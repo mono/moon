@@ -39,7 +39,7 @@ class Control : public FrameworkElement {
 	static DependencyProperty *BackgroundProperty;
  	/* @PropertyType=Brush,GenerateAccessors */
 	static DependencyProperty *BorderBrushProperty;
- 	/* @PropertyType=Thickness,DefaultValue=Thickness(0.0) */
+ 	/* @PropertyType=Thickness,DefaultValue=Thickness(0.0),GenerateAccessors */
 	static DependencyProperty *BorderThicknessProperty;
  	/* @PropertyType=string,DefaultValue=CONTROL_FONT_FAMILY,ManagedPropertyType=FontFamily,GenerateAccessors */
 	static DependencyProperty *FontFamilyProperty;
@@ -57,7 +57,7 @@ class Control : public FrameworkElement {
 	static DependencyProperty *HorizontalContentAlignmentProperty;
  	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
 	static DependencyProperty *IsTabStopProperty;
- 	/* @PropertyType=Thickness,DefaultValue=Thickness(0.0) */
+ 	/* @PropertyType=Thickness,DefaultValue=Thickness(0.0),GenerateAccessors */
 	static DependencyProperty *PaddingProperty;
  	/* @PropertyType=gint32,DefaultValue=INT_MAX,GenerateAccessors */
 	static DependencyProperty *TabIndexProperty;

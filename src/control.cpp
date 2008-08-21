@@ -153,27 +153,3 @@ Control::InitializeFromXaml (const char *xaml, Type::Kind *element_type, XamlLoa
 	
 	return element;
 }
-
-void
-Control::SetBorderThickness (Thickness *thickness)
-{
-	SetValue (Control::BorderThicknessProperty, Value (*thickness));
-}
-
-Thickness *
-Control::GetBorderThickness ()
-{
-	return GetValue (Control::BorderThicknessProperty)->AsThickness ();
-}
-
-void
-Control::SetPadding (Thickness *padding)
-{
-	SetValue (Control::PaddingProperty, Value (*padding));
-}
-
-Thickness *
-Control::GetPadding ()
-{
-	return GetValue (Control::PaddingProperty)->AsThickness ();
-}

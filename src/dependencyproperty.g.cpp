@@ -243,7 +243,7 @@ dependency_property_g_init (void)
 #if SL_2_0
 
 	ObjectAnimationUsingKeyFrames::KeyFramesProperty = DependencyProperty::Register (Type::OBJECTANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::OBJECTKEYFRAME_COLLECTION);
-	ObjectKeyFrame::KeyTimeProperty = DependencyProperty::Register (Type::OBJECTKEYFRAME, "KeyTime", Type::KEYTIME);
+	ObjectKeyFrame::KeyTimeProperty = DependencyProperty::RegisterNullable (Type::OBJECTKEYFRAME, "KeyTime", Type::KEYTIME);
 	ObjectKeyFrame::ValueProperty = DependencyProperty::Register (Type::OBJECTKEYFRAME, "Value", Type::MANAGED);
 #endif
 	Panel::BackgroundProperty = DependencyProperty::Register (Type::PANEL, "Background", Type::BRUSH);
@@ -1012,6 +1012,28 @@ ColorAnimationUsingKeyFrames::SetKeyFrames (ColorKeyFrameCollection * value)
 	this->DependencyObject::SetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty, Value (value));
 }
 
+KeyTime *
+ColorKeyFrame::GetKeyTime ()
+{
+	Value *value = this->DependencyObject::GetValue (ColorKeyFrame::KeyTimeProperty);
+	return (!value) ? NULL : value->AsKeyTime ();
+}
+
+void
+ColorKeyFrame::SetKeyTime (KeyTime value)
+{
+	this->DependencyObject::SetValue (ColorKeyFrame::KeyTimeProperty, Value (value));
+}
+
+void
+ColorKeyFrame::SetKeyTime (KeyTime * value)
+{
+	if (!value)
+		this->DependencyObject::SetValue (ColorKeyFrame::KeyTimeProperty, NULL);
+	else
+		this->DependencyObject::SetValue (ColorKeyFrame::KeyTimeProperty, Value (*value));
+}
+
 Color *
 ColorKeyFrame::GetValue ()
 {
@@ -1107,6 +1129,22 @@ void
 Control::SetBorderBrush (Brush * value)
 {
 	this->DependencyObject::SetValue (Control::BorderBrushProperty, Value (value));
+}
+
+#endif
+#if SL_2_0
+Thickness *
+Control::GetBorderThickness ()
+{
+	Value *value = this->DependencyObject::GetValue (Control::BorderThicknessProperty);
+	return (!value) ? NULL : value->AsThickness ();
+}
+
+void
+Control::SetBorderThickness (Thickness * value)
+{
+	if (!value) return;
+	this->DependencyObject::SetValue (Control::BorderThicknessProperty, Value (*value));
 }
 
 #endif
@@ -1227,6 +1265,22 @@ void
 Control::SetIsTabStop (bool value)
 {
 	this->DependencyObject::SetValue (Control::IsTabStopProperty, Value (value));
+}
+
+#endif
+#if SL_2_0
+Thickness *
+Control::GetPadding ()
+{
+	Value *value = this->DependencyObject::GetValue (Control::PaddingProperty);
+	return (!value) ? NULL : value->AsThickness ();
+}
+
+void
+Control::SetPadding (Thickness * value)
+{
+	if (!value) return;
+	this->DependencyObject::SetValue (Control::PaddingProperty, Value (*value));
 }
 
 #endif
@@ -2573,6 +2627,30 @@ NameScope::SetNameScope (DependencyObject *obj, NameScope * value)
 	obj->DependencyObject::SetValue (NameScope::NameScopeProperty, Value (value));
 }
 
+#if SL_2_0
+KeyTime *
+ObjectKeyFrame::GetKeyTime ()
+{
+	Value *value = this->DependencyObject::GetValue (ObjectKeyFrame::KeyTimeProperty);
+	return (!value) ? NULL : value->AsKeyTime ();
+}
+
+void
+ObjectKeyFrame::SetKeyTime (KeyTime value)
+{
+	this->DependencyObject::SetValue (ObjectKeyFrame::KeyTimeProperty, Value (value));
+}
+
+void
+ObjectKeyFrame::SetKeyTime (KeyTime * value)
+{
+	if (!value)
+		this->DependencyObject::SetValue (ObjectKeyFrame::KeyTimeProperty, NULL);
+	else
+		this->DependencyObject::SetValue (ObjectKeyFrame::KeyTimeProperty, Value (*value));
+}
+
+#endif
 Brush *
 Panel::GetBackground ()
 {
@@ -2757,6 +2835,28 @@ void
 PointAnimationUsingKeyFrames::SetKeyFrames (PointKeyFrameCollection * value)
 {
 	this->DependencyObject::SetValue (PointAnimationUsingKeyFrames::KeyFramesProperty, Value (value));
+}
+
+KeyTime *
+PointKeyFrame::GetKeyTime ()
+{
+	Value *value = this->DependencyObject::GetValue (PointKeyFrame::KeyTimeProperty);
+	return (!value) ? NULL : value->AsKeyTime ();
+}
+
+void
+PointKeyFrame::SetKeyTime (KeyTime value)
+{
+	this->DependencyObject::SetValue (PointKeyFrame::KeyTimeProperty, Value (value));
+}
+
+void
+PointKeyFrame::SetKeyTime (KeyTime * value)
+{
+	if (!value)
+		this->DependencyObject::SetValue (PointKeyFrame::KeyTimeProperty, NULL);
+	else
+		this->DependencyObject::SetValue (PointKeyFrame::KeyTimeProperty, Value (*value));
 }
 
 Point *

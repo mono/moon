@@ -27,8 +27,14 @@ class ObjectKeyFrame : public KeyFrame /* The managed class derives directly fro
 	
 	/* @PropertyType=Managed,ManagedPropertyType=object */
 	static DependencyProperty *ValueProperty;
-	/* @PropertyType=KeyTime */
+	/* @PropertyType=KeyTime,Nullable,ManagedPropertyType=KeyTime,GenerateAccessors */
 	static DependencyProperty *KeyTimeProperty;
+
+	// Property accessors
+
+	virtual KeyTime *GetKeyTime ();
+	virtual void SetKeyTime (KeyTime keytime);
+	virtual void SetKeyTime (KeyTime *keytime);
 };
 
 

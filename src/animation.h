@@ -354,8 +354,9 @@ class KeyFrame : public DependencyObject {
 	//
 	// Property Accessors
 	//
-	KeyTime *GetKeyTime ();
-	void SetKeyTime (KeyTime keytime);
+	virtual KeyTime *GetKeyTime () = 0;
+	virtual void SetKeyTime (KeyTime keytime) = 0;
+	virtual void SetKeyTime (KeyTime *keytime) = 0;
 };
 
 /* @Namespace=None */
@@ -430,7 +431,7 @@ class DoubleKeyFrame : public KeyFrame {
  public:
  	/* @PropertyType=double,Nullable,ManagedPropertyType=double,GenerateAccessors */
 	static DependencyProperty *ValueProperty;
-	/* @PropertyType=KeyTime,Nullable,ManagedPropertyType=KeyTime */
+	/* @PropertyType=KeyTime,Nullable,ManagedPropertyType=KeyTime,GenerateAccessor */
 	static DependencyProperty *KeyTimeProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
@@ -443,6 +444,10 @@ class DoubleKeyFrame : public KeyFrame {
 	double *GetValue ();
 	void    SetValue (double *pv);
 	void    SetValue (double v);
+
+	virtual KeyTime *GetKeyTime ();
+	virtual void SetKeyTime (KeyTime keytime);
+	virtual void SetKeyTime (KeyTime *keytime);
 };
 
 /* @Namespace=System.Windows.Media.Animation */
@@ -453,7 +458,7 @@ class ColorKeyFrame : public KeyFrame {
  public:
  	/* @PropertyType=Color,Nullable,ManagedPropertyType=Color,GenerateAccessors */
 	static DependencyProperty *ValueProperty;
-	/* @PropertyType=KeyTime,Nullable,ManagedPropertyType=KeyTime */
+	/* @PropertyType=KeyTime,Nullable,ManagedPropertyType=KeyTime,GenerateAccessors */
 	static DependencyProperty *KeyTimeProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
@@ -466,6 +471,10 @@ class ColorKeyFrame : public KeyFrame {
 	Color *GetValue ();
 	void   SetValue (Color *pv);
 	void   SetValue (Color v);
+
+	virtual KeyTime *GetKeyTime ();
+	virtual void SetKeyTime (KeyTime keytime);
+	virtual void SetKeyTime (KeyTime *keytime);
 };
 
 /* @Namespace=System.Windows.Media.Animation */
@@ -476,7 +485,7 @@ class PointKeyFrame : public KeyFrame {
  public:
  	/* @PropertyType=Point,Nullable,ManagedPropertyType=Point,GenerateAccessors */
 	static DependencyProperty *ValueProperty;
-	/* @PropertyType=KeyTime,Nullable,ManagedPropertyType=KeyTime */
+	/* @PropertyType=KeyTime,Nullable,ManagedPropertyType=KeyTime,GenerateAccessors */
 	static DependencyProperty *KeyTimeProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
@@ -490,6 +499,10 @@ class PointKeyFrame : public KeyFrame {
 	Point *GetValue ();
 	void   SetValue (Point *pv);
 	void   SetValue (Point v);
+
+	virtual KeyTime *GetKeyTime ();
+	virtual void SetKeyTime (KeyTime keytime);
+	virtual void SetKeyTime (KeyTime *keytime);
 };
 
 

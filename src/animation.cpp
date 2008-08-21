@@ -832,22 +832,6 @@ KeyFrame::KeyFrame ()
 {
 }
 
-KeyTime*
-KeyFrame::GetKeyTime()
-{
-	Value *v = GetValue ("KeyTime");
-	if (v == NULL)
-		return NULL;
-	else
-		return v->AsKeyTime();
-}
-
-void
-KeyFrame::SetKeyTime (KeyTime keytime)
-{
-	SetValue ("KeyTime", Value(keytime));
-}
-
 Value *
 KeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
