@@ -1,3 +1,9 @@
+2008-08-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* IsolatedStorageSettings.cs: Don't include the class in the 3.0 
+	profile (since the base isolated storage is very different). Few
+	other fixes for new unit tests.
+
 2008-08-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* IsolatedStorageSettings.cs: Fix a few things wrt new unit tests

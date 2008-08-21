@@ -26,6 +26,9 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+// users of the desktop moonlight libraries needs to use the "standard" isolated storage from the .net framework
+#if NET_2_1
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -40,12 +43,16 @@ namespace System.IO.IsolatedStorage {
 		static private IsolatedStorageSettings application_settings;
 		static private IsolatedStorageSettings site_settings;
 
-		private IsolatedStorageFile storage;
+		private IsolatedStorageFileStream stream;
 		private Dictionary<string, object> settings;
 
-		internal IsolatedStorageSettings (string filename)
+		internal IsolatedStorageSettings (IsolatedStorageFile isf)
 		{
+			// FIXME we need an unpredictable, from the SL app, filename to store the settings
+			// FIXME we need to test if settings are part of the quota (I guess so)
+			stream = isf.OpenFile ("moonlight.data", FileMode.OpenOrCreate);
 			settings = new Dictionary<string, object> ();
+			// FIXME read data from stream
 		}
 
 		~IsolatedStorageSettings ()
@@ -59,8 +66,8 @@ namespace System.IO.IsolatedStorage {
 			[MonoTODO ("not loaded from file, isolated or not")]
 			get {
 				if (application_settings == null) {
-					// FIXME: supply a constant, mangled, filename for the application
-					application_settings = new IsolatedStorageSettings (null);
+					application_settings = new IsolatedStorageSettings (
+						IsolatedStorageFile.GetUserStoreForApplication ());
 				}
 				return application_settings;
 			}
@@ -70,8 +77,8 @@ namespace System.IO.IsolatedStorage {
 			[MonoTODO ("not loaded from file, isolated or not")]
 			get {
 				if (site_settings == null) {
-					// FIXME: supply a constant, mangled, filename for the site
-					site_settings = new IsolatedStorageSettings (null);
+					site_settings = new IsolatedStorageSettings (
+						IsolatedStorageFile.GetUserStoreForSite ());
 				}
 				return site_settings;
 			}
@@ -282,3 +289,5 @@ namespace System.IO.IsolatedStorage {
 		}
 	}
 }
+
+#endif
