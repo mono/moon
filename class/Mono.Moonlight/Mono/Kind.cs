@@ -15,6 +15,7 @@ namespace Mono {
 		BEGINSTORYBOARD,
 		BEZIERSEGMENT,
 		BOOL,
+		BORDER,// Silverlight 2.0 only
 		BRUSH,
 		CANVAS,
 		CLOCK,
@@ -30,6 +31,7 @@ namespace Mono {
 		CONTENTCONTROL,// Silverlight 2.0 only
 		CONTROL,// Silverlight 2.0 only
 		CONTROLTEMPLATE,// Silverlight 2.0 only
+		CORNERRADIUS,// Silverlight 2.0 only
 		DEEPZOOMIMAGETILESOURCE,
 		DEPENDENCY_OBJECT,
 		DEPENDENCY_OBJECT_COLLECTION,

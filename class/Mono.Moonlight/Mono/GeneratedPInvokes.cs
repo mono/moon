@@ -38,6 +38,10 @@ namespace Mono {
 		public extern static IntPtr bezier_segment_new ();
 
 		[DllImport ("moon")]
+		// Border *border_new ();
+		public extern static IntPtr border_new ();
+
+		[DllImport ("moon")]
 		// Brush *brush_new ();
 		public extern static IntPtr brush_new ();
 

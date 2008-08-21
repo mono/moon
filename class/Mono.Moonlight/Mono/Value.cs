@@ -89,6 +89,13 @@ namespace Mono {
 		public double height;
 	}
 
+	public struct UnmanagedCornerRadius {
+		public double topLeft;
+		public double topRight;
+		public double bottomLeft;
+		public double bottomRight;
+	}
+
 	[StructLayout(LayoutKind.Explicit)]
 	public struct ValUnion {
 		[FieldOffset(0)] public double d;

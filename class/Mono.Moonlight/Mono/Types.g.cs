@@ -52,6 +52,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.TRIGGER_COLLECTION));
 				t = agclr.GetType ("System.Windows.UIElement", true); 
 				types.Add (t, new ManagedType (t, Kind.UIELEMENT));
+				t = agclr.GetType ("System.Windows.Controls.Border", true); 
+				types.Add (t, new ManagedType (t, Kind.BORDER));
 				t = agclr.GetType ("System.Windows.Controls.Canvas", true); 
 				types.Add (t, new ManagedType (t, Kind.CANVAS));
 				t = agclr.GetType ("System.Windows.Controls.ColumnDefinition", true); 

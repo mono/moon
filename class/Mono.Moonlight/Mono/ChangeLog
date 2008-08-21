@@ -1,3 +1,13 @@
+2008-08-21  Chris Toshok  <toshok@ximian.com>
+
+	* Value.cs: add UnmanagedCornerRadius.
+
+	* Kind.cs: regen.
+
+	* Types.g.cs: regen.
+
+	* GeneratedPInvokes.cs: regen.
+
 2008-08-20  Jackson Harper  <jackson@ximian.com>
 
 	* XamlLoaderCallbacks.cs: We pass the xmlns to the
