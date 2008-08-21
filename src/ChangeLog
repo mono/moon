@@ -1,3 +1,10 @@
+2008-08-21  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (TextLayout::Layout): Fixed
+	LineStackingStrategy/LineHeight issues. If we are using
+	BlockLineHeight & the specified LineHeight is not Auto, then we
+	need to use 0.0 as the descender.
+
 2008-08-21  Chris Toshok  <toshok@ximian.com>
 
 	* animation.h: make KeyFrame::Get/SetKeyTime pure virtual, and add

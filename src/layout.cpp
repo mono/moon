@@ -376,11 +376,9 @@ TextLayout::LayoutWrapWithOverflow (TextLayoutHints *hints)
 	for (run = (TextRun *) runs->First (); run; run = (TextRun *) run->next) {
 		if (run->text == NULL) {
 			// LineBreak
-			if (height == 0.0) {
-				if (!hints->OverrideLineHeight ())
-					height = run->font->Height ();
-				
+			if (blank && !hints->OverrideLineHeight ()) {
 				descend = run->font->Descender ();
+				height = run->font->Height ();
 			}
 			
 			line->descend = descend;
@@ -402,10 +400,11 @@ TextLayout::LayoutWrapWithOverflow (TextLayoutHints *hints)
 			underlined = false;
 			blank = true;
 			
-			if (!hints->OverrideLineHeight ())
+			if (!hints->OverrideLineHeight ()) {
+				descend = 0.0;
 				height = 0.0;
+			}
 			
-			descend = 0.0;
 			x0 = 0.0;
 			
 			continue;
@@ -413,10 +412,11 @@ TextLayout::LayoutWrapWithOverflow (TextLayoutHints *hints)
 		
 		if (!underlined)
 			underlined = run->IsUnderlined ();
-		descend = MIN (descend, run->font->Descender ());
 		
-		if (!hints->OverrideLineHeight ())
+		if (!hints->OverrideLineHeight ()) {
+			descend = MIN (descend, run->font->Descender ());
 			height = MAX (height, run->font->Height ());
+		}
 		
 		segment = new TextSegment (run, 0);
 		inptr = start = run->text;
@@ -483,10 +483,11 @@ TextLayout::LayoutWrapWithOverflow (TextLayoutHints *hints)
 				blank = true;
 				
 				underlined = run->IsUnderlined ();
-				descend = run->font->Descender ();
 				
-				if (!hints->OverrideLineHeight ())
+				if (!hints->OverrideLineHeight ()) {
+					descend = run->font->Descender ();
 					height = run->font->Height ();
+				}
 				
 				prev = 0;
 				x0 = 0.0;
@@ -569,11 +570,9 @@ TextLayout::LayoutNoWrap (TextLayoutHints *hints)
 	for (run = (TextRun *) runs->First (); run; run = (TextRun *) run->next) {
 		if (run->text == NULL) {
 			// LineBreak
-			if (height == 0.0) {
-				if (!hints->OverrideLineHeight ())
-					height = run->font->Height ();
-				
+			if (blank && !hints->OverrideLineHeight ()) {
 				descend = run->font->Descender ();
+				height = run->font->Height ();
 			}
 			
 			line->descend = descend;
@@ -596,10 +595,11 @@ TextLayout::LayoutNoWrap (TextLayoutHints *hints)
 			clipped = false;
 			blank = true;
 			
-			if (!hints->OverrideLineHeight ())
+			if (!hints->OverrideLineHeight ()) {
+				descend = 0.0;
 				height = 0.0;
+			}
 			
-			descend = 0.0;
 			x0 = 0.0;
 			
 			continue;
@@ -610,10 +610,11 @@ TextLayout::LayoutNoWrap (TextLayoutHints *hints)
 		
 		if (!underlined)
 			underlined = run->IsUnderlined ();
-		descend = MIN (descend, run->font->Descender ());
 		
-		if (!hints->OverrideLineHeight ())
+		if (!hints->OverrideLineHeight ()) {
+			descend = MIN (descend, run->font->Descender ());
 			height = MAX (height, run->font->Height ());
+		}
 		
 		segment = new TextSegment (run, 0);
 		inptr = run->text;
@@ -787,11 +788,9 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 	for (run = (TextRun *) runs->First (); run; run = (TextRun *) run->next) {
 		if (run->text == NULL) {
 			// LineBreak
-			if (height == 0.0) {
-				if (!hints->OverrideLineHeight ())
-					height = run->font->Height ();
-				
+			if (blank && !hints->OverrideLineHeight ()) {
 				descend = run->font->Descender ();
+				height = run->font->Height ();
 			}
 			
 			line->descend = descend;
@@ -814,10 +813,11 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 			last_word = false;
 			blank = true;
 			
-			if (!hints->OverrideLineHeight ())
+			if (!hints->OverrideLineHeight ()) {
+				descend = 0.0;
 				height = 0.0;
+			}
 			
-			descend = 0.0;
 			x0 = 0.0;
 			
 			continue;
@@ -825,10 +825,11 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 		
 		if (!underlined)
 			underlined = run->IsUnderlined ();
-		descend = MIN (descend, run->font->Descender ());
 		
-		if (!hints->OverrideLineHeight ())
+		if (!hints->OverrideLineHeight ()) {
+			descend = MIN (descend, run->font->Descender ());
 			height = MAX (height, run->font->Height ());
+		}
 		
 		segment = new TextSegment (run, 0);
 		d(print_run_text ("Laying out Run.Text", run->text, NULL));
@@ -904,10 +905,11 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 				blank = true;
 				
 				underlined = run->IsUnderlined ();
-				descend = run->font->Descender ();
 				
-				if (!hints->OverrideLineHeight ())
+				if (!hints->OverrideLineHeight ()) {
+					descend = run->font->Descender ();
 					height = run->font->Height ();
+				}
 				
 				prev = 0;
 				x0 = 0.0;
