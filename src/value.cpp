@@ -32,7 +32,7 @@
  */
 
 Value*
-Value::CreateUnrefPtr (DependencyObject *dob)
+Value::CreateUnrefPtr (DependencyObject* dob)
 {
 	Value *result = new Value (dob);
 	dob->unref ();
@@ -40,7 +40,7 @@ Value::CreateUnrefPtr (DependencyObject *dob)
 }
 
 Value
-Value::CreateUnref (DependencyObject *dob)
+Value::CreateUnref (DependencyObject* dob)
 {
 	Value result = Value (dob);
 	dob->unref ();
@@ -160,7 +160,7 @@ Value::Value (Color c)
 	*u.color = Color (c);
 }
 
-Value::Value (EventObject *obj)
+Value::Value (EventObject* obj)
 {
 	Init ();
 	if (obj == NULL) {
@@ -227,7 +227,7 @@ Value::Value (KeyTime keytime)
 	*u.keytime = KeyTime (keytime);
 }
 
-Value::Value (const char *s)
+Value::Value (const char* s)
 {
 	Init ();
 	k = Type::STRING;
@@ -352,7 +352,7 @@ Value::ToString ()
 // This is invoked by managed code to free the contents of the value
 //
 void 
-value_free_value (Value *value)
+value_free_value (Value* value)
 {
 	value->FreeValue ();
 }
