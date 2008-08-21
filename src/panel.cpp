@@ -93,8 +93,8 @@ Panel::ComputeBounds ()
 		bounds_with_children = Rect (0,0,0,0);
 	}
 
-	Value *value = GetValue (Panel::BackgroundProperty);
-	if (value) {
+	Brush *bg = GetBackground();
+	if (bg) {
 		FrameworkElement::ComputeBounds ();
 		bounds_with_children = bounds_with_children.Union (bounds);
 	} else
@@ -258,7 +258,7 @@ Panel::RenderChildren (cairo_t *cr, Region *parent_region)
 void
 Panel::FrontToBack (Region *surface_region, List *render_list)
 {
-	double local_opacity = GetValue (OpacityProperty)->AsDouble();
+	double local_opacity = GetOpacity ();
 
 	if (surface_region->RectIn (bounds_with_children.RoundOut()) == GDK_OVERLAP_RECTANGLE_OUT)
 		return;
@@ -283,11 +283,10 @@ Panel::FrontToBack (Region *surface_region, List *render_list)
 	Region *region;
 	bool delete_region;
 	bool can_subtract_self;
-	Value *value;
 	
-	if ((GetValue (UIElement::ClipProperty) == NULL)
-	    && (!(value = GetValue (UIElement::OpacityMaskProperty)) || value->AsBrush () == NULL)
-	    && !IS_TRANSLUCENT (GetValue (UIElement::OpacityProperty)->AsDouble ())) {
+	if (!GetClip ()
+	    && !GetOpacityMask ()
+	    && !IS_TRANSLUCENT (GetOpacity ())) {
 		region = surface_region;
 		delete_region = false;
 		can_subtract_self = true;
@@ -313,7 +312,7 @@ Panel::FrontToBack (Region *surface_region, List *render_list)
 
 	if (!GetOpacityMask () && !IS_TRANSLUCENT (local_opacity)) {
 		delete self_region;
-		if (GetValue (Panel::BackgroundProperty) == NULL)
+		if (GetBackground () == NULL)
 			self_region = new Region ();
 		else {
 			self_region = new Region (region);
@@ -556,7 +555,7 @@ Panel::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, Pr
 void
 Panel::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
-	if (col == GetValue (Panel::ChildrenProperty)->AsCollection ()) {
+	if (col == GetChildren ()) {
 		switch (args->action) {
 		case CollectionChangedActionReplace:
 			ChildRemoved (args->old_value->AsUIElement ());
@@ -583,7 +582,7 @@ Panel::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 void
 Panel::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
 {
-	if (col == GetValue (Panel::ChildrenProperty)->AsCollection ()) {
+	if (col == GetChildren()) {
 		// if a child changes its ZIndex property we need to resort our Children
 		if (args->property == Canvas::ZIndexProperty) {
 			((UIElement *) obj)->Invalidate ();

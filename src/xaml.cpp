@@ -1285,11 +1285,11 @@ print_tree (XamlElementInstance *el, int depth)
 	for (int i = 0; i < depth; i++)
 		printf ("\t");
 	
-	Value *v = NULL;
+	const char *name = NULL;
 
 	if (el->element_type == XamlElementInstance::ELEMENT && !el->IsValueType ())
-		v = el->item->GetValue (DependencyObject::NameProperty);
-	printf ("%s  (%s)  (%p)\n", el->element_name, v ? v->AsString () : "-no name-", el->parent);
+		name = el->item->GetName ();
+	printf ("%s  (%s)  (%p)\n", el->element_name, name ? name : "-no name-", el->parent);
 
 	for (List::Node *walk = el->children->First (); walk != NULL; walk = walk->next) {
 		XamlElementInstance *el = (XamlElementInstance *) walk;

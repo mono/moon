@@ -588,7 +588,7 @@ Stroke::ComputeBounds ()
 void
 Stroke::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
-	if (col != GetValue (Stroke::StylusPointsProperty)->AsCollection ()) {
+	if (col != GetStylusPoints ()) {
 		DependencyObject::OnCollectionChanged (col, args);
 		return;
 	}
@@ -615,7 +615,7 @@ Stroke::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 void
 Stroke::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
 {
-	if (col != GetValue (Stroke::StylusPointsProperty)->AsCollection ()) {
+	if (col != GetStylusPoints ()) {
 		DependencyObject::OnCollectionItemChanged (col, obj, args);
 		return;
 	}
@@ -826,7 +826,7 @@ InkPresenter::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *
 {
 	Stroke *stroke;
 	
-	if (col != GetValue (InkPresenter::StrokesProperty)->AsCollection ()) {
+	if (col != GetStrokes ()) {
 		Canvas::OnCollectionChanged (col, args);
 		return;
 	}
@@ -866,7 +866,7 @@ InkPresenter::OnCollectionItemChanged (Collection *col, DependencyObject *obj, P
 {
 	Stroke *stroke = (Stroke *) obj;
 	
-	if (col != GetValue (InkPresenter::StrokesProperty)->AsCollection ()) {
+	if (col != GetStrokes ()) {
 		Canvas::OnCollectionItemChanged (col, obj, args);
 		return;
 	}

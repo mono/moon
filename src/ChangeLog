@@ -1,5 +1,16 @@
 2008-08-20  Chris Toshok  <toshok@ximian.com>
 
+	* text.cpp, text.h: generate accessors for Glyph properties.
+
+	* geometry.cpp, grid.cpp, media.cpp, panel.cpp, runtime.cpp,
+	shape.cpp, stylus.cpp, transform.cpp, trigger.cpp, uielement.cpp,
+	xaml.cpp: make another pass through files switching to C++
+	accessors from GetValue(FooClass::FooProperty)->AsFoo().
+
+	* dependencyproperty.g.cpp: regen.
+
+2008-08-20  Chris Toshok  <toshok@ximian.com>
+
 	* animation.cpp, animation.h, brush.cpp, brush.h, canvas.cpp,
 	  canvas.h, clock.cpp, clock.h, collection.cpp, collection.h,
 	  frameworkelement.cpp, frameworkelement.h, geometry.cpp,

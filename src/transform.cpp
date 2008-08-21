@@ -248,7 +248,7 @@ MatrixTransform::OnSubPropertyChanged (DependencyProperty *prop, DependencyObjec
 void
 MatrixTransform::UpdateTransform ()
 {
-	Matrix *matrix = GetValue (MatrixTransform::MatrixProperty)->AsMatrix();
+	Matrix *matrix = GetMatrix ();
 	if (matrix)
 		_matrix = matrix->GetUnderlyingMatrix();
 	else
@@ -286,7 +286,7 @@ TransformGroup::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 TransformGroup::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
-	if (col != GetValue (TransformGroup::ChildrenProperty)->AsCollection ()) {
+	if (col != GetChildren ()) {
 		Transform::OnCollectionChanged (col, args);
 		return;
 	}
@@ -298,7 +298,7 @@ TransformGroup::OnCollectionChanged (Collection *col, CollectionChangedEventArgs
 void
 TransformGroup::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
 {
-	if (col != GetValue (TransformGroup::ChildrenProperty)->AsCollection ()) {
+	if (col != GetChildren ()) {
 		Transform::OnCollectionItemChanged (col, obj, args);
 		return;
 	}
@@ -310,7 +310,7 @@ TransformGroup::OnCollectionItemChanged (Collection *col, DependencyObject *obj,
 void
 TransformGroup::UpdateTransform ()
 {
-	TransformCollection *children = GetValue (TransformGroup::ChildrenProperty)->AsTransformCollection ();
+	TransformCollection *children = GetChildren ();
 	
 	cairo_matrix_init_identity (&_matrix);
 	

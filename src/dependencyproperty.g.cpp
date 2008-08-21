@@ -1667,6 +1667,118 @@ GeometryGroup::SetChildren (GeometryCollection * value)
 	this->DependencyObject::SetValue (GeometryGroup::ChildrenProperty, Value (value));
 }
 
+double
+Glyphs::GetFontRenderingEmSize ()
+{
+	Value *value = NULL;
+	value = this->DependencyObject::GetValue (Glyphs::FontRenderingEmSizeProperty);
+	if (value == NULL)
+		return 0.0;
+	return value->AsDouble ();
+}
+
+void
+Glyphs::SetFontRenderingEmSize (double value)
+{
+	this->DependencyObject::SetValue (Glyphs::FontRenderingEmSizeProperty, Value (value));
+}
+
+const char *
+Glyphs::GetFontUri ()
+{
+	Value *value = NULL;
+	value = this->DependencyObject::GetValue (Glyphs::FontUriProperty);
+	if (value == NULL)
+		return NULL;
+	return value->AsString ();
+}
+
+void
+Glyphs::SetFontUri (const char * value)
+{
+	this->DependencyObject::SetValue (Glyphs::FontUriProperty, Value (value));
+}
+
+const char *
+Glyphs::GetIndices ()
+{
+	Value *value = NULL;
+	value = this->DependencyObject::GetValue (Glyphs::IndicesProperty);
+	if (value == NULL)
+		return NULL;
+	return value->AsString ();
+}
+
+void
+Glyphs::SetIndices (const char * value)
+{
+	this->DependencyObject::SetValue (Glyphs::IndicesProperty, Value (value));
+}
+
+double
+Glyphs::GetOriginX ()
+{
+	Value *value = NULL;
+	value = this->DependencyObject::GetValue (Glyphs::OriginXProperty);
+	if (value == NULL)
+		return 0.0;
+	return value->AsDouble ();
+}
+
+void
+Glyphs::SetOriginX (double value)
+{
+	this->DependencyObject::SetValue (Glyphs::OriginXProperty, Value (value));
+}
+
+double
+Glyphs::GetOriginY ()
+{
+	Value *value = NULL;
+	value = this->DependencyObject::GetValue (Glyphs::OriginYProperty);
+	if (value == NULL)
+		return 0.0;
+	return value->AsDouble ();
+}
+
+void
+Glyphs::SetOriginY (double value)
+{
+	this->DependencyObject::SetValue (Glyphs::OriginYProperty, Value (value));
+}
+
+StyleSimulations
+Glyphs::GetStyleSimulations ()
+{
+	Value *value = NULL;
+	value = this->DependencyObject::GetValue (Glyphs::StyleSimulationsProperty);
+	if (value == NULL)
+		return (StyleSimulations) 0;
+	return (StyleSimulations)value->AsInt32();
+}
+
+void
+Glyphs::SetStyleSimulations (StyleSimulations value)
+{
+	this->DependencyObject::SetValue (Glyphs::StyleSimulationsProperty, Value (value));
+}
+
+const char *
+Glyphs::GetUnicodeString ()
+{
+	Value *value = NULL;
+	value = this->DependencyObject::GetValue (Glyphs::UnicodeStringProperty);
+	if (value == NULL)
+		return NULL;
+	return value->AsString ();
+}
+
+void
+Glyphs::SetUnicodeString (const char * value)
+{
+	this->DependencyObject::SetValue (Glyphs::UnicodeStringProperty, Value (value));
+}
+
 ColorInterpolationMode
 GradientBrush::GetColorInterpolationMode ()
 {

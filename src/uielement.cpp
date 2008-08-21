@@ -84,11 +84,10 @@ UIElement::SetSurface (Surface *s)
 Rect
 UIElement::IntersectBoundsWithClipPath (Rect unclipped, bool transform)
 {
-	Value *value = GetValue (UIElement::ClipProperty);
-	if (!value)
+	Geometry *geometry = GetClip ();
+	if (!geometry)
 		return unclipped;
 
-	Geometry *geometry = value->AsGeometry ();
 	Rect box = geometry->ComputeBounds (NULL, false);
 
 	if (!GetRenderVisible())
@@ -106,11 +105,10 @@ UIElement::RenderClipPath (cairo_t *cr)
 	cairo_new_path (cr);
 	cairo_set_matrix (cr, &absolute_xform);
 
-	Value *value = GetValue (UIElement::ClipProperty);
-	if (!value)
+	Geometry *geometry = GetClip();
+	if (!geometry)
 		return;
 
-	Geometry *geometry = value->AsGeometry ();
 	geometry->Draw (NULL, cr);
 	cairo_clip (cr);
 }
@@ -175,7 +173,7 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 UIElement::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
-	if (col == GetValue (UIElement::TriggersProperty)->AsCollection ()) {
+	if (col == GetTriggers ()) {
 		switch (args->action) {
 		case CollectionChangedActionReplace:
 			args->old_value->AsEventTrigger ()->RemoveTarget (this);
@@ -400,17 +398,12 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj
 bool 
 UIElement::InsideClip (cairo_t *cr, double x, double y)
 {
-	Value* clip_geometry = GetValue (UIElement::ClipProperty);
 	Geometry* clip;
 	bool ret = false;
 	double nx = x;
 	double ny = y;
 	
-	if (clip_geometry == NULL) {
-		return true;
-	}
-
-	clip = clip_geometry->AsGeometry ();
+	clip = GetClip ();
 	
 	if (clip == NULL) {
 		return true;
@@ -600,7 +593,7 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 
 		bool subtract = ((absolute_xform.yx == 0 && absolute_xform.xy == 0) /* no skew */
 				 && !IS_TRANSLUCENT (local_opacity)
-				 && (GetValue (UIElement::ClipProperty) == NULL)
+				 && (GetClip () == NULL)
 				 && (GetOpacityMask () == NULL)); // XXX we can easily deal with opaque solid color brushes.
 
 		// element type specific checks
@@ -740,9 +733,8 @@ UIElement::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 		cairo_set_matrix (cr, &absolute_xform);
 		cairo_set_line_width (cr, 1);
 		
-		Value *value = GetValue (UIElement::ClipProperty);
-		if (value) {
-			Geometry *geometry = value->AsGeometry ();
+		Geometry *geometry = GetClip ();
+		if (geometry) {
 			geometry->Draw (NULL, cr);
 			cairo_set_source_rgba (cr, 0.0, 1.0, 1.0, 1.0);
 			cairo_stroke (cr);

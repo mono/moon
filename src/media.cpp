@@ -1011,7 +1011,7 @@ MediaElement::GetBufferedSize ()
 			last_played_pts, MilliSeconds_FromPts (last_played_pts),
 			current_pts, MilliSeconds_FromPts (current_pts),
 			currently_available_pts, MilliSeconds_FromPts (currently_available_pts), 
-			GetValue (MediaElement::BufferingProgressProperty)->AsDouble (), progress));
+		  	GetBufferingProgress (), progress));
 			
 	if (progress < 0.0)
 		progress = 0.0;

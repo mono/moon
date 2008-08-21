@@ -77,7 +77,7 @@ GeometryGroup::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject 
 void
 GeometryGroup::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
-	if (col != GetValue (GeometryGroup::ChildrenProperty)->AsCollection ()) {
+	if (col != GetChildren ()) {
 		Geometry::OnCollectionChanged (col, args);
 		return;
 	}
@@ -88,7 +88,7 @@ GeometryGroup::OnCollectionChanged (Collection *col, CollectionChangedEventArgs 
 void
 GeometryGroup::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
 {
-	if (col != GetValue (GeometryGroup::ChildrenProperty)->AsCollection ()) {
+	if (col != GetChildren ()) {
 		Geometry::OnCollectionItemChanged (col, obj, args);
 		return;
 	}
@@ -269,7 +269,7 @@ PathGeometry::PathGeometry (moon_path *pml)
 void
 PathGeometry::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
-	if (col != GetValue (PathGeometry::FiguresProperty)->AsCollection ()) {
+	if (col != GetFigures ()) {
 		Geometry::OnCollectionChanged (col, args);
 		return;
 	}
@@ -284,7 +284,7 @@ PathGeometry::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *
 void
 PathGeometry::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
 {
-	if (col != GetValue (PathGeometry::FiguresProperty)->AsCollection ()) {
+	if (col != GetFigures ()) {
 		Geometry::OnCollectionItemChanged (col, obj, args);
 		return;
 	}
@@ -479,7 +479,7 @@ PathFigure::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 PathFigure::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
-	if (col != GetValue (PathFigure::SegmentsProperty)->AsCollection ()) {
+	if (col != GetSegments ()) {
 		DependencyObject::OnCollectionChanged (col, args);
 		return;
 	}
@@ -493,7 +493,7 @@ PathFigure::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *ar
 void
 PathFigure::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
 {
-	if (col != GetValue (PathFigure::SegmentsProperty)->AsCollection ()) {
+	if (col != GetSegments ()) {
 		DependencyObject::OnCollectionItemChanged (col, obj, args);
 		return;
 	}

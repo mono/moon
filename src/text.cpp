@@ -726,7 +726,7 @@ TextBlock::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *arg
 	bool update_bounds = false;
 	bool update_text = false;
 	
-	if (col != GetValue (TextBlock::InlinesProperty)->AsCollection ()) {
+	if (col != GetInlines ()) {
 		FrameworkElement::OnCollectionChanged (col, args);
 		return;
 	}
@@ -771,7 +771,7 @@ TextBlock::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Prop
 	bool update_bounds;
 	bool update_text;
 	
-	if (col != GetValue (TextBlock::InlinesProperty)->AsCollection ()) {
+	if (col != GetInlines ()) {
 		FrameworkElement::OnCollectionItemChanged (col, obj, args);
 		return;
 	}
@@ -1694,97 +1694,6 @@ Glyphs::GetFill ()
 	
 	return value ? value->AsBrush () : NULL;
 }
-
-void
-Glyphs::SetFontRenderingEmSize (double size)
-{
-	SetValue (Glyphs::FontRenderingEmSizeProperty, Value (size));
-}
-
-double
-Glyphs::GetFontRenderingEmSize ()
-{
-	return GetValue (Glyphs::FontRenderingEmSizeProperty)->AsDouble ();
-}
-
-void
-Glyphs::SetFontUri (const char *uri)
-{
-	SetValue (Glyphs::FontUriProperty, Value (uri));
-}
-
-const char *
-Glyphs::GetFontUri ()
-{
-	Value *value = GetValue (Glyphs::FontUriProperty);
-	
-	return value ? value->AsString () : NULL;
-}
-
-void
-Glyphs::SetIndices (const char *indices)
-{
-	SetValue (Glyphs::IndicesProperty, Value (indices));
-}
-
-const char *
-Glyphs::GetIndices ()
-{
-	Value *value = GetValue (Glyphs::IndicesProperty);
-	
-	return value ? value->AsString () : NULL;
-}
-
-void
-Glyphs::SetOriginX (double origin)
-{
-	SetValue (Glyphs::OriginXProperty, Value (origin));
-}
-
-double
-Glyphs::GetOriginX ()
-{
-	return GetValue (Glyphs::OriginXProperty)->AsDouble ();
-}
-
-void
-Glyphs::SetOriginY (double origin)
-{
-	SetValue (Glyphs::OriginYProperty, Value (origin));
-}
-
-double
-Glyphs::GetOriginY ()
-{
-	return GetValue (Glyphs::OriginYProperty)->AsDouble ();
-}
-
-void
-Glyphs::SetStyleSimulations (StyleSimulations style)
-{
-	SetValue (Glyphs::StyleSimulationsProperty, Value (style));
-}
-
-StyleSimulations
-Glyphs::GetStyleSimulations ()
-{
-	return (StyleSimulations) GetValue (Glyphs::StyleSimulationsProperty)->AsInt32 ();
-}
-
-void
-Glyphs::SetUnicodeString (const char *unicode)
-{
-	SetValue (Glyphs::UnicodeStringProperty, Value (unicode));
-}
-
-const char *
-Glyphs::GetUnicodeString ()
-{
-	Value *value = GetValue (Glyphs::UnicodeStringProperty);
-	
-	return value ? value->AsString () : NULL;
-}
-
 
 
 void

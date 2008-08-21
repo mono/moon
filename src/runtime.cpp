@@ -777,8 +777,7 @@ Surface::ShowFullScreenMessage ()
 	TextBlock* message_block = (message_object != NULL && message_object->Is (Type::TEXTBLOCK)) ? (TextBlock*) message_object : NULL;
 	TextBlock* url_block = (url_object != NULL && url_object->Is (Type::TEXTBLOCK)) ? (TextBlock*) url_object : NULL;
 	
-	Value* tmp = full_screen_message->GetValue (UIElement::RenderTransformProperty);
-	Transform* transform = tmp != NULL ? tmp->AsTransform () : NULL;
+	Transform* transform = full_screen_message->GetRenderTransform ();
 	
 	double box_height = full_screen_message->GetHeight ();
 	double box_width = full_screen_message->GetWidth ();
@@ -1453,7 +1452,7 @@ Surface::UpdateCursorFromInputList ()
 	// has its cursor set to the non-default.
 	UIElementNode *node;
 	for (node = (UIElementNode*)input_list->First(); node; node = (UIElementNode*)node->next) {
-		new_cursor = (MouseCursor)node->uielement->GetValue (FrameworkElement::CursorProperty)->AsInt32();
+		new_cursor = node->uielement->GetCursor ();
 		if (new_cursor != MouseCursorDefault)
 			break;
 	}

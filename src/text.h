@@ -345,19 +345,19 @@ class Glyphs : public FrameworkElement {
  public:
  	/* @PropertyType=Brush */
 	static DependencyProperty *FillProperty;
- 	/* @PropertyType=double,DefaultValue=0.0 */
+ 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *FontRenderingEmSizeProperty;
- 	/* @PropertyType=string,ManagedPropertyType=Uri */
+ 	/* @PropertyType=string,ManagedPropertyType=Uri,GenerateAccessors */
 	static DependencyProperty *FontUriProperty;
- 	/* @PropertyType=string */
+ 	/* @PropertyType=string,GenerateAccessors */
 	static DependencyProperty *IndicesProperty;
- 	/* @PropertyType=double,DefaultValue=0.0 */
+ 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *OriginXProperty;
- 	/* @PropertyType=double,DefaultValue=0.0 */
+ 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *OriginYProperty;
- 	/* @PropertyType=StyleSimulations,DefaultValue=StyleSimulationsNone */
+ 	/* @PropertyType=StyleSimulations,DefaultValue=StyleSimulationsNone,GenerateAccessors */
 	static DependencyProperty *StyleSimulationsProperty;
- 	/* @PropertyType=string */
+ 	/* @PropertyType=string,GenerateAccessors */
 	static DependencyProperty *UnicodeStringProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */

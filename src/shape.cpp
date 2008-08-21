@@ -607,18 +607,15 @@ Shape::InsideObject (cairo_t *cr, double x, double y)
 	// to do this in two steps: first check if the point is within 
 	// the clipping bounds and later check if within the path itself.
 
-	Value *clip_geometry = GetValue (UIElement::ClipProperty);
-	if (clip_geometry) {
-		Geometry *clip = clip_geometry->AsGeometry ();
-		if (clip) {
-			clip->Draw (NULL, cr);
-			ret = cairo_in_fill (cr, x, y);
-			cairo_new_path (cr);
+	Geometry *clip = GetClip ();
+	if (clip) {
+		clip->Draw (NULL, cr);
+		ret = cairo_in_fill (cr, x, y);
+		cairo_new_path (cr);
 
-			if (!ret) {
-				cairo_restore (cr);
-				return false;
-			}
+		if (!ret) {
+		  cairo_restore (cr);
+		  return false;
 		}
 	}
 
@@ -1534,7 +1531,7 @@ Polygon::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 Polygon::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
-	if (col != GetValue (Polygon::PointsProperty)->AsCollection ()) {
+	if (col != GetPoints()) {
 		Shape::OnCollectionChanged (col, args);
 		return;
 	}
@@ -1666,7 +1663,7 @@ Polyline::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 Polyline::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
-	if (col != GetValue (Polyline::PointsProperty)->AsCollection ()) {
+	if (col != GetPoints ()) {
 		Shape::OnCollectionChanged (col, args);
 		return;
 	}
