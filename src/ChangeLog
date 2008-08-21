@@ -1,5 +1,14 @@
 2008-08-21  Chris Toshok  <toshok@ximian.com>
 
+	* dependencyobject.cpp (DependencyObject::HasProperty): pass
+	additional_types to IsSubclassOf.
+
+	* type.h, type.cpp: add IsSubclassOf variants that take
+	additional_types.  Fixes lookup problems of non-custom DP's on
+	managed subclasses.
+
+2008-08-21  Chris Toshok  <toshok@ximian.com>
+
 	* value.h.in (struct Value): make all single arg primitive value
 	typed ctors "explicit" so c++ won't do any magic implicit
 	conversion from value type to Value.

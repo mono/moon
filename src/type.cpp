@@ -148,6 +148,37 @@ Type::IsSubclassOf (Type::Kind super)
 	return parent_type->IsSubclassOf (super);
 }
 
+bool
+Type::IsSubclassOf (Types *additional_types, Type::Kind type, Type::Kind super)
+{
+	Type *t = Find (additional_types, type);
+	if (t == NULL)
+		return false;
+	return t->IsSubclassOf (super);
+}
+
+bool 
+Type::IsSubclassOf (Types *additional_types, Type::Kind super)
+{
+	Type *parent_type;
+
+	if (type == super)
+		return true;
+
+	if (parent == super)
+		return true;
+
+	if (parent == Type::INVALID || type == Type::INVALID)
+		return false;
+
+	parent_type = Type::Find (additional_types, parent);
+	
+	if (parent_type == NULL)
+		return false;
+	
+	return parent_type->IsSubclassOf (additional_types, super);
+}
+
 Type *
 Type::Find (const char *name)
 {
