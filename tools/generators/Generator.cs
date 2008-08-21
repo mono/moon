@@ -328,7 +328,7 @@ class Generator {
 		headers.Add ("color.h", 1);
 		foreach (FieldInfo field in fields)
 			headers.Add (field.Header, field.SilverlightVersion);
-				
+		
 		Helper.WriteWarningGenerated (text);
 		text.AppendLine ();
 		text.AppendLine ("#ifdef HAVE_CONFIG_H");
@@ -362,7 +362,6 @@ class Generator {
 			if (version > 1 && version_previous != version) {
 				text.Append ("#if ");
 				Helper.WriteVersion (text, version);
-				text.AppendLine ();
 			}
 			
 			propertyType = field.GetDPPropertyType (all);
@@ -481,7 +480,7 @@ class Generator {
 			
 			if (!setter && !getter)
 				continue;
-		
+			
 			prop_type = field.GetDPPropertyType (all);
 			
 			switch (prop_type.Name) {
@@ -529,50 +528,64 @@ class Generator {
 				else
 					text.AppendLine (" ()");
 				text.AppendLine ("{");
-
+				
 				if (is_attached) {
 					text.Append ("\tValue *value = (!obj) ? NULL : ");
-				}
-				else {
+				} else {
 					text.Append ("\tValue *value = ");
 				}
-
+				
 				if (is_attached)
-					text.Append ("obj");
-				else
-					text.Append ("this");
-				text.Append ("->DependencyObject::GetValue (");
+					text.Append ("obj->");
+				
+				text.Append ("DependencyObject::GetValue (");
 				text.Append (field.ParentType.Name);
 				text.Append ("::");
 				text.Append (field.Name);
 				text.AppendLine (");");
+				text.AppendLine ();
 				
-				text.Append ("\treturn (!value) ? ");
-				if (prop_type.IsEnum) {
-					text.Append ("(");
-					text.Append (prop_type.Name);
-					text.Append (") 0");
-				} else if (!field.IsDPNullable && (/*prop_type.IsStruct || */prop_default != null)) {
-					if (string.IsNullOrEmpty (prop_default))
-						throw new NotImplementedException (string.Format ("Generation of DependencyProperties with struct values ({0}.{1})", field.ParentType.Name, field.Name));
-					text.Append (prop_default);
+				if (field.IsDPNullable || (prop_type.IsClass || prop_type.IsStruct || prop_type.Name == "char*")) {
+					text.Append ("\treturn value ? ");
+					if (prop_type.IsEnum) {
+						text.Append ("(");
+						text.Append (prop_type.Name);
+						text.Append (") value->AsInt32 ()");
+					} else {
+						text.Append ("value->As");
+						if (field.IsDPNullable && !(prop_type.IsStruct || prop_type.IsClass))
+							text.Append ("Nullable");
+						text.Append (value_str);
+						text.Append (" ()");
+					}
+					
+					text.Append (" : ");
+					if (prop_type.IsEnum) {
+						text.Append ("(");
+						text.Append (prop_type.Name);
+						text.Append (") 0");
+					} else if (!field.IsDPNullable && (/*prop_type.IsStruct || */prop_default != null)) {
+						if (string.IsNullOrEmpty (prop_default))
+							throw new NotImplementedException (string.Format ("Generation of DependencyProperties with struct values ({0}.{1})", field.ParentType.Name, field.Name));
+						text.Append (prop_default);
+					} else {
+						text.Append ("NULL");
+					}
 				} else {
-					text.Append ("NULL");
+					// Value cannot be null, so don't need to check for it
+					text.Append ("\treturn ");
+					if (prop_type.IsEnum) {
+						text.Append ("(");
+						text.Append (prop_type.Name);
+						text.Append (") value->AsInt32 ()");
+					} else {
+						text.Append ("value->As");
+						text.Append (value_str);
+						text.Append (" ()");
+					}
 				}
-				text.Append (" : ");
-
-				if (prop_type.IsEnum) {
-					text.Append ("(");
-					text.Append (prop_type.Name);
-					text.AppendLine (")value->AsInt32();");
-				}
-				else {
-					text.Append ("value->As");
-					if (field.IsDPNullable && !(prop_type.IsStruct || prop_type.IsClass))
-						text.Append ("Nullable");
-					text.Append (value_str);
-					text.AppendLine (" ();");
-				}
+				
+				text.AppendLine (";");
 				text.AppendLine ("}");
 				text.AppendLine ();
 			}
@@ -657,7 +670,6 @@ class Generator {
 				text.AppendLine ("#endif");
 			}
 		}
-		
 		
 		Helper.WriteAllText (Path.Combine (moon_dir, "dependencyproperty.g.cpp"), text.ToString ());
 		
