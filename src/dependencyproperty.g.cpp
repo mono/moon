@@ -949,7 +949,10 @@ ColorAnimation::SetBy (Color value)
 void
 ColorAnimation::SetBy (Color * value)
 {
-	this->DependencyObject::SetValue (ColorAnimation::ByProperty, value ? Value(*value) : NULL);
+	if (!value)
+		this->DependencyObject::SetValue (ColorAnimation::ByProperty, NULL);
+	else
+		this->DependencyObject::SetValue (ColorAnimation::ByProperty, Value (*value));
 }
 
 Color *
@@ -968,7 +971,10 @@ ColorAnimation::SetFrom (Color value)
 void
 ColorAnimation::SetFrom (Color * value)
 {
-	this->DependencyObject::SetValue (ColorAnimation::FromProperty, value ? Value(*value) : NULL);
+	if (!value)
+		this->DependencyObject::SetValue (ColorAnimation::FromProperty, NULL);
+	else
+		this->DependencyObject::SetValue (ColorAnimation::FromProperty, Value (*value));
 }
 
 Color *
@@ -987,7 +993,10 @@ ColorAnimation::SetTo (Color value)
 void
 ColorAnimation::SetTo (Color * value)
 {
-	this->DependencyObject::SetValue (ColorAnimation::ToProperty, value ? Value(*value) : NULL);
+	if (!value)
+		this->DependencyObject::SetValue (ColorAnimation::ToProperty, NULL);
+	else
+		this->DependencyObject::SetValue (ColorAnimation::ToProperty, Value (*value));
 }
 
 ColorKeyFrameCollection *
@@ -1019,7 +1028,10 @@ ColorKeyFrame::SetValue (Color value)
 void
 ColorKeyFrame::SetValue (Color * value)
 {
-	this->DependencyObject::SetValue (ColorKeyFrame::ValueProperty, value ? Value(*value) : NULL);
+	if (!value)
+		this->DependencyObject::SetValue (ColorKeyFrame::ValueProperty, NULL);
+	else
+		this->DependencyObject::SetValue (ColorKeyFrame::ValueProperty, Value (*value));
 }
 
 #if SL_2_0
@@ -1292,7 +1304,10 @@ DoubleAnimation::SetBy (double value)
 void
 DoubleAnimation::SetBy (double * value)
 {
-	this->DependencyObject::SetValue (DoubleAnimation::ByProperty, value ? Value(*value) : NULL);
+	if (!value)
+		this->DependencyObject::SetValue (DoubleAnimation::ByProperty, NULL);
+	else
+		this->DependencyObject::SetValue (DoubleAnimation::ByProperty, Value (*value));
 }
 
 double *
@@ -1311,7 +1326,10 @@ DoubleAnimation::SetFrom (double value)
 void
 DoubleAnimation::SetFrom (double * value)
 {
-	this->DependencyObject::SetValue (DoubleAnimation::FromProperty, value ? Value(*value) : NULL);
+	if (!value)
+		this->DependencyObject::SetValue (DoubleAnimation::FromProperty, NULL);
+	else
+		this->DependencyObject::SetValue (DoubleAnimation::FromProperty, Value (*value));
 }
 
 double *
@@ -1330,7 +1348,10 @@ DoubleAnimation::SetTo (double value)
 void
 DoubleAnimation::SetTo (double * value)
 {
-	this->DependencyObject::SetValue (DoubleAnimation::ToProperty, value ? Value(*value) : NULL);
+	if (!value)
+		this->DependencyObject::SetValue (DoubleAnimation::ToProperty, NULL);
+	else
+		this->DependencyObject::SetValue (DoubleAnimation::ToProperty, Value (*value));
 }
 
 DoubleKeyFrameCollection *
@@ -1362,7 +1383,10 @@ DoubleKeyFrame::SetValue (double value)
 void
 DoubleKeyFrame::SetValue (double * value)
 {
-	this->DependencyObject::SetValue (DoubleKeyFrame::ValueProperty, value ? Value(*value) : NULL);
+	if (!value)
+		this->DependencyObject::SetValue (DoubleKeyFrame::ValueProperty, NULL);
+	else
+		this->DependencyObject::SetValue (DoubleKeyFrame::ValueProperty, Value (*value));
 }
 
 Color *
@@ -2353,7 +2377,10 @@ MediaElement::SetAudioStreamIndex (gint32 value)
 void
 MediaElement::SetAudioStreamIndex (gint32 * value)
 {
-	this->DependencyObject::SetValue (MediaElement::AudioStreamIndexProperty, value ? Value(*value) : NULL);
+	if (!value)
+		this->DependencyObject::SetValue (MediaElement::AudioStreamIndexProperty, NULL);
+	else
+		this->DependencyObject::SetValue (MediaElement::AudioStreamIndexProperty, Value (*value));
 }
 
 bool
@@ -2669,7 +2696,10 @@ PointAnimation::SetBy (Point value)
 void
 PointAnimation::SetBy (Point * value)
 {
-	this->DependencyObject::SetValue (PointAnimation::ByProperty, value ? Value(*value) : NULL);
+	if (!value)
+		this->DependencyObject::SetValue (PointAnimation::ByProperty, NULL);
+	else
+		this->DependencyObject::SetValue (PointAnimation::ByProperty, Value (*value));
 }
 
 Point *
@@ -2688,7 +2718,10 @@ PointAnimation::SetFrom (Point value)
 void
 PointAnimation::SetFrom (Point * value)
 {
-	this->DependencyObject::SetValue (PointAnimation::FromProperty, value ? Value(*value) : NULL);
+	if (!value)
+		this->DependencyObject::SetValue (PointAnimation::FromProperty, NULL);
+	else
+		this->DependencyObject::SetValue (PointAnimation::FromProperty, Value (*value));
 }
 
 Point *
@@ -2707,7 +2740,10 @@ PointAnimation::SetTo (Point value)
 void
 PointAnimation::SetTo (Point * value)
 {
-	this->DependencyObject::SetValue (PointAnimation::ToProperty, value ? Value(*value) : NULL);
+	if (!value)
+		this->DependencyObject::SetValue (PointAnimation::ToProperty, NULL);
+	else
+		this->DependencyObject::SetValue (PointAnimation::ToProperty, Value (*value));
 }
 
 PointKeyFrameCollection *
@@ -2739,7 +2775,10 @@ PointKeyFrame::SetValue (Point value)
 void
 PointKeyFrame::SetValue (Point * value)
 {
-	this->DependencyObject::SetValue (PointKeyFrame::ValueProperty, value ? Value(*value) : NULL);
+	if (!value)
+		this->DependencyObject::SetValue (PointKeyFrame::ValueProperty, NULL);
+	else
+		this->DependencyObject::SetValue (PointKeyFrame::ValueProperty, Value (*value));
 }
 
 PointCollection *
