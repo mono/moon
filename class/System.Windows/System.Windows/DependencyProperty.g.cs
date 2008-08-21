@@ -420,6 +420,11 @@ namespace System.Windows.Controls {
 			get { return (RowDefinitionCollection) GetValue (RowDefinitionsProperty); }
 			internal set { SetValue (RowDefinitionsProperty, value); }
 		}
+
+		public bool ShowGridLines {
+			get { return (bool) GetValue (ShowGridLinesProperty); }
+			set { SetValue (ShowGridLinesProperty, value); }
+		}
 	}
 
 	partial class InkPresenter {
