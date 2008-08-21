@@ -605,7 +605,7 @@ class Generator {
 					text.Append (field.ParentType.Name);
 					text.Append ("::");
 					text.Append (field.Name);
-					text.AppendLine (", Value (NULL));");
+					text.AppendLine (", NULL);");
 					text.AppendLine ("\telse");
 					text.Append ("\t\t");
 					if (is_attached)
