@@ -339,7 +339,7 @@ namespace Mono.Xaml
 			DependencyObject dob = res as DependencyObject;
 
 			if (dob == null) {
-				Console.Error.WriteLine ("ManagedXamlLoader::LoadObject ({0}, {1}, {2}): unable to create object instance: '{4}', the object was of type '{5}'", asm_name, ns, type_name, name, res.GetType ().FullName);
+				Console.Error.WriteLine ("ManagedXamlLoader::LoadObject ({0}, {1}, {2}): unable to create object instance: '{3}', the object was of type '{4}'", asm_name, ns, type_name, name, res.GetType ().FullName);
 			}
 
 			return dob;
@@ -652,7 +652,6 @@ namespace Mono.Xaml
 				return SetCustomAttribute (target_ptr, xmlns, name, value);
 			} catch (Exception ex) {
 				Console.Error.WriteLine ("ManagedXamlLoader::SetCustomAttribute ({0}, {1}, {2}) threw an exception: {3}.", target_ptr, name, value, ex.Message);
-				Console.Error.WriteLine (ex);
 				return false;
 			}
 		}
