@@ -32,15 +32,15 @@
  */
 
 Value*
-Value::CreateUnrefPtr (DependencyObject* dob)
+Value::CreateUnrefPtr (DependencyObject *dob)
 {
-	Value* result = new Value (dob);
+	Value *result = new Value (dob);
 	dob->unref ();
 	return result;
 }
 
 Value
-Value::CreateUnref (DependencyObject* dob)
+Value::CreateUnref (DependencyObject *dob)
 {
 	Value result = Value (dob);
 	dob->unref ();
@@ -227,7 +227,7 @@ Value::Value (KeyTime keytime)
 	*u.keytime = KeyTime (keytime);
 }
 
-Value::Value (const char* s)
+Value::Value (const char *s)
 {
 	Init ();
 	k = Type::STRING;
