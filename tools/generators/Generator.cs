@@ -514,15 +514,16 @@ class Generator {
 				text.Append ("#if ");
 				Helper.WriteVersion (text, field.SilverlightVersion);
 			}
-			
+
+			string GetterName = string.Format ("{0}::Get{1}", field.ParentType.Name, field.GetDependencyPropertyName());
+			string SetterName = string.Format ("{0}::Set{1}", field.ParentType.Name, field.GetDependencyPropertyName());
+
 			if (getter) {
 				text.Append (prop_type_str);
 				if (field.IsDPNullable || (prop_type.IsClass || prop_type.IsStruct))
 					text.Append (" *");
 				text.AppendLine ();
-				text.Append (field.ParentType.Name);
-				text.Append ("::Get");
-				text.Append (field.GetDependencyPropertyName ());
+				text.Append (GetterName);
 				if (is_attached)
 					text.AppendLine (" (DependencyObject *obj)");
 				else
@@ -534,55 +535,35 @@ class Generator {
 				} else {
 					text.Append ("\tValue *value = ");
 				}
-				
-				if (is_attached)
-					text.Append ("obj->");
-				if (field.ParentType.NeedsQualifiedGetValue(all))
-					text.Append ("DependencyObject::");
-				text.Append ("GetValue (");
-				text.Append (field.ParentType.Name);
-				text.Append ("::");
-				text.Append (field.Name);
-				text.AppendLine (");");
-				text.AppendLine ();
+
+				text.AppendFormat ("{0}{1}GetValue ({2}::{3});\n",
+						   is_attached ? "obj->" : "",
+						   field.ParentType.NeedsQualifiedGetValue(all) ? "DependencyObject::" : "",
+						   field.ParentType.Name, field.Name);
 				
 				if (field.IsDPNullable || (prop_type.IsClass || prop_type.IsStruct || prop_type.Name == "char*")) {
 					text.Append ("\treturn value ? ");
 					if (prop_type.IsEnum) {
-						text.Append ("(");
-						text.Append (prop_type.Name);
-						text.Append (") value->AsInt32 ()");
+						text.AppendFormat ("({0}) value->AsInt32() : ({0}) 0", prop_type.Name);
 					} else {
-						text.Append ("value->As");
-						if (field.IsDPNullable && !(prop_type.IsStruct || prop_type.IsClass))
-							text.Append ("Nullable");
-						text.Append (value_str);
-						text.Append (" ()");
-					}
-					
-					text.Append (" : ");
-					if (prop_type.IsEnum) {
-						text.Append ("(");
-						text.Append (prop_type.Name);
-						text.Append (") 0");
-					} else if (!field.IsDPNullable && (/*prop_type.IsStruct || */prop_default != null)) {
-						if (string.IsNullOrEmpty (prop_default))
-							throw new NotImplementedException (string.Format ("Generation of DependencyProperties with struct values ({0}.{1})", field.ParentType.Name, field.Name));
-						text.Append (prop_default);
-					} else {
-						text.Append ("NULL");
+						if (!field.IsDPNullable && (/*prop_type.IsStruct || */prop_default != null))
+						    if (string.IsNullOrEmpty (prop_default))
+							throw new NotImplementedException (
+								string.Format ("Generation of DependencyProperties with struct values ({0}.{1})",
+									       field.ParentType.Name, field.Name));
+
+						text.AppendFormat ("value->As{0}{1} () : {2}",
+								   field.IsDPNullable && !(prop_type.IsStruct || prop_type.IsClass) ? "Nullable" : "",
+								   value_str,
+								   !field.IsDPNullable && prop_default != null ? prop_default : "NULL");
 					}
 				} else {
 					// Value cannot be null, so don't need to check for it
 					text.Append ("\treturn ");
 					if (prop_type.IsEnum) {
-						text.Append ("(");
-						text.Append (prop_type.Name);
-						text.Append (") value->AsInt32 ()");
+						text.AppendFormat ("({0}) value->AsInt32 ()", prop_type.Name);
 					} else {
-						text.Append ("value->As");
-						text.Append (value_str);
-						text.Append (" ()");
+						text.AppendFormat ("value->As{0} ()", value_str);
 					}
 				}
 				
@@ -594,9 +575,7 @@ class Generator {
 		 do_nullable_setter:
 			if (setter) {		
 				text.AppendLine ("void");
-				text.Append (field.ParentType.Name);
-				text.Append ("::Set");
-				text.Append (field.GetDependencyPropertyName ());
+				text.Append (SetterName);
 				text.Append (" (");
 				if (is_attached)
 					text.Append ("DependencyObject *obj, ");
@@ -611,48 +590,34 @@ class Generator {
 				if (doing_nullable_setter) {
 					text.AppendLine ("\tif (!value)");
 					text.Append ("\t\t");
-					if (is_attached)
-						text.Append ("obj->");
-					if (field.ParentType.NeedsQualifiedGetValue(all))
-						text.Append ("DependencyObject::");
-					text.Append ("SetValue (");
-					text.Append (field.ParentType.Name);
-					text.Append ("::");
-					text.Append (field.Name);
-					text.AppendLine (", NULL);");
+					text.AppendFormat ("{0}{1}SetValue ({2}::{3}, NULL);\n",
+							   is_attached ? "obj->" : "",
+							   field.ParentType.NeedsQualifiedGetValue(all) ? "DependencyObject::" : "",
+							   field.ParentType.Name, field.Name);
 					text.AppendLine ("\telse");
 					text.Append ("\t\t");
-					if (is_attached)
-						text.Append ("obj->");
-					if (field.ParentType.NeedsQualifiedGetValue(all))
-						text.Append ("DependencyObject::");
-					text.Append ("SetValue (");
-					text.Append (field.ParentType.Name);
-					text.Append ("::");
-					text.Append (field.Name);
-					text.AppendLine (", Value (*value));");
+					text.AppendFormat ("{0}{1}SetValue ({2}::{3}, Value (*value));\n",
+							   is_attached ? "obj->" : "",
+							   field.ParentType.NeedsQualifiedGetValue(all) ? "DependencyObject::" : "",
+							   field.ParentType.Name, field.Name);
 				} else {
 					if (!nullable_setter && prop_type.IsStruct)
 						text.AppendLine ("\tif (!value) return;");
 					text.Append ("\t");
-					if (is_attached)
-						text.Append ("obj->");
-					if (field.ParentType.NeedsQualifiedGetValue(all))
-						text.Append ("DependencyObject::");
-					text.Append ("SetValue (");
-					text.Append (field.ParentType.Name);
-					text.Append ("::");
-					text.Append (field.Name);
+					text.AppendFormat ("{0}{1}SetValue ({2}::{3}, ",
+							   is_attached ? "obj->" : "",
+							   field.ParentType.NeedsQualifiedGetValue(all) ? "DependencyObject::" : "",
+							   field.ParentType.Name, field.Name);
+
 					if (prop_type.Name == "guint64" || prop_type.Name == "TimeSpan") {
-						text.Append (", Value (value, Type::");
-						text.Append (prop_type.KindName);
-						text.AppendLine ("));");
+						text.AppendFormat ("Value (value, Type::{0}));\n",
+								   prop_type.KindName);
 					}
 					else if (!nullable_setter && prop_type.IsStruct) {
-						text.AppendLine (", Value (*value));");
+						text.AppendLine ("Value (*value));");
 					}
 					else {
-						text.AppendLine (", Value (value));");
+						text.AppendLine ("Value (value));");
 					}
 				}
 				text.AppendLine ("}");
