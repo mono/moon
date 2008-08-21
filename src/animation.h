@@ -431,7 +431,7 @@ class DoubleKeyFrame : public KeyFrame {
  public:
  	/* @PropertyType=double,Nullable,ManagedPropertyType=double,GenerateAccessors */
 	static DependencyProperty *ValueProperty;
-	/* @PropertyType=KeyTime,Nullable,ManagedPropertyType=KeyTime,GenerateAccessor */
+	/* @PropertyType=KeyTime,Nullable,ManagedPropertyType=KeyTime,GenerateAccessors */
 	static DependencyProperty *KeyTimeProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */

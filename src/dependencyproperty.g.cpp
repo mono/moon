@@ -1421,6 +1421,28 @@ DoubleAnimationUsingKeyFrames::SetKeyFrames (DoubleKeyFrameCollection * value)
 	this->DependencyObject::SetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty, Value (value));
 }
 
+KeyTime *
+DoubleKeyFrame::GetKeyTime ()
+{
+	Value *value = this->DependencyObject::GetValue (DoubleKeyFrame::KeyTimeProperty);
+	return (!value) ? NULL : value->AsKeyTime ();
+}
+
+void
+DoubleKeyFrame::SetKeyTime (KeyTime value)
+{
+	this->DependencyObject::SetValue (DoubleKeyFrame::KeyTimeProperty, Value (value));
+}
+
+void
+DoubleKeyFrame::SetKeyTime (KeyTime * value)
+{
+	if (!value)
+		this->DependencyObject::SetValue (DoubleKeyFrame::KeyTimeProperty, NULL);
+	else
+		this->DependencyObject::SetValue (DoubleKeyFrame::KeyTimeProperty, Value (*value));
+}
+
 double *
 DoubleKeyFrame::GetValue ()
 {
