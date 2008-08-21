@@ -59,7 +59,7 @@ class Inline : public DependencyObject {
 	static DependencyProperty *ForegroundProperty;
  	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone,ManagedPropertyType=TextDecorationCollection */
 	static DependencyProperty *TextDecorationsProperty;
-	/* @PropertyType=string,DefaultValue=\"en-US\",Version=2,ManagedPropertyType=XmlLanguage */
+	/* @PropertyType=string,DefaultValue=\"en-US\",Version=2.0,ManagedPropertyType=XmlLanguage */
 	static DependencyProperty *LanguageProperty;
 	
 	/* Member variables should be considered private, for use only with the parent TextBlock */

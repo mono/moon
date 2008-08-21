@@ -249,6 +249,13 @@ enum ModifierKeys {
 	ModifierKeyApple    = (1 << 3)
 };
 
+enum ScrollBarVisibility {
+	ScrollBarVisibilityDisabled,
+	ScrollBarVisibilityAuto,
+	ScrollBarVisibilityHidden,
+	ScrollBarVisibilityVisible
+};
+
 enum VerticalAlignment {
 	VerticalAlignmentTop,
 	VerticalAlignmentCenter,

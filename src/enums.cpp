@@ -234,6 +234,16 @@ static enum_map_t text_wrapping_map [] = {
 };
 
 #if SL_2_0
+static enum_map_t scrollbar_visibility_map [] = {
+	MAP_ENUM_SL2 (ScrollBarVisibility, Disabled),
+	MAP_ENUM_SL2 (ScrollBarVisibility, Auto),
+	MAP_ENUM_SL2 (ScrollBarVisibility, Hidden),
+	MAP_ENUM_SL2 (ScrollBarVisibility, Visible),
+	END_MAPPING
+};
+#endif
+
+#if SL_2_0
 static enum_map_t vertical_alignment_map [] = {
 	MAP_ENUM_SL2 (VerticalAlignment, Top),
 	MAP_ENUM_SL2 (VerticalAlignment, Center),
@@ -298,6 +308,7 @@ initialize_enums (void)
 #if SL_2_0
 	g_hash_table_insert (enum_map, (char *) "ExternalCallersFromCrossDomain", cross_domain_access_map);
 	g_hash_table_insert (enum_map, (char *) "LineStackingStrategy", line_stacking_strategy_map);
+	g_hash_table_insert (enum_map, (char *) "ScrollBarVisibility", scrollbar_visibility_map);
 	g_hash_table_insert (enum_map, (char *) "HorizontalAlignment", horizontal_alignment_map);
 	g_hash_table_insert (enum_map, (char *) "VerticalAlignment", vertical_alignment_map);
 	g_hash_table_insert (enum_map, (char *) "TextAlignment", text_alignment_map);

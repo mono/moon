@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * text.cpp: 
  *
@@ -40,6 +41,17 @@ default_foreground (void)
 	
 	return (Brush *) default_foreground_brush;
 }
+
+void
+text_shutdown (void)
+{
+	if (default_foreground_brush) {
+		default_foreground_brush->unref ();
+		default_foreground_brush = NULL;
+	}
+}
+
+
 
 
 //
@@ -668,6 +680,8 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 		}
 	} else if (args->property == TextBlock::TextDecorationsProperty) {
 		dirty = true;
+	} else if (args->property == TextBlock::TextWrappingProperty) {
+		dirty = true
 	} else if (args->property == TextBlock::InlinesProperty) {
 		if (setvalue) {
 			// result of a change to the TextBlock.Inlines property
@@ -1693,14 +1707,4 @@ Glyphs::GetFill ()
 	Value *value = GetValue (Glyphs::FillProperty);
 	
 	return value ? value->AsBrush () : NULL;
-}
-
-
-void
-text_shutdown (void)
-{
-	if (default_foreground_brush) {
-		default_foreground_brush->unref ();
-		default_foreground_brush = NULL;
-	}
 }
