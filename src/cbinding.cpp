@@ -2108,30 +2108,6 @@ text_block_new (void)
 }
 
 
-#if SL_2_0
-/**
- * TextBox
- **/
-void
-text_box_select (TextBox *instance, int start, int length)
-{
-	if (instance == NULL)
-		return;
-	
-	instance->Select (start, length);
-}
-#endif
-
-
-#if SL_2_0
-TextBox *
-text_box_new (void)
-{
-	return new TextBox ();
-}
-#endif
-
-
 /**
  * TileBrush
  **/
