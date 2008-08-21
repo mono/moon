@@ -483,6 +483,8 @@ class XamlElementInfoManaged : public XamlElementInfo {
 		this->dependency_object = dob;
 	}
 
+	const char* GetName () { return name; }
+
 	const char* GetContentProperty (XamlParserInfo *p);
 
 	XamlElementInstance* CreateElementInstance (XamlParserInfo *p);
@@ -2713,7 +2715,7 @@ XamlElementInfoManaged::GetContentProperty (XamlParserInfo *p)
 XamlElementInstance *
 XamlElementInfoManaged::CreateElementInstance (XamlParserInfo *p)
 {
-	XamlElementInstanceManaged *inst = new XamlElementInstanceManaged (this, dependency_object->GetTypeName (), XamlElementInstance::ELEMENT, dependency_object);
+	XamlElementInstanceManaged *inst = new XamlElementInstanceManaged (this, GetName (), XamlElementInstance::ELEMENT, dependency_object);
 
 	if (p->loader)
         	inst->item->SetSurface (p->loader->GetSurface ());
@@ -2725,7 +2727,7 @@ XamlElementInfoManaged::CreateElementInstance (XamlParserInfo *p)
 XamlElementInstance *
 XamlElementInfoManaged::CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o)
 {
-	XamlElementInstanceManaged *inst = new XamlElementInstanceManaged (this, o->GetTypeName (), XamlElementInstance::ELEMENT, o);
+	XamlElementInstanceManaged *inst = new XamlElementInstanceManaged (this, GetName (), XamlElementInstance::ELEMENT, o);
 
 	if (p->loader)
         	inst->item->SetSurface (p->loader->GetSurface ());
