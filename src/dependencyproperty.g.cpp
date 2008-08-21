@@ -720,11 +720,8 @@ DependencyProperty *VisualBrush::VisualProperty = NULL;
 bool
 ArcSegment::GetIsLargeArc ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (ArcSegment::IsLargeArcProperty);
-	if (value == NULL)
-		return false;
-	return value->AsBool ();
+	Value *value = this->DependencyObject::GetValue (ArcSegment::IsLargeArcProperty);
+	return (!value) ? false : value->AsBool ();
 }
 
 void
@@ -736,28 +733,22 @@ ArcSegment::SetIsLargeArc (bool value)
 Point *
 ArcSegment::GetPoint ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (ArcSegment::PointProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsPoint ();
+	Value *value = this->DependencyObject::GetValue (ArcSegment::PointProperty);
+	return (!value) ? NULL : value->AsPoint ();
 }
 
 void
 ArcSegment::SetPoint (Point * value)
 {
-	if (value == NULL) return;
+	if (!value) return;
 	this->DependencyObject::SetValue (ArcSegment::PointProperty, Value (*value));
 }
 
 double
 ArcSegment::GetRotationAngle ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (ArcSegment::RotationAngleProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (ArcSegment::RotationAngleProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -769,28 +760,22 @@ ArcSegment::SetRotationAngle (double value)
 Point *
 ArcSegment::GetSize ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (ArcSegment::SizeProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsPoint ();
+	Value *value = this->DependencyObject::GetValue (ArcSegment::SizeProperty);
+	return (!value) ? NULL : value->AsPoint ();
 }
 
 void
 ArcSegment::SetSize (Point * value)
 {
-	if (value == NULL) return;
+	if (!value) return;
 	this->DependencyObject::SetValue (ArcSegment::SizeProperty, Value (*value));
 }
 
 SweepDirection
 ArcSegment::GetSweepDirection ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (ArcSegment::SweepDirectionProperty);
-	if (value == NULL)
-		return (SweepDirection) 0;
-	return (SweepDirection)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (ArcSegment::SweepDirectionProperty);
+	return (!value) ? (SweepDirection) 0 : (SweepDirection)value->AsInt32();
 }
 
 void
@@ -802,11 +787,8 @@ ArcSegment::SetSweepDirection (SweepDirection value)
 Storyboard *
 BeginStoryboard::GetStoryboard ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (BeginStoryboard::StoryboardProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsStoryboard ();
+	Value *value = this->DependencyObject::GetValue (BeginStoryboard::StoryboardProperty);
+	return (!value) ? NULL : value->AsStoryboard ();
 }
 
 void
@@ -818,62 +800,50 @@ BeginStoryboard::SetStoryboard (Storyboard * value)
 Point *
 BezierSegment::GetPoint1 ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (BezierSegment::Point1Property);
-	if (value == NULL)
-		return NULL;
-	return value->AsPoint ();
+	Value *value = this->DependencyObject::GetValue (BezierSegment::Point1Property);
+	return (!value) ? NULL : value->AsPoint ();
 }
 
 void
 BezierSegment::SetPoint1 (Point * value)
 {
-	if (value == NULL) return;
+	if (!value) return;
 	this->DependencyObject::SetValue (BezierSegment::Point1Property, Value (*value));
 }
 
 Point *
 BezierSegment::GetPoint2 ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (BezierSegment::Point2Property);
-	if (value == NULL)
-		return NULL;
-	return value->AsPoint ();
+	Value *value = this->DependencyObject::GetValue (BezierSegment::Point2Property);
+	return (!value) ? NULL : value->AsPoint ();
 }
 
 void
 BezierSegment::SetPoint2 (Point * value)
 {
-	if (value == NULL) return;
+	if (!value) return;
 	this->DependencyObject::SetValue (BezierSegment::Point2Property, Value (*value));
 }
 
 Point *
 BezierSegment::GetPoint3 ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (BezierSegment::Point3Property);
-	if (value == NULL)
-		return NULL;
-	return value->AsPoint ();
+	Value *value = this->DependencyObject::GetValue (BezierSegment::Point3Property);
+	return (!value) ? NULL : value->AsPoint ();
 }
 
 void
 BezierSegment::SetPoint3 (Point * value)
 {
-	if (value == NULL) return;
+	if (!value) return;
 	this->DependencyObject::SetValue (BezierSegment::Point3Property, Value (*value));
 }
 
 double
 Brush::GetOpacity ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Brush::OpacityProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (Brush::OpacityProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -885,11 +855,8 @@ Brush::SetOpacity (double value)
 Transform *
 Brush::GetRelativeTransform ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Brush::RelativeTransformProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsTransform ();
+	Value *value = this->DependencyObject::GetValue (Brush::RelativeTransformProperty);
+	return (!value) ? NULL : value->AsTransform ();
 }
 
 void
@@ -901,11 +868,8 @@ Brush::SetRelativeTransform (Transform * value)
 Transform *
 Brush::GetTransform ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Brush::TransformProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsTransform ();
+	Value *value = this->DependencyObject::GetValue (Brush::TransformProperty);
+	return (!value) ? NULL : value->AsTransform ();
 }
 
 void
@@ -917,65 +881,50 @@ Brush::SetTransform (Transform * value)
 double
 Canvas::GetLeft (DependencyObject *obj)
 {
-	Value *value = NULL;
-	if (obj) 
-		value = obj->DependencyObject::GetValue (Canvas::LeftProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = (!obj) ? NULL : obj->DependencyObject::GetValue (Canvas::LeftProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
 Canvas::SetLeft (DependencyObject *obj, double value)
 {
-	if (obj == NULL) return;
+	if (!obj) return;
 	obj->DependencyObject::SetValue (Canvas::LeftProperty, Value (value));
 }
 
 double
 Canvas::GetTop (DependencyObject *obj)
 {
-	Value *value = NULL;
-	if (obj) 
-		value = obj->DependencyObject::GetValue (Canvas::TopProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = (!obj) ? NULL : obj->DependencyObject::GetValue (Canvas::TopProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
 Canvas::SetTop (DependencyObject *obj, double value)
 {
-	if (obj == NULL) return;
+	if (!obj) return;
 	obj->DependencyObject::SetValue (Canvas::TopProperty, Value (value));
 }
 
 gint32
 Canvas::GetZIndex (DependencyObject *obj)
 {
-	Value *value = NULL;
-	if (obj) 
-		value = obj->DependencyObject::GetValue (Canvas::ZIndexProperty);
-	if (value == NULL)
-		return 0;
-	return value->AsInt32 ();
+	Value *value = (!obj) ? NULL : obj->DependencyObject::GetValue (Canvas::ZIndexProperty);
+	return (!value) ? 0 : value->AsInt32 ();
 }
 
 void
 Canvas::SetZIndex (DependencyObject *obj, gint32 value)
 {
-	if (obj == NULL) return;
+	if (!obj) return;
 	obj->DependencyObject::SetValue (Canvas::ZIndexProperty, Value (value));
 }
 
 gint32
 Collection::GetCount ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Collection::CountProperty);
-	if (value == NULL)
-		return 0;
-	return value->AsInt32 ();
+	Value *value = this->DependencyObject::GetValue (Collection::CountProperty);
+	return (!value) ? 0 : value->AsInt32 ();
 }
 
 void
@@ -987,11 +936,8 @@ Collection::SetCount (gint32 value)
 Color *
 ColorAnimation::GetBy ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (ColorAnimation::ByProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsColor ();
+	Value *value = this->DependencyObject::GetValue (ColorAnimation::ByProperty);
+	return (!value) ? NULL : value->AsColor ();
 }
 
 void
@@ -1003,7 +949,7 @@ ColorAnimation::SetBy (Color value)
 void
 ColorAnimation::SetBy (Color * value)
 {
-	if (value == NULL)
+	if (!value)
 		this->DependencyObject::SetValue (ColorAnimation::ByProperty, Value (NULL));
 	else
 		this->DependencyObject::SetValue (ColorAnimation::ByProperty, Value (*value));
@@ -1012,11 +958,8 @@ ColorAnimation::SetBy (Color * value)
 Color *
 ColorAnimation::GetFrom ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (ColorAnimation::FromProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsColor ();
+	Value *value = this->DependencyObject::GetValue (ColorAnimation::FromProperty);
+	return (!value) ? NULL : value->AsColor ();
 }
 
 void
@@ -1028,7 +971,7 @@ ColorAnimation::SetFrom (Color value)
 void
 ColorAnimation::SetFrom (Color * value)
 {
-	if (value == NULL)
+	if (!value)
 		this->DependencyObject::SetValue (ColorAnimation::FromProperty, Value (NULL));
 	else
 		this->DependencyObject::SetValue (ColorAnimation::FromProperty, Value (*value));
@@ -1037,11 +980,8 @@ ColorAnimation::SetFrom (Color * value)
 Color *
 ColorAnimation::GetTo ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (ColorAnimation::ToProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsColor ();
+	Value *value = this->DependencyObject::GetValue (ColorAnimation::ToProperty);
+	return (!value) ? NULL : value->AsColor ();
 }
 
 void
@@ -1053,7 +993,7 @@ ColorAnimation::SetTo (Color value)
 void
 ColorAnimation::SetTo (Color * value)
 {
-	if (value == NULL)
+	if (!value)
 		this->DependencyObject::SetValue (ColorAnimation::ToProperty, Value (NULL));
 	else
 		this->DependencyObject::SetValue (ColorAnimation::ToProperty, Value (*value));
@@ -1062,11 +1002,8 @@ ColorAnimation::SetTo (Color * value)
 ColorKeyFrameCollection *
 ColorAnimationUsingKeyFrames::GetKeyFrames ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsColorKeyFrameCollection ();
+	Value *value = this->DependencyObject::GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty);
+	return (!value) ? NULL : value->AsColorKeyFrameCollection ();
 }
 
 void
@@ -1078,11 +1015,8 @@ ColorAnimationUsingKeyFrames::SetKeyFrames (ColorKeyFrameCollection * value)
 Color *
 ColorKeyFrame::GetValue ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (ColorKeyFrame::ValueProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsColor ();
+	Value *value = this->DependencyObject::GetValue (ColorKeyFrame::ValueProperty);
+	return (!value) ? NULL : value->AsColor ();
 }
 
 void
@@ -1094,7 +1028,7 @@ ColorKeyFrame::SetValue (Color value)
 void
 ColorKeyFrame::SetValue (Color * value)
 {
-	if (value == NULL)
+	if (!value)
 		this->DependencyObject::SetValue (ColorKeyFrame::ValueProperty, Value (NULL));
 	else
 		this->DependencyObject::SetValue (ColorKeyFrame::ValueProperty, Value (*value));
@@ -1104,11 +1038,8 @@ ColorKeyFrame::SetValue (Color * value)
 double
 ColumnDefinition::GetMaxWidth ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (ColumnDefinition::MaxWidthProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (ColumnDefinition::MaxWidthProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -1122,11 +1053,8 @@ ColumnDefinition::SetMaxWidth (double value)
 double
 ColumnDefinition::GetMinWidth ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (ColumnDefinition::MinWidthProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (ColumnDefinition::MinWidthProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -1140,17 +1068,14 @@ ColumnDefinition::SetMinWidth (double value)
 GridLength *
 ColumnDefinition::GetWidth ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (ColumnDefinition::WidthProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsGridLength ();
+	Value *value = this->DependencyObject::GetValue (ColumnDefinition::WidthProperty);
+	return (!value) ? NULL : value->AsGridLength ();
 }
 
 void
 ColumnDefinition::SetWidth (GridLength * value)
 {
-	if (value == NULL) return;
+	if (!value) return;
 	this->DependencyObject::SetValue (ColumnDefinition::WidthProperty, Value (*value));
 }
 
@@ -1158,11 +1083,8 @@ ColumnDefinition::SetWidth (GridLength * value)
 const char *
 DependencyObject::GetName ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (DependencyObject::NameProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsString ();
+	Value *value = this->DependencyObject::GetValue (DependencyObject::NameProperty);
+	return (!value) ? NULL : value->AsString ();
 }
 
 void
@@ -1174,11 +1096,8 @@ DependencyObject::SetName (const char * value)
 double *
 DoubleAnimation::GetBy ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (DoubleAnimation::ByProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsNullableDouble ();
+	Value *value = this->DependencyObject::GetValue (DoubleAnimation::ByProperty);
+	return (!value) ? NULL : value->AsNullableDouble ();
 }
 
 void
@@ -1190,7 +1109,7 @@ DoubleAnimation::SetBy (double value)
 void
 DoubleAnimation::SetBy (double * value)
 {
-	if (value == NULL)
+	if (!value)
 		this->DependencyObject::SetValue (DoubleAnimation::ByProperty, Value (NULL));
 	else
 		this->DependencyObject::SetValue (DoubleAnimation::ByProperty, Value (*value));
@@ -1199,11 +1118,8 @@ DoubleAnimation::SetBy (double * value)
 double *
 DoubleAnimation::GetFrom ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (DoubleAnimation::FromProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsNullableDouble ();
+	Value *value = this->DependencyObject::GetValue (DoubleAnimation::FromProperty);
+	return (!value) ? NULL : value->AsNullableDouble ();
 }
 
 void
@@ -1215,7 +1131,7 @@ DoubleAnimation::SetFrom (double value)
 void
 DoubleAnimation::SetFrom (double * value)
 {
-	if (value == NULL)
+	if (!value)
 		this->DependencyObject::SetValue (DoubleAnimation::FromProperty, Value (NULL));
 	else
 		this->DependencyObject::SetValue (DoubleAnimation::FromProperty, Value (*value));
@@ -1224,11 +1140,8 @@ DoubleAnimation::SetFrom (double * value)
 double *
 DoubleAnimation::GetTo ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (DoubleAnimation::ToProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsNullableDouble ();
+	Value *value = this->DependencyObject::GetValue (DoubleAnimation::ToProperty);
+	return (!value) ? NULL : value->AsNullableDouble ();
 }
 
 void
@@ -1240,7 +1153,7 @@ DoubleAnimation::SetTo (double value)
 void
 DoubleAnimation::SetTo (double * value)
 {
-	if (value == NULL)
+	if (!value)
 		this->DependencyObject::SetValue (DoubleAnimation::ToProperty, Value (NULL));
 	else
 		this->DependencyObject::SetValue (DoubleAnimation::ToProperty, Value (*value));
@@ -1249,11 +1162,8 @@ DoubleAnimation::SetTo (double * value)
 DoubleKeyFrameCollection *
 DoubleAnimationUsingKeyFrames::GetKeyFrames ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsDoubleKeyFrameCollection ();
+	Value *value = this->DependencyObject::GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty);
+	return (!value) ? NULL : value->AsDoubleKeyFrameCollection ();
 }
 
 void
@@ -1265,11 +1175,8 @@ DoubleAnimationUsingKeyFrames::SetKeyFrames (DoubleKeyFrameCollection * value)
 double *
 DoubleKeyFrame::GetValue ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (DoubleKeyFrame::ValueProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsNullableDouble ();
+	Value *value = this->DependencyObject::GetValue (DoubleKeyFrame::ValueProperty);
+	return (!value) ? NULL : value->AsNullableDouble ();
 }
 
 void
@@ -1281,7 +1188,7 @@ DoubleKeyFrame::SetValue (double value)
 void
 DoubleKeyFrame::SetValue (double * value)
 {
-	if (value == NULL)
+	if (!value)
 		this->DependencyObject::SetValue (DoubleKeyFrame::ValueProperty, Value (NULL));
 	else
 		this->DependencyObject::SetValue (DoubleKeyFrame::ValueProperty, Value (*value));
@@ -1290,28 +1197,22 @@ DoubleKeyFrame::SetValue (double * value)
 Color *
 DrawingAttributes::GetColor ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (DrawingAttributes::ColorProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsColor ();
+	Value *value = this->DependencyObject::GetValue (DrawingAttributes::ColorProperty);
+	return (!value) ? NULL : value->AsColor ();
 }
 
 void
 DrawingAttributes::SetColor (Color * value)
 {
-	if (value == NULL) return;
+	if (!value) return;
 	this->DependencyObject::SetValue (DrawingAttributes::ColorProperty, Value (*value));
 }
 
 double
 DrawingAttributes::GetHeight ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (DrawingAttributes::HeightProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (DrawingAttributes::HeightProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -1323,28 +1224,22 @@ DrawingAttributes::SetHeight (double value)
 Color *
 DrawingAttributes::GetOutlineColor ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (DrawingAttributes::OutlineColorProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsColor ();
+	Value *value = this->DependencyObject::GetValue (DrawingAttributes::OutlineColorProperty);
+	return (!value) ? NULL : value->AsColor ();
 }
 
 void
 DrawingAttributes::SetOutlineColor (Color * value)
 {
-	if (value == NULL) return;
+	if (!value) return;
 	this->DependencyObject::SetValue (DrawingAttributes::OutlineColorProperty, Value (*value));
 }
 
 double
 DrawingAttributes::GetWidth ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (DrawingAttributes::WidthProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (DrawingAttributes::WidthProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -1356,28 +1251,22 @@ DrawingAttributes::SetWidth (double value)
 Point *
 EllipseGeometry::GetCenter ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (EllipseGeometry::CenterProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsPoint ();
+	Value *value = this->DependencyObject::GetValue (EllipseGeometry::CenterProperty);
+	return (!value) ? NULL : value->AsPoint ();
 }
 
 void
 EllipseGeometry::SetCenter (Point * value)
 {
-	if (value == NULL) return;
+	if (!value) return;
 	this->DependencyObject::SetValue (EllipseGeometry::CenterProperty, Value (*value));
 }
 
 double
 EllipseGeometry::GetRadiusX ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (EllipseGeometry::RadiusXProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (EllipseGeometry::RadiusXProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -1389,11 +1278,8 @@ EllipseGeometry::SetRadiusX (double value)
 double
 EllipseGeometry::GetRadiusY ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (EllipseGeometry::RadiusYProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (EllipseGeometry::RadiusYProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -1405,11 +1291,8 @@ EllipseGeometry::SetRadiusY (double value)
 TriggerActionCollection *
 EventTrigger::GetActions ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (EventTrigger::ActionsProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsTriggerActionCollection ();
+	Value *value = this->DependencyObject::GetValue (EventTrigger::ActionsProperty);
+	return (!value) ? NULL : value->AsTriggerActionCollection ();
 }
 
 void
@@ -1422,11 +1305,8 @@ EventTrigger::SetActions (TriggerActionCollection * value)
 double
 FrameworkElement::GetActualHeight ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (FrameworkElement::ActualHeightProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (FrameworkElement::ActualHeightProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 #endif
@@ -1434,22 +1314,16 @@ FrameworkElement::GetActualHeight ()
 double
 FrameworkElement::GetActualWidth ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (FrameworkElement::ActualWidthProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (FrameworkElement::ActualWidthProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 #endif
 double
 FrameworkElement::GetHeight ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (FrameworkElement::HeightProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (FrameworkElement::HeightProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -1462,11 +1336,8 @@ FrameworkElement::SetHeight (double value)
 HorizontalAlignment
 FrameworkElement::GetHorizontalAlignment ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (FrameworkElement::HorizontalAlignmentProperty);
-	if (value == NULL)
-		return (HorizontalAlignment) 0;
-	return (HorizontalAlignment)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (FrameworkElement::HorizontalAlignmentProperty);
+	return (!value) ? (HorizontalAlignment) 0 : (HorizontalAlignment)value->AsInt32();
 }
 
 void
@@ -1480,17 +1351,14 @@ FrameworkElement::SetHorizontalAlignment (HorizontalAlignment value)
 Thickness *
 FrameworkElement::GetMargin ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (FrameworkElement::MarginProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsThickness ();
+	Value *value = this->DependencyObject::GetValue (FrameworkElement::MarginProperty);
+	return (!value) ? NULL : value->AsThickness ();
 }
 
 void
 FrameworkElement::SetMargin (Thickness * value)
 {
-	if (value == NULL) return;
+	if (!value) return;
 	this->DependencyObject::SetValue (FrameworkElement::MarginProperty, Value (*value));
 }
 
@@ -1499,11 +1367,8 @@ FrameworkElement::SetMargin (Thickness * value)
 double
 FrameworkElement::GetMaxHeight ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (FrameworkElement::MaxHeightProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (FrameworkElement::MaxHeightProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -1517,11 +1382,8 @@ FrameworkElement::SetMaxHeight (double value)
 double
 FrameworkElement::GetMaxWidth ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (FrameworkElement::MaxWidthProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (FrameworkElement::MaxWidthProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -1535,11 +1397,8 @@ FrameworkElement::SetMaxWidth (double value)
 double
 FrameworkElement::GetMinHeight ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (FrameworkElement::MinHeightProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (FrameworkElement::MinHeightProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -1553,11 +1412,8 @@ FrameworkElement::SetMinHeight (double value)
 double
 FrameworkElement::GetMinWidth ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (FrameworkElement::MinWidthProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (FrameworkElement::MinWidthProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -1571,11 +1427,8 @@ FrameworkElement::SetMinWidth (double value)
 Style *
 FrameworkElement::GetStyle ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (FrameworkElement::StyleProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsStyle ();
+	Value *value = this->DependencyObject::GetValue (FrameworkElement::StyleProperty);
+	return (!value) ? NULL : value->AsStyle ();
 }
 
 void
@@ -1589,11 +1442,8 @@ FrameworkElement::SetStyle (Style * value)
 VerticalAlignment
 FrameworkElement::GetVerticalAlignment ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (FrameworkElement::VerticalAlignmentProperty);
-	if (value == NULL)
-		return (VerticalAlignment) 0;
-	return (VerticalAlignment)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (FrameworkElement::VerticalAlignmentProperty);
+	return (!value) ? (VerticalAlignment) 0 : (VerticalAlignment)value->AsInt32();
 }
 
 void
@@ -1606,11 +1456,8 @@ FrameworkElement::SetVerticalAlignment (VerticalAlignment value)
 double
 FrameworkElement::GetWidth ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (FrameworkElement::WidthProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (FrameworkElement::WidthProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -1622,11 +1469,8 @@ FrameworkElement::SetWidth (double value)
 FillRule
 Geometry::GetFillRule ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Geometry::FillRuleProperty);
-	if (value == NULL)
-		return (FillRule) 0;
-	return (FillRule)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (Geometry::FillRuleProperty);
+	return (!value) ? (FillRule) 0 : (FillRule)value->AsInt32();
 }
 
 void
@@ -1638,11 +1482,8 @@ Geometry::SetFillRule (FillRule value)
 Transform *
 Geometry::GetTransform ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Geometry::TransformProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsTransform ();
+	Value *value = this->DependencyObject::GetValue (Geometry::TransformProperty);
+	return (!value) ? NULL : value->AsTransform ();
 }
 
 void
@@ -1654,11 +1495,8 @@ Geometry::SetTransform (Transform * value)
 GeometryCollection *
 GeometryGroup::GetChildren ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (GeometryGroup::ChildrenProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsGeometryCollection ();
+	Value *value = this->DependencyObject::GetValue (GeometryGroup::ChildrenProperty);
+	return (!value) ? NULL : value->AsGeometryCollection ();
 }
 
 void
@@ -1670,11 +1508,8 @@ GeometryGroup::SetChildren (GeometryCollection * value)
 double
 Glyphs::GetFontRenderingEmSize ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Glyphs::FontRenderingEmSizeProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (Glyphs::FontRenderingEmSizeProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -1686,11 +1521,8 @@ Glyphs::SetFontRenderingEmSize (double value)
 const char *
 Glyphs::GetFontUri ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Glyphs::FontUriProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsString ();
+	Value *value = this->DependencyObject::GetValue (Glyphs::FontUriProperty);
+	return (!value) ? NULL : value->AsString ();
 }
 
 void
@@ -1702,11 +1534,8 @@ Glyphs::SetFontUri (const char * value)
 const char *
 Glyphs::GetIndices ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Glyphs::IndicesProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsString ();
+	Value *value = this->DependencyObject::GetValue (Glyphs::IndicesProperty);
+	return (!value) ? NULL : value->AsString ();
 }
 
 void
@@ -1718,11 +1547,8 @@ Glyphs::SetIndices (const char * value)
 double
 Glyphs::GetOriginX ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Glyphs::OriginXProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (Glyphs::OriginXProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -1734,11 +1560,8 @@ Glyphs::SetOriginX (double value)
 double
 Glyphs::GetOriginY ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Glyphs::OriginYProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (Glyphs::OriginYProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -1750,11 +1573,8 @@ Glyphs::SetOriginY (double value)
 StyleSimulations
 Glyphs::GetStyleSimulations ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Glyphs::StyleSimulationsProperty);
-	if (value == NULL)
-		return (StyleSimulations) 0;
-	return (StyleSimulations)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (Glyphs::StyleSimulationsProperty);
+	return (!value) ? (StyleSimulations) 0 : (StyleSimulations)value->AsInt32();
 }
 
 void
@@ -1766,11 +1586,8 @@ Glyphs::SetStyleSimulations (StyleSimulations value)
 const char *
 Glyphs::GetUnicodeString ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Glyphs::UnicodeStringProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsString ();
+	Value *value = this->DependencyObject::GetValue (Glyphs::UnicodeStringProperty);
+	return (!value) ? NULL : value->AsString ();
 }
 
 void
@@ -1782,11 +1599,8 @@ Glyphs::SetUnicodeString (const char * value)
 ColorInterpolationMode
 GradientBrush::GetColorInterpolationMode ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (GradientBrush::ColorInterpolationModeProperty);
-	if (value == NULL)
-		return (ColorInterpolationMode) 0;
-	return (ColorInterpolationMode)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (GradientBrush::ColorInterpolationModeProperty);
+	return (!value) ? (ColorInterpolationMode) 0 : (ColorInterpolationMode)value->AsInt32();
 }
 
 void
@@ -1798,11 +1612,8 @@ GradientBrush::SetColorInterpolationMode (ColorInterpolationMode value)
 GradientStopCollection *
 GradientBrush::GetGradientStops ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (GradientBrush::GradientStopsProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsGradientStopCollection ();
+	Value *value = this->DependencyObject::GetValue (GradientBrush::GradientStopsProperty);
+	return (!value) ? NULL : value->AsGradientStopCollection ();
 }
 
 void
@@ -1814,11 +1625,8 @@ GradientBrush::SetGradientStops (GradientStopCollection * value)
 BrushMappingMode
 GradientBrush::GetMappingMode ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (GradientBrush::MappingModeProperty);
-	if (value == NULL)
-		return (BrushMappingMode) 0;
-	return (BrushMappingMode)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (GradientBrush::MappingModeProperty);
+	return (!value) ? (BrushMappingMode) 0 : (BrushMappingMode)value->AsInt32();
 }
 
 void
@@ -1830,11 +1638,8 @@ GradientBrush::SetMappingMode (BrushMappingMode value)
 GradientSpreadMethod
 GradientBrush::GetSpreadMethod ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (GradientBrush::SpreadMethodProperty);
-	if (value == NULL)
-		return (GradientSpreadMethod) 0;
-	return (GradientSpreadMethod)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (GradientBrush::SpreadMethodProperty);
+	return (!value) ? (GradientSpreadMethod) 0 : (GradientSpreadMethod)value->AsInt32();
 }
 
 void
@@ -1846,28 +1651,22 @@ GradientBrush::SetSpreadMethod (GradientSpreadMethod value)
 Color *
 GradientStop::GetColor ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (GradientStop::ColorProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsColor ();
+	Value *value = this->DependencyObject::GetValue (GradientStop::ColorProperty);
+	return (!value) ? NULL : value->AsColor ();
 }
 
 void
 GradientStop::SetColor (Color * value)
 {
-	if (value == NULL) return;
+	if (!value) return;
 	this->DependencyObject::SetValue (GradientStop::ColorProperty, Value (*value));
 }
 
 double
 GradientStop::GetOffset ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (GradientStop::OffsetProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (GradientStop::OffsetProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -1880,11 +1679,8 @@ GradientStop::SetOffset (double value)
 ColumnDefinitionCollection *
 Grid::GetColumnDefinitions ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Grid::ColumnDefinitionsProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsColumnDefinitionCollection ();
+	Value *value = this->DependencyObject::GetValue (Grid::ColumnDefinitionsProperty);
+	return (!value) ? NULL : value->AsColumnDefinitionCollection ();
 }
 
 void
@@ -1898,18 +1694,14 @@ Grid::SetColumnDefinitions (ColumnDefinitionCollection * value)
 gint32
 Grid::GetColumn (DependencyObject *obj)
 {
-	Value *value = NULL;
-	if (obj) 
-		value = obj->DependencyObject::GetValue (Grid::ColumnProperty);
-	if (value == NULL)
-		return 0;
-	return value->AsInt32 ();
+	Value *value = (!obj) ? NULL : obj->DependencyObject::GetValue (Grid::ColumnProperty);
+	return (!value) ? 0 : value->AsInt32 ();
 }
 
 void
 Grid::SetColumn (DependencyObject *obj, gint32 value)
 {
-	if (obj == NULL) return;
+	if (!obj) return;
 	obj->DependencyObject::SetValue (Grid::ColumnProperty, Value (value));
 }
 
@@ -1918,18 +1710,14 @@ Grid::SetColumn (DependencyObject *obj, gint32 value)
 gint32
 Grid::GetColumnSpan (DependencyObject *obj)
 {
-	Value *value = NULL;
-	if (obj) 
-		value = obj->DependencyObject::GetValue (Grid::ColumnSpanProperty);
-	if (value == NULL)
-		return 0;
-	return value->AsInt32 ();
+	Value *value = (!obj) ? NULL : obj->DependencyObject::GetValue (Grid::ColumnSpanProperty);
+	return (!value) ? 0 : value->AsInt32 ();
 }
 
 void
 Grid::SetColumnSpan (DependencyObject *obj, gint32 value)
 {
-	if (obj == NULL) return;
+	if (!obj) return;
 	obj->DependencyObject::SetValue (Grid::ColumnSpanProperty, Value (value));
 }
 
@@ -1938,11 +1726,8 @@ Grid::SetColumnSpan (DependencyObject *obj, gint32 value)
 RowDefinitionCollection *
 Grid::GetRowDefinitions ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Grid::RowDefinitionsProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsRowDefinitionCollection ();
+	Value *value = this->DependencyObject::GetValue (Grid::RowDefinitionsProperty);
+	return (!value) ? NULL : value->AsRowDefinitionCollection ();
 }
 
 void
@@ -1956,18 +1741,14 @@ Grid::SetRowDefinitions (RowDefinitionCollection * value)
 gint32
 Grid::GetRow (DependencyObject *obj)
 {
-	Value *value = NULL;
-	if (obj) 
-		value = obj->DependencyObject::GetValue (Grid::RowProperty);
-	if (value == NULL)
-		return 0;
-	return value->AsInt32 ();
+	Value *value = (!obj) ? NULL : obj->DependencyObject::GetValue (Grid::RowProperty);
+	return (!value) ? 0 : value->AsInt32 ();
 }
 
 void
 Grid::SetRow (DependencyObject *obj, gint32 value)
 {
-	if (obj == NULL) return;
+	if (!obj) return;
 	obj->DependencyObject::SetValue (Grid::RowProperty, Value (value));
 }
 
@@ -1976,18 +1757,14 @@ Grid::SetRow (DependencyObject *obj, gint32 value)
 gint32
 Grid::GetRowSpan (DependencyObject *obj)
 {
-	Value *value = NULL;
-	if (obj) 
-		value = obj->DependencyObject::GetValue (Grid::RowSpanProperty);
-	if (value == NULL)
-		return 0;
-	return value->AsInt32 ();
+	Value *value = (!obj) ? NULL : obj->DependencyObject::GetValue (Grid::RowSpanProperty);
+	return (!value) ? 0 : value->AsInt32 ();
 }
 
 void
 Grid::SetRowSpan (DependencyObject *obj, gint32 value)
 {
-	if (obj == NULL) return;
+	if (!obj) return;
 	obj->DependencyObject::SetValue (Grid::RowSpanProperty, Value (value));
 }
 
@@ -1996,11 +1773,8 @@ Grid::SetRowSpan (DependencyObject *obj, gint32 value)
 bool
 Grid::GetShowGridLines ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Grid::ShowGridLinesProperty);
-	if (value == NULL)
-		return false;
-	return value->AsBool ();
+	Value *value = this->DependencyObject::GetValue (Grid::ShowGridLinesProperty);
+	return (!value) ? false : value->AsBool ();
 }
 
 void
@@ -2013,11 +1787,8 @@ Grid::SetShowGridLines (bool value)
 double
 ImageBrush::GetDownloadProgress ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (ImageBrush::DownloadProgressProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (ImageBrush::DownloadProgressProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -2029,11 +1800,8 @@ ImageBrush::SetDownloadProgress (double value)
 const char *
 ImageBrush::GetImageSource ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (ImageBrush::ImageSourceProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsString ();
+	Value *value = this->DependencyObject::GetValue (ImageBrush::ImageSourceProperty);
+	return (!value) ? NULL : value->AsString ();
 }
 
 void
@@ -2045,11 +1813,8 @@ ImageBrush::SetImageSource (const char * value)
 StrokeCollection *
 InkPresenter::GetStrokes ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (InkPresenter::StrokesProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsStrokeCollection ();
+	Value *value = this->DependencyObject::GetValue (InkPresenter::StrokesProperty);
+	return (!value) ? NULL : value->AsStrokeCollection ();
 }
 
 void
@@ -2061,11 +1826,8 @@ InkPresenter::SetStrokes (StrokeCollection * value)
 double
 Inline::GetFontSize ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Inline::FontSizeProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (Inline::FontSizeProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -2077,11 +1839,8 @@ Inline::SetFontSize (double value)
 FontStretches
 Inline::GetFontStretch ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Inline::FontStretchProperty);
-	if (value == NULL)
-		return (FontStretches) 0;
-	return (FontStretches)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (Inline::FontStretchProperty);
+	return (!value) ? (FontStretches) 0 : (FontStretches)value->AsInt32();
 }
 
 void
@@ -2093,11 +1852,8 @@ Inline::SetFontStretch (FontStretches value)
 FontStyles
 Inline::GetFontStyle ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Inline::FontStyleProperty);
-	if (value == NULL)
-		return (FontStyles) 0;
-	return (FontStyles)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (Inline::FontStyleProperty);
+	return (!value) ? (FontStyles) 0 : (FontStyles)value->AsInt32();
 }
 
 void
@@ -2109,11 +1865,8 @@ Inline::SetFontStyle (FontStyles value)
 FontWeights
 Inline::GetFontWeight ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Inline::FontWeightProperty);
-	if (value == NULL)
-		return (FontWeights) 0;
-	return (FontWeights)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (Inline::FontWeightProperty);
+	return (!value) ? (FontWeights) 0 : (FontWeights)value->AsInt32();
 }
 
 void
@@ -2125,11 +1878,8 @@ Inline::SetFontWeight (FontWeights value)
 Brush *
 Inline::GetForeground ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Inline::ForegroundProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsBrush ();
+	Value *value = this->DependencyObject::GetValue (Inline::ForegroundProperty);
+	return (!value) ? NULL : value->AsBrush ();
 }
 
 void
@@ -2141,11 +1891,8 @@ Inline::SetForeground (Brush * value)
 double
 Line::GetX1 ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Line::X1Property);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (Line::X1Property);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -2157,11 +1904,8 @@ Line::SetX1 (double value)
 double
 Line::GetX2 ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Line::X2Property);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (Line::X2Property);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -2173,11 +1917,8 @@ Line::SetX2 (double value)
 double
 Line::GetY1 ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Line::Y1Property);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (Line::Y1Property);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -2189,11 +1930,8 @@ Line::SetY1 (double value)
 double
 Line::GetY2 ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Line::Y2Property);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (Line::Y2Property);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -2205,96 +1943,78 @@ Line::SetY2 (double value)
 Point *
 LinearGradientBrush::GetEndPoint ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (LinearGradientBrush::EndPointProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsPoint ();
+	Value *value = this->DependencyObject::GetValue (LinearGradientBrush::EndPointProperty);
+	return (!value) ? NULL : value->AsPoint ();
 }
 
 void
 LinearGradientBrush::SetEndPoint (Point * value)
 {
-	if (value == NULL) return;
+	if (!value) return;
 	this->DependencyObject::SetValue (LinearGradientBrush::EndPointProperty, Value (*value));
 }
 
 Point *
 LinearGradientBrush::GetStartPoint ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (LinearGradientBrush::StartPointProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsPoint ();
+	Value *value = this->DependencyObject::GetValue (LinearGradientBrush::StartPointProperty);
+	return (!value) ? NULL : value->AsPoint ();
 }
 
 void
 LinearGradientBrush::SetStartPoint (Point * value)
 {
-	if (value == NULL) return;
+	if (!value) return;
 	this->DependencyObject::SetValue (LinearGradientBrush::StartPointProperty, Value (*value));
 }
 
 Point *
 LineGeometry::GetEndPoint ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (LineGeometry::EndPointProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsPoint ();
+	Value *value = this->DependencyObject::GetValue (LineGeometry::EndPointProperty);
+	return (!value) ? NULL : value->AsPoint ();
 }
 
 void
 LineGeometry::SetEndPoint (Point * value)
 {
-	if (value == NULL) return;
+	if (!value) return;
 	this->DependencyObject::SetValue (LineGeometry::EndPointProperty, Value (*value));
 }
 
 Point *
 LineGeometry::GetStartPoint ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (LineGeometry::StartPointProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsPoint ();
+	Value *value = this->DependencyObject::GetValue (LineGeometry::StartPointProperty);
+	return (!value) ? NULL : value->AsPoint ();
 }
 
 void
 LineGeometry::SetStartPoint (Point * value)
 {
-	if (value == NULL) return;
+	if (!value) return;
 	this->DependencyObject::SetValue (LineGeometry::StartPointProperty, Value (*value));
 }
 
 Point *
 LineSegment::GetPoint ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (LineSegment::PointProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsPoint ();
+	Value *value = this->DependencyObject::GetValue (LineSegment::PointProperty);
+	return (!value) ? NULL : value->AsPoint ();
 }
 
 void
 LineSegment::SetPoint (Point * value)
 {
-	if (value == NULL) return;
+	if (!value) return;
 	this->DependencyObject::SetValue (LineSegment::PointProperty, Value (*value));
 }
 
 double
 Matrix::GetM11 ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Matrix::M11Property);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (Matrix::M11Property);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -2306,11 +2026,8 @@ Matrix::SetM11 (double value)
 double
 Matrix::GetM12 ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Matrix::M12Property);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (Matrix::M12Property);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -2322,11 +2039,8 @@ Matrix::SetM12 (double value)
 double
 Matrix::GetM21 ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Matrix::M21Property);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (Matrix::M21Property);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -2338,11 +2052,8 @@ Matrix::SetM21 (double value)
 double
 Matrix::GetM22 ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Matrix::M22Property);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (Matrix::M22Property);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -2354,11 +2065,8 @@ Matrix::SetM22 (double value)
 double
 Matrix::GetOffsetX ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Matrix::OffsetXProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (Matrix::OffsetXProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -2370,11 +2078,8 @@ Matrix::SetOffsetX (double value)
 double
 Matrix::GetOffsetY ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Matrix::OffsetYProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (Matrix::OffsetYProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -2386,11 +2091,8 @@ Matrix::SetOffsetY (double value)
 Matrix *
 MatrixTransform::GetMatrix ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (MatrixTransform::MatrixProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsMatrix ();
+	Value *value = this->DependencyObject::GetValue (MatrixTransform::MatrixProperty);
+	return (!value) ? NULL : value->AsMatrix ();
 }
 
 void
@@ -2402,11 +2104,8 @@ MatrixTransform::SetMatrix (Matrix * value)
 const char *
 MediaAttribute::GetValue ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (MediaAttribute::ValueProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsString ();
+	Value *value = this->DependencyObject::GetValue (MediaAttribute::ValueProperty);
+	return (!value) ? NULL : value->AsString ();
 }
 
 void
@@ -2418,11 +2117,8 @@ MediaAttribute::SetValue (const char * value)
 double
 MediaBase::GetDownloadProgress ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (MediaBase::DownloadProgressProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (MediaBase::DownloadProgressProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -2434,11 +2130,8 @@ MediaBase::SetDownloadProgress (double value)
 Stretch
 MediaBase::GetStretch ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (MediaBase::StretchProperty);
-	if (value == NULL)
-		return (Stretch) 0;
-	return (Stretch)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (MediaBase::StretchProperty);
+	return (!value) ? (Stretch) 0 : (Stretch)value->AsInt32();
 }
 
 void
@@ -2450,11 +2143,8 @@ MediaBase::SetStretch (Stretch value)
 MediaAttributeCollection *
 MediaElement::GetAttributes ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (MediaElement::AttributesProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsMediaAttributeCollection ();
+	Value *value = this->DependencyObject::GetValue (MediaElement::AttributesProperty);
+	return (!value) ? NULL : value->AsMediaAttributeCollection ();
 }
 
 void
@@ -2466,11 +2156,8 @@ MediaElement::SetAttributes (MediaAttributeCollection * value)
 gint32
 MediaElement::GetAudioStreamCount ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (MediaElement::AudioStreamCountProperty);
-	if (value == NULL)
-		return 0;
-	return value->AsInt32 ();
+	Value *value = this->DependencyObject::GetValue (MediaElement::AudioStreamCountProperty);
+	return (!value) ? 0 : value->AsInt32 ();
 }
 
 void
@@ -2482,11 +2169,8 @@ MediaElement::SetAudioStreamCount (gint32 value)
 gint32 *
 MediaElement::GetAudioStreamIndex ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (MediaElement::AudioStreamIndexProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsNullableInt32 ();
+	Value *value = this->DependencyObject::GetValue (MediaElement::AudioStreamIndexProperty);
+	return (!value) ? NULL : value->AsNullableInt32 ();
 }
 
 void
@@ -2498,7 +2182,7 @@ MediaElement::SetAudioStreamIndex (gint32 value)
 void
 MediaElement::SetAudioStreamIndex (gint32 * value)
 {
-	if (value == NULL)
+	if (!value)
 		this->DependencyObject::SetValue (MediaElement::AudioStreamIndexProperty, Value (NULL));
 	else
 		this->DependencyObject::SetValue (MediaElement::AudioStreamIndexProperty, Value (*value));
@@ -2507,11 +2191,8 @@ MediaElement::SetAudioStreamIndex (gint32 * value)
 bool
 MediaElement::GetAutoPlay ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (MediaElement::AutoPlayProperty);
-	if (value == NULL)
-		return false;
-	return value->AsBool ();
+	Value *value = this->DependencyObject::GetValue (MediaElement::AutoPlayProperty);
+	return (!value) ? false : value->AsBool ();
 }
 
 void
@@ -2523,11 +2204,8 @@ MediaElement::SetAutoPlay (bool value)
 double
 MediaElement::GetBalance ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (MediaElement::BalanceProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (MediaElement::BalanceProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -2539,11 +2217,8 @@ MediaElement::SetBalance (double value)
 double
 MediaElement::GetBufferingProgress ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (MediaElement::BufferingProgressProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (MediaElement::BufferingProgressProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -2555,11 +2230,8 @@ MediaElement::SetBufferingProgress (double value)
 TimeSpan
 MediaElement::GetBufferingTime ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (MediaElement::BufferingTimeProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsTimeSpan ();
+	Value *value = this->DependencyObject::GetValue (MediaElement::BufferingTimeProperty);
+	return (!value) ? NULL : value->AsTimeSpan ();
 }
 
 void
@@ -2571,11 +2243,8 @@ MediaElement::SetBufferingTime (TimeSpan value)
 bool
 MediaElement::GetCanPause ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (MediaElement::CanPauseProperty);
-	if (value == NULL)
-		return false;
-	return value->AsBool ();
+	Value *value = this->DependencyObject::GetValue (MediaElement::CanPauseProperty);
+	return (!value) ? false : value->AsBool ();
 }
 
 void
@@ -2587,11 +2256,8 @@ MediaElement::SetCanPause (bool value)
 bool
 MediaElement::GetCanSeek ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (MediaElement::CanSeekProperty);
-	if (value == NULL)
-		return false;
-	return value->AsBool ();
+	Value *value = this->DependencyObject::GetValue (MediaElement::CanSeekProperty);
+	return (!value) ? false : value->AsBool ();
 }
 
 void
@@ -2603,11 +2269,8 @@ MediaElement::SetCanSeek (bool value)
 const char *
 MediaElement::GetCurrentState ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (MediaElement::CurrentStateProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsString ();
+	Value *value = this->DependencyObject::GetValue (MediaElement::CurrentStateProperty);
+	return (!value) ? NULL : value->AsString ();
 }
 
 void
@@ -2619,11 +2282,8 @@ MediaElement::SetCurrentState (const char * value)
 bool
 MediaElement::GetIsMuted ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (MediaElement::IsMutedProperty);
-	if (value == NULL)
-		return false;
-	return value->AsBool ();
+	Value *value = this->DependencyObject::GetValue (MediaElement::IsMutedProperty);
+	return (!value) ? false : value->AsBool ();
 }
 
 void
@@ -2635,11 +2295,8 @@ MediaElement::SetIsMuted (bool value)
 TimelineMarkerCollection *
 MediaElement::GetMarkers ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (MediaElement::MarkersProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsTimelineMarkerCollection ();
+	Value *value = this->DependencyObject::GetValue (MediaElement::MarkersProperty);
+	return (!value) ? NULL : value->AsTimelineMarkerCollection ();
 }
 
 void
@@ -2651,21 +2308,15 @@ MediaElement::SetMarkers (TimelineMarkerCollection * value)
 Duration *
 MediaElement::GetNaturalDuration ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (MediaElement::NaturalDurationProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsDuration ();
+	Value *value = this->DependencyObject::GetValue (MediaElement::NaturalDurationProperty);
+	return (!value) ? NULL : value->AsDuration ();
 }
 
 double
 MediaElement::GetNaturalVideoHeight ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (MediaElement::NaturalVideoHeightProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (MediaElement::NaturalVideoHeightProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -2677,11 +2328,8 @@ MediaElement::SetNaturalVideoHeight (double value)
 double
 MediaElement::GetNaturalVideoWidth ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (MediaElement::NaturalVideoWidthProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (MediaElement::NaturalVideoWidthProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -2693,11 +2341,8 @@ MediaElement::SetNaturalVideoWidth (double value)
 TimeSpan
 MediaElement::GetPosition ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (MediaElement::PositionProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsTimeSpan ();
+	Value *value = this->DependencyObject::GetValue (MediaElement::PositionProperty);
+	return (!value) ? NULL : value->AsTimeSpan ();
 }
 
 void
@@ -2709,11 +2354,8 @@ MediaElement::SetPosition (TimeSpan value)
 double
 MediaElement::GetVolume ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (MediaElement::VolumeProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (MediaElement::VolumeProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -2725,29 +2367,22 @@ MediaElement::SetVolume (double value)
 NameScope *
 NameScope::GetNameScope (DependencyObject *obj)
 {
-	Value *value = NULL;
-	if (obj) 
-		value = obj->DependencyObject::GetValue (NameScope::NameScopeProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsNameScope ();
+	Value *value = (!obj) ? NULL : obj->DependencyObject::GetValue (NameScope::NameScopeProperty);
+	return (!value) ? NULL : value->AsNameScope ();
 }
 
 void
 NameScope::SetNameScope (DependencyObject *obj, NameScope * value)
 {
-	if (obj == NULL) return;
+	if (!obj) return;
 	obj->DependencyObject::SetValue (NameScope::NameScopeProperty, Value (value));
 }
 
 Brush *
 Panel::GetBackground ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Panel::BackgroundProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsBrush ();
+	Value *value = this->DependencyObject::GetValue (Panel::BackgroundProperty);
+	return (!value) ? NULL : value->AsBrush ();
 }
 
 void
@@ -2759,11 +2394,8 @@ Panel::SetBackground (Brush * value)
 UIElementCollection *
 Panel::GetChildren ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Panel::ChildrenProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsUIElementCollection ();
+	Value *value = this->DependencyObject::GetValue (Panel::ChildrenProperty);
+	return (!value) ? NULL : value->AsUIElementCollection ();
 }
 
 void
@@ -2775,11 +2407,8 @@ Panel::SetChildren (UIElementCollection * value)
 Geometry *
 Path::GetData ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Path::DataProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsGeometry ();
+	Value *value = this->DependencyObject::GetValue (Path::DataProperty);
+	return (!value) ? NULL : value->AsGeometry ();
 }
 
 void
@@ -2791,11 +2420,8 @@ Path::SetData (Geometry * value)
 bool
 PathFigure::GetIsClosed ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (PathFigure::IsClosedProperty);
-	if (value == NULL)
-		return false;
-	return value->AsBool ();
+	Value *value = this->DependencyObject::GetValue (PathFigure::IsClosedProperty);
+	return (!value) ? false : value->AsBool ();
 }
 
 void
@@ -2808,11 +2434,8 @@ PathFigure::SetIsClosed (bool value)
 bool
 PathFigure::GetIsFilled ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (PathFigure::IsFilledProperty);
-	if (value == NULL)
-		return false;
-	return value->AsBool ();
+	Value *value = this->DependencyObject::GetValue (PathFigure::IsFilledProperty);
+	return (!value) ? false : value->AsBool ();
 }
 
 void
@@ -2825,11 +2448,8 @@ PathFigure::SetIsFilled (bool value)
 PathSegmentCollection *
 PathFigure::GetSegments ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (PathFigure::SegmentsProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsPathSegmentCollection ();
+	Value *value = this->DependencyObject::GetValue (PathFigure::SegmentsProperty);
+	return (!value) ? NULL : value->AsPathSegmentCollection ();
 }
 
 void
@@ -2841,28 +2461,22 @@ PathFigure::SetSegments (PathSegmentCollection * value)
 Point *
 PathFigure::GetStartPoint ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (PathFigure::StartPointProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsPoint ();
+	Value *value = this->DependencyObject::GetValue (PathFigure::StartPointProperty);
+	return (!value) ? NULL : value->AsPoint ();
 }
 
 void
 PathFigure::SetStartPoint (Point * value)
 {
-	if (value == NULL) return;
+	if (!value) return;
 	this->DependencyObject::SetValue (PathFigure::StartPointProperty, Value (*value));
 }
 
 PathFigureCollection *
 PathGeometry::GetFigures ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (PathGeometry::FiguresProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsPathFigureCollection ();
+	Value *value = this->DependencyObject::GetValue (PathGeometry::FiguresProperty);
+	return (!value) ? NULL : value->AsPathFigureCollection ();
 }
 
 void
@@ -2874,11 +2488,8 @@ PathGeometry::SetFigures (PathFigureCollection * value)
 Point *
 PointAnimation::GetBy ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (PointAnimation::ByProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsPoint ();
+	Value *value = this->DependencyObject::GetValue (PointAnimation::ByProperty);
+	return (!value) ? NULL : value->AsPoint ();
 }
 
 void
@@ -2890,7 +2501,7 @@ PointAnimation::SetBy (Point value)
 void
 PointAnimation::SetBy (Point * value)
 {
-	if (value == NULL)
+	if (!value)
 		this->DependencyObject::SetValue (PointAnimation::ByProperty, Value (NULL));
 	else
 		this->DependencyObject::SetValue (PointAnimation::ByProperty, Value (*value));
@@ -2899,11 +2510,8 @@ PointAnimation::SetBy (Point * value)
 Point *
 PointAnimation::GetFrom ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (PointAnimation::FromProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsPoint ();
+	Value *value = this->DependencyObject::GetValue (PointAnimation::FromProperty);
+	return (!value) ? NULL : value->AsPoint ();
 }
 
 void
@@ -2915,7 +2523,7 @@ PointAnimation::SetFrom (Point value)
 void
 PointAnimation::SetFrom (Point * value)
 {
-	if (value == NULL)
+	if (!value)
 		this->DependencyObject::SetValue (PointAnimation::FromProperty, Value (NULL));
 	else
 		this->DependencyObject::SetValue (PointAnimation::FromProperty, Value (*value));
@@ -2924,11 +2532,8 @@ PointAnimation::SetFrom (Point * value)
 Point *
 PointAnimation::GetTo ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (PointAnimation::ToProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsPoint ();
+	Value *value = this->DependencyObject::GetValue (PointAnimation::ToProperty);
+	return (!value) ? NULL : value->AsPoint ();
 }
 
 void
@@ -2940,7 +2545,7 @@ PointAnimation::SetTo (Point value)
 void
 PointAnimation::SetTo (Point * value)
 {
-	if (value == NULL)
+	if (!value)
 		this->DependencyObject::SetValue (PointAnimation::ToProperty, Value (NULL));
 	else
 		this->DependencyObject::SetValue (PointAnimation::ToProperty, Value (*value));
@@ -2949,11 +2554,8 @@ PointAnimation::SetTo (Point * value)
 PointKeyFrameCollection *
 PointAnimationUsingKeyFrames::GetKeyFrames ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsPointKeyFrameCollection ();
+	Value *value = this->DependencyObject::GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty);
+	return (!value) ? NULL : value->AsPointKeyFrameCollection ();
 }
 
 void
@@ -2965,11 +2567,8 @@ PointAnimationUsingKeyFrames::SetKeyFrames (PointKeyFrameCollection * value)
 Point *
 PointKeyFrame::GetValue ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (PointKeyFrame::ValueProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsPoint ();
+	Value *value = this->DependencyObject::GetValue (PointKeyFrame::ValueProperty);
+	return (!value) ? NULL : value->AsPoint ();
 }
 
 void
@@ -2981,7 +2580,7 @@ PointKeyFrame::SetValue (Point value)
 void
 PointKeyFrame::SetValue (Point * value)
 {
-	if (value == NULL)
+	if (!value)
 		this->DependencyObject::SetValue (PointKeyFrame::ValueProperty, Value (NULL));
 	else
 		this->DependencyObject::SetValue (PointKeyFrame::ValueProperty, Value (*value));
@@ -2990,11 +2589,8 @@ PointKeyFrame::SetValue (Point * value)
 PointCollection *
 PolyBezierSegment::GetPoints ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (PolyBezierSegment::PointsProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsPointCollection ();
+	Value *value = this->DependencyObject::GetValue (PolyBezierSegment::PointsProperty);
+	return (!value) ? NULL : value->AsPointCollection ();
 }
 
 void
@@ -3006,11 +2602,8 @@ PolyBezierSegment::SetPoints (PointCollection * value)
 FillRule
 Polygon::GetFillRule ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Polygon::FillRuleProperty);
-	if (value == NULL)
-		return (FillRule) 0;
-	return (FillRule)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (Polygon::FillRuleProperty);
+	return (!value) ? (FillRule) 0 : (FillRule)value->AsInt32();
 }
 
 void
@@ -3022,11 +2615,8 @@ Polygon::SetFillRule (FillRule value)
 PointCollection *
 Polygon::GetPoints ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Polygon::PointsProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsPointCollection ();
+	Value *value = this->DependencyObject::GetValue (Polygon::PointsProperty);
+	return (!value) ? NULL : value->AsPointCollection ();
 }
 
 void
@@ -3038,11 +2628,8 @@ Polygon::SetPoints (PointCollection * value)
 FillRule
 Polyline::GetFillRule ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Polyline::FillRuleProperty);
-	if (value == NULL)
-		return (FillRule) 0;
-	return (FillRule)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (Polyline::FillRuleProperty);
+	return (!value) ? (FillRule) 0 : (FillRule)value->AsInt32();
 }
 
 void
@@ -3054,11 +2641,8 @@ Polyline::SetFillRule (FillRule value)
 PointCollection *
 Polyline::GetPoints ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Polyline::PointsProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsPointCollection ();
+	Value *value = this->DependencyObject::GetValue (Polyline::PointsProperty);
+	return (!value) ? NULL : value->AsPointCollection ();
 }
 
 void
@@ -3070,11 +2654,8 @@ Polyline::SetPoints (PointCollection * value)
 PointCollection *
 PolyLineSegment::GetPoints ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (PolyLineSegment::PointsProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsPointCollection ();
+	Value *value = this->DependencyObject::GetValue (PolyLineSegment::PointsProperty);
+	return (!value) ? NULL : value->AsPointCollection ();
 }
 
 void
@@ -3086,11 +2667,8 @@ PolyLineSegment::SetPoints (PointCollection * value)
 PointCollection *
 PolyQuadraticBezierSegment::GetPoints ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (PolyQuadraticBezierSegment::PointsProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsPointCollection ();
+	Value *value = this->DependencyObject::GetValue (PolyQuadraticBezierSegment::PointsProperty);
+	return (!value) ? NULL : value->AsPointCollection ();
 }
 
 void
@@ -3102,79 +2680,64 @@ PolyQuadraticBezierSegment::SetPoints (PointCollection * value)
 Point *
 QuadraticBezierSegment::GetPoint1 ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (QuadraticBezierSegment::Point1Property);
-	if (value == NULL)
-		return NULL;
-	return value->AsPoint ();
+	Value *value = this->DependencyObject::GetValue (QuadraticBezierSegment::Point1Property);
+	return (!value) ? NULL : value->AsPoint ();
 }
 
 void
 QuadraticBezierSegment::SetPoint1 (Point * value)
 {
-	if (value == NULL) return;
+	if (!value) return;
 	this->DependencyObject::SetValue (QuadraticBezierSegment::Point1Property, Value (*value));
 }
 
 Point *
 QuadraticBezierSegment::GetPoint2 ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (QuadraticBezierSegment::Point2Property);
-	if (value == NULL)
-		return NULL;
-	return value->AsPoint ();
+	Value *value = this->DependencyObject::GetValue (QuadraticBezierSegment::Point2Property);
+	return (!value) ? NULL : value->AsPoint ();
 }
 
 void
 QuadraticBezierSegment::SetPoint2 (Point * value)
 {
-	if (value == NULL) return;
+	if (!value) return;
 	this->DependencyObject::SetValue (QuadraticBezierSegment::Point2Property, Value (*value));
 }
 
 Point *
 RadialGradientBrush::GetCenter ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (RadialGradientBrush::CenterProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsPoint ();
+	Value *value = this->DependencyObject::GetValue (RadialGradientBrush::CenterProperty);
+	return (!value) ? NULL : value->AsPoint ();
 }
 
 void
 RadialGradientBrush::SetCenter (Point * value)
 {
-	if (value == NULL) return;
+	if (!value) return;
 	this->DependencyObject::SetValue (RadialGradientBrush::CenterProperty, Value (*value));
 }
 
 Point *
 RadialGradientBrush::GetGradientOrigin ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (RadialGradientBrush::GradientOriginProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsPoint ();
+	Value *value = this->DependencyObject::GetValue (RadialGradientBrush::GradientOriginProperty);
+	return (!value) ? NULL : value->AsPoint ();
 }
 
 void
 RadialGradientBrush::SetGradientOrigin (Point * value)
 {
-	if (value == NULL) return;
+	if (!value) return;
 	this->DependencyObject::SetValue (RadialGradientBrush::GradientOriginProperty, Value (*value));
 }
 
 double
 RadialGradientBrush::GetRadiusX ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (RadialGradientBrush::RadiusXProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (RadialGradientBrush::RadiusXProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -3186,11 +2749,8 @@ RadialGradientBrush::SetRadiusX (double value)
 double
 RadialGradientBrush::GetRadiusY ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (RadialGradientBrush::RadiusYProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (RadialGradientBrush::RadiusYProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -3202,11 +2762,8 @@ RadialGradientBrush::SetRadiusY (double value)
 double
 Rectangle::GetRadiusX ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Rectangle::RadiusXProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (Rectangle::RadiusXProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -3218,11 +2775,8 @@ Rectangle::SetRadiusX (double value)
 double
 Rectangle::GetRadiusY ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Rectangle::RadiusYProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (Rectangle::RadiusYProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -3234,11 +2788,8 @@ Rectangle::SetRadiusY (double value)
 double
 RectangleGeometry::GetRadiusX ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (RectangleGeometry::RadiusXProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (RectangleGeometry::RadiusXProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -3250,11 +2801,8 @@ RectangleGeometry::SetRadiusX (double value)
 double
 RectangleGeometry::GetRadiusY ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (RectangleGeometry::RadiusYProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (RectangleGeometry::RadiusYProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -3266,28 +2814,22 @@ RectangleGeometry::SetRadiusY (double value)
 Rect *
 RectangleGeometry::GetRect ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (RectangleGeometry::RectProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsRect ();
+	Value *value = this->DependencyObject::GetValue (RectangleGeometry::RectProperty);
+	return (!value) ? NULL : value->AsRect ();
 }
 
 void
 RectangleGeometry::SetRect (Rect * value)
 {
-	if (value == NULL) return;
+	if (!value) return;
 	this->DependencyObject::SetValue (RectangleGeometry::RectProperty, Value (*value));
 }
 
 double
 RotateTransform::GetAngle ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (RotateTransform::AngleProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (RotateTransform::AngleProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -3299,11 +2841,8 @@ RotateTransform::SetAngle (double value)
 double
 RotateTransform::GetCenterX ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (RotateTransform::CenterXProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (RotateTransform::CenterXProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -3315,11 +2854,8 @@ RotateTransform::SetCenterX (double value)
 double
 RotateTransform::GetCenterY ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (RotateTransform::CenterYProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (RotateTransform::CenterYProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -3332,17 +2868,14 @@ RotateTransform::SetCenterY (double value)
 GridLength *
 RowDefinition::GetHeight ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (RowDefinition::HeightProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsGridLength ();
+	Value *value = this->DependencyObject::GetValue (RowDefinition::HeightProperty);
+	return (!value) ? NULL : value->AsGridLength ();
 }
 
 void
 RowDefinition::SetHeight (GridLength * value)
 {
-	if (value == NULL) return;
+	if (!value) return;
 	this->DependencyObject::SetValue (RowDefinition::HeightProperty, Value (*value));
 }
 
@@ -3351,11 +2884,8 @@ RowDefinition::SetHeight (GridLength * value)
 double
 RowDefinition::GetMaxHeight ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (RowDefinition::MaxHeightProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (RowDefinition::MaxHeightProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -3369,11 +2899,8 @@ RowDefinition::SetMaxHeight (double value)
 double
 RowDefinition::GetMinHeight ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (RowDefinition::MinHeightProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (RowDefinition::MinHeightProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -3386,11 +2913,8 @@ RowDefinition::SetMinHeight (double value)
 const char *
 Run::GetText ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Run::TextProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsString ();
+	Value *value = this->DependencyObject::GetValue (Run::TextProperty);
+	return (!value) ? NULL : value->AsString ();
 }
 
 void
@@ -3402,11 +2926,8 @@ Run::SetText (const char * value)
 double
 ScaleTransform::GetCenterX ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (ScaleTransform::CenterXProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (ScaleTransform::CenterXProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -3418,11 +2939,8 @@ ScaleTransform::SetCenterX (double value)
 double
 ScaleTransform::GetCenterY ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (ScaleTransform::CenterYProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (ScaleTransform::CenterYProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -3434,11 +2952,8 @@ ScaleTransform::SetCenterY (double value)
 double
 ScaleTransform::GetScaleX ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (ScaleTransform::ScaleXProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (ScaleTransform::ScaleXProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -3450,11 +2965,8 @@ ScaleTransform::SetScaleX (double value)
 double
 ScaleTransform::GetScaleY ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (ScaleTransform::ScaleYProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (ScaleTransform::ScaleYProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -3466,11 +2978,8 @@ ScaleTransform::SetScaleY (double value)
 Brush *
 Shape::GetFill ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Shape::FillProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsBrush ();
+	Value *value = this->DependencyObject::GetValue (Shape::FillProperty);
+	return (!value) ? NULL : value->AsBrush ();
 }
 
 void
@@ -3482,11 +2991,8 @@ Shape::SetFill (Brush * value)
 Stretch
 Shape::GetStretch ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Shape::StretchProperty);
-	if (value == NULL)
-		return (Stretch) 0;
-	return (Stretch)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (Shape::StretchProperty);
+	return (!value) ? (Stretch) 0 : (Stretch)value->AsInt32();
 }
 
 void
@@ -3498,11 +3004,8 @@ Shape::SetStretch (Stretch value)
 DoubleCollection *
 Shape::GetStrokeDashArray ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Shape::StrokeDashArrayProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsDoubleCollection ();
+	Value *value = this->DependencyObject::GetValue (Shape::StrokeDashArrayProperty);
+	return (!value) ? NULL : value->AsDoubleCollection ();
 }
 
 void
@@ -3514,11 +3017,8 @@ Shape::SetStrokeDashArray (DoubleCollection * value)
 PenLineCap
 Shape::GetStrokeDashCap ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Shape::StrokeDashCapProperty);
-	if (value == NULL)
-		return (PenLineCap) 0;
-	return (PenLineCap)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (Shape::StrokeDashCapProperty);
+	return (!value) ? (PenLineCap) 0 : (PenLineCap)value->AsInt32();
 }
 
 void
@@ -3530,11 +3030,8 @@ Shape::SetStrokeDashCap (PenLineCap value)
 double
 Shape::GetStrokeDashOffset ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Shape::StrokeDashOffsetProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (Shape::StrokeDashOffsetProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -3546,11 +3043,8 @@ Shape::SetStrokeDashOffset (double value)
 PenLineCap
 Shape::GetStrokeEndLineCap ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Shape::StrokeEndLineCapProperty);
-	if (value == NULL)
-		return (PenLineCap) 0;
-	return (PenLineCap)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (Shape::StrokeEndLineCapProperty);
+	return (!value) ? (PenLineCap) 0 : (PenLineCap)value->AsInt32();
 }
 
 void
@@ -3562,11 +3056,8 @@ Shape::SetStrokeEndLineCap (PenLineCap value)
 PenLineJoin
 Shape::GetStrokeLineJoin ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Shape::StrokeLineJoinProperty);
-	if (value == NULL)
-		return (PenLineJoin) 0;
-	return (PenLineJoin)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (Shape::StrokeLineJoinProperty);
+	return (!value) ? (PenLineJoin) 0 : (PenLineJoin)value->AsInt32();
 }
 
 void
@@ -3578,11 +3069,8 @@ Shape::SetStrokeLineJoin (PenLineJoin value)
 double
 Shape::GetStrokeMiterLimit ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Shape::StrokeMiterLimitProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (Shape::StrokeMiterLimitProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -3594,11 +3082,8 @@ Shape::SetStrokeMiterLimit (double value)
 Brush *
 Shape::GetStroke ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Shape::StrokeProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsBrush ();
+	Value *value = this->DependencyObject::GetValue (Shape::StrokeProperty);
+	return (!value) ? NULL : value->AsBrush ();
 }
 
 void
@@ -3610,11 +3095,8 @@ Shape::SetStroke (Brush * value)
 PenLineCap
 Shape::GetStrokeStartLineCap ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Shape::StrokeStartLineCapProperty);
-	if (value == NULL)
-		return (PenLineCap) 0;
-	return (PenLineCap)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (Shape::StrokeStartLineCapProperty);
+	return (!value) ? (PenLineCap) 0 : (PenLineCap)value->AsInt32();
 }
 
 void
@@ -3626,11 +3108,8 @@ Shape::SetStrokeStartLineCap (PenLineCap value)
 double
 Shape::GetStrokeThickness ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Shape::StrokeThicknessProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (Shape::StrokeThicknessProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -3642,11 +3121,8 @@ Shape::SetStrokeThickness (double value)
 double
 SkewTransform::GetAngleX ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (SkewTransform::AngleXProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (SkewTransform::AngleXProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -3658,11 +3134,8 @@ SkewTransform::SetAngleX (double value)
 double
 SkewTransform::GetAngleY ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (SkewTransform::AngleYProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (SkewTransform::AngleYProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -3674,11 +3147,8 @@ SkewTransform::SetAngleY (double value)
 double
 SkewTransform::GetCenterX ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (SkewTransform::CenterXProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (SkewTransform::CenterXProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -3690,11 +3160,8 @@ SkewTransform::SetCenterX (double value)
 double
 SkewTransform::GetCenterY ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (SkewTransform::CenterYProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (SkewTransform::CenterYProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -3706,28 +3173,22 @@ SkewTransform::SetCenterY (double value)
 Color *
 SolidColorBrush::GetColor ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (SolidColorBrush::ColorProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsColor ();
+	Value *value = this->DependencyObject::GetValue (SolidColorBrush::ColorProperty);
+	return (!value) ? NULL : value->AsColor ();
 }
 
 void
 SolidColorBrush::SetColor (Color * value)
 {
-	if (value == NULL) return;
+	if (!value) return;
 	this->DependencyObject::SetValue (SolidColorBrush::ColorProperty, Value (*value));
 }
 
 KeySpline *
 SplineColorKeyFrame::GetKeySpline ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (SplineColorKeyFrame::KeySplineProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsKeySpline ();
+	Value *value = this->DependencyObject::GetValue (SplineColorKeyFrame::KeySplineProperty);
+	return (!value) ? NULL : value->AsKeySpline ();
 }
 
 void
@@ -3739,11 +3200,8 @@ SplineColorKeyFrame::SetKeySpline (KeySpline * value)
 KeySpline *
 SplineDoubleKeyFrame::GetKeySpline ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (SplineDoubleKeyFrame::KeySplineProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsKeySpline ();
+	Value *value = this->DependencyObject::GetValue (SplineDoubleKeyFrame::KeySplineProperty);
+	return (!value) ? NULL : value->AsKeySpline ();
 }
 
 void
@@ -3755,11 +3213,8 @@ SplineDoubleKeyFrame::SetKeySpline (KeySpline * value)
 KeySpline *
 SplinePointKeyFrame::GetKeySpline ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (SplinePointKeyFrame::KeySplineProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsKeySpline ();
+	Value *value = this->DependencyObject::GetValue (SplinePointKeyFrame::KeySplineProperty);
+	return (!value) ? NULL : value->AsKeySpline ();
 }
 
 void
@@ -3772,11 +3227,8 @@ SplinePointKeyFrame::SetKeySpline (KeySpline * value)
 Orientation
 StackPanel::GetOrientation ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (StackPanel::OrientationProperty);
-	if (value == NULL)
-		return (Orientation) 0;
-	return (Orientation)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (StackPanel::OrientationProperty);
+	return (!value) ? (Orientation) 0 : (Orientation)value->AsInt32();
 }
 
 void
@@ -3789,47 +3241,36 @@ StackPanel::SetOrientation (Orientation value)
 const char *
 Storyboard::GetTargetName (DependencyObject *obj)
 {
-	Value *value = NULL;
-	if (obj) 
-		value = obj->DependencyObject::GetValue (Storyboard::TargetNameProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsString ();
+	Value *value = (!obj) ? NULL : obj->DependencyObject::GetValue (Storyboard::TargetNameProperty);
+	return (!value) ? NULL : value->AsString ();
 }
 
 void
 Storyboard::SetTargetName (DependencyObject *obj, const char * value)
 {
-	if (obj == NULL) return;
+	if (!obj) return;
 	obj->DependencyObject::SetValue (Storyboard::TargetNameProperty, Value (value));
 }
 
 const char *
 Storyboard::GetTargetProperty (DependencyObject *obj)
 {
-	Value *value = NULL;
-	if (obj) 
-		value = obj->DependencyObject::GetValue (Storyboard::TargetPropertyProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsString ();
+	Value *value = (!obj) ? NULL : obj->DependencyObject::GetValue (Storyboard::TargetPropertyProperty);
+	return (!value) ? NULL : value->AsString ();
 }
 
 void
 Storyboard::SetTargetProperty (DependencyObject *obj, const char * value)
 {
-	if (obj == NULL) return;
+	if (!obj) return;
 	obj->DependencyObject::SetValue (Storyboard::TargetPropertyProperty, Value (value));
 }
 
 DrawingAttributes *
 Stroke::GetDrawingAttributes ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Stroke::DrawingAttributesProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsDrawingAttributes ();
+	Value *value = this->DependencyObject::GetValue (Stroke::DrawingAttributesProperty);
+	return (!value) ? NULL : value->AsDrawingAttributes ();
 }
 
 void
@@ -3841,11 +3282,8 @@ Stroke::SetDrawingAttributes (DrawingAttributes * value)
 StylusPointCollection *
 Stroke::GetStylusPoints ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Stroke::StylusPointsProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsStylusPointCollection ();
+	Value *value = this->DependencyObject::GetValue (Stroke::StylusPointsProperty);
+	return (!value) ? NULL : value->AsStylusPointCollection ();
 }
 
 void
@@ -3858,11 +3296,8 @@ Stroke::SetStylusPoints (StylusPointCollection * value)
 SetterBaseCollection *
 Style::GetSetters ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Style::SettersProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsSetterBaseCollection ();
+	Value *value = this->DependencyObject::GetValue (Style::SettersProperty);
+	return (!value) ? NULL : value->AsSetterBaseCollection ();
 }
 
 void
@@ -3875,11 +3310,8 @@ Style::SetSetters (SetterBaseCollection * value)
 TabletDeviceType
 StylusInfo::GetDeviceType ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (StylusInfo::DeviceTypeProperty);
-	if (value == NULL)
-		return (TabletDeviceType) 0;
-	return (TabletDeviceType)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (StylusInfo::DeviceTypeProperty);
+	return (!value) ? (TabletDeviceType) 0 : (TabletDeviceType)value->AsInt32();
 }
 
 void
@@ -3891,11 +3323,8 @@ StylusInfo::SetDeviceType (TabletDeviceType value)
 bool
 StylusInfo::GetIsInverted ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (StylusInfo::IsInvertedProperty);
-	if (value == NULL)
-		return false;
-	return value->AsBool ();
+	Value *value = this->DependencyObject::GetValue (StylusInfo::IsInvertedProperty);
+	return (!value) ? false : value->AsBool ();
 }
 
 void
@@ -3907,11 +3336,8 @@ StylusInfo::SetIsInverted (bool value)
 double
 StylusPoint::GetPressureFactor ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (StylusPoint::PressureFactorProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (StylusPoint::PressureFactorProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -3923,11 +3349,8 @@ StylusPoint::SetPressureFactor (double value)
 double
 StylusPoint::GetX ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (StylusPoint::XProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (StylusPoint::XProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -3939,11 +3362,8 @@ StylusPoint::SetX (double value)
 double
 StylusPoint::GetY ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (StylusPoint::YProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (StylusPoint::YProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -3955,11 +3375,8 @@ StylusPoint::SetY (double value)
 const char *
 TextBlock::GetFontFamily ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (TextBlock::FontFamilyProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsString ();
+	Value *value = this->DependencyObject::GetValue (TextBlock::FontFamilyProperty);
+	return (!value) ? NULL : value->AsString ();
 }
 
 void
@@ -3971,11 +3388,8 @@ TextBlock::SetFontFamily (const char * value)
 double
 TextBlock::GetFontSize ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (TextBlock::FontSizeProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (TextBlock::FontSizeProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -3987,11 +3401,8 @@ TextBlock::SetFontSize (double value)
 FontStretches
 TextBlock::GetFontStretch ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (TextBlock::FontStretchProperty);
-	if (value == NULL)
-		return (FontStretches) 0;
-	return (FontStretches)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (TextBlock::FontStretchProperty);
+	return (!value) ? (FontStretches) 0 : (FontStretches)value->AsInt32();
 }
 
 void
@@ -4003,11 +3414,8 @@ TextBlock::SetFontStretch (FontStretches value)
 FontStyles
 TextBlock::GetFontStyle ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (TextBlock::FontStyleProperty);
-	if (value == NULL)
-		return (FontStyles) 0;
-	return (FontStyles)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (TextBlock::FontStyleProperty);
+	return (!value) ? (FontStyles) 0 : (FontStyles)value->AsInt32();
 }
 
 void
@@ -4019,11 +3427,8 @@ TextBlock::SetFontStyle (FontStyles value)
 FontWeights
 TextBlock::GetFontWeight ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (TextBlock::FontWeightProperty);
-	if (value == NULL)
-		return (FontWeights) 0;
-	return (FontWeights)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (TextBlock::FontWeightProperty);
+	return (!value) ? (FontWeights) 0 : (FontWeights)value->AsInt32();
 }
 
 void
@@ -4035,11 +3440,8 @@ TextBlock::SetFontWeight (FontWeights value)
 Brush *
 TextBlock::GetForeground ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (TextBlock::ForegroundProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsBrush ();
+	Value *value = this->DependencyObject::GetValue (TextBlock::ForegroundProperty);
+	return (!value) ? NULL : value->AsBrush ();
 }
 
 void
@@ -4051,11 +3453,8 @@ TextBlock::SetForeground (Brush * value)
 InlineCollection *
 TextBlock::GetInlines ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (TextBlock::InlinesProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsInlineCollection ();
+	Value *value = this->DependencyObject::GetValue (TextBlock::InlinesProperty);
+	return (!value) ? NULL : value->AsInlineCollection ();
 }
 
 void
@@ -4068,11 +3467,8 @@ TextBlock::SetInlines (InlineCollection * value)
 double
 TextBlock::GetLineHeight ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (TextBlock::LineHeightProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (TextBlock::LineHeightProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -4086,11 +3482,8 @@ TextBlock::SetLineHeight (double value)
 LineStackingStrategy
 TextBlock::GetLineStackingStrategy ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (TextBlock::LineStackingStrategyProperty);
-	if (value == NULL)
-		return (LineStackingStrategy) 0;
-	return (LineStackingStrategy)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (TextBlock::LineStackingStrategyProperty);
+	return (!value) ? (LineStackingStrategy) 0 : (LineStackingStrategy)value->AsInt32();
 }
 
 void
@@ -4104,17 +3497,14 @@ TextBlock::SetLineStackingStrategy (LineStackingStrategy value)
 Thickness *
 TextBlock::GetPadding ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (TextBlock::PaddingProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsThickness ();
+	Value *value = this->DependencyObject::GetValue (TextBlock::PaddingProperty);
+	return (!value) ? NULL : value->AsThickness ();
 }
 
 void
 TextBlock::SetPadding (Thickness * value)
 {
-	if (value == NULL) return;
+	if (!value) return;
 	this->DependencyObject::SetValue (TextBlock::PaddingProperty, Value (*value));
 }
 
@@ -4123,11 +3513,8 @@ TextBlock::SetPadding (Thickness * value)
 TextAlignment
 TextBlock::GetTextAlignment ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (TextBlock::TextAlignmentProperty);
-	if (value == NULL)
-		return (TextAlignment) 0;
-	return (TextAlignment)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (TextBlock::TextAlignmentProperty);
+	return (!value) ? (TextAlignment) 0 : (TextAlignment)value->AsInt32();
 }
 
 void
@@ -4140,11 +3527,8 @@ TextBlock::SetTextAlignment (TextAlignment value)
 TextDecorations
 TextBlock::GetTextDecorations ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (TextBlock::TextDecorationsProperty);
-	if (value == NULL)
-		return (TextDecorations) 0;
-	return (TextDecorations)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (TextBlock::TextDecorationsProperty);
+	return (!value) ? (TextDecorations) 0 : (TextDecorations)value->AsInt32();
 }
 
 void
@@ -4156,11 +3540,8 @@ TextBlock::SetTextDecorations (TextDecorations value)
 const char *
 TextBlock::GetText ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (TextBlock::TextProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsString ();
+	Value *value = this->DependencyObject::GetValue (TextBlock::TextProperty);
+	return (!value) ? NULL : value->AsString ();
 }
 
 void
@@ -4172,11 +3553,8 @@ TextBlock::SetText (const char * value)
 TextWrapping
 TextBlock::GetTextWrapping ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (TextBlock::TextWrappingProperty);
-	if (value == NULL)
-		return (TextWrapping) 0;
-	return (TextWrapping)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (TextBlock::TextWrappingProperty);
+	return (!value) ? (TextWrapping) 0 : (TextWrapping)value->AsInt32();
 }
 
 void
@@ -4188,11 +3566,8 @@ TextBlock::SetTextWrapping (TextWrapping value)
 AlignmentX
 TileBrush::GetAlignmentX ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (TileBrush::AlignmentXProperty);
-	if (value == NULL)
-		return (AlignmentX) 0;
-	return (AlignmentX)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (TileBrush::AlignmentXProperty);
+	return (!value) ? (AlignmentX) 0 : (AlignmentX)value->AsInt32();
 }
 
 void
@@ -4204,11 +3579,8 @@ TileBrush::SetAlignmentX (AlignmentX value)
 AlignmentY
 TileBrush::GetAlignmentY ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (TileBrush::AlignmentYProperty);
-	if (value == NULL)
-		return (AlignmentY) 0;
-	return (AlignmentY)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (TileBrush::AlignmentYProperty);
+	return (!value) ? (AlignmentY) 0 : (AlignmentY)value->AsInt32();
 }
 
 void
@@ -4220,11 +3592,8 @@ TileBrush::SetAlignmentY (AlignmentY value)
 Stretch
 TileBrush::GetStretch ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (TileBrush::StretchProperty);
-	if (value == NULL)
-		return (Stretch) 0;
-	return (Stretch)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (TileBrush::StretchProperty);
+	return (!value) ? (Stretch) 0 : (Stretch)value->AsInt32();
 }
 
 void
@@ -4236,11 +3605,8 @@ TileBrush::SetStretch (Stretch value)
 bool
 Timeline::GetAutoReverse ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Timeline::AutoReverseProperty);
-	if (value == NULL)
-		return false;
-	return value->AsBool ();
+	Value *value = this->DependencyObject::GetValue (Timeline::AutoReverseProperty);
+	return (!value) ? false : value->AsBool ();
 }
 
 void
@@ -4252,11 +3618,8 @@ Timeline::SetAutoReverse (bool value)
 FillBehavior
 Timeline::GetFillBehavior ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Timeline::FillBehaviorProperty);
-	if (value == NULL)
-		return (FillBehavior) 0;
-	return (FillBehavior)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (Timeline::FillBehaviorProperty);
+	return (!value) ? (FillBehavior) 0 : (FillBehavior)value->AsInt32();
 }
 
 void
@@ -4268,11 +3631,8 @@ Timeline::SetFillBehavior (FillBehavior value)
 double
 Timeline::GetSpeedRatio ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (Timeline::SpeedRatioProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (Timeline::SpeedRatioProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -4284,11 +3644,8 @@ Timeline::SetSpeedRatio (double value)
 TimelineCollection *
 TimelineGroup::GetChildren ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (TimelineGroup::ChildrenProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsTimelineCollection ();
+	Value *value = this->DependencyObject::GetValue (TimelineGroup::ChildrenProperty);
+	return (!value) ? NULL : value->AsTimelineCollection ();
 }
 
 void
@@ -4300,11 +3657,8 @@ TimelineGroup::SetChildren (TimelineCollection * value)
 const char *
 TimelineMarker::GetText ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (TimelineMarker::TextProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsString ();
+	Value *value = this->DependencyObject::GetValue (TimelineMarker::TextProperty);
+	return (!value) ? NULL : value->AsString ();
 }
 
 void
@@ -4316,11 +3670,8 @@ TimelineMarker::SetText (const char * value)
 TimeSpan
 TimelineMarker::GetTime ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (TimelineMarker::TimeProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsTimeSpan ();
+	Value *value = this->DependencyObject::GetValue (TimelineMarker::TimeProperty);
+	return (!value) ? NULL : value->AsTimeSpan ();
 }
 
 void
@@ -4332,11 +3683,8 @@ TimelineMarker::SetTime (TimeSpan value)
 const char *
 TimelineMarker::GetType ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (TimelineMarker::TypeProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsString ();
+	Value *value = this->DependencyObject::GetValue (TimelineMarker::TypeProperty);
+	return (!value) ? NULL : value->AsString ();
 }
 
 void
@@ -4348,11 +3696,8 @@ TimelineMarker::SetType (const char * value)
 TransformCollection *
 TransformGroup::GetChildren ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (TransformGroup::ChildrenProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsTransformCollection ();
+	Value *value = this->DependencyObject::GetValue (TransformGroup::ChildrenProperty);
+	return (!value) ? NULL : value->AsTransformCollection ();
 }
 
 void
@@ -4364,11 +3709,8 @@ TransformGroup::SetChildren (TransformCollection * value)
 double
 TranslateTransform::GetX ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (TranslateTransform::XProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (TranslateTransform::XProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -4380,11 +3722,8 @@ TranslateTransform::SetX (double value)
 double
 TranslateTransform::GetY ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (TranslateTransform::YProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (TranslateTransform::YProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -4396,11 +3735,8 @@ TranslateTransform::SetY (double value)
 Geometry *
 UIElement::GetClip ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (UIElement::ClipProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsGeometry ();
+	Value *value = this->DependencyObject::GetValue (UIElement::ClipProperty);
+	return (!value) ? NULL : value->AsGeometry ();
 }
 
 void
@@ -4412,11 +3748,8 @@ UIElement::SetClip (Geometry * value)
 MouseCursor
 UIElement::GetCursor ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (UIElement::CursorProperty);
-	if (value == NULL)
-		return (MouseCursor) 0;
-	return (MouseCursor)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (UIElement::CursorProperty);
+	return (!value) ? (MouseCursor) 0 : (MouseCursor)value->AsInt32();
 }
 
 void
@@ -4428,11 +3761,8 @@ UIElement::SetCursor (MouseCursor value)
 bool
 UIElement::GetIsHitTestVisible ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (UIElement::IsHitTestVisibleProperty);
-	if (value == NULL)
-		return false;
-	return value->AsBool ();
+	Value *value = this->DependencyObject::GetValue (UIElement::IsHitTestVisibleProperty);
+	return (!value) ? false : value->AsBool ();
 }
 
 void
@@ -4444,11 +3774,8 @@ UIElement::SetIsHitTestVisible (bool value)
 Brush *
 UIElement::GetOpacityMask ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (UIElement::OpacityMaskProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsBrush ();
+	Value *value = this->DependencyObject::GetValue (UIElement::OpacityMaskProperty);
+	return (!value) ? NULL : value->AsBrush ();
 }
 
 void
@@ -4460,11 +3787,8 @@ UIElement::SetOpacityMask (Brush * value)
 double
 UIElement::GetOpacity ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (UIElement::OpacityProperty);
-	if (value == NULL)
-		return 0.0;
-	return value->AsDouble ();
+	Value *value = this->DependencyObject::GetValue (UIElement::OpacityProperty);
+	return (!value) ? 0.0 : value->AsDouble ();
 }
 
 void
@@ -4476,28 +3800,22 @@ UIElement::SetOpacity (double value)
 Point *
 UIElement::GetRenderTransformOrigin ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (UIElement::RenderTransformOriginProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsPoint ();
+	Value *value = this->DependencyObject::GetValue (UIElement::RenderTransformOriginProperty);
+	return (!value) ? NULL : value->AsPoint ();
 }
 
 void
 UIElement::SetRenderTransformOrigin (Point * value)
 {
-	if (value == NULL) return;
+	if (!value) return;
 	this->DependencyObject::SetValue (UIElement::RenderTransformOriginProperty, Value (*value));
 }
 
 Transform *
 UIElement::GetRenderTransform ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (UIElement::RenderTransformProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsTransform ();
+	Value *value = this->DependencyObject::GetValue (UIElement::RenderTransformProperty);
+	return (!value) ? NULL : value->AsTransform ();
 }
 
 void
@@ -4509,11 +3827,8 @@ UIElement::SetRenderTransform (Transform * value)
 ResourceDictionary *
 UIElement::GetResources ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (UIElement::ResourcesProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsResourceDictionary ();
+	Value *value = this->DependencyObject::GetValue (UIElement::ResourcesProperty);
+	return (!value) ? NULL : value->AsResourceDictionary ();
 }
 
 void
@@ -4525,11 +3840,8 @@ UIElement::SetResources (ResourceDictionary * value)
 const char *
 UIElement::GetTag ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (UIElement::TagProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsString ();
+	Value *value = this->DependencyObject::GetValue (UIElement::TagProperty);
+	return (!value) ? NULL : value->AsString ();
 }
 
 void
@@ -4541,11 +3853,8 @@ UIElement::SetTag (const char * value)
 TriggerCollection *
 UIElement::GetTriggers ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (UIElement::TriggersProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsTriggerCollection ();
+	Value *value = this->DependencyObject::GetValue (UIElement::TriggersProperty);
+	return (!value) ? NULL : value->AsTriggerCollection ();
 }
 
 void
@@ -4557,11 +3866,8 @@ UIElement::SetTriggers (TriggerCollection * value)
 Visibility
 UIElement::GetVisibility ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (UIElement::VisibilityProperty);
-	if (value == NULL)
-		return (Visibility) 0;
-	return (Visibility)value->AsInt32();
+	Value *value = this->DependencyObject::GetValue (UIElement::VisibilityProperty);
+	return (!value) ? (Visibility) 0 : (Visibility)value->AsInt32();
 }
 
 void
@@ -4573,11 +3879,8 @@ UIElement::SetVisibility (Visibility value)
 const char *
 VideoBrush::GetSourceName ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (VideoBrush::SourceNameProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsString ();
+	Value *value = this->DependencyObject::GetValue (VideoBrush::SourceNameProperty);
+	return (!value) ? NULL : value->AsString ();
 }
 
 void
@@ -4589,11 +3892,8 @@ VideoBrush::SetSourceName (const char * value)
 UIElement *
 VisualBrush::GetVisual ()
 {
-	Value *value = NULL;
-	value = this->DependencyObject::GetValue (VisualBrush::VisualProperty);
-	if (value == NULL)
-		return NULL;
-	return value->AsUIElement ();
+	Value *value = this->DependencyObject::GetValue (VisualBrush::VisualProperty);
+	return (!value) ? NULL : value->AsUIElement ();
 }
 
 void
