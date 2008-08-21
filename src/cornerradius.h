@@ -20,15 +20,15 @@ struct CornerRadius {
 	double bottomRight;
 
 	CornerRadius (double uniformRadius)
-	  : bottomLeft (uniformRadius), bottomRight (uniformRadius),
-	    topLeft (uniformRadius), topRight (uniformRadius)
+	  : topLeft (uniformRadius), topRight (uniformRadius),
+	    bottomLeft (uniformRadius), bottomRight (uniformRadius)
 	{
 	}
 
 	CornerRadius (double topLeft, double topRight,
 		      double bottomLeft, double bottomRight)
-	  : bottomLeft (bottomLeft), bottomRight (bottomRight),
-	    topLeft (topLeft), topRight (topRight)
+	  : topLeft (topLeft), topRight (topRight),
+	    bottomLeft (bottomLeft), bottomRight (bottomRight)
 	{
 	}
 };
