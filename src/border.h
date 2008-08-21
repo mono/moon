@@ -24,7 +24,7 @@
 /* @Namespace=System.Windows.Controls */
 class Border : public FrameworkElement {
 protected:
-	virtual ~Border ();
+	virtual ~Border () { };
 	
 public:
 	/* @PropertyType=Brush */
