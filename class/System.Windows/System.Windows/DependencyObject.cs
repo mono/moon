@@ -396,6 +396,11 @@ namespace System.Windows {
 					return new Size (size->width, size->height);
 				}
 
+				case Kind.CORNERRADIUS: {
+					UnmanagedCornerRadius *corner = (UnmanagedCornerRadius*)val->u.p;
+					return new CornerRadius (corner->topLeft, corner->topRight, corner->bottomRight, corner->bottomLeft);
+				}
+
 				case Kind.THICKNESS: {
 					UnmanagedThickness *thickness = (UnmanagedThickness*)val->u.p;
 					return new Thickness (thickness->left, thickness->top, thickness->right, thickness->bottom);
@@ -543,6 +548,12 @@ namespace System.Windows {
 					value.k = Kind.SIZE;
 					value.u.p = Helper.AllocHGlobal (sizeof (Size));
 					Marshal.StructureToPtr (size, value.u.p, false); // Unmanaged and managed structure layout is equal.
+				}
+				else if (v is CornerRadius) {
+					CornerRadius corner = (CornerRadius) v;
+					value.k = Kind.CORNERRADIUS;
+					value.u.p = Helper.AllocHGlobal (sizeof (CornerRadius));
+					Marshal.StructureToPtr (corner, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
 				else if (v is Point) {
 					Point pnt = (Point) v;

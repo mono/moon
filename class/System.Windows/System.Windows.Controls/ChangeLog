@@ -1,3 +1,7 @@
+2008-08-21  Chris Toshok  <toshok@ximian.com>
+
+	* Border.cs: added
+
 2008-08-21  Jeffrey Stedfast  <fejj@novell.com>
 
 	* TextBox.cs: Added to the build.

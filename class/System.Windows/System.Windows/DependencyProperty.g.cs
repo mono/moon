@@ -261,6 +261,45 @@ namespace System.Windows {
 }
 
 namespace System.Windows.Controls {
+	partial class Border {
+		public static readonly DependencyProperty BackgroundProperty = DependencyProperty.Lookup (Kind.BORDER, "Background", typeof (Brush));
+		public static readonly DependencyProperty BorderBrushProperty = DependencyProperty.Lookup (Kind.BORDER, "BorderBrush", typeof (Brush));
+		public static readonly DependencyProperty BorderThicknessProperty = DependencyProperty.Lookup (Kind.BORDER, "BorderThickness", typeof (Thickness));
+		public static readonly DependencyProperty ChildProperty = DependencyProperty.Lookup (Kind.BORDER, "Child", typeof (UIElement));
+		public static readonly DependencyProperty CornerRadiusProperty = DependencyProperty.Lookup (Kind.BORDER, "CornerRadius", typeof (CornerRadius));
+		public static readonly DependencyProperty PaddingProperty = DependencyProperty.Lookup (Kind.BORDER, "Padding", typeof (Thickness));
+
+		public Brush Background {
+			get { return (Brush) GetValue (BackgroundProperty); }
+			set { SetValue (BackgroundProperty, value); }
+		}
+
+		public Brush BorderBrush {
+			get { return (Brush) GetValue (BorderBrushProperty); }
+			set { SetValue (BorderBrushProperty, value); }
+		}
+
+		public Thickness BorderThickness {
+			get { return (Thickness) GetValue (BorderThicknessProperty); }
+			set { SetValue (BorderThicknessProperty, value); }
+		}
+
+		public UIElement Child {
+			get { return (UIElement) GetValue (ChildProperty); }
+			set { SetValue (ChildProperty, value); }
+		}
+
+		public CornerRadius CornerRadius {
+			get { return (CornerRadius) GetValue (CornerRadiusProperty); }
+			set { SetValue (CornerRadiusProperty, value); }
+		}
+
+		public Thickness Padding {
+			get { return (Thickness) GetValue (PaddingProperty); }
+			set { SetValue (PaddingProperty, value); }
+		}
+	}
+
 	partial class Canvas {
 		public static readonly DependencyProperty LeftProperty = DependencyProperty.Lookup (Kind.CANVAS, "Left", typeof (double));
 		public static readonly DependencyProperty TopProperty = DependencyProperty.Lookup (Kind.CANVAS, "Top", typeof (double));

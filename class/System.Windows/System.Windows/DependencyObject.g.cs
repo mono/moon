@@ -113,6 +113,12 @@ namespace System.Windows {
 }
 
 namespace System.Windows.Controls {
+	partial class Border {
+		public Border () : base (NativeMethods.border_new ()) {}
+		internal Border (IntPtr raw) : base (raw) {}
+		internal override Kind GetKind () { return Kind.BORDER; }
+	}
+
 	partial class Canvas {
 		public Canvas () : base (NativeMethods.canvas_new ()) {}
 		internal Canvas (IntPtr raw) : base (raw) {}
