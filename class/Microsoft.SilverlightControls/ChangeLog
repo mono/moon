@@ -1,3 +1,8 @@
+2008-08-21  Fernando Herrera  <fherrera@novell.com>
+
+	* Controls/Src/ContentControl/ContentControl.cs: Uncomment
+	ToolTip object.
+
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Controls/Src/ScrollBar/ScrollBar.cs: Changed some parameter names,

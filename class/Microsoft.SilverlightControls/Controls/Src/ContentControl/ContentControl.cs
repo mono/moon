@@ -366,7 +366,6 @@ namespace System.Windows.Controls
         #endregion TextWrapping
 
 
-/* FIXME: commented out until we get Popup and then tooltip
         #region ToolTip 
         /// <summary> 
         /// Gets or sets the tool-tip object that is displayed for this element
@@ -379,7 +378,6 @@ namespace System.Windows.Controls
         } 
  
         #endregion ToolTip
-*/
  
         /// <summary>
         /// Initializes a new instance of the ContentControl class.
