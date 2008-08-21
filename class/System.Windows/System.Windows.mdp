@@ -50,6 +50,7 @@
     <File name="System.Windows.Controls/MediaElement.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/Panel.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/TextBlock.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/TextBox.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Data/Binding.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Data/BindingMode.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Documents/Glyphs.cs" subtype="Code" buildaction="Compile" />

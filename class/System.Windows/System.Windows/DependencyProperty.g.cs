@@ -675,6 +675,57 @@ namespace System.Windows.Controls {
 		}
 	}
 
+	partial class TextBox {
+		public static readonly DependencyProperty AcceptsReturnProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "AcceptsReturn", typeof (bool));
+		public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "IsReadOnly", typeof (bool));
+		public static readonly DependencyProperty MaxLengthProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "MaxLength", typeof (int));
+		public static readonly DependencyProperty SelectionBackgroundProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "SelectionBackground", typeof (Brush));
+		public static readonly DependencyProperty SelectionForegroundProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "SelectionForeground", typeof (Brush));
+		public static readonly DependencyProperty TextAlignmentProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "TextAlignment", typeof (TextAlignment));
+		public static readonly DependencyProperty TextProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "Text", typeof (string));
+		public static readonly DependencyProperty TextWrappingProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "TextWrapping", typeof (TextWrapping));
+
+		public bool AcceptsReturn {
+			get { return (bool) GetValue (AcceptsReturnProperty); }
+			set { SetValue (AcceptsReturnProperty, value); }
+		}
+
+		public bool IsReadOnly {
+			get { return (bool) GetValue (IsReadOnlyProperty); }
+			set { SetValue (IsReadOnlyProperty, value); }
+		}
+
+		public int MaxLength {
+			get { return (int) GetValue (MaxLengthProperty); }
+			set { SetValue (MaxLengthProperty, value); }
+		}
+
+		public Brush SelectionBackground {
+			get { return (Brush) GetValue (SelectionBackgroundProperty); }
+			set { SetValue (SelectionBackgroundProperty, value); }
+		}
+
+		public Brush SelectionForeground {
+			get { return (Brush) GetValue (SelectionForegroundProperty); }
+			set { SetValue (SelectionForegroundProperty, value); }
+		}
+
+		public TextAlignment TextAlignment {
+			get { return (TextAlignment) GetValue (TextAlignmentProperty); }
+			set { SetValue (TextAlignmentProperty, value); }
+		}
+
+		public string Text {
+			get { return (string) GetValue (TextProperty); }
+			set { SetValue (TextProperty, value); }
+		}
+
+		public TextWrapping TextWrapping {
+			get { return (TextWrapping) GetValue (TextWrappingProperty); }
+			set { SetValue (TextWrappingProperty, value); }
+		}
+	}
+
 	partial class UserControl {
 		protected static readonly DependencyProperty ContentProperty = DependencyProperty.Lookup (Kind.USERCONTROL, "Content", typeof (UIElement));
 

@@ -56,6 +56,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/Panel.cs				\
 	$(srcdir)/System.Windows.Controls/StackPanel.cs				\
 	$(srcdir)/System.Windows.Controls/TextBlock.cs				\
+	$(srcdir)/System.Windows.Controls/TextBox.cs				\
 	$(srcdir)/System.Windows.Controls/UserControl.cs			\
 	$(srcdir)/System.Windows.Controls/UIElementCollection.cs		\
 	$(srcdir)/System.Windows.Controls/RowDefinition.cs			\
