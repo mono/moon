@@ -743,7 +743,6 @@ bool
 ArcSegment::GetIsLargeArc ()
 {
 	Value *value = GetValue (ArcSegment::IsLargeArcProperty);
-
 	return value->AsBool ();
 }
 
@@ -757,7 +756,6 @@ Point *
 ArcSegment::GetPoint ()
 {
 	Value *value = GetValue (ArcSegment::PointProperty);
-
 	return value ? value->AsPoint () : NULL;
 }
 
@@ -772,7 +770,6 @@ double
 ArcSegment::GetRotationAngle ()
 {
 	Value *value = GetValue (ArcSegment::RotationAngleProperty);
-
 	return value->AsDouble ();
 }
 
@@ -786,7 +783,6 @@ Point *
 ArcSegment::GetSize ()
 {
 	Value *value = GetValue (ArcSegment::SizeProperty);
-
 	return value ? value->AsPoint () : NULL;
 }
 
@@ -801,7 +797,6 @@ SweepDirection
 ArcSegment::GetSweepDirection ()
 {
 	Value *value = GetValue (ArcSegment::SweepDirectionProperty);
-
 	return (SweepDirection) value->AsInt32 ();
 }
 
@@ -815,7 +810,6 @@ Storyboard *
 BeginStoryboard::GetStoryboard ()
 {
 	Value *value = GetValue (BeginStoryboard::StoryboardProperty);
-
 	return value ? value->AsStoryboard () : NULL;
 }
 
@@ -829,7 +823,6 @@ Point *
 BezierSegment::GetPoint1 ()
 {
 	Value *value = GetValue (BezierSegment::Point1Property);
-
 	return value ? value->AsPoint () : NULL;
 }
 
@@ -844,7 +837,6 @@ Point *
 BezierSegment::GetPoint2 ()
 {
 	Value *value = GetValue (BezierSegment::Point2Property);
-
 	return value ? value->AsPoint () : NULL;
 }
 
@@ -859,7 +851,6 @@ Point *
 BezierSegment::GetPoint3 ()
 {
 	Value *value = GetValue (BezierSegment::Point3Property);
-
 	return value ? value->AsPoint () : NULL;
 }
 
@@ -874,7 +865,6 @@ double
 Brush::GetOpacity ()
 {
 	Value *value = GetValue (Brush::OpacityProperty);
-
 	return value->AsDouble ();
 }
 
@@ -888,7 +878,6 @@ Transform *
 Brush::GetRelativeTransform ()
 {
 	Value *value = GetValue (Brush::RelativeTransformProperty);
-
 	return value ? value->AsTransform () : NULL;
 }
 
@@ -902,7 +891,6 @@ Transform *
 Brush::GetTransform ()
 {
 	Value *value = GetValue (Brush::TransformProperty);
-
 	return value ? value->AsTransform () : NULL;
 }
 
@@ -916,7 +904,6 @@ double
 Canvas::GetLeft (DependencyObject *obj)
 {
 	Value *value = (!obj) ? NULL : obj->GetValue (Canvas::LeftProperty);
-
 	return value->AsDouble ();
 }
 
@@ -931,7 +918,6 @@ double
 Canvas::GetTop (DependencyObject *obj)
 {
 	Value *value = (!obj) ? NULL : obj->GetValue (Canvas::TopProperty);
-
 	return value->AsDouble ();
 }
 
@@ -946,7 +932,6 @@ gint32
 Canvas::GetZIndex (DependencyObject *obj)
 {
 	Value *value = (!obj) ? NULL : obj->GetValue (Canvas::ZIndexProperty);
-
 	return value->AsInt32 ();
 }
 
@@ -961,7 +946,6 @@ gint32
 Collection::GetCount ()
 {
 	Value *value = GetValue (Collection::CountProperty);
-
 	return value->AsInt32 ();
 }
 
@@ -975,7 +959,6 @@ Color *
 ColorAnimation::GetBy ()
 {
 	Value *value = GetValue (ColorAnimation::ByProperty);
-
 	return value ? value->AsColor () : NULL;
 }
 
@@ -998,7 +981,6 @@ Color *
 ColorAnimation::GetFrom ()
 {
 	Value *value = GetValue (ColorAnimation::FromProperty);
-
 	return value ? value->AsColor () : NULL;
 }
 
@@ -1021,7 +1003,6 @@ Color *
 ColorAnimation::GetTo ()
 {
 	Value *value = GetValue (ColorAnimation::ToProperty);
-
 	return value ? value->AsColor () : NULL;
 }
 
@@ -1044,7 +1025,6 @@ ColorKeyFrameCollection *
 ColorAnimationUsingKeyFrames::GetKeyFrames ()
 {
 	Value *value = GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty);
-
 	return value ? value->AsColorKeyFrameCollection () : NULL;
 }
 
@@ -1058,7 +1038,6 @@ KeyTime *
 ColorKeyFrame::GetKeyTime ()
 {
 	Value *value = DependencyObject::GetValue (ColorKeyFrame::KeyTimeProperty);
-
 	return value ? value->AsKeyTime () : NULL;
 }
 
@@ -1081,7 +1060,6 @@ Color *
 ColorKeyFrame::GetValue ()
 {
 	Value *value = DependencyObject::GetValue (ColorKeyFrame::ValueProperty);
-
 	return value ? value->AsColor () : NULL;
 }
 
@@ -1105,7 +1083,6 @@ double
 ColumnDefinition::GetMaxWidth ()
 {
 	Value *value = GetValue (ColumnDefinition::MaxWidthProperty);
-
 	return value->AsDouble ();
 }
 
@@ -1121,7 +1098,6 @@ double
 ColumnDefinition::GetMinWidth ()
 {
 	Value *value = GetValue (ColumnDefinition::MinWidthProperty);
-
 	return value->AsDouble ();
 }
 
@@ -1137,7 +1113,6 @@ GridLength *
 ColumnDefinition::GetWidth ()
 {
 	Value *value = GetValue (ColumnDefinition::WidthProperty);
-
 	return value ? value->AsGridLength () : NULL;
 }
 
@@ -1154,7 +1129,6 @@ Brush *
 Control::GetBackground ()
 {
 	Value *value = GetValue (Control::BackgroundProperty);
-
 	return value ? value->AsBrush () : NULL;
 }
 
@@ -1170,7 +1144,6 @@ Brush *
 Control::GetBorderBrush ()
 {
 	Value *value = GetValue (Control::BorderBrushProperty);
-
 	return value ? value->AsBrush () : NULL;
 }
 
@@ -1186,7 +1159,6 @@ Thickness *
 Control::GetBorderThickness ()
 {
 	Value *value = GetValue (Control::BorderThicknessProperty);
-
 	return value ? value->AsThickness () : NULL;
 }
 
@@ -1203,7 +1175,6 @@ const char *
 Control::GetFontFamily ()
 {
 	Value *value = GetValue (Control::FontFamilyProperty);
-
 	return value ? value->AsString () : NULL;
 }
 
@@ -1219,7 +1190,6 @@ double
 Control::GetFontSize ()
 {
 	Value *value = GetValue (Control::FontSizeProperty);
-
 	return value->AsDouble ();
 }
 
@@ -1235,7 +1205,6 @@ FontStretches
 Control::GetFontStretch ()
 {
 	Value *value = GetValue (Control::FontStretchProperty);
-
 	return (FontStretches) value->AsInt32 ();
 }
 
@@ -1251,7 +1220,6 @@ FontStyles
 Control::GetFontStyle ()
 {
 	Value *value = GetValue (Control::FontStyleProperty);
-
 	return (FontStyles) value->AsInt32 ();
 }
 
@@ -1267,7 +1235,6 @@ FontWeights
 Control::GetFontWeight ()
 {
 	Value *value = GetValue (Control::FontWeightProperty);
-
 	return (FontWeights) value->AsInt32 ();
 }
 
@@ -1283,7 +1250,6 @@ Brush *
 Control::GetForeground ()
 {
 	Value *value = GetValue (Control::ForegroundProperty);
-
 	return value ? value->AsBrush () : NULL;
 }
 
@@ -1299,7 +1265,6 @@ HorizontalAlignment
 Control::GetHorizontalContentAlignment ()
 {
 	Value *value = GetValue (Control::HorizontalContentAlignmentProperty);
-
 	return (HorizontalAlignment) value->AsInt32 ();
 }
 
@@ -1315,7 +1280,6 @@ bool
 Control::GetIsTabStop ()
 {
 	Value *value = GetValue (Control::IsTabStopProperty);
-
 	return value->AsBool ();
 }
 
@@ -1331,7 +1295,6 @@ Thickness *
 Control::GetPadding ()
 {
 	Value *value = GetValue (Control::PaddingProperty);
-
 	return value ? value->AsThickness () : NULL;
 }
 
@@ -1348,7 +1311,6 @@ gint32
 Control::GetTabIndex ()
 {
 	Value *value = GetValue (Control::TabIndexProperty);
-
 	return value->AsInt32 ();
 }
 
@@ -1364,7 +1326,6 @@ KeyboardNavigationMode
 Control::GetTabNavigation ()
 {
 	Value *value = GetValue (Control::TabNavigationProperty);
-
 	return (KeyboardNavigationMode) value->AsInt32 ();
 }
 
@@ -1380,7 +1341,6 @@ VerticalAlignment
 Control::GetVerticalContentAlignment ()
 {
 	Value *value = GetValue (Control::VerticalContentAlignmentProperty);
-
 	return (VerticalAlignment) value->AsInt32 ();
 }
 
@@ -1395,7 +1355,6 @@ const char *
 DependencyObject::GetName ()
 {
 	Value *value = GetValue (DependencyObject::NameProperty);
-
 	return value ? value->AsString () : NULL;
 }
 
@@ -1409,7 +1368,6 @@ double *
 DoubleAnimation::GetBy ()
 {
 	Value *value = GetValue (DoubleAnimation::ByProperty);
-
 	return value ? value->AsNullableDouble () : NULL;
 }
 
@@ -1432,7 +1390,6 @@ double *
 DoubleAnimation::GetFrom ()
 {
 	Value *value = GetValue (DoubleAnimation::FromProperty);
-
 	return value ? value->AsNullableDouble () : NULL;
 }
 
@@ -1455,7 +1412,6 @@ double *
 DoubleAnimation::GetTo ()
 {
 	Value *value = GetValue (DoubleAnimation::ToProperty);
-
 	return value ? value->AsNullableDouble () : NULL;
 }
 
@@ -1478,7 +1434,6 @@ DoubleKeyFrameCollection *
 DoubleAnimationUsingKeyFrames::GetKeyFrames ()
 {
 	Value *value = GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty);
-
 	return value ? value->AsDoubleKeyFrameCollection () : NULL;
 }
 
@@ -1492,7 +1447,6 @@ KeyTime *
 DoubleKeyFrame::GetKeyTime ()
 {
 	Value *value = DependencyObject::GetValue (DoubleKeyFrame::KeyTimeProperty);
-
 	return value ? value->AsKeyTime () : NULL;
 }
 
@@ -1515,7 +1469,6 @@ double *
 DoubleKeyFrame::GetValue ()
 {
 	Value *value = DependencyObject::GetValue (DoubleKeyFrame::ValueProperty);
-
 	return value ? value->AsNullableDouble () : NULL;
 }
 
@@ -1538,7 +1491,6 @@ Color *
 DrawingAttributes::GetColor ()
 {
 	Value *value = GetValue (DrawingAttributes::ColorProperty);
-
 	return value ? value->AsColor () : NULL;
 }
 
@@ -1553,7 +1505,6 @@ double
 DrawingAttributes::GetHeight ()
 {
 	Value *value = GetValue (DrawingAttributes::HeightProperty);
-
 	return value->AsDouble ();
 }
 
@@ -1567,7 +1518,6 @@ Color *
 DrawingAttributes::GetOutlineColor ()
 {
 	Value *value = GetValue (DrawingAttributes::OutlineColorProperty);
-
 	return value ? value->AsColor () : NULL;
 }
 
@@ -1582,7 +1532,6 @@ double
 DrawingAttributes::GetWidth ()
 {
 	Value *value = GetValue (DrawingAttributes::WidthProperty);
-
 	return value->AsDouble ();
 }
 
@@ -1596,7 +1545,6 @@ Point *
 EllipseGeometry::GetCenter ()
 {
 	Value *value = GetValue (EllipseGeometry::CenterProperty);
-
 	return value ? value->AsPoint () : NULL;
 }
 
@@ -1611,7 +1559,6 @@ double
 EllipseGeometry::GetRadiusX ()
 {
 	Value *value = GetValue (EllipseGeometry::RadiusXProperty);
-
 	return value->AsDouble ();
 }
 
@@ -1625,7 +1572,6 @@ double
 EllipseGeometry::GetRadiusY ()
 {
 	Value *value = GetValue (EllipseGeometry::RadiusYProperty);
-
 	return value->AsDouble ();
 }
 
@@ -1639,7 +1585,6 @@ TriggerActionCollection *
 EventTrigger::GetActions ()
 {
 	Value *value = GetValue (EventTrigger::ActionsProperty);
-
 	return value ? value->AsTriggerActionCollection () : NULL;
 }
 
@@ -1654,7 +1599,6 @@ double
 FrameworkElement::GetActualHeight ()
 {
 	Value *value = GetValue (FrameworkElement::ActualHeightProperty);
-
 	return value->AsDouble ();
 }
 
@@ -1664,7 +1608,6 @@ double
 FrameworkElement::GetActualWidth ()
 {
 	Value *value = GetValue (FrameworkElement::ActualWidthProperty);
-
 	return value->AsDouble ();
 }
 
@@ -1673,7 +1616,6 @@ double
 FrameworkElement::GetHeight ()
 {
 	Value *value = GetValue (FrameworkElement::HeightProperty);
-
 	return value->AsDouble ();
 }
 
@@ -1688,7 +1630,6 @@ HorizontalAlignment
 FrameworkElement::GetHorizontalAlignment ()
 {
 	Value *value = GetValue (FrameworkElement::HorizontalAlignmentProperty);
-
 	return (HorizontalAlignment) value->AsInt32 ();
 }
 
@@ -1704,7 +1645,6 @@ Thickness *
 FrameworkElement::GetMargin ()
 {
 	Value *value = GetValue (FrameworkElement::MarginProperty);
-
 	return value ? value->AsThickness () : NULL;
 }
 
@@ -1721,7 +1661,6 @@ double
 FrameworkElement::GetMaxHeight ()
 {
 	Value *value = GetValue (FrameworkElement::MaxHeightProperty);
-
 	return value->AsDouble ();
 }
 
@@ -1737,7 +1676,6 @@ double
 FrameworkElement::GetMaxWidth ()
 {
 	Value *value = GetValue (FrameworkElement::MaxWidthProperty);
-
 	return value->AsDouble ();
 }
 
@@ -1753,7 +1691,6 @@ double
 FrameworkElement::GetMinHeight ()
 {
 	Value *value = GetValue (FrameworkElement::MinHeightProperty);
-
 	return value->AsDouble ();
 }
 
@@ -1769,7 +1706,6 @@ double
 FrameworkElement::GetMinWidth ()
 {
 	Value *value = GetValue (FrameworkElement::MinWidthProperty);
-
 	return value->AsDouble ();
 }
 
@@ -1785,7 +1721,6 @@ Style *
 FrameworkElement::GetStyle ()
 {
 	Value *value = GetValue (FrameworkElement::StyleProperty);
-
 	return value ? value->AsStyle () : NULL;
 }
 
@@ -1801,7 +1736,6 @@ VerticalAlignment
 FrameworkElement::GetVerticalAlignment ()
 {
 	Value *value = GetValue (FrameworkElement::VerticalAlignmentProperty);
-
 	return (VerticalAlignment) value->AsInt32 ();
 }
 
@@ -1816,7 +1750,6 @@ double
 FrameworkElement::GetWidth ()
 {
 	Value *value = GetValue (FrameworkElement::WidthProperty);
-
 	return value->AsDouble ();
 }
 
@@ -1830,7 +1763,6 @@ FillRule
 Geometry::GetFillRule ()
 {
 	Value *value = GetValue (Geometry::FillRuleProperty);
-
 	return (FillRule) value->AsInt32 ();
 }
 
@@ -1844,7 +1776,6 @@ Transform *
 Geometry::GetTransform ()
 {
 	Value *value = GetValue (Geometry::TransformProperty);
-
 	return value ? value->AsTransform () : NULL;
 }
 
@@ -1858,7 +1789,6 @@ GeometryCollection *
 GeometryGroup::GetChildren ()
 {
 	Value *value = GetValue (GeometryGroup::ChildrenProperty);
-
 	return value ? value->AsGeometryCollection () : NULL;
 }
 
@@ -1872,7 +1802,6 @@ double
 Glyphs::GetFontRenderingEmSize ()
 {
 	Value *value = GetValue (Glyphs::FontRenderingEmSizeProperty);
-
 	return value->AsDouble ();
 }
 
@@ -1886,7 +1815,6 @@ const char *
 Glyphs::GetFontUri ()
 {
 	Value *value = GetValue (Glyphs::FontUriProperty);
-
 	return value ? value->AsString () : NULL;
 }
 
@@ -1900,7 +1828,6 @@ const char *
 Glyphs::GetIndices ()
 {
 	Value *value = GetValue (Glyphs::IndicesProperty);
-
 	return value ? value->AsString () : NULL;
 }
 
@@ -1914,7 +1841,6 @@ double
 Glyphs::GetOriginX ()
 {
 	Value *value = GetValue (Glyphs::OriginXProperty);
-
 	return value->AsDouble ();
 }
 
@@ -1928,7 +1854,6 @@ double
 Glyphs::GetOriginY ()
 {
 	Value *value = GetValue (Glyphs::OriginYProperty);
-
 	return value->AsDouble ();
 }
 
@@ -1942,7 +1867,6 @@ StyleSimulations
 Glyphs::GetStyleSimulations ()
 {
 	Value *value = GetValue (Glyphs::StyleSimulationsProperty);
-
 	return (StyleSimulations) value->AsInt32 ();
 }
 
@@ -1956,7 +1880,6 @@ const char *
 Glyphs::GetUnicodeString ()
 {
 	Value *value = GetValue (Glyphs::UnicodeStringProperty);
-
 	return value ? value->AsString () : NULL;
 }
 
@@ -1970,7 +1893,6 @@ ColorInterpolationMode
 GradientBrush::GetColorInterpolationMode ()
 {
 	Value *value = GetValue (GradientBrush::ColorInterpolationModeProperty);
-
 	return (ColorInterpolationMode) value->AsInt32 ();
 }
 
@@ -1984,7 +1906,6 @@ GradientStopCollection *
 GradientBrush::GetGradientStops ()
 {
 	Value *value = GetValue (GradientBrush::GradientStopsProperty);
-
 	return value ? value->AsGradientStopCollection () : NULL;
 }
 
@@ -1998,7 +1919,6 @@ BrushMappingMode
 GradientBrush::GetMappingMode ()
 {
 	Value *value = GetValue (GradientBrush::MappingModeProperty);
-
 	return (BrushMappingMode) value->AsInt32 ();
 }
 
@@ -2012,7 +1932,6 @@ GradientSpreadMethod
 GradientBrush::GetSpreadMethod ()
 {
 	Value *value = GetValue (GradientBrush::SpreadMethodProperty);
-
 	return (GradientSpreadMethod) value->AsInt32 ();
 }
 
@@ -2026,7 +1945,6 @@ Color *
 GradientStop::GetColor ()
 {
 	Value *value = GetValue (GradientStop::ColorProperty);
-
 	return value ? value->AsColor () : NULL;
 }
 
@@ -2041,7 +1959,6 @@ double
 GradientStop::GetOffset ()
 {
 	Value *value = GetValue (GradientStop::OffsetProperty);
-
 	return value->AsDouble ();
 }
 
@@ -2056,7 +1973,6 @@ ColumnDefinitionCollection *
 Grid::GetColumnDefinitions ()
 {
 	Value *value = GetValue (Grid::ColumnDefinitionsProperty);
-
 	return value ? value->AsColumnDefinitionCollection () : NULL;
 }
 
@@ -2072,7 +1988,6 @@ gint32
 Grid::GetColumn (DependencyObject *obj)
 {
 	Value *value = (!obj) ? NULL : obj->GetValue (Grid::ColumnProperty);
-
 	return value->AsInt32 ();
 }
 
@@ -2089,7 +2004,6 @@ gint32
 Grid::GetColumnSpan (DependencyObject *obj)
 {
 	Value *value = (!obj) ? NULL : obj->GetValue (Grid::ColumnSpanProperty);
-
 	return value->AsInt32 ();
 }
 
@@ -2106,7 +2020,6 @@ RowDefinitionCollection *
 Grid::GetRowDefinitions ()
 {
 	Value *value = GetValue (Grid::RowDefinitionsProperty);
-
 	return value ? value->AsRowDefinitionCollection () : NULL;
 }
 
@@ -2122,7 +2035,6 @@ gint32
 Grid::GetRow (DependencyObject *obj)
 {
 	Value *value = (!obj) ? NULL : obj->GetValue (Grid::RowProperty);
-
 	return value->AsInt32 ();
 }
 
@@ -2139,7 +2051,6 @@ gint32
 Grid::GetRowSpan (DependencyObject *obj)
 {
 	Value *value = (!obj) ? NULL : obj->GetValue (Grid::RowSpanProperty);
-
 	return value->AsInt32 ();
 }
 
@@ -2156,7 +2067,6 @@ bool
 Grid::GetShowGridLines ()
 {
 	Value *value = GetValue (Grid::ShowGridLinesProperty);
-
 	return value->AsBool ();
 }
 
@@ -2171,7 +2081,6 @@ double
 ImageBrush::GetDownloadProgress ()
 {
 	Value *value = GetValue (ImageBrush::DownloadProgressProperty);
-
 	return value->AsDouble ();
 }
 
@@ -2185,7 +2094,6 @@ const char *
 ImageBrush::GetImageSource ()
 {
 	Value *value = GetValue (ImageBrush::ImageSourceProperty);
-
 	return value ? value->AsString () : NULL;
 }
 
@@ -2199,7 +2107,6 @@ StrokeCollection *
 InkPresenter::GetStrokes ()
 {
 	Value *value = GetValue (InkPresenter::StrokesProperty);
-
 	return value ? value->AsStrokeCollection () : NULL;
 }
 
@@ -2213,7 +2120,6 @@ double
 Inline::GetFontSize ()
 {
 	Value *value = GetValue (Inline::FontSizeProperty);
-
 	return value->AsDouble ();
 }
 
@@ -2227,7 +2133,6 @@ FontStretches
 Inline::GetFontStretch ()
 {
 	Value *value = GetValue (Inline::FontStretchProperty);
-
 	return (FontStretches) value->AsInt32 ();
 }
 
@@ -2241,7 +2146,6 @@ FontStyles
 Inline::GetFontStyle ()
 {
 	Value *value = GetValue (Inline::FontStyleProperty);
-
 	return (FontStyles) value->AsInt32 ();
 }
 
@@ -2255,7 +2159,6 @@ FontWeights
 Inline::GetFontWeight ()
 {
 	Value *value = GetValue (Inline::FontWeightProperty);
-
 	return (FontWeights) value->AsInt32 ();
 }
 
@@ -2269,7 +2172,6 @@ Brush *
 Inline::GetForeground ()
 {
 	Value *value = GetValue (Inline::ForegroundProperty);
-
 	return value ? value->AsBrush () : NULL;
 }
 
@@ -2283,7 +2185,6 @@ double
 Line::GetX1 ()
 {
 	Value *value = GetValue (Line::X1Property);
-
 	return value->AsDouble ();
 }
 
@@ -2297,7 +2198,6 @@ double
 Line::GetX2 ()
 {
 	Value *value = GetValue (Line::X2Property);
-
 	return value->AsDouble ();
 }
 
@@ -2311,7 +2211,6 @@ double
 Line::GetY1 ()
 {
 	Value *value = GetValue (Line::Y1Property);
-
 	return value->AsDouble ();
 }
 
@@ -2325,7 +2224,6 @@ double
 Line::GetY2 ()
 {
 	Value *value = GetValue (Line::Y2Property);
-
 	return value->AsDouble ();
 }
 
@@ -2339,7 +2237,6 @@ Point *
 LinearGradientBrush::GetEndPoint ()
 {
 	Value *value = GetValue (LinearGradientBrush::EndPointProperty);
-
 	return value ? value->AsPoint () : NULL;
 }
 
@@ -2354,7 +2251,6 @@ Point *
 LinearGradientBrush::GetStartPoint ()
 {
 	Value *value = GetValue (LinearGradientBrush::StartPointProperty);
-
 	return value ? value->AsPoint () : NULL;
 }
 
@@ -2369,7 +2265,6 @@ Point *
 LineGeometry::GetEndPoint ()
 {
 	Value *value = GetValue (LineGeometry::EndPointProperty);
-
 	return value ? value->AsPoint () : NULL;
 }
 
@@ -2384,7 +2279,6 @@ Point *
 LineGeometry::GetStartPoint ()
 {
 	Value *value = GetValue (LineGeometry::StartPointProperty);
-
 	return value ? value->AsPoint () : NULL;
 }
 
@@ -2399,7 +2293,6 @@ Point *
 LineSegment::GetPoint ()
 {
 	Value *value = GetValue (LineSegment::PointProperty);
-
 	return value ? value->AsPoint () : NULL;
 }
 
@@ -2414,7 +2307,6 @@ double
 Matrix::GetM11 ()
 {
 	Value *value = GetValue (Matrix::M11Property);
-
 	return value->AsDouble ();
 }
 
@@ -2428,7 +2320,6 @@ double
 Matrix::GetM12 ()
 {
 	Value *value = GetValue (Matrix::M12Property);
-
 	return value->AsDouble ();
 }
 
@@ -2442,7 +2333,6 @@ double
 Matrix::GetM21 ()
 {
 	Value *value = GetValue (Matrix::M21Property);
-
 	return value->AsDouble ();
 }
 
@@ -2456,7 +2346,6 @@ double
 Matrix::GetM22 ()
 {
 	Value *value = GetValue (Matrix::M22Property);
-
 	return value->AsDouble ();
 }
 
@@ -2470,7 +2359,6 @@ double
 Matrix::GetOffsetX ()
 {
 	Value *value = GetValue (Matrix::OffsetXProperty);
-
 	return value->AsDouble ();
 }
 
@@ -2484,7 +2372,6 @@ double
 Matrix::GetOffsetY ()
 {
 	Value *value = GetValue (Matrix::OffsetYProperty);
-
 	return value->AsDouble ();
 }
 
@@ -2498,7 +2385,6 @@ Matrix *
 MatrixTransform::GetMatrix ()
 {
 	Value *value = GetValue (MatrixTransform::MatrixProperty);
-
 	return value ? value->AsMatrix () : NULL;
 }
 
@@ -2512,7 +2398,6 @@ const char *
 MediaAttribute::GetValue ()
 {
 	Value *value = DependencyObject::GetValue (MediaAttribute::ValueProperty);
-
 	return value ? value->AsString () : NULL;
 }
 
@@ -2526,7 +2411,6 @@ double
 MediaBase::GetDownloadProgress ()
 {
 	Value *value = GetValue (MediaBase::DownloadProgressProperty);
-
 	return value->AsDouble ();
 }
 
@@ -2540,7 +2424,6 @@ Stretch
 MediaBase::GetStretch ()
 {
 	Value *value = GetValue (MediaBase::StretchProperty);
-
 	return (Stretch) value->AsInt32 ();
 }
 
@@ -2554,7 +2437,6 @@ MediaAttributeCollection *
 MediaElement::GetAttributes ()
 {
 	Value *value = GetValue (MediaElement::AttributesProperty);
-
 	return value ? value->AsMediaAttributeCollection () : NULL;
 }
 
@@ -2568,7 +2450,6 @@ gint32
 MediaElement::GetAudioStreamCount ()
 {
 	Value *value = GetValue (MediaElement::AudioStreamCountProperty);
-
 	return value->AsInt32 ();
 }
 
@@ -2582,7 +2463,6 @@ gint32 *
 MediaElement::GetAudioStreamIndex ()
 {
 	Value *value = GetValue (MediaElement::AudioStreamIndexProperty);
-
 	return value ? value->AsNullableInt32 () : NULL;
 }
 
@@ -2605,7 +2485,6 @@ bool
 MediaElement::GetAutoPlay ()
 {
 	Value *value = GetValue (MediaElement::AutoPlayProperty);
-
 	return value->AsBool ();
 }
 
@@ -2619,7 +2498,6 @@ double
 MediaElement::GetBalance ()
 {
 	Value *value = GetValue (MediaElement::BalanceProperty);
-
 	return value->AsDouble ();
 }
 
@@ -2633,7 +2511,6 @@ double
 MediaElement::GetBufferingProgress ()
 {
 	Value *value = GetValue (MediaElement::BufferingProgressProperty);
-
 	return value->AsDouble ();
 }
 
@@ -2647,7 +2524,6 @@ TimeSpan
 MediaElement::GetBufferingTime ()
 {
 	Value *value = GetValue (MediaElement::BufferingTimeProperty);
-
 	return value->AsTimeSpan ();
 }
 
@@ -2661,7 +2537,6 @@ bool
 MediaElement::GetCanPause ()
 {
 	Value *value = GetValue (MediaElement::CanPauseProperty);
-
 	return value->AsBool ();
 }
 
@@ -2675,7 +2550,6 @@ bool
 MediaElement::GetCanSeek ()
 {
 	Value *value = GetValue (MediaElement::CanSeekProperty);
-
 	return value->AsBool ();
 }
 
@@ -2689,7 +2563,6 @@ const char *
 MediaElement::GetCurrentState ()
 {
 	Value *value = GetValue (MediaElement::CurrentStateProperty);
-
 	return value ? value->AsString () : NULL;
 }
 
@@ -2703,7 +2576,6 @@ bool
 MediaElement::GetIsMuted ()
 {
 	Value *value = GetValue (MediaElement::IsMutedProperty);
-
 	return value->AsBool ();
 }
 
@@ -2717,7 +2589,6 @@ TimelineMarkerCollection *
 MediaElement::GetMarkers ()
 {
 	Value *value = GetValue (MediaElement::MarkersProperty);
-
 	return value ? value->AsTimelineMarkerCollection () : NULL;
 }
 
@@ -2731,7 +2602,6 @@ Duration *
 MediaElement::GetNaturalDuration ()
 {
 	Value *value = GetValue (MediaElement::NaturalDurationProperty);
-
 	return value ? value->AsDuration () : NULL;
 }
 
@@ -2739,7 +2609,6 @@ double
 MediaElement::GetNaturalVideoHeight ()
 {
 	Value *value = GetValue (MediaElement::NaturalVideoHeightProperty);
-
 	return value->AsDouble ();
 }
 
@@ -2753,7 +2622,6 @@ double
 MediaElement::GetNaturalVideoWidth ()
 {
 	Value *value = GetValue (MediaElement::NaturalVideoWidthProperty);
-
 	return value->AsDouble ();
 }
 
@@ -2767,7 +2635,6 @@ TimeSpan
 MediaElement::GetPosition ()
 {
 	Value *value = GetValue (MediaElement::PositionProperty);
-
 	return value->AsTimeSpan ();
 }
 
@@ -2781,7 +2648,6 @@ double
 MediaElement::GetVolume ()
 {
 	Value *value = GetValue (MediaElement::VolumeProperty);
-
 	return value->AsDouble ();
 }
 
@@ -2795,7 +2661,6 @@ NameScope *
 NameScope::GetNameScope (DependencyObject *obj)
 {
 	Value *value = (!obj) ? NULL : obj->GetValue (NameScope::NameScopeProperty);
-
 	return value ? value->AsNameScope () : NULL;
 }
 
@@ -2811,7 +2676,6 @@ KeyTime *
 ObjectKeyFrame::GetKeyTime ()
 {
 	Value *value = DependencyObject::GetValue (ObjectKeyFrame::KeyTimeProperty);
-
 	return value ? value->AsKeyTime () : NULL;
 }
 
@@ -2835,7 +2699,6 @@ Brush *
 Panel::GetBackground ()
 {
 	Value *value = GetValue (Panel::BackgroundProperty);
-
 	return value ? value->AsBrush () : NULL;
 }
 
@@ -2849,7 +2712,6 @@ UIElementCollection *
 Panel::GetChildren ()
 {
 	Value *value = GetValue (Panel::ChildrenProperty);
-
 	return value ? value->AsUIElementCollection () : NULL;
 }
 
@@ -2863,7 +2725,6 @@ Geometry *
 Path::GetData ()
 {
 	Value *value = GetValue (Path::DataProperty);
-
 	return value ? value->AsGeometry () : NULL;
 }
 
@@ -2877,7 +2738,6 @@ bool
 PathFigure::GetIsClosed ()
 {
 	Value *value = GetValue (PathFigure::IsClosedProperty);
-
 	return value->AsBool ();
 }
 
@@ -2892,7 +2752,6 @@ bool
 PathFigure::GetIsFilled ()
 {
 	Value *value = GetValue (PathFigure::IsFilledProperty);
-
 	return value->AsBool ();
 }
 
@@ -2907,7 +2766,6 @@ PathSegmentCollection *
 PathFigure::GetSegments ()
 {
 	Value *value = GetValue (PathFigure::SegmentsProperty);
-
 	return value ? value->AsPathSegmentCollection () : NULL;
 }
 
@@ -2921,7 +2779,6 @@ Point *
 PathFigure::GetStartPoint ()
 {
 	Value *value = GetValue (PathFigure::StartPointProperty);
-
 	return value ? value->AsPoint () : NULL;
 }
 
@@ -2936,7 +2793,6 @@ PathFigureCollection *
 PathGeometry::GetFigures ()
 {
 	Value *value = GetValue (PathGeometry::FiguresProperty);
-
 	return value ? value->AsPathFigureCollection () : NULL;
 }
 
@@ -2950,7 +2806,6 @@ Point *
 PointAnimation::GetBy ()
 {
 	Value *value = GetValue (PointAnimation::ByProperty);
-
 	return value ? value->AsPoint () : NULL;
 }
 
@@ -2973,7 +2828,6 @@ Point *
 PointAnimation::GetFrom ()
 {
 	Value *value = GetValue (PointAnimation::FromProperty);
-
 	return value ? value->AsPoint () : NULL;
 }
 
@@ -2996,7 +2850,6 @@ Point *
 PointAnimation::GetTo ()
 {
 	Value *value = GetValue (PointAnimation::ToProperty);
-
 	return value ? value->AsPoint () : NULL;
 }
 
@@ -3019,7 +2872,6 @@ PointKeyFrameCollection *
 PointAnimationUsingKeyFrames::GetKeyFrames ()
 {
 	Value *value = GetValue (PointAnimationUsingKeyFrames::KeyFramesProperty);
-
 	return value ? value->AsPointKeyFrameCollection () : NULL;
 }
 
@@ -3033,7 +2885,6 @@ KeyTime *
 PointKeyFrame::GetKeyTime ()
 {
 	Value *value = DependencyObject::GetValue (PointKeyFrame::KeyTimeProperty);
-
 	return value ? value->AsKeyTime () : NULL;
 }
 
@@ -3056,7 +2907,6 @@ Point *
 PointKeyFrame::GetValue ()
 {
 	Value *value = DependencyObject::GetValue (PointKeyFrame::ValueProperty);
-
 	return value ? value->AsPoint () : NULL;
 }
 
@@ -3079,7 +2929,6 @@ PointCollection *
 PolyBezierSegment::GetPoints ()
 {
 	Value *value = GetValue (PolyBezierSegment::PointsProperty);
-
 	return value ? value->AsPointCollection () : NULL;
 }
 
@@ -3093,7 +2942,6 @@ FillRule
 Polygon::GetFillRule ()
 {
 	Value *value = GetValue (Polygon::FillRuleProperty);
-
 	return (FillRule) value->AsInt32 ();
 }
 
@@ -3107,7 +2955,6 @@ PointCollection *
 Polygon::GetPoints ()
 {
 	Value *value = GetValue (Polygon::PointsProperty);
-
 	return value ? value->AsPointCollection () : NULL;
 }
 
@@ -3121,7 +2968,6 @@ FillRule
 Polyline::GetFillRule ()
 {
 	Value *value = GetValue (Polyline::FillRuleProperty);
-
 	return (FillRule) value->AsInt32 ();
 }
 
@@ -3135,7 +2981,6 @@ PointCollection *
 Polyline::GetPoints ()
 {
 	Value *value = GetValue (Polyline::PointsProperty);
-
 	return value ? value->AsPointCollection () : NULL;
 }
 
@@ -3149,7 +2994,6 @@ PointCollection *
 PolyLineSegment::GetPoints ()
 {
 	Value *value = GetValue (PolyLineSegment::PointsProperty);
-
 	return value ? value->AsPointCollection () : NULL;
 }
 
@@ -3163,7 +3007,6 @@ PointCollection *
 PolyQuadraticBezierSegment::GetPoints ()
 {
 	Value *value = GetValue (PolyQuadraticBezierSegment::PointsProperty);
-
 	return value ? value->AsPointCollection () : NULL;
 }
 
@@ -3177,7 +3020,6 @@ Point *
 QuadraticBezierSegment::GetPoint1 ()
 {
 	Value *value = GetValue (QuadraticBezierSegment::Point1Property);
-
 	return value ? value->AsPoint () : NULL;
 }
 
@@ -3192,7 +3034,6 @@ Point *
 QuadraticBezierSegment::GetPoint2 ()
 {
 	Value *value = GetValue (QuadraticBezierSegment::Point2Property);
-
 	return value ? value->AsPoint () : NULL;
 }
 
@@ -3207,7 +3048,6 @@ Point *
 RadialGradientBrush::GetCenter ()
 {
 	Value *value = GetValue (RadialGradientBrush::CenterProperty);
-
 	return value ? value->AsPoint () : NULL;
 }
 
@@ -3222,7 +3062,6 @@ Point *
 RadialGradientBrush::GetGradientOrigin ()
 {
 	Value *value = GetValue (RadialGradientBrush::GradientOriginProperty);
-
 	return value ? value->AsPoint () : NULL;
 }
 
@@ -3237,7 +3076,6 @@ double
 RadialGradientBrush::GetRadiusX ()
 {
 	Value *value = GetValue (RadialGradientBrush::RadiusXProperty);
-
 	return value->AsDouble ();
 }
 
@@ -3251,7 +3089,6 @@ double
 RadialGradientBrush::GetRadiusY ()
 {
 	Value *value = GetValue (RadialGradientBrush::RadiusYProperty);
-
 	return value->AsDouble ();
 }
 
@@ -3265,7 +3102,6 @@ double
 Rectangle::GetRadiusX ()
 {
 	Value *value = GetValue (Rectangle::RadiusXProperty);
-
 	return value->AsDouble ();
 }
 
@@ -3279,7 +3115,6 @@ double
 Rectangle::GetRadiusY ()
 {
 	Value *value = GetValue (Rectangle::RadiusYProperty);
-
 	return value->AsDouble ();
 }
 
@@ -3293,7 +3128,6 @@ double
 RectangleGeometry::GetRadiusX ()
 {
 	Value *value = GetValue (RectangleGeometry::RadiusXProperty);
-
 	return value->AsDouble ();
 }
 
@@ -3307,7 +3141,6 @@ double
 RectangleGeometry::GetRadiusY ()
 {
 	Value *value = GetValue (RectangleGeometry::RadiusYProperty);
-
 	return value->AsDouble ();
 }
 
@@ -3321,7 +3154,6 @@ Rect *
 RectangleGeometry::GetRect ()
 {
 	Value *value = GetValue (RectangleGeometry::RectProperty);
-
 	return value ? value->AsRect () : NULL;
 }
 
@@ -3336,7 +3168,6 @@ double
 RotateTransform::GetAngle ()
 {
 	Value *value = GetValue (RotateTransform::AngleProperty);
-
 	return value->AsDouble ();
 }
 
@@ -3350,7 +3181,6 @@ double
 RotateTransform::GetCenterX ()
 {
 	Value *value = GetValue (RotateTransform::CenterXProperty);
-
 	return value->AsDouble ();
 }
 
@@ -3364,7 +3194,6 @@ double
 RotateTransform::GetCenterY ()
 {
 	Value *value = GetValue (RotateTransform::CenterYProperty);
-
 	return value->AsDouble ();
 }
 
@@ -3379,7 +3208,6 @@ GridLength *
 RowDefinition::GetHeight ()
 {
 	Value *value = GetValue (RowDefinition::HeightProperty);
-
 	return value ? value->AsGridLength () : NULL;
 }
 
@@ -3396,7 +3224,6 @@ double
 RowDefinition::GetMaxHeight ()
 {
 	Value *value = GetValue (RowDefinition::MaxHeightProperty);
-
 	return value->AsDouble ();
 }
 
@@ -3412,7 +3239,6 @@ double
 RowDefinition::GetMinHeight ()
 {
 	Value *value = GetValue (RowDefinition::MinHeightProperty);
-
 	return value->AsDouble ();
 }
 
@@ -3427,7 +3253,6 @@ const char *
 Run::GetText ()
 {
 	Value *value = GetValue (Run::TextProperty);
-
 	return value ? value->AsString () : NULL;
 }
 
@@ -3441,7 +3266,6 @@ double
 ScaleTransform::GetCenterX ()
 {
 	Value *value = GetValue (ScaleTransform::CenterXProperty);
-
 	return value->AsDouble ();
 }
 
@@ -3455,7 +3279,6 @@ double
 ScaleTransform::GetCenterY ()
 {
 	Value *value = GetValue (ScaleTransform::CenterYProperty);
-
 	return value->AsDouble ();
 }
 
@@ -3469,7 +3292,6 @@ double
 ScaleTransform::GetScaleX ()
 {
 	Value *value = GetValue (ScaleTransform::ScaleXProperty);
-
 	return value->AsDouble ();
 }
 
@@ -3483,7 +3305,6 @@ double
 ScaleTransform::GetScaleY ()
 {
 	Value *value = GetValue (ScaleTransform::ScaleYProperty);
-
 	return value->AsDouble ();
 }
 
@@ -3497,7 +3318,6 @@ Brush *
 Shape::GetFill ()
 {
 	Value *value = GetValue (Shape::FillProperty);
-
 	return value ? value->AsBrush () : NULL;
 }
 
@@ -3511,7 +3331,6 @@ Stretch
 Shape::GetStretch ()
 {
 	Value *value = GetValue (Shape::StretchProperty);
-
 	return (Stretch) value->AsInt32 ();
 }
 
@@ -3525,7 +3344,6 @@ DoubleCollection *
 Shape::GetStrokeDashArray ()
 {
 	Value *value = GetValue (Shape::StrokeDashArrayProperty);
-
 	return value ? value->AsDoubleCollection () : NULL;
 }
 
@@ -3539,7 +3357,6 @@ PenLineCap
 Shape::GetStrokeDashCap ()
 {
 	Value *value = GetValue (Shape::StrokeDashCapProperty);
-
 	return (PenLineCap) value->AsInt32 ();
 }
 
@@ -3553,7 +3370,6 @@ double
 Shape::GetStrokeDashOffset ()
 {
 	Value *value = GetValue (Shape::StrokeDashOffsetProperty);
-
 	return value->AsDouble ();
 }
 
@@ -3567,7 +3383,6 @@ PenLineCap
 Shape::GetStrokeEndLineCap ()
 {
 	Value *value = GetValue (Shape::StrokeEndLineCapProperty);
-
 	return (PenLineCap) value->AsInt32 ();
 }
 
@@ -3581,7 +3396,6 @@ PenLineJoin
 Shape::GetStrokeLineJoin ()
 {
 	Value *value = GetValue (Shape::StrokeLineJoinProperty);
-
 	return (PenLineJoin) value->AsInt32 ();
 }
 
@@ -3595,7 +3409,6 @@ double
 Shape::GetStrokeMiterLimit ()
 {
 	Value *value = GetValue (Shape::StrokeMiterLimitProperty);
-
 	return value->AsDouble ();
 }
 
@@ -3609,7 +3422,6 @@ Brush *
 Shape::GetStroke ()
 {
 	Value *value = GetValue (Shape::StrokeProperty);
-
 	return value ? value->AsBrush () : NULL;
 }
 
@@ -3623,7 +3435,6 @@ PenLineCap
 Shape::GetStrokeStartLineCap ()
 {
 	Value *value = GetValue (Shape::StrokeStartLineCapProperty);
-
 	return (PenLineCap) value->AsInt32 ();
 }
 
@@ -3637,7 +3448,6 @@ double
 Shape::GetStrokeThickness ()
 {
 	Value *value = GetValue (Shape::StrokeThicknessProperty);
-
 	return value->AsDouble ();
 }
 
@@ -3651,7 +3461,6 @@ double
 SkewTransform::GetAngleX ()
 {
 	Value *value = GetValue (SkewTransform::AngleXProperty);
-
 	return value->AsDouble ();
 }
 
@@ -3665,7 +3474,6 @@ double
 SkewTransform::GetAngleY ()
 {
 	Value *value = GetValue (SkewTransform::AngleYProperty);
-
 	return value->AsDouble ();
 }
 
@@ -3679,7 +3487,6 @@ double
 SkewTransform::GetCenterX ()
 {
 	Value *value = GetValue (SkewTransform::CenterXProperty);
-
 	return value->AsDouble ();
 }
 
@@ -3693,7 +3500,6 @@ double
 SkewTransform::GetCenterY ()
 {
 	Value *value = GetValue (SkewTransform::CenterYProperty);
-
 	return value->AsDouble ();
 }
 
@@ -3707,7 +3513,6 @@ Color *
 SolidColorBrush::GetColor ()
 {
 	Value *value = GetValue (SolidColorBrush::ColorProperty);
-
 	return value ? value->AsColor () : NULL;
 }
 
@@ -3722,7 +3527,6 @@ KeySpline *
 SplineColorKeyFrame::GetKeySpline ()
 {
 	Value *value = DependencyObject::GetValue (SplineColorKeyFrame::KeySplineProperty);
-
 	return value ? value->AsKeySpline () : NULL;
 }
 
@@ -3736,7 +3540,6 @@ KeySpline *
 SplineDoubleKeyFrame::GetKeySpline ()
 {
 	Value *value = DependencyObject::GetValue (SplineDoubleKeyFrame::KeySplineProperty);
-
 	return value ? value->AsKeySpline () : NULL;
 }
 
@@ -3750,7 +3553,6 @@ KeySpline *
 SplinePointKeyFrame::GetKeySpline ()
 {
 	Value *value = DependencyObject::GetValue (SplinePointKeyFrame::KeySplineProperty);
-
 	return value ? value->AsKeySpline () : NULL;
 }
 
@@ -3765,7 +3567,6 @@ Orientation
 StackPanel::GetOrientation ()
 {
 	Value *value = GetValue (StackPanel::OrientationProperty);
-
 	return (Orientation) value->AsInt32 ();
 }
 
@@ -3780,7 +3581,6 @@ const char *
 Storyboard::GetTargetName (DependencyObject *obj)
 {
 	Value *value = (!obj) ? NULL : obj->GetValue (Storyboard::TargetNameProperty);
-
 	return value ? value->AsString () : NULL;
 }
 
@@ -3795,7 +3595,6 @@ const char *
 Storyboard::GetTargetProperty (DependencyObject *obj)
 {
 	Value *value = (!obj) ? NULL : obj->GetValue (Storyboard::TargetPropertyProperty);
-
 	return value ? value->AsString () : NULL;
 }
 
@@ -3810,7 +3609,6 @@ DrawingAttributes *
 Stroke::GetDrawingAttributes ()
 {
 	Value *value = GetValue (Stroke::DrawingAttributesProperty);
-
 	return value ? value->AsDrawingAttributes () : NULL;
 }
 
@@ -3824,7 +3622,6 @@ StylusPointCollection *
 Stroke::GetStylusPoints ()
 {
 	Value *value = GetValue (Stroke::StylusPointsProperty);
-
 	return value ? value->AsStylusPointCollection () : NULL;
 }
 
@@ -3839,7 +3636,6 @@ SetterBaseCollection *
 Style::GetSetters ()
 {
 	Value *value = GetValue (Style::SettersProperty);
-
 	return value ? value->AsSetterBaseCollection () : NULL;
 }
 
@@ -3854,7 +3650,6 @@ TabletDeviceType
 StylusInfo::GetDeviceType ()
 {
 	Value *value = GetValue (StylusInfo::DeviceTypeProperty);
-
 	return (TabletDeviceType) value->AsInt32 ();
 }
 
@@ -3868,7 +3663,6 @@ bool
 StylusInfo::GetIsInverted ()
 {
 	Value *value = GetValue (StylusInfo::IsInvertedProperty);
-
 	return value->AsBool ();
 }
 
@@ -3882,7 +3676,6 @@ double
 StylusPoint::GetPressureFactor ()
 {
 	Value *value = GetValue (StylusPoint::PressureFactorProperty);
-
 	return value->AsDouble ();
 }
 
@@ -3896,7 +3689,6 @@ double
 StylusPoint::GetX ()
 {
 	Value *value = GetValue (StylusPoint::XProperty);
-
 	return value->AsDouble ();
 }
 
@@ -3910,7 +3702,6 @@ double
 StylusPoint::GetY ()
 {
 	Value *value = GetValue (StylusPoint::YProperty);
-
 	return value->AsDouble ();
 }
 
@@ -3924,7 +3715,6 @@ const char *
 TextBlock::GetFontFamily ()
 {
 	Value *value = GetValue (TextBlock::FontFamilyProperty);
-
 	return value ? value->AsString () : NULL;
 }
 
@@ -3938,7 +3728,6 @@ double
 TextBlock::GetFontSize ()
 {
 	Value *value = GetValue (TextBlock::FontSizeProperty);
-
 	return value->AsDouble ();
 }
 
@@ -3952,7 +3741,6 @@ FontStretches
 TextBlock::GetFontStretch ()
 {
 	Value *value = GetValue (TextBlock::FontStretchProperty);
-
 	return (FontStretches) value->AsInt32 ();
 }
 
@@ -3966,7 +3754,6 @@ FontStyles
 TextBlock::GetFontStyle ()
 {
 	Value *value = GetValue (TextBlock::FontStyleProperty);
-
 	return (FontStyles) value->AsInt32 ();
 }
 
@@ -3980,7 +3767,6 @@ FontWeights
 TextBlock::GetFontWeight ()
 {
 	Value *value = GetValue (TextBlock::FontWeightProperty);
-
 	return (FontWeights) value->AsInt32 ();
 }
 
@@ -3994,7 +3780,6 @@ Brush *
 TextBlock::GetForeground ()
 {
 	Value *value = GetValue (TextBlock::ForegroundProperty);
-
 	return value ? value->AsBrush () : NULL;
 }
 
@@ -4008,7 +3793,6 @@ InlineCollection *
 TextBlock::GetInlines ()
 {
 	Value *value = GetValue (TextBlock::InlinesProperty);
-
 	return value ? value->AsInlineCollection () : NULL;
 }
 
@@ -4023,7 +3807,6 @@ double
 TextBlock::GetLineHeight ()
 {
 	Value *value = GetValue (TextBlock::LineHeightProperty);
-
 	return value->AsDouble ();
 }
 
@@ -4039,7 +3822,6 @@ LineStackingStrategy
 TextBlock::GetLineStackingStrategy ()
 {
 	Value *value = GetValue (TextBlock::LineStackingStrategyProperty);
-
 	return (LineStackingStrategy) value->AsInt32 ();
 }
 
@@ -4055,7 +3837,6 @@ Thickness *
 TextBlock::GetPadding ()
 {
 	Value *value = GetValue (TextBlock::PaddingProperty);
-
 	return value ? value->AsThickness () : NULL;
 }
 
@@ -4072,7 +3853,6 @@ TextAlignment
 TextBlock::GetTextAlignment ()
 {
 	Value *value = GetValue (TextBlock::TextAlignmentProperty);
-
 	return (TextAlignment) value->AsInt32 ();
 }
 
@@ -4087,7 +3867,6 @@ TextDecorations
 TextBlock::GetTextDecorations ()
 {
 	Value *value = GetValue (TextBlock::TextDecorationsProperty);
-
 	return (TextDecorations) value->AsInt32 ();
 }
 
@@ -4101,7 +3880,6 @@ const char *
 TextBlock::GetText ()
 {
 	Value *value = GetValue (TextBlock::TextProperty);
-
 	return value ? value->AsString () : NULL;
 }
 
@@ -4115,7 +3893,6 @@ TextWrapping
 TextBlock::GetTextWrapping ()
 {
 	Value *value = GetValue (TextBlock::TextWrappingProperty);
-
 	return (TextWrapping) value->AsInt32 ();
 }
 
@@ -4130,7 +3907,6 @@ bool
 TextBox::GetAcceptsReturn ()
 {
 	Value *value = GetValue (TextBox::AcceptsReturnProperty);
-
 	return value->AsBool ();
 }
 
@@ -4146,7 +3922,6 @@ bool
 TextBox::GetIsReadOnly ()
 {
 	Value *value = GetValue (TextBox::IsReadOnlyProperty);
-
 	return value->AsBool ();
 }
 
@@ -4162,7 +3937,6 @@ gint32
 TextBox::GetMaxLength ()
 {
 	Value *value = GetValue (TextBox::MaxLengthProperty);
-
 	return value->AsInt32 ();
 }
 
@@ -4178,7 +3952,6 @@ Brush *
 TextBox::GetSelectionBackground ()
 {
 	Value *value = GetValue (TextBox::SelectionBackgroundProperty);
-
 	return value ? value->AsBrush () : NULL;
 }
 
@@ -4194,7 +3967,6 @@ Brush *
 TextBox::GetSelectionForeground ()
 {
 	Value *value = GetValue (TextBox::SelectionForegroundProperty);
-
 	return value ? value->AsBrush () : NULL;
 }
 
@@ -4210,7 +3982,6 @@ TextAlignment
 TextBox::GetTextAlignment ()
 {
 	Value *value = GetValue (TextBox::TextAlignmentProperty);
-
 	return (TextAlignment) value->AsInt32 ();
 }
 
@@ -4226,7 +3997,6 @@ const char *
 TextBox::GetText ()
 {
 	Value *value = GetValue (TextBox::TextProperty);
-
 	return value ? value->AsString () : NULL;
 }
 
@@ -4242,7 +4012,6 @@ TextWrapping
 TextBox::GetTextWrapping ()
 {
 	Value *value = GetValue (TextBox::TextWrappingProperty);
-
 	return (TextWrapping) value->AsInt32 ();
 }
 
@@ -4257,7 +4026,6 @@ AlignmentX
 TileBrush::GetAlignmentX ()
 {
 	Value *value = GetValue (TileBrush::AlignmentXProperty);
-
 	return (AlignmentX) value->AsInt32 ();
 }
 
@@ -4271,7 +4039,6 @@ AlignmentY
 TileBrush::GetAlignmentY ()
 {
 	Value *value = GetValue (TileBrush::AlignmentYProperty);
-
 	return (AlignmentY) value->AsInt32 ();
 }
 
@@ -4285,7 +4052,6 @@ Stretch
 TileBrush::GetStretch ()
 {
 	Value *value = GetValue (TileBrush::StretchProperty);
-
 	return (Stretch) value->AsInt32 ();
 }
 
@@ -4299,7 +4065,6 @@ bool
 Timeline::GetAutoReverse ()
 {
 	Value *value = GetValue (Timeline::AutoReverseProperty);
-
 	return value->AsBool ();
 }
 
@@ -4313,7 +4078,6 @@ FillBehavior
 Timeline::GetFillBehavior ()
 {
 	Value *value = GetValue (Timeline::FillBehaviorProperty);
-
 	return (FillBehavior) value->AsInt32 ();
 }
 
@@ -4327,7 +4091,6 @@ double
 Timeline::GetSpeedRatio ()
 {
 	Value *value = GetValue (Timeline::SpeedRatioProperty);
-
 	return value->AsDouble ();
 }
 
@@ -4341,7 +4104,6 @@ TimelineCollection *
 TimelineGroup::GetChildren ()
 {
 	Value *value = GetValue (TimelineGroup::ChildrenProperty);
-
 	return value ? value->AsTimelineCollection () : NULL;
 }
 
@@ -4355,7 +4117,6 @@ const char *
 TimelineMarker::GetText ()
 {
 	Value *value = GetValue (TimelineMarker::TextProperty);
-
 	return value ? value->AsString () : NULL;
 }
 
@@ -4369,7 +4130,6 @@ TimeSpan
 TimelineMarker::GetTime ()
 {
 	Value *value = GetValue (TimelineMarker::TimeProperty);
-
 	return value->AsTimeSpan ();
 }
 
@@ -4383,7 +4143,6 @@ const char *
 TimelineMarker::GetType ()
 {
 	Value *value = GetValue (TimelineMarker::TypeProperty);
-
 	return value ? value->AsString () : NULL;
 }
 
@@ -4397,7 +4156,6 @@ TransformCollection *
 TransformGroup::GetChildren ()
 {
 	Value *value = GetValue (TransformGroup::ChildrenProperty);
-
 	return value ? value->AsTransformCollection () : NULL;
 }
 
@@ -4411,7 +4169,6 @@ double
 TranslateTransform::GetX ()
 {
 	Value *value = GetValue (TranslateTransform::XProperty);
-
 	return value->AsDouble ();
 }
 
@@ -4425,7 +4182,6 @@ double
 TranslateTransform::GetY ()
 {
 	Value *value = GetValue (TranslateTransform::YProperty);
-
 	return value->AsDouble ();
 }
 
@@ -4439,7 +4195,6 @@ Geometry *
 UIElement::GetClip ()
 {
 	Value *value = GetValue (UIElement::ClipProperty);
-
 	return value ? value->AsGeometry () : NULL;
 }
 
@@ -4453,7 +4208,6 @@ MouseCursor
 UIElement::GetCursor ()
 {
 	Value *value = GetValue (UIElement::CursorProperty);
-
 	return (MouseCursor) value->AsInt32 ();
 }
 
@@ -4467,7 +4221,6 @@ bool
 UIElement::GetIsHitTestVisible ()
 {
 	Value *value = GetValue (UIElement::IsHitTestVisibleProperty);
-
 	return value->AsBool ();
 }
 
@@ -4481,7 +4234,6 @@ Brush *
 UIElement::GetOpacityMask ()
 {
 	Value *value = GetValue (UIElement::OpacityMaskProperty);
-
 	return value ? value->AsBrush () : NULL;
 }
 
@@ -4495,7 +4247,6 @@ double
 UIElement::GetOpacity ()
 {
 	Value *value = GetValue (UIElement::OpacityProperty);
-
 	return value->AsDouble ();
 }
 
@@ -4509,7 +4260,6 @@ Point *
 UIElement::GetRenderTransformOrigin ()
 {
 	Value *value = GetValue (UIElement::RenderTransformOriginProperty);
-
 	return value ? value->AsPoint () : NULL;
 }
 
@@ -4524,7 +4274,6 @@ Transform *
 UIElement::GetRenderTransform ()
 {
 	Value *value = GetValue (UIElement::RenderTransformProperty);
-
 	return value ? value->AsTransform () : NULL;
 }
 
@@ -4538,7 +4287,6 @@ ResourceDictionary *
 UIElement::GetResources ()
 {
 	Value *value = GetValue (UIElement::ResourcesProperty);
-
 	return value ? value->AsResourceDictionary () : NULL;
 }
 
@@ -4552,7 +4300,6 @@ const char *
 UIElement::GetTag ()
 {
 	Value *value = GetValue (UIElement::TagProperty);
-
 	return value ? value->AsString () : NULL;
 }
 
@@ -4566,7 +4313,6 @@ TriggerCollection *
 UIElement::GetTriggers ()
 {
 	Value *value = GetValue (UIElement::TriggersProperty);
-
 	return value ? value->AsTriggerCollection () : NULL;
 }
 
@@ -4580,7 +4326,6 @@ Visibility
 UIElement::GetVisibility ()
 {
 	Value *value = GetValue (UIElement::VisibilityProperty);
-
 	return (Visibility) value->AsInt32 ();
 }
 
@@ -4594,7 +4339,6 @@ const char *
 VideoBrush::GetSourceName ()
 {
 	Value *value = GetValue (VideoBrush::SourceNameProperty);
-
 	return value ? value->AsString () : NULL;
 }
 
@@ -4608,7 +4352,6 @@ UIElement *
 VisualBrush::GetVisual ()
 {
 	Value *value = GetValue (VisualBrush::VisualProperty);
-
 	return value ? value->AsUIElement () : NULL;
 }
 
