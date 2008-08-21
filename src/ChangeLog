@@ -1,5 +1,11 @@
 2008-08-21  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.h: Initial implementation of the TextBox class (just
+	stubs atm).
+
+	* value.h.in (struct Value): Don't use int32_t or uint64_t,
+	etc. Be consistent and use the glib types.
+
 	* layout.cpp (TextLayout::Layout): Fixed
 	LineStackingStrategy/LineHeight issues. If we are using
 	BlockLineHeight & the specified LineHeight is not Auto, then we

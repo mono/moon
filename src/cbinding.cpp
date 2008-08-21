@@ -2096,6 +2096,18 @@ text_block_new (void)
 }
 
 
+#if SL_2_0
+/**
+ * TextBox
+ **/
+TextBox *
+text_box_new (void)
+{
+	return new TextBox ();
+}
+#endif
+
+
 /**
  * TileBrush
  **/

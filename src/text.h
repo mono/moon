@@ -19,7 +19,9 @@
 #include <frameworkelement.h>
 #include <downloader.h>
 #include <moon-path.h>
+#if SL_2_0
 #include <thickness.h>
+#endif
 #include <layout.h>
 #include <brush.h>
 #include <font.h>
@@ -224,6 +226,7 @@ class TextBlock : public FrameworkElement {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	TextBlock ();
+	
 	virtual Type::Kind GetObjectType () { return Type::TEXTBLOCK; }
 	
 	void SetFontSource (Downloader *downloader);

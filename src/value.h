@@ -183,6 +183,7 @@ class StylusPointCollection;
 class Surface;
 class SystemTimeSource;
 class TextBlock;
+class TextBox;
 class TileBrush;
 class Timeline;
 class TimelineCollection;
@@ -290,13 +291,13 @@ public:
 	KeyTime*	AsKeyTime ()	{ checked_get_exact (Type::KEYTIME, NULL, u.keytime); }
 	GridLength*     AsGridLength () { checked_get_exact (Type::GRIDLENGTH, NULL, u.grid_length); }
 	Thickness*      AsThickness () { checked_get_exact (Type::THICKNESS, NULL, u.thickness); }
-
+	
 	/* nullable primitives (all but bool) */
 	double*		AsNullableDouble ()	{ checked_get_exact (Type::DOUBLE, NULL, &u.d); }
-	uint64_t*	AsNullableUint64 ()	{ checked_get_exact (Type::UINT64, NULL, &u.ui64); }
-	int64_t*	AsNullableInt64 ()	{ checked_get_exact (Type::INT64, NULL, &u.i64); }
-	int32_t*	AsNullableInt32 ()	{ checked_get_exact (Type::INT32, NULL, &u.i32); }
-
+	guint64*	AsNullableUint64 ()	{ checked_get_exact (Type::UINT64, NULL, &u.ui64); }
+	gint64* 	AsNullableInt64 ()	{ checked_get_exact (Type::INT64, NULL, &u.i64); }
+	gint32* 	AsNullableInt32 ()	{ checked_get_exact (Type::INT32, NULL, &u.i32); }
+	
 	Animation*                     AsAnimation () { checked_get_subclass (Type::ANIMATION, Animation) }
 	AnimationClock*                AsAnimationClock () { checked_get_subclass (Type::ANIMATIONCLOCK, AnimationClock) }
 	Application*                   AsApplication () { checked_get_subclass (Type::APPLICATION, Application) }
@@ -435,6 +436,7 @@ public:
 	Surface*                       AsSurface () { checked_get_subclass (Type::SURFACE, Surface) }
 	SystemTimeSource*              AsSystemTimeSource () { checked_get_subclass (Type::SYSTEMTIMESOURCE, SystemTimeSource) }
 	TextBlock*                     AsTextBlock () { checked_get_subclass (Type::TEXTBLOCK, TextBlock) }
+	TextBox*                       AsTextBox () { checked_get_subclass (Type::TEXTBOX, TextBox) }
 	TileBrush*                     AsTileBrush () { checked_get_subclass (Type::TILEBRUSH, TileBrush) }
 	Timeline*                      AsTimeline () { checked_get_subclass (Type::TIMELINE, Timeline) }
 	TimelineCollection*            AsTimelineCollection () { checked_get_subclass (Type::TIMELINE_COLLECTION, TimelineCollection) }
@@ -456,18 +458,18 @@ public:
 	VideoBrush*                    AsVideoBrush () { checked_get_subclass (Type::VIDEOBRUSH, VideoBrush) }
 	VisualBrush*                   AsVisualBrush () { checked_get_subclass (Type::VISUALBRUSH, VisualBrush) }
 
-
+	
 	char *ToString ();
-
+	
   	Type::Kind GetKind ();
-
+	
 	void FreeValue ();
-  
+	
   private:
 	Type::Kind k;
-
-	int32_t padding;
-
+	
+	gint32 padding;
+	
 	union {
 		double d;
 		guint64 ui64;
@@ -486,14 +488,13 @@ public:
 		Thickness *thickness;
 		void *managed_object;
 	} u;
-
-
+	
 	// You don't want to be using this ctor.  it's here to help
 	// c++ recognize bad unspecified pointer args to Value ctors
 	// (it normally converts them to bool, which we handle, so you
 	// never see the error of your ways).  So do the world a
 	// favor, and don't expose this ctor. :)
-	Value (void* v) { }
+	Value (void *v) { }
 	// You don't want to be using this ctor either.
 	// Use the Value (gint64, Type::Kind) ctor
 	// (Both for TimeSpan and int64_t)

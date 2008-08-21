@@ -12,7 +12,7 @@ libmoon_include_HEADERS = 	\
 	asf/asf-guids.h		\
 	asf/asf-structures.h	\
 	asf/asf-debug.h		\
-	audio.h		\
+	audio.h			\
 	brush.h			\
 	canvas.h		\
 	cbinding.h		\
@@ -53,11 +53,8 @@ libmoon_include_HEADERS = 	\
 	runtime.h		\
 	shape.h			\
 	size.h			\
-	stackpanel.h	\
 	stylus.h		\
 	text.h			\
-	thickness.h		\
-	tilesource.h	\
 	transform.h		\
 	trigger.h		\
 	type.h			\
@@ -80,17 +77,17 @@ libmoon_la_SOURCES = 		\
 	asf/asf-guids.cpp	\
 	asf/asf-structures.cpp	\
 	asf/asf-debug.cpp	\
-	audio.cpp	\
+	audio.cpp		\
 	brush.cpp		\
 	canvas.cpp		\
-	cbinding.cpp	\
+	cbinding.cpp		\
 	clock.cpp		\
 	collection.cpp		\
 	color.cpp		\
 	debug.cpp		\
 	dependencyobject.cpp	\
 	dependencyproperty.cpp	\
-	dependencyproperty.g.cpp	\
+	dependencyproperty.g.cpp\
 	dirty.h			\
 	dirty.cpp		\
 	downloader.cpp		\
@@ -123,7 +120,6 @@ libmoon_la_SOURCES = 		\
 	size.cpp		\
 	stylus.cpp		\
 	text.cpp		\
-	thickness.cpp		\
 	transform.cpp		\
 	trigger.cpp		\
 	type.cpp		\
@@ -147,8 +143,12 @@ libmoon_include_HEADERS += 	\
 	control.h		\
 	deployment.h		\
 	grid.h			\
+	stackpanel.h		\
 	style.h			\
 	template.h		\
+	textbox.h		\
+	thickness.h		\
+	tilesource.h		\
 	usercontrol.h		\
 	xap.h
 
@@ -159,6 +159,7 @@ libmoon_la_SOURCES += 		\
 	grid.cpp		\
 	style.cpp		\
 	template.cpp		\
+	thickness.cpp		\
 	usercontrol.cpp 	\
 	xap.cpp
 endif

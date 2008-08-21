@@ -33,6 +33,7 @@
 #include "stylus.h"
 #include "template.h"
 #include "text.h"
+#include "textbox.h"
 #include "tilesource.h"
 #include "transform.h"
 #include "trigger.h"
@@ -1098,6 +1099,14 @@ Surface *surface_new (MoonWindow *window, bool silverlight2);
  **/
 /* @GeneratePInvoke */
 TextBlock *text_block_new (void);
+
+#if SL_2_0
+/**
+ * TextBox
+ **/
+/* @GeneratePInvoke */
+TextBox *text_box_new (void);
+#endif
 
 /**
  * TileBrush
