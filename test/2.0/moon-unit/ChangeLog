@@ -1,3 +1,9 @@
+2008-08-22  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.IO.IsolatedStorage/IsolatedStorageFileStreamTest.cs: Add
+	test cases for check how to FileStream interact with its associated
+	IsolatedStorageFile container.
+
 2008-08-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.IO.IsolatedStorage/IsolatedStorageFileStreamTest.cs: New.

@@ -97,13 +97,201 @@ namespace MoonTest.System.IO.IsolatedStorage {
 				Assert.IsFalse (fs.CanWrite, "Dispose/CanWrite");
 				Assert.Throws (delegate { Console.WriteLine (fs.Length); }, typeof (ObjectDisposedException), "Dispose/Length");
 				Assert.Throws (delegate { Console.WriteLine (fs.Position); }, typeof (ObjectDisposedException), "Dispose/Position");
+
+				fs.Dispose (); // multiple times (like using do to)
+
+				isf.Remove ();
+				Assert.Throws (delegate { new IsolatedStorageFileStream ("removed", FileMode.Create, isf); }, typeof (IsolatedStorageException), "Remove/new");
+				Assert.IsFalse (fs.CanRead, "Dispose/CanRead");
+				Assert.IsFalse (fs.CanSeek, "Dispose/CanSeek");
+				Assert.IsFalse (fs.CanWrite, "Dispose/CanWrite");
+				Assert.Throws (delegate { Console.WriteLine (fs.Length); }, typeof (IsolatedStorageException), "Dispose/Length");
+				Assert.Throws (delegate { Console.WriteLine (fs.Position); }, typeof (IsolatedStorageException), "Dispose/Position");
+
+				isf.Dispose ();
+				Assert.Throws (delegate { new IsolatedStorageFileStream ("removed", FileMode.Create, isf); }, typeof (ObjectDisposedException), "Dispose/new");
+				Assert.IsFalse (fs.CanRead, "Dispose/CanRead");
+				Assert.IsFalse (fs.CanSeek, "Dispose/CanSeek");
+				Assert.IsFalse (fs.CanWrite, "Dispose/CanWrite");
+				Assert.Throws (delegate { Console.WriteLine (fs.Length); }, typeof (ObjectDisposedException), "Dispose/Length");
+				Assert.Throws (delegate { Console.WriteLine (fs.Position); }, typeof (ObjectDisposedException), "Dispose/Position");
 			}
+		}
 
+		[TestMethod]
+		public void Create_RemovedIsolatedStorageFile ()
+		{
+			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
 			isf.Remove ();
-			Assert.Throws (delegate { new IsolatedStorageFileStream ("removed", FileMode.Create, isf); }, typeof (IsolatedStorageException), "Remove/new");
+			Assert.Throws (delegate { new IsolatedStorageFileStream ("removed", FileMode.Create, isf); }, typeof (IsolatedStorageException), "Remove/new1");
+			Assert.Throws (delegate { new IsolatedStorageFileStream ("removed", FileMode.Create, FileAccess.ReadWrite, isf); }, typeof (IsolatedStorageException), "Remove/new2");
+			Assert.Throws (delegate { new IsolatedStorageFileStream ("removed", FileMode.Create, FileAccess.ReadWrite, FileShare.Read, isf); }, typeof (IsolatedStorageException), "Remove/new3");
+		}
 
+		[TestMethod]
+		public void Create_DisposedIsolatedStorageFile ()
+		{
+			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
 			isf.Dispose ();
-			Assert.Throws (delegate { new IsolatedStorageFileStream ("removed", FileMode.Create, isf); }, typeof (ObjectDisposedException), "Dispose/new");
+			Assert.Throws (delegate { new IsolatedStorageFileStream ("disposed", FileMode.Create, isf); }, typeof (ObjectDisposedException), "Dispose/new1");
+			Assert.Throws (delegate { new IsolatedStorageFileStream ("disposed", FileMode.Create, FileAccess.ReadWrite, isf); }, typeof (ObjectDisposedException), "Dispose/new2");
+			Assert.Throws (delegate { new IsolatedStorageFileStream ("disposed", FileMode.Create, FileAccess.ReadWrite, FileShare.Read, isf); }, typeof (ObjectDisposedException), "Dispose/new3");
+		}
+
+		[TestMethod]
+		public void Create_NotFound ()
+		{
+			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
+			// LAMESPEC: documented to be a FileNotFoundException
+			Assert.Throws (delegate { new IsolatedStorageFileStream ("does-not-exist", FileMode.Open, isf); }, typeof (IsolatedStorageException), "FileNotFound1");
+			Assert.Throws (delegate { new IsolatedStorageFileStream ("does-not-exist", FileMode.Open, FileAccess.Read, isf); }, typeof (IsolatedStorageException), "FileNotFound2");
+			Assert.Throws (delegate { new IsolatedStorageFileStream ("does-not-exist", FileMode.Open, FileAccess.Read, FileShare.Read, isf); }, typeof (IsolatedStorageException), "FileNotFound3");
+			// LAMESPEC: documented to be a DirectoryNotFoundException
+			Assert.Throws (delegate { new IsolatedStorageFileStream ("dir-does-not-exist/new-file", FileMode.Create, isf); }, typeof (IsolatedStorageException), "DirectoryNotFound1");
+			Assert.Throws (delegate { new IsolatedStorageFileStream ("dir-does-not-exist/new-file", FileMode.Create, FileAccess.ReadWrite, isf); }, typeof (IsolatedStorageException), "DirectoryNotFound2");
+			Assert.Throws (delegate { new IsolatedStorageFileStream ("dir-does-not-exist/new-file", FileMode.Create, FileAccess.ReadWrite, FileShare.Read, isf); }, typeof (IsolatedStorageException), "DirectoryNotFound3");
+		}
+
+		void EndRead (IAsyncResult result)
+		{
+			IsolatedStorageFileStream fs = (IsolatedStorageFileStream) result.AsyncState;
+			Assert.AreEqual (0, fs.EndRead (result), "EndRead");
+		}
+
+		[TestMethod]
+		public void AsyncRead ()
+		{
+			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
+			using (IsolatedStorageFileStream fs = new IsolatedStorageFileStream ("moon", FileMode.Create, isf)) {
+				byte [] data = new byte [2];
+				IAsyncResult result = fs.BeginRead (data, 0, 2, new AsyncCallback (EndRead), fs);
+				result.AsyncWaitHandle.WaitOne ();
+
+				isf.Remove (); // this removed everything
+				Assert.Throws (delegate { fs.BeginRead (data, 0, 2, new AsyncCallback (EndRead), fs); }, typeof (IsolatedStorageException), "Remove/Write");
+				isf.Dispose ();
+				Assert.Throws (delegate { fs.BeginRead (data, 0, 2, new AsyncCallback (EndRead), fs); }, typeof (ObjectDisposedException), "Dispose/Write");
+			}
+			isf = IsolatedStorageFile.GetUserStoreForApplication ();
+			Assert.AreEqual (0, isf.GetFileNames ().Length, "Empty");
+		}
+
+		void EndWrite (IAsyncResult result)
+		{
+			IsolatedStorageFileStream fs = (IsolatedStorageFileStream) result.AsyncState;
+			fs.EndWrite (result);
+		}
+
+		[TestMethod]
+		public void AsyncWrite ()
+		{
+			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
+			using (IsolatedStorageFileStream fs = new IsolatedStorageFileStream ("moon", FileMode.Create, isf)) {
+				byte[] data = new byte [2];
+				IAsyncResult result = fs.BeginWrite (data, 0, 2, new AsyncCallback (EndWrite), fs);
+				result.AsyncWaitHandle.WaitOne ();
+
+				isf.Remove (); // this removed everything
+				Assert.Throws (delegate { fs.BeginWrite (data, 0, 2, new AsyncCallback (EndWrite), fs); }, typeof (IsolatedStorageException), "Remove/Write");
+				isf.Dispose ();
+				Assert.Throws (delegate { fs.BeginWrite (data, 0, 2, new AsyncCallback (EndWrite), fs); }, typeof (ObjectDisposedException), "Dispose/Write");
+			}
+			isf = IsolatedStorageFile.GetUserStoreForApplication ();
+			Assert.AreEqual (0, isf.GetFileNames ().Length, "Empty");
+		}
+
+		[TestMethod]
+		public void Flush ()
+		{
+			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
+			using (IsolatedStorageFileStream fs = new IsolatedStorageFileStream ("moon", FileMode.Create, isf)) {
+				fs.Flush ();
+
+				isf.Remove (); // this removed everything
+				Assert.Throws (delegate { fs.Flush (); }, typeof (IsolatedStorageException), "Remove/Write");
+				isf.Dispose ();
+				Assert.Throws (delegate { fs.Flush (); }, typeof (ObjectDisposedException), "Dispose/Write");
+			}
+			isf = IsolatedStorageFile.GetUserStoreForApplication ();
+			Assert.AreEqual (0, isf.GetFileNames ().Length, "Empty");
+		}
+
+		[TestMethod]
+		public void Seek ()
+		{
+			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
+			using (IsolatedStorageFileStream fs = new IsolatedStorageFileStream ("moon", FileMode.Create, isf)) {
+				fs.Seek (0, SeekOrigin.Begin);
+
+				isf.Remove (); // this removed everything
+				Assert.Throws (delegate { fs.Seek (0, SeekOrigin.Begin); }, typeof (IsolatedStorageException), "Remove/Write");
+				isf.Dispose ();
+				Assert.Throws (delegate { fs.Seek (0, SeekOrigin.Begin); }, typeof (ObjectDisposedException), "Dispose/Write");
+			}
+			isf = IsolatedStorageFile.GetUserStoreForApplication ();
+			Assert.AreEqual (0, isf.GetFileNames ().Length, "Empty");
+		}
+
+		[TestMethod]
+		public void SetLength ()
+		{
+			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
+			using (IsolatedStorageFileStream fs = new IsolatedStorageFileStream ("moon", FileMode.Create, isf)) {
+				fs.SetLength (1);
+
+				isf.Remove (); // this removed everything
+				Assert.Throws (delegate { fs.SetLength (1); }, typeof (IsolatedStorageException), "Remove/Write");
+				isf.Dispose ();
+				Assert.Throws (delegate { fs.SetLength (1); }, typeof (ObjectDisposedException), "Dispose/Write");
+			}
+			isf = IsolatedStorageFile.GetUserStoreForApplication ();
+			Assert.AreEqual (0, isf.GetFileNames ().Length, "Empty");
+		}
+
+		[TestMethod]
+		public void Write ()
+		{
+			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
+			using (IsolatedStorageFileStream fs = new IsolatedStorageFileStream ("moon", FileMode.Create, isf)) {
+				byte [] data = new byte [2] { 0x00, 0x01 };
+				fs.Write (data, 0, 1);
+				fs.WriteByte (0x01);
+				isf.Remove (); // this removed everything
+				Assert.Throws (delegate { fs.Write (data, 1, 1); }, typeof (IsolatedStorageException), "Remove/Write");
+				Assert.Throws (delegate { fs.WriteByte (0x0f); }, typeof (IsolatedStorageException), "Remove/WriteByte");
+				isf.Dispose ();
+				Assert.Throws (delegate { fs.Write (data, 1, 1); }, typeof (ObjectDisposedException), "Dispose/Write");
+				Assert.Throws (delegate { fs.WriteByte (0xf0); }, typeof (ObjectDisposedException), "Dispose/WriteByte");
+			}
+			isf = IsolatedStorageFile.GetUserStoreForApplication ();
+			Assert.AreEqual (0, isf.GetFileNames ().Length, "Empty");
+		}
+
+
+		[TestMethod]
+		public void WriteThenRead ()
+		{
+			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
+			using (IsolatedStorageFileStream fs = new IsolatedStorageFileStream ("moon", FileMode.Create, isf)) {
+				byte [] data = new byte [2] { 0x00, 0x01 };
+				fs.Write (data, 0, 1);
+				fs.WriteByte (0xff);
+			}
+			using (IsolatedStorageFileStream fs = isf.OpenFile ("moon", FileMode.Open)) {
+				byte [] data = new byte [1];
+				Assert.AreEqual (1, fs.Read (data, 0, 1), "1");
+				Assert.AreEqual (0x00, data[0], "0x00");
+				Assert.AreEqual (0xff, fs.ReadByte (), "0xff");
+
+				isf.Remove (); // this removed everything
+				Assert.Throws (delegate { fs.Read (data, 1, 1); }, typeof (IsolatedStorageException), "Remove/Write");
+				Assert.Throws (delegate { fs.ReadByte (); }, typeof (IsolatedStorageException), "Remove/WriteByte");
+				isf.Dispose ();
+				Assert.Throws (delegate { fs.Read (data, 1, 1); }, typeof (ObjectDisposedException), "Dispose/Write");
+				Assert.Throws (delegate { fs.ReadByte (); }, typeof (ObjectDisposedException), "Dispose/WriteByte");
+			}
+			isf = IsolatedStorageFile.GetUserStoreForApplication ();
+			Assert.AreEqual (0, isf.GetFileNames ().Length, "Empty");
 		}
 
 		[TestMethod]
