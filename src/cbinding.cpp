@@ -828,10 +828,32 @@ event_trigger_new (void)
 /**
  * FrameworkElement
  **/
+Size
+framework_element_arrange_override (FrameworkElement *instance, Size finalSize)
+{
+	if (instance == NULL)
+		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		return (Size) 0;
+	
+	return instance->ArrangeOverride (finalSize);
+}
+
+
 FrameworkElement *
 framework_element_new (void)
 {
 	return new FrameworkElement ();
+}
+
+
+Size
+framework_element_measure_override (FrameworkElement *instance, Size availableSize)
+{
+	if (instance == NULL)
+		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		return (Size) 0;
+	
+	return instance->MeasureOverride (availableSize);
 }
 
 

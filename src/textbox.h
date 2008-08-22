@@ -106,13 +106,11 @@ class TextBox : public Control {
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual Value *GetValue (DependencyProperty *property);
+	virtual Size ArrangeOverride (Size size);
 	
 	//
 	// Methods
 	//
-	/* @GenerateCBinding,GeneratePInvoke */
-	Size ArrangeOverride (Size size);
-	
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Select (int start, int length);
 	
@@ -158,6 +156,7 @@ class TextBox : public Control {
 	//
 	// Events
 	//
+	const static int SelectionChangedEvent;
 	const static int TextChangedEvent;
 };
 

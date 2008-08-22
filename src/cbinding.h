@@ -436,7 +436,13 @@ EventTrigger *event_trigger_new (void);
  * FrameworkElement
  **/
 /* @GeneratePInvoke */
+Size framework_element_arrange_override (FrameworkElement *instance, Size finalSize);
+
+/* @GeneratePInvoke */
 FrameworkElement *framework_element_new (void);
+
+/* @GeneratePInvoke */
+Size framework_element_measure_override (FrameworkElement *instance, Size availableSize);
 
 /* @GeneratePInvoke */
 void framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb);

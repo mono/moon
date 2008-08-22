@@ -480,7 +480,8 @@ TextBox::GetValue (DependencyProperty *property)
 Size
 TextBox::ArrangeOverride (Size size)
 {
-	return size;
+	// FIXME: implement me
+	return Control::ArrangeOverride (size);
 }
 
 void

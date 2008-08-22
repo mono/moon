@@ -1,3 +1,8 @@
+2008-08-22  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.h: Made ArrangeOverride() virtual and added
+	SelectionChangedEvent.
+
 2008-08-22  Chris Toshok  <toshok@ximian.com>
 
 	* dependencyobject.cpp (DependencyObject::GetContent): guard
