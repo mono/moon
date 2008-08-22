@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Security;
 using System.Windows;
 #if notyet
@@ -61,7 +62,12 @@ namespace System.Windows {
 #endif
 		public void Arrange (Rect finalRect)
 		{
-			throw new NotImplementedException ();
+			UnmanagedRect unmanagedFinalRect = new UnmanagedRect();
+			unmanagedFinalRect.left = finalRect.X;
+			unmanagedFinalRect.top = finalRect.Y;
+			unmanagedFinalRect.width = finalRect.Width;
+			unmanagedFinalRect.height = finalRect.Height;
+			NativeMethods.uielement_arrange(native, unmanagedFinalRect);
 		}
 
 #if NET_2_1
@@ -69,7 +75,7 @@ namespace System.Windows {
 #endif
 		public void InvalidateArrange ()
 		{
-			throw new NotImplementedException ();
+			NativeMethods.uielement_invalidate_arrange(native);
 		}
 
 #if NET_2_1
@@ -77,7 +83,12 @@ namespace System.Windows {
 #endif
 		public void Measure (Size availableSize)
 		{
-			throw new NotImplementedException ();
+			UnmanagedSize unmanagedAvailableSize = new UnmanagedSize();
+
+			unmanagedAvailableSize.width = availableSize.Width;
+			unmanagedAvailableSize.height = availableSize.Height;
+
+			NativeMethods.uielement_measure (native, unmanagedAvailableSize);
 		}
 
 #if NET_2_1
@@ -85,7 +96,7 @@ namespace System.Windows {
 #endif
 		public void InvalidateMeasure ()
 		{
-			throw new NotImplementedException ();
+			NativeMethods.uielement_invalidate_measure (native);
 		}
 
 #if NET_2_1
@@ -93,7 +104,7 @@ namespace System.Windows {
 #endif
 		public void UpdateLayout ()
 		{
-			throw new NotImplementedException ();
+			NativeMethods.uielement_update_layout (native);
 		}
 
 #if NET_2_1

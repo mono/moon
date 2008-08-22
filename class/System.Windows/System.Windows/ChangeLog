@@ -1,5 +1,19 @@
 2008-08-22  Chris Toshok  <toshok@ximian.com>
 
+	* FrameworkElement.cs: in our Initialize method register the
+	delegates with the unmanaged code for our layout overrides.  Proxy
+	them through InvokeMeasureOverride and InvokeArrangeOverride.
+	Implement MeasureOverride properly, and leave ArrangeOverride
+	alone for the moment (broken, I think).
+
+	* UIElement.cs: provide implementations for all the layout methods
+	- Arrange, Measure, InvalidateArrange, InvalidateMeasure,
+	UpdateLayout.
+
+	* DependencyObject.g.cs: regen.
+
+2008-08-22  Chris Toshok  <toshok@ximian.com>
+
 	* Size.cs: implement ToString.
 
 2008-08-21  Chris Toshok  <toshok@ximian.com>

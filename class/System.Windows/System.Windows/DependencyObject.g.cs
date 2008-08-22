@@ -47,8 +47,14 @@ namespace System.Windows {
 	}
 
 	partial class FrameworkElement {
-		internal FrameworkElement () : base (NativeMethods.framework_element_new ()) {}
-		internal FrameworkElement (IntPtr raw) : base (raw) {}
+		internal FrameworkElement () : base (NativeMethods.framework_element_new ())
+		{
+			Initialize ();
+		}
+		internal FrameworkElement (IntPtr raw) : base (raw)
+		{
+			Initialize ();
+		}
 		internal override Kind GetKind () { return Kind.FRAMEWORKELEMENT; }
 	}
 
@@ -106,7 +112,6 @@ namespace System.Windows {
 	}
 
 	partial class UIElement {
-		internal UIElement () : base (NativeMethods.uielement_new ()) {}
 		internal UIElement (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.UIELEMENT; }
 	}

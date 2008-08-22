@@ -34,7 +34,17 @@ using System.Security;
 
 namespace System.Windows {
 	public abstract partial class FrameworkElement : UIElement {
-		
+
+		MeasureOverrideCallback measure_cb;
+		ArrangeOverrideCallback arrange_cb;
+
+		private void Initialize ()
+		{
+			measure_cb = new MeasureOverrideCallback (InvokeMeasureOverride);
+			arrange_cb = new ArrangeOverrideCallback (InvokeArrangeOverride);
+			NativeMethods.framework_element_register_managed_overrides (native, measure_cb, arrange_cb);
+		}
+
 #if NET_2_1
 		[SecuritySafeCritical]
 #endif
@@ -61,7 +71,8 @@ namespace System.Windows {
 #endif
 		protected virtual Size MeasureOverride (Size availableSize)
 		{
-			throw new NotImplementedException ();
+			return new Size (availableSize.Width > MinWidth ? MinWidth : availableSize.Width,
+					 availableSize.Height > MinHeight ? MinHeight : availableSize.Height);
 		}
 
 #if NET_2_1
@@ -69,7 +80,7 @@ namespace System.Windows {
 #endif
 		protected virtual Size ArrangeOverride (Size finalSize)
 		{
-			throw new NotImplementedException ();
+			return finalSize;
 		}
 
 		public DependencyObject Parent {
@@ -175,6 +186,24 @@ namespace System.Windows {
 			SizeChangedEventHandler h = (SizeChangedEventHandler)events[SizeChangedEvent];
 			if (h != null)
 				h (this, args);
+		}
+
+		private UnmanagedSize InvokeMeasureOverride (UnmanagedSize availableSize)
+		{
+			Size rv = MeasureOverride (new Size (availableSize.width, availableSize.height));
+			UnmanagedSize sz = new UnmanagedSize();
+			sz.width = rv.Width;
+			sz.height = rv.Height;
+			return sz;
+		}
+
+		private UnmanagedSize InvokeArrangeOverride (UnmanagedSize finalSize)
+		{
+			Size rv = ArrangeOverride (new Size (finalSize.width, finalSize.height));
+			UnmanagedSize sz = new UnmanagedSize();
+			sz.width = rv.Width;
+			sz.height = rv.Height;
+			return sz;
 		}
 	}
 }
