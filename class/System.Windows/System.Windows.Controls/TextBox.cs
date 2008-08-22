@@ -30,9 +30,39 @@ using Mono;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Documents;
+using System.Collections.Generic;
 
 namespace System.Windows.Controls {
 	public partial class TextBox : Control {
+		protected override Size ArrangeOverride (Size size)
+		{
+			// FIXME: implement me
+			return base.ArrangeOverride (size);
+		}
 		
+		public IEnumerable<UIElement> HitTest (Point point)
+		{
+			return null;
+		}
+		
+		public IEnumerable<UIElement> HitTest (Rect rect)
+		{
+			return null;
+		}
+		
+		public void Select (int start, int length)
+		{
+			if (start < 0)
+				throw new ArgumentOutOfRangeException ("start");
+			
+			if (length < 0)
+				throw new ArgumentOutOfRangeException ("length");
+			
+			// FIXME: do exceptions get thrown if the
+			// start/length values are out of range? If
+			// not, what is supposed to happen?
+			
+			NativeMethods.text_box_select (this.native, start, length);
+		}
 	}
 }
