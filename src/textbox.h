@@ -58,6 +58,12 @@ class TextBox : public Control {
 	void Layout (cairo_t *cr);
 	void Paint (cairo_t *cr);
 	
+	//
+	// Private Property Accessors
+	//
+	void SetSelectionStart (int start);
+	void SetSelectionLength (int length);
+	
  protected:
 	virtual ~TextBox ();
 	
@@ -99,10 +105,8 @@ class TextBox : public Control {
 	//
 	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
-	virtual Point GetTransformOrigin ();
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
-	
 	virtual Value *GetValue (DependencyProperty *property);
 	
 	//
@@ -135,10 +139,7 @@ class TextBox : public Control {
 	void SetSelectedText (const char *text);
 	const char *GetSelectedText ();
 	
-	void SetSelectionStart (int start);
 	int GetSelectionStart ();
-	
-	void SetSelectionLength (int length);
 	int GetSelectionLength ();
 	
 	void SetText (const char *text);

@@ -148,6 +148,7 @@ libmoon_include_HEADERS += 	\
 	stackpanel.h		\
 	style.h			\
 	template.h		\
+	textbox.h		\
 	thickness.h		\
 	tilesource.h		\
 	usercontrol.h		\
@@ -161,6 +162,7 @@ libmoon_la_SOURCES += 		\
 	grid.cpp		\
 	style.cpp		\
 	template.cpp		\
+	textbox.cpp		\
 	thickness.cpp		\
 	usercontrol.cpp 	\
 	xap.cpp

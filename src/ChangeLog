@@ -1,3 +1,8 @@
+2008-08-22  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp: Initial implementation of TextBox, Layout and
+	Rendering logic still missing.
+
 2008-08-22  Larry Ewing  <lewing@novell.com>
 
 	* usercontrol.cpp (UserControl::OnPropertyChanged): make sure the
@@ -29,10 +34,6 @@
 
 	* dirty.cpp (Surface::PropagateDirtyFlagToChildren): use
 	ContentWalker.
-
-2008-08-21  Jeffrey Stedfast  <fejj@novell.com>
-
-	* textbox.cpp: Lots more code...
 
 2008-08-21  Chris Toshok  <toshok@ximian.com>
 
