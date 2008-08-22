@@ -340,7 +340,6 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty HorizontalContentAlignmentProperty = DependencyProperty.Lookup (Kind.CONTROL, "HorizontalContentAlignment", typeof (HorizontalAlignment));
 		public static readonly DependencyProperty IsTabStopProperty = DependencyProperty.Lookup (Kind.CONTROL, "IsTabStop", typeof (bool));
 		public static readonly DependencyProperty PaddingProperty = DependencyProperty.Lookup (Kind.CONTROL, "Padding", typeof (Thickness));
-		internal static readonly DependencyProperty StyleProperty = DependencyProperty.Lookup (Kind.CONTROL, "Style", typeof (Style));
 		public static readonly DependencyProperty TabIndexProperty = DependencyProperty.Lookup (Kind.CONTROL, "TabIndex", typeof (int));
 		public static readonly DependencyProperty TabNavigationProperty = DependencyProperty.Lookup (Kind.CONTROL, "TabNavigation", typeof (KeyboardNavigationMode));
 		public static readonly DependencyProperty TemplateProperty = DependencyProperty.Lookup (Kind.CONTROL, "Template", typeof (ControlTemplate));
@@ -404,11 +403,6 @@ namespace System.Windows.Controls {
 		public Thickness Padding {
 			get { return (Thickness) GetValue (PaddingProperty); }
 			set { SetValue (PaddingProperty, value); }
-		}
-
-		public Style Style {
-			get { return (Style) GetValue (StyleProperty); }
-			set { SetValue (StyleProperty, value); }
 		}
 
 		public int TabIndex {
@@ -711,6 +705,87 @@ namespace System.Windows.Controls {
 		public TextWrapping TextWrapping {
 			get { return (TextWrapping) GetValue (TextWrappingProperty); }
 			set { SetValue (TextWrappingProperty, value); }
+		}
+	}
+
+	partial class TextBox {
+		public static readonly DependencyProperty AcceptsReturnProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "AcceptsReturn", typeof (bool));
+		internal static readonly DependencyProperty HorizontalScrollBarVisibilityProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "HorizontalScrollBarVisibility", typeof (ScrollBarVisibility));
+		public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "IsReadOnly", typeof (bool));
+		public static readonly DependencyProperty MaxLengthProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "MaxLength", typeof (int));
+		internal static readonly DependencyProperty SelectedTextProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "SelectedText", typeof (string));
+		public static readonly DependencyProperty SelectionBackgroundProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "SelectionBackground", typeof (Brush));
+		public static readonly DependencyProperty SelectionForegroundProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "SelectionForeground", typeof (Brush));
+		internal static readonly DependencyProperty SelectionLengthProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "SelectionLength", typeof (int));
+		internal static readonly DependencyProperty SelectionStartProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "SelectionStart", typeof (int));
+		public static readonly DependencyProperty TextAlignmentProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "TextAlignment", typeof (TextAlignment));
+		public static readonly DependencyProperty TextProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "Text", typeof (string));
+		public static readonly DependencyProperty TextWrappingProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "TextWrapping", typeof (TextWrapping));
+		internal static readonly DependencyProperty VerticalScrollBarVisibilityProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "VerticalScrollBarVisibility", typeof (ScrollBarVisibility));
+
+		public bool AcceptsReturn {
+			get { return (bool) GetValue (AcceptsReturnProperty); }
+			set { SetValue (AcceptsReturnProperty, value); }
+		}
+
+		public ScrollBarVisibility HorizontalScrollBarVisibility {
+			get { return (ScrollBarVisibility) GetValue (HorizontalScrollBarVisibilityProperty); }
+			set { SetValue (HorizontalScrollBarVisibilityProperty, value); }
+		}
+
+		public bool IsReadOnly {
+			get { return (bool) GetValue (IsReadOnlyProperty); }
+			set { SetValue (IsReadOnlyProperty, value); }
+		}
+
+		public int MaxLength {
+			get { return (int) GetValue (MaxLengthProperty); }
+			set { SetValue (MaxLengthProperty, value); }
+		}
+
+		public string SelectedText {
+			get { return (string) GetValue (SelectedTextProperty); }
+			set { SetValue (SelectedTextProperty, value); }
+		}
+
+		public Brush SelectionBackground {
+			get { return (Brush) GetValue (SelectionBackgroundProperty); }
+			set { SetValue (SelectionBackgroundProperty, value); }
+		}
+
+		public Brush SelectionForeground {
+			get { return (Brush) GetValue (SelectionForegroundProperty); }
+			set { SetValue (SelectionForegroundProperty, value); }
+		}
+
+		public int SelectionLength {
+			get { return (int) GetValue (SelectionLengthProperty); }
+			set { SetValue (SelectionLengthProperty, value); }
+		}
+
+		public int SelectionStart {
+			get { return (int) GetValue (SelectionStartProperty); }
+			set { SetValue (SelectionStartProperty, value); }
+		}
+
+		public TextAlignment TextAlignment {
+			get { return (TextAlignment) GetValue (TextAlignmentProperty); }
+			set { SetValue (TextAlignmentProperty, value); }
+		}
+
+		public string Text {
+			get { return (string) GetValue (TextProperty); }
+			set { SetValue (TextProperty, value); }
+		}
+
+		public TextWrapping TextWrapping {
+			get { return (TextWrapping) GetValue (TextWrappingProperty); }
+			set { SetValue (TextWrappingProperty, value); }
+		}
+
+		public ScrollBarVisibility VerticalScrollBarVisibility {
+			get { return (ScrollBarVisibility) GetValue (VerticalScrollBarVisibilityProperty); }
+			set { SetValue (VerticalScrollBarVisibilityProperty, value); }
 		}
 	}
 

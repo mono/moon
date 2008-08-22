@@ -203,6 +203,12 @@ namespace System.Windows.Controls {
 		internal override Kind GetKind () { return Kind.TEXTBLOCK; }
 	}
 
+	partial class TextBox {
+		public TextBox () : base (NativeMethods.text_box_new ()) {}
+		internal TextBox (IntPtr raw) : base (raw) {}
+		internal override Kind GetKind () { return Kind.TEXTBOX; }
+	}
+
 	partial class UIElementCollection {
 		public UIElementCollection () : base (NativeMethods.uielement_collection_new ()) {}
 		internal UIElementCollection (IntPtr raw) : base (raw) {}

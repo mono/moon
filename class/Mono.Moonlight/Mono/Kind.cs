@@ -162,6 +162,7 @@ namespace Mono {
 		SURFACE,
 		SYSTEMTIMESOURCE,
 		TEXTBLOCK,
+		TEXTBOX,// Silverlight 2.0 only
 		THICKNESS,
 		TILEBRUSH,
 		TIMELINE,
