@@ -127,12 +127,15 @@ FrameworkElement::MeasureOverride (Size availableSize)
 			if (child_size.height + margins->top + margins->bottom > height)
 				height = child_size.height + margins->top + margins->bottom;
 		}
-		else if (!content->Is (Type::UIELEMENT)) {
+		else if (content->Is (Type::COLLECTION)) {
 			g_warning ("non-panel has a collection for its ContentProperty.  unsupported");
+		}
+		else {
+			g_warning ("unsupport content of FrameworkElement (%s)", content->GetTypeName());
 		}
 	}
 
-	// make sure we don't go over our configured max height
+	// make sure we don't go over our configured max size
 	if (width > GetMaxWidth ())
 		width = GetMaxWidth ();
 	if (height > GetMaxHeight ())
