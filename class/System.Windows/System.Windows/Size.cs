@@ -44,7 +44,7 @@ namespace System.Windows {
 			if (!(o is Size))
 				return false;
 
-			return Equals (this, (Size) o);
+			return Equals ((Size) o);
 		}
 		
 		public bool Equals (Size value)
