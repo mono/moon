@@ -1,6 +1,6 @@
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * text.cpp: 
+ * textbox.cpp: 
  *
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
@@ -261,8 +261,6 @@ TextBox::TextBox ()
 	maxlen = 0;
 	caret = 0;
 	
-	actual_height = 0.0;
-	actual_width = 0.0;
 	dirty = true;
 }
 
@@ -320,7 +318,24 @@ TextBox::CalcActualWidthHeight (cairo_t *cr)
 void
 TextBox::Layout (cairo_t *cr)
 {
+	double width = GetWidth ();
+	List *runs;
+	Run *run;
 	
+	layout->SetWrapping (GetTextWrapping ());
+	
+	if (width > 0.0f)
+		layout->SetMaxWidth (width);
+	else
+		layout->SetMaxWidth (-1.0);
+	
+	runs = new List ();
+	runs->Append (new TextRun (buffer->text, buffer->len, TextDecorationsNone, font, NULL));
+	
+	layout->SetTextRuns (runs);
+	layout->Layout (hints);
+	
+	dirty = false;
 }
 
 void
@@ -354,6 +369,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		dirty = true;
 	} else if (args->property == TextBox::MaxLengthProperty) {
 		/* FIXME: What happens if the current buffer length is > MaxLength? */
+		maxlen = args->new_value->AsInt32 ();
 	} else if (args->property == TextBox::SelectedTextProperty) {
 		const char *str = args->new_value ? args->new_value->AsString () : "";
 		gunichar *text;

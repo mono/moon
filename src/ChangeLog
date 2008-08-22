@@ -1,5 +1,11 @@
 2008-08-22  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.cpp (TextBox::Layout): Implemented rough layout.
+
+	* layout.cpp (TextRun::TextRun): New ctor for use with TextBox.
+
+2008-08-22  Jeffrey Stedfast  <fejj@novell.com>
+
 	* textbox.cpp (TextBox::ArrangeOverride): Added.
 
 	* frameworkelement.h (class FrameworkElement): Changed default

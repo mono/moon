@@ -50,9 +50,6 @@ class TextBox : public Control {
 		int start;
 	} selection;
 	
-	double actual_height;
-	double actual_width;
-	bool setvalue;
 	bool dirty;
 	
 	void CalcActualWidthHeight (cairo_t *cr);
@@ -157,6 +154,11 @@ class TextBox : public Control {
 	
 	void SetVerticalScrollBarVisibility (ScrollBarVisibility visibility);
 	ScrollBarVisibility GetVerticalScrollBarVisibility ();
+	
+	//
+	// Events
+	//
+	const static int TextChangedEvent;
 };
 
 #endif /* __TEXTBOX_H__ */

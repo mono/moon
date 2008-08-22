@@ -30,6 +30,7 @@ class TextRun : public List::Node {
 	TextFont *font;
 	Brush **fg;
 	
+	TextRun (const gunichar *ucs4, int len, TextDecorations deco, TextFontDescription *font, Brush **fg);
 	TextRun (const char *utf8, int len, TextDecorations deco, TextFontDescription *font, Brush **fg);
 	TextRun (TextFontDescription *font);
 	~TextRun ();

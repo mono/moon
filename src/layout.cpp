@@ -35,6 +35,17 @@
  */
 #define APPLY_KERNING(uc)	((uc != 0x002E) && (uc != 0x06D4) && (uc != 3002))
 
+TextRun::TextRun (const gunichar *ucs4, int len, TextDecorations deco, TextFontDescription *font, Brush **fg)
+{
+	text = (gunichar *) g_malloc (sizeof (gunichar) * (len + 1));
+	memcpy (text, ucs4, sizeof (gunichar) * len);
+	text[len] = 0;
+	
+	this->font = font->GetFont ();
+	this->deco = deco;
+	this->fg = fg;
+}
+
 TextRun::TextRun (const char *utf8, int len, TextDecorations deco, TextFontDescription *font, Brush **fg)
 {
 	register gunichar *s, *d;

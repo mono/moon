@@ -84,6 +84,7 @@ const int Surface::ErrorEvent = 1;
 const int Surface::FullScreenChangeEvent = 2;
 const int Surface::LoadEvent = 3;
 const int Surface::ResizeEvent = 4;
+const int TextBox::TextChangedEvent = 15;
 const int TimeManager::RenderEvent = 1;
 const int TimeManager::UpdateInputEvent = 2;
 const int TimeSource::TickEvent = 1;
@@ -109,6 +110,7 @@ const char *MediaBase_Events [] = { "DownloadProgressChanged", NULL };
 const char *MediaElement_Events [] = { "BufferingProgressChanged", "CurrentStateChanged", "MarkerReached", "MediaEnded", "MediaFailed", "MediaOpened", NULL };
 const char *Storyboard_Events [] = { "Completed", NULL };
 const char *Surface_Events [] = { "Error", "FullScreenChange", "Load", "Resize", NULL };
+const char *TextBox_Events [] = { "TextChanged", NULL };
 const char *TimeManager_Events [] = { "Render", "UpdateInput", NULL };
 const char *TimeSource_Events [] = { "Tick", NULL };
 const char *UIElement_Events [] = { "GotFocus", "Invalidated", "KeyDown", "KeyUp", "Loaded", "LostFocus", "MouseEnter", "MouseLeave", "MouseLeftButtonDown", "MouseLeftButtonUp", "MouseMove", NULL };
@@ -271,7 +273,7 @@ Type type_infos [] = {
 	{ Type::SURFACE, Type::EVENTOBJECT, false, "Surface", "SURFACE", 4, 5, Surface_Events, NULL, NULL, NULL, NULL }, 
 	{ Type::SYSTEMTIMESOURCE, Type::TIMESOURCE, false, "SystemTimeSource", "SYSTEMTIMESOURCE", 0, 2, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::TEXTBLOCK, Type::FRAMEWORKELEMENT, false, "TextBlock", "TEXTBLOCK", 0, 15, NULL, (create_inst_func *) text_block_new, "Inlines", NULL, NULL }, 
-	{ Type::TEXTBOX, Type::CONTROL, false, "TextBox", "TEXTBOX", 0, 15, NULL, (create_inst_func *) text_box_new, "Text", NULL, NULL }, 
+	{ Type::TEXTBOX, Type::CONTROL, false, "TextBox", "TEXTBOX", 1, 16, TextBox_Events, (create_inst_func *) text_box_new, "Text", NULL, NULL }, 
 	{ Type::THICKNESS, Type::INVALID, true, "Thickness", "THICKNESS", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::TILEBRUSH, Type::BRUSH, false, "TileBrush", "TILEBRUSH", 0, 1, NULL, (create_inst_func *) tile_brush_new, NULL, NULL, NULL }, 
 	{ Type::TIMELINE, Type::DEPENDENCY_OBJECT, false, "Timeline", "TIMELINE", 0, 1, NULL, (create_inst_func *) timeline_new, NULL, NULL, NULL }, 
