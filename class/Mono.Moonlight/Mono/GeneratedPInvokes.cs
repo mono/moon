@@ -386,12 +386,20 @@ namespace Mono {
 		public extern static IntPtr event_trigger_new ();
 
 		[DllImport ("moon")]
+		// Size framework_element_arrange_override (FrameworkElement *instance, Size finalSize);
+		public extern static UnmanagedSize framework_element_arrange_override (IntPtr instance, UnmanagedSize finalSize);
+
+		[DllImport ("moon")]
 		// FrameworkElement *framework_element_new ();
 		public extern static IntPtr framework_element_new ();
 
 		[DllImport ("moon")]
+		// Size framework_element_measure_override (FrameworkElement *instance, Size availableSize);
+		public extern static UnmanagedSize framework_element_measure_override (IntPtr instance, UnmanagedSize availableSize);
+
+		[DllImport ("moon")]
 		// void framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb);
-		public extern static void framework_element_register_managed_overrides (IntPtr instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb);
+		public extern static void framework_element_register_managed_overrides (IntPtr instance, Mono.MeasureOverrideCallback measure_cb, Mono.ArrangeOverrideCallback arrange_cb);
 
 		[DllImport ("moon")]
 		// FrameworkTemplate *framework_template_new ();
