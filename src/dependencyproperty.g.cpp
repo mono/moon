@@ -40,7 +40,6 @@
 #include "style.h"
 #include "template.h"
 #include "text.h"
-#include "textbox.h"
 #include "tilesource.h"
 #include "usercontrol.h"
 #endif

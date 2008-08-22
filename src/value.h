@@ -184,7 +184,6 @@ class StylusPointCollection;
 class Surface;
 class SystemTimeSource;
 class TextBlock;
-class TextBox;
 class TileBrush;
 class Timeline;
 class TimelineCollection;
@@ -438,7 +437,6 @@ public:
 	Surface*                       AsSurface () { checked_get_subclass (Type::SURFACE, Surface) }
 	SystemTimeSource*              AsSystemTimeSource () { checked_get_subclass (Type::SYSTEMTIMESOURCE, SystemTimeSource) }
 	TextBlock*                     AsTextBlock () { checked_get_subclass (Type::TEXTBLOCK, TextBlock) }
-	TextBox*                       AsTextBox () { checked_get_subclass (Type::TEXTBOX, TextBox) }
 	TileBrush*                     AsTileBrush () { checked_get_subclass (Type::TILEBRUSH, TileBrush) }
 	Timeline*                      AsTimeline () { checked_get_subclass (Type::TIMELINE, Timeline) }
 	TimelineCollection*            AsTimelineCollection () { checked_get_subclass (Type::TIMELINE_COLLECTION, TimelineCollection) }
