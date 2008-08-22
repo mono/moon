@@ -1,5 +1,13 @@
 2008-08-22  Jeffrey Stedfast  <fejj@novell.com>
 
+	* TextChangedEventArgs.cs: Added.
+
+	* TextChangedEventHandler.cs: Added.
+
+	* TextBox.cs: Implemented events.
+
+2008-08-22  Jeffrey Stedfast  <fejj@novell.com>
+
 	* TextBox.cs: Implemented Select() and stubbed out the other
 	methods.
 

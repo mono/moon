@@ -64,5 +64,61 @@ namespace System.Windows.Controls {
 			
 			NativeMethods.text_box_select (this.native, start, length);
 		}
+		
+		static UnmanagedEventHandler selection_changed = new UnmanagedEventHandler (selection_changed_cb);
+		static UnmanagedEventHandler text_changed = new UnmanagedEventHandler (text_changed_cb);
+		
+		static object SelectionChangedEvent = new object ();
+		static object TextChangedEvent = new object ();
+		
+		void InvokeSelectionChanged ()
+		{
+			EventHandler h = (EventHandler) events[SelectionChangedEvent];
+			if (h != null)
+				h (this, EventArgs.Empty);
+		}
+		
+		static void selection_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
+		{
+			((TextBox) Helper.GCHandleFromIntPtr (closure).Target).InvokeSelectionChanged ();
+		}
+		
+		public event RoutedEventHandler SelectionChanged {
+			add {
+				if (events[SelectionChangedEvent] == null)
+					Events.AddHandler (this, "SelectionChanged", selection_changed);
+				events.AddHandler (SelectionChangedEvent, value);
+			}
+			remove {
+				events.RemoveHandler (SelectionChangedEvent, value);
+				if (events[SelectionChangedEvent] == null)
+					Events.RemoveHandler (this, "SelectionChanged", selection_changed);
+			}
+		}
+		
+		void InvokeTextChanged ()
+		{
+			EventHandler h = (EventHandler) events[TextChangedEvent];
+			if (h != null)
+				h (this, EventArgs.Empty);
+		}
+		
+		static void text_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
+		{
+			((TextBox) Helper.GCHandleFromIntPtr (closure).Target).InvokeTextChanged ();
+		}
+		
+		public event TextChangedEventHandler TextChanged {
+			add {
+				if (events[TextChangedEvent] == null)
+					Events.AddHandler (this, "TextChanged", text_changed);
+				events.AddHandler (TextChangedEvent, value);
+			}
+			remove {
+				events.RemoveHandler (TextChangedEvent, value);
+				if (events[TextChangedEvent] == null)
+					Events.RemoveHandler (this, "TextChanged", text_changed);
+			}
+		}
 	}
 }

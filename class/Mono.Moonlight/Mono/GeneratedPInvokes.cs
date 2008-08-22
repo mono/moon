@@ -738,6 +738,26 @@ namespace Mono {
 		public extern static IntPtr scale_transform_new ();
 
 		[DllImport ("moon")]
+		// GPtrArray *selection_changed_event_args_get_added_items (SelectionChangedEventArgs *instance);
+		public extern static IntPtr selection_changed_event_args_get_added_items (IntPtr instance);
+
+		[DllImport ("moon")]
+		// GPtrArray *selection_changed_event_args_get_removed_items (SelectionChangedEventArgs *instance);
+		public extern static IntPtr selection_changed_event_args_get_removed_items (IntPtr instance);
+
+		[DllImport ("moon")]
+		// SelectionChangedEventArgs *selection_changed_event_args_new ();
+		public extern static IntPtr selection_changed_event_args_new ();
+
+		[DllImport ("moon")]
+		// void selection_changed_event_args_set_added_items (SelectionChangedEventArgs *instance, GPtrArray *addedItems);
+		public extern static void selection_changed_event_args_set_added_items (IntPtr instance, IntPtr addedItems);
+
+		[DllImport ("moon")]
+		// void selection_changed_event_args_set_removed_items (SelectionChangedEventArgs *instance, GPtrArray *removedItems);
+		public extern static void selection_changed_event_args_set_removed_items (IntPtr instance, IntPtr removedItems);
+
+		[DllImport ("moon")]
 		// Setter *setter_new ();
 		public extern static IntPtr setter_new ();
 
@@ -882,16 +902,16 @@ namespace Mono {
 		public extern static IntPtr text_block_new ();
 
 		[DllImport ("moon")]
-		// Size text_box_arrange_override (TextBox *instance, Size size);
-		public extern static UnmanagedSize text_box_arrange_override (IntPtr instance, UnmanagedSize size);
-
-		[DllImport ("moon")]
 		// void text_box_select (TextBox *instance, int start, int length);
 		public extern static void text_box_select (IntPtr instance, int start, int length);
 
 		[DllImport ("moon")]
 		// TextBox *text_box_new ();
 		public extern static IntPtr text_box_new ();
+
+		[DllImport ("moon")]
+		// TextChangedEventArgs *text_changed_event_args_new ();
+		public extern static IntPtr text_changed_event_args_new ();
 
 		[DllImport ("moon")]
 		// TileBrush *tile_brush_new ();

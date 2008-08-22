@@ -78,12 +78,16 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.ROWDEFINITION));
 				t = agclr.GetType ("System.Windows.Controls.RowDefinitionCollection", true); 
 				types.Add (t, new ManagedType (t, Kind.ROWDEFINITION_COLLECTION));
+				t = agclr.GetType ("System.Windows.Controls.SelectionChangedEventArgs", true); 
+				types.Add (t, new ManagedType (t, Kind.SELECTIONCHANGEDEVENTARGS));
 				t = agclr.GetType ("System.Windows.Controls.StackPanel", true); 
 				types.Add (t, new ManagedType (t, Kind.STACKPANEL));
 				t = agclr.GetType ("System.Windows.Controls.TextBlock", true); 
 				types.Add (t, new ManagedType (t, Kind.TEXTBLOCK));
 				t = agclr.GetType ("System.Windows.Controls.TextBox", true); 
 				types.Add (t, new ManagedType (t, Kind.TEXTBOX));
+				t = agclr.GetType ("System.Windows.Controls.TextChangedEventArgs", true); 
+				types.Add (t, new ManagedType (t, Kind.TEXTCHANGEDEVENTARGS));
 				t = agclr.GetType ("System.Windows.Controls.UIElementCollection", true); 
 				types.Add (t, new ManagedType (t, Kind.UIELEMENT_COLLECTION));
 				t = agclr.GetType ("System.Windows.Controls.UserControl", true); 
