@@ -1108,6 +1108,12 @@ TextBlock *text_block_new (void);
 /**
  * TextBox
  **/
+/* @GeneratePInvoke */
+Size text_box_arrange_override (TextBox *instance, Size size);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
 void text_box_select (TextBox *instance, int start, int length);
 #endif
 

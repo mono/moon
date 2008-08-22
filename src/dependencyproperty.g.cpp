@@ -151,7 +151,7 @@ dependency_property_g_init (void)
 	FrameworkElement::ActualWidthProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "ActualWidth", new Value (0.0));
 	FrameworkElement::DataContextProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "DataContext", Type::MANAGED);
 #endif
-	FrameworkElement::HeightProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Height", new Value (0.0));
+	FrameworkElement::HeightProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Height", new Value (NAN));
 #if SL_2_0
 	FrameworkElement::HorizontalAlignmentProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "HorizontalAlignment", new Value (HorizontalAlignmentStretch));
 	FrameworkElement::LanguageProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Language", new Value ("en-US"));
@@ -163,7 +163,7 @@ dependency_property_g_init (void)
 	FrameworkElement::StyleProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Style", Type::STYLE);
 	FrameworkElement::VerticalAlignmentProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "VerticalAlignment", new Value (VerticalAlignmentStretch));
 #endif
-	FrameworkElement::WidthProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Width", new Value (0.0));
+	FrameworkElement::WidthProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Width", new Value (NAN));
 	Geometry::FillRuleProperty = DependencyProperty::Register (Type::GEOMETRY, "FillRule", new Value (FillRuleEvenOdd));
 	Geometry::TransformProperty = DependencyProperty::Register (Type::GEOMETRY, "Transform", Type::TRANSFORM);
 	GeometryGroup::ChildrenProperty = DependencyProperty::Register (Type::GEOMETRYGROUP, "Children", Type::GEOMETRY_COLLECTION);

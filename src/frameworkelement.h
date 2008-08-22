@@ -12,6 +12,7 @@
 #define __MOON_FRAMEWORKELEMENT_H__
 
 #include <glib.h>
+#include <math.h>
 
 #include "uielement.h"
 
@@ -21,9 +22,9 @@ class FrameworkElement : public UIElement {
 	virtual ~FrameworkElement () {}
 
  public:
-	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=NAN,GenerateAccessors */
 	static DependencyProperty *HeightProperty;
-	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=NAN,GenerateAccessors */
 	static DependencyProperty *WidthProperty;
 
 	/* @PropertyType=double,DefaultValue=0.0,Version=2,ManagedSetterAccess=Internal,GenerateGetter */
@@ -101,14 +102,15 @@ class FrameworkElement : public UIElement {
 	const static int SizeChangedEvent;
 	// XXX 2.0 also has the Loaded event moved here from
 	// UIElement.
-
+	
+	//
 	// Property Accessors
-
+	//
 	double GetActualWidth ();
 	double GetActualHeight ();
 
-	Thickness* GetMargin ();
-	void SetMargin (Thickness* value);
+	Thickness *GetMargin ();
+	void SetMargin (Thickness *value);
 
 	double GetMaxHeight ();
 	void SetMaxHeight (double value);
@@ -125,11 +127,11 @@ class FrameworkElement : public UIElement {
 	HorizontalAlignment GetHorizontalAlignment ();
 	void SetHorizontalAlignment (HorizontalAlignment value);
 
-	Style* GetStyle();
-	void SetStyle (Style* value);
+	Style *GetStyle ();
+	void SetStyle (Style *value);
 
 	VerticalAlignment GetVerticalAlignment ();
 	void SetVerticalAlignment (VerticalAlignment value);
 };
 
-#endif /* __MOON_FRAMEWORKELEMENT_H__ */
+#endif /* __FRAMEWORKELEMENT_H__ */

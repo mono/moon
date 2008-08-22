@@ -1,5 +1,10 @@
 2008-08-22  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.cpp (TextBox::ArrangeOverride): Added.
+
+	* frameworkelement.h (class FrameworkElement): Changed default
+	Width/Height values to NAN.
+
 	* textbox.cpp: Initial implementation of TextBox, Layout and
 	Rendering logic still missing.
 

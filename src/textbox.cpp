@@ -461,6 +461,12 @@ TextBox::GetValue (DependencyProperty *property)
 	return DependencyObject::GetValue (property);
 }
 
+Size
+TextBox::ArrangeOverride (Size size)
+{
+	return size;
+}
+
 void
 TextBox::Select (int start, int length)
 {

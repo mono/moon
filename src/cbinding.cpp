@@ -2100,6 +2100,19 @@ text_block_new (void)
 /**
  * TextBox
  **/
+Size
+text_box_arrange_override (TextBox *instance, Size size)
+{
+	if (instance == NULL)
+		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		return (Size) 0;
+	
+	return instance->ArrangeOverride (size);
+}
+#endif
+
+
+#if SL_2_0
 void
 text_box_select (TextBox *instance, int start, int length)
 {

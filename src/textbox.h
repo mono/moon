@@ -22,6 +22,7 @@
 #include <control.h>
 #include <layout.h>
 #include <brush.h>
+#include <size.h>
 #include <font.h>
 
 G_BEGIN_DECLS
@@ -112,7 +113,10 @@ class TextBox : public Control {
 	//
 	// Methods
 	//
-	/* @GenerateCBinding,@GeneratePInvoke */
+	/* @GenerateCBinding,GeneratePInvoke */
+	Size ArrangeOverride (Size size);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	void Select (int start, int length);
 	
 	//
