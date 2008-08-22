@@ -65,6 +65,102 @@ namespace MoonTest.System.Windows.Controls
 
 			Assert.AreEqual (new Size (0,0), c.DesiredSize);
 		}
+
+		[TestMethod]
+		public void ChildBackgroundMeasureTest1 ()
+		{
+			Canvas c = new Canvas ();
+			Rectangle r = new Rectangle();
+
+			c.Background = new SolidColorBrush (Colors.Black);
+			c.Children.Add (r);
+
+			Canvas.SetLeft (r, 10);
+			Canvas.SetTop (r, 10);
+
+			r.Width = 50;
+			r.Height = 50;
+
+			c.Measure (new Size (10, 10));
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize);
+		}
+
+		[TestMethod]
+		public void ChildBackgroundMeasureTest2 ()
+		{
+			Canvas c = new Canvas ();
+			Rectangle r = new Rectangle();
+
+			c.Background = new SolidColorBrush (Colors.Black);
+			c.Children.Add (r);
+
+			Canvas.SetLeft (r, 10);
+			Canvas.SetTop (r, 10);
+
+			r.Width = 50;
+			r.Height = 50;
+
+			c.Measure (new Size (100, 100));
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize);
+		}
+
+		[TestMethod]
+		public void WidthHeightMeasureTest1 ()
+		{
+			Canvas c = new Canvas ();
+
+			c.Width = 50;
+			c.Height = 60;
+
+			c.Measure (new Size (10, 10));
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize);
+		}
+
+		[TestMethod]
+		public void WidthHeightMeasureTest2 ()
+		{
+			Canvas c = new Canvas ();
+
+			c.Width = 50;
+			c.Height = 60;
+
+			c.Measure (new Size (100, 100));
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize);
+		}
+	
+		[TestMethod]
+		public void WidthHeightBackgroundMeasureTest1 ()
+		{
+			Canvas c = new Canvas ();
+
+			c.Background = new SolidColorBrush (Colors.Black);
+
+			c.Width = 50;
+			c.Height = 60;
+
+			c.Measure (new Size (10, 10));
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize);
+		}
+
+		[TestMethod]
+		public void WidthHeightBackgroundMeasureTest2 ()
+		{
+			Canvas c = new Canvas ();
+
+			c.Background = new SolidColorBrush (Colors.Black);
+
+			c.Width = 50;
+			c.Height = 60;
+
+			c.Measure (new Size (100, 100));
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize);
+		}
 	}
 
 }
