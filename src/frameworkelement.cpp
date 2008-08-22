@@ -96,6 +96,7 @@ FrameworkElement::Measure (Size availableSize)
 Size
 FrameworkElement::MeasureOverride (Size availableSize)
 {
+#if SL_2_0
 	double width = GetWidth ();
 	double height = GetHeight ();
 
@@ -144,6 +145,9 @@ FrameworkElement::MeasureOverride (Size availableSize)
 	// now choose whichever is smaller, our chosen size or the availableSize.
 	return Size (availableSize.width > width ? width : availableSize.width,
 		     availableSize.height > height ? height : availableSize.height);
+#else
+	return availableSize;
+#endif
 }
 
 
