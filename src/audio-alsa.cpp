@@ -417,6 +417,7 @@ AlsaSource::XrunRecovery (int err)
 {	
 	switch (err) {
 	case -EPIPE: // under-run
+		Underflowed ();
 		err = snd_pcm_prepare (pcm);
 		if (err < 0)
 			AUDIO_DEBUG ("AlsaPlayer: Can't recover from underrun, prepare failed: %s.\n", snd_strerror (err));

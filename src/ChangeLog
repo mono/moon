@@ -1,5 +1,9 @@
 2008-08-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* audio-alsa.cpp: Call Underflowed () when we run out of data.
+
+2008-08-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* mplayer.h, mplayer.cpp: Remove the Eof state and add two separate
 	  VideoEnded and AudioEnded states. Implement handling of VideoEnded
 	  state, and call MediaElement::MediaEnded when both states have been
