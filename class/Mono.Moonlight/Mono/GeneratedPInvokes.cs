@@ -870,10 +870,6 @@ namespace Mono {
 		public extern static IntPtr text_block_new ();
 
 		[DllImport ("moon")]
-		// TextBox *text_box_new ();
-		public extern static IntPtr text_box_new ();
-
-		[DllImport ("moon")]
 		// TileBrush *tile_brush_new ();
 		public extern static IntPtr tile_brush_new ();
 
