@@ -111,6 +111,12 @@ class TypeReference {
 			case "NativePropertyChangedHandler*":
 				managed_type = "Mono.NativePropertyChangedHandler";
 				break;
+			case "MeasureOverrideCallback":
+				managed_type = "Mono.MeasureOverrideCallback";
+				break;
+			case "ArrangeOverrideCallback":
+				managed_type = "Mono.ArrangeOverrideCallback";
+				break;
 			case "char*":
 				managed_type = "string";
 				break;
@@ -123,6 +129,18 @@ class TypeReference {
 				break;
 			case "Size":
 				managed_type = "UnmanagedSize";
+				break;
+			case "Rect":
+				managed_type = "UnmanagedRect";
+				break;
+			case "Point":
+				managed_type = "UnmanagedPoint";
+				break;
+			case "Thickness":
+				managed_type = "UnmanagedThickness";
+				break;
+			case "CornerRadius":
+				managed_type = "UnmanagedCornerRadius";
 				break;
 			case "TimeSpan":
 				managed_type = "long";

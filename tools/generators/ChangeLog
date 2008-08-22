@@ -1,3 +1,10 @@
+2008-08-22  Chris Toshok  <toshok@ximian.com>
+
+	* TypeReference.cs: add some type mappings for the Unmanaged
+	Rect/Size/Point/Thickness/CornerRadius types, and also for the new
+	Layout callbacks (ArrangeOverrideCallback,
+	MeasureOverrideCallback).
+
 2008-08-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Generator.cs: Implemented calling Initialize in generated managed
