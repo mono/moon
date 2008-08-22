@@ -28,7 +28,8 @@ UserControl::OnPropertyChanged (PropertyChangedEventArgs *args)
 	}
 	
 	if (args->property == UserControl::ContentProperty){
-		SetContent (args->new_value->AsUIElement (), GetSurface ());
+		ContentRemoved (args->old_value->AsUIElement ());
+		ContentAdded (args->new_value->AsUIElement ());
 		UpdateBounds ();
 	}
 	NotifyListenersOfPropertyChange (args);

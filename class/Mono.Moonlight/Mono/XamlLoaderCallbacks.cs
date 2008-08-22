@@ -286,31 +286,5 @@ namespace Mono.Xaml
 		// 
 		public abstract object CreateDependencyObjectFromString (string xaml, bool createNamescope);
 		public abstract object CreateDependencyObjectFromFile (string path, bool createNamescope);
-		
-		public object InitializeFromXaml (string xaml, IntPtr native)
-		{
-			if (xaml == null)
-				throw new ArgumentNullException ("xaml");
-			
-			Kind kind;
-			IntPtr native_child;
-			
-			LoadDepsSynch = true;
-			CreateNativeLoader (null, xaml);
-			native_child = NativeMethods.control_initialize_from_xaml (native, xaml,
-										   out kind, NativeLoader);
-			FreeNativeLoader ();
-		
-			if (native_child == IntPtr.Zero)
-				// FIXME: Add detail
-				throw new Exception ();
-		
-			return Helper.LookupDependencyObject (kind, native_child);
-		}
-		
-		public object InitializeFromXaml (string xaml, object dependency_object)
-		{
-			return InitializeFromXaml (xaml, Helper.GetNativeObject (dependency_object));
-		}
 	}
 }

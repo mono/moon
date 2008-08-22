@@ -93,11 +93,6 @@ class Control : public FrameworkElement {
 	
 	virtual bool GetRenderVisible () { return real_object && real_object->GetRenderVisible(); }
 	virtual bool GetHitTestVisible () { return real_object && real_object->GetHitTestVisible(); }
-
-	void SetContent (UIElement *element, Surface *surface);
-
-	/* @GenerateCBinding,GeneratePInvoke */
-	UIElement *InitializeFromXaml (const char *xaml, Type::Kind *element_type, XamlLoader *loader);
 	
 	//
 	// Property Accessors

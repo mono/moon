@@ -277,37 +277,6 @@ public class GtkSilver : EventBox {
 
 		return result as DependencyObject;
 	}
-
-	/// <summary>
-	///    Initializes xaml on a dependency object within the context of the current GtkSilver widget
-	/// </summary>
-	/// <param name="xaml">The contents of the string.</param>
-	/// <param name="native">The native handle of the DependencyObject on which to call InitializeFromXaml</param>
-	private FrameworkElement InitializeFromXaml (string xaml, IntPtr native)
-	{
-		object result;
-		XamlLoader loader;
-
-		if (xaml == null)
-			throw new ArgumentNullException ("xaml");
-
-		XamlLoader.AllowMultipleSurfacesPerDomain = true;
-
-		loader = XamlLoader.CreateManagedXamlLoader (surface, IntPtr.Zero);
-		result = loader.InitializeFromXaml (xaml, native);
-
-		return result as FrameworkElement;
-	}
-
-	/// <summary>
-	///    Initializes xaml on a dependency object within the context of the current GtkSilver widget
-	/// </summary>
-	/// <param name="xaml">The contents of the string.</param>
-	/// <param name="dependency_object">The DependencyObject on which to call InitializeFromXaml</param>
-	public FrameworkElement InitializeFromXaml (string xaml, DependencyObject dependency_object)
-	{
-		return InitializeFromXaml (xaml, Helper.GetNativeObject (dependency_object));
-	}
 }
 }
 

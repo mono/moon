@@ -568,3 +568,41 @@ collection_new (Type::Kind kind)
 	
 	return (Collection *) t->CreateInstance();
 }
+
+ContentWalker::ContentWalker (DependencyObject *obj) {
+	index = 0;
+	collection = NULL;
+	content = obj->GetContent ();
+
+	if (content != NULL) {
+		if (content->Is (Type::COLLECTION))
+			collection = (Collection *)content;
+		
+		content->ref ();
+	}
+}
+
+DependencyObject *
+ContentWalker::Step ()
+{
+	DependencyObject *result = NULL;
+
+	if (collection) {
+		if (index < 0 || index >= collection->GetCount ())
+			return NULL;
+		
+		Value *v = collection->GetValueAt (index++);
+		result = v->AsDependencyObject ();
+	} else {
+		result = content;
+		content = NULL;
+	}
+
+	return result;
+}
+
+ContentWalker::~ContentWalker()
+{
+	if (content)
+		content->unref ();
+}

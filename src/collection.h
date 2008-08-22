@@ -42,7 +42,7 @@ public:
 	GPtrArray *Array () { return array; }
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	CollectionIterator *GetIterator ();
+	virtual CollectionIterator *GetIterator ();
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	int GetCount ();
@@ -172,6 +172,19 @@ public:
 private:
 	Collection *collection;
 	int generation;
+	int index;
+};
+
+class ContentWalker {
+public:
+	ContentWalker (DependencyObject *obj);
+	~ContentWalker ();
+
+	DependencyObject *Step ();
+
+protected:
+	DependencyObject *content;
+	Collection *collection;
 	int index;
 };
 

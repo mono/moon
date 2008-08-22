@@ -229,11 +229,6 @@ Control *control_new (void);
 #endif
 
 #if SL_2_0
-/* @GeneratePInvoke */
-UIElement *control_initialize_from_xaml (Control *instance, const char *xaml, Type::Kind *element_type, XamlLoader *loader);
-#endif
-
-#if SL_2_0
 /**
  * ControlTemplate
  **/

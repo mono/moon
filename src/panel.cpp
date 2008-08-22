@@ -28,16 +28,6 @@ Panel::~Panel()
 {
 }
 
-void
-Panel::Dispose ()
-{
-	UIElementCollection *children = GetChildren();
-	for (int i = 0; i < children->GetCount (); i++)
-		children->GetValueAt (i)->AsUIElement ()->SetVisualParent (NULL);
-
-	FrameworkElement::Dispose ();
-}
-
 #define DEBUG_BOUNDS 0
 #define CAIRO_CLIP 0
 
@@ -116,28 +106,6 @@ Panel::ShiftPosition (Point p)
 }
 
 //#define DEBUG_INVALIDATE 1
-
-void
-Panel::UpdateTotalRenderVisibility ()
-{
-	FrameworkElement::UpdateTotalRenderVisibility ();
-}
-
-void
-Panel::UpdateTotalHitTestVisibility ()
-{
-#if 1
-	// this really shouldn't need to be here, but our dirty code is broken
-	UIElementCollection *children = GetChildren ();
-	
-	for (int i = 0; i < children->GetCount (); i++) {
-		UIElement *item = children->GetValueAt (i)->AsUIElement ();
-		item->UpdateTotalHitTestVisibility ();
-	}
-#endif
-	
-	FrameworkElement::UpdateTotalHitTestVisibility ();
-}
 
 bool
 Panel::UseBackToFront ()
@@ -347,20 +315,6 @@ Panel::FrontToBack (Region *surface_region, List *render_list)
 
 	if (delete_region)
 		delete region;
-}
-
-void
-Panel::CacheInvalidateHint (void)
-{
-	UIElementCollection *children = GetChildren ();
-	
-	if (!children)
-		return;
-	
-	for (int i = 0; i < children->GetCount (); i++) {
-		UIElement *item = children->GetValueAt (i)->AsUIElement ();
-		item->CacheInvalidateHint ();
-	}
 }
 
 bool

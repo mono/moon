@@ -90,11 +90,11 @@ public:
 	//   its parent's opacity and visibility as well as the value of its 
 	//   OpacityProperty and RenderVisibilityProperty.
 	//
-	virtual void UpdateTotalRenderVisibility ();
+	void UpdateTotalRenderVisibility ();
 	void ComputeTotalRenderVisibility ();
 	bool GetActualTotalRenderVisibility ();
 
-	virtual void UpdateTotalHitTestVisibility ();
+	void UpdateTotalHitTestVisibility ();
 	void ComputeTotalHitTestVisibility ();
 	bool GetActualTotalHitTestVisibility ();
 
@@ -338,7 +338,7 @@ public:
 	//   cached (mem-intensive) data it has. This ie. can happen when the
 	//   element is removed from a collection, becomes invisible, etc.
 	//
-	virtual void CacheInvalidateHint () {}
+	virtual void CacheInvalidateHint ();
 	
 	//
 	// 2.0 methods

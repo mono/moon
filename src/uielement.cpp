@@ -69,6 +69,7 @@ UIElement::Dispose()
 	for (int i = 0; i < triggers->GetCount (); i++)
 		triggers->GetValueAt (i)->AsEventTrigger ()->RemoveTarget (this);
 
+
 	DependencyObject::Dispose();
 }
 
@@ -79,6 +80,7 @@ UIElement::SetSurface (Surface *s)
 		/* we're losing our surface, delete ourselves from the dirty list if we're on it */
 		GetSurface()->RemoveDirtyElement (this);
 	}
+
 	DependencyObject::SetSurface (s);
 }
 
@@ -233,6 +235,12 @@ UIElement::UpdateTotalRenderVisibility ()
 void
 UIElement::UpdateTotalHitTestVisibility ()
 {
+	ContentWalker walker = ContentWalker (this);
+	while (DependencyObject *content = walker.Step ()) {
+		if (content->Is (Type::UIElement))
+			((UIElement *)content)->UpdateTotalHitTestVisibility ();
+	}
+
 	if (GetSurface())
 		GetSurface ()->AddDirtyElement (this, DirtyHitTestVisibility);
 }
@@ -396,6 +404,17 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj
 	DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
+void 
+UIElement::CacheInvalidateHint () 
+{
+	ContentWalker walker = ContentWalker (this);
+	while (DependencyObject *content = walker.Step ()) {
+		if (content && content->Is (Type::UIELEMENT)) {
+			((UIElement *)content)->CacheInvalidateHint ();
+		}
+	}
+}
+
 void
 UIElement::ContentRemoved (DependencyObject *obj)
 {
@@ -476,19 +495,10 @@ UIElement::OnLoaded ()
 
 	emitting_loaded = true;
 
-	DependencyObject *content = DependencyObject::GetContent ();
-	if (content && content->Is (Type::COLLECTION)) {
-		Collection *children = (Collection *)content;
-
-		for (int i = 0; i < children->GetCount (); i++) {
-			DependencyObject *child = children->GetValueAt (i)->AsDependencyObject ();
-
-			if (child->Is (Type::UIELEMENT))
-				((UIElement *)child)->OnLoaded ();
-		} 
-	} 
-	else if (content && content->Is (Type::UIELEMENT)) {
-		((UIElement *)content)->OnLoaded ();
+	ContentWalker walker = ContentWalker (this);
+	while (DependencyObject *content = walker.Step ()) {
+		if (content && content->Is (Type::UIELEMENT))
+			((UIElement *)content)->OnLoaded ();
 	}
 		   
 	flags |= UIElement::IS_LOADED;
