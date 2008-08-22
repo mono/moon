@@ -322,31 +322,33 @@ UIElement::UpdateTransform ()
 void
 UIElement::ComputeLocalTransform ()
 {
-	GetRenderAffine (&local_transform);
-	transform_origin = GetTransformOrigin ();
-	
-	if (GetVisualParent () != NULL)
-		GetVisualParent ()->GetTransformFor (this, &parent_transform);
-	else
-		cairo_matrix_init_identity (&parent_transform);
+	Transform *transform = GetRenderTransform ();
+	Point transform_origin = GetTransformOrigin ();
+	cairo_matrix_t render;
+	cairo_matrix_init_identity (&render);
+	cairo_matrix_init_identity (&local_transform);
+
+	if (transform == NULL)
+		return;
+
+	transform->GetTransform (&render);
+	cairo_matrix_translate (&local_transform, transform_origin.x, transform_origin.y);
+	cairo_matrix_multiply (&local_transform, &render, &local_transform);
+	cairo_matrix_translate (&local_transform, -transform_origin.x, -transform_origin.y);
 }
 
 void
 UIElement::ComputeTransform ()
 {
-	//printf ("Compute transform for %s\n", GetName ());
-	if (GetVisualParent () != NULL)
+	if (GetVisualParent () != NULL) {
+		cairo_matrix_t parent_transform;
+		GetVisualParent ()->GetTransformFor (this, &parent_transform);
 		absolute_xform = GetVisualParent ()->absolute_xform;
-	else 
+		cairo_matrix_multiply (&absolute_xform, &parent_transform, &absolute_xform);
+	} else 
 		GetTransformFor (this, &absolute_xform);
 
-	cairo_matrix_multiply (&absolute_xform, &parent_transform, &absolute_xform);
-	cairo_matrix_translate (&absolute_xform, transform_origin.x, transform_origin.y);
 	cairo_matrix_multiply (&absolute_xform, &local_transform, &absolute_xform);
-	cairo_matrix_translate (&absolute_xform, -transform_origin.x, -transform_origin.y);
-	//printf ("      Final position for %s x=%g y=%g\n", GetTypeName(), absolute_xform.x0, absolute_xform.y0);
-
-	// a change in transform requires a change in our bounds, more than likely
 }
 
 void
@@ -871,17 +873,6 @@ UIElement::GetTimeManager ()
 {
 	Surface *surface = GetSurface ();
 	return surface ? surface->GetTimeManager() : NULL;
-}
-
-void
-UIElement::GetRenderAffine (cairo_matrix_t *result)
-{
-	Transform *transform = GetRenderTransform ();
-	
-	if (transform == NULL)
-		cairo_matrix_init_identity (result);
-	else
-		transform->GetTransform (result);
 }
 
 #if SL_2_0

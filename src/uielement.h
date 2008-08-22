@@ -463,13 +463,6 @@ private:
 
 	// the transform to be multiplied by our parent transform to compute absolute_xform
 	cairo_matrix_t local_transform;
-
-	cairo_matrix_t parent_transform;
-
-	Point transform_origin;
-	
-	void GetRenderAffine (cairo_matrix_t *result);
-	
 };
 
 #endif /* __MOON_UIELEMENT_H__ */

@@ -13,6 +13,12 @@
 
 2008-08-21  Larry Ewing  <lewing@novell.com>
 
+	* uielement.cpp (UIElement::ComputeLocalTransform): clean up
+	accumulated transform logic.  Keep the parent TransformFor out of
+	the local_transform.
+
+2008-08-21  Larry Ewing  <lewing@novell.com>
+
 	* uielement.cpp (UIElement::Dispose): add logic removed from
 	panel.
 
