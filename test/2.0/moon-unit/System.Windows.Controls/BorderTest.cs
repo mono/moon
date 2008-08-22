@@ -29,6 +29,21 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		public void ChildlessPropertiesMeasureTest ()
+		{
+			Border c = new Border ();
+			Size s = new Size (10,10);
+
+			c.Padding = new Thickness (10);
+			c.BorderBrush = new SolidColorBrush (Colors.Black);
+			c.Background = new SolidColorBrush (Colors.Black);
+
+			c.Measure (s);
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "DesiredSize");
+		}
+
+		[TestMethod]
 		public void ChildMeasureTest1 ()
 		{
 			Border c = new Border ();
