@@ -1,3 +1,8 @@
+2008-08-22  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.cpp (DependencyObject::GetContent): guard
+	against the value being NULL.
+
 2008-08-22  Larry Ewing  <lewing@novell.com>
 
 	* runtime.cpp (Surface::PaintToDrawable): restore the x/y offsets

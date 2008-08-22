@@ -1481,5 +1481,10 @@ DependencyObject::GetContent()
 	if (!content_property_name)
 		return NULL;
 
-	return GetValue(content_property_name)->AsDependencyObject();
+	Value *content_value = GetValue(content_property_name);
+
+	if (!content_value)
+		return NULL;
+
+	return content_value->AsDependencyObject();
 }
