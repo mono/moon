@@ -870,6 +870,14 @@ namespace Mono {
 		public extern static IntPtr text_block_new ();
 
 		[DllImport ("moon")]
+		// Size text_box_arrange_override (TextBox *instance, Size size);
+		public extern static UnmanagedSize text_box_arrange_override (IntPtr instance, UnmanagedSize size);
+
+		[DllImport ("moon")]
+		// void text_box_select (TextBox *instance, int start, int length);
+		public extern static void text_box_select (IntPtr instance, int start, int length);
+
+		[DllImport ("moon")]
 		// TextBox *text_box_new ();
 		public extern static IntPtr text_box_new ();
 
