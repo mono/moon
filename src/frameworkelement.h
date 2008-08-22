@@ -22,9 +22,9 @@ class FrameworkElement : public UIElement {
 	virtual ~FrameworkElement () {}
 
  public:
-	/* @PropertyType=double,DefaultValue=NAN,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *HeightProperty;
-	/* @PropertyType=double,DefaultValue=NAN,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *WidthProperty;
 
 	/* @PropertyType=double,DefaultValue=0.0,Version=2,ManagedSetterAccess=Internal,GenerateGetter */
