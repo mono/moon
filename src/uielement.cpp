@@ -237,7 +237,7 @@ UIElement::UpdateTotalHitTestVisibility ()
 {
 	ContentWalker walker = ContentWalker (this);
 	while (DependencyObject *content = walker.Step ()) {
-		if (content->Is (Type::UIElement))
+		if (content->Is (Type::UIELEMENT))
 			((UIElement *)content)->UpdateTotalHitTestVisibility ();
 	}
 
