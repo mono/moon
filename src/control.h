@@ -67,8 +67,6 @@ class Control : public FrameworkElement {
 	static DependencyProperty *TemplateProperty;
  	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentCenter,GenerateAccessors */
 	static DependencyProperty *VerticalContentAlignmentProperty;
- 	/* @PropertyType=Style,ManagedFieldAccess=Internal */
-	static DependencyProperty *StyleProperty;
 	
 	FrameworkElement *real_object;
 	Rect bounds_with_children;
