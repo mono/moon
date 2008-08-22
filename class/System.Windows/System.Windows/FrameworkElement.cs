@@ -71,8 +71,14 @@ namespace System.Windows {
 #endif
 		protected virtual Size MeasureOverride (Size availableSize)
 		{
-			return new Size (availableSize.Width > MinWidth ? MinWidth : availableSize.Width,
-					 availableSize.Height > MinHeight ? MinHeight : availableSize.Height);
+			UnmanagedSize uavail = new UnmanagedSize();
+
+			uavail.width = availableSize.Width;
+			uavail.height = availableSize.Height;
+
+			UnmanagedSize rv = NativeMethods.framework_element_measure_override (native, uavail);
+
+			return new Size (rv.width, rv.height);
 		}
 
 #if NET_2_1
@@ -80,7 +86,14 @@ namespace System.Windows {
 #endif
 		protected virtual Size ArrangeOverride (Size finalSize)
 		{
-			return finalSize;
+			UnmanagedSize ufinal = new UnmanagedSize();
+
+			ufinal.width = finalSize.Width;
+			ufinal.height = finalSize.Height;
+
+			UnmanagedSize rv = NativeMethods.framework_element_arrange_override (native, ufinal);
+
+			return new Size (rv.width, rv.height);
 		}
 
 		public DependencyObject Parent {

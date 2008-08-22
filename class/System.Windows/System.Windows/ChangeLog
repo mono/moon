@@ -1,5 +1,15 @@
 2008-08-22  Chris Toshok  <toshok@ximian.com>
 
+	* FrameworkElement.cs: slight change - since we have lots of
+	unmanaged code for dealing with the various content trees under a
+	given element, and since Control/UserControl don't override
+	MeasureOverride/ArrangeOverride, we have to call into unmanaged
+	code in FWE.MeasureOverride/ArrangeOverride.  This matches up with
+	the SecuritySafeCritical attributes, even if it does mean many
+	more M->N transitions.
+
+2008-08-22  Chris Toshok  <toshok@ximian.com>
+
 	* FrameworkElement.cs: in our Initialize method register the
 	delegates with the unmanaged code for our layout overrides.  Proxy
 	them through InvokeMeasureOverride and InvokeArrangeOverride.
