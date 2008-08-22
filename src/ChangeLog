@@ -1,3 +1,8 @@
+2008-08-22  Larry Ewing  <lewing@novell.com>
+
+	* usercontrol.cpp (UserControl::OnPropertyChanged): make sure the
+	values are there.
+
 2008-08-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* audio-alsa.cpp: Call Underflowed () when we run out of data.
