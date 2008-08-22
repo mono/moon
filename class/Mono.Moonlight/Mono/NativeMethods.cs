@@ -30,6 +30,9 @@ using System.Runtime.InteropServices;
 
 namespace Mono {
 
+	public delegate UnmanagedSize MeasureOverrideCallback (UnmanagedSize availableSize);
+	public delegate UnmanagedSize ArrangeOverrideCallback (UnmanagedSize finalSize);
+
 	public delegate IntPtr CreateCustomXamlElementCallback (string xmlns, string name);
 	public delegate void SetCustomXamlAttributeCallback (IntPtr target, string name, string value);
 	public delegate void XamlHookupEventCallback (IntPtr target, string name, string value);

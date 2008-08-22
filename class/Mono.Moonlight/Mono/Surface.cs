@@ -29,7 +29,6 @@
 
 using System;
 using System.Reflection;
-using System.Reflection;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Mono;
@@ -43,7 +42,7 @@ namespace Mono
 	{
 		private IntPtr native;
 		
-		private static object sync_object = new object ();
+		//private static object sync_object = new object ();
 	
 		public IntPtr Native {
 			get { return native; }

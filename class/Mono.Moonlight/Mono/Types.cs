@@ -51,6 +51,7 @@ namespace Mono
 			CreateNativeTypes ();
 		}
 		
+#if notyet
 		private static void Free ()
 		{
 			// TODO: How do we free the per-domain types? There's no static dtor...
@@ -60,6 +61,7 @@ namespace Mono
 			NativeMethods.types_free (native);
 			native = IntPtr.Zero;
 		}
+#endif
 		
 		public static IntPtr Native {
 			get { return native; }

@@ -390,6 +390,10 @@ namespace Mono {
 		public extern static IntPtr framework_element_new ();
 
 		[DllImport ("moon")]
+		// void framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb);
+		public extern static void framework_element_register_managed_overrides (IntPtr instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb);
+
+		[DllImport ("moon")]
 		// FrameworkTemplate *framework_template_new ();
 		public extern static IntPtr framework_template_new ();
 
@@ -954,6 +958,10 @@ namespace Mono {
 		public extern static IntPtr types_new ();
 
 		[DllImport ("moon")]
+		// void uielement_arrange (UIElement *instance, Rect finalRect);
+		public extern static void uielement_arrange (IntPtr instance, UnmanagedRect finalRect);
+
+		[DllImport ("moon")]
 		// bool uielement_capture_mouse (UIElement *instance);
 		public extern static bool uielement_capture_mouse (IntPtr instance);
 
@@ -970,6 +978,14 @@ namespace Mono {
 		public extern static IntPtr uielement_get_visual_parent (IntPtr instance);
 
 		[DllImport ("moon")]
+		// void uielement_invalidate_arrange (UIElement *instance);
+		public extern static void uielement_invalidate_arrange (IntPtr instance);
+
+		[DllImport ("moon")]
+		// void uielement_invalidate_measure (UIElement *instance);
+		public extern static void uielement_invalidate_measure (IntPtr instance);
+
+		[DllImport ("moon")]
 		// void uielement_measure (UIElement *instance, Size availableSize);
 		public extern static void uielement_measure (IntPtr instance, UnmanagedSize availableSize);
 
@@ -978,8 +994,8 @@ namespace Mono {
 		public extern static void uielement_release_mouse_capture (IntPtr instance);
 
 		[DllImport ("moon")]
-		// UIElement *uielement_new ();
-		public extern static IntPtr uielement_new ();
+		// void uielement_update_layout (UIElement *instance);
+		public extern static void uielement_update_layout (IntPtr instance);
 
 		[DllImport ("moon")]
 		// UIElementCollection *uielement_collection_new ();

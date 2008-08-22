@@ -1,3 +1,15 @@
+2008-08-22  Chris Toshok  <toshok@ximian.com>
+
+	* GeneratedPInvokes.cs: regen.
+
+	* NativeMethods.cs: add the two layout delegate types.
+
+	* Types.cs: ifdef out Free() to quiet the compiler.
+
+	* Surface.cs: comment out an unused field to quiet the compiler.
+
+	* Value.cs: make the paddings public so the compiler shuts up.
+
 2008-08-21  Chris Toshok  <toshok@ximian.com>
 
 	* Value.cs: add UnmanagedCornerRadius.

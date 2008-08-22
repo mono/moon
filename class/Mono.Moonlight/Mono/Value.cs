@@ -32,21 +32,21 @@ namespace Mono {
 
 	public struct UnmanagedRepeatBehavior {
 		public int kind;
-		int padding;
+		public int unused_padding;
 		public double count;
 		public long timespan;
 	}
 
 	public struct UnmanagedKeyTime {
 		public int kind;
-		int padding;
+		public int unused_padding;
 		public double percent;
 		public long timespan;
 	}
 
 	public struct UnmanagedDuration {
 		public int kind;
-		int padding;
+		public int unused_padding;
 		public long timespan;
 	}
 
@@ -111,7 +111,7 @@ namespace Mono {
 		public Kind k;
 
 		[FieldOffset (4)]
-		int padding;
+		public int unused_padding;
 
 		[FieldOffset (8)]
 		public ValUnion u;
