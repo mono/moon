@@ -163,6 +163,7 @@ class RowDefinition;
 class RowDefinitionCollection;
 class Run;
 class ScaleTransform;
+class SelectionChangedEventArgs;
 class Setter;
 class SetterBase;
 class SetterBaseCollection;
@@ -185,6 +186,7 @@ class Surface;
 class SystemTimeSource;
 class TextBlock;
 class TextBox;
+class TextChangedEventArgs;
 class TileBrush;
 class Timeline;
 class TimelineCollection;
@@ -417,6 +419,7 @@ public:
 	RowDefinitionCollection*       AsRowDefinitionCollection () { checked_get_subclass (Type::ROWDEFINITION_COLLECTION, RowDefinitionCollection) }
 	Run*                           AsRun () { checked_get_subclass (Type::RUN, Run) }
 	ScaleTransform*                AsScaleTransform () { checked_get_subclass (Type::SCALETRANSFORM, ScaleTransform) }
+	SelectionChangedEventArgs*     AsSelectionChangedEventArgs () { checked_get_subclass (Type::SELECTIONCHANGEDEVENTARGS, SelectionChangedEventArgs) }
 	Setter*                        AsSetter () { checked_get_subclass (Type::SETTER, Setter) }
 	SetterBase*                    AsSetterBase () { checked_get_subclass (Type::SETTERBASE, SetterBase) }
 	SetterBaseCollection*          AsSetterBaseCollection () { checked_get_subclass (Type::SETTERBASE_COLLECTION, SetterBaseCollection) }
@@ -439,6 +442,7 @@ public:
 	SystemTimeSource*              AsSystemTimeSource () { checked_get_subclass (Type::SYSTEMTIMESOURCE, SystemTimeSource) }
 	TextBlock*                     AsTextBlock () { checked_get_subclass (Type::TEXTBLOCK, TextBlock) }
 	TextBox*                       AsTextBox () { checked_get_subclass (Type::TEXTBOX, TextBox) }
+	TextChangedEventArgs*          AsTextChangedEventArgs () { checked_get_subclass (Type::TEXTCHANGEDEVENTARGS, TextChangedEventArgs) }
 	TileBrush*                     AsTileBrush () { checked_get_subclass (Type::TILEBRUSH, TileBrush) }
 	Timeline*                      AsTimeline () { checked_get_subclass (Type::TIMELINE, Timeline) }
 	TimelineCollection*            AsTimelineCollection () { checked_get_subclass (Type::TIMELINE_COLLECTION, TimelineCollection) }

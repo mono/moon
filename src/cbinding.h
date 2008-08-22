@@ -929,6 +929,34 @@ ScaleTransform *scale_transform_new (void);
 
 #if SL_2_0
 /**
+ * SelectionChangedEventArgs
+ **/
+/* @GeneratePInvoke */
+GPtrArray *selection_changed_event_args_get_added_items (SelectionChangedEventArgs *instance);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
+GPtrArray *selection_changed_event_args_get_removed_items (SelectionChangedEventArgs *instance);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
+SelectionChangedEventArgs *selection_changed_event_args_new (void);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
+void selection_changed_event_args_set_added_items (SelectionChangedEventArgs *instance, GPtrArray *addedItems);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
+void selection_changed_event_args_set_removed_items (SelectionChangedEventArgs *instance, GPtrArray *removedItems);
+#endif
+
+#if SL_2_0
+/**
  * Setter
  **/
 /* @GeneratePInvoke */
@@ -1118,17 +1146,20 @@ TextBlock *text_block_new (void);
  * TextBox
  **/
 /* @GeneratePInvoke */
-Size text_box_arrange_override (TextBox *instance, Size size);
-#endif
-
-#if SL_2_0
-/* @GeneratePInvoke */
 void text_box_select (TextBox *instance, int start, int length);
 #endif
 
 #if SL_2_0
 /* @GeneratePInvoke */
 TextBox *text_box_new (void);
+#endif
+
+#if SL_2_0
+/**
+ * TextChangedEventArgs
+ **/
+/* @GeneratePInvoke */
+TextChangedEventArgs *text_changed_event_args_new (void);
 #endif
 
 /**

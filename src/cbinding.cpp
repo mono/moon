@@ -1744,6 +1744,66 @@ scale_transform_new (void)
 
 #if SL_2_0
 /**
+ * SelectionChangedEventArgs
+ **/
+GPtrArray *
+selection_changed_event_args_get_added_items (SelectionChangedEventArgs *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetAddedItems ();
+}
+#endif
+
+
+#if SL_2_0
+GPtrArray *
+selection_changed_event_args_get_removed_items (SelectionChangedEventArgs *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetRemovedItems ();
+}
+#endif
+
+
+#if SL_2_0
+SelectionChangedEventArgs *
+selection_changed_event_args_new (void)
+{
+	return new SelectionChangedEventArgs ();
+}
+#endif
+
+
+#if SL_2_0
+void
+selection_changed_event_args_set_added_items (SelectionChangedEventArgs *instance, GPtrArray *addedItems)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetAddedItems (addedItems);
+}
+#endif
+
+
+#if SL_2_0
+void
+selection_changed_event_args_set_removed_items (SelectionChangedEventArgs *instance, GPtrArray *removedItems)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetRemovedItems (removedItems);
+}
+#endif
+
+
+#if SL_2_0
+/**
  * Setter
  **/
 Setter *
@@ -2132,19 +2192,6 @@ text_block_new (void)
 /**
  * TextBox
  **/
-Size
-text_box_arrange_override (TextBox *instance, Size size)
-{
-	if (instance == NULL)
-		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
-		return (Size) 0;
-	
-	return instance->ArrangeOverride (size);
-}
-#endif
-
-
-#if SL_2_0
 void
 text_box_select (TextBox *instance, int start, int length)
 {
@@ -2161,6 +2208,18 @@ TextBox *
 text_box_new (void)
 {
 	return new TextBox ();
+}
+#endif
+
+
+#if SL_2_0
+/**
+ * TextChangedEventArgs
+ **/
+TextChangedEventArgs *
+text_changed_event_args_new (void)
+{
+	return new TextChangedEventArgs ();
 }
 #endif
 

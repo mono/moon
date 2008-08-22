@@ -32,6 +32,54 @@ void textbox_shutdown (void);
 G_END_DECLS
 
 
+/* @SilverlightVersion="2" */
+/* @Namespace=System.Windows.Controls */
+class SelectionChangedEventArgs : public RoutedEventArgs {
+ protected:
+	virtual ~SelectionChangedEventArgs () { }
+	
+ public:
+	GPtrArray *removed;
+	GPtrArray *added;
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	SelectionChangedEventArgs () { removed = NULL; added = NULL; }
+	SelectionChangedEventArgs (GPtrArray *removedItems, GPtrArray *addedItems)
+	{
+		removed = removedItems;
+		added = addedItems;
+	}
+	
+	virtual Type::Kind GetObjectType () { return Type::SELECTIONCHANGEDEVENTARGS; }
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetAddedItems (GPtrArray *addedItems) { added = addedItems; }
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	GPtrArray *GetAddedItems () { return added; }
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetRemovedItems (GPtrArray *removedItems) { removed = removedItems; }
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	GPtrArray *GetRemovedItems () { return removed; }
+};
+
+
+/* @SilverlightVersion="2" */
+/* @Namespace=System.Windows.Controls */
+class TextChangedEventArgs : public RoutedEventArgs {
+ protected:
+	virtual ~TextChangedEventArgs () { }
+	
+ public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	TextChangedEventArgs () { }
+	
+	virtual Type::Kind GetObjectType () { return Type::TEXTCHANGEDEVENTARGS; }
+};
+
+
 class TextBuffer;
 
 /* @SilverlightVersion="2" */
