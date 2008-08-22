@@ -5,7 +5,8 @@ bin_SCRIPTS = xaml2html
 moon_DATA = xaml2html.exe
 
 EXTRA_DIST = \
-	$(xaml2html_exe_CS)
+	$(xaml2html_exe_CS) \
+	$(xaml2html_exe_RESOURCES)
 
 CLEANFILES = 		\
 	xaml2html 	\
@@ -15,8 +16,10 @@ CLEANFILES = 		\
 xaml2html_exe_CS = 	\
 	$(srcdir)/xaml2html.cs
 
-xaml2html.exe: $(xaml2html_exe_CS) 
-	gmcs -debug -out:$@ $(xaml2html_exe_CS) -res:sl2template.html
+xaml2html_exe_RESOURCES = sl2template.html
+
+xaml2html.exe: $(xaml2html_exe_CS) $(xaml2html_exe_RESOURCES)
+	gmcs -debug -out:$@ $(xaml2html_exe_CS) -res:$(srcdir)/sl2template.html
 
 xaml2html: $(srcdir)/../launcher.in Makefile
 	$(do_subst) < $(srcdir)/../launcher.in > xaml2html

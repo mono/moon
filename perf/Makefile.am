@@ -19,28 +19,28 @@ MCS_LIB_FLAGS = -r:Mono.Data.SqliteClient -r:System.Data
 MCS_RUNNER_FLAGS = -r:perf-suite-lib.dll
 MCS_GENERATOR_FLAGS = -r:perf-suite-lib.dll -r:Mono.Cairo
 
-perf_suite_lib_sources =				\
-	perf-suite-lib/Database.cs			\
-	perf-suite-lib/DbEntry.cs			\
-	perf-suite-lib/PassDbEntry.cs			\
-	perf-suite-lib/ItemDbEntry.cs			\
-	perf-suite-lib/ResultDbEntry.cs
+perf_suite_lib_sources = \
+	$(srcdir)/perf-suite-lib/Database.cs			\
+	$(srcdir)/perf-suite-lib/DbEntry.cs			\
+	$(srcdir)/perf-suite-lib/PassDbEntry.cs			\
+	$(srcdir)/perf-suite-lib/ItemDbEntry.cs			\
+	$(srcdir)/perf-suite-lib/ResultDbEntry.cs
 
-perf_suite_runner_sources =				\
-	perf-suite-runner/DrtStore.cs			\
-	perf-suite-runner/DrtItem.cs			\
-	perf-suite-runner/PerfSuiteRunner.cs		\
-	perf-suite-runner/DrtResult.cs			\
-	perf-suite-runner/Options.cs			\
-	perf-suite-runner/AssemblyInfo.cs
+perf_suite_runner_sources = \
+	$(srcdir)/perf-suite-runner/DrtStore.cs			\
+	$(srcdir)/perf-suite-runner/DrtItem.cs			\
+	$(srcdir)/perf-suite-runner/PerfSuiteRunner.cs		\
+	$(srcdir)/perf-suite-runner/DrtResult.cs		\
+	$(srcdir)/perf-suite-runner/Options.cs			\
+	$(srcdir)/perf-suite-runner/AssemblyInfo.cs
 
-perf_suite_generator_sources =				\
-	perf-suite-generator/GraphGenerator.cs		\
-	perf-suite-generator/HtmlGenerator.cs		\
-	perf-suite-generator/PerfSuiteGenerator.cs	\
-	perf-suite-generator/UtilFu.cs			\
-	perf-suite-generator/AssemblyInfo.cs		\
-	perf-suite-generator/Options.cs
+perf_suite_generator_sources = \
+	$(srcdir)/perf-suite-generator/GraphGenerator.cs	\
+	$(srcdir)/perf-suite-generator/HtmlGenerator.cs		\
+	$(srcdir)/perf-suite-generator/PerfSuiteGenerator.cs	\
+	$(srcdir)/perf-suite-generator/UtilFu.cs		\
+	$(srcdir)/perf-suite-generator/AssemblyInfo.cs		\
+	$(srcdir)/perf-suite-generator/Options.cs
 
 perf-suite-lib.dll: $(perf_suite_lib_sources)
 	$(MCS) $(MCS_COMMON_FLAGS) $(MCS_LIB_FLAGS) $(perf_suite_lib_sources) /target:library /out:$@

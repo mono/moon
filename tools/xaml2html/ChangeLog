@@ -1,3 +1,8 @@
+2008-08-22  Raja R Harinath  <harinath@hurrynot.org>
+
+	* Makefile.am (xaml2html.exe): Pick up sl2template.html from $(srcdir).
+	(EXTRA_DIST): Distribute sl2template.html.
+
 2008-07-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* xaml2html.cs: Make xap surfaces bigger, pending looking into every

@@ -166,7 +166,7 @@ if test x$managed_code = xyes; then
 				  [SMCS_ASM=`pkg-config --variable=Libraries smcs`
 				  AC_SUBST(SMCS_ASM)])
         else
-            browser_assemblies = no
+            browser_assemblies=no
 	    browser_reason="(reason: could not find smcs package, Mono >= 1.9 not installed)"
 	fi
     fi

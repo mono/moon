@@ -1,3 +1,7 @@
+2008-08-22  Raja R Harinath  <harinath@hurrynot.org>
+
+	* configure.ac (SMCS_ASM): Remove spaces around '='.
+
 2008-08-19  Chris Toshok  <toshok@ximian.com>
 
 	* configure.ac: beautify the configuration output.
