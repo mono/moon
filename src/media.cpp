@@ -488,12 +488,12 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 }
 
 void
-MediaElement::AudioFinished ()
+MediaElement::MediaFinished ()
 {
-	d(printf ("MediaElement::AudioFinished ()\n"));
+	d(printf ("MediaElement::MediaFinished ()\n"));
 	
 	SetState (Stopped);
-	Emit (MediaElement::MediaEndedEvent);
+	EmitMediaEnded ();
 }
 
 bool
@@ -537,12 +537,6 @@ MediaElement::AdvanceFrame ()
 		// beginning and end of a range (otherwise the same marker
 		// might raise two events).
 		previous_position = position + 1;
-	}
-
-	if (!advanced && mplayer->GetEof ()) {	
-		mplayer->Stop ();
-		SetState (Stopped);
-		EmitMediaEnded ();
 	}
 	
 	return !IsStopped ();
@@ -846,6 +840,8 @@ MediaElement::EmitMediaOpened ()
 void
 MediaElement::EmitMediaEnded ()
 {
+	d (printf ("MediaElement::EmitMediaEnded (), playlist: %p, isCurrentLastEntry: %i\n", playlist, playlist ? playlist->IsCurrentEntryLastEntry () : -1));
+	
 	if (playlist == NULL || playlist->IsCurrentEntryLastEntry ())
 		Emit (MediaEndedEvent);
 		

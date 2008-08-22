@@ -438,7 +438,10 @@ class MediaElement : public MediaBase {
 	virtual void SetSurface (Surface *surface);
 	
 	bool AdvanceFrame ();
-	void AudioFinished (); // Called by MediaPlayer when the audio reaches its end. Only called if we have no video.
+	// Called by MediaPlayer when the media reaches its end.
+	// For media with both video and audio this method is called
+	// after both have finished.
+	void MediaFinished ();
 	
 	MediaPlayer *GetMediaPlayer () { return mplayer; }
 	

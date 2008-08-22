@@ -53,13 +53,15 @@ class MediaPlayer : public EventObject {
 		// catch up with the audio.
 		SeekSynched			= (1 << 6),
 		RenderedFrame			= (1 << 7),
-		Eof		       		= (1 << 8),
 		Opened				= (1 << 9),
 		CanSeek				= (1 << 10),
 		CanPause			= (1 << 11),
 		// If we should stop playing when we reach the duration
 		// Used to support the Duration tag in asx files.
-		FixedDuration			= (1 << 12), 
+		FixedDuration			= (1 << 12),
+		// If Audio/Video has finished playing 
+		AudioEnded			= (1 << 13),
+		VideoEnded			= (1 << 14),
 	};
 	
  private:
@@ -85,6 +87,9 @@ class MediaPlayer : public EventObject {
 	
 	bool LoadVideoFrame ();
 	void Initialize ();
+	void CheckFinished ();
+	static void NotifyFinishedCallback (EventObject *player);
+	void NotifyFinished ();
 	
 	void SeekInternal (guint64 pts/* 100-nanosecond units (pts) */);
 	void RenderFrame (MediaFrame *frame);
@@ -119,6 +124,7 @@ class MediaPlayer : public EventObject {
 	bool IsSeeking () { return (state & Seeking) == Seeking; }
 	bool IsLoadFramePending () { return (state & LoadFramePending); }
 	bool HasRenderedFrame () { return (state & RenderedFrame); }
+	void VideoFinished (); // not thread safe.
 	void AudioFinished (); // Called by the audio player when audio reaches the end (this method is thread-safe).
 	void AudioFailed (AudioSource *source); // Called by the audio engine if audio failed to load (async)
 	
@@ -133,7 +139,6 @@ class MediaPlayer : public EventObject {
 	void SetCanPause (bool value);
 	void Pause ();
 	void Stop (bool seek_to_start = true);
-	bool MediaEnded ();
 	
 	void SetCanSeek (bool value);
 	bool GetCanSeek ();
@@ -163,9 +168,6 @@ class MediaPlayer : public EventObject {
 	
 	double GetBalance ();
 	void SetBalance (double balance);
-	
-	bool GetEof () { return state & Eof; }
-	void SetEof (bool value);
 	
 	double GetVolume ();
 	void SetVolume (double volume);

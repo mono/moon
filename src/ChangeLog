@@ -1,3 +1,12 @@
+2008-08-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mplayer.h, mplayer.cpp: Remove the Eof state and add two separate
+	  VideoEnded and AudioEnded states. Implement handling of VideoEnded
+	  state, and call MediaElement::MediaEnded when both states have been
+	  reached.
+	* media.h, media.cpp: Rename AudioFinished to MediaFinished and handle
+	  all media finished (both video and audio) logic there.
+
 2008-08-21  Larry Ewing  <lewing@novell.com>
 
 	* uielement.cpp (UIElement::Dispose): add logic removed from

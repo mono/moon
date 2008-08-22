@@ -30,10 +30,8 @@
 //#define VERBOSE_DEBUG
 #ifdef VERBOSE_DEBUG
 #define LOG_MEDIAPLAYER_EX(...) printf (__VA_ARGS__);
-#define LOG_AUDIO_EX(...) printf (__VA_ARGS__);
 #else
 #define LOG_MEDIAPLAYER_EX(...)
-#define LOG_AUDIO_EX(...)
 #endif
 
 
@@ -209,16 +207,48 @@ MediaPlayer::AudioFinished ()
 		return;
 	}
 
-	if (HasVideo ())
-		return;
+	SetBit (AudioEnded);
+	CheckFinished ();
+}
 
-	if (!HasAudio ())
-		return;
+void
+MediaPlayer::VideoFinished ()
+{
+	LOG_MEDIAPLAYER ("MediaPlayer::VideoFinished ()\n");
+	
+	SetBit (VideoEnded);
+	CheckFinished ();
+}
 
-	if (element) {
-		Stop ();
-		element->AudioFinished ();
-	}
+void
+MediaPlayer::NotifyFinishedCallback (EventObject *player)
+{
+	((MediaPlayer *) player)->NotifyFinished ();
+}
+
+void
+MediaPlayer::NotifyFinished ()
+{
+	LOG_MEDIAPLAYER ("MediaPlayer::NotifyFinished (): Element: %p\n", element);
+	
+	Stop ();
+	if (element)
+		element->MediaFinished ();
+}
+
+void
+MediaPlayer::CheckFinished ()
+{
+	LOG_MEDIAPLAYER ("MediaPlayer::CheckFinished (), HasVideo: %i, VideoEnded: %i, HasAudio: %i, AudioEnded: %i\n",
+		HasVideo (), GetBit (VideoEnded), HasAudio (), GetBit (AudioEnded));
+		
+	if (HasVideo () && !GetBit (VideoEnded))
+		return;
+		
+	if (HasAudio () && !GetBit (AudioEnded))
+		return;
+	
+	AddTickCallSafe (NotifyFinishedCallback);
 }
 
 void
@@ -416,7 +446,9 @@ MediaPlayer::Initialize ()
 {
 	LOG_MEDIAPLAYER ("MediaPlayer::Initialize ()\n");
 
+	// Clear out any state, bits, etc
 	state = (PlayerState) 0;
+	// Set initial states and bits
 	SetState (Stopped);
 	SetBit (SeekSynched);
 	SetBit (CanSeek);
@@ -529,10 +561,10 @@ MediaPlayer::AdvanceFrame ()
 	static int skipped_per_second = 0;
 	static guint64 last_second_pts = 0;
 	int skipped = 0;
-#endif
 	
-	LOG_MEDIAPLAYER_EX ("MediaPlayer::AdvanceFrame () state: %i, current_pts = %llu, IsPaused: %i, IsSeeking: %i, GetEof: %i, HasVideo: %i, HasAudio: %i\n", 
-		state, current_pts, IsPaused (), IsSeeking (), GetEof (), HasVideo (), HasAudio ());
+	printf ("MediaPlayer::AdvanceFrame () state: %i, current_pts = %llu, IsPaused: %i, IsSeeking: %i, VideoEnded: %i, AudioEnded: %i, HasVideo: %i, HasAudio: %i\n", 
+		state, current_pts, IsPaused (), IsSeeking (), GetBit (VideoEnded), GetBit (AudioEnded), HasVideo (), HasAudio ());
+#endif
 
 	RemoveBit (LoadFramePending);
 	
@@ -542,7 +574,7 @@ MediaPlayer::AdvanceFrame ()
 	if (IsSeeking ())
 		return false;
 	
-	if (GetEof ())
+	if (GetBit (VideoEnded))
 		return false;
 
 	if (!HasVideo ())
@@ -569,16 +601,18 @@ MediaPlayer::AdvanceFrame ()
 	target_pts_start = target_pts_delta > target_pts ? 0 : target_pts - target_pts_delta;
 	target_pts_end = target_pts + target_pts_delta;
 	
-	if (current_pts >= target_pts_end && GetBit (SeekSynched)) {
+	if (current_pts >= target_pts_end && GetBit (SeekSynched) && !(HasAudio () && GetBit (AudioEnded))) {
 #if DEBUG_ADVANCEFRAME
 		printf ("MediaPlayer::AdvanceFrame (): video is running too fast, wait a bit (current_pts: %llu, target_pts: %llu, delta: %llu, diff: %lld (%lld ms)).\n",
 			current_pts, target_pts, target_pts_delta, current_pts - target_pts, MilliSeconds_FromPts (current_pts - target_pts));
 #endif
 		return false;
 	}
-	
-	//printf ("MediaPlayer::AdvanceFrame (): target pts: %llu = %llu ms\n", target_pts, MilliSeconds_FromPts (target_pts));
-		
+
+#if DEBUG_ADVANCEFRAME
+	printf ("MediaPlayer::AdvanceFrame (): target pts: %llu = %llu ms\n", target_pts, MilliSeconds_FromPts (target_pts));
+#endif
+
 	while ((pkt = (Packet *) video.queue.Pop ())) {
 		if (pkt->frame->event == FrameEventEOF) {
 			if (!HasAudio ()) {
@@ -586,7 +620,7 @@ MediaPlayer::AdvanceFrame ()
 				this->target_pts = current_pts;
 			}
 			delete pkt;
-			SetEof (true);
+			VideoFinished ();
 			return false;
 		}
 		
@@ -611,13 +645,17 @@ MediaPlayer::AdvanceFrame ()
 				current_pts - first_live_pts, MilliSeconds_FromPts (current_pts - first_live_pts));
 */
 			if (element->IsLive ()) {
-				if (current_pts - first_live_pts > duration)
-					SetEof (true);
+				if (current_pts - first_live_pts > duration) {
+					AudioFinished ();
+					VideoFinished ();
+				}
 			} else {
-				if (current_pts > duration)
-					SetEof (true);
+				if (current_pts > duration) {
+					AudioFinished ();
+					VideoFinished ();
+				}
 			}
-			if (GetEof ()) {
+			if (GetBit (VideoEnded)) {
 				//printf ("MediaPlayer::AdvanceFrame (): Reached end of duration.\n");
 				update = false;
 				break;
@@ -685,7 +723,7 @@ MediaPlayer::AdvanceFrame ()
 	
 	delete pkt;
 		
-	return result & !GetEof ();
+	return result;
 }
 
 bool
@@ -725,24 +763,6 @@ MediaPlayer::LoadVideoFrame ()
 	delete packet;
 	
 	return cont;
-}
-
-bool
-MediaPlayer::MediaEnded ()
-{
-	return GetEof ();
-}
-
-void
-MediaPlayer::SetEof (bool value)
-{
-	LOG_MEDIAPLAYER ("MediaPlayer::SetEof (%i), state: %i\n", value, state);
-
-	if (value) {
-		SetBit (Eof);
-	} else {
-		RemoveBit (Eof);
-	}
 }
 
 void
@@ -904,7 +924,9 @@ MediaPlayer::Seek (guint64 pts)
 		audio->Stop ();
 
 	SetBit (Seeking);
-	RemoveBit (Eof);
+	RemoveBit (AudioEnded);
+	RemoveBit (VideoEnded);
+		
 	if (HasVideo () && !resume)
 		SetBit (LoadFramePending);
 
@@ -946,7 +968,8 @@ MediaPlayer::Stop (bool seek_to_start)
 	current_pts = 0;
 	target_pts = 0;
 	SetState (Stopped);
-	RemoveBit (Eof);
+	RemoveBit (AudioEnded);
+	RemoveBit (VideoEnded);
 
 	// If we're closing the media player, there is no need to 
 	// seek to the beginning, it may even cause crashes if we're

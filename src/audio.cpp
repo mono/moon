@@ -368,6 +368,8 @@ AudioSource::Pause ()
 void
 AudioSource::Underflowed ()
 {
+	LOG_AUDIO ("AudioSource::Underflowed (), state: %s, flags: %s\n", GetStateName (GetState ()), GetFlagNames (flags));
+	
 	if (GetState () == AudioPlaying && GetFlag (AudioEOF)) {
 		Stop ();
 		SetFlag (AudioEnded, true);
