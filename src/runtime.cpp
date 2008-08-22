@@ -1059,6 +1059,7 @@ Surface::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpo
 		cairo_set_source_surface (native, cairo_get_target (ctx),
 					  0, 0);
 
+		region->Offset (off_x, off_y);
 		region->Offset (-event->area.x, -event->area.y);
 		region->Draw (native);
 
