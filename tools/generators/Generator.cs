@@ -62,6 +62,7 @@ class Generator {
 		
 		for (int i = 0; i < types.Count; i++) {
 			TypeInfo type = types [i];
+			bool call_initialize = type.Annotations.ContainsKey ("CallInitialize");
 			string ns;
 			
 			ns = type.Namespace;
@@ -122,13 +123,29 @@ class Generator {
 				text.Append (type.ManagedName.Replace ("`1", ""));
 				text.Append (" () : base (NativeMethods.");
 				text.Append (type.C_Constructor);
-				text.AppendLine (" ()) {}");
+				text.Append (" ())");
+				if (call_initialize) {
+					text.AppendLine ();
+					text.AppendLine ("\t\t{");
+					text.AppendLine ("\t\t\tInitialize ();");
+					text.AppendLine ("\t\t}");
+				} else {
+					text.AppendLine (" {}");
+				}
 			}
 			
 			// Internal ctor
 			text.Append ("\t\tinternal ");
 			text.Append (type.ManagedName.Replace ("`1", ""));
-			text.AppendLine (" (IntPtr raw) : base (raw) {}");
+			text.Append (" (IntPtr raw) : base (raw)");
+			if (call_initialize) {
+				text.AppendLine ();
+				text.AppendLine ("\t\t{");
+				text.AppendLine ("\t\t\tInitialize ();");
+				text.AppendLine ("\t\t}");
+			} else {
+				text.AppendLine (" {}");
+			}
 
 			// GetKind
 			text.Append ("\t\tinternal override Kind GetKind () { return Kind.");

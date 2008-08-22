@@ -1,3 +1,8 @@
+2008-08-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Generator.cs: Implemented calling Initialize in generated managed
+	  ctors (by annotating the C++ type with 'CallInitializer').
+
 2008-08-21  Chris Toshok  <toshok@ximian.com>
 
 	* Generator.cs: generate nullable property setting code that
