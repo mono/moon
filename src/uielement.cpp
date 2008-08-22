@@ -68,7 +68,12 @@ UIElement::Dispose()
 	
 	for (int i = 0; i < triggers->GetCount (); i++)
 		triggers->GetValueAt (i)->AsEventTrigger ()->RemoveTarget (this);
-
+	
+	ContentWalker walker = ContentWalker (this);
+	while (DependencyObject *content = walker.Step ()) {
+		if (content->Is (Type::UIELEMENT))
+			((UIElement *)content)->SetVisualParent (NULL);
+	}
 
 	DependencyObject::Dispose();
 }

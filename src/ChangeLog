@@ -1,5 +1,8 @@
 2008-08-21  Larry Ewing  <lewing@novell.com>
 
+	* uielement.cpp (UIElement::Dispose): add logic removed from
+	panel.
+
 	* dirty.cpp (Surface::PropagateDirtyFlagToChildren): use
 	ContentWalker.
 
