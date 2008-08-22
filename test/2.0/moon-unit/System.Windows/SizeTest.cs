@@ -29,5 +29,12 @@ namespace MoonTest.System.Windows
 			Assert.Throws (delegate { new Size (Double.MinValue, Double.MinValue); }, typeof (ArgumentException));
 			Assert.Throws (delegate { new Size (Double.NegativeInfinity, Double.NegativeInfinity); }, typeof (ArgumentException));
 		}
+
+		[TestMethod]
+		public void ToStringTest ()
+		{
+			Assert.AreEqual ("5,5", (new Size(5,5)).ToString());
+			Assert.AreEqual ("5.234124,5234235", (new Size(5.234124,5234235)).ToString());
+		}
 	}
 }
