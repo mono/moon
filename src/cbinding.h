@@ -438,6 +438,9 @@ EventTrigger *event_trigger_new (void);
 /* @GeneratePInvoke */
 FrameworkElement *framework_element_new (void);
 
+/* @GeneratePInvoke */
+void framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb);
+
 #if SL_2_0
 /**
  * FrameworkTemplate
@@ -1232,6 +1235,9 @@ Types *types_new (void);
  * UIElement
  **/
 /* @GeneratePInvoke */
+void uielement_arrange (UIElement *instance, Rect finalRect);
+
+/* @GeneratePInvoke */
 bool uielement_capture_mouse (UIElement *instance);
 
 /* @GeneratePInvoke */
@@ -1246,13 +1252,19 @@ GeneralTransform *uielement_get_transform_to_uielement (UIElement *instance, UIE
 UIElement *uielement_get_visual_parent (UIElement *instance);
 
 /* @GeneratePInvoke */
+void uielement_invalidate_arrange (UIElement *instance);
+
+/* @GeneratePInvoke */
+void uielement_invalidate_measure (UIElement *instance);
+
+/* @GeneratePInvoke */
 void uielement_measure (UIElement *instance, Size availableSize);
 
 /* @GeneratePInvoke */
 void uielement_release_mouse_capture (UIElement *instance);
 
 /* @GeneratePInvoke */
-UIElement *uielement_new (void);
+void uielement_update_layout (UIElement *instance);
 
 /**
  * UIElementCollection

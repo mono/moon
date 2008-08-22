@@ -38,7 +38,6 @@ class Surface;
 /* @Namespace=System.Windows */
 class UIElement : public DependencyObject {
 public:
- 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	UIElement ();
 	
 	virtual Type::Kind GetObjectType () { return Type::UIELEMENT; }
@@ -343,17 +342,20 @@ public:
 	//
 	// 2.0 methods
 	//
-	/* @GenerateCBinding,GeneratePInvoke */
-	void Measure (Size availableSize)
-	{
-		desired_size = MeasureCore (availableSize);
-	}
 
-	virtual Size MeasureCore (Size availableSize)
-	{
-		return Size (0, 0);
-	}
-	
+	// Layout foo
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	virtual void Measure (Size availableSize) = 0;
+	/* @GenerateCBinding,GeneratePInvoke */
+	virtual void Arrange (Rect finalRect) = 0;
+	/* @GenerateCBinding,GeneratePInvoke */
+	void InvalidateMeasure ();
+	/* @GenerateCBinding,GeneratePInvoke */
+	void InvalidateArrange ();
+	/* @GenerateCBinding,GeneratePInvoke */
+	void UpdateLayout ();
+
 	/* @GenerateCBinding,GeneratePInvoke */
 	Size GetDesiredSize () { return desired_size; }
 	
@@ -446,6 +448,8 @@ protected:
 	virtual void Dispose ();
 	Rect IntersectBoundsWithClipPath (Rect bounds, bool transform);
 	void RenderClipPath (cairo_t *cr);
+
+	void SetDesiredSize (Size s) { desired_size = s; }
 
 	// The computed bounding box
 	Rect bounds;

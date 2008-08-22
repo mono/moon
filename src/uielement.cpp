@@ -459,6 +459,24 @@ UIElement::ContentAdded (DependencyObject *obj)
 	}
 }
 
+void
+UIElement::InvalidateMeasure ()
+{
+	g_warning ("UIElement::InvalidateMeasure not implemented - it should add a dirty flag (DirtyMeasure)");
+}
+
+void
+UIElement::InvalidateArrange ()
+{
+	g_warning ("UIElement::InvalidateArrange not implemented - it should add a dirty flag (DirtyArrange)");
+}
+
+void
+UIElement::UpdateLayout ()
+{
+	g_warning ("UIElement::UpdateLayout not implemented - it should process the layout dirty flags synchronously");
+}
+
 bool 
 UIElement::InsideClip (cairo_t *cr, double x, double y)
 {

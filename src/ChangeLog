@@ -1,3 +1,19 @@
+2008-08-22  Chris Toshok  <toshok@ximian.com>
+
+	* frameworkelement.h, frameworkelement.cpp: add in the layout foo
+	- provide implementations of Measure and Arrange that just call
+	MeasureOverride and ArrangeOverride.  These are virtual and meant
+	to be overridden either in unmanaged code (by simply overriding
+	them), or in managed code (RegisterManagedOverrides is called in
+	FWE.Initialize.)  Decorate the class with @CallInitialize so the
+	managed ctor calls it.
+
+	* uielement.h, uielement.cpp: remove the PInvoke/CBinding for the
+	ctor, and add the layout methods.  Measure and Arrange are pure
+	virtual.
+
+	* cbinding.h, cbinding.cpp, type-generated.cpp: regen.
+	
 2008-08-22  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBox::Layout): Implemented rough layout.

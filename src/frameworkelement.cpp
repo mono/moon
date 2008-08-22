@@ -20,6 +20,8 @@
 
 FrameworkElement::FrameworkElement ()
 {
+	measure_cb = NULL;
+	arrange_cb = NULL;
 }
 
 void
@@ -76,4 +78,48 @@ FrameworkElement::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 {
 	*height = GetHeight ();
 	*width = GetWidth ();
+}
+
+void
+FrameworkElement::Measure (Size availableSize)
+{
+	SetDesiredSize (MeasureOverride (availableSize));
+}
+
+Size
+FrameworkElement::MeasureOverride (Size availableSize)
+{
+	if (measure_cb)
+		return (*measure_cb)(availableSize);
+
+	return availableSize;
+}
+
+
+// not sure about the disconnect between these two methods..  I would
+// imagine both should take Rects and ArrangeOverride would return a
+// rectangle as well..
+void
+FrameworkElement::Arrange (Rect finalRect)
+{
+	Size finalSize (finalRect.w, finalRect.h);
+	Size r = ArrangeOverride (finalSize);
+
+	g_warning ("more here in FrameworkElement::Arrange.  move the bounds or something?  set properties?  who knows!?");
+}
+
+Size
+FrameworkElement::ArrangeOverride (Size finalSize)
+{
+	if (arrange_cb)
+		return (*arrange_cb)(finalSize);
+
+	return finalSize;
+}
+
+void
+FrameworkElement::RegisterManagedOverrides (MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb)
+{
+	this->measure_cb = measure_cb;
+	this->arrange_cb = arrange_cb;
 }

@@ -16,12 +16,13 @@
 
 #include "uielement.h"
 
-/* @Namespace=System.Windows */
-class FrameworkElement : public UIElement {
- protected:
-	virtual ~FrameworkElement () {}
+typedef Size (*MeasureOverrideCallback)(Size availableSize);
+typedef Size (*ArrangeOverrideCallback)(Size finalSize);
 
- public:
+/* @Namespace=System.Windows */
+/* @CallInitialize */
+class FrameworkElement : public UIElement {
+public:
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *HeightProperty;
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
@@ -77,22 +78,23 @@ class FrameworkElement : public UIElement {
 	//
 	// 2.0 methods
 	//
-	
-	virtual Size MeasureOverride (Size availableSize)
-	{
-		return Size (0, 0);
-	}
-	
-	// overrides uielement::MeasureCore
-	virtual Size MeasureCore (Size availableSize)
-	{
-		//
-		// We proxy from UIElement.MeasureCore to FrameworkElement.MeasureOverride
-		//
-		// WPF docs do not shed much light into why there is a difference
-		//
-		return MeasureOverride (availableSize);
-	}
+	// Layout
+	virtual void Measure (Size availableSize);
+	virtual void Arrange (Rect finalRect);
+
+	/* @GeneratePInvoke,GenerateCBinding */
+	void RegisterManagedOverrides (MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb);
+
+	// These two methods call into managed land using the
+	// delegates registered in RegisterManagedOverrides.  If
+	// classes want to implement fully unmanaged layout, they
+	// should override these two methods.
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	virtual Size MeasureOverride (Size availableSize);
+	/* @GenerateCBinding,GeneratePInvoke */
+	virtual Size ArrangeOverride (Size finalSize);
+
 
 	/* @SilverlightVersion="2" */
 	const static int BindingValidationErrorEvent;
@@ -132,6 +134,13 @@ class FrameworkElement : public UIElement {
 
 	VerticalAlignment GetVerticalAlignment ();
 	void SetVerticalAlignment (VerticalAlignment value);
+
+protected:
+	virtual ~FrameworkElement () {}
+
+private:
+	MeasureOverrideCallback measure_cb;
+	ArrangeOverrideCallback arrange_cb;
 };
 
 #endif /* __FRAMEWORKELEMENT_H__ */

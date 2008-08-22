@@ -835,6 +835,16 @@ framework_element_new (void)
 }
 
 
+void
+framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->RegisterManagedOverrides (measure_cb, arrange_cb);
+}
+
+
 #if SL_2_0
 /**
  * FrameworkTemplate
@@ -2331,6 +2341,16 @@ types_new (void)
 /**
  * UIElement
  **/
+void
+uielement_arrange (UIElement *instance, Rect finalRect)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->Arrange (finalRect);
+}
+
+
 bool
 uielement_capture_mouse (UIElement *instance)
 {
@@ -2375,6 +2395,26 @@ uielement_get_visual_parent (UIElement *instance)
 
 
 void
+uielement_invalidate_arrange (UIElement *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->InvalidateArrange ();
+}
+
+
+void
+uielement_invalidate_measure (UIElement *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->InvalidateMeasure ();
+}
+
+
+void
 uielement_measure (UIElement *instance, Size availableSize)
 {
 	if (instance == NULL)
@@ -2394,10 +2434,13 @@ uielement_release_mouse_capture (UIElement *instance)
 }
 
 
-UIElement *
-uielement_new (void)
+void
+uielement_update_layout (UIElement *instance)
 {
-	return new UIElement ();
+	if (instance == NULL)
+		return;
+	
+	instance->UpdateLayout ();
 }
 
 
