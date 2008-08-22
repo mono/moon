@@ -224,7 +224,6 @@ namespace System.Windows {
 				get {
 					int error;
 					IntPtr val = NativeMethods.collection_iterator_get_current (native_iter, out error);
-					Kind k;
 
 					if (error == 1)
 						throw GetInvalid ();
@@ -273,7 +272,6 @@ namespace System.Windows {
 			{
 				int error;
 				IntPtr val = NativeMethods.collection_iterator_get_current (native_iter, out error);
-				Kind k;
 
 				if (error == 1)
 					throw GetInvalid ();
