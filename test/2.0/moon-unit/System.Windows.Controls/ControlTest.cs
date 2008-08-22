@@ -17,14 +17,11 @@ namespace MoonTest.System.Windows.Controls
 	[TestClass]
 	public class ControlTest
 	{
-		class ControlPoker : Control {
-		}
-
-		[TestMethod]
-		public void DefaultRenderSizeTest ()
-		{
- 			ControlPoker p = new ControlPoker ();
- 			Assert.AreEqual (new Size (0,0), p.RenderSize);
+		class ControlPoker : UserControl {
+			public void SetContent (UIElement ui)
+			{
+				Content = ui;
+			}
 		}
 
 		[TestMethod]
@@ -35,7 +32,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		public void DefaultMeasureTest ()
+		public void ChildlessMeasureTest ()
 		{
  			ControlPoker p = new ControlPoker ();
 
@@ -43,12 +40,11 @@ namespace MoonTest.System.Windows.Controls
 
 			p.Measure (s);
 
-			Assert.AreEqual (new Size (0,0), p.DesiredSize);
-			Assert.AreEqual (new Size (0,0), p.RenderSize);
+			Assert.AreEqual (new Size (0,0), p.DesiredSize, "DesiredSize");
 		}
 
 		[TestMethod]
-		public void MinWidthMeasureTest1 ()
+		public void ChildlessMinWidthMeasureTest1 ()
 		{
  			ControlPoker p = new ControlPoker ();
 
@@ -62,7 +58,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		public void MinWidthMeasureTest2 ()
+		public void ChildlessMinWidthMeasureTest2 ()
 		{
  			ControlPoker p = new ControlPoker ();
 
@@ -76,7 +72,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		public void MinHeightMeasureTest1 ()
+		public void ChildlessMinHeightMeasureTest1 ()
 		{
  			ControlPoker p = new ControlPoker ();
 
@@ -90,7 +86,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		public void MinHeightMeasureTest2 ()
+		public void ChildlessMinHeightMeasureTest2 ()
 		{
  			ControlPoker p = new ControlPoker ();
 
@@ -101,6 +97,72 @@ namespace MoonTest.System.Windows.Controls
 			p.Measure (s);
 
 			Assert.AreEqual (5, p.DesiredSize.Height);
+		}
+
+		[TestMethod]
+		public void ChildMeasureTest1 ()
+		{
+			ControlPoker p = new ControlPoker ();
+			Rectangle r = new Rectangle();
+
+			p.SetContent (r);
+
+			r.Width = 50;
+			r.Height = 50;
+
+			p.Measure (new Size (10, 10));
+
+			Assert.AreEqual (new Size (10,10), p.DesiredSize);
+		}
+
+		[TestMethod]
+		public void ChildMeasureTest2 ()
+		{
+			ControlPoker p = new ControlPoker ();
+			Rectangle r = new Rectangle();
+
+			p.SetContent (r);
+
+			r.Width = 50;
+			r.Height = 50;
+
+			p.Measure (new Size (100, 100));
+
+			Assert.AreEqual (new Size (50,50), p.DesiredSize);
+		}
+
+		[TestMethod]
+		public void ChildThicknessMeasureTest1 ()
+		{
+			ControlPoker p = new ControlPoker ();
+			Rectangle r = new Rectangle();
+
+			p.Margin = new Thickness (5);
+			p.SetContent (r);
+
+			r.Width = 50;
+			r.Height = 50;
+
+			p.Measure (new Size (10, 10));
+
+			Assert.AreEqual (new Size (10,10), p.DesiredSize);
+		}
+
+		[TestMethod]
+		public void ChildThicknessMeasureTest2 ()
+		{
+			ControlPoker p = new ControlPoker ();
+			Rectangle r = new Rectangle();
+
+			p.Margin = new Thickness (5);
+			p.SetContent (r);
+
+			r.Width = 50;
+			r.Height = 50;
+
+			p.Measure (new Size (100, 100));
+
+			Assert.AreEqual (new Size (60,60), p.DesiredSize);
 		}
 
 		[TestMethod]
