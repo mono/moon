@@ -257,8 +257,10 @@ namespace Mono.Moonlight.UnitTesting
 
 		public static void AreEqual (object expected, object actual, string message)
 		{
-			if (!object.Equals (expected, actual))
-				throw new AssertFailedException (message);
+			if (!object.Equals (expected, actual)) {
+				string msg = String.Format ("Actual value is '{0}' while the expected value was '{1}'.", actual, expected);
+				throw new AssertFailedException (message, msg);
+			}
 		}
 
 		public static void AreEqual (object expected, object actual, string message, params object [] parameters)
