@@ -1,3 +1,20 @@
+2008-08-22  Chris Toshok  <toshok@ximian.com>
+
+	* frameworkelement.cpp (FrameworkElement::Measure): instead of
+	always calling MeasureOverride here, we call the registered manage
+	callback if there is one.  So, we proxy into managed code here,
+	invoke the virtual method FWE.MeasureOverride, and if there's no
+	subclass override (or if it chains up for some reason), we end up
+	in MeasureOverride by virtue of the pinvoke in
+	FrameworkElement.cs.
+	(FrameworkElement::MeasureOverride): move all the logic for the
+	default MeasureOverride implementation here.  it's pretty
+	braindead - takes margins into account, measures our child, makes
+	sure our size is between Min/Max.  That's about it.
+	(FrameworkElement::Arrange): same drill as ::Measure.
+	(FrameworkElement::ArrangeOverride): still (incorrectly) return
+	finalSize.
+
 2008-08-22  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.h: Made ArrangeOverride() virtual and added

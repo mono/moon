@@ -83,16 +83,64 @@ FrameworkElement::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 void
 FrameworkElement::Measure (Size availableSize)
 {
-	SetDesiredSize (MeasureOverride (availableSize));
+	Size size;
+
+	if (measure_cb)
+		size = (*measure_cb)(availableSize);
+	else
+		size = MeasureOverride (availableSize);
+
+	SetDesiredSize (size);
 }
 
 Size
 FrameworkElement::MeasureOverride (Size availableSize)
 {
-	if (measure_cb)
-		return (*measure_cb)(availableSize);
+	double width = GetWidth ();
+	double height = GetHeight ();
 
-	return availableSize;
+	// if our width is not set, or is smaller than our configured MinWidth,
+	// bump it up to the minimum.
+	if (width == /*XXX NAN*/ 0 || width < GetMinWidth ())
+		width = GetMinWidth ();
+
+	// and do the same with height
+	if (height == /*XXX NAN*/ 0 || height < GetMinHeight ())
+		height = GetMinHeight ();
+
+	DependencyObject *content = GetContent ();
+	if (content) {
+		if (content->Is (Type::UIELEMENT)) {
+			// Get the desired size of our content, and include any margins we set
+			UIElement *el = (UIElement*)content;
+			Thickness *margins = GetMargin ();
+
+			el->Measure (availableSize);
+
+			Size child_size = el->GetDesiredSize ();
+
+			// if the child's size + margins is > our idea
+			// of what our size should be, use the
+			// child+margins instead.
+			if (child_size.width + margins->left + margins->right > width)
+				width = child_size.width + margins->left + margins->right;
+			if (child_size.height + margins->top + margins->bottom > height)
+				height = child_size.height + margins->top + margins->bottom;
+		}
+		else if (!content->Is (Type::UIELEMENT)) {
+			g_warning ("non-panel has a collection for its ContentProperty.  unsupported");
+		}
+	}
+
+	// make sure we don't go over our configured max height
+	if (width > GetMaxWidth ())
+		width = GetMaxWidth ();
+	if (height > GetMaxHeight ())
+		height = GetMaxHeight ();
+
+	// now choose whichever is smaller, our chosen size or the availableSize.
+	return Size (availableSize.width > width ? width : availableSize.width,
+		     availableSize.height > height ? height : availableSize.height);
 }
 
 
@@ -102,8 +150,13 @@ FrameworkElement::MeasureOverride (Size availableSize)
 void
 FrameworkElement::Arrange (Rect finalRect)
 {
+	Size size;
 	Size finalSize (finalRect.w, finalRect.h);
-	Size r = ArrangeOverride (finalSize);
+
+	if (arrange_cb)
+		size = (*arrange_cb)(finalSize);
+	else
+		size = ArrangeOverride (finalSize);
 
 	g_warning ("more here in FrameworkElement::Arrange.  move the bounds or something?  set properties?  who knows!?");
 }
@@ -111,9 +164,6 @@ FrameworkElement::Arrange (Rect finalRect)
 Size
 FrameworkElement::ArrangeOverride (Size finalSize)
 {
-	if (arrange_cb)
-		return (*arrange_cb)(finalSize);
-
 	return finalSize;
 }
 
