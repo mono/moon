@@ -1,5 +1,10 @@
 2008-08-22  Chris Toshok  <toshok@ximian.com>
 
+	* color.h, rect.h, point.h: remove the copy ctors.  we don't need
+	them, and they were causing crashes (!)
+
+2008-08-22  Chris Toshok  <toshok@ximian.com>
+
 	* frameworkelement.cpp (FrameworkElement::MeasureOverride): always
 	take the margins into account, even when we're childless.
 

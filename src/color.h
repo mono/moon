@@ -35,14 +35,6 @@ struct Color {
 		this->a = a;
 	}
 
-	Color (const Color &color)
-	{
-		r = color.r;
-		g = color.g;
-		b = color.b;
-		a = color.a;
-	}
-
 	Color operator+ (const Color &color)
 	{
 		return Color (r + color.r,

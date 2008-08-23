@@ -27,12 +27,6 @@ public:
 		this->y = y;
 	}
 
-	Point (const Point &point)
-	{
-		x = point.x;
-		y = point.y;
-	}
-
 	Point operator+ (const Point &point)
 	{
 		return Point (x + point.x,

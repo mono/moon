@@ -33,14 +33,6 @@ struct Rect {
 		h = height;
 	}
 
-	Rect (const Rect &rect)
-	{
-		x = rect.x;
-		y = rect.y;
-		w = rect.w;
-		h = rect.h;
-	}
-
 	Rect (Point p1, Point p2)
 	{
 		x = MIN (p1.x, p2.x);
