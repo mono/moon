@@ -13,6 +13,9 @@
 
 2008-08-23  Larry Ewing  <lewing@novell.com>
 
+	* collection.cpp (ContentWalker::Step): add some debug logic to
+	protect against an error case for now.
+
 	* xaml.cpp (value_from_str): quick auto hack so we can test
 	controls more.
 

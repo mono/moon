@@ -598,12 +598,21 @@ ContentWalker::Step ()
 		if (index < 0 || index >= count)
 			return NULL;
 
+		UIElementCollection *uiecollection = NULL;
+		if (direction != Logical) {
+			uiecollection = (UIElementCollection *)collection;
+			if ((int)uiecollection->z_sorted->len != count) {
+				g_warning ("ContentWalker: unexpectedly got an unsorted UIElementCollection");
+				uiecollection->ResortByZIndex ();
+			}
+		}
+
 		switch (direction) {
 		case ZForward:
-			result = (UIElement *)((UIElementCollection *)collection)->z_sorted->pdata[index];
+			result = (UIElement*)uiecollection->z_sorted->pdata[index];
 			break;
 		case ZReverse:
-			result = (UIElement *)((UIElementCollection *)collection)->z_sorted->pdata[count - (index + 1)];
+			result = (UIElement *)uiecollection->z_sorted->pdata[count - (index + 1)];
 			break;
 		default:
 			Value *v = collection->GetValueAt (index);
