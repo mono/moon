@@ -26,6 +26,7 @@
 #include "control.h"
 #include "point.h"
 #include "grid.h"
+#include "cornerradius.h"
 
 /**
  * Value implementation
@@ -77,39 +78,43 @@ Value::Value (const Value& v)
 		break;
 	case Type::COLOR:
 		u.color = g_new (Color, 1);
-		*u.color = Color (*v.u.color);
+		*u.color = *v.u.color;
 		break;
 	case Type::POINT:
 		u.point = g_new (Point, 1);
-		*u.point = Point (*v.u.point);
+		*u.point = *v.u.point;
 		break;
 	case Type::RECT:
 		u.rect = g_new (Rect, 1);
-		*u.rect = Rect (*v.u.rect);
+		*u.rect = *v.u.rect;
 		break;
 	case Type::SIZE:
 		u.size = g_new (Size, 1);
-		*u.size = Size (*v.u.size);
+		*u.size = *v.u.size;
 		break;
 	case Type::REPEATBEHAVIOR:
 		u.repeat = g_new (RepeatBehavior, 1);
-		*u.repeat = RepeatBehavior (*v.u.repeat);
+		*u.repeat = *v.u.repeat;
 		break;
 	case Type::DURATION:
 		u.duration = g_new (Duration, 1);
-		*u.duration = Duration (*v.u.duration);
+		*u.duration = *v.u.duration;
 		break;
 	case Type::KEYTIME:
 		u.keytime = g_new (KeyTime, 1);
-		*u.keytime = KeyTime (*v.u.keytime);
+		*u.keytime = *v.u.keytime;
 		break;
 	case Type::GRIDLENGTH:
 		u.grid_length = g_new (GridLength, 1);
-		*u.grid_length = GridLength (*v.u.grid_length);
+		*u.grid_length = *v.u.grid_length;
 		break;
 	case Type::THICKNESS:
 		u.thickness = g_new (Thickness, 1);
-		*u.thickness = Thickness (*v.u.thickness);
+		*u.thickness = *v.u.thickness;
+		break;
+	case Type::CORNERRADIUS:
+		u.corner = g_new (CornerRadius, 1);
+		*u.corner = *v.u.corner;
 		break;
 	default:
 		if (Is (Type::EVENTOBJECT) && u.dependency_object)

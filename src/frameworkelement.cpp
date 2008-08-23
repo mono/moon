@@ -99,6 +99,7 @@ FrameworkElement::MeasureOverride (Size availableSize)
 #if SL_2_0
 	double width = GetWidth ();
 	double height = GetHeight ();
+	Thickness *margins = GetMargin ();
 
 	// if our width is not set, or is smaller than our configured MinWidth,
 	// bump it up to the minimum.
@@ -114,7 +115,6 @@ FrameworkElement::MeasureOverride (Size availableSize)
 		if (content->Is (Type::UIELEMENT)) {
 			// Get the desired size of our content, and include any margins we set
 			UIElement *el = (UIElement*)content;
-			Thickness *margins = GetMargin ();
 
 			el->Measure (availableSize);
 
@@ -123,10 +123,10 @@ FrameworkElement::MeasureOverride (Size availableSize)
 			// if the child's size + margins is > our idea
 			// of what our size should be, use the
 			// child+margins instead.
-			if (child_size.width + margins->left + margins->right > width)
-				width = child_size.width + margins->left + margins->right;
-			if (child_size.height + margins->top + margins->bottom > height)
-				height = child_size.height + margins->top + margins->bottom;
+			if (child_size.width > width)
+				width = child_size.width;
+			if (child_size.height > height)
+				height = child_size.height;
 		}
 		else if (content->Is (Type::COLLECTION)) {
 			g_warning ("non-panel has a collection for its ContentProperty.  unsupported");
@@ -135,6 +135,9 @@ FrameworkElement::MeasureOverride (Size availableSize)
 			g_warning ("unsupport content of FrameworkElement (%s)", content->GetTypeName());
 		}
 	}
+
+	width += margins->left + margins->right;
+	height += margins->top + margins->bottom;
 
 	// make sure we don't go over our configured max size
 	if (width > GetMaxWidth ())

@@ -503,3 +503,9 @@ Panel::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Property
 		FrameworkElement::OnCollectionItemChanged (col, obj, args);
 	}
 }
+
+Size
+Panel::MeasureOverride (Size availableSize)
+{
+	return Size(0,0);
+}

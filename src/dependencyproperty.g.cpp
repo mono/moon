@@ -869,6 +869,99 @@ BezierSegment::SetPoint3 (Point * value)
 	SetValue (BezierSegment::Point3Property, Value (*value));
 }
 
+#if SL_2_0
+Brush *
+Border::GetBackground ()
+{
+	Value *value = GetValue (Border::BackgroundProperty);
+	return value ? value->AsBrush () : NULL;
+}
+
+void
+Border::SetBackground (Brush * value)
+{
+	SetValue (Border::BackgroundProperty, Value (value));
+}
+
+#endif
+#if SL_2_0
+Brush *
+Border::GetBorderBrush ()
+{
+	Value *value = GetValue (Border::BorderBrushProperty);
+	return value ? value->AsBrush () : NULL;
+}
+
+void
+Border::SetBorderBrush (Brush * value)
+{
+	SetValue (Border::BorderBrushProperty, Value (value));
+}
+
+#endif
+#if SL_2_0
+Thickness *
+Border::GetBorderThickness ()
+{
+	Value *value = GetValue (Border::BorderThicknessProperty);
+	return value ? value->AsThickness () : NULL;
+}
+
+void
+Border::SetBorderThickness (Thickness * value)
+{
+	if (!value) return;
+	SetValue (Border::BorderThicknessProperty, Value (*value));
+}
+
+#endif
+#if SL_2_0
+UIElement *
+Border::GetChild ()
+{
+	Value *value = GetValue (Border::ChildProperty);
+	return value ? value->AsUIElement () : NULL;
+}
+
+void
+Border::SetChild (UIElement * value)
+{
+	SetValue (Border::ChildProperty, Value (value));
+}
+
+#endif
+#if SL_2_0
+CornerRadius *
+Border::GetCornerRadius ()
+{
+	Value *value = GetValue (Border::CornerRadiusProperty);
+	return value ? value->AsCornerRadius () : NULL;
+}
+
+void
+Border::SetCornerRadius (CornerRadius * value)
+{
+	if (!value) return;
+	SetValue (Border::CornerRadiusProperty, Value (*value));
+}
+
+#endif
+#if SL_2_0
+Thickness *
+Border::GetPadding ()
+{
+	Value *value = GetValue (Border::PaddingProperty);
+	return value ? value->AsThickness () : NULL;
+}
+
+void
+Border::SetPadding (Thickness * value)
+{
+	if (!value) return;
+	SetValue (Border::PaddingProperty, Value (*value));
+}
+
+#endif
 double
 Brush::GetOpacity ()
 {

@@ -69,6 +69,8 @@ class Panel : public FrameworkElement {
 	
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
+
+	virtual Size MeasureOverride (Size availableSize);
 	
 	//
 	// Property Accessors

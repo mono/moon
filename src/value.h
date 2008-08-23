@@ -37,6 +37,7 @@ struct Size;
 struct RepeatBehavior;
 struct GridLength;
 struct Thickness;
+struct CornerRadius;
 
 struct Value;
 
@@ -233,6 +234,7 @@ public:
 	Value (KeyTime keytime);
 	Value (GridLength grid_length);
 	Value (Thickness thickness);
+	Value (CornerRadius radius);
 	Value (const char *s);
 	Value (Point *points, int count);
 	Value (double *values, int count);
@@ -294,7 +296,7 @@ public:
 	KeyTime*	AsKeyTime ()	{ checked_get_exact (Type::KEYTIME, NULL, u.keytime); }
 	GridLength*     AsGridLength () { checked_get_exact (Type::GRIDLENGTH, NULL, u.grid_length); }
 	Thickness*      AsThickness () { checked_get_exact (Type::THICKNESS, NULL, u.thickness); }
-	
+	CornerRadius*   AsCornerRadius () { checked_get_exact (Type::CORNERRADIUS, NULL, u.corner); }
 	/* nullable primitives (all but bool) */
 	double*		AsNullableDouble ()	{ checked_get_exact (Type::DOUBLE, NULL, &u.d); }
 	guint64*	AsNullableUint64 ()	{ checked_get_exact (Type::UINT64, NULL, &u.ui64); }
@@ -492,6 +494,7 @@ public:
 		KeyTime *keytime;
 		GridLength *grid_length;
 		Thickness *thickness;
+		CornerRadius *corner;
 		void *managed_object;
 	} u;
 	

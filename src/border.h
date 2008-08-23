@@ -27,23 +27,46 @@ protected:
 	virtual ~Border () { };
 	
 public:
-	/* @PropertyType=Brush */
+	/* @PropertyType=Brush,GenerateAccessors */
 	static DependencyProperty *BackgroundProperty;
-	/* @PropertyType=Brush */
+	/* @PropertyType=Brush,GenerateAccessors */
 	static DependencyProperty *BorderBrushProperty;
-	/* @PropertyType=Thickness */
+	/* @PropertyType=Thickness,GenerateAccessors */
 	static DependencyProperty *BorderThicknessProperty;
-	/* @PropertyType=UIElement */
+	/* @PropertyType=UIElement,GenerateAccessors */
 	static DependencyProperty *ChildProperty;
-	/* @PropertyType=CornerRadius */
+	/* @PropertyType=CornerRadius,GenerateAccessors */
 	static DependencyProperty *CornerRadiusProperty;
-	/* @PropertyType=Thickness */
+	/* @PropertyType=Thickness,GenerateAccessors */
 	static DependencyProperty *PaddingProperty;
 	
  	/* @GenerateCBinding,GeneratePInvoke */
 	Border ();
 	
 	virtual Type::Kind GetObjectType () { return Type::BORDER; }
+
+	virtual Size MeasureOverride (Size availableSize);
+
+	// property accessors
+
+	Brush *GetBackground ();
+	void SetBackground (Brush *value);
+
+	Brush *GetBorderBrush ();
+	void SetBorderBrush (Brush *value);
+
+	Thickness *GetBorderThickness ();
+	void SetBorderThickness (Thickness *value);
+
+	UIElement *GetChild ();
+	void SetChild (UIElement *value);
+
+	CornerRadius *GetCornerRadius ();
+	void SetCornerRadius (CornerRadius *value);
+
+	Thickness *GetPadding ();
+	void SetPadding (Thickness *value);
+	
 };
 
 #endif /* __MOON_BORDER_H__ */
