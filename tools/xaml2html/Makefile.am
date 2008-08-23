@@ -16,10 +16,11 @@ CLEANFILES = 		\
 xaml2html_exe_CS = 	\
 	$(srcdir)/xaml2html.cs
 
-xaml2html_exe_RESOURCES = sl2template.html
+xaml2html_exe_RESOURCES = \
+	$(srcdir)/sl2template.html
 
 xaml2html.exe: $(xaml2html_exe_CS) $(xaml2html_exe_RESOURCES)
-	gmcs -debug -out:$@ $(xaml2html_exe_CS) -res:$(srcdir)/sl2template.html
+	gmcs -debug -out:$@ $(xaml2html_exe_CS) -res:$(xaml2html_exe_RESOURCES)
 
 xaml2html: $(srcdir)/../launcher.in Makefile
 	$(do_subst) < $(srcdir)/../launcher.in > xaml2html
