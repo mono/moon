@@ -19,6 +19,12 @@ struct CornerRadius {
 	double bottomLeft;
 	double bottomRight;
 
+	CornerRadius ()
+	  : topLeft (0), topRight (0),
+	    bottomLeft (0), bottomRight (0)
+	{
+	}
+
 	CornerRadius (double uniformRadius)
 	  : topLeft (uniformRadius), topRight (uniformRadius),
 	    bottomLeft (uniformRadius), bottomRight (uniformRadius)
@@ -31,6 +37,13 @@ struct CornerRadius {
 	    bottomLeft (bottomLeft), bottomRight (bottomRight)
 	{
 	}
+
+	//
+	// FromStr
+	//   Parses @s and return a new CornerRadius in @p.  Returns
+	//   true if this was successful, false otherwise.
+	//
+	static bool FromStr (const char *s, CornerRadius *p);
 };
 
 #endif /* __MOON_POINT_H__ */

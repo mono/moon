@@ -158,6 +158,7 @@ libmoon_la_SOURCES += 		\
 	border.cpp		\
 	contentcontrol.cpp	\
 	control.cpp		\
+	cornerradius.cpp	\
 	deployment.cpp		\
 	grid.cpp		\
 	style.cpp		\

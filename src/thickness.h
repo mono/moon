@@ -20,6 +20,12 @@ struct Thickness {
 	double right;
 	double bottom;
 	
+	Thickness ()
+	  : left (0), top (0),
+	    right (0), bottom (0)
+	{
+	}
+
 	Thickness (double uniform)
 	{
 		bottom = uniform;
@@ -51,12 +57,13 @@ struct Thickness {
 		left = thickness.left;
 		top = thickness.top;
 	}
+
+	//
+	// FromStr
+	//   Parses @s and return a new Thickness in @t.  Returns
+	//   true if this was successful, false otherwise.
+	//
+	static bool FromStr (const char *s, Thickness *t);
 };
-
-G_BEGIN_DECLS
-
-Thickness *thickness_from_str (const char *str);
-
-G_END_DECLS
 
 #endif /* __MOON_THICKNESS_H__ */

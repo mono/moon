@@ -1,3 +1,16 @@
+2008-08-23  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (libmoon_la_SOURCES): add cornerradius.cpp
+
+	* thickness.h, thickness.cpp: rename thickness_from_str to
+	Thickness::FromStr, and make it return a bool instead of a
+	pointer, as Point and Rect do.
+
+	* cornerradius.h, cornerradius.cpp: add CornerRadius::FromStr.
+
+	* xaml.cpp (value_from_str): use the CornerRadius parsing method,
+	and track the change to the Thickness one.
+
 2008-08-23  Larry Ewing  <lewing@novell.com>
 
 	* xaml.cpp (value_from_str): quick auto hack so we can test

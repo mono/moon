@@ -43,6 +43,7 @@
 
 #if SL_2_0
 #include "thickness.h"
+#include "cornerradius.h"
 #include "deployment.h"
 #include "grid.h"
 #endif
@@ -2343,18 +2344,23 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 		if (IS_NULL_OR_EMPTY(str))
 			return true;
 
-		errno = 0;
-		d = g_ascii_strtod (str, &endptr);
-
+		if (!strcmp (prop_name, "Width") || !strcmp (prop_name, "Height")) {
+			if (!strcmp (str, "Auto"))
+				*v = new Value (NAN);
+		}
 		
 		// FIXME this is a hack
-		if (errno || endptr == str || *endptr)
+		if (errno || endptr == str || *endptr) {
 			if (strcmp (str, "Auto") == 0)
 				d = NAN;
 			else
 				return false;
 
-		*v = new Value (d);
+			if (errno || endptr == str || *endptr)
+				return false;
+
+			*v = new Value (d);
+		}
 		break;
 	}
 	case Type::INT64: {
@@ -2532,11 +2538,22 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 	}
 #if SL_2_0
 	case Type::THICKNESS: {
-		Thickness *t = thickness_from_str (str);
-		if (t == NULL)
+		Thickness t;
+
+		if (!Thickness::FromStr (str, &t))
 			return false;
-		*v = new Value (*t);
-		delete t;
+
+		*v = new Value (t);
+		break;
+	}
+
+	case Type::CORNERRADIUS: {
+		CornerRadius c;
+
+		if (!CornerRadius::FromStr (str, &c))
+			return false;
+
+		*v = new Value (c);
 		break;
 	}
 
