@@ -44,6 +44,18 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		public void ChildlessMarginMeasureTest ()
+		{
+ 			ControlPoker p = new ControlPoker ();
+
+			p.Margin = new Thickness (10);
+
+			p.Measure (new Size (10, 10));
+
+			Assert.AreEqual (new Size (10,10), p.DesiredSize, "DesiredSize");
+		}
+		
+		[TestMethod]
 		public void ChildlessMinWidthMeasureTest1 ()
 		{
  			ControlPoker p = new ControlPoker ();

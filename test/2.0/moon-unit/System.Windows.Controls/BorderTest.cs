@@ -29,18 +29,33 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		public void ChildlessPropertiesMeasureTest ()
+		public void ChildlessPropertiesMeasureTest1 ()
 		{
 			Border c = new Border ();
-			Size s = new Size (10,10);
 
-			c.Padding = new Thickness (10);
+			c.Padding = new Thickness (20);
+			c.BorderThickness = new Thickness (5);
 			c.BorderBrush = new SolidColorBrush (Colors.Black);
 			c.Background = new SolidColorBrush (Colors.Black);
 
-			c.Measure (s);
+			c.Measure (new Size (10, 10));
 
-			Assert.AreEqual (new Size (0,0), c.DesiredSize, "DesiredSize");
+			Assert.AreEqual (new Size (10,10), c.DesiredSize, "DesiredSize");
+		}
+
+		[TestMethod]
+		public void ChildlessPropertiesMeasureTest2 ()
+		{
+			Border c = new Border ();
+
+			c.Padding = new Thickness (20);
+			c.BorderThickness = new Thickness (5);
+			c.BorderBrush = new SolidColorBrush (Colors.Black);
+			c.Background = new SolidColorBrush (Colors.Black);
+
+			c.Measure (new Size (100, 100));
+
+			Assert.AreEqual (new Size (50,50), c.DesiredSize, "DesiredSize");
 		}
 
 		[TestMethod]
@@ -112,17 +127,36 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		public void ChildPaddingMarginMeasureTest ()
+		public void Child_Padding_ChildMargin_MeasureTest ()
 		{
 			Border c = new Border ();
 			Rectangle r = new Rectangle();
 
 			c.Child = r;
 
+			r.Width = 50;
+			r.Height = 50;
 			r.Margin = new Thickness (5);
+
+			c.Padding = new Thickness(10);
+
+			c.Measure (new Size (100, 100));
+
+			Assert.AreEqual (new Size (80,80), c.DesiredSize);
+		}
+
+		[TestMethod]
+		public void Child_Padding_BorderMargin_MeasureTest ()
+		{
+			Border c = new Border ();
+			Rectangle r = new Rectangle();
+
+			c.Child = r;
+
 			r.Width = 50;
 			r.Height = 50;
 
+			c.Margin = new Thickness (5);
 			c.Padding = new Thickness(10);
 
 			c.Measure (new Size (100, 100));
