@@ -33,7 +33,7 @@ G_END_DECLS
 
 
 /* @SilverlightVersion="2" */
-/* @Namespace=System.Windows.Controls */
+/* @Namespace=None */
 class SelectionChangedEventArgs : public RoutedEventArgs {
  protected:
 	virtual ~SelectionChangedEventArgs () { }
@@ -67,7 +67,7 @@ class SelectionChangedEventArgs : public RoutedEventArgs {
 
 
 /* @SilverlightVersion="2" */
-/* @Namespace=System.Windows.Controls */
+/* @Namespace=None */
 class TextChangedEventArgs : public RoutedEventArgs {
  protected:
 	virtual ~TextChangedEventArgs () { }
