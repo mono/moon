@@ -55,6 +55,11 @@
 
 2008-08-22  Larry Ewing  <lewing@novell.com>
 
+	* collection.cpp (ContentWalker::ContentWalker): make
+	ContentWalker understand directions (Logical, ZForward, ZReverse).
+
+2008-08-22  Larry Ewing  <lewing@novell.com>
+
 	* runtime.cpp (Surface::PaintToDrawable): restore the x/y offsets
 	when drawing in the image backend.
 

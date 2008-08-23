@@ -569,15 +569,20 @@ collection_new (Type::Kind kind)
 	return (Collection *) t->CreateInstance();
 }
 
-ContentWalker::ContentWalker (DependencyObject *obj) {
+ContentWalker::ContentWalker (DependencyObject *obj, ContentWalkerDirection dir) {
 	index = 0;
 	collection = NULL;
 	content = obj->GetContent ();
+	direction = dir;
 
 	if (content != NULL) {
-		if (content->Is (Type::COLLECTION))
+		if (content->Is (Type::COLLECTION)) {
 			collection = (Collection *)content;
-		
+
+			if (!collection->Is (Type::UIELEMENT_COLLECTION))
+				direction = Logical;
+		}
+
 		content->ref ();
 	}
 }
@@ -588,17 +593,42 @@ ContentWalker::Step ()
 	DependencyObject *result = NULL;
 
 	if (collection) {
-		if (index < 0 || index >= collection->GetCount ())
+		int count = collection->GetCount ();
+
+		if (index < 0 || index >= count)
 			return NULL;
+
+		switch (direction) {
+		case ZForward:
+			result = (UIElement *)((UIElementCollection *)collection)->z_sorted->pdata[index];
+			break;
+		case ZReverse:
+			result = (UIElement *)((UIElementCollection *)collection)->z_sorted->pdata[count - (index + 1)];
+			break;
+		default:
+			Value *v = collection->GetValueAt (index);
+			result = v->AsDependencyObject ();
+		}
 		
-		Value *v = collection->GetValueAt (index++);
-		result = v->AsDependencyObject ();
+		index++;
 	} else {
 		result = content;
 		content = NULL;
 	}
 
 	return result;
+}
+
+int
+ContentWalker::GetCount ()
+{
+	if (!content)
+		return 0;
+
+	if (!collection)
+		return 1;
+
+	return collection->GetCount ();
 }
 
 ContentWalker::~ContentWalker()

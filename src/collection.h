@@ -175,17 +175,26 @@ private:
 	int index;
 };
 
+enum ContentWalkerDirection {
+	Logical,
+	ZForward,
+	ZReverse
+};
+
 class ContentWalker {
 public:
-	ContentWalker (DependencyObject *obj);
+	ContentWalker (DependencyObject *obj, ContentWalkerDirection direction = Logical);
+
 	~ContentWalker ();
 
 	DependencyObject *Step ();
+	int GetCount ();
 
 protected:
 	DependencyObject *content;
 	Collection *collection;
 	int index;
+	ContentWalkerDirection direction;
 };
 
 /* @Namespace=System.Windows */
