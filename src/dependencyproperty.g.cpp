@@ -203,6 +203,8 @@ dependency_property_g_init (void)
 	Inline::LanguageProperty = DependencyProperty::Register (Type::INLINE, "Language", new Value ("en-US"));
 #endif
 	Inline::TextDecorationsProperty = DependencyProperty::Register (Type::INLINE, "TextDecorations", new Value (TextDecorationsNone));
+	KeySpline::ControlPoint1Property = DependencyProperty::Register (Type::KEYSPLINE, "ControlPoint1", new Value (Point (0,0)));
+	KeySpline::ControlPoint2Property = DependencyProperty::Register (Type::KEYSPLINE, "ControlPoint2", new Value (Point (1.0, 1.0)));
 	Line::X1Property = DependencyProperty::Register (Type::LINE, "X1", new Value (0.0));
 	Line::X2Property = DependencyProperty::Register (Type::LINE, "X2", new Value (0.0));
 	Line::Y1Property = DependencyProperty::Register (Type::LINE, "Y1", new Value (0.0));
@@ -551,6 +553,8 @@ DependencyProperty *Inline::ForegroundProperty = NULL;
 DependencyProperty *Inline::LanguageProperty = NULL;
 #endif
 DependencyProperty *Inline::TextDecorationsProperty = NULL;
+DependencyProperty *KeySpline::ControlPoint1Property = NULL;
+DependencyProperty *KeySpline::ControlPoint2Property = NULL;
 DependencyProperty *Line::X1Property = NULL;
 DependencyProperty *Line::X2Property = NULL;
 DependencyProperty *Line::Y1Property = NULL;
@@ -2292,6 +2296,34 @@ void
 Inline::SetForeground (Brush * value)
 {
 	SetValue (Inline::ForegroundProperty, Value (value));
+}
+
+Point *
+KeySpline::GetControlPoint1 ()
+{
+	Value *value = GetValue (KeySpline::ControlPoint1Property);
+	return value ? value->AsPoint () : NULL;
+}
+
+void
+KeySpline::SetControlPoint1 (Point * value)
+{
+	if (!value) return;
+	SetValue (KeySpline::ControlPoint1Property, Value (*value));
+}
+
+Point *
+KeySpline::GetControlPoint2 ()
+{
+	Value *value = GetValue (KeySpline::ControlPoint2Property);
+	return value ? value->AsPoint () : NULL;
+}
+
+void
+KeySpline::SetControlPoint2 (Point * value)
+{
+	if (!value) return;
+	SetValue (KeySpline::ControlPoint2Property, Value (*value));
 }
 
 double

@@ -27,8 +27,6 @@
 /* @Namespace=System.Windows.Media.Animation */
 class KeySpline : public DependencyObject {
 	moon_quadratic quadraticsArray [16];
-	Point controlPoint1;
-	Point controlPoint2;
 	
  protected:
 	virtual ~KeySpline () {}
@@ -41,14 +39,21 @@ class KeySpline : public DependencyObject {
 	KeySpline (double x1, double y1, double x2, double y2);
 
 	virtual Type::Kind GetObjectType () { return Type::KEYSPLINE; }
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	
+	void RegenerateQuadratics ();
 
 	double GetSplineProgress (double linearProgress);
+	/* @PropertyType=Point,ManagedPropertyType=Point,DefaultValue=Point (0\,0),GenerateAccessors */
+	static DependencyProperty *ControlPoint1Property;
+	/* @PropertyType=Point,ManagedPropertyType=Point,DefaultValue=Point (1.0\, 1.0),GenerateAccessors */
+	static DependencyProperty *ControlPoint2Property;
 
-	Point GetControlPoint1 ();
-	void SetControlPoint1 (Point controlPoint1);
+	Point *GetControlPoint1 ();
+	void SetControlPoint1 (Point *controlPoint1);
 
-	Point GetControlPoint2 ();
-	void SetControlPoint2 (Point controlPoint2);
+	Point *GetControlPoint2 ();
+	void SetControlPoint2 (Point *controlPoint2);
 };
 
 /* @IncludeInKinds */

@@ -721,9 +721,12 @@ PointAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 	return new Value (LERP (start, end, progress));
 }
 
-static void
-regenerate_quadratics_array (Point c1, Point c2, moon_quadratic *qarr)
+void
+KeySpline::RegenerateQuadratics ()
 {
+	Point c1 = *GetControlPoint1 ();
+	Point c2 = *GetControlPoint2 ();
+
 	moon_cubic src;
 	src.c0.x = 0; src.c0.y = 0;
 	src.c1.x = c1.x; src.c1.y = c1.y;
@@ -733,56 +736,40 @@ regenerate_quadratics_array (Point c1, Point c2, moon_quadratic *qarr)
 	moon_cubic carr [16];
 	
 	moon_subdivide_cubic_at_level (carr, 4, &src);
-	moon_convert_cubics_to_quadratics (qarr, carr, 16);
+	moon_convert_cubics_to_quadratics (quadraticsArray, carr, 16);
 }
 
 KeySpline::KeySpline ()
 {
-	controlPoint1 = Point (0.0, 0.0);
-	controlPoint2 = Point (1.0, 1.0);
-	regenerate_quadratics_array (controlPoint1, controlPoint2, quadraticsArray);
 }
 
 KeySpline::KeySpline (Point controlPoint1, Point controlPoint2)
 {
-	this->controlPoint1 = controlPoint1;
-	this->controlPoint2 = controlPoint2;
-	regenerate_quadratics_array (controlPoint1, controlPoint2, quadraticsArray);
+	SetControlPoint1 (&controlPoint1);
+	SetControlPoint2 (&controlPoint2);
 }
 
 KeySpline::KeySpline (double x1, double y1,
 		      double x2, double y2)
 {
-	this->controlPoint1 = Point (x1, y1);
-	this->controlPoint2 = Point (x2, y2);
-	regenerate_quadratics_array (controlPoint1, controlPoint2, quadraticsArray);
-}
+	Point p1 = Point (x1, y1);
+	Point p2 = Point (x2, y2);
 
-Point
-KeySpline::GetControlPoint1 ()
-{
-	return controlPoint1;
+	SetControlPoint1 (&p1);
+	SetControlPoint2 (&p2);
 }
 
 void
-KeySpline::SetControlPoint1 (Point controlPoint1)
+KeySpline::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	this->controlPoint1 = controlPoint1;
-	regenerate_quadratics_array (controlPoint1, controlPoint2, quadraticsArray);
-}
+	if (args->property->GetOwnerType() != Type::KEYSPLINE) {
+		DependencyObject::OnPropertyChanged (args);
+		return;
+	}
 
+	RegenerateQuadratics ();
 
-Point
-KeySpline::GetControlPoint2 ()
-{
-	return controlPoint2;
-}
-
-void
-KeySpline::SetControlPoint2 (Point controlPoint2)
-{
-	this->controlPoint2 = controlPoint2;
-	regenerate_quadratics_array (controlPoint1, controlPoint2, quadraticsArray);
+	NotifyListenersOfPropertyChange (args);
 }
 
 double
@@ -796,37 +783,6 @@ KeySpline::GetSplineProgress (double linearProgress)
 
 	return moon_quadratic_array_y_for_x (quadraticsArray, linearProgress, 16);
 }
-
-void
-key_spline_get_control_point_1 (KeySpline *ks, double *x, double *y)
-{
-	Point p = ks->GetControlPoint1 ();
-	
-	*x = p.x;
-	*y = p.y;
-}
-
-void
-key_spline_set_control_point_1 (KeySpline *ks, double x, double y)
-{
-	ks->SetControlPoint1 (Point (x, y));
-}
-
-void
-key_spline_get_control_point_2 (KeySpline *ks, double *x, double *y)
-{
-	Point p = ks->GetControlPoint2 ();
-	
-	*x = p.x;
-	*y = p.y;
-}
-
-void
-key_spline_set_control_point_2 (KeySpline *ks, double x, double y)
-{
-	ks->SetControlPoint2 (Point (x, y));
-}
-
 
 KeyFrame::KeyFrame ()
 {

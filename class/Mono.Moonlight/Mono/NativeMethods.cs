@@ -86,20 +86,6 @@ namespace Mono {
 		public extern static void general_transform_transform_point (IntPtr handle, ref UnmanagedPoint p, ref UnmanagedPoint r);
 #endregion
 		
-#region Animations
-		[DllImport("moon")]
-		public extern static void key_spline_set_control_point_1 (IntPtr handle, double x, double y);
-
-		[DllImport("moon")]
-		public extern static void key_spline_set_control_point_2 (IntPtr handle, double x, double y);
-
-		[DllImport("moon")]
-		public extern static void key_spline_get_control_point_1 (IntPtr handle, out double x, out double y);
-
-		[DllImport("moon")]
-		public extern static void key_spline_get_control_point_2 (IntPtr handle, out double x, out double y);
-#endregion
-		
 #region Collections
 		[DllImport("moon")]
 		public extern static void stroke_collection_get_bounds (IntPtr native, ref UnmanagedRect urect);

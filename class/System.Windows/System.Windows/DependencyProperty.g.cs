@@ -1583,6 +1583,21 @@ namespace System.Windows.Media.Animation {
 		}
 	}
 
+	partial class KeySpline {
+		public static readonly DependencyProperty ControlPoint1Property = DependencyProperty.Lookup (Kind.KEYSPLINE, "ControlPoint1", typeof (Point));
+		public static readonly DependencyProperty ControlPoint2Property = DependencyProperty.Lookup (Kind.KEYSPLINE, "ControlPoint2", typeof (Point));
+
+		public Point ControlPoint1 {
+			get { return (Point) GetValue (ControlPoint1Property); }
+			set { SetValue (ControlPoint1Property, value); }
+		}
+
+		public Point ControlPoint2 {
+			get { return (Point) GetValue (ControlPoint2Property); }
+			set { SetValue (ControlPoint2Property, value); }
+		}
+	}
+
 	partial class ObjectAnimationUsingKeyFrames {
 		internal static readonly DependencyProperty KeyFramesProperty = DependencyProperty.Lookup (Kind.OBJECTANIMATIONUSINGKEYFRAMES, "KeyFrames", typeof (ObjectKeyFrameCollection));
 
