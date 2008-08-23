@@ -1,5 +1,8 @@
 2008-08-23  Larry Ewing  <lewing@novell.com>
 
+	* xaml.cpp (value_from_str): quick auto hack so we can test
+	controls more.
+
 	* runtime.cpp (RenderNode::Render): fix typo in merge
 
 2008-08-23  Larry Ewing  <lewing@novell.com>
