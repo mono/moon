@@ -1080,7 +1080,7 @@ RenderNode::RenderNode (UIElement *el,
 void
 RenderNode::Render (cairo_t *ctx)
 {
-	bool front_to_back = UseBackToFront ();
+	bool front_to_back = uielement->UseBackToFront ();
 
 	if (pre_render)
 		pre_render (ctx, uielement, region, front_to_back);
