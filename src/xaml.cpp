@@ -2344,22 +2344,19 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 		if (IS_NULL_OR_EMPTY(str))
 			return true;
 
-		if (!strcmp (prop_name, "Width") || !strcmp (prop_name, "Height")) {
-			if (!strcmp (str, "Auto"))
-				*v = new Value (NAN);
-		}
+		errno = 0;
+		d = g_ascii_strtod (str, &endptr); 
 		
-		// FIXME this is a hack
-		if (errno || endptr == str || *endptr) {
-			if (strcmp (str, "Auto") == 0)
+		
+		if (errno || endptr == str || *endptr)
+			if ((!strcmp (prop_name, "Width") || !strcmp (prop_name, "Height"))
+			     && !strcmp (str, "Auto"))
 				d = NAN;
-			else
-				return false;
+			else 
+				return NULL;
 
-			if (errno || endptr == str || *endptr)
-				return false;
+		*v = new Value (d);
 
-			*v = new Value (d);
 		}
 		break;
 	}

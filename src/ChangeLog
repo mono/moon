@@ -1,5 +1,8 @@
 2008-08-23  Larry Ewing  <lewing@novell.com>
 
+	* xaml.cpp (value_from_str): fixed crossed commits with Auto
+	parsing.
+
 	* collection.cpp (ContentWalker::Step): add some debug logic to
 	protect against an error case for now.
 
