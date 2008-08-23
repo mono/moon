@@ -255,6 +255,14 @@ Value::Value (Thickness thickness)
 	*u.thickness = Thickness (thickness);
 }
 
+Value::Value (CornerRadius corner)
+{
+	Init ();
+	k = Type::CORNERRADIUS;
+	u.corner = g_new (CornerRadius, 1);
+	*u.corner = CornerRadius (corner);
+}
+
 void
 Value::FreeValue ()
 {
