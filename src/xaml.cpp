@@ -2348,16 +2348,15 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 		d = g_ascii_strtod (str, &endptr); 
 		
 		
-		if (errno || endptr == str || *endptr)
+		if (errno || endptr == str || *endptr) {
 			if ((!strcmp (prop_name, "Width") || !strcmp (prop_name, "Height"))
-			     && !strcmp (str, "Auto"))
+			    && !strcmp (str, "Auto"))
 				d = NAN;
 			else 
-				return NULL;
-
-		*v = new Value (d);
-
+				return false;
 		}
+		
+		*v = new Value (d);
 		break;
 	}
 	case Type::INT64: {
