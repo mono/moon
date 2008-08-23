@@ -2346,15 +2346,13 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 		errno = 0;
 		d = g_ascii_strtod (str, &endptr);
 
-		if (errno) {
-			// XXX this is a hack
-			if (strcmp (str, "Auto") == 0);
-			errno = 0;
-			d = NAN;
-		}
-
+		
+		// FIXME this is a hack
 		if (errno || endptr == str || *endptr)
-			return false;
+			if (strcmp (str, "Auto") == 0)
+				d = NAN;
+			else
+				return false;
 
 		*v = new Value (d);
 		break;
