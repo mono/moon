@@ -26,6 +26,7 @@
 #include "media.h"
 
 //#define DEBUG_INVALIDATE 0
+#define MIN_FRONT_TO_BACK_COUNT 25
 
 UIElement::UIElement ()
 {
@@ -326,15 +327,15 @@ UIElement::ComputeLocalTransform ()
 	Point transform_origin = GetTransformOrigin ();
 	cairo_matrix_t render;
 	cairo_matrix_init_identity (&render);
-	cairo_matrix_init_identity (&local_transform);
+	cairo_matrix_init_identity (&local_xform);
 
 	if (transform == NULL)
 		return;
 
 	transform->GetTransform (&render);
-	cairo_matrix_translate (&local_transform, transform_origin.x, transform_origin.y);
-	cairo_matrix_multiply (&local_transform, &render, &local_transform);
-	cairo_matrix_translate (&local_transform, -transform_origin.x, -transform_origin.y);
+	cairo_matrix_translate (&local_xform, transform_origin.x, transform_origin.y);
+	cairo_matrix_multiply (&local_xform, &render, &local_xform);
+	cairo_matrix_translate (&local_xform, -transform_origin.x, -transform_origin.y);
 }
 
 void
@@ -348,7 +349,7 @@ UIElement::ComputeTransform ()
 	} else 
 		GetTransformFor (this, &absolute_xform);
 
-	cairo_matrix_multiply (&absolute_xform, &local_transform, &absolute_xform);
+	cairo_matrix_multiply (&absolute_xform, &local_xform, &absolute_xform);
 }
 
 void
@@ -652,9 +653,12 @@ UIElement::ReleaseMouseCapture ()
 }
 
 void
-UIElement::DoRender (cairo_t *cr, Region *region)
+UIElement::DoRender (cairo_t *cr, Region *parent_region)
 {
-	if (!GetRenderVisible() || IS_INVISIBLE (total_opacity) || region->RectIn (GetSubtreeBounds().RoundOut()) == GDK_OVERLAP_RECTANGLE_OUT)
+	Region *region = new Region (GetSubtreeBounds ());
+	region->Intersect (parent_region);
+
+	if (!GetRenderVisible() || IS_INVISIBLE (total_opacity) || region->IsEmpty ()) 
 		return;
 
 #if FRONT_TO_BACK_STATS
@@ -670,6 +674,14 @@ UIElement::DoRender (cairo_t *cr, Region *region)
 	PostRender (cr, region, false);
 
 	ENDTIMER (UIElement_render, Type::Find (GetObjectType())->name);
+
+	delete region;
+}
+
+bool
+UIElement::UseBackToFront ()
+{
+	return ContentWalker (this).GetCount () < MIN_FRONT_TO_BACK_COUNT;
 }
 
 void
@@ -684,80 +696,81 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 
 	Region* self_region = new Region (surface_region);
 	self_region->Intersect (bounds.RoundOut());  // note the RoundOut here.
-	if (!self_region->IsEmpty()) {
-		render_list->Prepend (new RenderNode (this, self_region, true, CallPreRender, CallPostRender));
+	if (self_region->IsEmpty()) {
+		delete self_region;
+		return;
+	}
+		
+	render_list->Prepend (new RenderNode (this, self_region, true, CallPreRender, CallPostRender));
 
-		bool subtract = ((absolute_xform.yx == 0 && absolute_xform.xy == 0) /* no skew */
-				 && !IS_TRANSLUCENT (local_opacity)
-				 && (GetClip () == NULL)
-				 && (GetOpacityMask () == NULL)); // XXX we can easily deal with opaque solid color brushes.
+	bool subtract = ((absolute_xform.yx == 0 && absolute_xform.xy == 0) /* no skew */
+			 && !IS_TRANSLUCENT (local_opacity)
+			 && (GetClip () == NULL)
+			 && (GetOpacityMask () == NULL)); // XXX we can easily deal with opaque solid color brushes.
 
-		// element type specific checks
-		if (subtract) {
-			if (Is (Type::MEDIAELEMENT)) {
-				MediaElement *media = (MediaElement *) this;
-				MediaPlayer *mplayer = media->GetMediaPlayer ();
-				Stretch stretch = media->GetStretch ();
-				
-				subtract = (!media->IsClosed () && mplayer
-					    && mplayer->HasRenderedFrame ()
-					    && ((mplayer->GetVideoWidth () == media->GetBounds ().w
-						 && mplayer->GetVideoHeight () == media->GetBounds ().h)
-						|| (stretch == StretchFill || stretch == StretchUniformToFill)));
-				
-				//Rect r = me->GetBounds();
+	// element type specific checks
+	if (subtract) {
+		if (Is (Type::MEDIAELEMENT)) {
+			MediaElement *media = (MediaElement *) this;
+			MediaPlayer *mplayer = media->GetMediaPlayer ();
+			Stretch stretch = media->GetStretch ();
+
+			subtract = (!media->IsClosed () && mplayer
+				    && mplayer->HasRenderedFrame ()
+				    && ((mplayer->GetVideoWidth () == media->GetBounds ().w
+					 && mplayer->GetVideoHeight () == media->GetBounds ().h)
+					|| (stretch == StretchFill || stretch == StretchUniformToFill)));
+
+			//Rect r = me->GetBounds();
 				//printf ("r.bounds = %g %g %g %g\n", r.x, r.y, r.w, r.h);
-			}
-			else if (Is (Type::IMAGE)) {
-				Image *image = (Image *) this;
-				Stretch stretch = image->GetStretch ();
-				
-				subtract = (image->surface && !image->surface->has_alpha
-					    && ((image->GetImageWidth () == image->GetBounds ().w
-						 && image->GetImageHeight () == image->GetBounds ().h)
-						|| (stretch == StretchFill || stretch == StretchUniformToFill)));
-			}
-			else if (Is (Type::RECTANGLE)) {
-				// if we're going to subtract anything we'll
-				// do it in here, so set this to false so that
-				// it doesn't happen later.
-				subtract = false;
+		}
+		else if (Is (Type::IMAGE)) {
+			Image *image = (Image *) this;
+			Stretch stretch = image->GetStretch ();
 
-				Rectangle *rectangle = (Rectangle *) this;
-				Brush *fill = rectangle->GetFill ();
-				
-				if (fill != NULL && fill->IsOpaque()) {
-					/* make it a little easier - only consider the rectangle inside the corner radii.
-					   we're also a little more conservative than we need to be, regarding stroke
-					   thickness. */
-					double xr = (rectangle->GetRadiusX () + rectangle->GetStrokeThickness () / 2);
-					double yr = (rectangle->GetRadiusY () + rectangle->GetStrokeThickness () / 2);
-					
-					Rect r = bounds.GrowBy (-xr, -yr).RoundOut();
+			subtract = (image->surface && !image->surface->has_alpha
+				    && ((image->GetImageWidth () == image->GetBounds ().w
+					 && image->GetImageHeight () == image->GetBounds ().h)
+					|| (stretch == StretchFill || stretch == StretchUniformToFill)));
+		}
+		else if (Is (Type::RECTANGLE)) {
+			// if we're going to subtract anything we'll
+			// do it in here, so set this to false so that
+			// it doesn't happen later.
+			subtract = false;
 
-					Region *inner_rect_region = new Region (self_region);
-					inner_rect_region->Intersect (r);
-					if (!inner_rect_region->IsEmpty())
-						surface_region->Subtract (inner_rect_region);
-					
-					delete inner_rect_region;
-				}
-			}
-			// XXX more stuff here for non-panel subclasses...
-			else {
-				subtract = false;
+			Rectangle *rectangle = (Rectangle *) this;
+			Brush *fill = rectangle->GetFill ();
+
+			if (fill != NULL && fill->IsOpaque()) {
+				/* make it a little easier - only consider the rectangle inside the corner radii.
+				   we're also a little more conservative than we need to be, regarding stroke
+				   thickness. */
+				double xr = (rectangle->GetRadiusX () + rectangle->GetStrokeThickness () / 2);
+				double yr = (rectangle->GetRadiusY () + rectangle->GetStrokeThickness () / 2);
+
+				Rect r = bounds.GrowBy (-xr, -yr).RoundOut();
+
+				Region *inner_rect_region = new Region (self_region);
+				inner_rect_region->Intersect (r);
+				if (!inner_rect_region->IsEmpty())
+					surface_region->Subtract (inner_rect_region);
+
+				delete inner_rect_region;
 			}
 		}
-
-		if (subtract)
-			surface_region->Subtract (bounds);
-	} else {
-		delete self_region;
+		// XXX more stuff here for non-panel subclasses...
+		else {
+			subtract = false;
+		}
 	}
+
+	if (subtract)
+		surface_region->Subtract (bounds);
 }
 
 void
-UIElement::PreRender (cairo_t *cr, Region *region, bool front_to_back)
+UIElement::PreRender (cairo_t *cr, Region *region, bool skip_children)
 {
 	double local_opacity = GetOpacity ();
 
@@ -788,9 +801,14 @@ UIElement::PreRender (cairo_t *cr, Region *region, bool front_to_back)
 			region->Draw (cr);
 			cairo_clip (cr);
 		}
-		cairo_rectangle (cr, r.x, r.y, r.w, r.h);
+		r.Draw (cr);
 		cairo_clip (cr);
-		cairo_set_matrix (cr, &absolute_xform);
+	}
+	cairo_set_matrix (cr, &absolute_xform);
+
+	if (ClipToExtents ()) {
+		extents.Draw (cr); 
+		cairo_clip (cr);
 	}
 
 	if (IS_TRANSLUCENT (local_opacity))
@@ -803,6 +821,18 @@ UIElement::PreRender (cairo_t *cr, Region *region, bool front_to_back)
 void
 UIElement::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 {
+	// if we didn't render front to back, then render the children here
+	if (!front_to_back) {
+		ContentWalker walker = ContentWalker (this, ZForward);
+		while (DependencyObject *content = walker.Step ()) {
+			if (!content->Is (Type::UIELEMENT))
+				continue;
+			
+			// DoRender does all the proper region and visibility checking
+			((UIElement *)content)->DoRender (cr, region);
+		}
+	}
+
 	double local_opacity = GetOpacity ();
 
 	if (opacityMask != NULL) {
@@ -821,6 +851,7 @@ UIElement::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 		cairo_pop_group_to_source (cr);
 		cairo_paint_with_alpha (cr, local_opacity);
 	}
+
 	cairo_restore (cr);
 	
 	if (moonlight_flags & RUNTIME_INIT_SHOW_CLIPPING) {

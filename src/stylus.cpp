@@ -774,37 +774,41 @@ InkPresenter::EmptyBackground ()
 void
 InkPresenter::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 {
-	// if we didn't render front to back, then render the children here
-	if (!front_to_back || !UseBackToFront ()) {
-		RenderChildren (cr, region);
+	// render our chidren if not in front to back mode
+	if (!front_to_back) {
+		ContentWalker walker = ContentWalker (this, ZForward);
+		while (DependencyObject *content = walker.Step ()) {
+			if (!content->Is (Type::UIELEMENT))
+				continue;
+			
+			// DoRender does all the proper region and visibility checking
+			((UIElement *)content)->DoRender (cr, region);
+		}
 	}
 	
-	StrokeCollection *strokes = GetStrokes ();
-	if (!strokes)
-		return;
-
 	cairo_set_matrix (cr, &absolute_xform);
 	cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
 	cairo_set_line_join (cr, CAIRO_LINE_JOIN_ROUND);
 
+	StrokeCollection *strokes = GetStrokes ();
 	// for each stroke in collection
 	for (int i = 0; i < strokes->GetCount (); i++) {
 		Stroke *stroke = strokes->GetValueAt (i)->AsStroke ();
-		
 		DrawingAttributes *da = stroke->GetDrawingAttributes ();
-		
 		StylusPointCollection *spc = stroke->GetStylusPoints ();
-		
+			
 		if (da) {
 			da->Render (cr, spc);
 		} else {
 			DrawingAttributes::RenderWithoutDrawingAttributes (cr, spc);
 		}
-	}
+	}		
 
-	UIElement::PostRender (cr, region, front_to_back);
+	// Chain up in front_to_back mode since we've alread rendered content
+	UIElement::PostRender (cr, region, true);
 }
 
+	
 void
 InkPresenter::OnPropertyChanged (PropertyChangedEventArgs *args)
 {

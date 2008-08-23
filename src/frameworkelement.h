@@ -28,9 +28,9 @@ public:
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *WidthProperty;
 
-	/* @PropertyType=double,DefaultValue=0.0,Version=2,ManagedSetterAccess=Internal,GenerateGetter */
+	/* @PropertyType=double,DefaultValue=0.0,Version=2,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *ActualHeightProperty;
-	/* @PropertyType=double,DefaultValue=0.0,Version=2,ManagedSetterAccess=Internal,GenerateGetter */
+	/* @PropertyType=double,DefaultValue=0.0,Version=2,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *ActualWidthProperty;
 	/* @PropertyType=Managed,Version=2.0 */
 	static DependencyProperty *DataContextProperty;
@@ -108,7 +108,10 @@ public:
 	//
 	// Property Accessors
 	//
+
+	void SetActualWidth (double width);
 	double GetActualWidth ();
+	void SetActualHeight (double width);
 	double GetActualHeight ();
 
 	Thickness *GetMargin ();

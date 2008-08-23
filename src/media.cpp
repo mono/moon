@@ -238,9 +238,8 @@ MediaBase::GetSource ()
 void
 MediaBase::ComputeBounds ()
 {
-	Rect box = Rect (0,0, GetWidth (), GetHeight ());
-	
-	bounds = IntersectBoundsWithClipPath (box, false).Transform (&absolute_xform);
+        extents = Rect (0,0, GetWidth (), GetHeight ());
+	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 }
 
 

@@ -1703,6 +1703,12 @@ FrameworkElement::GetActualHeight ()
 	return value->AsDouble ();
 }
 
+void
+FrameworkElement::SetActualHeight (double value)
+{
+	SetValue (FrameworkElement::ActualHeightProperty, Value (value));
+}
+
 #endif
 #if SL_2_0
 double
@@ -1710,6 +1716,12 @@ FrameworkElement::GetActualWidth ()
 {
 	Value *value = GetValue (FrameworkElement::ActualWidthProperty);
 	return value->AsDouble ();
+}
+
+void
+FrameworkElement::SetActualWidth (double value)
+{
+	SetValue (FrameworkElement::ActualWidthProperty, Value (value));
 }
 
 #endif

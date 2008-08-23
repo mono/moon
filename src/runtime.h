@@ -339,16 +339,20 @@ public:
 typedef void (*RenderFunc) (cairo_t *ctx, UIElement *uielement, Region *region, bool front_to_back);
 
 class RenderNode : public List::Node {
- public:
+public:
+	RenderNode (UIElement *el, Region *region, bool render_element, RenderFunc pre, RenderFunc post);
+	
+	void Render (cairo_t *cr);
+
+	virtual ~RenderNode ();
+
+private:
 	UIElement *uielement;
 	Region *region;
 	bool render_element;
 	RenderFunc pre_render;
 	RenderFunc post_render;
 
-	RenderNode (UIElement *el, Region *region, bool render_element, RenderFunc pre, RenderFunc post);
-
-	virtual ~RenderNode ();
 };
 
 

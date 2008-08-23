@@ -140,7 +140,8 @@ public:
 	// a non virtual method for use when we want to wrap render
 	// with debugging and/or timing info
 	void DoRender (cairo_t *cr, Region *region);
-
+	
+	bool UseBackToFront ();
 	virtual void FrontToBack (Region *surface_region, List *render_list);
 	virtual void PreRender (cairo_t *cr, Region *region, bool front_to_back);
 	virtual void PostRender (cairo_t *cr, Region *region, bool front_to_back);
@@ -206,15 +207,23 @@ public:
 	virtual void ComputeBounds ();
 
 	// 
+	// GetExtents:
+	//   returns the extents of the current item in relative coordinates.
+	// 
+	Rect GetExtents () { return extents.Transform (&local_xform); }
+	virtual bool ClipToExtents () { return false; };
+
+	// 
 	// GetBounds:
-	//   returns the current bounding box for the given item.
+	//   returns the current bounding box for the given item in surface 
+	//   coordinates.
 	// 
 	Rect GetBounds () { return bounds; }
 
 	// 
 	// GetSubtreeBounds:
 	//   returns the bounding box including all sub-uielements.
-	//   implemented by containers.
+	//   implemented by containers in surface coordinates.
 	// 
 	virtual Rect GetSubtreeBounds () { return bounds; }
 
@@ -453,20 +462,21 @@ protected:
 
 	// The computed bounding box
 	Rect bounds;
+	Rect extents;
 
 	int flags;
 
 	// Absolute affine transform, precomputed with all of its data
 	cairo_matrix_t absolute_xform;
-
+	
 private:
 	UIElement *visual_parent;
 	double total_opacity;
 	Brush *opacityMask;
 	Size desired_size;
 
-	// the transform to be multiplied by our parent transform to compute absolute_xform
-	cairo_matrix_t local_transform;
+	// The local render transform including tranform origin
+	cairo_matrix_t local_xform;
 };
 
 #endif /* __MOON_UIELEMENT_H__ */

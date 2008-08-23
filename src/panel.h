@@ -29,8 +29,6 @@ class Panel : public FrameworkElement {
  protected:
 	virtual ~Panel ();
 
-	bool UseBackToFront ();
-
 	virtual bool EmptyBackground ();
  public:
  	/* @PropertyType=Brush,GenerateAccessors */
@@ -46,10 +44,7 @@ class Panel : public FrameworkElement {
 	
 	virtual void ComputeBounds ();
 	virtual void Render (cairo_t *cr, Region *region);
-	virtual void RenderChildren (cairo_t *cr, Region *region);
-
 	virtual void FrontToBack (Region *surface_region, List *render_list);
-	virtual void PostRender (cairo_t *cr, Region *region, bool front_to_back);
 
 	bool CheckOver (cairo_t *cr, UIElement *item, double x, double y);
 

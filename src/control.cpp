@@ -29,63 +29,160 @@ Control::~Control ()
 void 
 Control::Render (cairo_t *cr, Region *region)
 {
-	if (real_object)
-		real_object->DoRender (cr, region);
+	Brush *background = GetBackground ();
+
+	cairo_set_matrix (cr, &absolute_xform);
+	
+	if (background) {
+		background->SetupBrush (cr, this);
+
+		cairo_new_path (cr);
+		extents.Draw (cr);
+		cairo_fill (cr);
+	}
 }
 
 void
 Control::FrontToBack (Region *surface_region, List *render_list)
 {
-	if (GetContent ())
-		return ((UIElement *)GetContent ())->FrontToBack (surface_region, render_list);
+	double local_opacity = GetOpacity ();
+
+	if (surface_region->RectIn (bounds_with_children.RoundOut()) == GDK_OVERLAP_RECTANGLE_OUT)
+		return;
+
+	if (!GetRenderVisible ()
+	    || IS_INVISIBLE (local_opacity))
+		return;
+
+	if (!UseBackToFront ()) {
+		Region *self_region = new Region (surface_region);
+		self_region->Intersect (bounds_with_children.RoundOut());
+
+		// we need to include our children in this one, since
+		// we'll be rendering them in the PostRender method.
+		if (!self_region->IsEmpty())
+			render_list->Prepend (new RenderNode (this, self_region, true,
+							      UIElement::CallPreRender, UIElement::CallPostRender));
+		// don't remove the region from surface_region because
+		// there are likely holes in it
+		return;
+	}
+
+	Region *region;
+	bool delete_region;
+	bool can_subtract_self;
+	
+	if (!GetClip ()
+	    && !GetOpacityMask ()
+	    && !IS_TRANSLUCENT (GetOpacity ())) {
+		region = surface_region;
+		delete_region = false;
+		can_subtract_self = true;
+	}
+	else {
+		region = new Region (surface_region);
+		delete_region = true;
+		can_subtract_self = false;
+	}
+
+	RenderNode *panel_cleanup_node = new RenderNode (this, NULL, false, NULL, UIElement::CallPostRender);
+	
+	render_list->Prepend (panel_cleanup_node);
+
+	Region *self_region = new Region (region);
+
+	ContentWalker walker = ContentWalker (this, ZReverse);
+	while (DependencyObject *content = walker.Step ()) {
+		if (content->Is (Type::UIELEMENT))
+			((UIElement *)content)->FrontToBack (region, render_list);
+	}
+
+	if (!GetOpacityMask () && !IS_TRANSLUCENT (local_opacity)) {
+		delete self_region;
+		if (!GetBackground ()) {
+			self_region = new Region ();
+		}
+		else {
+			self_region = new Region (region);
+			self_region->Intersect (GetRenderBounds().RoundOut ()); // note the RoundOut
+		}
+	} else {
+		self_region->Intersect (GetSubtreeBounds().RoundOut ()); // note the RoundOut
+	}
+
+	if (self_region->IsEmpty() && render_list->First() == panel_cleanup_node) {
+		/* we don't intersect the surface region, and none of
+		   our children did either, remove the cleanup node */
+		render_list->Remove (render_list->First());
+		delete self_region;
+		if (delete_region)
+			delete region;
+		return;
+	}
+
+	render_list->Prepend (new RenderNode (this, self_region, !self_region->IsEmpty(), UIElement::CallPreRender, NULL));
+
+	if (!self_region->IsEmpty()) {
+		bool subtract = ((absolute_xform.yx == 0 && absolute_xform.xy == 0) /* no skew/rotation */
+				 && can_subtract_self);
+
+		if (subtract) {
+			Brush *background = GetBackground ();
+			
+			if (background)
+				subtract = background->IsOpaque ();
+			else
+				subtract = false;
+		}
+
+ 		if (subtract)
+			region->Subtract (bounds);
+	}
+
+	if (delete_region)
+		delete region;
 }
 
 void 
 Control::ComputeBounds ()
 {
-	if (real_object) {
-		bounds = real_object->GetBounds ();
-		bounds_with_children = real_object->GetSubtreeBounds ();
-	} else {
-		bounds = Rect (0, 0, 0, 0);
-		bounds_with_children = Rect (0, 0, 0, 0);
-	}
+	double width = GetWidth ();
+	double height = GetHeight ();
 	
-	double x1, x2, y1, y2;
-	
-	x1 = y1 = 0.0;
-	x2 = GetWidth ();
-	y2 = GetHeight ();
-	
-	if (x2 != 0.0 && y2 != 0.0) {
-		Rect fw_rect = Rect (x1,y1,x2,y2);
-		
-		if (real_object)
-			bounds = bounds.Union (fw_rect);
-		else
-			bounds = fw_rect;
-	}
-	
-	bounds = IntersectBoundsWithClipPath (bounds, false).Transform (&absolute_xform);
-	bounds_with_children = IntersectBoundsWithClipPath (bounds_with_children.Union (bounds), false);
-}
+	extents = Rect (0.0, 0.0, width, height);
 
-void
-Control::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
-{
-	if (subobj_args->property == Canvas::TopProperty || subobj_args->property == Canvas::LeftProperty)
-		real_object->UpdateTransform ();
-	
-	UIElement::OnSubPropertyChanged (prop, obj, subobj_args);
+	Thickness border = *GetBorderThickness ();
+	Thickness padding = *GetPadding ();
+
+	// if width or height == NAN  Auto layout
+	if ((width != width) && (height != height)) {
+		extents = Rect ();
+		ContentWalker walker = ContentWalker (this);
+		while (UIElement *item = (UIElement *)walker.Step ()) {
+			cairo_matrix_t offset;
+			
+			GetTransformFor (item, &offset);
+			extents = extents.Union (item->GetExtents ().Transform (&offset));
+		}
+		
+		extents.h += border.bottom + padding.bottom;
+		extents.w += border.right + padding.right;
+	}
+
+	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
+	bounds_with_children = bounds;
 }
 
 void
 Control::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 {
-	double left = Canvas::GetLeft (item);
-	double top = Canvas::GetTop (item);
+	cairo_matrix_init_identity (result);
 	
-	cairo_matrix_init_translate (result, left, top);
+	Thickness border = *GetBorderThickness ();
+	Thickness padding = *GetPadding ();
+	
+	cairo_matrix_translate (result, padding.left, padding.top);
+	cairo_matrix_translate (result, border.left, border.top);
 }
 
 bool 

@@ -635,31 +635,16 @@ Surface::Paint (cairo_t *ctx, Region *region)
 		toplevel->FrontToBack (copy, render_list);
 
 		if (!render_list->IsEmpty ()) {
-			Region *empty_region = new Region ();
-			RenderNode *node;
-			
-			while ((node = (RenderNode*)render_list->First())) {
-				Region *r = node->region ? node->region : empty_region;
-				UIElement *ui = node->uielement;
-			 
+			while (RenderNode *node = (RenderNode*)render_list->First()) {
 #if FRONT_TO_BACK_STATS
 				uielements_rendered_front_to_back ++;
 #endif
- 
-				if (node->pre_render)
-					node->pre_render (ctx, ui, r, true);
-
-				if (node->render_element)
-					ui->Render (ctx, r);
-
-				if (node->post_render)
-					node->post_render (ctx, ui, r, true);
+				node->Render (ctx);
 
 				render_list->Remove (node);
 			}
 
 			did_front_to_back = true;
-			delete empty_region;
 		}
 
 		delete render_list;
@@ -1086,10 +1071,25 @@ RenderNode::RenderNode (UIElement *el,
 {
 	uielement = el;
 	uielement->ref();
-	this->region = region;
+	this->region = region ? region : new Region ();
 	this->render_element = render_element;
 	this->pre_render = pre;
 	this->post_render = post;
+}
+
+void
+RenderNode::Render (cairo_t *ctx)
+{
+	bool front_to_back = UseBackToFront ();
+
+	if (pre_render)
+		pre_render (ctx, uielement, region, front_to_back);
+
+	if (render_element)
+		uielement->Render (ctx, region);
+	
+	if (post_render)
+		post_render (ctx, uielement, region, front_to_back);
 }
 
 RenderNode::~RenderNode ()

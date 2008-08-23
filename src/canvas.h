@@ -43,6 +43,7 @@ class Canvas : public Panel {
 	virtual Point GetTransformOrigin ();
 	virtual void OnLoaded ();
 
+	virtual bool ClipToExtents () { return false; }
 	virtual void ComputeBounds ();
 	virtual void GetTransformFor (UIElement *item, cairo_matrix_t *result);
 	

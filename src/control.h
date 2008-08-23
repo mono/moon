@@ -78,20 +78,18 @@ class Control : public FrameworkElement {
 	
 	virtual void Render (cairo_t *cr, Region *region);
 	virtual void FrontToBack (Region *surface_region, List *render_list);
+	
+	virtual bool ClipToExtents () { return true; }
 	virtual void ComputeBounds ();
 	virtual Rect GetSubtreeBounds () { return bounds_with_children; }
+
 	virtual void GetTransformFor (UIElement *item, cairo_matrix_t *result);
-	
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	
 	virtual void HitTest (cairo_t *cr, Point p, List *uielement_list);
 	virtual void HitTest (cairo_t *cr, Rect r, List *uielement_list);
-	
-	virtual bool GetRenderVisible () { return real_object && real_object->GetRenderVisible(); }
-	virtual bool GetHitTestVisible () { return real_object && real_object->GetHitTestVisible(); }
-	
+		
 	//
 	// Property Accessors
 	//

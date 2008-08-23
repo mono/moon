@@ -75,7 +75,6 @@ class Shape : public FrameworkElement {
 	cairo_matrix_t stretch_transform;
 	virtual Rect ComputeStretchBounds (Rect shape_bounds);
 	Point ComputeOriginPoint (Rect shape_bounds);
-	Rect extents;
 	
 	DoubleCollection *GetStrokeDashArray ();
 	

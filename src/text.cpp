@@ -284,7 +284,8 @@ TextBlock::Render (cairo_t *cr, int x, int y, int width, int height)
 void 
 TextBlock::ComputeBounds ()
 {
-	bounds = IntersectBoundsWithClipPath (Rect (0, 0, GetBoundingWidth (), GetBoundingHeight ()), false).Transform (&absolute_xform);
+	extents = Rect (0, 0, GetBoundingWidth (), GetBoundingHeight ());
+	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 }
 
 bool

@@ -49,14 +49,8 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 FrameworkElement::ComputeBounds ()
 {
-	double x1, x2, y1, y2;
-	
-	x1 = y1 = 0.0;
-	y2 = GetHeight ();
-	x2 = GetWidth ();
-	
-	if (x2 != 0.0 && y2 != 0.0)
-		bounds = IntersectBoundsWithClipPath (Rect (x1,y1,x2,y2), false).Transform (&absolute_xform);
+	extents = Rect (0.0, 0.0, GetWidth (), GetHeight ());
+	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 }
 
 bool

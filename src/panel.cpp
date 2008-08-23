@@ -43,45 +43,38 @@ static int levelb = 0;
 void
 Panel::ComputeBounds ()
 {
-	UIElementCollection *children = GetChildren ();
-	
 #if DEBUG_BOUNDS
 	levelb += 4;
 	space (levelb);
 	printf ("Panel: Enter ComputeBounds (%s)\n", GetName());
 #endif
-	if (children != NULL) {
-		for (int i = 0; i < children->GetCount (); i++) {
-			UIElement *item = children->GetValueAt (i)->AsUIElement ();
-			
-			// if the item isn't drawn, skip it
-			if (!item->GetRenderVisible ())
-				continue;
-			
-			Rect r = item->GetSubtreeBounds ();
-			
-			r = IntersectBoundsWithClipPath (r, true);
+
+	// Clear the previous 
+	extents = bounds = bounds_with_children = Rect ();
+
+	ContentWalker walker = ContentWalker (this);
+	while (UIElement *item = (UIElement *)walker.Step ()) {
+		
+		// if the item isn't drawn, skip it
+		if (!item->GetRenderVisible ())
+			continue;
+
+		Rect r = item->GetSubtreeBounds ();
+		r = IntersectBoundsWithClipPath (r, true);
+
 #if DEBUG_BOUNDS
-			space (levelb + 4);
-			printf ("Item (%s, %s) bounds %g %g %g %g\n", item->GetName (), item->GetTypeName ()
-				r.x, r.y, r.w, r.h);
+		space (levelb + 4);
+		printf ("Item (%s, %s) bounds %g %g %g %g\n", item->GetName (), item->GetTypeName ()
+			r.x, r.y, r.w, r.h);
 #endif
-			if (i > 0)
-				bounds_with_children = bounds_with_children.Union (r);
-			else
-				bounds_with_children = r;
-		}
-		bounds_with_children = IntersectBoundsWithClipPath (bounds_with_children, true);
-	} else {
-		bounds_with_children = Rect (0,0,0,0);
+		bounds_with_children = bounds_with_children.Union (r);
 	}
 
 	Brush *bg = GetBackground();
 	if (bg) {
 		FrameworkElement::ComputeBounds ();
 		bounds_with_children = bounds_with_children.Union (bounds);
-	} else
-		bounds = Rect (0,0,0,0);
+	}
 
 #if DEBUG_BOUNDS
 	space (levelb);
@@ -107,17 +100,6 @@ Panel::ShiftPosition (Point p)
 
 //#define DEBUG_INVALIDATE 1
 
-bool
-Panel::UseBackToFront ()
-{
-	Collection *children;
-	
-	if (!(children = GetChildren ()))
-		return true;
-	
-	return children->GetCount () < 25;
-}
-
 void
 Panel::Render (cairo_t *cr, Region *region)
 {
@@ -140,81 +122,6 @@ Panel::Render (cairo_t *cr, Region *region)
 	}
 }
 
-void
-Panel::PostRender (cairo_t *cr, Region *region, bool front_to_back)
-{
-	// if we didn't render front to back, then render the children here
-	if (!front_to_back || !UseBackToFront ()) {
-		RenderChildren (cr, region);
-	}
-
-	UIElement::PostRender (cr, region, front_to_back);
-}
-
-
-void
-Panel::RenderChildren (cairo_t *cr, Region *parent_region)
-{
-	UIElementCollection *children = GetChildren ();
-	
-	Region *clipped_region = new Region (bounds_with_children);
-	clipped_region->Intersect (parent_region);
-
-	cairo_identity_matrix (cr);
-	for (guint i = 0; i < children->z_sorted->len; i++) {
-		UIElement *item = (UIElement *) children->z_sorted->pdata[i];
-		
-		Region *region = new Region (item->GetSubtreeBounds());
-		region->Intersect (clipped_region);
-
-		if (!item->GetRenderVisible ()
-		    || region->IsEmpty()) {
-#ifdef DEBUG_INVALIDATE
-			printf ("skipping offscreen object %s: %p (%s)\n", item->GetName (), item, item->GetTypeName());
-#endif
-			delete region;
-			continue;
-		}
-		
-#if CAIRO_CLIP
-#if TIME_CLIP
-		STARTTIMER(clip, "cairo clip setup");
-#endif
-		cairo_save (cr);
-		
-		//printf ("Clipping to %g %g %g %g\n", inter.x, inter.y, inter.w, inter.h);
-		// at the very least we need to clip based on the expose area.
-		// there's also a UIElement::ClipProperty
-		
-		region->Draw (cr);
-		cairo_clip (cr);
-#if TIME_CLIP
-		ENDTIMER(clip, "cairo clip setup");
-#endif
-#endif
-		// 			space (levelb);
-		// 			printf ("%p %s (%s), bounds = %g %g %g %g, inter = %g %g %g %g\n",
-		// 				item, item->GetTypeName(), item->GetName(),
-		// 				item->GetBounds().x, item->GetBounds().y, item->GetBounds().w, item->GetBounds().h,
-		// 				inter.x, inter.y, inter.w, inter.h);
-		
-		item->DoRender (cr, region);
-
-#if CAIRO_CLIP
-#if TIME_CLIP
-		STARTTIMER(endclip, "cairo clip teardown");
-#endif			
-		cairo_restore (cr);
-		
-#if TIME_CLIP
-		ENDTIMER(endclip, "cairo clip teardown");
-#endif
-#endif
-		delete region;
-	}
-
-	delete clipped_region;
-}
 
 void
 Panel::FrontToBack (Region *surface_region, List *render_list)
@@ -231,10 +138,11 @@ Panel::FrontToBack (Region *surface_region, List *render_list)
 	if (!UseBackToFront ()) {
 		Region *self_region = new Region (surface_region);
 		self_region->Intersect (bounds_with_children.RoundOut());
+
 		// we need to include our children in this one, since
 		// we'll be rendering them in the PostRender method.
 		if (!self_region->IsEmpty())
-			render_list->Prepend (new RenderNode (this, self_region, !self_region->IsEmpty(),
+			render_list->Prepend (new RenderNode (this, self_region, true,
 							      UIElement::CallPreRender, UIElement::CallPostRender));
 		// don't remove the region from surface_region because
 		// there are likely holes in it
@@ -264,11 +172,10 @@ Panel::FrontToBack (Region *surface_region, List *render_list)
 
 	Region *self_region = new Region (region);
 
-	UIElementCollection *children = GetChildren ();
-	for (guint i = children->z_sorted->len; i > 0; i--) {
-		UIElement *item = (UIElement *) children->z_sorted->pdata[i - 1];
-
-		item->FrontToBack (region, render_list);
+	ContentWalker walker = ContentWalker (this, ZReverse);
+	while (DependencyObject *content = walker.Step ()) {
+		if (content->Is (Type::UIELEMENT))
+			((UIElement *)content)->FrontToBack (region, render_list);
 	}
 
 	if (!GetOpacityMask () && !IS_TRANSLUCENT (local_opacity)) {

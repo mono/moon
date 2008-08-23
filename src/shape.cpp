@@ -302,10 +302,10 @@ Shape::ComputeStretchBounds (Rect shape_bounds)
 			// the first time. This usually gives pixel-recise stretches for Paths
 			cairo_matrix_t temp;
 			cairo_matrix_init_scale (&temp, adj_x ? sw : 1.0, adj_y ? sh : 1.0);
-			Rect extents = ComputeShapeBounds (false, &temp);
-			if (extents.w != shape_bounds.w && extents.h != shape_bounds.h) {
-				sw *= adj_x ? (w - extents.w + logical_bounds.w * sw) / (logical_bounds.w * sw): 1.0;
-				sh *= adj_y ? (h - extents.h + logical_bounds.h * sh) / (logical_bounds.h * sh): 1.0;
+			Rect stretch_bounds = ComputeShapeBounds (false, &temp);
+			if (stretch_bounds.w != shape_bounds.w && stretch_bounds.h != shape_bounds.h) {
+				sw *= adj_x ? (w - stretch_bounds.w + logical_bounds.w * sw) / (logical_bounds.w * sw): 1.0;
+				sh *= adj_y ? (h - stretch_bounds.h + logical_bounds.h * sh) / (logical_bounds.h * sh): 1.0;
 
 				switch (stretch) {
 				case StretchUniform:

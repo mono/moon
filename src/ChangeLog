@@ -1,3 +1,22 @@
+2008-08-23  Larry Ewing  <lewing@novell.com>
+
+	* uielement.cpp, uielement.h: move basic ftb logic here from
+	panel.  Start storing extents allong with bounds.
+
+	* panel.cpp, panel.h: move most ftb logic to uielement.cpp.  Use
+	content walker.
+
+	* stylus.cpp, stylus.h: rework the PostRender hack by chaining up
+	to uielement in front_to_back mode unconditionaly.
+
+	* runtime.cpp, runtime.h: make RenderNode members private and move
+	the ftb override logic here and out of the PostRender call.
+	
+	* shape.cpp|h, frameworkelement.cpp|h, media.cpp, text.cpp: store
+	extents.
+
+	* control.cpp, control.h: implement basic functionality.
+
 2008-08-22  Chris Toshok  <toshok@ximian.com>
 
 	* color.h, rect.h, point.h: remove the copy ctors.  we don't need

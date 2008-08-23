@@ -43,6 +43,7 @@ Canvas::ComputeBounds ()
 	Surface *surface = GetSurface ();
 	if (surface && surface->IsTopLevel (this)) {
 		// toplevel canvas don't subscribe to the same bounds computation as others
+		extents = Rect (0, 0, GetWidth (), GetHeight ());
 		bounds = Rect (0, 0, surface->GetWindow()->GetWidth(), surface->GetWindow()->GetHeight());
 		bounds_with_children = Rect (0, 0, surface->GetWindow()->GetWidth(), surface->GetWindow()->GetHeight());
 	}
