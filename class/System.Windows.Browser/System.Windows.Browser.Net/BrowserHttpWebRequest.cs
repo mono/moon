@@ -132,7 +132,6 @@ namespace System.Windows.Browser.Net
 
 		uint OnAsyncResponseFinished (IntPtr native, IntPtr context, bool success, IntPtr data)
 		{
-Console.WriteLine ("completed");
 			try {
 				async_result.SetComplete ();
 			} catch (Exception e) {
@@ -222,7 +221,7 @@ Console.WriteLine ("completed");
 				NativeMethods.downloader_request_set_body (native, body, body.Length);
 			}
 			
-			Console.WriteLine (NativeMethods.downloader_request_get_response (native, started, available, finished, IntPtr.Zero));
+			NativeMethods.downloader_request_get_response (native, started, available, finished, IntPtr.Zero);
 
 			wait_handle.Set ();
 		}

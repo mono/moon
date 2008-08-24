@@ -53,7 +53,6 @@ namespace System.Windows.Media.Imaging {
 
 		internal void GetStream ()
 		{
-Console.WriteLine ("GetStream() called");
 			if (stream != null)
 				return;
 
