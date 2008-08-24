@@ -36,6 +36,9 @@ namespace System.Windows.Media {
 		{
 		}
 
+		internal ImageSource (IntPtr native) : base (native)
+		{
+		}
 	}
 
 }
