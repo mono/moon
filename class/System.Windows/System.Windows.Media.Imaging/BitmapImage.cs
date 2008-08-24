@@ -27,21 +27,18 @@ using System.Windows;
 using System.Windows.Media;
 using System.Security;
 using System.IO;
+using System.Threading;
+using System.Net;
 using Mono;
 
 namespace System.Windows.Media.Imaging {
 
-	public sealed class BitmapImage : ImageSource {
+	public sealed partial class BitmapImage : ImageSource {
+		private ManualResetEvent wait;
+
 		internal Stream stream;
 
-		// XXX
-		public static readonly DependencyProperty UriSourceProperty = null;
-
-		public BitmapImage ()
-		{
-		}
-
-		public BitmapImage (Uri uriSource)
+		public BitmapImage (Uri uriSource) : base (NativeMethods.bitmap_image_new ())
 		{
 			UriSource = uriSource;
 		}
@@ -54,12 +51,17 @@ namespace System.Windows.Media.Imaging {
 			this.stream = streamSource;
 		}
 
-		public Uri UriSource {
-			get { return (Uri)GetValue (UriSourceProperty); }
-			set {
-				Console.WriteLine ("setting UriSource property to {0}", value);
-				SetValue (UriSourceProperty, value);
-			}
+		internal void GetStream ()
+		{
+Console.WriteLine ("GetStream() called");
+			if (stream != null)
+				return;
+
+			WebRequest request = WebRequest.Create (UriSource);
+			IAsyncResult async_result = request.BeginGetResponse (null, this);
+			WebResponse response = request.EndGetResponse (async_result);
+
+			stream = response.GetResponseStream ();
 		}
 
 		public event EventHandler<DownloadProgressEventArgs> DownloadProgress;
