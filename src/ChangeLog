@@ -1,3 +1,10 @@
+2008-08-23  Geoff Norton  <gnorton@novell.com>
+
+	* cbinding.cpp|h, dependencyproperty.g.cpp, type-generated.cpp,
+	  type.h, value.h: Regenerated
+	* downloader.cpp|h: Return failure state for downloader->GetResponse
+	* runtime.h: Generate C bindings for IsMainThread.
+
 2008-08-23  Larry Ewing  <lewing@novell.com>
 
 	* animation.cpp, animation.h: make ControlPoint1 and ControlPoint2

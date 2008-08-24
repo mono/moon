@@ -661,10 +661,10 @@ downloader_request_abort (DownloaderRequest *dr)
 	dr->Abort ();
 }
 
-void
+bool
 downloader_request_get_response (DownloaderRequest *dr, DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context)
 {
-	dr->GetResponse (started, available, finished, context);
+	return dr->GetResponse (started, available, finished, context);
 }
 
 void downloader_response_set_header_visitor (DownloaderResponse *dr, DownloaderResponseHeaderVisitorCallback visitor)

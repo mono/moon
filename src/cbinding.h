@@ -9,6 +9,7 @@
 // This should probably be changed to somehow not include c++ headers.
 #include "animation.h"
 #include "animation2.h"
+#include "bitmapimage.h"
 #include "border.h"
 #include "brush.h"
 #include "canvas.h"
@@ -87,6 +88,14 @@ BeginStoryboard *begin_storyboard_new (void);
  **/
 /* @GeneratePInvoke */
 BezierSegment *bezier_segment_new (void);
+
+#if SL_2_0
+/**
+ * BitmapImage
+ **/
+/* @GeneratePInvoke */
+BitmapImage *bitmap_image_new (void);
+#endif
 
 #if SL_2_0
 /**
@@ -1122,6 +1131,9 @@ TimeManager *surface_get_time_manager (Surface *instance);
 bool surface_get_transparent (Surface *instance);
 
 MoonWindow *surface_get_window (Surface *instance);
+
+/* @GeneratePInvoke */
+bool surface_in_main_thread (void);
 
 /* @GeneratePInvoke */
 void surface_paint (Surface *instance, cairo_t *ctx, int x, int y, int width, int height);

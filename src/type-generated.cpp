@@ -42,6 +42,7 @@
 #include "yuv-converter.h"
 #if SL_2_0
 #include "animation2.h"
+#include "bitmapimage.h"
 #include "border.h"
 #include "contentcontrol.h"
 #include "control.h"
@@ -126,6 +127,7 @@ Type type_infos [] = {
 	{ Type::ASSEMBLYPART_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "AssemblyPartCollection", "ASSEMBLYPART_COLLECTION", 0, 1, NULL, (create_inst_func *) assembly_part_collection_new, NULL, NULL, NULL }, 
 	{ Type::BEGINSTORYBOARD, Type::TRIGGERACTION, false, "BeginStoryboard", "BEGINSTORYBOARD", 0, 1, NULL, (create_inst_func *) begin_storyboard_new, "Storyboard", NULL, NULL }, 
 	{ Type::BEZIERSEGMENT, Type::PATHSEGMENT, false, "BezierSegment", "BEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) bezier_segment_new, NULL, NULL, NULL }, 
+	{ Type::BITMAPIMAGE, Type::DEPENDENCY_OBJECT, false, "BitmapImage", "BITMAPIMAGE", 0, 1, NULL, (create_inst_func *) bitmap_image_new, NULL, NULL, NULL }, 
 	{ Type::BOOL, Type::INVALID, false, "bool", "BOOL", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::BORDER, Type::FRAMEWORKELEMENT, false, "Border", "BORDER", 0, 15, NULL, (create_inst_func *) border_new, "Child", NULL, NULL }, 
 	{ Type::BRUSH, Type::DEPENDENCY_OBJECT, false, "Brush", "BRUSH", 0, 1, NULL, (create_inst_func *) brush_new, NULL, NULL, NULL }, 
@@ -367,6 +369,7 @@ Type type_infos [] = {
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'ASSEMBLYPART_COLLECTION'", "ASSEMBLYPART_COLLECTION", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::BEGINSTORYBOARD, Type::TRIGGERACTION, false, "BeginStoryboard", "BEGINSTORYBOARD", 0, 1, NULL, (create_inst_func *) begin_storyboard_new, "Storyboard", NULL, NULL }, 
 	{ Type::BEZIERSEGMENT, Type::PATHSEGMENT, false, "BezierSegment", "BEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) bezier_segment_new, NULL, NULL, NULL }, 
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'BITMAPIMAGE'", "BITMAPIMAGE", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::BOOL, Type::INVALID, false, "bool", "BOOL", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'BORDER'", "BORDER", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::BRUSH, Type::DEPENDENCY_OBJECT, false, "Brush", "BRUSH", 0, 1, NULL, (create_inst_func *) brush_new, NULL, NULL, NULL }, 

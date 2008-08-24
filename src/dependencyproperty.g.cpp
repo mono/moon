@@ -29,6 +29,7 @@
 #include "uielement.h"
 #if SL_2_0
 #include "animation2.h"
+#include "bitmapimage.h"
 #include "border.h"
 #include "contentcontrol.h"
 #include "control.h"
@@ -68,6 +69,7 @@ dependency_property_g_init (void)
 	BezierSegment::Point2Property = DependencyProperty::Register (Type::BEZIERSEGMENT, "Point2", Type::POINT);
 	BezierSegment::Point3Property = DependencyProperty::Register (Type::BEZIERSEGMENT, "Point3", Type::POINT);
 #if SL_2_0
+	BitmapImage::UriSourceProperty = DependencyProperty::Register (Type::BITMAPIMAGE, "UriSource", Type::STRING);
 	Border::BackgroundProperty = DependencyProperty::Register (Type::BORDER, "Background", Type::BRUSH);
 	Border::BorderBrushProperty = DependencyProperty::Register (Type::BORDER, "BorderBrush", Type::BRUSH);
 	Border::BorderThicknessProperty = DependencyProperty::Register (Type::BORDER, "BorderThickness", Type::THICKNESS);
@@ -418,6 +420,7 @@ DependencyProperty *BezierSegment::Point1Property = NULL;
 DependencyProperty *BezierSegment::Point2Property = NULL;
 DependencyProperty *BezierSegment::Point3Property = NULL;
 #if SL_2_0
+DependencyProperty *BitmapImage::UriSourceProperty = NULL;
 DependencyProperty *Border::BackgroundProperty = NULL;
 DependencyProperty *Border::BorderBrushProperty = NULL;
 DependencyProperty *Border::BorderThicknessProperty = NULL;

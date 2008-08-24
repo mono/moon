@@ -54,6 +54,7 @@ class AssemblyPart;
 class AssemblyPartCollection;
 class BeginStoryboard;
 class BezierSegment;
+class BitmapImage;
 class Border;
 class Brush;
 class Canvas;
@@ -311,6 +312,7 @@ public:
 	AssemblyPartCollection*        AsAssemblyPartCollection () { checked_get_subclass (Type::ASSEMBLYPART_COLLECTION, AssemblyPartCollection) }
 	BeginStoryboard*               AsBeginStoryboard () { checked_get_subclass (Type::BEGINSTORYBOARD, BeginStoryboard) }
 	BezierSegment*                 AsBezierSegment () { checked_get_subclass (Type::BEZIERSEGMENT, BezierSegment) }
+	BitmapImage*                   AsBitmapImage () { checked_get_subclass (Type::BITMAPIMAGE, BitmapImage) }
 	Border*                        AsBorder () { checked_get_subclass (Type::BORDER, Border) }
 	Brush*                         AsBrush () { checked_get_subclass (Type::BRUSH, Brush) }
 	Canvas*                        AsCanvas () { checked_get_subclass (Type::CANVAS, Canvas) }

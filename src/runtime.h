@@ -208,6 +208,7 @@ public:
 	bool IsAnythingDirty ();
 
 	static pthread_t main_thread;
+	/* @GenerateCBinding,GeneratePInvoke */
 	static bool InMainThread () { return (pthread_equal (main_thread, pthread_self ()) || pthread_equal (main_thread, NULL)); }
 	
 protected:

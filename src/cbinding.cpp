@@ -79,6 +79,18 @@ bezier_segment_new (void)
 
 #if SL_2_0
 /**
+ * BitmapImage
+ **/
+BitmapImage *
+bitmap_image_new (void)
+{
+	return new BitmapImage ();
+}
+#endif
+
+
+#if SL_2_0
+/**
  * Border
  **/
 Border *
@@ -2138,6 +2150,13 @@ surface_get_window (Surface *instance)
 		return NULL;
 	
 	return instance->GetWindow ();
+}
+
+
+bool
+surface_in_main_thread (void)
+{
+	return Surface::InMainThread ();
 }
 
 
