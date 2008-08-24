@@ -102,13 +102,17 @@ namespace System.Windows.Browser.Net
 
 		public override IAsyncResult BeginGetResponse (AsyncCallback callback, object state)
 		{
-			NativeMethods.TickCallHandler tch = new NativeMethods.TickCallHandler (InitializeNativeRequest);
+			if (NativeMethods.surface_in_main_thread ()) {
+				InitializeNativeRequest (IntPtr.Zero);
+			} else {
+				NativeMethods.TickCallHandler tch = new NativeMethods.TickCallHandler (InitializeNativeRequest);
 
-			NativeMethods.time_manager_add_tick_call (NativeMethods.surface_get_time_manager (NativeMethods.plugin_instance_get_surface (PluginHost.Handle)), tch, IntPtr.Zero);
+				NativeMethods.time_manager_add_tick_call (NativeMethods.surface_get_time_manager (NativeMethods.plugin_instance_get_surface (PluginHost.Handle)), tch, IntPtr.Zero);
 
-			wait_handle.WaitOne ();
+				wait_handle.WaitOne ();
 
-			GC.KeepAlive (tch);
+				GC.KeepAlive (tch);
+			}
 
 			async_result = new BrowserHttpWebAsyncResult (callback, state);
 
@@ -128,6 +132,7 @@ namespace System.Windows.Browser.Net
 
 		uint OnAsyncResponseFinished (IntPtr native, IntPtr context, bool success, IntPtr data)
 		{
+Console.WriteLine ("completed");
 			try {
 				async_result.SetComplete ();
 			} catch (Exception e) {
@@ -217,7 +222,7 @@ namespace System.Windows.Browser.Net
 				NativeMethods.downloader_request_set_body (native, body, body.Length);
 			}
 			
-			NativeMethods.downloader_request_get_response (native, started, available, finished, IntPtr.Zero);
+			Console.WriteLine (NativeMethods.downloader_request_get_response (native, started, available, finished, IntPtr.Zero));
 
 			wait_handle.Set ();
 		}
