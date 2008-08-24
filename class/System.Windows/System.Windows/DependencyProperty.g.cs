@@ -1739,6 +1739,17 @@ namespace System.Windows.Media.Animation {
 	}
 }
 
+namespace System.Windows.Media.Imaging {
+	partial class BitmapImage {
+		public static readonly DependencyProperty UriSourceProperty = DependencyProperty.Lookup (Kind.BITMAPIMAGE, "UriSource", typeof (Uri));
+
+		public Uri UriSource {
+			get { return (Uri) GetValue (UriSourceProperty); }
+			set { SetValue (UriSourceProperty, value); }
+		}
+	}
+}
+
 namespace System.Windows.Shapes {
 	partial class Line {
 		public static readonly DependencyProperty X1Property = DependencyProperty.Lookup (Kind.LINE, "X1", typeof (double));

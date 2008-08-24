@@ -376,7 +376,7 @@ namespace System.Windows {
 					else if (type == typeof (System.Windows.Media.FontFamily))
 						return new FontFamily (str);
 					else if (type == typeof (System.Uri))
-						return new Uri (str);
+						return new Uri (str, UriKind.RelativeOrAbsolute);
 					else
 						return str;
 				}

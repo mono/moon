@@ -1,3 +1,8 @@
+2008-08-23  Geoff Norton  <gnorton@novell.com>
+
+	* Dependency*.g.cs: Regen
+	* DependencyObject.cs: Create Uri's as Absolute or Relative.
+
 2008-08-22  Chris Toshok  <toshok@ximian.com>
 
 	* FrameworkElement.cs: slight change - since we have lots of

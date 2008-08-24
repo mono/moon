@@ -729,6 +729,14 @@ namespace System.Windows.Media.Animation {
 	}
 }
 
+namespace System.Windows.Media.Imaging {
+	partial class BitmapImage {
+		public BitmapImage () : base (NativeMethods.bitmap_image_new ()) {}
+		internal BitmapImage (IntPtr raw) : base (raw) {}
+		internal override Kind GetKind () { return Kind.BITMAPIMAGE; }
+	}
+}
+
 namespace System.Windows.Shapes {
 	partial class Ellipse {
 		public Ellipse () : base (NativeMethods.ellipse_new ()) {}
