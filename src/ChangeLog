@@ -1,5 +1,9 @@
 2008-08-23  Geoff Norton  <gnorton@novell.com>
 
+	* bitmapimage.h: Add to the build
+
+2008-08-23  Geoff Norton  <gnorton@novell.com>
+
 	* cbinding.cpp|h, dependencyproperty.g.cpp, type-generated.cpp,
 	  type.h, value.h: Regenerated
 	* downloader.cpp|h: Return failure state for downloader->GetResponse
