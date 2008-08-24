@@ -399,8 +399,8 @@ MediaPlayer::Open (Media *media)
 		if (audio != NULL) {
 			// Only select the audio stream if we can actually play it
 			astream->SetSelected (true);
+			audio->ref ();
 		}
-		audio->ref ();
 	}
 	
 	current_pts = 0;
