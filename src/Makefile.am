@@ -140,6 +140,7 @@ libmoon_la_SOURCES = 		\
 if INCLUDE_MANAGED_CODE
 libmoon_include_HEADERS += 	\
 	border.h		\
+	bitmapimage.h		\
 	contentcontrol.h	\
 	control.h		\
 	cornerradius.h		\
