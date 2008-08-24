@@ -38,6 +38,10 @@ namespace Mono {
 		public extern static IntPtr bezier_segment_new ();
 
 		[DllImport ("moon")]
+		// BitmapImage *bitmap_image_new ();
+		public extern static IntPtr bitmap_image_new ();
+
+		[DllImport ("moon")]
 		// Border *border_new ();
 		public extern static IntPtr border_new ();
 
@@ -880,6 +884,10 @@ namespace Mono {
 		[DllImport ("moon")]
 		// bool surface_get_transparent (Surface *instance);
 		public extern static bool surface_get_transparent (IntPtr instance);
+
+		[DllImport ("moon")]
+		// bool surface_in_main_thread ();
+		public extern static bool surface_in_main_thread ();
 
 		[DllImport ("moon")]
 		// void surface_paint (Surface *instance, cairo_t *ctx, int x, int y, int width, int height);

@@ -252,6 +252,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.TIMELINE));
 				t = agclr.GetType ("System.Windows.Media.Animation.TimelineCollection", true); 
 				types.Add (t, new ManagedType (t, Kind.TIMELINE_COLLECTION));
+				t = agclr.GetType ("System.Windows.Media.Imaging.BitmapImage", true); 
+				types.Add (t, new ManagedType (t, Kind.BITMAPIMAGE));
 				t = agclr.GetType ("System.Windows.Shapes.Ellipse", true); 
 				types.Add (t, new ManagedType (t, Kind.ELLIPSE));
 				t = agclr.GetType ("System.Windows.Shapes.Line", true); 

@@ -132,7 +132,7 @@ namespace Mono {
 		public extern static void downloader_request_abort (IntPtr downloader_request);
 
 		[DllImport("moon")]
-		public extern static void downloader_request_get_response (IntPtr downloader_request, DownloaderResponseStartedDelegate started, DownloaderResponseAvailableDelegate available, DownloaderResponseFinishedDelegate finished, IntPtr context);
+		public extern static bool downloader_request_get_response (IntPtr downloader_request, DownloaderResponseStartedDelegate started, DownloaderResponseAvailableDelegate available, DownloaderResponseFinishedDelegate finished, IntPtr context);
 
 		[DllImport("moon")]
 		public extern static bool downloader_request_is_aborted (IntPtr downloader_request);
