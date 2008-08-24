@@ -49,7 +49,7 @@ namespace System.Windows.Controls {
 					Stream stream = ((BitmapImage) value).stream;
 
 					if (stream == null)
-						throw new ArgumentNullException ("stream");
+						((BitmapImage)value).GetStream ();
 
 					ManagedStreamCallbacks callbacks;
 					wrapper = new StreamWrapper (stream);
