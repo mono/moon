@@ -16,4 +16,5 @@ libmoonplugin_ff2bridge_la_SOURCES=	ff2-bridge.cpp \
 					ff2-dom.cpp \
 					ff2-http.cpp
 
+libmoonplugin_ff2bridge_la_LDFLAGS=--module -avoid-version
 libmoonplugin_ff2bridge_la_LIBADD=$(FF2_LIBS) ../../libmoonplugin.la ../../../src/libmoon.la

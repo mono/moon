@@ -1,3 +1,9 @@
+2008-08-25  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (libmoonplugin_ff3bridge_la_LIBADD): use --module
+	-avoid-version to get rid of the .so.0.0.0 mess.  fixes bug
+	#418907.
+
 2008-07-02  Chris Toshok  <toshok@ximian.com>
 
 	* ff3-dom.cpp: rip out the duplicated NPN_strdup and
