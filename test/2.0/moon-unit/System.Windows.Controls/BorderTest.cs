@@ -141,6 +141,76 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		public void ChildBorderBrushThicknessMeasureTest1 ()
+		{
+			Border c = new Border ();
+			Rectangle r = new Rectangle();
+
+			c.Child = r;
+			c.BorderBrush = new SolidColorBrush (Colors.Black);
+			c.BorderThickness = new Thickness (5);
+
+			r.Width = 50;
+			r.Height = 50;
+
+			c.Measure (new Size (10, 10));
+
+			Assert.AreEqual (new Size (10,10), c.DesiredSize);
+		}
+
+		[TestMethod]
+		public void ChildBorderBrushThicknessMeasureTest2 ()
+		{
+			Border c = new Border ();
+			Rectangle r = new Rectangle();
+
+			c.Child = r;
+			c.BorderBrush = new SolidColorBrush (Colors.Black);
+			c.BorderThickness = new Thickness (5);
+
+			r.Width = 50;
+			r.Height = 50;
+
+			c.Measure (new Size (100, 100));
+
+			Assert.AreEqual (new Size (60,60), c.DesiredSize);
+		}
+
+		[TestMethod]
+		public void ChildBorderThicknessMeasureTest1 ()
+		{
+			Border c = new Border ();
+			Rectangle r = new Rectangle();
+
+			c.Child = r;
+			c.BorderThickness = new Thickness (5);
+
+			r.Width = 50;
+			r.Height = 50;
+
+			c.Measure (new Size (10, 10));
+
+			Assert.AreEqual (new Size (10,10), c.DesiredSize);
+		}
+
+		[TestMethod]
+		public void ChildBorderThicknessMeasureTest2 ()
+		{
+			Border c = new Border ();
+			Rectangle r = new Rectangle();
+
+			c.Child = r;
+			c.BorderThickness = new Thickness (5);
+
+			r.Width = 50;
+			r.Height = 50;
+
+			c.Measure (new Size (100, 100));
+
+			Assert.AreEqual (new Size (60,60), c.DesiredSize);
+		}
+
+		[TestMethod]
 		public void Child_Padding_ChildMargin_MeasureTest ()
 		{
 			Border c = new Border ();
