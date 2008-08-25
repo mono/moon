@@ -44,4 +44,13 @@
 	width="400"
 	height="400"
    />
+  <DrtItem uniqueId="6"
+	name="Simple text rendering/scaling"
+	inputFile="simple-text.html"
+	endTime="10000"
+	interval="20"
+	runs="3"
+	width="720"
+	height="160"
+   />
 </DrtList>

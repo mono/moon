@@ -1,3 +1,8 @@
+2008-08-25  Michael Dominic K.  <mdk@mdk.am>
+
+	* perf-suite-set/drtlist.xml:
+	* perf-suite-set/simple-text.html: Adding a simple performance test for text.
+
 2008-08-21  Michael Dominic K.  <mdk@mdk.am>
 
 	* perf-suite-runner/DrtItem.cs: Bumping the default timeout up to 35s.

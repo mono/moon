@@ -1,0 +1,74 @@
+<html>
+<head>
+    <style type="text/css">
+    body { 
+      margin-left: 0;
+      margin-top: 0;
+      padding: 0;
+	background-color: #000
+    };
+
+    embed {
+      margin-left: 0;
+      margin-top: 0;
+      margin-right: 0;
+      margin-bottom: 0;
+    };
+    </style>
+</head>
+<body>
+<embed type="application/x-silverlight" data="data:," id="slControl" width="720" height="160" source="#xamlContent" windowless="true">
+</embed>
+<script type="text/xaml" id="xamlContent">
+<?xml version="1.0"?>
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Name="MasterCanvas">
+
+	<Rectangle Width="720" Height="160" Fill="Orange" />
+	<TextBlock x:Name="text1" FontFamily="Arial" Text="To be or not to be? A question." FontSize="10" Canvas.Left="10" Canvas.Top="10">
+	   <TextBlock.RenderTransform>
+	     <ScaleTransform ScaleX="1.0" ScaleY="1.0" />
+   	   </TextBlock.RenderTransform>
+
+	<TextBlock.Triggers>
+		<EventTrigger RoutedEvent="TextBlock.Loaded">
+			<BeginStoryboard>
+				<Storyboard>
+					<DoubleAnimation Storyboard.TargetName="text1" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="5" Duration="00:00:10" />
+					<DoubleAnimation Storyboard.TargetName="text1" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="5" Duration="00:00:10" />
+				</Storyboard>
+			</BeginStoryboard>
+		</EventTrigger>
+	</TextBlock.Triggers>
+	</TextBlock>
+
+	<TextBlock x:Name="text2" FontFamily="Arial" Text="To be or not to be? A question." FontSize="10" Canvas.Left="10" Canvas.Top="50">
+	<TextBlock.Triggers>
+		<EventTrigger RoutedEvent="TextBlock.Loaded">
+			<BeginStoryboard>
+				<Storyboard>
+					<DoubleAnimation Storyboard.TargetName="text2" Storyboard.TargetProperty="FontSize" To="50" Duration="00:00:10" />
+				</Storyboard>
+			</BeginStoryboard>
+		</EventTrigger>
+	</TextBlock.Triggers>
+	</TextBlock>
+
+	<TextBlock x:Name="text3" FontFamily="Arial" Text="To be or not to be? A question." FontSize="50" Canvas.Left="10" Canvas.Top="90" Opacity="0.0">
+	<TextBlock.Triggers>
+		<EventTrigger RoutedEvent="TextBlock.Loaded">
+			<BeginStoryboard>
+				<Storyboard>
+					<DoubleAnimation Storyboard.TargetName="text3" Storyboard.TargetProperty="(UIElement.Opacity)" To="1" Duration="00:00:10" />
+				</Storyboard>
+			</BeginStoryboard>
+		</EventTrigger>
+	</TextBlock.Triggers>
+	</TextBlock>
+
+</Canvas>
+</script>
+</body>
+</html>
+
+
