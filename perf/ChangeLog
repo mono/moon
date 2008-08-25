@@ -1,6 +1,13 @@
 2008-08-25  Michael Dominic K.  <mdk@mdk.am>
 
 	* perf-suite-set/drtlist.xml:
+	* perf-suite-set/ftb-rendering-ref.html: Adding a front-to-back rendering
+	refference -- doing same as previous but without ftb (objects are not 
+	obscured by the black rectangles).
+
+2008-08-25  Michael Dominic K.  <mdk@mdk.am>
+
+	* perf-suite-set/drtlist.xml:
 	* perf-suite-set/ftb-rendering.html: Adding a front-to-back rendering 
 	performance test.
 

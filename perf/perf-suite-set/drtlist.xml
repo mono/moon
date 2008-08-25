@@ -57,8 +57,17 @@
 	name="Front-to-back rendering"
 	inputFile="ftb-rendering.html"
 	endTime="5000"
-	interval="20"
+	interval="10"
 	runs="5"
+	width="400"
+	height="400"
+   />
+  <DrtItem uniqueId="8"
+	name="Front-to-back rendering refference"
+	inputFile="ftb-rendering-ref.html"
+	endTime="5000"
+	interval="10"
+	runs="3"
 	width="400"
 	height="400"
    />
