@@ -97,11 +97,11 @@ FrameworkElement::MeasureOverride (Size availableSize)
 
 	// if our width is not set, or is smaller than our configured MinWidth,
 	// bump it up to the minimum.
-	if (width == /*XXX NAN*/ 0 || width < GetMinWidth ())
+	if (isnan(width) || width < GetMinWidth ())
 		width = GetMinWidth ();
 
 	// and do the same with height
-	if (height == /*XXX NAN*/ 0 || height < GetMinHeight ())
+	if (isnan(height) || height < GetMinHeight ())
 		height = GetMinHeight ();
 
 	DependencyObject *content = GetContent ();
@@ -161,6 +161,8 @@ FrameworkElement::Arrange (Rect finalRect)
 		size = (*arrange_cb)(finalSize);
 	else
 		size = ArrangeOverride (finalSize);
+
+	SetDesiredSize (size);
 
 	g_warning ("more here in FrameworkElement::Arrange.  move the bounds or something?  set properties?  who knows!?");
 }

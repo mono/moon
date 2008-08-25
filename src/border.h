@@ -46,6 +46,7 @@ public:
 	virtual Type::Kind GetObjectType () { return Type::BORDER; }
 
 	virtual Size MeasureOverride (Size availableSize);
+	virtual Size ArrangeOverride (Size finalSize);
 
 	// property accessors
 
