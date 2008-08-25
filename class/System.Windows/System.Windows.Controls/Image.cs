@@ -43,7 +43,11 @@ namespace System.Windows.Controls {
 		public ImageSource Source {
 			get { throw new NotImplementedException (); }
 			set {
-				value.SetElement (this);
+				if (value == null) {
+					NativeMethods.media_base_set_source (this.native, null);
+				} else {
+					value.SetElement (this);
+				}
 			}
 		}
 		

@@ -1,5 +1,9 @@
 2008-08-24  Geoff Norton  <gnorton@novell.com>
 
+	* Image.cs: Support nulling out the ImageSource
+
+2008-08-24  Geoff Norton  <gnorton@novell.com>
+
 	* Image.cs: ImageSource now does the heavy lifting for us.
 
 2008-08-23  Geoff Norton  <gnorton@novell.com>
