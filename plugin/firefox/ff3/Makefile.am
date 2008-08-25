@@ -17,5 +17,5 @@ libmoonplugin_ff3bridge_la_SOURCES=	ff3-bridge.cpp \
 					ff3-dom.cpp \
 					ff3-http.cpp
 
-libmoonplugin_ff3bridge_la_LDFLAGS=--module -avoid-version
+libmoonplugin_ff3bridge_la_LDFLAGS=-module -avoid-version
 libmoonplugin_ff3bridge_la_LIBADD=$(FF3_LIBS) ../../libmoonplugin.la ../../../src/libmoon.la
