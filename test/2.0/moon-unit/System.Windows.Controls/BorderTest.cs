@@ -179,7 +179,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		public void ArrangeTest_RenderSize_ChildSmallerThanFinalRect ()
+		public void ArrangeTest_RenderSize_ChildLargerThanFinalRect ()
 		{
 			Border c = new Border ();
 			Rectangle r = new Rectangle ();
@@ -209,7 +209,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		public void ArrangeTest_ChildSmallerThanFinalRect ()
+		public void ArrangeTest_ChildLargerThanFinalRect ()
 		{
 			Border c = new Border ();
 			Rectangle r = new Rectangle ();
@@ -229,7 +229,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		public void ArrangeTest_ChildSmallerThanFinalRect_WithBorderMargin ()
+		public void ArrangeTest_ChildLargerThanFinalRect_WithBorderMargin ()
 		{
 			Border c = new Border ();
 			Rectangle r = new Rectangle ();
@@ -251,7 +251,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		public void ArrangeTest_ChildSmallerThanFinalRect_WithBorderBrushAndThickness ()
+		public void ArrangeTest_ChildLargerThanFinalRect_WithBorderBrushAndThickness ()
 		{
 			Border c = new Border ();
 			Rectangle r = new Rectangle ();
@@ -274,7 +274,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		public void ArrangeTest_ChildSmallerThanFinalRect_WithBorderThickness ()
+		public void ArrangeTest_ChildLargerThanFinalRect_WithBorderThickness ()
 		{
 			Border c = new Border ();
 			Rectangle r = new Rectangle ();
@@ -293,6 +293,50 @@ namespace MoonTest.System.Windows.Controls
 			c.Arrange (new Rect (0, 0, 25, 25));
 
 			Assert.AreEqual (new Size (15, 15), r.DesiredSize);
+		}
+
+		[TestMethod]
+		public void ArrangeTest_ChildUnsetSize ()
+		{
+			Border c = new Border ();
+			Rectangle r = new Rectangle ();
+
+			c.Child = r;
+
+			// we intentionally give border less room to
+			// work with than the configured width/height
+			// of the child
+			c.Measure (new Size (25, 25));
+			c.Arrange (new Rect (0, 0, 25, 25));
+
+			Assert.AreEqual (new Size (0, 0), r.DesiredSize);
+			Assert.AreEqual (new Size (25, 25), r.RenderSize);
+		}
+
+		[TestMethod]
+		public void MeasureTest_TransformedChild ()
+		{
+			Border c = new Border ();
+			Rectangle r = new Rectangle ();
+
+			c.Child = r;
+
+			r.Width = 20;
+			r.Height = 20;
+
+			ScaleTransform s = new ScaleTransform ();
+			s.ScaleX = s.ScaleY = 2.0;
+
+			r.RenderTransform = s;
+			
+			// we intentionally give border less room to
+			// work with than the configured width/height
+			// of the child
+			c.Measure (new Size (250, 250));
+			c.Arrange (new Rect (0, 0, 250, 250));
+
+			Assert.AreEqual (new Size (20, 20), r.DesiredSize);
+			Assert.AreEqual (new Size (20, 20), r.RenderSize);
 		}
 	}
 }
