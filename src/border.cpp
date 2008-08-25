@@ -82,14 +82,12 @@ Border::ArrangeOverride (Size finalSize)
 
 	Size desired_size = GetDesiredSize ();
 
-	g_warning ("in Border::ArrangeOverride (%g, %g)", finalSize.width, finalSize.height);
 	if (desired_size.width <= finalSize.width
 	    && desired_size.height <= finalSize.height) {
 		// the parent gave us a final rectangle large enough
 		// for what we need.  keep our desired size, and pass
 		// off the right arg to our child.
 
-		g_warning ("border has desired size of (%g, %g)", desired_size.width, desired_size.height);
 		UIElement *child = GetChild ();
 		if (child) {
 			Thickness *margins = GetMargin ();
@@ -119,7 +117,7 @@ Border::ArrangeOverride (Size finalSize)
 		return desired_size;
 	}
 	else {
-		g_warning ("border has desired size of (%g, %g", desired_size.width, desired_size.height);
+		g_warning ("border has desired size of (%g, %g)", desired_size.width, desired_size.height);
 		g_warning ("unhandled case");
 	}
 
