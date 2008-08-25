@@ -98,6 +98,8 @@ class ObjectAnimationUsingKeyFrames : public /*Object*/Animation {
 
 	virtual Duration GetNaturalDurationCore (Clock* clock);
 	virtual bool Validate ();
+
+	virtual Type::Kind GetValueKind () { return Type::DEPENDENCY_OBJECT; };
 };
 
 #endif /* MOON_ANIMATION2_H */
