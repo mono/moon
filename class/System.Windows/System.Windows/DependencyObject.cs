@@ -732,7 +732,12 @@ namespace System.Windows {
 				throw new UnauthorizedAccessException ("Invalid access of Moonlight from an external thread");
 		}
 
-		internal static void Ping ()
+#if SL_2_1
+		internal
+#else
+		public
+#endif
+		static void EnsureInitialized ()
 		{
 			// Here just to ensure that the static ctor is executed and
 			// runtime init is initialized from some entry points
