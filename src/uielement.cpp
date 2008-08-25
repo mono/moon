@@ -806,10 +806,12 @@ UIElement::PreRender (cairo_t *cr, Region *region, bool skip_children)
 	}
 	cairo_set_matrix (cr, &absolute_xform);
 
+	/*
 	if (ClipToExtents ()) {
 		extents.Draw (cr); 
 		cairo_clip (cr);
 	}
+	*/
 
 	if (IS_TRANSLUCENT (local_opacity))
 		cairo_push_group (cr);

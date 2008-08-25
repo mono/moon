@@ -148,29 +148,33 @@ Control::ComputeBounds ()
 {
 	double width = GetWidth ();
 	double height = GetHeight ();
+	Value *vw = GetValueNoDefault (FrameworkElement::WidthProperty);
+	Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
 	
-	extents = Rect (0.0, 0.0, width, height);
-
 	Thickness border = *GetBorderThickness ();
 	Thickness padding = *GetPadding ();
 
-	// if width or height == NAN  Auto layout
-	if ((width != width) && (height != height)) {
-		extents = Rect ();
-		ContentWalker walker = ContentWalker (this);
-		while (UIElement *item = (UIElement *)walker.Step ()) {
-			cairo_matrix_t offset;
-			
-			GetTransformFor (item, &offset);
-			extents = extents.Union (item->GetExtents ().Transform (&offset));
-		}
+	extents = Rect ();
+	bounds_with_children = Rect ();
+	ContentWalker walker = ContentWalker (this);
+	while (UIElement *item = (UIElement *)walker.Step ()) {
+		cairo_matrix_t offset;
 		
-		extents.h += border.bottom + padding.bottom;
-		extents.w += border.right + padding.right;
+		GetTransformFor (item, &offset);
+		//extents = extents.Union (item->GetExtents ().Transform (&offset));
+		extents = bounds_with_children.Union (item->GetSubtreeBounds ());
 	}
+	extents.h += border.bottom + padding.bottom;
+	extents.w += border.right + padding.right;
+
+	// if width or height == NAN  Auto layout
+	if (vh && vw && (width == width) && (height == height))
+		extents = Rect (0.0, 0.0, width, height);
+	else 
+		g_warning ("AutoWidth (%f, %f, %f, %f)", extents.x, extents.y, extents.w, extents.h);
 
 	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
-	bounds_with_children = bounds;
+	bounds_with_children = bounds.Union (bounds);
 }
 
 void
