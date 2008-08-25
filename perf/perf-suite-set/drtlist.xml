@@ -53,4 +53,13 @@
 	width="720"
 	height="160"
    />
+  <DrtItem uniqueId="7"
+	name="Front-to-back rendering"
+	inputFile="ftb-rendering.html"
+	endTime="5000"
+	interval="20"
+	runs="5"
+	width="400"
+	height="400"
+   />
 </DrtList>

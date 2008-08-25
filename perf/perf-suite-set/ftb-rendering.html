@@ -1,0 +1,114 @@
+<html>
+<head>
+    <style type="text/css">
+    body { 
+      margin-left: 0;
+      margin-top: 0;
+      padding: 0;
+    };
+
+    embed {
+      margin-left: 0;
+      margin-top: 0;
+      margin-right: 0;
+      margin-bottom: 0;
+    };
+    </style>
+</head>
+<body>
+<embed type="application/x-silverlight" data="data:," id="slControl" width="400" height="400" source="#xamlContent" windowless="true">
+</embed>
+<script type="text/xaml" id="xamlContent">
+<?xml version="1.0"?>
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Name="MasterCanvas">
+
+	
+	<Rectangle x:Name="obscured1" Canvas.Top="20" Canvas.Left="20" Width="50" Height="50">
+	<Rectangle.Fill>
+       	<RadialGradientBrush>
+			<RadialGradientBrush.GradientStops>
+				<GradientStop x:Name="color1" Offset="0" Color="Red" />
+				<GradientStop x:Name="color2" Offset="3" Color="White" />
+			</RadialGradientBrush.GradientStops>
+		</RadialGradientBrush>
+	</Rectangle.Fill>
+	<Rectangle.Triggers>
+        <EventTrigger RoutedEvent="Rectangle.Loaded">
+           <BeginStoryboard>
+	            <Storyboard>
+			        <DoubleAnimation BeginTime="00:00:00" Storyboard.TargetName="obscured1" Storyboard.TargetProperty="(Canvas.Left)" To="330" Duration="0:0:5" />
+                </Storyboard>
+           </BeginStoryboard>
+        </EventTrigger>
+	</Rectangle.Triggers>
+	</Rectangle>
+
+	<Rectangle x:Name="obscured2" Canvas.Top="330" Canvas.Left="20" Width="50" Height="50">
+	<Rectangle.Fill>
+       	<RadialGradientBrush>
+			<RadialGradientBrush.GradientStops>
+				<GradientStop x:Name="color1" Offset="0" Color="Green" />
+				<GradientStop x:Name="color2" Offset="3" Color="White" />
+			</RadialGradientBrush.GradientStops>
+		</RadialGradientBrush>
+	</Rectangle.Fill>
+	<Rectangle.Triggers>
+        <EventTrigger RoutedEvent="Rectangle.Loaded">
+           <BeginStoryboard>
+	            <Storyboard>
+			        <DoubleAnimation BeginTime="00:00:00" Storyboard.TargetName="obscured2" Storyboard.TargetProperty="(Canvas.Top)" To="20" Duration="0:0:5" />
+                </Storyboard>
+           </BeginStoryboard>
+        </EventTrigger>
+	</Rectangle.Triggers>
+	</Rectangle>
+
+	<Rectangle x:Name="obscured3" Canvas.Top="20" Canvas.Left="330" Width="50" Height="50">
+	<Rectangle.Fill>
+       	<RadialGradientBrush>
+			<RadialGradientBrush.GradientStops>
+				<GradientStop x:Name="color1" Offset="0" Color="Black" />
+				<GradientStop x:Name="color2" Offset="3" Color="White" />
+			</RadialGradientBrush.GradientStops>
+		</RadialGradientBrush>
+	</Rectangle.Fill>
+	<Rectangle.Triggers>
+        <EventTrigger RoutedEvent="Rectangle.Loaded">
+           <BeginStoryboard>
+	            <Storyboard>
+			        <DoubleAnimation BeginTime="00:00:00" Storyboard.TargetName="obscured3" Storyboard.TargetProperty="(Canvas.Top)" To="330" Duration="0:0:5" />
+                </Storyboard>
+           </BeginStoryboard>
+        </EventTrigger>
+	</Rectangle.Triggers>
+	</Rectangle>
+
+	<Rectangle x:Name="obscured4" Canvas.Top="330" Canvas.Left="330" Width="50" Height="50">
+	<Rectangle.Fill>
+       	<RadialGradientBrush>
+			<RadialGradientBrush.GradientStops>
+				<GradientStop x:Name="color1" Offset="0" Color="Blue" />
+				<GradientStop x:Name="color2" Offset="3" Color="White" />
+			</RadialGradientBrush.GradientStops>
+		</RadialGradientBrush>
+	</Rectangle.Fill>
+	<Rectangle.Triggers>
+        <EventTrigger RoutedEvent="Rectangle.Loaded">
+           <BeginStoryboard>
+	            <Storyboard>
+			        <DoubleAnimation BeginTime="00:00:00" Storyboard.TargetName="obscured4" Storyboard.TargetProperty="(Canvas.Left)" To="20" Duration="0:0:5" />
+                </Storyboard>
+           </BeginStoryboard>
+        </EventTrigger>
+	</Rectangle.Triggers>
+	</Rectangle>
+	
+	<Rectangle Canvas.Left="10" Canvas.Top="10" Fill="Black" Width="380" Height="380"/>
+
+</Canvas>
+</script>
+</body>
+</html>
+
+
