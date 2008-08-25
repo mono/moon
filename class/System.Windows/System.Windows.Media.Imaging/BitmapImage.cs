@@ -55,9 +55,11 @@ namespace System.Windows.Media.Imaging
 		{
 			get
 		 	{
-				StreamResourceInfo sri = Application.GetResourceStream (UriSource);
-				if (sri != null)
-					return sri.Stream;
+				if (UriSource != null) {
+					StreamResourceInfo sri = Application.GetResourceStream (UriSource);
+					if (sri != null)
+						return sri.Stream;
+				}
 				return stream;
 			}
 		}

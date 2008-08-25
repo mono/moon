@@ -1,4 +1,9 @@
 2008-08-24  Geoff Norton  <gnorton@novell.com>
+	
+	* BitmapImage.cs: Dont attempt to read a resource stream unless we
+	have a uri.
+
+2008-08-24  Geoff Norton  <gnorton@novell.com>
 
 	* BitmapImage.cs: The URI passed to a BitmapImage isn't always
 	a download, it can specify a resource/content in the xap.
