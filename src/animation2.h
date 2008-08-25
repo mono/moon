@@ -77,7 +77,7 @@ class ObjectAnimationUsingKeyFrames : public /*Object*/Animation {
 	virtual ~ObjectAnimationUsingKeyFrames () {}
 
  public:
- 	/* @PropertyType=ObjectKeyFrameCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal */
+ 	/* @PropertyType=ObjectKeyFrameCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *KeyFramesProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
