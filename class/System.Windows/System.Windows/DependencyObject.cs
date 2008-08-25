@@ -144,6 +144,7 @@ namespace System.Windows {
 			case Kind.ASSEMBLYPART_COLLECTION: return new AssemblyPartCollection (raw);
 			case Kind.BEGINSTORYBOARD: return new BeginStoryboard (raw);
 			case Kind.BEZIERSEGMENT: return new BezierSegment (raw);
+			case Kind.BORDER: return new Border (raw);
 			case Kind.CANVAS: return new Canvas (raw);
 			case Kind.COLORANIMATION: return new ColorAnimation (raw);
 			case Kind.COLORKEYFRAME_COLLECTION: return new ColorKeyFrameCollection (raw);
