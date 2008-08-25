@@ -59,7 +59,7 @@ public class GtkSilver : EventBox {
 	internal delegate void   downloader_abort_func (IntPtr state);
 	
 	[DllImport ("moon")]
-        internal extern static void downloader_set_functions (
+	internal extern static void downloader_set_functions (
 		downloader_create_state_func create_state,
 		downloader_destroy_state_func destroy_state,
 		downloader_open_func open,
@@ -74,10 +74,10 @@ public class GtkSilver : EventBox {
 			ManagedDownloader.Open,
 			ManagedDownloader.Send,
 			ManagedDownloader.Abort);
-
+		
 		// Just touch something in a DependencyObject subclass
-                // to trigger its initialization
-		object o = UIElement.ClipProperty;
+		// to trigger its initialization
+		DependencyObject.EnsureInitialized ();
 	}
 
 	/// <summary>
