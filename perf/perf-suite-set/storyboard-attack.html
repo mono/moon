@@ -1,0 +1,79 @@
+<html>
+<head>
+    <style type="text/css">
+    body { 
+      margin-left: 0;
+      margin-top: 0;
+      padding: 0;
+    };
+
+    embed {
+      margin-left: 0;
+      margin-top: 0;
+      margin-right: 0;
+      margin-bottom: 0;
+    };
+    </style>
+</head>
+<body>
+<script type="text/javascript">
+
+function CreateRectangle(l, t, i, sj, master)
+{
+	var xaml =
+		'<Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" \
+		x:Name="rect%no%" Canvas.Left="%left%" Canvas.Top="%top%" Width="5" Height="5" Fill="Black"> \
+			<Rectangle.Resources> \
+				<Storyboard x:Name="sb%no%"> \
+					<DoubleAnimation \
+						Storyboard.TargetName="rect%no%" \
+						Storyboard.TargetProperty="(Canvas.Left)" \
+						To="195" Duration="0:0:4" /> \
+					<DoubleAnimation \
+						Storyboard.TargetName="rect%no%" \
+						Storyboard.TargetProperty="(Canvas.Top)" \
+						To="195" Duration="0:0:4" /> \
+				</Storyboard> \
+			</Rectangle.Resources> \
+		</Rectangle>';
+
+	xaml = xaml.replace(/%no%/g, i);
+	xaml = xaml.replace(/%top%/g, t);
+	xaml = xaml.replace(/%left%/g, l);
+
+	var obj = sj.createFromXaml(xaml);
+	master.Children.Add(obj);
+	master.findName ("sb%no%".replace('%no%', i)).Begin ();
+}
+
+function OnLoaded (sender)
+{
+        var SJ = document.getElementById ("slControl").content;
+        var master = sender.findName("MasterCanvas");
+
+	for (i = 0; i < 40; i++)
+		xaml = CreateRectangle (0, i * 10, i, SJ, master);
+
+	for (i = 40; i < 80; i++)
+		xaml = CreateRectangle (390, (i - 40) * 10, i, SJ, master);
+
+	for (i = 80; i < 120; i++)
+		xaml = CreateRectangle ((i - 80) * 10, 0, i, SJ, master);
+
+	for (i = 120; i < 160; i++)
+		xaml = CreateRectangle ((i - 120) * 10, 390, i, SJ, master);
+}
+</script>
+
+<embed type="application/x-silverlight" data="data:," id="slControl" width="400" height="400" source="#xamlContent" windowless="true">
+</embed>
+<script type="text/xaml" id="xamlContent">
+<?xml version="1.0"?>
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Name="MasterCanvas" Loaded="OnLoaded">
+</Canvas>
+</script>
+</body>
+</html>
+
+

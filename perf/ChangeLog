@@ -1,5 +1,11 @@
-2008-08-22  Raja R Harinath  <harinath@hurrynot.org>
+2008-08-21  Michael Dominic K.  <mdk@mdk.am>
 
+	* perf-suite-set/drtlist.xml:
+	* perf-suite-set/storyboard-attack.html: Adding a test for massive storyboard
+	action.
+
+2008-08-22  Raja R Harinath  <harinath@hurrynot.org>
+	
 	* Makefile.am (perf_suite_lib_sources): Prefix filenames with $(srcdir).
 	(perf_suite_runner_sources): Likewise.
 	(perf_suite_generator_sources): Likewise.

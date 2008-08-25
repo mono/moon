@@ -35,4 +35,13 @@
 	width="400"
 	height="400"
    />
+  <DrtItem uniqueId="5"
+	name="Storyboard attack"
+	inputFile="storyboard-attack.html"
+	endTime="4000"
+	interval="20"
+	runs="3"
+	width="400"
+	height="400"
+   />
 </DrtList>
