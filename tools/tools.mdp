@@ -33,6 +33,9 @@
     <File name="generators/HeaderCollection.cs" subtype="Code" buildaction="Compile" />
     <File name="generators/HOWTO" subtype="Code" buildaction="Nothing" />
     <File name="generators/TODO" subtype="Code" buildaction="Nothing" />
+    <File name="mopen/ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="mopen/CompositeHelper.cs" subtype="Code" buildaction="Compile" />
+    <File name="mopen/mopen.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <GtkDesignInfo />
 </Project>
