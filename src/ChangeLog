@@ -1,3 +1,9 @@
+2008-08-24  Geoff Norton <gnorton@novell.com>
+
+	* media.h: Add a new overload to set the SourceProperty from managed land.
+	* media.cpp: Support async source changing downloader creation for ImageSource
+	* cbinding.(cpp|h): Regen
+
 2008-08-23  Geoff Norton  <gnorton@novell.com>
 
 	* mplayer.cpp: Only ref the audio if we have it as well.

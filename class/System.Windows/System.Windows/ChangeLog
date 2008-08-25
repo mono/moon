@@ -1,3 +1,8 @@
+2008-08-24  Geoff Norton  <gnorton@novell.com>
+
+	* Application.cs: Rewrite GetResourceStream with more liberal 
+	behaviour
+
 2008-08-23  Geoff Norton  <gnorton@novell.com>
 
 	* Dependency*.g.cs: Regen

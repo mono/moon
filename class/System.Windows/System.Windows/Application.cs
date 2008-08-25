@@ -45,6 +45,7 @@ namespace System.Windows {
 	public partial class Application {
 		static Application current;
 		static Assembly [] assemblies;
+		static Assembly startup;
 		
 		//
 		// Controls access to the s_ static fields, which are used
@@ -155,7 +156,6 @@ namespace System.Windows {
 			// Load the assemblies from the XAP file, and find the startup assembly
 			//
 			Assembly a;
-			Assembly startup = null;
 			assemblies = new Assembly [deployment.Parts.Count + 1];
 			assemblies [0] = typeof (Application).Assembly; // Add System.Windows.dll
 
@@ -266,54 +266,45 @@ namespace System.Windows {
 			}
 		}
 
-		//
-		// From casual documentation inspection:
-		//
-		//   "pathname"                     resource file embedded in application package
-		//   "AssemblyName;component/pathname"   embedded in AssemblyName, the file pathname
-		//
-		// 
+		/*
+		 * Resources take the following format:
+		 * 	[/[AssemblyName;component/]]resourcename
+		 * They will always be resolved in the following order:
+		 * 	1. Application manifest resources
+		 * 	2. XAP content
+		 */
 #if NET_2_1
 		[SecuritySafeCritical]
 #endif
 		public static StreamResourceInfo GetResourceStream (Uri resourceUri)
 		{
 			string loc = resourceUri.ToString ();
+			string aname;
+			string res;
 			int p = loc.IndexOf (';');
 
-			if (p == -1)
-				return StreamResourceInfo.FromFile (Path.Combine (Current.xap_dir, loc));
-
-			string aname = loc.Substring (0, p);
-
-			// For now, strip this, I have no idea what this means.
-			if (aname [0] == '/')
-				aname = aname.Substring (1);
-
+			/* We have a resource of the format /assembly;component/resourcename */
+			if (p > 0) {
+				aname = loc.Substring (1, p-1);
+				res = loc.Substring (p+11);
+			} else {
+				aname = startup.GetName ().Name;
+				res = loc [0] == '/' ? loc.Substring (1) : loc;	
+			}
+					
 			Assembly assembly = assemblies.FirstOrDefault (a => a.GetName ().Name == aname);
-
-			if (assembly == null){
-				Report.Info ("Could not find the named assembly in the resourceUri");
-				return null;
-			}
-
-			string rest = loc.Substring (p+1);
-			if (!rest.StartsWith ("component/")){
-				Report.Info ("Second component does not inclue component/");
-				return null;
-			}
-			rest = rest.Substring (10);
-
 			ResourceManager rm = new ResourceManager (aname + ".g", assembly);
-			rm.IgnoreCase = true;
-			Stream s = rm.GetStream (rest);
-			
-			if (s == null){
-				Report.Info ("Could not find resource: {0}", rest);
-				return null;
-			}
 
-			return new StreamResourceInfo (s, "");
+			rm.IgnoreCase = true;
+			Stream s = rm.GetStream (res);
+
+			if (s != null)
+				return new StreamResourceInfo (s, "");
+
+			if (File.Exists (Path.Combine (Current.xap_dir, res)))
+				return StreamResourceInfo.FromFile (Path.Combine (Current.xap_dir, res));
+
+			return null;
 		}
 
 #if NET_2_1

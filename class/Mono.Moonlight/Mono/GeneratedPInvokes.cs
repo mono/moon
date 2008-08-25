@@ -550,6 +550,10 @@ namespace Mono {
 		public extern static IntPtr media_base_new ();
 
 		[DllImport ("moon")]
+		// void media_base_set_source (MediaBase *instance, const char *uri);
+		public extern static void media_base_set_source (IntPtr instance, string uri);
+
+		[DllImport ("moon")]
 		// MediaElement *media_element_new ();
 		public extern static IntPtr media_element_new ();
 

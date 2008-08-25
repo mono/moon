@@ -192,6 +192,15 @@ MediaBase::SetSource (Downloader *downloader, const char *PartName)
 }
 
 void
+MediaBase::SetSource (const char *uri)
+{
+	Value v(uri);
+	PropertyChangedEventArgs args (MediaBase::SourceProperty, NULL, &v);
+	OnPropertyChanged (&args);
+}
+
+
+void
 MediaBase::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
 	if (args->property == MediaBase::SourceProperty) {

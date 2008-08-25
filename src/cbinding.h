@@ -666,6 +666,9 @@ MediaAttributeCollection *media_attribute_collection_new (void);
 /* @GeneratePInvoke */
 MediaBase *media_base_new (void);
 
+/* @GeneratePInvoke */
+void media_base_set_source (MediaBase *instance, const char *uri);
+
 /**
  * MediaElement
  **/

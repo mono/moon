@@ -1,3 +1,8 @@
+2008-08-24  Geoff Norton  <gnorton@novell.com>
+
+	* ImageSource.cs: Move the logic for source setting here
+	so that all FrameworkElements can share the same code path.
+
 2008-08-23  Geoff Norton  <gnorton@novell.com>
 
 	* ImageSource.cs: Add internal ctor.

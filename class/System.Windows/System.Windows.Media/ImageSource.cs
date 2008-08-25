@@ -23,13 +23,17 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System.IO;
 using System.Windows;
 using System.Security;
+using System.Windows.Interop;
 using Mono;
 
 namespace System.Windows.Media {
 
 	public abstract class ImageSource : DependencyObject {
+		private StreamWrapper wrapper;
+		private ManagedStreamCallbacks callbacks;
 
 		[MonoTODO ("this should use ': base (NativeMethods.image_source_new())'")]
 		protected ImageSource ()
@@ -39,6 +43,19 @@ namespace System.Windows.Media {
 		internal ImageSource (IntPtr native) : base (native)
 		{
 		}
-	}
 
+		internal abstract Stream Stream { get; }
+		internal abstract Uri Uri { get; }
+
+		internal void SetElement (FrameworkElement element) {
+			if (Stream != null) {
+				wrapper = new StreamWrapper (Stream);
+				callbacks = wrapper.GetCallbacks ();
+				NativeMethods.image_set_stream_source (element.native, ref callbacks);
+			}
+			if (Uri != null) {
+				NativeMethods.media_base_set_source (element.native, new Uri (PluginHost.RootUri, Uri).ToString ());
+			}
+		}
+	}
 }

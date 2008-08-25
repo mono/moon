@@ -168,6 +168,8 @@ class MediaBase : public FrameworkElement {
 	void SetSourceAsyncCallback ();
 	virtual void SetSourceInternal (Downloader *downloader, char *PartName);
 	virtual void SetSource (Downloader *downloader, const char *PartName);
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetSource (const char *uri);
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	
@@ -239,9 +241,6 @@ class Image : public MediaBase {
  	/* @GenerateCBinding,GeneratePInvoke */
 	Image ();
 	
-	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
-	void SetStreamSource (ManagedStreamCallbacks *stream);
-	
 	virtual Type::Kind GetObjectType () { return Type::IMAGE; };
 	
 	virtual void Render (cairo_t *cr, Region *region);
@@ -251,6 +250,8 @@ class Image : public MediaBase {
 	
 	virtual void SetSourceInternal (Downloader *downloader, char *PartName);
 	virtual void SetSource (Downloader *downloader, const char *PartName);
+	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	void SetStreamSource (ManagedStreamCallbacks *stream);
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	

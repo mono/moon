@@ -1,3 +1,8 @@
+2008-08-24  Geoff Norton  <gnorton@novell.com>
+
+	* BitmapImage.cs: The URI passed to a BitmapImage isn't always
+	a download, it can specify a resource/content in the xap.
+
 2008-08-23  Geoff Norton  <gnorton@novell.com>
 
 	* BitmapImage.cs: Implement support for getting a BitmapImage from 

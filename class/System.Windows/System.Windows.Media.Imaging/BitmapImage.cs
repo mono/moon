@@ -25,17 +25,17 @@
 
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Resources;
 using System.Security;
 using System.IO;
 using System.Threading;
 using System.Net;
 using Mono;
 
-namespace System.Windows.Media.Imaging {
-
-	public sealed partial class BitmapImage : ImageSource {
-		private ManualResetEvent wait;
-
+namespace System.Windows.Media.Imaging
+{
+	public sealed partial class BitmapImage : ImageSource
+	{
 		internal Stream stream;
 
 		public BitmapImage (Uri uriSource) : base (NativeMethods.bitmap_image_new ())
@@ -51,16 +51,23 @@ namespace System.Windows.Media.Imaging {
 			this.stream = streamSource;
 		}
 
-		internal void GetStream ()
+		internal override Stream Stream
 		{
-			if (stream != null)
-				return;
+			get
+		 	{
+				StreamResourceInfo sri = Application.GetResourceStream (UriSource);
+				if (sri != null)
+					return sri.Stream;
+				return stream;
+			}
+		}
 
-			WebRequest request = WebRequest.Create (UriSource);
-			IAsyncResult async_result = request.BeginGetResponse (null, this);
-			WebResponse response = request.EndGetResponse (async_result);
-
-			stream = response.GetResponseStream ();
+		internal override Uri Uri
+		{
+			get
+			{
+				return UriSource;
+			}
 		}
 
 		public event EventHandler<DownloadProgressEventArgs> DownloadProgress;

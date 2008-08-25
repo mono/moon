@@ -1,0 +1,4 @@
+2008-08-24  Geoff Norton  <gnorton@novell.com>
+
+	* PluginHost.cs: Wrap up the Root uri of the .xap location
+

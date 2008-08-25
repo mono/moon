@@ -1247,6 +1247,16 @@ media_base_new (void)
 }
 
 
+void
+media_base_set_source (MediaBase *instance, const char *uri)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetSource (uri);
+}
+
+
 /**
  * MediaElement
  **/

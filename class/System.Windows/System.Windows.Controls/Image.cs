@@ -33,8 +33,6 @@ using Mono;
 
 namespace System.Windows.Controls {
 	public sealed partial class Image : FrameworkElement {
-		private StreamWrapper wrapper;
-
 		// XXX this should be an ImageSource
 		public static readonly DependencyProperty SourceProperty =
 			DependencyProperty.Lookup (Kind.MEDIABASE, "Source", typeof (string));
@@ -45,17 +43,7 @@ namespace System.Windows.Controls {
 		public ImageSource Source {
 			get { throw new NotImplementedException (); }
 			set {
-				if (value is BitmapImage) {
-					Stream stream = ((BitmapImage) value).stream;
-
-					if (stream == null)
-						((BitmapImage)value).GetStream ();
-
-					ManagedStreamCallbacks callbacks;
-					wrapper = new StreamWrapper (stream);
-					callbacks = wrapper.GetCallbacks ();
-					NativeMethods.image_set_stream_source (this.native, ref callbacks);
-				}
+				value.SetElement (this);
 			}
 		}
 		
