@@ -39,7 +39,7 @@ namespace PerfSuiteRunner {
 		public int StartTime = 0;
 		public int EndTime = 5000;
 		public int Interval = 40;
-		public int Timeout = 20000;
+		public int Timeout = 35000;
 		public int Runs = 3;
 		public int Width = 400;
 		public int Height = 400;

@@ -1,5 +1,9 @@
 2008-08-21  Michael Dominic K.  <mdk@mdk.am>
 
+	* perf-suite-runner/DrtItem.cs: Bumping the default timeout up to 35s.
+
+2008-08-21  Michael Dominic K.  <mdk@mdk.am>
+
 	* perf-suite-set/drtlist.xml:
 	* perf-suite-set/storyboard-attack.html: Adding a test for massive storyboard
 	action.
