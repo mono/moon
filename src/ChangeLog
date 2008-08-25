@@ -1,5 +1,11 @@
-2008-08-24  Geoff Norton <gnorton@novell.com>
+2008-08-25  Michael Dominic K.  <mdk@mdk.am>
 
+	* animation.cpp:
+	* animation2.h: Base work for ObjectAnimationUsingKeyFrames 
+	implementation.
+
+2008-08-24  Geoff Norton <gnorton@novell.com>
+	
 	* media.h: Add a new overload to set the SourceProperty from managed land.
 	* media.cpp: Support async source changing downloader creation for ImageSource
 	* cbinding.(cpp|h): Regen

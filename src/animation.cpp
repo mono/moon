@@ -19,6 +19,7 @@
 #include <math.h>
 
 #include "animation.h"
+#include "animation2.h"
 #include "color.h"
 #include "runtime.h"
 #include "utils.h"
@@ -959,6 +960,17 @@ DiscretePointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgre
 }
 
 Value*
+DiscreteObjectKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
+{
+	DependencyObject *to = GetValue();
+
+	if (to && keyFrameProgress == 1.0)
+		return new Value(to);
+	else
+		return new Value (baseValue->AsDependencyObject());
+}
+
+Value*
 LinearDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
 	double *to = GetValue();
@@ -1545,6 +1557,96 @@ Duration Duration::Automatic (Duration::AUTOMATIC);
 Duration Duration::Forever (Duration::FOREVER);
 KeyTime KeyTime::Paced (KeyTime::PACED);
 KeyTime KeyTime::Uniform (KeyTime::UNIFORM);
+
+void
+ObjectAnimationUsingKeyFrames::AddKeyFrame (ObjectKeyFrame *frame)
+{
+	ObjectKeyFrameCollection *key_frames = GetKeyFrames ();
+
+	key_frames->Add (frame);
+}
+
+void
+ObjectAnimationUsingKeyFrames::RemoveKeyFrame (ObjectKeyFrame *frame)
+{
+	ObjectKeyFrameCollection *key_frames = GetKeyFrames ();
+
+	key_frames->Remove (frame);
+}
+
+void
+ObjectAnimationUsingKeyFrames::Resolve ()
+{
+	KeyFrameAnimation_ResolveKeyFrames (this, GetKeyFrames ());
+}
+
+Value*
+ObjectAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
+					        AnimationClock* animationClock)
+{
+	ObjectKeyFrameCollection *key_frames = GetKeyFrames ();
+
+	/* current segment info */
+	TimeSpan current_time = animationClock->GetCurrentTime();
+	ObjectKeyFrame *current_keyframe;
+	ObjectKeyFrame *previous_keyframe;
+	ObjectKeyFrame** keyframep = &previous_keyframe;
+	Value *baseValue;
+	bool deleteBaseValue;
+
+	current_keyframe = (ObjectKeyFrame*)key_frames->GetKeyFrameForTime (current_time, (KeyFrame**)keyframep);
+	if (current_keyframe == NULL)
+		return NULL; /* XXX */
+
+	TimeSpan key_end_time = current_keyframe->resolved_keytime;
+	TimeSpan key_start_time;
+
+	if (previous_keyframe == NULL) {
+		/* the first keyframe, start at the animation's base value */
+		baseValue = defaultOriginValue;
+		deleteBaseValue = false;
+		key_start_time = 0;
+	} else {
+		/* start at the previous keyframe's target value */
+		baseValue = new Value(previous_keyframe->GetValue ());
+		deleteBaseValue = true;
+		key_start_time = previous_keyframe->resolved_keytime;
+	}
+
+	double progress;
+
+	if (current_time >= key_end_time) {
+		progress = 1.0;
+	} else {
+		TimeSpan key_duration = key_end_time - key_start_time;
+		if (key_duration == 0)
+			progress = 1.0;
+		else
+			progress = (double)(current_time - key_start_time) / key_duration;
+	}
+
+	/* get the current value out of that segment */
+	Value *rv = current_keyframe->InterpolateValue (baseValue, progress);
+
+	if (deleteBaseValue)
+		delete baseValue;
+
+	return rv;;
+}
+
+Duration
+ObjectAnimationUsingKeyFrames::GetNaturalDurationCore (Clock *clock)
+{
+	ObjectKeyFrameCollection *key_frames = GetKeyFrames ();
+	
+	KeyFrameAnimation_ResolveKeyFrames (this, key_frames);
+
+	guint len = key_frames->sorted_list->len;
+	if (len > 0)
+		return ((KeyFrame *) key_frames->sorted_list->pdata[len - 1])->resolved_keytime;
+	else
+		return Duration (0);
+}
 
 void
 animation_shutdown (void)

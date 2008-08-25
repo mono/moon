@@ -31,6 +31,9 @@ class ObjectKeyFrame : public KeyFrame /* The managed class derives directly fro
 	static DependencyProperty *KeyTimeProperty;
 
 	// Property accessors
+	DependencyObject *GetValue ();
+	void    SetValue (DependencyObject *pv);
+	void    SetValue (DependencyObject v);
 
 	virtual KeyTime *GetKeyTime ();
 	virtual void SetKeyTime (KeyTime keytime);
@@ -48,6 +51,7 @@ class DiscreteObjectKeyFrame : public ObjectKeyFrame {
 	DiscreteObjectKeyFrame () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::DISCRETEOBJECTKEYFRAME; }
+	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 };
 
 
@@ -80,19 +84,20 @@ class ObjectAnimationUsingKeyFrames : public /*Object*/Animation {
 	ObjectAnimationUsingKeyFrames () {}
 	virtual Type::Kind GetObjectType () { return Type::OBJECTANIMATIONUSINGKEYFRAMES; };
 
-/*
-TODO:
 	void AddKeyFrame (ObjectKeyFrame *frame);
 	void RemoveKeyFrame (ObjectKeyFrame *frame);
-	
+
+	// Property accessors
+	ObjectKeyFrameCollection *GetKeyFrames ();
+	void SetKeyFrames (ObjectKeyFrameCollection* value);
+
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock* animationClock);
 
 	virtual void Resolve ();
 
 	virtual Duration GetNaturalDurationCore (Clock* clock);
-	virtual bool Validate ();
-*/
+	//virtual bool Validate ();
 };
 
 #endif /* MOON_ANIMATION2_H */
