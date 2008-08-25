@@ -19,7 +19,11 @@
 #include <math.h>
 
 #include "animation.h"
+
+#if SL_2_0
 #include "animation2.h"
+#endif
+
 #include "color.h"
 #include "runtime.h"
 #include "utils.h"
@@ -960,17 +964,6 @@ DiscretePointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgre
 }
 
 Value*
-DiscreteObjectKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
-{
-	DependencyObject *to = GetValue();
-
-	if (to && keyFrameProgress == 1.0)
-		return new Value(to);
-	else
-		return new Value (baseValue->AsDependencyObject());
-}
-
-Value*
 LinearDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
 	double *to = GetValue();
@@ -1558,6 +1551,19 @@ Duration Duration::Forever (Duration::FOREVER);
 KeyTime KeyTime::Paced (KeyTime::PACED);
 KeyTime KeyTime::Uniform (KeyTime::UNIFORM);
 
+#if SL_2_0
+
+Value*
+DiscreteObjectKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
+{
+	DependencyObject *to = GetValue();
+
+	if (to && keyFrameProgress == 1.0)
+		return new Value(to);
+	else
+		return new Value (baseValue->AsDependencyObject());
+}
+
 void
 ObjectAnimationUsingKeyFrames::AddKeyFrame (ObjectKeyFrame *frame)
 {
@@ -1647,6 +1653,15 @@ ObjectAnimationUsingKeyFrames::GetNaturalDurationCore (Clock *clock)
 	else
 		return Duration (0);
 }
+
+bool
+ObjectAnimationUsingKeyFrames::Validate ()
+{
+	// Interesting question -- should we check for null here?
+	return generic_keyframe_validator (GetKeyFrames ());
+}
+
+#endif
 
 void
 animation_shutdown (void)

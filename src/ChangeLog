@@ -1,6 +1,12 @@
 2008-08-25  Michael Dominic K.  <mdk@mdk.am>
 
 	* animation.cpp:
+	* animation2.h: Properly guard 2.0 stuff with if SL_2_0 .
+	Also adding validation methods.
+
+2008-08-25  Michael Dominic K.  <mdk@mdk.am>
+
+	* animation.cpp:
 	* animation2.h: Base work for ObjectAnimationUsingKeyFrames 
 	implementation.
 

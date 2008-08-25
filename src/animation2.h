@@ -97,7 +97,7 @@ class ObjectAnimationUsingKeyFrames : public /*Object*/Animation {
 	virtual void Resolve ();
 
 	virtual Duration GetNaturalDurationCore (Clock* clock);
-	//virtual bool Validate ();
+	virtual bool Validate ();
 };
 
 #endif /* MOON_ANIMATION2_H */
