@@ -1021,11 +1021,11 @@ MoonlightRect::GetProperty (int id, NPIdentifier name, NPVariant *result)
 		return true;
 
 	case MoonId_Width:
-		DOUBLE_TO_NPVARIANT (rect.w, *result);
+		DOUBLE_TO_NPVARIANT (rect.width, *result);
 		return true;
 
 	case MoonId_Height:
-		DOUBLE_TO_NPVARIANT (rect.h, *result);
+		DOUBLE_TO_NPVARIANT (rect.height, *result);
 		return true;
 
 	default:
@@ -1046,11 +1046,11 @@ MoonlightRect::SetProperty (int id, NPIdentifier name, const NPVariant *value)
 		return true;
 
 	case MoonId_Width:
-		rect.w = NPVARIANT_TO_DOUBLE (*value);
+		rect.width = NPVARIANT_TO_DOUBLE (*value);
 		return true;
 
 	case MoonId_Height:
-		rect.h = NPVARIANT_TO_DOUBLE (*value);
+		rect.height = NPVARIANT_TO_DOUBLE (*value);
 		return true;
 
 	default:

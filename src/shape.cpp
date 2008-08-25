@@ -252,10 +252,10 @@ Shape::ComputeStretchBounds (Rect shape_bounds)
 		return shape_bounds;
 	}
 
-	h = (h == 0.0) ? shape_bounds.h : h;
-	w = (w == 0.0) ? shape_bounds.w : w;
+	h = (h == 0.0) ? shape_bounds.height : h;
+	w = (w == 0.0) ? shape_bounds.width : w;
 
-	if (h <= 0.0 || w <= 0.0 || shape_bounds.w <= 0.0 || shape_bounds.h <= 0.0) {
+	if (h <= 0.0 || w <= 0.0 || shape_bounds.width <= 0.0 || shape_bounds.height <= 0.0) {
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return shape_bounds;
 	}
@@ -264,13 +264,13 @@ Shape::ComputeStretchBounds (Rect shape_bounds)
 	if (stretch != StretchNone) {
 		Rect logical_bounds = ComputeShapeBounds (true);
 
-		bool adj_x = logical_bounds.w != 0.0;
-		bool adj_y = logical_bounds.h != 0.0;
+		bool adj_x = logical_bounds.width != 0.0;
+		bool adj_y = logical_bounds.height != 0.0;
              
-		double diff_x = shape_bounds.w - logical_bounds.w;
-		double diff_y = shape_bounds.h - logical_bounds.h;
-		double sw = adj_x ? (w - diff_x) / logical_bounds.w : 1.0;
-		double sh = adj_y ? (h - diff_y) / logical_bounds.h : 1.0;
+		double diff_x = shape_bounds.width - logical_bounds.width;
+		double diff_y = shape_bounds.height - logical_bounds.height;
+		double sw = adj_x ? (w - diff_x) / logical_bounds.width : 1.0;
+		double sh = adj_y ? (h - diff_y) / logical_bounds.height : 1.0;
 
 		bool center = false;
 
@@ -296,16 +296,16 @@ Shape::ComputeStretchBounds (Rect shape_bounds)
 		// e.g. apps like Silverlight World have a ratio up to 50 unneeded for 1 needed adjustment
 		// so it all boilds down are we gonna change bounds anyway ?
 		#define IS_SIGNIFICANT(dx,x)	(IS_ZERO(dx) && (fabs(dx) * x - x > 1.0))
-		if ((adj_x && IS_SIGNIFICANT((sw - 1), shape_bounds.w)) || (adj_y && IS_SIGNIFICANT((sh - 1), shape_bounds.h))) {
+		if ((adj_x && IS_SIGNIFICANT((sw - 1), shape_bounds.width)) || (adj_y && IS_SIGNIFICANT((sh - 1), shape_bounds.height))) {
 			// FIXME: this IS still UBER slow
 			// hereafter we're doing a second pass to refine the sw and sh we guessed
 			// the first time. This usually gives pixel-recise stretches for Paths
 			cairo_matrix_t temp;
 			cairo_matrix_init_scale (&temp, adj_x ? sw : 1.0, adj_y ? sh : 1.0);
 			Rect stretch_bounds = ComputeShapeBounds (false, &temp);
-			if (stretch_bounds.w != shape_bounds.w && stretch_bounds.h != shape_bounds.h) {
-				sw *= adj_x ? (w - stretch_bounds.w + logical_bounds.w * sw) / (logical_bounds.w * sw): 1.0;
-				sh *= adj_y ? (h - stretch_bounds.h + logical_bounds.h * sh) / (logical_bounds.h * sh): 1.0;
+			if (stretch_bounds.width != shape_bounds.width && stretch_bounds.height != shape_bounds.height) {
+				sw *= adj_x ? (w - stretch_bounds.width + logical_bounds.width * sw) / (logical_bounds.width * sw): 1.0;
+				sh *= adj_y ? (h - stretch_bounds.height + logical_bounds.height * sh) / (logical_bounds.height * sh): 1.0;
 
 				switch (stretch) {
 				case StretchUniform:
@@ -329,16 +329,16 @@ Shape::ComputeStretchBounds (Rect shape_bounds)
 						adj_y ? h * 0.5 : 0);
 		else //UniformToFill
 			cairo_matrix_translate (&stretch_transform, 
-						adj_x ? (logical_bounds.w * sw + diff_x) * .5 : 0,
-						adj_y ? (logical_bounds.h * sh + diff_y) * .5: 0);
+						adj_x ? (logical_bounds.width * sw + diff_x) * .5 : 0,
+						adj_y ? (logical_bounds.height * sh + diff_y) * .5: 0);
 		
 		cairo_matrix_scale (&stretch_transform, 
 				    adj_x ? sw : 1.0, 
 				    adj_y ? sh : 1.0);
 		
 		cairo_matrix_translate (&stretch_transform, 
-					adj_x ? -shape_bounds.w * 0.5 : 0, 
-					adj_y ? -shape_bounds.h * 0.5 : 0);
+					adj_x ? -shape_bounds.width * 0.5 : 0, 
+					adj_y ? -shape_bounds.height * 0.5 : 0);
 
 		if (!Is (Type::LINE) || (vh && vw))
 			cairo_matrix_translate (&stretch_transform, -x, -y);
@@ -410,12 +410,12 @@ Shape::IsCandidateForCaching (void)
 	// This is not 100% correct check -- the actual surface size might be
 	// a tiny little bit larger. It's not a problem though if we go few
 	// bytes above the cache limit.
-	if (!GetSurface ()->VerifyWithCacheSizeCounter ((int) bounds.w, (int) bounds.h))
+	if (!GetSurface ()->VerifyWithCacheSizeCounter ((int) bounds.width, (int) bounds.height))
 		return FALSE;
 
 	// one last line of defense, lets not cache things 
 	// much larger than the screen.
-	if (bounds.w * bounds.h > 4000000)
+	if (bounds.width * bounds.height > 4000000)
 		return FALSE;
 
 	return TRUE;
@@ -439,11 +439,11 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 		cairo_t *cached_cr = NULL;
 		
 		// g_warning ("bounds (%f, %f), extents (%f, %f), cache_extents (%f, %f)", 
-		// bounds.w, bounds.h,
-		// extents.w, extents.h,
-		// cache_extents.w, cache_extents.h);
+		// bounds.width, bounds.height,
+		// extents.width, extents.height,
+		// cache_extents.width, cache_extents.height);
 		
-		cached_surface = image_brush_create_similar (cr, (int) cache_extents.w, (int) cache_extents.h);
+		cached_surface = image_brush_create_similar (cr, (int) cache_extents.width, (int) cache_extents.height);
 		cairo_surface_set_device_offset (cached_surface, -cache_extents.x, -cache_extents.y);
 		cached_cr = cairo_create (cached_surface);
 		
@@ -455,7 +455,7 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 		cairo_destroy (cached_cr);
 		
 		// Increase our cache size
-		cached_size = GetSurface ()->AddToCacheSizeCounter ((int) cache_extents.w, (int) cache_extents.h);
+		cached_size = GetSurface ()->AddToCacheSizeCounter ((int) cache_extents.width, (int) cache_extents.height);
 	}
 	
 	if (do_op && cached_surface) {
@@ -523,7 +523,7 @@ Shape::ComputeBounds ()
 	origin = ComputeOriginPoint (extents);
 
 	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
-	//printf ("%f,%f,%f,%f\n", bounds.x, bounds.y, bounds.w, bounds.h);
+	//printf ("%f,%f,%f,%f\n", bounds.x, bounds.y, bounds.width, bounds.height);
 }
 
 Rect
@@ -587,8 +587,8 @@ Shape::ComputeLargestRectangle ()
 void
 Shape::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 {
-	*height = extents.h;
-	*width = extents.w;
+	*height = extents.height;
+	*width = extents.width;
 }
 
 bool
@@ -820,20 +820,20 @@ Ellipse::BuildPath ()
 	double t = IsStroked () ? GetStrokeThickness () : 0.0;
 	Rect rect = Rect (0.0, 0.0, GetWidth (), GetHeight ());
 
-	if (rect.w < 0.0 || rect.h < 0.0) {
+	if (rect.width < 0.0 || rect.height < 0.0) {
 		SetShapeFlags (UIElement::SHAPE_EMPTY);		
 		return;
 	}
 
 	switch (stretch) {
 	case StretchNone:
-		rect.w = rect.h = 0.0;
+		rect.width = rect.height = 0.0;
 		break;
 	case StretchUniform:
-		rect.w = rect.h = (rect.w < rect.h) ? rect.w : rect.h;
+		rect.width = rect.height = (rect.width < rect.height) ? rect.width : rect.height;
 		break;
 	case StretchUniformToFill:
-		rect.w = rect.h = (rect.w > rect.h) ? rect.w : rect.h;
+		rect.width = rect.height = (rect.width > rect.height) ? rect.width : rect.height;
 		break;
 	case StretchFill:
 		/* nothing needed here.  the assignment of w/h above
@@ -841,9 +841,9 @@ Ellipse::BuildPath ()
 		break;
 	}
 
-	if (rect.w <= t || rect.h <= t){
-		rect.w = MAX (rect.w, t + t * 0.001);
-		rect.h = MAX (rect.h, t + t * 0.001);
+	if (rect.width <= t || rect.height <= t){
+		rect.width = MAX (rect.width, t + t * 0.001);
+		rect.height = MAX (rect.height, t + t * 0.001);
 		SetShapeFlags (UIElement::SHAPE_DEGENERATE);
 	} else
 		SetShapeFlags (UIElement::SHAPE_NORMAL);
@@ -851,7 +851,7 @@ Ellipse::BuildPath ()
 	rect = rect.GrowBy ( -t/2, -t/2);
 
 	path = moon_path_renew (path, MOON_PATH_ELLIPSE_LENGTH);
-	moon_ellipse (path, rect.x, rect.y, rect.w, rect.h);
+	moon_ellipse (path, rect.x, rect.y, rect.width, rect.height);
 }
 
 Rect
@@ -909,7 +909,7 @@ Rectangle::ComputeShapeBounds (bool logical)
 
 	Rect rect = Rect (0, 0, GetWidth (), GetHeight ());
 
-	if ((vw && (rect.w <= 0.0)) || (vh && (rect.h <= 0.0))) { 
+	if ((vw && (rect.width <= 0.0)) || (vh && (rect.height <= 0.0))) { 
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return Rect ();
 	}
@@ -917,15 +917,15 @@ Rectangle::ComputeShapeBounds (bool logical)
 	double t = IsStroked () ? GetStrokeThickness () : 0.0;
 	switch (GetStretch ()) {
 	case StretchNone:
-		rect.w = rect.h = 0.0;
+		rect.width = rect.height = 0.0;
 		break;
 	case StretchUniform:
-		rect.w = rect.h = MIN (rect.w, rect.h);
+		rect.width = rect.height = MIN (rect.width, rect.height);
 		break;
 	case StretchUniformToFill:
 		// this gets an rectangle larger than it's dimension, relative
 		// scaling is ok but we need Shape::Draw to clip to it's original size
-		rect.w = rect.h = MAX (rect.w, rect.h);
+		rect.width = rect.height = MAX (rect.width, rect.height);
 		break;
 	case StretchFill:
 		/* nothing needed here.  the assignment of w/h above
@@ -933,12 +933,12 @@ Rectangle::ComputeShapeBounds (bool logical)
 		break;
 	}
 	
-	if (rect.w == 0)
+	if (rect.width == 0)
 		rect.x = t *.5;
-	if (rect.h == 0)
+	if (rect.height == 0)
 		rect.y = t *.5;
 
-	if (t >= rect.w || t >= rect.h) {
+	if (t >= rect.width || t >= rect.height) {
 		SetShapeFlags (UIElement::SHAPE_DEGENERATE);
 		rect = rect.GrowBy (t * .5005, t * .5005);
 	} else {
@@ -999,15 +999,15 @@ Rectangle::BuildPath ()
 
 	switch (stretch) {
 	case StretchNone:
-		rect.w = rect.h = 0;
+		rect.width = rect.height = 0;
 		break;
 	case StretchUniform:
-		rect.w = rect.h = MIN (rect.w, rect.h);
+		rect.width = rect.height = MIN (rect.width, rect.height);
 		break;
 	case StretchUniformToFill:
 		// this gets an rectangle larger than it's dimension, relative
 		// scaling is ok but we need Shape::Draw to clip to it's original size
-		rect.w = rect.h = MAX (rect.w, rect.h);
+		rect.width = rect.height = MAX (rect.width, rect.height);
 		break;
 	case StretchFill:
 		/* nothing needed here.  the assignment of w/h above
@@ -1015,12 +1015,12 @@ Rectangle::BuildPath ()
 		break;
 	}
 	
-	if (rect.w == 0)
+	if (rect.width == 0)
 		rect.x = t *.5;
-	if (rect.h == 0)
+	if (rect.height == 0)
 		rect.y = t *.5;
 
-	if (t >= rect.w || t >= rect.h) {
+	if (t >= rect.width || t >= rect.height) {
 		rect = rect.GrowBy (t * 0.001, t * 0.001);
 		SetShapeFlags (UIElement::SHAPE_DEGENERATE);
 	} else {
@@ -1029,7 +1029,7 @@ Rectangle::BuildPath ()
 	}
 
 	path = moon_path_renew (path, MOON_PATH_ROUNDED_RECTANGLE_LENGTH);
-	moon_rounded_rectangle (path, rect.x, rect.y, rect.w, rect.h, radius_x, radius_y);
+	moon_rounded_rectangle (path, rect.x, rect.y, rect.width, rect.height, radius_x, radius_y);
 }
 
 void
@@ -1054,10 +1054,10 @@ Rectangle::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 {
 	switch (GetStretch ()) {
 	case StretchUniform:
-		*width = *height = (extents.w < extents.h) ? extents.w : extents.h;
+		*width = *height = (extents.width < extents.height) ? extents.width : extents.height;
 		break;
 	case StretchUniformToFill:
-		*width = *height = (extents.w > extents.h) ? extents.w : extents.h;
+		*width = *height = (extents.width > extents.height) ? extents.width : extents.height;
 		break;
 	default:
 		return Shape::GetSizeForBrush (cr, width, height);
@@ -1211,13 +1211,13 @@ calc_line_bounds (double x1, double x2, double y1, double y2, double thickness, 
 	if (x1 == x2) {
 		bounds->x = x1 - thickness / 2.0;
 		bounds->y = MIN (y1, y2) - (y1 < y2 && start_cap != PenLineCapFlat ? thickness / 2.0 : 0.0) - (y1 >= y2 && end_cap != PenLineCapFlat ? thickness / 2.0 : 0.0);
-		bounds->w = thickness;
-		bounds->h = fabs (y2 - y1) + (start_cap != PenLineCapFlat ? thickness / 2.0 : 0.0) + (end_cap != PenLineCapFlat ? thickness / 2.0 : 0.0);
+		bounds->width = thickness;
+		bounds->height = fabs (y2 - y1) + (start_cap != PenLineCapFlat ? thickness / 2.0 : 0.0) + (end_cap != PenLineCapFlat ? thickness / 2.0 : 0.0);
 	} else 	if (y1 == y2) {
 		bounds->x = MIN (x1, x2) - (x1 < x2 && start_cap != PenLineCapFlat ? thickness / 2.0 : 0.0) - (x1 >= x2 && end_cap != PenLineCapFlat ? thickness / 2.0 : 0.0);
 		bounds->y = y1 - thickness / 2.0;
-		bounds->w = fabs (x2 - x1) + (start_cap != PenLineCapFlat ? thickness / 2.0 : 0.0) + (end_cap != PenLineCapFlat ? thickness / 2.0 : 0.0);
-		bounds->h = thickness;
+		bounds->width = fabs (x2 - x1) + (start_cap != PenLineCapFlat ? thickness / 2.0 : 0.0) + (end_cap != PenLineCapFlat ? thickness / 2.0 : 0.0);
+		bounds->height = thickness;
 	} else {
 		double m = fabs ((y1 - y2) / (x1 - x2));
 #if EXACT_BOUNDS
@@ -1275,35 +1275,35 @@ calc_line_bounds (double x1, double x2, double y1, double y2, double thickness, 
 			default: //PenLineCapFlat
 				bounds->y = MIN (y1, y2) - dy / 2.0;
 			}	
-		bounds->w = fabs (x2 - x1);
-		bounds->h = fabs (y2 - y1);
+		bounds->width = fabs (x2 - x1);
+		bounds->height = fabs (y2 - y1);
 		switch (start_cap) {
 		case PenLineCapSquare:
-			bounds->w += (dx + dy) / 2.0;
-			bounds->h += (dx + dy) / 2.0;
+			bounds->width += (dx + dy) / 2.0;
+			bounds->height += (dx + dy) / 2.0;
 			break;
 		case PenLineCapTriangle: //FIXME, reverting to Round for now
 		case PenLineCapRound:
-			bounds->w += thickness / 2.0;
-			bounds->h += thickness / 2.0;
+			bounds->width += thickness / 2.0;
+			bounds->height += thickness / 2.0;
 			break;
 		default: //PenLineCapFlat
-			bounds->w += dx/2.0;
-			bounds->h += dy/2.0;
+			bounds->width += dx/2.0;
+			bounds->height += dy/2.0;
 		}
 		switch (end_cap) {
 		case PenLineCapSquare:
-			bounds->w += (dx + dy) / 2.0;
-			bounds->h += (dx + dy) / 2.0;
+			bounds->width += (dx + dy) / 2.0;
+			bounds->height += (dx + dy) / 2.0;
 			break;
 		case PenLineCapTriangle: //FIXME, reverting to Round for now
 		case PenLineCapRound:
-			bounds->w += thickness / 2.0;
-			bounds->h += thickness / 2.0;
+			bounds->width += thickness / 2.0;
+			bounds->height += thickness / 2.0;
 			break;
 		default: //PenLineCapFlat
-			bounds->w += dx/2.0;
-			bounds->h += dy/2.0;	
+			bounds->width += dx/2.0;
+			bounds->height += dy/2.0;	
 		}
 	}
 }

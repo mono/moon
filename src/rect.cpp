@@ -39,10 +39,10 @@ Rect::Transform (cairo_matrix_t *transform)
 	if (!transform)
 		return rect;
 
-	double p1_x = rect.x;        double p1_y = rect.y;
-	double p2_x = rect.x+rect.w; double p2_y = rect.y;
-	double p3_x = rect.x+rect.w; double p3_y = rect.y+rect.h;
-	double p4_x = rect.x;        double p4_y = rect.y+rect.h;
+	double p1_x = rect.x;            double p1_y = rect.y;
+	double p2_x = rect.x+rect.width; double p2_y = rect.y;
+	double p3_x = rect.x+rect.width; double p3_y = rect.y+rect.height;
+	double p4_x = rect.x;            double p4_y = rect.y+rect.height;
 
 	cairo_matrix_transform_point (transform, &p1_x, &p1_y);
 	cairo_matrix_transform_point (transform, &p2_x, &p2_y);

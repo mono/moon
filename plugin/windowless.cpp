@@ -71,8 +71,8 @@ MoonWindowless::Invalidate (Rect r)
 
 	nprect.left = (uint16)r.x;
 	nprect.top = (uint16)r.y;
-	nprect.right = (uint16)(r.x + r.w);
-	nprect.bottom = (uint16)(r.y + r.h);
+	nprect.right = (uint16)(r.x + r.width);
+	nprect.bottom = (uint16)(r.y + r.height);
 
 	NPN_InvalidateRect (plugin->GetInstance(), &nprect);
 }

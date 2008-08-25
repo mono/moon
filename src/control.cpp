@@ -164,14 +164,14 @@ Control::ComputeBounds ()
 		//extents = extents.Union (item->GetExtents ().Transform (&offset));
 		extents = bounds_with_children.Union (item->GetSubtreeBounds ());
 	}
-	extents.h += border.bottom + padding.bottom;
-	extents.w += border.right + padding.right;
+	extents.height += border.bottom + padding.bottom;
+	extents.width += border.right + padding.right;
 
 	// if width or height == NAN  Auto layout
 	if (vh && vw && (width == width) && (height == height))
 		extents = Rect (0.0, 0.0, width, height);
 	else 
-		g_warning ("AutoWidth (%f, %f, %f, %f)", extents.x, extents.y, extents.w, extents.h);
+		g_warning ("AutoWidth (%f, %f, %f, %f)", extents.x, extents.y, extents.width, extents.height);
 
 	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 	bounds_with_children = bounds.Union (bounds);

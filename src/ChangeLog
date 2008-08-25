@@ -1,5 +1,14 @@
 2008-08-25  Chris Toshok  <toshok@ximian.com>
 
+	* rect.h, rect.cpp: rename the w/h fields to width/height, since
+	every other instance of similar fields are named that.
+
+	* value.cpp, border.cpp, window-gtk.cpp, control.cpp, runtime.cpp,
+	uielement.cpp, geometry.cpp, shape.cpp, frameworkelement.cpp,
+	brush.cpp: track rect change.
+
+2008-08-25  Chris Toshok  <toshok@ximian.com>
+
 	* border.h, border.cpp: implement ArrangeOverride, and fix up some
 	test failures in MeasureOverride.
 

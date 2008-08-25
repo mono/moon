@@ -95,7 +95,7 @@ MoonWindowGtk::Invalidate (Rect r)
 	gtk_widget_queue_draw_area (widget,
 				    (int) (widget->allocation.x + r.x), 
 				    (int) (widget->allocation.y + r.y), 
-				    (int) r.w, (int)r.h);
+				    (int) r.width, (int)r.height);
 }
 
 void

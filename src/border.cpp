@@ -108,8 +108,8 @@ Border::ArrangeOverride (Size finalSize)
 			childRect.x = padding_left + border_left + margins->left;
 			childRect.y = padding_top + border_top + margins->top;
 
-			childRect.w = desired_size.width - padding_left - padding_right - border_left - border_right - margins->left - margins->right;
-			childRect.h = desired_size.height - padding_top - padding_bottom - border_top - border_bottom - margins->top - margins->bottom;
+			childRect.width = desired_size.width - padding_left - padding_right - border_left - border_right - margins->left - margins->right;
+			childRect.height = desired_size.height - padding_top - padding_bottom - border_top - border_bottom - margins->top - margins->bottom;
 
 			child->Arrange (childRect);
 		}

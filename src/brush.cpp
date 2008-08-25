@@ -809,10 +809,10 @@ VisualBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double
 	// used multiple times without having to re-render each time.
 	Rect bounds = ui->GetSubtreeBounds().RoundOut ();
 	
-	surface = image_brush_create_similar (cr, (int) bounds.w, (int) bounds.h);
+	surface = image_brush_create_similar (cr, (int) bounds.width, (int) bounds.height);
 	
 	cairo_t *surface_cr = cairo_create (surface);
-	ui->Render (surface_cr, 0, 0, (int) bounds.w , (int) bounds.h);
+	ui->Render (surface_cr, 0, 0, (int) bounds.width , (int) bounds.height);
 	cairo_destroy (surface_cr);
 	
 	Stretch stretch = GetStretch ();
@@ -826,7 +826,7 @@ VisualBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double
  	cairo_pattern_t *pattern = cairo_pattern_create_for_surface (surface);
 	cairo_matrix_t matrix;
  	image_brush_compute_pattern_matrix (&matrix, width, height,
-					    (int) bounds.w, (int) bounds.h,
+					    (int) bounds.width, (int) bounds.height,
 					    stretch, ax, ay, transform, relative_transform);
 	
 	Point offset = uielement->GetOriginPoint ();

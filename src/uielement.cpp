@@ -717,20 +717,20 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 
 			subtract = (!media->IsClosed () && mplayer
 				    && mplayer->HasRenderedFrame ()
-				    && ((mplayer->GetVideoWidth () == media->GetBounds ().w
-					 && mplayer->GetVideoHeight () == media->GetBounds ().h)
+				    && ((mplayer->GetVideoWidth () == media->GetBounds ().width
+					 && mplayer->GetVideoHeight () == media->GetBounds ().height)
 					|| (stretch == StretchFill || stretch == StretchUniformToFill)));
 
 			//Rect r = me->GetBounds();
-				//printf ("r.bounds = %g %g %g %g\n", r.x, r.y, r.w, r.h);
+				//printf ("r.bounds = %g %g %g %g\n", r.x, r.y, r.width, r.height);
 		}
 		else if (Is (Type::IMAGE)) {
 			Image *image = (Image *) this;
 			Stretch stretch = image->GetStretch ();
 
 			subtract = (image->surface && !image->surface->has_alpha
-				    && ((image->GetImageWidth () == image->GetBounds ().w
-					 && image->GetImageHeight () == image->GetBounds ().h)
+				    && ((image->GetImageWidth () == image->GetBounds ().width
+					 && image->GetImageHeight () == image->GetBounds ().height)
 					|| (stretch == StretchFill || stretch == StretchUniformToFill)));
 		}
 		else if (Is (Type::RECTANGLE)) {
@@ -879,7 +879,7 @@ UIElement::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 		cairo_identity_matrix (cr);
 		cairo_set_source_rgba (cr, 1.0, 0.5, 0.2, 1.0);
 		cairo_set_line_width (cr, 1);
-		cairo_rectangle (cr, bounds.x + .5, bounds.y + .5, bounds.w - .5, bounds.h - .5);
+		cairo_rectangle (cr, bounds.x + .5, bounds.y + .5, bounds.width - .5, bounds.height - .5);
 		cairo_stroke (cr);
 		cairo_restore (cr);
 	}
@@ -901,7 +901,7 @@ void
 UIElement::Render (cairo_t *cr, Region *region)
 {
         Rect rect = region->ClipBox ();
-	Render (cr, (int)rect.x, (int)rect.y, (int)rect.w, (int)rect.h);
+	Render (cr, (int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
 }
 
 void

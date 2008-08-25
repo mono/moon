@@ -22,40 +22,40 @@
 /* @IncludeInKinds */
 struct Rect {
  public:
-	double x, y, w, h;
+	double x, y, width, height;
 
-	Rect () : x (0), y (0), w (0), h (0) {}
+	Rect () : x (0), y (0), width (0), height (0) {}
 	Rect (double x, double y, double width, double height)
 	{
 		this->x = x;
 		this->y = y;
-		w = width;
-		h = height;
+		this->width = width;
+		this->height = height;
 	}
 
 	Rect (Point p1, Point p2)
 	{
 		x = MIN (p1.x, p2.x);
 		y = MIN (p1.y, p2.y);
-		w = ABS (p1.x - p2.x);
-		h = ABS (p1.y - p2.y);
+		width = ABS (p1.x - p2.x);
+		height = ABS (p1.y - p2.y);
 	}
 
         Rect Transform (cairo_matrix_t *matrix);
 
 	bool PointInside (double px, double py)
 	{
-		return px > x && px < (x + w) && py > y && py < (y + h);
+		return px > x && px < (x + width) && py > y && py < (y + height);
 	}
 
 	bool PointInside (Point p)
 	{
-		return p.x > x && p.x < (x + w) && p.y > y && p.y < (y + h);
+		return p.x > x && p.x < (x + width) && p.y > y && p.y < (y + height);
 	}
 
 	bool IntersectsWith (const Rect& rect)
 	{
-		return ((x < rect.x + rect.w) && (x + w > rect.x) && (y < rect.y + rect.h) && (y + h > rect.y));
+		return ((x < rect.x + rect.width) && (x + width > rect.x) && (y < rect.y + rect.height) && (y + height > rect.y));
 	}
 
 	bool IsEmpty ()
@@ -66,9 +66,9 @@ struct Rect {
 	bool IsEmpty (bool logical)
 	{
 		if (logical)
-			return ((w <= 0.0) && (h <= 0.0));
+			return ((width <= 0.0) && (height <= 0.0));
 		else
-			return ((w <= 0.0) || (h <= 0.0));
+			return ((width <= 0.0) || (height <= 0.0));
 	}
 			
 	Rect Intersection (const Rect& rect)
@@ -76,8 +76,8 @@ struct Rect {
 		Rect result = Rect ();
 		result.x = x > rect.x ? x : rect.x;
 		result.y = y > rect.y ? y : rect.y;
-		result.w = ((x + w < rect.x + rect.w) ? (x + w) : (rect.x + rect.w)) - result.x;
-		result.h = ((y + h < rect.y + rect.h) ? (y + h) : (rect.y + rect.h)) - result.y;
+		result.width = ((x + width < rect.x + rect.width) ? (x + width) : (rect.x + rect.width)) - result.x;
+		result.height = ((y + height < rect.y + rect.height) ? (y + height) : (rect.y + rect.height)) - result.y;
 		return result;
 	}
 
@@ -95,29 +95,29 @@ struct Rect {
 		if (IsEmpty (logical))
 			return Rect (rect);
 		if (logical) {
-			if ((rect.w <= 0.0) && (rect.h <= 0.0))
+			if ((rect.width <= 0.0) && (rect.height <= 0.0))
 				return Rect (*this);
 		} else {
-			if ((rect.w <= 0.0) || (rect.h <= 0.0))
+			if ((rect.width <= 0.0) || (rect.height <= 0.0))
 				return Rect (*this);	
 		}
 		Rect result = Rect ();
 		result.x = x < rect.x ? x : rect.x;
 		result.y = y < rect.y ? y : rect.y;
-		result.w = ((x + w > rect.x + rect.w) ? (x + w) : (rect.x + rect.w)) - result.x;
-		result.h = ((y + h > rect.y + rect.h) ? (y + h) : (rect.y + rect.h)) - result.y;
+		result.width = ((x + width > rect.x + rect.width) ? (x + width) : (rect.x + rect.width)) - result.x;
+		result.height = ((y + height > rect.y + rect.height) ? (y + height) : (rect.y + rect.height)) - result.y;
 		return result;
 	}
 
 	Rect RoundOut ()
 	{
-		Rect result (floor (x), floor (y), ceil (x + w) - floor (x), ceil (y + h) - floor (y));
+		Rect result (floor (x), floor (y), ceil (x + width) - floor (x), ceil (y + height) - floor (y));
 		return result;
 	}
 
 	Rect RoundIn ()
 	{
-		Rect result (ceil (x), ceil (y), floor (x + w) - ceil (x), floor (y + h) - ceil (y));
+		Rect result (ceil (x), ceil (y), floor (x + width) - ceil (x), floor (y + height) - ceil (y));
 		return result;
 	}
 
@@ -126,8 +126,8 @@ struct Rect {
 		Rect result = *this;
 		result.x -= xd;
 		result.y -= yd;
-		result.w += 2*xd;
-		result.h += 2*yd;
+		result.width += 2*xd;
+		result.height += 2*yd;
 
 		return result;
 	}
@@ -140,10 +140,10 @@ struct Rect {
 	Rect ExtendTo (double x, double y)
 	{
 		Rect result = *this;
-		if (x < result.x || x > (result.x + result.w))
-			result.w = MAX (ABS(x - result.x), ABS(x - result.x - result.w));
-		if (y < result.y || y > (result.y + result.h))
-			result.h = MAX (ABS(y - result.y), ABS(y - result.y - result.h));
+		if (x < result.x || x > (result.x + result.width))
+			result.width = MAX (ABS(x - result.x), ABS(x - result.x - result.width));
+		if (y < result.y || y > (result.y + result.height))
+			result.height = MAX (ABS(y - result.y), ABS(y - result.y - result.height));
 		result.x = MIN (result.x, x);
 		result.y = MIN (result.y, y);
 
@@ -162,15 +162,15 @@ struct Rect {
 		Rect rect = RoundOut ();
 		gdk.x = (gint)rect.x;
 		gdk.y = (gint)rect.y;
-		gdk.width = (gint)rect.w;
-		gdk.height = (gint)rect.h;
+		gdk.width = (gint)rect.width;
+		gdk.height = (gint)rect.height;
 
 		return gdk;
 	}
 
 	bool operator == (const Rect &rect)
 	{
-		return x == rect.x && y == rect.y && w == rect.w && h == rect.h;
+		return x == rect.x && y == rect.y && width == rect.width && height == rect.height;
 	}
 
 	bool operator != (const Rect &rect)
@@ -180,7 +180,7 @@ struct Rect {
 
 	void Draw (cairo_t *cr) 
 	{
-		cairo_rectangle (cr, x, y, w, h);
+		cairo_rectangle (cr, x, y, width, height);
 	}
 
 	Point GetTopLeft ()
@@ -190,17 +190,17 @@ struct Rect {
 
 	Point GetTopRight ()
 	{
-		return Point (x + w, y);
+		return Point (x + width, y);
 	}
 
 	Point GetBottomLeft ()
 	{
-		return Point (x, y + h);
+		return Point (x, y + height);
 	}
 
 	Point GetBottomRight ()
 	{
-		return Point (x + w, y + h);
+		return Point (x + width, y + height);
 	}
 
 	//

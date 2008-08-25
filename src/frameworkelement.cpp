@@ -155,7 +155,7 @@ void
 FrameworkElement::Arrange (Rect finalRect)
 {
 	Size size;
-	Size finalSize (finalRect.w, finalRect.h);
+	Size finalSize (finalRect.width, finalRect.height);
 
 	if (arrange_cb)
 		size = (*arrange_cb)(finalSize);

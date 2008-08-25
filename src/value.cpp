@@ -328,7 +328,7 @@ Value::ToString ()
 		g_string_append_printf (str, "{ %g, %g }", (u.size)->width, (u.size)->height);
 		break;
 	case Type::RECT:
-		g_string_append_printf (str, "{ x=%g, y=%g, w=%g, h=%g }", (u.rect)->x, (u.rect)->y, (u.rect)->w, (u.rect)->h);
+		g_string_append_printf (str, "{ x=%g, y=%g, w=%g, h=%g }", (u.rect)->x, (u.rect)->y, (u.rect)->width, (u.rect)->height);
 		break;
 	case Type::REPEATBEHAVIOR:
 		if (u.repeat->IsForever ())

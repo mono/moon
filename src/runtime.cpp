@@ -675,7 +675,7 @@ Surface::Paint (cairo_t *ctx, Region *region)
 			cairo_identity_matrix (ctx);
 			cairo_set_source_rgba (ctx, 1.0, 0.5, 0.2, 1.0);
 			cairo_set_line_width (ctx, 1);
-			cairo_rectangle (ctx, bounds.x, bounds.y, bounds.w, bounds.h);
+			cairo_rectangle (ctx, bounds.x, bounds.y, bounds.width, bounds.height);
 			cairo_stroke (ctx);
 			cairo_restore (ctx);
 		}
