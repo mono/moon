@@ -17,8 +17,8 @@ example-weather: Makefile
 	echo "mopen -d $(deskletdir)" >> example-weather
 	chmod +x example-weather
 
-weather.dll: $(sources) $(top_builddir)/gtk/gtksilver.dll $(top_builddir)/class/lib/3.0/System.Windows.dll
-	gmcs -debug -out:$@ -target:library -out:weather.dll -r:$(top_builddir)/gtk/gtksilver.dll -r:$(top_builddir)/class/lib/3.0/System.Windows.dll -pkg:gtk-sharp-2.0 -pkg:gconf-sharp-2.0 $(sources)
+weather.dll: $(sources) $(top_builddir)/gtk/gtksilver.dll $(top_builddir)/class/lib/3.0/System.Windows.dll $(top_builddir)/class/lib/3.0/Mono.Moonlight.dll
+	gmcs -debug -out:$@ -target:library -out:weather.dll -r:$(top_builddir)/gtk/gtksilver.dll -r:$(top_builddir)/class/lib/3.0/System.Windows.dll -r:$(top_builddir)/class/lib/3.0/Mono.Moonlight.dll -pkg:gtk-sharp-2.0 -pkg:gconf-sharp-2.0 $(sources)
 
 LocationsGenerated.cs: $(srcdir)/StationCompiler.cs $(srcdir)/data/Locations.xml.bz2
 	gmcs $(srcdir)/StationCompiler.cs 

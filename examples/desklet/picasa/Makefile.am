@@ -16,8 +16,8 @@ google.zip:
 Google.GData.Client.dll: Makefile google.zip
 	unzip -j -o google.zip root/clients/cs/lib/Release/Google.GData.Client.dll -d .
 
-picasa.dll: $(srcdir)/picasa.cs $(top_builddir)/examples/desklet/picasa/Google.GData.Client.dll $(top_builddir)/gtk/gtksilver.dll $(top_builddir)/class/lib/3.0/System.Windows.dll
-	gmcs -debug -out:$@ -target:library -r:$(top_builddir)/gtk/gtksilver.dll -r:$(top_builddir)/class/lib/3.0/System.Windows.dll $(srcdir)/picasa.cs -r:Google.GData.Client.dll
+picasa.dll: $(srcdir)/picasa.cs $(top_builddir)/examples/desklet/picasa/Google.GData.Client.dll $(top_builddir)/gtk/gtksilver.dll $(top_builddir)/class/lib/3.0/System.Windows.dll $(top_builddir)/class/lib/3.0/Mono.Moonlight.dll
+	gmcs -debug -out:$@ -target:library -r:$(top_builddir)/gtk/gtksilver.dll -r:$(top_builddir)/class/lib/3.0/System.Windows.dll -r:$(top_builddir)/class/lib/3.0/Mono.Moonlight.dll $(srcdir)/picasa.cs -r:Google.GData.Client.dll
 
 CLEANFILES =			\
 	example-picasa		\
