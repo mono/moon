@@ -303,9 +303,8 @@ namespace MoonTest.System.Windows.Controls
 
 			c.Child = r;
 
-			// we intentionally give border less room to
-			// work with than the configured width/height
-			// of the child
+			/* don't specify a width/height */
+
 			c.Measure (new Size (25, 25));
 			c.Arrange (new Rect (0, 0, 25, 25));
 
@@ -321,17 +320,17 @@ namespace MoonTest.System.Windows.Controls
 
 			c.Child = r;
 
+			/* give the child a width and height */
 			r.Width = 20;
 			r.Height = 20;
 
+			/* and add a render transform to see if it
+			   affects either call.  it shouldn't. */
 			ScaleTransform s = new ScaleTransform ();
 			s.ScaleX = s.ScaleY = 2.0;
 
 			r.RenderTransform = s;
 			
-			// we intentionally give border less room to
-			// work with than the configured width/height
-			// of the child
 			c.Measure (new Size (250, 250));
 			c.Arrange (new Rect (0, 0, 250, 250));
 
