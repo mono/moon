@@ -19,7 +19,6 @@
     <File name="mxap/Makefile.am" subtype="Code" buildaction="Nothing" />
     <File name="mxap/mxap.cs" subtype="Code" buildaction="Compile" />
     <File name="generators/Generator.cs" subtype="Code" buildaction="Compile" />
-    <File name="generators/Property.cs" subtype="Code" buildaction="Compile" />
     <File name="generators/GlobalInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="generators/MemberInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="generators/MethodInfo.cs" subtype="Code" buildaction="Compile" />
@@ -35,5 +34,5 @@
     <File name="generators/HOWTO" subtype="Code" buildaction="Nothing" />
     <File name="generators/TODO" subtype="Code" buildaction="Nothing" />
   </Contents>
-  <GtkDesignInfo gtkVersion="2.12.2" />
+  <GtkDesignInfo />
 </Project>
