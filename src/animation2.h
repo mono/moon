@@ -24,8 +24,9 @@ class ObjectKeyFrame : public KeyFrame /* The managed class derives directly fro
 	ObjectKeyFrame () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::OBJECTKEYFRAME; }
-	
-	/* @PropertyType=Managed,ManagedPropertyType=object */
+
+	/* BROKEN BROKEN BROKEN! */
+	/* @PropertyType=DependencyObject,ManagedPropertyType=DependencyObject,GenerateAccessors */
 	static DependencyProperty *ValueProperty;
 	/* @PropertyType=KeyTime,Nullable,ManagedPropertyType=KeyTime,GenerateAccessors */
 	static DependencyProperty *KeyTimeProperty;
