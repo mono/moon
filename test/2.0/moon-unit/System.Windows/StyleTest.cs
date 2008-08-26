@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Ink;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
@@ -40,6 +41,19 @@ namespace MoonTest.System.Windows
 
 			r.Style = style;
 			Assert.Throws (delegate { r.Style = style; }, typeof (Exception));
+		}
+
+		[TestMethod]
+		public void AvailableBeforeLoaded ()
+		{
+			Style s = (Style)XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Button""><Setter Property=""Width"" Value=""10""/></Style>");
+			Button b = new Button ();
+
+			Assert.IsTrue (Double.IsNaN(b.Width));
+
+			b.Style = s;
+
+			Assert.AreEqual (10, b.Width);
 		}
 	}
 }
