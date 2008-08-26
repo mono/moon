@@ -53,7 +53,17 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		{
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
 
-			isf.DeleteFile ("create-file");
+			try {
+				isf.DeleteFile ("create-file");
+			} catch (IsolatedStorageException) {
+				// ignore this exception here since
+				// it's generated when the file
+				// doesn't exist.
+			}
+
+			// now test the above behavior just to make sure
+			Assert.Throws (delegate { isf.DeleteFile ("create-file"); }, typeof (IsolatedStorageException));
+
 			Assert.IsFalse (isf.FileExists ("create-file"), "before");
 			IsolatedStorageFileStream fs = isf.CreateFile ("create-file");
 			try {
