@@ -19,12 +19,20 @@ namespace MoonTest.System.Windows
 	public class PresentationFrameworkCollectionTest
 	{
 		[TestMethod]
-		public void RemoveAt ()
+		public void AddWithoutParent ()
 		{
 			UIElementCollection col = new UIElementCollection();
+			Assert.Throws (delegate { col.Add (new Rectangle()); }, typeof (NullReferenceException));
+		}
+
+		[TestMethod]
+		public void RemoveAt ()
+		{
+			Canvas c = new Canvas ();
+			UIElementCollection col = c.Children;
 			col.Add (new Rectangle());
 			col.RemoveAt (0);
-			Assert.Throws (delegate { col.RemoveAt (1); }, typeof (ArgumentOutOfRangeException));
+			Assert.Throws (delegate { col.RemoveAt (1); }, typeof (ArgumentException));
 		}
 	}
 }
