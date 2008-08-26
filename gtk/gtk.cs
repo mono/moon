@@ -75,9 +75,7 @@ public class GtkSilver : EventBox {
 			ManagedDownloader.Send,
 			ManagedDownloader.Abort);
 		
-		// Just touch something in a DependencyObject subclass
-		// to trigger its initialization
-		DependencyObject.EnsureInitialized ();
+		DependencyObject.Initialize ();
 	}
 
 	/// <summary>
