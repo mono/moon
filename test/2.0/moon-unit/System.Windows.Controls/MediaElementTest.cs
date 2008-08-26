@@ -12,7 +12,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Mono.Moonlight.UnitTesting;
 
-namespace MoonTest.System.Windows
+namespace MoonTest.System.Windows.Controls
 {
 	[TestClass]
 	public partial class MediaElementTest
