@@ -55,5 +55,44 @@ namespace MoonTest.System.Windows
 
 			Assert.AreEqual (10, b.Width);
 		}
+
+		[TestMethod]
+		public void MismatchTargetType ()
+		{
+			Style s = (Style)XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""CheckBox""><Setter Property=""Width"" Value=""10""/></Style>");
+			Button b = new Button ();
+
+			Assert.Throws (delegate { b.Style = s; }, typeof (XamlParseException));
+		}
+
+		[TestMethod]
+		public void MissingTargetType ()
+		{
+			Style s = (Style)XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007""><Setter Property=""Width"" Value=""10""/></Style>");
+			Button b = new Button ();
+
+			Assert.Throws (delegate { b.Style = s; }, typeof (NullReferenceException));
+
+			// we need a new button or else the b.Style assignment below won't occur
+			b = new Button ();
+
+			s = (Style)XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007""><Setter Property=""Width"" Value=""10""/></Style>");
+			s.TargetType = typeof (Button);
+
+			Assert.AreEqual (typeof (Button), s.TargetType);
+
+			b.Style = s;
+
+			// in a perfect world (or maybe a less broken one), the following would be true
+			// Assert.AreEqual (10, b.Width);
+			//
+			// but in SL, it seems that if you're missing
+			// the target type in the xaml you create the
+			// style with, it's forever lost to you, even
+			// if you set it in code before assigning the
+			// style to an element.  You don't get an
+			// exception like above, though.
+			Assert.IsTrue (Double.IsNaN(b.Width));
+		}
 	}
 }
