@@ -18,6 +18,14 @@ namespace MoonTest.System.Windows.Controls
 	public class BorderTest
 	{
 		[TestMethod]
+		public void Defaults ()
+		{
+			Border c = new Border ();
+
+			Assert.AreEqual (new Thickness(0), c.Padding);
+		}
+
+		[TestMethod]
 		public void ChildlessMeasureTest ()
 		{
 			Border c = new Border ();
