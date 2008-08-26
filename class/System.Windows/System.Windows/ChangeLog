@@ -1,3 +1,13 @@
+2008-08-26  Jeffrey Stedfast  <fejj@novell.com>
+
+	* XapHackProxyImpl.cs: Don't do gross things like intiailizing
+	Helper's Agclr reference. Helper does this itself now using
+	strong-name.
+
+	* DependencyObject.cs: Don't set Helper.Agclr, Helper does this
+	itself now to avoid this particular grossness.
+	(Initialize): Renamed.
+
 2008-08-25  Jeffrey Stedfast  <fejj@novell.com>
 
 	* DependencyObject.cs (EnsureInitialized): Renamed from Ping() and

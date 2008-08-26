@@ -79,7 +79,6 @@ namespace System.Windows {
 		{
 			NativeMethods.runtime_init (0);
 			moonlight_thread = Thread.CurrentThread;
-			Helper.Agclr = typeof (DependencyObject).Assembly;
 		}
 
 		internal DependencyObject ()
@@ -737,7 +736,7 @@ namespace System.Windows {
 #else
 		public
 #endif
-		static void EnsureInitialized ()
+		static void Initialize ()
 		{
 			// Here just to ensure that the static ctor is executed and
 			// runtime init is initialized from some entry points
