@@ -29,6 +29,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 		
 		[TestMethod]
+		[Ignore ("we can't run this test on windows, FileStream.ctor is unavailable.")]
 		public void SetSourceTest2 ()
 		{
 			MediaElement media = new MediaElement ();
