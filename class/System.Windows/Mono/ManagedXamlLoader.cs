@@ -117,7 +117,7 @@ namespace Mono.Xaml
 			DependencyObject result;
 			Kind kind;
 			
-			DependencyObject.EnsureInitialized ();
+			DependencyObject.Initialize ();
 			
 			top = CreateFromString (xaml, createNamescope, out kind);
 			
@@ -149,7 +149,7 @@ namespace Mono.Xaml
 			DependencyObject result;
 			Kind kind;
 			
-			DependencyObject.EnsureInitialized ();
+			DependencyObject.Initialize ();
 
 			top = CreateFromFile (file, createNamescope, out kind);
 			

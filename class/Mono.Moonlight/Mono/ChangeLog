@@ -1,3 +1,10 @@
+2008-08-26  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Helper.cs: Made Agclr an internal property accessor. Also fixed
+	the real agclr assembly reference to be initialized internally
+	rather than having an external source initialize it for us by
+	using the assembly strong name.
+
 2008-08-24  Geoff Norton  <gnorton@novell.com>
 
 	* GeneratedPInvokes.cs: Regen

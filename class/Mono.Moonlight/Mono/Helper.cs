@@ -41,8 +41,13 @@ using System.IO;
 namespace Mono {
 
 	public class Helper {
-		public static Assembly Agclr;
+		static Assembly agclr;
 
+		static Helper ()
+		{
+			agclr = LoadAgclr ();
+		}
+		
 		private static TypeConverter GetConverterFor (MemberInfo info, Type target_type)
 		{
 			Attribute[] attrs = (Attribute[])info.GetCustomAttributes (true);
@@ -142,11 +147,10 @@ namespace Mono {
 			if (pi.PropertyType == typeof (Type)) {
 
 				// try to find the type based on the name
-				Assembly agclr = GetAgclr ();
-				Type app = agclr.GetType ("System.Windows.Application");
+				Type app = Agclr.GetType ("System.Windows.Application");
 				MethodInfo lookup = app.GetMethod ("GetComponentTypeFromName", BindingFlags.NonPublic | BindingFlags.Static, null, new Type [] {typeof (string)}, null);
 				Type t = (Type)lookup.Invoke (null, new object [] {value});
-
+				
 				if (t != null) {
 					try {
 						pi.SetValue (target, t, null);
@@ -155,7 +159,6 @@ namespace Mono {
 					}
 					return;
 				}
-
 			}
 
 			//
@@ -255,9 +258,31 @@ namespace Mono {
 			Thread.MemoryBarrier ();
 		}
 		
+		static Assembly LoadAgclr ()
+		{
+			string assemblyName;
+			
+#if SL_2_1
+			assemblyName = "System.Windows,Version=2.0.5.0,Culture=neutral,PublicKeyToken=7cec85d7bea7798e";
+#else
+			assemblyName = "System.Windows,Version=3.0.0.0,Culture=neutral,PublicKeyToken=0738eb9f132ed756";
+#endif
+			
+			return System.Reflection.Assembly.Load (assemblyName);
+		}
+		
 		internal static Assembly GetAgclr ()
 		{
-			return Agclr;
+			if (agclr == null)
+				agclr = LoadAgclr ();
+			
+			return agclr;
+		}
+		
+		static Assembly Agclr {
+			get {
+				return GetAgclr ();
+			}
 		}
 		
 		/// <summary>
@@ -266,8 +291,7 @@ namespace Mono {
 		/// </summary>
 		public static object LookupDependencyObject (Kind k, IntPtr ptr)
 		{
-			Assembly agclr = GetAgclr ();
-			Type depobj = agclr.GetType ("System.Windows.DependencyObject");
+			Type depobj = Agclr.GetType ("System.Windows.DependencyObject");
 			MethodInfo lookup = depobj.GetMethod ("Lookup", BindingFlags.NonPublic | BindingFlags.Static, null, new Type [] {typeof (Kind), typeof (IntPtr)}, null);
 			return lookup.Invoke (null, new object [] {k, ptr});
 		}
@@ -277,8 +301,7 @@ namespace Mono {
 			if (dependency_object == null)
 				return IntPtr.Zero;
 			
-			Assembly agclr = GetAgclr ();
-			Type depobj = agclr.GetType ("System.Windows.DependencyObject");
+			Type depobj = Agclr.GetType ("System.Windows.DependencyObject");
 			FieldInfo field = depobj.GetField ("_native", BindingFlags.Instance | BindingFlags.NonPublic);
 			return (IntPtr) field.GetValue (dependency_object);
 		}
