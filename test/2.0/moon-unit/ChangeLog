@@ -1,3 +1,8 @@
+2008-08-26  Chris Toshok  <toshok@ximian.com>
+
+	* Mono.Moonlight.UnitTesting/Tester.cs: KnownFailure should be
+	moonlight-only.
+
 2008-08-22  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.IO.IsolatedStorage/IsolatedStorageFileStreamTest.cs: Add

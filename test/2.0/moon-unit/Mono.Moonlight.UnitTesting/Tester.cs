@@ -110,7 +110,8 @@ namespace Mono.Moonlight.UnitTesting
 						else
 							failed++;
 
-						if (method.IsDefined (typeof (KnownFailureAttribute), false)) {
+						if (Environment.OSVersion.Platform == PlatformID.Unix &&
+						    method.IsDefined (typeof (KnownFailureAttribute), false)) {
 							if (result.result == TestResult.Pass)
 								result.result = TestResult.UnexpectedPass;
 							else
