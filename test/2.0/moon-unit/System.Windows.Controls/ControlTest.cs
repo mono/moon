@@ -24,6 +24,79 @@ namespace MoonTest.System.Windows.Controls
 			}
 		}
 
+		class DefaultStyleKey_TypeClass : UserControl {
+			public DefaultStyleKey_TypeClass ()
+			{
+				DefaultStyleKey = typeof (DefaultStyleKey_TypeClass);
+			}
+		}
+
+		class DefaultStyleKey_TypeClass2 : UserControl {
+			public DefaultStyleKey_TypeClass2 ()
+			{
+				DefaultStyleKey = typeof (UserControl);
+			}
+		}
+
+		class DefaultStyleKey_NullClass : UserControl {
+			public DefaultStyleKey_NullClass ()
+			{
+				DefaultStyleKey = null;
+			}
+		}
+
+		class DefaultStyleKey_DifferentTypeClass : UserControl {
+			public DefaultStyleKey_DifferentTypeClass ()
+			{
+				DefaultStyleKey = typeof (Button);
+			}
+		}
+
+		class DefaultStyleKey_NonDOTypeClass : UserControl {
+			public DefaultStyleKey_NonDOTypeClass ()
+			{
+				DefaultStyleKey = typeof (string);
+			}
+		}
+
+		class DefaultStyleKey_NonTypeClass : UserControl {
+			public DefaultStyleKey_NonTypeClass ()
+			{
+				DefaultStyleKey = "hi";
+			}
+		}
+
+		class DefaultStyleKey_GetterClass : UserControl {
+			public DefaultStyleKey_GetterClass ()
+			{
+			}
+
+			public Type GetDefaultStyleKey()
+			{
+				return (Type)DefaultStyleKey;
+			}
+		}
+
+		[TestMethod]
+		public void DefaultStyleKeyTest ()
+		{
+			DefaultStyleKey_GetterClass gc = new DefaultStyleKey_GetterClass ();
+			Assert.AreEqual (null, gc.GetDefaultStyleKey());
+
+			Assert.Throws (delegate { DefaultStyleKey_TypeClass tc = new DefaultStyleKey_TypeClass (); },
+				       typeof (ArgumentException), "1");
+			Assert.Throws (delegate { DefaultStyleKey_TypeClass2 tc = new DefaultStyleKey_TypeClass2 (); },
+				       typeof (ArgumentException), "2");
+			Assert.Throws (delegate { DefaultStyleKey_NullClass nc = new DefaultStyleKey_NullClass (); },
+				       typeof (ArgumentException), "3");
+			Assert.Throws (delegate { DefaultStyleKey_DifferentTypeClass dtc = new DefaultStyleKey_DifferentTypeClass (); },
+				       typeof (InvalidOperationException), "4");
+			Assert.Throws (delegate { DefaultStyleKey_NonDOTypeClass ndotc = new DefaultStyleKey_NonDOTypeClass (); },
+				       typeof (ArgumentException), "5");
+			Assert.Throws (delegate { DefaultStyleKey_NonTypeClass ntc = new DefaultStyleKey_NonTypeClass (); },
+				       typeof (ArgumentException), "6");
+		}
+
 		[TestMethod]
 		public void DefaultDesiredSizeTest ()
 		{
