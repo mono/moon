@@ -96,7 +96,11 @@ namespace Mono
 				info.type = type;
 				info.gc_handle = GCHandle.Alloc (type);
 				info.parent = parent;
-				info.native_handle = NativeMethods.types_register_type (native, type.FullName, GCHandle.ToIntPtr (info.gc_handle), (parent != null ? parent.native_handle : Kind.INVALID));
+
+				if (type.IsEnum && Enum.GetUnderlyingType (type) == typeof(int))
+					info.native_handle = Kind.INT32;
+				else
+					info.native_handle = NativeMethods.types_register_type (native, type.FullName, GCHandle.ToIntPtr (info.gc_handle), (parent != null ? parent.native_handle : Kind.INVALID));
 				
 				types.Add (type, info);
 			}

@@ -357,6 +357,8 @@ namespace System.Windows {
 					// marshall back to the .NET type that we simply serialised as int for unmanaged usage
 					if (type == typeof (System.Windows.Input.Cursor))
 						return new Cursor ((CursorType)val->u.i32);
+					else if (type != null && type.IsEnum)
+						return Enum.ToObject (type, val->u.i32);
 					else
 						return val->u.i32;
 
@@ -472,17 +474,6 @@ namespace System.Windows {
 		internal static Value GetAsValue (object v, bool as_managed_object)
 		{
 			Value value = new Value ();
-			
-			if (as_managed_object) {
-				// TODO: We probably need to marshal types that can animate as the 
-				// corresponding type (Point, Double, Color, etc).
-				// TODO: We need to store the GCHandle somewhere so that we can free it,
-				// or register a callback on the surface for the unmanaged code to call.
-				GCHandle handle = GCHandle.Alloc (v);
-				value.k = Kind.MANAGED;
-				value.u.p = Helper.GCHandleToIntPtr (handle);
-				return value;
-			}
 			
 			unsafe {
 				if (v is DependencyObject) {
@@ -651,6 +642,16 @@ namespace System.Windows {
 					value.k = Kind.INT32;
 
 					value.u.i32 = (int)c.cursor;
+				}
+				else if (as_managed_object) {
+					// TODO: We probably need to marshal types that can animate as the 
+					// corresponding type (Point, Double, Color, etc).
+					// TODO: We need to store the GCHandle somewhere so that we can free it,
+					// or register a callback on the surface for the unmanaged code to call.
+					GCHandle handle = GCHandle.Alloc (v);
+					value.k = Kind.MANAGED;
+					value.u.p = Helper.GCHandleToIntPtr (handle);
+					return value;
 				}
 				else {
 					throw new Exception (

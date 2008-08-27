@@ -75,8 +75,8 @@ namespace System.Windows {
 		
 		private static DependencyProperty RegisterAny (string name, Type propertyType, Type ownerType, PropertyMetadata metadata, bool attached)
 		{
-			ManagedType property_type = Types.Find (propertyType);
-			ManagedType owner_type = Types.Find (ownerType);
+			ManagedType property_type;
+			ManagedType owner_type;
 			NativePropertyChangedHandler handler;
 			CustomDependencyProperty result;
 			
@@ -91,6 +91,9 @@ namespace System.Windows {
 			
 			if (ownerType == null)
 				throw new System.ArgumentNullException ("ownerType");
+
+			property_type = Types.Find (propertyType);
+			owner_type = Types.Find (ownerType);
 			
 			if (metadata != null)
 				handler = new NativePropertyChangedHandler(NativePropertyChangedCallback);

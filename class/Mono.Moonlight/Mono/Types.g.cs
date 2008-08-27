@@ -268,6 +268,22 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.RECTANGLE));
 				t = agclr.GetType ("System.Windows.Shapes.Shape", true); 
 				types.Add (t, new ManagedType (t, Kind.SHAPE));
+				t = typeof (bool);
+				types.Add (t, new ManagedType (t, Kind.BOOL));
+				t = typeof (double);
+				types.Add (t, new ManagedType (t, Kind.DOUBLE));
+				t = typeof (ulong);
+				types.Add (t, new ManagedType (t, Kind.UINT64));
+				t = typeof (long);
+				types.Add (t, new ManagedType (t, Kind.INT64));
+				t = typeof (uint);
+				types.Add (t, new ManagedType (t, Kind.UINT32));
+				t = typeof (int);
+				types.Add (t, new ManagedType (t, Kind.INT32));
+				t = typeof (string);
+				types.Add (t, new ManagedType (t, Kind.STRING));
+				t = typeof (TimeSpan);
+				types.Add (t, new ManagedType (t, Kind.TIMESPAN));
 			} catch (Exception ex) {
 				Console.WriteLine ("There was an error while loading native types: " + ex.ToString ());
 			}

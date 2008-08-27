@@ -1,3 +1,16 @@
+2008-08-26  Chris Toshok  <toshok@ximian.com>
+
+	* DependencyProperty.cs (DependencyProperty.RegisterAny): move the
+	Type lookups to after the argument exception throwing stuff, fixes
+	a unit test.
+
+	* DependencyObject.cs (DependencyObject.GetAsValue): don't short
+	circuit out if as_managed_object == true.  try to always map
+	things over in a form that the unmanaged code can deal with as
+	well.
+	(DependencyObject.ValueToObject): in the case of a managed enum
+	property type, box up an enum object and return that.
+
 2008-08-26  Jeffrey Stedfast  <fejj@novell.com>
 
 	* XapHackProxyImpl.cs: Don't do gross things like intiailizing

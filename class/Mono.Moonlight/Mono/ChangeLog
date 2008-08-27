@@ -1,3 +1,10 @@
+2008-08-26  Chris Toshok  <toshok@ximian.com>
+
+	* Types.cs: if the type is an enum, specify INT32 as the native
+	type.
+
+	* Types.g.cs: regen.
+
 2008-08-26  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Helper.cs: Made Agclr an internal property accessor. Also fixed
