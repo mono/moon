@@ -19,6 +19,7 @@ namespace MoonTest.System.Windows
 	public class PresentationFrameworkCollectionTest
 	{
 		[TestMethod]
+		[KnownFailure]
 		public void AddWithoutParent ()
 		{
 			UIElementCollection col = new UIElementCollection();

@@ -44,6 +44,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void AvailableBeforeLoaded ()
 		{
 			Style s = (Style)XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Button""><Setter Property=""Width"" Value=""10""/></Style>");
@@ -57,6 +58,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void MismatchTargetType ()
 		{
 			Style s = (Style)XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""CheckBox""><Setter Property=""Width"" Value=""10""/></Style>");
@@ -66,6 +68,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void MissingTargetType ()
 		{
 			Style s = (Style)XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007""><Setter Property=""Width"" Value=""10""/></Style>");
@@ -96,6 +99,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void InvalidPropertyNameInSetter ()
 		{
 			Assert.Throws (delegate { XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Button""><Setter Property=""WidthOrHeight"" Value=""10""/></Style>"); }, typeof (XamlParseException));

@@ -37,6 +37,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void TestParseColor ()
 		{
 			Canvas b = (Canvas)
@@ -48,7 +49,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		//		[Ignore ("this causes moonlight to crash - we need to throw a XamlParseException instead of crashing")]
+		[KnownFailure]
 		public void TestParseDouble ()
 		{
 			Assert.Throws (delegate {
@@ -58,6 +59,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void Parse_MissingxKey ()
 		{
 			Assert.Throws (delegate { 
@@ -67,6 +69,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void Parse_MissingxKey_WithxName ()
 		{
 			Canvas b = (Canvas)
@@ -80,6 +83,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void Parse_BothxKeyAndxName ()
 		{
 			Assert.Throws (delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Color x:Key=""keycolor"" x:Name=""color"">#ffffffff</Color></Canvas.Resources></Canvas>");

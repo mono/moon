@@ -37,6 +37,7 @@ namespace MoonTest.System.IO.IsolatedStorage {
 	public class IsolatedStorageFileStreamTest {
 
 		[TestMethod]
+		[KnownFailure]
 		public void IsolatedStorageFileStream_BadValues ()
 		{
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
@@ -81,6 +82,7 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void Create ()
 		{
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
@@ -119,6 +121,7 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void Create_RemovedIsolatedStorageFile ()
 		{
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
@@ -129,6 +132,7 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void Create_DisposedIsolatedStorageFile ()
 		{
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
@@ -139,6 +143,7 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void Create_NotFound ()
 		{
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
@@ -159,6 +164,7 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void AsyncRead ()
 		{
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
@@ -183,6 +189,7 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void AsyncWrite ()
 		{
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
@@ -201,6 +208,7 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void Flush ()
 		{
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
@@ -217,6 +225,7 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void Seek ()
 		{
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
@@ -233,6 +242,7 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void SetLength ()
 		{
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
@@ -249,6 +259,7 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void Write ()
 		{
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
@@ -269,6 +280,7 @@ namespace MoonTest.System.IO.IsolatedStorage {
 
 
 		[TestMethod]
+		[KnownFailure]
 		public void WriteThenRead ()
 		{
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
@@ -295,6 +307,7 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void PlayingWithQuota ()
 		{
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();

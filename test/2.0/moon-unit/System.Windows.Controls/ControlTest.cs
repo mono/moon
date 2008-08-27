@@ -78,6 +78,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void DefaultStyleKeyTest ()
 		{
 			DefaultStyleKey_GetterClass gc = new DefaultStyleKey_GetterClass ();
