@@ -94,5 +94,17 @@ namespace MoonTest.System.Windows
 			// exception like above, though.
 			Assert.IsTrue (Double.IsNaN(b.Width));
 		}
+
+		[TestMethod]
+		public void InvalidPropertyNameInSetter ()
+		{
+			Assert.Throws (delegate { XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Button""><Setter Property=""WidthOrHeight"" Value=""10""/></Style>"); }, typeof (XamlParseException));
+		}
+
+		[TestMethod]
+		public void InvalidPropertyNameInSetterMissingTargetType ()
+		{
+			XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007""><Setter Property=""WidthOrHeight"" Value=""10""/></Style>");
+		}
 	}
 }

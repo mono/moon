@@ -63,7 +63,7 @@ namespace MoonTest.System.Windows
 		[KnownFailure]
 		public void ParseAndAddToStyle ()
 		{
-			Setter s = (Setter)XamlReader.Load ("<Setter xmlns=\"http://schemas.microsoft.com/client/2007\" Property=\"ActualWidth\" Value=\"5.0\" />");
+			Setter s = (Setter)XamlReader.Load ("<Setter xmlns=\"http://schemas.microsoft.com/client/2007\" Property=\"Width\" Value=\"5.0\" />");
 
 			Assert.IsNull (s.Property);
 			Assert.AreEqual ("5.0", s.Value);
@@ -79,6 +79,7 @@ namespace MoonTest.System.Windows
 
 			Assert.IsNull (s.Property);
 			Assert.AreEqual ("5.0", s.Value);
+			Assert.IsTrue (Double.IsNaN(r.Width));
 		}
 	}
 }
