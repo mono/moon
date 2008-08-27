@@ -16,6 +16,8 @@ using System.Text;
 
 
 class Generator {
+	delegate void output_native_type_delegate (string t, string k);
+
 	public void Generate ()
 	{
 		GlobalInfo info = GetTypes2 ();
@@ -1128,6 +1130,27 @@ class Generator {
 			text.Append (t.KindName);
 			text.AppendLine ("));");
 		}
+
+		// now handle the primitive types
+		output_native_type_delegate f = delegate (string t, string k) {
+			text.Append ("\t\t\t\tt = typeof (");
+			text.Append (t);
+			text.AppendLine (");");
+				
+				
+			text.Append ("\t\t\t\ttypes.Add (t, new ManagedType (t, Kind.");
+			text.Append (k);
+			text.AppendLine ("));");
+		};
+
+		f ("bool", "BOOL");
+		f ("double", "DOUBLE");
+		f ("ulong", "UINT64");
+		f ("long", "INT64");
+		f ("uint", "UINT32");
+		f ("int", "INT32");
+		f ("string", "STRING");
+		f ("TimeSpan", "TIMESPAN");
 		
 		text.AppendLine ("\t\t\t} catch (Exception ex) {");
 		text.AppendLine ("\t\t\t\tConsole.WriteLine (\"There was an error while loading native types: \" + ex.ToString ());");
