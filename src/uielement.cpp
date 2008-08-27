@@ -82,6 +82,9 @@ UIElement::Dispose()
 void
 UIElement::SetSurface (Surface *s)
 {
+	if (GetSurface() == s)
+		return;
+
 	if (s == NULL && GetSurface()) {
 		/* we're losing our surface, delete ourselves from the dirty list if we're on it */
 		GetSurface()->RemoveDirtyElement (this);

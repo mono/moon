@@ -1,3 +1,26 @@
+2008-08-26  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.cpp (DependencyObject::SetLogicalParent): get
+	rid of this g_assert, it's crashing the moon-unit tests.  just
+	warn and bail.
+	(DependencyObject::SetSurface): don't do anything if the surface
+	is already set to the same value.
+
+	* animation.cpp (Storyboard::SetSurface): don't do anything if
+	GetSurface() == surface.
+
+	* text.cpp (Glyphs::SetSurface): same.
+
+	* uielement.cpp (UIElement::SetSurface): same.
+
+	* brush.cpp (ImageBrush::SetSurface): same.
+
+	* media.cpp: same.
+
+	* collection.cpp (DependencyObjectCollection::SetSurface): same.
+	(Collection::RemoveAtWithError): this (against logic) raises
+	ArgumentException, not ArgumentOutOfRangeException.
+
 2008-08-25  Chris Toshok  <toshok@ximian.com>
 
 	* rect.h, rect.cpp: rename the w/h fields to width/height, since

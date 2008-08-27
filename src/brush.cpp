@@ -484,6 +484,8 @@ ImageBrush::SetSource (Downloader *downloader, const char *PartName)
 void
 ImageBrush::SetSurface (Surface *surface)
 {
+	if (GetSurface() == surface)
+		return;
 	image->SetSurface (surface);
 	DependencyObject::SetSurface (surface);
 }

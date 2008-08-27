@@ -1608,6 +1608,9 @@ Glyphs::DownloadFont (Surface *surface, const char *url)
 void
 Glyphs::SetSurface (Surface *surface)
 {
+	if (GetSurface() == surface)
+		return;
+
 	const char *uri;
 	
 	FrameworkElement::SetSurface (surface);

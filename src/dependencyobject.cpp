@@ -1408,6 +1408,8 @@ set_surface (gpointer key, gpointer value, gpointer data)
 void
 DependencyObject::SetSurface (Surface *s)
 {
+	if (GetSurface() == s)
+		return;
 	EventObject::SetSurface (s);
 	g_hash_table_foreach (current_values, set_surface, s);
 }
@@ -1419,7 +1421,10 @@ DependencyObject::SetLogicalParent (DependencyObject *logical_parent)
 	// Check for circular families
 	DependencyObject *current = logical_parent;
 	while (current != NULL) {
-		g_assert (current != this); // (assert within #if DEBUG)
+		if (current == this) {
+			g_warning ("cycle found in logical tree.  bailing out");
+			return;
+		}
 		current = current->GetLogicalParent ();
 	} 
 #endif

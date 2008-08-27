@@ -103,6 +103,9 @@ MediaBase::DownloaderAbort ()
 void
 MediaBase::SetSurface (Surface *surface)
 {
+	if (GetSurface() == surface)
+		return;
+
 	const char *uri;
 	Downloader *dl;
 	
@@ -591,6 +594,9 @@ MediaElement::~MediaElement ()
 void
 MediaElement::SetSurface (Surface *s)
 {
+	if (GetSurface() == s)
+		return;
+
 	// if we previously had a surface and are losing it, we need
 	// to remove our timeout (if we had one)
 	if (s == NULL && GetSurface ()) {

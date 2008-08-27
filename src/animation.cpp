@@ -552,6 +552,9 @@ Storyboard::Stop ()
 void
 Storyboard::SetSurface (Surface *surface)
 {
+	if (GetSurface() == surface)
+		return;
+
 	if (GetSurface() && surface == NULL && root_clock && root_clock->GetClockState() == Clock::Active) {
 		/* we're being detached from a surface, so pause clock */
 		Pause ();
