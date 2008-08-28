@@ -1,3 +1,7 @@
+2008-08-28  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (TextLayout::Render): Respect TextAlignment.
+
 2008-08-26  Chris Toshok  <toshok@ximian.com>
 
 	* dependencyobject.cpp (DependencyObject::SetLogicalParent): get

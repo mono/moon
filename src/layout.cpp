@@ -127,6 +127,7 @@ class TextLine : public List::Node {
 	List *segments;
 	double descend;
 	double height;
+	double width;
 	
 	TextLine ();
 	~TextLine ();
@@ -137,6 +138,7 @@ TextLine::TextLine ()
 	segments = new List ();
 	descend = 0.0;
 	height = -1.0;
+	width = 0.0;
 }
 
 TextLine::~TextLine ()
@@ -394,6 +396,8 @@ TextLayout::LayoutWrapWithOverflow (TextLayoutHints *hints)
 			
 			line->descend = descend;
 			line->height = height;
+			line->width = x1;
+			
 			lines->Append (line);
 			
 			dy += height;
@@ -417,6 +421,7 @@ TextLayout::LayoutWrapWithOverflow (TextLayoutHints *hints)
 			}
 			
 			x0 = 0.0;
+			x1 = 0.0;
 			
 			continue;
 		}
@@ -481,6 +486,8 @@ TextLayout::LayoutWrapWithOverflow (TextLayoutHints *hints)
 				
 				line->descend = descend;
 				line->height = height;
+				line->width = x1;
+				
 				lines->Append (line);
 				
 				dy += height;
@@ -545,6 +552,8 @@ TextLayout::LayoutWrapWithOverflow (TextLayoutHints *hints)
 	if (line) {
 		line->descend = descend;
 		line->height = height;
+		line->width = x1;
+		
 		lines->Append (line);
 		
 		dy += height;
@@ -588,6 +597,8 @@ TextLayout::LayoutNoWrap (TextLayoutHints *hints)
 			
 			line->descend = descend;
 			line->height = height;
+			line->width = x1;
+			
 			lines->Append (line);
 			
 			dy += height;
@@ -612,6 +623,7 @@ TextLayout::LayoutNoWrap (TextLayoutHints *hints)
 			}
 			
 			x0 = 0.0;
+			x1 = 0.0;
 			
 			continue;
 		} else if (clipped) {
@@ -706,6 +718,8 @@ TextLayout::LayoutNoWrap (TextLayoutHints *hints)
 	if (line) {
 		line->descend = descend;
 		line->height = height;
+		line->width = x1;
+		
 		lines->Append (line);
 		
 		dy += height;
@@ -806,6 +820,8 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 			
 			line->descend = descend;
 			line->height = height;
+			line->width = x1;
+			
 			lines->Append (line);
 			
 			dy += height;
@@ -830,6 +846,7 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 			}
 			
 			x0 = 0.0;
+			x1 = 0.0;
 			
 			continue;
 		}
@@ -903,6 +920,8 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 				
 				line->descend = descend;
 				line->height = height;
+				line->width = x1;
+				
 				lines->Append (line);
 				
 				dy += height;
@@ -1049,6 +1068,8 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 	if (line) {
 		line->descend = descend;
 		line->height = height;
+		line->width = x1;
+		
 		lines->Append (line);
 		
 		dy += height;
@@ -1278,6 +1299,7 @@ void
 TextLayout::Render (cairo_t *cr, TextLayoutHints *hints, UIElement *element, Brush *default_fg, double x, double y)
 {
 	TextLine *line;
+	double deltax;
 	double y1 = y;
 	
 	Layout (hints);
@@ -1285,7 +1307,19 @@ TextLayout::Render (cairo_t *cr, TextLayoutHints *hints, UIElement *element, Bru
 	line = (TextLine *) lines->First ();
 	
 	while (line) {
-		RenderLine (cr, hints, element, line, default_fg, x, y1);
+		switch (hints->GetTextAlignment ()) {
+		case TextAlignmentCenter:
+			deltax = (actual_width - line->width) / 2.0;
+			break;
+		case TextAlignmentRight:
+			deltax = actual_width - line->width;
+			break;
+		default:
+			deltax = 0.0;
+			break;
+		}
+		
+		RenderLine (cr, hints, element, line, default_fg, x + deltax, y1);
 		y1 += (double) line->height;
 		
 		line = (TextLine *) line->next;
