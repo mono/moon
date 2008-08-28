@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * layout.cpp: 
  *
@@ -1309,10 +1310,10 @@ TextLayout::Render (cairo_t *cr, TextLayoutHints *hints, UIElement *element, Bru
 	while (line) {
 		switch (hints->GetTextAlignment ()) {
 		case TextAlignmentCenter:
-			deltax = (actual_width - line->width) / 2.0;
+			deltax = (max_width - line->width) / 2.0;
 			break;
 		case TextAlignmentRight:
-			deltax = actual_width - line->width;
+			deltax = max_width - line->width;
 			break;
 		default:
 			deltax = 0.0;
