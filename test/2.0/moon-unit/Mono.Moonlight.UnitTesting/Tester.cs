@@ -259,7 +259,7 @@ namespace Mono.Moonlight.UnitTesting
 		public static void AreEqual (object expected, object actual, string message)
 		{
 			if (!object.Equals (expected, actual)) {
-				string msg = String.Format ("Actual value is '{0}' while the expected value was '{1}'.", actual, expected);
+				string msg = String.Format ("Actual value is '{0}' while the expected value was {1}.", actual, expected == null ? "<null>" : string.Format ("'{0}'", expected));
 				throw new AssertFailedException (message, msg);
 			}
 		}

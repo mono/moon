@@ -1,3 +1,8 @@
+2008-08-28  Chris Toshok  <toshok@ximian.com>
+
+	* Mono.Moonlight.UnitTesting/Tester.cs: output something different
+	if the actual object was null.
+
 2008-08-26  Chris Toshok  <toshok@ximian.com>
 
 	* Mono.Moonlight.UnitTesting/Tester.cs: KnownFailure should be
