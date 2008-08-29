@@ -59,11 +59,9 @@ ResourceDictionary::AddWithError (char* key, Value *value, MoonError *error)
 bool
 ResourceDictionary::Clear ()
 {
-	Collection::Clear ();
-
 	g_hash_table_remove_all (hash);
 
-	return true;
+	return Collection::Clear ();
 }
 
 bool

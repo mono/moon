@@ -1,3 +1,9 @@
+2008-08-29  Chris Toshok  <toshok@ximian.com>
+
+	* resources.cpp (ResourceDictionary::Clear): call
+	Collection::Clear after we've cleared the hash so the hash will be
+	empty in event handlers.
+
 2008-08-29  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (TextLayout::Layout): Do a slightly better job of
