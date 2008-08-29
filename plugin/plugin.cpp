@@ -1756,9 +1756,9 @@ PluginXamlLoader::TryLoad (int *error)
 	GetSurface ()->Attach (NULL);
 	
 	if (GetFilename ()) {
-		element = xaml_create_from_file (this, GetFilename (), true, &element_type);
+		element = CreateFromFile (GetFilename (), true, &element_type);
 	} else if (GetString ()) {
-		element = xaml_create_from_str (this, GetString (), true, &element_type);
+		element = CreateFromString (GetString (), true, &element_type);
 	} else {
 		*error = 1;
 		return NULL;
