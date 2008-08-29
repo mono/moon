@@ -1,0 +1,15 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007">
+  <Rectangle Canvas.Left="10" Canvas.Top="10" Width="400" Height="75" Stroke="SkyBlue"/>
+  <TextBlock Canvas.Left="10" Canvas.Top="10" Width="400" TextWrapping="NoWrap">
+    <Run>This is a fairly short line of text...</Run><LineBreak/>
+    <Run>This is a really really long line of text meant to overflow the max allowable width to see how Silverlight copes with TextAlignmentRight.</Run><LineBreak/>
+    <Run>And here is a third line for good measure.</Run>
+  </TextBlock>
+
+  <Rectangle Canvas.Left="10" Canvas.Top="125" Width="400" Height="75" Stroke="SkyBlue"/>
+  <TextBlock Canvas.Left="10" Canvas.Top="125" Width="400" TextWrapping="NoWrap" TextAlignment="Right">
+    <Run>This is a fairly short line of text...</Run><LineBreak/>
+    <Run>This is a really really long line of text meant to overflow the max allowable width to see how Silverlight copes with TextAlignmentRight.</Run><LineBreak/>
+    <Run>And here is a third line for good measure.</Run>
+  </TextBlock>
+</Canvas>

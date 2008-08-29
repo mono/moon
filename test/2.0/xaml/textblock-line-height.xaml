@@ -1,0 +1,15 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007">
+  <TextBlock Canvas.Left="10" Canvas.Top="10">Use the <Run FontSize="28">LineStackingStrategy</Run> property to<LineBreak/>determine how a line box is created for each line. A value of<LineBreak/><Run FontSize="22">MaxHeight</Run> specifies that the stack height is the smallest value<LineBreak/>that contains all the inline elements on that line when those<LineBreak/>elements are properly aligned. A value of <Run FontSize="21">BlockLineHeight</Run><LineBreak/>specifies that the stack height is determined by the block element<LineBreak/>LineHeight property value.</TextBlock>
+
+  <!-- Blue Line at each baseline of the first TextBlock... -->
+  <Line Canvas.Left="10" Canvas.Top="39" X1="0" Y1="0" X2="475" Y2="0" Stroke="SkyBlue" StrokeThickness="1"/>
+  <Line Canvas.Left="10" Canvas.Top="68" X1="0" Y1="0" X2="475" Y2="0" Stroke="SkyBlue" StrokeThickness="1"/>
+  <Line Canvas.Left="10" Canvas.Top="99" X1="0" Y1="0" X2="475" Y2="0" Stroke="SkyBlue" StrokeThickness="1"/>
+  <Line Canvas.Left="10" Canvas.Top="124" X1="0" Y1="0" X2="475" Y2="0" Stroke="SkyBlue" StrokeThickness="1"/>
+  <Line Canvas.Left="10" Canvas.Top="154" X1="0" Y1="0" X2="475" Y2="0" Stroke="SkyBlue" StrokeThickness="1"/>
+  <Line Canvas.Left="10" Canvas.Top="179" X1="0" Y1="0" X2="475" Y2="0" Stroke="SkyBlue" StrokeThickness="1"/>
+  <Line Canvas.Left="10" Canvas.Top="202" X1="0" Y1="0" X2="475" Y2="0" Stroke="SkyBlue" StrokeThickness="1"/>
+
+  <Line Canvas.Left="10" Canvas.Top="250" X1="0" Y1="0" X2="475" Y2="0" Stroke="Green" StrokeThickness="1"/>
+  <TextBlock Canvas.Left="10" Canvas.Top="249" LineStackingStrategy="BlockLineHeight" LineHeight="11">Use the <Run FontSize="28">LineStackingStrategy</Run> property to<LineBreak/>determine how a line box is created for each line. A value of<LineBreak/><Run FontSize="22">MaxHeight</Run> specifies that the stack height is the smallest value<LineBreak/>that contains all the inline elements on that line when those<LineBreak/>elements are properly aligned. A value of <Run FontSize="21">BlockLineHeight</Run><LineBreak/>specifies that the stack height is determined by the block element<LineBreak/>LineHeight property value.</TextBlock>
+</Canvas>
