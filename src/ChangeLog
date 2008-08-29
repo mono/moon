@@ -1,3 +1,12 @@
+2008-08-29  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (TextLayout::LayoutWrap): Keep track of when 'words'
+	end so that we can fall back to that position as the line
+	width (we don't want to include trailing spaces unless
+	underlined).
+	(TextLayout::Render): If the line width is greater than the
+	allowable width, keep the line left-aligned like Silverlight does.
+
 2008-08-29  Chris Toshok  <toshok@ximian.com>
 
 	* resources.cpp (ResourceDictionary::Clear): call

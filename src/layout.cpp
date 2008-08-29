@@ -801,7 +801,9 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 	bool include_lwsp = false;
 	bool underlined = false;
 	bool last_word = false;
+	bool in_word = false;
 	TextSegment *segment;
+	double word_end = 0.0;
 	double descend = 0.0;
 	double height = 0.0;
 	double width = 0.0;
@@ -850,6 +852,7 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 			
 			underlined = false;
 			last_word = false;
+			in_word = false;
 			blank = true;
 			
 			if (!hints->OverrideLineHeight ()) {
@@ -857,6 +860,7 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 				height = 0.0;
 			}
 			
+			word_end = 0.0;
 			width = 0.0;
 			x0 = 0.0;
 			x1 = 0.0;
@@ -884,6 +888,11 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 			// always include the lwsp, it is allowed to go past max_width
 			start = inptr;
 			btype = g_unichar_break_type (*inptr);
+			if (in_word && BreakSpace (btype)) {
+				in_word = false;
+				word_end = x1;
+			}
+			
 			while (BreakSpace (btype)) {
 				if ((glyph = run->font->GetGlyphInfo (*inptr))) {
 					advance = glyph->metrics.horiAdvance;
@@ -908,6 +917,7 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 			if (run->IsUnderlined () || include_lwsp) {
 				actual_width = MAX (actual_width, x1);
 				segment->width = x1 - x0;
+				word_end = x1;
 				width = x1;
 			}
 			
@@ -954,6 +964,9 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 					descend = run->font->Descender ();
 					height = run->font->Height ();
 				}
+				
+				in_word = false;
+				word_end = 0.0;
 				
 				width = 0.0;
 				prev = 0;
@@ -1044,11 +1057,7 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 							// break before this word
 							segment->advance = wx - x0;
 							segment->width = wx - x0;
-							
-							// FIXME: this isn't quite accurate because it
-							// includes the width of the trailing lwsp and
-							// it should not be counted unless underlined
-							width = wx;
+							width = word_end;
 							
 							goto linebreak;
 						}
@@ -1065,6 +1074,7 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 				else
 					wc.btype = btype;
 				
+				in_word = true;
 				wc.c = inptr;
 				wc.x1 = x1;
 				width = x1;
@@ -1332,10 +1342,16 @@ TextLayout::Render (cairo_t *cr, TextLayoutHints *hints, UIElement *element, Bru
 	while (line) {
 		switch (hints->GetTextAlignment ()) {
 		case TextAlignmentCenter:
-			deltax = (max_width - line->width) / 2.0;
+			if (line->width < max_width)
+				deltax = (max_width - line->width) / 2.0;
+			else
+				deltax = 0.0;
 			break;
 		case TextAlignmentRight:
-			deltax = max_width - line->width;
+			if (line->width < max_width)
+				deltax = max_width - line->width;
+			else
+				deltax = 0.0;
 			break;
 		default:
 			deltax = 0.0;
