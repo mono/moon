@@ -79,6 +79,7 @@ namespace System.Windows {
 		{
 			NativeMethods.runtime_init (0);
 			moonlight_thread = Thread.CurrentThread;
+			Helper.Agclr = typeof (DependencyObject).Assembly;
 		}
 
 		internal DependencyObject ()
@@ -672,20 +673,20 @@ namespace System.Windows {
 			CheckNativeAndThread ();
 			
 			if (dp.DeclaringType != null && !dp.IsAttached) {
-				if (dp.DeclaringType != GetType () && !dp.DeclaringType.IsAssignableFrom (GetType ()))
-					throw new System.ArgumentException (string.Format ("The DependencyProperty '{2}', registered on type {0} can't be used to set a value on an object of type {1}", dp.DeclaringType.FullName, GetType ().FullName, dp.Name));
+				if (!dp.DeclaringType.IsAssignableFrom (GetType ()))
+					throw new System.ArgumentException (string.Format ("The DependencyProperty '{2}', registered on type {0} can't be used to set a value on an object of type {1}", dp.DeclaringType.AssemblyQualifiedName, GetType ().AssemblyQualifiedName, dp.Name));
 			}
 			
 			if (value == null) {
 				if (dp.PropertyType.IsValueType)
 					throw new System.ArgumentException (string.Format ("null is not a valid value for '{0}'.", dp.Name));
 				
-				NativeMethods.dependency_object_set_value (native, dp.Native, IntPtr.Zero);
+				NativeMethods.dependency_object_clear_value (native, dp.Native, true);
 				return;
 			}
 
 			object_type = value.GetType ();
-			if (!(object_type == dp.PropertyType || dp.PropertyType.IsAssignableFrom (object_type)))
+			if (!dp.PropertyType.IsAssignableFrom (object_type))
 				throw new ArgumentException (string.Format ("The DependencyProperty '{2}', whose property type is {0} can't be set to value whose type is {1}", dp.PropertyType.FullName, object_type.FullName, dp.Name));
 			
 			v = GetAsValue (value, dp is CustomDependencyProperty);

@@ -1,3 +1,12 @@
+2008-08-28  Chris Toshok  <toshok@ximian.com>
+
+	* ResourceDictionary.cs: implement most of this.
+
+	* DependencyObject.cs: remove some redundant type checking, and
+	revert the Helper.Agclr change.
+
+	* XapHackProxyImpl.cs: revert the Helper.Agclr change.
+
 2008-08-26  Chris Toshok  <toshok@ximian.com>
 
 	* DependencyProperty.cs (DependencyProperty.RegisterAny): move the

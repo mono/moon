@@ -35,80 +35,162 @@ using Mono;
 
 namespace System.Windows {
 
-public partial class ResourceDictionary : DependencyObject, IDictionary<Object, Object>, ICollection<KeyValuePair<Object, Object>>, IEnumerable<KeyValuePair<Object, Object>>, IEnumerable {
+	public partial class ResourceDictionary	: DependencyObject,
+		IDictionary<Object, Object>,
+		ICollection<KeyValuePair<Object, Object>>,
+		IEnumerable<KeyValuePair<Object, Object>>,
+		IEnumerable {
 
-
-		public void Add(string key, Object value) {
-			throw new NotImplementedException();
+		public void Add (string key, object value)
+		{
+			Value v = DependencyObject.GetAsValue (value, true);
+			try {
+				NativeMethods.resource_dictionary_add (native, key, ref v);
+			} finally {
+				NativeMethods.value_free_value (ref v);
+			}
 		}
 
-		public int Count { get {throw new NotImplementedException();} }
+		private bool Clear ()
+		{
+			return NativeMethods.resource_dictionary_clear (native);
+		}
+
+		private bool ContainsKey (string key)
+		{
+			return NativeMethods.resource_dictionary_contains_key (native, key);
+		}
+
+		private bool Remove (string key)
+		{
+			return NativeMethods.resource_dictionary_remove (native, key);
+		}
+
+		private bool TryGetValue (string key, out object value)
+		{
+			bool exists;
+
+			IntPtr val = NativeMethods.resource_dictionary_get (native, key, out exists);
+
+			value = null;
+
+			if (exists)
+				value = DependencyObject.ValueToObject (null, val);
+
+			return exists;
+		}
+
+		public int Count { get { return 0; } }
 
 		public bool IsReadOnly { get {throw new NotImplementedException();} }
 
-		public Object this[Object key] { 
+		public object this[object key] { 
+			get {
+				if (!(key is string))
+					throw new ArgumentException ("Key must be a string");
+
+				bool exists;
+				IntPtr val = NativeMethods.resource_dictionary_get (native, (string)key, out exists);
+				if (val == IntPtr.Zero)
+					return null;
+				return DependencyObject.ValueToObject (null, val);
+			}
+			set {
+				if (!(key is string))
+					throw new ArgumentException ("Key must be a string");
+
+				Value v = DependencyObject.GetAsValue (value, true);
+				try {
+					NativeMethods.resource_dictionary_set (native, (string)key, ref v);
+				} finally {
+					NativeMethods.value_free_value (ref v);
+				}
+			}
+		}
+
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			throw new NotImplementedException();
+		}
+
+		// IDictionary<object, object>  implementation
+		//
+		void IDictionary<object, object>.Add(object key, object value)
+		{
+			Add ((string)key, value);
+		}
+
+		bool IDictionary<object, object>.ContainsKey(object key)
+		{
+			return ContainsKey ((string)key);
+		}
+
+		object IDictionary<object, object>.this[ object key ] { 
+			get { return this[key]; }
+			set { this[key] = value; }
+		}
+
+		bool IDictionary<object, object>.Remove (object key)
+		{
+			return Remove ((string)key);
+		}
+
+		bool IDictionary<object, object>.TryGetValue (object key, out object value)
+		{
+			return TryGetValue ((string)key, out value);
+		}
+
+		// ICollection<KeyValuePair<object, object>> implementation
+		//
+		void ICollection<KeyValuePair<object, object>>.Add(KeyValuePair<object, object> item)
+		{
+			Add ((string)item.Key, item.Value);
+		}
+
+		void ICollection<KeyValuePair<object, object>>.Clear()
+		{
+			Clear();
+		}
+
+		bool ICollection<KeyValuePair<object, object>>.Contains(KeyValuePair<object, object> item)
+		{
+			throw new NotImplementedException();
+		}
+
+		void ICollection<KeyValuePair<object, object>>.CopyTo(KeyValuePair<object, object>[] array, int arrayIndex)
+		{
+			throw new NotImplementedException();
+		}
+
+		int ICollection<KeyValuePair<object, object>>.Count {
+			get { return Count; }
+		}
+
+		bool ICollection<KeyValuePair<object, object>>.IsReadOnly {
+			get { return IsReadOnly; }
+		}
+
+		bool ICollection<KeyValuePair<object, object>>.Remove (KeyValuePair<object, object> item)
+		{
+			return Remove ((string)item.Key);
+		}
+
+		// IDictionary<object, object> implementation
+		//
+		ICollection<object> IDictionary<object, object>.Keys {
 			get {throw new NotImplementedException();}
-			set {throw new NotImplementedException();}
 		}
 
-		void ICollection<KeyValuePair<Object, Object>>.Add(KeyValuePair<Object, Object> item) {
-			throw new NotImplementedException();
-		}
-
-		void IDictionary<Object, Object>.Add(Object key, Object value) {
-			throw new NotImplementedException();
-		}
-
-		void ICollection<KeyValuePair<Object, Object>>.Clear() {
-			throw new NotImplementedException();
-		}
-
-		bool ICollection<KeyValuePair<Object, Object>>.Contains(KeyValuePair<Object, Object> item)  {
-			throw new NotImplementedException();
-		}
-
-		bool IDictionary<Object, Object>.ContainsKey(Object key) {
-			throw new NotImplementedException();
-		}
-
-		void ICollection<KeyValuePair<Object, Object>>.CopyTo(KeyValuePair<Object, Object>[] array, int arrayIndex) {
-			throw new NotImplementedException();
-		}
-
-		int ICollection<KeyValuePair<Object, Object>>.Count { get {throw new NotImplementedException();} }
-
-		IEnumerator<KeyValuePair<Object, Object>> IEnumerable<KeyValuePair<Object, Object>>.GetEnumerator() {
-			throw new NotImplementedException();
-		}
-
-		IEnumerator IEnumerable.GetEnumerator() {
-			throw new NotImplementedException();
-		}
-
-		bool ICollection<KeyValuePair<Object, Object>>.IsReadOnly { get {throw new NotImplementedException();} }
-
-		Object IDictionary<Object, Object>.this[ Object key ] { 
+		ICollection<object> IDictionary<object, object>.Values {
 			get {throw new NotImplementedException();}
-			set {throw new NotImplementedException();}
 		}
 
-		ICollection<Object> IDictionary<Object, Object>.Keys { get {throw new NotImplementedException();} }
-
-		bool ICollection<KeyValuePair<Object, Object>>.Remove( KeyValuePair<Object, Object> item) {
+		// IEnumerator<KeyValuePair<object, objct>> implementation
+		//
+		IEnumerator<KeyValuePair<object, object>> IEnumerable<KeyValuePair<object, object>>.GetEnumerator()
+		{
 			throw new NotImplementedException();
 		}
-
-		bool IDictionary<Object, Object>.Remove( Object key) {
-			throw new NotImplementedException();
-		}
-
-		bool IDictionary<Object, Object>.TryGetValue( Object key, out Object value) {
-			throw new NotImplementedException();
-		}
-
-		ICollection<Object> IDictionary<Object, Object>.Values { get {throw new NotImplementedException();} }
-
-
-
 	}
 }
