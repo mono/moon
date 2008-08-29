@@ -1,3 +1,22 @@
+2008-08-28  Larry Ewing  <lewing@novell.com>
+
+	Make a little progress in getting opera to load the plugin
+	correctly in windowless mode.  Opera is still only minimally
+	functional but the plugin should come up now.
+	
+	* plugin.cpp, plugin.h: don't get the source url via GetProperty
+	that causes operapluginwrapper to reenter and breaks everything.
+	Handle a few other operapluginwrapper quirks and pass resizing
+	through the window not the surface (so that UpdateWindowInfo will
+	work).
+
+	* plugin-glue.cpp: slightly rework the initialization, don't fixup
+	errors just try to fail early.
+	
+	* windowless.cpp (MoonWindowless::UpdateWindowInfo): new function
+	to copy the needed members of NPWindow that opera is prematurely
+	destroying.
+
 2008-08-25  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp, windowless.cpp: track rect change.

@@ -209,15 +209,18 @@ static bool runtime_shutdown_pending = false;
 NPError
 NPP_Initialize (void)
 {
+	NPNToolkitType toolkit = (NPNToolkitType)0;
+
+	NPN_GetValue (NULL, NPNVToolkit, &toolkit);
+	if (toolkit != (NPNToolkitType)NPNVGtk2) {
+		g_warning ("we don't have the toolkit we need");
+		return NPERR_INCOMPATIBLE_VERSION_ERROR;
+	}
 	// We dont need to initialize mono vm and gtk more than one time.
 	if (!g_thread_supported ()) {
-		g_thread_init (NULL);
+		g_warning ("host has not initialized threads");
+		//g_thread_init (NULL);
 	} 
-
-	if (!gtk_initialized) {
-		gtk_initialized = true;
-		gtk_init (0, 0);
-	}
 
 	downloader_initialize ();
 

@@ -19,7 +19,12 @@
 
 class MoonWindowless : public MoonWindow {
 	PluginInstance *plugin;
+	VisualID visualid;
+	int x;
+	int y;
 	
+	void UpdateWindowInfo ();
+
  public:
 	MoonWindowless (int width, int height, PluginInstance *plugin);
 

@@ -31,12 +31,30 @@ MoonWindowless::MoonWindowless (int width, int height, PluginInstance *plugin)
 	: MoonWindow (width, height)
 {
 	this->plugin = plugin;
+
+	UpdateWindowInfo ();
+}
+
+void
+MoonWindowless::UpdateWindowInfo ()
+{
+	// It appears opera doesn't do a good job of keeping the NPWindow members valid
+	// between SetWindow calls so we have to work around this by copying the members
+	// we need.  This is really ugly.
+
+	NPWindow *window = plugin->GetWindow();
+	NPSetWindowCallbackStruct *ws_info = (NPSetWindowCallbackStruct*)window->ws_info;
+	visualid = ws_info->visual ? visualid = ws_info->visual->visualid : 0;
+	x = window->x;
+	y = window->y;
 }
 
 void
 MoonWindowless::Resize (int width, int height)
 {
 	bool emit_resize = false;
+
+	UpdateWindowInfo ();
 
         if (this->width != width || this->height != height) {
 		this->width = width;
@@ -80,7 +98,7 @@ MoonWindowless::Invalidate (Rect r)
 void
 MoonWindowless::ProcessUpdates ()
 {
-	NPN_ForceRedraw (plugin->GetInstance());
+	//NPN_ForceRedraw (plugin->GetInstance());
 }
 
 gboolean
@@ -98,9 +116,7 @@ MoonWindowless::HandleEvent (XEvent *event)
 		}
 
 		if (drawable) {
-			NPWindow *window = plugin->GetWindow();
-			NPSetWindowCallbackStruct *ws_info = (NPSetWindowCallbackStruct*)window->ws_info;
-			GdkVisual *visual = gdkx_visual_get (ws_info->visual->visualid);
+			GdkVisual *visual = gdkx_visual_get (visualid);
 
 			if (visual) {
 				GdkEventExpose expose;
@@ -117,7 +133,7 @@ MoonWindowless::HandleEvent (XEvent *event)
 
 				expose.area.x = expose.area.y = 0;
 
-				surface->PaintToDrawable (drawable, visual, &expose, window->x, window->y, false);
+				surface->PaintToDrawable (drawable, visual, &expose, x, y, false);
 				handled = TRUE;
 
 				gdk_region_destroy (expose.region);

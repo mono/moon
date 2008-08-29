@@ -208,7 +208,7 @@ extern GSList *plugin_instances;
 #define STREAM_NOTIFY_DATA(x) ((StreamNotify*) x)->pdata
 
 #define IS_NOTIFY_SOURCE(x) \
-	(!x ? StreamNotify::NONE : (((StreamNotify*) x)->type == StreamNotify::SOURCE))
+	(!x ? true : (((StreamNotify*) x)->type == StreamNotify::SOURCE))
 
 #define IS_NOTIFY_DOWNLOADER(x) \
 	(!x ? StreamNotify::NONE : (((StreamNotify*) x)->type == StreamNotify::DOWNLOADER))

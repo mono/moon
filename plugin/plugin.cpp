@@ -44,7 +44,7 @@
 
 #define w(x) x
 // Debug NPStreams
-#define nps(x)// x
+#define nps(x)//x
 
 extern guint32 moonlight_flags;
 
@@ -536,17 +536,29 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 
 	int plugin_major, plugin_minor;
 	int netscape_major, netscape_minor;
+	bool try_opera_quirks = FALSE;
 
 	/* Find the version numbers. */
 	NPN_Version(&plugin_major, &plugin_minor,
 		    &netscape_major, &netscape_minor);
 
+	//d(printf ("Plugin NPAPI version = %d.%d\n", plugin_major, netscape_minor));
 	//d(printf ("Browser NPAPI version = %d.%d\n", netscape_major, netscape_minor));
 
-	if (netscape_major >= 1 || netscape_minor >= 18) {
-		if (windowless)
-			NPN_GetValue (instance, NPNVSupportsWindowless, &supportsWindowless);
+	NPError error;
+	error = NPN_GetValue (instance, NPNVSupportsXEmbedBool, &xembed_supported);
+	if (error || !xembed_supported) {
+		// This should be an error but we'll use it to detect
+		// that we are running in opera
+		//return NPERR_INCOMPATIBLE_VERSION_ERROR;
+		if (!windowless)
+			d(printf ("*** XEmbed not supported\n"));
+
+		try_opera_quirks = true;
 	}
+
+	error = NPN_GetValue (instance, NPNVSupportsWindowless, &supportsWindowless);
+	supportsWindowless = (error == NPERR_NO_ERROR) && supportsWindowless;
 
 #ifdef DEBUG
 	if ((moonlight_flags & RUNTIME_INIT_ALLOW_WINDOWLESS) == 0) {
@@ -586,6 +598,10 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 			TryLoadBridge ("ff3");
 		}
         }
+
+	// XXX Opera currently claims to be mozilla when we query it
+	if (!bridge && try_opera_quirks)
+		TryLoadBridge ("opera");
 
         if (!bridge) {
 		g_warning ("probing for browser type failed, user agent = `%s'",
@@ -662,26 +678,18 @@ PluginInstance::SetValue (NPNVariable variable, void *value)
 NPError
 PluginInstance::SetWindow (NPWindow *window)
 {
- 	if (window == this->window) {
+ 	if (moon_window) {
+		// XXX opera Window lifetime hack needs this
+		this->window = window;
+
 		if (!surface)
 			return NPERR_GENERIC_ERROR;
 		
-		surface->Resize (window->width, window->height);
+		moon_window->Resize (window->width, window->height);
 		return NPERR_NO_ERROR;
 	}
 
-	if (!windowless) {
-		NPN_GetValue (instance, NPNVSupportsXEmbedBool, &xembed_supported);
-		if (!xembed_supported) {
-			d(printf ("*** XEmbed not supported\n"));
-			// This is a hack to deal with opera 9.5b2 and
-			// should be investigated more
-			//return NPERR_INCOMPATIBLE_VERSION_ERROR;
-		}
-	}
-
 	this->window = window;
-
 	CreateWindow ();
 	
 	return NPERR_NO_ERROR;
@@ -695,33 +703,6 @@ PluginInstance::GetHost()
 		d(printf ("Failed to get plugin host object\n"));
 	}
 	return object;
-}
-
-void
-PluginInstance::SetPageURL ()
-{
-	// From: http://developer.mozilla.org/en/docs/Getting_the_page_URL_in_NPAPI_plugin
-	NPIdentifier str_location = NPN_GetStringIdentifier ("location");
-	NPIdentifier str_href = NPN_GetStringIdentifier ("href");
-	NPVariant location_property;
-	NPVariant location_object;
-	NPObject *window;
-	
-	if (NPERR_NO_ERROR != NPN_GetValue (instance, NPNVWindowNPObject, &window))
-		return;
-	
-	// Get the location property from the window object (which is another object).
-	if (NPN_GetProperty (instance, window, str_location, &location_property)) {
-		// Get the location property from the location object.
-		if (NPN_GetProperty (instance, location_property.value.objectValue, str_href, &location_object )) {
-			this->source_location = g_strndup (NPVARIANT_TO_STRING (location_object).utf8characters, NPVARIANT_TO_STRING (location_object).utf8length);
-			surface->SetSourceLocation (this->source_location);
-			NPN_ReleaseVariantValue (&location_object);
-		}
-		NPN_ReleaseVariantValue (&location_property);
-	}
-
-	NPN_ReleaseObject (window);
 }
 
 void
@@ -810,8 +791,7 @@ PluginInstance::CreateWindow ()
 	surface->SetCacheReportFunc (ReportCache, this);
 	surface->SetDownloaderContext (this);
 	
-	SetPageURL ();
-
+	//SetPageURL ();
 	UpdateSource ();
 	
 	surface->GetTimeManager()->SetMaximumRefreshRate (maxFrameRate);
@@ -969,6 +949,8 @@ PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, u
 	nps (printf ("PluginInstance::NewStream (%p, %p, %i, %p)\n", type, stream, seekable, stype));
 
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
+		//printf ("source_location = %s\n", stream->url);
+		this->source_location = g_strdup (stream->url);
 		*stype = NP_ASFILEONLY;
 		return NPERR_NO_ERROR;
 	}
