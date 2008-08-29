@@ -1,3 +1,8 @@
+2008-08-29  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (TextLayout::Layout): Do a slightly better job of
+	keeping track of line->width - still not 100% correct.
+
 2008-08-28  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am: add resources.h and resources.cpp

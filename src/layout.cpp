@@ -376,6 +376,7 @@ TextLayout::LayoutWrapWithOverflow (TextLayoutHints *hints)
 	TextSegment *segment;
 	double descend = 0.0;
 	double height = 0.0;
+	double width = 0.0;
 	bool blank = true;
 	GlyphInfo *glyph;
 	TextLine *line;
@@ -397,7 +398,7 @@ TextLayout::LayoutWrapWithOverflow (TextLayoutHints *hints)
 			
 			line->descend = descend;
 			line->height = height;
-			line->width = x1;
+			line->width = width;
 			
 			lines->Append (line);
 			
@@ -421,6 +422,7 @@ TextLayout::LayoutWrapWithOverflow (TextLayoutHints *hints)
 				height = 0.0;
 			}
 			
+			width = 0.0;
 			x0 = 0.0;
 			x1 = 0.0;
 			
@@ -465,6 +467,7 @@ TextLayout::LayoutWrapWithOverflow (TextLayoutHints *hints)
 			if (run->IsUnderlined ()) {
 				actual_width = MAX (actual_width, x1);
 				segment->width = x1 - x0;
+				width = x1;
 			}
 			
 			if (*inptr == 0)
@@ -487,7 +490,7 @@ TextLayout::LayoutWrapWithOverflow (TextLayoutHints *hints)
 				
 				line->descend = descend;
 				line->height = height;
-				line->width = x1;
+				line->width = width;
 				
 				lines->Append (line);
 				
@@ -508,6 +511,7 @@ TextLayout::LayoutWrapWithOverflow (TextLayoutHints *hints)
 					height = run->font->Height ();
 				}
 				
+				width = 0.0;
 				prev = 0;
 				x0 = 0.0;
 				x1 = 0.0;
@@ -528,6 +532,7 @@ TextLayout::LayoutWrapWithOverflow (TextLayoutHints *hints)
 					
 					prev = glyph->index;
 					x1 += advance;
+					width = x1;
 					
 					if (max_width > 0.0 && x1 >= max_width && wx > 0.0)
 						goto linebreak;
@@ -553,7 +558,7 @@ TextLayout::LayoutWrapWithOverflow (TextLayoutHints *hints)
 	if (line) {
 		line->descend = descend;
 		line->height = height;
-		line->width = x1;
+		line->width = width;
 		
 		lines->Append (line);
 		
@@ -577,6 +582,7 @@ TextLayout::LayoutNoWrap (TextLayoutHints *hints)
 	TextSegment *segment;
 	double descend = 0.0;
 	double height = 0.0;
+	double width = 0.0;
 	bool blank = true;
 	GlyphInfo *glyph;
 	TextLine *line;
@@ -598,7 +604,7 @@ TextLayout::LayoutNoWrap (TextLayoutHints *hints)
 			
 			line->descend = descend;
 			line->height = height;
-			line->width = x1;
+			line->width = width;
 			
 			lines->Append (line);
 			
@@ -623,12 +629,14 @@ TextLayout::LayoutNoWrap (TextLayoutHints *hints)
 				height = 0.0;
 			}
 			
+			width = 0.0;
 			x0 = 0.0;
 			x1 = 0.0;
 			
 			continue;
 		} else if (clipped) {
 			// once we've clipped, we cannot append anymore text to the line
+			// FIXME: Silverlight 2.0 doesn't seem to clip
 			continue;
 		}
 		
@@ -670,6 +678,7 @@ TextLayout::LayoutNoWrap (TextLayoutHints *hints)
 			if (run->IsUnderlined ()) {
 				actual_width = MAX (actual_width, x1);
 				segment->width = x1 - x0;
+				width = x1;
 			}
 			
 			if (*inptr == 0)
@@ -688,6 +697,7 @@ TextLayout::LayoutNoWrap (TextLayoutHints *hints)
 					
 					prev = glyph->index;
 					x1 += advance;
+					width = x1;
 				}
 				
 				inptr++;
@@ -719,7 +729,7 @@ TextLayout::LayoutNoWrap (TextLayoutHints *hints)
 	if (line) {
 		line->descend = descend;
 		line->height = height;
-		line->width = x1;
+		line->width = width;
 		
 		lines->Append (line);
 		
@@ -794,6 +804,7 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 	TextSegment *segment;
 	double descend = 0.0;
 	double height = 0.0;
+	double width = 0.0;
 	bool blank = true;
 	GlyphInfo *glyph;
 	TextLine *line;
@@ -821,7 +832,7 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 			
 			line->descend = descend;
 			line->height = height;
-			line->width = x1;
+			line->width = width;
 			
 			lines->Append (line);
 			
@@ -846,6 +857,7 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 				height = 0.0;
 			}
 			
+			width = 0.0;
 			x0 = 0.0;
 			x1 = 0.0;
 			
@@ -896,6 +908,7 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 			if (run->IsUnderlined () || include_lwsp) {
 				actual_width = MAX (actual_width, x1);
 				segment->width = x1 - x0;
+				width = x1;
 			}
 			
 			if (*inptr == 0)
@@ -921,7 +934,7 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 				
 				line->descend = descend;
 				line->height = height;
-				line->width = x1;
+				line->width = width;
 				
 				lines->Append (line);
 				
@@ -942,6 +955,7 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 					height = run->font->Height ();
 				}
 				
+				width = 0.0;
 				prev = 0;
 				x0 = 0.0;
 				x1 = 0.0;
@@ -1016,6 +1030,7 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 						if (after) {
 							// break after a previous char in the word
 							inptr = wc.c + 1;
+							width = wc.x1;
 							x1 = wc.x1;
 							
 							actual_width = MAX (actual_width, x1);
@@ -1029,6 +1044,12 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 							// break before this word
 							segment->advance = wx - x0;
 							segment->width = wx - x0;
+							
+							// FIXME: this isn't quite accurate because it
+							// includes the width of the trailing lwsp and
+							// it should not be counted unless underlined
+							width = wx;
+							
 							goto linebreak;
 						}
 					}
@@ -1046,6 +1067,7 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 				
 				wc.c = inptr;
 				wc.x1 = x1;
+				width = x1;
 				
 				g_array_append_val (array, wc);
 				
@@ -1069,7 +1091,7 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 	if (line) {
 		line->descend = descend;
 		line->height = height;
-		line->width = x1;
+		line->width = width;
 		
 		lines->Append (line);
 		
