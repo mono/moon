@@ -26,7 +26,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-// Temporary namespace, need to fix olive/class/PresentationFramework namespaces
 namespace System.Windows.Markup {
 	public class XamlParseException : SystemException {
 		int line, col;
