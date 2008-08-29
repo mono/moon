@@ -166,7 +166,7 @@ static int LoadXaml (const char* file)
 	MoonWindowGtk *moon_window = new MoonWindowGtk (false, 300, 300);
 	Surface* surface = new Surface (moon_window, false);
 	XamlLoader* loader = new XamlLoader (file, NULL, surface);
-	DependencyObject* dob = xaml_create_from_file (loader, file, FALSE, &et);
+	DependencyObject* dob = loader->CreateFromFile (file, FALSE, &et);
 
 	delete loader;
 
