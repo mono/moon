@@ -382,7 +382,7 @@ class KeyFrameCollection : public DependencyObjectCollection {
 	virtual Type::Kind GetObjectType() { return Type::KEYFRAME_COLLECTION; }
 	virtual Type::Kind GetElementType() { return Type::KEYFRAME; }
 	
-	virtual void Clear ();
+	virtual bool Clear ();
 	
 	KeyFrame *GetKeyFrameForTime (TimeSpan t, KeyFrame **previous_frame);
 

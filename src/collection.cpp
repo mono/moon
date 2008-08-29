@@ -63,7 +63,7 @@ Collection::Add (Value value)
 	return Add (&value);
 }
 
-void
+bool
 Collection::Clear ()
 {
 	EmitChanged (CollectionChangedActionClearing, NULL, NULL, -1);
@@ -84,15 +84,13 @@ Collection::Clear ()
 	delete[] vals;
 	
 	EmitChanged (CollectionChangedActionCleared, NULL, NULL, -1);
+
+	return true;
 }
 
 bool
 Collection::Contains (Value *value)
 {
-	// make sure value is of the proper type
-	if (!value->Is (GetElementType ()))
-		return false;
-	
 	return IndexOf (value) != -1;
 }
 
@@ -100,10 +98,6 @@ int
 Collection::IndexOf (Value *value)
 {
 	Value *v;
-	
-	// make sure value is of the proper type
-	if (!value->Is (GetElementType ()))
-		return -1;
 	
 	for (guint i = 0; i < array->len; i++) {
 		v = (Value *) array->pdata[i];
@@ -125,16 +119,12 @@ Collection::Insert (int index, Value *value)
 {
 	Value *added;
 	
-	// make sure value is of the proper type
-	if (!value->Is (GetElementType ()))
+	// Check that the item can be added to our collection
+	if (!CanAdd (value))
 		return false;
 	
 	// bounds check
 	if (index < 0)
-		return false;
-	
-	// Check that the item can be added to our collection
-	if (!CanAdd (value))
 		return false;
 	
 	if (index > GetCount ())
@@ -230,16 +220,12 @@ Collection::SetValueAt (int index, Value *value)
 {
 	Value *added, *removed;
 	
-	// make sure the object is of the correct type
-	if (!value->Is (GetElementType ()))
+	// Check that the value can be added to our collection
+	if (!CanAdd (value))
 		return false;
 	
 	// check array bounds
 	if (index < 0 || (guint) index >= array->len)
-		return false;
-	
-	// Check that the value can be added to our collection
-	if (!CanAdd (value))
 		return false;
 	
 	removed = (Value *) array->pdata[index];
@@ -260,8 +246,8 @@ Collection::SetValueAt (int index, Value *value)
 bool
 Collection::SetValueAtWithError (int index, Value *value, MoonError *error)
 {
-	// make sure the object is of the correct type
-	if (!value->Is (GetElementType ())) {
+	// Check that the value can be added to our collection
+	if (!CanAdd (value)) {
 		MoonError::FillIn (error, MoonError::ARGUMENT, "");
 		return false;
 	}
@@ -269,12 +255,6 @@ Collection::SetValueAtWithError (int index, Value *value, MoonError *error)
 	// check array bounds
 	if (index < 0 || (guint) index >= array->len) {
 		MoonError::FillIn (error, MoonError::ARGUMENT_OUT_OF_RANGE, "");
-		return false;
-	}
-	
-	// Check that the value can be added to our collection
-	if (!CanAdd (value)) {
-		MoonError::FillIn (error, MoonError::ARGUMENT, "");
 		return false;
 	}
 	
@@ -293,6 +273,11 @@ Collection::EmitChanged (CollectionChangedAction action, Value *new_value, Value
 	}
 }
 
+bool
+Collection::CanAdd (Value *value)
+{
+	return value->Is (GetElementType ());
+}
 
 void
 DependencyObjectCollection::AddedToCollection (Value *value)
@@ -412,6 +397,11 @@ DependencyObjectCollection::MergeNames (DependencyObject *new_obj)
 	}
 }
 
+bool
+DependencyObjectCollection::CanAdd (Value *value)
+{
+	return Collection::CanAdd (value) && value->AsDependencyObject ()->GetLogicalParent () == NULL;
+}
 
 
 UIElementCollection::UIElementCollection ()
@@ -448,11 +438,11 @@ UIElementCollection::ResortByZIndex ()
 		g_ptr_array_sort (z_sorted, UIElementZIndexComparer);
 }
 
-void
+bool
 UIElementCollection::Clear ()
 {
 	g_ptr_array_set_size (z_sorted, 0);
-	DependencyObjectCollection::Clear ();
+	return DependencyObjectCollection::Clear ();
 }
 
 DoubleCollection *

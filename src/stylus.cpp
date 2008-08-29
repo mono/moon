@@ -22,6 +22,14 @@
 
 #define DEBUG_HITTEST 0
 
+bool
+StylusPointCollection::CanAdd (Value *value)
+{
+	// We skip DependencyObjectCollection::CanAdd because that one
+	// mandates 1 parent per DO, which StylusPoints violate.
+	return Collection::CanAdd (value) && !Contains (value);
+}
+
 double
 StylusPointCollection::AddStylusPoints (StylusPointCollection *points)
 {
@@ -649,6 +657,14 @@ Stroke::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, P
 	}
 
 	DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);
+}
+
+bool
+StrokeCollection::CanAdd (Value *value)
+{
+	// We skip DependencyObjectCollection::CanAdd because that one
+	// mandates 1 parent per DO, which strokes violate.
+	return Collection::CanAdd (value) && !Contains (value);
 }
 
 Rect

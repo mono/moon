@@ -45,14 +45,14 @@ public:
 	virtual CollectionIterator *GetIterator ();
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	int GetCount ();
+	virtual int GetCount ();
 	
 	int Add (Value value);
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual int Add (Value *value);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	virtual void Clear ();
+	virtual bool Clear ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool Contains (Value *value);
@@ -85,7 +85,7 @@ protected:
 	
 	void EmitChanged (CollectionChangedAction action, Value *new_value, Value *old_value, int index);
 	
-	virtual bool CanAdd (Value *value) { return true; }
+	virtual bool CanAdd (Value *value);
 	virtual void AddedToCollection (Value *value) {}
 	virtual void RemovedFromCollection (Value *value) {}
 	
@@ -115,7 +115,7 @@ public:
 	void MergeNames (DependencyObject *new_obj);
 
 protected:
-	virtual bool CanAdd (Value *value) { return value->AsDependencyObject ()->GetLogicalParent () == NULL; }
+	virtual bool CanAdd (Value *value);
 	virtual void AddedToCollection (Value *value);
 	virtual void RemovedFromCollection (Value *value);
 	
@@ -224,20 +224,6 @@ class TriggerActionCollection : public DependencyObjectCollection {
 	virtual Type::Kind GetElementType () { return Type::BEGINSTORYBOARD; }
 };
 
-/* @Namespace=System.Windows */
-class ResourceDictionary : public DependencyObjectCollection {
- protected:
-	virtual ~ResourceDictionary () {}
-	
- public:
-	/* @GenerateCBinding,GeneratePInvoke */
-	ResourceDictionary () {}
-	
-	virtual Type::Kind GetObjectType () { return Type::RESOURCE_DICTIONARY; }
-	// XXX FIXME this should be "object"
-	virtual Type::Kind GetElementType () { return Type::DEPENDENCY_OBJECT; }
-};
-
 /* @Namespace=System.Windows.Documents */
 class InlineCollection : public DependencyObjectCollection {
  protected:
@@ -265,7 +251,7 @@ class UIElementCollection : public DependencyObjectCollection {
 	virtual Type::Kind GetObjectType () { return Type::UIELEMENT_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::UIELEMENT; }
 	
-	virtual void Clear ();
+	virtual bool Clear ();
 	
 	void ResortByZIndex ();
 };

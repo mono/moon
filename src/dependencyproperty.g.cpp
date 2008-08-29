@@ -72,10 +72,10 @@ dependency_property_g_init (void)
 	BitmapImage::UriSourceProperty = DependencyProperty::Register (Type::BITMAPIMAGE, "UriSource", Type::STRING);
 	Border::BackgroundProperty = DependencyProperty::Register (Type::BORDER, "Background", Type::BRUSH);
 	Border::BorderBrushProperty = DependencyProperty::Register (Type::BORDER, "BorderBrush", Type::BRUSH);
-	Border::BorderThicknessProperty = DependencyProperty::Register (Type::BORDER, "BorderThickness", Type::THICKNESS);
+	Border::BorderThicknessProperty = DependencyProperty::Register (Type::BORDER, "BorderThickness", new Value (Thickness(0)));
 	Border::ChildProperty = DependencyProperty::Register (Type::BORDER, "Child", Type::UIELEMENT);
 	Border::CornerRadiusProperty = DependencyProperty::Register (Type::BORDER, "CornerRadius", Type::CORNERRADIUS);
-	Border::PaddingProperty = DependencyProperty::Register (Type::BORDER, "Padding", Type::THICKNESS);
+	Border::PaddingProperty = DependencyProperty::Register (Type::BORDER, "Padding", new Value (Thickness(0)));
 #endif
 	Brush::ChangedProperty = DependencyProperty::Register (Type::BRUSH, "Changed", Type::BOOL);
 	Brush::OpacityProperty = DependencyProperty::Register (Type::BRUSH, "Opacity", new Value (1.0));

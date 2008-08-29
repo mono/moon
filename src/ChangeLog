@@ -1,3 +1,89 @@
+2008-08-28  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am: add resources.h and resources.cpp
+
+	* xaml.cpp (class XamlElementInfo): add x:Key field (since this
+	can't set a field on the object -- it might be a value type).
+	(class XamlElementInstanceValueType): remove the empty
+	implementation of SetAttributes.  we'll define it later.
+	(XNamespace::SetAttribute): handle name/key behavior here.  Only
+	allow one of them to be set on an object. Also, only attempt to
+	set DependencyObject::NameProperty on an item if it's not a value
+	type.
+	(start_element): don't add value type children to their parent in
+	start_element (as we haven't read the data that will allow us to
+	create the value typed object.)  we need to push this off to the
+	end_element handler.  also return early if there are problems
+	setting attributes.
+	(end_element_handler): if we're creating a value typed ELEMENT,
+	add the child to the parent here.
+	(dependency_object_add_child): add some ResourceDictionary
+	validation here (if there's no key, etc), and actually call
+	dict->Add(key, child).
+	(XamlElementInstanceNative::CreateItem): don't crash if we failed
+	to create an item.  (fixes one of the crashes caused by the
+	ResourceDictionaryTests - ParseDouble)
+	(XamlElementInstanceValueType::SetAttributes): call
+	value_type_set_attributes.
+	(value_type_set_attributes): stripped down version of
+	dependency_object_set_attributes, as there are only a handful (is
+	it really only x:Name and x:Key?) attributes we handle on value
+	types.
+	(globally): always call set_parent as opposed to
+	->SetLogicalParent.  we might not be dealing with a DO-subclass.
+
+	* xaml.h (class XamlLoader): remove the explicit C api calls
+	xaml_create_from_file, xaml_create_from_str, and
+	xaml_hydrate_from_str.  Replace them with instance methods on
+	XamlLoader (CreateFromFile, CreateFromString, and
+	HydrateFromString, respectively) Add WithError variants of the
+	these, and have the generator generate bindings for them so we can
+	throw parse exceptions into managed code.
+
+	* error.h (struct MoonError): add XAML_PARSE_EXCEPTION.
+
+	* value.h.in (struct Value): add Is overload with
+	additional_types.
+
+	* uielement.h: include resources.h.
+
+	* collection.h, collection.cpp: change the api in a few ways to
+	make ResourceDictionary easier to write - make Count virtual,
+	remove all the type checks for element type from methods, and add
+	that check to Collection::CanAdd.  ResourceDictionary overrides
+	that and always returns true.  Make Clear return a bool.
+
+	* animation.h, animation.cpp: track collection changes.
+
+	* stylus.h, stylus.cpp: track Collection::CanAdd change, and move
+	implementations to the .cpp file.
+
+	* resources.h, resources.cpp: split out the code for
+	ResourceDictionary here.  ResourceDictionary is an odd fish.  In
+	1.0 land, it provides the same api as a collection, and things can
+	be looked up by name via findName.  In 2.0 land, items in
+	ResourceDictionaries have to have either an x:Key or x:Name
+	attribute.  If both are lacking it's an error.  If the former is
+	specified you can only get at it through Resources["name"].  If
+	the latter is specified, you can use both Resources["name"] or
+	findName("name").
+
+	* dependencyobject.cpp, dependencyobject.h: add Is and GetType
+	overloads that take additional_types.  Make IsValueValid take an
+	additional_types parameter too.  Expose ClearValue to managed code
+	so we can actually clear the Value* to null without using
+	the (unsupported from the generator) old method of passing
+	IntPtr.Zero (Value* now maps to "ref Value" in generated
+	pinvokes.)  Lastly add a SetValueWithError method so we can throw
+	exceptions in managed code.
+
+	* border.h: add defaults for Padding and BorderThickness.
+
+	* border.cpp: simplify things a bit since we don't have to worry
+	about padding/border thickness being NULL.
+
+	* depenencyproperty.g.cpp, value.h, type-generated.cpp: regen.
+
 2008-08-28  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (TextLayout::Render): Respect TextAlignment.

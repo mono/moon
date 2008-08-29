@@ -96,6 +96,7 @@ struct MoonError {
 	  ARGUMENT_NULL = 3,
 	  ARGUMENT_OUT_OF_RANGE = 4,
 	  INVALID_OPERATION = 5,
+	  XAML_PARSE_EXCEPTION = 6
 	};
 
 	// non-zero if an error occurred.

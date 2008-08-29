@@ -847,12 +847,12 @@ KeyFrameCollection::RemovedFromCollection (Value *value)
 	resolved = false;
 }
 
-void
+bool
 KeyFrameCollection::Clear ()
 {
 	resolved = false;
 	g_ptr_array_set_size (sorted_list, 0);
-	DependencyObjectCollection::Clear ();
+	return DependencyObjectCollection::Clear ();
 }
 
 KeyFrame *

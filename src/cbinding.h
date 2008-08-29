@@ -27,6 +27,7 @@
 #include "grid.h"
 #include "media.h"
 #include "panel.h"
+#include "resources.h"
 #include "runtime.h"
 #include "shape.h"
 #include "size.h"
@@ -43,6 +44,7 @@
 #include "uielement.h"
 #include "usercontrol.h"
 #include "window-gtk.h"
+#include "xaml.h"
 #include "xap.h"
 
 G_BEGIN_DECLS
@@ -124,7 +126,7 @@ Canvas *canvas_new (void);
 int collection_add (Collection *instance, Value *value);
 
 /* @GeneratePInvoke */
-void collection_clear (Collection *instance);
+bool collection_clear (Collection *instance);
 
 /* @GeneratePInvoke */
 bool collection_contains (Collection *instance, Value *value);
@@ -254,9 +256,14 @@ ControlTemplate *control_template_new (void);
 DeepZoomImageTileSource *deep_zoom_image_tile_source_new (void);
 #endif
 
+#if SL_2_0
 /**
  * DependencyObject
  **/
+/* @GeneratePInvoke */
+void dependency_object_clear_value (DependencyObject *instance, DependencyProperty *property, bool notify_listeners);
+#endif
+
 /* @GeneratePInvoke */
 DependencyObject *dependency_object_new (void);
 
@@ -288,7 +295,7 @@ Value *dependency_object_get_value_with_error (DependencyObject *instance, Types
 void dependency_object_set_name (DependencyObject *instance, const char *name);
 
 /* @GeneratePInvoke */
-void dependency_object_set_value (DependencyObject *instance, DependencyProperty *property, Value *value);
+void dependency_object_set_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, Value *value, MoonError *error);
 
 /**
  * DependencyObjectCollection
@@ -880,7 +887,25 @@ RectangleGeometry *rectangle_geometry_new (void);
  * ResourceDictionary
  **/
 /* @GeneratePInvoke */
+void resource_dictionary_add_with_error (ResourceDictionary *instance, char *key, Value *value, MoonError *error);
+
+/* @GeneratePInvoke */
+bool resource_dictionary_clear (ResourceDictionary *instance);
+
+/* @GeneratePInvoke */
+bool resource_dictionary_contains_key (ResourceDictionary *instance, char *key);
+
+/* @GeneratePInvoke */
+Value *resource_dictionary_get (ResourceDictionary *instance, char *key, bool *exists);
+
+/* @GeneratePInvoke */
+bool resource_dictionary_remove (ResourceDictionary *instance, char *key);
+
+/* @GeneratePInvoke */
 ResourceDictionary *resource_dictionary_new (void);
+
+/* @GeneratePInvoke */
+bool resource_dictionary_set (ResourceDictionary *instance, char *key, Value *value);
 
 /**
  * RotateTransform
@@ -1343,6 +1368,18 @@ VideoBrush *video_brush_new (void);
  **/
 /* @GeneratePInvoke */
 VisualBrush *visual_brush_new (void);
+
+/**
+ * XamlLoader
+ **/
+/* @GeneratePInvoke */
+DependencyObject *xaml_loader_create_from_file_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error);
+
+/* @GeneratePInvoke */
+DependencyObject *xaml_loader_create_from_string_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error);
+
+/* @GeneratePInvoke */
+DependencyObject *xaml_loader_hydrate_from_string_with_error (XamlLoader *instance, const char *default_asm_name, const char *default_asm_path, const char *xaml, DependencyObject *obj, bool create_namescope, Type::Kind *element_type, MoonError *error);
 
 #if SL_2_0
 /**

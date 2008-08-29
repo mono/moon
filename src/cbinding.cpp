@@ -135,13 +135,13 @@ collection_add (Collection *instance, Value *value)
 }
 
 
-void
+bool
 collection_clear (Collection *instance)
 {
 	if (instance == NULL)
-		return;
+		return false;
 	
-	instance->Clear ();
+	return instance->Clear ();
 }
 
 
@@ -425,9 +425,21 @@ deep_zoom_image_tile_source_new (void)
 #endif
 
 
+#if SL_2_0
 /**
  * DependencyObject
  **/
+void
+dependency_object_clear_value (DependencyObject *instance, DependencyProperty *property, bool notify_listeners)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->ClearValue (property, notify_listeners);
+}
+#endif
+
+
 DependencyObject *
 dependency_object_new (void)
 {
@@ -518,12 +530,14 @@ dependency_object_set_name (DependencyObject *instance, const char *name)
 
 
 void
-dependency_object_set_value (DependencyObject *instance, DependencyProperty *property, Value *value)
+dependency_object_set_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, Value *value, MoonError *error)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->SetValue (property, value);
+	if (error == NULL)
+		g_warning ("Moonlight: Called dependency_object_set_value_with_error () with error == NULL.");
+	instance->SetValueWithError (additional_types, property, value, error);
 }
 
 
@@ -1640,10 +1654,72 @@ rectangle_geometry_new (void)
 /**
  * ResourceDictionary
  **/
+void
+resource_dictionary_add_with_error (ResourceDictionary *instance, char *key, Value *value, MoonError *error)
+{
+	if (instance == NULL)
+		return;
+	
+	if (error == NULL)
+		g_warning ("Moonlight: Called resource_dictionary_add_with_error () with error == NULL.");
+	instance->AddWithError (key, value, error);
+}
+
+
+bool
+resource_dictionary_clear (ResourceDictionary *instance)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->Clear ();
+}
+
+
+bool
+resource_dictionary_contains_key (ResourceDictionary *instance, char *key)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->ContainsKey (key);
+}
+
+
+Value *
+resource_dictionary_get (ResourceDictionary *instance, char *key, bool *exists)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->Get (key, exists);
+}
+
+
+bool
+resource_dictionary_remove (ResourceDictionary *instance, char *key)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->Remove (key);
+}
+
+
 ResourceDictionary *
 resource_dictionary_new (void)
 {
 	return new ResourceDictionary ();
+}
+
+
+bool
+resource_dictionary_set (ResourceDictionary *instance, char *key, Value *value)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->Set (key, value);
 }
 
 
@@ -2593,6 +2669,45 @@ VisualBrush *
 visual_brush_new (void)
 {
 	return new VisualBrush ();
+}
+
+
+/**
+ * XamlLoader
+ **/
+DependencyObject *
+xaml_loader_create_from_file_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	if (error == NULL)
+		g_warning ("Moonlight: Called xaml_loader_create_from_file_with_error () with error == NULL.");
+	return instance->CreateFromFileWithError (xaml, create_namescope, element_type, error);
+}
+
+
+DependencyObject *
+xaml_loader_create_from_string_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	if (error == NULL)
+		g_warning ("Moonlight: Called xaml_loader_create_from_string_with_error () with error == NULL.");
+	return instance->CreateFromStringWithError (xaml, create_namescope, element_type, error);
+}
+
+
+DependencyObject *
+xaml_loader_hydrate_from_string_with_error (XamlLoader *instance, const char *default_asm_name, const char *default_asm_path, const char *xaml, DependencyObject *obj, bool create_namescope, Type::Kind *element_type, MoonError *error)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	if (error == NULL)
+		g_warning ("Moonlight: Called xaml_loader_hydrate_from_string_with_error () with error == NULL.");
+	return instance->HydrateFromStringWithError (default_asm_name, default_asm_path, xaml, obj, create_namescope, element_type, error);
 }
 
 

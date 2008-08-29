@@ -109,7 +109,8 @@ public:
 		return true;
 	}
 	
-	bool		Is (Type::Kind type) { return Type::IsSubclassOf (k, type); }
+	bool		Is (Types* additional_types, Type::Kind type) { return Type::IsSubclassOf (additional_types, k, type); }
+	bool		Is (Type::Kind type) { return Is (NULL, type); }
 
 	bool		AsBool ()	{ checked_get_exact (Type::BOOL, false, (bool)u.i32); }
 	double 		AsDouble ()	{ checked_get_exact (Type::DOUBLE, 0.0, u.d); }

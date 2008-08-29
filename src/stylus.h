@@ -88,7 +88,7 @@ class StylusPoint : public DependencyObject {
 /* @Namespace=System.Windows.Input */
 class StylusPointCollection : public DependencyObjectCollection {
  protected:
-	virtual bool CanAdd (Value *value) { return !Contains (value); }
+	virtual bool CanAdd (Value *value);
 	
 	virtual ~StylusPointCollection () {}
 	
@@ -200,7 +200,7 @@ class Stroke : public DependencyObject {
 /* @Namespace=System.Windows.Ink */
 class StrokeCollection : public DependencyObjectCollection {
  protected:
-	virtual bool CanAdd (Value *value) { return !Contains (value); }
+	virtual bool CanAdd (Value *value);
 	
 	virtual ~StrokeCollection () {}
 	

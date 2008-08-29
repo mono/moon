@@ -780,7 +780,7 @@ DependencyObject::NotifyListenersOfPropertyChange (DependencyProperty *subproper
 }
 
 bool
-DependencyObject::IsValueValid (DependencyProperty* property, Value* value, GError** error)
+DependencyObject::IsValueValid (Types *additional_types, DependencyProperty* property, Value* value, GError** error)
 {
 	if (property == NULL) {
 		g_set_error (error, VALIDATION_ERROR_QUARK, 1001, "NULL property passed to IsValueValid");
@@ -788,13 +788,13 @@ DependencyObject::IsValueValid (DependencyProperty* property, Value* value, GErr
 	}
 
 	if (value != NULL) {
-		if (value->Is (Type::EVENTOBJECT) && !value->AsEventObject ()) {
+		if (value->Is (additional_types, Type::EVENTOBJECT) && !value->AsEventObject ()) {
 			// if it's a null DependencyObject, it doesn't matter what type it is
 			return true;
 		}
 		
 #if SL_2_0
-		if (value->Is (Type::MANAGED)) {
+		if (value->Is (additional_types, Type::MANAGED)) {
 			// This is a big hack, we do no type-checking if we try to set a managed type.
 			// Given that for the moment we might not have the surface available, we can't
 			// do any type checks since we can't access types registered on the surface.
@@ -802,12 +802,12 @@ DependencyObject::IsValueValid (DependencyProperty* property, Value* value, GErr
 		}
 #endif
 		
-		if (!value->Is (property->GetPropertyType())) {
+		if (!value->Is (additional_types, property->GetPropertyType())) {
 			g_set_error (error, VALIDATION_ERROR_QUARK, 1001,
 				     "DependencyObject::SetValue, value cannot be assigned to the "
 				     "property %s::%s (property has type '%s', value has type '%s')",
-				     GetTypeName (), property->GetName(), Type::Find (property->GetPropertyType())->name,
-				     Type::Find (value->GetKind ())->name);
+				     GetTypeName (), property->GetName(), Type::Find (additional_types, property->GetPropertyType())->name,
+				     Type::Find (additional_types, value->GetKind ())->name);
 			return false;
 		}
 	} else {
@@ -821,7 +821,7 @@ DependencyObject::IsValueValid (DependencyProperty* property, Value* value, GErr
 			return false;
 		}
 #else
-		if (!(Type::IsSubclassOf (property->GetPropertyType(), Type::DEPENDENCY_OBJECT)) && !property->IsNullable ()) {
+		if (!(Type::IsSubclassOf (additional_types, property->GetPropertyType(), Type::DEPENDENCY_OBJECT)) && !property->IsNullable ()) {
 			g_set_error (error, VALIDATION_ERROR_QUARK, 1001,
 				     "Can not set a non-nullable scalar type to NULL (property: %s)",
 				     property->GetName());
@@ -860,13 +860,19 @@ DependencyObject::SetValue (DependencyProperty *property, Value *value)
 bool
 DependencyObject::SetValue (DependencyProperty* property, Value value, GError** error)
 {
-	return SetValue (property, &value, error);
+	return SetValue ((Types*)NULL, property, &value, error);
 }
 
 bool
 DependencyObject::SetValue (DependencyProperty* property, Value* value, GError** error)
 {
-	if (!IsValueValid (property, value, error))
+	return SetValue ((Types*)NULL, property, value, error);
+}
+
+bool
+DependencyObject::SetValue (Types *additional_types, DependencyProperty* property, Value* value, GError** error)
+{
+	if (!IsValueValid (additional_types, property, value, error))
 		return false;
 
 	Value *current_value = (Value*)g_hash_table_lookup (current_values, property);
@@ -938,6 +944,18 @@ DependencyObject::SetValue (DependencyProperty* property, Value* value, GError**
 	}
 
 	return true;
+}
+
+void
+DependencyObject::SetValueWithError (Types *additional_types, DependencyProperty* property, Value* value, MoonError* error)
+{
+	GError *gerror = NULL;
+	bool rv = SetValue (additional_types, property, value, &gerror);
+
+	if (!rv) {
+		// XXX we need to fill in error with something proper
+		MoonError::FillIn (error, MoonError::EXCEPTION, gerror->message);
+	}
 }
 
 static NameScope *

@@ -73,10 +73,6 @@ void	    xaml_loader_free (XamlLoader *loader);
 void        xaml_loader_set_callbacks (XamlLoader *loader, XamlLoaderCallbacks callbacks);
 void	    xaml_loader_add_missing (XamlLoader *loader, const char *file);
 
-DependencyObject  *xaml_create_from_file (XamlLoader *loader, const char *xaml, bool create_namescope, Type::Kind *element_type);
-DependencyObject  *xaml_create_from_str  (XamlLoader *loader, const char *xaml, bool create_namescope, Type::Kind *element_type);
-DependencyObject  *xaml_hydrate_from_str (XamlLoader *loader, const char *default_asm_name, const char *default_asm_path, const char *xaml, DependencyObject *object, bool create_namescope, Type::Kind *element_type);
-
 G_END_DECLS
 
 /*
@@ -148,6 +144,17 @@ class XamlLoader {
 	void RemoveMissing (const char *assembly);
 	
 	bool vm_loaded;
+
+	DependencyObject* CreateFromFile (const char *xaml, bool create_namescope, Type::Kind *element_type);
+	DependencyObject* CreateFromString  (const char *xaml, bool create_namescope, Type::Kind *element_type);
+	DependencyObject* HydrateFromString (const char *default_asm_name, const char *default_asm_path, const char *xaml, DependencyObject *object, bool create_namescope, Type::Kind *element_type);
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	DependencyObject* CreateFromFileWithError (const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error);
+	/* @GenerateCBinding,GeneratePInvoke */
+	DependencyObject* CreateFromStringWithError  (const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error);
+	/* @GenerateCBinding,GeneratePInvoke */
+	DependencyObject* HydrateFromStringWithError (const char *default_asm_name, const char *default_asm_path, const char *xaml, DependencyObject *obj, bool create_namescope, Type::Kind *element_type, MoonError *error);
 	
 	XamlLoaderCallbacks callbacks;
 	ParserErrorEventArgs *error_args;

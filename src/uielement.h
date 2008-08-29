@@ -17,6 +17,7 @@
 #include <glib.h>
 
 #include "dependencyobject.h"
+#include "resources.h"
 #include "point.h"
 #include "rect.h"
 #include "region.h"

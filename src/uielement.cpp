@@ -24,6 +24,7 @@
 #include "eventargs.h"
 #include "clock.h"
 #include "media.h"
+#include "resources.h"
 
 //#define DEBUG_INVALIDATE 0
 #define MIN_FRONT_TO_BACK_COUNT 25

@@ -50,6 +50,7 @@ libmoon_include_HEADERS = 	\
 	point.h			\
 	rect.h			\
 	region.h		\
+	resources.h		\
 	runtime.h		\
 	shape.h			\
 	size.h			\
@@ -115,6 +116,7 @@ libmoon_la_SOURCES = 		\
 	playlist.cpp		\
 	rect.cpp		\
 	region.cpp		\
+	resources.cpp		\
 	runtime.cpp		\
 	shape.cpp		\
 	size.cpp		\

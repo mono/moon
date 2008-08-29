@@ -142,20 +142,35 @@ class EventObject {
 	//    Similar to C#'s is: it checks if this object is of this kind or 
 	//    a derived class.
 	
+	bool Is (Types *additional_types, Type::Kind k)
+	{
+		return GetType ()->IsSubclassOf (additional_types, k);
+	}
+	
+	Type *GetType (Types *additional_types)
+	{
+		return Type::Find (additional_types, GetObjectType ());
+	}
+
 	bool Is (Type::Kind k)
 	{
-		return GetType ()->IsSubclassOf (k);
+		return Is (NULL,k);
 	}
 	
 	Type *GetType ()
 	{
-		return Type::Find (GetObjectType ());
+		return GetType (NULL);
 	}
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual const char *GetTypeName ()
 	{
-		return Type::Find (GetObjectType ())->GetName ();
+		return GetTypeName(NULL);
+	}	
+
+	const char *GetTypeName (Types *additional_types)
+	{
+		return Type::Find (additional_types, GetObjectType ())->GetName ();
 	}	
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -255,11 +270,13 @@ class DependencyObject : public EventObject {
 	// If error is non NULL and the value is not valid, error will be given an error code and error message that should be
 	// propogated to OnError
 	//
-	virtual bool IsValueValid (DependencyProperty *property, Value *value, GError **error);
+	virtual bool IsValueValid (Types *additional_types, DependencyProperty *property, Value *value, GError **error);
 	
 	bool SetValue (DependencyProperty *property, Value *value, GError **error);
 	bool SetValue (DependencyProperty *property, Value value, GError **error);
+	bool SetValue (Types *additional_types, DependencyProperty *property, Value *value, GError **error);
 	/* @GenerateCBinding,GeneratePInvoke */
+	void SetValueWithError (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error);
 	void SetValue (DependencyProperty *property, Value *value);
 	void SetValue (DependencyProperty *property, Value value);
 	void SetValue (const char *name, Value *value);
@@ -278,6 +295,7 @@ class DependencyObject : public EventObject {
 	Value *GetValueNoDefaultWithError (Types *additional_types, DependencyProperty *property, MoonError *error);
 	Value *GetValueNoDefault (DependencyProperty *property);
 
+	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	void ClearValue (DependencyProperty *property, bool notify_listeners = true);
 	bool HasProperty (const char *name, bool inherits);
 	bool HasProperty (Types *additional_types, Type::Kind whatami, DependencyProperty *property, bool inherits);

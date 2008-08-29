@@ -31,13 +31,13 @@ public:
 	static DependencyProperty *BackgroundProperty;
 	/* @PropertyType=Brush,GenerateAccessors */
 	static DependencyProperty *BorderBrushProperty;
-	/* @PropertyType=Thickness,GenerateAccessors */
+	/* @PropertyType=Thickness,DefaultValue=Thickness(0),GenerateAccessors */
 	static DependencyProperty *BorderThicknessProperty;
 	/* @PropertyType=UIElement,GenerateAccessors */
 	static DependencyProperty *ChildProperty;
 	/* @PropertyType=CornerRadius,GenerateAccessors */
 	static DependencyProperty *CornerRadiusProperty;
-	/* @PropertyType=Thickness,GenerateAccessors */
+	/* @PropertyType=Thickness,DefaultValue=Thickness(0),GenerateAccessors */
 	static DependencyProperty *PaddingProperty;
 	
  	/* @GenerateCBinding,GeneratePInvoke */

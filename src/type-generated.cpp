@@ -31,6 +31,7 @@
 #include "pipeline.h"
 #include "pipeline-ffmpeg.h"
 #include "playlist.h"
+#include "resources.h"
 #include "runtime.h"
 #include "shape.h"
 #include "stylus.h"
@@ -246,7 +247,7 @@ Type type_infos [] = {
 	{ Type::RECTANGLE, Type::SHAPE, false, "Rectangle", "RECTANGLE", 0, 15, NULL, (create_inst_func *) rectangle_new, NULL, NULL, NULL }, 
 	{ Type::RECTANGLEGEOMETRY, Type::GEOMETRY, false, "RectangleGeometry", "RECTANGLEGEOMETRY", 0, 1, NULL, (create_inst_func *) rectangle_geometry_new, NULL, NULL, NULL }, 
 	{ Type::REPEATBEHAVIOR, Type::INVALID, true, "RepeatBehavior", "REPEATBEHAVIOR", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::RESOURCE_DICTIONARY, Type::DEPENDENCY_OBJECT_COLLECTION, false, "ResourceDictionary", "RESOURCE_DICTIONARY", 0, 1, NULL, (create_inst_func *) resource_dictionary_new, NULL, NULL, NULL }, 
+	{ Type::RESOURCE_DICTIONARY, Type::COLLECTION, false, "ResourceDictionary", "RESOURCE_DICTIONARY", 0, 1, NULL, (create_inst_func *) resource_dictionary_new, NULL, NULL, NULL }, 
 	{ Type::ROTATETRANSFORM, Type::TRANSFORM, false, "RotateTransform", "ROTATETRANSFORM", 0, 1, NULL, (create_inst_func *) rotate_transform_new, NULL, NULL, NULL }, 
 	{ Type::ROUTEDEVENTARGS, Type::EVENTARGS, false, "RoutedEventArgs", "ROUTEDEVENTARGS", 0, 1, NULL, (create_inst_func *) routed_event_args_new, NULL, NULL, NULL }, 
 	{ Type::ROWDEFINITION, Type::DEPENDENCY_OBJECT, false, "RowDefinition", "ROWDEFINITION", 0, 1, NULL, (create_inst_func *) row_definition_new, NULL, NULL, NULL }, 
@@ -488,7 +489,7 @@ Type type_infos [] = {
 	{ Type::RECTANGLE, Type::SHAPE, false, "Rectangle", "RECTANGLE", 0, 12, NULL, (create_inst_func *) rectangle_new, NULL, NULL, NULL }, 
 	{ Type::RECTANGLEGEOMETRY, Type::GEOMETRY, false, "RectangleGeometry", "RECTANGLEGEOMETRY", 0, 1, NULL, (create_inst_func *) rectangle_geometry_new, NULL, NULL, NULL }, 
 	{ Type::REPEATBEHAVIOR, Type::INVALID, true, "RepeatBehavior", "REPEATBEHAVIOR", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::RESOURCE_DICTIONARY, Type::DEPENDENCY_OBJECT_COLLECTION, false, "ResourceDictionary", "RESOURCE_DICTIONARY", 0, 1, NULL, (create_inst_func *) resource_dictionary_new, NULL, NULL, NULL }, 
+	{ Type::RESOURCE_DICTIONARY, Type::COLLECTION, false, "ResourceDictionary", "RESOURCE_DICTIONARY", 0, 1, NULL, (create_inst_func *) resource_dictionary_new, NULL, NULL, NULL }, 
 	{ Type::ROTATETRANSFORM, Type::TRANSFORM, false, "RotateTransform", "ROTATETRANSFORM", 0, 1, NULL, (create_inst_func *) rotate_transform_new, NULL, NULL, NULL }, 
 	{ Type::ROUTEDEVENTARGS, Type::EVENTARGS, false, "RoutedEventArgs", "ROUTEDEVENTARGS", 0, 1, NULL, (create_inst_func *) routed_event_args_new, NULL, NULL, NULL }, 
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'ROWDEFINITION'", "ROWDEFINITION", 0, 0, NULL, NULL, NULL, NULL, NULL }, 

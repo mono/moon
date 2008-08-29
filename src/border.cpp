@@ -35,10 +35,10 @@ Border::MeasureOverride (Size availableSize)
 	Thickness *border_thickness = GetBorderThickness ();
 	Thickness *padding = GetPadding ();
 
-	double padding_width = padding ? padding->left + padding->right : 0;
-	double padding_height = padding ? padding->top + padding->bottom: 0;
-	double border_width = border_thickness ? border_thickness->left + border_thickness->right : 0;
-	double border_height = border_thickness ? border_thickness->top + border_thickness->bottom : 0;
+	double padding_width = padding->left + padding->right;
+	double padding_height = padding->top + padding->bottom;
+	double border_width = border_thickness->left + border_thickness->right;
+	double border_height = border_thickness->top + border_thickness->bottom;
 
 	Size child_size = Size (0,0);
 
@@ -78,48 +78,36 @@ Border::MeasureOverride (Size availableSize)
 Size
 Border::ArrangeOverride (Size finalSize)
 {
-	// XXX what do we do with finalRect.x and y?
-
 	Size desired_size = GetDesiredSize ();
 
 	if (desired_size.width <= finalSize.width
 	    && desired_size.height <= finalSize.height) {
-		// the parent gave us a final rectangle large enough
-		// for what we need.  keep our desired size, and pass
-		// off the right arg to our child.
 
-		UIElement *child = GetChild ();
-		if (child) {
-			Thickness *margins = GetMargin ();
-			Thickness *border_thickness = GetBorderThickness ();
-			Thickness *padding = GetPadding ();
-
-			double padding_left = padding ? padding->left : 0;
-			double padding_top = padding ? padding->top: 0;
-			double padding_right = padding ? padding->right : 0;
-			double padding_bottom = padding ? padding->bottom: 0;
-			double border_left = border_thickness ? border_thickness->left : 0;
-			double border_top = border_thickness ? border_thickness->top : 0;
-			double border_right = border_thickness ? border_thickness->right : 0;
-			double border_bottom = border_thickness ? border_thickness->bottom : 0;
-
-			Rect childRect;
-
-			childRect.x = padding_left + border_left + margins->left;
-			childRect.y = padding_top + border_top + margins->top;
-
-			childRect.width = desired_size.width - padding_left - padding_right - border_left - border_right - margins->left - margins->right;
-			childRect.height = desired_size.height - padding_top - padding_bottom - border_top - border_bottom - margins->top - margins->bottom;
-
-			child->Arrange (childRect);
-		}
-
-		return desired_size;
+		/* nothing to do here, the final size is large enough
+		   to keep our desired size */
 	}
+
 	else {
-		g_warning ("border has desired size of (%g, %g)", desired_size.width, desired_size.height);
-		g_warning ("unhandled case");
+		SetDesiredSize (finalSize);
+		desired_size = finalSize;
+	}
+		
+	UIElement *child = GetChild ();
+	if (child) {
+		Thickness *margins = GetMargin ();
+		Thickness *border = GetBorderThickness ();
+		Thickness *padding = GetPadding ();
+
+		Rect childRect;
+
+		childRect.x = padding->left + border->left + margins->left;
+		childRect.y = padding->top + border->top + margins->top;
+
+		childRect.width = desired_size.width - padding->left - padding->right - border->left - border->right - margins->left - margins->right;
+		childRect.height = desired_size.height - padding->top - padding->bottom - border->top - border->bottom - margins->top - margins->bottom;
+
+		child->Arrange (childRect);
 	}
 
-	return finalSize;
+	return desired_size;
 }

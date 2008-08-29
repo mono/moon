@@ -740,7 +740,7 @@ Surface::ShowFullScreenMessage ()
 	
 	Type::Kind dummy;
 	XamlLoader *loader = new XamlLoader (NULL, FULLSCREEN_MESSAGE, this);
-	DependencyObject* message = xaml_create_from_str (loader, FULLSCREEN_MESSAGE, false, &dummy);
+	DependencyObject* message = loader->CreateFromString (FULLSCREEN_MESSAGE, false, &dummy);
 	delete loader;
 	
 	if (!message) {
