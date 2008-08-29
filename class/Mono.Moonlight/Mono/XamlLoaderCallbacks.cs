@@ -242,7 +242,7 @@ namespace Mono.Xaml
 			IntPtr top;
 			
 			CreateNativeLoader (null, xaml);
-			top = NativeMethods.xaml_create_from_str (NativeLoader, xaml, createNamescope, out kind);
+			top = NativeMethods.xaml_loader_create_from_string (NativeLoader, xaml, createNamescope, out kind);
 			FreeNativeLoader ();
 			
 			return top;
@@ -256,7 +256,7 @@ namespace Mono.Xaml
 			Kind k;
 			
 			CreateNativeLoader (null, xaml);
-			IntPtr ret = NativeMethods.xaml_hydrate_from_str (NativeLoader, xaml, assembly_name, assembly_path, dependency_object, true, out k);
+			IntPtr ret = NativeMethods.xaml_loader_hydrate_from_string (NativeLoader, xaml, assembly_name, assembly_path, dependency_object, true, out k);
 			FreeNativeLoader ();
 			if (ret == IntPtr.Zero)
 				throw new Exception ("Invalid XAML file");
@@ -273,7 +273,7 @@ namespace Mono.Xaml
 			IntPtr top;
 			
 			CreateNativeLoader (null, path);
-			top = NativeMethods.xaml_create_from_file (NativeLoader, path, createNamescope, out kind);
+			top = NativeMethods.xaml_loader_create_from_file (NativeLoader, path, createNamescope, out kind);
 			FreeNativeLoader ();
 			
 			return top;

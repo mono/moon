@@ -41,13 +41,8 @@ using System.IO;
 namespace Mono {
 
 	public class Helper {
-		static Assembly agclr;
+		public static Assembly Agclr;
 
-		static Helper ()
-		{
-			agclr = LoadAgclr ();
-		}
-		
 		private static TypeConverter GetConverterFor (MemberInfo info, Type target_type)
 		{
 			Attribute[] attrs = (Attribute[])info.GetCustomAttributes (true);
@@ -258,31 +253,9 @@ namespace Mono {
 			Thread.MemoryBarrier ();
 		}
 		
-		static Assembly LoadAgclr ()
-		{
-			string assemblyName;
-			
-#if SL_2_1
-			assemblyName = "System.Windows,Version=2.0.5.0,Culture=neutral,PublicKeyToken=7cec85d7bea7798e";
-#else
-			assemblyName = "System.Windows,Version=3.0.0.0,Culture=neutral,PublicKeyToken=0738eb9f132ed756";
-#endif
-			
-			return System.Reflection.Assembly.Load (assemblyName);
-		}
-		
 		internal static Assembly GetAgclr ()
 		{
-			if (agclr == null)
-				agclr = LoadAgclr ();
-			
-			return agclr;
-		}
-		
-		static Assembly Agclr {
-			get {
-				return GetAgclr ();
-			}
+			return Agclr;
 		}
 		
 		/// <summary>

@@ -58,8 +58,8 @@ namespace Mono {
 		public extern static int collection_add (IntPtr instance, ref Value value);
 
 		[DllImport ("moon")]
-		// void collection_clear (Collection *instance);
-		public extern static void collection_clear (IntPtr instance);
+		// bool collection_clear (Collection *instance);
+		public extern static bool collection_clear (IntPtr instance);
 
 		[DllImport ("moon")]
 		// bool collection_contains (Collection *instance, Value *value);
@@ -189,6 +189,10 @@ namespace Mono {
 		public extern static IntPtr deep_zoom_image_tile_source_new ();
 
 		[DllImport ("moon")]
+		// void dependency_object_clear_value (DependencyObject *instance, DependencyProperty *property, bool notify_listeners);
+		public extern static void dependency_object_clear_value (IntPtr instance, IntPtr property, bool notify_listeners);
+
+		[DllImport ("moon")]
 		// DependencyObject *dependency_object_new ();
 		public extern static IntPtr dependency_object_new ();
 
@@ -253,9 +257,16 @@ namespace Mono {
 		// void dependency_object_set_name (DependencyObject *instance, const char *name);
 		public extern static void dependency_object_set_name (IntPtr instance, string name);
 
-		[DllImport ("moon")]
-		// void dependency_object_set_value (DependencyObject *instance, DependencyProperty *property, Value *value);
-		public extern static void dependency_object_set_value (IntPtr instance, IntPtr property, ref Value value);
+		[DllImport ("moon", EntryPoint="dependency_object_set_value_with_error")]
+		// void dependency_object_set_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, Value *value, MoonError *error);
+		private extern static void dependency_object_set_value_with_error_ (IntPtr instance, IntPtr additional_types, IntPtr property, ref Value value, out MoonError error);
+		public static void dependency_object_set_value (IntPtr instance, IntPtr property, ref Value value)
+		{
+					MoonError error;
+			dependency_object_set_value_with_error_ (instance, Mono.Types.Native, property, ref value, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+		}
 
 		[DllImport ("moon")]
 		// DependencyObjectCollection *dependency_object_collection_new ();
@@ -697,9 +708,40 @@ namespace Mono {
 		// RectangleGeometry *rectangle_geometry_new ();
 		public extern static IntPtr rectangle_geometry_new ();
 
+		[DllImport ("moon", EntryPoint="resource_dictionary_add_with_error")]
+		// void resource_dictionary_add_with_error (ResourceDictionary *instance, char *key, Value *value, MoonError *error);
+		private extern static void resource_dictionary_add_with_error_ (IntPtr instance, string key, ref Value value, out MoonError error);
+		public static void resource_dictionary_add (IntPtr instance, string key, ref Value value)
+		{
+					MoonError error;
+			resource_dictionary_add_with_error_ (instance, key, ref value, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+		}
+
+		[DllImport ("moon")]
+		// bool resource_dictionary_clear (ResourceDictionary *instance);
+		public extern static bool resource_dictionary_clear (IntPtr instance);
+
+		[DllImport ("moon")]
+		// bool resource_dictionary_contains_key (ResourceDictionary *instance, char *key);
+		public extern static bool resource_dictionary_contains_key (IntPtr instance, string key);
+
+		[DllImport ("moon")]
+		// Value *resource_dictionary_get (ResourceDictionary *instance, char *key, bool *exists);
+		public extern static IntPtr resource_dictionary_get (IntPtr instance, string key, out bool exists);
+
+		[DllImport ("moon")]
+		// bool resource_dictionary_remove (ResourceDictionary *instance, char *key);
+		public extern static bool resource_dictionary_remove (IntPtr instance, string key);
+
 		[DllImport ("moon")]
 		// ResourceDictionary *resource_dictionary_new ();
 		public extern static IntPtr resource_dictionary_new ();
+
+		[DllImport ("moon")]
+		// bool resource_dictionary_set (ResourceDictionary *instance, char *key, Value *value);
+		public extern static bool resource_dictionary_set (IntPtr instance, string key, ref Value value);
 
 		[DllImport ("moon")]
 		// RotateTransform *rotate_transform_new ();
@@ -1052,6 +1094,45 @@ namespace Mono {
 		[DllImport ("moon")]
 		// VisualBrush *visual_brush_new ();
 		public extern static IntPtr visual_brush_new ();
+
+		[DllImport ("moon", EntryPoint="xaml_loader_create_from_file_with_error")]
+		// DependencyObject *xaml_loader_create_from_file_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error);
+		private extern static IntPtr xaml_loader_create_from_file_with_error_ (IntPtr instance, string xaml, bool create_namescope, out Kind element_type, out MoonError error);
+		public static IntPtr xaml_loader_create_from_file (IntPtr instance, string xaml, bool create_namescope, out Kind element_type)
+		{
+			IntPtr result;
+			MoonError error;
+			result = xaml_loader_create_from_file_with_error_ (instance, xaml, create_namescope, out element_type, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+			return result;
+		}
+
+		[DllImport ("moon", EntryPoint="xaml_loader_create_from_string_with_error")]
+		// DependencyObject *xaml_loader_create_from_string_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error);
+		private extern static IntPtr xaml_loader_create_from_string_with_error_ (IntPtr instance, string xaml, bool create_namescope, out Kind element_type, out MoonError error);
+		public static IntPtr xaml_loader_create_from_string (IntPtr instance, string xaml, bool create_namescope, out Kind element_type)
+		{
+			IntPtr result;
+			MoonError error;
+			result = xaml_loader_create_from_string_with_error_ (instance, xaml, create_namescope, out element_type, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+			return result;
+		}
+
+		[DllImport ("moon", EntryPoint="xaml_loader_hydrate_from_string_with_error")]
+		// DependencyObject *xaml_loader_hydrate_from_string_with_error (XamlLoader *instance, const char *default_asm_name, const char *default_asm_path, const char *xaml, DependencyObject *obj, bool create_namescope, Type::Kind *element_type, MoonError *error);
+		private extern static IntPtr xaml_loader_hydrate_from_string_with_error_ (IntPtr instance, string default_asm_name, string default_asm_path, string xaml, IntPtr obj, bool create_namescope, out Kind element_type, out MoonError error);
+		public static IntPtr xaml_loader_hydrate_from_string (IntPtr instance, string default_asm_name, string default_asm_path, string xaml, IntPtr obj, bool create_namescope, out Kind element_type)
+		{
+			IntPtr result;
+			MoonError error;
+			result = xaml_loader_hydrate_from_string_with_error_ (instance, default_asm_name, default_asm_path, xaml, obj, create_namescope, out element_type, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+			return result;
+		}
 
 		[DllImport ("moon", EntryPoint="xap_unpack")]
 		// char *xap_unpack (const char *fname);

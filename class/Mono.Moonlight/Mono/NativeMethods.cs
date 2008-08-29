@@ -26,6 +26,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using System;
+using System.Reflection;
+using System.Globalization;
 using System.Runtime.InteropServices;
 
 namespace Mono {
@@ -62,16 +64,6 @@ namespace Mono {
 		[DllImport("moon")]
 		public extern static bool type_is_dependency_object (Kind type);
 
-		[DllImport("moon")]
-		public extern static IntPtr dependency_object_set_value (IntPtr obj, IntPtr property, IntPtr zero);
-		
-		[DllImport("moon")]
-		public extern static IntPtr xaml_create_from_str (IntPtr native_loader, string xaml, bool create_namescope,
-								  out Kind kind);
-
-		[DllImport("moon")]
-		public extern static IntPtr xaml_hydrate_from_str(IntPtr native_loader, string xaml, string assembly_name, string assembly_path, IntPtr obj, bool create_namescope, out Kind kind);
-		
 		[DllImport ("moon")]
 		public extern static void xaml_set_property_from_str (IntPtr obj, IntPtr prop, string value);
 
@@ -270,6 +262,11 @@ namespace Mono {
 				throw new ArgumentOutOfRangeException (msg);
 			case 5:
 				throw new InvalidOperationException (msg);
+			case 6: {
+				Type t = Helper.Agclr.GetType ("System.Windows.Markup.XamlParseException", true);
+				Exception e = (Exception)Activator.CreateInstance (t, BindingFlags.Instance | BindingFlags.NonPublic, null, new object[] { msg }, CultureInfo.CurrentCulture );
+				throw e;
+			}
 			}
 		}
 	}
