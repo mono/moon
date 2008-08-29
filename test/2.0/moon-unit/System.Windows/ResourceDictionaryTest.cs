@@ -37,19 +37,39 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[KnownFailure]
+		public void AddDuplicate ()
+		{
+			Button b = new Button();
+			ResourceDictionary rd = b.Resources;
+
+			rd.Add ("hi", new object());
+			Assert.Throws (delegate { rd.Add ("hi", new object()); 
+				},
+				typeof (ArgumentException));
+		}
+
+		[TestMethod]
 		public void TestParseColor ()
 		{
 			Canvas b = (Canvas)
 				XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Color x:Key=""color"">#ffffffff</Color></Canvas.Resources></Canvas>");
 
+			Assert.IsNotNull (b.Resources["color"], "1");
+
 			Color c = (Color)b.Resources["color"];
 
-			Assert.AreEqual (Color.FromArgb (0xff, 0xff, 0xff, 0xff), b.Resources["color"]);
+			Assert.AreEqual (Color.FromArgb (0xff, 0xff, 0xff, 0xff), b.Resources["color"], "2");
 		}
 
 		[TestMethod]
-		[KnownFailure]
+		public void TestParseColorAndUpdateFromExpression ()
+		{
+			Assert.Throws (delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" Background=""{StaticResource BackgroundBrush}""><Canvas.Resources><Color x:Key=""color"">#ffffffff</Color><SolidColorBrush x:Key=""BackgroundBrush"" Color=""Black""/></Canvas.Resources></Canvas>");
+				},
+				typeof (XamlParseException));
+		}
+
+		[TestMethod]
 		public void TestParseDouble ()
 		{
 			Assert.Throws (delegate {
@@ -59,7 +79,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[KnownFailure]
 		public void Parse_MissingxKey ()
 		{
 			Assert.Throws (delegate { 
@@ -69,7 +88,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[KnownFailure]
 		public void Parse_MissingxKey_WithxName ()
 		{
 			Canvas b = (Canvas)
@@ -83,12 +101,65 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[KnownFailure]
 		public void Parse_BothxKeyAndxName ()
 		{
 			Assert.Throws (delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Color x:Key=""keycolor"" x:Name=""color"">#ffffffff</Color></Canvas.Resources></Canvas>");
 				},
 				typeof (XamlParseException));
+		}
+
+		[TestMethod]
+		public void TestIntegerIndex ()
+		{
+			Canvas b = (Canvas)
+				XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Color x:Key=""color"">#ffffffff</Color></Canvas.Resources></Canvas>");
+
+			Assert.Throws (delegate { Color c = (Color)b.Resources[0]; },
+				       typeof (ArgumentException));
+		}
+
+		[TestMethod]
+		public void TestFindName ()
+		{
+			Canvas b = (Canvas)
+				XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Color x:Key=""color"">#ffffffff</Color><Storyboard x:Key=""sb""/><Storyboard x:Name=""anothersb""/></Canvas.Resources></Canvas>");
+
+			Assert.IsNull (b.FindName ("color"));
+			Assert.IsNull (b.FindName ("sb"));
+			Assert.IsNotNull (b.FindName ("anothersb"));
+			Assert.IsNotNull (b.Resources ["anothersb"]);
+
+			Assert.AreSame (b.FindName ("anothersb"), b.Resources["anothersb"]);
+		}
+
+		[TestMethod]
+		public void TestNameAndKey ()
+		{
+			Assert.Throws (delegate {
+					XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Storyboard x:Name=""sb""/><Storyboard x:Key=""sb""/></Canvas.Resources></Canvas>");
+				},
+				typeof (XamlParseException));
+		}
+
+		[TestMethod]
+		public void TestCount ()
+		{
+			Canvas b = (Canvas)
+				XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Color x:Key=""color"">#ffffffff</Color></Canvas.Resources></Canvas>");
+
+			Assert.AreEqual (0, b.Resources.Count);
+
+			b = (Canvas)
+				XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Color x:Name=""color"">#ffffffff</Color></Canvas.Resources></Canvas>");
+
+			Assert.AreEqual (0, b.Resources.Count);
+		}
+
+		[TestMethod]
+		public void TestxKeyOutsideDictionary ()
+		{
+			Canvas b = (Canvas)
+				XamlReader.Load (@"<Canvas x:Key=""foo"" xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" />");
 		}
 	}
 }
