@@ -25,7 +25,7 @@ SUBDIRS = $(subdirs) src $(MONO_SUBDIRS) $(TOOLS_SUBDIR) plugin $(TEST_SUBDIR) $
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA=moon.pc
 
-EXTRA_DIST=moon.pc.in
+EXTRA_DIST=moon.pc.in LICENSE NOTES
 
 # this should be handled by dolt.m4
 DISTCLEANFILES=	doltcompile \
