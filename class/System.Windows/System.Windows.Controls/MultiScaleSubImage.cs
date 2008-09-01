@@ -14,11 +14,7 @@ using System;
 
 namespace System.Windows.Controls
 {	
-	public abstract partial class MultiScaleSubImage : DependencyObject
+	public partial class MultiScaleSubImage : DependencyObject
 	{
-		public MultiScaleSubImage ()
-		{
-			throw new NotImplementedException ();
-		}
 	}
 }
