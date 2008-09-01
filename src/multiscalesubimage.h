@@ -38,6 +38,22 @@ class MultiScaleSubImage : public DependencyObject {
 	MultiScaleSubImage () {}
 
 	virtual Type::Kind GetObjectType () { return Type::MULTISCALESUBIMAGE; }
+
+	double GetAspectRatio ();
+	void SetAspectRatio (double ratio);
+
+	double GetOpacity ();
+	void SetOpacity (double ratio);
+
+	Point* GetViewPortOrigin ();
+	void SetViewPortOrigin (Point* point);
+
+	double GetViewPortWidth ();
+	void SetViewPortWidth (double width);
+
+	gint32 GetZIndex ();
+	void SetZIndex (gint32 zindex);
+
 };
 
 #endif /* __MULTISCALESUBIMAGE_H__ */
