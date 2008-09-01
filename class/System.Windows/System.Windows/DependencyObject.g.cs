@@ -179,7 +179,7 @@ namespace System.Windows.Controls {
 	}
 
 	partial class MultiScaleSubImage {
-		internal MultiScaleSubImage () : base (NativeMethods.multi_scale_sub_image_new ()) {}
+		public MultiScaleSubImage () : base (NativeMethods.multi_scale_sub_image_new ()) {}
 		internal MultiScaleSubImage (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.MULTISCALESUBIMAGE; }
 	}

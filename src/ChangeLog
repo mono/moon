@@ -1,5 +1,9 @@
 2008-09-01  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* multiscalesubimage.h: fixing code generation decorators
+
+2008-09-01  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* multiscalesubimage.h: new type
 
 2008-08-29  Jeffrey Stedfast  <fejj@novell.com>

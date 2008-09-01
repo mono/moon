@@ -246,10 +246,10 @@ dependency_property_g_init (void)
 	MediaElement::PositionProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "Position", Type::TIMESPAN);
 	MediaElement::VolumeProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "Volume", new Value (0.5));
 #if SL_2_0
-	MultiScaleSubImage::AspectRatioProperty = DependencyProperty::Register (Type::MULTISCALESUBIMAGE, "AspectRatio", new Value (1.0));
+	MultiScaleSubImage::AspectRatioProperty = DependencyProperty::RegisterFull (Type::MULTISCALESUBIMAGE, "AspectRatio", new Value (1.0), Type::DOUBLE, false, true);
 	MultiScaleSubImage::OpacityProperty = DependencyProperty::Register (Type::MULTISCALESUBIMAGE, "Opacity", Type::DOUBLE);
-	MultiScaleSubImage::ViewPortOriginProperty = DependencyProperty::Register (Type::MULTISCALESUBIMAGE, "ViewPortOrigin", Type::POINT);
-	MultiScaleSubImage::ViewPortWidthProperty = DependencyProperty::Register (Type::MULTISCALESUBIMAGE, "ViewPortWidth", Type::DOUBLE);
+	MultiScaleSubImage::ViewportOriginProperty = DependencyProperty::Register (Type::MULTISCALESUBIMAGE, "ViewportOrigin", Type::POINT);
+	MultiScaleSubImage::ViewportWidthProperty = DependencyProperty::Register (Type::MULTISCALESUBIMAGE, "ViewportWidth", Type::DOUBLE);
 	MultiScaleSubImage::ZIndexProperty = DependencyProperty::Register (Type::MULTISCALESUBIMAGE, "ZIndex", Type::INT32);
 #endif
 	NameScope::NameScopeProperty = DependencyProperty::RegisterFull (Type::NAMESCOPE, "NameScope", NULL, Type::NAMESCOPE, true, false);
@@ -606,8 +606,8 @@ DependencyProperty *MediaElement::VolumeProperty = NULL;
 #if SL_2_0
 DependencyProperty *MultiScaleSubImage::AspectRatioProperty = NULL;
 DependencyProperty *MultiScaleSubImage::OpacityProperty = NULL;
-DependencyProperty *MultiScaleSubImage::ViewPortOriginProperty = NULL;
-DependencyProperty *MultiScaleSubImage::ViewPortWidthProperty = NULL;
+DependencyProperty *MultiScaleSubImage::ViewportOriginProperty = NULL;
+DependencyProperty *MultiScaleSubImage::ViewportWidthProperty = NULL;
 DependencyProperty *MultiScaleSubImage::ZIndexProperty = NULL;
 #endif
 DependencyProperty *NameScope::NameScopeProperty = NULL;
@@ -2846,32 +2846,32 @@ MultiScaleSubImage::SetOpacity (double value)
 #endif
 #if SL_2_0
 Point *
-MultiScaleSubImage::GetViewPortOrigin ()
+MultiScaleSubImage::GetViewportOrigin ()
 {
-	Value *value = GetValue (MultiScaleSubImage::ViewPortOriginProperty);
+	Value *value = GetValue (MultiScaleSubImage::ViewportOriginProperty);
 	return value ? value->AsPoint () : NULL;
 }
 
 void
-MultiScaleSubImage::SetViewPortOrigin (Point * value)
+MultiScaleSubImage::SetViewportOrigin (Point * value)
 {
 	if (!value) return;
-	SetValue (MultiScaleSubImage::ViewPortOriginProperty, Value (*value));
+	SetValue (MultiScaleSubImage::ViewportOriginProperty, Value (*value));
 }
 
 #endif
 #if SL_2_0
 double
-MultiScaleSubImage::GetViewPortWidth ()
+MultiScaleSubImage::GetViewportWidth ()
 {
-	Value *value = GetValue (MultiScaleSubImage::ViewPortWidthProperty);
+	Value *value = GetValue (MultiScaleSubImage::ViewportWidthProperty);
 	return value->AsDouble ();
 }
 
 void
-MultiScaleSubImage::SetViewPortWidth (double value)
+MultiScaleSubImage::SetViewportWidth (double value)
 {
-	SetValue (MultiScaleSubImage::ViewPortWidthProperty, Value (value));
+	SetValue (MultiScaleSubImage::ViewportWidthProperty, Value (value));
 }
 
 #endif

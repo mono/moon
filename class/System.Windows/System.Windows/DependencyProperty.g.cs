@@ -569,13 +569,12 @@ namespace System.Windows.Controls {
 	partial class MultiScaleSubImage {
 		public static readonly DependencyProperty AspectRatioProperty = DependencyProperty.Lookup (Kind.MULTISCALESUBIMAGE, "AspectRatio", typeof (double));
 		public static readonly DependencyProperty OpacityProperty = DependencyProperty.Lookup (Kind.MULTISCALESUBIMAGE, "Opacity", typeof (double));
-		public static readonly DependencyProperty ViewPortOriginProperty = DependencyProperty.Lookup (Kind.MULTISCALESUBIMAGE, "ViewPortOrigin", typeof (Point));
-		public static readonly DependencyProperty ViewPortWidthProperty = DependencyProperty.Lookup (Kind.MULTISCALESUBIMAGE, "ViewPortWidth", typeof (double));
+		public static readonly DependencyProperty ViewportOriginProperty = DependencyProperty.Lookup (Kind.MULTISCALESUBIMAGE, "ViewportOrigin", typeof (Point));
+		public static readonly DependencyProperty ViewportWidthProperty = DependencyProperty.Lookup (Kind.MULTISCALESUBIMAGE, "ViewportWidth", typeof (double));
 		public static readonly DependencyProperty ZIndexProperty = DependencyProperty.Lookup (Kind.MULTISCALESUBIMAGE, "ZIndex", typeof (int));
 
 		public double AspectRatio {
 			get { return (double) GetValue (AspectRatioProperty); }
-			set { SetValue (AspectRatioProperty, value); }
 		}
 
 		public double Opacity {
@@ -583,14 +582,14 @@ namespace System.Windows.Controls {
 			set { SetValue (OpacityProperty, value); }
 		}
 
-		public Point ViewPortOrigin {
-			get { return (Point) GetValue (ViewPortOriginProperty); }
-			set { SetValue (ViewPortOriginProperty, value); }
+		public Point ViewportOrigin {
+			get { return (Point) GetValue (ViewportOriginProperty); }
+			set { SetValue (ViewportOriginProperty, value); }
 		}
 
-		public double ViewPortWidth {
-			get { return (double) GetValue (ViewPortWidthProperty); }
-			set { SetValue (ViewPortWidthProperty, value); }
+		public double ViewportWidth {
+			get { return (double) GetValue (ViewportWidthProperty); }
+			set { SetValue (ViewportWidthProperty, value); }
 		}
 
 		public int ZIndex {

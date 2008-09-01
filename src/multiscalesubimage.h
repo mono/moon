@@ -22,19 +22,19 @@ class MultiScaleSubImage : public DependencyObject {
 	virtual ~MultiScaleSubImage () {}
 
  public:
-	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateGetter */
+	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,ReadOnly,GenerateGetter */
 	static DependencyProperty *AspectRatioProperty;
  	/* @PropertyType=double,Version=2.0,GenerateAccessors */
 	static DependencyProperty *OpacityProperty;
 	/* @PropertyType=Point,Version=2.0,GenerateAccessors */
-	static DependencyProperty *ViewPortOriginProperty;
+	static DependencyProperty *ViewportOriginProperty;
 	/* @PropertyType=double,Version=2.0,GenerateAccessors */
-	static DependencyProperty *ViewPortWidthProperty;
+	static DependencyProperty *ViewportWidthProperty;
 	/* @PropertyType=gint32,Version=2.0,GenerateAccessors */
 	static DependencyProperty *ZIndexProperty;
 
 	
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	/* @GenerateCBinding,GeneratePInvoke */
 	MultiScaleSubImage () {}
 
 	virtual Type::Kind GetObjectType () { return Type::MULTISCALESUBIMAGE; }
@@ -45,11 +45,11 @@ class MultiScaleSubImage : public DependencyObject {
 	double GetOpacity ();
 	void SetOpacity (double ratio);
 
-	Point* GetViewPortOrigin ();
-	void SetViewPortOrigin (Point* point);
+	Point* GetViewportOrigin ();
+	void SetViewportOrigin (Point* point);
 
-	double GetViewPortWidth ();
-	void SetViewPortWidth (double width);
+	double GetViewportWidth ();
+	void SetViewportWidth (double width);
 
 	gint32 GetZIndex ();
 	void SetZIndex (gint32 zindex);
