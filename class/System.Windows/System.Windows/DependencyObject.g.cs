@@ -178,6 +178,12 @@ namespace System.Windows.Controls {
 		internal override Kind GetKind () { return Kind.MEDIAELEMENT; }
 	}
 
+	partial class MultiScaleSubImage {
+		internal MultiScaleSubImage () : base (NativeMethods.multi_scale_sub_image_new ()) {}
+		internal MultiScaleSubImage (IntPtr raw) : base (raw) {}
+		internal override Kind GetKind () { return Kind.MULTISCALESUBIMAGE; }
+	}
+
 	partial class Panel {
 		protected Panel () : base (NativeMethods.panel_new ()) {}
 		internal Panel (IntPtr raw) : base (raw) {}

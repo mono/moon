@@ -1,3 +1,7 @@
+2008-09-01  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscalesubimage.h: new type
+
 2008-08-29  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (TextLayout::LayoutWrap): Keep track of when 'words'

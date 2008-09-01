@@ -605,6 +605,10 @@ namespace Mono {
 		public extern static IntPtr mouse_event_args_new ();
 
 		[DllImport ("moon")]
+		// MultiScaleSubImage *multi_scale_sub_image_new ();
+		public extern static IntPtr multi_scale_sub_image_new ();
+
+		[DllImport ("moon")]
 		// MultiScaleTileSource *multi_scale_tile_source_new ();
 		public extern static IntPtr multi_scale_tile_source_new ();
 

@@ -1375,6 +1375,18 @@ mouse_event_args_new (void)
 
 #if SL_2_0
 /**
+ * MultiScaleSubImage
+ **/
+MultiScaleSubImage *
+multi_scale_sub_image_new (void)
+{
+	return new MultiScaleSubImage ();
+}
+#endif
+
+
+#if SL_2_0
+/**
  * MultiScaleTileSource
  **/
 MultiScaleTileSource *

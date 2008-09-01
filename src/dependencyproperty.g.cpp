@@ -37,6 +37,7 @@
 #include "frameworkelement.h"
 #include "geometry.h"
 #include "grid.h"
+#include "multiscalesubimage.h"
 #include "stackpanel.h"
 #include "style.h"
 #include "template.h"
@@ -244,6 +245,13 @@ dependency_property_g_init (void)
 	MediaElement::NaturalVideoWidthProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "NaturalVideoWidth", new Value (0.0), Type::DOUBLE, false, true);
 	MediaElement::PositionProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "Position", Type::TIMESPAN);
 	MediaElement::VolumeProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "Volume", new Value (0.5));
+#if SL_2_0
+	MultiScaleSubImage::AspectRatioProperty = DependencyProperty::Register (Type::MULTISCALESUBIMAGE, "AspectRatio", new Value (1.0));
+	MultiScaleSubImage::OpacityProperty = DependencyProperty::Register (Type::MULTISCALESUBIMAGE, "Opacity", Type::DOUBLE);
+	MultiScaleSubImage::ViewPortOriginProperty = DependencyProperty::Register (Type::MULTISCALESUBIMAGE, "ViewPortOrigin", Type::POINT);
+	MultiScaleSubImage::ViewPortWidthProperty = DependencyProperty::Register (Type::MULTISCALESUBIMAGE, "ViewPortWidth", Type::DOUBLE);
+	MultiScaleSubImage::ZIndexProperty = DependencyProperty::Register (Type::MULTISCALESUBIMAGE, "ZIndex", Type::INT32);
+#endif
 	NameScope::NameScopeProperty = DependencyProperty::RegisterFull (Type::NAMESCOPE, "NameScope", NULL, Type::NAMESCOPE, true, false);
 #if SL_2_0
 	ObjectAnimationUsingKeyFrames::KeyFramesProperty = DependencyProperty::Register (Type::OBJECTANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::OBJECTKEYFRAME_COLLECTION);
@@ -595,6 +603,13 @@ DependencyProperty *MediaElement::NaturalVideoHeightProperty = NULL;
 DependencyProperty *MediaElement::NaturalVideoWidthProperty = NULL;
 DependencyProperty *MediaElement::PositionProperty = NULL;
 DependencyProperty *MediaElement::VolumeProperty = NULL;
+#if SL_2_0
+DependencyProperty *MultiScaleSubImage::AspectRatioProperty = NULL;
+DependencyProperty *MultiScaleSubImage::OpacityProperty = NULL;
+DependencyProperty *MultiScaleSubImage::ViewPortOriginProperty = NULL;
+DependencyProperty *MultiScaleSubImage::ViewPortWidthProperty = NULL;
+DependencyProperty *MultiScaleSubImage::ZIndexProperty = NULL;
+#endif
 DependencyProperty *NameScope::NameScopeProperty = NULL;
 #if SL_2_0
 DependencyProperty *ObjectAnimationUsingKeyFrames::KeyFramesProperty = NULL;
@@ -2805,6 +2820,76 @@ MediaElement::SetVolume (double value)
 	SetValue (MediaElement::VolumeProperty, Value (value));
 }
 
+#if SL_2_0
+double
+MultiScaleSubImage::GetAspectRatio ()
+{
+	Value *value = GetValue (MultiScaleSubImage::AspectRatioProperty);
+	return value->AsDouble ();
+}
+
+#endif
+#if SL_2_0
+double
+MultiScaleSubImage::GetOpacity ()
+{
+	Value *value = GetValue (MultiScaleSubImage::OpacityProperty);
+	return value->AsDouble ();
+}
+
+void
+MultiScaleSubImage::SetOpacity (double value)
+{
+	SetValue (MultiScaleSubImage::OpacityProperty, Value (value));
+}
+
+#endif
+#if SL_2_0
+Point *
+MultiScaleSubImage::GetViewPortOrigin ()
+{
+	Value *value = GetValue (MultiScaleSubImage::ViewPortOriginProperty);
+	return value ? value->AsPoint () : NULL;
+}
+
+void
+MultiScaleSubImage::SetViewPortOrigin (Point * value)
+{
+	if (!value) return;
+	SetValue (MultiScaleSubImage::ViewPortOriginProperty, Value (*value));
+}
+
+#endif
+#if SL_2_0
+double
+MultiScaleSubImage::GetViewPortWidth ()
+{
+	Value *value = GetValue (MultiScaleSubImage::ViewPortWidthProperty);
+	return value->AsDouble ();
+}
+
+void
+MultiScaleSubImage::SetViewPortWidth (double value)
+{
+	SetValue (MultiScaleSubImage::ViewPortWidthProperty, Value (value));
+}
+
+#endif
+#if SL_2_0
+gint32
+MultiScaleSubImage::GetZIndex ()
+{
+	Value *value = GetValue (MultiScaleSubImage::ZIndexProperty);
+	return value->AsInt32 ();
+}
+
+void
+MultiScaleSubImage::SetZIndex (gint32 value)
+{
+	SetValue (MultiScaleSubImage::ZIndexProperty, Value (value));
+}
+
+#endif
 NameScope *
 NameScope::GetNameScope (DependencyObject *obj)
 {

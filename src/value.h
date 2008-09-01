@@ -130,6 +130,7 @@ class MediaBase;
 class MediaElement;
 class MediaErrorEventArgs;
 class MouseEventArgs;
+class MultiScaleSubImage;
 class MultiScaleTileSource;
 class NameScope;
 class ObjectAnimationUsingKeyFrames;
@@ -389,6 +390,7 @@ public:
 	MediaElement*                  AsMediaElement () { checked_get_subclass (Type::MEDIAELEMENT, MediaElement) }
 	MediaErrorEventArgs*           AsMediaErrorEventArgs () { checked_get_subclass (Type::MEDIAERROREVENTARGS, MediaErrorEventArgs) }
 	MouseEventArgs*                AsMouseEventArgs () { checked_get_subclass (Type::MOUSEEVENTARGS, MouseEventArgs) }
+	MultiScaleSubImage*            AsMultiScaleSubImage () { checked_get_subclass (Type::MULTISCALESUBIMAGE, MultiScaleSubImage) }
 	MultiScaleTileSource*          AsMultiScaleTileSource () { checked_get_subclass (Type::MULTISCALETILESOURCE, MultiScaleTileSource) }
 	NameScope*                     AsNameScope () { checked_get_subclass (Type::NAMESCOPE, NameScope) }
 	ObjectAnimationUsingKeyFrames* AsObjectAnimationUsingKeyFrames () { checked_get_subclass (Type::OBJECTANIMATIONUSINGKEYFRAMES, ObjectAnimationUsingKeyFrames) }
