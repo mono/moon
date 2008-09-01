@@ -148,6 +148,7 @@ libmoon_include_HEADERS += 	\
 	cornerradius.h		\
 	deployment.h		\
 	grid.h			\
+	multiscalesubimage.h	\
 	stackpanel.h		\
 	style.h			\
 	template.h		\
