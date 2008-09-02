@@ -1,3 +1,8 @@
+2008-09-02  Zoltan Varga  <vargaz@gmail.com>
+
+	* AssemblyInfo.cs: Add XmlnsDefinition attributes so the control classes
+	can be referenced directly by xaml.
+
 2008-05-07  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* AssemblyInfo.cs: Remove AssemblyDelaySign(true) since it's
