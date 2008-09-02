@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 
 
-namespace TextBox {
+namespace TextBoxExample {
 	public partial class App : Application {
 		public App ()
 		{
