@@ -8,8 +8,8 @@
  * 
  */
 
-#ifndef __MOON_EVENTARGS_H__
-#define __MOON_EVENTARGS_H__
+#ifndef __EVENTARGS_H__
+#define __EVENTARGS_H__
 
 #include <glib.h>
 
@@ -29,12 +29,12 @@ class UIElement;
 
 /* @Namespace=None */
 class EventArgs : public DependencyObject {
-public:
+ protected:
+	virtual ~EventArgs () {}
+	
+ public:
 	EventArgs () {}
-	virtual Type::Kind GetObjectType () { return Type::EVENTARGS; };
-
-protected:
-	virtual ~EventArgs () {};
+	virtual Type::Kind GetObjectType () { return Type::EVENTARGS; }
 };
 
 enum CollectionChangedAction {
@@ -47,11 +47,23 @@ enum CollectionChangedAction {
 
 /* @Namespace=None */
 class CollectionChangedEventArgs : public EventArgs {
-public:
+ protected:
+	virtual ~CollectionChangedEventArgs () {}
+	
+ public:
 	CollectionChangedAction action;
 	Value *old_value;
 	Value *new_value;
 	int index;
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	CollectionChangedEventArgs ()
+	{
+		action = CollectionChangedActionAdd;
+		old_value = NULL;
+		new_value = NULL;
+		index = -1;
+	}
 	
 	CollectionChangedEventArgs (CollectionChangedAction action, Value *new_value, Value *old_value, int index)
 	{
@@ -60,40 +72,67 @@ public:
 		this->old_value = old_value;
 		this->index = index;
 	}
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetChangedAction (CollectionChangedAction action) { this->action = action; }
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	CollectionChangedAction GetChangedAction () { return action; }
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetNewItem (Value *item) { new_value = item; }
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	Value *GetNewItem () { return new_value; }
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetOldItem (Value *item) { old_value = item; }
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	Value *GetOldItem () { return old_value; }
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetIndex (int index) { this->index = index; }
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	int GetIndex () { return index; }
 };
 
 /* @Namespace=None */
 class RoutedEventArgs : public EventArgs {
-
-public:
+	DependencyObject *source;
+	bool handled;
+	
+ protected:
+	virtual ~RoutedEventArgs ();
+	
+ public:
  	/* @GenerateCBinding,GeneratePInvoke */
 	RoutedEventArgs ();
 
-	virtual Type::Kind GetObjectType () { return Type::ROUTEDEVENTARGS; };
+	virtual Type::Kind GetObjectType () { return Type::ROUTEDEVENTARGS; }
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject* GetSource() { return source; }
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetSource(DependencyObject *el);
-
+	
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetHandled (bool handled) { this->handled = handled; }
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool GetHandled () { return handled; }
-
-protected:
-	virtual ~RoutedEventArgs ();
-
-private:
-	DependencyObject *source;
-	bool handled;
 };
 
 /* @Namespace=None */
 class KeyEventArgs : public RoutedEventArgs {
-public:
+	GdkEventKey *event;
+	
+ protected:
+	virtual ~KeyEventArgs ();
+	
+ public:
  	/* @GenerateCBinding,GeneratePInvoke */
 	KeyEventArgs ();
 	KeyEventArgs (GdkEventKey *event);
@@ -108,17 +147,16 @@ public:
 	int GetPlatformKeyCode ();
 
 	static int gdk_keyval_to_key (guint keyval);
-
-protected:
-	virtual ~KeyEventArgs ();
-
-private:
-	GdkEventKey *event;
 };
 
 /* @Namespace=None */
 class MouseEventArgs : public RoutedEventArgs {
-public:
+	GdkEvent *event;
+	
+ protected:
+	virtual ~MouseEventArgs ();
+	
+ public:
  	/* @GenerateCBinding,GeneratePInvoke */
 	MouseEventArgs ();
 	MouseEventArgs (GdkEvent *event);
@@ -133,23 +171,16 @@ public:
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	StylusPointCollection *GetStylusPoints (UIElement *ink_presenter);
-
-protected:
-	virtual ~MouseEventArgs ();
-
-private:
-	GdkEvent *event;
 };
 
 class Keyboard {
-public:
+	static ModifierKeys modifiers;
+	
+ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	static ModifierKeys GetModifiers ();
 
 	static void SetModifiers (ModifierKeys m);
-
-private:
-	static ModifierKeys modifiers;
 };
 
-#endif /* __MOON_EVENTARGS_H__ */
+#endif /* __EVENTARGS_H__ */

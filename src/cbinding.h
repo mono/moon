@@ -171,6 +171,30 @@ bool collection_set_value_at_with_error (Collection *instance, int index, Value 
 /* @GeneratePInvoke */
 CollectionChangedEventArgs *collection_changed_event_args_new (void);
 
+/* @GeneratePInvoke */
+CollectionChangedAction collection_changed_event_args_get_changed_action (CollectionChangedEventArgs *instance);
+
+/* @GeneratePInvoke */
+int collection_changed_event_args_get_index (CollectionChangedEventArgs *instance);
+
+/* @GeneratePInvoke */
+Value *collection_changed_event_args_get_new_item (CollectionChangedEventArgs *instance);
+
+/* @GeneratePInvoke */
+Value *collection_changed_event_args_get_old_item (CollectionChangedEventArgs *instance);
+
+/* @GeneratePInvoke */
+void collection_changed_event_args_set_changed_action (CollectionChangedEventArgs *instance, CollectionChangedAction action);
+
+/* @GeneratePInvoke */
+void collection_changed_event_args_set_index (CollectionChangedEventArgs *instance, int index);
+
+/* @GeneratePInvoke */
+void collection_changed_event_args_set_new_item (CollectionChangedEventArgs *instance, Value *item);
+
+/* @GeneratePInvoke */
+void collection_changed_event_args_set_old_item (CollectionChangedEventArgs *instance, Value *item);
+
 /**
  * CollectionIterator
  **/

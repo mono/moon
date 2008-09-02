@@ -269,6 +269,88 @@ collection_changed_event_args_new (void)
 }
 
 
+CollectionChangedAction
+collection_changed_event_args_get_changed_action (CollectionChangedEventArgs *instance)
+{
+	if (instance == NULL)
+		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		return (CollectionChangedAction) 0;
+	
+	return instance->GetChangedAction ();
+}
+
+
+int
+collection_changed_event_args_get_index (CollectionChangedEventArgs *instance)
+{
+	if (instance == NULL)
+		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetIndex ();
+}
+
+
+Value *
+collection_changed_event_args_get_new_item (CollectionChangedEventArgs *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetNewItem ();
+}
+
+
+Value *
+collection_changed_event_args_get_old_item (CollectionChangedEventArgs *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetOldItem ();
+}
+
+
+void
+collection_changed_event_args_set_changed_action (CollectionChangedEventArgs *instance, CollectionChangedAction action)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetChangedAction (action);
+}
+
+
+void
+collection_changed_event_args_set_index (CollectionChangedEventArgs *instance, int index)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetIndex (index);
+}
+
+
+void
+collection_changed_event_args_set_new_item (CollectionChangedEventArgs *instance, Value *item)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetNewItem (item);
+}
+
+
+void
+collection_changed_event_args_set_old_item (CollectionChangedEventArgs *instance, Value *item)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetOldItem (item);
+}
+
+
 /**
  * CollectionIterator
  **/
