@@ -1,0 +1,49 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Rectangle x:Name="rect" Stroke="Black" StrokeThickness="1" Canvas.Left="10" Canvas.Top="10" Width="100" Height="100">
+
+	<Rectangle.Fill>
+	    <SolidColorBrush x:Name="rect-brush" Color="Red" />
+	</Rectangle.Fill>
+
+
+
+	<Rectangle.Triggers>
+	    <EventTrigger RoutedEvent="Rectangle.Loaded">
+	        <BeginStoryboard>
+		    <Storyboard>
+			<ObjectAnimationUsingKeyFrames
+         			Storyboard.TargetName="rect"
+         			Storyboard.TargetProperty="Fill"
+         			Duration="0:0:4">
+				<ObjectAnimationUsingKeyFrames.KeyFrames>
+		 			
+					<DiscreteObjectKeyFrame KeyTime="0:0:1">
+                        			<DiscreteObjectKeyFrame.Value>
+       	    						<SolidColorBrush Color="Yellow" />
+                 				</DiscreteObjectKeyFrame.Value>
+                    			</DiscreteObjectKeyFrame>
+
+					<DiscreteObjectKeyFrame KeyTime="0:0:2">
+                        			<DiscreteObjectKeyFrame.Value>
+       	    						<SolidColorBrush Color="Blue" />
+                 				</DiscreteObjectKeyFrame.Value>
+                    			</DiscreteObjectKeyFrame>
+
+					<DiscreteObjectKeyFrame KeyTime="0:0:3">
+                        			<DiscreteObjectKeyFrame.Value>
+       	    						<SolidColorBrush Color="Blue" />
+                 				</DiscreteObjectKeyFrame.Value>
+                    			</DiscreteObjectKeyFrame>
+
+				</ObjectAnimationUsingKeyFrames.KeyFrames>
+			</ObjectAnimationUsingKeyFrames>
+		    </Storyboard>
+		</BeginStoryboard>
+	     </EventTrigger>
+	</Rectangle.Triggers>
+    </Rectangle>
+
+</Canvas>
+
