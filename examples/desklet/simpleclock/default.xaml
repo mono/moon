@@ -2,8 +2,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	x:Class="Clock.Display;assembly=clock.dll"
 	Loaded="PageLoaded"
-	Width="310" Height="100"
-	>
+	Width="310" Height="100">
 
   <Canvas.Resources>
     <Storyboard x:Name="run">
@@ -31,31 +30,31 @@
   </Canvas.Resources>
 
   <Rectangle Stroke="#a0bbbbbb" StrokeThickness="2" 
-	Canvas.Left="10" Canvas.Top="10" Width="300" Height="88"  RadiusX="30" RadiusY="30">
-  	<Rectangle.Fill>
-  		<LinearGradientBrush EndPoint="0.495,2.204" StartPoint="0.505,-1.204">
-  			<GradientStop Color="#FF000000" Offset="0"/>
-  			<GradientStop Color="#4CFFFFFF" Offset="1"/>
-  		</LinearGradientBrush>
-  	</Rectangle.Fill>
+  Canvas.Left="10" Canvas.Top="10" Width="300" Height="88"  RadiusX="30" RadiusY="30">
+    <Rectangle.Fill>
+      <LinearGradientBrush EndPoint="0.495,2.204" StartPoint="0.505,-1.204">
+        <GradientStop Color="#FF000000" Offset="0"/>
+        <GradientStop Color="#4CFFFFFF" Offset="1"/>
+      </LinearGradientBrush>
+    </Rectangle.Fill>
   </Rectangle>
 
   <Canvas x:Name="clockcanvas" Width="310" Height="100">
-      <TextBlock x:Name="hour" Text="12" FontSize="68" Foreground="#fff" Canvas.Left="28" Canvas.Top="15"/>
-      <TextBlock x:Name="dotcover" Text=":" FontSize="68" Foreground="#fff" Canvas.Left="108" Canvas.Top="10"/>
-      <TextBlock x:Name="minute" Text="00" FontSize="68" Foreground="#fff" Canvas.Left="124" Canvas.Top="15"/>
+    <TextBlock x:Name="hour" Text="12" FontSize="68" Foreground="#fff" Canvas.Left="28" Canvas.Top="15"/>
+    <TextBlock x:Name="dotcover" Text=":" FontSize="68" Foreground="#fff" Canvas.Left="108" Canvas.Top="10"/>
+    <TextBlock x:Name="minute" Text="00" FontSize="68" Foreground="#fff" Canvas.Left="124" Canvas.Top="15"/>
     
-      <TextBlock x:Name="ampm" Text="am" FontSize="24" Foreground="#fff" Canvas.Left="240" Canvas.Top="25"/>
+    <TextBlock x:Name="ampm" Text="am" FontSize="24" Foreground="#fff" Canvas.Left="240" Canvas.Top="25"/>
 
-      <Canvas x:Name="config_button" Canvas.Left="240" Canvas.Top="70" Width="16" Height="16">
-        <Rectangle x:Name="config" Width="16" Height="16" Fill="#a9ffffff" Stroke="#000"/>
-        <TextBlock Text="i" FontStyle="Italic" FontSize="15"   Canvas.Left="6" Canvas.Top="-1" />
-      </Canvas>
+    <Canvas x:Name="config_button" Canvas.Left="240" Canvas.Top="70" Width="16" Height="16">
+      <Rectangle x:Name="config" Width="16" Height="16" Fill="#a9ffffff" Stroke="#000"/>
+      <TextBlock Text="i" FontStyle="Italic" FontSize="15"   Canvas.Left="6" Canvas.Top="-1" />
+    </Canvas>
   </Canvas>
   <Canvas x:Name="configcanvas" Opacity="0">
-      <Canvas Canvas.Left="60" Canvas.Top="30">
-         <TextBlock Text="Show AM/PM" Foreground="#fff" FontSize="16"/>
-         <TextBlock Text="Another Option" Foreground="#fff" Canvas.Top="36" FontSize="16"/>
-      </Canvas>
+    <Canvas Canvas.Left="60" Canvas.Top="30">
+      <TextBlock Text="Show AM/PM" Foreground="#fff" FontSize="16"/>
+      <TextBlock Text="Another Option" Foreground="#fff" Canvas.Top="36" FontSize="16"/>
+    </Canvas>
   </Canvas>
 </Canvas>
