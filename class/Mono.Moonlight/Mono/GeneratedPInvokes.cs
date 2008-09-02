@@ -129,6 +129,44 @@ namespace Mono {
 		}
 
 		[DllImport ("moon")]
+		// CollectionChangedEventArgs *collection_changed_event_args_new ();
+		public extern static IntPtr collection_changed_event_args_new ();
+
+		// This method contains types the generator didn't know about. Fix the generator (find the method 'GetManagedType' in TypeReference.cs and add the missing case) and try again.
+		// [DllImport ("moon")]
+		// CollectionChangedAction collection_changed_event_args_get_changed_action (CollectionChangedEventArgs *instance);
+		// public extern static /* Unknown: 'CollectionChangedAction' */ collection_changed_event_args_get_changed_action (IntPtr instance);
+
+		[DllImport ("moon")]
+		// int collection_changed_event_args_get_index (CollectionChangedEventArgs *instance);
+		public extern static int collection_changed_event_args_get_index (IntPtr instance);
+
+		[DllImport ("moon")]
+		// Value *collection_changed_event_args_get_new_item (CollectionChangedEventArgs *instance);
+		public extern static IntPtr collection_changed_event_args_get_new_item (IntPtr instance);
+
+		[DllImport ("moon")]
+		// Value *collection_changed_event_args_get_old_item (CollectionChangedEventArgs *instance);
+		public extern static IntPtr collection_changed_event_args_get_old_item (IntPtr instance);
+
+		// This method contains types the generator didn't know about. Fix the generator (find the method 'GetManagedType' in TypeReference.cs and add the missing case) and try again.
+		// [DllImport ("moon")]
+		// void collection_changed_event_args_set_changed_action (CollectionChangedEventArgs *instance, CollectionChangedAction action);
+		// public extern static void collection_changed_event_args_set_changed_action (IntPtr instance, /* Unknown: 'CollectionChangedAction' */ action);
+
+		[DllImport ("moon")]
+		// void collection_changed_event_args_set_index (CollectionChangedEventArgs *instance, int index);
+		public extern static void collection_changed_event_args_set_index (IntPtr instance, int index);
+
+		[DllImport ("moon")]
+		// void collection_changed_event_args_set_new_item (CollectionChangedEventArgs *instance, Value *item);
+		public extern static void collection_changed_event_args_set_new_item (IntPtr instance, ref Value item);
+
+		[DllImport ("moon")]
+		// void collection_changed_event_args_set_old_item (CollectionChangedEventArgs *instance, Value *item);
+		public extern static void collection_changed_event_args_set_old_item (IntPtr instance, ref Value item);
+
+		[DllImport ("moon")]
 		// void collection_iterator_destroy (CollectionIterator *iterator);
 		public extern static void collection_iterator_destroy (IntPtr iterator);
 
