@@ -123,6 +123,7 @@ namespace Desklet
 			closeButton.MouseLeave += delegate {
 				UnhighlightButton (closeButton);
 			};
+			
 			circle = FindName ("Circle") as Shape;
 			load = FindName ("Load") as TextBlock;
 			colorSb = FindName ("color_sb") as Storyboard;
