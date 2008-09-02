@@ -17,7 +17,7 @@
 
 /* @Namespace=None */
 class TriggerAction : public DependencyObject {
-public:
+ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	TriggerAction () {}
 	
@@ -26,7 +26,7 @@ public:
 	/* @GenerateCBinding */
 	virtual void Fire () {}
 
-protected:
+ protected:
 	virtual ~TriggerAction () {}
 };
 
@@ -34,10 +34,17 @@ protected:
 /* @ContentProperty="Actions" */
 /* @Namespace=System.Windows */
 class EventTrigger : public DependencyObject {
-public:
+	int registered_event_id;
+	
+	static void event_trigger_fire_actions (EventObject *sender, EventArgs *calldata, gpointer closure);
+	
+ protected:
+	virtual ~EventTrigger ();
+	
+ public:
 	/* @PropertyType=TriggerActionCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *ActionsProperty;
-	/* @PropertyType=string,ManagedPropertyType=RoutedEvent,ManagedFieldAccess=Internal */
+	/* @PropertyType=string,ManagedPropertyType=RoutedEvent,ManagedFieldAccess=Internal,GenerateAccessors */
 	static DependencyProperty *RoutedEventProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -48,15 +55,14 @@ public:
 	void SetTarget (DependencyObject *target);
 	void RemoveTarget (DependencyObject *target);
 
+	//
 	// Property Accessors
-	TriggerActionCollection* GetActions();
-	void SetActions (TriggerActionCollection* value);
-protected:
-	virtual ~EventTrigger ();
-
-private:
-	int registered_event_id;
-	static void event_trigger_fire_actions (EventObject *sender, EventArgs *calldata, gpointer closure);
+	//
+	void SetActions (TriggerActionCollection *value);
+	TriggerActionCollection *GetActions ();
+	
+	void SetRoutedEvent (const char *event);
+	const char *GetRoutedEvent ();
 };
 
 G_BEGIN_DECLS

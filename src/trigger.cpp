@@ -30,21 +30,21 @@ void
 EventTrigger::SetTarget (DependencyObject *target)
 {
 	g_return_if_fail (target);
-
+	
 	if (target->GetSurface() && target->GetSurface()->IsSilverlight2()) {
-		char* event = GetValue (EventTrigger::RoutedEventProperty)->AsString();
-		char* dot;
-		if ((dot = strchr (event, '.')) == NULL) {
-			registered_event_id = target->GetType()->LookupEvent (GetValue (EventTrigger::RoutedEventProperty)->AsString());
-		}
-		else {
+		const char *event = GetRoutedEvent ();
+		const char *dot;
+		
+		if (event && (dot = strchr (event, '.'))) {
 			char *type = g_strndup (event, dot-event);
-			char *event_name = g_strdup (dot + 1);
-
-			Type *event_type = Type::Find(type);
+			const char *event_name = dot + 1;
+			
+			Type *event_type = Type::Find (type);
+			g_free (type);
+			
 			if (event_type) {
 				// event type has to exist
-				if (target->GetType()->IsSubclassOf(event_type->GetKind())) {
+				if (target->GetType()->IsSubclassOf (event_type->GetKind ())) {
 					// the type of the target has
 					// to be a subclass of the
 					// event type for the event to
@@ -52,19 +52,18 @@ EventTrigger::SetTarget (DependencyObject *target)
 					registered_event_id = event_type->LookupEvent (event_name);
 				}
 			}
-
-			g_free (type);
-			g_free (event_name);
+		} else if (event) {
+			registered_event_id = target->GetType ()->LookupEvent (event);
 		}
+		
 		if (registered_event_id == -1)
 			g_warning ("failed to set target");
-	}
-	else {
+	} else {
 		/* Despite the name, in silverlight 1.0 it can only be
 		   loaded (according to the docs) */
 		registered_event_id = UIElement::LoadedEvent;
 	}
-
+	
 	if (registered_event_id != -1)
 		target->AddHandler (registered_event_id, event_trigger_fire_actions, this);
 }

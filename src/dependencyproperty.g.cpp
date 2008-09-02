@@ -1717,6 +1717,19 @@ EventTrigger::SetActions (TriggerActionCollection * value)
 	SetValue (EventTrigger::ActionsProperty, Value (value));
 }
 
+const char *
+EventTrigger::GetRoutedEvent ()
+{
+	Value *value = GetValue (EventTrigger::RoutedEventProperty);
+	return value ? value->AsString () : NULL;
+}
+
+void
+EventTrigger::SetRoutedEvent (const char * value)
+{
+	SetValue (EventTrigger::RoutedEventProperty, Value (value));
+}
+
 #if SL_2_0
 double
 FrameworkElement::GetActualHeight ()

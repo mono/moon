@@ -260,6 +260,16 @@ collection_set_value_at_with_error (Collection *instance, int index, Value *valu
 
 
 /**
+ * CollectionChangedEventArgs
+ **/
+CollectionChangedEventArgs *
+collection_changed_event_args_new (void)
+{
+	return new CollectionChangedEventArgs ();
+}
+
+
+/**
  * CollectionIterator
  **/
 void

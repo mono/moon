@@ -1,3 +1,9 @@
+2008-09-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	* trigger.cpp (EventTrigger::SetTarget): Fixed to not need to
+	strdup the event_name string and also updated to use an accessor
+	method to prevent a possible NULL dereference.
+
 2008-09-02  Michael Dominic K.  <mdk@mdk.am>
 
 	* animation.cpp:
