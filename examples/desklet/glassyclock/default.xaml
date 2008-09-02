@@ -1,177 +1,177 @@
 <Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
- 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="Desklets.Clock;assembly=clock.dll"
-	Loaded="PageLoaded" Width="114" Height="114">
+        Loaded="PageLoaded" Width="114" Height="114">
 
   <!-- close/drag elements -->
-        <Polygon x:Name="desklet-close" Canvas.Left="0" Canvas.Top="0"
-                 Points="4 4 8 8 4 12 6 14 10 10 14 14 16 12 12 8 16 4 14 2 10 6 6 2 4 4"
-                 Stroke="#66FFFFFF" StrokeThickness="3" Fill="#66FFFFFF" />
+  <Polygon x:Name="desklet-close" Canvas.Left="0" Canvas.Top="0"
+           Points="4 4 8 8 4 12 6 14 10 10 14 14 16 12 12 8 16 4 14 2 10 6 6 2 4 4"
+           Stroke="#66FFFFFF" StrokeThickness="3" Fill="#66FFFFFF" />
 
-	<!-- outer border -->
-	<Ellipse Canvas.Left="2" Canvas.Top="2" Width="110" Height="110" StrokeThickness="4">
-		<Ellipse.Stroke>
-			<LinearGradientBrush>
-				<LinearGradientBrush.GradientStops>
-					<GradientStop Color="#aaffffff" Offset="0" />
-					<GradientStop Color="#aa999999" Offset="1" />
-				</LinearGradientBrush.GradientStops>
-			</LinearGradientBrush>
-		</Ellipse.Stroke>
-	</Ellipse>
+  <!-- outer border -->
+  <Ellipse Canvas.Left="2" Canvas.Top="2" Width="110" Height="110" StrokeThickness="4">
+    <Ellipse.Stroke>
+      <LinearGradientBrush>
+        <LinearGradientBrush.GradientStops>
+          <GradientStop Color="#aaffffff" Offset="0" />
+          <GradientStop Color="#aa999999" Offset="1" />
+        </LinearGradientBrush.GradientStops>
+      </LinearGradientBrush>
+    </Ellipse.Stroke>
+  </Ellipse>
 
 
-	<!-- inner border -->
-	<Ellipse Canvas.Left="4" Canvas.Top="4" Width="106" Height="106" StrokeThickness="4">
-		<Ellipse.Stroke>
-			<LinearGradientBrush>
-				<LinearGradientBrush.GradientStops>
-					<GradientStop Color="#aa999999" Offset="0" />
-					<GradientStop Color="#aaffffff" Offset="1" />
-				</LinearGradientBrush.GradientStops>
-			</LinearGradientBrush>
-		</Ellipse.Stroke>
-	</Ellipse>
+  <!-- inner border -->
+  <Ellipse Canvas.Left="4" Canvas.Top="4" Width="106" Height="106" StrokeThickness="4">
+    <Ellipse.Stroke>
+      <LinearGradientBrush>
+        <LinearGradientBrush.GradientStops>
+          <GradientStop Color="#aa999999" Offset="0" />
+          <GradientStop Color="#aaffffff" Offset="1" />
+        </LinearGradientBrush.GradientStops>
+      </LinearGradientBrush>
+    </Ellipse.Stroke>
+  </Ellipse>
 
-	<!-- background -->
-	<Ellipse Canvas.Left="6" Canvas.Top="6" Width="102" Height="102">
-		<Ellipse.Fill>
-			<LinearGradientBrush StartPoint="0.4,0.1" EndPoint="0.6,0.9">
-				<LinearGradientBrush.GradientStops>
-					<GradientStop Offset="0.0" Color="#33888888" />
-					<GradientStop Offset="1.0" Color="#33111111" />
-				</LinearGradientBrush.GradientStops>
-			</LinearGradientBrush>
-		</Ellipse.Fill>
-	</Ellipse>
+  <!-- background -->
+  <Ellipse Canvas.Left="6" Canvas.Top="6" Width="102" Height="102">
+    <Ellipse.Fill>
+      <LinearGradientBrush StartPoint="0.4,0.1" EndPoint="0.6,0.9">
+        <LinearGradientBrush.GradientStops>
+          <GradientStop Offset="0.0" Color="#33888888" />
+          <GradientStop Offset="1.0" Color="#33111111" />
+        </LinearGradientBrush.GradientStops>
+      </LinearGradientBrush>
+    </Ellipse.Fill>
+  </Ellipse>
 
-	<!-- Marks -->
-	<Rectangle Canvas.Top="7" Canvas.Left="56" Fill="Black" Stroke="" Width="1" Height="5">
-		<Rectangle.RenderTransform>
-			<RotateTransform CenterX="0" CenterY="50" Angle="0" />
-		</Rectangle.RenderTransform>
-	</Rectangle>
-	<Rectangle Canvas.Top="7" Canvas.Left="57" Fill="Black" Stroke="" Width="1" Height="5">
-		<Rectangle.RenderTransform>
-			<RotateTransform CenterX="0" CenterY="50" Angle="30" />
-		</Rectangle.RenderTransform>
-	</Rectangle>
-	<Rectangle Canvas.Top="7" Canvas.Left="57" Fill="Black" Stroke="" Width="1" Height="5">
-		<Rectangle.RenderTransform>
-			<RotateTransform CenterX="0" CenterY="50" Angle="60" />
-		</Rectangle.RenderTransform>
-	</Rectangle>
-	<Rectangle Canvas.Top="7" Canvas.Left="56" Fill="Black" Stroke="" Width="1" Height="5">
-		<Rectangle.RenderTransform>
-			<RotateTransform CenterX="0" CenterY="50" Angle="90" />
-		</Rectangle.RenderTransform>
-	</Rectangle>
-	<Rectangle Canvas.Top="7" Canvas.Left="57" Fill="Black" Stroke="" Width="1" Height="5">
-		<Rectangle.RenderTransform>
-			<RotateTransform CenterX="0" CenterY="50" Angle="120" />
-		</Rectangle.RenderTransform>
-	</Rectangle>
-	<Rectangle Canvas.Top="7" Canvas.Left="57" Fill="Black" Stroke="" Width="1" Height="5">
-		<Rectangle.RenderTransform>
-			<RotateTransform CenterX="0" CenterY="50" Angle="150" />
-		</Rectangle.RenderTransform>
-	</Rectangle>
-	<Rectangle Canvas.Top="7" Canvas.Left="56" Fill="Black" Stroke="" Width="1" Height="5">
-		<Rectangle.RenderTransform>
-			<RotateTransform CenterX="1" CenterY="50" Angle="180" />
-		</Rectangle.RenderTransform>
-	</Rectangle>
-	<Rectangle Canvas.Top="7" Canvas.Left="57" Fill="Black" Stroke="" Width="1" Height="5">
-		<Rectangle.RenderTransform>
-			<RotateTransform CenterX="1" CenterY="50" Angle="210" />
-		</Rectangle.RenderTransform>
-	</Rectangle>
-	<Rectangle Canvas.Top="7" Canvas.Left="57" Fill="Black" Stroke="" Width="1" Height="5">
-		<Rectangle.RenderTransform>
-			<RotateTransform CenterX="1" CenterY="50" Angle="240" />
-		</Rectangle.RenderTransform>
-	</Rectangle>
-	<Rectangle Canvas.Top="7" Canvas.Left="56" Fill="Black" Stroke="" Width="1" Height="5">
-		<Rectangle.RenderTransform>
-			<RotateTransform CenterX="1" CenterY="50" Angle="270" />
-		</Rectangle.RenderTransform>
-	</Rectangle>
-	<Rectangle Canvas.Top="7" Canvas.Left="57" Fill="Black" Stroke="" Width="1" Height="5">
-		<Rectangle.RenderTransform>
-			<RotateTransform CenterX="1" CenterY="50" Angle="300" />
-		</Rectangle.RenderTransform>
-	</Rectangle>
-	<Rectangle Canvas.Top="7" Canvas.Left="57" Fill="Black" Stroke="" Width="1" Height="5">
-		<Rectangle.RenderTransform>
-			<RotateTransform CenterX="1" CenterY="50" Angle="330" />
-		</Rectangle.RenderTransform>
-	</Rectangle>
+  <!-- Marks -->
+  <Rectangle Canvas.Top="7" Canvas.Left="56" Fill="Black" Stroke="" Width="1" Height="5">
+    <Rectangle.RenderTransform>
+      <RotateTransform CenterX="0" CenterY="50" Angle="0" />
+    </Rectangle.RenderTransform>
+  </Rectangle>
+  <Rectangle Canvas.Top="7" Canvas.Left="57" Fill="Black" Stroke="" Width="1" Height="5">
+    <Rectangle.RenderTransform>
+      <RotateTransform CenterX="0" CenterY="50" Angle="30" />
+    </Rectangle.RenderTransform>
+  </Rectangle>
+  <Rectangle Canvas.Top="7" Canvas.Left="57" Fill="Black" Stroke="" Width="1" Height="5">
+    <Rectangle.RenderTransform>
+      <RotateTransform CenterX="0" CenterY="50" Angle="60" />
+    </Rectangle.RenderTransform>
+  </Rectangle>
+  <Rectangle Canvas.Top="7" Canvas.Left="56" Fill="Black" Stroke="" Width="1" Height="5">
+    <Rectangle.RenderTransform>
+      <RotateTransform CenterX="0" CenterY="50" Angle="90" />
+    </Rectangle.RenderTransform>
+  </Rectangle>
+  <Rectangle Canvas.Top="7" Canvas.Left="57" Fill="Black" Stroke="" Width="1" Height="5">
+    <Rectangle.RenderTransform>
+      <RotateTransform CenterX="0" CenterY="50" Angle="120" />
+    </Rectangle.RenderTransform>
+  </Rectangle>
+  <Rectangle Canvas.Top="7" Canvas.Left="57" Fill="Black" Stroke="" Width="1" Height="5">
+    <Rectangle.RenderTransform>
+      <RotateTransform CenterX="0" CenterY="50" Angle="150" />
+    </Rectangle.RenderTransform>
+  </Rectangle>
+  <Rectangle Canvas.Top="7" Canvas.Left="56" Fill="Black" Stroke="" Width="1" Height="5">
+    <Rectangle.RenderTransform>
+      <RotateTransform CenterX="1" CenterY="50" Angle="180" />
+    </Rectangle.RenderTransform>
+  </Rectangle>
+  <Rectangle Canvas.Top="7" Canvas.Left="57" Fill="Black" Stroke="" Width="1" Height="5">
+    <Rectangle.RenderTransform>
+      <RotateTransform CenterX="1" CenterY="50" Angle="210" />
+    </Rectangle.RenderTransform>
+  </Rectangle>
+  <Rectangle Canvas.Top="7" Canvas.Left="57" Fill="Black" Stroke="" Width="1" Height="5">
+    <Rectangle.RenderTransform>
+      <RotateTransform CenterX="1" CenterY="50" Angle="240" />
+    </Rectangle.RenderTransform>
+  </Rectangle>
+  <Rectangle Canvas.Top="7" Canvas.Left="56" Fill="Black" Stroke="" Width="1" Height="5">
+    <Rectangle.RenderTransform>
+      <RotateTransform CenterX="1" CenterY="50" Angle="270" />
+    </Rectangle.RenderTransform>
+  </Rectangle>
+  <Rectangle Canvas.Top="7" Canvas.Left="57" Fill="Black" Stroke="" Width="1" Height="5">
+    <Rectangle.RenderTransform>
+      <RotateTransform CenterX="1" CenterY="50" Angle="300" />
+    </Rectangle.RenderTransform>
+  </Rectangle>
+  <Rectangle Canvas.Top="7" Canvas.Left="57" Fill="Black" Stroke="" Width="1" Height="5">
+    <Rectangle.RenderTransform>
+      <RotateTransform CenterX="1" CenterY="50" Angle="330" />
+    </Rectangle.RenderTransform>
+  </Rectangle>
 
-	<!-- hour hand -->
-	<Line Stroke="#101010" X1="57" Y1="28" X2="57" Y2="67" StrokeThickness="3">
-		<Line.RenderTransform>
-			<RotateTransform x:Name="hourHand" Angle="30" CenterX="57" CenterY="57" />
-		</Line.RenderTransform>
-	</Line>
+  <!-- hour hand -->
+  <Line Stroke="#101010" X1="57" Y1="28" X2="57" Y2="67" StrokeThickness="3">
+    <Line.RenderTransform>
+      <RotateTransform x:Name="hourHand" Angle="30" CenterX="57" CenterY="57" />
+    </Line.RenderTransform>
+  </Line>
 
-	<!-- minute hand -->
-	<Line Stroke="#101010" X1="57" Y1="16" X2="57" Y2="70" StrokeThickness="2">
-		<Line.RenderTransform>
-			<RotateTransform x:Name="minuteHand" Angle="100" CenterX="57" CenterY="57" />
-		</Line.RenderTransform>
-	</Line>
+  <!-- minute hand -->
+  <Line Stroke="#101010" X1="57" Y1="16" X2="57" Y2="70" StrokeThickness="2">
+    <Line.RenderTransform>
+      <RotateTransform x:Name="minuteHand" Angle="100" CenterX="57" CenterY="57" />
+    </Line.RenderTransform>
+  </Line>
 
-	<!-- middle -->
-	<Path Fill="#101010">
-		<Path.Data>
-			<EllipseGeometry Center="57,57" RadiusX="3" RadiusY="3" />
-		</Path.Data>
-	</Path>
+  <!-- middle -->
+  <Path Fill="#101010">
+    <Path.Data>
+      <EllipseGeometry Center="57,57" RadiusX="3" RadiusY="3" />
+    </Path.Data>
+  </Path>
 
-	<!-- seconds hand -->
-	<Path Fill="#6393c4" Stroke="#6393c4">
-		<Path.Data>
-			<EllipseGeometry Center="57,57" RadiusX="1" RadiusY="1" />
-		</Path.Data>
-	</Path>
-	<Line Stroke="#6393c4" X1="57" Y1="14" X2="57" Y2="67" StrokeThickness="1" StrokeStartLineCap="Round">
-		<Line.RenderTransform>
-			<RotateTransform x:Name="secondsHand" Angle="90" CenterX="57" CenterY="57" />
-		</Line.RenderTransform>
-	</Line>
+  <!-- seconds hand -->
+  <Path Fill="#6393c4" Stroke="#6393c4">
+    <Path.Data>
+      <EllipseGeometry Center="57,57" RadiusX="1" RadiusY="1" />
+    </Path.Data>
+  </Path>
+  <Line Stroke="#6393c4" X1="57" Y1="14" X2="57" Y2="67" StrokeThickness="1" StrokeStartLineCap="Round">
+    <Line.RenderTransform>
+      <RotateTransform x:Name="secondsHand" Angle="90" CenterX="57" CenterY="57" />
+    </Line.RenderTransform>
+  </Line>
 
-	<Path.Triggers>
-		<EventTrigger>
-			<BeginStoryboard>
-				<Storyboard>
-					<DoubleAnimation Name="secondsAnim"
-						Storyboard.TargetName="secondsHand"
-						Storyboard.TargetProperty="Angle"
-						RepeatBehavior="Forever" Duration="0:01:00" By="360" />
-					<DoubleAnimation Name="minutesAnim"
-						Storyboard.TargetName="minuteHand"
-						Storyboard.TargetProperty="Angle"
-						RepeatBehavior="Forever" Duration="1:00:00" By="360" />
-					<DoubleAnimation Name="hoursAnim"
-						Storyboard.TargetName="hourHand"
-						Storyboard.TargetProperty="Angle"
-						RepeatBehavior="Forever" Duration="12:00:00" By="360" />
-				</Storyboard>
-			</BeginStoryboard>
-		</EventTrigger>
-	</Path.Triggers>
-	
+  <Path.Triggers>
+    <EventTrigger RoutedEvent="Canvas.Loaded">
+      <BeginStoryboard>
+        <Storyboard>
+          <DoubleAnimation x:Name="secondsAnim"
+            Storyboard.TargetName="secondsHand"
+            Storyboard.TargetProperty="Angle"
+            RepeatBehavior="Forever" Duration="0:01:00" By="360" />
+          <DoubleAnimation x:Name="minutesAnim"
+            Storyboard.TargetName="minuteHand"
+            Storyboard.TargetProperty="Angle"
+            RepeatBehavior="Forever" Duration="1:00:00" By="360" />
+          <DoubleAnimation x:Name="hoursAnim"
+            Storyboard.TargetName="hourHand"
+            Storyboard.TargetProperty="Angle"
+            RepeatBehavior="Forever" Duration="12:00:00" By="360" />
+        </Storyboard>
+      </BeginStoryboard>
+    </EventTrigger>
+  </Path.Triggers>
+  
 
-	<!-- glass--> 
-	<Ellipse Canvas.Left="2" Canvas.Top="2" Width="106" Height="106">
-		<Ellipse.Fill>
-			<RadialGradientBrush Center="0.7,0.8" SpreadMethod="Pad" RadiusX="1.3" RadiusY="1.2">
-				<GradientStop Offset="0.0" Color="Transparent" />
-				<GradientStop Offset="0.4" Color="#30ffffff" />
-				<GradientStop Offset="0.5" Color="#60ffffff" />
-				<GradientStop Offset="0.6" Color="#3fffffff" />
-				<GradientStop Offset="1.0" Color="Transparent" />
-			</RadialGradientBrush>
-		</Ellipse.Fill>
-	</Ellipse>
+  <!-- glass--> 
+  <Ellipse Canvas.Left="2" Canvas.Top="2" Width="106" Height="106">
+    <Ellipse.Fill>
+      <RadialGradientBrush Center="0.7,0.8" SpreadMethod="Pad" RadiusX="1.3" RadiusY="1.2">
+        <GradientStop Offset="0.0" Color="Transparent" />
+        <GradientStop Offset="0.4" Color="#30ffffff" />
+        <GradientStop Offset="0.5" Color="#60ffffff" />
+        <GradientStop Offset="0.6" Color="#3fffffff" />
+        <GradientStop Offset="1.0" Color="Transparent" />
+      </RadialGradientBrush>
+    </Ellipse.Fill>
+  </Ellipse>
 </Canvas>
