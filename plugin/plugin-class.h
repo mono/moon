@@ -17,7 +17,7 @@
 #include "moonlight.h"
 #include "error.h"
 #include "plugin.h"
-
+#include "gtk/gtkgl.h"
 
 G_BEGIN_DECLS
 void plugin_init_classes (void);

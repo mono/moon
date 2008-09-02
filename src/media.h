@@ -206,6 +206,7 @@ class Image : public MediaBase {
 	
 	// pattern caching
 	cairo_pattern_t *pattern;
+	guint texture_id;
 
 	// pixbuf loading
 	GdkPixbufLoader *loader;

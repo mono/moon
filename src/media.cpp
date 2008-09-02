@@ -17,6 +17,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <GL/gl.h>
 
 #include "runtime.h"
 #include "media.h"
@@ -1889,6 +1890,7 @@ Image::Image ()
 	surface = NULL;
 	loader = NULL;
 	loader_err = NULL;
+	texture_id = 0;
 }
 
 Image::~Image ()
@@ -1924,6 +1926,11 @@ Image::CleanupSurface ()
 		}
 		
 		surface = NULL;
+	}
+
+	if (texture_id) {
+		glDeleteTextures (1, &texture_id);
+		texture_id = 0;
 	}
 }
 
@@ -2369,27 +2376,60 @@ Image::pixbuf_write (void *buf, gint32 offset, gint32 n, gpointer data)
 	((Image *) data)->PixbufWrite (buf, offset, n);
 }
 
+static double*
+convert_3_matrix_to_4 (cairo_matrix_t *matrix)
+{
+	double *out = (double *) g_malloc (sizeof (double) * 16);
+	out [0] = matrix->xx;
+	out [1] = matrix->xy;
+	out [2] = 0;
+	out [3] = 0;
+
+	out [4] = matrix->yx;
+	out [5] = matrix->yy;
+	out [6] = 0;
+	out [7] = 0;
+
+	out [8] = 0;
+	out [9] = 0;
+	out [10] = 1; // 1 here?
+	out [11] = 0;
+
+	out [12] = matrix->x0;
+	out [13] = matrix->y0;
+	out [14] = 0;
+	out [15] = 1;
+
+	return out;
+}
+
+void print_cairo_matrix (cairo_matrix_t *m)
+{
+	printf ("[%.2f %.2f]\n", m->xx, m->yx);
+	printf ("[%.2f %.2f]\n", m->xy, m->yy);
+	printf ("[%.2f %.2f]\n\n", m->x0, m->y0);
+}
+
+void print_gl_matrix (double *m)
+{
+	printf ("[%.2f %.2f %.2f %.2f]\n", m [0], m [4], m [8], m [12]);
+	printf ("[%.2f %.2f %.2f %.2f]\n", m [1], m [5], m [9], m [13]);
+	printf ("[%.2f %.2f %.2f %.2f]\n", m [2], m [6], m [10], m [14]);
+	printf ("[%.2f %.2f %.2f %.2f]\n\n", m [3], m [7], m [11], m [15]);
+}
+
 void
 Image::Render (cairo_t *cr, Region *region)
 {
 	if (!surface)
 		return;
-	
-	if (create_xlib_surface && !surface->xlib_surface_created) {
-		surface->xlib_surface_created = true;
-		
-		cairo_surface_t *xlib_surface = image_brush_create_similar (cr, surface->width, surface->height);
-		cairo_t *cr = cairo_create (xlib_surface);
 
-		cairo_set_source_surface (cr, surface->cairo, 0, 0);
+	if (texture_id == 0) {
+		printf ("* GL: Generating texture for image...\n");
+		glGenTextures (1, &texture_id);
+		glBindTexture (GL_TEXTURE_RECTANGLE_ARB, texture_id);
 
-		//cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
-		cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_FAST);
-
-		cairo_paint (cr);
-		cairo_destroy (cr);
-
-		cairo_surface_destroy (surface->cairo);
+		glTexImage2D (GL_TEXTURE_RECTANGLE_ARB, 0, 4, surface->width, surface->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, cairo_image_surface_get_data (surface->cairo));
 
 		if (surface->backing_pixbuf) {
 			g_object_unref (surface->backing_pixbuf);
@@ -2401,7 +2441,8 @@ Image::Render (cairo_t *cr, Region *region)
 			surface->backing_data =NULL;
 		}
 
-		surface->cairo = xlib_surface;
+	} else {
+		glBindTexture (GL_TEXTURE_RECTANGLE_ARB, texture_id);
 	}
 
 	cairo_save (cr);
@@ -2410,22 +2451,37 @@ Image::Render (cairo_t *cr, Region *region)
 	double h = GetHeight ();
 	double w = GetWidth ();
 	
-	if (!pattern)
-		pattern = cairo_pattern_create_for_surface (surface->cairo);
+	//if (!pattern)
+	//	pattern = cairo_pattern_create_for_surface (surface->cairo);
 	
 	cairo_matrix_t matrix;
 	
 	image_brush_compute_pattern_matrix (&matrix, w, h, surface->width, surface->height, stretch, 
 					    AlignmentXCenter, AlignmentYCenter, NULL, NULL);
 	
-	cairo_pattern_set_matrix (pattern, &matrix);
-	cairo_set_source (cr, pattern);
+	//cairo_pattern_set_matrix (pattern, &matrix);
+	//cairo_set_source (cr, pattern);
 
-	cairo_set_matrix (cr, &absolute_xform);
+	//cairo_set_matrix (cr, &absolute_xform);
+
+	glMatrixMode (GL_MODELVIEW);
+	glPushMatrix ();
+
+	double *gl_matrix = convert_3_matrix_to_4 (&absolute_xform);
+	glMultMatrixd (gl_matrix);
+	g_free (gl_matrix);
+
+	glBegin( GL_QUADS );
+	glTexCoord2d (0.0, 0.0); glVertex2d (0, 0);
+	glTexCoord2d (surface->width, 0.0); glVertex2d (w, 0);
+	glTexCoord2d (surface->width, surface->height); glVertex2d (w, h);
+	glTexCoord2d (0.0, surface->height); glVertex2d (0, h);
+	glEnd();
 	
-	cairo_rectangle (cr, 0, 0, w, h);
-	cairo_fill (cr);
+	//cairo_rectangle (cr, 0, 0, w, h);
+	//cairo_fill (cr);
 
+	glPopMatrix ();
 	cairo_restore (cr);
 }
 

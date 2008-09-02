@@ -604,8 +604,12 @@ Surface::ProcessUpdates ()
 void
 Surface::Paint (cairo_t *ctx, int x, int y, int width, int height)
 {
-	Rect r = Rect (x, y, width, height);
-	Region region = Region (r);
+	Region region = Region (x, y, width, height);
+
+	cairo_surface_set_device_offset (cairo_get_target (ctx),
+					 -x, 
+					 -y);
+
 	Paint (ctx, &region);
 }
 

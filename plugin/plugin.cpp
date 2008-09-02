@@ -560,22 +560,8 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 	error = NPN_GetValue (instance, NPNVSupportsWindowless, &supportsWindowless);
 	supportsWindowless = (error == NPERR_NO_ERROR) && supportsWindowless;
 
-#ifdef DEBUG
-	if ((moonlight_flags & RUNTIME_INIT_ALLOW_WINDOWLESS) == 0) {
-		printf ("plugin wants to be windowless, but we're not going to let it\n");
-		windowless = false;
-	}
-#endif
-	if (windowless) {
-		if (supportsWindowless) {
-			NPN_SetValue (instance, NPPVpluginWindowBool, (void *) FALSE);
-			NPN_SetValue (instance, NPPVpluginTransparentBool, (void *) TRUE);
-			d(printf ("windowless mode\n"));
-		} else {
-			d(printf ("browser doesn't support windowless mode.\n"));
-			windowless = false;
-		}
-	}
+	printf ("plugin wants to be windowless, but we're not going to let it\n");
+	windowless = false;
 
         // grovel around in the useragent and try to figure out which
         // browser bridge we should use.

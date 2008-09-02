@@ -1,4 +1,6 @@
 #include "window-gtk.h"
+#include <gtk/gtkgl.h>
+#include <GL/gl.h>
 
 MoonWindowGtk::MoonWindowGtk (bool fullscreen, int w, int h)
 	: MoonWindow (w, h)
@@ -37,17 +39,37 @@ MoonWindowGtk::InitializeFullScreen ()
 void
 MoonWindowGtk::InitializeNormal ()
 {
+	printf ("* GL: Initializing Normal MoonWindowGtk...\n");
 	if (width == -1 || height == -1) {
 		g_warning ("you must specify width and height when creating a non-fullscreen gtk window");
 		width = 0;
 		height = 0;
 	}
 
-	widget = gtk_event_box_new ();
+	widget = gtk_drawing_area_new ();
+	//widget = gtk_event_box_new ();
 
-	gtk_event_box_set_visible_window (GTK_EVENT_BOX (widget), false);
+	//gtk_event_box_set_visible_window (GTK_EVENT_BOX (widget), false);
 
 	InitializeCommon ();
+
+	/* prepare GL */
+	GdkGLConfig *glconfig;
+	printf ("* GL: Creating gl config...\n");
+	glconfig = gdk_gl_config_new_by_mode (
+			(GdkGLConfigMode) (GDK_GL_MODE_RGB |
+			(GdkGLConfigMode) GDK_GL_MODE_DOUBLE));
+
+	if (!glconfig)
+	{
+		g_assert_not_reached ();
+	}
+
+	printf ("* GL: Applying gl capability...\n");
+	if (!gtk_widget_set_gl_capability (widget, glconfig, NULL, TRUE, GDK_GL_RGBA_TYPE))
+	{
+		g_assert_not_reached ();
+	}
 
 	Show ();
 }
@@ -66,6 +88,7 @@ MoonWindowGtk::InitializeCommon ()
 	gtk_widget_add_events (widget, 
 			       GDK_POINTER_MOTION_MASK |
 			       //GDK_POINTER_MOTION_HINT_MASK |
+			       GDK_EXPOSURE_MASK |
 			       GDK_KEY_PRESS_MASK |
 			       GDK_KEY_RELEASE_MASK |
 			       GDK_BUTTON_PRESS_MASK |
@@ -188,30 +211,63 @@ MoonWindowGtk::expose_event (GtkWidget *widget, GdkEventExpose *event, gpointer 
 	if (!window->surface)
 		return true;
 
-	// we draw to a backbuffer pixmap, then transfer the contents
-	// to the widget's window.
-	GdkPixmap *pixmap = gdk_pixmap_new (widget->window,
-					    MAX (event->area.width, 1), MAX (event->area.height, 1), -1);
+	GdkGLContext *glcontext = gtk_widget_get_gl_context (widget);
+	GdkGLDrawable *gldrawable = gtk_widget_get_gl_drawable (widget);
 
-	window->surface->PaintToDrawable (pixmap,
-					  gdk_drawable_get_visual (widget->window),
-					  event,
-					  widget->allocation.x,
-					  widget->allocation.y,
-					  true);
+	if (!gdk_gl_drawable_gl_begin (gldrawable, glcontext))
+	{
+		g_assert_not_reached ();
+	}
 
-	GdkGC *gc = gdk_gc_new (pixmap);
+	/*
+	int w = MAX (event->area.width, 1);
+	int h = MAX (event->area.height, 1);
+	int x = event->area.x;
+	int y = event->area.y;
+	*/
 
-	gdk_gc_set_clip_region (gc, event->region);
+	glClear (GL_COLOR_BUFFER_BIT);
 
-	gdk_draw_drawable (widget->window, gc, pixmap,
-			   0, 0,
-			   event->area.x, event->area.y,
-			   event->area.width, event->area.height);
-	
-	g_object_unref (pixmap);
-	g_object_unref (gc);
+	glEnable (GL_BLEND);
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	cairo_surface_t *surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, 1, 1);
+	cairo_t *cr = cairo_create (surface);
+
+	glEnable (GL_TEXTURE_RECTANGLE_ARB);
+
+	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	window->surface->Paint (cr, 0, 0, widget->allocation.width, widget->allocation.height);
+
+	/*
+        glTexImage2D (GL_TEXTURE_RECTANGLE_ARB, 0, 4, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, cairo_image_surface_get_data (surface));
+
+	glBegin( GL_QUADS );
+	glTexCoord2d (0.0, 0.0); glVertex2d (x, y);
+	glTexCoord2d (w, 0.0); glVertex2d (x + w, y);
+	glTexCoord2d (w, h); glVertex2d (x + w, y + h);
+	glTexCoord2d (0.0, h); glVertex2d (x, y + h);
+	glEnd();
+	*/
+
+	if (gdk_gl_drawable_is_double_buffered (gldrawable))
+		gdk_gl_drawable_swap_buffers (gldrawable);
+	else
+		glFlush ();
+
+	gdk_gl_drawable_gl_end (gldrawable);
+
+	//cairo_surface_write_to_png (surface, "surface.png");
+	cairo_surface_destroy (surface);
+	cairo_destroy (cr);
+
+	// FIXME Remove
 	return true;
 }
 
@@ -327,6 +383,22 @@ gboolean
 MoonWindowGtk::realized (GtkWidget *widget, gpointer user_data)
 {
 	MoonWindowGtk* window = (MoonWindowGtk*)user_data;
+
+	GdkGLContext *glcontext = gtk_widget_get_gl_context (widget);
+	GdkGLDrawable *gldrawable = gtk_widget_get_gl_drawable (widget);
+
+	if (!gdk_gl_drawable_gl_begin (gldrawable, glcontext))
+	{
+		g_assert_not_reached ();
+	}
+
+	glLoadIdentity();
+	glViewport (0, 0, widget->allocation.width, widget->allocation.height);
+	glOrtho (0,widget->allocation.width,widget->allocation.height,0,-20050,10000);
+
+	glClearColor (1.0, 1.0, 1.0, 1.0);
+
+	gdk_gl_drawable_gl_end (gldrawable);
 
 #ifdef USE_XRANDR
 #if INTEL_DRIVERS_STOP_SUCKING

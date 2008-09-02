@@ -227,6 +227,7 @@ NPP_Initialize (void)
 	if (!runtime_initialized) {
 		runtime_initialized = true;
 		runtime_init (RUNTIME_INIT_BROWSER);
+		gtk_gl_init (0, 0);
 	}
 
 	plugin_init_classes ();

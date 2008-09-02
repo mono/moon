@@ -15,6 +15,7 @@
 #endif
 
 #include <cairo.h>
+#include <GL/gl.h>
 
 #include <math.h>
 
@@ -95,7 +96,7 @@ Shape::Shape ()
 	fill = NULL;
 	path = NULL;
 	origin = Point (0, 0);
-	cached_surface = NULL;
+	cached_texture_id = 0;
 	SetShapeFlags (UIElement::SHAPE_NORMAL);
 	cairo_matrix_init_identity (&stretch_transform);
 }
@@ -410,15 +411,42 @@ Shape::IsCandidateForCaching (void)
 	// This is not 100% correct check -- the actual surface size might be
 	// a tiny little bit larger. It's not a problem though if we go few
 	// bytes above the cache limit.
-	if (!GetSurface ()->VerifyWithCacheSizeCounter ((int) bounds.width, (int) bounds.height))
-		return FALSE;
+	//if (!GetSurface ()->VerifyWithCacheSizeCounter ((int) bounds.width, (int) bounds.height))
+	//	return FALSE;
 
 	// one last line of defense, lets not cache things 
 	// much larger than the screen.
-	if (bounds.width * bounds.height > 4000000)
-		return FALSE;
+	//if (bounds.width * bounds.height > 4000000)
+	//	return FALSE;
 
 	return TRUE;
+}
+
+static double*
+convert_3_matrix_to_4 (cairo_matrix_t *matrix)
+{
+	double *out = (double *) g_malloc (sizeof (double) * 16);
+	out [0] = matrix->xx;
+	out [1] = matrix->xy;
+	out [2] = 0;
+	out [3] = 0;
+
+	out [4] = matrix->yx;
+	out [5] = matrix->yy;
+	out [6] = 0;
+	out [7] = 0;
+
+	out [8] = 0;
+	out [9] = 0;
+	out [10] = 1; // 1 here?
+	out [11] = 1;
+
+	out [12] = matrix->x0;
+	out [13] = matrix->y0;
+	out [14] = 0;
+	out [15] = 1;
+
+	return out;
 }
 
 //
@@ -434,7 +462,7 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 	if (IsEmpty ())
 		goto cleanpath;
 
-	if (do_op && cached_surface == NULL && IsCandidateForCaching ()) {
+	if (do_op && cached_texture_id == 0) {
 		Rect cache_extents = bounds.RoundOut ();
 		cairo_t *cached_cr = NULL;
 		
@@ -442,8 +470,9 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 		// bounds.width, bounds.height,
 		// extents.width, extents.height,
 		// cache_extents.width, cache_extents.height);
-		
-		cached_surface = image_brush_create_similar (cr, (int) cache_extents.width, (int) cache_extents.height);
+	
+		cairo_surface_t *cached_surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, (int) cache_extents.width, (int) cache_extents.height);
+		//cached_surface = image_brush_create_similar (cr, (int) cache_extents.width, (int) cache_extents.height);
 		cairo_surface_set_device_offset (cached_surface, -cache_extents.x, -cache_extents.y);
 		cached_cr = cairo_create (cached_surface);
 		
@@ -453,19 +482,57 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 		ret = DrawShape (cached_cr, do_op);
 		
 		cairo_destroy (cached_cr);
+
+		glGenTextures (1, &cached_texture_id);
+		glBindTexture (GL_TEXTURE_RECTANGLE_ARB, cached_texture_id);
+		glTexImage2D (GL_TEXTURE_RECTANGLE_ARB, 0, 4, (int) cache_extents.width, (int) cache_extents.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, cairo_image_surface_get_data (cached_surface));
+
+		cached_w = cache_extents.width;
+		cached_h = cache_extents.height;
+		cached_x = cache_extents.x;
+		cached_y = cache_extents.y;
 		
+		cairo_surface_destroy (cached_surface);
+
 		// Increase our cache size
-		cached_size = GetSurface ()->AddToCacheSizeCounter ((int) cache_extents.width, (int) cache_extents.height);
+		// bcached_size = GetSurface ()->AddToCacheSizeCounter ((int) cache_extents.width, (int) cache_extents.height);
+		//printf ("CREATED %.2f %.2f cached surface...\n", cache_extents.width, cache_extents.height);
 	}
 	
-	if (do_op && cached_surface) {
-		cairo_pattern_t *cached_pattern = NULL;
+	if (do_op && cached_texture_id > 0) {
+		//printf ("DRAWING CACHED THING!\n");
 
-		cached_pattern = cairo_pattern_create_for_surface (cached_surface);
-		cairo_identity_matrix (cr);
-		cairo_set_source (cr, cached_pattern);
-		cairo_pattern_destroy (cached_pattern);
-		cairo_paint (cr);
+		glBindTexture (GL_TEXTURE_RECTANGLE_ARB, cached_texture_id);
+
+		glMatrixMode (GL_MODELVIEW);
+		glPushMatrix ();
+
+		double *gl_matrix = convert_3_matrix_to_4 (&absolute_xform);
+		glMultMatrixd (gl_matrix);
+		g_free (gl_matrix);
+
+		glBegin( GL_QUADS );
+		glTexCoord2d (0.0, 0.0); glVertex2d (0, 0);
+		glTexCoord2d (cached_w, 0.0); glVertex2d (cached_w, 0);
+		glTexCoord2d (cached_w, cached_h); glVertex2d (cached_w, cached_h);
+		glTexCoord2d (0.0, cached_h); glVertex2d (0, cached_h);
+		glEnd();
+
+		glPopMatrix ();
+
+		//cached_pattern = cairo_pattern_create_for_surface (cached_surface);
+		//cairo_identity_matrix (cr);
+		//cairo_set_source (cr, cached_pattern);
+		
+		//double x1, x2, y1, y2;
+
+
+		//cairo_clip_extents (cr, &x1, &y1, &x2, &y2);
+		//printf ("EXTENTS: %.2f %.2f %.2f %.2f\n", x1, y1, x2, y2);
+		//printf ("P: %.2f %.2f", xo, yo);
+		
+		//cairo_pattern_destroy (cached_pattern);
+		//cairo_paint (cr);
 	} else {
 		cairo_set_matrix (cr, &absolute_xform);
 		Clip (cr);
@@ -502,8 +569,10 @@ Shape::ShiftPosition (Point p)
 	// FIXME this is much less than ideal but we must invalidate the surface cache
 	// if the shift is not an integer otherwise we can potentially drow outside our
 	// rounded out bounds.
-       	if (cached_surface && (dx == trunc(dx)) && (dy == trunc(dy))) {
-		cairo_surface_set_device_offset (cached_surface, trunc (-p.x), trunc (-p.y));
+       	if (cached_texture_id > 0 && (dx == trunc(dx)) && (dy == trunc(dy))) {
+		cached_x += (-p.x);
+		cached_y += (-p.y);
+		//cairo_surface_set_device_offset (cached_surface, trunc (-p.x), trunc (-p.y));
 	} else {
 		InvalidateSurfaceCache ();
 	}
@@ -737,12 +806,9 @@ Shape::InvalidatePathCache (bool free)
 void
 Shape::InvalidateSurfaceCache (void)
 {
-	if (cached_surface) {
-		cairo_surface_destroy (cached_surface);
-		if (GetSurface ())
-			GetSurface ()->RemoveFromCacheSizeCounter (cached_size);
-		cached_surface = NULL;
-		cached_size = 0;
+	if (cached_texture_id != 0) {
+		glDeleteTextures (1, &cached_texture_id);
+		cached_texture_id = 0;
 	}
 }
 

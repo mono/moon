@@ -45,8 +45,12 @@ class Shape : public FrameworkElement {
 
 	Brush *stroke, *fill;
 	Point origin;
-	cairo_surface_t *cached_surface;
+	guint32 cached_texture_id;
 	gint64 cached_size;
+	double cached_w;
+	double cached_h;
+	double cached_x;
+	double cached_y;
 	bool needs_clip;
 
 	void DoDraw (cairo_t *cr, bool do_op);
