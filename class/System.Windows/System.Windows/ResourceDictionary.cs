@@ -26,6 +26,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using System;
+using System.Security;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Input;
@@ -61,7 +62,15 @@ namespace System.Windows {
 			return NativeMethods.resource_dictionary_contains_key (native, key);
 		}
 
-		private bool Remove (string key)
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
+		public void Remove (string key)
+		{
+			_Remove (key);
+		}
+
+		private bool _Remove (string key)
 		{
 			return NativeMethods.resource_dictionary_remove (native, key);
 		}
@@ -133,7 +142,7 @@ namespace System.Windows {
 
 		bool IDictionary<object, object>.Remove (object key)
 		{
-			return Remove ((string)key);
+			return _Remove ((string)key);
 		}
 
 		bool IDictionary<object, object>.TryGetValue (object key, out object value)
@@ -173,7 +182,7 @@ namespace System.Windows {
 
 		bool ICollection<KeyValuePair<object, object>>.Remove (KeyValuePair<object, object> item)
 		{
-			return Remove ((string)item.Key);
+			return _Remove ((string)item.Key);
 		}
 
 		// IDictionary<object, object> implementation

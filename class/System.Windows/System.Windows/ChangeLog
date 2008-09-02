@@ -1,3 +1,7 @@
+2008-09-02  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* ResourceDictionary.cs: implement Remove
+
 2008-08-28  Chris Toshok  <toshok@ximian.com>
 
 	* ResourceDictionary.cs: implement most of this.
