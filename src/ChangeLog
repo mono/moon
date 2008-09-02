@@ -1,3 +1,9 @@
+2008-09-02  Michael Dominic K.  <mdk@mdk.am>
+
+	* animation.cpp: Fixing a problem in animation hookup 
+	storage -- the type/kind that the animation generates has to be the subclass
+	of the type/kind the target property is ready to accept.
+
 2008-09-01  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscalesubimage.h: fixing code generation decorators
