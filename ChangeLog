@@ -1,3 +1,13 @@
+2008-09-03  Jackson Harper  <jackson@ximian.com>
+
+	* tools/xamlg/xamlg.cs: Add code for getting resources, it's
+	commented out right now, because MS isn't doing this, but I wrote
+	the code before I realized that, and will leave it in, since I am
+	sure it will be added at some point.
+	- Don't try to lookup names or resources if we are an Application,
+	since System.Windows.Application doesnt have a FindName/Resource
+	in Silverlight.
+
 2008-08-22  Raja R Harinath  <harinath@hurrynot.org>
 
 	* configure.ac (SMCS_ASM): Remove spaces around '='.

@@ -121,6 +121,7 @@ namespace Moonlight {
 				return;
 			}
 
+			bool is_application = root.LocalName == "Application";
 			string root_ns;
 			string root_type;
 			string root_asm;
@@ -128,6 +129,7 @@ namespace Moonlight {
 			ParseXmlns (root_class.Value, out root_type, out root_ns, out root_asm);
 
 			Hashtable names_and_types = GetNamesAndTypes (root, nsmgr);
+//			Hashtable keys_and_types = GetKeysAndTypes (root, nsmgr);
 
 			CodeCompileUnit ccu = new CodeCompileUnit ();
 			CodeNamespace decl_ns = new CodeNamespace (root_ns);
@@ -178,31 +180,34 @@ namespace Moonlight {
 				initcomp.Statements.Add (load_component);
 			}
 
-			foreach (DictionaryEntry entry  in names_and_types) {
-				string name = (string) entry.Key;
-				string type = (string) entry.Value;
-					
-				CodeMemberField field = new CodeMemberField ();
+			if (!is_application) {
+				foreach (DictionaryEntry entry  in names_and_types) {
+					string name = (string) entry.Key;
+					string type = (string) entry.Value;
 
-				if (sl2)
-					field.Attributes = MemberAttributes.Assembly;
+					CodeMemberField field = new CodeMemberField ();
 
-				field.Name = name;
-				field.Type = new CodeTypeReference (type);
+					if (sl2)
+						field.Attributes = MemberAttributes.Assembly;
 
-				decl_type.Members.Add (field);
+					field.Name = name;
+					field.Type = new CodeTypeReference (type);
 
-				CodeMethodInvokeExpression find_invoke = new CodeMethodInvokeExpression (
-					new CodeThisReferenceExpression(), "FindName", 
-					new CodeExpression[] { new CodePrimitiveExpression (name) } );
+					decl_type.Members.Add (field);
 
-				CodeCastExpression cast = new CodeCastExpression (type, find_invoke);
+					CodeMethodInvokeExpression find_invoke = new CodeMethodInvokeExpression (
+						new CodeThisReferenceExpression(), "FindName", 
+						new CodeExpression[] { new CodePrimitiveExpression (name) } );
 
-				CodeAssignStatement assign = new CodeAssignStatement (
-					new CodeVariableReferenceExpression (name), cast);
+					CodeCastExpression cast = new CodeCastExpression (type, find_invoke);
 
-				initcomp.Statements.Add (assign);
+					CodeAssignStatement assign = new CodeAssignStatement (
+						new CodeVariableReferenceExpression (name), cast);
+
+					initcomp.Statements.Add (assign);
+				}
 			}
+			
 
 			using (StreamWriter writer = new StreamWriter (out_file)) {
 				provider.GenerateCodeFromCompileUnit (ccu, writer, new CodeGeneratorOptions ());
@@ -233,7 +238,34 @@ namespace Moonlight {
 
 			return res;
 		}
-		
+
+		/*
+		private static Hashtable GetKeysAndTypes (XmlNode root, XmlNamespaceManager nsmgr)
+		{
+			Hashtable res = new Hashtable ();
+
+			XmlNodeList keys = root.SelectNodes ("//*[@x:Key]", nsmgr);
+			foreach (XmlNode node in keys)	{
+
+				// Don't take the root canvas
+				if (node == root)
+					continue;
+
+				XmlAttribute attr = node.Attributes ["x:Key"];
+				string key = attr.Value;
+				string ns = GetNamespace (node);
+				string member_type = node.LocalName;
+
+				if (ns != null)
+					member_type = String.Concat (ns, ".", member_type);
+
+				res [key] = member_type;
+			}
+
+			return res;
+		}
+		*/
+
 		private static string GetNamespace (XmlNode node)
 		{
 			if (!IsCustom (node.NamespaceURI))
