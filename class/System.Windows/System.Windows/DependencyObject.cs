@@ -213,6 +213,7 @@ namespace System.Windows {
 			case Kind.STYLUSPOINT_COLLECTION: return new StylusPointCollection (raw);
 			case Kind.STYLUSPOINT: return new StylusPoint (raw);
 			case Kind.TEXTBLOCK: return new TextBlock (raw);
+			case Kind.TEXTBOX: return new TextBox (raw);
 			case Kind.TIMELINE_COLLECTION: return new TimelineCollection (raw);
 			case Kind.TIMELINEMARKER_COLLECTION: return new TimelineMarkerCollection (raw);
 			case Kind.TRANSFORM_COLLECTION: return new TransformCollection (raw);
@@ -249,7 +250,7 @@ namespace System.Windows {
 
 			default:
 				throw new Exception (
-					String.Format ("Kind missing from switch: {0}", k ));
+					String.Format ("DependencyObject::CreateObject(): Kind missing from switch: {0}", k));
 			}
 		}
 
