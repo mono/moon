@@ -1,0 +1,23 @@
+#!/bin/sh
+
+revision_number=`svn info | grep "Last Changed Rev:" | awk '{print $4}'`
+author=`svn info | grep "Last Changed Author:" | awk '{print $4}'`
+changelog=`svn -v log -l1`
+
+if [ -z "$revision_number" ]; then
+  echo "Failed to fetch revision number from SVN!"
+  exit 128
+fi
+
+if [ -z "$author" ]; then
+  echo "Failed to fetch author from SVN!"
+  exit 128
+fi
+
+if [ -z "$changelog" ]; then
+  echo "Failed to fetch changelog from SVN!"
+  exit 128
+fi
+
+echo "Note: using database stored in your home directory... ~/moonlight-perf.db"
+PERF_SHORT_NAME="$revision_number" PERF_AUTHOR="$author" PERF_CHANGE_LOG="$changelog" PERF_DATABASE_FILE="$HOME/moonlight-perf.db" make run-perf 

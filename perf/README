@@ -60,3 +60,13 @@ env variables. The `make` command runs the tools with no cmd line options.
 Additionally, the PERF_DATABASE_FILE variable can be used to specify a
 location for storing the results.
 
+
+Auto running with SVN data
+==========================
+
+To have all the meta-data fetched automatically from the (current) SVN repository,
+run:
+
+  $> svn-dispatcher
+
+This is mostly meant for automated scripts.

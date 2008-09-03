@@ -1,3 +1,9 @@
+2008-09-03  Michael Dominic K.  <mdk@mdk.am>
+
+	* README:
+	* svn-dispatcher: Adding a script to automatically run with SVN 
+	metadata.
+
 2008-08-25  Michael Dominic K.  <mdk@mdk.am>
 
 	* perf-suite-set/drtlist.xml:
