@@ -643,6 +643,14 @@ namespace Mono {
 		public extern static IntPtr mouse_event_args_new ();
 
 		[DllImport ("moon")]
+		// MultiScaleImage *multi_scale_image_new ();
+		public extern static IntPtr multi_scale_image_new ();
+
+		[DllImport ("moon")]
+		// void multi_scale_image_zoom_about_logical_point (MultiScaleImage *instance, double zoomIncrementFactor, double zoomCenterLogicalX, double zoomCenterLogicalY);
+		public extern static void multi_scale_image_zoom_about_logical_point (IntPtr instance, double zoomIncrementFactor, double zoomCenterLogicalX, double zoomCenterLogicalY);
+
+		[DllImport ("moon")]
 		// MultiScaleSubImage *multi_scale_sub_image_new ();
 		public extern static IntPtr multi_scale_sub_image_new ();
 

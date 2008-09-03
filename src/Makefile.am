@@ -148,6 +148,7 @@ libmoon_include_HEADERS += 	\
 	cornerradius.h		\
 	deployment.h		\
 	grid.h			\
+	multiscaleimage.h	\
 	multiscalesubimage.h	\
 	stackpanel.h		\
 	style.h			\
@@ -165,6 +166,7 @@ libmoon_la_SOURCES += 		\
 	cornerradius.cpp	\
 	deployment.cpp		\
 	grid.cpp		\
+	multiscaleimage.cpp	\
 	style.cpp		\
 	template.cpp		\
 	textbox.cpp		\

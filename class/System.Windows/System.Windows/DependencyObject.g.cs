@@ -178,6 +178,12 @@ namespace System.Windows.Controls {
 		internal override Kind GetKind () { return Kind.MEDIAELEMENT; }
 	}
 
+	partial class MultiScaleImage {
+		public MultiScaleImage () : base (NativeMethods.multi_scale_image_new ()) {}
+		internal MultiScaleImage (IntPtr raw) : base (raw) {}
+		internal override Kind GetKind () { return Kind.MULTISCALEIMAGE; }
+	}
+
 	partial class MultiScaleSubImage {
 		public MultiScaleSubImage () : base (NativeMethods.multi_scale_sub_image_new ()) {}
 		internal MultiScaleSubImage (IntPtr raw) : base (raw) {}

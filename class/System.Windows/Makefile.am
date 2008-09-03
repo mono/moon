@@ -53,6 +53,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/ItemCollection.cs			\
 	$(srcdir)/System.Windows.Controls/ItemsControl.cs			\
 	$(srcdir)/System.Windows.Controls/ItemsPanelTemplate.cs			\
+	$(srcdir)/System.Windows.Controls/MultiScaleImage.cs			\
 	$(srcdir)/System.Windows.Controls/MultiScaleSubImage.cs			\
 	$(srcdir)/System.Windows.Controls/OpenFileDialog.cs			\
 	$(srcdir)/System.Windows.Controls/Panel.cs				\

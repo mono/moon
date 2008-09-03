@@ -49,6 +49,7 @@
 #include "control.h"
 #include "deployment.h"
 #include "grid.h"
+#include "multiscaleimage.h"
 #include "multiscalesubimage.h"
 #include "size.h"
 #include "stackpanel.h"
@@ -82,6 +83,11 @@ const int MediaElement::MarkerReachedEvent = 18;
 const int MediaElement::MediaEndedEvent = 19;
 const int MediaElement::MediaFailedEvent = 20;
 const int MediaElement::MediaOpenedEvent = 21;
+const int MultiScaleImage::ImageFailedEvent = 15;
+const int MultiScaleImage::ImageOpenFailedEvent = 16;
+const int MultiScaleImage::ImageOpenSucceededEvent = 17;
+const int MultiScaleImage::MotionFinishedEvent = 18;
+const int MultiScaleImage::ViewportChangedEvent = 19;
 const int Storyboard::CompletedEvent = 1;
 const int Surface::ErrorEvent = 1;
 const int Surface::FullScreenChangeEvent = 2;
@@ -112,6 +118,7 @@ const char *Image_Events [] = { "ImageFailed", NULL };
 const char *ImageBrush_Events [] = { "DownloadProgressChanged", "ImageFailed", NULL };
 const char *MediaBase_Events [] = { "DownloadProgressChanged", NULL };
 const char *MediaElement_Events [] = { "BufferingProgressChanged", "CurrentStateChanged", "MarkerReached", "MediaEnded", "MediaFailed", "MediaOpened", NULL };
+const char *MultiScaleImage_Events [] = { "ImageFailed", "ImageOpenFailed", "ImageOpenSucceeded", "MotionFinished", "ViewportChanged", NULL };
 const char *Storyboard_Events [] = { "Completed", NULL };
 const char *Surface_Events [] = { "Error", "FullScreenChange", "Load", "Resize", NULL };
 const char *TextBox_Events [] = { "SelectionChanged", "TextChanged", NULL };
@@ -216,6 +223,7 @@ Type type_infos [] = {
 	{ Type::MEDIAELEMENT, Type::MEDIABASE, false, "MediaElement", "MEDIAELEMENT", 6, 22, MediaElement_Events, (create_inst_func *) media_element_new, NULL, NULL, NULL }, 
 	{ Type::MEDIAERROREVENTARGS, Type::ERROREVENTARGS, false, "MediaErrorEventArgs", "MEDIAERROREVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::MOUSEEVENTARGS, Type::ROUTEDEVENTARGS, false, "MouseEventArgs", "MOUSEEVENTARGS", 0, 1, NULL, (create_inst_func *) mouse_event_args_new, NULL, NULL, NULL }, 
+	{ Type::MULTISCALEIMAGE, Type::FRAMEWORKELEMENT, false, "MultiScaleImage", "MULTISCALEIMAGE", 5, 20, MultiScaleImage_Events, (create_inst_func *) multi_scale_image_new, NULL, NULL, NULL },
 	{ Type::MULTISCALESUBIMAGE, Type::DEPENDENCY_OBJECT, false, "MultiScaleSubImage", "MULTISCALESUBIMAGE", 0, 1, NULL, (create_inst_func *) multi_scale_sub_image_new, NULL, NULL, NULL }, 
 	{ Type::MULTISCALETILESOURCE, Type::DEPENDENCY_OBJECT, false, "MultiScaleTileSource", "MULTISCALETILESOURCE", 0, 1, NULL, (create_inst_func *) multi_scale_tile_source_new, NULL, NULL, NULL }, 
 	{ Type::NAMESCOPE, Type::DEPENDENCY_OBJECT, false, "NameScope", "NAMESCOPE", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
@@ -459,6 +467,7 @@ Type type_infos [] = {
 	{ Type::MEDIAELEMENT, Type::MEDIABASE, false, "MediaElement", "MEDIAELEMENT", 6, 19, MediaElement_Events, (create_inst_func *) media_element_new, NULL, NULL, NULL }, 
 	{ Type::MEDIAERROREVENTARGS, Type::ERROREVENTARGS, false, "MediaErrorEventArgs", "MEDIAERROREVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::MOUSEEVENTARGS, Type::ROUTEDEVENTARGS, false, "MouseEventArgs", "MOUSEEVENTARGS", 0, 1, NULL, (create_inst_func *) mouse_event_args_new, NULL, NULL, NULL }, 
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'MULTISCALEIMAGE'", "MULTISCALEIMAGE", 0, 0, NULL, NULL, NULL, NULL, NULL },
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'MULTISCALESUBIMAGE'", "MULTISCALESUBIMAGE", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'MULTISCALETILESOURCE'", "MULTISCALETILESOURCE", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::NAMESCOPE, Type::DEPENDENCY_OBJECT, false, "NameScope", "NAMESCOPE", 0, 1, NULL, NULL, NULL, NULL, NULL }, 

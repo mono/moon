@@ -37,6 +37,7 @@
 #include "frameworkelement.h"
 #include "geometry.h"
 #include "grid.h"
+#include "multiscaleimage.h"
 #include "multiscalesubimage.h"
 #include "stackpanel.h"
 #include "style.h"
@@ -246,6 +247,11 @@ dependency_property_g_init (void)
 	MediaElement::PositionProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "Position", Type::TIMESPAN);
 	MediaElement::VolumeProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "Volume", new Value (0.5));
 #if SL_2_0
+	MultiScaleImage::AspectRatioProperty = DependencyProperty::Register (Type::MULTISCALEIMAGE, "AspectRatio", new Value (1.0));
+	MultiScaleImage::SourceProperty = DependencyProperty::Register (Type::MULTISCALEIMAGE, "Source", Type::MULTISCALETILESOURCE);
+	MultiScaleImage::UseSpringsProperty = DependencyProperty::Register (Type::MULTISCALEIMAGE, "UseSprings", new Value (true));
+	MultiScaleImage::ViewportOriginProperty = DependencyProperty::Register (Type::MULTISCALEIMAGE, "ViewportOrigin", Type::POINT);
+	MultiScaleImage::ViewportWidthProperty = DependencyProperty::Register (Type::MULTISCALEIMAGE, "ViewportWidth", Type::DOUBLE);
 	MultiScaleSubImage::AspectRatioProperty = DependencyProperty::RegisterFull (Type::MULTISCALESUBIMAGE, "AspectRatio", new Value (1.0), Type::DOUBLE, false, true);
 	MultiScaleSubImage::OpacityProperty = DependencyProperty::Register (Type::MULTISCALESUBIMAGE, "Opacity", Type::DOUBLE);
 	MultiScaleSubImage::ViewportOriginProperty = DependencyProperty::Register (Type::MULTISCALESUBIMAGE, "ViewportOrigin", Type::POINT);
@@ -604,6 +610,11 @@ DependencyProperty *MediaElement::NaturalVideoWidthProperty = NULL;
 DependencyProperty *MediaElement::PositionProperty = NULL;
 DependencyProperty *MediaElement::VolumeProperty = NULL;
 #if SL_2_0
+DependencyProperty *MultiScaleImage::AspectRatioProperty = NULL;
+DependencyProperty *MultiScaleImage::SourceProperty = NULL;
+DependencyProperty *MultiScaleImage::UseSpringsProperty = NULL;
+DependencyProperty *MultiScaleImage::ViewportOriginProperty = NULL;
+DependencyProperty *MultiScaleImage::ViewportWidthProperty = NULL;
 DependencyProperty *MultiScaleSubImage::AspectRatioProperty = NULL;
 DependencyProperty *MultiScaleSubImage::OpacityProperty = NULL;
 DependencyProperty *MultiScaleSubImage::ViewportOriginProperty = NULL;
@@ -2833,6 +2844,76 @@ MediaElement::SetVolume (double value)
 	SetValue (MediaElement::VolumeProperty, Value (value));
 }
 
+#if SL_2_0
+double
+MultiScaleImage::GetAspectRatio ()
+{
+	Value *value = GetValue (MultiScaleImage::AspectRatioProperty);
+	return value->AsDouble ();
+}
+
+#endif
+#if SL_2_0
+MultiScaleTileSource *
+MultiScaleImage::GetSource ()
+{
+	Value *value = GetValue (MultiScaleImage::SourceProperty);
+	return value ? value->AsMultiScaleTileSource () : NULL;
+}
+
+void
+MultiScaleImage::SetSource (MultiScaleTileSource * value)
+{
+	SetValue (MultiScaleImage::SourceProperty, Value (value));
+}
+
+#endif
+#if SL_2_0
+bool
+MultiScaleImage::GetUseSprings ()
+{
+	Value *value = GetValue (MultiScaleImage::UseSpringsProperty);
+	return value->AsBool ();
+}
+
+void
+MultiScaleImage::SetUseSprings (bool value)
+{
+	SetValue (MultiScaleImage::UseSpringsProperty, Value (value));
+}
+
+#endif
+#if SL_2_0
+Point *
+MultiScaleImage::GetViewportOrigin ()
+{
+	Value *value = GetValue (MultiScaleImage::ViewportOriginProperty);
+	return value ? value->AsPoint () : NULL;
+}
+
+void
+MultiScaleImage::SetViewportOrigin (Point * value)
+{
+	if (!value) return;
+	SetValue (MultiScaleImage::ViewportOriginProperty, Value (*value));
+}
+
+#endif
+#if SL_2_0
+double
+MultiScaleImage::GetViewportWidth ()
+{
+	Value *value = GetValue (MultiScaleImage::ViewportWidthProperty);
+	return value->AsDouble ();
+}
+
+void
+MultiScaleImage::SetViewportWidth (double value)
+{
+	SetValue (MultiScaleImage::ViewportWidthProperty, Value (value));
+}
+
+#endif
 #if SL_2_0
 double
 MultiScaleSubImage::GetAspectRatio ()

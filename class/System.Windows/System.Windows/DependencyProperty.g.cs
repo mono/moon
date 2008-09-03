@@ -566,6 +566,39 @@ namespace System.Windows.Controls {
 		}
 	}
 
+	partial class MultiScaleImage {
+		public static readonly DependencyProperty AspectRatioProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "AspectRatio", typeof (double));
+		public static readonly DependencyProperty SourceProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "Source", typeof (MultiScaleTileSource));
+		public static readonly DependencyProperty UseSpringsProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "UseSprings", typeof (bool));
+		public static readonly DependencyProperty ViewportOriginProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "ViewportOrigin", typeof (Point));
+		public static readonly DependencyProperty ViewportWidthProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "ViewportWidth", typeof (double));
+
+		public double AspectRatio {
+			get { return (double) GetValue (AspectRatioProperty); }
+			set { SetValue (AspectRatioProperty, value); }
+		}
+
+		public MultiScaleTileSource Source {
+			get { return (MultiScaleTileSource) GetValue (SourceProperty); }
+			set { SetValue (SourceProperty, value); }
+		}
+
+		public bool UseSprings {
+			get { return (bool) GetValue (UseSpringsProperty); }
+			set { SetValue (UseSpringsProperty, value); }
+		}
+
+		public Point ViewportOrigin {
+			get { return (Point) GetValue (ViewportOriginProperty); }
+			set { SetValue (ViewportOriginProperty, value); }
+		}
+
+		public double ViewportWidth {
+			get { return (double) GetValue (ViewportWidthProperty); }
+			set { SetValue (ViewportWidthProperty, value); }
+		}
+	}
+
 	partial class MultiScaleSubImage {
 		public static readonly DependencyProperty AspectRatioProperty = DependencyProperty.Lookup (Kind.MULTISCALESUBIMAGE, "AspectRatio", typeof (double));
 		public static readonly DependencyProperty OpacityProperty = DependencyProperty.Lookup (Kind.MULTISCALESUBIMAGE, "Opacity", typeof (double));

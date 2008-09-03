@@ -26,6 +26,7 @@
 #include "geometry.h"
 #include "grid.h"
 #include "media.h"
+#include "multiscaleimage.h"
 #include "multiscalesubimage.h"
 #include "panel.h"
 #include "resources.h"
@@ -747,6 +748,19 @@ StylusPointCollection *mouse_event_args_get_stylus_points (MouseEventArgs *insta
 
 /* @GeneratePInvoke */
 MouseEventArgs *mouse_event_args_new (void);
+
+#if SL_2_0
+/**
+ * MultiScaleImage
+ **/
+/* @GeneratePInvoke */
+MultiScaleImage *multi_scale_image_new (void);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
+void multi_scale_image_zoom_about_logical_point (MultiScaleImage *instance, double zoomIncrementFactor, double zoomCenterLogicalX, double zoomCenterLogicalY);
+#endif
 
 #if SL_2_0
 /**

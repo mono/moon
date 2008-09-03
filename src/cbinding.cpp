@@ -1467,6 +1467,30 @@ mouse_event_args_new (void)
 
 #if SL_2_0
 /**
+ * MultiScaleImage
+ **/
+MultiScaleImage *
+multi_scale_image_new (void)
+{
+	return new MultiScaleImage ();
+}
+#endif
+
+
+#if SL_2_0
+void
+multi_scale_image_zoom_about_logical_point (MultiScaleImage *instance, double zoomIncrementFactor, double zoomCenterLogicalX, double zoomCenterLogicalY)
+{
+	if (instance == NULL)
+		return;
+
+	instance->ZoomAboutLogicalPoint (zoomIncrementFactor, zoomCenterLogicalX, zoomCenterLogicalY);
+}
+#endif
+
+
+#if SL_2_0
+/**
  * MultiScaleSubImage
  **/
 MultiScaleSubImage *

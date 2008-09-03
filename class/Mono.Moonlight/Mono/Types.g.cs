@@ -72,6 +72,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.INKPRESENTER));
 				t = agclr.GetType ("System.Windows.Controls.MediaElement", true); 
 				types.Add (t, new ManagedType (t, Kind.MEDIAELEMENT));
+				t = agclr.GetType ("System.Windows.Controls.MultiScaleImage", true);
+				types.Add (t, new ManagedType (t, Kind.MULTISCALEIMAGE));
 				t = agclr.GetType ("System.Windows.Controls.MultiScaleSubImage", true); 
 				types.Add (t, new ManagedType (t, Kind.MULTISCALESUBIMAGE));
 				t = agclr.GetType ("System.Windows.Controls.Panel", true); 
