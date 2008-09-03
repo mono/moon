@@ -367,6 +367,8 @@ TextBox::Paint (cairo_t *cr)
 void
 TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
+	bool invalidate = true;
+	
 	if (args->property == Control::FontFamilyProperty) {
 		char *family = args->new_value ? args->new_value->AsString () : NULL;
 		font->SetFamily (family);
@@ -387,6 +389,9 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		FontWeights weight = (FontWeights) args->new_value->AsInt32 ();
 		font->SetWeight (weight);
 		dirty = true;
+	} else if (args->property == TextBox::AcceptsReturnProperty) {
+		// No layout or rendering changes needed
+		invalidate = false;
 	} else if (args->property == TextBox::MaxLengthProperty) {
 		/* FIXME: What happens if the current buffer length is > MaxLength? */
 		maxlen = args->new_value->AsInt32 ();
@@ -458,10 +463,12 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		 */
 	}
 	
-	if (dirty)
-		UpdateBounds (true);
-	
-	Invalidate ();
+	if (invalidate) {
+		if (dirty)
+			UpdateBounds (true);
+		
+		Invalidate ();
+	}
 	
 	if (args->property->GetOwnerType () != Type::TEXTBOX) {
 		Control::OnPropertyChanged (args);

@@ -1,3 +1,11 @@
+2008-09-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBox::OnPropertyChanged): When the AcceptsReturn
+	property chanegs, no need to re-layout or invalidate - according
+	to my little test program, Silverlight 2 Beta 2 does not change
+	the rendered text when this property changes - any newlines in the
+	input text stay there.
+
 2008-09-03  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* resources.cpp: (ContainsKey) Don't crash if a null key is
