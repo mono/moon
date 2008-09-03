@@ -1,3 +1,8 @@
+2008-09-03  Zoltan Varga  <vargaz@gmail.com>
+
+	* DependencyObject.cs (SetValue): Allow any managed value if the property
+	has type object.
+
 2008-09-03  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* DependencyObject.cs: MultiScaleImage support.
