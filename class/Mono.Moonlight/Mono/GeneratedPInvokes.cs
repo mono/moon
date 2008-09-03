@@ -759,7 +759,7 @@ namespace Mono {
 		public extern static IntPtr rectangle_geometry_new ();
 
 		[DllImport ("moon", EntryPoint="resource_dictionary_add_with_error")]
-		// void resource_dictionary_add_with_error (ResourceDictionary *instance, char *key, Value *value, MoonError *error);
+		// void resource_dictionary_add_with_error (ResourceDictionary *instance, const char *key, Value *value, MoonError *error);
 		private extern static void resource_dictionary_add_with_error_ (IntPtr instance, string key, ref Value value, out MoonError error);
 		public static void resource_dictionary_add (IntPtr instance, string key, ref Value value)
 		{
@@ -774,15 +774,15 @@ namespace Mono {
 		public extern static bool resource_dictionary_clear (IntPtr instance);
 
 		[DllImport ("moon")]
-		// bool resource_dictionary_contains_key (ResourceDictionary *instance, char *key);
+		// bool resource_dictionary_contains_key (ResourceDictionary *instance, const char *key);
 		public extern static bool resource_dictionary_contains_key (IntPtr instance, string key);
 
 		[DllImport ("moon")]
-		// Value *resource_dictionary_get (ResourceDictionary *instance, char *key, bool *exists);
+		// Value *resource_dictionary_get (ResourceDictionary *instance, const char *key, bool *exists);
 		public extern static IntPtr resource_dictionary_get (IntPtr instance, string key, out bool exists);
 
 		[DllImport ("moon")]
-		// bool resource_dictionary_remove (ResourceDictionary *instance, char *key);
+		// bool resource_dictionary_remove (ResourceDictionary *instance, const char *key);
 		public extern static bool resource_dictionary_remove (IntPtr instance, string key);
 
 		[DllImport ("moon")]
@@ -790,7 +790,7 @@ namespace Mono {
 		public extern static IntPtr resource_dictionary_new ();
 
 		[DllImport ("moon")]
-		// bool resource_dictionary_set (ResourceDictionary *instance, char *key, Value *value);
+		// bool resource_dictionary_set (ResourceDictionary *instance, const char *key, Value *value);
 		public extern static bool resource_dictionary_set (IntPtr instance, string key, ref Value value);
 
 		[DllImport ("moon")]

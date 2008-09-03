@@ -1483,7 +1483,7 @@ multi_scale_image_zoom_about_logical_point (MultiScaleImage *instance, double zo
 {
 	if (instance == NULL)
 		return;
-
+	
 	instance->ZoomAboutLogicalPoint (zoomIncrementFactor, zoomCenterLogicalX, zoomCenterLogicalY);
 }
 #endif
@@ -1783,7 +1783,7 @@ rectangle_geometry_new (void)
  * ResourceDictionary
  **/
 void
-resource_dictionary_add_with_error (ResourceDictionary *instance, char *key, Value *value, MoonError *error)
+resource_dictionary_add_with_error (ResourceDictionary *instance, const char *key, Value *value, MoonError *error)
 {
 	if (instance == NULL)
 		return;
@@ -1805,7 +1805,7 @@ resource_dictionary_clear (ResourceDictionary *instance)
 
 
 bool
-resource_dictionary_contains_key (ResourceDictionary *instance, char *key)
+resource_dictionary_contains_key (ResourceDictionary *instance, const char *key)
 {
 	if (instance == NULL)
 		return false;
@@ -1815,7 +1815,7 @@ resource_dictionary_contains_key (ResourceDictionary *instance, char *key)
 
 
 Value *
-resource_dictionary_get (ResourceDictionary *instance, char *key, bool *exists)
+resource_dictionary_get (ResourceDictionary *instance, const char *key, bool *exists)
 {
 	if (instance == NULL)
 		return NULL;
@@ -1825,7 +1825,7 @@ resource_dictionary_get (ResourceDictionary *instance, char *key, bool *exists)
 
 
 bool
-resource_dictionary_remove (ResourceDictionary *instance, char *key)
+resource_dictionary_remove (ResourceDictionary *instance, const char *key)
 {
 	if (instance == NULL)
 		return false;
@@ -1842,7 +1842,7 @@ resource_dictionary_new (void)
 
 
 bool
-resource_dictionary_set (ResourceDictionary *instance, char *key, Value *value)
+resource_dictionary_set (ResourceDictionary *instance, const char *key, Value *value)
 {
 	if (instance == NULL)
 		return false;

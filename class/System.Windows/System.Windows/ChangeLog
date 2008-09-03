@@ -1,3 +1,7 @@
+2008-09-03  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* DependencyObject.cs: MultiScaleImage support.
+
 2008-09-02  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* ResourceDictionary.cs: implement Remove

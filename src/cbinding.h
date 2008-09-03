@@ -940,25 +940,25 @@ RectangleGeometry *rectangle_geometry_new (void);
  * ResourceDictionary
  **/
 /* @GeneratePInvoke */
-void resource_dictionary_add_with_error (ResourceDictionary *instance, char *key, Value *value, MoonError *error);
+void resource_dictionary_add_with_error (ResourceDictionary *instance, const char *key, Value *value, MoonError *error);
 
 /* @GeneratePInvoke */
 bool resource_dictionary_clear (ResourceDictionary *instance);
 
 /* @GeneratePInvoke */
-bool resource_dictionary_contains_key (ResourceDictionary *instance, char *key);
+bool resource_dictionary_contains_key (ResourceDictionary *instance, const char *key);
 
 /* @GeneratePInvoke */
-Value *resource_dictionary_get (ResourceDictionary *instance, char *key, bool *exists);
+Value *resource_dictionary_get (ResourceDictionary *instance, const char *key, bool *exists);
 
 /* @GeneratePInvoke */
-bool resource_dictionary_remove (ResourceDictionary *instance, char *key);
+bool resource_dictionary_remove (ResourceDictionary *instance, const char *key);
 
 /* @GeneratePInvoke */
 ResourceDictionary *resource_dictionary_new (void);
 
 /* @GeneratePInvoke */
-bool resource_dictionary_set (ResourceDictionary *instance, char *key, Value *value);
+bool resource_dictionary_set (ResourceDictionary *instance, const char *key, Value *value);
 
 /**
  * RotateTransform
