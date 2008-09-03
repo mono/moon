@@ -45,7 +45,6 @@ class Panel : public FrameworkElement {
 	virtual void ComputeBounds ();
 	virtual Rect GetCoverageBounds ();
 	virtual void Render (cairo_t *cr, Region *region);
-	virtual void FrontToBack (Region *surface_region, List *render_list);
 
 	bool CheckOver (cairo_t *cr, UIElement *item, double x, double y);
 

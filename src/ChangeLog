@@ -16,6 +16,16 @@
 2008-09-03  Larry Ewing  <lewing@novell.com>
 
 	* uielement.cpp, uielement.h: 
+	(UIElement::FrontToBack): Make FrontToBack non-virtual and move
+	the generic logic here.
+
+	* control.cpp, control.h:
+	* panel.cpp, panel.h: Remove ftb logic, everything is handled in
+	uielement now.
+
+2008-09-03  Larry Ewing  <lewing@novell.com>
+
+	* uielement.cpp, uielement.h: 
 	* media.cpp, media.h:
 	* panel.cpp, panel.h:
 	* shape.cpp, shape.h: Add GetCoverageBounds virtual method

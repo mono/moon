@@ -143,7 +143,7 @@ public:
 	void DoRender (cairo_t *cr, Region *region);
 	
 	bool UseBackToFront ();
-	virtual void FrontToBack (Region *surface_region, List *render_list);
+	void FrontToBack (Region *surface_region, List *render_list);
 	virtual void PreRender (cairo_t *cr, Region *region, bool front_to_back);
 	virtual void PostRender (cairo_t *cr, Region *region, bool front_to_back);
 

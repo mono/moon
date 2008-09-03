@@ -693,26 +693,89 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 {
 	double local_opacity = GetOpacity ();
 
+	if (surface_region->RectIn (GetSubtreeBounds().RoundOut()) == GDK_OVERLAP_RECTANGLE_OUT)
+		return;
+
 	if (!GetRenderVisible ()
-	    || IS_INVISIBLE (total_opacity)) {
+	    || IS_INVISIBLE (local_opacity))
+		return;
+
+	if (!UseBackToFront ()) {
+		Region *self_region = new Region (surface_region);
+		self_region->Intersect (GetSubtreeBounds().RoundOut());
+
+		// we need to include our children in this one, since
+		// we'll be rendering them in the PostRender method.
+		if (!self_region->IsEmpty())
+			render_list->Prepend (new RenderNode (this, self_region, true,
+							      UIElement::CallPreRender, UIElement::CallPostRender));
+		// don't remove the region from surface_region because
+		// there are likely holes in it
 		return;
 	}
 
-	Region* self_region = new Region (surface_region);
-	self_region->Intersect (bounds.RoundOut());  // note the RoundOut here.
-	if (self_region->IsEmpty()) {
+	Region *region;
+	bool delete_region;
+	bool can_subtract_self;
+	
+	if (!GetClip ()
+	    && !GetOpacityMask ()
+	    && !IS_TRANSLUCENT (GetOpacity ())) {
+		region = surface_region;
+		delete_region = false;
+		can_subtract_self = true;
+	}
+	else {
+		region = new Region (surface_region);
+		delete_region = true;
+		can_subtract_self = false;
+	}
+
+	RenderNode *cleanup_node = new RenderNode (this, NULL, false, NULL, UIElement::CallPostRender);
+	
+	render_list->Prepend (cleanup_node);
+
+	Region *self_region = new Region (region);
+
+	ContentWalker walker = ContentWalker (this, ZReverse);
+	while (DependencyObject *content = walker.Step ()) {
+		if (content->Is (Type::UIELEMENT))
+			((UIElement *)content)->FrontToBack (region, render_list);
+	}
+
+	if (!GetOpacityMask () && !IS_TRANSLUCENT (local_opacity)) {
 		delete self_region;
+		if (bounds.IsEmpty ()) {  // empty bounds mean that this element draws nothing itself
+			self_region = new Region ();
+		}
+		else {
+			self_region = new Region (region);
+			self_region->Intersect (GetRenderBounds().RoundOut ()); // note the RoundOut
+		}
+	} else {
+		self_region->Intersect (GetSubtreeBounds().RoundOut ()); // note the RoundOut
+	}
+
+	if (self_region->IsEmpty() && render_list->First() == cleanup_node) {
+		/* we don't intersect the surface region, and none of
+		   our children did either, remove the cleanup node */
+		render_list->Remove (render_list->First());
+		delete self_region;
+		if (delete_region)
+			delete region;
 		return;
 	}
-		
-	render_list->Prepend (new RenderNode (this, self_region, true, CallPreRender, CallPostRender));
 
-	if((absolute_xform.yx == 0 && absolute_xform.xy == 0) /* no skew */
-	   && !IS_TRANSLUCENT (local_opacity)
-	   && (GetClip () == NULL)
-	   && (GetOpacityMask () == NULL)) { // XXX we can easily deal with opaque solid color brushes.
-		surface_region->Subtract (GetCoverageBounds ());
+	render_list->Prepend (new RenderNode (this, self_region, !self_region->IsEmpty(), UIElement::CallPreRender, NULL));
+
+	if (!self_region->IsEmpty()) {
+		if ((absolute_xform.yx == 0 && absolute_xform.xy == 0) /* no skew/rotation */
+		    && can_subtract_self)
+			region->Subtract (GetCoverageBounds ());
 	}
+
+	if (delete_region)
+		delete region;
 }
 
 void
