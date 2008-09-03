@@ -948,6 +948,25 @@ Rectangle::ComputeShapeBounds (bool logical)
 	return rect;
 }
 
+Rect 
+Rectangle::GetCoverageBounds ()
+{
+	Brush *fill = GetFill ();
+	
+	if (fill != NULL && fill->IsOpaque()) {
+		/* make it a little easier - only consider the rectangle inside the corner radii.
+		   we're also a little more conservative than we need to be, regarding stroke
+		   thickness. */
+		double xr = (GetRadiusX () + GetStrokeThickness () / 2);
+		double yr = (GetRadiusY () + GetStrokeThickness () / 2);
+		
+		return bounds.GrowBy (-xr, -yr).RoundIn ();
+	}
+	
+	return Rect ();
+}
+
+
 // The Rectangle shape can be drawn while ignoring properties:
 // * Shape::StrokeStartLineCap
 // * Shape::StrokeEndLineCap

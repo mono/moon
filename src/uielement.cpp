@@ -707,70 +707,12 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 		
 	render_list->Prepend (new RenderNode (this, self_region, true, CallPreRender, CallPostRender));
 
-	bool subtract = ((absolute_xform.yx == 0 && absolute_xform.xy == 0) /* no skew */
-			 && !IS_TRANSLUCENT (local_opacity)
-			 && (GetClip () == NULL)
-			 && (GetOpacityMask () == NULL)); // XXX we can easily deal with opaque solid color brushes.
-
-	// element type specific checks
-	if (subtract) {
-		if (Is (Type::MEDIAELEMENT)) {
-			MediaElement *media = (MediaElement *) this;
-			MediaPlayer *mplayer = media->GetMediaPlayer ();
-			Stretch stretch = media->GetStretch ();
-
-			subtract = (!media->IsClosed () && mplayer
-				    && mplayer->HasRenderedFrame ()
-				    && ((mplayer->GetVideoWidth () == media->GetBounds ().width
-					 && mplayer->GetVideoHeight () == media->GetBounds ().height)
-					|| (stretch == StretchFill || stretch == StretchUniformToFill)));
-
-			//Rect r = me->GetBounds();
-				//printf ("r.bounds = %g %g %g %g\n", r.x, r.y, r.width, r.height);
-		}
-		else if (Is (Type::IMAGE)) {
-			Image *image = (Image *) this;
-			Stretch stretch = image->GetStretch ();
-
-			subtract = (image->surface && !image->surface->has_alpha
-				    && ((image->GetImageWidth () == image->GetBounds ().width
-					 && image->GetImageHeight () == image->GetBounds ().height)
-					|| (stretch == StretchFill || stretch == StretchUniformToFill)));
-		}
-		else if (Is (Type::RECTANGLE)) {
-			// if we're going to subtract anything we'll
-			// do it in here, so set this to false so that
-			// it doesn't happen later.
-			subtract = false;
-
-			Rectangle *rectangle = (Rectangle *) this;
-			Brush *fill = rectangle->GetFill ();
-
-			if (fill != NULL && fill->IsOpaque()) {
-				/* make it a little easier - only consider the rectangle inside the corner radii.
-				   we're also a little more conservative than we need to be, regarding stroke
-				   thickness. */
-				double xr = (rectangle->GetRadiusX () + rectangle->GetStrokeThickness () / 2);
-				double yr = (rectangle->GetRadiusY () + rectangle->GetStrokeThickness () / 2);
-
-				Rect r = bounds.GrowBy (-xr, -yr).RoundOut();
-
-				Region *inner_rect_region = new Region (self_region);
-				inner_rect_region->Intersect (r);
-				if (!inner_rect_region->IsEmpty())
-					surface_region->Subtract (inner_rect_region);
-
-				delete inner_rect_region;
-			}
-		}
-		// XXX more stuff here for non-panel subclasses...
-		else {
-			subtract = false;
-		}
+	if((absolute_xform.yx == 0 && absolute_xform.xy == 0) /* no skew */
+	   && !IS_TRANSLUCENT (local_opacity)
+	   && (GetClip () == NULL)
+	   && (GetOpacityMask () == NULL)) { // XXX we can easily deal with opaque solid color brushes.
+		surface_region->Subtract (GetCoverageBounds ());
 	}
-
-	if (subtract)
-		surface_region->Subtract (bounds);
 }
 
 void

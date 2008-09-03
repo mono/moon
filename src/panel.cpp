@@ -122,6 +122,16 @@ Panel::Render (cairo_t *cr, Region *region)
 	}
 }
 
+Rect
+Panel::GetCoverageBounds ()
+{
+	Brush *background = GetBackground ();
+	
+	if (background && background->IsOpaque ())
+		return bounds;
+
+	return Rect ();
+}
 
 void
 Panel::FrontToBack (Region *surface_region, List *render_list)
@@ -166,9 +176,9 @@ Panel::FrontToBack (Region *surface_region, List *render_list)
 		can_subtract_self = false;
 	}
 
-	RenderNode *panel_cleanup_node = new RenderNode (this, NULL, false, NULL, UIElement::CallPostRender);
+	RenderNode *cleanup_node = new RenderNode (this, NULL, false, NULL, UIElement::CallPostRender);
 	
-	render_list->Prepend (panel_cleanup_node);
+	render_list->Prepend (cleanup_node);
 
 	Region *self_region = new Region (region);
 
@@ -204,20 +214,9 @@ Panel::FrontToBack (Region *surface_region, List *render_list)
 	render_list->Prepend (new RenderNode (this, self_region, !self_region->IsEmpty(), UIElement::CallPreRender, NULL));
 
 	if (!self_region->IsEmpty()) {
-		bool subtract = ((absolute_xform.yx == 0 && absolute_xform.xy == 0) /* no skew/rotation */
-				 && can_subtract_self);
-
-		if (subtract) {
-			Brush *background = GetBackground ();
-			
-			if (background)
-				subtract = background->IsOpaque ();
-			else
-				subtract = false;
-		}
-
- 		if (subtract)
-			region->Subtract (bounds);
+		if ((absolute_xform.yx == 0 && absolute_xform.xy == 0) /* no skew/rotation */
+		    && can_subtract_self)
+			region->Subtract (GetCoverageBounds ());
 	}
 
 	if (delete_region)

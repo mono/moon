@@ -901,6 +901,22 @@ MediaElement::GetTransformOrigin ()
 	return Point (user_xform_origin->x * w, user_xform_origin->y * h);
 }
 
+Rect
+MediaElement::GetCoverageBounds ()
+{
+	MediaPlayer *mplayer = GetMediaPlayer ();
+	Stretch stretch = GetStretch ();
+
+	if  (!IsClosed () 
+	     && mplayer && mplayer->HasRenderedFrame ()
+	     && ((mplayer->GetVideoWidth () == bounds.width
+		  && mplayer->GetVideoHeight () == bounds.height)
+		 || (stretch == StretchFill || stretch == StretchUniformToFill)))
+		return bounds;
+
+	return Rect ();
+}
+
 void
 MediaElement::Render (cairo_t *cr, Region *region)
 {
@@ -2436,6 +2452,20 @@ Image::GetTransformOrigin ()
 	
 	return Point (GetWidth () * user_xform_origin->x, 
 		      GetHeight () * user_xform_origin->y);
+}
+
+Rect
+Image::GetCoverageBounds ()
+{
+	Stretch stretch = GetStretch ();
+
+	if (surface && !surface->has_alpha
+	    && ((GetImageWidth () == GetBounds ().width
+		 && GetImageHeight () == GetBounds ().height)
+		|| (stretch == StretchFill || stretch == StretchUniformToFill)))
+		return bounds;
+
+	return Rect ();
 }
 
 cairo_surface_t *

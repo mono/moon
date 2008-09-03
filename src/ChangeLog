@@ -1,3 +1,11 @@
+2008-09-03  Larry Ewing  <lewing@novell.com>
+
+	* uielement.cpp, uielement.h: 
+	* media.cpp, media.h:
+	* panel.cpp, panel.h:
+	* shape.cpp, shape.h: Add GetCoverageBounds virtual method
+	to let elements compute their own opaque coverage.
+
 2008-09-03  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.h|.cpp: new MultiScaleImage type

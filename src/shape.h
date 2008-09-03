@@ -234,7 +234,8 @@ class Rectangle : public Shape {
 	Rectangle ();
 	
 	virtual Type::Kind GetObjectType () { return Type::RECTANGLE; }
-	
+
+	virtual Rect GetCoverageBounds ();
 	virtual void BuildPath ();
 	virtual bool CanFill () { return true; }
 	

@@ -258,6 +258,8 @@ class Image : public MediaBase {
 	int GetImageHeight () { return surface ? surface->height : 0; };
 	int GetImageWidth  () { return surface ? surface->width : 0; };
 	
+	virtual Rect GetCoverageBounds ();
+	
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 };
 
@@ -449,6 +451,7 @@ class MediaElement : public MediaBase {
 	// overrides
 	virtual void Render (cairo_t *cr, Region *region);
 	virtual Point GetTransformOrigin ();
+	virtual Rect GetCoverageBounds ();
 	
 	virtual Value *GetValue (DependencyProperty *prop);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);

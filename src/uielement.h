@@ -236,6 +236,12 @@ public:
 	virtual Rect GetRenderBounds () { return bounds; }
 
 	//
+	// GetCoverageBounds:
+	// returns the bounding box in global coordinates that opaquely covered by this object
+	//
+	virtual Rect GetCoverageBounds () { return Rect (); }
+
+	//
 	// GetTransformFor
 	//   Obtains the affine transform for the given child, this is
 	//   implemented by containers
