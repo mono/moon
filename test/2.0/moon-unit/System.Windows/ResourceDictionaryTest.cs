@@ -49,6 +49,15 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		public void AddNull ()
+		{
+			ResourceDictionary rd = new ResourceDictionary ();
+			Assert.Throws (delegate { rd.Add (null, new object ()); }, typeof (ArgumentNullException), "Add(null,object)");
+			Assert.Throws (delegate { rd.Add ("s", null); }, typeof (NotSupportedException), "Add(string,null)");
+			Assert.AreEqual (0, rd.Count, "Count");
+		}
+
+		[TestMethod]
 		public void TestParseColor ()
 		{
 			Canvas b = (Canvas)
@@ -131,6 +140,8 @@ namespace MoonTest.System.Windows
 
 			b.Resources.Remove ("color");
 			b.Resources.Remove ("color");
+
+			b.Resources.Remove (null);
 		}
 
 		[TestMethod]
@@ -142,6 +153,7 @@ namespace MoonTest.System.Windows
 
 			Assert.IsTrue (b.Resources.Contains ("color"));
 			Assert.IsFalse (b.Resources.Contains (new object()));
+			Assert.IsFalse (b.Resources.Contains (null), "null");
 		}
 
 		[TestMethod]

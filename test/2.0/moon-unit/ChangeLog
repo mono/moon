@@ -1,3 +1,8 @@
+2008-09-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows/ResourceDictionaryTest.cs: Add a few null tests
+	against potential (and real) crashers.
+
 2008-08-28  Chris Toshok  <toshok@ximian.com>
 
 	* Mono.Moonlight.UnitTesting/Tester.cs: output something different
