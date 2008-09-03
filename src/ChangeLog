@@ -1,3 +1,8 @@
+2008-09-03  Chris Toshok  <toshok@ximian.com>
+
+	* resources.cpp (ResourceDictionary::Clear): add pre-glib 2.12
+	code.
+
 2008-09-03  Larry Ewing  <lewing@novell.com>
 
 	* uielement.cpp, uielement.h: 

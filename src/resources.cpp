@@ -56,10 +56,26 @@ ResourceDictionary::AddWithError (const char* key, Value *value, MoonError *erro
 		MoonError::FillIn (error, MoonError::ARGUMENT, "An item with the same key has already been added");
 }
 
+#if !GTK_CHECK_VERSION(2,12,0)
+static gboolean
+glib_is_stupid (gpointer key,
+		gpointer value,
+		gpointer user_data)
+{
+	g_free (key);
+	g_free (value);
+	return TRUE;
+}
+#endif
+
 bool
 ResourceDictionary::Clear ()
 {
+#if GTK_CHECK_VERSION(2,12,0)
 	g_hash_table_remove_all (hash);
+#else
+	g_hash_table_foreach_remove (hash, glib_is_stupid, NULL);
+#endif
 
 	return Collection::Clear ();
 }
