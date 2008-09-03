@@ -1,3 +1,8 @@
+2008-09-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* resources.cpp: (ContainsKey) Don't crash if	a null key is 
+	supplied.
+
 2008-09-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* enums.cpp (initialize_enums): Map Horizontal and

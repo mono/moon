@@ -83,6 +83,9 @@ ResourceDictionary::Clear ()
 bool
 ResourceDictionary::ContainsKey (const char *key)
 {
+	if (!key)
+		return false;
+
 	gpointer orig_value;
 	gpointer orig_key;
 
