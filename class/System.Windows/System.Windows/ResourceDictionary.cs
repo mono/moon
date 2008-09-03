@@ -62,6 +62,11 @@ namespace System.Windows {
 			return NativeMethods.resource_dictionary_contains_key (native, key);
 		}
 
+		public bool Contains (object key)
+		{
+			return ContainsKey (key as string);
+		}
+
 #if NET_2_1
 		[SecuritySafeCritical]
 #endif

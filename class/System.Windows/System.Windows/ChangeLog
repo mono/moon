@@ -1,3 +1,8 @@
+2008-09-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ResourceDictionary.cs: Implement Contains(object) so we can compile 
+	moon's unit tests.
+
 2008-09-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* DependencyObject.cs: Added Kind.TEXTBOX to the switch.
