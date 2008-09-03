@@ -188,6 +188,35 @@ class XamlElementInstance : public List::Node {
 #endif
 	}
 
+	void LookupNamedResource (const char *name, Value **v)
+	{
+		if (!item) {
+			*v = NULL;
+			return;
+		}
+
+		if (item->Is(Type::FRAMEWORKELEMENT)) {
+
+			ResourceDictionary *rd = item->GetValue(UIElement::ResourcesProperty)->AsResourceDictionary();
+
+			bool exists = false;
+			Value *resource_value = rd->Get (name, &exists);
+
+			if (exists) {
+				*v = new Value (*resource_value);
+				return;
+			}
+		}
+
+		// XXX I'm guessing this parent lookup is the reason that we're failing for cases like the following xaml:
+		//
+		// <Rectangle><Rectangle.Stroke><SolidColorBrush Color="{StaticResource color}"/></Rectangle.Stroke></Rectangle>
+		//
+		// check ResourceDictionaryTest.TestStaticResourceParentElement_Property
+		//
+		if (parent)
+			parent->LookupNamedResource (name, v);
+	}
 };
 
 void 
@@ -3356,7 +3385,47 @@ start_parse:
 			}
 
 			Value *v = NULL;
-			if (!value_from_str (prop->GetPropertyType(), prop->GetName(), attr [i + 1], &v, p->loader->GetSurface()->IsSilverlight2())) {
+			if (attr[i+1][0] == '{' && attr[i+1][strlen(attr[i+1]) - 1] == '}') {
+				const char *start = attr[i+1] + 1; // skip the initial {
+				while (*start && isspace (*start)) start++;
+
+				if (!strncmp (start, "StaticResource ", strlen ("StaticResource "))) {
+					start += strlen ("StaticResource ");
+
+					while (*start && isspace (*start)) start++;
+
+					if (*start == '}') {
+						parser_error (p, item->element_name, attr[i], 2024,
+							      g_strdup_printf ("Empty StaticResource reference for property %s.",
+									       attr[i]));
+						return;
+					}
+
+					char *resource_name = g_strdup (start);
+
+					/* now trim off the trailing } and any spaces after the resource name */
+					char *end = resource_name + (strlen (resource_name) - 2);
+					while (end != resource_name && isspace (*end))
+						end --;
+					end++;
+					*end = '\0';
+
+					if (p->current_element)
+						p->current_element->LookupNamedResource (resource_name, &v);
+
+					if (!v) {
+						// XXX don't know the proper values here...
+						parser_error (p, item->element_name, attr[i], 2024,
+							      g_strdup_printf ("Could not locate StaticResource %s for property %s.",
+									       resource_name,
+									       attr[i]));
+						g_free (resource_name);
+						return;
+					}
+				}
+			}
+
+			if (!v && !value_from_str (prop->GetPropertyType(), prop->GetName(), attr [i + 1], &v, p->loader->GetSurface()->IsSilverlight2())) {
 				if (prop->GetPropertyType () == Type::MANAGED) {
 					if (!p->loader->callbacks.set_custom_attribute (item->item, NULL, prop->GetName (), attr [i + 1])) {
 						return;

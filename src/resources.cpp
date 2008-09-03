@@ -35,7 +35,7 @@ ResourceDictionary::CanAdd (Value *value)
 }
 
 bool
-ResourceDictionary::Add (char* key, Value *value)
+ResourceDictionary::Add (const char* key, Value *value)
 {
 	if (ContainsKey (key))
 		return false;
@@ -50,7 +50,7 @@ ResourceDictionary::Add (char* key, Value *value)
 }
 
 void
-ResourceDictionary::AddWithError (char* key, Value *value, MoonError *error)
+ResourceDictionary::AddWithError (const char* key, Value *value, MoonError *error)
 {
 	if (!Add (key, value))
 		MoonError::FillIn (error, MoonError::ARGUMENT, "An item with the same key has already been added");
@@ -65,7 +65,7 @@ ResourceDictionary::Clear ()
 }
 
 bool
-ResourceDictionary::ContainsKey (char *key)
+ResourceDictionary::ContainsKey (const char *key)
 {
 	gpointer orig_value;
 	gpointer orig_key;
@@ -75,16 +75,15 @@ ResourceDictionary::ContainsKey (char *key)
 }
 
 bool
-ResourceDictionary::Remove (char *key)
+ResourceDictionary::Remove (const char *key)
 {
 	/* check if the item exists first */
 	Value* orig_value;
 	gpointer orig_key;
 
-	if (g_hash_table_lookup_extended (hash, key,
-					  &orig_key, (gpointer*)&orig_value)) {
+	if (!g_hash_table_lookup_extended (hash, key,
+					   &orig_key, (gpointer*)&orig_value))
 		return false;
-	}
 
 	Collection::Remove (orig_value);
 
@@ -94,7 +93,7 @@ ResourceDictionary::Remove (char *key)
 }
 
 bool
-ResourceDictionary::Set (char *key, Value *value)
+ResourceDictionary::Set (const char *key, Value *value)
 {
 	Value *v = new Value (*value);
 
@@ -116,7 +115,7 @@ ResourceDictionary::Set (char *key, Value *value)
 }
 
 Value*
-ResourceDictionary::Get (char *key, bool *exists)
+ResourceDictionary::Get (const char *key, bool *exists)
 {
 	Value *v = NULL;
 	gpointer orig_key;

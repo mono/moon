@@ -1,3 +1,15 @@
+2008-09-02  Chris Toshok  <toshok@ximian.com>
+
+	* resources.h, resources.cpp: constify this.
+	(ResourceDictionary::Remove): fix g_hash_table_lookup_extended
+	logic.
+
+	* xaml.cpp (XamlElementInstance::LookupNamedResource): implement
+	resource lookups.
+	(dependency_object_set_attributes): add support for StaticResource
+	lookups.  going to refactor all this to add support for
+	TemplateBinding.
+
 2008-09-02  Jeffrey Stedfast  <fejj@novell.com>
 
 	* eventargs.h (class CollectionChangedEventArgs): Implemented

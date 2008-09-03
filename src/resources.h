@@ -27,25 +27,25 @@ public:
 	/* just to provide an implementation.  our CanAdd always returns true. */
 	virtual Type::Kind GetElementType () { return Type::INVALID;}
 
-	bool Add (char* key, Value *value);
+	bool Add (const char* key, Value *value);
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	void AddWithError (char* key, Value *value, MoonError *error);
+	void AddWithError (const char* key, Value *value, MoonError *error);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool Clear ();
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	bool ContainsKey (char *key);
+	bool ContainsKey (const char *key);
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	bool Remove (char *key);
+	bool Remove (const char *key);
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	bool Set (char *key, Value *value);
+	bool Set (const char *key, Value *value);
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	Value* Get (char *key, bool *exists);
+	Value* Get (const char *key, bool *exists);
 
 	virtual void SetSurface (Surface *surface);
 	virtual void UnregisterAllNamesRootedAt (NameScope *from_ns);
