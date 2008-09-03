@@ -83,7 +83,6 @@ class TextChangedEventArgs : public RoutedEventArgs {
 class TextBuffer;
 
 /* @SilverlightVersion="2" */
-/* @ContentProperty="Text" */
 /* @Namespace=System.Windows.Controls */
 class TextBox : public Control {
 	TextFontDescription *font;
@@ -100,7 +99,6 @@ class TextBox : public Control {
 	
 	bool dirty;
 	
-	void CalcActualWidthHeight (cairo_t *cr);
 	void Layout (cairo_t *cr);
 	void Paint (cairo_t *cr);
 	

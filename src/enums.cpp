@@ -307,8 +307,9 @@ initialize_enums (void)
 
 #if SL_2_0
 	g_hash_table_insert (enum_map, (char *) "ExternalCallersFromCrossDomain", cross_domain_access_map);
+	g_hash_table_insert (enum_map, (char *) "HorizontalScrollBarVisibility", scrollbar_visibility_map);
+	g_hash_table_insert (enum_map, (char *) "VerticalScrollBarVisibility", scrollbar_visibility_map);
 	g_hash_table_insert (enum_map, (char *) "LineStackingStrategy", line_stacking_strategy_map);
-	g_hash_table_insert (enum_map, (char *) "ScrollBarVisibility", scrollbar_visibility_map);
 	g_hash_table_insert (enum_map, (char *) "HorizontalAlignment", horizontal_alignment_map);
 	g_hash_table_insert (enum_map, (char *) "VerticalAlignment", vertical_alignment_map);
 	g_hash_table_insert (enum_map, (char *) "TextAlignment", text_alignment_map);

@@ -30,6 +30,8 @@
 
 static SolidColorBrush *default_selection_background_brush = NULL;
 static SolidColorBrush *default_selection_foreground_brush = NULL;
+static SolidColorBrush *default_background_brush = NULL;
+static SolidColorBrush *default_foreground_brush = NULL;
 
 static Brush *
 default_selection_background (void)
@@ -44,9 +46,27 @@ static Brush *
 default_selection_foreground (void)
 {
 	if (!default_selection_foreground_brush)
-		default_selection_foreground_brush = new SolidColorBrush ("black");
+		default_selection_foreground_brush = new SolidColorBrush ("white");
 	
 	return (Brush *) default_selection_foreground_brush;
+}
+
+static Brush *
+default_background (void)
+{
+	if (!default_background_brush)
+		default_background_brush = new SolidColorBrush ("white");
+	
+	return (Brush *) default_background_brush;
+}
+
+static Brush *
+default_foreground (void)
+{
+	if (!default_foreground_brush)
+		default_foreground_brush = new SolidColorBrush ("black");
+	
+	return (Brush *) default_foreground_brush;
 }
 
 void
@@ -60,6 +80,16 @@ textbox_shutdown (void)
 	if (default_selection_foreground_brush) {
 		default_selection_foreground_brush->unref ();
 		default_selection_foreground_brush = NULL;
+	}
+	
+	if (default_background_brush) {
+		default_background_brush->unref ();
+		default_background_brush = NULL;
+	}
+	
+	if (default_foreground_brush) {
+		default_foreground_brush->unref ();
+		default_foreground_brush = NULL;
 	}
 }
 
@@ -292,30 +322,6 @@ TextBox::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 }
 
 void
-TextBox::CalcActualWidthHeight (cairo_t *cr)
-{
-	bool destroy = false;
-	
-	if (cr == NULL) {
-		cr = measuring_context_create ();
-		destroy = true;
-	} else {
-		cairo_save (cr);
-	}
-	
-	cairo_identity_matrix (cr);
-	
-	Layout (cr);
-	
-	if (destroy) {
-		measuring_context_destroy (cr);
-	} else {
-		cairo_new_path (cr);
-		cairo_restore (cr);
-	}
-}
-
-void
 TextBox::Layout (cairo_t *cr)
 {
 	double width = GetWidth ();
@@ -341,7 +347,21 @@ TextBox::Layout (cairo_t *cr)
 void
 TextBox::Paint (cairo_t *cr)
 {
+	Brush *bg, *fg;
 	
+	printf ("TextBox::Paint()\n");
+	
+	if (!(bg = GetBackground ()))
+		bg = default_background ();
+	
+	bg->SetupBrush (cr, this, GetActualWidth (), GetActualHeight ());
+	cairo_rectangle (cr, 0.0, 0.0, GetActualWidth (), GetActualHeight ());
+	cairo_fill (cr);
+	
+	if (!(fg = GetForeground ()))
+		fg = default_foreground ();
+	
+	layout->Render (cr, hints, this, fg, 0.0, 0.0);
 }
 
 void

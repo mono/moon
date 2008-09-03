@@ -1,3 +1,13 @@
+2008-09-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* enums.cpp (initialize_enums): Map Horizontal and
+	VerticalScrollBarVisibility properly.
+
+	* textbox.cpp (TextBox::CalcActualWidthHeight): Removed, I don't
+	think we need this for TextBox controls since their
+	ActualWidth/Height aren't based on the text extents afaik.
+	(TextBox::Paint): Implemented, sorta.
+
 2008-09-03  Chris Toshok  <toshok@ximian.com>
 
 	* resources.cpp (ResourceDictionary::Clear): add pre-glib 2.12

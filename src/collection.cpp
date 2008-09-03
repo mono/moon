@@ -562,7 +562,8 @@ collection_new (Type::Kind kind)
 	return (Collection *) t->CreateInstance();
 }
 
-ContentWalker::ContentWalker (DependencyObject *obj, ContentWalkerDirection dir) {
+ContentWalker::ContentWalker (DependencyObject *obj, ContentWalkerDirection dir)
+{
 	index = 0;
 	collection = NULL;
 	content = obj->GetContent ();

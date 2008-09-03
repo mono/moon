@@ -106,14 +106,15 @@ public:
 	// UIElement.
 	
 	//
-	// Property Accessors
+	// Property Accessors (2.0)
 	//
 
 	void SetActualWidth (double width);
 	double GetActualWidth ();
+	
 	void SetActualHeight (double width);
 	double GetActualHeight ();
-
+	
 	Thickness *GetMargin ();
 	void SetMargin (Thickness *value);
 
