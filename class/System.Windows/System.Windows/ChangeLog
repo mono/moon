@@ -1,7 +1,7 @@
-2008-09-03  Sebastien Pouliot  <sebastien@ximian.com>
+2008-09-03  Sebastien Pouliot  <sebastien@ximian.com> 
 
-	* ResourceDictionary.cs: Implement Contains(object) so we can compile 
-	moon's unit tests.
+	* ResourceDictionary.cs: Implement Contains(object) so we can compile
+	moon's unit tests. Add correct exceptions to Add method.
 
 2008-09-03  Jeffrey Stedfast  <fejj@novell.com>
 

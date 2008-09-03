@@ -44,6 +44,11 @@ namespace System.Windows {
 
 		public void Add (string key, object value)
 		{
+			if (key == null)
+				throw new ArgumentNullException ("key");
+			if (value == null)
+				throw new NotSupportedException ("value");
+
 			Value v = DependencyObject.GetAsValue (value, true);
 			try {
 				NativeMethods.resource_dictionary_add (native, key, ref v);
