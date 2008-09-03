@@ -201,7 +201,7 @@ Panel::FrontToBack (Region *surface_region, List *render_list)
 		self_region->Intersect (GetSubtreeBounds().RoundOut ()); // note the RoundOut
 	}
 
-	if (self_region->IsEmpty() && render_list->First() == panel_cleanup_node) {
+	if (self_region->IsEmpty() && render_list->First() == cleanup_node) {
 		/* we don't intersect the surface region, and none of
 		   our children did either, remove the cleanup node */
 		render_list->Remove (render_list->First());
