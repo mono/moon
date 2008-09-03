@@ -1,7 +1,7 @@
-2008-09-03  Sebastien Pouliot  <sebastien@ximian.com>
+2008-09-03  Sebastien Pouliot  <sebastien@ximian.com> 
 
-	* resources.cpp: (ContainsKey) Don't crash if	a null key is 
-	supplied.
+	* resources.cpp: (ContainsKey) Don't crash if a null key is
+	supplied. (Remove) same. (Add) same.
 
 2008-09-03  Jeffrey Stedfast  <fejj@novell.com>
 

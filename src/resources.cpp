@@ -37,6 +37,9 @@ ResourceDictionary::CanAdd (Value *value)
 bool
 ResourceDictionary::Add (const char* key, Value *value)
 {
+	if (!key)
+		return false;
+
 	if (ContainsKey (key))
 		return false;
 
@@ -96,6 +99,9 @@ ResourceDictionary::ContainsKey (const char *key)
 bool
 ResourceDictionary::Remove (const char *key)
 {
+	if (!key)
+		return false;
+
 	/* check if the item exists first */
 	Value* orig_value;
 	gpointer orig_key;
