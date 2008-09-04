@@ -54,7 +54,7 @@ namespace System.Windows.Threading {
 		}
 #endif
 
-		public virtual void Send (SendOrPostCallback d, object state)
+		public override void Send (SendOrPostCallback d, object state)
 		{
 			throw new NotImplementedException ();
 		}
@@ -62,12 +62,12 @@ namespace System.Windows.Threading {
 #if NET_2_1
 		[SecuritySafeCritical]
 #endif
-		public virtual void Post (SendOrPostCallback d, object state)
+		public override void Post (SendOrPostCallback d, object state)
 		{
 			throw new NotImplementedException ();
 		}
 		
-		public virtual SynchronizationContext CreateCopy ()
+		public override SynchronizationContext CreateCopy ()
 		{
 			throw new NotImplementedException ();
 		}
