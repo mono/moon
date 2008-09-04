@@ -17,6 +17,7 @@
 #include <gdk/gdk.h> // for GdkRectangle
 
 #include "point.h"
+#include "thickness.h"
 
 // map to System.Windows.Rect
 /* @IncludeInKinds */
@@ -121,20 +122,35 @@ struct Rect {
 		return result;
 	}
 
-	Rect GrowBy (double xd, double yd)
+	Rect GrowBy (double left, double top, double right, double bottom)
 	{
 		Rect result = *this;
-		result.x -= xd;
-		result.y -= yd;
-		result.width += 2*xd;
-		result.height += 2*yd;
+		result.x -= left;
+		result.y -= top;
+		result.width += left + right;
+		result.height += top + bottom;
 
 		return result;
 	}
 
+	Rect GrowBy (double xd, double yd)
+	{
+		return GrowBy (xd, yd, xd, yd);
+	}
+
 	Rect GrowBy (double d)
 	{
-		return GrowBy (d, d);
+		return GrowBy (d, d, d, d);
+	}
+
+	Rect GrowBy (Thickness *t)
+	{
+		return GrowBy (t->left, t->top, t->right, t->bottom);
+	}
+
+	Rect ShrinkBy (Thickness *t)
+	{
+		return GrowBy (-t->left, -t->top, -t->right, -t->bottom);
 	}
 
 	Rect ExtendTo (double x, double y)

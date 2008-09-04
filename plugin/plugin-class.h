@@ -673,30 +673,6 @@ struct MoonlightStrokeObject : MoonlightDependencyObjectObject {
 			     const NPVariant *args, uint32_t argCount, NPVariant *result);
 };
 
-/*** MoonlightControl ***************************************************/
-
-struct MoonlightControlType : MoonlightDependencyObjectType {
-	MoonlightControlType ();
-};
-
-
-struct MoonlightControlObject : MoonlightDependencyObjectObject {
-	MoonlightControlObject (NPP instance) : MoonlightDependencyObjectObject (instance)
-	{
-		real_object = NULL;
-	}
-
-	virtual bool HasProperty (NPIdentifier name);
-	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
-	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
-
-	virtual bool HasMethod (NPIdentifier name);
-	virtual bool Invoke (int id, NPIdentifier name,
-			     const NPVariant *args, uint32_t argCount, NPVariant *result);
-
-	MoonlightEventObjectObject *real_object;
-};
-
 /*** MoonlightScriptableObject ***************************************************/
 
 struct MoonlightScriptableObjectObject;

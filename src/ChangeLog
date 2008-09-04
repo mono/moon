@@ -1,3 +1,9 @@
+2008-09-03  Larry Ewing  <lewing@novell.com>
+
+	* border.cpp, border.h: add some initial (broken) rendering
+	support, rework measure to use some of the new rect and size
+	methods.
+
 2008-09-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBox::OnPropertyChanged): When the AcceptsReturn

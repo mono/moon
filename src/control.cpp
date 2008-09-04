@@ -19,7 +19,6 @@
 
 Control::Control ()
 {
-	real_object = NULL;
 }
 
 Control::~Control ()
@@ -91,18 +90,24 @@ Control::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 bool 
 Control::InsideObject (cairo_t *cr, double x, double y)
 {
-	if (real_object)
-		return real_object->InsideObject (cr, x, y);
-	else
-		return false;
+	ContentWalker walker = ContentWalker (this);
+	UIElement *content = (UIElement *)walker.Step ();
+	
+	if (content)
+		return content->InsideObject (cr, x, y);
+	
+	return false;
 }
 
 void
 Control::HitTest (cairo_t *cr, Point p, List *uielement_list)
 {
+	ContentWalker walker = ContentWalker (this);
+	UIElement *content = (UIElement *)walker.Step ();
+
 	if (InsideObject (cr, p.x, p.y)) {
 		uielement_list->Prepend (new UIElementNode (this));
-		real_object->HitTest (cr, p, uielement_list);
+		content->HitTest (cr, p, uielement_list);
 	}
 }
 

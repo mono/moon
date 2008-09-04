@@ -13,6 +13,7 @@
 
 #include <glib.h>
 #include "eventargs.h"
+#include "thickness.h"
 
 /* @SilverlightVersion="2" */
 /* @IncludeInKinds */
@@ -27,6 +28,36 @@ struct Size {
 	{
 		this->width = w;
 		this->height = h;
+	}
+
+	Size Max (double w, double h)
+	{
+		return Size (width < w ? w : width, h < height ? h : height);
+	}
+
+	Size Max (Size s)
+	{
+		return Max (s.width, s.height);
+	}
+
+	Size Min (double w, double h)
+	{
+		return Size (width < w ? width : w, height < h ? height : h);
+	}
+
+	Size Min (Size s)
+	{
+		return Min (s.width, s.height);
+	}
+
+	Size GrowBy (double w, double h)
+	{
+		return Size (w + width, h + height);
+	}
+
+	Size GrowBy (Thickness *t)
+	{
+		return Size (width + t->left + t->right, height + t->top + t->bottom); 
 	}
 };
 

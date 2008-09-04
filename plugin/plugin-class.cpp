@@ -3012,17 +3012,6 @@ EventObjectCreateWrapper (NPP instance, EventObject *obj)
 	
 	plugin->AddWrappedObject (obj, depobj);
 	
-	/* do any post creation initialization here */
-	switch (obj->GetObjectType()) {
-	case Type::CONTROL:
-		((MoonlightControlObject *) depobj)->real_object = EventObjectCreateWrapper (instance,
-											     ((Control *) obj)->real_object);
-		break;
-	default:
-		/* nothing to do */
-		break;
-	}
-
 	return depobj;
 }
 
@@ -3860,102 +3849,6 @@ MoonlightDownloaderType::MoonlightDownloaderType ()
 }
 
 
-/*** MoonlightControlClass ***************************************************/
-
-static NPObject *
-moonlight_control_allocate (NPP instance, NPClass *klass)
-{
-	return new MoonlightControlObject (instance);
-}
-
-bool
-MoonlightControlObject::HasProperty (NPIdentifier name)
-{
-	if (real_object->HasProperty (name))
-		return true;
-
-	return false;
-}
-
-bool
-MoonlightControlObject::GetProperty (int id, NPIdentifier name, NPVariant *result)
-{
-	DependencyObject *dob = GetDependencyObject ();
-	DependencyObject *real_dob = ((MoonlightDependencyObjectObject*)real_object)->GetDependencyObject ();
-	DependencyProperty *p;
-
-	// don't need to downcase here since dependency property lookup is already case insensitive
-	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
-	if (!strname)
-		return false;
-
-	p = _get_dependency_property (real_dob, strname);
-	if (!p)
-		p = _get_dependency_property(dob, strname);
-
-	NPN_MemFree (strname);
-
-	if (!p)
-		return false;
-
-	Value *value = dob->GetValue (p);
-	if (!value)
-		return false;
-
-	value_to_variant (this, value, result, dob, p);
-
-	return true;
-}
-
-bool
-MoonlightControlObject::SetProperty (int id, NPIdentifier name, const NPVariant *value)
-{
-	PluginInstance *plugin = (PluginInstance*) instance->pdata;
-	DependencyObject *dob = GetDependencyObject ();
-	DependencyObject *real_dob = ((MoonlightDependencyObjectObject*)real_object)->GetDependencyObject ();
-	DependencyProperty *p;
-
-	// don't need to downcase here since dependency property lookup is already case insensitive
-	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
-	if (!strname)
-		return false;
-
-	p = _get_dependency_property (real_dob, strname);
-	if (!p)
-		p = _get_dependency_property(dob, strname);
-
-	NPN_MemFree (strname);
-
-	if (!p)
-		return false;
-
-	if (_set_dependency_property_value (dob, p, value, plugin->IsSilverlight2()))
-		return true;
-	else
-		THROW_JS_EXCEPTION ("AG_E_RUNTIME_SETVALUE");
-}
-
-bool
-MoonlightControlObject::HasMethod (NPIdentifier name)
-{
-	return real_object->HasMethod (name);
-}
-
-bool
-MoonlightControlObject::Invoke (int id, NPIdentifier name,
-				const NPVariant *args, uint32_t argCount,
-				NPVariant *result)
-{
-	return NPN_Invoke (instance, real_object, name, args, argCount, result);
-}
-
-MoonlightControlType::MoonlightControlType ()
-{
-	allocate = moonlight_control_allocate;
-}
-
-
-
 /*** MoonlightScriptableObjectClass ***************************************************/
 
 // FIXME: the property/method hashes here are case sensitive
@@ -4375,7 +4268,6 @@ plugin_init_classes (void)
 	 */
 
 	dependency_object_classes [COLLECTION_CLASS] = new MoonlightCollectionType ();
-	dependency_object_classes [CONTROL_CLASS] = new MoonlightControlType ();
 	dependency_object_classes [DEPENDENCY_OBJECT_CLASS] = new MoonlightDependencyObjectType ();
 	dependency_object_classes [DOWNLOADER_CLASS] = new MoonlightDownloaderType ();
 	dependency_object_classes [IMAGE_BRUSH_CLASS] = new MoonlightImageBrushType ();

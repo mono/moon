@@ -68,7 +68,6 @@ class Control : public FrameworkElement {
  	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentCenter,GenerateAccessors */
 	static DependencyProperty *VerticalContentAlignmentProperty;
 	
-	FrameworkElement *real_object;
 	Rect bounds_with_children;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
