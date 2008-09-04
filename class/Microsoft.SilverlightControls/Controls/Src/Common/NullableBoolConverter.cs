@@ -35,6 +35,8 @@ namespace System.Windows
         /// </returns> 
 #if NET_2_1
 	override
+#else
+	new
 #endif
         public bool CanConvertFrom(Type sourceType)
         { 
@@ -49,6 +51,8 @@ namespace System.Windows
         /// <returns>A bool? that represents the converted text.</returns> 
 #if NET_2_1
 	override
+#else
+	new
 #endif
         public object ConvertFrom(object value)
         {
@@ -71,6 +75,8 @@ namespace System.Windows
         /// </returns>
 #if NET_2_1
 	override
+#else
+	new
 #endif
         public object ConvertFromString(string text)
         { 
