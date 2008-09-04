@@ -42,6 +42,9 @@ namespace System.Windows {
 		IEnumerable<KeyValuePair<Object, Object>>,
 		IEnumerable {
 
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
 		public void Add (string key, object value)
 		{
 			if (key == null)
@@ -57,9 +60,12 @@ namespace System.Windows {
 			}
 		}
 
-		private bool Clear ()
+#if NET_2_1
+		[SecuritySafeCritical]
+#endif
+		public void Clear ()
 		{
-			return NativeMethods.resource_dictionary_clear (native);
+			NativeMethods.resource_dictionary_clear (native);
 		}
 
 		private bool ContainsKey (string key)
@@ -77,10 +83,10 @@ namespace System.Windows {
 #endif
 		public void Remove (string key)
 		{
-			_Remove (key);
+			RemoveInternal (key);
 		}
 
-		private bool _Remove (string key)
+		private bool RemoveInternal (string key)
 		{
 			return NativeMethods.resource_dictionary_remove (native, key);
 		}
@@ -104,6 +110,9 @@ namespace System.Windows {
 		public bool IsReadOnly { get {throw new NotImplementedException();} }
 
 		public object this[object key] { 
+#if NET_2_1
+			[SecuritySafeCritical]
+#endif
 			get {
 				if (!(key is string))
 					throw new ArgumentException ("Key must be a string");
@@ -152,7 +161,7 @@ namespace System.Windows {
 
 		bool IDictionary<object, object>.Remove (object key)
 		{
-			return _Remove ((string)key);
+			return RemoveInternal ((string)key);
 		}
 
 		bool IDictionary<object, object>.TryGetValue (object key, out object value)
@@ -192,7 +201,8 @@ namespace System.Windows {
 
 		bool ICollection<KeyValuePair<object, object>>.Remove (KeyValuePair<object, object> item)
 		{
-			return _Remove ((string)item.Key);
+			Remove ((string)item.Key);
+			return false;
 		}
 
 		// IDictionary<object, object> implementation

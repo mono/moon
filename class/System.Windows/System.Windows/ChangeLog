@@ -1,3 +1,9 @@
+2008-09-03  Chris Toshok  <toshok@ximian.com>
+
+	* ResourceDictionary.cs: rename _Remove to RemoveInternal, correct
+	return values of some of the explicit interface implementations,
+	and add some SecuritySafeCriticals.
+
 2008-09-03  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* ResourceDictionary.cs: Implement Contains(object) so we can compile
