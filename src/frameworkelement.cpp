@@ -91,18 +91,12 @@ Size
 FrameworkElement::MeasureOverride (Size availableSize)
 {
 #if SL_2_0
-	double width = GetWidth ();
-	double height = GetHeight ();
+	Size result = Size (GetWidth (), GetHeight ());
 	Thickness *margins = GetMargin ();
 
 	// if our width is not set, or is smaller than our configured MinWidth,
 	// bump it up to the minimum.
-	if (isnan(width) || width < GetMinWidth ())
-		width = GetMinWidth ();
-
-	// and do the same with height
-	if (isnan(height) || height < GetMinHeight ())
-		height = GetMinHeight ();
+	result = result.Max (GetMinWidth (), GetMinHeight ());
 
 	DependencyObject *content = GetContent ();
 	if (content) {
@@ -117,10 +111,7 @@ FrameworkElement::MeasureOverride (Size availableSize)
 			// if the child's size + margins is > our idea
 			// of what our size should be, use the
 			// child+margins instead.
-			if (child_size.width > width)
-				width = child_size.width;
-			if (child_size.height > height)
-				height = child_size.height;
+			result = result.Max (child_size);
 		}
 		else if (content->Is (Type::COLLECTION)) {
 			g_warning ("non-panel has a collection for its ContentProperty.  unsupported");
@@ -129,19 +120,13 @@ FrameworkElement::MeasureOverride (Size availableSize)
 			g_warning ("unsupport content of FrameworkElement (%s)", content->GetTypeName());
 		}
 	}
-
-	width += margins->left + margins->right;
-	height += margins->top + margins->bottom;
+	result = result.GrowBy (margins);
 
 	// make sure we don't go over our configured max size
-	if (width > GetMaxWidth ())
-		width = GetMaxWidth ();
-	if (height > GetMaxHeight ())
-		height = GetMaxHeight ();
+	result = result.Min (GetMaxWidth (), GetMaxHeight ());
 
 	// now choose whichever is smaller, our chosen size or the availableSize.
-	return Size (availableSize.width > width ? width : availableSize.width,
-		     availableSize.height > height ? height : availableSize.height);
+	return result.Min (availableSize);
 #else
 	return availableSize;
 #endif

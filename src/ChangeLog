@@ -1,5 +1,8 @@
 2008-09-03  Larry Ewing  <lewing@novell.com>
 
+	* frameworkelement.cpp (FrameworkElement::MeasureOverride): use
+	the new Size methods.
+
 	* border.cpp, border.h: add some initial (broken) rendering
 	support, rework measure to use some of the new rect and size
 	methods.
