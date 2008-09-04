@@ -46,6 +46,7 @@ namespace MoonlightTests {
 		
 		private string test_run_dir;
 		private string test_suite = string.Empty;
+		private bool debug = true;
 		
 		public bool HasConnection
 		{
@@ -57,9 +58,10 @@ namespace MoonlightTests {
 			try
 			{
 				StreamReader reader = new StreamReader(".dbconnection.txt");
-				connectionString = reader.ReadLine();
+				connectionString = reader.ReadLine(); // Read the first line of the file
 				reader.Close();
 				
+				Log(string.Format("Connecting to Postgresql server: '{0}'",connectionString));
 				dbcon =  new NpgsqlConnection(connectionString);
 				dbcon.Open();
 				dbcmd = dbcon.CreateCommand();
@@ -70,19 +72,19 @@ namespace MoonlightTests {
 				while(dbreader.Read())
 				{
 					int id = dbreader.GetInt32(0);
-					//Console.WriteLine("reading testcase {0}",id);
+					Log("reading testcase " + id);
 				}
 				dbreader.Close();
 				dbreader = null;
 				
-				Console.WriteLine("\nDbReport enabled\n");
+				Log("\nDbReport enabled\n");
 			
 			}
 			catch(Exception ex)
 			{
-				Console.WriteLine("DbReport disabled");
-				//WriteHelp();
-				//Console.WriteLine("\n{1} {0}",ex.GetType(), ex.Message);
+				Log("DbReport disabled");
+				WriteHelp();
+				Log(string.Format("\n{1} {0}",ex.GetType(), ex.Message));
 				connectionString = string.Empty;
 			}
 			
@@ -94,7 +96,7 @@ namespace MoonlightTests {
 			str += "\nCreate file moon/test/.dbconnection.txt with the first line being the connection string to use.";
 			str += "\nServer=mysqlserver.company.com;Database=db;User ID=user;Password=password;Pooling=false;\n";
 			
-			Console.WriteLine(str);
+			Log(str);
 				
 		}
 #region IReport members
@@ -109,7 +111,7 @@ namespace MoonlightTests {
 			string dir = "test-run-data";
 			string filename = "moonTestSuite.db";
 			
-			runtime = run.StartTime.ToString("yyyy-MM-dd-hh-mm");
+			runtime = run.StartTime.ToString("yyyy-MM-dd hh:mm");//Postgres timestamp format
 			test_run_dir = Path.Combine(dir,runtime);
 			
 			if (!Directory.Exists(test_run_dir)) {
@@ -125,7 +127,7 @@ namespace MoonlightTests {
 			else
 				test_suite = "moon";
 
-			Console.WriteLine("Runtime: {0}", runtime);
+			Log(string.Format("Runtime: {0}", runtime));
 			
 			AddBuild(runtime);
 		}
@@ -154,13 +156,11 @@ namespace MoonlightTests {
 			string result_file = XmlReport.GetFilePath (test.ResultFile);
 			string master_file = XmlReport.GetFilePath (test.MasterFile);
 
-			/*
-			Console.WriteLine("masterfile = " + masterfile);
-			Console.WriteLine("renderfile = " + renderfile);
+			Log("masterfile = " + masterfile);
+			Log("renderfile = " + renderfile);
 			
-			Console.WriteLine("result_file = " + result_file);
-			Console.WriteLine("master_file = " + master_file);
-			//*/
+			Log("result_file = " + result_file);
+			Log("master_file = " + master_file);
 			
 			
 			XmlReport.CopyImageToRunDirectory(test_run_dir,result_file);
@@ -232,16 +232,17 @@ namespace MoonlightTests {
 			string revision = GetSubersionRevision();
 			string arch = GetArch();
 			
-			string query = string.Format("INSERT INTO builds VALUES ('','{0}','{1}','{2}');",revision,time,arch);
+			string query = string.Format("INSERT INTO builds (revision, runtime, arch) VALUES ('{0}','{1}','{2}');",revision,time,arch);
 			//execnonquery(query);
 			dbcmd.CommandText = query;
-			try 			{
+			try {
 				dbcmd.ExecuteNonQuery();
 			}
 			catch(Exception ex) {
-				Console.WriteLine(ex);
+				Log(ex.ToString());
+				Log(query);
 			}
-			IDataReader reader = execreader(string.Format("select id from builds where revision='{0}' and runtime='{1}' and arch='{2}';",revision,time,arch));
+			IDataReader reader = execreader(string.Format("select id from builds where revision={0} and runtime='{1}' and arch='{2}';",revision,time,arch));
 			if ((reader != null) && reader.Read())
 			{
 				this.runtimeid = reader.GetInt32(0);
@@ -268,7 +269,7 @@ namespace MoonlightTests {
 					
 				}
 				catch(Exception ex) {
-					Console.WriteLine("Tag exists:" + tag);
+					Log("Tag exists:" + tag);
 					tagid = int.MinValue;
 				}
 				finally {
@@ -281,7 +282,7 @@ namespace MoonlightTests {
 					
 				if (tagid == int.MinValue) {
 					try {
-						query = string.Format("INSERT INTO tags VALUES ('','{0}');",tag.ToLower());
+						query = string.Format("INSERT INTO tags (name) VALUES ('{0}');",tag.ToLower());
 						execnonquery(query);					
 						
 						query = string.Format("SELECT id FROM tags WHERE name = '{0}';",tag.ToLower());
@@ -293,7 +294,7 @@ namespace MoonlightTests {
 					}
 					catch (Exception ex) {
 						
-						Console.WriteLine("ADDTAG " +ex.Message);
+						Log("ADDTAG " +ex.Message);
 					}
 					finally{
 						if (reader != null) {
@@ -312,7 +313,7 @@ namespace MoonlightTests {
 			IDataReader reader = execreader(query);
 			if ((reader != null) && reader.Read()) {
 				reader.Close();
-				Console.WriteLine("tagged case EXISTS for testcaseid={0} and tagid={1};",testid,tagid);
+				Log(string.Format("tagged case EXISTS for testcaseid={0} and tagid={1};",testid,tagid));
 			}
 			else {
 				if (reader != null)
@@ -330,8 +331,8 @@ namespace MoonlightTests {
 				dbcmd.ExecuteNonQuery();
 			}
 			catch(Exception ex) {
-				Console.WriteLine("EXECQUERY {0}: {1}",ex.GetType().ToString(), ex.Message);
-				Console.WriteLine("{0}",query);
+				Log(string.Format("EXECQUERY {0}: {1}",ex.GetType().ToString(), ex.Message));
+				Log(query);
 			}
 		}
 		private IDataReader execreader(string query)
@@ -342,7 +343,7 @@ namespace MoonlightTests {
 				return reader;
 			}
 			catch(Exception ex) {
-				Console.WriteLine("NONEXEC {0}: {1}",ex.GetType().ToString(), query);
+				Log(string.Format("NONEXEC {0}: {1}",ex.GetType().ToString(), query));
 				return null;
 			}
 		}
@@ -389,6 +390,8 @@ namespace MoonlightTests {
 				}
 			}
 			catch (Exception ex) {
+				
+				Log("Cannot get revision number: " + ex.Message);
 				revision = string.Empty;
 			}
 
@@ -398,6 +401,11 @@ namespace MoonlightTests {
 			}
 			return revision;
 
+		}
+		private void Log(string msg)
+		{
+			if (debug)
+				Console.WriteLine(msg);
 		}
 	}
 }
