@@ -1229,16 +1229,9 @@ DependencyObject::DependencyObject ()
 	logical_parent = NULL;
 }
 
-static void
-dump (gpointer key, gpointer value, gpointer data)
-{
-	printf ("%s\n", (char*)key);
-}
-
 Type::Kind
 DependencyObject::GetObjectType ()
 {
-	g_hash_table_foreach (current_values, dump, NULL);
 	return Type::DEPENDENCY_OBJECT; 
 }
 
