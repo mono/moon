@@ -465,7 +465,7 @@ TextBlock::Paint (cairo_t *cr)
 	if (!(fg = GetForeground ()))
 		fg = default_foreground ();
 	
-	layout->Render (cr, hints, this, fg, 0.0, 0.0);
+	layout->Render (cr, 0.0, 0.0, this, hints, fg);
 	
 	if (moonlight_flags & RUNTIME_INIT_SHOW_TEXTBOXES) {
 		cairo_set_source_rgba (cr, 0.0, 1.0, 0.0, 1.0);

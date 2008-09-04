@@ -38,6 +38,12 @@ class TextRun : public List::Node {
 	bool IsUnderlined () { return (deco & TextDecorationsUnderline); }
 };
 
+struct TextSelection {
+	Brush *background;
+	Brush *foreground;
+	int start, length;
+};
+
 class TextLayoutHints {
 	LineStackingStrategy strategy;
 	TextAlignment alignment;
@@ -103,7 +109,7 @@ class TextLayout {
 	void GetActualExtents (double *width, double *height);
 	//void GetLayoutExtents (double *width, double *height);
 	
-	void Render (cairo_t *cr, TextLayoutHints *hints, UIElement *element, Brush *default_fg, double x, double y);
+	void Render (cairo_t *cr, double x, double y, UIElement *item, TextLayoutHints *hints, Brush *default_fg, TextSelection *selection = NULL, int caret = -1);
 };
 
 #endif /* __LAYOUT_H__ */

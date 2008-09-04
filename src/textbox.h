@@ -92,10 +92,7 @@ class TextBox : public Control {
 	int maxlen;
 	int caret;
 	
-	struct {
-		int length;
-		int start;
-	} selection;
+	TextSelection selection;
 	
 	bool dirty;
 	

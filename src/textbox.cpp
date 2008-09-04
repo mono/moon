@@ -286,6 +286,8 @@ TextBox::TextBox ()
 	
 	buffer = new TextBuffer ();
 	
+	selection.background = default_selection_background ();
+	selection.foreground = default_selection_foreground ();
 	selection.length = 0;
 	selection.start = 0;
 	maxlen = 0;
@@ -326,7 +328,6 @@ TextBox::Layout (cairo_t *cr)
 {
 	double width = GetWidth ();
 	List *runs;
-	Run *run;
 	
 	layout->SetWrapping (GetTextWrapping ());
 	
@@ -347,21 +348,14 @@ TextBox::Layout (cairo_t *cr)
 void
 TextBox::Paint (cairo_t *cr)
 {
-	Brush *bg, *fg;
+	Brush *fg;
 	
 	printf ("TextBox::Paint()\n");
-	
-	if (!(bg = GetBackground ()))
-		bg = default_background ();
-	
-	bg->SetupBrush (cr, this, GetActualWidth (), GetActualHeight ());
-	cairo_rectangle (cr, 0.0, 0.0, GetActualWidth (), GetActualHeight ());
-	cairo_fill (cr);
 	
 	if (!(fg = GetForeground ()))
 		fg = default_foreground ();
 	
-	layout->Render (cr, hints, this, fg, 0.0, 0.0);
+	layout->Render (cr, 0.0, 0.0, this, hints, fg, &selection);
 }
 
 void
@@ -424,9 +418,11 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		selection.length = args->new_value->AsInt32 ();
 		dirty = true;
 	} else if (args->property == TextBox::SelectionBackgroundProperty) {
-		/* just need to invalidate */
+		if (!(selection.background = args->new_value ? args->new_value->AsBrush () : NULL))
+			selection.background = default_selection_background ();
 	} else if (args->property == TextBox::SelectionForegroundProperty) {
-		/* just need to invalidate */
+		if (!(selection.foreground = args->new_value ? args->new_value->AsBrush () : NULL))
+			selection.foreground = default_selection_foreground ();
 	} else if (args->property == TextBox::TextProperty) {
 		const char *str = args->new_value ? args->new_value->AsString () : "";
 		gunichar *text;
@@ -472,6 +468,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 	
 	if (args->property->GetOwnerType () != Type::TEXTBOX) {
 		Control::OnPropertyChanged (args);
+		// FIXME: does padding or anything else play a part in affecting textual wrapping?
 		if (args->property == FrameworkElement::WidthProperty) {
 			if (GetTextWrapping () != TextWrappingNoWrap)
 				dirty = true;

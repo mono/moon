@@ -1209,7 +1209,7 @@ TextLayout::Layout (TextLayoutHints *hints)
 }
 
 static inline void
-RenderLine (cairo_t *cr, TextLayoutHints *hints, UIElement *element, TextLine *line, Brush *default_fg, double x, double y)
+RenderLine (cairo_t *cr, double x, double y, UIElement *item, TextLayoutHints *hints, TextLine *line, Brush *default_fg)
 {
 	TextFont *font = NULL;
 	TextDecorations deco;
@@ -1248,7 +1248,7 @@ RenderLine (cairo_t *cr, TextLayoutHints *hints, UIElement *element, TextLine *l
 		else
 			fg = default_fg;
 		
-		fg->SetupBrush (cr, element, segment->advance, font->Height ());
+		fg->SetupBrush (cr, item, segment->advance, font->Height ());
 		
 		if (!segment->path) {
 			if (font->IsScalable () && segment->start < segment->end) {
@@ -1329,7 +1329,7 @@ RenderLine (cairo_t *cr, TextLayoutHints *hints, UIElement *element, TextLine *l
 }
 
 void
-TextLayout::Render (cairo_t *cr, TextLayoutHints *hints, UIElement *element, Brush *default_fg, double x, double y)
+TextLayout::Render (cairo_t *cr, double x, double y, UIElement *item, TextLayoutHints *hints, Brush *default_fg, TextSelection *selection, int caret)
 {
 	TextLine *line;
 	double deltax;
@@ -1358,7 +1358,7 @@ TextLayout::Render (cairo_t *cr, TextLayoutHints *hints, UIElement *element, Bru
 			break;
 		}
 		
-		RenderLine (cr, hints, element, line, default_fg, x + deltax, y1);
+		RenderLine (cr, x + deltax, y1, item, hints, line, default_fg);
 		y1 += (double) line->height;
 		
 		line = (TextLine *) line->next;

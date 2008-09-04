@@ -1,3 +1,12 @@
+2008-09-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (TextLayout::Render): Added some new arguments which
+	aren't actually used yet but will be eventually (assuming I
+	continue with this approach).
+
+	* textbox.cpp (TextBox::Paint): Don't bother painting the
+	background, control does this for us.
+
 2008-09-04  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* tilesource.h, deepzoomimagetilesource.h|.cpp: move the dzits in its
