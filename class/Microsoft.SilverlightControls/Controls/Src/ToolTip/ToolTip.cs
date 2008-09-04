@@ -8,7 +8,6 @@ using System.Windows.Markup;
 using System.Windows.Media; 
 using System.Windows.Media.Animation;
 using System.Windows.Controls.Primitives;
-using System.Windows.Controls.Primitives;
 using System.Windows.Controls;
 
 namespace System.Windows.Controls
