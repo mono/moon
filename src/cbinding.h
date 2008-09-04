@@ -17,6 +17,7 @@
 #include "collection.h"
 #include "contentcontrol.h"
 #include "control.h"
+#include "deepzoomimagetilesource.h"
 #include "dependencyobject.h"
 #include "dependencyproperty.h"
 #include "deployment.h"
@@ -286,6 +287,10 @@ ControlTemplate *control_template_new (void);
  **/
 /* @GeneratePInvoke */
 DeepZoomImageTileSource *deep_zoom_image_tile_source_new (void);
+#endif
+
+#if SL_2_0
+void deep_zoom_image_tile_source_download_urisource (DeepZoomImageTileSource *instance, const char *uri, downloaded_cb callback);
 #endif
 
 #if SL_2_0

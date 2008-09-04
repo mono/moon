@@ -1,3 +1,7 @@
+2008-09-04  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* Makefile.am: add ref to System.Xml for parsing DeepZoom images
+
 2008-08-23  Geoff Norton  <gnorton@novell.com>
 
 	* Makefile.am: add a reference to System.Net.dll when compiling

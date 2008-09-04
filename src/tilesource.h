@@ -19,6 +19,12 @@
 /* @Version=2,Namespace=System.Windows.Media */
 class MultiScaleTileSource : public DependencyObject {
  protected:
+	int imageWidth; //width of the DeepZoom Image
+	int imageHeight;
+	int tileWidth;	//width of the tiles
+	int tileHeight;
+	int tileOverlap; //how much the tiles overlap
+
 	virtual ~MultiScaleTileSource () {}
 
  public:
@@ -26,21 +32,7 @@ class MultiScaleTileSource : public DependencyObject {
 	MultiScaleTileSource () {}
 
 	virtual Type::Kind GetObjectType () { return Type::MULTISCALETILESOURCE; }
-};
 
-/* @Version=2,Namespace=System.Windows.Media */
-class DeepZoomImageTileSource : public MultiScaleTileSource {
- protected:
-	virtual ~DeepZoomImageTileSource () {}
-
- public:
-	/* @PropertyType=string,ManagedPropertyType=Uri */
-	static DependencyProperty *UriSourceProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	DeepZoomImageTileSource () {}
-
-	virtual Type::Kind GetObjectType () { return Type::DEEPZOOMIMAGETILESOURCE; }	
 };
 
 #endif /* __TILESOURCE_H__ */

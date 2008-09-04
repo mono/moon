@@ -146,6 +146,7 @@ libmoon_include_HEADERS += 	\
 	contentcontrol.h	\
 	control.h		\
 	cornerradius.h		\
+	deepzoomimagetilesource.h \
 	deployment.h		\
 	grid.h			\
 	multiscaleimage.h	\
@@ -164,6 +165,7 @@ libmoon_la_SOURCES += 		\
 	contentcontrol.cpp	\
 	control.cpp		\
 	cornerradius.cpp	\
+	deepzoomimagetilesource.cpp \
 	deployment.cpp		\
 	grid.cpp		\
 	multiscaleimage.cpp	\

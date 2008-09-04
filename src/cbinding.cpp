@@ -518,6 +518,18 @@ deep_zoom_image_tile_source_new (void)
 
 
 #if SL_2_0
+void
+deep_zoom_image_tile_source_download_urisource (DeepZoomImageTileSource *instance, const char *uri, downloaded_cb callback)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->download_urisource (uri, callback);
+}
+#endif
+
+
+#if SL_2_0
 /**
  * DependencyObject
  **/

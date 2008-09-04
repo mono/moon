@@ -13,7 +13,10 @@ namespace DeepZoomSample {
 
 		void msi_loaded (object o, RoutedEventArgs e)
 		{
-			msimage.Source = new DeepZoomImageTileSource (new Uri ("file:///home/sde/Mono/moon/test/2.0/DeepZoomSample/output/info.xml"));
+			Console.WriteLine ("Loaded");
+			DeepZoomImageTileSource dzits = new DeepZoomImageTileSource ();
+			msimage.Source = dzits;
+			dzits.UriSource = new Uri ("http://192.168.42.10/~sde/output/info.xml");
 		}
 	}
 }

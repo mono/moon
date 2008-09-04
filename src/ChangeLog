@@ -1,3 +1,8 @@
+2008-09-04  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* tilesource.h, deepzoomimagetilesource.h|.cpp: move the dzits in its
+	own file, implement the downloader.
+
 2008-09-03  Chris Toshok  <toshok@ximian.com>
 
 	* dependencyobject.h: as much as i hate this, add

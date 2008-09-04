@@ -1103,15 +1103,6 @@ namespace System.Windows.Media {
 		}
 	}
 
-	partial class DeepZoomImageTileSource {
-		public static readonly DependencyProperty UriSourceProperty = DependencyProperty.Lookup (Kind.DEEPZOOMIMAGETILESOURCE, "UriSource", typeof (Uri));
-
-		public Uri UriSource {
-			get { return (Uri) GetValue (UriSourceProperty); }
-			set { SetValue (UriSourceProperty, value); }
-		}
-	}
-
 	partial class EllipseGeometry {
 		public static readonly DependencyProperty CenterProperty = DependencyProperty.Lookup (Kind.ELLIPSEGEOMETRY, "Center", typeof (Point));
 		public static readonly DependencyProperty RadiusXProperty = DependencyProperty.Lookup (Kind.ELLIPSEGEOMETRY, "RadiusX", typeof (double));

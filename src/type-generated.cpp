@@ -47,6 +47,7 @@
 #include "border.h"
 #include "contentcontrol.h"
 #include "control.h"
+#include "deepzoomimagetilesource.h"
 #include "deployment.h"
 #include "grid.h"
 #include "multiscaleimage.h"

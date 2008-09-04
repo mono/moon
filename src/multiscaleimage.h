@@ -70,7 +70,6 @@ class MultiScaleImage : public FrameworkElement {
 	// Property Accessors
 	//
 	double GetAspectRatio ();
-	void SetAspectRatio (double ratio);
 
 	MultiScaleTileSource* GetSource ();
 	void SetSource (MultiScaleTileSource* source);
