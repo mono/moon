@@ -3459,6 +3459,7 @@ start_parse:
 						return;
 					}
 				}
+#if SL_2_0
 				else if (!strncmp (start, "TemplateBinding ", strlen ("TemplateBinding "))) {
 					XamlElementInstance *parent = item->parent;
 
@@ -3495,6 +3496,7 @@ start_parse:
 
 					template_parent->AddTemplateBinding (p->current_element, argument, attr[i]);
 				}
+#endif
 			}
 
 			if (!v && !value_from_str (prop->GetPropertyType(), prop->GetName(), attr [i + 1], &v, p->loader->GetSurface()->IsSilverlight2())) {
