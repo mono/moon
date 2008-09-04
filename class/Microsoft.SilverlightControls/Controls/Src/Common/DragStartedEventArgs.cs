@@ -31,7 +31,7 @@ namespace System.Windows.Controls.Primitives
             : base() 
         {
             HorizontalOffset = horizontalOffset;
-            verticalOffset = verticalOffset;
+            VerticalOffset = verticalOffset;
         }
     } 
 
