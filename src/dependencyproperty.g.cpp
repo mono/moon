@@ -1471,6 +1471,21 @@ Control::SetTabNavigation (KeyboardNavigationMode value)
 
 #endif
 #if SL_2_0
+ControlTemplate *
+Control::GetTemplate ()
+{
+	Value *value = GetValue (Control::TemplateProperty);
+	return value ? value->AsControlTemplate () : NULL;
+}
+
+void
+Control::SetTemplate (ControlTemplate * value)
+{
+	SetValue (Control::TemplateProperty, Value (value));
+}
+
+#endif
+#if SL_2_0
 VerticalAlignment
 Control::GetVerticalContentAlignment ()
 {

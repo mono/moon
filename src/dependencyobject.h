@@ -255,6 +255,8 @@ class DependencyObject : public EventObject {
  	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject ();
 
+	GHashTable* GetCurrentValues () { return current_values; }
+
 	//
 	// Gets the content property from this object's type, and
 	// returns the value of that dependency property.

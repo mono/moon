@@ -1,3 +1,20 @@
+2008-09-03  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.h: as much as i hate this, add
+	GetCurrentValues() for the template stuff.
+
+	* xaml.cpp: add XamlElementInstanceTemplate and initial support
+	for TemplateBindings.
+
+	* template.h, template.cpp: add a bunch of stuff for templates.
+
+	* control.h, control.cpp: add OnLoaded and OnPropertyChanged to
+	watch for template property changes, and apply the template in
+	OnLoaded (or if we're already loaded).  Also, add accessors for
+	TemplateProperty.
+
+	* dependencyproperty.g.cpp: regen.
+
 2008-09-03  Larry Ewing  <lewing@novell.com>
 
 	* frameworkelement.cpp (FrameworkElement::MeasureOverride): use

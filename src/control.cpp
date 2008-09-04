@@ -19,6 +19,7 @@
 
 Control::Control ()
 {
+	applied_template = NULL;
 }
 
 Control::~Control ()
@@ -116,3 +117,37 @@ Control::HitTest (cairo_t *cr, Rect r, List *uielement_list)
 {
 }
 
+void
+Control::OnPropertyChanged (PropertyChangedEventArgs *args)
+{
+	if (args->property == Control::TemplateProperty) {
+		if (applied_template) {
+			applied_template->unref();
+			applied_template = NULL;
+
+			delete bindings;
+			bindings = NULL;
+		}
+
+		applied_template = args->new_value->AsControlTemplate();;
+
+		if (IsLoaded())
+			applied_template->Apply(this, bindings);
+	}
+
+	FrameworkElement::OnPropertyChanged (args);
+}
+
+void
+Control::OnLoaded ()
+{
+	// XXX we need some ordering work here
+
+	ControlTemplate *t = GetTemplate ();
+	if (t)
+		t->Apply (this, bindings);
+
+	// XXX call OnApplyTemplate?
+
+	FrameworkElement::OnLoaded ();
+}

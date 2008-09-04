@@ -40,6 +40,7 @@
 #include "runtime.h"
 #include "utils.h"
 #include "control.h"
+#include "template.h"
 
 #if SL_2_0
 #include "thickness.h"
@@ -74,6 +75,7 @@ class XamlElementInfoManaged;
 class XamlElementInstanceManaged;
 class XamlElementInfoImportedManaged;
 class XamlElementInstanceImportedManaged;
+class XamlElementInstanceTemplate;
 
 		
 
@@ -155,6 +157,11 @@ class XamlElementInstance : public List::Node {
 	virtual Value *GetAsValue ()
 	{
 		return new Value (item);
+	}
+
+	virtual bool IsTemplate ()
+	{
+		return false;
 	}
 
 	bool IsPropertySet (const char *name)
@@ -396,6 +403,30 @@ class XamlElementInstanceValueType : public XamlElementInstance {
 	virtual void SetAttributes (XamlParserInfo *p, const char **attr);
 };
 
+
+class XamlElementInstanceTemplate : public XamlElementInstanceNative {
+public:
+	XamlElementInstanceTemplate (XamlElementInfoNative *element_info, XamlParserInfo *parser_info, const char *name, ElementType type, bool create_item = true)
+		: XamlElementInstanceNative (element_info, parser_info, name, type, create_item)
+	{
+		bindings = new List ();
+	}
+
+	virtual bool IsTemplate ()
+	{
+		return true;
+	}
+
+	void AddTemplateBinding (XamlElementInstance *element, const char *source_property, const char *target_property)
+	{
+		XamlTemplateBinding *b = new XamlTemplateBinding ((FrameworkElement*)element->item, source_property, target_property);
+		((FrameworkTemplate*)item)->AddXamlBinding (b);
+		b->unref ();
+	}
+
+private:
+	List* bindings;
+};
 
 
 class XamlNamespace {
@@ -3368,6 +3399,11 @@ start_parse:
 		}
 
 		if (prop) {
+			if (prop == DependencyObject::NameProperty) {
+				// XXX toshok - I don't like doing this here... but it fixes airlines.
+				item->info->SetKey (attr[i+1]);
+			}
+
 			if (prop->IsReadOnly ()) {
 				parser_error (p, item->element_name, NULL, 2014,
 					      g_strdup_printf ("The attribute %s is read only and cannot be set.", prop->GetName()));
@@ -3422,6 +3458,42 @@ start_parse:
 						g_free (resource_name);
 						return;
 					}
+				}
+				else if (!strncmp (start, "TemplateBinding ", strlen ("TemplateBinding "))) {
+					XamlElementInstance *parent = item->parent;
+
+					while (parent && !parent->IsTemplate())
+						parent = parent->parent;
+
+					if (!parent) {
+						parser_error (p, item->element_name, attr[i], 2024,
+							      g_strdup ("TemplateBinding expression found outside of a template"));
+						return;
+					}
+
+					XamlElementInstanceTemplate *template_parent = (XamlElementInstanceTemplate*)parent;
+
+					start += strlen ("TemplateBinding ");
+
+					while (*start && isspace (*start)) start++;
+
+					if (*start == '}') {
+						parser_error (p, item->element_name, attr[i], 2024,
+							      g_strdup_printf ("Empty TemplateBinding reference for property %s.",
+									       attr[i]));
+						return;
+					}
+
+					char *argument = g_strdup (start);
+
+					/* now trim off the trailing } and any spaces after the resource name */
+					char *end = argument + (strlen (argument) - 2);
+					while (end != argument && isspace (*end))
+						end --;
+					end++;
+					*end = '\0';
+
+					template_parent->AddTemplateBinding (p->current_element, argument, attr[i]);
 				}
 			}
 
