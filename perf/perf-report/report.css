@@ -96,3 +96,19 @@ h3 {
   float: right;
   margin: 0; }
 
+.changelog {
+  display: none; 
+  type: }
+
+#tooltip pre {
+   font-size: 8pt; }
+
+#tooltip {
+	position: absolute;
+	z-index: 3000;
+	border: 1px solid #111;
+	background-color: #eee;
+	padding: 5px;
+	opacity: 0.85; }
+
+#tooltip h3, #tooltip div { margin: 0; }

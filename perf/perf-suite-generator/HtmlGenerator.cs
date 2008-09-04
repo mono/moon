@@ -36,7 +36,13 @@ namespace PerfSuiteGenerator {
 
 	public static class HtmlGenerator {
 
-		static readonly string DetailRowTemplate = "<div class=\"detail @@DETAIL_CLASS@@\">" + 
+		static readonly string ChangelogTemplate = "<div class=\"changelog\" id=\"changelog-@@DETAIL_ID@@\">" + 
+							   "<pre>" + 
+							   "@@DETAIL_CHANGELOG@@" +
+							   "</pre>" +
+							   "</div>";
+
+		static readonly string DetailRowTemplate = "<div class=\"detail @@DETAIL_CLASS@@\" id=\"detail-@@DETAIL_ID@@\">" + 
 							   "<div class=\"left\">@@PASS_SHORT_NAME@@ @@PASS_AUTHOR@@ @@DATE@@</div>" + 
 							   "<div class=\"right\">@@RESULT@@</div>" +
 							   "</div>";
@@ -51,6 +57,7 @@ namespace PerfSuiteGenerator {
 						      "<meta content='text/html; charset utf-8' http-equiv='Content-type' />" +
 						      "<link type=\"text/css\" href=\"report.css\" charset=\"utf-8\" media=\"all\" rel=\"Stylesheet\" />" +
 						      "<script type=\"text/javascript\" src=\"jquery.js\"></script>" + 
+						      "<script type=\"text/javascript\" src=\"jquery.tooltip.js\"></script>" + 
 						      "<script type=\"text/javascript\" src=\"helpers.js\"></script>" +
 						      "</head><body>" + 
 						      "<div class=\"container\">\n@@HEADER@@\n@@CONTENT@@</div></body></html>";
@@ -65,12 +72,14 @@ namespace PerfSuiteGenerator {
 		public static string GenerateDetailRows (List <ResultDbEntry> resultList)
 		{
 			string output = String.Empty;
+			string changelogsOutput = String.Empty;
 
 			// FIXME Exception if more than 50 results...
 			// FIXME Reverse the copy
 			resultList.Reverse ();
 			bool hasPrevResult = false;
 			long prevResult = 0;
+			int id = 1;
 
 			foreach (ResultDbEntry entry in resultList) {
 
@@ -90,6 +99,7 @@ namespace PerfSuiteGenerator {
 
 				string html = DetailRowTemplate;
 				html = html.Replace ("@@DETAIL_CLASS@@", cls);
+				html = html.Replace ("@@DETAIL_ID@@", id.ToString ());
 				html = html.Replace ("@@PASS_SHORT_NAME@@", entry.Pass.ShortName);
 				
 				string author = String.Empty;
@@ -105,12 +115,21 @@ namespace PerfSuiteGenerator {
 				else
 					html = html.Replace ("@@RESULT@@", "FAILURE");
 
+				// Add also the detail changelog
+				string changelog = ChangelogTemplate;
+				changelog = changelog.Replace ("@@DETAIL_ID@@", id.ToString ());
 
+				if (entry.Pass.ChangeLog != String.Empty) 
+					changelog = changelog.Replace ("@@DETAIL_CHANGELOG@@", entry.Pass.ChangeLog);
+				else
+					changelog = changelog.Replace ("@@DETAIL_CHANGELOG@@", "No ChangeLog data");
+
+				changelogsOutput += changelog;
 				output = html + output;
-
+				id += 1;
 			}
 				
-			return output;
+			return output + changelogsOutput;
 		}
 
 		public static string GenerateHeaderTemplate ()

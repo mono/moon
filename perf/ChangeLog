@@ -1,3 +1,10 @@
+2008-09-04  Michael Dominic K.  <mdk@mdk.am>
+
+	* perf-report/helpers.js:
+	* perf-report/jquery.tooltip.js:
+	* perf-report/report.css:
+	* perf-suite-generator/HtmlGenerator.cs: Show ChangeLog entries as tooltips.
+
 2008-09-03  Michael Dominic K.  <mdk@mdk.am>
 
 	* README:
