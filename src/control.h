@@ -54,8 +54,18 @@ public:
 	virtual void HitTest (cairo_t *cr, Rect r, List *uielement_list);
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	
+	virtual DependencyObject *GetSubtreeObject () { return template_root; }
 
+	virtual void ElementAdded (UIElement *item);
+	virtual void ElementRemoved (UIElement *item);
+	
 	virtual void OnLoaded ();
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	bool ApplyTemplate ();
+
+	DependencyObject *GetTemplateChild (char *name);
 
 	//
 	// Property Accessors
@@ -143,9 +153,11 @@ public:
 	
 protected:
 	virtual ~Control ();
+	UIElement *template_root;
 	
 private:
 	ControlTemplate *applied_template;
+	
 	List *bindings;
 };
 

@@ -76,12 +76,15 @@ public:
 	virtual TimeManager *GetTimeManager ();
 	
 	void SetVisualParent (UIElement *visual_parent) { this->visual_parent = visual_parent; }
+	UIElement *GetVisualParent () { return visual_parent; }
 
-	virtual void ContentAdded (DependencyObject *obj);
-	virtual void ContentRemoved (DependencyObject *obj);
+	virtual DependencyObject *GetSubtreeObject () { return NULL; }
+
+	virtual void ElementAdded (UIElement *obj);
+	virtual void ElementRemoved (UIElement *obj);
+	
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	UIElement *GetVisualParent () { return visual_parent; }
 	
 	virtual bool EnableAntiAlias() { return true; }
 

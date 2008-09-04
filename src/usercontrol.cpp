@@ -28,11 +28,12 @@ UserControl::OnPropertyChanged (PropertyChangedEventArgs *args)
 	}
 	
 	if (args->property == UserControl::ContentProperty){
-		if (args->old_value)
-			ContentRemoved (args->old_value->AsUIElement ());
-
-		if (args->new_value)
-			ContentAdded (args->new_value->AsUIElement ());
+		if (args->old_value) {
+			ElementRemoved (args->old_value->AsUIElement ());
+		}
+		if (args->new_value) {
+			ElementAdded (args->new_value->AsUIElement ());
+		}
 
 		UpdateBounds ();
 	}

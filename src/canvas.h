@@ -47,8 +47,8 @@ class Canvas : public Panel {
 	virtual void ComputeBounds ();
 	virtual void GetTransformFor (UIElement *item, cairo_matrix_t *result);
 	
-	virtual void ContentAdded (DependencyObject *obj);
-	virtual void ContentRemoved (DependencyObject *obj);
+	virtual void ElementAdded (UIElement *item);
+	virtual void ElementRemoved (UIElement *item);
 
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);

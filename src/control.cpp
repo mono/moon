@@ -55,13 +55,13 @@ Control::ComputeBounds ()
 
 	extents = Rect ();
 	bounds_with_children = Rect ();
-	ContentWalker walker = ContentWalker (this);
-	while (UIElement *item = (UIElement *)walker.Step ()) {
+	
+	if (template_root) {
 		cairo_matrix_t offset;
 		
-		GetTransformFor (item, &offset);
+		GetTransformFor (template_root, &offset);
 		//extents = extents.Union (item->GetExtents ().Transform (&offset));
-		extents = bounds_with_children.Union (item->GetSubtreeBounds ());
+		extents = bounds_with_children.Union (template_root->GetSubtreeBounds ());
 	}
 	extents.height += border.bottom + padding.bottom;
 	extents.width += border.right + padding.right;
@@ -91,11 +91,8 @@ Control::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 bool 
 Control::InsideObject (cairo_t *cr, double x, double y)
 {
-	ContentWalker walker = ContentWalker (this);
-	UIElement *content = (UIElement *)walker.Step ();
-	
-	if (content)
-		return content->InsideObject (cr, x, y);
+	if (template_root)
+		return template_root->InsideObject (cr, x, y);
 	
 	return false;
 }
@@ -103,12 +100,9 @@ Control::InsideObject (cairo_t *cr, double x, double y)
 void
 Control::HitTest (cairo_t *cr, Point p, List *uielement_list)
 {
-	ContentWalker walker = ContentWalker (this);
-	UIElement *content = (UIElement *)walker.Step ();
-
 	if (InsideObject (cr, p.x, p.y)) {
 		uielement_list->Prepend (new UIElementNode (this));
-		content->HitTest (cr, p, uielement_list);
+		template_root->HitTest (cr, p, uielement_list);
 	}
 }
 
@@ -121,18 +115,8 @@ void
 Control::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
 	if (args->property == Control::TemplateProperty) {
-		if (applied_template) {
-			applied_template->unref();
-			applied_template = NULL;
-
-			delete bindings;
-			bindings = NULL;
-		}
-
-		applied_template = args->new_value->AsControlTemplate();;
-
 		if (IsLoaded())
-			applied_template->Apply(this, bindings);
+			ApplyTemplate ();
 	}
 
 	FrameworkElement::OnPropertyChanged (args);
@@ -142,12 +126,67 @@ void
 Control::OnLoaded ()
 {
 	// XXX we need some ordering work here
-
-	ControlTemplate *t = GetTemplate ();
-	if (t)
-		t->Apply (this, bindings);
-
-	// XXX call OnApplyTemplate?
+	ApplyTemplate ();
 
 	FrameworkElement::OnLoaded ();
+}
+
+bool
+Control::ApplyTemplate ()
+{
+	if (applied_template == GetTemplate ())
+		return false;
+
+	if (applied_template) {
+		applied_template->unref();
+		applied_template = NULL;
+		
+		delete bindings;
+		bindings = NULL;
+	}
+	
+	ElementRemoved (template_root);
+
+	applied_template = GetTemplate ();
+
+	ElementAdded (applied_template->Apply(this, bindings));
+
+	return true;
+}
+
+void
+Control::ElementAdded (UIElement *item)
+{
+	if (item == template_root)
+		return;
+
+	ElementRemoved (template_root);
+
+	template_root = item;
+
+	if (template_root) {
+		template_root->ref ();
+		FrameworkElement::ElementAdded (template_root);
+	}
+}
+
+void
+Control::ElementRemoved (UIElement *item)
+{
+	if (template_root && item == template_root) {
+		template_root->unref ();
+		template_root = NULL;
+	}
+
+	if (item)
+		FrameworkElement::ElementRemoved (item);
+}
+
+DependencyObject *
+Control::GetTemplateChild (char *name)
+{
+	if (template_root)
+		return template_root->FindName (name);
+	
+	return NULL;
 }

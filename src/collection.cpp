@@ -562,11 +562,11 @@ collection_new (Type::Kind kind)
 	return (Collection *) t->CreateInstance();
 }
 
-ContentWalker::ContentWalker (DependencyObject *obj, ContentWalkerDirection dir)
+VisualTreeWalker::VisualTreeWalker (UIElement *obj, VisualTreeWalkerDirection dir)
 {
 	index = 0;
 	collection = NULL;
-	content = obj->GetContent ();
+	content = obj->GetSubtreeObject ();
 	direction = dir;
 
 	if (content != NULL) {
@@ -581,10 +581,10 @@ ContentWalker::ContentWalker (DependencyObject *obj, ContentWalkerDirection dir)
 	}
 }
 
-DependencyObject *
-ContentWalker::Step ()
+UIElement *
+VisualTreeWalker::Step ()
 {
-	DependencyObject *result = NULL;
+	UIElement *result = NULL;
 
 	if (collection) {
 		int count = collection->GetCount ();
@@ -596,7 +596,7 @@ ContentWalker::Step ()
 		if (direction != Logical) {
 			uiecollection = (UIElementCollection *)collection;
 			if ((int)uiecollection->z_sorted->len != count) {
-				g_warning ("ContentWalker: unexpectedly got an unsorted UIElementCollection");
+				g_warning ("VisualTreeWalker: unexpectedly got an unsorted UIElementCollection");
 				uiecollection->ResortByZIndex ();
 			}
 		}
@@ -610,20 +610,24 @@ ContentWalker::Step ()
 			break;
 		default:
 			Value *v = collection->GetValueAt (index);
-			result = v->AsDependencyObject ();
+			result = v->AsUIElement ();
 		}
 		
 		index++;
 	} else {
-		result = content;
-		content = NULL;
+		if (index == 0) {
+			index++;
+			result = (UIElement *)content;
+		} else { 
+			result = NULL;
+		}
 	}
 
 	return result;
 }
 
 int
-ContentWalker::GetCount ()
+VisualTreeWalker::GetCount ()
 {
 	if (!content)
 		return 0;
@@ -634,7 +638,7 @@ ContentWalker::GetCount ()
 	return collection->GetCount ();
 }
 
-ContentWalker::~ContentWalker()
+VisualTreeWalker::~VisualTreeWalker()
 {
 	if (content)
 		content->unref ();

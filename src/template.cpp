@@ -139,12 +139,14 @@ ControlTemplate::DuplicateObject (Control *source, DependencyObject *dob, List* 
 	return new_dob;
 }
 
-void
+FrameworkElement *
 ControlTemplate::Apply (Control *control, List *bindings)
 {
 	DependencyObject *instantiated_tree = DuplicateObject (control, visual_tree, bindings);
 
 	printf ("yay, now set the control's instantiated tree (%p)\n", instantiated_tree);
+
+	return (FrameworkElement *)instantiated_tree;
 }
 
 XamlTemplateBinding::XamlTemplateBinding (FrameworkElement *target,

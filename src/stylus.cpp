@@ -792,14 +792,9 @@ InkPresenter::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 {
 	// render our chidren if not in front to back mode
 	if (!front_to_back) {
-		ContentWalker walker = ContentWalker (this, ZForward);
-		while (DependencyObject *content = walker.Step ()) {
-			if (!content->Is (Type::UIELEMENT))
-				continue;
-			
-			// DoRender does all the proper region and visibility checking
-			((UIElement *)content)->DoRender (cr, region);
-		}
+		VisualTreeWalker walker = VisualTreeWalker (this, ZForward);
+		while (UIElement *child = walker.Step ())
+			child->DoRender (cr, region);
 	}
 	
 	cairo_set_matrix (cr, &absolute_xform);

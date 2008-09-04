@@ -66,7 +66,9 @@ class Panel : public FrameworkElement {
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 
 	virtual Size MeasureOverride (Size availableSize);
-	
+
+	virtual DependencyObject *GetSubtreeObject () { return GetChildren (); }
+
 	//
 	// Property Accessors
 	//

@@ -57,7 +57,7 @@ public:
 
 	virtual Type::Kind GetObjectType () { return Type::CONTROLTEMPLATE; }
 
-	void Apply (Control *toControl, List *bindings);
+	FrameworkElement * Apply (Control *toControl, List *bindings);
 
 protected:
 	virtual ~ControlTemplate () {}

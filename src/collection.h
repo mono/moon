@@ -175,26 +175,26 @@ private:
 	int index;
 };
 
-enum ContentWalkerDirection {
+enum VisualTreeWalkerDirection {
 	Logical,
 	ZForward,
 	ZReverse
 };
 
-class ContentWalker {
+class VisualTreeWalker {
 public:
-	ContentWalker (DependencyObject *obj, ContentWalkerDirection direction = Logical);
+	VisualTreeWalker (UIElement *item, VisualTreeWalkerDirection direction = Logical);
 
-	~ContentWalker ();
+	~VisualTreeWalker ();
 
-	DependencyObject *Step ();
+	UIElement *Step ();
 	int GetCount ();
 
 protected:
 	DependencyObject *content;
 	Collection *collection;
 	int index;
-	ContentWalkerDirection direction;
+	VisualTreeWalkerDirection direction;
 };
 
 /* @Namespace=System.Windows */

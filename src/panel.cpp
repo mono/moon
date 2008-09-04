@@ -52,8 +52,8 @@ Panel::ComputeBounds ()
 	// Clear the previous 
 	extents = bounds = bounds_with_children = Rect ();
 
-	ContentWalker walker = ContentWalker (this);
-	while (UIElement *item = (UIElement *)walker.Step ()) {
+	VisualTreeWalker walker = VisualTreeWalker (this);
+	while (UIElement *item = walker.Step ()) {
 		
 		// if the item isn't drawn, skip it
 		if (!item->GetRenderVisible ())
@@ -250,13 +250,13 @@ Panel::OnPropertyChanged (PropertyChangedEventArgs *args)
 		if (args->old_value) {
 			collection = args->old_value->AsCollection ();
 			for (int i = 0; i < collection->GetCount (); i++)
-				ContentRemoved (collection->GetValueAt (i)->AsUIElement());
+				ElementRemoved (collection->GetValueAt (i)->AsUIElement());
 		}
 		
 		if (args->new_value) {
 			collection = args->new_value->AsCollection ();
 			for (int i = 0; i < collection->GetCount (); i++)
-				ContentAdded (collection->GetValueAt (i)->AsUIElement ());
+				ElementAdded (collection->GetValueAt (i)->AsUIElement ());
 		}
 
 		UpdateBounds();
@@ -282,17 +282,17 @@ Panel::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 	if (col == GetChildren ()) {
 		switch (args->action) {
 		case CollectionChangedActionReplace:
-			ContentRemoved (args->old_value->AsUIElement ());
+			ElementRemoved (args->old_value->AsUIElement ());
 			// now fall thru to Add
 		case CollectionChangedActionAdd:
-			ContentAdded (args->new_value->AsUIElement ());
+			ElementAdded (args->new_value->AsUIElement ());
 			break;
 		case CollectionChangedActionRemove:
-			ContentRemoved (args->old_value->AsUIElement ());
+			ElementRemoved (args->old_value->AsUIElement ());
 			break;
 		case CollectionChangedActionClearing:
 			for (int i = 0; i < col->GetCount (); i++)
-				ContentRemoved (col->GetValueAt (i)->AsUIElement ());
+				ElementRemoved (col->GetValueAt (i)->AsUIElement ());
 			break;
 		case CollectionChangedActionCleared:
 			// nothing needed here.

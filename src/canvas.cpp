@@ -102,9 +102,9 @@ Canvas::OnLoaded ()
 }
 
 void
-Canvas::ContentAdded (DependencyObject *obj)
+Canvas::ElementAdded (UIElement *item)
 {
-	Panel::ContentAdded (obj);
+	Panel::ElementAdded (item);
 	
 	if (GetSurface ()) {
 		// queue a resort based on ZIndex
@@ -113,9 +113,9 @@ Canvas::ContentAdded (DependencyObject *obj)
 }
 
 void
-Canvas::ContentRemoved (DependencyObject *obj)
+Canvas::ElementRemoved (UIElement *item)
 {
-	Panel::ContentRemoved (obj);
+	Panel::ElementRemoved (item);
 	
 	if (GetSurface ()) {
 		// queue a resort based on ZIndex

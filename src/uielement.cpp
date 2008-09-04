@@ -71,11 +71,9 @@ UIElement::Dispose()
 	for (int i = 0; i < triggers->GetCount (); i++)
 		triggers->GetValueAt (i)->AsEventTrigger ()->RemoveTarget (this);
 	
-	ContentWalker walker = ContentWalker (this);
-	while (DependencyObject *content = walker.Step ()) {
-		if (content->Is (Type::UIELEMENT))
-			((UIElement *)content)->SetVisualParent (NULL);
-	}
+	VisualTreeWalker walker = VisualTreeWalker (this);
+	while (UIElement *child = walker.Step ())
+		child->SetVisualParent (NULL);
 
 	DependencyObject::Dispose();
 }
@@ -245,11 +243,9 @@ UIElement::UpdateTotalRenderVisibility ()
 void
 UIElement::UpdateTotalHitTestVisibility ()
 {
-	ContentWalker walker = ContentWalker (this);
-	while (DependencyObject *content = walker.Step ()) {
-		if (content->Is (Type::UIELEMENT))
-			((UIElement *)content)->UpdateTotalHitTestVisibility ();
-	}
+	VisualTreeWalker walker = VisualTreeWalker (this);
+	while (UIElement *child = walker.Step ())
+		child->UpdateTotalHitTestVisibility ();
 
 	if (GetSurface())
 		GetSurface ()->AddDirtyElement (this, DirtyHitTestVisibility);
@@ -419,49 +415,34 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj
 void 
 UIElement::CacheInvalidateHint () 
 {
-	ContentWalker walker = ContentWalker (this);
-	while (DependencyObject *content = walker.Step ()) {
-		if (content && content->Is (Type::UIELEMENT)) {
-			((UIElement *)content)->CacheInvalidateHint ();
-		}
-	}
+	VisualTreeWalker walker = VisualTreeWalker (this);
+	while (UIElement *child = walker.Step ())
+		child->CacheInvalidateHint ();
 }
 
 void
-UIElement::ContentRemoved (DependencyObject *obj)
+UIElement::ElementRemoved (UIElement *item)
 {
-	DependencyObject:: ContentRemoved (obj);
-
-	if (obj->Is (Type::UIELEMENT)) {
-		UIElement *item = (UIElement *) obj;
+	Invalidate (item->GetSubtreeBounds());
 		
-		Invalidate (item->GetSubtreeBounds());
-		
-		item->CacheInvalidateHint ();
-		item->SetVisualParent (NULL);
-		item->ClearLoaded ();
-	}
+	item->CacheInvalidateHint ();
+	item->SetVisualParent (NULL);
+	item->ClearLoaded ();
 }
 
 void
-UIElement::ContentAdded (DependencyObject *obj)
+UIElement::ElementAdded (UIElement *item)
 {
-	DependencyObject::ContentAdded (obj);
-
-	if (obj->Is (Type::UIELEMENT)) {
-		UIElement *item = (UIElement *) obj;
-		
-		item->SetVisualParent (this);
-		item->UpdateTransform ();
-		item->UpdateTotalRenderVisibility ();
-		item->UpdateTotalHitTestVisibility ();
-		item->Invalidate ();
-
-		if (IsLoaded ())
-			item->OnLoaded ();
-		
-		UpdateBounds (true);
-	}
+	item->SetVisualParent (this);
+	item->UpdateTransform ();
+	item->UpdateTotalRenderVisibility ();
+	item->UpdateTotalHitTestVisibility ();
+	item->Invalidate ();
+	
+	if (IsLoaded ())
+		item->OnLoaded ();
+	
+	UpdateBounds (true);
 }
 
 void
@@ -525,11 +506,9 @@ UIElement::OnLoaded ()
 
 	emitting_loaded = true;
 
-	ContentWalker walker = ContentWalker (this);
-	while (DependencyObject *content = walker.Step ()) {
-		if (content && content->Is (Type::UIELEMENT))
-			((UIElement *)content)->OnLoaded ();
-	}
+	VisualTreeWalker walker = VisualTreeWalker (this);
+	while (UIElement *child = walker.Step ())
+		child->OnLoaded ();
 		   
 	flags |= UIElement::IS_LOADED;
 
@@ -685,7 +664,7 @@ UIElement::DoRender (cairo_t *cr, Region *parent_region)
 bool
 UIElement::UseBackToFront ()
 {
-	return ContentWalker (this).GetCount () < MIN_FRONT_TO_BACK_COUNT;
+	return VisualTreeWalker (this).GetCount () < MIN_FRONT_TO_BACK_COUNT;
 }
 
 void
@@ -737,11 +716,9 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 
 	Region *self_region = new Region (region);
 
-	ContentWalker walker = ContentWalker (this, ZReverse);
-	while (DependencyObject *content = walker.Step ()) {
-		if (content->Is (Type::UIELEMENT))
-			((UIElement *)content)->FrontToBack (region, render_list);
-	}
+	VisualTreeWalker walker = VisualTreeWalker (this, ZReverse);
+	while (UIElement *child = walker.Step ())
+		child->FrontToBack (region, render_list);
 
 	if (!GetOpacityMask () && !IS_TRANSLUCENT (local_opacity)) {
 		delete self_region;
@@ -834,14 +811,9 @@ UIElement::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 {
 	// if we didn't render front to back, then render the children here
 	if (!front_to_back) {
-		ContentWalker walker = ContentWalker (this, ZForward);
-		while (DependencyObject *content = walker.Step ()) {
-			if (!content->Is (Type::UIELEMENT))
-				continue;
-			
-			// DoRender does all the proper region and visibility checking
-			((UIElement *)content)->DoRender (cr, region);
-		}
+		VisualTreeWalker walker = VisualTreeWalker (this, ZForward);
+		while (UIElement *child = walker.Step ())
+			child->DoRender (cr, region);
 	}
 
 	double local_opacity = GetOpacity ();

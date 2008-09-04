@@ -1,3 +1,32 @@
+2008-09-04  Larry Ewing  <lewing@novell.com>
+
+	* uielement.cpp, uielement.h: new methods GetSubtreeObject and
+	ElementAdded ElementRemoved.
+
+	* dependencyobject.h: remove ContentAdded, ContentRemoved.
+	
+	* collection.cpp, collection.h: rename ContentWalker to
+	VisualTreeWalker use GetSubtreeObject () rather than content for walking.
+
+	* template.cpp, template.h: make Apply return the newly created
+	tree.
+
+	* panel.cpp, panel.h:
+	* control.cpp, control.h: add template_root child that isn't
+	hooked into the normal tree.  Start implementing ApplyTemplate and
+	GetTemplateChild.
+
+	* usercontrol.cpp: mess around with Content a little in making it
+	use the ElementAdded ElementRemoved logic since UserControl
+	doesn't really support template changes.
+	
+	* border.h: implement GetSubtreeObject. 
+
+	* stylus.cpp:
+	* dirty.cpp:
+	* frameworkelement.cpp:
+	* canvas.cpp, canvas.h: update for new treewalker.
+
 2008-09-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (TextLayout::Render): Added some new arguments which

@@ -98,7 +98,7 @@ FrameworkElement::MeasureOverride (Size availableSize)
 	// bump it up to the minimum.
 	result = result.Max (GetMinWidth (), GetMinHeight ());
 
-	DependencyObject *content = GetContent ();
+	DependencyObject *content = GetSubtreeObject ();
 	if (content) {
 		if (content->Is (Type::UIELEMENT)) {
 			// Get the desired size of our content, and include any margins we set
