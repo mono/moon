@@ -20,11 +20,6 @@ namespace System.Windows.Media
 {	
 	public sealed partial class DeepZoomImageTileSource : MultiScaleTileSource
 	{
-		delegate void DownloadedHandler (string path);
-
-		[DllImport ("moon")]
-		extern static void deep_zoom_image_tile_source_download_urisource (IntPtr instance, string uri, DownloadedHandler callback);
-
 		public DeepZoomImageTileSource (Uri sourceUri) : base ()
 		{
 			throw new NotImplementedException ("Set the source after attaching the TileSource to the MultiScaleImage control");
@@ -34,22 +29,26 @@ namespace System.Windows.Media
 		{
 			throw new NotImplementedException ();
 		}
+            
+	    
 
-//		public static readonly DependencyProperty UriSourceProperty =
-//			DependencyProperty.Lookup (Kind.DEEPZOOMIMAGETILESOURCE, "UriSource", typeof (string));
+		public static DependencyProperty UriSourceProperty = 
+			DependencyProperty.Register ("UriSource", typeof (Uri), typeof (DeepZoomImageTileSource), null);
 		
-		Uri uri_source;
 		public Uri UriSource {
-			get { return uri_source; }
-			set {
-				uri_source = value;
-				deep_zoom_image_tile_source_download_urisource (this.native, uri_source.ToString (), OnDownloaded);
+			get { return (Uri)GetValue(UriSourceProperty); }
+			set { 
+			//	SetValue(UriSourceProperty, value);
+				NativeMethods.deep_zoom_image_tile_source_download_urisource (this.native, value.ToString (), ParseDeepZoom);
 			}
 		}
 
-		void OnDownloaded (string path)
+		void ParseDeepZoom (string path)
 		{
-			Console.WriteLine ("OnDownloaded {0}", path);
+			Console.WriteLine ("Downloaded {0}", path);
+			XmlReader reader = XmlReader.Create ("file://" + path);
+			while (reader.Read ())
+				Console.WriteLine ("{1} {0}", reader.Depth, reader.Name);
 		}
 
 	}

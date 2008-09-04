@@ -112,6 +112,10 @@ namespace Mono {
 		[DllImport("moon")]
 		public extern static IntPtr downloader_create_webrequest (IntPtr downloader, string method, string uri);
 
+		public delegate void DownloadedHandler (string path);
+		[DllImport ("moon")]
+		public extern static void deep_zoom_image_tile_source_download_urisource (IntPtr instance, string uri, DownloadedHandler callback);
+
 #endregion
 
 #region DownloaderRequest
