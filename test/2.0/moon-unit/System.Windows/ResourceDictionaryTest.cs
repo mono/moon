@@ -98,7 +98,6 @@ namespace MoonTest.System.Windows
 			Color c = (Color)b.Resources["color"];
 
 			Assert.AreEqual (Color.FromArgb (0xff, 0xff, 0xff, 0xff), b.Resources["color"]);
-
 		}
 
 		[TestMethod]
@@ -233,6 +232,16 @@ namespace MoonTest.System.Windows
 			Assert.Throws (delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><SolidColorBrush x:Key=""FillBrush"" Color=""Black""/></Canvas.Resources><Rectangle x:Name=""child"" Fill=""{StaticResource FillBrush}""><Rectangle.Stroke><SolidColorBrush Color=""{StaticResource color}""/></Rectangle.Stroke></Rectangle></Canvas>");
 				},
 				typeof (XamlParseException));
+		}
+
+		// This was breaking airlines
+		[TestMethod]
+		public void TestUnnamespacedName ()
+		{
+			Canvas b = (Canvas)
+				XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Storyboard Name=""sb""/></Canvas.Resources></Canvas>");
+
+			Assert.IsNotNull (b.Resources["sb"]);
 		}
 
 		[TestMethod]
