@@ -372,6 +372,7 @@ namespace MoonTest.System.Windows.Controls
 			c.Arrange (new Rect (0, 0, 25, 25));
 
 			Assert.AreEqual (new Size (15, 15), r.DesiredSize);
+			Assert.AreEqual (new Size (50, 50), r.RenderSize);
 		}
 
 		[TestMethod]
