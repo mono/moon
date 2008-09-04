@@ -55,7 +55,6 @@ namespace System.Windows.Threading {
 			if (source_id == 0)
 				return;
 
-			IntPtr handle = PluginHost.Handle;
 			NativeMethods.time_manager_remove_timeout (NativeMethods.surface_get_time_manager (Application.s_surface), source_id);
 			source_id = 0;
 			callback = null;
