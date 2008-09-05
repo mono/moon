@@ -215,6 +215,10 @@ namespace Mono {
 		public extern static IntPtr content_control_new ();
 
 		[DllImport ("moon")]
+		// bool control_apply_template (Control *instance);
+		public extern static bool control_apply_template (IntPtr instance);
+
+		[DllImport ("moon")]
 		// Control *control_new ();
 		public extern static IntPtr control_new ();
 

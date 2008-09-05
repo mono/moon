@@ -270,6 +270,11 @@ ContentControl *content_control_new (void);
  * Control
  **/
 /* @GeneratePInvoke */
+bool control_apply_template (Control *instance);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
 Control *control_new (void);
 #endif
 

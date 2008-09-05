@@ -485,6 +485,18 @@ content_control_new (void)
 /**
  * Control
  **/
+bool
+control_apply_template (Control *instance)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->ApplyTemplate ();
+}
+#endif
+
+
+#if SL_2_0
 Control *
 control_new (void)
 {
