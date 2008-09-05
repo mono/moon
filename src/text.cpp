@@ -349,25 +349,34 @@ TextBlock::CalcActualWidthHeight (cairo_t *cr)
 void
 TextBlock::Layout (cairo_t *cr)
 {
+	Value *value = GetValueNoDefault (FrameworkElement::WidthProperty);
+	InlineCollection *inlines = GetInlines ();
+	Thickness *padding = GetPadding ();
 	TextDecorations decorations;
-	double width = GetWidth ();
+	List *runs = new List ();
 	guint8 font_mask;
 	const char *text;
-	List *runs;
 	
 	layout->SetWrapping (GetTextWrapping ());
 	
-	if (width > 0.0f)
-		layout->SetMaxWidth (width);
-	else
+	if (value) {
+		double pad = padding->left + padding->right;
+		double width = value->AsDouble ();
+		
+		if (pad >= width) {
+			layout->SetTextRuns (runs);
+			actual_height = 0.0;
+			actual_width = 0.0;
+			goto done;
+		}
+		
+		layout->SetMaxWidth (width - pad);
+	} else {
 		layout->SetMaxWidth (-1.0);
-	
-	runs = new List ();
+	}
 	
 	decorations = GetTextDecorations ();
 	font_mask = font->GetFields ();
-	
-	InlineCollection *inlines = GetInlines ();
 	
 	if (inlines != NULL) {
 		guint8 run_mask, inherited_mask;
@@ -451,6 +460,8 @@ TextBlock::Layout (cairo_t *cr)
 		font->unref ();
 	}
 	
+ done:
+	
 	SetActualHeight (actual_height);
 	SetActualWidth (actual_width);
 	
@@ -460,12 +471,13 @@ TextBlock::Layout (cairo_t *cr)
 void
 TextBlock::Paint (cairo_t *cr)
 {
+	Thickness *padding = GetPadding ();
 	Brush *fg;
 	
 	if (!(fg = GetForeground ()))
 		fg = default_foreground ();
 	
-	layout->Render (cr, 0.0, 0.0, this, hints, fg);
+	layout->Render (cr, padding->left, padding->top, this, hints, fg);
 	
 	if (moonlight_flags & RUNTIME_INIT_SHOW_TEXTBOXES) {
 		cairo_set_source_rgba (cr, 0.0, 1.0, 0.0, 1.0);
@@ -627,7 +639,7 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
 	bool invalidate = true;
 	
-	if (args->property->GetOwnerType() != Type::TEXTBLOCK) {
+	if (args->property->GetOwnerType () != Type::TEXTBLOCK) {
 		FrameworkElement::OnPropertyChanged (args);
 		if (args->property == FrameworkElement::WidthProperty) {
 			if (GetTextWrapping () != TextWrappingNoWrap)
@@ -706,7 +718,6 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 		dirty = true;
 	} else if (args->property == TextBlock::TextAlignmentProperty) {
 		hints->SetTextAlignment ((TextAlignment) args->new_value->AsInt32 ());
-		dirty = true;
 	} else if (args->property == TextBlock::PaddingProperty) {
 		dirty = true;
 #endif
@@ -729,10 +740,13 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 TextBlock::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
+	if (prop->GetOwnerType () != Type::TEXTBLOCK) {
+		FrameworkElement::OnSubPropertyChanged (prop, obj, subobj_args);
+		return;
+	}
+	
 	if (prop == TextBlock::ForegroundProperty)
 		Invalidate ();
-	else
-		FrameworkElement::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
 void

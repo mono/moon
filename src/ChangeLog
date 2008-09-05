@@ -1,3 +1,12 @@
+2008-09-05  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp (TextBlock::OnPropertyChanged): TextAlignment doesn't
+	actually change the lauout, so no need to set the dirty flag when
+	it changes.
+	(TextBlock::Layout): Updated to handle Silverlight 2.0 TextBlock's
+	Padding property.
+	(TextBlock::Paint): Same.
+
 2008-09-05  Larry Ewing  <lewing@novell.com>
 
 	* uielement.cpp: use render bounds rather than bounds to determine
