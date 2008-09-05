@@ -83,9 +83,6 @@ public:
 	virtual void ElementAdded (UIElement *obj);
 	virtual void ElementRemoved (UIElement *obj);
 	
-
-	/* @GenerateCBinding,GeneratePInvoke */
-	
 	virtual bool EnableAntiAlias() { return true; }
 
 	// UpdateTotalRenderVisibility:
