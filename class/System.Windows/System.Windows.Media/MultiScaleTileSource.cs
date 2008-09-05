@@ -18,9 +18,17 @@ namespace System.Windows.Media
 {	
 	public abstract partial class MultiScaleTileSource : DependencyObject
 	{
+		protected internal int ImageWidth { get; set; }
+		protected internal int ImageHeight { get; set; }
+		protected internal int TileWidth { get; set; }
+		protected internal int TileOverlap { get; set; }
+
 		public MultiScaleTileSource (int imageWidth, int imageHeight, int tileWidth, int tileHeight, int tileOverlap)
 		{
-			throw new NotImplementedException ();
+			ImageWidth = imageWidth;
+			ImageHeight = imageHeight;
+			TileWidth = tileWidth;
+			TileOverlap = tileOverlap;
 		}
 		
 #if NET_2_1
