@@ -51,7 +51,7 @@ namespace System.Windows.Controls {
 #endif
 		public bool ApplyTemplate()
 		{
-			return NativeMethods.control_apply_template ();
+			return NativeMethods.control_apply_template (native);
 		}
 		
 #if NET_2_1
