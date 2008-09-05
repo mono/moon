@@ -1,3 +1,8 @@
+2008-09-04  Larry Ewing  <lewing@novell.com>
+
+	* VisualTreeHelper.cs: use the new FrameworkElement.SubtreeObject
+	to hack together a functional VisualTreeHelper.
+
 2008-09-04  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* DeepZoomImageTileSource.cs: Implement the file downloader.

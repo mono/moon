@@ -1106,6 +1106,10 @@ namespace Mono {
 		public extern static UnmanagedSize uielement_get_desired_size (IntPtr instance);
 
 		[DllImport ("moon")]
+		// DependencyObject *uielement_get_subtree_object (UIElement *instance);
+		public extern static IntPtr uielement_get_subtree_object (IntPtr instance);
+
+		[DllImport ("moon")]
 		// GeneralTransform *uielement_get_transform_to_uielement (UIElement *instance, UIElement *to_element);
 		public extern static IntPtr uielement_get_transform_to_uielement (IntPtr instance, IntPtr to_element);
 

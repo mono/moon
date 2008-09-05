@@ -31,7 +31,6 @@ using System.Windows.Controls;
 using Mono;
 
 namespace System.Windows.Media {
-
 	public static class VisualTreeHelper {
 		public static DependencyObject GetChild (DependencyObject reference, int childIndex)
 		{
@@ -39,13 +38,16 @@ namespace System.Windows.Media {
 			if (ref_fw == null)
 				throw new InvalidOperationException ("Reference is not a valid visual DependencyObject");
 
-			Panel p = reference as Panel;
-			if (p == null) {
-				// we have no children, so everything is out of range.
-				throw new ArgumentOutOfRangeException ();
-			}
+			DependencyObject subtree = ref_fw.SubtreeObject;
+			UIElementCollection collection = subtree as UIElementCollection;
+			if (collection != null)
+				return collection[childIndex];
 
-			return p.Children[childIndex];
+			UIElement item = subtree as UIElement;
+			if (item != null && childIndex == 0)
+				return item;
+
+			throw new ArgumentOutOfRangeException ();
 		}
 
 		public static int GetChildrenCount (DependencyObject reference)
@@ -54,13 +56,17 @@ namespace System.Windows.Media {
 			if (ref_fw == null)
 				throw new InvalidOperationException ("Reference is not a valid visual DependencyObject");
 
-			Panel p = reference as Panel;
-			if (p == null) {
-				// we have no children
-				return 0;
-			}
+			DependencyObject subtree = ref_fw.SubtreeObject;
 
-			return p.Children.Count;
+			UIElementCollection collection = subtree as UIElementCollection;
+			if (collection != null)
+				return collection.Count;
+			
+			UIElement item = subtree as UIElement;
+			if (item != null)
+				return 1;
+
+			return 0;
 		}
 
 		public static DependencyObject GetParent (DependencyObject reference)

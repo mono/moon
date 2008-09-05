@@ -79,6 +79,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	UIElement *GetVisualParent () { return visual_parent; }
 
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	virtual DependencyObject *GetSubtreeObject () { return NULL; }
 
 	virtual void ElementAdded (UIElement *obj);

@@ -2710,6 +2710,16 @@ uielement_get_desired_size (UIElement *instance)
 }
 
 
+DependencyObject *
+uielement_get_subtree_object (UIElement *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetSubtreeObject ();
+}
+
+
 #if SL_2_0
 GeneralTransform *
 uielement_get_transform_to_uielement (UIElement *instance, UIElement *to_element)

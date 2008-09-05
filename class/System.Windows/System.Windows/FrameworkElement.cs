@@ -110,6 +110,20 @@ namespace System.Windows {
 			}
 		}
 
+		internal DependencyObject SubtreeObject {
+#if NET_2_1
+			[SecuritySafeCritical]
+#endif
+			get {
+				IntPtr parent_handle = NativeMethods.uielement_get_subtree_object (native);
+				if (parent_handle == IntPtr.Zero)
+					return null;
+				
+				Kind k = NativeMethods.dependency_object_get_object_type (parent_handle);
+				return DependencyObject.Lookup (k, parent_handle);
+			}
+		}		
+
 		[MonoTODO ("figure out how to construct routed events")]
 		public static readonly RoutedEvent LoadedEvent = new RoutedEvent();
 
