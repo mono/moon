@@ -1,3 +1,13 @@
+2008-09-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.IO.IsolatedStorage/IsolatedStorageFileStreamTest.cs: Remove
+	[KnownFailure], except for Quota test, since this works using 
+	moon + mono HEAD. Add new test cases for async calls.
+	* System.IO.IsolatedStorage/IsolatedStorageFileTest.cs: Remove
+	[KnownFailure] since this works using moon + mono HEAD.
+	* System.IO.IsolatedStorage/IsolatedStorageSettingsTest.cs: Remove
+	[KnownFailure] since this works using moon + mono HEAD.
+
 2008-09-03  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows/ResourceDictionaryTest.cs: Add a few null tests

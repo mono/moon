@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.IsolatedStorage;
 using Mono.Moonlight.UnitTesting;
@@ -37,7 +38,6 @@ namespace MoonTest.System.IO.IsolatedStorage {
 	public class IsolatedStorageFileStreamTest {
 
 		[TestMethod]
-		[KnownFailure]
 		public void IsolatedStorageFileStream_BadValues ()
 		{
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
@@ -82,7 +82,6 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		}
 
 		[TestMethod]
-		[KnownFailure]
 		public void Create ()
 		{
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
@@ -121,7 +120,6 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		}
 
 		[TestMethod]
-		[KnownFailure]
 		public void Create_RemovedIsolatedStorageFile ()
 		{
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
@@ -132,7 +130,6 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		}
 
 		[TestMethod]
-		[KnownFailure]
 		public void Create_DisposedIsolatedStorageFile ()
 		{
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
@@ -143,7 +140,6 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		}
 
 		[TestMethod]
-		[KnownFailure]
 		public void Create_NotFound ()
 		{
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
@@ -164,7 +160,6 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		}
 
 		[TestMethod]
-		[KnownFailure]
 		public void AsyncRead ()
 		{
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
@@ -182,6 +177,46 @@ namespace MoonTest.System.IO.IsolatedStorage {
 			Assert.AreEqual (0, isf.GetFileNames ().Length, "Empty");
 		}
 
+		void EndReadRemoved (IAsyncResult result)
+		{
+			KeyValuePair<IsolatedStorageFile, IsolatedStorageFileStream> kvp = (KeyValuePair<IsolatedStorageFile, IsolatedStorageFileStream>) result.AsyncState;
+			kvp.Key.Remove ();
+			Assert.Throws (delegate { kvp.Value.EndRead (result); }, typeof (IsolatedStorageException), "Remove/EndRead");
+		}
+
+		[TestMethod]
+		public void AsyncEndRead_Removed ()
+		{
+			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
+			using (IsolatedStorageFileStream fs = new IsolatedStorageFileStream ("moon", FileMode.Create, isf)) {
+				byte [] data = new byte [2];
+				KeyValuePair<IsolatedStorageFile, IsolatedStorageFileStream> kvp = new KeyValuePair<IsolatedStorageFile, IsolatedStorageFileStream> (isf, fs);
+				IAsyncResult result = fs.BeginRead (data, 0, 2, new AsyncCallback (EndReadRemoved), kvp);
+				result.AsyncWaitHandle.WaitOne ();
+			}
+			isf = IsolatedStorageFile.GetUserStoreForApplication ();
+			Assert.AreEqual (0, isf.GetFileNames ().Length, "Empty");
+		}
+
+		void EndReadDisposed (IAsyncResult result)
+		{
+			KeyValuePair<IsolatedStorageFile, IsolatedStorageFileStream> kvp = (KeyValuePair<IsolatedStorageFile, IsolatedStorageFileStream>) result.AsyncState;
+			kvp.Key.Dispose ();
+			Assert.Throws (delegate { kvp.Value.EndRead (result); }, typeof (ObjectDisposedException), "Dispose/EndRead");
+		}
+
+		[TestMethod]
+		public void AsyncEndRead_Disposed ()
+		{
+			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
+			using (IsolatedStorageFileStream fs = new IsolatedStorageFileStream ("moon", FileMode.Create, isf)) {
+				byte [] data = new byte [2];
+				KeyValuePair<IsolatedStorageFile, IsolatedStorageFileStream> kvp = new KeyValuePair<IsolatedStorageFile, IsolatedStorageFileStream> (isf, fs);
+				IAsyncResult result = fs.BeginRead (data, 0, 2, new AsyncCallback (EndReadDisposed), kvp);
+				result.AsyncWaitHandle.WaitOne ();
+			}
+		}
+
 		void EndWrite (IAsyncResult result)
 		{
 			IsolatedStorageFileStream fs = (IsolatedStorageFileStream) result.AsyncState;
@@ -189,7 +224,6 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		}
 
 		[TestMethod]
-		[KnownFailure]
 		public void AsyncWrite ()
 		{
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
@@ -203,12 +237,55 @@ namespace MoonTest.System.IO.IsolatedStorage {
 				isf.Dispose ();
 				Assert.Throws (delegate { fs.BeginWrite (data, 0, 2, new AsyncCallback (EndWrite), fs); }, typeof (ObjectDisposedException), "Dispose/Write");
 			}
+
 			isf = IsolatedStorageFile.GetUserStoreForApplication ();
 			Assert.AreEqual (0, isf.GetFileNames ().Length, "Empty");
 		}
 
+		void EndWriteRemoved (IAsyncResult result)
+		{
+			KeyValuePair<IsolatedStorageFile, IsolatedStorageFileStream> kvp = (KeyValuePair<IsolatedStorageFile, IsolatedStorageFileStream>) result.AsyncState;
+			kvp.Key.Remove ();
+			Assert.Throws (delegate { kvp.Value.EndWrite (result); }, typeof (IsolatedStorageException), "Remove/EndWrite");
+		}
+
 		[TestMethod]
-		[KnownFailure]
+		public void AsyncEndWrite_Removed ()
+		{
+			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
+			isf.Remove ();
+
+			isf = IsolatedStorageFile.GetUserStoreForApplication ();
+			Assert.AreEqual (0, isf.GetFileNames ().Length, "pre-check");
+
+			using (IsolatedStorageFileStream fs = new IsolatedStorageFileStream ("moon", FileMode.Create, isf)) {
+				byte [] data = new byte [2];
+				KeyValuePair<IsolatedStorageFile, IsolatedStorageFileStream> kvp = new KeyValuePair<IsolatedStorageFile, IsolatedStorageFileStream> (isf, fs);
+				IAsyncResult result = fs.BeginWrite (data, 0, 2, new AsyncCallback (EndWriteRemoved), kvp);
+				result.AsyncWaitHandle.WaitOne ();
+			}
+		}
+
+		void EndWriteDisposed (IAsyncResult result)
+		{
+			KeyValuePair<IsolatedStorageFile, IsolatedStorageFileStream> kvp = (KeyValuePair<IsolatedStorageFile, IsolatedStorageFileStream>) result.AsyncState;
+			kvp.Key.Dispose ();
+			Assert.Throws (delegate { kvp.Value.EndWrite (result); }, typeof (ObjectDisposedException), "Dispose/EndWrite");
+		}
+
+		[TestMethod]
+		public void AsyncEndWrite_Disposed ()
+		{
+			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
+			using (IsolatedStorageFileStream fs = new IsolatedStorageFileStream ("moon", FileMode.Create, isf)) {
+				byte [] data = new byte [2];
+				KeyValuePair<IsolatedStorageFile, IsolatedStorageFileStream> kvp = new KeyValuePair<IsolatedStorageFile, IsolatedStorageFileStream> (isf, fs);
+				IAsyncResult result = fs.BeginWrite (data, 0, 2, new AsyncCallback (EndWriteDisposed), kvp);
+				result.AsyncWaitHandle.WaitOne ();
+			}
+		}
+
+		[TestMethod]
 		public void Flush ()
 		{
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
@@ -225,7 +302,6 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		}
 
 		[TestMethod]
-		[KnownFailure]
 		public void Seek ()
 		{
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
@@ -242,7 +318,6 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		}
 
 		[TestMethod]
-		[KnownFailure]
 		public void SetLength ()
 		{
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
@@ -259,7 +334,6 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		}
 
 		[TestMethod]
-		[KnownFailure]
 		public void Write ()
 		{
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
@@ -280,7 +354,6 @@ namespace MoonTest.System.IO.IsolatedStorage {
 
 
 		[TestMethod]
-		[KnownFailure]
 		public void WriteThenRead ()
 		{
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();

@@ -180,7 +180,6 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		}
 
 		[TestMethod]
-		[KnownFailure]
 		public void SiteSettingsTest ()
 		{
 			CheckAll (IsolatedStorageSettings.SiteSettings);
