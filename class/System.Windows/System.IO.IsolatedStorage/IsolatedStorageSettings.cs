@@ -32,7 +32,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
+#if false
+using System.IO;
+using System.Runtime.Serialization;
+using System.Text;
+#endif
 
 namespace System.IO.IsolatedStorage {
 
@@ -43,25 +47,49 @@ namespace System.IO.IsolatedStorage {
 		static private IsolatedStorageSettings application_settings;
 		static private IsolatedStorageSettings site_settings;
 
-		private IsolatedStorageFileStream stream;
+		private IsolatedStorageFile container;
 		private Dictionary<string, object> settings;
+
+		// SL2 use a "well known" name and it's readable (and delete-able) directly by isolated storage
+		private const string LocalSettings = "__LocalSettings";
 
 		internal IsolatedStorageSettings (IsolatedStorageFile isf)
 		{
-			// FIXME we need an unpredictable, from the SL app, filename to store the settings
-			// FIXME we need to test if settings are part of the quota (I guess so)
-			stream = isf.OpenFile ("moonlight.data", FileMode.OpenOrCreate);
+			container = isf;
+
+			if (!isf.FileExists (LocalSettings)) {
+				settings = new Dictionary<string, object> ();
+				return;
+			}
+#if false
+			using (IsolatedStorageFileStream fs = isf.OpenFile (LocalSettings, FileMode.Open)) {
+				using (StreamReader sr = new StreamReader (fs)) {
+					// first line contains a fully qualified type + CRLF (System.Object)
+					string header = sr.ReadLine ();
+					if (header.StartsWith ("<"))
+						fs.Position = 0;
+					else
+						fs.Position = header.Length;
+					DataContractSerializer reader = new DataContractSerializer (sets.GetType ());
+					settings = (Dictionary<string, object>) reader.ReadObject (fs);
+				}
+			}
+#else
 			settings = new Dictionary<string, object> ();
-			// FIXME read data from stream
+#endif
 		}
 
 		~IsolatedStorageSettings ()
 		{
-			settings.Clear ();
+#if false
+			// settings are automatically saved if the application close normally
+			settings.Save ();
+#endif
 		}
 
 		// static properties
 
+		// per application, per-computer, per-user
 		public static IsolatedStorageSettings ApplicationSettings {
 			[MonoTODO ("not loaded from file, isolated or not")]
 			get {
@@ -73,6 +101,7 @@ namespace System.IO.IsolatedStorage {
 			}
 		}
 
+		// per domain, per-computer, per-user
 		public static IsolatedStorageSettings SiteSettings {
 			[MonoTODO ("not loaded from file, isolated or not")]
 			get {
@@ -131,11 +160,27 @@ namespace System.IO.IsolatedStorage {
 			return settings.Remove (key);
 		}
 
+#if false
+		public void Save ()
+		{
+			using (IsolatedStorageFileStream fs = container.CreateFile (LocalSettings)) {
+				// note: SL seems to prepend a line with a fully qualified name for System.Object + CRLF
+				byte[] header = System.Text.Encoding.UTF8.GetBytes (typeof (object).AssemblyQualifiedName);
+				fs.Write (header, 0, header.Length);
+				fs.WriteByte (13);
+				fs.WriteByte (10);
+				// and does not seems to need it when reading back...
+				DataContractSerializer ser = new DataContractSerializer (settings.GetType ());
+				ser.WriteObject (fs, settings);
+			}
+		}
+#else
 		[MonoTODO ("not saved to file, isolated or not")]
 		public void Save ()
 		{
 			throw new NotImplementedException ();
 		}
+#endif
 
 		public bool TryGetValue<T> (string key, out T value)
 		{

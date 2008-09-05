@@ -1,3 +1,10 @@
+2008-09-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* IsolatedStorageSettings.cs: Implemented loading and saving of
+	the settings. Commented for now and until we can reference SL2
+	version of System.Runtime.Serialization.dll. The format is 
+	compatible with Silverlight 2.0 (confirmed on Windows).
+
 2008-08-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* IsolatedStorageSettings.cs: Don't include the class in the 3.0 
