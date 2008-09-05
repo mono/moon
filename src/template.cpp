@@ -59,11 +59,21 @@ FrameworkTemplate::FrameworkTemplate ()
 					       g_direct_equal,
 					       NULL,
 					       delete_list);
+	visual_tree = NULL;
 }
 
 FrameworkTemplate::~FrameworkTemplate ()
 {
 	g_hash_table_destroy (xaml_bindings);
+	if (visual_tree)
+		visual_tree->unref();
+}
+
+void
+FrameworkTemplate::SetVisualTree (FrameworkElement *value)
+{
+	visual_tree = value;
+	visual_tree->ref ();
 }
 
 void
@@ -123,6 +133,25 @@ ControlTemplate::DuplicateObject (Control *source, DependencyObject *dob, List* 
 
 	g_hash_table_foreach (dob->GetCurrentValues(), (GHFunc)duplicate_value, &closure);
 
+	if (dob->Is (Type::COLLECTION)) {
+		Collection *c = (Collection*)dob;
+		Collection *new_c = (Collection*)new_dob;
+
+		if (Type::Find(c->GetElementType())->IsSubclassOf(Type::DEPENDENCY_OBJECT)) {
+			for (int i = 0; i < c->GetCount(); i ++)
+				new_c->Add(Value (DuplicateObject(source, c->GetValueAt(i)->AsDependencyObject(), bindings)));
+		}
+		else {
+			for (int i = 0; i < c->GetCount(); i ++)
+				new_c->Add(c->GetValueAt(i));
+		}
+	}
+	else if (dob->Is (Type::FRAMEWORKTEMPLATE)) {
+		FrameworkTemplate *t = (FrameworkTemplate*)dob;
+		FrameworkTemplate *new_t = (FrameworkTemplate*)new_dob;
+		new_t->SetVisualTree ((FrameworkElement*)DuplicateObject (source, t->GetVisualTree(), bindings));
+	}
+
 	/* check if dob exists in the xaml binding hash. */
 	List *l = (List*)g_hash_table_lookup (xaml_bindings, dob);
 	if (l) {
@@ -142,9 +171,10 @@ ControlTemplate::DuplicateObject (Control *source, DependencyObject *dob, List* 
 FrameworkElement *
 ControlTemplate::Apply (Control *control, List *bindings)
 {
-	DependencyObject *instantiated_tree = DuplicateObject (control, visual_tree, bindings);
+	if (!visual_tree)
+		return NULL;
 
-	printf ("yay, now set the control's instantiated tree (%p)\n", instantiated_tree);
+	DependencyObject *instantiated_tree = DuplicateObject (control, visual_tree, bindings);
 
 	return (FrameworkElement *)instantiated_tree;
 }

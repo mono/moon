@@ -21,10 +21,16 @@ Control::Control ()
 {
 	applied_template = NULL;
 	template_root = NULL;
+	bindings = NULL;
 }
 
 Control::~Control ()
 {
+	if (applied_template)
+		applied_template->unref();
+
+	if (bindings)
+		delete bindings;
 }
 
 void 
@@ -148,9 +154,19 @@ Control::ApplyTemplate ()
 	
 	ElementRemoved (template_root);
 
-	applied_template = GetTemplate ();
+	if (!GetTemplate())
+		return false;
 
-	ElementAdded (applied_template->Apply(this, bindings));
+	applied_template = GetTemplate ();
+	applied_template->ref();
+
+	bindings = new List ();
+
+	FrameworkElement *el = applied_template->Apply(this, bindings);
+	if (!el)
+		return false;
+
+	ElementAdded (el);
 
 	return true;
 }

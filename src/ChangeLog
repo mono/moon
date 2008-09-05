@@ -1,3 +1,28 @@
+2008-09-04  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (dependency_object_add_child): add code here for
+	FrameworkTemplate, call SetVisualTree with the child.
+
+	* control.cpp (Control::Control): init bindings.
+	(Control::~Control): unref applied_template and delete bindings.
+	(Control::ApplyTemplate): make sure we return false here from a
+	few error places (NULL template, a template with a NULL
+	visual_tree.)
+
+	* template.cpp (FrameworkTemplate::FrameworkTemplate): init
+	visual_tree to NULL.
+	(FrameworkTemplate::~FrameworkTemplate): unref visual_tree.
+	(FrameworkTemplate::SetVisualTree): new method, set visual_tree
+	and ref it.
+	(ControlTemplate::DuplicateObject): we need to special case a
+	couple of classes (collections, templates) in order to traverse
+	them.. ugh.
+	(ControlTemplate::Apply): if the visual_tree is null, don't try to
+	copy it.
+
+	* template.h (class FrameworkTemplate): add SetVisualTree method
+	for the parser.
+
 2008-09-04  Larry Ewing  <lewing@novell.com>
 
 	* uielement.cpp, uielement.h: new methods GetSubtreeObject and

@@ -32,6 +32,7 @@ public:
 	virtual Type::Kind GetObjectType () { return Type::FRAMEWORKTEMPLATE; }
 
 	FrameworkElement *GetVisualTree () { return visual_tree; }
+	void SetVisualTree (FrameworkElement* value);
 
 	void AddXamlBinding (XamlTemplateBinding *binding);
 
