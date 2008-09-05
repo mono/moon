@@ -3098,6 +3098,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 		return;
 	}
 
+#if SL_2_0
 	if (Type::Find (parent->info->GetKind ())->IsSubclassOf (Type::FRAMEWORKTEMPLATE)) {
 		FrameworkTemplate *t = (FrameworkTemplate*) parent->item;
 
@@ -3106,7 +3107,9 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 		t->SetVisualTree ((FrameworkElement*) child->item);
 		return;
 	}
-	else if (Type::Find (parent->info->GetKind ())->IsSubclassOf (Type::DEPENDENCY_OBJECT_COLLECTION)) {
+	else 
+#endif
+	if (Type::Find (parent->info->GetKind ())->IsSubclassOf (Type::DEPENDENCY_OBJECT_COLLECTION)) {
 		Collection *col = (Collection *) parent->item;
 		
 		set_parent (child, NULL);
