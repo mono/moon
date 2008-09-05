@@ -1,3 +1,12 @@
+2008-09-05  Larry Ewing  <lewing@novell.com>
+
+	* uielement.cpp: use render bounds rather than bounds to determine
+	if we have something to draw.
+
+	* stylus.h, stylus.cpp: remove the EmptyBackground method.
+
+	Fixes the annotation regression in page turn (again).
+	
 2008-09-04  Larry Ewing  <lewing@novell.com>
 
 	* uielement.h (class UIElement): generate managed accessors for

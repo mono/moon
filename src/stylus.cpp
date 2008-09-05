@@ -775,18 +775,6 @@ InkPresenter::InkPresenter ()
 	SetValue (InkPresenter::StrokesProperty, Value::CreateUnref (new StrokeCollection ()));
 }
 
-bool
-InkPresenter::EmptyBackground ()
-{
-	StrokeCollection *strokes = GetStrokes();
-	bool empty = true;
-
-	if (strokes)
-		empty = strokes->GetBounds().IsEmpty();
-
-	return empty ? Panel::EmptyBackground() : false;
-}
-
 void
 InkPresenter::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 {

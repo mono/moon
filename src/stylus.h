@@ -225,7 +225,6 @@ class InkPresenter : public Canvas {
  protected:
 	virtual ~InkPresenter () {}
 
-	virtual bool EmptyBackground ();
  public:
 	/* @PropertyType=StrokeCollection,GenerateAccessors */
 	static DependencyProperty *StrokesProperty;

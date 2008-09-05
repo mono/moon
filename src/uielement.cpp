@@ -722,7 +722,7 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 
 	if (!GetOpacityMask () && !IS_TRANSLUCENT (local_opacity)) {
 		delete self_region;
-		if (bounds.IsEmpty ()) {  // empty bounds mean that this element draws nothing itself
+		if (GetRenderBounds().IsEmpty ()) {  // empty bounds mean that this element draws nothing itself
 			self_region = new Region ();
 		}
 		else {
