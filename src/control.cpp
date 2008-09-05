@@ -20,6 +20,7 @@
 Control::Control ()
 {
 	applied_template = NULL;
+	template_root = NULL;
 }
 
 Control::~Control ()
