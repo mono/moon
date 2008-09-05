@@ -1,0 +1,115 @@
+using System;
+using System.Net;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Ink;
+using System.Windows.Input;
+using System.Windows.Markup;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
+using System.Windows.Shapes;
+using System.Collections.Generic;
+using Mono.Moonlight.UnitTesting;
+
+
+namespace MoonTest.System.Windows.Controls
+{
+	[TestClass]
+	public class ControlTemplateTest
+	{
+
+		[TestMethod]
+		[Ignore ("this doesn't seem to work on windows.. 'c.Template = t' raises an exception")]
+		public void LoadTemplateOnlyUsingXamlReader ()
+		{
+			Console.WriteLine ("LoadTemplateOnlyUsingXamlReader");
+			UserControl c = new UserControl ();
+
+			ControlTemplate t = (ControlTemplate)XamlReader.Load (@"
+<ControlTemplate TargetType=""UserControl"" xmlns=""http://schemas.microsoft.com/client/2007"">
+  <TextBlock Text=""hi"" />
+</ControlTemplate>");
+
+			c.Template = t;
+
+			Assert.IsTrue (c.ApplyTemplate (), "0");
+
+			Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (c), "1");
+
+			TextBlock tb = (TextBlock)VisualTreeHelper.GetChild (c, 0);
+
+			Assert.AreEqual ("hi", tb.Text, "2");
+		}
+
+		[TestMethod]
+		[KnownFailure]
+		public void SetTemplateInXamlOnUserControl ()
+		{
+			// "Invalid Property: UserControl.Template"
+			//
+			Console.WriteLine ("SetTemplateInXamlOnUserControl");
+			Assert.Throws ( delegate { XamlReader.Load (@"
+<UserControl xmlns=""http://schemas.microsoft.com/client/2007"">
+  <UserControl.Template>
+    <ControlTemplate TargetType=""Button"">
+      <TextBlock Text=""hi"" />
+    </ControlTemplate>
+  </UserControl.Template>
+</UserControl>"); },
+				typeof (XamlParseException));
+		}
+
+		[TestMethod]
+		public void SetTemplateInXamlOnButton ()
+		{
+			Console.WriteLine ("SetTemplateInXamlOnButton");
+			Button b = (Button)XamlReader.Load (@"
+<Button xmlns=""http://schemas.microsoft.com/client/2007"">
+  <Button.Template>
+    <ControlTemplate TargetType=""Button"">
+      <TextBlock Text=""hi"" />
+    </ControlTemplate>
+  </Button.Template>
+</Button>");
+			Assert.AreEqual (0, VisualTreeHelper.GetChildrenCount (b), "0");
+
+			Assert.IsTrue (b.ApplyTemplate (), "1");
+
+			Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (b), "2");
+
+			TextBlock tb = (TextBlock)VisualTreeHelper.GetChild (b, 0);
+
+			Assert.AreEqual ("hi", tb.Text, "3");
+		}
+
+		[TestMethod]
+		public void TemplateInStaticResource ()
+		{
+			Console.WriteLine ("TemplateInStaticResource");
+			Canvas c = (Canvas)XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Canvas.Resources>
+  <ControlTemplate x:Key=""ButtonTemplate"" TargetType=""Button"">
+      <TextBlock Text=""hi"" />
+  </ControlTemplate> 
+</Canvas.Resources>
+<Button x:Name=""button"" Template=""{StaticResource ButtonTemplate}"" />
+</Canvas>");
+
+			Button b = (Button)c.FindName ("button");
+
+			Assert.AreEqual (0, VisualTreeHelper.GetChildrenCount (b), "0");
+
+			Assert.IsTrue (b.ApplyTemplate (), "1");
+
+			Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (b), "2");
+
+			TextBlock tb = (TextBlock)VisualTreeHelper.GetChild (b, 0);
+
+			Assert.AreEqual ("hi", tb.Text, "3");
+		}
+
+	}
+
+}
