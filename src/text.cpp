@@ -351,7 +351,6 @@ TextBlock::Layout (cairo_t *cr)
 {
 	Value *value = GetValueNoDefault (FrameworkElement::WidthProperty);
 	InlineCollection *inlines = GetInlines ();
-	Thickness *padding = GetPadding ();
 	TextDecorations decorations;
 	List *runs = new List ();
 	guint8 font_mask;
@@ -360,7 +359,12 @@ TextBlock::Layout (cairo_t *cr)
 	layout->SetWrapping (GetTextWrapping ());
 	
 	if (value) {
+#if SL_2_0
+		Thickness *padding = GetPadding ();
 		double pad = padding->left + padding->right;
+#else
+		double pad = 0.0;
+#endif
 		double width = value->AsDouble ();
 		
 		if (pad >= width) {
@@ -471,13 +475,19 @@ TextBlock::Layout (cairo_t *cr)
 void
 TextBlock::Paint (cairo_t *cr)
 {
+#if SL_2_0
 	Thickness *padding = GetPadding ();
+#endif
 	Brush *fg;
 	
 	if (!(fg = GetForeground ()))
 		fg = default_foreground ();
 	
+#if SL_2_0
 	layout->Render (cr, padding->left, padding->top, this, hints, fg);
+#else
+	layout->Render (cr, 0.0, 0.0, this, hints, fg);
+#endif
 	
 	if (moonlight_flags & RUNTIME_INIT_SHOW_TEXTBOXES) {
 		cairo_set_source_rgba (cr, 0.0, 1.0, 0.0, 1.0);
