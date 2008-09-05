@@ -76,6 +76,7 @@ public:
 	virtual TimeManager *GetTimeManager ();
 	
 	void SetVisualParent (UIElement *visual_parent) { this->visual_parent = visual_parent; }
+	/* @GenerateCBinding,GeneratePInvoke */
 	UIElement *GetVisualParent () { return visual_parent; }
 
 	virtual DependencyObject *GetSubtreeObject () { return NULL; }
