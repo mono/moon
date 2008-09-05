@@ -29,6 +29,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void ChildlessMarginTest ()
 		{
 			Grid g = new Grid ();
@@ -41,6 +42,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void Childless_ColumnDefinition_Width_constSize_singleColumn ()
 		{
 			Grid g = new Grid ();
@@ -60,6 +62,8 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (new Size (100, 0), g.DesiredSize, "DesiredSize");
 		}
 
+		[TestMethod]
+		[KnownFailure]
 		public void ChildlessMargin_ColumnDefinition_Width_constSize_singleColumn ()
 		{
 			Grid g = new Grid ();
@@ -82,6 +86,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void ChildlessMargin_ColumnDefinition_Width_constSize_multiColumn ()
 		{
 			Grid g = new Grid ();
@@ -108,6 +113,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void ChildlessMargin_ColumnDefinition_Width_autoSize_singleColumn ()
 		{
 			Grid g = new Grid ();
@@ -130,6 +136,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void ChildlessMargin_ColumnDefinition_Width_autoSize_constSize_multiColumn ()
 		{
 			Grid g = new Grid ();
@@ -156,6 +163,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void ChildlessMargin_ColumnDefinition_Width_starSize_singleColumn ()
 		{
 			Grid g = new Grid ();
@@ -178,6 +186,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void ChildlessMargin_ColumnDefinition_Width_starSize_constSize_multiColumn ()
 		{
 			Grid g = new Grid ();
@@ -204,6 +213,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void ChildlessMargin_RowDefinition_Height_constSize_singleRow ()
 		{
 			Grid g = new Grid ();
@@ -226,6 +236,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void ChildlessMargin_RowDefinition_Height_constSize_multiRow ()
 		{
 			Grid g = new Grid ();
@@ -252,6 +263,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void ChildlessMargin_RowDefinition_Height_autoSize_singleRow ()
 		{
 			Grid g = new Grid ();
@@ -274,6 +286,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void ChildlessMargin_RowDefinition_Height_autoSize_constSize_multiRow ()
 		{
 			Grid g = new Grid ();
@@ -300,6 +313,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void ChildlessMargin_RowDefinition_Height_starSize_singleRow ()
 		{
 			Grid g = new Grid ();
@@ -322,6 +336,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void ChildlessMargin_RowDefinition_Height_starSize_constSize_multiRow ()
 		{
 			Grid g = new Grid ();
@@ -348,6 +363,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void ChildMargin_constWidth_constHeight_singleCell ()
 		{
 			Grid g = new Grid ();
@@ -398,6 +414,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void ChildMargin_starWidth_starHeight_singleCell ()
 		{
 			Grid g = new Grid ();
@@ -448,6 +465,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void ChildMargin_autoWidth_autoHeight_singleCell ()
 		{
 			Grid g = new Grid ();
@@ -501,6 +519,7 @@ namespace MoonTest.System.Windows.Controls
 		// are both explicitly sized, but the column
 		// definitions are 1* and 2* respectively.
 		[TestMethod]
+		[KnownFailure]
 		public void TwoChildrenMargin_2Columns_1Star_and_2Star_1Row_constSize ()
 		{
 			Grid g = new Grid ();
@@ -551,6 +570,7 @@ namespace MoonTest.System.Windows.Controls
 		// are both explicitly sized, but the column
 		// definitions are 1* and 2* respectively.
 		[TestMethod]
+		[KnownFailure]
 		public void Child_ColSpan2_2Columns_constSize_and_1Star_1Row_constSize ()
 		{
 			Grid g = new Grid ();
