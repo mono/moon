@@ -53,7 +53,7 @@ namespace System.Windows.Media
 					ParseImage (reader);
 					break;
 				default:
-					if (reader.Name != null && reader.Name != String.Empty && reader.NodeType != XmlNodeType.EndElement)
+					if (!String.IsNullOrEmpty (reader.Name) && reader.NodeType != XmlNodeType.EndElement)
 						Console.WriteLine ("DeepZoomImageTileSource::ParseDeepZoom: Not parsing {0} element", reader.Name);
 					break;
 				}
@@ -105,7 +105,7 @@ namespace System.Windows.Media
 					ParseTilePresence (reader);
 					break;
 				default:
-					if (reader.Name != null && reader.Name != String.Empty && reader.NodeType != XmlNodeType.EndElement)
+					if (!String.IsNullOrEmpty (reader.Name) && reader.NodeType != XmlNodeType.EndElement)
 						Console.WriteLine ("DeepZoomImageTileSource::ParseImage: Not parsing image.{0}", reader.Name);
 					break;
 				}
@@ -121,7 +121,7 @@ namespace System.Windows.Media
 					ParseLevel (reader);
 					break;
 				default:
-					if (reader.Name != null && reader.Name != String.Empty && reader.NodeType != XmlNodeType.EndElement)
+					if (!String.IsNullOrEmpty (reader.Name) && reader.NodeType != XmlNodeType.EndElement)
 						Console.WriteLine ("DeepZoomImageTileSource: Not parsing image.levels.{0}", reader.Name);
 					break;
 				}
@@ -132,8 +132,7 @@ namespace System.Windows.Media
 			int l = Convert.ToInt32 (reader["index"]) - 1;
 //			Console.WriteLine ("Parsing <level> {0}", l);
 			Level level = null;
-			levels.TryGetValue (l, out level);
-			if (level == null) {
+			if (!levels.TryGetValue (l, out level)) {
 				level = new Level ();
 				levels [l] = level;
 			}
@@ -156,7 +155,7 @@ namespace System.Windows.Media
 							level.tile_height = read_int (reader);
 							break;
 						default:
-							if (reader.Name != null && reader.Name != String.Empty && reader.NodeType != XmlNodeType.EndElement)
+							if (!String.IsNullOrEmpty (reader.Name) && reader.NodeType != XmlNodeType.EndElement)
 								Console.WriteLine ("DeepZoomImageTileSource: Not parsing image.levels.level.tile-size.{0}", reader.Name);
 							break;
 						}
@@ -177,7 +176,7 @@ namespace System.Windows.Media
 							level.tile_overlap_bottom = read_int (reader);
 							break;
 						default:
-							if (reader.Name != null && reader.Name != String.Empty && reader.NodeType != XmlNodeType.EndElement)
+							if (!String.IsNullOrEmpty (reader.Name) && reader.NodeType != XmlNodeType.EndElement)
 								Console.WriteLine ("DeepZoomImageTileSource: Not parsing image.levels.level.tile-overlap.{0}", reader.Name);
 							break;
 						}
@@ -192,13 +191,13 @@ namespace System.Windows.Media
 							level.offset_height = read_int (reader);
 							break;
 						default:
-							if (reader.Name != null && reader.Name != String.Empty && reader.NodeType != XmlNodeType.EndElement)
+							if (!String.IsNullOrEmpty (reader.Name) && reader.NodeType != XmlNodeType.EndElement)
 								Console.WriteLine ("DeepZoomImageTileSource: Not parsing image.levels.level.tile-size.{0}", reader.Name);
 							break;
 						}
 					break;
 				default:
-					if (reader.Name != null && reader.Name != String.Empty && reader.NodeType != XmlNodeType.EndElement)
+					if (!String.IsNullOrEmpty (reader.Name) && reader.NodeType != XmlNodeType.EndElement)
 						Console.WriteLine ("DeepZoomImageTileSource: Not parsing image.levels.level.{0}", reader.Name);
 					break;
 				}
@@ -213,7 +212,7 @@ namespace System.Windows.Media
 					ParseRect (reader);
 					break;
 				default:
-					if (reader.Name != null && reader.Name != String.Empty && reader.NodeType != XmlNodeType.EndElement)
+					if (!String.IsNullOrEmpty (reader.Name) && reader.NodeType != XmlNodeType.EndElement)
 						Console.WriteLine ("DeepZoomImageTileSource: Not parsing image.tile-presence.{0}", reader.Name);
 					break;
 				}
@@ -229,8 +228,7 @@ namespace System.Windows.Media
 				case "level":
 					int l = read_int (reader);
 					Level level = null;
-					levels.TryGetValue (l, out level);
-					if (level == null) {
+					if (!levels.TryGetValue (l, out level)) {
 						level = new Level ();
 						levels [l] = level;
 					}
@@ -251,7 +249,7 @@ namespace System.Windows.Media
 					rect.bottom = read_int (reader);
 					break;
 				default:
-					if (reader.Name != null && reader.Name != String.Empty && reader.NodeType != XmlNodeType.EndElement)
+					if (!String.IsNullOrEmpty (reader.Name) && reader.NodeType != XmlNodeType.EndElement)
 						Console.WriteLine ("DeepZoomImageTileSource: Not parsing image.tile-presence.rect.{0}", reader.Name);
 					break;
 				}
