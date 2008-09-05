@@ -32,7 +32,7 @@ struct Size {
 
 	Size Max (double w, double h)
 	{
-		return Size (width < w ? w : width, h < height ? h : height);
+		return Size (width < w ? w : width, height < h ? h : height);
 	}
 
 	Size Max (Size s)
