@@ -113,6 +113,54 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		public void ChildMeasureTest3 ()
+		{
+			Border b = new Border ();
+			Canvas c = new Canvas ();
+			
+			c.Width = 30;
+			c.Height = 30;
+			
+			c.Measure (new Size (40, 40));
+			Assert.AreEqual (new Size (0,0), c.DesiredSize);
+
+			b.Child = c;
+
+			b.Measure (new Size (40, 40));
+			
+			Assert.AreEqual (new Size (30,30), b.DesiredSize);
+			Assert.AreEqual (new Size (30,30), c.DesiredSize);
+
+			c.Measure (new Size (40, 40));
+			Assert.AreEqual (new Size (30,30), c.DesiredSize);
+		}
+
+		[TestMethod]
+		public void ChildMeasureTest4 ()
+		{
+			Border b1 = new Border ();
+			Border b2 = new Border ();
+			Border b3 = new Border ();
+			
+			b1.Child = b2;
+			b2.Child = b3;
+			b1.Measure (new Size (20, 20));
+			
+			Assert.AreEqual (new Size (0,0), b1.DesiredSize, "b1 before");
+			Assert.AreEqual (new Size (0,0), b2.DesiredSize, "b2 before");
+			Assert.AreEqual (new Size (0,0), b3.DesiredSize, "b3 before");
+
+			b2.Width = 10;
+			b2.Height = 10;
+			
+			b1.Measure (new Size (20, 20));
+			
+			Assert.AreEqual (new Size (10,10), b1.DesiredSize, "b1 after");
+			Assert.AreEqual (new Size (10,10), b2.DesiredSize, "b2 after");
+			Assert.AreEqual (new Size (0,0), b3.DesiredSize, "b3 after");
+		}
+
+		[TestMethod]
 		public void ChildPaddingMeasureTest1 ()
 		{
 			Border c = new Border ();
