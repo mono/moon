@@ -148,6 +148,7 @@ namespace System.Windows {
 			case Kind.CANVAS: return new Canvas (raw);
 			case Kind.COLORANIMATION: return new ColorAnimation (raw);
 			case Kind.COLORKEYFRAME_COLLECTION: return new ColorKeyFrameCollection (raw);
+			case Kind.COLUMNDEFINITION_COLLECTION: return new ColumnDefinitionCollection (raw);
 			case Kind.CONTROLTEMPLATE: return new ControlTemplate (raw);
 			case Kind.DEPLOYMENT: return new Deployment (raw);
 			case Kind.DISCRETECOLORKEYFRAME: return new DiscreteColorKeyFrame (raw);
@@ -199,6 +200,7 @@ namespace System.Windows {
 			case Kind.RECTANGLE: return new Rectangle (raw);
 			case Kind.RESOURCE_DICTIONARY: return new ResourceDictionary (raw);
 			case Kind.ROTATETRANSFORM: return new RotateTransform (raw);
+			case Kind.ROWDEFINITION_COLLECTION: return new RowDefinitionCollection (raw);
 			case Kind.RUN: return new Run (raw);
 			case Kind.SETTERBASE_COLLECTION: return new SetterBaseCollection (raw);
 			case Kind.SETTER: return new Setter (raw);
@@ -645,6 +647,14 @@ namespace System.Windows {
 					value.k = Kind.INT32;
 
 					value.u.i32 = (int)c.cursor;
+				}
+				else if (v is GridLength) {
+					GridLength gl = (GridLength) v;
+					value.k = Kind.GRIDLENGTH;
+					value.u.p = Helper.AllocHGlobal (sizeof (UnmanagedGridLength));
+					UnmanagedGridLength* grid_length = (UnmanagedGridLength*) value.u.p;
+					grid_length->type = (int)gl.GridUnitType;
+					grid_length->val = gl.Value;
 				}
 				else if (as_managed_object) {
 					// TODO: We probably need to marshal types that can animate as the 

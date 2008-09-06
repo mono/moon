@@ -57,12 +57,9 @@ namespace Mono {
 		public double a;
 	}
 
-	[StructLayout(LayoutKind.Explicit)]
-	public struct UnmanagedArray {
-		[FieldOffset(0)] public int count;
-		[FieldOffset(4)] public int refcount;
-		[FieldOffset(8)] public double first_d;
-		[FieldOffset(8)] public UnmanagedPoint first_pnt;
+	public struct UnmanagedGridLength {
+		public double val;
+		public int type;
 	}
 
 	public struct UnmanagedPoint {

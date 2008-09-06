@@ -1,3 +1,9 @@
+2008-09-05  Chris Toshok  <toshok@ximian.com>
+
+	* DependencyObject.cs (CreateObject): add
+	ColumnDefinitionCollection and RowDefinitionCollection support.
+	(GetAsValue): marshal the GridLength struct.
+
 2008-09-03  Chris Toshok  <toshok@ximian.com>
 
 	* ResourceDictionary.cs: rename _Remove to RemoveInternal, correct
