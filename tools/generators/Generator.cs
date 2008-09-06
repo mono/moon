@@ -559,7 +559,12 @@ class Generator {
 						   is_attached ? "obj->" : "",
 						   field.ParentType.NeedsQualifiedGetValue(all) ? "DependencyObject::" : "",
 						   field.ParentType.Name, field.Name);
-				
+
+				if (is_attached) {
+					text.AppendFormat ("\tif (!value) value = {0}::{1}->GetDefaultValue();\n",
+							   field.ParentType.Name, field.Name);
+				}
+
 				if (field.IsDPNullable || (prop_type.IsClass || prop_type.IsStruct || prop_type.Name == "char*")) {
 					text.Append ("\treturn value ? ");
 					if (prop_type.IsEnum) {
