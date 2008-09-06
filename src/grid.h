@@ -14,12 +14,6 @@
 #include <glib.h>
 #include "panel.h"
 
-enum GridUnitType {
-       Auto,
-       Pixel,
-       Star
-};
-
 /* @IncludeInKinds */
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
@@ -30,7 +24,7 @@ struct GridLength {
 	
 	GridLength () {
 		val = 0;
-		type = Auto;
+		type = GridUnitTypeAuto;
 	}
 	
 	GridLength (double v, GridUnitType t)
@@ -50,9 +44,9 @@ class ColumnDefinition : public DependencyObject {
 	virtual ~ColumnDefinition () {}
 	
  public:
- 	/* @PropertyType=double,GenerateAccessors */
+ 	/* @PropertyType=double,DefaultValue=INFINITY,GenerateAccessors */
 	static DependencyProperty *MaxWidthProperty;
- 	/* @PropertyType=double,GenerateAccessors */
+ 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *MinWidthProperty;
  	/* @PropertyType=GridLength,GenerateAccessors */
 	static DependencyProperty *WidthProperty;
@@ -88,9 +82,9 @@ class RowDefinition : public DependencyObject {
  public:
  	/* @PropertyType=GridLength,GenerateAccessors */
 	static DependencyProperty *HeightProperty;
- 	/* @PropertyType=double,GenerateAccessors */
+ 	/* @PropertyType=double,DefaultValue=INFINITY,GenerateAccessors */
 	static DependencyProperty *MaxHeightProperty;
- 	/* @PropertyType=double,GenerateAccessors */
+ 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *MinHeightProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -153,13 +147,13 @@ class Grid : public Panel {
 	static DependencyProperty *ColumnProperty;
 	/* @PropertyType=ColumnDefinitionCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *ColumnDefinitionsProperty;
- 	/* @PropertyType=gint32,DefaultValue=0,Attached,GenerateAccessors */
+ 	/* @PropertyType=gint32,DefaultValue=1,Attached,GenerateAccessors */
 	static DependencyProperty *ColumnSpanProperty;
  	/* @PropertyType=gint32,DefaultValue=0,Attached,GenerateAccessors */
 	static DependencyProperty *RowProperty;
 	/* @PropertyType=RowDefinitionCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *RowDefinitionsProperty;
- 	/* @PropertyType=gint32,DefaultValue=0,Attached,GenerateAccessors */
+ 	/* @PropertyType=gint32,DefaultValue=1,Attached,GenerateAccessors */
 	static DependencyProperty *RowSpanProperty;
  	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	static DependencyProperty *ShowGridLinesProperty;
@@ -172,6 +166,8 @@ class Grid : public Panel {
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
+
+	virtual Size MeasureOverride (Size availableSize);
 
 	// property accessors
 	ColumnDefinitionCollection *GetColumnDefinitions ();

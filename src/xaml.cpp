@@ -1951,7 +1951,7 @@ bool
 grid_length_from_str (const char *str, GridLength *grid_length)
 {
 	if (str [0] == '*') {
-		*grid_length = GridLength (0, Star);
+		*grid_length = GridLength (0, GridUnitTypeStar);
 		return true;
 	}
 		
@@ -1967,7 +1967,7 @@ grid_length_from_str (const char *str, GridLength *grid_length)
 	if (errno || endptr == str)
 		return false;
 
-	*grid_length = GridLength (d, Pixel);
+	*grid_length = GridLength (d, GridUnitTypePixel);
 	return true;
 }
 #endif

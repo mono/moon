@@ -227,6 +227,13 @@ enum Key {
 
 // Silverlight 2.0 Enums:
 
+enum GridUnitType {
+       GridUnitTypeAuto,
+       GridUnitTypePixel,
+       GridUnitTypeStar
+};
+
+
 enum HorizontalAlignment {
 	HorizontalAlignmentLeft,
 	HorizontalAlignmentCenter,

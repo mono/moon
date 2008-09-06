@@ -1,5 +1,16 @@
 2008-09-06  Chris Toshok  <toshok@ximian.com>
 
+	* grid.h, grid.cpp: flesh out some of the
+	OnPropertyChanged/OnSubPropertyChanged/OnCollectionChanged stuff.
+	Also add in a completely broken and unfinished MeasureOverride
+	implementation.  It passes some of the tests, but not for the
+	right reasons :) Lastly, move the GridUnitType enum to enums.h
+
+	* enums.h: move GridUnitType here, and rename its elements to have
+	a "GridUnitType" prefix.
+
+	* xaml.cpp: track GridUnitType enum references.
+
 	* dependencyproperty.g.cpp: fix up attached properties getters to
 	return default values if there is one.
 
