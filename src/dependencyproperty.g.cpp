@@ -93,8 +93,8 @@ dependency_property_g_init (void)
 	ColorKeyFrame::KeyTimeProperty = DependencyProperty::RegisterNullable (Type::COLORKEYFRAME, "KeyTime", Type::KEYTIME);
 	ColorKeyFrame::ValueProperty = DependencyProperty::RegisterNullable (Type::COLORKEYFRAME, "Value", Type::COLOR);
 #if SL_2_0
-	ColumnDefinition::MaxWidthProperty = DependencyProperty::Register (Type::COLUMNDEFINITION, "MaxWidth", Type::DOUBLE);
-	ColumnDefinition::MinWidthProperty = DependencyProperty::Register (Type::COLUMNDEFINITION, "MinWidth", Type::DOUBLE);
+	ColumnDefinition::MaxWidthProperty = DependencyProperty::Register (Type::COLUMNDEFINITION, "MaxWidth", new Value (INFINITY));
+	ColumnDefinition::MinWidthProperty = DependencyProperty::Register (Type::COLUMNDEFINITION, "MinWidth", new Value (0.0));
 	ColumnDefinition::WidthProperty = DependencyProperty::Register (Type::COLUMNDEFINITION, "Width", Type::GRIDLENGTH);
 	ContentControl::ContentProperty = DependencyProperty::Register (Type::CONTENTCONTROL, "Content", Type::DEPENDENCY_OBJECT);
 	ContentControl::ContentTemplateProperty = DependencyProperty::Register (Type::CONTENTCONTROL, "ContentTemplate", Type::DEPENDENCY_OBJECT);
@@ -186,10 +186,10 @@ dependency_property_g_init (void)
 #if SL_2_0
 	Grid::ColumnDefinitionsProperty = DependencyProperty::Register (Type::GRID, "ColumnDefinitions", Type::COLUMNDEFINITION_COLLECTION);
 	Grid::ColumnProperty = DependencyProperty::RegisterFull (Type::GRID, "Column", new Value (0), Type::INT32, true, false);
-	Grid::ColumnSpanProperty = DependencyProperty::RegisterFull (Type::GRID, "ColumnSpan", new Value (0), Type::INT32, true, false);
+	Grid::ColumnSpanProperty = DependencyProperty::RegisterFull (Type::GRID, "ColumnSpan", new Value (1), Type::INT32, true, false);
 	Grid::RowDefinitionsProperty = DependencyProperty::Register (Type::GRID, "RowDefinitions", Type::ROWDEFINITION_COLLECTION);
 	Grid::RowProperty = DependencyProperty::RegisterFull (Type::GRID, "Row", new Value (0), Type::INT32, true, false);
-	Grid::RowSpanProperty = DependencyProperty::RegisterFull (Type::GRID, "RowSpan", new Value (0), Type::INT32, true, false);
+	Grid::RowSpanProperty = DependencyProperty::RegisterFull (Type::GRID, "RowSpan", new Value (1), Type::INT32, true, false);
 	Grid::ShowGridLinesProperty = DependencyProperty::Register (Type::GRID, "ShowGridLines", new Value (false));
 #endif
 	ImageBrush::DownloadProgressProperty = DependencyProperty::Register (Type::IMAGEBRUSH, "DownloadProgress", new Value (0.0));
@@ -301,8 +301,8 @@ dependency_property_g_init (void)
 	RotateTransform::CenterYProperty = DependencyProperty::Register (Type::ROTATETRANSFORM, "CenterY", new Value (0.0));
 #if SL_2_0
 	RowDefinition::HeightProperty = DependencyProperty::Register (Type::ROWDEFINITION, "Height", Type::GRIDLENGTH);
-	RowDefinition::MaxHeightProperty = DependencyProperty::Register (Type::ROWDEFINITION, "MaxHeight", Type::DOUBLE);
-	RowDefinition::MinHeightProperty = DependencyProperty::Register (Type::ROWDEFINITION, "MinHeight", Type::DOUBLE);
+	RowDefinition::MaxHeightProperty = DependencyProperty::Register (Type::ROWDEFINITION, "MaxHeight", new Value (INFINITY));
+	RowDefinition::MinHeightProperty = DependencyProperty::Register (Type::ROWDEFINITION, "MinHeight", new Value (0.0));
 #endif
 	Run::TextProperty = DependencyProperty::Register (Type::RUN, "Text", Type::STRING);
 	ScaleTransform::CenterXProperty = DependencyProperty::Register (Type::SCALETRANSFORM, "CenterX", new Value (0.0));
@@ -1035,6 +1035,7 @@ double
 Canvas::GetLeft (DependencyObject *obj)
 {
 	Value *value = (!obj) ? NULL : obj->GetValue (Canvas::LeftProperty);
+	if (!value) value = Canvas::LeftProperty->GetDefaultValue();
 	return value->AsDouble ();
 }
 
@@ -1049,6 +1050,7 @@ double
 Canvas::GetTop (DependencyObject *obj)
 {
 	Value *value = (!obj) ? NULL : obj->GetValue (Canvas::TopProperty);
+	if (!value) value = Canvas::TopProperty->GetDefaultValue();
 	return value->AsDouble ();
 }
 
@@ -1063,6 +1065,7 @@ gint32
 Canvas::GetZIndex (DependencyObject *obj)
 {
 	Value *value = (!obj) ? NULL : obj->GetValue (Canvas::ZIndexProperty);
+	if (!value) value = Canvas::ZIndexProperty->GetDefaultValue();
 	return value->AsInt32 ();
 }
 
@@ -2159,6 +2162,7 @@ gint32
 Grid::GetColumn (DependencyObject *obj)
 {
 	Value *value = (!obj) ? NULL : obj->GetValue (Grid::ColumnProperty);
+	if (!value) value = Grid::ColumnProperty->GetDefaultValue();
 	return value->AsInt32 ();
 }
 
@@ -2175,6 +2179,7 @@ gint32
 Grid::GetColumnSpan (DependencyObject *obj)
 {
 	Value *value = (!obj) ? NULL : obj->GetValue (Grid::ColumnSpanProperty);
+	if (!value) value = Grid::ColumnSpanProperty->GetDefaultValue();
 	return value->AsInt32 ();
 }
 
@@ -2206,6 +2211,7 @@ gint32
 Grid::GetRow (DependencyObject *obj)
 {
 	Value *value = (!obj) ? NULL : obj->GetValue (Grid::RowProperty);
+	if (!value) value = Grid::RowProperty->GetDefaultValue();
 	return value->AsInt32 ();
 }
 
@@ -2222,6 +2228,7 @@ gint32
 Grid::GetRowSpan (DependencyObject *obj)
 {
 	Value *value = (!obj) ? NULL : obj->GetValue (Grid::RowSpanProperty);
+	if (!value) value = Grid::RowSpanProperty->GetDefaultValue();
 	return value->AsInt32 ();
 }
 
@@ -3000,6 +3007,7 @@ NameScope *
 NameScope::GetNameScope (DependencyObject *obj)
 {
 	Value *value = (!obj) ? NULL : obj->GetValue (NameScope::NameScopeProperty);
+	if (!value) value = NameScope::NameScopeProperty->GetDefaultValue();
 	return value ? value->AsNameScope () : NULL;
 }
 
@@ -3950,6 +3958,7 @@ const char *
 Storyboard::GetTargetName (DependencyObject *obj)
 {
 	Value *value = (!obj) ? NULL : obj->GetValue (Storyboard::TargetNameProperty);
+	if (!value) value = Storyboard::TargetNameProperty->GetDefaultValue();
 	return value ? value->AsString () : NULL;
 }
 
@@ -3964,6 +3973,7 @@ const char *
 Storyboard::GetTargetProperty (DependencyObject *obj)
 {
 	Value *value = (!obj) ? NULL : obj->GetValue (Storyboard::TargetPropertyProperty);
+	if (!value) value = Storyboard::TargetPropertyProperty->GetDefaultValue();
 	return value ? value->AsString () : NULL;
 }
 

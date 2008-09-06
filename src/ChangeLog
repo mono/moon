@@ -1,3 +1,8 @@
+2008-09-06  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyproperty.g.cpp: fix up attached properties getters to
+	return default values if there is one.
+
 2008-09-05  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp (TextBlock::OnPropertyChanged): TextAlignment doesn't
