@@ -61,9 +61,9 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void SetTemplateInXamlOnButton ()
 		{
-			Console.WriteLine ("SetTemplateInXamlOnButton");
 			Button b = (Button)XamlReader.Load (@"
 <Button xmlns=""http://schemas.microsoft.com/client/2007"">
   <Button.Template>
