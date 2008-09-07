@@ -30,6 +30,7 @@ public:
 	enum Kind {
 		// START_MANAGED_MAPPING
 		INVALID,
+		OBJECT,
 				ANIMATION,
 		ANIMATIONCLOCK,
 		APPLICATION,// Silverlight 2.0 only

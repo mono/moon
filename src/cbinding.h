@@ -337,7 +337,7 @@ Value *dependency_object_get_value_with_error (DependencyObject *instance, Types
 void dependency_object_set_name (DependencyObject *instance, const char *name);
 
 /* @GeneratePInvoke */
-void dependency_object_set_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, Value *value, MoonError *error);
+bool dependency_object_set_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, Value *value, MoonError *error);
 
 /**
  * DependencyObjectCollection

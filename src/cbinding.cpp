@@ -645,15 +645,15 @@ dependency_object_set_name (DependencyObject *instance, const char *name)
 }
 
 
-void
+bool
 dependency_object_set_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, Value *value, MoonError *error)
 {
 	if (instance == NULL)
-		return;
+		return false;
 	
 	if (error == NULL)
 		g_warning ("Moonlight: Called dependency_object_set_value_with_error () with error == NULL.");
-	instance->SetValueWithError (additional_types, property, value, error);
+	return instance->SetValueWithError (additional_types, property, value, error);
 }
 
 

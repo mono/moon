@@ -1,3 +1,9 @@
+2008-09-07  Chris Toshok  <toshok@ximian.com>
+
+	* type.h.in: add OBJECT kind.
+
+	* type.h, cbinding.h, cbinding.cpp, type-generated.cpp: regen.
+
 2008-09-06  Chris Toshok  <toshok@ximian.com>
 
 	* value.cpp (Value::CreateUnref): don't use 'Foo foo = Foo(args);'
