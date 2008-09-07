@@ -43,7 +43,7 @@ Value::CreateUnrefPtr (DependencyObject* dob)
 Value
 Value::CreateUnref (DependencyObject* dob)
 {
-	Value result = Value (dob);
+	Value result (dob);
 	dob->unref ();
 	return result;
 }

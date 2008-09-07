@@ -11,25 +11,47 @@
  */
  
  #include "error.h"
- 
-void
-MoonError::FillIn (MoonError *error, ErrorType number, char *message)
-{
-	if (error) {
-		error->number = number;
-		error->message = message;
-	}
-}
-	
-void
-MoonError::FillIn (MoonError *error, ErrorType number, const char *message)
-{
-	FillIn (error, number, g_strdup (message));
-}
 
-void
-MoonError::Dispose ()
+MoonError::~MoonError ()
 {
 	g_free (message);
 	message = NULL;
+}
+ 
+void
+MoonError::FillIn (MoonError *error, ErrorType number, int code, char *message)
+{
+	if (!error)
+		return;
+
+	error->number = number;
+	error->code = code;
+	error->message = message;
+}
+	
+void
+MoonError::FillIn (MoonError *error, ErrorType number, int code, const char *message)
+{
+	if (!error)
+		return;
+
+	FillIn (error, number, code, g_strdup (message));
+}
+
+void
+MoonError::FillIn (MoonError *error, ErrorType type, char *message)
+{
+	if (!error)
+		return;
+
+	FillIn (error, type, 0, message);
+}
+
+void
+MoonError::FillIn (MoonError *error, ErrorType type, const char *message)
+{
+	if (!error)
+		return;
+
+	FillIn (error, type, 0, message);
 }

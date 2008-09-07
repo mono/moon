@@ -1724,7 +1724,7 @@ MediaElement::GetValue (DependencyProperty *prop)
 			position = mplayer->GetPosition ();
 		
 		if (TimeSpan_FromPts (position) != -1) {
-			Value v = Value (TimeSpan_FromPts (position), Type::TIMESPAN);
+			Value v (TimeSpan_FromPts (position), Type::TIMESPAN);
 			
 			flags |= UpdatingPosition;
 			SetValue (prop, &v);

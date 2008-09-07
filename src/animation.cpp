@@ -881,7 +881,8 @@ KeyFrameCollection::GetKeyFrameForTime (TimeSpan t, KeyFrame **prev_frame)
 	/* Crawl backward to find first non-null frame */
 	for (; i >= 0; i--) {
 		KeyFrame *keyframe = (KeyFrame *) sorted_list->pdata[i];
-		if (keyframe->GetValue ("Value") != NULL) {
+		DependencyProperty *value_prop = keyframe->GetDependencyProperty ("Value");
+		if (keyframe->GetValue (value_prop) != NULL) {
 			current_keyframe = keyframe;
 			break;
 		}
@@ -890,7 +891,8 @@ KeyFrameCollection::GetKeyFrameForTime (TimeSpan t, KeyFrame **prev_frame)
 	/* Crawl backward some more to find first non-null prev frame */
 	for (i--; i >= 0; i--) {
 		KeyFrame *keyframe = (KeyFrame *) sorted_list->pdata[i];
-		if (keyframe->GetValue ("Value") != NULL) {
+		DependencyProperty *value_prop = keyframe->GetDependencyProperty ("Value");
+		if (keyframe->GetValue (value_prop) != NULL) {
 			previous_keyframe = keyframe;
 			break;
 		}

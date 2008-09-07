@@ -71,7 +71,7 @@ UIElement::Dispose()
 	for (int i = 0; i < triggers->GetCount (); i++)
 		triggers->GetValueAt (i)->AsEventTrigger ()->RemoveTarget (this);
 	
-	VisualTreeWalker walker = VisualTreeWalker (this);
+	VisualTreeWalker walker (this);
 	while (UIElement *child = walker.Step ())
 		child->SetVisualParent (NULL);
 
@@ -243,7 +243,7 @@ UIElement::UpdateTotalRenderVisibility ()
 void
 UIElement::UpdateTotalHitTestVisibility ()
 {
-	VisualTreeWalker walker = VisualTreeWalker (this);
+	VisualTreeWalker walker (this);
 	while (UIElement *child = walker.Step ())
 		child->UpdateTotalHitTestVisibility ();
 
@@ -415,7 +415,7 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj
 void 
 UIElement::CacheInvalidateHint () 
 {
-	VisualTreeWalker walker = VisualTreeWalker (this);
+	VisualTreeWalker walker (this);
 	while (UIElement *child = walker.Step ())
 		child->CacheInvalidateHint ();
 }
@@ -506,7 +506,7 @@ UIElement::OnLoaded ()
 
 	emitting_loaded = true;
 
-	VisualTreeWalker walker = VisualTreeWalker (this);
+	VisualTreeWalker walker (this);
 	while (UIElement *child = walker.Step ())
 		child->OnLoaded ();
 		   
@@ -716,7 +716,7 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 
 	Region *self_region = new Region (region);
 
-	VisualTreeWalker walker = VisualTreeWalker (this, ZReverse);
+	VisualTreeWalker walker (this, ZReverse);
 	while (UIElement *child = walker.Step ())
 		child->FrontToBack (region, render_list);
 
@@ -811,7 +811,7 @@ UIElement::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 {
 	// if we didn't render front to back, then render the children here
 	if (!front_to_back) {
-		VisualTreeWalker walker = VisualTreeWalker (this, ZForward);
+		VisualTreeWalker walker (this, ZForward);
 		while (UIElement *child = walker.Step ())
 			child->DoRender (cr, region);
 	}

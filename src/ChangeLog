@@ -1,5 +1,34 @@
 2008-09-06  Chris Toshok  <toshok@ximian.com>
 
+	* value.cpp (Value::CreateUnref): don't use 'Foo foo = Foo(args);'
+	- instead use 'Foo foo(args)'.  the former creates 2 objects to
+	the latter's 1.
+
+	* media.cpp (MediaElement::GetValue): same.
+
+	* uielement.cpp: same.
+
+	* error.h, error.cpp (class MoonError): make this a class instead
+	of a struct, add a default ctor, remove Dispose and use ~MoonError
+	instead, add FillIn methods that take a "code" as well as an
+	ErrorType to support the parser.
+
+	* dependencyobject.h, dependencyobject.cpp: some api cleanup - get
+	rid of GError and use MonoError exclusively, move the internal
+	EventLists/EventList types to the .cpp file.  Also, remove a few
+	redundant methods on DependencyObject.  The hit at call sites is
+	negligable (one additional line, perhaps), and the call sites are
+	few and far between.
+
+	* xaml.cpp (dependency_object_set_attributes)
+	(dependency_object_set_property): call
+	DependencyObject::SetValueWithError.
+
+	* animation.cpp (KeyFrameCollection::GetKeyFrameForTime): look up
+	the property here.  the DO api is gone.
+
+2008-09-06  Chris Toshok  <toshok@ximian.com>
+
 	* grid.h, grid.cpp: flesh out some of the
 	OnPropertyChanged/OnSubPropertyChanged/OnCollectionChanged stuff.
 	Also add in a completely broken and unfinished MeasureOverride

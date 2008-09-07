@@ -89,7 +89,8 @@ public:
 	char *xml_attribute;
 };
 
-struct MoonError {
+class MoonError {
+public:
 	enum ErrorType {
 	  EXCEPTION = 1,
 	  ARGUMENT = 2,
@@ -101,14 +102,22 @@ struct MoonError {
 
 	// non-zero if an error occurred.
 	ErrorType number;
+
+	// the silverlight error code
+	int code;
+
 	// the caller of the method which returned the error must call Dispose to free this value
 	// (only necessary if there were any errors)
 	char *message;
 	
-	void Dispose ();
-	
-	static void FillIn (MoonError *error, ErrorType number, char *message /* this message must be allocated using glib methods */);
-	static void FillIn (MoonError *error, ErrorType number, const char *message);
+	MoonError () : number ((ErrorType)0), code (0), message (0) {}
+	~MoonError ();
+
+	static void FillIn (MoonError *error, ErrorType type, int code, char *message /* this message must be allocated using glib methods */);
+  	static void FillIn (MoonError *error, ErrorType type, int code, const char *message);
+
+	static void FillIn (MoonError *error, ErrorType type, char *message /* this message must be allocated using glib methods */);
+  	static void FillIn (MoonError *error, ErrorType type, const char *message);
 };
 
 #endif /* __MOON_ERROR_H__ */

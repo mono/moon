@@ -36,22 +36,7 @@ typedef void (* TickCallHandler) (EventObject *object);
 typedef void (* EventHandler) (EventObject *sender, EventArgs *args, gpointer closure);
 typedef bool (* EventHandlerPredicate) (EventHandler cb_handler, gpointer cb_data, gpointer data);
 
-struct EventList {
-	int current_token;
-	int emitting;
-	int event_count;
-	List *event_list;
-};
-
-class EventLists {
-public:
-	int size;
-	int emitting;
-	EventList *lists;
-	
-	EventLists (int n);
-	~EventLists ();
-};
+struct EventLists;
 
 // 
 // An EventObject starts out with a reference count of 1 (no need to
@@ -82,11 +67,7 @@ public:
 #endif
 
 class EventObject {
-	EventLists *events;
-	Surface *surface;
-	gint32 refcount;
-	
- public:
+public:
 	EventObject ();
 	
 #if DEBUG
@@ -174,11 +155,9 @@ class EventObject {
 	}	
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	int AddHandler (const char *event_name, EventHandler handler, gpointer data);
+ 	int AddHandler (const char *event_name, EventHandler handler, gpointer data);
 	/* @GenerateCBinding,GeneratePInvoke */
-	void RemoveHandler (const char *event_name, EventHandler handler, gpointer data);
-	void RemoveHandler (const char *event_name, int token);
-	void RemoveMatchingHandlers (const char *event_name, EventHandlerPredicate predicate, gpointer closure);
+ 	void RemoveHandler (const char *event_name, EventHandler handler, gpointer data);
 
 	int AddHandler (int event_id, EventHandler handler, gpointer data);
 	void RemoveHandler (int event_id, EventHandler handler, gpointer data);
@@ -204,7 +183,6 @@ class EventObject {
 	//  the call to the base type's SetSurface with SetSurfaceLock/Unlock.
 	void AddTickCall (TickCallHandler handler);
 	void AddTickCallSafe (TickCallHandler handler);
-	void AddTickCallInternal (TickCallHandler handler);
 	
 	virtual Type::Kind GetObjectType () { return Type::EVENTOBJECT; }
 	
@@ -216,7 +194,7 @@ class EventObject {
 	bool DoEmit (int event_id, EmitContext *ctx, EventArgs *calldata = NULL, bool only_unemitted = false);
 	void FinishEmit (int event_id, EmitContext *ctx);
 	
- protected:
+protected:
 	virtual ~EventObject ();
 	virtual void Dispose ();
 	
@@ -226,6 +204,13 @@ class EventObject {
 	// Emit will call unref on the calldata.
 	bool Emit (char *event_name, EventArgs *calldata = NULL, bool only_unemitted = false);
 	bool Emit (int event_id, EventArgs *calldata = NULL, bool only_unemitted = false);
+
+private:
+	void AddTickCallInternal (TickCallHandler handler);
+
+	EventLists *events;
+	Surface *surface;
+	gint32 refcount;
 };
 
 
@@ -239,25 +224,12 @@ struct PropertyChangedEventArgs {
 
 /* @Namespace=System.Windows */
 class DependencyObject : public EventObject {
-	GHashTable        *current_values;
-	GSList            *listener_list;
-	DependencyObject  *logical_parent;
-
- protected:
-	virtual ~DependencyObject ();
-	
-	void NotifyListenersOfPropertyChange (PropertyChangedEventArgs *args);
-	void NotifyListenersOfPropertyChange (DependencyProperty *property);
-	
-	void RemoveAllListeners ();
-	
- public:
+public:
  	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject ();
 
 	GHashTable* GetCurrentValues () { return current_values; }
 
-	//
 	// Gets the content property from this object's type, and
 	// returns the value of that dependency property.
 	//
@@ -269,21 +241,16 @@ class DependencyObject : public EventObject {
 	// If error is non NULL and the value is not valid, error will be given an error code and error message that should be
 	// propogated to OnError
 	//
-	virtual bool IsValueValid (Types *additional_types, DependencyProperty *property, Value *value, GError **error);
+	virtual bool IsValueValid (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error);
 	
-	bool SetValue (DependencyProperty *property, Value *value, GError **error);
-	bool SetValue (DependencyProperty *property, Value value, GError **error);
-	bool SetValue (Types *additional_types, DependencyProperty *property, Value *value, GError **error);
+	bool SetValue (DependencyProperty *property, Value *value);
+	bool SetValue (DependencyProperty *property, Value value);
 	/* @GenerateCBinding,GeneratePInvoke */
-	void SetValueWithError (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error);
-	void SetValue (DependencyProperty *property, Value *value);
-	void SetValue (DependencyProperty *property, Value value);
-	void SetValue (const char *name, Value *value);
-	void SetValue (const char *name, Value value);
+	bool SetValueWithError (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error);
+	bool SetValueWithError (Types *additional_types, DependencyProperty *property, Value value, MoonError *error);
 
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Value *GetValueWithError (Types *additional_types, Type::Kind whatami, DependencyProperty *property, MoonError *error);
-	Value *GetValue (const char *name);
 	virtual Value *GetValue (DependencyProperty *property);
 
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
@@ -368,13 +335,19 @@ class DependencyObject : public EventObject {
 	static DependencyProperty *NameProperty;
 
 	static void Shutdown ();
+
+protected:
+	virtual ~DependencyObject ();
+	
+	void NotifyListenersOfPropertyChange (PropertyChangedEventArgs *args);
+	void NotifyListenersOfPropertyChange (DependencyProperty *property);
+	
+	void RemoveAllListeners ();
+	
+private:
+	GHashTable        *current_values;
+	GSList            *listener_list;
+	DependencyObject  *logical_parent;
 };
-
-G_BEGIN_DECLS
-
-void base_ref (EventObject *obj);
-void base_unref (EventObject *obj);
-
-G_END_DECLS
 
 #endif /* __MONO_DEPOBJECT_H__ */

@@ -635,7 +635,7 @@ EventListenerProxy::~EventListenerProxy ()
 		if (event_id != -1)
 			RemoveHandler ();
 		
-		target_object->RemoveHandler ("destroyed", dtoken);
+		target_object->RemoveHandler (EventObject::DestroyedEvent, dtoken);
 	}
 	
 	if (is_func) {
@@ -2857,14 +2857,16 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 			THROW_JS_EXCEPTION ("AG_E_RUNTIME_DELEVENT");
 		} else if (NPVARIANT_IS_INT32 (args [1])) {
 			char *event = STRDUP_FROM_VARIANT (args[0]);
-			dob->RemoveHandler (event, NPVARIANT_TO_INT32 (args[1]));
+			int event_id = dob->GetType()->LookupEvent (event);
+			dob->RemoveHandler (event_id, NPVARIANT_TO_INT32 (args[1]));
 			g_free (event);
 		} else if (NPVARIANT_IS_STRING (args[1])) {
 			char *value = STRDUP_FROM_VARIANT (args[1]);
 			NamedProxyPredicate predicate (value);
 			g_free (value);
 			char *event = STRDUP_FROM_VARIANT (args[0]);
-			dob->RemoveMatchingHandlers (event, NamedProxyPredicate::matches, &predicate);
+			int event_id = dob->GetType()->LookupEvent (event);
+			dob->RemoveMatchingHandlers (event_id, NamedProxyPredicate::matches, &predicate);
 			g_free (event);
 		}
 		

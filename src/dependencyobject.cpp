@@ -32,25 +32,40 @@
 #endif
 
 
-EventLists::EventLists (int n)
-{
-	size = n;
-	emitting = 0;
-	lists = new EventList [size];
-	for (int i = 0; i < size; i++) {
-		lists [i].current_token = 0;
-		lists [i].emitting = 0;
-		lists [i].event_list = new List ();
-	}
-}
 
-EventLists::~EventLists ()
-{
-	for (int i = 0; i < size; i++) {
-		delete lists [i].event_list;
+struct EventList {
+	int current_token;
+	int emitting;
+	int event_count;
+	List *event_list;
+};
+
+class EventLists {
+public:
+	int size;
+	int emitting;
+	EventList *lists;
+	
+	EventLists (int n)
+	{
+		size = n;
+		emitting = 0;
+		lists = new EventList [size];
+		for (int i = 0; i < size; i++) {
+			lists [i].current_token = 0;
+			lists [i].emitting = 0;
+			lists [i].event_list = new List ();
+		}
 	}
-	delete [] lists;
-}
+
+	~EventLists ()
+	{
+		for (int i = 0; i < size; i++) {
+			delete lists [i].event_list;
+		}
+		delete [] lists;
+	}
+};
 
 /*
  *
@@ -362,19 +377,6 @@ EventObject::RemoveHandler (const char *event_name, EventHandler handler, gpoint
 }
 
 void
-EventObject::RemoveHandler (const char *event_name, int token)
-{
-	int id = GetType()->LookupEvent (event_name);
-
-	if (id == -1) {
-		g_warning ("removing handler for event '%s', which has not been registered\n", event_name);
-		return;
-	}
-
-	RemoveHandler (id, token);
-}
-
-void
 EventObject::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 {
 	if (GetType()->GetEventCount() <= 0) {
@@ -424,19 +426,6 @@ EventObject::RemoveHandler (int event_id, int token)
 		
 		closure = (EventClosure *) closure->next;
 	}
-}
-
-void
-EventObject::RemoveMatchingHandlers (const char *event_name, bool (*predicate)(EventHandler cb_handler, gpointer cb_data, gpointer data), gpointer closure)
-{
-	int id = GetType()->LookupEvent (event_name);
-
-	if (id == -1) {
-		g_warning ("removing handler for event '%s', which has not been registered\n", event_name);
-		return;
-	}
-
-	RemoveMatchingHandlers (id, predicate, closure);
 }
 
 void
@@ -607,20 +596,6 @@ EventObject::FinishEmit (int event_id, EmitContext *ctx)
 	delete ctx;
 }
 
-void 
-base_ref (EventObject *obj)
-{
-	if (obj != NULL)
-		obj->ref ();
-}
-
-void
-base_unref (EventObject *obj)
-{
-	if (obj != NULL)
-		obj->unref ();
-}
-
 static pthread_mutex_t delayed_unref_mutex = PTHREAD_MUTEX_INITIALIZER;
 static bool drain_tick_call_added = false;
 static GSList *pending_unrefs = NULL;
@@ -630,6 +605,12 @@ drain_unrefs_idle_call (gpointer data)
 {
 	EventObject::DrainUnrefs ();
 	return false;
+}
+
+static void
+unref_object (EventObject *obj)
+{
+	obj->unref ();
 }
 
 void
@@ -648,7 +629,7 @@ EventObject::DrainUnrefs ()
 		drain_tick_call_added = false;
 		pthread_mutex_unlock (&delayed_unref_mutex);
 	
-		g_slist_foreach (list, (GFunc) base_unref, NULL);
+		g_slist_foreach (list, (GFunc) unref_object, NULL);
 		g_slist_free (list);
 	} while (pending_unrefs != NULL);
 }
@@ -717,20 +698,6 @@ unregister_depobj_values (gpointer  key,
 	}
 }
 
-#define VALIDATION_ERROR_QUARK validation_error_quark ()
-
-static GQuark
-validation_error_quark ()
-{
-	static GQuark quark = 0;
-
-	if (quark == 0)
-		quark = g_quark_from_static_string ("VALIDATION_ERROR_QUARK");
-	return quark;
-}
-
-
-
 void
 DependencyObject::RemoveAllListeners ()
 {
@@ -780,10 +747,11 @@ DependencyObject::NotifyListenersOfPropertyChange (DependencyProperty *subproper
 }
 
 bool
-DependencyObject::IsValueValid (Types *additional_types, DependencyProperty* property, Value* value, GError** error)
+DependencyObject::IsValueValid (Types *additional_types, DependencyProperty* property, Value* value, MoonError *error)
 {
 	if (property == NULL) {
-		g_set_error (error, VALIDATION_ERROR_QUARK, 1001, "NULL property passed to IsValueValid");
+		MoonError::FillIn (error, MoonError::ARGUMENT_NULL, 1001,
+				   "NULL property passed to IsValueValid");
 		return false;
 	}
 
@@ -803,31 +771,24 @@ DependencyObject::IsValueValid (Types *additional_types, DependencyProperty* pro
 #endif
 		
 		if (!value->Is (additional_types, property->GetPropertyType())) {
-			g_set_error (error, VALIDATION_ERROR_QUARK, 1001,
-				     "DependencyObject::SetValue, value cannot be assigned to the "
-				     "property %s::%s (property has type '%s', value has type '%s')",
-				     GetTypeName (), property->GetName(), Type::Find (additional_types, property->GetPropertyType())->name,
-				     Type::Find (additional_types, value->GetKind ())->name);
+			MoonError::FillIn (error, MoonError::ARGUMENT, 1001,
+					   g_strdup_printf ("DependencyObject::SetValue, value cannot be assigned to the "
+							    "property %s::%s (property has type '%s', value has type '%s')",
+							    GetTypeName (), property->GetName(), Type::Find (additional_types, property->GetPropertyType())->name,
+							    Type::Find (additional_types, value->GetKind ())->name));
 			return false;
 		}
 	} else {
-#if SL_2_0
-		// Only check built-in types for null
-		// Types registered on the managed side has their own check there.
+		// In 2.0, property->GetPropertyType() can return
+		// something greater than Type::LASTTYPE.  Only check
+		// built-in types for null Types registered on the
+		// managed side has their own check there.
 		if (property->GetPropertyType () < Type::LASTTYPE && !(Type::IsSubclassOf (property->GetPropertyType(), Type::DEPENDENCY_OBJECT)) && !property->IsNullable ()) {
-			g_set_error (error, VALIDATION_ERROR_QUARK, 1001,
-				     "Can not set a non-nullable scalar type to NULL (property: %s)",
-				     property->GetName());
+			MoonError::FillIn (error, MoonError::ARGUMENT, 1001,
+					   g_strdup_printf ("Can not set a non-nullable scalar type to NULL (property: %s)",
+							    property->GetName()));
 			return false;
 		}
-#else
-		if (!(Type::IsSubclassOf (additional_types, property->GetPropertyType(), Type::DEPENDENCY_OBJECT)) && !property->IsNullable ()) {
-			g_set_error (error, VALIDATION_ERROR_QUARK, 1001,
-				     "Can not set a non-nullable scalar type to NULL (property: %s)",
-				     property->GetName());
-			return false;
-		}
-#endif
 	}
 
 	if (DependencyObject::NameProperty == property) {
@@ -835,9 +796,9 @@ DependencyObject::IsValueValid (Types *additional_types, DependencyProperty* pro
 		if (scope && value && !scope->GetTemporary ()) {
 			DependencyObject *o = scope->FindName (value->AsString ());
 			if (o && o != this) {
-				g_set_error (error, VALIDATION_ERROR_QUARK, 2028,
-					     "The name already exists in the tree: %s.",
-					     value->AsString ());
+				MoonError::FillIn (error, MoonError::ARGUMENT, 2028,
+						   g_strdup_printf ("The name already exists in the tree: %s.",
+								    value->AsString ()));
 				return false;
 			}
 		}
@@ -851,26 +812,26 @@ DependencyObject::IsValueValid (Types *additional_types, DependencyProperty* pro
 	return true;
 }
 
-void
+bool
 DependencyObject::SetValue (DependencyProperty *property, Value *value)
 {
-	SetValue (property, value, NULL);
+	return SetValueWithError ((Types*)NULL, property, value, NULL);
 }
 
 bool
-DependencyObject::SetValue (DependencyProperty* property, Value value, GError** error)
+DependencyObject::SetValue (DependencyProperty *property, Value value)
 {
-	return SetValue ((Types*)NULL, property, &value, error);
+	return SetValueWithError ((Types*)NULL, property, &value, NULL);
 }
 
 bool
-DependencyObject::SetValue (DependencyProperty* property, Value* value, GError** error)
+DependencyObject::SetValueWithError (Types *additional_types, DependencyProperty* property, Value value, MoonError *error)
 {
-	return SetValue ((Types*)NULL, property, value, error);
+	return SetValueWithError (additional_types, property, &value, error);
 }
 
 bool
-DependencyObject::SetValue (Types *additional_types, DependencyProperty* property, Value* value, GError** error)
+DependencyObject::SetValueWithError (Types *additional_types, DependencyProperty* property, Value* value, MoonError *error)
 {
 	if (!IsValueValid (additional_types, property, value, error))
 		return false;
@@ -944,18 +905,6 @@ DependencyObject::SetValue (Types *additional_types, DependencyProperty* propert
 	}
 
 	return true;
-}
-
-void
-DependencyObject::SetValueWithError (Types *additional_types, DependencyProperty* property, Value* value, MoonError* error)
-{
-	GError *gerror = NULL;
-	bool rv = SetValue (additional_types, property, value, &gerror);
-
-	if (!rv) {
-		// XXX we need to fill in error with something proper
-		MoonError::FillIn (error, MoonError::EXCEPTION, gerror->message);
-	}
 }
 
 static NameScope *
@@ -1051,12 +1000,6 @@ DependencyObject::RegisterAllNamesRootedAt (NameScope *to_ns)
  	g_hash_table_foreach (current_values, register_depobj_names, to_ns);
 }
 
-void
-DependencyObject::SetValue (DependencyProperty *property, Value value)
-{
-	SetValue (property, &value);
-}
-
 Value *
 DependencyObject::GetDefaultValue (DependencyProperty *property)
 {
@@ -1117,20 +1060,6 @@ DependencyObject::GetValueNoDefaultWithError (Types *additional_types, Dependenc
 }
 #endif
 
-Value *
-DependencyObject::GetValue (const char *name)
-{
-	DependencyProperty *property;
-	property = GetDependencyProperty (name);
-
-	if (property == NULL) {
-		g_warning ("This object (of type '%s') doesn't have a property called '%s'\n", GetType ()->GetName (), name);
-		return NULL;
-	}
-
-	return GetValue (property);
-}
-
 void
 DependencyObject::ClearValue (DependencyProperty *property, bool notify_listeners)
 {
@@ -1173,26 +1102,6 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 	}
 
 	delete current_value;
-}
-
-void 
-DependencyObject::SetValue (const char *name, Value value)
-{
-	SetValue (name, &value);
-}
-
-void
-DependencyObject::SetValue (const char *name, Value *value)
-{
-	DependencyProperty *property;
-	property = GetDependencyProperty (name);
-
-	if (property == NULL) {
-		g_warning ("This object (of type '%s') doesn't have a property called '%s'\n", GetTypeName (), name);
-		return;
-	}
-
-	SetValue (property, value);
 }
 
 static gboolean
@@ -1497,7 +1406,11 @@ DependencyObject::GetContent()
 	if (!content_property_name)
 		return NULL;
 
-	Value *content_value = GetValue(content_property_name);
+	DependencyProperty *content_property = GetDependencyProperty (content_property_name);
+	if (!content_property)
+		return NULL;
+
+	Value *content_value = GetValue(content_property);
 
 	if (!content_value)
 		return NULL;
