@@ -1,3 +1,7 @@
+2008-09-06  Chris Toshok  <toshok@ximian.com>
+
+	* mopen.cs: remove the canvas-only restriction.
+
 2008-08-28  Chris Toshok  <toshok@ximian.com>
 
 	* mopen1.cpp (LoadXaml): track XamlLoader api change.

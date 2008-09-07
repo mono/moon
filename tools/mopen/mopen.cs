@@ -168,9 +168,9 @@ class MonoOpen {
 		};
 
 		GtkSilver silver = new GtkSilver (400, 400);
-		Canvas canvas;
+		FrameworkElement top;
 		
-		if (!silver.LoadFile (file, out canvas)) {
+		if (!silver.LoadFile (file, out top)) {
 			Console.Error.WriteLine ("mopen: Could not load xaml");
 			return 1;
 		}
@@ -179,9 +179,9 @@ class MonoOpen {
 			return 0;
 
 		if (width == -1)
-			width = (int) canvas.Width;
+			width = (int) top.Width;
 		if (height == -1)
-			height = (int) canvas.Height;
+			height = (int) top.Height;
 
 		if (width > 0 && height > 0) {
 			silver.Resize (width, height);
@@ -194,9 +194,9 @@ class MonoOpen {
 		}
 
 		if (desklet) {
-			canvas.MouseLeftButtonDown += new MouseButtonEventHandler (HandleMouseLeftButtonDown);
-			canvas.MouseLeftButtonUp += new MouseButtonEventHandler (HandleMouseLeftButtonUp);
-			canvas.MouseMove += new MouseEventHandler (HandleMouseMove);
+			top.MouseLeftButtonDown += new MouseButtonEventHandler (HandleMouseLeftButtonDown);
+			top.MouseLeftButtonUp += new MouseButtonEventHandler (HandleMouseLeftButtonUp);
+			top.MouseMove += new MouseEventHandler (HandleMouseMove);
 		}
 
 		window.Add (silver);
@@ -207,7 +207,7 @@ class MonoOpen {
 			storyboards = new List<Storyboard> ();
 			
 			foreach (string story in story_names){
-				object o = canvas.FindName (story);
+				object o = top.FindName (story);
 				Storyboard sb = o as Storyboard;
 
 				if (sb == null){
@@ -221,7 +221,7 @@ class MonoOpen {
 				storyboards.Add (sb);
 			};
 
-			canvas.MouseLeftButtonUp += delegate {
+			top.MouseLeftButtonUp += delegate {
 				if (current_storyboard == storyboards.Count)
 					current_storyboard = 0;
 				if (current_storyboard == storyboards.Count)
