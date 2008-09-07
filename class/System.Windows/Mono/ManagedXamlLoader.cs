@@ -430,7 +430,7 @@ namespace Mono.Xaml
 			}
 			
 			if (error != null) {
-				//Console.Error.WriteLine ("ManagedXamlLoader::SetCustomAttribute ({0}, {1}, {2}, {3}) unable to set property: {3}.", target_ptr, name, xmlns, value, error);
+				//Console.Error.WriteLine ("ManagedXamlLoader::SetCustomAttribute ({0}, {1}, {2}, {3}) unable to set property: {4}.", target_ptr, name, xmlns, value, error);
 				return false;
 			}
 
