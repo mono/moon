@@ -77,12 +77,38 @@ FrameworkElement::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 void
 FrameworkElement::Measure (Size availableSize)
 {
-	Size size;
+	Size size = availableSize;
+
+	// XXX this is hack to get around the 0.0 w/h defaults we still
+	// have in place due to 1.0
+	Value *vw = GetValueNoDefault (FrameworkElement::WidthProperty);
+	Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
+	double width = vw ? GetWidth () : NAN;
+	double height = vh ? GetHeight () : NAN;
+
+	// precondition the input
+	size = size.Min (width, height);
+	size = size.Max (width, height);
+#if SL_2_0
+	size = size.Min (GetMaxWidth (), GetMaxHeight ());
+	size = size.Max (GetMinWidth (), GetMinHeight ());
+#endif
 
 	if (measure_cb)
-		size = (*measure_cb)(availableSize);
+		size = (*measure_cb)(size);
 	else
-		size = MeasureOverride (availableSize);
+		size = MeasureOverride (size);
+
+	// postcondition the results
+	size = size.Min (width, height);
+	size = size.Max (width, height);
+#if SL_2_0
+	size = size.Min (GetMaxWidth (), GetMaxHeight ());
+	size = size.Max (GetMinWidth (), GetMinHeight ());
+
+	size = size.GrowBy (GetMargin ());
+#endif
+	size = size.Min (availableSize);
 
 	SetDesiredSize (size);
 }
@@ -90,46 +116,7 @@ FrameworkElement::Measure (Size availableSize)
 Size
 FrameworkElement::MeasureOverride (Size availableSize)
 {
-#if SL_2_0
-	Size result = Size (GetWidth (), GetHeight ());
-	Thickness *margins = GetMargin ();
-
-	// if our width is not set, or is smaller than our configured MinWidth,
-	// bump it up to the minimum.
-	result = result.Max (GetMinWidth (), GetMinHeight ());
-
-	DependencyObject *content = GetSubtreeObject ();
-	if (content) {
-		if (content->Is (Type::UIELEMENT)) {
-			// Get the desired size of our content, and include any margins we set
-			UIElement *el = (UIElement*)content;
-
-			el->Measure (availableSize);
-
-			Size child_size = el->GetDesiredSize ();
-
-			// if the child's size + margins is > our idea
-			// of what our size should be, use the
-			// child+margins instead.
-			result = result.Max (child_size);
-		}
-		else if (content->Is (Type::COLLECTION)) {
-			g_warning ("non-panel has a collection for its ContentProperty.  unsupported");
-		}
-		else {
-			g_warning ("unsupport content of FrameworkElement (%s)", content->GetTypeName());
-		}
-	}
-	result = result.GrowBy (margins);
-
-	// make sure we don't go over our configured max size
-	result = result.Min (GetMaxWidth (), GetMaxHeight ());
-
-	// now choose whichever is smaller, our chosen size or the availableSize.
-	return result.Min (availableSize);
-#else
-	return availableSize;
-#endif
+	return Size (0.0, 0.0);
 }
 
 

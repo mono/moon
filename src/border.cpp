@@ -21,39 +21,16 @@ Border::Border()
 Size
 Border::MeasureOverride (Size availableSize)
 {
-	Size results = Size (GetWidth (), GetHeight ());
-
-	// if our width is not set, or is smaller than our configured MinWidth,
-	// bump it up to the minimum.
-	results = results.Max (GetMinWidth (), GetMinHeight ());
-
-       
-	Thickness *margins = GetMargin ();
-	Thickness *border_thickness = GetBorderThickness ();
-	Thickness *padding = GetPadding ();
-
-	Size child_size = Size (0,0);
+	Size desired = Size (0,0);
 
 	// Get the desired size of our child, and include any margins we set
 	UIElement *child = GetChild ();
 	if (child) {
 		child->Measure (availableSize);
-
-		child_size = child->GetDesiredSize ();
-		child_size = child_size.GrowBy (margins);
+		desired = child->GetDesiredSize ();
 	}
-	child_size = child_size.GrowBy (padding).GrowBy (border_thickness);
-	
-	// if the child's size + margins is > our idea
-	// of what our size should be, use the
-	// child+margins instead.
-	results = results.Max (child_size);
 
-	// make sure we don't go over our configured max size
-	results = results.Min (GetMaxWidth (), GetMaxHeight ());
-
-	// now choose whichever is smaller, our chosen size or the availableSize.
-	return results.Min (availableSize);
+	return desired.GrowBy (GetPadding ()).GrowBy (GetBorderThickness ());
 }
 
 Size
@@ -140,6 +117,27 @@ Border::ComputeBounds ()
 
 	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 	bounds_with_children = bounds_with_children.Union (bounds);
+}
+
+void
+Border::OnPropertyChanged (PropertyChangedEventArgs *args)
+{
+	if (args->property->GetOwnerType() != Type::BORDER) {
+		FrameworkElement::OnPropertyChanged (args);
+		return;
+	}
+	
+	if (args->property == Border::ChildProperty){
+		if (args->old_value) {
+			ElementRemoved (args->old_value->AsUIElement ());
+		}
+		if (args->new_value) {
+			ElementAdded (args->new_value->AsUIElement ());
+		}
+
+		UpdateBounds ();
+	}
+	NotifyListenersOfPropertyChange (args);
 }
 
 void

@@ -45,6 +45,7 @@ public:
 	Border ();
 	
 	virtual Type::Kind GetObjectType () { return Type::BORDER; }
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 
 	virtual Size MeasureOverride (Size availableSize);
 	virtual Size ArrangeOverride (Size finalSize);

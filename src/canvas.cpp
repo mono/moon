@@ -131,3 +131,14 @@ Canvas::GetTransformOrigin ()
 	return Point (GetWidth () * user_xform_origin->x, 
 		      GetHeight () * user_xform_origin->y);
 }
+
+Size
+Canvas::MeasureOverride (Size availableSize)
+{
+	VisualTreeWalker walker = VisualTreeWalker (this);
+	while (UIElement *child = walker.Step ()) {
+		child->Measure (Size (INFINITY, INFINITY));
+	}
+	
+	return FrameworkElement::MeasureOverride (availableSize);
+}

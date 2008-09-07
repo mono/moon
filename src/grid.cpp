@@ -70,11 +70,7 @@ Grid::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 Size
 Grid::MeasureOverride (Size availableSize)
 {
-	Size results = Size (GetWidth (), GetHeight ());
-
-	// if our width is not set, or is smaller than our configured MinWidth,
-	// bump it up to the minimum.
-	results = results.Max (GetMinWidth (), GetMinHeight ());
+	Size results (0, 0);
 
 	ColumnDefinitionCollection *columns = GetColumnDefinitions ();
 	RowDefinitionCollection *rows = GetRowDefinitions ();
@@ -116,15 +112,8 @@ Grid::MeasureOverride (Size availableSize)
 		UIElement *child = children->GetValueAt(i)->AsUIElement ();
 		Size child_size;
 
-		if (child->Is(Type::FRAMEWORKELEMENT)) {
-			FrameworkElement *fe = (FrameworkElement*)child;
-			child_size = Size (fe->GetWidth(), fe->GetHeight());
-			child->Measure (child_size);
-		}
-		else {
-			child->Measure (Size (INFINITY, INFINITY));
-			child_size = child->GetDesiredSize();
-		}
+		child->Measure (Size (INFINITY, INFINITY));
+		child_size = child->GetDesiredSize();
 
 		gint32 col, row;
 		gint32 colspan, rowspan;
@@ -180,10 +169,8 @@ Grid::MeasureOverride (Size availableSize)
 
 	results = results.Max (grid_size);
 
-	results = results.GrowBy (GetMargin());
-
 	printf ("results = %g %g\n", results.width, results.height);
 
 	// now choose whichever is smaller, our chosen size or the availableSize.
-	return results.Min (availableSize);
+	return results;
 }

@@ -207,3 +207,16 @@ Control::GetTemplateChild (char *name)
 	
 	return NULL;
 }
+
+Size
+Control::MeasureOverride (Size availableSize)
+{
+	Size contents = Size (0.0, 0.0);
+
+	if (template_root) {
+		template_root->Measure (availableSize);
+		contents = template_root->GetDesiredSize ();
+	}
+
+	return contents.GrowBy (GetBorderThickness ()).GrowBy (GetPadding ());
+}
