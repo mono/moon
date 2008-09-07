@@ -78,6 +78,23 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		public void ChildlessMeasureTest3 ()
+		{
+			MeasurePoker c = new MeasurePoker ();
+			Size s = new Size (10,10);
+			Border b = new Border ();
+			
+			b.Child = c;
+			
+			c.MaxWidth = 3;
+			c.MeasureResult = new Size (5, 5);
+			c.Margin = new Thickness (1);			
+			b.Measure (s);
+
+			Assert.AreEqual (new Size (5, 7), c.DesiredSize, "DesiredSize");
+		}
+
+		[TestMethod]
 		public void ChildMeasureTest1 ()
 		{
 			PanelPoker c = new PanelPoker ();

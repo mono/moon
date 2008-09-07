@@ -32,9 +32,14 @@ namespace System.Windows {
 
 		public Size (double width, double height)
 		{
-			if (width < 0 || height < 0)
-				throw new ArgumentException ();
+			// This test is split up to work around
+			// b.n.c #423981 and NaN troubles
 
+			if (width < 0)
+				throw new ArgumentException ();
+			if (height < 0)
+				throw new ArgumentException ();
+			
 			w = width;
 			h = height;
 		}
