@@ -36,12 +36,17 @@ namespace Mono
 	public struct MoonError : IDisposable
 	{
 		private int number;
+		private int code;
 		private IntPtr message;
 		
 		public int Number {
 			get { return number; }
 		}
 		
+		public int Code {
+			get { return code; }
+		}
+
 		public string Message {
 			get { return message == IntPtr.Zero ? null : Marshal.PtrToStringAnsi (message); }
 		}
