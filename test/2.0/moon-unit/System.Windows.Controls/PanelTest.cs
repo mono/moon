@@ -20,6 +20,18 @@ namespace MoonTest.System.Windows.Controls
 		class PanelPoker : Panel
 		{
 		}
+		
+		class MeasurePoker : Panel
+		{
+			public Size MeasureResult = new Size (0,0);
+
+			protected override Size MeasureOverride (Size availableSize)
+			{
+				Tester.WriteLine (string.Format ("Panel available size is {0}", availableSize));
+				return MeasureResult;
+			}
+
+		}
 
 		[TestMethod]
 		public void ChildlessMeasureTest ()
@@ -30,6 +42,39 @@ namespace MoonTest.System.Windows.Controls
 			c.Measure (s);
 
 			Assert.AreEqual (new Size (0,0), c.DesiredSize, "DesiredSize");
+		}
+
+		[TestMethod]
+		public void ChildlessMeasureTest2 ()
+		{
+			MeasurePoker c = new MeasurePoker ();
+			Size s = new Size (10,10);
+			Border b = new Border ();
+			
+			b.Child = c;
+			
+			c.MeasureResult = new Size (5, 5);
+			c.Margin = new Thickness (1);			
+			b.Measure (s);
+
+			Assert.AreEqual (new Size (7, 7), c.DesiredSize, "DesiredSize");
+		}
+
+		[TestMethod]
+		public void ChildlessMeasureTest3 ()
+		{
+			MeasurePoker c = new MeasurePoker ();
+			Size s = new Size (10,10);
+			Border b = new Border ();
+			
+			b.Child = c;
+			
+			c.MaxWidth = 3;
+			c.MeasureResult = new Size (5, 5);
+			c.Margin = new Thickness (1);			
+			b.Measure (s);
+
+			Assert.AreEqual (new Size (5, 7), c.DesiredSize, "DesiredSize");
 		}
 
 		[TestMethod]
@@ -63,6 +108,7 @@ namespace MoonTest.System.Windows.Controls
 
 			Assert.AreEqual (new Size (0,0), c.DesiredSize);
 		}
+
 	}
 
 }
