@@ -1,3 +1,8 @@
+2008-09-07  Chris Toshok  <toshok@ximian.com>
+
+	* Generator.cs: add an OBJECT kind/type as the root of everything.
+	INVALID is the parent class of OBJECT.
+
 2008-09-06  Chris Toshok  <toshok@ximian.com>
 
 	* Generator.cs: fix default values on attached properties.

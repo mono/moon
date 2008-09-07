@@ -682,16 +682,16 @@ class Generator {
 		}
 		
 		// Add all the manual types
-		all.Children.Add (new TypeInfo ("bool", "BOOL", null, true));
-		all.Children.Add (new TypeInfo ("double", "DOUBLE", null, true));
-		all.Children.Add (new TypeInfo ("guint64", "UINT64", null, true));
-		all.Children.Add (new TypeInfo ("gint64", "INT64", null, true));
-		all.Children.Add (new TypeInfo ("guint32", "UINT32", null, true));
-		all.Children.Add (new TypeInfo ("gint32", "INT32", null, true));
-		all.Children.Add (new TypeInfo ("char*", "STRING", null, true));
-		all.Children.Add (new TypeInfo ("NPObj", "NPOBJ", null, true));
-		all.Children.Add (new TypeInfo ("Managed", "MANAGED", null, true, 2));
-		all.Children.Add (new TypeInfo ("TimeSpan", "TIMESPAN", null, true));
+		all.Children.Add (new TypeInfo ("bool", "BOOL", "OBJECT", true));
+		all.Children.Add (new TypeInfo ("double", "DOUBLE", "OBJECT", true));
+		all.Children.Add (new TypeInfo ("guint64", "UINT64", "OBJECT", true));
+		all.Children.Add (new TypeInfo ("gint64", "INT64", "OBJECT", true));
+		all.Children.Add (new TypeInfo ("guint32", "UINT32", "OBJECT", true));
+		all.Children.Add (new TypeInfo ("gint32", "INT32", "OBJECT", true));
+		all.Children.Add (new TypeInfo ("char*", "STRING", "OBJECT", true));
+		all.Children.Add (new TypeInfo ("NPObj", "NPOBJ", "OBJECT", true));
+		all.Children.Add (new TypeInfo ("Managed", "MANAGED", "OBJECT", true, 2));
+		all.Children.Add (new TypeInfo ("TimeSpan", "TIMESPAN", "OBJECT", true));
 		
 		return all;
 	}
@@ -1148,6 +1148,7 @@ class Generator {
 			text.AppendLine ("));");
 		};
 
+		f ("object", "OBJECT");
 		f ("bool", "BOOL");
 		f ("double", "DOUBLE");
 		f ("ulong", "UINT64");
@@ -1505,6 +1506,7 @@ class Generator {
 			text.AppendLine ("");
 			text.AppendLine ("Type type_infos [] = {");
 			text.AppendLine ("\t{ Type::INVALID, Type::INVALID, false, \"INVALID\", NULL, 0, 0, NULL, NULL, NULL, NULL, NULL },");
+			text.AppendLine ("\t{ Type::OBJECT, Type::INVALID, false, \"Object\", \"OBJECT\", 0, 0, NULL, NULL, NULL, NULL, NULL },");
 			foreach (TypeInfo type in all.Children.SortedTypesByKind) {
 				MemberInfo member;
 				TypeInfo parent = null;
@@ -1522,7 +1524,7 @@ class Generator {
 				if (version >= type.SilverlightVersion) {
 					text.AppendLine (string.Format (@"	{{ {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, NULL, NULL }}, ",
 					                                "Type::" + type.KindName, 
-					                                "Type::" + (parent != null ? parent.KindName : "INVALID"),
+					                                "Type::" + (parent != null ? parent.KindName : "OBJECT"),
 					                                type.IsValueType ? "true" : "false",
 					                                "\"" + type.Name + "\"", 
 					                                "\"" + type.KindName + "\"", 
