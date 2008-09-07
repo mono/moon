@@ -126,6 +126,9 @@ namespace MoonTest.System.Windows.Controls
 
 			b.Child = c;
 
+			c.Measure (new Size (40, 40));
+			Assert.AreEqual (new Size (c.Width,c.Height), c.DesiredSize);
+
 			b.Measure (new Size (40, 40));
 			
 			Assert.AreEqual (new Size (30,30), b.DesiredSize);
@@ -133,6 +136,11 @@ namespace MoonTest.System.Windows.Controls
 
 			c.Measure (new Size (40, 40));
 			Assert.AreEqual (new Size (30,30), c.DesiredSize);
+			
+			c.Width = 20;
+			c.Measure (new Size (40, 40));
+
+			Assert.AreEqual (new Size (20,30), c.DesiredSize);
 		}
 
 		[TestMethod]

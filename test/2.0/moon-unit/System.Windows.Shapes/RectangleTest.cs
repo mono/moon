@@ -32,10 +32,13 @@ namespace MoonTest.System.Windows.Shapes
 			r.Height = 20;
 
 			r.Measure (new Size (50, 50));
-
 			Assert.AreEqual (new Size (0, 0), r.DesiredSize);
 			
 			c.Children.Add (r);
+
+			r.Measure (new Size (50, 50));
+			Assert.AreEqual (new Size (0, 0), r.DesiredSize);
+
 			c.Measure (new Size (50, 50));
 
 			Assert.AreEqual (new Size (0, 0), c.DesiredSize, "Canvas desired");
@@ -55,6 +58,28 @@ namespace MoonTest.System.Windows.Shapes
 			Assert.AreEqual (new Size (0, 0), r.DesiredSize);
 			
 			c.Child = r;
+			c.Measure (new Size (50, 50));
+
+			Assert.AreEqual (new Size (10, 20), c.DesiredSize, "Border desired");
+			Assert.AreEqual (new Size (10, 20), r.DesiredSize, "Rectangle desired");
+		}
+
+		[TestMethod]
+		public void MeasureTest4 ()
+		{
+			Border c = new Border ();
+			Rectangle r = new Rectangle ();
+			r.Width = 10;
+			r.Height = 20;
+
+			r.Measure (new Size (50, 50));
+			Assert.AreEqual (new Size (0, 0), r.DesiredSize);
+			
+			c.Child = r;
+
+			r.Measure (new Size (50, 50));
+			Assert.AreEqual (new Size (10, 20), r.DesiredSize);
+
 			c.Measure (new Size (50, 50));
 
 			Assert.AreEqual (new Size (10, 20), c.DesiredSize, "Border desired");
