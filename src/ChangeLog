@@ -12,8 +12,6 @@
 
 	* size.h: make sure min/max will never set a known size to NAN.
 
-	*
-
 2008-09-07  Chris Toshok  <toshok@ximian.com>
 
 	* type.h.in: add OBJECT kind.
