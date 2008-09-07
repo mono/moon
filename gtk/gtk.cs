@@ -116,7 +116,7 @@ public class GtkSilver : EventBox {
 	///
 	///    <para>The widget is initially empty, you must call the
 	///    <see cref="Attach"/> method with a
-	///    System.Windows.Controls.UIElement instance (you can
+	///    System.Windows.FrameworkElement instance (you can
 	///    create those programatically, using XAML, or using the
 	///    <see cref="LoadFile(System.String)"/> method).</para>
 	/// </remarks>
@@ -158,20 +158,20 @@ public class GtkSilver : EventBox {
 		NativeMethods.surface_paint (surface, ctx, area.X, area.Y, area.Width, area.Height);
 	}
 
-	UIElement content;
+	FrameworkElement content;
 
 	/// <summary>
-	///    Makes the specified System.Windows.Control.UIElement
+	///    Makes the specified System.Windows.FrameworkElement
 	///    the content to be displayed on this widget
 	/// </summary>
-	/// <param name="toplevel">The System.Windows.Control.UIElement to attach.</param>
+	/// <param name="toplevel">The System.Windows.FrameworkElement to attach.</param>
 	/// <remarks>
 	///    This will make the instance of canvas be the content
 	///    displayed by the widget.  Calling this method with a
 	///    new canvas replaces the currently attached toplevel
 	///    with the new one.
 	/// </remarks>
-	public void Attach (UIElement toplevel)
+	public void Attach (FrameworkElement toplevel)
 	{
 		if (toplevel == null)
 			throw new ArgumentNullException ("toplevel");
@@ -184,12 +184,12 @@ public class GtkSilver : EventBox {
 	}
 	
 	/// <summary>
-	///    The currently attached UIElement.
+	///    The currently attached FrameworkElement.
 	/// </summary>
 	/// <remarks>
-	///   This returns the instance of the currently attached UIElement.
+	///   This returns the instance of the currently attached FrameworkElement.
 	/// </remarks>
-	public UIElement Content {
+	public FrameworkElement Content {
 		get {
 			return content;
 		}
@@ -210,12 +210,12 @@ public class GtkSilver : EventBox {
 	///    in a string
 	/// </summary>
 	/// <param name="xaml">The contents of the string.</param>
-	/// <param name="toplevel">The created UIElement, if the creation of the xaml string was successful.</param>
+	/// <param name="toplevel">The created FrameworkElement, if the creation of the xaml string was successful.</param>
 	/// <remarks>
 	///   This uses the XAML parser to load the given string and
 	///   display it on the GtkSilver widget.
 	/// </remarks>
-	public bool LoadXaml (string xaml, out UIElement toplevel)
+	public bool LoadXaml (string xaml, out FrameworkElement toplevel)
 	{
 		toplevel = null;
 
@@ -227,7 +227,7 @@ public class GtkSilver : EventBox {
 		if (top == null)
 			return false;
 
-		toplevel = top as UIElement;
+		toplevel = top as FrameworkElement;
 		if (toplevel == null)
 			return false;
 	
@@ -241,12 +241,12 @@ public class GtkSilver : EventBox {
 	///    in a file
 	/// </summary>
 	/// <param name="file">The name of a file in your file system.</param>
-	/// <param name="top">The created UIElement, if the creation of the xaml string was successful.</param>
+	/// <param name="top">The created FrameworkElement, if the creation of the xaml string was successful.</param>
 	/// <remarks>
 	///   This uses the XAML parser to load the given file and
 	///   display it on the GtkSilver widget.
 	/// </remarks>
-	public bool LoadFile (string file, out UIElement top)
+	public bool LoadFile (string file, out FrameworkElement top)
 	{
 		if (file == null)
 			throw new ArgumentNullException ("file");
@@ -265,7 +265,7 @@ public class GtkSilver : EventBox {
 	/// </remarks>
 	public bool LoadFile (string file)
 	{
-		UIElement unused;
+		FrameworkElement unused;
 		return LoadFile (file, out unused);
 	}
 
