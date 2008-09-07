@@ -94,7 +94,7 @@ namespace Mono {
 
 			unmanaged_value = NativeMethods.value_from_str_with_typename (TypeToMoonType (value_type), prop_name, value);
 			if (unmanaged_value == IntPtr.Zero)
-				error = "unable to convert to this type from a string";
+				error = string.Format ("unable to convert to type {0} from a string", value_type);
 
 			return null;
 		}
@@ -132,6 +132,14 @@ namespace Mono {
 					return;
 				}
 			}
+			else if (pi.PropertyType == typeof (object)) {
+				try {
+					pi.SetValue (target, (object)value, null);
+				} catch (Exception e) {
+					error = e.ToString ();
+				}
+				return;
+			}
 
 			// special case System.Type properties (like
 			// Style.TargetType and
@@ -163,7 +171,7 @@ namespace Mono {
 			//
 			unmanaged_value = NativeMethods.value_from_str_with_typename (TypeToMoonType (pi.PropertyType), pi.Name, value);
 			if (unmanaged_value == IntPtr.Zero)
-				error = "unable to convert to this type from a string";
+				error = string.Format ("unable to convert to type {0} from a string", pi.PropertyType);
 		}
 
 		public static void SetPropertyFromValue (object target, PropertyInfo pi, object value, out string error)

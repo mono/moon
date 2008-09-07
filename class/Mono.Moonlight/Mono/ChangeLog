@@ -1,3 +1,10 @@
+2008-09-07  Chris Toshok  <toshok@ximian.com>
+
+	* Helper.cs: I hate this code... we need a more consistent type
+	conversion setup.
+
+	* Kind.cs, Types.g.cs, GeneratedPInvokes.cs: regen.
+	
 2008-09-05  Chris Toshok  <toshok@ximian.com>
 
 	* Value.cs: add UnmanagedGridLength.

@@ -300,14 +300,16 @@ namespace Mono {
 		public extern static void dependency_object_set_name (IntPtr instance, string name);
 
 		[DllImport ("moon", EntryPoint="dependency_object_set_value_with_error")]
-		// void dependency_object_set_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, Value *value, MoonError *error);
-		private extern static void dependency_object_set_value_with_error_ (IntPtr instance, IntPtr additional_types, IntPtr property, ref Value value, out MoonError error);
-		public static void dependency_object_set_value (IntPtr instance, IntPtr property, ref Value value)
+		// bool dependency_object_set_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, Value *value, MoonError *error);
+		private extern static bool dependency_object_set_value_with_error_ (IntPtr instance, IntPtr additional_types, IntPtr property, ref Value value, out MoonError error);
+		public static bool dependency_object_set_value (IntPtr instance, IntPtr property, ref Value value)
 		{
-					MoonError error;
-			dependency_object_set_value_with_error_ (instance, Mono.Types.Native, property, ref value, out error);
+			bool result;
+			MoonError error;
+			result = dependency_object_set_value_with_error_ (instance, Mono.Types.Native, property, ref value, out error);
 			if (error.Number != 0)
 				throw CreateManagedException (error);
+			return result;
 		}
 
 		[DllImport ("moon")]

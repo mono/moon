@@ -6,6 +6,7 @@ namespace Mono {
 	public enum Kind {
 
 		INVALID,
+		OBJECT,
 				ANIMATION,
 		ANIMATIONCLOCK,
 		APPLICATION,// Silverlight 2.0 only

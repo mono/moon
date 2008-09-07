@@ -272,6 +272,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.RECTANGLE));
 				t = agclr.GetType ("System.Windows.Shapes.Shape", true); 
 				types.Add (t, new ManagedType (t, Kind.SHAPE));
+				t = typeof (object);
+				types.Add (t, new ManagedType (t, Kind.OBJECT));
 				t = typeof (bool);
 				types.Add (t, new ManagedType (t, Kind.BOOL));
 				t = typeof (double);
