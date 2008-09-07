@@ -1,8 +1,8 @@
 //
 // gtk.cs
 //
-// Author:
-//   Miguel de Icaza (miguel@novell.com)
+// Contact:
+//   Moonlight List (moonlight-list@lists.ximian.com)
 //
 // Copyright 2007 Novell, Inc.
 //
@@ -38,12 +38,12 @@ using System.Reflection;
 namespace Gtk.Moonlight {
 	
 	/// <summary>
-	///    A Gtk# widget that can be used to embed Moonlight/Silverlight(tm)
-	///    content in a Gtk application
+	///    A Gtk# widget that can be used to embed
+	///    Moonlight/Silverlight(tm) content in a Gtk application
 	/// </summary>
 	/// <remarks>
-        ///    See the namespace documentation for a sample on how to use this
-        ///    widget with your Gtk# code.
+        ///    See the namespace documentation for a sample on how to
+        ///    use this widget with your Gtk# code.
 	/// </remarks>
 public class GtkSilver : EventBox {
 	IntPtr surface;
@@ -83,16 +83,19 @@ public class GtkSilver : EventBox {
         ///    before any calls are done to System.Windows.
 	/// </summary>
 	/// <remarks>
-        ///    <para>The System.Windows namespace for Silverlight requires a
-        ///    downloader engine to be registered before it can be used to
-        ///    satisfy assembly dependencies and images.    If your application will
-	///    for some reason call into System.Windows before they create an instance
-	///    of GtkSilver, they should call this method to ensure that the proper
-	///    downloader has been registered with the agclr runtime.</para>
+        ///    <para>The System.Windows namespace for Silverlight
+        ///    requires a downloader engine to be registered before it
+        ///    can be used to satisfy assembly dependencies and
+        ///    images.  If your application will for some reason call
+        ///    into System.Windows before they create an instance of
+        ///    GtkSilver, they should call this method to ensure that
+        ///    the proper downloader has been registered with the
+        ///    agclr runtime.</para>
 	///
-	///    <para>Failure to call this method typically result in errors from the XAML
-	///    parsing code when it tries to resolve assembly references, external
-	///    classes or loading of external media.</para>
+	///    <para>Failure to call this method typically result in
+	///    errors from the XAML parsing code when it tries to
+	///    resolve assembly references, external classes or
+	///    loading of external media.</para>
 	/// </remarks>
 	static public void Init ()
 	{
@@ -100,18 +103,22 @@ public class GtkSilver : EventBox {
 	}
 	
 	/// <summary>
-	///    Public constructor, creates a widget with the specified width and height
+	///    Public constructor, creates a widget with the specified
+	///    width and height
 	/// </summary>
 	/// <param name="width">The initial width for the widget</param>
 	/// <param name="height">The initial height for the widget</param>
 	/// <remarks>
-	///    <para>The initial width and height of the GtkSilver control are given by the
-	///    parameters.   The size of the widget can later be changed by using the
-	///    standard Gtk# APIs (SizeAllocate).</para>
+	///    <para>The initial width and height of the GtkSilver
+	///    control are given by the parameters.  The size of the
+	///    widget can later be changed by using the standard Gtk#
+	///    APIs (SizeAllocate).</para>
 	///
-	///    <para>The widget is initially empty, you must call the <see cref="Attach"/>
-	///    method with a System.Windows.Controls.Canvas instance (you can create
-	///    those programatically, using XAML, or using the <see cref="LoadFile(System.String)"/> method).</para>
+	///    <para>The widget is initially empty, you must call the
+	///    <see cref="Attach"/> method with a
+	///    System.Windows.Controls.UIElement instance (you can
+	///    create those programatically, using XAML, or using the
+	///    <see cref="LoadFile(System.String)"/> method).</para>
 	/// </remarks>
 	public GtkSilver (int width, int height)
 	{
@@ -126,12 +133,14 @@ public class GtkSilver : EventBox {
 	}
 	
 	/// <summary>
-	///    The transparent state for the widget.   Used to drive the compositing of unpainted regions against the background.
+	///    The transparent state for the widget.  Used to drive
+	///    the compositing of unpainted regions against the
+	///    background.
 	/// </summary>
 	/// <remarks>
-        ///    By default the value is false which will produce a solid white background,
-	///    otherwise the background is cleared with black and composited with the
-	///    background.
+        ///    By default the value is false which will produce a
+	///    solid white background, otherwise the background is
+	///    cleared with black and composited with the background.
 	/// </remarks>
 	public bool Transparent {
 		get {
@@ -149,38 +158,40 @@ public class GtkSilver : EventBox {
 		NativeMethods.surface_paint (surface, ctx, area.X, area.Y, area.Width, area.Height);
 	}
 
+	UIElement content;
+
 	/// <summary>
-	///    Makes the specifies System.Windows.Control.Canvas the content to be displayed on this widget
+	///    Makes the specified System.Windows.Control.UIElement
+	///    the content to be displayed on this widget
 	/// </summary>
-	/// <param name="canvas">The System.Windows.Control.Canvas to attach.</param>
+	/// <param name="toplevel">The System.Windows.Control.UIElement to attach.</param>
 	/// <remarks>
-	///    This will make the instance of canvas be the content displayed by the widget.
-	///    Calling this method with a new canvas replaces the currently attached canvas
+	///    This will make the instance of canvas be the content
+	///    displayed by the widget.  Calling this method with a
+	///    new canvas replaces the currently attached toplevel
 	///    with the new one.
 	/// </remarks>
-	public void Attach (Canvas canvas)
+	public void Attach (UIElement toplevel)
 	{
-		if (canvas == null)
-			throw new ArgumentNullException ("canvas");
+		if (toplevel == null)
+			throw new ArgumentNullException ("toplevel");
 
 		// Dynamically invoke our get-the-handle-code
 		MethodInfo m = typeof (Canvas).Assembly.GetType ("Mono.Hosting").
 			GetMethod ("SurfaceAttach", BindingFlags.Static | BindingFlags.NonPublic);
-		m.Invoke (null, new object [] { surface, canvas });
-		c = canvas;
+		m.Invoke (null, new object [] { surface, toplevel });
+		content = toplevel;
 	}
-
-	Canvas c;
 	
 	/// <summary>
-	///    The currently attached Canvas.
+	///    The currently attached UIElement.
 	/// </summary>
 	/// <remarks>
-	///   This returns the instance of the currently attached Canvas.
+	///   This returns the instance of the currently attached UIElement.
 	/// </remarks>
-	public Canvas Canvas {
+	public UIElement Content {
 		get {
-			return c;
+			return content;
 		}
 	}
 
@@ -195,17 +206,18 @@ public class GtkSilver : EventBox {
 	}
 
 	/// <summary>
-	///    Initializes the GtkSilver widget from the XAML contents in a string
+	///    Initializes the GtkSilver widget from the XAML contents
+	///    in a string
 	/// </summary>
 	/// <param name="xaml">The contents of the string.</param>
-	/// <param name="canvas">The created canvas, if the creation of the xaml string was successful.</param>
+	/// <param name="toplevel">The created UIElement, if the creation of the xaml string was successful.</param>
 	/// <remarks>
-	///   This uses the XAML parser to load the given string and display it on 
-	///   the GtkSilver widget.
+	///   This uses the XAML parser to load the given string and
+	///   display it on the GtkSilver widget.
 	/// </remarks>
-	public bool LoadXaml (string xaml, out Canvas canvas)
+	public bool LoadXaml (string xaml, out UIElement toplevel)
 	{
-		canvas = null;
+		toplevel = null;
 
 		if (xaml == null)
 			throw new ArgumentNullException ("xaml");
@@ -215,48 +227,51 @@ public class GtkSilver : EventBox {
 		if (top == null)
 			return false;
 
-		canvas = top as Canvas;
-		if (canvas == null)
+		toplevel = top as UIElement;
+		if (toplevel == null)
 			return false;
 	
-		Attach (canvas);
+		Attach (toplevel);
 
 		return true;
 	}
 
 	/// <summary>
-	///    Initializes the GtkSilver widget from the XAML contents in a file
+	///    Initializes the GtkSilver widget from the XAML contents
+	///    in a file
 	/// </summary>
 	/// <param name="file">The name of a file in your file system.</param>
-	/// <param name="canvas">The created canvas, if the creation of the xaml string was successful.</param>
+	/// <param name="top">The created UIElement, if the creation of the xaml string was successful.</param>
 	/// <remarks>
-	///   This uses the XAML parser to load the given file and display it on 
-	///   the GtkSilver widget.
+	///   This uses the XAML parser to load the given file and
+	///   display it on the GtkSilver widget.
 	/// </remarks>
-	public bool LoadFile (string file, out Canvas canvas)
+	public bool LoadFile (string file, out UIElement top)
 	{
 		if (file == null)
 			throw new ArgumentNullException ("file");
 
-		return LoadXaml (System.IO.File.ReadAllText (file), out canvas);
+		return LoadXaml (System.IO.File.ReadAllText (file), out top);
 	}
 
 	/// <summary>
-	///    Initializes the GtkSilver widget from the XAML contents in a file
+	///    Initializes the GtkSilver widget from the XAML contents
+	///    in a file
 	/// </summary>
 	/// <param name="file">The name of a file in your file system.</param>
 	/// <remarks>
-	///   This uses the XAML parser to load the given file and display it on 
-	///   the GtkSilver widget.
+	///   This uses the XAML parser to load the given file and
+	///   display it on the GtkSilver widget.
 	/// </remarks>
 	public bool LoadFile (string file)
 	{
-		Canvas canvas;
-		return LoadFile (file, out canvas);
+		UIElement unused;
+		return LoadFile (file, out unused);
 	}
 
 	/// <summary>
-	///    Loads xaml within the context of the current GtkSilver widget
+	///    Loads xaml within the context of the current GtkSilver
+	///    widget
 	/// </summary>
 	/// <param name="xaml">The contents of the string.</param>
 	/// <param name="createNamescope"></param>

@@ -94,12 +94,6 @@ namespace Gtk.Moonlight {
 			downloader = native;
 		}
 
-		Stream GetTempFile (out string path)
-		{
-			path = Path.GetTempFileName ();
-			return File.OpenWrite (path);
-		}
-
 		void Download ()
 		{
 			// we can't call event_object_get_surface (or other stuff) if the download has been aborted
