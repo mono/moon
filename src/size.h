@@ -30,22 +30,22 @@ struct Size {
 		this->height = h;
 	}
 
-	Size Max (const double w, const double h) const
+	Size Max (double w, double h) const
 	{
 		return Size (width < w ? w : width, height < h ? h : height);
 	}
 
-	Size Max (const Size s) const
+	Size Max (const Size &s) const
 	{
 		return Max (s.width, s.height);
 	}
 
-	Size Min (const double w, const double h) const
+	Size Min (double w, double h) const
 	{
 		return Size (width > w ? w : width, height > h ? h : height);
 	}
 
-	Size Min (const Size s) const
+	Size Min (const Size &s) const
 	{
 		return Min (s.width, s.height);
 	}

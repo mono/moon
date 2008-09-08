@@ -34,7 +34,7 @@ struct Rect {
 		this->height = height;
 	}
 
-	Rect (Point p1, Point p2)
+	Rect (const Point& p1, const Point& p2)
 	{
 		x = MIN (p1.x, p2.x);
 		y = MIN (p1.y, p2.y);
@@ -49,22 +49,22 @@ struct Rect {
 		return px > x && px < (x + width) && py > y && py < (y + height);
 	}
 
-	bool PointInside (Point p)
+	bool PointInside (const Point& p) const
 	{
 		return p.x > x && p.x < (x + width) && p.y > y && p.y < (y + height);
 	}
 
-	bool IntersectsWith (const Rect& rect)
+	bool IntersectsWith (const Rect& rect) const
 	{
 		return ((x < rect.x + rect.width) && (x + width > rect.x) && (y < rect.y + rect.height) && (y + height > rect.y));
 	}
 
-	bool IsEmpty ()
+	bool IsEmpty () const
 	{
 		return IsEmpty (false);
 	}
 
-	bool IsEmpty (bool logical)
+	bool IsEmpty (bool logical) const
 	{
 		if (logical)
 			return ((width <= 0.0) && (height <= 0.0));
@@ -72,7 +72,7 @@ struct Rect {
 			return ((width <= 0.0) || (height <= 0.0));
 	}
 			
-	Rect Intersection (const Rect& rect)
+	Rect Intersection (const Rect& rect) const
 	{
 		Rect result = Rect ();
 		result.x = x > rect.x ? x : rect.x;
@@ -82,7 +82,7 @@ struct Rect {
 		return result;
 	}
 
-	Rect Union (const Rect& rect)
+	Rect Union (const Rect& rect) const
 	{
 		return Union (rect, false);
 	}
@@ -91,7 +91,7 @@ struct Rect {
 	// Note about the logical bool: there's now an override for both Rect::Union and
 	// Rect::IsEmpty that takes a bool. That bool allows union of rectangle with one
 	// empty extend. This is needed to compute logical bounds for example.
-	Rect Union (const Rect& rect, bool logical)
+	Rect Union (const Rect& rect, bool logical) const
 	{
 		if (IsEmpty (logical))
 			return Rect (rect);
@@ -110,19 +110,19 @@ struct Rect {
 		return result;
 	}
 
-	Rect RoundOut ()
+	Rect RoundOut () const
 	{
 		Rect result (floor (x), floor (y), ceil (x + width) - floor (x), ceil (y + height) - floor (y));
 		return result;
 	}
 
-	Rect RoundIn ()
+	Rect RoundIn () const
 	{
 		Rect result (ceil (x), ceil (y), floor (x + width) - ceil (x), floor (y + height) - ceil (y));
 		return result;
 	}
 
-	Rect GrowBy (const double left, const double top, const double right, const double bottom) const
+	Rect GrowBy (double left, double top, double right, double bottom) const
 	{
 		Rect result = *this;
 		result.x -= left;
@@ -133,12 +133,12 @@ struct Rect {
 		return result;
 	}
 
-	Rect GrowBy (const double xd, const double yd) const
+	Rect GrowBy (double xd, double yd) const
 	{
 		return GrowBy (xd, yd, xd, yd);
 	}
 
-	Rect GrowBy (const double d) const
+	Rect GrowBy (double d) const
 	{
 		return GrowBy (d, d, d, d);
 	}
@@ -148,7 +148,7 @@ struct Rect {
 		return GrowBy (t.left, t.top, t.right, t.bottom);
 	}
 
-	Rect ExtendTo (const double x, const double y) const
+	Rect ExtendTo (double x, double y) const
 	{
 		Rect result = *this;
 		if (x < result.x || x > (result.x + result.width))
@@ -161,13 +161,13 @@ struct Rect {
 		return result;
 	}
 	
-	Rect ExtendTo (Point p) 
+	Rect ExtendTo (const Point& p) 
 	{
 		return ExtendTo (p.x, p.y);	
 	}
 
 	GdkRectangle 
-	ToGdkRectangle ()
+	ToGdkRectangle () const
 	{
 		GdkRectangle gdk;
 		Rect rect = RoundOut ();
@@ -189,27 +189,27 @@ struct Rect {
 		return !(*this == rect);
 	}
 
-	void Draw (cairo_t *cr) 
+	void Draw (cairo_t *cr) const 
 	{
 		cairo_rectangle (cr, x, y, width, height);
 	}
 
-	Point GetTopLeft ()
+	Point GetTopLeft () const
 	{
 		return Point (x, y);
 	}
 
-	Point GetTopRight ()
+	Point GetTopRight () const
 	{
 		return Point (x + width, y);
 	}
 
-	Point GetBottomLeft ()
+	Point GetBottomLeft () const
 	{
 		return Point (x, y + height);
 	}
 
-	Point GetBottomRight ()
+	Point GetBottomRight () const
 	{
 		return Point (x + width, y + height);
 	}

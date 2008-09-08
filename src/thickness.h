@@ -26,7 +26,7 @@ struct Thickness {
 	{
 	}
 
-	Thickness (const double uniform)
+	Thickness (double uniform)
 	{
 		bottom = uniform;
 		right = uniform;
@@ -34,7 +34,7 @@ struct Thickness {
 		top = uniform;
 	}
 	
-	Thickness (const double hori, const double vert)
+	Thickness (double hori, double vert)
 	{
 		bottom = vert;
 		right = hori;
@@ -42,7 +42,7 @@ struct Thickness {
 		top = vert;
 	}
 	
-	Thickness (const double left, const double top, const double right, const double bottom)
+	Thickness (double left, double top, double right, double bottom)
 	{
 		this->bottom = bottom;
 		this->right = right;
