@@ -67,6 +67,48 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		public void ChildMeasureTest3 ()
+		{
+			Canvas c = new Canvas ();
+			Border r = new Border ();
+
+			c.Children.Add (r);
+
+			Canvas.SetLeft (r, 10);
+			Canvas.SetTop (r, 10);
+
+			r.Width = 50;
+			r.Height = 50;
+
+			c.Measure (new Size (100, 100));
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize);
+			Assert.AreEqual (new Size (0,0), r.DesiredSize);
+		}
+
+		[TestMethod]
+		public void ChildMeasureTest4 ()
+		{
+			Border root = new Border ();
+			Canvas c = new Canvas ();
+			Border r = new Border ();
+
+			root.Child = c;
+			c.Children.Add (r);
+
+			Canvas.SetLeft (r, 10);
+			Canvas.SetTop (r, 10);
+
+			r.Width = 50;
+			r.Height = 50;
+
+			c.Measure (new Size (100, 100));
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize);
+			Assert.AreEqual (new Size (50,50), r.DesiredSize);
+		}
+
+		[TestMethod]
 		public void ChildBackgroundMeasureTest1 ()
 		{
 			Canvas c = new Canvas ();

@@ -24,9 +24,11 @@ namespace MoonTest.System.Windows.Controls
 		class MeasurePoker : Panel
 		{
 			public Size MeasureResult = new Size (0,0);
+			public Size MeasureArg = new Size (0,0);
 
 			protected override Size MeasureOverride (Size availableSize)
 			{
+				MeasureArg = availableSize;
 				Tester.WriteLine (string.Format ("Panel available size is {0}", availableSize));
 				return MeasureResult;
 			}
@@ -75,6 +77,7 @@ namespace MoonTest.System.Windows.Controls
 			b.Measure (s);
 
 			Assert.AreEqual (new Size (5, 7), c.DesiredSize, "DesiredSize");
+			Assert.AreEqual (new Size (3, 8), c.MeasureArg, "MeasureArgs");
 		}
 
 		[TestMethod]
@@ -92,6 +95,7 @@ namespace MoonTest.System.Windows.Controls
 			c.Margin = new Thickness (1);			
 			c.Measure (s);
 
+			Assert.AreEqual (new Size (c.Width, c.Height), c.MeasureArg, "MeasureArg");
 			Assert.AreEqual (new Size (10, 10), c.DesiredSize, "DesiredSize");
 		}
 
