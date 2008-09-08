@@ -704,6 +704,11 @@ AudioSources::GetNext (bool only_playing)
 		node = (AudioListNode *) node->next;
 	}
 	
+	// Its possible that the loop has started but nothing is playing, which without this guard would
+	// return list.First () in an infinite loop while we're downloading / buffering.
+	if (only_playing && node != NULL && node->source->GetState () != AudioPlaying)
+		node = NULL;
+
 cleanup:
 	if (node) {
 		node->generation = current_generation;
