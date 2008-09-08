@@ -144,15 +144,17 @@ FrameworkElement::Arrange (Rect finalRect)
 {
 	Size finalSize = GetDesiredSize ();
 	Size size = GetDesiredSize ();
-	Thickness margin = *GetMargin ();
 
+#if SL_2_0
+	Thickness margin = *GetMargin ();
+	finalRect = finalRect.GrowBy (-margin);
+#endif
 	// XXX this is hack to get around the 0.0 w/h defaults we still
 	// have in place due to 1.0
 	Value *vw = GetValueNoDefault (FrameworkElement::WidthProperty);
 	Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
 	Size specified = Size (vw ? GetWidth () : NAN, vh ? GetHeight () : NAN);
 
-	finalRect = finalRect.GrowBy (-margin);
 	size = size.Min (finalRect.width, finalRect.height);
 	
 	if (arrange_cb)

@@ -1,5 +1,9 @@
 2008-09-08  Larry Ewing  <lewing@novell.com>
 
+	* frameworkelement.cpp: make things 1.0 safe.
+
+2008-09-08  Larry Ewing  <lewing@novell.com>
+
 	* frameworkelement.cpp (FrameworkElement::Arrange): rework to
 	match some of the Measure logic
 
