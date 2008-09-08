@@ -21,6 +21,7 @@ namespace System.Windows.Media
 		protected internal int ImageWidth { get; set; }
 		protected internal int ImageHeight { get; set; }
 		protected internal int TileWidth { get; set; }
+		protected internal int TileHeight { get; set; }
 		protected internal int TileOverlap { get; set; }
 
 		public MultiScaleTileSource (int imageWidth, int imageHeight, int tileWidth, int tileHeight, int tileOverlap)
@@ -28,6 +29,7 @@ namespace System.Windows.Media
 			ImageWidth = imageWidth;
 			ImageHeight = imageHeight;
 			TileWidth = tileWidth;
+			TileHeight = tileHeight;
 			TileOverlap = tileOverlap;
 		}
 		
