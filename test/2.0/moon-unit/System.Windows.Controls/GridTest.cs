@@ -690,16 +690,27 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		class PanelPoker : Panel {
+			public Size MeasureResult = new Size (0,0);
+			public Size MeasureArg = new Size (0,0);
+			public Size ArrangeResult = new Size (0,0);
+			public Size ArrangeArg = new Size (0,0);
+
 			protected override Size MeasureOverride (Size availableSize)
 			{
+				MeasureArg = availableSize;
+
 				Tester.WriteLine (string.Format ("Panel available size is {0}", availableSize));
-				return new Size (0, 0);
+
+				return MeasureResult;
 			}
 
 			protected override Size ArrangeOverride (Size finalSize)
 			{
+				ArrangeArg = finalSize;
+				
 				Tester.WriteLine (string.Format ("Panel final size is {0}", finalSize));
-				return finalSize;
+
+				return ArrangeResult;
 			}
 		}
 
@@ -740,11 +751,13 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (400, c.Height);
 
 			Assert.AreEqual (new Size (200, 200), c.DesiredSize, "DesiredSize0");
+			Assert.AreEqual (new Size (200, 200), c.MeasureArg, "MeasureArg");
 			Assert.AreEqual (new Size (210, 210), g.DesiredSize, "DesiredSize1");
 
 			g.Measure (new Size (100, 100));
 
 			Assert.AreEqual (new Size (100, 100), g.DesiredSize, "DesiredSize2");
+			Assert.AreEqual (new Size (200, 200), c.MeasureArg, "MeasureArg");
 
 			// now test with the child sized smaller than the row/column definitions
 			c.Width = 100;
