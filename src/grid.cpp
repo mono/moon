@@ -112,7 +112,6 @@ Grid::MeasureOverride (Size availableSize)
 	UIElementCollection *children = GetChildren ();
 	for (int i = 0; i < children->GetCount(); i ++) {
 		UIElement *child = children->GetValueAt(i)->AsUIElement ();
-		Size child_size;
 		gint32 col, row;
 		gint32 colspan, rowspan;
 
@@ -121,8 +120,39 @@ Grid::MeasureOverride (Size availableSize)
 		colspan = Grid::GetColumnSpan (child);
 		rowspan = Grid::GetRowSpan (child);
 
-		child->Measure (Size (INFINITY, INFINITY));
+		Size child_size = Size (INFINITY, INFINITY);
+
+		/*
+		Size min_size = Size (0,0);
+		Size max_size = Size (0,0); 
+		
+		for (int r = row; r < row + rowspan; r++) {
+			RowDefinition *rowdef = rows->GetValueAt (r)->AsRowDefinition ();
+			GridLength* height = rowdef->GetHeight();
+
+			min_size.height += rowdef->GetMinWidth ();
+			max_size.height += rowdef->GetMaxWidth ();
+		}
+
+		for (int c = col; c < col + colspan; c++) {
+			ColumnDefinition *coldef = columns->GetValueAt (c)->AsColumnDefinition ();
+			GridLength* width = coldef->GetWidth();
+
+			min_size.width += coldef->GetMinWidth ();
+			max_size.width += coldef->GetMaxWidth ();
+		}
+		
+		child_size = child_size.Min (max_size);
+		child_size = child_size.Max (min_size);
+		*/
+
+		child->Measure (child_size);
 		child_size = child->GetDesiredSize();
+		
+		/*
+		child_size = child_size.Min (max_size);
+		child_size = child_size.Max (min_size);
+		*/
 
 		if (col_count) {
 			double remaining_width = child_size.width;

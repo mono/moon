@@ -785,7 +785,57 @@ MultiScaleSubImage *multi_scale_sub_image_new (void);
  * MultiScaleTileSource
  **/
 /* @GeneratePInvoke */
+int multi_scale_tile_source_get_image_height (MultiScaleTileSource *instance);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
+int multi_scale_tile_source_get_image_width (MultiScaleTileSource *instance);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
+int multi_scale_tile_source_get_tile_height (MultiScaleTileSource *instance);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
+int multi_scale_tile_source_get_tile_overlap (MultiScaleTileSource *instance);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
+int multi_scale_tile_source_get_tile_width (MultiScaleTileSource *instance);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
 MultiScaleTileSource *multi_scale_tile_source_new (void);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
+void multi_scale_tile_source_set_image_height (MultiScaleTileSource *instance, int height);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
+void multi_scale_tile_source_set_image_width (MultiScaleTileSource *instance, int width);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
+void multi_scale_tile_source_set_tile_height (MultiScaleTileSource *instance, int height);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
+void multi_scale_tile_source_set_tile_overlap (MultiScaleTileSource *instance, int overlap);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
+void multi_scale_tile_source_set_tile_width (MultiScaleTileSource *instance, int width);
 #endif
 
 #if SL_2_0
@@ -1382,6 +1432,9 @@ bool uielement_capture_mouse (UIElement *instance);
 
 /* @GeneratePInvoke */
 Size uielement_get_desired_size (UIElement *instance);
+
+/* @GeneratePInvoke */
+Size uielement_get_render_size (UIElement *instance);
 
 /* @GeneratePInvoke */
 DependencyObject *uielement_get_subtree_object (UIElement *instance);

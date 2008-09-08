@@ -377,6 +377,9 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	Size GetDesiredSize () { return desired_size; }
 	
+	/* @GenerateCBinding,GeneratePInvoke */
+	Size GetRenderSize () { return render_size; }
+
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	GeneralTransform *GetTransformToUIElement (UIElement *to_element);
 
@@ -468,6 +471,7 @@ protected:
 	void RenderClipPath (cairo_t *cr);
 
 	void SetDesiredSize (Size s) { desired_size = s; }
+	void SetRenderSize (Size s) { render_size = s; }
 
 	// The computed bounding box
 	Rect bounds;
@@ -483,6 +487,7 @@ private:
 	double total_opacity;
 	Brush *opacityMask;
 	Size desired_size;
+	Size render_size;
 
 	// The local render transform including tranform origin
 	cairo_matrix_t local_xform;

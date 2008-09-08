@@ -47,6 +47,7 @@ UIElement::UIElement ()
 
 #if SL_2_0
 	desired_size = Size (0, 0);
+	render_size = Size (0, 0);
 #endif
 	
 	ComputeLocalTransform ();

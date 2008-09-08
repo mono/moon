@@ -25,8 +25,7 @@ Border::MeasureOverride (Size availableSize)
 	Thickness border = *GetPadding () + *GetBorderThickness ();
 
 	// Get the desired size of our child, and include any margins we set
-	UIElement *child = GetChild ();
-	if (child) {
+	if (UIElement *child = GetChild ()) {
 		child->Measure (availableSize.GrowBy (-border));
 		desired = child->GetDesiredSize ();
 	}
@@ -37,32 +36,17 @@ Border::MeasureOverride (Size availableSize)
 Size
 Border::ArrangeOverride (Size finalSize)
 {
-	Size desired_size = GetDesiredSize ();
+	Size desired = Size (0,0);
+	Thickness border = *GetPadding () + *GetBorderThickness ();
 
-	if (desired_size.width <= finalSize.width
-	    && desired_size.height <= finalSize.height) {
+	if (UIElement *child = GetChild ()) {
+		Rect childRect = Rect (0.0, 0.0, finalSize.width, finalSize.height);
 
-		/* nothing to do here, the final size is large enough
-		   to keep our desired size */
+		child->Arrange (childRect.GrowBy (-border));
+		desired = child->GetDesiredSize ();
 	}
 
-	else {
-		SetDesiredSize (finalSize);
-		desired_size = finalSize;
-	}
-		
-	UIElement *child = GetChild ();
-	if (child) {
-		Thickness border = *GetMargin () + *GetBorderThickness () + *GetPadding ();
-
-		Rect childRect = Rect (0.0, 0.0, desired_size.width, desired_size.height);
-
-		childRect = childRect.GrowBy (-border);
-
-		child->Arrange (childRect);
-	}
-
-	return desired_size;
+	return desired.GrowBy (border);
 }
 
 void 
@@ -135,6 +119,10 @@ Border::OnPropertyChanged (PropertyChangedEventArgs *args)
 		}
 
 		UpdateBounds ();
+	}
+	else if (args->property == Border::PaddingProperty
+		 || args->property == Border::BorderThicknessProperty) {
+		InvalidateMeasure ();
 	}
 	NotifyListenersOfPropertyChange (args);
 }

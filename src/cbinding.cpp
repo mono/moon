@@ -1529,10 +1529,135 @@ multi_scale_sub_image_new (void)
 /**
  * MultiScaleTileSource
  **/
+int
+multi_scale_tile_source_get_image_height (MultiScaleTileSource *instance)
+{
+	if (instance == NULL)
+		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetImageHeight ();
+}
+#endif
+
+
+#if SL_2_0
+int
+multi_scale_tile_source_get_image_width (MultiScaleTileSource *instance)
+{
+	if (instance == NULL)
+		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetImageWidth ();
+}
+#endif
+
+
+#if SL_2_0
+int
+multi_scale_tile_source_get_tile_height (MultiScaleTileSource *instance)
+{
+	if (instance == NULL)
+		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetTileHeight ();
+}
+#endif
+
+
+#if SL_2_0
+int
+multi_scale_tile_source_get_tile_overlap (MultiScaleTileSource *instance)
+{
+	if (instance == NULL)
+		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetTileOverlap ();
+}
+#endif
+
+
+#if SL_2_0
+int
+multi_scale_tile_source_get_tile_width (MultiScaleTileSource *instance)
+{
+	if (instance == NULL)
+		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetTileWidth ();
+}
+#endif
+
+
+#if SL_2_0
 MultiScaleTileSource *
 multi_scale_tile_source_new (void)
 {
 	return new MultiScaleTileSource ();
+}
+#endif
+
+
+#if SL_2_0
+void
+multi_scale_tile_source_set_image_height (MultiScaleTileSource *instance, int height)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetImageHeight (height);
+}
+#endif
+
+
+#if SL_2_0
+void
+multi_scale_tile_source_set_image_width (MultiScaleTileSource *instance, int width)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetImageWidth (width);
+}
+#endif
+
+
+#if SL_2_0
+void
+multi_scale_tile_source_set_tile_height (MultiScaleTileSource *instance, int height)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetTileHeight (height);
+}
+#endif
+
+
+#if SL_2_0
+void
+multi_scale_tile_source_set_tile_overlap (MultiScaleTileSource *instance, int overlap)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetTileOverlap (overlap);
+}
+#endif
+
+
+#if SL_2_0
+void
+multi_scale_tile_source_set_tile_width (MultiScaleTileSource *instance, int width)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetTileWidth (width);
 }
 #endif
 
@@ -2707,6 +2832,17 @@ uielement_get_desired_size (UIElement *instance)
 		return (Size) 0;
 	
 	return instance->GetDesiredSize ();
+}
+
+
+Size
+uielement_get_render_size (UIElement *instance)
+{
+	if (instance == NULL)
+		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		return (Size) 0;
+	
+	return instance->GetRenderSize ();
 }
 
 

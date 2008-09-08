@@ -43,6 +43,7 @@ public:
 	virtual void Render (cairo_t *cr, Region *region);
 	
 	virtual Size MeasureOverride (Size availableSize);
+	virtual Size ArrangeOverride (Size finalSize);
 	virtual void ComputeBounds ();
 	virtual Rect GetSubtreeBounds () { return bounds_with_children; }
 

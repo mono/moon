@@ -214,10 +214,26 @@ Control::MeasureOverride (Size availableSize)
 	Size contents = Size (0.0, 0.0);
 	Thickness border = *GetBorderThickness () + *GetPadding ();
 
-	if (template_root) {
+	if (UIElement *child = template_root) {
 		template_root->Measure (availableSize.GrowBy (-border));
 		contents = template_root->GetDesiredSize ();
 	}
 
 	return contents.GrowBy (border);
+}
+
+Size
+Control::ArrangeOverride (Size finalSize)
+{
+	Size desired = Size (0,0);
+	Thickness border = *GetPadding () + *GetBorderThickness ();
+
+	if (UIElement *child = template_root) {
+		Rect childRect = Rect (0.0, 0.0, finalSize.width, finalSize.height);
+
+		child->Arrange (childRect.GrowBy (-border));
+		desired = child->GetDesiredSize ();
+	}
+
+	return desired.GrowBy (border);
 }

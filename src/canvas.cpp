@@ -147,3 +147,25 @@ Canvas::MeasureOverride (Size availableSize)
 	
 	return result;
 }
+
+Size 
+Canvas::ArrangeOverride (Size finalSize)
+{
+	Size result = FrameworkElement::ArrangeOverride (finalSize);
+
+	// XXX ugly hack to maintain compat
+	if (!GetVisualParent ())
+		return result;
+
+	VisualTreeWalker walker = VisualTreeWalker (this);
+	while (UIElement *child = walker.Step ()) {
+		Size child_desired = child->GetDesiredSize ();
+		Rect child_final = Rect (GetLeft (child), GetTop (child),
+					 child_desired.width, child_desired.height);
+
+		child->Arrange (child_final);
+		// XXX fill layout slot?
+	}
+
+	return result;
+}

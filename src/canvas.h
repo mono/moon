@@ -44,6 +44,7 @@ class Canvas : public Panel {
 	virtual void OnLoaded ();
 
 	virtual Size MeasureOverride (Size availableSize);
+	virtual Size ArrangeOverride (Size availableSize);
 	virtual bool ClipToExtents () { return false; }
 	virtual void ComputeBounds ();
 	virtual void GetTransformFor (UIElement *item, cairo_matrix_t *result);

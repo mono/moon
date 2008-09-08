@@ -1,3 +1,15 @@
+2008-09-08  Larry Ewing  <lewing@novell.com>
+
+	* frameworkelement.cpp (FrameworkElement::Arrange): rework to
+	match some of the Measure logic
+
+	* border.cpp:
+	* canvas.cpp, canvas.h:
+	* control.cpp, control.h: rework arrange implementation to match
+	the measure logic and the current thinking on arrange.
+
+	* uielement.cpp, uielement.h: expose render_size accessor.
+
 2009-09-08  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* tilesource.h|cpp: keep the source and tiles info on the c++ side

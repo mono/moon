@@ -1,3 +1,7 @@
+2008-09-08  Larry Ewing  <lewing@novell.com>
+
+	* UIElement.cs: expose RenderSize.
+
 2008-09-05  Chris Toshok  <toshok@ximian.com>
 
 	* DependencyObject.cs (CreateObject): add

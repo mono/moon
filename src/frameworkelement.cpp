@@ -105,6 +105,7 @@ FrameworkElement::Measure (Size availableSize)
 	else
 		size = MeasureOverride (size);
 
+	// XXX ugly hack to fake some sort of exception case
 	if (isnan (size.width) || isnan (size.height)) {
 		SetDesiredSize (Size (0,0));
 		return;
@@ -130,7 +131,7 @@ FrameworkElement::MeasureOverride (Size availableSize)
 {
 	if (!GetVisualParent ())
 		return Size (NAN, NAN);
-	
+
 	return Size (0,0);
 }
 
@@ -141,19 +142,44 @@ FrameworkElement::MeasureOverride (Size availableSize)
 void
 FrameworkElement::Arrange (Rect finalRect)
 {
-	Size size;
-	Size finalSize (finalRect.width, finalRect.height);
+	Size finalSize = GetDesiredSize ();
+	Size size = GetDesiredSize ();
+	Thickness margin = *GetMargin ();
 
+	// XXX this is hack to get around the 0.0 w/h defaults we still
+	// have in place due to 1.0
+	Value *vw = GetValueNoDefault (FrameworkElement::WidthProperty);
+	Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
+	Size specified = Size (vw ? GetWidth () : NAN, vh ? GetHeight () : NAN);
+
+	finalRect = finalRect.GrowBy (-margin);
+	size = size.Min (finalRect.width, finalRect.height);
+	
 	if (arrange_cb)
-		size = (*arrange_cb)(finalSize);
+		size = (*arrange_cb)(size);
 	else
-		size = ArrangeOverride (finalSize);
+		size = ArrangeOverride (size);
 
+
+	// postcondition the results
+	size = size.Min (specified);
+	size = size.Max (specified);
+
+#if SL_2_0
+	size = size.Min (GetMaxWidth (), GetMaxHeight ());
+	size = size.Max (GetMinWidth (), GetMinHeight ());
+
+	size = size.GrowBy (margin);
+#endif
+	SetRenderSize (size);
+
+	size = size.Min (finalRect.width, finalRect.height);
 	SetDesiredSize (size);
-
+	
 	// XXX what do we do with finalRect.x and y?
 
 	g_warning ("more here in FrameworkElement::Arrange.  move the bounds or something?  set properties?  who knows!?");
+				     
 }
 
 Size
