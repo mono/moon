@@ -84,11 +84,11 @@ const int MediaElement::MarkerReachedEvent = 18;
 const int MediaElement::MediaEndedEvent = 19;
 const int MediaElement::MediaFailedEvent = 20;
 const int MediaElement::MediaOpenedEvent = 21;
-const int MultiScaleImage::ImageFailedEvent = 15;
-const int MultiScaleImage::ImageOpenFailedEvent = 16;
-const int MultiScaleImage::ImageOpenSucceededEvent = 17;
-const int MultiScaleImage::MotionFinishedEvent = 18;
-const int MultiScaleImage::ViewportChangedEvent = 19;
+const int MultiScaleImage::ImageFailedEvent = 16;
+const int MultiScaleImage::ImageOpenFailedEvent = 17;
+const int MultiScaleImage::ImageOpenSucceededEvent = 18;
+const int MultiScaleImage::MotionFinishedEvent = 19;
+const int MultiScaleImage::ViewportChangedEvent = 20;
 const int Storyboard::CompletedEvent = 1;
 const int Surface::ErrorEvent = 1;
 const int Surface::FullScreenChangeEvent = 2;
@@ -225,7 +225,7 @@ Type type_infos [] = {
 	{ Type::MEDIAELEMENT, Type::MEDIABASE, false, "MediaElement", "MEDIAELEMENT", 6, 22, MediaElement_Events, (create_inst_func *) media_element_new, NULL, NULL, NULL }, 
 	{ Type::MEDIAERROREVENTARGS, Type::ERROREVENTARGS, false, "MediaErrorEventArgs", "MEDIAERROREVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::MOUSEEVENTARGS, Type::ROUTEDEVENTARGS, false, "MouseEventArgs", "MOUSEEVENTARGS", 0, 1, NULL, (create_inst_func *) mouse_event_args_new, NULL, NULL, NULL }, 
-	{ Type::MULTISCALEIMAGE, Type::FRAMEWORKELEMENT, false, "MultiScaleImage", "MULTISCALEIMAGE", 5, 20, MultiScaleImage_Events, (create_inst_func *) multi_scale_image_new, NULL, NULL, NULL }, 
+	{ Type::MULTISCALEIMAGE, Type::MEDIABASE, false, "MultiScaleImage", "MULTISCALEIMAGE", 5, 21, MultiScaleImage_Events, (create_inst_func *) multi_scale_image_new, NULL, NULL, NULL }, 
 	{ Type::MULTISCALESUBIMAGE, Type::DEPENDENCY_OBJECT, false, "MultiScaleSubImage", "MULTISCALESUBIMAGE", 0, 1, NULL, (create_inst_func *) multi_scale_sub_image_new, NULL, NULL, NULL }, 
 	{ Type::MULTISCALETILESOURCE, Type::DEPENDENCY_OBJECT, false, "MultiScaleTileSource", "MULTISCALETILESOURCE", 0, 1, NULL, (create_inst_func *) multi_scale_tile_source_new, NULL, NULL, NULL }, 
 	{ Type::NAMESCOPE, Type::DEPENDENCY_OBJECT, false, "NameScope", "NAMESCOPE", 0, 1, NULL, NULL, NULL, NULL, NULL }, 

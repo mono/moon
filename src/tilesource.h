@@ -33,6 +33,30 @@ class MultiScaleTileSource : public DependencyObject {
 
 	virtual Type::Kind GetObjectType () { return Type::MULTISCALETILESOURCE; }
 
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	int GetImageWidth ();
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	void SetImageWidth (int width);
+
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	int GetImageHeight ();
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	void SetImageHeight (int height);
+
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	int GetTileWidth ();
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	void SetTileWidth (int width);
+
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	int GetTileHeight ();
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	void SetTileHeight (int height);
+
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	int GetTileOverlap ();
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	void SetTileOverlap (int overlap);
 };
 
 #endif /* __TILESOURCE_H__ */

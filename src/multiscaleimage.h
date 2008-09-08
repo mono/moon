@@ -19,6 +19,7 @@
 #include <tilesource.h>
 #include <eventargs.h>
 #include <control.h>
+#include <media.h>
 
 G_BEGIN_DECLS
 
@@ -26,7 +27,7 @@ G_BEGIN_DECLS
 G_END_DECLS
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
-class MultiScaleImage : public FrameworkElement {
+class MultiScaleImage : public MediaBase {
 
  protected:
 	virtual ~MultiScaleImage ();
@@ -53,12 +54,7 @@ class MultiScaleImage : public FrameworkElement {
 	//
 	// Overrides
 	//
-//	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
-//	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
-//	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
-//	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
-//	virtual Value *GetValue (DependencyProperty *property);
-//	virtual Size ArrangeOverride (Size size);
+	virtual void Render (cairo_t *cr, Region *region);
 
 	//
 	// Methods

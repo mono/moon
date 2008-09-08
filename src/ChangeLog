@@ -1,3 +1,9 @@
+2009-09-08  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* tilesource.h|cpp: keep the source and tiles info on the c++ side
+
+	* multiscaleimage.cpp: draw a cairo pattern instead of nothing
+
 2008-09-08  Larry Ewing  <lewing@novell.com>
 
 	* grid.cpp: Chain collection changed up properly.

@@ -172,6 +172,7 @@ libmoon_la_SOURCES += 		\
 	style.cpp		\
 	template.cpp		\
 	textbox.cpp		\
+	tilesource.cpp		\
 	thickness.cpp		\
 	usercontrol.cpp 	\
 	xap.cpp
