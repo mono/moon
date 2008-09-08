@@ -917,6 +917,9 @@ class Generator {
 				}
 				
 				parent.Children.Add (method);
+
+				//Allow const member functions, ignore the const keyword
+				tokenizer.Accept (Token2Type.Identifier, "const");
 				
 				if (tokenizer.CurrentToken.value == "{") {
 					//Console.WriteLine ("ParseMember: member has body, skipping it");
