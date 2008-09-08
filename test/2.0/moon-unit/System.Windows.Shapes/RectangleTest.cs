@@ -24,6 +24,7 @@ namespace MoonTest.System.Windows.Shapes
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void MeasureTest2 ()
 		{
 			Canvas c = new Canvas ();

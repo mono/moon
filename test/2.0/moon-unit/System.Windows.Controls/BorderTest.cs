@@ -327,7 +327,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[KnownFailure]
 		public void ArrangeTest_RenderSize_ChildLargerThanFinalRect ()
 		{
 			Border c = new Border ();
@@ -464,7 +463,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[KnownFailure]
 		public void MeasureTest_TransformedChild ()
 		{
 			Border c = new Border ();
