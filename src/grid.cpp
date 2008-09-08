@@ -64,6 +64,8 @@ Grid::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 	    col == GetRowDefinitions ()) {
 
 		InvalidateMeasure ();
+	} else {
+		Panel::OnCollectionChanged (col, args);
 	}
 }
 
@@ -111,10 +113,6 @@ Grid::MeasureOverride (Size availableSize)
 	for (int i = 0; i < children->GetCount(); i ++) {
 		UIElement *child = children->GetValueAt(i)->AsUIElement ();
 		Size child_size;
-
-		child->Measure (Size (INFINITY, INFINITY));
-		child_size = child->GetDesiredSize();
-
 		gint32 col, row;
 		gint32 colspan, rowspan;
 
@@ -122,6 +120,9 @@ Grid::MeasureOverride (Size availableSize)
 		row = Grid::GetRow (child);
 		colspan = Grid::GetColumnSpan (child);
 		rowspan = Grid::GetRowSpan (child);
+
+		child->Measure (Size (INFINITY, INFINITY));
+		child_size = child->GetDesiredSize();
 
 		if (col_count) {
 			double remaining_width = child_size.width;

@@ -1,3 +1,7 @@
+2008-09-08  Larry Ewing  <lewing@novell.com>
+
+	* grid.cpp: Chain collection changed up properly.
+
 2008-09-07  Larry Ewing  <lewing@novell.com>
 
 	* thickness.h (struct Thickness): add +/-/- to thickness to clean
