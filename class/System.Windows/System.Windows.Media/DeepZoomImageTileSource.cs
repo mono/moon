@@ -129,7 +129,7 @@ namespace System.Windows.Media
 
 		void ParseLevel (XmlReader reader)
 		{
-			int l = Convert.ToInt32 (reader["index"]) - 1;
+			int l = Convert.ToInt32 (reader["index"]);
 //			Console.WriteLine ("Parsing <level> {0}", l);
 			Level level = null;
 			if (!levels.TryGetValue (l, out level)) {
