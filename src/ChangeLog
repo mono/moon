@@ -1,5 +1,22 @@
 2008-09-07  Larry Ewing  <lewing@novell.com>
 
+	* thickness.h (struct Thickness): add +/-/- to thickness to clean
+	up some of the other code.
+
+	* rect.h: remove ShrinkBy now that we can negate thickness
+
+	* size.h: clean things and make GrowBy stop at 0 now that we can
+	deal with thickness addition outside of things.
+
+	* canvas.cpp:
+	* frameworkelement.cpp: 
+	* control.cpp:
+	* border.cpp: subtract the padding and border thickness from
+	available size before passing it to children.  Handle some corner
+	cases in measure with ugly hacks.
+	
+2008-09-07  Larry Ewing  <lewing@novell.com>
+
 	* canvas.cpp, canvas.h: 	
 	* control.cpp, control.h:
 	* border.cpp:

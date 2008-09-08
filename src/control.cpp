@@ -212,11 +212,12 @@ Size
 Control::MeasureOverride (Size availableSize)
 {
 	Size contents = Size (0.0, 0.0);
+	Thickness border = *GetBorderThickness () + *GetPadding ();
 
 	if (template_root) {
-		template_root->Measure (availableSize);
+		template_root->Measure (availableSize.GrowBy (-border));
 		contents = template_root->GetDesiredSize ();
 	}
 
-	return contents.GrowBy (GetBorderThickness ()).GrowBy (GetPadding ());
+	return contents.GrowBy (border);
 }

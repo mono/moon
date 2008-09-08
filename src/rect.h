@@ -122,7 +122,7 @@ struct Rect {
 		return result;
 	}
 
-	Rect GrowBy (double left, double top, double right, double bottom)
+	Rect GrowBy (const double left, const double top, const double right, const double bottom) const
 	{
 		Rect result = *this;
 		result.x -= left;
@@ -133,27 +133,22 @@ struct Rect {
 		return result;
 	}
 
-	Rect GrowBy (double xd, double yd)
+	Rect GrowBy (const double xd, const double yd) const
 	{
 		return GrowBy (xd, yd, xd, yd);
 	}
 
-	Rect GrowBy (double d)
+	Rect GrowBy (const double d) const
 	{
 		return GrowBy (d, d, d, d);
 	}
 
-	Rect GrowBy (Thickness *t)
+	Rect GrowBy (const Thickness &t) const
 	{
-		return GrowBy (t->left, t->top, t->right, t->bottom);
+		return GrowBy (t.left, t.top, t.right, t.bottom);
 	}
 
-	Rect ShrinkBy (Thickness *t)
-	{
-		return GrowBy (-t->left, -t->top, -t->right, -t->bottom);
-	}
-
-	Rect ExtendTo (double x, double y)
+	Rect ExtendTo (const double x, const double y) const
 	{
 		Rect result = *this;
 		if (x < result.x || x > (result.x + result.width))

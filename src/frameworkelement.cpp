@@ -77,21 +77,27 @@ FrameworkElement::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 void
 FrameworkElement::Measure (Size availableSize)
 {
-	Size size = availableSize;
 
 	// XXX this is hack to get around the 0.0 w/h defaults we still
 	// have in place due to 1.0
 	Value *vw = GetValueNoDefault (FrameworkElement::WidthProperty);
 	Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
-	double width = vw ? GetWidth () : NAN;
-	double height = vh ? GetHeight () : NAN;
-
-	// precondition the input
-	size = size.Min (width, height);
-	size = size.Max (width, height);
+	Size specified = Size (vw ? GetWidth () : NAN, vh ? GetHeight () : NAN);
+	
 #if SL_2_0
+	Thickness margin = *GetMargin ();
+	Size size = availableSize.GrowBy (-margin);
+
+	size = size.Min (specified);
+	size = size.Max (specified);
+
 	size = size.Min (GetMaxWidth (), GetMaxHeight ());
 	size = size.Max (GetMinWidth (), GetMinHeight ());
+#else
+	Size size = availableSize;
+
+	size = size.Min (specified);
+	size = size.Max (specified);
 #endif
 
 	if (measure_cb)
@@ -99,14 +105,20 @@ FrameworkElement::Measure (Size availableSize)
 	else
 		size = MeasureOverride (size);
 
+	if (isnan (size.width) || isnan (size.height)) {
+		SetDesiredSize (Size (0,0));
+		return;
+	}
+
 	// postcondition the results
-	size = size.Min (width, height);
-	size = size.Max (width, height);
+	size = size.Min (specified);
+	size = size.Max (specified);
+
 #if SL_2_0
 	size = size.Min (GetMaxWidth (), GetMaxHeight ());
 	size = size.Max (GetMinWidth (), GetMinHeight ());
 
-	size = size.GrowBy (GetMargin ());
+	size = size.GrowBy (margin);
 #endif
 	size = size.Min (availableSize);
 
@@ -116,7 +128,10 @@ FrameworkElement::Measure (Size availableSize)
 Size
 FrameworkElement::MeasureOverride (Size availableSize)
 {
-	return Size (0.0, 0.0);
+	if (!GetVisualParent ())
+		return Size (NAN, NAN);
+	
+	return Size (0,0);
 }
 
 

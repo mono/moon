@@ -55,9 +55,11 @@ struct Size {
 		return Size (w + width, h + height);
 	}
 
-	Size GrowBy (const Thickness *t) 
+	Size GrowBy (const Thickness &t) 
 	{
-		return Size (width + t->left + t->right, height + t->top + t->bottom); 
+		const double w = width + t.left + t.right;
+		const double h = height + t.top + t.bottom;
+		return Size (w > 0 ? w : 0, h > 0 ? h : 0); 
 	}
 };
 

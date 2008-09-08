@@ -22,15 +22,16 @@ Size
 Border::MeasureOverride (Size availableSize)
 {
 	Size desired = Size (0,0);
+	Thickness border = *GetPadding () + *GetBorderThickness ();
 
 	// Get the desired size of our child, and include any margins we set
 	UIElement *child = GetChild ();
 	if (child) {
-		child->Measure (availableSize);
+		child->Measure (availableSize.GrowBy (-border));
 		desired = child->GetDesiredSize ();
 	}
 
-	return desired.GrowBy (GetPadding ()).GrowBy (GetBorderThickness ());
+	return desired.GrowBy (border);
 }
 
 Size
@@ -52,13 +53,11 @@ Border::ArrangeOverride (Size finalSize)
 		
 	UIElement *child = GetChild ();
 	if (child) {
-		Thickness *margins = GetMargin ();
-		Thickness *border = GetBorderThickness ();
-		Thickness *padding = GetPadding ();
+		Thickness border = *GetMargin () + *GetBorderThickness () + *GetPadding ();
 
 		Rect childRect = Rect (0.0, 0.0, desired_size.width, desired_size.height);
 
-		childRect = childRect.ShrinkBy (padding).ShrinkBy (margins).ShrinkBy (border);
+		childRect = childRect.GrowBy (-border);
 
 		child->Arrange (childRect);
 	}

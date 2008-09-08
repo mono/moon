@@ -135,10 +135,15 @@ Canvas::GetTransformOrigin ()
 Size
 Canvas::MeasureOverride (Size availableSize)
 {
+	Size result = FrameworkElement::MeasureOverride (availableSize);
+
+	// XXX ugly hack to maintain compat
+	if (!GetVisualParent ())
+		return result;
+
 	VisualTreeWalker walker = VisualTreeWalker (this);
-	while (UIElement *child = walker.Step ()) {
+	while (UIElement *child = walker.Step ())
 		child->Measure (Size (INFINITY, INFINITY));
-	}
 	
-	return FrameworkElement::MeasureOverride (availableSize);
+	return result;
 }
