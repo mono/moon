@@ -1,3 +1,8 @@
+2008-09-08  Geoff Norton  <gnorton@novell.com>
+
+	* audio.cpp: Ensure that we dont enter an infinite loop before
+	we actually start playing a source.
+
 2008-09-08  Larry Ewing  <lewing@novell.com>
 
 	* frameworkelement.cpp: make things 1.0 safe.
