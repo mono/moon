@@ -31,6 +31,14 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		public void NaNTest ()
+		{
+			Size test = new Size (Double.NaN, Double.NaN);
+			Assert.AreEqual (true, Double.IsNaN (test.Width));
+			Assert.AreEqual (true, Double.IsNaN (test.Height));
+		}
+
+		[TestMethod]
 		public void ToStringTest ()
 		{
 			Assert.AreEqual ("5,5", (new Size(5,5)).ToString());

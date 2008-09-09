@@ -748,13 +748,13 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (400, c.Height);
 
 			Assert.AreEqual (new Size (200, 200), c.DesiredSize, "DesiredSize0");
-			Assert.AreEqual (new Size (200, 200), c.MeasureArg, "MeasureArg");
+			Assert.AreEqual (new Size (400, 400), c.MeasureArg, "MeasureArg");
 			Assert.AreEqual (new Size (210, 210), g.DesiredSize, "DesiredSize1");
 
 			g.Measure (new Size (100, 100));
 
 			Assert.AreEqual (new Size (100, 100), g.DesiredSize, "DesiredSize2");
-			Assert.AreEqual (new Size (200, 200), c.MeasureArg, "MeasureArg");
+			Assert.AreEqual (new Size (400, 400), c.MeasureArg, "MeasureArg");
 
 			// now test with the child sized smaller than the row/column definitions
 			c.Width = 100;
