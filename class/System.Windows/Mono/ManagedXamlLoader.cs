@@ -387,7 +387,6 @@ namespace Mono.Xaml
 
 			DependencyObject target = o as DependencyObject;
 			if (target != null) {
-				Console.WriteLine ("DependencyObject");
 				PropertyInfo pi;
 				string error;
 				IntPtr unmanaged_value;
@@ -434,7 +433,6 @@ namespace Mono.Xaml
 
 					object o_value = Helper.ValueFromString (set_params [1].ParameterType, value, name, out error, out unmanaged_value);
 					if (error == null && unmanaged_value != IntPtr.Zero) {
-						Console.WriteLine ("unmanaged value:   {0}    {1}", unmanaged_value, value);
 						o_value = DependencyObject.ValueToObject (null, unmanaged_value);
 					}
 
@@ -449,7 +447,6 @@ namespace Mono.Xaml
 					return false;
 				}
 
-
 				Helper.SetPropertyFromString (target, pi, value, out error, out unmanaged_value);
 
 				if (error == null && unmanaged_value != IntPtr.Zero) {
@@ -458,8 +455,10 @@ namespace Mono.Xaml
 				}
 			
 				if (error != null) {
-					//Console.Error.WriteLine ("ManagedXamlLoader::SetCustomAttribute ({0}, {1}, {2}, {3}) unable to set property: {4}.", target_ptr, name, xmlns, value, error);
-					return false;
+					Console.Error.WriteLine ("ManagedXamlLoader::SetCustomAttribute ({0}, {1}, {2}, {3}, {4}) unable to set property: {5}.", target_ptr, target.GetType(), xmlns, name, value, error);
+					// XXX ignore these for now
+					// return false;
+					return true;
 				}
 
 				return true;
@@ -469,12 +468,7 @@ namespace Mono.Xaml
 				PropertyInfo pi;
 				IntPtr unmanaged_value;
 
-				Console.WriteLine ("looking up property {0}", name);
-
 				pi = o.GetType ().GetProperty (name);
-
-				if (pi == null)
-					Console.WriteLine ("pi == null");
 
 				try {
 					object o_value = Helper.ValueFromString (pi.PropertyType, value, name, out error, out unmanaged_value);
@@ -509,46 +503,57 @@ namespace Mono.Xaml
 				return false;
 			}
 
-			FieldInfo fi = parent.GetType ().GetField (prop_path[1] + "Property", BindingFlags.Static | BindingFlags.NonPublic);
+			FieldInfo fi = parent.GetType ().GetField (prop_path[1] + "Property", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy);
 			if (fi != null) {
 				DependencyProperty dp = fi.GetValue (parent) as DependencyProperty;
 				if (dp == null)
 					return false;
 
 				if (dp.IsAttached) {
-					MethodInfo mi = parent.GetType ().GetMethod ("Get" + prop_path[1], BindingFlags.Static | BindingFlags.Public);
-					object o = mi.Invoke (parent, new object[] { child });
-					if (o is IList) {
-						((IList)o).Add (child);
-						return true;
+					if (typeof (IList).IsAssignableFrom (dp.PropertyType)) {
+						// it's a collection type
+						MethodInfo mi = parent.GetType ().GetMethod ("Get" + prop_path[1], BindingFlags.Static | BindingFlags.Public);
+						object o = mi.Invoke (parent, new object[] { child });
+						if (o is IList) {
+							((IList)o).Add (child);
+							return true;
+						}
+						else {
+							Console.Error.WriteLine ("unable to add child to attached property");
+							return false;
+						}
 					}
 					else {
-						Console.Error.WriteLine ("unable to add child to attached property");
-						return false;
+						Console.Error.WriteLine ("unfinished - we need attached non-collection properties");
 					}
 				}
 				else {
 					DependencyObject parent_depobj = parent as DependencyObject;
 					if (parent == null) {
-						Console.Error.WriteLine ("we're adding a child to a DP backed collection on a non-DO parent?  nuh uh!");
+						Console.Error.WriteLine ("we're adding a child to a non-DO parent?  nuh uh!");
 						return false;
 					}
 
-					object col = parent_depobj.GetValue(dp);
-					if (col == null) {
-						Console.WriteLine ("Creating instant of {0} collection", dp.PropertyType);
-						// automatically create the collection if it doesn't exist
-						col = Activator.CreateInstance (dp.PropertyType);
-						parent_depobj.SetValue (dp, col);
-					}
+					if (typeof (IList).IsAssignableFrom (dp.PropertyType)) {
+						object col = parent_depobj.GetValue(dp);
+						if (col == null) {
+							Console.WriteLine ("Creating instant of {0} collection", dp.PropertyType);
+							// automatically create the collection if it doesn't exist
+							col = Activator.CreateInstance (dp.PropertyType);
+							parent_depobj.SetValue (dp, col);
+						}
 
-					// XXX do we check the child
-					// type vs the collection
-					// type?  or do we catch the
-					// exception?
-					IList l = col as IList;
-					if (l != null)
-						l.Add (child);
+						// XXX do we check the child
+						// type vs the collection
+						// type?  or do we catch the
+						// exception?
+						IList l = col as IList;
+						if (l != null)
+							l.Add (child);
+					}
+					else {
+						parent_depobj.SetValue (dp, child);
+					}
 
 					return true;
 				}
