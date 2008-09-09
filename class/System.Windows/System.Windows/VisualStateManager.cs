@@ -71,7 +71,8 @@ namespace System.Windows {
 					      string stateName,
 					      bool useTransitions)
 		{
-			throw new NotImplementedException ();
+			Console.Error.WriteLine ("GoToState not implemented");
+			return true;
 		}
 
 		protected virtual bool GoToStateCore (Control control,
@@ -81,7 +82,8 @@ namespace System.Windows {
 						      VisualState state,
 						      bool useTransitions)
 		{
-			throw new NotImplementedException ();
+			Console.Error.WriteLine ("GoToStateCore not implemented");
+			return true;
 		}
 	}
 
