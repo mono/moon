@@ -61,10 +61,11 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[KnownFailure]
 		public void SetTemplateInXamlOnButton ()
 		{
-			Button b = (Button)XamlReader.Load (@"
+			Button b;
+			try {
+			b = (Button)XamlReader.Load (@"
 <Button xmlns=""http://schemas.microsoft.com/client/2007"">
   <Button.Template>
     <ControlTemplate TargetType=""Button"">
@@ -72,6 +73,10 @@ namespace MoonTest.System.Windows.Controls
     </ControlTemplate>
   </Button.Template>
 </Button>");
+			} catch (Exception e) {
+				Tester.WriteLine (e.ToString());
+				throw e;
+			}
 			Assert.AreEqual (0, VisualTreeHelper.GetChildrenCount (b), "0");
 
 			Assert.IsTrue (b.ApplyTemplate (), "1");
