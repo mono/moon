@@ -326,6 +326,9 @@ system_windows_sources =							\
 	$(MSCONTROLS)/Src/ContentControl/ContentControl.cs			\
 	$(MSCONTROLS)/Src/ContentControl/ContentPresenter.cs			\
 	$(MSCONTROLS)/Src/GlobalSuppressions.cs					\
+	$(MSCONTROLS)/Src/ListBox/DisplayMemberValueConverter.cs		\
+	$(MSCONTROLS)/Src/ListBox/ListBox.cs					\
+	$(MSCONTROLS)/Src/ListBox/ListBoxItem.cs				\
 	$(MSCONTROLS)/Src/ListBox/SelectionMode.cs				\
 	$(MSCONTROLS)/Src/RadioButton/RadioButton.cs				\
 	$(MSCONTROLS)/Src/RangeBase/RangeBase.cs				\
@@ -334,6 +337,8 @@ system_windows_sources =							\
 	$(MSCONTROLS)/Src/ScrollBar/ScrollBarVisibility.cs			\
 	$(MSCONTROLS)/Src/ScrollBar/ScrollEventArgs.cs				\
 	$(MSCONTROLS)/Src/ScrollBar/ScrollEventType.cs				\
+	$(MSCONTROLS)/Src/ScrollViewer/ScrollViewer.cs				\
+	$(MSCONTROLS)/Src/ScrollViewer/ScrollContentPresenter.cs		\
 	$(MSCONTROLS)/Src/Thumb/Thumb.cs					\
 	$(MSCONTROLS)/Src/ToggleButton/ToggleButton.cs				\
 	$(MSCONTROLS)/Src/ToolTip/ToolTip.cs					\
