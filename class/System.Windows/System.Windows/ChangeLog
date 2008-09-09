@@ -1,3 +1,19 @@
+2008-09-08  Chris Toshok  <toshok@ximian.com>
+
+	* VisualTransition.cs: this isn't a DO, so implement the
+	properties as normal CLR properties + private fields.  the parser
+	can handle this now (yay).
+
+	* VisualStateGroup.cs: add 2 private DependencyProperties for the
+	States and Transitions collections, and implement the accessors.
+
+	* VisualState.cs: implement the property accessors using
+	DP's (it's a DO, after all).
+
+	* VisualStateManager.cs: both dependency properties are attached.
+	implement GetVisualStateGroups by creating the collection if need
+	be.
+
 2008-09-08  Larry Ewing  <lewing@novell.com>
 
 	* UIElement.cs: expose RenderSize.

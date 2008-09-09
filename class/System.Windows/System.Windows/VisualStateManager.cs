@@ -34,9 +34,13 @@ namespace System.Windows {
 
 	public class VisualStateManager : DependencyObject
 	{
-		public static DependencyProperty CustomVisualStateManagerProperty = DependencyProperty.Register ("CustomVisualStateManager",
-														 typeof (VisualStateManager),
-														 typeof (VisualStateManager), null);
+		private static DependencyProperty VisualStateGroupsProperty = DependencyProperty.RegisterAttached ("VisualStateGroups",
+														   typeof (Collection<VisualStateGroup>),
+														   typeof (VisualStateManager), null);
+
+		public static DependencyProperty CustomVisualStateManagerProperty = DependencyProperty.RegisterAttached ("CustomVisualStateManager",
+															 typeof (VisualStateManager),
+															 typeof (VisualStateManager), null);
 
 		public VisualStateManager()
 		{
@@ -55,7 +59,12 @@ namespace System.Windows {
 
 		public static Collection<VisualStateGroup> GetVisualStateGroups (DependencyObject obj)
 		{
-			throw new NotImplementedException ();
+			Collection<VisualStateGroup> col = (Collection<VisualStateGroup>)obj.GetValue (VisualStateGroupsProperty);
+			if (col == null) {
+				col = new Collection<VisualStateGroup>();
+				obj.SetValue (VisualStateGroupsProperty, col);
+			}
+			return col;
 		}
 
 		public static bool GoToState (Control control,

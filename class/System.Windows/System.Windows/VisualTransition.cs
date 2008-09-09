@@ -35,20 +35,34 @@ namespace System.Windows {
 	[ContentPropertyAttribute("Storyboard")]
 	public class VisualTransition
 	{
+		string from;
+		string to;
+		Storyboard storyboard;
+		Duration duration;
+
 		public VisualTransition()
 		{
-			throw new NotImplementedException ();
 		}
 
 		[TypeConverterAttribute(typeof(DurationConverter))]
 		public Duration Duration {
-			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
+			get { return duration; }
+			set { duration = value; }
 		}
 
-		public string From { get; set; }
-		public Storyboard Storyboard { get; set; }
-		public string To { get; set; }
+		public string From {
+			get { return from; }
+			set { from = value; }
+		}
+
+		public Storyboard Storyboard {
+			get { return storyboard; }
+			set { storyboard = value; }
+		}
+		public string To {
+			get { return to; }
+			set { to = value; }
+		}
 	}
 
 }

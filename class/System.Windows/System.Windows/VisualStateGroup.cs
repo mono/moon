@@ -34,18 +34,27 @@ namespace System.Windows {
 	[ContentPropertyAttribute("States")]
 	public sealed class VisualStateGroup : DependencyObject
 	{
+		private static readonly DependencyProperty StatesProperty = DependencyProperty.Register ("States",
+													 typeof (Collection<VisualState>),
+													 typeof (VisualStateGroup),
+													 null);
+		private static readonly DependencyProperty TransitionsProperty = DependencyProperty.Register ("Transitions",
+													      typeof (Collection<VisualTransition>),
+													      typeof (VisualStateGroup),
+													      null);
 
 		public string Name {
 			get { throw new NotImplementedException (); }
 		}
+
 		public Collection<VisualState> States {
-			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
+			get { return (Collection<VisualState>)GetValue(StatesProperty); }
+			set { SetValue (StatesProperty, value); }
 		}
 
 		public Collection<VisualTransition> Transitions {
-			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
+			get { return (Collection<VisualTransition>)GetValue(TransitionsProperty); }
+			set { SetValue (TransitionsProperty, value); }
 		}
 	}
 }

@@ -26,6 +26,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using Mono;
 using System.Windows.Markup;
 using System.Windows.Media.Animation;
 
@@ -34,17 +35,20 @@ namespace System.Windows {
 	[ContentPropertyAttribute("Storyboard")]
 	public sealed class VisualState : DependencyObject
 	{
+		private static readonly DependencyProperty NameProperty = DependencyProperty.Lookup (Kind.DEPENDENCY_OBJECT, "Name", typeof (string));
+		private static readonly DependencyProperty StoryboardProperty = DependencyProperty.Register ("Storyboard", typeof (Storyboard), typeof (VisualState), null);
+
 		public VisualState()
 		{
 		}
 
 		public string Name {
-			get { throw new NotImplementedException (); }
+			get { return (string)GetValue (NameProperty); }
 		}
 
 		public Storyboard Storyboard {
-			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
+			get { return (Storyboard)GetValue (StoryboardProperty); }
+			set { SetValue (StoryboardProperty, value); }
 		}
 	}
 
