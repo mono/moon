@@ -159,7 +159,13 @@ namespace System.Windows {
 			
 			args = new DependencyPropertyChangedEventArgs (old_obj, new_obj, property);
 			
-			custom_property.Metadata.property_changed_callback (obj, args);
+			try {
+				custom_property.Metadata.property_changed_callback (obj, args);
+			}
+			catch (Exception e) {
+				Console.WriteLine ("Exception calling managed PropertyChangedCallback");
+				Console.WriteLine(e);
+			}
 			
 		}
 		

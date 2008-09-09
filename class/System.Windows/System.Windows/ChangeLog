@@ -1,3 +1,8 @@
+2008-09-09  Chris Toshok  <toshok@ximian.com>
+
+	* DependencyProperty.cs: swallow exceptions raised during the
+	property_changed_callback.
+
 2008-09-08  Chris Toshok  <toshok@ximian.com>
 
 	* VisualTransition.cs: this isn't a DO, so implement the
