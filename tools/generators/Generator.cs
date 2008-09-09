@@ -682,6 +682,7 @@ class Generator {
 		}
 		
 		// Add all the manual types
+		all.Children.Add (new TypeInfo ("object", "OBJECT", "INVALID", true));
 		all.Children.Add (new TypeInfo ("bool", "BOOL", "OBJECT", true));
 		all.Children.Add (new TypeInfo ("double", "DOUBLE", "OBJECT", true));
 		all.Children.Add (new TypeInfo ("guint64", "UINT64", "OBJECT", true));
@@ -1509,7 +1510,6 @@ class Generator {
 			text.AppendLine ("");
 			text.AppendLine ("Type type_infos [] = {");
 			text.AppendLine ("\t{ Type::INVALID, Type::INVALID, false, \"INVALID\", NULL, 0, 0, NULL, NULL, NULL, NULL, NULL },");
-			text.AppendLine ("\t{ Type::OBJECT, Type::INVALID, false, \"Object\", \"OBJECT\", 0, 0, NULL, NULL, NULL, NULL, NULL },");
 			foreach (TypeInfo type in all.Children.SortedTypesByKind) {
 				MemberInfo member;
 				TypeInfo parent = null;
@@ -1527,7 +1527,7 @@ class Generator {
 				if (version >= type.SilverlightVersion) {
 					text.AppendLine (string.Format (@"	{{ {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, NULL, NULL }}, ",
 					                                "Type::" + type.KindName, 
-					                                "Type::" + (parent != null ? parent.KindName : "OBJECT"),
+					                                type.KindName == "OBJECT" ? "Type::INVALID" : ("Type::" + (parent != null ? parent.KindName : "OBJECT")),
 					                                type.IsValueType ? "true" : "false",
 					                                "\"" + type.Name + "\"", 
 					                                "\"" + type.KindName + "\"", 

@@ -1,3 +1,7 @@
+2008-09-09  Chris Toshok  <toshok@ximian.com>
+
+	* Generator.cs: autogenerate the OBJECT stuff.
+
 2008-09-07  Chris Toshok  <toshok@ximian.com>
 
 	* Generator.cs: add an OBJECT kind/type as the root of everything.
