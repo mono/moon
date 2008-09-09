@@ -641,7 +641,7 @@ AlsaPlayer::RemoveInternal (AudioSource *source)
 }
 
 void
-AlsaPlayer::ShutdownInternal ()
+AlsaPlayer::PrepareShutdownInternal ()
 {
 	int result = 0;
 	
@@ -673,6 +673,11 @@ AlsaPlayer::ShutdownInternal ()
 	g_free (udfs);
 	udfs = NULL;
 	ndfs = 0;
+}
+
+void
+AlsaPlayer::ShutdownInternal()
+{
 }
 
 void

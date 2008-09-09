@@ -233,6 +233,9 @@ class AudioPlayer {
 	virtual void RemoveInternal (AudioSource *node) = 0;
 	 // called just after ctor. 
 	virtual bool Initialize () = 0;
+	// before all the nodes will be removedthis method is called
+	// to ensure that we have stopped the play loop
+	virtual void PrepareShutdownInternal () = 0;
 	// all the nodes will have been removed when this method is called
 	// after this call has returned, the player will be deleted immediately.
 	virtual void ShutdownInternal () = 0;

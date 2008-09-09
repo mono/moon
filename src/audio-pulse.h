@@ -80,6 +80,7 @@ class PulsePlayer : public AudioPlayer {
  protected:
 	virtual void AddInternal (AudioSource *node);
 	virtual void RemoveInternal (AudioSource *node);
+	virtual void PrepareShutdownInternal ();
 	virtual void ShutdownInternal ();
 	virtual bool Initialize ();
 	virtual AudioSource *CreateNode (MediaPlayer *mplayer, AudioStream *stream);
