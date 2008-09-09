@@ -129,7 +129,6 @@ const char *UIElement_Events [] = { "GotFocus", "Invalidated", "KeyDown", "KeyUp
 
 Type type_infos [] = {
 	{ Type::INVALID, Type::INVALID, false, "INVALID", NULL, 0, 0, NULL, NULL, NULL, NULL, NULL },
-	{ Type::OBJECT, Type::INVALID, false, "Object", "OBJECT", 0, 0, NULL, NULL, NULL, NULL, NULL },
 	{ Type::ANIMATION, Type::TIMELINE, false, "Animation", "ANIMATION", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::ANIMATIONCLOCK, Type::CLOCK, false, "AnimationClock", "ANIMATIONCLOCK", 0, 5, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::APPLICATION, Type::DEPENDENCY_OBJECT, false, "Application", "APPLICATION", 0, 1, NULL, (create_inst_func *) application_new, NULL, NULL, NULL }, 
@@ -230,6 +229,7 @@ Type type_infos [] = {
 	{ Type::MULTISCALETILESOURCE, Type::DEPENDENCY_OBJECT, false, "MultiScaleTileSource", "MULTISCALETILESOURCE", 0, 1, NULL, (create_inst_func *) multi_scale_tile_source_new, NULL, NULL, NULL }, 
 	{ Type::NAMESCOPE, Type::DEPENDENCY_OBJECT, false, "NameScope", "NAMESCOPE", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::NPOBJ, Type::OBJECT, false, "NPObj", "NPOBJ", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
+	{ Type::OBJECT, Type::INVALID, false, "object", "OBJECT", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::OBJECTANIMATIONUSINGKEYFRAMES, Type::ANIMATION, false, "ObjectAnimationUsingKeyFrames", "OBJECTANIMATIONUSINGKEYFRAMES", 0, 1, NULL, (create_inst_func *) object_animation_using_key_frames_new, "KeyFrames", NULL, NULL }, 
 	{ Type::OBJECTKEYFRAME, Type::KEYFRAME, false, "ObjectKeyFrame", "OBJECTKEYFRAME", 0, 1, NULL, (create_inst_func *) object_key_frame_new, NULL, NULL, NULL }, 
 	{ Type::OBJECTKEYFRAME_COLLECTION, Type::KEYFRAME_COLLECTION, false, "ObjectKeyFrameCollection", "OBJECTKEYFRAME_COLLECTION", 0, 1, NULL, (create_inst_func *) object_key_frame_collection_new, NULL, NULL, NULL }, 
@@ -374,7 +374,6 @@ const char *UIElement_Events [] = { "GotFocus", "Invalidated", "KeyDown", "KeyUp
 
 Type type_infos [] = {
 	{ Type::INVALID, Type::INVALID, false, "INVALID", NULL, 0, 0, NULL, NULL, NULL, NULL, NULL },
-	{ Type::OBJECT, Type::INVALID, false, "Object", "OBJECT", 0, 0, NULL, NULL, NULL, NULL, NULL },
 	{ Type::ANIMATION, Type::TIMELINE, false, "Animation", "ANIMATION", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::ANIMATIONCLOCK, Type::CLOCK, false, "AnimationClock", "ANIMATIONCLOCK", 0, 5, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'APPLICATION'", "APPLICATION", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
@@ -475,6 +474,7 @@ Type type_infos [] = {
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'MULTISCALETILESOURCE'", "MULTISCALETILESOURCE", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::NAMESCOPE, Type::DEPENDENCY_OBJECT, false, "NameScope", "NAMESCOPE", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::NPOBJ, Type::OBJECT, false, "NPObj", "NPOBJ", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
+	{ Type::OBJECT, Type::INVALID, false, "object", "OBJECT", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'OBJECTANIMATIONUSINGKEYFRAMES'", "OBJECTANIMATIONUSINGKEYFRAMES", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'OBJECTKEYFRAME'", "OBJECTKEYFRAME", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'OBJECTKEYFRAME_COLLECTION'", "OBJECTKEYFRAME_COLLECTION", 0, 0, NULL, NULL, NULL, NULL, NULL }, 

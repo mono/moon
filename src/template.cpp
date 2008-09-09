@@ -79,6 +79,11 @@ FrameworkTemplate::SetVisualTree (FrameworkElement *value)
 void
 FrameworkTemplate::AddXamlBinding (XamlTemplateBinding *binding)
 {
+	if (binding == NULL) {
+		g_warning("AddXamlBinding passed NULL binding");
+		return;
+	}
+		
 	List *l = (List*)g_hash_table_lookup (xaml_bindings, binding->GetTarget());
 	if (!l) {
 		l = new List();
@@ -161,7 +166,11 @@ ControlTemplate::DuplicateObject (Control *source, DependencyObject *dob, List* 
 		List::Node *node;
 		for (node = l->First(); node; node = node->next) {
 			XamlTemplateBindingNode *x = (XamlTemplateBindingNode*)node;
-			bindings->Append (new TemplateBindingNode (x->GetBinding()->Attach (source, (FrameworkElement*)new_dob)));
+			TemplateBinding *b = x->GetBinding()->Attach (source, (FrameworkElement*)new_dob);
+			if (b) {
+				bindings->Append (new TemplateBindingNode (b));
+				b->unref();
+			}
 		}
 	}
 

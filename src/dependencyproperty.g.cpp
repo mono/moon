@@ -312,7 +312,7 @@ dependency_property_g_init (void)
 #if SL_2_0
 	Setter::DependencyPropertyProperty = DependencyProperty::Register (Type::SETTER, "DependencyProperty", Type::DEPENDENCYPROPERTY);
 	Setter::PropertyProperty = DependencyProperty::Register (Type::SETTER, "Property", Type::STRING);
-	Setter::ValueProperty = DependencyProperty::Register (Type::SETTER, "Value", Type::MANAGED);
+	Setter::ValueProperty = DependencyProperty::Register (Type::SETTER, "Value", Type::OBJECT);
 #endif
 	Shape::FillProperty = DependencyProperty::Register (Type::SHAPE, "Fill", Type::BRUSH);
 	Shape::StretchProperty = DependencyProperty::Register (Type::SHAPE, "Stretch", new Value (StretchNone));

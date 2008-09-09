@@ -1062,6 +1062,8 @@ start_element (void *data, const char *el, const char **attr)
 		if (!inst)
 			return;
 
+		inst->parent = p->current_element;
+
 		if (!p->top_element) {
 			p->top_element = inst;
 			if (inst->item)
@@ -1100,6 +1102,8 @@ start_element (void *data, const char *el, const char **attr)
 		if (prop_info != NULL) {
 			inst = prop_info->CreatePropertyElementInstance (p, g_strdup (el));
 
+			inst->parent = p->current_element;
+
 			if (attr [0] != NULL) {
 				// It appears there is a bug in the error string but it matches the MS runtime
 				parser_error (p, el, NULL, 2018, g_strdup_printf ("The element %s does not support attributes.", attr [0]));
@@ -1121,8 +1125,6 @@ start_element (void *data, const char *el, const char **attr)
 			return;
 		}
 	}
-
-	inst->parent = p->current_element;
 
 	if (p->current_element) {
 		p->current_element->children->Append (inst);
@@ -2773,7 +2775,12 @@ XamlElementInfoNative::CreateElementInstance (XamlParserInfo *p)
 	if (type->IsValueType ())
 		return new XamlElementInstanceValueType (this, p, GetName (), XamlElementInstance::ELEMENT);
 
-	return new XamlElementInstanceNative (this, p, GetName (), XamlElementInstance::ELEMENT);
+	else if (type->IsSubclassOf (Type::FRAMEWORKTEMPLATE)) {
+		return new XamlElementInstanceTemplate (this, p, GetName (), XamlElementInstance::ELEMENT);
+	}
+
+	else
+	  return new XamlElementInstanceNative (this, p, GetName (), XamlElementInstance::ELEMENT);
 }
 
 XamlElementInstance *
@@ -3565,15 +3572,15 @@ start_parse:
 					*end = '\0';
 
 					template_parent->AddTemplateBinding (p->current_element, argument, attr[i]);
+					return;
 				}
 #endif
 			}
 
 			if (!v && !value_from_str (prop->GetPropertyType(), prop->GetName(), attr [i + 1], &v, p->loader->GetSurface()->IsSilverlight2())) {
-				if (prop->GetPropertyType () == Type::MANAGED) {
-					if (!p->loader->callbacks.set_custom_attribute (item->item, NULL, prop->GetName (), attr [i + 1])) {
+				if (prop->GetPropertyType () == Type::MANAGED || prop->GetPropertyType() == Type::OBJECT) {
+					if (p->loader->SetAttribute (item->item, NULL, prop->GetName (), attr [i + 1]))
 						return;
-					}
 				}
 
 				parser_error (p, item->element_name, attr [i], 2024,

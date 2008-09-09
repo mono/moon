@@ -89,7 +89,7 @@ class Setter : public SetterBase {
 	static DependencyProperty *DependencyPropertyProperty;
 	/* @PropertyType=string */
 	static DependencyProperty *PropertyProperty;
-	/* @PropertyType=Managed */
+	/* @PropertyType=object */
 	static DependencyProperty *ValueProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
