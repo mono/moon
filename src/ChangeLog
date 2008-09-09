@@ -1,3 +1,8 @@
+2008-09-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* xaml.cpp: Don't unref NULL collections. Fix regression when
+	parsing invalid points (or doubles).
+
 2008-09-08  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.h, xaml.cpp: stopgap before jackson gets the completely

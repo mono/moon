@@ -2652,12 +2652,18 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 	}
 	case Type::DOUBLE_COLLECTION: {
 		DoubleCollection *doubles = DoubleCollection::FromStr (str);
+		if (!doubles)
+			return false;
+
 		*v = new Value (doubles);
 		doubles->unref ();
 		break;
 	}
 	case Type::POINT_COLLECTION: {
 		PointCollection *points = PointCollection::FromStr (str);
+		if (!points)
+			return false;
+
 		*v = new Value (points);
 		points->unref ();
 		break;
