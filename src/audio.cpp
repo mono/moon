@@ -895,11 +895,13 @@ AudioPlayer::ShutdownImpl ()
 {
 	AudioSource *source;
 	
+	PrepareShutdownInternal ();
+
 	// Remove all the sources.
 	while ((source = sources.GetHead ()) != NULL) {
 		RemoveImpl (source);
 		source->unref ();
 	}
-	
-	ShutdownInternal ();
+
+	FinishShutdownInternal ();
 }

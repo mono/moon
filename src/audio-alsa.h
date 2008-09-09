@@ -108,7 +108,8 @@ class AlsaPlayer : public AudioPlayer {
 
 	virtual void AddInternal (AudioSource *node);
 	virtual void RemoveInternal (AudioSource *node);
-	virtual void ShutdownInternal ();
+	virtual void PrepareShutdownInternal ();
+	virtual void FinishShutdownInternal ();
 	virtual bool Initialize ();
 	virtual AudioSource *CreateNode (MediaPlayer *mplayer, AudioStream *stream);
 	

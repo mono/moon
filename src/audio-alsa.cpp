@@ -641,11 +641,11 @@ AlsaPlayer::RemoveInternal (AudioSource *source)
 }
 
 void
-AlsaPlayer::ShutdownInternal ()
+AlsaPlayer::PrepareShutdownInternal ()
 {
 	int result = 0;
 	
-	LOG_ALSA ("AlsaPlayer::ShutdownInternal ().\n");
+	LOG_ALSA ("AlsaPlayer::PrepareShutdownInternal ().\n");
 
 	// Wait for the audio thread to finish
 	shutdown = true;
@@ -660,6 +660,12 @@ AlsaPlayer::ShutdownInternal ()
 		}
 		audio_thread = NULL;
 	}
+}
+
+void
+AlsaPlayer::FinishShutdownInternal ()
+{
+	LOG_ALSA ("AlsaPlayer::FinishShutdownInternal ().\n");
 	
 	if (fds [0] != -1) {
 		close (fds [0]);

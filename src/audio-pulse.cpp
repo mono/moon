@@ -613,7 +613,12 @@ PulsePlayer::Initialize ()
 }
 
 void
-PulsePlayer::ShutdownInternal ()
+PulsePlayer::PrepareShutdownInternal ()
+{
+}
+
+void
+PulsePlayer::FinishShutdownInternal ()
 {
 	LOG_PULSE ("PulsePlayer::ShutdownInternal ()\n");
 	

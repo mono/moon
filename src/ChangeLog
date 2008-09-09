@@ -16,6 +16,12 @@
 
 2008-09-08  Geoff Norton  <gnorton@novell.com>
 
+	* audio-*.(cpp|h): The Alsa code requires us to join the play
+	thread before we remove the audio sources otherwise we can 
+	end up in a race accessing closed pcm's when shutting down.
+
+2008-09-08  Geoff Norton  <gnorton@novell.com>
+
 	* audio.cpp: Ensure that we dont enter an infinite loop before
 	we actually start playing a source.
 
