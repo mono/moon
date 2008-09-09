@@ -1,3 +1,9 @@
+2008-09-08  Chris Toshok  <toshok@ximian.com>
+
+	* XamlLoaderCallbacks.cs: add the AddChildCallback type mirroring
+	the xaml.cpp change, and add the out bool parameter to
+	LoadObjectCallback.
+
 2008-09-07  Chris Toshok  <toshok@ximian.com>
 
 	* Helper.cs: I hate this code... we need a more consistent type

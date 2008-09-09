@@ -1,3 +1,19 @@
+2008-09-08  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.h, xaml.cpp: stopgap before jackson gets the completely
+	managed approach to managed object parsing going.  a few key
+	changes:
+
+	1) xaml_load_managed_object takes an out bool
+	parameter (is_dependency_object) so the managed code can create
+	non-DO subclasses, and then the parser will pass that GCHandle
+	back to managed code in set_attribute.
+
+	2) added an add_child callback to the loader so that managed DO
+	subclasses (and non-subclasses) can deal with collection
+	properties.  theres no ContentProperty handled in managed code,
+	yet.
+
 2008-09-08  Geoff Norton  <gnorton@novell.com>
 
 	* audio.cpp: Ensure that we dont enter an infinite loop before

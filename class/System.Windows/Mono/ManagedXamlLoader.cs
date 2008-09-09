@@ -27,17 +27,21 @@
 //
 
 using System;
+using System.Collections;
 using System.Diagnostics;
 using System.Reflection;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Markup;
+using System.Runtime.InteropServices;
 using Mono;
 
 namespace Mono.Xaml
 {
 	internal class ManagedXamlLoader : XamlLoader {
+		List<GCHandle> createdHandles = new List<GCHandle>();
+
 		//
 		// Maps the assembly path to the location where the browser stored
 		// the downloaded file on its cache (ClientBin/Dingus.dll -> /home/xxx/.mozilla/cache/...)
@@ -74,6 +78,7 @@ namespace Mono.Xaml
 			//
 			callbacks.load_managed_object = new LoadObjectCallback (cb_load_object);
 			callbacks.set_custom_attribute = new SetAttributeCallback (cb_set_custom_attribute);
+			callbacks.add_child = new AddChildCallback (cb_add_child);
 			callbacks.hookup_event = new HookupEventCallback (cb_hookup_event);
 			callbacks.insert_mapping = new InsertMappingCallback (cb_insert_mapping);
 			callbacks.get_mapping = new GetMappingCallback (cb_get_mapping);
@@ -300,12 +305,14 @@ namespace Mono.Xaml
 			return AssemblyLoadResult.Success;
 		}
 
-		private DependencyObject LoadDependencyObject (string asm_name, string ns, string type_name)
+		private IntPtr LoadObject (string asm_name, string asm_path, string ns, string type_name, out bool is_dependency_object)
 		{
 			AssemblyLoadResult load_result;
 			Assembly clientlib = null;
 			string name;
-			
+
+			is_dependency_object = false;
+
 			if (asm_name == null)
 				throw new ArgumentNullException ("asm_name");
 
@@ -315,11 +322,11 @@ namespace Mono.Xaml
 			load_result = LoadAssembly (asm_name, out clientlib);
 			
 			if (load_result != AssemblyLoadResult.Success)
-				return null;
+				return IntPtr.Zero;
 
 			if (clientlib == null) {
 				Console.WriteLine ("ManagedXamlLoader::LoadObject ({0}, {1}, {2}): Assembly loaded, but where is it?", asm_name, ns, type_name);
-				return null;
+				return IntPtr.Zero;
 			}
 			
 			if (ns == null || ns == string.Empty)
@@ -334,107 +341,220 @@ namespace Mono.Xaml
 			}
 			catch (TargetInvocationException ex) {
 				Console.WriteLine ("ManagedXamlLoader::LoadObject: CreateInstance ({0}) failed: {1}", name, ex.InnerException);
-				return null;
-			}
-			DependencyObject dob = res as DependencyObject;
-
-			if (dob == null) {
-				Console.Error.WriteLine ("ManagedXamlLoader::LoadObject ({0}, {1}, {2}): unable to create object instance: '{3}', the object was of type '{4}'", asm_name, ns, type_name, name, res.GetType ().FullName);
-			}
-
-			return dob;
-		}
-
-		private IntPtr LoadObject (string asm_name, string asm_path, string ns, string type_name)
-		{
-			DependencyObject dob = LoadDependencyObject (asm_name, ns, type_name);
-
-			if (dob == null)
 				return IntPtr.Zero;
+			}
+			if (res == null) {
+				Console.Error.WriteLine ("ManagedXamlLoader::LoadObject ({0}, {1}, {2}): unable to create object instance: '{3}', the object was of type '{4}'", asm_name, ns, type_name, name, res.GetType ().FullName);
+				return IntPtr.Zero;
+			}
 
-			NativeMethods.event_object_ref (dob.native);
-			return dob.native;
+			DependencyObject dob = res as DependencyObject;
+			if (dob == null) {
+				// it's a non-DO object.  create the
+				// GCHandle and return the GCHandle.
+				GCHandle handle = GCHandle.Alloc (res);
+				createdHandles.Add(handle);
+				return Helper.GCHandleToIntPtr (handle);
+			}
+			else {
+				is_dependency_object = true;
+				NativeMethods.event_object_ref (dob.native);
+				return dob.native;
+			}
 		}
 		
+		private object LookupObject (IntPtr target_ptr)
+		{
+			if (target_ptr == IntPtr.Zero)
+				return  null;
+
+			try {
+				GCHandle handle = Helper.GCHandleFromIntPtr (target_ptr);
+				return handle.Target;
+			}
+			catch {
+				Kind k = NativeMethods.dependency_object_get_object_type (target_ptr); 
+				return DependencyObject.Lookup (k, target_ptr);
+			}
+		}
+
 		private bool SetCustomAttribute (IntPtr target_ptr, string xmlns, string name, string value)
 		{
-			Kind k = NativeMethods.dependency_object_get_object_type (target_ptr); 
-			DependencyObject target = DependencyObject.Lookup (k, target_ptr);
-			PropertyInfo pi;
-			string error;
-			IntPtr unmanaged_value;
+			object o = LookupObject (target_ptr);
 
-			if (target == null) {
-				//Console.Error.WriteLine ("ManagedXamlLoader::SetCustomAttribute ({0}, {1}, {2}, {3}): unable to create target object.", target_ptr, xmlns, name, value);
+			if (o == null)
 				return false;
-			}
 
-			//
-			// We might be dealing with an attached property
-			//
-			int dot = name.IndexOf ('.');
-			if (dot > 0) {
-				string asm = AssemblyNameFromXmlns (xmlns);
-				string ns = ClrNamespaceFromXmlns (xmlns);
-				string type = String.Concat (ns, ".", name.Substring (0, dot));
-				name = name.Substring (++dot, name.Length - dot);
+			DependencyObject target = o as DependencyObject;
+			if (target != null) {
+				Console.WriteLine ("DependencyObject");
+				PropertyInfo pi;
+				string error;
+				IntPtr unmanaged_value;
 
-				Assembly clientlib;
-				if (LoadAssembly (asm, out clientlib) != AssemblyLoadResult.Success) {
-					Console.WriteLine ("couldn't load assembly");
+				if (target == null) {
+					//Console.Error.WriteLine ("ManagedXamlLoader::SetCustomAttribute ({0}, {1}, {2}, {3}): unable to create target object.", target_ptr, xmlns, name, value);
 					return false;
 				}
+
+				//
+				// We might be dealing with an attached property
+				//
+				int dot = name.IndexOf ('.');
+				if (dot > 0) {
+					Console.WriteLine ("setting attached managed property {0}", name);
+					string asm = AssemblyNameFromXmlns (xmlns);
+					string ns = ClrNamespaceFromXmlns (xmlns);
+					string type = String.Concat (ns, ".", name.Substring (0, dot));
+					name = name.Substring (++dot, name.Length - dot);
+
+					Assembly clientlib;
+					if (LoadAssembly (asm, out clientlib) != AssemblyLoadResult.Success) {
+						Console.WriteLine ("couldn't load assembly");
+						return false;
+					}
 				
-				Type attach_type = clientlib.GetType (type, false);
-				if (attach_type == null) {
-					Console.WriteLine ("attach type is null  {0}", type);
+					Type attach_type = clientlib.GetType (type, false);
+					if (attach_type == null) {
+						Console.WriteLine ("attach type is null  {0}", type);
+						return false;
+					}
+
+					MethodInfo set_method = attach_type.GetMethod (String.Concat ("Set", name), BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+					if (set_method == null) {
+						Console.WriteLine ("set method is null: {0}", String.Concat ("Set", name));
+						return false;
+					}
+
+					ParameterInfo [] set_params = set_method.GetParameters ();
+					if (set_params == null || set_params.Length < 2) {
+						Console.WriteLine ("set method signature is inccorrect.");
+						return false;
+					}
+
+					object o_value = Helper.ValueFromString (set_params [1].ParameterType, value, name, out error, out unmanaged_value);
+					if (error == null && unmanaged_value != IntPtr.Zero) {
+						Console.WriteLine ("unmanaged value:   {0}    {1}", unmanaged_value, value);
+						o_value = DependencyObject.ValueToObject (null, unmanaged_value);
+					}
+
+					set_method.Invoke (null, new object [] {target, o_value});
+					return true;
+				}
+
+				pi = target.GetType ().GetProperty (name);
+
+				if (pi == null){
+					Console.Error.WriteLine ("ManagedXamlLoader::SetCustomAttribute ({0}, {1}, {2}, {3}) no property descriptor found.", target_ptr, xmlns, name, value);
 					return false;
 				}
 
-				MethodInfo set_method = attach_type.GetMethod (String.Concat ("Set", name), BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
-				if (set_method == null) {
-					Console.WriteLine ("set method is null: {0}", String.Concat ("Set", name));
-					return false;
-				}
 
-				ParameterInfo [] set_params = set_method.GetParameters ();
-				if (set_params == null || set_params.Length < 2) {
-					Console.WriteLine ("set method signature is inccorrect.");
-					return false;
-				}
+				Helper.SetPropertyFromString (target, pi, value, out error, out unmanaged_value);
 
-				object o_value = Helper.ValueFromString (set_params [1].ParameterType, value, name, out error, out unmanaged_value);
 				if (error == null && unmanaged_value != IntPtr.Zero) {
-					Console.WriteLine ("unmanaged value:   {0}    {1}", unmanaged_value, value);
-					o_value = DependencyObject.ValueToObject (null, unmanaged_value);
+					object obj_value = DependencyObject.ValueToObject (null, unmanaged_value);
+					Helper.SetPropertyFromValue (target, pi, obj_value, out error);
+				}
+			
+				if (error != null) {
+					//Console.Error.WriteLine ("ManagedXamlLoader::SetCustomAttribute ({0}, {1}, {2}, {3}) unable to set property: {4}.", target_ptr, name, xmlns, value, error);
+					return false;
 				}
 
-				set_method.Invoke (null, new object [] {target, o_value});
 				return true;
 			}
+			else {
+				string error;
+				PropertyInfo pi;
+				IntPtr unmanaged_value;
 
-			pi = target.GetType ().GetProperty (name);
+				Console.WriteLine ("looking up property {0}", name);
 
-			if (pi == null){
-				Console.Error.WriteLine ("ManagedXamlLoader::SetCustomAttribute ({0}, {1}, {2}, {3}) no property descriptor found.", target_ptr, xmlns, name, value);
+				pi = o.GetType ().GetProperty (name);
+
+				if (pi == null)
+					Console.WriteLine ("pi == null");
+
+				try {
+					object o_value = Helper.ValueFromString (pi.PropertyType, value, name, out error, out unmanaged_value);
+
+					pi.SetValue (o, o_value, null);
+				}
+				catch (Exception e) {
+					Console.Error.WriteLine (e);
+					return false;
+				}
+
+				return true;
+			}
+		}
+
+		private bool AddChild (IntPtr parent_ptr, string prop_name, IntPtr child_ptr)
+		{
+			string[] prop_path = prop_name.Split ('.');
+			if (prop_path.Length < 2)
+				return false;
+
+			object parent = LookupObject (parent_ptr);
+			object child = LookupObject (child_ptr);
+
+			if (parent == null) {
+				Console.WriteLine ("parent is null");
 				return false;
 			}
 
-			
-
-			Helper.SetPropertyFromString (target, pi, value, out error, out unmanaged_value);
-
-			if (error == null && unmanaged_value != IntPtr.Zero) {
-				object obj_value = DependencyObject.ValueToObject (null, unmanaged_value);
-				Helper.SetPropertyFromValue (target, pi, obj_value, out error);
-			}
-			
-			if (error != null) {
-				//Console.Error.WriteLine ("ManagedXamlLoader::SetCustomAttribute ({0}, {1}, {2}, {3}) unable to set property: {4}.", target_ptr, name, xmlns, value, error);
+			if (child == null) {
+				Console.WriteLine ("child is null");
 				return false;
 			}
 
-			return true;
+			FieldInfo fi = parent.GetType ().GetField (prop_path[1] + "Property", BindingFlags.Static | BindingFlags.NonPublic);
+			if (fi != null) {
+				DependencyProperty dp = fi.GetValue (parent) as DependencyProperty;
+				if (dp == null)
+					return false;
+
+				if (dp.IsAttached) {
+					MethodInfo mi = parent.GetType ().GetMethod ("Get" + prop_path[1], BindingFlags.Static | BindingFlags.Public);
+					object o = mi.Invoke (parent, new object[] { child });
+					if (o is IList) {
+						((IList)o).Add (child);
+						return true;
+					}
+					else {
+						Console.Error.WriteLine ("unable to add child to attached property");
+						return false;
+					}
+				}
+				else {
+					DependencyObject parent_depobj = parent as DependencyObject;
+					if (parent == null) {
+						Console.Error.WriteLine ("we're adding a child to a DP backed collection on a non-DO parent?  nuh uh!");
+						return false;
+					}
+
+					object col = parent_depobj.GetValue(dp);
+					if (col == null) {
+						Console.WriteLine ("Creating instant of {0} collection", dp.PropertyType);
+						// automatically create the collection if it doesn't exist
+						col = Activator.CreateInstance (dp.PropertyType);
+						parent_depobj.SetValue (dp, col);
+					}
+
+					// XXX do we check the child
+					// type vs the collection
+					// type?  or do we catch the
+					// exception?
+					IList l = col as IList;
+					if (l != null)
+						l.Add (child);
+
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		private bool LoadCode (string source, string type)
@@ -632,10 +752,11 @@ namespace Mono.Xaml
 		// Proxy so that we return IntPtr.Zero in case of any failures, instead of
 		// genereting an exception and unwinding the stack.
 		//
-		private IntPtr cb_load_object (string asm_name, string asm_path, string ns, string type_name)
+		private IntPtr cb_load_object (string asm_name, string asm_path, string ns, string type_name, out bool is_dependency_object)
 		{
+			is_dependency_object = false;
 			try {
-				return LoadObject (asm_name, asm_path, ns, type_name);
+				return LoadObject (asm_name, asm_path, ns, type_name, out is_dependency_object);
 			} catch (Exception ex) {
 				Console.Error.WriteLine ("ManagedXamlLoader::LoadObject ({0}, {1}, {2}, {3}) failed: {4} ({5}).", asm_name, asm_path, ns, type_name, ex.Message, ex.GetType ().FullName);
 				return IntPtr.Zero;
@@ -644,7 +765,7 @@ namespace Mono.Xaml
 		
 		//
 		// Proxy so that we return IntPtr.Zero in case of any failures, instead of
-		// genreating an exception and unwinding the stack.
+		// generating an exception and unwinding the stack.
 		//
 		private bool cb_set_custom_attribute (IntPtr target_ptr, string xmlns, string name, string value)
 		{
@@ -655,7 +776,18 @@ namespace Mono.Xaml
 				return false;
 			}
 		}
-		
+
+		private bool cb_add_child (IntPtr parent_ptr, string prop_name, IntPtr child_ptr)
+		{
+			try {
+				return AddChild (parent_ptr, prop_name, child_ptr);
+			} catch (Exception ex) {
+				Console.Error.WriteLine ("ManagedXamlLoader::AddChild ({0}, {1}, {2}) threw an exception: {3}.",
+							 parent_ptr, prop_name, child_ptr, ex.Message);
+				return false;
+			}
+		}
+
 		private bool cb_hookup_event (IntPtr target_ptr, IntPtr dest_ptr, string name, string value)
 		{
 			DependencyObject target = DependencyObject.Lookup (target_ptr);

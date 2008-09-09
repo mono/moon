@@ -33,8 +33,9 @@ using Mono;
 
 namespace Mono.Xaml
 {
-	public delegate IntPtr LoadObjectCallback (string asm_name, string asm_path, string ns, string type_name);
+	public delegate IntPtr LoadObjectCallback (string asm_name, string asm_path, string ns, string type_name, out bool is_dependency_object);
 	public delegate bool SetAttributeCallback (IntPtr target, string xmlns, string name, string value);
+	public delegate bool AddChildCallback (IntPtr parent, string propname, IntPtr child);
 	public delegate bool HookupEventCallback (IntPtr target, IntPtr dest, string name, string value);
 	public delegate void InsertMappingCallback (string key, string value);
 	public delegate string GetMappingCallback (string key);
@@ -47,6 +48,7 @@ namespace Mono.Xaml
 	public struct XamlLoaderCallbacks {
 		public LoadObjectCallback load_managed_object;
 		public SetAttributeCallback set_custom_attribute;
+		public AddChildCallback add_child;
 		public HookupEventCallback hookup_event;
 		public GetMappingCallback get_mapping;
 		public InsertMappingCallback insert_mapping;

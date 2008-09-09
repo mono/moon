@@ -21,32 +21,34 @@
 
 class XamlLoader;
 
-typedef DependencyObject *xaml_load_managed_object_callback (const char *asm_name, const char *asm_path, const char *name, const char *type_name);
-typedef bool xaml_set_custom_attribute_callback (void *target, const char* xmlns, const char *name, const char *value);
-typedef bool xaml_hookup_event_callback (void *target, void *dest, const char *ename, const char *evalue);
-typedef void xaml_insert_mapping_callback (const char *key, const char *value); 
-typedef const char *xaml_get_mapping_callback (const char *key);
-typedef bool xaml_load_code_callback (const char *source, const char *type);
-typedef void xaml_set_name_attribute_callback (void *target, const char *name);
-typedef void xaml_import_xaml_xmlns_callback (const char* xmlns);
-typedef DependencyObject *xaml_create_component_from_name_callback (const char* name);
-typedef const char *xaml_get_content_property_name_callback (DependencyObject* dob);
+typedef void* (*xaml_load_managed_object_callback) (const char *asm_name, const char *asm_path, const char *name, const char *type_name, bool *is_dependency_object);
+typedef bool (*xaml_set_custom_attribute_callback) (void *target, const char* xmlns, const char *name, const char *value);
+typedef bool (*xaml_add_child_callback) (void *parent, const char *prop_name, void *child);
+typedef bool (*xaml_hookup_event_callback) (void *target, void *dest, const char *ename, const char *evalue);
+typedef void (*xaml_insert_mapping_callback) (const char *key, const char *value); 
+typedef const char* (*xaml_get_mapping_callback) (const char *key);
+typedef bool (*xaml_load_code_callback) (const char *source, const char *type);
+typedef void (*xaml_set_name_attribute_callback) (void *target, const char *name);
+typedef void (*xaml_import_xaml_xmlns_callback) (const char* xmlns);
+typedef DependencyObject* (*xaml_create_component_from_name_callback) (const char* name);
+typedef const char* (*xaml_get_content_property_name_callback) (void *obj);
 
 struct XamlLoaderCallbacks {
-	xaml_load_managed_object_callback *load_managed_object;
-	xaml_set_custom_attribute_callback *set_custom_attribute;
-	xaml_hookup_event_callback *hookup_event;
-	xaml_get_mapping_callback *get_mapping;
-	xaml_insert_mapping_callback *insert_mapping;
-	xaml_load_code_callback *load_code;
-	xaml_set_name_attribute_callback *set_name_attribute;
-	xaml_import_xaml_xmlns_callback *import_xaml_xmlns;
-	xaml_create_component_from_name_callback *create_component_from_name;
-	xaml_get_content_property_name_callback *get_content_property_name;
+	xaml_load_managed_object_callback load_managed_object;
+	xaml_set_custom_attribute_callback set_custom_attribute;
+	xaml_add_child_callback add_child;
+	xaml_hookup_event_callback hookup_event;
+	xaml_get_mapping_callback get_mapping;
+	xaml_insert_mapping_callback insert_mapping;
+	xaml_load_code_callback load_code;
+	xaml_set_name_attribute_callback set_name_attribute;
+	xaml_import_xaml_xmlns_callback import_xaml_xmlns;
+	xaml_create_component_from_name_callback create_component_from_name;
+	xaml_get_content_property_name_callback get_content_property_name;
 
 	XamlLoaderCallbacks () :
 		load_managed_object (NULL), set_custom_attribute (NULL),
-		hookup_event (NULL), get_mapping (NULL),
+		add_child (NULL), hookup_event (NULL), get_mapping (NULL),
 		insert_mapping (NULL), load_code (NULL),
 		set_name_attribute (NULL), import_xaml_xmlns (NULL),
 		create_component_from_name (NULL), get_content_property_name (NULL)
@@ -110,7 +112,7 @@ class XamlLoader {
 	char *str;
 	GHashTable *mappings;
 	GHashTable *missing_assemblies;
-	
+
  public:
 	enum AssemblyLoadResult {
 		SUCCESS = -1,
@@ -122,14 +124,15 @@ class XamlLoader {
 	virtual ~XamlLoader ();
 	
 	virtual bool LoadVM ();
-	virtual DependencyObject *CreateManagedObjectFromXmlns (const char *default_asm_name, const char *default_asm_path, const char *xmlns, const char *name);
-	virtual DependencyObject *CreateManagedObject (const char *asm_name, const char *asm_path, const char *name, const char *type_name);
+	virtual void *CreateManagedObjectFromXmlns (const char *default_asm_name, const char *default_asm_path, const char *xmlns, const char *name, bool *is_dependency_object);
+	virtual void *CreateManagedObject (const char *asm_name, const char *asm_path, const char *name, const char *type_name, bool *is_dependency_object);
+	virtual bool AddChild (void *parent, const char *prop_name, void *child);
 	virtual bool SetAttribute (void *target, const char *xmlns, const char *name, const char *value);
 	virtual void SetNameAttribute (void *target, const char *name);
 	virtual bool HookupEvent (void *target, void *dest, const char *name, const char *value);
 	virtual void InsertMapping (const char *key, const char *value);
 	virtual DependencyObject *CreateComponentFromName (const char* name);
-	virtual const char *GetContentPropertyName (DependencyObject *dob);
+	virtual const char *GetContentPropertyName (void *dob);
 
 	
 	const char *GetMapping (const char *key);

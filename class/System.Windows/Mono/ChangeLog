@@ -1,3 +1,10 @@
+2008-09-08  Chris Toshok  <toshok@ximian.com>
+
+	* ManagedXamlLoader.cs: a few changes to support creating non-DO
+	objects from within the parser (including property setting),
+	setting completely managed attached DP's on managed objects, and
+	implement AddChild for managed objects.
+
 2008-08-20  Jackson Harper  <jackson@ximian.com>
 
 	* ManagedXamlLoader.cs: When setting managed attributes we need to
