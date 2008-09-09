@@ -36,14 +36,11 @@ using System.Windows.Markup;
 
 namespace System.Windows.Controls {
 	public abstract partial class Control : FrameworkElement {
-		
+
+		[MonoTODO]
 		protected object DefaultStyleKey {
-			get {
-				throw new NotImplementedException ();
-			}
-			set {
-				throw new NotImplementedException ();
-			}
+			get { return null; }
+			set { /* nothing yet */; }
 		}
 
 #if NET_2_1
