@@ -167,9 +167,10 @@ FrameworkElement::Arrange (Rect finalRect)
         }
 
 	SetRenderSize (size);
+#if SL_2_0
 	SetActualWidth (size.width);
 	SetActualHeight (size.height);
-
+#endif
 	// XXX what do we do with finalRect.x and y?
 
 	g_warning ("more here in FrameworkElement::Arrange.  move the bounds or something?  set properties?  who knows!?");
