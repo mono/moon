@@ -8,6 +8,10 @@
 	* border.cpp:
 	* frameworkelement.cpp:
 	* shape.cpp, shape.h:
+	* canvas.cpp: update to pass the new more extensive tests.
+
+2008-09-10  Larry Ewing  <lewing@novell.com>
+
 	* size.h:  Tweak to match updated tests.
 
 2008-09-09  Chris Toshok  <toshok@ximian.com>

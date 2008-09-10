@@ -522,6 +522,20 @@ Shape::MeasureOverride (Size availableSize)
 	return size;
 }
 
+Size
+Shape::ArrangeOverride (Size availableSize)
+{
+	Size size =  FrameworkElement::ArrangeOverride (availableSize);
+	
+	// XXX hack to handle rectangle and ellipse specially until more is understood
+	// at which point they can be their own overrides
+	if (GetStretch () != StretchNone && !(Is (Type::RECTANGLE) || Is (Type::ELLIPSE)))
+		size = size.Min (0,0);
+
+	return size;
+}
+
+
 void
 Shape::ComputeBounds ()
 {

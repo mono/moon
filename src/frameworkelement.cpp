@@ -107,20 +107,16 @@ FrameworkElement::Measure (Size availableSize)
 	else
 		size = MeasureOverride (size);
 
+#if SL_2_0
+	SetActualWidth (GetWidth ());
+	SetActualHeight (GetHeight ());
+#endif
+
 	// XXX ugly hack to fake some sort of exception case
 	if (isnan (size.width) || isnan (size.height)) {
-#if SL_2_0
-		SetActualWidth (0);
-		SetActualHeight (0);
-#endif
                 SetDesiredSize (Size (0,0));
 		return;
         }
-
-#if SL_2_0
-	SetActualWidth (size.width);
-	SetActualHeight (size.height);
-#endif
 
 	// postcondition the results
 	size = size.Min (specified);
@@ -153,40 +149,27 @@ FrameworkElement::MeasureOverride (Size availableSize)
 void
 FrameworkElement::Arrange (Rect finalRect)
 {
-	Size size = GetDesiredSize ();
-
 #if SL_2_0
 	Thickness margin = *GetMargin ();
 	finalRect = finalRect.GrowBy (-margin);
 #endif
-	// XXX this is hack to get around the 0.0 w/h defaults we still
-	// have in place due to 1.0
-	Value *vw = GetValueNoDefault (FrameworkElement::WidthProperty);
-	Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
-	Size specified = Size (vw ? GetWidth () : NAN, vh ? GetHeight () : NAN);
+	Size size = Size (finalRect.width, finalRect.height);
 
-	size = size.Min (finalRect.width, finalRect.height);
-	
 	if (arrange_cb)
 		size = (*arrange_cb)(size);
 	else
 		size = ArrangeOverride (size);
 
-	// postcondition the results
-	size = size.Min (specified);
-	size = size.Max (specified);
+	// XXX ugly hack to fake some sort of exception case
+	if (isnan (size.width) || isnan (size.height)) {
+                SetRenderSize (Size (0,0));
+		return;
+        }
 
-#if SL_2_0
-	size = size.Min (GetMaxWidth (), GetMaxHeight ());
-	size = size.Max (GetMinWidth (), GetMinHeight ());
-
-	size = size.GrowBy (margin);
-#endif
 	SetRenderSize (size);
+	SetActualWidth (size.width);
+	SetActualHeight (size.height);
 
-	size = size.Min (finalRect.width, finalRect.height);
-	SetDesiredSize (size);
-	
 	// XXX what do we do with finalRect.x and y?
 
 	g_warning ("more here in FrameworkElement::Arrange.  move the bounds or something?  set properties?  who knows!?");
@@ -196,7 +179,20 @@ FrameworkElement::Arrange (Rect finalRect)
 Size
 FrameworkElement::ArrangeOverride (Size finalSize)
 {
-	return finalSize;
+	Size size = finalSize;
+
+	if (!GetVisualParent () || GetVisualParent ()->Is (Type::CANVAS))
+		return Size (NAN,NAN);
+
+	Value *vw = GetValueNoDefault (FrameworkElement::WidthProperty);
+	Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
+	Size specified = Size (vw ? GetWidth () : NAN, vh ? GetHeight () : NAN);
+
+	// postcondition the results
+	size = size.Min (specified);
+	size = size.Max (specified);
+
+	return size;
 }
 
 void

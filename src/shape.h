@@ -110,6 +110,7 @@ class Shape : public FrameworkElement {
 	// Overrides from UIElement.
 	//
 	virtual Size MeasureOverride (Size Availablesize);
+	virtual Size ArrangeOverride (Size finalSize);
 	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual void ComputeBounds ();

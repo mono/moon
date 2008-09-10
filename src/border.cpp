@@ -27,8 +27,7 @@ Border::MeasureOverride (Size availableSize)
 	// Get the desired size of our child, and include any margins we set
 	if (UIElement *child = GetChild ()) {
 		child->Measure (availableSize.GrowBy (-border));
-
-		desired = desired.Max (child->GetDesiredSize ());
+		desired = child->GetDesiredSize ();
 	}
 	desired = desired.GrowBy (border);
 
@@ -51,10 +50,19 @@ Border::ArrangeOverride (Size finalSize)
 		Rect childRect = Rect (0.0, 0.0, finalSize.width, finalSize.height);
 
 		child->Arrange (childRect.GrowBy (-border));
-		desired = desired.Max (child->GetDesiredSize ());
+		desired = desired.Max (child->GetRenderSize ());
 	}
-	
-	return desired.GrowBy (border);
+
+	desired = desired.GrowBy (border);
+	desired = desired.Max (finalSize);
+
+	Value *vw = GetValueNoDefault (FrameworkElement::WidthProperty);
+	Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
+	Size specified = Size (vw ? GetWidth () : NAN, vh ? GetHeight () : NAN);
+	desired = desired.Max (specified);
+	desired = desired.Min (specified);
+
+	return desired;
 }
 
 void 
