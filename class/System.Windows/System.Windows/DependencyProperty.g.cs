@@ -968,7 +968,7 @@ namespace System.Windows.Documents {
 	}
 
 	partial class Run {
-		public static readonly DependencyProperty TextProperty = DependencyProperty.Lookup (Kind.RUN, "Text", typeof (string));
+		internal static readonly DependencyProperty TextProperty = DependencyProperty.Lookup (Kind.RUN, "Text", typeof (string));
 
 		public string Text {
 			get { return (string) GetValue (TextProperty); }

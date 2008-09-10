@@ -155,9 +155,6 @@ namespace System.Windows {
 		}
 
 		public Size RenderSize {
-#if NET_2_1
-			[SecuritySafeCritical]
-#endif
 			get {
 				UnmanagedSize sz = NativeMethods.uielement_get_render_size (native);
 				return new Size (sz.width, sz.height);

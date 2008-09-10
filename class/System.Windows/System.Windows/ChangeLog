@@ -1,3 +1,8 @@
+2008-09-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* UIElement.cs: get_RenderSize does not need SecuritySafeCritical
+	attribute.
+
 2008-09-09  Chris Toshok  <toshok@ximian.com>
 
 	* DependencyProperty.cs: swallow exceptions raised during the
