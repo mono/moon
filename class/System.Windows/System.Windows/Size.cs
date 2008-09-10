@@ -32,16 +32,8 @@ namespace System.Windows {
 
 		public Size (double width, double height)
 		{
-			// This test is split up to work around
-			// b.n.c #423981 and NaN troubles
-
-			if (width < 0)
-				throw new ArgumentException ();
-			if (height < 0)
-				throw new ArgumentException ();
-			
-			w = width;
-			h = height;
+			Width = width;
+			Height = height;
 		}
 		
 		public override bool Equals (object o)
@@ -74,12 +66,22 @@ namespace System.Windows {
 		
 		public double Height {
 			get { return h; } 
-			set { h = value; }
+			set { 	
+				if (value < 0)
+					throw new ArgumentException ();
+
+				h = value; 
+			}
 		}
 
 		public double Width {
 			get { return w; }
-			set { w = value; }
+			set {
+				if (value < 0)
+					throw new ArgumentException ();
+
+				w = value; 
+			}
 		}
 
 		public bool IsEmpty {
@@ -97,6 +99,9 @@ namespace System.Windows {
 
 		public override string ToString ()
 		{
+			if (IsEmpty)
+				return "Empty";
+
 			return string.Format ("{0},{1}", w, h);
 		}
 	}

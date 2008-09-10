@@ -28,6 +28,13 @@ namespace MoonTest.System.Windows
 			Assert.Throws (delegate { new Size (-1, 5); }, typeof (ArgumentException));
 			Assert.Throws (delegate { new Size (Double.MinValue, Double.MinValue); }, typeof (ArgumentException));
 			Assert.Throws (delegate { new Size (Double.NegativeInfinity, Double.NegativeInfinity); }, typeof (ArgumentException));
+
+			Size s = new Size (0,0);
+			Assert.Throws (delegate { s.Width = Double.NegativeInfinity; }, typeof (ArgumentException));
+			
+			s = Size.Empty;
+			s.Width = 10;
+			Assert.AreEqual (false, s.IsEmpty);
 		}
 
 		[TestMethod]
@@ -43,6 +50,20 @@ namespace MoonTest.System.Windows
 		{
 			Assert.AreEqual ("5,5", (new Size(5,5)).ToString());
 			Assert.AreEqual ("5.234124,5234235", (new Size(5.234124,5234235)).ToString());
+		}
+
+		[TestMethod]
+		[KnownFailure]
+		public void SpecialToString ()
+		{
+			Assert.AreEqual ("NaN,NaN", (new Size(Double.NaN,Double.NaN)).ToString ());
+			Assert.AreEqual ("Empty", Size.Empty.ToString ());
+			
+			Assert.AreEqual ("-\u221e", Double.NegativeInfinity.ToString ());
+
+			Size s = Size.Empty;
+			s.Width = Double.NaN;
+			Assert.AreEqual ("NaN,-\u221e", s.ToString ());
 		}
 	}
 }
