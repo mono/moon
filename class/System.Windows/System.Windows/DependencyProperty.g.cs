@@ -1125,10 +1125,10 @@ namespace System.Windows.Media {
 	}
 
 	partial class Geometry {
-		public static readonly DependencyProperty FillRuleProperty = DependencyProperty.Lookup (Kind.GEOMETRY, "FillRule", typeof (FillRule));
+		internal static readonly DependencyProperty FillRuleProperty = DependencyProperty.Lookup (Kind.GEOMETRY, "FillRule", typeof (FillRule));
 		public static readonly DependencyProperty TransformProperty = DependencyProperty.Lookup (Kind.GEOMETRY, "Transform", typeof (Transform));
 
-		public FillRule FillRule {
+		internal FillRule FillRule {
 			get { return (FillRule) GetValue (FillRuleProperty); }
 			set { SetValue (FillRuleProperty, value); }
 		}
