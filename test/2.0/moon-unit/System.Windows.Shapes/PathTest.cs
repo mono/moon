@@ -95,7 +95,6 @@ namespace MoonTest.System.Windows.Shapes
 		}
 
 		[TestMethod]
-		[KnownFailure]
 		public void Measure_StretchFill_Test2 ()
 		{
 			Border b = new Border ();
@@ -123,7 +122,6 @@ namespace MoonTest.System.Windows.Shapes
 		}
 
 		[TestMethod]
-		[KnownFailure]
 		public void Measure_StretchFill_Test3 ()
 		{
 			Border b = new Border ();
@@ -158,7 +156,6 @@ namespace MoonTest.System.Windows.Shapes
 		}
 
 		[TestMethod]
-		[KnownFailure]
 		public void MeasureStretchTest4 ()
 		{
 			Border b = (Border)XamlReader.Load (@"

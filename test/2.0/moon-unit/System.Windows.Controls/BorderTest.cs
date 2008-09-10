@@ -464,7 +464,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[KnownFailure]
 		public void ArrangeTest_ChildUnsetSize ()
 		{
 			Border c = new Border ();

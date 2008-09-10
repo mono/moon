@@ -156,7 +156,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[KnownFailure]
 		public void ChildlessArrangeTest2 ()
 		{
 			Border b = new Border ();
@@ -184,7 +183,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[KnownFailure]
 		public void ChildlessArrangeTest3 ()
 		{
 			Border b = new Border ();
@@ -217,7 +215,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[KnownFailure]
 		public void ChildlessArrangeTest4 ()
 		{
 			Border b = new Border ();
@@ -250,7 +247,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[KnownFailure]
 		public void ChildlessArrangeTest5 ()
 		{
 			Border b = new Border ();
