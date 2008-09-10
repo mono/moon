@@ -511,6 +511,17 @@ Shape::ShiftPosition (Point p)
 	FrameworkElement::ShiftPosition (p);
 }
 
+Size
+Shape::MeasureOverride (Size availableSize)
+{
+	Size size = FrameworkElement::MeasureOverride (availableSize);
+
+	if (GetStretch () != StretchNone)
+		size = size.Min (0,0);
+
+	return size;
+}
+
 void
 Shape::ComputeBounds ()
 {

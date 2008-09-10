@@ -107,6 +107,7 @@ namespace MoonTest.System.Windows.Controls
 
 			c.Measure (new Size (10, 10));
 
+			Assert.AreEqual (new Size (10,10), r.DesiredSize);
 			Assert.AreEqual (new Size (10,10), c.DesiredSize);
 		}
 

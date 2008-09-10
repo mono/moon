@@ -11,6 +11,7 @@
 #ifndef __MOON_SIZE_H__
 #define __MOON_SIZE_H__
 
+#include <math.h>
 #include <glib.h>
 #include "eventargs.h"
 #include "thickness.h"
@@ -19,7 +20,7 @@
 /* @IncludeInKinds */
 struct Size {
 	double width, height;
-	
+
 	Size () : width(0), height(0) {}
 	
 	Size (int zero) : width(0), height(0) {}
@@ -28,6 +29,11 @@ struct Size {
 	{
 		this->width = w;
 		this->height = h;
+	}
+
+	bool IsEmpty () const
+	{
+		return (width == -INFINITY && height == -INFINITY);
 	}
 
 	Size Max (double w, double h) const

@@ -24,7 +24,6 @@ namespace MoonTest.System.Windows.Shapes
 		}
 
 		[TestMethod]
-		[KnownFailure]
 		public void MeasureTest2 ()
 		{
 			Canvas c = new Canvas ();
@@ -44,6 +43,29 @@ namespace MoonTest.System.Windows.Shapes
 
 			Assert.AreEqual (new Size (0, 0), c.DesiredSize, "Canvas desired");
 			Assert.AreEqual (new Size (0, 0), r.DesiredSize, "Rectangle desired");
+		}
+
+		[TestMethod]
+		public void MeasureTest2_1 ()
+		{
+			Border b = new Border ();
+			Canvas c = new Canvas ();
+			Rectangle r = new Rectangle ();
+			r.Width = 10;
+			r.Height = 20;
+
+			r.Measure (new Size (50, 50));
+			Assert.AreEqual (new Size (0, 0), r.DesiredSize);
+
+			b.Child = c;
+			c.Children.Add (r);
+
+			b.Width = 20;
+			b.Height = 10;
+			b.Measure (new Size (50, 50));
+			Assert.AreEqual (new Size (0, 0), c.DesiredSize, "Canvas desired");
+			Assert.AreEqual (new Size (0, 0), r.DesiredSize, "Rectangle desired");
+			Assert.AreEqual (new Size (20, 10), b.DesiredSize, "Border desired");
 		}
 
 		[TestMethod]

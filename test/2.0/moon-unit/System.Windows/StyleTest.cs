@@ -18,7 +18,6 @@ namespace MoonTest.System.Windows
 	public class StyleTest
 	{
 		[TestMethod]
-		[KnownFailure]
 		public void Sealed ()
 		{
 			Style style = new Style (typeof (UIElement));

@@ -84,9 +84,11 @@ FrameworkElement::Measure (Size availableSize)
 	Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
 	Size specified = Size (vw ? GetWidth () : NAN, vh ? GetHeight () : NAN);
 	
+	
 #if SL_2_0
 	Thickness margin = *GetMargin ();
 	Size size = availableSize.GrowBy (-margin);
+
 
 	size = size.Min (specified);
 	size = size.Max (specified);
@@ -107,9 +109,14 @@ FrameworkElement::Measure (Size availableSize)
 
 	// XXX ugly hack to fake some sort of exception case
 	if (isnan (size.width) || isnan (size.height)) {
-		SetDesiredSize (Size (0,0));
+		SetActualWidth (0);
+		SetActualHeight (0);
+                SetDesiredSize (Size (0,0));
 		return;
-	}
+        }
+
+	SetActualWidth (size.width);
+	SetActualHeight (size.height);
 
 	// postcondition the results
 	size = size.Min (specified);
@@ -129,10 +136,10 @@ FrameworkElement::Measure (Size availableSize)
 Size
 FrameworkElement::MeasureOverride (Size availableSize)
 {
-	if (!GetVisualParent ())
-		return Size (NAN, NAN);
+	if (!GetVisualParent () || GetVisualParent ()->Is (Type::CANVAS))
+		return Size (NAN,NAN);
 
-	return Size (0,0);
+	return Size (0,0).GrowBy (GetWidth (), GetHeight ());
 }
 
 
@@ -142,7 +149,6 @@ FrameworkElement::MeasureOverride (Size availableSize)
 void
 FrameworkElement::Arrange (Rect finalRect)
 {
-	Size finalSize = GetDesiredSize ();
 	Size size = GetDesiredSize ();
 
 #if SL_2_0
@@ -161,7 +167,6 @@ FrameworkElement::Arrange (Rect finalRect)
 		size = (*arrange_cb)(size);
 	else
 		size = ArrangeOverride (size);
-
 
 	// postcondition the results
 	size = size.Min (specified);
