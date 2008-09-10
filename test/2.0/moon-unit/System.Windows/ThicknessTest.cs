@@ -18,7 +18,7 @@ namespace MoonTest.System.Windows
 	public class ThicknessTest
 	{
 		[TestMethod]
-		public void ToString ()
+		public void ToStringTest ()
 		{
 			Thickness t = new Thickness (10);
 			Assert.AreEqual ("10,10,10,10", t.ToString());
