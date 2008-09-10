@@ -77,7 +77,7 @@ namespace System.Windows.Interop {
 				if (PluginHost.Handle == IntPtr.Zero)
 					return null;
 
-				IntPtr raw = NativeMethods.plugin_instance_get_init_params (PluginHost.Handle);
+				IntPtr raw = NativeMethods.plugin_instance_get_source_location (PluginHost.Handle);
 				if (raw == IntPtr.Zero)
 					return null;
 

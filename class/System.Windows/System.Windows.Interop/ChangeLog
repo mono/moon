@@ -1,3 +1,8 @@
+2008-09-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* SilverlightHost.cs: Fix to call the right p/invoke that returns
+	the URI to the XAP file.
+
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Settings.cs, Content.cs, SilverlightHost.cs: Gui-compare fixes.
