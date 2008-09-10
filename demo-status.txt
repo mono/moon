@@ -77,9 +77,8 @@ rating:4
 
 site:Kit 3D
 url:http://www.markdawson.org/kit3d
-rating:1
- * Playing cards change faces Bug 394946
- * 3D picture grid - black canvas appears Bug 375217
+rating:4
+ * Works
 
 site:LCD Clock
 url:http://www.designwithsilverlight.com/tutorials/LCDClock/Default.html
@@ -90,7 +89,7 @@ rating:4
 site:Matrix Falling Chars
 url:http://blogs.msdn.com/synergist/archive/2007/09/28/matrix-falling-characters-in-silverlight.aspx
 rating:2
- * Fullscreen is super slow. Bug 350174
+ * Works!
 
 site:Matrix Multiplication
 url:http://minbashian.com/matrixanim.html
@@ -100,7 +99,7 @@ rating:4
 site:Media Preview TV
 url:http://www.mediapreview.tv/
 rating:0
- * Never finishes loading. Stays at 99%
+ * Never finishes loading. Stays at 99% Bug 424971
 
 site:Minesweeper
 url:http://www.softencrypt.com/mines/
@@ -150,7 +149,9 @@ rating:4
 site:Popfly
 url:http://www.popfly.com
 rating:3
- * Controls 
+ * Color picker not releaseing mouse cursor. Bug 410619
+ * SIGABRT when playing game Bug 424984
+ * Block menus don't show items Bug 412674
 
 site:Scrolling Video Playlist
 url:http://williablog.net/post/2007/11/Sample-Scrolling-Silverlight-Video-Playlist.aspx
