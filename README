@@ -87,6 +87,12 @@ Test Suite
 		cd moon/test
 		./make-xephyr run-ms-tests
 
+	To run the Moonlight Unit Tests:
+
+		cd moon/test/2.0/moon-unit
+		make test
+		
+
 Firefox 3
 =========
 
