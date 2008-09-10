@@ -49,7 +49,7 @@ class Geometry : public DependencyObject {
 	virtual ~Geometry ();
 	
  public:
- 	/* @PropertyType=FillRule,DefaultValue=FillRuleEvenOdd,GenerateAccessors */
+ 	/* @PropertyType=FillRule,DefaultValue=FillRuleEvenOdd,Access=Internal,GenerateAccessors */
 	static DependencyProperty *FillRuleProperty;
  	/* @PropertyType=Transform,GenerateAccessors */
 	static DependencyProperty *TransformProperty;
