@@ -52,8 +52,8 @@ namespace Mono.Moonlight.UnitTesting
 
 				try {
 					test = ctor.Invoke (null);
-				} catch {//(Exception ex) {
-					//output.WriteLine ("Exception while trying to instantiate test class: " + ex.ToString ());
+				} catch (Exception ex) {
+					Console.WriteLine ("Exception while trying to instantiate test class: " + ex.ToString ());
 					continue;
 				}
 
