@@ -109,14 +109,18 @@ FrameworkElement::Measure (Size availableSize)
 
 	// XXX ugly hack to fake some sort of exception case
 	if (isnan (size.width) || isnan (size.height)) {
+#if SL_2_0
 		SetActualWidth (0);
 		SetActualHeight (0);
+#endif
                 SetDesiredSize (Size (0,0));
 		return;
         }
 
+#if SL_2_0
 	SetActualWidth (size.width);
 	SetActualHeight (size.height);
+#endif
 
 	// postcondition the results
 	size = size.Min (specified);
