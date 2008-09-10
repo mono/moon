@@ -1,3 +1,10 @@
+2008-09-10  Larry Ewing  <lewing@novell.com>
+
+	* border.cpp:
+	* frameworkelement.cpp:
+	* shape.cpp, shape.h:
+	* size.h:  Tweak to match updated tests.
+
 2008-09-09  Chris Toshok  <toshok@ximian.com>
 
 	* style.h (class Setter): make ValueProperty's PropertyType
