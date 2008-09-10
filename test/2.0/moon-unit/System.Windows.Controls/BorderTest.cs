@@ -199,6 +199,24 @@ namespace MoonTest.System.Windows.Controls
 			c.Measure (new Size (10, 10));
 
 			Assert.AreEqual (new Size (10,10), c.DesiredSize);
+			Assert.AreEqual (0, c.ActualWidth);
+			Assert.AreEqual (0, c.ActualHeight);
+		}
+
+		[TestMethod]
+		public void ChildPaddingMeasureTest1_2()
+		{
+			Border c = new Border ();
+			Rectangle r = new Rectangle();
+
+			c.Child = r;
+
+			c.Padding = new Thickness(10);
+			c.Measure (new Size (10, 10));
+
+			Assert.AreEqual (new Size (10,10), c.DesiredSize);
+			Assert.AreEqual (0, c.ActualWidth);
+			Assert.AreEqual (0, c.ActualHeight);
 		}
 
 		[TestMethod]
@@ -457,10 +475,21 @@ namespace MoonTest.System.Windows.Controls
 			/* don't specify a width/height */
 
 			c.Measure (new Size (25, 25));
+			Assert.AreEqual (0, r.ActualWidth);
+			Assert.AreEqual (0, r.ActualHeight);
+			Assert.AreEqual (0, c.ActualWidth);
+			Assert.AreEqual (0, c.ActualHeight);
+			Assert.AreEqual (new Size (0, 0), r.DesiredSize);
+			Assert.AreEqual (new Size (0, 0), c.DesiredSize);
+
 			c.Arrange (new Rect (0, 0, 25, 25));
 
+			Assert.AreEqual (25, r.ActualWidth);
+			Assert.AreEqual (25, r.ActualHeight);
 			Assert.AreEqual (new Size (0, 0), r.DesiredSize);
 			Assert.AreEqual (new Size (25, 25), r.RenderSize);
+			Assert.AreEqual (new Size (0, 0), c.DesiredSize);
+			Assert.AreEqual (new Size (25, 25), c.RenderSize);
 		}
 
 		[TestMethod]

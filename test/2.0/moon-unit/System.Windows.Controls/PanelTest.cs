@@ -17,14 +17,12 @@ namespace MoonTest.System.Windows.Controls
 	[TestClass]
 	public class PanelTest
 	{
-		class PanelPoker : Panel
-		{
-		}
-		
-		class MeasurePoker : Panel
+		class LayoutPoker : Panel
 		{
 			public Size MeasureResult = new Size (0,0);
 			public Size MeasureArg = new Size (0,0);
+			public Size ArrangeResult = new Size (0,0);
+			public Size ArrangeArg = new Size (0,0);
 
 			protected override Size MeasureOverride (Size availableSize)
 			{
@@ -33,23 +31,31 @@ namespace MoonTest.System.Windows.Controls
 				return MeasureResult;
 			}
 
+			protected override Size ArrangeOverride (Size finalSize)
+			{
+				ArrangeArg = finalSize;
+				Tester.WriteLine (string.Format ("Panel final size is {0}", finalSize));
+				return ArrangeResult;
+			}
+
 		}
 
 		[TestMethod]
 		public void ChildlessMeasureTest ()
 		{
-			PanelPoker c = new PanelPoker ();
+			LayoutPoker c = new LayoutPoker ();
 			Size s = new Size (10,10);
 
 			c.Measure (s);
 
 			Assert.AreEqual (new Size (0,0), c.DesiredSize, "DesiredSize");
+			Assert.AreEqual (new Size (10,10), c.MeasureArg, "measure args");
 		}
 
 		[TestMethod]
 		public void ChildlessMeasureTest2 ()
 		{
-			MeasurePoker c = new MeasurePoker ();
+			LayoutPoker c = new LayoutPoker ();
 			Size s = new Size (10,10);
 			Border b = new Border ();
 			
@@ -65,7 +71,7 @@ namespace MoonTest.System.Windows.Controls
 		[TestMethod]
 		public void ChildlessMeasureTest3 ()
 		{
-			MeasurePoker c = new MeasurePoker ();
+			LayoutPoker c = new LayoutPoker ();
 			Size s = new Size (10,10);
 			Border b = new Border ();
 			
@@ -83,7 +89,7 @@ namespace MoonTest.System.Windows.Controls
 		[TestMethod]
 		public void ChildlessMeasureTest4 ()
 		{
-			MeasurePoker c = new MeasurePoker ();
+			LayoutPoker c = new LayoutPoker ();
 			Size s = new Size (10,10);
 			Border b = new Border ();
 			
@@ -102,7 +108,7 @@ namespace MoonTest.System.Windows.Controls
 		[TestMethod]
 		public void ChildMeasureTest1 ()
 		{
-			PanelPoker c = new PanelPoker ();
+			LayoutPoker c = new LayoutPoker ();
 			Rectangle r = new Rectangle();
 
 			c.Children.Add (r);
@@ -118,19 +124,226 @@ namespace MoonTest.System.Windows.Controls
 		[TestMethod]
 		public void ChildMeasureTest2 ()
 		{
-			PanelPoker c = new PanelPoker ();
+			LayoutPoker c = new LayoutPoker ();
 			Rectangle r = new Rectangle();
 
 			c.Children.Add (r);
 
 			r.Width = 50;
 			r.Height = 50;
-
+			
 			c.Measure (new Size (100, 100));
 
 			Assert.AreEqual (new Size (0,0), c.DesiredSize);
 		}
+		
+		[TestMethod]
+		public void ChildlessArrangeTest1 ()
+		{
+			LayoutPoker c = new LayoutPoker ();
+			Size s = new Size (10,10);
+			
+			c.Measure (s);
 
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "DesiredSize");
+			Assert.AreEqual (new Size (10,10), c.MeasureArg, "measure args");
+			
+			c.Arrange (new Rect (0,0,10,10));
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "DesiredSize");
+			Assert.AreEqual (new Size (0,0), c.RenderSize, "render size");
+			Assert.AreEqual (new Size (10,10), c.ArrangeArg, "measure args");
+		}
+
+		[TestMethod]
+		[KnownFailure]
+		public void ChildlessArrangeTest2 ()
+		{
+			Border b = new Border ();
+			LayoutPoker c = new LayoutPoker ();
+			Size s = new Size (10,10);
+			
+			b.Child = c;
+			b.Measure (s);
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c DesiredSize");
+			Assert.AreEqual (new Size (10,10), c.MeasureArg, "c measure args");
+			Assert.AreEqual (new Size (0,0), b.DesiredSize, "b DesiredSize");
+			Assert.AreEqual (0,b.ActualWidth);
+			Assert.AreEqual (0,b.ActualHeight);
+			
+			b.Arrange (new Rect (0,0,10,10));
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c DesiredSize");
+			Assert.AreEqual (new Size (0,0), c.RenderSize, "c render size");
+			Assert.AreEqual (new Size (10,10), c.ArrangeArg, "c measure args");
+			Assert.AreEqual (new Size (0,0), b.DesiredSize, "b DesiredSize");
+			Assert.AreEqual (new Size (10,10), b.RenderSize, "b render size");
+			Assert.AreEqual (10,b.ActualWidth);
+			Assert.AreEqual (10,b.ActualHeight);
+		}
+
+		[TestMethod]
+		[KnownFailure]
+		public void ChildlessArrangeTest3 ()
+		{
+			Border b = new Border ();
+			LayoutPoker c = new LayoutPoker ();
+			Size s = new Size (10,10);
+			
+			b.Child = c;
+			b.Measure (s);
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c DesiredSize");
+			Assert.AreEqual (new Size (10,10), c.MeasureArg, "c measure args");
+			Assert.AreEqual (new Size (0,0), b.DesiredSize, "b DesiredSize");
+			Assert.AreEqual (0,b.ActualWidth);
+			Assert.AreEqual (0,b.ActualHeight);
+			Assert.AreEqual (0,c.ActualWidth);
+			Assert.AreEqual (0,c.ActualHeight);
+			
+			c.ArrangeResult = new Size (10,10);
+			b.Arrange (new Rect (0,0,10,10));
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c DesiredSize");
+			Assert.AreEqual (new Size (10,10), c.RenderSize, "c render size");
+			Assert.AreEqual (new Size (10,10), c.ArrangeArg, "c measure args");
+			Assert.AreEqual (new Size (0,0), b.DesiredSize, "b DesiredSize");
+			Assert.AreEqual (new Size (10,10), b.RenderSize, "b render size");
+			Assert.AreEqual (10,b.ActualWidth);
+			Assert.AreEqual (10,b.ActualHeight);
+			Assert.AreEqual (10,c.ActualWidth);
+			Assert.AreEqual (10,c.ActualHeight);
+		}
+
+		[TestMethod]
+		[KnownFailure]
+		public void ChildlessArrangeTest4 ()
+		{
+			Border b = new Border ();
+			LayoutPoker c = new LayoutPoker ();
+			Size s = new Size (10,10);
+			
+			b.Child = c;
+			b.Measure (s);
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c DesiredSize");
+			Assert.AreEqual (new Size (10,10), c.MeasureArg, "c measure args");
+			Assert.AreEqual (new Size (0,0), b.DesiredSize, "b DesiredSize");
+			Assert.AreEqual (0,b.ActualWidth);
+			Assert.AreEqual (0,b.ActualHeight);
+			Assert.AreEqual (0,c.ActualWidth);
+			Assert.AreEqual (0,c.ActualHeight);
+			
+			c.ArrangeResult = new Size (10,10);
+			b.Arrange (new Rect (0,0,10,10));
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c DesiredSize");
+			Assert.AreEqual (new Size (10,10), c.RenderSize, "c render size");
+			Assert.AreEqual (new Size (10,10), c.ArrangeArg, "c measure args");
+			Assert.AreEqual (new Size (0,0), b.DesiredSize, "b DesiredSize");
+			Assert.AreEqual (new Size (10,10), b.RenderSize, "b render size");
+			Assert.AreEqual (10,b.ActualWidth);
+			Assert.AreEqual (10,b.ActualHeight);
+			Assert.AreEqual (10,c.ActualWidth);
+			Assert.AreEqual (10,c.ActualHeight);
+		}
+
+		[TestMethod]
+		[KnownFailure]
+		public void ChildlessArrangeTest5 ()
+		{
+			Border b = new Border ();
+			LayoutPoker c = new LayoutPoker ();
+			Size s = new Size (10,10);
+			
+			b.Padding = new Thickness (1,1,0,0);
+			b.Child = c;
+			b.Measure (s);
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c DesiredSize");
+			Assert.AreEqual (new Size (9,9), c.MeasureArg, "c measure args");
+			Assert.AreEqual (new Size (1,1), b.DesiredSize, "b DesiredSize");
+			Assert.AreEqual (0,b.ActualWidth);
+			Assert.AreEqual (0,b.ActualHeight);
+			Assert.AreEqual (0,c.ActualWidth);
+			Assert.AreEqual (0,c.ActualHeight);
+			
+			c.ArrangeResult = new Size (9,9);
+			b.Arrange (new Rect (0,0,10,10));
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c DesiredSize");
+			Assert.AreEqual (new Size (9,9), c.RenderSize, "c render size");
+			Assert.AreEqual (new Size (9,9), c.ArrangeArg, "c measure args");
+			Assert.AreEqual (new Size (1,1), b.DesiredSize, "b DesiredSize");
+			Assert.AreEqual (new Size (10,10), b.RenderSize, "b render size");
+			Assert.AreEqual (10,b.ActualWidth);
+			Assert.AreEqual (10,b.ActualHeight);
+			Assert.AreEqual (9,c.ActualWidth);
+			Assert.AreEqual (9,c.ActualHeight);
+		}
+
+		[TestMethod]
+		[KnownFailure]
+		public void InvalidateArrangeTest ()
+		{
+			Border b = new Border ();
+			LayoutPoker c = new LayoutPoker ();
+			Size s = new Size (10,10);
+			
+			b.Padding = new Thickness (1,1,0,0);
+			b.Child = c;
+			b.Measure (s);
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c DesiredSize");
+			Assert.AreEqual (new Size (9,9), c.MeasureArg, "c measure args");
+			Assert.AreEqual (new Size (1,1), b.DesiredSize, "b DesiredSize");
+			Assert.AreEqual (0,b.ActualWidth);
+			Assert.AreEqual (0,b.ActualHeight);
+			Assert.AreEqual (0,c.ActualWidth);
+			Assert.AreEqual (0,c.ActualHeight);
+			
+			c.ArrangeResult = new Size (20,20);
+			b.Arrange (new Rect (0,0,10,10));
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c DesiredSize");
+			Assert.AreEqual (new Size (20,20), c.RenderSize, "c render size");
+			Assert.AreEqual (new Size (9,9), c.ArrangeArg, "c measure args");
+			Assert.AreEqual (new Size (1,1), b.DesiredSize, "b DesiredSize");
+			Assert.AreEqual (new Size (10,10), b.RenderSize, "b render size");
+			Assert.AreEqual (10,b.ActualWidth);
+			Assert.AreEqual (10,b.ActualHeight);
+			Assert.AreEqual (20,c.ActualWidth);
+			Assert.AreEqual (20,c.ActualHeight);
+
+			c.ArrangeResult = new Size (9,9);
+			b.Arrange (new Rect (0,0,10,10));
+
+			// Does not invalidate child
+			b.InvalidateArrange ();
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c DesiredSize");
+			Assert.AreEqual (new Size (20,20), c.RenderSize, "c render size");
+			Assert.AreEqual (new Size (9,9), c.ArrangeArg, "c measure args");
+			Assert.AreEqual (new Size (1,1), b.DesiredSize, "b DesiredSize");
+			Assert.AreEqual (new Size (10,10), b.RenderSize, "b render size");
+			Assert.AreEqual (10,b.ActualWidth);
+			Assert.AreEqual (10,b.ActualHeight);
+			Assert.AreEqual (20,c.ActualWidth);
+			Assert.AreEqual (20,c.ActualHeight);
+
+			c.InvalidateArrange ();
+			b.Arrange (new Rect (0,0,10,10));
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c DesiredSize");
+			Assert.AreEqual (new Size (9,9), c.RenderSize, "c render size");
+			Assert.AreEqual (new Size (9,9), c.ArrangeArg, "c measure args");
+			Assert.AreEqual (new Size (1,1), b.DesiredSize, "b DesiredSize");
+			Assert.AreEqual (new Size (10,10), b.RenderSize, "b render size");
+			Assert.AreEqual (10,b.ActualWidth);
+			Assert.AreEqual (10,b.ActualHeight);
+			Assert.AreEqual (9,c.ActualWidth);
+			Assert.AreEqual (9,c.ActualHeight);
+		}
 	}
-
 }
