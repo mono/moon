@@ -114,7 +114,7 @@ class Run : public Inline {
 	virtual ~Run () {}
 	
  public:
- 	/* @PropertyType=string,GenerateAccessors */
+ 	/* @PropertyType=string,ManagedFieldAccess=Internal,GenerateAccessors */
 	static DependencyProperty *TextProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */

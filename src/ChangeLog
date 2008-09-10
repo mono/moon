@@ -1,3 +1,8 @@
+2008-09-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.h (class Run): Apparently Run's TextProperty is internal in
+	managed-land.
+
 2008-09-10  Larry Ewing  <lewing@novell.com>
 
 	* border.cpp:
