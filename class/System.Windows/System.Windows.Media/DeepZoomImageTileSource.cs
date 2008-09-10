@@ -32,7 +32,7 @@ namespace System.Windows.Media
             
 	    
 
-		public static DependencyProperty UriSourceProperty = 
+		public static readonly DependencyProperty UriSourceProperty = 
 			DependencyProperty.Register ("UriSource", typeof (Uri), typeof (DeepZoomImageTileSource), null);
 		
 		public Uri UriSource {
