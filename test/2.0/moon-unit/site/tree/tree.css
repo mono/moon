@@ -84,7 +84,7 @@ ul.tree a  {
 	white-space: nowrap;
 	overflow: hidden;
 	
-	padding: 10px 0px 10px 18px;
+	padding: 0 18px; 
 	line-height: 16px;
 
 	background: url(page-file.png) 0 50% no-repeat;
