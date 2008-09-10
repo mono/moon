@@ -39,21 +39,6 @@ namespace System.Windows.Controls {
 
 	[ContentPropertyAttribute("Child", true)]
 	public sealed partial class Border : FrameworkElement {
-#if NET_2_1
-		[SecuritySafeCritical]
-#endif
-		public new IEnumerable<UIElement> HitTest (Point point)
-		{
-			throw new NotImplementedException ();
-		}
-
-#if NET_2_1
-		[SecuritySafeCritical]
-#endif
-		public new IEnumerable<UIElement> HitTest (Rect rect)
-		{
-			throw new NotImplementedException ();
-		}
 	}
 }
 	
