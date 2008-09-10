@@ -1640,8 +1640,8 @@ namespace System.Windows.Media.Animation {
 	}
 
 	partial class KeySpline {
-		public static readonly DependencyProperty ControlPoint1Property = DependencyProperty.Lookup (Kind.KEYSPLINE, "ControlPoint1", typeof (Point));
-		public static readonly DependencyProperty ControlPoint2Property = DependencyProperty.Lookup (Kind.KEYSPLINE, "ControlPoint2", typeof (Point));
+		internal static readonly DependencyProperty ControlPoint1Property = DependencyProperty.Lookup (Kind.KEYSPLINE, "ControlPoint1", typeof (Point));
+		internal static readonly DependencyProperty ControlPoint2Property = DependencyProperty.Lookup (Kind.KEYSPLINE, "ControlPoint2", typeof (Point));
 
 		public Point ControlPoint1 {
 			get { return (Point) GetValue (ControlPoint1Property); }
