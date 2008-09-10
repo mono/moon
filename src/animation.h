@@ -44,9 +44,9 @@ class KeySpline : public DependencyObject {
 	void RegenerateQuadratics ();
 
 	double GetSplineProgress (double linearProgress);
-	/* @PropertyType=Point,ManagedPropertyType=Point,DefaultValue=Point (0\,0),GenerateAccessors */
+	/* @PropertyType=Point,ManagedPropertyType=Point,DefaultValue=Point (0\,0),ManagedFieldAccess=Internal,GenerateAccessors */
 	static DependencyProperty *ControlPoint1Property;
-	/* @PropertyType=Point,ManagedPropertyType=Point,DefaultValue=Point (1.0\, 1.0),GenerateAccessors */
+	/* @PropertyType=Point,ManagedPropertyType=Point,DefaultValue=Point (1.0\, 1.0),ManagedFieldAccess=Internal,GenerateAccessors */
 	static DependencyProperty *ControlPoint2Property;
 
 	Point *GetControlPoint1 ();
