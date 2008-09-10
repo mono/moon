@@ -391,7 +391,7 @@ UIElement::ComputePosition ()
 void
 UIElement::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 {
-	g_warning ("GetTransformFor called on a non-container, you must implement this in your container\n");
+  g_warning ("GetTransformFor called on a non-container of type %s, you must implement this in your container\n", GetTypeName());
 }
 
 void
