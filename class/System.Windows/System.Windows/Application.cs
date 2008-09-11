@@ -71,6 +71,12 @@ namespace System.Windows {
 			surface = s_surface;
 
 			current = this;
+
+			// IsolatedStorage (inside mscorlib.dll) needs some information about the XAP file
+			// to initialize it's application and site directory storage.
+			AppDomain ad = AppDomain.CurrentDomain;
+			ad.SetData ("xap_uri", Host.Source.AbsoluteUri);
+			ad.SetData ("xap_host", Host.Source.Host);
 		}
 
 		internal void Terminate ()
@@ -238,6 +244,8 @@ namespace System.Windows {
 #endif
 		public static void LoadComponent (object component, Uri xamlUri)
 		{
+			// FIXME: unit tests (and MSDN) shows that Application throws an exception
+			// but ML needs Application support right now and 'object' seems a strange choice if only DO are supported
 			Application app = component as Application;
 			DependencyObject cdo = component as DependencyObject;
 			
@@ -278,6 +286,9 @@ namespace System.Windows {
 #endif
 		public static StreamResourceInfo GetResourceStream (Uri resourceUri)
 		{
+			if (resourceUri == null)
+				throw new ArgumentNullException ("resourceUri");
+
 			string loc = resourceUri.ToString ();
 			string aname;
 			string res;
@@ -312,6 +323,11 @@ namespace System.Windows {
 #endif
 		public static StreamResourceInfo GetResourceStream (StreamResourceInfo zipPackageStreamResourceInfo, Uri resourceUri)
 		{
+			if (zipPackageStreamResourceInfo == null)
+				throw new ArgumentNullException ("zipPackageStreamResourceInfo");
+			if (resourceUri == null)
+				throw new ArgumentNullException ("resourceUri");
+
 			throw new NotImplementedException ("GetResourceStream-2");
 		}
 

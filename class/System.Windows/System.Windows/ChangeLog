@@ -1,3 +1,8 @@
+2008-09-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Application.cs: Initialize, via AppDomain, the IsolatedStorage
+	roots. Add missing parameter checks / exceptions.
+
 2008-09-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	* UIElement.cs: get_RenderSize does not need SecuritySafeCritical
