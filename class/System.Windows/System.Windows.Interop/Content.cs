@@ -44,7 +44,7 @@ namespace System.Windows.Interop {
 			get {
 				if (PluginHost.Handle != IntPtr.Zero) {
 					int n = NativeMethods.plugin_instance_get_actual_height (PluginHost.Handle);
-					return n >= 0 ? (uint) n : 0;
+					return n >= 0 ? n : 0;
 				} else
 					return 768;
 			}
@@ -57,7 +57,7 @@ namespace System.Windows.Interop {
 			get {
 				if (PluginHost.Handle != IntPtr.Zero) {
 					int n = NativeMethods.plugin_instance_get_actual_width (PluginHost.Handle);
-					return n >= 0 ? (uint) n : 0;
+					return n >= 0 ? n : 0;
 				} else
 					return 1024;
 			}
@@ -78,6 +78,8 @@ namespace System.Windows.Interop {
 			[SecuritySafeCritical ()]
 #endif
 			set {
+				// Note: we can change the value only if this is called from a user keyboard or mouse event.
+				// Otherside the value won't change (at least won't change to true)
 				// not yet implemented
 			}
 		}

@@ -1,3 +1,9 @@
+2008-09-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Content.cs: Don't typecast int into uint when we return doubles.
+	Added note for IsFullscreen setter which needs to work only when
+	called from user generated keyboard and mouse events.
+
 2008-09-10  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* SilverlightHost.cs: Fix to call the right p/invoke that returns
