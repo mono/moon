@@ -13,6 +13,11 @@
 
 #include "tilesource.h"
 
+MultiScaleTileSource::MultiScaleTileSource ()
+{
+	imageWidth = -1;
+}
+
 int 
 MultiScaleTileSource::GetImageWidth ()
 {

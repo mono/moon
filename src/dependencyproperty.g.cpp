@@ -248,8 +248,8 @@ dependency_property_g_init (void)
 	MultiScaleImage::AspectRatioProperty = DependencyProperty::Register (Type::MULTISCALEIMAGE, "AspectRatio", new Value (1.0));
 	MultiScaleImage::SourceProperty = DependencyProperty::Register (Type::MULTISCALEIMAGE, "Source", Type::MULTISCALETILESOURCE);
 	MultiScaleImage::UseSpringsProperty = DependencyProperty::Register (Type::MULTISCALEIMAGE, "UseSprings", new Value (true));
-	MultiScaleImage::ViewportOriginProperty = DependencyProperty::Register (Type::MULTISCALEIMAGE, "ViewportOrigin", Type::POINT);
-	MultiScaleImage::ViewportWidthProperty = DependencyProperty::Register (Type::MULTISCALEIMAGE, "ViewportWidth", Type::DOUBLE);
+	MultiScaleImage::ViewportOriginProperty = DependencyProperty::Register (Type::MULTISCALEIMAGE, "ViewportOrigin", new Value (Point(0,0)));
+	MultiScaleImage::ViewportWidthProperty = DependencyProperty::Register (Type::MULTISCALEIMAGE, "ViewportWidth", new Value (1.0));
 	MultiScaleSubImage::AspectRatioProperty = DependencyProperty::RegisterFull (Type::MULTISCALESUBIMAGE, "AspectRatio", new Value (1.0), Type::DOUBLE, false, true);
 	MultiScaleSubImage::OpacityProperty = DependencyProperty::Register (Type::MULTISCALESUBIMAGE, "Opacity", Type::DOUBLE);
 	MultiScaleSubImage::ViewportOriginProperty = DependencyProperty::Register (Type::MULTISCALESUBIMAGE, "ViewportOrigin", Type::POINT);

@@ -28,6 +28,7 @@ G_END_DECLS
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
 class MultiScaleImage : public MediaBase {
+	void RenderLayer (cairo_t *cr, MultiScaleTileSource *source, int layer);
 
  protected:
 	virtual ~MultiScaleImage ();
@@ -41,9 +42,9 @@ class MultiScaleImage : public MediaBase {
 //	static DependencyProperty *SubImagesProperty;
 	/* @PropertyType=bool,DefaultValue=true,Version=2.0,GenerateAccessors */
 	static DependencyProperty *UseSpringsProperty;
-	/* @PropertyType=Point,Version=2.0,GenerateAccessors */
+	/* @PropertyType=Point,DefaultValue=Point(0\,0),Version=2.0,GenerateAccessors */
 	static DependencyProperty *ViewportOriginProperty;
-	/* @PropertyType=double,Version=2.0,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateAccessors */
 	static DependencyProperty *ViewportWidthProperty;
 
 	/* @GenerateCBinding,GeneratePInvoke */

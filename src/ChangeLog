@@ -1,3 +1,8 @@
+2008-09-11  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: draw a pattern that should look like
+	a MSI (currently still wrong)
+
 2008-09-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.h (class Run): Apparently Run's TextProperty is internal in

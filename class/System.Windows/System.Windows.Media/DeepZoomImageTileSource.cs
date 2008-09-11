@@ -38,7 +38,7 @@ namespace System.Windows.Media
 		public Uri UriSource {
 			get { return (Uri)GetValue(UriSourceProperty); }
 			set { 
-			//	SetValue(UriSourceProperty, value);
+	//			SetValue(UriSourceProperty, value);
 				NativeMethods.deep_zoom_image_tile_source_download_urisource (this.native, value.ToString (), ParseDeepZoom);
 			}
 		}
@@ -149,10 +149,10 @@ namespace System.Windows.Media
 					while (reader.Read () && !(reader.Name == "tile-size" && reader.NodeType == XmlNodeType.EndElement))
 						switch (reader.Name) {
 						case "width":
-							level.tile_width = read_int (reader);
+							TileWidth = level.tile_width = read_int (reader);
 							break;
 						case "height":
-							level.tile_height = read_int (reader);
+							TileHeight = level.tile_height = read_int (reader);
 							break;
 						default:
 							if (!String.IsNullOrEmpty (reader.Name) && reader.NodeType != XmlNodeType.EndElement)

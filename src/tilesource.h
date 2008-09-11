@@ -29,7 +29,7 @@ class MultiScaleTileSource : public DependencyObject {
 
  public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
-	MultiScaleTileSource () {}
+	MultiScaleTileSource ();
 
 	virtual Type::Kind GetObjectType () { return Type::MULTISCALETILESOURCE; }
 
