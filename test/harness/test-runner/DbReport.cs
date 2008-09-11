@@ -46,7 +46,7 @@ namespace MoonlightTests {
 		
 		private string test_run_dir;
 		private string test_suite = string.Empty;
-		private bool debug = true;
+		private bool debug = false;
 		
 		public bool HasConnection
 		{
@@ -82,7 +82,7 @@ namespace MoonlightTests {
 			}
 			catch(Exception ex)
 			{
-				Log("DbReport disabled");
+				Console.WriteLine("\nDbReport disabled\n"); // Use Console.WriteLine() so that this line always appears
 				WriteHelp();
 				Log(string.Format("\n{1} {0}",ex.GetType(), ex.Message));
 				connectionString = string.Empty;
@@ -111,7 +111,7 @@ namespace MoonlightTests {
 			string dir = "test-run-data";
 			string filename = "moonTestSuite.db";
 			
-			runtime = run.StartTime.ToString("yyyy-MM-dd hh:mm");//Postgres timestamp format
+			runtime = run.StartTime.ToString("yyyy-MM-dd HH:mm");//Postgres timestamp format
 			test_run_dir = Path.Combine(dir,runtime);
 			
 			if (!Directory.Exists(test_run_dir)) {
