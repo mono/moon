@@ -149,6 +149,9 @@ class XamlElementInstance : public List::Node {
 	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child) = 0;
 	virtual void SetAttributes (XamlParserInfo *p, const char **attr) = 0;
 
+	virtual bool TrySetContentProperty (XamlParserInfo *p, XamlElementInstance *value);
+	virtual bool TrySetContentProperty (XamlParserInfo *p, const char *value);
+
 	virtual bool IsValueType ()
 	{
 		return false;
@@ -374,6 +377,9 @@ class XamlElementInstanceNative : public XamlElementInstance {
 	virtual void SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value);
 	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child);
 	virtual void SetAttributes (XamlParserInfo *p, const char **attr);
+
+	virtual bool TrySetContentProperty (XamlParserInfo *p, XamlElementInstance *value);
+	virtual bool TrySetContentProperty (XamlParserInfo *p, const char *value);
 };
 
 
@@ -402,6 +408,9 @@ class XamlElementInstanceValueType : public XamlElementInstance {
 	virtual void SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value) { }
 	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child) { }
 	virtual void SetAttributes (XamlParserInfo *p, const char **attr);
+
+	virtual bool TrySetContentProperty (XamlParserInfo *p, XamlElementInstance *value) { return false; }
+	virtual bool TrySetContentProperty (XamlParserInfo *p, const char *value) { return CreateValueItemFromString (value); }
 };
 
 
@@ -608,6 +617,9 @@ class XamlElementInstanceManaged : public XamlElementInstance {
 	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child);
 	virtual void SetAttributes (XamlParserInfo *p, const char **attr);
 
+	virtual bool TrySetContentProperty (XamlParserInfo *p, XamlElementInstance *value);
+	virtual bool TrySetContentProperty (XamlParserInfo *p, const char *value);
+
 	bool is_dependency_object;
 	void *obj;
 };
@@ -637,6 +649,9 @@ class XamlElementInstanceImportedManaged : public XamlElementInstance {
 	virtual void SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value);
 	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child);
 	virtual void SetAttributes (XamlParserInfo *p, const char **attr);
+
+	virtual bool TrySetContentProperty (XamlParserInfo *p, XamlElementInstance *value);
+	virtual bool TrySetContentProperty (XamlParserInfo *p, const char *value);
 };
 
 
@@ -2745,6 +2760,60 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 	return true;
 }
 
+bool
+XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, XamlElementInstance *value)
+{
+	const char* prop_name = info->GetContentProperty (p);
+	if (!prop_name)
+		return false;
+
+	DependencyProperty *dep = DependencyProperty::GetDependencyProperty (info->GetKind (), prop_name);
+	
+	if (!dep)
+		return false;
+
+	Type *prop_type = Type::Find (dep->GetPropertyType());
+	bool is_collection = prop_type->IsSubclassOf (Type::DEPENDENCY_OBJECT_COLLECTION);
+
+	if (!is_collection && Type::Find (value->info->GetKind ())->IsSubclassOf (dep->GetPropertyType())) {
+		item->SetValue (dep, (DependencyObject *) value->item);
+		return true;
+	}
+
+	// We only want to enter this if statement if we are NOT dealing with the content property element,
+	// otherwise, attempting to use explicit property setting, would add the content property element
+	// to the content property element collection
+	if (is_collection && dep->GetPropertyType() != value->info->GetKind ()) {
+		Value *col_v = item->GetValue (dep);
+		Collection *col;
+			
+		if (!col_v) {
+			col = collection_new (dep->GetPropertyType ());
+			item->SetValue (dep, Value (col));
+			col->unref ();
+		} else {
+			col = (Collection *) col_v->AsCollection ();
+		}
+
+		set_parent (value, NULL);
+			
+		col->Add (value->item);
+		return true;
+	}
+
+	return false;
+}
+
+bool
+XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, const char *value)
+{
+	const char* prop_name = info->GetContentProperty (p);
+	if (!prop_name)
+		return false;
+
+	return false;
+}
+
 
 static XamlElementInfo *
 create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *name)
@@ -2762,6 +2831,7 @@ create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *n
 
 	return info;
 }
+
 
 const char *
 XamlElementInfoNative::GetContentProperty (XamlParserInfo *p)
@@ -2890,6 +2960,18 @@ XamlElementInstanceNative::SetAttributes (XamlParserInfo *p, const char **attr)
 }
 
 
+bool
+XamlElementInstanceNative::TrySetContentProperty (XamlParserInfo *p, XamlElementInstance *value)
+{
+	return XamlElementInstance::TrySetContentProperty (p, value);
+}
+
+bool
+XamlElementInstanceNative::TrySetContentProperty (XamlParserInfo *p, const char *value)
+{
+	return XamlElementInstance::TrySetContentProperty (p, value);
+}
+
 XamlElementInstanceValueType::XamlElementInstanceValueType (XamlElementInfoNative *element_info, XamlParserInfo *parser_info, const char *name, ElementType type) :
 	XamlElementInstance (element_info, name, type)
 {
@@ -2990,6 +3072,18 @@ XamlElementInstanceManaged::SetAttributes (XamlParserInfo *p, const char **attr)
 	dependency_object_set_attributes (p, this, attr);
 }
 
+bool
+XamlElementInstanceManaged::TrySetContentProperty (XamlParserInfo *p, XamlElementInstance *value)
+{
+	return XamlElementInstance::TrySetContentProperty (p, value);
+}
+
+bool
+XamlElementInstanceManaged::TrySetContentProperty (XamlParserInfo *p, const char *value)
+{
+	return XamlElementInstance::TrySetContentProperty (p, value);
+}
+
 XamlElementInstance *
 XamlElementInfoImportedManaged::CreateElementInstance (XamlParserInfo *p)
 {
@@ -3062,6 +3156,19 @@ void
 XamlElementInstanceImportedManaged::SetAttributes (XamlParserInfo *p, const char **attr)
 {
 	dependency_object_set_attributes (p, this, attr);
+}
+
+
+bool
+XamlElementInstanceImportedManaged::TrySetContentProperty (XamlParserInfo *p, XamlElementInstance *value)
+{
+	return XamlElementInstance::TrySetContentProperty (p, value);
+}
+
+bool
+XamlElementInstanceImportedManaged::TrySetContentProperty (XamlParserInfo *p, const char *value)
+{
+	return XamlElementInstance::TrySetContentProperty (p, value);
 }
 
 
@@ -3195,44 +3302,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 		dict->Add (key, child->GetAsValue());
 	}
 
-	if (parent->info->GetContentProperty (p)) {
-		DependencyProperty *dep = DependencyProperty::GetDependencyProperty (parent->info->GetKind (),
-				(char *) parent->info->GetContentProperty (p));
-
-		if (!dep)
-			return;
-
-		Type *prop_type = Type::Find (dep->GetPropertyType());
-		bool is_collection = prop_type->IsSubclassOf (Type::DEPENDENCY_OBJECT_COLLECTION);
-
-		if (!is_collection && Type::Find (child->info->GetKind ())->IsSubclassOf (dep->GetPropertyType())) {
-			DependencyObject *obj = (DependencyObject *) parent->item;
-			obj->SetValue (dep, (DependencyObject *) child->item);
-			return;
-		}
-
-		// We only want to enter this if statement if we are NOT dealing with the content property element,
-		// otherwise, attempting to use explicit property setting, would add the content property element
-		// to the content property element collection
-		if (is_collection && dep->GetPropertyType() != child->info->GetKind ()) {
-			DependencyObject *obj = (DependencyObject *) parent->item;
-			Value *col_v = obj->GetValue (dep);
-			Collection *col;
-			
-			if (!col_v) {
-				col = collection_new (dep->GetPropertyType());
-				obj->SetValue (dep, Value (col));
-				col->unref ();
-			} else {
-				col = (Collection *) col_v->AsCollection ();
-			}
-
-			set_parent (child, NULL);
-			
-			col->Add ((DependencyObject *) child->item);
-			return;
-		}
-	}
+	parent->TrySetContentProperty (p, child);
 
 	// Do nothing if we aren't adding to a collection, or a content property collection
 }

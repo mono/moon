@@ -1,3 +1,8 @@
+2008-09-11  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Move some of the content property setting logic into
+	the XamlElementInstance's.
+
 2008-09-11  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.cpp: draw a pattern that should look like
