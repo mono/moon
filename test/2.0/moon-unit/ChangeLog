@@ -1,3 +1,10 @@
+2008-09-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows/ApplicationTest.cs: New. Unit tests.
+	* System.Windows.Interop/ContentTest.cs: New. Unit tests.
+	* System.Windows.Interop/SettingsTest.cs: New. Unit tests.
+	* System.Windows.Interop/SilverlightHostTest.cs: New. Unit tests.
+
 2008-09-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.IO.IsolatedStorage/IsolatedStorageFileStreamTest.cs: Remove
