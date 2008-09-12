@@ -380,7 +380,26 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		}
 
 		[TestMethod]
-		[KnownFailure]
+		public void ReadOnly ()
+		{
+			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
+			try {
+				using (IsolatedStorageFileStream fs = new IsolatedStorageFileStream ("read-only", FileMode.Create, FileAccess.Write, isf)) {
+					fs.WriteByte (0);
+				}
+				// now we open it read-only
+				using (IsolatedStorageFileStream fs = new IsolatedStorageFileStream ("read-only", FileMode.Open, FileAccess.Read, isf)) {
+					Assert.Throws (delegate { fs.WriteByte (0); }, typeof (NotSupportedException), "WriteByte");
+					Assert.Throws (delegate { fs.Write (new byte [0], 0, 0); }, typeof (NotSupportedException), "Write");
+					Assert.Throws (delegate { fs.BeginWrite (new byte [0], 0, 0, null, null); }, typeof (NotSupportedException), "BeginWrite");
+				}
+			}
+			finally {
+				isf.DeleteFile ("read-only");
+			}
+		}
+
+		[TestMethod]
 		public void PlayingWithQuota ()
 		{
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
@@ -392,7 +411,8 @@ namespace MoonTest.System.IO.IsolatedStorage {
 					Assert.Throws (delegate { fs.SetLength (isf.AvailableFreeSpace + 1025); }, typeof (IsolatedStorageException), ">1024");
 
 					// this does not since AvailableFreeSpace < Quota (overhead?)
-					Assert.Throws (delegate { fs.SetLength (isf.Quota); }, typeof (IsolatedStorageException), "OverQuota");
+					// KnownFailure because Moonlight, right now, has AvailableFreeSpace = Quota - 1024 (Safety) while SL has some "extra" stuff (less space)
+					// Assert.Throws (delegate { fs.SetLength (isf.Quota); }, typeof (IsolatedStorageException), "OverQuota");
 				}
 			}
 			finally {

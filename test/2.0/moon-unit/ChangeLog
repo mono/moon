@@ -1,3 +1,12 @@
+2008-09-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.IO.IsolatedStorage/IsolatedStorageFileStreamTest.cs: Add
+	ReadOnly test. Activate Quota test.
+	* System.IO.IsolatedStorage/IsolatedStorageFileTest.cs: Add
+	CreateDirectory test cases.
+	* System.IO.IsolatedStorage/IsolatedStorageSettingsTest.cs: Add
+	a few more tests to ensure we match exceptions with SL2.
+
 2008-09-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows/ApplicationTest.cs: New. Unit tests.

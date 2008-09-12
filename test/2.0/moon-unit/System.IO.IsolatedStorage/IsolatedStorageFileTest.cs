@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.IO;
 using System.IO.IsolatedStorage;
 using Mono.Moonlight.UnitTesting;
 
@@ -46,6 +47,49 @@ namespace MoonTest.System.IO.IsolatedStorage {
 
 			isf.Dispose ();
 			Assert.Throws (delegate { Console.WriteLine (isf.AvailableFreeSpace); }, typeof (ObjectDisposedException), "Dispose");
+		}
+
+		[TestMethod]
+		public void CreateDirectory ()
+		{
+			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
+			Assert.Throws (delegate { isf.CreateDirectory (null); }, typeof (ArgumentNullException), "null");
+
+			string baddir = "\x00"; // <- the only invalid char, on linux, that is invalid in a directory
+			Assert.Throws (delegate { isf.CreateDirectory (baddir); }, typeof (ArgumentException), "null char");
+
+			baddir = Path.Combine ("..", "gotcha");
+			Assert.Throws (delegate { isf.CreateDirectory (baddir); }, typeof (IsolatedStorageException), "../gotcha");
+
+			isf.CreateDirectory (String.Empty);
+
+			isf.CreateDirectory ("dir-1");
+			Assert.IsTrue (isf.DirectoryExists ("dir-1"), "Exists(dir-1)");
+
+			string codir = Path.Combine ("dir-1", "..");
+			isf.CreateDirectory (codir);
+			Assert.IsTrue (isf.DirectoryExists (codir), "Exists(dir-1/..)");
+
+			codir = Path.Combine (codir, "dir-3");
+			isf.CreateDirectory (codir);
+			Assert.IsTrue (isf.DirectoryExists (codir), "Exists(dir-1/../dir-3)");
+
+			string subdir = Path.Combine ("dir-1", "dir-2");
+			isf.CreateDirectory (subdir);
+			Assert.IsTrue (isf.DirectoryExists (subdir), "Exists(dir-1/dir2)");
+
+			isf.DeleteDirectory (subdir);
+			Assert.IsFalse (isf.DirectoryExists (subdir), "Delete-Exists(dir-1/dir2)");
+			Assert.IsTrue (isf.DirectoryExists ("dir-1"), "Delete-Exists(dir-1)");
+
+			isf.DeleteDirectory ("dir-1");
+			Assert.IsFalse (isf.DirectoryExists ("dir-1"), "Delete2-Exists(dir-1)");
+
+			isf.Remove ();
+			Assert.Throws (delegate { isf.CreateDirectory ("a"); }, typeof (IsolatedStorageException), "Remove");
+
+			isf.Dispose ();
+			Assert.Throws (delegate { isf.CreateDirectory ("a"); }, typeof (ObjectDisposedException), "Dispose");
 		}
 
 		[TestMethod]

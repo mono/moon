@@ -56,6 +56,9 @@ namespace MoonTest.System.IO.IsolatedStorage {
 			KeyValuePair<string,object> kvp = new KeyValuePair<string,object> ("key", "value");
 			c.Add (kvp);
 			Assert.AreEqual (1, c.Count, "Add/Count");
+			Assert.Throws (delegate { c.Add (new KeyValuePair<string, object> (null, "value")); }, typeof (ArgumentNullException), "Add(KVP(null))");
+			Assert.Throws (delegate { c.Add (new KeyValuePair<string, object> ("key", "value")); }, typeof (ArgumentException), "Add(twice)");
+
 			Assert.IsTrue (c.Contains (kvp), "Contains(kvp)");
 			Assert.IsTrue (c.Contains (new KeyValuePair<string, object> ("key", "value")), "Contains(new)");
 			Assert.IsFalse (c.Contains (new KeyValuePair<string, object> ("value", "key")), "Contains(bad)");
@@ -81,6 +84,7 @@ namespace MoonTest.System.IO.IsolatedStorage {
 			Assert.AreEqual (1, d.Count, "Add/Count");
 			Assert.Throws (delegate { d.Add (key, "object"); }, typeof (ArgumentException), "Add(object)");
 			Assert.Throws (delegate { d.Add (null, "null"); }, typeof (ArgumentNullException), "Add(null)");
+			Assert.Throws (delegate { d.Add ("key", "another string"); }, typeof (ArgumentException), "Add(twice)");
 
 			d.Remove ("value");
 			Assert.AreEqual (1, d.Count, "Remove/Bad/Count");
@@ -123,6 +127,7 @@ namespace MoonTest.System.IO.IsolatedStorage {
 
 			settings.Add ("key", "value");
 			Assert.Throws (delegate { settings.Add (null, "x"); }, typeof (ArgumentNullException), "Add(null,x)");
+			Assert.Throws (delegate { settings.Add ("key", "another string"); }, typeof (ArgumentException), "Add(twice)");
 
 			Assert.AreEqual (1, settings.Count, "Count");
 			Assert.AreEqual (1, settings.Keys.Count, "Keys.Count");
@@ -136,10 +141,12 @@ namespace MoonTest.System.IO.IsolatedStorage {
 			Assert.AreEqual ("value", settings ["key"], "this[key]");
 			settings ["key"] = null;
 			Assert.IsNull (settings ["key"], "this[key]-null");
+			Assert.Throws (delegate { Console.WriteLine (settings ["unexisting"]); }, typeof (KeyNotFoundException), "this[unexisting]");
 			Assert.Throws (delegate { settings [null] = null; }, typeof (ArgumentNullException), "this[null] set");
 
 			settings.Remove ("key");
 			Assert.AreEqual (0, settings.Count, "Remove/Count");
+			Assert.IsFalse (settings.Remove ("unexisting"), "Remove(unexisting)");
 			Assert.Throws (delegate { settings.Remove (null); }, typeof (ArgumentNullException), "Remove(null)");
 
 			settings.Add ("key", "value");
