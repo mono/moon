@@ -70,13 +70,17 @@ namespace System.Windows {
 			xap_dir = s_xap_dir;
 			surface = s_surface;
 
-			current = this;
+			if (current == null) {
+				current = this;
 
-			// IsolatedStorage (inside mscorlib.dll) needs some information about the XAP file
-			// to initialize it's application and site directory storage.
-			AppDomain ad = AppDomain.CurrentDomain;
-			ad.SetData ("xap_uri", Host.Source.AbsoluteUri);
-			ad.SetData ("xap_host", Host.Source.Host);
+				// IsolatedStorage (inside mscorlib.dll) needs some information about the XAP file
+				// to initialize it's application and site directory storage.
+				AppDomain ad = AppDomain.CurrentDomain;
+				ad.SetData ("xap_uri", Host.Source.AbsoluteUri);
+				ad.SetData ("xap_host", Host.Source.Host);
+			} else {
+				root_visual = current.root_visual;
+			}
 		}
 
 		internal void Terminate ()

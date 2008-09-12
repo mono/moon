@@ -1,3 +1,9 @@
+2008-09-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Application.cs: Only update current (and appdomain data) if we
+	are the first Application instance. Otherwise copy the data from
+	Current (since all instance are identical).
+
 2008-09-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Application.cs: Initialize, via AppDomain, the IsolatedStorage
