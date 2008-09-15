@@ -32,11 +32,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-#if false
 using System.IO;
 using System.Runtime.Serialization;
 using System.Text;
-#endif
 
 namespace System.IO.IsolatedStorage {
 
@@ -61,7 +59,7 @@ namespace System.IO.IsolatedStorage {
 				settings = new Dictionary<string, object> ();
 				return;
 			}
-#if false
+
 			using (IsolatedStorageFileStream fs = isf.OpenFile (LocalSettings, FileMode.Open)) {
 				using (StreamReader sr = new StreamReader (fs)) {
 					// first line contains a fully qualified type + CRLF (System.Object)
@@ -70,28 +68,22 @@ namespace System.IO.IsolatedStorage {
 						fs.Position = 0;
 					else
 						fs.Position = header.Length;
-					DataContractSerializer reader = new DataContractSerializer (sets.GetType ());
+					DataContractSerializer reader = new DataContractSerializer (typeof (Dictionary<string, object>));
 					settings = (Dictionary<string, object>) reader.ReadObject (fs);
 				}
 			}
-#else
-			settings = new Dictionary<string, object> ();
-#endif
 		}
 
 		~IsolatedStorageSettings ()
 		{
-#if false
 			// settings are automatically saved if the application close normally
-			settings.Save ();
-#endif
+			Save ();
 		}
 
 		// static properties
 
 		// per application, per-computer, per-user
 		public static IsolatedStorageSettings ApplicationSettings {
-			[MonoTODO ("not loaded from file, isolated or not")]
 			get {
 				if (application_settings == null) {
 					application_settings = new IsolatedStorageSettings (
@@ -103,7 +95,6 @@ namespace System.IO.IsolatedStorage {
 
 		// per domain, per-computer, per-user
 		public static IsolatedStorageSettings SiteSettings {
-			[MonoTODO ("not loaded from file, isolated or not")]
 			get {
 				if (site_settings == null) {
 					site_settings = new IsolatedStorageSettings (
@@ -160,7 +151,6 @@ namespace System.IO.IsolatedStorage {
 			return settings.Remove (key);
 		}
 
-#if false
 		public void Save ()
 		{
 			using (IsolatedStorageFileStream fs = container.CreateFile (LocalSettings)) {
@@ -174,13 +164,6 @@ namespace System.IO.IsolatedStorage {
 				ser.WriteObject (fs, settings);
 			}
 		}
-#else
-		[MonoTODO ("not saved to file, isolated or not")]
-		public void Save ()
-		{
-			throw new NotImplementedException ();
-		}
-#endif
 
 		public bool TryGetValue<T> (string key, out T value)
 		{
