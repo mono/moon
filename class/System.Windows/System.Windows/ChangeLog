@@ -1,3 +1,8 @@
+2008-09-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Application.cs: GetResourceStream works only on relative URI.
+	Throw an InvalidOperationException if we try to nullify RootVisual.
+
 2008-09-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Application.cs: Only update current (and appdomain data) if we

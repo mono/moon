@@ -255,6 +255,9 @@ namespace System.Windows {
 			
 			if (cdo == null && app == null)
 				throw new ArgumentException ("Not a DependencyObject or Application", "component");
+			// match SL exception but with a better description
+			if (xamlUri == null)
+				throw new ArgumentException ("Null Uri", "xamlUri");
 
 			StreamResourceInfo sr = GetResourceStream (xamlUri);
 
@@ -292,6 +295,12 @@ namespace System.Windows {
 		{
 			if (resourceUri == null)
 				throw new ArgumentNullException ("resourceUri");
+			// FIXME: URI must point to
+			// - the application assembly (embedded resources)
+			// - an assembly part of the application package (embedded resources)
+			// - something included in the package
+			if (resourceUri.IsAbsoluteUri)
+				throw new ArgumentException ("resourceUri");
 
 			string loc = resourceUri.ToString ();
 			string aname;
@@ -308,6 +317,9 @@ namespace System.Windows {
 			}
 					
 			Assembly assembly = assemblies.FirstOrDefault (a => a.GetName ().Name == aname);
+			if (assembly == null)
+				return null;
+
 			ResourceManager rm = new ResourceManager (aname + ".g", assembly);
 
 			rm.IgnoreCase = true;
@@ -365,6 +377,9 @@ namespace System.Windows {
 			[SecuritySafeCritical]
 #endif
 			set {
+				if (value == null)
+					throw new InvalidOperationException ();
+
 				// Can only be set once according to the docs.
 				if (root_visual != null)
 					return;
