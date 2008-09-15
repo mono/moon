@@ -76,6 +76,7 @@ Applier::AddPropertyChange (DependencyObject *object, DependencyProperty *proper
 	if (o_indexer == NULL) {
 		o_indexer = g_new (object_indexer, 1);
 		o_indexer->object = object;
+		object->ref ();
 		o_indexer->properties_list = NULL;
 		g_hash_table_insert (objects, object, o_indexer);
 	}
@@ -124,6 +125,7 @@ destroy_object_func (DependencyObject *object, object_indexer *o_indexer)
 {
 	g_list_foreach (o_indexer->properties_list, (GFunc) destroy_property_func, NULL);
 	g_list_free (o_indexer->properties_list);
+	object->unref ();
 	g_free (o_indexer);
 }
 

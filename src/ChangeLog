@@ -1,3 +1,8 @@
+2008-09-15  Larry Ewing  <lewing@novell.com>
+
+	* applier.cpp: ref and unref the object to avoid crashes on
+	popfly.
+
 2008-09-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* src.mdp: Updated with new files.
