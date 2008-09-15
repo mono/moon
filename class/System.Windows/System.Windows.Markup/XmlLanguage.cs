@@ -41,9 +41,7 @@ namespace System.Windows.Markup {
 			lang = ietfLanguageTag;
 		}
 		
-#if NET_2_1
 		[SecuritySafeCritical ()]
-#endif
 		public static XmlLanguage GetLanguage (string ietfLanguageTag)
 		{
 			return new XmlLanguage (ietfLanguageTag);

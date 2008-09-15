@@ -43,9 +43,7 @@ namespace System.Windows.Threading {
 		}
 
 		[EditorBrowsable (EditorBrowsableState.Never)]
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public bool CheckAccess ()
 		{
 			throw new NotImplementedException ();

@@ -32,9 +32,7 @@ using Mono;
 namespace System.Windows.Input {
 
 	public static class FocusManager {
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public static object GetFocusedElement ()
 		{
 			IntPtr v = NativeMethods.surface_get_focused_element (Application.s_surface);

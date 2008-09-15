@@ -36,6 +36,7 @@ using System.Windows.Media.Animation;
 using System.Runtime.InteropServices;
 
 namespace System.Windows.Controls {
+
 	public sealed partial class MediaElement : FrameworkElement {
 		private StreamWrapper wrapper;
 		
@@ -55,25 +56,19 @@ namespace System.Windows.Controls {
 			return base.GetValue (dp);
 		}
 		
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public void Pause ()
 		{
 			NativeMethods.media_element_pause (native);
 		}
 		
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public void Play ()
 		{
 			NativeMethods.media_element_play (native);
 		}
 		
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public void SetSource (Stream stream)
 		{
 			if (stream != null) {
@@ -88,17 +83,13 @@ namespace System.Windows.Controls {
 			}
 		}
 		
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public void SetSource (MediaStreamSource mediaStreamSource)
 		{
 			Console.WriteLine ("WARNING: MediaElement.SetSource(MediaStreamSource) is unimplemented");
 		}
 		
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public void Stop ()
 		{
 			NativeMethods.media_element_stop (native);

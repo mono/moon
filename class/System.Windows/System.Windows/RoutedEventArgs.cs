@@ -52,9 +52,7 @@ namespace System.Windows {
 		DependencyObject source;
 		bool source_set;
 		public object Source {
-#if NET_2_1
 			[SecuritySafeCritical]
-#endif
 			get {
 				if (source_set) {
 					return source;
@@ -68,9 +66,7 @@ namespace System.Windows {
 				}
 			}
 
-#if NET_2_1
 			[SecuritySafeCritical]
-#endif
 			set {
 				if (value == null) {
 					NativeMethods.routed_event_args_set_source (native, IntPtr.Zero);

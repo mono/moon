@@ -37,9 +37,7 @@ namespace System.Windows.Media.Imaging {
 		}
 
 		public int Progress {
-#if NET_2_1
 			[SecuritySafeCritical]
-#endif
 			get { throw new NotImplementedException (); }
 		}
 	}

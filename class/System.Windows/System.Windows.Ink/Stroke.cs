@@ -35,9 +35,7 @@ namespace System.Windows.Ink
 {
 	public sealed partial class Stroke : DependencyObject
 	{
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public Rect GetBounds ()
 		{
 			UnmanagedRect urect = new UnmanagedRect();
@@ -45,9 +43,7 @@ namespace System.Windows.Ink
 			return new Rect (urect.left, urect.top, urect.width, urect.height);
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public bool HitTest (StylusPointCollection stylusPointCollection)
 		{
 			return NativeMethods.stroke_hit_test (native, stylusPointCollection.native);

@@ -37,9 +37,7 @@ namespace System.Windows {
 		public StartupEventArgs () {}
 
 		public IDictionary<string,string> InitParams {
-#if NET_2_1
 			[SecuritySafeCritical]
-#endif
 			get {
 				if (init_params == null) {
 					char [] param_separator = new char [] { ',' };

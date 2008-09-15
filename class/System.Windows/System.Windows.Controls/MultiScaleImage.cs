@@ -30,11 +30,10 @@ using Mono;
 using System.Security;
 
 namespace System.Windows.Controls {
+
 	public partial class MultiScaleImage : FrameworkElement {
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public void ZoomAboutLogicalPoint (double zoomIncrementFactor, double zoomCenterLogicalX, double zoomCenterLogicalY)
 		{
 			NativeMethods.multi_scale_image_zoom_about_logical_point (this.native, zoomIncrementFactor, zoomCenterLogicalX, zoomCenterLogicalY);

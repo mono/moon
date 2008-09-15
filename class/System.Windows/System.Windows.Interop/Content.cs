@@ -38,9 +38,7 @@ namespace System.Windows.Interop {
 		}
 
 		public double ActualHeight {
-#if NET_2_1
 			[SecuritySafeCritical ()]
-#endif
 			get {
 				if (PluginHost.Handle != IntPtr.Zero) {
 					int n = NativeMethods.plugin_instance_get_actual_height (PluginHost.Handle);
@@ -51,9 +49,7 @@ namespace System.Windows.Interop {
 		}
 
 		public double ActualWidth {
-#if NET_2_1
 			[SecuritySafeCritical ()]
-#endif
 			get {
 				if (PluginHost.Handle != IntPtr.Zero) {
 					int n = NativeMethods.plugin_instance_get_actual_width (PluginHost.Handle);
@@ -64,9 +60,7 @@ namespace System.Windows.Interop {
 		}
 
 		public bool IsFullScreen {
-#if NET_2_1
 			[SecuritySafeCritical ()]
-#endif
 			get {
 				if (PluginHost.Handle != IntPtr.Zero) {
 					return false;
@@ -74,9 +68,7 @@ namespace System.Windows.Interop {
 					return false;
 			}
 			[MonoTODO ()]
-#if NET_2_1
 			[SecuritySafeCritical ()]
-#endif
 			set {
 				// Note: we can change the value only if this is called from a user keyboard or mouse event.
 				// Otherside the value won't change (at least won't change to true)

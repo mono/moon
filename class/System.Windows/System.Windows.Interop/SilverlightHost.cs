@@ -39,18 +39,14 @@ namespace System.Windows.Interop {
 		public SilverlightHost ()
 		{}
 
-#if NET_2_1
 		[SecuritySafeCritical ()]
-#endif
 		public bool IsVersionSupported (string versionStr)
 		{
 			throw new NotImplementedException ();
 		}
 
 		public Color Background {
-#if NET_2_1
 			[SecuritySafeCritical ()]
-#endif
 			get { throw new NotImplementedException (); }
 		}
 
@@ -59,9 +55,7 @@ namespace System.Windows.Interop {
 		}
 
 		public bool IsLoaded {
-#if NET_2_1
 			[SecuritySafeCritical ()]
-#endif
 			get { throw new NotImplementedException (); }
 		}
 
@@ -70,9 +64,7 @@ namespace System.Windows.Interop {
 		}
 
 		public Uri Source {
-#if NET_2_1
 			[SecuritySafeCritical ()]
-#endif
 			get {
 				if (PluginHost.Handle == IntPtr.Zero)
 					return null;

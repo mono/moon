@@ -64,9 +64,7 @@ namespace System.Windows.Input
 			set { SetItemImpl (index, value); }
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public void Add (StylusPointCollection stylusPoints)
 		{
 			throw new NotImplementedException ();

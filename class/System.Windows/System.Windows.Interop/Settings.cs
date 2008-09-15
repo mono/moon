@@ -39,53 +39,37 @@ namespace System.Windows.Interop {
 		//FIXME: this should enable the fps counter in the browser status bar
 		public bool EnableFrameRateCounter
 		{
-#if NET_2_1
 			[SecuritySafeCritical ()]
-#endif
 			get { return false; }
-#if NET_2_1
 			[SecuritySafeCritical ()]
-#endif
 			set {}
 		}
 
 		//FIXME
 		public bool EnableHTMLAccess {
-#if NET_2_1
 			[SecuritySafeCritical ()]
-#endif
 			get { return false ;}
 		}
 
 		//FIXME
 		public bool EnableRedrawRegions {
-#if NET_2_1
 			[SecuritySafeCritical ()]
-#endif
 			get { return false; }
-#if NET_2_1
 			[SecuritySafeCritical ()]
-#endif
 			set {}
 		}
 		
 		//FIXME
 		public int MaxFrameRate {
-#if NET_2_1
 			[SecuritySafeCritical ()]
-#endif
 			get {return 1;}
-#if NET_2_1
 			[SecuritySafeCritical ()]
-#endif
 			set {}
 		}
 
 		//FIXME
 		public bool Windowless {
-#if NET_2_1
 			[SecuritySafeCritical ()]
-#endif
 			get { return false; }
 		}
 	}

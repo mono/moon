@@ -41,27 +41,19 @@ namespace System.Windows.Input {
 		}
 
 		public bool Handled {
-#if NET_2_1
 			[SecuritySafeCritical]
-#endif
 			get { return NativeMethods.routed_event_args_get_handled (native); }
-#if NET_2_1
 			[SecuritySafeCritical]
-#endif
 			set { NativeMethods.routed_event_args_set_handled (native, value); }
 		}
 
 		public Key Key {
-#if NET_2_1
 			[SecuritySafeCritical]
-#endif
 			get { return (Key) NativeMethods.key_event_args_get_key (native); }
 		}
 
 		public int PlatformKeyCode {
-#if NET_2_1
 			[SecuritySafeCritical]
-#endif
 			get { return NativeMethods.key_event_args_get_platform_key_code (native); }
 		}
 	}

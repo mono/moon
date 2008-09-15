@@ -45,9 +45,7 @@ namespace System.Windows {
 			NativeMethods.framework_element_register_managed_overrides (native, measure_cb, arrange_cb);
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public object FindName (string name)
 		{
 			return DepObjectFindName (name);
@@ -66,9 +64,7 @@ namespace System.Windows {
 			return base.GetValue (dp);
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		protected virtual Size MeasureOverride (Size availableSize)
 		{
 			UnmanagedSize uavail = new UnmanagedSize();
@@ -81,9 +77,7 @@ namespace System.Windows {
 			return new Size (rv.width, rv.height);
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		protected virtual Size ArrangeOverride (Size finalSize)
 		{
 			UnmanagedSize ufinal = new UnmanagedSize();
@@ -97,9 +91,7 @@ namespace System.Windows {
 		}
 
 		public DependencyObject Parent {
-#if NET_2_1
 			[SecuritySafeCritical]
-#endif
 			get {
 				IntPtr parent_handle = NativeMethods.uielement_get_visual_parent (native);
 				if (parent_handle == IntPtr.Zero)
@@ -111,9 +103,7 @@ namespace System.Windows {
 		}
 
 		internal DependencyObject SubtreeObject {
-#if NET_2_1
 			[SecuritySafeCritical]
-#endif
 			get {
 				IntPtr parent_handle = NativeMethods.uielement_get_subtree_object (native);
 				if (parent_handle == IntPtr.Zero)

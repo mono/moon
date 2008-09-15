@@ -50,9 +50,7 @@ namespace System.Windows.Media
 			TileOverlap = tileOverlap;
 		}
 		
-#if NET_2_1
 		[SecuritySafeCritical ()]
-#endif
 		protected void InvalidateTileLayer (int level, int tilePositionX, int tilePositionY, int tileLayer)
 		{
 			throw new NotImplementedException ();

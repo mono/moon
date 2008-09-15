@@ -39,9 +39,7 @@ namespace System.Windows.Threading {
 			throw new NotImplementedException ();
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public DispatcherSynchronizationContext ()
 		{
 			throw new NotImplementedException ();
@@ -59,9 +57,7 @@ namespace System.Windows.Threading {
 			throw new NotImplementedException ();
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public override void Post (SendOrPostCallback d, object state)
 		{
 			throw new NotImplementedException ();

@@ -35,9 +35,7 @@ namespace System.Windows.Threading {
 		uint source_id;
 		NativeMethods.GSourceFunc callback;
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public void Start ()
 		{
 			if (source_id != 0)
@@ -47,9 +45,7 @@ namespace System.Windows.Threading {
 			source_id = NativeMethods.time_manager_add_timeout (NativeMethods.surface_get_time_manager (Application.s_surface), (int) interval.TotalMilliseconds, callback, IntPtr.Zero);
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public void Stop ()
 		{
 			if (source_id == 0)
@@ -61,14 +57,10 @@ namespace System.Windows.Threading {
 		}
 
 		public TimeSpan Interval {
-#if NET_2_1
 			[SecuritySafeCritical]
-#endif
 			get { return interval; }
 
-#if NET_2_1
 			[SecuritySafeCritical]
-#endif
 			set { interval = value; }
 			
 		}

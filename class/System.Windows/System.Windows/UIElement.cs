@@ -41,25 +41,19 @@ using Mono;
 namespace System.Windows {
 	public abstract partial class UIElement : DependencyObject {
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public bool CaptureMouse ()
 		{
 			return NativeMethods.uielement_capture_mouse (native);
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public void ReleaseMouseCapture ()
 		{
 			NativeMethods.uielement_release_mouse_capture (native);
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public void Arrange (Rect finalRect)
 		{
 			UnmanagedRect unmanagedFinalRect = new UnmanagedRect();
@@ -70,17 +64,13 @@ namespace System.Windows {
 			NativeMethods.uielement_arrange(native, unmanagedFinalRect);
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public void InvalidateArrange ()
 		{
 			NativeMethods.uielement_invalidate_arrange(native);
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public void Measure (Size availableSize)
 		{
 			UnmanagedSize unmanagedAvailableSize = new UnmanagedSize();
@@ -91,25 +81,19 @@ namespace System.Windows {
 			NativeMethods.uielement_measure (native, unmanagedAvailableSize);
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public void InvalidateMeasure ()
 		{
 			NativeMethods.uielement_invalidate_measure (native);
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public void UpdateLayout ()
 		{
 			NativeMethods.uielement_update_layout (native);
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public GeneralTransform TransformToVisual (UIElement visual)
 		{
 			IntPtr t = NativeMethods.uielement_get_transform_to_uielement (native, visual.native);
@@ -118,26 +102,20 @@ namespace System.Windows {
 		}
 
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public IEnumerable<UIElement> HitTest (Point point)
 		{
 			throw new NotImplementedException ();
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public IEnumerable<UIElement> HitTest (Rect rect)
 		{
 			throw new NotImplementedException ();
 		}
 
 #if notyet
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public AutomationPeer OnCreateAutomationPeer ()
 		{
 			throw new NotImplementedException ();
@@ -145,9 +123,7 @@ namespace System.Windows {
 #endif
 
 		public Size DesiredSize {
-#if NET_2_1
 			[SecuritySafeCritical]
-#endif
 			get {
 				UnmanagedSize sz = NativeMethods.uielement_get_desired_size (native);
 				return new Size (sz.width, sz.height);

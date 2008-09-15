@@ -33,11 +33,8 @@ using Mono;
 namespace System.Windows.Ink
 {
 	public sealed partial class StrokeCollection : PresentationFrameworkCollection <Stroke>
-	{
-	
-#if NET_2_1
+	{	
 		[SecuritySafeCritical]
-#endif
 		public Rect GetBounds ()
 		{
 			UnmanagedRect urect = new UnmanagedRect();
@@ -45,9 +42,7 @@ namespace System.Windows.Ink
 			return new Rect (urect.left, urect.top, urect.width, urect.height);
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public StrokeCollection HitTest (StylusPointCollection stylusPointCollection)
 		{
 			IntPtr col = NativeMethods.stroke_collection_hit_test (native, stylusPointCollection.native);

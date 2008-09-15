@@ -43,33 +43,25 @@ namespace System.Windows.Controls {
 			set { /* nothing yet */; }
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public bool ApplyTemplate()
 		{
 			return NativeMethods.control_apply_template (native);
 		}
 		
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public bool Focus()
 		{
 			return NativeMethods.surface_focus_element (Application.s_surface, native);
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		protected DependencyObject GetTemplateChild(string childName)
 		{
 			throw new NotImplementedException ();
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public virtual void OnApplyTemplate()
 		{
 			// FIXME

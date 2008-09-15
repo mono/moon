@@ -42,9 +42,7 @@ namespace System.Windows {
 			TargetType = targetType;
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public void Seal()
 		{
 			isSealed = true;

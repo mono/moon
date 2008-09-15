@@ -42,9 +42,7 @@ namespace System.Windows.Input {
 		{
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public Point GetPosition (UIElement relativeTo)
 		{
 			double nx;
@@ -56,20 +54,14 @@ namespace System.Windows.Input {
 		}
 
 		public bool Handled {
-#if NET_2_1
 			[SecuritySafeCritical]
-#endif
 			get { return NativeMethods.routed_event_args_get_handled (native); }
-#if NET_2_1
 			[SecuritySafeCritical]
-#endif
 			set { NativeMethods.routed_event_args_set_handled (native, value); }
 		}
 		
 		public StylusDevice StylusDevice {
-#if NET_2_1
 			[SecuritySafeCritical]
-#endif
 			get {
 				if (stylus_device == null)
 					stylus_device = new StylusDevice (this);

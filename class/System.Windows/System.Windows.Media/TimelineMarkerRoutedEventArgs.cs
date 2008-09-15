@@ -47,13 +47,9 @@ namespace System.Windows.Media
 		}
 		
 		public TimelineMarker Marker {
-#if NET_2_1
-		[SecuritySafeCritical ()]
-#endif
+			[SecuritySafeCritical]
 			get { return marker; }
-#if NET_2_1
-		[SecuritySafeCritical ()]
-#endif
+			[SecuritySafeCritical]
 			set { marker = value; }
 		}
 	}

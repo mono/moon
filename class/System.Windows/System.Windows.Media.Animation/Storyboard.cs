@@ -39,34 +39,25 @@ namespace System.Windows.Media.Animation {
 		// FIXME Exception if setting on running
 		// This check needs to go in native co
 
-#if NET_2_1
 		[SecuritySafeCritical ()]
-#endif
 		public void Begin ()
 		{
 			NativeMethods.storyboard_begin (native);
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical ()]
-#endif
 		public void Pause ()
 		{
 			NativeMethods.storyboard_pause (native);
 		}
 
-
-#if NET_2_1
 		[SecuritySafeCritical ()]
-#endif
 		public void Resume ()
 		{
 			NativeMethods.storyboard_resume (native);
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical ()]
-#endif
 		public void Seek (TimeSpan timespan)
 		{
 			NativeMethods.storyboard_seek (native, timespan.Ticks);
@@ -82,9 +73,7 @@ namespace System.Windows.Media.Animation {
 			throw new NotImplementedException ();
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical ()]
-#endif
 		public void Stop ()
 		{
 			NativeMethods.storyboard_stop (native);

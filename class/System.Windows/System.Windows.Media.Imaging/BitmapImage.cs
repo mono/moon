@@ -43,9 +43,7 @@ namespace System.Windows.Media.Imaging
 			UriSource = uriSource;
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public void SetSource (Stream streamSource)
 		{
 			this.stream = streamSource;

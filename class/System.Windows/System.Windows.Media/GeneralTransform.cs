@@ -33,9 +33,7 @@ namespace System.Windows.Media {
 
 	public abstract partial class GeneralTransform : DependencyObject {
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public Point Transform (Point point)
 		{
 			UnmanagedPoint p1, p2;

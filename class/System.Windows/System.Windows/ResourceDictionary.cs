@@ -42,9 +42,7 @@ namespace System.Windows {
 		IEnumerable<KeyValuePair<Object, Object>>,
 		IEnumerable {
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public void Add (string key, object value)
 		{
 			if (key == null)
@@ -60,9 +58,7 @@ namespace System.Windows {
 			}
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public void Clear ()
 		{
 			NativeMethods.resource_dictionary_clear (native);
@@ -78,9 +74,7 @@ namespace System.Windows {
 			return ContainsKey (key as string);
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public void Remove (string key)
 		{
 			RemoveInternal (key);
@@ -110,9 +104,7 @@ namespace System.Windows {
 		public bool IsReadOnly { get {throw new NotImplementedException();} }
 
 		public object this[object key] { 
-#if NET_2_1
 			[SecuritySafeCritical]
-#endif
 			get {
 				if (!(key is string))
 					throw new ArgumentException ("Key must be a string");
