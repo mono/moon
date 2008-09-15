@@ -112,3 +112,9 @@ void Applier::Apply ()
 	g_hash_table_foreach (objects, (GHFunc) apply_object_func, NULL);
 }
 
+void Applier::Flush ()
+{
+	// FIXME Totally temporary for now, leaks memory!
+	objects = g_hash_table_new (g_direct_hash, g_direct_equal);
+}
+

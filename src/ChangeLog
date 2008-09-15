@@ -1,6 +1,11 @@
 2008-09-08  Michael Dominic K.  <mdk@mdk.am>
 
 	* applier.cpp:
+	* applier.h: Adding a basic Flush method, totally bad for now.
+
+2008-09-08  Michael Dominic K.  <mdk@mdk.am>
+
+	* applier.cpp:
 	* applier.h: Adding basic Apply function that applies all the changes
 	to objects.
 
