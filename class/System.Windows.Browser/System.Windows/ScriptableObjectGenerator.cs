@@ -30,7 +30,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Browser;
-using System.Windows.Browser.Serialization;
 using System.Runtime.InteropServices;
 using System.Reflection;
 using System.Globalization;
