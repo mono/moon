@@ -28,11 +28,6 @@ system_windows_browser_sources =					\
 	$(srcdir)/System.Windows.Browser.Net/BrowserHttpWebResponse.cs		\
 	$(srcdir)/System.Windows.Browser.Net/BrowserHttpWebAsyncResult.cs		\
 	$(srcdir)/System.Windows.Browser.Net/SoapHttpClientProtocol.cs		\
-	$(srcdir)/System.Windows.Browser.Serialization/JavaScriptConverter.cs	\
-	$(srcdir)/System.Windows.Browser.Serialization/JavaScriptSerializer.cs	\
-	$(srcdir)/System.Windows.Browser.Serialization/JavaScriptTypeResolver.cs	\
-	$(srcdir)/System.Windows.Browser.Serialization/ScriptIgnoreAttribute.cs	\
-	$(srcdir)/System.Windows.Browser.Serialization/SimpleTypeResolver.cs	\
 	$(srcdir)/System.Windows.Browser/BrowserInformation.cs			\
 	$(srcdir)/System.Windows.Browser/BrowserRuntimeSettings.cs		\
 	$(srcdir)/System.Windows.Browser/HtmlDocument.cs				\
@@ -53,8 +48,6 @@ system_windows_browser_sources =					\
 	$(srcdir)/System.Windows/WebApplication.cs
 
 test_sources = \
-	$(srcdir)/Test/System.Windows.Browser.Serialization/JavaScriptSerializerTest.cs		\
-	$(srcdir)/Test/System.Windows.Browser.Serialization/SimpleTypeResolverTest.cs		\
 	$(srcdir)/Test/System.Windows/WebApplicationTest.cs
 
 EXTRA_DIST = $(system_windows_browser_sources) 				\
@@ -62,7 +55,6 @@ EXTRA_DIST = $(system_windows_browser_sources) 				\
 	Assembly/ChangeLog						\
 	System.Windows.Browser/ChangeLog				\
 	System.Windows.Browser.Net/ChangeLog				\
-	System.Windows.Browser.Serialization/ChangeLog			\
 	System.Windows/ChangeLog					\
 	System.Windows.Hosting/ChangeLog				\
 	ChangeLog
