@@ -1,3 +1,10 @@
+2008-09-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows/ApplicationTest.cs: Remove [KnownFailure] from 
+	LoadComponent_Application and add test case for a relative URI. Also
+	add relative URI test case for GetResourceStream. Add test cases for
+	RootVisual property.
+
 2008-09-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.IO.IsolatedStorage/IsolatedStorageFileStreamTest.cs: Add

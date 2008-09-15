@@ -29,7 +29,7 @@
 using System;
 using System.IO;
 using System.Windows;
-using System.Windows.Media;
+using System.Windows.Controls;
 using System.Windows.Resources;
 using Mono.Moonlight.UnitTesting;
 
@@ -77,6 +77,8 @@ namespace MoonTest.System.Windows {
 
 			Assert.Throws (delegate { Application.GetResourceStream (null, uri); }, typeof (ArgumentNullException), "GetResourceStream(null,uri)");
 
+			Assert.IsNull (Application.GetResourceStream (new Uri ("/moon_unit;component/App-does-not-exists.xaml", UriKind.Relative)), "GetResourceStream(does-not-exists-uri)");
+
 			StreamResourceInfo sri = new StreamResourceInfo (new MemoryStream (), String.Empty);
 			Assert.Throws (delegate { Application.GetResourceStream (sri, null); }, typeof (ArgumentNullException), "GetResourceStream(sri,null)");
 
@@ -84,13 +86,27 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
-		[KnownFailure]
 		public void LoadComponent_Application ()
 		{
-			// Exception message says the component is expected to be a Application or DependencyObject
-			// however it does not accept Application (and MSDN does talk about anything other than a DO)
+			// Note: Exception message can be misleading
 			Assert.Throws (delegate { Application.LoadComponent (Application.Current, null); }, typeof (ArgumentException), "LoadComponent(app,null)");
 			Assert.Throws (delegate { Application.LoadComponent (Application.Current, uri); }, typeof (ArgumentException), "LoadComponent(app,uri)");
+			Assert.Throws (delegate { Application.LoadComponent (Application.Current, Application.Current.Host.Source); }, typeof (ArgumentException), "LoadComponent(app,xap)");
+			// try to load an unexisting uri
+			Application.LoadComponent (Application.Current, new Uri ("/moon_unit;component/App-does-not-exists.xaml", UriKind.Relative));
+		}
+
+		[TestMethod]
+		public void ResetRootVisual ()
+		{
+			UIElement root = Application.Current.RootVisual;
+			Canvas new_root = new Canvas ();
+			Application.Current.RootVisual = new_root;
+			// we can't change the root
+			Assert.IsFalse (Object.ReferenceEquals (new_root, Application.Current.RootVisual), "new root");
+			Assert.IsTrue (Object.ReferenceEquals (root, Application.Current.RootVisual), "old root");
+			// and we can't clear it
+			Assert.Throws (delegate { Application.Current.RootVisual = null; }, typeof (InvalidOperationException), "null");
 		}
 	}
 }
