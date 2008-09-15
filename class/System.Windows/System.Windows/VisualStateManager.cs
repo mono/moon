@@ -48,12 +48,18 @@ namespace System.Windows {
 
 		public static VisualStateManager GetCustomVisualStateManager (DependencyObject obj)
 		{
+			if (obj == null)
+				throw new ArgumentNullException ("obj");
+
 			return (VisualStateManager)obj.GetValue (CustomVisualStateManagerProperty);
 		}
 
 		public static void SetCustomVisualStateManager (DependencyObject obj,
 								VisualStateManager value)
 		{
+			if (obj == null)
+				throw new ArgumentNullException ("obj");
+
 			obj.SetValue (CustomVisualStateManagerProperty, value);
 		}
 
