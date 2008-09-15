@@ -1,3 +1,8 @@
+2008-09-05  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/assorted/downloader-smooth-set-source-passing.html: Another (this time 
+	really accurate) test for source setting on image. The famous #375275.
+
 2008-09-02  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/test-object-animation.xaml: Adding a test for ObjectAnimationUsingKeyFrames.
