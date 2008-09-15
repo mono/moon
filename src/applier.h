@@ -30,6 +30,7 @@ class Applier {
  public:
 	Applier ();
 	void AddPropertyChange (DependencyObject *object, DependencyProperty *property, Value *v, int precedence);
+	void Apply ();
 };
 	
 #endif /* MOON_APPLIER_H */

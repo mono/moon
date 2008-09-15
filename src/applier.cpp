@@ -91,3 +91,24 @@ Applier::AddPropertyChange (DependencyObject *object, DependencyProperty *proper
 	p_indexer->values_list = g_list_insert_sorted (p_indexer->values_list, v_indexer, (GCompareFunc) value_indexer_compare_func);
 }
 
+static void
+apply_property_func (property_indexer *p_indexer, DependencyObject *object)
+{
+	g_return_if_fail (p_indexer->property != NULL);
+	g_return_if_fail (p_indexer->values_list != NULL);
+
+	value_indexer *v_indexer = (value_indexer *) p_indexer->values_list->data;
+	object->SetValue (p_indexer->property, *v_indexer->v);
+}
+
+static void
+apply_object_func (DependencyObject *object, object_indexer *o_indexer)
+{
+	g_list_foreach (o_indexer->properties_list, (GFunc) apply_property_func, object);
+}
+
+void Applier::Apply ()
+{
+	g_hash_table_foreach (objects, (GHFunc) apply_object_func, NULL);
+}
+
