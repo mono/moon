@@ -284,6 +284,8 @@ TimeManager::~TimeManager ()
 	root_clock->unref ();
 	root_clock = NULL;
 
+	delete applier;
+
 	RemoveAllRegisteredTimeouts ();
 }
 
