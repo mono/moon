@@ -1,5 +1,10 @@
 2008-09-08  Michael Dominic K.  <mdk@mdk.am>
 
+	* applier.cpp:
+	* applier.h: Adding basic method to add property to apply on object.
+
+2008-09-08  Michael Dominic K.  <mdk@mdk.am>
+
 	* Makefile.am:
 	* applier.cpp:
 	* applier.h: Introducing the applier helper class. Will be used 

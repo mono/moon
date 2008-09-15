@@ -22,13 +22,14 @@
 class Applier {
 
  private:
-	GList *list;
+	GHashTable *objects;
 
  protected:
 	~Applier ();
 
  public:
 	Applier ();
+	void AddPropertyChange (DependencyObject *object, DependencyProperty *property, Value *v, int precedence);
 };
 	
 #endif /* MOON_APPLIER_H */
