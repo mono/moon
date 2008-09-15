@@ -1,5 +1,10 @@
 2008-09-08  Michael Dominic K.  <mdk@mdk.am>
 
+	* runtime.cpp:
+	* runtime.h: Adding Applier to Surface.
+
+2008-09-08  Michael Dominic K.  <mdk@mdk.am>
+
 	* applier.cpp:
 	* applier.h: Adding a basic Flush method, totally bad for now.
 
