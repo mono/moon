@@ -19,6 +19,10 @@
 #include "list.h"
 #include "point.h"
 
+#define APPLIER_PRECEDENCE_INSTANT 0
+#define APPLIER_PRECEDENCE_ANIMATION 100
+#define APPLIER_PRECEDENCE_ANIMATION_RESET APPLIER_PRECEDENCE_INSTANT
+
 class Applier {
 
  private:

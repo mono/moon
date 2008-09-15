@@ -61,6 +61,12 @@ value_indexer_compare_func (value_indexer *a, value_indexer *b)
 void
 Applier::AddPropertyChange (DependencyObject *object, DependencyProperty *property, Value *v, int precedence)
 {
+	if (precedence == APPLIER_PRECEDENCE_INSTANT) {
+		object->SetValue (property, *v);
+		delete v;
+		return;
+	}
+
 	value_indexer *v_indexer = NULL;
 	property_indexer *p_indexer = NULL;
 	object_indexer *o_indexer = NULL;

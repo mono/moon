@@ -119,7 +119,7 @@ AnimationStorage::UpdatePropertyValueWith (Value *v)
 
 	if (v != NULL) {
 		Applier *applier = clock->GetTimeManager ()->GetApplier ();
-		applier->AddPropertyChange (targetobj, targetprop, new Value (*v), 0);
+		applier->AddPropertyChange (targetobj, targetprop, new Value (*v), APPLIER_PRECEDENCE_ANIMATION);
 	}
 }
 
@@ -132,7 +132,7 @@ AnimationStorage::UpdatePropertyValue ()
 	Value *current_value = clock->GetCurrentValue (baseValue, NULL/*XXX*/);
 	if (current_value != NULL) {
 		Applier *applier = clock->GetTimeManager ()->GetApplier ();
-		applier->AddPropertyChange (targetobj, targetprop, new Value (*current_value), 0);
+		applier->AddPropertyChange (targetobj, targetprop, new Value (*current_value), APPLIER_PRECEDENCE_ANIMATION);
 	}
 		
 	delete current_value;
@@ -147,10 +147,12 @@ AnimationStorage::ResetPropertyValue ()
 	if (targetobj == NULL)
 		return;
 
+	Applier *applier = clock->GetTimeManager ()->GetApplier ();
+
 	if (stopValue)
-		targetobj->SetValue (targetprop, *stopValue);
+		applier->AddPropertyChange (targetobj, targetprop, new Value (*stopValue), APPLIER_PRECEDENCE_ANIMATION);
 	else
-		targetobj->SetValue (targetprop, *baseValue);
+		applier->AddPropertyChange (targetobj, targetprop, new Value (*baseValue), APPLIER_PRECEDENCE_ANIMATION);
 }
 
 void
