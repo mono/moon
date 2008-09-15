@@ -1,0 +1,4 @@
+2008-09-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* 00-triangle-cap, 00-triangle-cap.README: Patch to support
+	a new triangle looking end cap, CAIRO_LINE_CAP_TRIANGLE.
