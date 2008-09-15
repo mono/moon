@@ -1,3 +1,8 @@
+2008-09-10  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/assorted/completed-event-consistency.html: Adding a test for completed 
+	event consistency. Check if all values are ok during 'Completed' emission.
+
 2008-09-05  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/assorted/downloader-smooth-set-source-passing.html: Another (this time 

@@ -1,0 +1,82 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>Downloader smooth source setting</title>
+<meta></meta>
+</head>
+<body>
+
+<script type="text/javascript">
+
+
+function OnCompleted (sender)
+{
+	console.log("Done!");
+	console.log("For rect1 got %s expecting 150", sender.FindName('rect1') ['Canvas.Left']);
+	console.log("For rect2 got %s expecting 150", sender.FindName('rect2') ['Canvas.Left']);
+	console.log("For rect3 got %s expecting 150", sender.FindName('rect3') ['Canvas.Left']);
+}
+</script>
+
+<object type="application/x-silverlight" data="data:," id="slControl" width="640" height="480">
+<param name="background" value="#FFFFFF"/>
+<param name="source" value="#xamlContent"/>
+</object>
+
+<script type="text/xaml" id="xamlContent">
+<?xml version="1.0"?>
+<Canvas
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Rectangle Width="10" Height="10" Canvas.Left="0" Canvas.Top="0" Fill="Red" x:Name="rect1">
+  	<Rectangle.Triggers>
+		<EventTrigger RoutedEvent="Path.Loaded">
+			<BeginStoryboard>
+				<Storyboard BeginTime="0:0:0">
+					<DoubleAnimationUsingKeyFrames
+						Storyboard.TargetName="rect1"
+						Storyboard.TargetProperty="(Canvas.Left)">
+							<DiscreteDoubleKeyFrame Value="50" KeyTime="0:0:2"/>
+							<DiscreteDoubleKeyFrame Value="100" KeyTime="0:0:4"/>
+							<DiscreteDoubleKeyFrame Value="150" KeyTime="0:0:6"/>
+					</DoubleAnimationUsingKeyFrames>
+				</Storyboard>
+			</BeginStoryboard>
+		</EventTrigger>
+	</Rectangle.Triggers>
+	</Rectangle>
+
+	<Rectangle Width="10" Height="10" Canvas.Left="0" Canvas.Top="10" Fill="Blue" x:Name="rect2">
+  	<Rectangle.Triggers>
+		<EventTrigger RoutedEvent="Path.Loaded">
+			<BeginStoryboard>
+				<Storyboard BeginTime="0:0:0" Completed="OnCompleted">
+					<DoubleAnimation To="150" Duration="0:0:6" Storyboard.TargetName="rect2" Storyboard.TargetProperty="(Canvas.Left)"/>
+				</Storyboard>
+			</BeginStoryboard>
+		</EventTrigger>
+	</Rectangle.Triggers>
+	</Rectangle>
+
+	<Rectangle Width="10" Height="10" Canvas.Left="0" Canvas.Top="20" Fill="Green" x:Name="rect3">
+  	<Rectangle.Triggers>
+		<EventTrigger RoutedEvent="Path.Loaded">
+			<BeginStoryboard>
+				<Storyboard BeginTime="0:0:0">
+					<DoubleAnimationUsingKeyFrames
+						Storyboard.TargetName="rect3"
+						Storyboard.TargetProperty="(Canvas.Left)">
+							<DiscreteDoubleKeyFrame Value="50" KeyTime="0:0:2"/>
+							<DiscreteDoubleKeyFrame Value="100" KeyTime="0:0:4"/>
+							<DiscreteDoubleKeyFrame Value="150" KeyTime="0:0:6"/>
+					</DoubleAnimationUsingKeyFrames>
+				</Storyboard>
+			</BeginStoryboard>
+		</EventTrigger>
+	</Rectangle.Triggers>
+	</Rectangle>
+</Canvas>
+</script>
+
+</body>
+</html>
