@@ -1,3 +1,8 @@
+2008-09-10  Michael Dominic K.  <mdk@mdk.am>
+
+	* clock.cpp: Properly emit the Completed event after the properties have
+	been applied.
+
 2008-09-09  Michael Dominic K.  <mdk@mdk.am>
 
 	* animation.cpp:

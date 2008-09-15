@@ -363,6 +363,9 @@ TimeManager::SourceTick ()
 		if (need_another_tick)
 			flags = (TimeManagerOp)(flags | TIME_MANAGER_UPDATE_CLOCKS);
 
+		applier->Apply ();
+		applier->Flush ();
+
 		// ... then cause all clocks to raise the events they've queued up
 		root_clock->RaiseAccumulatedEvents ();
 
@@ -377,9 +380,6 @@ TimeManager::SourceTick ()
 
 		ENDTICKTIMER (tick_update_clocks, "TimeManager::Tick - UpdateClocks");
 	}
-
-	applier->Apply ();
-	applier->Flush ();
 
 	if (current_flags & TIME_MANAGER_UPDATE_INPUT) {
 		STARTTICKTIMER (tick_input, "TimeManager::Tick - Input");
