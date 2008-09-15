@@ -43,9 +43,7 @@ namespace System.Windows.Browser
 			throw new NotImplementedException ();
 		}
 		
-#if NET_2_1
 		[SecuritySafeCritical ()]
-#endif
 		public object Eval (string code)
 		{
 			IntPtr result;

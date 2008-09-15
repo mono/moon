@@ -55,9 +55,7 @@ namespace System.Windows.Browser {
 			// FIXME: same as .ctor().
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical ()]
-#endif
 		public virtual void SetProperty (string name, object value)
 		{
 			WebApplication.SetProperty (handle, name, value);
@@ -68,9 +66,7 @@ namespace System.Windows.Browser {
 			throw new System.NotImplementedException ();
 		}
 		
-#if NET_2_1
 		[SecuritySafeCritical ()]
-#endif
 		public virtual object GetProperty (string name)
 		{
 			return WebApplication.GetProperty (handle, name);
@@ -91,17 +87,13 @@ namespace System.Windows.Browser {
 			throw new System.NotImplementedException ();
 		}
 		
-#if NET_2_1
 		[SecuritySafeCritical ()]
-#endif
 		public virtual object Invoke (string name, params object [] args)
 		{
 			throw new System.NotImplementedException ();
 		}
 		
-#if NET_2_1
 		[SecuritySafeCritical ()]
-#endif
 		public virtual object InvokeSelf (params object [] args)
 		{
 			throw new System.NotImplementedException ();

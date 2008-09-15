@@ -42,25 +42,19 @@ namespace System.Windows.Browser
 		{
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical ()]
-#endif
 		public void AppendChild (HtmlElement element)
 		{
 			InvokeInternal<object> (Handle, "appendChild", element);
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical ()]
-#endif
 		public void AppendChild (HtmlElement element, HtmlElement referenceElement)
 		{
 			InvokeInternal<object> (Handle, "insertBefore", element, referenceElement);
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical ()]
-#endif
 		public void Focus ()
 		{
 			InvokeInternal<object> (Handle, "focus");
@@ -82,10 +76,7 @@ namespace System.Windows.Browser
 			InvokeInternal<object> (Handle, "removeAttribute", name);
 		}
 
-
-#if NET_2_1
 		[SecuritySafeCritical ()]
-#endif
 		public void RemoveChild (HtmlElement element)
 		{
 			InvokeInternal<object> (Handle, "removeChild", element);
@@ -116,9 +107,7 @@ namespace System.Windows.Browser
 		}
 
 		public HtmlElementCollection Children {
-#if NET_2_1
-		[SecuritySafeCritical ()]
-#endif
+			[SecuritySafeCritical]
 			get { return new HtmlElementCollection ((IntPtr) GetProperty ("childNodes")); }
 		}
 
@@ -133,9 +122,7 @@ namespace System.Windows.Browser
 		}
 
 		public HtmlElement Parent {
-#if NET_2_1
-		[SecuritySafeCritical ()]
-#endif
+			[SecuritySafeCritical]
 			get { return new HtmlElement (GetPropertyInternal<IntPtr> (Handle, "parentNode")); }
 		}
 

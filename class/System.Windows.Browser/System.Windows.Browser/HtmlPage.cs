@@ -36,25 +36,19 @@ namespace System.Windows.Browser{
 		private static BrowserInformation browser_info = new BrowserInformation ();
 
 		public static BrowserInformation BrowserInformation {
-#if NET_2_1
 		[SecuritySafeCritical ()]
-#endif
 			get {
 				return browser_info;
 			}
 		}
 
 		public static bool IsEnabled {		
-#if NET_2_1
 		[SecuritySafeCritical ()]
-#endif
 			get { throw new System.NotImplementedException (); }
 		}
 		
 		public static HtmlDocument Document {
-#if NET_2_1
 		[SecuritySafeCritical ()]
-#endif
 			get {
 				return new HtmlDocument (HtmlObject.GetPropertyInternal<IntPtr> (IntPtr.Zero, "document"));
 			}
@@ -76,18 +70,14 @@ namespace System.Windows.Browser{
 		}
 
 		public static HtmlWindow Window {
-#if NET_2_1
-		[SecuritySafeCritical ()]
-#endif
+			[SecuritySafeCritical]
 			get {
 				return new HtmlWindow (HtmlObject.GetPropertyInternal<IntPtr> (IntPtr.Zero, "window"));
 			}
 		}
 
 		public static HtmlElement Plugin {
-#if NET_2_1
-		[SecuritySafeCritical ()]
-#endif
+			[SecuritySafeCritical]
 			get { throw new System.NotImplementedException (); }
 		}
 	}

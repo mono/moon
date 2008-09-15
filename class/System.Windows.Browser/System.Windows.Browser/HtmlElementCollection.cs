@@ -44,9 +44,7 @@ namespace System.Windows.Browser
 		}
 
 		public int Count {
-#if NET_2_1
-		[SecuritySafeCritical ()]
-#endif
+			[SecuritySafeCritical]
 			get {
 				return HtmlObject.GetPropertyInternal<int> (node_list, "length");
 			}
@@ -54,9 +52,7 @@ namespace System.Windows.Browser
 
 		public HtmlElement this [int i] {
 			// is this approach (creating HtmlElement every time) bogus?
-#if NET_2_1
-		[SecuritySafeCritical ()]
-#endif
+			[SecuritySafeCritical]
 			get {
 				return new HtmlElement (HtmlObject.InvokeInternal<IntPtr> (node_list, "item", i));
 			}

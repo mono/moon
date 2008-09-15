@@ -64,17 +64,13 @@ namespace System.Windows.Browser
 			event_type = eventType;
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical ()]
-#endif
 		public void PreventDefault ()
 		{
 			throw new NotImplementedException ();
 		}
 		
-#if NET_2_1
 		[SecuritySafeCritical ()]
-#endif
 		public void StopPropagation ()
 		{
 			throw new NotImplementedException ();

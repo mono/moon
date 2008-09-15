@@ -52,25 +52,19 @@ namespace System.Windows.Browser
 			}
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical ()]
-#endif
 		public HtmlElement CreateElement (string tagName)
 		{
 			return new HtmlElement (InvokeInternal<IntPtr> (Handle, "createElement", tagName));
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical ()]
-#endif
 		public HtmlElement GetElementById (string id)
 		{
 			return new HtmlElement (InvokeInternal<IntPtr> (Handle, "getElementById", id));
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical ()]
-#endif
 		public HtmlElementCollection GetElementsByTagName (string tagName)
 		{
 			return new HtmlElementCollection (InvokeInternal<IntPtr> (Handle, "getElementsByTagName", tagName));
