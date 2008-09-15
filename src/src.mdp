@@ -195,6 +195,24 @@
     <File name="stackpanel.h" subtype="Code" buildaction="Nothing" />
     <File name="animation2.h" subtype="Code" buildaction="Nothing" />
     <File name="tilesource.h" subtype="Code" buildaction="Nothing" />
+    <File name="applier.cpp" subtype="Code" buildaction="Compile" />
+    <File name="applier.h" subtype="Code" buildaction="Nothing" />
+    <File name="bitmapimage.h" subtype="Code" buildaction="Nothing" />
+    <File name="border.cpp" subtype="Code" buildaction="Compile" />
+    <File name="border.h" subtype="Code" buildaction="Nothing" />
+    <File name="cornerradius.cpp" subtype="Code" buildaction="Compile" />
+    <File name="cornerradius.h" subtype="Code" buildaction="Nothing" />
+    <File name="deepzoomimagetilesource.cpp" subtype="Code" buildaction="Compile" />
+    <File name="deepzoomimagetilesource.h" subtype="Code" buildaction="Nothing" />
+    <File name="multiscaleimage.cpp" subtype="Code" buildaction="Compile" />
+    <File name="multiscaleimage.h" subtype="Code" buildaction="Nothing" />
+    <File name="multiscalesubimage.h" subtype="Code" buildaction="Nothing" />
+    <File name="resources.cpp" subtype="Code" buildaction="Compile" />
+    <File name="resources.h" subtype="Code" buildaction="Nothing" />
+    <File name="textbox.cpp" subtype="Code" buildaction="Compile" />
+    <File name="textbox.h" subtype="Code" buildaction="Nothing" />
+    <File name="thickness.cpp" subtype="Code" buildaction="Compile" />
+    <File name="tilesource.cpp" subtype="Code" buildaction="Compile" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>
