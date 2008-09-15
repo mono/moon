@@ -76,6 +76,8 @@
     <Compile Include="System.Windows\SizeTest.cs" />
     <Compile Include="System.Windows\StyleTest.cs" />
     <Compile Include="System.Windows\ThicknessTest.cs" />
+    <Compile Include="System.Windows\VisualStateManagerTest.cs" />
+    <Compile Include="System.Windows\VisualStateTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
