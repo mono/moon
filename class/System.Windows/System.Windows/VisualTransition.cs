@@ -13,10 +13,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -32,19 +32,19 @@ using System.Windows.Media.Animation;
 
 namespace System.Windows {
 
-	[ContentPropertyAttribute("Storyboard")]
-	public class VisualTransition
-	{
+	[ContentProperty ("Storyboard")]
+	public class VisualTransition {
+
 		string from;
 		string to;
 		Storyboard storyboard;
 		Duration duration;
 
-		public VisualTransition()
+		public VisualTransition ()
 		{
 		}
 
-		[TypeConverterAttribute(typeof(DurationConverter))]
+		[TypeConverter (typeof (DurationConverter))]
 		public Duration Duration {
 			get { return duration; }
 			set { duration = value; }
@@ -59,10 +59,10 @@ namespace System.Windows {
 			get { return storyboard; }
 			set { storyboard = value; }
 		}
+
 		public string To {
 			get { return to; }
 			set { to = value; }
 		}
 	}
-
 }
