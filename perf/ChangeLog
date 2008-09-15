@@ -1,3 +1,11 @@
+2008-09-12  Michael Dominic K.  <mdk@mdk.am>
+
+	* README:
+	* perf-suite-runner/DrtStore.cs:
+	* perf-suite-runner/Options.cs:
+	* perf-suite-runner/PerfSuiteRunner.cs: Adding a way (PERF_TEST_ID env var)
+	to run a single test without storing the results in the database.
+
 2008-09-04  Michael Dominic K.  <mdk@mdk.am>
 
 	* perf-report/helpers.js:

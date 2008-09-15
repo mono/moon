@@ -49,6 +49,9 @@ namespace PerfSuiteRunner {
 		[Option ("Location of the file with the database", 'd', "database")]
 		public string DatabaseFile = "perf-results.db";
 
+		[Option ("Test id to run (forces single-test mode)", 'i', "id")]
+		public string TestId = "";
+
 		public Options ()
 		{
 			base.ParsingMode = OptionsParsingMode.Both;
@@ -58,6 +61,7 @@ namespace PerfSuiteRunner {
 			Author = GetEnvVarIfPresentOrDefault ("PERF_AUTHOR", Author);
 			ChangeLog = GetEnvVarIfPresentOrDefault ("PERF_CHANGE_LOG", ChangeLog);
 			DatabaseFile = GetEnvVarIfPresentOrDefault ("PERF_DATABASE_FILE", DatabaseFile);
+			TestId = GetEnvVarIfPresentOrDefault ("PERF_TEST_ID", TestId);
 		}
 
 		private string GetEnvVarIfPresentOrDefault (string var, string def)

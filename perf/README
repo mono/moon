@@ -70,3 +70,14 @@ run:
   $> svn-dispatcher
 
 This is mostly meant for automated scripts.
+
+
+Running single test
+===================
+
+To run a single test (without storing the results in the database) use the PERF_TEST_ID
+variable. In example:
+
+  $> PERF_TEST_ID="1" make run-perf
+
+The results of this run will only be printed to the console.

@@ -37,11 +37,8 @@ namespace PerfSuiteRunner {
 
 	public static class PerfSuiteRunner {
 
-		public static int Main (string [] args)
+		public static int AllTestsMode (Options opts)
 		{
-			Options opts = new Options ();
-			opts.ProcessArgs (args);
-
 			Console.WriteLine ("*** Pass name is '{0}'...", opts.ShortName);
 
 			Database.Initialize (opts.DatabaseFile);
@@ -89,6 +86,49 @@ namespace PerfSuiteRunner {
 			Database.CommitTransaction ();
 
 			return 0;
+
+		}
+
+		public static int SingleTestMode (Options opts)
+		{
+			Console.WriteLine ("*** Running single test with id '{0}' not storing results in database...", opts.TestId);
+
+			DrtStore store = new DrtStore ("perf-suite-set/drtlist.xml");
+			DrtItem item = store.GetDrtItemForId (opts.TestId);
+			
+			if (item == null) {
+				Console.WriteLine ("*** Test '{0}' not found!", opts.TestId);
+				return 128;
+			}
+
+			Console.WriteLine ("*** Running [{0}]", item);
+
+			DrtResult r = item.Run ();
+				
+			ResultDbEntry resultEntry = new ResultDbEntry ();
+
+			if (r == null) {
+				resultEntry.Time = 0;
+				Console.WriteLine ("*** Averaged result: 0 (FAILURE)");
+			} else {
+				resultEntry.Time = r.AveragedTime;
+				Console.WriteLine ("*** Averaged result: {0}usec", r.AveragedTime);
+			}
+				
+			return 0;
+
+		}
+
+		public static int Main (string [] args)
+		{
+			Options opts = new Options ();
+			opts.ProcessArgs (args);
+
+			if (opts.TestId != String.Empty)
+				return SingleTestMode (opts);
+			else
+				return AllTestsMode (opts);
+
 		}
 
 	}

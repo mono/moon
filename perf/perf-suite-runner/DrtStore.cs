@@ -68,6 +68,16 @@ namespace PerfSuiteRunner {
 			Console.WriteLine ("*** Loaded {0} items from drt list", count);
 		}
 
+		public DrtItem GetDrtItemForId (string id)
+		{
+			foreach (DrtItem item in Items) {
+				if (item.UniqueId == id)
+					return item;
+			}
+
+			return null;
+		}
+
 	}
 
 }
