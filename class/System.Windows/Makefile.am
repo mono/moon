@@ -12,7 +12,7 @@ assemblies = $(assemblysl) $(assemblydesktop)
 
 noinst_DATA = $(assemblies)
 
-CSCFLAGS = /codepage:65001 -d:NET_1_1 -d:NET_2_0 -d:MOONLIGHT -debug+ -noconfig -r:System -r:System.Core -r:System.Xml -r:Mono.Moonlight -d:AGCLR -unsafe
+CSCFLAGS = /codepage:65001 -d:NET_1_1 -d:NET_2_0 -d:MOONLIGHT -debug+ -noconfig -r:System -r:System.Core -r:System.Xml -r:System.Runtime.Serialization.dll -r:Mono.Moonlight -d:AGCLR -unsafe
 
 GMCS = gmcs $(CSCFLAGS) -lib:../lib/3.0
 SMCS = MONO_PATH="../lib/2.1:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack ../lib/2.1/smcs.exe -r:System.Net $(CSCFLAGS)
