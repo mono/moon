@@ -17,6 +17,29 @@ namespace MoonTest.System.Windows.Controls
 	[TestClass]
 	public class GridTest
 	{
+		class LayoutPoker : Panel
+		{
+			public Size MeasureResult = new Size (0,0);
+			public Size MeasureArg = new Size (0,0);
+			public Size ArrangeResult = new Size (0,0);
+			public Size ArrangeArg = new Size (0,0);
+
+			protected override Size MeasureOverride (Size availableSize)
+			{
+				MeasureArg = availableSize;
+				Tester.WriteLine (string.Format ("Panel available size is {0}", availableSize));
+				return MeasureResult;
+			}
+
+			protected override Size ArrangeOverride (Size finalSize)
+			{
+				ArrangeArg = finalSize;
+				Tester.WriteLine (string.Format ("Panel final size is {0}", finalSize));
+				return ArrangeResult;
+			}
+
+		}
+
 		[TestMethod]
 		public void ChildlessMeasureTest ()
 		{
@@ -361,7 +384,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[KnownFailure]
 		public void ChildMargin_constWidth_constHeight_singleCell ()
 		{
 			Grid g = new Grid ();
@@ -568,7 +590,6 @@ namespace MoonTest.System.Windows.Controls
 		// are both explicitly sized, but the column
 		// definitions are 1* and 2* respectively.
 		[TestMethod]
-		[KnownFailure]
 		public void Child_ColSpan2_2Columns_constSize_and_1Star_1Row_constSize ()
 		{
 			Grid g = new Grid ();
@@ -685,33 +706,7 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (new Size (200, 400), g.DesiredSize, "DesiredSize");
 		}
 
-		class PanelPoker : Panel {
-			public Size MeasureResult = new Size (0,0);
-			public Size MeasureArg = new Size (0,0);
-			public Size ArrangeResult = new Size (0,0);
-			public Size ArrangeArg = new Size (0,0);
-
-			protected override Size MeasureOverride (Size availableSize)
-			{
-				MeasureArg = availableSize;
-
-				Tester.WriteLine (string.Format ("Panel available size is {0}", availableSize));
-
-				return MeasureResult;
-			}
-
-			protected override Size ArrangeOverride (Size finalSize)
-			{
-				ArrangeArg = finalSize;
-				
-				Tester.WriteLine (string.Format ("Panel final size is {0}", finalSize));
-
-				return ArrangeResult;
-			}
-		}
-
 		[TestMethod]
-		[KnownFailure]
 		public void ComplexLayout2 ()
 		{
 			Grid g = new Grid ();
@@ -729,7 +724,7 @@ namespace MoonTest.System.Windows.Controls
 
 			g.Margin = new Thickness (5);
 
-			PanelPoker c = new PanelPoker ();
+			LayoutPoker c = new LayoutPoker ();
 
 			Grid.SetRow (c, 0);
 			Grid.SetColumn (c, 0);
@@ -747,14 +742,15 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (400, c.Width);
 			Assert.AreEqual (400, c.Height);
 
-			Assert.AreEqual (new Size (200, 200), c.DesiredSize, "DesiredSize0");
-			Assert.AreEqual (new Size (400, 400), c.MeasureArg, "MeasureArg");
-			Assert.AreEqual (new Size (210, 210), g.DesiredSize, "DesiredSize1");
+			Assert.AreEqual (new Size (200, 200), c.DesiredSize, "c DesiredSize0");
+			Assert.AreEqual (new Size (400, 400), c.MeasureArg, "c MeasureArg0");
+			Assert.AreEqual (new Size (210, 210), g.DesiredSize, "grid DesiredSize0");
 
 			g.Measure (new Size (100, 100));
 
-			Assert.AreEqual (new Size (100, 100), g.DesiredSize, "DesiredSize2");
-			Assert.AreEqual (new Size (400, 400), c.MeasureArg, "MeasureArg");
+			Assert.AreEqual (new Size (100, 100), g.DesiredSize, "grid DesiredSize1");
+			Assert.AreEqual (new Size (400, 400), c.MeasureArg, "c MeasureArg");
+			Assert.AreEqual (new Size (200, 200), c.DesiredSize, "c DesiredSize1");
 
 			// now test with the child sized smaller than the row/column definitions
 			c.Width = 100;
@@ -762,7 +758,8 @@ namespace MoonTest.System.Windows.Controls
 
 			g.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
 
-			Assert.AreEqual (new Size (210, 210), g.DesiredSize, "DesiredSize3");
+			Assert.AreEqual (new Size (100, 100), c.MeasureArg, "c MeasureArg2");
+			Assert.AreEqual (new Size (210, 210), g.DesiredSize, "grid DesiredSize2");
 		}
 	}
 }

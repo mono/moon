@@ -1,9 +1,14 @@
+2008-09-12  Larry Ewing  <lewing@novell.com>
+
+	* grid.cpp (Grid::Measure): accumulate colspan width and pass
+	pixel size restrictions on to the children.
+
 2008-09-11  Michael Dominic K.  <mdk@mdk.am>
 
 	* animation.cpp:
 	* applier.cpp:
-	* applier.h: Adding some defines for applier precedences + a way to instant 
-	apply with precedence == 0.
+	* applier.h: Adding some defines for applier precedences + a way
+	to instant apply with precedence == 0.
 
 2008-09-10  Michael Dominic K.  <mdk@mdk.am>
 

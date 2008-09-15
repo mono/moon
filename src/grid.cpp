@@ -90,23 +90,19 @@ Grid::MeasureOverride (Size availableSize)
 		RowDefinition *rowdef = rows->GetValueAt (i)->AsRowDefinition ();
 		GridLength* height = rowdef->GetHeight();
 		row_heights[i] = 0.0;
+
 		if (height->type == GridUnitTypePixel)
 			row_heights[i] = height->val;
-
-		row_heights[i] = MAX (row_heights[i], rowdef->GetMinHeight());
-		row_heights[i] = MIN (row_heights[i], rowdef->GetMaxHeight());
 	}
 
 	for (int i = 0; i < col_count; i ++) {
 		ColumnDefinition *coldef = columns->GetValueAt (i)->AsColumnDefinition ();
 		GridLength* width = coldef->GetWidth();
 		column_widths[i] = 0.0;
+
 		if (width->type == GridUnitTypePixel)
 			column_widths[i] = width->val;
 
-		column_widths[i] = MAX (column_widths[i], coldef->GetMinWidth());
-		column_widths[i] = MIN (column_widths[i], coldef->GetMaxWidth());
-		printf ("column_widths[%d] specified as %g\n", i, column_widths[i]);
 	}
 
 	UIElementCollection *children = GetChildren ();
@@ -120,9 +116,7 @@ Grid::MeasureOverride (Size availableSize)
 		colspan = Grid::GetColumnSpan (child);
 		rowspan = Grid::GetRowSpan (child);
 
-		Size child_size = Size (INFINITY, INFINITY);
-
-		/*
+		Size child_size = Size (0,0);
 		Size min_size = Size (0,0);
 		Size max_size = Size (0,0); 
 		
@@ -130,29 +124,37 @@ Grid::MeasureOverride (Size availableSize)
 			RowDefinition *rowdef = rows->GetValueAt (r)->AsRowDefinition ();
 			GridLength* height = rowdef->GetHeight();
 
-			min_size.height += rowdef->GetMinWidth ();
-			max_size.height += rowdef->GetMaxWidth ();
+			if (height->type == GridUnitTypePixel)
+			        child_size.height += row_heights [i];
+			else
+				child_size.height += INFINITY;
+
+			min_size.height += rowdef->GetMinHeight ();
+			max_size.height += rowdef->GetMaxHeight ();
 		}
 
 		for (int c = col; c < col + colspan; c++) {
 			ColumnDefinition *coldef = columns->GetValueAt (c)->AsColumnDefinition ();
 			GridLength* width = coldef->GetWidth();
 
+			if (width->type == GridUnitTypePixel)
+				child_size.width += column_widths [i];
+			else
+				child_size.width += INFINITY;
+
 			min_size.width += coldef->GetMinWidth ();
 			max_size.width += coldef->GetMaxWidth ();
 		}
 		
+		
 		child_size = child_size.Min (max_size);
 		child_size = child_size.Max (min_size);
-		*/
 
 		child->Measure (child_size);
 		child_size = child->GetDesiredSize();
 		
-		/*
 		child_size = child_size.Min (max_size);
 		child_size = child_size.Max (min_size);
-		*/
 
 		if (col_count) {
 			double remaining_width = child_size.width;
