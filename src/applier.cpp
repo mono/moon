@@ -59,6 +59,8 @@ value_indexer_compare_func (value_indexer *a, value_indexer *b)
 void
 Applier::AddPropertyChange (DependencyObject *object, DependencyProperty *property, Value *v, int precedence)
 {
+	printf ("Adding...\n");
+
 	value_indexer *v_indexer = NULL;
 	property_indexer *p_indexer = NULL;
 	object_indexer *o_indexer = NULL;
@@ -87,6 +89,7 @@ Applier::AddPropertyChange (DependencyObject *object, DependencyProperty *proper
 	v_indexer = g_new (value_indexer, 1);
 	v_indexer->precedence = precedence;
 	v_indexer->v = v;
+	printf ("ADDING VALUE %s\n", v->ToString ());
 
 	p_indexer->values_list = g_list_insert_sorted (p_indexer->values_list, v_indexer, (GCompareFunc) value_indexer_compare_func);
 }
@@ -98,6 +101,7 @@ apply_property_func (property_indexer *p_indexer, DependencyObject *object)
 	g_return_if_fail (p_indexer->values_list != NULL);
 
 	value_indexer *v_indexer = (value_indexer *) p_indexer->values_list->data;
+	printf ("WOULD HAVE APPLIED: %s\n", v_indexer->v->ToString ());
 	object->SetValue (p_indexer->property, *v_indexer->v);
 }
 

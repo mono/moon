@@ -1,5 +1,11 @@
 2008-09-08  Michael Dominic K.  <mdk@mdk.am>
 
+	* animation.cpp:
+	* animation.h:
+	* applier.cpp: Do not set the values, instead move them to applier. 
+
+2008-09-08  Michael Dominic K.  <mdk@mdk.am>
+
 	* applier.cpp:
 	* clock.cpp:
 	* clock.h:

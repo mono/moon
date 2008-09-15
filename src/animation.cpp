@@ -117,8 +117,11 @@ AnimationStorage::UpdatePropertyValueWith (Value *v)
 	if (targetobj == NULL)
 		return;
 
-	if (v != NULL)
-		targetobj->SetValue (targetprop, *v);
+	if (v != NULL) {
+		//targetobj->SetValue (targetprop, *v);
+		Applier *applier = clock->GetTimeManager ()->GetApplier ();
+		applier->AddPropertyChange (targetobj, targetprop, new Value (*v), 0);
+	}
 }
 
 void
@@ -128,8 +131,12 @@ AnimationStorage::UpdatePropertyValue ()
 		return;
 
 	Value *current_value = clock->GetCurrentValue (baseValue, NULL/*XXX*/);
-	if (current_value != NULL)
-		targetobj->SetValue (targetprop, *current_value);
+	if (current_value != NULL) {
+		//targetobj->SetValue (targetprop, *current_value);
+		printf ("VALUE WOULD HAVE BEEN: %s\n", current_value->ToString ());
+		Applier *applier = clock->GetTimeManager ()->GetApplier ();
+		applier->AddPropertyChange (targetobj, targetprop, new Value (*current_value), 0);
+	}
 	//else
 	//	targetobj->SetValue (targetprop, NULL);
 		

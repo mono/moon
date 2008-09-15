@@ -22,6 +22,7 @@
 #include "list.h"
 #include "point.h"
 #include "moon-curves.h"
+#include "applier.h"
 
 // misc types
 /* @Namespace=System.Windows.Media.Animation */
