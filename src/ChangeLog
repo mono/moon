@@ -1,3 +1,10 @@
+2008-09-08  Michael Dominic K.  <mdk@mdk.am>
+
+	* Makefile.am:
+	* applier.cpp:
+	* applier.h: Introducing the applier helper class. Will be used 
+	to apply property changes in order.
+
 2008-09-11  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Move some of the content property setting logic into
