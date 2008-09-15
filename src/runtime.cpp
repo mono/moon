@@ -213,7 +213,6 @@ Surface::Surface (MoonWindow *window, bool silverlight2)
 	background_color = NULL;
 	cursor = MouseCursorDefault;
 	mouse_event = NULL;
-	applier = new Applier ();
 	
 	background_color = new Color (1, 1, 1, 0);
 

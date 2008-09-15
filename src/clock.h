@@ -14,6 +14,7 @@
 #ifndef MOON_CLOCK_H
 #define MOON_CLOCK_H
 
+#include "applier.h"
 #include <glib.h>
 #include <stdint.h>
 #include "collection.h"
@@ -239,6 +240,7 @@ class ManualTimeSource : public TimeSource {
 class TimeManager;
 class Timeline;
 class TimelineGroup;
+class Applier;
 
 /* our clock is a mixture of the WPF Clock and ClockController
    classes.  as such, all clocks are controllable */
@@ -444,6 +446,7 @@ class TimeManager : public EventObject {
 	virtual Type::Kind GetObjectType () { return Type::TIMEMANAGER; };
 
 	void ListClocks ();
+	Applier* GetApplier () { return applier; }
 	
  protected:
 	~TimeManager ();
@@ -452,6 +455,7 @@ class TimeManager : public EventObject {
 
 	TimelineGroup *timeline;
 	ClockGroup *root_clock;
+	Applier *applier;
 	
 	void SourceTick ();
 

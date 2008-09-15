@@ -261,6 +261,8 @@ TimeManager::TimeManager ()
 	source_tick_pending = false;
 	first_tick = true;
 
+	applier = new Applier ();
+
 	timeline = new ParallelTimeline();
 	timeline->SetDuration (Duration::Automatic);
 	root_clock = new ClockGroup (timeline, true);
@@ -375,6 +377,9 @@ TimeManager::SourceTick ()
 
 		ENDTICKTIMER (tick_update_clocks, "TimeManager::Tick - UpdateClocks");
 	}
+
+	applier->Apply ();
+	applier->Flush ();
 
 	if (current_flags & TIME_MANAGER_UPDATE_INPUT) {
 		STARTTICKTIMER (tick_input, "TimeManager::Tick - Input");

@@ -1,5 +1,13 @@
 2008-09-08  Michael Dominic K.  <mdk@mdk.am>
 
+	* applier.cpp:
+	* clock.cpp:
+	* clock.h:
+	* runtime.cpp:
+	* runtime.h: Moving the Applier instance to TimeManager.
+
+2008-09-08  Michael Dominic K.  <mdk@mdk.am>
+
 	* runtime.cpp:
 	* runtime.h: Adding Applier to Surface.
 

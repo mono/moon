@@ -109,11 +109,13 @@ apply_object_func (DependencyObject *object, object_indexer *o_indexer)
 
 void Applier::Apply ()
 {
+	printf ("Applying...\n");
 	g_hash_table_foreach (objects, (GHFunc) apply_object_func, NULL);
 }
 
 void Applier::Flush ()
 {
+	printf ("Flushing...\n");
 	// FIXME Totally temporary for now, leaks memory!
 	objects = g_hash_table_new (g_direct_hash, g_direct_equal);
 }

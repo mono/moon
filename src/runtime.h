@@ -31,7 +31,6 @@ G_BEGIN_DECLS
 #include "list.h"
 #include "error.h"
 #include "window.h"
-#include "applier.h"
 
 #define MAXIMUM_CACHE_SIZE 6000000
 
@@ -145,8 +144,6 @@ public:
 	const static int ErrorEvent;
 	const static int LoadEvent;
 
-	Applier* GetApplier () { return applier; }
-
 	bool GetFullScreen () { return full_screen; }
 	void SetFullScreen (bool value);
 	void SetCanFullScreen (bool value) { can_full_screen = value; }
@@ -227,8 +224,6 @@ private:
 	// are we headed for death?
 	bool zombie;
 
-	Applier *applier;
-	
 	// bad, but these two live in dirty.cpp, not runtime.cpp
 	void ProcessDownDirtyElements ();
 	void ProcessUpDirtyElements ();
