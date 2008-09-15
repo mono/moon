@@ -32,8 +32,10 @@ Applier::Applier ()
 
 Applier::~Applier ()
 {
-	// FIXME Leaking memory here! Rework!
-	g_hash_table_destroy (objects);
+	if (objects) {
+		Flush ();
+		g_hash_table_destroy (objects);
+	}
 }
 
 static gint
@@ -59,8 +61,6 @@ value_indexer_compare_func (value_indexer *a, value_indexer *b)
 void
 Applier::AddPropertyChange (DependencyObject *object, DependencyProperty *property, Value *v, int precedence)
 {
-	printf ("Adding...\n");
-
 	value_indexer *v_indexer = NULL;
 	property_indexer *p_indexer = NULL;
 	object_indexer *o_indexer = NULL;
@@ -89,9 +89,36 @@ Applier::AddPropertyChange (DependencyObject *object, DependencyProperty *proper
 	v_indexer = g_new (value_indexer, 1);
 	v_indexer->precedence = precedence;
 	v_indexer->v = v;
-	printf ("ADDING VALUE %s\n", v->ToString ());
 
 	p_indexer->values_list = g_list_insert_sorted (p_indexer->values_list, v_indexer, (GCompareFunc) value_indexer_compare_func);
+}
+
+static void
+destroy_value_func (value_indexer *v_indexer)
+{
+	g_return_if_fail (v_indexer->v != NULL);
+
+	delete v_indexer->v;
+	g_free (v_indexer);
+}
+
+static void
+destroy_property_func (property_indexer *p_indexer)
+{
+	g_return_if_fail (p_indexer->property != NULL);
+	g_return_if_fail (p_indexer->values_list != NULL);
+
+	g_list_foreach (p_indexer->values_list, (GFunc) destroy_value_func, NULL);
+	g_list_free (p_indexer->values_list);
+	g_free (p_indexer);
+}
+
+static void
+destroy_object_func (DependencyObject *object, object_indexer *o_indexer)
+{
+	g_list_foreach (o_indexer->properties_list, (GFunc) destroy_property_func, NULL);
+	g_list_free (o_indexer->properties_list);
+	g_free (o_indexer);
 }
 
 static void
@@ -101,7 +128,6 @@ apply_property_func (property_indexer *p_indexer, DependencyObject *object)
 	g_return_if_fail (p_indexer->values_list != NULL);
 
 	value_indexer *v_indexer = (value_indexer *) p_indexer->values_list->data;
-	printf ("WOULD HAVE APPLIED: %s\n", v_indexer->v->ToString ());
 	object->SetValue (p_indexer->property, *v_indexer->v);
 }
 
@@ -111,16 +137,18 @@ apply_object_func (DependencyObject *object, object_indexer *o_indexer)
 	g_list_foreach (o_indexer->properties_list, (GFunc) apply_property_func, object);
 }
 
-void Applier::Apply ()
+void 
+Applier::Apply ()
 {
-	printf ("Applying...\n");
 	g_hash_table_foreach (objects, (GHFunc) apply_object_func, NULL);
 }
 
-void Applier::Flush ()
+void
+Applier::Flush ()
 {
-	printf ("Flushing...\n");
-	// FIXME Totally temporary for now, leaks memory!
+	g_hash_table_foreach (objects, (GHFunc) destroy_object_func, NULL);
+	g_hash_table_destroy (objects);
+	
 	objects = g_hash_table_new (g_direct_hash, g_direct_equal);
 }
 
