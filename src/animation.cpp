@@ -150,9 +150,9 @@ AnimationStorage::ResetPropertyValue ()
 	Applier *applier = clock->GetTimeManager ()->GetApplier ();
 
 	if (stopValue)
-		applier->AddPropertyChange (targetobj, targetprop, new Value (*stopValue), APPLIER_PRECEDENCE_ANIMATION);
+		applier->AddPropertyChange (targetobj, targetprop, new Value (*stopValue), APPLIER_PRECEDENCE_ANIMATION_RESET);
 	else
-		applier->AddPropertyChange (targetobj, targetprop, new Value (*baseValue), APPLIER_PRECEDENCE_ANIMATION);
+		applier->AddPropertyChange (targetobj, targetprop, new Value (*baseValue), APPLIER_PRECEDENCE_ANIMATION_RESET);
 }
 
 void
