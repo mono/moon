@@ -28,11 +28,10 @@ class Applier {
  private:
 	GHashTable *objects;
 
- protected:
-	~Applier ();
-
  public:
 	Applier ();
+	~Applier ();
+
 	void AddPropertyChange (DependencyObject *object, DependencyProperty *property, Value *v, int precedence);
 	void Apply ();
 	void Flush ();
