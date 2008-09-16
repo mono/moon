@@ -16,15 +16,11 @@
 #include <glib.h>
 #include <cairo.h>
 
-#include <tilesource.h>
-#include <eventargs.h>
-#include <control.h>
-#include <media.h>
+#include "tilesource.h"
+#include "eventargs.h"
+#include "control.h"
+#include "media.h"
 
-G_BEGIN_DECLS
-
-
-G_END_DECLS
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
 class MultiScaleImage : public MediaBase {

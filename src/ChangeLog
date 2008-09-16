@@ -1,5 +1,9 @@
 2008-09-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* multiscaleimage.h, textbox.h: Use quotes to include our headers.
+
+2008-09-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* audio-alsa.cpp: Use dlopen/dlsym to access all alsa methods, and
 	  don't link with alsa anymore
 

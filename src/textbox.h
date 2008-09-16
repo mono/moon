@@ -16,14 +16,14 @@
 #include <glib.h>
 #include <cairo.h>
 
-#include <moon-path.h>
-#include <eventargs.h>
-#include <thickness.h>
-#include <control.h>
-#include <layout.h>
-#include <brush.h>
-#include <size.h>
-#include <font.h>
+#include "moon-path.h"
+#include "eventargs.h"
+#include "thickness.h"
+#include "control.h"
+#include "layout.h"
+#include "brush.h"
+#include "size.h"
+#include "font.h"
 
 G_BEGIN_DECLS
 
