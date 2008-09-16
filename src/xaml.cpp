@@ -3641,7 +3641,7 @@ start_parse:
 					end++;
 					*end = '\0';
 
-					template_parent->AddTemplateBinding (p->current_element, argument, attr[i]);
+					template_parent->AddTemplateBinding (item, argument, attr[i]);
 					return;
 				}
 #endif
