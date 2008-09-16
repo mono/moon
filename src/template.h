@@ -89,6 +89,7 @@ private:
 	char *sourcePropertyName;
 };
 
+/* @SilverlightVersion="2" */
 class TemplateBinding : public EventObject {
 public:
 	TemplateBinding (Control *source,

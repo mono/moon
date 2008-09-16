@@ -1,3 +1,7 @@
+2008-09-16  Jb Evain  <jbevain@novell.com>
+
+	* template.h (TemplateBinding): decorate with a SLVersion=2.
+
 2008-09-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* audio-pulse.cpp: Use dlopen/dlsym to access all pa methods, and don't
