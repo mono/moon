@@ -122,10 +122,13 @@ namespace MoonlightTests {
 			}
 
 			test_suite = Environment.GetEnvironmentVariable ("MS_DRTLIST");
-			if (test_suite != string.Empty)
+			
+			if (test_suite.Contains("moonlight-ms"))
 				test_suite = "ms";
 			else
 				test_suite = "moon";
+
+			Log(string.Format("suite = {0}", test_suite));
 
 			Log(string.Format("Runtime: {0}", runtime));
 			
@@ -206,7 +209,7 @@ namespace MoonlightTests {
 			if(!reader.Read())
 			{		
 				reader.Close();
-				query = string.Format("INSERT INTO testcases VALUES ({0},'{1}','{2}','{3}');",intid, suite, testname, masterfile);
+				query = string.Format("INSERT INTO testcases (id, suite, name, masterfile) VALUES ({0},'{1}','{2}','{3}');",intid, suite, testname, masterfile);
 				execnonquery(query);
 			}
 			reader.Close();
@@ -318,7 +321,7 @@ namespace MoonlightTests {
 			else {
 				if (reader != null)
 					reader.Close();
-				query = string.Format("INSERT INTO taggedcases values ({0},'{1}');",testid,tagid);				
+				query = string.Format("INSERT INTO taggedcases values ({0},'{1}');",tagid, testid);
 				execnonquery(query);
 			}
 			reader = null;
