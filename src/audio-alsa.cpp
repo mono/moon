@@ -22,6 +22,103 @@
 // This one prints out spew on every sample
 #define LOG_ALSA_EX(...)// printf (__VA_ARGS__);
 
+typedef int               (dyn_snd_pcm_open)                           (snd_pcm_t **pcm, const char *name, snd_pcm_stream_t stream, int mode);
+typedef int               (dyn_snd_pcm_close)                          (snd_pcm_t *pcm);
+typedef int               (dyn_snd_pcm_get_params)                     (snd_pcm_t *pcm, snd_pcm_uframes_t *buffer_size, snd_pcm_uframes_t *period_size);
+typedef int               (dyn_snd_pcm_poll_descriptors_count)         (snd_pcm_t *pcm);
+typedef int               (dyn_snd_pcm_poll_descriptors)               (snd_pcm_t *pcm, struct pollfd *pfds, unsigned int space);
+typedef int               (dyn_snd_output_stdio_attach)                (snd_output_t **outputp, FILE *fp, int _close);
+typedef int               (dyn_snd_pcm_hw_params_malloc)               (snd_pcm_hw_params_t **ptr);
+typedef int               (dyn_snd_pcm_hw_params_any)                  (snd_pcm_t *pcm, snd_pcm_hw_params_t *params);
+typedef int               (dyn_snd_pcm_hw_params_dump)                 (snd_pcm_hw_params_t *params, snd_output_t *out);
+typedef int               (dyn_snd_pcm_hw_params_set_rate_resample)    (snd_pcm_t *pcm, snd_pcm_hw_params_t *params, unsigned int val);
+typedef int               (dyn_snd_pcm_hw_params_test_access)          (snd_pcm_t *pcm, snd_pcm_hw_params_t *params, snd_pcm_access_t _access);
+typedef int               (dyn_snd_pcm_hw_params_set_access)           (snd_pcm_t *pcm, snd_pcm_hw_params_t *params, snd_pcm_access_t _access);
+typedef int               (dyn_snd_pcm_hw_params_set_format)           (snd_pcm_t *pcm, snd_pcm_hw_params_t *params, snd_pcm_format_t val);
+typedef int               (dyn_snd_pcm_hw_params_set_channels)         (snd_pcm_t *pcm, snd_pcm_hw_params_t *params, unsigned int val);
+typedef int               (dyn_snd_pcm_hw_params_set_rate_near)        (snd_pcm_t *pcm, snd_pcm_hw_params_t *params, unsigned int *val, int *dir);
+typedef int               (dyn_snd_pcm_hw_params_set_buffer_time_near) (snd_pcm_t *pcm, snd_pcm_hw_params_t *params, unsigned int *val, int *dir);
+typedef int               (dyn_snd_pcm_hw_params)                      (snd_pcm_t *pcm, snd_pcm_hw_params_t *params);
+typedef int               (dyn_snd_pcm_hw_params_can_pause)            (const snd_pcm_hw_params_t *params);
+typedef void              (dyn_snd_pcm_hw_params_free)                 (snd_pcm_hw_params_t *obj);
+typedef snd_pcm_state_t   (dyn_snd_pcm_state)                          (snd_pcm_t *pcm);
+typedef int               (dyn_snd_pcm_drop)                           (snd_pcm_t *pcm);
+typedef snd_pcm_sframes_t (dyn_snd_pcm_writei)                         (snd_pcm_t *pcm, const void *buffer, snd_pcm_uframes_t size);
+typedef int               (dyn_snd_pcm_mmap_begin)                     (snd_pcm_t *pcm, const snd_pcm_channel_area_t **areas, snd_pcm_uframes_t *offset, snd_pcm_uframes_t *frames);
+typedef snd_pcm_sframes_t (dyn_snd_pcm_mmap_commit)                    (snd_pcm_t *pcm, snd_pcm_uframes_t offset, snd_pcm_uframes_t frames);
+typedef int               (dyn_snd_pcm_prepare)                        (snd_pcm_t *pcm);
+typedef int               (dyn_snd_pcm_resume)                         (snd_pcm_t *pcm);
+typedef snd_pcm_sframes_t (dyn_snd_pcm_avail_update)                   (snd_pcm_t *pcm);
+typedef int               (dyn_snd_pcm_start)                          (snd_pcm_t *pcm);
+typedef int               (dyn_snd_pcm_delay)                          (snd_pcm_t *pcm, snd_pcm_sframes_t *delayp);
+typedef const char *      (dyn_snd_strerror)                           (int errnum);
+typedef const char *      (dyn_snd_asoundlib_version)                  (void);
+
+dyn_snd_pcm_open *                           d_snd_pcm_open = NULL;
+dyn_snd_pcm_close *                          d_snd_pcm_close = NULL;
+dyn_snd_pcm_get_params *                     d_snd_pcm_get_params = NULL;
+dyn_snd_pcm_poll_descriptors_count *         d_snd_pcm_poll_descriptors_count = NULL;
+dyn_snd_pcm_poll_descriptors *               d_snd_pcm_poll_descriptors = NULL;
+dyn_snd_output_stdio_attach *                d_snd_output_stdio_attach = NULL;
+dyn_snd_strerror *                           d_snd_strerror = NULL;
+dyn_snd_pcm_hw_params_malloc *               d_snd_pcm_hw_params_malloc = NULL;
+dyn_snd_pcm_hw_params_any *                  d_snd_pcm_hw_params_any = NULL;
+dyn_snd_pcm_hw_params_dump *                 d_snd_pcm_hw_params_dump = NULL;
+dyn_snd_pcm_hw_params_set_rate_resample *    d_snd_pcm_hw_params_set_rate_resample = NULL;
+dyn_snd_pcm_hw_params_test_access *          d_snd_pcm_hw_params_test_access = NULL;
+dyn_snd_pcm_hw_params_set_access *           d_snd_pcm_hw_params_set_access = NULL;
+dyn_snd_pcm_hw_params_set_format *           d_snd_pcm_hw_params_set_format = NULL;
+dyn_snd_pcm_hw_params_set_channels *         d_snd_pcm_hw_params_set_channels = NULL;
+dyn_snd_pcm_hw_params_set_rate_near *        d_snd_pcm_hw_params_set_rate_near = NULL;
+dyn_snd_pcm_hw_params_set_buffer_time_near * d_snd_pcm_hw_params_set_buffer_time_near = NULL;
+dyn_snd_pcm_hw_params *                      d_snd_pcm_hw_params = NULL;
+dyn_snd_pcm_hw_params_can_pause *            d_snd_pcm_hw_params_can_pause = NULL;
+dyn_snd_pcm_hw_params_free *                 d_snd_pcm_hw_params_free = NULL;
+dyn_snd_pcm_state *                          d_snd_pcm_state = NULL;
+dyn_snd_pcm_drop *                           d_snd_pcm_drop = NULL;
+dyn_snd_pcm_writei *                         d_snd_pcm_writei = NULL;
+dyn_snd_pcm_mmap_begin *                     d_snd_pcm_mmap_begin = NULL;
+dyn_snd_pcm_mmap_commit *                    d_snd_pcm_mmap_commit = NULL;
+dyn_snd_pcm_prepare *                        d_snd_pcm_prepare = NULL;
+dyn_snd_pcm_resume *                         d_snd_pcm_resume = NULL;
+dyn_snd_pcm_avail_update *                   d_snd_pcm_avail_update = NULL;
+dyn_snd_pcm_start *                          d_snd_pcm_start = NULL;
+dyn_snd_pcm_delay *                          d_snd_pcm_delay = NULL;
+dyn_snd_asoundlib_version *                  d_snd_asoundlib_version = NULL;
+
+#define snd_pcm_open                           d_snd_pcm_open
+#define snd_pcm_close                          d_snd_pcm_close
+#define snd_pcm_get_params                     d_snd_pcm_get_params
+#define snd_pcm_poll_descriptors_count         d_snd_pcm_poll_descriptors_count
+#define snd_pcm_poll_descriptors               d_snd_pcm_poll_descriptors
+#define snd_output_stdio_attach                d_snd_output_stdio_attach
+#define snd_strerror                           d_snd_strerror
+#define snd_pcm_hw_params_malloc               d_snd_pcm_hw_params_malloc
+#define snd_pcm_hw_params_any                  d_snd_pcm_hw_params_any
+#define snd_pcm_hw_params_dump                 d_snd_pcm_hw_params_dump
+#define snd_pcm_hw_params_set_rate_resample    d_snd_pcm_hw_params_set_rate_resample
+#define snd_pcm_hw_params_test_access          d_snd_pcm_hw_params_test_access
+#define snd_pcm_hw_params_test_access          d_snd_pcm_hw_params_test_access
+#define snd_pcm_hw_params_set_access           d_snd_pcm_hw_params_set_access
+#define snd_pcm_hw_params_set_format           d_snd_pcm_hw_params_set_format
+#define snd_pcm_hw_params_set_channels         d_snd_pcm_hw_params_set_channels
+#define snd_pcm_hw_params_set_rate_near        d_snd_pcm_hw_params_set_rate_near
+#define snd_pcm_hw_params_set_buffer_time_near d_snd_pcm_hw_params_set_buffer_time_near
+#define snd_pcm_hw_params                      d_snd_pcm_hw_params
+#define snd_pcm_hw_params_can_pause            d_snd_pcm_hw_params_can_pause
+#define snd_pcm_hw_params_free                 d_snd_pcm_hw_params_free
+#define snd_pcm_state                          d_snd_pcm_state
+#define snd_pcm_drop                           d_snd_pcm_drop
+#define snd_pcm_writei                         d_snd_pcm_writei
+#define snd_pcm_mmap_begin                     d_snd_pcm_mmap_begin
+#define snd_pcm_mmap_commit                    d_snd_pcm_mmap_commit
+#define snd_pcm_prepare                        d_snd_pcm_prepare
+#define snd_pcm_resume                         d_snd_pcm_resume
+#define snd_pcm_avail_update                   d_snd_pcm_avail_update
+#define snd_pcm_start                          d_snd_pcm_start
+#define snd_pcm_delay                          d_snd_pcm_delay
+#define snd_asoundlib_version                  d_snd_asoundlib_version
+
 /*
  * AlsaSource
  */
@@ -592,29 +689,63 @@ AlsaPlayer::Initialize ()
 }
 
 static int is_alsa_usable = 0; // 0 = not tested, 1 = tested, usable, 2 = tested, not usable
-typedef const char *ALSA_get_library_version ();
+static void *libalsa = NULL;
 
 bool
 AlsaPlayer::IsInstalled ()
 {
 	bool result = false;
-	void *libalsa;
-	ALSA_get_library_version *get_version;
 	const char *version;
 	
 	switch (is_alsa_usable) {
 	case 0:
 		libalsa = dlopen ("libasound.so.2", RTLD_LAZY);
-		if (libalsa != NULL) {
-			get_version = (ALSA_get_library_version *) dlsym (libalsa, "snd_asoundlib_version");
-			if (get_version != NULL) {
-				version = get_version ();
-				AUDIO_DEBUG ("AlsaPlayer: Found alsa/asound version: '%s'\n", version);
-				result = true;
-			}
-			dlclose (libalsa);
+		if (libalsa == NULL) {
+			is_alsa_usable = 2;
+			return false;
+		}
+		result = true;
+		
+		result &= NULL != (d_snd_pcm_open = (dyn_snd_pcm_open *) dlsym (libalsa, "snd_pcm_open"));
+		result &= NULL != (d_snd_pcm_close = (dyn_snd_pcm_close *) dlsym (libalsa, "snd_pcm_close"));
+		result &= NULL != (d_snd_pcm_get_params = (dyn_snd_pcm_get_params *) dlsym (libalsa, "snd_pcm_get_params"));
+		result &= NULL != (d_snd_pcm_poll_descriptors_count = (dyn_snd_pcm_poll_descriptors_count *) dlsym (libalsa, "snd_pcm_poll_descriptors_count"));
+		result &= NULL != (d_snd_pcm_poll_descriptors = (dyn_snd_pcm_poll_descriptors *) dlsym (libalsa, "snd_pcm_poll_descriptors"));
+		result &= NULL != (d_snd_output_stdio_attach = (dyn_snd_output_stdio_attach *) dlsym (libalsa, "snd_output_stdio_attach"));
+		result &= NULL != (d_snd_pcm_hw_params_malloc = (dyn_snd_pcm_hw_params_malloc *) dlsym (libalsa, "snd_pcm_hw_params_malloc"));
+		result &= NULL != (d_snd_pcm_hw_params_any = (dyn_snd_pcm_hw_params_any *) dlsym (libalsa, "snd_pcm_hw_params_any"));
+		result &= NULL != (d_snd_pcm_hw_params_dump = (dyn_snd_pcm_hw_params_dump *) dlsym (libalsa, "snd_pcm_hw_params_dump"));
+		result &= NULL != (d_snd_pcm_hw_params_set_rate_resample = (dyn_snd_pcm_hw_params_set_rate_resample *) dlsym (libalsa, "snd_pcm_hw_params_set_rate_resample"));
+		result &= NULL != (d_snd_pcm_hw_params_test_access = (dyn_snd_pcm_hw_params_test_access *) dlsym (libalsa, "snd_pcm_hw_params_test_access"));
+		result &= NULL != (d_snd_pcm_hw_params_set_access = (dyn_snd_pcm_hw_params_set_access *) dlsym (libalsa, "snd_pcm_hw_params_set_access"));
+		result &= NULL != (d_snd_pcm_hw_params_set_format = (dyn_snd_pcm_hw_params_set_format *) dlsym (libalsa, "snd_pcm_hw_params_set_format"));
+		result &= NULL != (d_snd_pcm_hw_params_set_channels = (dyn_snd_pcm_hw_params_set_channels *) dlsym (libalsa, "snd_pcm_hw_params_set_channels"));
+		result &= NULL != (d_snd_pcm_hw_params_set_rate_near = (dyn_snd_pcm_hw_params_set_rate_near *) dlsym (libalsa, "snd_pcm_hw_params_set_rate_near"));
+		result &= NULL != (d_snd_pcm_hw_params_set_buffer_time_near = (dyn_snd_pcm_hw_params_set_buffer_time_near *) dlsym (libalsa, "snd_pcm_hw_params_set_buffer_time_near"));
+		result &= NULL != (d_snd_pcm_hw_params = (dyn_snd_pcm_hw_params *) dlsym (libalsa, "snd_pcm_hw_params"));
+		result &= NULL != (d_snd_pcm_hw_params_can_pause = (dyn_snd_pcm_hw_params_can_pause *) dlsym (libalsa, "snd_pcm_hw_params_can_pause"));
+		result &= NULL != (d_snd_pcm_hw_params_free = (dyn_snd_pcm_hw_params_free *) dlsym (libalsa, "snd_pcm_hw_params_free"));
+		result &= NULL != (d_snd_pcm_state = (dyn_snd_pcm_state *) dlsym (libalsa, "snd_pcm_state"));
+		result &= NULL != (d_snd_pcm_drop = (dyn_snd_pcm_drop *) dlsym (libalsa, "snd_pcm_drop"));
+		result &= NULL != (d_snd_pcm_writei = (dyn_snd_pcm_writei *) dlsym (libalsa, "snd_pcm_writei"));
+		result &= NULL != (d_snd_pcm_mmap_begin = (dyn_snd_pcm_mmap_begin *) dlsym (libalsa, "snd_pcm_mmap_begin"));
+		result &= NULL != (d_snd_pcm_mmap_commit = (dyn_snd_pcm_mmap_commit *) dlsym (libalsa, "snd_pcm_mmap_commit"));
+		result &= NULL != (d_snd_pcm_prepare = (dyn_snd_pcm_prepare *) dlsym (libalsa, "snd_pcm_prepare"));
+		result &= NULL != (d_snd_pcm_resume = (dyn_snd_pcm_resume *) dlsym (libalsa, "snd_pcm_resume"));
+		result &= NULL != (d_snd_pcm_avail_update = (dyn_snd_pcm_avail_update *) dlsym (libalsa, "snd_pcm_avail_update"));
+		result &= NULL != (d_snd_pcm_start = (dyn_snd_pcm_start *) dlsym (libalsa, "snd_pcm_start"));
+		result &= NULL != (d_snd_pcm_delay = (dyn_snd_pcm_delay *) dlsym (libalsa, "snd_pcm_delay"));
+		result &= NULL != (d_snd_asoundlib_version = (dyn_snd_asoundlib_version *) dlsym (libalsa, "snd_asoundlib_version"));
+		result &= NULL != (d_snd_strerror = (dyn_snd_strerror *) dlsym (libalsa, "snd_strerror"));
+
+		if (d_snd_asoundlib_version != NULL) {
+			version = d_snd_asoundlib_version ();
+			AUDIO_DEBUG ("AlsaPlayer: Found alsa/asound version: '%s'\n", version);
 		}
 		
+		if (!result)
+			AUDIO_DEBUG ("AlsaPlayer: Failed to load one or more required functions in libasound.so.");
+
 		is_alsa_usable = result ? 1 : 2;
 		return result;
 	case 1:

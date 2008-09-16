@@ -1,5 +1,10 @@
 2008-09-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* configure.ac: Use dlopen/dlsym to access all alsa methods, and don't
+	  link with alsa anymore
+
+2008-09-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* configure.ac: Use dlopen/dlsym to access all pa methods, and don't
 	  link with pulseaudio anymore. Hopefully fixes #425560.
 
