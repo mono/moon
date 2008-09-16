@@ -1,3 +1,8 @@
+2008-09-16  Fernando Herrera  <fherrera@novell.com>
+
+	* drtlist.xml:
+	* test-seek-wma.html: Added a new test for wma
+
 2008-08-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* test-pause.html, drtlist.xml: Added new test.

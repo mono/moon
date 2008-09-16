@@ -1,0 +1,135 @@
+<html>
+  <head>
+      <title>Moonlight Test Page</title>
+
+		<script type="text/xaml" id="xaml">
+			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
+			<MediaElement Source="miguel.wma" AutoPlay="False" MediaOpened="OnMediaOpened" 
+				MediaFailed="OnMediaFailed" MediaEnded="OnMediaEnded" 
+				DownloadProgressChanged="OnDownloadProgressChanged" />
+			</Canvas>
+		</script>
+
+		<script language="javascript" src="../../js/js/utils.js"></script>
+		<script language="javascript" src="../../js/js/testplugin.js"></script>
+		<script language="javascript">
+		
+		var mediaElement = null;
+		var started = false;
+		var ended = false;
+		var failed = false;
+		var start_time = new Date (0, 0, 0);
+		var end_time = new Date (0, 0, 0);
+
+		function EndTest ()
+		{
+			var failed = false;
+			TestLogger.LogDebug ("EndTest");
+			if (!started) {
+				TestLogger.LogError ("The media was never started. Download didn't finish?");
+				failed = true;
+			}
+			if (!ended) {
+				TestLogger.LogError ("Test never finished.");
+				failed = true;
+			}
+
+			if (!failed) {
+				if (end_time.getTime () > start_time.getTime () + 10000) {
+					TestLogger.LogError ("It took " + (end_time.getTime () - start_time.getTime ()) / 1000 + " s to play the audio clip, it should take ~ 2.5 seconds, at most 10 seconds.");
+					failed = true;
+				} else {
+					TestLogger.LogDebug ("It took " + (end_time.getTime () - start_time.getTime ()) / 1000 + " s to play the audio clip (OK).");					
+				}
+			}
+
+			TestLogger.LogResult (failed ? -1 : 1);
+			SignalShutdown ();
+		}
+
+		function SeekTest ()
+		{
+			TestLogger.LogDebug ("SeekTest");
+			mediaElement.Position = "00:00:20.000";
+		}
+
+		function OnDownloadProgressChanged (sender, args)
+		{
+			TestLogger.LogDebug ("OnDownloadProgressChanged: " + sender.DownloadProgress);
+			if (!started && sender.DownloadProgress == 1.0) {
+				TestLogger.LogDebug ("Starting to play...");
+				TestLogger.LogDebug ("NaturalDuration: " + sender.NaturalDuration.Seconds);
+				mediaElement = sender;
+				started = true;
+				start_time = new Date ();
+				sender.Play ();
+				setTimeout ("SeekTest ();", 500);
+			}
+		}
+
+		function OnCurrentStateChanged (sender, args)
+		{
+			TestLogger.LogDebug ("OnCurrentStateChanged: current state: " + sender.CurrentState);
+		}
+
+		function OnMediaEnded (sender, args)
+		{
+			TestLogger.LogDebug ("OnMediaEnded");
+
+			if (!ended) {
+				ended = true;
+				end_time = new Date ();
+			}
+
+			EndTest ();
+		}
+
+		function OnMediaOpened (sender, args)
+		{
+			TestLogger.LogDebug ("OnMediaOpened: " + sender.CurrentState);
+			TestLogger.LogDebug ("NaturalDuration: " + sender.NaturalDuration.Seconds);
+		}
+
+		function OnMediaFailed (sender, args)
+		{
+			TestLogger.LogError ("OnMediaFailed: " + ErrorEventArgsToOneLineString (args));
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+		function OnPluginLoad (sender, args)
+		{
+			TestLogger.LogDebug ("OnPluginLoad");
+			setTimeout ("EndTest ();", 30000);
+		}
+
+		function OnPluginError (sender, args)
+		{
+			TestLogger.LogError ("Plugin failed to initialize: " + args.ErrorMessage);
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+		
+		</script>
+	</head>
+
+  <body>
+    <div>
+        <embed type="application/x-silverlight"
+             width="200"
+             height="200"
+             id="_MoonlightControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoad"
+             style="position:absolute; left:0px; top:0px"
+             background="green" >
+        </embed>
+    </div>
+<!--
+    <div>
+        <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
+        </embed>
+    </div>
+-->
+  </body>
+</html>
+
+
