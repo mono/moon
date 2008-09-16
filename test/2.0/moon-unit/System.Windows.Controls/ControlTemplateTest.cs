@@ -115,6 +115,35 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual ("hi", tb.Text, "3");
 		}
 
+
+		[TestMethod]
+		public void TemplateBindingTest ()
+		{
+			Console.WriteLine ("TemplateBindingTest");
+			Canvas c = (Canvas)XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Canvas.Resources>
+  <ControlTemplate x:Key=""ButtonTemplate"" TargetType=""Button"">
+      <TextBlock Text=""hi"" Width=""{TemplateBinding Width}"" />
+  </ControlTemplate> 
+</Canvas.Resources>
+<Button x:Name=""button"" Template=""{StaticResource ButtonTemplate}"" />
+</Canvas>");
+
+			Button b = (Button)c.FindName ("button");
+
+			Assert.IsTrue (b.ApplyTemplate (), "1");
+
+			Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (b), "2");
+
+			TextBlock tb = (TextBlock)VisualTreeHelper.GetChild (b, 0);
+
+			b.Width = 100;
+
+			Assert.AreEqual (100, b.Width, "3");
+			Assert.AreEqual (100, tb.Width, "4");
+		}
+
 	}
 
 }
