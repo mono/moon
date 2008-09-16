@@ -42,6 +42,8 @@ endif
 
 libmoonplugin_la_LIBADD = $(MAYBE_LIBMOON) $(PLUGIN_LIBS)
 
+INCLUDES += -I../src/asf
+
 libmoonplugin_la_SOURCES = \
 	browser-bridge.h	\
 	moonlight.h		\
