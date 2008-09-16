@@ -11,7 +11,6 @@
  * 
  */
 
-
 #include <config.h>
 #include <string.h>
 #include <malloc.h>
@@ -146,6 +145,7 @@ class XamlElementInstance : public List::Node {
 	}
 
 	virtual void SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value) = 0;
+	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char* value) = 0;
 	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child) = 0;
 	virtual void SetAttributes (XamlParserInfo *p, const char **attr) = 0;
 
@@ -252,6 +252,7 @@ class XamlParserInfo {
 	XamlElementInstance *top_element;
 	XamlNamespace *current_namespace;
 	XamlElementInstance *current_element;
+	const char* next_element;
 
 	GHashTable *namespace_map;
 	bool cdata_content;
@@ -375,11 +376,9 @@ class XamlElementInstanceNative : public XamlElementInstance {
 	virtual DependencyObject *CreateItem ();
 
 	virtual void SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value);
+	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char* value);
 	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child);
 	virtual void SetAttributes (XamlParserInfo *p, const char **attr);
-
-	virtual bool TrySetContentProperty (XamlParserInfo *p, XamlElementInstance *value);
-	virtual bool TrySetContentProperty (XamlParserInfo *p, const char *value);
 };
 
 
@@ -406,6 +405,7 @@ class XamlElementInstanceValueType : public XamlElementInstance {
 	// A Value type doesn't really support anything. It's just here so people can do <SolidColorBrush.Color><Color>#FF00FF</Color></SolidColorBrush.Color>
 	virtual DependencyObject *CreateItem () { return NULL; }
 	virtual void SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value) { }
+	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char* value) { }
 	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child) { }
 	virtual void SetAttributes (XamlParserInfo *p, const char **attr);
 
@@ -614,10 +614,10 @@ class XamlElementInstanceManaged : public XamlElementInstance {
 	XamlElementInstanceManaged (XamlElementInfo *info, const char *name, ElementType type, void *obj, bool is_dependency_object);
 
 	virtual void SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value);
+	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char* value);
 	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child);
 	virtual void SetAttributes (XamlParserInfo *p, const char **attr);
 
-	virtual bool TrySetContentProperty (XamlParserInfo *p, XamlElementInstance *value);
 	virtual bool TrySetContentProperty (XamlParserInfo *p, const char *value);
 
 	bool is_dependency_object;
@@ -647,10 +647,10 @@ class XamlElementInstanceImportedManaged : public XamlElementInstance {
 	XamlElementInstanceImportedManaged (XamlElementInfo *info, const char *name, ElementType type, DependencyObject *dob);
 
 	virtual void SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value);
+	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char* value);
 	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child);
 	virtual void SetAttributes (XamlParserInfo *p, const char **attr);
 
-	virtual bool TrySetContentProperty (XamlParserInfo *p, XamlElementInstance *value);
 	virtual bool TrySetContentProperty (XamlParserInfo *p, const char *value);
 };
 
@@ -1148,7 +1148,7 @@ start_element (void *data, const char *el, const char **attr)
 }
 
 static void
-flush_char_data (XamlParserInfo *p, const char *next_element)
+flush_char_data (XamlParserInfo *p)
 {
 	DependencyProperty *content;
 	const char *prop_name = NULL;
@@ -1157,82 +1157,19 @@ flush_char_data (XamlParserInfo *p, const char *next_element)
 	if (!p->cdata || !p->current_element)
 		return;
 
-	if (p->current_element->IsValueType () && p->cdata_content) {
-		XamlElementInstanceValueType *vinst = (XamlElementInstanceValueType *) p->current_element;
-		if (!vinst->CreateValueItemFromString (p->cdata->str)) {
-			parser_error (p, p->current_element->element_name, NULL, -1, g_strdup_printf ("Unable to create value item for string: %s\n", p->cdata->str));
+	if (p->current_element->element_type == XamlElementInstance::ELEMENT) {
+		if (!p->current_element->TrySetContentProperty (p, p->cdata->str) && p->cdata_content) {
+			char *err = g_strdup_printf ("%s does not support text content.", p->current_element->element_name);
+			parser_error (p, p->current_element->element_name, NULL, 2011, err);
 		}
-		goto done;
-	}
-
-	if (p->current_element->info && p->current_element->element_type == XamlElementInstance::ELEMENT)
-		prop_name = p->current_element->info->GetContentProperty (p);
-
-	if (!prop_name && p->cdata_content) {
-		char *err = g_strdup_printf ("%s does not support text content.", p->current_element->element_name);
-		parser_error (p, p->current_element->element_name, NULL, 2011, err);
-		goto done;
-	} else if (!prop_name) {
-		goto done;
-	}
-	
-	prop_type = p->current_element->info->GetKind ();
-	content = DependencyProperty::GetDependencyProperty (prop_type, prop_name);
-	
-	// TODO: There might be other types that can be specified here,
-	// but string is all i have found so far.  If you can specify other
-	// types, i should pull the property setting out of set_attributes
-	// and use that code
-	
-	if (content && (content->GetPropertyType()) == Type::STRING && p->cdata_content) {
-		p->current_element->item->SetValue (content, Value (g_strstrip (p->cdata->str)));
-	} else if (Type::Find (p->current_element->info->GetKind ())->IsSubclassOf (Type::TEXTBLOCK)) {
-		TextBlock *textblock = (TextBlock *) p->current_element->item;
-		InlineCollection *inlines = textblock->GetInlines ();
-		Inline *last = NULL;
-		
-		if (inlines && inlines->GetCount () > 0)
-			last = inlines->GetValueAt (inlines->GetCount () - 1)->AsInline ();
-		
-		if (!p->cdata_content) {
-			if (next_element && !strcmp (next_element, "Run") && last && last->GetObjectType () == Type::RUN &&
-			    !last->autogen) {
-				// LWSP between <Run> elements is to be treated as a single-SPACE <Run> element
-				// Note: p->cdata is already canonicalized
-			} else {
-				// This is one of the following cases:
-				//
-				// 1. LWSP before the first <Run> element
-				// 2. LWSP after the last <Run> element
-				// 3. LWSP between <Run> and <LineBreak> elements
-				goto done;
-			}
-		} else {
-			if (!next_element)
-				g_strchomp (p->cdata->str);
-			
-			//if (next_element && !strcmp (next_element, "Run"))
-			//	g_strchug (p->cdata->str);
-			
-			if (!last || last->GetObjectType () != Type::RUN || last->autogen)
-				g_strchug (p->cdata->str);
+	} else if (p->current_element->element_type == XamlElementInstance::PROPERTY) {
+		if (p->cdata_content && p->current_element->parent && !p->current_element->parent->SetProperty (p, p->current_element, p->cdata->str)) {
+			char *err = g_strdup_printf ("%s does not support text content.", p->current_element->element_name);
+			parser_error (p, p->current_element->element_name, NULL, 2011, err);
 		}
-		
-		Run *run = new Run ();
-		run->SetText (p->cdata->str);
-		
-		if (!inlines) {
-			inlines = new InlineCollection ();
-			textblock->SetInlines (inlines);
-			inlines->unref ();
-		}
-		
-		inlines->Add (run);
-		run->unref ();
 	}
-	
+		
 done:
-	
 	if (p->cdata) {
 		g_string_free (p->cdata, TRUE);
 		p->cdata_content = false;
@@ -1264,10 +1201,9 @@ start_element_handler (void *data, const char *el, const char **attr)
 		next_namespace = default_namespace;
 		element = name [0];
 	}
-	
-	// Flush our cdata, passing the name of the next element so it
-	// can do smart things for TextBlock cdata (and maybe others).
-	flush_char_data (p, element);
+	p->next_element = element;
+
+	flush_char_data (p);
 	
 	// Now update our namespace
 	p->current_namespace = next_namespace;
@@ -1283,6 +1219,7 @@ start_element_handler (void *data, const char *el, const char **attr)
 		return;
 	}
 
+	p->next_element = NULL;
 	start_element (data, element, attr);
 
 	g_strfreev (name);
@@ -1304,7 +1241,7 @@ end_element_handler (void *data, const char *el)
 
 	switch (info->current_element->element_type) {
 	case XamlElementInstance::ELEMENT:
-		flush_char_data (info, NULL);
+		flush_char_data (info);
 		if (info->current_element->IsValueType() && info->current_element->parent) {
 			info->current_element->parent->AddChild(info, info->current_element);
 		}
@@ -1319,7 +1256,7 @@ end_element_handler (void *data, const char *el)
 			}
 			walk = walk->next;
 		}
-		flush_char_data (info, NULL);
+		flush_char_data (info);
 		break;
 	}
 	}
@@ -2764,11 +2701,11 @@ bool
 XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, XamlElementInstance *value)
 {
 	const char* prop_name = info->GetContentProperty (p);
+	
 	if (!prop_name)
 		return false;
 
 	DependencyProperty *dep = DependencyProperty::GetDependencyProperty (info->GetKind (), prop_name);
-	
 	if (!dep)
 		return false;
 
@@ -2776,7 +2713,7 @@ XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, XamlElementInstan
 	bool is_collection = prop_type->IsSubclassOf (Type::DEPENDENCY_OBJECT_COLLECTION);
 
 	if (!is_collection && Type::Find (value->info->GetKind ())->IsSubclassOf (dep->GetPropertyType())) {
-		item->SetValue (dep, (DependencyObject *) value->item);
+		item->SetValue (dep, value->item);
 		return true;
 	}
 
@@ -2810,6 +2747,60 @@ XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, const char *value
 	const char* prop_name = info->GetContentProperty (p);
 	if (!prop_name)
 		return false;
+
+	Type::Kind prop_type = p->current_element->info->GetKind ();
+	DependencyProperty *content = DependencyProperty::GetDependencyProperty (prop_type, prop_name);
+	
+	// TODO: There might be other types that can be specified here,
+	// but string is all i have found so far.  If you can specify other
+	// types, i should pull the property setting out of set_attributes
+	// and use that code
+
+	if (content && (content->GetPropertyType()) == Type::STRING && value) {
+		item->SetValue (content, Value (g_strstrip (p->cdata->str)));
+		return true;
+	} else if (Type::Find (info->GetKind ())->IsSubclassOf (Type::TEXTBLOCK)) {
+		TextBlock *textblock = (TextBlock *) item;
+		InlineCollection *inlines = textblock->GetInlines ();
+		Inline *last = NULL;
+		
+		if (inlines && inlines->GetCount () > 0)
+			last = inlines->GetValueAt (inlines->GetCount () - 1)->AsInline ();
+		
+		if (!p->cdata_content) {
+			if (p->next_element && !strcmp (p->next_element, "Run") && last && last->GetObjectType () == Type::RUN &&
+			    !last->autogen) {
+				// LWSP between <Run> elements is to be treated as a single-SPACE <Run> element
+				// Note: p->cdata is already canonicalized
+			} else {
+				// This is one of the following cases:
+				//
+				// 1. LWSP before the first <Run> element
+				// 2. LWSP after the last <Run> element
+				// 3. LWSP between <Run> and <LineBreak> elements
+				return true;
+			}
+		} else {
+			if (!p->next_element)
+				g_strchomp (p->cdata->str);
+
+			if (!last || last->GetObjectType () != Type::RUN || last->autogen)
+				g_strchug (p->cdata->str);
+		}
+
+		Run *run = new Run ();
+		run->SetText (p->cdata->str);
+		
+		if (!inlines) {
+			inlines = new InlineCollection ();
+			textblock->SetInlines (inlines);
+			inlines->unref ();
+		}
+		
+		inlines->Add (run);
+		run->unref ();
+		return true;
+	}
 
 	return false;
 }
@@ -2932,7 +2923,6 @@ XamlElementInstanceNative::CreateItem ()
 			parser_info->AddCreatedElement (item);
 		}
 		else {
-			g_warning ("Unknown element 2: %s.", element_name);
 			parser_error (parser_info, element_name, NULL, 2007,
 				      g_strdup_printf ("Unknown element: %s.", element_name));
 		}
@@ -2947,6 +2937,21 @@ XamlElementInstanceNative::SetProperty (XamlParserInfo *p, XamlElementInstance *
 	dependency_object_set_property (p, this, property, value);
 }
 
+bool
+XamlElementInstanceNative::SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char *value)
+{
+	char **prop_name = g_strsplit (property->element_name, ".", -1);
+	Type *owner = Type::Find (prop_name [0]);
+	DependencyProperty *dep;
+
+	if (!owner)
+		return false;
+
+	dep = item->GetDependencyProperty (prop_name [1]);
+
+	return xaml_set_property_from_str (item, dep, value, p->loader->GetSurface()->IsSilverlight2 ());
+}
+
 void
 XamlElementInstanceNative::AddChild (XamlParserInfo *p, XamlElementInstance *child)
 {
@@ -2959,18 +2964,6 @@ XamlElementInstanceNative::SetAttributes (XamlParserInfo *p, const char **attr)
 	dependency_object_set_attributes (p, this, attr);
 }
 
-
-bool
-XamlElementInstanceNative::TrySetContentProperty (XamlParserInfo *p, XamlElementInstance *value)
-{
-	return XamlElementInstance::TrySetContentProperty (p, value);
-}
-
-bool
-XamlElementInstanceNative::TrySetContentProperty (XamlParserInfo *p, const char *value)
-{
-	return XamlElementInstance::TrySetContentProperty (p, value);
-}
 
 XamlElementInstanceValueType::XamlElementInstanceValueType (XamlElementInfoNative *element_info, XamlParserInfo *parser_info, const char *name, ElementType type) :
 	XamlElementInstance (element_info, name, type)
@@ -3060,6 +3053,12 @@ XamlElementInstanceManaged::SetProperty (XamlParserInfo *p, XamlElementInstance 
 	dependency_object_set_property (p, this, property, value);
 }
 
+bool
+XamlElementInstanceManaged::SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char *value)
+{
+	return p->loader->SetAttribute (item, NULL, property->element_name, value);
+}
+
 void
 XamlElementInstanceManaged::AddChild (XamlParserInfo *p, XamlElementInstance *child)
 {
@@ -3073,15 +3072,15 @@ XamlElementInstanceManaged::SetAttributes (XamlParserInfo *p, const char **attr)
 }
 
 bool
-XamlElementInstanceManaged::TrySetContentProperty (XamlParserInfo *p, XamlElementInstance *value)
-{
-	return XamlElementInstance::TrySetContentProperty (p, value);
-}
-
-bool
 XamlElementInstanceManaged::TrySetContentProperty (XamlParserInfo *p, const char *value)
 {
-	return XamlElementInstance::TrySetContentProperty (p, value);
+	if (!XamlElementInstance::TrySetContentProperty (p, value)) {
+		const char* prop_name = info->GetContentProperty (p);
+		if (!prop_name)
+			return false;
+		return p->loader->SetAttribute (item, NULL, prop_name, value);
+	}
+	return true;
 }
 
 XamlElementInstance *
@@ -3139,11 +3138,28 @@ XamlElementInstanceImportedManaged::XamlElementInstanceImportedManaged (XamlElem
 	this->item = dob;
 };
 
+bool
+XamlElementInstanceImportedManaged::TrySetContentProperty (XamlParserInfo *p, const char *value)
+{
+	if (!XamlElementInstance::TrySetContentProperty (p, value)) {
+		const char* prop_name = info->GetContentProperty (p);
+		if (!prop_name)
+			return false;
+		return p->loader->SetAttribute (item, NULL, prop_name, value);
+	}
+	return true;
+}
 
 void
 XamlElementInstanceImportedManaged::SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value)
 {
 	dependency_object_set_property (p, this, property, value);
+}
+
+bool
+XamlElementInstanceImportedManaged::SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char *value)
+{
+	return p->loader->SetAttribute (item, NULL, property->element_name, value);
 }
 
 void
@@ -3156,19 +3172,6 @@ void
 XamlElementInstanceImportedManaged::SetAttributes (XamlParserInfo *p, const char **attr)
 {
 	dependency_object_set_attributes (p, this, attr);
-}
-
-
-bool
-XamlElementInstanceImportedManaged::TrySetContentProperty (XamlParserInfo *p, XamlElementInstance *value)
-{
-	return XamlElementInstance::TrySetContentProperty (p, value);
-}
-
-bool
-XamlElementInstanceImportedManaged::TrySetContentProperty (XamlParserInfo *p, const char *value)
-{
-	return XamlElementInstance::TrySetContentProperty (p, value);
 }
 
 
@@ -3189,7 +3192,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 			g_strfreev (prop_name);
 
 			if (!dep) {
-				g_warning ("Unknown element 4: %s.", parent->element_name);
+				g_warning ("Unknown element: %s.", parent->element_name);
 				return parser_error (p, parent->element_name, NULL, 2007,
 						     g_strdup_printf ("Unknown element: %s.", parent->element_name));
 			}

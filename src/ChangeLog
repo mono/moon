@@ -1,3 +1,9 @@
+2008-09-16  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Move cdata handling code into the content property
+	setters, allow managed content property setters to set values from
+	strings.
+
 2008-09-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* audio-pulse.cpp: dlsym another method previously forgotten.
