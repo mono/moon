@@ -62,6 +62,7 @@ typedef pa_channel_map*       (dyn_pa_channel_map_init_stereo)       (pa_channel
 typedef const char*           (dyn_pa_strerror)                      (int error);
 // operation.h
 typedef pa_operation_state_t  (dyn_pa_operation_get_state)           (pa_operation *o);
+typedef void                  (dyn_pa_operation_unref)                   (pa_operation *o);
 // version.h
 typedef const char *          (dyn_pa_get_library_version)           ();
 
@@ -100,7 +101,8 @@ dyn_pa_channel_map_init_mono *         d_pa_channel_map_init_mono = NULL;
 dyn_pa_channel_map_init_stereo *       d_pa_channel_map_init_stereo = NULL;
 dyn_pa_strerror *                      d_pa_strerror = NULL;
 dyn_pa_operation_get_state *           d_pa_operation_get_state = NULL;
-dyn_pa_get_library_version *           d_pa_get_library_version;
+dyn_pa_operation_unref *               d_pa_operation_unref = NULL;
+dyn_pa_get_library_version *           d_pa_get_library_version = NULL;
 
 #define pa_stream_new                    d_pa_stream_new
 #define pa_stream_set_state_callback     d_pa_stream_set_state_callback
@@ -137,6 +139,7 @@ dyn_pa_get_library_version *           d_pa_get_library_version;
 #define pa_channel_map_init_stereo       d_pa_channel_map_init_stereo
 #define pa_strerror                      d_pa_strerror
 #define pa_operation_get_state           d_pa_operation_get_state;
+#define pa_operation_unref               d_pa_operation_unref;
 
 /*
  * PulseSource
@@ -636,6 +639,7 @@ PulsePlayer::IsInstalled ()
 		result &= NULL != (d_pa_strerror = (dyn_pa_strerror *) dlsym (libpulse, "pa_strerror"));
 		
 		result &= NULL != (d_pa_operation_get_state = (dyn_pa_operation_get_state *) dlsym (libpulse, "pa_operation_get_state"));
+		result &= NULL != (d_pa_operation_unref = (dyn_pa_operation_unref *) dlsym (libpulse, "pa_operation_unref"));
 		
 		result &= NULL != (d_pa_get_library_version = (dyn_pa_get_library_version *) dlsym (libpulse, "pa_get_library_version"));
 

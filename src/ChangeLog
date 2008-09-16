@@ -1,5 +1,9 @@
 2008-09-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* audio-pulse.cpp: dlsym another method previously forgotten.
+
+2008-09-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* multiscaleimage.h, textbox.h: Use quotes to include our headers.
 
 2008-09-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
