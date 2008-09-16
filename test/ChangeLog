@@ -1,3 +1,8 @@
+2008-09-16  Fernando Herrera  <fherrera@novell.com>
+
+	* parsertest/Makefile.am:
+	* sizes/Makefile.am: Add asf include dir
+
 2008-09-10  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/assorted/completed-event-consistency.html: Adding a test for completed 
