@@ -1,3 +1,10 @@
+2008-09-16  Fernando Herrera  <fherrera@novell.com>
+
+	* pipeline.cpp: Register MS codecs if MOONLIGHT_OVERRIDES
+	  has codecs=microsoft.
+	* runtime.h: Do not default to RUNTIME_INIT_MICROSOFT_CODECS
+	  in RUNTIME_INIT_BROWSER.
+
 2008-09-16  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Move cdata handling code into the content property

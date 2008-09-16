@@ -22,6 +22,8 @@
 #include <pthread.h>
 #include <sched.h>
 
+#include <dlfcn.h>
+
 #include "pipeline.h"
 #include "pipeline-ffmpeg.h"
 #include "mp3.h"
@@ -37,6 +39,28 @@
 #define LOG_PIPELINE_ERROR(...) printf (__VA_ARGS__);
 #define LOG_PIPELINE_ERROR_CONDITIONAL(x, ...) if (x) printf (__VA_ARGS__);
 #define LOG_FRAMEREADERLOOP(...)// printf (__VA_ARGS__);
+
+void
+register_mscodecs (void)
+{
+	void (*reg) (void);
+	void *dl = dlopen ("libmscodecs.so", RTLD_LAZY);
+	if (dl == NULL)
+		goto dl_error;
+
+	*(void **) (&reg) = dlsym (dl, "register_mswma");
+	if (reg == NULL)
+		goto dl_error;
+
+	(*reg)();
+	return;
+
+dl_error:
+	char *error_str = dlerror();
+	g_print ("Cannot load libmscodecs.so: %s\n", error_str);
+	return;
+}
+
 
 class MediaNode : public List::Node {
 public:
@@ -241,11 +265,17 @@ Media::Initialize ()
 
 	// decoders
 	Media::RegisterDecoder (new ASFMarkerDecoderInfo ());
+	if (moonlight_flags & RUNTIME_INIT_MICROSOFT_CODECS) {
+		g_print ("Registering MS Codecs\n");
+		register_mscodecs ();
+	} else {
 #ifdef INCLUDE_FFMPEG
-	register_ffmpeg ();
+		g_print ("Registering FFMPEG Codecs\n");
+		register_ffmpeg ();
 #else
-	Media::RegisterDecoder (new NullMp3DecoderInfo ());
+		Media::RegisterDecoder (new NullMp3DecoderInfo ());
 #endif
+	}
 }
 
 void
