@@ -89,18 +89,12 @@ private:
 	char *sourcePropertyName;
 };
 
-// XXX this shouldn't be a DO subclass - we need a way to add event
-// listeners so that they're callbacks, instead of method calls on
-// DO's.
-/* @SilverlightVersion="2" */
-/* @Namespace=None */
-class TemplateBinding : public DependencyObject {
+class TemplateBinding : public EventObject {
 public:
 	TemplateBinding (Control *source,
 			 DependencyProperty *sourceProperty,
 			 FrameworkElement *target,
 			 DependencyProperty *targetProperty);
-
 protected:
 	~TemplateBinding ();
 
@@ -111,7 +105,8 @@ private:
 	FrameworkElement *target;
 	DependencyProperty *targetProperty;
 
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
+	void OnSourcePropertyChanged (DependencyObject *sender, PropertyChangedEventArgs *args);
+	static void SourcePropertyChangedCallback (DependencyObject *sender, PropertyChangedEventArgs *args, gpointer closure);
 };
 
 #endif /* __MOON_TEMPLATE_H__ */

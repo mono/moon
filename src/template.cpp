@@ -239,7 +239,7 @@ TemplateBinding::TemplateBinding (Control *source,
 	this->target = target;
 	this->targetProperty = targetProperty;
 
-	source->AddPropertyChangeListener (this, NULL);
+	source->AddPropertyChangeHandler (sourceProperty, SourcePropertyChangedCallback, this);
 
 	// maybe this first step should be done elsewhere?
 	target->SetValue (targetProperty, source->GetValue (sourceProperty));
@@ -247,15 +247,18 @@ TemplateBinding::TemplateBinding (Control *source,
 
 TemplateBinding::~TemplateBinding ()
 {
-	source->RemovePropertyChangeListener (this, NULL);
+	source->RemovePropertyChangeHandler (sourceProperty, SourcePropertyChangedCallback);
 }
 
 void
-TemplateBinding::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj,
-				       PropertyChangedEventArgs *subobj_args)
+TemplateBinding::OnSourcePropertyChanged (DependencyObject *sender, PropertyChangedEventArgs *args)
 {
-	if (subobj_args->property != sourceProperty)
-		return;
-	
-	target->SetValue (targetProperty, subobj_args->new_value);
+	target->SetValue (targetProperty, args->new_value);
+}
+
+void
+TemplateBinding::SourcePropertyChangedCallback (DependencyObject *sender, PropertyChangedEventArgs *args, gpointer closure)
+{
+	TemplateBinding *binding = (TemplateBinding*) closure;
+	binding->OnSourcePropertyChanged (sender, args);
 }

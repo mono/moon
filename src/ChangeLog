@@ -1,5 +1,15 @@
 2008-09-15  Chris Toshok  <toshok@ximian.com>
 
+	* dependencyobject.h, dependencyobject.cpp: add real
+	PropertyChange callbacks (so we can implement listeners without
+	the listener being a dependencyobject - which is nice for
+	TemplateBindings, which don't need all that overhead.)
+	
+	* template.h, template.cpp: switch over to using this new listener
+	interface.
+
+2008-09-15  Chris Toshok  <toshok@ximian.com>
+
 	* xaml.cpp (dependency_object_set_attributes): add the
 	TemplateBinding to the item, not the containing template.
 

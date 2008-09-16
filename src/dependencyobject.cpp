@@ -649,11 +649,78 @@ EventObject::unref_delayed ()
 	pthread_mutex_unlock (&delayed_unref_mutex);
 }
 
-struct Listener {
+class Listener {
+public:
+	virtual bool Matches (PropertyChangedEventArgs *args) = 0;
+	virtual void Invoke (DependencyObject *sender, PropertyChangedEventArgs *args) = 0;
+
+	virtual gpointer GetListener () = 0;
+	virtual gpointer GetProperty () = 0;
+};
+
+class WildcardListener {
+public:
+	WildcardListener (DependencyObject *obj, DependencyProperty *prop)
+	{
+		this->obj = obj;
+		this->prop = prop;
+	}
+
+	virtual bool Matches (PropertyChangedEventArgs *args) { return true; }
+	virtual void Invoke (DependencyObject *sender, PropertyChangedEventArgs *args)
+	{
+		obj->OnSubPropertyChanged (prop, sender, args);
+	}
+
+	virtual gpointer GetListener ()
+	{
+		return obj;
+	}
+
+	virtual gpointer GetProperty ()
+	{
+		return prop;
+	}
+
+private:
+
 	DependencyObject *obj;
 	DependencyProperty *prop;
-	
-	Listener (DependencyObject *obj, DependencyProperty *prop) { this->obj = obj; this->prop = prop; }
+};
+
+class CallbackListener {
+public:
+	CallbackListener (DependencyProperty *prop, PropertyChangeHandler cb, gpointer closure)
+	{
+		this->prop = prop;
+		this->cb = cb;
+		this->closure = closure;
+	}
+
+	virtual bool Matches (PropertyChangedEventArgs *args)
+	{
+		return prop == args->property;
+	}
+
+	virtual void Invoke (DependencyObject *sender, PropertyChangedEventArgs *args)
+	{
+		cb (sender, args, closure);
+	}
+
+	virtual gpointer GetListener ()
+	{
+		return (gpointer)cb;
+	}
+
+	virtual gpointer GetProperty ()
+	{
+		return prop;
+	}
+
+private:
+	PropertyChangeHandler cb;
+	DependencyProperty *prop;
+	gpointer closure;
 };
 
 //
@@ -662,7 +729,21 @@ struct Listener {
 void
 DependencyObject::AddPropertyChangeListener (DependencyObject *listener, DependencyProperty *child_property)
 {
-	listener_list = g_slist_append (listener_list, new Listener (listener, child_property));
+	listener_list = g_slist_append (listener_list, new WildcardListener (listener, child_property));
+}
+
+void
+DependencyObject::RemoveListener (gpointer listener, DependencyProperty *child_property)
+{
+	for (GSList *l = listener_list; l; l = l->next) {
+		Listener *listen = (Listener *) l->data;
+		
+		if ((listen->GetListener() == listener)
+		    && (child_property == NULL || listen->GetProperty() == child_property)) {
+			listener_list = g_slist_remove_link (listener_list, l);
+			delete listen;
+		}
+	}
 }
 
 //
@@ -671,14 +752,19 @@ DependencyObject::AddPropertyChangeListener (DependencyObject *listener, Depende
 void
 DependencyObject::RemovePropertyChangeListener (DependencyObject *listener, DependencyProperty *child_property)
 {
-	for (GSList *l = listener_list; l; l = l->next) {
-		Listener *listen = (Listener *) l->data;
-		
-		if ((listen->obj == listener) && (child_property == NULL || listen->prop == child_property)) {
-			listener_list = g_slist_remove_link (listener_list, l);
-			delete listen;
-		}
-	}
+	RemoveListener (listener, child_property);
+}
+
+void
+DependencyObject::AddPropertyChangeHandler (DependencyProperty *property, PropertyChangeHandler cb, gpointer closure)
+{
+	listener_list = g_slist_append (listener_list, new CallbackListener (property, cb, closure));
+}
+
+void
+DependencyObject::RemovePropertyChangeHandler (DependencyProperty *property, PropertyChangeHandler cb)
+{
+	RemoveListener ((gpointer)cb, property);
 }
 
 static void
@@ -719,8 +805,10 @@ DependencyObject::NotifyListenersOfPropertyChange (PropertyChangedEventArgs *arg
 	for (GSList *l = listener_list; l != NULL; l = l->next){
 		Listener *listener = (Listener*)l->data;
 
-		listener->obj->OnSubPropertyChanged (listener->prop, this, args);
-		if (listener->obj == logical_parent)
+		if (listener->Matches (args))
+			listener->Invoke (this, args);
+
+		if (listener->GetListener() == logical_parent)
 			notified_parent = true;
 	}
 

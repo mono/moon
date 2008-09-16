@@ -222,6 +222,8 @@ struct PropertyChangedEventArgs {
 	Value *new_value;
 };
 
+typedef void (* PropertyChangeHandler) (DependencyObject *sender, PropertyChangedEventArgs *args, gpointer closure);
+
 /* @Namespace=System.Windows */
 class DependencyObject : public EventObject {
 public:
@@ -327,6 +329,12 @@ public:
 	void AddPropertyChangeListener (DependencyObject *listener, DependencyProperty *child_property = NULL);
 	void RemovePropertyChangeListener (DependencyObject *listener, DependencyProperty *child_property = NULL);
 
+	// *These* two methods do what you'd expect.  You provide this
+	// dependencyobject with a callback and a closure to be
+	// invoked when the given property changes.
+	void AddPropertyChangeHandler (DependencyProperty *property, PropertyChangeHandler cb, gpointer closure);
+	void RemovePropertyChangeHandler (DependencyProperty *property, PropertyChangeHandler cb);
+
 	void MergeTemporaryNameScopes (DependencyObject *dob);
 	virtual void UnregisterAllNamesRootedAt (NameScope *from_ns);
 	virtual void RegisterAllNamesRootedAt (NameScope *to_ns);
@@ -345,6 +353,8 @@ protected:
 	void RemoveAllListeners ();
 	
 private:
+	void RemoveListener (gpointer listener, DependencyProperty *child_property);
+
 	GHashTable        *current_values;
 	GSList            *listener_list;
 	DependencyObject  *logical_parent;
