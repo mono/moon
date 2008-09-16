@@ -1,3 +1,8 @@
+2008-09-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* audio-pulse.cpp: Use dlopen/dlsym to access all pa methods, and don't
+	  link with pulseaudio anymore. Hopefully fixes #425560.
+
 2008-09-16  Fernando Herrera  <fherrera@novell.com>
 
 	* asf/asf-structures.h:

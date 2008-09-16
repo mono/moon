@@ -21,6 +21,123 @@
 // This one prints out spew on every sample
 #define LOG_PULSE_EX(...)// printf (__VA_ARGS__);
 
+// stream.h
+typedef pa_stream*            (dyn_pa_stream_new)                    (pa_context *c, const char *name, const pa_sample_spec *ss, const pa_channel_map *map);
+typedef void                  (dyn_pa_stream_set_state_callback)     (pa_stream *s, pa_stream_notify_cb_t cb, void *userdata);
+typedef void                  (dyn_pa_stream_set_write_callback)     (pa_stream *p, pa_stream_request_cb_t cb, void *userdata);
+typedef void                  (dyn_pa_stream_set_underflow_callback) (pa_stream *p, pa_stream_notify_cb_t cb, void *userdata);
+typedef int                   (dyn_pa_stream_connect_playback)       (pa_stream *s, const char *dev, const pa_buffer_attr *attr, pa_stream_flags_t flags, pa_cvolume *volume, pa_stream *sync_stream);
+typedef int                   (dyn_pa_stream_disconnect)             (pa_stream *s);
+typedef void                  (dyn_pa_stream_unref)                  (pa_stream *s);
+typedef pa_stream_state_t     (dyn_pa_stream_get_state)              (pa_stream *p);
+typedef int                   (dyn_pa_stream_write)                  (pa_stream *p, const void *data, size_t bytes, pa_free_cb_t free_cb, int64_t offset, pa_seek_mode_t seek);
+typedef size_t                (dyn_pa_stream_writable_size)          (pa_stream *p);
+typedef pa_operation*         (dyn_pa_stream_cork)                   (pa_stream *s, int b, pa_stream_success_cb_t cb, void *userdata);
+typedef pa_operation*         (dyn_pa_stream_trigger)                (pa_stream *s, pa_stream_success_cb_t cb, void *userdata);
+typedef pa_operation*         (dyn_pa_stream_flush)                  (pa_stream *s, pa_stream_success_cb_t cb, void *userdata);
+typedef int                   (dyn_pa_stream_get_latency)            (pa_stream *s, pa_usec_t *r_usec, int *negative);
+// context.h
+typedef pa_context *          (dyn_pa_context_new)                   (pa_mainloop_api *mainloop, const char *name);
+typedef int                   (dyn_pa_context_errno)                 (pa_context *c);
+typedef pa_context_state_t    (dyn_pa_context_get_state)             (pa_context *c);
+typedef void                  (dyn_pa_context_set_state_callback)    (pa_context *c, pa_context_notify_cb_t cb, void *userdata);
+typedef int                   (dyn_pa_context_connect)               (pa_context *c, const char *server, pa_context_flags_t flags, const pa_spawn_api *api);
+typedef void                  (dyn_pa_context_disconnect)            (pa_context *c);
+typedef void                  (dyn_pa_context_unref)                 (pa_context *c);
+// thread-mainloop.h
+typedef pa_threaded_mainloop* (dyn_pa_threaded_mainloop_new)         (void);
+typedef int                   (dyn_pa_threaded_mainloop_start)       (pa_threaded_mainloop *m);
+typedef pa_mainloop_api*      (dyn_pa_threaded_mainloop_get_api)     (pa_threaded_mainloop*m);
+typedef void                  (dyn_pa_threaded_mainloop_wait)        (pa_threaded_mainloop *m);
+typedef int                   (dyn_pa_threaded_mainloop_in_thread)   (pa_threaded_mainloop *m);
+typedef void                  (dyn_pa_threaded_mainloop_lock)        (pa_threaded_mainloop *m);
+typedef void                  (dyn_pa_threaded_mainloop_unlock)      (pa_threaded_mainloop *m);
+typedef void                  (dyn_pa_threaded_mainloop_signal)      (pa_threaded_mainloop *m, int wait_for_accept);
+typedef void                  (dyn_pa_threaded_mainloop_stop)        (pa_threaded_mainloop *m);
+typedef void                  (dyn_pa_threaded_mainloop_free)        (pa_threaded_mainloop* m);
+// channelmap.h
+typedef pa_channel_map*       (dyn_pa_channel_map_init_mono)         (pa_channel_map *m);
+typedef pa_channel_map*       (dyn_pa_channel_map_init_stereo)       (pa_channel_map *m);
+// error.h
+typedef const char*           (dyn_pa_strerror)                      (int error);
+// operation.h
+typedef pa_operation_state_t  (dyn_pa_operation_get_state)           (pa_operation *o);
+// version.h
+typedef const char *          (dyn_pa_get_library_version)           ();
+
+dyn_pa_stream_new *                    d_pa_stream_new = NULL;
+dyn_pa_stream_set_state_callback *     d_pa_stream_set_state_callback = NULL;
+dyn_pa_stream_set_write_callback *     d_pa_stream_set_write_callback = NULL;
+dyn_pa_stream_set_underflow_callback * d_pa_stream_set_underflow_callback = NULL;
+dyn_pa_stream_connect_playback *       d_pa_stream_connect_playback = NULL;
+dyn_pa_stream_disconnect *             d_pa_stream_disconnect = NULL;
+dyn_pa_stream_unref *                  d_pa_stream_unref = NULL;
+dyn_pa_stream_get_state *              d_pa_stream_get_state = NULL;
+dyn_pa_stream_write *                  d_pa_stream_write = NULL;
+dyn_pa_stream_writable_size *          d_pa_stream_writable_size = NULL;
+dyn_pa_stream_cork *                   d_pa_stream_cork = NULL;
+dyn_pa_stream_trigger *                d_pa_stream_trigger = NULL;
+dyn_pa_stream_flush *                  d_pa_stream_flush = NULL;
+dyn_pa_stream_get_latency *            d_pa_stream_get_latency = NULL;
+dyn_pa_context_new *                   d_pa_context_new = NULL;
+dyn_pa_context_errno *                 d_pa_context_errno = NULL;
+dyn_pa_context_get_state *             d_pa_context_get_state = NULL;
+dyn_pa_context_set_state_callback *    d_pa_context_set_state_callback = NULL;
+dyn_pa_context_connect *               d_pa_context_connect = NULL;
+dyn_pa_context_disconnect *            d_pa_context_disconnect = NULL;
+dyn_pa_context_unref *                 d_pa_context_unref = NULL;
+dyn_pa_threaded_mainloop_new *         d_pa_threaded_mainloop_new = NULL;
+dyn_pa_threaded_mainloop_start *       d_pa_threaded_mainloop_start = NULL;
+dyn_pa_threaded_mainloop_get_api *     d_pa_threaded_mainloop_get_api = NULL;
+dyn_pa_threaded_mainloop_wait *        d_pa_threaded_mainloop_wait = NULL;
+dyn_pa_threaded_mainloop_in_thread *   d_pa_threaded_mainloop_in_thread = NULL;
+dyn_pa_threaded_mainloop_lock *        d_pa_threaded_mainloop_lock = NULL;
+dyn_pa_threaded_mainloop_unlock *      d_pa_threaded_mainloop_unlock = NULL;
+dyn_pa_threaded_mainloop_signal *      d_pa_threaded_mainloop_signal = NULL;
+dyn_pa_threaded_mainloop_stop *        d_pa_threaded_mainloop_stop = NULL;
+dyn_pa_threaded_mainloop_free *        d_pa_threaded_mainloop_free = NULL;
+dyn_pa_channel_map_init_mono *         d_pa_channel_map_init_mono = NULL;
+dyn_pa_channel_map_init_stereo *       d_pa_channel_map_init_stereo = NULL;
+dyn_pa_strerror *                      d_pa_strerror = NULL;
+dyn_pa_operation_get_state *           d_pa_operation_get_state = NULL;
+dyn_pa_get_library_version *           d_pa_get_library_version;
+
+#define pa_stream_new                    d_pa_stream_new
+#define pa_stream_set_state_callback     d_pa_stream_set_state_callback
+#define pa_stream_set_write_callback     d_pa_stream_set_write_callback
+#define pa_stream_set_underflow_callback d_pa_stream_set_underflow_callback
+#define pa_stream_connect_playback       d_pa_stream_connect_playback
+#define pa_stream_disconnect             d_pa_stream_disconnect
+#define pa_stream_unref                  d_pa_stream_unref
+#define pa_stream_get_state              d_pa_stream_get_state
+#define pa_stream_write                  d_pa_stream_write
+#define pa_stream_writable_size          d_pa_stream_writable_size
+#define pa_stream_cork                   d_pa_stream_cork
+#define pa_stream_trigger                d_pa_stream_trigger
+#define pa_stream_flush                  d_pa_stream_flush
+#define pa_stream_get_latency            d_pa_stream_get_latency
+#define pa_context_new                   d_pa_context_new
+#define pa_context_errno                 d_pa_context_errno
+#define pa_context_get_state             d_pa_context_get_state
+#define pa_context_set_state_callback    d_pa_context_set_state_callback
+#define pa_context_connect               d_pa_context_connect
+#define pa_context_disconnect            d_pa_context_disconnect
+#define pa_context_unref                 d_pa_context_unref
+#define pa_threaded_mainloop_new		 d_pa_threaded_mainloop_new
+#define pa_threaded_mainloop_start		 d_pa_threaded_mainloop_start
+#define pa_threaded_mainloop_get_api	 d_pa_threaded_mainloop_get_api
+#define pa_threaded_mainloop_wait		 d_pa_threaded_mainloop_wait
+#define pa_threaded_mainloop_in_thread	 d_pa_threaded_mainloop_in_thread
+#define pa_threaded_mainloop_lock		 d_pa_threaded_mainloop_lock
+#define pa_threaded_mainloop_unlock		 d_pa_threaded_mainloop_unlock
+#define pa_threaded_mainloop_signal		 d_pa_threaded_mainloop_signal
+#define pa_threaded_mainloop_stop		 d_pa_threaded_mainloop_stop
+#define pa_threaded_mainloop_free		 d_pa_threaded_mainloop_free
+#define pa_channel_map_init_mono         d_pa_channel_map_init_mono
+#define pa_channel_map_init_stereo       d_pa_channel_map_init_stereo
+#define pa_strerror                      d_pa_strerror
+#define pa_operation_get_state           d_pa_operation_get_state;
+
 /*
  * PulseSource
  */
@@ -127,6 +244,9 @@ PulseSource::CloseInternal ()
 	
 	player->LockLoop ();
 	if (pulse_stream) {
+		pa_stream_set_state_callback (pulse_stream, NULL, NULL);
+		pa_stream_set_write_callback (pulse_stream, NULL, NULL);
+		pa_stream_set_underflow_callback (pulse_stream, NULL, NULL);
 		pa_stream_disconnect (pulse_stream);
 		pa_stream_unref (pulse_stream);
 		pulse_stream = NULL;
@@ -459,28 +579,73 @@ PulsePlayer::CreateNode (MediaPlayer *mplayer, AudioStream *stream)
 }
 
 static int is_pulse_usable = 0; // 0 = not tested, 1 = tested, usable, 2 = tested, not usable
-typedef const char *PA_get_library_version ();
+static void *libpulse = NULL;
 
 bool
 PulsePlayer::IsInstalled ()
 {
 	bool result = false;
-	void *libpulse;
-	PA_get_library_version *get_version;
 	const char *version;
-	
+
 	switch (is_pulse_usable) {
 	case 0:				
 		libpulse = dlopen ("libpulse.so.0", RTLD_LAZY);
-		if (libpulse != NULL) {
-			get_version = (PA_get_library_version *) dlsym (libpulse, "pa_get_library_version");
-			if (get_version != NULL) {
-				version = get_version ();
-				AUDIO_DEBUG ("PulsePlayer: Found libpulse version: '%s'\n", version);
-				result = true;
-			}
-			dlclose (libpulse);
+		if (libpulse == NULL) {
+			is_pulse_usable = 2;
+			return false;
 		}
+		result = true;
+		
+		result &= NULL != (d_pa_stream_new = (dyn_pa_stream_new *) dlsym (libpulse, "pa_stream_new"));
+		result &= NULL != (d_pa_stream_set_state_callback = (dyn_pa_stream_set_state_callback *) dlsym (libpulse, "pa_stream_set_state_callback"));
+		result &= NULL != (d_pa_stream_set_write_callback = (dyn_pa_stream_set_write_callback *) dlsym (libpulse, "pa_stream_set_write_callback"));
+		result &= NULL != (d_pa_stream_set_underflow_callback = (dyn_pa_stream_set_underflow_callback *) dlsym (libpulse, "pa_stream_set_underflow_callback"));
+		result &= NULL != (d_pa_stream_connect_playback = (dyn_pa_stream_connect_playback *) dlsym (libpulse, "pa_stream_connect_playback"));
+		result &= NULL != (d_pa_stream_disconnect = (dyn_pa_stream_disconnect *) dlsym (libpulse, "pa_stream_disconnect"));
+		result &= NULL != (d_pa_stream_unref = (dyn_pa_stream_unref *) dlsym (libpulse, "pa_stream_unref"));
+		result &= NULL != (d_pa_stream_get_state = (dyn_pa_stream_get_state *) dlsym (libpulse, "pa_stream_get_state"));
+		result &= NULL != (d_pa_stream_write = (dyn_pa_stream_write *) dlsym (libpulse, "pa_stream_write"));
+		result &= NULL != (d_pa_stream_writable_size = (dyn_pa_stream_writable_size *) dlsym (libpulse, "pa_stream_writable_size"));
+		result &= NULL != (d_pa_stream_cork = (dyn_pa_stream_cork *) dlsym (libpulse, "pa_stream_cork"));
+		result &= NULL != (d_pa_stream_trigger = (dyn_pa_stream_trigger *) dlsym (libpulse, "pa_stream_trigger"));
+		result &= NULL != (d_pa_stream_flush = (dyn_pa_stream_flush *) dlsym (libpulse, "pa_stream_flush"));
+		result &= NULL != (d_pa_stream_get_latency = (dyn_pa_stream_get_latency *) dlsym (libpulse, "pa_stream_get_latency"));
+
+		result &= NULL != (d_pa_context_new = (dyn_pa_context_new *) dlsym (libpulse, "pa_context_new"));
+		result &= NULL != (d_pa_context_errno = (dyn_pa_context_errno *) dlsym (libpulse, "pa_context_errno"));
+		result &= NULL != (d_pa_context_get_state = (dyn_pa_context_get_state *) dlsym (libpulse, "pa_context_get_state"));
+		result &= NULL != (d_pa_context_set_state_callback = (dyn_pa_context_set_state_callback *) dlsym (libpulse, "pa_context_set_state_callback"));
+		result &= NULL != (d_pa_context_connect = (dyn_pa_context_connect *) dlsym (libpulse, "pa_context_connect"));
+		result &= NULL != (d_pa_context_disconnect = (dyn_pa_context_disconnect *) dlsym (libpulse, "pa_context_disconnect"));
+		result &= NULL != (d_pa_context_unref = (dyn_pa_context_unref *) dlsym (libpulse, "pa_context_unref"));
+
+		result &= NULL != (d_pa_threaded_mainloop_new = (dyn_pa_threaded_mainloop_new *) dlsym (libpulse, "pa_threaded_mainloop_new"));
+		result &= NULL != (d_pa_threaded_mainloop_start = (dyn_pa_threaded_mainloop_start *) dlsym (libpulse, "pa_threaded_mainloop_start"));
+		result &= NULL != (d_pa_threaded_mainloop_get_api = (dyn_pa_threaded_mainloop_get_api *) dlsym (libpulse, "pa_threaded_mainloop_get_api"));
+		result &= NULL != (d_pa_threaded_mainloop_wait = (dyn_pa_threaded_mainloop_wait *) dlsym (libpulse, "pa_threaded_mainloop_wait"));
+		result &= NULL != (d_pa_threaded_mainloop_in_thread = (dyn_pa_threaded_mainloop_in_thread *) dlsym (libpulse, "pa_threaded_mainloop_in_thread"));
+		result &= NULL != (d_pa_threaded_mainloop_lock = (dyn_pa_threaded_mainloop_lock *) dlsym (libpulse, "pa_threaded_mainloop_lock"));
+		result &= NULL != (d_pa_threaded_mainloop_unlock = (dyn_pa_threaded_mainloop_unlock *) dlsym (libpulse, "pa_threaded_mainloop_unlock"));
+		result &= NULL != (d_pa_threaded_mainloop_signal = (dyn_pa_threaded_mainloop_signal *) dlsym (libpulse, "pa_threaded_mainloop_signal"));
+		result &= NULL != (d_pa_threaded_mainloop_stop = (dyn_pa_threaded_mainloop_stop *) dlsym (libpulse, "pa_threaded_mainloop_stop"));
+		result &= NULL != (d_pa_threaded_mainloop_free = (dyn_pa_threaded_mainloop_free *) dlsym (libpulse, "pa_threaded_mainloop_free"));
+					
+		result &= NULL != (d_pa_channel_map_init_mono = (dyn_pa_channel_map_init_mono *) dlsym (libpulse, "pa_channel_map_init_mono"));
+		result &= NULL != (d_pa_channel_map_init_stereo = (dyn_pa_channel_map_init_stereo *) dlsym (libpulse, "pa_channel_map_init_stereo"));
+		
+		result &= NULL != (d_pa_strerror = (dyn_pa_strerror *) dlsym (libpulse, "pa_strerror"));
+		
+		result &= NULL != (d_pa_operation_get_state = (dyn_pa_operation_get_state *) dlsym (libpulse, "pa_operation_get_state"));
+		
+		result &= NULL != (d_pa_get_library_version = (dyn_pa_get_library_version *) dlsym (libpulse, "pa_get_library_version"));
+
+		if (d_pa_get_library_version != NULL) {
+			version = d_pa_get_library_version ();
+			AUDIO_DEBUG ("PulsePlayer: Found libpulse version: '%s'\n", version);
+		}
+
+		if (!result)
+			AUDIO_DEBUG ("PulsePlayer: Failed to load one or more required functions in libpulse.so.");
 		
 		is_pulse_usable = result ? 1 : 2;
 		return result;
