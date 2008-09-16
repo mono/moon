@@ -1,3 +1,8 @@
+2008-09-15  Geoff Norton  <gnorton@novell.com>
+
+	* 01-tesselate-edges, 01-tesselate-edges.README: Patch to 
+	not tesselate an entire path when hit testing a point.
+
 2008-09-15  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* 00-triangle-cap, 00-triangle-cap.README: Patch to support
