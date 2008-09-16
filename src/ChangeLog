@@ -1,3 +1,12 @@
+2008-09-16  Fernando Herrera  <fherrera@novell.com>
+
+	* asf/asf-structures.h:
+	* asf/asf.cpp:
+	* asf/asf.h:
+	* mplayer.h:
+	* pipeline.h: Don't use relative paths in #includes.
+	* Makefile.am: Add -Iasf
+
 2008-09-15  Chris Toshok  <toshok@ximian.com>
 
 	* dependencyobject.h, dependencyobject.cpp: add real

@@ -13,8 +13,8 @@
 #include <stdint.h>
 
 #include "asf.h"
-#include "../debug.h"
-#include "../clock.h"
+#include "debug.h"
+#include "clock.h"
 
 /*
 	ASFParser

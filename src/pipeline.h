@@ -188,7 +188,7 @@ enum MoonWorkType {
 typedef MediaResult MediaCallback (MediaClosure *closure);
 
 #include "list.h"
-#include "asf/asf.h"
+#include "asf.h"
 #include "debug.h"
 #include "dependencyobject.h"
 #include "playlist.h"

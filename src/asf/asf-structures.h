@@ -16,7 +16,7 @@
 
 #include "asf-debug.h"
 #include "asf.h"
-#include "../pipeline.h"
+#include "pipeline.h"
 
 void asf_error_correction_data_dump (asf_error_correction_data* obj);
 void asf_payload_parsing_information_dump (asf_payload_parsing_information* obj);

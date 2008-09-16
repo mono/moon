@@ -48,9 +48,9 @@ class ASFContext;
 #include "asf-structures.h"
 #include "asf-debug.h"
 
-#include "../pipeline.h"
-#include "../clock.h"
-#include "../error.h"
+#include "pipeline.h"
+#include "clock.h"
+#include "error.h"
 
 struct ASFContext {
 	ASFParser *parser;
