@@ -115,6 +115,7 @@ class XamlElementInstance : public List::Node {
 
 	int element_type;
 	DependencyObject *item;
+	char *x_key;
 
 	GHashTable *set_properties;
 
@@ -126,6 +127,7 @@ class XamlElementInstance : public List::Node {
 		this->parent = NULL;
 		this->info = info;
 		this->item = NULL;
+		this->x_key = NULL;
 		
 		children = new List ();
 	}
@@ -134,6 +136,7 @@ class XamlElementInstance : public List::Node {
 	{
 		children->Clear (true);
 		delete children;
+		g_free (x_key);
 
 		if (set_properties)
 			g_hash_table_destroy (set_properties);
@@ -144,6 +147,7 @@ class XamlElementInstance : public List::Node {
 		//	delete element_name;
 	}
 
+	
 	virtual void SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value) = 0;
 	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char* value) = 0;
 	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child) = 0;
@@ -151,6 +155,9 @@ class XamlElementInstance : public List::Node {
 
 	virtual bool TrySetContentProperty (XamlParserInfo *p, XamlElementInstance *value);
 	virtual bool TrySetContentProperty (XamlParserInfo *p, const char *value);
+	
+	void SetKey (const char *key) { this->x_key = g_strdup (key); }
+	char *GetKey () { return x_key; }
 
 	virtual bool IsValueType ()
 	{
@@ -311,23 +318,16 @@ class XamlElementInfo {
 	XamlElementInfo *parent;
 	const char *name;
 
-	char *x_key;
-
 	XamlElementInfo (const char *name, Type::Kind kind)
 	{
 		this->parent = NULL;
 		this->kind = kind;
 		this->name = name;
-		this->x_key = NULL;
 	}
 
 	~XamlElementInfo ()
 	{
-		g_free (x_key);
 	}
-
-	void SetKey (const char *key) { this->x_key = g_strdup (key); }
-	char *GetKey () { return x_key; }
 
 	virtual Type::Kind GetKind () { return kind; }
 	virtual const char* GetContentProperty (XamlParserInfo *p) { return Type::Find (kind)->GetContentPropertyName (); }
@@ -505,13 +505,13 @@ class XNamespace : public XamlNamespace {
 			// }
 			//
 
-			if (item->info->GetKey ()) {
+			if (item->GetKey ()) {
 				// XXX don't know the proper values here...
 				parser_error (p, item->element_name, NULL, 2007,
 					      g_strdup ("You can't specify x:Name along with x:Key, or x:Key twice."));
 				return false;
 			}
-			item->info->SetKey (value);
+			item->SetKey (value);
 
 			if (!item->IsValueType()) {
 				p->namescope->RegisterName (value, (DependencyObject *) item->item);
@@ -526,13 +526,13 @@ class XNamespace : public XamlNamespace {
 		}
 
 		if (!strcmp ("Key", attr)) {
-			if (item->info->GetKey ()) {
+			if (item->GetKey ()) {
 				// XXX don't know the proper values here...
 				parser_error (p, item->element_name, NULL, 2007,
 					      g_strdup ("You can't specify x:Name along with x:Key, or x:Key twice."));
 				return false;
 			}
-			item->info->SetKey (value);
+			item->SetKey (value);
 			return true;
 		}
 
@@ -3056,6 +3056,7 @@ XamlElementInstanceManaged::SetProperty (XamlParserInfo *p, XamlElementInstance 
 bool
 XamlElementInstanceManaged::SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char *value)
 {
+	printf ("SETTING MANAGED ATTRIBUTE:  %s  to '%s'\n", property->element_name, value);
 	return p->loader->SetAttribute (item, NULL, property->element_name, value);
 }
 
@@ -3240,7 +3241,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 
 				set_parent (child, NULL);
 
-				char *key = child->info->GetKey ();
+				char *key = child->GetKey ();
 
 				if (key == NULL) {
 					// XXX don't know the proper values here...
@@ -3300,7 +3301,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 
 		set_parent (child, NULL);
 
-		char *key = child->info->GetKey ();
+		char *key = child->GetKey ();
 
 		dict->Add (key, child->GetAsValue());
 	}
@@ -3551,7 +3552,7 @@ start_parse:
 		if (prop) {
 			if (prop == DependencyObject::NameProperty) {
 				// XXX toshok - I don't like doing this here... but it fixes airlines.
-				item->info->SetKey (attr[i+1]);
+				item->SetKey (attr[i+1]);
 			}
 
 			if (prop->IsReadOnly ()) {

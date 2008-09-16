@@ -1,3 +1,7 @@
+2008-09-16  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: keys should be a property of the instance.
+
 2008-09-16  Fernando Herrera  <fherrera@novell.com>
 
 	* pipeline.cpp: Register MS codecs if MOONLIGHT_OVERRIDES
