@@ -13,6 +13,30 @@
 #ifndef __DIRTY_H__
 #define __DIRTY_H__
 
+class DirtyList;
+
+class DirtyLists {
+public:
+	DirtyLists (bool ascending);
+	~DirtyLists ();
+
+	DirtyList* GetList (int level, bool create = false);
+	void RemoveList (int level);
+
+	void AddDirtyNode (int level, List::Node *node);
+	void RemoveDirtyNode (int level, List::Node *node);
+
+	List::Node *GetFirst ();
+
+	bool IsEmpty ();
+
+	void Clear (bool freeNodes);
+
+private:
+	bool ascending;
+	List *lists;
+};
+
 enum DirtyType {
 	// DirtyTransform
 	//

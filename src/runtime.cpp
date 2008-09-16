@@ -266,8 +266,8 @@ Surface::Surface (MoonWindow *window, bool silverlight2)
 	if (!(moonlight_flags & RUNTIME_INIT_USE_BACKEND_XLIB))
 		g_warning ("using software backend");
 
-	up_dirty = new List ();
-	down_dirty = new List ();
+	up_dirty = new DirtyLists (true);
+	down_dirty = new DirtyLists (false);
 	
 	surface_list = g_list_append (surface_list, this);
 }

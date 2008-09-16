@@ -31,6 +31,7 @@
 
 UIElement::UIElement ()
 {
+	visual_level = 0;
 	visual_parent = NULL;
 	opacityMask = NULL;
 	
@@ -434,6 +435,7 @@ UIElement::ElementRemoved (UIElement *item)
 void
 UIElement::ElementAdded (UIElement *item)
 {
+	item->SetVisualLevel (GetVisualLevel() + 1);
 	item->SetVisualParent (this);
 	item->UpdateTransform ();
 	item->UpdateTotalRenderVisibility ();

@@ -79,6 +79,9 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	UIElement *GetVisualParent () { return visual_parent; }
 
+	int GetVisualLevel () { return visual_level; }
+	void SetVisualLevel (int level) { visual_level = level; }
+
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	virtual DependencyObject *GetSubtreeObject () { return NULL; }
 
@@ -483,6 +486,7 @@ protected:
 	cairo_matrix_t absolute_xform;
 	
 private:
+	int visual_level;
 	UIElement *visual_parent;
 	double total_opacity;
 	Brush *opacityMask;

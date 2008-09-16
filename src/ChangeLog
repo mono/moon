@@ -1,3 +1,16 @@
+2008-09-16  Chris Toshok  <toshok@ximian.com>
+
+	* dirty.h, dirty.cpp: add a priority queue-like setup for the
+	dirty lists, where priority == level in the visual hierarchy.
+	Processing the down dirty list proceeds from lower "priority" to
+	higher, and the up dirty list proceeds from higher to lower.
+
+	* runtime.h, runtime.cpp: use the new dirty lists.
+
+	* uielement.h, uielement.cpp: add a visual_level field, which is
+	updated when the element is added to the
+	hierarchy (this->visual_level = parent->visual_level + 1).
+	
 2008-09-16  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: keys should be a property of the instance.

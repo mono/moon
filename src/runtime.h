@@ -228,8 +228,8 @@ private:
 	void ProcessDownDirtyElements ();
 	void ProcessUpDirtyElements ();
 	
-	List *down_dirty;
-	List *up_dirty;
+	DirtyLists *down_dirty;
+	DirtyLists *up_dirty;
 	
 	gpointer downloader_context;
 	List *downloaders;
