@@ -13,6 +13,7 @@
 
 #include <math.h>
 
+#include "runtime.h"
 #include "frameworkelement.h"
 #include "trigger.h"
 #include "thickness.h"
@@ -77,6 +78,7 @@ FrameworkElement::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 void
 FrameworkElement::Measure (Size availableSize)
 {
+	this->dirty_flags &= ~DirtyMeasure;
 
 	// XXX this is hack to get around the 0.0 w/h defaults we still
 	// have in place due to 1.0
@@ -149,6 +151,8 @@ FrameworkElement::MeasureOverride (Size availableSize)
 void
 FrameworkElement::Arrange (Rect finalRect)
 {
+	this->dirty_flags &= ~DirtyArrange;
+
 #if SL_2_0
 	Thickness margin = *GetMargin ();
 	finalRect = finalRect.GrowBy (-margin);
@@ -168,8 +172,16 @@ FrameworkElement::Arrange (Rect finalRect)
 
 	SetRenderSize (size);
 #if SL_2_0
+	double old_width = GetActualWidth ();
+	double old_height = GetActualHeight ();
+
 	SetActualWidth (size.width);
 	SetActualHeight (size.height);
+	if (old_width != size.width || old_height != size.height) {
+		SizeChangedEventArgs args(Size (old_width, old_height), size);
+
+		Emit(SizeChangedEvent, &args);
+	}
 #endif
 	// XXX what do we do with finalRect.x and y?
 
@@ -194,6 +206,20 @@ FrameworkElement::ArrangeOverride (Size finalSize)
 	size = size.Max (specified);
 
 	return size;
+}
+
+bool
+FrameworkElement::UpdateLayout ()
+{
+	bool rv = UIElement::UpdateLayout ();
+
+	if (rv) {
+		// we only emit the event if either a measure or
+		// arrange pass was done.
+		Emit (LayoutUpdatedEvent);
+	}
+
+	return rv;
 }
 
 void

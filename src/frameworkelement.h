@@ -95,6 +95,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual Size ArrangeOverride (Size finalSize);
 
+	virtual bool UpdateLayout ();
 
 	/* @SilverlightVersion="2" */
 	const static int BindingValidationErrorEvent;

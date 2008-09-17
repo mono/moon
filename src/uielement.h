@@ -366,6 +366,9 @@ public:
 
 	// Layout foo
 
+	void DoMeasure ();
+	void DoArrange ();
+
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual void Measure (Size availableSize) = 0;
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -375,7 +378,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	void InvalidateArrange ();
 	/* @GenerateCBinding,GeneratePInvoke */
-	void UpdateLayout ();
+	virtual bool UpdateLayout ();
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	Size GetDesiredSize () { return desired_size; }

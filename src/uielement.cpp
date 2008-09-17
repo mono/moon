@@ -451,19 +451,43 @@ UIElement::ElementAdded (UIElement *item)
 void
 UIElement::InvalidateMeasure ()
 {
-	g_warning ("UIElement::InvalidateMeasure not implemented - it should add a dirty flag (DirtyMeasure)");
+	if (GetSurface())
+		GetSurface()->AddDirtyElement (this, DirtyMeasure);
 }
 
 void
 UIElement::InvalidateArrange ()
 {
-	g_warning ("UIElement::InvalidateArrange not implemented - it should add a dirty flag (DirtyArrange)");
+	if (GetSurface())
+		GetSurface()->AddDirtyElement (this, DirtyArrange);
 }
 
 void
+UIElement::DoMeasure ()
+{
+	// Measuring implies Arranging
+	InvalidateArrange();
+}
+
+void
+UIElement::DoArrange ()
+{
+}
+
+bool
 UIElement::UpdateLayout ()
 {
-	g_warning ("UIElement::UpdateLayout not implemented - it should process the layout dirty flags synchronously");
+	bool rv = false;
+
+	if (dirty_flags & DirtyMeasure)
+		DoMeasure ();
+
+	if (dirty_flags & DirtyArrange) {
+		DoArrange ();
+		rv = true;
+	}
+
+	return rv;
 }
 
 bool 

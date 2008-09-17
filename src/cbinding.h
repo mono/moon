@@ -1460,7 +1460,7 @@ void uielement_measure (UIElement *instance, Size availableSize);
 void uielement_release_mouse_capture (UIElement *instance);
 
 /* @GeneratePInvoke */
-void uielement_update_layout (UIElement *instance);
+bool uielement_update_layout (UIElement *instance);
 
 /**
  * UIElementCollection

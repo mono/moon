@@ -2918,13 +2918,13 @@ uielement_release_mouse_capture (UIElement *instance)
 }
 
 
-void
+bool
 uielement_update_layout (UIElement *instance)
 {
 	if (instance == NULL)
-		return;
+		return false;
 	
-	instance->UpdateLayout ();
+	return instance->UpdateLayout ();
 }
 
 

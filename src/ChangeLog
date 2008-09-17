@@ -1,3 +1,28 @@
+2008-09-16  Chris Toshok  <toshok@ximian.com>
+
+	* dirty.h, dirty.cpp: add DirtyMeasure/DirtyArrange.
+	
+	* frameworkelement.h, frameworkelement.cpp
+	(FrameworkElement::UpdateLayout): override
+	UIElement::UpdateLayout, and if that base class method returns
+	true, emit LayoutUpdatedEvent.
+
+	* uielement.h, uielement.cpp (UIElement::InvalidateMeasure): add
+	DirtyMeasure.
+	(UIElement::InvalidateArrange): add DirtyArrange.
+	(UIElement::DoMeasure): this should drive the measure process -
+	needs filling in, though.
+	(UIElement::DoArrange): this should drive the arrange
+	process. same.
+	(UIElement::UpdateLayout): change return type to bool.  call
+	DoMeasure and DoArrange synchronously, and return true if we
+	arrange.
+
+	* runtime.cpp (Surface::Attach): call InvalidateMeasure on the new
+	toplevel.
+
+	* cbinding.h, cbinding.cpp: regen.
+
 2008-09-16  Larry Ewing  <lewing@novell.com>
 
 	* clock.cpp: make AddTimeout take a priority. Make the render

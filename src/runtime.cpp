@@ -586,6 +586,10 @@ Surface::Attach (UIElement *element)
 	toplevel->UpdateTotalRenderVisibility ();
 	toplevel->UpdateTotalHitTestVisibility ();
 	toplevel->FullInvalidate (true);
+
+	// we call this two here so that the layout pass proceeds when
+	// we next process the dirty list.
+	toplevel->InvalidateMeasure ();
 }
 
 

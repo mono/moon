@@ -79,14 +79,23 @@ enum DirtyType {
 	DirtyRenderVisibility  = 0x00000020,
 	DirtyHitTestVisibility = 0x00000040,
 
+	// DirtyMeasure
+	//
+	// InvalidateMeasure was called on this element.
+	DirtyMeasure           = 0x00000080,
 
+	// DirtyMeasure
+	//
+	// InvalidateMeasure was called on this element.
+	DirtyArrange           = 0x00000100,
+	
 	// DirtyChildrenZIndices
 	//
 	// This isn't really a downward pass, as it doesn't propagate
 	// anything to children.  It's just so we can delay resorting
 	// by ZIndex until the dirty passes run.
 	//
-	DirtyChildrenZIndices  = 0x00000080,
+	DirtyChildrenZIndices  = 0x00000200,
 
 	DownDirtyState         = (DirtyLocalTransform |
 				  DirtyTransform |
@@ -95,6 +104,8 @@ enum DirtyType {
 				  DirtyLocalClip |
 				  DirtyClip |
 				  DirtyPosition |
+				  DirtyMeasure |
+				  DirtyArrange |
 				  DirtyChildrenZIndices),
 
 	// DirtyBounds
@@ -102,8 +113,8 @@ enum DirtyType {
 	// The bounds of this element need to be recomputed.  If
 	// they're found to be different, invalidate the node and set
 	// DirtyBounds on the parent.
-	DirtyBounds            = 0x00000100,
-	DirtyNewBounds         = 0x00000200,
+	DirtyBounds            = 0x00100000,
+	DirtyNewBounds         = 0x00200000,
 
 	// DirtyInvalidate
 	//
@@ -112,7 +123,7 @@ enum DirtyType {
 	// the surface.  Otherwise we pass the rect up to our parent
 	// (and union it in with the parent's dirty_rect), and set
 	// DirtyInvalidate on the parent.
-	DirtyInvalidate        = 0x00000400,
+	DirtyInvalidate        = 0x00400000,
 
 	UpDirtyState           = (DirtyBounds |
 				  DirtyInvalidate),
