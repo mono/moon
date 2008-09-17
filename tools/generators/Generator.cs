@@ -465,11 +465,21 @@ class Generator {
 		// Static initializers
 		for (int i = 0; i < fields.Count; i++) {
 			FieldInfo field = fields [i];
+			int version = field.SilverlightVersion;
+			int version_next = i + 1 < fields.Count ? fields [i + 1].SilverlightVersion : -1;
+			if (version > 1 && version_previous != version) {
+				text.Append ("#if SL_");
+				text.Append (version);
+				text.AppendLine ("_0");
+			}
 			text.Append ("DependencyProperty *");
 			text.Append (field.Parent.Name);
 			text.Append ("::");
 			text.Append (field.Name);
 			text.AppendLine (" = NULL;");
+			if (version > 1 && version_next != version)
+				text.AppendLine ("#endif");
+			version_previous = version;
 		}
 		text.AppendLine ();
 		

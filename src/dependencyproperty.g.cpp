@@ -416,17 +416,22 @@ dependency_property_g_init (void)
 	VisualBrush::VisualProperty = DependencyProperty::Register (Type::VISUALBRUSH, "Visual", Type::UIELEMENT);
 }
 
+#if SL_2_0
 DependencyProperty *Application::ResourcesProperty = NULL;
+#endif
 DependencyProperty *ArcSegment::IsLargeArcProperty = NULL;
 DependencyProperty *ArcSegment::PointProperty = NULL;
 DependencyProperty *ArcSegment::RotationAngleProperty = NULL;
 DependencyProperty *ArcSegment::SizeProperty = NULL;
 DependencyProperty *ArcSegment::SweepDirectionProperty = NULL;
+#if SL_2_0
 DependencyProperty *AssemblyPart::SourceProperty = NULL;
+#endif
 DependencyProperty *BeginStoryboard::StoryboardProperty = NULL;
 DependencyProperty *BezierSegment::Point1Property = NULL;
 DependencyProperty *BezierSegment::Point2Property = NULL;
 DependencyProperty *BezierSegment::Point3Property = NULL;
+#if SL_2_0
 DependencyProperty *BitmapImage::UriSourceProperty = NULL;
 DependencyProperty *Border::BackgroundProperty = NULL;
 DependencyProperty *Border::BorderBrushProperty = NULL;
@@ -434,6 +439,7 @@ DependencyProperty *Border::BorderThicknessProperty = NULL;
 DependencyProperty *Border::ChildProperty = NULL;
 DependencyProperty *Border::CornerRadiusProperty = NULL;
 DependencyProperty *Border::PaddingProperty = NULL;
+#endif
 DependencyProperty *Brush::ChangedProperty = NULL;
 DependencyProperty *Brush::OpacityProperty = NULL;
 DependencyProperty *Brush::RelativeTransformProperty = NULL;
@@ -448,6 +454,7 @@ DependencyProperty *ColorAnimation::ToProperty = NULL;
 DependencyProperty *ColorAnimationUsingKeyFrames::KeyFramesProperty = NULL;
 DependencyProperty *ColorKeyFrame::KeyTimeProperty = NULL;
 DependencyProperty *ColorKeyFrame::ValueProperty = NULL;
+#if SL_2_0
 DependencyProperty *ColumnDefinition::MaxWidthProperty = NULL;
 DependencyProperty *ColumnDefinition::MinWidthProperty = NULL;
 DependencyProperty *ColumnDefinition::WidthProperty = NULL;
@@ -474,12 +481,15 @@ DependencyProperty *Control::TabNavigationProperty = NULL;
 DependencyProperty *Control::TemplateProperty = NULL;
 DependencyProperty *Control::VerticalContentAlignmentProperty = NULL;
 DependencyProperty *ControlTemplate::TargetTypeProperty = NULL;
+#endif
 DependencyProperty *DependencyObject::NameProperty = NULL;
+#if SL_2_0
 DependencyProperty *Deployment::EntryPointAssemblyProperty = NULL;
 DependencyProperty *Deployment::EntryPointTypeProperty = NULL;
 DependencyProperty *Deployment::ExternalCallersFromCrossDomainProperty = NULL;
 DependencyProperty *Deployment::PartsProperty = NULL;
 DependencyProperty *Deployment::RuntimeVersionProperty = NULL;
+#endif
 DependencyProperty *DoubleAnimation::ByProperty = NULL;
 DependencyProperty *DoubleAnimation::FromProperty = NULL;
 DependencyProperty *DoubleAnimation::ToProperty = NULL;
@@ -500,10 +510,13 @@ DependencyProperty *EllipseGeometry::RadiusXProperty = NULL;
 DependencyProperty *EllipseGeometry::RadiusYProperty = NULL;
 DependencyProperty *EventTrigger::ActionsProperty = NULL;
 DependencyProperty *EventTrigger::RoutedEventProperty = NULL;
+#if SL_2_0
 DependencyProperty *FrameworkElement::ActualHeightProperty = NULL;
 DependencyProperty *FrameworkElement::ActualWidthProperty = NULL;
 DependencyProperty *FrameworkElement::DataContextProperty = NULL;
+#endif
 DependencyProperty *FrameworkElement::HeightProperty = NULL;
+#if SL_2_0
 DependencyProperty *FrameworkElement::HorizontalAlignmentProperty = NULL;
 DependencyProperty *FrameworkElement::LanguageProperty = NULL;
 DependencyProperty *FrameworkElement::MarginProperty = NULL;
@@ -513,6 +526,7 @@ DependencyProperty *FrameworkElement::MinHeightProperty = NULL;
 DependencyProperty *FrameworkElement::MinWidthProperty = NULL;
 DependencyProperty *FrameworkElement::StyleProperty = NULL;
 DependencyProperty *FrameworkElement::VerticalAlignmentProperty = NULL;
+#endif
 DependencyProperty *FrameworkElement::WidthProperty = NULL;
 DependencyProperty *Geometry::FillRuleProperty = NULL;
 DependencyProperty *Geometry::TransformProperty = NULL;
@@ -531,6 +545,7 @@ DependencyProperty *GradientBrush::MappingModeProperty = NULL;
 DependencyProperty *GradientBrush::SpreadMethodProperty = NULL;
 DependencyProperty *GradientStop::ColorProperty = NULL;
 DependencyProperty *GradientStop::OffsetProperty = NULL;
+#if SL_2_0
 DependencyProperty *Grid::ColumnDefinitionsProperty = NULL;
 DependencyProperty *Grid::ColumnProperty = NULL;
 DependencyProperty *Grid::ColumnSpanProperty = NULL;
@@ -538,6 +553,7 @@ DependencyProperty *Grid::RowDefinitionsProperty = NULL;
 DependencyProperty *Grid::RowProperty = NULL;
 DependencyProperty *Grid::RowSpanProperty = NULL;
 DependencyProperty *Grid::ShowGridLinesProperty = NULL;
+#endif
 DependencyProperty *ImageBrush::DownloadProgressProperty = NULL;
 DependencyProperty *ImageBrush::ImageSourceProperty = NULL;
 DependencyProperty *InkPresenter::StrokesProperty = NULL;
@@ -547,7 +563,9 @@ DependencyProperty *Inline::FontStretchProperty = NULL;
 DependencyProperty *Inline::FontStyleProperty = NULL;
 DependencyProperty *Inline::FontWeightProperty = NULL;
 DependencyProperty *Inline::ForegroundProperty = NULL;
+#if SL_2_0
 DependencyProperty *Inline::LanguageProperty = NULL;
+#endif
 DependencyProperty *Inline::TextDecorationsProperty = NULL;
 DependencyProperty *KeySpline::ControlPoint1Property = NULL;
 DependencyProperty *KeySpline::ControlPoint2Property = NULL;
@@ -588,6 +606,7 @@ DependencyProperty *MediaElement::NaturalVideoHeightProperty = NULL;
 DependencyProperty *MediaElement::NaturalVideoWidthProperty = NULL;
 DependencyProperty *MediaElement::PositionProperty = NULL;
 DependencyProperty *MediaElement::VolumeProperty = NULL;
+#if SL_2_0
 DependencyProperty *MultiScaleImage::AspectRatioProperty = NULL;
 DependencyProperty *MultiScaleImage::SourceProperty = NULL;
 DependencyProperty *MultiScaleImage::UseSpringsProperty = NULL;
@@ -598,15 +617,20 @@ DependencyProperty *MultiScaleSubImage::OpacityProperty = NULL;
 DependencyProperty *MultiScaleSubImage::ViewportOriginProperty = NULL;
 DependencyProperty *MultiScaleSubImage::ViewportWidthProperty = NULL;
 DependencyProperty *MultiScaleSubImage::ZIndexProperty = NULL;
+#endif
 DependencyProperty *NameScope::NameScopeProperty = NULL;
+#if SL_2_0
 DependencyProperty *ObjectAnimationUsingKeyFrames::KeyFramesProperty = NULL;
 DependencyProperty *ObjectKeyFrame::KeyTimeProperty = NULL;
 DependencyProperty *ObjectKeyFrame::ValueProperty = NULL;
+#endif
 DependencyProperty *Panel::BackgroundProperty = NULL;
 DependencyProperty *Panel::ChildrenProperty = NULL;
 DependencyProperty *Path::DataProperty = NULL;
 DependencyProperty *PathFigure::IsClosedProperty = NULL;
+#if SL_2_0
 DependencyProperty *PathFigure::IsFilledProperty = NULL;
+#endif
 DependencyProperty *PathFigure::SegmentsProperty = NULL;
 DependencyProperty *PathFigure::StartPointProperty = NULL;
 DependencyProperty *PathGeometry::FiguresProperty = NULL;
@@ -637,17 +661,21 @@ DependencyProperty *RectangleGeometry::RectProperty = NULL;
 DependencyProperty *RotateTransform::AngleProperty = NULL;
 DependencyProperty *RotateTransform::CenterXProperty = NULL;
 DependencyProperty *RotateTransform::CenterYProperty = NULL;
+#if SL_2_0
 DependencyProperty *RowDefinition::HeightProperty = NULL;
 DependencyProperty *RowDefinition::MaxHeightProperty = NULL;
 DependencyProperty *RowDefinition::MinHeightProperty = NULL;
+#endif
 DependencyProperty *Run::TextProperty = NULL;
 DependencyProperty *ScaleTransform::CenterXProperty = NULL;
 DependencyProperty *ScaleTransform::CenterYProperty = NULL;
 DependencyProperty *ScaleTransform::ScaleXProperty = NULL;
 DependencyProperty *ScaleTransform::ScaleYProperty = NULL;
+#if SL_2_0
 DependencyProperty *Setter::DependencyPropertyProperty = NULL;
 DependencyProperty *Setter::PropertyProperty = NULL;
 DependencyProperty *Setter::ValueProperty = NULL;
+#endif
 DependencyProperty *Shape::FillProperty = NULL;
 DependencyProperty *Shape::StretchProperty = NULL;
 DependencyProperty *Shape::StrokeDashArrayProperty = NULL;
@@ -667,13 +695,17 @@ DependencyProperty *SolidColorBrush::ColorProperty = NULL;
 DependencyProperty *SplineColorKeyFrame::KeySplineProperty = NULL;
 DependencyProperty *SplineDoubleKeyFrame::KeySplineProperty = NULL;
 DependencyProperty *SplinePointKeyFrame::KeySplineProperty = NULL;
+#if SL_2_0
 DependencyProperty *StackPanel::OrientationProperty = NULL;
+#endif
 DependencyProperty *Storyboard::TargetNameProperty = NULL;
 DependencyProperty *Storyboard::TargetPropertyProperty = NULL;
 DependencyProperty *Stroke::DrawingAttributesProperty = NULL;
 DependencyProperty *Stroke::StylusPointsProperty = NULL;
+#if SL_2_0
 DependencyProperty *Style::SettersProperty = NULL;
 DependencyProperty *Style::TargetTypeProperty = NULL;
+#endif
 DependencyProperty *StylusInfo::DeviceTypeProperty = NULL;
 DependencyProperty *StylusInfo::IsInvertedProperty = NULL;
 DependencyProperty *StylusPoint::PressureFactorProperty = NULL;
@@ -688,13 +720,16 @@ DependencyProperty *TextBlock::FontStyleProperty = NULL;
 DependencyProperty *TextBlock::FontWeightProperty = NULL;
 DependencyProperty *TextBlock::ForegroundProperty = NULL;
 DependencyProperty *TextBlock::InlinesProperty = NULL;
+#if SL_2_0
 DependencyProperty *TextBlock::LineHeightProperty = NULL;
 DependencyProperty *TextBlock::LineStackingStrategyProperty = NULL;
 DependencyProperty *TextBlock::PaddingProperty = NULL;
 DependencyProperty *TextBlock::TextAlignmentProperty = NULL;
+#endif
 DependencyProperty *TextBlock::TextDecorationsProperty = NULL;
 DependencyProperty *TextBlock::TextProperty = NULL;
 DependencyProperty *TextBlock::TextWrappingProperty = NULL;
+#if SL_2_0
 DependencyProperty *TextBox::AcceptsReturnProperty = NULL;
 DependencyProperty *TextBox::HorizontalScrollBarVisibilityProperty = NULL;
 DependencyProperty *TextBox::IsReadOnlyProperty = NULL;
@@ -708,6 +743,7 @@ DependencyProperty *TextBox::TextAlignmentProperty = NULL;
 DependencyProperty *TextBox::TextProperty = NULL;
 DependencyProperty *TextBox::TextWrappingProperty = NULL;
 DependencyProperty *TextBox::VerticalScrollBarVisibilityProperty = NULL;
+#endif
 DependencyProperty *TileBrush::AlignmentXProperty = NULL;
 DependencyProperty *TileBrush::AlignmentYProperty = NULL;
 DependencyProperty *TileBrush::StretchProperty = NULL;
@@ -735,7 +771,9 @@ DependencyProperty *UIElement::ResourcesProperty = NULL;
 DependencyProperty *UIElement::TagProperty = NULL;
 DependencyProperty *UIElement::TriggersProperty = NULL;
 DependencyProperty *UIElement::VisibilityProperty = NULL;
+#if SL_2_0
 DependencyProperty *UserControl::ContentProperty = NULL;
+#endif
 DependencyProperty *VideoBrush::SourceNameProperty = NULL;
 DependencyProperty *VisualBrush::VisualProperty = NULL;
 
