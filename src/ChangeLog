@@ -5,7 +5,7 @@
 	* grid.cpp:
 	* frameworkelement.cpp: start filling in InvalidateArrange and
 	InvalidateMeasure calls.
-	
+
 	* panel.cpp:
 	* panel.h:
 	* canvas.h:

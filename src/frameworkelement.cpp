@@ -34,11 +34,14 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 	}
 
 	if (args->property == FrameworkElement::WidthProperty ||
-	    args->property == FrameworkElement::HeightProperty ||
+#if SL_2_0
 	    args->property == FrameworkElement::MaxWidthProperty ||
-	    args->property == FrameworkElement::MaxHeightProperty ||
 	    args->property == FrameworkElement::MinWidthProperty ||
-	    args->property == FrameworkElement::MinHeightProperty) {
+	    args->property == FrameworkElement::MaxHeightProperty ||
+	    args->property == FrameworkElement::MinHeightProperty ||
+#endif
+	    args->property == FrameworkElement::HeightProperty) {
+
 		Point *p = GetRenderTransformOrigin ();
 
 		/* normally we'd only update the bounds of this
