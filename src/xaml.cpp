@@ -3077,7 +3077,7 @@ XamlElementInstanceManaged::TrySetContentProperty (XamlParserInfo *p, const char
 {
 	if (!XamlElementInstance::TrySetContentProperty (p, value)) {
 		const char* prop_name = info->GetContentProperty (p);
-		if (!prop_name)
+		if (!prop_name || !p->cdata_content)
 			return false;
 		return p->loader->SetAttribute (item, NULL, prop_name, value);
 	}
