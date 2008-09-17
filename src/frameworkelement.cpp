@@ -178,9 +178,9 @@ FrameworkElement::Arrange (Rect finalRect)
 	SetActualWidth (size.width);
 	SetActualHeight (size.height);
 	if (old_width != size.width || old_height != size.height) {
-		SizeChangedEventArgs args(Size (old_width, old_height), size);
+		SizeChangedEventArgs *args = new SizeChangedEventArgs (Size (old_width, old_height), size);
 
-		Emit(SizeChangedEvent, &args);
+		Emit(SizeChangedEvent, args);
 	}
 #endif
 	// XXX what do we do with finalRect.x and y?

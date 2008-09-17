@@ -1,3 +1,8 @@
+2008-09-17  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* frameworkelement.cpp: Fix moon-unit SIGSEGV when unreferencing
+	SizeChangedEventArgs.
+
 2008-09-17  Michael Dominic K.  <mdk@mdk.am>
 
 	* clock.cpp:
