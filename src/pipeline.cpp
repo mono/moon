@@ -286,8 +286,8 @@ Media::Initialize ()
 	if (!(moonlight_flags & RUNTIME_INIT_DISABLE_FFMPEG_CODECS)) {
 		g_print ("Registering FFMPEG Codecs\n");
 		register_ffmpeg ();
-#endif
 	}
+#endif
 	
 	Media::RegisterDecoder (new NullMp3DecoderInfo ());
 }
