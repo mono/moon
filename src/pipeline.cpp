@@ -1773,7 +1773,11 @@ ProgressiveSource::Initialize ()
 	}
 	
 	// unlink the file right away so that it'll be deleted even if we crash.
-	unlink (filename);
+	if (moonlight_flags & RUNTIME_INIT_KEEP_MEDIA) {
+		printf ("Moonlight: The media file %s will not deleted.\n", filename);
+	} else {
+		unlink (filename);
+	}
 
 	wait_pos = 0;
 	eof = false;

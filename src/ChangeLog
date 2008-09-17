@@ -1,5 +1,10 @@
 2008-09-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* pipeline.cpp, runtime.cpp, runtime.h: Add a runtime override to not
+	  delete downloaded media files.
+
+2008-09-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* dependencyobject.cpp: Add TODO.
 
 2008-09-17  Jackson Harper  <jackson@ximian.com>

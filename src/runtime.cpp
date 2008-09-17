@@ -112,7 +112,9 @@ static struct {
 	{ "idlehint=yes",      RUNTIME_INIT_USE_IDLE_HINT,         false },
 	{ "idlehint=no",       RUNTIME_INIT_USE_IDLE_HINT,         true  },
 	{ "backend=xlib",      RUNTIME_INIT_USE_BACKEND_XLIB,      true  },
-	{ "backend=image",     RUNTIME_INIT_USE_BACKEND_XLIB,      false }
+	{ "backend=image",     RUNTIME_INIT_USE_BACKEND_XLIB,      false },
+	{ "keepmedia=no",      RUNTIME_INIT_KEEP_MEDIA,            false },
+	{ "keepmedia=yes",     RUNTIME_INIT_KEEP_MEDIA,            true  },
 };
 
 #define RENDER_EXPOSE (moonlight_flags & RUNTIME_INIT_SHOW_EXPOSE)
