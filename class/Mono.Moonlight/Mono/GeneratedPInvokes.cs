@@ -1180,8 +1180,8 @@ namespace Mono {
 		public extern static void uielement_release_mouse_capture (IntPtr instance);
 
 		[DllImport ("moon")]
-		// void uielement_update_layout (UIElement *instance);
-		public extern static void uielement_update_layout (IntPtr instance);
+		// bool uielement_update_layout (UIElement *instance);
+		public extern static bool uielement_update_layout (IntPtr instance);
 
 		[DllImport ("moon")]
 		// UIElementCollection *uielement_collection_new ();
