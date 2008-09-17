@@ -302,20 +302,3 @@ Panel::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 		FrameworkElement::OnCollectionChanged (col, args);
 	}
 }
-
-void
-Panel::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
-{
-	if (col == GetChildren()) {
-		// if a child changes its ZIndex property we need to resort our Children
-		if (args->property == Canvas::ZIndexProperty) {
-			((UIElement *) obj)->Invalidate ();
-			if (GetSurface ()) {
-				// queue a resort based on ZIndex
-				GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
-			}
-		}
-	} else {
-		FrameworkElement::OnCollectionItemChanged (col, obj, args);
-	}
-}

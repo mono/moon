@@ -1,3 +1,17 @@
+2008-09-17  Larry Ewing  <lewing@novell.com>
+
+	* border.cpp:
+	* control.cpp:
+	* grid.cpp:
+	* frameworkelement.cpp: start filling in InvalidateArrange and
+	InvalidateMeasure calls.
+	
+	* panel.cpp:
+	* panel.h:
+	* canvas.h:
+	* canvas.cpp (Canvas::OnCollectionItemChanged): move the ZIndex
+	change handling here from panel since it is a Canvas property.
+
 2008-09-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline.h: Remove some dead code.

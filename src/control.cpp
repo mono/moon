@@ -121,12 +121,21 @@ Control::HitTest (cairo_t *cr, Rect r, List *uielement_list)
 void
 Control::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
+	if (args->property->GetOwnerType() != Type::CONTROL) {
+		FrameworkElement::OnPropertyChanged (args);
+		return;
+	}
+
 	if (args->property == Control::TemplateProperty) {
 		if (IsLoaded())
 			ApplyTemplate ();
+		InvalidateMeasure ();
 	}
-
-	FrameworkElement::OnPropertyChanged (args);
+	else if (args->property == Control::PaddingProperty
+		 || args->property == Control::BorderThicknessProperty) {
+		InvalidateMeasure ();
+	}
+	NotifyListenersOfPropertyChange (args);
 }
 
 void

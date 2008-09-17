@@ -50,7 +50,6 @@ Grid::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, Pro
 	    || subobj_args->property == Grid::RowProperty
 	    || subobj_args->property == Grid::ColumnSpanProperty
 	    || subobj_args->property == Grid::RowSpanProperty) {
-
 		InvalidateMeasure ();
 	}
 	  

@@ -34,7 +34,11 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 	}
 
 	if (args->property == FrameworkElement::WidthProperty ||
-	    args->property == FrameworkElement::HeightProperty) {
+	    args->property == FrameworkElement::HeightProperty ||
+	    args->property == FrameworkElement::MaxWidthProperty ||
+	    args->property == FrameworkElement::MaxHeightProperty ||
+	    args->property == FrameworkElement::MinWidthProperty ||
+	    args->property == FrameworkElement::MinHeightProperty) {
 		Point *p = GetRenderTransformOrigin ();
 
 		/* normally we'd only update the bounds of this
@@ -42,6 +46,8 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 		   transform is someplace other than (0,0), the
 		   transform needs to be updated as well. */
 		FullInvalidate (p->x != 0.0 || p->y != 0.0);
+
+		InvalidateMeasure ();
 	}
 
 	NotifyListenersOfPropertyChange (args);

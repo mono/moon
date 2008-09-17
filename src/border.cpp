@@ -135,6 +135,7 @@ Border::OnPropertyChanged (PropertyChangedEventArgs *args)
 		}
 
 		UpdateBounds ();
+		InvalidateMeasure ();
 	}
 	else if (args->property == Border::PaddingProperty
 		 || args->property == Border::BorderThicknessProperty) {
