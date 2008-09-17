@@ -1078,21 +1078,4 @@ public:
 	virtual const char *GetName () { return "ASFMarkerDecoder"; }
 };
 
-/*
- * MS related implementations
- */
-
-class MSDecoder : public IMediaDecoder {
-protected:
-	virtual ~MSDecoder () {};
-
-public:
-	MSDecoder (Media *media, IMediaStream *stream) : IMediaDecoder (media, stream) {}
-	
-	virtual MediaResult Open ()
-	{
-		return MEDIA_FAIL;
-	}
-};
-
 #endif

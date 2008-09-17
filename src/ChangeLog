@@ -1,5 +1,9 @@
 2008-09-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* pipeline.h: Remove some dead code.
+
+2008-09-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* runtime.h, runtime.cpp: Instead of having a flag to enable ms codecs,
 	  add flags to disable both ffmpeg and ms codecs and include them by
 	  default.
