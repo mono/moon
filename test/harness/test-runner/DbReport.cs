@@ -46,7 +46,7 @@ namespace MoonlightTests {
 		
 		private string test_run_dir;
 		private string test_suite = string.Empty;
-		private bool debug = false;
+		private bool debug = true;
 		
 		public bool HasConnection
 		{
@@ -77,7 +77,7 @@ namespace MoonlightTests {
 				dbreader.Close();
 				dbreader = null;
 				
-				Log("\nDbReport enabled\n");
+				Console.WriteLine("\nDbReport enabled\n");
 			
 			}
 			catch(Exception ex)
@@ -121,9 +121,9 @@ namespace MoonlightTests {
 				Directory.CreateDirectory(Path.Combine(dir,masters));
 			}
 
-			test_suite = Environment.GetEnvironmentVariable ("MS_DRTLIST");
+			test_suite = Environment.GetEnvironmentVariable ("MS_TEST_SUITE");
 			
-			if (test_suite.Contains("moonlight-ms"))
+			if (test_suite.ToLower() == "true")
 				test_suite = "ms";
 			else
 				test_suite = "moon";
