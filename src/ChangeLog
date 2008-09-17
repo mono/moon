@@ -1,3 +1,8 @@
+2008-09-17  Larry Ewing  <lewing@novell.com>
+
+	* grid.cpp (Grid::MeasureOverride): fix the span accumulators to
+	use the right index value.
+
 2008-09-17  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* frameworkelement.cpp: Fix moon-unit SIGSEGV when unreferencing

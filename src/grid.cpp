@@ -125,7 +125,7 @@ Grid::MeasureOverride (Size availableSize)
 			GridLength* height = rowdef->GetHeight();
 
 			if (height->type == GridUnitTypePixel)
-			        child_size.height += row_heights [i];
+			        child_size.height += row_heights [r];
 			else
 				child_size.height += INFINITY;
 
@@ -138,7 +138,7 @@ Grid::MeasureOverride (Size availableSize)
 			GridLength* width = coldef->GetWidth();
 
 			if (width->type == GridUnitTypePixel)
-				child_size.width += column_widths [i];
+				child_size.width += column_widths [c];
 			else
 				child_size.width += INFINITY;
 
