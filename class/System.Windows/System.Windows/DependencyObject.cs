@@ -272,9 +272,7 @@ namespace System.Windows {
 			}
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public virtual object GetValue (DependencyProperty dp)
 		{
 			object result = null;
@@ -294,26 +292,20 @@ namespace System.Windows {
 			return result;
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public object GetAnimationBaseValue (DependencyProperty dp)
 		{
 			throw new System.NotImplementedException ();
 		}
 		
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public object ReadLocalValue (DependencyProperty dp)
 		{
 			throw new System.NotImplementedException ();
 		}
 		
 		
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public void ClearValue (DependencyProperty dp)
 		{
 			throw new System.NotImplementedException ();
@@ -725,9 +717,7 @@ namespace System.Windows {
 			return Kind.DEPENDENCY_OBJECT;
 		}
 
-#if SL_2_1
 		[SecuritySafeCritical ()]
-#endif
 		[System.ComponentModel.EditorBrowsable (System.ComponentModel.EditorBrowsableState.Never)]
 		public bool CheckAccess ()
 		{
