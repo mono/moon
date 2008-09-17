@@ -618,6 +618,10 @@ EventObject::DrainUnrefs ()
 {
 	GSList *list;
 
+	// TODO: make pending_unrefs a lock free structure (or just make the
+	// access to the variable lock free, the structure itself doesn't need
+	// to be lock free given that we get exclusive access to it here
+	// by nulling out the global variable before using it).
 	do {
 		// We need to unlock our mutex before unreffing the objects,
 		// since unreffing any object might cause unref_delayed to be

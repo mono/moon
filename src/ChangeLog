@@ -1,3 +1,7 @@
+2008-09-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* dependencyobject.cpp: Add TODO.
+
 2008-09-17  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Don't try setting the content prop in managed if there
