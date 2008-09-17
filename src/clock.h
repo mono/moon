@@ -434,7 +434,7 @@ class TimeManager : public EventObject {
 	void NeedRedraw ();
 	void NeedClockTick ();
 
-	guint AddTimeout (guint ms_interval, GSourceFunc func, gpointer timeout_data);
+	guint AddTimeout (gint priority, guint ms_interval, GSourceFunc func, gpointer timeout_data);
 	void RemoveTimeout (guint timeout_id);
 
 	void SetMaximumRefreshRate (int hz);
