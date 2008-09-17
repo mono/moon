@@ -78,8 +78,10 @@ static struct {
 	guint32 flag;
 	bool set;
 } overrides[] = {
-	{ "codecs=microsoft",  RUNTIME_INIT_MICROSOFT_CODECS,      true  },
-	{ "codecs=ffmpeg",     RUNTIME_INIT_MICROSOFT_CODECS,      false },
+	{ "ms-codecs=no",      RUNTIME_INIT_DISABLE_MS_CODECS,     true  },
+	{ "ms-codecs=yes",     RUNTIME_INIT_DISABLE_MS_CODECS,     false },
+	{ "ffmpeg-codecs=no",  RUNTIME_INIT_DISABLE_FFMPEG_CODECS, true  },
+	{ "ffmpeg-codecs=yes", RUNTIME_INIT_DISABLE_FFMPEG_CODECS, false },
 	{ "timesource=manual", RUNTIME_INIT_MANUAL_TIMESOURCE,     true  },
 	{ "timesource=system", RUNTIME_INIT_MANUAL_TIMESOURCE,     false },
 	{ "expose=show",       RUNTIME_INIT_SHOW_EXPOSE,           true  },

@@ -44,21 +44,34 @@ void
 register_mscodecs (void)
 {
 	void (*reg) (void);
-	void *dl = dlopen ("libmscodecs.so", RTLD_LAZY);
-	if (dl == NULL)
-		goto dl_error;
+	void *dl;
+	bool success;
+	
+	success = false;
+	dl = dlopen ("libmscodecs.so", RTLD_LAZY);
+	if (dl != NULL) {
+		*(void **) (&reg) = dlsym (dl, "register_mswma");
+		if (reg != NULL) {	
+			(*reg)();
+			success = true;
+		}
+	}
+	if (!success)
+		printf ("Moonlight: Cannot load libmscodecs.so: %s\n", dlerror ());
 
-	*(void **) (&reg) = dlsym (dl, "register_mswma");
-	if (reg == NULL)
-		goto dl_error;
-
-	(*reg)();
-	return;
-
-dl_error:
-	char *error_str = dlerror();
-	g_print ("Cannot load libmscodecs.so: %s\n", error_str);
-	return;
+	// the mp3 codec lives in a separate so until it's integrated into libmscodecs.so
+	success = false;
+	dl = dlopen ("libmscodecsmp3.so", RTLD_LAZY);
+	if (dl != NULL) {
+		*(void **) (&reg) = dlsym (dl, "register_msmp3");
+		if (reg != NULL) {	
+			(*reg)();
+			success = true;
+		}
+	}
+	if (!success)
+		printf ("Moonlight: Cannot load libmscodecsmp3.so: %s\n", dlerror ());
+	
 }
 
 
@@ -265,17 +278,18 @@ Media::Initialize ()
 
 	// decoders
 	Media::RegisterDecoder (new ASFMarkerDecoderInfo ());
-	if (moonlight_flags & RUNTIME_INIT_MICROSOFT_CODECS) {
+	if (!(moonlight_flags & RUNTIME_INIT_DISABLE_MS_CODECS)) {
 		g_print ("Registering MS Codecs\n");
 		register_mscodecs ();
-	} else {
+	}
 #ifdef INCLUDE_FFMPEG
+	if (!(moonlight_flags & RUNTIME_INIT_DISABLE_FFMPEG_CODECS)) {
 		g_print ("Registering FFMPEG Codecs\n");
 		register_ffmpeg ();
-#else
-		Media::RegisterDecoder (new NullMp3DecoderInfo ());
 #endif
 	}
+	
+	Media::RegisterDecoder (new NullMp3DecoderInfo ());
 }
 
 void

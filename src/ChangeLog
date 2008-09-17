@@ -1,5 +1,15 @@
 2008-09-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* runtime.h, runtime.cpp: Instead of having a flag to enable ms codecs,
+	  add flags to disable both ffmpeg and ms codecs and include them by
+	  default.
+	* pipeline.cpp: register_mscodecs: look for libmscodecsmp3.so too
+	  (until it gets integrated in libmscodecs.so), and register the mp3
+	  codec. Media::Initialize: Update according to runtime init flag
+	  changes, and always register null encoders.
+
+2008-09-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* pipeline.cpp, runtime.cpp, runtime.h: Add a runtime override to not
 	  delete downloaded media files.
 
