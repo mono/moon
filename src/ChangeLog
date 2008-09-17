@@ -1,11 +1,22 @@
+2008-09-17  Michael Dominic K.  <mdk@mdk.am>
+
+	* clock.cpp:
+	* clock.h: Separate raising events from raising completed events. 
+	In certain clock hierarchies this would cause us to emit completed event
+	before raising animation setter events.
+
+	* applier.cpp: Enabling the applier again.
+	* applier.h: Animation resets don't have INSTANT precedence. The just 
+	have higher precedence than normal animation setters.
+
 2008-09-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* audio-pulse.cpp: Remove stray characters.
 
 2008-09-16  Chris Toshok  <toshok@ximian.com>
-
-	* dirty.h, dirty.cpp: add DirtyMeasure/DirtyArrange.
 	
+	* dirty.h, dirty.cpp: add DirtyMeasure/DirtyArrange.
+
 	* frameworkelement.h, frameworkelement.cpp
 	(FrameworkElement::UpdateLayout): override
 	UIElement::UpdateLayout, and if that base class method returns

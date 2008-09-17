@@ -88,6 +88,12 @@ CallRaiseAccumulatedEvents (Clock *clock)
 	clock->RaiseAccumulatedEvents ();
 }
 
+static void
+CallRaiseAccumulatedCompleted (Clock *clock)
+{
+	clock->RaiseAccumulatedCompleted ();
+}
+
 TimeSpan
 get_now (void)
 {
@@ -365,11 +371,14 @@ TimeManager::SourceTick ()
 		if (need_another_tick)
 			flags = (TimeManagerOp)(flags | TIME_MANAGER_UPDATE_CLOCKS);
 
-		applier->Apply ();
-		applier->Flush ();
-
+	
 		// ... then cause all clocks to raise the events they've queued up
 		root_clock->RaiseAccumulatedEvents ();
+		
+		applier->Apply ();
+		applier->Flush ();
+	
+		root_clock->RaiseAccumulatedCompleted ();
 
 #if PUT_TIME_MANAGER_TO_SLEEP
 		// kind of a hack to make sure we render animation
@@ -921,6 +930,11 @@ Clock::RaiseAccumulatedEvents ()
 }
 
 void
+Clock::RaiseAccumulatedCompleted ()
+{
+}
+
+void
 Clock::Begin ()
 {
 	seeking = false;
@@ -1312,6 +1326,14 @@ ClockGroup::RaiseAccumulatedEvents ()
 	
 	/* now cause our children to raise theirs */
 	clock_list_foreach (child_clocks, CallRaiseAccumulatedEvents);
+}
+
+void
+ClockGroup::RaiseAccumulatedCompleted ()
+{
+	Clock::RaiseAccumulatedCompleted ();
+	
+	clock_list_foreach (child_clocks, CallRaiseAccumulatedCompleted);
 	
 	if (emit_completed && (state == Clock::Stopped || state == Clock::Filling)) {
 		emit_completed = false;

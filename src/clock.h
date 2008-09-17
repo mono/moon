@@ -302,6 +302,7 @@ class Clock : public DependencyObject {
 
 	/* these shouldn't be used.  they're called by the TimeManager and parent Clocks */
 	virtual void RaiseAccumulatedEvents ();
+	virtual void RaiseAccumulatedCompleted ();
 	virtual void ExtraRepeatAction () {};
 	virtual bool Tick ();
 	void SetParent (ClockGroup *parent) { parent_clock = parent; }
@@ -396,6 +397,7 @@ class ClockGroup : public Clock {
 
 	/* these shouldn't be used.  they're called by the TimeManager and parent Clocks */
 	virtual void RaiseAccumulatedEvents ();
+	virtual void RaiseAccumulatedCompleted ();
 	virtual bool Tick ();
 
 	GList *child_clocks;
