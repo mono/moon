@@ -138,8 +138,8 @@ dyn_pa_get_library_version *           d_pa_get_library_version = NULL;
 #define pa_channel_map_init_mono         d_pa_channel_map_init_mono
 #define pa_channel_map_init_stereo       d_pa_channel_map_init_stereo
 #define pa_strerror                      d_pa_strerror
-#define pa_operation_get_state           d_pa_operation_get_state;
-#define pa_operation_unref               d_pa_operation_unref;
+#define pa_operation_get_state           d_pa_operation_get_state
+#define pa_operation_unref               d_pa_operation_unref
 
 /*
  * PulseSource

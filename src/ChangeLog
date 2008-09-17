@@ -1,3 +1,7 @@
+2008-09-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* audio-pulse.cpp: Remove stray characters.
+
 2008-09-16  Chris Toshok  <toshok@ximian.com>
 
 	* dirty.h, dirty.cpp: add DirtyMeasure/DirtyArrange.
