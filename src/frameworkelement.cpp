@@ -213,11 +213,13 @@ FrameworkElement::UpdateLayout ()
 {
 	bool rv = UIElement::UpdateLayout ();
 
+#if SL_2_0
 	if (rv) {
 		// we only emit the event if either a measure or
 		// arrange pass was done.
 		Emit (LayoutUpdatedEvent);
 	}
+#endif
 
 	return rv;
 }
