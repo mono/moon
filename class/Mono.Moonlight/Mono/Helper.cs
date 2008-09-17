@@ -72,6 +72,11 @@ namespace Mono {
 			return converter;
 		}
 
+		static bool IsAssignableToIConvertible (Type type)
+		{
+			return typeof (IConvertible).IsAssignableFrom (type);
+		}
+
 		public static object ValueFromString (Type value_type, string value, string prop_name, out string error, out IntPtr unmanaged_value)
 		{
 			unmanaged_value = IntPtr.Zero;
@@ -82,7 +87,7 @@ namespace Mono {
 				return converter.ConvertFrom (value);
 			}
 
-			if (value_type.GetInterface ("IConvertible") != null) {
+			if (IsAssignableToIConvertible (value_type)) {
 				object res = ValueFromConvertible (value_type, value);
 				if (res != null)
 					return res;
@@ -121,7 +126,7 @@ namespace Mono {
 			// If the property is a simple IConvertible type we might
 			// be able to just convert it in managed code.
 			//
-			if (pi.PropertyType.GetInterface ("IConvertible") != null) {
+			if (IsAssignableToIConvertible (pi.PropertyType)) {
 				object res = ValueFromConvertible (pi.PropertyType, value);
 				if (res != null) {
 					try {

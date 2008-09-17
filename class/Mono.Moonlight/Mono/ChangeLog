@@ -1,3 +1,7 @@
+2008-09-17  Jb Evain  <jbevain@novell.com>
+
+	* Helper.cs: correctly check type assignability to IConvertible.
+
 2008-09-08  Chris Toshok  <toshok@ximian.com>
 
 	* XamlLoaderCallbacks.cs: add the AddChildCallback type mirroring
