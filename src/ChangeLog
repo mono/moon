@@ -47,7 +47,7 @@
 	* uielement.h, uielement.cpp: add a visual_level field, which is
 	updated when the element is added to the
 	hierarchy (this->visual_level = parent->visual_level + 1).
-	
+
 2008-09-16  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: keys should be a property of the instance.
@@ -95,6 +95,11 @@
 	* mplayer.h:
 	* pipeline.h: Don't use relative paths in #includes.
 	* Makefile.am: Add -Iasf
+
+2008-09-15  Michael Dominic K.  <mdk@mdk.am>
+
+	* src/applier.cpp: Disabling the applier for now, it seems there are still
+	some tiny 'issues' with it.
 
 2008-09-15  Chris Toshok  <toshok@ximian.com>
 
