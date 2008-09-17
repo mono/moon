@@ -1,10 +1,18 @@
+2008-09-16  Larry Ewing  <lewing@novell.com>
+
+	* clock.cpp: make AddTimeout take a priority. Make the render
+	timeout slightly lower than default so that we process gdk events
+	before rendering.
+
+	* media.cpp: raise the priority of the media timeout so that it
+	doesn't drop below default or the render tick.
+
 2008-09-16  Chris Toshok  <toshok@ximian.com>
 
 	* dirty.h, dirty.cpp: add a priority queue-like setup for the
 	dirty lists, where priority == level in the visual hierarchy.
 	Processing the down dirty list proceeds from lower "priority" to
 	higher, and the up dirty list proceeds from higher to lower.
-
 	* runtime.h, runtime.cpp: use the new dirty lists.
 
 	* uielement.h, uielement.cpp: add a visual_level field, which is

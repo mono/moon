@@ -1647,7 +1647,8 @@ MediaElement::PlayInternal ()
 		advance_frame_timeout_id = 0;
 	}
 	
-	advance_frame_timeout_id = GetTimeManager ()->AddTimeout (mplayer->GetTimeoutInterval (),
+	advance_frame_timeout_id = GetTimeManager ()->AddTimeout (G_PRIORITY_DEFAULT - 10,
+								  mplayer->GetTimeoutInterval (),
 								  media_element_advance_frame, this);
 	
 	d(printf ("MediaElement::PlayInternal (), state = %s, timeout_id: %i, interval: %i [Done]\n",

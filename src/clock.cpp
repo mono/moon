@@ -174,7 +174,7 @@ SystemTimeSource::Start ()
 	if (frequency == -1)
 		g_warning ("SystemTimeSource::frequency uninitialized in ::Start()");
 	
-	timeout_id = g_timeout_add_full (G_PRIORITY_DEFAULT, frequency, SystemTimeSource::tick_timeout, this, NULL);
+	timeout_id = g_timeout_add_full (G_PRIORITY_DEFAULT + 10, frequency, SystemTimeSource::tick_timeout, this, NULL);
 }
 
 void
@@ -516,9 +516,9 @@ TimeManager::SourceTick ()
 }
 
 guint
-TimeManager::AddTimeout (guint ms_interval, GSourceFunc func, gpointer tick_data)
+TimeManager::AddTimeout (gint priority, guint ms_interval, GSourceFunc func, gpointer tick_data)
 {
-	guint rv = g_timeout_add (ms_interval, func, tick_data);
+	guint rv = g_timeout_add_full (priority, ms_interval, func, tick_data, NULL);
 	registered_timeouts = g_list_prepend (registered_timeouts, GUINT_TO_POINTER (rv));
 	return rv;
 }
@@ -989,7 +989,7 @@ Clock::Begin ()
 guint
 time_manager_add_timeout (TimeManager *manager, guint ms_interval, GSourceFunc func, gpointer tick_data)
 {
-	return manager->AddTimeout (ms_interval, func, tick_data);
+	return manager->AddTimeout (G_PRIORITY_DEFAULT, ms_interval, func, tick_data);
 }
 
 void
