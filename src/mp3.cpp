@@ -849,7 +849,7 @@ Mp3Demuxer::ReadHeader ()
 	
 	stream = audio = new AudioStream (GetMedia ());
 	audio->codec_id = CODEC_MP3;
-	audio->codec = "mp3";
+	audio->codec = g_strdup ("mp3");
 	
 	audio->duration = duration * (nframes > 0 ? nframes - 1 : nframes);
 	audio->bit_rate = mpeg.bit_rate;

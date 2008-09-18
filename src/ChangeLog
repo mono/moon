@@ -1,3 +1,8 @@
+2008-09-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mp3.cpp: Need to g_strdup the "mp3" string or we could crash when
+	g_free-ing it later.
+
 2008-09-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline.cpp: Check for register_mswmv in libmscodecs.so, and honor
