@@ -194,6 +194,7 @@ endif
 
 EXTRA_DIST = \
 	alpha-premul-table.inc \
+	pipeline-logo.inc \
 	zip/README \
 	zip/ChangeLogUnzip \
 	$(libmooninclude_headers)
