@@ -405,7 +405,7 @@ class XamlElementInstanceValueType : public XamlElementInstance {
 	// A Value type doesn't really support anything. It's just here so people can do <SolidColorBrush.Color><Color>#FF00FF</Color></SolidColorBrush.Color>
 	virtual DependencyObject *CreateItem () { return NULL; }
 	virtual void SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value) { }
-	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char* value) { }
+	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char *value) { return false; }
 	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child) { }
 	virtual void SetAttributes (XamlParserInfo *p, const char **attr);
 
@@ -1150,10 +1150,6 @@ start_element (void *data, const char *el, const char **attr)
 static void
 flush_char_data (XamlParserInfo *p)
 {
-	DependencyProperty *content;
-	const char *prop_name = NULL;
-	Type::Kind prop_type;
-
 	if (!p->cdata || !p->current_element)
 		return;
 
@@ -1169,7 +1165,6 @@ flush_char_data (XamlParserInfo *p)
 		}
 	}
 		
-done:
 	if (p->cdata) {
 		g_string_free (p->cdata, TRUE);
 		p->cdata_content = false;
