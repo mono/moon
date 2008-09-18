@@ -2060,8 +2060,9 @@ Image::PixbufWrite (void *buf, gint32 offset, gint32 n)
 	if (!loader_err) {
 		gdk_pixbuf_loader_write (GDK_PIXBUF_LOADER (loader), (const guchar *)buf, n, &loader_err);
 
-		if (loader_err)
+		if (loader_err) {
 			gdk_pixbuf_loader_close (GDK_PIXBUF_LOADER (loader), NULL);
+		}
 	}
 }
 
@@ -2288,6 +2289,8 @@ Image::CreateSurface (const char *uri)
 			loader = gdk_pixbuf_loader_new ();
 
 			if ((fd = open (filename, O_RDONLY)) == -1) {
+				gdk_pixbuf_loader_close (GDK_PIXBUF_LOADER (loader), NULL);
+				g_object_unref (loader);
 				msg = g_strdup_printf ("Failed to load image %s: %s", filename, g_strerror (errno));
 				Emit (ImageFailedEvent, new ImageErrorEventArgs (msg));
 				return false;
@@ -2310,6 +2313,7 @@ Image::CreateSurface (const char *uri)
 		gdk_pixbuf_loader_close (GDK_PIXBUF_LOADER (loader), loader_err ? NULL : &loader_err);
 		
 		if (!(pixbuf = gdk_pixbuf_loader_get_pixbuf (GDK_PIXBUF_LOADER (loader)))) {
+			g_object_unref (loader);
 			if (loader_err && loader_err->message)
 				msg = g_strdup_printf ("Failed to load image %s: %s", uri, loader_err->message);
 			else
@@ -2324,6 +2328,8 @@ Image::CreateSurface (const char *uri)
 		} else if (loader_err) {
 			g_error_free (loader_err);
 		}
+		g_object_ref (pixbuf);
+		g_object_unref (loader);
 		
 		surface = g_new0 (CachedSurface, 1);
 		
