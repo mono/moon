@@ -52,7 +52,7 @@ public:
 		emitting = 0;
 		lists = new EventList [size];
 		for (int i = 0; i < size; i++) {
-			lists [i].current_token = 0;
+			lists [i].current_token = 1;
 			lists [i].emitting = 0;
 			lists [i].event_list = new List ();
 		}

@@ -1,3 +1,11 @@
+2008-09-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes bug #410619.
+
+	* dependencyobject.cpp (class EventLists): Init current_token to
+	1. Popfly uses a token of 0 to mean no-listener (sorta like gtk
+	apps use 0 to mean that a g_signal is not connected).
+
 2008-09-18  Geoff Norton  <gnorton@novell.com>
 
 	* media.cpp: Stop leaking pixbuf loaders.
