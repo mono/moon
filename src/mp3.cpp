@@ -927,23 +927,3 @@ Mp3DemuxerInfo::Create (Media *media, IMediaSource *source)
 {
 	return new Mp3Demuxer (media, source);
 }
-
-
-/*
- * NullMp3Decoder
- */
-MediaResult
-NullMp3Decoder::DecodeFrame (MediaFrame *frame)
-{
-	MpegFrameHeader mpeg;
-	
-	mpeg_parse_header (&mpeg, frame->buffer);
-	g_free (frame->buffer);
-	
-	frame->buflen = mpeg_frame_size (&mpeg);
-	frame->buffer = (guint8 *) g_malloc0 (frame->buflen);
-	
-	frame->AddState (FRAME_DECODED);
-	
-	return MEDIA_SUCCESS;
-}

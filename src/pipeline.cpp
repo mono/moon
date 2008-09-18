@@ -289,7 +289,7 @@ Media::Initialize ()
 	}
 #endif
 	
-	Media::RegisterDecoder (new NullMp3DecoderInfo ());
+	Media::RegisterDecoder (new NullDecoderInfo ());
 }
 
 void
@@ -1133,7 +1133,7 @@ ASFDemuxer::ReadHeader ()
 		} else if (stream_properties->is_command ()) {
 			MarkerStream* marker = new MarkerStream (GetMedia ());
 			stream = marker;
-			stream->codec = "asf-marker";
+			stream->codec = g_strdup ("asf-marker");
 		} else {
 			// Unknown stream, ignore it.
 		}
@@ -1141,15 +1141,21 @@ ASFDemuxer::ReadHeader ()
 		if (stream != NULL) {
 			if (stream_properties->is_video () || stream_properties->is_audio ()) {
 				switch (stream->codec_id) {
-				case CODEC_WMV1: stream->codec = "wmv1"; break;
-				case CODEC_WMV2: stream->codec = "wmv2"; break;
-				case CODEC_WMV3: stream->codec = "wmv3"; break;
-				case CODEC_WMVA: stream->codec = "wmva"; break;
-				case CODEC_WVC1: stream->codec = "vc1"; break;
-				case CODEC_MP3: stream->codec = "mp3"; break;
-				case CODEC_WMAV1: stream->codec = "wmav1"; break;
-				case CODEC_WMAV2: stream->codec = "wmav2"; break;
-				default: stream->codec = "unknown"; break;
+				case CODEC_WMV1: stream->codec = g_strdup ("wmv1"); break;
+				case CODEC_WMV2: stream->codec = g_strdup ("wmv2"); break;
+				case CODEC_WMV3: stream->codec = g_strdup ("wmv3"); break;
+				case CODEC_WMVA: stream->codec = g_strdup ("wmva"); break;
+				case CODEC_WVC1: stream->codec = g_strdup ("vc1"); break;
+				case CODEC_MP3: stream->codec = g_strdup ("mp3"); break;
+				case CODEC_WMAV1: stream->codec = g_strdup ("wmav1"); break;
+				case CODEC_WMAV2: stream->codec = g_strdup ("wmav2"); break;
+				default:
+					char a = ((stream->codec_id & 0x000000FF));
+					char b = ((stream->codec_id & 0x0000FF00) >> 8);
+					char c = ((stream->codec_id & 0x00FF0000) >> 16);
+					char d = ((stream->codec_id & 0xFF000000) >> 24);
+					stream->codec = g_strdup_printf ("unknown (%c%c%c%c)", a ? a : ' ', b ? b : ' ', c ? c : ' ', d ? d : ' ');
+					break;
 				}
 			}
 			streams [i] = stream;
@@ -2379,6 +2385,7 @@ IMediaStream::~IMediaStream ()
 		decoder->unref ();
 	
 	g_free (extra_data);
+	g_free (codec);
 }
 
 void
@@ -2878,4 +2885,176 @@ MediaWork::~MediaWork ()
 #if DEBUG
 	memset (&data, 0, sizeof (data));
 #endif
+}
+
+/*
+ * NullDecoderInfo
+ */
+
+bool
+NullDecoderInfo::Supports (const char *codec)
+{
+	const char *video_fourccs [] = { "wmv1", "wmv2", "wmv3", "wmva", "vc1", NULL };
+	const char *audio_fourccs [] = { "wmav1","wmav2", "mp3", NULL};
+	
+	for (int i = 0; video_fourccs [i] != NULL; i++)
+		if (!strcmp (codec, video_fourccs [i]))
+			return true;
+
+	for (int i = 0; audio_fourccs [i] != NULL; i++)
+		if (!strcmp (codec, audio_fourccs [i]))
+			return true;
+
+
+	return false;
+}
+
+/*
+ * NullDecoder
+ */
+
+NullDecoder::NullDecoder (Media *media, IMediaStream *stream) : IMediaDecoder (media, stream)
+{
+	logo = NULL;
+	logo_size = 0;
+	prev_pts = G_MAXUINT64;
+}
+
+NullDecoder::~NullDecoder ()
+{
+	g_free (logo);
+}
+
+MediaResult
+NullDecoder::DecodeVideoFrame (MediaFrame *frame)
+{
+	// free encoded buffer and alloc a new one for our image
+	g_free (frame->buffer);
+	frame->buflen = logo_size;
+	frame->buffer = (guint8*) g_malloc (frame->buflen);
+	memcpy (frame->buffer, logo, frame->buflen);
+	frame->AddState (FRAME_DECODED);
+	
+	//printf ("NullVideoDecoder::DecodeFrame () pts: %llu, w: %i, h: %i\n", frame->pts, w, h);
+	
+	return MEDIA_SUCCESS;
+}
+
+MediaResult
+NullDecoder::DecodeAudioFrame (MediaFrame *frame)
+{
+	AudioStream *as = (AudioStream *) stream;
+	guint32 samples;
+	guint32 data_size;
+	guint64 diff_pts;
+	
+	// discard encoded data
+	g_free (frame->buffer);
+
+	// We have no idea here how long the encoded audio data is
+	// for the first frame we use 0.1 seconds, for the rest
+	// we calculate the time since the last frame
+
+	if (prev_pts == G_MAXUINT64) {
+		samples = as->sample_rate / 10; // start off sending 0.1 seconds of audio
+	} else {
+		diff_pts = frame->pts - prev_pts;
+		samples = (float) as->sample_rate / (TIMESPANTICKS_IN_SECOND_FLOAT / (float) diff_pts);
+	}
+	prev_pts = frame->pts;
+
+	data_size  = samples * as->channels * 2 /* 16 bit audio */;
+
+	frame->buflen = data_size;
+	frame->buffer = (guint8 *) g_malloc0 (frame->buflen);
+	
+	frame->AddState (FRAME_DECODED);
+	
+	return MEDIA_SUCCESS;
+}
+
+MediaResult
+NullDecoder::DecodeFrame (MediaFrame *frame)
+{
+	if (stream->GetType () == MediaTypeAudio)
+		return DecodeAudioFrame (frame);
+	else if (stream->GetType () == MediaTypeVideo)
+		return DecodeVideoFrame (frame);
+	else
+		return MEDIA_FAIL;
+}
+
+MediaResult
+NullDecoder::Open ()
+{
+	if (stream->GetType () == MediaTypeAudio)
+		return OpenAudio ();
+	else if (stream->GetType () == MediaTypeVideo)
+		return OpenVideo ();
+	else
+		return MEDIA_FAIL;
+}
+
+MediaResult
+NullDecoder::OpenAudio ()
+{
+	return MEDIA_SUCCESS;
+}
+
+MediaResult
+NullDecoder::OpenVideo ()
+{
+	VideoStream *vs = (VideoStream *) stream;
+	guint32 dest_height = vs->height;
+	guint32 dest_width = vs->width;
+	guint32 dest_i = 0;
+	
+	// We assume that the input image is a 24 bit bitmap (bmp), stored bottum up and flipped vertically.
+	#include "pipeline-logo.inc" // <- image is defined here
+
+	guint32 img_offset = *((guint32*)(image + 10));
+	guint32 img_width  = *((guint32*)(image + 18));
+	guint32 img_height = *((guint32*)(image + 22));
+	guint32 img_stride = (img_width * 3 + 3) & ~3; // in bytes
+	guint32 img_i, img_h, img_w;
+	
+	LOG_PIPELINE ("offset: %i, size: %i, width: 0x%x = %i, height: 0x%x = %i, stride: %i\n", img_offset, img_size, img_width, img_width, img_height, img_height, img_stride);
+	
+	// create the buffer for our image
+	logo_size = dest_height * dest_width * 4;
+	logo = (guint8*) g_malloc (dest_height * dest_width * 4);
+
+	// write our image tiled into the destination rectangle, flipped horizontally
+	for (guint32 dest_h = 0; dest_h < dest_height; dest_h++) {
+		for (guint32 dest_w = 0; dest_w < dest_width; dest_w++) {
+			img_h = dest_h % img_height;
+			img_w = dest_w % img_width;
+			img_i = img_h * img_stride + img_w * 3;
+			
+			logo [logo_size - dest_i + 0] = image [img_offset + img_i + 0];
+			logo [logo_size - dest_i + 1] = image [img_offset + img_i + 1];
+			logo [logo_size - dest_i + 2] = image [img_offset + img_i + 2];
+			logo [logo_size - dest_i + 3] = 255;
+			
+			dest_i += 4;
+		}
+	}
+	
+	// Flip the image vertically
+	for (guint32 dest_h = 0; dest_h < dest_height; dest_h++) {
+		for (guint32 dest_w = 0; dest_w < dest_width / 2; dest_w++) {
+			guint32 tmp;
+			guint32 a = (dest_h * dest_width + dest_w) * 4;
+			guint32 b = (dest_h * dest_width + dest_width - dest_w) * 4;
+			for (guint32 c = 0; c < 3; c++) {
+				tmp = logo [a + c];
+				logo [a + c] = logo [b + c];
+				logo [b + c] = tmp;
+			}
+		}
+	}
+
+	pixel_format = MoonPixelFormatRGB32;
+	
+	return MEDIA_SUCCESS;
 }

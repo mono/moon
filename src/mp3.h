@@ -109,31 +109,6 @@ public:
 	virtual const char *GetName () { return "Mp3Demuxer"; }
 };
 
-class NullMp3Decoder : public IMediaDecoder {
-protected:
-	virtual ~NullMp3Decoder () {};
-
-public:
-	NullMp3Decoder (Media *media, IMediaStream *stream) : IMediaDecoder (media, stream) {}
-	
-	virtual MediaResult DecodeFrame (MediaFrame *frame);
-	
-	virtual MediaResult Open ()
-	{
-		return MEDIA_SUCCESS;
-	}
-};
-
-class NullMp3DecoderInfo : public DecoderInfo {
-public:
-	virtual bool Supports (const char *codec) { return !strcmp (codec, "mp3"); };
-	
-	virtual IMediaDecoder *Create (Media *media, IMediaStream *stream)
-	{
-		return new NullMp3Decoder (media, stream);
-	}
-};
-
 bool mpeg_parse_header (MpegFrameHeader *mpeg, const guint8 *buffer);
 guint32 mpeg_frame_length (MpegFrameHeader *mpeg, bool xing);
 

@@ -486,7 +486,7 @@ public:
 	guint64 duration; // 100-nanosecond units (pts)
 	gint32 msec_per_frame;
 	IMediaDecoder *decoder;
-	const char *codec;
+	char *codec; // freed upon destruction
 	// The minimum amount of padding any other part of the pipeline needs for frames from this stream.
 	// Used by the demuxer when reading frames, ensures that there are at least min_padding extra bytes
 	// at the end of the frame data (all initialized to 0).
@@ -1076,6 +1076,40 @@ public:
 		return new ASFMarkerDecoder (media, stream);
 	}	
 	virtual const char *GetName () { return "ASFMarkerDecoder"; }
+};
+
+class NullDecoder : public IMediaDecoder {
+private:
+	// Video data
+	guint8 *logo;
+	guint32 logo_size;
+
+	// Audio data
+	guint64 prev_pts;
+	
+	MediaResult DecodeVideoFrame (MediaFrame *frame);
+	MediaResult DecodeAudioFrame (MediaFrame *frame);
+	MediaResult OpenAudio ();
+	MediaResult OpenVideo ();
+	
+protected:
+	virtual ~NullDecoder ();
+
+public:
+	NullDecoder (Media *media, IMediaStream *stream);
+	virtual MediaResult DecodeFrame (MediaFrame *frame);
+	virtual MediaResult Open ();
+};
+
+class NullDecoderInfo : public DecoderInfo {	
+public:
+	virtual bool Supports (const char *codec);
+	
+	virtual IMediaDecoder *Create (Media *media, IMediaStream *stream)
+	{
+		return new NullDecoder (media, stream);
+	}	
+	virtual const char *GetName () { return "NullDecoder"; }
 };
 
 #endif

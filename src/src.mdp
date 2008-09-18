@@ -213,6 +213,7 @@
     <File name="textbox.h" subtype="Code" buildaction="Nothing" />
     <File name="thickness.cpp" subtype="Code" buildaction="Compile" />
     <File name="tilesource.cpp" subtype="Code" buildaction="Compile" />
+    <File name="pipeline-logo.inc" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>

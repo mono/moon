@@ -522,7 +522,9 @@ MediaPlayer::RenderFrame (MediaFrame *frame)
 	
 	if (!frame->IsPlanar ()) {
 		// Just copy the data
-		memcpy (video.rgb_buffer, frame->buffer, MIN (frame->buflen, (guint32) (cairo_image_surface_get_stride (video.surface) * height)));
+		guint32 stride = cairo_image_surface_get_stride (video.surface);
+		for (int i = 0; i < height; i++)
+			memcpy (video.rgb_buffer + stride * i, frame->buffer + i * width * 4, width * 4);
 		SetBit (RenderedFrame);
 		return;
 	}

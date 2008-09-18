@@ -1,3 +1,13 @@
+2008-09-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* src.mdp: Updated.
+	* pipeline.cpp, pipeline.h: Add a generic null decoder, shows a
+	  moonlight logo for video and plays silence for audio.
+	* mp3.cpp, mp3.h: Remove NullMp3Decoder, no longer needed.
+	* mplayer.cpp: RenderFrame: take stride into account when blitting rgb
+	  data.
+	* pipeline-logo.inc: Added.
+
 2008-09-17  Larry Ewing  <lewing@novell.com>
 
 	* border.cpp:
