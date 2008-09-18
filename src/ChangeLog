@@ -1,5 +1,12 @@
 2008-09-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* pipeline.cpp: Check for register_mswmv in libmscodecs.so, and honor
+	  RUNTIME_INIT_CODECS_DEBUG.
+	* runtime.h, runtime.cpp: Add a runtime init flag to print codec debug
+	  info.
+
+2008-09-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* src.mdp: Updated.
 	* pipeline.cpp, pipeline.h: Add a generic null decoder, shows a
 	  moonlight logo for video and plays silence for audio.

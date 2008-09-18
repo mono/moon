@@ -117,6 +117,7 @@ static struct {
 	{ "backend=image",     RUNTIME_INIT_USE_BACKEND_XLIB,      false },
 	{ "keepmedia=no",      RUNTIME_INIT_KEEP_MEDIA,            false },
 	{ "keepmedia=yes",     RUNTIME_INIT_KEEP_MEDIA,            true  },
+	{ "codecs=debug",      RUNTIME_INIT_CODECS_DEBUG,          true  },
 };
 
 #define RENDER_EXPOSE (moonlight_flags & RUNTIME_INIT_SHOW_EXPOSE)
