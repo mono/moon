@@ -149,6 +149,7 @@ class AnimationStorage {
 	Value* GetResetValue ();
 	void UpdatePropertyValueWith (Value *v);
 	Value* GetStopValue (void);
+	void AttachToPrevStorage (void);
 
  private:
 	void TargetObjectDestroyed ();
@@ -187,6 +188,7 @@ class AnimationClock : public Clock {
 	bool HookupStorage (DependencyObject *targetobj, DependencyProperty *targetprop);
 
 	virtual void Stop ();
+	virtual void Begin ();
 
  private:
 	Animation/*Timeline*/ *timeline;

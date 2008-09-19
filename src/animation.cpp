@@ -46,6 +46,13 @@ AnimationStorage::AnimationStorage (AnimationClock *clock, Animation/*Timeline*/
 	clock->AddHandler (clock->CurrentTimeInvalidatedEvent, update_property_value, this);
 	targetobj->AddHandler (EventObject::DestroyedEvent, target_object_destroyed, this);
 
+	baseValue = new Value(*targetobj->GetValue (targetprop));
+	stopValue = NULL;
+}
+
+void
+AnimationStorage::AttachToPrevStorage (void)
+{
 	AnimationStorage *prev_storage = targetprop->AttachAnimationStorage (targetobj, this);
 
 	baseValue = new Value(*targetobj->GetValue (targetprop));
@@ -56,8 +63,6 @@ AnimationStorage::AnimationStorage (AnimationClock *clock, Animation/*Timeline*/
 		prev_storage->FlagAsNonResetable ();
 		if (prev_storage->IsFloating ())
 			delete prev_storage;
-	} else {
-		stopValue = NULL;
 	}
 }
 
@@ -292,6 +297,14 @@ AnimationClock::Stop ()
 	}
 
 	Clock::Stop ();
+}
+
+void
+AnimationClock::Begin ()
+{
+	Clock::Begin ();
+	if (storage)
+		storage->AttachToPrevStorage ();
 }
 
 AnimationClock::~AnimationClock ()
