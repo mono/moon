@@ -1608,7 +1608,7 @@ Glyphs::DownloadFont (Surface *surface, const char *url)
 			}
 			
 			str = uri->ToString (UriHideFragment);
-			downloader_open (downloader, "GET", str);
+			downloader->Open ("GET", str, XamlPolicy);
 			g_free (str);
 			
 			downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);

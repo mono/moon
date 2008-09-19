@@ -122,7 +122,7 @@ MediaBase::SetSurface (Surface *surface)
 			return;
 		}
 		
-		dl->Open ("GET", uri);
+		dl->Open ("GET", uri, MediaPolicy);
 		SetSource (dl, "");
 		dl->unref ();
 	}
@@ -215,7 +215,7 @@ MediaBase::OnPropertyChanged (PropertyChangedEventArgs *args)
 			
 			if (surface) {
 				if ((dl = surface->CreateDownloader ())) {
-					dl->Open ("GET", uri);
+					dl->Open ("GET", uri, MediaPolicy);
 					SetSource (dl, "");
 					dl->unref ();
 				} else {
@@ -1371,7 +1371,7 @@ MediaElement::DownloaderFailed (EventArgs *args)
 			if (dl == NULL)
 				return;
 				
-			dl->Open ("GET", new_uri);
+			dl->Open ("GET", new_uri, MediaPolicy);
 			SetSource (dl, "");
 			g_free (new_uri);
 			dl->unref ();

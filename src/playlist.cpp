@@ -437,7 +437,7 @@ PlaylistEntry::Open ()
 
 	Downloader *dl = element->GetSurface ()->CreateDownloader ();
 	if (dl) {
-		dl->Open ("GET", GetFullSourceName ());
+		dl->Open ("GET", GetFullSourceName (), StreamingPolicy);
 		element->SetSourceInternal (dl, NULL);
 		dl->unref ();
 	}

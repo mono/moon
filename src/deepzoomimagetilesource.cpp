@@ -51,7 +51,7 @@ DeepZoomImageTileSource::download_urisource (const char* url, downloaded_cb cb)
 	if (!downloader)
 		return;
 
-	downloader_open (downloader, "GET", uri->ToString ());
+	downloader->Open ("GET", uri->ToString (), NoPolicy);
 	
 	downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
 

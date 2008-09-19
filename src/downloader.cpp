@@ -151,7 +151,7 @@ Downloader::InternalOpen (const char *verb, const char *uri, bool streaming)
 }
 
 void
-Downloader::Open (const char *verb, const char *uri)
+Downloader::Open (const char *verb, const char *uri, DownloaderAccessPolicy policy)
 {
 	d (printf ("Downloader::Open (%s, %s)\n", verb, uri));
 	
@@ -575,11 +575,11 @@ downloader_get_response_text (Downloader *dl, const char *PartName, guint64 *siz
 	return dl->GetResponseText (PartName, size);
 }
 
-void
-downloader_open (Downloader *dl, const char *verb, const char *uri)
-{
-	dl->Open (verb, uri);
-}
+//void
+//downloader_open (Downloader *dl, const char *verb, const char *uri)
+//{
+//	dl->Open (verb, uri);
+//}
 
 void
 downloader_send (Downloader *dl)

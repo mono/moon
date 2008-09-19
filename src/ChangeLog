@@ -1,3 +1,13 @@
+2008-09-19  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* src/downloader.cpp:
+	* src/downloader.h: DownloadAccessPolicy enum, used as dl.Open
+	argument. Drop downloder_open method.
+	* src/media.cpp:
+	* src/playlist.cpp:
+	* src/deepzoomimagetilesource.cpp:
+	* src/text.cpp: use the new Open with the corresponding policy.
+
 2008-09-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* media.cpp: Reduce the pixbuffer leaks on popfly.com. The biggest

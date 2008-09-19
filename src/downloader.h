@@ -41,6 +41,8 @@ typedef void     (*downloader_header_func) (gpointer state, const char *header, 
 typedef void     (*downloader_body_func) (gpointer state, void *body, guint32 length);
 typedef gpointer (*downloader_create_webrequest_func) (const char *method, const char *uri, gpointer context);
 
+enum DownloaderAccessPolicy {DownloaderPolicy, MediaPolicy, XamlPolicy, StreamingPolicy, NoPolicy};
+
 /* @Namespace=None */
 /* @ManagedDependencyProperties=None */
 class Downloader : public DependencyObject {
@@ -108,7 +110,7 @@ class Downloader : public DependencyObject {
 	
 	void Abort ();
 	char *GetResponseText (const char *Partname, guint64 *size);
-	void Open (const char *verb, const char *uri);
+	void Open (const char *verb, const char *uri, DownloaderAccessPolicy policy);
 	void SendInternal ();
 	void Send ();
 	void SendNow ();
@@ -245,7 +247,7 @@ void  downloader_abort	       (Downloader *dl);
 char *downloader_get_downloaded_file (Downloader *dl);
 char *downloader_get_response_text   (Downloader *dl, const char *PartName, guint64 *size);
 char *downloader_get_response_file   (Downloader *dl, const char *PartName);
-void  downloader_open		(Downloader *dl, const char *verb, const char *uri);
+//void  downloader_open		(Downloader *dl, const char *verb, const char *uri);
 void  downloader_send		(Downloader *dl);
 
 //
