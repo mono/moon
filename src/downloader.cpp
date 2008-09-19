@@ -146,8 +146,14 @@ void
 Downloader::InternalOpen (const char *verb, const char *uri, bool streaming)
 {
 	d (printf ("Downloader::InternalOpen (%s, %s, %i)\n", verb, uri, streaming));
-	
+
 	open_func (verb, uri, streaming, downloader_state);
+}
+
+bool
+validate_policy (const char *uri, DownloaderAccessPolicy policy)
+{
+	return true;
 }
 
 void
@@ -165,6 +171,15 @@ Downloader::Open (const char *verb, const char *uri, DownloaderAccessPolicy poli
 	g_free (failed_msg);
 	failed_msg = NULL;
 	filename = NULL;
+
+	//FIXME: ONLY VALIDATE IF USED FROM THE PLUGIN
+	if (!validate_policy (uri, policy))
+	{
+		printf ("aborting due to security policy violation\n");
+		failed_msg = g_strdup ("Security Policy Violation");
+		Abort ();
+		return;
+	}
 
 	if (strncmp (uri, "mms://", 6) == 0) {
 		internal_dl = (InternalDownloader *) new MmsDownloader (this);
