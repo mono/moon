@@ -56,33 +56,11 @@ function OnMouseEnterGreen (sender, eventArgs)
   <Canvas.Resources>
         <Storyboard x:Name="ShowNameArea" BeginTime='0'>
             <DoubleAnimation Storyboard.TargetName="nameAreaBlock" BeginTime="00:00:00"
-                    Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.1" />
-            <DoubleAnimationUsingKeyFrames
-                    Storyboard.TargetName="nameAreaBlock" BeginTime="00:00:00"
-                    Storyboard.TargetProperty="(Canvas.Left)">
-                    <SplineDoubleKeyFrame KeyTime="00:00:00" Value="1100"/>
-                    <SplineDoubleKeyFrame KeyTime="00:00:0.5" Value="350"/>
-            </DoubleAnimationUsingKeyFrames>
-            <DoubleAnimation Storyboard.TargetName="nameAreaBlock" BeginTime="00:00:0.5"
-                Storyboard.TargetProperty="Height" From="2" To="50" Duration="0:0:0.3" />
-            <DoubleAnimation Storyboard.TargetName="nameAreaBlockInside" BeginTime="00:00:0.8"
-                Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.3" />
+                    Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:1" />
         </Storyboard>
         <Storyboard x:Name="HideNameArea" BeginTime='0'>
-            <DoubleAnimation Storyboard.TargetName="nameAreaBlockInside" BeginTime="00:00:00"
-                Storyboard.TargetProperty="Opacity" From="1" To="0" Duration="0:0:0.3" />
-            <DoubleAnimation Storyboard.TargetName="nameAreaBlock" BeginTime="00:00:0.3"
-                Storyboard.TargetProperty="Height" From="50" To="2" Duration="0:0:0.1" />
-            <DoubleAnimation Storyboard.TargetName="nameAreaBlock" BeginTime="00:00:0.3"
-                Storyboard.TargetProperty="(Canvas.Top)" From="250" To="298" Duration="0:0:0.1" />
-            <DoubleAnimationUsingKeyFrames
-                Storyboard.TargetName="nameAreaBlock" BeginTime="00:00:0.4"
-                Storyboard.TargetProperty="(Canvas.Left)">
-                    <SplineDoubleKeyFrame KeyTime="00:00:00" Value="350"/>
-                    <SplineDoubleKeyFrame KeyTime="00:00:0.5" Value="-500"/>
-            </DoubleAnimationUsingKeyFrames>
             <DoubleAnimation Storyboard.TargetName="nameAreaBlock" BeginTime="00:00:1"
-                    Storyboard.TargetProperty="Opacity" From="1" To="0" Duration="0:0:0.1" />
+                    Storyboard.TargetProperty="Opacity" From="1" To="0" Duration="0:0:1" />
         </Storyboard>
     </Canvas.Resources>
   
