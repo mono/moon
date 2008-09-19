@@ -1051,9 +1051,9 @@ merge_namescope (NameScope *parent_ns, NameScope *child_ns, DependencyObject *ow
 void
 DependencyObject::MergeTemporaryNameScopes (DependencyObject *dob)
 {
-	NameScope *ns = NameScope::GetNameScope (this);
 	NameScope *dob_ns = NameScope::GetNameScope (dob);
-
+	NameScope *ns = FindNameScope ();
+	
 	if (dob_ns && dob_ns->GetTemporary ())
 		merge_namescope (ns, dob_ns, this);
 
@@ -1062,7 +1062,6 @@ DependencyObject::MergeTemporaryNameScopes (DependencyObject *dob)
 		
 		for (int i = 0; i < c->GetCount (); i++) {
 			NameScope *c_ns = NameScope::GetNameScope (c->GetValueAt (i)->AsDependencyObject ());
-			ns = NameScope::GetNameScope (this);
 			if (c_ns && c_ns->GetTemporary ())
 				merge_namescope (ns, c_ns, this);
 		}
@@ -1465,8 +1464,9 @@ DependencyObject::SetLogicalParent (DependencyObject *logical_parent)
 			return;
 		}
 		current = current->GetLogicalParent ();
-	} 
+	}
 #endif
+	
 	this->logical_parent = logical_parent;
 }
 
