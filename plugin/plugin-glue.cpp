@@ -202,7 +202,6 @@ NPP_GetMIMEDescription (void)
 	return (char *) (MIME_TYPES_HANDLED);
 }
 
-static bool gtk_initialized = false;
 static bool runtime_initialized = false;
 static bool runtime_shutdown_pending = false;
 

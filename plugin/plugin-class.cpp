@@ -668,6 +668,26 @@ EventListenerProxy::AddHandler (EventObject *obj)
 	return token;
 }
 
+int
+EventListenerProxy::AddXamlHandler (EventObject *obj)
+{
+	target_object = obj;
+	
+	dtoken = obj->AddHandler (EventObject::DestroyedEvent, on_target_object_destroyed, this);
+	
+	event_id = obj->GetType()->LookupEvent (event_name);
+	
+	if (event_id == -1) {
+		d(printf ("object of type `%s' does not provide an event named `%s'\n",
+			  obj->GetTypeName(), event_name));
+		return -1;
+	}
+	
+	token = obj->AddXamlHandler (event_id, proxy_listener_to_javascript, this);
+	
+	return token;
+}
+
 void
 EventListenerProxy::RemoveHandler ()
 {
@@ -769,6 +789,13 @@ event_object_add_javascript_listener (EventObject *obj, PluginInstance *plugin, 
 {
 	EventListenerProxy *proxy = new EventListenerProxy (plugin->GetInstance (), event_name, cb_name);
 	proxy->AddHandler (obj);
+}
+
+void
+event_object_add_xaml_listener (EventObject *obj, PluginInstance *plugin, const char *event_name, const char *cb_name)
+{
+	EventListenerProxy *proxy = new EventListenerProxy (plugin->GetInstance (), event_name, cb_name);
+	proxy->AddXamlHandler (obj);
 }
 
 class NamedProxyPredicate {
@@ -2856,18 +2883,13 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 		if (id == -1) {
 			THROW_JS_EXCEPTION ("AG_E_RUNTIME_DELEVENT");
 		} else if (NPVARIANT_IS_INT32 (args [1])) {
-			char *event = STRDUP_FROM_VARIANT (args[0]);
-			int event_id = dob->GetType()->LookupEvent (event);
-			dob->RemoveHandler (event_id, NPVARIANT_TO_INT32 (args[1]));
-			g_free (event);
+			dob->RemoveHandler (id, NPVARIANT_TO_INT32 (args[1]));
 		} else if (NPVARIANT_IS_STRING (args[1])) {
 			char *value = STRDUP_FROM_VARIANT (args[1]);
 			NamedProxyPredicate predicate (value);
 			g_free (value);
-			char *event = STRDUP_FROM_VARIANT (args[0]);
-			int event_id = dob->GetType()->LookupEvent (event);
-			dob->RemoveMatchingHandlers (event_id, NamedProxyPredicate::matches, &predicate);
-			g_free (event);
+			
+			dob->RemoveMatchingHandlers (id, NamedProxyPredicate::matches, &predicate);
 		}
 		
 		return true;

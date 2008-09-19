@@ -1,3 +1,18 @@
+2008-09-19  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin-class.cpp (MoonlightDependencyObjectObject::Invoke): For
+	RemoveEventListener(), we don't need to look up the event_id more
+	than once.
+
+	* plugin.cpp (PluginXamlLoader::HookupEvent): Call
+	event_object_add_xaml_listener() instead of
+	event_object_add_javascript_handler() since this is happening as a
+	result of a listener being set in the XAML (which means it has to
+	have a token value of 0).
+
+	* plugin-class.cpp (EventListenerProxy::AddXamlHandler): New method.
+	(event_object_add_xaml_listener): New.
+
 2008-09-19  Stephane Delcroix  <sdelcroix@gnome.org>
 
 	* plugin-class.cpp: use the nex dl->Open interface

@@ -1034,7 +1034,7 @@ PluginInstance::LoadXAP (const char *fname)
 	if (!vm_is_loaded ())
 		vm_init ();
 
-	bool res = vm_application_create (this, surface, fname);
+	vm_application_create (this, surface, fname);
 	xap_loaded = true;
 }
 
@@ -1811,8 +1811,8 @@ bool
 PluginXamlLoader::HookupEvent (void *target, void *dest, const char *name, const char *value)
 {
 	if (!XamlLoader::HookupEvent (target, dest, name, value))
-		event_object_add_javascript_listener ((EventObject*) target, plugin, name, value);
-
+		event_object_add_xaml_listener ((EventObject*) target, plugin, name, value);
+	
 	return true;
 }
 
