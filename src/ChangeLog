@@ -1,3 +1,9 @@
+2008-09-19  Jeffrey Stedfast  <fejj@novell.com>
+
+	* dependencyobject.cpp (EventObject::AddXamlHandler): New method
+	to add a handler from XAML so that we can force the listener token
+	to be 0, like Silverlight does.
+
 2008-09-19  Michael Dominic K.  <mdk@mdk.am>
 
 	* animation.cpp:

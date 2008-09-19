@@ -323,7 +323,6 @@ public:
 		emit_count = 0;
 	}
 	
-
 	EventHandler func;
 	gpointer data;
 	int token;
@@ -362,6 +361,34 @@ EventObject::AddHandler (int event_id, EventHandler handler, gpointer data)
 	return token;
 }
 
+int
+EventObject::AddXamlHandler (const char *event_name, EventHandler handler, gpointer data)
+{
+	int id = GetType ()->LookupEvent (event_name);
+	
+	if (id == -1) {
+		g_warning ("adding xaml handler to event '%s', which has not been registered\n", event_name);
+		return -1;
+	}
+	
+	return AddHandler (id, handler, data);
+}
+
+int
+EventObject::AddXamlHandler (int event_id, EventHandler handler, gpointer data)
+{ 
+	if (GetType ()->GetEventCount () <= 0) {
+		g_warning ("adding xaml handler to event with id %d, which has not been registered\n", event_id);
+		return -1;
+	}
+	
+	if (events == NULL)
+		events = new EventLists (GetType ()->GetEventCount ());
+	
+	events->lists [event_id].event_list->Append (new EventClosure (handler, data, 0));
+	
+	return 0;
+}
 
 void
 EventObject::RemoveHandler (const char *event_name, EventHandler handler, gpointer data)
