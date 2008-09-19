@@ -1,0 +1,92 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>sprawl-test</title>
+<meta></meta>
+</head>
+<body bgcolor="#eeeeee">
+<script type="text/javascript">
+
+function OnLoad (sender)
+{
+	sender.findName ("ShowNameArea").begin ();
+}
+
+function OnMouseEnterRed (sender, eventArgs)
+{
+	console.log("Testing!");
+	sender.findName ("ShowNameArea").stop ();
+	sender.findName ("HideNameArea").begin ();
+}
+
+function OnMouseEnterGreen (sender, eventArgs)
+{
+	console.log("Testing!");
+	sender.findName ("HideNameArea").begin ();
+	sender.findName ("ShowNameArea").stop ();
+}
+</script>
+<object type="application/x-silverlight" data="data:," id="slControl" width="950" height="850">
+<param name="background" value="#FFFFFF"/>
+<param name="source" value="#xamlContent"/>
+</object>
+<script type="text/xaml" id="xamlContent">
+<?xml version="1.0"?>
+<Canvas
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Width="950" Height="850"
+    x:Name='Root'
+    Loaded="OnLoad">
+
+ <Canvas RenderTransform="1,0,0,0.8,0,0" Background="#44000000"
+                Width="300" Height="2" Opacity="0" x:Name="nameAreaBlock"
+                Canvas.Top="250">
+                <Rectangle Width="300" Height="49" Stroke="#66000000" StrokeThickness="2"/>
+                <TextBlock Text="Name: " FontSize="7" FontFamily="Arial" FontWeight="ExtraBlack" RenderTransform="3,0,-0.55,4,0,0"  Canvas.Left="12" Canvas.Top="7"
+                Opacity="0" x:Name="nameAreaBlockInside" Foreground="#FF474E93">
+                    <Run x:Name="nameArea"></Run></TextBlock>
+              <Canvas x:Name="nameOkButton">
+                <Rectangle Width="60" Height="49" Fill="#44000000" Stroke="#66000000" StrokeThickness="2.2" Canvas.Left="310"/>
+                <TextBlock Canvas.Left="325" Canvas.Top="10" Text="OK" FontSize="7" FontFamily="Arial" FontWeight="ExtraBlack" Foreground="#FF474E93" RenderTransform="3,0,-0.55,4,0,0"/>
+              </Canvas>
+ </Canvas>
+ <Rectangle Width="100" Height="50" Canvas.Left="0" Canvas.Top="0" Fill="Red" MouseEnter="OnMouseEnterRed" />
+ <Rectangle Width="100" Height="50" Canvas.Left="100" Canvas.Top="0" Fill="Green" MouseEnter="OnMouseEnterGreen" />
+
+  <Canvas.Resources>
+        <Storyboard x:Name="ShowNameArea" BeginTime='0'>
+            <DoubleAnimation Storyboard.TargetName="nameAreaBlock" BeginTime="00:00:00"
+                    Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.1" />
+            <DoubleAnimationUsingKeyFrames
+                    Storyboard.TargetName="nameAreaBlock" BeginTime="00:00:00"
+                    Storyboard.TargetProperty="(Canvas.Left)">
+                    <SplineDoubleKeyFrame KeyTime="00:00:00" Value="1100"/>
+                    <SplineDoubleKeyFrame KeyTime="00:00:0.5" Value="350"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimation Storyboard.TargetName="nameAreaBlock" BeginTime="00:00:0.5"
+                Storyboard.TargetProperty="Height" From="2" To="50" Duration="0:0:0.3" />
+            <DoubleAnimation Storyboard.TargetName="nameAreaBlockInside" BeginTime="00:00:0.8"
+                Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.3" />
+        </Storyboard>
+        <Storyboard x:Name="HideNameArea" BeginTime='0'>
+            <DoubleAnimation Storyboard.TargetName="nameAreaBlockInside" BeginTime="00:00:00"
+                Storyboard.TargetProperty="Opacity" From="1" To="0" Duration="0:0:0.3" />
+            <DoubleAnimation Storyboard.TargetName="nameAreaBlock" BeginTime="00:00:0.3"
+                Storyboard.TargetProperty="Height" From="50" To="2" Duration="0:0:0.1" />
+            <DoubleAnimation Storyboard.TargetName="nameAreaBlock" BeginTime="00:00:0.3"
+                Storyboard.TargetProperty="(Canvas.Top)" From="250" To="298" Duration="0:0:0.1" />
+            <DoubleAnimationUsingKeyFrames
+                Storyboard.TargetName="nameAreaBlock" BeginTime="00:00:0.4"
+                Storyboard.TargetProperty="(Canvas.Left)">
+                    <SplineDoubleKeyFrame KeyTime="00:00:00" Value="350"/>
+                    <SplineDoubleKeyFrame KeyTime="00:00:0.5" Value="-500"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimation Storyboard.TargetName="nameAreaBlock" BeginTime="00:00:1"
+                    Storyboard.TargetProperty="Opacity" From="1" To="0" Duration="0:0:0.1" />
+        </Storyboard>
+    </Canvas.Resources>
+  
+</Canvas>
+</script>
+</body>
+</html>

@@ -1,3 +1,7 @@
+2008-09-19  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/assorted/sprawl-test.html: Adding a test case for sprawl bug #412074.
+
 2008-09-16  Fernando Herrera  <fherrera@novell.com>
 
 	* parsertest/Makefile.am:
