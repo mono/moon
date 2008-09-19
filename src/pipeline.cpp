@@ -2466,12 +2466,11 @@ MediaFrame::MediaFrame (IMediaStream *stream)
  
 MediaFrame::~MediaFrame ()
 {
-	g_free (buffer);
-	
 	if (decoder_specific_data != NULL) {
 		if (stream != NULL && stream->decoder != NULL)
 			stream->decoder->Cleanup (this);
 	}
+	g_free (buffer);
 }
 
 /*

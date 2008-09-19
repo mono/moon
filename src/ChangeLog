@@ -1,3 +1,9 @@
+2008-09-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* pipeline.cpp: MediaFrame::~MediaFrame: Free the buffer before calling
+	  any custom Cleanup methods (allowing the Cleanup method to free
+	  buffer if g_free isn't the way to do it).
+
 2008-09-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fixes bug #410619.
