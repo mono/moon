@@ -1910,6 +1910,10 @@ Image::Image ()
 
 Image::~Image ()
 {
+	if (loader) {
+		gdk_pixbuf_loader_close (GDK_PIXBUF_LOADER (loader), NULL);
+		g_object_unref (loader);
+	}
 	CleanupSurface ();
 }
 
@@ -2330,6 +2334,7 @@ Image::CreateSurface (const char *uri)
 		}
 		g_object_ref (pixbuf);
 		g_object_unref (loader);
+		loader = NULL;
 		
 		surface = g_new0 (CachedSurface, 1);
 		

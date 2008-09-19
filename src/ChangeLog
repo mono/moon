@@ -1,3 +1,8 @@
+2008-09-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* media.cpp: Reduce the pixbuffer leaks on popfly.com. The biggest
+	offenders are gone now but it's still leaking in a few cases.
+
 2008-09-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline.cpp: MediaFrame::~MediaFrame: Free the buffer before calling
