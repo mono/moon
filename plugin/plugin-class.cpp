@@ -3805,7 +3805,7 @@ MoonlightDownloaderObject::Invoke (int id, NPIdentifier name,
 		else
 			uri = NULL;
 		
-		downloader->Open (verb, uri);
+		downloader->Open (verb, uri, DownloaderPolicy);
 		g_free (verb);
 		g_free (uri);
 		
