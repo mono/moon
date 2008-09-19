@@ -98,8 +98,8 @@ namespace Mono {
 		[DllImport("moon")]
 		public extern static IntPtr downloader_get_response_text (IntPtr handle, string partname, out long size);
 
-		[DllImport("moon")]
-		public extern static void downloader_open (IntPtr handle, string verb, string uri);
+//		[DllImport("moon")]
+//		public extern static void downloader_open (IntPtr handle, string verb, string uri);
 
 		[DllImport("moon")]
 		public extern static void downloader_send (IntPtr handle);
