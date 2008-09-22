@@ -123,7 +123,7 @@ namespace MoonlightTests {
 
 			test_suite = Environment.GetEnvironmentVariable ("MS_TEST_SUITE");
 			
-			if (test_suite.ToLower() == "true")
+			if ((test_suite != null) && (test_suite.ToLower() == "true"))
 				test_suite = "ms";
 			else
 				test_suite = "moon";
