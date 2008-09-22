@@ -166,6 +166,7 @@ class AnimationStorage {
 	Value *stopValue;
 	bool nonResetableFlag;
 	bool floating;
+	bool wasAttached;
 };
 
 

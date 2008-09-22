@@ -48,11 +48,15 @@ AnimationStorage::AnimationStorage (AnimationClock *clock, Animation/*Timeline*/
 
 	baseValue = new Value(*targetobj->GetValue (targetprop));
 	stopValue = NULL;
+	wasAttached = FALSE;
 }
 
 void
 AnimationStorage::AttachToPrevStorage (void)
 {
+	if (wasAttached)
+		return;
+
 	AnimationStorage *prev_storage = targetprop->AttachAnimationStorage (targetobj, this);
 
 	baseValue = new Value(*targetobj->GetValue (targetprop));
@@ -64,6 +68,8 @@ AnimationStorage::AttachToPrevStorage (void)
 		if (prev_storage->IsFloating ())
 			delete prev_storage;
 	}
+
+	wasAttached = TRUE;
 }
 
 void

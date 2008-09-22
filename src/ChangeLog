@@ -1,3 +1,8 @@
+2008-09-22  Michael Dominic K.  <mdk@mdk.am>
+
+	* animation.cpp:
+	* animation.h: Attach storage only once. Fixes a crash in clock21.html.
+
 2008-09-19  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fix for bug #427560
