@@ -1,3 +1,8 @@
+2008-09-22  Larry Ewing  <lewing@novell.com>
+
+	* geometry.cpp (Geometry::Draw): fix the transform brokeness that
+	crept in.  Fixes test-geometry-transform.xaml
+
 2008-09-22  Michael Dominic K.  <mdk@mdk.am>
 
 	* animation.cpp:

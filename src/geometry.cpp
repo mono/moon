@@ -35,6 +35,9 @@ void
 Geometry::Draw (Path *shape, cairo_t *cr)
 {
 	Transform *transform = GetTransform ();
+	cairo_matrix_t saved;
+	cairo_get_matrix (cr, &saved);
+
 	if (transform) {
 		cairo_matrix_t matrix;
 		transform->GetTransform (&matrix);
@@ -46,6 +49,8 @@ Geometry::Draw (Path *shape, cairo_t *cr)
 
 	if (path)
 		cairo_append_path (cr, &path->cairo);
+
+	cairo_set_matrix (cr, &saved);
 }
 
 void
@@ -100,6 +105,9 @@ void
 GeometryGroup::Draw (Path *shape, cairo_t *cr)
 {
 	Transform *transform = GetTransform ();
+	cairo_matrix_t saved;
+	cairo_get_matrix (cr, &saved);
+
 	if (transform) {
 		cairo_matrix_t matrix;
 		transform->GetTransform (&matrix);
@@ -114,6 +122,8 @@ GeometryGroup::Draw (Path *shape, cairo_t *cr)
 		
 		geometry->Draw (shape, cr);
 	}
+	
+	cairo_set_matrix (cr, &saved);
 }
 
 Rect
