@@ -1,3 +1,11 @@
+2008-09-22  Jeffrey Stedfast  <fejj@novell.com>
+
+	* dependencyobject.cpp (merge_namescope): Return the parent_ns so
+	that our caller doesn't have to call FindNameScope() in case it
+	was created.
+	(DependencyObject::MergeTemporaryNameScopes): Adjust for above API
+	change.
+
 2008-09-22  Larry Ewing  <lewing@novell.com>
 
 	* geometry.cpp (Geometry::Draw): fix the transform brokeness that

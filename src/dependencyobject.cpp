@@ -1037,15 +1037,18 @@ create_temp_namescope (DependencyObject *o)
 	return ns;
 }
 
-static void
+static NameScope *
 merge_namescope (NameScope *parent_ns, NameScope *child_ns, DependencyObject *owner)
 {
 	if (!parent_ns)
 		parent_ns = create_temp_namescope (owner);
+	
 	parent_ns->MergeTemporaryScope (child_ns);
-
+	
 	// remove the child's temporary namescope
 	child_ns->ClearValue (NameScope::NameScopeProperty, false);
+	
+	return parent_ns;
 }
 
 void
@@ -1055,15 +1058,15 @@ DependencyObject::MergeTemporaryNameScopes (DependencyObject *dob)
 	NameScope *ns = FindNameScope ();
 	
 	if (dob_ns && dob_ns->GetTemporary ())
-		merge_namescope (ns, dob_ns, this);
-
+		ns = merge_namescope (ns, dob_ns, this);
+	
 	if (dob->Is (Type::DEPENDENCY_OBJECT_COLLECTION)) {
 		Collection *c = (Collection *) dob;
 		
 		for (int i = 0; i < c->GetCount (); i++) {
 			NameScope *c_ns = NameScope::GetNameScope (c->GetValueAt (i)->AsDependencyObject ());
 			if (c_ns && c_ns->GetTemporary ())
-				merge_namescope (ns, c_ns, this);
+				ns = merge_namescope (ns, c_ns, this);
 		}
 	}
 }
