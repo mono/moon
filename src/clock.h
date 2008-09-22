@@ -550,11 +550,22 @@ class Timeline : public DependencyObject {
 	virtual Clock *AllocateClock () { return new Clock (this); }
 	virtual bool Validate ();
 
+	enum TimelineStatus {
+		TIMELINE_STATUS_OK, 
+		TIMELINE_STATUS_DETACHED
+	};
+
+	TimelineStatus GetTimelineStatus () { return timeline_status; }
+
 	bool HasManualTarget () { return manual_target != NULL; }
 	DependencyObject* GetManualTarget () { return manual_target; }
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetManualTarget (DependencyObject *o) { manual_target = o; }
+
+ private:
+	TimelineStatus timeline_status;
+
 };
 
 

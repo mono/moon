@@ -1362,6 +1362,7 @@ ClockGroup::~ClockGroup ()
 Timeline::Timeline ()
 {
 	manual_target = NULL;
+	timeline_status = TIMELINE_STATUS_OK;
 }
 
 bool
@@ -1370,14 +1371,9 @@ Timeline::Validate ()
 	RepeatBehavior *repeat = GetRepeatBehavior ();
 	Duration *duration = GetDuration ();
 
-	/*if (repeat->HasDuration () && repeat->GetDuration () == 0) {
-		delete repeat;
-		repeat = new RepeatBehavior (1.0);
-	}*/
-
 	if (duration->HasTimeSpan () && duration->GetTimeSpan () == 0 && 
 	    (GetFillBehavior () == FillBehaviorStop || (repeat->HasCount () && repeat->GetCount () > 1.0)))
-		return false;
+		timeline_status = TIMELINE_STATUS_DETACHED;
 
 	return true;
 }

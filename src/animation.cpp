@@ -128,7 +128,7 @@ AnimationStorage::UpdatePropertyValueWith (Value *v)
 	if (targetobj == NULL)
 		return;
 
-	if (v != NULL) {
+	if (v != NULL && timeline->GetTimelineStatus () == Timeline::TIMELINE_STATUS_OK) {
 		Applier *applier = clock->GetTimeManager ()->GetApplier ();
 		applier->AddPropertyChange (targetobj, targetprop, new Value (*v), APPLIER_PRECEDENCE_ANIMATION);
 	}
@@ -141,7 +141,7 @@ AnimationStorage::UpdatePropertyValue ()
 		return;
 
 	Value *current_value = clock->GetCurrentValue (baseValue, NULL/*XXX*/);
-	if (current_value != NULL) {
+	if (current_value != NULL && timeline->GetTimelineStatus () == Timeline::TIMELINE_STATUS_OK) {
 		Applier *applier = clock->GetTimeManager ()->GetApplier ();
 		applier->AddPropertyChange (targetobj, targetprop, new Value (*current_value), APPLIER_PRECEDENCE_ANIMATION);
 	}
@@ -156,6 +156,9 @@ AnimationStorage::ResetPropertyValue ()
 		return;
 
 	if (targetobj == NULL)
+		return;
+	
+	if (timeline->GetTimelineStatus () != Timeline::TIMELINE_STATUS_OK)
 		return;
 
 	Applier *applier = clock->GetTimeManager ()->GetApplier ();
