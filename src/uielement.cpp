@@ -668,8 +668,10 @@ UIElement::DoRender (cairo_t *cr, Region *parent_region)
 	Region *region = new Region (GetSubtreeBounds ());
 	region->Intersect (parent_region);
 
-	if (!GetRenderVisible() || IS_INVISIBLE (total_opacity) || region->IsEmpty ()) 
+	if (!GetRenderVisible() || IS_INVISIBLE (total_opacity) || region->IsEmpty ()) {
+		delete region;
 		return;
+	}
 
 #if FRONT_TO_BACK_STATS
 	GetSurface()->uielements_rendered_back_to_front ++;
