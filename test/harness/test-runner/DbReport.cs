@@ -69,11 +69,14 @@ namespace MoonlightTests {
 				
 				dbcmd.CommandText = query;
 				IDataReader dbreader = dbcmd.ExecuteReader();
+				int count = 0;
 				while(dbreader.Read())
 				{
 					int id = dbreader.GetInt32(0);
-					Log("reading testcase " + id);
+					++count;
+					//Log("reading testcase " + id);
 				}
+				Log(string.Format("{0} test cases read", count));
 				dbreader.Close();
 				dbreader = null;
 				
@@ -123,7 +126,7 @@ namespace MoonlightTests {
 
 			test_suite = Environment.GetEnvironmentVariable ("MS_TEST_SUITE");
 			
-			if ((test_suite != null) && (test_suite.ToLower() == "true"))
+			if ((test_suite != null) && (test_suite.Trim().ToLower() == "true"))
 				test_suite = "ms";
 			else
 				test_suite = "moon";
