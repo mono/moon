@@ -30,23 +30,20 @@ function OnLoaded (sender, eventArgs)
         // first test is to see what happens when a named brush is set
         // as a property on multiple elements in the same NameScope.
         
-        var tree0 = content.createFromXaml ("<Canvas xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' Canvas.Top='5' Canvas.Left='5' x:Name='Tree0'><Rectangle x:Name='Rect0' Canvas.Left='0' Width='10' Height='10'/><Rectangle x:Name='Rect1' Canvas.Left='15' Width='10' Height='10'/></Canvas>", true);
-        var brush = content.createFromXaml ("<SolidColorBrush Color='Green'/>");
-        brush.name = "MyBrush";
-        
+        var tree0 = content.createFromXaml ("<Canvas xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' Canvas.Top='5' Canvas.Left='5' x:Name='Tree0'><Rectangle x:Name='Rect0' Canvas.Left='0' Width='10' Height='10'><Rectangle.Stroke><SolidColorBrush x:Name='MyBrush' Color='Green'/></Rectangle.Stroke></Rectangle><Rectangle x:Name='Rect1' Canvas.Left='15' Width='10' Height='10'/></Canvas>", true);
         sender.children.add (tree0);
         
         var rect = tree0.findName ("Rect0");
-        rect.stroke = brush;
+        var brush = rect.stroke;
         
         rect = tree0.findName ("Rect1");
         rect.fill = brush;
         
         var res = tree0.findName ("MyBrush");
-        if (res == brush)
-                Log ("green", "FindName() found the re-used brush as expected.");
+        if (res != brush)
+                Log ("green", "FindName() correctly did not find the re-used brush in the same namescope.");
         else
-                Log ("red", "FindName() did not find the re-used brush.");
+                Log ("red", "FindName() incorrectly found the re-used brush in the same namescope.");
         
         // now we need to see if we can re-use the same brush in a second
         // namespace and whether or not FindName() will find it in both places.
@@ -61,10 +58,10 @@ function OnLoaded (sender, eventArgs)
         rect.fill = brush;
         
         res = tree1.findName ("MyBrush");
-        if (res == brush)
-                Log ("green", "FindName() found the re-used brush in the alternate namescope as expected.");
+        if (res != brush)
+                Log ("green", "FindName() correctly did not find the re-used brush in the alternate namescope.");
         else
-                Log ("red", "FindName() did not find the re-used brush in the alternate namescope.");
+                Log ("red", "FindName() incorrectly found the re-used brush in the alternate namescope.");
 }
 </script>
 
