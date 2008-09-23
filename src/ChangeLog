@@ -1,3 +1,14 @@
+2008-09-22  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.cpp (DependencyObject::MergeTemporaryNameScopes):
+	another case we hadn't addressed - if the object we're merging
+	*from* doesn't have a namescope, we iterate over the entire tree,
+	registering names into our (possibly temporary, if it didn't exist
+	before) namescope.  Fixes firstfloorsoftware.com (bug #425268).
+
+	* xaml.cpp (XamlElementInstanceNative::CreateItem): fix memory
+	leak.
+
 2008-09-22  Jeffrey Stedfast  <fejj@novell.com>
 
 	* dependencyobject.cpp (merge_namescope): Return the parent_ns so

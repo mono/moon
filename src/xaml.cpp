@@ -2913,7 +2913,7 @@ XamlElementInstanceNative::CreateItem ()
 
 			// in case we must store the collection into the parent
 			if (dep && dep->GetPropertyType() == type->type)
-				((DependencyObject * ) walk->item)->SetValue (dep, new Value (item));
+				((DependencyObject * ) walk->item)->SetValue (dep, Value (item));
 
 			parser_info->AddCreatedElement (item);
 		}
