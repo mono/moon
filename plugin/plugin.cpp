@@ -765,6 +765,7 @@ PluginInstance::CreateWindow ()
 		NPIdentifier identifier = NPN_GetStringIdentifier ("onError");
 		NPN_SetProperty (instance, GetRootObject (), 
 				 identifier, &npvalue);
+		NPN_MemFree (retval);
 	}
 
 	if (onResize != NULL) {
@@ -775,6 +776,7 @@ PluginInstance::CreateWindow ()
 		NPIdentifier identifier = NPN_GetStringIdentifier ("onResize");
 		NPN_SetProperty (instance, GetRootObject ()->content,
 				 identifier, &npvalue);
+		NPN_MemFree (retval);
 	}
 
 	if (onLoad != NULL) {
@@ -785,6 +787,7 @@ PluginInstance::CreateWindow ()
 		NPIdentifier identifier = NPN_GetStringIdentifier ("onLoad");
 		NPN_SetProperty (instance, GetRootObject (), 
 				 identifier, &npvalue);
+		NPN_MemFree (retval);
 	}
 
 	surface->SetFPSReportFunc (ReportFPS, this);

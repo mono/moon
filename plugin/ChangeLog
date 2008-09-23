@@ -1,3 +1,8 @@
+2008-09-23  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (PluginInstance::CreateWindow): plug some memory
+	leaks.
+
 2008-09-19  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin-class.cpp (MoonlightDependencyObjectObject::Invoke): For
