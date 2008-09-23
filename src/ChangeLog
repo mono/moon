@@ -1,3 +1,8 @@
+2008-09-23  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.cpp (DependencyObject::MergeTemporaryNameScopes):
+	back out (#if false) this change for now.
+
 2008-09-23  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* runtime.h|cpp: Surface::GetSourceLocation()

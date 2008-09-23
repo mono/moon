@@ -1061,11 +1061,13 @@ DependencyObject::MergeTemporaryNameScopes (DependencyObject *dob)
 		if (dob_ns->GetTemporary ())
 			ns = merge_namescope (ns, dob_ns, this);
 	}
+#if false
 	else {
 		if (!ns)
 			ns = create_temp_namescope (this);
 		dob->RegisterAllNamesRootedAt (ns);
 	}
+#endif
 	
 	if (dob->Is (Type::DEPENDENCY_OBJECT_COLLECTION)) {
 		Collection *c = (Collection *) dob;
