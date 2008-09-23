@@ -824,6 +824,12 @@ Surface::ShowFullScreenMessage ()
 	full_screen_message->OnLoaded ();
 }
 
+const char* 
+Surface::GetSourceLocation ()
+{
+	return source_location;
+}
+
 void
 Surface::SetSourceLocation (const char* location)
 {

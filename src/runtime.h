@@ -151,6 +151,7 @@ public:
 	bool GetFullScreen () { return full_screen; }
 	void SetFullScreen (bool value);
 	void SetCanFullScreen (bool value) { can_full_screen = value; }
+	const char* GetSourceLocation ();
 	void SetSourceLocation (const char *location);
 	bool FullScreenKeyHandled (GdkEventKey *key);
 	
