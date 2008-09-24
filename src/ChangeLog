@@ -5,9 +5,6 @@
 
 2008-09-24  Jeffrey Stedfast  <fejj@novell.com>
 
-	* panel.cpp (Panel::Render): Need to fill the entire window if we
-	are the toplevel window.
-
 	* dependencyproperty.cpp (resolve_property_path): Cleaned up the
 	code, robustified, and fixed bug #429396.
 

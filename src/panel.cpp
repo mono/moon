@@ -108,17 +108,8 @@ Panel::Render (cairo_t *cr, Region *region)
 	cairo_set_matrix (cr, &absolute_xform);
 	
 	if ((background = GetBackground ())) {
-		Surface *surface = GetSurface ();
-		double height;
-		double width;
-		
-		if (surface && surface->IsTopLevel (this) && surface->GetFullScreen ()) {
-			height = surface->GetWindow ()->GetHeight ();
-			width = surface->GetWindow ()->GetWidth ();
-		} else {
-			height = GetHeight ();
-			width = GetWidth ();
-		}
+		double height = GetHeight ();
+		double width = GetWidth ();
 		
 		if (width > 0 && height > 0) {
 			background->SetupBrush (cr, this, width, height);
