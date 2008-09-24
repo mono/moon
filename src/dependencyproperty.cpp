@@ -283,6 +283,7 @@ resolve_property_path (DependencyObject **o, const char *path)
 	DependencyProperty *res = NULL;
 	DependencyObject *lu = *o;
 	const char *prop = path;
+	Value *v = NULL;
 	
 	for (size_t i = 0; i < len; i++) {
 		switch (path [i]) {
@@ -361,7 +362,10 @@ resolve_property_path (DependencyObject **o, const char *path)
 			// do not process unless we processed a '(' earlier
 			if (!res)
 				break;
-			lu = lu->GetValue (res)->AsDependencyObject ();
+			v = lu->GetValue (res);
+			if (!v)
+				return NULL;
+			lu = v->AsDependencyObject ();
 			expression_found = false;
 			prop = path + (i + 1);
 			// we can ignore this, since we pull the lookup object when we finish a ( ) block

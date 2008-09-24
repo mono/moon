@@ -1,3 +1,9 @@
+2008-09-24  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* dependencyproperty.cpp: Fix SIGSEGV when parsing something that
+	does not exists.
+	[Fix bug #429396]
+
 2008-09-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline-ui.cpp, pipeline-ui.h: UI to download and install codecs.
