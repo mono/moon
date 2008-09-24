@@ -44,12 +44,16 @@
 char*
 Plugin_GetMIMEDescription (void)
 {
-	return (MIME_TYPES_DESCRIPTION);
+	return (char *) MIME_TYPES_DESCRIPTION;
 }
 
 
-PluginObject::PluginObject (NPP npp, int argc, char* argn[], char* argv[]) : instance (npp), shocker_control (NULL), auto_capture (NULL)
+PluginObject::PluginObject (NPP npp, int argc, char *argn[], char *argv[])
 {
+	shocker_control = NULL;
+	auto_capture = NULL;
+	instance = npp;
+	
 	for (int i = 0; i < argc; i++) {
 		if (argn[i] == NULL)
 			continue;
@@ -116,10 +120,10 @@ PluginObject::GetValue (NPPVariable variable, void *value)
 
 	switch (variable) {
 	case NPPVpluginNameString:
-		*((char **) value) = PLUGIN_NAME;
+		*((char **) value) = (char *) PLUGIN_NAME;
 		break;
 	case NPPVpluginDescriptionString:
-		*((char **) value) = PLUGIN_DESCRIPTION;
+		*((char **) value) = (char *) PLUGIN_DESCRIPTION;
 		break;
 	case NPPVpluginScriptableNPObject:
 		*((NPObject**) value) = GetShockerControl ();
