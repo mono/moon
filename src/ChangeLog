@@ -1,3 +1,7 @@
+2008-09-24  Jeffrey Stedfast  <fejj@novell.com>
+
+	* dependencyproperty.cpp (resolve_property_path): Fixicated.
+
 2008-09-24  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* pipeline.cpp: Fix a valgrind complaint when a NULL parameter is 

@@ -283,6 +283,7 @@ resolve_property_path (DependencyObject **o, const char *path)
 	DependencyObject *lu = *o;
 	Collection *collection;
 	char *p, *name = NULL;
+	bool indexed = false;
 	Value *value;
 	Type *type;
 	int index;
@@ -341,18 +342,23 @@ resolve_property_path (DependencyObject **o, const char *path)
 				}
 			}
 			
+			indexed = false;
 			g_free (name);
+			inptr++;
 			break;
 		case '.':
-			// do nothing unless we've processed an expression
-			if (!res)
-				break;
-			
-			// make sure that we are getting what we expect
-			if (!(value = lu->GetValue (res)) || !(lu = value->AsDependencyObject ()))
-				goto error;
+			// resolve the dependency property
+			if (res && !indexed) {
+				// make sure that we are getting what we expect
+				if (!(value = lu->GetValue (res)))
+					goto error;
+				
+				if (!(lu = value->AsDependencyObject ()))
+					goto error;
+			}
 			
 			expression_found = false;
+			indexed = false;
 			prop = inptr;
 			break;
 		case '[':
@@ -378,6 +384,7 @@ resolve_property_path (DependencyObject **o, const char *path)
 			if (!(lu = value->AsDependencyObject ()))
 				goto error;
 			
+			indexed = true;
 			break;
 		}
 	}
