@@ -1,3 +1,13 @@
+2008-09-24  Aaron Bockover  <abockover@novell.com>
+
+	* pipeline-ui.cpp: 
+	* pipeline-ui.h: Redesigned the dialog to conform to the GNOME HIG 
+	in regards to header messages, detail messages, spacing, padding, and
+	button layout; use a GtkDialog instead of a GtkWindow, and take all
+	input through the dialog's response signal; require the user to explicitly
+	tell us that they never want to see the installer again instead of 
+	assuming on cancel; fix crash when cancelling while downloading
+
 2008-09-24  Jeffrey Stedfast  <fejj@novell.com>
 
 	* dependencyproperty.cpp (resolve_property_path): Fixicated.

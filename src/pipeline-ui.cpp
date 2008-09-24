@@ -24,7 +24,11 @@
 #define EULA_URL "http://anonsvn.mono-project.com/viewvc/trunk/moon/LICENSE?revision=112447"
 #define CODEC_URL "http://localhost:8080/libmscodecs.so"
 
-#define LOG_UI(...)// printf (__VA_ARGS__);
+//Use these for testing the downloader UI, they're large and slow
+//#define EULA_URL "http://download.banshee-project.org/banshee/banshee-1-1.3.1.changes"
+//#define CODEC_URL "http://kirk.provo.novell.com/dist/install/SLES-11-Beta1/SLES-11-DVD-x86_64-Beta1-mini.iso"
+
+#define LOG_UI(...) printf (__VA_ARGS__);
 
 bool CodecDownloader::running = false;
 
@@ -34,64 +38,47 @@ CodecDownloader::CodecDownloader (Surface *surf)
 	eula = NULL;
 	state = 0;
 	dl = NULL;
-	window = NULL;
+	dialog = NULL;
 	vbox = NULL;
-	hbox = NULL;
-	label = NULL;
-	accept_button = NULL;
-	cancel_button = NULL;
+	header_label = NULL;
+	message_label = NULL;
 	progress_bar = NULL;
 	eula_scrollwindow = NULL;
 	eula_buffer = NULL;
 	eula_view = NULL;
-	logo = NULL;
+	accept_button = NULL;
+	cancel_button = NULL;
+	icon = NULL;
+	dont_ask = NULL;
 }
 
 CodecDownloader::~CodecDownloader ()
 {
 	g_free (eula);
-	if (dl)
+	if (dl != NULL) {
 		dl->unref ();
+	}
 	running = false;
 }
 
 void
 CodecDownloader::ShowUI (Surface *surface)
 {
-	CodecDownloader *cd;
-	
-	if (running)
+	if (running) {
 		return;
-		
-	cd = new CodecDownloader (surface);
+	}
+
+	CodecDownloader *cd = new CodecDownloader (surface);
 	cd->Show ();
 	cd->unref ();
 }
 
+// ----- Event Proxies -----
+
 void
-CodecDownloader::Close ()
+CodecDownloader::ResponseEventHandler (GtkDialog *dialog, gint response, gpointer data)
 {
-	gtk_widget_destroy (GTK_WIDGET (window));
-	unref ();
-	running = false;
-}
-
-gboolean
-CodecDownloader::DeleteEventHandler (GtkWidget *widget, GdkEvent *e, gpointer data)
-{
-	return ((CodecDownloader *) data)->DeleteEvent (widget, e);
-}
-
-gboolean
-CodecDownloader::CancelClickedHandler (GtkButton *widget, CodecDownloader *cd)
-{
-	return cd->CancelClicked (widget);
-}
-
-gboolean
-CodecDownloader::AcceptClickedHandler (GtkButton *widget, CodecDownloader *cd)
-{
-	return cd->AcceptClicked (widget);
+	((CodecDownloader *) data)->ResponseEvent (dialog, (GtkResponseType)response);
 }
 
 void
@@ -112,48 +99,157 @@ CodecDownloader::DownloadProgressChangedHandler (EventObject *sender, EventArgs 
 	((CodecDownloader *) closure)->DownloadProgressChanged (sender, args);
 }
 
-gboolean
-CodecDownloader::DeleteEvent (GtkWidget *widget, GdkEvent *e)
+// ----- Event Handlers -----
+
+void
+CodecDownloader::ResponseEvent (GtkDialog *dialog, GtkResponseType response)
 {
-	LOG_UI ("CodecDownloader::DeleteEvent ()\n");
-	
-	Close ();
-	
-	return TRUE;
+	LOG_UI ("CodecDownloader::ResponseEvent (%d)\n", response);
+
+	switch (response) {
+	case GTK_RESPONSE_CANCEL:
+		if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (dont_ask))) {
+			LOG_UI ("Setting DontInstallMSCodecs\n");
+			configuration.SetBooleanValue ("Codecs", "DontInstallMSCodecs", true);
+			configuration.Save ();
+		}
+
+		state = 5;
+		Close ();
+		return;
+	case GTK_RESPONSE_DELETE_EVENT:
+		Close ();
+		return;
+	case GTK_RESPONSE_OK:
+		AcceptClicked ();
+		return;
+	default:
+		return;
+	}
 }
 
-gboolean
-CodecDownloader::CancelClicked (GtkButton *widget)
+void
+CodecDownloader::DownloadProgressChanged (EventObject *sender, EventArgs *args)
 {
-	LOG_UI ("CodecDownloader::CancelClicked ()\n");
-	
-	configuration.SetBooleanValue ("Codecs", "DontInstallMSCodecs", true);
-	configuration.Save ();
-	state = 5;
-	Close ();
-	
-	return TRUE;
+	double progress = dl->GetDownloadProgress ();
+	LOG_UI ("CodecDownloader::DownloadProgressChanged (): %.2f\n", progress);	
+	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (progress_bar), progress);
 }
 
-gboolean
-CodecDownloader::AcceptClicked (GtkButton *widget)
+void
+CodecDownloader::DownloadFailed (EventObject *sender, EventArgs *args)
+{
+	ErrorEventArgs *eea = (ErrorEventArgs *) args;
+	gchar *msg;
+	
+	LOG_UI ("CodecDownloader::DownloadFailed ()\n");
+
+	msg = g_strdup_printf ("An error occurred while downloading the %s", state == 1 
+		? "End User License Agreement." 
+		: "add-on software."); 
+
+	SetHeader ((const gchar *)msg);
+	SetMessage (eea->error_message);
+
+	ToggleProgress (false);
+
+	gtk_button_set_label (GTK_BUTTON (accept_button), GTK_STOCK_CLOSE);
+	gtk_dialog_set_response_sensitive (GTK_DIALOG (dialog), GTK_RESPONSE_OK, true);
+	gtk_widget_hide (cancel_button);
+	
+	g_free (msg);
+	
+	state = 6;
+}
+
+void
+CodecDownloader::DownloadCompleted (EventObject *sender, EventArgs *args)
+{
+	guint64 size;
+
+	gchar *downloaded_file = NULL;
+	gchar *codec_path = NULL;
+	gchar *codec_dir = NULL;
+	int codec_fd = 0;
+	GtkTextIter iter = { 0 };
+	
+	LOG_UI ("CodecDownloader::DownloadCompleted ()\n");
+	
+	ToggleProgress (false);
+
+	switch (state) {
+	case 1: // downloading eula, we're now finished downloading the eula
+		eula = dl->GetResponseText (NULL, &size);
+
+		SetHeader ("End User License Agreement");
+		SetMessage ("Before the required software can be installed, you must first agree "
+			"to the End User License Agreement below.");
+		ToggleEula (true);
+
+		gtk_button_set_label (GTK_BUTTON (accept_button), "_Accept");
+		gtk_text_buffer_set_text (eula_buffer, eula, strlen (eula));
+		gtk_text_view_get_iter_at_location (GTK_TEXT_VIEW (eula_view), &iter, 0, 0);
+		gtk_text_view_scroll_to_iter (GTK_TEXT_VIEW (eula_view), &iter, 0, true, 0, 0);
+
+		gtk_dialog_set_response_sensitive (GTK_DIALOG (dialog), GTK_RESPONSE_OK, true);
+
+		state = 2;
+		break;
+	case 3: // downloading codec, we're now finished downloading the codec
+
+		// TODO: Save the codec into some other directory
+		codec_path = g_build_filename (g_get_user_config_dir (), "moonlight", "libmscodecs.so", NULL);
+		codec_dir = g_path_get_dirname (codec_path);
+
+		downloaded_file = dl->GetDownloadedFilename (NULL);
+
+		errno = 0;
+
+		if (g_mkdir_with_parents (codec_dir, 0700) == -1 ||
+			(codec_fd = open (codec_path, O_CREAT | O_TRUNC | O_WRONLY, 0700)) == -1 ||
+			CopyFileTo (downloaded_file, codec_fd) == -1) {
+			SetHeader ("An error occurred when installing the software");
+			SetMessage (strerror (errno));
+		} else {
+			SetHeader ("Software successfully downloaded and installed!");
+			SetMessage ("Please refresh the web page you were viewing to allow the new software to take effect.");
+
+			configuration.SetStringValue ("Codecs", "MSCodecsPath", codec_path);
+			configuration.Save ();
+			Media::RegisterMSCodecs ();
+		}
+		
+		g_free (codec_path);
+		g_free (codec_dir);
+		g_free (downloaded_file);
+
+		gtk_widget_hide (cancel_button);
+		gtk_button_set_label (GTK_BUTTON (accept_button), GTK_STOCK_CLOSE);
+		gtk_dialog_set_response_sensitive (GTK_DIALOG (dialog), GTK_RESPONSE_OK, true);
+
+		state = 4;
+		break;
+	default:
+		printf ("CodecDownloader::DownloadCompleted (): Invalid state: %i\n", state);
+		break;
+	}
+}
+
+void
+CodecDownloader::AcceptClicked ()
 {
 	LOG_UI ("CodecDownloader::AcceptClicked\n");
 	
-	gtk_progress_bar_set_fraction (progress_bar, 0.0);
-	gtk_widget_show_all (GTK_WIDGET (progress_bar));
+	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (progress_bar), 0.0);
+	ToggleProgress (true);
 
-	if (!dl) {
-		dl = surface->CreateDownloader ();
-		dl->AddHandler (Downloader::DownloadProgressChangedEvent, DownloadProgressChangedHandler, this);
-		dl->AddHandler (Downloader::DownloadFailedEvent, DownloadFailedHandler, this);
-		dl->AddHandler (Downloader::CompletedEvent, DownloadCompletedHandler, this);
-	}
+	CreateDownloader ();
 	
 	switch (state) {
 	case 0: // initial, waiting for user input
-		gtk_label_set_text (label, "Downloading eula...");
-		gtk_widget_set_sensitive (GTK_WIDGET (accept_button), false);
+		SetHeader ("Downloading license agreement...");
+		HideMessage ();
+		gtk_dialog_set_response_sensitive (GTK_DIALOG (dialog), GTK_RESPONSE_OK, false);
 		
 		dl->Open ("GET", EULA_URL, NoPolicy);
 		dl->Send ();
@@ -161,9 +257,10 @@ CodecDownloader::AcceptClicked (GtkButton *widget)
 		state = 1;
 		break;
 	case 2: // eula downloaded, waiting for user input
-		gtk_label_set_text (label, "Downloading codecs...");
-		gtk_widget_hide (GTK_WIDGET (eula_scrollwindow));
-		gtk_widget_set_sensitive (GTK_WIDGET (accept_button), false);
+		SetHeader ("Downloading the required software...");
+		HideMessage ();
+		ToggleEula (false);
+		gtk_dialog_set_response_sensitive (GTK_DIALOG (dialog), GTK_RESPONSE_OK, false);
 
 		dl->Open ("GET", CODEC_URL, NoPolicy);
 		dl->Send ();
@@ -178,115 +275,109 @@ CodecDownloader::AcceptClicked (GtkButton *widget)
 		printf ("CodecDownloader::AcceptClicked (): Invalid state: %i\n", state);
 		break;
 	}
-	
-	return TRUE;
 }
 
+// ----- Utilities -----
 
 void
-CodecDownloader::DownloadFailed (EventObject *sender, EventArgs *args)
+CodecDownloader::CreateDownloader ()
 {
-	ErrorEventArgs *eea = (ErrorEventArgs *) args;
-	gchar *msg;
-	
-	LOG_UI ("CodecDownloader::DownloadFailed ()\n");
-
-	msg = g_strdup_printf ("There was an error while downloading the %s: %s.", state == 1 ? "eula" : "codec", eea->error_message);
-	
-	gtk_label_set_text (label, msg);
-	gtk_button_set_label (accept_button, "_Close");
-	gtk_widget_set_sensitive (GTK_WIDGET (accept_button), true);
-	gtk_widget_hide (GTK_WIDGET (cancel_button));
-	gtk_widget_hide (GTK_WIDGET (progress_bar));
-	
-	g_free (msg);
-	
-	state = 6;
-}
-
-void
-CodecDownloader::DownloadCompleted (EventObject *sender, EventArgs *args)
-{
-	guint64 size;
-	gchar *msg = NULL;
-	gchar *downloaded_file = NULL;
-	gchar *codec_path = NULL;
-	gchar *codec_dir = NULL;
-	int codec_fd = 0;
-	
-	LOG_UI ("CodecDownloader::DownloadCompleted ()\n");
-	
-	gtk_widget_hide (GTK_WIDGET (progress_bar));
-
-	switch (state) {
-	case 1: // downloading eula, we're now finished downloading the eula
-		eula = dl->GetResponseText (NULL, &size);
-		gtk_label_set_text (label, "You need to accept the EULA before installing the codecs");
-		gtk_button_set_label (accept_button, "_Accept");
-		gtk_text_buffer_set_text (eula_buffer, eula, strlen (eula));
-		gtk_widget_show_all (GTK_WIDGET (eula_scrollwindow));
-		gtk_widget_set_sensitive (GTK_WIDGET (accept_button), true);
-
-		state = 2;
-		break;
-	case 3: // downloading codec, we're now finished downloading the codec
-
-		// TODO: Save the codec into some other directory
-		codec_path = g_build_filename (g_get_user_config_dir (), "moonlight", "libmscodecs.so", NULL);
-		codec_dir = g_path_get_dirname (codec_path);
-
-		downloaded_file = dl->GetDownloadedFilename (NULL);
-
-		errno = 0;
-		if (g_mkdir_with_parents (codec_dir, 0700) == -1) {
-			msg = g_strdup_printf ("Error while installing codecs: %s.\n", strerror (errno));
-		} else if ((codec_fd = open (codec_path, O_CREAT | O_TRUNC | O_WRONLY, 0700)) == -1) {
-			msg = g_strdup_printf ("Error while installing codecs: %s.\n", strerror (errno));
-		} else if (CopyFileTo (downloaded_file, codec_fd) == -1) {
-			msg = g_strdup_printf ("Error while installing codecs: %s.\n", strerror (errno));
-		} else {
-			msg = g_strdup ("Codecs successfully downloaded and installed.\nYou have to refresh the web page for the change to take effect.");
-			configuration.SetStringValue ("Codecs", "MSCodecsPath", codec_path);
-			configuration.Save ();
-			Media::RegisterMSCodecs ();
-		}
-		
-		g_free (codec_path);
-		g_free (codec_dir);
-		g_free (downloaded_file);
-				
-		gtk_label_set_text (label, msg);
-		gtk_widget_hide (GTK_WIDGET (cancel_button));
-		gtk_button_set_label (accept_button, "_Close");
-		gtk_widget_set_sensitive (GTK_WIDGET (accept_button), true);
-
-		g_free (msg);
-
-		state = 4;
-		break;
-	default:
-		printf ("CodecDownloader::DownloadCompleted (): Invalid state: %i\n", state);
-		break;
+	if (dl == NULL) {
+		dl = surface->CreateDownloader ();
+		dl->AddHandler (Downloader::DownloadProgressChangedEvent, DownloadProgressChangedHandler, this);
+		dl->AddHandler (Downloader::DownloadFailedEvent, DownloadFailedHandler, this);
+		dl->AddHandler (Downloader::CompletedEvent, DownloadCompletedHandler, this);
 	}
 }
 
 void
-CodecDownloader::DownloadProgressChanged (EventObject *sender, EventArgs *args)
+CodecDownloader::DestroyDownloader ()
 {
-	double progress = dl->GetDownloadProgress ();
-	
-	LOG_UI ("CodecDownloader::DownloadProgressChanged (): %.2f\n", progress);
-	
-	gtk_progress_bar_set_fraction (progress_bar, progress);
+	if (dl != NULL) {
+		dl->RemoveHandler (Downloader::DownloadProgressChangedEvent, DownloadProgressChangedHandler, this);
+		dl->RemoveHandler (Downloader::DownloadFailedEvent, DownloadFailedHandler, this);
+		dl->RemoveHandler (Downloader::CompletedEvent, DownloadCompletedHandler, this);
+		dl->unref ();
+		dl = NULL;
+	}
 }
+
+void
+CodecDownloader::SetHeader (const gchar *message)
+{
+	gchar *message_full = g_strdup_printf ("<big><b>%s</b></big>", message);
+	gtk_label_set_markup (GTK_LABEL (header_label), message_full);
+	g_free (message_full);
+}
+
+void
+CodecDownloader::SetMessage (const gchar *message)
+{
+	gtk_label_set_text (GTK_LABEL (message_label), message);
+	gtk_widget_show (message_label);
+}
+
+void
+CodecDownloader::HideMessage ()
+{
+	gtk_widget_hide (message_label);
+}
+
+void
+CodecDownloader::ToggleEula (bool show)
+{
+	if (show) {
+		gtk_widget_show_all (eula_scrollwindow);
+	} else {
+		gtk_widget_hide (eula_scrollwindow);
+	}
+}
+
+void
+CodecDownloader::ToggleProgress (bool show)
+{
+	if (show) {
+		gtk_image_set_from_stock (GTK_IMAGE (icon), GTK_STOCK_SAVE, GTK_ICON_SIZE_DIALOG);
+		gtk_widget_hide (dont_ask);
+		gtk_widget_show_all (progress_bar);
+	} else {
+		gtk_image_set_from_stock (GTK_IMAGE (icon), GTK_STOCK_DIALOG_QUESTION, GTK_ICON_SIZE_DIALOG);
+		gtk_widget_hide (progress_bar);
+	}
+}
+
+void
+CodecDownloader::AdaptToParentWindow ()
+{
+	// try to find a parent for our window
+	// there must be a better way of doing this though :|
+	GList *toplevels = gtk_window_list_toplevels ();
+	GtkWindow *parent = NULL;
+
+	while (toplevels != NULL) {
+		const char *title = gtk_window_get_title (GTK_WINDOW (toplevels->data));
+		if (title != NULL && strstr (title, "Mozilla Firefox") != NULL) {
+			parent = GTK_WINDOW (toplevels->data);
+			break;
+		}
+
+		toplevels = toplevels->next;
+	}
+
+	if (parent != NULL) {
+		gtk_window_set_transient_for (GTK_WINDOW (dialog), parent);
+		gtk_window_set_position (GTK_WINDOW (dialog), GTK_WIN_POS_CENTER_ON_PARENT);
+	} else {
+		// If no parent could be found, just center in the screen
+		gtk_window_set_position (GTK_WINDOW (dialog), GTK_WIN_POS_CENTER);
+	}
+}
+
+// ----- Dialog Create/Destroy -----
 
 void
 CodecDownloader::Show ()
 {
-	extern const char moonlight_logo [];
-	extern int moonlight_logo_size;
-	const int pad = 5;
-	
 	if (configuration.GetBooleanValue ("Codecs", "DontInstallMSCodecs")) {
 		state = 5;
 		return;
@@ -298,87 +389,92 @@ CodecDownloader::Show ()
 		return;
 	}
 
-	// Create ui widgets
-	window = GTK_WINDOW (gtk_window_new (GTK_WINDOW_TOPLEVEL));
-	vbox = GTK_VBOX (gtk_vbox_new (FALSE, 0));
-	hbox = GTK_HBOX (gtk_hbox_new (FALSE, 5));
-	label = GTK_LABEL (gtk_label_new (NULL));
-	accept_button = GTK_BUTTON (gtk_button_new_with_mnemonic ("_Install"));
-	cancel_button = GTK_BUTTON (gtk_button_new_with_mnemonic ("_Don't install"));
-	progress_bar = GTK_PROGRESS_BAR (gtk_progress_bar_new ());
-	eula_scrollwindow = GTK_SCROLLED_WINDOW (gtk_scrolled_window_new (NULL, NULL));
-	eula_buffer = GTK_TEXT_BUFFER (gtk_text_buffer_new (NULL));
-	eula_view = GTK_TEXT_VIEW (gtk_text_view_new_with_buffer (eula_buffer));
-
-	// Try to load the logo
-	GdkPixbufLoader *loader = gdk_pixbuf_loader_new ();
-	if (gdk_pixbuf_loader_write (loader, (const guchar *) moonlight_logo, moonlight_logo_size, NULL) == TRUE) {
-		GdkPixbuf *buf = gdk_pixbuf_loader_get_pixbuf (loader);
-		if (buf != NULL)
-			logo = GTK_IMAGE (gtk_image_new_from_pixbuf (buf));
-	}
-	gdk_pixbuf_loader_close (loader, NULL);
-	g_object_unref (loader);
-
-	// try to find a parent for our window
-	// there must be a better way of doing this though :|
-	GList *toplevels = gtk_window_list_toplevels ();
-	GtkWindow *parent = NULL;
-	while (toplevels != NULL) {
-		const char *title = gtk_window_get_title (GTK_WINDOW (toplevels->data));
-
-		if (title != NULL && strstr (title, "Mozilla Firefox") != NULL) {
-			parent = GTK_WINDOW (toplevels->data);
-			break;
-		}
-		toplevels = toplevels->next;
-	}
-	if (parent != NULL) {
-		gtk_window_set_transient_for (window, parent);
-		gtk_window_set_position (window, GTK_WIN_POS_CENTER_ON_PARENT);
-	} else {
-		// If no parent could be found, just center in the screen
-		gtk_window_set_position (window, GTK_WIN_POS_CENTER);
-	}
-
-	// set properties
-	gtk_widget_set_app_paintable (GTK_WIDGET (window), TRUE);
-	gtk_window_set_default_size (window, 400, 300);
-	gtk_window_set_title (window, "Moonlight Codecs Installer");
-
-	gtk_label_set_text (label, "You do not have the codecs required to properly decode the media on this page, do you want to install the required codecs?");
-	gtk_label_set_line_wrap (label, TRUE);
-	gtk_misc_set_padding (GTK_MISC (label), pad, pad);
-
-	if (logo)
-		gtk_misc_set_padding (GTK_MISC (logo), pad, pad);
+	// Build HIG Dialog Box
+	dialog = gtk_dialog_new_with_buttons ("Moonlight Codecs Installer", NULL, (GtkDialogFlags)
+		(GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_NO_SEPARATOR), NULL);
+	cancel_button = gtk_dialog_add_button (GTK_DIALOG (dialog), GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
+	accept_button = gtk_dialog_add_button (GTK_DIALOG (dialog), "_Install Codecs", GTK_RESPONSE_OK);
+	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
 	
-	gtk_text_view_set_editable (eula_view, FALSE);
+	AdaptToParentWindow ();
+	gtk_container_set_border_width (GTK_CONTAINER (dialog), 5);
+	gtk_widget_set_size_request (dialog, 500, -1);
+	gtk_object_set (GTK_OBJECT (dialog), "resizable", false, NULL);
 
-	// create hierarchy	
-	gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET (vbox));
+	// HIG HBox
+	GtkWidget *hbox = gtk_hbox_new (false, 12);
+	gtk_container_set_border_width (GTK_CONTAINER (hbox), 5);
+	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), hbox, true, true, 0);
 
-	gtk_container_add (GTK_CONTAINER (eula_scrollwindow), GTK_WIDGET (eula_view));
+	// Message box icon
+	icon = gtk_image_new_from_stock (GTK_STOCK_DIALOG_QUESTION, GTK_ICON_SIZE_DIALOG);
+	gtk_misc_set_alignment (GTK_MISC (icon), 0.5f, 0.0f);
+	gtk_box_pack_start (GTK_BOX (hbox), icon, false, false, 0);
 
-	if (logo)
-		gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (logo), FALSE, TRUE, pad);
-	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (label), FALSE, TRUE, pad);
-	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (eula_scrollwindow), TRUE, TRUE, pad);
-	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (progress_bar), FALSE, TRUE, pad);
-	gtk_box_pack_end (GTK_BOX (vbox), GTK_WIDGET (hbox), FALSE, TRUE, pad);
+	// Contents container
+	vbox = gtk_vbox_new (false, 0);
+	gtk_box_set_spacing (GTK_BOX (vbox), 10);
+	gtk_box_pack_start (GTK_BOX (hbox), vbox, true, true, 0);
 
-	gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (cancel_button), TRUE, TRUE, pad);
-	gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (accept_button), TRUE, TRUE, pad);
+	// Header Label
+	header_label = gtk_label_new (NULL);
+	SetHeader ("Would you like to install the required add-on to play the content on this page?");
+	gtk_label_set_line_wrap (GTK_LABEL (header_label), true);
+	gtk_label_set_justify (GTK_LABEL (header_label), GTK_JUSTIFY_LEFT);
+	gtk_misc_set_alignment (GTK_MISC (header_label), 0.0f, 0.5f);
+	gtk_box_pack_start (GTK_BOX (vbox), header_label, false, false, 0);
 
-	gtk_signal_connect (GTK_OBJECT (window), "delete-event", G_CALLBACK (DeleteEventHandler), this);
-	gtk_signal_connect (GTK_OBJECT (cancel_button), "clicked", G_CALLBACK (CancelClickedHandler), this);
-	gtk_signal_connect (GTK_OBJECT (accept_button), "clicked", G_CALLBACK (AcceptClickedHandler), this);
+	// Secondary Label
+	message_label = gtk_label_new (NULL);
+	SetMessage ("This page requires additional software to be installed to play multimedia content.");
+	gtk_label_set_line_wrap (GTK_LABEL (message_label), true);
+	gtk_label_set_justify (GTK_LABEL (message_label), GTK_JUSTIFY_LEFT);
+	gtk_misc_set_alignment (GTK_MISC (message_label), 0.0f, 0.5f);
+	gtk_box_pack_start (GTK_BOX (vbox), message_label, false, false, 0);
+
+	dont_ask = gtk_check_button_new_with_label ("Do not ask me to install this add-on again");
+	gtk_box_pack_start (GTK_BOX (vbox), dont_ask, false, false, 0);
+
+	// Other elements
+	progress_bar = gtk_progress_bar_new ();
+	gtk_box_pack_start (GTK_BOX (vbox), progress_bar, false, false, 0);
 	
-	gtk_widget_show_all (GTK_WIDGET (window));
+	// EULA
+	eula_buffer = gtk_text_buffer_new (NULL);
+	eula_view = gtk_text_view_new_with_buffer (eula_buffer);
+	gtk_text_view_set_editable (GTK_TEXT_VIEW (eula_view), FALSE);
 
-	gtk_widget_hide (GTK_WIDGET (progress_bar));
-	gtk_widget_hide (GTK_WIDGET (eula_scrollwindow));
+	eula_scrollwindow = gtk_scrolled_window_new (NULL, NULL);
+	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (eula_scrollwindow), GTK_SHADOW_IN);
+	gtk_container_add (GTK_CONTAINER (eula_scrollwindow), eula_view);
+	gtk_widget_set_size_request (eula_scrollwindow, -1, 225);
+	gtk_box_pack_end (GTK_BOX (vbox), eula_scrollwindow, true, true, 0);
+
+	// Connect and go
+	g_signal_connect (G_OBJECT (dialog), "response", G_CALLBACK (ResponseEventHandler), this);
+
+	gtk_object_set (GTK_OBJECT (accept_button), "has-focus", true, "has-default", true, NULL);
+
+	gtk_widget_show_all (dialog);
+	ToggleProgress (false);
+	ToggleEula (false);
 
 	ref (); // We manage our lifetime ourself
 	running = true;
 }
+
+void
+CodecDownloader::Close ()
+{
+	LOG_UI ("CodecDownloader::Close ()\n");
+
+	if (dl != NULL) {
+		dl->Abort ();
+		DestroyDownloader ();
+	}
+
+	gtk_widget_destroy (dialog);
+	unref ();
+	running = false;
+}
+

@@ -37,24 +37,21 @@ private:
 	Downloader *dl;
 	MoonlightConfiguration configuration;
 	
-	GtkWindow *window;
-	GtkVBox *vbox;
-	GtkHBox *hbox;
-	GtkLabel *label;
-	GtkButton *accept_button;
-	GtkButton *cancel_button;
-	GtkProgressBar *progress_bar;
-	GtkScrolledWindow *eula_scrollwindow;
+	GtkWidget *dialog;
+	GtkWidget *vbox;
+	GtkWidget *header_label;
+	GtkWidget *message_label;
+	GtkWidget *progress_bar;
+	GtkWidget *eula_scrollwindow;
 	GtkTextBuffer *eula_buffer;
-	GtkTextView *eula_view;
-	GtkImage *logo;
+	GtkWidget *eula_view;
+	GtkWidget *accept_button;
+	GtkWidget *cancel_button;
+	GtkWidget *icon;
+	GtkWidget *dont_ask;
 	
-	static gboolean DeleteEventHandler (GtkWidget *widget, GdkEvent *e, gpointer data);
-	static gboolean AcceptClickedHandler (GtkButton *widget, CodecDownloader *cd);
-	static gboolean CancelClickedHandler (GtkButton *widget, CodecDownloader *cd);
-	gboolean AcceptClicked (GtkButton *widget);
-	gboolean CancelClicked (GtkButton *widget);
-	gboolean DeleteEvent (GtkWidget *widget, GdkEvent *e);
+	static void ResponseEventHandler (GtkDialog *dialog, gint response, gpointer data);
+	void ResponseEvent (GtkDialog *dialog, GtkResponseType response);
 
 	static void DownloadProgressChangedHandler (EventObject *sender, EventArgs *args, gpointer closure);
 	static void DownloadCompletedHandler (EventObject *sender, EventArgs *args, gpointer closure);
@@ -64,6 +61,17 @@ private:
 	void DownloadCompleted (EventObject *sender, EventArgs *args);
 	void DownloadFailed (EventObject *sender, EventArgs *args);
 
+	void CreateDownloader ();
+	void DestroyDownloader ();
+
+	void ToggleEula (bool show);
+	void ToggleProgress (bool show);
+	void SetHeader (const gchar *message);
+	void SetMessage (const gchar *message);
+	void HideMessage ();
+	void AdaptToParentWindow ();
+
+	void AcceptClicked ();
 	void Close (); // Closes the window and unrefs ourself
 	void Show ();// Shows the codec installation ui and refs ourself
 	
