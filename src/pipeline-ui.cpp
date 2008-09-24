@@ -325,7 +325,9 @@ CodecDownloader::Show ()
 	GList *toplevels = gtk_window_list_toplevels ();
 	GtkWindow *parent = NULL;
 	while (toplevels != NULL) {
-		if (strstr (gtk_window_get_title (GTK_WINDOW (toplevels->data)), "Mozilla Firefox") != NULL) {
+		const char *title = gtk_window_get_title (GTK_WINDOW (toplevels->data));
+
+		if (title != NULL && strstr (title, "Mozilla Firefox") != NULL) {
 			parent = GTK_WINDOW (toplevels->data);
 			break;
 		}
