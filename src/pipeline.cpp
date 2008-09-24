@@ -51,6 +51,9 @@ Media::RegisterMSCodecs (void)
 	MoonlightConfiguration config;
 	char *libmscodecs_path = config.GetStringValue ("Codecs", "MSCodecsPath");
 
+	if (!libmscodecs_path)
+		return;
+
 	registering_ms_codecs = true;
 
 	if (!(g_file_test (libmscodecs_path, G_FILE_TEST_EXISTS) && g_file_test (libmscodecs_path, G_FILE_TEST_IS_REGULAR)))
