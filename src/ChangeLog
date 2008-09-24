@@ -1,3 +1,21 @@
+2008-09-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* pipeline-ui.cpp, pipeline-ui.h: UI to download and install codecs.
+	* pipeline-logo.cpp, pipeline-logo.inc: Renamed pipeline-logo.inc to
+	  pipeline-logo.cpp and made it an extern variable to avoid
+	  duplicating the entire image in the binary for every time we want
+	  to use it.
+	* pipeline.cpp, pipeline.h: RegisterMSCodecs: Read the path to ms
+	  codecs from our configuration, and always register ms codecs first
+	  in the list. NullDecoder: fix a buffer overrun and update according
+	  to pipeline-logo changes.
+	* moonlightconfiguration.cpp, moonlightconfiguration.h: Added: a class
+	  to store our configuration.
+	* media.cpp: MediaElement::MediaOpened: if any of the streams is
+	  handled by a nulldecoder, it means we don't have ms codecs
+	  installed. If so, show the codec downloader UI.
+	* Makefile.am, src.mdp: Updated.
+
 2008-09-23  Chris Toshok  <toshok@ximian.com>
 
 	* dependencyobject.cpp (DependencyObject::MergeTemporaryNameScopes):

@@ -1,4 +1,17 @@
-const char image [] = {
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/*
+ * pipeline-logo.cpp
+ *
+ * Contact:
+ *   Moonlight List (moonlight-list@lists.ximian.com)
+ *
+ * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ *
+ * See the LICENSE file included with the distribution for details.
+ * 
+ */
+
+extern const char moonlight_logo  [] = {
 '\x42', '\x4D', '\x2E', '\x35', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x36', '\x00', '\x00', '\x00', '\x28', '\x00', 
 '\x00', '\x00', '\x96', '\x00', '\x00', '\x00', '\x1E', '\x00', '\x00', '\x00', '\x01', '\x00', '\x18', '\x00', '\x00', '\x00', 
 '\x00', '\x00', '\xF8', '\x34', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', 
@@ -849,4 +862,7 @@ const char image [] = {
 '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', 
 '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', 
 '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', 
-'\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\xB3', '\x08', NULL };
+'\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\x5D', '\xB3', '\x08'};
+
+extern int moonlight_logo_size;
+int moonlight_logo_size = sizeof (moonlight_logo);

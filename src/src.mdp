@@ -213,7 +213,11 @@
     <File name="textbox.h" subtype="Code" buildaction="Nothing" />
     <File name="thickness.cpp" subtype="Code" buildaction="Compile" />
     <File name="tilesource.cpp" subtype="Code" buildaction="Compile" />
-    <File name="pipeline-logo.inc" subtype="Code" buildaction="Nothing" />
+    <File name="pipeline-ui.cpp" subtype="Code" buildaction="Compile" />
+    <File name="pipeline-ui.h" subtype="Code" buildaction="Nothing" />
+    <File name="moonlightconfiguration.cpp" subtype="Code" buildaction="Compile" />
+    <File name="moonlightconfiguration.h" subtype="Code" buildaction="Nothing" />
+    <File name="pipeline-logo.cpp" subtype="Code" buildaction="Compile" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>

@@ -40,6 +40,7 @@ libmoon_include_HEADERS = 	\
 	mms-downloader.h	\
 	moon-path.h		\
 	moon-curves.h		\
+	moonlightconfiguration.h	\
 	applier.h		\
 	mp3.h			\
 	mplayer.h		\
@@ -47,6 +48,7 @@ libmoon_include_HEADERS = 	\
 	openfile.h		\
 	panel.h			\
 	pipeline.h		\
+	pipeline-ui.h	\
 	playlist.h		\
 	point.h			\
 	rect.h			\
@@ -106,6 +108,7 @@ libmoon_la_SOURCES = 		\
 	mms-downloader.cpp	\
 	moon-path.c		\
 	moon-curves.c		\
+	moonlightconfiguration.cpp	\
 	applier.cpp		\
 	enums.cpp		\
 	mp3.cpp			\
@@ -114,6 +117,8 @@ libmoon_la_SOURCES = 		\
 	openfile.cpp		\
 	panel.cpp		\
 	pipeline.cpp		\
+	pipeline-ui.cpp		\
+	pipeline-logo.cpp		\
 	point.cpp		\
 	playlist.cpp		\
 	rect.cpp		\
@@ -194,7 +199,6 @@ endif
 
 EXTRA_DIST = \
 	alpha-premul-table.inc \
-	pipeline-logo.inc \
 	zip/README \
 	zip/ChangeLogUnzip \
 	$(libmooninclude_headers)

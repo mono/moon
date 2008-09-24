@@ -25,6 +25,7 @@
 #include "playlist.h"
 #include "geometry.h"
 #include "pipeline.h"
+#include "pipeline-ui.h"
 
 #define d(x)
 #define e(x)
@@ -801,10 +802,23 @@ MediaElement::SetMedia (Media *media)
 bool
 MediaElement::MediaOpened (Media *media)
 {
-	const char *demux_name = media->GetDemuxer ()->GetName ();
+	IMediaDemuxer *demuxer = media->GetDemuxer ();
+	const char *demux_name = demuxer->GetName ();
+	bool missing_codecs = false;
 	
 	d(printf ("MediaElement::MediaOpened (%p), demuxer name: %s, download complete: %i\n", media, demux_name, flags & DownloadComplete));
 	
+	for (int i = 0; i < demuxer->GetStreamCount (); i++) {
+		IMediaStream *stream = demuxer->GetStream (i);
+		const char *decoder_name = stream->GetDecoder ()->GetName ();
+		if (decoder_name != NULL && strcmp (decoder_name, "NullDecoder") == 0) {
+			missing_codecs = true;
+			break;
+		}
+	}
+	if (missing_codecs)
+		CodecDownloader::ShowUI (GetSurface ());
+
 	if (demux_name != NULL && strcmp (demux_name, "ASXDemuxer") == 0) {
 		Playlist *pl = ((ASXDemuxer *) media->GetDemuxer ())->GetPlaylist ();
 		if (playlist == NULL) {

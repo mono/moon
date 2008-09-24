@@ -300,6 +300,7 @@ private:
 	bool opened;
 	bool stopping;
 	bool stopped; // If the worker thread has been stopped.
+	static bool registering_ms_codecs;
 	
 	MediaElement *element;
 	Downloader *downloader;
@@ -366,6 +367,8 @@ public:
 	static void RegisterDemuxer (DemuxerInfo *info);
 	static void RegisterDecoder (DecoderInfo *info);
 	static void RegisterConverter (ConverterInfo *info);
+	
+	static void RegisterMSCodecs ();
 	
 	static void Initialize ();
 	static void Shutdown ();
@@ -552,7 +555,8 @@ public:
 	IMediaStream *stream;
 	
 	virtual const char* GetTypeName () { return "IMediaDecoder"; }
-}; // Set when this is the callback in Media::GetNextFrameAsync
+	virtual const char *GetName () { return GetTypeName (); }
+};
 
 
 /*
@@ -1064,7 +1068,7 @@ public:
 	
 	virtual MediaResult DecodeFrame (MediaFrame *frame);
 	virtual MediaResult Open () { return MEDIA_SUCCESS; }
-	virtual const char *GetName () { return "ASFMarkerDecoder"; }
+	virtual const char *GetTypeName () { return "ASFMarkerDecoder"; }
 }; 
 
 class ASFMarkerDecoderInfo : public DecoderInfo {
@@ -1099,6 +1103,8 @@ public:
 	NullDecoder (Media *media, IMediaStream *stream);
 	virtual MediaResult DecodeFrame (MediaFrame *frame);
 	virtual MediaResult Open ();
+	
+	virtual const char *GetTypeName () { return "NullDecoder"; }
 };
 
 class NullDecoderInfo : public DecoderInfo {	

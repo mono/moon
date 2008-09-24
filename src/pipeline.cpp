@@ -34,19 +34,29 @@
 #include "yuv-converter.h"
 #include "runtime.h"
 #include "mms-downloader.h"
+#include "pipeline-ui.h"
 
 #define LOG_PIPELINE(...)// printf (__VA_ARGS__);
 #define LOG_PIPELINE_ERROR(...) printf (__VA_ARGS__);
 #define LOG_PIPELINE_ERROR_CONDITIONAL(x, ...) if (x) printf (__VA_ARGS__);
 #define LOG_FRAMEREADERLOOP(...)// printf (__VA_ARGS__);
 
+bool Media::registering_ms_codecs = false;
+
 void
-register_mscodecs (void)
+Media::RegisterMSCodecs (void)
 {
 	void (*reg) (void);
 	void *dl;
+	MoonlightConfiguration config;
+	char *libmscodecs_path = config.GetStringValue ("Codecs", "MSCodecsPath");
+
+	registering_ms_codecs = true;
+
+	if (!(g_file_test (libmscodecs_path, G_FILE_TEST_EXISTS) && g_file_test (libmscodecs_path, G_FILE_TEST_IS_REGULAR)))
+		libmscodecs_path = g_strdup ("libmscodecs.so");
 	
-	dl = dlopen ("libmscodecs.so", RTLD_LAZY);
+	dl = dlopen (libmscodecs_path, RTLD_LAZY);
 	if (dl != NULL) {
 		*(void **) (&reg) = dlsym (dl, "register_mswma");
 		if (reg != NULL)
@@ -62,6 +72,7 @@ register_mscodecs (void)
 	} else {
 		printf ("Moonlight: Cannot load libmscodecs.so: %s\n", dlerror ());
 	}
+	g_free (libmscodecs_path);
 
 	// the mp3 codec lives in a separate so until it's integrated into libmscodecs.so
 	dl = dlopen ("libmscodecsmp3.so", RTLD_LAZY);
@@ -75,6 +86,8 @@ register_mscodecs (void)
 	} else {
 		printf ("Moonlight: Cannot load libmscodecsmp3.so: %s\n", dlerror ());
 	}
+	
+	registering_ms_codecs = false;
 }
 
 
@@ -251,15 +264,26 @@ Media::RegisterConverter (ConverterInfo *info)
 void
 Media::RegisterDecoder (DecoderInfo *info)
 {
+	MediaInfo *current;
+	
 	//printf ("Media::RegisterDecoder (%p)\n", info);
 	info->next = NULL;
 	if (registered_decoders == NULL) {
 		registered_decoders = info;
 	} else {
-		MediaInfo *current = registered_decoders;
-		while (current->next != NULL)
-			current = current->next;
-		current->next = info;
+		if (registering_ms_codecs) {
+			// MS codecs might get registered after all other codecs (right after installing them), 
+			// which means after the null codecs so if they don't get special treatment, they won't
+			// get used until the next browser restart (when they're registered normally).
+			// So instead of appending them, we prepend them.
+			info->next = registered_decoders;
+			registered_decoders = info;
+		} else {
+			current = registered_decoders;
+			while (current->next != NULL)
+				current = current->next;
+			current->next = info;
+		}
 	}
 	if (moonlight_flags & RUNTIME_INIT_CODECS_DEBUG)
 		printf ("Moonlight: Codec has been registered: %s\n", info->GetName ());
@@ -284,7 +308,7 @@ Media::Initialize ()
 	// decoders
 	Media::RegisterDecoder (new ASFMarkerDecoderInfo ());
 	if (!(moonlight_flags & RUNTIME_INIT_DISABLE_MS_CODECS)) {
-		register_mscodecs ();
+		RegisterMSCodecs ();
 	}
 #ifdef INCLUDE_FFMPEG
 	if (!(moonlight_flags & RUNTIME_INIT_DISABLE_FFMPEG_CODECS)) {
@@ -2651,7 +2675,7 @@ IMediaSource::Peek (void *buf, guint32 n, bool block, gint64 start)
 	if (start == -1)
 		start = GetPositionInternal ();
 
-	WaitForPosition (block, start + n);
+	WaitForPosition (block, start + n - 1);
 
 	result = (gint64) PeekInternal (buf, n, start) == (gint64) n;
 
@@ -3013,7 +3037,8 @@ NullDecoder::OpenVideo ()
 	guint32 dest_i = 0;
 	
 	// We assume that the input image is a 24 bit bitmap (bmp), stored bottum up and flipped vertically.
-	#include "pipeline-logo.inc" // <- image is defined here
+	extern const char moonlight_logo [];
+	const char *image = moonlight_logo;
 
 	guint32 img_offset = *((guint32*)(image + 10));
 	guint32 img_width  = *((guint32*)(image + 18));
@@ -3025,9 +3050,10 @@ NullDecoder::OpenVideo ()
 	
 	// create the buffer for our image
 	logo_size = dest_height * dest_width * 4;
-	logo = (guint8*) g_malloc (dest_height * dest_width * 4);
+	logo = (guint8*) g_malloc (logo_size);
 
 	// write our image tiled into the destination rectangle, flipped horizontally
+	dest_i = 4;
 	for (guint32 dest_h = 0; dest_h < dest_height; dest_h++) {
 		for (guint32 dest_w = 0; dest_w < dest_width; dest_w++) {
 			img_h = dest_h % img_height;
@@ -3048,7 +3074,7 @@ NullDecoder::OpenVideo ()
 		for (guint32 dest_w = 0; dest_w < dest_width / 2; dest_w++) {
 			guint32 tmp;
 			guint32 a = (dest_h * dest_width + dest_w) * 4;
-			guint32 b = (dest_h * dest_width + dest_width - dest_w) * 4;
+			guint32 b = (dest_h * dest_width + dest_width - dest_w) * 4 - 4;
 			for (guint32 c = 0; c < 3; c++) {
 				tmp = logo [a + c];
 				logo [a + c] = logo [b + c];
