@@ -1,3 +1,8 @@
+2008-09-24  Jeffrey Stedfast  <fejj@novell.com>
+
+	* dependencyproperty.cpp (resolve_property_path): Cleaned up the
+	code, robustified, and fixed bug #429396.
+
 2008-09-24  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* dependencyproperty.cpp: Fix SIGSEGV when parsing something that

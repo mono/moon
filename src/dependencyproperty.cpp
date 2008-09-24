@@ -274,139 +274,124 @@ resolve_property_path (DependencyObject **o, const char *path)
 {
 	g_return_val_if_fail (o != NULL, NULL);
 	g_return_val_if_fail (path != NULL, NULL);
-
-	size_t c;
-	size_t len = strlen (path);
-	char *typen = NULL;
-	char *propn = NULL;
+	
+	const char *inend = path + strlen (path);
+	register const char *inptr = path;
+	const char *start, *prop = path;
 	bool expression_found = false;
 	DependencyProperty *res = NULL;
 	DependencyObject *lu = *o;
-	const char *prop = path;
-	Value *v = NULL;
+	Collection *collection;
+	char *p, *name = NULL;
+	Value *value;
+	Type *type;
+	int index;
 	
-	for (size_t i = 0; i < len; i++) {
-		switch (path [i]) {
+	while (inptr < inend) {
+		switch (*inptr++) {
 		case '(':
-		{
 			expression_found = true;
-
-			typen = NULL;
-			propn = NULL;
-			size_t estart = i + 1;
-			for (c = estart; c < len; c++) {
-				if (path [c] == '.') {
+			
+			start = inptr;
+			while (inptr < inend && *inptr != '.' && *inptr != ')')
+				inptr++;
+			
+			if (inptr == start)
+				goto error;
+			
+			if (*inptr == '.') {
+				// we found a type name, now we need to find the property name
+				if ((inptr - start) == 11 && !g_ascii_strncasecmp (start, "TextElement", 11)) {
 					// Some Beta versions of Blend had a bug where they would save the TextBlock
 					// properties as TextElement instead. Since Silverlight 1.0 works around this
 					// bug, we should too. Fixes http://silverlight.timovil.com and
 					// http://election.msn.com/podium08.aspx.
-					if ((c - estart) == 11 && !g_ascii_strncasecmp (path + estart, "TextElement", 11))
-						typen = g_strdup ("TextBlock");
-					else
-						typen = g_strndup (path + estart, c - estart);
-					estart = c + 1;
-					continue;
-				}
-				if (path [c] == ')') {
-					propn = g_strndup (path + estart, c - estart);
-					break;
-				}
-			}
-			
-			i = c;
-			
-			Type *t = NULL;
-			if (typen) {
-				t = Type::Find (typen);
-			} else
-				t = Type::Find (lu->GetObjectType ());
-			
-			if (!t || !propn || *propn == '\0') {
-				g_free (propn);
-				g_free (typen);
-				*o = NULL;
-				return NULL;
-			}
-			
-			res = DependencyProperty::GetDependencyProperty (t->GetKind (), propn);
-			if (!res) {
-				g_warning ("Can't find '%s' property in '%s'", propn, typen);
-				g_free (propn);
-				g_free (typen);
-				*o = NULL;
-				return NULL;
-			}
-
-			if (!res->IsAttached() && !lu->Is (t->GetKind ())) {
-				// We try to be gracefull here and do something smart...
-				res = DependencyProperty::GetDependencyProperty (lu->GetObjectType (), propn);
-				
-				if (! res) {
-					g_warning ("Got '%s' but expected a type of '%s'!", typen, lu->GetTypeName ());
-					g_free (propn);
-					g_free (typen);
-					*o = NULL;
-					return NULL;
+					type = Type::Find ("TextBlock");
 				} else {
-					g_warning ("Got '%s' but expected a type of '%s' ! "
-						   "Did you mean '%s.%s' ? Using that.",
-						   typen, lu->GetTypeName (), lu->GetTypeName (), propn);
+					name = g_strndup (start, inptr - start);
+					type = Type::Find (name);
+					g_free (name);
+				}
+				
+				inptr++;
+				start = inptr;
+				while (inptr < inend && *inptr != ')')
+					inptr++;
+				
+				if (inptr == start)
+					goto error;
+			} else {
+				type = Type::Find (lu->GetObjectType ());
+			}
+			
+			if (*inptr != ')' || !type)
+				goto error;
+			
+			name = g_strndup (start, inptr - start);
+			if (!(res = DependencyProperty::GetDependencyProperty (type->GetKind (), name))) {
+				g_free (name);
+				goto error;
+			}
+			
+			if (!res->IsAttached () && !lu->Is (type->GetKind ())) {
+				// We try to be gracefull here and do something smart...
+				if (!(res = DependencyProperty::GetDependencyProperty (lu->GetObjectType (), name))) {
+					g_free (name);
+					goto error;
 				}
 			}
-
-			g_free (propn);
-			g_free (typen);
+			
+			g_free (name);
 			break;
-		}
 		case '.':
-			// do not process unless we processed a '(' earlier
+			// do nothing unless we've processed an expression
 			if (!res)
 				break;
-			v = lu->GetValue (res);
-			if (!v)
-				return NULL;
-			lu = v->AsDependencyObject ();
+			
+			// make sure that we are getting what we expect
+			if (!(value = lu->GetValue (res)) || !(lu = value->AsDependencyObject ()))
+				goto error;
+			
 			expression_found = false;
-			prop = path + (i + 1);
-			// we can ignore this, since we pull the lookup object when we finish a ( ) block
+			prop = inptr;
 			break;
 		case '[':
-		{
-			int indexer = 0;
-
 			// Need to be a little more loving
-			if (path [i + 1] == 0)
-				break;
-
-			char *p;
-
-			indexer = strtol (path + i + 1, &p, 10);
-			i = p - path;
-
-			if (path [i] != ']'
-			    || path [i + 1] != '.')
+			if (*inptr == '\0')
 				break;
 			
-			Collection *col = lu->GetValue (res)->AsCollection ();
-			Value *n = col->GetValueAt (indexer);
+			index = strtol (inptr, &p, 10);
+			if (*p != ']' || *(p + 1) != '.')
+				break;
 			
-			if (n) {
-				lu = n->AsDependencyObject ();
-			} else {
-				g_warning ("%s collection doesn't have element %d!", lu->GetTypeName (), indexer);
-				*o = NULL;
-				return NULL;
-			}
-
-			i += 1;
+			inptr = p + 1;
+			
+			if (!(value = lu->GetValue (res)))
+				goto error;
+			
+			if (!(collection = value->AsCollection ()))
+				goto error;
+			
+			if (!(value = collection->GetValueAt (index)))
+				goto error;
+			
+			if (!(lu = value->AsDependencyObject ()))
+				goto error;
+			
 			break;
 		}
-		}
 	}
-
+	
 	if (!expression_found)
 		res = DependencyProperty::GetDependencyProperty (lu->GetObjectType (), prop);
-
+	
 	*o = lu;
+	
 	return res;
+	
+ error:
+	
+	*o = NULL;
+	
+	return NULL;
 }
