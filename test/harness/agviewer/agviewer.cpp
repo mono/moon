@@ -249,7 +249,7 @@ main(int argc, char **argv)
 
 	gtk_widget_set_usize (browser->moz_embed, frame_width, frame_height);
 	gtk_window_fullscreen (browser->top_level_window);
-	gtk_window_set_keep_above (browser->top_level_window, TRUE);
+	//gtk_window_set_keep_above (browser->top_level_window, TRUE);
 	gtk_widget_show_all (browser->moz_embed);
 	gtk_widget_show_all (GTK_WIDGET (browser->top_level_window));
 
