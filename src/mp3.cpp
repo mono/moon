@@ -762,7 +762,7 @@ FindMpegHeader (MpegFrameHeader *mpeg, MpegVBRHeader *vbr, IMediaSource *source,
 		
 		if ((n = (inend - inptr)) > 0) {
 			/* save the remaining bytes */
-			g_memmove (buf, inptr, n);
+			memmove (buf, inptr, n);
 		}
 		
 		/* if we scan more than 'MPEG_FRAME_LENGTH_MAX' bytes, this is unlikely to be an mpeg audio stream */
