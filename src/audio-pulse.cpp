@@ -713,6 +713,7 @@ PulsePlayer::OnContextStateChanged () {
 		sources.StartEnumeration ();
 		while ((source = (PulseSource *) sources.GetNext (false)) != NULL) {
 			source->Initialize ();
+			source->unref ();
 		}
 		UnlockLoop ();
 		break;
