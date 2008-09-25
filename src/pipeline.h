@@ -28,6 +28,9 @@
 #define CODEC_WMAV1 0x160
 #define CODEC_WMAV2 0x161
 
+#define MOONLIGHT_CODEC_ABI_VERSION 1
+typedef void (*register_codec) (int abi_version);
+
 /*
  *	Should be capable of:
  *	- play files and live streams

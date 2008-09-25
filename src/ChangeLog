@@ -1,3 +1,8 @@
+2008-09-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* pipeline.cpp, pipeline.h: Added an abi_version to codec registration
+	  functions.
+
 2008-09-24  Aaron Bockover  <abockover@novell.com>
 
 	* pipeline-ui.cpp: 

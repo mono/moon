@@ -46,30 +46,27 @@ bool Media::registering_ms_codecs = false;
 void
 Media::RegisterMSCodecs (void)
 {
-	void (*reg) (void);
+	register_codec reg;
 	void *dl;
 	MoonlightConfiguration config;
 	char *libmscodecs_path = config.GetStringValue ("Codecs", "MSCodecsPath");
 
-	if (!libmscodecs_path)
-		return;
-
 	registering_ms_codecs = true;
 
-	if (!(g_file_test (libmscodecs_path, G_FILE_TEST_EXISTS) && g_file_test (libmscodecs_path, G_FILE_TEST_IS_REGULAR)))
+	if (libmscodecs_path == NULL || !(g_file_test (libmscodecs_path, G_FILE_TEST_EXISTS) && g_file_test (libmscodecs_path, G_FILE_TEST_IS_REGULAR)))
 		libmscodecs_path = g_strdup ("libmscodecs.so");
 	
 	dl = dlopen (libmscodecs_path, RTLD_LAZY);
 	if (dl != NULL) {
-		*(void **) (&reg) = dlsym (dl, "register_mswma");
+		reg = (register_codec) dlsym (dl, "register_mswma");
 		if (reg != NULL)
-			(*reg)();
+			(*reg) (MOONLIGHT_CODEC_ABI_VERSION);
 		else
 			printf ("Moonlight: Cannot find register_mswma in libmscodecs.so.\n");
 
-		*(void **) (&reg) = dlsym (dl, "register_mswmv");
+		reg = (register_codec)  dlsym (dl, "register_mswmv");
 		if (reg != NULL)
-			(*reg)();
+			(*reg) (MOONLIGHT_CODEC_ABI_VERSION);
 		else
 			printf ("Moonlight: Cannot find register_mswmv in libmscodecs.so.\n");
 	} else {
@@ -80,9 +77,9 @@ Media::RegisterMSCodecs (void)
 	// the mp3 codec lives in a separate so until it's integrated into libmscodecs.so
 	dl = dlopen ("libmscodecsmp3.so", RTLD_LAZY);
 	if (dl != NULL) {
-		*(void **) (&reg) = dlsym (dl, "register_msmp3");
+		reg = (register_codec) dlsym (dl, "register_msmp3");
 		if (reg != NULL)
-			(*reg)();
+			(*reg) (MOONLIGHT_CODEC_ABI_VERSION);
 		else
 			printf ("Moonlight: Cannot find register_msmp3 in libmscodecsmp3.so.\n");
 		
