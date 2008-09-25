@@ -967,7 +967,7 @@ PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, u
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
 		//printf ("source_location = %s\n", stream->url);
 		this->source_location = g_strdup (stream->url);
-		if (surface != NULL & g_str_has_prefix (this->source_location, "http"))
+		if (surface != NULL && g_str_has_prefix (this->source_location, "http"))
 			surface->SetSourceLocation (this->source_location);
 		*stype = NP_ASFILEONLY;
 		return NPERR_NO_ERROR;
