@@ -344,6 +344,9 @@ Downloader::SetFilename (const char *fname)
 {
 	d (printf ("Downloader::SetFilename (%s)\n", fname));
 	
+	if (filename)
+		g_free (filename);
+
 	filename = g_strdup (fname);
 	((FileDownloader *)internal_dl)->setFilename (filename);
 }
