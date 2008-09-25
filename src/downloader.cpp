@@ -171,7 +171,7 @@ same_domain (const Uri *uri1, const Uri *uri2)
 bool
 validate_policy (const char *location, const char *uri, DownloaderAccessPolicy policy)
 {
-	if (!location && !uri) {
+	if (!location || !uri) {
 		printf ("location or uri is NULL, not checking policy\n");
 		return true;
 	}

@@ -1,5 +1,10 @@
 2008-09-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* downloader.cpp: validate_policy: Fix boolean logic according to
+	  comment, fixes crash.
+
+2008-09-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* media.cpp: Plug one more leak.
 
 2008-09-25  Stephane Delcroix  <sdelcroix@novell.com>
