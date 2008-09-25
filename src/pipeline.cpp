@@ -57,7 +57,7 @@ Media::RegisterMSCodecs (void)
 	void *dl;
 	MoonlightConfiguration config;
 	char *libmscodecs_path = config.GetStringValue ("Codecs", "MSCodecsPath");
-
+	const char *functions [] = {"register_mswma", "register_mswmv", "register_msmp3"};
 	registering_ms_codecs = true;
 
 	if (libmscodecs_path == NULL || !(g_file_test (libmscodecs_path, G_FILE_TEST_EXISTS) && g_file_test (libmscodecs_path, G_FILE_TEST_IS_REGULAR)))
@@ -65,27 +65,17 @@ Media::RegisterMSCodecs (void)
 	
 	dl = dlopen (libmscodecs_path, RTLD_LAZY);
 	if (dl != NULL) {
-		reg = (register_codec) dlsym (dl, "register_mswma");
-		if (reg != NULL)
-			(*reg) (MOONLIGHT_CODEC_ABI_VERSION);
-		else
-			printf ("Moonlight: Cannot find register_mswma in libmscodecs.so.\n");
-
-		reg = (register_codec)  dlsym (dl, "register_mswmv");
-		if (reg != NULL)
-			(*reg) (MOONLIGHT_CODEC_ABI_VERSION);
-		else
-			printf ("Moonlight: Cannot find register_mswmv in libmscodecs.so.\n");
-			
-		reg = (register_codec) dlsym (dl, "register_msmp3");
-		if (reg != NULL) {
-			(*reg) (MOONLIGHT_CODEC_ABI_VERSION);
-		} else {
-			printf ("Moonlight: Cannot find register_msmp3 in libmscodecsmp3.so.\n");
-		}
+		for (int i = 0; i < 3; i++) {
+			reg = (register_codec) dlsym (dl, functions [i]);
+			if (reg != NULL) {
+				(*reg) (MOONLIGHT_CODEC_ABI_VERSION);
+			} else if (moonlight_flags & RUNTIME_INIT_CODECS_DEBUG) {
+				printf ("Moonlight: Cannot find %s in %s.\n", functions [i], libmscodecs_path);
+			}
+		}		
 		registered_ms_codecs = true;
-	} else {
-		printf ("Moonlight: Cannot load libmscodecs.so: %s\n", dlerror ());
+	} else if (moonlight_flags & RUNTIME_INIT_CODECS_DEBUG) {
+		printf ("Moonlight: Cannot load %s: %s\n", libmscodecs_path, dlerror ());
 	}
 	g_free (libmscodecs_path);
 
