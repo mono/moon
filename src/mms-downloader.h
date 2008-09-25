@@ -105,7 +105,7 @@ class MmsDownloader : public InternalDownloader {
 
  public:
 	MmsDownloader (Downloader *dl);
-	~MmsDownloader ();
+	virtual ~MmsDownloader ();
 
 	void Open (const char *verb, const char *uri);
 	void Write (void *buf, gint32 offset, gint32 n);

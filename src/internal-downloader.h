@@ -33,7 +33,7 @@ class InternalDownloader {
 		this->dl = dl;
 	}
 
-	~InternalDownloader ()
+	virtual ~InternalDownloader ()
 	{
 	}
 

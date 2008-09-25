@@ -38,7 +38,7 @@ class FileDownloader : public InternalDownloader {
 
  public:
 	FileDownloader (Downloader *dl);
-	~FileDownloader ();
+	virtual ~FileDownloader ();
 
 	void Open (const char *verb, const char *uri);
 	void Write (void *buf, gint32 offset, gint32 n);
