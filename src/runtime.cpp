@@ -779,17 +779,21 @@ Surface::ShowFullScreenMessage ()
 	// Set the url in the box
 	if (url_block != NULL)  {
 		char *url = NULL;
-		if (g_str_has_prefix (source_location, "http://")) {
-			char* path = strchr (source_location + 7, '/');
-			if (path != NULL && path > source_location + 7) {
-				url = g_strndup (source_location, path - source_location);  
+		
+		if (source_location) {
+			if (g_str_has_prefix (source_location, "http://")) {
+				const char *path = strchr (source_location + 7, '/');
+				
+				if (path != NULL && path > source_location + 7) {
+					url = g_strndup (source_location, path - source_location);  
+				} else {
+					url = g_strdup (source_location);
+				}
+			} else if (g_str_has_prefix (source_location, "file://")) {
+				url = g_strdup ("file://");
 			} else {
 				url = g_strdup (source_location);
 			}
-		} else if (g_str_has_prefix (source_location, "file://")) {
-			url = g_strdup ("file://");
-		} else {
-			url = g_strdup (source_location);
 		}
 		
 		url_block->SetValue (TextBlock::TextProperty, url ? url : (char *) "file://");
