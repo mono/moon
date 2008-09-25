@@ -365,6 +365,7 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, uint16_t mo
 	moon_window = NULL;
 	
 	// Property fields
+	source_location = NULL;
 	initParams = false;
 	source = NULL;
 	source_idle = 0;
@@ -963,12 +964,12 @@ NPError
 PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, uint16_t *stype)
 {
 	nps (printf ("PluginInstance::NewStream (%p, %p, %i, %p)\n", type, stream, seekable, stype));
-
+	
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
 		//printf ("source_location = %s\n", stream->url);
-		this->source_location = g_strdup (stream->url);
-		if (surface != NULL && g_str_has_prefix (this->source_location, "http"))
-			surface->SetSourceLocation (this->source_location);
+		source_location = g_strdup (stream->url);
+		if (surface != NULL && g_str_has_prefix (source_location, "http"))
+			surface->SetSourceLocation (source_location);
 		*stype = NP_ASFILEONLY;
 		return NPERR_NO_ERROR;
 	}
@@ -1285,16 +1286,16 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
 		if (xaml_loader != NULL)
 			delete xaml_loader;
-	
+		
 #if PLUGIN_SL_2_0
 		// FIXME horrible hack to test sl2 sites that use the sl1
 		// mimetype.
 		if (IsSilverlight2 ()) {
-			LoadXAP (fname);		
+			LoadXAP (fname);
 		} else if (strstr (stream->url, ".xap")) {
 			g_warning ("HACK to use sl2 on uris containing .xap engaged");
 			this->silverlight2 = TRUE;
-			LoadXAP (fname);		
+			LoadXAP (fname);
 		} else {
 #else
 			unzFile zf = unzOpen (fname);
@@ -1302,11 +1303,10 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 				unzClose (zf);
 				xaml_loader = PluginXamlLoader::FromStr (MOONLIGHT_1_0_LOADING_2_0_ERROR_XAML,
 									 this, surface);
-			}
-			else
+			} else
 #endif
 				xaml_loader = PluginXamlLoader::FromFilename (fname, this, surface);
-	
+			
 			LoadXAML ();
 #if PLUGIN_SL_2_0
 		}

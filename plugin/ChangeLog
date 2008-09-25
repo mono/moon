@@ -1,3 +1,9 @@
+2008-09-25  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin.cpp (PluginInstance::PluginInstance): Initialize
+	source_location to NULL - probably the source of the random
+	crashes we were seeing on the buildbot earlier.
+
 2008-09-25  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* plugin.cpp: update the Surface::source_location while setting
