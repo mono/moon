@@ -426,7 +426,11 @@ CodecDownloader::Show ()
 
 	// Secondary Label
 	message_label = gtk_label_new (NULL);
-	SetMessage ("This page requires additional software to be installed to play multimedia content.");
+	SetMessage ("This page requires the Microsoft Media Pack\n"
+		    "to be installed to play multimedia content.\n\n"
+		    "If you choose to install it, the software will be\n"
+		    "automatically downloaded and installed\n"
+		    "from Microsoft's web site.");
 	gtk_label_set_line_wrap (GTK_LABEL (message_label), true);
 	gtk_label_set_justify (GTK_LABEL (message_label), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_alignment (GTK_MISC (message_label), 0.0f, 0.5f);
