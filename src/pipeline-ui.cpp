@@ -350,17 +350,19 @@ CodecDownloader::AdaptToParentWindow ()
 	// try to find a parent for our window
 	// there must be a better way of doing this though :|
 	GList *toplevels = gtk_window_list_toplevels ();
+	GList *current = toplevels;
 	GtkWindow *parent = NULL;
 
-	while (toplevels != NULL) {
-		const char *title = gtk_window_get_title (GTK_WINDOW (toplevels->data));
+	while (current != NULL) {
+		const char *title = gtk_window_get_title (GTK_WINDOW (current->data));
 		if (title != NULL && strstr (title, "Mozilla Firefox") != NULL) {
-			parent = GTK_WINDOW (toplevels->data);
+			parent = GTK_WINDOW (current->data);
 			break;
 		}
 
-		toplevels = toplevels->next;
+		current = current->next;
 	}
+	g_list_free (toplevels);
 
 	if (parent != NULL) {
 		gtk_window_set_transient_for (GTK_WINDOW (dialog), parent);
