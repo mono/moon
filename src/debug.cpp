@@ -183,7 +183,7 @@ library_of_ip (gpointer ip, gpointer* base_address)
 		current_base_address = start;
 		
 		if (start <= ip && end >= ip) {
-			result = lib;
+			result = g_strdup (lib);
 			*base_address = current_base_address;
 			// printf ("IP %p is in library %s\n", ip, result);
 			break;
@@ -248,7 +248,9 @@ addr2line_offset (gpointer ip, bool use_offset)
 		addr2line->next = addr2line_pipes;
 		addr2line_pipes = addr2line;
 	}
-		
+
+	g_free (binary);
+
 	gpointer offset;
 	if (use_offset)
 		offset = (gpointer) (((size_t) ip) - ((size_t) addr2line->base));
