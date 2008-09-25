@@ -196,9 +196,7 @@ CodecDownloader::DownloadCompleted (EventObject *sender, EventArgs *args)
 		state = 2;
 		break;
 	case 3: // downloading codec, we're now finished downloading the codec
-
-		// TODO: Save the codec into some other directory
-		codec_path = g_build_filename (g_get_user_config_dir (), "moonlight", "libmscodecs.so", NULL);
+		codec_path = g_build_filename (g_get_home_dir (), ".mozilla", "plugins", "libmscodecs.so", NULL);
 		codec_dir = g_path_get_dirname (codec_path);
 
 		downloaded_file = dl->GetDownloadedFilename (NULL);

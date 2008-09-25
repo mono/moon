@@ -1,5 +1,9 @@
 2008-09-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* pipeline-ui.cpp: Store libmscodecs.so in ~/.mozilla/plugins.
+
+2008-09-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* pipeline-ui.cpp: Hush.
 
 2008-09-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
