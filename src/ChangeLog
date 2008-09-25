@@ -1,5 +1,9 @@
 2008-09-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* pipeline-ui.cpp: Hush.
+
+2008-09-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* pipeline.cpp, pipeline.h: Added an abi_version to codec registration
 	  functions.
 

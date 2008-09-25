@@ -28,7 +28,7 @@
 //#define EULA_URL "http://download.banshee-project.org/banshee/banshee-1-1.3.1.changes"
 //#define CODEC_URL "http://kirk.provo.novell.com/dist/install/SLES-11-Beta1/SLES-11-DVD-x86_64-Beta1-mini.iso"
 
-#define LOG_UI(...) printf (__VA_ARGS__);
+#define LOG_UI(...)// printf (__VA_ARGS__);
 
 bool CodecDownloader::running = false;
 
