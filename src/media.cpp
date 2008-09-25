@@ -1360,7 +1360,10 @@ MediaElement::TryOpen ()
 		
 		MediaClosure *closure = new MediaClosure (media_element_open_callback);
 		closure->SetContext (this);
+		closure->SetMedia (media);
 		media->OpenAsync (downloaded_file, closure);
+		media->unref ();
+		media = NULL;
 	}
 	
 	// FIXME: specify which audio stream index the player should use
