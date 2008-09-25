@@ -1164,7 +1164,7 @@ flush_char_data (XamlParserInfo *p)
 			parser_error (p, p->current_element->element_name, NULL, 2011, err);
 		}
 	}
-		
+	
 	if (p->cdata) {
 		g_string_free (p->cdata, TRUE);
 		p->cdata_content = false;
@@ -3498,7 +3498,6 @@ start_parse:
 		char **attr_name = g_strsplit (attr [i], "|", -1);
 
 		if (attr_name [1]) {
-			
 			XamlNamespace *ns = (XamlNamespace *) g_hash_table_lookup (p->namespace_map, attr_name [0]);
 
 			if (!ns)

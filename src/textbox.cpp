@@ -166,7 +166,7 @@ class TextBuffer {
 		
 		offset = MAX (len, start + length);
 		
-		memmove (UNICODE_OFFSET (text, start), UNICODE_OFFSET (text, offset), UNICODE_LEN ((len - offset) + 1));
+		g_memmove (UNICODE_OFFSET (text, start), UNICODE_OFFSET (text, offset), UNICODE_LEN ((len - offset) + 1));
 	}
 	
 	void Insert (int index, gunichar c)
@@ -175,7 +175,7 @@ class TextBuffer {
 		
 		if (index < len) {
 			// shift all chars beyond position @index down by 1 char
-			memmove (UNICODE_OFFSET (text, index + 1), UNICODE_OFFSET (text, index), UNICODE_LEN ((len - index) + 1));
+			g_memmove (UNICODE_OFFSET (text, index + 1), UNICODE_OFFSET (text, index), UNICODE_LEN ((len - index) + 1));
 			text[index] = c;
 			len++;
 		} else {
@@ -190,7 +190,7 @@ class TextBuffer {
 		
 		if (index < len) {
 			// shift all chars beyond position @index down by @count chars
-			memmove (UNICODE_OFFSET (text, index + count), UNICODE_OFFSET (text, index), UNICODE_LEN ((len - index) + 1));
+			g_memmove (UNICODE_OFFSET (text, index + count), UNICODE_OFFSET (text, index), UNICODE_LEN ((len - index) + 1));
 			
 			// insert @count chars of @str into our buffer at position @index
 			memcpy (UNICODE_OFFSET (text, index), str, UNICODE_LEN (count));
@@ -208,7 +208,7 @@ class TextBuffer {
 		Resize (len + 1);
 		
 		// shift the entire buffer down by 1 char
-		memmove (UNICODE_OFFSET (text, 1), text, UNICODE_LEN (len + 1));
+		g_memmove (UNICODE_OFFSET (text, 1), text, UNICODE_LEN (len + 1));
 		text[0] = c;
 		len++;
 	}
@@ -218,7 +218,7 @@ class TextBuffer {
 		Resize (len + count + 1);
 		
 		// shift the endtire buffer down by @count chars
-		memmove (UNICODE_OFFSET (text, count), text, UNICODE_LEN (len + 1));
+		g_memmove (UNICODE_OFFSET (text, count), text, UNICODE_LEN (len + 1));
 		
 		// copy @count chars of @str into the beginning of our buffer
 		memcpy (text, str, UNICODE_LEN (count));
@@ -257,7 +257,7 @@ class TextBuffer {
 		beyond = len - (start + length);
 		
 		// shift all chars beyond position (@start + length) into position...
-		memmove (UNICODE_OFFSET (text, start + count), UNICODE_OFFSET (text, start + length), UNICODE_LEN (beyond + 1));
+		g_memmove (UNICODE_OFFSET (text, start + count), UNICODE_OFFSET (text, start + length), UNICODE_LEN (beyond + 1));
 		
 		// copy @count chars of @str into our buffer at position @start
 		memcpy (UNICODE_OFFSET (text, start), str, UNICODE_LEN (count));

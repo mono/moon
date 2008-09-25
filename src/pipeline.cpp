@@ -1759,7 +1759,7 @@ FileSource::PeekInBuffer (void *buf, guint32 n)
 			if (avail < need) {
 				/* make room for 'need' more bytes */
 				shift = need - avail;
-				memmove (buffer, buffer + shift, used - shift);
+				g_memmove (buffer, buffer + shift, used - shift);
 				bufptr -= shift;
 			} else {
 				/* request 'avail' more bytes so we

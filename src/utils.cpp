@@ -530,7 +530,7 @@ TextStream::Read (char *buf, size_t n)
 		
 		// buffer more data
 		if (inleft > 0)
-			memmove (buffer, inbuf, inleft);
+			g_memmove (buffer, inbuf, inleft);
 		
 		inbuf = buffer + inleft;
 		if ((nread = read_internal (fd, inbuf, sizeof (buffer) - inleft)) <= 0) {

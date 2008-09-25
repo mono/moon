@@ -325,7 +325,7 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 
 		if (frame_buffer != NULL) {
 			mf->buffer = (guint8 *) g_realloc (mf->buffer, mf->buflen+frame_buffer_length);
-			memmove (mf->buffer+frame_buffer_length, mf->buffer, mf->buflen);
+			g_memmove (mf->buffer + frame_buffer_length, mf->buffer, mf->buflen);
 			memcpy (mf->buffer, frame_buffer, frame_buffer_length);
 			remain += frame_buffer_length;
 			

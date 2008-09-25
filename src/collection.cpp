@@ -70,7 +70,7 @@ Collection::Clear ()
 
 	guint len = array->len;
 	Value** vals = new Value*[len];
-	memmove (vals, array->pdata, len * sizeof(Value*));
+	memcpy (vals, array->pdata, len * sizeof(Value*));
 
 	g_ptr_array_set_size (array, 0);
 	generation++;
