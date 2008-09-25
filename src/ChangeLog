@@ -1,3 +1,7 @@
+2008-09-25  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* downloader.cpp: neforce security policies on Open ()
+
 2008-09-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline.cpp, pipeline.h: Added Media::IsMSCodecsInstalled, and look

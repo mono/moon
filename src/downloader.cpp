@@ -1,5 +1,5 @@
 /*
- * runtime.cpp: Downloader class.
+ * downloader.cpp: Downloader class.
  *
  * The downloader implements two modes of operation:
  *
@@ -151,8 +151,85 @@ Downloader::InternalOpen (const char *verb, const char *uri, bool streaming)
 }
 
 bool
-validate_policy (const char *uri, DownloaderAccessPolicy policy)
+scheme_is (const Uri *uri, const char *scheme)
 {
+	return (strcmp (uri->protocol, scheme) == 0);
+}
+
+bool
+same_scheme (const Uri *uri1, const Uri *uri2)
+{
+	return (strcmp (uri1->protocol, uri2->protocol) == 0);
+}
+
+bool
+same_domain (const Uri *uri1, const Uri *uri2)
+{
+	return (g_ascii_strcasecmp (uri1->host, uri2->host) == 0);
+}
+
+bool
+validate_policy (const char *location, const char *uri, DownloaderAccessPolicy policy)
+{
+	if (!location && !uri) {
+		printf ("location or uri is NULL, not checking policy\n");
+		return true;
+	}
+	Uri *source = new Uri ();
+	source->Parse (uri);
+	if (source->host == NULL) //relative uri, not checking policy
+		return true;
+
+	Uri *target = new Uri ();
+	target->Parse (location);
+
+	switch (policy) {
+	case DownloaderPolicy:
+		//Allowed schemes: http, https
+		if (!scheme_is (target, "http") && !scheme_is (target, "https"))
+			return false;
+		//X-Scheme: no
+		if (!same_scheme (target, source))
+			return false;
+		//X-Domain: no
+		if (!same_domain (target, source))
+			return false;
+		//Redirection allowed: same domain. FIXME NotImplemented
+		break;
+	case MediaPolicy: //Media, images, ASX
+		//Allowed schemes: http, https, file
+		if (!scheme_is (target, "http") && !scheme_is (target, "https") && !scheme_is (target, "file"))
+			return false;
+		//X-Scheme: no
+		if (!same_scheme (target, source))
+			return false;
+		//X-Domain: if not https
+		if (scheme_is (source, "https") && !same_domain (target, source))
+			return false;
+		break;
+	case XamlPolicy: //XAML files, font files
+		//Allowed schemes: http, https, file
+		if (!scheme_is (target, "http") && !scheme_is (target, "https") && !scheme_is (target, "file"))
+			return false;
+		//X-Scheme: no
+		if (!same_scheme (target, source))
+			return false;
+		//X-domain: no
+		if (!same_domain (target, source))
+			return false;
+		//Redirection allowed: same domain. FIXME NotImplemented
+		break;
+	case StreamingPolicy: //Streaming media
+		//Allowed schemes: http
+		if (!scheme_is (target, "http"))
+			return false;
+		//X-scheme: Not from https
+		if (scheme_is (source, "https") && !same_scheme (source, target))
+			return false;
+		//Redirection allowed: same domain. FIXME NotImplemented
+	default:
+		break;
+	}
 	return true;
 }
 
@@ -173,13 +250,16 @@ Downloader::Open (const char *verb, const char *uri, DownloaderAccessPolicy poli
 	filename = NULL;
 
 	//FIXME: ONLY VALIDATE IF USED FROM THE PLUGIN
-	if (!validate_policy (uri, policy))
+	char *location = g_strdup (GetSurface()->GetSourceLocation ());
+	if (!validate_policy (location, uri, policy))
 	{
 		printf ("aborting due to security policy violation\n");
 		failed_msg = g_strdup ("Security Policy Violation");
 		Abort ();
+		g_free (location);
 		return;
 	}
+	g_free (location);
 
 	if (strncmp (uri, "mms://", 6) == 0) {
 		internal_dl = (InternalDownloader *) new MmsDownloader (this);
