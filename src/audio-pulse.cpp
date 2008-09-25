@@ -366,7 +366,7 @@ PulseSource::OnWrite (size_t length)
 	
 	if (length == 0)
 		return;
-	
+
 	buffer = g_malloc (length);
 	
 	frames = Write (buffer, length / GetBytesPerFrame ());
@@ -382,6 +382,8 @@ PulseSource::OnWrite (size_t length)
 		} else if (play_pending) {
 			Played ();
 		}
+	} else {
+		g_free (buffer);
 	}
 }
 

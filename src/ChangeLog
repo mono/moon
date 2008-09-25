@@ -1,5 +1,9 @@
 2008-09-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* audio-pulse.cpp: Another leak plugged.
+
+2008-09-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* debug.cpp: Fix stack traces.
 
 2008-09-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
