@@ -1,5 +1,10 @@
 2008-09-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* dependencyobject.cpp: DependencyObject::RemoveListener: We need to
+	  delete the listener link, not only remove it. Plugs a leak.
+
+2008-09-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* audio-pulse.h, clock.h, layout.h, pipeline.h, template.h,
 	  yuv-converter.h: Sprinkle virtual on some destructors.
 

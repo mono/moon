@@ -766,12 +766,14 @@ DependencyObject::AddPropertyChangeListener (DependencyObject *listener, Depende
 void
 DependencyObject::RemoveListener (gpointer listener, DependencyProperty *child_property)
 {
-	for (GSList *l = listener_list; l; l = l->next) {
+	GSList *next;
+	for (GSList *l = listener_list; l; l = next) {
+		next = l->next;
 		Listener *listen = (Listener *) l->data;
 		
 		if ((listen->GetListener() == listener)
 		    && (child_property == NULL || listen->GetProperty() == child_property)) {
-			listener_list = g_slist_remove_link (listener_list, l);
+			listener_list = g_slist_delete_link (listener_list, l);
 			delete listen;
 		}
 	}
