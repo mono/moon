@@ -97,7 +97,7 @@ public:
 			 FrameworkElement *target,
 			 DependencyProperty *targetProperty);
 protected:
-	~TemplateBinding ();
+	virtual ~TemplateBinding ();
 
 private:
 	Control *source;

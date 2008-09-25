@@ -451,7 +451,7 @@ class TimeManager : public EventObject {
 	Applier* GetApplier () { return applier; }
 	
  protected:
-	~TimeManager ();
+	virtual ~TimeManager ();
 
  private:
 

@@ -1,5 +1,10 @@
 2008-09-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* audio-pulse.h, clock.h, layout.h, pipeline.h, template.h,
+	  yuv-converter.h: Sprinkle virtual on some destructors.
+
+2008-09-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* internal-downloader.h, file-downloader.h, mms-downloader.h: Fix
 	  another leak.
 

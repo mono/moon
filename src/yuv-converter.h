@@ -26,7 +26,7 @@ G_END_DECLS
 class YUVConverter : public IImageConverter {
 public:
 	YUVConverter (Media* media, VideoStream* stream);	
-	~YUVConverter ();
+	virtual ~YUVConverter ();
 	
 	MediaResult Open ();
 	MediaResult Convert (guint8 *src[], int srcStride[], int srcSlideY, int srcSlideH, guint8* dest[], int dstStride []);

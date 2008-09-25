@@ -87,7 +87,7 @@ class PulsePlayer : public AudioPlayer {
 	
  public:
 	PulsePlayer ();
-	~PulsePlayer ();
+	virtual ~PulsePlayer ();
 	
 	pa_context *GetPAContext () { return context; }
 	pa_threaded_mainloop *GetPALoop () { return loop; }

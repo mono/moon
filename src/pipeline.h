@@ -282,7 +282,7 @@ public:
 	MediaWork (MediaClosure *closure, IMediaStream *stream, guint16 states); // GetNextFrame
 	MediaWork (MediaClosure *closure, guint64 seek_pts); // Seek
 	MediaWork (MediaClosure *closure, IMediaSource *source); // Open
-	~MediaWork ();
+	virtual ~MediaWork ();
 };
 
 class Media : public EventObject {
@@ -320,7 +320,7 @@ private:
 	void Init (MediaElement *element, Downloader *dl);
 	
 protected:
-	~Media ();
+	virtual ~Media ();
 
 public:
 	Media (MediaElement *element, Downloader *dl = NULL);
