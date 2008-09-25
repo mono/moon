@@ -1,5 +1,11 @@
 2008-09-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* pipeline.cpp, pipeline.h: Added Media::IsMSCodecsInstalled, and look
+	  for the mp3 codecs in libmscodecs.so, libmscodecs-mp3.so doesn't
+	  exist anymore.
+
+2008-09-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* pipeline-ui.cpp: AdaptToParentWindow: free the toplevels list.
 
 2008-09-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 

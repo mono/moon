@@ -42,6 +42,13 @@
 #define LOG_FRAMEREADERLOOP(...)// printf (__VA_ARGS__);
 
 bool Media::registering_ms_codecs = false;
+bool Media::registered_ms_codecs = false;
+
+bool
+Media::IsMSCodecsInstalled ()
+{
+	return registered_ms_codecs;
+}
 
 void
 Media::RegisterMSCodecs (void)
@@ -69,24 +76,19 @@ Media::RegisterMSCodecs (void)
 			(*reg) (MOONLIGHT_CODEC_ABI_VERSION);
 		else
 			printf ("Moonlight: Cannot find register_mswmv in libmscodecs.so.\n");
+			
+		reg = (register_codec) dlsym (dl, "register_msmp3");
+		if (reg != NULL) {
+			(*reg) (MOONLIGHT_CODEC_ABI_VERSION);
+		} else {
+			printf ("Moonlight: Cannot find register_msmp3 in libmscodecsmp3.so.\n");
+		}
+		registered_ms_codecs = true;
 	} else {
 		printf ("Moonlight: Cannot load libmscodecs.so: %s\n", dlerror ());
 	}
 	g_free (libmscodecs_path);
 
-	// the mp3 codec lives in a separate so until it's integrated into libmscodecs.so
-	dl = dlopen ("libmscodecsmp3.so", RTLD_LAZY);
-	if (dl != NULL) {
-		reg = (register_codec) dlsym (dl, "register_msmp3");
-		if (reg != NULL)
-			(*reg) (MOONLIGHT_CODEC_ABI_VERSION);
-		else
-			printf ("Moonlight: Cannot find register_msmp3 in libmscodecsmp3.so.\n");
-		
-	} else {
-		printf ("Moonlight: Cannot load libmscodecsmp3.so: %s\n", dlerror ());
-	}
-	
 	registering_ms_codecs = false;
 }
 

@@ -21,6 +21,7 @@
 #include "browser-bridge.h"
 #include "moon-mono.h"
 #include "downloader.h"
+#include "pipeline-ui.h"
 #include "plugin-downloader.h"
 #include "npstream-request.h"
 #include "xap.h"
@@ -94,6 +95,12 @@ plugin_menu_about (PluginInstance *plugin)
 }
 
 void
+plugin_media_pack (PluginInstance *plugin)
+{
+	CodecDownloader::ShowUI (plugin->GetSurface ());
+}
+
+void
 plugin_properties (PluginInstance *plugin)
 {
 	plugin->Properties ();
@@ -119,6 +126,12 @@ plugin_show_menu (PluginInstance *plugin)
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
 	g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (plugin_properties), plugin);
 
+	if (!Media::IsMSCodecsInstalled ()) {
+		menu_item = gtk_menu_item_new_with_label ("Install Microsoft Media Pack");
+		gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
+		g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (plugin_media_pack), plugin);
+	}
+	
 #ifdef DEBUG
 	menu_item = gtk_menu_item_new_with_label ("Debug");
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);

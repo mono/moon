@@ -304,6 +304,7 @@ private:
 	bool stopping;
 	bool stopped; // If the worker thread has been stopped.
 	static bool registering_ms_codecs;
+	static bool registered_ms_codecs;
 	
 	MediaElement *element;
 	Downloader *downloader;
@@ -372,6 +373,7 @@ public:
 	static void RegisterConverter (ConverterInfo *info);
 	
 	static void RegisterMSCodecs ();
+	static bool IsMSCodecsInstalled ();
 	
 	static void Initialize ();
 	static void Shutdown ();
