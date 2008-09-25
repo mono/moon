@@ -837,8 +837,7 @@ Surface::GetSourceLocation ()
 void
 Surface::SetSourceLocation (const char* location)
 {
-	if (source_location)
-		g_free (source_location);
+	g_free (source_location);
 	source_location = g_strdup (location);
 }
 
