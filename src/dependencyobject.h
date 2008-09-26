@@ -71,8 +71,8 @@ public:
 	EventObject ();
 	
 #if DEBUG
-	static int objects_created;
-	static int objects_destroyed;
+	volatile static gint objects_created;
+	volatile static gint objects_destroyed;
 #endif
 	
 #if OBJECT_TRACKING
@@ -197,9 +197,10 @@ public:
 	bool DoEmit (int event_id, EmitContext *ctx, EventArgs *calldata = NULL, bool only_unemitted = false);
 	void FinishEmit (int event_id, EmitContext *ctx);
 	
+	virtual void Dispose ();
+	
 protected:
 	virtual ~EventObject ();
-	virtual void Dispose ();
 	
 	bool IsDisposed () { return refcount == 0; }
 	

@@ -1,3 +1,15 @@
+2008-09-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* dependencyobject.cpp, dependencyobject.h: Make objects_created and
+	  objects_destroyed thread-safe. Added MOONLIGHT_OBJECT_TRACK_TYPE to
+	  track a specific type, might be useful when the id varies from run
+	  to run. Make Dispose public.
+	* media.cpp: Reinitialize: Dispose the downloaded_file if we're being
+	  destructed.
+	* pipeline.cpp, pipeline.h: Implement MemoryQueueSource::Dispose, and
+	  cleanup properly there instead of in the dtor. This breaks a
+	  circular reference between ASFPacket/ASFDemuxer/MemoryQueueSource.
+
 2008-09-26  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* downloader.cpp: use StreamingPolicy for streaming

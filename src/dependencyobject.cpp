@@ -78,7 +78,7 @@ EventObject::EventObject ()
 	events = NULL;
 	
 #if OBJECT_TRACKING
-	id = ++objects_created;
+	id = g_atomic_int_exchange_and_add (&objects_created, 1);
 	if (objects_alive == NULL)
 		objects_alive = g_hash_table_new (g_direct_hash, g_direct_equal);
 	// Helgrind correctly reports a race here. Given this is for debugging, ignore it.
@@ -94,7 +94,7 @@ EventObject::EventObject ()
 EventObject::~EventObject()
 {
 #if OBJECT_TRACKING
-	objects_destroyed++;
+	g_atomic_int_inc (&objects_destroyed);
 	g_hash_table_remove (objects_alive, this);
 	if (weak_refs) {
 		int length = g_hash_table_size (weak_refs);
@@ -244,15 +244,20 @@ EventObject::unref ()
 
 	OBJECT_TRACK ("Unref", GetTypeName ());
 
-	if (delete_me) {
+	if (delete_me)
 		Dispose ();
+	
+	// We need to check again the the refcount really is zero,
+	// the object might have resurrected in the Dispose. Should
+	// never happen, but checking avoids a crash, so...
+	if (refcount == 0)
 		delete this;
-	}
+	
 }
 
 #if DEBUG
-int EventObject::objects_created = 0;
-int EventObject::objects_destroyed = 0;
+volatile gint EventObject::objects_created = 0;
+volatile gint EventObject::objects_destroyed = 0;
 #endif
 
 #if OBJECT_TRACKING
@@ -261,6 +266,7 @@ int EventObject::objects_destroyed = 0;
 // are logged to the console, with a stacktrace.
 static bool object_id_fetched = false;
 static int object_id = -1;
+static const char *object_type = NULL;
 
 #define OBJECT_TRACK_ID (0)
 
@@ -274,8 +280,9 @@ EventObject::Track (const char* done, const char* typname)
 		char *sval = getenv ("MOONLIGHT_OBJECT_TRACK_ID");
 		if (sval)
 			object_id = atoi (sval);
+		object_type = getenv ("MOONLIGHT_OBJECT_TRACK_TYPE");
 	}
-	if (id == object_id) {
+	if (id == object_id || (object_type != NULL && typname != NULL && strcmp (typname, object_type) == 0)) {
 		char *st = get_stack_trace ();
 		printf ("%s tracked object of type '%s': %i, current refcount: %i\n%s", done, typname, id, refcount, st);
 		g_free (st);

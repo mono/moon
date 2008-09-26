@@ -874,7 +874,7 @@ public:
 
 class MemoryQueueSource : public IMediaSource {
 private:
-	Queue queue;
+	Queue *queue;
 	ASFParser *parser;
 	bool finished;
 	guint64 requested_pts;
@@ -888,6 +888,8 @@ protected:
 	virtual gint64 GetSizeInternal ();
 	virtual gint64 GetLastAvailablePositionInternal ();
 	void WaitForQueue ();
+	virtual ~MemoryQueueSource ();
+	virtual void Dispose ();
 
 public:
 	class QueueNode : public List::Node {
@@ -900,7 +902,6 @@ public:
 	};
 	
 	MemoryQueueSource (Media *media);
-	virtual ~MemoryQueueSource ();
 	void AddPacket (MemorySource *packet);
 	ASFPacket *Pop ();
 	bool Advance (); 
@@ -915,7 +916,7 @@ public:
 	virtual void Write (void *buf, gint64 offset, gint32 n);
 	
 	virtual bool CanSeek () { return true; }
-	virtual bool Eof () { return finished && queue.IsEmpty (); }
+	virtual bool Eof () { return finished && queue && queue->IsEmpty (); }
 
 	virtual const char *ToString () { return "MemoryQueueSource"; }
 	virtual bool CanSeekToPts () { return true; }

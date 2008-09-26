@@ -671,6 +671,8 @@ MediaElement::Reinitialize (bool dtor)
 	DownloaderAbort ();
 	
 	if (downloaded_file) {
+		if (dtor)
+			downloaded_file->Dispose ();
 		downloaded_file->unref ();
 		downloaded_file = NULL;
 	}

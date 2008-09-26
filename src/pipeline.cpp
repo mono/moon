@@ -161,7 +161,6 @@ Media::~Media ()
 		pthread_join (queue_thread, NULL);
 	pthread_mutex_destroy (&queue_mutex);
 	pthread_cond_destroy (&queue_condition);
-	pthread_detach (queue_thread);
 	
 	g_free (file_or_url);
 	if (source)
@@ -1031,7 +1030,11 @@ cleanup:
 void
 ASFDemuxer::SetParser (ASFParser *parser)
 {
+	if (this->parser)
+		this->parser->unref ();
 	this->parser = parser;
+	if (this->parser)
+		this->parser->ref ();
 }
 
 MediaResult
@@ -2045,12 +2048,25 @@ MemoryQueueSource::MemoryQueueSource (Media *media)
 	last_requested_pts = UINT64_MAX;
 	write_count = 0;
 	parser = NULL;
+	queue = new Queue ();
 }
 
 MemoryQueueSource::~MemoryQueueSource ()
 {
-	if (this->parser)
-		this->parser->unref ();
+}
+
+void
+MemoryQueueSource::Dispose ()
+{
+	IMediaSource::Dispose ();
+	if (parser) {
+		parser->unref ();
+		parser = NULL;
+	}
+	if (queue) {
+		delete queue;
+		queue = NULL;
+	}
 }
 
 ASFParser *
@@ -2077,7 +2093,7 @@ MemoryQueueSource::WaitForQueue ()
 
 	Lock ();
 	StartWaitLoop ();
-	while (!finished && !Aborted () && queue.IsEmpty ()) {
+	while (!finished && !Aborted () && queue && queue->IsEmpty ()) {
 		Wait ();
 	}
 	EndWaitLoop ();
@@ -2098,24 +2114,27 @@ MemoryQueueSource::GetQueue ()
 {
 	QueueNode *node;
 	QueueNode *next;
-	
+
+	if (!queue)
+		return NULL;
+
 	// Make sure all nodes have asf packets.
-	queue.Lock ();
-	node = (QueueNode *) queue.LinkedList ()->First ();
+	queue->Lock ();
+	node = (QueueNode *) queue->LinkedList ()->First ();
 	while (node != NULL && node->packet == NULL) {
 		next = (QueueNode *) node->next;
 		
 		node->packet = new ASFPacket (parser, node->source);
 		if (!MEDIA_SUCCEEDED (node->packet->Read ())) {
 			LOG_PIPELINE_ERROR ("MemoryQueueSource::GetQueue (): Error while parsing packet, dropping packet.\n");
-			queue.LinkedList ()->Remove (node);
+			queue->LinkedList ()->Remove (node);
 		}
 		
 		node = next;
 	}
-	queue.Unlock ();
+	queue->Unlock ();
 	
-	return &queue;
+	return queue;
 }
 
 ASFPacket *
@@ -2125,14 +2144,17 @@ MemoryQueueSource::Pop ()
 	
 	QueueNode *node;
 	ASFPacket *result = NULL;
-	
+
+	if (!queue)
+		return NULL;
+
 trynext:
-	node = (QueueNode *) queue.Pop ();
+	node = (QueueNode *) queue->Pop ();
 	
 	if (node == NULL) {
 		WaitForQueue ();
 		
-		node = (QueueNode *) queue.Pop ();
+		node = (QueueNode *) queue->Pop ();
 	}
 	
 	if (node == NULL) {
@@ -2171,7 +2193,10 @@ MemoryQueueSource::Write (void *buf, gint64 offset, gint32 n)
 	ASFPacket *packet;
 	
 	//printf ("MemoryQueueSource::Write (%p, %lld, %i), write_count: %lld\n", buf, offset, n, write_count + 1);
-	
+
+	if (!queue)
+		return;
+
 	write_count++;
 	if (parser != NULL) {
 		src = new MemorySource (NULL, buf, n, offset);
@@ -2180,13 +2205,13 @@ MemoryQueueSource::Write (void *buf, gint64 offset, gint32 n)
 		if (!MEDIA_SUCCEEDED (packet->Read ())) {
 			LOG_PIPELINE_ERROR ("MemoryQueueSource::Write (%p, %lld, %i): Error while parsing packet, dropping packet.\n", buf, offset, n);
 		} else {
-			queue.Push (new QueueNode (packet));
+			queue->Push (new QueueNode (packet));
 		}
 		packet->unref ();
 		src->unref ();
 	} else {
 		src = new MemorySource (NULL, g_memdup (buf, n), n, offset);
-		queue.Push (new QueueNode (src));
+		queue->Push (new QueueNode (src));
 		src->unref ();
 	}
 	
@@ -2270,8 +2295,11 @@ MemoryQueueSource::SeekToPts (guint64 pts)
 	if (last_requested_pts == pts)
 		return true;
 
+	if (!queue)
+		return false;
+
 	Lock ();
-	queue.Clear (true);
+	queue->Clear (true);
 	requested_pts = pts;
 	finished = false;
 
