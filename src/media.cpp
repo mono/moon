@@ -211,7 +211,7 @@ MediaBase::OnPropertyChanged (PropertyChangedEventArgs *args)
 			Surface *surface = GetSurface ();
 			Downloader *dl;
 			
-			if (surface) {
+			if (surface && IsLoaded ()) {
 				if ((dl = surface->CreateDownloader ())) {
 					dl->Open ("GET", uri, strncmp (uri, "mms://", 6) == 0 ? StreamingPolicy : MediaPolicy);
 					SetSource (dl, "");
