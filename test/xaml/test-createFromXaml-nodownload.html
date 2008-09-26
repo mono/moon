@@ -1,0 +1,68 @@
+<html>
+  <head>
+      <title>Moonlight Test Page</title>
+
+		<script type="text/xaml" id="xaml">
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Rectangle Fill="#DDDDDDDD" Stroke="#33333333" StrokeThickness="2" Canvas.Left="20" Canvas.Top="20" Width="110" Height="110" RadiusX="10" RadiusY="10" />
+</Canvas>
+		</script>
+
+		<script language="javascript" src="Silverlight.js"></script>
+		<script language="javascript" src="../js/js/testplugin.js"></script>
+		<script language="javascript" src="../js/js/utils.js"></script>
+		<script language="javascript">
+
+		var plugin = null;
+		var download = false;
+
+		function OnDownloadProgressChanged (sender, args)
+		{
+			download = true;
+		}
+
+		function OnPluginLoad (sender, args)
+		{
+			plugin = document.getElementById ("_MoonlightControl");
+			setTimeout ("Timeout ();", 5000);
+			var xaml = "<Canvas><Image Source='mono.png' DownloadProgressChanged='OnDownloadProgressChanged'/></Canvas>";
+			var image = plugin.content.createFromXaml (xaml);
+		}
+
+		function OnPluginError (sender, args)
+		{
+			TestLogger.LogError ("Plugin failed to initialize: " + args.ErrorMessage);
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+		function Timeout ()
+		{
+			TestLogger.LogResult (download ? -1 : 1);
+			SignalShutdown ();
+		}
+		</script>
+	</head>
+
+  <body>
+    <div>
+        <embed type="application/x-silverlight"
+             width="200"
+             height="200"
+             id="_MoonlightControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoad"
+             style="position:absolute; left:0px; top:0px"
+             background="green" >
+        </embed>
+    </div>
+<!--
+    <div>
+        <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
+        </embed>
+    </div>
+-->
+  </body>
+</html>
+
+

@@ -920,4 +920,8 @@
 	 inputFile="test-fillrule.xaml"
 	 masterFile10="None"
 	 />
+   <Test id="205"
+	 inputFile="test-createFromXaml-nodownload.html"
+	 masterFile10="None"
+	 />
 </DRTList>
