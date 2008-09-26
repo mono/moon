@@ -546,7 +546,7 @@ class XNamespace : public XamlNamespace {
 				
 			// While hydrating, we do not need to create the toplevel class, its created already
 			if (p->hydrating)
-				return TRUE;
+				return true;
 
 			//
 			// FIXME: On Silverlight 2.0 only the toplevel node should contain an x:Class
@@ -2816,7 +2816,7 @@ create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *n
 
 	XamlElementInfoImportedManaged *info = new  XamlElementInfoImportedManaged (name, NULL, obj->GetObjectType (), obj);
 	
-	if (p->hydrating && p->loader)
+	if (p->loader)
 		obj->SetSurface (p->loader->GetSurface ());
 	
 	return info;
@@ -2909,13 +2909,13 @@ XamlElementInstanceNative::CreateItem ()
 		item = element_info->GetType ()->CreateInstance ();
 
 		if (item) {
-			if (parser_info->hydrating && parser_info->loader)
+			if (parser_info->loader)
 				item->SetSurface (parser_info->loader->GetSurface ());
 			
 			// in case we must store the collection into the parent
 			if (dep && dep->GetPropertyType() == type->type)
 				((DependencyObject * ) walk->item)->SetValue (dep, Value (item));
-
+			
 			parser_info->AddCreatedElement (item);
 		}
 		else {
@@ -2999,7 +2999,7 @@ XamlElementInfoManaged::CreateElementInstance (XamlParserInfo *p)
 	XamlElementInstanceManaged *inst = new XamlElementInstanceManaged (this, GetName (), XamlElementInstance::ELEMENT, obj, is_dependency_object);
 
 	if (is_dependency_object) {
-		if (p->hydrating && p->loader)
+		if (p->loader)
 			inst->item->SetSurface (p->loader->GetSurface ());
 		p->AddCreatedElement (inst->item);
 	}
@@ -3012,7 +3012,7 @@ XamlElementInfoManaged::CreateWrappedElementInstance (XamlParserInfo *p, Depende
 {
 	XamlElementInstanceManaged *inst = new XamlElementInstanceManaged (this, GetName (), XamlElementInstance::ELEMENT, o, true);
 
-	if (p->hydrating && p->loader)
+	if (p->loader)
 		inst->item->SetSurface (p->loader->GetSurface ());
 	p->AddCreatedElement (inst->item);
 
@@ -3025,7 +3025,7 @@ XamlElementInfoManaged::CreatePropertyElementInstance (XamlParserInfo *p, const 
 	XamlElementInstanceManaged *inst = new XamlElementInstanceManaged (this, name, XamlElementInstance::PROPERTY, obj, is_dependency_object);
 
 	if (is_dependency_object) {
-		if (p->hydrating && p->loader)
+		if (p->loader)
 			inst->item->SetSurface (p->loader->GetSurface ());
 		p->AddCreatedElement (inst->item);
 	}
@@ -3085,7 +3085,7 @@ XamlElementInfoImportedManaged::CreateElementInstance (XamlParserInfo *p)
 {
 	XamlElementInstanceImportedManaged *inst = new XamlElementInstanceImportedManaged (this, dependency_object->GetTypeName (), XamlElementInstance::ELEMENT, dependency_object);
 
-	if (p->hydrating && p->loader)
+	if (p->loader)
 		inst->item->SetSurface (p->loader->GetSurface ());
 	p->AddCreatedElement (inst->item);
 
@@ -3111,7 +3111,7 @@ XamlElementInfoImportedManaged::CreateWrappedElementInstance (XamlParserInfo *p,
 {
 	XamlElementInstanceImportedManaged *inst = new XamlElementInstanceImportedManaged (this, o->GetTypeName (), XamlElementInstance::ELEMENT, o);
 
-	if (p->hydrating && p->loader)
+	if (p->loader)
 		inst->item->SetSurface (p->loader->GetSurface ());
 	p->AddCreatedElement (inst->item);
 
@@ -3123,7 +3123,7 @@ XamlElementInfoImportedManaged::CreatePropertyElementInstance (XamlParserInfo *p
 {
 	XamlElementInstanceImportedManaged *inst = new XamlElementInstanceImportedManaged (this, name, XamlElementInstance::PROPERTY, dependency_object);
 
-	if (p->hydrating && p->loader)
+	if (p->loader)
 		inst->item->SetSurface (p->loader->GetSurface ());
 	p->AddCreatedElement (inst->item);
 

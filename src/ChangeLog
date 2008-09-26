@@ -1,5 +1,10 @@
 2008-09-26  Jeffrey Stedfast  <fejj@novell.com>
 
+	* xaml.cpp: Revert the hydrating check for SetSurface() from the
+	previous commit. This is causing a bunch of failures :(
+
+2008-09-26  Jeffrey Stedfast  <fejj@novell.com>
+
 	* xaml.cpp (XamlLoader::HydrateFromString): Properly initialize
 	parser_info->hydrating and parser_info->hydrate_expecting based on
 	whether or not we are really doing a HydrateFromString() vs
