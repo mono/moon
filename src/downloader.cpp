@@ -236,7 +236,7 @@ validate_policy (const char *location, const char *uri, DownloaderAccessPolicy p
 void
 Downloader::Open (const char *verb, const char *uri, DownloaderAccessPolicy policy)
 {
-	printf ("Downloader::Open (%s, %s)\n", verb, uri);
+	d(printf ("Downloader::Open (%s, %s)\n", verb, uri));
 	
 	send_queued = false;
 	started = false;

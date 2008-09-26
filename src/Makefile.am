@@ -74,7 +74,6 @@ libmooninclude_headers = 	\
 
 
 libmoon_la_SOURCES = 		\
-	$(libmoon_include_headers) 	\
 	animation.cpp		\
 	asf/asf.cpp		\
 	asf/asf-generated.cpp	\
@@ -201,7 +200,7 @@ EXTRA_DIST = \
 	alpha-premul-table.inc \
 	zip/README \
 	zip/ChangeLogUnzip \
-	$(libmooninclude_headers)
+	$(libmoon_include_headers)
 
 libmoon_la_LIBADD = $(MOON_LIBS)
 
