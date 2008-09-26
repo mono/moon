@@ -4,7 +4,7 @@ lib_LTLIBRARIES = libmoon.la
 
 INCLUDES = $(MOON_CFLAGS) -Wall -DUSE_OPT_RGB24=1 -DG_LOG_DOMAIN=\"Moonlight\" -Iasf
 
-libmoon_include_headers = 	\
+libmooninclude_headers = 	\
 	animation.h		\
 	animation2.h		\
 	asf/asf.h		\
@@ -147,7 +147,7 @@ libmoon_la_SOURCES = 		\
 	zip/crypt.h
 
 if INCLUDE_MANAGED_CODE
-libmoon_include_headers += 	\
+libmooninclude_headers += 	\
 	border.h		\
 	bitmapimage.h		\
 	contentcontrol.h	\
