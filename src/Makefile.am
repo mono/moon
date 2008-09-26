@@ -5,50 +5,61 @@ lib_LTLIBRARIES = libmoon.la
 INCLUDES = $(MOON_CFLAGS) -Wall -DUSE_OPT_RGB24=1 -DG_LOG_DOMAIN=\"Moonlight\" -Iasf
 
 libmoon_include_headers = 	\
-	animation.h		\
 	animation2.h		\
-	asf/asf.h		\
+	animation.h		\
+	applier.h		\
+	asf/asf-debug.h		\
 	asf/asf-generated.h	\
 	asf/asf-guids.h		\
+	asf/asf.h		\
 	asf/asf-structures.h	\
-	asf/asf-debug.h		\
 	audio.h			\
+	bitmapimage.h		\
+	border.h		\
 	brush.h			\
 	canvas.h		\
 	cbinding.h		\
 	clock.h			\
 	collection.h		\
 	color.h			\
+	contentcontrol.h	\
+	control.h		\
+	cornerradius.h		\
 	debug.h			\
+	deepzoomimagetilesource.h \
 	dependencyobject.h	\
 	dependencyproperty.h	\
+	deployment.h		\
 	dirty.h			\
 	downloader.h		\
 	enums.h			\
-	eventargs.h		\
 	error.h			\
+	eventargs.h		\
 	file-downloader.h	\
 	font.h			\
 	frameworkelement.h 	\
 	fullscreen.h		\
 	geometry.h		\
+	grid.h			\
 	http-streaming.h	\
 	internal-downloader.h	\
 	layout.h		\
+	libmoon.h		\
 	list.h			\
 	media.h			\
 	mms-downloader.h	\
-	moon-path.h		\
 	moon-curves.h		\
 	moonlightconfiguration.h	\
-	applier.h		\
+	moon-path.h		\
 	mp3.h			\
 	mplayer.h		\
+	multiscaleimage.h	\
+	multiscalesubimage.h	\
 	namescope.h		\
 	openfile.h		\
 	panel.h			\
 	pipeline.h		\
-	pipeline-ui.h	\
+	pipeline-ui.h		\
 	playlist.h		\
 	point.h			\
 	rect.h			\
@@ -57,40 +68,27 @@ libmoon_include_headers = 	\
 	runtime.h		\
 	shape.h			\
 	size.h			\
+	stackpanel.h		\
+	style.h			\
 	stylus.h		\
+	template.h		\
+	textbox.h		\
 	text.h			\
+	thickness.h		\
+	tilesource.h		\
 	transform.h		\
 	trigger.h		\
 	type.h			\
 	uielement.h		\
 	uri.h			\
+	usercontrol.h		\
 	utils.h			\
 	value.h			\
-	window.h		\
 	window-gtk.h		\
+	window.h		\
 	xaml.h			\
-	yuv-converter.h		\
-	libmoon.h
-
-libmoon_include_headers_2 = 	\
-	border.h		\
-	bitmapimage.h		\
-	contentcontrol.h	\
-	control.h		\
-	cornerradius.h		\
-	deepzoomimagetilesource.h \
-	deployment.h		\
-	grid.h			\
-	multiscaleimage.h	\
-	multiscalesubimage.h	\
-	stackpanel.h		\
-	style.h			\
-	template.h		\
-	textbox.h		\
-	thickness.h		\
-	tilesource.h		\
-	usercontrol.h		\
-	xap.h
+	xap.h			\
+	yuv-converter.h
 
 libmoon_la_SOURCES = 		\
 	animation.cpp		\
@@ -202,9 +200,7 @@ EXTRA_DIST = \
 	alpha-premul-table.inc \
 	zip/README \
 	zip/ChangeLogUnzip \
-	$(libmoon_include_headers) \
-	$(libmoon_include_headers_2) \
-	$(libmoon_la_sources_2)
+	$(libmoon_include_headers)
 
 libmoon_la_LIBADD = $(MOON_LIBS)
 
