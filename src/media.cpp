@@ -102,31 +102,28 @@ MediaBase::DownloaderAbort ()
 }
 
 void
-MediaBase::SetSurface (Surface *surface)
+MediaBase::OnLoaded ()
 {
-	if (GetSurface() == surface)
-		return;
-
+	Surface *surface = GetSurface ();
 	const char *uri;
 	Downloader *dl;
 	
-	FrameworkElement::SetSurface (surface);
-	
-	if (!source_changed || !surface)
-		return;
-	
-	source_changed = false;
-	
-	if ((uri = GetSource ()) && *uri) {
-		if (!(dl = surface->CreateDownloader ())) {
-			// we're shutting down
-			return;
-		}
+	if (surface && source_changed) {
+		source_changed = false;
 		
-		dl->Open ("GET", uri, strncmp (uri, "mms://", 6) == 0 ? StreamingPolicy : MediaPolicy);
-		SetSource (dl, "");
-		dl->unref ();
+		if ((uri = GetSource ()) && *uri) {
+			if (!(dl = surface->CreateDownloader ())) {
+				// we're shutting down
+				return;
+			}
+			
+			dl->Open ("GET", uri, strncmp (uri, "mms://", 6) == 0 ? StreamingPolicy : MediaPolicy);
+			SetSource (dl, "");
+			dl->unref ();
+		}
 	}
+	
+	FrameworkElement::OnLoaded ();
 }
 
 void

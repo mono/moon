@@ -173,7 +173,7 @@ class MediaBase : public FrameworkElement {
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	
-	virtual void SetSurface (Surface *surface);
+	virtual void OnLoaded ();
 	
 	//
 	// Property Accessors

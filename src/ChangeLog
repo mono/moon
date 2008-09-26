@@ -1,5 +1,7 @@
 2008-09-26  Jeffrey Stedfast  <fejj@novell.com>
 
+	* media.cpp (MediaBase::OnLoaded): Logic moved here from SetSurface().
+
 	* xaml.cpp: Revert the hydrating check for SetSurface() from the
 	previous commit. This is causing a bunch of failures :(
 
