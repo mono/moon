@@ -1,3 +1,7 @@
+2008-09-26  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* downloader.cpp: use StreamingPolicy for streaming
+
 2008-09-25  Jeffrey Stedfast  <fejj@novell.com>
 
 	* runtime.cpp (Surface::ShowFullScreenMessage): Don't use
