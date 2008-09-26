@@ -72,6 +72,25 @@ libmoon_include_headers = 	\
 	yuv-converter.h		\
 	libmoon.h
 
+libmoon_include_headers_2 = 	\
+	border.h		\
+	bitmapimage.h		\
+	contentcontrol.h	\
+	control.h		\
+	cornerradius.h		\
+	deepzoomimagetilesource.h \
+	deployment.h		\
+	grid.h			\
+	multiscaleimage.h	\
+	multiscalesubimage.h	\
+	stackpanel.h		\
+	style.h			\
+	template.h		\
+	textbox.h		\
+	thickness.h		\
+	tilesource.h		\
+	usercontrol.h		\
+	xap.h
 
 libmoon_la_SOURCES = 		\
 	animation.cpp		\
@@ -145,28 +164,7 @@ libmoon_la_SOURCES = 		\
 	zip/unzip.h		\
 	zip/crypt.h
 
-if INCLUDE_MANAGED_CODE
-libmoon_include_headers += 	\
-	border.h		\
-	bitmapimage.h		\
-	contentcontrol.h	\
-	control.h		\
-	cornerradius.h		\
-	deepzoomimagetilesource.h \
-	deployment.h		\
-	grid.h			\
-	multiscaleimage.h	\
-	multiscalesubimage.h	\
-	stackpanel.h		\
-	style.h			\
-	template.h		\
-	textbox.h		\
-	thickness.h		\
-	tilesource.h		\
-	usercontrol.h		\
-	xap.h
-
-libmoon_la_SOURCES += 		\
+libmoon_la_sources_2 =		\
 	border.cpp		\
 	contentcontrol.cpp	\
 	control.cpp		\
@@ -182,6 +180,10 @@ libmoon_la_SOURCES += 		\
 	thickness.cpp		\
 	usercontrol.cpp 	\
 	xap.cpp
+
+if INCLUDE_MANAGED_CODE
+libmoon_include_headers += $(libmoon_include_headers_2)
+libmoon_la_SOURCES      += $(libmoon_la_sources_2)
 endif
 
 if INCLUDE_FFMPEG
@@ -200,7 +202,9 @@ EXTRA_DIST = \
 	alpha-premul-table.inc \
 	zip/README \
 	zip/ChangeLogUnzip \
-	$(libmoon_include_headers)
+	$(libmoon_include_headers) \
+	$(libmoon_include_headers_2) \
+	$(libmoon_la_sources_2)
 
 libmoon_la_LIBADD = $(MOON_LIBS)
 
