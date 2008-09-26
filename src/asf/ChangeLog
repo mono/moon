@@ -1,3 +1,8 @@
+2008-09-26  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf.cpp: Remove unused local field.
+	* asf.h: Implement ASFPacket::GetTypeName.
+
 2008-08-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf.h: No need to surround GetTypeName with OBJECT_TRACKING anymore.

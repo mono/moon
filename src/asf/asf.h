@@ -81,6 +81,8 @@ public:
 	IMediaSource *GetSource () { return source; }
 	void SetSource (IMediaSource *source);
 	MediaResult Read ();
+	
+	virtual const char* GetTypeName () { return "ASFPacket"; }
 };
 
 class ASFReader {

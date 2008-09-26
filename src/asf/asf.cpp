@@ -725,7 +725,6 @@ ASFPacket::Read ()
 	MediaResult result;
 	asf_payload_parsing_information ppi;
 	asf_error_correction_data ecd;
-	gint64 initial_position;
 	ASFContext context;
 		
 	ASF_LOG ("ASFPacket::Read (): source: %s, source position: %lld\n", source->ToString (), source->GetPosition ());
@@ -750,7 +749,7 @@ ASFPacket::Read ()
 	asf_multiple_payloads *mp = new asf_multiple_payloads ();
 	result = mp->FillInAll (&context, &ecd, ppi);
 	if (!MEDIA_SUCCEEDED (result)) {
-		ASF_LOG_ERROR ("ASFPacket::Read (): FillIn multiple payloads failed, current position: %lld, in stream %s, initial packet position: %lld, packet index: %llu\n", source->GetPosition (), source->ToString (), initial_position, parser->GetPacketIndex (initial_position));
+		ASF_LOG_ERROR ("ASFPacket::Read (): FillIn multiple payloads failed, current position: %lld, in stream %s\n", source->GetPosition (), source->ToString ());
 		delete mp;
 		return result;
 	}
