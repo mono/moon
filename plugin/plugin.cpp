@@ -877,6 +877,7 @@ PluginInstance::IdleUpdateSourceByReference (gpointer data)
 	PluginInstance *instance = (PluginInstance*)data;
 
 	char *pos = strchr (instance->source, '#');
+
 	if (strlen (pos+1) > 0)
 		instance->UpdateSourceByReference (pos+1);
 
@@ -959,27 +960,58 @@ PluginInstance::CreateDownloader (PluginInstance *instance)
 	}
 }
 
+void
+PluginInstance::SetPageURL ()
+{
+	if (source_location != NULL)
+		return;
+	
+	NPIdentifier str_location = NPN_GetStringIdentifier ("location");
+	NPIdentifier str_href = NPN_GetStringIdentifier ("href");
+	NPVariant location_property;
+	NPVariant location_object;
+	NPObject *window;
+	
+	if (NPERR_NO_ERROR == NPN_GetValue (instance, NPNVWindowNPObject, &window)) {
+		// Get the location property from the window object (which is another object).
+		if (NPN_GetProperty (instance, window, str_location, &location_property)) {
+			// Get the location property from the location object.
+			if (NPN_GetProperty (instance, location_property.value.objectValue, str_href, &location_object )) {
+				this->source_location = g_strndup (NPVARIANT_TO_STRING (location_object).utf8characters, NPVARIANT_TO_STRING (location_object).utf8length);
+				if (surface)
+					surface->SetSourceLocation (this->source_location);
+				NPN_ReleaseVariantValue (&location_object);
+			}
+			NPN_ReleaseVariantValue (&location_property);
+		}
+	}
+	NPN_ReleaseObject (window);
+}
+
 
 NPError
 PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, uint16_t *stype)
 {
 	nps (printf ("PluginInstance::NewStream (%p, %p, %i, %p)\n", type, stream, seekable, stype));
-	
+
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
-		//printf ("source_location = %s\n", stream->url);
-		source_location = g_strdup (stream->url);
-		if (surface != NULL && g_str_has_prefix (source_location, "http"))
-			surface->SetSourceLocation (source_location);
+		// See http://developer.mozilla.org/En/Getting_the_page_URL_in_NPAPI_plugin
+		//
+		// but don't call GetProperty inside SetWindow because it breaks opera by
+		// causing it to reenter
+		//
+		// this->source_location = g_strdup (stream->url);
+		SetPageURL ();
+
 		*stype = NP_ASFILEONLY;
 		return NPERR_NO_ERROR;
 	}
-	
+
 	if (IS_NOTIFY_DOWNLOADER (stream->notifyData)) {
 		StreamNotify *notify = (StreamNotify *) stream->notifyData;
 		
 		npstream_request_set_stream_data ((Downloader *) notify->pdata, instance, stream);
 		*stype = NP_ASFILE;
-		
 		return NPERR_NO_ERROR;
 	}
 
