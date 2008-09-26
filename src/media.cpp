@@ -123,7 +123,7 @@ MediaBase::SetSurface (Surface *surface)
 			return;
 		}
 		
-		dl->Open ("GET", uri, MediaPolicy);
+		dl->Open ("GET", uri, strncmp (uri, "mms://", 6) == 0 ? StreamingPolicy : MediaPolicy);
 		SetSource (dl, "");
 		dl->unref ();
 	}
