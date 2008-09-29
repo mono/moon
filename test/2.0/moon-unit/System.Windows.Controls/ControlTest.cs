@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Ink;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
@@ -254,6 +255,24 @@ namespace MoonTest.System.Windows.Controls
 		[TestMethod]
 		public void GetTemplateChildTest ()
 		{
+		}
+
+		[TestMethod]
+		public void ChildNameScope ()
+		{
+			ControlPoker b = new ControlPoker ();
+		        Canvas c = (Canvas)XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+  <Border>
+    <Path x:Name=""foo"" Data=""F1 M 10,10 20,20 10,20"" Stroke=""Red""/>
+  </Border>
+</Canvas>");
+			Assert.IsNotNull (c.FindName ("foo"),"c before");
+			
+			b.SetContent (c);
+			
+			Assert.IsNull (b.FindName ("foo"),"b after");
+			Assert.IsNotNull (c.FindName ("foo"),"c after");
 		}
 	}
 }
