@@ -1108,7 +1108,7 @@ class Generator {
 		text.AppendLine ("\tstatic partial class Types {");
 		text.AppendLine ("\t\tprivate static void CreateNativeTypes ()");
 		text.AppendLine ("\t\t{");
-		text.AppendLine ("\t\t\tAssembly agclr = Helper.GetAgclr ();");
+		text.AppendLine ("\t\t\tAssembly agclr = Helper.Agclr;");
 		text.AppendLine ("\t\t\tType t;");
 		text.AppendLine ("\t\t\ttry {");
 		
