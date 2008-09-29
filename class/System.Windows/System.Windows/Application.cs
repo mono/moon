@@ -243,9 +243,7 @@ namespace System.Windows {
 		// we are loading, makes no sense to me, sounds like a
 		// hack.
 		//
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public static void LoadComponent (object component, Uri xamlUri)
 		{
 			// FIXME: unit tests (and MSDN) shows that Application throws an exception
@@ -288,9 +286,7 @@ namespace System.Windows {
 		 * 	1. Application manifest resources
 		 * 	2. XAP content
 		 */
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public static StreamResourceInfo GetResourceStream (Uri resourceUri)
 		{
 			if (resourceUri == null)
@@ -334,9 +330,7 @@ namespace System.Windows {
 			return null;
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public static StreamResourceInfo GetResourceStream (StreamResourceInfo zipPackageStreamResourceInfo, Uri resourceUri)
 		{
 			if (zipPackageStreamResourceInfo == null)
@@ -348,34 +342,26 @@ namespace System.Windows {
 		}
 
 		public static Application Current {
-#if NET_2_1
 			[SecuritySafeCritical]
-#endif
 			get {
 				return current;
 			}
 		}
 
 		public ResourceDictionary Resources {
-#if NET_2_1
 			[SecuritySafeCritical]
-#endif
 			get {
 				throw new NotImplementedException ("Resources");
 			}
 		}
 
 		public UIElement RootVisual {
-#if NET_2_1
 			[SecuritySafeCritical]
-#endif
 			get {
 				return root_visual;
 			}
 
-#if NET_2_1
 			[SecuritySafeCritical]
-#endif
 			set {
 				if (value == null)
 					throw new InvalidOperationException ();
@@ -409,7 +395,6 @@ namespace System.Windows {
 			}
 		}
 
-		
 		internal static void ImportXamlNamespace (string xmlns)
 		{
 			imported_namespaces.Add (xmlns);
@@ -442,8 +427,7 @@ namespace System.Windows {
 
 		internal static Assembly GetAssembly (string assembly_name)
 		{
-			Assembly a = (from def in assemblies where def.GetName ().Name == assembly_name select def).FirstOrDefault ();
-			return a;
+			return (from def in assemblies where def.GetName ().Name == assembly_name select def).FirstOrDefault ();
 		}
 	}
 }

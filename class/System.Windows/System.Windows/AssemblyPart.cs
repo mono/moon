@@ -41,9 +41,7 @@ namespace System.Windows {
 			SourceProperty = DependencyProperty.Lookup (Kind.ASSEMBLYPART, "Source", typeof (string));
 		}
 
-#if NET_2_1
 		[SecuritySafeCritical]
-#endif
 		public Assembly Load (Stream assemblyStream)
 		{
 			//
