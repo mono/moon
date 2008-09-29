@@ -852,6 +852,10 @@ class Generator {
 					is_extern = true;
 					continue;
 				}
+
+				if (tokenizer.Accept (Token2Type.Identifier, "volatile")) {
+					continue;
+				}
 				
 			    break;
 			} while (true);
