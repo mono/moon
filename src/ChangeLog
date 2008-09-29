@@ -1,3 +1,10 @@
+2008-09-29  Jeffrey Stedfast  <fejj@novell.com>
+
+	* brush.cpp (ImageBrush::SetSurface): Update the image's Loaded
+	state. Fixes some regressions introduced by moving the async
+	downloading logic from MediaBase::SetSurface() into
+	ImageBase::OnLoaded().
+
 2008-09-29  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* pipeline-ffmpeg.cpp: Free extradata, if allocated, on failure.

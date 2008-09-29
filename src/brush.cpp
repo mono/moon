@@ -486,7 +486,14 @@ ImageBrush::SetSurface (Surface *surface)
 {
 	if (GetSurface() == surface)
 		return;
+	
 	image->SetSurface (surface);
+	
+	if (surface)
+		image->OnLoaded ();
+	else
+		image->ClearLoaded ();
+	
 	DependencyObject::SetSurface (surface);
 }
 
