@@ -23,7 +23,6 @@ G_BEGIN_DECLS
 void plugin_init_classes (void);
 void plugin_destroy_classes (void);
 
-void event_object_add_javascript_listener (EventObject *obj, PluginInstance *instance, const char *event_name, const char *cb_name);
 void event_object_add_xaml_listener (EventObject *obj, PluginInstance *instance, const char *event_name, const char *cb_name);
 
 void string_to_npvariant (const char *value, NPVariant *result);

@@ -132,6 +132,7 @@ enum PluginPropertyId {
 	MoonId_ToString,     
 #if DEBUG_JAVASCRIPT
 	MoonId_Printf,
+	MoonId_DumpNameScope,
 #endif
 	MoonId_Add,
 	MoonId_Remove,
@@ -783,12 +784,11 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 		proxy->RemoveHandler();
 }
 
-
-void
-event_object_add_javascript_listener (EventObject *obj, PluginInstance *plugin, const char *event_name, const char *cb_name)
+static void
+delete_proxy (EventObject *sender, EventArgs *args, gpointer closure)
 {
-	EventListenerProxy *proxy = new EventListenerProxy (plugin->GetInstance (), event_name, cb_name);
-	proxy->AddHandler (obj);
+	EventListenerProxy *proxy = (EventListenerProxy*)closure;
+	delete proxy;
 }
 
 void
@@ -796,6 +796,7 @@ event_object_add_xaml_listener (EventObject *obj, PluginInstance *plugin, const 
 {
 	EventListenerProxy *proxy = new EventListenerProxy (plugin->GetInstance (), event_name, cb_name);
 	proxy->AddXamlHandler (obj);
+	obj->AddHandler (EventObject::DestroyedEvent, delete_proxy, proxy);
 }
 
 class NamedProxyPredicate {
@@ -2469,6 +2470,9 @@ static const MoonNameIdMapping
 moonlight_dependency_object_mapping [] = {
 	{ "addeventlistener", MoonId_AddEventListener },
 	{ "capturemouse", MoonId_CaptureMouse },
+#if DEBUG_JAVASCRIPT
+	{ "dumpnamescope", MoonId_DumpNameScope },
+#endif
 	{ "equals", MoonId_Equals },
 	{ "findname", MoonId_FindName },
 	{ "gethost", MoonId_GetHost },
@@ -2770,6 +2774,21 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 		fprintf (stderr, "JS message: %s\n", message);
 		g_free (message);
 		VOID_TO_NPVARIANT (*result);
+		return true;
+	}
+	case MoonId_DumpNameScope: {
+		fprintf (stderr, "dumping namescope for object %p (%s)\n", dob, dob->GetTypeName());
+		DependencyObject *ns_dob = dob;
+		NameScope *ns;
+		while (!(ns = NameScope::GetNameScope(ns_dob)))
+			ns_dob = ns_dob->GetLogicalParent();
+		if (ns_dob == NULL)
+			fprintf (stderr, " no namescope in logical hierarchy!\n");
+		else {
+			if (ns_dob != dob)
+				fprintf (stderr, "namescope is actually on object %p (%s)\n", ns_dob, ns_dob->GetTypeName());
+			ns->Dump ();
+		}
 		return true;
 	}
 #endif
