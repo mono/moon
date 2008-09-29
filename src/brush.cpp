@@ -528,6 +528,9 @@ ImageBrush::AddTarget (DependencyObject *obj)
 	if (!obj->Is (Type::UIELEMENT))
 		return;
 	
+	if (((UIElement *) obj)->IsLoaded ())
+		TargetLoaded ();
+	
 	obj->AddHandler (UIElement::UnloadedEvent, target_unloaded, this);
 	obj->AddHandler (UIElement::LoadedEvent, target_loaded, this);
 }
@@ -537,6 +540,9 @@ ImageBrush::RemoveTarget (DependencyObject *obj)
 {
 	if (!obj->Is (Type::UIELEMENT))
 		return;
+	
+	if (((UIElement *) obj)->IsLoaded ())
+		TargetUnloaded ();
 	
 	obj->RemoveHandler (UIElement::UnloadedEvent, target_unloaded, this);
 	obj->RemoveHandler (UIElement::LoadedEvent, target_loaded, this);
