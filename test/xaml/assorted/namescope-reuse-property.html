@@ -12,246 +12,321 @@ var logger = null;
 
 function Log (color, text)
 {
-        var run = content.createFromXaml ("<Run Foreground='" + color + "'/>");
-        var eoln = content.createFromXaml ("<LineBreak/>");
-        
-        run.text = text;
-        logger.inlines.add (run);
-        logger.inlines.add (eoln);
+  var run = content.createFromXaml ("<Run Foreground='" + color + "'/>");
+  var eoln = content.createFromXaml ("<LineBreak/>");
+
+  run.text = text;
+  logger.inlines.add (run);
+  logger.inlines.add (eoln);
 }
 
 function test1 ()
 {
-        // see what happens when a named brush is set as a property
-	// on multiple elements in the same NameScope.
-        
-        var tree0 = content.createFromXaml ("<Canvas xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' Canvas.Top='5' Canvas.Left='5' x:Name='Tree0'><Rectangle x:Name='Rect0' Canvas.Left='0' Width='10' Height='10'><Rectangle.Stroke><SolidColorBrush x:Name='MyBrush' Color='Green'/></Rectangle.Stroke></Rectangle><Rectangle x:Name='Rect1' Canvas.Left='15' Width='10' Height='10'/></Canvas>", true);
+  // see what happens when a named brush is set as a property
+  // on multiple elements in the same NameScope.
 
-        var rect = tree0.findName ("Rect0");
-        var brush = rect.stroke;
-        
-        rect = tree0.findName ("Rect1");
-        rect.fill = brush;
-        
-        var res = tree0.findName ("MyBrush");
-        if (res != brush)
-                Log ("green", "FindName() correctly did not find the re-used brush in the same namescope.");
-        else
-                Log ("red", "FindName() incorrectly found the re-used brush in the same namescope.");
+  var tree0 = content.createFromXaml ("<Canvas xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' Canvas.Top='5' Canvas.Left='5' x:Name='Tree0'><Rectangle x:Name='Rect0' Canvas.Left='0' Width='10' Height='10'><Rectangle.Stroke><SolidColorBrush x:Name='MyBrush' Color='Green'/></Rectangle.Stroke></Rectangle><Rectangle x:Name='Rect1' Canvas.Left='15' Width='10' Height='10'/></Canvas>", true);
+
+  var rect = tree0.findName ("Rect0");
+  var brush = rect.stroke;
+
+  rect = tree0.findName ("Rect1");
+  rect.fill = brush;
+
+  var res = tree0.findName ("MyBrush");
+  if (res != brush)
+    Log ("green", "FindName() correctly did not find the re-used brush in the same namescope.");
+  else
+    Log ("red", "FindName() incorrectly found the re-used brush in the same namescope.");
 }
 
 function test2 ()
 {
-        // see if we can re-use the same brush in a second namespace
-        // and whether or not FindName() will find it in both places.
-        var tree0 = content.createFromXaml ("<Canvas xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' Canvas.Top='5' Canvas.Left='5' x:Name='Tree0'><Rectangle x:Name='Rect0' Canvas.Left='0' Width='10' Height='10'><Rectangle.Stroke><SolidColorBrush x:Name='MyBrush' Color='Green'/></Rectangle.Stroke></Rectangle><Rectangle x:Name='Rect1' Canvas.Left='15' Width='10' Height='10'/></Canvas>", true);
-        
-        var tree1 = content.createFromXaml ("<Canvas xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' Canvas.Top='5' Canvas.Left='35' x:Name='Tree1'><Rectangle x:Name='Rect2' Canvas.Left='0' Width='10' Height='10'/><Rectangle x:Name='Rect3' Canvas.Left='15' Width='10' Height='10'/></Canvas>", true);
+  // see if we can re-use the same brush in a second namespace
+  // and whether or not FindName() will find it in both places.
+  var tree0 = content.createFromXaml ("<Canvas xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' Canvas.Top='5' Canvas.Left='5' x:Name='Tree0'><Rectangle x:Name='Rect0' Canvas.Left='0' Width='10' Height='10'><Rectangle.Stroke><SolidColorBrush x:Name='MyBrush' Color='Green'/></Rectangle.Stroke></Rectangle><Rectangle x:Name='Rect1' Canvas.Left='15' Width='10' Height='10'/></Canvas>", true);
 
-        var rect = tree0.findName ("Rect0");
-        var brush = rect.stroke;
-        
-        rect = tree1.findName ("Rect2");
-        rect.stroke = brush;
-        
-        rect = tree1.findName ("Rect3");
-        rect.fill = brush;
-        
-        res = tree1.findName ("MyBrush");
-        if (res != brush)
-                Log ("green", "FindName() correctly did not find the re-used brush in the alternate namescope.");
-        else
-                Log ("red", "FindName() incorrectly found the re-used brush in the alternate namescope.");
+  var tree1 = content.createFromXaml ("<Canvas xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' Canvas.Top='5' Canvas.Left='35' x:Name='Tree1'><Rectangle x:Name='Rect2' Canvas.Left='0' Width='10' Height='10'/><Rectangle x:Name='Rect3' Canvas.Left='15' Width='10' Height='10'/></Canvas>", true);
 
+  var rect = tree0.findName ("Rect0");
+  var brush = rect.stroke;
+
+  rect = tree1.findName ("Rect2");
+  rect.stroke = brush;
+
+  rect = tree1.findName ("Rect3");
+  rect.fill = brush;
+
+  res = tree1.findName ("MyBrush");
+  if (res != brush)
+    Log ("green", "FindName() correctly did not find the re-used brush in the alternate namescope.");
+  else
+    Log ("red", "FindName() incorrectly found the re-used brush in the alternate namescope.");
 }
 
 function test3 ()
 {
-	// see if names conflict if added from a separate subtree (which has a temp scope)
+  // see if names conflict if added from a separate subtree (which has a temp scope)
 
-	var tree2 = content.createFromXaml ("<Canvas xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' Canvas.Top='5' Canvas.Left='35' x:Name='Tree1'><Rectangle x:Name='Rect2' Canvas.Left='0' Width='10' Height='10'/><Rectangle x:Name='Rect3' Canvas.Left='15' Width='10' Height='10'/></Canvas>", true);
-	var tree3 = content.createFromXaml ("<Canvas xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' Canvas.Top='5' Canvas.Left='35' x:Name='Tree2'><Rectangle x:Name='Rect2'/></Canvas>");
+  var tree2 = content.createFromXaml ("<Canvas xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' Canvas.Top='5' Canvas.Left='35' x:Name='Tree1'><Rectangle x:Name='Rect2' Canvas.Left='0' Width='10' Height='10'/><Rectangle x:Name='Rect3' Canvas.Left='15' Width='10' Height='10'/></Canvas>", true);
+  var tree3 = content.createFromXaml ("<Canvas xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' Canvas.Top='5' Canvas.Left='35' x:Name='Tree2'><Rectangle x:Name='Rect2'/></Canvas>");
 
-	var exception = null;
-	try {
-		tree2.children.add (tree3);
-	}
-	catch (ex) {
-		exception = ex;
-	}
+  var exception = null;
+  try {
+    tree2.children.add (tree3);
+  }
+  catch (ex) {
+    exception = ex;
+  }
 
-	if (exception != null)
-		Log ("green", "merging namescopes with conflicting names did generate error");
-	else
-		Log ("red", "merging namescopes with conflicting names did not generate error");
+  if (exception != null)
+    Log ("green", "merging namescopes with conflicting names did generate error");
+  else
+    Log ("red", "merging namescopes with conflicting names did not generate error");
 
-	var conflicting = tree3.findName ("Rect2");
-	if (conflicting)
-		Log ("red", "after merge failed due to exception, Rect2 was still findName()able in child tree");
-	else
-		Log ("green", "after merge failed due to exception, Rect2 was not findName()able in child tree");
+  var conflicting = tree3.findName ("Rect2");
+  if (conflicting)
+    Log ("red", "after merge failed due to exception, Rect2 was still findName()able in child tree");
+  else
+    Log ("green", "after merge failed due to exception, Rect2 was not findName()able in child tree");
 
-	var original = tree2.findName ("Rect2");
-	if (original)
-		Log ("green", "after merge failed due to exception, Rect2 was still findName()able in original tree");
-	else
-		Log ("red", "after merge failed due to exception, Rect2 was not findName()able in original tree");
+  var original = tree2.findName ("Rect2");
+  if (original)
+    Log ("green", "after merge failed due to exception, Rect2 was still findName()able in original tree");
+  else
+    Log ("red", "after merge failed due to exception, Rect2 was not findName()able in original tree");
 
 }
 
 function test4 ()
 {
-	// see if names in conflict in the same xaml block generate an error (a child element)
+  // see if names in conflict in the same xaml block generate an error (a child element)
 
-	exception = null;
-	try {
-		var tree4 = content.createFromXaml ("<Canvas xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' Canvas.Top='5' Canvas.Left='35' x:Name='Tree1'><Rectangle x:Name='Tree1'/></Canvas>");
-	}
-	catch (ex) {
-		exception = ex;
-	}
+  exception = null;
+  try {
+    var tree4 = content.createFromXaml ("<Canvas xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' Canvas.Top='5' Canvas.Left='35' x:Name='Tree1'><Rectangle x:Name='Tree1'/></Canvas>");
+  }
+  catch (ex) {
+    exception = ex;
+  }
 
-	if (exception != null)
-		Log ("green", "two elements with the same name in the same xaml block did generate an error");
-	else
-		Log ("red", "two elements with the same name in the same xaml block did not generate an error");
-
+  if (exception != null)
+    Log ("green", "two elements with the same name in the same xaml block did generate an error");
+  else
+    Log ("red", "two elements with the same name in the same xaml block did not generate an error");
 }
 
 function test5 ()
 {
-	// see if names in conflict in the same xaml block generate an error (a property element)
+  // see if names in conflict in the same xaml block generate an error (a property element)
 
-	exception = null;
-	try {
-		var tree4 = content.createFromXaml ("<Canvas xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' Canvas.Top='5' Canvas.Left='35' x:Name='Tree1'><Canvas.Clip><RectangleGeometry x:Name='Tree1'/></Canvas.Clip></Canvas>");
-	}
-	catch (ex) {
-		exception = ex;
-	}
+  exception = null;
+  try {
+    var tree4 = content.createFromXaml ("<Canvas xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' Canvas.Top='5' Canvas.Left='35' x:Name='Tree1'><Canvas.Clip><RectangleGeometry x:Name='Tree1'/></Canvas.Clip></Canvas>");
+  }
+  catch (ex) {
+    exception = ex;
+  }
 
-	if (exception != null)
-		Log ("green", "two elements with the same name (property element) in the same xaml block did generate an error");
-	else
-		Log ("red", "two elements with the same name (property element) in the same xaml block did not generate an error");
-
-
+  if (exception != null)
+    Log ("green", "two elements with the same name (property element) in the same xaml block did generate an error");
+  else
+    Log ("red", "two elements with the same name (property element) in the same xaml block did not generate an error");
 }
 
 function test6 ()
 {
-	// see if we can remove a child then re-add it and have the name be available
+  // see if we can remove a child then re-add it and have the name be available
 
-	var tree5 = content.createFromXaml ("<Canvas xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' x:Name='Tree2'><Canvas x:Name='Subtree'><Rectangle x:Name='Rect2'/></Canvas></Canvas>");
+  var tree5 = content.createFromXaml ("<Canvas xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' x:Name='Tree2'><Canvas x:Name='Subtree'><Rectangle x:Name='Rect2'/></Canvas></Canvas>");
 
-	var child = tree5.children.getItem(0);
-	tree5.children.clear ();
+  var child = tree5.children.getItem(0);
+  tree5.children.clear ();
 
-	tree5.children.add (child);
+  tree5.printf ("before children.add");
+  tree5.children.add (child);
+  tree5.printf ("after children.add");
 
-	if (tree5.findName ("Subtree") != null)
-		Log ("green", "child is once again findName()able after being removed and re-added");
-	else
-		Log ("red", "child is not findName()able after being removed and re-added");
+//  if (tree5.findName ("Subtree") != null)
+//    Log ("green", "child is once again findName()able after being removed and re-added");
+//  else
+//    Log ("red", "child is not findName()able after being removed and re-added");
 
-	if (tree5.findName ("Rect2") != null)
-		Log ("green", "descendent is once again findName()able after being removed and re-added");
-	else
-		Log ("red", "descendent is not findName()able after being removed and re-added");
+  if (tree5.findName ("Rect2") != null)
+    Log ("green", "descendent is once again findName()able after being removed and re-added");
+  else
+    Log ("red", "descendent is not findName()able after being removed and re-added");
 }
 
 function test7 ()
 {
-	// see if we can remove a child then re-add it and have the name be available
+  // see if we can remove a child then re-add it and have the name be available
 
-	var tree5 = content.createFromXaml ("<Canvas xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' x:Name='Tree2'><Canvas x:Name='Subtree'><Rectangle x:Name='Rect2'/></Canvas></Canvas>");
+  var tree5 = content.createFromXaml ("<Canvas xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' x:Name='Tree2'><Canvas x:Name='Subtree'><Rectangle x:Name='Rect2'/></Canvas></Canvas>");
 
-	var child = tree5.children.getItem(0);
-	tree5.children.clear ();
+  var child = tree5.children.getItem(0);
+  tree5.children.clear ();
 
-	if (child.findName ("Subtree") == null)
-		Log ("green", "Subtree cannot be looked up in disconnected subtree");
-	else
-		Log ("red", "Subtree can be looked up in disconnected subtree");
+  if (child.findName ("Subtree") == null)
+    Log ("green", "Subtree cannot be looked up in disconnected subtree");
+  else
+    Log ("red", "Subtree can be looked up in disconnected subtree");
 
-	if (child.findName ("Rect2") == null)
-		Log ("green", "Rect2 cannot be looked up in disconnected subtree");
-	else
-		Log ("red", "Rect2 can be looked up in disconnected subtree");
+  if (child.findName ("Rect2") == null)
+    Log ("green", "Rect2 cannot be looked up in disconnected subtree");
+  else
+    Log ("red", "Rect2 can be looked up in disconnected subtree");
 
-	tree5.children.add (child);
+  tree5.children.add (child);
 
-	if (tree5.findName ("Subtree") != null)
-		Log ("green", "child is once again findName()able after being removed and re-added");
-	else
-		Log ("red", "child is not findName()able after being removed and re-added");
+  if (tree5.findName ("Subtree") != null)
+    Log ("green", "child is once again findName()able after being removed and re-added");
+  else
+    Log ("red", "child is not findName()able after being removed and re-added");
 
-	if (tree5.findName ("Rect2") != null)
-		Log ("green", "descendent is once again findName()able after being removed and re-added");
-	else
-		Log ("red", "descendent is not findName()able after being removed and re-added");
+  if (tree5.findName ("Rect2") != null)
+    Log ("green", "descendent is once again findName()able after being removed and re-added");
+  else
+    Log ("red", "descendent is not findName()able after being removed and re-added");
 }
 
 function test8 ()
 {
-	// see if a temp namescope causes children to no longer be
-	// findName()able if we remove the subtree from the hierarchy and
-	// add it back
+  // see if a temp namescope causes children to no longer be
+  // findName()able if we remove the subtree from the hierarchy and
+  // add it back
 
-	var tree = content.createFromXaml ("<Canvas xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' x:Name='Tree'/>");
-	var subtree = content.createFromXaml ("<Canvas xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' x:Name='Subtree'><Rectangle x:Name='Rect2'/></Canvas>");
+  var tree = content.createFromXaml ("<Canvas xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' x:Name='Tree'/>");
+  var subtree = content.createFromXaml ("<Canvas xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' x:Name='Subtree'><Rectangle x:Name='Rect2'/></Canvas>");
 
-	tree.children.add (subtree);
+  tree.children.add (subtree);
 
-	if (tree.findName ("Subtree") != null)
-		Log ("green", "child is locatable after adding to hierarchy");
-	else
-		Log ("red", "child is not locatable after adding to hierarchy");
+  if (tree.findName ("Subtree") != null)
+    Log ("green", "child is locatable after adding to hierarchy");
+  else
+    Log ("red", "child is not locatable after adding to hierarchy");
 
-	tree.children.clear ();
+  tree.children.clear ();
 
-	if (subtree.findName ("Subtree") == null)
-		Log ("green", "Subtree cannot be looked up in disconnected subtree");
-	else
-		Log ("red", "Subtree can be looked up in disconnected subtree");
+  if (subtree.findName ("Subtree") == null)
+    Log ("green", "Subtree cannot be looked up in disconnected subtree");
+  else
+    Log ("red", "Subtree can be looked up in disconnected subtree");
 
-	if (subtree.findName ("Rect2") == null)
-		Log ("green", "Rect2 cannot be looked up in disconnected subtree");
-	else
-		Log ("red", "Rect2 can be looked up in disconnected subtree");
+  if (subtree.findName ("Rect2") == null)
+    Log ("green", "Rect2 cannot be looked up in disconnected subtree");
+  else
+    Log ("red", "Rect2 can be looked up in disconnected subtree");
 
-	tree.children.add (subtree);
+  tree.children.add (subtree);
 
-	if (tree.findName ("Rect2") != null)
-		Log ("green", "descendent is once again findName()able after being removed and re-added");
-	else
-		Log ("red", "descendent is not findName()able after being removed and re-added");
+  if (tree.findName ("Rect2") != null)
+    Log ("green", "descendent is once again findName()able after being removed and re-added");
+  else
+    Log ("red", "descendent is not findName()able after being removed and re-added");
 
+}
+
+function test9 ()
+{
+  // we create a temp namescope on a subtree, add the subtree to
+  // the main tree, then remove it. then we add a new name to it
+  // and see if we can look up the new name on the subtree.  then
+  // we add it back to the main tree and look up the name there.
+
+  var tree = content.createFromXaml ("<Canvas xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' x:Name='Tree'/>");
+  var subtree = content.createFromXaml ("<Canvas xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' x:Name='Subtree'><Rectangle x:Name='Rect2'/></Canvas>");
+
+  tree.children.add (subtree);
+
+  tree.children.clear ();
+
+  var new_child = content.createFromXaml ("<Canvas xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' x:Name='Subtree2' />");
+
+  subtree.children.add (new_child);
+
+  if (subtree.findName ("Subtree2") == null)
+    Log ("green", "Subtree2 cannot be looked up in disconnected subtree");
+  else
+    Log ("red", "Subtree2 can be looked up in disconnected subtree");
+
+  tree.children.add (subtree);
+
+  if (tree.findName ("Subtree2") != null)
+    Log ("green", "Subtree2 can be looked up once the subtree is reconnected");
+  else
+    Log ("red", "Subtree2 cannot be looked up once the subtree is reconnected");
+}
+
+function test10 ()
+{
+  // we create a temp namescope on a subtree, add the subtree to the
+  // main tree, then remove it (to kill its namescope).  then we add a
+  // conflicting named child to it and see if that flags an error.
+
+  var tree = content.createFromXaml ("<Canvas xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' x:Name='Tree'/>");
+  var subtree = content.createFromXaml ("<Canvas xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' x:Name='Subtree'><Rectangle x:Name='Rect2'/></Canvas>");
+
+  tree.children.add (subtree);
+
+  tree.children.clear ();
+
+  var new_child = content.createFromXaml ("<Canvas xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' x:Name='Subtree' />");
+
+  var exception = null;
+  try {
+    subtree.children.add (new_child);
+  }
+  catch (ex) {
+    exception = ex;
+  }
+
+  if (exception != null)
+    Log ("red", "adding conflicting child to subtree without namescope raised exception");
+  else
+    Log ("green", "adding conflicting child to subtree without namescope didn't raise exception");
+
+  exception = null;
+  try {
+    tree.children.add (subtree);
+  }
+  catch (ex) {
+    exception = ex;
+  }
+
+  if (exception != null)
+    Log ("green", "adding subtree with conflicting child name back to root tree raised exception");
+  else
+    Log ("red", "adding subtree with conflicting child name back to root tree didn't raise exception");
 }
 
 function OnLoaded (sender, eventArgs)
 {
-        control = document.getElementById ("agControl");
-        content = control.content;
-        
-        logger = sender.findName ("Log");
-        
-	Log ("black", "test1");
-	test1 ();
-	Log ("black", "\ntest2");
-	test2 ();
-	Log ("black", "\ntest3");
-	test3 ();
-	Log ("black", "\ntest4");
-	test4 ();
-	Log ("black", "\ntest5");
-	test5 ();
-	Log ("black", "\ntest6");
-	test6 ();
-	Log ("black", "\ntest7");
-	test7 ();
-	Log ("black", "\ntest8");
-	test8 ();
+  control = document.getElementById ("agControl");
+  content = control.content;
+
+  logger = sender.findName ("Log");
+
+  Log ("black", "test1");
+  test1 ();
+  Log ("black", "test2");
+  test2 ();
+  Log ("black", "test3");
+  test3 ();
+  Log ("black", "test4");
+  test4 ();
+  Log ("black", "test5");
+  test5 ();
+  Log ("black", "test6");
+  test6 ();
+  Log ("black", "test7");
+  test7 ();
+  Log ("black", "test8");
+  test8 ();
+  Log ("black", "test9");
+  test9 ();
+  Log ("black", "test10");
+  test10 ();
 }
 </script>
 
