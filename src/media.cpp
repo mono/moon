@@ -2564,9 +2564,6 @@ TimelineMarkerCollection::Add (Value *value)
 {
 	TimelineMarker *marker, *cur;
 	
-	if (!value->Is (Type::TIMELINEMARKER))
-		return -1;
-	
 	marker = value->AsTimelineMarker ();
 	
 	for (guint i = 0; i < array->len; i++) {

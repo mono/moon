@@ -1,3 +1,9 @@
+2008-09-28  Chris Toshok  <toshok@ximian.com>
+
+	* media.cpp (TimelineMarkerCollection::Add): no need to check the
+	element type of the value, by the time it makes it here it should
+	already be the right type.
+
 2008-09-26  Jeffrey Stedfast  <fejj@novell.com>
 
 	* media.cpp (MediaBase::OnLoaded): Logic moved here from
