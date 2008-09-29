@@ -1,5 +1,61 @@
 2008-09-28  Chris Toshok  <toshok@ximian.com>
 
+	* xaml.cpp (XNamespace::SetAttribute): don't both RegisterName and
+	SetValue (NameProperty) - just set the NameProperty, it'll update
+	the proper namescope automatically.
+	(get_parent): remove.
+	(set_parent): remove.  we no longer need to maintain a temporary
+	chain while parsing.  there's also no need for set_parent(NULL)
+	anywhere.
+	(XamlElementInstance::TrySetContentProperty): if there was an
+	error in DependencyObject::SetValueWithError or
+	Collection::AddWithError, raise a parser error.
+	(dependency_object_add_child): call
+	Collection/ResourceDictionary::AddWithError, and raise a
+	parser_error if it fails.  also, remove set_parent (NULL) calls.
+
+	* dependencyobject.h,
+	dependencyobject.cpp (DependencyObject::MergeNameScopes): remove.
+	(DependencyObject::RegisterAllNamesRootedAt): this now takes a
+	MoonError argument so we can signal when there's been a conflict.
+	(DependencyObject::SetLogicalParent): this also now takes a
+	MoonError argument, and this is where ALL the namescope merging
+	code lives.  It's been removed from everywhere else.  Also, this
+	change means we can no longer be setting/clearing the parent in
+	xaml.cpp, as it destroys temp namescopes.
+
+	* namescope.h, namescope.cpp (NameScope::MergeTemporaryScope): add
+	a MoonError parameter, so we can communicate back an
+	error (conflicting names) properly.
+	(NameScope::Dump): new method.
+	
+	* collection.h, collection.cpp (Collection::AddWithError): new
+	method, generate a binding for this instead of Add.  This allows
+	us to check for name conflicts when a DOCollection is updated.
+	(Collection::InsertWithError): same.  Also, this method has
+	something quirky about it - it calls AddedToCollection *before*
+	the collection is modified.  suck, but the logic in that code
+	needs to be run before the change occurs.
+	(Collection::AddedToCollection): add a MoonError arg so we can
+	properly pass errors back up.
+	(DependencyObjectCollection::RegisterAllNamesRootedAt): add the
+	MoonError arg.
+	(DependencyObjectCollection::AddedToCollection,
+	DependencyObjectCollection::RemovedFromCollection): remove
+	namescope handling from here.
+	
+	* animation.h,
+	animation.cpp (KeyFrameCollection::AddedToCollection): track api
+	change to Collection::AddedToCollection.
+
+	* resources.h, resources.cpp: track changes to AddedToCollection,
+	RegisterAllNamesRootedAt, and AddWithError.  Also, remove
+	namescope handling code from here.
+
+	* cbinding.cpp, cbinding.h, type-generated.cpp: regen.
+	
+2008-09-28  Chris Toshok  <toshok@ximian.com>
+
 	* geometry.cpp (Geometry::OnPropertyChanged): this method was
 	never chaining up to DependencObject::OnPropertyChanged, which it
 	must do for properties whose ownerType != Geometry.

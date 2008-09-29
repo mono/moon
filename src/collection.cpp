@@ -63,6 +63,13 @@ Collection::Add (Value value)
 	return Add (&value);
 }
 
+int
+Collection::AddWithError (Value *value, MoonError *error)
+{
+	bool rv = InsertWithError (array->len, value, error);
+	return rv ? array->len - 1 : -1;
+}
+
 bool
 Collection::Clear ()
 {
@@ -70,7 +77,7 @@ Collection::Clear ()
 
 	guint len = array->len;
 	Value** vals = new Value*[len];
-	memcpy (vals, array->pdata, len * sizeof(Value*));
+	memmove (vals, array->pdata, len * sizeof(Value*));
 
 	g_ptr_array_set_size (array, 0);
 	generation++;
@@ -114,8 +121,8 @@ Collection::Insert (int index, Value value)
 	return Insert (index, &value);
 }
 
-bool
-Collection::Insert (int index, Value *value)
+int
+Collection::InsertWithError (int index, Value *value, MoonError *error)
 {
 	Value *added;
 	
@@ -131,14 +138,27 @@ Collection::Insert (int index, Value *value)
 		index = GetCount ();
 	
 	added = new Value (*value);
-	g_ptr_array_insert (array, index, added);
-	AddedToCollection (added);
+
+	if (AddedToCollection (added, error)) {
+		g_ptr_array_insert (array, index, added);
 	
-	SetCount ((int) array->len);
+		SetCount ((int) array->len);
 	
-	EmitChanged (CollectionChangedActionAdd, added, NULL, index);
+		EmitChanged (CollectionChangedActionAdd, added, NULL, index);
 	
-	return true;
+		return true;
+	}
+	else {
+		delete added;
+		return false;
+	}
+}
+
+bool
+Collection::Insert (int index, Value *value)
+{
+	MoonError error;
+	return InsertWithError (index, value, &error);
 }
 
 bool
@@ -218,34 +238,16 @@ Collection::GetValueAtWithError (int index, MoonError *error)
 bool
 Collection::SetValueAt (int index, Value *value)
 {
-	Value *added, *removed;
-	
-	// Check that the value can be added to our collection
-	if (!CanAdd (value))
-		return false;
-	
-	// check array bounds
-	if (index < 0 || (guint) index >= array->len)
-		return false;
-	
-	removed = (Value *) array->pdata[index];
-	added = new Value (*value);
-	
-	array->pdata[index] = added;
-	
-	RemovedFromCollection (removed);
-	AddedToCollection (added);
-	
-	EmitChanged (CollectionChangedActionReplace, added, removed, index);
-	
-	delete removed;
-	
-	return true;
+	MoonError error;
+	return SetValueAtWithError (index, value, &error);
 }
 
 bool
 Collection::SetValueAtWithError (int index, Value *value, MoonError *error)
 {
+
+	Value *added, *removed;
+	
 	// Check that the value can be added to our collection
 	if (!CanAdd (value)) {
 		MoonError::FillIn (error, MoonError::ARGUMENT, "");
@@ -258,7 +260,22 @@ Collection::SetValueAtWithError (int index, Value *value, MoonError *error)
 		return false;
 	}
 	
-	return SetValueAt (index, value);
+	removed = (Value *) array->pdata[index];
+	added = new Value (*value);
+	
+	if (AddedToCollection (added, error)) {
+		array->pdata[index] = added;
+	
+		RemovedFromCollection (removed);
+	
+		EmitChanged (CollectionChangedActionReplace, added, removed, index);
+	
+		delete removed;
+
+		return true;
+	}
+	else
+		return false;
 }
 
 void
@@ -279,8 +296,8 @@ Collection::CanAdd (Value *value)
 	return value->Is (GetElementType ());
 }
 
-void
-DependencyObjectCollection::AddedToCollection (Value *value)
+bool
+DependencyObjectCollection::AddedToCollection (Value *value, MoonError *error)
 {
 	DependencyObject *obj = value->AsDependencyObject ();
 	
@@ -289,30 +306,22 @@ DependencyObjectCollection::AddedToCollection (Value *value)
 	// distinguish between the two cases.
 	
 	obj->SetSurface (GetSurface ());
-	obj->SetLogicalParent (this);
+	obj->SetLogicalParent (this, error);
+	if (error->number)
+		return false;
 	obj->AddPropertyChangeListener (this);
 	
-	MergeNames (obj);
-	
-	Collection::AddedToCollection (value);
+	return Collection::AddedToCollection (value, error);
 }
 
 void
 DependencyObjectCollection::RemovedFromCollection (Value *value)
 {
 	DependencyObject *obj = value->AsDependencyObject ();
-	NameScope *ns;
 	
 	obj->RemovePropertyChangeListener (this);
-	obj->SetLogicalParent (NULL);
+	obj->SetLogicalParent (NULL, NULL);
 	obj->SetSurface (NULL);
-	
-	// unregister the name from whatever scope it's registered in
-	// if it's got its own, don't worry about it.
-	if (!(ns = NameScope::GetNameScope (obj))) {
-		if ((ns = obj->FindNameScope ()))
-			obj->UnregisterAllNamesRootedAt (ns);
-	}
 	
 	Collection::RemovedFromCollection (value);
 }
@@ -358,43 +367,21 @@ DependencyObjectCollection::UnregisterAllNamesRootedAt (NameScope *from_ns)
 }
 
 void
-DependencyObjectCollection::RegisterAllNamesRootedAt (NameScope *to_ns)
+DependencyObjectCollection::RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error)
 {
 	DependencyObject *obj;
 	Value *value;
 	
 	for (guint i = 0; i < array->len; i++) {
+		if (error->number)
+			break;
+
 		value = (Value *) array->pdata[i];
 		obj = value->AsDependencyObject ();
-		obj->RegisterAllNamesRootedAt (to_ns);
+		obj->RegisterAllNamesRootedAt (to_ns, error);
 	}
 	
-	Collection::RegisterAllNamesRootedAt (to_ns);
-}
-
-void
-DependencyObjectCollection::MergeNames (DependencyObject *new_obj)
-{
-	if (!GetLogicalParent())
-		return;
-	
-	NameScope *ns = NameScope::GetNameScope (new_obj);
-	
-	/* this should always be true for Canvas subclasses */
-	if (ns) {
-		if (ns->GetTemporary ()) {
-			NameScope *con_ns = GetLogicalParent()->FindNameScope ();
-			if (con_ns) {
-				con_ns->MergeTemporaryScope (ns);
-				// get rid of the old namescope after we merge
-				new_obj->ClearValue (NameScope::NameScopeProperty, false);
-			}
-		}
-	} else {
-		NameScope *con_ns = GetLogicalParent()->FindNameScope ();
-		if (con_ns)
-			new_obj->RegisterAllNamesRootedAt (con_ns);
-	}
+	Collection::RegisterAllNamesRootedAt (to_ns, error);
 }
 
 bool

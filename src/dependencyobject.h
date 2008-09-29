@@ -287,7 +287,7 @@ public:
 
 	virtual void SetSurface (Surface *surface);
 
-	void SetLogicalParent (DependencyObject *logical_parent);
+	void SetLogicalParent (DependencyObject *logical_parent, MoonError *error);
 	DependencyObject *GetLogicalParent ();
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
@@ -339,9 +339,8 @@ public:
 	void AddPropertyChangeHandler (DependencyProperty *property, PropertyChangeHandler cb, gpointer closure);
 	void RemovePropertyChangeHandler (DependencyProperty *property, PropertyChangeHandler cb);
 
-	void MergeTemporaryNameScopes (DependencyObject *dob);
 	virtual void UnregisterAllNamesRootedAt (NameScope *from_ns);
-	virtual void RegisterAllNamesRootedAt (NameScope *to_ns);
+	virtual void RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error);
 
 	/* @PropertyType=string,GenerateAccessors,ManagedDeclaringType=FrameworkElement,ManagedSetterAccess=Internal */
 	static DependencyProperty *NameProperty;

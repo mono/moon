@@ -13,6 +13,7 @@
 
 #include <glib.h>
 #include "dependencyobject.h"
+#include "error.h"
 #include "list.h"
 
 /* @Namespace=None */
@@ -44,10 +45,12 @@ class NameScope : public DependencyObject {
 	void SetTemporary (bool flag) { temporary = flag; }
 	bool GetTemporary () { return temporary; }
 	
-	void MergeTemporaryScope (NameScope *scope);
+	void MergeTemporaryScope (NameScope *scope, MoonError *error);
 	
 	static NameScope *GetNameScope (DependencyObject *obj);
 	static void SetNameScope (DependencyObject *obj, NameScope *scope);
+
+	void Dump();
 };
 
 #endif /* __MOON_NAMESCOPE_H__ */

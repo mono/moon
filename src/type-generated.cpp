@@ -30,6 +30,7 @@
 #include "panel.h"
 #include "pipeline.h"
 #include "pipeline-ffmpeg.h"
+#include "pipeline-ui.h"
 #include "playlist.h"
 #include "resources.h"
 #include "runtime.h"

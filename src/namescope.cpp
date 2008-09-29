@@ -15,9 +15,7 @@
 
 NameScope::NameScope ()
 {
-	names = g_hash_table_new_full (g_str_hash, g_str_equal,
-				       (GDestroyNotify)g_free,
-				       NULL);
+	names = NULL;
 	temporary = false;
 }
 
@@ -31,8 +29,10 @@ NameScope::remove_handler (gpointer key, gpointer value, gpointer data)
 
 NameScope::~NameScope ()
 {
-	g_hash_table_foreach_remove (names, remove_handler, this);
-	g_hash_table_destroy (names);
+	if (names) {
+		g_hash_table_foreach_remove (names, remove_handler, this);
+		g_hash_table_destroy (names);
+	}
 }
 
 void
@@ -47,6 +47,12 @@ NameScope::ObjectDestroyedEvent (EventObject *sender, EventArgs *args, gpointer 
 void
 NameScope::RegisterName (const char *name, DependencyObject *object)
 {
+	if (!names) {
+		names = g_hash_table_new_full (g_str_hash, g_str_equal,
+					       (GDestroyNotify)g_free,
+					       NULL);
+	}
+
 	DependencyObject *existing_object = (DependencyObject*)g_hash_table_lookup (names, name);
 	if (existing_object == object)
 		return;
@@ -62,6 +68,9 @@ NameScope::RegisterName (const char *name, DependencyObject *object)
 void
 NameScope::UnregisterName (const char *name)
 {
+	if (!names)
+		return;
+
 	DependencyObject *depobj = (DependencyObject*)g_hash_table_lookup (names, name);
 	if (depobj) {
 		depobj->RemoveHandler (EventObject::DestroyedEvent, ObjectDestroyedEvent, this);
@@ -73,6 +82,9 @@ NameScope::UnregisterName (const char *name)
 DependencyObject*
 NameScope::FindName (const char *name)
 {
+	if (!names)
+		return NULL;
+
 	if (name == NULL) {
 		g_warning ("NameScope::FindName (null)");
 		return NULL;
@@ -90,9 +102,60 @@ NameScope::merge_name (gpointer key, gpointer value, gpointer user_data)
 	scope->RegisterName (name, obj);
 }
 
-void
-NameScope::MergeTemporaryScope (NameScope *temp)
+struct DuplicatesData {
+  NameScope *ns;
+  bool duplicate_found;
+  char *duplicate_name;
+};
+
+static void
+look_for_duplicates (gpointer key, gpointer value, gpointer user_data)
 {
-	if (temp)
-		g_hash_table_foreach (temp->names, merge_name, this);
+	DuplicatesData *data = (DuplicatesData*)user_data;
+
+	if (data->duplicate_found)
+		return;
+
+	char *name = (char*)key;
+	if (data->ns->FindName (name)) {
+		data->duplicate_found = true;
+		data->duplicate_name = g_strdup (name);
+	}
+}
+
+void
+NameScope::MergeTemporaryScope (NameScope *temp, MoonError *error)
+{
+	if (!temp || !temp->names)
+		return;
+
+	DuplicatesData data;
+	data.ns = this;
+	data.duplicate_found = false;
+	data.duplicate_name = NULL;
+
+	g_hash_table_foreach (temp->names, look_for_duplicates, &data);
+	if (data.duplicate_found) {
+		MoonError::FillIn (error, MoonError::ARGUMENT, 2028,
+				   g_strdup_printf ("The name already exists in the tree: %s.",
+						    data.duplicate_name));
+		g_free (data.duplicate_name);
+		return;
+	}
+
+	g_hash_table_foreach (temp->names, merge_name, this);
+}
+
+static void
+dump_namescope_helper (gpointer key, gpointer value, gpointer user_data)
+{
+	fprintf (stderr, "  %s => %s\n", (char*)key, ((DependencyObject*)value)->GetTypeName());
+}
+
+
+void
+NameScope::Dump ()
+{
+	fprintf (stderr, "  ns = %p\n", this);
+	g_hash_table_foreach (names, dump_namescope_helper, NULL);
 }

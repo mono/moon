@@ -371,7 +371,7 @@ class KeyFrame : public DependencyObject {
 /* @Namespace=None */
 class KeyFrameCollection : public DependencyObjectCollection {
  protected:
-	virtual void AddedToCollection (Value *value);
+	virtual bool AddedToCollection (Value *value, MoonError *error);
 	virtual void RemovedFromCollection (Value *value);
 	
 	virtual ~KeyFrameCollection ();

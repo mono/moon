@@ -30,7 +30,7 @@ public:
 	bool Add (const char* key, Value *value);
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	void AddWithError (const char* key, Value *value, MoonError *error);
+	bool AddWithError (const char* key, Value *value, MoonError *error);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool Clear ();
@@ -49,17 +49,15 @@ public:
 
 	virtual void SetSurface (Surface *surface);
 	virtual void UnregisterAllNamesRootedAt (NameScope *from_ns);
-	virtual void RegisterAllNamesRootedAt (NameScope *to_ns);
+	virtual void RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error);
 
 protected:
 	virtual ~ResourceDictionary ();
 
 	virtual bool CanAdd (Value *value);
 
-	virtual void AddedToCollection (Value *value);
+	virtual bool AddedToCollection (Value *value, MoonError *error);
 	virtual void RemovedFromCollection (Value *value);
-
-	void MergeNames (DependencyObject *new_obj);
 
 private:
 	GHashTable *hash;

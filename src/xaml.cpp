@@ -514,7 +514,6 @@ class XNamespace : public XamlNamespace {
 			item->SetKey (value);
 
 			if (!item->IsValueType()) {
-				p->namescope->RegisterName (value, (DependencyObject *) item->item);
 				item->item->SetValue (DependencyObject::NameProperty, Value (value));
 				if (p->loader) {
 					p->loader->SetNameAttribute (item->item, value);
@@ -1019,31 +1018,6 @@ expat_parser_error (XamlParserInfo *p, XML_Error expat_error)
 	g_free (message);
 }
 
-static DependencyObject *
-get_parent (XamlElementInstance *inst)
-{
-	XamlElementInstance *walk = inst;
-
-	while (walk) {
-		if (walk->element_type == XamlElementInstance::ELEMENT)
-			return walk->item;
-		walk = walk->parent;
-	}
-
-	return NULL;
-}
-
-static void
-set_parent (XamlElementInstance *inst, DependencyObject *parent)
-{
-	if (inst->IsValueType ())
-		return;
-
-	DependencyObject *item = inst->item;
-	if (item)
-		item->SetLogicalParent (parent);
-}
-
 static void
 start_element (void *data, const char *el, const char **attr)
 {
@@ -1083,11 +1057,6 @@ start_element (void *data, const char *el, const char **attr)
 			p->top_element = inst;
 			if (inst->item)
 				NameScope::SetNameScope (inst->item, p->namescope);
-		} else {
-			DependencyObject *parent = get_parent (p->current_element);
-			if (parent) {
-				set_parent (inst, parent);
-			}
 		}
 
 		inst->SetAttributes (p, attr);
@@ -2710,7 +2679,12 @@ XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, XamlElementInstan
 	bool is_collection = prop_type->IsSubclassOf (Type::DEPENDENCY_OBJECT_COLLECTION);
 
 	if (!is_collection && Type::Find (value->info->GetKind ())->IsSubclassOf (dep->GetPropertyType())) {
-		item->SetValue (dep, value->item);
+		MoonError err;
+		Value item_value (value->item);
+		if (!item->SetValueWithError (NULL /* XXX */, dep, &item_value, &err)) {
+		    parser_error (p, value->element_name, NULL, err.code, err.message);
+		    return false;
+		}
 		return true;
 	}
 
@@ -2729,9 +2703,13 @@ XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, XamlElementInstan
 			col = (Collection *) col_v->AsCollection ();
 		}
 
-		set_parent (value, NULL);
+		Value item_value (value->item);
+		MoonError err;
+		if (-1 == col->AddWithError (&item_value, &err)) {
+			parser_error (p, value->element_name, NULL, err.code, err.message);
+			return false;
+		}
 			
-		col->Add (value->item);
 		return true;
 	}
 
@@ -2913,8 +2891,12 @@ XamlElementInstanceNative::CreateItem ()
 				item->SetSurface (parser_info->loader->GetSurface ());
 			
 			// in case we must store the collection into the parent
-			if (dep && dep->GetPropertyType() == type->type)
-				((DependencyObject * ) walk->item)->SetValue (dep, Value (item));
+			if (dep && dep->GetPropertyType() == type->type) {
+				MoonError err;
+				Value item_value (item);
+				if (!((DependencyObject * ) walk->item)->SetValueWithError (NULL/* XXX */, dep, &item_value, &err))
+					parser_error (parser_info, element_name, NULL, err.code, err.message);
+			}
 			
 			parser_info->AddCreatedElement (item);
 		}
@@ -3210,6 +3192,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 				return;
 
 			Value *col_v = obj->GetValue (dep);
+			MoonError err;
 
 			if (col_type->IsSubclassOf (Type::DEPENDENCY_OBJECT_COLLECTION)) {
 				Collection *col = NULL;
@@ -3221,9 +3204,9 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 					col = (Collection *) col_v->AsCollection ();
 				}
 
-				set_parent (child, NULL);
-			
-				col->Add ((DependencyObject*)child->item);
+				Value child_val ((DependencyObject*)child->item);
+				if (-1 == col->AddWithError (&child_val, &err))
+					return parser_error (p, child->element_name, NULL, err.code, err.message);
 			}
 			else if (col_type->IsSubclassOf (Type::RESOURCE_DICTIONARY)) {
 				ResourceDictionary *dict = NULL;
@@ -3236,8 +3219,6 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 					dict = (ResourceDictionary*) col_v->AsResourceDictionary ();
 				}
 
-				set_parent (child, NULL);
-
 				char *key = child->GetKey ();
 
 				if (key == NULL) {
@@ -3246,10 +3227,8 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 							     "You must specify an x:Key or x:Name for elements in a ResourceDictionary");
 				}
 
-				if (!dict->Add (key, child->GetAsValue())) {
-					// XXX don't know the proper values here...
-					return parser_error (p, child->element_name, NULL, 2007,
-							     "Elements in the same ResourceDictionary cannot have the same key");
+				if (!dict->AddWithError (key, child->GetAsValue(), &err)) {
+					return parser_error (p, child->element_name, NULL, err.code, err.message);
 				}
 			}
 
@@ -3278,8 +3257,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 	if (Type::Find (parent->info->GetKind ())->IsSubclassOf (Type::FRAMEWORKTEMPLATE)) {
 		FrameworkTemplate *t = (FrameworkTemplate*) parent->item;
 
-		set_parent (child, NULL);
-
+		// XXX a SetVisualTreeWithError, maybe?
 		t->SetVisualTree ((FrameworkElement*) child->item);
 		return;
 	}
@@ -3287,20 +3265,20 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 #endif
 	if (Type::Find (parent->info->GetKind ())->IsSubclassOf (Type::DEPENDENCY_OBJECT_COLLECTION)) {
 		Collection *col = (Collection *) parent->item;
-		
-		set_parent (child, NULL);
-		
-		col->Add ((DependencyObject *) child->item);
+		MoonError err;
+		Value child_val ((DependencyObject*)child->item);
+
+		if (-1 == col->AddWithError (&child_val, &err))
+			return parser_error (p, child->element_name, NULL, err.code, err.message);
 		return;
 	}
 	else if (Type::Find (parent->info->GetKind ())->IsSubclassOf (Type::RESOURCE_DICTIONARY)) {
 		ResourceDictionary *dict = (ResourceDictionary *) parent->item;
-
-		set_parent (child, NULL);
-
+		MoonError err;
 		char *key = child->GetKey ();
 
-		dict->Add (key, child->GetAsValue());
+		if (!dict->AddWithError (key, child->GetAsValue(), &err))
+			return parser_error (p, child->element_name, NULL, err.code, err.message);
 	}
 
 	parent->TrySetContentProperty (p, child);

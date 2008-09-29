@@ -48,7 +48,6 @@ public:
 	virtual int GetCount ();
 	
 	int Add (Value value);
-	/* @GenerateCBinding,GeneratePInvoke */
 	virtual int Add (Value *value);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -60,18 +59,20 @@ public:
 	int IndexOf (Value *value);
 	
 	bool Insert (int index, Value value);
-	/* @GenerateCBinding,GeneratePInvoke */
 	virtual bool Insert (int index, Value *value);
 	
 	bool Remove (Value value);
-	/* @GenerateCBinding,GeneratePInvoke */
 	virtual bool Remove (Value *value);
 	
 	bool RemoveAt (int index);
 	
 	bool SetValueAt (int index, Value *value);
 	Value *GetValueAt (int index);
-	
+
+	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	int AddWithError (Value *value, MoonError *error);
+	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	int InsertWithError (int index, Value *value, MoonError *error);
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Value *GetValueAtWithError (int index, MoonError *error);
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
@@ -86,7 +87,7 @@ protected:
 	void EmitChanged (CollectionChangedAction action, Value *new_value, Value *old_value, int index);
 	
 	virtual bool CanAdd (Value *value);
-	virtual void AddedToCollection (Value *value) {}
+	virtual bool AddedToCollection (Value *value, MoonError *error) { return true; }
 	virtual void RemovedFromCollection (Value *value) {}
 	
 	void SetCount (int count);
@@ -110,13 +111,11 @@ public:
 	
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void UnregisterAllNamesRootedAt (NameScope *from_ns);
-	virtual void RegisterAllNamesRootedAt (NameScope *to_ns);
+	virtual void RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error);
 	
-	void MergeNames (DependencyObject *new_obj);
-
 protected:
 	virtual bool CanAdd (Value *value);
-	virtual void AddedToCollection (Value *value);
+	virtual bool AddedToCollection (Value *value, MoonError *error);
 	virtual void RemovedFromCollection (Value *value);
 	
 	virtual ~DependencyObjectCollection () {}

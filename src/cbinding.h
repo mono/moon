@@ -122,11 +122,13 @@ Brush *brush_new (void);
 /* @GeneratePInvoke */
 Canvas *canvas_new (void);
 
+#if SL_2_0
 /**
  * Collection
  **/
 /* @GeneratePInvoke */
-int collection_add (Collection *instance, Value *value);
+int collection_add_with_error (Collection *instance, Value *value, MoonError *error);
+#endif
 
 /* @GeneratePInvoke */
 bool collection_clear (Collection *instance);
@@ -151,11 +153,10 @@ Value *collection_get_value_at_with_error (Collection *instance, int index, Moon
 /* @GeneratePInvoke */
 int collection_index_of (Collection *instance, Value *value);
 
+#if SL_2_0
 /* @GeneratePInvoke */
-bool collection_insert (Collection *instance, int index, Value *value);
-
-/* @GeneratePInvoke */
-bool collection_remove (Collection *instance, Value *value);
+int collection_insert_with_error (Collection *instance, int index, Value *value, MoonError *error);
+#endif
 
 #if SL_2_0
 /* @GeneratePInvoke */
@@ -467,6 +468,9 @@ EllipseGeometry *ellipse_geometry_new (void);
  **/
 /* @GeneratePInvoke */
 int event_object_add_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data);
+
+/* @GeneratePInvoke */
+int event_object_add_xaml_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data);
 
 void event_object_drain_unrefs (void);
 
@@ -1000,7 +1004,7 @@ RectangleGeometry *rectangle_geometry_new (void);
  * ResourceDictionary
  **/
 /* @GeneratePInvoke */
-void resource_dictionary_add_with_error (ResourceDictionary *instance, const char *key, Value *value, MoonError *error);
+bool resource_dictionary_add_with_error (ResourceDictionary *instance, const char *key, Value *value, MoonError *error);
 
 /* @GeneratePInvoke */
 bool resource_dictionary_clear (ResourceDictionary *instance);

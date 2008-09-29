@@ -121,18 +121,22 @@ canvas_new (void)
 }
 
 
+#if SL_2_0
 /**
  * Collection
  **/
 int
-collection_add (Collection *instance, Value *value)
+collection_add_with_error (Collection *instance, Value *value, MoonError *error)
 {
 	if (instance == NULL)
 		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
 		return (int) 0;
 	
-	return instance->Add (value);
+	if (error == NULL)
+		g_warning ("Moonlight: Called collection_add_with_error () with error == NULL.");
+	return instance->AddWithError (value, error);
 }
+#endif
 
 
 bool
@@ -211,24 +215,19 @@ collection_index_of (Collection *instance, Value *value)
 }
 
 
-bool
-collection_insert (Collection *instance, int index, Value *value)
+#if SL_2_0
+int
+collection_insert_with_error (Collection *instance, int index, Value *value, MoonError *error)
 {
 	if (instance == NULL)
-		return false;
+		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
 	
-	return instance->Insert (index, value);
+	if (error == NULL)
+		g_warning ("Moonlight: Called collection_insert_with_error () with error == NULL.");
+	return instance->InsertWithError (index, value, error);
 }
-
-
-bool
-collection_remove (Collection *instance, Value *value)
-{
-	if (instance == NULL)
-		return false;
-	
-	return instance->Remove (value);
-}
+#endif
 
 
 #if SL_2_0
@@ -897,6 +896,17 @@ event_object_add_handler (EventObject *instance, const char *event_name, EventHa
 		return (int) 0;
 	
 	return instance->AddHandler (event_name, handler, data);
+}
+
+
+int
+event_object_add_xaml_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data)
+{
+	if (instance == NULL)
+		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->AddXamlHandler (event_name, handler, data);
 }
 
 
@@ -1931,15 +1941,15 @@ rectangle_geometry_new (void)
 /**
  * ResourceDictionary
  **/
-void
+bool
 resource_dictionary_add_with_error (ResourceDictionary *instance, const char *key, Value *value, MoonError *error)
 {
 	if (instance == NULL)
-		return;
+		return false;
 	
 	if (error == NULL)
 		g_warning ("Moonlight: Called resource_dictionary_add_with_error () with error == NULL.");
-	instance->AddWithError (key, value, error);
+	return instance->AddWithError (key, value, error);
 }
 
 

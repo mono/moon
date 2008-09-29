@@ -37,26 +37,31 @@ ResourceDictionary::CanAdd (Value *value)
 bool
 ResourceDictionary::Add (const char* key, Value *value)
 {
-	if (!key)
-		return false;
+	MoonError err;
+	return AddWithError (key, value, &err);
+}
 
-	if (ContainsKey (key))
+bool
+ResourceDictionary::AddWithError (const char* key, Value *value, MoonError *error)
+{
+	if (!key) {
+		MoonError::FillIn (error, MoonError::ARGUMENT_NULL, "key was null");
 		return false;
+	}
+
+	if (ContainsKey (key)) {
+		MoonError::FillIn (error, MoonError::ARGUMENT, "An item with the same key has already been added");
+		return false;
+	}
 
 	Value *v = new Value (*value);
 	
 	g_hash_table_insert (hash, g_strdup (key), v);
 
+	// kinda nasty, but we ignore this return value..
 	Collection::Add (v);
 
 	return true;
-}
-
-void
-ResourceDictionary::AddWithError (const char* key, Value *value, MoonError *error)
-{
-	if (!Add (key, value))
-		MoonError::FillIn (error, MoonError::ARGUMENT, "An item with the same key has already been added");
 }
 
 #if !GTK_CHECK_VERSION(2,12,0)
@@ -152,8 +157,8 @@ ResourceDictionary::Get (const char *key, bool *exists)
 }
 
 // XXX this was (mostly, except for the type check) c&p from DependencyObjectCollection
-void
-ResourceDictionary::AddedToCollection (Value *value)
+bool
+ResourceDictionary::AddedToCollection (Value *value, MoonError *error)
 {
 	if (value->Is(Type::DEPENDENCY_OBJECT)) {
 		DependencyObject *obj = value->AsDependencyObject ();
@@ -163,13 +168,14 @@ ResourceDictionary::AddedToCollection (Value *value)
 		// distinguish between the two cases.
 	
 		obj->SetSurface (GetSurface ());
-		obj->SetLogicalParent (this);
+		obj->SetLogicalParent (this, error);
+		if (error->number)
+			return false;
+
 		obj->AddPropertyChangeListener (this);
-	
-		MergeNames (obj);
-	
-		Collection::AddedToCollection (value);
 	}
+
+	return Collection::AddedToCollection (value, error);
 }
 
 // XXX this was (mostly, except for the type check) c&p from DependencyObjectCollection
@@ -178,46 +184,12 @@ ResourceDictionary::RemovedFromCollection (Value *value)
 {
 	if (value->Is (Type::DEPENDENCY_OBJECT)) {
 		DependencyObject *obj = value->AsDependencyObject ();
-		NameScope *ns;
 		
 		obj->RemovePropertyChangeListener (this);
-		obj->SetLogicalParent (NULL);
+		obj->SetLogicalParent (NULL, NULL);
 		obj->SetSurface (NULL);
 		
-		// unregister the name from whatever scope it's registered in
-		// if it's got its own, don't worry about it.
-		if (!(ns = NameScope::GetNameScope (obj))) {
-			if ((ns = obj->FindNameScope ()))
-				obj->UnregisterAllNamesRootedAt (ns);
-		}
-		
 		Collection::RemovedFromCollection (value);
-	}
-}
-
-// XXX this was c&p from DependencyObjectCollection
-void
-ResourceDictionary::MergeNames (DependencyObject *new_obj)
-{
-	if (!GetLogicalParent())
-		return;
-	
-	NameScope *ns = NameScope::GetNameScope (new_obj);
-	
-	/* this should always be true for Canvas subclasses */
-	if (ns) {
-		if (ns->GetTemporary ()) {
-			NameScope *con_ns = GetLogicalParent()->FindNameScope ();
-			if (con_ns) {
-				con_ns->MergeTemporaryScope (ns);
-				// get rid of the old namescope after we merge
-				new_obj->ClearValue (NameScope::NameScopeProperty, false);
-			}
-		}
-	} else {
-		NameScope *con_ns = GetLogicalParent()->FindNameScope ();
-		if (con_ns)
-			new_obj->RegisterAllNamesRootedAt (con_ns);
 	}
 }
 
@@ -260,17 +232,20 @@ ResourceDictionary::UnregisterAllNamesRootedAt (NameScope *from_ns)
 
 // XXX this was (mostly, except for the type check) c&p from DependencyObjectCollection
 void
-ResourceDictionary::RegisterAllNamesRootedAt (NameScope *to_ns)
+ResourceDictionary::RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error)
 {
 	Value *value;
 	
 	for (guint i = 0; i < array->len; i++) {
+		if (error->number)
+			break;
+
 		value = (Value *) array->pdata[i];
 		if (value->Is (Type::DEPENDENCY_OBJECT)) {
 			DependencyObject *obj = value->AsDependencyObject ();
-			obj->RegisterAllNamesRootedAt (to_ns);
+			obj->RegisterAllNamesRootedAt (to_ns, error);
 		}
 	}
 	
-	Collection::RegisterAllNamesRootedAt (to_ns);
+	Collection::RegisterAllNamesRootedAt (to_ns, error);
 }

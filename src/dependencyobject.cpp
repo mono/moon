@@ -820,7 +820,7 @@ unregister_depobj_values (gpointer  key,
 		//printf ("unregistering from property %s\n", prop->name);
 		DependencyObject *obj = v->AsDependencyObject ();
 		obj->RemovePropertyChangeListener (this_obj);
-		obj->SetLogicalParent (NULL);
+		obj->SetLogicalParent (NULL, NULL);
 	}
 }
 
@@ -921,7 +921,7 @@ DependencyObject::IsValueValid (Types *additional_types, DependencyProperty* pro
 
 	if (DependencyObject::NameProperty == property) {
 		NameScope *scope = FindNameScope ();
-		if (scope && value && !scope->GetTemporary ()) {
+		if (scope && value) {
 			DependencyObject *o = scope->FindName (value->AsString ());
 			if (o && o != this) {
 				MoonError::FillIn (error, MoonError::ARGUMENT, 2028,
@@ -943,13 +943,15 @@ DependencyObject::IsValueValid (Types *additional_types, DependencyProperty* pro
 bool
 DependencyObject::SetValue (DependencyProperty *property, Value *value)
 {
-	return SetValueWithError ((Types*)NULL, property, value, NULL);
+	MoonError err;
+	return SetValueWithError ((Types*)NULL, property, value, &err);
 }
 
 bool
 DependencyObject::SetValue (DependencyProperty *property, Value value)
 {
-	return SetValueWithError ((Types*)NULL, property, &value, NULL);
+	MoonError err;
+	return SetValueWithError ((Types*)NULL, property, &value, &err);
 }
 
 bool
@@ -984,7 +986,7 @@ DependencyObject::SetValueWithError (Types *additional_types, DependencyProperty
 
 		if (current_as_dep) {
 			// unset its logical parent
-			current_as_dep->SetLogicalParent (NULL);
+			current_as_dep->SetLogicalParent (NULL, NULL);
 
 			// unregister from the existing value
 			current_as_dep->RemovePropertyChangeListener (this, property);
@@ -993,24 +995,23 @@ DependencyObject::SetValueWithError (Types *additional_types, DependencyProperty
 
 		Value *new_value = value ? new Value (*value) : NULL;
 
-		// store the new value in the hash
-		g_hash_table_insert (current_values, property, new_value);
-
 		if (new_as_dep) {
+			new_as_dep->SetSurface (GetSurface ());
+
 			// set its logical parent
 			if (new_as_dep->GetLogicalParent() != NULL && new_as_dep->GetLogicalParent() != this)
 				g_warning ("DependencyObject already has a logical parent");
-			new_as_dep->SetLogicalParent (this);
-			
+			new_as_dep->SetLogicalParent (this, error);
+			if (error->number)
+				return false;
+
 			// listen for property changes on the new object
 			new_as_dep->AddPropertyChangeListener (this, property);
-			new_as_dep->SetSurface (GetSurface ());
-
-			// merge any temporary namescopes in its
-			// subtree.
-			MergeTemporaryNameScopes (new_as_dep);
 		}
-		
+
+		// store the new value in the hash
+		g_hash_table_insert (current_values, property, new_value);
+
 		listeners_notified = false;
 
 		PropertyChangedEventArgs args (property, current_value, new_value ? new_value : GetDefaultValue (property));
@@ -1035,58 +1036,56 @@ DependencyObject::SetValueWithError (Types *additional_types, DependencyProperty
 	return true;
 }
 
-static NameScope *
-create_temp_namescope (DependencyObject *o)
-{
-	NameScope *ns = new NameScope ();
-	ns->SetTemporary (true);
-	NameScope::SetNameScope (o, ns);
-	ns->unref ();
+struct RegisterNamesClosure {
+	NameScope *to_ns;
+	MoonError *error;
+};
 
-	return ns;
-}
-
-static NameScope *
-merge_namescope (NameScope *parent_ns, NameScope *child_ns, DependencyObject *owner)
+static void
+register_depobj_names (gpointer  key,
+		       gpointer  value,
+		       gpointer  user_data)
 {
-	if (!parent_ns)
-		parent_ns = create_temp_namescope (owner);
-	
-	parent_ns->MergeTemporaryScope (child_ns);
-	
-	// remove the child's temporary namescope
-	child_ns->ClearValue (NameScope::NameScopeProperty, false);
-	
-	return parent_ns;
+	RegisterNamesClosure *closure = (RegisterNamesClosure*)user_data;
+	if (closure->error->number)
+		return;
+
+	Value *v = (Value*)value;
+
+	if (v != NULL && v->Is (Type::DEPENDENCY_OBJECT) && v->AsDependencyObject() != NULL) {
+		DependencyObject *obj = v->AsDependencyObject ();
+		obj->RegisterAllNamesRootedAt (closure->to_ns, closure->error);
+	}
 }
 
 void
-DependencyObject::MergeTemporaryNameScopes (DependencyObject *dob)
+DependencyObject::RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error)
 {
-	NameScope *dob_ns = NameScope::GetNameScope (dob);
-	NameScope *ns = FindNameScope ();
+	if (error->number)
+		return;
+
+	NameScope *this_ns = NameScope::GetNameScope(this);
+	if (this_ns && !this_ns->GetTemporary())
+		return;
+
+	const char *n = GetName();
 	
-	if (dob_ns) {
-		if (dob_ns->GetTemporary ())
-			ns = merge_namescope (ns, dob_ns, this);
-	}
-#if false
-	else {
-		if (!ns)
-			ns = create_temp_namescope (this);
-		dob->RegisterAllNamesRootedAt (ns);
-	}
-#endif
-	
-	if (dob->Is (Type::DEPENDENCY_OBJECT_COLLECTION)) {
-		Collection *c = (Collection *) dob;
-		
-		for (int i = 0; i < c->GetCount (); i++) {
-			NameScope *c_ns = NameScope::GetNameScope (c->GetValueAt (i)->AsDependencyObject ());
-			if (c_ns && c_ns->GetTemporary ())
-				ns = merge_namescope (ns, c_ns, this);
+	if (n) {
+		if (to_ns->FindName (n)) {
+			MoonError::FillIn (error, MoonError::ARGUMENT, 2028,
+					   g_strdup_printf ("The name already exists in the tree: %s.",
+							    n));
+			return;
 		}
+		to_ns->RegisterName (n, this);
 	}
+
+	RegisterNamesClosure closure;
+	closure.to_ns = to_ns;
+	closure.error = error;
+
+	g_hash_table_foreach (current_values, register_depobj_names, &closure);
+
 }
 
 static void
@@ -1103,40 +1102,19 @@ unregister_depobj_names (gpointer  key,
 	}
 }
 
-static void
-register_depobj_names (gpointer  key,
-		       gpointer  value,
-		       gpointer  user_data)
-{
-	NameScope *to_ns = (NameScope*)user_data;
-	Value *v = (Value*)value;
-
-	if (v != NULL && v->Is (Type::DEPENDENCY_OBJECT) && v->AsDependencyObject() != NULL) {
-		DependencyObject *obj = v->AsDependencyObject ();
-		obj->RegisterAllNamesRootedAt (to_ns);
-	}
-}
-
 void
 DependencyObject::UnregisterAllNamesRootedAt (NameScope *from_ns)
 {
+	NameScope *this_ns = NameScope::GetNameScope(this);
+	if (this_ns && !this_ns->GetTemporary())
+		return;
+	
 	const char *n = GetName();
 	
 	if (n)
 		from_ns->UnregisterName (n);
 	
 	g_hash_table_foreach (current_values, unregister_depobj_names, from_ns);
-}
-
-void
-DependencyObject::RegisterAllNamesRootedAt (NameScope *to_ns)
-{
-	const char *n = GetName();
-	
-	if (n)
-		to_ns->RegisterName (n, this);
-
- 	g_hash_table_foreach (current_values, register_depobj_names, to_ns);
 }
 
 Value *
@@ -1215,7 +1193,7 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 
 		if (dob != NULL) {
 			// unset its logical parent
-			dob->SetLogicalParent (NULL);
+			dob->SetLogicalParent (NULL, NULL);
 
 			// unregister from the existing value
 			dob->RemovePropertyChangeListener (this, property);
@@ -1257,7 +1235,7 @@ free_value (gpointer key, gpointer value, gpointer data)
 		
 		if (dob != NULL) {
 			// unset its logical parent
-			dob->SetLogicalParent (NULL);
+			dob->SetLogicalParent (NULL, NULL);
 
 			// unregister from the existing value
 			dob->RemovePropertyChangeListener ((DependencyObject*)data, NULL);
@@ -1474,7 +1452,7 @@ DependencyObject::SetSurface (Surface *s)
 }
 
 void
-DependencyObject::SetLogicalParent (DependencyObject *logical_parent)
+DependencyObject::SetLogicalParent (DependencyObject *logical_parent, MoonError *error)
 {
 #if DEBUG
 	// Check for circular families
@@ -1488,7 +1466,64 @@ DependencyObject::SetLogicalParent (DependencyObject *logical_parent)
 	}
 #endif
 	
-	this->logical_parent = logical_parent;
+	if (logical_parent != this->logical_parent) {
+		if (logical_parent) {
+			NameScope *this_scope = NameScope::GetNameScope(this);
+			NameScope *parent_scope = logical_parent->FindNameScope();
+			if (this_scope) {
+				if (this_scope->GetTemporary()) {
+					// if we have a temporary name scope, merge it into the
+					// closest one up the hierarchy.
+					if (parent_scope) {
+						parent_scope->MergeTemporaryScope (this_scope, error);
+					}
+					else {
+						// oddly enough, if
+						// there's no parent
+						// namescope, we don't
+						// do anything
+					}
+					ClearValue (NameScope::NameScopeProperty, false);
+				}
+			}
+			else {
+				// we don't have a namescope at all,
+				// we have to iterate over the subtree
+				// rooted at this object, and merge
+				// the names into the parent
+				// namescope.
+
+				if (parent_scope) {
+					NameScope *temp_scope = new NameScope();
+					temp_scope->SetTemporary (true);
+
+					RegisterAllNamesRootedAt (temp_scope, error);
+
+					if (error->number) {
+						temp_scope->unref ();
+						return;
+					}
+
+					parent_scope->MergeTemporaryScope (temp_scope, error);
+
+					temp_scope->unref ();
+				}
+			}
+		}
+
+		// the unregistration has to happen after the
+		// registration, in order to make sure
+		// namescope-corner-cases.html (test1) passes.  don't
+		// ask me, it's crazy.
+		if (this->logical_parent) {
+			NameScope *parent_scope = this->logical_parent->FindNameScope ();
+			if (parent_scope)
+				UnregisterAllNamesRootedAt (parent_scope);
+		}
+
+		if (!error || error->number == 0)
+			this->logical_parent = logical_parent;
+	}
 }
 
 DependencyObject *

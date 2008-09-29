@@ -857,12 +857,15 @@ KeyFrameCollection::~KeyFrameCollection ()
 	g_ptr_array_free (sorted_list, true);
 }
 
-void
-KeyFrameCollection::AddedToCollection (Value *value)
+bool
+KeyFrameCollection::AddedToCollection (Value *value, MoonError *error)
 {
-	DependencyObjectCollection::AddedToCollection (value);
+	if (!DependencyObjectCollection::AddedToCollection (value, error))
+		return false;
 	
 	resolved = false;
+
+	return true;
 }
 
 void
