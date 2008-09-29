@@ -32,15 +32,17 @@ using Mono;
 using System.Collections.Generic;
 
 namespace System.Windows {
+
 	public class DependencyProperty {
-		private string name;
-		private IntPtr native;
-		private Type property_type;
-		private Type declaring_type; 
-		private object default_value;
-		private bool? attached;
+
+		string name;
+		IntPtr native;
+		Type property_type;
+		Type declaring_type; 
+		object default_value;
+		bool? attached;
 		
-		private static Dictionary <IntPtr, DependencyProperty> properties = new Dictionary<System.IntPtr,DependencyProperty> ();
+		static Dictionary <IntPtr, DependencyProperty> properties = new Dictionary<IntPtr, DependencyProperty> ();
 		
 		public static readonly object UnsetValue = new object ();
 		
@@ -77,30 +79,28 @@ namespace System.Windows {
 		{
 			ManagedType property_type;
 			ManagedType owner_type;
-			NativePropertyChangedHandler handler;
+			NativePropertyChangedHandler handler = null;
 			CustomDependencyProperty result;
 			
 			if (name == null)
-				throw new System.ArgumentNullException ("name");
+				throw new ArgumentNullException ("name");
 			
-			if (name == string.Empty)
+			if (name.Length == 0)
 				throw new ArgumentException("The 'name' argument cannot be an empty string");
 			
 			if (propertyType == null)
-				throw new System.ArgumentNullException ("propertyType");
+				throw new ArgumentNullException ("propertyType");
 			
 			if (ownerType == null)
-				throw new System.ArgumentNullException ("ownerType");
-
+				throw new ArgumentNullException ("ownerType");
+			
 			property_type = Types.Find (propertyType);
 			owner_type = Types.Find (ownerType);
 			
 			if (metadata != null)
-				handler = new NativePropertyChangedHandler(NativePropertyChangedCallback);
-			else
-				handler = null;
+				handler = NativePropertyChangedCallback;
 			
-			IntPtr handle = NativeMethods.dependency_property_register_managed_property ( name, property_type.native_handle, owner_type.native_handle, attached, handler);
+			IntPtr handle = NativeMethods.dependency_property_register_managed_property (name, property_type.native_handle, owner_type.native_handle, attached, handler);
 			
 			if (handle == IntPtr.Zero)
 				return null;
@@ -136,7 +136,6 @@ namespace System.Windows {
 				return;				
 			
 			obj = DependencyObject.Lookup (dependency_object);
-		
 			
 			if (obj == null)
 				return;
@@ -175,13 +174,13 @@ namespace System.Windows {
 			DependencyProperty result;
 
 			if (name == null)
-				throw new System.ArgumentNullException ("name");
+				throw new ArgumentNullException ("name");
 			
 			if (property_type == null)
 				throw new ArgumentNullException ("property_type");	
 			
 			if (declaring_kind == Kind.INVALID)
-				throw new System.ArgumentOutOfRangeException ("declaring_kind");
+				throw new ArgumentOutOfRangeException ("declaring_kind");
 			
 			handle = NativeMethods.dependency_property_get_dependency_property (declaring_kind, name);
 			
