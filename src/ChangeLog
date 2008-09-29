@@ -1,5 +1,14 @@
 2008-09-29  Jeffrey Stedfast  <fejj@novell.com>
 
+	* media.cpp (MediaBase::GetDownloaderPolicy): New virtual method
+	to get the download policy based on the uri. By default, returns
+	MediaPolicy.
+	(MediaElement::GetDownloaderPolicy): Return StreamingPolicy if
+	mms://
+	(MediaBase::SetAllowDownloads): Use GetDownloaderPolicy() instead
+	of hardcoding mms:// check.
+	(MediaBase::OnPropertyChanged): Same.
+
 	* brush.cpp (ImageBrush::SetSurface): Remove previous hack.
 	(ImageBrush::TargetLoaded): Call SetAllowDOwnloads(true) on our
 	image once we have at least 1 target which is loaded in the visual

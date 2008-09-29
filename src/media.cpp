@@ -121,7 +121,7 @@ MediaBase::SetAllowDownloads (bool allow)
 				return;
 			}
 			
-			dl->Open ("GET", uri, strncmp (uri, "mms://", 6) == 0 ? StreamingPolicy : MediaPolicy);
+			dl->Open ("GET", uri, GetDownloaderPolicy (uri));
 			SetSource (dl, "");
 			dl->unref ();
 		}
@@ -224,7 +224,7 @@ MediaBase::OnPropertyChanged (PropertyChangedEventArgs *args)
 			
 			if (surface && AllowDownloads ()) {
 				if ((dl = surface->CreateDownloader ())) {
-					dl->Open ("GET", uri, strncmp (uri, "mms://", 6) == 0 ? StreamingPolicy : MediaPolicy);
+					dl->Open ("GET", uri, GetDownloaderPolicy (uri));
 					SetSource (dl, "");
 					dl->unref ();
 				} else {
@@ -726,6 +726,15 @@ bool
 MediaElement::IsLive ()
 {
 	return flags & Broadcast;
+}
+
+DownloaderAccessPolicy
+MediaElement::GetDownloaderPolicy (const char *uri)
+{
+	if (!g_ascii_strncasecmp (uri, "mms://", 6))
+		return StreamingPolicy;
+	
+	return MediaPolicy;
 }
 
 void
@@ -1397,7 +1406,7 @@ MediaElement::DownloaderFailed (EventArgs *args)
 			
 			if (dl == NULL)
 				return;
-				
+			
 			dl->Open ("GET", new_uri, MediaPolicy);
 			SetSource (dl, "");
 			g_free (new_uri);

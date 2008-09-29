@@ -152,6 +152,8 @@ class MediaBase : public FrameworkElement {
 	
 	void SetDownloadProgress (double progress);
 	
+	virtual DownloaderAccessPolicy GetDownloaderPolicy (const char *uri) { return MediaPolicy; }
+	
  public:
  	/* @PropertyType=string,AlwaysChange */
 	static DependencyProperty *SourceProperty;
@@ -389,6 +391,8 @@ class MediaElement : public MediaBase {
 	static void SeekNow (EventObject *value);
 	
  protected:
+	virtual DownloaderAccessPolicy GetDownloaderPolicy (const char *uri);
+	
 	virtual ~MediaElement ();
 	
  public:

@@ -41,7 +41,13 @@ typedef void     (*downloader_header_func) (gpointer state, const char *header, 
 typedef void     (*downloader_body_func) (gpointer state, void *body, guint32 length);
 typedef gpointer (*downloader_create_webrequest_func) (const char *method, const char *uri, gpointer context);
 
-enum DownloaderAccessPolicy {DownloaderPolicy, MediaPolicy, XamlPolicy, StreamingPolicy, NoPolicy};
+enum DownloaderAccessPolicy {
+	DownloaderPolicy,
+	MediaPolicy,
+	XamlPolicy,
+	StreamingPolicy,
+	NoPolicy
+};
 
 /* @Namespace=None */
 /* @ManagedDependencyProperties=None */
