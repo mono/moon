@@ -158,6 +158,9 @@ int collection_index_of (Collection *instance, Value *value);
 int collection_insert_with_error (Collection *instance, int index, Value *value, MoonError *error);
 #endif
 
+/* @GeneratePInvoke */
+bool collection_remove (Collection *instance, Value *value);
+
 #if SL_2_0
 /* @GeneratePInvoke */
 bool collection_remove_at_with_error (Collection *instance, int index, MoonError *error);

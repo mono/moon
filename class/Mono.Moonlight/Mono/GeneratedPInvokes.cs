@@ -116,6 +116,10 @@ namespace Mono {
 			return result;
 		}
 
+		[DllImport ("moon")]
+		// bool collection_remove (Collection *instance, Value *value);
+		public extern static bool collection_remove (IntPtr instance, ref Value value);
+
 		[DllImport ("moon", EntryPoint="collection_remove_at_with_error")]
 		// bool collection_remove_at_with_error (Collection *instance, int index, MoonError *error);
 		private extern static bool collection_remove_at_with_error_ (IntPtr instance, int index, out MoonError error);

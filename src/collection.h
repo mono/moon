@@ -62,6 +62,7 @@ public:
 	virtual bool Insert (int index, Value *value);
 	
 	bool Remove (Value value);
+	/* @GenerateCBinding,GeneratePInvoke */
 	virtual bool Remove (Value *value);
 	
 	bool RemoveAt (int index);

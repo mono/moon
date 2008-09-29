@@ -230,6 +230,16 @@ collection_insert_with_error (Collection *instance, int index, Value *value, Moo
 #endif
 
 
+bool
+collection_remove (Collection *instance, Value *value)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->Remove (value);
+}
+
+
 #if SL_2_0
 bool
 collection_remove_at_with_error (Collection *instance, int index, MoonError *error)
