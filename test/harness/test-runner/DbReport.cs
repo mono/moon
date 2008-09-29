@@ -46,7 +46,7 @@ namespace MoonlightTests {
 		
 		private string test_run_dir;
 		private string test_suite = string.Empty;
-		private bool debug = true;
+		private bool debug = false;
 		
 		public bool HasConnection
 		{
@@ -55,13 +55,22 @@ namespace MoonlightTests {
 		
 		public DbReport()
 		{
-			try
-			{
+
+			try {
+				test_suite = Environment.GetEnvironmentVariable ("MS_TEST_SUITE");
+			
+				if ((test_suite != null) && (test_suite.Trim().ToLower() == "true")) {
+					test_suite = "ms";
+					throw new Exception("DbReport not enabled for MS test suite");// We should not log MS test suite results
+				}
+				else {
+					test_suite = "moon";
+				}
 				StreamReader reader = new StreamReader(".dbconnection.txt");
 				connectionString = reader.ReadLine(); // Read the first line of the file
 				reader.Close();
 				
-				Log(string.Format("Connecting to Postgresql server: '{0}'",connectionString));
+				//Log(string.Format("Connecting to Postgresql server: '{0}'",connectionString));
 				dbcon =  new NpgsqlConnection(connectionString);
 				dbcon.Open();
 				dbcmd = dbcon.CreateCommand();
@@ -70,11 +79,9 @@ namespace MoonlightTests {
 				dbcmd.CommandText = query;
 				IDataReader dbreader = dbcmd.ExecuteReader();
 				int count = 0;
-				while(dbreader.Read())
-				{
+				while(dbreader.Read()) {
 					int id = dbreader.GetInt32(0);
 					++count;
-					//Log("reading testcase " + id);
 				}
 				Log(string.Format("{0} test cases read", count));
 				dbreader.Close();
@@ -83,8 +90,7 @@ namespace MoonlightTests {
 				Console.WriteLine("\nDbReport enabled\n");
 			
 			}
-			catch(Exception ex)
-			{
+			catch(Exception ex) {
 				Console.WriteLine("\nDbReport disabled\n"); // Use Console.WriteLine() so that this line always appears
 				WriteHelp();
 				Log(string.Format("\n{1} {0}",ex.GetType(), ex.Message));
@@ -124,14 +130,6 @@ namespace MoonlightTests {
 				Directory.CreateDirectory(Path.Combine(dir,masters));
 			}
 
-			test_suite = Environment.GetEnvironmentVariable ("MS_TEST_SUITE");
-			
-			if ((test_suite != null) && (test_suite.Trim().ToLower() == "true"))
-				test_suite = "ms";
-			else
-				test_suite = "moon";
-
-			Log(string.Format("suite = {0}", test_suite));
 
 			Log(string.Format("Runtime: {0}", runtime));
 			
@@ -147,8 +145,7 @@ namespace MoonlightTests {
 		
 		public void AddResult(Test test, TestResult result)
 		{
-			if (!HasConnection)
-			{
+			if (!HasConnection) {
 				return;
 			}
 				
@@ -162,11 +159,11 @@ namespace MoonlightTests {
 			string result_file = XmlReport.GetFilePath (test.ResultFile);
 			string master_file = XmlReport.GetFilePath (test.MasterFile);
 
-			Log("masterfile = " + masterfile);
-			Log("renderfile = " + renderfile);
+			//Log("masterfile = " + masterfile);
+			//Log("renderfile = " + renderfile);
 			
-			Log("result_file = " + result_file);
-			Log("master_file = " + master_file);
+			//Log("result_file = " + result_file);
+			//Log("master_file = " + master_file);
 			
 			
 			XmlReport.CopyImageToRunDirectory(test_run_dir,result_file);
@@ -177,46 +174,65 @@ namespace MoonlightTests {
 				renderfile += ".png";
 			}
 			
-			AddTestCase(test.Id,testname,masterfile,test_suite);
+			int internal_id = AddTestCase(test.Id,testname,masterfile,test_suite);
 			
-			switch(result)
-			{
-			case TestResult.Fail:
-				info = test.FailedReason;
-				break;
-			case TestResult.Ignore:
-				info = test.IgnoreReason;
-				break;
-			case TestResult.KnownFailure:
-				info = test.KnownFailureReason;
-				break;
-			default:
-				info = string.Empty;
-				break;
-				
-			}		
-			
-			string query = string.Format("INSERT INTO results VALUES ('{0}','{1}','{2}','{3}', '{4}');",test.Id, runtimeid, result.ToString(), renderfile, info);
+			switch(result) {
+
+				case TestResult.Fail:
+					info = test.FailedReason;
+					break;
+				case TestResult.Ignore:
+					info = test.IgnoreReason;
+					break;
+				case TestResult.KnownFailure:
+					info = test.KnownFailureReason;
+					break;
+				default:
+					info = string.Empty;
+					break;
+			}
+
+			string query = string.Format("INSERT INTO results (internal_id,runtimeid,result,renderfile,info) VALUES ('{0}','{1}','{2}','{3}', '{4}');",internal_id, runtimeid, result.ToString(), renderfile, info);
 			execnonquery(query);
-			
+
 		}
-		private void AddTestCase(string id, string testname, string masterfile, string suite)
+		private int AddTestCase(string id, string testname, string masterfile, string suite)
 		{
 			int intid = Convert.ToInt32(id);
-			string query = string.Format("Select id from testcases where id={0} and suite='{1}'",intid,suite);
+			int internal_id = -1;
+
+			string query = string.Format("Select internal_id from testcases where id={0} and suite='{1}'",intid,suite);
 			
 			dbcmd.CommandText = query;
 			IDataReader reader = dbcmd.ExecuteReader();
 			
 			// If the test case is not found, add it
-			if(!reader.Read())
-			{		
+			if(!reader.Read()) {
 				reader.Close();
 				query = string.Format("INSERT INTO testcases (id, suite, name, masterfile) VALUES ({0},'{1}','{2}','{3}');",intid, suite, testname, masterfile);
+				Log(query);
 				execnonquery(query);
+			}
+			else {
+				internal_id = reader.GetInt32(0);
+				Log(string.Format("Testcase exists with internal_id={0}",internal_id));
 			}
 			reader.Close();
 			reader = null;
+
+			if (internal_id != -1)
+				return internal_id;
+
+			dbcmd.CommandText = string.Format("SELECT internal_id FROM testcases WHERE id={0} AND suite='{1}';",intid,suite);
+			reader = dbcmd.ExecuteReader();
+			reader.Read();
+			
+			internal_id = reader.GetInt32(0);
+			reader.Close();
+			reader = null;
+
+
+			return internal_id;
 			
 		}
 #endregion
@@ -319,7 +335,7 @@ namespace MoonlightTests {
 			IDataReader reader = execreader(query);
 			if ((reader != null) && reader.Read()) {
 				reader.Close();
-				Log(string.Format("tagged case EXISTS for testcaseid={0} and tagid={1};",testid,tagid));
+				//Log(string.Format("tagged case EXISTS for testcaseid={0} and tagid={1};",testid,tagid));
 			}
 			else {
 				if (reader != null)
@@ -397,7 +413,7 @@ namespace MoonlightTests {
 			}
 			catch (Exception ex) {
 				
-				Log("Cannot get revision number: " + ex.Message);
+				Log("Cannot get revision number via svn info: " + ex.Message);
 				revision = string.Empty;
 			}
 
