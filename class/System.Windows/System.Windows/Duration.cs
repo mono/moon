@@ -33,25 +33,30 @@ using Mono;
 using System;
 
 namespace System.Windows {
+
 	public struct Duration  {
-		const int TIMESPAN = 0;
-		const int AUTOMATIC = 1;
-		const int FOREVER = 2;
-		int kind;
+
+		enum DurationKind {
+			TimeSpan = 0,
+			Automatic = 1,
+			Forever = 2,
+		}
+
+		DurationKind kind;
 		TimeSpan time_span;
 
-		static Duration automatic = new Duration (AUTOMATIC);
-		static Duration forever = new Duration (FOREVER);
+		static Duration automatic = new Duration (DurationKind.Automatic);
+		static Duration forever = new Duration (DurationKind.Forever);
 		
 		internal int KindInternal {
-			get { return kind; }
+			get { return (int) kind; }
 		}
 		
 		internal TimeSpan TimeSpanInternal {
 			get { return time_span; }
 		}
 		
-		internal Duration (int k)
+		Duration (DurationKind k)
 		{
 			kind = k;
 			time_span = new TimeSpan (0);
@@ -59,21 +64,21 @@ namespace System.Windows {
 		
 		internal Duration (int k, TimeSpan ts)
 		{
-			kind = k;
+			kind = (DurationKind) k;
 			time_span = ts;
 		}
 		
 		public Duration (TimeSpan timeSpan)
 		{
 			time_span = timeSpan;
-			kind = TIMESPAN;
+			kind = DurationKind.TimeSpan;
 		}
 
 		public static bool Equals (Duration t1, Duration t2)
 		{
-			if (t1.kind == TIMESPAN && t2.kind == TIMESPAN){
+			if (t1.kind == DurationKind.TimeSpan && t2.kind == DurationKind.TimeSpan)
 				return t1.time_span == t2.time_span;
-			}
+
 			return t1.kind == t2.kind;
 		}
 		
@@ -92,14 +97,15 @@ namespace System.Windows {
 
 		public static int Compare (Duration t1, Duration t2)
 		{
-			if (t1.kind == t2.kind && t1.kind == TIMESPAN)
+			if (t1.kind == t2.kind && t1.kind == DurationKind.TimeSpan)
 				return TimeSpan.Compare (t1.time_span, t2.time_span);
-			return (int) t1.kind - (int) t2.kind;
+
+			return t1.kind - t2.kind;
 		}
 			
 		public override int GetHashCode ()
 		{
-			if (kind == TIMESPAN)
+			if (kind == DurationKind.TimeSpan)
 				return time_span.GetHashCode ();
 			else
 				return (int) kind;
@@ -107,21 +113,23 @@ namespace System.Windows {
 
 		public Duration Add (Duration duration)
 		{
-			if (kind == duration.kind && kind == TIMESPAN)
+			if (kind == duration.kind && kind == DurationKind.TimeSpan)
 				return new Duration (time_span.Add (duration.time_span));
+
 			return this;
 		}
 
 		public Duration Subtract (Duration duration)
 		{
-			if (kind == duration.kind && kind == TIMESPAN)
+			if (kind == duration.kind && kind == DurationKind.TimeSpan)
 				return new Duration (time_span.Add (duration.time_span));
+
 			return this;
 		}
 
 		public static Duration Plus (Duration duration)
 		{
-			if (duration.kind == TIMESPAN && duration.time_span < TimeSpan.Zero)
+			if (duration.kind == DurationKind.TimeSpan && duration.time_span < TimeSpan.Zero)
 				return new Duration (-duration.time_span);
 			else
 				return duration;
@@ -129,7 +137,8 @@ namespace System.Windows {
 
 		public override string ToString ()
 		{
-			return kind == TIMESPAN ? time_span.ToString () : (kind == AUTOMATIC ? "automatic" : "forever");
+			return kind == DurationKind.TimeSpan ?
+				time_span.ToString () : (kind == DurationKind.Automatic ? "automatic" : "forever");
 		}
 
 		public static implicit operator Duration (TimeSpan timeSpan)
@@ -149,9 +158,9 @@ namespace System.Windows {
 		
 		public static bool operator == (Duration t1, Duration t2)
 		{
-			if (t1.kind == TIMESPAN && t2.kind == TIMESPAN){
+			if (t1.kind == DurationKind.TimeSpan && t2.kind == DurationKind.TimeSpan)
 				return t1.time_span == t2.time_span;
-			}
+
 			return t1.kind == t2.kind;
 		}
 		
@@ -159,7 +168,7 @@ namespace System.Windows {
 		{
 			if (t1.kind != t2.kind)
 				return true;
-			if (t1.kind == TIMESPAN)
+			if (t1.kind == DurationKind.TimeSpan)
 				return t1.time_span != t2.time_span;
 			return false;
 		}
@@ -199,14 +208,16 @@ namespace System.Windows {
 
 		public bool HasTimeSpan {
 			get {
-				return (kind == TIMESPAN);
+				return (kind == DurationKind.TimeSpan);
 			}
 		}
+
 		public TimeSpan TimeSpan {
 			get {
-				if (kind == TIMESPAN)
+				if (kind == DurationKind.TimeSpan)
 					return time_span;
-				throw new Exception ("This is not a TimeSpan duration");
+
+				throw new InvalidOperationException ("This is not a TimeSpan duration");
 			}
 		}
 	}
