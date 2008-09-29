@@ -1,5 +1,12 @@
 2008-09-29  Jb Evain  <jbevain@novell.com>
 
+	* Helper.cs
+	* XamlLoaderCallbacks.cs
+	* Types.g.cs: uniformize the use of the Agclr field. Wrap as a property.
+	Remove GetAgclr method.
+
+2008-09-29  Jb Evain  <jbevain@novell.com>
+
 	* Helper.cs: remove Split. Avoid calling internals methods.
 
 2008-09-17  Stephane Delcroix  <sdelcroix@novell.com>

@@ -41,7 +41,8 @@ using System.IO;
 namespace Mono {
 
 	public class Helper {
-		public static Assembly Agclr;
+
+		public static Assembly Agclr { get; set; }
 
 		private static TypeConverter GetConverterFor (MemberInfo info, Type target_type)
 		{
@@ -260,12 +261,7 @@ namespace Mono {
 		{
 			Thread.MemoryBarrier ();
 		}
-		
-		internal static Assembly GetAgclr ()
-		{
-			return Agclr;
-		}
-		
+
 		/// <summary>
 		/// Looks up a dependency object given the native pointer.
 		/// The calling code must free the native pointer when it's finished with it.

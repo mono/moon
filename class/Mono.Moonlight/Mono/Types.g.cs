@@ -11,7 +11,7 @@ namespace Mono {
 	static partial class Types {
 		private static void CreateNativeTypes ()
 		{
-			Assembly agclr = Helper.GetAgclr ();
+			Assembly agclr = Helper.Agclr;
 			Type t;
 			try {
 				if (agclr == null) {
