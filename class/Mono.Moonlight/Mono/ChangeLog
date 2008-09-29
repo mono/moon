@@ -1,5 +1,9 @@
 2008-09-29  Jb Evain  <jbevain@novell.com>
 
+	* Helper.cs: make Helper class static.
+
+2008-09-29  Jb Evain  <jbevain@novell.com>
+
 	* Helper.cs
 	* XamlLoaderCallbacks.cs
 	* Types.g.cs: uniformize the use of the Agclr field. Wrap as a property.
