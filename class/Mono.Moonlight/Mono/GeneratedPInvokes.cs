@@ -53,9 +53,18 @@ namespace Mono {
 		// Canvas *canvas_new ();
 		public extern static IntPtr canvas_new ();
 
-		[DllImport ("moon")]
-		// int collection_add (Collection *instance, Value *value);
-		public extern static int collection_add (IntPtr instance, ref Value value);
+		[DllImport ("moon", EntryPoint="collection_add_with_error")]
+		// int collection_add_with_error (Collection *instance, Value *value, MoonError *error);
+		private extern static int collection_add_with_error_ (IntPtr instance, ref Value value, out MoonError error);
+		public static int collection_add (IntPtr instance, ref Value value)
+		{
+			int result;
+			MoonError error;
+			result = collection_add_with_error_ (instance, ref value, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+			return result;
+		}
 
 		[DllImport ("moon")]
 		// bool collection_clear (Collection *instance);
@@ -94,13 +103,18 @@ namespace Mono {
 		// int collection_index_of (Collection *instance, Value *value);
 		public extern static int collection_index_of (IntPtr instance, ref Value value);
 
-		[DllImport ("moon")]
-		// bool collection_insert (Collection *instance, int index, Value *value);
-		public extern static bool collection_insert (IntPtr instance, int index, ref Value value);
-
-		[DllImport ("moon")]
-		// bool collection_remove (Collection *instance, Value *value);
-		public extern static bool collection_remove (IntPtr instance, ref Value value);
+		[DllImport ("moon", EntryPoint="collection_insert_with_error")]
+		// int collection_insert_with_error (Collection *instance, int index, Value *value, MoonError *error);
+		private extern static int collection_insert_with_error_ (IntPtr instance, int index, ref Value value, out MoonError error);
+		public static int collection_insert (IntPtr instance, int index, ref Value value)
+		{
+			int result;
+			MoonError error;
+			result = collection_insert_with_error_ (instance, index, ref value, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+			return result;
+		}
 
 		[DllImport ("moon", EntryPoint="collection_remove_at_with_error")]
 		// bool collection_remove_at_with_error (Collection *instance, int index, MoonError *error);
@@ -417,6 +431,10 @@ namespace Mono {
 		[DllImport ("moon")]
 		// int event_object_add_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data);
 		public extern static int event_object_add_handler (IntPtr instance, string event_name, UnmanagedEventHandler handler, IntPtr data);
+
+		[DllImport ("moon")]
+		// int event_object_add_xaml_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data);
+		public extern static int event_object_add_xaml_handler (IntPtr instance, string event_name, UnmanagedEventHandler handler, IntPtr data);
 
 		[DllImport ("moon", EntryPoint="event_object_get_type_name")]
 		// const char *event_object_get_type_name (EventObject *instance);
@@ -805,14 +823,16 @@ namespace Mono {
 		public extern static IntPtr rectangle_geometry_new ();
 
 		[DllImport ("moon", EntryPoint="resource_dictionary_add_with_error")]
-		// void resource_dictionary_add_with_error (ResourceDictionary *instance, const char *key, Value *value, MoonError *error);
-		private extern static void resource_dictionary_add_with_error_ (IntPtr instance, string key, ref Value value, out MoonError error);
-		public static void resource_dictionary_add (IntPtr instance, string key, ref Value value)
+		// bool resource_dictionary_add_with_error (ResourceDictionary *instance, const char *key, Value *value, MoonError *error);
+		private extern static bool resource_dictionary_add_with_error_ (IntPtr instance, string key, ref Value value, out MoonError error);
+		public static bool resource_dictionary_add (IntPtr instance, string key, ref Value value)
 		{
-					MoonError error;
-			resource_dictionary_add_with_error_ (instance, key, ref value, out error);
+			bool result;
+			MoonError error;
+			result = resource_dictionary_add_with_error_ (instance, key, ref value, out error);
 			if (error.Number != 0)
 				throw CreateManagedException (error);
+			return result;
 		}
 
 		[DllImport ("moon")]
