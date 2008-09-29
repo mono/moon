@@ -58,8 +58,15 @@ Geometry::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
 	// no need to clear the path for Geometry itself as FillRule and Transform properties are 
 	// only used when drawing, i.e. they do not affect the path itself
-	if ((args->property->GetOwnerType() != Type::GEOMETRY) && path)
-		moon_path_clear (path);
+	if (args->property->GetOwnerType() != Type::GEOMETRY) {
+		DependencyObject::OnPropertyChanged (args);
+
+		// not sure why we're doing this inside this block.. seems like it should happen outside it?
+		if (path)
+			moon_path_clear (path);
+
+		return;
+	}
 
 	NotifyListenersOfPropertyChange (args);
 }

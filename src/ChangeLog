@@ -1,5 +1,11 @@
 2008-09-28  Chris Toshok  <toshok@ximian.com>
 
+	* geometry.cpp (Geometry::OnPropertyChanged): this method was
+	never chaining up to DependencObject::OnPropertyChanged, which it
+	must do for properties whose ownerType != Geometry.
+
+2008-09-28  Chris Toshok  <toshok@ximian.com>
+
 	* media.cpp (TimelineMarkerCollection::Add): no need to check the
 	element type of the value, by the time it makes it here it should
 	already be the right type.
