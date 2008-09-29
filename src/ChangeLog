@@ -1,3 +1,7 @@
+2008-09-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* pipeline-ffmpeg.cpp: Free extradata, if allocated, on failure.
+
 2008-09-28  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (XNamespace::SetAttribute): don't both RegisterName and
