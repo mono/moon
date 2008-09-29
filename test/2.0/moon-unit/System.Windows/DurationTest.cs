@@ -19,7 +19,7 @@ namespace MoonTest.System.Windows {
 		[TestMethod]
 		public void GetNonTimeSpanDurationTimeSpan ()
 		{
-			Assert.Throws (() => Duration.Forever.TimeSpan, typeof (InvalidOperationException));
+			Assert.Throws (() => { var t = Duration.Forever.TimeSpan; }, typeof (InvalidOperationException));
 		}
 	}
 }
