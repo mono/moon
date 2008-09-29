@@ -302,5 +302,4 @@
     <ProjectReference type="Gac" localcopy="True" refto="System.Core, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
   </References>
-  <GtkDesignInfo gtkVersion="2.12.2" />
 </Project>

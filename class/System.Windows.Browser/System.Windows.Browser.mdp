@@ -53,5 +53,4 @@
     <ProjectReference type="Project" localcopy="True" refto="Mono.Moonlight" />
     <ProjectReference type="Project" localcopy="True" refto="System.Windows" />
   </References>
-  <GtkDesignInfo gtkVersion="2.12.2" />
 </Project>
