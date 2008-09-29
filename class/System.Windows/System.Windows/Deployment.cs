@@ -35,23 +35,17 @@ namespace System.Windows {
 	public sealed partial class Deployment : DependencyObject {
 
 		public static Deployment Current {
-#if NET_2_1
 			[SecuritySafeCritical]
-#endif
 			get { throw new NotImplementedException (); }
 		}
 	
-#if NET_2_1
 		[SecurityCritical]
-#endif
 		public static void RegisterAssembly (Assembly assembly)
 		{
 			throw new System.NotImplementedException ();
 		}
 		
-#if NET_2_1
 		[SecurityCritical]
-#endif
 		public static void SetCurrentApplication (Application application)
 		{
 			throw new System.NotImplementedException ();
