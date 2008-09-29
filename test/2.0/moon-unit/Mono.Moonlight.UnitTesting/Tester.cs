@@ -338,6 +338,16 @@ namespace Mono.Moonlight.UnitTesting
 			IsInstanceOfType (value, expectedType, string.Format (message, parameters));
 		}
 
+		public static void Throws<TException> (TestCode code) where TException : Exception
+		{
+			Throws (code, typeof (TException), null);
+		}
+
+		public static void Throws<TException> (TestCode code, string message) where TException : Exception
+		{
+			Throws (code, typeof (TException), message);
+		}
+
 		public static void Throws (TestCode code, Type expected_exception)
 		{
 			Throws (code, expected_exception, null);
