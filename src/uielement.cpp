@@ -519,7 +519,8 @@ UIElement::InsideClip (cairo_t *cr, double x, double y)
 
 	return ret;
 }
-bool 
+
+bool
 UIElement::InsideObject (cairo_t *cr, double x, double y)
 {
 	return InsideClip (cr, x, y);
@@ -543,6 +544,17 @@ UIElement::OnLoaded ()
 
  	emitting_loaded = false;
 
+}
+
+void
+UIElement::ClearLoaded ()
+{
+	if (!IsLoaded ())
+		return;
+	
+	flags &= ~UIElement::IS_LOADED;
+	
+	Emit (UnloadedEvent, NULL, true);
 }
 
 //

@@ -317,12 +317,18 @@ class TileBrush : public Brush {
 class ImageBrush : public TileBrush {
 	static void image_progress_changed (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void image_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void target_unloaded (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void target_loaded (EventObject *sender, EventArgs *calldata, gpointer closure);
 	
+	void TargetUnloaded ();
+	void TargetLoaded ();
+	
+	int loaded_count;
 	Image *image;
 	
  protected:
 	virtual ~ImageBrush ();
-
+	
  public:
 	/* @PropertyType=double,DefaultValue=0.0,ManagedAccess=Private,GenerateAccessors */
 	static DependencyProperty *DownloadProgressProperty;
@@ -340,6 +346,8 @@ class ImageBrush : public TileBrush {
 	void SetSource (Downloader *downloader, const char *PartName);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height);
+	virtual void RemoveTarget (DependencyObject *obj);
+	virtual void AddTarget (DependencyObject *obj);
 	virtual void SetSurface (Surface *surface);
 	
 	virtual bool IsOpaque ();

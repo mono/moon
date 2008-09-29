@@ -102,7 +102,7 @@ public:
 	void UpdateTotalHitTestVisibility ();
 	void ComputeTotalHitTestVisibility ();
 	bool GetActualTotalHitTestVisibility ();
-
+	
 	virtual void SetSurface (Surface *s);
 
 	//
@@ -133,7 +133,7 @@ public:
 	//
 	bool IsLoaded () { return (flags & UIElement::IS_LOADED) != 0; }
 
-	void ClearLoaded () { flags &= ~UIElement::IS_LOADED; }
+	void ClearLoaded ();
 
 	//
 	// Render: 
@@ -459,6 +459,7 @@ public:
 
 	// Events you can AddHandler to
 	const static int LoadedEvent;
+	const static int UnloadedEvent;
 	const static int MouseMoveEvent;
 	const static int MouseLeftButtonDownEvent;
 	const static int MouseLeftButtonUpEvent;

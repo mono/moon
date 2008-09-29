@@ -987,7 +987,10 @@ DependencyObject::SetValueWithError (Types *additional_types, DependencyProperty
 		if (current_as_dep) {
 			// unset its logical parent
 			current_as_dep->SetLogicalParent (NULL, NULL);
-
+			
+			// remove ourselves as a target
+			current_as_dep->RemoveTarget (this);
+			
 			// unregister from the existing value
 			current_as_dep->RemovePropertyChangeListener (this, property);
 			current_as_dep->SetSurface (NULL);
@@ -1004,9 +1007,12 @@ DependencyObject::SetValueWithError (Types *additional_types, DependencyProperty
 			new_as_dep->SetLogicalParent (this, error);
 			if (error->number)
 				return false;
-
+			
 			// listen for property changes on the new object
 			new_as_dep->AddPropertyChangeListener (this, property);
+			
+			// add ourselves as a target
+			new_as_dep->AddTarget (this);
 		}
 
 		// store the new value in the hash

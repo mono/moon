@@ -1,5 +1,32 @@
 2008-09-29  Jeffrey Stedfast  <fejj@novell.com>
 
+	* brush.cpp (ImageBrush::SetSurface): Remove previous hack.
+	(ImageBrush::TargetLoaded): Call SetAllowDOwnloads(true) on our
+	image once we have at least 1 target which is loaded in the visual
+	tree.
+	(ImageBrush::TargetUnloaded): Disallow image downloads once our
+	loaded_count falls back to 0.
+	(ImageBrush::AddTarget): Listen to the target's Loaded/Unloaded
+	events.
+	(ImageBrush::RemoveTarget): Remove our listeners for the Loaded
+	and Unloaded events placed on the target object.
+
+	* uielement.cpp (UIElement::ClearLoaded): Emit an UnloadedEvent.
+
+	* dependencyobject.cpp (DependencyObject::SetValueWithError): Call
+	AddTarget()/RemoveTarget() on DO property values as they are
+	set/unset.
+	(DependencyObject::AddTarget): New virtual method which gets
+	called on DependencyObject property values when they are set on a
+	target.
+	(DependencyObject::RemoveTarget): Same but when unset.
+
+	* media.cpp (MediaBase::SetAllowDownloads): New method to handle a
+	state-change of allowing new downloads vs not.
+	(MediaBase::OnLoaded): Call SetAllowDownloads(true).
+
+2008-09-29  Jeffrey Stedfast  <fejj@novell.com>
+
 	* brush.cpp (ImageBrush::SetSurface): Update the image's Loaded
 	state. Fixes some regressions introduced by moving the async
 	downloading logic from MediaBase::SetSurface() into

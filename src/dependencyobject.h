@@ -93,7 +93,9 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	void ref ()
 	{
-		if (refcount == 0) {
+		int v = g_atomic_int_exchange_and_add (&refcount, 1);
+		
+		if (v == 0) {
 			// Here something really bad happened, this object is probably being reffed again because
 			// of some action in the destructor. There is no way to recover from this now, no matter what 
 			// we do the code that called ref now will be accessing a deleted object later on, which may or 
@@ -106,7 +108,6 @@ public:
 			g_error ("Ref was called on an object with a refcount of 0.\n"); // g_error valid, see comment above.
 		}
 		
-		g_atomic_int_inc (&refcount);
 		OBJECT_TRACK ("Ref", GetTypeName ());
 	}
 	
@@ -312,6 +313,11 @@ public:
 	// This method is invoked when an item in the collection has had a property changed.
 	//
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args) { }
+	
+	// These methods get called on DependencyObjects when they are
+	// set/unset as property values on another DependencyObject.
+	virtual void AddTarget (DependencyObject *obj) { }
+	virtual void RemoveTarget (DependencyObject *obj) { }
 	
 	// These two methods are a little confusing.  @child_property
 	// is *not* the property you're interested in receiving change

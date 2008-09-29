@@ -467,6 +467,8 @@ ImageBrush::ImageBrush ()
 	image->AddHandler (Image::ImageFailedEvent, image_failed, this);
 
 	image->brush = this;
+	
+	loaded_count = 0;
 }
 
 ImageBrush::~ImageBrush ()
@@ -489,12 +491,55 @@ ImageBrush::SetSurface (Surface *surface)
 	
 	image->SetSurface (surface);
 	
-	if (surface)
-		image->OnLoaded ();
-	else
-		image->ClearLoaded ();
-	
 	DependencyObject::SetSurface (surface);
+}
+
+void
+ImageBrush::TargetLoaded ()
+{
+	int v = g_atomic_int_exchange_and_add (&loaded_count, 1);
+	
+	if (v == 0)
+		image->SetAllowDownloads (true);
+}
+
+void
+ImageBrush::target_loaded (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	((ImageBrush *) closure)->TargetLoaded ();
+}
+
+void
+ImageBrush::TargetUnloaded ()
+{
+	if (g_atomic_int_dec_and_test (&loaded_count))
+		image->SetAllowDownloads (false);
+}
+
+void
+ImageBrush::target_unloaded (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	((ImageBrush *) closure)->TargetUnloaded ();
+}
+
+void
+ImageBrush::AddTarget (DependencyObject *obj)
+{
+	if (!obj->Is (Type::UIELEMENT))
+		return;
+	
+	obj->AddHandler (UIElement::UnloadedEvent, target_unloaded, this);
+	obj->AddHandler (UIElement::LoadedEvent, target_loaded, this);
+}
+
+void
+ImageBrush::RemoveTarget (DependencyObject *obj)
+{
+	if (!obj->Is (Type::UIELEMENT))
+		return;
+	
+	obj->RemoveHandler (UIElement::UnloadedEvent, target_unloaded, this);
+	obj->RemoveHandler (UIElement::LoadedEvent, target_loaded, this);
 }
 
 void

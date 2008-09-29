@@ -132,6 +132,7 @@ class MediaBase : public FrameworkElement {
 	char *part_name;
 	
 	int updating_size_from_media:1;
+	int allow_downloads:1;
 	int use_media_height:1;
 	int use_media_width:1;
 	int source_changed:1;
@@ -170,6 +171,9 @@ class MediaBase : public FrameworkElement {
 	virtual void SetSource (Downloader *downloader, const char *PartName);
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetSource (const char *uri);
+	
+	void SetAllowDownloads (bool allow);
+	bool AllowDownloads () { return allow_downloads; }
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	

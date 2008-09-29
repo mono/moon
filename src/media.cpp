@@ -47,6 +47,7 @@ MediaBase::MediaBase ()
 	downloader = NULL;
 	part_name = NULL;
 	updating_size_from_media = false;
+	allow_downloads = false;
 	use_media_height = true;
 	use_media_width = true;
 	source_changed = false;
@@ -102,13 +103,16 @@ MediaBase::DownloaderAbort ()
 }
 
 void
-MediaBase::OnLoaded ()
+MediaBase::SetAllowDownloads (bool allow)
 {
 	Surface *surface = GetSurface ();
 	const char *uri;
 	Downloader *dl;
 	
-	if (surface && source_changed) {
+	if ((allow_downloads && allow) || (!allow_downloads && !allow))
+		return;
+	
+	if (allow && surface && source_changed) {
 		source_changed = false;
 		
 		if ((uri = GetSource ()) && *uri) {
@@ -123,7 +127,14 @@ MediaBase::OnLoaded ()
 		}
 	}
 	
+	allow_downloads = allow;
+}
+
+void
+MediaBase::OnLoaded ()
+{
 	FrameworkElement::OnLoaded ();
+	SetAllowDownloads (true);
 }
 
 void
@@ -211,7 +222,7 @@ MediaBase::OnPropertyChanged (PropertyChangedEventArgs *args)
 			Surface *surface = GetSurface ();
 			Downloader *dl;
 			
-			if (surface && IsLoaded ()) {
+			if (surface && AllowDownloads ()) {
 				if ((dl = surface->CreateDownloader ())) {
 					dl->Open ("GET", uri, strncmp (uri, "mms://", 6) == 0 ? StreamingPolicy : MediaPolicy);
 					SetSource (dl, "");
