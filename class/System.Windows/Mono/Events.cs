@@ -275,7 +275,7 @@ namespace Mono {
 			System.Text.StringBuilder sb = new StringBuilder (ex.GetType ().FullName);
 			sb.Append (": ").Append (ex.Message);
 			String details = sb.ToString ();
-			String[] stack_trace = Helper.Split (ex.StackTrace, new String [] { Environment.NewLine });
+			String[] stack_trace = ex.StackTrace.Split (new [] { Environment.NewLine }, StringSplitOptions.None);
 
 			NativeMethods.plugin_instance_report_exception (System.Windows.Interop.PluginHost.Handle, msg, details, stack_trace, stack_trace.Length);
 		}
