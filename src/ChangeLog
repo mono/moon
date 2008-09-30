@@ -1,3 +1,8 @@
+2008-09-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* xaml.cpp: Fix leak in dependency_object_add_child when AddWithError
+	returns false.
+
 2008-09-30  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* downloader.cpp: fix the leak in validate_policy.
