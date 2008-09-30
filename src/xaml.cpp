@@ -3227,11 +3227,9 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 							     "You must specify an x:Key or x:Name for elements in a ResourceDictionary");
 				}
 
-				Value *child_as_value = child->GetAsValue ();
-				if (!dict->AddWithError (key, child_as_value, &err)) {
-					delete child_as_value;
+				Value child_as_value = Value (child->item);
+				if (!dict->AddWithError (key, &child_as_value, &err))
 					return parser_error (p, child->element_name, NULL, err.code, err.message);
-				}
 			}
 
 			return;
@@ -3279,7 +3277,8 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 		MoonError err;
 		char *key = child->GetKey ();
 
-		if (!dict->AddWithError (key, child->GetAsValue(), &err))
+		Value child_as_value = Value (child->item);
+		if (!dict->AddWithError (key, &child_as_value, &err))
 			return parser_error (p, child->element_name, NULL, err.code, err.message);
 	}
 

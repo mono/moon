@@ -1,3 +1,7 @@
+2008-09-30  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* xaml.cpp: Better fix for the leaks in dependency_object_add_child.
+
 2008-09-30  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* xaml.cpp: Fix leak in dependency_object_add_child when AddWithError
