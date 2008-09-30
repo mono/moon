@@ -27,6 +27,15 @@
 #include "uri.h"
 
 
+enum TreeColumns {
+	COL_NAME,
+	COL_TYPE_NAME,
+	COL_OPACITY,
+	COL_OPACITY_MASK,
+	COL_ELEMENT_PTR,
+	NUM_COLUMNS
+};
+
 #ifdef DEBUG
 
 static void
@@ -40,9 +49,11 @@ populate_tree_from_xaml (UIElement *el, GtkTreeStore *store, GtkTreeIter *parent
 	gtk_tree_store_append (store, &iter, parent);
 
 	gtk_tree_store_set (store, &iter,
-			    0, el->GetName() ? el->GetName() : "",
-			    1, el->GetTypeName(),
-			    2, el,
+			    COL_NAME, el->GetName() ? el->GetName() : "",
+			    COL_TYPE_NAME, el->GetTypeName(),
+			    COL_OPACITY, el->GetOpacity (),
+			    COL_OPACITY_MASK, el->GetOpacityMask () != NULL,
+			    COL_ELEMENT_PTR, el,
 			    -1);
 	
 	if (el->Is (Type::PANEL)) {
@@ -86,8 +97,6 @@ selection_changed (GtkTreeSelection *selection, PluginInstance *plugin)
 			    -1);
 
 	if (el) {
-		printf ("%p selected, name = %s, type = %s, opacity = %.2f, opacitymask = %s\n", el, el->GetName(), el->GetTypeName(),
-			el->GetOpacity (), el->GetOpacityMask () ? "true" : "false");
 		el->Invalidate (el->GetSubtreeBounds().GrowBy(1).RoundOut());
 		el->ref ();
 		plugin->GetSurface()->debug_selected_element = el;
@@ -112,9 +121,11 @@ plugin_debug (PluginInstance *plugin)
 	gtk_window_set_title (GTK_WINDOW (tree_win), "Xaml contents");
 	gtk_window_set_default_size (GTK_WINDOW (tree_win), 300, 400);
 
-	GtkTreeStore *tree_store = gtk_tree_store_new (3,
+	GtkTreeStore *tree_store = gtk_tree_store_new (NUM_COLUMNS,
 						       G_TYPE_STRING,
 						       G_TYPE_STRING,
+						       G_TYPE_DOUBLE,
+						       G_TYPE_BOOLEAN,
 						       G_TYPE_POINTER);
 
 	populate_tree_from_xaml (plugin->GetSurface()->GetToplevel (), tree_store, NULL);
@@ -137,7 +148,7 @@ plugin_debug (PluginInstance *plugin)
 	gtk_tree_view_append_column(GTK_TREE_VIEW(tree_view), col);
 
 	gtk_tree_view_column_pack_start(col, renderer, TRUE);
-	gtk_tree_view_column_add_attribute (col, renderer, "text", 0);
+	gtk_tree_view_column_add_attribute (col, renderer, "text", COL_NAME);
 
 	/* The Type column */
 	col = gtk_tree_view_column_new();
@@ -145,7 +156,23 @@ plugin_debug (PluginInstance *plugin)
 	gtk_tree_view_append_column(GTK_TREE_VIEW(tree_view), col);
 
 	gtk_tree_view_column_pack_start(col, renderer, TRUE);
-	gtk_tree_view_column_add_attribute (col, renderer, "text", 1);
+	gtk_tree_view_column_add_attribute (col, renderer, "text", COL_TYPE_NAME);
+
+	/* The opacity column */
+	col = gtk_tree_view_column_new();
+	gtk_tree_view_column_set_title(col, "Opacity");
+	gtk_tree_view_append_column(GTK_TREE_VIEW(tree_view), col);
+
+	gtk_tree_view_column_pack_start(col, renderer, TRUE);
+	gtk_tree_view_column_add_attribute (col, renderer, "text", COL_OPACITY);
+
+	/* The opacity-mask column */
+	col = gtk_tree_view_column_new();
+	gtk_tree_view_column_set_title(col, "Opacity Mask");
+	gtk_tree_view_append_column(GTK_TREE_VIEW(tree_view), col);
+
+	gtk_tree_view_column_pack_start(col, renderer, TRUE);
+	gtk_tree_view_column_add_attribute (col, renderer, "text", COL_OPACITY_MASK);
 	
 	GtkWidget *scrolled = gtk_scrolled_window_new (NULL, NULL);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled),
