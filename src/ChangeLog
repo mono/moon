@@ -1,5 +1,12 @@
 2008-09-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* audio-alsa.cpp: Close the pcm in the dtor, not in Close. Refcounting
+	  ensures that the dtor won't be called while playing or that we'll
+	  be playing destructed sources, but Close might be called at any
+	  time.
+
+2008-09-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* pipeline.cpp: NullDecoder::DecodeAudioFrame: protected against int
 	  underflows and /0 errors.
 

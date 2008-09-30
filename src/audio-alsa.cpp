@@ -144,7 +144,14 @@ AlsaSource::AlsaSource (AlsaPlayer *player, MediaPlayer *mplayer, AudioStream *s
 AlsaSource::~AlsaSource ()
 {
 	LOG_ALSA ("AlsaSource::~AlsaSource ()\n");
-	Close ();
+
+	if (pcm != NULL) {
+		snd_pcm_close (pcm);
+		pcm = NULL;
+	}
+	
+	g_free (udfs);
+	udfs = NULL;
 }
 
 bool
@@ -382,15 +389,6 @@ AlsaSource::DropAlsa ()
 void
 AlsaSource::CloseInternal ()
 {
-	LOG_ALSA ("AlsaSource::Close ()\n");
-		
-	if (pcm != NULL) {
-		snd_pcm_close (pcm);
-		pcm = NULL;
-	}
-	
-	g_free (udfs);
-	udfs = NULL;
 }
 
 bool
