@@ -1,3 +1,9 @@
+2008-10-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* audio-pulse.cpp, audio-pulse.h: Don't use callbacks with
+	  pa_stream_[cork|trigger|flush|drain] since the audio source might
+	  have gotten deleted by the time the callback is called.
+
 2008-09-30  Chris Toshok  <toshok@ximian.com>
 
 	* dirty.cpp (Surface::ProcessDownDirtyElements): use

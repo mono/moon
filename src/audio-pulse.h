@@ -38,10 +38,6 @@ class PulseSource: public AudioSource {
 	void OnStateChanged (pa_stream *stream);
 	void OnWrite (size_t length);	
 	
-	static void OnCorked (pa_stream *pulse_stream, int success, void *userdata);
-	static void OnDrained (pa_stream *pulse_stream, int success, void *userdata);
-	static void OnTriggered (pa_stream *pulse_stream, int success, void *userdata);
-	static void OnFlushed (pa_stream *pulse_stream, int success, void *userdata);
 	static void OnUnderflow (pa_stream *pulse_stream, void *userdata);
 	static void OnWrite (pa_stream *pulse_stream, size_t length, void *userdata);
 	static void OnStateChanged (pa_stream *pulse_stream, void *userdata);

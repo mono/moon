@@ -410,45 +410,21 @@ void
 PulseSource::PACork (bool cork)
 {
 	LOG_PULSE ("PulseSource::PACork (%i)\n", cork);
-	player->WaitForOperation (pa_stream_cork (pulse_stream, cork, OnCorked, this));
+	pa_operation_unref (pa_stream_cork (pulse_stream, cork, NULL, this));
 }
 
 void
 PulseSource::PATrigger ()
 {
 	LOG_PULSE ("PulseSource::PATrigger (), triggered: %i\n", triggered);
-	player->WaitForOperation (pa_stream_trigger (pulse_stream, OnTriggered, this));	
+	pa_operation_unref (pa_stream_trigger (pulse_stream, NULL, this));
 	triggered = true;
 }
 
 void
 PulseSource::PAFlush ()
 {
-	player->WaitForOperation (pa_stream_flush (pulse_stream, OnFlushed, this));
-}
-
-void
-PulseSource::OnCorked (pa_stream *pulse_stream, int successs, void *userdata)
-{
-	((PulseSource *) userdata)->player->SignalLoop ();
-}
-
-void
-PulseSource::OnFlushed (pa_stream *pulse_stream, int success, void *userdata)
-{
-	((PulseSource *) userdata)->player->SignalLoop ();
-}
-
-void
-PulseSource::OnTriggered (pa_stream *pulse_stream, int success, void *userdata)
-{
-	((PulseSource *) userdata)->player->SignalLoop ();
-}
-
-void
-PulseSource::OnDrained (pa_stream *pulse_stream, int success, void *userdata)
-{
-	((PulseSource *) userdata)->player->SignalLoop ();
+	pa_operation_unref (pa_stream_flush (pulse_stream, NULL, this));
 }
 
 void
