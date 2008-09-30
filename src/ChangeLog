@@ -1,3 +1,10 @@
+2008-09-30  Chris Toshok  <toshok@ximian.com>
+
+	* stylus.cpp (Stroke::OnCollectionItemChanged): we need to
+	recompute our bounds when an item (can only be a stylus point)
+	changes its properties.  Fixes stroke bounds in the face of
+	dragging text in inkjournal.
+
 2008-10-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* audio-pulse.cpp, audio-pulse.h: Don't use callbacks with

@@ -627,7 +627,11 @@ Stroke::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Propert
 		DependencyObject::OnCollectionItemChanged (col, obj, args);
 		return;
 	}
-	
+
+	old_bounds = bounds;
+
+	ComputeBounds ();
+
 	NotifyListenersOfPropertyChange (Stroke::StylusPointsProperty);
 }
 
