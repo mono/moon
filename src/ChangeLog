@@ -1,3 +1,7 @@
+2008-09-30  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* downloader.cpp: fix the leak in validate_policy.
+
 2008-09-30  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* debug.cpp: Make sure allocated 'binary' is freed in every case

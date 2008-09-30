@@ -177,60 +177,65 @@ validate_policy (const char *location, const char *uri, DownloaderAccessPolicy p
 	}
 	Uri *source = new Uri ();
 	source->Parse (uri);
-	if (source->host == NULL) //relative uri, not checking policy
+	if (source->host == NULL) {//relative uri, not checking policy
+		delete source;
 		return true;
+	}
 
 	Uri *target = new Uri ();
 	target->Parse (location);
 
+	bool retval = true;
 	switch (policy) {
 	case DownloaderPolicy:
 		//Allowed schemes: http, https
 		if (!scheme_is (target, "http") && !scheme_is (target, "https"))
-			return false;
+			retval = false;
 		//X-Scheme: no
 		if (!same_scheme (target, source))
-			return false;
+			retval = false;
 		//X-Domain: no
 		if (!same_domain (target, source))
-			return false;
+			retval = false;
 		//Redirection allowed: same domain. FIXME NotImplemented
 		break;
 	case MediaPolicy: //Media, images, ASX
 		//Allowed schemes: http, https, file
 		if (!scheme_is (target, "http") && !scheme_is (target, "https") && !scheme_is (target, "file"))
-			return false;
+			retval = false;
 		//X-Scheme: no
 		if (!same_scheme (target, source))
-			return false;
+			retval = false;
 		//X-Domain: if not https
 		if (scheme_is (source, "https") && !same_domain (target, source))
-			return false;
+			retval = false;
 		break;
 	case XamlPolicy: //XAML files, font files
 		//Allowed schemes: http, https, file
 		if (!scheme_is (target, "http") && !scheme_is (target, "https") && !scheme_is (target, "file"))
-			return false;
+			retval = false;
 		//X-Scheme: no
 		if (!same_scheme (target, source))
-			return false;
+			retval =false;
 		//X-domain: no
 		if (!same_domain (target, source))
-			return false;
+			retval = false;
 		//Redirection allowed: same domain. FIXME NotImplemented
 		break;
 	case StreamingPolicy: //Streaming media
 		//Allowed schemes: http
 		if (!scheme_is (target, "http"))
-			return false;
+			retval = false;
 		//X-scheme: Not from https
 		if (scheme_is (source, "https") && !same_scheme (source, target))
-			return false;
+			retval = false;
 		//Redirection allowed: same domain. FIXME NotImplemented
 	default:
 		break;
 	}
-	return true;
+	delete source;
+	delete target;
+	return retval;
 }
 
 void
