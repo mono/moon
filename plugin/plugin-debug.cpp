@@ -86,7 +86,8 @@ selection_changed (GtkTreeSelection *selection, PluginInstance *plugin)
 			    -1);
 
 	if (el) {
-		printf ("%p selected, name = %s, type = %s\n", el, el->GetName(), el->GetTypeName());
+		printf ("%p selected, name = %s, type = %s, opacity = %.2f, opacitymask = %s\n", el, el->GetName(), el->GetTypeName(),
+			el->GetOpacity (), el->GetOpacityMask () ? "true" : "false");
 		el->Invalidate (el->GetSubtreeBounds().GrowBy(1).RoundOut());
 		el->ref ();
 		plugin->GetSurface()->debug_selected_element = el;
@@ -145,7 +146,7 @@ plugin_debug (PluginInstance *plugin)
 
 	gtk_tree_view_column_pack_start(col, renderer, TRUE);
 	gtk_tree_view_column_add_attribute (col, renderer, "text", 1);
-
+	
 	GtkWidget *scrolled = gtk_scrolled_window_new (NULL, NULL);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled),
 					GTK_POLICY_AUTOMATIC,
