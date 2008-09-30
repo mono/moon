@@ -1,3 +1,15 @@
+2008-09-29  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.cpp (DependencyObject::RegisterAllNamesRootedAt):
+	if during the course of traversing the tree, we come across a temp
+	namescope, merge that up instead of recursing down even further.
+	(DependencyObject::SetLogicalParent): only clear the namescope if
+	we're merging ourselves into a parent namescope.
+
+	* canvas.cpp (Canvas::Canvas): remove the temp namescope creation
+	here.  the parser does it for us if we're parsing an element, and
+	programmatically created objects don't seem to have them.
+
 2008-09-29  Jeffrey Stedfast  <fejj@novell.com>
 
 	* media.cpp (MediaBase::GetDownloaderPolicy): New virtual method

@@ -1071,8 +1071,13 @@ DependencyObject::RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error)
 		return;
 
 	NameScope *this_ns = NameScope::GetNameScope(this);
-	if (this_ns && !this_ns->GetTemporary())
+	if (this_ns) {
+		if (this_ns->GetTemporary()) {
+			to_ns->MergeTemporaryScope (this_ns, error);
+			ClearValue (NameScope::NameScopeProperty, false);
+		}
 		return;
+	}
 
 	const char *n = GetName();
 	
@@ -1091,7 +1096,6 @@ DependencyObject::RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error)
 	closure.error = error;
 
 	g_hash_table_foreach (current_values, register_depobj_names, &closure);
-
 }
 
 static void
@@ -1482,6 +1486,7 @@ DependencyObject::SetLogicalParent (DependencyObject *logical_parent, MoonError 
 					// closest one up the hierarchy.
 					if (parent_scope) {
 						parent_scope->MergeTemporaryScope (this_scope, error);
+						ClearValue (NameScope::NameScopeProperty, false);
 					}
 					else {
 						// oddly enough, if
@@ -1489,7 +1494,6 @@ DependencyObject::SetLogicalParent (DependencyObject *logical_parent, MoonError 
 						// namescope, we don't
 						// do anything
 					}
-					ClearValue (NameScope::NameScopeProperty, false);
 				}
 			}
 			else {
