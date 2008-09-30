@@ -1,3 +1,8 @@
+2008-09-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* pipeline.cpp: NullDecoder::DecodeAudioFrame: protected against int
+	  underflows and /0 errors.
+
 2008-09-29  Chris Toshok  <toshok@ximian.com>
 
 	* dependencyobject.cpp (DependencyObject::RegisterAllNamesRootedAt):

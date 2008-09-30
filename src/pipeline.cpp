@@ -3002,7 +3002,7 @@ NullDecoder::DecodeAudioFrame (MediaFrame *frame)
 	// for the first frame we use 0.1 seconds, for the rest
 	// we calculate the time since the last frame
 
-	if (prev_pts == G_MAXUINT64) {
+	if (prev_pts == G_MAXUINT64 || frame->pts <= prev_pts) {
 		samples = as->sample_rate / 10; // start off sending 0.1 seconds of audio
 	} else {
 		diff_pts = frame->pts - prev_pts;
