@@ -1,3 +1,9 @@
+2008-09-30  Chris Toshok  <toshok@ximian.com>
+
+	* dirty.cpp (Surface::ProcessDownDirtyElements): use
+	AddDirtyElement instead of |= to set flags, since it might require
+	dirty list manipulation.
+
 2008-09-30  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* xaml.cpp: Fix (again) the leaks in dependency_object_add_child, 

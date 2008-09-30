@@ -249,7 +249,7 @@ Surface::ProcessDownDirtyElements ()
 				el->GetVisualParent ()->UpdateBounds ();
 
 			el->ComputeTotalRenderVisibility ();
-			el->dirty_flags |= DirtyNewBounds;
+			AddDirtyElement (el, DirtyNewBounds);
 
 			PropagateDirtyFlagToChildren (el, DirtyRenderVisibility);
 		}
@@ -286,7 +286,7 @@ Surface::ProcessDownDirtyElements ()
 			el->Invalidate ();
 			el->ComputeTransform ();
 			el->UpdateBounds ();
-			el->dirty_flags |= DirtyNewBounds;
+			AddDirtyElement (el, DirtyNewBounds);
 
 			PropagateDirtyFlagToChildren (el, DirtyTransform);
 		}
@@ -327,7 +327,7 @@ Surface::ProcessDownDirtyElements ()
 			el->ComputePosition ();
  			if (obounds != el->GetBounds() && el->GetVisualParent ())
 				el->GetVisualParent()->UpdateBounds();
-			el->dirty_flags |= DirtyNewBounds;
+			AddDirtyElement (el, DirtyNewBounds);
 
  			PropagateDirtyFlagToChildren (el, DirtyPosition);
 		}
