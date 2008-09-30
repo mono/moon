@@ -1,3 +1,8 @@
+2008-09-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* debug.cpp: Make sure allocated 'binary' is freed in every case
+	inside addr2line_offset.
+
 2008-09-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* audio-alsa.cpp: Close the pcm in the dtor, not in Close. Refcounting

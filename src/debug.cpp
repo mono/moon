@@ -221,8 +221,10 @@ addr2line_offset (gpointer ip, bool use_offset)
 	if (binary == NULL)
 		return NULL;
 		
-	if (binary [0] == '[')
+	if (binary [0] == '[') {
+		g_free (binary);
 		return NULL;
+	}
 
 	for (addr2line = addr2line_pipes; addr2line; addr2line = addr2line->next) {
 		if (strcmp (binary, addr2line->binary) == 0)
@@ -236,6 +238,7 @@ addr2line_offset (gpointer ip, bool use_offset)
 		
 		if (!g_spawn_async_with_pipes (NULL, (char**)addr_argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL,
 				&child_pid, &ch_in, &ch_out, NULL, NULL)) {
+			g_free (binary);
 			return NULL;
 		}
 		
