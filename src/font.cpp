@@ -1055,7 +1055,7 @@ FontFace::LoadDefaultFace ()
 	FcDefaultSubstitute (pattern);
 	
 	d(fprintf (stderr, "Attempting to load default system font\n"));
-	LoadFontFace (&default_face, pattern, families);
+	LoadFontFace (&default_face, pattern, NULL);
 	
 	FcPatternDestroy (pattern);
 }

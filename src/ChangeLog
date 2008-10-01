@@ -1,5 +1,13 @@
 2008-10-01  Jeffrey Stedfast  <fejj@novell.com>
 
+	Attempt #1 at fixing bug #430766.
+
+	* font.cpp (FontFace::LoadDefaultFace): Pass NULL as the families
+	argument to LoadFontFace() so that we don't fail when matching the
+	loaded family name.
+
+2008-10-01  Jeffrey Stedfast  <fejj@novell.com>
+
 	* font.cpp (FontFace::OpenFontDirectory): Now a static class
 	method.
 	(FontFace::LoadFontFace): New static method which tries to load an
