@@ -46,6 +46,35 @@ struct ReflectForeachData {
 	DependencyObject *obj;
 };
 
+char*
+timespan_to_str (TimeSpan ts)
+{
+	bool negative;
+	int days;
+	int hours;
+	int minutes;
+	double seconds;
+
+	double ts_frac = (double)ts;
+
+	negative = (ts < 0);
+
+	ts_frac /= 10000000.0;
+
+	days = (int)(ts_frac / 86400);
+	ts_frac -= days * 86400;
+	hours = (int)(ts_frac / 3600);
+	ts_frac -= hours * 3600;
+	minutes = (int)(ts_frac / 60);
+	ts_frac -= minutes * 60;
+	seconds = ts_frac;
+
+	// XXX someone who can remember printf specifiers should
+	// remove that %s from in there in such a way that we get a
+	// float zero padded to 2 spaces to the left of the decimal.
+	return g_strdup_printf ("%02d:%02d:%02d:%s%.4f", days, hours, minutes, seconds < 10.0 ? "0" : "", seconds);
+}
+
 static void
 reflect_value (GtkTreeStore *store, GtkTreeIter *node, const char *name, Value *value)
 {
@@ -66,30 +95,46 @@ reflect_value (GtkTreeStore *store, GtkTreeIter *node, const char *name, Value *
 
 		switch (value->GetKind()) {
 		case Type::DOUBLE:
-			val_string = g_strdup_printf ("<b>%f</b>", value->AsDouble());
+			val_string = g_strdup_printf ("<b>%g</b>", value->AsDouble());
 			break;
 		case Type::INT32:
 			val_string = g_strdup_printf ("<b>%d</b>", value->AsInt32());
+			break;
+		case Type::INT64:
+			val_string = g_strdup_printf ("<b>%lld</b>", value->AsInt64());
+			break;
+		case Type::TIMESPAN: {
+			char *ts_string = timespan_to_str (value->AsTimeSpan());
+			val_string = g_strdup_printf ("<b>%s</b>", ts_string);
+			g_free (ts_string);
+			break;
+		}
+		case Type::UINT64:
+			val_string = g_strdup_printf ("<b>%llu</b>", value->AsUint64());
 			break;
 		case Type::STRING:
 			val_string = g_strdup_printf ("<b>%s</b>", value->AsString());
 			break;
 		case Type::RECT: {
 			Rect *rect = value->AsRect();
-			val_string = g_strdup_printf ("<b>%f, %f, %f, %f</b>", rect->x, rect->y, rect->width, rect->height);
+			val_string = g_strdup_printf ("<b>%g, %g, %g, %g</b>", rect->x, rect->y, rect->width, rect->height);
 			break;
 		}
 		case Type::SIZE:
-			val_string = g_strdup_printf ("<b>%f, %f</b>", value->AsSize()->width, value->AsSize()->height);
+			val_string = g_strdup_printf ("<b>%g, %g</b>", value->AsSize()->width, value->AsSize()->height);
 			break;
 		case Type::REPEATBEHAVIOR: {
 			RepeatBehavior *rb = value->AsRepeatBehavior();
 			if (rb->IsForever ())
 				val_string = g_strdup_printf ("<b>Forever</b>");
 			else if (rb->HasCount())
-				val_string = g_strdup_printf ("<b>%fx</b>", rb->GetCount());
-			else /*if (rb->HasDuration())*/
-				val_string = g_strdup_printf ("<b>%lld</b>", rb->GetDuration());
+				val_string = g_strdup_printf ("<b>%gx</b>", rb->GetCount());
+			else /*if (rb->HasDuration())*/ {
+				char *ts_string = timespan_to_str (rb->GetDuration());
+				val_string = g_strdup_printf ("<b>%s</b>", ts_string);
+				g_free (ts_string);
+			}
+			break;
 		}
 		case Type::DURATION: {
 			Duration *d = value->AsDuration();
@@ -97,8 +142,17 @@ reflect_value (GtkTreeStore *store, GtkTreeIter *node, const char *name, Value *
 				val_string = g_strdup_printf ("<b>Forever</b>");
 			else if (d->IsAutomatic())
 				val_string = g_strdup_printf ("<b>Automatic</b>");
-			else /*if (d->HasTimeSpan())*/
-				val_string = g_strdup_printf ("<b>%lld</b>", d->GetTimeSpan());
+			else /*if (d->HasTimeSpan())*/ {
+				char *ts_string = timespan_to_str (d->GetTimeSpan());
+				val_string = g_strdup_printf ("<b>%s</b>", ts_string);
+				g_free (ts_string);
+			}
+			break;
+		}
+		case Type::COLOR: {
+			Color *color = value->AsColor();
+			val_string = g_strdup_printf ("<b>r=%g, g=%g, b=%g, a=%g</b>", color->r, color->g, color->b, color->a);
+			break;
 		}
 		case Type::KEYTIME:
 		case Type::GRIDLENGTH:
@@ -106,6 +160,7 @@ reflect_value (GtkTreeStore *store, GtkTreeIter *node, const char *name, Value *
 		case Type::CORNERRADIUS:
 		default:
 			val_string = g_strdup ("<i>(unknown)</i>");
+			break;
 		}
 
 		gtk_tree_store_set (store, node,
@@ -167,7 +222,7 @@ reflect_dependency_object_in_tree (DependencyObject *obj, GtkTreeStore *store, G
 		gtk_tree_store_append (store, &prop_iter, node);
 
 		gtk_tree_store_set (store, &prop_iter,
-				    COL_NAME, "<i>Properties</i>",
+				    COL_NAME, "Properties",
 				    COL_TYPE_NAME, "",
 				    COL_ELEMENT_PTR, obj,
 				    -1);
@@ -189,7 +244,7 @@ reflect_dependency_object_in_tree (DependencyObject *obj, GtkTreeStore *store, G
 			gtk_tree_store_append (store, &elements_iter, node);
 
 			gtk_tree_store_set (store, &elements_iter,
-					    COL_NAME, "<i>Elements</i>",
+					    COL_NAME, "Elements",
 					    COL_TYPE_NAME, "",
 					    COL_ELEMENT_PTR, obj,
 					    -1);
@@ -272,7 +327,12 @@ plugin_debug (PluginInstance *plugin)
 
 	reflect_dependency_object_in_tree (plugin->GetSurface()->GetToplevel (), tree_store, NULL, false);
 
-	GtkWidget* tree_view = gtk_tree_view_new_with_model (GTK_TREE_MODEL (tree_store));
+	GtkTreeModel *sorted_model = gtk_tree_model_sort_new_with_model (GTK_TREE_MODEL (tree_store));
+
+	gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (sorted_model),
+					      COL_NAME, GTK_SORT_ASCENDING);
+
+	GtkWidget* tree_view = gtk_tree_view_new_with_model (sorted_model);
 
 	GtkTreeSelection *selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree_view));
 
@@ -291,6 +351,9 @@ plugin_debug (PluginInstance *plugin)
 
 	gtk_tree_view_column_pack_start(col, renderer, TRUE);
 	gtk_tree_view_column_add_attribute (col, renderer, "markup", COL_NAME);
+	gtk_tree_view_column_set_resizable (col, TRUE);
+
+	gtk_tree_view_column_set_sort_column_id (col, COL_NAME);
 
 	/* The Type column */
 	col = gtk_tree_view_column_new();
@@ -299,6 +362,7 @@ plugin_debug (PluginInstance *plugin)
 
 	gtk_tree_view_column_pack_start(col, renderer, TRUE);
 	gtk_tree_view_column_add_attribute (col, renderer, "markup", COL_TYPE_NAME);
+	gtk_tree_view_column_set_resizable (col, TRUE);
 
 	/* The Value column */
 	col = gtk_tree_view_column_new();
@@ -307,6 +371,7 @@ plugin_debug (PluginInstance *plugin)
 
 	gtk_tree_view_column_pack_start(col, renderer, TRUE);
 	gtk_tree_view_column_add_attribute (col, renderer, "markup", COL_VALUE);
+	gtk_tree_view_column_set_resizable (col, TRUE);
 
 	GtkWidget *scrolled = gtk_scrolled_window_new (NULL, NULL);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled),
