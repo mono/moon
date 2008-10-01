@@ -924,4 +924,9 @@
 	 inputFile="test-createFromXaml-nodownload.html"
 	 masterFile10="None"
 	 />
+   <Test id="206"
+	inputFile="test-clip-fillrule.xaml"
+	masterFile10="../harness/masters/test-clip-fillruleMaster.png"
+	categories="clip,moonbuilder"
+   />
 </DRTList>

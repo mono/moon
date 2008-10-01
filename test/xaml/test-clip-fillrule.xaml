@@ -1,0 +1,12 @@
+  <Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:Background="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+x:Name="ControlsBackNext" Background="Red" Width="500" Height="500">
+                    <Canvas.Clip>
+                        <GeometryGroup FillRule="EvenOdd">
+                            <RectangleGeometry x:Name="RectanglCutOut" Rect="0 0, 140 50" />
+                            <EllipseGeometry x:Name="CircleCutOut" Center="70,25" RadiusX="40" RadiusY="40" />
+                            <GeometryGroup.Transform>
+                                <TranslateTransform X="249" Y="408"/>
+                            </GeometryGroup.Transform>
+                        </GeometryGroup>
+                    </Canvas.Clip>
+</Canvas>
