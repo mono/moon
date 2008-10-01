@@ -1,3 +1,16 @@
+2008-10-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	Attempt #2 at fixing bug #430766.
+
+	* font.cpp (FontFace::LoadFontFace): Don't load non-scalable fonts
+	- this helps us do better fallback for bug #430766.
+	(FontFace::LoadDefaultFace): Do manual fallback of fonts. First
+	try to use the Microsoft Lucida Sans font if available. If not,
+	fall back to GNOME's Bitstream Vera Sans font. Then fallback to
+	DejaVu Sans and finally to X.Org's Luxi Sans font (which doesn't
+	render many of the glyphs in bug #430766, hence why it is last
+	choice). If the user doesn't have the X.Org fonts, he's SOL.
+
 2008-10-01  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* value.h[.in],value.cpp: Fix operator == to work for non-DO and

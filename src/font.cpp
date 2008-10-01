@@ -1043,10 +1043,9 @@ FontFace::Shutdown ()
 		FT_Done_Face (default_face);
 }
 
-void
-FontFace::LoadDefaultFace ()
+static FcPattern *
+create_default_pattern (const char **families)
 {
-	const char *families[] = { "Lucida Sans Unicode", "Lucida Sans", "Sans", NULL };
 	FcPattern *pattern;
 	int i;
 	
@@ -1058,10 +1057,36 @@ FontFace::LoadDefaultFace ()
 	
 	FcDefaultSubstitute (pattern);
 	
-	d(fprintf (stderr, "Attempting to load default system font\n"));
-	LoadFontFace (&default_face, pattern, NULL);
+	return pattern;
+}
+
+static struct {
+	const char *source;
+	const char *families[3];
+} default_font_names[] = {
+	// Use the Microsoft Lucida Sans Unicode font if available (in an attempt to be a pixel-perfect match with Windows/Mac)
+	{ "Microsoft", { "Lucida Sans Unicode", "Lucida Sans", NULL } },
+	// GNOME's Bitstream Vera Sans font are probably the next best
+	{ "GNOME", { "Bitstream Vera Sans", NULL, NULL } },
+	// DejaVu Sans is another common Sans font found on Linux desktop systems
+	{ "DejaVu", { "DejaVu Sans", NULL, NULL } },
+	// Finally, fall back to X.Org default Sans font
+	{ "X.Org", { "Luxi Sans", NULL, NULL } }
+};
+
+void
+FontFace::LoadDefaultFace ()
+{
+	bool loaded = false;
+	FcPattern *pattern;
 	
-	FcPatternDestroy (pattern);
+	d(fprintf (stderr, "Attempting to load default system font\n"));
+	for (guint i = 0; i < G_N_ELEMENTS (default_font_names) && !loaded; i++) {
+		d(fprintf (stderr, "    %s\n", default_font_names[i].source));
+		pattern = create_default_pattern (default_font_names[i].families);
+		loaded = LoadFontFace (&default_face, pattern, NULL);
+		FcPatternDestroy (pattern);
+	}
 }
 
 FontFace *
