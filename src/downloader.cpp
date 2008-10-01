@@ -171,13 +171,13 @@ same_domain (const Uri *uri1, const Uri *uri2)
 bool
 validate_policy (const char *location, const char *uri, DownloaderAccessPolicy policy)
 {
-	if (!location || !uri) {
-		printf ("location or uri is NULL, not checking policy\n");
+	if (!location || !uri)
 		return true;
-	}
+	
 	Uri *source = new Uri ();
 	source->Parse (uri);
-	if (source->host == NULL) {//relative uri, not checking policy
+	if (source->host == NULL) {
+		//relative uri, not checking policy
 		delete source;
 		return true;
 	}
@@ -256,9 +256,8 @@ Downloader::Open (const char *verb, const char *uri, DownloaderAccessPolicy poli
 
 	//FIXME: ONLY VALIDATE IF USED FROM THE PLUGIN
 	char *location = g_strdup (GetSurface()->GetSourceLocation ());
-	if (!validate_policy (location, uri, policy))
-	{
-		printf ("aborting due to security policy violation\n");
+	if (!validate_policy (location, uri, policy)) {
+		d(printf ("aborting due to security policy violation\n"));
 		failed_msg = g_strdup ("Security Policy Violation");
 		Abort ();
 		g_free (location);
