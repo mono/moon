@@ -123,6 +123,8 @@ GeometryGroup::Draw (Path *shape, cairo_t *cr)
 	
 	GeometryCollection *children = GetChildren ();
 	Geometry *geometry;
+
+	cairo_set_fill_rule (cr, convert_fill_rule (GetFillRule ()));
 	
 	for (int i = 0; i < children->GetCount (); i++) {
 		geometry = children->GetValueAt (i)->AsGeometry ();

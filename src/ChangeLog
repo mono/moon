@@ -1,3 +1,9 @@
+2008-10-01  Chris Toshok  <toshok@ximian.com>
+
+	* geometry.cpp (GeometryGroup::Draw): reinstate the call to
+	cairo_set_fill_rule removed in r105643.  This fixes
+	http://mapul.com/Tutorials.html.
+
 2008-10-01  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* shape.cpp: (Shape::InsideObject) Move cairo_save after the 
