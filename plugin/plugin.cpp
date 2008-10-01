@@ -133,7 +133,7 @@ plugin_show_menu (PluginInstance *plugin)
 	}
 	
 #ifdef DEBUG
-	menu_item = gtk_menu_item_new_with_label ("Debug");
+	menu_item = gtk_menu_item_new_with_label ("Show XAML Hierarchy");
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
 	g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (plugin_debug), plugin);
 	
