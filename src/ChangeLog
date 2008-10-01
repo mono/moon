@@ -1,3 +1,8 @@
+2008-10-01  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* geometry.cpp (GeometryGroup::Draw): Make sure the original
+	fill rule is still in effect at the end of drawing the group.
+
 2008-10-01  Chris Toshok  <toshok@ximian.com>
 
 	* geometry.cpp (GeometryGroup::Draw): reinstate the call to

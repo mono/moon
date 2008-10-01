@@ -124,6 +124,7 @@ GeometryGroup::Draw (Path *shape, cairo_t *cr)
 	GeometryCollection *children = GetChildren ();
 	Geometry *geometry;
 
+	cairo_fill_rule_t original_fill_rule = cairo_get_fill_rule (cr);
 	cairo_set_fill_rule (cr, convert_fill_rule (GetFillRule ()));
 	
 	for (int i = 0; i < children->GetCount (); i++) {
@@ -132,6 +133,7 @@ GeometryGroup::Draw (Path *shape, cairo_t *cr)
 		geometry->Draw (shape, cr);
 	}
 	
+	cairo_set_fill_rule (cr, original_fill_rule);
 	cairo_set_matrix (cr, &saved);
 }
 
