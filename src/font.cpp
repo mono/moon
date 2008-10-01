@@ -1508,7 +1508,7 @@ TextFont::GetGlyphInfo (gunichar unichar, guint32 index)
 	glyph.path = NULL;
 	
 	if (!face->LoadGlyph (size, &glyph))
-		return false;
+		return NULL;
 	
 	if (nglyphs == 256) {
 		// need to expire the least requested glyph (which will be the last element in the array after sorting)
