@@ -1,3 +1,10 @@
+2008-10-01  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* value.h[.in],value.cpp: Fix operator == to work for non-DO and
+	non-string values. This fix the issue of removing stuff from a
+	ResourceDictionary (while a copy still exists in the underlying
+	Collection).
+
 2008-10-01  Jeffrey Stedfast  <fejj@novell.com>
 
 	Attempt #1 at fixing bug #430766.

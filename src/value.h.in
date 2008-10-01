@@ -84,30 +84,8 @@ public:
 	static Value* CreateUnrefPtr (DependencyObject* dob);
 	static Value  CreateUnref (DependencyObject* dob);
 
-	bool operator!= (const Value &v) const
-	{
-		return !(*this == v);
-	}
-
-	bool operator== (const Value &v) const
-	{
-		if (k != v.k)
-			return false;
-
-		if (k == Type::STRING) {
-			if (u.s == NULL){
-				return v.u.s == NULL;
-			} else if (v.u.s == NULL)
-				return FALSE;
-
-			return !strcmp (u.s, v.u.s);
-		}
-		else {
-			return !memcmp (&u, &v.u, sizeof (u));
-		}
-
-		return true;
-	}
+	bool operator!= (const Value &v) const;
+	bool operator== (const Value &v) const;
 	
 	bool		Is (Types* additional_types, Type::Kind type) { return Type::IsSubclassOf (additional_types, k, type); }
 	bool		Is (Type::Kind type) { return Is (NULL, type); }

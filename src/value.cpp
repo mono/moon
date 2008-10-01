@@ -361,6 +361,53 @@ Value::ToString ()
 	return g_string_free (str, FALSE);
 }
 
+bool
+Value::operator!= (const Value &v) const
+{
+	return !(*this == v);
+}
+
+bool 
+Value::operator== (const Value &v) const
+{
+		if (k != v.k)
+			return false;
+
+		switch (k) {
+		case Type::STRING:
+			if (u.s == NULL){
+				return v.u.s == NULL;
+			} else if (v.u.s == NULL)
+				return FALSE;
+
+			return !strcmp (u.s, v.u.s);
+		case Type::COLOR:
+			return !memcmp (u.color, v.u.color, sizeof (Color));
+		case Type::POINT:
+			return !memcmp (u.point, v.u.point, sizeof (Point));
+		case Type::RECT:
+			return !memcmp (u.rect, v.u.rect, sizeof (Rect));
+		case Type::SIZE:
+			return !memcmp (u.size, v.u.size, sizeof (Size));
+		case Type::REPEATBEHAVIOR:
+			return !memcmp (u.repeat, v.u.repeat, sizeof (RepeatBehavior));
+		case Type::DURATION:
+			return !memcmp (u.duration, v.u.duration, sizeof (Duration));
+		case Type::KEYTIME:
+			return !memcmp (u.keytime, v.u.keytime, sizeof (KeyTime));
+		case Type::GRIDLENGTH:
+			return !memcmp (u.grid_length, v.u.grid_length, sizeof (GridLength));
+		case Type::THICKNESS:
+			return !memcmp (u.thickness, v.u.thickness, sizeof (Thickness));
+		case Type::CORNERRADIUS:
+			return !memcmp (u.corner, v.u.corner, sizeof (CornerRadius));
+		default:
+			return !memcmp (&u, &v.u, sizeof (u));
+		}
+
+		return true;
+}
+
 //
 // This is invoked by managed code to free the contents of the value
 //
