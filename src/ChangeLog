@@ -1,3 +1,10 @@
+2008-10-01  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* shape.cpp: (Shape::InsideObject) Move cairo_save after the 
+	extents.PointInside check since there was no cairo_restore
+	if false was returned. Looks likely that false was not much
+	returned (if ever).
+
 2008-09-30  Chris Toshok  <toshok@ximian.com>
 
 	* stylus.cpp (Stroke::OnCollectionItemChanged): we need to

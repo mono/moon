@@ -619,13 +619,13 @@ Shape::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 bool
 Shape::InsideObject (cairo_t *cr, double x, double y)
 {
-	cairo_save (cr);
-
 	bool ret = true;
 
 	TransformPoint (&x, &y);
 	if (!extents.PointInside (x, y))
 		return false;
+
+	cairo_save (cr);
 	
 	// cairo_in_* functions which we're using to check if point inside
 	// the path don't take the clipping into account. Therefore, we need 
@@ -639,8 +639,8 @@ Shape::InsideObject (cairo_t *cr, double x, double y)
 		cairo_new_path (cr);
 
 		if (!ret) {
-		  cairo_restore (cr);
-		  return false;
+			cairo_restore (cr);
+			return false;
 		}
 	}
 
