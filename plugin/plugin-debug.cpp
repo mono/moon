@@ -30,45 +30,188 @@
 enum TreeColumns {
 	COL_NAME,
 	COL_TYPE_NAME,
-	COL_OPACITY,
-	COL_OPACITY_MASK,
+	COL_VALUE,
 	COL_ELEMENT_PTR,
 	NUM_COLUMNS
 };
 
 #ifdef DEBUG
 
+static void reflect_dependency_object_in_tree (DependencyObject *obj, GtkTreeStore *store,
+					       GtkTreeIter *node, bool node_is_self);
+
+struct ReflectForeachData {
+	GtkTreeStore *store;
+	GtkTreeIter *parent;
+	DependencyObject *obj;
+};
+
 static void
-populate_tree_from_xaml (UIElement *el, GtkTreeStore *store, GtkTreeIter *parent)
+reflect_value (GtkTreeStore *store, GtkTreeIter *node, const char *name, Value *value)
 {
-	if (el == NULL)
+	if (value->Is(Type::DEPENDENCY_OBJECT)) {
+		gtk_tree_store_set (store, node,
+				    COL_NAME, name,
+				    COL_TYPE_NAME, value->AsDependencyObject()->GetTypeName(),
+				    COL_VALUE, "",
+				    COL_ELEMENT_PTR, NULL,
+				    -1);
+
+		reflect_dependency_object_in_tree (value->AsDependencyObject(), store, node, true);
+	}
+	else {
+		Type* t = Type::Find (value->GetKind());
+
+		char *val_string = NULL;
+
+		switch (value->GetKind()) {
+		case Type::DOUBLE:
+			val_string = g_strdup_printf ("<b>%f</b>", value->AsDouble());
+			break;
+		case Type::INT32:
+			val_string = g_strdup_printf ("<b>%d</b>", value->AsInt32());
+			break;
+		case Type::STRING:
+			val_string = g_strdup_printf ("<b>%s</b>", value->AsString());
+			break;
+		case Type::RECT: {
+			Rect *rect = value->AsRect();
+			val_string = g_strdup_printf ("<b>%f, %f, %f, %f</b>", rect->x, rect->y, rect->width, rect->height);
+			break;
+		}
+		case Type::SIZE:
+			val_string = g_strdup_printf ("<b>%f, %f</b>", value->AsSize()->width, value->AsSize()->height);
+			break;
+		case Type::REPEATBEHAVIOR: {
+			RepeatBehavior *rb = value->AsRepeatBehavior();
+			if (rb->IsForever ())
+				val_string = g_strdup_printf ("<b>Forever</b>");
+			else if (rb->HasCount())
+				val_string = g_strdup_printf ("<b>%fx</b>", rb->GetCount());
+			else /*if (rb->HasDuration())*/
+				val_string = g_strdup_printf ("<b>%lld</b>", rb->GetDuration());
+		}
+		case Type::DURATION: {
+			Duration *d = value->AsDuration();
+			if (d->IsForever ())
+				val_string = g_strdup_printf ("<b>Forever</b>");
+			else if (d->IsAutomatic())
+				val_string = g_strdup_printf ("<b>Automatic</b>");
+			else /*if (d->HasTimeSpan())*/
+				val_string = g_strdup_printf ("<b>%lld</b>", d->GetTimeSpan());
+		}
+		case Type::KEYTIME:
+		case Type::GRIDLENGTH:
+		case Type::THICKNESS:
+		case Type::CORNERRADIUS:
+		default:
+			val_string = g_strdup ("<i>(unknown)</i>");
+		}
+
+		gtk_tree_store_set (store, node,
+				    COL_NAME, name,
+				    COL_TYPE_NAME, t->GetName (),
+				    COL_VALUE, val_string,
+				    COL_ELEMENT_PTR, NULL,
+				    -1);
+
+		g_free (val_string);
+	}
+}
+
+static void
+reflect_foreach_current_value (gpointer key, gpointer val, gpointer user_data)
+{
+	ReflectForeachData *data = (ReflectForeachData *)user_data;
+	DependencyProperty *prop = (DependencyProperty *)key;
+	Value *value = (Value*)val;
+
+	GtkTreeIter iter;
+
+	gtk_tree_store_append (data->store, &iter, data->parent);
+
+	char *markup = g_strdup_printf ("<i>%s.%s</i>", Type::Find(prop->GetOwnerType())->GetName(), prop->GetName());
+
+	reflect_value (data->store, &iter, markup, value);
+
+	g_free (markup);
+}
+
+static void
+reflect_dependency_object_in_tree (DependencyObject *obj, GtkTreeStore *store, GtkTreeIter *node, bool node_is_self)
+{
+	if (obj == NULL)
 		return;
 
 	GtkTreeIter iter;
 
-	gtk_tree_store_append (store, &iter, parent);
+	if (!node_is_self) {
+		gtk_tree_store_append (store, &iter, node);
 
-	gtk_tree_store_set (store, &iter,
-			    COL_NAME, el->GetName() ? el->GetName() : "",
-			    COL_TYPE_NAME, el->GetTypeName(),
-			    COL_OPACITY, el->GetOpacity (),
-			    COL_OPACITY_MASK, el->GetOpacityMask () != NULL,
-			    COL_ELEMENT_PTR, el,
-			    -1);
-	
-	if (el->Is (Type::PANEL)) {
-		UIElementCollection *children = ((Panel *) el)->GetChildren ();
+		char *markup = g_strdup_printf ("<b>%s</b>", obj->GetName() ? obj->GetName() : "");
+		gtk_tree_store_set (store, &iter,
+				    COL_NAME, markup,
+				    COL_TYPE_NAME, obj->GetTypeName(),
+				    COL_ELEMENT_PTR, obj,
+				    -1);
+		g_free (markup);
+
+		node = &iter;
+	}
+
+	GHashTable *ht = obj->GetCurrentValues();
+
+	if (g_hash_table_size (ht) > 0) {
+		GtkTreeIter prop_iter;
+
+		gtk_tree_store_append (store, &prop_iter, node);
+
+		gtk_tree_store_set (store, &prop_iter,
+				    COL_NAME, "<i>Properties</i>",
+				    COL_TYPE_NAME, "",
+				    COL_ELEMENT_PTR, obj,
+				    -1);
+
+		ReflectForeachData reflect_data;
+		reflect_data.store = store;
+		reflect_data.parent = &prop_iter;
+		reflect_data.obj = obj;
+
+		g_hash_table_foreach (ht, reflect_foreach_current_value, &reflect_data);
+	}
+
+	if (obj->Is(Type::COLLECTION)) {
+		Collection *col = (Collection*)obj;
+
+		if (col->GetCount() > 0) {
+			GtkTreeIter elements_iter;
 		
-		if (children != NULL) {
-			for (int i = 0; i < children->GetCount (); i++) {
-				UIElement *item = children->GetValueAt (i)->AsUIElement ();
-				populate_tree_from_xaml (item, store, &iter);
+			gtk_tree_store_append (store, &elements_iter, node);
+
+			gtk_tree_store_set (store, &elements_iter,
+					    COL_NAME, "<i>Elements</i>",
+					    COL_TYPE_NAME, "",
+					    COL_ELEMENT_PTR, obj,
+					    -1);
+
+			for (int i = 0; i < col->GetCount(); i ++) {
+				Value *v = col->GetValueAt (i);
+				char *markup;
+
+				if (v->Is (Type::DEPENDENCY_OBJECT))
+					markup = g_strdup_printf ("<i>[%d]</i> <b>%s</b>", i, v->AsDependencyObject()->GetName() ? v->AsDependencyObject()->GetName() : "");
+				else
+					markup = g_strdup_printf ("<i>[%d]</i>", i);
+
+				GtkTreeIter child_iter;
+
+				gtk_tree_store_append (store, &child_iter, &elements_iter);
+
+				reflect_value (store, &child_iter, markup, v);
+
+				g_free (markup);
 			}
 		}
-	} else if (el->Is (Type::USERCONTROL)) {
-		UIElement *content = user_control_get_content ((UserControl *) el);
-		if (content)
-			populate_tree_from_xaml (content, store, &iter);
 	}
 }
 
@@ -93,7 +236,7 @@ selection_changed (GtkTreeSelection *selection, PluginInstance *plugin)
 	}
 
 	gtk_tree_model_get (model, &iter,
-			    2, &el,
+			    COL_ELEMENT_PTR, &el,
 			    -1);
 
 	if (el) {
@@ -124,11 +267,10 @@ plugin_debug (PluginInstance *plugin)
 	GtkTreeStore *tree_store = gtk_tree_store_new (NUM_COLUMNS,
 						       G_TYPE_STRING,
 						       G_TYPE_STRING,
-						       G_TYPE_DOUBLE,
-						       G_TYPE_BOOLEAN,
+						       G_TYPE_STRING,
 						       G_TYPE_POINTER);
 
-	populate_tree_from_xaml (plugin->GetSurface()->GetToplevel (), tree_store, NULL);
+	reflect_dependency_object_in_tree (plugin->GetSurface()->GetToplevel (), tree_store, NULL, false);
 
 	GtkWidget* tree_view = gtk_tree_view_new_with_model (GTK_TREE_MODEL (tree_store));
 
@@ -148,7 +290,7 @@ plugin_debug (PluginInstance *plugin)
 	gtk_tree_view_append_column(GTK_TREE_VIEW(tree_view), col);
 
 	gtk_tree_view_column_pack_start(col, renderer, TRUE);
-	gtk_tree_view_column_add_attribute (col, renderer, "text", COL_NAME);
+	gtk_tree_view_column_add_attribute (col, renderer, "markup", COL_NAME);
 
 	/* The Type column */
 	col = gtk_tree_view_column_new();
@@ -156,24 +298,16 @@ plugin_debug (PluginInstance *plugin)
 	gtk_tree_view_append_column(GTK_TREE_VIEW(tree_view), col);
 
 	gtk_tree_view_column_pack_start(col, renderer, TRUE);
-	gtk_tree_view_column_add_attribute (col, renderer, "text", COL_TYPE_NAME);
+	gtk_tree_view_column_add_attribute (col, renderer, "markup", COL_TYPE_NAME);
 
-	/* The opacity column */
+	/* The Value column */
 	col = gtk_tree_view_column_new();
-	gtk_tree_view_column_set_title(col, "Opacity");
+	gtk_tree_view_column_set_title(col, "Value");
 	gtk_tree_view_append_column(GTK_TREE_VIEW(tree_view), col);
 
 	gtk_tree_view_column_pack_start(col, renderer, TRUE);
-	gtk_tree_view_column_add_attribute (col, renderer, "text", COL_OPACITY);
+	gtk_tree_view_column_add_attribute (col, renderer, "markup", COL_VALUE);
 
-	/* The opacity-mask column */
-	col = gtk_tree_view_column_new();
-	gtk_tree_view_column_set_title(col, "Opacity Mask");
-	gtk_tree_view_append_column(GTK_TREE_VIEW(tree_view), col);
-
-	gtk_tree_view_column_pack_start(col, renderer, TRUE);
-	gtk_tree_view_column_add_attribute (col, renderer, "text", COL_OPACITY_MASK);
-	
 	GtkWidget *scrolled = gtk_scrolled_window_new (NULL, NULL);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled),
 					GTK_POLICY_AUTOMATIC,

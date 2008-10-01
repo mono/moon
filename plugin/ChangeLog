@@ -1,3 +1,8 @@
+2008-09-30  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-debug.cpp: rework the Debug window entirely.  no we don't
+	just show children, but all property values.
+
 2008-09-28  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.h,
