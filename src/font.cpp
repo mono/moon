@@ -918,33 +918,37 @@ FontFace::LoadFontFace (FT_Face *face, FcPattern *pattern, const char **families
 		
 		d(fprintf (stderr, "\t* loading font from `%s' (index=%d)... ", filename, index));
 		if ((err = FT_New_Face (libft2, (const char *) filename, index, &ftface)) == 0) {
-			if (!families || !ftface->family_name) {
-				d(fprintf (stderr, "success!\n"));
-				break;
-			}
-			
-			// make sure the font family name matches what was requested...
-			for (i = 0; families[i]; i++) {
-				if (!g_ascii_strcasecmp (ftface->family_name, families[i]))
+			if (FT_IS_SCALABLE (ftface)) {
+				if (!families || !ftface->family_name) {
+					d(fprintf (stderr, "success!\n"));
 					break;
-			}
-			
-			if (families[i]) {
-				d(fprintf (stderr, "success!\n"));
-				break;
-			}
-			
+				}
+				
+				// make sure the font family name matches what was requested...
+				for (i = 0; families[i]; i++) {
+					if (!g_ascii_strcasecmp (ftface->family_name, families[i]))
+						break;
+				}
+				
+				if (families[i]) {
+					d(fprintf (stderr, "success!\n"));
+					break;
+				}
+				
 #if d(!)0
-			fprintf (stderr, "no; incorrect family: '%s' does not match any of: ",
-				 ftface->family_name);
-			for (i = 0; families[i]; i++) {
-				fputs (families[i], stderr);
-				if (families[i+1])
-					fputs (", ", stderr);
-			}
-			
-			fputc ('\n', stderr);
+				fprintf (stderr, "no\n\t\t* incorrect family: '%s' does not match any of: ",
+					 ftface->family_name);
+				for (i = 0; families[i]; i++) {
+					fputs (families[i], stderr);
+					if (families[i+1])
+						fputs (", ", stderr);
+				}
+				
+				fputc ('\n', stderr);
 #endif
+			} else {
+				d(fprintf (stderr, "no\n\t\t* not a scalable font\n"));
+			}
 			
 			FT_Done_Face (ftface);
 			ftface = NULL;
@@ -2070,7 +2074,8 @@ TextFontDescription::ToString () const
 	}
 	
 	if ((set & FontMaskFamily) && family) {
-		g_string_append (str, "?family=");
+		if (set & FontMaskFilename)
+			g_string_append (str, "?family=");
 		
 		if (strchr (family, ',')) {
 			g_string_append_c (str, '"');
@@ -2080,7 +2085,7 @@ TextFontDescription::ToString () const
 			g_string_append (str, family);
 		}
 	} else if (!(set & FontMaskFilename)) {
-		g_string_append (str, "?family=\"Lucida Sans Unicode, Lucida Sans\"");
+		g_string_append (str, "\"Lucida Sans Unicode, Lucida Sans\"");
 	}
 	
 	if ((set & FontMaskStretch) && stretch != FontStretchesNormal) {
