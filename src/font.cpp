@@ -33,7 +33,7 @@
 
 #include FT_OUTLINE_H
 
-//#define FONT_DEBUG 1
+#define FONT_DEBUG 1
 #ifdef FONT_DEBUG
 #define d(x) x
 #else
@@ -116,8 +116,8 @@ struct FontDir {
 	void CacheFileInfo (const char *filename, FT_Face face);
 };
 
-static GHashTable *face_cache = NULL;
-static GHashTable *font_cache = NULL;
+GHashTable *FontFace::cache = NULL;
+GHashTable *TextFont::cache = NULL;
 static GHashTable *fontdirs = NULL;
 static bool initialized = false;
 static FT_Library libft2;
@@ -143,8 +143,8 @@ font_init (void)
 		return;
 	}
 	
-	face_cache = g_hash_table_new ((GHashFunc) FcPatternHash, (GEqualFunc) FcPatternEqual);
-	font_cache = g_hash_table_new ((GHashFunc) FcPatternHash, (GEqualFunc) FcPatternEqual);
+	FontFace::Init ();
+	TextFont::Init ();
 	
 	fontdirs = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, (GDestroyNotify) delete_fontdir);
 	
@@ -165,8 +165,9 @@ font_shutdown (void)
 	if (!initialized)
 		return;
 	
-	g_hash_table_destroy (face_cache);
-	g_hash_table_destroy (font_cache);
+	TextFont::Shutdown ();
+	FontFace::Shutdown ();
+	
 	g_hash_table_destroy (fontdirs);
 	
 	FT_Done_FreeType (libft2);
@@ -423,6 +424,7 @@ FontDir::CacheFileInfo (const char *filename, FT_Face face)
 		if (i > 0 && FT_New_Face (libft2, filename, i, &face) != 0)
 			break;
 		
+		d(fprintf (stderr, "\t\t* caching font info for `%s'...\n", filename));
 		fface = new FontFileFace (file, face, i);
 		g_ptr_array_add (file->faces, fface);
 		
@@ -728,6 +730,10 @@ parse_font_family (const char *in)
 }
 
 
+//
+// FontFace
+//
+
 struct FontFaceSimilarity {
 	FontFileFace *face;
 	int weight;
@@ -737,7 +743,7 @@ struct FontFaceSimilarity {
 
 
 bool
-FontFace::OpenFontDirectory (FcPattern *pattern, const char *path, const char **families)
+FontFace::OpenFontDirectory (FT_Face *face, FcPattern *pattern, const char *path, const char **families)
 {
 #ifdef FONT_DEBUG
 	char stylebuf1[256], stylebuf2[256];
@@ -752,13 +758,13 @@ FontFace::OpenFontDirectory (FcPattern *pattern, const char *path, const char **
 	uint i, j;
 	
 	if (FcPatternGetInteger (pattern, FC_WEIGHT, 0, &style.weight) != FcResultMatch)
-		return false;
+		style.weight = FC_WEIGHT_NORMAL;
 	
 	if (FcPatternGetInteger (pattern, FC_WIDTH, 0, &style.width) != FcResultMatch)
-		return false;
+		style.width = FC_WIDTH_NORMAL;
 	
 	if (FcPatternGetInteger (pattern, FC_SLANT, 0, &style.slant) != FcResultMatch)
-		return false;
+		style.slant = FC_SLANT_ROMAN;
 	
 	if (!(dir = (FontDir *) g_hash_table_lookup (fontdirs, path))) {
 		d(fprintf (stderr, "\t* indexing font directory...\n"));
@@ -771,7 +777,7 @@ FontFace::OpenFontDirectory (FcPattern *pattern, const char *path, const char **
 	}
 	
 	array = g_ptr_array_new ();
-	for (i = 0; families[i]; i++) {
+	for (i = 0; families && families[i]; i++) {
 		// parse the family name to extract any additional style info
 		family = parse_font_family ((const char *) families[i]);
 		g_ptr_array_add (array, family);
@@ -803,7 +809,7 @@ FontFace::OpenFontDirectory (FcPattern *pattern, const char *path, const char **
 				style.width = family->width;
 				style.slant = family->slant;
 				
-				d(fprintf (stderr, "\t\t* checking if '%s' matches '%s'... ",
+				d(fprintf (stderr, "\t* checking if '%s' matches '%s'... ",
 					   fface->family_name, family->name));
 				
 				// compare against parsed family name (don't want to include style info)
@@ -812,7 +818,7 @@ FontFace::OpenFontDirectory (FcPattern *pattern, const char *path, const char **
 					continue;
 				}
 				
-				d(fprintf (stderr, "yes\n\t\t\t* checking if '%s' matches '%s'... ",
+				d(fprintf (stderr, "yes\n\t\t* checking if '%s' matches '%s'... ",
 					   style_name (&fface->style, stylebuf1), style_name (&style, stylebuf2)));
 				
 				if (fface->style.weight == style.weight &&
@@ -857,34 +863,25 @@ FontFace::OpenFontDirectory (FcPattern *pattern, const char *path, const char **
 	
  found:
 	
-	d(fprintf (stderr, "\t\t* using font '%s, %s'\n", fface->family_name, style_name (&fface->style, stylebuf1)));
+	d(fprintf (stderr, "\t* using font '%s, %s'\n", fface->family_name, style_name (&fface->style, stylebuf1)));
 	
 	for (i = 0; i < array->len; i++)
 		delete (FontFamilyInfo *) array->pdata[i];
 	g_ptr_array_free (array, true);
 	
-	return FT_New_Face (libft2, file->path, fface->index, &face) == 0;
+	return FT_New_Face (libft2, file->path, fface->index, face) == 0;
 }
 
-FontFace::FontFace (FcPattern *pattern, const char *family_name, const char *debug_name)
+bool
+FontFace::LoadFontFace (FT_Face *face, FcPattern *pattern, const char **families)
 {
 	FcPattern *matched = NULL, *fallback = NULL;
 	FcChar8 *filename = NULL;
 	bool try_nofile = false;
-	char **families = NULL;
+	FT_Face ftface = NULL;
 	FcResult result;
 	FT_Error err;
-	int id, i;
-	
-	d(fprintf (stderr, "\nFontFace %p: Attempting to load %s\n", this, debug_name));
-	
-	// FIXME: would be nice to simply get this from the original
-	// pattern... then we'd have fewer args to pass in.
-	if (family_name) {
-		families = g_strsplit (family_name, ",", -1);
-		for (i = 0; families[i]; i++)
-			families[i] = g_strstrip (families[i]);
-	}
+	int index, i;
 	
 	if (FcPatternGetString (pattern, FC_FILE, 0, &filename) == FcResultMatch) {
 		struct stat st;
@@ -893,12 +890,12 @@ FontFace::FontFace (FcPattern *pattern, const char *family_name, const char *deb
 		try_nofile = true;
 		
 		if ((rv = stat ((const char *) filename, &st)) == -1 || S_ISDIR (st.st_mode)) {
-			if (rv != -1 && OpenFontDirectory (pattern, (const char *) filename, (const char **) families)) {
+			if (rv != -1 && OpenFontDirectory (face, pattern, (const char *) filename, families)) {
 				// we found the font in the directory...
-				goto loaded;
+				return true;
 			}
 			
-			if (family_name)
+			if (families)
 				goto try_nofile;
 		}
 	} else {
@@ -916,19 +913,19 @@ FontFace::FontFace (FcPattern *pattern, const char *family_name, const char *deb
 		if (FcPatternGetString (matched, FC_FILE, 0, &filename) != FcResultMatch)
 			goto fail;
 		
-		if (FcPatternGetInteger (matched, FC_INDEX, 0, &id) != FcResultMatch)
+		if (FcPatternGetInteger (matched, FC_INDEX, 0, &index) != FcResultMatch)
 			goto fail;
 		
-		d(fprintf (stderr, "\t* loading font from `%s' (index=%d)... ", filename, id));
-		if ((err = FT_New_Face (libft2, (const char *) filename, id, &face)) == 0) {
-			if (!family_name || !face->family_name) {
+		d(fprintf (stderr, "\t* loading font from `%s' (index=%d)... ", filename, index));
+		if ((err = FT_New_Face (libft2, (const char *) filename, index, &ftface)) == 0) {
+			if (!families || !ftface->family_name) {
 				d(fprintf (stderr, "success!\n"));
 				break;
 			}
 			
 			// make sure the font family name matches what was requested...
 			for (i = 0; families[i]; i++) {
-				if (!g_ascii_strcasecmp (face->family_name, families[i]))
+				if (!g_ascii_strcasecmp (ftface->family_name, families[i]))
 					break;
 			}
 			
@@ -937,23 +934,42 @@ FontFace::FontFace (FcPattern *pattern, const char *family_name, const char *deb
 				break;
 			}
 			
-			d(fprintf (stderr, "no; incorrect family: '%s' does not match '%s'\n",
-				   face->family_name, family_name));
+#if d(!)0
+			fprintf (stderr, "no; incorrect family: '%s' does not match any of: ",
+				 ftface->family_name);
+			for (i = 0; families[i]; i++) {
+				fputs (families[i], stderr);
+				if (families[i+1])
+					fputs (", ", stderr);
+			}
 			
-			FT_Done_Face (face);
-			face = NULL;
+			fputc ('\n', stderr);
+#endif
+			
+			FT_Done_Face (ftface);
+			ftface = NULL;
 		} else {
 			d(fprintf (stderr, "failed :(\n"));
 		}
 		
 	 fail:
 		
-		if (try_nofile && family_name) {
+		if (try_nofile && families) {
 		 try_nofile:
 			// We couldn't find a matching font in the font directory, so let's try
 			// removing the filename from the pattern and see if that gets us what
 			// we are looking for.
-			d(fprintf (stderr, "\t* falling back to specified family, '%s'...\n", family_name));
+#if d(!)0
+			d(fprintf (stderr, "\t* falling back to matching by family: "));
+			for (i = 0; families[i]; i++) {
+				fputs (families[i], stderr);
+				if (families[i+1])
+					fputs (", ", stderr);
+			}
+			
+			fputc ('\n', stderr);
+#endif
+			
 			fallback = FcPatternDuplicate (pattern);
 			FcPatternDel (fallback, FC_FILE);
 			
@@ -969,68 +985,125 @@ FontFace::FontFace (FcPattern *pattern, const char *family_name, const char *deb
 			continue;
 		}
 		
-		if (fallback != NULL) {
-			face = NULL;
-			break;
-		}
-		
-		d(fprintf (stderr, "\t* falling back to default font\n"));
-		
-		fallback = FcPatternCreate ();
-		FcPatternAddString (fallback, FC_FAMILY, (FcChar8 *) "Lucida Sans Unicode");
-		FcPatternAddString (fallback, FC_FAMILY, (FcChar8 *) "Lucida Sans");
-		FcPatternAddString (fallback, FC_FAMILY, (FcChar8 *) "Sans");
-		FcPatternAddDouble (fallback, FC_DPI, dpi);
-		
-		FcPatternDestroy (matched);
-		matched = FcFontMatch (NULL, fallback, &result);
-		FcPatternDestroy (fallback);
-		family_name = NULL;
-		filename = NULL;
-		face = NULL;
+		// epic fail.
+		ftface = NULL;
+		break;
 	} while (true);
 	
 	FcPatternDestroy (matched);
 	
- loaded:
+	if (ftface != NULL) {
+		*face = ftface;
+		return true;
+	}
 	
-	if (families)
-		g_strfreev (families);
+	return false;
+}
+
+FontFace::FontFace (FT_Face face, FcPattern *pattern, bool own)
+{
+	this->own_face = own;
+	this->ref_count = 1;
 	
-	if (face != NULL)
-		FT_Set_Pixel_Sizes (face, 0, (int) FONT_FACE_SIZE);
-	
-	g_hash_table_insert (face_cache, pattern, this);
-	FcPatternReference (pattern);
+	g_hash_table_insert (FontFace::cache, pattern, this);
+	FT_Set_Pixel_Sizes (face, 0, (int) FONT_FACE_SIZE);
+	this->size = FONT_FACE_SIZE;
 	this->pattern = pattern;
-	size = FONT_FACE_SIZE;
-	ref_count = 1;
+	this->face = face;
 }
 
 FontFace::~FontFace ()
 {
-	if (face)
-		FT_Done_Face (face);
+	g_hash_table_remove (FontFace::cache, pattern);
+	FcPatternDestroy (pattern);
 	
-	g_hash_table_remove (face_cache, pattern);
+	if (face && own_face)
+		FT_Done_Face (face);
+}
+
+static FT_Face default_face;
+
+void
+FontFace::Init ()
+{
+	FontFace::cache = g_hash_table_new ((GHashFunc) FcPatternHash, (GEqualFunc) FcPatternEqual);
+	default_face = NULL;
+}
+
+void
+FontFace::Shutdown ()
+{
+	g_hash_table_destroy (FontFace::cache);
+	
+	if (default_face)
+		FT_Done_Face (default_face);
+}
+
+void
+FontFace::LoadDefaultFace ()
+{
+	const char *families[] = { "Lucida Sans Unicode", "Lucida Sans", "Sans", NULL };
+	FcPattern *pattern;
+	int i;
+	
+	pattern = FcPatternCreate ();
+	FcPatternAddDouble (pattern, FC_DPI, dpi);
+	
+	for (i = 0; families[i]; i++)
+		FcPatternAddString (pattern, FC_FAMILY, (FcChar8 *) families[i]);
+	
+	FcDefaultSubstitute (pattern);
+	
+	d(fprintf (stderr, "Attempting to load default system font\n"));
+	LoadFontFace (&default_face, pattern, families);
+	
 	FcPatternDestroy (pattern);
 }
 
 FontFace *
-FontFace::Load (FcPattern *pattern, const char *family_name, const char *debug_name)
+FontFace::GetDefault (FcPattern *pattern)
 {
+	if (!default_face)
+		LoadDefaultFace ();
+	
+	return new FontFace (default_face, pattern, false);
+}
+
+FontFace *
+FontFace::Load (const TextFontDescription *desc)
+{
+	FcPattern *pattern = desc->CreatePattern (false);
 	FontFace *face;
 	
-	// copy the original pattern and then remove the size field
-	pattern = FcPatternDuplicate (pattern);
-	FcPatternDel (pattern, FC_PIXEL_SIZE);
-	
-	if (!(face = (FontFace *) g_hash_table_lookup (face_cache, pattern)))
-		face = new FontFace (pattern, family_name, debug_name);
-	else
+	if (!(face = (FontFace *) g_hash_table_lookup (FontFace::cache, pattern))) {
+		bool loaded = false;
+		
+		if (!desc->IsDefault ()) {
+			char **families = desc->GetFamilies ();
+			FT_Face ftface;
+			
+#if d(!)0
+			char *debug = desc->ToString ();
+			fprintf (stderr, "Attempting to load %s\n", debug);
+			g_free (debug);
+#endif
+			
+			if ((loaded = LoadFontFace (&ftface, pattern, (const char **) families)))
+				face = new FontFace (ftface, pattern, true);
+			else
+				d(fprintf (stderr, "\t* falling back to default system font...\n"));
+			
+			g_strfreev (families);
+		}
+		
+		if (!loaded) {
+			face = GetDefault (pattern);
+			face->ref ();
+		}
+	} else {
+		FcPatternDestroy (pattern);
 		face->ref ();
-	
-	FcPatternDestroy (pattern);
+	}
 	
 	return face;
 }
@@ -1295,15 +1368,17 @@ FontFace::HasChar (gunichar unichar)
 }
 
 
+//
+// TextFont
+//
 
-TextFont::TextFont (FcPattern *pattern, const char *family_name, const char *debug_name)
+TextFont::TextFont (FontFace *face, FcPattern *pattern)
 {
-	face = FontFace::Load (pattern, family_name, debug_name);
 	FcPatternGetDouble (pattern, FC_PIXEL_SIZE, 0, &size);
-	g_hash_table_insert (font_cache, pattern, this);
+	g_hash_table_insert (TextFont::cache, pattern, this);
 	face->GetExtents (size, &extents);
-	FcPatternReference (pattern);
 	this->pattern = pattern;
+	this->face = face;
 	ref_count = 1;
 	nglyphs = 0;
 }
@@ -1317,22 +1392,39 @@ TextFont::~TextFont ()
 			moon_path_destroy (glyphs[i].path);
 	}
 	
-	g_hash_table_remove (font_cache, pattern);
+	g_hash_table_remove (TextFont::cache, pattern);
 	FcPatternDestroy (pattern);
 	face->unref ();
 }
 
-TextFont *
-TextFont::Load (FcPattern *pattern, const char *family_name, const char *debug_name)
+void
+TextFont::Init ()
 {
+	TextFont::cache = g_hash_table_new ((GHashFunc) FcPatternHash, (GEqualFunc) FcPatternEqual);
+}
+
+void
+TextFont::Shutdown ()
+{
+	g_hash_table_destroy (TextFont::cache);
+}
+
+TextFont *
+TextFont::Load (const TextFontDescription *desc)
+{
+	FcPattern *pattern = desc->CreatePattern (true);
 	TextFont *font;
+	FontFace *face;
 	
-	if ((font = (TextFont *) g_hash_table_lookup (font_cache, pattern))) {
+	if ((font = (TextFont *) g_hash_table_lookup (TextFont::cache, pattern))) {
+		FcPatternDestroy (pattern);
 		font->ref ();
 		return font;
 	}
 	
-	return new TextFont (pattern, family_name, debug_name);
+	face = FontFace::Load (desc);
+	
+	return new TextFont (face, pattern);
 }
 
 void
@@ -1595,7 +1687,7 @@ TextFontDescription::~TextFontDescription ()
 }
 
 FcPattern *
-TextFontDescription::CreatePattern ()
+TextFontDescription::CreatePattern (bool sized) const
 {
 	FcPattern *pattern;
 	char **families;
@@ -1616,10 +1708,14 @@ TextFontDescription::CreatePattern ()
 		g_strfreev (families);
 	}
 	
-	FcPatternAddInteger (pattern, FC_SLANT, fc_style (style));
-	FcPatternAddInteger (pattern, FC_WEIGHT, fc_weight (weight));
-	FcPatternAddInteger (pattern, FC_WIDTH, fc_stretch (stretch));
-	FcPatternAddDouble (pattern, FC_PIXEL_SIZE, size);
+	if (!IsDefault ()) {
+		FcPatternAddInteger (pattern, FC_SLANT, fc_style (style));
+		FcPatternAddInteger (pattern, FC_WEIGHT, fc_weight (weight));
+		FcPatternAddInteger (pattern, FC_WIDTH, fc_stretch (stretch));
+	}
+	
+	if (sized)
+		FcPatternAddDouble (pattern, FC_PIXEL_SIZE, size);
 	
 	FcDefaultSubstitute (pattern);
 	
@@ -1629,16 +1725,8 @@ TextFontDescription::CreatePattern ()
 TextFont *
 TextFontDescription::GetFont ()
 {
-	char *debug_name = NULL;
-	FcPattern *pattern;
-	
-	if (font == NULL) {
-		d(debug_name = ToString ());
-		pattern = CreatePattern ();
-		font = TextFont::Load (pattern, family, debug_name);
-		FcPatternDestroy (pattern);
-		d(g_free (debug_name));
-	}
+	if (font == NULL)
+		font = TextFont::Load (this);
 	
 	if (font)
 		font->ref ();
@@ -1647,7 +1735,7 @@ TextFontDescription::GetFont ()
 }
 
 guint8
-TextFontDescription::GetFields ()
+TextFontDescription::GetFields () const
 {
 	return set;
 }
@@ -1709,7 +1797,10 @@ TextFontDescription::Merge (TextFontDescription *desc, bool replace)
 	if ((desc->set & FontMaskFamily) && (!(set & FontMaskFamily) || replace)) {
 		if (!family || strcmp (family, desc->family) != 0) {
 			g_free (family);
-			family = g_strdup (desc->family);
+			if (desc->family)
+				family = g_strdup (desc->family);
+			else
+				family = NULL;
 			changed = true;
 		}
 		
@@ -1758,8 +1849,20 @@ TextFontDescription::Merge (TextFontDescription *desc, bool replace)
 	}
 }
 
+bool
+TextFontDescription::IsDefault () const
+{
+	if (set & FontMaskFilename)
+		return false;
+	
+	if (!(set & FontMaskFamily) || !family)
+		return true;
+	
+	return false;
+}
+
 const char *
-TextFontDescription::GetFilename ()
+TextFontDescription::GetFilename () const
 {
 	if (set & FontMaskFilename)
 		return filename;
@@ -1795,7 +1898,7 @@ TextFontDescription::SetFilename (const char *filename)
 }
 
 int
-TextFontDescription::GetIndex ()
+TextFontDescription::GetIndex () const
 {
 	return index;
 }
@@ -1813,10 +1916,26 @@ TextFontDescription::SetIndex (int index)
 	}
 }
 
-const char *
-TextFontDescription::GetFamily ()
+char **
+TextFontDescription::GetFamilies () const
 {
-	if (set & FontMaskFamily)
+	char **families;
+	
+	if (!family)
+		return NULL;
+	
+	if ((families = g_strsplit (family, ",", -1))) {
+		for (int i = 0; families[i]; i++)
+			g_strstrip (families[i]);
+	}
+	
+	return families;
+}
+
+const char *
+TextFontDescription::GetFamily () const
+{
+	if ((set & FontMaskFamily) && family)
 		return family;
 	
 	return "Lucida Sans Unicode, Lucida Sans";
@@ -1828,12 +1947,12 @@ TextFontDescription::SetFamily (const char *family)
 	bool changed;
 	
 	if (family) {
-		if (!g_ascii_strcasecmp (family, "Portable User Interface"))
-			family = "Lucida Sans Unicode, Lucida Sans";
-		
 		if (!this->family || g_ascii_strcasecmp (this->family, family) != 0) {
 			g_free (this->family);
-			this->family = g_strdup (family);
+			if (g_ascii_strcasecmp (family, "Portable User Interface") != 0)
+				this->family = g_strdup (family);
+			else
+				this->family = NULL;
 			set |= FontMaskFamily;
 			changed = true;
 		} else {
@@ -1853,7 +1972,7 @@ TextFontDescription::SetFamily (const char *family)
 }
 
 FontStyles
-TextFontDescription::GetStyle ()
+TextFontDescription::GetStyle () const
 {
 	return style;
 }
@@ -1873,7 +1992,7 @@ TextFontDescription::SetStyle (FontStyles style)
 }
 
 FontWeights
-TextFontDescription::GetWeight ()
+TextFontDescription::GetWeight () const
 {
 	return weight;
 }
@@ -1893,7 +2012,7 @@ TextFontDescription::SetWeight (FontWeights weight)
 }
 
 FontStretches
-TextFontDescription::GetStretch ()
+TextFontDescription::GetStretch () const
 {
 	return stretch;
 }
@@ -1913,7 +2032,7 @@ TextFontDescription::SetStretch (FontStretches stretch)
 }
 
 double
-TextFontDescription::GetSize ()
+TextFontDescription::GetSize () const
 {
 	return size;
 }
@@ -1933,7 +2052,7 @@ TextFontDescription::SetSize (double size)
 }
 
 char *
-TextFontDescription::ToString ()
+TextFontDescription::ToString () const
 {
 	bool attrs = false;
 	GString *str;
@@ -1947,12 +2066,11 @@ TextFontDescription::ToString ()
 		g_string_append (str, "font:");
 		g_string_append (str, filename);
 		g_string_append_printf (str, "?index=%d", index);
-		
-		if (set & FontMaskFamily)
-			g_string_append (str, "?family=");
 	}
 	
-	if (set & FontMaskFamily) {
+	if ((set & FontMaskFamily) && family) {
+		g_string_append (str, "?family=");
+		
 		if (strchr (family, ',')) {
 			g_string_append_c (str, '"');
 			g_string_append (str, family);
@@ -1961,7 +2079,7 @@ TextFontDescription::ToString ()
 			g_string_append (str, family);
 		}
 	} else if (!(set & FontMaskFilename)) {
-		g_string_append (str, "\"Lucida Sans Unicode, Lucida Sans\"");
+		g_string_append (str, "?family=\"Lucida Sans Unicode, Lucida Sans\"");
 	}
 	
 	if ((set & FontMaskStretch) && stretch != FontStretchesNormal) {

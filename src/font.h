@@ -26,6 +26,8 @@
 #include "enums.h"
 #include "list.h"
 
+class TextFontDescription;
+
 // Silverlight accept negative values ]0,-475[ as bold and everything over 1023 as normal
 #define FONT_LOWER_BOLD_LIMIT	-475
 #define FONT_UPPER_BOLD_LIMIT	1024
@@ -75,23 +77,34 @@ struct FontFaceExtents {
 };
 
 class FontFace {
+	//static FT_Face default_face;
+	static GHashTable *cache;
+	
 	int ref_count;
 	
 	FcPattern *pattern;
+	bool own_face;
 	FT_Face face;
 	double size;
 	
-	FontFace (FcPattern *pattern, const char *family_name, const char *debug_name);
+	static bool OpenFontDirectory (FT_Face *face, FcPattern *pattern, const char *path, const char **families);
+	static bool LoadFontFace (FT_Face *face, FcPattern *pattern, const char **families);
+	
+	static FontFace *GetDefault (FcPattern *pattern);
+	static void LoadDefaultFace ();
+	
+	
+	FontFace (FT_Face face, FcPattern *pattern, bool own);
 	~FontFace ();
 	
-	bool OpenFontDirectory (FcPattern *pattern, const char *path, const char **families);
-	
  public:
+	static void Init ();
+	static void Shutdown ();
 	
 	void ref ();
 	void unref ();
 	
-	static FontFace *Load (FcPattern *pattern, const char *family_name, const char *debug_name);
+	static FontFace *Load (const TextFontDescription *desc);
 	
 	gunichar GetCharFromIndex (guint32 index);
 	guint32 GetCharIndex (gunichar unichar);
@@ -106,6 +119,8 @@ class FontFace {
 
 
 class TextFont {
+	static GHashTable *cache;
+	
 	int ref_count;
 	
 	FcPattern *pattern;
@@ -117,17 +132,19 @@ class TextFont {
 	GlyphInfo glyphs[256];
 	int nglyphs;
 	
-	TextFont (FcPattern *pattern, const char *family_name, const char *debug_name);
+	TextFont (FontFace *face, FcPattern *pattern);
 	~TextFont ();
 	
 	void RenderGlyphPath (cairo_t *cr, GlyphInfo *glyph, double x, double y);
 	
  public:
+	static void Init ();
+	static void Shutdown ();
 	
 	void ref ();
 	void unref ();
 	
-	static TextFont *Load (FcPattern *pattern, const char *family_name, const char *debug_name);
+	static TextFont *Load (const TextFontDescription *desc);
 	
 	GlyphInfo *GetGlyphInfo (gunichar unichar);
 	GlyphInfo *GetGlyphInfoByIndex (guint32 index);
@@ -171,43 +188,46 @@ class TextFontDescription {
 	double size;
 	int index;
 	
-	FcPattern *CreatePattern ();
-	
  public:
 	TextFontDescription ();
 	TextFontDescription (const char *str);
 	~TextFontDescription ();
 	
+	FcPattern *CreatePattern (bool sized) const;
+	
 	TextFont *GetFont ();
 	
-	guint8 GetFields ();
+	guint8 GetFields () const;
 	
 	void UnsetFields (guint8 mask);
 	
 	void Merge (TextFontDescription *desc, bool replace);
 	
-	const char *GetFilename ();
+	bool IsDefault () const;
+	
+	const char *GetFilename () const;
 	void SetFilename (const char *filename);
 	
-	int GetIndex ();
+	int GetIndex () const;
 	void SetIndex (int index);
 	
-	const char *GetFamily ();
+	char **GetFamilies () const;
+	const char *GetFamily () const;
 	void SetFamily (const char *family);
 	
-	FontStyles GetStyle ();
+	FontStyles GetStyle () const;
 	void SetStyle (FontStyles style);
 	
-	FontWeights GetWeight ();
+	FontWeights GetWeight () const;
 	void SetWeight (FontWeights weight);
 	
-	FontStretches GetStretch ();
+	FontStretches GetStretch () const;
 	void SetStretch (FontStretches stretch);
 	
-	double GetSize ();
+	double GetSize () const;
 	void SetSize (double size);
 	
-	char *ToString ();
+	char *ToString () const;
 };
 
 #endif /* __FONT_H__ */

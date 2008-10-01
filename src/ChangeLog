@@ -1,3 +1,37 @@
+2008-10-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp (FontFace::OpenFontDirectory): Now a static class
+	method.
+	(FontFace::LoadFontFace): New static method which tries to load an
+	FT_Face given an FcPattern and a list of families.
+	(FontFace::FontFace): No longer tries to load an FT_Face, instead
+	we have it passed to us as an argument.
+	(FontFace::LoadDefaultFace): New static method to load a global
+	FT_Face representing the default system font.
+	(FontFace::GetDefault): Instantiates a new FontFace using the
+	global system default FT_Face.
+	(FontFace::Load): Now takes only a TextFontDescription (much
+	cleaner/simpler). If we are loading the default system font or if
+	loading the requested font fails, simply return a new FontFace
+	based on the global system default FT_Face.
+	(TextFont::TextFont): Now takes fewer arguments (cleaner API,
+	yay!).
+	(TextFont::Load): Now only takes a TextFontDescription argument to
+	make the API simpler/cleaner.
+	(TextFontDescription::CreatePattern): Now public and takes a
+	'sized' argument specifying whether or not the created pattern
+	should include the size field. This is needed because TextFont
+	caches based on all attributes while FontFace caches on everything
+	but size. Also, don't include weight, width, or slant if our font
+	family is the default (Portable User Interface is not allowed to
+	have any of those attributes).
+	(TextFontDescription::IsDefault): New method to decide if our
+	family is the default or not.
+	(TextFontDescription::GetFamilies): New convenience method to
+	strsplit the family string into an array.
+	(TextFontDescription::SetFamily): If the value "Portable User
+	Interface" is set, set our family to NULL instead.
+
 2008-10-01  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* geometry.cpp (GeometryGroup::Draw): Make sure the original
