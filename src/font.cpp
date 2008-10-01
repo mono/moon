@@ -1938,6 +1938,7 @@ TextFontDescription::GetFamily () const
 	if ((set & FontMaskFamily) && family)
 		return family;
 	
+	// either no family is set or it is "Portable User Interface"
 	return "Lucida Sans Unicode, Lucida Sans";
 }
 
