@@ -1125,10 +1125,8 @@ FontFace::Load (const TextFontDescription *desc)
 			g_strfreev (families);
 		}
 		
-		if (!loaded) {
+		if (!loaded)
 			face = GetDefault (pattern);
-			face->ref ();
-		}
 	} else {
 		FcPatternDestroy (pattern);
 		face->ref ();

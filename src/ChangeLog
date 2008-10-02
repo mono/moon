@@ -1,3 +1,8 @@
+2008-10-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp (FontFace::Load): Don't ref the default face, it is
+	returned to us with a ref already.
+
 2008-10-02  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Now that Info's aren't shared, Instance's can free
