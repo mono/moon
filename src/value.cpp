@@ -370,42 +370,45 @@ Value::operator!= (const Value &v) const
 bool 
 Value::operator== (const Value &v) const
 {
-		if (k != v.k)
-			return false;
+	if (k != v.k)
+		return false;
 
-		switch (k) {
-		case Type::STRING:
-			if (u.s == NULL){
-				return v.u.s == NULL;
-			} else if (v.u.s == NULL)
-				return FALSE;
+	switch (k) {
+	case Type::STRING:
+		if (u.s == NULL){
+			return v.u.s == NULL;
+		} else if (v.u.s == NULL)
+			return FALSE;
 
-			return !strcmp (u.s, v.u.s);
-		case Type::COLOR:
-			return !memcmp (u.color, v.u.color, sizeof (Color));
-		case Type::POINT:
-			return !memcmp (u.point, v.u.point, sizeof (Point));
-		case Type::RECT:
-			return !memcmp (u.rect, v.u.rect, sizeof (Rect));
-		case Type::SIZE:
-			return !memcmp (u.size, v.u.size, sizeof (Size));
-		case Type::REPEATBEHAVIOR:
-			return *u.repeat == *v.u.repeat;
-		case Type::DURATION:
-			return *u.duration == *v.u.duration;
-		case Type::KEYTIME:
-			return !memcmp (u.keytime, v.u.keytime, sizeof (KeyTime));
-		case Type::GRIDLENGTH:
-			return !memcmp (u.grid_length, v.u.grid_length, sizeof (GridLength));
-		case Type::THICKNESS:
-			return !memcmp (u.thickness, v.u.thickness, sizeof (Thickness));
-		case Type::CORNERRADIUS:
-			return !memcmp (u.corner, v.u.corner, sizeof (CornerRadius));
-		default:
-			return !memcmp (&u, &v.u, sizeof (u));
-		}
+		return !strcmp (u.s, v.u.s);
+	case Type::COLOR:
+		return !memcmp (u.color, v.u.color, sizeof (Color));
+	case Type::POINT:
+		return !memcmp (u.point, v.u.point, sizeof (Point));
+	case Type::RECT:
+		return !memcmp (u.rect, v.u.rect, sizeof (Rect));
+	case Type::SIZE:
+		return !memcmp (u.size, v.u.size, sizeof (Size));
+	case Type::REPEATBEHAVIOR:
+		// memcmp can't be used since the struct contains unassigned padding value
+		return *u.repeat == *v.u.repeat;
+	case Type::DURATION:
+		// memcmp can't be used since the struct contains unassigned padding value
+		return *u.duration == *v.u.duration;
+	case Type::KEYTIME:
+		// memcmp can't be used since the struct contains unassigned padding value
+		return *u.keytime == *v.u.keytime;
+	case Type::GRIDLENGTH:
+		return !memcmp (u.grid_length, v.u.grid_length, sizeof (GridLength));
+	case Type::THICKNESS:
+		return !memcmp (u.thickness, v.u.thickness, sizeof (Thickness));
+	case Type::CORNERRADIUS:
+		return !memcmp (u.corner, v.u.corner, sizeof (CornerRadius));
+	default:
+		return !memcmp (&u, &v.u, sizeof (u));
+	}
 
-		return true;
+	return true;
 }
 
 //
