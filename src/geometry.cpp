@@ -74,6 +74,12 @@ Geometry::OnPropertyChanged (PropertyChangedEventArgs *args)
 	NotifyListenersOfPropertyChange (args);
 }
 
+void
+Geometry::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
+{
+	NotifyListenersOfPropertyChange (prop);
+}
+
 //
 // GeometryGroup
 //
@@ -81,12 +87,6 @@ Geometry::OnPropertyChanged (PropertyChangedEventArgs *args)
 GeometryGroup::GeometryGroup ()
 {
 	SetValue (GeometryGroup::ChildrenProperty, Value::CreateUnref (new GeometryCollection ()));
-}
-
-void
-GeometryGroup::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
-{
-	NotifyListenersOfPropertyChange (prop);
 }
 
 void

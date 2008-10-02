@@ -60,6 +60,7 @@ class Geometry : public DependencyObject {
 	virtual Type::Kind GetObjectType () { return Type::GEOMETRY; }
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subprop_args);
 
 	virtual void Draw (Path *path, cairo_t *cr);
 	virtual Rect ComputeBounds (Path *path, bool logical) { return Rect (0.0, 0.0, 0.0, 0.0); }
@@ -119,7 +120,6 @@ class GeometryGroup : public Geometry {
 	
 	virtual Type::Kind GetObjectType () { return Type::GEOMETRYGROUP; }
 	
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subprop_args);
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	
