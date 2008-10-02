@@ -99,6 +99,34 @@ void parser_error (XamlParserInfo *p, const char *el, const char *attr, int erro
 static XamlElementInfo *create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *name);
 
 
+class XamlElementInfo {
+ protected:
+	Type::Kind kind;
+	
+ public:
+	XamlElementInfo *parent;
+	const char *name;
+
+	XamlElementInfo (const char *name, Type::Kind kind)
+	{
+		this->parent = NULL;
+		this->kind = kind;
+		this->name = name;
+	}
+
+	~XamlElementInfo ()
+	{
+	}
+
+	virtual Type::Kind GetKind () { return kind; }
+	virtual const char *GetContentProperty (XamlParserInfo *p) { return Type::Find (kind)->GetContentPropertyName (); }
+
+	virtual XamlElementInstance *CreateElementInstance (XamlParserInfo *p) = 0;
+	virtual XamlElementInstance *CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o) = 0;
+	virtual XamlElementInstance *CreatePropertyElementInstance (XamlParserInfo *p, const char *name) = 0;
+};
+
+
 class XamlElementInstance : public List::Node {
  public:
 	const char *element_name;
@@ -307,35 +335,6 @@ class XamlParserInfo {
 		namescope->unref ();
 	}
 };
-
-
-class XamlElementInfo {
- protected:
-	Type::Kind kind;
-	
- public:
-	XamlElementInfo *parent;
-	const char *name;
-
-	XamlElementInfo (const char *name, Type::Kind kind)
-	{
-		this->parent = NULL;
-		this->kind = kind;
-		this->name = name;
-	}
-
-	~XamlElementInfo ()
-	{
-	}
-
-	virtual Type::Kind GetKind () { return kind; }
-	virtual const char* GetContentProperty (XamlParserInfo *p) { return Type::Find (kind)->GetContentPropertyName (); }
-
-	virtual XamlElementInstance* CreateElementInstance (XamlParserInfo *p) = 0;
-	virtual XamlElementInstance* CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o) = 0;
-	virtual XamlElementInstance* CreatePropertyElementInstance (XamlParserInfo *p, const char *name) = 0;
-};
-
 
 
 class XamlElementInfoNative : public XamlElementInfo {

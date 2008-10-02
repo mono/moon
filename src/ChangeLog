@@ -1,5 +1,10 @@
 2008-10-02  Jeffrey Stedfast  <fejj@novell.com>
 
+	* xaml.cpp: Move the definition of XamlElementInfo to the top so
+	that g++ doesn't complain about deleting an incomplete type inside
+	the XamlElementInstance dtor. Also gets rid of other g++ compiler
+	warnings.
+
 	* list.cpp (List::InsertAfter): New convenience function to sort
 	of balance the API.
 
