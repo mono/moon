@@ -15,12 +15,18 @@
 #include "namescope.h"
 #include "error.h"
 
+static void
+free_value (Value *value)
+{
+	delete value;
+}
+
 ResourceDictionary::ResourceDictionary ()
 {
 	hash = g_hash_table_new_full (g_str_hash,
 				      g_str_equal,
 				      (GDestroyNotify)g_free,
-				      (GDestroyNotify)value_free_value);
+				      (GDestroyNotify)free_value);
 }
 
 ResourceDictionary::~ResourceDictionary ()
@@ -71,7 +77,7 @@ glib_is_stupid (gpointer key,
 		gpointer user_data)
 {
 	g_free (key);
-	g_free (value);
+	delete value;
 	return TRUE;
 }
 #endif

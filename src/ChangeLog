@@ -1,3 +1,9 @@
+2008-10-02  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* resources.cpp: Free the values (not only their content) when
+	the hash table is destroyed. Correctly (delete) free the value
+	when compiled against glib < 2.12 (e.g. SLED10).
+
 2008-10-02  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* geometry.cpp: Remove last patch to GeometryGroup::Draw as this
