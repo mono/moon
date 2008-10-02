@@ -1,3 +1,8 @@
+2008-10-02  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Now that Info's aren't shared, Instance's can free
+	them.  Also properties need to free their name.
+
 2008-10-02  Larry Ewing  <lewing@novell.com>
 
 	* geometry.cpp (Geometry::OnSubPropertyChanged): move

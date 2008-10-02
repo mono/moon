@@ -136,15 +136,14 @@ class XamlElementInstance : public List::Node {
 	{
 		children->Clear (true);
 		delete children;
+		delete info;
 		g_free (x_key);
 
 		if (set_properties)
 			g_hash_table_destroy (set_properties);
 
-		// if (instance_name)
-		//	delete instance_name;
-		// if (element_name && element_type == PROPERTY)
-		//	delete element_name;
+		if (element_name && element_type == PROPERTY)
+			delete element_name;
 	}
 
 	
