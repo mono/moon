@@ -1,3 +1,8 @@
+2008-10-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	* configure.ac: If building against the system cairo, make sure it
+	is 1.8.0 or later.
+
 2008-09-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* configure.ac: Use dlopen/dlsym to access all alsa methods, and don't

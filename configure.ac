@@ -238,7 +238,7 @@ if test x$with_cairo = xembedded; then
   CAIRO_CFLAGS='-I$(top_srcdir)/cairo/src'
   CAIRO_LIBS='$(top_builddir)/cairo/src/libcairo.la'
 else
-  PKG_CHECK_MODULES(CAIRO,cairo >= 1.6)
+  PKG_CHECK_MODULES(CAIRO,cairo >= 1.8)
 fi
 
 dnl
