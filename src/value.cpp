@@ -390,9 +390,9 @@ Value::operator== (const Value &v) const
 		case Type::SIZE:
 			return !memcmp (u.size, v.u.size, sizeof (Size));
 		case Type::REPEATBEHAVIOR:
-			return !memcmp (u.repeat, v.u.repeat, sizeof (RepeatBehavior));
+			return *u.repeat == *v.u.repeat;
 		case Type::DURATION:
-			return !memcmp (u.duration, v.u.duration, sizeof (Duration));
+			return *u.duration == *v.u.duration;
 		case Type::KEYTIME:
 			return !memcmp (u.keytime, v.u.keytime, sizeof (KeyTime));
 		case Type::GRIDLENGTH:

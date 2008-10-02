@@ -1,3 +1,9 @@
+2008-10-02  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* value.cpp: Fix == for Duration and RepeatBehavior. We can't
+	use memcmp to compare them since they include (unassigned)
+	padding. Both structs overrides their == operator so we use that.
+
 2008-10-02  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* resources.cpp: Free the values (not only their content) when
