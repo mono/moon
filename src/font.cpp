@@ -1011,7 +1011,7 @@ FontFace::FontFace (FT_Face face, FcPattern *pattern, bool own)
 	
 	g_hash_table_insert (FontFace::cache, pattern, this);
 	FT_Set_Pixel_Sizes (face, 0, (int) FONT_FACE_SIZE);
-	this->size = FONT_FACE_SIZE;
+	this->cur_size = FONT_FACE_SIZE;
 	this->pattern = pattern;
 	this->face = face;
 }
@@ -1179,15 +1179,15 @@ FontFace::GetExtents (double size, FontFaceExtents *extents)
 	}
 	
 	if (size <= FONT_FACE_SIZE) {
-		if (this->size != FONT_FACE_SIZE) {
+		if (!own_face || cur_size != FONT_FACE_SIZE) {
 			FT_Set_Pixel_Sizes (face, 0, (int) FONT_FACE_SIZE);
-			this->size = FONT_FACE_SIZE;
+			cur_size = FONT_FACE_SIZE;
 		}
 		
 		scale *= (size / FONT_FACE_SIZE);
-	} else if (this->size != size) {
+	} else if (!own_face || cur_size != size) {
 		FT_Set_Pixel_Sizes (face, 0, (int) size);
-		this->size = size;
+		cur_size = size;
 	}
 	
 	thickness = FT_MulFix (face->underline_thickness, face->size->metrics.y_scale);
@@ -1291,16 +1291,16 @@ FontFace::LoadGlyph (double size, GlyphInfo *glyph)
 		return false;
 	
 	if (size <= FONT_FACE_SIZE) {
-		if (this->size != FONT_FACE_SIZE) {
+		if (!own_face || cur_size != FONT_FACE_SIZE) {
 			FT_Set_Pixel_Sizes (face, 0, (int) FONT_FACE_SIZE);
-			this->size = FONT_FACE_SIZE;
+			cur_size = FONT_FACE_SIZE;
 		}
 		
 		scale = size / FONT_FACE_SIZE;
 	} else {
-		if (this->size != size) {
+		if (!own_face || cur_size != size) {
 			FT_Set_Pixel_Sizes (face, 0, (int) size);
-			this->size = size;
+			cur_size = size;
 		}
 		
 		scale = 1.0;
@@ -1342,18 +1342,18 @@ FontFace::Kerning (double size, gunichar left, gunichar right)
 		return 0.0;
 	
 	if (size <= FONT_FACE_SIZE) {
-		if (this->size != FONT_FACE_SIZE) {
+		if (!own_face || cur_size != FONT_FACE_SIZE) {
 			FT_Set_Pixel_Sizes (face, 0, (int) FONT_FACE_SIZE);
-			this->size = FONT_FACE_SIZE;
+			cur_size = FONT_FACE_SIZE;
 		}
 		
 		FT_Get_Kerning (face, left, right, FT_KERNING_DEFAULT, &kerning);
 		
 		return (kerning.x * size) / (FONT_FACE_SIZE * 64.0);
 	} else {
-		if (this->size != size) {
+		if (!own_face || cur_size != size) {
 			FT_Set_Pixel_Sizes (face, 0, (int) size);
-			this->size = size;
+			cur_size = size;
 		}
 		
 		FT_Get_Kerning (face, left, right, FT_KERNING_DEFAULT, &kerning);

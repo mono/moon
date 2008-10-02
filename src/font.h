@@ -83,9 +83,9 @@ class FontFace {
 	int ref_count;
 	
 	FcPattern *pattern;
+	double cur_size;
 	bool own_face;
 	FT_Face face;
-	double size;
 	
 	static bool OpenFontDirectory (FT_Face *face, FcPattern *pattern, const char *path, const char **families);
 	static bool LoadFontFace (FT_Face *face, FcPattern *pattern, const char **families);

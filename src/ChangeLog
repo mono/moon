@@ -1,5 +1,13 @@
 2008-10-01  Jeffrey Stedfast  <fejj@novell.com>
 
+	* font.cpp (FontFace::LoadGlyph): We need to force the font size
+	if we don't own it, since we don't know what the current size is
+	set to.
+	(FontFace::Kerning): Same.
+	(FontFace::GetExtents): Here too.
+
+2008-10-01  Jeffrey Stedfast  <fejj@novell.com>
+
 	Attempt #2 at fixing bug #430766.
 
 	* font.cpp (FontFace::LoadFontFace): Don't load non-scalable fonts
