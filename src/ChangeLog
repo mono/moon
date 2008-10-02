@@ -1,5 +1,8 @@
 2008-10-02  Jeffrey Stedfast  <fejj@novell.com>
 
+	* list.cpp (List::InsertAfter): New convenience function to sort
+	of balance the API.
+
 	* font.cpp (FontFace::Load): Don't ref the default face, it is
 	returned to us with a ref already.
 

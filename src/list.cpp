@@ -167,6 +167,26 @@ List::Insert (List::Node *node, int index)
 }
 
 List::Node *
+List::InsertAfter (List::Node *node, List::Node *after)
+{
+	if (after == NULL)
+		return Prepend (node);
+	
+	node->next = after->next;
+	node->prev = after;
+	after->next = node;
+	
+	if (node->next != NULL)
+		node->next->prev = node;
+	else
+		tail = node;
+	
+	length++;
+	
+	return node;
+}
+
+List::Node *
 List::InsertBefore (List::Node *node, List::Node *before)
 {
 	if (before == NULL)
