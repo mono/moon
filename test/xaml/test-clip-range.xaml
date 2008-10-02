@@ -1,0 +1,8 @@
+  <Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+x:Name="ControlsBackNext" Background="Red" Width="500" Height="500">
+    <!-- test make sure that clips with huge dimensions don't degenerate into an empty path -->
+    <Canvas.Clip>
+      <RectangleGeometry x:Name="RectanglCutOut" Rect="0 0, 2000000 100" />
+    </Canvas.Clip>
+    <TextBlock Text="If you can see this you passed" Foreground="Blue"/>
+</Canvas>

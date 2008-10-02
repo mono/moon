@@ -929,4 +929,10 @@
 	masterFile10="../harness/masters/test-clip-fillruleMaster.png"
 	categories="clip,moonbuilder"
    />
+   <Test id="207"
+	inputFile="test-clip-range.xaml"
+	masterFile10="../harness/masters/test-clip-rangeMaster.png"
+	categories="clip,moonbuilder"
+	knownFailure="True"
+   />
 </DRTList>
