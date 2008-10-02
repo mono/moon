@@ -19,4 +19,18 @@
                 <Rectangle Canvas.Left="50" Canvas.Top="50" Fill="Yellow"
 			   Width="100" Height="100" />
 	</Canvas>
+
+        <Canvas Canvas.Top="180" Opacity="0.5">
+                <Canvas.Clip>
+                  <RectangleGeometry x:Name="clipRect3" Rect="0,0,10,50">
+		    <RectangleGeometry.Transform>
+                      <TranslateTransform x:Name="xform" X="10" Y="10"/>
+                    </RectangleGeometry.Transform>
+		  </RectangleGeometry>
+                </Canvas.Clip>
+     	        <Rectangle Fill="Yellow" StrokeThickness="10" Stroke="Purple" Width="100" Height="100" />
+                <!-- this should be drawn over the previous rectangle (no blending) -->
+                <Rectangle Canvas.Left="50" Canvas.Top="50" Fill="Yellow"
+			   Width="100" Height="100" />
+	</Canvas>
 </Canvas>

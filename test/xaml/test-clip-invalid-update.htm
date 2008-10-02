@@ -19,6 +19,7 @@
         {
 	       var clip = sender.findName ("clipRect");
 	       var clip2 = sender.findName ("clipRect2");
+	       var xform = sender.findName ("xform");
 	       //alert ("clip " + clip);
 	       //alert ("rect: " + clip.Rect);
 	       clip.rect = "0,0,100,100";
@@ -27,6 +28,7 @@
 	       clip2.rect = "0,0,100,100";
 	       var moonlight_control = document.getElementById ("MoonlightControl");
 		TakeSingleSnapshotAndShutdown (moonlight_control,"test-clip-invalid-update.htm.png", 500, 500, 100);	
+	       xform.x = "0";
         }
 
         function TakeSingleSnapshotAndShutdown (control, file_name, width, height, initial_delay)
