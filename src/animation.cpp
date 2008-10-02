@@ -63,7 +63,12 @@ AnimationStorage::AttachToPrevStorage (void)
 
 	if (prev_storage) {
 		Value *v = prev_storage->GetResetValue ();
+
+		if (stopValue)
+			delete (stopValue);
+
 		stopValue = new Value (*v);
+
 		prev_storage->FlagAsNonResetable ();
 		if (prev_storage->IsFloating ())
 			delete prev_storage;
