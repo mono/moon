@@ -171,7 +171,7 @@ class XamlElementInstance : public List::Node {
 			g_hash_table_destroy (set_properties);
 
 		if (element_name && element_type == PROPERTY)
-			delete element_name;
+			g_free ((void*) element_name);
 	}
 
 	

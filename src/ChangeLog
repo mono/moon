@@ -1,3 +1,7 @@
+2008-10-02  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* xaml.cpp:  Fix mixup between delete and g_free
+
 2008-10-02  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* value.cpp: Fix == for KeyTime (padding too). Add comments and
