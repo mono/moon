@@ -1,3 +1,4 @@
+<!-- Silverlight 2.0 does not show nothing for this test / because of the childs of GG with FillRule -->
 <Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 	<Path Fill="#770000FF" Stroke="#77777777" StrokeThickness="3">
 		<Path.Data>
