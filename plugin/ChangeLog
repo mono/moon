@@ -1,3 +1,8 @@
+2008-10-03  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* plugin.cpp: call SetPageURL even for embedded xaml. Makes fixture
+	145 break, as expected.
+
 2008-09-30  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-debug.cpp: more debug window work - it's sorted by name

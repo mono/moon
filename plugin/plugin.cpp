@@ -863,6 +863,7 @@ PluginInstance::UpdateSource ()
 	char *pos = strchr (source, '#');
 	if (pos) {
 		source_idle = g_idle_add (IdleUpdateSourceByReference, this);
+		SetPageURL ();
 	} else {
 		StreamNotify *notify = new StreamNotify (StreamNotify::SOURCE, source);
 		
