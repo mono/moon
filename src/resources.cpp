@@ -77,7 +77,7 @@ glib_is_stupid (gpointer key,
 		gpointer user_data)
 {
 	g_free (key);
-	delete value;
+	delete ((Value*)value);
 	return TRUE;
 }
 #endif
