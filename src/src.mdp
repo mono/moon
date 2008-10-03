@@ -7,6 +7,7 @@
       <Includes>
         <Include>${ProjectDir}</Include>
         <Include>${CombineDir}</Include>
+        <Include>${ProjectDir}/asf</Include>
         <Include>${CombineDir}/cairo/src</Include>
         <Include>/usr/include/gtk-2.0</Include>
         <Include>/usr/lib/gtk-2.0/include</Include>
