@@ -1,3 +1,8 @@
+2008-10-02  Geoff Norton  <gnorton@novell.com>
+
+	* media.cpp,pipeline-ffmpeg.cpp,yuv-converter.cpp,mplayer.cpp:
+	Add some headers needed to compile when #undef DEBUG
+
 2008-10-02  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* xaml.cpp:  Fix mixup between delete and g_free
