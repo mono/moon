@@ -1,3 +1,8 @@
+2008-10-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* dependencyobject.cpp: Use atomic operations with
+	  objects_created|destroyed.
+
 2008-10-02  Chris Toshok  <toshok@ximian.com>
 
 	* resources.cpp (glib_is_stupid): we need to cast value in order

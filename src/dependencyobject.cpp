@@ -87,7 +87,7 @@ EventObject::EventObject ()
 
 	Track ("Created", "");
 #elif DEBUG
-	objects_created++;
+	g_atomic_int_inc (&objects_created);
 #endif
 }
 
@@ -120,7 +120,7 @@ EventObject::~EventObject()
 
 	Track ("Destroyed", "");
 #elif DEBUG
-	objects_destroyed++;
+	g_atomic_int_inc (&objects_destroyed);
 #endif
 
 	delete events;
