@@ -71,8 +71,8 @@ public:
 	EventObject ();
 	
 #if DEBUG
-	volatile static gint objects_created;
-	volatile static gint objects_destroyed;
+	static gint objects_created;
+	static gint objects_destroyed;
 #endif
 	
 #if OBJECT_TRACKING

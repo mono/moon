@@ -1,5 +1,9 @@
 2008-10-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* dependencyobject.h, dependencyobject.cpp: Fix SLED10.
+
+2008-10-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* pipeline.cpp: Reorganize some code.
 
 2008-10-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 

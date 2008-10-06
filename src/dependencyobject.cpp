@@ -256,8 +256,8 @@ EventObject::unref ()
 }
 
 #if DEBUG
-volatile gint EventObject::objects_created = 0;
-volatile gint EventObject::objects_destroyed = 0;
+gint EventObject::objects_created = 0;
+gint EventObject::objects_destroyed = 0;
 #endif
 
 #if OBJECT_TRACKING
