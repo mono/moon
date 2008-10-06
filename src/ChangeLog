@@ -1,5 +1,9 @@
 2008-10-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* pipeline.cpp: Reorganize some code.
+
+2008-10-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* audio.cpp, audio.h: Access the Media directly to enqueue frames,
 	  avoiding the need for a tick call on the main thread. If audio
 	  underflowed and we don't have more data available, set buffer
