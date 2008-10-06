@@ -1,5 +1,11 @@
 2008-10-06  Jackson Harper  <jackson@ximian.com>
 
+	* test-runner/HtmlTest.cs: We try to patch "remote" files if they
+	aren't actually remote, they are just using the location
+	attribute.
+
+2008-10-06  Jackson Harper  <jackson@ximian.com>
+
 	* test-runner/Test.cs: Obey the location attribute so we can run
 	'remote' tests.
 	* test-runner/EdgeCompare.cs: Use the local path for saving the

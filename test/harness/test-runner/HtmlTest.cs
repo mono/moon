@@ -169,16 +169,16 @@ namespace MoonlightTests {
 		{
 			base.Setup ();
 
-			if (Remote)
+			if (Remote && Location == null)
 				return;
-			
-			if (!File.Exists (InputFile)) {
-				SetToIgnore (String.Format ("Unable to find input file: {0}", InputFile));
+
+			if (!File.Exists (LocalFilePath)) {
+				SetToIgnore (String.Format ("Unable to find input file: {0}", LocalFilePath));
 				return;
 			}
 						
 			StringBuilder built = new StringBuilder ();
-			StreamReader reader = new StreamReader (File.OpenRead (InputFile));
+			StreamReader reader = new StreamReader (File.OpenRead (LocalFilePath));
 
 			string line;
 			string xaml_source = null;
@@ -273,8 +273,8 @@ namespace MoonlightTests {
 			reader.Close ();
 			
 			string built_str = built.ToString ();
-			if (built_str != File.ReadAllText (InputFile))
-				File.WriteAllText (InputFile, built_str);
+			if (built_str != File.ReadAllText (LocalFilePath))
+				File.WriteAllText (LocalFilePath, built_str);
 		}
 
 		private string GenerateSilverlightEmbedHtml (string xaml_source, string control_id, string control_width, string control_height, string background)
@@ -316,7 +316,7 @@ namespace MoonlightTests {
 			} else {
 				// what happens if initial delay is specified but not width/height ??? 	
 				res.AppendFormat ("\t\t\tTakeSingleSnapshotAndShutdown (moonlight_control, \"{0}\", {1}, {2}, {3});",
-						  String.Concat (Path.GetFileName (InputFile), ".png"),
+						  String.Concat (Path.GetFileName (LocalFilePath), ".png"),
 						  (capture_width != null ? capture_width : ResultWidth),
 						  (capture_height != null ? capture_height : ResultHeight),
 						  InitialDelay);
