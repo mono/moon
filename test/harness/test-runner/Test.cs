@@ -36,6 +36,8 @@ namespace MoonlightTests {
 
 	public class Test {
 
+		private static readonly int LocationPort = 8001;
+		
 		private string id;
 		private string input_file;
 		private string master_file;
@@ -66,6 +68,9 @@ namespace MoonlightTests {
 
 		private ExternalProcess xsp;
 		private string xsp_exec_dir;
+
+		private ExternalProcess location_xsp;
+		private Uri location;
 
 		private string codebehind;
 
@@ -142,7 +147,17 @@ namespace MoonlightTests {
 
 			if (node.Attributes ["codebehind"] != null)
 				test.codebehind = node.Attributes ["codebehind"].Value;
-		
+
+			
+			if (node.Attributes ["location"] != null) {
+				UriBuilder u = new UriBuilder (node.Attributes ["location"].Value);
+				u.Port = LocationPort;
+				test.location = u.Uri;
+				u.Path = Path.Combine (u.Path, Path.GetFileName (input_file));
+				test.input_file = u.ToString ();
+				test.remote = true;
+			}
+
 			return test;
 		}
 
@@ -165,8 +180,16 @@ namespace MoonlightTests {
 			get { return Path.GetFileName (input_file); }
 		}
 
+		public string LocalFilePath {
+			get { return Path.Combine (base_directory, InputFileName); }
+		}
+
 		public int Timeout {
 			get { return timeout; }
+		}
+
+		public string Location {
+			get { return location.ToString (); }
 		}
 
 		public bool Ignore {
@@ -305,12 +328,14 @@ namespace MoonlightTests {
 				File.Delete (test_result_file);
 
 			CodeBehindCompileIfNeeded ();
+			RunLocationServerIfNeeded ();
 			RunXspIfNeeded ();
 		}
 
 		public virtual void Teardown ()
 		{			
 			StopXspIfNeeded ();
+			StopLocationServerIfNeeded ();
 		}
 
 		protected virtual string GetTestPath ()
@@ -334,13 +359,13 @@ namespace MoonlightTests {
 		{
 			string ext;
 			
-			if (Remote)
-				return null;
-			
 			ext = Path.GetExtension (MasterFile);
 			
 			if (ext == String.Empty)
 				ext = ".png";
+
+			if (Remote)
+				return Path.Combine (base_directory, String.Concat (InputFileName, ext));
 
 			return String.Concat (InputFile, ext);
 		}
@@ -402,7 +427,36 @@ namespace MoonlightTests {
 			System.Threading.Thread.Sleep (1000);			
 		}
 
+		private void RunLocationServerIfNeeded ()
+		{
+			if (location == null)
+				return;
+
+			string args = String.Format ("--applications '{0}:{1}' --nonstop --port {2}", location.AbsolutePath, base_directory, LocationPort);
+
+			location_xsp = new ExternalProcess ("xsp", args, -1);
+			location_xsp.Run (false);
+
+			// Wait a second to let xsp startup before continuing
+			// otherwise the test might make requests before xsp is ready
+			System.Threading.Thread.Sleep (1000);			
+		}
+		
 		private void StopXspIfNeeded ()
+		{
+			if (xsp == null)
+				return;
+			StopXsp (xsp);
+		}
+
+		private void StopLocationServerIfNeeded ()
+		{
+			if (location_xsp == null)
+				return;
+			StopXsp (location_xsp);
+		}
+
+		private void StopXsp (ExternalProcess xsp)
 		{
 			try {
 				if (xsp != null)

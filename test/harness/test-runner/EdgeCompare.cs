@@ -78,8 +78,8 @@ namespace MoonlightTests {
 						}
 						
 						AddDiffKey (diff);
-						
-						diff.Save (String.Concat (test.InputFile, "-edge-diff.png"), ImageFormat.Png);
+
+						diff.Save (String.Concat (test.LocalFilePath, "-edge-diff.png"), ImageFormat.Png);
 						
 						if (diff_score / (point_count * 10) > Tolerance) {
 							test.SetFailedReason (String.Format ("Edge difference was too great ({0})",

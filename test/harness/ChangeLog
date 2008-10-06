@@ -1,3 +1,10 @@
+2008-10-06  Jackson Harper  <jackson@ximian.com>
+
+	* test-runner/Test.cs: Obey the location attribute so we can run
+	'remote' tests.
+	* test-runner/EdgeCompare.cs: Use the local path for saving the
+	diff file.
+
 2008-09-22  Larry Ewing  <lewing@novell.com>
 
 	* agviewer/agviewer.cpp: make the viewer stay on top.
