@@ -1,3 +1,9 @@
+2008-10-06  Jeffrey Stedfast  <fejj@novell.com>
+
+	* brush.cpp (ImageBrush::TargetLoaded): Don't bother with g_atomic
+	stuff, it's too expensive for what we need.
+	(ImageBrush::TargetUnloaded): Same.
+
 2008-10-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* dependencyobject.h, dependencyobject.cpp: Fix SLED10.

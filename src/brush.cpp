@@ -497,9 +497,7 @@ ImageBrush::SetSurface (Surface *surface)
 void
 ImageBrush::TargetLoaded ()
 {
-	int v = g_atomic_int_exchange_and_add (&loaded_count, 1);
-	
-	if (v == 0)
+	if (++loaded_count == 1)
 		image->SetAllowDownloads (true);
 }
 
@@ -512,7 +510,7 @@ ImageBrush::target_loaded (EventObject *sender, EventArgs *calldata, gpointer cl
 void
 ImageBrush::TargetUnloaded ()
 {
-	if (g_atomic_int_dec_and_test (&loaded_count))
+	if (--loaded_count == 0)
 		image->SetAllowDownloads (false);
 }
 
