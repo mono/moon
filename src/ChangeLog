@@ -1,3 +1,15 @@
+2008-10-06  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pipeline.h (IMediaStream::dtor): Delete the frame. This prevents
+	a MediaFrame leak-per-node whenever the queue is cleared.
+
+	* pipeline.cpp (ASFMarkerDecoder::DecodeFrame): Free the
+	frame->bufefr before updating it to point to a new malloc'd
+	buffer.
+	(ASFDemuxer::TryReadFrame): Delete the frame on error.
+	(IMediaStream::PopFrame): After getting the node's frame, set the
+	node->frame to NULL.
+
 2008-10-06  Larry Ewing  <lewing@novell.com>
 
 	* media.cpp, media.h: rework image code to skip using a downloader

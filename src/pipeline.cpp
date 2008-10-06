@@ -1304,6 +1304,9 @@ ASFDemuxer::TryReadFrame (IMediaStream *stream, MediaFrame **f)
 	
 	if (frame->buffer == NULL) {
 		media->AddMessage (MEDIA_OUT_OF_MEMORY, "Could not allocate memory for next frame.");
+		delete frame;
+		*f = NULL;
+		
 		return MEDIA_OUT_OF_MEMORY;
 	}
 	
@@ -1313,6 +1316,9 @@ ASFDemuxer::TryReadFrame (IMediaStream *stream, MediaFrame **f)
 	
 	if (!reader->Write (frame->buffer)) {
 		media->AddMessage (MEDIA_DEMUXER_ERROR, "Error while copying the next frame.");
+		delete frame;
+		*f = NULL;
+		
 		return MEDIA_DEMUXER_ERROR;
 	}
 	
@@ -1368,6 +1374,10 @@ ASFMarkerDecoder::DecodeFrame (MediaFrame *frame)
 		}
 	}
 	
+	g_free (frame->buffer);
+	frame->buffer = NULL;
+	frame->buflen = 0;
+	
 	if (null_count >= 2) {
 		text = wchar_to_utf8 (uni_text, text_length);
 		type = wchar_to_utf8 (uni_type, type_length);
@@ -1384,7 +1394,7 @@ ASFMarkerDecoder::DecodeFrame (MediaFrame *frame)
 		LOG_PIPELINE ("ASFMarkerDecoder::DecodeFrame (): didn't find 2 null characters in the data.\n");
 		result = MEDIA_CORRUPTED_MEDIA;
 	}
-		
+	
 	return result;
 }
 
@@ -2359,6 +2369,8 @@ IMediaStream::PopFrame ()
 	node = (StreamNode *) queue->LinkedList ()->First ();
 	if (node != NULL) {
 		result = node->frame;
+		node->frame = NULL;
+		
 		queue->LinkedList ()->Remove (node);
 		last_popped_pts = result->pts;
 	}
@@ -2536,7 +2548,7 @@ MediaFrame::MediaFrame (IMediaStream *stream)
 	srcSlideY = 0;
 	srcSlideH = 0;
 }
- 
+
 MediaFrame::~MediaFrame ()
 {
 	if (decoder_specific_data != NULL) {

@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * pipeline.h: Pipeline for the media
  *
@@ -507,7 +508,7 @@ public:
 	 public:
 		MediaFrame *frame;
 		StreamNode (MediaFrame *frame) { this->frame = frame; }
-		virtual ~StreamNode () {}
+		virtual ~StreamNode () { delete frame; }
 	};
 	
 	IMediaStream (Media *media);
