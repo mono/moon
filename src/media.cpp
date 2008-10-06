@@ -45,6 +45,7 @@ MediaBase::MediaBase ()
 {
 	source.downloader = NULL;
 	source.part_name = NULL;
+	source.queued = false;
 	downloader = NULL;
 	part_name = NULL;
 	updating_size_from_media = false;
@@ -142,21 +143,23 @@ MediaBase::SetSourceAsyncCallback ()
 {
 	Downloader *downloader;
 	char *part_name;
-	
-	if (!source.downloader)
-		return;
+
+	DownloaderAbort ();
+
+	downloader = source.downloader;
+	part_name = source.part_name;
+
+	source.queued = false;
+	source.downloader = NULL;
+	source.part_name = NULL;
 	
 	if (GetSurface () == NULL)
 		return;
 	
-	downloader = source.downloader;
-	part_name = source.part_name;
-	source.downloader = NULL;
-	source.part_name = NULL;
-	
 	SetSourceInternal (downloader, part_name);
 	
-	downloader->unref ();
+	if (downloader)
+		downloader->unref ();
 }
 
 void
@@ -169,8 +172,8 @@ MediaBase::SetSourceInternal (Downloader *downloader, char *PartName)
 		downloader->ref ();
 }
 
-static void
-set_source_async (EventObject *user_data)
+void
+MediaBase::set_source_async (EventObject *user_data)
 {
 	MediaBase *media = (MediaBase *) user_data;
 	
@@ -182,25 +185,25 @@ MediaBase::SetSource (Downloader *downloader, const char *PartName)
 {
 	source_changed = false;
 	
-	DownloaderAbort ();
-	
-	if (source.downloader) {
-		source.downloader->unref ();
+	if (source.queued) {
+		if (source.downloader)
+			source.downloader->unref ();
+
 		g_free (source.part_name);
 		source.downloader = NULL;
 		source.part_name = NULL;
 	}
 	
-	if (!downloader) {
-		SetSourceInternal (NULL, NULL);
-		return;
-	}
-	
 	source.part_name = g_strdup (PartName);
 	source.downloader = downloader;
-	downloader->ref ();
+	
+	if (downloader)
+		downloader->ref ();
 
-	AddTickCall (set_source_async);
+	if (!source.queued)
+		AddTickCall (MediaBase::set_source_async);
+
+	source.queued = true;
 }
 
 void
@@ -217,12 +220,11 @@ MediaBase::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
 	if (args->property == MediaBase::SourceProperty) {
 		const char *uri = args->new_value ? args->new_value->AsString () : NULL;
-		
-		if (uri && *uri) {
-			Surface *surface = GetSurface ();
-			Downloader *dl;
-			
-			if (surface && AllowDownloads ()) {
+		Surface *surface = GetSurface ();
+					
+		if (surface && AllowDownloads ()) {
+			if (uri && *uri) {
+				Downloader *dl;
 				if ((dl = surface->CreateDownloader ())) {
 					dl->Open ("GET", uri, GetDownloaderPolicy (uri));
 					SetSource (dl, "");
@@ -231,12 +233,10 @@ MediaBase::OnPropertyChanged (PropertyChangedEventArgs *args)
 					// we're shutting down
 				}
 			} else {
-				source_changed = true;
+				SetSource (NULL, NULL);
 			}
 		} else {
-			DownloaderAbort ();
-			OnEmptySource ();
-			Invalidate ();
+			source_changed = true;
 		}
 	}
 	
@@ -1954,6 +1954,7 @@ Image::CleanupSurface ()
 	if (surface) {
 		surface->ref_count--;
 		if (surface->ref_count == 0) {
+			d(printf ("removing %s\n", surface->filename);)
 			g_hash_table_remove (surface_cache, surface->filename);
 			g_free (surface->filename);
 			cairo_surface_destroy (surface->cairo);
@@ -2040,30 +2041,65 @@ Image::SetStreamSource (ManagedStreamCallbacks *callbacks)
 }
 #endif
 
+bool 
+Image::IsSurfaceCached ()
+{
+	char *uri;
+	bool found;
+
+	if (!downloader)
+		return false;
+
+	if (strcmp (part_name, "") == 0)
+		uri = g_strdup (downloader->GetUri ());
+	else
+		uri = g_strdup (downloader->GetDownloadedFilename (part_name));
+
+	found = uri && surface_cache && g_hash_table_lookup (surface_cache, uri);
+
+	d(g_print ("%s cache for (%s)\n", found ? "found" : "no", uri);)
+
+	return found;
+}
+
 void
 Image::SetSourceInternal (Downloader *downloader, char *PartName)
 {
+	// We need to actually download something
 	MediaBase::SetSourceInternal (downloader, PartName);
 	
-	if (downloader) {
-		downloader->AddHandler (Downloader::CompletedEvent, downloader_complete, this);
-		downloader->AddHandler (Downloader::DownloadFailedEvent, downloader_failed, this);
+	// If the uri the we are requesting is already cached 
+	// short circuit the request and use the cached image
+	if (IsSurfaceCached ()) {
+		DownloaderComplete ();
+		SetDownloadProgress (1.0);
 		
-		if (downloader->Started () || downloader->Completed ()) {
-			if (downloader->Completed ())
-				DownloaderComplete ();
-			
-			UpdateProgress ();
-		} else {
-			downloader->SetWriteFunc (pixbuf_write, size_notify, this);
-			
-			// Image::SetSource() is already async, so we don't need another
-			// layer of asyncronicity... it is safe to call SendNow() here.
-			downloader->SendNow ();
-		}
-	} else {
+		Emit (DownloadProgressChangedEvent);
+		
+		MediaBase::SetSourceInternal (NULL, PartName);
+		downloader->Abort ();
+		downloader->unref ();
+		return;
+	} else if (!downloader) {
 		CleanupSurface ();
 		Invalidate ();
+		return;
+	}
+	
+	downloader->AddHandler (Downloader::CompletedEvent, downloader_complete, this);
+	downloader->AddHandler (Downloader::DownloadFailedEvent, downloader_failed, this);
+	
+	if (downloader->Started () || downloader->Completed ()) {
+		if (downloader->Completed ())
+			DownloaderComplete ();
+		
+		UpdateProgress ();
+	} else {
+		downloader->SetWriteFunc (pixbuf_write, size_notify, this);
+		
+		// Image::SetSource() is already async, so we don't need another
+		// layer of asyncronicity... it is safe to call SendNow() here.
+		downloader->SendNow ();
 	}
 }
 
@@ -2105,6 +2141,7 @@ Image::DownloaderComplete ()
 	if (!CreateSurface (uri)) {
 		g_free (uri);
 		Invalidate ();
+		printf ("failed to create surface\n");
 		return;
 	}
 	
@@ -2345,12 +2382,15 @@ Image::CreateSurface (const char *uri)
 			
 			Emit (ImageFailedEvent, new ImageErrorEventArgs (msg));
 			
-			if (loader_err)
+			if (loader_err) {
 				g_error_free (loader_err);
-			
+				loader_err = NULL;
+			}
+
 			return false;
 		} else if (loader_err) {
 			g_error_free (loader_err);
+			loader_err = NULL;
 		}
 		g_object_ref (pixbuf);
 		g_object_unref (loader);

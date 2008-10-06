@@ -122,10 +122,15 @@ class MarkerReachedEventArgs : public EventArgs {
 /* @Namespace=None */
 /* @ManagedDependencyProperties=None */
 class MediaBase : public FrameworkElement {
+ private:
+	static void set_source_async (EventObject *user_data);
+	void SetSourceAsyncCallback ();
+
  protected:
 	struct {
 		Downloader *downloader;
 		char *part_name;
+		bool queued;
 	} source;
 	
 	Downloader *downloader;
@@ -153,7 +158,7 @@ class MediaBase : public FrameworkElement {
 	void SetDownloadProgress (double progress);
 	
 	virtual DownloaderAccessPolicy GetDownloaderPolicy (const char *uri) { return MediaPolicy; }
-	
+
  public:
  	/* @PropertyType=string,AlwaysChange */
 	static DependencyProperty *SourceProperty;
@@ -166,9 +171,9 @@ class MediaBase : public FrameworkElement {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	MediaBase ();
+
 	virtual Type::Kind GetObjectType () { return Type::MEDIABASE; }
 	
-	void SetSourceAsyncCallback ();
 	virtual void SetSourceInternal (Downloader *downloader, char *PartName);
 	virtual void SetSource (Downloader *downloader, const char *PartName);
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -196,11 +201,12 @@ class MediaBase : public FrameworkElement {
 /* @Namespace=System.Windows.Controls */
 class Image : public MediaBase {
 	int create_xlib_surface:1;
-	
+
 	bool CreateSurface (const char *filename);
+	bool IsSurfaceCached ();
 	void CleanupSurface ();
 	void CleanupPattern ();
-	
+
 	// downloader callbacks
 	void PixbufWrite (void *buf, gint32 offset, gint32 n);
 	virtual void DownloaderFailed (EventArgs *args);
@@ -216,7 +222,7 @@ class Image : public MediaBase {
 	// pixbuf loading
 	GdkPixbufLoader *loader;
 	GError *loader_err;
-	
+
  protected:
 	virtual ~Image ();
 	
@@ -392,7 +398,6 @@ class MediaElement : public MediaBase {
 	
  protected:
 	virtual DownloaderAccessPolicy GetDownloaderPolicy (const char *uri);
-	
 	virtual ~MediaElement ();
 	
  public:
