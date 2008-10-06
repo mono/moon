@@ -36,7 +36,7 @@ namespace MoonlightTests {
 
 	public class Test {
 
-		private static readonly int LocationPort = 8001;
+		private static int AvailableLocationPort = 8000;
 		
 		private string id;
 		private string input_file;
@@ -71,6 +71,7 @@ namespace MoonlightTests {
 
 		private ExternalProcess location_xsp;
 		private Uri location;
+		private int LocationPort;
 
 		private string codebehind;
 
@@ -151,7 +152,12 @@ namespace MoonlightTests {
 			
 			if (node.Attributes ["location"] != null) {
 				UriBuilder u = new UriBuilder (node.Attributes ["location"].Value);
-				u.Port = LocationPort;
+
+				test.LocationPort = AvailableLocationPort++;
+				if (test.LocationPort == 8080)
+					test.LocationPort = AvailableLocationPort++;
+
+				u.Port = test.LocationPort;
 				test.location = u.Uri;
 				u.Path = Path.Combine (u.Path, Path.GetFileName (input_file));
 				test.input_file = u.ToString ();

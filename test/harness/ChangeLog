@@ -1,5 +1,11 @@
 2008-10-06  Jackson Harper  <jackson@ximian.com>
 
+	* test-runner/Test.cs: Use a new port for the location server, the
+	test might not have been finalized by the time the next test
+	starts.
+
+2008-10-06  Jackson Harper  <jackson@ximian.com>
+
 	* test-runner/HtmlTest.cs: We try to patch "remote" files if they
 	aren't actually remote, they are just using the location
 	attribute.
