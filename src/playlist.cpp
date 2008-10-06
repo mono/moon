@@ -1328,7 +1328,7 @@ PlaylistParser::IsASX2 (IMediaSource *source)
 bool
 PlaylistParser::ParseASX2 ()
 {
-#define BUFFER_SIZE 1024
+	const int BUFFER_SIZE = 1024;
 	int bytes_read;
 	char buffer[BUFFER_SIZE];
 	char *ref;
@@ -1386,17 +1386,29 @@ PlaylistParser::ParseASX2 ()
 	return true;
 }
 
-bool
+MediaResult
 PlaylistParser::Parse ()
 {
+	bool result;
+	gint64 last_available_pos;
+	gint64 size;
+
 	d(printf ("PlaylistParser::Parse ()\n"));
+
+	// Don't try to parse anything until we have all the data.
+	size = source->GetSize ();
+	last_available_pos = source->GetLastAvailablePosition ();
+	if (size != -1 && last_available_pos != -1 && size != last_available_pos)
+		return MEDIA_NOT_ENOUGH_DATA; 
 
 	if (!this->IsASX3 (source) && this->IsASX2 (source)) {
 		/* Parse as a asx2 mms file */
-		return this->ParseASX2 ();
+		result = this->ParseASX2 ();
 	} else {
-		return this->ParseASX3 ();
+		result = this->ParseASX3 ();
 	}
+
+	return result ? MEDIA_SUCCESS : MEDIA_FAIL;
 }
 
 bool
@@ -1406,7 +1418,7 @@ PlaylistParser::ParseASX3 ()
 	void *buffer;
 
 // asx documents don't tend to be very big, so there's no need for a big buffer
-#define BUFFER_SIZE 1024
+	const int BUFFER_SIZE = 1024;
 
 	for (;;) {
 		buffer = XML_GetBuffer(internal->parser, BUFFER_SIZE);

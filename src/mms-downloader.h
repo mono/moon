@@ -15,6 +15,7 @@
 #define __MMS_DOWNLOADER_H__
 
 #include <glib.h>
+#include <pthread.h>
 
 G_BEGIN_DECLS
 
@@ -69,7 +70,10 @@ class MmsDownloader : public InternalDownloader {
 	guint32 header_size;
 	guint32 size;
 	guint32 packets_received;
-
+	
+	guint64 requested_pts;
+	pthread_mutex_t request_mutex;
+	
 	TimeSpan p_packet_times[3];
 	gint32 p_packet_sizes[3];
 
@@ -112,8 +116,11 @@ class MmsDownloader : public InternalDownloader {
 	char *GetDownloadedFilename (const char *partname);
 	char *GetResponseText (const char *partname, guint64 *size);
 	virtual InternalDownloader::DownloaderType GetType () { return InternalDownloader::MmsDownloader; }
-	
+
 	ASFParser *GetASFParser () { return parser; }
+
+	void SetRequestedPts (guint64 value);
+	guint64 GetRequestedPts ();
 };
 
 G_END_DECLS

@@ -514,7 +514,7 @@ MediaPlayer::RenderFrame (MediaFrame *frame)
 {
 	VideoStream *stream = (VideoStream *) frame->stream;
 
-	LOG_MEDIAPLAYER_EX ("MediaPlayer::RenderFrame (%p)\n", frame);
+	LOG_MEDIAPLAYER_EX ("MediaPlayer::RenderFrame (%p), buflen: %i, buffer: %p, IsPlanar: %i\n", frame, frame->buflen, frame->buffer, frame->IsPlanar ());
 	
 	if (!frame->IsDecoded ()) {
 		fprintf (stderr, "MediaPlayer::RenderFrame (): Trying to render a frame which hasn't been decoded yet.\n");
@@ -616,7 +616,15 @@ MediaPlayer::AdvanceFrame ()
 	printf ("MediaPlayer::AdvanceFrame (): target pts: %llu = %llu ms\n", target_pts, MilliSeconds_FromPts (target_pts));
 #endif
 
-	while ((pkt = (Packet *) video.queue.Pop ())) {
+	while (true) {
+		pkt = (Packet *) video.queue.Pop ();
+		if (pkt == NULL) {
+			if (!HasAudio ())
+				SetBufferUnderflow ();
+			// If we have audio, we keep playing (and loosing frames) until the audio playing stops due to buffer underflow
+			break;
+		}
+		
 		if (pkt->frame->event == FrameEventEOF) {
 			if (!HasAudio ()) {
 				// Set the target pts to the last pts we showed, since target_pts is what's reported as our current position.
@@ -755,7 +763,7 @@ MediaPlayer::LoadVideoFrame ()
 	
 	LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (), packet pts: %llu, target pts: %llu\n", packet->frame->pts, GetTargetPts ());
 
-	if (packet->frame->pts >= GetTargetPts ()) {
+	if (packet->frame->pts >= GetTargetPts () && packet->frame->buflen > 0) {
 		RemoveBit (LoadFramePending);
 		RenderFrame (packet->frame);
 		element->Invalidate ();
@@ -777,6 +785,7 @@ MediaPlayer::Play ()
 		return;
 	
 	SetState (Playing);
+	RemoveBit (BufferUnderflow);
 	start_time = TimeSpan_ToPts (element->GetTimeManager()->GetCurrentTime ());
 	start_time -= target_pts;
 

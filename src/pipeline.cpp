@@ -40,6 +40,11 @@
 #define LOG_PIPELINE_ERROR(...) printf (__VA_ARGS__);
 #define LOG_PIPELINE_ERROR_CONDITIONAL(x, ...) if (x) printf (__VA_ARGS__);
 #define LOG_FRAMEREADERLOOP(...)// printf (__VA_ARGS__);
+#define LOG_BUFFERING(...)// printf (__VA_ARGS__);
+
+/*
+ * Media
+ */
 
 bool Media::registering_ms_codecs = false;
 bool Media::registered_ms_codecs = false;
@@ -123,6 +128,7 @@ Media::Media (MediaElement *element, Downloader *dl)
 	
 	demuxer = NULL;
 	markers = NULL;
+	buffering_time = 0;
 	
 	opened = false;
 	stopping = false;
@@ -154,9 +160,6 @@ Media::~Media ()
 	if (downloader)
 		downloader->unref ();
 	
-	if (source)
-		source->Abort ();
-
 	if (!stopped)
 		pthread_join (queue_thread, NULL);
 	pthread_mutex_destroy (&queue_mutex);
@@ -183,6 +186,24 @@ Media::~Media ()
 		}
 		media_objects->Unlock ();
 	}
+}
+
+void
+Media::SetBufferingTime (guint64 buffering_time)
+{
+	pthread_mutex_lock (&queue_mutex);
+	this->buffering_time = buffering_time;
+	pthread_mutex_unlock (&queue_mutex);
+}
+
+guint64
+Media::GetBufferingTime ()
+{
+	guint64 result;
+	pthread_mutex_lock (&queue_mutex);
+	result = buffering_time;
+	pthread_mutex_unlock (&queue_mutex);
+	return result;
 }
 
 void
@@ -349,7 +370,9 @@ Media::Shutdown ()
 	media_objects->Lock ();
 	node = (MediaNode *) media_objects->LinkedList ()->First ();
 	while (node != NULL) {
+		node->media->ref ();
 		node->media->StopThread ();
+		node->media->unref ();
 		node = (MediaNode *) node->next;
 	}
 	
@@ -449,6 +472,7 @@ Media::Open (IMediaSource *source)
 	LOG_PIPELINE ("Media::Open (%p <id:%i>), id: %i, downloader: %p\n", source, GET_OBJ_ID (source), GET_OBJ_ID (this), downloader);
 
 	MediaResult result;
+	MediaResult support;
 	MmsDownloader *mms_dl = NULL;
 	ASFParser *asf_parser = NULL;
 	
@@ -461,7 +485,7 @@ Media::Open (IMediaSource *source)
 		// The internal downloader doesn't get deleted until the Downloader itself is destructed, which won't happen 
 		// because we have a ref to it. Which means that it's safe to access the internal dl here.
 		mms_dl = (MmsDownloader *) downloader->GetInternalDownloader ();
-		while ((asf_parser = mms_dl->GetASFParser ()) == NULL) {
+		if ((asf_parser = mms_dl->GetASFParser ()) == NULL) {
 			if (stopped || stopping)
 				return MEDIA_FAIL;
 				
@@ -470,9 +494,8 @@ Media::Open (IMediaSource *source)
 	
 			if (source->Eof ())
 				return MEDIA_READ_ERROR;						
-			
-			LOG_PIPELINE ("Media::Open (): Waiting for asf parser...");
-			g_usleep (G_USEC_PER_SEC / 100); // Sleep a bit
+
+			return MEDIA_NOT_ENOUGH_DATA;
 		}
 		
 		demuxer = new ASFDemuxer (this, source);
@@ -485,8 +508,17 @@ Media::Open (IMediaSource *source)
 	// Select a demuxer
 	DemuxerInfo *demuxerInfo = registered_demuxers;
 	while (demuxer == NULL && demuxerInfo != NULL) {
-		if (demuxerInfo->Supports (source))
+		support = demuxerInfo->Supports (source);
+		
+		if (support == MEDIA_SUCCESS)
 			break;
+		
+		result = support;
+
+		if (result == MEDIA_NOT_ENOUGH_DATA) {
+			LOG_PIPELINE ("Media::Open (): '%s' can't determine whether it can handle the media or not due to not enough data being available yet.\n", demuxerInfo->GetName ());
+			return result;
+		}
 		
 		LOG_PIPELINE ("Media::Open (): '%s' can't handle this media.\n", demuxerInfo->GetName ());
 		demuxerInfo = (DemuxerInfo *) demuxerInfo->next;
@@ -652,14 +684,13 @@ Media::GetNextFrame (MediaWork *work)
 			LOG_PIPELINE ("Media::GetNextFrame (): delayed a frame\n");
 			delete frame;
 		}
-		frame = new MediaFrame (stream);
-		frame->AddState (states);
-
-		// TODO: get the last frame out of delayed codecs (when the demuxer returns NO_MORE_DATA)
-
-		result = demuxer->ReadFrame (frame);
-		if (!MEDIA_SUCCEEDED (result))
+		// TODO: Before popping any frames, we need to check if the decoder still has data available
+		frame = stream->PopFrame ();
+		//printf ("Media::GetNextFrame () popped a frame: %p, pts: %llu\n", frame, frame ? MilliSeconds_FromPts (frame->pts) : 0);
+		if (frame == NULL) {
+			result = MEDIA_BUFFER_UNDERFLOW;
 			break;
+		}
 		
 		if ((states & FRAME_DECODED) != FRAME_DECODED) {
 			// We weren't requested to decode the frame
@@ -671,12 +702,11 @@ Media::GetNextFrame (MediaWork *work)
 			break;
 	
 		result = stream->decoder->DecodeFrame (frame);
+		//printf ("Media::GetNextFrame () decoded a frame: %p, pts: %llu\n", frame, frame ? MilliSeconds_FromPts (frame->pts) : 0);
 	} while (result == MEDIA_CODEC_DELAYED);
 
 	work->closure->frame = frame;
 
-	//printf ("Media::GetNextFrame (%p) finished, size: %i.\n", stream, frame->buflen);
-	
 	return result;
 }
 
@@ -704,7 +734,7 @@ Media::WorkerLoop ()
 		
 		// Wait until we have something in the queue
 		pthread_mutex_lock (&queue_mutex);
-		while (queued_requests != NULL && !stopping && queued_requests->IsEmpty ())
+		if (queued_requests != NULL && !stopping && queued_requests->IsEmpty ())
 			pthread_cond_wait (&queue_condition, &queue_mutex);
 		
 		LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): got something.\n");
@@ -722,6 +752,11 @@ Media::WorkerLoop ()
 		
 		pthread_mutex_unlock (&queue_mutex);
 		
+		if (demuxer != NULL && (node == NULL || node->type != WorkTypeSeek)) {
+			// Fill buffers if we have a demuxer and as long as we don't have a pending seek.
+			demuxer->FillBuffers ();
+		}
+
 		if (node == NULL)
 			continue; // Found nothing, continue waiting.
 		
@@ -729,8 +764,28 @@ Media::WorkerLoop ()
 		
 		switch (node->type) {
 		case WorkTypeSeek:
-			//printf ("Media::WorkerLoop (): Seeking, current count: %d\n", queued_requests->Length ());
+			LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): Seeking, current count: %d\n", queued_requests->Length ());
 			result = Seek (node->data.seek.seek_pts);
+			if (result == MEDIA_NOT_ENOUGH_DATA) {
+				bool putback = false;
+				// The seek failed because we don't have enough data.
+				// Put the seek request back again.
+				pthread_mutex_lock (&queue_mutex);
+				// There is a race condition here, somebody might have called ClearQueue now to
+				// empty the queue, and we'll enter new items in it (a bad thing to do). 
+				// We handle a second seek request correctly here (which would be one reason for a 
+				// ClearQueue), but there might be other cases.
+				// The proper fix would be to store the seek request on the media itself, and only
+				// clear it if the seek succeeded (or failed, but not because of missing data).
+				putback = (queued_requests->First () == NULL || ((MediaWork *) queued_requests->First ())->type != WorkTypeSeek);
+				pthread_mutex_unlock (&queue_mutex);
+
+				if (putback) {
+					LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): putting back seek request.\n");
+					SeekAsync (node->data.seek.seek_pts, node->closure);
+					node->closure = NULL;
+				}
+			}
 			break;
 		case WorkTypeAudio:
 		case WorkTypeVideo:
@@ -742,10 +797,12 @@ Media::WorkerLoop ()
 			result = Open (node->data.open.source);
 			break;
 		}
-		
-		node->closure->result = result;
-		node->closure->Call ();
 
+		if (node->closure != NULL) {
+			node->closure->result = result;
+			node->closure->Call ();
+		}
+		
 		LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): processed node %p with type %i, result: %i.\n",
 				     node, node->type, result);
 		
@@ -835,6 +892,14 @@ Media::EnqueueWork (MediaWork *work)
 }
 
 void
+Media::WakeUp ()
+{
+	pthread_mutex_lock (&queue_mutex);
+	pthread_cond_signal (&queue_condition);
+	pthread_mutex_unlock (&queue_mutex);
+}
+
+void
 Media::ClearQueue ()
 {
 	LOG_PIPELINE ("Media::ClearQueue ().\n");
@@ -843,9 +908,6 @@ Media::ClearQueue ()
 		queued_requests->Clear (true);
 		pthread_mutex_unlock (&queue_mutex);
 	}
-	
-	if (source)
-		source->Abort ();
 }
 
 void
@@ -886,29 +948,6 @@ ASFDemuxer::~ASFDemuxer ()
 	if (parser)
 		parser->unref ();
 }
-guint64 
-ASFDemuxer::GetLastAvailablePts ()
-{
-	if (reader == NULL)
-		return 0;
-
-	return reader->GetLastAvailablePts ();
-}
-
-gint64
-ASFDemuxer::EstimatePtsPosition (guint64 pts)
-{
-	gint64 result = -1;
-	
-	for (int i = 0; i < GetStreamCount (); i++) {
-		if (!GetStream (i)->GetSelected ())
-			continue;
-
-		result = MAX (result, reader->GetFrameReader (stream_to_asf_index [i])->EstimatePtsPosition(pts));
-	}
-	
-	return result;
-}
 
 void
 ASFDemuxer::UpdateSelected (IMediaStream *stream)
@@ -920,14 +959,14 @@ ASFDemuxer::UpdateSelected (IMediaStream *stream)
 }
 
 MediaResult
-ASFDemuxer::Seek (guint64 pts)
+ASFDemuxer::SeekInternal (guint64 pts)
 {
 	//printf ("ASFDemuxer::Seek (%llu)\n", pts);
 	
 	if (reader == NULL)
 		return MEDIA_FAIL;
 	
-	return reader->Seek (pts) ? MEDIA_SUCCESS : MEDIA_FAIL;
+	return reader->Seek (pts);
 }
 
 void
@@ -1053,12 +1092,16 @@ ASFDemuxer::ReadHeader ()
 		asf_parser = new ASFParser (source, media);
 	}
 
-	//printf ("ASFDemuxer::ReadHeader ().\n");
-	
-	if (!asf_parser->ReadHeader ()) {
-		result = MEDIA_INVALID_MEDIA;
-		GetMedia ()->AddMessage (MEDIA_INVALID_MEDIA, "asf_parser->ReadHeader () failed:");
-		GetMedia ()->AddMessage (MEDIA_FAIL, asf_parser->GetLastErrorStr ());
+	LOG_PIPELINE ("ASFDemuxer::ReadHeader ().\n");
+
+	result = asf_parser->ReadHeader ();
+	if (!MEDIA_SUCCEEDED (result)) {
+		if (result == MEDIA_NOT_ENOUGH_DATA) {
+			LOG_PIPELINE ("ASFDemuxer::ReadHeader (): ReadHeader failed due to not enough data being available.\n");
+		} else {
+			GetMedia ()->AddMessage (MEDIA_INVALID_MEDIA, "asf_parser->ReadHeader () failed:");
+			GetMedia ()->AddMessage (MEDIA_FAIL, asf_parser->GetLastErrorStr ());
+		}
 		goto failure;
 	}
 	
@@ -1229,23 +1272,29 @@ failure:
 }
 
 MediaResult
-ASFDemuxer::ReadFrame (MediaFrame *frame)
+ASFDemuxer::TryReadFrame (IMediaStream *stream, MediaFrame **f)
 {
 	//printf ("ASFDemuxer::ReadFrame (%p).\n", frame);
-	ASFFrameReader *reader = this->reader->GetFrameReader (stream_to_asf_index [frame->stream->index]);
+	ASFFrameReader *reader = this->reader->GetFrameReader (stream_to_asf_index [stream->index]);
+	MediaFrame *frame;
 	MediaResult result;
 	
 	result = reader->Advance ();
 	if (result == MEDIA_NO_MORE_DATA) {
 		//media->AddMessage (MEDIA_NO_MORE_DATA, "Reached end of data.");
-		frame->event = FrameEventEOF;
 		return MEDIA_NO_MORE_DATA;
 	}
+
+	if (result == MEDIA_BUFFER_UNDERFLOW)
+		return result;
 	
 	if (!MEDIA_SUCCEEDED (result)) {
 		media->AddMessage (MEDIA_DEMUXER_ERROR, g_strdup_printf ("Error while advancing to the next frame (%i)", result));
 		return result;
 	}
+
+	frame = new MediaFrame (stream);
+	*f = frame;
 	
 	frame->pts = reader->Pts ();
 	//frame->duration = reader->Duration ();
@@ -1345,26 +1394,33 @@ ASFMarkerDecoder::DecodeFrame (MediaFrame *frame)
  * ASFDemuxerInfo
  */
 
-bool
+MediaResult
 ASFDemuxerInfo::Supports (IMediaSource *source)
 {
 	guint8 buffer[16];
-	
+	bool result;
+
+	LOG_PIPELINE ("ASFDemuxerInfo::Supports (%p) pos: %lld, avail pos: %lld\n", source, source->GetPosition (), source->GetLastAvailablePosition ());
+
 #if DEBUG
-	if (!source->GetPosition () == 0) {
+	bool eof = false;
+	if (!source->GetPosition () == 0)
 		fprintf (stderr, "ASFDemuxerInfo::Supports (%p): Trying to check if a media is supported, but the media isn't at position 0 (it's at position %lld)\n", source, source->GetPosition ());
-	}
+	if (!source->IsPositionAvailable (16, &eof)) // This shouldn't happen, we should have at least 1024 bytes (or eof).
+		fprintf (stderr, "ASFDemuxerInfo::Supports (%p): Not enough data! eof: %i\n", source, eof);
 #endif
 
-	if (!source->Peek (buffer, 16))
-		return false;
+	if (!source->Peek (buffer, 16)) {
+		fprintf (stderr, "ASFDemuxerInfo::Supports (%p): Peek failed.\n", source);
+		return MEDIA_FAIL;
+	}
 	
-	bool result = asf_guid_compare (&asf_guids_header, (asf_guid *) buffer);
+	result = asf_guid_compare (&asf_guids_header, (asf_guid *) buffer);
 	
-	//printf ("ASFDemuxerInfo::Supports (%p): probing result: %s\n", source,
+	//printf ("ASFDemuxerInfo::Supports (%p): probing result: %s %s\n", source, source->ToString (),
 	//	result ? "true" : "false");
 	
-	return result;
+	return result ? MEDIA_SUCCESS : MEDIA_FAIL;
 }
 
 IMediaDemuxer *
@@ -1396,7 +1452,7 @@ ASXDemuxer::ReadHeader ()
 
 	PlaylistParser *parser = new PlaylistParser (media->GetElement (), source);
 
-	if (parser->Parse ()) {
+	if (MEDIA_SUCCEEDED (parser->Parse ())) {
 		result = MEDIA_SUCCESS;
 		playlist = parser->GetPlaylist ();
 		playlist->ref ();
@@ -1413,16 +1469,19 @@ ASXDemuxer::ReadHeader ()
  * ASXDemuxerInfo
  */
 
-bool
+MediaResult
 ASXDemuxerInfo::Supports (IMediaSource *source)
 {
 	char buffer[4];
+	bool result;
 	
 	if (!source->Peek ((guint8 *) buffer, 4))
-		return false;
+		return MEDIA_FAIL;
 	
-	return !g_ascii_strncasecmp (buffer, "<asx", 4) ||
+	result = !g_ascii_strncasecmp (buffer, "<asx", 4) ||
 		!g_ascii_strncasecmp (buffer, "[Ref", 4);
+
+	return result ? MEDIA_SUCCESS : MEDIA_FAIL;
 }
 
 IMediaDemuxer *
@@ -1454,21 +1513,14 @@ ManagedStreamSource::ReadInternal (void *buf, guint32 n)
 }
 
 gint32 
-ManagedStreamSource::PeekInternal (void *buf, guint32 n, gint64 start)
+ManagedStreamSource::PeekInternal (void *buf, guint32 n)
 {
 	int read;
 	gint64 position;
 	
-	if (start != -1) {
-		position = stream.Position (stream.handle);
-		read = stream.Read (stream.handle, buf, 0, n);
-		stream.Seek (stream.handle, position, 0 /* SeekOrigin.Begin */);	
-		return read;
-	} else {
-		read = stream.Read (stream.handle, buf, 0, n);
-		stream.Seek (stream.handle, -read, 1 /* SeekOrigin.Current */);
-		return read;
-	}
+	read = stream.Read (stream.handle, buf, 0, n);
+	stream.Seek (stream.handle, -read, 1 /* SeekOrigin.Current */);
+	return read;
 }
 
 bool 
@@ -1499,65 +1551,97 @@ ManagedStreamSource::GetSizeInternal ()
 FileSource::FileSource (Media *media) : IMediaSource (media)
 {
 	filename = g_strdup (media->GetFileOrUrl ());
-	bufptr = buffer;
-	buflen = 0;
-	pos = -1;
-	fd = -1;
-	
-	eof = true;
+	fd = NULL;
+	size = 0;
+	temp_file = false;
 }
 
 FileSource::FileSource (Media *media, const char *filename) : IMediaSource (media)
 {
 	this->filename = g_strdup (filename);
-	bufptr = buffer;
-	buflen = 0;
-	pos = -1;
-	fd = -1;
-	
-	eof = true;
+	fd = NULL;
+	size = 0;
+	temp_file = false;
+}
+
+FileSource::FileSource (Media *media, bool temp_file) : IMediaSource (media)
+{
+	filename = NULL;
+	fd = NULL;
+	size = 0;
+	this->temp_file = temp_file;
 }
 
 FileSource::~FileSource ()
 {
 	g_free (filename);
-	if (fd != -1)
-		close (fd);
+	if (fd != NULL)
+		fclose (fd);
 }
 
 MediaResult 
 FileSource::Initialize ()
 {
-	if (fd != -1)
+	struct stat st;
+	int tmp_fd;
+
+	LOG_PIPELINE ("FileSource::Initialize ()\n");
+
+	if (fd != NULL)
 		return MEDIA_SUCCESS;
 	
-	if (filename == NULL)
+	if (temp_file) {
+		if (filename != NULL)
+			return MEDIA_FILE_ERROR;
+	
+		filename = g_build_filename (g_get_tmp_dir (), "MoonlightProgressiveStream.XXXXXX", NULL);
+		
+		if ((tmp_fd = g_mkstemp (filename)) == -1) {
+			g_free (filename);
+			filename = NULL;
+			
+			return MEDIA_FAIL;
+		}
+
+		fd = fdopen (tmp_fd, "r");
+
+		setvbuf (fd, buffer, _IOFBF, sizeof (buffer));
+	} else {
+		if (filename == NULL)
+			return MEDIA_FILE_ERROR;
+			
+		fd = fopen (filename, "r");
+	}
+
+	if (fd == NULL)
 		return MEDIA_FILE_ERROR;
-	
-	if ((fd = open (filename, O_LARGEFILE | O_RDONLY)) == -1)
-		return MEDIA_FILE_ERROR;
-	
-	eof = false;
-	pos = 0;
-	
+
+	size = 0;
+	if (fstat (fileno (fd), &st) != -1)
+		size = st.st_size;
+		
 	return MEDIA_SUCCESS;
 }
 
 gint64
 FileSource::GetSizeInternal ()
 {
-	struct stat st;
-	
-	if (fd == -1 || fstat (fd, &st) == -1)
-		return -1;
-	
-	return st.st_size;
+	return size;
 }
 
 gint64
 FileSource::GetPositionInternal ()
 {
-	return pos;
+	gint64 result;
+	
+	if (fd == NULL)
+		return -1;
+	
+	result = ftell (fd);
+
+	LOG_PIPELINE ("FileSource::GetPositionInternal (): result: %lld\n", result);
+
+	return result;
 }
 
 bool
@@ -1565,342 +1649,135 @@ FileSource::SeekInternal (gint64 offset, int mode)
 {
 	gint64 n;
 	
-	if (fd == -1)
+	if (fd == NULL)
 		return false;
-	
-	switch (mode) {
-	case SEEK_CUR:
-		if (offset == 0)
-			return true;
-		
-		/* convert to SEEK_SET */
-		if ((offset = pos + offset) < 0)
-			return false;
-		
-		/* fall thru... */
-	case SEEK_SET:
-		if (pos == offset)
-			return true;
-		
-		if (offset < 0)
-			return false;
-		
-		n = (offset - pos);
-		if ((n >= 0 && n <= buflen) || (n < 0 && (-n) <= (bufptr - buffer))) {
-			/* the position is within our pre-buffered data */
-			pos = offset;
-			bufptr += n;
-			buflen -= n;
-			
-			return true;
-		}
-		
-		/* we are now forced to do an actual seek */
-		if (lseek (fd, offset, SEEK_SET) == -1)
-			return false;
-		
-		pos = offset;
-		eof = false;
-		
-		bufptr = buffer;
-		buflen = 0;
-		
-		return true;
-	case SEEK_END:
-		/* I doubt this code path ever gets hit, so we'll just
-		 * do things the easy way... to hell with any
-		 * optimizations. */
-		if (lseek (fd, offset, SEEK_END) == -1)
-			return false;
-		
-		pos = offset;
-		eof = false;
-		
-		bufptr = buffer;
-		buflen = 0;
-		
-		return true;
-	default:
-		// invalid 'whence' argument
-		return false;
-	}
-}
 
-/* non-interruptable read() */
-static ssize_t
-noint_read (int fd, char *buf, size_t n)
-{
-	ssize_t nread;
+	LOG_PIPELINE ("FileSource::SeekInternal (%lld, %i)\n", offset, mode);
 	
-	do {
-		nread = read (fd, buf, n);
-	} while (nread == -1 && errno == EINTR);
-	
-	return nread;
+	clearerr (fd);
+	n = fseek (fd, offset, mode);
+
+	return n != -1;
 }
 
 gint32
 FileSource::ReadInternal (void *buf, guint32 n)
 {
-	ssize_t r, nread = 0;
-	
-	if (fd == -1) {
+	ssize_t nread = 0;
+
+	if (fd == NULL) {
 		errno = EINVAL;
 		LOG_PIPELINE_ERROR ("FileSource::ReadInternal (%p, %u): File not open.\n", buf, n);
 		return -1;
 	}
-	
-	while (n > 0) {
-		if ((r = MIN (buflen, n)) > 0) {
-			/* copy what we can from our existing buffer */
-			memcpy (((char *) buf) + nread, bufptr, r);
-			bufptr += r;
-			buflen -= r;
-			nread += r;
-			pos += r;
-			n -= r;
-		}
-		
-		if (n >= sizeof (buffer)) {
-			/* bypass intermediate buffer */
-			bufptr = buffer;
-			if ((r = noint_read (fd, ((char *) buf) + nread, n)) > 0) {
-				nread += r;
-				pos += r;
-				n -= r;
-			}
-		} else if (n > 0) {
-			/* buffer more data */
-			if ((r = noint_read (fd, buffer, sizeof (buffer))) > 0)
-				buflen = (guint32) r;
-			
-			bufptr = buffer;
-		}
-		
-		if (r == -1 && nread == 0) {
-			LOG_PIPELINE_ERROR ("FileSource<%d>::ReadInternal ('%s', %p, %u): Some error occured during reading, r: %d, nread: %d, errno: %d = %s.\n",
-					    GET_OBJ_ID (this), filename, buf, n, r, nread, errno, strerror (errno));
-			return -1;
-		}
-		
-		if (r == 0) {
-			LOG_PIPELINE ("FileSource<%d>::ReadInternal ('%s', %p, %u): Could not read all the data, eof reached. Current position: %lld\n",
-					    GET_OBJ_ID (this), filename, buf, n, GetPositionInternal ());
-			eof = true;
-			break;
-		}
-	}
-	
+
+	clearerr (fd);
+	nread = fread (buf, 1, n, fd);
+
+	LOG_PIPELINE ("FileSource::ReadInternal (0x????????, %i), prev pos: %i, post pos: %i, nread: %i\n", (int) n, (int) current_position, (int) after_position, (int) nread);
+
 	return nread;
 }
 
 gint32
-FileSource::PeekInternal (void *buf, guint32 n, gint64 start)
+FileSource::PeekInternal (void *buf, guint32 n)
 {
 	gint32 result;
-	gint64 current_pos;
-	gint64 initial_pos;
-
-	if (start == -1) {
-		initial_pos = GetPosition ();
-	} else {
-		initial_pos = start;		
-	}
-
-	current_pos = GetPosition ();
-	
-	// First try to peek in the buffer.
-	if (initial_pos == current_pos && PeekInBuffer (buf, n))
-		return n;
-	
-	// We could not peek in the buffer, use a very simple fallback algorithm.
-	LOG_PIPELINE ("FileSource<%i>::PeekInternal (%p, %i, %lld), initial_pos: %lld, current_pos: %lld, GetPosition (): %lld\n", GET_OBJ_ID (this), buf, n, start, initial_pos, current_pos, GetPosition ());
-
-	if (initial_pos != current_pos)
-		Seek (initial_pos, SEEK_SET);
 
 	result = ReadSome (buf, n);
 	
-	Seek (current_pos, SEEK_SET);
+	Seek (-result, SEEK_CUR);
 
-	LOG_PIPELINE ("FileSource<%i>::PeekInternal (%p, %i, %lld), initial_pos: %lld, current_pos: %lld, GetPosition (): %lld [Done]\n", GET_OBJ_ID (this), buf, n, start, initial_pos, current_pos, GetPosition ());
+	LOG_PIPELINE ("FileSource<%i>::PeekInternal (%p, %i), GetPosition (): %lld [Done]\n", GET_OBJ_ID (this), buf, n, GetPosition ());
 
 	return result;
 }
 
 bool
-FileSource::PeekInBuffer (void *buf, guint32 n)
+FileSource::Eof ()
 {
-	guint32 need, used, avail, shift;
-	ssize_t r;
-	
-	if (fd == -1)
+	if (fd == NULL)
 		return false;
 	
-	if (n > sizeof (buffer)) {
-		/* we can't handle a peek of this size */
-		return false;
-	}
-	
-	if (buflen < n) {
-		/* need to buffer more data */
-		if (bufptr > buffer) {
-			used = (bufptr + buflen) - buffer;
-			avail = sizeof (buffer) - used;
-			need = n - buflen;
-			
-			if (avail < need) {
-				/* make room for 'need' more bytes */
-				shift = need - avail;
-				memmove (buffer, buffer + shift, used - shift);
-				bufptr -= shift;
-			} else {
-				/* request 'avail' more bytes so we
-				 * can hopefully fill our buffer */
-				need = avail;
-			}
-		} else {
-			/* nothing in our buffer, fill 'er up */
-			need = sizeof (buffer);
-		}
-		
-		do {
-			if ((r = noint_read (fd, bufptr + buflen, need)) == 0) {
-				eof = true;
-				break;
-			} else if (r == -1)
-				break;
-			
-			buflen += r;
-			need -= r;
-		} while (buflen < n);
-	}
-	
-	if (buflen < n) {
-		/* can't peek as much data as requested... */
-		return false;
-	}
-	
-	memcpy (((char *) buf), bufptr, n);
-	
-	return true;
+	return feof (fd);
 }
 
 /*
  * ProgressiveSource
  */
 
-ProgressiveSource::ProgressiveSource (Media *media) : FileSource (media, NULL)
+ProgressiveSource::ProgressiveSource (Media *media) : FileSource (media, true)
 {
 	write_pos = 0;
-	wait_pos = 0;
 	size = -1;
+	write_fd = NULL;
 }
 
 ProgressiveSource::~ProgressiveSource ()
 {
+	if (write_fd != NULL)
+		fclose (write_fd);
 }
 
 MediaResult
 ProgressiveSource::Initialize ()
 {
+	MediaResult result;
+	
 	if (filename != NULL)
 		return MEDIA_SUCCESS;
-	
-	filename = g_build_filename (g_get_tmp_dir (), "MoonlightProgressiveStream.XXXXXX", NULL);
-	if ((fd = g_mkstemp (filename)) == -1) {
-		g_free (filename);
-		filename = NULL;
-		
+
+	result = FileSource::Initialize ();
+
+	if (!MEDIA_SUCCEEDED (result))
+		return result;
+
+	write_fd = fopen (filename, "w");
+	if (write_fd == NULL) {
+		fprintf (stderr, "Moonlight: Could not open a write handle to the file '%s'\n", filename);
 		return MEDIA_FAIL;
 	}
-	
+
 	// unlink the file right away so that it'll be deleted even if we crash.
 	if (moonlight_flags & RUNTIME_INIT_KEEP_MEDIA) {
 		printf ("Moonlight: The media file %s will not deleted.\n", filename);
 	} else {
 		unlink (filename);
 	}
-
-	wait_pos = 0;
-	eof = false;
-	pos = 0;
 	
 	return MEDIA_SUCCESS;
-}
-
-static ssize_t
-write_all (int fd, char *buf, size_t len)
-{
-	size_t nwritten = 0;
-	ssize_t n;
-	
-	do {
-		do {
-			n = write (fd, buf + nwritten, len - nwritten);
-		} while (n == -1 && (errno == EINTR || errno == EAGAIN));
-		
-		if (n > 0)
-			nwritten += n;
-	} while (n != -1 && nwritten < len);
-	
-	if (n == -1)
-		return -1;
-	
-	return nwritten;
 }
 
 void
 ProgressiveSource::Write (void *buf, gint64 offset, gint32 n)
 {
-	ssize_t nwritten;
-	bool new_pos = false;
-
-	// printf ("ProgressiveSource::Write (%p, %lld, %i)\n", buf, offset, n);
-	if (fd == -1) {
+	size_t nwritten;
+	
+	LOG_PIPELINE ("ProgressiveSource::Write (%p, %lld, %i) media: %p, filename: %s\n", buf, offset, n, media, filename);
+	if (write_fd == NULL) {
 		media->AddMessage (MEDIA_FAIL, "Progressive source doesn't have a file to write the data to.");
 		return;
 	}
 	
-	Lock ();
 
 	if (n == 0) {
 		// We've got the entire file, update the size
-		size = write_pos;
+		size = write_pos; // Since this method is the only method that writes to write_pos, and we're not reentrant, there is no need to lock here.
 		goto cleanup;
 	}
 
-	 if (write_pos == -1)
-		new_pos = true;
+	nwritten = fwrite (buf, 1, n, write_fd);
+	fflush (write_fd);
 
-	// Seek to the write position
-	if (lseek (fd, offset, SEEK_SET) != offset)
-		goto cleanup;
-	
-	if ((nwritten = write_all (fd, (char *) buf, n)) > 0)
-		write_pos = offset + nwritten;
-
-	
-	if (new_pos) {
-		// Set pos to the new write position
-		pos = offset;
-		lseek (fd, offset, SEEK_SET);
-	} else {
-		// Restore the current position
-		lseek (fd, pos + buflen, SEEK_SET);
-	}
-	
-cleanup:
-	if (IsWaiting ())
-		Signal ();
-	
+	Lock ();
+	write_pos += nwritten;
 	Unlock ();
-}
 
-bool
-ProgressiveSource::SeekInternal (gint64 offset, int mode)
-{
-	return FileSource::SeekInternal (offset, mode);
+
+cleanup:
+	if (media)
+		media->WakeUp ();
+
 }
 
 void
@@ -1917,7 +1794,6 @@ ProgressiveSource::NotifyFinished ()
 	Lock ();
 	this->size = write_pos;
 	Unlock ();
-	Signal ();
 }
 
 /*
@@ -2021,10 +1897,9 @@ MemorySource::ReadInternal (void *buffer, guint32 n)
 }
 
 gint32
-MemorySource::PeekInternal (void *buffer, guint32 n, gint64 start)
+MemorySource::PeekInternal (void *buffer, guint32 n)
 {
-	if (start == -1)
-		start = this->start + pos;
+	gint64 start = this->start + pos;
 
 	if (this->start > start)
 		return 0;
@@ -2044,8 +1919,6 @@ MemoryQueueSource::MemoryQueueSource (Media *media)
 	: IMediaSource (media)
 {
 	finished = false;
-	requested_pts = UINT64_MAX;
-	last_requested_pts = UINT64_MAX;
 	write_count = 0;
 	parser = NULL;
 	queue = new Queue ();
@@ -2085,26 +1958,11 @@ MemoryQueueSource::SetParser (ASFParser *parser)
 		this->parser->ref ();
 }
 
-void
-MemoryQueueSource::WaitForQueue ()
-{
-	if (finished)
-		return;
-
-	Lock ();
-	StartWaitLoop ();
-	while (!finished && !Aborted () && queue && queue->IsEmpty ()) {
-		Wait ();
-	}
-	EndWaitLoop ();
-	Unlock ();
-}
-
-
 gint64
 MemoryQueueSource::GetPositionInternal ()
 {
 	g_warning ("MemoryQueueSource::GetPositionInternal (): You hit a bug in moonlight, please attach gdb, get a stack trace and file bug.");
+	print_stack_trace ();
 
 	return -1;
 }
@@ -2152,14 +2010,8 @@ trynext:
 	node = (QueueNode *) queue->Pop ();
 	
 	if (node == NULL) {
-		WaitForQueue ();
-		
-		node = (QueueNode *) queue->Pop ();
-	}
-	
-	if (node == NULL) {
-		LOG_PIPELINE ("MemoryQueueSource::Pop (): No more packets.\n");
-		return NULL; // We waited and got nothing, reached end of stream
+		LOG_PIPELINE ("MemoryQueueSource::Pop (): No more packets (for now).\n");
+		return NULL;
 	}
 	
 	if (node->packet == NULL) {
@@ -2181,7 +2033,7 @@ trynext:
 cleanup:				
 	delete node;
 	
-	LOG_PIPELINE ("MemoryQueueSource::Pop (): popped 1 packet, there are %i packets left, of a total of %lld packets written\n", queue.Length (), write_count);
+	LOG_PIPELINE ("MemoryQueueSource::Pop (): popped 1 packet, there are %i packets left, of a total of %lld packets written\n", queue->Length (), write_count);
 	
 	return result;
 }
@@ -2192,7 +2044,7 @@ MemoryQueueSource::Write (void *buf, gint64 offset, gint32 n)
 	MemorySource *src;
 	ASFPacket *packet;
 	
-	//printf ("MemoryQueueSource::Write (%p, %lld, %i), write_count: %lld\n", buf, offset, n, write_count + 1);
+	LOG_PIPELINE ("MemoryQueueSource::Write (%p, %lld, %i), write_count: %lld\n", buf, offset, n, write_count + 1);
 
 	if (!queue)
 		return;
@@ -2214,16 +2066,17 @@ MemoryQueueSource::Write (void *buf, gint64 offset, gint32 n)
 		queue->Push (new QueueNode (src));
 		src->unref ();
 	}
-	
-	if (IsWaiting ())
-		Signal ();
+
+	if (media)
+		media->WakeUp ();
 }
 
 bool
 MemoryQueueSource::SeekInternal (gint64 offset, int mode)
 {
 	g_warning ("MemoryQueueSource::SeekInternal (%lld, %i): You hit a bug in moonlight, please attach gdb, get a stack trace and file bug.", offset, mode);
-	
+	print_stack_trace ();
+
 	return false;
 }
 
@@ -2236,9 +2089,9 @@ MemoryQueueSource::ReadInternal (void *buffer, guint32 n)
 }
 
 gint32
-MemoryQueueSource::PeekInternal (void *buffer, guint32 n, gint64 start)
+MemoryQueueSource::PeekInternal (void *buffer, guint32 n)
 {
-	g_warning ("MemoryQueueSource::PeekInternal (%p, %u, %lld): You hit a bug in moonlight, please attach gdb, get a stack trace and file bug.", buffer, n, start);
+	g_warning ("MemoryQueueSource::PeekInternal (%p, %u): You hit a bug in moonlight, please attach gdb, get a stack trace and file bug.", buffer, n);
 	
 	return 0;
 }
@@ -2263,7 +2116,6 @@ MemoryQueueSource::NotifyFinished ()
 	Lock ();
 	this->finished = true;
 	Unlock ();
-	Signal ();
 }
 
 gint64
@@ -2274,45 +2126,31 @@ MemoryQueueSource::GetSizeInternal ()
 	return 0;
 }
 
-void
-MemoryQueueSource::RequestPosition (gint64 *pos)
-{
-	Lock ();
-	if (requested_pts != UINT64_MAX && requested_pts != last_requested_pts) {
-		*pos = requested_pts;
-		last_requested_pts = requested_pts;
-		requested_pts = UINT64_MAX;
-		Signal ();
-	}
-	Unlock ();
-}
-
-bool
+MediaResult
 MemoryQueueSource::SeekToPts (guint64 pts)
 {
+	MediaResult result = true;
+
 	LOG_PIPELINE ("MemoryQueueSource::SeekToPts (%llu)\n", pts);
 
-	if (last_requested_pts == pts)
-		return true;
-
-	if (!queue)
-		return false;
-
-	Lock ();
-	queue->Clear (true);
-	requested_pts = pts;
-	finished = false;
-
-	StartWaitLoop ();
-	while (!Aborted () && requested_pts != UINT64_MAX)
-		Wait ();
-	EndWaitLoop ();
-
-	Unlock ();
-
-	LOG_PIPELINE ("MemoryQueueSource::SeekToPts (%llu) [Done]\n", pts);
+	if (queue) {
+		queue->Clear (true);
+		Downloader *dl = media->GetDownloader ();
+		InternalDownloader *idl = dl->GetInternalDownloader ();
+		MmsDownloader *mms;
+		if (idl->GetType () == InternalDownloader::MmsDownloader) {
+			mms = (MmsDownloader *) idl;
+			mms->SetRequestedPts (pts);
+		} else {
+			fprintf (stderr, "Moonlight: media assert failure (downloader's internal downloader isn't a mms downloader)\n");
+		}
+		finished = false;
+		result = MEDIA_SUCCESS;
+	} else {
+		result = MEDIA_FAIL;
+	}
 	
-	return !Aborted ();
+	return result;
 }
 
 
@@ -2425,6 +2263,11 @@ IMediaStream::IMediaStream (Media *media) : IMediaObject (media)
 	min_padding = 0;
 	index = -1;
 	selected = false;
+	queue = new Queue ();
+	
+	first_pts = G_MAXUINT64; // The first pts in the stream, initialized to G_MAXUINT64
+	last_popped_pts = G_MAXUINT64; // The pts of the last frame returned, initialized to G_MAXUINT64
+	last_enqueued_pts = G_MAXUINT64; // The pts of the last frame enqueued, initialized to G_MAXUINT64
 }
 
 IMediaStream::~IMediaStream ()
@@ -2434,6 +2277,113 @@ IMediaStream::~IMediaStream ()
 	
 	g_free (extra_data);
 	g_free (codec);
+	delete queue;
+}
+
+guint64
+IMediaStream::GetBufferedSize ()
+{
+	guint64 result;
+	
+	queue->Lock ();
+	if (first_pts == G_MAXUINT64 || last_enqueued_pts == G_MAXUINT64)
+		result = 0;
+	else if (last_popped_pts == G_MAXUINT64)
+		result = last_enqueued_pts - first_pts;
+	else
+		result = last_enqueued_pts - last_popped_pts;
+	queue->Unlock ();
+
+	LOG_BUFFERING ("IMediaStream::GetBufferedSize (): codec: %s, first_pts: %llu ms, last_popped_pts: %llu ms, last_enqueued_pts: %llu ms, result: %llu ms\n",
+		codec, MilliSeconds_FromPts (first_pts), MilliSeconds_FromPts (last_popped_pts), MilliSeconds_FromPts (last_enqueued_pts), MilliSeconds_FromPts (result));
+
+	return result;
+}
+
+
+#if DEBUG
+#define TO_MS(x) (MilliSeconds_FromPts (x) == 1844674407370955ULL ? -1 : MilliSeconds_FromPts (x))
+
+void
+IMediaStream::PrintBufferInformation ()
+{
+	guint64 buffer_size = GetBufferedSize ();
+	
+	printf (" <%s: ", codec);
+	
+	if (GetSelected ()) {
+		printf ("size: %.4llu, first: %.4lli, last popped: %.4lli, last enq: %.4lli, frames enq: %i>",
+			TO_MS (buffer_size), TO_MS (first_pts), TO_MS (last_popped_pts), 
+			TO_MS (last_enqueued_pts), queue ? queue->Length () : -1);
+	} else {
+		printf ("(not selected) >");
+	}
+}
+#endif
+
+void
+IMediaStream::EnqueueFrame (MediaFrame *frame)
+{
+	queue->Lock ();
+	if (first_pts == G_MAXUINT64)
+		first_pts = frame->pts;
+
+#if 0
+	if (last_enqueued_pts > frame->pts && last_enqueued_pts != G_MAXUINT64 && frame->event != FrameEventEOF && frame->buflen > 0) {
+		g_warning ("IMediaStream::EnqueueFrame (): codec: %.5s, first_pts: %llu ms, last_popped_pts: %llu ms, last_enqueued_pts: %llu ms, "
+		"buffer: %llu ms, frame: %p, frame->buflen: %i, frame->pts: %llu ms (the last enqueued frame's pts is below the current frame's pts)\n",
+		codec, MilliSeconds_FromPts (first_pts), MilliSeconds_FromPts (last_popped_pts), MilliSeconds_FromPts (last_enqueued_pts), 
+		MilliSeconds_FromPts (last_popped_pts != G_MAXUINT64 ? last_enqueued_pts - last_popped_pts : last_enqueued_pts), frame, frame->buflen, MilliSeconds_FromPts (frame->pts));
+	}
+#endif
+
+	if (frame->event != FrameEventEOF)
+		last_enqueued_pts = frame->pts;
+	queue->LinkedList ()->Append (new StreamNode (frame));
+	queue->Unlock ();
+
+	LOG_BUFFERING ("IMediaStream::EnqueueFrame (): codec: %.5s, first_pts: %llu ms, last_popped_pts: %llu ms, last_enqueued_pts: %llu ms, buffer: %llu ms, frame: %p, frame->buflen: %i\n",
+		codec, MilliSeconds_FromPts (first_pts), MilliSeconds_FromPts (last_popped_pts), MilliSeconds_FromPts (last_enqueued_pts), 
+		MilliSeconds_FromPts (last_popped_pts != G_MAXUINT64 ? last_enqueued_pts - last_popped_pts : last_enqueued_pts - first_pts), frame, frame->buflen);
+}
+
+MediaFrame *
+IMediaStream::PopFrame ()
+{
+	MediaFrame *result = NULL;
+	StreamNode *node = NULL;
+
+	// We use the queue lock to synchronize access to
+	// last_popped_pts/last_enqueued_pts/first_pts
+
+	queue->Lock ();
+	node = (StreamNode *) queue->LinkedList ()->First ();
+	if (node != NULL) {
+		result = node->frame;
+		queue->LinkedList ()->Remove (node);
+		last_popped_pts = result->pts;
+	}
+	queue->Unlock ();
+	
+	LOG_BUFFERING ("IMediaStream::PopFrame (): codec: %.5s, first_pts: %llu ms, last_popped_pts: %llu ms, last_enqueued_pts: %llu ms, buffer: %llu ms, frame: %p, frame->buflen: %i\n",
+		codec, MilliSeconds_FromPts (first_pts), MilliSeconds_FromPts (last_popped_pts), MilliSeconds_FromPts (last_enqueued_pts), 
+		MilliSeconds_FromPts (last_popped_pts != G_MAXUINT64 ? last_enqueued_pts - last_popped_pts : last_enqueued_pts), result, result ? result->buflen : 0);
+
+	return result;
+}
+
+void
+IMediaStream::ClearQueue ()
+{
+	LOG_BUFFERING ("IMediaStream::ClearQueue ()\n");
+	if (queue) {
+		queue->Lock ();
+		queue->LinkedList ()->Clear (true);
+		first_pts = G_MAXUINT64;
+		last_popped_pts = G_MAXUINT64;
+		last_enqueued_pts = G_MAXUINT64;
+		queue->Unlock ();
+	}
 }
 
 void
@@ -2466,6 +2416,86 @@ IMediaDemuxer::~IMediaDemuxer ()
 	}
 	source->unref ();
 }
+
+void
+IMediaDemuxer::FillBuffers ()
+{
+	IMediaStream *stream;
+	MediaFrame *frame;
+	MediaResult result = MEDIA_SUCCESS;
+	guint64 buffering_time = media->GetBufferingTime ();
+	
+	LOG_BUFFERING ("IMediaDemuxer::FillBuffers ()\n");
+
+	for (int i = 0; i < GetStreamCount (); i++) {
+		stream = GetStream (i);
+		if (!stream->GetSelected ())
+			continue;
+
+		if (stream->GetType () != MediaTypeVideo && 
+			stream->GetType () != MediaTypeAudio)
+			continue;
+
+		if (stream->GetBufferedSize () >= buffering_time)
+			continue;
+
+		while (stream->GetBufferedSize () < buffering_time) {
+			LOG_BUFFERING ("IMediaDemuxer::FillBuffers (): codec: %s, result: %i, buffered size: %llu ms, buffering time: %llu ms\n",
+				stream->codec, result, MilliSeconds_FromPts (stream->GetBufferedSize ()), MilliSeconds_FromPts (buffering_time));
+
+			frame = NULL;
+			result = TryReadFrame (stream, &frame);
+			if (MEDIA_SUCCEEDED (result)) {
+				stream->EnqueueFrame (frame);
+			} else if (result == MEDIA_NO_MORE_DATA) {
+				if (frame != NULL) {
+					g_warning ("IMediaDemuxer::FillBuffers (): we shouldn't get a frame back when there's no more data.\n");
+					delete frame;
+				}
+				frame = new MediaFrame (stream);
+				frame->event = FrameEventEOF;
+				stream->EnqueueFrame (frame);
+				break;
+			} else {
+				break;
+			}
+		}
+		
+		LOG_BUFFERING ("IMediaDemuxer::FillBuffers (): codec: %s, result: %i, buffered size: %llu ms, buffering time: %llu ms, last popped time: %llu ms\n", 
+				stream->codec, result, MilliSeconds_FromPts (stream->GetBufferedSize ()), MilliSeconds_FromPts (buffering_time), MilliSeconds_FromPts (stream->GetLastPoppedPts ()));
+	}
+	
+	LOG_BUFFERING ("IMediaDemuxer::FillBuffers () [Done]. BufferedSize: %llu ms\n", GetBufferedSize ());
+}
+
+guint64
+IMediaDemuxer::GetBufferedSize ()
+{
+	guint64 result = G_MAXUINT64;
+	IMediaStream *stream;
+	
+	for (int i = 0; i < GetStreamCount (); i++) {
+		stream = GetStream (i);
+		if (!stream->GetSelected ())
+			continue;
+
+		result = MIN (result, stream->GetBufferedSize ());
+	}
+
+	return result;
+}
+
+#if DEBUG
+void
+IMediaDemuxer::PrintBufferInformation ()
+{
+	printf ("Buffer: %lld", MilliSeconds_FromPts (GetBufferedSize ()));
+	for (int i = 0; i < GetStreamCount (); i++) {
+		GetStream (i)->PrintBufferInformation ();
+	}
+	printf ("\n");
+}
+#endif
 
 guint64
 IMediaDemuxer::GetDuration ()
@@ -2524,10 +2554,28 @@ MediaFrame::~MediaFrame ()
 IMediaObject::IMediaObject (Media *media)
 {
 	this->media = media;
+	if (this->media)
+		this->media->ref ();
 }
 
-IMediaObject::~IMediaObject ()
+void
+IMediaObject::Dispose ()
 {
+	EventObject::Dispose ();
+	if (media) {
+		media->unref ();
+		media = NULL;
+	}
+}
+
+void
+IMediaObject::SetMedia (Media *value)
+{
+	if (media)
+		media->unref ();
+	media = value;
+	if (media)
+		media->ref ();
 }
 
 /*
@@ -2544,9 +2592,6 @@ IMediaSource::IMediaSource (Media *media)
 	pthread_mutexattr_destroy (&attribs);
 
 	pthread_cond_init (&condition, NULL);
-
-	wait_count = 0;
-	aborted = false;
 }
 
 IMediaSource::~IMediaSource ()
@@ -2567,102 +2612,18 @@ IMediaSource::Unlock ()
 	pthread_mutex_unlock (&mutex);
 }
 
-void
-IMediaSource::Signal ()
-{
-	pthread_cond_signal (&condition);
-}
-
-void
-IMediaSource::Wait ()
-{
-	if (aborted)
-		return;
-
-	g_atomic_int_inc (&wait_count);
-	pthread_cond_wait (&condition, &mutex);
-	g_atomic_int_dec_and_test (&wait_count);
-}
-
-void
-IMediaSource::StartWaitLoop ()
-{
-	g_atomic_int_inc (&wait_count);
-}
-
-void
-IMediaSource::EndWaitLoop ()
-{
-	if (g_atomic_int_dec_and_test (&wait_count))
-		aborted = false;
-}
-
-void
-IMediaSource::Abort ()
-{
-	LOG_PIPELINE ("IMediaSource::Abort ()\n");
-	//LOG_PIPELINE_ERROR_CONDITIONAL (GetLastAvailablePosition () != -1, "IMediaSource::Abort (): Any pending operations will now be aborted (probably due to a seek) and you may see a few reading errors. This is completely normal.\n")
-
-	// There's no need to lock here, since aborted can only be set to true.
-	aborted = true;
-	while (IsWaiting ()) {
-		Signal ();
-	}
-}
-
-bool
-IMediaSource::IsWaiting ()
-{
-	return g_atomic_int_get (&wait_count) != 0;
-}
-
-void
-IMediaSource::WaitForPosition (bool block, gint64 position)
-{
-	LOG_PIPELINE ("IMediaSource<%i>::WaitForPosition (%i, %lld) last available pos: %lld, aborted: %i\n", GET_OBJ_ID (this), block, position, GetLastAvailablePositionInternal (), aborted);
-
-	StartWaitLoop ();
-
-	if (block && GetLastAvailablePositionInternal () != -1) {
-		while (!aborted) {
-			// Check if the entire file is available.
-			if (GetSizeInternal () >= 0 && GetSizeInternal () <= GetLastAvailablePositionInternal () + 1) {
-				LOG_PIPELINE ("IMediaSource<%i>::WaitForPosition (%i, %lld): GetSize (): %lld, GetLastAvailablePositionInternal (): %lld.\n", GET_OBJ_ID (this), block, position, GetSizeInternal (), GetLastAvailablePositionInternal ());	
-				break;
-			}
-
-			// Check if we got the position we want
-			if (GetLastAvailablePositionInternal () >= position) {
-				LOG_PIPELINE ("IMediaSource<%i>::WaitForPosition (%i, %lld): GetLastAvailablePositionInternal (): %lld.\n", GET_OBJ_ID (this), block, position, GetLastAvailablePositionInternal ());	
-				break;
-			}
-			
-			Wait ();
-		}
-	}
-
-	EndWaitLoop ();
-
-	LOG_PIPELINE ("IMediaSource<%i>::WaitForPosition (%i, %lld): aborted: %i\n", GET_OBJ_ID (this), block, position, aborted);
-}
-
 gint32
-IMediaSource::ReadSome (void *buf, guint32 n, bool block, gint64 start)
+IMediaSource::ReadSome (void *buf, guint32 n)
 {
 	gint32 result;
 
-	LOG_PIPELINE ("IMediaSource<%i>::ReadSome (%p, %i, %s, %lld)\n", GET_OBJ_ID (this), buf, n, block ? "true" : "false", start);
-	
+	LOG_PIPELINE ("IMediaSource<%i>::ReadSome (%p, %u)\n", GET_OBJ_ID (this), buf, n);
+
 	Lock ();
-	
-	if (start == -1)
-		start = GetPositionInternal ();
-	else if (start != GetPositionInternal () && !SeekInternal (start, SEEK_SET))
-		return -1;
-	
-	WaitForPosition (block, start + n - 1);
 
 	result = ReadInternal (buf, n);
+
+	LOG_PIPELINE ("IMediaSource<%i>::ReadSome (%p, %u) read %i, position: %lld\n", GET_OBJ_ID (this), buf, n, result, GetPosition ());
 
 	Unlock ();
 
@@ -2670,36 +2631,45 @@ IMediaSource::ReadSome (void *buf, guint32 n, bool block, gint64 start)
 }
 
 bool
-IMediaSource::ReadAll (void *buf, guint32 n, bool block, gint64 start)
+IMediaSource::ReadAll (void *buf, guint32 n)
 {
 	gint32 read;
+	gint64 prev = GetPosition ();
+	gint64 avail = GetLastAvailablePosition ();
 	
-	LOG_PIPELINE ("IMediaSource<%d>::ReadAll (%p, %u, %s, %lld).\n",
-		      GET_OBJ_ID (this), buf, n, block ? "true" : "false", start);
+	//printf ("IMediaSource::ReadAll (%p, %u), position: %lld\n", buf, n, prev);
 	
-	read = ReadSome (buf, n, block, start);
+	read = ReadSome (buf, n);
 	
-	LOG_PIPELINE ("IMediaSource<%d>::ReadAll (%p, %u, %s, %lld), read: %d [Done].\n",
-		      GET_OBJ_ID (this), buf, n, block ? "true" : "false", start, read);
+	if ((gint64) read != (gint64) n) {
+		FileSource *fs = (FileSource *) this;
+		g_warning ("IMediaSource::ReadInternal (%i): Read failed, read %i bytes. available size: %lld, size: %lld, pos: %lld, prev pos: %lld, position not available: %lld, feof: %i, ferror: %i, strerror: %s\n", 
+			n, read, avail, GetSize (), GetPosition (), prev, prev + n, feof (fs->fd), ferror (fs->fd), strerror (ferror (fs->fd)));
+		print_stack_trace ();
+		exit (-1);
+	}
+	
+	LOG_PIPELINE ("IMediaSource<%d>::ReadAll (%p, %u), read: %d [Done].\n",
+		      GET_OBJ_ID (this), buf, n, read);
 	
 	return (gint64) read == (gint64) n;
 }
 
 bool
-IMediaSource::Peek (void *buf, guint32 n, bool block, gint64 start)
+IMediaSource::Peek (void *buf, guint32 n)
 {
 	bool result;
-
+	gint64 read;
+	
 	Lock ();
 
-	if (start == -1)
-		start = GetPositionInternal ();
-
-	WaitForPosition (block, start + n - 1);
-
-	result = (gint64) PeekInternal (buf, n, start) == (gint64) n;
+	read = PeekInternal (buf, n);
+	result = read == (gint64) n;
 
 	Unlock ();
+
+	if (!result)
+		printf ("IMediaSource::Peek (%p, %u): peek failed, read %lld bytes.\n", buf, n, read);
 
 	return result;
 }
@@ -2716,6 +2686,37 @@ IMediaSource::Seek (gint64 offset, int mode)
 	result = SeekInternal (offset, mode);
 	Unlock ();
 	return result;
+}
+
+bool
+IMediaSource::IsPositionAvailable (gint64 position, bool *eof)
+{
+	gint64 available = GetLastAvailablePosition ();
+	gint64 size = GetSize ();
+
+	*eof = false;
+
+	if (size != -1 && size < position) {
+		// Size is known and smaller than the requested position
+		*eof = true;
+		return false;
+	}
+
+	if (available != -1 && available < position) {
+		// Not everything is available and the available position is smaller than the requested position
+		*eof = false;
+		return false;
+	}
+
+	if (size == -1 && available == -1) {
+		// Size is not known, but everything is available??
+		// This is probably due to a bug in the derived *Source class
+		*eof = false;
+		fprintf (stderr, "Moonlight: media assert error (invalid source size), media playback errors will probably occur\n");
+		return false;
+	}
+
+	return true;
 }
 
 gint64
@@ -2757,6 +2758,33 @@ IMediaDemuxer::SetStreams (IMediaStream** streams, int count)
 {
 	this->streams = streams;
 	this->stream_count = count;
+}
+
+MediaResult
+IMediaDemuxer::Seek (guint64 pts)
+{
+	MediaResult result;
+	
+	for (int i = 0; i < GetStreamCount (); i++) {
+		IMediaStream *stream = GetStream (i);
+		stream->ClearQueue ();
+		if (stream->decoder != NULL)
+			stream->decoder->CleanState ();
+	}
+
+	LOG_PIPELINE ("IMediaDemuxer::Seek (%llu)\n", MilliSeconds_FromPts (pts));
+
+	result = SeekInternal (pts);
+
+#if DEBUG
+	for (int i = 0; i < GetStreamCount (); i++) {
+		if (GetStream (i)->PopFrame () != NULL) {
+			g_warning ("IMediaDemuxer::Seek (): We got frames while we were seeking.\n");
+		}
+	}
+#endif
+
+	return result;
 }
 
 /*
@@ -2853,7 +2881,7 @@ MarkerStream::MarkerFound (MediaFrame *frame)
 	}
 	
 	if (closure == NULL) {
-		LOG_PIPELINE ("MarkerStream::MarkerFound (): Got decoded marker, but nobody is waiting ofr it.\n");
+		LOG_PIPELINE ("MarkerStream::MarkerFound (): Got decoded marker, but nobody is waiting for it.\n");
 		return;
 	}
 	
@@ -3066,7 +3094,7 @@ NullDecoder::OpenVideo ()
 	guint32 img_stride = (img_width * 3 + 3) & ~3; // in bytes
 	guint32 img_i, img_h, img_w;
 	
-	LOG_PIPELINE ("offset: %i, size: %i, width: 0x%x = %i, height: 0x%x = %i, stride: %i\n", img_offset, img_size, img_width, img_width, img_height, img_height, img_stride);
+	LOG_PIPELINE ("offset: %i, width: 0x%x = %i, height: 0x%x = %i, stride: %i\n", img_offset, img_width, img_width, img_height, img_height, img_stride);
 	
 	// create the buffer for our image
 	logo_size = dest_height * dest_width * 4;

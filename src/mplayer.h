@@ -62,6 +62,7 @@ class MediaPlayer : public EventObject {
 		// If Audio/Video has finished playing 
 		AudioEnded			= (1 << 13),
 		VideoEnded			= (1 << 14),
+		BufferUnderflow     = (1 << 15),
 	};
 	
  private:
@@ -123,6 +124,8 @@ class MediaPlayer : public EventObject {
 	bool IsStopped () { return (state & StateMask) == Stopped; }
 	bool IsSeeking () { return (state & Seeking) == Seeking; }
 	bool IsLoadFramePending () { return (state & LoadFramePending); }
+	bool IsBufferUnderflow () { return (state & BufferUnderflow); }
+	
 	bool HasRenderedFrame () { return (state & RenderedFrame); }
 	void VideoFinished (); // not thread safe.
 	void AudioFinished (); // Called by the audio player when audio reaches the end (this method is thread-safe).
@@ -133,7 +136,9 @@ class MediaPlayer : public EventObject {
 	void SetBitTo (PlayerState s, bool value) { if (value) SetBit (s); else RemoveBit (s); }
 	bool GetBit (PlayerState s) { return (state & s) == s; }
 	void SetState (PlayerState s) { state = (PlayerState) ((state & ~StateMask) | s); }
-	
+
+	void SetBufferUnderflow () { SetBitTo (BufferUnderflow, true); }
+
 	void Play ();
 	bool GetCanPause ();
 	void SetCanPause (bool value);

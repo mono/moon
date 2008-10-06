@@ -1,5 +1,12 @@
 2008-10-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* asf.cpp, asf.h: ASFParser: handle buffer underruns correctly and
+	  never block. Some API changes to allow returning buffer underrun
+	  errors. ASFFrameReader::Advance: implement resuming after a buffer
+	  underrun occurred.
+
+2008-10-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* asf-generated.cpp, asf-guids.cpp, asf-structures.cpp: Include
 	  <config.h>.
 

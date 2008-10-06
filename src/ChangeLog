@@ -1,3 +1,33 @@
+2008-10-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* audio.cpp, audio.h: Access the Media directly to enqueue frames,
+	  avoiding the need for a tick call on the main thread. If audio
+	  underflowed and we don't have more data available, set buffer
+	  underflow flag on the media player.
+	* playlist.cpp, playlist.h: Playlist::Parse: until the source has all
+	  the data available, return MEDIA_NOT_ENOUGH_DATA.
+	* downloader.cpp, downloader.h: Remove RequestPosition methods, no
+	  longer needed.
+	* mms-downloader.h, mms-downloader.cpp: Added Set|GetRequestedPts, and
+	  use that value to determine if we should seek or not.
+	* mplayer.cpp, mplayer.h: Add a BufferUnderflow flag, set when
+	  audio/video needs more data, but the buffer is empty.
+	* pipeline.cpp, pipeline.h: Media: Change how buffering works: we now
+	  have an in-memory buffer of demuxed frames (one queue for frames
+	  for each stream), and calculate buffer size from that.
+	  ProgressiveSource: open an additional file descriptor for writing,
+	  makes locking unnecessary. Change al io to return failure if there
+	  is not enough data, this allows us to remove all the
+	  blocking/waiting logic. MemoryQueueSource: push seeks to
+	  MmsDownloader, instead of waiting for MmsDownloader to check for
+	  pending seeks. FileSource: don't reinvent the wheel and use stdio
+	  to get buffered io instead of having buffering logic ourselves.
+	* mp3.h, mp3.cpp: Implemented non-blocking reading to support buffer
+	  underruns correctly.
+	* media.cpp: MediaElement: Retrieve buffer size from the demuxer
+	  instead of calculating it. Handle MEDIA_NOT_ENOUGH_DATA errors when
+	  trying to open media and retry later on.
+
 2008-10-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* src.mdp: Updated.

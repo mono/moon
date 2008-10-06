@@ -75,7 +75,6 @@ Downloader::Downloader ()
 	streaming_features = HttpStreamingFeaturesNone;
 	notify_size = NULL;
 	this->write = NULL;
-	request_position = NULL;
 	internal_dl = NULL;
 	
 	send_queued = false;
@@ -412,18 +411,6 @@ Downloader::InternalWrite (void *buf, gint32 offset, gint32 n)
 }
 
 void
-Downloader::RequestPosition (gint64 *pos)
-{
-	d (printf ("Downloader::RequestPosition (%p)\n", pos));
-	
-	if (aborted)
-		return;
-	
-	if (request_position)
-		request_position (pos, consumer_closure);
-}
-
-void
 Downloader::SetFilename (const char *fname)
 {
 	d (printf ("Downloader::SetFilename (%s)\n", fname));
@@ -556,14 +543,6 @@ Downloader::SetFunctions (downloader_create_state_func create_state,
 	Downloader::header_func = header;
 	Downloader::body_func = body;
 	Downloader::request_func = request;
-}
-
-void
-Downloader::SetRequestPositionFunc (downloader_request_position_func request_position)
-{
-	d (printf ("Downloader::SetRequestPositionFunc\n"));
-	
-	this->request_position = request_position;
 }
 
 void
@@ -790,12 +769,6 @@ void
 downloader_request_set_body (DownloaderRequest *dr, void *body, int size)
 {
 	dr->SetBody (body, size);
-}
-
-void
-downloader_request_position (Downloader *dl, gint64 *pos)
-{
-	dl->RequestPosition (pos);
 }
 
 void

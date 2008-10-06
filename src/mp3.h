@@ -17,6 +17,18 @@
 
 #include "pipeline.h"
 
+
+/* validate that this is an MPEG audio stream by checking that
+ * the 32bit header matches the pattern:
+ *
+ * 1111 1111 111* **** **** **** **** **** = 0xff 0xe0
+ *
+ * Use a mask of 0xffe6 (because bits 12 and 13 can both be 0 if it is
+ * MPEG 2.5). Compare the second byte > 0xe0 because one of the other
+ * masked bits has to be set (the Layer bits cannot both be 0).
+ */
+#define is_mpeg_header(buffer) (buffer[0] == 0xff && ((buffer[1] & 0xe6) > 0xe0) && (buffer[1] & 0x18) != 0x08)
+
 struct MpegFrameHeader {
 	guint8 version:2;
 	guint8 layer:2;
@@ -71,17 +83,15 @@ class Mp3FrameReader {
 	guint32 MpegFrameSearch (guint64 pts);
 	void AddFrameIndex (gint64 offset, guint64 pts, guint32 dur, gint32 bit_rate);
 	
-	bool SkipFrame ();
+	MediaResult SkipFrame ();
 	
 public:
 	Mp3FrameReader (IMediaSource *source, gint64 start, guint32 frame_len, guint32 frame_duration, bool xing);
 	~Mp3FrameReader ();
 	
-	bool Seek (guint64 pts);
+	MediaResult Seek (guint64 pts);
 	
-	MediaResult ReadFrame (MediaFrame *frame);
-	
-	gint64 EstimatePtsPosition (guint64 pts);
+	MediaResult TryReadFrame (IMediaStream *stream, MediaFrame **frame);
 };
 
 class Mp3Demuxer : public IMediaDemuxer {
@@ -91,20 +101,20 @@ private:
 
 protected:
 	virtual ~Mp3Demuxer ();
+	virtual MediaResult SeekInternal (guint64 pts);
 
 public:
 	Mp3Demuxer (Media *media, IMediaSource *source);
 	
 	virtual MediaResult ReadHeader ();
-	virtual MediaResult ReadFrame (MediaFrame *frame);
-	virtual MediaResult Seek (guint64 pts);
-	virtual gint64 EstimatePtsPosition (guint64 pts);
+	virtual MediaResult TryReadFrame (IMediaStream *stream, MediaFrame **frame);
+	
 	virtual const char *GetName () { return "Mp3Demuxer"; }
 };
 
 class Mp3DemuxerInfo : public DemuxerInfo {
 public:
-	virtual bool Supports (IMediaSource *source);
+	virtual MediaResult Supports (IMediaSource *source);
 	virtual IMediaDemuxer *Create (Media *media, IMediaSource *source); 
 	virtual const char *GetName () { return "Mp3Demuxer"; }
 };

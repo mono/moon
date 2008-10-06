@@ -265,7 +265,7 @@ public:
 
 	Playlist *GetPlaylist () { return playlist; }
 
-	bool Parse ();
+	MediaResult Parse ();
 	bool ParseASX2 ();
 	bool ParseASX3 ();
 	bool IsASX2 (IMediaSource *source);

@@ -91,12 +91,11 @@ private:
 	ASFParser *parser;
 	IMediaSource *source;
 	IMediaDemuxer *demuxer;
-	bool positioned;
 	// The index of the next packet to be read.
 	uint64_t next_packet_index;
 
 	// Seeks to the specified pts directly on the source.
-	bool SeekToPts (uint64_t pts);
+	MediaResult SeekToPts (uint64_t pts);
 
 public:
 	ASFReader (ASFParser *parser, IMediaDemuxer *demuxer);
@@ -115,7 +114,7 @@ public:
 	// Note that the streams will probably be positioned at different pts after a seek (given that
 	// for audio streams any frame is considered as a key frame, while for video there may be several
 	// seconds between every key frame).
-	bool Seek (uint64_t pts);
+	MediaResult Seek (guint64 pts);
 
 	// Resets all readers
 	void ResetAll ();
@@ -126,13 +125,12 @@ public:
 
  	// Reads another packet and stuffs the payloads into our queue.
 	// Called by the readers when they are out of data.
-	MediaResult ReadMore ();
+	MediaResult TryReadMore ();
 
 	// Can we seek?
 	bool CanSeek () { return true; }
 	
 	uint64_t GetLastAvailablePacketIndex ();
-	uint64_t GetLastAvailablePts ();
 
 };
 
@@ -200,6 +198,7 @@ private:
 
 	// Only return key frames. Reset after we've returned a key frame.
 	bool key_frames_only;
+	bool buffer_underflow; // If the last time we tried to advance the buffer ran out of data
 	int stream_number; // The stream this reader is reading for 
 	bool positioned;
 	
@@ -267,7 +266,7 @@ private:
 	bool header_read_successfully;
 	
 	void Initialize ();
-	bool ReadData ();
+	MediaResult ReadData ();
 	asf_object *ReadObject (asf_object *guid);
 	void SetStream (int stream_id, const asf_stream_properties *stream);
 	void SetExtendedStream (int stream_id, const asf_extended_stream_properties *stream);
@@ -281,7 +280,7 @@ public:
 	// The parser takes ownership of the source and will delete it when the parser is deleted.
 	ASFParser (IMediaSource *source, Media *media);
 	
-	bool ReadHeader ();
+	MediaResult ReadHeader ();
 	// Reads a packet
 	// In any case (failure or success), the position of the source
 	// is set to the next packet.

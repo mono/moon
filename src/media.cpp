@@ -94,7 +94,6 @@ MediaBase::DownloaderAbort ()
 		downloader->RemoveHandler (Downloader::DownloadFailedEvent, downloader_failed, this);
 		downloader->RemoveHandler (Downloader::CompletedEvent, downloader_complete, this);
 		downloader->SetWriteFunc (NULL, NULL, NULL);
-		downloader->SetRequestPositionFunc (NULL);
 		downloader->Abort ();
 		downloader->unref ();
 		g_free (part_name);
@@ -869,6 +868,8 @@ MediaElement::MediaOpened (Media *media)
 		
 		return true;
 	}
+	if (downloaded_file != NULL)
+		downloaded_file->SetMedia (media);
 }
 
 void
@@ -1031,54 +1032,29 @@ MediaElement::Render (cairo_t *cr, Region *region)
 double
 MediaElement::GetBufferedSize ()
 {
-	double progress;
-	guint64 current_pts;
-	guint64 buffer_pts;
+	guint64 buffering_time;
+	guint64 buffered_time;
 	IMediaDemuxer *demuxer;
-	guint64 currently_available_pts;
-	
-	current_pts = mplayer->GetPosition ();
-	buffer_pts = TimeSpan_ToPts (GetBufferingTime ());
-	demuxer = media ? media->GetDemuxer () : NULL;
-	currently_available_pts = demuxer ? demuxer->GetLastAvailablePts () : 0;
-	
-	if (first_pts == G_MAXUINT64)
-		first_pts = currently_available_pts;
-	
-	if (first_pts > currently_available_pts)
-		currently_available_pts = 0;
-	else 
-		currently_available_pts -= first_pts;
-	
-	// Check that we don't cause any div/0.
-	if (currently_available_pts == 0) {
-		progress = 0.0;
-	} else if (currently_available_pts < last_played_pts) {
-		last_played_pts = currently_available_pts;
-		progress = 0.0;
-	} else if (current_pts - last_played_pts + buffer_pts == currently_available_pts - last_played_pts) {
-		progress = 1.0;
-	} else {
-		progress = (double) (currently_available_pts - last_played_pts) / (double) (current_pts - last_played_pts + buffer_pts);
-	}
 
-	e(printf ("MediaElement::GetBufferedSize (), "
-			"buffer_pts: %llu = %llu ms, "
-			"last_played_pts: %llu = %llu ms, "
-			"current_pts: %llu = %llu ms, "
-			"currently_available_pts: %llu = %llu ms, current: %.2f, progress: %.2f\n",
-			buffer_pts, MilliSeconds_FromPts (buffer_pts),
-			last_played_pts, MilliSeconds_FromPts (last_played_pts),
-			current_pts, MilliSeconds_FromPts (current_pts),
-			currently_available_pts, MilliSeconds_FromPts (currently_available_pts), 
-		  	GetBufferingProgress (), progress));
-			
-	if (progress < 0.0)
-		progress = 0.0;
-	else if (progress > 1.0)
-		progress = 1.0;
+	buffering_time = TimeSpan_ToPts (GetBufferingTime ());
+
+	if (buffering_time == 0)
+		return 1.0;
+
+	if (!media)
+		return 0.0;
 		
-	return progress;
+	demuxer = media->GetDemuxer ();
+
+	if (!demuxer)
+		return 0.0;
+
+	buffered_time = demuxer->GetBufferedSize ();
+
+	if (buffered_time >= buffering_time)
+		return 1.0;
+		
+	return (double) buffered_time / (double) buffering_time;
 }
 
 void
@@ -1092,14 +1068,14 @@ MediaElement::UpdateProgress ()
 	if (state & WaitingForOpen)
 		return;
 	
-	if (downloaded_file != NULL && IsPlaying () && downloaded_file->IsWaiting () && GetBufferedSize () < 0.2) {
+	if (downloaded_file != NULL && IsPlaying () && mplayer->IsBufferUnderflow () && GetBufferedSize () == 0.0) {
 		// We're waiting for more data, switch to the 'Buffering' state.
 		d(printf ("MediaElement::UpdateProgress (): Switching to 'Buffering', previous_position: "
-			  "%llu = %llu ms, mplayer->GetPosition (): %llu = %llu ms, last available pts: %llu, "
+			  "%llu = %llu ms, mplayer->GetPosition (): %llu = %llu ms, buffered size: %llu, "
 			  "buffering progress: %.2f\n", 
 			  previous_position, MilliSeconds_FromPts (previous_position), mplayer->GetPosition (),
 			  MilliSeconds_FromPts (mplayer->GetPosition ()),
-			  media ? media->GetDemuxer ()->GetLastAvailablePts () : 0, GetBufferedSize ()));
+			  media ? media->GetDemuxer ()->GetBufferedSize () : 0, GetBufferedSize ()));
 		
 		flags |= PlayRequested;
 		SetBufferingProgress (0.0);
@@ -1109,6 +1085,9 @@ MediaElement::UpdateProgress ()
 		emit = true;
 	}
 	
+	//if (media && media->GetDemuxer ())
+	//	media->GetDemuxer ()->PrintBufferInformation ();
+			
 	if (IsBuffering ()) {
 		progress = GetBufferedSize ();
 		current = GetBufferingProgress ();
@@ -1126,9 +1105,7 @@ MediaElement::UpdateProgress ()
 			Emit (BufferingProgressChangedEvent);
 		}
 		
-		// Don't call BufferingComplete until the pipeline isn't waiting for anything anymore,
-		// since otherwise we'll jump back to the Buffering state on the next call to UpdateProgress.
-		if (progress == 1.0 && (downloaded_file == NULL || !downloaded_file->IsWaiting ()))
+		if (progress == 1.0)
 			BufferingComplete ();
 	}
 	
@@ -1175,7 +1152,7 @@ MediaElement::DataWrite (void *buf, gint32 offset, gint32 n)
 		downloaded_file->Write (buf, (gint64) offset, n);
 		
  		// FIXME: How much do we actually have to download in order to try to open the file?
-		if (!(flags & BufferingFailed) && IsOpening () && offset > 1024 && (part_name == NULL || part_name[0] == 0))
+		if (!(flags & BufferingFailed) && IsOpening () && offset > 4096 && (part_name == NULL || part_name[0] == 0))
 			TryOpen ();
 	}
 	
@@ -1187,23 +1164,10 @@ MediaElement::DataWrite (void *buf, gint32 offset, gint32 n)
 		UpdateProgress ();
 }
 
-void
-MediaElement::DataRequestPosition (gint64 *position)
-{
-       if (downloaded_file != NULL)
-               ((MemoryQueueSource*)downloaded_file)->RequestPosition (position);
-}
-
 void 
 MediaElement::data_write (void *buf, gint32 offset, gint32 n, gpointer data)
 {
 	((MediaElement *) data)->DataWrite (buf, offset, n);
-}
-
-void 
-MediaElement::data_request_position (gint64 *position, gpointer data)
-{
-       ((MediaElement *) data)->DataRequestPosition (position);
 }
 
 void
@@ -1284,10 +1248,18 @@ MediaElement::TryOpenFinished (EventObject *user_data)
 		element->last_played_pts = 0;
 		element->SetState (Buffering);
 		element->MediaOpened (closure->GetMedia ());
+	} else if (closure->result == MEDIA_NOT_ENOUGH_DATA) {
+		if (element->flags & DownloadComplete) {
+			// Try again, the download completed after the media failed to open it due to not having
+			// enough data.
+			element->TryOpen ();
+		} else {
+			// do nothing, we neither failed nor succeeded.
+			// clearing the WaitingForOpen flag above causes us to
+			// try to open it again upon next write
+		}
 	} else {
 		element->flags |= BufferingFailed;
-		// Seek back to the beginning of the file
-		element->downloaded_file->Seek (0, SEEK_SET);
 		element->MediaFailed (new ErrorEventArgs (MediaError, 3001, "AG_E_INVALID_FILE_FORMAT"));
 	}
 	
@@ -1340,9 +1312,13 @@ MediaElement::TryOpen ()
 		char *filename = downloader->GetDownloadedFilename (part_name);
 		Media *media = new Media (this, downloader);
 		IMediaSource *source;
+
+		media->SetBufferingTime (TimeSpan_ToPts (GetBufferingTime ()));
 		
-		if (current_downloaded_file)
+		if (current_downloaded_file) {
 			current_downloaded_file->ref ();
+			current_downloaded_file->SetMedia (media);
+		}
 		
 		if (filename == NULL && current_downloaded_file != NULL) {
 			source = current_downloaded_file;
@@ -1378,10 +1354,15 @@ MediaElement::TryOpen ()
 		
 		Media *media = new Media (this, downloader);
 		
+		media->SetBufferingTime (TimeSpan_ToPts (GetBufferingTime ()));
 		MediaClosure *closure = new MediaClosure (media_element_open_callback);
 		closure->SetContext (this);
 		closure->SetMedia (media);
 		media->OpenAsync (downloaded_file, closure);
+
+		if (downloaded_file)
+			downloaded_file->SetMedia (media);
+
 		media->unref ();
 		media = NULL;
 	}
@@ -1499,10 +1480,9 @@ MediaElement::SetSourceInternal (Downloader *downloader, char *PartName)
 			TryOpen ();
 		} else {
 			if (is_streaming) {
-				downloaded_file = new MemoryQueueSource (mplayer->GetMedia() );
-				downloader->SetRequestPositionFunc (data_request_position);
+				downloaded_file = new MemoryQueueSource (media);
 			} else {
-				downloaded_file = new ProgressiveSource (mplayer->GetMedia ());
+				downloaded_file = new ProgressiveSource (media);
 			}
 			
 			// FIXME: error check Initialize()
@@ -1876,6 +1856,9 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 		mplayer->SetBalance (args->new_value->AsDouble ());
 	} else if (args->property == MediaElement::BufferingProgressProperty) {
 		// read-only property
+	} else if (args->property == MediaElement::BufferingTimeProperty) {
+		if (media)
+			media->SetBufferingTime (TimeSpan_ToPts (GetBufferingTime ()));
 	} else if (args->property == MediaElement::CurrentStateProperty) {
 		Emit (CurrentStateChangedEvent);
 	} else if (args->property == MediaElement::IsMutedProperty) {

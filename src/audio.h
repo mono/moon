@@ -83,6 +83,7 @@ class AudioSource : public EventObject {
 	void Unlock ();
 	
 	static MediaResult FrameCallback (MediaClosure *closure);
+	void Enqueue ();
 	
  protected:
 	AudioSource (AudioPlayer *player, MediaPlayer *mplayer, AudioStream *stream);

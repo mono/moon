@@ -61,6 +61,9 @@ MmsDownloader::MmsDownloader (Downloader *dl) : InternalDownloader (dl)
 	p_packet_times [2] = 0;
 	
 	parser = NULL;
+
+	requested_pts = G_MAXUINT64;
+	pthread_mutex_init (&request_mutex, NULL);
 }
 
 MmsDownloader::~MmsDownloader ()
@@ -68,6 +71,25 @@ MmsDownloader::~MmsDownloader ()
 	g_free (buffer);
 	if (parser)
 		parser->unref ();
+	pthread_mutex_destroy (&request_mutex);
+}
+
+void
+MmsDownloader::SetRequestedPts (guint64 value)
+{
+	pthread_mutex_lock (&request_mutex);
+	requested_pts = value;
+	pthread_mutex_unlock (&request_mutex);
+}
+
+guint64
+MmsDownloader::GetRequestedPts ()
+{
+	guint64 result;
+	pthread_mutex_lock (&request_mutex);
+	result = requested_pts;
+	pthread_mutex_unlock (&request_mutex);
+	return result;
 }
 
 void
@@ -90,7 +112,7 @@ MmsDownloader::Write (void *buf, gint32 off, gint32 n)
 	MmsPacket *packet;
 	char *payload;
 	guint32 offset = 0;
-	int64_t requested_position = -1;
+	guint64 requested_position = GetRequestedPts ();
 
 	// Resize our internal buffer
 	if (buffer == NULL) {
@@ -103,15 +125,16 @@ MmsDownloader::Write (void *buf, gint32 off, gint32 n)
 	memcpy (buffer + size, buf, n);
 	size += n;
 
-	// FIXME: We shouldn't poll here, we should notify over
-	dl->RequestPosition (&requested_position);
-	if (requested_position != -1) {
+	LOG_MMS ("MmsDownloader::Write () requested_position: %llu\n", requested_position);
+	
+	if (requested_position != G_MAXUINT64) {
 		seeked = true;
 
 		g_free (buffer);
 		buffer = NULL;
 		size = 0;
 
+		SetRequestedPts (G_MAXUINT64);
 		RestartAtPts (requested_position);
 
 		return;
@@ -243,7 +266,9 @@ MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *
 		ASFDemuxerInfo *dx_info = new ASFDemuxerInfo ();
 		MemorySource *asf_src = new MemorySource (NULL, payload, header->length - sizeof (MmsDataPacket), 0);
 		
-		if (!dx_info->Supports (asf_src)) {
+		asf_src->SetOwner (false);
+
+		if (!MEDIA_SUCCEEDED (dx_info->Supports (asf_src))) {
 			// TODO: What should we do here?
 			asf_packet_size = ASF_DEFAULT_PACKET_SIZE,
 			delete dx_info;
@@ -253,9 +278,8 @@ MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *
 		
 		parser = new ASFParser (asf_src, NULL);
 		
-		asf_src->SetOwner (false);
 		asf_src->unref ();
-		if (!parser->ReadHeader ()) {
+		if (!MEDIA_SUCCEEDED (parser->ReadHeader ())) {
 			// TODO: And what should we do here?
 			asf_packet_size = ASF_DEFAULT_PACKET_SIZE;
 			parser->unref ();

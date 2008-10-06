@@ -290,8 +290,11 @@ AudioSource::ClearFrames ()
 void
 AudioSource::AppendFrame (MediaFrame *frame)
 {
-	LOG_AUDIO_EX ("AudioSource::AppendFrame (%p): now got %i frames, this frame's EOF: %i, buflen: %i\n", frame, frames.Length () + 1, frame->event == FrameEventEOF, frame->buflen);
+	LOG_AUDIO ("AudioSource::AppendFrame (%p): now got %i frames, this frame's EOF: %i, buflen: %i\n", frame, frames.Length () + 1, frame->event == FrameEventEOF, frame->buflen);
 		
+	if (frame == NULL)
+		return;
+
 	frames.Push (new AudioFrameNode (frame));
 	
 	if (GetFlag (AudioWaiting)) {
@@ -368,12 +371,16 @@ AudioSource::Pause ()
 void
 AudioSource::Underflowed ()
 {
-	LOG_AUDIO ("AudioSource::Underflowed (), state: %s, flags: %s\n", GetStateName (GetState ()), GetFlagNames (flags));
+	LOG_AUDIO ("AudioSource::Underflowed (), state: %s, flags: %s, queue length: %i\n", GetStateName (GetState ()), GetFlagNames (flags), frames.Length ());
 	
-	if (GetState () == AudioPlaying && GetFlag (AudioEOF)) {
-		Stop ();
-		SetFlag (AudioEnded, true);
-		mplayer->AudioFinished ();
+	if (GetState () == AudioPlaying) {
+		if (GetFlag (AudioEOF)) {
+			Stop ();
+			SetFlag (AudioEnded, true);
+			mplayer->AudioFinished ();
+		} else if (frames.Length () == 0) {
+			mplayer->SetBufferUnderflow ();
+		}
 	}
 }
 
@@ -383,7 +390,8 @@ AudioSource::FrameCallback (MediaClosure *closure)
 	AudioSource *source = (AudioSource *) closure->GetContext ();
 	MediaFrame *frame = closure->frame;
 	closure->frame = NULL;
-	source->AppendFrame (frame);
+	if (frame != NULL)
+		source->AppendFrame (frame);
 	return MEDIA_SUCCESS;
 }
 
@@ -443,6 +451,21 @@ AudioSource::Write (void *dest, guint32 samples)
 	}
 	
 	return result;
+}
+
+void
+AudioSource::Enqueue ()
+{
+#if false
+	mplayer->EnqueueFramesAsync (1, 0);
+#else
+	MediaClosure *closure;
+
+	closure = new MediaClosure (FrameCallback);
+	closure->SetContext (this);
+	
+	mplayer->GetMedia ()->GetNextFrameAsync (closure, stream, FRAME_DEMUXED | FRAME_DECODED | FRAME_COPY_DECODED_DATA);
+#endif
 }
 
 guint32
@@ -538,7 +561,7 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 		
 		if (bytes_available < bytes_per_sample) {
 			LOG_AUDIO ("AudioSource::WriteFull (): incomplete packet, bytes_available: %u, buflen: %u, bytes_used: %u\n", bytes_available, node->frame->buflen, node->bytes_used);
-			mplayer->EnqueueFramesAsync (1, 0);
+			Enqueue ();
 			delete node;
 			continue;
 		}
@@ -566,8 +589,8 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 		last_frame_pts = node->frame->pts;
 		
 		if (node->bytes_used == node->frame->buflen) {
-			// We used the entire packet			
-			mplayer->EnqueueFramesAsync (1, 0);
+			// We used the entire packet
+			Enqueue ();
 			delete node;
 			node = NULL;
 		} else {
@@ -706,6 +729,8 @@ AudioSources::GetNext (bool only_playing)
 	
 	// Its possible that the loop has started but nothing is playing, which without this guard would
 	// return list.First () in an infinite loop while we're downloading / buffering.
+	// (due to the while loop above not clearing out the first value (list.First ()) if the condition is false and there's no other 
+	// node which satifies the condition)
 	if (only_playing && node != NULL && node->source->GetState () != AudioPlaying)
 		node = NULL;
 
