@@ -1,3 +1,9 @@
+2008-10-06  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* text.cpp (Glyphs::Layout): Handle NULL values coming from 
+	GetGlyphInfo. Avoid crash in DRT #177 (not sure why it did 
+	not come up before today or why it now fails anyway).
+
 2008-10-06  Jeffrey Stedfast  <fejj@novell.com>
 
 	* brush.cpp (ImageBrush::TargetLoaded): Don't bother with g_atomic
