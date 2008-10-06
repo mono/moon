@@ -9,6 +9,7 @@
  * See the LICENSE file included with the distribution for details.
  */
 
+#include <config.h>
 #include "asf.h"
 
 void print_sizes () {
