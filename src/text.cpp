@@ -1145,6 +1145,8 @@ Glyphs::Layout ()
 					goto done;
 				} else {
 					glyph = font->GetGlyphInfo (*c);
+					if (!glyph)
+						goto next1;
 				}
 				
 				y1 = y0;
