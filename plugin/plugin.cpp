@@ -766,7 +766,6 @@ PluginInstance::CreateWindow ()
 	}
 
 	surface = new Surface (moon_window, silverlight2);
-	moon_window->SetSurface (surface);
 
 	if (windowless)
 		surface->SetTransparent (true);

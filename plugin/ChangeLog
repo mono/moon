@@ -1,3 +1,11 @@
+2008-10-07  Larry Ewing  <lewing@novell.com>
+
+	* plugin.cpp: remove a redundant call to SetSurface after creating
+	a surface, it is handled in the ctor.
+
+	Fixes the double render_cb registration problem we were seeing
+	that caused high framerates and starvation problems. 
+
 2008-10-03  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* plugin.cpp: call SetPageURL even for embedded xaml. Makes fixture
