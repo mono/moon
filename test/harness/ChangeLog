@@ -1,3 +1,8 @@
+2008-10-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* test-runner/XmlReport.cs: Use a date/time formats which sort
+	  correctly.
+
 2008-10-06  Jackson Harper  <jackson@ximian.com>
 
 	* test-runner/Test.cs: Use a new port for the location server, the

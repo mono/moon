@@ -61,7 +61,7 @@ namespace MoonlightTests {
 
 		public void EndRun ()
 		{
-			runs_node.SetAttribute ("EndTime", DateTime.Now.ToString (CultureInfo.InvariantCulture));
+			runs_node.SetAttribute ("EndTime", DateTime.Now.ToString ("yyyy-MM-dd-HH-mm-ss"));
 		}
 
 		public void Executing (Test test)
@@ -118,7 +118,7 @@ namespace MoonlightTests {
 
 		private void CreateTestRunPathNames (TestRun run)
 		{			
-			test_run_dir = Path.Combine (TestRunDirectoryName, run.StartTime.ToString ("yyyy-MM-dd-hh-mm"));
+			test_run_dir = Path.Combine (TestRunDirectoryName, run.StartTime.ToString ("yyyy-MM-dd-HH-mm-ss"));
 			test_run_path = Path.Combine (test_run_dir, TestRunFileName);
 
 			if (!Directory.Exists (test_run_dir))
