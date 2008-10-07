@@ -1,3 +1,7 @@
+2008-10-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* audio-pulse.h: Remove unused method definition.
+
 2008-10-07  Jeffrey Stedfast  <fejj@novell.com>
 
 	* animation.cpp (AnimationStorage::AttachToPrevStorage): Delete

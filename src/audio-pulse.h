@@ -31,7 +31,6 @@ class PulseSource: public AudioSource {
 	bool closed;
 	
 	void PACork (bool cork);
-	void PADrain ();
 	void PATrigger ();
 	void PAFlush ();
 	void OnUnderflow ();
