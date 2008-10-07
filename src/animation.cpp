@@ -58,7 +58,8 @@ AnimationStorage::AttachToPrevStorage (void)
 		return;
 
 	AnimationStorage *prev_storage = targetprop->AttachAnimationStorage (targetobj, this);
-
+	
+	delete baseValue;
 	baseValue = new Value(*targetobj->GetValue (targetprop));
 
 	if (prev_storage) {

@@ -1,5 +1,8 @@
 2008-10-07  Jeffrey Stedfast  <fejj@novell.com>
 
+	* animation.cpp (AnimationStorage::AttachToPrevStorage): Delete
+	the old baseValue before allocating a new one.
+
 	* mms-downloader.cpp (MmsDownloader::ProcessHeaderPacket): Need to
 	delete dx_info when we're done with it. Also get rid of the
 	unneeded parser pointer since we're just using this->parser
