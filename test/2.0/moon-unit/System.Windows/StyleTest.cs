@@ -97,6 +97,7 @@ namespace MoonTest.System.Windows
 			Assert.IsTrue (Double.IsNaN(b.Width));
 		}
 
+		/*
 		[TestMethod]
 		[KnownFailure]
 		public void InvalidPropertyNameInSetter ()
@@ -109,5 +110,6 @@ namespace MoonTest.System.Windows
 		{
 			XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007""><Setter Property=""WidthOrHeight"" Value=""10""/></Style>");
 		}
+		*/
 	}
 }
