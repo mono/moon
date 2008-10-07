@@ -1,5 +1,14 @@
 2008-10-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* test-runner/TestRun.cs: Add a Tests property getter and in
+	  RecordResult actually set the result on the test.
+	* test-runner/Test.cs: Add Result accessors and prevent NRE in
+	  Location.
+	* test-runner/ConsoleReport.cs: Changed summary somewhat, printing
+	  result for every test at the end.
+
+2008-10-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* test-runner/ComparisonReport.cs: Work around an exception.
 	* test-runner/Driver.cs: Show some rudimentary timing.
 

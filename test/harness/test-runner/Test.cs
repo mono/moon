@@ -74,6 +74,7 @@ namespace MoonlightTests {
 		private int LocationPort;
 
 		private string codebehind;
+		private TestResult test_result;
 
 		public static Test Create (string base_directory, XmlNode node)
 		{
@@ -174,6 +175,11 @@ namespace MoonlightTests {
 			this.master_file = master_file;
 		}
 
+		public TestResult Result {
+			get { return test_result; }
+			set { test_result = value; }
+		}
+		
 		public string Id {
 			get { return id; }
 		}
@@ -195,7 +201,7 @@ namespace MoonlightTests {
 		}
 
 		public string Location {
-			get { return location.ToString (); }
+			get { return location == null ? null : location.ToString (); }
 		}
 
 		public bool Ignore {

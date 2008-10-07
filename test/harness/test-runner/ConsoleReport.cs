@@ -52,8 +52,9 @@ namespace MoonlightTests {
 			ReportIgnoredTests ();
 			ReportFailedTests ();
 			ReportPassedTests ();
-
-			ReportSummary ();
+			
+			//ReportSummary ();
+			ReportAllTests ();
 		}
 
 		public void AddResult (Test test, TestResult result)
@@ -102,6 +103,16 @@ namespace MoonlightTests {
 			
 		}
 
+		private void ReportAllTests ()
+		{
+			Console.WriteLine ("========================= Test Summary =========================");
+			foreach (Test t in run.Tests)
+				AddResult (t, t.Result);
+			Console.WriteLine ("Tests run:  {0}  {1} Pass, {2} Ignored,  {3} Failures,  {4} Known Failures",
+					run.ExecutedTests.Count, run.PassedTests.Count, run.IgnoredTests.Count, run.FailedTests.Count, run.KnownFailures.Count);
+			Console.WriteLine ("");
+		}
+		
 		private void ReportIgnoredTests ()
 		{
 			if (run.IgnoredTests.Count < 1)

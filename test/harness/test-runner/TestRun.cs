@@ -69,6 +69,10 @@ namespace MoonlightTests {
 			this.runner = runner;
 		}
 
+		public List<Test> Tests {
+			get { return tests; }
+		}
+		
 		public string BaseDirectory {
 			get { return base_dir; }
 		}
@@ -221,6 +225,7 @@ namespace MoonlightTests {
 			}
 
 			ExecutedTests.Add (test);
+			test.Result = result;
 		}
 
 	}
