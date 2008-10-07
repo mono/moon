@@ -1,3 +1,9 @@
+2008-10-07  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* runtime.cpp (Surface::SetCursor): Don't create the GdkPixmap and
+	GdkColor unless we need them. Unref the pixmap after the call to
+	gdk_cursor_new_from_pixmap.
+
 2008-10-06  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pipeline.h (IMediaStream::dtor): Delete the frame. This prevents
