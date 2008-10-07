@@ -1,0 +1,78 @@
+<html>
+  <head>
+      <title>Moonlight Test Page</title>
+
+		<script type="text/xaml" id="xaml">
+			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
+				<Image Name="image" ImageFailed="OnImageFailed" Source="http://mono-project.com/files/b/b9/Monopaint.png" />
+			</Canvas>
+		</script>
+
+		<script language="javascript" src="../js/js/utils.js"></script>
+		<script language="javascript" src="../js/js/testplugin.js"></script>
+		<script language="javascript">
+		var src = "http://mono-project.com/files/b/b9/Monopaint.png";
+		var image = null;
+		var max_runs = 25;
+		var runs = 0;
+		var failed = false;
+		
+		function NextImage ()
+		{
+			var timeout =  Math.floor (Math.random () * 2000); /* 1 - 2000 ms */
+			var src_runs = src + "?" + runs;
+			TestLogger.LogDebug ("NextImage, runs: " + runs + ", timeout: " + timeout + ", src_runs: " + src_runs);
+			
+			runs++;
+			if (runs >= max_runs) {
+				TestLogger.LogResult (failed ? -1 : 1);
+				SignalShutdown ();
+				return;
+			}
+
+			image.Source = src_runs;
+			setTimeout ("NextImage ();", timeout);
+		}
+
+		function OnImageFailed (sender, args)
+		{
+			failed = true;
+			TestLogger.LogError ("OnImageFailed: " + ErrorEventArgsToOneLineString (args));
+		}
+
+		function OnPluginLoad (sender, args)
+		{
+			TestLogger.LogDebug ("OnPluginLoad");
+			image = sender.findName ("image");
+			NextImage ();
+		}
+
+		function OnPluginError (sender, args)
+		{
+			TestLogger.LogError ("Plugin failed to initialize: " + args.ErrorMessage);
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+		
+		</script>
+	</head>
+
+  <body>
+    <div>
+        <embed type="application/x-silverlight"
+             width="340"
+             height="220"
+             id="_MoonlightControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoad"
+             style="position:absolute; left:0px; top:0px"
+             background="green" >
+        </embed>
+    </div>
+<!--
+    <div>
+        <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
+        </embed>
+    </div>
+-->
+  </body>
+</html>
+
