@@ -153,7 +153,6 @@ process_packet:
 		return;
 	}
 
-
 	if (size < (header->length + sizeof (MmsHeader)))
 		return;
 
@@ -255,14 +254,13 @@ bool
 MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *offset)
 {
 	asf_file_properties *properties;
-	ASFParser *parser;
 	
 	LOG_MMS ("MmsDownloader::ProcessHeaderPacket ()\n");
 	
 	if (seeked)
 		return true;
 
-	if (this->parser == NULL) {
+	if (parser == NULL) {
 		ASFDemuxerInfo *dx_info = new ASFDemuxerInfo ();
 		MemorySource *asf_src = new MemorySource (NULL, payload, header->length - sizeof (MmsDataPacket), 0);
 		
@@ -277,8 +275,9 @@ MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *
 		}
 		
 		parser = new ASFParser (asf_src, NULL);
-		
 		asf_src->unref ();
+		delete dx_info;
+		
 		if (!MEDIA_SUCCEEDED (parser->ReadHeader ())) {
 			// TODO: And what should we do here?
 			asf_packet_size = ASF_DEFAULT_PACKET_SIZE;
@@ -286,10 +285,6 @@ MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *
 			parser = NULL;
 			return true;
 		}
-		
-		this->parser = parser;
-	} else {
-		parser = this->parser;
 	}
 	
 	properties = parser->GetFileProperties ();
