@@ -22,6 +22,8 @@ namespace Moonlight {
 		private string entry_point_type = null;
 		private string cs_sources;
 
+		const string RuntimeVersion = "2.0.30923.0";
+
 		public string CSSources {
 			get { return cs_sources; }
 			set { cs_sources = value; }
@@ -123,7 +125,7 @@ namespace Moonlight {
 				manifest.Append (entry_point_type);
 			else 
 				manifest.AppendFormat ("{0}.App", ApplicationName);
-			manifest.Append ("\" RuntimeVersion=\"2.0.30523.4\">\n");
+			manifest.AppendFormat ("\" RuntimeVersion=\"{0}\">\n", RuntimeVersion);
 
 			manifest.AppendLine ("  <Deployment.Parts>");
 
