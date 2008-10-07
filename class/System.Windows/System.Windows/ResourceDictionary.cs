@@ -99,9 +99,9 @@ namespace System.Windows {
 			return exists;
 		}
 
-		public int Count { get { return 0; } }
+		public int Count { get { return NativeMethods.collection_get_count (native); } }
 
-		public bool IsReadOnly { get {throw new NotImplementedException();} }
+		public bool IsReadOnly { get { return false; } }
 
 		public object this[object key] { 
 			[SecuritySafeCritical]
