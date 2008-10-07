@@ -17,7 +17,6 @@ namespace MoonTest.System.Windows
 	[TestClass]
 	public class ResourceDictionaryTest
 	{
-
 		[TestMethod]
 		public void AddDouble ()
 		{
@@ -46,6 +45,27 @@ namespace MoonTest.System.Windows
 			Assert.Throws (delegate { rd.Add ("hi", new object()); 
 				},
 				typeof (ArgumentException));
+		}
+
+		[TestMethod]
+		public void IsReadOnly ()
+		{
+			ResourceDictionary rd = new ResourceDictionary ();
+
+			Assert.IsFalse (rd.IsReadOnly);
+		}
+
+		[TestMethod]
+		public void Count ()
+		{
+			Button b = new Button();
+			ResourceDictionary rd = b.Resources;
+
+			rd.Add ("mono", new object ());
+			rd.Add ("monkey", new object ());
+			rd.Add ("singe", new object ());
+
+			Assert.AreEqual (3, rd.Count);
 		}
 
 		[TestMethod]
@@ -184,12 +204,12 @@ namespace MoonTest.System.Windows
 			Canvas b = (Canvas)
 				XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Color x:Key=""color"">#ffffffff</Color></Canvas.Resources></Canvas>");
 
-			Assert.AreEqual (0, b.Resources.Count);
+			Assert.AreEqual (1, b.Resources.Count);
 
 			b = (Canvas)
 				XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Color x:Name=""color"">#ffffffff</Color></Canvas.Resources></Canvas>");
 
-			Assert.AreEqual (0, b.Resources.Count);
+			Assert.AreEqual (1, b.Resources.Count);
 		}
 
 		[TestMethod]
