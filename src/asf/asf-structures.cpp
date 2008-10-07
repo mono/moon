@@ -673,8 +673,11 @@ asf_multiple_payloads::FillInAll (ASFContext *context, asf_error_correction_data
 			payloads [current_index] = new asf_single_payload ();
 			
 			result = payloads [current_index]->FillInAll (context, ecd, ppi, this);
-			if (!MEDIA_SUCCEEDED (result))
+			if (!MEDIA_SUCCEEDED (result)) {
+				delete payloads [current_index];
+				payloads [current_index] = NULL;
 				return result;
+			}
 			
 			if (payloads [current_index]->is_compressed ()) {
 				asf_single_payload* first = payloads [current_index];

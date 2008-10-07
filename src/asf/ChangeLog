@@ -1,3 +1,9 @@
+2008-10-07  Jeffrey Stedfast  <fejj@novell.com>
+
+	* asf-structures.cpp (asf_multiple_payloads::FillInAll): If we
+	fail to FillInAll a payload, delete it so that the pointer isn't
+	later clobbered/lost.
+
 2008-10-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf.cpp, asf.h: ASFParser: handle buffer underruns correctly and
