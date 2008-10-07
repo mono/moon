@@ -109,7 +109,6 @@ MoonWindowless::HandleEvent (XEvent *event)
 
 	switch (xev->type) {
 	case GraphicsExpose: {
-
 		GdkDrawable *drawable = gdk_pixmap_foreign_new ((GdkNativeWindow)xev->xgraphicsexpose.drawable);
 		if (!drawable) {
 			drawable = gdk_window_foreign_new ((GdkNativeWindow)xev->xgraphicsexpose.drawable);
@@ -235,7 +234,8 @@ MoonWindowless::HandleEvent (XEvent *event)
 		crossing.y = xev->xcrossing.y;
 		crossing.x_root = xev->xcrossing.x_root;
 		crossing.y_root = xev->xcrossing.y_root;
-		crossing.mode = (GdkCrossingMode)xev->xcrossing.mode; // XXX
+		// crossing.mode = (GdkCrossingMode)xev->xcrossing.mode; // XXX
+		crossing.mode = GDK_CROSSING_NORMAL;
 		crossing.detail = (GdkNotifyType)xev->xcrossing.detail; // XXX
 		crossing.focus = xev->xcrossing.focus;
 		crossing.state = xev->xcrossing.state;

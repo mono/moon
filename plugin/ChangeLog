@@ -1,5 +1,12 @@
 2008-10-07  Larry Ewing  <lewing@novell.com>
 
+	* windowless.cpp (MoonWindowless::HandleEvent): set the crossing
+	mode of our synthetic events to normal.  
+
+	Fixes missing mouse leave events for InputHitTst.html (143)
+	
+2008-10-07  Larry Ewing  <lewing@novell.com>
+
 	* plugin.cpp: remove a redundant call to SetSurface after creating
 	a surface, it is handled in the ctor.
 
