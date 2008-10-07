@@ -120,7 +120,8 @@ namespace MoonlightTests {
 				return;
 
 			TestRunData test_run = new TestRunData ();
-			test_run.StartTime = DateTime.ParseExact (GetBaseDirectory (dir), "yyyy-MM-dd-hh-mm", System.Globalization.CultureInfo.InvariantCulture);
+			if (!DateTime.TryParseExact (GetBaseDirectory (dir), "yyyy-MM-dd-HH-mm-ss", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeLocal, out test_run.StartTime))
+				test_run.StartTime = DateTime.ParseExact (GetBaseDirectory (dir), "yyyy-MM-dd-hh-mm", System.Globalization.CultureInfo.InvariantCulture);
 			test_run.NumTestsExecuted = Int32.Parse (iterator.Current.GetAttribute ("ExecutedTests", String.Empty));
 			test_run.NumTestsPassed = Int32.Parse (iterator.Current.GetAttribute ("PassedTests", String.Empty));
 			test_run.NumTestsFailed = Int32.Parse (iterator.Current.GetAttribute ("FailedTests", String.Empty));

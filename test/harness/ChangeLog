@@ -1,5 +1,10 @@
 2008-10-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* test-runner/ComparisonReport.cs: Quick fix for datetime format
+	  changes.
+
+2008-10-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* test-runner/TestRun.cs: Add a Tests property getter and in
 	  RecordResult actually set the result on the test.
 	* test-runner/Test.cs: Add Result accessors and prevent NRE in
