@@ -1,5 +1,10 @@
 2008-10-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* test-runner/ComparisonReport.cs: Work around an exception.
+	* test-runner/Driver.cs: Show some rudimentary timing.
+
+2008-10-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* test-runner/XmlReport.cs: Use a date/time formats which sort
 	  correctly.
 

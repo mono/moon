@@ -301,7 +301,11 @@ namespace MoonlightTests {
 		{
 			string dir = Path.Combine (XmlReport.TestRunDirectoryName, tcd.CurrentRunTime.ToString ("yyyy-MM-dd-hh-mm"));
 
-			return Path.Combine (dir, Path.GetFileName (tcd.CurrentResultFile));
+			try {
+				return Path.Combine (dir, Path.GetFileName (tcd.CurrentResultFile));
+			} catch {
+				return "";
+			}
 		}
 		
 		/*

@@ -442,6 +442,8 @@ namespace MoonlightTests {
 
 		public static int Main (string [] args)
 		{
+			int result;
+			DateTime start = DateTime.Now;
 			string drtlist = "drtlist.xml";
 
 			Driver d = new Driver ();
@@ -492,7 +494,11 @@ namespace MoonlightTests {
 			d.AddReport (new ComparisonReport ());
 			d.AddReport (new DbReport());
 
-			return d.Run (drtlist);
+			result = d.Run (drtlist);
+			
+			Console.WriteLine ("Total duration of test run: " + (DateTime.Now - start).ToString ());
+			
+			return result;
 		}
 
 		private static void CheckEnvVars (Driver d)
