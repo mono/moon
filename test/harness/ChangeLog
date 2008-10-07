@@ -1,5 +1,10 @@
 2008-10-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* test-runner/ConsoleReport.cs: Revert summary changes to avoid
+	  double-printing failures.
+
+2008-10-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* test-runner/ComparisonReport.cs: Quick fix for datetime format
 	  changes.
 

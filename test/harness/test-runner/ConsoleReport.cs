@@ -53,8 +53,8 @@ namespace MoonlightTests {
 			ReportFailedTests ();
 			ReportPassedTests ();
 			
-			//ReportSummary ();
-			ReportAllTests ();
+			ReportSummary ();
+			//ReportAllTests ();
 		}
 
 		public void AddResult (Test test, TestResult result)
