@@ -1,0 +1,103 @@
+<html>
+  <head>
+      <title>Moonlight Test Page</title>
+
+		<script type="text/xaml" id="xaml">
+			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
+			<MediaElement Source="http://moonlightmedia:81/mediaDrop0123/testsource/mediamatrix/LoveSong_11.025_16_mono.mp3" AutoPlay="True" 
+				MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" MediaEnded="OnMediaEnded" CurrentStateChanged="OnCurrentStateChanged"
+				DownloadProgressChanged="OnDownloadProgressChanged" BufferingProgressChanged="OnBufferingProgressChanged"
+			/>
+			</Canvas>
+		</script>
+
+		<script language="javascript" src="../../js/js/utils.js"></script>
+		<script language="javascript" src="../../js/js/testplugin.js"></script>
+		<script language="javascript">
+		
+		var mediaElement = null;
+		var timeout = null;
+		var downloaded = 0.0;
+		var buffered = 0.0;
+		
+
+		function OnDownloadProgressChanged (sender, args)
+		{
+			TestLogger.LogDebug ("OnDownloadProgressChanged: " + sender.DownloadProgress);
+			downloaded = sender.DownloadProgress;
+		}
+
+		function OnBufferingProgressChanged (sender, args)
+		{
+			TestLogger.LogDebug ("OnBufferingProgressChanged: " + sender.BufferingProgress);
+			buffered = sender.BufferingProgressChanged;
+		}
+
+		function OnCurrentStateChanged (sender, args)
+		{
+			TestLogger.LogDebug ("OnCurrentStateChanged, CurrentState: " + sender.CurrentState + ", downloaded: " + downloaded + ", buffered: " + buffered);
+
+			if (sender.CurrentState == "Playing") {
+				if (downloaded > 50) {
+					TestLogger.LogResult (-1);
+					TestLogger.LogError ("Expected to have downloaded at most 50% of the file, we've downloaded " + downloaded + "%.");
+				} else {
+					TestLogger.LogResult (1);
+				}
+				SignalShutdown ();
+			}
+		}
+
+		function OnMediaEnded (sender, args)
+		{
+			TestLogger.LogDebug ("OnMediaEnded");
+		}
+
+		function OnMediaOpened (sender, args)
+		{
+			TestLogger.LogDebug ("OnMediaOpened");
+		}
+
+		function OnMediaFailed (sender, args)
+		{
+			TestLogger.LogError ("OnMediaFailed: " + ErrorEventArgsToOneLineString (args));
+			TestLogger.LogError ("Make sure the media server is running and accessible.");
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+		function OnPluginLoad (sender, args)
+		{
+			TestLogger.LogDebug ("OnPluginLoad");
+		}
+
+		function OnPluginError (sender, args)
+		{
+			TestLogger.LogError ("Plugin failed to initialize: " + args.ErrorMessage);
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+		
+		</script>
+	</head>
+
+  <body>
+Hello there
+    <div>
+        <embed type="application/x-silverlight"
+             width="200"
+             height="200"
+             id="_MoonlightControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoad"
+             background="green" >
+        </embed>
+    </div>
+<!--
+    <div>
+        <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
+        </embed>
+    </div>
+-->
+  </body>
+</html>
+
+

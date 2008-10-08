@@ -17,6 +17,12 @@
 #include "mp3.h"
 #include "pipeline.h"
 
+//
+// Relevant links to documentation:
+//  http://www.codeproject.com/KB/audio-video/mpegaudioinfo.aspx
+//  http://www.mpgedit.org/mpgedit/mpeg_format/mpeghdr.htm
+//  http://www.compuphase.com/mp3/sta013.htm
+//
 
 /*
  * MPEG Audio Demuxer
@@ -193,23 +199,18 @@ static int mpeg_block_sizes[3][3] = {
 
 #define mpeg_block_size(mpeg) mpeg_block_sizes[(mpeg)->version - 1][(mpeg)->layer - 1]
 
-guint32
+double
 mpeg_frame_length (MpegFrameHeader *mpeg, bool xing)
 {
-	guint32 len;
+	double len;
 	
 	// calculate the frame length
 	if (mpeg->layer == 1)
-		len = (((12 * mpeg->bit_rate) / mpeg->sample_rate) + mpeg->padded) * 4;
+		len = (((12 * mpeg->bit_rate) / (double) mpeg->sample_rate) + mpeg->padded) * 4;
 	else if (mpeg->version == 1)
-		len = ((144 * mpeg->bit_rate) / mpeg->sample_rate) + mpeg->padded;
+		len = ((144 * mpeg->bit_rate) / (double) mpeg->sample_rate) + mpeg->padded;
 	else
-		len = ((72 * mpeg->bit_rate) / mpeg->sample_rate) + mpeg->padded;
-	
-	if (false && mpeg->prot && !xing) {
-		// include 2 extra bytes for 16bit crc
-		len += 2;
-	}
+		len = ((72 * mpeg->bit_rate) / (double) mpeg->sample_rate) + mpeg->padded;
 	
 	return len;
 }
@@ -221,13 +222,7 @@ mpeg_frame_length (MpegFrameHeader *mpeg, bool xing)
 static guint64
 mpeg_frame_duration (MpegFrameHeader *mpeg)
 {
-	guint64 result;
-	
-	if (mpeg->version == 1) // Layer III
-		result = 1152ULL * TIMESPANTICKS_IN_SECOND / mpeg->sample_rate;
-	else // Layer I or II
-		result = 384ULL * TIMESPANTICKS_IN_SECOND / mpeg->sample_rate;
-			
+	guint64 result = ((guint64) mpeg_block_size (mpeg)) * TIMESPANTICKS_IN_SECOND / mpeg->sample_rate;
 	return result;
 }
 
@@ -274,7 +269,8 @@ mpeg_xing_header_offset (MpegFrameHeader *mpeg)
 static bool
 mpeg_check_vbr_headers (MpegFrameHeader *mpeg, MpegVBRHeader *vbr, IMediaSource *source, gint64 pos)
 {
-	guint32 nframes = 0, size = 0, len;
+	guint32 nframes = 0, size = 0;
+	double len;
 	guint8 buffer[24], *bufptr;
 	gint64 offset;
 	int i;
@@ -532,7 +528,7 @@ Mp3FrameReader::SkipFrame ()
 	if (used == 0 || offset > jmptab[used - 1].offset)
 		AddFrameIndex (offset, cur_pts, duration, bit_rate);
 	
-	len = mpeg_frame_length (&mpeg, xing);
+	len = (guint32) mpeg_frame_length (&mpeg, xing);
 	
 	if (!stream->IsPositionAvailable (offset + len, &eof))
 		return eof ? MEDIA_FAIL : MEDIA_NOT_ENOUGH_DATA;
@@ -592,7 +588,7 @@ Mp3FrameReader::TryReadFrame (IMediaStream *str, MediaFrame **f)
 	if (used == 0 || offset > jmptab[used - 1].offset)
 		AddFrameIndex (offset, cur_pts, duration, bit_rate);
 	
-	len = mpeg_frame_length (&mpeg, xing);
+	len = (guint32) mpeg_frame_length (&mpeg, xing);
 
 	if (!stream->IsPositionAvailable (offset + len, &eof)) {
 		//printf ("Mp3FrameReader::TryReadFrame (): Exit 6: Buffer underflow (last available pos: %lld, offset: %llu, diff: %llu, len: %u)\n", stream->GetLastAvailablePosition (), offset, stream->GetLastAvailablePosition () - offset, len);
@@ -712,12 +708,12 @@ FindMpegHeader (MpegFrameHeader *mpeg, MpegVBRHeader *vbr, IMediaSource *source,
 					/* validate that this is really an MPEG frame header by calculating the
 					 * position of the next frame header and checking that it looks like a
 					 * valid frame header too */
-					len = mpeg_frame_length (mpeg, false);
+					len = (guint32) mpeg_frame_length (mpeg, false);
 					pos = source->GetPosition ();
 					
 					if (vbr && mpeg_check_vbr_headers (mpeg, vbr, source, offset)) {
 						if (vbr->type == MpegXingHeader)
-							len = mpeg_frame_length (mpeg, true);
+							len = (guint32) mpeg_frame_length (mpeg, true);
 						
 						return offset + len;
 					}
@@ -771,9 +767,9 @@ Mp3Demuxer::ReadHeader ()
 	MpegVBRHeader vbr;
 	guint64 duration;
 	guint32 size = 0;
-	guint32 nframes;
+	double nframes;
 	int stream_count;
-	guint32 len;
+	double len;
 	gint64 end;
 	int i;
 	bool eof = false;
@@ -825,7 +821,7 @@ Mp3Demuxer::ReadHeader ()
 		
 		if ((end = source->GetSize ()) != -1) {
 			// estimate the number of frames
-			nframes = (end - stream_start) / len;
+			nframes = ((double) end - (double) stream_start) / (double) len;
 		} else {
 			nframes = 0;
 		}
@@ -847,7 +843,7 @@ Mp3Demuxer::ReadHeader ()
 	audio->codec_id = CODEC_MP3;
 	audio->codec = g_strdup ("mp3");
 	
-	audio->duration = duration * (nframes > 0 ? nframes - 1 : nframes);
+	audio->duration = duration * nframes;
 	audio->bit_rate = mpeg.bit_rate;
 	audio->channels = mpeg.channels;
 	audio->sample_rate = mpeg.sample_rate;

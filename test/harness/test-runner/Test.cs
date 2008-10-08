@@ -444,7 +444,7 @@ namespace MoonlightTests {
 			if (location == null)
 				return;
 
-			string args = String.Format ("--applications '{0}:{1}' --nonstop --port {2}", location.AbsolutePath, base_directory, LocationPort);
+			string args = String.Format ("--applications '{0}:{1},/:.' --nonstop --port {2}", location.AbsolutePath, base_directory, LocationPort);
 
 			location_xsp = new ExternalProcess ("xsp", args, -1);
 			location_xsp.Run (false);

@@ -1,3 +1,12 @@
+2008-10-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* drtlist.xml: Added test-mp3-progressive-download.html.
+	* miguel-11.025kHz-16kbps.mp3, miguel-11.025kHz-16kbps-p.mp3,
+	  miguel-16kHz-56kbps.mp3, miguel-44.1kHz-56kbps.mp3,
+	  miguel-encode.sh, test-mp3-progressive-download.html: Added.
+	* test-mp3-media-properties.html: Improved to test all miguel*.mp3
+	  files.
+
 2008-09-16  Fernando Herrera  <fherrera@novell.com>
 
 	* drtlist.xml:

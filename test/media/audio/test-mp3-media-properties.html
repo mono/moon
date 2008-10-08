@@ -4,7 +4,7 @@
 
 		<script type="text/xaml" id="xaml">
 			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
-			<MediaElement Source="miguel.mp3" AutoPlay="False" MediaOpened="OnMediaOpened" 
+			<MediaElement Name="Media" Source="miguel.mp3" AutoPlay="False" MediaOpened="OnMediaOpened" 
 				MediaFailed="OnMediaFailed" MediaEnded="OnMediaEnded" 
 				DownloadProgressChanged="OnDownloadProgressChanged"
 			/>
@@ -17,25 +17,47 @@
 		
 		var mediaElement = null;
 		var timeout = null;
-
-		function timedOut ()
-		{
-			TestLogger.LogError ("MediaOpened was never raised.");
-			TestLogger.LogResult (-1);
-			SignalShutdown ();
-		}
+		var sources = ["miguel.mp3", "miguel-11.025kHz-16kbps.mp3", "miguel-11.025kHz-16kbps-p.mp3", "miguel-16kHz-56kbps.mp3", "miguel-44.1kHz-56kbps.mp3", null];
+		var durations = [21.707, 21.734, 21.734, 21.780, 21.760];
+		var expected = [true, true, false, true, true];
+		var sources_index = -1;
+		var failed = false;
 
 		function OnDownloadProgressChanged (sender, args)
 		{
-			clearTimeout (timeout);
-			timeout = setTimeout ("timedOut ();", 2500);
+		}
+
+		function NextMedia ()
+		{
+			sources_index++;
+			if (sources [sources_index] == null) {
+				TestLogger.LogResult (failed ? -1 : 1);
+				SignalShutdown ();
+			} else {
+				mediaElement.Source = sources [sources_index];
+			}
+		}
+
+		function checkFloat (a, b, tolerance)
+		{
+			TestLogger.LogDebug ("checkFloat (" + a + ", " + b + ", " + tolerance + ") abs (a-b): " + Math.abs (a - b));
+			return (Math.abs (a - b) <= tolerance);
 		}
 
 		function OnMediaOpened (sender, args)
 		{
-			var failed = false;
+			if (expected [sources_index]) {
+				TestLogger.LogDebug ("OnMediaOpened: " + sender.Source + ", State: " + sender.CurrentState);
+			} else {
+				// For some reason SL doesn't like miguel-11.025kHz-16kbps-p.mp3, 
+				// possibly because it's CRC protected (the only difference from miguel-11.025kHz-16kbps.mp3)
+				// Instead of failing CRC protected files and maybe failing valid files too, just accept them all.
+				if (sources_index != 2) {
+					TestLogger.LogError ("OnMediaOpened: " + sender.Source + ", State: " + sender.CurrentState);
+					failed = true;
+				}
+			}
 
-			TestLogger.LogDebug ("OnMediaOpened: " + sender.CurrentState);
 			TestLogger.LogDebug ("AudioStreamCount: " + sender.AudioStreamCount);
 			if (sender.AudioStreamCount != 1) {
 				failed = true; TestLogger.LogDebug ("Expected AudioStreamCount to be 1");
@@ -56,9 +78,9 @@
 			if (sender.CanSeek != true) {
 				failed = true; TestLogger.LogError ("Expected CanSeek to be true");
 			}
-			TestLogger.LogDebug ("NaturalDuration: " + Math.floor (sender.NaturalDuration.Seconds * 1000) / 1000);
-			if (Math.floor (sender.NaturalDuration.Seconds * 1000) / 1000 != 21.707) {
-				failed = true; TestLogger.LogError ("Expected NaturalDuration to be 21.707");
+			TestLogger.LogDebug ("NaturalDuration: " + sender.NaturalDuration.Seconds);
+			if (!checkFloat (sender.NaturalDuration.Seconds, durations [sources_index], 0.001)) {
+				failed = true; TestLogger.LogError ("Expected NaturalDuration to be " + durations [sources_index]);
 			}
 			TestLogger.LogDebug ("NaturalVideoHeight: " + sender.NaturalVideoHeight);
 			if (sender.NaturalVideoHeight != 0) {
@@ -81,22 +103,25 @@
 				failed = true; TestLogger.LogError ("Expected Height to be 0");
 			}
 
-			clearTimeout (timeout);
-			TestLogger.LogResult (failed ? -1 : 1);
-			SignalShutdown ();
+			setTimeout ("NextMedia ();", 100);
 		}
 
 		function OnMediaFailed (sender, args)
 		{
-			TestLogger.LogError ("OnMediaFailed: " + ErrorEventArgsToOneLineString (args));
-			TestLogger.LogResult (-1);
-			SignalShutdown ();
+			if (expected [sources_index]) {
+				TestLogger.LogError ("OnMediaFailed: " + sender.Source + " " + ErrorEventArgsToOneLineString (args));
+				failed = true;
+			} else {
+				TestLogger.LogDebug ("OnMediaFailed: " + sender.Source + " " + ErrorEventArgsToOneLineString (args));
+			}
+			setTimeout ("NextMedia ();", 100);
 		}
 
 		function OnPluginLoad (sender, args)
 		{
 			TestLogger.LogDebug ("OnPluginLoad");
-			timeout = setTimeout ("timedOut ();", 2500);
+			mediaElement = sender.findName ("Media");
+			NextMedia ();
 		}
 
 		function OnPluginError (sender, args)
