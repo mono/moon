@@ -1,4 +1,4 @@
-lib_LTLIBRARIES = libpixman-1.la
+noinst_LTLIBRARIES = libpixman-1.la
 libpixman_1_la_LDFLAGS = -version-info $(LT_VERSION_INFO) -no-undefined
 libpixman_1_la_LIBADD = @DEP_LIBS@ -lm
 libpixman_1_la_CFLAGS = -DPIXMAN_DISABLE_DEPRECATED
@@ -30,8 +30,7 @@ libpixman_1_la_SOURCES =		\
 	pixman-timer.c
 
 libpixmanincludedir = $(includedir)/pixman-1/
-libpixmaninclude_HEADERS = pixman.h pixman-version.h
-noinst_LTLIBRARIES =
+noinst_HEADERS = pixman.h pixman-version.h
 
 pixman-combine32.c : combine.inc pixman-combine32.h combine.pl
 	$(PERL) $(srcdir)/combine.pl 8 < $(srcdir)/combine.inc > $@ || ($(RM) $@; exit 1)
