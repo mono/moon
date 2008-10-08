@@ -2,7 +2,7 @@ libmoon_includedir=$(includedir)/libmoon
 
 lib_LTLIBRARIES = libmoon.la
 
-INCLUDES = $(MOON_CFLAGS) -Wall -DUSE_OPT_RGB24=1 -DG_LOG_DOMAIN=\"Moonlight\" -Iasf
+INCLUDES = $(MOON_CFLAGS) -Wall -DUSE_OPT_RGB24=1 -DG_LOG_DOMAIN=\"Moonlight\" -I$(srcdir)/asf
 
 libmoon_include_headers = 	\
 	animation2.h		\
