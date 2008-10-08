@@ -33,7 +33,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "create-from-png-stream",
     "Tests the creation of an image surface from a PNG using a FILE *",
     WIDTH, HEIGHT,
@@ -56,17 +56,18 @@ read_png_from_file (void *closure, unsigned char *data, unsigned int length)
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
-    char *srcdir = getenv ("srcdir");
+    const cairo_test_context_t *ctx = cairo_test_get_context (cr);
     char *filename;
     FILE *file;
     cairo_surface_t *surface;
 
-    xasprintf (&filename, "%s/%s", srcdir ? srcdir : ".",
+    xasprintf (&filename, "%s/%s", ctx->srcdir,
 	       "create-from-png-stream-ref.png");
 
     file = fopen (filename, "rb");
     if (file == NULL) {
-	cairo_test_log ("Error: failed to open file: %s\n", filename);
+	cairo_test_log (ctx, "Error: failed to open file: %s\n", filename);
+	free (filename);
 	return CAIRO_TEST_FAILURE;
     }
 
@@ -75,8 +76,11 @@ draw (cairo_t *cr, int width, int height)
 
     fclose (file);
 
-    if (surface == NULL) {
-	cairo_test_log ("Error: failed to create surface from PNG: %s\n", filename);
+    if (cairo_surface_status (surface)) {
+	cairo_test_log (ctx,
+			"Error: failed to create surface from PNG: %s - %s\n",
+			filename,
+			cairo_status_to_string (cairo_surface_status (surface)));
 	free (filename);
 	return CAIRO_TEST_FAILURE;
     }

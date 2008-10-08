@@ -27,7 +27,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "long-dashed-lines",
     "Exercises _cairo_box_intersects_line_segment()",
     60, 60,
@@ -72,4 +72,3 @@ main (void)
 {
     return cairo_test (&test);
 }
-

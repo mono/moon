@@ -37,7 +37,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "dash-caps-joins",
     "Test caps and joins when dashing",
     3 * (PAD + SIZE) + PAD,

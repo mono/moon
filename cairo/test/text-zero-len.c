@@ -45,7 +45,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "text-zero-len",
     "Tests show_text and text_path with a zero-sized string",
     0, 0,
@@ -78,6 +78,7 @@ font_extents_equal (const cairo_font_extents_t *A,
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
+    const cairo_test_context_t *ctx = cairo_test_get_context (cr);
     cairo_text_extents_t extents, nil_extents;
     cairo_font_extents_t font_extents, nil_font_extents;
     cairo_scaled_font_t *scaled_font;
@@ -104,7 +105,7 @@ draw (cairo_t *cr, int width, int height)
     memset (&extents, 0xff, sizeof (cairo_text_extents_t));
     cairo_text_extents (cr, "", &extents);
     if (! text_extents_equal (&extents, &nil_extents)) {
-	cairo_test_log ("Error: cairo_text_extents(\"\"); extents (%g, %g, %g, %g, %g, %g)\n",
+	cairo_test_log (ctx, "Error: cairo_text_extents(\"\"); extents (%g, %g, %g, %g, %g, %g)\n",
 		        extents.x_bearing, extents.y_bearing,
 			extents.width, extents.height,
 			extents.x_advance, extents.y_advance);
@@ -114,7 +115,7 @@ draw (cairo_t *cr, int width, int height)
     memset (&extents, 0xff, sizeof (cairo_text_extents_t));
     cairo_text_extents (cr, NULL, &extents);
     if (! text_extents_equal (&extents, &nil_extents)) {
-	cairo_test_log ("Error: cairo_text_extents(NULL); extents (%g, %g, %g, %g, %g, %g)\n",
+	cairo_test_log (ctx, "Error: cairo_text_extents(NULL); extents (%g, %g, %g, %g, %g, %g)\n",
 		        extents.x_bearing, extents.y_bearing,
 			extents.width, extents.height,
 			extents.x_advance, extents.y_advance);
@@ -124,7 +125,7 @@ draw (cairo_t *cr, int width, int height)
     memset (&extents, 0xff, sizeof (cairo_text_extents_t));
     cairo_glyph_extents (cr, (void*)8, 0, &extents);
     if (! text_extents_equal (&extents, &nil_extents)) {
-	cairo_test_log ("Error: cairo_glyph_extents(); extents (%g, %g, %g, %g, %g, %g)\n",
+	cairo_test_log (ctx, "Error: cairo_glyph_extents(); extents (%g, %g, %g, %g, %g, %g)\n",
 		        extents.x_bearing, extents.y_bearing,
 			extents.width, extents.height,
 			extents.x_advance, extents.y_advance);
@@ -136,7 +137,7 @@ draw (cairo_t *cr, int width, int height)
     memset (&extents, 0xff, sizeof (cairo_text_extents_t));
     cairo_scaled_font_text_extents (scaled_font, "", &extents);
     if (! text_extents_equal (&extents, &nil_extents)) {
-	cairo_test_log ("Error: cairo_scaled_font_text_extents(\"\"); extents (%g, %g, %g, %g, %g, %g)\n",
+	cairo_test_log (ctx, "Error: cairo_scaled_font_text_extents(\"\"); extents (%g, %g, %g, %g, %g, %g)\n",
 		        extents.x_bearing, extents.y_bearing,
 			extents.width, extents.height,
 			extents.x_advance, extents.y_advance);
@@ -146,7 +147,7 @@ draw (cairo_t *cr, int width, int height)
     memset (&extents, 0xff, sizeof (cairo_text_extents_t));
     cairo_scaled_font_text_extents (scaled_font, NULL, &extents);
     if (! text_extents_equal (&extents, &nil_extents)) {
-	cairo_test_log ("Error: cairo_scaled_font_text_extents(NULL); extents (%g, %g, %g, %g, %g, %g)\n",
+	cairo_test_log (ctx, "Error: cairo_scaled_font_text_extents(NULL); extents (%g, %g, %g, %g, %g, %g)\n",
 		        extents.x_bearing, extents.y_bearing,
 			extents.width, extents.height,
 			extents.x_advance, extents.y_advance);
@@ -156,7 +157,7 @@ draw (cairo_t *cr, int width, int height)
     memset (&extents, 0xff, sizeof (cairo_text_extents_t));
     cairo_scaled_font_glyph_extents (scaled_font, (void*)8, 0, &extents);
     if (! text_extents_equal (&extents, &nil_extents)) {
-	cairo_test_log ("Error: cairo_scaled_font_glyph_extents(NULL); extents (%g, %g, %g, %g, %g, %g)\n",
+	cairo_test_log (ctx, "Error: cairo_scaled_font_glyph_extents(NULL); extents (%g, %g, %g, %g, %g, %g)\n",
 		        extents.x_bearing, extents.y_bearing,
 			extents.width, extents.height,
 			extents.x_advance, extents.y_advance);
@@ -169,7 +170,7 @@ draw (cairo_t *cr, int width, int height)
     memset (&extents, 0xff, sizeof (cairo_text_extents_t));
     cairo_text_extents (cr, "test", &extents);
     if (! text_extents_equal (&extents, &nil_extents)) {
-	cairo_test_log ("Error: cairo_set_font_size(0); cairo_text_extents(\"test\"); extents (%g, %g, %g, %g, %g, %g)\n",
+	cairo_test_log (ctx, "Error: cairo_set_font_size(0); cairo_text_extents(\"test\"); extents (%g, %g, %g, %g, %g, %g)\n",
 		        extents.x_bearing, extents.y_bearing,
 			extents.width, extents.height,
 			extents.x_advance, extents.y_advance);
@@ -181,7 +182,7 @@ draw (cairo_t *cr, int width, int height)
     memset (&font_extents, 0xff, sizeof (cairo_font_extents_t));
     cairo_font_extents (cr,  &font_extents);
     if (! font_extents_equal (&font_extents, &nil_font_extents)) {
-	cairo_test_log ("Error: cairo_set_font_size(0); cairo_font_extents(); extents (%g, %g, %g, %g, %g)\n",
+	cairo_test_log (ctx, "Error: cairo_set_font_size(0); cairo_font_extents(); extents (%g, %g, %g, %g, %g)\n",
 		        font_extents.ascent, font_extents.descent,
 			font_extents.height,
 			font_extents.max_x_advance, font_extents.max_y_advance);
@@ -193,7 +194,7 @@ draw (cairo_t *cr, int width, int height)
     memset (&font_extents, 0xff, sizeof (cairo_font_extents_t));
     cairo_scaled_font_extents (scaled_font,  &font_extents);
     if (! font_extents_equal (&font_extents, &nil_font_extents)) {
-	cairo_test_log ("Error: cairo_set_font_size(0); cairo_scaled_font_extents(); extents (%g, %g, %g, %g, %g)\n",
+	cairo_test_log (ctx, "Error: cairo_set_font_size(0); cairo_scaled_font_extents(); extents (%g, %g, %g, %g, %g)\n",
 		        font_extents.ascent, font_extents.descent,
 			font_extents.height,
 			font_extents.max_x_advance, font_extents.max_y_advance);

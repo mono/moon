@@ -27,7 +27,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "reflected-stroke",
     "Exercises the stroker with a reflected ctm",
     200, 200,

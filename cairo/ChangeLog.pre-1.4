@@ -2439,8 +2439,8 @@ Date:   Thu Feb 8 15:28:14 2007 -0800
 
     [cairo-surface] Use a macro definition for all nil surfaces
 
- src/cairo-surface.c |  139 ++++++++++++++-------------------------------------
- 1 files changed, 38 insertions(+), 101 deletions(-)
+ src/cairo-surface.c |  137 ++++++++++++++-------------------------------------
+ 1 files changed, 37 insertions(+), 100 deletions(-)
 
 commit aea0831d24c3fca59b9eb9dd8acce9d9cdd13f26
 Author: Kalle Vahlman <kalle.vahlman@gmail.com>
@@ -2692,8 +2692,8 @@ Date:   Tue Feb 6 17:21:22 2007 -0800
     This also allows some cleanup of the error-handling in
     cairo_scaled_font_create, (no more goto statements).
 
- src/cairo-scaled-font.c |   48 +++++++++++++++++++++++-----------------------
- 1 files changed, 24 insertions(+), 24 deletions(-)
+ src/cairo-scaled-font.c |   52 +++++++++++++++++++++++-----------------------
+ 1 files changed, 26 insertions(+), 26 deletions(-)
 
 commit fc660511ec7a51be909e5ed940354d39ef7ad633
 Author: Adrian Johnson <ajohnson@redneon.com>
@@ -4362,7 +4362,7 @@ Date:   Thu Dec 14 06:55:58 2006 -0800
     image-rgb     stroke_linear_rgba_over-256  5.68 ->  4.10: 1.39x speedup
     ▍
 
- pixman/src/fbcompose.c                |  425 +++++++++++++++++++++++----------
+ pixman/src/fbcompose.c                |  435 +++++++++++++++++++++++----------
  test/clip-operator-ref.png            |  Bin 36956 -> 8262 bytes
  test/clip-operator-rgb24-ref.png      |  Bin 16507 -> 3258 bytes
  test/clip-operator.c                  |    6 +-
@@ -4386,7 +4386,7 @@ Date:   Thu Dec 14 06:55:58 2006 -0800
  test/unbounded-operator-ref.png       |  Bin 11964 -> 2777 bytes
  test/unbounded-operator-rgb24-ref.png |  Bin 6047 -> 1315 bytes
  test/unbounded-operator.c             |    6 +-
- 24 files changed, 316 insertions(+), 145 deletions(-)
+ 24 files changed, 321 insertions(+), 150 deletions(-)
 
 commit af9cce6aa295327b5256f55900b3debf9112b6ca
 Author: Carl Worth <cworth@cworth.org>
@@ -5714,8 +5714,8 @@ Date:   Mon Nov 20 03:14:20 2006 +0200
 
     Tweak comparators.
 
- src/cairo-bentley-ottmann.c |   60 ++++++++++++++++++++----------------------
- 1 files changed, 29 insertions(+), 31 deletions(-)
+ src/cairo-bentley-ottmann.c |   62 ++++++++++++++++++++----------------------
+ 1 files changed, 30 insertions(+), 32 deletions(-)
 
 commit 67359d7a58c14851936345417833b1e610987c19
 Author: Joonas Pihlaja <jpihlaja@cc.helsinki.fi>
@@ -6255,8 +6255,8 @@ Date:   Sat Nov 11 10:43:11 2006 -0800
      xlib-rgb   world_map-800  562.31 0.64% -> 460.51 0.83%:  1.22x speedup
     ▎
 
- src/cairo-path-stroke.c |   20 +++++++-------------
- 1 files changed, 7 insertions(+), 13 deletions(-)
+ src/cairo-path-stroke.c |   22 ++++++++--------------
+ 1 files changed, 8 insertions(+), 14 deletions(-)
 
 commit 3d53f623faed4aed2517e207d77a6da7e3b74fbd
 Author: Carl Worth <cworth@cworth.org>
@@ -6278,8 +6278,8 @@ Date:   Fri Nov 10 12:56:32 2006 -0800
      xlib-rgba  world_map-800  663.71 0.46% -> 567.74 0.19%:  1.17x speedup
     ▏
 
- src/cairo-path-stroke.c |   31 ++++++-------------------------
- 1 files changed, 6 insertions(+), 25 deletions(-)
+ src/cairo-path-stroke.c |   33 +++++++--------------------------
+ 1 files changed, 7 insertions(+), 26 deletions(-)
 
 commit fefa7d9b993b1fc0759cfe1f8faff8dec9dc5c85
 Author: Carl Worth <cworth@cworth.org>

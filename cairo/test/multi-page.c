@@ -130,51 +130,61 @@ draw_some_pages (cairo_surface_t *surface)
 int
 main (void)
 {
+    cairo_test_context_t ctx;
     cairo_surface_t *surface;
     cairo_status_t status;
     const char *filename;
+    cairo_test_status_t result = CAIRO_TEST_UNTESTED;
 
-    cairo_test_init ("multi-page");
+    cairo_test_init (&ctx, "multi-page");
 
 #if CAIRO_HAS_PS_SURFACE
-    filename = "multi-page.ps";
+    if (cairo_test_is_target_enabled (&ctx, "ps")) {
+	if (result == CAIRO_TEST_UNTESTED)
+	    result = CAIRO_TEST_SUCCESS;
 
-    surface = cairo_ps_surface_create (filename,
-				       WIDTH_IN_POINTS, HEIGHT_IN_POINTS);
-    status = cairo_surface_status (surface);
-    if (status) {
-	cairo_test_log ("Failed to create ps surface for file %s: %s\n",
-			filename, cairo_status_to_string (status));
-	return CAIRO_TEST_FAILURE;
+	filename = "multi-page.ps";
+	surface = cairo_ps_surface_create (filename,
+					   WIDTH_IN_POINTS, HEIGHT_IN_POINTS);
+	status = cairo_surface_status (surface);
+	if (status) {
+	    cairo_test_log (&ctx, "Failed to create ps surface for file %s: %s\n",
+			    filename, cairo_status_to_string (status));
+	    result = CAIRO_TEST_FAILURE;
+	}
+
+	draw_some_pages (surface);
+
+	cairo_surface_destroy (surface);
+
+	printf ("multi-page: Please check %s to ensure it looks happy.\n", filename);
     }
-
-    draw_some_pages (surface);
-
-    cairo_surface_destroy (surface);
-
-    printf ("multi-page: Please check %s to ensure it looks happy.\n", filename);
 #endif
 
 #if CAIRO_HAS_PDF_SURFACE
-    filename = "multi-page.pdf";
+    if (cairo_test_is_target_enabled (&ctx, "pdf")) {
+	if (result == CAIRO_TEST_UNTESTED)
+	    result = CAIRO_TEST_SUCCESS;
 
-    surface = cairo_pdf_surface_create (filename,
-					WIDTH_IN_POINTS, HEIGHT_IN_POINTS);
-    status = cairo_surface_status (surface);
-    if (status) {
-	cairo_test_log ("Failed to create pdf surface for file %s: %s\n",
-			filename, cairo_status_to_string (status));
-	return CAIRO_TEST_FAILURE;
+	filename = "multi-page.pdf";
+	surface = cairo_pdf_surface_create (filename,
+					    WIDTH_IN_POINTS, HEIGHT_IN_POINTS);
+	status = cairo_surface_status (surface);
+	if (status) {
+	    cairo_test_log (&ctx, "Failed to create pdf surface for file %s: %s\n",
+			    filename, cairo_status_to_string (status));
+	    result = CAIRO_TEST_FAILURE;
+	}
+
+	draw_some_pages (surface);
+
+	cairo_surface_destroy (surface);
+
+	printf ("multi-page: Please check %s to ensure it looks happy.\n", filename);
     }
-
-    draw_some_pages (surface);
-
-    cairo_surface_destroy (surface);
-
-    printf ("multi-page: Please check %s to ensure it looks happy.\n", filename);
 #endif
 
-    cairo_test_fini ();
+    cairo_test_fini (&ctx);
 
-    return CAIRO_TEST_SUCCESS;
+    return result;
 }

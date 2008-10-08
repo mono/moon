@@ -38,7 +38,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "clip-push-group",
     "Test that push_group doesn't crash after setting a surface-based clip",
     SIZE, SIZE,

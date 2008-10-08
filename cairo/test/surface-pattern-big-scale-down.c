@@ -30,7 +30,7 @@ static cairo_test_draw_function_t draw;
 #define SRC_WIDTH 2048
 #define SRC_HEIGHT 32
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "surface-pattern-big-scale-down",
     "Test scaled-down transformed not-repeated surface patterns with large images and offsets",
     512, 16,

@@ -62,19 +62,22 @@ typedef unsigned __int64 uint64_t;
 typedef enum cairo_test_status {
     CAIRO_TEST_SUCCESS = 0,
     CAIRO_TEST_FAILURE,
-    CAIRO_TEST_UNTESTED,
-    CAIRO_TEST_CRASHED
+    CAIRO_TEST_CRASHED,
+    CAIRO_TEST_UNTESTED = 77 /* match automake's skipped exit status */
 } cairo_test_status_t;
+
+typedef struct _cairo_test_context cairo_test_context_t;
+typedef struct _cairo_test cairo_test_t;
 
 typedef cairo_test_status_t  (cairo_test_draw_function_t) (cairo_t *cr, int width, int height);
 
-typedef struct _cairo_test {
+struct _cairo_test {
     const char *name;
     const char *description;
     int width;
     int height;
     cairo_test_draw_function_t *draw;
-} cairo_test_t;
+};
 
 /* The standard test interface which works by examining result image.
  *
@@ -99,7 +102,39 @@ typedef struct _cairo_test {
  * to the four criteria above.
  */
 cairo_test_status_t
-cairo_test (cairo_test_t *test);
+cairo_test (const cairo_test_t *test);
+
+/* The full context for the test.
+ * For ordinary tests (using cairo_test()) the context is passed to the draw
+ * routine via user_data on the cairo_t.  The reason why the context is not
+ * passed as an explicit parameter is that it is rarely required by the test
+ * itself and by removing the parameter we can keep the draw routines simple
+ * and serve as example code.
+ */
+struct _cairo_test_context {
+    const cairo_test_t *test;
+    const char *test_name;
+    cairo_test_status_t expectation;
+
+    FILE *log_file;
+    const char *srcdir; /* directory containing sources and input data */
+    const char *refdir; /* directory containing reference images */
+
+    char *ref_name; /* cache of the current reference image */
+    cairo_surface_t *ref_image;
+    cairo_surface_t *ref_image_flattened;
+
+    size_t num_targets;
+    cairo_bool_t limited_targets;
+    cairo_boilerplate_target_t **targets_to_test;
+
+    int thread;
+};
+
+/* Retrieve the test context from the cairo_t, used for logging, paths etc */
+const cairo_test_context_t *
+cairo_test_get_context (cairo_t *cr);
+
 
 /* cairo_test_init(), cairo_test_log(), and cairo_test_fini() exist to
  * help in writing tests for which cairo_test() is not appropriate for
@@ -108,32 +143,46 @@ cairo_test (cairo_test_t *test);
  * than be handed one by cairo_test.
  */
 
+
 /* Initialize test-specific resources, (log files, etc.) */
 void
-cairo_test_init (const char *test_name);
+cairo_test_init (cairo_test_context_t *ctx,
+		 const char *test_name);
 
 /* Finalize test-specific resource. */
 void
-cairo_test_fini (void);
+cairo_test_fini (cairo_test_context_t *ctx);
+
 
 /* Print a message to the log file, ala printf. */
 void
-cairo_test_log (const char *fmt, ...) CAIRO_BOILERPLATE_PRINTF_FORMAT(1, 2);
+cairo_test_log (const cairo_test_context_t *ctx,
+	        const char *fmt, ...) CAIRO_BOILERPLATE_PRINTF_FORMAT(2, 3);
+
+void
+cairo_test_log_path (const cairo_test_context_t *ctx,
+		     const cairo_path_t *path);
 
 /* Helper functions that take care of finding source images even when
  * building in a non-srcdir manner, (ie. the tests will be run in a
  * directory that is different from the one where the source image
  * exists). */
 cairo_surface_t *
-cairo_test_create_surface_from_png (const char *filename);
+cairo_test_create_surface_from_png (const cairo_test_context_t *ctx,
+	                            const char *filename);
 
 cairo_pattern_t *
-cairo_test_create_pattern_from_png (const char *filename);
+cairo_test_create_pattern_from_png (const cairo_test_context_t *ctx,
+	                            const char *filename);
 
 cairo_status_t
 cairo_test_paint_checkered (cairo_t *cr);
 
 #define CAIRO_TEST_DOUBLE_EQUALS(a,b)  (fabs((a)-(b)) < 0.00001)
+
+cairo_bool_t
+cairo_test_is_target_enabled (const cairo_test_context_t *ctx,
+	                      const char *target);
 
 CAIRO_END_DECLS
 

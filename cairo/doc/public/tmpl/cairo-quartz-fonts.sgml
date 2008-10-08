@@ -23,7 +23,8 @@ implementation of the font backend methods.
 
 <!-- ##### MACRO CAIRO_HAS_QUARTZ_FONT ##### -->
 <para>
-
+Defined if the Quartz font backend is available.
+This macro can be used to conditionally compile backend-specific code.
 </para>
 
 

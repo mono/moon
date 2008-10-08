@@ -39,6 +39,9 @@
 #include "cairo-skiplist-private.h"
 #include "cairo-freelist-private.h"
 
+#define DEBUG_VALIDATE 0
+#define DEBUG_PRINT_STATE 0
+
 typedef cairo_point_t cairo_bo_point32_t;
 
 typedef struct _cairo_bo_point128 {
@@ -508,7 +511,7 @@ det64_128 (cairo_int64_t a,
  * result is provided as a coordinate pair of 128-bit integers.
  *
  * Returns %CAIRO_BO_STATUS_INTERSECTION if there is an intersection or
- * CAIRO_BO_STATUS_PARALLEL if the two lines are exactly parallel.
+ * %CAIRO_BO_STATUS_PARALLEL if the two lines are exactly parallel.
  */
 static cairo_bo_status_t
 intersect_lines (cairo_bo_edge_t		*a,
@@ -941,7 +944,6 @@ _cairo_bo_sweep_line_swap (cairo_bo_sweep_line_t	*sweep_line,
     left->prev = right;
 }
 
-#define DEBUG_PRINT_STATE 0
 #if DEBUG_PRINT_STATE
 static void
 _cairo_bo_edge_print (cairo_bo_edge_t *edge)
@@ -1078,35 +1080,35 @@ _cairo_bo_edge_end_trap (cairo_bo_edge_t	*left,
 
     /* Only emit trapezoids with positive height. */
     if (fixed_top < fixed_bot) {
-	cairo_point_t left_top, left_bot, right_top, right_bot;
+	cairo_line_t left_line;
+	cairo_line_t right_line;
 	cairo_fixed_t xmin = bo_traps->xmin;
 	cairo_fixed_t ymin = bo_traps->ymin;
 	fixed_top += ymin;
 	fixed_bot += ymin;
 
-	left_top.x = left->top.x + xmin;
-	left_top.y = left->top.y + ymin;
-	right_top.x = right->top.x + xmin;
-	right_top.y = right->top.y + ymin;
-	left_bot.x = left->bottom.x + xmin;
-	left_bot.y = left->bottom.y + ymin;
-	right_bot.x = right->bottom.x + xmin;
-	right_bot.y = right->bottom.y + ymin;
+	left_line.p1.x  = left->top.x + xmin;
+	left_line.p1.y  = left->top.y + ymin;
+	right_line.p1.x = right->top.x + xmin;
+	right_line.p1.y = right->top.y + ymin;
+
+	left_line.p2.x  = left->bottom.x + xmin;
+	left_line.p2.y  = left->bottom.y + ymin;
+	right_line.p2.x = right->bottom.x + xmin;
+	right_line.p2.y = right->bottom.y + ymin;
 
 	/* Avoid emitting the trapezoid if it is obviously degenerate.
 	 * TODO: need a real collinearity test here for the cases
 	 * where the trapezoid is degenerate, yet the top and bottom
 	 * coordinates aren't equal.  */
-	if (left_top.x != right_top.x ||
-	    left_top.y != right_top.y ||
-	    left_bot.x != right_bot.x ||
-	    left_bot.y != right_bot.y)
+	if (left_line.p1.x != right_line.p1.x ||
+	    left_line.p1.y != right_line.p1.y ||
+	    left_line.p2.x != right_line.p2.x ||
+	    left_line.p2.y != right_line.p2.y)
 	{
-	    _cairo_traps_add_trap_from_points (bo_traps->traps,
-					       fixed_top,
-					       fixed_bot,
-					       left_top, left_bot,
-					       right_top, right_bot);
+	    _cairo_traps_add_trap (bo_traps->traps,
+				   fixed_top, fixed_bot,
+				   &left_line, &right_line);
 
 #if DEBUG_PRINT_STATE
 	    printf ("Deferred trap: left=(%08x, %08x)-(%08x,%08x) "
@@ -1177,6 +1179,7 @@ _cairo_bo_traps_fini (cairo_bo_traps_t *bo_traps)
     _cairo_freelist_fini (&bo_traps->freelist);
 }
 
+#if DEBUG_VALIDATE
 static void
 _cairo_bo_sweep_line_validate (cairo_bo_sweep_line_t *sweep_line)
 {
@@ -1202,6 +1205,7 @@ _cairo_bo_sweep_line_validate (cairo_bo_sweep_line_t *sweep_line)
 	exit (1);
     }
 }
+#endif
 
 
 static cairo_status_t
@@ -1214,7 +1218,7 @@ _active_edges_to_traps (cairo_bo_edge_t		*head,
     int in_out = 0;
     cairo_bo_edge_t *edge;
 
-    for (edge = head; edge && edge->next; edge = edge->next) {
+    for (edge = head; edge; edge = edge->next) {
 	if (fill_rule == CAIRO_FILL_RULE_WINDING) {
 	    if (edge->reversed)
 		in_out++;
@@ -1324,9 +1328,8 @@ _cairo_bentley_ottmann_tessellate_bo_edges (cairo_bo_edge_t	*edges,
 #if DEBUG_PRINT_STATE
 	    print_state ("After processing start", &event_queue, &sweep_line);
 #endif
-	    _cairo_bo_sweep_line_validate (&sweep_line);
-
 	    break;
+
 	case CAIRO_BO_EVENT_TYPE_STOP:
 	    edge = event->e1;
 
@@ -1346,9 +1349,8 @@ _cairo_bentley_ottmann_tessellate_bo_edges (cairo_bo_edge_t	*edges,
 #if DEBUG_PRINT_STATE
 	    print_state ("After processing stop", &event_queue, &sweep_line);
 #endif
-	    _cairo_bo_sweep_line_validate (&sweep_line);
-
 	    break;
+
 	case CAIRO_BO_EVENT_TYPE_INTERSECTION:
 	    edge1 = event->e1;
 	    edge2 = event->e2;
@@ -1382,10 +1384,11 @@ _cairo_bentley_ottmann_tessellate_bo_edges (cairo_bo_edge_t	*edges,
 #if DEBUG_PRINT_STATE
 	    print_state ("After processing intersection", &event_queue, &sweep_line);
 #endif
-	    _cairo_bo_sweep_line_validate (&sweep_line);
-
 	    break;
 	}
+#if DEBUG_VALIDATE
+	_cairo_bo_sweep_line_validate (&sweep_line);
+#endif
     }
 
     *num_intersections = intersection_count;
@@ -1415,9 +1418,9 @@ update_minmax(cairo_fixed_t *inout_min,
 }
 
 cairo_status_t
-_cairo_bentley_ottmann_tessellate_polygon (cairo_traps_t	*traps,
-					   cairo_polygon_t	*polygon,
-					   cairo_fill_rule_t	 fill_rule)
+_cairo_bentley_ottmann_tessellate_polygon (cairo_traps_t	 *traps,
+					   const cairo_polygon_t *polygon,
+					   cairo_fill_rule_t	  fill_rule)
 {
     int intersections;
     cairo_status_t status;
@@ -1428,12 +1431,14 @@ _cairo_bentley_ottmann_tessellate_polygon (cairo_traps_t	*traps,
     cairo_fixed_t xmax = -0x80000000;
     cairo_fixed_t ymax = -0x80000000;
     cairo_box_t limit;
-    cairo_bool_t has_limits = _cairo_traps_get_limit(traps, &limit);
+    cairo_bool_t has_limits;
     int num_bo_edges;
     int i;
 
     if (0 == polygon->num_edges)
 	return CAIRO_STATUS_SUCCESS;
+
+    has_limits = _cairo_traps_get_limit (traps, &limit);
 
     if (polygon->num_edges < ARRAY_LENGTH (stack_edges)) {
 	edges = stack_edges;
@@ -1473,12 +1478,12 @@ _cairo_bentley_ottmann_tessellate_polygon (cairo_traps_t	*traps,
 	cairo_point_t top = polygon->edges[i].edge.p1;
 	cairo_point_t bot = polygon->edges[i].edge.p2;
 
-        /* Discard the edge if traps doesn't care. */
-        if (has_limits) {
-                /* Strictly above or below the limits? */
-                if (bot.y <= limit.p1.y || top.y >= limit.p2.y)
-                        continue;
-        }
+	/* Discard the edge if it lies outside the limits of traps. */
+	if (has_limits) {
+	    /* Strictly above or below the limits? */
+	    if (bot.y <= limit.p1.y || top.y >= limit.p2.y)
+		continue;
+	}
 
 	/* Offset coordinates into the non-negative range. */
 	top.x -= xmin;

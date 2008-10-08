@@ -34,7 +34,7 @@ static cairo_test_draw_function_t draw;
 #define WIDTH (SIZE * NUM_GRADIENTS)
 #define HEIGHT (SIZE * NUM_EXTEND)
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "radial-gradient",
     "Simple test of radial gradients",
     WIDTH, HEIGHT,

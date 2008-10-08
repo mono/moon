@@ -41,7 +41,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "pixman-rotate",
     "Exposes pixman off-by-one error when rotating",
     IMAGE_WIDTH, IMAGE_HEIGHT,

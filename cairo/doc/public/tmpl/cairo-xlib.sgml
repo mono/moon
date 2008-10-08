@@ -26,7 +26,8 @@ if it is available.
 
 <!-- ##### MACRO CAIRO_HAS_XLIB_SURFACE ##### -->
 <para>
-
+Defined if the Xlib surface backend is available.
+This macro can be used to conditionally compile backend-specific code.
 </para>
 
 

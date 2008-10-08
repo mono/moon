@@ -23,9 +23,10 @@
  * Author: Kristian Høgsberg <krh@redhat.com>
  */
 
+#include "cairo-test.h"
+
 #include <cairo.h>
 #include <assert.h>
-#include <stdlib.h>
 
 static void
 destroy_data1 (void *p)
@@ -42,9 +43,12 @@ destroy_data2 (void *p)
 int
 main (void)
 {
+    cairo_test_context_t ctx;
     cairo_surface_t *surface;
     static const cairo_user_data_key_t key1, key2;
     int data1, data2;
+
+    cairo_test_init (&ctx, "user-data");
 
     data1 = 0;
     data2 = 0;
@@ -78,5 +82,7 @@ main (void)
     assert (data1 == 1);
     assert (data2 == 2);
 
-    return 0;
+    cairo_test_fini (&ctx);
+
+    return CAIRO_TEST_SUCCESS;
 }

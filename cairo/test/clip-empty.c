@@ -29,7 +29,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "clip-empty",
     "Test clipping with an empty clip path",
     SIZE, SIZE,

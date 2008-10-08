@@ -36,7 +36,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "filter-nearest-offset",
     "Test sampling offset of CAIRO_FILTER_NEAREST"
     "\nwrong sampling location for nearest-neighbor filter in libpixman and Render",
@@ -48,7 +48,7 @@ static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
     cairo_surface_t *surface;
-    static uint32_t data[STAMP_WIDTH * STAMP_HEIGHT] = {
+    uint32_t data[STAMP_WIDTH * STAMP_HEIGHT] = {
 	0xffffffff, 0xffffffff,		0xffff0000, 0xffff0000,
 	0xffffffff, 0xffffffff,		0xffff0000, 0xffff0000,
 

@@ -22,7 +22,8 @@ systems, but can be used on other platforms too.
 
 <!-- ##### MACRO CAIRO_HAS_FT_FONT ##### -->
 <para>
-
+Defined if the FreeType font backend is available.
+This macro can be used to conditionally compile backend-specific code.
 </para>
 
 

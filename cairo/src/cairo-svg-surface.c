@@ -384,8 +384,11 @@ _cairo_svg_surface_create_for_document (cairo_svg_document_t	*document,
 						 surface->height,
 						 &cairo_svg_surface_paginated_backend);
     status = paginated->status;
-    if (status == CAIRO_STATUS_SUCCESS)
+    if (status == CAIRO_STATUS_SUCCESS) {
+	/* paginated keeps the only reference to surface now, drop ours */
+	cairo_surface_destroy (&surface->base);
 	return paginated;
+    }
 
     /* ignore status as we are on the error path */
 CLEANUP:
@@ -648,7 +651,7 @@ _cairo_svg_document_emit_bitmap_glyph_data (cairo_svg_document_t	*document,
     cairo_image_surface_t *image;
     cairo_scaled_glyph_t *scaled_glyph;
     cairo_status_t status;
-    unsigned char *row, *byte;
+    uint8_t *row, *byte;
     int rows, cols;
     int x, y, bit;
 
@@ -674,7 +677,7 @@ _cairo_svg_document_emit_bitmap_glyph_data (cairo_svg_document_t	*document,
 
     for (y = 0, row = image->data, rows = image->height; rows; row += image->stride, rows--, y++) {
 	for (x = 0, byte = row, cols = (image->width + 7) / 8; cols; byte++, cols--) {
-	    unsigned char output_byte = CAIRO_BITSWAP8_IF_LITTLE_ENDIAN (*byte);
+	    uint8_t output_byte = CAIRO_BITSWAP8_IF_LITTLE_ENDIAN (*byte);
 	    for (bit = 7; bit >= 0 && x < image->width; bit--, x++) {
 		if (output_byte & (1 << bit)) {
 		    _cairo_output_stream_printf (document->xml_node_glyphs,
@@ -749,7 +752,14 @@ _cairo_svg_document_emit_font_subsets (cairo_svg_document_t *document)
     status = _cairo_scaled_font_subsets_foreach_scaled (document->font_subsets,
                                                         _cairo_svg_document_emit_font_subset,
                                                         document);
+    if (status)
+	goto FAIL;
 
+    status = _cairo_scaled_font_subsets_foreach_user (document->font_subsets,
+						      _cairo_svg_document_emit_font_subset,
+						      document);
+
+  FAIL:
     _cairo_scaled_font_subsets_destroy (document->font_subsets);
     document->font_subsets = NULL;
 
@@ -867,12 +877,11 @@ _cairo_svg_surface_emit_alpha_filter (cairo_svg_document_t *document)
 typedef struct {
     cairo_output_stream_t *output;
     unsigned int in_mem;
-    unsigned char src[3];
-    unsigned char dst[5];
     unsigned int trailing;
+    unsigned char src[3];
 } base64_write_closure_t;
 
-static char const *base64_table =
+static char const base64_table[64] =
 "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 static cairo_status_t
@@ -882,26 +891,27 @@ base64_write_func (void *closure,
 {
     base64_write_closure_t *info = (base64_write_closure_t *) closure;
     unsigned int i;
-    unsigned char *src, *dst;
+    unsigned char *src;
 
-    dst = info->dst;
     src = info->src;
 
     if (info->in_mem + length < 3) {
 	for (i = 0; i < length; i++) {
-	    src[i + info->in_mem] = *data;
-	    data++;
+	    src[i + info->in_mem] = *data++;
 	}
 	info->in_mem += length;
 	return CAIRO_STATUS_SUCCESS;
     }
 
-    while (info->in_mem + length >= 3) {
-	for (i = 0; i < 3 - info->in_mem; i++) {
-	    src[i + info->in_mem] = *data;
-	    data++;
+    do {
+	unsigned char dst[4];
+
+	for (i = info->in_mem; i < 3; i++) {
+	    src[i] = *data++;
 	    length--;
 	}
+	info->in_mem = 0;
+
 	dst[0] = base64_table[src[0] >> 2];
 	dst[1] = base64_table[(src[0] & 0x03) << 4 | src[1] >> 4];
 	dst[2] = base64_table[(src[1] & 0x0f) << 2 | src[2] >> 6];
@@ -916,16 +926,14 @@ base64_write_func (void *closure,
 		break;
 	}
 	_cairo_output_stream_write (info->output, dst, 4);
-	info->in_mem = 0;
-    }
+    } while (length >= 3);
 
     for (i = 0; i < length; i++) {
-	src[i] = *data;
-	data++;
+	src[i] = *data++;
     }
     info->in_mem = length;
 
-    return CAIRO_STATUS_SUCCESS;
+    return _cairo_output_stream_get_status (info->output);
 }
 
 static cairo_int_status_t
@@ -939,7 +947,6 @@ _cairo_surface_base64_encode (cairo_surface_t       *surface,
     info.output = output;
     info.in_mem = 0;
     info.trailing = 0;
-    memset (info.dst, '\x0', 5);
 
     _cairo_output_stream_printf (info.output, "data:image/png;base64,");
 
@@ -1931,6 +1938,7 @@ _cairo_svg_surface_emit_paint (cairo_output_stream_t *output,
 			       cairo_svg_surface_t   *surface,
 			       cairo_operator_t	      op,
 			       cairo_pattern_t	     *source,
+			       cairo_pattern_t	     *mask_source,
 			       const char	     *extra_attributes)
 {
     cairo_status_t status;
@@ -1941,7 +1949,7 @@ _cairo_svg_surface_emit_paint (cairo_output_stream_t *output,
 				       surface,
 				       (cairo_surface_pattern_t *) source,
 				       invalid_pattern_id,
-				       NULL,
+				       mask_source ? &mask_source->matrix :NULL,
 				       extra_attributes);
 
     _cairo_output_stream_printf (output,
@@ -2024,7 +2032,7 @@ _cairo_svg_surface_paint (void		    *abstract_surface,
 	}
     }
 
-    return _cairo_svg_surface_emit_paint (surface->xml_node, surface, op, source, NULL);
+    return _cairo_svg_surface_emit_paint (surface->xml_node, surface, op, source, 0, NULL);
 }
 
 static cairo_int_status_t
@@ -2070,7 +2078,7 @@ _cairo_svg_surface_mask (void		    *abstract_surface,
 				 "%s",
 				 mask_id,
 				 discard_filter ? "" : "  <g filter=\"url(#alpha)\">\n");
-    status = _cairo_svg_surface_emit_paint (mask_stream, surface, op, mask, NULL);
+    status = _cairo_svg_surface_emit_paint (mask_stream, surface, op, mask, source, NULL);
     if (status) {
 	cairo_status_t ignore = _cairo_output_stream_destroy (mask_stream);
 	return status;
@@ -2089,7 +2097,7 @@ _cairo_svg_surface_mask (void		    *abstract_surface,
 
     snprintf (buffer, sizeof buffer, "mask=\"url(#mask%d)\"",
 	      mask_id);
-    status = _cairo_svg_surface_emit_paint (surface->xml_node, surface, op, source, buffer);
+    status = _cairo_svg_surface_emit_paint (surface->xml_node, surface, op, source, 0, buffer);
     if (status)
 	return status;
 
@@ -2139,7 +2147,8 @@ _cairo_svg_surface_show_glyphs (void			*abstract_surface,
 				cairo_pattern_t		*pattern,
 				cairo_glyph_t		*glyphs,
 				int			 num_glyphs,
-				cairo_scaled_font_t	*scaled_font)
+				cairo_scaled_font_t	*scaled_font,
+				int			*remaining_glyphs)
 {
     cairo_svg_surface_t *surface = abstract_surface;
     cairo_svg_document_t *document = surface->document;
@@ -2173,6 +2182,7 @@ _cairo_svg_surface_show_glyphs (void			*abstract_surface,
     for (i = 0; i < num_glyphs; i++) {
 	status = _cairo_scaled_font_subsets_map_glyph (document->font_subsets,
 						       scaled_font, glyphs[i].index,
+						       NULL, 0,
                                                        &subset_glyph);
 	if (status == CAIRO_INT_STATUS_UNSUPPORTED) {
 	    _cairo_output_stream_printf (surface->xml_node, "</g>\n");
@@ -2198,7 +2208,7 @@ _cairo_svg_surface_show_glyphs (void			*abstract_surface,
     return CAIRO_STATUS_SUCCESS;
 
 FALLBACK:
-   _cairo_path_fixed_init (&path);
+    _cairo_path_fixed_init (&path);
 
     status = _cairo_scaled_font_glyph_path (scaled_font,(cairo_glyph_t *) glyphs, num_glyphs, &path);
 

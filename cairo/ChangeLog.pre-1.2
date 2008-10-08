@@ -1416,8 +1416,8 @@ Date:   Thu Jun 15 14:15:42 2006 -0700
 
     _cairo_format_from_pixman_format: Add useful error mesage and assertion when failing.
 
- src/cairo-image-surface.c |   62 ++++++++++++++++++++++++++-------------------
- 1 files changed, 36 insertions(+), 26 deletions(-)
+ src/cairo-image-surface.c |   64 ++++++++++++++++++++++++++-------------------
+ 1 files changed, 37 insertions(+), 27 deletions(-)
 
 commit dedc51ba51eaa61e4b11f274fac06c6f0acd8a87
 Author: Kristian Høgsberg <krh@redhat.com>
@@ -2970,14 +2970,14 @@ Date:   Wed May 24 17:05:51 2006 -0700
  src/cairo-svg-surface.c       |    3 +-
  src/cairo-win32-surface.c     |    6 ++-
  src/cairo-xcb-surface.c       |   29 ++++++++++++-
- src/cairo-xlib-surface.c      |   93 ++++++++++++++++++++++------------------
+ src/cairo-xlib-surface.c      |   95 ++++++++++++++++++++++------------------
  src/cairo.h                   |    3 +
  src/cairoint.h                |    5 ++-
  src/test-fallback-surface.c   |    3 +-
  src/test-meta-surface.c       |    3 +-
  src/test-paginated-surface.c  |    3 +-
  test/cairo-test.c             |   18 ++++++++
- 20 files changed, 162 insertions(+), 61 deletions(-)
+ 20 files changed, 163 insertions(+), 62 deletions(-)
 
 commit 0796845ae6923f3ccef5df231b7d9a2c145063fd
 Author: Carl Worth <cworth@cworth.org>
@@ -9041,10 +9041,10 @@ Date:   Wed Jan 4 16:39:23 2006 +0000
     Some major performance improvements to the general composite code used for gradients and transformed images. Like fetching of mask scanline before source scanline so that only the necessary pixels from source needs to be computed in case of gradients or transformed images as source. This patch also include some gradient specific fixes and performance improvement.
 
  pixman/ChangeLog       |   22 +-
- pixman/src/fbcompose.c | 1187 ++++++++++++++++++++++++++++++------------------
+ pixman/src/fbcompose.c | 1205 ++++++++++++++++++++++++++++++------------------
  pixman/src/icimage.c   |   17 +-
  pixman/src/icimage.h   |    9 +
- 4 files changed, 776 insertions(+), 459 deletions(-)
+ 4 files changed, 785 insertions(+), 468 deletions(-)
 
 commit 305a83721f5c6423fc1e7fbb0cf1d67c0f92ecb7
 Author: Carl Worth <cworth@cworth.org>
@@ -11206,8 +11206,8 @@ Date:   Tue Sep 13 12:26:29 2005 +0000
     Expand locking to encapsulate any modification to the reference count of a scaled font, rather than just modifcations of the scaled_font_map, since scaled fonts are shared between threads.
 
  ChangeLog               |    8 ++++
- src/cairo-scaled-font.c |   87 ++++++++++++++++++++++++++--------------------
- 2 files changed, 57 insertions(+), 38 deletions(-)
+ src/cairo-scaled-font.c |   89 ++++++++++++++++++++++++++--------------------
+ 2 files changed, 58 insertions(+), 39 deletions(-)
 
 commit 258f6f4903eb91187384c2df7591413d9041f184
 Author: Carl Worth <cworth@cworth.org>

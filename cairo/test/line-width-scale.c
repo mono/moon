@@ -54,7 +54,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "line-width-scale",
     "Tests interaction of cairo_set_line_width with cairo_scale",
     WIDTH, HEIGHT,
@@ -158,8 +158,7 @@ static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
     int i;
-    typedef void (*figure_t) (cairo_t *cr);
-    figure_t figures[4] = {
+    void (* const figures[4]) (cairo_t *cr) = {
 	scale_then_set_line_width_and_stroke,
 	scale_path_and_line_width,
 	set_line_width_then_scale_and_stroke,

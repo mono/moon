@@ -50,7 +50,7 @@ static cairo_test_draw_function_t draw;
  * pen doing slope comparisons.
  */
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "degenerate-pen",
     "Test round joins with a pen that's transformed to a line",
     WIDTH, HEIGHT,

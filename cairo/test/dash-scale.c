@@ -31,7 +31,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "dash-scale",
     "Test interactions of cairo_set_dash and cairo_scale, (in particular with a non-uniformly scaled pen)",
     3 * (PAD + SIZE) + PAD,

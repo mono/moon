@@ -4,6 +4,7 @@ Shawn T. Amundson <amundson@gtk.org> Build fix
 Olivier Andrieu <oliv__a@users.sourceforge.net> PNG backend
 Peter Dennis Bartok <peter@novonyx.com> Bug fix for clipping
 Dave Beckett <dajobe@debian.org> Build fixes, Debian packaging
+Kai-Uwe Behrmann <ku.b@gmx.de> SVG bug fixes
 Christian Biesinger <cbiesinger@web.de> BeOS backend
 Billy Biggs <vektor@dumbterm.net> Pixman code merge. Optimization. Fixes for subtle rendering bugs.
 Hans Breuer <hans@breuer.org> win32 bug fixes, build fixes, and improvements
@@ -22,6 +23,7 @@ Miklós Erdélyi <erdelyim@gmail.com> Fix typo leading to a crash
 Behdad Esfahbod <behdad@behdad.org> Huge piles of bug fixes, improvements, and general maintenance
 Brian Ewins <Brian.Ewins@gmail.com> ATSUI maintenance (first success at making it really work)
 Bertram Felgenhauer <int-e@gmx.de> Fixes for subtle arithmetic errors
+Damian Frank <damian.frank@gmail.com> Build system improvements for win32
 Bdale Garbee <bdale@gag.com> Provided essential support for cairo achitecture sessions
 Jens Granseuer <jensgr@gmx.net> Fixes to generate proper compiler flags
 Laxmi Harikumar <laxmi.harikumar@digital.com> Build fix

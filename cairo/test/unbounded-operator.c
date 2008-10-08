@@ -116,7 +116,7 @@ draw_rects (cairo_t *cr, int x, int y)
     cairo_fill (cr);
 }
 
-static void (*draw_funcs[])(cairo_t *cr, int x, int y) = {
+static void (*const draw_funcs[])(cairo_t *cr, int x, int y) = {
     draw_mask,
     draw_glyphs,
     draw_polygon,
@@ -134,7 +134,7 @@ static cairo_operator_t operators[] = {
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "unbounded-operator",
     "Operators with an effect for transparent source/mask",
     IMAGE_WIDTH, IMAGE_HEIGHT,
@@ -144,6 +144,7 @@ cairo_test_t test = {
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
+    const cairo_test_context_t *ctx = cairo_test_get_context (cr);
     size_t i, j, x, y;
     cairo_pattern_t *pattern;
 
@@ -176,14 +177,14 @@ draw (cairo_t *cr, int width, int height)
 
 	    draw_funcs[j] (cr, x, y);
 	    if (cairo_status (cr))
-		cairo_test_log ("%d %d HERE!\n", (int)i, (int)j);
+		cairo_test_log (ctx, "%d %d HERE!\n", (int)i, (int)j);
 
 	    cairo_restore (cr);
 	}
     }
 
     if (cairo_status (cr) != CAIRO_STATUS_SUCCESS)
-	cairo_test_log ("%d %d .HERE!\n", (int)i, (int)j);
+	cairo_test_log (ctx, "%d %d .HERE!\n", (int)i, (int)j);
 
     return CAIRO_TEST_SUCCESS;
 }

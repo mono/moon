@@ -36,6 +36,8 @@
 #include <cairo.h>
 #include <string.h>
 
+#include "cairo-compiler-private.h"
+
 #if   HAVE_STDINT_H
 # include <stdint.h>
 #elif HAVE_INTTYPES_H
@@ -51,20 +53,21 @@
   typedef unsigned __int32 uint32_t;
   typedef __int64 int64_t;
   typedef unsigned __int64 uint64_t;
-# ifndef HAVE_UINT64_T
-#  define HAVE_UINT64_T 1
-# endif
-# ifndef INT16_MIN
-#  define INT16_MIN	(-32767-1)
-# endif
-# ifndef INT16_MAX
-#  define INT16_MAX	(32767)
-# endif
-# ifndef UINT16_MAX
-#  define UINT16_MAX	(65535)
-# endif
 #else
 #error Cannot find definitions for fixed-width integral types (uint8_t, uint32_t, etc.)
+#endif
+
+#ifndef HAVE_UINT64_T
+# define HAVE_UINT64_T 1
+#endif
+#ifndef INT16_MIN
+# define INT16_MIN	(-32767-1)
+#endif
+#ifndef INT16_MAX
+# define INT16_MAX	(32767)
+#endif
+#ifndef UINT16_MAX
+# define UINT16_MAX	(65535)
 #endif
 
 #ifndef CAIRO_BOILERPLATE_LOG
@@ -95,6 +98,9 @@
  * PDF surfaces. */
 #define CAIRO_TEST_CONTENT_COLOR_ALPHA_FLATTENED ((unsigned int) -1)
 
+cairo_content_t
+cairo_boilerplate_content (cairo_content_t content);
+
 const char *
 cairo_boilerplate_content_name (cairo_content_t content);
 
@@ -111,11 +117,23 @@ typedef cairo_surface_t *
 				       cairo_content_t		  content,
 				       int			  width,
 				       int			  height,
+				       int			  max_width,
+				       int			  max_height,
 				       cairo_boilerplate_mode_t	  mode,
+				       int                        id,
 				       void			**closure);
 
 typedef cairo_status_t
-(*cairo_boilerplate_write_to_png_t) (cairo_surface_t *surface, const char *filename);
+(*cairo_boilerplate_finish_surface_t) (cairo_surface_t *surface);
+
+typedef cairo_surface_t *
+(*cairo_boilerplate_get_image_surface_t) (cairo_surface_t *surface,
+					  int width,
+					  int height);
+
+typedef cairo_status_t
+(*cairo_boilerplate_write_to_png_t) (cairo_surface_t *surface,
+				     const char *filename);
 
 typedef void
 (*cairo_boilerplate_cleanup_t) (void *closure);
@@ -125,16 +143,18 @@ typedef void
 
 typedef struct _cairo_boilerplate_target
 {
-    const char		       	       *name;
-    cairo_surface_type_t		expected_type;
-    cairo_content_t			content;
-    unsigned int			error_tolerance;
-    cairo_boilerplate_create_surface_t	create_surface;
-    cairo_boilerplate_write_to_png_t	write_to_png;
-    cairo_boilerplate_cleanup_t		cleanup;
-    cairo_boilerplate_wait_t		synchronize;
-    cairo_bool_t			is_vector;
-    void			       *closure;
+    const char					*name;
+    const char					*file_extension;
+    cairo_surface_type_t			 expected_type;
+    cairo_content_t				 content;
+    unsigned int				 error_tolerance;
+    cairo_boilerplate_create_surface_t		 create_surface;
+    cairo_boilerplate_finish_surface_t		 finish_surface;
+    cairo_boilerplate_get_image_surface_t	 get_image_surface;
+    cairo_boilerplate_write_to_png_t		 write_to_png;
+    cairo_boilerplate_cleanup_t			 cleanup;
+    cairo_boilerplate_wait_t			 synchronize;
+    cairo_bool_t				 is_vector;
 } cairo_boilerplate_target_t;
 
 cairo_boilerplate_target_t **
@@ -143,12 +163,32 @@ cairo_boilerplate_get_targets (int *num_targets, cairo_bool_t *limited_targets);
 void
 cairo_boilerplate_free_targets (cairo_boilerplate_target_t **targets);
 
-void
-cairo_boilerplate_surface_set_user_data (cairo_surface_t		*surface,
-					 const cairo_user_data_key_t	*key,
-					 void				*user_data,
-					 cairo_destroy_func_t		 destroy);
+cairo_surface_t *
+_cairo_boilerplate_get_image_surface (cairo_surface_t *src,
+				      int width,
+				      int height);
+cairo_surface_t *
+cairo_boilerplate_get_image_surface_from_png (const char *filename,
+					      int width,
+					      int height,
+					      cairo_bool_t flatten);
 
-#include "xmalloc.h"
+cairo_surface_t *
+cairo_boilerplate_surface_create_in_error (cairo_status_t status);
+
+FILE *
+cairo_boilerplate_open_any2ppm (const char *filename,
+				int page);
+
+cairo_surface_t *
+cairo_boilerplate_image_surface_create_from_ppm_stream (FILE *file);
+
+int
+cairo_boilerplate_version (void);
+
+const char*
+cairo_boilerplate_version_string (void);
+
+#include "cairo-boilerplate-system.h"
 
 #endif

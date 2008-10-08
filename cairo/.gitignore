@@ -14,3 +14,12 @@
 /aclocal.m4
 /doltcompile
 /doltlibtool
+/cairo-uninstalled.pc
+/cairo-ft-uninstalled.pc
+/cairo-pdf-uninstalled.pc
+/cairo-png-uninstalled.pc
+/cairo-ps-uninstalled.pc
+/cairo-svg-uninstalled.pc
+/cairo-xlib-uninstalled.pc
+/cairo-xlib-xrender-uninstalled.pc
+

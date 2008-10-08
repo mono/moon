@@ -17,6 +17,11 @@ make check
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <direct/debug.h>
+
+D_DEBUG_DOMAIN( CairoDFB_Boiler, "CairoDFB/Boiler", "Cairo DirectFB Boilerplate" );
+
+
 /* macro for a safe call to DirectFB functions */
 #define DFBCHECK(x...) \
 {                                                                \
@@ -38,7 +43,7 @@ static DFBInfo *init(void) {
 	DFBDisplayLayerConfig        layer_config;
 	DFBGraphicsDeviceDescription desc;
 	int err;
-	DFBInfo *info = calloc(1,sizeof(DFBInfo));
+	DFBInfo *info = xcalloc(1,sizeof(DFBInfo));
 	if( !info )
 		return NULL;
 
@@ -67,6 +72,13 @@ _cairo_boilerplate_directfb_window_create_surface (DFBInfo		*info,
 {
 	DFBWindowDescription desc;
 	int err;
+
+        D_DEBUG_AT( CairoDFB_Boiler, "%s( %p, %s, %dx%d )\n", __FUNCTION__, info,
+                    content == CAIRO_CONTENT_ALPHA       ? "ALPHA" :
+                    content == CAIRO_CONTENT_COLOR       ? "RGB"   :
+                    content == CAIRO_CONTENT_COLOR_ALPHA ? "ARGB"  : "unknown content!",
+                    width, height );
+
 	desc.flags  = ( DWDESC_POSX | DWDESC_POSY |
 			DWDESC_WIDTH | DWDESC_HEIGHT /*| DWDESC_CAPS|DSDESC_PIXELFORMAT*/ );
 	desc.posx   = 0;
@@ -97,7 +109,13 @@ _cairo_boilerplate_directfb_bitmap_create_surface (DFBInfo		*info,
 	int  err;
 	DFBSurfaceDescription  desc;
 
-	desc.flags = DSDESC_WIDTH | DSDESC_HEIGHT | DSDESC_PIXELFORMAT;
+        D_DEBUG_AT( CairoDFB_Boiler, "%s( %p, %s, %dx%d )\n", __FUNCTION__, info,
+                    content == CAIRO_CONTENT_ALPHA       ? "ALPHA" :
+                    content == CAIRO_CONTENT_COLOR       ? "RGB"   :
+                    content == CAIRO_CONTENT_COLOR_ALPHA ? "ARGB"  : "unknown content!",
+                    width, height );
+
+        desc.flags = DSDESC_WIDTH | DSDESC_HEIGHT | DSDESC_PIXELFORMAT;
 	desc.caps = DSCAPS_NONE;
 	desc.width  = width;
 	desc.height = height;
@@ -124,7 +142,10 @@ _cairo_boilerplate_directfb_create_surface (const char			 *name,
 					    cairo_content_t		  content,
 					    int				  width,
 					    int				  height,
+					    int				  max_width,
+					    int				  max_height,
 					    cairo_boilerplate_mode_t	  mode,
+					    int                           id,
 					    void			**closure)
 {
 
@@ -134,6 +155,14 @@ _cairo_boilerplate_directfb_create_surface (const char			 *name,
 	    CAIRO_BOILERPLATE_LOG ("Failed to init directfb:\n");
         return NULL;
     }
+
+    D_DEBUG_AT( CairoDFB_Boiler, "%s( '%s', %s, %dx%d, %s )\n", __FUNCTION__, name,
+                content == CAIRO_CONTENT_ALPHA       ? "ALPHA" :
+                content == CAIRO_CONTENT_COLOR       ? "RGB"   :
+                content == CAIRO_CONTENT_COLOR_ALPHA ? "ARGB"  : "unknown content!",
+                width, height,
+                mode == CAIRO_BOILERPLATE_MODE_TEST ? "TEST" :
+                mode == CAIRO_BOILERPLATE_MODE_PERF ? "PERF" : "unknown mode!" );
 
     if (width == 0)
 	width = 1;

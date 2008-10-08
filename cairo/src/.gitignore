@@ -3,6 +3,7 @@
 /cairo-no-features.h
 /Makefile
 /Makefile.in
+/Makefile.am.features
 /.deps
 /.libs
 /libcairo.la

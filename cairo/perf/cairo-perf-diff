@@ -189,7 +189,11 @@ git_setup
 # Build cairo-perf-diff-files if not available
 if [ ! -e $CAIRO_DIR/perf/cairo-perf-diff-files ]; then
     echo "Building cairo-perf-diff-files"
-    make -C $CAIRO_DIR/perf/ cairo-perf-diff-files
+    if [ "x$OS" = "xWindows_NT" ]; then
+        make -f Makefile.win32 -C $CAIRO_DIR/perf/ cairo-perf-diff-files CFG=debug
+    else
+        make -C $CAIRO_DIR/perf/ cairo-perf-diff-files
+    fi
 fi
 
 if [ ! -e $old ]; then

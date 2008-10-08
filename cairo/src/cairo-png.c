@@ -119,6 +119,13 @@ png_simple_warning_callback (png_structp png,
 }
 
 
+/* Starting with libpng-1.2.30, we must explicitly specify an output_flush_fn.
+ * Otherwise, we will segfault if we are writing to a stream. */
+static void
+png_simple_output_flush_fn (png_structp png_ptr)
+{
+}
+
 static cairo_status_t
 write_png (cairo_surface_t	*surface,
 	   png_rw_ptr		write_func,
@@ -130,7 +137,6 @@ write_png (cairo_surface_t	*surface,
     void *image_extra;
     png_struct *png;
     png_info *info;
-    png_time pt;
     png_byte **volatile rows = NULL;
     png_color_16 white;
     int png_color_type;
@@ -179,7 +185,7 @@ write_png (cairo_surface_t	*surface,
 	goto BAIL3;
 #endif
 
-    png_set_write_fn (png, closure, write_func, NULL);
+    png_set_write_fn (png, closure, write_func, png_simple_output_flush_fn);
 
     switch (image->format) {
     case CAIRO_FORMAT_ARGB32:
@@ -197,6 +203,9 @@ write_png (cairo_surface_t	*surface,
     case CAIRO_FORMAT_A1:
 	depth = 1;
 	png_color_type = PNG_COLOR_TYPE_GRAY;
+#ifndef WORDS_BIGENDIAN
+	png_set_packswap (png);
+#endif
 	break;
     default:
 	status = _cairo_error (CAIRO_STATUS_INVALID_FORMAT);
@@ -215,8 +224,12 @@ write_png (cairo_surface_t	*surface,
     white.red = white.blue = white.green = white.gray;
     png_set_bKGD (png, info, &white);
 
-    png_convert_from_time_t (&pt, time (NULL));
-    png_set_tIME (png, info, &pt);
+    if (0) { /* XXX extract meta-data from surface (i.e. creation date) */
+	png_time pt;
+
+	png_convert_from_time_t (&pt, time (NULL));
+	png_set_tIME (png, info, &pt);
+    }
 
     /* We have to call png_write_info() before setting up the write
      * transformation, since it stores data internally in 'png'
@@ -274,7 +287,7 @@ stdio_write_func (png_structp png, png_bytep data, png_size_t size)
  * Return value: %CAIRO_STATUS_SUCCESS if the PNG file was written
  * successfully. Otherwise, %CAIRO_STATUS_NO_MEMORY if memory could not
  * be allocated for the operation or
- * CAIRO_STATUS_SURFACE_TYPE_MISMATCH if the surface does not have
+ * %CAIRO_STATUS_SURFACE_TYPE_MISMATCH if the surface does not have
  * pixel contents, or %CAIRO_STATUS_WRITE_ERROR if an I/O error occurs
  * while attempting to write the file.
  **/
@@ -341,7 +354,7 @@ stream_write_func (png_structp png, png_bytep data, png_size_t size)
  * Return value: %CAIRO_STATUS_SUCCESS if the PNG file was written
  * successfully.  Otherwise, %CAIRO_STATUS_NO_MEMORY is returned if
  * memory could not be allocated for the operation,
- * CAIRO_STATUS_SURFACE_TYPE_MISMATCH if the surface does not have
+ * %CAIRO_STATUS_SURFACE_TYPE_MISMATCH if the surface does not have
  * pixel contents.
  **/
 cairo_status_t
@@ -350,6 +363,12 @@ cairo_surface_write_to_png_stream (cairo_surface_t	*surface,
 				   void			*closure)
 {
     struct png_write_closure_t png_closure;
+
+    if (surface->status)
+	return surface->status;
+
+    if (surface->finished)
+	return _cairo_error (CAIRO_STATUS_SURFACE_FINISHED);
 
     png_closure.write_func = write_func;
     png_closure.closure = closure;
@@ -498,24 +517,36 @@ read_png (png_rw_ptr	read_func,
     if (interlace != PNG_INTERLACE_NONE)
         png_set_interlace_handling (png);
 
+    png_set_filler (png, 0xff, PNG_FILLER_AFTER);
+
+    /* recheck header after setting EXPAND options */
+    png_read_update_info (png, info);
+    png_get_IHDR (png, info,
+                  &png_width, &png_height, &depth,
+                  &color_type, &interlace, NULL, NULL);
+    if (depth != 8 ||
+	! (color_type == PNG_COLOR_TYPE_RGB ||
+	   color_type == PNG_COLOR_TYPE_RGB_ALPHA))
+    {
+	surface = _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_READ_ERROR));
+	goto BAIL;
+    }
+
     switch (color_type) {
 	default:
-	case PNG_COLOR_TYPE_GRAY_ALPHA:
+	    ASSERT_NOT_REACHED;
+	    /* fall-through just in case ;-) */
+
 	case PNG_COLOR_TYPE_RGB_ALPHA:
 	    format = CAIRO_FORMAT_ARGB32;
 	    png_set_read_user_transform_fn (png, premultiply_data);
 	    break;
 
-	case PNG_COLOR_TYPE_GRAY:
-	case PNG_COLOR_TYPE_PALETTE:
 	case PNG_COLOR_TYPE_RGB:
 	    format = CAIRO_FORMAT_RGB24;
 	    png_set_read_user_transform_fn (png, convert_bytes_to_data);
-	    png_set_filler (png, 0xff, PNG_FILLER_AFTER);
 	    break;
     }
-
-    png_read_update_info (png, info);
 
     stride = cairo_format_stride_for_width (format, png_width);
     if (stride < 0) {
@@ -597,9 +628,9 @@ stdio_read_func (png_structp png, png_bytep data, png_size_t size)
  * surface can be checked for with cairo_surface_status(surface) which
  * may return one of the following values:
  *
- *	CAIRO_STATUS_NO_MEMORY
- *	CAIRO_STATUS_FILE_NOT_FOUND
- *	CAIRO_STATUS_READ_ERROR
+ *	%CAIRO_STATUS_NO_MEMORY
+ *	%CAIRO_STATUS_FILE_NOT_FOUND
+ *	%CAIRO_STATUS_READ_ERROR
  **/
 cairo_surface_t *
 cairo_image_surface_create_from_png (const char *filename)

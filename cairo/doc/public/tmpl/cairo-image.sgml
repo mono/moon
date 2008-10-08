@@ -21,6 +21,16 @@ image formats are those defined in #cairo_format_t.
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### MACRO CAIRO_HAS_IMAGE_SURFACE ##### -->
+<para>
+Defined if the image surface backend is available.
+The image surface backend is always built in.
+This macro was added for completeness in cairo 1.8.
+</para>
+
+@Since: 1.8
+
+
 <!-- ##### ENUM cairo_format_t ##### -->
 <para>
 

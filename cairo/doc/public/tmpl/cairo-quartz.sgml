@@ -22,7 +22,8 @@ Apple OS X Quartz rendering system.
 
 <!-- ##### MACRO CAIRO_HAS_QUARTZ_SURFACE ##### -->
 <para>
-
+Defined if the Quartz surface backend is available.
+This macro can be used to conditionally compile backend-specific code.
 </para>
 
 

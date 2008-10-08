@@ -89,16 +89,25 @@ draw (cairo_t *cr, int width, int height)
 int
 main (void)
 {
+    cairo_test_context_t ctx;
     cairo_t *cr;
     const char *filename = "svg-surface.svg";
     cairo_surface_t *surface;
 
-    cairo_test_init ("svg-surface");
+    cairo_test_init (&ctx, "svg-surface");
+    if (! cairo_test_is_target_enabled (&ctx, "svg")) {
+	cairo_test_fini (&ctx);
+	return CAIRO_TEST_UNTESTED;
+    }
 
     surface = cairo_svg_surface_create (filename,
 					WIDTH_IN_POINTS, HEIGHT_IN_POINTS);
-    if (surface == NULL) {
-	fprintf (stderr, "Failed to create svg surface for file %s\n", filename);
+    if (cairo_surface_status (surface)) {
+	cairo_test_log (&ctx,
+			"Failed to create svg surface for file %s: %s\n",
+			filename,
+			cairo_status_to_string (cairo_surface_status (surface)));
+	cairo_test_fini (&ctx);
 	return CAIRO_TEST_FAILURE;
     }
 
@@ -113,7 +122,7 @@ main (void)
 
     printf ("svg-surface: Please check svg-surface.svg to make sure it looks happy.\n");
 
-    cairo_test_fini ();
+    cairo_test_fini (&ctx);
 
-    return 0;
+    return CAIRO_TEST_SUCCESS;
 }

@@ -36,7 +36,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "leaky-dash",
     "Exercises bug #4863 in which a dashed stroke leaks into half the rectangle being filled"
     "\nknown bug (#4863) which has existed since the 1.0 release",

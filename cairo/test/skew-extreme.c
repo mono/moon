@@ -57,7 +57,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "skew-extreme",
     "Test cases of extreme skew.",
     WIDTH, HEIGHT,

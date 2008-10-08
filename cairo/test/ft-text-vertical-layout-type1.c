@@ -35,7 +35,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "ft-text-vertical-layout-type1",
     "Tests text rendering for vertical layout with Type1 fonts"
     "\nCan fail if an incorrect font is loaded---need to bundle the desired font",
@@ -101,7 +101,7 @@ draw (cairo_t *cr, int width, int height)
 {
     cairo_text_extents_t extents;
     cairo_scaled_font_t * scaled_font;
-    static char text[] = "i-W";
+    const char text[] = "i-W";
     double line_width, x, y;
 
     line_width = cairo_get_line_width (cr);

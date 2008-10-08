@@ -24,15 +24,22 @@
  * Author: Carl Worth <cworth@cworth.org>
  */
 
+#define _ISOC99_SOURCE	/* for INFINITY */
+#define _GNU_SOURCE 1	/* for fedisableeexcept() et al */
+
 #include "cairo-test.h"
 
-#if _XOPEN_SOURCE >= 600 || defined (_ISOC99_SOURCE)
+#ifdef INFINITY
 #define HAVE_INFINITY 1
+#endif
+
+#if HAVE_FEDISABLEEXCEPT
+#include <fenv.h>
 #endif
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "invalid-matrix",
     "Test that all relevant public functions return CAIRO_STATUS_INVALID_MATRIX as appropriate",
     0, 0,
@@ -42,6 +49,7 @@ cairo_test_t test = {
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
+    const cairo_test_context_t *ctx = cairo_test_get_context (cr);
     cairo_status_t status;
     cairo_surface_t *target;
     cairo_font_face_t *font_face;
@@ -57,17 +65,22 @@ draw (cairo_t *cr, int width, int height)
 
 #define CHECK_STATUS(status, function_name)						\
 if ((status) == CAIRO_STATUS_SUCCESS) {							\
-    cairo_test_log ("Error: %s with invalid matrix passed\n",				\
+    cairo_test_log (ctx, "Error: %s with invalid matrix passed\n",				\
 		    (function_name));							\
     return CAIRO_TEST_FAILURE;								\
 } else if ((status) != CAIRO_STATUS_INVALID_MATRIX) {					\
-    cairo_test_log ("Error: %s with invalid matrix returned unexpected status "	\
+    cairo_test_log (ctx, "Error: %s with invalid matrix returned unexpected status "	\
 		    "(%d): %s\n",							\
 		    (function_name),							\
 		    status,								\
 		    cairo_status_to_string (status));					\
     return CAIRO_TEST_FAILURE;								\
 }
+
+    /* clear floating point exceptions (added by cairo_test_init()) */
+#if HAVE_FEDISABLEEXCEPT
+    fedisableexcept (FE_INVALID);
+#endif
 
     /* create a bogus matrix and check results of attempted inversion */
     bogus.x0 = bogus.xy = bogus.xx = strtod ("NaN", NULL);

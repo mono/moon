@@ -37,7 +37,9 @@
 #include "cairoint.h"
 
 void
-_cairo_slope_init (cairo_slope_t *slope, cairo_point_t *a, cairo_point_t *b)
+_cairo_slope_init (cairo_slope_t *slope,
+		   const cairo_point_t *a,
+		   const cairo_point_t *b)
 {
     slope->dx = b->x - a->x;
     slope->dy = b->y - a->y;
@@ -62,7 +64,7 @@ _cairo_slope_init (cairo_slope_t *slope, cairo_point_t *a, cairo_point_t *b)
    >  0 => a more positive than b
 */
 int
-_cairo_slope_compare (cairo_slope_t *a, cairo_slope_t *b)
+_cairo_slope_compare (const cairo_slope_t *a, const cairo_slope_t *b)
 {
     cairo_fixed_48_16_t diff;
 

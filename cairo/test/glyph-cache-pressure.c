@@ -51,7 +51,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "glyph-cache-pressure",
     "Ensure that all backends behave well under artificial glyph cache pressure",
     223, TEXT_SIZE + 4,

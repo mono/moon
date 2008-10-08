@@ -33,7 +33,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "dash-no-dash",
     "Tests that we can actually turn dashing on and off again",
     WIDTH, HEIGHT,

@@ -119,6 +119,24 @@ size and transformation and a certain set of font options.
 @extents: 
 
 
+<!-- ##### FUNCTION cairo_scaled_font_text_to_glyphs ##### -->
+<para>
+
+</para>
+
+@scaled_font:
+@x:
+@y:
+@utf8:
+@utf8_len:
+@glyphs:
+@num_glyphs:
+@clusters:
+@num_clusters:
+@cluster_flags:
+@Returns:
+
+
 <!-- ##### FUNCTION cairo_scaled_font_get_font_face ##### -->
 <para>
 
@@ -153,6 +171,15 @@ size and transformation and a certain set of font options.
 
 @scaled_font: 
 @ctm: 
+
+
+<!-- ##### FUNCTION cairo_scaled_font_get_scale_matrix ##### -->
+<para>
+
+</para>
+
+@scaled_font:
+@scale_matrix:
 
 
 <!-- ##### FUNCTION cairo_scaled_font_get_type ##### -->

@@ -31,7 +31,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "ft-show-glyphs-positioning",
     "Test that the PS/PDF glyph positioning optimizations are correct",
     235, (TEXT_SIZE + 4)*2,

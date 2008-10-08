@@ -1,4 +1,7 @@
+include $(top_srcdir)/build/Makefile.am.common
+
 SUBDIRS=public
-.PHONY: doc
+
 doc:
 	cd public && $(MAKE) $(AM_MAKEFLAGS) doc
+.PHONY: doc

@@ -32,7 +32,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "surface-pattern-scale-down",
     "Test scaled-down transformed not-repeated surface patterns"
     "\nFails xlib backend (with argb32) with inexplicable alpha in result",

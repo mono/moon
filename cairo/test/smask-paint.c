@@ -27,7 +27,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "smask-paint",
     "Test the support of \"soft\" masks with paints",
     60, 60,
@@ -87,4 +87,3 @@ main (void)
 {
     return cairo_test (&test);
 }
-

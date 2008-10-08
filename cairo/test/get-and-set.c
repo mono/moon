@@ -28,7 +28,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "get-and-set",
     "Tests calls to the most trivial cairo_get and cairo_set functions",
     0, 0,
@@ -49,7 +49,7 @@ typedef struct {
 } settings_t;
 
 /* Two sets of settings, no defaults */
-settings_t settings[] = {
+static const settings_t settings[] = {
     {
 	CAIRO_OPERATOR_IN,
 	2.0,
@@ -77,7 +77,7 @@ settings_t settings[] = {
 };
 
 static void
-settings_set (cairo_t *cr, settings_t *settings)
+settings_set (cairo_t *cr, const settings_t *settings)
 {
     cairo_set_operator (cr, settings->op);
     cairo_set_tolerance (cr, settings->tolerance);
@@ -114,7 +114,7 @@ settings_get (cairo_t *cr, settings_t *settings)
 }
 
 static int
-settings_equal (settings_t *a, settings_t *b)
+settings_equal (const settings_t *a, const settings_t *b)
 {
     return (a->op == b->op &&
 	    a->tolerance == b->tolerance &&

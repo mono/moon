@@ -148,6 +148,7 @@ _cairo_boilerplate_glitz_glx_create_surface_internal (glitz_format_name_t		 form
     glitz_drawable_destroy (drawable);
 
     return sr;
+
  DESTROY_DRAWABLE:
     glitz_drawable_destroy (drawable);
  DESTROY_WINDOW:
@@ -162,12 +163,16 @@ _cairo_boilerplate_glitz_glx_create_surface (const char			 *name,
 					     cairo_content_t 		  content,
 					     int			  width,
 					     int			  height,
+					     int			  max_width,
+					     int			  max_height,
 					     cairo_boilerplate_mode_t	  mode,
+					     int                          id,
 					     void			**closure)
 {
     glitz_glx_target_closure_t *gxtc;
     glitz_surface_t  * glitz_surface;
-    cairo_surface_t  * surface;
+    cairo_surface_t  * surface = NULL;
+    cairo_status_t status;
 
     *closure = gxtc = xmalloc (sizeof (glitz_glx_target_closure_t));
 
@@ -204,19 +209,28 @@ _cairo_boilerplate_glitz_glx_create_surface (const char			 *name,
     }
 
     surface = cairo_glitz_surface_create (glitz_surface);
+    glitz_surface_destroy (glitz_surface);
+
+    if (cairo_surface_status (surface))
+	goto FAIL_CLOSE_DISPLAY;
 
     gxtc->base.width = width;
     gxtc->base.height = height;
     gxtc->base.content = content;
-    cairo_surface_set_user_data (surface, &glitz_closure_key,
-				 gxtc, NULL);
+    status = cairo_boilerplate_surface_set_user_data (surface,
+	                                      &glitz_closure_key, gxtc, NULL);
+    if (status == CAIRO_STATUS_SUCCESS)
+	return surface;
 
-    return surface;
+    cairo_surface_destroy (surface);
+    surface = cairo_boilerplate_surface_create_in_error (status);
 
  FAIL_CLOSE_DISPLAY:
+    glitz_glx_fini ();
     XCloseDisplay (gxtc->dpy);
  FAIL:
-    return NULL;
+    free (gxtc);
+    return surface;
 }
 
 void
@@ -298,9 +312,10 @@ _cairo_boilerplate_glitz_agl_create_surface_internal (glitz_format_name_t		 form
 
  DESTROY_DRAWABLE:
     glitz_drawable_destroy (gdraw);
+    return sr;
 
  FAIL:
-    return sr; /* will be NULL unless we create it and attach */
+    return NULL;
 }
 
 cairo_surface_t *
@@ -308,11 +323,14 @@ _cairo_boilerplate_glitz_agl_create_surface (const char			 *name,
 					     cairo_content_t 		  content,
 					     int			  width,
 					     int			  height,
+					     int			  max_width,
+					     int			  max_height,
 					     cairo_boilerplate_mode_t	  mode,
+					     int                          id,
 					     void			**closure)
 {
     glitz_surface_t *glitz_surface;
-    cairo_surface_t *surface;
+    cairo_surface_t *surface = NULL;
     glitz_agl_target_closure_t *aglc;
 
     glitz_agl_init ();
@@ -335,16 +353,25 @@ _cairo_boilerplate_glitz_agl_create_surface (const char			 *name,
 	goto FAIL;
 
     surface = cairo_glitz_surface_create (glitz_surface);
+    glitz_surface_destroy (glitz_surface);
+
+    if (cairo_surface_status (surface))
+	goto FAIL;
 
     aglc->base.width = width;
     aglc->base.height = height;
     aglc->base.content = content;
-    cairo_surface_set_user_data (surface, &glitz_closure_key, aglc, NULL);
+    status = cairo_boilerplate_surface_set_user_data (surface,
+	                                      &glitz_closure_key, aglc, NULL);
+    if (status == CAIRO_STATUS_SUCCESS)
+	return surface;
 
-    return surface;
+    cairo_surface_destroy (surface);
+    surface = cairo_boilerplate_surface_create_in_error (status);
 
  FAIL:
-    return NULL;
+    glitz_agl_fini ();
+    return surface;
 }
 
 void
@@ -428,11 +455,14 @@ _cairo_boilerplate_glitz_wgl_create_surface (const char			 *name,
 					     cairo_content_t		  content,
 					     int			  width,
 					     int			  height,
+					     int			  max_width,
+					     int			  max_height,
 					     cairo_boilerplate_mode_t	  mode,
+					     int                          id,
 					     void			**closure)
 {
     glitz_surface_t *glitz_surface;
-    cairo_surface_t *surface;
+    cairo_surface_t *surface = NULL;
     glitz_wgl_target_closure_t *wglc;
 
     glitz_wgl_init (NULL);
@@ -455,16 +485,26 @@ _cairo_boilerplate_glitz_wgl_create_surface (const char			 *name,
 	goto FAIL;
 
     surface = cairo_glitz_surface_create (glitz_surface);
+    glitz_surface_destroy (glitz_surface);
+
+    if (cairo_surface_status (surface))
+	goto FAIL;
 
     wglc->base.width = width;
     wglc->base.height = height;
     wglc->base.content = content;
-    cairo_surface_set_user_data (surface, &glitz_closure_key, wglc, NULL);
+    status = cairo_boilerplate_surface_set_user_data (surface,
+	                                      &glitz_closure_key, wglc, NULL);
+    if (status == CAIRO_STATUS_SUCCESS)
+	return surface;
 
-    return surface;
+    cairo_surface_destroy (surface);
+    surface = cairo_boilerplate_surface_create_in_error (status);
 
  FAIL:
-    return NULL;
+    glitz_wgl_fini ();
+    free (wglc);
+    return surface;
 }
 
 void

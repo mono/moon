@@ -41,7 +41,7 @@ static cairo_test_draw_function_t draw;
  * (0.8, 0.8, 0.8, 0.4).
  */
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "stroke-ctm-caps",
     "Test that the stroker correctly passes the device-space vector to the stroker for endcaps",
     WIDTH, HEIGHT,

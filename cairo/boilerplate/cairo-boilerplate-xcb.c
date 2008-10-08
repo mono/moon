@@ -52,12 +52,14 @@ _cairo_boilerplate_xcb_create_surface (const char		 *name,
 				       cairo_content_t		  content,
 				       int			  width,
 				       int			  height,
+				       int			  max_width,
+				       int			  max_height,
 				       cairo_boilerplate_mode_t	  mode,
+				       int                        id,
 				       void			**closure)
 {
     xcb_screen_t *root;
     xcb_target_closure_t *xtc;
-    cairo_surface_t *surface;
     xcb_connection_t *c;
     xcb_render_pictforminfo_t *render_format;
     xcb_pict_standard_t format;
@@ -97,11 +99,10 @@ _cairo_boilerplate_xcb_create_surface (const char		 *name,
     render_format = xcb_render_util_find_standard_format (xcb_render_util_query_formats (c), format);
     if (render_format->id == 0)
 	return NULL;
-    surface = cairo_xcb_surface_create_with_xrender_format (c, xtc->pixmap, root,
-							    render_format,
-							    width, height);
 
-    return surface;
+    return cairo_xcb_surface_create_with_xrender_format (c, xtc->pixmap, root,
+							 render_format,
+							 width, height);
 }
 
 void

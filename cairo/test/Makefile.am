@@ -1,11 +1,14 @@
+include $(top_srcdir)/build/Makefile.am.common
+
 SUBDIRS=pdiff .
 
 # Here are all the tests that are run unconditionally
-TESTS =							\
+TESTS +=						\
 a1-image-sample$(EXEEXT)				\
 a1-mask$(EXEEXT)					\
 a1-traps-sample$(EXEEXT)				\
 a8-mask$(EXEEXT)					\
+alpha-similar$(EXEEXT)					\
 big-line$(EXEEXT)					\
 big-trap$(EXEEXT)					\
 bilevel-image$(EXEEXT)					\
@@ -21,6 +24,7 @@ clip-operator$(EXEEXT)					\
 clip-push-group$(EXEEXT)				\
 clip-twice$(EXEEXT)					\
 clip-zero$(EXEEXT)					\
+clipped-group$(EXEEXT)					\
 close-path$(EXEEXT)					\
 composite-integer-translate-source$(EXEEXT)		\
 composite-integer-translate-over$(EXEEXT)		\
@@ -36,15 +40,20 @@ dash-offset-negative$(EXEEXT)				\
 dash-scale$(EXEEXT)					\
 dash-state$(EXEEXT)					\
 dash-zero-length$(EXEEXT)				\
+degenerate-arc$(EXEEXT)					\
 degenerate-path$(EXEEXT)				\
 degenerate-pen$(EXEEXT)					\
 device-offset$(EXEEXT)					\
+device-offset-fractional$(EXEEXT)			\
 device-offset-positive$(EXEEXT)				\
+device-offset-scale$(EXEEXT)				\
 extend-pad$(EXEEXT)					\
 extend-reflect$(EXEEXT)					\
 extend-reflect-similar$(EXEEXT)				\
 extend-repeat$(EXEEXT)					\
 extend-repeat-similar$(EXEEXT)				\
+fill-alpha$(EXEEXT)					\
+fill-alpha-pattern$(EXEEXT)				\
 fill-and-stroke$(EXEEXT)				\
 fill-and-stroke-alpha$(EXEEXT)				\
 fill-and-stroke-alpha-add$(EXEEXT)			\
@@ -63,14 +72,19 @@ get-clip$(EXEEXT)					\
 get-group-target$(EXEEXT)				\
 get-path-extents$(EXEEXT)				\
 gradient-alpha$(EXEEXT)					\
+gradient-constant-alpha$(EXEEXT)			\
 gradient-zero-stops$(EXEEXT)				\
+group-paint$(EXEEXT)					\
 image-surface-source$(EXEEXT)				\
 infinite-join$(EXEEXT)					\
 in-fill-empty-trapezoid$(EXEEXT)			\
 in-fill-trapezoid$(EXEEXT)				\
 invalid-matrix$(EXEEXT)					\
+large-clip$(EXEEXT)					\
+large-font$(EXEEXT)					\
 large-source$(EXEEXT)					\
 leaky-dash$(EXEEXT)					\
+leaky-dashed-rectangle$(EXEEXT)				\
 leaky-polygon$(EXEEXT)					\
 line-width$(EXEEXT)					\
 line-width-scale$(EXEEXT)				\
@@ -83,11 +97,15 @@ mask$(EXEEXT)						\
 mask-alpha$(EXEEXT)					\
 mask-ctm$(EXEEXT)					\
 mask-surface-ctm$(EXEEXT)				\
+mask-transformed-image$(EXEEXT)				\
+mask-transformed-similar$(EXEEXT)			\
 meta-surface-pattern$(EXEEXT)				\
 miter-precision$(EXEEXT)				\
 move-to-show-surface$(EXEEXT)				\
 new-sub-path$(EXEEXT)					\
 nil-surface$(EXEEXT)					\
+operator$(EXEEXT)					\
+operator-alpha$(EXEEXT)					\
 operator-clear$(EXEEXT)					\
 operator-source$(EXEEXT)				\
 over-above-source$(EXEEXT)				\
@@ -106,6 +124,7 @@ push-group$(EXEEXT)					\
 radial-gradient$(EXEEXT)				\
 random-intersections$(EXEEXT)				\
 rectangle-rounding-error$(EXEEXT)			\
+rectilinear-fill$(EXEEXT)				\
 rectilinear-miter-limit$(EXEEXT)			\
 rectilinear-stroke$(EXEEXT)				\
 reflected-stroke$(EXEEXT)				\
@@ -119,6 +138,7 @@ stroke-image$(EXEEXT)				        \
 select-font-face$(EXEEXT)				\
 select-font-no-show-text$(EXEEXT)			\
 self-copy$(EXEEXT)					\
+self-copy-overlap$(EXEEXT)				\
 self-intersecting$(EXEEXT)				\
 set-source$(EXEEXT)					\
 show-text-current-point$(EXEEXT)			\
@@ -147,6 +167,7 @@ text-pattern$(EXEEXT)					\
 text-rotate$(EXEEXT)					\
 text-transform$(EXEEXT)					\
 text-zero-len$(EXEEXT)					\
+toy-font-face$(EXEEXT)					\
 transforms$(EXEEXT)					\
 translate-show-surface$(EXEEXT)				\
 trap-clip$(EXEEXT)					\
@@ -154,6 +175,9 @@ truetype-tables$(EXEEXT)				\
 unantialiased-shapes$(EXEEXT)				\
 unbounded-operator$(EXEEXT)				\
 user-data$(EXEEXT)					\
+user-font$(EXEEXT)					\
+user-font-proxy$(EXEEXT)				\
+user-font-rescale$(EXEEXT)				\
 zero-alpha$(EXEEXT)
 
 # XXX: Here are some existing tests that are currently disabled for
@@ -238,6 +262,7 @@ TESTS += svg-surface-source$(EXEEXT)
 endif
 
 if CAIRO_HAS_XLIB_SURFACE
+TESTS += xlib-expose-event$(EXEEXT)
 TESTS += xlib-surface$(EXEEXT)
 TESTS += xlib-surface-source$(EXEEXT)
 endif
@@ -250,13 +275,17 @@ if CAIRO_HAS_MULTI_PAGE_SURFACES
 TESTS += multi-page$(EXEEXT)
 endif
 
+# Include fallback-resolution (once!) if we have any of the vector surfaces
 if CAIRO_HAS_SVG_SURFACE
+test = fallback-resolution$(EXEEXT)
+endif
 if CAIRO_HAS_PDF_SURFACE
+test = fallback-resolution$(EXEEXT)
+endif
 if CAIRO_HAS_PS_SURFACE
-TESTS += fallback-resolution$(EXEEXT)
+test = fallback-resolution$(EXEEXT)
 endif
-endif
-endif
+TESTS += $(test)
 
 # All tests which have a reference image go here.
 REFERENCE_IMAGES = \
@@ -264,6 +293,8 @@ REFERENCE_IMAGES = \
 	a1-mask-ref.png	\
 	a1-traps-sample-ref.png		\
 	a8-mask-ref.png	\
+	alpha-similar-ref.png	\
+	alpha-similar-rgb24-ref.png	\
 	big-line-ref.png		\
 	big-line-rgb24-ref.png		\
 	big-line-ps-ref.png		\
@@ -297,7 +328,6 @@ REFERENCE_IMAGES = \
 	clip-operator-ref.png	\
 	clip-operator-pdf-argb32-ref.png \
 	clip-operator-pdf-rgb24-ref.png \
-	clip-operator-ps-argb32-ref.png	\
 	clip-operator-ps-rgb24-ref.png	\
 	clip-operator-rgb24-ref.png	\
 	clip-operator-quartz-ref.png	\
@@ -312,6 +342,8 @@ REFERENCE_IMAGES = \
 	clip-twice-quartz-rgb24-ref.png	\
 	clip-twice-ref.png	\
 	clip-twice-rgb24-ref.png	\
+	clipped-group-ref.png	\
+	clipped-group-ps-ref.png	\
 	close-path-ref.png	\
 	close-path-ps-ref.png	\
 	composite-integer-translate-over-ref.png	\
@@ -319,7 +351,12 @@ REFERENCE_IMAGES = \
 	composite-integer-translate-source-ref.png	\
 	copy-path-ps-ref.png	\
 	copy-path-ref.png	\
-	create-from-png-ref.png	\
+	create-from-png-ref.png			\
+	create-from-png-alpha-ref.png		\
+	create-from-png-gray-ref.png		\
+	create-from-png-gray-alpha-ref.png	\
+	create-from-png-indexed-ref.png		\
+	create-from-png-indexed-alpha-ref.png	\
 	create-from-png-stream-ref.png	\
 	dash-caps-joins-ps-argb32-ref.png	\
 	dash-caps-joins-ps-rgb24-ref.png	\
@@ -341,6 +378,8 @@ REFERENCE_IMAGES = \
 	dash-zero-length-ps-rgb24-ref.png	\
 	dash-zero-length-ref.png	\
 	dash-zero-length-rgb24-ref.png	\
+	degenerate-arc-ref.png		\
+	degenerate-arc-ps-ref.png	\
 	degenerate-pen-ref.png		\
 	degenerate-pen-ps-ref.png	\
 	degenerate-pen-quartz-ref.png	\
@@ -350,10 +389,14 @@ REFERENCE_IMAGES = \
 	degenerate-path-rgb24-ref.png	\
 	degenerate-path-quartz-ref.png	\
 	degenerate-path-quartz-rgb24-ref.png	\
+	device-offset-fractional-ref.png	\
+	device-offset-fractional-pdf-ref.png	\
+	device-offset-fractional-ps-ref.png	\
 	device-offset-positive-ref.png	\
 	device-offset-positive-rgb24-ref.png	\
 	device-offset-ref.png	\
 	device-offset-rgb24-ref.png	\
+	device-offset-scale-ref.png	\
 	extend-pad-ref.png	\
 	extend-reflect-ref.png	\
 	extend-reflect-similar-ref.png	\
@@ -361,6 +404,11 @@ REFERENCE_IMAGES = \
 	extend-reflect-ps-ref.png \
 	extend-repeat-ref.png	\
 	extend-repeat-similar-ref.png	\
+	fill-alpha-ref.png	\
+	fill-alpha-pattern-ref.png	\
+	fill-alpha-pattern-pdf-argb32-ref.png	\
+	fill-alpha-pattern-pdf-rgb24-ref.png	\
+	fill-alpha-pattern-ps-ref.png	\
 	fill-and-stroke-alpha-add-quartz-ref.png	\
 	fill-and-stroke-alpha-add-ref.png	\
 	fill-and-stroke-alpha-quartz-ref.png	\
@@ -423,16 +471,27 @@ REFERENCE_IMAGES = \
 	gradient-alpha-ps-rgb24-ref.png	\
 	gradient-alpha-ref.png	\
 	gradient-alpha-rgb24-ref.png	\
+	gradient-constant-alpha-pdf-argb32-ref.png	\
+	gradient-constant-alpha-pdf-rgb24-ref.png	\
+	gradient-constant-alpha-ps-ref.png		\
+	gradient-constant-alpha-ps-rgb24-ref.png	\
+	gradient-constant-alpha-ref.png	\
+	gradient-constant-alpha-rgb24-ref.png	\
 	gradient-zero-stops-ref.png	\
 	gradient-zero-stops-rgb24-ref.png	\
+	group-paint-ref.png	\
 	image-surface-source-ref.png \
 	infinite-join-ref.png	\
 	infinite-join-ps-ref.png	\
+	large-clip-ref.png	\
+	large-font-ref.png	\
 	large-source-ref.png	\
 	leaky-dash-ps-argb32-ref.png	\
 	leaky-dash-ps-rgb24-ref.png	\
 	leaky-dash-quartz-ref.png	\
 	leaky-dash-ref.png	\
+	leaky-dashed-rectangle-ref.png		\
+	leaky-dashed-rectangle-ps-ref.png	\
 	leaky-polygon-ref.png	\
 	leaky-polygon-ps-ref.png	\
 	linear-gradient-reflect-ref.png	\
@@ -471,6 +530,10 @@ REFERENCE_IMAGES = \
 	mask-surface-ctm-svg-argb32-ref.png	\
 	mask-svg-rgb24-ref.png	\
 	mask-svg-argb32-ref.png	\
+	mask-transformed-image-ref.png	\
+	mask-transformed-similar-ref.png	\
+	mask-transformed-similar-pdf-ref.png	\
+	mask-transformed-similar-svg-ref.png	\
 	meta-surface-pattern-ref.png		\
 	meta-surface-pattern-rgb24-ref.png	\
 	meta-surface-pattern-pdf-ref.png	\
@@ -491,17 +554,18 @@ REFERENCE_IMAGES = \
 	new-sub-path-rgb24-ref.png	\
 	nil-surface-ref.png	\
 	nil-surface-rgb24-ref.png	\
+	operator-ref.png	\
+	operator-rgb24-ref.png	\
+	operator-alpha-ref.png	\
+	operator-alpha-rgb24-ref.png	\
 	operator-clear-quartz-ref.png	\
 	operator-clear-quartz-rgb24-ref.png	\
 	operator-clear-ref.png	\
 	operator-clear-rgb24-ref.png	\
 	operator-clear-pdf-argb32-ref.png	\
 	operator-clear-pdf-rgb24-ref.png	\
-	operator-clear-ps-argb32-ref.png	\
 	operator-source-pdf-argb32-ref.png	\
 	operator-source-pdf-rgb24-ref.png	\
-	operator-source-ps-argb32-ref.png	\
-	operator-source-ps-rgb24-ref.png	\
 	operator-source-ref.png	\
 	operator-source-rgb24-ref.png	\
 	operator-source-quartz-ref.png \
@@ -512,6 +576,7 @@ REFERENCE_IMAGES = \
 	over-above-source-ref.png                 \
 	over-above-source-rgb24-ref.png           \
 	over-around-source-ps-argb32-ref.png       \
+	over-around-source-ps-rgb24-ref.png        \
 	over-around-source-quartz-ref.png	   \
 	over-around-source-quartz-rgb24-ref.png	   \
 	over-around-source-ref.png                 \
@@ -552,6 +617,7 @@ REFERENCE_IMAGES = \
 	random-intersections-quartz-ref.png \
 	rgb24-ignore-alpha-ref.png \
 	rectangle-rounding-error-ref.png	\
+	rectilinear-fill-ref.png	\
 	rectilinear-miter-limit-ref.png		\
 	rectilinear-miter-limit-ps-ref.png	\
 	rectilinear-stroke-ref.png	\
@@ -583,6 +649,8 @@ REFERENCE_IMAGES = \
 	select-font-face-quartz-ref.png \
 	self-copy-ref.png	\
 	self-copy-ps-ref.png	\
+	self-copy-overlap-ref.png	\
+	self-copy-overlap-rgb24-ref.png	\
 	self-intersecting-ref.png	\
 	self-intersecting-rgb24-ref.png	\
 	set-source-ref.png	\
@@ -619,6 +687,7 @@ REFERENCE_IMAGES = \
 	stroke-image-pdf-ref.png \
 	stroke-image-ps-ref.png \
 	stroke-image-quartz-ref.png \
+	solid-pattern-cache-stress-ref.png	\
 	source-clip-ref.png	\
 	source-clip-scale-quartz-ref.png	\
 	source-clip-scale-ps-argb32-ref.png	\
@@ -661,6 +730,7 @@ REFERENCE_IMAGES = \
 	text-pattern-quartz-ref.png \
 	text-pattern-quartz-rgb24-ref.png \
 	text-rotate-ref.png	\
+	text-rotate-pdf-ref.png \
 	text-rotate-ps-ref.png	\
 	text-rotate-svg-ref.png	\
 	text-rotate-quartz-ref.png \
@@ -682,12 +752,23 @@ REFERENCE_IMAGES = \
 	unantialiased-shapes-quartz-ref.png \
 	unbounded-operator-ref.png	\
 	unbounded-operator-rgb24-ref.png	\
+	user-font-ref.png	\
+	user-font-ps-ref.png \
+	user-font-svg-ref.png	\
+	user-font-proxy-ref.png	\
+	user-font-proxy-pdf-ref.png	\
+	user-font-proxy-ps-ref.png	\
+	user-font-proxy-svg-ref.png	\
+	user-font-rescale-ref.png	\
+	user-font-rescale-ps-ref.png	\
+	user-font-rescale-svg-ref.png	\
 	unbounded-operator-quartz-ref.png	\
 	unbounded-operator-quartz-rgb24-ref.png	\
+	xlib-expose-event-ref.png \
 	xlib-surface-source-ref.png \
 	zero-alpha-ref.png
 
-EXTRA_DIST =		\
+EXTRA_DIST +=		\
 6x13.pcf		\
 make-html.pl		\
 romedalen.png		\
@@ -705,13 +786,21 @@ $(REFERENCE_IMAGES)
 # everything from this list by fixing the bugs. (We don't necessarily
 # have to be that strict for "snapshots" though.)
 XFAIL_TESTS =					\
+alpha-similar$(EXEEXT)				\
 big-line$(EXEEXT)				\
 big-trap$(EXEEXT)				\
+bitmap-font$(EXEEXT)				\
+degenerate-path$(EXEEXT)			\
+device-offset-scale$(EXEEXT)			\
 extend-pad$(EXEEXT)				\
 filter-nearest-offset$(EXEEXT)			\
 filter-bilinear-extents$(EXEEXT)		\
 large-source$(EXEEXT)				\
 long-lines$(EXEEXT)				\
+miter-precision$(EXEEXT)			\
+operator$(EXEEXT)				\
+operator-alpha$(EXEEXT)				\
+self-copy-overlap$(EXEEXT)			\
 self-intersecting$(EXEEXT)			\
 surface-pattern$(EXEEXT)			\
 surface-pattern-big-scale-down$(EXEEXT)		\
@@ -728,6 +817,7 @@ png				\
 ps-features			\
 svg-clip			\
 svg-surface			\
+toy-font-face			\
 user-data
 
 # A hook that summarises the failures
@@ -773,24 +863,15 @@ check-local:
 	    done; \
 	fi
 
-check_PROGRAMS =
-EXTRA_PROGRAMS =
-
-# We're using _GNU_SOURCE to get the prototype for asprintf. This may
-# not be the most portable approach, but it is pragmatic and I'm
-# willing to do something cleaner as soon as it causes someone a
-# problem.
-INCLUDES =					\
-	-D_GNU_SOURCE				\
+AM_CPPFLAGS =					\
 	-I$(srcdir)				\
 	-I$(srcdir)/pdiff			\
 	-I$(top_srcdir)/boilerplate		\
-	-I$(top_srcdir)/pixman/src		\
 	-I$(top_srcdir)/src			\
 	-I$(top_builddir)/src			\
 	$(CAIRO_CFLAGS)
 
-EXTRA_LTLIBRARIES = libcairotest.la
+EXTRA_LTLIBRARIES += libcairotest.la
 
 libcairotest_la_SOURCES =\
 	buffer-diff.c	\
@@ -820,10 +901,19 @@ endif
 
 check_PROGRAMS += imagediff png-flatten
 
+if BUILD_ANY2PPM
+check_PROGRAMS += any2ppm
+any2ppm_CFLAGS = $(POPPLER_CFLAGS) $(LIBRSVG_CFLAGS)
+# add LDADD, so poppler/librsvg uses "our" cairo
+any2ppm_LDFLAGS = $(CAIRO_TEST_UNDEFINED_LDFLAGS)
+any2ppm_LDADD  = $(LDADD) $(POPPLER_LIBS) $(LIBRSVG_LIBS)
+endif
+
 if CAIRO_CAN_TEST_PDF_SURFACE
 check_PROGRAMS += pdf2png
 pdf2png_CFLAGS = $(POPPLER_CFLAGS)
 # add LDADD, so poppler uses "our" cairo
+pdf2png_LDFLAGS = $(CAIRO_TEST_UNDEFINED_LDFLAGS)
 pdf2png_LDADD  = $(LDADD) $(POPPLER_LIBS)
 endif
 
@@ -831,6 +921,7 @@ if CAIRO_CAN_TEST_SVG_SURFACE
 check_PROGRAMS += svg2png
 svg2png_CFLAGS = $(LIBRSVG_CFLAGS)
 # add LDADD, so librsvg uses "our" cairo
+svg2png_LDFLAGS = $(CAIRO_TEST_UNDEFINED_LDFLAGS)
 svg2png_LDADD  = $(LDADD) $(LIBRSVG_LIBS)
 endif
 
@@ -841,38 +932,40 @@ EXTRA_PROGRAMS += $(TESTS) $(DISABLED_TESTS)
 # and TARGETS make var on the command line.  Same for the rest.
 TARGETS = $(CAIRO_TEST_TARGET)
 TARGETS_EXCLUDE = $(CAIRO_TEST_TARGET_EXCLUDE)
+NUM_THREADS = $(CAIRO_TEST_NUM_THREADS)
 
-TESTS_ENVIRONMENT = CAIRO_XFAIL_TESTS="$(XFAIL_TESTS:$(EXEEXT)=)" CAIRO_TEST_TARGET="$(TARGETS)" CAIRO_TEST_TARGET_EXCLUDE="$(TARGETS_EXCLUDE)"
+# Same about ENV vs CAIRO_TEST_ENV.  ENV is used with "make run" only
+ENV = $(CAIRO_TEST_ENV)
+
+TESTS_ENVIRONMENT = CAIRO_XFAIL_TESTS="$(XFAIL_TESTS:$(EXEEXT)=)" CAIRO_TEST_TARGET="$(TARGETS)" CAIRO_TEST_TARGET_EXCLUDE="$(TARGETS_EXCLUDE)" CAIRO_TEST_NUM_THREADS="$(NUM_THREADS)" $(ENV)
 
 EXTRA_VALGRIND_FLAGS = $(CAIRO_EXTRA_VALGRIND_FLAGS)
 VALGRIND_FLAGS = \
 	--tool=memcheck --suppressions=$(srcdir)/.valgrind-suppressions \
 	--leak-check=yes --show-reachable=yes $(EXTRA_VALGRIND_FLAGS)
 
-CLEANFILES =					\
+CLEANFILES +=					\
 	valgrind-log				\
 	index.html				\
 	ref.hash				\
 	png-test.png				\
-	$(EXTRA_LTLIBRARIES)			\
-	$(EXTRA_PROGRAMS)
+	svg-surface-source.svg			\
+	pdf-surface-source.pdf			\
+	ps-surface-source.ps			\
+	$(NULL)
 
 # This used to be a simple 'echo ${RM} *.ps *.pdf *.svg *.etc', but
 # most systems cannot handle all of our clean files together.
 # Then it became a fancy find using many GNU extensions, but then the ugly
 # reality of portability was raised and it became....
-clean-local:
-	-${FIND} . -name '*.ps'       -print | ${XARGS} ${RM}
-	-${FIND} . -name '*.pdf'      -print | ${XARGS} ${RM}
-	-${FIND} . -name '*.svg'      -print | ${XARGS} ${RM}
-	-${FIND} . -name '*-out.png'  -print | ${XARGS} ${RM}
+clean-local: clean-caches
+	-${FIND} . -name '*-out.*'    -print | ${XARGS} ${RM}
 	-${FIND} . -name '*-diff.png' -print | ${XARGS} ${RM}
 	-${FIND} . -name '*.log'      -print | ${XARGS} ${RM}
-
-# Check tests under valgrind
-# Saves log to valgrind-log
-check-valgrind:
-	$(MAKE) $(AM_MAKEFLAGS) check TESTS_ENVIRONMENT='$(TESTS_ENVIRONMENT) $(top_builddir)/libtool --mode=execute valgrind $(VALGRIND_FLAGS)' 2>&1 | tee valgrind-log
+	-${FIND} . -name '*.[is]'     -print | ${XARGS} ${RM}
+clean-caches:
+	-${FIND} . -name '*-pass.*'   -print | ${XARGS} ${RM}
+	-${FIND} . -name '*-fail.*'   -print | ${XARGS} ${RM}
 
 # The following definitions both should work.
 #FAILED_TESTS = `grep -l '\<FAIL\>' $(TESTS:$(EXEEXT)=.log) 2>/dev/null | sed -e 's/[.]log$$//' | xargs echo`
@@ -899,7 +992,7 @@ retest:
 	$(MAKE) $(AM_MAKEFLAGS) TESTS="$$TESTS" html
 
 # Make index.html with no dependency tracking.
-html:
+html-local:
 	@echo Creating index.html
 	@perl $(srcdir)/make-html.pl $(TESTS:$(EXEEXT)=.log) > index.html
 
@@ -907,17 +1000,29 @@ html:
 rehtml:
 	@$(MAKE) $(AM_MAKEFLAGS) TESTS="$(FAILED_TESTS)" html
 
+# Run tests under a tool specified by TOOL.  For example, make run TOOL=gdb
+run:
+	$(MAKE) $(AM_MAKEFLAGS) check TESTS_ENVIRONMENT='$(TESTS_ENVIRONMENT) $(top_builddir)/libtool --mode=execute env $(TOOL)'
+
+# Check tests under valgrind.  Saves log to valgrind-log
+check-valgrind:
+	$(MAKE) $(AM_MAKEFLAGS) check TESTS_ENVIRONMENT='$(TESTS_ENVIRONMENT) $(top_builddir)/libtool --mode=execute valgrind $(VALGRIND_FLAGS)' 2>&1 | tee valgrind-log
+
+
+$(TESTS): $(check_PROGRAMS)
+
 %.log: % $(check_PROGRAMS)
 	-./$<
 
 NOLOG_TESTS_LOG = $(NOLOG_TESTS:=.log)
 
 $(NOLOG_TESTS_LOG):
-	echo dummy > $@
+	@echo dummy > $@
 
 index.html: $(srcdir)/make-html.pl $(TESTS:$(EXEEXT)=.log)
 	@echo Creating index.html
 	@perl $^ > $@
+
 
 # Identify identical reference images
 check-ref-dups:
@@ -957,6 +1062,6 @@ check-ref-missing:
 
 release-verify-sane-tests: check-ref-missing
 
-.PHONY: check-valgrind test recheck retest html rehtml check-ref-dups check-ref-missing release-verify-sane-tests
+.PHONY: check-valgrind test recheck retest rehtml check-ref-dups check-ref-missing release-verify-sane-tests
 
 EXTRA_DIST += Makefile.win32

@@ -1,17 +1,14 @@
-# We're using _GNU_SOURCE to get the prototype for asprintf. This may
-# not be the most portable approach, but it is pragmatic and I'm
-# willing to do something cleaner as soon as it causes someone a
-# problem.
-INCLUDES =					\
-	-D_GNU_SOURCE				\
+include $(top_srcdir)/build/Makefile.am.common
+
+AM_CPPFLAGS =					\
 	-I$(srcdir)				\
 	-I$(top_srcdir)/boilerplate		\
 	-I$(top_srcdir)/src			\
 	-I$(top_builddir)/src			\
 	$(CAIRO_CFLAGS)
 
-EXTRA_PROGRAMS = cairo-perf cairo-perf-diff-files
-EXTRA_DIST = cairo-perf-diff
+EXTRA_PROGRAMS += cairo-perf cairo-perf-diff-files
+EXTRA_DIST += cairo-perf-diff
 
 cairo_perf_SOURCES =		\
 	cairo-perf.c		\
@@ -77,12 +74,12 @@ CAIRO_PERF_ENVIRONMENT = CAIRO_PERF_ITERATIONS="$(ITERS)" CAIRO_TEST_TARGET="$(T
 # Cap the maximum number of iterations during 'make check'
 TESTS_ENVIRONMENT = CAIRO_TEST_TARGET="$(TARGETS)" CAIRO_PERF_ITERATIONS="10"
 
-TESTS = cairo-perf$(EXEEXT)
+TESTS += cairo-perf$(EXEEXT)
 
 perf: cairo-perf$(EXEEXT)
 	$(CAIRO_PERF_ENVIRONMENT) ./cairo-perf$(EXEEXT)
 
-html: index.html
+html-local: index.html
 
 index.html: cairo-perf$(EXEEXT)
 	$(CAIRO_PERF_ENVIRONMENT) ./cairo-perf-diff -h HEAD > $@
@@ -95,8 +92,7 @@ VALGRIND_MEMCHECK_FLAGS = \
 	--leak-check=yes --show-reachable=yes
 VALGRIND_CALLGRIND_FLAGS = \
 	--tool=callgrind
-CLEANFILES = \
-	$(EXTRA_PROGRAMS) \
+CLEANFILES += \
 	valgrind-log \
 	callgrind.out.* \
 	index.html
@@ -114,6 +110,6 @@ perf-callgrind:
 	    $(top_builddir)/libtool --mode=execute \
 	    valgrind $(VALGRIND_CALLGRIND_FLAGS) $(EXTRA_VALGRIND_FLAGS)'
 
-.PHONY: perf html check-valgrind perf-valgrind perf-callgrind
+.PHONY: perf check-valgrind perf-valgrind perf-callgrind
 
 EXTRA_DIST += Makefile.win32

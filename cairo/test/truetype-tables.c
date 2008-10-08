@@ -34,18 +34,18 @@
 int
 main (void)
 {
+    cairo_test_context_t ctx;
     cairo_test_status_t ret = CAIRO_TEST_SUCCESS;
 
-    cairo_test_init ("truetype-tables");
-
-    cairo_test_log ("Test that the size of TrueType table structs is correct\n");
+    cairo_test_init (&ctx, "truetype-tables");
+    cairo_test_log (&ctx, "Test that the size of TrueType table structs is correct\n");
 
 #define check(st, sz) \
 	if (sizeof (st) != (sz)) { \
-	    cairo_test_log ("sizeof (%s): got %d, expected %d", #st, (int)sizeof (st), sz); \
+	    cairo_test_log (&ctx, "sizeof (%s): got %d, expected %d", #st, (int)sizeof (st), sz); \
 	    ret = CAIRO_TEST_FAILURE; \
 	}
-
+#if CAIRO_HAS_FONT_SUBSET
     check (tt_head_t,	54);
     check (tt_hhea_t,	36);
     check (tt_maxp_t,	32);
@@ -54,8 +54,8 @@ main (void)
     check (tt_name_t,	18);
     check (tt_composite_glyph_t,	18);
     check (tt_glyph_data_t,	28);
-
-    cairo_test_fini ();
+#endif
+    cairo_test_fini (&ctx);
 
     return ret;
 }

@@ -30,7 +30,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "fill-and-stroke",
     "Tests using cairo_fill_preserve/cairo_stroke to fill/stroke the same path",
     2 * SIZE + 4 * PAD, SIZE + 2 * PAD,

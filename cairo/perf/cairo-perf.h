@@ -71,6 +71,9 @@ typedef struct _cairo_perf {
     unsigned int num_names;
 
     /* Stuff used internally */
+    cairo_perf_ticks_t *times;
+    cairo_boilerplate_target_t **targets;
+    int num_targets;
     cairo_boilerplate_target_t *target;
     unsigned int test_number;
     unsigned int size;

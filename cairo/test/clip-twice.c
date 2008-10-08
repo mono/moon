@@ -30,7 +30,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "clip-twice",
     "Verifies that the clip mask is updated correctly when it constructed by setting the clip path twice.",
     WIDTH, HEIGHT,

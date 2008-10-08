@@ -36,20 +36,6 @@ typedef struct _buffer_diff_result {
     unsigned int max_diff;
 } buffer_diff_result_t;
 
-/* Compares two image surfaces
- *
- * Provides number of pixels changed and maximum single-channel
- * difference in result.
- *
- * Also fills in a "diff" surface intended to visually show where the
- * images differ.
- */
-void
-compare_surfaces (cairo_surface_t	*surface_a,
-		  cairo_surface_t	*surface_b,
-		  cairo_surface_t	*surface_diff,
-		  buffer_diff_result_t *result);
-
 /* Compares two image buffers ignoring the alpha channel.
  *
  * Provides number of pixels changed and maximum single-channel
@@ -59,46 +45,25 @@ compare_surfaces (cairo_surface_t	*surface_a,
  * images differ.
  */
 void
-buffer_diff_noalpha (unsigned char *buf_a,
-		     unsigned char *buf_b,
+buffer_diff_noalpha (const unsigned char *buf_a,
+		     const unsigned char *buf_b,
 		     unsigned char *buf_diff,
 		     int	    width,
 		     int	    height,
 		     int	    stride,
 		     buffer_diff_result_t *result);
 
-/* Compares two image buffers ignoring the alpha channel. A return
- * value of CAIRO_STATUS_SUCCESS indicates that a comparison was made,
- * (but the images may or may not differ). Failure modes include
- * CAIRO_STATUS_FILE_NOT_FOUND, CAIRO_STATUS_READ_ERROR,
- * CAIRO_STATUS_NO_MEMORY, and CAIRO_STATUS_SURFACE_TYPE_MISMATCH
- * (which is used if the image sizes differ).
+/* The central algorithm to compare two images, and return the differences
+ * in the surface_diff.
  *
  * Provides number of pixels changed and maximum single-channel
  * difference in result.
- *
- * Also saves a "diff" image intended to visually show where the
- * images differ.
  */
 cairo_status_t
-image_diff (const char *filename_a,
-	    const char *filename_b,
-	    const char *filename_diff,
-	    int		ax,
-	    int		ay,
-	    int		bx,
-	    int		by,
+image_diff (const cairo_test_context_t *ctx,
+	    cairo_surface_t *surface_a,
+	    cairo_surface_t *surface_b,
+	    cairo_surface_t *surface_diff,
 	    buffer_diff_result_t *result);
-
-/* Like image_diff, but blending the contents of b over white first. */
-cairo_status_t
-image_diff_flattened (const char *filename_a,
-		      const char *filename_b,
-		      const char *filename_diff,
-                      int         ax,
-                      int         ay,
-                      int         bx,
-                      int         by,
-		      buffer_diff_result_t *result);
 
 #endif

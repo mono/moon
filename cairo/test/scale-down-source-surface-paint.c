@@ -27,7 +27,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "scale-down-source-surface-paint",
     "Test call sequence: cairo_scale; cairo_set_source_surface; cairo_paint, with a scale < 1.0",
     6, 6,
@@ -38,7 +38,7 @@ static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
     cairo_surface_t *surface;
-    static uint32_t data[16] = {
+    uint32_t data[16] = {
 	0xffffffff, 0xffffffff,		0xffff0000, 0xffff0000,
 	0xffffffff, 0xffffffff,		0xffff0000, 0xffff0000,
 

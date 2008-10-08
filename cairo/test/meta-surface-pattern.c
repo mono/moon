@@ -40,13 +40,12 @@ static cairo_test_draw_function_t draw;
  * CAIRO_EXTEND_NONE and a non identity pattern matrix.
  */
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "meta-surface-pattern",
     "Paint meta surface pattern with non identity pattern matrix",
     WIDTH, HEIGHT,
     draw
 };
-
 
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)

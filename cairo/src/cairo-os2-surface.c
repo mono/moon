@@ -56,8 +56,8 @@
 
 /*
  * Here comes the extra API for the OS/2 platform. Currently it consists
- * of two extra functions, the cairo_os2_init () and the
- * cairo_os2_fini (). Both of them are called automatically if
+ * of two extra functions, the cairo_os2_init() and the
+ * cairo_os2_fini(). Both of them are called automatically if
  * Cairo is compiled to be a DLL file, but you have to call them before
  * using the Cairo API if you link to Cairo statically!
  *
@@ -137,7 +137,7 @@ cairo_os2_fini (void)
 
     /* Free allocated memories! */
     /* (Check cairo_debug_reset_static_data () for an example of this!) */
-    _cairo_font_reset_static_data ();
+    _cairo_font_face_reset_static_data ();
 #if CAIRO_HAS_FT_FONT
     _cairo_ft_font_reset_static_data ();
 #endif
@@ -145,8 +145,10 @@ cairo_os2_fini (void)
     CAIRO_MUTEX_FINALIZE ();
 
 #if CAIRO_HAS_FT_FONT
+# if HAVE_FCFINI
     /* Uninitialize FontConfig */
     FcFini ();
+# endif
 #endif
 
 #ifdef __WATCOMC__
@@ -229,6 +231,12 @@ void _buffer_free (void *buffer)
     free (buffer);
 #endif
 }
+
+/* XXX
+ * The cairo_os2_ini() and cairo_os2_fini() functions should be removed and
+ * the LibMain code moved to cairo-system.c.  It should also call
+ * cairo_debug_reset_static_data() instead of duplicating its logic...
+ */
 
 #ifdef BUILD_CAIRO_DLL
 /* The main DLL entry for DLL initialization and uninitialization */

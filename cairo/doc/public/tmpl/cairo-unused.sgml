@@ -78,6 +78,30 @@ OpenGL accelerated rendering using the Glitz library
 Glitz Surfaces
 
 
+<!-- ##### SECTION ./tmpl/cairo-quartz-image.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/cairo-quartz-image.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/cairo-quartz-image.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/cairo-quartz-image.sgml:Stability_Level ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/cairo-quartz-image.sgml:Title ##### -->
+Quartz Image Surfaces
+
+
 <!-- ##### SECTION ./tmpl/cairo-xcb-xrender.sgml:Long_Description ##### -->
 <para>
 The XCB surface is used to render cairo graphics to X Window System
@@ -147,4 +171,55 @@ XCB Surfaces
 
 @cr: 
 @Returns: 
+
+<!-- ##### FUNCTION cairo_font_options_get_lcd_filter ##### -->
+<para>
+
+</para>
+
+@options:
+@Returns:
+
+<!-- ##### FUNCTION cairo_font_options_set_lcd_filter ##### -->
+<para>
+
+</para>
+
+@options:
+@lcd_filter:
+
+<!-- ##### FUNCTION cairo_has_show_text_glyphs ##### -->
+<para>
+
+</para>
+
+@cr:
+@Returns:
+
+<!-- ##### ENUM cairo_lcd_filter_t ##### -->
+<para>
+
+</para>
+
+@CAIRO_LCD_FILTER_DEFAULT:
+@CAIRO_LCD_FILTER_NONE:
+@CAIRO_LCD_FILTER_INTRA_PIXEL:
+@CAIRO_LCD_FILTER_FIR3:
+@CAIRO_LCD_FILTER_FIR5:
+
+<!-- ##### FUNCTION cairo_quartz_image_surface_create ##### -->
+<para>
+
+</para>
+
+@image_surface:
+@Returns:
+
+<!-- ##### FUNCTION cairo_quartz_image_surface_get_image ##### -->
+<para>
+
+</para>
+
+@surface:
+@Returns:
 

@@ -32,6 +32,11 @@
 #include <cairo-ps-surface-private.h>
 #include <cairo-paginated-surface-private.h>
 
+#if HAVE_SIGNAL_H
+#include <stdlib.h>
+#include <signal.h>
+#endif
+
 cairo_user_data_key_t	ps_closure_key;
 
 typedef struct _ps_target_closure
@@ -42,16 +47,38 @@ typedef struct _ps_target_closure
     cairo_surface_t	*target;
 } ps_target_closure_t;
 
+static cairo_status_t
+_cairo_boilerplate_ps_surface_set_creation_date (cairo_surface_t *abstract_surface,
+						 time_t date)
+{
+    cairo_paginated_surface_t *paginated = (cairo_paginated_surface_t*) abstract_surface;
+    cairo_ps_surface_t *surface;
+
+    if (cairo_surface_get_type (abstract_surface) != CAIRO_SURFACE_TYPE_PS)
+	return CAIRO_STATUS_SURFACE_TYPE_MISMATCH;
+
+    surface = (cairo_ps_surface_t*) paginated->target;
+
+    surface->has_creation_date = TRUE;
+    surface->creation_date = date;
+
+    return CAIRO_STATUS_SUCCESS;
+}
+
 cairo_surface_t *
 _cairo_boilerplate_ps_create_surface (const char		 *name,
 				      cairo_content_t		  content,
 				      int			  width,
 				      int			  height,
+				      int			  max_width,
+				      int			  max_height,
 				      cairo_boilerplate_mode_t	  mode,
+				      int                         id,
 				      void			**closure)
 {
     ps_target_closure_t	*ptc;
     cairo_surface_t *surface;
+    cairo_status_t status;
 
     /* Sanitize back to a real cairo_content_t value. */
     if (content == CAIRO_TEST_CONTENT_COLOR_ALPHA_FLATTENED)
@@ -59,18 +86,17 @@ _cairo_boilerplate_ps_create_surface (const char		 *name,
 
     *closure = ptc = xmalloc (sizeof (ps_target_closure_t));
 
-    xasprintf (&ptc->filename, "%s-ps-%s-out.ps",
-	       name, cairo_boilerplate_content_name (content));
+    xasprintf (&ptc->filename, "%s-out.ps", name);
+    xunlink (ptc->filename);
 
     ptc->width = width;
     ptc->height = height;
 
     surface = cairo_ps_surface_create (ptc->filename, width, height);
-    if (cairo_surface_status (surface)) {
-	free (ptc->filename);
-	free (ptc);
-	return NULL;
-    }
+    if (cairo_surface_status (surface))
+	goto CLEANUP_FILENAME;
+
+    _cairo_boilerplate_ps_surface_set_creation_date (surface, 0);
     cairo_surface_set_fallback_resolution (surface, 72., 72.);
 
     if (content == CAIRO_CONTENT_COLOR) {
@@ -78,30 +104,33 @@ _cairo_boilerplate_ps_create_surface (const char		 *name,
 	surface = cairo_surface_create_similar (ptc->target,
 						CAIRO_CONTENT_COLOR,
 						width, height);
+	if (cairo_surface_status (surface))
+	    goto CLEANUP_TARGET;
     } else {
 	ptc->target = NULL;
     }
 
-    if (cairo_surface_set_user_data (surface,
-		                     &ps_closure_key,
-				     ptc,
-				     NULL) != CAIRO_STATUS_SUCCESS) {
-	cairo_surface_destroy (surface);
-	if (ptc->target != NULL)
-	    cairo_surface_destroy (ptc->target);
-	free (ptc->filename);
-	free (ptc);
-	return NULL;
-    }
+    status = cairo_surface_set_user_data (surface, &ps_closure_key, ptc, NULL);
+    if (status == CAIRO_STATUS_SUCCESS)
+	return surface;
 
+    cairo_surface_destroy (surface);
+    surface = cairo_boilerplate_surface_create_in_error (status);
+
+  CLEANUP_TARGET:
+    cairo_surface_destroy (ptc->target);
+  CLEANUP_FILENAME:
+    free (ptc->filename);
+    free (ptc);
     return surface;
 }
 
 cairo_status_t
-_cairo_boilerplate_ps_surface_write_to_png (cairo_surface_t *surface, const char *filename)
+_cairo_boilerplate_ps_finish_surface (cairo_surface_t		*surface)
 {
-    ps_target_closure_t *ptc = cairo_surface_get_user_data (surface, &ps_closure_key);
-    char    command[4096];
+    ps_target_closure_t *ptc = cairo_surface_get_user_data (surface,
+							    &ps_closure_key);
+    cairo_status_t status;
 
     /* Both surface and ptc->target were originally created at the
      * same dimensions. We want a 1:1 copy here, so we first clear any
@@ -118,18 +147,73 @@ _cairo_boilerplate_ps_surface_write_to_png (cairo_surface_t *surface, const char
 	cairo_set_source_surface (cr, surface, 0, 0);
 	cairo_paint (cr);
 	cairo_show_page (cr);
+	status = cairo_status (cr);
 	cairo_destroy (cr);
 
+	if (status)
+	    return status;
+
 	cairo_surface_finish (surface);
+	status = cairo_surface_status (surface);
+	if (status)
+	    return status;
+
 	surface = ptc->target;
     }
 
     cairo_surface_finish (surface);
+    status = cairo_surface_status (surface);
+    if (status)
+	return status;
+
+    return CAIRO_STATUS_SUCCESS;
+}
+
+cairo_status_t
+_cairo_boilerplate_ps_surface_write_to_png (cairo_surface_t *surface, const char *filename)
+{
+    ps_target_closure_t *ptc = cairo_surface_get_user_data (surface,
+							    &ps_closure_key);
+    char    command[4096];
+    int exitstatus;
+
     sprintf (command, "gs -q -r72 -g%dx%d -dSAFER -dBATCH -dNOPAUSE -sDEVICE=pngalpha -sOutputFile=%s %s",
 	     ptc->width, ptc->height, filename, ptc->filename);
-    if (system (command) == 0)
-	return CAIRO_STATUS_SUCCESS;
-    return CAIRO_STATUS_WRITE_ERROR;
+    exitstatus = system (command);
+#if _XOPEN_SOURCE && HAVE_SIGNAL_H
+    if (WIFSIGNALED (exitstatus))
+	raise (WTERMSIG (exitstatus));
+#endif
+    if (exitstatus)
+	return CAIRO_STATUS_WRITE_ERROR;
+
+    return CAIRO_STATUS_SUCCESS;
+}
+
+cairo_surface_t *
+_cairo_boilerplate_ps_get_image_surface (cairo_surface_t *surface,
+					  int width,
+					  int height)
+{
+    ps_target_closure_t *ptc = cairo_surface_get_user_data (surface,
+							    &ps_closure_key);
+    char *filename;
+    cairo_status_t status;
+
+    xasprintf (&filename, "%s.png", ptc->filename);
+    status = _cairo_boilerplate_ps_surface_write_to_png (surface, filename);
+    if (status)
+	return cairo_boilerplate_surface_create_in_error (status);
+
+    surface = cairo_boilerplate_get_image_surface_from_png (filename,
+							    width,
+							    height,
+							    ptc->target == NULL);
+
+    remove (filename);
+    free (filename);
+
+    return surface;
 }
 
 void

@@ -53,6 +53,7 @@ cleanup (void *data)
 static cairo_surface_t *
 create_source_surface (int size)
 {
+#if CAIRO_HAS_XLIB_XRENDER_SURFACE
     XRenderPictFormat *xrender_format;
     struct closure *data;
     cairo_surface_t *surface;
@@ -60,6 +61,10 @@ create_source_surface (int size)
     data = xmalloc (sizeof (struct closure));
 
     data->dpy = XOpenDisplay (NULL);
+    if (!data->dpy) {
+	return NULL;
+    }
+
     xrender_format = XRenderFindStandardFormat (data->dpy, PictStandardARGB32);
 
     data->pix = XCreatePixmap (data->dpy, DefaultRootWindow (data->dpy),
@@ -73,4 +78,7 @@ create_source_surface (int size)
     cairo_surface_set_user_data (surface, &closure_key, data, cleanup);
 
     return surface;
+#else
+    return NULL;
+#endif
 }

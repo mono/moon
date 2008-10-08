@@ -27,7 +27,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "bilevel-image",
     "Test that PS can embed an RGB image with a bilevel alpha channel.",
     12, 4,
@@ -39,7 +39,7 @@ cairo_test_t test = {
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
-    static uint32_t data[] = {
+    uint32_t data[] = {
 	RGBx, RGBx, RGBx,
 	RGBx, RGBx, RGBx,
 	RGBx, RGBx, RGBx,

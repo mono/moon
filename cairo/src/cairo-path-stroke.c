@@ -169,11 +169,8 @@ _cairo_stroker_init (cairo_stroker_t		*stroker,
     stroker->tolerance = tolerance;
     stroker->traps = traps;
 
-    _cairo_matrix_compute_determinant (stroker->ctm, &stroker->ctm_determinant);
-    if (stroker->ctm_determinant >= 0.0)
-	stroker->ctm_det_positive = TRUE;
-    else
-	stroker->ctm_det_positive = FALSE;
+    stroker->ctm_determinant = _cairo_matrix_compute_determinant (stroker->ctm);
+    stroker->ctm_det_positive = stroker->ctm_determinant >= 0.0;
 
     status = _cairo_pen_init (&stroker->pen,
 		              stroke_style->line_width / 2.0,
@@ -918,6 +915,14 @@ _cairo_stroker_line_to_dashed (void *closure, cairo_point_t *point)
 		    stroker->has_current_face = FALSE;
 		}
 	    }
+	} else {
+	    if (stroker->has_current_face) {
+		/* Cap final face from previous segment */
+		status = _cairo_stroker_add_trailing_cap (stroker, &stroker->current_face);
+		if (status)
+		    return status;
+		stroker->has_current_face = FALSE;
+	    }
 	}
 
 	_cairo_stroker_step_dash (stroker, step_length);
@@ -1191,9 +1196,10 @@ typedef struct _cairo_rectilinear_stroker
     cairo_point_t current_point;
     cairo_point_t first_point;
     cairo_bool_t open_sub_path;
-    cairo_line_t *segments;
-    int segments_size;
     int num_segments;
+    int segments_size;
+    cairo_line_t *segments;
+    cairo_line_t segments_embedded[8]; /* common case is a single rectangle */
 } cairo_rectilinear_stroker_t;
 
 static void
@@ -1206,15 +1212,16 @@ _cairo_rectilinear_stroker_init (cairo_rectilinear_stroker_t	*stroker,
 	_cairo_fixed_from_double (stroke_style->line_width / 2.0);
     stroker->traps = traps;
     stroker->open_sub_path = FALSE;
-    stroker->segments = NULL;
-    stroker->segments_size = 0;
+    stroker->segments = stroker->segments_embedded;
+    stroker->segments_size = ARRAY_LENGTH (stroker->segments_embedded);
     stroker->num_segments = 0;
 }
 
 static void
 _cairo_rectilinear_stroker_fini (cairo_rectilinear_stroker_t	*stroker)
 {
-    free (stroker->segments);
+    if (stroker->segments != stroker->segments_embedded)
+	free (stroker->segments);
 }
 
 static cairo_status_t
@@ -1222,18 +1229,24 @@ _cairo_rectilinear_stroker_add_segment (cairo_rectilinear_stroker_t	*stroker,
 					cairo_point_t			*p1,
 					cairo_point_t			*p2)
 {
-    int new_size;
-    cairo_line_t *new_segments;
 
     if (stroker->num_segments == stroker->segments_size) {
-	new_size = stroker->segments_size * 2;
-	/* Common case is one rectangle of exactly 4 segments. */
-	if (new_size == 0)
-	    new_size = 4;
-	new_segments = _cairo_realloc_ab (stroker->segments,
-	       	                          new_size, sizeof (cairo_line_t));
-	if (new_segments == NULL)
-	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	int new_size = stroker->segments_size * 2;
+	cairo_line_t *new_segments;
+
+	if (stroker->segments == stroker->segments_embedded) {
+	    new_segments = _cairo_malloc_ab (new_size, sizeof (cairo_line_t));
+	    if (new_segments == NULL)
+		return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+
+	    memcpy (new_segments, stroker->segments,
+		    stroker->num_segments * sizeof (cairo_line_t));
+	} else {
+	    new_segments = _cairo_realloc_ab (stroker->segments,
+					      new_size, sizeof (cairo_line_t));
+	    if (new_segments == NULL)
+		return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	}
 
 	stroker->segments_size = new_size;
 	stroker->segments = new_segments;
@@ -1252,12 +1265,12 @@ _cairo_rectilinear_stroker_emit_segments (cairo_rectilinear_stroker_t *stroker)
     cairo_status_t status;
     cairo_line_cap_t line_cap = stroker->stroke_style->line_cap;
     cairo_fixed_t half_line_width = stroker->half_line_width;
-    cairo_bool_t lengthen_initial, shorten_final, lengthen_final;
-    cairo_point_t *a, *b;
-    cairo_point_t r[4];
     int i;
 
     for (i = 0; i < stroker->num_segments; i++) {
+	cairo_point_t *a, *b;
+	cairo_bool_t lengthen_initial, shorten_final, lengthen_final;
+
 	a = &stroker->segments[i].p1;
 	b = &stroker->segments[i].p2;
 
@@ -1310,6 +1323,14 @@ _cairo_rectilinear_stroker_emit_segments (cairo_rectilinear_stroker_t *stroker)
 		else if (lengthen_final)
 		    b->x -= half_line_width;
 	    }
+
+	    if (a->x > b->x) {
+		cairo_point_t *t;
+
+		t = a;
+		a = b;
+		b = t;
+	    }
 	} else {
 	    if (a->y < b->y) {
 		if (lengthen_initial)
@@ -1326,27 +1347,27 @@ _cairo_rectilinear_stroker_emit_segments (cairo_rectilinear_stroker_t *stroker)
 		else if (lengthen_final)
 		    b->y -= half_line_width;
 	    }
+
+	    if (a->y > b->y) {
+		cairo_point_t *t;
+
+		t = a;
+		a = b;
+		b = t;
+	    }
 	}
 
 	/* Form the rectangle by expanding by half the line width in
-	 * either perdendicular direction. */
-	r[0] = *a;
-	r[1] = *b;
-	r[2] = *b;
-	r[3] = *a;
+	 * either perpendicular direction. */
 	if (a->y == b->y) {
-	    r[0].y -= half_line_width;
-	    r[1].y -= half_line_width;
-	    r[2].y += half_line_width;
-	    r[3].y += half_line_width;
+	    a->y -= half_line_width;
+	    b->y += half_line_width;
 	} else {
-	    r[0].x -= half_line_width;
-	    r[1].x -= half_line_width;
-	    r[2].x += half_line_width;
-	    r[3].x += half_line_width;
+	    a->x -= half_line_width;
+	    b->x += half_line_width;
 	}
 
-	status = _cairo_traps_tessellate_convex_quad (stroker->traps, r);
+	status = _cairo_traps_tessellate_rectangle (stroker->traps, a, b);
 	if (status)
 	    return status;
     }
@@ -1390,8 +1411,7 @@ _cairo_rectilinear_stroker_line_to (void		*closure,
     if (a->x == b->x && a->y == b->y)
 	return CAIRO_STATUS_SUCCESS;
 
-    status = _cairo_rectilinear_stroker_add_segment (stroker,
-						     a, b);
+    status = _cairo_rectilinear_stroker_add_segment (stroker, a, b);
 
     stroker->current_point = *point;
     stroker->open_sub_path = TRUE;
@@ -1435,7 +1455,7 @@ _cairo_path_fixed_stroke_rectilinear (cairo_path_fixed_t	*path,
     /* This special-case rectilinear stroker only supports
      * miter-joined lines (not curves) and no dashing and a
      * translation-only matrix (though it could probably be extended
-     * to support a matrix with uniform, integer sacling).
+     * to support a matrix with uniform, integer scaling).
      *
      * It also only supports horizontal and vertical line_to
      * elements. But we don't catch that here, but instead return
@@ -1480,11 +1500,10 @@ _cairo_path_fixed_stroke_rectilinear (cairo_path_fixed_t	*path,
     status = _cairo_rectilinear_stroker_emit_segments (&rectilinear_stroker);
 
 BAIL:
-
     _cairo_rectilinear_stroker_fini (&rectilinear_stroker);
 
     if (status)
-	_cairo_traps_fini (traps);
+	_cairo_traps_clear (traps);
 
     return status;
 }

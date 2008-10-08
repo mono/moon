@@ -32,9 +32,10 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "degenerate-path",
-    "Tests the behaviour of degenerate paths with different cap types",
+    "Tests the behaviour of degenerate paths with different cap types"
+    "\nPS backend currently fails for unknown reason (cairo? GS?).",
     3*(PAD+LINE_WIDTH+PAD), 8*(LINE_WIDTH+PAD) + PAD,
     draw
 };

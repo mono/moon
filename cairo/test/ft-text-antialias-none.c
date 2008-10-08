@@ -35,7 +35,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "ft-text-antialias-none",
     "Tests text rendering with no antialiasing",
     WIDTH, HEIGHT,
@@ -99,7 +99,7 @@ draw (cairo_t *cr, int width, int height)
 {
     cairo_text_extents_t extents;
     cairo_scaled_font_t * scaled_font;
-    static char black[] = "black", blue[] = "blue";
+    const char black[] = "black", blue[] = "blue";
 
     /* We draw in the default black, so paint white first. */
     cairo_save (cr);

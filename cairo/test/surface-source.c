@@ -30,7 +30,7 @@ static cairo_surface_t *create_source_surface (int size);
 
 #define SIZE 90
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     NAME "-surface-source",
     "Test using various surfaces as the source",
     SIZE, SIZE,
@@ -77,6 +77,9 @@ draw (cairo_t *cr, int width, int height)
 
     surface_size = SIZE - 30;
     surface = create_source_surface (surface_size);
+    if (surface == NULL) /* can't create the source so skip the test */
+	return CAIRO_TEST_UNTESTED;
+
     draw_pattern (surface, surface_size);
 
     cairo_set_source_surface (cr, surface, 15, 15);
@@ -93,7 +96,7 @@ main (void)
 
     surface = create_source_surface (SIZE);
     if (surface == NULL) /* can't create the source so skip the test */
-	return CAIRO_TEST_SUCCESS;
+	return CAIRO_TEST_UNTESTED;
 
     cairo_surface_destroy (surface);
 

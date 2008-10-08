@@ -23,27 +23,23 @@
  * Author: Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+#include "cairo-test.h"
 
 #include <cairo.h>
 #include <assert.h>
-#include <stdlib.h>
-
-#if HAVE_FCFINI
-#include <fontconfig/fontconfig.h>
-#endif
 
 int
 main (void)
 {
+    cairo_test_context_t ctx;
     cairo_font_options_t *default_options;
     cairo_font_options_t *nil_options;
     cairo_surface_t *surface;
     cairo_matrix_t identity;
     cairo_t *cr;
     cairo_scaled_font_t *scaled_font;
+
+    cairo_test_init (&ctx, "font-options");
 
     /* first check NULL handling of cairo_font_options_t */
     default_options = cairo_font_options_create ();
@@ -72,7 +68,7 @@ main (void)
 
     cairo_font_options_set_subpixel_order (NULL, CAIRO_SUBPIXEL_ORDER_DEFAULT);
     cairo_font_options_get_subpixel_order (NULL);
-    assert (cairo_font_options_get_subpixel_order (default_options) ==  CAIRO_SUBPIXEL_ORDER_DEFAULT);
+    assert (cairo_font_options_get_subpixel_order (default_options) == CAIRO_SUBPIXEL_ORDER_DEFAULT);
 
     cairo_font_options_set_hint_style (NULL, CAIRO_HINT_STYLE_DEFAULT);
     cairo_font_options_get_hint_style (NULL);
@@ -107,10 +103,7 @@ main (void)
 
     cairo_destroy (cr);
 
-    cairo_debug_reset_static_data ();
-#if HAVE_FCFINI
-    FcFini ();
-#endif
+    cairo_test_fini (&ctx);
 
-    return 0;
+    return CAIRO_TEST_SUCCESS;
 }

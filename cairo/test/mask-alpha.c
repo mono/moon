@@ -41,7 +41,7 @@ static cairo_test_draw_function_t draw;
  * (0.8, 0.8, 0.8, 0.4).
  */
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "mask-alpha",
     "A simple test painting a group through a circle mask",
     WIDTH, HEIGHT,

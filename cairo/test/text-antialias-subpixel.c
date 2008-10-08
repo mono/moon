@@ -31,7 +31,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "text-antialias-subpixel",
     "Tests text rendering with subpixel antialiasing",
     WIDTH, HEIGHT,
@@ -43,7 +43,7 @@ draw (cairo_t *cr, int width, int height)
 {
     cairo_text_extents_t extents;
     cairo_font_options_t *font_options;
-    static char black[] = "black", blue[] = "blue";
+    const char black[] = "black", blue[] = "blue";
 
     cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
     cairo_paint (cr);

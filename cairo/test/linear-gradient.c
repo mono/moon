@@ -56,7 +56,7 @@ static const int n_stops[] = { 2, 3 };
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "linear-gradient",
     "Tests the drawing of linear gradients\n",
     WIDTH, HEIGHT,
@@ -84,7 +84,7 @@ draw_unit (cairo_t *cr,
     cairo_rotate (cr, rotate_angle);
 
     pattern = cairo_pattern_create_linear (-0.5 * cos (gradient_angle),  -0.5 * sin (gradient_angle),
- 					    0.5 * cos (gradient_angle),   0.5 * sin (gradient_angle));
+					    0.5 * cos (gradient_angle),   0.5 * sin (gradient_angle));
 
     if (n_stops == 2) {
 	cairo_pattern_add_color_stop_rgb (pattern, 0.,

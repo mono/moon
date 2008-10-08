@@ -199,6 +199,8 @@ printl '</tr>';
 sub img_for {
   my ($fn, $withlink) = @_;
 
+  return "" unless defined $fn;
+
   if ($config_show_inline) {
     $fn = file_to_data("image/png", $fn);
     # never return links, people can just right-click view image,

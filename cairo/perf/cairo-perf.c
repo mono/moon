@@ -26,6 +26,8 @@
  *          Carl Worth <cworth@cworth.org>
  */
 
+#define _GNU_SOURCE 1	/* for sched_getaffinity() */
+
 #include "cairo-perf.h"
 
 #include "cairo-boilerplate-getopt.h"
@@ -53,7 +55,7 @@ typedef struct _cairo_perf_case {
     unsigned int max_size;
 } cairo_perf_case_t;
 
-cairo_perf_case_t perf_cases[];
+const cairo_perf_case_t perf_cases[];
 
 /* Some targets just aren't that interesting for performance testing,
  * (not least because many of these surface types use a meta-surface
@@ -169,14 +171,15 @@ cairo_perf_run (cairo_perf_t		*perf,
 	first_run = FALSE;
     }
 
-    times = xmalloc (perf->iterations * sizeof (cairo_perf_ticks_t));
+    times = perf->times;
 
     has_similar = cairo_perf_has_similar (perf);
     for (similar = 0; similar <= has_similar; similar++) {
 	/* We run one iteration in advance to warm caches, etc. */
 	cairo_perf_yield ();
 	if (similar)
-	    cairo_push_group_with_content (perf->cr, perf->target->content);
+	    cairo_push_group_with_content (perf->cr,
+		                           cairo_boilerplate_content (perf->target->content));
 	(perf_func) (perf->cr, perf->size, perf->size);
 	if (similar)
 	    cairo_pattern_destroy (cairo_pop_group (perf->cr));
@@ -185,7 +188,8 @@ cairo_perf_run (cairo_perf_t		*perf,
 	for (i =0; i < perf->iterations; i++) {
 	    cairo_perf_yield ();
 	    if (similar)
-		cairo_push_group_with_content (perf->cr, perf->target->content);
+		cairo_push_group_with_content (perf->cr,
+			                       cairo_boilerplate_content (perf->target->content));
 	    times[i] = (perf_func) (perf->cr, perf->size, perf->size);
 	    if (similar)
 		cairo_pattern_destroy (cairo_pop_group (perf->cr));
@@ -197,7 +201,7 @@ cairo_perf_run (cairo_perf_t		*perf,
 			    _content_to_string (perf->target->content, similar),
 			    name, perf->size,
 			    cairo_perf_ticks_per_second () / 1000.0);
-		printf (" %lld", times[i]);
+		printf (" %lld", (long long) times[i]);
 	    } else if (! perf->exact_iterations) {
 		if (i > 0) {
 		    _cairo_stats_compute (&stats, times, i+1);
@@ -224,7 +228,7 @@ cairo_perf_run (cairo_perf_t		*perf,
 		    name, perf->size);
 
 	    printf ("%10lld %#8.3f %#8.3f %#5.2f%% %3d\n",
-		    stats.min_ticks,
+		    (long long) stats.min_ticks,
 		    (stats.min_ticks * 1000.0) / cairo_perf_ticks_per_second (),
 		    (stats.median_ticks * 1000.0) / cairo_perf_ticks_per_second (),
 		    stats.std_dev * 100.0, stats.iterations);
@@ -232,7 +236,6 @@ cairo_perf_run (cairo_perf_t		*perf,
 
 	perf->test_number++;
     }
-    free (times);
 }
 
 static void
@@ -342,8 +345,10 @@ check_cpu_affinity(void)
 }
 
 static void
-cairo_perf_fini (void)
+cairo_perf_fini (cairo_perf_t *perf)
 {
+    cairo_boilerplate_free_targets (perf->targets);
+    free (perf->times);
     cairo_debug_reset_static_data ();
 #if HAVE_FCFINI
     FcFini ();
@@ -354,10 +359,8 @@ cairo_perf_fini (void)
 int
 main (int argc, char *argv[])
 {
-    int i, j, num_targets;
-    cairo_perf_case_t *perf_case;
+    int i, j;
     cairo_perf_t perf;
-    cairo_boilerplate_target_t **targets;
     cairo_surface_t *surface;
 
     parse_options (&perf, argc, argv);
@@ -375,10 +378,11 @@ main (int argc, char *argv[])
             stderr);
     }
 
-    targets = cairo_boilerplate_get_targets (&num_targets, NULL);
+    perf.targets = cairo_boilerplate_get_targets (&perf.num_targets, NULL);
+    perf.times = xmalloc (perf.iterations * sizeof (cairo_perf_ticks_t));
 
-    for (i = 0; i < num_targets; i++) {
-        cairo_boilerplate_target_t *target = targets[i];
+    for (i = 0; i < perf.num_targets; i++) {
+        cairo_boilerplate_target_t *target = perf.targets[i];
 
 	if (! target_is_measurable (target))
 	    continue;
@@ -387,29 +391,29 @@ main (int argc, char *argv[])
 	perf.test_number = 0;
 
 	for (j = 0; perf_cases[j].run; j++) {
-
-	    perf_case = &perf_cases[j];
+	    const cairo_perf_case_t *perf_case = &perf_cases[j];
 
 	    for (perf.size = perf_case->min_size;
 		 perf.size <= perf_case->max_size;
 		 perf.size *= 2)
 	    {
+		void *closure;
+
 		surface = (target->create_surface) (NULL,
 						    target->content,
 						    perf.size, perf.size,
+						    perf.size, perf.size,
 						    CAIRO_BOILERPLATE_MODE_PERF,
-						    &target->closure);
+						    0,
+						    &closure);
 		if (surface == NULL) {
 		    fprintf (stderr,
 			     "Error: Failed to create target surface: %s\n",
 			     target->name);
-		    cairo_boilerplate_free_targets (targets);
-		    cairo_perf_fini ();
-		    exit (1);
+		    continue;
 		}
 
-		cairo_perf_timer_set_synchronize (target->synchronize,
-						  target->closure);
+		cairo_perf_timer_set_synchronize (target->synchronize, closure);
 
 		perf.cr = cairo_create (surface);
 
@@ -418,27 +422,23 @@ main (int argc, char *argv[])
 		if (cairo_status (perf.cr)) {
 		    fprintf (stderr, "Error: Test left cairo in an error state: %s\n",
 			     cairo_status_to_string (cairo_status (perf.cr)));
-		    cairo_boilerplate_free_targets (targets);
-		    cairo_perf_fini ();
-		    exit (1);
 		}
 
 		cairo_destroy (perf.cr);
 		cairo_surface_destroy (surface);
 
 		if (target->cleanup)
-		    target->cleanup (target->closure);
+		    target->cleanup (closure);
 	    }
 	}
     }
 
-    cairo_boilerplate_free_targets (targets);
-    cairo_perf_fini ();
+    cairo_perf_fini (&perf);
 
     return 0;
 }
 
-cairo_perf_case_t perf_cases[] = {
+const cairo_perf_case_t perf_cases[] = {
     { paint,  256, 512},
     { paint_with_alpha,  256, 512},
     { fill,   64, 256},

@@ -39,23 +39,31 @@
 #ifndef CAIRO_TYPES_PRIVATE_H
 #define CAIRO_TYPES_PRIVATE_H
 
-/* This is the only header file not including cairoint.h.  It only contains
- * typedefs.*/
 #include "cairo.h"
 #include "cairo-fixed-type-private.h"
 
 typedef struct _cairo_array cairo_array_t;
-typedef struct _cairo_hash_table cairo_hash_table_t;
 typedef struct _cairo_cache cairo_cache_t;
-typedef struct _cairo_hash_entry cairo_hash_entry_t;
-typedef struct _cairo_surface_backend cairo_surface_backend_t;
 typedef struct _cairo_clip cairo_clip_t;
-typedef struct _cairo_output_stream cairo_output_stream_t;
-typedef struct _cairo_scaled_font_subsets cairo_scaled_font_subsets_t;
-typedef struct _cairo_paginated_surface_backend cairo_paginated_surface_backend_t;
-typedef struct _cairo_scaled_font_backend   cairo_scaled_font_backend_t;
+typedef struct _cairo_clip_path cairo_clip_path_t;
+typedef struct _cairo_color cairo_color_t;
 typedef struct _cairo_font_face_backend     cairo_font_face_backend_t;
+typedef struct _cairo_gstate cairo_gstate_t;
+typedef struct _cairo_hash_entry cairo_hash_entry_t;
+typedef struct _cairo_hash_table cairo_hash_table_t;
+typedef struct _cairo_image_surface cairo_image_surface_t;
+typedef struct _cairo_output_stream cairo_output_stream_t;
+typedef struct _cairo_paginated_surface_backend cairo_paginated_surface_backend_t;
+typedef struct _cairo_path_fixed cairo_path_fixed_t;
+typedef struct _cairo_rectangle_int16 cairo_glyph_size_t;
+typedef struct _cairo_region cairo_region_t;
+typedef struct _cairo_scaled_font_backend   cairo_scaled_font_backend_t;
+typedef struct _cairo_scaled_font_subsets cairo_scaled_font_subsets_t;
+typedef struct _cairo_solid_pattern cairo_solid_pattern_t;
+typedef struct _cairo_surface_backend cairo_surface_backend_t;
+typedef struct _cairo_unscaled_font_backend cairo_unscaled_font_backend_t;
 typedef struct _cairo_xlib_screen_info cairo_xlib_screen_info_t;
+
 typedef cairo_array_t cairo_user_data_array_t;
 
 /**
@@ -123,6 +131,24 @@ struct _cairo_cache {
     int freeze_count;
 };
 
+/* XXX: Right now, the _cairo_color structure puts unpremultiplied
+   color in the doubles and premultiplied color in the shorts. Yes,
+   this is crazy insane, (but at least we don't export this
+   madness). I'm still working on a cleaner API, but in the meantime,
+   at least this does prevent precision loss in color when changing
+   alpha. */
+struct _cairo_color {
+    double red;
+    double green;
+    double blue;
+    double alpha;
+
+    unsigned short red_short;
+    unsigned short green_short;
+    unsigned short blue_short;
+    unsigned short alpha_short;
+};
+
 typedef enum _cairo_paginated_mode {
     CAIRO_PAGINATED_MODE_ANALYZE,	/* analyze page regions */
     CAIRO_PAGINATED_MODE_RENDER,	/* render page contents */
@@ -130,16 +156,18 @@ typedef enum _cairo_paginated_mode {
 } cairo_paginated_mode_t;
 
 /* Sure wish C had a real enum type so that this would be distinct
-   from cairo_status_t. Oh well, without that, I'll use this bogus 1000
-   offset */
+ * from #cairo_status_t. Oh well, without that, I'll use this bogus 100
+ * offset.  We want to keep it fit in int8_t as the compiler may choose
+ * that for #cairo_status_t */
 typedef enum _cairo_int_status {
-    CAIRO_INT_STATUS_DEGENERATE = 1000,
-    CAIRO_INT_STATUS_UNSUPPORTED,
+    CAIRO_INT_STATUS_UNSUPPORTED = 100,
+    CAIRO_INT_STATUS_DEGENERATE,
     CAIRO_INT_STATUS_NOTHING_TO_DO,
-    CAIRO_INT_STATUS_CACHE_EMPTY,
     CAIRO_INT_STATUS_FLATTEN_TRANSPARENCY,
     CAIRO_INT_STATUS_IMAGE_FALLBACK,
-    CAIRO_INT_STATUS_ANALYZE_META_SURFACE_PATTERN
+    CAIRO_INT_STATUS_ANALYZE_META_SURFACE_PATTERN,
+
+    CAIRO_INT_STATUS_LAST_STATUS
 } cairo_int_status_t;
 
 typedef enum _cairo_internal_surface_type {
@@ -148,10 +176,10 @@ typedef enum _cairo_internal_surface_type {
     CAIRO_INTERNAL_SURFACE_TYPE_ANALYSIS,
     CAIRO_INTERNAL_SURFACE_TYPE_TEST_META,
     CAIRO_INTERNAL_SURFACE_TYPE_TEST_FALLBACK,
-    CAIRO_INTERNAL_SURFACE_TYPE_TEST_PAGINATED
+    CAIRO_INTERNAL_SURFACE_TYPE_TEST_PAGINATED,
+    CAIRO_INTERNAL_SURFACE_TYPE_NULL,
+    CAIRO_INTERNAL_SURFACE_TYPE_TYPE3_GLYPH
 } cairo_internal_surface_type_t;
-
-typedef struct _cairo_region cairo_region_t;
 
 typedef struct _cairo_point {
     cairo_fixed_t x;
@@ -194,8 +222,6 @@ struct _cairo_rectangle_int32 {
     uint32_t width, height;
 };
 
-typedef struct _cairo_rectangle_int16 cairo_glyph_size_t;
-
 struct _cairo_point_int16 {
     int16_t x, y;
 };
@@ -207,13 +233,13 @@ struct _cairo_point_int32 {
 #if CAIRO_FIXED_BITS == 32 && CAIRO_FIXED_FRAC_BITS >= 16
 typedef struct _cairo_rectangle_int16 cairo_rectangle_int_t;
 typedef struct _cairo_point_int16 cairo_point_int_t;
-#define CAIRO_RECT_INT_MIN INT16_MIN
-#define CAIRO_RECT_INT_MAX INT16_MAX
+#define CAIRO_RECT_INT_MIN (INT16_MIN >> (CAIRO_FIXED_FRAC_BITS - 16))
+#define CAIRO_RECT_INT_MAX (INT16_MAX >> (CAIRO_FIXED_FRAC_BITS - 16))
 #elif CAIRO_FIXED_BITS == 32
 typedef struct _cairo_rectangle_int32 cairo_rectangle_int_t;
 typedef struct _cairo_point_int32 cairo_point_int_t;
-#define CAIRO_RECT_INT_MIN INT32_MIN
-#define CAIRO_RECT_INT_MAX INT32_MAX
+#define CAIRO_RECT_INT_MIN (INT32_MIN >> CAIRO_FIXED_FRAC_BITS)
+#define CAIRO_RECT_INT_MAX (INT32_MAX >> CAIRO_FIXED_FRAC_BITS)
 #else
 #error Not sure how to pick a cairo_rectangle_int_t and cairo_point_int_t for your CAIRO_FIXED_BITS!
 #endif
@@ -228,13 +254,11 @@ typedef enum _cairo_direction {
     CAIRO_DIRECTION_REVERSE
 } cairo_direction_t;
 
-typedef struct _cairo_path_fixed cairo_path_fixed_t;
 typedef enum _cairo_clip_mode {
     CAIRO_CLIP_MODE_PATH,
     CAIRO_CLIP_MODE_REGION,
     CAIRO_CLIP_MODE_MASK
 } cairo_clip_mode_t;
-typedef struct _cairo_clip_path cairo_clip_path_t;
 
 typedef struct _cairo_edge {
     cairo_line_t edge;
@@ -253,7 +277,7 @@ typedef struct _cairo_polygon {
     int num_edges;
     int edges_size;
     cairo_edge_t *edges;
-    cairo_edge_t  edges_embedded[8];
+    cairo_edge_t  edges_embedded[32];
 } cairo_polygon_t;
 
 typedef struct _cairo_spline_knots {
@@ -268,7 +292,7 @@ typedef struct _cairo_spline {
     int num_points;
     int points_size;
     cairo_point_t *points;
-    cairo_point_t  points_embedded[8];
+    cairo_point_t  points_embedded[64];
 } cairo_spline_t;
 
 typedef struct _cairo_pen_vertex {
@@ -282,12 +306,10 @@ typedef struct _cairo_pen {
     double radius;
     double tolerance;
 
-    cairo_pen_vertex_t *vertices;
     int num_vertices;
+    cairo_pen_vertex_t *vertices;
+    cairo_pen_vertex_t  vertices_embedded[32];
 } cairo_pen_t;
-
-typedef struct _cairo_color cairo_color_t;
-typedef struct _cairo_image_surface cairo_image_surface_t;
 
 typedef struct _cairo_stroke_style {
     double		 line_width;

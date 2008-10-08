@@ -32,7 +32,7 @@ static cairo_test_draw_function_t draw;
 #define IMAGE_SIZE (SIZE-PAD*2)
 #define LINE_WIDTH 10
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "stroke-image",
     "Test stroking with an image source, with a non-identity CTM",
     SIZE, SIZE,

@@ -29,7 +29,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "pattern-getters",
     "Tests calls to pattern getter functions",
     1, 1,
@@ -39,12 +39,12 @@ cairo_test_t test = {
 #define CHECK_SUCCESS do { if (status) return CAIRO_TEST_FAILURE; } while (0)
 
 static int
-double_buf_equal (double *a, double *b, int nc)
+double_buf_equal (const cairo_test_context_t *ctx, double *a, double *b, int nc)
 {
     int i;
     for (i = 0; i < nc; i++) {
 	if (!CAIRO_TEST_DOUBLE_EQUALS(a[i],b[i])) {
-	    cairo_test_log ("Error: doubles not equal: %g, %g\n",
+	    cairo_test_log (ctx, "Error: doubles not equal: %g, %g\n",
 			    a[i], b[i]);
 	    return 0;
 	}
@@ -55,6 +55,7 @@ double_buf_equal (double *a, double *b, int nc)
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
+    const cairo_test_context_t *ctx = cairo_test_get_context (cr);
     cairo_status_t status;
     cairo_pattern_t *pat;
 
@@ -70,7 +71,7 @@ draw (cairo_t *cr, int width, int height)
 	    !CAIRO_TEST_DOUBLE_EQUALS(g,0.3) ||
 	    !CAIRO_TEST_DOUBLE_EQUALS(b,0.4) ||
 	    !CAIRO_TEST_DOUBLE_EQUALS(a,0.5)) {
-	    cairo_test_log ("Error: cairo_pattern_get_rgba returned unexepcted results: %g, %g, %g, %g\n",
+	    cairo_test_log (ctx, "Error: cairo_pattern_get_rgba returned unexepcted results: %g, %g, %g, %g\n",
 			    r, g, b, a);
 	    return CAIRO_TEST_FAILURE;
 	}
@@ -88,7 +89,7 @@ draw (cairo_t *cr, int width, int height)
 	CHECK_SUCCESS;
 
 	if (surf != cairo_get_target (cr)) {
-	    cairo_test_log ("Error: cairo_pattern_get_resurface returned wrong surface\n");
+	    cairo_test_log (ctx, "Error: cairo_pattern_get_resurface returned wrong surface\n");
 	    return CAIRO_TEST_FAILURE;
 	}
 
@@ -144,7 +145,7 @@ draw (cairo_t *cr, int width, int height)
 	if (status != CAIRO_STATUS_INVALID_INDEX)
 	    return CAIRO_TEST_FAILURE;
 
-	if (!double_buf_equal (new_buf, expected_values, sizeof(expected_values)/sizeof(double)) != 0)
+	if (!double_buf_equal (ctx, new_buf, expected_values, sizeof(expected_values)/sizeof(double)) != 0)
 	    return CAIRO_TEST_FAILURE;
 
 	cairo_pattern_destroy (pat);

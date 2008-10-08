@@ -29,7 +29,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "new-sub-path",
     "Test the cairo_new_sub_path call",
     8 * SIZE,

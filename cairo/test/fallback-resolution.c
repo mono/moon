@@ -26,18 +26,32 @@
 #include <stdio.h>
 #include <cairo.h>
 
+#if CAIRO_HAS_PDF_SURFACE
 #include <cairo-pdf.h>
 #include <cairo-boilerplate-pdf.h>
+#endif
 
+#if CAIRO_HAS_PS_SURFACE
 #include <cairo-ps.h>
 #include <cairo-boilerplate-ps.h>
+#endif
 
+#if CAIRO_HAS_SVG_SURFACE
 #include <cairo-svg.h>
 #include <cairo-boilerplate-svg.h>
+#endif
 
 #include "cairo-test.h"
 
 /* This test exists to test cairo_surface_set_fallback_resolution
+ *
+ * <behdad> one more thing.
+ *          if you can somehow incorporate cairo_show_page stuff in the
+ *          test suite.  such that fallback-resolution can actually be
+ *          automated..
+ *          if we could get a callback on surface when that function is
+ *          called, we could do cool stuff like making other backends
+ *          draw a long strip of images, one for each page...
  */
 
 #define INCHES_TO_POINTS(in) ((in) * 72.0)
@@ -75,9 +89,8 @@ draw_with_ppi (cairo_t *cr, double width, double height, double ppi)
     cairo_restore (cr);
 }
 
-#define NUM_BACKENDS 3
 typedef enum {
-    PDF, PS, SVG
+    PDF, PS, SVG, NUM_BACKENDS
 } backend_t;
 static const char *backend_filename[NUM_BACKENDS] = {
     "fallback-resolution.pdf",
@@ -88,39 +101,61 @@ static const char *backend_filename[NUM_BACKENDS] = {
 int
 main (void)
 {
-    cairo_surface_t *surface = NULL;
+    cairo_test_context_t ctx;
     cairo_t *cr;
     cairo_status_t status;
-    cairo_test_status_t ret = CAIRO_TEST_SUCCESS;
+    cairo_test_status_t ret = CAIRO_TEST_UNTESTED;
     double ppi[] = { 600., 300., 150., 75., 37.5 };
     backend_t backend;
     int page, num_pages;
 
     num_pages = sizeof (ppi) / sizeof (ppi[0]);
 
-    cairo_test_init ("fallback-resolution");
+    cairo_test_init (&ctx, "fallback-resolution");
 
     for (backend=0; backend < NUM_BACKENDS; backend++) {
+	cairo_surface_t *surface = NULL;
 
 	/* Create backend-specific surface and force image fallbacks. */
 	switch (backend) {
 	case PDF:
-	    surface = cairo_pdf_surface_create (backend_filename[backend],
-						SIZE, SIZE);
-	    cairo_boilerplate_pdf_surface_force_fallbacks (surface);
+#if CAIRO_HAS_PDF_SURFACE
+	    if (cairo_test_is_target_enabled (&ctx, "pdf")) {
+		surface = cairo_pdf_surface_create (backend_filename[backend],
+						    SIZE, SIZE);
+		cairo_boilerplate_pdf_surface_force_fallbacks (surface);
+	    }
+#endif
 	    break;
 	case PS:
-	    surface = cairo_ps_surface_create (backend_filename[backend],
-					       SIZE, SIZE);
-	    cairo_boilerplate_ps_surface_force_fallbacks (surface);
+#if CAIRO_HAS_PS_SURFACE
+	    if (cairo_test_is_target_enabled (&ctx, "ps")) {
+		surface = cairo_ps_surface_create (backend_filename[backend],
+						   SIZE, SIZE);
+		cairo_boilerplate_ps_surface_force_fallbacks (surface);
+	    }
+#endif
 	    break;
 	case SVG:
-	    surface = cairo_svg_surface_create (backend_filename[backend],
-						SIZE, SIZE);
-	    cairo_boilerplate_svg_surface_force_fallbacks (surface);
-	    cairo_svg_surface_restrict_to_version (surface, CAIRO_SVG_VERSION_1_2);
+#if CAIRO_HAS_SVG_SURFACE
+	    if (cairo_test_is_target_enabled (&ctx, "svg")) {
+		surface = cairo_svg_surface_create (backend_filename[backend],
+						    SIZE, SIZE);
+		cairo_boilerplate_svg_surface_force_fallbacks (surface);
+		cairo_svg_surface_restrict_to_version (surface, CAIRO_SVG_VERSION_1_2);
+	    }
+#endif
+	    break;
+
+	case NUM_BACKENDS:
 	    break;
 	}
+
+	if (surface == NULL)
+	    continue;
+
+	if (ret == CAIRO_TEST_UNTESTED)
+	    ret = CAIRO_TEST_SUCCESS;
 
 	cr = cairo_create (surface);
 	cairo_set_tolerance (cr, 3.0);
@@ -129,7 +164,33 @@ main (void)
 	{
 	    cairo_surface_set_fallback_resolution (surface, ppi[page], ppi[page]);
 
-	    draw_with_ppi (cr, SIZE, SIZE, ppi[page]);
+	    /* First draw the top half in a conventional way. */
+	    cairo_save (cr);
+	    {
+		cairo_rectangle (cr, 0, 0, SIZE, SIZE / 2.0);
+		cairo_clip (cr);
+
+		draw_with_ppi (cr, SIZE, SIZE, ppi[page]);
+	    }
+	    cairo_restore (cr);
+
+	    /* Then draw the bottom half in a separate group,
+	     * (exposing a bug in 1.6.4 with the group not being
+	     * rendered with the correct fallback resolution). */
+	    cairo_save (cr);
+	    {
+		cairo_rectangle (cr, 0, SIZE / 2.0, SIZE, SIZE / 2.0);
+		cairo_clip (cr);
+
+		cairo_push_group (cr);
+		{
+		    draw_with_ppi (cr, SIZE, SIZE, ppi[page]);
+		}
+		cairo_pop_group_to_source (cr);
+
+		cairo_paint (cr);
+	    }
+	    cairo_restore (cr);
 
 	    cairo_show_page (cr);
 	}
@@ -140,7 +201,7 @@ main (void)
 	cairo_surface_destroy (surface);
 
 	if (status) {
-	    cairo_test_log ("Failed to create pdf surface for file %s: %s\n",
+	    cairo_test_log (&ctx, "Failed to create pdf surface for file %s: %s\n",
 			    backend_filename[backend],
 			    cairo_status_to_string (status));
 	    ret = CAIRO_TEST_FAILURE;
@@ -151,7 +212,7 @@ main (void)
 		backend_filename[backend]);
     }
 
-    cairo_test_fini ();
+    cairo_test_fini (&ctx);
 
     return ret;
 }

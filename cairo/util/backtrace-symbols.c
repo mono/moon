@@ -359,3 +359,21 @@ char **backtrace_symbols(void *const *buffer, int size)
 
 	return final;
 }
+
+void
+backtrace_symbols_fd(void *const *buffer, int size, int fd)
+{
+        int j;
+        char **strings;
+
+        strings = backtrace_symbols(buffer, size);
+        if (strings == NULL) {
+		perror("backtrace_symbols");
+		exit(EXIT_FAILURE);
+        }
+
+        for (j = 0; j < size; j++)
+		printf("%s\n", strings[j]);
+
+        free(strings);
+}

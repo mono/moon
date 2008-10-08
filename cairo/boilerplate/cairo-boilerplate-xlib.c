@@ -190,13 +190,17 @@ _cairo_boilerplate_xlib_create_surface (const char			 *name,
 					cairo_content_t			  content,
 					int				  width,
 					int				  height,
+					int				  max_width,
+					int				  max_height,
 					cairo_boilerplate_mode_t	  mode,
+					int                               id,
 					void				**closure)
 {
     xlib_target_closure_t *xtc;
     Display *dpy;
+    cairo_surface_t *surface;
 
-    *closure = xtc = xmalloc (sizeof (xlib_target_closure_t));
+    *closure = xtc = xcalloc (1, sizeof (xlib_target_closure_t));
 
     if (width == 0)
 	width = 1;
@@ -205,14 +209,20 @@ _cairo_boilerplate_xlib_create_surface (const char			 *name,
 
     xtc->dpy = dpy = XOpenDisplay (NULL);
     if (xtc->dpy == NULL) {
+	free (xtc);
 	CAIRO_BOILERPLATE_LOG ("Failed to open display: %s\n", XDisplayName(0));
 	return NULL;
     }
 
     if (mode == CAIRO_BOILERPLATE_MODE_TEST)
-	return _cairo_boilerplate_xlib_test_create_surface (dpy, content, width, height, xtc);
+	surface = _cairo_boilerplate_xlib_test_create_surface (dpy, content, width, height, xtc);
     else /* mode == CAIRO_BOILERPLATE_MODE_PERF */
-	return _cairo_boilerplate_xlib_perf_create_surface (dpy, content, width, height, xtc);
+	surface = _cairo_boilerplate_xlib_perf_create_surface (dpy, content, width, height, xtc);
+
+    if (surface == NULL || cairo_surface_status (surface))
+	_cairo_boilerplate_xlib_cleanup (xtc);
+
+    return surface;
 }
 #endif
 
@@ -230,12 +240,16 @@ _cairo_boilerplate_xlib_fallback_create_surface (const char			 *name,
 						 cairo_content_t		  content,
 						 int				  width,
 						 int				  height,
+						 int				  max_width,
+						 int				  max_height,
 						 cairo_boilerplate_mode_t	  mode,
+						 int				  id,
 						 void				**closure)
 {
     xlib_target_closure_t *xtc;
     Display *dpy;
-    int screen;
+    Screen *scr;
+    int screen, x, y;
     XSetWindowAttributes attr;
     cairo_surface_t *surface;
 
@@ -277,9 +291,25 @@ _cairo_boilerplate_xlib_fallback_create_surface (const char			 *name,
 	return NULL;
     }
 
+    /* tile the windows so threads do not overlap */
+    scr = XScreenOfDisplay (dpy, screen);
+    x = y = 0;
+    if (id-- > 1) do {
+	x += max_width;
+	if (x + max_width > WidthOfScreen (scr)) {
+	    x = 0;
+	    y += max_height;
+	    if (y + max_height > HeightOfScreen (scr)) {
+		XCloseDisplay (dpy);
+		free (xtc);
+		return NULL;
+	    }
+	}
+    } while (--id);
+
     attr.override_redirect = True;
     xtc->drawable = XCreateWindow (dpy, DefaultRootWindow (dpy),
-				   0, 0,
+				   x, y,
 				   width, height, 0,
 				   DefaultDepth (dpy, screen),
 				   InputOutput,
@@ -304,10 +334,12 @@ _cairo_boilerplate_xlib_cleanup (void *closure)
 {
     xlib_target_closure_t *xtc = closure;
 
-    if (xtc->drawable_is_pixmap)
-	XFreePixmap (xtc->dpy, xtc->drawable);
-    else
-	XDestroyWindow (xtc->dpy, xtc->drawable);
+    if (xtc->drawable) {
+	if (xtc->drawable_is_pixmap)
+	    XFreePixmap (xtc->dpy, xtc->drawable);
+	else
+	    XDestroyWindow (xtc->dpy, xtc->drawable);
+    }
     XCloseDisplay (xtc->dpy);
     free (xtc);
 }

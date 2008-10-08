@@ -37,7 +37,10 @@ _cairo_boilerplate_glitz_glx_create_surface (const char			 *name,
 					     cairo_content_t		  content,
 					     int			  width,
 					     int			  height,
+					     int			  max_width,
+					     int			  max_height,
 					     cairo_boilerplate_mode_t	  mode,
+					     int                          id,
 					     void			**closure);
 
 void
@@ -50,7 +53,10 @@ _cairo_boilerplate_glitz_agl_create_surface (const char			 *name,
 					     cairo_content_t		  content,
 					     int			  width,
 					     int			  height,
+					     int			  max_width,
+					     int			  max_height,
 					     cairo_boilerplate_mode_t	  mode,
+					     int                          id,
 					     void			**closure);
 
 void
@@ -63,7 +69,10 @@ _cairo_boilerplate_glitz_wgl_create_surface (const char			 *name,
 					     cairo_content_t		  content,
 					     int			  width,
 					     int			  height,
+					     int			  max_width,
+					     int			  max_height,
 					     cairo_boilerplate_mode_t	  mode,
+					     int                          id,
 					     void			**closure);
 
 void

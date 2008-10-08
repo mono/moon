@@ -35,7 +35,7 @@ const char	png_filename[]	= "romedalen.png";
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "composite-integer-translate-source",
     "Test simple compositing: integer-translation 32->32 SOURCE",
     SIZE, SIZE,
@@ -45,9 +45,10 @@ cairo_test_t test = {
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
+    const cairo_test_context_t *ctx = cairo_test_get_context (cr);
     cairo_surface_t *image;
 
-    image = cairo_test_create_surface_from_png (png_filename);
+    image = cairo_test_create_surface_from_png (ctx, png_filename);
 
     cairo_set_source_rgba (cr, 0, 0, 0, 1);
     cairo_rectangle (cr, 0, 0, SIZE, SIZE);

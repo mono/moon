@@ -166,7 +166,10 @@ _cairo_boilerplate_win32_printing_create_surface (const char              *name,
 						  cairo_content_t          content,
 						  int                      width,
 						  int                      height,
+						  int                      max_width,
+						  int                      max_height,
 						  cairo_boilerplate_mode_t mode,
+						  int                      id,
 						  void                   **closure)
 {
     win32_target_closure_t *ptc;
@@ -178,8 +181,9 @@ _cairo_boilerplate_win32_printing_create_surface (const char              *name,
 
     *closure = ptc = xmalloc (sizeof (win32_target_closure_t));
 
-    xasprintf (&ptc->filename, "%s-win32-printing-%s-out.ps",
-	       name, cairo_boilerplate_content_name (content));
+    xasprintf (&ptc->filename, "%s-out.ps", name);
+    xunlink (ptc->filename);
+
     memset (&di, 0, sizeof (DOCINFO));
     di.cbSize = sizeof (DOCINFO);
     di.lpszDocName = ptc->filename;
@@ -294,6 +298,32 @@ _cairo_boilerplate_win32_printing_surface_write_to_png (cairo_surface_t *surface
     cairo_surface_destroy (dst_image);
 
     return CAIRO_STATUS_SUCCESS;
+}
+
+cairo_surface_t *
+_cairo_boilerplate_win32_printing_get_image_surface (cairo_surface_t *surface,
+						     int width,
+						     int height)
+{
+    win32_target_closure_t *ptc = cairo_surface_get_user_data (surface,
+							       &win32_closure_key);
+    char *filename;
+    cairo_status_t status;
+
+    xasprintf (&filename, "%s.png", ptc->filename);
+    status = _cairo_boilerplate_win32_printing_surface_write_to_png (surface, filename);
+    if (status)
+	return cairo_boilerplate_surface_create_in_error (status);
+
+    surface = cairo_boilerplate_get_image_surface_from_png (filename,
+							    width,
+							    height,
+							    ptc->target == NULL);
+
+    remove (filename);
+    free (filename);
+
+    return surface;
 }
 
 void

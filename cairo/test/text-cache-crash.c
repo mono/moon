@@ -57,14 +57,14 @@
  *   Found the bug. cairo_gstate_select_font was noticing when the
  *   same font was selected twice in a row and was erroneously failing
  *   to free the old reference. Committed a fix and verified it also
- *   fixed the orginal test case.
+ *   fixed the original test case.
  */
 
 #include "cairo-test.h"
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "text-cache-crash",
     "Test case for bug causing an assertion failure in _cairo_cache_lookup",
     0, 0,

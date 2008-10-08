@@ -29,7 +29,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "show-text-current-point",
     "Test that cairo_show_text adjusts the current point properly",
     263, TEXT_SIZE + 4,

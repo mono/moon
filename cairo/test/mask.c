@@ -32,22 +32,22 @@
 #define HEIGHT 16
 #define PAD 2
 
-const char	png_filename[]	= "romedalen.png";
+static const char	png_filename[]	= "romedalen.png";
 
 static void
-set_solid_pattern (cairo_t *cr, int x, int y)
+set_solid_pattern (const cairo_test_context_t *ctx, cairo_t *cr, int x, int y)
 {
     cairo_set_source_rgb (cr, 0, 0, 0.6);
 }
 
 static void
-set_translucent_pattern (cairo_t *cr, int x, int y)
+set_translucent_pattern (const cairo_test_context_t *ctx, cairo_t *cr, int x, int y)
 {
     cairo_set_source_rgba (cr, 0, 0, 0.6, 0.5);
 }
 
 static void
-set_gradient_pattern (cairo_t *cr, int x, int y)
+set_gradient_pattern (const cairo_test_context_t *ctx, cairo_t *cr, int x, int y)
 {
     cairo_pattern_t *pattern;
 
@@ -60,11 +60,11 @@ set_gradient_pattern (cairo_t *cr, int x, int y)
 }
 
 static void
-set_image_pattern (cairo_t *cr, int x, int y)
+set_image_pattern (const cairo_test_context_t *ctx, cairo_t *cr, int x, int y)
 {
     cairo_pattern_t *pattern;
 
-    pattern = cairo_test_create_pattern_from_png (png_filename);
+    pattern = cairo_test_create_pattern_from_png (ctx, png_filename);
     cairo_set_source (cr, pattern);
     cairo_pattern_destroy (pattern);
 }
@@ -156,20 +156,20 @@ clip_circle (cairo_t *cr, int x, int y)
     cairo_new_path (cr);
 }
 
-static void (*pattern_funcs[])(cairo_t *cr, int x, int y) = {
+static void (* const pattern_funcs[])(const cairo_test_context_t *ctx, cairo_t *cr, int x, int y) = {
     set_solid_pattern,
     set_translucent_pattern,
     set_gradient_pattern,
     set_image_pattern,
 };
 
-static void (*mask_funcs[])(cairo_t *cr, int x, int y) = {
+static void (* const mask_funcs[])(cairo_t *cr, int x, int y) = {
     mask_alpha,
     mask_gradient,
     mask_polygon,
 };
 
-static void (*clip_funcs[])(cairo_t *cr, int x, int y) = {
+static void (* const clip_funcs[])(cairo_t *cr, int x, int y) = {
     clip_none,
     clip_rects,
     clip_circle,
@@ -181,7 +181,7 @@ static void (*clip_funcs[])(cairo_t *cr, int x, int y) = {
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "mask",
     "Tests of cairo_mask",
     IMAGE_WIDTH, IMAGE_HEIGHT,
@@ -191,6 +191,7 @@ cairo_test_t test = {
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
+    const cairo_test_context_t *ctx = cairo_test_get_context (cr);
     cairo_surface_t *tmp_surface;
     cairo_pattern_t *tmp_pattern;
     size_t i, j, k;
@@ -225,7 +226,7 @@ draw (cairo_t *cr, int width, int height)
 		cairo_save (cr2);
 
 		clip_funcs[k] (cr2, x, y);
-		pattern_funcs[i] (cr2, x, y);
+		pattern_funcs[i] (ctx, cr2, x, y);
 		mask_funcs[j] (cr2, x, y);
 
 		cairo_restore (cr2);

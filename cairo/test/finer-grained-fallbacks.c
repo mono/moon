@@ -33,7 +33,7 @@ static cairo_test_draw_function_t draw;
 #define WIDTH (CIRCLE_SIZE*6.5 + PAD)
 #define HEIGHT (CIRCLE_SIZE*3.5 + PAD)
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "finer-grained-fallbacks",
     "Test that multiple PS/PDF fallback images in various locations are correct",
     WIDTH, HEIGHT,

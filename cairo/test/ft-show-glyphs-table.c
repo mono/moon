@@ -56,7 +56,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "ft-show-glyphs-table",
     "Test cairo_show_glyphs with cairo-ft backend and glyphs laid out in a table",
     WIDTH, HEIGHT,

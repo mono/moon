@@ -268,3 +268,24 @@ for overflow and will return NULL in that case.
 In general, be wary of performing any arithmetic operations in an
 argument to malloc.  You should explicitly check for integer overflow
 yourself in any more complex situations.
+
+Mode lines
+----------
+
+So given the rules above, what is the best way to simplify one's life as
+a code monkey? Get your editor to do most of the tedious work of
+beautifying your code!
+
+As a reward for reading this far, here are some mode lines for the more
+popular editors:
+/*
+ * vim:sw=4:sts=4:ts=8:tw=78:fo=tcroq:cindent:cino=\:0,(0
+ * vim:isk=a-z,A-Z,48-57,_,.,-,>
+ */
+
+
+TODO
+----
+
+Write rules for common editors to use this style.  Also cleanup/unify
+the modelines in the source files.

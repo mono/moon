@@ -32,6 +32,11 @@
 #include <cairo-svg-surface-private.h>
 #include <cairo-paginated-surface-private.h>
 
+#if HAVE_SIGNAL_H
+#include <stdlib.h>
+#include <signal.h>
+#endif
+
 cairo_user_data_key_t	svg_closure_key;
 
 typedef struct _svg_target_closure
@@ -46,26 +51,28 @@ _cairo_boilerplate_svg_create_surface (const char		 *name,
 				       cairo_content_t		  content,
 				       int			  width,
 				       int			  height,
+				       int			  max_width,
+				       int			  max_height,
 				       cairo_boilerplate_mode_t	  mode,
+				       int                        id,
 				       void			**closure)
 {
     svg_target_closure_t *ptc;
     cairo_surface_t *surface;
+    cairo_status_t status;
 
     *closure = ptc = xmalloc (sizeof (svg_target_closure_t));
 
     ptc->width = width;
     ptc->height = height;
 
-    xasprintf (&ptc->filename, "%s-svg-%s-out.svg",
-	       name, cairo_boilerplate_content_name (content));
+    xasprintf (&ptc->filename, "%s-out.svg", name);
+    xunlink (ptc->filename);
 
     surface = cairo_svg_surface_create (ptc->filename, width, height);
-    if (cairo_surface_status (surface)) {
-	free (ptc->filename);
-	free (ptc);
-	return NULL;
-    }
+    if (cairo_surface_status (surface))
+	goto CLEANUP_FILENAME;
+
     cairo_surface_set_fallback_resolution (surface, 72., 72.);
 
     if (content == CAIRO_CONTENT_COLOR) {
@@ -73,22 +80,32 @@ _cairo_boilerplate_svg_create_surface (const char		 *name,
 	surface = cairo_surface_create_similar (ptc->target,
 						CAIRO_CONTENT_COLOR,
 						width, height);
+	if (cairo_surface_status (surface))
+	    goto CLEANUP_TARGET;
     } else {
 	ptc->target = NULL;
     }
 
-    cairo_boilerplate_surface_set_user_data (surface,
-					     &svg_closure_key,
-					     ptc, NULL);
+    status = cairo_surface_set_user_data (surface, &svg_closure_key, ptc, NULL);
+    if (status == CAIRO_STATUS_SUCCESS)
+	return surface;
 
+    cairo_surface_destroy (surface);
+    surface = cairo_boilerplate_surface_create_in_error (status);
+
+  CLEANUP_TARGET:
+    cairo_surface_destroy (ptc->target);
+  CLEANUP_FILENAME:
+    free (ptc->filename);
+    free (ptc);
     return surface;
 }
 
 cairo_status_t
-_cairo_boilerplate_svg_surface_write_to_png (cairo_surface_t *surface, const char *filename)
+_cairo_boilerplate_svg_finish_surface (cairo_surface_t		*surface)
 {
     svg_target_closure_t *ptc = cairo_surface_get_user_data (surface, &svg_closure_key);
-    char    command[4096];
+    cairo_status_t status;
 
     /* Both surface and ptc->target were originally created at the
      * same dimensions. We want a 1:1 copy here, so we first clear any
@@ -105,20 +122,82 @@ _cairo_boilerplate_svg_surface_write_to_png (cairo_surface_t *surface, const cha
 	cairo_set_source_surface (cr, surface, 0, 0);
 	cairo_paint (cr);
 	cairo_show_page (cr);
+	status = cairo_status (cr);
 	cairo_destroy (cr);
 
+	if (status)
+	    return status;
+
 	cairo_surface_finish (surface);
+	status = cairo_surface_status (surface);
+	if (status)
+	    return status;
+
 	surface = ptc->target;
     }
 
     cairo_surface_finish (surface);
+    status = cairo_surface_status (surface);
+    if (status)
+	return status;
+
+    return CAIRO_STATUS_SUCCESS;
+}
+
+cairo_status_t
+_cairo_boilerplate_svg_surface_write_to_png (cairo_surface_t *surface, const char *filename)
+{
+    svg_target_closure_t *ptc = cairo_surface_get_user_data (surface, &svg_closure_key);
+    char    command[4096];
+    int exitstatus;
+
     sprintf (command, "./svg2png %s %s",
 	     ptc->filename, filename);
 
-    if (system (command) != 0)
+    exitstatus = system (command);
+#if _XOPEN_SOURCE && HAVE_SIGNAL_H
+    if (WIFSIGNALED (exitstatus))
+	raise (WTERMSIG (exitstatus));
+#endif
+    if (exitstatus)
 	return CAIRO_STATUS_WRITE_ERROR;
 
     return CAIRO_STATUS_SUCCESS;
+}
+
+static cairo_surface_t *
+_cairo_boilerplate_svg_convert_to_image (cairo_surface_t *surface)
+{
+    svg_target_closure_t *ptc = cairo_surface_get_user_data (surface,
+							     &svg_closure_key);
+    FILE *file;
+    cairo_surface_t *image;
+
+    file = cairo_boilerplate_open_any2ppm (ptc->filename, 0);
+    if (file == NULL)
+	return cairo_boilerplate_surface_create_in_error (CAIRO_STATUS_READ_ERROR);
+
+    image = cairo_boilerplate_image_surface_create_from_ppm_stream (file);
+    fclose (file);
+
+    return image;
+}
+
+cairo_surface_t *
+_cairo_boilerplate_svg_get_image_surface (cairo_surface_t *surface,
+					  int width,
+					  int height)
+{
+    cairo_surface_t *image;
+
+    image = _cairo_boilerplate_svg_convert_to_image (surface);
+    cairo_surface_set_device_offset (image,
+				     cairo_image_surface_get_width (image) - width,
+				     cairo_image_surface_get_height (image) - height);
+    surface = _cairo_boilerplate_get_image_surface (image, width, height);
+    cairo_surface_destroy (image);
+
+    return surface;
 }
 
 void

@@ -255,13 +255,26 @@ _test_meta_surface_fill (void			*abstract_surface,
 				tolerance, antialias);
 }
 
+static cairo_bool_t
+_test_meta_surface_has_show_text_glyphs (void *abstract_surface)
+{
+    test_meta_surface_t *surface = abstract_surface;
+
+    return cairo_surface_has_show_text_glyphs (surface->meta);
+}
+
 static cairo_int_status_t
-_test_meta_surface_show_glyphs (void			*abstract_surface,
-				cairo_operator_t	 op,
-				cairo_pattern_t		*source,
-				cairo_glyph_t		*glyphs,
-				int			 num_glyphs,
-				cairo_scaled_font_t	*scaled_font)
+_test_meta_surface_show_text_glyphs (void		    *abstract_surface,
+				     cairo_operator_t	     op,
+				     cairo_pattern_t	    *source,
+				     const char		    *utf8,
+				     int		     utf8_len,
+				     cairo_glyph_t	    *glyphs,
+				     int		     num_glyphs,
+				     const cairo_text_cluster_t *clusters,
+				     int		     num_clusters,
+				     cairo_text_cluster_flags_t cluster_flags,
+				     cairo_scaled_font_t    *scaled_font)
 {
     test_meta_surface_t *surface = abstract_surface;
     cairo_int_status_t status;
@@ -269,8 +282,8 @@ _test_meta_surface_show_glyphs (void			*abstract_surface,
     surface->image_reflects_meta = FALSE;
 
     /* Since this is a "wrapping" surface, we're calling back into
-     * _cairo_surface_show_glyphs from within a call to the same.
-     * Since _cairo_surface_show_glyphs acquires a mutex, we release
+     * _cairo_surface_show_text_glyphs from within a call to the same.
+     * Since _cairo_surface_show_text_glyphs acquires a mutex, we release
      * and re-acquire the mutex around this nested call.
      *
      * Yes, this is ugly, but we consider it pragmatic as compared to
@@ -279,55 +292,23 @@ _test_meta_surface_show_glyphs (void			*abstract_surface,
      * lead to bugs).
      */
     CAIRO_MUTEX_UNLOCK (scaled_font->mutex);
-    status = _cairo_surface_show_glyphs (surface->meta, op, source,
-					 glyphs, num_glyphs,
-					 scaled_font);
+    status = _cairo_surface_show_text_glyphs (surface->meta, op, source,
+					      utf8, utf8_len,
+					      glyphs, num_glyphs,
+					      clusters, num_clusters, cluster_flags,
+					      scaled_font);
     CAIRO_MUTEX_LOCK (scaled_font->mutex);
 
     return status;
 }
 
+
 static cairo_surface_t *
 _test_meta_surface_snapshot (void *abstract_other)
 {
     test_meta_surface_t *other = abstract_other;
-    cairo_status_t status;
 
-    /* XXX: Just making a snapshot of other->meta is what we really
-     * want. But this currently triggers a bug somewhere (the "mask"
-     * test from the test suite segfaults).
-     *
-     * For now, we'll create a new image surface and replay onto
-     * that. It would be tempting to replay into other->image and then
-     * return a snapshot of that, but that will cause the self-copy
-     * test to fail, (since our replay will be affected by a clip that
-     * should not have any effect on the use of the resulting snapshot
-     * as a source).
-     */
-
-#if 0
     return _cairo_surface_snapshot (other->meta);
-#else
-    cairo_rectangle_int_t extents;
-    cairo_surface_t *surface;
-
-    status = _cairo_surface_get_extents (other->image, &extents);
-    if (status)
-	return _cairo_surface_create_in_error (status);
-
-    surface = cairo_surface_create_similar (other->image,
-					    CAIRO_CONTENT_COLOR_ALPHA,
-					    extents.width,
-					    extents.height);
-
-    status = _cairo_meta_surface_replay (other->meta, surface);
-    if (status) {
-	cairo_surface_destroy (surface);
-	surface = _cairo_surface_create_in_error (status);
-    }
-
-    return surface;
-#endif
 }
 
 static const cairo_surface_backend_t test_meta_surface_backend = {
@@ -357,6 +338,12 @@ static const cairo_surface_backend_t test_meta_surface_backend = {
     _test_meta_surface_mask,
     _test_meta_surface_stroke,
     _test_meta_surface_fill,
-    _test_meta_surface_show_glyphs,
-    _test_meta_surface_snapshot
+    NULL, /* show_glyphs */
+    _test_meta_surface_snapshot,
+    NULL, /* is_similar */
+    NULL, /* reset */
+    NULL, /* fill_stroke */
+    NULL, /* create_solid_pattern_surface */
+    _test_meta_surface_has_show_text_glyphs,
+    _test_meta_surface_show_text_glyphs
 };

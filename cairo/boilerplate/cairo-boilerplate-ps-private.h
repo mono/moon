@@ -32,13 +32,24 @@ _cairo_boilerplate_ps_create_surface (const char		 *name,
 				      cairo_content_t		  content,
 				      int			  width,
 				      int			  height,
+				      int			  max_width,
+				      int			  max_height,
 				      cairo_boilerplate_mode_t	  mode,
+				      int                         id,
 				      void			**closure);
 
 void
 _cairo_boilerplate_ps_cleanup (void *closure);
 
 cairo_status_t
+_cairo_boilerplate_ps_finish_surface (cairo_surface_t		*surface);
+
+cairo_status_t
 _cairo_boilerplate_ps_surface_write_to_png (cairo_surface_t *surface, const char *filename);
+
+cairo_surface_t *
+_cairo_boilerplate_ps_get_image_surface (cairo_surface_t *surface,
+					  int width,
+					  int height);
 
 #endif

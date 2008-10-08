@@ -92,7 +92,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "text-rotate",
     "Tests show_text under various rotations",
     WIDTH, HEIGHT,
@@ -106,7 +106,7 @@ draw (cairo_t *cr, int width, int height)
     int i, x_off, y_off;
     cairo_text_extents_t extents;
     cairo_font_options_t *font_options;
-    static char text[] = "cairo";
+    const char text[] = "cairo";
 
     /* paint white so we don't need separate ref images for
      * RGB24 and ARGB32 */

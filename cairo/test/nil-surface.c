@@ -35,7 +35,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "nil-surface",
     "Test that nil surfaces do not make cairo crash.",
     1, 1,
@@ -45,6 +45,7 @@ cairo_test_t test = {
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
+    const cairo_test_context_t *ctx = cairo_test_get_context (cr);
     cairo_surface_t *surface;
     cairo_pattern_t *pattern;
     cairo_t *cr2;
@@ -71,7 +72,7 @@ draw (cairo_t *cr, int width, int height)
 
     /* Check that the error made it all that way. */
     if (cairo_status (cr2) != CAIRO_STATUS_FILE_NOT_FOUND) {
-	cairo_test_log ("Error: Received status of \"%s\" rather than expected \"%s\"\n",
+	cairo_test_log (ctx, "Error: Received status of \"%s\" rather than expected \"%s\"\n",
 			cairo_status_to_string (cairo_status (cr2)),
 			cairo_status_to_string (CAIRO_STATUS_FILE_NOT_FOUND));
 	cairo_destroy (cr2);
@@ -96,7 +97,7 @@ draw (cairo_t *cr, int width, int height)
 
     /* Check that the error made it all that way. */
     if (cairo_status (cr2) != CAIRO_STATUS_NULL_POINTER) {
-	cairo_test_log ("Error: Received status of \"%s\" rather than expected \"%s\"\n",
+	cairo_test_log (ctx, "Error: Received status of \"%s\" rather than expected \"%s\"\n",
 			cairo_status_to_string (cairo_status (cr2)),
 			cairo_status_to_string (CAIRO_STATUS_NULL_POINTER));
 	cairo_destroy (cr2);
@@ -127,7 +128,7 @@ draw (cairo_t *cr, int width, int height)
     /* Trigger invalid restore. */
     cairo_restore (cr2);
     if (cairo_status (cr2) != CAIRO_STATUS_INVALID_RESTORE) {
-	cairo_test_log ("Error: Received status of \"%s\" rather than expected \"%s\"\n",
+	cairo_test_log (ctx, "Error: Received status of \"%s\" rather than expected \"%s\"\n",
 			cairo_status_to_string (cairo_status (cr2)),
 			cairo_status_to_string (CAIRO_STATUS_INVALID_RESTORE));
 	cairo_destroy (cr2);
@@ -145,7 +146,7 @@ draw (cairo_t *cr, int width, int height)
     cr2 = cairo_create (NULL);
 
     if (cairo_status (cr2) != CAIRO_STATUS_NULL_POINTER) {
-	cairo_test_log ("Error: Received status of \"%s\" rather than expected \"%s\"\n",
+	cairo_test_log (ctx, "Error: Received status of \"%s\" rather than expected \"%s\"\n",
 			cairo_status_to_string (cairo_status (cr2)),
 			cairo_status_to_string (CAIRO_STATUS_NULL_POINTER));
 	cairo_destroy (cr2);
@@ -154,7 +155,7 @@ draw (cairo_t *cr, int width, int height)
 
     /* Test that get_target returns something valid */
     if (cairo_get_target (cr2) == NULL) {
-	cairo_test_log ("Error: cairo_get_target() returned NULL\n");
+	cairo_test_log (ctx, "Error: cairo_get_target() returned NULL\n");
 	cairo_destroy (cr2);
 	return CAIRO_TEST_FAILURE;
     }

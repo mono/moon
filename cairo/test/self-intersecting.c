@@ -46,7 +46,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "self-intersecting",
     "Test strokes of self-intersecting paths"
     "\nSelf-intersecting strokes are wrong due to incremental trapezoidization.",

@@ -28,12 +28,13 @@
 int
 main (void)
 {
+    cairo_test_context_t ctx;
     cairo_surface_t *surface;
     cairo_pattern_t *solid_rgb, *solid_rgba, *surface_pattern, *linear, *radial;
+    cairo_test_status_t result = CAIRO_TEST_SUCCESS;
 
-    cairo_test_init ("pattern-get-type");
-
-    cairo_test_log ("Creating patterns of all types\n");
+    cairo_test_init (&ctx, "pattern-get-type");
+    cairo_test_log (&ctx, "Creating patterns of all types\n");
 
     solid_rgb = cairo_pattern_create_rgb (0.0, 0.1, 0.2);
     solid_rgba = cairo_pattern_create_rgba (0.3, 0.4, 0.5, 0.6);
@@ -44,24 +45,24 @@ main (void)
     radial = cairo_pattern_create_radial (10.0, 10.0, 0.1,
 					  10.0, 10.0, 1.0);
 
-    cairo_test_log ("Verifying return values of cairo_pattern_get_type\n");
+    cairo_test_log (&ctx, "Verifying return values of cairo_pattern_get_type\n");
 
     if (cairo_pattern_get_type (solid_rgb) != CAIRO_PATTERN_TYPE_SOLID)
-	return CAIRO_TEST_FAILURE;
+	result = CAIRO_TEST_FAILURE;
 
     if (cairo_pattern_get_type (solid_rgba) != CAIRO_PATTERN_TYPE_SOLID)
-	return CAIRO_TEST_FAILURE;
+	result = CAIRO_TEST_FAILURE;
 
     if (cairo_pattern_get_type (surface_pattern) != CAIRO_PATTERN_TYPE_SURFACE)
-	return CAIRO_TEST_FAILURE;
+	result = CAIRO_TEST_FAILURE;
 
     if (cairo_pattern_get_type (linear) != CAIRO_PATTERN_TYPE_LINEAR)
-	return CAIRO_TEST_FAILURE;
+	result = CAIRO_TEST_FAILURE;
 
     if (cairo_pattern_get_type (radial) != CAIRO_PATTERN_TYPE_RADIAL)
-	return CAIRO_TEST_FAILURE;
+	result = CAIRO_TEST_FAILURE;
 
-    cairo_test_log ("Cleaning up\n");
+    cairo_test_log (&ctx, "Cleaning up\n");
 
     cairo_pattern_destroy (solid_rgb);
     cairo_pattern_destroy (solid_rgba);
@@ -70,7 +71,7 @@ main (void)
     cairo_pattern_destroy (linear);
     cairo_pattern_destroy (radial);
 
-    cairo_test_fini ();
+    cairo_test_fini (&ctx);
 
-    return CAIRO_TEST_SUCCESS;
+    return result;
 }

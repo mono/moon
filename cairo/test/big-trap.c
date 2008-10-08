@@ -60,7 +60,7 @@ static cairo_test_draw_function_t draw;
  * will prevent the hiding of internal library symbols.
  */
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "big-trap",
     "Test oversize trapezoid with a clip region"
     "\nTest needs to be adjusted to trigger the original bug",

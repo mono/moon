@@ -53,6 +53,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#define _XOPEN_SOURCE 600	/* for round() */
+
 #include <signal.h>
 #include <sys/time.h>
 #include <unistd.h>
@@ -68,9 +70,9 @@
 static inline cairo_perf_ticks_t
 oil_profile_stamp_rdtsc (void)
 {
-    uint64_t ts;
-    __asm__ __volatile__("rdtsc\n" : "=A" (ts));
-    return ts;
+    unsigned a, d;
+    __asm__ __volatile__("rdtsc" : "=a" (a), "=d" (d));
+    return ((uint64_t)a) | (((uint64_t)d) << 32);
 }
 #define OIL_STAMP oil_profile_stamp_rdtsc
 #endif

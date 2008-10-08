@@ -32,7 +32,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "line-width",
     "Tests cairo_set_line_width",
     IMAGE_WIDTH, IMAGE_HEIGHT,

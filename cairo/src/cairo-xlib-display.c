@@ -29,6 +29,8 @@
  *
  * The Initial Developer of the Original Code is Chris Wilson.
  *
+ * Contributor(s):
+ *	Karl Tomlinson <karlt+@karlt.net>, Mozilla Corporation
  */
 
 #include "cairoint.h"
@@ -65,10 +67,14 @@ struct _cairo_xlib_job {
 static cairo_xlib_display_t *_cairo_xlib_display_list;
 
 static void
+_cairo_xlib_remove_close_display_hook_internal (cairo_xlib_display_t *display,
+						cairo_xlib_hook_t *hook);
+
+static void
 _cairo_xlib_call_close_display_hooks (cairo_xlib_display_t *display)
 {
     cairo_xlib_screen_info_t	    *screen;
-    cairo_xlib_hook_t		    *hooks, *list;
+    cairo_xlib_hook_t		    *hook;
 
     /* call all registered shutdown routines */
     CAIRO_MUTEX_LOCK (display->mutex);
@@ -76,28 +82,16 @@ _cairo_xlib_call_close_display_hooks (cairo_xlib_display_t *display)
     for (screen = display->screens; screen != NULL; screen = screen->next)
 	_cairo_xlib_screen_info_close_display (screen);
 
-    hooks = display->close_display_hooks;
-    while (hooks != NULL) {
-	display->close_display_hooks = NULL;
+    while (TRUE) {
+	hook = display->close_display_hooks;
+	if (hook == NULL)
+	    break;
+
+	_cairo_xlib_remove_close_display_hook_internal (display, hook);
+
 	CAIRO_MUTEX_UNLOCK (display->mutex);
-
-	list = hooks;
-	do {
-	    cairo_xlib_hook_t *hook = list;
-	    list = hook->next;
-
-	    hook->func (display->display, hook->data);
-	} while (list != NULL);
-
+	hook->func (display, hook);
 	CAIRO_MUTEX_LOCK (display->mutex);
-	do {
-	    cairo_xlib_hook_t *hook = hooks;
-	    hooks = hook->next;
-
-	    _cairo_freelist_free (&display->hook_freelist, hook);
-	} while (hooks != NULL);
-
-	hooks = display->close_display_hooks;
     }
     display->closed = TRUE;
 
@@ -151,7 +145,6 @@ _cairo_xlib_display_destroy (cairo_xlib_display_t *display)
 	_cairo_freelist_free (&display->wq_freelist, job);
     }
     _cairo_freelist_fini (&display->wq_freelist);
-    _cairo_freelist_fini (&display->hook_freelist);
 
     CAIRO_MUTEX_FINI (display->mutex);
 
@@ -277,7 +270,6 @@ _cairo_xlib_display_get (Display *dpy)
     XESetCloseDisplay (dpy, codes->extension, _cairo_xlib_close_display);
 
     _cairo_freelist_init (&display->wq_freelist, sizeof (cairo_xlib_job_t));
-    _cairo_freelist_init (&display->hook_freelist, sizeof (cairo_xlib_hook_t));
 
     CAIRO_REFERENCE_COUNT_INIT (&display->ref_count, 2); /* add one for the CloseDisplay */
     CAIRO_MUTEX_INIT (display->mutex);
@@ -286,6 +278,9 @@ _cairo_xlib_display_get (Display *dpy)
     display->workqueue = NULL;
     display->close_display_hooks = NULL;
     display->closed = FALSE;
+
+    memset (display->cached_xrender_formats, 0,
+	    sizeof (display->cached_xrender_formats));
 
     display->buggy_repeat = FALSE;
     if (strstr (ServerVendor (dpy), "X.Org") != NULL) {
@@ -322,61 +317,43 @@ UNLOCK:
     return display;
 }
 
-cairo_bool_t
-_cairo_xlib_add_close_display_hook (Display *dpy, void (*func) (Display *, void *), void *data, const void *key)
+void
+_cairo_xlib_add_close_display_hook (cairo_xlib_display_t	*display,
+				    cairo_xlib_hook_t		*hook)
 {
-    cairo_xlib_display_t *display;
-    cairo_xlib_hook_t *hook;
-    cairo_bool_t ret = FALSE;
-
-    display = _cairo_xlib_display_get (dpy);
-    if (display == NULL)
-	return FALSE;
-
     CAIRO_MUTEX_LOCK (display->mutex);
-    if (display->closed == FALSE) {
-	hook = _cairo_freelist_alloc (&display->hook_freelist);
-	if (hook != NULL) {
-	    hook->func = func;
-	    hook->data = data;
-	    hook->key = key;
-
-	    hook->next = display->close_display_hooks;
-	    display->close_display_hooks = hook;
-	    ret = TRUE;
-	}
-    }
+    hook->prev = NULL;
+    hook->next = display->close_display_hooks;
+    if (hook->next != NULL)
+	hook->next->prev = hook;
+    display->close_display_hooks = hook;
     CAIRO_MUTEX_UNLOCK (display->mutex);
+}
 
-    _cairo_xlib_display_destroy (display);
+/* display->mutex must be held */
+static void
+_cairo_xlib_remove_close_display_hook_internal (cairo_xlib_display_t *display,
+						cairo_xlib_hook_t *hook)
+{
+    if (display->close_display_hooks == hook)
+	display->close_display_hooks = hook->next;
+    else if (hook->prev != NULL)
+	hook->prev->next = hook->next;
 
-    return ret;
+    if (hook->next != NULL)
+	hook->next->prev = hook->prev;
+
+    hook->prev = NULL;
+    hook->next = NULL;
 }
 
 void
-_cairo_xlib_remove_close_display_hooks (Display *dpy, const void *key)
+_cairo_xlib_remove_close_display_hook (cairo_xlib_display_t	*display,
+				       cairo_xlib_hook_t	*hook)
 {
-    cairo_xlib_display_t *display;
-    cairo_xlib_hook_t *hook, *next, **prev;
-
-    display = _cairo_xlib_display_get (dpy);
-    if (display == NULL)
-	return;
-
     CAIRO_MUTEX_LOCK (display->mutex);
-    prev = &display->close_display_hooks;
-    for (hook = display->close_display_hooks; hook != NULL; hook = next) {
-	next = hook->next;
-	if (hook->key == key) {
-	    *prev = hook->next;
-	    _cairo_freelist_free (&display->hook_freelist, hook);
-	} else
-	    prev = &hook->next;
-    }
-    *prev = NULL;
+    _cairo_xlib_remove_close_display_hook_internal (display, hook);
     CAIRO_MUTEX_UNLOCK (display->mutex);
-
-    _cairo_xlib_display_destroy (display);
 }
 
 cairo_status_t
@@ -484,4 +461,36 @@ _cairo_xlib_display_notify (cairo_xlib_display_t *display)
 	jobs = display->workqueue;
     }
     CAIRO_MUTEX_UNLOCK (display->mutex);
+}
+
+XRenderPictFormat *
+_cairo_xlib_display_get_xrender_format (cairo_xlib_display_t	*display,
+	                                cairo_format_t		 format)
+{
+    XRenderPictFormat *xrender_format;
+
+    CAIRO_MUTEX_LOCK (display->mutex);
+    xrender_format = display->cached_xrender_formats[format];
+    if (xrender_format == NULL) {
+	int pict_format;
+
+	switch (format) {
+	case CAIRO_FORMAT_A1:
+	    pict_format = PictStandardA1; break;
+	case CAIRO_FORMAT_A8:
+	    pict_format = PictStandardA8; break;
+	case CAIRO_FORMAT_RGB24:
+	    pict_format = PictStandardRGB24; break;
+	default:
+	    ASSERT_NOT_REACHED;
+	case CAIRO_FORMAT_ARGB32:
+	    pict_format = PictStandardARGB32; break;
+	}
+	xrender_format = XRenderFindStandardFormat (display->display,
+		                                    pict_format);
+	display->cached_xrender_formats[format] = xrender_format;
+    }
+    CAIRO_MUTEX_UNLOCK (display->mutex);
+
+    return xrender_format;
 }

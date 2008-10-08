@@ -27,7 +27,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "big-line",
     "Test drawing of simple lines with positive and negative coordinates > 2^16\n"
     "This currently fails because of 16-bit limitations in pixman.",

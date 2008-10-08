@@ -31,7 +31,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "source-clip-scale",
     "Test that a source surface is not affected by a clip when scaling",
     SIZE * 2, SIZE,

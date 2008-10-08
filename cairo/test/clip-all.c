@@ -30,7 +30,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "clip-all",
     "Test clipping with everything clipped out",
     SIZE, SIZE,

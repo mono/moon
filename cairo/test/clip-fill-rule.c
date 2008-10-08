@@ -29,7 +29,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "clip-fill-rule",
     "Tests interaction of clipping with cairo_set_fill_rule",
     STAR_SIZE * 2 + 2, STAR_SIZE + 2,

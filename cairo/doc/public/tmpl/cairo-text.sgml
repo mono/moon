@@ -50,6 +50,7 @@ Cairo has two sets of text rendering capabilities:
 
 </para>
 
+@index:
 @x: 
 @y: 
 
@@ -69,6 +70,21 @@ Cairo has two sets of text rendering capabilities:
 
 @CAIRO_FONT_WEIGHT_NORMAL: 
 @CAIRO_FONT_WEIGHT_BOLD: 
+
+<!-- ##### STRUCT cairo_text_cluster_t ##### -->
+<para>
+
+</para>
+
+@num_bytes:
+@num_glyphs:
+
+<!-- ##### ENUM cairo_text_cluster_flags_t ##### -->
+<para>
+
+</para>
+
+@CAIRO_TEXT_CLUSTER_FLAG_BACKWARD:
 
 <!-- ##### FUNCTION cairo_select_font_face ##### -->
 <para>
@@ -181,6 +197,21 @@ Cairo has two sets of text rendering capabilities:
 @num_glyphs: 
 
 
+<!-- ##### FUNCTION cairo_show_text_glyphs ##### -->
+<para>
+
+</para>
+
+@cr:
+@utf8:
+@utf8_len:
+@glyphs:
+@num_glyphs:
+@clusters:
+@num_clusters:
+@cluster_flags:
+
+
 <!-- ##### FUNCTION cairo_font_extents ##### -->
 <para>
 
@@ -209,5 +240,77 @@ Cairo has two sets of text rendering capabilities:
 @glyphs: 
 @num_glyphs: 
 @extents: 
+
+
+<!-- ##### FUNCTION cairo_toy_font_face_create ##### -->
+<para>
+
+</para>
+
+@family:
+@slant:
+@weight:
+@Returns:
+
+
+<!-- ##### FUNCTION cairo_toy_font_face_get_family ##### -->
+<para>
+
+</para>
+
+@font_face:
+@Returns:
+
+
+<!-- ##### FUNCTION cairo_toy_font_face_get_slant ##### -->
+<para>
+
+</para>
+
+@font_face:
+@Returns:
+
+
+<!-- ##### FUNCTION cairo_toy_font_face_get_weight ##### -->
+<para>
+
+</para>
+
+@font_face:
+@Returns:
+
+
+<!-- ##### FUNCTION cairo_glyph_allocate ##### -->
+<para>
+
+</para>
+
+@num_glyphs:
+@Returns:
+
+
+<!-- ##### FUNCTION cairo_glyph_free ##### -->
+<para>
+
+</para>
+
+@glyphs:
+
+
+<!-- ##### FUNCTION cairo_text_cluster_allocate ##### -->
+<para>
+
+</para>
+
+@num_clusters:
+@Returns:
+
+
+<!-- ##### FUNCTION cairo_text_cluster_free ##### -->
+<para>
+
+</para>
+
+@clusters:
 
 

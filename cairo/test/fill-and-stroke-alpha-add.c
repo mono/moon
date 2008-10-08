@@ -31,7 +31,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "fill-and-stroke-alpha-add",
     "Use a group to fill/stroke a path (each with different alpha) using DEST_OUT and ADD to combine",
     2 * SIZE + 4 * PAD, SIZE + 2 * PAD,

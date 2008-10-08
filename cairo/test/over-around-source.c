@@ -39,7 +39,7 @@ static cairo_test_draw_function_t draw;
  * surface, it's the reverse where OVER is native while SOURCE is a
  * fallback. */
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "over-around-source",
     "A simple test drawing a triangle with SOURCE between two circles drawn with OVER",
     WIDTH, HEIGHT,

@@ -32,7 +32,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "rectangle-rounding-error",
     "This demonstrates (or not) a rounding error that causes a gap between "
     "two neighbouring rectangles.",

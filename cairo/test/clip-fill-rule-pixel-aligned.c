@@ -30,7 +30,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "clip-fill-rule-pixel-aligned",
     "Tests interaction of clipping and cairo_set_fill_rule with a pixel-aligned path",
     PAD + (SIZE*4) + PAD + (SIZE*4) + PAD,

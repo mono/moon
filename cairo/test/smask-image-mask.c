@@ -27,7 +27,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "smask-image-mask",
     "Test the support of \"soft\" masks with a secondary image mask",
     60, 60,
@@ -37,7 +37,7 @@ cairo_test_t test = {
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
-    static uint32_t data[] = {
+    uint32_t data[] = {
 	0xaa000000, 0x55000000,
 	0x55000000, 0xaa000000,
     };
@@ -89,4 +89,3 @@ main (void)
 {
     return cairo_test (&test);
 }
-

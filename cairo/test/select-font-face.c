@@ -29,7 +29,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "select-font-face",
     "Tests using cairo_select_font_face to draw text in different faces",
     192, TEXT_SIZE + 4,

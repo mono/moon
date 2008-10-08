@@ -28,7 +28,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "in-fill-trapezoid",
     "Test _cairo_trap_contains via cairo_in_fill",
     0, 0,
@@ -38,6 +38,7 @@ cairo_test_t test = {
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
+    const cairo_test_context_t *ctx = cairo_test_get_context (cr);
     cairo_test_status_t ret = CAIRO_TEST_SUCCESS;
 
     cairo_set_fill_rule (cr, CAIRO_FILL_RULE_EVEN_ODD);
@@ -46,7 +47,7 @@ draw (cairo_t *cr, int width, int height)
     cairo_new_path (cr);
     cairo_rectangle (cr, -10, -10, 20, 20);
     if (! cairo_in_fill (cr, 0, 0)) {
-	cairo_test_log ("Error: Failed to find point inside rectangle\n");
+	cairo_test_log (ctx, "Error: Failed to find point inside rectangle\n");
 	ret = CAIRO_TEST_FAILURE;
     }
 
@@ -54,7 +55,7 @@ draw (cairo_t *cr, int width, int height)
     cairo_new_path (cr);
     cairo_arc (cr, 0, 0, 10, 0, 2 * M_PI);
     if (! cairo_in_fill (cr, 0, 0)) {
-	cairo_test_log ("Error: Failed to find point inside circle\n");
+	cairo_test_log (ctx, "Error: Failed to find point inside circle\n");
 	ret = CAIRO_TEST_FAILURE;
     }
 
@@ -63,7 +64,7 @@ draw (cairo_t *cr, int width, int height)
     cairo_rectangle (cr, -10, -10, 20, 20);
     cairo_rectangle (cr, -5, -5, 10, 10);
     if (cairo_in_fill (cr, 0, 0)) {
-	cairo_test_log ("Error: Found an unexpected point inside rectangular hole\n");
+	cairo_test_log (ctx, "Error: Found an unexpected point inside rectangular hole\n");
 	ret = CAIRO_TEST_FAILURE;
     }
 
@@ -72,7 +73,7 @@ draw (cairo_t *cr, int width, int height)
     cairo_arc (cr, 0, 0, 10, 0, 2 * M_PI);
     cairo_arc (cr, 0, 0, 5, 0, 2 * M_PI);
     if (cairo_in_fill (cr, 0, 0)) {
-	cairo_test_log ("Error: Found an unexpected point inside circular hole\n");
+	cairo_test_log (ctx, "Error: Found an unexpected point inside circular hole\n");
 	ret = CAIRO_TEST_FAILURE;
     }
 

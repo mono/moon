@@ -1,3 +1,7 @@
+2008-10-08  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* cairo, pixman: upgrade to 1.8.0, 0.12.0
+
 2008-10-02  Jeffrey Stedfast  <fejj@novell.com>
 
 	* configure.ac: If building against the system cairo, make sure it
@@ -473,6 +477,10 @@
 2008-04-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* moon.mds: Updated.
+
+2008-04-14  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* pixman/configure.ac: Don't generate test/Makefile
 
 2008-04-14  Andrew Jorgensen  <ajorgensen@novell.com>
 

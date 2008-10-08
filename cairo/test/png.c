@@ -23,15 +23,9 @@
  * Author: Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "cairo-test.h"
 
 #include <cairo.h>
-#include <stdio.h>
-#include <stdint.h>
 #include <assert.h>
 
 /* Test the idempotency of write_png->read_png */
@@ -69,20 +63,25 @@ format_to_string (cairo_format_t format)
 }
 
 static void
-print_surface (cairo_surface_t *surface)
+print_surface (cairo_test_context_t *ctx, cairo_surface_t *surface)
 {
-    printf ("%s (%dx%d)\n",
-	    format_to_string (cairo_image_surface_get_format (surface)),
-	    cairo_image_surface_get_width (surface),
-	    cairo_image_surface_get_height (surface));
+    cairo_test_log (ctx,
+		    "%s (%dx%d)\n",
+		    format_to_string (cairo_image_surface_get_format (surface)),
+		    cairo_image_surface_get_width (surface),
+		    cairo_image_surface_get_height (surface));
 }
 
 int
 main (void)
 {
+    cairo_test_context_t ctx;
     cairo_surface_t *surface0, *surface1;
     cairo_status_t status;
     uint32_t argb32 = 0xdeadbede;
+    cairo_test_status_t result = CAIRO_TEST_SUCCESS;
+
+    cairo_test_init (&ctx, "png");
 
     surface0 = cairo_image_surface_create_for_data ((unsigned char *) &argb32,
 						    CAIRO_FORMAT_ARGB32,
@@ -90,23 +89,23 @@ main (void)
     assert (cairo_surface_status (surface0) == CAIRO_STATUS_SUCCESS);
     status = cairo_surface_write_to_png (surface0, "png-test.png");
     if (status) {
-	printf ("Error writing 'png-test.png': %s\n",
-		cairo_status_to_string (status));
-	return CAIRO_TEST_FAILURE;
+	cairo_test_log (&ctx, "Error writing 'png-test.png': %s\n",
+			cairo_status_to_string (status));
+	result = CAIRO_TEST_FAILURE;
     }
     surface1 = cairo_image_surface_create_from_png ("png-test.png");
     status = cairo_surface_status (surface1);
     if (status) {
-	printf ("Error reading 'png-test.png': %s\n",
-		cairo_status_to_string (status));
-	return CAIRO_TEST_FAILURE;
+	cairo_test_log (&ctx, "Error reading 'png-test.png': %s\n",
+			cairo_status_to_string (status));
+	result = CAIRO_TEST_FAILURE;
     }
 
     if (! image_surface_equals (surface0, surface1)) {
-	printf ("Error surface mismatch.\n");
-	printf ("to png: "); print_surface (surface0);
-	printf ("from png: "); print_surface (surface1);
-	return CAIRO_TEST_FAILURE;
+	cairo_test_log (&ctx, "Error surface mismatch.\n");
+	cairo_test_log (&ctx, "to png: "); print_surface (&ctx, surface0);
+	cairo_test_log (&ctx, "from png: "); print_surface (&ctx, surface1);
+	result = CAIRO_TEST_FAILURE;
     }
     assert (*(uint32_t *) cairo_image_surface_get_data (surface1) == argb32);
 
@@ -120,23 +119,23 @@ main (void)
     assert (cairo_surface_status (surface0) == CAIRO_STATUS_SUCCESS);
     status = cairo_surface_write_to_png (surface0, "png-test.png");
     if (status) {
-	printf ("Error writing 'png-test.png': %s\n",
-		cairo_status_to_string (status));
-	return CAIRO_TEST_FAILURE;
+	cairo_test_log (&ctx, "Error writing 'png-test.png': %s\n",
+			cairo_status_to_string (status));
+	result = CAIRO_TEST_FAILURE;
     }
     surface1 = cairo_image_surface_create_from_png ("png-test.png");
     status = cairo_surface_status (surface1);
     if (status) {
-	printf ("Error reading 'png-test.png': %s\n",
-		cairo_status_to_string (status));
-	return CAIRO_TEST_FAILURE;
+	cairo_test_log (&ctx, "Error reading 'png-test.png': %s\n",
+			cairo_status_to_string (status));
+	result = CAIRO_TEST_FAILURE;
     }
 
     if (! image_surface_equals (surface0, surface1)) {
-	printf ("Error surface mismatch.\n");
-	printf ("to png: "); print_surface (surface0);
-	printf ("from png: "); print_surface (surface1);
-	return CAIRO_TEST_FAILURE;
+	cairo_test_log (&ctx, "Error surface mismatch.\n");
+	cairo_test_log (&ctx, "to png: "); print_surface (&ctx, surface0);
+	cairo_test_log (&ctx, "from png: "); print_surface (&ctx, surface1);
+	result = CAIRO_TEST_FAILURE;
     }
     assert ((*(uint32_t *) cairo_image_surface_get_data (surface1) & RGB_MASK)
 	    == (argb32 & RGB_MASK));
@@ -144,6 +143,7 @@ main (void)
     cairo_surface_destroy (surface0);
     cairo_surface_destroy (surface1);
 
+    cairo_test_fini (&ctx);
 
-    return CAIRO_TEST_SUCCESS;
+    return result;
 }

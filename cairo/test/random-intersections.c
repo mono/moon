@@ -29,7 +29,7 @@ static cairo_test_draw_function_t draw;
 #define SIZE 512
 #define NUM_SEGMENTS 128
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "random-intersections",
     "Tests the tessellator trapezoid generation and intersection computation",
     SIZE+3, SIZE+3,

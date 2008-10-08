@@ -38,20 +38,25 @@
 int
 main (void)
 {
+    cairo_test_context_t ctx;
     int x,y;
     int width = 10;
     int height = 10;
-    cairo_surface_t *surf = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
-    cairo_t *cr = cairo_create (surf);
+    cairo_surface_t *surf;
+    cairo_t *cr;
     int false_positive_count = 0;
     cairo_status_t status;
     char const * description =
 	"Test that the tessellator isn't producing obviously empty trapezoids";
     cairo_test_status_t ret;
 
-    cairo_test_init ("in-fill-empty-trapezoid");
-    cairo_test_log ("%s\n", description);
+    cairo_test_init (&ctx, "in-fill-empty-trapezoid");
+    cairo_test_log (&ctx, "%s\n", description);
     printf ("%s\n", description);
+
+    surf = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
+    cr = cairo_create (surf);
+    cairo_surface_destroy (surf);
 
     /* Empty horizontal trapezoid. */
     cairo_move_to (cr, 0, height/3);
@@ -79,24 +84,23 @@ main (void)
 	}
     }
     cairo_destroy (cr);
-    cairo_surface_destroy (surf);
 
     /* Check that everything went well. */
     ret = CAIRO_TEST_SUCCESS;
     if (CAIRO_STATUS_SUCCESS != status) {
-	cairo_test_log ("Failed to create a test surface and path: %s\n",
+	cairo_test_log (&ctx, "Failed to create a test surface and path: %s\n",
 			cairo_status_to_string (status));
 	ret = CAIRO_TEST_FAILURE;
     }
 
     if (0 != false_positive_count) {
-	cairo_test_log ("Point sampling found %d false positives "
+	cairo_test_log (&ctx, "Point sampling found %d false positives "
 			"from cairo_in_fill()\n",
 			false_positive_count);
 	ret = CAIRO_TEST_FAILURE;
     }
 
-    cairo_test_fini ();
+    cairo_test_fini (&ctx);
 
     return ret;
 }

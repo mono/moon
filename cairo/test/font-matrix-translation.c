@@ -31,7 +31,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "font-matrix-translation",
     "Test that translation in a font matrix can be used to offset a string",
     38, 34,
@@ -51,7 +51,9 @@ text_extents_equal (const cairo_text_extents_t *A,
 }
 
 static cairo_test_status_t
-box_text (cairo_t *cr, const char *utf8, double x, double y)
+box_text (const cairo_test_context_t *ctx, cairo_t *cr,
+	  const char *utf8,
+	  double x, double y)
 {
     double line_width;
     cairo_text_extents_t extents = {0}, scaled_extents = {0};
@@ -64,7 +66,8 @@ box_text (cairo_t *cr, const char *utf8, double x, double y)
     scaled_font = cairo_get_scaled_font (cr);
     cairo_scaled_font_text_extents (scaled_font, TEXT, &scaled_extents);
     if (! text_extents_equal (&extents, &scaled_extents)) {
-        cairo_test_log ("Error: extents differ when they shouldn't:\n"
+        cairo_test_log (ctx,
+			"Error: extents differ when they shouldn't:\n"
 			"cairo_text_extents(); extents (%g, %g, %g, %g, %g, %g)\n"
 			"cairo_scaled_font_text_extents(); extents (%g, %g, %g, %g, %g, %g)\n",
 		        extents.x_bearing, extents.y_bearing,
@@ -95,6 +98,7 @@ box_text (cairo_t *cr, const char *utf8, double x, double y)
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
+    const cairo_test_context_t *ctx = cairo_test_get_context (cr);
     cairo_test_status_t status;
     cairo_text_extents_t extents;
     cairo_matrix_t matrix;
@@ -114,7 +118,7 @@ draw (cairo_t *cr, int width, int height)
 
     /* Draw text and bounding box */
     cairo_set_source_rgb (cr, 0, 0, 0); /* black */
-    status = box_text (cr, TEXT, 0, - extents.y_bearing);
+    status = box_text (ctx, cr, TEXT, 0, - extents.y_bearing);
     if (status)
 	return status;
 
@@ -126,7 +130,7 @@ draw (cairo_t *cr, int width, int height)
     cairo_set_font_matrix (cr, &matrix);
 
     cairo_set_source_rgb (cr, 0, 0, 1); /* blue */
-    status = box_text (cr, TEXT, 0, - extents.y_bearing);
+    status = box_text (ctx, cr, TEXT, 0, - extents.y_bearing);
     if (status)
 	return status;
 

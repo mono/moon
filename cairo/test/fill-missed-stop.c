@@ -40,7 +40,7 @@
 static cairo_test_draw_function_t draw;
 #define SIZE 50
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "fill-missed-stop",
     "Tests that the tessellator doesn't miss stop events when generating trapezoids",
     SIZE+3, SIZE+3,

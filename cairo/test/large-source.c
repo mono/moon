@@ -37,7 +37,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "large-source",
     "Exercises mozilla bug 424333 - handling of massive images",
     20, 20,

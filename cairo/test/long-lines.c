@@ -21,18 +21,18 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  * Authors: Carl D. Worth <cworth@cworth.org>
- * 	    Emmanuel Pacaud <emmanuel.pacaud@lapp.in2p3.fr>
+ *	    Emmanuel Pacaud <emmanuel.pacaud@lapp.in2p3.fr>
  */
 
 #include "cairo-test.h"
 
-#define LINE_WIDTH 	1.
-#define SIZE 		10
+#define LINE_WIDTH	1.
+#define SIZE		10
 #define LINE_NBR	6
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "long-lines",
     "Test long lines"
     "\nLong lines are not drawn due to the limitations of the internal 16.16 fixed-point coordinates",
@@ -45,12 +45,12 @@ struct {
     double length;
     double red, green, blue;
 } lines[LINE_NBR] = {
-    {      100.0, 1.0, 0.0, 0.0 },
-    {    10000.0, 0.0, 1.0, 0.0 },
-    {   100000.0, 0.0, 0.0, 1.0 },
-    {  1000000.0, 1.0, 1.0, 0.0 },
-    { 10000000.0, 0.0, 1.0, 1.0 },
-    {100000000.0, 1.0, 0.0, 1.0 }
+    {       100.0, 1.0, 0.0, 0.0 },
+    {     10000.0, 0.0, 1.0, 0.0 },
+    {    100000.0, 0.0, 0.0, 1.0 },
+    {   1000000.0, 1.0, 1.0, 0.0 },
+    {  10000000.0, 0.0, 1.0, 1.0 },
+    { 100000000.0, 1.0, 0.0, 1.0 }
 };
 
 static cairo_test_status_t
@@ -64,7 +64,6 @@ draw (cairo_t *cr, int width, int height)
     cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
     cairo_paint (cr);
     cairo_restore (cr);
-
 
     cairo_set_line_width (cr, LINE_WIDTH);
 

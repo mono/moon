@@ -35,10 +35,10 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "miter-precision",
     "test how cairo deals with small miters"
-    "\ncurrent code draws inappropriate bevels at times",
+    "\nPS backend currently fails for unknown reason (cairo? GS?).",
     120, 100,
     draw
 };
@@ -49,7 +49,7 @@ draw (cairo_t *cr, int width, int height)
     double  xscale, yscale;
     cairo_set_source_rgb (cr, 1, 1, 1);
     cairo_paint (cr);
-    
+
     cairo_set_source_rgb (cr, 0, 0, 0);
     cairo_set_miter_limit (cr, 100000);
     for (xscale = 1; xscale <= 1000; xscale += 999)
@@ -69,7 +69,7 @@ draw (cairo_t *cr, int width, int height)
 	    cairo_stroke (cr);
 	    cairo_restore (cr);
 	}
-    
+
     return CAIRO_TEST_SUCCESS;
 }
 

@@ -31,7 +31,7 @@ static cairo_test_draw_function_t draw;
 #define WIDTH  2
 #define HEIGHT 2
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "rgb24-ignore-alpha",
     "Test that when using an RGB24 image as a source, there is no alpha channel",
     WIDTH, HEIGHT,

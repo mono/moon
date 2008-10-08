@@ -27,7 +27,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "mask-ctm",
     "Test that cairo_mask is affected properly by the CTM",
     10, 10,
@@ -39,7 +39,7 @@ draw (cairo_t *cr, int width, int height)
 {
     cairo_surface_t *mask_surface;
     cairo_pattern_t *mask;
-    static uint32_t data[] = {
+    uint32_t data[] = {
 	0x80000000, 0x80000000,
 	0x80000000, 0x80000000,
     };

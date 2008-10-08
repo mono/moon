@@ -29,7 +29,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "get-path-extents",
     "Test cairo_fill_extents and cairo_stroke_extents",
     0, 0,
@@ -41,7 +41,8 @@ enum ExtentsType { FILL, STROKE, PATH };
 enum Relation { EQUALS, APPROX_EQUALS, CONTAINS };
 
 static cairo_bool_t
-check_extents (const char *message, cairo_t *cr, enum ExtentsType type,
+check_extents (const cairo_test_context_t *ctx,
+	       const char *message, cairo_t *cr, enum ExtentsType type,
                enum Relation relation,
                double x, double y, double width, double height)
 {
@@ -97,7 +98,7 @@ check_extents (const char *message, cairo_t *cr, enum ExtentsType type,
         break;
     }
 
-    cairo_test_log ("Error: %s; %s extents (%g, %g) x (%g, %g) should %s (%g, %g) x (%g, %g)\n",
+    cairo_test_log (ctx, "Error: %s; %s extents (%g, %g) x (%g, %g) should %s (%g, %g) x (%g, %g)\n",
                     message, type_string,
                     ext_x1, ext_y1, ext_x2 - ext_x1, ext_y2 - ext_y1,
                     relation_string,
@@ -108,6 +109,7 @@ check_extents (const char *message, cairo_t *cr, enum ExtentsType type,
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
+    const cairo_test_context_t *ctx = cairo_test_get_context (cr);
     cairo_surface_t *surface;
     cairo_t         *cr2;
     const char      *phase;
@@ -127,9 +129,9 @@ draw (cairo_t *cr, int width, int height)
     cairo_set_miter_limit (cr2, 100);
 
     phase = "No path";
-    errors += !check_extents (phase, cr2, FILL, EQUALS, 0, 0, 0, 0);
-    errors += !check_extents (phase, cr2, STROKE, EQUALS, 0, 0, 0, 0);
-    errors += !check_extents (phase, cr2, PATH, EQUALS, 0, 0, 0, 0);
+    errors += !check_extents (ctx, phase, cr2, FILL, EQUALS, 0, 0, 0, 0);
+    errors += !check_extents (ctx, phase, cr2, STROKE, EQUALS, 0, 0, 0, 0);
+    errors += !check_extents (ctx, phase, cr2, PATH, EQUALS, 0, 0, 0, 0);
 
     cairo_save (cr2);
 
@@ -137,31 +139,31 @@ draw (cairo_t *cr, int width, int height)
     cairo_move_to (cr2, 200, 400);
     cairo_rel_line_to (cr2, 0., 0.);
     phase = "Degenerate line";
-    errors += !check_extents (phase, cr2, FILL, EQUALS, 0, 0, 0, 0);
-    errors += !check_extents (phase, cr2, STROKE, EQUALS, 0, 0, 0, 0);
-    errors += !check_extents (phase, cr2, PATH, EQUALS, 200, 400, 0, 0);
+    errors += !check_extents (ctx, phase, cr2, FILL, EQUALS, 0, 0, 0, 0);
+    errors += !check_extents (ctx, phase, cr2, STROKE, EQUALS, 0, 0, 0, 0);
+    errors += !check_extents (ctx, phase, cr2, PATH, EQUALS, 200, 400, 0, 0);
 
     cairo_new_path (cr2);
     cairo_move_to (cr2, 200, 400);
     cairo_rel_curve_to (cr2, 0., 0., 0., 0., 0., 0.);
     phase = "Degenerate curve";
-    errors += !check_extents (phase, cr2, FILL, EQUALS, 0, 0, 0, 0);
-    errors += !check_extents (phase, cr2, STROKE, EQUALS, 0, 0, 0, 0);
-    errors += !check_extents (phase, cr2, PATH, EQUALS, 200, 400, 0, 0);
+    errors += !check_extents (ctx, phase, cr2, FILL, EQUALS, 0, 0, 0, 0);
+    errors += !check_extents (ctx, phase, cr2, STROKE, EQUALS, 0, 0, 0, 0);
+    errors += !check_extents (ctx, phase, cr2, PATH, EQUALS, 200, 400, 0, 0);
 
     cairo_new_path (cr2);
     cairo_arc (cr2, 200, 400, 0., 0, 2 * M_PI);
     phase = "Degenerate arc (R=0)";
-    errors += !check_extents (phase, cr2, FILL, EQUALS, 0, 0, 0, 0);
-    errors += !check_extents (phase, cr2, STROKE, EQUALS, 0, 0, 0, 0);
-    errors += !check_extents (phase, cr2, PATH, EQUALS, 200, 400, 0, 0);
+    errors += !check_extents (ctx, phase, cr2, FILL, EQUALS, 0, 0, 0, 0);
+    errors += !check_extents (ctx, phase, cr2, STROKE, EQUALS, 0, 0, 0, 0);
+    errors += !check_extents (ctx, phase, cr2, PATH, EQUALS, 200, 400, 0, 0);
 
     cairo_new_path (cr2);
     cairo_arc (cr2, 200, 400, 10., 0, 0);
     phase = "Degenerate arc (Θ=0)";
-    errors += !check_extents (phase, cr2, FILL, EQUALS, 0, 0, 0, 0);
-    errors += !check_extents (phase, cr2, STROKE, EQUALS, 0, 0, 0, 0);
-    errors += !check_extents (phase, cr2, PATH, EQUALS, 200, 400, 0, 0);
+    errors += !check_extents (ctx, phase, cr2, FILL, EQUALS, 0, 0, 0, 0);
+    errors += !check_extents (ctx, phase, cr2, STROKE, EQUALS, 0, 0, 0, 0);
+    errors += !check_extents (ctx, phase, cr2, PATH, EQUALS, 200, 400, 0, 0);
 
     cairo_new_path (cr2);
     cairo_restore (cr2);
@@ -176,17 +178,17 @@ draw (cairo_t *cr, int width, int height)
     cairo_move_to (cr2, 200, 400);
     cairo_rel_line_to (cr2, 0, 0);
     phase = "Single 'dot'";
-    errors += !check_extents (phase, cr2, FILL, EQUALS, 0, 0, 0, 0);
-    errors += !check_extents (phase, cr2, STROKE, EQUALS, 190, 390, 20, 20);
-    errors += !check_extents (phase, cr2, PATH, EQUALS, 200, 400, 0, 0);
+    errors += !check_extents (ctx, phase, cr2, FILL, EQUALS, 0, 0, 0, 0);
+    errors += !check_extents (ctx, phase, cr2, STROKE, EQUALS, 190, 390, 20, 20);
+    errors += !check_extents (ctx, phase, cr2, PATH, EQUALS, 200, 400, 0, 0);
 
     /* Add another dot without starting a new path */
     cairo_move_to (cr2, 100, 500);
     cairo_rel_line_to (cr2, 0, 0);
     phase = "Multiple 'dots'";
-    errors += !check_extents (phase, cr2, FILL, EQUALS, 0, 0, 0, 0);
-    errors += !check_extents (phase, cr2, STROKE, EQUALS, 90, 390, 120, 120);
-    errors += !check_extents (phase, cr2, PATH, EQUALS, 100, 400, 100, 100);
+    errors += !check_extents (ctx, phase, cr2, FILL, EQUALS, 0, 0, 0, 0);
+    errors += !check_extents (ctx, phase, cr2, STROKE, EQUALS, 90, 390, 120, 120);
+    errors += !check_extents (ctx, phase, cr2, PATH, EQUALS, 100, 400, 100, 100);
 
     cairo_new_path (cr2);
 
@@ -199,18 +201,18 @@ draw (cairo_t *cr, int width, int height)
     cairo_set_line_join (cr2, CAIRO_LINE_JOIN_ROUND);
     cairo_move_to (cr2, 0, 180);
     cairo_line_to (cr2, 750, 180);
-    errors += !check_extents (phase, cr2, FILL, EQUALS, 0, 0, 0, 0);
-    errors += !check_extents (phase, cr2, STROKE, EQUALS, -5, 175, 760, 10);
-    errors += !check_extents (phase, cr2, PATH, EQUALS, 0, 180, 755, 0);
+    errors += !check_extents (ctx, phase, cr2, FILL, EQUALS, 0, 0, 0, 0);
+    errors += !check_extents (ctx, phase, cr2, STROKE, EQUALS, -5, 175, 760, 10);
+    errors += !check_extents (ctx, phase, cr2, PATH, EQUALS, 0, 180, 755, 0);
     cairo_new_path (cr2);
     cairo_restore (cr2);
 
     phase = "Simple rect";
     cairo_save (cr2);
     cairo_rectangle (cr2, 10, 10, 80, 80);
-    errors += !check_extents (phase, cr2, FILL, EQUALS, 10, 10, 80, 80);
-    errors += !check_extents (phase, cr2, STROKE, EQUALS, 5, 5, 90, 90);
-    errors += !check_extents (phase, cr2, PATH, EQUALS, 10, 10, 80, 80);
+    errors += !check_extents (ctx, phase, cr2, FILL, EQUALS, 10, 10, 80, 80);
+    errors += !check_extents (ctx, phase, cr2, STROKE, EQUALS, 5, 5, 90, 90);
+    errors += !check_extents (ctx, phase, cr2, PATH, EQUALS, 10, 10, 80, 80);
     cairo_new_path (cr2);
     cairo_restore (cr2);
 
@@ -218,9 +220,9 @@ draw (cairo_t *cr, int width, int height)
     cairo_save (cr2);
     cairo_rectangle (cr2, 10, 10, 10, 10);
     cairo_rectangle (cr2, 20, 20, 10, 10);
-    errors += !check_extents (phase, cr2, FILL, EQUALS, 10, 10, 20, 20);
-    errors += !check_extents (phase, cr2, STROKE, EQUALS, 5, 5, 30, 30);
-    errors += !check_extents (phase, cr2, PATH, EQUALS, 10, 10, 20, 20);
+    errors += !check_extents (ctx, phase, cr2, FILL, EQUALS, 10, 10, 20, 20);
+    errors += !check_extents (ctx, phase, cr2, STROKE, EQUALS, 5, 5, 30, 30);
+    errors += !check_extents (ctx, phase, cr2, PATH, EQUALS, 10, 10, 20, 20);
     cairo_new_path (cr2);
     cairo_restore (cr2);
 
@@ -232,9 +234,9 @@ draw (cairo_t *cr, int width, int height)
     cairo_close_path (cr2);
     /* miter joins protrude 5*(1+sqrt(2)) above the top-left corner and to
        the right of the bottom-right corner */
-    errors += !check_extents (phase, cr2, FILL, EQUALS, 10, 10, 80, 80);
-    errors += !check_extents (phase, cr2, STROKE, CONTAINS, 0, 5, 95, 95);
-    errors += !check_extents (phase, cr2, PATH, CONTAINS, 10, 10, 80, 80);
+    errors += !check_extents (ctx, phase, cr2, FILL, EQUALS, 10, 10, 80, 80);
+    errors += !check_extents (ctx, phase, cr2, STROKE, CONTAINS, 0, 5, 95, 95);
+    errors += !check_extents (ctx, phase, cr2, PATH, CONTAINS, 10, 10, 80, 80);
     cairo_new_path (cr2);
     cairo_restore (cr2);
 
@@ -247,17 +249,17 @@ draw (cairo_t *cr, int width, int height)
 
     cairo_set_fill_rule (cr2, CAIRO_FILL_RULE_EVEN_ODD);
     phase = "EVEN_ODD overlapping rectangles";
-    errors += !check_extents (phase, cr2, FILL, EQUALS, 10, 10, 15, 30);
-    errors += !check_extents (phase, cr2, STROKE, EQUALS, 8, 8, 34, 34);
-    errors += !check_extents (phase, cr2, PATH, EQUALS, 10, 10, 30, 30);
+    errors += !check_extents (ctx, phase, cr2, FILL, EQUALS, 10, 10, 15, 30);
+    errors += !check_extents (ctx, phase, cr2, STROKE, EQUALS, 8, 8, 34, 34);
+    errors += !check_extents (ctx, phase, cr2, PATH, EQUALS, 10, 10, 30, 30);
 
     /* Test other fill rule with the same path. */
 
     cairo_set_fill_rule (cr2, CAIRO_FILL_RULE_WINDING);
     phase = "WINDING overlapping rectangles";
-    errors += !check_extents (phase, cr2, FILL, EQUALS, 10, 10, 30, 30);
-    errors += !check_extents (phase, cr2, STROKE, EQUALS, 8, 8, 34, 34);
-    errors += !check_extents (phase, cr2, PATH, EQUALS, 10, 10, 30, 30);
+    errors += !check_extents (ctx, phase, cr2, FILL, EQUALS, 10, 10, 30, 30);
+    errors += !check_extents (ctx, phase, cr2, STROKE, EQUALS, 8, 8, 34, 34);
+    errors += !check_extents (ctx, phase, cr2, PATH, EQUALS, 10, 10, 30, 30);
 
     /* Now, change the direction of the second rectangle and test both
      * fill rules again. */
@@ -267,17 +269,17 @@ draw (cairo_t *cr, int width, int height)
 
     cairo_set_fill_rule (cr2, CAIRO_FILL_RULE_EVEN_ODD);
     phase = "EVEN_ODD overlapping rectangles";
-    errors += !check_extents (phase, cr2, FILL, EQUALS, 10, 10, 15, 30);
-    errors += !check_extents (phase, cr2, STROKE, EQUALS, 8, 8, 34, 34);
-    errors += !check_extents (phase, cr2, PATH, EQUALS, 10, 10, 30, 30);
+    errors += !check_extents (ctx, phase, cr2, FILL, EQUALS, 10, 10, 15, 30);
+    errors += !check_extents (ctx, phase, cr2, STROKE, EQUALS, 8, 8, 34, 34);
+    errors += !check_extents (ctx, phase, cr2, PATH, EQUALS, 10, 10, 30, 30);
 
     /* Test other fill rule with the same path. */
 
     cairo_set_fill_rule (cr2, CAIRO_FILL_RULE_WINDING);
     phase = "WINDING overlapping rectangles";
-    errors += !check_extents (phase, cr2, FILL, EQUALS, 10, 10, 15, 30);
-    errors += !check_extents (phase, cr2, STROKE, EQUALS, 8, 8, 34, 34);
-    errors += !check_extents (phase, cr2, PATH, EQUALS, 10, 10, 30, 30);
+    errors += !check_extents (ctx, phase, cr2, FILL, EQUALS, 10, 10, 15, 30);
+    errors += !check_extents (ctx, phase, cr2, STROKE, EQUALS, 8, 8, 34, 34);
+    errors += !check_extents (ctx, phase, cr2, PATH, EQUALS, 10, 10, 30, 30);
 
     cairo_new_path (cr2);
 
@@ -288,7 +290,7 @@ draw (cairo_t *cr, int width, int height)
     cairo_save (cr2);
     cairo_arc (cr2, 250.0, 250.0, 157.0, 5.147, 3.432);
     cairo_set_line_width (cr2, 154.0);
-    errors += !check_extents (phase, cr2, STROKE, APPROX_EQUALS, 16, 38, 468, 446);
+    errors += !check_extents (ctx, phase, cr2, STROKE, APPROX_EQUALS, 16, 38, 468, 446);
     cairo_new_path (cr2);
     cairo_restore (cr2);
 
@@ -304,7 +306,7 @@ draw (cairo_t *cr, int width, int height)
 				    string,
 				    &scaled_font_extents);
     if (memcmp (&extents, &scaled_font_extents, sizeof (extents))) {
-	cairo_test_log ("Error: cairo_text_extents() does not match cairo_scaled_font_text_extents() - font extents (%f, %f) x (%f, %f) should be (%f, %f) x (%f, %f)\n",
+	cairo_test_log (ctx, "Error: cairo_text_extents() does not match cairo_scaled_font_text_extents() - font extents (%f, %f) x (%f, %f) should be (%f, %f) x (%f, %f)\n",
 		        scaled_font_extents.x_bearing,
 			scaled_font_extents.y_bearing,
 			scaled_font_extents.width,
@@ -322,11 +324,11 @@ draw (cairo_t *cr, int width, int height)
     /* XXX: We'd like to be able to use EQUALS here, but currently
      * when hinting is enabled freetype returns integer extents. See
      * http://cairographics.org/todo */
-    errors += !check_extents (phase, cr2, FILL, APPROX_EQUALS,
+    errors += !check_extents (ctx, phase, cr2, FILL, APPROX_EQUALS,
 			      0, 0, extents.width, extents.height);
-    errors += !check_extents (phase, cr2, STROKE, APPROX_EQUALS,
+    errors += !check_extents (ctx, phase, cr2, STROKE, APPROX_EQUALS,
 			      -1, -1, extents.width+2, extents.height+2);
-    errors += !check_extents (phase, cr2, PATH, APPROX_EQUALS,
+    errors += !check_extents (ctx, phase, cr2, PATH, APPROX_EQUALS,
 			      0, 0, extents.width, extents.height);
     cairo_new_path (cr2);
     cairo_restore (cr2);
@@ -335,9 +337,9 @@ draw (cairo_t *cr, int width, int height)
     cairo_save (cr2);
     cairo_scale (cr2, 2, 2);
     cairo_rectangle (cr2, 5, 5, 40, 40);
-    errors += !check_extents (phase, cr2, FILL, EQUALS, 5, 5, 40, 40);
-    errors += !check_extents (phase, cr2, STROKE, EQUALS, 0, 0, 50, 50);
-    errors += !check_extents (phase, cr2, PATH, EQUALS, 5, 5, 40, 40);
+    errors += !check_extents (ctx, phase, cr2, FILL, EQUALS, 5, 5, 40, 40);
+    errors += !check_extents (ctx, phase, cr2, STROKE, EQUALS, 0, 0, 50, 50);
+    errors += !check_extents (ctx, phase, cr2, PATH, EQUALS, 5, 5, 40, 40);
     cairo_new_path (cr2);
     cairo_restore (cr2);
 
@@ -347,9 +349,9 @@ draw (cairo_t *cr, int width, int height)
     cairo_scale (cr2, 2, 2);
     cairo_rectangle (cr2, 5, 5, 40, 40);
     cairo_restore (cr2);
-    errors += !check_extents (phase, cr2, FILL, EQUALS, 10, 10, 80, 80);
-    errors += !check_extents (phase, cr2, STROKE, EQUALS, 5, 5, 90, 90);
-    errors += !check_extents (phase, cr2, PATH, EQUALS, 10, 10, 80, 80);
+    errors += !check_extents (ctx, phase, cr2, FILL, EQUALS, 10, 10, 80, 80);
+    errors += !check_extents (ctx, phase, cr2, STROKE, EQUALS, 5, 5, 90, 90);
+    errors += !check_extents (ctx, phase, cr2, PATH, EQUALS, 10, 10, 80, 80);
     cairo_new_path (cr2);
     cairo_restore (cr2);
 
@@ -366,9 +368,9 @@ draw (cairo_t *cr, int width, int height)
        the axes. With the stroke width added to the rotated path,
        the largest axis-aligned square is a bit over 38 on either side of
        the axes. */
-    errors += !check_extents (phase, cr2, FILL, CONTAINS, -35, -35, 35, 35);
-    errors += !check_extents (phase, cr2, STROKE, CONTAINS, -38, -38, 38, 38);
-    errors += !check_extents (phase, cr2, PATH, CONTAINS, -35, -35, 35, 35);
+    errors += !check_extents (ctx, phase, cr2, FILL, CONTAINS, -35, -35, 35, 35);
+    errors += !check_extents (ctx, phase, cr2, STROKE, CONTAINS, -38, -38, 38, 38);
+    errors += !check_extents (ctx, phase, cr2, PATH, CONTAINS, -35, -35, 35, 35);
     cairo_new_path (cr2);
     cairo_restore (cr2);
 

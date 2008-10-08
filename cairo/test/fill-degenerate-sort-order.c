@@ -38,7 +38,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "fill-degenerate-sort-order",
     "Tests the tessellator's event comparator with degenerate input",
     190, 120,

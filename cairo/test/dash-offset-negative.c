@@ -36,7 +36,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "dash-offset-negative",
     "Tests cairo_set_dash with a negative offset",
     IMAGE_WIDTH, IMAGE_HEIGHT,

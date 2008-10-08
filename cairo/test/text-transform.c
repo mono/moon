@@ -32,9 +32,9 @@ static cairo_test_draw_function_t draw;
 
 #define FONT_SIZE 32.0
 
-const char png_filename[] = "romedalen.png";
+static const char png_filename[] = "romedalen.png";
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "text-transform",
     "Test various applications of the font matrix",
     SIZE, SIZE,
@@ -78,6 +78,7 @@ draw_text (cairo_t *cr)
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
+    const cairo_test_context_t *ctx = cairo_test_get_context (cr);
     cairo_pattern_t *pattern;
 
     cairo_set_source_rgb (cr, 1., 1., 1.);
@@ -94,7 +95,7 @@ draw (cairo_t *cr, int width, int height)
     cairo_translate (cr, SIZE, SIZE);
     cairo_rotate (cr, M_PI);
 
-    pattern = cairo_test_create_pattern_from_png (png_filename);
+    pattern = cairo_test_create_pattern_from_png (ctx, png_filename);
     cairo_pattern_set_extend (pattern, CAIRO_EXTEND_REPEAT);
     cairo_set_source (cr, pattern);
     cairo_pattern_destroy (pattern);

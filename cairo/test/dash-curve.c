@@ -27,7 +27,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "dash-curve",
     "Tries to explore the state space of the dashing code along curves",
     25*60, 4*60,

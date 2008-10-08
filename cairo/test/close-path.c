@@ -28,7 +28,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "close-path",
     "Test some corner cases related to cairo_close_path",
     32, 16,

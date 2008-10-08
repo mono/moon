@@ -35,7 +35,7 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "line-width-zero",
     "Test all stroke operations and all cap,join styles with line width of zero",
     0, 0,

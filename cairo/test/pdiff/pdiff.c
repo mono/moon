@@ -175,24 +175,19 @@ XYZToLAB (float x, float y, float z, float *L, float *A, float *B)
 }
 
 static uint32_t
-_get_pixel (cairo_surface_t *surface, int i)
+_get_pixel (const uint32_t *data, int i)
 {
-    uint32_t *data;
-
-    data = (uint32_t *) cairo_image_surface_get_data (surface);
     return data[i];
 }
 
 static unsigned char
-_get_red (cairo_surface_t *surface, int i)
+_get_red (const uint32_t *data, int i)
 {
     uint32_t pixel;
     uint8_t alpha;
 
-    pixel = _get_pixel (surface, i);
-
+    pixel = _get_pixel (data, i);
     alpha = (pixel & 0xff000000) >> 24;
-
     if (alpha == 0)
 	return 0;
     else
@@ -200,15 +195,13 @@ _get_red (cairo_surface_t *surface, int i)
 }
 
 static unsigned char
-_get_green (cairo_surface_t *surface, int i)
+_get_green (const uint32_t *data, int i)
 {
     uint32_t pixel;
     uint8_t alpha;
 
-    pixel = _get_pixel (surface, i);
-
+    pixel = _get_pixel (data, i);
     alpha = (pixel & 0xff000000) >> 24;
-
     if (alpha == 0)
 	return 0;
     else
@@ -216,15 +209,13 @@ _get_green (cairo_surface_t *surface, int i)
 }
 
 static unsigned char
-_get_blue (cairo_surface_t *surface, int i)
+_get_blue (const uint32_t *data, int i)
 {
     uint32_t pixel;
     uint8_t alpha;
 
-    pixel = _get_pixel (surface, i);
-
+    pixel = _get_pixel (data, i);
     alpha = (pixel & 0xff000000) >> 24;
-
     if (alpha == 0)
 	return 0;
     else
@@ -281,6 +272,7 @@ pdiff_compare (cairo_surface_t *surface_a,
     float cpd[MAX_PYR_LEVELS];
     float F_freq[MAX_PYR_LEVELS - 2];
     float csf_max;
+    const uint32_t *data_a, *data_b;
 
     unsigned int pixels_failed;
 
@@ -303,19 +295,21 @@ pdiff_compare (cairo_surface_t *surface_a,
     aB = xmalloc (dim * sizeof (float));
     bB = xmalloc (dim * sizeof (float));
 
+    data_a = (uint32_t *) cairo_image_surface_get_data (surface_a);
+    data_b = (uint32_t *) cairo_image_surface_get_data (surface_b);
     for (y = 0; y < h; y++) {
 	for (x = 0; x < w; x++) {
 	    float r, g, b, l;
 	    i = x + y * w;
-	    r = powf(_get_red (surface_a, i) / 255.0f, gamma);
-	    g = powf(_get_green (surface_a, i) / 255.0f, gamma);
-	    b = powf(_get_blue (surface_a, i) / 255.0f, gamma);
+	    r = powf(_get_red (data_a, i) / 255.0f, gamma);
+	    g = powf(_get_green (data_a, i) / 255.0f, gamma);
+	    b = powf(_get_blue (data_a, i) / 255.0f, gamma);
 
 	    AdobeRGBToXYZ(r,g,b,&aX[i],&aY[i],&aZ[i]);
 	    XYZToLAB(aX[i], aY[i], aZ[i], &l, &aA[i], &aB[i]);
-	    r = powf(_get_red (surface_b, i) / 255.0f, gamma);
-	    g = powf(_get_green (surface_b, i) / 255.0f, gamma);
-	    b = powf(_get_blue (surface_b, i) / 255.0f, gamma);
+	    r = powf(_get_red (data_b, i) / 255.0f, gamma);
+	    g = powf(_get_green (data_b, i) / 255.0f, gamma);
+	    b = powf(_get_blue (data_b, i) / 255.0f, gamma);
 
 	    AdobeRGBToXYZ(r,g,b,&bX[i],&bY[i],&bZ[i]);
 	    XYZToLAB(bX[i], bY[i], bZ[i], &l, &bA[i], &bB[i]);

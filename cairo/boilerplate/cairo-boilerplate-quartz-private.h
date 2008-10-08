@@ -28,12 +28,15 @@
 #define _CAIRO_BOILERPLATE_QUARTZ_PRIVATE_H_
 
 cairo_surface_t *
-_cairo_boilerplate_quartz_create_surface (const char		*name,
-					  cairo_content_t	 content,
-					  int			 width,
-					  int			 height,
+_cairo_boilerplate_quartz_create_surface (const char		   *name,
+					  cairo_content_t	    content,
+					  int			    width,
+					  int			    height,
+					  int			    max_width,
+					  int			    max_height,
 					  cairo_boilerplate_mode_t  mode,
-					  void			**closure);
+					  int                       id,
+					  void			  **closure);
 
 void
 _cairo_boilerplate_quartz_cleanup (void *closure);

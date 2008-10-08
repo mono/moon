@@ -60,6 +60,10 @@ _cairo_format_from_pixman_format (pixman_format_code_t pixman_format)
     case PIXMAN_a1r1g1b1: case PIXMAN_a1b1g1r1: case PIXMAN_c4:
     case PIXMAN_g4:       case PIXMAN_g1:
     case PIXMAN_yuy2:     case PIXMAN_yv12:
+#if PIXMAN_VERSION >= PIXMAN_VERSION_ENCODE(0,11,9)
+    case PIXMAN_x2b10g10r10:
+    case PIXMAN_a2b10g10r10:
+#endif
     default:
 	return CAIRO_FORMAT_INVALID;
     }
@@ -81,6 +85,9 @@ _cairo_content_from_pixman_format (pixman_format_code_t pixman_format)
     case PIXMAN_a2b2g2r2:
     case PIXMAN_a1r1g1b1:
     case PIXMAN_a1b1g1r1:
+#if PIXMAN_VERSION >= PIXMAN_VERSION_ENCODE(0,11,9)
+    case PIXMAN_a2b10g10r10:
+#endif
 	return CAIRO_CONTENT_COLOR_ALPHA;
     case PIXMAN_x8r8g8b8:
     case PIXMAN_x8b8g8r8:
@@ -103,6 +110,9 @@ _cairo_content_from_pixman_format (pixman_format_code_t pixman_format)
     case PIXMAN_g1:
     case PIXMAN_yuy2:
     case PIXMAN_yv12:
+#if PIXMAN_VERSION >= PIXMAN_VERSION_ENCODE(0,11,9)
+    case PIXMAN_x2b10g10r10:
+#endif
 	return CAIRO_CONTENT_COLOR;
     case PIXMAN_a8:
     case PIXMAN_a1:
@@ -124,7 +134,7 @@ _cairo_image_surface_create_for_pixman_image (pixman_image_t		*pixman_image,
     if (surface == NULL)
 	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
 
-    _cairo_surface_init (&surface->base, &cairo_image_surface_backend,
+    _cairo_surface_init (&surface->base, &_cairo_image_surface_backend,
 			 _cairo_content_from_pixman_format (pixman_format));
 
     surface->pixman_image = pixman_image;
@@ -259,14 +269,18 @@ _cairo_image_surface_create_with_masks (unsigned char	       *data,
     status = _pixman_format_from_masks (masks, &pixman_format);
     if (status == CAIRO_INT_STATUS_UNSUPPORTED) {
 	fprintf (stderr,
-		 "Error: Cairo " PACKAGE_VERSION " does not yet support the requested image format:\n"
+		 "Error: Cairo %s does not yet support the requested image format:\n"
 		 "\tDepth: %d\n"
 		 "\tAlpha mask: 0x%08lx\n"
 		 "\tRed   mask: 0x%08lx\n"
 		 "\tGreen mask: 0x%08lx\n"
 		 "\tBlue  mask: 0x%08lx\n"
+#ifdef PACKAGE_BUGGREPORT
 		 "Please file an enhancement request (quoting the above) at:\n"
-		 PACKAGE_BUGREPORT "\n",
+		 PACKAGE_BUGREPORT"\n"
+#endif
+		 ,
+		 cairo_version_string (),
 		 masks->bpp, masks->alpha_mask,
 		 masks->red_mask, masks->green_mask, masks->blue_mask);
 
@@ -392,7 +406,8 @@ _cairo_image_surface_create_with_content (cairo_content_t	content,
  * stride = cairo_format_stride_for_width (format, width);
  * data = malloc (stride * height);
  * surface = cairo_image_surface_create_for_data (data, format,
- *						  width, height);
+ *						  width, height,
+ *						  stride);
  * </programlisting></informalexample>
  *
  * Return value: the appropriate stride to use given the desired
@@ -791,8 +806,9 @@ _cairo_image_surface_set_matrix (cairo_image_surface_t	*surface,
     return CAIRO_STATUS_SUCCESS;
 }
 
-static void
-_cairo_image_surface_set_filter (cairo_image_surface_t *surface, cairo_filter_t filter)
+static cairo_status_t
+_cairo_image_surface_set_filter (cairo_image_surface_t *surface,
+				 cairo_filter_t filter)
 {
     pixman_filter_t pixman_filter;
 
@@ -822,7 +838,14 @@ _cairo_image_surface_set_filter (cairo_image_surface_t *surface, cairo_filter_t 
 	pixman_filter = PIXMAN_FILTER_BEST;
     }
 
-    pixman_image_set_filter (surface->pixman_image, pixman_filter, NULL, 0);
+    if (! pixman_image_set_filter (surface->pixman_image,
+				   pixman_filter,
+				   NULL, 0))
+    {
+	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+    }
+
+    return CAIRO_STATUS_SUCCESS;
 }
 
 static cairo_status_t
@@ -850,7 +873,9 @@ _cairo_image_surface_set_attributes (cairo_image_surface_t      *surface,
 	break;
     }
 
-    _cairo_image_surface_set_filter (surface, attributes->filter);
+    status = _cairo_image_surface_set_filter (surface, attributes->filter);
+    if (status)
+	return status;
 
     return CAIRO_STATUS_SUCCESS;
 }
@@ -1057,8 +1082,7 @@ _cairo_image_surface_composite_trapezoids (cairo_operator_t	op,
     pixman_trapezoid_t		 stack_traps[CAIRO_STACK_ARRAY_LENGTH (pixman_trapezoid_t)];
     pixman_trapezoid_t		*pixman_traps = stack_traps;
     int				 mask_stride;
-    int				 mask_bpp;
-    int				 ret, i;
+    int				 i;
 
     if (height == 0 || width == 0)
 	return CAIRO_STATUS_SUCCESS;
@@ -1122,18 +1146,14 @@ _cairo_image_surface_composite_trapezoids (cairo_operator_t	op,
     switch (antialias) {
     case CAIRO_ANTIALIAS_NONE:
 	format = PIXMAN_a1;
-	ret = 1;
 	mask_stride = ((width + 31) / 8) & ~0x03;
-	mask_bpp = 1;
 	break;
     case CAIRO_ANTIALIAS_GRAY:
     case CAIRO_ANTIALIAS_SUBPIXEL:
     case CAIRO_ANTIALIAS_DEFAULT:
     default:
 	format = PIXMAN_a8;
-	ret = 1;
 	mask_stride = (width + 3) & ~3;
-	mask_bpp = 8;
 	break;
     }
 
@@ -1192,7 +1212,7 @@ _cairo_image_surface_set_clip_region (void *abstract_surface,
 {
     cairo_image_surface_t *surface = (cairo_image_surface_t *) abstract_surface;
 
-    if (! pixman_image_set_clip_region (surface->pixman_image, &region->rgn))
+    if (! pixman_image_set_clip_region32 (surface->pixman_image, &region->rgn))
 	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
 
     surface->has_clip = region != NULL;
@@ -1246,10 +1266,10 @@ _cairo_image_surface_reset (void *abstract_surface)
 cairo_bool_t
 _cairo_surface_is_image (const cairo_surface_t *surface)
 {
-    return surface->backend == &cairo_image_surface_backend;
+    return surface->backend == &_cairo_image_surface_backend;
 }
 
-const cairo_surface_backend_t cairo_image_surface_backend = {
+const cairo_surface_backend_t _cairo_image_surface_backend = {
     CAIRO_SURFACE_TYPE_IMAGE,
     _cairo_image_surface_create_similar,
     _cairo_image_surface_finish,

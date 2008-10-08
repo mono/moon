@@ -38,9 +38,10 @@
 
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "bitmap-font",
-    "Test drawing with a font consisting only of bitmaps",
+    "Test drawing with a font consisting only of bitmaps"
+    "\nThe PDF and PS backends embed a slightly distorted font for the rotated case.",
     246 + 1, 2 * TEXT_SIZE,
     draw
 };
@@ -58,14 +59,14 @@ font_extents_equal (const cairo_font_extents_t *A,
 }
 
 static cairo_test_status_t
-check_font_extents (cairo_t *cr, const char *comment)
+check_font_extents (const cairo_test_context_t *ctx, cairo_t *cr, const char *comment)
 {
     cairo_font_extents_t font_extents, ref_font_extents = {11, 2, 13, 6, 0};
 
     memset (&font_extents, 0xff, sizeof (cairo_font_extents_t));
     cairo_font_extents (cr, &font_extents);
     if (! font_extents_equal (&font_extents, &ref_font_extents)) {
-	cairo_test_log ("Error: %s: cairo_font_extents(); extents (%g, %g, %g, %g, %g)\n",
+	cairo_test_log (ctx, "Error: %s: cairo_font_extents(); extents (%g, %g, %g, %g, %g)\n",
 			comment,
 		        font_extents.ascent, font_extents.descent,
 			font_extents.height,
@@ -79,30 +80,27 @@ check_font_extents (cairo_t *cr, const char *comment)
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
+    const cairo_test_context_t *ctx = cairo_test_get_context (cr);
     FcPattern *pattern;
     cairo_font_face_t *font_face;
     cairo_font_extents_t font_extents;
     cairo_font_options_t *font_options;
     cairo_status_t status;
-    const char *srcdir = getenv ("srcdir");
     char *filename;
     int face_count;
     struct stat stat_buf;
 
-    if (! srcdir)
-	srcdir = ".";
-
-    xasprintf (&filename, "%s/%s", srcdir, FONT);
+    xasprintf (&filename, "%s/%s", ctx->srcdir, FONT);
 
     if (stat (filename, &stat_buf) || ! S_ISREG (stat_buf.st_mode)) {
-	cairo_test_log ("Error finding font: %s: file not found?\n", filename);
+	cairo_test_log (ctx, "Error finding font: %s: file not found?\n", filename);
 	return CAIRO_TEST_FAILURE;
     }
 
     pattern = FcFreeTypeQuery ((unsigned char *)filename, 0, NULL, &face_count);
     free (filename);
     if (! pattern) {
-	cairo_test_log ("FcFreeTypeQuery failed.\n");
+	cairo_test_log (ctx, "FcFreeTypeQuery failed.\n");
 	return CAIRO_TEST_FAILURE;
     }
 
@@ -110,14 +108,14 @@ draw (cairo_t *cr, int width, int height)
 
     status = cairo_font_face_status (font_face);
     if (status) {
-	cairo_test_log ("Error creating font face for %s: %s\n",
+	cairo_test_log (ctx, "Error creating font face for %s: %s\n",
 			filename,
 			cairo_status_to_string (status));
 	return CAIRO_TEST_FAILURE;
     }
 
     if (cairo_font_face_get_type (font_face) != CAIRO_FONT_TYPE_FT) {
-	cairo_test_log ("Unexpected value from cairo_font_face_get_type: %d (expected %d)\n",
+	cairo_test_log (ctx, "Unexpected value from cairo_font_face_get_type: %d (expected %d)\n",
 			cairo_font_face_get_type (font_face), CAIRO_FONT_TYPE_FT);
 	cairo_font_face_destroy (font_face);
 	return CAIRO_TEST_FAILURE;
@@ -125,7 +123,7 @@ draw (cairo_t *cr, int width, int height)
 
     cairo_set_font_face (cr, font_face);
 
-#define CHECK_FONT_EXTENTS(comment) if (check_font_extents (cr, (comment)) != CAIRO_TEST_SUCCESS) return CAIRO_TEST_FAILURE
+#define CHECK_FONT_EXTENTS(comment) if (check_font_extents (ctx, cr, (comment)) != CAIRO_TEST_SUCCESS) return CAIRO_TEST_FAILURE
 
     cairo_font_extents (cr, &font_extents);
     CHECK_FONT_EXTENTS ("default");

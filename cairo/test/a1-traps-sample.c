@@ -34,7 +34,7 @@ static cairo_test_draw_function_t draw;
 #define WIDTH	(PAD + POINTS * 2 + PAD)
 #define HEIGHT	(WIDTH)
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "a1-traps-sample",
     "Test sample position when drawing trapezoids with ANTIALIAS_NONE",
     WIDTH, HEIGHT,

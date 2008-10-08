@@ -164,6 +164,16 @@ cairo_<emphasis>backend</emphasis>_surface_create().
 @y_pixels_per_inch: 
 
 
+<!-- ##### FUNCTION cairo_surface_get_fallback_resolution ##### -->
+<para>
+
+</para>
+
+@surface:
+@x_pixels_per_inch:
+@y_pixels_per_inch:
+
+
 <!-- ##### ENUM cairo_surface_type_t ##### -->
 <para>
 
@@ -238,5 +248,14 @@ cairo_<emphasis>backend</emphasis>_surface_create().
 </para>
 
 @surface: 
+
+
+<!-- ##### FUNCTION cairo_surface_has_show_text_glyphs ##### -->
+<para>
+
+</para>
+
+@surface:
+@Returns:
 
 

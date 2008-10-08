@@ -28,14 +28,15 @@
 int
 main (void)
 {
+    cairo_test_context_t ctx;
     cairo_surface_t *surface;
     cairo_t *cr;
     cairo_font_face_t *font_face;
     cairo_scaled_font_t *scaled_font;
 
-    cairo_test_init ("font-face-get-type");
+    cairo_test_init (&ctx, "font-face-get-type");
 
-    cairo_test_log ("Creating cairo context and obtaining a font face\n");
+    cairo_test_log (&ctx, "Creating cairo context and obtaining a font face\n");
 
     surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, 1, 1);
     cr = cairo_create (surface);
@@ -44,29 +45,31 @@ main (void)
 			    CAIRO_FONT_SLANT_NORMAL,
 			    CAIRO_FONT_WEIGHT_NORMAL);
 
-    cairo_test_log ("Testing return value of cairo_font_face_get_type\n");
+    cairo_test_log (&ctx, "Testing return value of cairo_font_face_get_type\n");
 
     font_face = cairo_get_font_face (cr);
 
     if (cairo_font_face_get_type (font_face) != CAIRO_FONT_TYPE_TOY) {
-	cairo_test_log ("Unexpected value %d from cairo_font_face_get_type (expected %d)\n",
+	cairo_test_log (&ctx, "Unexpected value %d from cairo_font_face_get_type (expected %d)\n",
 			cairo_font_face_get_type (font_face), CAIRO_FONT_TYPE_TOY);
+	cairo_test_fini (&ctx);
 	return CAIRO_TEST_FAILURE;
     }
 
-    cairo_test_log ("Testing return value of cairo_get_scaled_font\n");
+    cairo_test_log (&ctx, "Testing return value of cairo_get_scaled_font\n");
 
     scaled_font = cairo_get_scaled_font (cr);
 
     if (cairo_scaled_font_get_font_face (scaled_font) != font_face) {
-	cairo_test_log ("Font face returned from the scaled font is different from that returned by the context\n");
+	cairo_test_log (&ctx, "Font face returned from the scaled font is different from that returned by the context\n");
+	cairo_test_fini (&ctx);
 	return CAIRO_TEST_FAILURE;
     }
 
     cairo_destroy (cr);
     cairo_surface_destroy (surface);
 
-    cairo_test_fini ();
+    cairo_test_fini (&ctx);
 
     return CAIRO_TEST_SUCCESS;
 }

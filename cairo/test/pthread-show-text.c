@@ -30,7 +30,6 @@
 */
 
 #include "cairo-test.h"
-#include "xmalloc.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -75,6 +74,7 @@ start (void *closure)
 int
 main (int argc, char *argv[])
 {
+    cairo_test_context_t ctx;
     int err;
     int i, num_threads;
     pthread_t *pthread;
@@ -85,16 +85,16 @@ main (int argc, char *argv[])
 	num_threads = NUM_THREADS_DEFAULT;
     }
 
-    cairo_test_init ("pthread-show-text");
-
-    cairo_test_log ("Running with %d threads.\n", num_threads);
+    cairo_test_init (&ctx, "pthread-show-text");
+    cairo_test_log (&ctx, "Running with %d threads.\n", num_threads);
 
     pthread = xmalloc (num_threads * sizeof (pthread_t));
 
     for (i = 0; i < num_threads; i++) {
 	err = pthread_create (&pthread[i], NULL, start, NULL);
 	if (err) {
-	    cairo_test_log ("pthread_create failed: %s\n", strerror(err));
+	    cairo_test_log (&ctx, "pthread_create failed: %s\n", strerror(err));
+	    cairo_test_fini (&ctx);
 	    return CAIRO_TEST_FAILURE;
 	}
     }
@@ -104,7 +104,7 @@ main (int argc, char *argv[])
 
     free (pthread);
 
-    cairo_test_fini ();
+    cairo_test_fini (&ctx);
 
     return CAIRO_TEST_SUCCESS;
 }
