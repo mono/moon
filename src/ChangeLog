@@ -1,3 +1,8 @@
+2008-10-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* xaml.cpp (XamlElementInstanceNative::SetProperty): Avoid SIGSEGV
+	on bad XAML input when no (NULL) dependecy property is returned.
+
 2008-10-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline.h, pipeline.cpp: Add a marker field to MediaFrame and make
