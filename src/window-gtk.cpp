@@ -352,8 +352,10 @@ MoonWindowGtk::realized (GtkWidget *widget, gpointer user_data)
 #endif
 #endif
 
-	if (window->surface)
+	if (window->surface) {
+		window->surface->HandleUIWindowUnavailable ();
 		window->surface->HandleUIWindowAvailable ();
+	}
 
 	return true;
 }

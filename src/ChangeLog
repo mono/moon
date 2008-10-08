@@ -1,3 +1,10 @@
+2008-10-08  Larry Ewing  <lewing@novell.com>
+	* window-gtk.cpp (MoonWindowGtk::realized): make sure we remove
+	any existing render_cb attachments before adding new ones in case
+	our realize wordering is out of sync.
+
+	Fixes the rest of b.n.c #432975
+
 2008-10-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mp3.cpp: Fix boolean->MediaResult logic.
