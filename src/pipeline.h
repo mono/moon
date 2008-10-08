@@ -29,7 +29,7 @@
 #define CODEC_WMAV1 0x160
 #define CODEC_WMAV2 0x161
 
-#define MOONLIGHT_CODEC_ABI_VERSION 1
+#define MOONLIGHT_CODEC_ABI_VERSION 2
 typedef void (*register_codec) (int abi_version);
 
 /*
