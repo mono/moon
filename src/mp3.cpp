@@ -468,7 +468,7 @@ Mp3FrameReader::Seek (guint64 pts)
 	while (this->cur_pts < pts) {
 		result = SkipFrame ();
 
-		if (!SkipFrame ())
+		if (!MEDIA_SUCCEEDED (result))
 			goto exception;
 	}
 	

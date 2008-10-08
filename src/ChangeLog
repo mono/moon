@@ -1,3 +1,7 @@
+2008-10-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mp3.cpp: Fix boolean->MediaResult logic.
+
 2008-10-08  Jackson Harper  <jackson@ximian.com>
 
 	* playlist.cpp|h: When we encounter invalid characters in an
