@@ -1759,12 +1759,11 @@ ASFFrameReader::AppendPayload (asf_single_payload *payload, guint64 packet_index
 				frame->buflen = Size ();
 				frame->buffer = (guint8 *) data;
 				marker_stream->MarkerFound (frame);
-				frame->buffer = NULL;
 				delete frame;
 			} else {
 				restore = true;
+				g_free (data);
 			}
-			g_free (data);
 		}
 		
 		

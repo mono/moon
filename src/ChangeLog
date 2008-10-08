@@ -1,5 +1,11 @@
 2008-10-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* pipeline.h, pipeline.cpp: Add a marker field to MediaFrame and make
+	  MediaMarker refcounted. Fix a couple of crashing leakfixes, and
+	  simplify cleanup code a tiny bit.
+
+2008-10-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* audio-pulse.h: Remove unused method definition.
 
 2008-10-07  Jeffrey Stedfast  <fejj@novell.com>

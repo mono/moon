@@ -430,6 +430,7 @@ public:
 	bool IsMarker () { return (state & FRAME_MARKER) == FRAME_MARKER; }
 	
 	IMediaStream *stream;
+	MediaMarker *marker;
 	void *decoder_specific_data; // data specific to the decoder
 	guint64 pts; // Set by the demuxer
 	guint64 duration; // Set by the demuxer
@@ -439,7 +440,6 @@ public:
 	
 	// The demuxer sets these to the encoded data which the
 	// decoder then uses and replaces with the decoded data.
-	// For markers this is a MarkerStream *
 	guint8 *buffer;
 	guint32 buflen;
 	
@@ -450,11 +450,15 @@ public:
 	int srcStride[4]; // Set by the decoder
 };
 
-class MediaMarker {
+class MediaMarker : public EventObject {
+private:
 	guint64 pts; // 100-nanosecond units (pts)
 	char *type;
 	char *text;
-	
+
+protected:
+	~MediaMarker ();
+
 public:
 	class Node : public List::Node {
 	public:
@@ -464,7 +468,6 @@ public:
 	};
 	
 	MediaMarker (const char *type, const char *text, guint64 pts);
-	~MediaMarker ();
 	
 	const char *Type () { return type; }
 	const char *Text () { return text; }

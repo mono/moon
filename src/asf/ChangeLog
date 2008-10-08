@@ -1,3 +1,9 @@
+2008-10-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf.cpp: Add a marker field to MediaFrame and make MediaMarker
+	  refcounted. Fix a couple of crashing leakfixes, and simplify
+	  cleanup code a tiny bit.
+
 2008-10-07  Jeffrey Stedfast  <fejj@novell.com>
 
 	* asf-structures.cpp (asf_multiple_payloads::FillInAll): If we

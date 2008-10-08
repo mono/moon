@@ -1304,9 +1304,6 @@ ASFDemuxer::TryReadFrame (IMediaStream *stream, MediaFrame **f)
 	
 	if (frame->buffer == NULL) {
 		media->AddMessage (MEDIA_OUT_OF_MEMORY, "Could not allocate memory for next frame.");
-		delete frame;
-		*f = NULL;
-		
 		return MEDIA_OUT_OF_MEMORY;
 	}
 	
@@ -1316,9 +1313,6 @@ ASFDemuxer::TryReadFrame (IMediaStream *stream, MediaFrame **f)
 	
 	if (!reader->Write (frame->buffer)) {
 		media->AddMessage (MEDIA_DEMUXER_ERROR, "Error while copying the next frame.");
-		delete frame;
-		*f = NULL;
-		
 		return MEDIA_DEMUXER_ERROR;
 	}
 	
@@ -1374,18 +1368,13 @@ ASFMarkerDecoder::DecodeFrame (MediaFrame *frame)
 		}
 	}
 	
-	g_free (frame->buffer);
-	frame->buffer = NULL;
-	frame->buflen = 0;
-	
 	if (null_count >= 2) {
 		text = wchar_to_utf8 (uni_text, text_length);
 		type = wchar_to_utf8 (uni_type, type_length);
 		
 		LOG_PIPELINE ("ASFMarkerDecoder::DecodeFrame (): sending script command type: '%s', text: '%s', pts: '%llu'.\n", type, text, frame->pts);
 
-		frame->buffer = (guint8 *) new MediaMarker (type, text, frame->pts);
-		frame->buflen = sizeof (MediaMarker);
+		frame->marker = new MediaMarker (type, text, frame->pts);
 		
 		g_free (text);
 		g_free (type);
@@ -1394,7 +1383,7 @@ ASFMarkerDecoder::DecodeFrame (MediaFrame *frame)
 		LOG_PIPELINE ("ASFMarkerDecoder::DecodeFrame (): didn't find 2 null characters in the data.\n");
 		result = MEDIA_CORRUPTED_MEDIA;
 	}
-	
+
 	return result;
 }
 
@@ -2468,6 +2457,8 @@ IMediaDemuxer::FillBuffers ()
 				stream->EnqueueFrame (frame);
 				break;
 			} else {
+				if (frame != NULL)
+					delete frame;
 				break;
 			}
 		}
@@ -2531,6 +2522,7 @@ MediaFrame::MediaFrame (IMediaStream *stream)
 {
 	decoder_specific_data = NULL;
 	this->stream = stream;
+	this->marker = NULL;
 	
 	duration = 0;
 	pts = 0;
@@ -2556,6 +2548,8 @@ MediaFrame::~MediaFrame ()
 			stream->decoder->Cleanup (this);
 	}
 	g_free (buffer);
+	if (marker)
+		marker->unref ();
 }
 
 /*
@@ -2896,14 +2890,13 @@ MarkerStream::MarkerFound (MediaFrame *frame)
 		return;
 	}
 	
-	closure->marker = (MediaMarker *) frame->buffer;
+	closure->marker = frame->marker;
+	if (closure->marker)
+		closure->marker->ref ();
 	closure->Call ();
-	
-	delete closure->marker;
+	if (closure->marker)
+		closure->marker->unref ();
 	closure->marker = NULL;
-	
-	frame->buffer = NULL;
-	frame->buflen = 0;
 }
 
 void
