@@ -2300,8 +2300,8 @@ MoonlightContentObject::GetProperty (int id, NPIdentifier name, NPVariant *resul
 		if (surface == NULL) {
 			string_to_npvariant ("", result);
 		} else {
-			event_id = surface->GetType()->LookupEvent (event_name);
 			event_name = map_moon_id_to_event_name (id);
+			event_id = surface->GetType()->LookupEvent (event_name);
 			EventListenerProxy *proxy = LookupEventProxy (event_id);
 			string_to_npvariant (proxy == NULL ? "" : proxy->GetCallbackAsString (), result);
 		}
