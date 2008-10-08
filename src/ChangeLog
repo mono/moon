@@ -1,3 +1,8 @@
+2008-10-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* media.cpp (Image::IsSurfaceCached): Don't leak (actually 
+	don't dupe) uri.
+
 2008-10-08  Jeffrey Stedfast  <fejj@novell.com>
 
 	* font.cpp: Add fallback for Liberation fonts.

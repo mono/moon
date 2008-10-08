@@ -2044,16 +2044,16 @@ Image::SetStreamSource (ManagedStreamCallbacks *callbacks)
 bool 
 Image::IsSurfaceCached ()
 {
-	char *uri;
+	const char *uri;
 	bool found;
 
 	if (!downloader)
 		return false;
 
 	if (strcmp (part_name, "") == 0)
-		uri = g_strdup (downloader->GetUri ());
+		uri = downloader->GetUri ();
 	else
-		uri = g_strdup (downloader->GetDownloadedFilename (part_name));
+		uri = downloader->GetDownloadedFilename (part_name);
 
 	found = uri && surface_cache && g_hash_table_lookup (surface_cache, uri);
 
