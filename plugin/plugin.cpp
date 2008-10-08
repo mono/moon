@@ -1600,13 +1600,13 @@ PluginInstance::SetMaxFrameRate (int value)
 int32_t
 PluginInstance::GetActualHeight ()
 {
-	return surface->GetWindow()->GetHeight();
+	return surface ? surface->GetWindow()->GetHeight() : 0;
 }
 
 int32_t
 PluginInstance::GetActualWidth ()
 {
-	return surface->GetWindow()->GetWidth();
+	return surface ? surface->GetWindow()->GetWidth() : 0;
 }
 
 void

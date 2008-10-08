@@ -1,3 +1,8 @@
+2008-10-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin.cpp, plugin-class.cpp: Add some null checks, found while using
+	  firebug during plugin initialization.
+
 2008-10-07  Larry Ewing  <lewing@novell.com>
 
 	* windowless.cpp (MoonWindowless::HandleEvent): set the crossing

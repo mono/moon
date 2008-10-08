@@ -1912,7 +1912,11 @@ MoonlightScriptControlObject::GetProperty (int id, NPIdentifier name, NPVariant 
 		string_to_npvariant (plugin->GetInitParams (), result);
 		return true;
 	case MoonId_IsLoaded:
-		BOOLEAN_TO_NPVARIANT (plugin->GetSurface()->IsLoaded(), *result);
+		if (!plugin->GetSurface ()) {
+			BOOLEAN_TO_NPVARIANT (false, *result);
+		} else {
+			BOOLEAN_TO_NPVARIANT (plugin->GetSurface()->IsLoaded(), *result);
+		}
 		return true;
 	case MoonId_OnError:
 	case MoonId_OnLoad: {
@@ -2281,19 +2285,35 @@ MoonlightContentObject::GetProperty (int id, NPIdentifier name, NPVariant *resul
 		INT32_TO_NPVARIANT (plugin->GetActualWidth (), *result);
 		return true;
 	case MoonId_FullScreen:
-		BOOLEAN_TO_NPVARIANT (plugin->GetSurface()->GetFullScreen (), *result);
+		if (!plugin->GetSurface ()) {
+			BOOLEAN_TO_NPVARIANT (false, *result);
+		} else {
+			BOOLEAN_TO_NPVARIANT (plugin->GetSurface()->GetFullScreen (), *result);
+		}
 		return true;
 	case MoonId_OnResize:
 	case MoonId_OnFullScreenChange: {
-		const char *event_name = map_moon_id_to_event_name (id);
-		int event_id = plugin->GetSurface()->GetType()->LookupEvent (event_name);
-		EventListenerProxy *proxy = LookupEventProxy (event_id);
-		string_to_npvariant (proxy == NULL ? "" : proxy->GetCallbackAsString (), result);
+		Surface *surface = plugin->GetSurface ();
+		const char *event_name;
+		int event_id;
+	
+		if (surface == NULL) {
+			string_to_npvariant ("", result);
+		} else {
+			event_id = surface->GetType()->LookupEvent (event_name);
+			event_name = map_moon_id_to_event_name (id);
+			EventListenerProxy *proxy = LookupEventProxy (event_id);
+			string_to_npvariant (proxy == NULL ? "" : proxy->GetCallbackAsString (), result);
+		}
 		return true;
 	}
 	case MoonId_Root: {
-		DependencyObject *top = plugin->GetSurface()->GetToplevel ();
-		if (top == NULL) {
+		Surface *surface = plugin->GetSurface ();
+		DependencyObject *top;
+
+		if (surface == NULL) {
+			NULL_TO_NPVARIANT (*result);
+		} else if ((top = surface->GetToplevel ()) == NULL) {
 			NULL_TO_NPVARIANT (*result);
 		} else {
 			MoonlightEventObjectObject *topobj = EventObjectCreateWrapper (instance, top);
@@ -2324,15 +2344,24 @@ bool
 MoonlightContentObject::SetProperty (int id, NPIdentifier name, const NPVariant *value)
 {
 	PluginInstance *plugin = (PluginInstance*) instance->pdata;
+	Surface *surface = NULL;
 
 	switch (id) {
 	case MoonId_FullScreen:
-		plugin->GetSurface()->SetFullScreen (NPVARIANT_TO_BOOLEAN (*value));
+		surface = plugin->GetSurface ();
+		if (surface != NULL)
+			surface->SetFullScreen (NPVARIANT_TO_BOOLEAN (*value));
 		return true;
 	case MoonId_OnFullScreenChange:
 	case MoonId_OnResize: {
 		const char *event_name = map_moon_id_to_event_name (id);
-		int event_id = plugin->GetSurface()->GetType()->LookupEvent (event_name);
+		int event_id;
+
+		surface = plugin->GetSurface ();
+		if (surface == NULL)
+			return true;
+			
+		event_id  = surface->GetType()->LookupEvent (event_name);
 
 		if (event_id != -1) {
 			// If we have a handler, remove it.
