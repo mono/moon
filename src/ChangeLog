@@ -1,5 +1,7 @@
 2008-10-08  Jeffrey Stedfast  <fejj@novell.com>
 
+	* font.cpp: Add fallback for Liberation fonts.
+
 	* pipeline.cpp (Media::Warning): Replacement for both
 	Media::AddMessage() methods.
 

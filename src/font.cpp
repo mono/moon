@@ -1068,6 +1068,8 @@ static struct {
 	{ "Microsoft", { "Lucida Sans Unicode", "Lucida Sans", NULL } },
 	// GNOME's Bitstream Vera Sans font are probably the next best
 	{ "GNOME", { "Bitstream Vera Sans", NULL, NULL } },
+	// Liberation fonts are supposed to be really nice, let's fall back to them next
+	{ "Liberation", { "Liberation Sans", NULL, NULL } },
 	// DejaVu Sans is another common Sans font found on Linux desktop systems
 	{ "DejaVu", { "DejaVu Sans", NULL, NULL } },
 	// Finally, fall back to X.Org default Sans font
