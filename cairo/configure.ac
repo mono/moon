@@ -419,7 +419,10 @@ dnl XXX make this a private feature?
 CAIRO_ENABLE(test_surfaces, test surfaces, no)
 
 dnl ===========================================================================
-
+pixman_CFLAGS='-I$(top_srcdir)/../pixman/pixman'
+pixman_LIBS='$(top_builddir)/../pixman/pixman/libpixman-1.la'
+AC_SUBST(pixman_CFLAGS)
+AC_SUBST(pixman_LIBS)
 CAIRO_ENABLE_SURFACE_BACKEND(image, image, always, [
   pixman_REQUIRES="pixman-1 >= 0.12.0"
   PKG_CHECK_MODULES(pixman, $pixman_REQUIRES, , [AC_MSG_RESULT(no)
@@ -466,14 +469,7 @@ dnl ===========================================================================
 
 AC_CONFIG_FILES([
 Makefile
-boilerplate/Makefile
 src/Makefile
-test/Makefile
-test/pdiff/Makefile
-perf/Makefile
-util/Makefile
-doc/Makefile
-doc/public/Makefile
 ])
 
 AC_OUTPUT

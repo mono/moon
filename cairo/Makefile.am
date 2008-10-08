@@ -14,11 +14,11 @@ MAINTAINERCLEANFILES += \
 
 ACLOCAL_AMFLAGS = -I build
 
-DIST_SUBDIRS = src doc util boilerplate test perf
-SUBDIRS = src doc util
+DIST_SUBDIRS = src #doc util boilerplate test perf
+SUBDIRS = src #doc util
 # libpng is required for our test programs
 if CAIRO_HAS_PNG_FUNCTIONS
-SUBDIRS += boilerplate test perf
+#SUBDIRS += boilerplate test perf
 endif
 
 configure: cairo-version.h

@@ -20,9 +20,9 @@ $(top_builddir)/config.h: $(top_srcdir)/config.h.in
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) config.h
 
 cairoincludedir = $(includedir)/cairo
-cairoinclude_HEADERS = $(enabled_cairo_headers)
+noinst_HEADERS = $(enabled_cairo_headers)
 
-lib_LTLIBRARIES = libcairo.la
+noinst_LTLIBRARIES = libcairo.la
 
 libcairo_la_SOURCES = \
 	$(enabled_cairo_headers) \
@@ -34,15 +34,15 @@ libcairo_la_LIBADD = $(CAIRO_LIBS)
 libcairo_la_DEPENDENCIES = $(cairo_def_dependency)
 
 # Special headers
-cairoinclude_HEADERS += $(top_srcdir)/cairo-version.h
-nodist_cairoinclude_HEADERS = cairo-features.h
+noinst_HEADERS += $(top_srcdir)/cairo-version.h
+nodist_noinst_HEADERS = cairo-features.h
 libcairo_la_SOURCES += cairo-version.h cairo-features.h
 BUILT_SOURCES  += cairo-features.h cairo-supported-features.h
 cairo-features.h cairo-supported-features.h:
 	cd $(top_builddir) && ./config.status src/$@
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = $(enabled_cairo_pkgconf)
+noinst_DATA = $(enabled_cairo_pkgconf)
 
 CLEANFILES += cairo.def
 cairo.def: cairo-features.h $(enabled_cairo_headers)
@@ -94,7 +94,7 @@ COMPILE_ARGS = $(PREPROCESS_ARGS) $(AM_CFLAGS) $(CFLAGS)
 
 # The pre-processed result is used by check-{def,plt}.sh to determine whether
 # cairo has been compiled with symbol hiding.
-.c.i: $(cairoinclude_HEADERS) $(nodist_cairoinclude_HEADERS) cairoint.h $(top_builddir)/config.h
+.c.i: $(noinst_HEADERS) $(nodist_noinst_HEADERS) cairoint.h $(top_builddir)/config.h
 	$(CPP) $(PREPROCESS_ARGS) $< -o $@
 
 include $(srcdir)/Makefile.am.analysis

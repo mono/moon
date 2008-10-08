@@ -49,7 +49,7 @@
 # lists sorted.
 #
 
-cairo_headers = cairo.h cairo-deprecated.h
+cairo_headers = cairo.h cairo-deprecated.h cairo-embed.h
 cairo_private = \
 	cairoint.h \
 	cairo-analysis-surface-private.h \
