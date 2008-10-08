@@ -258,6 +258,10 @@ private:
 	PlaylistNode::Kind GetParentKind ();
 	bool AssertParentKind (int kind);
 
+	void Setup ();
+	void Cleanup ();
+	void SetSource (IMediaSource *source);
+	bool TryFixError (gint8 *buffer, int bytes_read);
 public:
 
 	PlaylistParser (MediaElement *element, IMediaSource *source);

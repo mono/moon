@@ -1,3 +1,8 @@
+2008-10-08  Jackson Harper  <jackson@ximian.com>
+
+	* playlist.cpp|h: When we encounter invalid characters in an
+	attribute try to patch them and reparse the document.
+
 2008-10-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mp3.h, mp3.cpp: Fix mpeg_frame_duration to use the static array of
