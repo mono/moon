@@ -58,30 +58,30 @@ cairo.def: cairo-features.h $(enabled_cairo_headers)
 	) >$@
 	@ ! grep -q cairo_ERROR $@ || ($(RM) $@; false)
 
-TESTS_ENVIRONMENT = \
-	srcdir="$(srcdir)" \
-	MAKE="$(MAKE) $(AM_MAKEFLAGS)" \
-	all_cairo_files="$(all_cairo_files)" \
-	all_cairo_headers="$(all_cairo_headers)" \
-	all_cairo_private="$(all_cairo_private)" \
-	all_cairo_sources="$(all_cairo_sources)" \
-	enabled_cairo_files="$(enabled_cairo_files)" \
-	enabled_cairo_headers="$(enabled_cairo_headers)" \
-	enabled_cairo_private="$(enabled_cairo_private)" \
-	enabled_cairo_sources="$(enabled_cairo_sources)" \
-	$(NULL)
-TESTS_SH = \
-	check-def.sh \
-	check-doc-syntax.sh\
-	check-headers.sh \
-	check-plt.sh \
-	check-preprocessor-syntax.sh \
-	$(NULL)
-TESTS += $(TESTS_SH)
-if CROSS_COMPILING
-else
-TESTS += check-link$(EXEEXT)
-endif
+#TESTS_ENVIRONMENT = \
+#	srcdir="$(srcdir)" \
+#	MAKE="$(MAKE) $(AM_MAKEFLAGS)" \
+#	all_cairo_files="$(all_cairo_files)" \
+#	all_cairo_headers="$(all_cairo_headers)" \
+#	all_cairo_private="$(all_cairo_private)" \
+#	all_cairo_sources="$(all_cairo_sources)" \
+#	enabled_cairo_files="$(enabled_cairo_files)" \
+#	enabled_cairo_headers="$(enabled_cairo_headers)" \
+#	enabled_cairo_private="$(enabled_cairo_private)" \
+#	enabled_cairo_sources="$(enabled_cairo_sources)" \
+#	$(NULL)
+#TESTS_SH = \
+#	check-def.sh \
+#	check-doc-syntax.sh\
+#	check-headers.sh \
+#	check-plt.sh \
+#	check-preprocessor-syntax.sh \
+#	$(NULL)
+#TESTS += $(TESTS_SH)
+#if CROSS_COMPILING
+#else
+#TESTS += check-link$(EXEEXT)
+#endif
 
 EXTRA_DIST += $(TESTS_SH) check-has-hidden-symbols.c
 check_PROGRAMS += check-link
