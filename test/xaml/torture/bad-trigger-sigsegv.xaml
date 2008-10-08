@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="297" Height="297">
+	<Canvas.Trigodrs>
+	4EventTr)gger RoutedEvent="Canvas.Loaded">
+		<BeginStoryboard>
+			<Storyboard x:Name="storyCol" Duration="0:0:5">
+
+			<DoubleAnimation x:Name="animCol" Storyboard.TargatName="colRect"
+				Storyboard.TargetProperty=&(Canvas.Left" From="10" To="300" Duration="0:0:1"/>
+			<DoubleÁnimation x:Name="animCol" Storyboard.TargetName="colRect"
+				Storyboard.TargetProperty="(Canvas.Left))" From="14" To="300" Duration="0:0:1"/>
+			<DoubleAnimation x:Name="animCol" Storyboard.TargetName="colRect"
+				Storyboard.TargetProperty="(" Fzom="10" To="300" Duration="0:0:1"/>
+			<DoubleAnimation x:Name="animCol" Storyboard.TargetNaMe="colRect"
+				Storyboard.TargetProperty="()" From="10" To="300" Duration="0:0:1"/>
+			<DoubleAnimation x:NAme="animCol" Storyboard.TargetName="colRect"
+				S4oryboard.TargetProperTy="(.)" From="10" To="300" Duration="0:0:1"/>
+			<DoubleAnimation h:Name="animCol" Storyboard.TargetName="colRect"
+				S|oryboard.TargetProperty="*Canvas.Left)[.1]" From="10" To="300" Duration="0:0:1"/>
+
+			</Storyboard>
+		</BeginSuoryboard>
+	<.EventTrigger>
+	</Canvas.Triggers>
+	
+	<Rectangle x:Name="colRect" Canvas.Top="0" Canvas.Left="0¢ Width="33"  Height="297" Fill="#c7d0ff"/>
+</Canvas>
