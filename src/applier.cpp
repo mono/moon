@@ -101,7 +101,7 @@ Applier::AddPropertyChange (DependencyObject *object, DependencyProperty *proper
 }
 
 static void
-destroy_value_func (value_indexer *v_indexer)
+destroy_value_func (value_indexer *v_indexer, gpointer *unused)
 {
 	g_return_if_fail (v_indexer->v != NULL);
 
@@ -110,7 +110,7 @@ destroy_value_func (value_indexer *v_indexer)
 }
 
 static void
-destroy_property_func (property_indexer *p_indexer)
+destroy_property_func (property_indexer *p_indexer, gpointer *unused)
 {
 	g_return_if_fail (p_indexer->property != NULL);
 	g_return_if_fail (p_indexer->values_list != NULL);
@@ -121,7 +121,7 @@ destroy_property_func (property_indexer *p_indexer)
 }
 
 static void
-destroy_object_func (DependencyObject *object, object_indexer *o_indexer)
+destroy_object_func (DependencyObject *object, object_indexer *o_indexer, gpointer *unused)
 {
 	g_list_foreach (o_indexer->properties_list, (GFunc) destroy_property_func, NULL);
 	g_list_free (o_indexer->properties_list);

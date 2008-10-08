@@ -1,3 +1,8 @@
+2008-10-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* applier.cpp: Fix function signatures for GFunc and GHFunc.
+	Fix random crash when closing silverlight world #433461
+
 2008-10-08  Larry Ewing  <lewing@novell.com>
 	* window-gtk.cpp (MoonWindowGtk::realized): make sure we remove
 	any existing render_cb attachments before adding new ones in case
