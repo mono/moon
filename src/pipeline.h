@@ -385,8 +385,7 @@ public:
 	void SetFileOrUrl (const char *value);
 	MediaElement *GetElement () { return element; }
 	
-	void AddMessage (MediaResult result, const char *msg);
-	void AddMessage (MediaResult result, char *msg);
+	static void Warning (MediaResult result, const char *format, ...);
 	void AddError (MediaErrorEventArgs *args);
 
 	// A list of MediaMarker::Node.
@@ -806,7 +805,6 @@ protected:
 	virtual gint64 GetSizeInternal ();
 
 public:
-	FileSource (Media *media);
 	FileSource (Media *media, const char *filename);
 	
 	virtual MediaResult Initialize (); 

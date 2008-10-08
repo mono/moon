@@ -384,17 +384,20 @@ Media::Shutdown ()
 }
 
 void
-Media::AddMessage (MediaResult result, const char *msg)
+Media::Warning (MediaResult result, const char *format, ...)
 {
-	if (!MEDIA_SUCCEEDED (result))
-		printf ("Moonlight: %s (%i)\n", msg, result);
-}
-
-void
-Media::AddMessage (MediaResult result, char *msg)
-{
-	AddMessage (result, (const char *) msg);
-	g_free (msg);
+	va_list args;
+	
+	if (MEDIA_SUCCEEDED (result))
+		return;
+	
+	fprintf (stderr, "Moonlight: MediaResult = %d; ", result);
+	
+	va_start (args, format);
+	vfprintf (stderr, format, args);
+	va_end (args);
+	
+	fputc ('\n', stderr);
 }
 
 void
@@ -441,12 +444,12 @@ Media::Open ()
 	LOG_PIPELINE ("Media::Open (), id: %i\n", GET_OBJ_ID (this));
 
 	if (source == NULL) {
-		AddMessage (MEDIA_INVALID_ARGUMENT, "Media::Initialize () hasn't been called (or didn't succeed).");
+		Media::Warning (MEDIA_INVALID_ARGUMENT, "Media::Initialize () hasn't been called (or didn't succeed).");
 		return MEDIA_INVALID_ARGUMENT;
 	}
 	
 	if (IsOpened ()) {
-		AddMessage (MEDIA_FAIL, "Media::Open () has already been called.");
+		Media::Warning (MEDIA_FAIL, "Media::Open () has already been called.");
 		return MEDIA_FAIL;
 	}
 	
@@ -541,9 +544,8 @@ Media::Open (IMediaSource *source)
 			}
 		}
 		
-		AddMessage (MEDIA_UNKNOWN_MEDIA_TYPE,
-			    g_strdup_printf ("No demuxers registered to handle the media source `%s'.",
-					     source_name));
+		Media::Warning (MEDIA_UNKNOWN_MEDIA_TYPE, "No demuxers registered to handle the media source `%s'.", source_name);
+		
 		return MEDIA_UNKNOWN_MEDIA_TYPE;
 	}
 	
@@ -586,7 +588,7 @@ Media::Open (IMediaSource *source)
 		}
 
 		if (current_decoder == NULL) {
-			AddMessage (MEDIA_UNKNOWN_CODEC, g_strdup_printf ("Unknown codec: '%s'.", codec));	
+			Media::Warning (MEDIA_UNKNOWN_CODEC, "Unknown codec: '%s'.", codec);	
 		} else {
 			if (moonlight_flags & RUNTIME_INIT_CODECS_DEBUG)
 				printf ("Moonlight: Checking if registered decoder '%s' supports codec '%s': yes.\n", current_decoder->GetName (), codec);
@@ -615,9 +617,8 @@ Media::Open (IMediaSource *source)
 				}
 				
 				if (current_conv == NULL) {
-					AddMessage (MEDIA_UNKNOWN_CONVERTER,
-						    g_strdup_printf ("Can't convert from %d to %d: No converter found.",
-								     decoder->pixel_format, MoonPixelFormatRGB32));	
+					Media::Warning (MEDIA_UNKNOWN_CONVERTER, "Can't convert from %d to %d: No converter found.",
+							decoder->pixel_format, MoonPixelFormatRGB32);	
 				} else {
 					LOG_PIPELINE ("Checking whether '%s' supports input '%d' and output '%d': yes.\n",
 						current_conv->GetName (), decoder->pixel_format, MoonPixelFormatRGB32);
@@ -666,12 +667,12 @@ Media::GetNextFrame (MediaWork *work)
 	//printf ("Media::GetNextFrame (%p).\n", stream);
 	
 	if (work == NULL) {
-		AddMessage (MEDIA_INVALID_ARGUMENT, "work is NULL.");
+		Media::Warning (MEDIA_INVALID_ARGUMENT, "work is NULL.");
 		return MEDIA_INVALID_ARGUMENT;
 	}
 	
 	if (stream == NULL) {
-		AddMessage (MEDIA_INVALID_ARGUMENT, "work->stream is NULL.");
+		Media::Warning (MEDIA_INVALID_ARGUMENT, "work->stream is NULL.");
 		return MEDIA_INVALID_ARGUMENT;
 	}
 	
@@ -819,7 +820,7 @@ Media::GetNextFrameAsync (MediaClosure *closure, IMediaStream *stream, guint16 s
 	MoonWorkType type;
 	
 	if (stream == NULL) {
-		AddMessage (MEDIA_INVALID_ARGUMENT, "stream is NULL.");
+		Media::Warning (MEDIA_INVALID_ARGUMENT, "stream is NULL.");
 		return;
 	}
 	
@@ -835,7 +836,7 @@ Media::GetNextFrameAsync (MediaClosure *closure, IMediaStream *stream, guint16 s
 		break;
 	case MediaTypeNone:
 	default:
-		AddMessage (MEDIA_INVALID_ARGUMENT, "The frame's stream is of an unknown type.");
+		Media::Warning (MEDIA_INVALID_ARGUMENT, "The frame's stream is of an unknown type.");
 		return;
 	}
 	
@@ -1098,8 +1099,8 @@ ASFDemuxer::ReadHeader ()
 		if (result == MEDIA_NOT_ENOUGH_DATA) {
 			LOG_PIPELINE ("ASFDemuxer::ReadHeader (): ReadHeader failed due to not enough data being available.\n");
 		} else {
-			GetMedia ()->AddMessage (MEDIA_INVALID_MEDIA, "asf_parser->ReadHeader () failed:");
-			GetMedia ()->AddMessage (MEDIA_FAIL, asf_parser->GetLastErrorStr ());
+			Media::Warning (MEDIA_INVALID_MEDIA, "asf_parser->ReadHeader () failed:");
+			Media::Warning (MEDIA_FAIL, "%s", asf_parser->GetLastErrorStr ());
 		}
 		goto failure;
 	}
@@ -1122,7 +1123,7 @@ ASFDemuxer::ReadHeader ()
 		
 		if (current_stream > 127) {
 			result = MEDIA_INVALID_STREAM;
-			GetMedia ()->AddMessage (result, "Couldn't find all the claimed streams in the file.");
+			Media::Warning (result, "Couldn't find all the claimed streams in the file.");
 			goto failure;
 		}
 		
@@ -1131,7 +1132,7 @@ ASFDemuxer::ReadHeader ()
 		
 		if (stream_properties == NULL) {
 			result = MEDIA_INVALID_STREAM;
-			GetMedia ()->AddMessage (result, "Couldn't find all the claimed streams in the file.");
+			Media::Warning (result, "Couldn't find all the claimed streams in the file.");
 			goto failure;
 		}
 		
@@ -1280,7 +1281,7 @@ ASFDemuxer::TryReadFrame (IMediaStream *stream, MediaFrame **f)
 	
 	result = reader->Advance ();
 	if (result == MEDIA_NO_MORE_DATA) {
-		//media->AddMessage (MEDIA_NO_MORE_DATA, "Reached end of data.");
+		//Media::Warning (MEDIA_NO_MORE_DATA, "Reached end of data.");
 		return MEDIA_NO_MORE_DATA;
 	}
 
@@ -1288,7 +1289,7 @@ ASFDemuxer::TryReadFrame (IMediaStream *stream, MediaFrame **f)
 		return result;
 	
 	if (!MEDIA_SUCCEEDED (result)) {
-		media->AddMessage (MEDIA_DEMUXER_ERROR, g_strdup_printf ("Error while advancing to the next frame (%i)", result));
+		Media::Warning (MEDIA_DEMUXER_ERROR, "Error while advancing to the next frame (%d)", result);
 		return result;
 	}
 
@@ -1303,7 +1304,7 @@ ASFDemuxer::TryReadFrame (IMediaStream *stream, MediaFrame **f)
 	frame->buffer = (guint8 *) g_try_malloc (frame->buflen + frame->stream->min_padding);
 	
 	if (frame->buffer == NULL) {
-		media->AddMessage (MEDIA_OUT_OF_MEMORY, "Could not allocate memory for next frame.");
+		Media::Warning (MEDIA_OUT_OF_MEMORY, "Could not allocate memory for next frame.");
 		return MEDIA_OUT_OF_MEMORY;
 	}
 	
@@ -1312,7 +1313,7 @@ ASFDemuxer::TryReadFrame (IMediaStream *stream, MediaFrame **f)
 		memset (frame->buffer + frame->buflen, 0, frame->stream->min_padding); 
 	
 	if (!reader->Write (frame->buffer)) {
-		media->AddMessage (MEDIA_DEMUXER_ERROR, "Error while copying the next frame.");
+		Media::Warning (MEDIA_DEMUXER_ERROR, "Error while copying the next frame.");
 		return MEDIA_DEMUXER_ERROR;
 	}
 	
@@ -1546,14 +1547,6 @@ ManagedStreamSource::GetSizeInternal ()
  * FileSource
  */
 
-FileSource::FileSource (Media *media) : IMediaSource (media)
-{
-	filename = g_strdup (media->GetFileOrUrl ());
-	fd = NULL;
-	size = 0;
-	temp_file = false;
-}
-
 FileSource::FileSource (Media *media, const char *filename) : IMediaSource (media)
 {
 	this->filename = g_strdup (filename);
@@ -1753,11 +1746,10 @@ ProgressiveSource::Write (void *buf, gint64 offset, gint32 n)
 	
 	LOG_PIPELINE ("ProgressiveSource::Write (%p, %lld, %i) media: %p, filename: %s\n", buf, offset, n, media, filename);
 	if (write_fd == NULL) {
-		media->AddMessage (MEDIA_FAIL, "Progressive source doesn't have a file to write the data to.");
+		Media::Warning (MEDIA_FAIL, "Progressive source doesn't have a file to write the data to.");
 		return;
 	}
 	
-
 	if (n == 0) {
 		// We've got the entire file, update the size
 		size = write_pos; // Since this method is the only method that writes to write_pos, and we're not reentrant, there is no need to lock here.

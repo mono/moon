@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * yuv-converter.cpp: YUV2RGB converters for the pipeline
  *
@@ -327,12 +328,12 @@ MediaResult
 YUVConverter::Open ()
 {
 	if (input_format == MoonPixelFormatNone) {
-		media->AddMessage (MEDIA_CONVERTER_ERROR, "Invalid input format.");
+		Media::Warning (MEDIA_CONVERTER_ERROR, "Invalid input format.");
 		return MEDIA_CONVERTER_ERROR;
 	}
 	
 	if (output_format == MoonPixelFormatNone) {
-		media->AddMessage (MEDIA_CONVERTER_ERROR, "Invalid output format.");
+		Media::Warning (MEDIA_CONVERTER_ERROR, "Invalid output format.");
 		return MEDIA_CONVERTER_ERROR;
 	}
 	

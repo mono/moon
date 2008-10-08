@@ -115,7 +115,7 @@ FfmpegDecoder::Open ()
 	
 	if (codec == NULL) {
 		result = MEDIA_UNKNOWN_CODEC;
-		media->AddMessage (MEDIA_UNKNOWN_CODEC, stream->codec);
+		Media::Warning (MEDIA_UNKNOWN_CODEC, "Unknown codec: %s", stream->codec);
 		goto failure;
 	}
 	
@@ -123,7 +123,7 @@ FfmpegDecoder::Open ()
 	
 	if (context == NULL) {
 		result = MEDIA_OUT_OF_MEMORY;
-		media->AddMessage (MEDIA_OUT_OF_MEMORY, "Failed to allocate context.");
+		Media::Warning (MEDIA_OUT_OF_MEMORY, "Failed to allocate context.");
 		goto failure;
 	}
 	
@@ -133,7 +133,7 @@ FfmpegDecoder::Open ()
 		context->extradata = (guint8*) av_mallocz (stream->extra_data_size + FF_INPUT_BUFFER_PADDING_SIZE + 100);
 		if (context->extradata == NULL) {
 			result = MEDIA_OUT_OF_MEMORY;
-			media->AddMessage (MEDIA_OUT_OF_MEMORY, "Failed to allocate space for extra data.");
+			Media::Warning (MEDIA_OUT_OF_MEMORY, "Failed to allocate space for extra data.");
 			goto failure;
 		}
 		memcpy (context->extradata, stream->extra_data, stream->extra_data_size);
@@ -155,14 +155,14 @@ FfmpegDecoder::Open ()
 		audio_buffer = (guint8*) av_mallocz (AUDIO_BUFFER_SIZE);
 	} else {
 		result = MEDIA_FAIL;
-		media->AddMessage (MEDIA_FAIL, "Invalid stream type.");
+		Media::Warning (MEDIA_FAIL, "Invalid stream type.");
 		goto failure;
 	}
 
 	ffmpeg_result = avcodec_open (context, codec);
 	if (ffmpeg_result < 0) {
 		result = MEDIA_CODEC_ERROR;
-		media->AddMessage (MEDIA_CODEC_ERROR, g_strdup_printf ("Failed to open codec (result: %i = %s).\n", ffmpeg_result, strerror (AVERROR (ffmpeg_result))));
+		Media::Warning (MEDIA_CODEC_ERROR, "Failed to open codec (result: %d = %s).", ffmpeg_result, strerror (AVERROR (ffmpeg_result)));
 		goto failure;
 	}
 	
@@ -256,10 +256,10 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 			// TODO: Find a way to get the last frame out of ffmpeg
 			// (requires passing NULL as buffer and 0 as buflen)
 			if (has_delayed_frame) {
-				media->AddMessage (MEDIA_CODEC_ERROR, g_strdup_printf ("Error while decoding frame (got length: %i).", length));
+				Media::Warning (MEDIA_CODEC_ERROR, "Error while decoding frame (got length: %d).", length);
 				return MEDIA_CODEC_ERROR;
 			} else {
-				//media->AddMessage (MEDIA_CODEC_ERROR, g_strdup_printf ("Error while decoding frame (got length: %i), delaying.", length));
+				//Media::Warning (MEDIA_CODEC_ERROR, "Error while decoding frame (got length: %d), delaying.", length);
 				has_delayed_frame = true;
 				return MEDIA_CODEC_DELAYED;
 			}
@@ -359,7 +359,7 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 			length = avcodec_decode_audio2 (context, (gint16 *) audio_buffer, &buffer_size, mf->buffer+offset, frame_size);
 
 			if (length < 0 || buffer_size < frame_size) {
-				//media->AddMessage (MEDIA_CODEC_ERROR, g_strdup_printf ("Error while decoding audio frame (length: %i, frame_size. %i, buflen: %u).", length, frame_size, mf->buflen));
+				//Media::Warning (MEDIA_CODEC_ERROR, "Error while decoding audio frame (length: %d, frame_size. %d, buflen: %u).", length, frame_size, mf->buflen);
 				return MEDIA_CODEC_ERROR;
 			}
 
@@ -383,7 +383,7 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 		mf->buffer = decoded_frames;
 		mf->buflen = decoded_size;;
 	} else {
-		media->AddMessage (MEDIA_FAIL, "Invalid media type.");
+		Media::Warning (MEDIA_FAIL, "Invalid media type.");
 		return MEDIA_FAIL;
 	}
 	

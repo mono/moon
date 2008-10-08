@@ -1529,7 +1529,8 @@ PlaylistParser::ParseASX3 ()
 		if (!XML_ParseBuffer (internal->parser, bytes_read, bytes_read == 0)) {
 			if (!TryFixError ((gint8 *) buffer, bytes_read))
 				ParsingError (new ErrorEventArgs (MediaError, 3000, g_strdup_printf ("%s  (%d, %d)", XML_ErrorString (XML_GetErrorCode (internal->parser)),
-						XML_GetCurrentLineNumber (internal->parser), XML_GetCurrentColumnNumber (internal->parser))));
+												     (int) XML_GetCurrentLineNumber (internal->parser),
+												     (int) XML_GetCurrentColumnNumber (internal->parser))));
 			return false;
 		}
 

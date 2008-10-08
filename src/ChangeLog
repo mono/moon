@@ -1,3 +1,8 @@
+2008-10-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pipeline.cpp (Media::Warning): Replacement for both
+	Media::AddMessage() methods.
+
 2008-10-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* applier.cpp: Fix function signatures for GFunc and GHFunc.
