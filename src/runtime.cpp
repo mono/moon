@@ -1949,9 +1949,7 @@ runtime_init (guint32 flags)
 	if (cairo_version () < CAIRO_VERSION_ENCODE(1,4,0)) {
 		printf ("*** WARNING ***\n");
 		printf ("*** Cairo versions < 1.4.0 should not be used for Moon.\n");
-		printf ("*** Moon was configured to use Cairo version %d.%d.%d, but\n",
-			CAIRO_VERSION_MAJOR, CAIRO_VERSION_MINOR, CAIRO_VERSION_MICRO);
-		printf ("*** is being run against version %s.\n", cairo_version_string ());
+		printf ("*** Moon is being run against version %s.\n", cairo_version_string ());
 		printf ("*** Proceed at your own risk\n");
 	}
 	
