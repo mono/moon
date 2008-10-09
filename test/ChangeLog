@@ -1,3 +1,15 @@
+2008-09-19  Alan McGovern  <amcgovern@novell.com>
+	* Silverlight.js
+	* xaml/clock/Silverlight.js:
+	* xaml/enums/Silverlight.js
+	* xaml/fullscreen/Silverlight.js
+	* xaml/Silverlight.js: Update to the latest version, licensed under MS-PL.
+	* harness/test-runner/NDesk.Options.dll:
+	* harness/test-runner/Npgsql.dll:
+	* harness/test-runner/Makefile.am: Nuke the two binaries. Replaced
+	NDesk.Options.dll with a reference to Options.cs and take Npgsql from
+	the GAC. 
+
 2008-09-19  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/assorted/sprawl-test.html: Adding a test case for sprawl bug #412074.
