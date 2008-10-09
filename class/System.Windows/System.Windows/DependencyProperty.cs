@@ -46,11 +46,6 @@ namespace System.Windows {
 		
 		public static readonly object UnsetValue = new object ();
 		
-		static DependencyProperty ()
-		{
-			NativeMethods.runtime_init (0);
-		}
-		
 		internal DependencyProperty (IntPtr handle, Type property_type, Type declaring_type, string name)
 		{
 			this.native = handle;

@@ -150,7 +150,8 @@ delete_event (GtkWidget *widget, GdkEvent *e, gpointer data)
 static int LoadXaml (const char* file)
 {
 	int result = 0;
-	runtime_init (RUNTIME_INIT_BROWSER);
+
+	runtime_init_desktop();
 
 	char* dir =  g_path_get_dirname (file);
 	chdir (dir);

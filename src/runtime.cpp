@@ -120,6 +120,10 @@ static struct {
 	{ "codecs=debug",      RUNTIME_INIT_CODECS_DEBUG,          true  },
 };
 
+#define RUNTIME_INIT_DESKTOP (RUNTIME_INIT_PANGO_TEXT_LAYOUT | RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_XLIB)
+#define RUNTIME_INIT_BROWSER (RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_ALLOW_WINDOWLESS | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_XLIB)
+
+
 #define RENDER_EXPOSE (moonlight_flags & RUNTIME_INIT_SHOW_EXPOSE)
 
 
@@ -1940,6 +1944,17 @@ Surface::SetBackgroundColor (Color *color)
 	active_window->Invalidate ();
 }
 
+void
+runtime_init_browser ()
+{
+	runtime_init (RUNTIME_INIT_BROWSER);
+}
+
+void
+runtime_init_desktop ()
+{
+	runtime_init (RUNTIME_INIT_DESKTOP);
+}
 
 void
 runtime_init (guint32 flags)

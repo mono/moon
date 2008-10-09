@@ -51,6 +51,12 @@ namespace Mono {
 	
 		[DllImport("moon")]
 		public extern static void runtime_init (int flags);
+
+		[DllImport("moon")]
+		public extern static void runtime_init_browser ();
+
+		[DllImport("moon")]
+		public extern static void runtime_init_desktop ();
 		
 		[DllImport("moon")]
 		public extern static void runtime_shutdown ();

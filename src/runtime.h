@@ -75,9 +75,6 @@ enum RuntimeInitFlags {
 	RUNTIME_INIT_CODECS_DEBUG           = 1 << 25,
 };
 
-#define RUNTIME_INIT_DESKTOP (RUNTIME_INIT_PANGO_TEXT_LAYOUT | RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_XLIB)
-#define RUNTIME_INIT_BROWSER (RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_ALLOW_WINDOWLESS | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_XLIB)
-
 extern guint32 moonlight_flags;
 
 class TimeManager;
@@ -363,6 +360,9 @@ private:
 
 
 void     runtime_init (guint32 flags);
+
+void     runtime_init_browser ();
+void     runtime_init_desktop ();
 
 GList   *runtime_get_surface_list (void);
 

@@ -77,7 +77,6 @@ namespace System.Windows {
 		
 		static DependencyObject ()
 		{
-			NativeMethods.runtime_init (0);
 			moonlight_thread = Thread.CurrentThread;
 			Helper.Agclr = typeof (DependencyObject).Assembly;
 		}

@@ -68,6 +68,7 @@ public class GtkSilver : EventBox {
 	
 	static GtkSilver ()
 	{
+		NativeMethods.runtime_init_desktop ();
 		downloader_set_functions (
 			ManagedDownloader.CreateDownloader,
 			ManagedDownloader.DestroyDownloader,
