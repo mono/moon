@@ -327,12 +327,16 @@ plugin_debug (PluginInstance *plugin)
 
 	reflect_dependency_object_in_tree (plugin->GetSurface()->GetToplevel (), tree_store, NULL, false);
 
-	GtkTreeModel *sorted_model = gtk_tree_model_sort_new_with_model (GTK_TREE_MODEL (tree_store));
+#if false
+ 	GtkTreeModel *sorted_model = gtk_tree_model_sort_new_with_model (GTK_TREE_MODEL (tree_store));
 
-	gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (sorted_model),
-					      COL_NAME, GTK_SORT_ASCENDING);
+ 	gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (sorted_model),
+ 					      COL_NAME, GTK_SORT_ASCENDING);
 
 	GtkWidget* tree_view = gtk_tree_view_new_with_model (sorted_model);
+#else
+	GtkWidget* tree_view = gtk_tree_view_new_with_model (GTK_TREE_MODEL (tree_store));
+#endif
 
 	GtkTreeSelection *selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree_view));
 
