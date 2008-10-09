@@ -461,8 +461,15 @@ protected:
 public:
 	class Node : public List::Node {
 	public:
-		Node (MediaMarker *m) : marker (m) {}
-		virtual ~Node () { delete marker; }
+		Node (MediaMarker *m)
+		{
+			marker = m;
+			marker->ref ();
+		}
+		virtual ~Node ()
+		{
+			marker->unref ();
+		}
 		MediaMarker *marker;
 	};
 	

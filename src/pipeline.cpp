@@ -987,6 +987,8 @@ ASFDemuxer::ReadMarkers ()
 	// Hookup to the marker (ASF_COMMAND_MEDIA) stream
 	MarkerStream *marker_stream;
 	ASFFrameReader *reader;
+	MediaMarker *marker;
+	
 	for (int i = 0; i < GetStreamCount (); i++) {
 		if (GetStream (i)->GetType () == MediaTypeMarker) {
 			marker_stream = (MarkerStream *) GetStream (i);
@@ -1030,8 +1032,10 @@ ASFDemuxer::ReadMarkers ()
 				type = command_types [entry->type_index];
 			else
 				type = "";
-			
-			markers->Append (new MediaMarker::Node (new MediaMarker (type, text, pts)));
+
+			marker = new MediaMarker (type, text, pts);
+			markers->Append (new MediaMarker::Node (marker));
+			marker->unref ();
 			
 			//printf ("MediaElement::ReadMarkers () Added script command at %llu (text: %s, type: %s)\n", pts, text, type);
 			
@@ -1050,8 +1054,10 @@ ASFDemuxer::ReadMarkers ()
 			text = marker_entry->get_marker_description ();
 			
 			pts = marker_entry->pts - preroll_pts;
-			
-			markers->Append (new MediaMarker::Node (new MediaMarker ("Name", text, pts)));
+
+			marker = new MediaMarker ("Name", text, pts);
+			markers->Append (new MediaMarker::Node (marker));
+			marker->unref ();
 			
 			//printf ("MediaElement::ReadMarkers () Added marker at %llu (text: %s, type: %s)\n", pts, text, "Name");
 		
