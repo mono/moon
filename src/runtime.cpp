@@ -881,6 +881,7 @@ Surface::UpdateFullScreen (bool value)
 
 	time_manager->GetSource()->Stop();
 	Emit (FullScreenChangeEvent);
+	Emit (ResizeEvent);
 	time_manager->GetSource()->Start();
 }
 
