@@ -1,3 +1,9 @@
+2008-10-09  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp (FontFace::LoadDefaultFace): Pass the families to
+	LoadDefaultFont() for font name comparison, we need to match the
+	font names exactly or fall back to the next font.
+
 2008-10-09  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* audio.cpp: Add a nullcheck.
