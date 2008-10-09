@@ -1,3 +1,7 @@
+2008-10-09  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* audio.cpp: Add a nullcheck.
+
 2008-10-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* media.cpp (Image::IsSurfaceCached): Don't leak (actually 

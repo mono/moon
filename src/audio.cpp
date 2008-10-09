@@ -460,11 +460,17 @@ AudioSource::Enqueue ()
 	mplayer->EnqueueFramesAsync (1, 0);
 #else
 	MediaClosure *closure;
+	Media *media;
+
+	media = mplayer->GetMedia ();
+
+	if (media == NULL)
+		return;
 
 	closure = new MediaClosure (FrameCallback);
 	closure->SetContext (this);
 	
-	mplayer->GetMedia ()->GetNextFrameAsync (closure, stream, FRAME_DEMUXED | FRAME_DECODED | FRAME_COPY_DECODED_DATA);
+	media->GetNextFrameAsync (closure, stream, FRAME_DEMUXED | FRAME_DECODED | FRAME_COPY_DECODED_DATA);
 #endif
 }
 
