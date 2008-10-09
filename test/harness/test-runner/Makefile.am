@@ -54,7 +54,7 @@ exocortex_sources = 				\
 	ExocortexDSP/src/Fourier.cs
 
 
-EXTRA_DIST = html_template.html comparison_report.html regression_report.txt $(test_runner_sources) $(exocortex_sources) $(srcdir)/NDesk.Options.dll
+EXTRA_DIST = html_template.html comparison_report.html regression_report.txt $(test_runner_sources) $(exocortex_sources)
 
 all: test-runner.exe logging-server.exe
 

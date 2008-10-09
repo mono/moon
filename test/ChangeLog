@@ -1,4 +1,7 @@
 2008-09-19  Alan McGovern  <amcgovern@novell.com>
+	* Makefile.am: Removed reference to NDesk.Options.dll that i missed.
+
+2008-09-19  Alan McGovern  <amcgovern@novell.com>
 	* Silverlight.js
 	* xaml/clock/Silverlight.js:
 	* xaml/enums/Silverlight.js
