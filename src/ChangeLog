@@ -1,3 +1,10 @@
+2008-10-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* media.cpp (Image::CreateSurface): Protect against a NULL
+	filename (valid value). This will avoid crash like bug #433810
+	even if, in this case, the problem lies elsewhere (bad downloader
+	which looks related to #433814).
+
 2008-10-09  Jeffrey Stedfast  <fejj@novell.com>
 
 	* font.cpp (FontFace::LoadDefaultFace): Pass the families to

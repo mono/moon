@@ -2346,6 +2346,11 @@ Image::CreateSurface (const char *uri)
 			int fd;
                 
 			filename = downloader->GetDownloadedFilename (part_name);
+			if (!filename) {
+				msg = g_strdup_printf ("Failed to load image %s", part_name);
+				Emit (ImageFailedEvent, new ImageErrorEventArgs (msg));
+				return false;
+			}
 
 			loader = gdk_pixbuf_loader_new ();
 
