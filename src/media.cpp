@@ -2136,16 +2136,18 @@ Image::DownloaderComplete ()
 		uri = g_strdup (downloader->GetUri ());
 	else
 		uri = g_strdup (downloader->GetDownloadedFilename (part_name));
-	
-	CleanupSurface ();
-	
-	if (!CreateSurface (uri)) {
-		g_free (uri);
-		Invalidate ();
-		printf ("failed to create surface\n");
-		return;
+
+	if (!surface || strcmp (uri, surface->filename)) {
+		CleanupSurface ();
+
+		if (!CreateSurface (uri)) {
+			g_free (uri);
+			Invalidate ();
+			printf ("failed to create surface %s\n", uri);
+			return;
+		}
 	}
-	
+
 	g_free (uri);
 	
 	updating_size_from_media = true;

@@ -1,3 +1,8 @@
+2008-10-10  Larry Ewing  <lewing@novell.com>
+
+	* media.cpp (Image::DownloaderComplete): handle the case where the
+	sureface uri and the new uri are the same.
+
 2008-10-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline-logo.cpp: New logo.
