@@ -2141,9 +2141,9 @@ Image::DownloaderComplete ()
 		CleanupSurface ();
 
 		if (!CreateSurface (uri)) {
+			printf ("failed to create surface %s\n", uri);
 			g_free (uri);
 			Invalidate ();
-			printf ("failed to create surface\n", uri);
 			return;
 		}
 	}
