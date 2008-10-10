@@ -1,5 +1,9 @@
 2008-10-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* pipeline-logo.cpp: New logo.
+
+2008-10-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* media.cpp: MediaElement::Reinitialize: Dispose the media to break
 	  cyclic refs.
 	* mplayer.cpp: AdvanceFrame: don't decode here anymore, we shouldn't
