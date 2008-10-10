@@ -430,7 +430,7 @@ namespace MoonlightTests {
 			if (xsp_exec_dir == null)
 				return;
 
-			string args = String.Format ("--root {0} --nonstop", Path.Combine (Path.GetDirectoryName (input_file), xsp_exec_dir));
+			string args = String.Format ("--root {0} --nonstop", Path.Combine (Path.GetDirectoryName (LocalFilePath), xsp_exec_dir));
 
 			xsp = new ExternalProcess ("xsp", args, -1);
 			xsp.Run (false);
