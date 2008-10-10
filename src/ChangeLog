@@ -1,3 +1,7 @@
+2008-10-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* applier.cpp: Fix another bad function signatures for GFunc.
+
 2008-10-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* audio.cpp, pipeline-ffmpeg.cpp, pipeline.h, mplayer.cpp: Remove

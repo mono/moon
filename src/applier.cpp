@@ -140,7 +140,7 @@ apply_property_func (property_indexer *p_indexer, DependencyObject *object)
 }
 
 static void
-apply_object_func (DependencyObject *object, object_indexer *o_indexer)
+apply_object_func (DependencyObject *object, object_indexer *o_indexer, gpointer *unused)
 {
 	g_list_foreach (o_indexer->properties_list, (GFunc) apply_property_func, object);
 }
