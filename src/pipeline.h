@@ -148,13 +148,6 @@ typedef gint32 MediaResult;
 #define FRAME_DEMUXED (1 << 2)
 #define FRAME_CONVERTED (1 << 3)
 #define FRAME_KEYFRAME (1 << 4)
-// Set if the pipeline needs it's own copy of the decoded data
-// If this is not set, the decoder can keep one area of memory and always decode into
-// that area, just passing back a pointer to that area.
-// It is required to set this if the decoding is done on another thread
-// (otherwise the pipeline will always access the latest decoded frame, which almost never
-// is the frame you want to show).
-#define FRAME_COPY_DECODED_DATA (1 << 5) 
 #define FRAME_MARKER (1 << 6)
 
 enum MediaSourceType {
@@ -424,7 +417,6 @@ public:
 	bool IsDemuxed () { return (state & FRAME_DEMUXED) == FRAME_DEMUXED; }
 	bool IsConverted () { return (state & FRAME_CONVERTED) == FRAME_CONVERTED; }
 	bool IsPlanar () { return (state & FRAME_PLANAR) == FRAME_PLANAR; }
-	bool IsCopyDecodedData () { return (state & FRAME_COPY_DECODED_DATA) == FRAME_COPY_DECODED_DATA; }
 	bool IsKeyFrame () { return (state & FRAME_KEYFRAME) == FRAME_KEYFRAME; }
 	bool IsMarker () { return (state & FRAME_MARKER) == FRAME_MARKER; }
 	

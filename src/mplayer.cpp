@@ -275,7 +275,6 @@ void
 MediaPlayer::EnqueueFrames (int audio_frames, int video_frames)
 {
 	MediaClosure *closure;
-	int states;
 
 	LOG_MEDIAPLAYER_EX ("MediaPlayer::EnqueueFrames (%i, %i)\n", audio_frames, video_frames);
 	
@@ -286,11 +285,7 @@ MediaPlayer::EnqueueFrames (int audio_frames, int video_frames)
 		for (int i = 0; i < audio_frames; i++) {
 			closure = new MediaClosure (FrameCallback);
 			closure->SetContext (element);
-			
-			// To decode on the main thread comment out FRAME_DECODED and FRAME_COPY_DECODED_DATA.
-			states = FRAME_DEMUXED | FRAME_DECODED | FRAME_COPY_DECODED_DATA;
-			
-			media->GetNextFrameAsync (closure, audio->GetStream (), states);
+			media->GetNextFrameAsync (closure, audio->GetStream (), FRAME_DEMUXED | FRAME_DECODED);
 		}
 	}
 	
@@ -298,11 +293,7 @@ MediaPlayer::EnqueueFrames (int audio_frames, int video_frames)
 		for (int i = 0; i < video_frames; i++) {
 			closure = new MediaClosure (FrameCallback);
 			closure->SetContext (element);
-			
-			// To decode on the main thread comment out FRAME_DECODED and FRAME_COPY_DECODED_DATA.
-			states = FRAME_DEMUXED | FRAME_DECODED | FRAME_COPY_DECODED_DATA;
-				
-			media->GetNextFrameAsync (closure, video.stream, states);
+			media->GetNextFrameAsync (closure, video.stream, FRAME_DEMUXED | FRAME_DECODED);
 		}
 	}
 }

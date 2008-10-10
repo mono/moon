@@ -276,50 +276,44 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 		mf->srcSlideY = 0;
 		mf->srcSlideH = context->height;
 		
-		if (mf->IsCopyDecodedData ()) {
-			int height = context->height;
-			int plane_bytes [4];
-			
-			switch (pixel_format) {
-			case MoonPixelFormatYUV420P:
-				plane_bytes [0] = height * frame->linesize [0];
-				plane_bytes [1] = height * frame->linesize [1] / 2;
-				plane_bytes [2] = height * frame->linesize [2] / 2;
-				plane_bytes [3] = 0;
-				break;
-			default:
-				printf ("FfmpegDecoder::DecodeFrame (): Unknown output format, can't calculate byte number.\n");
-				plane_bytes [0] = 0;
-				plane_bytes [1] = 0;
-				plane_bytes [2] = 0;
-				plane_bytes [3] = 0;
-				break;
-			}
-			
-			for (int i = 0; i < 4; i++) {
-				if (plane_bytes [i] != 0) {
-					if (posix_memalign ((void **)&mf->data_stride [i], 16, plane_bytes[i] + stream->min_padding)) {
-						g_warning ("Could not allocate memory for data stride");
-						return MEDIA_OUT_OF_MEMORY;
-					}
-					memcpy (mf->data_stride[i], frame->data[i], plane_bytes[i]);
-				} else {
-					mf->data_stride[i] = frame->data[i];
+		int height = context->height;
+		int plane_bytes [4];
+		
+		switch (pixel_format) {
+		case MoonPixelFormatYUV420P:
+			plane_bytes [0] = height * frame->linesize [0];
+			plane_bytes [1] = height * frame->linesize [1] / 2;
+			plane_bytes [2] = height * frame->linesize [2] / 2;
+			plane_bytes [3] = 0;
+			break;
+		default:
+			printf ("FfmpegDecoder::DecodeFrame (): Unknown output format, can't calculate byte number.\n");
+			plane_bytes [0] = 0;
+			plane_bytes [1] = 0;
+			plane_bytes [2] = 0;
+			plane_bytes [3] = 0;
+			break;
+		}
+		
+		for (int i = 0; i < 4; i++) {
+			if (plane_bytes [i] != 0) {
+				if (posix_memalign ((void **)&mf->data_stride [i], 16, plane_bytes[i] + stream->min_padding)) {
+					g_warning ("Could not allocate memory for data stride");
+					return MEDIA_OUT_OF_MEMORY;
 				}
-				
-				mf->srcStride[i] = frame->linesize[i];
-			}
-		} else {
-			for (int i = 0; i < 4; i++) {
+				memcpy (mf->data_stride[i], frame->data[i], plane_bytes[i]);
+			} else {
 				mf->data_stride[i] = frame->data[i];
-				mf->srcStride[i] = frame->linesize[i];
 			}
+			
+			mf->srcStride[i] = frame->linesize[i];
 		}
 		
 		// We can't free the frame until the data has been used, 
 		// so save the frame in decoder_specific_data. 
 		// This will cause FfmpegDecoder::Cleanup to be called 
 		// when the MediaFrame is deleted.
+		// TODO: check if we can free this now, given that we always copy data out from ffmpeg's buffers
 		mf->decoder_specific_data = frame;
 	} else if (stream->GetType () == MediaTypeAudio) {
 		MpegFrameHeader mpeg;

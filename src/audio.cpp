@@ -470,7 +470,7 @@ AudioSource::Enqueue ()
 	closure = new MediaClosure (FrameCallback);
 	closure->SetContext (this);
 	
-	media->GetNextFrameAsync (closure, stream, FRAME_DEMUXED | FRAME_DECODED | FRAME_COPY_DECODED_DATA);
+	media->GetNextFrameAsync (closure, stream, FRAME_DEMUXED | FRAME_DECODED);
 #endif
 }
 
