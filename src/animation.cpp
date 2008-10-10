@@ -328,9 +328,10 @@ AnimationClock::~AnimationClock ()
 		if (state == Clock::Stopped)
 			delete storage;
 		else {
-			if (storage->IsCurrentStorage ())
+			if (storage->IsCurrentStorage ()) {
+				// FIXME: Why don't we delete storage here? Sadly, we are leaking it on channel9
 				storage->Float ();
-			else
+			} else
 				delete storage;
 		}
 	}

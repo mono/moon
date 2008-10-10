@@ -149,25 +149,25 @@ Downloader::InternalOpen (const char *verb, const char *uri, bool streaming)
 	open_func (verb, uri, streaming, downloader_state);
 }
 
-bool
+static bool
 scheme_is (const Uri *uri, const char *scheme)
 {
 	return (strcmp (uri->protocol, scheme) == 0);
 }
 
-bool
+static bool
 same_scheme (const Uri *uri1, const Uri *uri2)
 {
 	return (strcmp (uri1->protocol, uri2->protocol) == 0);
 }
 
-bool
+static bool
 same_domain (const Uri *uri1, const Uri *uri2)
 {
 	return (g_ascii_strcasecmp (uri1->host, uri2->host) == 0);
 }
 
-bool
+static bool
 validate_policy (const char *location, const char *uri, DownloaderAccessPolicy policy)
 {
 	if (!location || !uri)

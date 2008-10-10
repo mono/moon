@@ -1,3 +1,8 @@
+2008-10-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* downloader.cpp (validate_policy): Made static so we don't export
+	this symbol.
+
 2008-10-10  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* dependencyproperty.cpp (detach_target_func): Fix bad function 
