@@ -147,7 +147,7 @@ MediaPlayer::FrameCallback (MediaClosure *closure)
 			    "\tstate: %d, frame: %p, pts: %llu = %llu, type: %s\n"
 			    "\taudio packets: ?, video packets: %d\n",
 			    closure, player->state, closure->frame, frame ? frame->pts : 0,
-			    frame ? MilliSeconds_FromPts (frame->pts) : 0, media_type_name[stream->GetType ()],
+			    frame ? MilliSeconds_FromPts (frame->pts) : 0, media_type_name[stream ? stream->GetType () : 0],
 			    player->video.queue.Length ());
 	
 	if (player->GetBit (MediaPlayer::Seeking)) {

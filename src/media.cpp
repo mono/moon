@@ -334,8 +334,6 @@ MediaElement::AddStreamedMarker (TimelineMarker *marker)
 		  MilliSeconds_FromPts (marker->GetTime ())));
 	
 	pending_streamed_markers->Push (new MarkerNode (marker));
-	
-	AddTickCallSafe (AddStreamedMarkersCallback);
 }
 
 void
@@ -549,6 +547,7 @@ MediaElement::AdvanceFrame ()
 		e (printf ("MediaElement::AdvanceFrame () previous_position: %llu = %llu ms, position: %llu = %llu ms, advanced: %i\n", 
 			previous_position, MilliSeconds_FromPts (previous_position), position, MilliSeconds_FromPts (position), advanced));
 			
+		AddStreamedMarkers ();
 		CheckMarkers (previous_position, position);
 	}
 	
@@ -773,6 +772,7 @@ MediaElement::SetMedia (Media *media)
 		return;
 	
 	ReadMarkers ();
+	media->SetBufferingEnabled (true);
 	
 	SetNaturalDuration (broadcast ? 0 : TimeSpan_FromPts (mplayer->GetDuration ()));
 	SetNaturalVideoHeight ((double) mplayer->GetVideoHeight ());

@@ -1,3 +1,14 @@
+2008-10-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* pipeline.h, pipeline.cpp: Media: Add a BufferingEnabled flag, don't
+	  start buffering until this is set to true (starts out as false).
+	* media.cpp: Only enable buffering on the media after reading the
+	  markers, otherwise we may loose markers in the beginning of the
+	  media. Fixes test-asf-demuxer-big-markers.html. Also don't add a
+	  tick call to notify the MediaElement that a marker has been added,
+	  always check in AdvanceFrame.
+	* mplayer.cpp: Add a null check in a printf.
+
 2008-10-10  Larry Ewing  <lewing@novell.com>
 
 	* media.cpp (Image::DownloaderComplete): handle the case where the

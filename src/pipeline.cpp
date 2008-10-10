@@ -94,6 +94,7 @@ Media::Media (MediaElement *element, Downloader *dl)
 	opened = false;
 	stopping = false;
 	stopped = false;
+	buffering_enabled = false;
 	
 	pthread_attr_init (&attribs);
 	pthread_attr_setdetachstate (&attribs, PTHREAD_CREATE_JOINABLE);
@@ -205,6 +206,13 @@ Media::RegisterMSCodecs (void)
 	g_free (libmscodecs_path);
 
 	registering_ms_codecs = false;
+}
+
+void
+Media::SetBufferingEnabled (bool value)
+{
+	buffering_enabled = value;
+	WakeUp ();
 }
 
 void
@@ -777,7 +785,7 @@ Media::WorkerLoop ()
 		
 		pthread_mutex_unlock (&queue_mutex);
 		
-		if (demuxer != NULL && (node == NULL || node->type != WorkTypeSeek)) {
+		if (buffering_enabled && demuxer != NULL && (node == NULL || node->type != WorkTypeSeek)) {
 			// Fill buffers if we have a demuxer and as long as we don't have a pending seek.
 			demuxer->FillBuffers ();
 		}

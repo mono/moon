@@ -313,6 +313,7 @@ private:
 	bool opened;
 	bool stopping;
 	bool stopped; // If the worker thread has been stopped.
+	bool buffering_enabled;
 	static bool registering_ms_codecs;
 	static bool registered_ms_codecs;
 	
@@ -371,6 +372,8 @@ public:
 	
 	void SetBufferingTime (guint64 buffering_time);
 	guint64 GetBufferingTime ();
+
+	void SetBufferingEnabled (bool value);
 
 	IMediaSource *GetSource ();
 	void SetSource (IMediaSource *value);
