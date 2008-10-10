@@ -72,7 +72,7 @@ DependencyProperty::DetachAnimationStorage (DependencyObject *obj, AnimationStor
 }
 
 static void
-detach_target_func (DependencyObject *obj, AnimationStorage *storage)
+detach_target_func (DependencyObject *obj, AnimationStorage *storage, gpointer unused)
 {
 	storage->DetachTarget ();
 }

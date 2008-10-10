@@ -1,3 +1,10 @@
+2008-10-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* dependencyproperty.cpp (detach_target_func): Fix bad function 
+	signature for GHFunc.
+	* dependencyobject.cpp (unref_object): Fix bad function signature
+	for GFunc.
+
 2008-10-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline.h, pipeline.cpp: Media: Add a BufferingEnabled flag, don't

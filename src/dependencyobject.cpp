@@ -642,7 +642,7 @@ drain_unrefs_idle_call (gpointer data)
 }
 
 static void
-unref_object (EventObject *obj)
+unref_object (EventObject *obj, gpointer unused)
 {
 	obj->unref ();
 }
