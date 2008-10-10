@@ -1,3 +1,17 @@
+2008-10-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* media.cpp: MediaElement::Reinitialize: Dispose the media to break
+	  cyclic refs.
+	* mplayer.cpp: AdvanceFrame: don't decode here anymore, we shouldn't
+	  get non-decoded frames anymore. Open: Handle null demuxers,
+	  shouldn't happen, but at least we won't crash if it happens.
+	* pipeline.cpp, pipeline.h: Media::~Media: move cleanup to Dispose.
+	  Media::Open: unref the decoder after giving it to the stream, the
+	  stream now take a ref on the decoder. Media::EnqueueWork:
+	  queued_requests might be nothing if we're disposed. IMediaStream:
+	  move cleanup to dispose and take a ref on the decoder. Add decoder
+	  getter/setters, and update code to use them.
+
 2008-10-10  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* applier.cpp: Fix another bad function signatures for GFunc.

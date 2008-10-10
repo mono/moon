@@ -329,6 +329,11 @@ MediaPlayer::Open (Media *media)
 	VideoStream *vstream = NULL;
 	AudioStream *astream = NULL, *astream2 = NULL;
 	
+	if (demuxer == NULL) {
+		fprintf (stderr, "MediaPlayer::Open (): media doesn't have a demuxer.\n");
+		return false;
+	}
+
 	for (int i = 0; i < demuxer->GetStreamCount (); i++) {
 		stream = demuxer->GetStream (i);
 		encoding = stream->GetDecoder (); //stream->codec;
@@ -483,9 +488,11 @@ MediaPlayer::Close (bool dtor)
 	}
 	video.stream = NULL;
 	
-	if (media)
+	if (media) {
+		media->Dispose ();
 		media->unref ();
-	media = NULL;
+		media = NULL;
+	}
 
 	if (dtor) {
 		// To avoid circular references we don't keep a ref to the media element.
@@ -505,7 +512,7 @@ MediaPlayer::RenderFrame (MediaFrame *frame)
 {
 	VideoStream *stream = (VideoStream *) frame->stream;
 
-	LOG_MEDIAPLAYER_EX ("MediaPlayer::RenderFrame (%p), buflen: %i, buffer: %p, IsPlanar: %i\n", frame, frame->buflen, frame->buffer, frame->IsPlanar ());
+	LOG_MEDIAPLAYER_EX ("MediaPlayer::RenderFrame (%p), pts: %llu ms, buflen: %i, buffer: %p, IsPlanar: %i\n", frame, MilliSeconds_FromPts (frame->pts), frame->buflen, frame->buffer, frame->IsPlanar ());
 	
 	if (!frame->IsDecoded ()) {
 		fprintf (stderr, "MediaPlayer::RenderFrame (): Trying to render a frame which hasn't been decoded yet.\n");
@@ -667,13 +674,8 @@ MediaPlayer::AdvanceFrame ()
 		EnqueueFrames (0, 1);	
 		
 		if (!frame->IsDecoded ()) {
-			//printf ("MediaPlayer::AdvanceFrame (): decoding on main thread.\n");
-			MediaResult result = stream->decoder->DecodeFrame (frame);
-			
-			if (!MEDIA_SUCCEEDED (result)) {
-				printf ("MediaPlayer::AdvanceFrame (): Couldn't decode frame (%i)\n", result);
-				update = false;
-			}
+			printf ("MediaPlayer::AdvanceFrame (): Got a non-decoded frame.\n");
+			update = false;
 		}
 		
 		if (update && current_pts >= target_pts_start) {

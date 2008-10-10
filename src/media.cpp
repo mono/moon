@@ -655,6 +655,7 @@ MediaElement::Reinitialize (bool dtor)
 	}
 	
 	if (media != NULL) {
+		media->Dispose ();
 		media->unref ();
 		media = NULL;
 	}

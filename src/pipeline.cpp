@@ -107,31 +107,51 @@ Media::Media (MediaElement *element, Downloader *dl)
 
 Media::~Media ()
 {
+	LOG_PIPELINE ("Media::~Media (), id: %i\n", GET_OBJ_ID (this));
+	pthread_mutex_destroy (&queue_mutex);
+	pthread_cond_destroy (&queue_condition);
+}
+
+void
+Media::Dispose ()
+{
 	MediaNode *node;
 
-	LOG_PIPELINE ("Media::~Media (), id: %i\n", GET_OBJ_ID (this));
+	LOG_PIPELINE ("Media::~Dispose (), id: %i\n", GET_OBJ_ID (this));
+
+	EventObject::Dispose ();
 
 	pthread_mutex_lock (&queue_mutex);
-	queued_requests->Clear (true);
-	delete queued_requests;
-	queued_requests = NULL;
+	if (queued_requests != NULL) {
+		queued_requests->Clear (true);
+		delete queued_requests;
+		queued_requests = NULL;
+	}
 	pthread_cond_signal (&queue_condition);
 	pthread_mutex_unlock (&queue_mutex);
 	
-	if (downloader)
-		downloader->unref ();
-	
 	if (!stopped)
 		pthread_join (queue_thread, NULL);
-	pthread_mutex_destroy (&queue_mutex);
-	pthread_cond_destroy (&queue_condition);
+	
+	if (downloader) {
+		downloader->unref ();
+		downloader = NULL;
+	}
 	
 	g_free (file_or_url);
-	if (source)
+	file_or_url = NULL;
+	if (source) {
+		source->Dispose ();
 		source->unref ();
-	if (demuxer)
+		source = NULL;
+	}
+	if (demuxer) {
+		demuxer->Dispose ();
 		demuxer->unref ();
+		demuxer = NULL;
+	}
 	delete markers;
+	markers = NULL;
 
 	// Remove ourselves from the global list of medias
 	// media_objects might be NULL if Media::Shutdown has been called already
@@ -491,11 +511,15 @@ Media::Open (IMediaSource *source)
 			if (stopped || stopping)
 				return MEDIA_FAIL;
 				
-			if (downloader->IsAborted ())
+			if (downloader->IsAborted ()) {
+				//printf ("Media::Open  (): Downloader aborted.\n");
 				return MEDIA_READ_ERROR;
+			}
 	
-			if (source->Eof ())
-				return MEDIA_READ_ERROR;						
+			if (source->Eof ()) {
+				//printf ("Media::Open (): eof reached.\n");
+				return MEDIA_READ_ERROR;
+			}
 
 			return MEDIA_NOT_ENOUGH_DATA;
 		}
@@ -642,6 +666,7 @@ Media::Open (IMediaSource *source)
 		
 		if (decoder != NULL) {
 			stream->SetDecoder (decoder);
+			decoder->unref ();
 			result = MEDIA_SUCCESS;
 		}
 	}
@@ -701,7 +726,7 @@ Media::GetNextFrame (MediaWork *work)
 		if (frame->event != 0)
 			break;
 	
-		result = stream->decoder->DecodeFrame (frame);
+		result = stream->GetDecoder ()->DecodeFrame (frame);
 		//printf ("Media::GetNextFrame () decoded a frame: %p, pts: %llu\n", frame, frame ? MilliSeconds_FromPts (frame->pts) : 0);
 	} while (result == MEDIA_CODEC_DELAYED);
 
@@ -852,7 +877,9 @@ Media::EnqueueWork (MediaWork *work)
 	
 	pthread_mutex_lock (&queue_mutex);
 	
-	if (queued_requests->First ()) {
+	if (queued_requests == NULL) {
+		// Do nothing
+	} else if (queued_requests->First ()) {
 		switch (work->type) {
 		case WorkTypeSeek:
 			// Only have one seek request in the queue, and make
@@ -2271,9 +2298,37 @@ IMediaStream::~IMediaStream ()
 	if (decoder)
 		decoder->unref ();
 	
-	g_free (extra_data);
-	g_free (codec);
 	delete queue;
+}
+
+void
+IMediaStream::Dispose ()
+{
+	IMediaObject::Dispose ();
+	if (decoder) {
+		decoder->unref ();
+		decoder = NULL;
+	}
+	g_free (extra_data);
+	extra_data = NULL;
+	g_free (codec);
+	codec = NULL;
+}
+
+IMediaDecoder *
+IMediaStream::GetDecoder ()
+{
+	return decoder;
+}
+
+void
+IMediaStream::SetDecoder (IMediaDecoder *value)
+{
+	if (decoder)
+		decoder->unref ();
+	decoder = value;
+	if (decoder)
+		decoder->ref ();
 }
 
 guint64
@@ -2541,9 +2596,13 @@ MediaFrame::MediaFrame (IMediaStream *stream)
 
 MediaFrame::~MediaFrame ()
 {
+	IMediaDecoder *decoder;
 	if (decoder_specific_data != NULL) {
-		if (stream != NULL && stream->decoder != NULL)
-			stream->decoder->Cleanup (this);
+		if (stream != NULL) {
+			decoder = stream->GetDecoder ();
+			if (decoder != NULL)
+				decoder->Cleanup (this);
+		}
 	}
 	g_free (buffer);
 	if (marker)
@@ -2771,8 +2830,8 @@ IMediaDemuxer::Seek (guint64 pts)
 	for (int i = 0; i < GetStreamCount (); i++) {
 		IMediaStream *stream = GetStream (i);
 		stream->ClearQueue ();
-		if (stream->decoder != NULL)
-			stream->decoder->CleanState ();
+		if (stream->GetDecoder () != NULL)
+			stream->GetDecoder ()->CleanState ();
 	}
 
 	LOG_PIPELINE ("IMediaDemuxer::Seek (%llu)\n", MilliSeconds_FromPts (pts));
@@ -2871,12 +2930,12 @@ MarkerStream::MarkerFound (MediaFrame *frame)
 {
 	MediaResult result;
 	
-	if (decoder == NULL) {
+	if (GetDecoder () == NULL) {
 		LOG_PIPELINE ("MarkerStream::MarkerFound (): Got marker, but there's no decoder for the marker.\n");
 		return;
 	}
 	
-	result = decoder->DecodeFrame (frame);
+	result = GetDecoder ()->DecodeFrame (frame);
 	
 	if (!MEDIA_SUCCEEDED (result)) {
 		LOG_PIPELINE ("MarkerStream::MarkerFound (): Error while decoding marker: %i\n", result);

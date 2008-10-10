@@ -29,7 +29,7 @@
 #define CODEC_WMAV1 0x160
 #define CODEC_WMAV2 0x161
 
-#define MOONLIGHT_CODEC_ABI_VERSION 2
+#define MOONLIGHT_CODEC_ABI_VERSION 3
 typedef void (*register_codec) (int abi_version);
 
 /*
@@ -335,6 +335,7 @@ protected:
 
 public:
 	Media (MediaElement *element, Downloader *dl = NULL);
+	virtual void Dispose ();
 	
 	//	Determines the container type and selects a demuxer
 	//	- Default is to use our own ASF demuxer (if it's an ASF file), otherwise use ffmpeg (if available). 
@@ -500,6 +501,7 @@ private:
 	guint64 last_popped_pts; // The pts of the last frame returned, initialized to G_MAXUINT64
 	guint64 last_enqueued_pts; // The pts of the last frame enqueued, initialized to G_MAXUINT64
 	Queue *queue; // Our queue of demuxed frames
+	IMediaDecoder *decoder;
 
 protected:
 	virtual ~IMediaStream ();
@@ -513,11 +515,13 @@ public:
 	};
 	
 	IMediaStream (Media *media);
+	virtual void Dispose ();
 	
 	//	Video, Audio, Markers, etc.
-	virtual MoonMediaType GetType () = 0; 
-	IMediaDecoder *GetDecoder () { return decoder; }
-	void SetDecoder (IMediaDecoder *dec) { decoder = dec; }
+	virtual MoonMediaType GetType () = 0;
+	
+	IMediaDecoder *GetDecoder ();
+	void SetDecoder (IMediaDecoder *value);
 	
 	//	If this stream is enabled (producing output). 
 	//	A file might have several audio streams, 
@@ -539,7 +543,6 @@ public:
 	int codec_id;
 	guint64 duration; // 100-nanosecond units (pts)
 	gint32 msec_per_frame;
-	IMediaDecoder *decoder;
 	char *codec; // freed upon destruction
 	// The minimum amount of padding any other part of the pipeline needs for frames from this stream.
 	// Used by the demuxer when reading frames, ensures that there are at least min_padding extra bytes
