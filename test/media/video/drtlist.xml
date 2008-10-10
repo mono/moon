@@ -8,23 +8,23 @@
     <Test id="27" inputFile="test-state-after-setsource.html" masterFile10="None" timeout="5000" categories="video,media" knownFailure="True" failureReason="Test is failing because a MediaOpened event is raised after the test has succeeded and decided to shut down" />
     <Test id="28" inputFile="test-invalid-video-codec.html" masterFile10="None" timeout="5000" categories="video,media"  />
     <Test id="29" inputFile="test-downloadprogress-on-small-files.html" masterFile10="None" timeout="5000" categories="video,media"  />
-    <Test id="30" inputFile="test-download-and-buffering-progress-on-big-files.html" masterFile10="None" timeout="60000" categories="video,media"  />
-    <Test id="31" inputFile="test-mms-failure.html" masterFile10="None" timeout="60000" categories="video,media,streaming" xspExecDir="../../" />
+    <Test id="30" inputFile="test-download-and-buffering-progress-on-big-files.html" masterFile10="None" timeout="60000" categories="video,media" location="http://localhost/media/video" />
+    <Test id="31" inputFile="test-mms-failure.html" masterFile10="None" timeout="60000" categories="video,media,streaming" location="http://localhost/media/video" xspExecDir="../../" />
     <Test id="32" inputFile="test-playlist-with-clientskip.html" masterFile10="None" timeout="5000" categories="media,playlist"  />
     <Test id="33" inputFile="test-misc.html" masterFile10="None" timeout="5000" categories="video,media" knownFailure="True" failureReason="Missing readonly property validation"  />
-    <Test id="34" inputFile="test-http-failure.html" masterFile10="None" timeout="60000" categories="video,media,streaming" />
-    <Test id="35" inputFile="test-bufferingprogress.html" masterFile10="None" timeout="120000" categories="video,media"  />
+    <Test id="34" inputFile="test-http-failure.html" masterFile10="None" timeout="60000" categories="video,media,streaming" location="http://localhost/media/video" />
+    <Test id="35" inputFile="test-bufferingprogress.html" masterFile10="None" timeout="120000" categories="video,media" location="http://localhost/media/video" />
     <Test id="36" inputFile="test-events-with-playlist.html" masterFile10="None" timeout="30000" categories="video,media,playlist"  />
-    <Test id="37" inputFile="test-playlist-with-base.html" masterFile10="None" timeout="20000" categories="video,media,playlist"  xspExecDir="../../"  />
+    <Test id="37" inputFile="test-playlist-with-base.html" masterFile10="None" timeout="20000" categories="video,media,playlist" xspExecDir="../../"  location="http://localhost/media/video" />
     <Test id="38" inputFile="test-playlist-with-zero-duration.html" masterFile10="None" timeout="5000" categories="video,media,playlist" />
-    <Test id="39" inputFile="test-playlist-with-duration.html" masterFile10="None" timeout="30000" categories="video,media,playlist" />
+    <Test id="39" inputFile="test-playlist-with-duration.html" masterFile10="None" timeout="30000" categories="video,media,playlist" location="http://localhost/media/video" />
     <Test id="40" inputFile="test-mediaopened.html" masterFile10="masters/test-mediaopened.Master.png" timeout="15000" categories="video,media,playlist" knownFailure="True" failureReason="We don't show first frame after a stop"/>
-    <Test id="41" inputFile="test-playlist-live-with-duration.html" masterFile10="None" timeout="30000" categories="video,media,playlist" />
-    <Test id="42" inputFile="test-mediaopened-2.html" masterFile10="masters/test-mediaopened.Master.png" timeout="15000" categories="video,media,playlist,mediaserver"  knownFailure="True" knownFailureReason="not known" />
+    <Test id="41" inputFile="test-playlist-live-with-duration.html" masterFile10="None" timeout="30000" categories="video,media,playlist" location="http://localhost/media/video"/>
+    <Test id="42" inputFile="test-mediaopened-2.html" masterFile10="masters/test-mediaopened.Master.png" timeout="15000" categories="video,media,playlist,mediaserver"  knownFailure="True" knownFailureReason="not known" location="http://localhost/media/video" />
     <Test id="43" inputFile="test-mediaopened-3.html" masterFile10="None" timeout="15000" categories="video,media,playlist"  knownFailure="True" knownFailureReason="not known" />
-    <Test id="44" inputFile="test-autoplay.html" masterFile10="None" timeout="15000" categories="video,media,playlist,mediaserver"  knownFailure="True" knownFailureReason="not known" />
+    <Test id="44" inputFile="test-autoplay.html" masterFile10="None" timeout="15000" categories="video,media,playlist,mediaserver"  knownFailure="True" knownFailureReason="not known" location="http://localhost/media/video" />
     <Test id="45" inputFile="test-playlist-autoplayed-stop.html" masterFile10="None" timeout="15000" categories="video,media,playlist" />
-    <Test id="46" inputFile="test-stopped-media.html" masterFile10="None" timeout="120000" categories="video,media,playlist,mediaserver" />
+    <Test id="46" inputFile="test-stopped-media.html" masterFile10="None" timeout="120000" categories="video,media,playlist,mediaserver" location="http://localhost/media/video" />
     <Test id="47" inputFile="test-nested-playlist.html" masterFile10="None" timeout="20000" categories="video,media,playlist" />
     <Test id="48" inputFile="test-markers-after-seek.html" masterFile10="None" timeout="30000" categories="video,media" />
     <Test id="49" inputFile="test-asf-demuxer-shuffled-payloads.html" masterFile10="../../harness/masters/test-asf-demuxer-shuffled-payloadsMaster.png" timeout="10000" categories="video,media,asf"  />
