@@ -1395,7 +1395,7 @@ XamlLoader::CreateFromFile (const char *xaml_file, bool create_namescope,
 	const char *inptr, *inend;
 	TextStream *stream;
 	char buffer[4096];
-	ssize_t nread;
+	ssize_t nread, n;
 	
 	d(printf ("attemtping to load xaml file: %s\n", xaml_file));
 	
@@ -1433,10 +1433,11 @@ XamlLoader::CreateFromFile (const char *xaml_file, bool create_namescope,
 	
 	while ((nread = stream->Read (buffer, sizeof (buffer))) >= 0) {
 		inptr = buffer;
+		n = nread;
 		
 		if (first_read) {
 			// Remove preceding white space
-			inend = buffer + nread;
+			inend = buffer + n;
 			
 			while (inptr < inend && isspace ((unsigned char) *inptr))
 				inptr++;
@@ -1444,11 +1445,11 @@ XamlLoader::CreateFromFile (const char *xaml_file, bool create_namescope,
 			if (inptr == inend)
 				continue;
 			
-			nread = (inend - inptr);
+			n = (inend - inptr);
 			first_read = false;
 		}
 		
-		if (!XML_Parse (p, inptr, nread, nread == 0)) {
+		if (!XML_Parse (p, inptr, n, nread == 0)) {
 			expat_parser_error (parser_info, XML_GetErrorCode (p));
 			goto cleanup_and_return;
 		}
