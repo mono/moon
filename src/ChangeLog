@@ -2,7 +2,8 @@
 
 	* xaml.cpp (XamlLoader::CreateFromFile): Since we use the nread
 	variable expecting it to be the value returned from read(), don't
-	modify it inside the loop, use another variable for that.
+	modify it inside the loop, use another variable for that. Before
+	eating leading whitespace, make sure we have data.
 
 2008-10-13  Fernando Herrera  <fherrera@novell.com>
 

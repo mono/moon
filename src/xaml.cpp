@@ -1435,9 +1435,9 @@ XamlLoader::CreateFromFile (const char *xaml_file, bool create_namescope,
 		inptr = buffer;
 		n = nread;
 		
-		if (first_read) {
+		if (first_read && nread > 0) {
 			// Remove preceding white space
-			inend = buffer + n;
+			inend = buffer + nread;
 			
 			while (inptr < inend && isspace ((unsigned char) *inptr))
 				inptr++;
