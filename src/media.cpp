@@ -1545,8 +1545,10 @@ MediaElement::SetPlayRequested ()
 void
 MediaElement::PlayOrPauseNow ()
 {
-	d (printf ("MediaElement::PlayOrPause (): GetCanPause (): %i, PlayRequested: %i, GetAutoPlay: %i, AutoPlayed: %i\n", GetCanPause (), flags & PlayRequested, GetAutoPlay (), playlist->GetAutoPlayed ()));
-
+	d(printf ("MediaElement::PlayOrPause (): GetCanPause (): %s, PlayRequested: %s, GetAutoPlay: %s, AutoPlayed: %s\n",
+		  GetCanPause () ? "true" : "false", (flags & PlayRequested) ? "true" : "false",
+		  GetAutoPlay () ? "true" : "false", playlist->GetAutoPlayed () ? "true" : "false"));
+	
 	if (!GetCanPause ()) {
 		// If we can't pause, we play
 		PlayNow ();
@@ -1609,7 +1611,16 @@ MediaElement::Play ()
 {
 	d(printf ("MediaElement::Play (): current state: %s\n", GetStateName (state)));
 	
-	AddTickCall (MediaElement::PlayNow);
+	switch (state) {
+	case Buffering:
+	case Paused:
+	case Stopped:
+		AddTickCall (MediaElement::PlayNow);
+		break;
+	default:
+		// do nothing
+		break;
+	}
 }
 
 void
