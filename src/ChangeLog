@@ -1,3 +1,8 @@
+2008-10-13  Fernando Herrera  <fherrera@novell.com>
+
+	* audio.cpp: Fix AudioSources::GetNext iteration for next playing
+	source logic. Fixes bug #433267
+
 2008-10-13  Jeffrey Stedfast  <fejj@novell.com>
 
 	* media.cpp (MediaElement::Play): Don't add a TickCall to start

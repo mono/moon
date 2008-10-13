@@ -729,7 +729,7 @@ AudioSources::GetNext (bool only_playing)
 	// Loop through all the nodes looking for a node not in the
 	// current generation.
 	node = (AudioListNode *) list.First ();
-	while (node != NULL && node->generation == current_generation && (!only_playing || node->source->GetState () == AudioPlaying)) {
+	while (node != NULL && (node->generation == current_generation || (only_playing && node->source->GetState () != AudioPlaying))) {
 		node = (AudioListNode *) node->next;
 	}
 	
