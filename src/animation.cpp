@@ -31,8 +31,6 @@
 #define LERP(f,t,p) ((f) + ((t) - (f)) * (p))
 
 
-
-
 AnimationStorage::AnimationStorage (AnimationClock *clock, Animation/*Timeline*/ *timeline,
 				    DependencyObject *targetobj, DependencyProperty *targetprop)
 {
@@ -46,12 +44,22 @@ AnimationStorage::AnimationStorage (AnimationClock *clock, Animation/*Timeline*/
 	clock->AddHandler (clock->CurrentTimeInvalidatedEvent, update_property_value, this);
 	targetobj->AddHandler (EventObject::DestroyedEvent, target_object_destroyed, this);
 
+	AnimationStorage *prev_storage = targetprop->AttachAnimationStorage (targetobj, this);
+
 	baseValue = new Value(*targetobj->GetValue (targetprop));
-	stopValue = NULL;
-	wasAttached = FALSE;
+
+	if (prev_storage) {
+		Value *v = prev_storage->GetResetValue ();
+		stopValue = new Value (*v);
+		prev_storage->FlagAsNonResetable ();
+		if (prev_storage->IsFloating ())
+			delete prev_storage;
+	} else {
+		stopValue = NULL;
+	}
 }
 
-void
+/*void
 AnimationStorage::AttachToPrevStorage (void)
 {
 	if (wasAttached)
@@ -76,7 +84,7 @@ AnimationStorage::AttachToPrevStorage (void)
 	}
 
 	wasAttached = TRUE;
-}
+}*/
 
 void
 AnimationStorage::target_object_destroyed (EventObject *, EventArgs *, gpointer closure)
@@ -318,8 +326,8 @@ void
 AnimationClock::Begin ()
 {
 	Clock::Begin ();
-	if (storage)
-		storage->AttachToPrevStorage ();
+	//if (storage)
+	//	storage->AttachToPrevStorage ();
 }
 
 AnimationClock::~AnimationClock ()
