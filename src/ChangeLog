@@ -1,5 +1,9 @@
 2008-10-13  Michael Dominic K.  <mdk@mdk.am>
 
+	* dependencyproperty.cpp: Fixing a mem leak.
+
+2008-10-13  Michael Dominic K.  <mdk@mdk.am>
+
 	* animation.cpp: Reverting the whole attaching-to-prev storage in Begin. 
 	This fixes some recent problems in PopFly.
 

@@ -75,6 +75,9 @@ static void
 detach_target_func (DependencyObject *obj, AnimationStorage *storage, gpointer unused)
 {
 	storage->DetachTarget ();
+	if (storage->IsFloating ()) {
+		delete storage;
+	}
 }
 
 static void
