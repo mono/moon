@@ -153,6 +153,7 @@ CodecDownloader::DownloadFailed (EventObject *sender, EventArgs *args)
 
 	ToggleProgress (false);
 
+	gtk_image_set_from_stock (GTK_IMAGE (icon), GTK_STOCK_DIALOG_ERROR, GTK_ICON_SIZE_DIALOG);
 	gtk_button_set_label (GTK_BUTTON (accept_button), GTK_STOCK_CLOSE);
 	gtk_dialog_set_response_sensitive (GTK_DIALOG (dialog), GTK_RESPONSE_OK, true);
 	gtk_widget_hide (cancel_button);
@@ -388,6 +389,8 @@ CodecDownloader::Show ()
 		state = 6;
 		return;
 	}
+	
+	gint label_width = 400;
 
 	// Build HIG Dialog Box
 	dialog = gtk_dialog_new_with_buttons ("Moonlight Codecs Installer", NULL, (GtkDialogFlags)
@@ -398,7 +401,6 @@ CodecDownloader::Show ()
 	
 	AdaptToParentWindow ();
 	gtk_container_set_border_width (GTK_CONTAINER (dialog), 5);
-	gtk_widget_set_size_request (dialog, 500, -1);
 	gtk_object_set (GTK_OBJECT (dialog), "resizable", false, NULL);
 
 	// HIG HBox
@@ -422,18 +424,20 @@ CodecDownloader::Show ()
 	gtk_label_set_line_wrap (GTK_LABEL (header_label), true);
 	gtk_label_set_justify (GTK_LABEL (header_label), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_alignment (GTK_MISC (header_label), 0.0f, 0.5f);
+	gtk_widget_set_size_request (header_label, label_width, -1);
 	gtk_box_pack_start (GTK_BOX (vbox), header_label, false, false, 0);
 
 	// Secondary Label
 	message_label = gtk_label_new (NULL);
-	SetMessage ("This page requires the Microsoft Media Pack\n"
+	SetMessage ("This page requires the Microsoft Media Pack "
 		    "to be installed to play multimedia content.\n\n"
-		    "If you choose to install it, the software will be\n"
-		    "automatically downloaded and installed\n"
+		    "If you choose to install it, the software will be "
+		    "automatically downloaded and installed "
 		    "from Microsoft's web site.");
 	gtk_label_set_line_wrap (GTK_LABEL (message_label), true);
 	gtk_label_set_justify (GTK_LABEL (message_label), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_alignment (GTK_MISC (message_label), 0.0f, 0.5f);
+	gtk_widget_set_size_request (message_label, label_width, -1);
 	gtk_box_pack_start (GTK_BOX (vbox), message_label, false, false, 0);
 
 	dont_ask = gtk_check_button_new_with_label ("Do not ask me to install this add-on again");

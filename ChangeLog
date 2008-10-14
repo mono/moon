@@ -1,3 +1,10 @@
+2008-10-13  Aaron Bockover  <abockover@novell.com>
+
+	* src/pipeline-ui.cpp: Set width request on the labels and not the
+	dialog to ensure they wrap properly; remove bad hard coded new
+	lines on the intro message; set the icon to dialog-error when 
+	there's an error
+
 2008-10-08  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* cairo, pixman: local changes to the build files, include the -embed.h
