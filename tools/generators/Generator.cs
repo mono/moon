@@ -860,8 +860,14 @@ class Generator {
 			    break;
 			} while (true);
 			
-			if (tokenizer.Accept (Token2Type.Punctuation, "~"))
+			if (tokenizer.Accept (Token2Type.Punctuation, "~")) {
 				is_dtor = true;
+				if (!is_virtual) {
+					TypeInfo ti = parent as TypeInfo;
+					if (ti != null && ti.Base != null)
+						Console.WriteLine ("The class {0} has a non-virtual destructor, and it's base class is {2} ({1}).", parent.Name, parent.Header, ti != null && ti.Base != null ? ti.Base.Value : "<none>");
+				}
+			}
 					
 			if (is_dtor) {
 				name = "~" + tokenizer.GetIdentifier ();
@@ -903,7 +909,12 @@ class Generator {
 					string param_value = null;
 					do {
 						ParameterInfo parameter = new ParameterInfo ();
-						parameter.ParameterType = ParseTypeReference (tokenizer);
+						if (tokenizer.Accept (Token2Type.Punctuation, ".") && tokenizer.Accept (Token2Type.Punctuation, ".") && tokenizer.Accept (Token2Type.Punctuation, ".")) {
+							// ... variable argument declaration
+							parameter.ParameterType = new TypeReference ("...");
+						} else {
+							parameter.ParameterType = ParseTypeReference (tokenizer);
+						}
 						if (tokenizer.CurrentToken.value != "," && tokenizer.CurrentToken.value != ")") {
 							parameter.Name = tokenizer.GetIdentifier ();
 							if (tokenizer.Accept (Token2Type.Punctuation, "["))
