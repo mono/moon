@@ -309,9 +309,8 @@ MoonWindowless::SetSurface (Surface *s)
 GdkWindow*
 MoonWindowless::GetGdkWindow ()
 {
-	NPWindow *window = plugin->GetWindow();
-	void *native_window = window->window;
-	GdkNativeWindow *gdknative = (GdkNativeWindow*)native_window;
-	GdkWindow *gdk = gdk_window_foreign_new (*gdknative);
+	GdkNativeWindow window;
+	NPN_GetValue (plugin->GetInstance(), NPNVnetscapeWindow, (void*)&window);
+	GdkWindow *gdk = gdk_window_foreign_new (window);
 	return gdk;
 }
