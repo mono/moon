@@ -1,3 +1,7 @@
+2008-10-14  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* windowless.h|.cpp: implements GetGdkWindow ()
+
 2008-10-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin-class.cpp: Fix statement order.

@@ -48,6 +48,8 @@ class MoonWindowless : public MoonWindow {
 	virtual void SetSurface (Surface *s);
 
 	virtual bool IsFullScreen () { return false; }
+
+	virtual GdkWindow* GetGdkWindow ();
 };
 
 #endif /* __MOON_WINDOWLESS__ */
