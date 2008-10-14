@@ -143,7 +143,9 @@ FfmpegDecoder::Open ()
 		VideoStream *vs = (VideoStream*) stream;
 		context->width = vs->width;
 		context->height = vs->height;
+#if LIBAVCODEC_VERSION_MAJOR < 52
 		context->bits_per_sample = vs->bits_per_sample;
+#endif
 		context->codec_type = CODEC_TYPE_VIDEO;
 	} else if (stream->GetType () == MediaTypeAudio) {
 		AudioStream *as = (AudioStream*) stream;

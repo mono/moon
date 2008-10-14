@@ -1,3 +1,8 @@
+2008-10-14  Geoff Norton  <gnorton@novell.com>
+
+	* pipeline-ffmpeg.cpp:  FFMpeg changed the API with version #52, no
+	longer requiring the bits_per_pixel.
+
 2008-10-14  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* window.h: GetGdkWindow () method
