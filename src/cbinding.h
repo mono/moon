@@ -752,7 +752,7 @@ void media_element_stop (MediaElement *instance);
 GtkWidget *moon_window_gtk_get_widget (MoonWindowGtk *instance);
 
 /* @GeneratePInvoke */
-MoonWindowGtk *moon_window_gtk_new (bool fullscreen, int w, int h);
+MoonWindowGtk *moon_window_gtk_new (bool fullscreen, int w, int h, void *parent);
 
 /**
  * MouseEventArgs

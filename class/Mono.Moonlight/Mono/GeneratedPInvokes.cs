@@ -655,8 +655,8 @@ namespace Mono {
 		public extern static IntPtr moon_window_gtk_get_widget (IntPtr instance);
 
 		[DllImport ("moon")]
-		// MoonWindowGtk *moon_window_gtk_new (bool fullscreen, int w, int h);
-		public extern static IntPtr moon_window_gtk_new (bool fullscreen, int w, int h);
+		// MoonWindowGtk *moon_window_gtk_new (bool fullscreen, int w, int h, void *parent);
+		public extern static IntPtr moon_window_gtk_new (bool fullscreen, int w, int h, IntPtr parent);
 
 		[DllImport ("moon")]
 		// void mouse_event_args_get_position (MouseEventArgs *instance, UIElement *relative_to, double *x, double *y);
