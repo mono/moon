@@ -256,12 +256,17 @@ CodecDownloader::AcceptClicked ()
 		state = 1;
 		break;
 	case 2: // eula downloaded, waiting for user input
+		char *env_url;
 		SetHeader ("Downloading the required software...");
 		HideMessage ();
 		ToggleEula (false);
 		gtk_dialog_set_response_sensitive (GTK_DIALOG (dialog), GTK_RESPONSE_OK, false);
 
-		dl->Open ("GET", CODEC_URL, NoPolicy);
+		env_url = getenv ("MOONLIGHT_CODEC_URL");
+		if (env_url != NULL)
+			dl->Open ("GET", env_url, NoPolicy);
+		else
+			dl->Open ("GET", CODEC_URL, NoPolicy);
 		dl->Send ();
 
 		state = 3;
