@@ -124,7 +124,7 @@ public class GtkSilver : EventBox {
 	public GtkSilver (int width, int height)
 	{
 		Mono.Xaml.XamlLoader.AllowMultipleSurfacesPerDomain = true;
-		window = NativeMethods.moon_window_gtk_new (false, width, height);
+		window = NativeMethods.moon_window_gtk_new (false, width, height, IntPtr.Zero);
 		surface = NativeMethods.surface_new (window, true);
 		Raw = NativeMethods.moon_window_gtk_get_widget (window);
 	}

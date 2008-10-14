@@ -1,3 +1,7 @@
+2008-10-14  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* gtk.cs: new moon_window_gtk_new ctor signature
+
 2008-09-06  Chris Toshok  <toshok@ximian.com>
 
 	* ManagedDownloader.cs: remove GetTempFile.
