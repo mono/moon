@@ -862,7 +862,7 @@ Surface::UpdateFullScreen (bool value)
 		return;
 	
 	if (value) {
-		fullscreen_window = new MoonWindowGtk (true);
+		fullscreen_window = new MoonWindowGtk (true, -1, -1, normal_window);
 		fullscreen_window->SetSurface (this);
 
 		active_window = fullscreen_window;

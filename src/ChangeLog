@@ -1,3 +1,13 @@
+2008-10-14  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* window.h: GetGdkWindow () method
+
+	* window-gtk.h|.cpp: implement GetGdkWindow, new ctor signature
+	taking the parent window reference. Only go fullscreen on the monitor
+	moonlight is running on.
+
+	* runtime.cpp: call the new MoonWindowGtk ctor
+
 2008-10-14  Fernando Herrera  <fherrera@novell.com>
 
 	* pipeline-ui.cpp: Override codecs download URL with

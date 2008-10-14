@@ -46,6 +46,8 @@ class MoonWindow {
 
 	virtual bool IsFullScreen () = 0;
 
+	virtual GdkWindow* GetGdkWindow () = 0;
+
  protected:
 	int width;
 	int height;
