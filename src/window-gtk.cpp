@@ -1,6 +1,6 @@
 #include "window-gtk.h"
 
-MoonWindowGtk::MoonWindowGtk (bool fullscreen, int w, int h, void *parent)
+MoonWindowGtk::MoonWindowGtk (bool fullscreen, int w, int h, MoonWindow *parent)
 	: MoonWindow (w, h)
 {
 	this->fullscreen = fullscreen;
@@ -20,33 +20,32 @@ MoonWindowGtk::~MoonWindowGtk ()
 GdkWindow *
 MoonWindowGtk::GetGdkWindow ()
 {
-	return gtk_widget_get_parent_window (widget);
+	GdkWindow *parent_window = gtk_widget_get_parent_window (widget);
+	g_object_ref (parent_window);
+	return parent_window;
 }
 
 void
-MoonWindowGtk::InitializeFullScreen (void *parent)
+MoonWindowGtk::InitializeFullScreen (MoonWindow *parent)
 {
 	widget = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 
-#if false 	//This goes fullscreen splitted on all the monitors
-	// Get the screen size
-	width = gdk_screen_get_width (gdk_screen_get_default ());
-	height = gdk_screen_get_height (gdk_screen_get_default ());
-#else 		//This only fullscreen on the monitor the plugin is on
-	GdkWindow *gdk = ((MoonWindow*)parent)->GetGdkWindow ();
+	// only fullscreen on the monitor the plugin is on
+	GdkWindow *gdk = parent->GetGdkWindow ();
 	int monitor = gdk_screen_get_monitor_at_window (gdk_screen_get_default (), gdk);
 	GdkRectangle bounds;
 	gdk_screen_get_monitor_geometry (gdk_screen_get_default (), monitor, &bounds);
 	width = bounds.width;
 	height = bounds.height;
 	gtk_window_move (GTK_WINDOW (widget), bounds.x, bounds.y);
-#endif
 
 	gtk_window_fullscreen (GTK_WINDOW (widget));
 
 	InitializeCommon ();
 
 	Show();
+
+	g_object_unref (gdk);
 }
 
 void

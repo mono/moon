@@ -27,7 +27,7 @@ G_BEGIN_DECLS
 class MoonWindowGtk : public MoonWindow {
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	MoonWindowGtk (bool fullscreen, int w = -1, int h = -1, void* parent = NULL);
+	MoonWindowGtk (bool fullscreen, int w = -1, int h = -1, MoonWindow* parent = NULL);
 
 	virtual ~MoonWindowGtk ();
 
@@ -70,7 +70,7 @@ private:
 	static void widget_size_allocate (GtkWidget *widget, GtkAllocation *allocation, gpointer user_data);
 	static void widget_destroyed (GtkWidget *widget, gpointer user_data);
 
-	void InitializeFullScreen (void *parent);
+	void InitializeFullScreen (MoonWindow *parent);
 	void InitializeNormal ();
 	void InitializeCommon ();
 };

@@ -1,3 +1,13 @@
+2008-10-14  Chris Toshok  <toshok@ximian.com>
+
+	* window-gtk.h, window-gtk.cpp (MoonWindowGtk::GetGdkWindow): ref
+	the return value.
+	(MoonWindowGtk::InitializeFullScreen): unref the return value of
+	GetGdkWindow.
+
+	* cbinding.h, cbinding.cpp: regen so we don't have to use void*
+	for the parent parameter to MoonWindowGtk.
+
 2008-10-14  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* applier.cpp|h: Add a readonly flag to ensure nothing gets added in
