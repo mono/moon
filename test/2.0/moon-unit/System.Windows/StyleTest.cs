@@ -66,6 +66,7 @@ namespace MoonTest.System.Windows
 			Assert.Throws (delegate { b.Style = s; }, typeof (XamlParseException));
 		}
 
+		/*
 		[TestMethod]
 		[KnownFailure]
 		public void MissingTargetType ()
@@ -97,7 +98,6 @@ namespace MoonTest.System.Windows
 			Assert.IsTrue (Double.IsNaN(b.Width));
 		}
 
-		/*
 		[TestMethod]
 		[KnownFailure]
 		public void InvalidPropertyNameInSetter ()
