@@ -27,14 +27,15 @@ typedef struct {
 
 Applier::Applier ()
 {
-	objects = g_hash_table_new (g_direct_hash, g_direct_equal);
+	readonly = false;
+	objects = NULL;
 }
 
 Applier::~Applier ()
 {
 	if (objects) {
+		readonly = true;
 		Flush ();
-		g_hash_table_destroy (objects);
 	}
 }
 
@@ -61,6 +62,12 @@ value_indexer_compare_func (value_indexer *a, value_indexer *b)
 void
 Applier::AddPropertyChange (DependencyObject *object, DependencyProperty *property, Value *v, int precedence)
 {
+	if (readonly) {
+		g_warning ("Applier::AddPropertyChange is being called during shutdown");
+		delete v;
+		return;
+	}
+
 	if (precedence == APPLIER_PRECEDENCE_INSTANT) {
 		object->SetValue (property, *v);
 		delete v;
@@ -70,8 +77,11 @@ Applier::AddPropertyChange (DependencyObject *object, DependencyProperty *proper
 	value_indexer *v_indexer = NULL;
 	property_indexer *p_indexer = NULL;
 	object_indexer *o_indexer = NULL;
-	
-	o_indexer = (object_indexer *) g_hash_table_lookup (objects, object);
+
+	if (!objects)
+		objects = g_hash_table_new (g_direct_hash, g_direct_equal);
+	else
+		o_indexer = (object_indexer *) g_hash_table_lookup (objects, object);
 
 	if (o_indexer == NULL) {
 		o_indexer = g_new (object_indexer, 1);
@@ -101,28 +111,35 @@ Applier::AddPropertyChange (DependencyObject *object, DependencyProperty *proper
 }
 
 static void
-destroy_value_func (value_indexer *v_indexer, gpointer *unused)
+destroy_value_func (value_indexer *v_indexer, gpointer unused)
 {
+	g_return_if_fail (v_indexer != NULL);
 	g_return_if_fail (v_indexer->v != NULL);
 
 	delete v_indexer->v;
+	v_indexer->v = NULL;
 	g_free (v_indexer);
 }
 
 static void
-destroy_property_func (property_indexer *p_indexer, gpointer *unused)
+destroy_property_func (property_indexer *p_indexer, gpointer unused)
 {
-	g_return_if_fail (p_indexer->property != NULL);
+	g_return_if_fail (p_indexer != NULL);
 	g_return_if_fail (p_indexer->values_list != NULL);
 
 	g_list_foreach (p_indexer->values_list, (GFunc) destroy_value_func, NULL);
 	g_list_free (p_indexer->values_list);
+	p_indexer->property = NULL;
+	p_indexer->values_list = NULL;
 	g_free (p_indexer);
 }
 
 static void
-destroy_object_func (DependencyObject *object, object_indexer *o_indexer, gpointer *unused)
+destroy_object_func (DependencyObject *object, object_indexer *o_indexer, gpointer unused)
 {
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (o_indexer != NULL);
+
 	g_list_foreach (o_indexer->properties_list, (GFunc) destroy_property_func, NULL);
 	g_list_free (o_indexer->properties_list);
 	object->unref ();
@@ -140,23 +157,27 @@ apply_property_func (property_indexer *p_indexer, DependencyObject *object)
 }
 
 static void
-apply_object_func (DependencyObject *object, object_indexer *o_indexer, gpointer *unused)
+apply_object_func (DependencyObject *object, object_indexer *o_indexer, gpointer unused)
 {
+	g_return_if_fail (o_indexer != NULL);
+
 	g_list_foreach (o_indexer->properties_list, (GFunc) apply_property_func, object);
 }
 
 void 
 Applier::Apply ()
 {
-	g_hash_table_foreach (objects, (GHFunc) apply_object_func, NULL);
+	if (objects)
+		g_hash_table_foreach (objects, (GHFunc) apply_object_func, NULL);
 }
 
 void
 Applier::Flush ()
 {
-	g_hash_table_foreach (objects, (GHFunc) destroy_object_func, NULL);
-	g_hash_table_destroy (objects);
-	
-	objects = g_hash_table_new (g_direct_hash, g_direct_equal);
+	if (objects) {
+		g_hash_table_foreach (objects, (GHFunc) destroy_object_func, NULL);
+		g_hash_table_destroy (objects);
+		objects = NULL;
+	}
 }
 

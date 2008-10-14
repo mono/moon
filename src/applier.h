@@ -27,6 +27,7 @@ class Applier {
 
  private:
 	GHashTable *objects;
+	bool readonly;
 
  public:
 	Applier ();

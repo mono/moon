@@ -1,3 +1,9 @@
+2008-10-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* applier.cpp|h: Add a readonly flag to ensure nothing gets added in
+	the hashtable while we're flushing it on shutdown. Add a few more
+	checks and avoid re-creating the hashtable on flush.
+
 2008-10-14  Geoff Norton  <gnorton@novell.com>
 
 	* pipeline-ffmpeg.cpp:  FFMpeg changed the API with version #52, no
