@@ -22,7 +22,7 @@ namespace Moonlight {
 		private string entry_point_type = null;
 		private string cs_sources;
 
-		const string RuntimeVersion = "2.0.30923.0";
+		const string RuntimeVersion = "2.0.31005.0";
 
 		public string CSSources {
 			get { return cs_sources; }
