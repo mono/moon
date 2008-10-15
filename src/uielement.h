@@ -109,10 +109,10 @@ public:
 	// UpdateTransform:
 	//   Updates the absolute_xform for this item
 	//
-	virtual void UpdateTransform ();
+	void UpdateTransform ();
 
 	void ComputeLocalTransform ();
-	virtual void ComputeTransform ();
+	virtual bool ComputeTransform ();
 
 	//
 	// GetRenderVisible:

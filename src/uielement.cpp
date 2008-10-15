@@ -340,7 +340,7 @@ UIElement::ComputeLocalTransform ()
 	cairo_matrix_translate (&local_xform, -transform_origin.x, -transform_origin.y);
 }
 
-void
+bool
 UIElement::ComputeTransform ()
 {
 	if (GetVisualParent () != NULL) {
@@ -352,6 +352,8 @@ UIElement::ComputeTransform ()
 		GetTransformFor (this, &absolute_xform);
 
 	cairo_matrix_multiply (&absolute_xform, &local_xform, &absolute_xform);
+
+	return true;
 }
 
 void

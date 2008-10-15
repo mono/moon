@@ -225,7 +225,7 @@ Shape::Fill (cairo_t *cr, bool do_op)
 }
 
 Rect
-Shape::ComputeStretchBounds (Rect shape_bounds)
+Shape::ComputeStretchBounds ()
 {
 	Value *vh, *vw;
 	needs_clip = true;
@@ -236,7 +236,7 @@ Shape::ComputeStretchBounds (Rect shape_bounds)
 	 */
 
 	if (Shape::MixedHeightWidth (&vh, &vw)) {
-		return shape_bounds;
+		return Rect ();
 	}
 
 	double w = vw ? vw->AsDouble () : 0.0;
@@ -244,25 +244,27 @@ Shape::ComputeStretchBounds (Rect shape_bounds)
 
 	if ((h < 0.0) || (w < 0.0)) {
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
-		return shape_bounds;
+		return Rect ();
 	}
 
 	if ((vh && (h <= 0.0)) || (vw && (w <= 0.0))) { 
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
-		return shape_bounds;
+		return Rect ();
 	}
+
+	Rect shape_bounds = ComputeShapeBounds (false, NULL);
 
 	h = (h == 0.0) ? shape_bounds.height : h;
 	w = (w == 0.0) ? shape_bounds.width : w;
 
 	if (h <= 0.0 || w <= 0.0 || shape_bounds.width <= 0.0 || shape_bounds.height <= 0.0) {
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
-		return shape_bounds;
+		return Rect();
 	}
 
 	Stretch stretch = GetStretch ();
 	if (stretch != StretchNone) {
-		Rect logical_bounds = ComputeShapeBounds (true);
+		Rect logical_bounds = ComputeShapeBounds (true, NULL);
 
 		bool adj_x = logical_bounds.width != 0.0;
 		bool adj_y = logical_bounds.height != 0.0;
@@ -536,15 +538,26 @@ Shape::ArrangeOverride (Size availableSize)
 }
 
 
+bool
+Shape::ComputeTransform ()
+{
+	FrameworkElement::ComputeTransform ();
+	InvalidateSurfaceCache ();
+
+       	if (this->dirty_flags & DirtyBounds)
+		return true;
+
+	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
+	return false;
+}
+
 void
 Shape::ComputeBounds ()
 {
 	cairo_matrix_init_identity (&stretch_transform);
 	InvalidateSurfaceCache ();
 	
-	extents = ComputeShapeBounds (false);
-
-	extents = ComputeStretchBounds (extents);
+	extents = ComputeStretchBounds ();
 	origin = ComputeOriginPoint (extents);
 
 	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
@@ -552,7 +565,7 @@ Shape::ComputeBounds ()
 }
 
 Rect
-Shape::ComputeShapeBounds (bool logical)
+Shape::ComputeShapeBounds (bool logical, cairo_matrix_t *matrix)
 {
 	if (!path || (path->cairo.num_data == 0))
 		BuildPath ();
@@ -563,6 +576,9 @@ Shape::ComputeShapeBounds (bool logical)
 	double thickness = (logical || !IsStroked ()) ? 0.0 : GetStrokeThickness ();
 	
 	cairo_t *cr = measuring_context_create ();
+	if (matrix)
+		cairo_set_matrix (cr, matrix);
+
 	cairo_set_line_width (cr, thickness);
 
 	if (thickness > 0.0) {
@@ -575,6 +591,8 @@ Shape::ComputeShapeBounds (bool logical)
 
 	cairo_append_path (cr, &path->cairo);
 	
+	cairo_identity_matrix (cr);
+
 	double x1, y1, x2, y2;
 
 	if (logical) {
@@ -624,6 +642,7 @@ Shape::InsideObject (cairo_t *cr, double x, double y)
 	TransformPoint (&x, &y);
 	if (!extents.PointInside (x, y))
 		return false;
+
 
 	cairo_save (cr);
 	
@@ -697,15 +716,22 @@ Shape::OnPropertyChanged (PropertyChangedEventArgs *args)
 			// (based on stroke thickness) to start
 			// painting.
 			InvalidatePathCache ();
+			UpdateBounds ();
                } else
 			InvalidateSurfaceCache ();
 		
+
 		stroke = new_stroke;
-		UpdateBounds ();
 	} else if (args->property == Shape::FillProperty) {
+		Brush *new_fill = args->new_value ? args->new_value->AsBrush () : NULL;
+
+		if (!fill || !new_fill) {
+			InvalidatePathCache ();
+			UpdateBounds ();
+		} else
+			InvalidateSurfaceCache ();
+			
 		fill = args->new_value ? args->new_value->AsBrush() : NULL;
-		InvalidateSurfaceCache ();
-		UpdateBounds ();
 	} else if (args->property == Shape::StrokeThicknessProperty) {
 		InvalidatePathCache ();
 		UpdateBounds ();
@@ -785,8 +811,9 @@ Ellipse::Ellipse ()
  * in the other stretch logic
  */
 Rect
-Ellipse::ComputeStretchBounds (Rect shape_bounds)
+Ellipse::ComputeStretchBounds ()
 {
+	Rect shape_bounds = ComputeShapeBounds (false);
 	needs_clip = !IsDegenerate () && (GetStretch () == StretchUniformToFill);
 	return shape_bounds;
 }
@@ -917,8 +944,9 @@ Rectangle::Rectangle ()
  * in the other stretch logic
  */
 Rect
-Rectangle::ComputeStretchBounds (Rect shape_bounds)
+Rectangle::ComputeStretchBounds ()
 {
+	Rect shape_bounds = ComputeShapeBounds (false);
 	needs_clip = !IsDegenerate () && (GetStretch () == StretchUniformToFill);
 	return shape_bounds;
 }
@@ -1805,7 +1833,39 @@ Path::ComputeShapeBounds (bool logical, cairo_matrix_t *matrix)
 		return shape_bounds;
 	}
 
-	shape_bounds = geometry->ComputeBounds (this, logical, matrix);
+	if (logical)
+		return geometry->ComputeBounds (this, logical, matrix);
+		
+	double thickness = !IsStroked () ? 0.0 : GetStrokeThickness ();
+	
+	cairo_t *cr = measuring_context_create ();
+	cairo_set_line_width (cr, thickness);
+
+	if (thickness > 0.0) {
+		//FIXME: still not 100% precise since it could be different from the end cap
+		PenLineCap cap = GetStrokeStartLineCap ();
+		if (cap == PenLineCapFlat)
+			cap = GetStrokeEndLineCap ();
+		cairo_set_line_cap (cr, convert_line_cap (cap));
+	}
+
+	if (matrix)
+		cairo_set_matrix (cr, matrix);
+	geometry->Draw (cr);
+
+	cairo_identity_matrix (cr);
+
+	double x1, y1, x2, y2;
+
+	if (thickness > 0) {
+		cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
+	} else {
+		cairo_fill_extents (cr, &x1, &y1, &x2, &y2);
+	}
+
+        shape_bounds = Rect (MIN (x1, x2), MIN (y1, y2), fabs (x2 - x1), fabs (y2 - y1));
+	
+	measuring_context_destroy (cr);
 
 	return shape_bounds;
 }

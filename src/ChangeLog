@@ -1,3 +1,16 @@
+2008-10-14  Larry Ewing  <lewing@novell.com>
+
+	* uielement.cpp, uielement.h: make ComputeTransform virtual and
+	have it return a bool.
+
+	* shape.cpp, shape.h: override ComputeTransform and optimize the
+	bounds computations.  Use a general ComputeShapeBounds for actual
+	drawn bounds compuations for now.
+	
+	* dirty.cpp (Surface::ProcessDownDirtyElements): add a short
+	circuit path to DirtyTransform for elements that can recompute
+	without updating bounds.
+
 2008-10-13  Larry Ewing  <lewing@novell.com>
 
 	* geometry.cpp, geometry.h: remove used argument from function

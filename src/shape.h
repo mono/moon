@@ -66,14 +66,15 @@ class Shape : public FrameworkElement {
 	void InvalidateSurfaceCache (void);
 	bool IsCandidateForCaching (void);
 
-	virtual Rect ComputeShapeBounds (bool logical);
-	virtual Rect ComputeShapeBounds (bool logical, cairo_matrix_t * matrix) { return ComputeShapeBounds (logical); }
+	virtual Rect ComputeShapeBounds (bool logical) { return ComputeShapeBounds (logical, NULL); }
+	virtual Rect ComputeShapeBounds (bool logical, cairo_matrix_t * matrix);
 	virtual Rect ComputeLargestRectangle ();
 
 	virtual void ShiftPosition (Point p);
+	virtual bool ComputeTransform ();
 
 	cairo_matrix_t stretch_transform;
-	virtual Rect ComputeStretchBounds (Rect shape_bounds);
+	virtual Rect ComputeStretchBounds ();
 	Point ComputeOriginPoint (Rect shape_bounds);
 	
 	DoubleCollection *GetStrokeDashArray ();
@@ -200,7 +201,7 @@ class Ellipse : public Shape {
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
 	virtual Rect ComputeLargestRectangle ();
 	virtual Rect ComputeShapeBounds (bool logical);
-	virtual Rect ComputeStretchBounds (Rect shape_bounds);
+	virtual Rect ComputeStretchBounds ();
 	
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -224,7 +225,7 @@ class Rectangle : public Shape {
 	virtual ~Rectangle () {}
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
 	virtual Rect ComputeShapeBounds (bool logical);
-	virtual Rect ComputeStretchBounds (Rect shape_bounds);
+	virtual Rect ComputeStretchBounds ();
 
  public:
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
@@ -402,7 +403,6 @@ class Path : public Shape {
 	virtual ~Path () {}
 	virtual bool SetupLine (cairo_t *cr);
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
-	Rect ComputeShapeBounds (bool logical) { return ComputeShapeBounds (logical, NULL); }
 	virtual Rect ComputeShapeBounds (bool logical, cairo_matrix_t *matrix);
 
  public:
