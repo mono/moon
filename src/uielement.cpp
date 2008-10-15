@@ -343,13 +343,13 @@ UIElement::TransformBounds (cairo_matrix_t *old, cairo_matrix_t *current)
 	Point p2 (1,1);
 	Point p3 (0,1);
 	
-	p0 = p1 - p0.Transform (&tween);
+	p0 = p0 - p0.Transform (&tween);
 	p1 = p1 - p1.Transform (&tween);
 	p2 = p2 - p2.Transform (&tween);
 	p3 = p3 - p3.Transform (&tween);
 
 	if (p0 == p1 && p1 == p2 && p2 == p3) {
-		printf ("shifting position\n");
+		d(printf ("shifting position\n");)
 		ShiftPosition (bounds.GetTopLeft ().Transform (&tween));
 		return;
 	}
