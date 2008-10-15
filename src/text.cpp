@@ -198,7 +198,6 @@ TextBlock::TextBlock ()
 {
 	downloader = NULL;
 	
-	setvalue = true;
 	dirty = true;
 	
 	actual_height = 0.0;
@@ -217,9 +216,11 @@ TextBlock::TextBlock ()
 	
 	Brush *brush = new SolidColorBrush ("black");
 	
+	setvalue = false;
 	SetValue (TextBlock::ForegroundProperty, Value (brush));
 	SetValue (TextBlock::InlinesProperty, Value::CreateUnref (new InlineCollection ()));
-	brush->unref();
+	brush->unref ();
+	setvalue = true;
 }
 
 TextBlock::~TextBlock ()
@@ -349,16 +350,25 @@ TextBlock::CalcActualWidthHeight (cairo_t *cr)
 void
 TextBlock::Layout (cairo_t *cr)
 {
-	Value *value = GetValueNoDefault (FrameworkElement::WidthProperty);
+	Value *value = GetValueNoDefault (TextBlock::TextProperty);
 	InlineCollection *inlines = GetInlines ();
 	TextDecorations decorations;
 	List *runs = new List ();
 	guint8 font_mask;
 	const char *text;
 	
+	if (!value) {
+		// If no text has ever been set on this TextBlock,
+		// then skip calculating actual width/height.
+		// Fixes bug #435798
+		actual_height = 0.0;
+		actual_width = 0.0;
+		goto done;
+	}
+	
 	layout->SetWrapping (GetTextWrapping ());
 	
-	if (value) {
+	if ((value = GetValueNoDefault (FrameworkElement::WidthProperty))) {
 #if SL_2_0
 		Thickness *padding = GetPadding ();
 		double pad = padding->left + padding->right;
@@ -456,9 +466,10 @@ TextBlock::Layout (cairo_t *cr)
 	//layout->GetLayoutExtents (&bbox_width, &bbox_height);
 	
 	if (runs->IsEmpty ()) {
-		// If the Text property is empty, Silverlight seems to
-		// set the ActualHeight property to the font
-		// height. See bug #405514 for details.
+		// If the Text property had been set once upon a time,
+		// but is currently empty, Silverlight seems to set
+		// the ActualHeight property to the font height. See
+		// bug #405514 for details.
 		TextFont *font = this->font->GetFont ();
 		actual_height = font->Height ();
 		font->unref ();

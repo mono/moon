@@ -1,3 +1,12 @@
+2008-10-15  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fix for bug #435798
+
+	* text.cpp (TextBlock::TextBlock): Let OnPropertyChanged() know
+	that we are setting the default brush/inlines.
+	(TextBlock::Layout): If no Text value has yet been set, use 0.0 as
+	the actualHeight.
+
 2008-10-14  Chris Toshok  <toshok@ximian.com>
 
 	* window-gtk.h, window-gtk.cpp (MoonWindowGtk::GetGdkWindow): ref
