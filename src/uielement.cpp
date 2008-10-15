@@ -253,16 +253,6 @@ UIElement::UpdateTotalHitTestVisibility ()
 		GetSurface ()->AddDirtyElement (this, DirtyHitTestVisibility);
 }
 
-void
-UIElement::UpdatePosition ()
-{
-	if (this->dirty_flags & (DirtyLocalTransform | DirtyTransform))
-		return;
-
-	if (GetSurface())
-		GetSurface()->AddDirtyElement (this, DirtyPosition);
-}
-
 bool
 UIElement::GetActualTotalRenderVisibility ()
 {
@@ -318,7 +308,6 @@ UIElement::UpdateTransform ()
 {
 	if (GetSurface()) {
 		GetSurface()->AddDirtyElement (this, DirtyLocalTransform);
-		this->dirty_flags &= ~DirtyPosition;
 	}
 }
 
@@ -340,9 +329,39 @@ UIElement::ComputeLocalTransform ()
 	cairo_matrix_translate (&local_xform, -transform_origin.x, -transform_origin.y);
 }
 
-bool
+void
+UIElement::TransformBounds (cairo_matrix_t *old, cairo_matrix_t *current)
+{
+	Rect updated;
+
+	cairo_matrix_t tween = *old;
+	cairo_matrix_invert (&tween);
+	cairo_matrix_multiply (&tween, current, &tween);
+
+	Point p0 (0,0);
+	Point p1 (1,0);
+	Point p2 (1,1);
+	Point p3 (0,1);
+	
+	p0 = p1 - p0.Transform (&tween);
+	p1 = p1 - p1.Transform (&tween);
+	p2 = p2 - p2.Transform (&tween);
+	p3 = p3 - p3.Transform (&tween);
+
+	if (p0 == p1 && p1 == p2 && p2 == p3) {
+		printf ("shifting position\n");
+		ShiftPosition (bounds.GetTopLeft ().Transform (&tween));
+		return;
+	}
+
+	UpdateBounds ();
+}
+
+void
 UIElement::ComputeTransform ()
 {
+	cairo_matrix_t old = absolute_xform;
+
 	if (GetVisualParent () != NULL) {
 		cairo_matrix_t parent_transform;
 		GetVisualParent ()->GetTransformFor (this, &parent_transform);
@@ -352,8 +371,11 @@ UIElement::ComputeTransform ()
 		GetTransformFor (this, &absolute_xform);
 
 	cairo_matrix_multiply (&absolute_xform, &local_xform, &absolute_xform);
-
-	return true;
+	
+	if (moonlight_flags & RUNTIME_INIT_USE_UPDATE_POSITION)
+		TransformBounds (&old, &absolute_xform);
+	else
+		UpdateBounds ();
 }
 
 void
@@ -368,27 +390,6 @@ UIElement::ShiftPosition (Point p)
 {
 	bounds.x = p.x;
 	bounds.y = p.y;
-}
-
-void
-UIElement::ComputePosition ()
-{
-	Point p (bounds.x, bounds.y);
-
-	cairo_matrix_t inverse = absolute_xform;
-	cairo_matrix_invert (&inverse);
-
-	p = p.Transform (&inverse);
-
-	ComputeLocalTransform();
-	ComputeTransform();
-
-	p = p.Transform (&absolute_xform);
-
-// 	printf ("old position is %g %g, new position is %g %g\n",
-// 		bounds.x, bounds.y, p.x, p.y);
-
-	ShiftPosition (p);
 }
 
 void

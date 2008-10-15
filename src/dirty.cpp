@@ -282,13 +282,12 @@ Surface::ProcessDownDirtyElements ()
 
 		if (el->dirty_flags & DirtyTransform) {
 			el->dirty_flags &= ~DirtyTransform;
-
+			
 			el->Invalidate ();
-			if (el->ComputeTransform ())
-				el->UpdateBounds ();
-			else
-				if (el->GetVisualParent ())
-					el->GetVisualParent ()->UpdateBounds ();
+			el->ComputeTransform ();
+
+			if (el->GetVisualParent ())
+				el->GetVisualParent ()->UpdateBounds ();
 					
 			AddDirtyElement (el, DirtyNewBounds);
 			PropagateDirtyFlagToChildren (el, DirtyTransform);
@@ -319,20 +318,6 @@ Surface::ProcessDownDirtyElements ()
 				((Panel*)el)->GetChildren ()->ResortByZIndex();
 			}
 			    
-		}
-
-		if (el->dirty_flags & DirtyPosition) {
-			el->dirty_flags &= ~DirtyPosition;
-
-			Rect obounds = el->GetBounds ();
-
-			el->Invalidate ();
-			el->ComputePosition ();
- 			if (obounds != el->GetBounds() && el->GetVisualParent ())
-				el->GetVisualParent()->UpdateBounds();
-			AddDirtyElement (el, DirtyNewBounds);
-
- 			PropagateDirtyFlagToChildren (el, DirtyPosition);
 		}
 
 		if (el->dirty_flags & DirtyMeasure) {

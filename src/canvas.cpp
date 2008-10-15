@@ -79,12 +79,7 @@ Canvas::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, P
 		}
 		UIElement *ui = (UIElement *) obj;
 
-		if (moonlight_flags & RUNTIME_INIT_USE_UPDATE_POSITION)
-			ui->UpdatePosition ();
-		else
-			ui->UpdateTransform ();
-
-
+		ui->UpdateTransform ();
 		ui->InvalidateMeasure ();
 	}
 	else

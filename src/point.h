@@ -44,6 +44,11 @@ public:
 		return Point (x * v, y * v);
 	}
 
+	bool operator == (const Point &point)
+	{
+		return x == point.x && y == point.y;
+	}
+
 	Point Transform (cairo_matrix_t *matrix);
 
 	//

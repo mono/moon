@@ -1,5 +1,19 @@
 2008-10-15  Larry Ewing  <lewing@novell.com>
 
+	* uielement.cpp, uielement.h: remove UpdatePosition and
+	ComputePosition, all transform changes are handled in
+	ComputeTransform now.
+
+	* shape.cpp, shape.h: update for the new transform api.
+	
+	* dirty.cpp, dirty.h: remove DirtyPostion is it no longer needed.
+	
+	* canvas.cpp: Use UpdateTransform. 
+
+	* point.h: add a (lame) == operator.
+	
+2008-10-15  Larry Ewing  <lewing@novell.com>
+
 	* geometry.cpp, geometry.h: add shape bounds caching to all
 	geometry classes apply the transform when retrieving the bounds.
 	Make GetBounds the public bounds interface and make the
@@ -29,7 +43,7 @@
 
 2008-10-13  Larry Ewing  <lewing@novell.com>
 
-	* geometry.cpp, geometry.h: remove used argument from function
+	* geometry.cpp, geometry.h: remove unused arguments from function
 	prototypes.
 	
 	* uielement.cpp, shape.cpp: update calls.

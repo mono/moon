@@ -71,7 +71,7 @@ class Shape : public FrameworkElement {
 	virtual Rect ComputeLargestRectangle ();
 
 	virtual void ShiftPosition (Point p);
-	virtual bool ComputeTransform ();
+	virtual void TransformBounds (cairo_matrix_t *old, cairo_matrix_t *current);
 
 	cairo_matrix_t stretch_transform;
 	virtual Rect ComputeStretchBounds ();

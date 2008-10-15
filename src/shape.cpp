@@ -470,7 +470,8 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 		cairo_paint (cr);
 	} else {
 		cairo_set_matrix (cr, &absolute_xform);
-		Clip (cr);
+		if (do_op)
+			Clip (cr);
 		
 		if (DrawShape (cr, do_op))
 			return;
@@ -537,18 +538,11 @@ Shape::ArrangeOverride (Size availableSize)
 	return size;
 }
 
-
-bool
-Shape::ComputeTransform ()
+void
+Shape::TransformBounds (cairo_matrix_t *old, cairo_matrix_t *current)
 {
-	FrameworkElement::ComputeTransform ();
 	InvalidateSurfaceCache ();
-
-       	if (this->dirty_flags & DirtyBounds)
-		return true;
-
-	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
-	return false;
+	bounds = IntersectBoundsWithClipPath (extents, false).Transform (current);
 }
 
 void

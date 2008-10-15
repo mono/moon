@@ -112,7 +112,9 @@ public:
 	void UpdateTransform ();
 
 	void ComputeLocalTransform ();
-	virtual bool ComputeTransform ();
+
+	void ComputeTransform ();
+	virtual void TransformBounds (cairo_matrix_t *old, cairo_matrix_t *current);
 
 	//
 	// GetRenderVisible:
@@ -167,22 +169,6 @@ public:
 	{
 		return Point (0.0, 0.0);
 	}
-
-	// UpdatePosition:
-	//   Recomputes just the position of this element, and if
-	//   they're different, chains up to its parent telling it to
-	//   update its bounds.
-	void UpdatePosition ();
-
-	// 
-	// ComputePosition:
-	//   Updates the bounding box for the given item, this uses the parent
-	//   chain to compute the composite affine.
-	//
-	// Output:
-	//   item->bounds is updated
-	// 
-	virtual void ComputePosition ();
 
 	//
 	// ShiftPosition:
