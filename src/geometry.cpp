@@ -32,7 +32,7 @@ Geometry::~Geometry ()
 }
 
 void
-Geometry::Draw (Path *shape, cairo_t *cr)
+Geometry::Draw (cairo_t *cr)
 {
 	Transform *transform = GetTransform ();
 	cairo_matrix_t saved;
@@ -45,7 +45,7 @@ Geometry::Draw (Path *shape, cairo_t *cr)
 	}
 
 	if (!IsBuilt ())
-		Build (shape);
+		Build ();
 
 	// Geometry is used for Clip so Fill (normally setting the fill rule) is never called
 	cairo_set_fill_rule (cr, convert_fill_rule (GetFillRule ()));
@@ -112,7 +112,7 @@ GeometryGroup::OnCollectionItemChanged (Collection *col, DependencyObject *obj, 
 }
 
 void
-GeometryGroup::Draw (Path *shape, cairo_t *cr)
+GeometryGroup::Draw (cairo_t *cr)
 {
 	Transform *transform = GetTransform ();
 	cairo_matrix_t saved;
@@ -133,7 +133,7 @@ GeometryGroup::Draw (Path *shape, cairo_t *cr)
 	for (int i = 0; i < children->GetCount (); i++) {
 		geometry = children->GetValueAt (i)->AsGeometry ();
 		
-		geometry->Draw (shape, cr);
+		geometry->Draw (cr);
 	}
 	
 	cairo_set_matrix (cr, &saved);
@@ -165,13 +165,13 @@ GeometryGroup::ComputeBounds (Path *path, bool logical, cairo_matrix_t * matrix)
 
 #if 0
 Point
-Geometry::GetOriginPoint (Path *shape)
+Geometry::GetOriginPoint ()
 {
 	double x = 0.0;
 	double y = 0.0;
 
 	if (!IsBuilt ())
-		Build (shape);
+		Build ();
 
 	moon_get_origin (path, &x, &y);
 	return Point (x, y);
@@ -183,7 +183,7 @@ Geometry::GetOriginPoint (Path *shape)
 //
 
 void
-EllipseGeometry::Build (Path *shape)
+EllipseGeometry::Build ()
 {
 	double rx = GetRadiusX ();
 	double ry = GetRadiusY ();
@@ -230,7 +230,7 @@ EllipseGeometry::ComputeBounds (Path *path, bool logical)
 //
 
 void
-LineGeometry::Build (Path *shape)
+LineGeometry::Build ()
 {
 	Point *p1 = GetStartPoint ();
 	Point *p2 = GetEndPoint ();
@@ -320,7 +320,7 @@ PathGeometry::OnCollectionItemChanged (Collection *col, DependencyObject *obj, P
 }
 
 void
-PathGeometry::Build (Path *shape)
+PathGeometry::Build ()
 {
 	PathFigureCollection *figures;
 	PathFigure *figure;
@@ -334,7 +334,7 @@ PathGeometry::Build (Path *shape)
 		figure = figures->GetValueAt (i)->AsPathFigure ();
 		
 		if (!figure->IsBuilt ())
-			figure->Build (shape);
+			figure->Build ();
 		
 		moon_merge (path, figure->path);
 	}
@@ -366,7 +366,7 @@ Rect
 PathGeometry::CacheBounds (Path *shape, bool logical, cairo_matrix_t *matrix)
 {
 	if (!IsBuilt ())
-		Build (shape);
+		Build ();
 
 	PathFigureCollection *figures = GetFigures ();
 	if (!figures && (!path || (path->cairo.num_data == 0)))
@@ -412,7 +412,7 @@ PathGeometry::CacheBounds (Path *shape, bool logical, cairo_matrix_t *matrix)
 //
 
 void
-RectangleGeometry::Build (Path *shape)
+RectangleGeometry::Build ()
 {
 	Rect *rect = GetRect ();
 	if (!rect)
@@ -528,7 +528,7 @@ PathFigure::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Pro
 }
 
 void
-PathFigure::Build (Path *shape)
+PathFigure::Build ()
 {
 	PathSegmentCollection *segments = GetSegments ();
 	PathSegment *segment;

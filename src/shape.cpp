@@ -634,7 +634,7 @@ Shape::InsideObject (cairo_t *cr, double x, double y)
 
 	Geometry *clip = GetClip ();
 	if (clip) {
-		clip->Draw (NULL, cr);
+		clip->Draw (cr);
 		ret = cairo_in_fill (cr, x, y);
 		cairo_new_path (cr);
 
@@ -1822,7 +1822,7 @@ Path::Draw (cairo_t *cr)
 	
 	cairo_save (cr);
 	cairo_transform (cr, &stretch_transform);
-	geometry->Draw (this, cr);
+	geometry->Draw (cr);
 	cairo_restore (cr);
 }
 

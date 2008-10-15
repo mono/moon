@@ -62,7 +62,7 @@ class Geometry : public DependencyObject {
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subprop_args);
 
-	virtual void Draw (Path *path, cairo_t *cr);
+	virtual void Draw (cairo_t *cr);
 	virtual Rect ComputeBounds (Path *path, bool logical) { return Rect (0.0, 0.0, 0.0, 0.0); }
 	virtual Rect ComputeBounds (Path *path, bool logical, cairo_matrix_t *matrix) { return ComputeBounds (path, logical); }
 
@@ -70,7 +70,7 @@ class Geometry : public DependencyObject {
 
 	virtual bool IsFilled () { return true; }
 
-	virtual void Build (Path *path) {}
+	virtual void Build () {}
 	virtual bool IsBuilt () { return path && path->cairo.num_data != 0; }
 	virtual cairo_path_t *GetCairoPath () { return (path) ? &path->cairo : NULL; }
 	
@@ -123,7 +123,7 @@ class GeometryGroup : public Geometry {
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	
-	virtual void Draw (Path *path, cairo_t *cr);
+	virtual void Draw (cairo_t *cr);
 	virtual Rect ComputeBounds (Path *path, bool logical) { return ComputeBounds (path, logical, NULL); }
 	virtual Rect ComputeBounds (Path *path, bool logical, cairo_matrix_t *matrix);
 	
@@ -141,7 +141,7 @@ class GeometryGroup : public Geometry {
 /* @Namespace=System.Windows.Media */
 class EllipseGeometry : public Geometry {
  protected:
-	virtual void Build (Path *path);
+	virtual void Build ();
 	
 	virtual ~EllipseGeometry () {}
 	
@@ -180,7 +180,7 @@ class EllipseGeometry : public Geometry {
 /* @Namespace=System.Windows.Media */
 class LineGeometry : public Geometry {
  protected:
-	virtual void Build (Path *path);
+	virtual void Build ();
 	
 	virtual ~LineGeometry () {}
 	
@@ -237,7 +237,7 @@ class PathGeometry : public Geometry {
 	Rect physical_bounds;
 	Rect CacheBounds (Path *path, bool logical, cairo_matrix_t *matrix);
  protected:
-	virtual void Build (Path *path);
+	virtual void Build ();
 	
 	virtual ~PathGeometry () {}
 	
@@ -273,7 +273,7 @@ class PathGeometry : public Geometry {
 /* @Namespace=System.Windows.Media */
 class RectangleGeometry : public Geometry {
  protected:
-	virtual void Build (Path *path);
+	virtual void Build ();
 	
 	virtual ~RectangleGeometry () {}
 	
@@ -354,7 +354,7 @@ class PathFigure : public DependencyObject {
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
-	virtual void Build (Path *shape);
+	virtual void Build ();
 	
 	virtual bool IsBuilt () { return path && path->cairo.num_data != 0; }
 	virtual cairo_path_t *GetCairoPath () { return (path) ? &path->cairo : NULL; }
@@ -382,7 +382,7 @@ class PathFigure : public DependencyObject {
 /* @Namespace=System.Windows.Media */
 class PathSegment : public DependencyObject {
  protected:
-	virtual void Build (Path *path) {}
+	virtual void Build () {}
 	
 	virtual ~PathSegment () {}
 	

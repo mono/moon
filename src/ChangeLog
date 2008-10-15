@@ -1,3 +1,10 @@
+2008-10-13  Larry Ewing  <lewing@novell.com>
+
+	* geometry.cpp, geometry.h: remove used argument from function
+	prototypes.
+	
+	* uielement.cpp, shape.cpp: update calls.
+	
 2008-10-15  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fix for bug #435798

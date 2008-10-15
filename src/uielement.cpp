@@ -122,7 +122,7 @@ UIElement::RenderClipPath (cairo_t *cr)
 	if (!geometry)
 		return;
 
-	geometry->Draw (NULL, cr);
+	geometry->Draw (cr);
 	cairo_clip (cr);
 }
 
@@ -506,7 +506,7 @@ UIElement::InsideClip (cairo_t *cr, double x, double y)
 	
 	cairo_save (cr);
 
-	clip->Draw (NULL, cr);
+	clip->Draw (cr);
 
 	TransformPoint (&nx, &ny);
 
@@ -886,7 +886,7 @@ UIElement::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 		
 		Geometry *geometry = GetClip ();
 		if (geometry) {
-			geometry->Draw (NULL, cr);
+			geometry->Draw (cr);
 			cairo_set_source_rgba (cr, 0.0, 1.0, 1.0, 1.0);
 			cairo_stroke (cr);
 		}
