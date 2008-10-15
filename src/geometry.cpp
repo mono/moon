@@ -56,8 +56,42 @@ Geometry::Draw (cairo_t *cr)
 	cairo_set_matrix (cr, &saved);
 }
 
+void
+Geometry::InvalidateCache ()
+{
+	if (path)
+		moon_path_clear (path);
+
+	local_bounds = Rect (0, 0, -INFINITY, -INFINITY);
+}
+
 Rect
-Geometry::ComputeBounds()
+Geometry::GetBounds ()
+{
+	bool compute = local_bounds.IsEmpty (true);
+
+	if (!IsBuilt ()) {
+		Build ();
+		compute = true;
+	}
+
+	if (compute)
+		local_bounds = ComputePathBounds ();
+
+	Rect bounds = local_bounds;
+
+	Transform *transform = GetTransform ();
+	if (transform) {
+		cairo_matrix_t matrix;
+		transform->GetTransform (&matrix);
+		bounds = bounds.Transform (&matrix);
+	}
+
+	return bounds;
+}
+
+Rect
+Geometry::ComputePathBounds()
 {
 	if (!IsBuilt ())
 		Build ();
@@ -77,13 +111,6 @@ Geometry::ComputeBounds()
 
 	measuring_context_destroy (cr);
 
-	Transform *transform = GetTransform ();
-	if (transform) {
-		cairo_matrix_t matrix;
-		transform->GetTransform (&matrix);
-		bounds = bounds.Transform (&matrix);
-	}
-	
 	return bounds;
 }
 
@@ -96,8 +123,7 @@ Geometry::OnPropertyChanged (PropertyChangedEventArgs *args)
 		DependencyObject::OnPropertyChanged (args);
 
 		// not sure why we're doing this inside this block.. seems like it should happen outside it?
-		if (path)
-			moon_path_clear (path);
+		InvalidateCache ();
 
 		return;
 	}
@@ -123,6 +149,8 @@ GeometryGroup::GeometryGroup ()
 void
 GeometryGroup::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
+	InvalidateCache ();
+
 	if (col != GetChildren ()) {
 		Geometry::OnCollectionChanged (col, args);
 		return;
@@ -134,6 +162,8 @@ GeometryGroup::OnCollectionChanged (Collection *col, CollectionChangedEventArgs 
 void
 GeometryGroup::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
 {
+	InvalidateCache ();
+
 	if (col != GetChildren ()) {
 		Geometry::OnCollectionItemChanged (col, obj, args);
 		return;
@@ -171,7 +201,7 @@ GeometryGroup::Draw (cairo_t *cr)
 }
 
 Rect
-GeometryGroup::ComputeBounds ()
+GeometryGroup::ComputePathBounds ()
 {
 	GeometryCollection *children = GetChildren ();
 	Rect bounds = Rect (0.0, 0.0, 0.0, 0.0);
@@ -180,14 +210,7 @@ GeometryGroup::ComputeBounds ()
 	for (int i = 0; i < children->GetCount (); i++) {
 		geometry = children->GetValueAt (i)->AsGeometry ();
 		
-		bounds = bounds.Union (geometry->ComputeBounds (), true);
-	}
-	
-	Transform *transform = GetTransform ();
-	if (transform) {
-		cairo_matrix_t matrix;
-		transform->GetTransform (&matrix);
-		bounds = bounds.Transform (&matrix);
+		bounds = bounds.Union (geometry->GetBounds (), true);
 	}
 	
 	//g_warning ("GeometryGroup::ComputeBounds - x %g y %g w %g h %g", bounds.x, bounds.y, bounds.w, bounds.h);
@@ -227,7 +250,7 @@ EllipseGeometry::Build ()
 }
 
 Rect
-EllipseGeometry::ComputeBounds ()
+EllipseGeometry::ComputePathBounds ()
 {
 	// code written to minimize divisions
 
@@ -240,13 +263,6 @@ EllipseGeometry::ComputeBounds ()
 	Rect bounds;
 	
 	bounds = Rect (x - hw, y - hh, hw * 2.0, hh * 2.0);
-	
-	Transform *transform = GetTransform ();
-	if (transform) {
-		cairo_matrix_t matrix;
-		transform->GetTransform (&matrix);
-		bounds = bounds.Transform (&matrix);
-	}
 	
 	return bounds;
 }
@@ -267,7 +283,7 @@ LineGeometry::Build ()
 }
 
 Rect
-LineGeometry::ComputeBounds ()
+LineGeometry::ComputePathBounds ()
 {
 	Point *p1 = GetStartPoint ();
 	Point *p2 = GetEndPoint ();
@@ -287,13 +303,6 @@ LineGeometry::ComputeBounds ()
 			  end_cap,
 			  &bounds);
 	
-	Transform *transform = GetTransform ();
-	if (transform) {
-		cairo_matrix_t matrix;
-		transform->GetTransform (&matrix);
-		bounds = bounds.Transform (&matrix);
-	}
-
 	return bounds;
 }
 
@@ -319,8 +328,7 @@ PathGeometry::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *
 		return;
 	}
 	
-	if (path)
-		moon_path_clear (path);
+	InvalidateCache ();
 	
 	NotifyListenersOfPropertyChange (PathGeometry::FiguresProperty);
 }
@@ -333,8 +341,7 @@ PathGeometry::OnCollectionItemChanged (Collection *col, DependencyObject *obj, P
 		return;
 	}
 	
-	if (path)
-		moon_path_clear (path);
+	InvalidateCache ();
 	
 	NotifyListenersOfPropertyChange (PathGeometry::FiguresProperty);
 }
@@ -361,7 +368,7 @@ PathGeometry::Build ()
 }
 
 Rect
-PathGeometry::ComputeBounds ()
+PathGeometry::ComputePathBounds ()
 {
 	if (!IsBuilt ())
 		Build ();
@@ -382,13 +389,6 @@ PathGeometry::ComputeBounds ()
 
 	measuring_context_destroy (cr);
 
-	Transform *transform = GetTransform ();
-	if (transform) {
-		cairo_matrix_t matrix;
-		transform->GetTransform (&matrix);
-		bounds = bounds.Transform (&matrix);
-	}
-	
 	return bounds;
 }
 
@@ -410,7 +410,7 @@ RectangleGeometry::Build ()
 }
 
 Rect
-RectangleGeometry::ComputeBounds ()
+RectangleGeometry::ComputePathBounds ()
 {
 	Rect *rect = GetRect ();
 	Rect bounds;
@@ -418,17 +418,8 @@ RectangleGeometry::ComputeBounds ()
 	if (!rect)
 		return Rect (0.0, 0.0, 0.0, 0.0);
 	
-	double thickness;
-
 	bounds = *rect;
 	
-	Transform *transform = GetTransform ();
-	if (transform) {
-		cairo_matrix_t matrix;
-		transform->GetTransform (&matrix);
-		bounds = bounds.Transform (&matrix);
-	}
-
 	return bounds;
 }
 
@@ -499,7 +490,7 @@ PathFigure::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Pro
 		DependencyObject::OnCollectionItemChanged (col, obj, args);
 		return;
 	}
-	
+
 	if (path)
 		moon_path_clear (path);
 	

@@ -1834,7 +1834,7 @@ Path::ComputeShapeBounds (bool logical, cairo_matrix_t *matrix)
 	}
 
 	if (logical)
-		return geometry->ComputeBounds ();
+		return geometry->GetBounds ();
 		
 	double thickness = !IsStroked () ? 0.0 : GetStrokeThickness ();
 	

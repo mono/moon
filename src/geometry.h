@@ -41,13 +41,15 @@ class Geometry : public DependencyObject {
 	
 	bool IsDegenerate () { return (flags & Geometry::GEOMETRY_DEGENERATE); }
 	void SetGeometryFlags (GeometryFlags sf) { flags &= ~Geometry::GEOMETRY_MASK; flags |= sf; }
-	virtual Rect ComputeBounds();
 
 	int flags;
 #endif
 	moon_path *path;
+
+	Rect local_bounds;
 	
 	virtual ~Geometry ();
+	virtual Rect ComputePathBounds ();
 	
  public:
  	/* @PropertyType=FillRule,DefaultValue=FillRuleEvenOdd,Access=Internal,GenerateAccessors */
@@ -56,7 +58,7 @@ class Geometry : public DependencyObject {
 	static DependencyProperty *TransformProperty;
 
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
-	Geometry () : path (NULL) { }
+	Geometry () : path (NULL) { local_bounds = Rect (0,0, -INFINITY, -INFINITY); }
 	
 	virtual Type::Kind GetObjectType () { return Type::GEOMETRY; }
 
@@ -64,7 +66,8 @@ class Geometry : public DependencyObject {
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subprop_args);
 
 	virtual void Draw (cairo_t *cr);
-	virtual Rect ComputeBounds ();
+	Rect GetBounds ();
+	void InvalidateCache ();
 
 	//virtual Point GetOriginPoint (Path *path);
 
@@ -110,6 +113,7 @@ class GeometryCollection : public DependencyObjectCollection {
 class GeometryGroup : public Geometry {
  protected:
 	virtual ~GeometryGroup () {}
+	virtual Rect ComputePathBounds ();
 
  public:
  	/* @PropertyType=GeometryCollection,GenerateAccessors */
@@ -124,7 +128,6 @@ class GeometryGroup : public Geometry {
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	
 	virtual void Draw (cairo_t *cr);
-	virtual Rect ComputeBounds ();
 	
 	//
 	// Property Accessors
@@ -143,6 +146,7 @@ class EllipseGeometry : public Geometry {
 	virtual void Build ();
 	
 	virtual ~EllipseGeometry () {}
+	virtual Rect ComputePathBounds ();
 	
  public:
  	/* @PropertyType=Point,GenerateAccessors */
@@ -156,7 +160,6 @@ class EllipseGeometry : public Geometry {
 	EllipseGeometry () { }
 	
 	virtual Type::Kind GetObjectType () { return Type::ELLIPSEGEOMETRY; }
-	virtual Rect ComputeBounds ();
 	
 	//
 	// Property Accessors
@@ -181,6 +184,7 @@ class LineGeometry : public Geometry {
 	virtual void Build ();
 	
 	virtual ~LineGeometry () {}
+	virtual Rect ComputePathBounds ();
 	
  public:
  	/* @PropertyType=Point,GenerateAccessors */
@@ -192,7 +196,6 @@ class LineGeometry : public Geometry {
 	LineGeometry () { }
 	
 	virtual Type::Kind GetObjectType () { return Type::LINEGEOMETRY; }
-	virtual Rect ComputeBounds ();
 	
 	//
 	// Property Accessors
@@ -232,6 +235,7 @@ class PathGeometry : public Geometry {
 	virtual void Build ();
 	
 	virtual ~PathGeometry () {}
+	virtual Rect ComputePathBounds ();
 	
  public:
  	/* @PropertyType=PathFigureCollection,GenerateAccessors */
@@ -245,7 +249,6 @@ class PathGeometry : public Geometry {
 	
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
-	virtual Rect ComputeBounds ();
 	
 	// this is an element-by-element decision
 	virtual bool IsFilled () { return true; }
@@ -267,6 +270,7 @@ class RectangleGeometry : public Geometry {
 	virtual void Build ();
 	
 	virtual ~RectangleGeometry () {}
+	virtual Rect ComputePathBounds ();
 	
  public:
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
@@ -280,7 +284,6 @@ class RectangleGeometry : public Geometry {
 	RectangleGeometry () { }
 	
 	virtual Type::Kind GetObjectType () { return Type::RECTANGLEGEOMETRY; }
-	virtual Rect ComputeBounds ();
 	
 	bool GetRadius (double *rx, double *ry);
 	

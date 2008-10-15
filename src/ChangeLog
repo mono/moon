@@ -1,3 +1,12 @@
+2008-10-15  Larry Ewing  <lewing@novell.com>
+
+	* geometry.cpp, geometry.h: add shape bounds caching to all
+	geometry classes apply the transform when retrieving the bounds.
+	Make GetBounds the public bounds interface and make the
+	computation interface protected.
+
+	* shape.cpp, uielement.cpp: call use GetBounds not ComputeBounds.
+
 2008-10-14  Larry Ewing  <lewing@novell.com>
 
 	* geometry.cpp, geometry.h: remove unused arguments to
