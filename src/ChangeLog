@@ -1,5 +1,12 @@
 2008-10-14  Larry Ewing  <lewing@novell.com>
 
+	* geometry.cpp, geometry.h: remove unused arguments to
+	ComputeBounds remove caching from PathGeometry.
+
+	* uielement.cpp, shape.cpp: call with correct arguments.
+
+2008-10-14  Larry Ewing  <lewing@novell.com>
+
 	* uielement.cpp, uielement.h: make ComputeTransform virtual and
 	have it return a bool.
 

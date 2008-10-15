@@ -56,6 +56,37 @@ Geometry::Draw (cairo_t *cr)
 	cairo_set_matrix (cr, &saved);
 }
 
+Rect
+Geometry::ComputeBounds()
+{
+	if (!IsBuilt ())
+		Build ();
+
+	if (!path || (path->cairo.num_data == 0))
+		return Rect ();
+
+	cairo_t *cr = measuring_context_create ();
+
+	cairo_append_path (cr, &path->cairo);
+	
+	double x1, y1, x2, y2;
+
+	cairo_path_extents (cr, &x1, &y1, &x2, &y2);
+
+	Rect bounds = Rect (MIN (x1, x2), MIN (y1, y2), fabs (x2 - x1), fabs (y2 - y1));
+
+	measuring_context_destroy (cr);
+
+	Transform *transform = GetTransform ();
+	if (transform) {
+		cairo_matrix_t matrix;
+		transform->GetTransform (&matrix);
+		bounds = bounds.Transform (&matrix);
+	}
+	
+	return bounds;
+}
+
 void
 Geometry::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
@@ -140,7 +171,7 @@ GeometryGroup::Draw (cairo_t *cr)
 }
 
 Rect
-GeometryGroup::ComputeBounds (Path *path, bool logical, cairo_matrix_t * matrix)
+GeometryGroup::ComputeBounds ()
 {
 	GeometryCollection *children = GetChildren ();
 	Rect bounds = Rect (0.0, 0.0, 0.0, 0.0);
@@ -149,7 +180,7 @@ GeometryGroup::ComputeBounds (Path *path, bool logical, cairo_matrix_t * matrix)
 	for (int i = 0; i < children->GetCount (); i++) {
 		geometry = children->GetValueAt (i)->AsGeometry ();
 		
-		bounds = bounds.Union (geometry->ComputeBounds (path, logical, matrix), logical);
+		bounds = bounds.Union (geometry->ComputeBounds (), true);
 	}
 	
 	Transform *transform = GetTransform ();
@@ -196,17 +227,12 @@ EllipseGeometry::Build ()
 }
 
 Rect
-EllipseGeometry::ComputeBounds (Path *path, bool logical)
+EllipseGeometry::ComputeBounds ()
 {
 	// code written to minimize divisions
-	double ht;
-	if (logical)
-		ht = 0.0;
-	else
-		ht = (path ? path->GetStrokeThickness () : 1.0) / 2.0;
 
-	double hw = GetRadiusX () + ht;
-	double hh = GetRadiusY () + ht;
+	double hw = GetRadiusX ();
+	double hh = GetRadiusY ();
 	// point is at center, so left-top corner is minus half width / half height
 	Point *pt = GetCenter ();
 	double x = pt ? pt->x : 0.0;
@@ -241,27 +267,25 @@ LineGeometry::Build ()
 }
 
 Rect
-LineGeometry::ComputeBounds (Path *shape, bool logical)
+LineGeometry::ComputeBounds ()
 {
 	Point *p1 = GetStartPoint ();
 	Point *p2 = GetEndPoint ();
-	double thickness;
 	PenLineCap start_cap;
 	PenLineCap end_cap;
 	Rect bounds;
 
-	if (shape) {
-		start_cap = shape->GetStrokeStartLineCap ();
-		end_cap = shape->GetStrokeEndLineCap ();
-		thickness = (logical) ? 0.0 : shape->GetStrokeThickness ();
-	} else {
-		start_cap = PenLineCapFlat;
-		end_cap = PenLineCapFlat;
-		thickness = 0.0;
-	}
+	start_cap = PenLineCapFlat;
+	end_cap = PenLineCapFlat;
 	
-	calc_line_bounds (p1 ? p1->x : 0.0, p2 ? p2->x : 0.0, p1 ? p1->y : 0.0, p2 ? p2->y : 0.0, 
-		thickness, start_cap, end_cap, &bounds);
+	calc_line_bounds (p1 ? p1->x : 0.0, 
+			  p2 ? p2->x : 0.0, 
+			  p1 ? p1->y : 0.0, 
+			  p2 ? p2->y : 0.0, 
+			  0.0, 
+			  start_cap, 
+			  end_cap,
+			  &bounds);
 	
 	Transform *transform = GetTransform ();
 	if (transform) {
@@ -279,13 +303,11 @@ LineGeometry::ComputeBounds (Path *shape, bool logical)
 
 PathGeometry::PathGeometry ()
 {
-	logical_bounds_available = physical_bounds_available = false;
 }
 
 // special case for the XAML parser when Path Markup Language (PML) is being used
 PathGeometry::PathGeometry (moon_path *pml)
 {
-	logical_bounds_available = physical_bounds_available = false;
 	path = pml;
 }
 
@@ -297,7 +319,6 @@ PathGeometry::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *
 		return;
 	}
 	
-	logical_bounds_available = physical_bounds_available = false;
 	if (path)
 		moon_path_clear (path);
 	
@@ -312,7 +333,6 @@ PathGeometry::OnCollectionItemChanged (Collection *col, DependencyObject *obj, P
 		return;
 	}
 	
-	logical_bounds_available = physical_bounds_available = false;
 	if (path)
 		moon_path_clear (path);
 	
@@ -341,29 +361,7 @@ PathGeometry::Build ()
 }
 
 Rect
-PathGeometry::ComputeBounds (Path *shape, bool logical, cairo_matrix_t *matrix)
-{
-	Rect bounds;
-
-	if (logical) {
-		if (!logical_bounds_available) {
-			logical_bounds = CacheBounds (shape, true, NULL);
-			logical_bounds_available = true;
-		}
-		bounds = logical_bounds;
-	} else {
-		if (!physical_bounds_available) {
-			physical_bounds = CacheBounds (shape, false, matrix);
-			physical_bounds_available = true;
-		}
-		bounds = physical_bounds;
-	}
-
-	return bounds;
-}
-
-Rect
-PathGeometry::CacheBounds (Path *shape, bool logical, cairo_matrix_t *matrix)
+PathGeometry::ComputeBounds ()
 {
 	if (!IsBuilt ())
 		Build ();
@@ -372,26 +370,13 @@ PathGeometry::CacheBounds (Path *shape, bool logical, cairo_matrix_t *matrix)
 	if (!figures && (!path || (path->cairo.num_data == 0)))
 		return Rect ();
 
-	double thickness = (logical || !shape || !shape->IsStroked ()) ? 0.0 : shape->GetStrokeThickness ();
-	
 	cairo_t *cr = measuring_context_create ();
-	cairo_set_line_width (cr, thickness);
 
-	if (matrix) 
-		cairo_set_matrix (cr, matrix);
 	cairo_append_path (cr, &path->cairo);
-	if (matrix) 
-		cairo_identity_matrix (cr);
 	
 	double x1, y1, x2, y2;
 
-	if (logical) {
-		cairo_path_extents (cr, &x1, &y1, &x2, &y2);
-	} else if (thickness > 0) {
-		cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
-	} else {
-		cairo_fill_extents (cr, &x1, &y1, &x2, &y2);
-	}
+	cairo_path_extents (cr, &x1, &y1, &x2, &y2);
 
 	Rect bounds = Rect (MIN (x1, x2), MIN (y1, y2), fabs (x2 - x1), fabs (y2 - y1));
 
@@ -425,7 +410,7 @@ RectangleGeometry::Build ()
 }
 
 Rect
-RectangleGeometry::ComputeBounds (Path *path, bool logical)
+RectangleGeometry::ComputeBounds ()
 {
 	Rect *rect = GetRect ();
 	Rect bounds;
@@ -434,14 +419,8 @@ RectangleGeometry::ComputeBounds (Path *path, bool logical)
 		return Rect (0.0, 0.0, 0.0, 0.0);
 	
 	double thickness;
-	if (path && !logical) {
-		thickness = path->IsStroked () ? path->GetStrokeThickness () : 0;
-	} else
-		thickness = 0.0;
 
-	//bounds = *rect;
-	bounds = rect->GrowBy (thickness / 2.0);
-
+	bounds = *rect;
 	
 	Transform *transform = GetTransform ();
 	if (transform) {

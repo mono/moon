@@ -41,6 +41,7 @@ class Geometry : public DependencyObject {
 	
 	bool IsDegenerate () { return (flags & Geometry::GEOMETRY_DEGENERATE); }
 	void SetGeometryFlags (GeometryFlags sf) { flags &= ~Geometry::GEOMETRY_MASK; flags |= sf; }
+	virtual Rect ComputeBounds();
 
 	int flags;
 #endif
@@ -63,8 +64,7 @@ class Geometry : public DependencyObject {
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subprop_args);
 
 	virtual void Draw (cairo_t *cr);
-	virtual Rect ComputeBounds (Path *path, bool logical) { return Rect (0.0, 0.0, 0.0, 0.0); }
-	virtual Rect ComputeBounds (Path *path, bool logical, cairo_matrix_t *matrix) { return ComputeBounds (path, logical); }
+	virtual Rect ComputeBounds ();
 
 	//virtual Point GetOriginPoint (Path *path);
 
@@ -124,8 +124,7 @@ class GeometryGroup : public Geometry {
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	
 	virtual void Draw (cairo_t *cr);
-	virtual Rect ComputeBounds (Path *path, bool logical) { return ComputeBounds (path, logical, NULL); }
-	virtual Rect ComputeBounds (Path *path, bool logical, cairo_matrix_t *matrix);
+	virtual Rect ComputeBounds ();
 	
 	//
 	// Property Accessors
@@ -157,8 +156,7 @@ class EllipseGeometry : public Geometry {
 	EllipseGeometry () { }
 	
 	virtual Type::Kind GetObjectType () { return Type::ELLIPSEGEOMETRY; }
-
-	virtual Rect ComputeBounds (Path *path, bool logical);
+	virtual Rect ComputeBounds ();
 	
 	//
 	// Property Accessors
@@ -194,8 +192,7 @@ class LineGeometry : public Geometry {
 	LineGeometry () { }
 	
 	virtual Type::Kind GetObjectType () { return Type::LINEGEOMETRY; }
-	
-	virtual Rect ComputeBounds (Path *path, bool logical);
+	virtual Rect ComputeBounds ();
 	
 	//
 	// Property Accessors
@@ -231,11 +228,6 @@ class PathFigureCollection : public DependencyObjectCollection {
 /* @ContentProperty="Figures" */
 /* @Namespace=System.Windows.Media */
 class PathGeometry : public Geometry {
-	int logical_bounds_available:1;
-	int physical_bounds_available:1;
-	Rect logical_bounds;
-	Rect physical_bounds;
-	Rect CacheBounds (Path *path, bool logical, cairo_matrix_t *matrix);
  protected:
 	virtual void Build ();
 	
@@ -253,8 +245,7 @@ class PathGeometry : public Geometry {
 	
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
-	virtual Rect ComputeBounds (Path *path, bool logical) { return ComputeBounds (path, logical, NULL); }
-	virtual Rect ComputeBounds (Path *path, bool logical, cairo_matrix_t *matrix);
+	virtual Rect ComputeBounds ();
 	
 	// this is an element-by-element decision
 	virtual bool IsFilled () { return true; }
@@ -289,8 +280,7 @@ class RectangleGeometry : public Geometry {
 	RectangleGeometry () { }
 	
 	virtual Type::Kind GetObjectType () { return Type::RECTANGLEGEOMETRY; }
-	
-	virtual Rect ComputeBounds (Path *path, bool logical);
+	virtual Rect ComputeBounds ();
 	
 	bool GetRadius (double *rx, double *ry);
 	
