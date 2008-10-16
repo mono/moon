@@ -1,3 +1,7 @@
+2008-10-16  Fernando Herrera  <fherrera@novell.com>
+
+	* README: Update codecs options.
+
 2008-10-13  Aaron Bockover  <abockover@novell.com>
 
 	* src/pipeline-ui.cpp: Set width request on the labels and not the

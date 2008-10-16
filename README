@@ -46,7 +46,8 @@ Runtime Options
 
 	Other options include:
 
-	* codecs=microsoft/ffmpeg
+	* ms-codecs=yes/no
+	* ffmpeg-codecs=yes/no
 
 		Controls which sets of codecs to use, the Microsoft
 		ones or the ffmpeg ones.
