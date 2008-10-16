@@ -1,3 +1,7 @@
+2008-10-16  Jb Evain  <jbevain@novell.com>
+
+	* sl2template.html: update SL2 mime type.
+
 2008-08-22  Raja R Harinath  <harinath@hurrynot.org>
 
 	* Makefile.am (xaml2html.exe): Pick up sl2template.html from $(srcdir).
