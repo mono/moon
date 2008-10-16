@@ -213,7 +213,7 @@ namespace System.Windows.Browser.Net
 			if (native == IntPtr.Zero)
 				throw new NotSupportedException ("Failed to create unmanaged WebHttpRequest object.  unsupported browser.");
 
-			foreach (string header in headers.Headers)
+			foreach (string header in headers.AllKeys)
 				NativeMethods.downloader_request_set_http_header (native, header, headers [header]);
 
 			if (request != null && request.Length > 0) {
