@@ -1,5 +1,10 @@
 2008-10-16  Jb Evain  <jbevain@novell.com>
 
+	* ResourceDictionary.cs: fix different Contains to check for
+	null and non string keys.
+
+2008-10-16  Jb Evain  <jbevain@novell.com>
+
 	* ResourceDictionary.cs: implement Count and IsReadOnly.
 
 2008-09-29  Jb Evain  <jbevain@novell.com>

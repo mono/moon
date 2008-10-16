@@ -36,11 +36,7 @@ using Mono;
 
 namespace System.Windows {
 
-	public partial class ResourceDictionary	: DependencyObject,
-		IDictionary<Object, Object>,
-		ICollection<KeyValuePair<Object, Object>>,
-		IEnumerable<KeyValuePair<Object, Object>>,
-		IEnumerable {
+	public partial class ResourceDictionary	: DependencyObject, IDictionary<Object, Object> {
 
 		[SecuritySafeCritical]
 		public void Add (string key, object value)
@@ -71,7 +67,19 @@ namespace System.Windows {
 
 		public bool Contains (object key)
 		{
-			return ContainsKey (key as string);
+			return ContainsKey (ToStringKey (key));
+		}
+
+		static string ToStringKey (object key)
+		{
+			if (key == null)
+				throw new ArgumentNullException ("key");
+
+			var str_key = key as string;
+			if (str_key == null)
+				throw new ArgumentException ("Key must be a string");
+
+			return str_key;
 		}
 
 		[SecuritySafeCritical]
@@ -99,29 +107,29 @@ namespace System.Windows {
 			return exists;
 		}
 
-		public int Count { get { return NativeMethods.collection_get_count (native); } }
+		public int Count {
+			get { return NativeMethods.collection_get_count (native); }
+		}
 
-		public bool IsReadOnly { get { return false; } }
+		public bool IsReadOnly {
+			get { return false; }
+		}
 
 		public object this[object key] { 
 			[SecuritySafeCritical]
 			get {
-				if (!(key is string))
-					throw new ArgumentException ("Key must be a string");
-
 				bool exists;
-				IntPtr val = NativeMethods.resource_dictionary_get (native, (string)key, out exists);
+				IntPtr val = NativeMethods.resource_dictionary_get (native, ToStringKey (key), out exists);
 				if (val == IntPtr.Zero)
 					return null;
 				return DependencyObject.ValueToObject (null, val);
 			}
 			set {
-				if (!(key is string))
-					throw new ArgumentException ("Key must be a string");
+				var str_key = ToStringKey (key);
 
 				Value v = DependencyObject.GetAsValue (value, true);
 				try {
-					NativeMethods.resource_dictionary_set (native, (string)key, ref v);
+					NativeMethods.resource_dictionary_set (native, str_key, ref v);
 				} finally {
 					NativeMethods.value_free_value (ref v);
 				}
@@ -143,37 +151,37 @@ namespace System.Windows {
 
 		bool IDictionary<object, object>.ContainsKey(object key)
 		{
-			return ContainsKey ((string)key);
+			return ContainsKey (ToStringKey (key));
 		}
 
-		object IDictionary<object, object>.this[ object key ] { 
-			get { return this[key]; }
-			set { this[key] = value; }
+		object IDictionary<object, object>.this [object key] { 
+			get { return this [key]; }
+			set { this [key] = value; }
 		}
 
 		bool IDictionary<object, object>.Remove (object key)
 		{
-			return RemoveInternal ((string)key);
+			return RemoveInternal (ToStringKey (key));
 		}
 
 		bool IDictionary<object, object>.TryGetValue (object key, out object value)
 		{
-			return TryGetValue ((string)key, out value);
+			return TryGetValue (ToStringKey (key), out value);
 		}
 
 		// ICollection<KeyValuePair<object, object>> implementation
 		//
-		void ICollection<KeyValuePair<object, object>>.Add(KeyValuePair<object, object> item)
+		void ICollection<KeyValuePair<object, object>>.Add (KeyValuePair<object, object> item)
 		{
-			Add ((string)item.Key, item.Value);
+			Add (ToStringKey (item.Key), item.Value);
 		}
 
-		void ICollection<KeyValuePair<object, object>>.Clear()
+		void ICollection<KeyValuePair<object, object>>.Clear ()
 		{
-			Clear();
+			Clear ();
 		}
 
-		bool ICollection<KeyValuePair<object, object>>.Contains(KeyValuePair<object, object> item)
+		bool ICollection<KeyValuePair<object, object>>.Contains (KeyValuePair<object, object> item)
 		{
 			throw new NotImplementedException();
 		}
@@ -193,7 +201,7 @@ namespace System.Windows {
 
 		bool ICollection<KeyValuePair<object, object>>.Remove (KeyValuePair<object, object> item)
 		{
-			Remove ((string)item.Key);
+			Remove (ToStringKey (item.Key));
 			return false;
 		}
 
