@@ -33,9 +33,8 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace System.Windows {
-	public abstract partial class PresentationFrameworkCollection<T> : DependencyObject,
-		IEnumerable, IList,
-		IList<T>, ICollection<T> {
+
+	public abstract partial class PresentationFrameworkCollection<T> : DependencyObject, IList<T>, IList {
 
 		public static readonly System.Windows.DependencyProperty CountProperty =
 			DependencyProperty.Lookup (Kind.COLLECTION, "Count", typeof (int));
