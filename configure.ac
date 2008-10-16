@@ -491,6 +491,42 @@ if test "x$ac_cv_sys_file_offset_bits" != "xno"; then
    LARGEFILE_CFLAGS="$LARGEFILE_CFLAGS -D_FILE_OFFSET_BITS=$ac_cv_sys_file_offset_bits"
 fi
 
+dnl *************************************
+dnl ***       Codec settings          ***
+dnl *************************************
+MOONLIGHT_CODEC_AVI_VERSION=`grep MOONLIGHT_CODEC_ABI_VERSION ./src/pipeline.h | awk -F" " '{print $3}'`
+OSTYPE="unknown"
+ARCH="unknown"
+# Do we know of a way to detect when the GCC ABI breaks? will it ever again? we'll hardcode this for now
+GCC_ABI_VERSION="1"
+
+case "$host" in
+        i*86-*-*)
+                ARCH=x86
+                ;;
+        x86_64-*-* | amd64-*-*)
+                ARCH=x64
+                ;;
+esac
+case "$host" in
+    *-*-*linux*)
+                OSTYPE=linux
+                ;;
+esac
+
+if test ${ARCH} = unknown; then
+        AC_ERROR(The codecs have not been configured to build on this architecture yet)
+fi
+if test ${OSTYPE} = unknown; then
+        AC_ERROR(The codecs have not been configured to build on this operating system yet)
+fi
+if test -z ${MOONLIGHT_CODEC_AVI_VERSION}; then
+        AC_ERROR(The Moonlight Pipeline ABI could not be determined)
+fi
+
+AC_DEFINE_UNQUOTED([CODEC_LIBRARY_NAME],["mscodecs-$OSTYPE-$ARCH-$MOONLIGHT_CODEC_AVI_VERSION-$GCC_ABI_VERSION.so"],[The encoded codec libname for this build])
+
+
 AGVIEWER_CFLAGS="$GTK_CFLAGS $DBUS_GLIB_CFLAGS $XULRUNNER_CFLAGS"
 AGVIEWER_LIBS="$GTK_LIBS $DBUS_GLIB_LIBS $XULRUNNER_LIBS"
 AC_SUBST(AGVIEWER_CFLAGS)
