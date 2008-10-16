@@ -11,6 +11,7 @@
 /Makefile.in
 /config.guess
 /config.sub
+/config.h.in
 /ltmain.sh
 /aclocal.m4
 /pixman-1-uninstalled.pc
