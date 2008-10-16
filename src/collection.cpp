@@ -207,7 +207,7 @@ Collection::RemoveAtWithError (int index, MoonError *error)
 {
 	// check bounds
 	if (index < 0 || (guint) index >= array->len) {
-		MoonError::FillIn (error, MoonError::ARGUMENT, "");
+		MoonError::FillIn (error, MoonError::ARGUMENT_OUT_OF_RANGE, "");
 		return false;
 	}
 	
