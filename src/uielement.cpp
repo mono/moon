@@ -336,7 +336,7 @@ UIElement::TransformBounds (cairo_matrix_t *old, cairo_matrix_t *current)
 
 	cairo_matrix_t tween = *old;
 	cairo_matrix_invert (&tween);
-	cairo_matrix_multiply (&tween, current, &tween);
+	cairo_matrix_multiply (&tween, &tween, current);
 
 	Point p0 (0,0);
 	Point p1 (1,0);

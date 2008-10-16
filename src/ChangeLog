@@ -14,6 +14,12 @@
 
 2008-10-15  Larry Ewing  <lewing@novell.com>
 
+	* uielement.cpp: fix the transform ordering.
+
+	* canvas.cpp, canvas.h: handle the toplevel canvas correctly.
+
+2008-10-15  Larry Ewing  <lewing@novell.com>
+
 	* uielement.cpp, uielement.h: remove UpdatePosition and
 	ComputePosition, all transform changes are handled in
 	ComputeTransform now.

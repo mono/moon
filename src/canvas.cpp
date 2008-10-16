@@ -12,13 +12,11 @@
  */
 
 #include <config.h>
-
 #include "rect.h"
 #include "canvas.h"
 #include "runtime.h"
 #include "namescope.h"
 #include "collection.h"
-
 
 Canvas::Canvas ()
 {
@@ -47,6 +45,17 @@ Canvas::ComputeBounds ()
 		Panel::ComputeBounds ();
 	}
 }
+
+void
+Canvas::ShiftPosition (Point p)
+{
+	Surface *surface = GetSurface ();
+	if (surface && surface->IsTopLevel (this)) {
+		ComputeBounds ();
+	} else {
+		Panel::ShiftPosition (p);
+	}
+} 
 
 void
 Canvas::OnPropertyChanged (PropertyChangedEventArgs *args)
