@@ -1589,24 +1589,31 @@ MoonlightObject::~MoonlightObject ()
 }
 
 void
-MoonlightObject::destroy_proxy (gpointer data)
+MoonlightObject::destroy_proxy_list (gpointer data)
 {
-	EventListenerProxy *proxy = (EventListenerProxy*)data;
-	proxy->RemoveHandler ();
-	delete (EventListenerProxy*)data;
+	List *list = (List *) data;
+	
+	list->Clear (true);
+	delete list;
 }
 
 void
-MoonlightObject::invalidate_proxy (gpointer key, gpointer value, gpointer data)
+MoonlightObject::invalidate_proxy_list (gpointer key, gpointer value, gpointer data)
 {
-	EventListenerProxy *proxy = (EventListenerProxy*)value;
-	proxy->Invalidate ();
+	List *list = (List *) value;
+	EventListenerProxy *proxy;
+	
+	proxy = (EventListenerProxy *) list->First ();
+	while (proxy) {
+		proxy->Invalidate ();
+		proxy = (EventListenerProxy *) proxy->next;
+	}
 }
 
 void
 MoonlightObject::Invalidate ()
 {
-	g_hash_table_foreach (event_listener_proxies, invalidate_proxy, NULL);
+	g_hash_table_foreach (event_listener_proxies, invalidate_proxy_list, NULL);
 }
 
 bool
@@ -1675,13 +1682,32 @@ MoonlightObject::Invoke (int id, NPIdentifier name, const NPVariant *args, uint3
 EventListenerProxy *
 MoonlightObject::LookupEventProxy (int event_id)
 {
-	return (EventListenerProxy*)g_hash_table_lookup (event_listener_proxies, GINT_TO_POINTER (event_id));
+	List *list = (List *) g_hash_table_lookup (event_listener_proxies, GINT_TO_POINTER (event_id));
+	
+	if (!list || list->IsEmpty ())
+		return NULL;
+	
+	return (EventListenerProxy *) list->First ();
+}
+
+void
+MoonlightObject::AddEventProxy (EventListenerProxy *proxy)
+{
+	List *list = (List *) g_hash_table_lookup (event_listener_proxies, GINT_TO_POINTER (proxy->GetEventId ()));
+	
+	if (!list) {
+		list = new List ();
+		g_hash_table_insert (event_listener_proxies, GINT_TO_POINTER (proxy->GetEventId ()), list);
+	}
+	
+	list->Append (proxy);
 }
 
 void
 MoonlightObject::SetEventProxy (int event_id, EventListenerProxy *proxy)
 {
-	g_hash_table_insert (event_listener_proxies, GINT_TO_POINTER (event_id), proxy);
+	ClearEventProxy (event_id);
+	AddEventProxy (proxy);
 }
 
 void
@@ -1974,11 +2000,11 @@ MoonlightScriptControlObject::SetProperty (int id, NPIdentifier name, const NPVa
 			if (event_id != -1) {
 				// If we have a handler, remove it.
 				ClearEventProxy (event_id);
-
+				
 				if (!NPVARIANT_IS_NULL (*value)) {
 					EventListenerProxy *proxy = new EventListenerProxy (instance,
-										    event_name,
-										    value);
+											    event_name,
+											    value);
 					proxy->AddHandler (plugin->GetSurface());
 					// we only emit that event once, when
 					// the plugin is initialized, so don't
@@ -2909,14 +2935,15 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 		
 		char *name = STRDUP_FROM_VARIANT (args [0]);
 		name[0] = toupper(name[0]);
-
+		
 		EventListenerProxy *proxy = new EventListenerProxy (instance, name, &args[1]);
 		int token = proxy->AddHandler (dob);
+		AddEventProxy (proxy);
 		g_free (name);
 		
 		if (token == -1)
 			THROW_JS_EXCEPTION ("AG_E_RUNTIME_ADDEVENT");
-
+		
 		INT32_TO_NPVARIANT (token, *result);
 		return true;
 	}
