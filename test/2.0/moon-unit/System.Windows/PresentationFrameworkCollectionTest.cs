@@ -19,7 +19,6 @@ namespace MoonTest.System.Windows
 	public class PresentationFrameworkCollectionTest
 	{
 		[TestMethod]
-		[KnownFailure]
 		public void RemoveAt ()
 		{
 			var canvas = new Canvas ();
