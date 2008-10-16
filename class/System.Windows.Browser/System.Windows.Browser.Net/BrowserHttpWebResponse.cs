@@ -79,12 +79,6 @@ namespace System.Windows.Browser.Net
 			response.Dispose ();
 		}
 
-		public override void Dispose (bool disposing)
-		{
-			if (disposing)
-				Close ();
-		}
-
 		internal void Write (IntPtr buffer, int count)
 		{
 			byte[] data = new byte [count];

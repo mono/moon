@@ -1,3 +1,7 @@
+2008-10-16  Jb Evain  <jbevain@novell.com>
+
+	* BrowserHttpWebResponse.cs: update to SL2 api.
+
 2008-08-23  Geoff Norton  <gnorton@novell.com>
 
 	* BrowserHttpWebRequest.cs: Only invoke a tick handler if we're not already
