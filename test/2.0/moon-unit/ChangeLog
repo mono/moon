@@ -1,3 +1,9 @@
+2008-10-16  Jb Evain  <jbevain@novell.com>
+
+	* System.Windows/ResourceDictionaryTest.cs: update.
+	* System.Windows/StyleTest.cs
+	* System.Windows/SetterTest.cs: comment out tests that crash SL2.
+
 2008-09-15  Jb Evain  <jbevain@novell.com>
 
 	* System.Windows/VisualStateManagerTest.cs: add test fixture

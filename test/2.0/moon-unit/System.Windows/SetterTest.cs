@@ -50,6 +50,7 @@ namespace MoonTest.System.Windows
 			style.Setters.Add (s);
 		}
 
+		/*
 		[TestMethod]
 		public void Parse ()
 		{
@@ -80,5 +81,6 @@ namespace MoonTest.System.Windows
 			Assert.AreEqual ("5.0", s.Value);
 			Assert.IsTrue (Double.IsNaN(r.Width));
 		}
+		*/
 	}
 }

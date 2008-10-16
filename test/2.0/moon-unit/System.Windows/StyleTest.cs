@@ -66,6 +66,7 @@ namespace MoonTest.System.Windows
 			Assert.Throws (delegate { b.Style = s; }, typeof (XamlParseException));
 		}
 
+		/*
 		[TestMethod]
 		[KnownFailure]
 		public void MissingTargetType ()
@@ -109,5 +110,6 @@ namespace MoonTest.System.Windows
 		{
 			XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007""><Setter Property=""WidthOrHeight"" Value=""10""/></Style>");
 		}
+		*/
 	}
 }
