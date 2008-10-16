@@ -26,9 +26,10 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System.Collections;
+using System.Collections.ObjectModel;
 using System.Windows.Controls;
 using System.Windows.Markup;
-using System.Collections.ObjectModel;
 
 namespace System.Windows {
 
@@ -46,7 +47,7 @@ namespace System.Windows {
 		{
 		}
 
-		public static VisualStateManager GetCustomVisualStateManager (DependencyObject obj)
+		public static VisualStateManager GetCustomVisualStateManager (FrameworkElement obj)
 		{
 			if (obj == null)
 				throw new ArgumentNullException ("obj");
@@ -54,7 +55,7 @@ namespace System.Windows {
 			return (VisualStateManager)obj.GetValue (CustomVisualStateManagerProperty);
 		}
 
-		public static void SetCustomVisualStateManager (DependencyObject obj,
+		public static void SetCustomVisualStateManager (FrameworkElement obj,
 								VisualStateManager value)
 		{
 			if (obj == null)
@@ -63,7 +64,7 @@ namespace System.Windows {
 			obj.SetValue (CustomVisualStateManagerProperty, value);
 		}
 
-		public static Collection<VisualStateGroup> GetVisualStateGroups (DependencyObject obj)
+		public static IList GetVisualStateGroups (FrameworkElement obj)
 		{
 			Collection<VisualStateGroup> col = (Collection<VisualStateGroup>)obj.GetValue (VisualStateGroupsProperty);
 			if (col == null) {
