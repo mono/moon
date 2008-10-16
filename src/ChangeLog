@@ -1,3 +1,8 @@
+2008-10-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* runtime.cpp (Surface::SetCursor): Unref cursors once they are set
+	on the window. Fix one more leak.
+
 2008-10-16  Jb Evain  <jbevain@novell.com>
 
 	* collection.cpp: TriggerCollection, UIElementCollection, InlineCollection:

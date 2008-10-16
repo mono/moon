@@ -490,7 +490,8 @@ Surface::SetCursor (MouseCursor new_cursor)
 
 		SetCursor (c);
 
-		// XXX unref the cursor?
+		if (c)
+			gdk_cursor_unref (c);
 	}
 }
 
