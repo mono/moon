@@ -1416,6 +1416,9 @@ PlaylistParser::TryFixError (gint8 *current_buffer, int bytes_read)
 		return false;
 
 	int index = XML_GetErrorByteIndex (internal->parser);
+
+	if (index > bytes_read)
+		return false;
 	
 	d (printf ("Attempting to fix invalid token error  %d.\n", index));
 

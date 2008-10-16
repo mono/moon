@@ -1,3 +1,7 @@
+2008-10-16  Fernando Herrera  <fherrera@novell.com>
+
+	* playlist.cpp: Fix a segfault parsing ASX3 malformed files.
+
 2008-10-16  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* text.cpp (TextBlock::Layout): Delay allocation of List so that we
