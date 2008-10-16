@@ -1,5 +1,9 @@
 2008-10-16  Jb Evain  <jbevain@novell.com>
 
+	* System.Windows/ResourceDictionaryTest.cs: add tests for Contains.
+
+2008-10-16  Jb Evain  <jbevain@novell.com>
+
 	* System.Windows/ResourceDictionaryTest.cs: update.
 	* System.Windows/StyleTest.cs
 	* System.Windows/SetterTest.cs: comment out tests that crash SL2.

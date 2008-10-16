@@ -166,13 +166,30 @@ namespace MoonTest.System.Windows
 		[TestMethod]
 		public void ContainsTest ()
 		{
-			Canvas b;
+			var canvas = CreateCanvas ();
 
-			b = (Canvas)XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Color x:Key=""color"">#ffffffff</Color></Canvas.Resources></Canvas>");
+			Assert.IsTrue (canvas.Resources.Contains ("color"));
+		}
 
-			Assert.IsTrue (b.Resources.Contains ("color"));
-			Assert.IsFalse (b.Resources.Contains (new object()));
-			Assert.IsFalse (b.Resources.Contains (null), "null");
+		static Canvas CreateCanvas ()
+		{
+			return (Canvas) XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Color x:Key=""color"">#ffffffff</Color></Canvas.Resources></Canvas>");
+		}
+
+		[TestMethod]
+		public void ContainsObjectKey ()
+		{
+			var canvas = CreateCanvas ();
+
+			Assert.Throws<ArgumentException> (() => canvas.Resources.Contains (new object ()));
+		}
+
+		[TestMethod]
+		public void ContainsNullKey ()
+		{
+			var canvas = CreateCanvas ();
+
+			Assert.Throws<ArgumentNullException> (() => canvas.Resources.Contains (null));
 		}
 
 		[TestMethod]
