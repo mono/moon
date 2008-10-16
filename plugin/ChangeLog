@@ -1,3 +1,7 @@
+2008-10-16  Jb Evain  <jbevain@novell.com>
+
+	* moonlight.h: update SL2 mime type and runtime version.
+
 2008-10-14  Chris Toshok  <toshok@ximian.com>
 
 	* windowless.cpp (MoonWindowless::GetGdkWindow): get the
