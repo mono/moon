@@ -22,7 +22,7 @@
 #include "pipeline.h"
 
 #define EULA_URL "http://anonsvn.mono-project.com/viewvc/trunk/moon/LICENSE?revision=112447"
-#define CODEC_URL "http://localhost:8080/libmscodecs.so"
+#define CODEC_URL "http://localhost:8080/"
 
 //Use these for testing the downloader UI, they're large and slow
 //#define EULA_URL "http://download.banshee-project.org/banshee/banshee-1-1.3.1.changes"
@@ -197,7 +197,7 @@ CodecDownloader::DownloadCompleted (EventObject *sender, EventArgs *args)
 		state = 2;
 		break;
 	case 3: // downloading codec, we're now finished downloading the codec
-		codec_path = g_build_filename (g_get_home_dir (), ".mozilla", "plugins", "libmscodecs.so", NULL);
+		codec_path = g_build_filename (g_get_home_dir (), ".mozilla", "plugins", CODEC_LIBRARY_NAME, NULL);
 		codec_dir = g_path_get_dirname (codec_path);
 
 		downloaded_file = dl->GetDownloadedFilename (NULL);
@@ -265,8 +265,11 @@ CodecDownloader::AcceptClicked ()
 		env_url = getenv ("MOONLIGHT_CODEC_URL");
 		if (env_url != NULL)
 			dl->Open ("GET", env_url, NoPolicy);
-		else
-			dl->Open ("GET", CODEC_URL, NoPolicy);
+		else {
+			char *codec_url = g_strdup_printf("%s/%s", CODEC_URL, CODEC_LIBRARY_NAME);
+			dl->Open ("GET", codec_url, NoPolicy);
+			g_free (codec_url);
+		}
 		dl->Send ();
 
 		state = 3;
