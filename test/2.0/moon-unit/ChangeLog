@@ -1,5 +1,9 @@
 2008-10-16  Jb Evain  <jbevain@novell.com>
 
+	* System.Windows/PresentationFrameworkCollectionTest.cs: fix tests.
+
+2008-10-16  Jb Evain  <jbevain@novell.com>
+
 	* System.Windows/SizeTest.cs: fix the test to be local independant.
 
 2008-10-16  Jb Evain  <jbevain@novell.com>
