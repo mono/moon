@@ -48,22 +48,24 @@ namespace MoonTest.System.Windows
 		[TestMethod]
 		public void ToStringTest ()
 		{
-			Assert.AreEqual ("5,5", (new Size(5,5)).ToString());
-			Assert.AreEqual ("5.234124,5234235", (new Size(5.234124,5234235)).ToString());
+			Assert.AreEqual (Concat (5, 5), new Size (5, 5).ToString ());
+			Assert.AreEqual (Concat (5.234124, 5234235), new Size (5.234124, 5234235).ToString ());
+		}
+
+		static string Concat (double a, double b)
+		{
+			return a.ToString () + "," + b.ToString ();
 		}
 
 		[TestMethod]
-		[KnownFailure]
 		public void SpecialToString ()
 		{
-			Assert.AreEqual ("NaN,NaN", (new Size(Double.NaN,Double.NaN)).ToString ());
+			Assert.AreEqual (Concat (Double.NaN, Double.NaN), new Size (Double.NaN, Double.NaN).ToString ());
 			Assert.AreEqual ("Empty", Size.Empty.ToString ());
-			
-			Assert.AreEqual ("-\u221e", Double.NegativeInfinity.ToString ());
 
 			Size s = Size.Empty;
 			s.Width = Double.NaN;
-			Assert.AreEqual ("NaN,-\u221e", s.ToString ());
+			Assert.AreEqual (Concat (Double.NaN, Double.NegativeInfinity), s.ToString ());
 		}
 	}
 }
