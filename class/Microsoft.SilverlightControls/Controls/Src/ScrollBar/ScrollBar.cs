@@ -438,7 +438,7 @@ namespace System.Windows.Controls.Primitives
         internal void RaiseScrollEvent(ScrollEventType scrollEventType) 
         {
             ScrollEventArgs newEvent = new ScrollEventArgs(scrollEventType, Value);
-            newEvent.Source = this; 
+            newEvent.OriginalSource = this; 
  
             if (Scroll != null)
             { 

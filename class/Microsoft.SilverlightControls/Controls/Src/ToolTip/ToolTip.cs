@@ -413,7 +413,7 @@ namespace System.Windows.Controls
  
         private void OnPopupClosed(object source, EventArgs e) 
         {
-            OnClosed(new RoutedEventArgs { Source = this }); 
+            OnClosed(new RoutedEventArgs { OriginalSource = this }); 
         }
 
         private void OnPopupOpened(object source, EventArgs e) 
@@ -424,7 +424,7 @@ namespace System.Windows.Controls
                 this._openingCompleted = false;
                 this.VisibleState.Begin(); 
             }
-            OnOpened(new RoutedEventArgs { Source = this });
+            OnOpened(new RoutedEventArgs { OriginalSource = this });
         } 
 
         internal void OnRootVisualSizeChanged()

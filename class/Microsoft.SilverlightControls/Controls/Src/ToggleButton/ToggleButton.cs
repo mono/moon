@@ -79,8 +79,7 @@ namespace System.Windows.Controls.Primitives
             bool? value = (bool?) e.NewValue;
  
             // Raise the appropriate changed event 
-            RoutedEventArgs args = new RoutedEventArgs();
-            args.Source = source; 
+            RoutedEventArgs args = new RoutedEventArgs () { OriginalSource = source};
             if (value == true)
             {
                 source.OnChecked(args); 

@@ -260,7 +260,7 @@ namespace System.Windows.Controls
 
         private static void OnOwnerKeyDown(object sender, KeyEventArgs e) 
         {
-            if ((ToolTipService._lastEnterSource != null) && object.ReferenceEquals(ToolTipService._lastEnterSource, e.Source))
+            if ((ToolTipService._lastEnterSource != null) && object.ReferenceEquals(ToolTipService._lastEnterSource, e.OriginalSource))
             { 
                 return;
             }
@@ -292,12 +292,12 @@ namespace System.Windows.Controls
             // cache mouse position relative to the plug-in
             ToolTipService.MousePosition = e.GetPosition(null);
  
-            OnOwnerMouseEnterInternal(sender, e.Source); 
+            OnOwnerMouseEnterInternal(sender, e.OriginalSource); 
         }
  
         private static void OnOwnerMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if ((ToolTipService._lastEnterSource != null) && object.ReferenceEquals(ToolTipService._lastEnterSource, e.Source)) 
+            if ((ToolTipService._lastEnterSource != null) && object.ReferenceEquals(ToolTipService._lastEnterSource, e.OriginalSource)) 
             {
                 return;
             } 

@@ -313,7 +313,7 @@ namespace System.Windows.Controls.Primitives
             RoutedEventHandler handler = Click;
             if (handler != null) 
             { 
-                handler(this, new RoutedEventArgs { Source = this });
+                handler(this, new RoutedEventArgs { OriginalSource = this });
             } 
         }
 
