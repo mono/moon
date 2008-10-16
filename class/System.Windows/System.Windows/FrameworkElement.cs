@@ -185,7 +185,7 @@ namespace System.Windows {
 			RoutedEventHandler reh = (RoutedEventHandler)events[LoadedEvent_];
 			if (reh != null) {
 				RoutedEventArgs args = new RoutedEventArgs();
-				args.Source = this;
+				args.OriginalSource = this;
 				reh (this, args);
 			}
 		}

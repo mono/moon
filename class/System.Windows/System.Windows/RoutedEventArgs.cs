@@ -29,7 +29,10 @@ using Mono;
 namespace System.Windows {
 
 	public class RoutedEventArgs : EventArgs {
+
 		internal IntPtr native;
+		DependencyObject source;
+		bool source_set;
 
 		internal RoutedEventArgs (IntPtr raw)
 		{
@@ -49,40 +52,36 @@ namespace System.Windows {
 		{
 		}
 
-		DependencyObject source;
-		bool source_set;
-		public object Source {
+		public object OriginalSource {
 			[SecuritySafeCritical]
 			get {
-				if (source_set) {
+				if (source_set)
 					return source;
-				}
-				else {
-					IntPtr v = NativeMethods.routed_event_args_get_source (native);
-					if (v == IntPtr.Zero)
-						return null;
-					return DependencyObject.Lookup (NativeMethods.dependency_object_get_object_type (v),
-									v);
-				}
+
+				IntPtr v = NativeMethods.routed_event_args_get_source (native);
+				if (v == IntPtr.Zero)
+					return null;
+
+				return DependencyObject.Lookup (NativeMethods.dependency_object_get_object_type (v), v);
 			}
 
 			[SecuritySafeCritical]
-			set {
+			internal set {
 				if (value == null) {
 					NativeMethods.routed_event_args_set_source (native, IntPtr.Zero);
 					source = null;
 					source_set = false;
+					return;
 				}
-				else {
-					DependencyObject v = value as DependencyObject;
-					if (v == null)
-						throw new ArgumentException ();
 
-					source_set = true;
-					source = v;
+				DependencyObject v = value as DependencyObject;
+				if (v == null)
+					throw new ArgumentException ();
 
-					NativeMethods.routed_event_args_set_source (native, v.native);
-				}
+				source_set = true;
+				source = v;
+
+				NativeMethods.routed_event_args_set_source (native, v.native);
 			}
 		}
 	}
