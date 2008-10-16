@@ -1,5 +1,9 @@
 2008-10-16  Geoff Norton  <gnorton@novell.com>
 
+	* pipeline.cpp: Unbreak the world.
+
+2008-10-16  Geoff Norton  <gnorton@novell.com>
+
 	* pipeline(-ui).cpp: Use the updated mscodec name and location.
 
 2008-10-16  Fernando Herrera  <fherrera@novell.com>
