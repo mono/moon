@@ -384,7 +384,7 @@ InputProvider::MapToKeysym (int key)
 	case VK_RETURN: res = XK_Return; break;
 	case VK_SHIFT: res = XK_Shift_L; break;
 	case VK_CONTROL: res = XK_Control_L; break;
-	case VK_MENU: res = XK_Menu; break;
+	case VK_MENU: res = XK_Alt_L; break;
 	case VK_PAUSE: res = XK_Pause; break;
 	case VK_CAPITAL: res = XK_Caps_Lock; break;
 
