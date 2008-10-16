@@ -1842,6 +1842,10 @@ Surface::ElementPathToRoot (UIElement *source)
 gboolean 
 Surface::HandleUIKeyPress (GdkEventKey *event)
 {
+	Key key = Keyboard::MapKeyValToKey (event->keyval);
+	if (Keyboard::IsKeyPressed (key))
+		return true;
+
 	if (FullScreenKeyHandled (event))
 		return true;
 	
@@ -1859,6 +1863,9 @@ Surface::HandleUIKeyPress (GdkEventKey *event)
 	
 	SetCanFullScreen (true);
 	bool handled;
+
+	Keyboard::OnKeyPress (key);
+
 	if (silverlight2 && focused_element) {
 		List *focus_to_root = ElementPathToRoot (focused_element);
 		handled = EmitEventOnList (UIElement::KeyDownEvent, focus_to_root, (GdkEvent*)event, -1);
@@ -1882,8 +1889,11 @@ Surface::HandleUIKeyRelease (GdkEventKey *event)
 		return true;
 
 	SetCanFullScreen (true);
-
 	bool handled;
+
+	Key key = Keyboard::MapKeyValToKey (event->keyval);
+	Keyboard::OnKeyRelease (key);
+
 	if (silverlight2 && focused_element) {
 		List *focus_to_root = ElementPathToRoot (focused_element);
 		handled = EmitEventOnList (UIElement::KeyUpEvent, focus_to_root, (GdkEvent*)event, -1);

@@ -155,6 +155,7 @@ MouseEventArgs::GetStylusPoints (UIElement *ink_presenter)
 }
 
 ModifierKeys Keyboard::modifiers = ModifierKeyNone;
+GHashTable*  Keyboard::pressedKeys = NULL;
 
 ModifierKeys
 Keyboard::GetModifiers ()
@@ -168,43 +169,30 @@ Keyboard::SetModifiers (ModifierKeys m)
 	modifiers = m;
 }
 
-KeyEventArgs::KeyEventArgs (GdkEventKey *event)
+void
+Keyboard::OnKeyPress (Key key)
 {
-	this->event = (GdkEventKey *) gdk_event_copy ((GdkEvent *)event);
+	if (!pressedKeys)
+		pressedKeys = g_hash_table_new (g_direct_hash, g_direct_equal);
+	g_hash_table_insert (pressedKeys, GINT_TO_POINTER(key), GINT_TO_POINTER(1));
 }
 
-KeyEventArgs::KeyEventArgs ()
+void
+Keyboard::OnKeyRelease (Key key)
 {
-	event = (GdkEventKey *) gdk_event_new (GDK_KEY_PRESS);
+	if (!pressedKeys)
+		return;
+	g_hash_table_remove (pressedKeys, GINT_TO_POINTER(key));
 }
 
-KeyEventArgs::~KeyEventArgs ()
+bool
+Keyboard::IsKeyPressed (Key key)
 {
-	gdk_event_free ((GdkEvent *) event);
+	return pressedKeys && (g_hash_table_lookup (pressedKeys, GINT_TO_POINTER(key)) != NULL);
 }
 
-int
-KeyEventArgs::GetState ()
-{
-	GdkModifierType state;
-	gdk_event_get_state ((GdkEvent *) event, &state);
-	return (int)state;
-}
-
-int
-KeyEventArgs::GetKey ()
-{
-	return gdk_keyval_to_key (event->keyval);
-}
-
-int
-KeyEventArgs::GetPlatformKeyCode ()
-{
-	return event->hardware_keycode;
-}
-
-int
-KeyEventArgs::gdk_keyval_to_key (guint keyval)
+Key
+Keyboard::MapKeyValToKey (guint keyval)
 {
 	switch (keyval) {
 	case GDK_BackSpace:				return KeyBACKSPACE;
@@ -225,7 +213,7 @@ KeyEventArgs::gdk_keyval_to_key (guint keyval)
 	case GDK_Right: case GDK_KP_Right:		return KeyRIGHT;
 	case GDK_Down: case GDK_KP_Down:		return KeyDOWN;
 	case GDK_Insert: case GDK_KP_Insert:		return KeyINSERT;
-	case GDK_Delete: case GDK_KP_Delete:		return KeyINSERT;
+	case GDK_Delete: case GDK_KP_Delete:		return KeyDELETE;
 	case GDK_0:					return KeyDIGIT0;
 	case GDK_1:					return KeyDIGIT1;
 	case GDK_2:					return KeyDIGIT2;
@@ -296,4 +284,39 @@ KeyEventArgs::gdk_keyval_to_key (guint keyval)
 	default:
 		return KeyUNKNOWN;
 	}
+}
+
+KeyEventArgs::KeyEventArgs (GdkEventKey *event)
+{
+	this->event = (GdkEventKey *) gdk_event_copy ((GdkEvent *)event);
+}
+
+KeyEventArgs::KeyEventArgs ()
+{
+	event = (GdkEventKey *) gdk_event_new (GDK_KEY_PRESS);
+}
+
+KeyEventArgs::~KeyEventArgs ()
+{
+	gdk_event_free ((GdkEvent *) event);
+}
+
+int
+KeyEventArgs::GetState ()
+{
+	GdkModifierType state;
+	gdk_event_get_state ((GdkEvent *) event, &state);
+	return (int)state;
+}
+
+int
+KeyEventArgs::GetKey ()
+{
+	return Keyboard::MapKeyValToKey (event->keyval);
+}
+
+int
+KeyEventArgs::GetPlatformKeyCode ()
+{
+	return event->hardware_keycode;
 }

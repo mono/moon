@@ -175,12 +175,20 @@ class MouseEventArgs : public RoutedEventArgs {
 
 class Keyboard {
 	static ModifierKeys modifiers;
-	
+	static GHashTable* pressedKeys;
+
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	static ModifierKeys GetModifiers ();
 
 	static void SetModifiers (ModifierKeys m);
+
+	static void OnKeyPress (Key key);
+	static void OnKeyRelease (Key key);
+
+	static bool IsKeyPressed (Key key);
+
+	static Key MapKeyValToKey (guint keyval);
 };
 
 #endif /* __EVENTARGS_H__ */

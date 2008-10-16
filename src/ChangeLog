@@ -1,3 +1,17 @@
+2008-10-15  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp (Surface::HandleUIKeyPress): check to see if the key
+	is already down, and if so, don't emit another event.  (really?
+	there's a test for this?  ugh.).  also, let Keyboard know the key
+	is down.
+	(Surface::HandleUIKeyRelease): let Keyboard know the key is up.
+
+	* eventargs.h, eventargs.cpp (class Keyboard): augment Keyboard
+	quite a bit -- it might soon deserve its own file.  It now
+	maintains a static hashtable of keys that are pressed/released
+	inside the moonlight plugin, and has logic to map a gdk keyval to
+	Key, and query if a particular key is pressed.
+
 2008-10-15  Larry Ewing  <lewing@novell.com>
 
 	* uielement.cpp, uielement.h: remove UpdatePosition and
