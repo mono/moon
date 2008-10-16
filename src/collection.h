@@ -203,7 +203,7 @@ class TriggerCollection : public DependencyObjectCollection {
 	virtual ~TriggerCollection () {}
 	
  public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	TriggerCollection () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::TRIGGER_COLLECTION; }
@@ -230,7 +230,7 @@ class InlineCollection : public DependencyObjectCollection {
 	virtual ~InlineCollection () {}
 	
  public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	InlineCollection () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::INLINE_COLLECTION; }
@@ -245,7 +245,7 @@ class UIElementCollection : public DependencyObjectCollection {
  public:
 	GPtrArray *z_sorted;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	UIElementCollection ();
 	
 	virtual Type::Kind GetObjectType () { return Type::UIELEMENT_COLLECTION; }

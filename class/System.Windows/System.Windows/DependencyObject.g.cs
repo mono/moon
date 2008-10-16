@@ -106,7 +106,7 @@ namespace System.Windows {
 	}
 
 	partial class TriggerCollection {
-		public TriggerCollection () : base (NativeMethods.trigger_collection_new ()) {}
+		internal TriggerCollection () : base (NativeMethods.trigger_collection_new ()) {}
 		internal TriggerCollection (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.TRIGGER_COLLECTION; }
 	}
@@ -227,7 +227,7 @@ namespace System.Windows.Controls {
 	}
 
 	partial class UIElementCollection {
-		public UIElementCollection () : base (NativeMethods.uielement_collection_new ()) {}
+		internal UIElementCollection () : base (NativeMethods.uielement_collection_new ()) {}
 		internal UIElementCollection (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.UIELEMENT_COLLECTION; }
 	}
@@ -253,7 +253,7 @@ namespace System.Windows.Documents {
 	}
 
 	partial class InlineCollection {
-		public InlineCollection () : base (NativeMethods.inline_collection_new ()) {}
+		internal InlineCollection () : base (NativeMethods.inline_collection_new ()) {}
 		internal InlineCollection (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.INLINE_COLLECTION; }
 	}

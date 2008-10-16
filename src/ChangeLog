@@ -1,5 +1,10 @@
 2008-10-16  Jb Evain  <jbevain@novell.com>
 
+	* collection.cpp: TriggerCollection, UIElementCollection, InlineCollection:
+	mark managed constructor internal.
+
+2008-10-16  Jb Evain  <jbevain@novell.com>
+
 	* collection.cpp (RemoveAtWithError): throw an ArgumentOutOfRangeException
 	instead of an ArgumentException when providing an out of range index.
 
