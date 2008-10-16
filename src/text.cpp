@@ -353,7 +353,7 @@ TextBlock::Layout (cairo_t *cr)
 	Value *value = GetValueNoDefault (TextBlock::TextProperty);
 	InlineCollection *inlines = GetInlines ();
 	TextDecorations decorations;
-	List *runs = new List ();
+	List *runs;
 	guint8 font_mask;
 	const char *text;
 	
@@ -365,6 +365,8 @@ TextBlock::Layout (cairo_t *cr)
 		actual_width = 0.0;
 		goto done;
 	}
+
+	runs = new List ();
 	
 	layout->SetWrapping (GetTextWrapping ());
 	

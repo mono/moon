@@ -1,3 +1,8 @@
+2008-10-16  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* text.cpp (TextBlock::Layout): Delay allocation of List so that we
+	don't leak when TextBlock::TextProperty	is NULL.
+
 2008-10-16  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* runtime.cpp (Surface::SetCursor): Unref cursors once they are set
