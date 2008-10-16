@@ -1,3 +1,7 @@
+2008-10-16  Jb Evain  <jbevain@novell.com>
+
+	* ResourceDictionary.cs: implement Count and IsReadOnly.
+
 2008-09-29  Jb Evain  <jbevain@novell.com>
 
 	* Duration.cs: use an enum as a way to represent duration's kind.
