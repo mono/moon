@@ -1,3 +1,7 @@
+2008-10-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* window-gtk.cpp, window.h: Add file header and fix copy-paste error.
+
 2008-10-15  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp (Surface::HandleUIKeyPress): check to see if the key

@@ -1,3 +1,16 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/*
+ * window-gtk.cpp: MoonWindow implementation using gtk widgets.
+ *
+ * Contact:
+ *   Moonlight List (moonlight-list@lists.ximian.com)
+ *
+ * Copyright 2007-2008 Novell, Inc. (http://www.novell.com)
+ *
+ * See the LICENSE file included with the distribution for details.
+ * 
+ */
+ 
 #include "window-gtk.h"
 
 MoonWindowGtk::MoonWindowGtk (bool fullscreen, int w, int h, MoonWindow *parent)
@@ -289,7 +302,7 @@ MoonWindowGtk::focus_out (GtkWidget *widget, GdkEventFocus *event, gpointer user
 {
 	MoonWindowGtk *window = (MoonWindowGtk*)user_data;
 
-	return window->surface ? window->surface->HandleUIFocusIn (event) : false;
+	return window->surface ? window->surface->HandleUIFocusOut (event) : false;
 }
 
 gboolean
