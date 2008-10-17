@@ -464,7 +464,7 @@ CodecDownloader::Show ()
 	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (eula_scrollwindow), GTK_SHADOW_IN);
 	gtk_container_add (GTK_CONTAINER (eula_scrollwindow), eula_view);
 	gtk_widget_set_size_request (eula_scrollwindow, -1, 225);
-	gtk_box_pack_end (GTK_BOX (vbox), eula_scrollwindow, true, true, 0);
+	gtk_box_pack_end (GTK_BOX (vbox), eula_scrollwindow, false, false, 0);
 
 	// Connect and go
 	g_signal_connect (G_OBJECT (dialog), "response", G_CALLBACK (ResponseEventHandler), this);

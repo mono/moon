@@ -1,5 +1,10 @@
 2008-10-16  Geoff Norton  <gnorton@novell.com>
 
+	* pipeline-ui.cpp: Avoid a resize when realizing which causes an
+	annoying flicker in the codec window.
+
+2008-10-16  Geoff Norton  <gnorton@novell.com>
+
 	* pipeline.cpp: Unbreak the world.
 
 2008-10-16  Geoff Norton  <gnorton@novell.com>
