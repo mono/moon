@@ -183,6 +183,14 @@ AnimationStorage::ResetPropertyValue ()
 		applier->AddPropertyChange (targetobj, targetprop, new Value (*baseValue), APPLIER_PRECEDENCE_ANIMATION_RESET);
 }
 
+void 
+AnimationStorage::DetachFromPrevStorage (void)
+{
+	if (targetobj != NULL && targetprop != NULL) {
+		targetprop->DetachAnimationStorage (targetobj, this);
+	}
+}
+
 void
 AnimationStorage::DetachTarget ()
 {
@@ -317,6 +325,8 @@ AnimationClock::Stop ()
 	if (storage) {
 		storage->ResetPropertyValue ();
 		storage->DetachUpdateHandler ();
+		if (storage->IsCurrentStorage ())
+			storage->DetachFromPrevStorage ();
 	}
 
 	Clock::Stop ();

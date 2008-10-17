@@ -1,5 +1,12 @@
 2008-10-17  Michael Dominic K.  <mdk@mdk.am>
 
+	* animation.cpp:
+	* animation.h:
+	* applier.h: Fixing one more osbcure case of Storyboard transitions where
+	stopping a prev sboard makes the next one starting from bad base value.
+
+2008-10-17  Michael Dominic K.  <mdk@mdk.am>
+
 	* runtime.cpp: Make sure we get the new pointer motion notify when 
 	entering/leaving fullscreen. This fixes the fullscreen-enter-leave test 
 	but interestingly doesn't fix the original problem of #434267.

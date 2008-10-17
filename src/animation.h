@@ -150,6 +150,7 @@ class AnimationStorage {
 	void UpdatePropertyValueWith (Value *v);
 	Value* GetStopValue (void);
 	void AttachToPrevStorage (void);
+	void DetachFromPrevStorage (void);
 
  private:
 	void TargetObjectDestroyed ();
