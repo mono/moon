@@ -1,3 +1,9 @@
+2008-10-17  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/assorted/fullscreen-enter-leave.html: The fullscreen enter-leave test-case
+	now also does some storyboard start/stop on enter/leave to better replicate
+	vertigo issue.
+
 2008-10-16  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/assorted/fullscreen-enter-leave.html: Adding a test-case for tracking what 
