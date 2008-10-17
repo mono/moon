@@ -1,3 +1,9 @@
+2008-10-17  Chris Toshok  <toshok@ximian.com>
+
+	* shocker/input.cpp: send a NumlockPress when we initialize the
+	InputProvider -- not a sure fire way to get this to work, but test
+	82 requires numlock to be on.
+
 2008-10-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* test-runner/Test.cs: Use local file path when executing xsp. Fixes
