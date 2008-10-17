@@ -3184,11 +3184,11 @@ NullDecoder::OpenVideo ()
 	logo = (guint8*) g_malloc (logo_size);
 	memset (logo, 0x00, logo_size);
 
-	// write our image tiled into the destination rectangle, flipped horizontally
+	// write our image centered into the destination rectangle, flipped horizontally
 	dest_i = 4;
 	for (guint32 dest_h = 0; dest_h < dest_height; dest_h++) {
 		for (guint32 dest_w = 0; dest_w < dest_width; dest_w++) {
-			if (dest_w >= start_w && dest_w <= end_w && dest_h >= start_h && dest_h <= end_h) {
+			if (dest_w >= start_w && dest_w < end_w && dest_h >= start_h && dest_h < end_h) {
 				img_h = (dest_h - start_h) % img_height;
 				img_w = (dest_w - start_w) % img_width;
 				img_i = img_h * img_stride + img_w * 3;

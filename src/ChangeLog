@@ -1,5 +1,11 @@
 2008-10-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* pipeline.cpp: NullDecoder::OpenVideo: Fix comment (logo is centered
+	  now, not tiled), and fix inner loop, we were including one pixel
+	  too many for width and height.
+
+2008-10-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* pipeline.cpp: RegisterMSCodecs: if there's no codec in
 	  ~/.mozilla/plugins, use just the filename of the codec library and
 	  make dlopen search for it. This makes it easier to run parallell
