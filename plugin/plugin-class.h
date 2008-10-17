@@ -106,7 +106,7 @@ struct MoonlightObject : NPObject {
 	{
 		this->instance = instance;
 		this->moonlight_type = Type::INVALID;
-		this->event_listener_proxies = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, destroy_proxy_list);
+		this->event_listener_proxies = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, destroy_proxy);
 	}
 	
 	virtual void Invalidate ();
@@ -122,12 +122,11 @@ struct MoonlightObject : NPObject {
 	int LookupName (NPIdentifier name) { return ((MoonlightObjectType *)_class)->LookupName (name, ((PluginInstance*)instance->pdata)->IsSilverlight2()); }
 	
 	EventListenerProxy *LookupEventProxy (int event_id);
-	void SetEventProxy (int event_id, EventListenerProxy *proxy);
-	void AddEventProxy (EventListenerProxy *proxy);
+	void SetEventProxy (int event_id, EventListenerProxy* proxy);
 	void ClearEventProxy (int event_id);
 	
-	static void destroy_proxy_list (gpointer data);
-	static void invalidate_proxy_list (gpointer key, gpointer value, gpointer data);
+	static void destroy_proxy (gpointer data);
+	static void invalidate_proxy (gpointer key, gpointer value, gpointer data);
 	
 	NPP instance;
 	Type::Kind moonlight_type;

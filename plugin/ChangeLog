@@ -4,14 +4,6 @@
 	  only pass 1 argument to javascript. Fixes #426440 partially (mp3s
 	  are now downloaded).
 
-2008-10-16  Jeffrey Stedfast  <fejj@novell.com>
-
-	* plugin-class.cpp (MoonlightObject::AddEventProxy): New method to
-	append an event listener proxy.
-	(MoonlightDependencyObjectObject::Invoke): After creating a new
-	EventListenerProxy, add it to the list of proxies for that event
-	on the object so that we don't leak it.
-
 2008-10-16  Jb Evain  <jbevain@novell.com>
 
 	* moonlight.h: update SL2 mime type and runtime version.
