@@ -189,7 +189,7 @@ Media::RegisterMSCodecs (void)
 	if (libmscodecs_path == NULL || !(g_file_test (libmscodecs_path, G_FILE_TEST_EXISTS) && g_file_test (libmscodecs_path, G_FILE_TEST_IS_REGULAR))) {
 		const gchar *home = g_get_home_dir ();
 		if (home != NULL)
-			libmscodecs_path = g_build_filename (g_get_home_dir (), ".mozilla", "plugins", CODEC_LIBRARY_NAME);
+			libmscodecs_path = g_build_filename (g_get_home_dir (), ".mozilla", "plugins", CODEC_LIBRARY_NAME, NULL);
 		else
 			libmscodecs_path = g_strdup (CODEC_LIBRARY_NAME);
 	}
