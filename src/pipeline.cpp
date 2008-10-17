@@ -190,12 +190,17 @@ Media::RegisterMSCodecs (void)
 		const gchar *home = g_get_home_dir ();
 		if (home != NULL)
 			libmscodecs_path = g_build_filename (g_get_home_dir (), ".mozilla", "plugins", CODEC_LIBRARY_NAME, NULL);
-		else
-			libmscodecs_path = g_strdup (CODEC_LIBRARY_NAME);
 	}
-	
+
+	if (libmscodecs_path == NULL || !(g_file_test (libmscodecs_path, G_FILE_TEST_EXISTS) && g_file_test (libmscodecs_path, G_FILE_TEST_IS_REGULAR))) {
+		libmscodecs_path = g_strdup (CODEC_LIBRARY_NAME);
+	}
+
 	dl = dlopen (libmscodecs_path, RTLD_LAZY);
 	if (dl != NULL) {
+		if (moonlight_flags & RUNTIME_INIT_CODECS_DEBUG)
+			printf ("Moonlight: Loaded mscodecs from: %s.\n", libmscodecs_path);
+			
 		for (int i = 0; i < 3; i++) {
 			reg = (register_codec) dlsym (dl, functions [i]);
 			if (reg != NULL) {

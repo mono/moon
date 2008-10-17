@@ -1,3 +1,11 @@
+2008-10-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* pipeline.cpp: RegisterMSCodecs: if there's no codec in
+	  ~/.mozilla/plugins, use just the filename of the codec library and
+	  make dlopen search for it. This makes it easier to run parallell
+	  tests from different revisions without having the codecs from each
+	  revision overwrite eachother in user's home.
+
 2008-10-16  Geoff Norton  <gnorton@novell.com>
 
 	* pipeline.cpp: Dont tile our logo, it looks like ass.  Lets
