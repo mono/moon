@@ -1734,11 +1734,6 @@ Surface::HandleUICrossing (GdkEventCrossing *event)
 {
 	bool handled;
 	
-	// Ignore the enter/leave events coming as a result of grab/press
-	// started finished
-	if (event->mode != GDK_CROSSING_NORMAL)
-		return true;
-	
 	if (event->type == GDK_ENTER_NOTIFY) {
 		if (mouse_event)
 			gdk_event_free (mouse_event);
