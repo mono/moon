@@ -1,0 +1,163 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>Test file</title>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<script src="../js/js/utils.js"></script>
+	<script src="../js/js/testplugin.js"></script>
+</head>
+<body>
+
+<script type="text/xaml" id="xaml0">
+	<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+		Name="C0" Height="800" Width="800" Background="Green" >
+	</Canvas>
+</script>
+
+<script type="text/xaml" id="xaml1">
+	<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+		Name="C1" Height="800" Width="800" Background="Green" 
+		GotFocus="OnGotFocus" LostFocus="OnLostFocus" KeyDown="OnKeyDown" KeyUp="OnKeyUp" >
+	</Canvas>
+</script>
+
+<script type="text/xaml" id="xaml2">
+	<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+		Name="C2" Height="800" Width="800" Background="Red" >	
+		<Canvas GotFocus="Dummy" />
+	</Canvas>
+</script>
+
+<script type="text/xaml" id="xaml3">
+	<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+		Name="C3" Height="800" Width="800" Background="Red" >	
+		<Canvas LostFocus="Dummy" />
+	</Canvas>
+</script>
+
+<script type="text/xaml" id="xaml4">
+	<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+		Name="C4" Height="800" Width="800" Background="Red" >	
+		<Canvas KeyDown="Dummy" />
+	</Canvas>
+</script>
+
+<script type="text/xaml" id="xaml5">
+	<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+		Name="C5" Height="800" Width="800" Background="Red" >	
+		<Canvas KeyUp="Dummy" />
+	</Canvas>
+</script>
+
+<script type="text/javascript">
+
+	// 
+	// It's only possible to attach event handlers for GotFocus, LostFocus, KeyUp and KeyDown on the root canvas.
+	// 
+	var failed = false;
+	var index = -1;
+	var xamls = [
+		'<Canvas GotFocus="Dummy" />', 
+		'<Canvas LostFocus="Dummy" />',
+		'<Canvas KeyDown="Dummy" />',
+		'<Canvas KeyUp="Dummy" />'
+		];
+	var embeds = [
+		'<embed type="application/x-silverlight" width="20" height="20" id="TF0" Source="#xaml0" OnError="OnPluginError" OnLoad="OnPluginLoaded" background="Red"></embed>',
+		'<embed type="application/x-silverlight" width="20" height="20" id="TF1" Source="#xaml1" OnError="OnPluginError" OnLoad="OnPluginLoaded" background="Red"></embed>',
+		'<embed type="application/x-silverlight" width="20" height="20" id="TF2" Source="#xaml2" OnError="OnPluginError" OnLoad="OnPluginLoaded" background="Green"></embed>',
+		'<embed type="application/x-silverlight" width="20" height="20" id="TF3" Source="#xaml3" OnError="OnPluginError" OnLoad="OnPluginLoaded" background="Green"></embed>',
+		'<embed type="application/x-silverlight" width="20" height="20" id="TF2" Source="#xaml4" OnError="OnPluginError" OnLoad="OnPluginLoaded" background="Green"></embed>',
+		'<embed type="application/x-silverlight" width="20" height="20" id="TF3" Source="#xaml5" OnError="OnPluginError" OnLoad="OnPluginLoaded" background="Green"></embed>'
+			];
+	var results = [
+		true, true, false, false, false, false
+		];
+
+	function DoCreateXamlTests ()
+	{
+		var plugin = document.getElementById ("TF0");
+		var top = plugin.content.findName ("C0");
+		var obj;
+
+		TestLogger.LogDebug ("DoCreateXamlFragments, trying to load " + xamls.length + " fragments");
+
+		for (var i = 0; i < xamls.length; i++) {
+			try {
+				var f = false;
+				try {
+					obj = plugin.content.createFromXaml (xamls [i]);
+				} catch (e) {
+					f = true;
+					TestLogger.LogError ("Couldn't create xaml fragment #" + i + ": " + e);
+				}
+				if (!f) {
+					top.Children.Add (obj);
+					failed = true;
+					TestLogger.LogError ("Was able to add xaml fragment #" + i + " to top level canvas, this should have caused an exception.");
+				}
+				failed = f;
+			} catch (e) {
+				TestLogger.LogDebug ("Exception (as expected) while adding xaml fragment: " + e);
+			}
+		}
+	}
+
+	function NextTest ()
+	{
+		index++;
+		if (index >= embeds.length) {
+			TestLogger.LogResult (failed ? -1 : 1);
+			SignalShutdown ();
+			return;
+		}
+
+		document.getElementById ("testdiv" + index).innerHTML = embeds [index];
+	}	
+	
+
+	function OnPluginError (sender, args)
+	{
+		TestLogger.LogDebug ("OnPluginError: " + ErrorEventArgsToOneLineString (args));
+		if (results [index]) {
+			failed = true;
+			TestLogger.LogError ("Xaml #" + index + " should not fail.");
+		}
+		NextTest ();
+	}
+	
+	function OnPluginLoaded (sender, args)
+	{
+		TestLogger.LogDebug ("OnPluginLoaded: " + sender);
+		if (!results [index]) {
+			failed = true;
+			TestLogger.LogError ("Xaml #" + index + " should fail.");
+		} else {
+			if (index == 0)
+				DoCreateXamlTests ();
+		}
+		NextTest ();
+	}
+
+	function Dummy () {}
+
+	setTimeout (NextTest, 500);
+</script>
+
+<div id="testdiv0"></div><div style="height:2px"></div>
+<div id="testdiv1"></div><div style="height:2px"></div>
+<div id="testdiv2"></div><div style="height:2px"></div>
+<div id="testdiv3"></div><div style="height:2px"></div>
+<div id="testdiv4"></div><div style="height:2px"></div>
+<div id="testdiv5"></div><div style="height:2px"></div>
+
+</div>
+
+<!--
+<embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest" 
+>
+</embed>
+-->
+
+</body>
+</html>

@@ -1,0 +1,1024 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>Test file</title>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<script src="../js/js/utils.js"></script>
+	<script src="../js/js/testplugin.js"></script>
+</head>
+<body>
+
+<!--
+	Here we test every single event to check that we pass the correct number of arguments to the js event handler
+	The only event not tested is Accessibility.PerformAction
+-->
+
+<script type="text/xaml" id="xamlA">
+	<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="MainCanvas" Height="800" Width="800" Background="Blue" >
+		
+	<Line x:Name="AnimatedLine" X1="300" Y1="300" X2="400" Y2="300" Stroke="Red" />
+	<Canvas.Resources>
+		<Storyboard x:Name="Storyboard" Duration="00:00:02">
+			<DoubleAnimation
+				Storyboard.TargetName="AnimatedLine"
+				Storyboard.TargetProperty="Y1"
+				From="300" To="400" Duration="0:0:2"
+				AutoReverse="False"  />
+		</Storyboard>
+	</Canvas.Resources>
+	</Canvas>
+</script>
+
+<script type="text/xaml" id="xamlOK">
+	<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Height="600" Width="600" Background="Green" >
+	</Canvas>
+</script>
+<script type="text/xaml" id="xamlFAIL">
+	<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Height="20" Width="20" Background="Red" >
+		this should fail to load
+	</Canvas>
+</script>
+
+<script type="text/javascript">
+	var tests = [
+		"TestImageBrush", 
+		"TestStoryboard", 
+		"TestDownloader",
+		"TestRootCanvas", // uses mouse 
+		"TestPlugin",
+		""];
+
+	var seq_tests = [ // (we can only have one test accessing the mouse running at the same time)
+		"TestImage",  // uses mouse
+		"TestMediaElement",  // uses mouse
+		"TestCanvas", // uses mouse
+		""];
+
+	var plugin = null;
+	var canvas = null;
+	var loaded = false;
+	var started = false;
+	var failed = false;
+	var tests_executed = 0;
+	var prev_tests_executed = 0;
+	var test_count = tests.length - (tests [tests.length - 1] == "" ? 1 : 0);
+	var seq_test_count = seq_tests.length - (seq_tests [seq_tests.length - 1] == "" ? 1 : 0);
+
+
+	// Test events which can only be added to the root canvas (GotFocus, LostFocus, KeyUp and KeyDown)
+	function TestRootCanvas ()
+	{
+		var completed = false;
+		var timedOut = false;
+		var mouse_test_started = false;
+		var key_test_started = false;
+		var events = [
+			// It's only possible to attach handlers for the following events on the root canvas 
+			"GotFocus", "KeyDown", "KeyUp", "LostFocus"
+			];
+		var tokens = [-1, -1, -1, -1];
+		var arg_count = [2, 2, 2, 2]; // the expected number of arguments for each event
+		var done = [/*focus*/ false, /*key*/ false];
+		var expected = 	[ // if an event is expected for a source
+				[true, true, true, true],
+				];
+
+		var raised = []; // An array of raised events for all images (we want to make sure we've tested all events).
+		for (var tmp = 0; tmp < events.length; tmp++)
+			raised.push (0);
+
+		var end_test = function ()
+			{
+				var finished = true;
+
+				if (completed)
+					return;
+
+				for (var i = 0; i < done.length; i++)
+					finished = finished && done [i];
+
+				if (!finished && !timedOut) {
+					setTimeout(end_test, 100);
+					return;
+				}
+
+				for (var i = 0; i < raised.length; i++) {
+					if (raised [i] != 0) {
+						TestLogger.LogDebug ("TestRootCanvas: Got " + events [i] + " " + raised [i] + " times");
+						continue;
+					}
+					TestLogger.LogError ("TestRootCanvas: Got " + events [i] + " " + raised [i] + " times");
+					failed = true;
+				}
+
+				if (timedOut) {
+					TestLogger.LogError ("TestRootCanvas: timed out.");
+					failed = true;
+				}
+				TestLogger.LogDebug ("TestRootCanvas: done.");
+				completed = true;
+				tests_executed++;
+	
+				for (var j = 0; j < events.length; j++) {
+					canvas.removeEventListener (events [j], tokens [j]);
+				}
+			};
+
+		var time_out = function ()
+			{
+				TestLogger.LogDebug ("TestRootCanvas: timed out.");
+				timedOut = true;
+				end_test ();
+			};
+
+		var create_handler = function (object, /*string*/ event_name, /*int*/ expected_arg_count, /*bool*/ expected_event, /*int*/ image_index)
+		{
+			var handler = function ()
+			{
+				TestLogger.LogDebug ("TestRootCanvas: " + event_name);
+				if (!expected_event) {
+					Assert (false, "TestRootCanvas: " + event_name + " was not expected for TestRootCanvas");
+				} else {
+					Assert (arguments.length == expected_arg_count, "TestRootCanvas: " + event_name + " takes " + expected_arg_count + " argument(s), got " + arguments.length + " argument(s).");
+				}
+
+				for (var e = 0; e < events.length; e++) {
+					if (events [e] != event_name)
+						continue;
+					raised [e]++;
+					break;
+				}
+			};
+			object.addEventListener (event_name, handler);
+		};
+
+		var do_focus_test = function ()
+			{
+				TestLogger.LogDebug ("TestRootCanvas: do_focus_test");
+				// Click on one of the text boxes, should get LostFocus (if we had the focus)
+				TestHost.moveMouse (835, 25);
+				TestHost.mouseLeftButtonDown ();
+				TestHost.mouseLeftButtonUp ();
+				// Click on ourselves again, should get GotFocus
+				TestHost.moveMouse (200, 200);
+				TestHost.mouseLeftButtonDown ();
+				TestHost.mouseLeftButtonUp ();
+				// Click on the text box again, this time we did have the focus, so now we should get LostFocus for sure
+				TestHost.moveMouse (835, 25);
+				TestHost.mouseLeftButtonDown ();
+				TestHost.mouseLeftButtonUp ();
+				// Click on ourselves once again, leaving us focused
+				TestHost.moveMouse (200, 200);
+				TestHost.mouseLeftButtonDown ();
+				TestHost.mouseLeftButtonUp ();
+				done [0] = true;
+			};
+
+		var do_key_test = function ()
+			{
+				TestLogger.LogDebug ("TestRootCanvas: do_key_test");
+				TestHost.sendKeyInput (0x42, true, false, false);
+				TestHost.sendKeyInput (0x42, false, false, false);
+				setTimeout (function () { done [1] = true; }, 2500);
+			};
+
+		for (var j = 0; j < events.length; j++) {
+			tokens [j] = create_handler (canvas, events [j], arg_count [j], expected [0], 0);
+		}
+				
+		//setTimeout (do_key_test, 1000);
+		setTimeout (do_focus_test, 2500);
+		setTimeout (do_key_test, 10000);
+
+		setTimeout (time_out, 20000);
+		setTimeout (end_test, 10000);
+	}
+
+	// Test canvas events except those tested in TestRootCanvas
+	function TestCanvas ()
+	{
+		var completed = false;
+		var timedOut = false;
+		var mouse_test_started = false;
+		var key_test_started = false;
+		var events = [
+			"Loaded", "MouseEnter", "MouseLeave", "MouseLeftButtonUp", "MouseLeftButtonDown", "MouseMove"
+			// It's only possible to attach handlers for the following events on the root canvas 
+			// "GotFocus", "KeyDown", "KeyUp", "LostFocus"
+			];
+		var arg_count = [1, 2, 2, 2, 2, 2]; // the expected number of arguments for each event
+		var canvases = [null];
+		var done = [false];
+		var expected = 	[ // if an event is expected for a source
+				[true, true, true, true, true, true],
+				];
+
+		var raised = []; // An array of raised events for all images (we want to make sure we've tested all events).
+		for (var tmp = 0; tmp < events.length; tmp++)
+			raised.push (0);
+
+		var end_test = function ()
+			{
+				var finished = true;
+
+				if (completed)
+					return;
+
+				for (var i = 0; i < done.length; i++)
+					finished = finished && done [i];
+
+				if (!finished && !timedOut) {
+					setTimeout(end_test, 100);
+					return;
+				}
+
+				for (var i = 0; i < raised.length; i++) {
+					if (raised [i] != 0) {
+						TestLogger.LogDebug ("TestCanvas: Got " + events [i] + " " + raised [i] + " times");
+						continue;
+					}
+					TestLogger.LogError ("TestCanvas: Got " + events [i] + " " + raised [i] + " times");
+					failed = true;
+				}
+
+				if (timedOut) {
+					TestLogger.LogError ("TestCanvas: timed out.");
+					failed = true;
+				}
+				TestLogger.LogDebug ("TestCanvas: done.");
+				completed = true;
+				tests_executed++;
+			};
+
+		var time_out = function ()
+			{
+				TestLogger.LogDebug ("TestCanvas: timed out.");
+				timedOut = true;
+				end_test ();
+			};
+
+		var do_mouse_test = function ()
+			{
+				TestLogger.LogDebug ("TestCanvas: do_mouse_test");
+
+				TestHost.moveMouse (60, 580); // outside of the canvas
+				TestHost.moveMouseLogarithmic (80, 620); // inside
+				TestHost.moveMouseLogarithmic (100, 580); // outside
+				TestHost.moveMouseLogarithmic (120, 620); // inside
+				TestHost.mouseLeftButtonDown ();
+				TestHost.mouseLeftButtonUp ();
+
+				done [0] = true;
+				setTimeout (end_test, 5000);
+			};
+
+
+		var create_handler = function (object, /*string*/ event_name, /*int*/ expected_arg_count, /*bool*/ expected_event, /*int*/ image_index)
+		{
+			var handler = function ()
+			{
+				TestLogger.LogDebug ("TestCanvas: " + event_name + " index: " + image_index);
+				if (!expected_event) {
+					Assert (false, "TestCanvas: " + event_name + " was not expected for TestCanvas with index: " + image_index);
+				} else {
+					Assert (arguments.length == expected_arg_count, "TestCanvas: " + event_name + " takes " + expected_arg_count + " argument(s), got " + arguments.length + " argument(s).");
+				}
+
+				for (var e = 0; e < events.length; e++) {
+					if (events [e] != event_name)
+						continue;
+					raised [e]++;
+					break;
+				}
+			};
+			object.addEventListener (event_name, handler);
+		}
+
+		var c;
+		c = plugin.content.createFromXaml ('<Canvas Name="Canvas" Canvas.Left="0" Canvas.Top="600" Background="Green" Width="200" Height="200" />');
+		
+		for (var j = 0; j < events.length; j++) {
+			create_handler (c, events [j], arg_count [j], expected [0], 0);
+		}
+				
+		canvas.children.add (c);
+
+		setTimeout (do_mouse_test, 1000);
+
+		setTimeout (time_out, 10000);
+	}
+
+	function TestImageBrush ()
+	{
+		var completed = false;
+		var got_event = false;
+
+		TestLogger.LogDebug ("TestImageBrush");
+
+		var end_test = function ()
+			{
+				var finished = true;
+
+				if (completed)
+					return;
+
+				if (!got_event) {
+					TestLogger.LogError ("TestImageBrush: didn't get the DownloadProgressChanged event.");
+					failed = true;
+				}
+				TestLogger.LogDebug ("TestImageBrush: done.");
+				completed = true;
+				tests_executed++;
+			};
+
+		var ib_downloadprogresschanged = function ()
+			{
+				TestLogger.LogDebug ("TestImageBrush: DownloadProgressChanged");
+				Assert (arguments.length == 1, "TestImageBrush: DownloadProgressChanged takes 1 argument, got " + arguments.length + " argument(s).");
+				got_event = true;
+				end_test ();
+			};
+
+		var xaml = '<Rectangle Width="100" Height="100" Canvas.Top="600" Stroke="blue"><Rectangle.Fill><ImageBrush Name="ImageBrush" Stretch="None"/></Rectangle.Fill></Rectangle>';
+		var rect = plugin.content.createFromXaml (xaml);
+		var imagebrush = rect.findName ("ImageBrush");
+		imagebrush.AddEventListener ("DownloadProgressChanged", ib_downloadprogresschanged);
+		imagebrush.ImageSource = "mono.png";
+		canvas.Children.Add (rect);
+	}
+
+	function TestImage ()
+	{
+		var completed = false;
+		var timedOut = false;
+		var mouse_test_started = false;
+		var events = ["Loaded", "DownloadProgressChanged", "ImageFailed", "MouseEnter", "MouseLeave", "MouseLeftButtonUp", "MouseLeftButtonDown", "MouseMove"];
+		var arg_count = [1, 1, 2, 2, 2, 2, 2, 2]; // the expected number of arguments for each event
+		var images = [null, null];
+		var done = [false, false];
+		var expected = 	[ // if an event is expected for a source
+				[true,  true, false, true,  true,  true,  true,  true],
+				[false, true, true,  false, false, false, false, false],
+				];
+		var sources = 	[
+				"mono.png",  // This image should work
+				"mono-inexistent.png", // This image shouldn't work
+				];
+
+		var raised = []; // An array of raised events for all images (we want to make sure we've tested all events).
+		for (var tmp = 0; tmp < events.length; tmp++)
+			raised.push (0);
+
+		var end_test = function ()
+			{
+				var finished = true;
+
+				if (completed)
+					return;
+
+				for (var i = 0; i < done.length; i++)
+					finished = finished && done [i];
+
+				if (!finished && !timedOut) {
+					setTimeout(end_test, 100);
+					return;
+				}
+
+				for (var i = 0; i < raised.length; i++) {
+					if (raised [i] != 0) {
+						TestLogger.LogDebug ("TestImage: Got " + events [i] + " " + raised [i] + " times");
+						continue;
+					}
+					TestLogger.LogError ("TestImage: Got " + events [i] + " " + raised [i] + " times");
+					failed = true;
+				}
+
+				if (timedOut) {
+					TestLogger.LogError ("TestImage: timed out.");
+					failed = true;
+				}
+				TestLogger.LogDebug ("TestImage: done.");
+				completed = true;
+				tests_executed++;
+			};
+
+		var time_out = function ()
+			{
+				timedOut = true;
+				end_test ();
+			};
+
+		var do_mouse_test = function ()
+			{
+				TestLogger.LogDebug ("TestImage: do_mouse_test");
+				TestHost.moveMouse (210, 40); // outside (just to the right)
+				TestHost.moveMouseLogarithmic (190, 50); // inside (just below top)
+				TestHost.moveMouseLogarithmic (210, 60); // outside (just above)
+				TestHost.moveMouseLogarithmic (190, 70); // inside (just below top)
+				TestHost.mouseLeftButtonDown ();
+				TestHost.mouseLeftButtonUp ();
+			};
+
+		var create_handler = function (object, /*string*/ event_name, /*int*/ expected_arg_count, /*bool*/ expected_event, /*int*/ image_index)
+		{
+			var handler = function ()
+			{
+				TestLogger.LogDebug ("TestImage: " + event_name + " Source: " + arguments [0].Source);
+				if (!expected_event) {
+					Assert (false, "TestImage: " + event_name + " was not expected for TestImage with Source: " + arguments [0].Source);
+				} else {
+					Assert (arguments.length == expected_arg_count, "TestImage: " + event_name + " takes " + expected_arg_count + " argument(s), got " + arguments.length + " argument(s).");
+				}
+
+				
+				for (var e = 0; e < events.length; e++) {
+					if (events [e] != event_name)
+						continue;
+					raised [e]++;
+					break;
+				}
+
+				if (event_name == "ImageFailed") {
+					done [image_index] = true;
+				} else if (event_name == "DownloadProgressChanged") {
+					if (arguments [0].DownloadProgress == 1.0) {
+						setTimeout (function () { done [image_index] = true; }, 5000); // five seconds to load the image, maybe do mouse tests or possibly fail
+						if (image_index == 0)
+							setTimeout (do_mouse_test, 1000);
+					}
+				}
+			};
+			object.AddEventListener (event_name, handler);
+		}
+
+		for (var i = 0; i < images.length; i++) {
+			var image = plugin.content.createFromXaml ("<Image />");
+			images [i] = image;
+			for (var j = 0; j < events.length; j++) {
+				create_handler (image, events [j], arg_count [j], expected [i], i);
+			}
+			canvas.Children.Add (image);
+			image.Width = 200;
+			image.Height = Math.floor (200 / images.length);
+			image.SetValue ("Canvas.Top", image.Height * i);
+			image.SetValue ("Canvas.Left", 0);
+			image.Stretch = 1; // "StretchFill";
+			image.Source = sources [i];
+			TestLogger.LogDebug ("TestImage: Created Image, w: " + image.Width + ", h: " + image.Height + ", top: " + image.GetValue ("Canvas.Top") + ", left: " + image.GetValue ("Canvas.Left"));
+		}
+		end_test ();
+
+		setTimeout (time_out, 10000);
+
+	}
+
+	function TestStoryboard ()
+	{
+		var completed = false;
+		var got_completed_event = false;
+
+		TestLogger.LogDebug ("TestStoryboard");
+
+		var end_test = function ()
+			{
+				var finished = true;
+
+				if (completed)
+					return;
+
+				if (!got_completed_event) {
+					TestLogger.LogError ("TestStoryboard: didn't get the Completed event.");
+					failed = true;
+				}
+				TestLogger.LogDebug ("TestStoryboard: done.");
+				completed = true;
+				tests_executed++;
+			};
+
+		var sb_completed = function ()
+			{
+				TestLogger.LogDebug ("TestStoryboard: Completed");
+				Assert (arguments.length == 1, "TestStoryboard: Completed takes 1 argument, got " + arguments.length + " argument(s).");
+				got_completed_event = true;
+				end_test ();
+			};
+
+		var storyboard = canvas.findName ("Storyboard");
+		storyboard.AddEventListener ("Completed", sb_completed);
+		storyboard.Begin ();
+	
+		// Storyboard animation takes 2 seconds, so wait 10 seconds for it to finish.
+		setTimeout (end_test, 10000);
+	}
+
+	function TestMediaElement ()
+	{
+		var completed = false;
+		var timedOut = false;
+		var mouse_test_started = false;
+		var events = ["BufferingProgressChanged", "CurrentStateChanged", "DownloadProgressChanged", 
+				"Loaded", "MarkerReached", "MediaEnded", "MediaFailed", "MediaOpened", 
+				"MouseEnter", "MouseLeave", "MouseLeftButtonUp", "MouseLeftButtonDown", "MouseMove"];
+		var arg_count = [1, 1, 1, 1, 2, 1, 2, 1, 2, 2, 2, 2, 2];
+		var mediaElements = [null, null, null];
+		var done = [false, false, false];
+		var expected = 	[
+				[true,  true, true, true, true, true, false, true, true, true, true, true, true],
+				[false, true, false, true, false, false, true, false, false, false, false, false, false],
+				[true,  true, true, true, true, true, false, true, true, true, true, true, true]
+				];
+		var sources = 	[
+				// This video should work
+				"../media/video/elephants-dream-320x180-first-minute.wmv", 
+				// This video shouldn't work
+				"../media/video/timecode-short-wmv9src.wmv", 
+				// And this should give us BufferingProgressChanged events 
+				// (the above are downloaded too fast to get buffering progress changed events, especially if the test is run from localhost)
+				// I'd love to use our own media server here, but I can't make it work on SL due to http://silverlight.net/forums/t/33819.aspx 
+				 "http://videor.mundo-r.com/TVG/tvg.asx" 
+				];
+
+		var raised = []; // An array of raised events for all mediaelements (we want to make sure we've tested all events).
+		for (var tmp = 0; tmp < events.length; tmp++)
+			raised.push (0);
+
+		var end_test = function ()
+			{
+				TestLogger.LogDebug ("TestMediaElement: end_test");
+				var finished = true;
+
+				if (completed) {
+					TestLogger.LogDebug ("TestMediaElement: end_test: already completed");
+					return;
+				}
+
+				for (var i = 0; i < done.length; i++)
+					finished = finished && done [i];
+
+				if (!finished && !timedOut) {
+					setTimeout(end_test, 250);
+					TestLogger.LogDebug ("TestMediaElement: end_test: not finished");
+					return;
+				}
+
+				for (var i = 0; i < raised.length; i++) {
+					if (raised [i] != 0) {
+						TestLogger.LogDebug ("TestMediaElement: Got " + events [i] + " " + raised [i] + " times");
+						continue;
+					}
+					TestLogger.LogError ("TestMediaElement: Got " + events [i] + " " + raised [i] + " times");
+					failed = true;
+				}
+
+				if (timedOut) {
+					TestLogger.LogError ("TestMediaElement: timed out.");
+					failed = true;
+				}
+				TestLogger.LogDebug ("TestMediaElement: done.");
+				completed = true;
+				tests_executed++;
+			};
+
+		var time_out = function ()
+			{
+				TestLogger.LogDebug ("TestMediaElement: time_out");
+				timedOut = true;
+				end_test ();
+			};
+
+		var seek_to_end = function ()
+			{
+				var me = mediaElements [0];
+				var pos = "00:00:" + Math.floor(me.NaturalDuration.Seconds - 3) + ".000";
+				TestLogger.LogDebug ("TestMediaElement: seek_to_end, position: " + me.Position.Seconds + ", duration: " + me.NaturalDuration.Seconds + ", destination: " + pos);
+				me.Position = pos;
+			};
+
+		var do_mouse_test = function ()
+			{
+				TestLogger.LogDebug ("TestMediaElement: do_mouse_test");
+				TestHost.moveMouse (100, 190); // outside (just above)
+				TestHost.moveMouseLogarithmic (120, 210); // inside (just below top)
+				TestHost.moveMouseLogarithmic (140, 190); // outside (just above)
+				TestHost.moveMouseLogarithmic (160, 210); // inside (just below top)
+				TestHost.mouseLeftButtonDown ();
+				TestHost.mouseLeftButtonUp ();
+				setTimeout (seek_to_end, 500);
+			};
+
+		var create_handler = function (object, /*string*/ event_name, /*int*/ expected_arg_count, /*bool*/ expected_event, /*int*/ me_index)
+		{
+			var handler = function ()
+			{
+				TestLogger.LogDebug ("TestMediaElement: " + event_name + " Source: " + arguments [0].Source + ", DownloadProgress: " + arguments [0].DownloadProgress);
+				if (!expected_event) {
+					Assert (false, "TestMediaElement: " + event_name + " was not expected for MediaElement with Source: " + arguments [0].Source);
+				} else {
+					Assert (arguments.length == expected_arg_count, "TestMediaElement: " + event_name + " takes " + expected_arg_count + " argument(s), got " + arguments.length + " argument(s).");
+				}
+
+				for (var e = 0; e < events.length; e++) {
+					if (events [e] != event_name)
+						continue;
+					raised [e]++;
+					break;
+				}
+
+				if (event_name == "MediaEnded" || event_name == "MediaFailed")
+					done [me_index] = true;
+
+				if (event_name == "MediaOpened") {
+					if (me_index == 0) {
+						if (!mouse_test_started) {
+							mouse_test_started = true;
+							setTimeout (do_mouse_test, 500);
+						}
+					} else if (me_index == 2) {
+						done [me_index] = true;
+					}
+				}
+				TestLogger.LogDebug ("TestMediaElement: " + event_name + " [Done]");
+			};
+			object.AddEventListener (event_name, handler);
+		}
+
+		for (var m = 0; m < sources.length; m++) {
+			var me = plugin.content.createFromXaml ('<MediaElement Width="200" Height="66" />');
+			mediaElements [m] = me;
+			for (var i = 0; i < events.length; i++) {
+				create_handler (me, events [i], arg_count [i], expected [m], m);
+			}
+			canvas.children.add (me);
+			me.Stretch = 1; // "StretchFill";
+			me.SetValue ("Canvas.Top", 200 + 66 * m);
+			me.AutoPlay = true;
+			me.Source = sources [m];
+			TestLogger.LogDebug ("TestMediaElement: Created MediaElement, w: " + me.Width + ", h: " + me.Height + ", top: " + me.GetValue ("Canvas.Top") + ", left: " + me.GetValue ("Canvas.Left"));
+		}
+		end_test ();
+
+		setTimeout (time_out, 10000);
+	}
+
+	function TestDownloader ()
+	{
+		var completed = false;
+		var timedOut = false;
+		var CurrentStep = 0;
+		var TotalSteps = 2;
+		var dlOK = null;
+		var dlFailed = null;
+		var end_test = function ()
+			{
+				if (completed)
+					return;
+
+				if (CurrentStep < TotalSteps) {
+					setTimeout(end_test, 100);
+					return;
+				}
+
+				if (timedOut) {
+					TestLogger.LogError ("TestDownloader: timed out.");
+					failed = true;
+				}
+				completed = true;
+				tests_executed++;
+			};
+
+		var time_out = function ()
+			{
+				timedOut = true;
+				end_test ();
+			};
+
+		var dl_completed = function (sender, args)
+			{
+				TestLogger.LogDebug ("TestDownloader: OnDownloaderCompleted: " + sender.Uri);
+				if (sender.Uri != dlOK.Uri) {
+					failed = true;
+					TestLogger.LogError ("TestDownloader: Shouldn't be able to download " + sender.Uri);
+				} else {
+					Assert (arguments.length == 1, "TestDownloader: Completed event takes 1 argument, got " + arguments.length + " arguments");
+					Assert (args == null, "TestDownloader: Completed event's second argument should be null.");
+				}
+				CurrentStep++;
+			};
+
+		var dl_failed = function (sender, args)
+			{
+				TestLogger.LogDebug ("TestDownloader: OnDownloaderFailed: " + sender.Uri);
+				if (sender.Uri != dlFailed.Uri) {
+					failed = true;
+					TestLogger.LogError ("TestDownloader: The download " + sender.Uri + " shouldn't fail");
+				} else {
+					Assert (arguments.length == 2, "TestDownloader: Failed event takes 2 arguments, got " + arguments.length + " arguments");
+					Assert (args != null, "TestDownloader: Failed event's second argument should not be null.");
+				}
+				CurrentStep++;
+			};
+
+		var dl_progresschanged = function (sender, args)
+			{
+				TestLogger.LogDebug ("TestDownloader: OnDownloaderProgressChanged: " + sender.Uri);
+				if (sender.Uri != dlOK.Uri) {
+					failed = true;
+					TestLogger.LogError ("TestDownloader: Shouldn't be able to download (or get progress changed events) for " + sender.Uri);
+				} else {
+					Assert (arguments.length == 1, "TestDownloader: ProgressChanged event takes 1 argument, got " + arguments.length + " arguments");
+					Assert (args == null, "TestDownloader: ProgressChanged event's second argument should be null.");
+				}
+			};
+
+		TestLogger.LogDebug ("TestDownloader");
+			
+		// Download a file
+		dlOK = plugin.createObject ("Downloader");
+		dlOK.Open ("GET", "test-event-argcount.html");
+		dlOK.AddEventListener ("Completed", dl_completed);
+		dlOK.AddEventListener ("DownloadFailed", dl_failed);
+		dlOK.AddEventListener ("DownloadProgressChanged", dl_progresschanged);
+		dlOK.Send();
+			
+		// Download a file which doesn't exist
+		dlFailed = plugin.createObject ("Downloader");
+		dlFailed.Open ("GET", "test-event-argcount-inexistent.html");
+		dlFailed.AddEventListener ("Completed", dl_completed);
+		dlFailed.AddEventListener ("DownloadFailed", dl_failed);
+		dlFailed.AddEventListener ("DownloadProgressChanged", dl_progresschanged);
+		dlFailed.Send();
+
+		end_test ();
+
+		// Given that we're downloading ourselves, the download should finish almost instantly
+		// 2 seconds should be more than enough
+		setTimeout (time_out, 2000);
+	}
+	
+	function TestPlugin ()
+	{
+		var done = [/*pluginOK*/ false, /*pluginFAIL*/ false, /*Fullscreen*/ false, /*Resize*/ false];
+		var pluginOK = null;
+		var completed = false;
+		var timedOut = false;
+
+		var embeds = [
+			'<embed type="application/x-silverlight" width="20" height="20" id="pluginOK"   Source="#xamlOK"   OnError="OnPluginError1" OnLoad="OnPluginLoaded1" background="Red" >   </embed>',
+			'<embed type="application/x-silverlight" width="20" height="20" id="pluginFAIL" Source="#xamlFAIL" OnError="OnPluginError2" OnLoad="OnPluginLoaded2" background="Green"> </embed>'
+			];
+
+		var end_test = function ()
+			{
+				var finished = true;
+
+				if (completed)
+					return;
+
+				for (var i = 0; i < done.length; i++)
+					finished = finished && done [i];
+
+				if (!finished && !timedOut) {
+					setTimeout(end_test, 100);
+					return;
+				}
+
+				if (timedOut) {
+					TestLogger.LogError ("TestPlugin: timed out.");
+					failed = true;
+				}
+				TestLogger.LogDebug ("TestPlugin: done.");
+				completed = true;
+				tests_executed++;
+			};
+
+		var time_out = function ()
+			{
+				timedOut = true;
+				end_test ();
+			};
+
+		var switch_fullscreen = function ()
+			{
+				TestLogger.LogDebug ("TestPlugin: switch_fullscreen: " + pluginOK.content.fullScreen);
+				plugin.content.fullScreen = true;
+				TestLogger.LogDebug ("TestPlugin: switch_fullscreen: [Done]" + pluginOK.content.fullScreen);
+			};
+
+		var on_fullscreenchange = function ()
+			{
+				TestLogger.LogDebug ("TestPlugin: OnFullScreenChange");
+				Assert (arguments.length == 1, "TestPlugin: FullScreenChange event takes 1 arguments, got " + arguments.length + " arguments");
+				setTimeout (function () { plugin.content.fullScreen = false; }, 1000);
+				done [2] = true;
+			};
+
+		var on_resize = function ()
+			{
+				TestLogger.LogDebug ("TestPlugin: OnResize");
+				Assert (arguments.length == 1, "TestPlugin: Resize event takes 1 arguments, got " + arguments.length + " arguments");
+				done [3] = true;
+			};
+
+		var test_fullscreen = function ()
+			{
+				TestLogger.LogDebug ("TestPlugin: test_fullscreen");
+				var token = canvas.addEventListener ("MouseLeftButtonDown", switch_fullscreen);
+				TestHost.moveMouse (200, 200);
+				TestHost.mouseLeftButtonDown ();
+				setTimeout (function () { canvas.removeEventListener ("MouseLeftButtonDown", token); }, 2500);
+			};
+
+		var test_resize = function ()
+			{
+				TestLogger.LogDebug ("TestPlugin: test_resize");
+				pluginOK.width = "40";
+			};
+
+		window.OnPluginError1 = function (sender, args) 
+			{
+				TestLogger.LogDebug ("TestPlugin: OnPluginError1");
+				failed = true;
+				TestLogger.LogError ("TestPlugin: Unexpected plugin error: " + ErrorEventArgsToOneLineString (args));
+				done [0] = true;
+			};
+
+		window.OnPluginError2 = function (sender, args) 
+			{
+				TestLogger.LogDebug ("TestPlugin: OnPluginError2");
+				TestLogger.LogDebug ("TestPlugin: Expected plugin error: " + ErrorEventArgsToOneLineString (args));
+				Assert (arguments.length == 2, "TestPlugin: OnError event takes 2 arguments, got " + arguments.length + " arguments");
+				done [1] = true;
+			};
+
+		window.OnPluginLoaded1 = function (sender, args)
+			{
+				TestLogger.LogDebug ("TestPlugin: OnPluginLoaded1");
+				Assert (arguments.length == 1, "TestPlugin: OnLoad event takes 1 arguments, got " + arguments.length + " arguments");
+				pluginOK = document.getElementById ("pluginOK");
+				plugin.content.onFullScreenChange = on_fullscreenchange;
+				pluginOK.content.onResize = on_resize;
+				setTimeout (test_fullscreen, 500);
+				//setTimeout (test_resize, 2000);
+				done [0] = true;
+			};
+
+		window.OnPluginLoaded2 = function (sender, args)
+			{
+				TestLogger.LogDebug ("TestPlugin: OnPluginLoaded2");
+				TestLogger.LogError ("TestPlugin: Plugin should have failed to load.");
+				done [1] = true;
+			};
+		
+
+		TestLogger.LogDebug ("TestPlugin");
+
+		document.getElementById ("div1").innerHTML = embeds [0];
+		document.getElementById ("div2").innerHTML = embeds [1];
+	
+		end_test ();
+		TestLogger.LogDebug ("TestPlugin [Started]");
+		setTimeout (time_out, 5000);
+	}
+
+	function CheckEnded ()
+	{
+		if (ShutdownRequested)
+			return;
+
+		if (tests_executed < test_count + seq_test_count) {
+			setTimeout (CheckEnded, 100);
+			return;
+		}
+		TestLogger.LogResult (failed ? -1 : 1);
+		SignalShutdown ();
+	}
+
+	function StartSequentialTest ()
+	{
+		var prev;
+		TestLogger.LogDebug ("StartSequentialTest");
+
+		// Wait until all non-sequential tests has executed.
+		if (tests_executed < test_count) {
+			TestLogger.LogDebug ("StartSequentialTest: non sequential tests haven't finished yet.");
+			setTimeout (StartSequentialTest, 1000);
+			return;
+		}
+
+		if (tests_executed >= test_count + seq_test_count) {
+			CheckEnded ();
+			return;
+		}
+
+		if (tests_executed == prev_tests_executed && prev_tests_executed != 0) {
+			// The previous test didn't finish yet.
+			TestLogger.LogDebug ("StartSequentialTest: there is a test running.");
+			setTimeout (StartSequentialTest, 1000);
+			return;
+		}
+
+		prev_tests_executed = tests_executed;
+
+		var t = tests_executed - test_count;
+		var test = seq_tests [t];
+
+		TestLogger.LogDebug ("StartSequentialTest: running '" + test + "'");
+
+		if (test != "") {
+			try {
+				eval (test + " ();");
+			} catch (e) {
+				tests_executed++;
+				failed = true;
+				TestLogger.LogError (test + " () failed: " + e);
+			}
+		}
+		setTimeout (StartSequentialTest, 1000);
+	}
+
+	function StartTests ()
+	{
+		TestLogger.LogDebug ("StartTests");
+
+		plugin = document.getElementById ("JoltActiveX");
+		canvas = plugin.content.findName ("MainCanvas");
+		
+		for (var t = 0; t < tests.length; t++) {
+			var test = tests [t];
+			if (test == "")
+				continue;
+
+			try {
+				eval (test + " ();");
+			} catch (e) {
+				tests_executed++;
+				failed = true;
+				TestLogger.LogError (test + " () failed: " + e);
+			}
+		}
+
+		StartSequentialTest ();
+
+		TestLogger.LogDebug ("StartTests [Running]");
+	}
+
+	function OnTestPluginReady ()
+	{
+		TestLogger.LogDebug ("OnTestPluginReady");
+		if (!loaded) {
+			setTimeout (OnTestPluginReady, 500);
+			return;
+		}
+		if (started)
+			return;
+		started = true;
+		StartTests ();
+	}
+
+	function OnPluginError (sender, args)
+	{
+		TestLogger.LogError ("OnPluginError: " + ErrorEventArgsToOneLineString (args));
+		TestLogger.LogResult (-1)
+		SignalShutdown ();
+	}
+	
+	function OnPluginLoaded ()
+	{
+		TestLogger.LogDebug ("OnPluginLoaded");
+		loaded = true;
+	}
+
+	function Assert (condition, msg)
+	{
+		if (!condition) {
+			TestLogger.LogError (msg);
+			failed = true;
+		}
+	}
+
+	setTimeout (OnTestPluginReady, 2000);
+
+</script>
+
+<div>
+<embed type="application/x-silverlight" width="800" height="800"
+     id="JoltActiveX" Source="#xamlA" OnError="OnPluginError" OnLoad="OnPluginLoaded"
+     style="position:absolute; left:0px; top:0px" background="#CCCCCC">
+</embed>
+</div>
+<div id="div1"> </div>
+<div id="div2"> </div>
+
+<form method="get" >
+	<input style="position:absolute; left:0px; top:825px; width:50px; height:25px" type="text" value="hello" >
+	<input style="position:absolute; left:0px; top:875px; width:50px; height:25px" type="text" value="hello" >
+</form>
+
+<!--
+<embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest" 
+>
+</embed>
+-->
+
+</body>
+</html>

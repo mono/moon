@@ -1,3 +1,9 @@
+2008-10-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin-class.cpp: proxy_listener_to_javascript: if calldata is null,
+	  only pass 1 argument to javascript. Fixes #426440 partially (mp3s
+	  are now downloaded).
+
 2008-10-16  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin-class.cpp (MoonlightObject::AddEventProxy): New method to

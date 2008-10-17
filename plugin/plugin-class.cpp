@@ -720,6 +720,7 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 	EventObject *js_sender = sender;
 	NPVariant args[2];
 	NPVariant result;
+	int argcount = 1;
 	
 	if (proxy->instance->pdata == NULL) {
 		// Firefox can invalidate our NPObjects after the plugin itself
@@ -754,20 +755,19 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 		depargs = EventObjectCreateWrapper (proxy->instance, calldata);
 		plugin->AddCleanupPointer (&depargs);
 		OBJECT_TO_NPVARIANT (depargs, args[1]);
-	} else {
-		NULL_TO_NPVARIANT (args[1]);
+		argcount++;
 	}
 	
 	if (proxy->is_func) {
 		/* the event listener was added with a JS function object */
-		if (NPN_InvokeDefault (proxy->instance, (NPObject *) proxy->callback, args, 2, &result))
+		if (NPN_InvokeDefault (proxy->instance, (NPObject *) proxy->callback, args, argcount, &result))
 			NPN_ReleaseVariantValue (&result);
 	} else {
 		/* the event listener was added with a JS string (the function name) */
 		NPObject *object = NULL;
 		
 		if (NPN_GetValue (proxy->instance, NPNVWindowNPObject, &object) == NPERR_NO_ERROR) {
-			if (NPN_Invoke (proxy->instance, object, NPID ((char *) proxy->callback), args, 2, &result))
+			if (NPN_Invoke (proxy->instance, object, NPID ((char *) proxy->callback), args, argcount, &result))
 				NPN_ReleaseVariantValue (&result);
 		}
 	}

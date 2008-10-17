@@ -1,3 +1,9 @@
+2008-10-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* xaml/drtlist.xml, xaml/test-event-argcount.html,
+	  xaml/test-toplevel-canvas-events.html: Added
+	  test-event-argcount.html and test-toplevel-canvas-events.html.
+
 2008-09-19  Alan McGovern  <amcgovern@novell.com>
 	* Makefile.am: Removed reference to NDesk.Options.dll that i missed.
 

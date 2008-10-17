@@ -935,4 +935,18 @@
 	categories="clip,moonbuilder"
 	knownFailure="True"
    />
+   <Test id="208"
+	inputFile="test-toplevel-canvas-events.html"
+	masterFile10="None"
+	categories="moonbuilder"
+	knownFailure="True"
+	knownFailureReason="We don't enforce that only top-level canvases can have keyup/down got/lostfocus event handlers"
+	timeout="5000"
+   />
+   <Test id="209"
+	inputFile="test-event-argcount.html"
+	masterFile10="None"
+	categories="moonbuilder"
+	timeout="120000"
+   />
 </DRTList>
