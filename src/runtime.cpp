@@ -1077,8 +1077,8 @@ Surface::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpo
 
 		cairo_fill (native);
 		cairo_destroy (native);
-	} else
-		cairo_destroy (ctx);
+	}
+	cairo_destroy (ctx);
 
 	delete region;
 

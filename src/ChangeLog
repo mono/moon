@@ -1,3 +1,8 @@
+2008-10-17  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* runtime.cpp (Surface::PaintToDrawable): Don't leak cairo context
+	when using "backend=image".
+
 2008-10-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline.cpp: NullDecoder::OpenVideo: Fix comment (logo is centered
