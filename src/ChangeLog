@@ -1,5 +1,10 @@
 2008-10-16  Geoff Norton  <gnorton@novell.com>
 
+	* pipeline.cpp: Dont tile our logo, it looks like ass.  Lets
+	center it in the available window instead.
+
+2008-10-16  Geoff Norton  <gnorton@novell.com>
+
 	* pipeline-ui.cpp: Avoid a resize when realizing which causes an
 	annoying flicker in the codec window.
 

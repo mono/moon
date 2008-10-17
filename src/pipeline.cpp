@@ -3167,26 +3167,33 @@ NullDecoder::OpenVideo ()
 	guint32 img_height = *((guint32*)(image + 22));
 	guint32 img_stride = (img_width * 3 + 3) & ~3; // in bytes
 	guint32 img_i, img_h, img_w;
+	guint32 start_w = (dest_width-img_width)/2;
+	guint32 end_w = start_w + img_width;	
+	guint32 start_h = (dest_height-img_height)/2;
+	guint32 end_h = start_h + img_height;	
 	
 	LOG_PIPELINE ("offset: %i, width: 0x%x = %i, height: 0x%x = %i, stride: %i\n", img_offset, img_width, img_width, img_height, img_height, img_stride);
 	
 	// create the buffer for our image
 	logo_size = dest_height * dest_width * 4;
 	logo = (guint8*) g_malloc (logo_size);
+	memset (logo, 0x00, logo_size);
 
 	// write our image tiled into the destination rectangle, flipped horizontally
 	dest_i = 4;
 	for (guint32 dest_h = 0; dest_h < dest_height; dest_h++) {
 		for (guint32 dest_w = 0; dest_w < dest_width; dest_w++) {
-			img_h = dest_h % img_height;
-			img_w = dest_w % img_width;
-			img_i = img_h * img_stride + img_w * 3;
-			
-			logo [logo_size - dest_i + 0] = image [img_offset + img_i + 0];
-			logo [logo_size - dest_i + 1] = image [img_offset + img_i + 1];
-			logo [logo_size - dest_i + 2] = image [img_offset + img_i + 2];
-			logo [logo_size - dest_i + 3] = 255;
-			
+			if (dest_w >= start_w && dest_w <= end_w && dest_h >= start_h && dest_h <= end_h) {
+				img_h = (dest_h - start_h) % img_height;
+				img_w = (dest_w - start_w) % img_width;
+				img_i = img_h * img_stride + img_w * 3;
+
+				logo [logo_size - dest_i + 0] = image [img_offset + img_i + 0];
+				logo [logo_size - dest_i + 1] = image [img_offset + img_i + 1];
+				logo [logo_size - dest_i + 2] = image [img_offset + img_i + 2];
+			}
+			logo [logo_size - dest_i + 3] = 0xff;
+
 			dest_i += 4;
 		}
 	}
