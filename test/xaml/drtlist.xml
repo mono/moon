@@ -3,11 +3,6 @@
 	inputFile="nested-canvas-empty.xaml"
 	masterFile10="../harness/masters/nested-canvas-emptyMaster.png"
    />
-   <Test id="2"
-	inputFile="nested-canvas.xaml"
-	masterFile10="../harness/masters/nested-canvasMaster.png"
-	codebehind="nested-canvas.cs"
-   />
    <Test id="3"
 	inputFile="points-torture.xaml"
 	masterFile10="../harness/masters/points-tortureMaster.png"
@@ -357,11 +352,6 @@
 	inputFile="test-rtol.xaml"
 	masterFile10="../harness/masters/test-rtolMaster.png"
    />
-   <Test id="81"
-	inputFile="test-seekable-storyboard.xaml"
-	masterFile10="../harness/masters/test-seekable-storyboardMaster.png"
-	codebehind="seekable-canvas.cs"
-   />
    <Test id="82"
 	inputFile="test-set-inherited-property-elements.xaml"
 	masterFile10="../harness/masters/test-set-inherited-property-elementsMaster.png"
@@ -509,11 +499,6 @@
 	inputFile="test-solidbrush-opacity.xaml"
 	masterFile10="../harness/masters/test-solidbrush-opacityMaster.png"
    />
-   <Test id="115"
-	inputFile="test-string-property.xaml"
-	masterFile10="../harness/masters/test-string-propertyMaster.png"
-	codebehind="test-string-property.cs"
-   />
    <Test id="116"
 	inputFile="test-text-animation.xaml"
 	masterFile10="../harness/masters/test-text-animationMaster.tif"
@@ -580,11 +565,6 @@
    <Test id="131"
 	inputFile="test-zindex.xaml"
 	masterFile10="../harness/masters/test-zindexMaster.png"
-   />
-   <Test id="132"
-	inputFile="video-player.xaml"
-	masterFile10="../harness/masters/video-playerMaster.png"
-	codebehind="video-player.cs"
    />
    <Test id="133"
 	inputFile="test-directory-in-zip.html"

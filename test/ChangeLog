@@ -1,5 +1,23 @@
 2008-10-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* 2.0/xaml/nested-canvas.cs, 2.0/xaml/nested-canvas.xaml,
+	  2.0/xaml/seekable-canvas.cs,
+	  2.0/xaml/test-seekable-storyboard.xaml,
+	  2.0/xaml/test-string-property.cs,
+	  2.0/xaml/test-string-property.xaml, 2.0/xaml/video-player.cs,
+	  2.0/xaml/video-player.xaml, 2.0/xaml/visualbrush,
+	  xaml/nested-canvas.xaml, xaml/nested-canvas.cs,
+	  xaml/seekable-canvas.cs, xaml/test-seekable-storyboard.xaml,
+	  xaml/test-string-property.cs, xaml/test-string-property.xaml,
+	  xaml/video-player.cs, xaml/video-player.xaml, xaml/visualbrush,
+	  xaml/visualbrush/Makefile, xaml/visualbrush/MyCanvas.cs,
+	  xaml/visualbrush/test-reflected-line.xaml,
+	  xaml/visualbrush/test-reflected-videobrush-text.xaml,
+	  xaml/drtlist.xml, 2.0/xaml/drtlist.xml: Move some 2.0 tests from
+	  test/xaml to test/2.0/xaml.
+
+2008-10-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* xaml/drtlist.xml, xaml/test-event-argcount.html,
 	  xaml/test-toplevel-canvas-events.html: Added
 	  test-event-argcount.html and test-toplevel-canvas-events.html.

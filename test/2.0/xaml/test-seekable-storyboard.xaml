@@ -13,7 +13,7 @@
     <Line
 	x:Name="TheAmazingMovingLine"
 	X1="10" Y1="10"
-	X2="10" Y2="200" Stroke="Black">
+	X2="10" Y2="200" Stroke="Black"
 
     </Line>
 
