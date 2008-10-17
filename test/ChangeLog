@@ -1,3 +1,8 @@
+2008-10-16  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/assorted/sl2-animation-blending.html: Adding a test to see if 
+	Silverlight 2.0 does the described animation blending in any way.
+
 2008-10-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* 2.0/xaml/nested-canvas.cs, 2.0/xaml/nested-canvas.xaml,
