@@ -1,5 +1,10 @@
 2008-10-16  Michael Dominic K.  <mdk@mdk.am>
 
+	* xaml/assorted/fullscreen-enter-leave.html: Adding a test-case for tracking what 
+	happens with Enter/Leave events when triggering fullscreen.
+
+2008-10-16  Michael Dominic K.  <mdk@mdk.am>
+
 	* xaml/assorted/sl2-animation-blending.html: Adding a test to see if 
 	Silverlight 2.0 does the described animation blending in any way.
 

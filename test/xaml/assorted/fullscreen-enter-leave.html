@@ -1,0 +1,42 @@
+<head>
+<title>Trivial test for stopping an animation</title>
+<meta></meta>
+</head>
+<body>
+
+<script type="text/javascript">
+function OnPress (sender)
+{
+	var plugin = sender.GetHost ();
+	plugin.content.fullScreen = !plugin.content.fullScreen;
+}
+
+function OnMouseEnter (sender, eventArgs)
+{
+	sender.StrokeThickness = 5.0;
+}
+
+function OnMouseLeave (sender)
+{
+	sender.StrokeThickness = 1.0;
+}
+</script>
+
+<object type="application/x-silverlight" data="data:," id="slControl" width="800" height="600">
+<param name="background" value="#FFFFFF"/>
+<param name="source" value="#xamlContent"/>
+</object>
+
+<script type="text/xaml" id="xamlContent">
+<?xml version="1.0"?>
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Rectangle x:Name="target" Stroke="Black" StrokeThickness="1.0" Fill="Blue" Canvas.Top="100" Canvas.Left="100" MouseEnter="OnMouseEnter" Width="50" Height="50" MouseLeave="OnMouseLeave" MouseLeftButtonDown="OnPress"/>
+</Canvas>
+</script>
+
+</body>
+</html>
+
+
