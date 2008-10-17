@@ -338,6 +338,8 @@ AnimationClock::~AnimationClock ()
 		else {
 			if (storage->IsCurrentStorage ()) {
 				// FIXME: Why don't we delete storage here? Sadly, we are leaking it on channel9
+				// ANSWER: The pointer to the storage is still held by the hash table in the DependencyProperty
+				// It gets destroyed next time sombody attaches an animation to the property. 
 				storage->Float ();
 			} else
 				delete storage;
