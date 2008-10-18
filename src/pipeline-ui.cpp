@@ -14,6 +14,7 @@
 #include <errno.h>
 #include <string.h>
 #include <fcntl.h>
+#include <stdlib.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
 #include "pipeline-ui.h"
