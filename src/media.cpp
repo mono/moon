@@ -830,7 +830,8 @@ MediaElement::MediaOpened (Media *media)
 	
 	for (int i = 0; i < demuxer->GetStreamCount (); i++) {
 		IMediaStream *stream = demuxer->GetStream (i);
-		const char *decoder_name = stream->GetDecoder ()->GetName ();
+		IMediaDecoder *decoder = stream->GetDecoder ();
+		const char *decoder_name = decoder ? decoder->GetName () : NULL;
 		if (decoder_name != NULL && strcmp (decoder_name, "NullDecoder") == 0) {
 			missing_codecs = true;
 			break;
