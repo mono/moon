@@ -1137,6 +1137,7 @@ ASFDemuxer::ReadHeader ()
 	IMediaStream **streams = NULL;
 	int current_stream = 1;
 	int stream_count = 0;
+	int count;
 	
 	if (parser != NULL) {
 		asf_parser = parser;
@@ -1158,7 +1159,6 @@ ASFDemuxer::ReadHeader ()
 	}
 	
 	// Count the number of streams
-	stream_count = 0;
 	for (int i = 1; i <= 127; i++) {
 		if (asf_parser->IsValidStream (i))
 			stream_count++;
@@ -1168,8 +1168,10 @@ ASFDemuxer::ReadHeader ()
 	streams = (IMediaStream **) g_malloc0 (sizeof (IMediaStream *) * (stream_count + 1)); // End with a NULL element.
 	stream_to_asf_index = (gint32 *) g_malloc0 (sizeof (gint32) * (stream_count + 1)); 
 
+	// keep count as a separate local since we can change its value (e.g. bad stream)
+	count = stream_count;
 	// Loop through all the streams and set stream-specific data	
-	for (int i = 0; i < stream_count; i++) {
+	for (int i = 0; i < count; i++) {
 		while (current_stream <= 127 && !asf_parser->IsValidStream (current_stream))
 			current_stream++;
 		
@@ -1253,7 +1255,8 @@ ASFDemuxer::ReadHeader ()
 			stream = marker;
 			stream->codec = g_strdup ("asf-marker");
 		} else {
-			// Unknown stream, ignore it.
+			// Unknown stream, don't include it in the count since it's NULL
+			stream_count--;
 		}
 		
 		if (stream != NULL) {

@@ -1,3 +1,8 @@
+2008-10-20  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* pipeline.cpp (ASFDemuxer::ReadHeader): Don't count invalid streams
+	since a lot of loops don't handle NULL values.
+
 2008-10-20  Michael Dominic K.  <mdk@mdk.am>
 
 	* runtime.cpp: More fixes to crossing events: when entering fullscreen
