@@ -34,6 +34,9 @@ GdkWindow *
 MoonWindowGtk::GetGdkWindow ()
 {
 	GdkWindow *parent_window = gtk_widget_get_parent_window (widget);
+	if (parent_window == NULL)
+		parent_window = widget->window;
+	
 	g_object_ref (parent_window);
 	return parent_window;
 }
