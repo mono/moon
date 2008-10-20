@@ -1,3 +1,14 @@
+2008-10-20  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-entry.cpp: get rid of all those CallNPP_* macro uses.
+	just invoke the damn function.
+
+	* plugin-proxy.cpp, moonlight.h: include npfunctions.h instead of npupp.h
+
+	* plugin-glue.cpp, plugin.h: fix types.
+	
+	* moz-sdk/*: rev to a newer version of the moz-sdk files.
+
 2008-10-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin-class.cpp: proxy_listener_to_javascript: if calldata is null,

@@ -24,7 +24,7 @@
 #define Region _XxRegion
 #define Visual _XxVisual
 #include <npapi.h>
-#include <npupp.h>
+#include <npfunctions.h>
 #include <npruntime.h>
 #undef Region
 #undef Visual

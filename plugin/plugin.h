@@ -48,7 +48,7 @@ class PluginInstance
 	int32_t Write (NPStream *stream, int32_t offset, int32_t len, void *buffer);
 	void UrlNotify (const char *url, NPReason reason, void *notifyData);
 	void Print (NPPrint *platformPrint);
-	int16 EventHandle (void *event);
+	int16_t EventHandle (void *event);
 	void ReportException (char *msg, char *details, char **stack_trace, int num_frames);
 	void *LoadUrl (char *url, int32_t *length);
 	void *Evaluate (const char *code);

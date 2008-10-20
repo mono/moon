@@ -18,7 +18,7 @@
 #include "moonlight.h"
 
 #include "npapi.h"
-#include "npupp.h"
+#include "npfunctions.h"
 
 #if PLUGIN_SL_2_0
 #include <mono/metadata/assembly.h>
