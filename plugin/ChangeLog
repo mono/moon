@@ -1,5 +1,10 @@
 2008-10-20  Chris Toshok  <toshok@ximian.com>
 
+	* windowless.h, windowless.cpp: add support for experimental
+	extension (see mozilla.org bug #430451) for windowless cursors.
+
+2008-10-20  Chris Toshok  <toshok@ximian.com>
+
 	* plugin-entry.cpp: get rid of all those CallNPP_* macro uses.
 	just invoke the damn function.
 

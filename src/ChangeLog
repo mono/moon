@@ -1,3 +1,15 @@
+2008-10-20  Chris Toshok  <toshok@ximian.com>
+
+	* window-gtk.h, window-gtk.cpp: move the Surface conversion from
+	MouseCursor -> GtkCursor here.
+
+	* runtime.h, runtime.cpp: surface only deals with MouseCursors
+	anymore.  the gtk support is in window-gtk now.
+	
+	* window.h: remove SetCursor (GdkCursor) and add
+	SetCursor (MouseCursor), so subclasses of MoonWindow can do their
+	own thing.
+
 2008-10-20  Jeffrey Stedfast  <fejj@novell.com>
 
 	* media.cpp (MediaElement::MediaOpened): If the stream decoder is

@@ -67,14 +67,37 @@ MoonWindowless::Resize (int width, int height)
 }
 
 void
-MoonWindowless::SetCursor (GdkCursor *cursor)
+MoonWindowless::SetCursor (MouseCursor cursor)
 {
-	// turned off for now.  hopefully we can get this switched on for
-	// newer versions of ff3
-	// see https://bugzilla.mozilla.org/show_bug.cgi?id=430451
+#if (NP_VERSION_MINOR >= NPVERS_HAS_WINDOWLESS_CURSORS)
+	NPCursor npcursor;
+	switch (cursor) {
+	case MouseCursorDefault:
+		npcursor = NPCursorAuto;
+		break;
+	case MouseCursorArrow:
+		npcursor = NPCursorPointer;
+		break;
+	case MouseCursorWait:
+		npcursor = NPCursorWait;
+		break;
+	case MouseCursorIBeam:
+		npcursor = NPCursorText;
+		break;
+	case MouseCursorStylus:
+		npcursor = NPCursorPointer; // XXX ugh...
+		break;
+	case MouseCursorEraser:
+		npcursor = NPCursorPointer; // XXX ugh...
+		break;
+	case MouseCursorNone:
+		// Silverlight display no cursor if the enumeration value is invalid (e.g. -1)
+	default:
+		npcursor = NPCursorNone;
+		break;
+	}
 
-#if 0 && (NP_VERSION_MINOR >= NPVERS_HAS_CURSOR)
-	NPN_SetValue (plugin->GetInstance(), NPNVcursor, GDK_CURSOR_XCURSOR(cursor));
+	NPN_SetValue (plugin->GetInstance(), NPPVcursor, (void*)npcursor);
 #endif
 }
 
@@ -87,10 +110,10 @@ MoonWindowless::Invalidate (Rect r)
 	// outside the windowless bounds.
 	r = r.Intersection (Rect (0, 0, GetWidth(), GetHeight())).RoundOut ();
 
-	nprect.left = (uint16)r.x;
-	nprect.top = (uint16)r.y;
-	nprect.right = (uint16)(r.x + r.width);
-	nprect.bottom = (uint16)(r.y + r.height);
+	nprect.left = (uint16_t)r.x;
+	nprect.top = (uint16_t)r.y;
+	nprect.right = (uint16_t)(r.x + r.width);
+	nprect.bottom = (uint16_t)(r.y + r.height);
 
 	NPN_InvalidateRect (plugin->GetInstance(), &nprect);
 }

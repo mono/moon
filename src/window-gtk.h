@@ -32,7 +32,7 @@ public:
 	virtual ~MoonWindowGtk ();
 
 	virtual void Resize (int width, int height);
-	virtual void SetCursor (GdkCursor *cursor);
+	virtual void SetCursor (MouseCursor cursor);
 	virtual void Invalidate (Rect r);
 	virtual void ProcessUpdates ();
 	virtual gboolean HandleEvent (XEvent *event);

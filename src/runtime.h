@@ -103,7 +103,6 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Attach (UIElement *toplevel);
 
-	virtual void SetCursor (GdkCursor *cursor);
 	void SetCursor (MouseCursor cursor);
 
 	bool SetMouseCapture (UIElement *capture);
