@@ -2733,7 +2733,6 @@ IMediaSource::ReadAll (void *buf, guint32 n)
 #if DEBUG
 		print_stack_trace ();
 #endif
-		exit (-1);
 	}
 	
 	LOG_PIPELINE ("IMediaSource<%d>::ReadAll (%p, %u), read: %d [Done].\n",
