@@ -244,7 +244,7 @@ namespace System.Windows {
 		// hack.
 		//
 		[SecuritySafeCritical]
-		public static void LoadComponent (object component, Uri xamlUri)
+		public static void LoadComponent (object component, Uri resourceLocator)
 		{
 			Application app = component as Application;
 			DependencyObject cdo = component as DependencyObject;
@@ -252,11 +252,10 @@ namespace System.Windows {
 			if (cdo == null && app == null)
 				throw new ArgumentNullException ("component");
 
-			// match SL exception but with a better description
-			if (xamlUri == null)
-				throw new ArgumentException ("Null Uri", "xamlUri");
+			if (resourceLocator == null)
+				throw new ArgumentNullException ("resourceLocator");
 
-			StreamResourceInfo sr = GetResourceStream (xamlUri);
+			StreamResourceInfo sr = GetResourceStream (resourceLocator);
 
 			// Does not seem to throw.
 			if (sr == null)
