@@ -81,16 +81,17 @@ namespace MoonTest.System.Windows {
 			StreamResourceInfo sri = new StreamResourceInfo (new MemoryStream (), String.Empty);
 
 			Assert.Throws<ArgumentNullException> (() => Application.GetResourceStream (sri, null), "GetResourceStream(sri,null)");
-			Assert.Throws<ArgumentNullException> (() => Application.LoadComponent (null, uri),"LoadComponent(null,uri)");
+			Assert.Throws<ArgumentNullException> (() => Application.LoadComponent (null, uri), "LoadComponent(null,uri)");
 		}
 
 		[TestMethod]
 		public void LoadComponent_Application ()
 		{
 			// Note: Exception message can be misleading
-			Assert.Throws (delegate { Application.LoadComponent (Application.Current, null); }, typeof (ArgumentException), "LoadComponent(app,null)");
-			Assert.Throws (delegate { Application.LoadComponent (Application.Current, uri); }, typeof (ArgumentException), "LoadComponent(app,uri)");
-			Assert.Throws (delegate { Application.LoadComponent (Application.Current, Application.Current.Host.Source); }, typeof (ArgumentException), "LoadComponent(app,xap)");
+			Assert.Throws<ArgumentNullException> (() => Application.LoadComponent (Application.Current, null), "LoadComponent(app,null)");
+			Assert.Throws<ArgumentException> (() => Application.LoadComponent (Application.Current, uri), "LoadComponent(app,uri)");
+			Assert.Throws<ArgumentException> (() => Application.LoadComponent (Application.Current, Application.Current.Host.Source), "LoadComponent(app,xap)");
+
 			// try to load an unexisting uri
 			Application.LoadComponent (Application.Current, new Uri ("/moon_unit;component/App-does-not-exists.xaml", UriKind.Relative));
 		}
