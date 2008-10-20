@@ -23,14 +23,14 @@ function OnMouseLeave1 (sender)
 
 function OnMouseEnter2 (sender, eventArgs)
 {
-	sender.findName("FadeOut").Stop ();
 	sender.findName("FadeIn").Begin ();
+	sender.findName("FadeOut").Stop ();
 }
 
 function OnMouseLeave2 (sender)
 {
-	sender.findName("FadeIn").Stop ();
 	sender.findName("FadeOut").Begin ();
+	sender.findName("FadeIn").Stop ();
 }
 </script>
 
