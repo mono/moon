@@ -321,24 +321,32 @@ EventObject::PrintStackTrace ()
 // event handlers for c++
 class EventClosure : public List::Node {
 public:
-	EventClosure (EventHandler func, gpointer data, int token) {
+	EventClosure (EventHandler func, gpointer data, GDestroyNotify data_dtor, int token) {
 		this->func = func;
 		this->data = data;
+		this->data_dtor = data_dtor;
 		this->token = token;
 
 		pending_removal = false;
 		emit_count = 0;
 	}
 	
+	~EventClosure ()
+	{
+		if (data_dtor)
+			data_dtor (data);
+	}
+
 	EventHandler func;
 	gpointer data;
+	GDestroyNotify data_dtor;
 	int token;
 	bool pending_removal;
 	int emit_count;
 };
 
 int
-EventObject::AddHandler (const char *event_name, EventHandler handler, gpointer data)
+EventObject::AddHandler (const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor)
 {
 	int id = GetType()->LookupEvent (event_name);
 
@@ -347,11 +355,11 @@ EventObject::AddHandler (const char *event_name, EventHandler handler, gpointer 
 		return -1;
 	}
 
-	return AddHandler (id, handler, data);
+	return AddHandler (id, handler, data, data_dtor);
 }
 
 int
-EventObject::AddHandler (int event_id, EventHandler handler, gpointer data)
+EventObject::AddHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor)
 { 
 	if (GetType()->GetEventCount() <= 0) {
 		g_warning ("adding handler to event with id %d, which has not been registered\n", event_id);
@@ -363,13 +371,13 @@ EventObject::AddHandler (int event_id, EventHandler handler, gpointer data)
 	
 	int token = events->lists [event_id].current_token++;
 	
-	events->lists [event_id].event_list->Append (new EventClosure (handler, data, token));
+	events->lists [event_id].event_list->Append (new EventClosure (handler, data, data_dtor, token));
 	
 	return token;
 }
 
 int
-EventObject::AddXamlHandler (const char *event_name, EventHandler handler, gpointer data)
+EventObject::AddXamlHandler (const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor)
 {
 	int id = GetType ()->LookupEvent (event_name);
 	
@@ -378,11 +386,11 @@ EventObject::AddXamlHandler (const char *event_name, EventHandler handler, gpoin
 		return -1;
 	}
 	
-	return AddHandler (id, handler, data);
+	return AddHandler (id, handler, data, data_dtor);
 }
 
 int
-EventObject::AddXamlHandler (int event_id, EventHandler handler, gpointer data)
+EventObject::AddXamlHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor)
 { 
 	if (GetType ()->GetEventCount () <= 0) {
 		g_warning ("adding xaml handler to event with id %d, which has not been registered\n", event_id);
@@ -392,7 +400,7 @@ EventObject::AddXamlHandler (int event_id, EventHandler handler, gpointer data)
 	if (events == NULL)
 		events = new EventLists (GetType ()->GetEventCount ());
 	
-	events->lists [event_id].event_list->Append (new EventClosure (handler, data, 0));
+	events->lists [event_id].event_list->Append (new EventClosure (handler, data, data_dtor, 0));
 	
 	return 0;
 }

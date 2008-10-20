@@ -156,14 +156,14 @@ public:
 	}	
 	
 	/* @GenerateCBinding,GeneratePInvoke */
- 	int AddHandler (const char *event_name, EventHandler handler, gpointer data);
+ 	int AddHandler (const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL);
 	/* @GenerateCBinding,GeneratePInvoke */
- 	int AddXamlHandler (const char *event_name, EventHandler handler, gpointer data);
+ 	int AddXamlHandler (const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL);
 	/* @GenerateCBinding,GeneratePInvoke */
  	void RemoveHandler (const char *event_name, EventHandler handler, gpointer data);
 
-	int AddHandler (int event_id, EventHandler handler, gpointer data);
-	int AddXamlHandler (int event_id, EventHandler handler, gpointer data);
+	int AddHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL);
+	int AddXamlHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL);
 	void RemoveHandler (int event_id, EventHandler handler, gpointer data);
 	void RemoveHandler (int event_id, int token);
 	void RemoveMatchingHandlers (int event_id, EventHandlerPredicate predicate, gpointer closure);

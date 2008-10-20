@@ -194,6 +194,7 @@ Media::RegisterMSCodecs (void)
 	}
 
 	if (libmscodecs_path == NULL || !(g_file_test (libmscodecs_path, G_FILE_TEST_EXISTS) && g_file_test (libmscodecs_path, G_FILE_TEST_IS_REGULAR))) {
+		g_free (libmscodecs_path);
 		libmscodecs_path = g_strdup (CODEC_LIBRARY_NAME);
 	}
 
