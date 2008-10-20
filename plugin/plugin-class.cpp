@@ -593,6 +593,7 @@ npvariant_is_moonlight_object (NPVariant var)
 EventListenerProxy::EventListenerProxy (NPP instance, const char *event_name, const char *cb_name)
 {
 	this->instance = instance;
+	this->owner = NULL;
 	this->event_name = g_strdup (event_name);
 	this->event_id = -1;
 	this->target_object = NULL;
@@ -603,18 +604,10 @@ EventListenerProxy::EventListenerProxy (NPP instance, const char *event_name, co
 	this->callback = g_strdup (cb_name);
 }
 
-const char *
-EventListenerProxy::GetCallbackAsString ()
-{
-	if (is_func)
-		return "";
-	
-	return (const char *)callback;
-}
-
 EventListenerProxy::EventListenerProxy (NPP instance, const char *event_name, const NPVariant *cb)
 {
 	this->instance = instance;
+	this->owner = NULL;
 	this->event_name = g_strdup (event_name);
 	this->event_id = -1;
 	this->target_object = NULL;
@@ -632,14 +625,12 @@ EventListenerProxy::EventListenerProxy (NPP instance, const char *event_name, co
 
 EventListenerProxy::~EventListenerProxy ()
 {
-	if (target_object) {
-		if (event_id != -1)
-			RemoveHandler ();
-		
-		target_object->RemoveHandler (EventObject::DestroyedEvent, dtoken);
-	}
-	
+	// we don't RemoveHandler here, since RemoveHandler is the only way we can *get* here.
+
 	if (is_func) {
+		if (owner)
+			owner->ClearEventProxy (this);
+
 		if (callback != NULL)
 			NPN_ReleaseObject ((NPObject *) callback);
 	}
@@ -649,13 +640,26 @@ EventListenerProxy::~EventListenerProxy ()
 	
 	g_free (event_name);
 }
+
+const char *
+EventListenerProxy::GetCallbackAsString ()
+{
+	if (is_func)
+		return "";
+	
+	return (const char *)callback;
+}
+
+void
+EventListenerProxy::SetOwner (MoonlightObject *owner)
+{
+	this->owner = owner;
+}
 	
 int
 EventListenerProxy::AddHandler (EventObject *obj)
 {
 	target_object = obj;
-	
-	dtoken = obj->AddHandler (EventObject::DestroyedEvent, on_target_object_destroyed, this);
 	
 	event_id = obj->GetType()->LookupEvent (event_name);
 
@@ -665,7 +669,8 @@ EventListenerProxy::AddHandler (EventObject *obj)
 		return -1;
 	}
 
-	token = obj->AddHandler (event_id, proxy_listener_to_javascript, this);
+	token = obj->AddHandler (event_id, proxy_listener_to_javascript,
+				 this, EventListenerProxy::handler_removed);
 	return token;
 }
 
@@ -674,8 +679,6 @@ EventListenerProxy::AddXamlHandler (EventObject *obj)
 {
 	target_object = obj;
 	
-	dtoken = obj->AddHandler (EventObject::DestroyedEvent, on_target_object_destroyed, this);
-	
 	event_id = obj->GetType()->LookupEvent (event_name);
 	
 	if (event_id == -1) {
@@ -684,7 +687,8 @@ EventListenerProxy::AddXamlHandler (EventObject *obj)
 		return -1;
 	}
 	
-	token = obj->AddXamlHandler (event_id, proxy_listener_to_javascript, this);
+	token = obj->AddXamlHandler (event_id, proxy_listener_to_javascript,
+				     this, EventListenerProxy::handler_removed);
 	
 	return token;
 }
@@ -692,10 +696,8 @@ EventListenerProxy::AddXamlHandler (EventObject *obj)
 void
 EventListenerProxy::RemoveHandler ()
 {
-	if (target_object && event_id != -1) {
+	if (target_object && event_id != -1)
 		target_object->RemoveHandler (event_id, token);
-		event_id = -1;
-	}
 }
 
 void
@@ -706,11 +708,9 @@ EventListenerProxy::Invalidate ()
 }
 
 void
-EventListenerProxy::on_target_object_destroyed (EventObject *sender, EventArgs *calldata, gpointer closure)
+EventListenerProxy::handler_removed (gpointer data)
 {
-	EventListenerProxy *proxy = (EventListenerProxy *) closure;
-	
-	proxy->target_object = NULL;
+	delete (EventListenerProxy*)data;
 }
 
 void
@@ -784,19 +784,11 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 		proxy->RemoveHandler();
 }
 
-static void
-delete_proxy (EventObject *sender, EventArgs *args, gpointer closure)
-{
-	EventListenerProxy *proxy = (EventListenerProxy*)closure;
-	delete proxy;
-}
-
 void
 event_object_add_xaml_listener (EventObject *obj, PluginInstance *plugin, const char *event_name, const char *cb_name)
 {
 	EventListenerProxy *proxy = new EventListenerProxy (plugin->GetInstance (), event_name, cb_name);
 	proxy->AddXamlHandler (obj);
-	obj->AddHandler (EventObject::DestroyedEvent, delete_proxy, proxy);
 }
 
 class NamedProxyPredicate {
@@ -1582,22 +1574,20 @@ _deallocate (NPObject *npobj)
 
 MoonlightObject::~MoonlightObject ()
 {
-	if (event_listener_proxies) {
-		g_hash_table_destroy (event_listener_proxies);
-		event_listener_proxies = NULL;
+	if (xaml_proxies) {
+		g_hash_table_destroy (xaml_proxies);
+		xaml_proxies = NULL;
 	}
+	for (GList *l = non_xaml_proxies; l; l = l->next) {
+		EventListenerProxy *proxy = (EventListenerProxy*)l->data;
+		proxy->SetOwner (NULL);
+		proxy->RemoveHandler ();
+	}
+	g_list_free (non_xaml_proxies);
 }
 
-void
-MoonlightObject::destroy_proxy (gpointer data)
-{
-	EventListenerProxy *proxy = (EventListenerProxy*)data;
-	proxy->RemoveHandler ();
-	delete (EventListenerProxy*)data;
-}
-
-void
-MoonlightObject::invalidate_proxy (gpointer key, gpointer value, gpointer data)
+static void
+invalidate_xaml_proxy (gpointer key, gpointer value, gpointer data)
 {
 	EventListenerProxy *proxy = (EventListenerProxy*)value;
 	proxy->Invalidate ();
@@ -1606,7 +1596,10 @@ MoonlightObject::invalidate_proxy (gpointer key, gpointer value, gpointer data)
 void
 MoonlightObject::Invalidate ()
 {
-	g_hash_table_foreach (event_listener_proxies, invalidate_proxy, NULL);
+	g_hash_table_foreach (xaml_proxies, invalidate_xaml_proxy, NULL);
+	for (GList *l = non_xaml_proxies; l; l = l->next) {
+		((EventListenerProxy*)l->data)->Invalidate();
+	}
 }
 
 bool
@@ -1673,23 +1666,32 @@ MoonlightObject::Invoke (int id, NPIdentifier name, const NPVariant *args, uint3
 
 
 EventListenerProxy *
-MoonlightObject::LookupEventProxy (int event_id)
+MoonlightObject::LookupXamlEventProxy (int event_id)
 {
-	return (EventListenerProxy*)g_hash_table_lookup (event_listener_proxies, GINT_TO_POINTER (event_id));
+	return (EventListenerProxy*)g_hash_table_lookup (xaml_proxies, GINT_TO_POINTER (event_id));
 }
 
 void
-MoonlightObject::SetEventProxy (int event_id, EventListenerProxy *proxy)
+MoonlightObject::SetXamlEventProxy (int event_id, EventListenerProxy *proxy)
 {
-	g_hash_table_insert (event_listener_proxies, GINT_TO_POINTER (event_id), proxy);
+	g_hash_table_insert (xaml_proxies, GINT_TO_POINTER (event_id), proxy);
 }
 
 void
-MoonlightObject::ClearEventProxy (int event_id)
+MoonlightObject::ClearXamlEventProxy (int event_id)
 {
-	g_hash_table_remove (event_listener_proxies, GINT_TO_POINTER (event_id));
+	EventListenerProxy *proxy = LookupXamlEventProxy (event_id);
+	if (proxy) {
+		g_hash_table_remove (xaml_proxies, GINT_TO_POINTER (event_id));
+		proxy->RemoveHandler ();
+	}
 }
 
+void
+MoonlightObject::ClearEventProxy (EventListenerProxy *proxy)
+{
+	non_xaml_proxies = g_list_remove (non_xaml_proxies, proxy);
+}
 
 static void
 _invalidate (NPObject *npobj)
@@ -1925,7 +1927,7 @@ MoonlightScriptControlObject::GetProperty (int id, NPIdentifier name, NPVariant 
 
 		if (obj != NULL) {
 			int event_id = obj->GetType()->LookupEvent (event_name);
-			EventListenerProxy *proxy = LookupEventProxy (event_id);
+			EventListenerProxy *proxy = LookupXamlEventProxy (event_id);
 			string_to_npvariant (proxy == NULL ? "" : proxy->GetCallbackAsString (), result);
 		} else {
 			string_to_npvariant ("", result);
@@ -1973,12 +1975,13 @@ MoonlightScriptControlObject::SetProperty (int id, NPIdentifier name, const NPVa
 
 			if (event_id != -1) {
 				// If we have a handler, remove it.
-				ClearEventProxy (event_id);
+				ClearXamlEventProxy (event_id);
 
 				if (!NPVARIANT_IS_NULL (*value)) {
 					EventListenerProxy *proxy = new EventListenerProxy (instance,
-										    event_name,
-										    value);
+											    event_name,
+											    value);
+					proxy->SetOwner (this);
 					proxy->AddHandler (plugin->GetSurface());
 					// we only emit that event once, when
 					// the plugin is initialized, so don't
@@ -1986,7 +1989,7 @@ MoonlightScriptControlObject::SetProperty (int id, NPIdentifier name, const NPVa
 					// afterward.
 					if (id == MoonId_OnLoad)
 						proxy->SetOneShot ();
-					SetEventProxy (event_id, proxy);
+					SetXamlEventProxy (event_id, proxy);
 				}
 
 				return true;
@@ -2302,7 +2305,7 @@ MoonlightContentObject::GetProperty (int id, NPIdentifier name, NPVariant *resul
 		} else {
 			event_name = map_moon_id_to_event_name (id);
 			event_id = surface->GetType()->LookupEvent (event_name);
-			EventListenerProxy *proxy = LookupEventProxy (event_id);
+			EventListenerProxy *proxy = LookupXamlEventProxy (event_id);
 			string_to_npvariant (proxy == NULL ? "" : proxy->GetCallbackAsString (), result);
 		}
 		return true;
@@ -2365,14 +2368,15 @@ MoonlightContentObject::SetProperty (int id, NPIdentifier name, const NPVariant 
 
 		if (event_id != -1) {
 			// If we have a handler, remove it.
-			ClearEventProxy (event_id);
+			ClearXamlEventProxy (event_id);
 
 			if (!NPVARIANT_IS_NULL (*value)) {
 				EventListenerProxy *proxy = new EventListenerProxy (instance,
 										    event_name,
 										    value);
+				proxy->SetOwner (this);
 				proxy->AddHandler (plugin->GetSurface());
-				SetEventProxy (event_id, proxy);
+				SetXamlEventProxy (event_id, proxy);
 			}
 
 			return true;
@@ -2721,7 +2725,7 @@ MoonlightDependencyObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 	
 	if ((event_id = dob->GetType()->LookupEvent (event_name)) == -1) {
 #if false
-		EventListenerProxy *proxy = LookupEventProxy (event_id);
+		EventListenerProxy *proxy = LookupXamlEventProxy (event_id);
 		string_to_npvariant (proxy == NULL ? "" : proxy->GetCallbackAsString (), result);
 		return true;
 #else
@@ -2769,14 +2773,15 @@ MoonlightDependencyObjectObject::SetProperty (int id, NPIdentifier name, const N
 		
 		if ((event_id = dob->GetType ()->LookupEvent (event_name)) != -1) {
 			// If we have a handler, remove it.
-			ClearEventProxy (event_id);
+			ClearXamlEventProxy (event_id);
 			
 			if (!NPVARIANT_IS_NULL (*value)) {
 				EventListenerProxy *proxy = new EventListenerProxy (instance,
 										    event_name,
 										    value);
+				proxy->SetOwner (this);
 				proxy->AddHandler (dob);
-				SetEventProxy (event_id, proxy);
+				SetXamlEventProxy (event_id, proxy);
 			}
 			
 			return true;
@@ -2913,7 +2918,11 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 		EventListenerProxy *proxy = new EventListenerProxy (instance, name, &args[1]);
 		int token = proxy->AddHandler (dob);
 		g_free (name);
+
+		proxy->SetOwner (this);
 		
+		non_xaml_proxies = g_list_prepend (non_xaml_proxies, proxy);
+
 		if (token == -1)
 			THROW_JS_EXCEPTION ("AG_E_RUNTIME_ADDEVENT");
 

@@ -1,5 +1,20 @@
 2008-10-20  Chris Toshok  <toshok@ximian.com>
 
+	* plugin-class.cpp, plugin-class.h: Rather complicated lifecycle
+	sorting out dealing with EventListenerProxies - there was a reason
+	I was avoiding this :) - fixes bug 436060.
+
+	1) if the target (the object on which the proxy calls AddHandler)
+	is destroyed, the proxy should go away.
+	
+	2) if the owner (the MoonlightObject which created the proxy) is
+	invalidated, the proxy should also be invalidated.
+
+	3) if the owner is destroyed, the proxy should call RemoveHandler
+	on the target.  Note that we shouldn't destroy the proxy here -
+	it'll be destroyed by virtue of the data_dtor stuff in
+	EventObject.
+	
 	* windowless.h, windowless.cpp: add support for experimental
 	extension (see mozilla.org bug #430451) for windowless cursors.
 
