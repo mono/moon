@@ -73,16 +73,15 @@ namespace MoonTest.System.Windows {
 		[TestMethod]
 		public void Static ()
 		{
-			Assert.Throws (delegate { Application.GetResourceStream (null); }, typeof (ArgumentNullException), "GetResourceStream(null)");
-
-			Assert.Throws (delegate { Application.GetResourceStream (null, uri); }, typeof (ArgumentNullException), "GetResourceStream(null,uri)");
+			Assert.Throws<ArgumentNullException> (() => Application.GetResourceStream (null), "GetResourceStream(null)");
+			Assert.Throws<ArgumentNullException> (() => Application.GetResourceStream (null, uri), "GetResourceStream(null,uri)");
 
 			Assert.IsNull (Application.GetResourceStream (new Uri ("/moon_unit;component/App-does-not-exists.xaml", UriKind.Relative)), "GetResourceStream(does-not-exists-uri)");
 
 			StreamResourceInfo sri = new StreamResourceInfo (new MemoryStream (), String.Empty);
-			Assert.Throws (delegate { Application.GetResourceStream (sri, null); }, typeof (ArgumentNullException), "GetResourceStream(sri,null)");
 
-			Assert.Throws (delegate { Application.LoadComponent (null, uri); }, typeof (ArgumentException), "LoadComponent(null,uri)");
+			Assert.Throws<ArgumentNullException> (() => Application.GetResourceStream (sri, null), "GetResourceStream(sri,null)");
+			Assert.Throws<ArgumentNullException> (() => Application.LoadComponent (null, uri),"LoadComponent(null,uri)");
 		}
 
 		[TestMethod]
