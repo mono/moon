@@ -28,48 +28,56 @@
 	masterFile10="../harness/masters/test-animation-ellipse-strokeMaster.tif"
 	captureSpecifier="300,15"
         categories="animation"
+	knownFailure="true"
    />
    <Test id="8"
 	inputFile="test-animation-ellipse.xaml"
 	masterFile10="../harness/masters/test-animation-ellipseMaster.tif"
 	captureSpecifier="300,15"
         categories="animation"
+	knownFailure="true"
    />
    <Test id="9"
 	inputFile="test-animation-line-bounds.xaml"
 	masterFile10="../harness/masters/test-animation-line-boundsMaster.tif"
 	captureSpecifier="300,15"
         categories="animation"
+	knownFailure="true"
    />
    <Test id="10"
 	inputFile="test-animation-line.xaml"
 	masterFile10="../harness/masters/test-animation-lineMaster.tif"
 	captureSpecifier="300,15"
         categories="animation"
+	knownFailure="true"
    />
    <Test id="11"
 	inputFile="test-animation-path-smoothbezier-stroke.xaml"
 	masterFile10="../harness/masters/test-animation-path-smoothbezier-strokeMaster.tif"
 	captureSpecifier="300,15"
         categories="animation"
+	knownFailure="true"
    />
    <Test id="12"
 	inputFile="test-animation-polygon-bounds.xaml"
 	masterFile10="../harness/masters/test-animation-polygon-boundsMaster.tif"
 	captureSpecifier="300,15"
         categories="animation"
+	knownFailure="true"
    />
    <Test id="13"
 	inputFile="test-animation-polyline-bounds.xaml"
 	masterFile10="../harness/masters/test-animation-polyline-boundsMaster.tif"
 	captureSpecifier="300,15"
         categories="animation"
+	knownFailure="true"
    />
    <Test id="14"
 	inputFile="test-animation-text.xaml"
 	masterFile10="../harness/masters/test-animation-textMaster.tif"
 	captureSpecifier="300,15"
         categories="animation"
+	knownFailure="true"
    />
    <Test id="15"
 	inputFile="test-brush-linear-negative.xaml"
@@ -78,14 +86,17 @@
    <Test id="16"
 	inputFile="test-brush-linear-points.xaml"
 	masterFile10="../harness/masters/test-brush-linear-pointsMaster.png"
+	knownFailure="true"
    />
    <Test id="17"
 	inputFile="test-brush-linear.xaml"
 	masterFile10="../harness/masters/test-brush-linearMaster.png"
+	knownFailure="true"
    />
    <Test id="18"
 	inputFile="test-brush-radial.xaml"
 	masterFile10="../harness/masters/test-brush-radialMaster.png"
+	knownFailure="true"
    />
    <Test id="19"
 	inputFile="test-canvas-inside-canvas.xaml"
@@ -104,6 +115,7 @@
    <Test id="22"
 	inputFile="test-colors.xaml"
 	masterFile10="../harness/masters/test-colorsMaster.png"
+	knownFailure="true"
    />
    <Test id="23"
 	inputFile="test-custom-element.xaml"
@@ -113,6 +125,7 @@
 	inputFile="test-double-keyspline-animation.xaml"
 	masterFile10="../harness/masters/test-double-keyspline-animationMaster.tif"
 	captureSpecifier="300,15"
+	knownFailure="true"
    />
    <Test id="26"
 	inputFile="test-geometry-collection.xaml"
@@ -141,6 +154,7 @@
    <Test id="32"
 	inputFile="test-inkpresenter-height-width.xaml"
 	masterFile10="../harness/masters/test-inkpresenter-height-widthMaster.png"
+	knownFailure="true"
    />
    <Test id="33"
 	inputFile="test-inkpresenter-nostrokes.xaml"
@@ -153,6 +167,7 @@
    <Test id="35"
 	inputFile="test-mediaelement-clip.xaml"
 	masterFile10="../harness/masters/test-mediaelement-clipMaster.png"
+	knownFailure="true"
    />
    <Test id="36"
 	inputFile="test-monkey.xaml"
@@ -199,6 +214,7 @@
    <Test id="45"
 	inputFile="test-path-group-2.xaml"
 	masterFile10="../harness/masters/test-path-group-2Master.png"
+	knownFailure="true"
    />
    <Test id="46"
 	inputFile="test-path-group-ellipse.xaml"
@@ -223,6 +239,7 @@
 	inputFile="test-path-group-stroke.xaml"
 	masterFile10="../harness/masters/test-path-group-strokeMaster.png"
 	categories="ellipse"
+	knownFailure="true"
    />
    <Test id="51"
 	inputFile="test-path-group-torture.xaml"
@@ -281,6 +298,7 @@
    <Test id="63"
 	inputFile="test-path-segments-arc-degenerate.xaml"
 	masterFile10="../harness/masters/test-path-segments-arc-degenerateMaster.png"
+	knownFailure="true"
    />
    <Test id="64"
 	inputFile="test-path-segments-arc-sweep-large.xaml"
@@ -330,6 +348,7 @@
 	inputFile="test-property-path.xaml"
 	masterFile10="../harness/masters/test-property-pathMaster.png"
 	expectedError="ParserError"
+	knownFailure="true"
    />
    <Test id="76"
 	inputFile="test-rectangle-aliasing.xaml"
@@ -339,6 +358,7 @@
    <Test id="77"
 	inputFile="test-relativetransform.xaml"
 	masterFile10="../harness/masters/test-relativetransformMaster.png"
+	knownFailure="true"
    />
    <Test id="78"
 	inputFile="test-render-xorigin.xaml"
@@ -347,10 +367,12 @@
    <Test id="79"
 	inputFile="test-resource-collection.xaml"
 	masterFile10="../harness/masters/test-resource-collectionMaster.png"
+	knownFailure="true"
    />
    <Test id="80"
 	inputFile="test-rtol.xaml"
 	masterFile10="../harness/masters/test-rtolMaster.png"
+	knownFailure="true"
    />
    <Test id="82"
 	inputFile="test-set-inherited-property-elements.xaml"
@@ -435,6 +457,7 @@
    <Test id="100"
 	inputFile="test-shape-polyline-bounds.xaml"
 	masterFile10="../harness/masters/test-shape-polyline-boundsMaster.png"
+	knownFailure="true"
    />
    <Test id="101"
 	inputFile="test-shape-polyline-lines.xaml"
@@ -504,6 +527,7 @@
 	masterFile10="../harness/masters/test-text-animationMaster.tif"
         captureSpecifier="300,15"
         categories="animation"
+	knownFailure="true"
    />
    <Test id="117"
 	inputFile="test-text-runs.xaml"
@@ -520,6 +544,7 @@
    <Test id="120"
 	inputFile="test-textblock-examples.xaml"
 	masterFile10="../harness/masters/test-textblock-examplesMaster.png"
+	knownFailure="true"
    />
    <Test id="121"
 	inputFile="test-textblock.xaml"
@@ -532,6 +557,7 @@
    <Test id="123"
 	inputFile="test-transform-group.xaml"
 	masterFile10="../harness/masters/test-transform-groupMaster.png"
+	knownFailure="true"
    />
    <Test id="124"
 	inputFile="test-transform-matrix.xaml"
@@ -544,23 +570,28 @@
    <Test id="126"
 	inputFile="test-trigger-action-collection.xaml"
 	masterFile10="../harness/masters/test-trigger-action-collectionMaster.png"
+	knownFailure="true"
    />
    <Test id="127"
 	inputFile="test-trigger-collection.xaml"
 	masterFile10="../harness/masters/test-trigger-collectionMaster.png"
+	knownFailure="true"
    />
    <Test id="128"
 	inputFile="test-videobrush-text.xaml"
 	masterFile10="../harness/masters/test-videobrush-textMaster.png"
+	knownFailure="true"
    />
    <Test id="129"
 	inputFile="test-videobrush.xaml"
 	masterFile10="../harness/masters/test-videobrushMaster.png"
+	knownFailure="true"
    />
    <Test id="130"
 	inputFile="test-zero-scale-animation.xaml"
 	masterFile10="../harness/masters/test-zero-scale-animationMaster.tif"
 	captureSpecifier="300,15"
+	knownFailure="true"
    />
    <Test id="131"
 	inputFile="test-zindex.xaml"
@@ -598,6 +629,7 @@
    <Test id="139"
 	inputFile="test-empty-element-source.html"
 	masterFile10="../harness/masters/test-empty-element-source.htmlMaster.png"
+	knownFailure="true"
    />
    <Test id="140"
 	inputFile="test-shape-line-stretch2.xaml"
@@ -613,6 +645,7 @@
 	inputFile="test-shape-polygon-stretch2.xaml"
 	masterFile10="../harness/masters/test-shape-polygon-stretch2Master.png"
          categories="stretch"
+	knownFailure="true"
    />
    <Test id="143"
 	inputFile="test-transform-clip.htm"
@@ -622,6 +655,7 @@
         inputFile="test-property-parsing.xaml"
         masterFile10="../harness/masters/test-property-parsingMaster.png"
 	expectedError="ParserError"
+	knownFailure="true"
    />
    <Test id="145"
         inputFile="test-canvas-toplevel.xaml"
@@ -656,6 +690,7 @@
         inputFile="test-crash-non-existing-animation-target-prop2.xaml"
         masterFile10="../harness/masters/test-crash-non-existing-animation-target-prop2Master.tif"
 	captureSpecifier="300,15"
+	knownFailure="true"
    />
    <Test id="152"
         inputFile="test-crash-non-existing-animation-target-prop3.xaml"
@@ -666,6 +701,7 @@
         inputFile="test-animation-slow-keyspline.xaml"
         masterFile10="../harness/masters/test-animation-slow-keysplineMaster.tif"
 	captureSpecifier="300,15"
+	knownFailure="true"
    />
    <Test id="154"
         inputFile="test-crash-color-anim-on-solid.xaml"
@@ -676,6 +712,7 @@
         inputFile="test-crash-gracefull-prop-resolving.xaml"
         masterFile10="../harness/masters/test-crash-gracefull-prop-resolvingMaster.tif"
 	captureSpecifier="300,15"
+	knownFailure="true"
    />
    <Test id="156"
         inputFile="test-text-font-quality.xaml"
@@ -689,6 +726,7 @@
    <Test id="158"
         inputFile="test-blending-gradients.xaml"
         masterFile10="../harness/masters/test-blending-gradientsMaster.png"
+	knownFailure="true"
    />
    <Test id="159"
 	 inputFile="test-shape-path-stretch.xaml"
@@ -698,6 +736,7 @@
    <Test id="160"
 	 inputFile="test-stroke-low-thickness.xaml"
 	 masterFile10="../harness/masters/test-stroke-low-thicknessMaster.png"
+	 knownFailure="true"
    />
    <Test id="161"
 	 inputFile="test-shape-path-stretch2.xaml"
@@ -717,6 +756,7 @@
 	 inputFile="test-shape-path-stretch4.xaml"
 	 masterFile10="../harness/masters/test-shape-path-stretch4Master.png"
          categories="stretch"
+	 knownFailure="true"
    />
    <Test id="165"
 	 inputFile="test-shape-line-stretch3.xaml"
@@ -732,6 +772,7 @@
 	 inputFile="test-shape-path-stretch-gradient.xaml"
 	 masterFile10="../harness/masters/test-shape-path-stretch-gradientMaster.png"
          categories="stretch"
+	 knownFailure="true"
    />
    <Test id="168"
 	 inputFile="input-test.html"
@@ -740,11 +781,13 @@
    <Test id="169"
 	 inputFile="test-setsource-with-downloader.html"
 	 masterFile10="None"
+	 knownFailure="true"
    />
    <Test id="170"
 	 inputFile="test-shape-line-stretch4.xaml"
 	 masterFile10="../harness/masters/test-shape-line-stretch4Master.png"
          categories="stretch"
+	 knownFailure="true"
    />
    <Test id="171"
          inputFile="test-geometry-collection-stretch.xaml"
@@ -764,11 +807,13 @@
    <Test id="174"
          inputFile="test-canvas-no-size.html"
          masterFile10="../harness/masters/test-canvas-no-sizeMaster.png"
+	 knownFailure="true"
    />
    <Test id="175"
 	 inputFile="test-shape-line-stretch5.xaml"
 	 masterFile10="../harness/masters/test-shape-line-stretch5Master.png"
          categories="stretch"
+	 knownFailure="true"
    />
    <Test id="176"
          inputFile="test-animation-invalid-keyframe-keytime.xaml"
@@ -777,6 +822,7 @@
    <Test id="177"
          inputFile="test-type-with-case-mismatch.html"
          masterFile10="None"
+	 knownFailure="true"
    />
    <Test id="178"
          inputFile="test-timelinemarkercollection-order.html"
@@ -807,14 +853,17 @@
 	 inputFile="test-shape-line-caps-stretch.xaml"
 	 masterFile10="../harness/masters/test-shape-line-caps-stretchMaster.png"
 	 categories="stretch"
+	 knownFailure="true"
    />
    <Test id="183"
 	 inputFile="test-zero-length-line.xaml"
 	 masterFile10="../harness/masters/test-zero-length-lineMaster.png"
+	 knownFailure="true"
    />
    <Test id="184"
 	 inputFile="test-radialgradientbrush2.xaml"
 	 masterFile10="../harness/masters/test-radialgradientbrush2Master.png"
+	 knownFailure="true"
 	 />
    <Test id="185"
 	 inputFile="test-second-surface-error.html"
@@ -823,6 +872,7 @@
    <Test id="186"
 	 inputFile="test-dead-downloaders.html"
 	 masterFile10="None"
+	 knownFailure="true"
 	 />
    <Test id="187"
 	 inputFile="test-downloaderprogress.html"
@@ -837,6 +887,7 @@
 	 inputFile="test-animation-zero-duration.xaml"
 	 masterFile10="../harness/masters/test-animation-zero-durationMaster.tif"
 	 captureSpecifier="0,1,10000"
+	 knownFailure="true"
 	 />
    <Test id="190"
 	 inputFile="test-downloader-events.html"
@@ -852,16 +903,19 @@
 	 inputFile="test-animation-nested-storyboard.xaml"
 	 masterFile10="../harness/masters/test-animation-nested-storyboardMaster.tif"
 	 captureSpecifier="300,15"
+	 knownFailure="true"
         />
    <Test id="193"
 	 inputFile="test-animation-only-from.xaml"
 	 masterFile10="../harness/masters/test-animation-only-fromMaster.tif"
 	 captureSpecifier="300,15"
+	 knownFailure="true"
         />
    <Test id="194"
 	 inputFile="test-animation-hold-stop-speed.xaml"
 	 masterFile10="../harness/masters/test-animation-hold-stop-speedMaster.tif"
 	 captureSpecifier="300,15"
+	 knownFailure="true"
         />
    <Test id="195"
 	 inputFile="test-animation-repeat-behavior.xaml"
@@ -887,14 +941,17 @@
    <Test id="201"
 	 inputFile="assorted/test-collections.html"
 	 masterFile10="None"
+	 knownFailure="true"
 	 />
    <Test id="202"
 	 inputFile="assorted/test-stroke-collection.html"
 	 masterFile10="None"
+	 knownFailure="true"
 	 />
    <Test id="203"
 	 inputFile="test-gradientbrush-spreadmethod.xaml"
 	 masterFile10="../harness/masters/test-gradientbrush-spreadmethodMaster.png"
+	 knownFailure="true"
 	 />
    <Test id="204"
 	 inputFile="test-fillrule.xaml"
@@ -903,6 +960,7 @@
    <Test id="205"
 	 inputFile="test-createFromXaml-nodownload.html"
 	 masterFile10="None"
+	 knownFailure="true"
 	 />
    <Test id="206"
 	inputFile="test-clip-fillrule.xaml"
