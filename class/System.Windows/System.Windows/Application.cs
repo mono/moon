@@ -246,13 +246,12 @@ namespace System.Windows {
 		[SecuritySafeCritical]
 		public static void LoadComponent (object component, Uri xamlUri)
 		{
-			// FIXME: unit tests (and MSDN) shows that Application throws an exception
-			// but ML needs Application support right now and 'object' seems a strange choice if only DO are supported
 			Application app = component as Application;
 			DependencyObject cdo = component as DependencyObject;
 			
 			if (cdo == null && app == null)
-				throw new ArgumentException ("Not a DependencyObject or Application", "component");
+				throw new ArgumentNullException ("component");
+
 			// match SL exception but with a better description
 			if (xamlUri == null)
 				throw new ArgumentException ("Null Uri", "xamlUri");
