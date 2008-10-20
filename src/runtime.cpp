@@ -861,7 +861,7 @@ Surface::UpdateFullScreen (bool value)
 {
 	if (value == full_screen)
 		return;
-	
+
 	if (value) {
 		fullscreen_window = new MoonWindowGtk (true, -1, -1, normal_window);
 		fullscreen_window->SetSurface (this);
@@ -1733,7 +1733,15 @@ gboolean
 Surface::HandleUICrossing (GdkEventCrossing *event)
 {
 	bool handled;
-	
+
+	GdkWindow *active_gdk_window = active_window->GetGdkWindow ();
+
+	if (event->window != active_window->GetGdkWindow ()) {
+		g_object_unref (active_gdk_window);
+		return TRUE;
+	} else
+		g_object_unref (active_gdk_window);
+
 	if (event->type == GDK_ENTER_NOTIFY) {
 		if (mouse_event)
 			gdk_event_free (mouse_event);
@@ -1845,7 +1853,7 @@ Surface::HandleUIKeyPress (GdkEventKey *event)
 	if (FullScreenKeyHandled (event))
 		return true;
 	
-#if DEBUG_MARKER_KEY
+//#if DEBUG_MARKER_KEY
 	static int debug_marker_key_in = 0;
 	if (event->keyval == GDK_d || event->keyval == GDK_D) {
 		if (!debug_marker_key_in)
@@ -1855,7 +1863,7 @@ Surface::HandleUIKeyPress (GdkEventKey *event)
 		debug_marker_key_in = ! debug_marker_key_in;
 		return true;
 	}
-#endif
+//#endif
 	
 	SetCanFullScreen (true);
 	bool handled;

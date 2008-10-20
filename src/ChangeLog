@@ -1,5 +1,11 @@
 2008-10-20  Michael Dominic K.  <mdk@mdk.am>
 
+	* runtime.cpp: More fixes to crossing events: when entering fullscreen
+	ignore the crossing events coming from previous window. Otherwise we get
+	double enter/leave pair.
+
+2008-10-20  Michael Dominic K.  <mdk@mdk.am>
+
 	* window-gtk.cpp: GetGdkWindow () - handle the fullscreen window case 
 	correctly (no parent window).
 
