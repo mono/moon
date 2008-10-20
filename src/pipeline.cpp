@@ -2004,9 +2004,7 @@ gint64
 MemoryQueueSource::GetPositionInternal ()
 {
 	g_warning ("MemoryQueueSource::GetPositionInternal (): You hit a bug in moonlight, please attach gdb, get a stack trace and file bug.");
-#if DEBUG
 	print_stack_trace ();
-#endif
 
 	return -1;
 }
@@ -2119,9 +2117,7 @@ bool
 MemoryQueueSource::SeekInternal (gint64 offset, int mode)
 {
 	g_warning ("MemoryQueueSource::SeekInternal (%lld, %i): You hit a bug in moonlight, please attach gdb, get a stack trace and file bug.", offset, mode);
-#if DEBUG
 	print_stack_trace ();
-#endif
 
 	return false;
 }
@@ -2730,9 +2726,7 @@ IMediaSource::ReadAll (void *buf, guint32 n)
 		FileSource *fs = (FileSource *) this;
 		g_warning ("IMediaSource::ReadInternal (%i): Read failed, read %i bytes. available size: %lld, size: %lld, pos: %lld, prev pos: %lld, position not available: %lld, feof: %i, ferror: %i, strerror: %s\n", 
 			n, read, avail, GetSize (), GetPosition (), prev, prev + n, feof (fs->fd), ferror (fs->fd), strerror (ferror (fs->fd)));
-#if DEBUG
 		print_stack_trace ();
-#endif
 	}
 	
 	LOG_PIPELINE ("IMediaSource<%d>::ReadAll (%p, %u), read: %d [Done].\n",

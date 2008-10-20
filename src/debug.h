@@ -32,7 +32,13 @@ void enable_vm_stack_trace ();
 void print_gdb_trace ();
 G_END_DECLS
 
-#endif
+#else
 
-#endif
+#define print_stack_trace()
+#define print_gdb_trace()
+#define enable_vm_stack_trace()
+
+#endif /* DEBUG */
+
+#endif /* __MOONLIGHT_DEBUG_H */
 

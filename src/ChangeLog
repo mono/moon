@@ -1,5 +1,11 @@
 2008-10-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* debug.h, pipeline.cpp, audio.cpp: #define print_stack_trace to
+	  nothing if not DEBUG is set, removing the need for surrounding all
+	  print_stack_trace calls with #if DEBUG.
+
+2008-10-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* pipeline.cpp: Remove debugging code.
 
 2008-10-17  Michael Dominic K.  <mdk@mdk.am>
