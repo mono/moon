@@ -306,9 +306,9 @@ fi
 PKG_CHECK_MODULES(XTST,xtst >= 1.0,,
 		  [with_testing=no
 		   testing_reason="(reason: failed to find xtst >= 1.0)"])
-PKG_CHECK_MODULES(IMAGEMAGICK,ImageMagick++ >= 6.3.5,,
+PKG_CHECK_MODULES(IMAGEMAGICK,ImageMagick++ >= 6.2.8,,
 		  [with_testing=no
-		   testing_reason="(reason: failed to find ImageMagick++ >= 6.3.5)"])
+		   testing_reason="(reason: failed to find ImageMagick++ >= 6.2.8)"])
 PKG_CHECK_MODULES(DBUS_GLIB,dbus-glib-1 >= 0.60,,
 		  [with_testing=no
 		   testing_reason="(reason: failed to find dbus-glib-1 >= 0.60)"])
