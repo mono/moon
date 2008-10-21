@@ -32,8 +32,6 @@ G_END_DECLS
 #define MAPPING_FLAG_SL1 0x01
 #define MAPPING_FLAG_SL2 0x02
 
-class MoonlightObject;
-
 struct MoonNameIdMapping {
 	const char *name;
 	int id;
@@ -43,11 +41,9 @@ struct MoonNameIdMapping {
 /*** EventListenerProxy */
 typedef void (*EventArgsWrapper)(NPP instance, EventArgs *calldata, NPVariant *value);
 
-class EventListenerProxy {
-	static void handler_removed (gpointer data);
-
-	MoonlightObject *owner;
-
+class EventListenerProxy : public List::Node {
+	static void on_target_object_destroyed (EventObject *sender, EventArgs *calldata, gpointer closure);
+	
 	EventObject *target_object;
 	
 	NPP instance;
@@ -60,6 +56,7 @@ class EventListenerProxy {
 	
 	char *event_name;
 	int event_id;
+	int dtoken;
 	int token;
 	
 	bool one_shot;
@@ -68,9 +65,7 @@ class EventListenerProxy {
 	EventListenerProxy (NPP instance, const char *event_name, const char *cb_name);
 	EventListenerProxy (NPP instance, const char *event_name, const NPVariant *cb);
 	virtual ~EventListenerProxy ();
-
-	void SetOwner (MoonlightObject *owner);
-
+	
 	int AddXamlHandler (EventObject *obj);
 	int AddHandler (EventObject *obj);
 	void RemoveHandler ();
@@ -111,8 +106,7 @@ struct MoonlightObject : NPObject {
 	{
 		this->instance = instance;
 		this->moonlight_type = Type::INVALID;
-		this->xaml_proxies = g_hash_table_new (g_direct_hash, g_direct_equal);
-		this->non_xaml_proxies = NULL;
+		this->event_listener_proxies = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, destroy_proxy);
 	}
 	
 	virtual void Invalidate ();
@@ -126,17 +120,17 @@ struct MoonlightObject : NPObject {
 	virtual bool Invoke (int id, NPIdentifier name,
 			     const NPVariant *args, uint32_t argCount, NPVariant *result);
 	int LookupName (NPIdentifier name) { return ((MoonlightObjectType *)_class)->LookupName (name, ((PluginInstance*)instance->pdata)->IsSilverlight2()); }
-
-	void ClearEventProxy (EventListenerProxy *proxy);
-
-	EventListenerProxy *LookupXamlEventProxy (int event_id);
-	void SetXamlEventProxy (int event_id, EventListenerProxy* proxy);
-	EventListenerProxy* ClearXamlEventProxy (int event_id);
-
+	
+	EventListenerProxy *LookupEventProxy (int event_id);
+	void SetEventProxy (int event_id, EventListenerProxy* proxy);
+	void ClearEventProxy (int event_id);
+	
+	static void destroy_proxy (gpointer data);
+	static void invalidate_proxy (gpointer key, gpointer value, gpointer data);
+	
 	NPP instance;
 	Type::Kind moonlight_type;
-	GHashTable *xaml_proxies;
-	GList *non_xaml_proxies;
+	GHashTable *event_listener_proxies;
 };
 
 /*** MoonlightPointClass  **************************************************************/
