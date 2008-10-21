@@ -1576,9 +1576,25 @@ _deallocate (NPObject *npobj)
 	delete obj;
 }
 
+static void
+remove_xaml_proxy (gpointer key, EventListenerProxy *proxy, gpointer data)
+{
+	proxy->SetOwner (NULL);
+	proxy->RemoveHandler ();
+}
+
+
+static void
+invalidate_xaml_proxy (gpointer key, gpointer value, gpointer data)
+{
+	EventListenerProxy *proxy = (EventListenerProxy*)value;
+	proxy->Invalidate ();
+}
+
 MoonlightObject::~MoonlightObject ()
 {
 	if (xaml_proxies) {
+		g_hash_table_foreach (xaml_proxies, (GHFunc)remove_xaml_proxy, NULL);
 		g_hash_table_destroy (xaml_proxies);
 		xaml_proxies = NULL;
 	}
@@ -1588,13 +1604,7 @@ MoonlightObject::~MoonlightObject ()
 		proxy->RemoveHandler ();
 	}
 	g_list_free (non_xaml_proxies);
-}
-
-static void
-invalidate_xaml_proxy (gpointer key, gpointer value, gpointer data)
-{
-	EventListenerProxy *proxy = (EventListenerProxy*)value;
-	proxy->Invalidate ();
+	non_xaml_proxies = NULL;
 }
 
 void
@@ -1978,8 +1988,10 @@ MoonlightScriptControlObject::SetProperty (int id, NPIdentifier name, const NPVa
 			if (event_id != -1) {
 				// If we have a handler, remove it.
 				EventListenerProxy *old_proxy = ClearXamlEventProxy (event_id);
-				if (old_proxy)
+				if (old_proxy) {
+					old_proxy->SetOwner (NULL);
 					old_proxy->RemoveHandler ();
+				}
 
 				if (!NPVARIANT_IS_NULL (*value)) {
 					EventListenerProxy *proxy = new EventListenerProxy (instance,
@@ -2373,8 +2385,10 @@ MoonlightContentObject::SetProperty (int id, NPIdentifier name, const NPVariant 
 		if (event_id != -1) {
 			// If we have a handler, remove it.
 			EventListenerProxy *old_proxy = ClearXamlEventProxy (event_id);
-			if (old_proxy)
+			if (old_proxy) {
+				old_proxy->SetOwner (NULL);
 				old_proxy->RemoveHandler ();
+			}
 
 			if (!NPVARIANT_IS_NULL (*value)) {
 				EventListenerProxy *proxy = new EventListenerProxy (instance,
@@ -2780,8 +2794,10 @@ MoonlightDependencyObjectObject::SetProperty (int id, NPIdentifier name, const N
 		if ((event_id = dob->GetType ()->LookupEvent (event_name)) != -1) {
 			// If we have a handler, remove it.
 			EventListenerProxy *old_proxy = ClearXamlEventProxy (event_id);
-			if (old_proxy)
+			if (old_proxy) {
+				old_proxy->SetOwner (NULL);
 				old_proxy->RemoveHandler ();
+			}
 			
 			if (!NPVARIANT_IS_NULL (*value)) {
 				EventListenerProxy *proxy = new EventListenerProxy (instance,

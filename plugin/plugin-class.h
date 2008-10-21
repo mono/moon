@@ -43,7 +43,7 @@ struct MoonNameIdMapping {
 /*** EventListenerProxy */
 typedef void (*EventArgsWrapper)(NPP instance, EventArgs *calldata, NPVariant *value);
 
-class EventListenerProxy : public List::Node {
+class EventListenerProxy {
 	static void handler_removed (gpointer data);
 
 	MoonlightObject *owner;
@@ -132,7 +132,7 @@ struct MoonlightObject : NPObject {
 	EventListenerProxy *LookupXamlEventProxy (int event_id);
 	void SetXamlEventProxy (int event_id, EventListenerProxy* proxy);
 	EventListenerProxy* ClearXamlEventProxy (int event_id);
-	
+
 	NPP instance;
 	Type::Kind moonlight_type;
 	GHashTable *xaml_proxies;
