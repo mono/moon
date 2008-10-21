@@ -1,5 +1,19 @@
 2008-10-20  Chris Toshok  <toshok@ximian.com>
 
+	* plugin-class.cpp (MoonlightObject::ClearXamlEventProxy): this
+	method cannot call RemoveHandler on the proxy.  instead, we return
+	the proxy and our callers can do it
+	(MoonlightScriptControlObject::SetProperty): here
+	(MoonlightContentObject::SetProperty): here
+	(MoonlightDependencyObjectObject::SetProperty): and here
+	
+	(EventListenerProxy::~EventListenerProxy): here we need to clear
+	out the xaml/non-xaml proxy regardless of of whether or not it's a
+	function.  and make sure to call the right method depending on our
+	token.
+
+2008-10-20  Chris Toshok  <toshok@ximian.com>
+
 	* plugin-class.cpp, plugin-class.h: Rather complicated lifecycle
 	sorting out dealing with EventListenerProxies - there was a reason
 	I was avoiding this :) - fixes bug 436060.

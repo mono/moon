@@ -627,10 +627,14 @@ EventListenerProxy::~EventListenerProxy ()
 {
 	// we don't RemoveHandler here, since RemoveHandler is the only way we can *get* here.
 
-	if (is_func) {
-		if (owner)
+	if (owner) {
+		if (token == 0)
+			owner->ClearXamlEventProxy (event_id);
+		else
 			owner->ClearEventProxy (this);
+	}
 
+	if (is_func) {
 		if (callback != NULL)
 			NPN_ReleaseObject ((NPObject *) callback);
 	}
@@ -1677,14 +1681,12 @@ MoonlightObject::SetXamlEventProxy (int event_id, EventListenerProxy *proxy)
 	g_hash_table_insert (xaml_proxies, GINT_TO_POINTER (event_id), proxy);
 }
 
-void
+EventListenerProxy*
 MoonlightObject::ClearXamlEventProxy (int event_id)
 {
 	EventListenerProxy *proxy = LookupXamlEventProxy (event_id);
-	if (proxy) {
-		g_hash_table_remove (xaml_proxies, GINT_TO_POINTER (event_id));
-		proxy->RemoveHandler ();
-	}
+	g_hash_table_remove (xaml_proxies, GINT_TO_POINTER (event_id));
+	return proxy;
 }
 
 void
@@ -1975,7 +1977,9 @@ MoonlightScriptControlObject::SetProperty (int id, NPIdentifier name, const NPVa
 
 			if (event_id != -1) {
 				// If we have a handler, remove it.
-				ClearXamlEventProxy (event_id);
+				EventListenerProxy *old_proxy = ClearXamlEventProxy (event_id);
+				if (old_proxy)
+					old_proxy->RemoveHandler ();
 
 				if (!NPVARIANT_IS_NULL (*value)) {
 					EventListenerProxy *proxy = new EventListenerProxy (instance,
@@ -2368,7 +2372,9 @@ MoonlightContentObject::SetProperty (int id, NPIdentifier name, const NPVariant 
 
 		if (event_id != -1) {
 			// If we have a handler, remove it.
-			ClearXamlEventProxy (event_id);
+			EventListenerProxy *old_proxy = ClearXamlEventProxy (event_id);
+			if (old_proxy)
+				old_proxy->RemoveHandler ();
 
 			if (!NPVARIANT_IS_NULL (*value)) {
 				EventListenerProxy *proxy = new EventListenerProxy (instance,
@@ -2773,7 +2779,9 @@ MoonlightDependencyObjectObject::SetProperty (int id, NPIdentifier name, const N
 		
 		if ((event_id = dob->GetType ()->LookupEvent (event_name)) != -1) {
 			// If we have a handler, remove it.
-			ClearXamlEventProxy (event_id);
+			EventListenerProxy *old_proxy = ClearXamlEventProxy (event_id);
+			if (old_proxy)
+				old_proxy->RemoveHandler ();
 			
 			if (!NPVARIANT_IS_NULL (*value)) {
 				EventListenerProxy *proxy = new EventListenerProxy (instance,

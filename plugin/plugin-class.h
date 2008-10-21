@@ -131,7 +131,7 @@ struct MoonlightObject : NPObject {
 
 	EventListenerProxy *LookupXamlEventProxy (int event_id);
 	void SetXamlEventProxy (int event_id, EventListenerProxy* proxy);
-	void ClearXamlEventProxy (int event_id);
+	EventListenerProxy* ClearXamlEventProxy (int event_id);
 	
 	NPP instance;
 	Type::Kind moonlight_type;
