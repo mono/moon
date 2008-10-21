@@ -169,6 +169,11 @@ ASFParser::ReadObject (asf_object *obj)
 	char *guid;
 	
 	ASF_LOG ("ASFParser::ReadObject ('%s', %llu)\n", asf_guid_tostring (&obj->id), obj->size);
+
+	if (obj->size < sizeof (asf_object)) {
+		AddError (g_strdup_printf ("Header corrupted (invalid size: %d)", obj->size));
+		return NULL;
+	}
 	
 	if (type == ASF_NONE) {
 		guid = asf_guid_tostring (&obj->id);
@@ -182,7 +187,7 @@ ASFParser::ReadObject (asf_object *obj)
 		guid = asf_guid_tostring (&obj->id);
 		AddError (g_strdup_printf ("Header corrupted (id: %s)", guid));
 		g_free (guid);
-		return false;
+		return NULL;
 	}
 	
 	memcpy (result, obj, sizeof (asf_object));

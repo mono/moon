@@ -1,3 +1,8 @@
+2008-10-21  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* asf.cpp (ASFParser::ReadObject): Return an error (and avoid
+	copying) a corrupted object which is too short to be valid.
+
 2008-10-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* asf-structures.h (get_stream_names): Fix allocation to be
