@@ -681,7 +681,7 @@ struct asf_extended_stream_properties : public asf_object {
 		if (stream_name_count == 0)
 			return NULL;
 
-		result = (asf_extended_stream_name **)  g_malloc0 (stream_name_count + 1);
+		result = (asf_extended_stream_name **) g_malloc0 (sizeof (asf_extended_stream_name*) * (stream_name_count + 1));
 		current = (asf_extended_stream_name *) (sizeof (asf_extended_stream_properties) + (char*) this);
 		for (int i = 0; i < stream_name_count; i++) {
 			result [i] = current;

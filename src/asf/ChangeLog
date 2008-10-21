@@ -1,3 +1,8 @@
+2008-10-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* asf-structures.h (get_stream_names): Fix allocation to be
+	multiplied by pointer size (typo).
+
 2008-10-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf.cpp: Add a marker field to MediaFrame and make MediaMarker
