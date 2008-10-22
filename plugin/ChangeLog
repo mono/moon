@@ -1,3 +1,8 @@
+2008-10-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin.cpp: Add a row to the Properties dialog informing about the
+	  codecs in use.
+
 2008-10-21  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp, plugin-class.h: event listener leak fix v3.0

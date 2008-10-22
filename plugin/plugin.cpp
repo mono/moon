@@ -292,6 +292,7 @@ PluginInstance::Properties ()
 	table_add (table, "Kind:", 0, row++);
 	table_add (table, "Windowless:", 0, row++);
 	table_add (table, "MaxFrameRate:", 0, row++);
+	table_add (table, "Codecs:", 0, row++);
 	
 	row = 0;
 	table_add (table, source, 1, row++);
@@ -304,6 +305,11 @@ PluginInstance::Properties ()
 	table_add (table, windowless ? "yes" : "no", 1, row++);
 	snprintf (buffer, sizeof (buffer), "%i", maxFrameRate);
 	table_add (table, buffer, 1, row++);
+#if INCLUDE_FFMPEG
+	table_add (table, Media::IsMSCodecsInstalled () ? "ms-codecs" : "ffmpeg", 1, row++);
+#else
+	table_add (table, Media::IsMSCodecsInstalled () ? "ms-codecs" : "none", 1, row++);
+#endif
 	
 	row++;
 	properties_fps_label = gtk_label_new ("");
