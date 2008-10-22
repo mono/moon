@@ -1474,6 +1474,7 @@ ASFFrameReader::Advance (bool read_if_needed)
 		} else {
 			media_object_number = payloads [0]->media_object_number;
 			current_pts = pts;
+			first_packet_index = G_MAXUINT64;
 		}
 	} else {
 		// Clear the current list of payloads.
@@ -1617,7 +1618,8 @@ end_frame:
 */
 	
 	if (MEDIA_SUCCEEDED (result)) {
-		AddFrameIndex (first_packet_index);
+		if (first_packet_index != G_MAXUINT64)
+			AddFrameIndex (first_packet_index);
 	}
 
 	return result;
