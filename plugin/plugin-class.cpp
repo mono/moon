@@ -1688,9 +1688,11 @@ MoonlightObject::ClearEventProxy (EventListenerProxy *proxy)
 {
 	proxy->SetOwner (NULL);
 
+#if SANITY
 	EventListenerProxy *p = LookupEventProxy (proxy->GetEventId());
 	if (!p)
 		abort();
+#endif
 	g_hash_table_remove (event_listener_proxies, GINT_TO_POINTER (proxy->GetEventId()));
 }
 
