@@ -1,5 +1,15 @@
 2008-10-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* audio.h, audio.cpp: AudioSource: Initialize last_write_pts and
+	  last_current_pts to their max value, to detect when they haven't
+	  been set yet. Properly reinitialize these variables (to their max
+	  values) in Stop, and make GetCurrentPts return G_MAXUINT64 for this
+	  case.
+	* mplayer.cpp: AdvanceFrame: the audio might return G_MAXUINT64 for
+	  current pts, handle this. Fixes fast-forwarding issue in #435908.
+
+2008-10-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* mp3.cpp: Mp3Demuxer::SeekInternal: Initialize result so that we don't
 	  use random memory if we don't have a reader.
 

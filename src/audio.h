@@ -70,7 +70,6 @@ class AudioSource : public EventObject {
 	double volume;
 	bool muted;
 	
-	guint64 first_pts; // The first pts found
 	guint64 last_write_pts; // The last pts written
 	guint64 last_current_pts; // The last value returned from GetCurrentPts
 		
@@ -130,6 +129,9 @@ class AudioSource : public EventObject {
 	// Close(Internal) is called after removing the source from the list of sources
 	void Close ();
 
+	// This method may return G_MAXUINT64 if it has no idea which is the current pts.
+	// This may happen if nothing has been done yet (the derived audio source hasn't
+	// requested any writes).
 	guint64 GetCurrentPts ();
 	guint32 GetBytesPerFrame ();
 	

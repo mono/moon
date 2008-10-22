@@ -582,8 +582,14 @@ MediaPlayer::AdvanceFrame ()
 		return false;
 
 	if (HasAudio ()) {
+		if (audio->GetState () != AudioPlaying)
+			return false;
 		// use target_pts as set by audio thread
 		target_pts = GetTargetPts ();	
+		if (target_pts == G_MAXUINT64) {
+			// This might happen if we've called Play on the audio source, but it hasn't actually played anything yet.
+			return false;
+		}
 	} else {
 		// no audio to sync to
 		guint64 now = TimeSpan_ToPts (element->GetTimeManager()->GetCurrentTime ());

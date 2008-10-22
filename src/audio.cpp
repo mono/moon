@@ -65,9 +65,8 @@ AudioSource::AudioSource (AudioPlayer *player, MediaPlayer *mplayer, AudioStream
 	volume = 1.0f;
 	muted = false;
 	
-	first_pts = 0;
-	last_write_pts = 0;
-	last_current_pts = 0;
+	last_write_pts = G_MAXUINT64;
+	last_current_pts = G_MAXUINT64;
 	
 	channels = stream->channels;
 	sample_rate = stream->sample_rate;
@@ -291,7 +290,7 @@ AudioSource::ClearFrames ()
 void
 AudioSource::AppendFrame (MediaFrame *frame)
 {
-	LOG_AUDIO ("AudioSource::AppendFrame (%p): now got %i frames, this frame's EOF: %i, buflen: %i\n", frame, frames.Length () + 1, frame->event == FrameEventEOF, frame->buflen);
+	LOG_AUDIO ("AudioSource::AppendFrame (%p): now got %i frames, this frame's EOF: %i, buflen: %i, pts: %llu\n", frame, frames.Length () + 1, frame->event == FrameEventEOF, frame->buflen, MilliSeconds_FromPts (frame->pts));
 		
 	if (frame == NULL)
 		return;
@@ -326,8 +325,10 @@ AudioSource::GetCurrentPts ()
 		Unlock ();
 		
 		delay = GetDelay ();
-		
-		if (delay == G_MAXUINT64 || GetState () != AudioPlaying) {
+
+		if (current_pts == G_MAXUINT64) {
+			result = current_pts;
+		} else if (delay == G_MAXUINT64 || GetState () != AudioPlaying) {
 			result = last_current_pts;
 		} else if (delay > current_pts) {
 			result = 0;
@@ -350,6 +351,8 @@ AudioSource::Stop ()
 	Lock ();
 	SetState (AudioStopped);
 	frames.Clear (true);
+	last_current_pts = G_MAXUINT64;
+	last_write_pts = G_MAXUINT64;
 	Unlock ();
 	Stopped ();
 }
