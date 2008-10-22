@@ -1,5 +1,11 @@
 2008-10-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* asf-structures.cpp: asf_extended_stream_properties_validate: payload
+	  extension system length is 32 bit, so handle it accordingly. Fixes
+	  #437315's test case in comment #6.
+
+2008-10-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* asf.cpp: ASFFrameReader::Advance: prevent index corruption when
 	  resuming from previous overflows: don't add anything to the index
 	  when resuming. Should help a bit with #435912.

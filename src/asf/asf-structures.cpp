@@ -1029,7 +1029,11 @@ bool asf_extended_stream_properties_validate (const asf_extended_stream_properti
 			parser->AddError (g_strdup_printf ("Invalid payload extension system count."));
 			return false;
 		}
-		gint16 length = 22 + *(gint16 *) (((char *) obj) + 88 + stream_names_length + payload_ex_sys_length + 18 /* offset into length */);
+		guint32 length = 22 + *(guint32 *) (((char *) obj) + 88 + stream_names_length + payload_ex_sys_length + 18 /* offset into length */);
+		if (length > max_size) { // Sanity check length before doing algorithm with it to avoid overflows.
+			parser->AddError (g_strdup_printf ("Invalid payload extension system."));
+			return false;
+		}
 		size += length;
 		payload_ex_sys_length += length;
 		if (size > max_size) {
