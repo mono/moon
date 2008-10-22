@@ -1592,7 +1592,7 @@ Surface::HandleUICrossing (GdkEventCrossing *event)
 
 	GdkWindow *active_gdk_window = active_window->GetGdkWindow ();
 
-	if (event->window != active_window->GetGdkWindow ()) {
+	if (event->window && event->window != active_window->GetGdkWindow ()) {
 		g_object_unref (active_gdk_window);
 		return TRUE;
 	} else

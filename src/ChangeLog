@@ -1,3 +1,12 @@
+2008-10-22  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp (Surface::HandleUICrossing): disable the crossing
+	check from r116528 in the case of a windowless plugin (where
+	event->window == NULL).  Also, active_window->GetGdkWindow should
+	never be trusted to return the actual window - it's use is
+	strictly to find the screen/monitor for full-screening.  In the
+	windowless case it returns the toplevel netscape window.
+
 2008-10-22  Larry Ewing  <lewing@novell.com>
 
 	* brush.cpp, brush.h: remove the uielement references from the api
