@@ -217,7 +217,7 @@ Shape::Fill (cairo_t *cr, bool do_op)
 
 	Draw (cr);
 	if (do_op) {
-		fill->SetupBrush (cr, this);
+		fill->SetupBrush (cr, extents);
 		cairo_set_fill_rule (cr, convert_fill_rule (GetFillRule ()));
 		cairo_fill_preserve (cr);
 	}
@@ -368,7 +368,7 @@ void
 Shape::Stroke (cairo_t *cr, bool do_op)
 {
 	if (do_op) {
-		stroke->SetupBrush (cr, this);
+		stroke->SetupBrush (cr, extents);
 		cairo_stroke (cr);
 	}
 }
@@ -490,12 +490,6 @@ Shape::Render (cairo_t *cr, int x, int y, int width, int height)
 	cairo_restore (cr);
 }
 
-Point
-Shape::ComputeOriginPoint (Rect shape_bounds)
-{
-	return Point (shape_bounds.x, shape_bounds.y);
-}
-
 void
 Shape::ShiftPosition (Point p)
 {
@@ -552,8 +546,6 @@ Shape::ComputeBounds ()
 	InvalidateSurfaceCache ();
 	
 	extents = ComputeStretchBounds ();
-	origin = ComputeOriginPoint (extents);
-
 	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 	//printf ("%f,%f,%f,%f\n", bounds.x, bounds.y, bounds.width, bounds.height);
 }

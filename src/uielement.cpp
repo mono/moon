@@ -865,7 +865,10 @@ UIElement::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 	if (opacityMask != NULL) {
 		cairo_pattern_t *mask;
 		cairo_pattern_t *data = cairo_pop_group (cr);
-		opacityMask->SetupBrush (cr, this);
+		Point p = GetOriginPoint ();
+		Rect area = Rect (p.x, p.y, 0.0, 0.0);
+		GetSizeForBrush (cr, &(area.width), &(area.height));
+		opacityMask->SetupBrush (cr, area);
 		mask = cairo_get_source (cr);
 		cairo_pattern_reference (mask);
 		cairo_set_source (cr, data);

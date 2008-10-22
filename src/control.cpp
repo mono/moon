@@ -41,7 +41,7 @@ Control::Render (cairo_t *cr, Region *region)
 	cairo_set_matrix (cr, &absolute_xform);
 	
 	if (background) {
-		background->SetupBrush (cr, this);
+		background->SetupBrush (cr, extents);
 
 		cairo_new_path (cr);
 		extents.Draw (cr);

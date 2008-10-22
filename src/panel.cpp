@@ -108,15 +108,14 @@ Panel::Render (cairo_t *cr, Region *region)
 	cairo_set_matrix (cr, &absolute_xform);
 	
 	if ((background = GetBackground ())) {
-		double height = GetHeight ();
-		double width = GetWidth ();
+		Rect area = Rect (0.0, 0.0, GetWidth (), GetHeight ());
 		
-		if (width > 0 && height > 0) {
-			background->SetupBrush (cr, this, width, height);
+		if (area.width > 0 && area.height > 0) {
+			background->SetupBrush (cr, area);
 			
 			// FIXME - UIElement::Opacity may play a role here
 			cairo_new_path (cr);
-			cairo_rectangle (cr, 0, 0, width, height);
+			area.Draw (cr);
 			cairo_fill (cr);
 		}
 	}

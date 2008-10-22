@@ -1,3 +1,16 @@
+2008-10-22  Larry Ewing  <lewing@novell.com>
+
+	* brush.cpp, brush.h: remove the uielement references from the api
+	pass the required information as a rect to SetupBrush instead.
+
+	* shape.cpp, shape.h:
+	* panel.cpp:
+	* layout.cpp:
+	* text.cpp:
+	* uielement.cpp:
+	* control.cpp:
+	* broder.cpp: update SetupBrush callers for the new signature.
+
 2008-10-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* audio.h, audio.cpp: AudioSource: Initialize last_write_pts and

@@ -45,27 +45,9 @@ convert_gradient_spread_method (GradientSpreadMethod method)
 
 
 void
-Brush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height)
+Brush::SetupBrush (cairo_t *cr, const Rect &area)
 {
 	g_warning ("Brush:SetupBrush has been called. The derived class should have overridden it.");
-}
-
-void
-Brush::SetupBrush (cairo_t *cr, UIElement *uielement)
-{
-	double x0, y0, x1, y1;
-	double w, h;
-	
-	if (uielement) {
-		uielement->GetSizeForBrush (cr, &w, &h);
-	} else {
-		cairo_stroke_extents (cr, &x0, &y0, &x1, &y1);
-		
-		h = fabs (y1 - y0);
-		w = fabs (x1 - x0);
-	}
-	
-	SetupBrush (cr, uielement, w, h);
 }
 
 void
@@ -107,22 +89,12 @@ SolidColorBrush::SolidColorBrush (const char *color)
 }
 
 void
-SolidColorBrush::SetupBrush (cairo_t *cr, UIElement *uielement)
+SolidColorBrush::SetupBrush (cairo_t *cr, const Rect &area)
 {
 	double opacity = GetOpacity ();
 	Color *color = GetColor ();
-	
-	cairo_set_source_rgba (cr, color->r, color->g, color->b, opacity * color->a);
-	
-	// [Relative]Transforms do not apply to solid color brush
-}
 
-void
-SolidColorBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height)
-{
-	// note: avoid computing width and height since it can be very expansive
-	// (e.g. complex paths) and not required for a SolidColorBrush
-	SetupBrush (cr, uielement);
+	cairo_set_source_rgba (cr, color->r, color->g, color->b, opacity * color->a);
 }
 
 bool
@@ -164,7 +136,7 @@ GradientBrush::OnCollectionItemChanged (Collection *col, DependencyObject *obj, 
 }
 
 void
-GradientBrush::SetupGradient (cairo_pattern_t *pattern, UIElement *uielement, bool single)
+GradientBrush::SetupGradient (cairo_pattern_t *pattern, const Rect &area, bool single)
 {
 	GradientStopCollection *children = GetGradientStops ();
 	GradientSpreadMethod gsm = GetSpreadMethod ();
@@ -302,13 +274,13 @@ GradientBrush::IsOpaque ()
 //
 
 void
-LinearGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height)
+LinearGradientBrush::SetupBrush (cairo_t *cr, const Rect &area)
 {
 	Point *start = GetStartPoint ();
 	Point *end = GetEndPoint ();
 	double x0, y0, x1, y1;
 	cairo_matrix_t offset_matrix; 
-	Point p = uielement->GetOriginPoint ();
+	Point p = area.GetTopLeft ();
 	
 	switch (GetMappingMode ()) {
 	// unknown (e.g. bad) values are considered to be Absolute to Silverlight
@@ -317,14 +289,14 @@ LinearGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width
 	default:
 		y0 = start ? start->y : 0.0;
 		x0 = start ? start->x : 0.0;
-		y1 = end ? end->y : height;
-		x1 = end ? end->x : width;
+		y1 = end ? end->y : area.height;
+		x1 = end ? end->x : area.width;
 		break;
 	case BrushMappingModeRelativeToBoundingBox:
-		y0 = start ? (start->y * height) : 0.0;
-		x0 = start ? (start->x * width) : 0.0;
-		y1 = end ? (end->y * height) : height;
-		x1 = end ? (end->x * width) : width;
+		y0 = start ? (start->y * area.height) : 0.0;
+		x0 = start ? (start->x * area.width) : 0.0;
+		y1 = end ? (end->y * area.height) : area.height;
+		x1 = end ? (end->x * area.width) : area.width;
 		break;	
 	}
 
@@ -345,7 +317,7 @@ LinearGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width
 	Transform *relative_transform = GetRelativeTransform ();
 	if (relative_transform) {
 		cairo_matrix_t tm;
-		transform_get_absolute_transform (relative_transform, width, height, &tm);
+		transform_get_absolute_transform (relative_transform, area.width, area.height, &tm);
 		cairo_matrix_multiply (&matrix, &matrix, &tm);
 	}
 
@@ -358,7 +330,7 @@ LinearGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width
 	cairo_pattern_set_matrix (pattern, &matrix);
 	
 	bool only_start = (x0 == x1 && y0 == y1);
-	GradientBrush::SetupGradient (pattern, uielement, only_start);
+	GradientBrush::SetupGradient (pattern, area, only_start);
 	
 	cairo_set_source (cr, pattern);
 	cairo_pattern_destroy (pattern);
@@ -369,9 +341,8 @@ LinearGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width
 //
 
 void
-RadialGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height)
+RadialGradientBrush::SetupBrush (cairo_t *cr, const Rect &area)
 {
-	Point offset = uielement->GetOriginPoint ();
 	Point *origin = GetGradientOrigin ();
 	double ox = (origin ? origin->x : 0.5);
 	double oy = (origin ? origin->y : 0.5);
@@ -397,8 +368,8 @@ RadialGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width
 		cairo_matrix_translate (&matrix, -cx/rx, -cy/ry);
 		break;
 	case BrushMappingModeRelativeToBoundingBox:
-		cairo_matrix_init_translate (&matrix, cx * width, cy * height);
-		cairo_matrix_scale (&matrix, width * rx, height * ry );
+		cairo_matrix_init_translate (&matrix, cx * area.width, cy * area.height);
+		cairo_matrix_scale (&matrix, area.width * rx, area.height * ry );
 		cairo_matrix_translate (&matrix, -cx/rx, -cy/ry);
 		break;
 	}
@@ -415,13 +386,13 @@ RadialGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width
 	Transform *relative_transform = GetRelativeTransform ();
 	if (relative_transform) {
 		cairo_matrix_t tm;
-		transform_get_absolute_transform (relative_transform, width, height, &tm);
+		transform_get_absolute_transform (relative_transform, area.width, area.height, &tm);
 		// TODO - optimization, check for empty/identity matrix too ?
 		cairo_matrix_multiply (&matrix, &matrix, &tm);
 	}
 
-	if (offset.x != 0.0 || offset.y != 0.0) {
-		cairo_matrix_init_translate (&offset_matrix, offset.x, offset.y);
+	if (area.x != 0.0 || area.y != 0.0) {
+		cairo_matrix_init_translate (&offset_matrix, area.x, area.y);
 		cairo_matrix_multiply (&matrix, &matrix, &offset_matrix);
 	}
 
@@ -432,7 +403,7 @@ RadialGradientBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width
 	}
 	
 	cairo_pattern_set_matrix (pattern, &matrix);
-	GradientBrush::SetupGradient (pattern, uielement);
+	GradientBrush::SetupGradient (pattern, area);
 	
 	cairo_set_source (cr, pattern);
 	cairo_pattern_destroy (pattern);
@@ -688,7 +659,7 @@ is_stretch_valid (Stretch stretch)
 }
 
 void
-ImageBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height)
+ImageBrush::SetupBrush (cairo_t *cr, const Rect &area)
 {
 	cairo_surface_t *surface = image->GetCairoSurface ();
 
@@ -710,9 +681,8 @@ ImageBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double 
 
 	cairo_pattern_t *pattern = cairo_pattern_create_for_surface (surface);
 
-	image_brush_compute_pattern_matrix (&matrix, width, height, image->GetImageWidth (), image->GetImageHeight (), stretch, ax, ay, transform, relative_transform);
-	Point offset = uielement->GetOriginPoint ();
-	cairo_matrix_translate (&matrix, -offset.x, -offset.y);
+	image_brush_compute_pattern_matrix (&matrix, area.width, area.height, image->GetImageWidth (), image->GetImageHeight (), stretch, ax, ay, transform, relative_transform);
+	cairo_matrix_translate (&matrix, -area.x, -area.y);
 	cairo_pattern_set_matrix (pattern, &matrix);
 	
 	cairo_set_source (cr, pattern);
@@ -737,7 +707,7 @@ VideoBrush::~VideoBrush ()
 }
 
 void
-VideoBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height)
+VideoBrush::SetupBrush (cairo_t *cr, const Rect &area)
 {
 	Stretch stretch = GetStretch ();
 	if (!is_stretch_valid (stretch)) {
@@ -786,12 +756,11 @@ VideoBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double 
 	
 	pattern = cairo_pattern_create_for_surface (surface);
 
-	image_brush_compute_pattern_matrix (&matrix, width, height, mplayer->GetVideoWidth (),
+	image_brush_compute_pattern_matrix (&matrix, area.width, area.height, mplayer->GetVideoWidth (),
 					    mplayer->GetVideoHeight (), stretch, ax, ay,
 					    transform, relative_transform);
 	
-	Point offset = uielement->GetOriginPoint ();
-	cairo_matrix_translate (&matrix, -offset.x, -offset.y);
+	cairo_matrix_translate (&matrix, -area.x, -area.y);
 	cairo_pattern_set_matrix (pattern, &matrix);
 	
 	cairo_set_source (cr, pattern);
@@ -854,7 +823,7 @@ VideoBrush::IsOpaque ()
 //
 
 void
-VisualBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height)
+VisualBrush::SetupBrush (cairo_t *cr, const Rect &area)
 {
 	UIElement *ui = (UIElement *) GetVisual ();
 	if (!ui) {
@@ -883,12 +852,11 @@ VisualBrush::SetupBrush (cairo_t *cr, UIElement *uielement, double width, double
 	
  	cairo_pattern_t *pattern = cairo_pattern_create_for_surface (surface);
 	cairo_matrix_t matrix;
- 	image_brush_compute_pattern_matrix (&matrix, width, height,
+ 	image_brush_compute_pattern_matrix (&matrix, area.width, area.height,
 					    (int) bounds.width, (int) bounds.height,
 					    stretch, ax, ay, transform, relative_transform);
 	
-	Point offset = uielement->GetOriginPoint ();
-	cairo_matrix_translate (&matrix, -offset.x, -offset.y);
+	cairo_matrix_translate (&matrix, -area.x, -area.y);
  	cairo_pattern_set_matrix (pattern, &matrix);
 
  	cairo_set_source (cr, pattern);

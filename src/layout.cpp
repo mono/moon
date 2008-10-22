@@ -1248,7 +1248,9 @@ RenderLine (cairo_t *cr, double x, double y, UIElement *item, TextLayoutHints *h
 		else
 			fg = default_fg;
 		
-		fg->SetupBrush (cr, item, segment->advance, font->Height ());
+		Point p = item->GetOriginPoint ();
+		Rect area = Rect (p.x, p.y, segment->advance, font->Height ());
+		fg->SetupBrush (cr, area);
 		
 		if (!segment->path) {
 			if (font->IsScalable () && segment->start < segment->end) {

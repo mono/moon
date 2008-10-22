@@ -76,8 +76,7 @@ class Brush : public DependencyObject {
 	
 	virtual Type::Kind GetObjectType () { return Type::BRUSH; };
 	
-	virtual void SetupBrush (cairo_t *cr, UIElement *uielement);
-	virtual void SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height);
+	virtual void SetupBrush (cairo_t *cr, const Rect &area);
 
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 
@@ -114,8 +113,7 @@ class SolidColorBrush : public Brush {
 	
 	virtual Type::Kind GetObjectType () { return Type::SOLIDCOLORBRUSH; };
 
-	virtual void SetupBrush (cairo_t *cr, UIElement *uielement);
-	virtual void SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height);
+	virtual void SetupBrush (cairo_t *cr, const Rect &area);
 	
 	virtual bool IsOpaque ();
 	
@@ -192,7 +190,7 @@ class GradientBrush : public Brush {
 	
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
-	virtual void SetupGradient (cairo_pattern_t *pattern, UIElement *uielement, bool single = false);
+	virtual void SetupGradient (cairo_pattern_t *pattern, const Rect &area, bool single = false);
 	
 	virtual bool IsOpaque ();
 	
@@ -229,7 +227,7 @@ class LinearGradientBrush : public GradientBrush {
 	
 	virtual Type::Kind GetObjectType () { return Type::LINEARGRADIENTBRUSH; }
 
-	virtual void SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height);
+	virtual void SetupBrush (cairo_t *cr, const Rect &area);
 	
 	//
 	// Property Accessors
@@ -262,7 +260,7 @@ class RadialGradientBrush : public GradientBrush {
 	
 	virtual Type::Kind GetObjectType () { return Type::RADIALGRADIENTBRUSH; }
 	
-	virtual void SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height);
+	virtual void SetupBrush (cairo_t *cr, const Rect &area);
 	
 	//
 	// Property Accessors
@@ -345,7 +343,7 @@ class ImageBrush : public TileBrush {
 	
 	void SetSource (Downloader *downloader, const char *PartName);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
-	virtual void SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height);
+	virtual void SetupBrush (cairo_t *cr, const Rect &area);
 	virtual void RemoveTarget (DependencyObject *obj);
 	virtual void AddTarget (DependencyObject *obj);
 	virtual void SetSurface (Surface *surface);
@@ -383,7 +381,7 @@ class VideoBrush : public TileBrush {
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
-	virtual void SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height);
+	virtual void SetupBrush (cairo_t *cr, const Rect &area);
 
 	virtual bool IsOpaque ();
 	
@@ -414,7 +412,7 @@ class VisualBrush : public TileBrush {
 	
 	virtual Type::Kind GetObjectType () { return Type::VISUALBRUSH; };
 
-	virtual void SetupBrush (cairo_t *cr, UIElement *uielement, double width, double height);
+	virtual void SetupBrush (cairo_t *cr, const Rect &area);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 
 	virtual bool IsOpaque ();

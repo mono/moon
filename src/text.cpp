@@ -1345,7 +1345,10 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
 	
-	fill->SetupBrush (cr, this);
+	Point p = GetOriginPoint ();
+	Rect area = Rect (p.x, p.y, 0, 0);
+	GetSizeForBrush (cr, &(area.width), &(area.height));
+	fill->SetupBrush (cr, area);
 	
 	cairo_append_path (cr, &path->cairo);
 	cairo_fill (cr);
