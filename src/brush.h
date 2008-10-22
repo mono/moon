@@ -20,7 +20,6 @@ G_BEGIN_DECLS
 
 #include "enums.h"
 #include "collection.h"
-#include "uielement.h"
 
 class MediaElement;
 
