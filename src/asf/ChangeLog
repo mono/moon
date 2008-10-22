@@ -1,5 +1,9 @@
 2008-10-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* asf.cpp: Quiet warning.
+
+2008-10-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* asf.cs, asf-generated.cpp: Special case a few object types to not
 	  print validation warnings since we're not using those objects.
 
