@@ -1,5 +1,9 @@
 2008-10-21  Chris Toshok  <toshok@ximian.com>
 
+	* plugin-class.cpp, plugin-class.h: event listener leak fix v3.0
+
+2008-10-21  Chris Toshok  <toshok@ximian.com>
+
 	* plugin-class.cpp, plugin-class.h: since I removed the value_dtor
 	from xaml_proxies, we need to iterate over it and destroy the
 	proxies manually now.  Also, disavow ownership of proxies when we

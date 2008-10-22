@@ -596,20 +596,12 @@ EventListenerProxy::EventListenerProxy (NPP instance, const char *event_name, co
 	this->event_name = g_strdup (event_name);
 	this->event_id = -1;
 	this->target_object = NULL;
+	this->owner = NULL;
 	this->one_shot = false;
 	this->is_func = false;
 	if (!strncmp (cb_name, "javascript:", strlen ("javascript:")))
 		cb_name += strlen ("javascript:");
 	this->callback = g_strdup (cb_name);
-}
-
-const char *
-EventListenerProxy::GetCallbackAsString ()
-{
-	if (is_func)
-		return "";
-	
-	return (const char *)callback;
 }
 
 EventListenerProxy::EventListenerProxy (NPP instance, const char *event_name, const NPVariant *cb)
@@ -618,6 +610,7 @@ EventListenerProxy::EventListenerProxy (NPP instance, const char *event_name, co
 	this->event_name = g_strdup (event_name);
 	this->event_id = -1;
 	this->target_object = NULL;
+	this->owner = NULL;
 	this->one_shot = false;
 
 	if (NPVARIANT_IS_OBJECT (*cb)) {
@@ -632,16 +625,15 @@ EventListenerProxy::EventListenerProxy (NPP instance, const char *event_name, co
 
 EventListenerProxy::~EventListenerProxy ()
 {
-	if (target_object) {
-		if (event_id != -1)
-			RemoveHandler ();
-		
-		target_object->RemoveHandler (EventObject::DestroyedEvent, dtoken);
-	}
-	
 	if (is_func) {
-		if (callback != NULL)
-			NPN_ReleaseObject ((NPObject *) callback);
+// XXX we *want* to be able to do this, we really do, but we have no
+// good means to invalidate EventListenerProxy, and thereby set the
+// callback to NULL.
+//
+// instead we do it in ::RemoveHandler, which is only invoked via JS's removeEventListener
+//
+// 		if (callback != NULL)
+// 			NPN_ReleaseObject ((NPObject *) callback);
 	}
 	else {
 		g_free (callback);
@@ -650,12 +642,25 @@ EventListenerProxy::~EventListenerProxy ()
 	g_free (event_name);
 }
 	
+const char *
+EventListenerProxy::GetCallbackAsString ()
+{
+	if (is_func)
+		return "";
+	
+	return (const char *)callback;
+}
+
+void
+EventListenerProxy::SetOwner (MoonlightObject *owner)
+{
+	this->owner = owner;
+}
+
 int
 EventListenerProxy::AddHandler (EventObject *obj)
 {
 	target_object = obj;
-	
-	dtoken = obj->AddHandler (EventObject::DestroyedEvent, on_target_object_destroyed, this);
 	
 	event_id = obj->GetType()->LookupEvent (event_name);
 
@@ -665,7 +670,7 @@ EventListenerProxy::AddHandler (EventObject *obj)
 		return -1;
 	}
 
-	token = obj->AddHandler (event_id, proxy_listener_to_javascript, this);
+	token = obj->AddHandler (event_id, proxy_listener_to_javascript, this, on_handler_removed);
 	return token;
 }
 
@@ -674,8 +679,6 @@ EventListenerProxy::AddXamlHandler (EventObject *obj)
 {
 	target_object = obj;
 	
-	dtoken = obj->AddHandler (EventObject::DestroyedEvent, on_target_object_destroyed, this);
-	
 	event_id = obj->GetType()->LookupEvent (event_name);
 	
 	if (event_id == -1) {
@@ -684,7 +687,7 @@ EventListenerProxy::AddXamlHandler (EventObject *obj)
 		return -1;
 	}
 	
-	token = obj->AddXamlHandler (event_id, proxy_listener_to_javascript, this);
+	token = obj->AddXamlHandler (event_id, proxy_listener_to_javascript, this, on_handler_removed);
 	
 	return token;
 }
@@ -694,23 +697,33 @@ EventListenerProxy::RemoveHandler ()
 {
 	if (target_object && event_id != -1) {
 		target_object->RemoveHandler (event_id, token);
-		event_id = -1;
+		if (callback != NULL)
+			NPN_ReleaseObject ((NPObject *) callback);
+	}
+	else {
+		on_handler_removed (this);
 	}
 }
 
 void
-EventListenerProxy::Invalidate ()
+EventListenerProxy::on_handler_removed (gpointer closure)
 {
-	if (is_func)
-		callback = NULL;
-}
+	// by the time we get here, the target_object has disclaimed
+	// all knowledge of this proxy.
 
-void
-EventListenerProxy::on_target_object_destroyed (EventObject *sender, EventArgs *calldata, gpointer closure)
-{
 	EventListenerProxy *proxy = (EventListenerProxy *) closure;
-	
+
+	if (proxy->owner) {
+		proxy->owner->ClearEventProxy (proxy);
+	}
+	else {
+		// we don't have an owner, so there's nothing special
+		// for us to do here.
+	}
+
 	proxy->target_object = NULL;
+	proxy->event_id = -1;
+	proxy->unref_delayed();
 }
 
 void
@@ -758,7 +771,7 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 		argcount++;
 	}
 	
-	if (proxy->is_func) {
+	if (proxy->is_func && proxy->callback) {
 		/* the event listener was added with a JS function object */
 		if (NPN_InvokeDefault (proxy->instance, (NPObject *) proxy->callback, args, argcount, &result))
 			NPN_ReleaseVariantValue (&result);
@@ -784,19 +797,11 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 		proxy->RemoveHandler();
 }
 
-static void
-delete_proxy (EventObject *sender, EventArgs *args, gpointer closure)
-{
-	EventListenerProxy *proxy = (EventListenerProxy*)closure;
-	delete proxy;
-}
-
 void
 event_object_add_xaml_listener (EventObject *obj, PluginInstance *plugin, const char *event_name, const char *cb_name)
 {
 	EventListenerProxy *proxy = new EventListenerProxy (plugin->GetInstance (), event_name, cb_name);
 	proxy->AddXamlHandler (obj);
-	obj->AddHandler (EventObject::DestroyedEvent, delete_proxy, proxy);
 }
 
 class NamedProxyPredicate {
@@ -1580,9 +1585,17 @@ _deallocate (NPObject *npobj)
 	delete obj;
 }
 
+static void
+detach_xaml_proxy (gpointer key, gpointer value, gpointer closure)
+{
+	EventListenerProxy *proxy = (EventListenerProxy*)value;
+	proxy->SetOwner (NULL);
+}
+
 MoonlightObject::~MoonlightObject ()
 {
 	if (event_listener_proxies) {
+		g_hash_table_foreach (event_listener_proxies, detach_xaml_proxy, NULL);
 		g_hash_table_destroy (event_listener_proxies);
 		event_listener_proxies = NULL;
 	}
@@ -1593,20 +1606,6 @@ MoonlightObject::destroy_proxy (gpointer data)
 {
 	EventListenerProxy *proxy = (EventListenerProxy*)data;
 	proxy->RemoveHandler ();
-	delete (EventListenerProxy*)data;
-}
-
-void
-MoonlightObject::invalidate_proxy (gpointer key, gpointer value, gpointer data)
-{
-	EventListenerProxy *proxy = (EventListenerProxy*)value;
-	proxy->Invalidate ();
-}
-
-void
-MoonlightObject::Invalidate ()
-{
-	g_hash_table_foreach (event_listener_proxies, invalidate_proxy, NULL);
 }
 
 bool
@@ -1679,15 +1678,20 @@ MoonlightObject::LookupEventProxy (int event_id)
 }
 
 void
-MoonlightObject::SetEventProxy (int event_id, EventListenerProxy *proxy)
+MoonlightObject::SetEventProxy (EventListenerProxy *proxy)
 {
-	g_hash_table_insert (event_listener_proxies, GINT_TO_POINTER (event_id), proxy);
+	g_hash_table_insert (event_listener_proxies, GINT_TO_POINTER (proxy->GetEventId()), proxy);
 }
 
 void
-MoonlightObject::ClearEventProxy (int event_id)
+MoonlightObject::ClearEventProxy (EventListenerProxy *proxy)
 {
-	g_hash_table_remove (event_listener_proxies, GINT_TO_POINTER (event_id));
+	proxy->SetOwner (NULL);
+
+	EventListenerProxy *p = LookupEventProxy (proxy->GetEventId());
+	if (!p)
+		abort();
+	g_hash_table_remove (event_listener_proxies, GINT_TO_POINTER (proxy->GetEventId()));
 }
 
 
@@ -1972,13 +1976,15 @@ MoonlightScriptControlObject::SetProperty (int id, NPIdentifier name, const NPVa
 			int event_id = obj->GetType()->LookupEvent (event_name);
 
 			if (event_id != -1) {
-				// If we have a handler, remove it.
-				ClearEventProxy (event_id);
+				EventListenerProxy *proxy = LookupEventProxy (event_id);
+				if (proxy)
+					proxy->RemoveHandler ();
 
 				if (!NPVARIANT_IS_NULL (*value)) {
 					EventListenerProxy *proxy = new EventListenerProxy (instance,
-										    event_name,
-										    value);
+											    event_name,
+											    value);
+					proxy->SetOwner (this);
 					proxy->AddHandler (plugin->GetSurface());
 					// we only emit that event once, when
 					// the plugin is initialized, so don't
@@ -1986,7 +1992,7 @@ MoonlightScriptControlObject::SetProperty (int id, NPIdentifier name, const NPVa
 					// afterward.
 					if (id == MoonId_OnLoad)
 						proxy->SetOneShot ();
-					SetEventProxy (event_id, proxy);
+					SetEventProxy (proxy);
 				}
 
 				return true;
@@ -2364,15 +2370,17 @@ MoonlightContentObject::SetProperty (int id, NPIdentifier name, const NPVariant 
 		event_id  = surface->GetType()->LookupEvent (event_name);
 
 		if (event_id != -1) {
-			// If we have a handler, remove it.
-			ClearEventProxy (event_id);
+			EventListenerProxy *proxy = LookupEventProxy (event_id);
+			if (proxy)
+				proxy->RemoveHandler();
 
 			if (!NPVARIANT_IS_NULL (*value)) {
 				EventListenerProxy *proxy = new EventListenerProxy (instance,
 										    event_name,
 										    value);
+				proxy->SetOwner (this);
 				proxy->AddHandler (plugin->GetSurface());
-				SetEventProxy (event_id, proxy);
+				SetEventProxy (proxy);
 			}
 
 			return true;
@@ -2758,32 +2766,6 @@ MoonlightDependencyObjectObject::SetProperty (int id, NPIdentifier name, const N
 		}
 	}
 	
-	// turns out that on Silverlight you can't set regular events as properties.
-#if 0
-	// it wasn't a dependency property.  let's see if it's an
-	// event
-	const char *event_name;
-	
-	if ((event_name = map_moon_id_to_event_name (id))) {
-		int event_id;
-		
-		if ((event_id = dob->GetType ()->LookupEvent (event_name)) != -1) {
-			// If we have a handler, remove it.
-			ClearEventProxy (event_id);
-			
-			if (!NPVARIANT_IS_NULL (*value)) {
-				EventListenerProxy *proxy = new EventListenerProxy (instance,
-										    event_name,
-										    value);
-				proxy->AddHandler (dob);
-				SetEventProxy (event_id, proxy);
-			}
-			
-			return true;
-		}
-	}
-#endif
-	
 	return MoonlightObject::SetProperty (id, name, value);
 }
 
@@ -2913,7 +2895,7 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 		EventListenerProxy *proxy = new EventListenerProxy (instance, name, &args[1]);
 		int token = proxy->AddHandler (dob);
 		g_free (name);
-		
+
 		if (token == -1)
 			THROW_JS_EXCEPTION ("AG_E_RUNTIME_ADDEVENT");
 

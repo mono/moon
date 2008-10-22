@@ -38,14 +38,17 @@ struct MoonNameIdMapping {
 	int flags; // 0 means both SL 1 & 2.  if either FLAG above is set alone, it means that release only.
 };
 
+class MoonlightObject;
+
 /*** EventListenerProxy */
 typedef void (*EventArgsWrapper)(NPP instance, EventArgs *calldata, NPVariant *value);
 
-class EventListenerProxy : public List::Node {
-	static void on_target_object_destroyed (EventObject *sender, EventArgs *calldata, gpointer closure);
+class EventListenerProxy : public EventObject {
+	static void on_handler_removed (gpointer closure);
 	
 	EventObject *target_object;
-	
+	MoonlightObject *owner;
+
 	NPP instance;
 	bool is_func;
 	
@@ -56,7 +59,6 @@ class EventListenerProxy : public List::Node {
 	
 	char *event_name;
 	int event_id;
-	int dtoken;
 	int token;
 	
 	bool one_shot;
@@ -66,13 +68,15 @@ class EventListenerProxy : public List::Node {
 	EventListenerProxy (NPP instance, const char *event_name, const NPVariant *cb);
 	virtual ~EventListenerProxy ();
 	
+	void SetOwner (MoonlightObject *owner);
+
 	int AddXamlHandler (EventObject *obj);
 	int AddHandler (EventObject *obj);
 	void RemoveHandler ();
-	void Invalidate ();
 	const char *GetCallbackAsString ();
 
 	int GetEventId () { return event_id; }
+	int GetEventToken () { return token; }
 
 	void SetOneShot () { one_shot = true; }
 
@@ -106,10 +110,10 @@ struct MoonlightObject : NPObject {
 	{
 		this->instance = instance;
 		this->moonlight_type = Type::INVALID;
-		this->event_listener_proxies = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, destroy_proxy);
+		this->event_listener_proxies = g_hash_table_new (g_direct_hash, g_direct_equal);
 	}
 	
-	virtual void Invalidate ();
+	virtual void Invalidate () { }
 	virtual ~MoonlightObject ();
 	
 	virtual bool HasProperty (NPIdentifier name);
@@ -122,8 +126,8 @@ struct MoonlightObject : NPObject {
 	int LookupName (NPIdentifier name) { return ((MoonlightObjectType *)_class)->LookupName (name, ((PluginInstance*)instance->pdata)->IsSilverlight2()); }
 	
 	EventListenerProxy *LookupEventProxy (int event_id);
-	void SetEventProxy (int event_id, EventListenerProxy* proxy);
-	void ClearEventProxy (int event_id);
+	void SetEventProxy (EventListenerProxy* proxy);
+	void ClearEventProxy (EventListenerProxy *proxy);
 	
 	static void destroy_proxy (gpointer data);
 	static void invalidate_proxy (gpointer key, gpointer value, gpointer data);
