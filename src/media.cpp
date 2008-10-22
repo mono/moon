@@ -1332,8 +1332,10 @@ MediaElement::TryOpen ()
 		
 		if (!MEDIA_SUCCEEDED (result = source->Initialize ())) {
 			MediaFailed ();
+			media->Dispose ();
 		} else if (!MEDIA_SUCCEEDED (result = media->Open (source))) {
 			MediaFailed (new ErrorEventArgs (MediaError, 3001, "AG_E_INVALID_FILE_FORMAT"));
+			media->Dispose ();
 		} else {
 			MediaOpened (media);
 		}
@@ -1346,6 +1348,7 @@ MediaElement::TryOpen ()
 		
 		// If we have a downloaded file ourselves, delete it, we no longer need it.
 		if (current_downloaded_file) {
+			current_downloaded_file->Dispose ();
 			current_downloaded_file->unref ();
 			current_downloaded_file = NULL;
 		}
