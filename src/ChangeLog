@@ -1,5 +1,10 @@
 2008-10-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mp3.cpp: Mp3Demuxer::SeekInternal: Initialize result so that we don't
+	  use random memory if we don't have a reader.
+
+2008-10-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* mms-downloader.cpp: Add logging methods.
 
 2008-10-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 

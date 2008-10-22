@@ -647,7 +647,7 @@ Mp3Demuxer::~Mp3Demuxer ()
 MediaResult
 Mp3Demuxer::SeekInternal (guint64 pts)
 {
-	MediaResult result;
+	MediaResult result = MEDIA_FAIL;
 	
 	if (reader)
 		result = reader->Seek (pts);
