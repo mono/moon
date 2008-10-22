@@ -164,6 +164,12 @@ class asf
 				writer.WriteLine ("\tcase {0}:", str.ToUpper ());
 				writer.WriteLine ("\t\treturn {0}_validate (({0}*) obj, parser);", str);
 			}
+			// Special case a bit
+			writer.WriteLine ("\tcase ASF_NONE:");
+			writer.WriteLine ("\tcase ASF_LANGUAGE_LIST:");
+			writer.WriteLine ("\tcase ASF_METADATA:");
+			writer.WriteLine ("\tcase ASF_PADDING:");
+			writer.WriteLine ("\t\treturn true; // Do nothing, we don't use these objects at all, so there's no need to validate either.");
 			writer.WriteLine ("\tdefault:");
 			writer.WriteLine ("#if DEBUG");
 			writer.WriteLine ("\t\tprintf (\"ASF warning: No validation implemented for %s.\\n\", asf_guid_get_name (&obj->id));");

@@ -61,6 +61,11 @@ bool asf_object_validate_exact (const asf_object* obj, ASFParser* parser)
 		return asf_data_validate ((asf_data*) obj, parser);
 	case ASF_EXTENDED_STREAM_PROPERTIES:
 		return asf_extended_stream_properties_validate ((asf_extended_stream_properties*) obj, parser);
+	case ASF_NONE:
+	case ASF_LANGUAGE_LIST:
+	case ASF_METADATA:
+	case ASF_PADDING:
+		return true; // Do nothing, we don't use these objects at all, so there's no need to validate either.
 	default:
 #if DEBUG
 		printf ("ASF warning: No validation implemented for %s.\n", asf_guid_get_name (&obj->id));
