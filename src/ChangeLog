@@ -1,5 +1,9 @@
 2008-10-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mms-downloader.cpp: Add logging methods.
+
+2008-10-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* media.cpp: Sprinkle Dispose calls to plug leaks.
 
 2008-10-20  Chris Toshok  <toshok@ximian.com>

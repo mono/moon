@@ -33,6 +33,7 @@ is_valid_mms_header (MmsHeader *header)
 
 MmsDownloader::MmsDownloader (Downloader *dl) : InternalDownloader (dl)
 {
+	LOG_MMS ("MmsDownloader::MmsDownloader ()\n");
 	uri = NULL;
 	buffer = NULL;
 
@@ -68,6 +69,7 @@ MmsDownloader::MmsDownloader (Downloader *dl) : InternalDownloader (dl)
 
 MmsDownloader::~MmsDownloader ()
 {
+	LOG_MMS ("MmsDownloader::~MmsDownloader ()\n");
 	g_free (buffer);
 	if (parser)
 		parser->unref ();
@@ -77,6 +79,7 @@ MmsDownloader::~MmsDownloader ()
 void
 MmsDownloader::SetRequestedPts (guint64 value)
 {
+	LOG_MMS ("MmsDownloader::SetRequestedPts (%llu)\n", value);
 	pthread_mutex_lock (&request_mutex);
 	requested_pts = value;
 	pthread_mutex_unlock (&request_mutex);
@@ -89,12 +92,14 @@ MmsDownloader::GetRequestedPts ()
 	pthread_mutex_lock (&request_mutex);
 	result = requested_pts;
 	pthread_mutex_unlock (&request_mutex);
+	LOG_MMS ("MmsDownloader::GetRequestedPts (): %llu\n", result);
 	return result;
 }
 
 void
 MmsDownloader::Open (const char *verb, const char *uri)
 {
+	LOG_MMS ("MmsDownloader::Open ('%s', '%s')\n", verb, uri);
 	this->uri = g_strdup_printf ("http://%s", uri+6);
 
 	dl->InternalOpen (verb, this->uri, true);
@@ -108,6 +113,7 @@ MmsDownloader::Open (const char *verb, const char *uri)
 void
 MmsDownloader::Write (void *buf, gint32 off, gint32 n)
 {
+	LOG_MMS ("MmsDownloader::Write (%p. %i, %i)\n", buf, off, n);
 	MmsHeader *header;
 	MmsPacket *packet;
 	char *payload;
@@ -125,7 +131,7 @@ MmsDownloader::Write (void *buf, gint32 off, gint32 n)
 	memcpy (buffer + size, buf, n);
 	size += n;
 
-	LOG_MMS ("MmsDownloader::Write () requested_position: %llu\n", requested_position);
+	LOG_MMS ("MmsDownloader::Write (%p, %i, %i) requested_position: %llu\n", buf, off, n, requested_position);
 	
 	if (requested_position != G_MAXUINT64) {
 		seeked = true;
@@ -183,18 +189,21 @@ process_packet:
 char *
 MmsDownloader::GetDownloadedFilename (const char *partname)
 {
+	LOG_MMS ("MmsDownloader::GetDownloadedFilename ('%s')\n", partname);
 	return NULL;
 }
 
 char *
 MmsDownloader::GetResponseText (const char *partname, guint64 *size)
 {
+	LOG_MMS ("MmsDownloader::GetResponseText ('%s', %p)\n", partname, size);
 	return NULL;
 }
 
 void
 MmsDownloader::RestartAtPts (guint64 pts)
 {
+	LOG_MMS ("MmsDownloader::RestartAtPts (%llu)\n", pts);
 	dl->InternalAbort ();
 
 	dl->InternalOpen ("GET", uri, true);
@@ -224,7 +233,7 @@ MmsDownloader::RestartAtPts (guint64 pts)
 bool
 MmsDownloader::ProcessPacket (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *offset)
 {
-	LOG_MMS ("MmsDownloader::ProcessPacket ()\n");
+	LOG_MMS ("MmsDownloader::ProcessPacket (%p, %p, %p, %p)\n", header, packet, payload, offset);
 	
 	*offset = (header->length + sizeof (MmsHeader));
  
