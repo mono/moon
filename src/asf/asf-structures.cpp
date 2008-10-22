@@ -121,6 +121,36 @@ asf_header_extension_validate (const asf_header_extension* obj, ASFParser* parse
 		parser->AddError (g_strdup_printf ("Invalid data_size (expected size - 46, got %llu - 46 = %u).", obj->size, obj->data_size)); 
 		return false;
 	}
+
+	if (obj->data_size == 0)
+		return true;
+
+	guint64 max_size = obj->size;
+	guint64 size = 46;
+	guint64 length;
+	guint64 accum_length = 0;
+	void *data = obj->get_data ();
+	asf_object *header_obj;
+
+	do {
+		if (size + 24 /* minimum object size */ > max_size) {
+			parser->AddError (g_strdup_printf ("Invalid header extension size."));
+			return false;
+		}
+		
+		header_obj = (asf_object *) (((char *) data) + accum_length);
+		length = header_obj->size;
+		accum_length += length;
+		size += length;
+		if (size > max_size) {
+			parser->AddError (g_strdup_printf ("Invalid header extension object."));
+			return false;
+		}
+		
+		if (!asf_object_validate_exact (header_obj, parser))
+			return false;
+		
+	} while (size < max_size);
 	
 	return true;
 }
@@ -949,12 +979,65 @@ bool asf_extended_stream_properties_validate (const asf_extended_stream_properti
 	if (!(asf_guid_validate (&obj->id, &asf_guids_extended_stream_properties, parser))) {
 		return false;
 	}
-	// FIXME: Verify that this size is correct.
-	if (obj->size < 112) {
+	
+	if (obj->size < 88) {
 		parser->AddError (g_strdup_printf ("Invalid size (expected >= 112, got %llu).", obj->size));
 		return false;
 	}
-	// TODO: More verifications?
+
+	if (obj->data_bitrate == 0) {
+		parser->AddError (g_strdup_printf ("Invalid bitrate (expected != 0)."));
+		return false;
+	}
+
+	if (obj->initial_buffer_fullness > obj->buffer_size) {
+		parser->AddError (g_strdup_printf ("Invalid initial buffer fullness (expected <= buffer size (%i), got %i).", obj->buffer_size, obj->initial_buffer_fullness));
+		return false;
+	}
+
+	if (obj->alternate_initial_buffer_fullness > obj->alternate_buffer_size) {
+		parser->AddError (g_strdup_printf ("Invalid alternate initial buffer fullness (expected <= alternate buffer size (%i), got %i).", obj->alternate_buffer_size, obj->alternate_initial_buffer_fullness));
+		return false;
+	}
+
+	if (obj->stream_id == 0 || obj->stream_id > 127) {
+		parser->AddError (g_strdup_printf ("Invalid stream number, must be 0 < stream number <= 127, got %i.", obj->stream_id	));
+		return false;
+	}
+
+	guint64 max_size = obj->size;
+	guint64 stream_names_length = 0; // accumulated length of stream names
+	guint64 payload_ex_sys_length = 0; // accumulated length of payload extension systems
+	guint64 size = 88; // size of all the fixed fields
+
+	for (gint32 i = 0; i < obj->stream_name_count; i++) {
+		if (size + 4 > max_size) { // 4 = minimum size of stream name
+			parser->AddError (g_strdup_printf ("Invalid stream name count."));
+			return false;
+		}
+		gint16 length = 4 + *(gint16 *) (((char *) obj) + 88 + stream_names_length + 2 /* offset into length */);
+		size += length;
+		stream_names_length += length;
+		if (size > max_size) {
+			parser->AddError (g_strdup_printf ("Invalid stream name."));
+			return false;
+		}
+	}
+
+	for (gint32 i = 0; i < obj->payload_extension_system_count; i++) {
+		if (size + 22 > max_size) { // 22 = minimum size of payload extension system
+			parser->AddError (g_strdup_printf ("Invalid payload extension system count."));
+			return false;
+		}
+		gint16 length = 22 + *(gint16 *) (((char *) obj) + 88 + stream_names_length + payload_ex_sys_length + 18 /* offset into length */);
+		size += length;
+		payload_ex_sys_length += length;
+		if (size > max_size) {
+			parser->AddError (g_strdup_printf ("Invalid payload extension system."));
+			return false;
+		}
+	}
+
 	return true;
 }
 

@@ -144,6 +144,7 @@ class asf
  * See the LICENSE file included with the distribution for details.
  */
 ");
+			writer.WriteLine ("#include <config.h>");
 			writer.WriteLine ("#include \"asf.h\"");
 			
 			writer.WriteLine ("");
@@ -164,7 +165,9 @@ class asf
 				writer.WriteLine ("\t\treturn {0}_validate (({0}*) obj, parser);", str);
 			}
 			writer.WriteLine ("\tdefault:");
-			writer.WriteLine ("\t\tparser->AddError (g_strdup_printf (\"No validation implemented for %s.\", asf_guid_get_name (&obj->id)));");
+			writer.WriteLine ("#if DEBUG");
+			writer.WriteLine ("\t\tprintf (\"ASF warning: No validation implemented for %s.\\n\", asf_guid_get_name (&obj->id));");
+			writer.WriteLine ("#endif");
 			writer.WriteLine ("\t\treturn true;");
 			writer.WriteLine ("\t}");
 			writer.WriteLine ("}");

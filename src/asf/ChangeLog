@@ -1,3 +1,12 @@
+2008-10-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf.cs: Include config.h in asf-generated.cpp, and if no validation
+	  method is implemented for an object type print a warning, not an
+	  error.
+	* asf-generated.cpp: Updated.
+	* asf-structures.cpp: Add validation for header_extension and
+	  extended_stream_properties objects. Fixes #437315.
+
 2008-10-21  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* asf.cpp (ASFParser::ReadObject): Return an error (and avoid
