@@ -101,9 +101,17 @@ struct asf_video_stream_data {
 	
 	const BITMAPINFOHEADER* get_bitmap_info_header () const
 	{
+		const BITMAPINFOHEADER *header;
+		
 		if (format_data_size < sizeof (BITMAPINFOHEADER))
 			return NULL;
-		return (const BITMAPINFOHEADER*) (((char*) this) + sizeof (asf_video_stream_data));
+			
+		header = (const BITMAPINFOHEADER*) (((char*) this) + sizeof (asf_video_stream_data));
+
+		if (format_data_size != header->size)
+			return NULL;
+
+		return header;
 	}
 };
 
@@ -444,10 +452,20 @@ struct asf_stream_properties : public asf_object {
 	
 	const asf_video_stream_data* get_video_data () const
 	{
+		const asf_video_stream_data *result;
+
+		if (!is_video ())
+			return NULL;
+
 		if (size < sizeof (asf_video_stream_data) + sizeof (asf_stream_properties))
 			return NULL;
 			
-		return (const asf_video_stream_data*) (((char*) this) + sizeof (asf_stream_properties));
+		result = (const asf_video_stream_data*) (((char*) this) + sizeof (asf_stream_properties));
+
+		if (result->format_data_size + sizeof (asf_video_stream_data) + sizeof (asf_stream_properties) != size)
+			return NULL;
+
+		return result;
 	}
 };
 

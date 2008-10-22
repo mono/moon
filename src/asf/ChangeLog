@@ -1,5 +1,10 @@
 2008-10-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* asf-structures.h, asf-structures.h: Do some length checking in
+	  asf_video_stream_data and asf_stream_properties. Fixes #437425.
+
+2008-10-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* asf.cs: Include config.h in asf-generated.cpp, and if no validation
 	  method is implemented for an object type print a warning, not an
 	  error.
