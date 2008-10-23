@@ -109,7 +109,7 @@ class TextLayout {
 	void GetActualExtents (double *width, double *height);
 	//void GetLayoutExtents (double *width, double *height);
 	
-	void Render (cairo_t *cr, double x, double y, UIElement *item, TextLayoutHints *hints, Brush *default_fg, TextSelection *selection = NULL, int caret = -1);
+	void Render (cairo_t *cr, const Point &position, const Point &origin, TextLayoutHints *hints, Brush *default_fg, TextSelection *selection = NULL, int caret = -1);
 };
 
 #endif /* __LAYOUT_H__ */

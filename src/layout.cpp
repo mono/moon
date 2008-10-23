@@ -1209,7 +1209,7 @@ TextLayout::Layout (TextLayoutHints *hints)
 }
 
 static inline void
-RenderLine (cairo_t *cr, double x, double y, UIElement *item, TextLayoutHints *hints, TextLine *line, Brush *default_fg)
+RenderLine (cairo_t *cr, const Point &position, const Point &origin, TextLayoutHints *hints, TextLine *line, Brush *default_fg)
 {
 	TextFont *font = NULL;
 	TextDecorations deco;
@@ -1225,9 +1225,8 @@ RenderLine (cairo_t *cr, double x, double y, UIElement *item, TextLayoutHints *h
 	int i;
 	
 	// set y0 to the line's baseline (descend is a negative value)
-	y0 = y + line->height + line->descend;
-	
-	x0 = x;
+	y0 = position.y + line->height + line->descend;
+	x0 = position.x;
 	
 	segment = (TextSegment *) line->segments->First ();
 	
@@ -1248,8 +1247,7 @@ RenderLine (cairo_t *cr, double x, double y, UIElement *item, TextLayoutHints *h
 		else
 			fg = default_fg;
 		
-		Point p = item->GetOriginPoint ();
-		Rect area = Rect (p.x, p.y, segment->advance, font->Height ());
+		Rect area = Rect (origin.x, origin.y, segment->advance, font->Height ());
 		fg->SetupBrush (cr, area);
 		
 		if (!segment->path) {
@@ -1331,11 +1329,13 @@ RenderLine (cairo_t *cr, double x, double y, UIElement *item, TextLayoutHints *h
 }
 
 void
-TextLayout::Render (cairo_t *cr, double x, double y, UIElement *item, TextLayoutHints *hints, Brush *default_fg, TextSelection *selection, int caret)
+TextLayout::Render (cairo_t *cr, const Point &offset, const Point &origin, TextLayoutHints *hints, Brush *default_fg, TextSelection *selection, int caret)
 {
 	TextLine *line;
+	Point position;
 	double deltax;
-	double y1 = y;
+	
+	position.y = offset.y;
 	
 	Layout (hints);
 	
@@ -1360,8 +1360,9 @@ TextLayout::Render (cairo_t *cr, double x, double y, UIElement *item, TextLayout
 			break;
 		}
 		
-		RenderLine (cr, x + deltax, y1, item, hints, line, default_fg);
-		y1 += (double) line->height;
+		position.x = offset.x + deltax;
+		RenderLine (cr, position, origin, hints, line, default_fg);
+		position.y += (double) line->height;
 		
 		line = (TextLine *) line->next;
 	}

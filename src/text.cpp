@@ -489,18 +489,20 @@ void
 TextBlock::Paint (cairo_t *cr)
 {
 #if SL_2_0
-	Thickness *padding = GetPadding ();
 #endif
 	Brush *fg;
 	
 	if (!(fg = GetForeground ()))
 		fg = default_foreground ();
-	
+
+	Point offset = Point (0.0, 0.0);
 #if SL_2_0
-	layout->Render (cr, padding->left, padding->top, this, hints, fg);
-#else
-	layout->Render (cr, 0.0, 0.0, this, hints, fg);
+	Thickness *padding = GetPadding ();
+        offset.x = padding->left;
+	offset.y = padding->top;
 #endif
+
+	layout->Render (cr, offset, GetOriginPoint (), hints, fg);
 	
 	if (moonlight_flags & RUNTIME_INIT_SHOW_TEXTBOXES) {
 		cairo_set_source_rgba (cr, 0.0, 1.0, 0.0, 1.0);
