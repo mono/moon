@@ -94,7 +94,6 @@ Shape::Shape ()
 	stroke = NULL;
 	fill = NULL;
 	path = NULL;
-	origin = Point (0, 0);
 	cached_surface = NULL;
 	SetShapeFlags (UIElement::SHAPE_NORMAL);
 	cairo_matrix_init_identity (&stretch_transform);
@@ -1105,21 +1104,6 @@ Rectangle::OnPropertyChanged (PropertyChangedEventArgs *args)
 
 	Invalidate ();
 	NotifyListenersOfPropertyChange (args);
-}
-
-void
-Rectangle::GetSizeForBrush (cairo_t *cr, double *width, double *height)
-{
-	switch (GetStretch ()) {
-	case StretchUniform:
-		*width = *height = (extents.width < extents.height) ? extents.width : extents.height;
-		break;
-	case StretchUniformToFill:
-		*width = *height = (extents.width > extents.height) ? extents.width : extents.height;
-		break;
-	default:
-		return Shape::GetSizeForBrush (cr, width, height);
-	}
 }
 
 bool

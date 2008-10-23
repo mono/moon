@@ -44,7 +44,6 @@ class Shape : public FrameworkElement {
 	virtual ~Shape ();
 
 	Brush *stroke, *fill;
-	Point origin;
 	cairo_surface_t *cached_surface;
 	gint64 cached_size;
 	bool needs_clip;
@@ -116,7 +115,7 @@ class Shape : public FrameworkElement {
 	virtual void ComputeBounds ();
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	virtual Point GetTransformOrigin ();
-	virtual Point GetOriginPoint () { return origin; }
+	virtual Point GetOriginPoint () { return extents.GetTopLeft (); }
 	
 	Rect ComputeLargestRectangleBounds ();
 	
@@ -241,7 +240,6 @@ class Rectangle : public Shape {
 	virtual void BuildPath ();
 	virtual bool CanFill () { return true; }
 	
-	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	
 	bool GetRadius (double *rx, double *ry);
