@@ -1209,7 +1209,7 @@ TextLayout::Layout (TextLayoutHints *hints)
 }
 
 static inline void
-RenderLine (cairo_t *cr, const Point &position, const Point &origin, TextLayoutHints *hints, TextLine *line, Brush *default_fg)
+RenderLine (cairo_t *cr, const Point &origin, const Point &position, TextLayoutHints *hints, TextLine *line, Brush *default_fg)
 {
 	TextFont *font = NULL;
 	TextDecorations deco;
@@ -1329,7 +1329,7 @@ RenderLine (cairo_t *cr, const Point &position, const Point &origin, TextLayoutH
 }
 
 void
-TextLayout::Render (cairo_t *cr, const Point &offset, const Point &origin, TextLayoutHints *hints, Brush *default_fg, TextSelection *selection, int caret)
+TextLayout::Render (cairo_t *cr, const Point &origin, const Point &offset, TextLayoutHints *hints, Brush *default_fg, TextSelection *selection, int caret)
 {
 	TextLine *line;
 	Point position;
@@ -1361,7 +1361,7 @@ TextLayout::Render (cairo_t *cr, const Point &offset, const Point &origin, TextL
 		}
 		
 		position.x = offset.x + deltax;
-		RenderLine (cr, position, origin, hints, line, default_fg);
+		RenderLine (cr, origin, position, hints, line, default_fg);
 		position.y += (double) line->height;
 		
 		line = (TextLine *) line->next;

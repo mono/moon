@@ -1,3 +1,12 @@
+2008-10-23  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBox::Paint): Updated.
+
+	* text.cpp (TextBlock::Paint): Updated.
+
+	* layout.cpp (TextLayout::Render): Swapped origin & offset
+	arguments which feels more natural to me.
+
 2008-10-23  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* pipeline.cpp: (ASFDemuxer::ReadHeader): Don't allow video height or

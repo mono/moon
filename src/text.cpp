@@ -501,8 +501,8 @@ TextBlock::Paint (cairo_t *cr)
         offset.x = padding->left;
 	offset.y = padding->top;
 #endif
-
-	layout->Render (cr, offset, GetOriginPoint (), hints, fg);
+	
+	layout->Render (cr, GetOriginPoint (), offset, hints, fg);
 	
 	if (moonlight_flags & RUNTIME_INIT_SHOW_TEXTBOXES) {
 		cairo_set_source_rgba (cr, 0.0, 1.0, 0.0, 1.0);

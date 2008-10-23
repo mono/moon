@@ -355,7 +355,7 @@ TextBox::Paint (cairo_t *cr)
 	if (!(fg = GetForeground ()))
 		fg = default_foreground ();
 	
-	layout->Render (cr, Point (), GetOriginPoint (), hints, fg, &selection);
+	layout->Render (cr, GetOriginPoint (), Point (), hints, fg, &selection);
 }
 
 void
