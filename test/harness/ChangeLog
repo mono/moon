@@ -1,3 +1,8 @@
+2008-10-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* test-runner/ExternalProcess.cs: Dispose our processes when we're done
+	  with them.
+
 2008-10-17  Chris Toshok  <toshok@ximian.com>
 
 	* shocker/input.cpp: send a NumlockPress when we initialize the

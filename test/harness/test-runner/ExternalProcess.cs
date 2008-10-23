@@ -131,6 +131,8 @@ namespace MoonlightTests {
 		{
 			if (process_running && !process.HasExited)
 				process.Kill ();
+			
+			process.Dispose ();
 
 			if (Driver.SwallowStreams) {
 				stdout_thread.Abort ();
