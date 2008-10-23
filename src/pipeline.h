@@ -29,7 +29,7 @@
 #define CODEC_WMAV1 0x160
 #define CODEC_WMAV2 0x161
 
-#define MOONLIGHT_CODEC_ABI_VERSION 3
+#define MOONLIGHT_CODEC_ABI_VERSION 4
 typedef void (*register_codec) (int abi_version);
 
 /*
@@ -545,7 +545,6 @@ public:
 	int extra_data_size;
 	int codec_id;
 	guint64 duration; // 100-nanosecond units (pts)
-	gint32 msec_per_frame;
 	char *codec; // freed upon destruction
 	// The minimum amount of padding any other part of the pipeline needs for frames from this stream.
 	// Used by the demuxer when reading frames, ensures that there are at least min_padding extra bytes
@@ -974,7 +973,7 @@ protected:
 public:
 	IImageConverter *converter; // This stream has the ownership of the converter, it will be deleted upon destruction.
 	guint32 bits_per_sample;
-	guint32 msec_per_frame;
+	guint64 pts_per_frame; // Duration (in pts) of each frame. Set to 0 if unknown.
 	guint64 initial_pts;
 	guint32 height;
 	guint32 width;

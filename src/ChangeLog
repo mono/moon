@@ -1,3 +1,11 @@
+2008-10-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* pipeline.h, pipeline.cpp: Increase codec ABI version (IMediaStream
+	  changed size). IMediaStream: Remove msec_per_frame, it's already in
+	  VideoStream. VideoStream: make msec_per_frame be pts_per_frame to
+	  loose less precision.
+	* mplayer.cpp: Calculate advance frame timeout based on video fps.
+
 2008-10-22  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp (Surface::HandleUICrossing): disable the crossing

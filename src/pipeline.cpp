@@ -1247,8 +1247,10 @@ ASFDemuxer::ReadHeader ()
 				}
 				if (aesp != NULL) {
 					video->bit_rate = aesp->data_bitrate;
+					video->pts_per_frame = aesp->average_time_per_frame;
 				} else {
 					video->bit_rate = video->width*video->height;
+					video->pts_per_frame = 0;
 				} 
 			}
 		} else if (stream_properties->is_command ()) {
@@ -2299,7 +2301,6 @@ IMediaStream::IMediaStream (Media *media) : IMediaObject (media)
 	extra_data_size = 0;
 	extra_data = NULL;
 	
-	msec_per_frame = 0;
 	duration = 0;
 	
 	decoder = NULL;
@@ -2899,7 +2900,7 @@ VideoStream::VideoStream (Media *media) : IMediaStream (media)
 {
 	converter = NULL;
 	bits_per_sample = 0;
-	msec_per_frame = 0;
+	pts_per_frame = 0;
 	initial_pts = 0;
 	height = 0;
 	width = 0;

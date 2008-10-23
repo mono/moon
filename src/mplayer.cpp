@@ -639,7 +639,6 @@ MediaPlayer::AdvanceFrame ()
 			return false;
 		}
 		
-		// always decode the frame or we get glitches in the screen
 		frame = pkt->frame;
 		stream = frame->stream;
 		current_pts = frame->pts;
@@ -686,9 +685,9 @@ MediaPlayer::AdvanceFrame ()
 		
 		if (update && current_pts >= target_pts_start) {
 			if (!GetBit (SeekSynched)) {
-				LOG_MEDIAPLAYER ("MediaPlayer::AdvanceFrame (): We have now successfully synched with the audio after the seek, current_pts: %llu\n", current_pts);
+				SetBit (SeekSynched);
+				LOG_MEDIAPLAYER ("MediaPlayer::AdvanceFrame (): We have now successfully synched with the audio after the seek, current_pts: %llu, target_pts_start: %llu\n", MilliSeconds_FromPts (current_pts), MilliSeconds_FromPts (target_pts_start));
 			}
-			SetBit (SeekSynched);
 			// we are in sync (or ahead) of audio playback
 			break;
 		}
@@ -700,8 +699,10 @@ MediaPlayer::AdvanceFrame ()
 		}
 		
 		// we are lagging behind, drop this frame
+		LOG_MEDIAPLAYER_EX ("MediaPlayer::AdvanceFrame (), [SKIPPED] frame pts: %6llu ms, target pts: %6llu ms, diff: %+4lld\n", 
+				MilliSeconds_FromPts (frame->pts), MilliSeconds_FromPts (target_pts), 
+				(gint64) MilliSeconds_FromPts (frame->pts) - (gint64) MilliSeconds_FromPts (target_pts));
 #if DEBUG_ADVANCEFRAME
-		//printf ("MediaPlayer::AdvanceFrame (): skipped frame with pts %llu, target pts: %llu, diff: %lld, milliseconds: %lld\n", frame->pts, target_pts, target_pts - frame->pts, MilliSeconds_FromPts ((target_pts - frame->pts)));
 		skipped++;
 #endif
 		frame = NULL;
@@ -725,6 +726,10 @@ MediaPlayer::AdvanceFrame ()
 		if (fps > 0)
 			printf ("MediaPlayer::AdvanceFrame (): rendering pts %llu (target pts: %llu, current pts: %llu, skipped frames: %i, fps: %i, sps: %i, ms: %llu)\n", frame->pts, target_pts, current_pts, skipped, fps, sps, ms);
 #endif
+		LOG_MEDIAPLAYER_EX ("MediaPlayer::AdvanceFrame (), [RENDER]  frame pts: %6llu ms, target pts: %6llu ms, diff: %+4lld\n",
+				MilliSeconds_FromPts (frame->pts), MilliSeconds_FromPts (target_pts), 
+				(gint64) MilliSeconds_FromPts (frame->pts) - (gint64) MilliSeconds_FromPts (target_pts));
+	
 		RenderFrame (frame);
 		delete pkt;
 		
@@ -803,12 +808,24 @@ MediaPlayer::Play ()
 gint32
 MediaPlayer::GetTimeoutInterval ()
 {
+	gint32 result; // ms between timeouts
+	guint64 pts_per_frame = 0;
+	
 	if (HasVideo ()) {
-		// TODO: Calculate correct framerate (in the pipeline)
-		return MAX (video.stream->msec_per_frame, 1000 / 60);
+		pts_per_frame = video.stream->pts_per_frame;
+		if (pts_per_frame == 0) {
+			// If the stream doesn't know its frame rate, use a default of 60 fps
+			result = (gint32) (1000.0 / 60.0);
+		} else {
+			result = (gint32) ((double) TIMESPANTICKS_IN_SECOND/ (double) pts_per_frame);
+		}
 	} else {
-		return 33;
+		result = 33;
 	}
+
+	LOG_MEDIAPLAYER ("MediaPlayer::GetTimeoutInterval (): %i = %f fps, pts_per_frame: %llu\n", result, 1000.0 / result, pts_per_frame);
+
+	return result;
 }
 
 bool
