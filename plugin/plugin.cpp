@@ -1568,13 +1568,16 @@ PluginInstance::GetEnableFramerateCounter ()
 bool
 PluginInstance::GetEnableRedrawRegions ()
 {
-	return false;
+	return moonlight_flags & RUNTIME_INIT_SHOW_EXPOSE;
 }
 
 void
 PluginInstance::SetEnableRedrawRegions (bool value)
 {
-	// not implemented yet.
+	if (value)
+		moonlight_flags |= RUNTIME_INIT_SHOW_EXPOSE;
+	else
+		moonlight_flags &= ~RUNTIME_INIT_SHOW_EXPOSE;
 }
 
 bool
