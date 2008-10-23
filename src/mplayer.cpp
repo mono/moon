@@ -460,6 +460,12 @@ MediaPlayer::Initialize ()
 	audio_stream_count = 0;
 	height = 0;
 	width = 0;
+
+	frames_update_timestamp = 0;
+	rendered_frames_per_second = 0;
+	rendered_frames = 0;
+	dropped_frames_per_second = 0;
+	dropped_frames = 0;
 }
 
 void
@@ -543,6 +549,14 @@ MediaPlayer::RenderFrame (MediaFrame *frame)
 	SetBit (RenderedFrame);
 }
 
+#define LOG_RS(x)  \
+		printf ("MediaPlayer::AdvanceFrame (), %10s frame pts: %6llu ms, target pts: %6llu ms, diff: %+5lld, rendered fps: %5.2f, dropped fps: %5.2f, total: %5.2f\n", x, \
+			MilliSeconds_FromPts (frame->pts), \
+			MilliSeconds_FromPts (target_pts), \
+			(gint64) MilliSeconds_FromPts (frame->pts) - (gint64) MilliSeconds_FromPts (target_pts), \
+			rendered_frames_per_second, \
+			dropped_frames_per_second, \
+			dropped_frames_per_second + rendered_frames_per_second);
 
 bool
 MediaPlayer::AdvanceFrame ()
@@ -556,16 +570,10 @@ MediaPlayer::AdvanceFrame ()
 	guint64 target_pts_delta = MilliSeconds_ToPts (100);
 	bool update = false;
 	bool result = false;
+	guint64 now = 0;
 	
-#if DEBUG_ADVANCEFRAME
-	static int frames_per_second = 0;
-	static int skipped_per_second = 0;
-	static guint64 last_second_pts = 0;
-	int skipped = 0;
-	
-	printf ("MediaPlayer::AdvanceFrame () state: %i, current_pts = %llu, IsPaused: %i, IsSeeking: %i, VideoEnded: %i, AudioEnded: %i, HasVideo: %i, HasAudio: %i\n", 
+	LOG_MEDIAPLAYER_EX ("MediaPlayer::AdvanceFrame () state: %i, current_pts = %llu, IsPaused: %i, IsSeeking: %i, VideoEnded: %i, AudioEnded: %i, HasVideo: %i, HasAudio: %i\n", 
 		state, current_pts, IsPaused (), IsSeeking (), GetBit (VideoEnded), GetBit (AudioEnded), HasVideo (), HasAudio ());
-#endif
 
 	RemoveBit (LoadFramePending);
 	
@@ -699,44 +707,34 @@ MediaPlayer::AdvanceFrame ()
 		}
 		
 		// we are lagging behind, drop this frame
-		LOG_MEDIAPLAYER_EX ("MediaPlayer::AdvanceFrame (), [SKIPPED] frame pts: %6llu ms, target pts: %6llu ms, diff: %+4lld\n", 
-				MilliSeconds_FromPts (frame->pts), MilliSeconds_FromPts (target_pts), 
-				(gint64) MilliSeconds_FromPts (frame->pts) - (gint64) MilliSeconds_FromPts (target_pts));
-#if DEBUG_ADVANCEFRAME
-		skipped++;
-#endif
+		dropped_frames++;
+	
+		//LOG_RS ("[SKIPPED]");
+
 		frame = NULL;
 		delete pkt;
 	}
 	
 	if (update && frame && GetBit (SeekSynched)) {
-#if DEBUG_ADVANCEFRAME
-		int fps = 0, sps = 0;
-		guint64 ms = 0;
-		frames_per_second++;
-		skipped_per_second += skipped;
-		if (MilliSeconds_FromPts (target_pts - last_second_pts) > 1000) {
-			fps = frames_per_second;
-			sps = skipped_per_second;
-			frames_per_second = 0;
-			skipped_per_second = 0;
-			ms = MilliSeconds_FromPts (target_pts - last_second_pts);
-			last_second_pts = target_pts;
-		}
-		if (fps > 0)
-			printf ("MediaPlayer::AdvanceFrame (): rendering pts %llu (target pts: %llu, current pts: %llu, skipped frames: %i, fps: %i, sps: %i, ms: %llu)\n", frame->pts, target_pts, current_pts, skipped, fps, sps, ms);
-#endif
-		LOG_MEDIAPLAYER_EX ("MediaPlayer::AdvanceFrame (), [RENDER]  frame pts: %6llu ms, target pts: %6llu ms, diff: %+4lld\n",
-				MilliSeconds_FromPts (frame->pts), MilliSeconds_FromPts (target_pts), 
-				(gint64) MilliSeconds_FromPts (frame->pts) - (gint64) MilliSeconds_FromPts (target_pts));
-	
+		rendered_frames++;
+		//LOG_RS ("[RENDER]");
+
 		RenderFrame (frame);
-		delete pkt;
-		
-		return true;
+		result = true;
 	}
 	
 	delete pkt;
+
+	now = get_now ();
+	if (frames_update_timestamp == 0) {
+		frames_update_timestamp = now;
+	} else if ((now - frames_update_timestamp) > TIMESPANTICKS_IN_SECOND) {
+		double time_elapsed = (double) (now - frames_update_timestamp) / (double) TIMESPANTICKS_IN_SECOND;
+		dropped_frames_per_second = (double) dropped_frames / time_elapsed;
+		rendered_frames_per_second = (double) rendered_frames / time_elapsed;
+		dropped_frames = rendered_frames = 0;
+		frames_update_timestamp = now;
+	}
 		
 	return result;
 }

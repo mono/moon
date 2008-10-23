@@ -85,7 +85,14 @@ class MediaPlayer : public EventObject {
 	guint64 start_pts; // 100-nanosecond units (pts)
 	guint64 current_pts; // 100-nanosecond units (pts)
 	guint64 target_pts; // 100-nanosecond units (pts)
-	
+
+	// These variables are used to implement RenderedFramesPerSecond and DroppedFramesPerSecond
+	guint64 frames_update_timestamp;
+	guint32 dropped_frames;
+	guint32 rendered_frames;
+	double dropped_frames_per_second;
+	double rendered_frames_per_second;
+
 	bool LoadVideoFrame ();
 	void Initialize ();
 	void CheckFinished ();
@@ -178,6 +185,9 @@ class MediaPlayer : public EventObject {
 	void SetVolume (double volume);
 	
 	guint64 GetTargetPts ();
+
+	double GetRenderedFramesPerSecond () { return rendered_frames_per_second; }
+	double GetDroppedFramesPerSecond () { return dropped_frames_per_second; }
 	
 	virtual const char * GetTypeName () { return "MediaPlayer"; }
 };
