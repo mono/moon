@@ -848,7 +848,6 @@ MediaPlayer::Pause ()
 		return;
 	
 	SetState (Paused);
-	SetBit (SeekSynched);
 	
 	if (audio)
 		audio->Pause ();

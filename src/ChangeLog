@@ -1,5 +1,12 @@
 2008-10-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mplayer.cpp: Pause: Don't set the SeekSynched flag. This would cause
+	  fast-forwarding video when seeking to a position which hadn't been
+	  downloaded (since we automatically pause the video then). Fixes
+	  #435908.
+
+2008-10-23  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* mplayer.h, mplayer.cpp: Implement RenderedFramesPerSecond and
 	  DroppedFramesPerSecond. Only in SL 2.0, but very useful for
 	  debugging 1.0 too.
