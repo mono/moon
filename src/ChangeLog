@@ -1,3 +1,10 @@
+2008-10-23  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* pipeline.cpp: (ASFDemuxer::ReadHeader): Don't allow video height or
+	width over 2048 pixels since this is likely to be corrupted values.
+	* pipeline.h: Define MAX_VIDEO_[HEIGHT|WIDTH] to 2048 (I'm sure that
+	someday people will laugh at me for proposing such a small value)
+
 2008-10-23  Larry Ewing  <lewing@novell.com>
 
 	* layout.cpp, layout.h: Change the Render api to drop the uielement argument. 

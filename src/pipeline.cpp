@@ -1235,6 +1235,16 @@ ASFDemuxer::ReadHeader ()
 				if (bmp != NULL) {
 					video->width = bmp->image_width;
 					video->height = bmp->image_height;
+
+					// note: both height and width are unsigned
+					if ((video->height > MAX_VIDEO_HEIGHT) || (video->width > MAX_VIDEO_WIDTH)) {
+						result = MEDIA_INVALID_STREAM;
+						Media::Warning (result, 
+							"Video stream size (width: %d, height: %d) outside limits (%d, %d)", 
+							video->height, video->width, MAX_VIDEO_HEIGHT, MAX_VIDEO_WIDTH);
+						goto failure;
+					}
+
 					video->bits_per_sample = bmp->bits_per_pixel;
 					video->codec_id = bmp->compression_id;
 					video->extra_data_size = bmp->get_extra_data_size ();
