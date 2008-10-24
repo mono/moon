@@ -228,7 +228,7 @@ dnl Cairo checks
 dnl
 AC_ARG_WITH(cairo,[  --with-cairo=embedded,system   Enable linking against system cairo ],[],[with_cairo=embedded])
 if test x$with_cairo = xembedded; then
-  ac_configure_args="$ac_configure_args --with-pic=yes --disable-pdf --disable-svg --disable-ps --disable-png"
+  ac_configure_args="$ac_configure_args --with-pic=yes --disable-pdf --disable-svg --disable-ps --disable-png --disable-xcb"
   AC_CONFIG_SUBDIRS([pixman cairo])
 
   # hackish but I couldn't get AC_EGREP_HEADER to work with our embedded cairo :(
