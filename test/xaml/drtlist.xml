@@ -512,6 +512,7 @@
 	inputFile="test-shape-rectangle.xaml"
 	masterFile10="../harness/masters/test-shape-rectangleMaster.png"
 	categories="rectangle"
+	knownFailure="true"
    />
    <Test id="112"
 	inputFile="test-shape-styles.xaml"
@@ -603,10 +604,6 @@
    <Test id="133"
 	inputFile="test-directory-in-zip.html"
 	masterFile10="../harness/masters/test-directory-in-zip.htmlMaster.png"
-   />
-   <Test id="139"
-	inputFile="test-empty-element-source.html"
-	masterFile10="../harness/masters/test-empty-element-source.htmlMaster.png"
    />
    <Test id="134"
 	inputFile="test-geometry-transform.xaml"
