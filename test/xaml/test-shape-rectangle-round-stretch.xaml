@@ -1,0 +1,37 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007">
+<!-- default == Fill -->
+	<Rectangle Stroke="Red"		RadiusX="5" RadiusY="5" Canvas.Left="10" Canvas.Top="10" Width="10" Height="20" />
+	<Rectangle Stroke="Orange"	RadiusX="5" RadiusY="5" Canvas.Left="22" Canvas.Top="10" Width="10" Height="20" />
+	<Rectangle Stroke="Yellow"	RadiusX="5" RadiusY="5" Canvas.Left="34" Canvas.Top="10" Width="10" Height="20" />
+	<Rectangle Stroke="Green"	RadiusX="5" RadiusY="5" Canvas.Left="46" Canvas.Top="10" Width="10" Height="20" />
+	<Rectangle Stroke="Blue"	RadiusX="5" RadiusY="5" Canvas.Left="58" Canvas.Top="10" Width="10" Height="20" />
+	<Rectangle Stroke="Purple"	RadiusX="5" RadiusY="5" Canvas.Left="70" Canvas.Top="10" Width="10" Height="20" />
+
+	<Rectangle Stroke="Red"		RadiusX="5" RadiusY="5" Canvas.Left="10" Canvas.Top="32" Width="10" Height="20" Stretch="None"/>
+	<Rectangle Stroke="Orange"	RadiusX="5" RadiusY="5" Canvas.Left="22" Canvas.Top="32" Width="10" Height="20" Stretch="None"/>
+	<Rectangle Stroke="Yellow"	Canvas.Left="34" Canvas.Top="32" Width="10" Height="20" Stretch="None"/>
+	<Rectangle Stroke="Green"	Canvas.Left="46" Canvas.Top="32" Width="10" Height="20" Stretch="None"/>
+	<Rectangle Stroke="Blue"	Canvas.Left="58" Canvas.Top="32" Width="10" Height="20" Stretch="None"/>
+	<Rectangle Stroke="Purple"	Canvas.Left="70" Canvas.Top="32" Width="10" Height="20" Stretch="None"/>
+
+	<Rectangle Stroke="Red"		Canvas.Left="10" Canvas.Top="54" Width="10" Height="20" Stretch="Fill"/>
+	<Rectangle Stroke="Orange"	Canvas.Left="22" Canvas.Top="54" Width="10" Height="20" Stretch="Fill"/>
+	<Rectangle Stroke="Yellow"	Canvas.Left="34" Canvas.Top="54" Width="10" Height="20" Stretch="Fill"/>
+	<Rectangle Stroke="Green"	Canvas.Left="46" Canvas.Top="54" Width="10" Height="20" Stretch="Fill"/>
+	<Rectangle Stroke="Blue"	Canvas.Left="58" Canvas.Top="54" Width="10" Height="20" Stretch="Fill"/>
+	<Rectangle Stroke="Purple"	Canvas.Left="70" Canvas.Top="54" Width="10" Height="20" Stretch="Fill"/>
+
+	<Rectangle Stroke="Red"		Canvas.Left="10" Canvas.Top="76" Width="10" Height="20" Stretch="Uniform"/>
+	<Rectangle Stroke="Orange"	Canvas.Left="22" Canvas.Top="76" Width="10" Height="20" Stretch="Uniform"/>
+	<Rectangle Stroke="Yellow"	Canvas.Left="34" Canvas.Top="76" Width="10" Height="20" Stretch="Uniform"/>
+	<Rectangle Stroke="Green"	Canvas.Left="46" Canvas.Top="76" Width="10" Height="20" Stretch="Uniform"/>
+	<Rectangle Stroke="Blue"	Canvas.Left="58" Canvas.Top="76" Width="10" Height="20" Stretch="Uniform"/>
+	<Rectangle Stroke="Purple"	Canvas.Left="70" Canvas.Top="76" Width="10" Height="20" Stretch="Uniform"/>
+
+	<Rectangle Stroke="Red"		Canvas.Left="10" Canvas.Top="98" Width="10" Height="20" Stretch="UniformToFill"/>
+	<Rectangle Stroke="Orange"	RadiusX="5" RadiusY="5" Canvas.Left="22" Canvas.Top="98" Width="10" Height="20" Stretch="UniformToFill"/>
+	<Rectangle Stroke="Yellow"	RadiusX="5" RadiusY="5" Canvas.Left="34" Canvas.Top="98" Width="10" Height="20" Stretch="UniformToFill"/>
+	<Rectangle Stroke="Green"	RadiusX="5" RadiusY="5" Canvas.Left="46" Canvas.Top="98" Width="10" Height="20" Stretch="UniformToFill"/>
+	<Rectangle Stroke="Blue"	RadiusX="5" RadiusY="5" Canvas.Left="58" Canvas.Top="98" Width="10" Height="20" Stretch="UniformToFill"/>
+	<Rectangle Stroke="Purple"	RadiusX="5" RadiusY="5" Canvas.Left="70" Canvas.Top="98" Width="10" Height="20" Stretch="UniformToFill"/>
+</Canvas>

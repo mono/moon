@@ -138,14 +138,17 @@
    <Test id="28"
 	inputFile="test-imagebrush-opacity.xaml"
 	masterFile10="../harness/masters/test-imagebrush-opacityMaster.png"
+	categories="imagebrush,brush"
    />
    <Test id="29"
 	inputFile="test-imagebrush-transform.xaml"
 	masterFile10="../harness/masters/test-imagebrush-transformMaster.png"
+	categories="imagebrush,brush"
    />
    <Test id="30"
 	inputFile="test-imagebrush.xaml"
 	masterFile10="../harness/masters/test-imagebrushMaster.png"
+	categories="imagebrush,brush"
    />
    <Test id="31"
 	inputFile="test-inkpresenter-drawingattributes.xaml"
@@ -962,18 +965,18 @@
 	 masterFile10="None"
 	 knownFailure="true"
 	 />
-   <Test id="206"
+   <Test id="10206"
 	inputFile="test-clip-fillrule.xaml"
 	masterFile10="../harness/masters/test-clip-fillruleMaster.png"
 	categories="clip,moonbuilder"
    />
-   <Test id="207"
+   <Test id="10207"
 	inputFile="test-clip-range.xaml"
 	masterFile10="../harness/masters/test-clip-rangeMaster.png"
 	categories="clip,moonbuilder"
 	knownFailure="True"
    />
-   <Test id="208"
+   <Test id="10208"
 	inputFile="test-toplevel-canvas-events.html"
 	masterFile10="None"
 	categories="moonbuilder"
@@ -981,10 +984,20 @@
 	knownFailureReason="We don't enforce that only top-level canvases can have keyup/down got/lostfocus event handlers"
 	timeout="5000"
    />
-   <Test id="209"
+   <Test id="10209"
 	inputFile="test-event-argcount.html"
 	masterFile10="None"
 	categories="moonbuilder"
 	timeout="120000"
    />
+   <Test id="10210"
+	inputFile="test-shape-rectangle-round-stretch.xaml"
+	masterFile10="../harness/masters/test-shape-rectangle-round-stretchMaster.png"
+	categories="stretch"
+   />
+   <Test id="10211"
+	inputFile="test-shape-rectangle-imagebrush-stretch.xaml"
+	masterFile10="../harness/masters/test-shape-rectangle-imagebrush-stretchMaster.png"
+	categories="imagebrush,stretch"
+   />	 
 </DRTList>
