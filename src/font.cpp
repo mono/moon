@@ -24,6 +24,7 @@
 #include <dirent.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <ctype.h>
 
 #include "zip/unzip.h"
 #include "moon-path.h"
@@ -248,30 +249,68 @@ fc_stretch (FontStretches stretch)
 }
 
 
+typedef struct _StyleToken {
+	struct _StyleToken *next;
+	const char *str;
+	size_t len;
+} StyleToken;
+
 static struct {
 	const char *name;
+	size_t len;
 	int value;
 } style_weights[] = {
-	// FIXME: are these strings all correct (e.g. spaces vs no spaces)?
-	{ "Ultra Light", FC_WEIGHT_ULTRALIGHT },
-	{ "Light",       FC_WEIGHT_LIGHT      },
-	{ "Semi Bold",   FC_WEIGHT_DEMIBOLD   },
-	{ "Ultra Bold",  FC_WEIGHT_ULTRABOLD  },
-	{ "Medium",      FC_WEIGHT_MEDIUM     },
-	{ "Bold",        FC_WEIGHT_BOLD       },
-	{ "Black",       FC_WEIGHT_BLACK      }
+	{ "UltraLight", 10, FC_WEIGHT_ULTRALIGHT },
+	{ "ExtraLight", 10, FC_WEIGHT_EXTRALIGHT },
+	{ "Light",       5, FC_WEIGHT_LIGHT      },
+	{ "Regular",     7, FC_WEIGHT_REGULAR    },
+	{ "DemiBold",    8, FC_WEIGHT_DEMIBOLD   },
+	{ "SemiBold",    8, FC_WEIGHT_SEMIBOLD   },
+	{ "ExtraBold",   9, FC_WEIGHT_EXTRABOLD  },
+	{ "UltraBold",   9, FC_WEIGHT_ULTRABOLD  },
+	{ "Medium",      6, FC_WEIGHT_MEDIUM     },
+	{ "Bold",        4, FC_WEIGHT_BOLD       },
+	{ "Black",       5, FC_WEIGHT_BLACK      }
 };
 
 static int
-style_weight_parse (const char *style)
+style_weight_parse (const StyleToken *tokens)
 {
+	const StyleToken *token = tokens;
+	const StyleToken *prev = NULL;
 	unsigned int i;
 	
-	if (style) {
+	while (token) {
+		if (token->len == 5 && !g_ascii_strncasecmp (token->str, "Light", 5)) {
+			if (prev && prev->len == 5) {
+				if (!g_ascii_strncasecmp (prev->str, "Extra", 5))
+					return FC_WEIGHT_EXTRALIGHT;
+				
+				if (!g_ascii_strncasecmp (prev->str, "Ultra", 5))
+					return FC_WEIGHT_ULTRALIGHT;
+			}
+			
+			return FC_WEIGHT_LIGHT;
+		} else if (token->len == 4 && !g_ascii_strncasecmp (token->str, "Bold", 4)) {
+			if (prev && prev->len == 5) {
+				if (!g_ascii_strncasecmp (prev->str, "Extra", 5))
+					return FC_WEIGHT_EXTRABOLD;
+				
+				if (!g_ascii_strncasecmp (prev->str, "Ultra", 5))
+					return FC_WEIGHT_ULTRABOLD;
+			}
+			
+			return FC_WEIGHT_BOLD;
+		}
+		
 		for (i = 0; i < G_N_ELEMENTS (style_weights); i++) {
-			if (strstr (style, style_weights[i].name))
+			if (token->len == style_weights[i].len &&
+			    !g_ascii_strncasecmp (style_weights[i].name, token->str, token->len))
 				return style_weights[i].value;
 		}
+		
+		prev = token;
+		token = token->next;
 	}
 	
 	return FC_WEIGHT_NORMAL;
@@ -279,29 +318,73 @@ style_weight_parse (const char *style)
 
 static struct {
 	const char *name;
+	size_t len;
 	int value;
 } style_widths[] = {
-	// FIXME: are these strings all correct (e.g. spaces vs no spaces, Cond vs Condensed)?
-	{ "Ultra Condensed", FC_WIDTH_ULTRACONDENSED },
-	{ "Extra Condensed", FC_WIDTH_EXTRACONDENSED },
-	{ "Semi Condensed",  FC_WIDTH_SEMICONDENSED  },
-	{ "Condensed",       FC_WIDTH_CONDENSED      },
-	{ "Ultra Expanded",  FC_WIDTH_ULTRAEXPANDED  },
-	{ "Extra Expanded",  FC_WIDTH_EXTRAEXPANDED  },
-	{ "Semi Expanded",   FC_WIDTH_SEMIEXPANDED   },
-	{ "Expanded",        FC_WIDTH_EXPANDED       }
+	{ "UltraCondensed", 14, FC_WIDTH_ULTRACONDENSED },
+	{ "ExtraCondensed", 14, FC_WIDTH_EXTRACONDENSED },
+	{ "SemiCondensed",  13, FC_WIDTH_SEMICONDENSED  },
+	{ "Condensed",       9, FC_WIDTH_CONDENSED      },
+	{ "UltraExpanded",  13, FC_WIDTH_ULTRAEXPANDED  },
+	{ "ExtraExpanded",  13, FC_WIDTH_EXTRAEXPANDED  },
+	{ "SemiExpanded",   12, FC_WIDTH_SEMIEXPANDED   },
+	{ "Expanded",        8, FC_WIDTH_EXPANDED       }
+};
+
+static struct {
+	const char *name;
+	size_t len;
+	int value;
+} style_widths_condensed[] = {
+	{ "Ultra", 5, FC_WIDTH_ULTRACONDENSED },
+	{ "Extra", 5, FC_WIDTH_EXTRACONDENSED },
+	{ "Semi",  4, FC_WIDTH_SEMICONDENSED  }
+};
+
+static struct {
+	const char *name;
+	size_t len;
+	int value;
+} style_widths_expanded[] = {
+	{ "Ultra", 5, FC_WIDTH_ULTRAEXPANDED },
+	{ "Extra", 5, FC_WIDTH_EXTRAEXPANDED },
+	{ "Semi",  4, FC_WIDTH_SEMIEXPANDED  }
 };
 
 static int
-style_width_parse (const char *style)
+style_width_parse (const StyleToken *tokens)
 {
+	const StyleToken *token = tokens;
+	const StyleToken *prev = NULL;
 	unsigned int i;
 	
-	if (style) {
+	while (token) {
+		if (token->len == 9 && !g_ascii_strncasecmp (token->str, "Condensed", 9)) {
+			for (i = 0; prev && i < G_N_ELEMENTS (style_widths_condensed); i++) {
+				if (prev->len == style_widths_condensed[i].len &&
+				    !g_ascii_strncasecmp (style_widths_condensed[i].name, prev->str, prev->len))
+					return style_widths_condensed[i].value;
+			}
+			
+			return FC_WIDTH_CONDENSED;
+		} else if (token->len == 8 && !g_ascii_strncasecmp (token->str, "Expanded", 8)) {
+			for (i = 0; prev && i < G_N_ELEMENTS (style_widths_expanded); i++) {
+				if (prev->len == style_widths_expanded[i].len &&
+				    !g_ascii_strncasecmp (style_widths_expanded[i].name, prev->str, prev->len))
+					return style_widths_expanded[i].value;
+			}
+			
+			return FC_WIDTH_EXPANDED;
+		}
+		
 		for (i = 0; i < G_N_ELEMENTS (style_widths); i++) {
-			if (strstr (style, style_widths[i].name))
+			if (token->len == style_widths[i].len &&
+			    !g_ascii_strncasecmp (style_widths[i].name, token->str, token->len))
 				return style_widths[i].value;
 		}
+		
+		prev = token;
+		token = token->next;
 	}
 	
 	return FC_WIDTH_NORMAL;
@@ -309,22 +392,27 @@ style_width_parse (const char *style)
 
 static struct {
 	const char *name;
+	size_t len;
 	int value;
 } style_slants[] = {
-	{ "Oblique", FC_SLANT_OBLIQUE },
-	{ "Italic",  FC_SLANT_ITALIC  }
+	{ "Oblique", 7, FC_SLANT_OBLIQUE },
+	{ "Italic",  6, FC_SLANT_ITALIC  }
 };
 
 static int
-style_slant_parse (const char *style)
+style_slant_parse (const StyleToken *tokens)
 {
+	const StyleToken *token = tokens;
 	unsigned int i;
 	
-	if (style) {
+	while (token) {
 		for (i = 0; i < G_N_ELEMENTS (style_slants); i++) {
-			if (strstr (style, style_slants[i].name))
+			if (token->len == style_slants[i].len &&
+			    !g_ascii_strncasecmp (style_slants[i].name, token->str, token->len))
 				return style_slants[i].value;
 		}
+		
+		token = token->next;
 	}
 	
 	return FC_SLANT_ROMAN;
@@ -333,9 +421,43 @@ style_slant_parse (const char *style)
 static void
 style_info_parse (const char *style, FontStyleInfo *info)
 {
-	info->weight = style_weight_parse (style);
-	info->width = style_width_parse (style);
-	info->slant = style_slant_parse (style);
+	StyleToken *tokens = NULL, *token, *tail;
+	register const char *inptr = style;
+	const char *start;
+	
+	if (style) {
+		tail = (StyleToken *) &tokens;
+		while (*inptr) {
+			while (*inptr && isspace ((int) ((unsigned char) *inptr)))
+				inptr++;
+			
+			if (*inptr == '\0')
+				break;
+			
+			start = inptr;
+			while (*inptr && !isspace ((int) ((unsigned char) *inptr)))
+				inptr++;
+			
+			token = new StyleToken ();
+			token->len = inptr - start;
+			token->str = start;
+			token->next = NULL;
+			
+			tail->next = token;
+			tail = token;
+		}
+	}
+	
+	info->weight = style_weight_parse (tokens);
+	info->width = style_width_parse (tokens);
+	info->slant = style_slant_parse (tokens);
+	
+	token = tokens;
+	while (token) {
+		tokens = token->next;
+		delete token;
+		token = tokens;
+	}
 }
 
 #ifdef FONT_DEBUG

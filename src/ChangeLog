@@ -1,3 +1,12 @@
+2008-10-24  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp (style_info_parse): Tokenize the style string so that
+	the individual sub-parsers can be a bit smarter than than
+	strstr().
+	(style_width_parse): Made smarter - now handles lwsp between
+	multi-word width specifiers (or no lwsp at all).
+	(style_weight_parse): Same.
+
 2008-10-23  Larry Ewing  <lewing@novell.com>
 
 	* media.cpp: remove compute bounds since it mirrors
