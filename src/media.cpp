@@ -256,14 +256,6 @@ MediaBase::GetSource ()
 	return value ? value->AsString () : NULL;
 }
 
-void
-MediaBase::ComputeBounds ()
-{
-        extents = Rect (0,0, GetWidth (), GetHeight ());
-	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
-}
-
-
 //
 // MediaElement
 //

@@ -1,5 +1,10 @@
 2008-10-23  Larry Ewing  <lewing@novell.com>
 
+	* media.cpp: remove compute bounds since it mirrors
+	FrameworkElement now.
+
+2008-10-23  Larry Ewing  <lewing@novell.com>
+
 	* shape.cpp, shape.h: remove origin fixup GetOriginPoint and
 	GetSizeForBrush.
 

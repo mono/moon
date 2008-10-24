@@ -144,8 +144,6 @@ class MediaBase : public FrameworkElement {
 	
 	virtual ~MediaBase ();
 	
-	virtual void ComputeBounds ();
-	
 	virtual void DownloaderFailed (EventArgs *args);
 	virtual void DownloaderComplete ();
 	void DownloaderAbort ();
