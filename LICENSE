@@ -22,12 +22,6 @@
 	GPL code, in those cases, if the library is built with those
 	bits the code is covered under those licenses.
 
-* Chiron Source Code (tools/chiron)
-
-	The Chiron Source code comes from the Silverlight Dynamic
-	Language SDK and is licensed under the terms of the Microsoft
-	Public License (MS-PL).
-
 * Microsoft Silverlight Controls (class/Microsoft.SilverlightControls)
 
 	This code is taken from Microsoft's web site, and contains the
@@ -37,7 +31,9 @@
 	Public License (MS-PL).
 
 * Moonlight managed source code (class/* other than
-  Microsoft.SilverlightControls)
+                                 Microsoft.SilverlightControls)
+  and end-user tools (tools/mopen, tools/mxap, tools/svg2xml,
+      	              tools/xaml2html, tools/xamlg)
 
 	Unless explicitly stated, this code is licensed under the
 	terms of the MIT license, the text of which is duplicated below:
@@ -63,4 +59,4 @@
 
 	If used outside of moonlight (with no LICENSE file which
 	contains the text above), please duplicate this license block
-	in the actual .cs file.
+	in the actual source files.
