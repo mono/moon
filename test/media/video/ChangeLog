@@ -1,5 +1,10 @@
 2008-10-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* drtlist.xml: Add the 'mediaserver' category to tests which require
+	  the media server.
+
+2008-10-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* test-video-only-seek.html: Delay calling Play on the MediaElement
 	  until the MediaElement has had a chance to load the media.
 
