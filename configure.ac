@@ -524,7 +524,7 @@ if test -z ${MOONLIGHT_CODEC_AVI_VERSION}; then
         AC_ERROR(The Moonlight Pipeline ABI could not be determined)
 fi
 
-AC_DEFINE_UNQUOTED([CODEC_LIBRARY_NAME],["mscodecs-$OSTYPE-$ARCH-$MOONLIGHT_CODEC_AVI_VERSION-$GCC_ABI_VERSION.so"],[The encoded codec libname for this build])
+AC_DEFINE_UNQUOTED([CODEC_LIBRARY_NAME],["silverlight-media-pack-$OSTYPE-$ARCH-$MOONLIGHT_CODEC_AVI_VERSION-$GCC_ABI_VERSION.so"],[The encoded codec libname for this build])
 
 
 AGVIEWER_CFLAGS="$GTK_CFLAGS $DBUS_GLIB_CFLAGS $XULRUNNER_CFLAGS"
