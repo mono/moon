@@ -951,9 +951,26 @@ Media::ClearQueue ()
 {
 	LOG_PIPELINE ("Media::ClearQueue ().\n");
 	if (queued_requests != NULL) {
+		List::Node *next;
+		List::Node *current;
+
 		pthread_mutex_lock (&queue_mutex);
-		queued_requests->Clear (true);
+		current = queued_requests->First ();
+		queued_requests->Clear (false);
 		pthread_mutex_unlock (&queue_mutex);
+		
+		// We have to delete the list nodes with the
+		// queue mutex unlocked, due to refcounting
+		// (our node's (MediaWork) dtor will cause unrefs,
+		// which may cause other dtors to be called,
+		// eventually ending up calling Dispose on this
+		// Media instance, which will try to lock again
+		// and therefore deadlock)
+		while (current != NULL) {
+			next = current->next;
+			delete current;
+			current = next;
+		}
 	}
 }
 

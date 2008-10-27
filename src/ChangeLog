@@ -1,3 +1,10 @@
+2008-10-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* pipeline.cpp: Media::ClearQueue: delete the list nodes with the
+	  queue_mutex unlocked, since the node dtor may cause unrefs, causing
+	  other dtors to be called, and it may all end up in Media::Dispose
+	  which will then try to lock the mutex again (and deadlock).
+
 2008-10-24  Jeffrey Stedfast  <fejj@novell.com>
 
 	* font.cpp (style_info_parse): Tokenize the style string so that
