@@ -1,5 +1,12 @@
 2008-10-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mplayer.cpp: AdvanceFrame/GetCurrentPts: if the audio isn't playing
+	  we should just work as if there's no audio at all. The video might
+	  play after the audio has stopped if the a/v streams have different
+	  length.
+
+2008-10-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* pipeline.cpp: Media::ClearQueue: delete the list nodes with the
 	  queue_mutex unlocked, since the node dtor may cause unrefs, causing
 	  other dtors to be called, and it may all end up in Media::Dispose

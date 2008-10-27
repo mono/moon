@@ -589,9 +589,10 @@ MediaPlayer::AdvanceFrame ()
 	if (!HasVideo ())
 		return false;
 
-	if (HasAudio ()) {
-		if (audio->GetState () != AudioPlaying)
-			return false;
+	// If the audio isn't playing, there might be slight length-difference between
+	// audio and video streams (the audio is shorted and finished earlier for instance)
+	// Treat this case as if there's no audio at all.
+	if (HasAudio () && audio->GetState () == AudioPlaying) {
 		// use target_pts as set by audio thread
 		target_pts = GetTargetPts ();	
 		if (target_pts == G_MAXUINT64) {
@@ -862,7 +863,7 @@ MediaPlayer::GetTargetPts ()
 
 	guint64 result;
 	
-	if (HasAudio ())
+	if (HasAudio () && audio->GetState () == AudioPlaying)
 		result = audio->GetCurrentPts ();
 	else
 		result = target_pts;
