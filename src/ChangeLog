@@ -1,5 +1,12 @@
 2008-10-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mplayer.cpp: LoadVideoFrame: show the frame if the end pts of the
+	  frame is above the target pts (previously we only showed the frame
+	  if the start pts was above the target pts, causing us to show one
+	  frame too late). Fixes test-asf-demuxer-shuffled-payloads.html.
+
+2008-10-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* media.cpp: MediaElement::Play: Call Play when in Opening state too.
 
 2008-10-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 

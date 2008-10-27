@@ -766,7 +766,7 @@ MediaPlayer::LoadVideoFrame ()
 	
 	LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (), packet pts: %llu, target pts: %llu\n", packet->frame->pts, GetTargetPts ());
 
-	if (packet->frame->pts >= GetTargetPts () && packet->frame->buflen > 0) {
+	if (packet->frame->pts + video.stream->pts_per_frame >= GetTargetPts () && packet->frame->buflen > 0) {
 		RemoveBit (LoadFramePending);
 		RenderFrame (packet->frame);
 		element->Invalidate ();
