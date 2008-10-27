@@ -63,21 +63,10 @@ Stroke::Stroke ()
 {
 	SetValue (Stroke::StylusPointsProperty, Value::CreateUnref (new StylusPointCollection ()));
 	SetValue (Stroke::DrawingAttributesProperty, Value::CreateUnref (new DrawingAttributes ()));
-
-	bounds = Rect (0,0,0,0);
-	old_bounds = Rect (0,0,0,0);
-}
-
-Rect
-Stroke::GetBounds ()
-{
-	return bounds;
-}
-
-Rect
-Stroke::GetOldBounds ()
-{
-	return old_bounds;
+	
+	dirty = Rect ();
+	bounds = Rect ();
+	old_bounds = Rect ();
 }
 
 bool
@@ -85,8 +74,8 @@ Stroke::HitTestEndcapSegment (Point c,
 			      double w, double h,
 			      Point p1, Point p2)
 {
-  Point op1 = p1;
-  Point op2 = p2;
+	Point op1 = p1;
+	Point op2 = p2;
 
 #if DEBUG_HITTEST
 	fprintf (stderr, "HitTestEndcapSegment: (%g,%g / %g, %g) hits segment (%g,%g  - %g,%g)?\n",
@@ -555,8 +544,8 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 	return false;
 }
 
-void
-Stroke::AddStylusPointToBounds (StylusPoint *stylus_point)
+Rect
+Stroke::AddStylusPointToBounds (StylusPoint *stylus_point, const Rect &bounds)
 {
 	DrawingAttributes *da = GetDrawingAttributes ();
 	double height, width;
@@ -570,32 +559,33 @@ Stroke::AddStylusPointToBounds (StylusPoint *stylus_point)
 			height += 4.0;
 			width += 4.0;
 		}
-	}
-	else {
+	} else {
 		height = width = 6.0;
-
 	}
-	bounds = bounds.Union (Rect (stylus_point->GetX () - width / 2,
-				     stylus_point->GetY () - height / 2,
-				     width, height));
+	
+	return bounds.Union (Rect (stylus_point->GetX () - width / 2,
+				   stylus_point->GetY () - height / 2,
+				   width, height));
 }
 
 void
 Stroke::ComputeBounds ()
 {
-	bounds = Rect (0,0,0,0);
-
+	bounds = Rect ();
+	
 	StylusPointCollection *spc = GetStylusPoints ();
 	if (!spc)
 		return;
 	
 	for (int i = 0; i < spc->GetCount (); i++)
-		AddStylusPointToBounds (spc->GetValueAt (i)->AsStylusPoint ());
+		bounds = AddStylusPointToBounds (spc->GetValueAt (i)->AsStylusPoint (), bounds);
 }
 
 void
 Stroke::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
+	Rect point;
+	
 	if (col != GetStylusPoints ()) {
 		DependencyObject::OnCollectionChanged (col, args);
 		return;
@@ -605,12 +595,25 @@ Stroke::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 	
 	switch (args->action) {
 	case CollectionChangedActionAdd:
-		AddStylusPointToBounds (args->new_value->AsStylusPoint ());
+		// add previous point to dirty
+		if (args->index > 0)
+			dirty = AddStylusPointToBounds (col->GetValueAt (args->index - 1)->AsStylusPoint (), dirty);
+		
+		// add new point to dirty
+		dirty = AddStylusPointToBounds (args->new_value->AsStylusPoint (), dirty);
+		
+		// add next point to dirty
+		if (args->index + 1 < col->GetCount ())
+			dirty = AddStylusPointToBounds (col->GetValueAt (args->index + 1)->AsStylusPoint (), dirty);
+		
+		// update official bounds
+		bounds = bounds.Union (dirty);
 		break;
 	case CollectionChangedActionRemove:
 	case CollectionChangedActionReplace:
 	case CollectionChangedActionCleared:
 		ComputeBounds ();
+		dirty = dirty.Union (old_bounds.Union (bounds));
 		break;
 	case CollectionChangedActionClearing:
 		// nothing needed here.
@@ -631,7 +634,9 @@ Stroke::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Propert
 	old_bounds = bounds;
 
 	ComputeBounds ();
-
+	
+	dirty = old_bounds.Union (bounds);
+	
 	NotifyListenersOfPropertyChange (Stroke::StylusPointsProperty);
 }
 
@@ -805,7 +810,9 @@ InkPresenter::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 		} else {
 			DrawingAttributes::RenderWithoutDrawingAttributes (cr, spc);
 		}
-	}		
+		
+		stroke->ResetDirty ();
+	}
 
 	// Chain up in front_to_back mode since we've alread rendered content
 	UIElement::PostRender (cr, region, true);
@@ -890,8 +897,7 @@ InkPresenter::OnCollectionItemChanged (Collection *col, DependencyObject *obj, P
 		return;
 	}
 	
-	Invalidate (stroke->GetOldBounds ().Transform (&absolute_xform));
-	Invalidate (stroke->GetBounds ().Transform (&absolute_xform));
+	Invalidate (stroke->GetDirty ().Transform (&absolute_xform));
 	UpdateBounds ();
 }
 

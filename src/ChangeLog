@@ -1,3 +1,17 @@
+2008-10-27  Jeffrey Stedfast  <fejj@novell.com>
+
+	Performance optimization patch for bug #409793
+
+	* stylus.cpp (Stroke::AddStylusPointToBounds): Modified to take a
+	Rect bounds argument so that we can update a bounds of our
+	choosing.
+	(Stroke::ComputeBounds): Updated.
+	(Stroke::OnCollectionChanged): Update our new 'dirty' bounds.
+	(Stroke::OnCollectionItemChanged): Same.
+	(InkPresenter::PostRender): Reset stroke dirty regions.
+	(InkPresenter::OnCollectionItemChanged): Invalidate only the
+	stroke's dirty region.
+
 2008-10-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* media.cpp: TryOpen: Don't try to open anything if downloaded_file is

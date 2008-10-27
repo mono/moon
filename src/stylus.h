@@ -149,8 +149,9 @@ class DrawingAttributes : public DependencyObject {
 class Stroke : public DependencyObject {
 	Rect old_bounds;
 	Rect bounds;
+	Rect dirty;
 	
-	void AddStylusPointToBounds (StylusPoint *stylus_point);
+	Rect AddStylusPointToBounds (StylusPoint *stylus_point, const Rect &bounds);
 	void ComputeBounds ();
 
 	bool HitTestEndcapSegment (Point c, double w, double h, Point p1, Point p2);
@@ -178,8 +179,11 @@ class Stroke : public DependencyObject {
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool HitTest (StylusPointCollection *stylusPoints);
 	
-	Rect GetBounds ();
-	Rect GetOldBounds ();
+	Rect GetOldBounds () { return old_bounds; }
+	Rect GetBounds () { return bounds; }
+	
+	void ResetDirty () { dirty = Rect (); }
+	Rect GetDirty () { return dirty; }
 	
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
