@@ -1,5 +1,10 @@
 2008-10-27  Jeffrey Stedfast  <fejj@novell.com>
 
+	* uri.cpp (Uri::Parse): Do a bit better than just strchr() for ':'
+	to parse out the uri scheme.
+
+2008-10-27  Jeffrey Stedfast  <fejj@novell.com>
+
 	Performance optimization patch for bug #409793
 
 	* stylus.cpp (Stroke::AddStylusPointToBounds): Modified to take a

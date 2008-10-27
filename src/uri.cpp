@@ -137,25 +137,28 @@ Uri::Parse (const char *uri, bool allow_trailing_sep)
 	size_t n;
 	
 	start = uri;
-	if (!(inptr = strchr (start, ':'))) {
+	
+	inptr = start;
+	while (*inptr && *inptr != ':' && *inptr != '/' && *inptr != '?' && *inptr != '#')
+		inptr++;
+	
+	if (inptr > start && *inptr == ':') {
+		protocol = g_ascii_strdown (start, inptr - start);
+		
+		inptr++;
+		if (!*inptr)
+			goto done;
+		
+		if (!strncmp (inptr, "//", 2))
+			inptr += 2;
+		
+		start = inptr;
+		while (*inptr && *inptr != ';' && *inptr != ':' && *inptr != '@' && *inptr != '/')
+			inptr++;
+	} else {
 		protocol = g_strdup ("file");
 		inptr = uri;
-		
-		goto decode_path;
 	}
-	
-	protocol = g_ascii_strdown (start, inptr - start);
-	
-	inptr++;
-	if (!*inptr)
-		goto done;
-	
-	if (!strncmp (inptr, "//", 2))
-		inptr += 2;
-	
-	start = inptr;
-	while (*inptr && *inptr != ';' && *inptr != ':' && *inptr != '@' && *inptr != '/')
-		inptr++;
 	
 	switch (*inptr) {
 	case ';': /* <user>;auth= */
@@ -266,7 +269,6 @@ Uri::Parse (const char *uri, bool allow_trailing_sep)
 	}
 	
 	if (*inptr == '/') {
-	decode_path:
 		/* look for params, query, or fragment */
 		start = inptr;
 		while (*inptr && *inptr != ';' && *inptr != '?' && *inptr != '#')
