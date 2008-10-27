@@ -1,5 +1,15 @@
 2008-10-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mplayer.cpp: LoadVideoFrame: Don't check if buflen = 0, makes things
+	  work with ffmpeg.
+	* pipeline-ffmpeg.cpp, pipeline-ffmpeg.h: CleanState: Properly clean
+	  up/reset codec. DecodeFrame: ffmpeg might delay output one frame,
+	  i.e. the decoder output is the input of the previous time we called
+	  avcodec_decode_video, so keep track of pts from previous frame and
+	  properly set pts of the decoded frame.
+
+2008-10-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* mplayer.cpp: LoadVideoFrame: show the frame if the end pts of the
 	  frame is above the target pts (previously we only showed the frame
 	  if the start pts was above the target pts, causing us to show one

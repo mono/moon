@@ -47,7 +47,7 @@ public:
 	virtual MediaResult DecodeFrame (MediaFrame* frame);
 	virtual MediaResult Open ();
 	virtual void Cleanup (MediaFrame* frame);
-	virtual void CleanState () { has_delayed_frame = false; }
+	virtual void CleanState ();
 	virtual bool HasDelayedFrame () {return has_delayed_frame; }
 
 	static PixelFormat ToFfmpegPixFmt (MoonPixelFormat format);	
@@ -57,6 +57,7 @@ private:
 	guint8* audio_buffer;
 	guint8* frame_buffer;
 	guint32 frame_buffer_length;
+	guint64 last_pts;
 	bool has_delayed_frame;
 };
 

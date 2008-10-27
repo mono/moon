@@ -745,6 +745,7 @@ MediaPlayer::LoadVideoFrame ()
 {
 	Packet *packet;
 	bool cont = false;
+	guint64 target_pts;
 	
 	LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (), HasVideo: %i, LoadFramePending: %i, queue size: %i\n", HasVideo (), state & LoadFramePending, video.queue.Length ());
 
@@ -764,9 +765,11 @@ MediaPlayer::LoadVideoFrame ()
 	if (packet == NULL)
 		return false;
 	
-	LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (), packet pts: %llu, target pts: %llu\n", packet->frame->pts, GetTargetPts ());
+	target_pts = GetTargetPts ();
 
-	if (packet->frame->pts + video.stream->pts_per_frame >= GetTargetPts () && packet->frame->buflen > 0) {
+	LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (), packet pts: %llu, target pts: %llu, pts_per_frame: %llu, buflen: %i\n", packet->frame->pts, GetTargetPts (), video.stream->pts_per_frame, packet->frame->buflen);
+
+	if (packet->frame->pts + video.stream->pts_per_frame >= target_pts) {
 		RemoveBit (LoadFramePending);
 		RenderFrame (packet->frame);
 		element->Invalidate ();

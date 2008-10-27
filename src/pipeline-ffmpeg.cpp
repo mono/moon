@@ -71,6 +71,7 @@ FfmpegDecoder::FfmpegDecoder (Media* media, IMediaStream* stream)
 	
 	frame_buffer = NULL;
 	frame_buffer_length = 0;
+	last_pts = G_MAXUINT64;
 }
 
 PixelFormat 
@@ -234,20 +235,50 @@ FfmpegDecoder::Cleanup (MediaFrame *frame)
 	}
 }
 
+void
+FfmpegDecoder::CleanState ()
+{
+	int length;
+	AVFrame *frame = NULL;
+	int got_picture = 0;
+	
+	LOG_FFMPEG ("FfmpegDecoder::CleanState ()\n");
+	
+	has_delayed_frame = false;
+	last_pts = G_MAXUINT64;
+	
+	if (context != NULL) {
+		// This is what ffmpeg says you should do.
+		avcodec_flush_buffers (context);
+		
+		// The above doesn't seem to be implemented for wmv/vc1 codecs though, so do it the hard way.
+		if (stream->GetType () != MediaTypeVideo)
+			return; // This is only an issue for video codecs
+
+		frame = avcodec_alloc_frame ();
+		length = avcodec_decode_video (context, frame, &got_picture, NULL, 0);
+		av_free (frame);
+	}		
+}
+
 MediaResult
 FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 {
 	AVFrame *frame = NULL;
+	guint64 prev_pts;
+	guint64 input_pts = mf->pts;
 	int got_picture = 0;
 	int length = 0;
 	
-	//printf ("FfmpegDecoder::DecodeFrame (%p).\n", mf);
+	LOG_FFMPEG ("FfmpegDecoder::DecodeFrame (%p). pts: %llu ms, context: %p\n", mf, MilliSeconds_FromPts (mf->pts), context);
 	
 	if (context == NULL)
 		return MEDIA_FAIL;
 	
 	if (stream->GetType () == MediaTypeVideo) {
 		frame = avcodec_alloc_frame ();
+		prev_pts = last_pts;
+		last_pts = mf->pts;
 		
 		length = avcodec_decode_video (context, frame, &got_picture, mf->buffer, mf->buflen);
 		
@@ -261,14 +292,18 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 				Media::Warning (MEDIA_CODEC_ERROR, "Error while decoding frame (got length: %d).", length);
 				return MEDIA_CODEC_ERROR;
 			} else {
-				//Media::Warning (MEDIA_CODEC_ERROR, "Error while decoding frame (got length: %d), delaying.", length);
+				Media::Warning (MEDIA_CODEC_ERROR, "Error while decoding frame (got length: %d), delaying.", length);
 				has_delayed_frame = true;
 				return MEDIA_CODEC_DELAYED;
 			}
 		}
 		
-		//printf ("FfmpegDecoder::DecodeFrame (%p): got picture.\n", mf);
-		
+		if (prev_pts != G_MAXUINT64 && has_delayed_frame)
+			mf->pts = prev_pts;
+
+		LOG_FFMPEG ("FfmpegDecoder::DecodeFrame (%p): got picture, input pts: %llu, actual pts: %llu, has delayed frame: %i, prev_pts: %llu ms\n", 
+			mf, MilliSeconds_FromPts (input_pts), MilliSeconds_FromPts (mf->pts), has_delayed_frame, MilliSeconds_FromPts (prev_pts));
+
 		mf->AddState (FRAME_PLANAR);
 		
 		g_free (mf->buffer);
