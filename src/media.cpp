@@ -1346,7 +1346,7 @@ MediaElement::TryOpen ()
 		}
 	} else if (part_name != NULL && part_name[0] != 0) {
 		// PartName is set, we can't buffer, download the entire file.
-	} else if (!(flags & BufferingFailed)) {
+	} else if (!(flags & BufferingFailed) && (downloaded_file != NULL)) {
 		flags |= WaitingForOpen;
 		
 		Media *media = new Media (this, downloader);

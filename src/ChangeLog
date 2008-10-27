@@ -1,5 +1,10 @@
 2008-10-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* media.cpp: TryOpen: Don't try to open anything if downloaded_file is
+	  null.
+
+2008-10-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* mplayer.cpp: LoadVideoFrame: Don't check if buflen = 0, makes things
 	  work with ffmpeg.
 	* pipeline-ffmpeg.cpp, pipeline-ffmpeg.h: CleanState: Properly clean
