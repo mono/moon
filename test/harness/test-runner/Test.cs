@@ -30,6 +30,7 @@ using System.Xml;
 using System.Drawing;
 using System.Threading;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace MoonlightTests {
@@ -296,6 +297,19 @@ namespace MoonlightTests {
 			}
 		}
 
+		public bool IsInCategoryList (List<string> run_list)
+		{
+			if (categories == null)
+				return false;
+
+			foreach (string cat in run_list) {
+				if (categories.Contains (cat))
+					return true;
+			}
+
+			return false;
+		}
+		
 		public bool IsInCategoryList (ArrayList run_list)
 		{
 			if (categories == null)
@@ -416,12 +430,13 @@ namespace MoonlightTests {
 				lib_name = pieces [1].Trim ();			
 
 			string args = String.Format ("-pkg:silver /target:library {0} {1}", lib_name != null ? String.Concat ("/out:", lib_name) : String.Empty, cs_file);
-			ExternalProcess gmcs = new ExternalProcess ("gmcs", args, -1);
+			using (ExternalProcess gmcs = new ExternalProcess ("gmcs", args, -1)) {
 
-			gmcs.Run (true);
-			if (gmcs.ExitCode < 0) {
-				SetFailedReason (String.Format ("Unable to compile codebehind file: {0}.", gmcs.Stderr));
-				return;
+				gmcs.Run (true);
+				if (gmcs.ExitCode < 0) {
+					SetFailedReason (String.Format ("Unable to compile codebehind file: {0}.", gmcs.Stderr));
+					return;
+				}
 			}
 		}
 
@@ -471,8 +486,10 @@ namespace MoonlightTests {
 		private void StopXsp (ExternalProcess xsp)
 		{
 			try {
-				if (xsp != null)
+				if (xsp != null) {
 					xsp.Kill ();
+					xsp.Dispose ();
+				}
 			} catch (Exception ex) {
 				Console.WriteLine ("Exception while trying to stop XSP: " + ex.Message + " (" + ex.GetType ().FullName + ")");
 			}

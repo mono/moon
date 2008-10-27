@@ -43,6 +43,7 @@ namespace MoonlightTests {
 
 		private string fixture_start;
 		private ArrayList categories;
+		private List<string> exclude_categories;
 		private ArrayList fixtures;
 
 		private VerboseLevel verbose_level = VerboseLevel.None;
@@ -85,6 +86,12 @@ namespace MoonlightTests {
 			this.fixture_start = fixture_start;
 		}
 
+		public void SetExcludeCategories (string excl_str)
+		{
+			exclude_categories = new List<string> ();
+			exclude_categories.AddRange (excl_str.Split (new char [] { ',' }));
+		}
+		
 		public void SetCategories (string cat_str)
 		{
 			string [] cats = cat_str.Split (new char [] { ',' });
@@ -169,6 +176,9 @@ namespace MoonlightTests {
 				}
 
 				if (categories != null && !t.IsInCategoryList (categories))
+					continue;
+
+				if (exclude_categories != null && t.IsInCategoryList (exclude_categories))
 					continue;
 
 				if (fixtures != null && !TestIsInFixtureList (t))
@@ -506,6 +516,7 @@ namespace MoonlightTests {
 			string fixture = Environment.GetEnvironmentVariable ("MOON_DRT_FIXTURE");
 			string fixtures = Environment.GetEnvironmentVariable ("MOON_DRT_FIXTURES");
 			string categories = Environment.GetEnvironmentVariable ("MOON_DRT_CATEGORIES");
+			string exclude = Environment.GetEnvironmentVariable ("MOON_DRT_EXCLUDE_CATEGORIES");
 			string fixture_start = Environment.GetEnvironmentVariable ("MOON_DRT_FIXTURE_START");
 			string swallow = Environment.GetEnvironmentVariable ("MOON_DRT_SWALLOW_STREAMS");
 			string stdout = Environment.GetEnvironmentVariable ("MOON_DRT_LOG_TO_STDOUT");
@@ -524,6 +535,8 @@ namespace MoonlightTests {
 				d.SetCategories (categories);
 			if (fixture_start != null && fixture_start != String.Empty)
 				d.SetFixtureStart (fixture_start);
+			if (!string.IsNullOrEmpty (exclude))
+				d.SetExcludeCategories (exclude);
 		}
 	}
 }

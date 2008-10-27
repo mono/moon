@@ -31,7 +31,7 @@ using System.Diagnostics;
 
 namespace MoonlightTests {
 
-	internal class ExternalProcess {
+	internal class ExternalProcess : IDisposable {
 
 		private Process process;
 		private bool process_running;
@@ -50,6 +50,12 @@ namespace MoonlightTests {
 
 		public AutoResetEvent ExitedEvent = new AutoResetEvent (false);
 
+		public void Dispose ()
+		{
+			if (process != null)
+				process.Dispose ();
+		}
+		
 		public ExternalProcess (string process_path, string arguments, int timeout)
 		{
 			this.process_path = process_path;
@@ -131,7 +137,7 @@ namespace MoonlightTests {
 		{
 			if (process_running && !process.HasExited)
 				process.Kill ();
-			
+
 			process.Dispose ();
 
 			if (Driver.SwallowStreams) {
