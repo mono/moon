@@ -1,5 +1,9 @@
 2008-10-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* media.cpp: MediaElement::Play: Call Play when in Opening state too.
+
+2008-10-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* mplayer.cpp: AdvanceFrame/GetCurrentPts: if the audio isn't playing
 	  we should just work as if there's no audio at all. The video might
 	  play after the audio has stopped if the a/v streams have different

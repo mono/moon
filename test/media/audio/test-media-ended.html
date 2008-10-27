@@ -1,7 +1,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" >
-<head><title>ASX parser test</title></head>
-
+<head>
+	<title>ASX parser test</title>
+	<script language="javascript" src="../../js/js/utils.js"></script>
+	<script language="javascript" src="../../js/js/testplugin.js"></script>
+</head>
 <body>
 <div id="PlaylistHost" style="background:#FFFFFF"></div>
 <div id="log"></div>
@@ -13,39 +16,19 @@
 		var timerID = null;
 		var mediaElement;
 
-		function getTester ()
-		{
-			if (!tester)
-				tester = document.getElementById ("_TestPlugin");
-		}
 		function LogDebug (msg)
 		{
-			try {
-				getTester ();
-				tester.LogDebug (msg);
-			} catch (ex) {
-				alert (msg);
-			}
+			TestLogger.LogDebug (msg);
 		}
 	
 		function LogError (msg)
 		{
-			try {
-				getTester ();
-				tester.LogError (msg);
-			} catch (ex) {
-				alert (msg);
-			}
+			TestLogger.LogError (msg);
 		}
 
 		function LogResult (result)
 		{
-			try {
-				getTester ();
-				tester.LogResult (result);
-			} catch (ex) {
-				alert (result);
-			}
+			TestLogger.LogResult (result);
 		}		
 
 		function StartTest ()
@@ -54,7 +37,8 @@
 				return;
 
 			mediaElement = document.getElementById ("ML").content.findName ("Media");
-			mediaElement.Play ();
+			LogDebug ("StartTest, state: " + mediaElement.CurrentState);
+			setTimeout ("mediaElement.Play ();", 500);
 			timerID = setTimeout ("EndTest ();", 5000);
 		}
 		function EndTest ()
@@ -71,7 +55,7 @@
 				LogDebug ("ended: " + ended + ", failed: " + failed + ", opened: " + opened);
 				LogResult (-1);
 			}
-			tester.SignalShutdown ();
+			SignalShutdown ();
 		}
 		function OnMediaEnded (obj, args)
 		{
@@ -104,12 +88,17 @@
 		}
     </script>
 
-	<embed id="_TestPlugin" width="1" height="1" type="application/x-jolttest"></embed>
 	<embed type="application/x-silverlight" width="20" height="20"
 		 id="ML" Source="test-media-ended.xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
 		 style="position:absolute; left:0px; top:0px" background="#CCCCCC">
 	</embed>
 
+<!--
+    <div>
+        <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
+        </embed>
+    </div>
+-->
 </body>                
 </html>
 

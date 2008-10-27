@@ -1608,6 +1608,7 @@ MediaElement::Play ()
 	d(printf ("MediaElement::Play (): current state: %s\n", GetStateName (state)));
 	
 	switch (state) {
+	case Opening:
 	case Buffering:
 	case Paused:
 	case Stopped:

@@ -1,3 +1,9 @@
+2008-10-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* test-media-ended.html: Use our testplugin.js file instead of
+	  duplicating a lot of js in this file. Delay Play on the
+	  MediaElement till the source has loaded.
+
 2008-10-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* drtlist.xml: Added test-mp3-progressive-download.html.

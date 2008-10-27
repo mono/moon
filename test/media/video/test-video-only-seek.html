@@ -30,8 +30,8 @@
 	{
 		TestLogger.LogDebug ("Step1");
 		mediaElement.Source = "timecode-long.wmv";
-		mediaElement.Play ();
-		setTimeout ("Step2 ();", 500);
+		setTimeout ("mediaElement.Play ();", 500);
+		setTimeout ("Step2 ();", 1000);
 	}
 	
 	function Step2 ()
