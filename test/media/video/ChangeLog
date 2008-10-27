@@ -1,5 +1,9 @@
 2008-10-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* drtlist.xml: Put more tests in the 'mediaserver' category.
+
+2008-10-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* drtlist.xml: Add the 'mediaserver' category to tests which require
 	  the media server.
 
