@@ -14,7 +14,6 @@
 #include <config.h>
 #endif
 
-#include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 
@@ -138,8 +137,6 @@ Uri::Parse (const char *uri, bool allow_trailing_sep)
 	GData *params = NULL;
 	int port = 0;
 	size_t n;
-	
-	printf ("uri = %s\n", uri);
 	
 	start = uri;
 	
