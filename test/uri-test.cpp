@@ -40,7 +40,6 @@ private:
       fprintf (stderr, "FAILURE:  %s: %s\n", msg, user_msg);
     else
       fprintf (stderr, msg);
-    exit (-1);
   }
 };
 
@@ -50,9 +49,15 @@ main()
 {
 	Uri *uri = new Uri();
 
-	Assert::IsTrue (uri->Parse ("http://moonlightmedia:81/source/robotica.wmv"), "::Parse");
-	Assert::AreEqual ("http", uri->protocol, "protocol");
-	Assert::AreEqual ("moonlightmedia", uri->host, "host");
-	Assert::AreEqual (81, uri->port, "port");
-	Assert::AreEqual ("/source/robotica.wmv",uri->path, "path");
+	Assert::IsTrue (uri->Parse ("http://moonlightmedia:81/source/robotica.wmv"), "1 ::Parse");
+	Assert::AreEqual ("http", uri->protocol, "1 protocol");
+	Assert::AreEqual ("moonlightmedia", uri->host, "1 host");
+	Assert::AreEqual (81, uri->port, "1 port");
+	Assert::AreEqual ("/source/robotica.wmv",uri->path, "1 path");
+
+	Assert::IsTrue (uri->Parse ("ribbon/images/DialogBoxLauncher.png"), "2 ::Parse");
+	Assert::IsNull (uri->protocol, "2 protocol");
+	Assert::IsNull (uri->host, "2 host");
+	Assert::AreEqual (-1, uri->port, "2 port");
+	Assert::AreEqual ("ribbon/images/DialogBoxLauncher.png",uri->path, "2 path");
 }
