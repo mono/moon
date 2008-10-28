@@ -1,3 +1,9 @@
+2008-10-28  Jeffrey Stedfast  <fejj@novell.com>
+
+	* uri.cpp (Uri::Parse): If no protocol is found, init to NULL
+	instead of file. Also make sure to parse the path in all valid
+	cases.
+
 2008-10-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mplayer.cpp: LoadVideoFrame: if target_pts is invalid, set 0 as

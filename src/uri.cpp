@@ -135,7 +135,7 @@ Uri::Parse (const char *uri, bool allow_trailing_sep)
 	register const char *start, *inptr;
 	bool parse_path = false;
 	GData *params = NULL;
-	int port = 0;
+	int port = -1;
 	size_t n;
 	
 	start = uri;
@@ -158,8 +158,8 @@ Uri::Parse (const char *uri, bool allow_trailing_sep)
 		while (*inptr && *inptr != ';' && *inptr != ':' && *inptr != '@' && *inptr != '/')
 			inptr++;
 	} else {
-		protocol = g_strdup ("file");
 		parse_path = true;
+		protocol = NULL;
 		inptr = uri;
 	}
 	
@@ -258,7 +258,6 @@ Uri::Parse (const char *uri, bool allow_trailing_sep)
 		break;
 	case '/': /* <host>/path or simply <host> */
 	case '\0':
-		parse_path = true;
 		if (inptr > start) {
 			n = inptr - start;
 			while (n > 0 && start[n - 1] == '.')
@@ -272,7 +271,7 @@ Uri::Parse (const char *uri, bool allow_trailing_sep)
 		break;
 	}
 	
-	if (parse_path) {
+	if (parse_path || *inptr == '/') {
 		/* look for params, query, or fragment */
 		start = inptr;
 		while (*inptr && *inptr != ';' && *inptr != '?' && *inptr != '#')
