@@ -1,3 +1,8 @@
+2008-10-28  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* asf.cpp (ASFParser::ReadObject): Return an error if the ASF header
+	size is larger than 10MB.
+
 2008-10-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf-structures.cpp: asf_extended_stream_properties_validate: payload

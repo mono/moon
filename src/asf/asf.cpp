@@ -170,7 +170,7 @@ ASFParser::ReadObject (asf_object *obj)
 	
 	ASF_LOG ("ASFParser::ReadObject ('%s', %llu)\n", asf_guid_tostring (&obj->id), obj->size);
 
-	if (obj->size < sizeof (asf_object)) {
+	if (obj->size < sizeof (asf_object) || obj->size > ASF_OBJECT_MAX_SIZE) {
 		AddError (g_strdup_printf ("Header corrupted (invalid size: %llu)", obj->size));
 		return NULL;
 	}

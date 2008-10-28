@@ -52,6 +52,9 @@ class ASFContext;
 #include "clock.h"
 #include "error.h"
 
+// according to http://msdn.microsoft.com/en-us/library/cc307965(VS.85).aspx the maximum size is 10 MB
+#define ASF_OBJECT_MAX_SIZE	(10 * 1024 * 1024)
+
 struct ASFContext {
 	ASFParser *parser;
 	IMediaSource *source;
