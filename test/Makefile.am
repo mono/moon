@@ -79,3 +79,12 @@ test: demo.exe
 dist-hook:
 	cp -a $(srcdir)/xaml $(distdir)/xaml
 	find $(distdir)/xaml -name .svn | xargs rm -rf
+
+noinst_PROGRAMS = uris
+
+uris_SOURCES= uri-test.cpp
+
+uris_LDADD = $(MOON_PROG_LIBS)
+
+uris_CPPFLAGS = $(MOON_PROG_CFLAGS) -I$(top_srcdir)/src/ -I$(top_srcdir)/src/asf
+
