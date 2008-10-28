@@ -1,5 +1,8 @@
 2008-10-28  Jeffrey Stedfast  <fejj@novell.com>
 
+	* downloader.cpp (scheme_is): Check protocol non-null.
+	(same_scheme): Same.
+
 	* uri.cpp (Uri::Parse): If no protocol is found, init to NULL
 	instead of file. Also make sure to parse the path in all valid
 	cases.

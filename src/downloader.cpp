@@ -152,13 +152,14 @@ Downloader::InternalOpen (const char *verb, const char *uri, bool streaming)
 static bool
 scheme_is (const Uri *uri, const char *scheme)
 {
-	return (strcmp (uri->protocol, scheme) == 0);
+	return uri->protocol && !strcmp (uri->protocol, scheme);
 }
 
 static bool
 same_scheme (const Uri *uri1, const Uri *uri2)
 {
-	return (strcmp (uri1->protocol, uri2->protocol) == 0);
+	return uri1->protocol && uri2->protocol &&
+		!strcmp (uri1->protocol, uri2->protocol);
 }
 
 static bool
