@@ -140,6 +140,10 @@ asf_header_extension_validate (const asf_header_extension* obj, ASFParser* parse
 		
 		header_obj = (asf_object *) (((char *) data) + accum_length);
 		length = header_obj->size;
+		if (length == 0) {
+			parser->AddError (g_strdup_printf ("Invalid header length is zero"));
+			return false;
+		}
 		accum_length += length;
 		size += length;
 		if (size > max_size) {

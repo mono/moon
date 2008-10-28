@@ -1,3 +1,9 @@
+2008-10-28  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* asf-structures.cpp (asf_header_extension_validate): Report error
+	and return false if an object has a length of zero (otherwise we
+	end up in an endless loop).
+
 2008-10-28  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* asf.cpp (ASFParser::ReadObject): Return an error if the ASF header
