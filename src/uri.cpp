@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * uri.cpp: 
  *
@@ -13,6 +14,7 @@
 #include <config.h>
 #endif
 
+#include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 
@@ -132,9 +134,12 @@ Uri::Parse (const char *uri, bool allow_trailing_sep)
 {
 	char *name, *value, *protocol, *user = NULL, *auth = NULL, *passwd = NULL, *host = NULL, *path = NULL, *query = NULL, *fragment = NULL;
 	register const char *start, *inptr;
+	bool parse_path = false;
 	GData *params = NULL;
 	int port = 0;
 	size_t n;
+	
+	printf ("uri = %s\n", uri);
 	
 	start = uri;
 	
@@ -157,6 +162,7 @@ Uri::Parse (const char *uri, bool allow_trailing_sep)
 			inptr++;
 	} else {
 		protocol = g_strdup ("file");
+		parse_path = true;
 		inptr = uri;
 	}
 	
@@ -255,6 +261,7 @@ Uri::Parse (const char *uri, bool allow_trailing_sep)
 		break;
 	case '/': /* <host>/path or simply <host> */
 	case '\0':
+		parse_path = true;
 		if (inptr > start) {
 			n = inptr - start;
 			while (n > 0 && start[n - 1] == '.')
@@ -268,7 +275,7 @@ Uri::Parse (const char *uri, bool allow_trailing_sep)
 		break;
 	}
 	
-	if (*inptr == '/') {
+	if (parse_path) {
 		/* look for params, query, or fragment */
 		start = inptr;
 		while (*inptr && *inptr != ';' && *inptr != '?' && *inptr != '#')
