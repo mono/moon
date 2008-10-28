@@ -1,3 +1,10 @@
+2008-10-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mplayer.cpp: LoadVideoFrame: if target_pts is invalid, set 0 as
+	  target_pts.
+	* media.cpp: AdvanceFrame: handle cases where position = -1 and don't
+	  do anything.
+
 2008-10-27  Jeffrey Stedfast  <fejj@novell.com>
 
 	* uri.cpp (Uri::Parse): Do a bit better than just strchr() for ':'

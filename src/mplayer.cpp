@@ -767,6 +767,9 @@ MediaPlayer::LoadVideoFrame ()
 	
 	target_pts = GetTargetPts ();
 
+	if (target_pts == G_MAXUINT64)
+		target_pts = 0;
+
 	LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (), packet pts: %llu, target pts: %llu, pts_per_frame: %llu, buflen: %i\n", packet->frame->pts, GetTargetPts (), video.stream->pts_per_frame, packet->frame->buflen);
 
 	if (packet->frame->pts + video.stream->pts_per_frame >= target_pts) {

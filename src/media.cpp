@@ -30,6 +30,8 @@
 
 #define d(x)
 #define e(x)
+#define LOG_MARKERS(...)// printf (__VA_ARGS__);
+#define LOG_MARKERS_EX(...)// printf (__VA_ARGS__);
 
 // still too ugly to be exposed in the header files ;-)
 void image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double height, int sw, int sh, 
@@ -409,9 +411,6 @@ MediaElement::ReadMarkers ()
 	markers->unref ();
 }
 
-#define LOG_MARKERS(...)// printf (__VA_ARGS__);
-#define LOG_MARKERS_EX(...) //printf (__VA_ARGS__);
-
 void
 MediaElement::CheckMarkers (guint64 from, guint64 to)
 {
@@ -524,7 +523,7 @@ MediaElement::AdvanceFrame ()
 	advanced = mplayer->AdvanceFrame ();
 	position = mplayer->GetPosition ();
 	
-	if (advanced) {
+	if (advanced && position != G_MAXUINT64) {
 		d (printf ("MediaElement::AdvanceFrame (): advanced, setting position to: %llu = %llu ms\n", position, MilliSeconds_FromPts (position)));
 		flags |= UpdatingPosition;
 		SetPosition (TimeSpan_FromPts (position));
@@ -540,10 +539,11 @@ MediaElement::AdvanceFrame ()
 			previous_position, MilliSeconds_FromPts (previous_position), position, MilliSeconds_FromPts (position), advanced));
 			
 		AddStreamedMarkers ();
-		CheckMarkers (previous_position, position);
+		if (position != G_MAXUINT64)
+			CheckMarkers (previous_position, position);
 	}
 	
-	if (!mplayer->IsSeeking () && position > previous_position) {
+	if (!mplayer->IsSeeking () && position > previous_position && position != G_MAXUINT64) {
 		// Add 1 to avoid the same position to be able to be both
 		// beginning and end of a range (otherwise the same marker
 		// might raise two events).
