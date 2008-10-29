@@ -818,17 +818,17 @@ MediaPlayer::GetTimeoutInterval ()
 	
 	if (HasVideo ()) {
 		pts_per_frame = video.stream->pts_per_frame;
-		if (pts_per_frame == 0) {
+		if (pts_per_frame <= 0 || pts_per_frame >= (guint64) G_MAXINT32) {
 			// If the stream doesn't know its frame rate, use a default of 60 fps
 			result = (gint32) (1000.0 / 60.0);
 		} else {
-			result = (gint32) ((double) TIMESPANTICKS_IN_SECOND/ (double) pts_per_frame);
+			result = (gint32) MilliSeconds_FromPts (pts_per_frame);
 		}
 	} else {
 		result = 33;
 	}
 
-	LOG_MEDIAPLAYER ("MediaPlayer::GetTimeoutInterval (): %i = %f fps, pts_per_frame: %llu\n", result, 1000.0 / result, pts_per_frame);
+	LOG_MEDIAPLAYER ("MediaPlayer::GetTimeoutInterval (): %i ms between frames gives fps: %.1f, pts_per_frame: %llu, exact fps: %f\n", result, 1000.0 / result, pts_per_frame, TIMESPANTICKS_IN_SECOND / (double) pts_per_frame);
 
 	return result;
 }

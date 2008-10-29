@@ -1,3 +1,8 @@
+2008-10-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mplayer.cpp: GetTimeoutInterval: Calculate timeout correctly. Fixes
+	  #439631.
+
 2008-10-28  Jeffrey Stedfast  <fejj@novell.com>
 
 	* downloader.cpp (scheme_is): Check protocol non-null.
