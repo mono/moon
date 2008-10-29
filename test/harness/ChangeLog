@@ -1,3 +1,16 @@
+2008-10-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* shocker/image-capture.cpp, shocker/image-capture.h: Make screenshots
+	  a whole lot faster, more predictable and less memory-consuming by
+	  doing XGetImage ourselves. For some reason using ImageMagick
+	  without Xephyr causes a lot of memory to be used (between 100 and
+	  200 *MB* per screenshot), effectively making animation tests very
+	  nasty, and gdk inserts a XSync after blitting the screen, causing
+	  performance to vary wildly. Also include time tracking when taking
+	  multiple screenshots, so that we compensate for the time spent
+	  taking a screenshot when deciding when the next screenshot should
+	  be taken.
+
 2008-10-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* test-runner/Driver.cs: Added support for MOON_DRT_EXCLUDE_CATEGORIES:

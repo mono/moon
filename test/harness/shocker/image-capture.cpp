@@ -26,22 +26,42 @@
  *
  */
 
+#include <glib.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <Magick++.h>
 #include <list>
+#include <sys/time.h>
 
 #include "shocker.h"
 #include "shutdown-manager.h"
+#include "string.h"
+#include "errno.h"
 
+static gint64
+get_now (void)
+{
+	struct timeval tv;
+	gint64 res;
+#ifdef CLOCK_MONOTONIC
+	struct timespec tspec;
+	if (clock_gettime (CLOCK_MONOTONIC, &tspec) == 0) {
+		res = ((gint64)tspec.tv_sec * 10000000 + tspec.tv_nsec / 100);
+		return res;
+	}
+#endif
 
-static Magick::Image acquire_screenshot (Window window, int x, int y, int w, int h);
+	if (gettimeofday (&tv, NULL) == 0) {
+		res = (tv.tv_sec * 1000000 + tv.tv_usec) * 10;
+		return res;
+	}
+
+	// XXX error
+	return 0;
+}
 
 ImageCaptureProvider::ImageCaptureProvider ()
 {
-	Display* display = XOpenDisplay (NULL);
-	xroot_window = XRootWindow (display, 0);
-	XCloseDisplay (display);
 }
 
 ImageCaptureProvider::~ImageCaptureProvider ()
@@ -57,19 +77,13 @@ ImageCaptureProvider::CaptureSingleImage (const char* image_dir, const char* fil
 #endif
 	char* image_path = g_build_filename (image_dir, file_name, NULL);
 
-	GdkWindow* root = gdk_window_foreign_new (GDK_ROOT_WINDOW ());
-	GdkPixbuf* buf = gdk_pixbuf_get_from_drawable (NULL, root, NULL, x, y, 0, 0, width, height);
-	GError* error = NULL;
-
-	gdk_pixbuf_save (buf, image_path, "png", &error, "tEXt::CREATOR", "moonlight-test-harness", NULL);
-
-    gdk_pixbuf_unref (buf);
+	ScreenCaptureData sc (x, y, width, height);
+	sc.Capture (image_path);
 	g_free (image_path);
 }
 
 typedef struct capture_multiple_images_data {
 	char* image_path;
-	int xroot_window;
 	int x;
 	int y;
 	int width;
@@ -90,28 +104,68 @@ void*
 capture_multiple_images (void* data)
 {
 	capture_multiple_images_data_t* cmid = (capture_multiple_images_data_t *) data;
-
+	std::list<Magick::Image> image_list;
+	pid_t pid = getpid ();
+	gint64 start, previous, current, elapsed, next;
+	const gint64 ticks_in_ms = 10000;
+	const gchar *tmp_dir = g_get_tmp_dir ();
+	gchar *pid_dir = g_strdup_printf ("%i", pid);
+	gchar *image_dir = g_build_filename (tmp_dir, "moonlight-test-harness", pid_dir, NULL);
+	gchar **image_paths = (gchar **) g_malloc0 (sizeof (gchar *) * (cmid->count + 1));
+	gchar **image_files = (gchar **) g_malloc0 (sizeof (gchar *) * (cmid->count + 1));
+	
 	usleep (cmid->initial_delay * 1000);
 
-	std::list<Magick::Image> image_list;
+	g_mkdir_with_parents (image_dir, 0700);
+
+	ScreenCaptureData sc (cmid->x, cmid->y, cmid->width, cmid->height);
+	
+	// printf ("Moonlight harness: Capture %i screenshots, initial delay: %i ms, interval: %i ms\n", cmid->count, cmid->initial_delay, cmid->interval);
+
+	start = get_now () / ticks_in_ms;
 	for (int i = 0; i < cmid->count; i++) {
-		Magick::Image image = acquire_screenshot (cmid->xroot_window, cmid->x, cmid->y, cmid->width, cmid->height);
+		image_files [i] = g_strdup_printf ("multilayered-image-%03i.png", i);
+		image_paths [i] = g_build_filename (image_dir, image_files [i], NULL);
 
-		// Maybe it's because it's late, maybe it's because dinner was so spicy, maybe it's because I've lost my grasp
-		// on reality.  I'm not sure why, but writing the images to disc before adding to the list makes everything work
-		// properly here.
-		image.write ("multilayered-image.png");
-		image_list.push_front (image);
-
-		usleep (cmid->interval * 1000);
+		// printf (" Capturing screenshot #%2i into %s", i + 1, image_paths [i]);
+		previous = get_now () / ticks_in_ms;
+		
+		sc.Capture (image_paths [i]);
+		
+		current = get_now () / ticks_in_ms;
+		elapsed = current - start;
+		next = (start + cmid->interval * (i + 1)) - current;
+		if (next <= 0) {
+			next = cmid->interval;
+			if (current - previous > cmid->interval)
+				printf ("\nMoonlight harness: Screen capture can't capture fast enough. Interval %lld ms, time spent taking screenshot: %lld ms\n", (gint64) cmid->interval, (gint64) current - previous);
+		}
+		
+		//printf (" Done in %4llu ms, elapsed: %4lld ms, sleeping %4lld ms\n", current - previous, elapsed, next);
+		
+		usleep (next * 1000);
 	}
-
+	
+	for (int i = 0; i < cmid->count; i++) {
+		Magick::Image image;
+		image.read (image_paths [i]);
+		image_list.push_front (image);
+	}
 	Magick::writeImages (image_list.begin (), image_list.end (), cmid->image_path);
-
+	
+	// Cleanup after us
+	for (int i = 0; i < cmid->count; i++) {
+		unlink (image_paths [i]);
+	}
+	rmdir (image_dir);	
+	g_strfreev (image_paths);
+	g_strfreev (image_files);
+	g_free (pid_dir);
+	g_free (image_dir);
+	
 	capture_multiple_images_data_free (cmid);
 	shutdown_manager_wait_decrement ();
-	g_thread_exit (NULL);
-	
+
 	return NULL;
 }
 
@@ -125,7 +179,6 @@ ImageCaptureProvider::CaptureMultipleImages (const char* test_path, int x, int y
 	capture_multiple_images_data_t* cmid = new capture_multiple_images_data ();
 
 	cmid->image_path = g_strdup_printf ("%s.tif", test_path);
-	cmid->xroot_window = xroot_window;
 	cmid->x = MAX (0, x);
 	cmid->y = MAX (0, y);
 	cmid->width = width;
@@ -147,29 +200,6 @@ ImageCaptureProvider::CaptureMultipleImages (const char* test_path, int x, int y
 	}
 }
 
-
-static Magick::Image
-acquire_screenshot (Window window, int x, int y, int width, int height)
-{
-	Magick::Image image;
-	Magick::Geometry crop = Magick::Geometry (width, height, MAX (0, x), MAX (0, y));
-	char* id = g_strdup_printf ("x:%d", (int) window);
-
-	// Why won't this work for me?  This should make things fast, but it is still taking
-	// ~2 seconds to take a screenshot
-	// image.defineValue ("x", "screen", "true");
-
-	image.depth (8);
-	image.read (crop, id);
-	image.matte (true);
-	image.crop (crop);
-
-	g_free (id);
-
-	return image;
-}
-
-
 // TODO: Figure out defaults, maybe width/height need to be calculated?
 AutoCapture::AutoCapture () : capture_interval (1000), max_images_to_capture (1), initial_delay (0), capture_x (0), capture_y (0), capture_width (640), capture_height (480)
 {
@@ -182,3 +212,88 @@ AutoCapture::Run (const char* test_path, ImageCaptureProvider* provider)
 }
 
 
+/*
+ * ScreenCaptureData
+ */
+
+ScreenCaptureData::ScreenCaptureData (int x, int y, unsigned int width, unsigned int height)
+{
+	Window dummy = NULL;
+	
+	display = XOpenDisplay (NULL);
+	screen = XDefaultScreen (display);
+	root_window = XRootWindow (display, screen);
+	XGetGeometry (display, root_window, &dummy, &root_x, &root_y, &root_width, &root_height, &root_border_width, &root_depth);
+
+	this->x = MAX (x, root_x);
+	this->y = MAX (y, root_x);
+	this->width = MIN (width, root_width - this->x);
+	this->height = MIN (height, root_height - this->y);
+
+	if (this->x != x)
+		printf ("Moonlight harness: Screen capture geometry has been modified (requested x: %i, actual x: %i)\n", x, this->x);
+	if (this->y != y)
+		printf ("Moonlight harness: Screen capture geometry has been modified (requested y: %i, actual y: %i)\n", y, this->y);
+	if (this->width != width)
+		printf ("Moonlight harness: Screen capture geometry has been modified (requested width: %u, actual width: %u)\n", width, this->width);
+	if (this->height != height)
+		printf ("Moonlight harness: Screen capture geometry has been modified (requested height: %u, actual height: %u)\n", height, this->height);
+}
+
+ScreenCaptureData::~ScreenCaptureData ()
+{
+	XCloseDisplay (display);
+}
+
+bool
+ScreenCaptureData::Capture (const char *filename)
+{
+	XImage *image;
+	int row_stride;
+	int offset;
+	int red_shift = 0, green_shift = 0, blue_shift = 0;
+	guint32 pixel;
+	GdkPixbuf *buffer;
+	GError* error = NULL;
+	
+	image = XGetImage (display, root_window, x, y, width, height, AllPlanes, ZPixmap);
+
+	if (image == NULL)
+		return false;
+	
+	// Gdk only supports 24 bits RGB
+	// The XImage is (at least on my machine) 32 bits RGB.
+	row_stride = image->bytes_per_line;
+	
+	while (((image->red_mask >> red_shift) & 1) == 0) {
+		red_shift++;
+	}
+	while (((image->green_mask >> green_shift) & 1) == 0) {
+		green_shift++;
+	}
+	while (((image->blue_mask >> blue_shift) & 1) == 0) {
+		blue_shift++;
+	}
+		
+	for (int r = 0; r < image->height; r++) {
+		for (int c = 0; c < image->width; c++) {
+			offset = row_stride * r + c * 4;
+			pixel = *(guint32 *) (image->data + offset);
+			image->data [offset - c + 0] = (pixel & image->red_mask) >> red_shift;
+			image->data [offset - c + 1] = (pixel & image->green_mask) >> green_shift;
+			image->data [offset - c + 2] = (pixel & image->blue_mask) >> blue_shift;
+		}
+	}
+
+	// Create a new pixbuf from our converted data
+	buffer = gdk_pixbuf_new_from_data ((const guchar *) image->data, GDK_COLORSPACE_RGB, false, 8, image->width, image->height, row_stride, NULL, NULL);
+
+	// Save to file
+	gdk_pixbuf_save (buffer, filename, "png", &error, "tEXt::CREATOR", "moonlight-test-harness", NULL);
+
+	gdk_pixbuf_unref (buffer);
+
+	XDestroyImage (image);
+
+	return true;
+}
