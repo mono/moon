@@ -818,7 +818,8 @@ MediaPlayer::GetTimeoutInterval ()
 	
 	if (HasVideo ()) {
 		pts_per_frame = video.stream->pts_per_frame;
-		if (pts_per_frame <= 0 || pts_per_frame >= (guint64) G_MAXINT32) {
+		// there are 10000 pts in a millisecond, anything less than that will result in 0 (and an endless loop)
+		if (pts_per_frame < PTS_PER_MILLISECOND || pts_per_frame >= (guint64) G_MAXINT32) {
 			// If the stream doesn't know its frame rate, use a default of 60 fps
 			result = (gint32) (1000.0 / 60.0);
 		} else {

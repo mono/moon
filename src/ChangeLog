@@ -1,3 +1,10 @@
+2008-10-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* clock.h: Change MilliSeconds_[From|To]Pts to use the new
+	PTS_PER_MILLISECOND define.
+	* mplayer.cpp: Rework fix on GetTimeoutInterval to avoid a division
+	resulting in zero (and the endless loop of #439631).
+
 2008-10-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mplayer.cpp: GetTimeoutInterval: Calculate timeout correctly. Fixes

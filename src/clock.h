@@ -43,8 +43,10 @@ typedef guint64 TimePts;
 #define TimeSpan_ToPts(s)	((guint64) (s))
 #define TimeSpan_FromPts(s)	((TimeSpan) (s))
 
-#define MilliSeconds_ToPts(s) ((guint64) (s) * 10000)
-#define MilliSeconds_FromPts(s) ((s) / 10000)
+#define PTS_PER_MILLISECOND	10000
+
+#define MilliSeconds_ToPts(s) ((guint64) (s) * PTS_PER_MILLISECOND)
+#define MilliSeconds_FromPts(s) ((s) / PTS_PER_MILLISECOND)
 
 // misc types
 enum FillBehavior {
