@@ -1,5 +1,10 @@
 2008-10-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* shocker/input.cpp: SendKeyInput: add error checking before faking a
+	  key event.
+
+2008-10-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* shocker/image-capture.cpp, shocker/image-capture.h: Make screenshots
 	  a whole lot faster, more predictable and less memory-consuming by
 	  doing XGetImage ourselves. For some reason using ImageMagick

@@ -196,7 +196,7 @@ enum VirtualKeys {
 InputProvider::InputProvider () : display (NULL), root_window (NULL), xtest_available (false), down_keys (NULL)
 {
 	display = XOpenDisplay (NULL);
-
+	
 	if (!display) {
 		printf ("Unable to open XDisplay, input tests will not run.\n");
 		return;
@@ -346,6 +346,11 @@ InputProvider::SendKeyInput (uint32 keysym, bool key_down)
 
 	int mapped = MapToKeysym (keysym);
 	int keycode = XKeysymToKeycode (display, mapped);
+
+	if (keycode == 0) {
+		printf ("Moonlight harness: InputProvider could send map key. keysym: %u, mapped: %i, keycode: %i\n", keysym, mapped, keycode);
+		return;
+	}
 
 	XTestFakeKeyEvent (display, keycode, key_down, CurrentTime);
 	XFlush (display);
