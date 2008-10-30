@@ -211,7 +211,7 @@ test_file (const char* filename)
 
 	parser = new ASFParser (fs, NULL);
 
-	if (!parser->ReadHeader ()) {
+	if (!MEDIA_SUCCEEDED (parser->ReadHeader ())) {
 		printf ("test_file (%s): read header failed.\n", filename);
 		goto end;
 	}

@@ -1,3 +1,7 @@
+2008-10-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf-test.cpp: Fix according to api change.
+
 2008-10-28  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* asf-structures.cpp (asf_header_extension_validate): Report error
