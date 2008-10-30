@@ -1,5 +1,9 @@
 2008-10-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* libmoon.h: Fix build.
+
+2008-10-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* audio.cpp, brush.cpp, cbinding.h, dependencyproperty.g.cpp,
 	  Makefile.am, media.cpp, media.h, mediaelement.cpp, mediaelement.h,
 	  mediaplayer.cpp, mediaplayer.h, pipeline.cpp, type-generated.cpp,
