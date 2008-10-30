@@ -27,6 +27,7 @@
 #include "geometry.h"
 #include "grid.h"
 #include "media.h"
+#include "mediaelement.h"
 #include "multiscaleimage.h"
 #include "multiscalesubimage.h"
 #include "panel.h"

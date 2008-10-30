@@ -23,6 +23,7 @@
 #include "runtime.h"
 #include "list.h"
 #include "media.h"
+#include "mediaelement.h"
 
 #define DEBUG_ADVANCEFRAME 0
 #define LOG_MEDIAPLAYER(...)// printf (__VA_ARGS__);

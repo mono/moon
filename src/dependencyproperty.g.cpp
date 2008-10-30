@@ -19,6 +19,7 @@
 #include "frameworkelement.h"
 #include "geometry.h"
 #include "media.h"
+#include "mediaelement.h"
 #include "namescope.h"
 #include "panel.h"
 #include "shape.h"

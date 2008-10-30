@@ -21,6 +21,7 @@
 #include "runtime.h"
 #include "clock.h"
 #include "debug.h"
+#include "mediaplayer.h"
 
 #define LOG_AUDIO(...)// printf (__VA_ARGS__);
 // This one prints out spew on every sample

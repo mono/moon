@@ -30,6 +30,7 @@
 #include "mp3.h"
 #include "uri.h"
 #include "media.h"
+#include "mediaelement.h"
 #include "asf/asf.h"
 #include "asf/asf-structures.h"
 #include "yuv-converter.h"

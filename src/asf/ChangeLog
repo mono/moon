@@ -1,5 +1,10 @@
 2008-10-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* asf.cpp: Split MediaElement out from media.[cpp|h] into its own
+	  mediaelement.[cpp|h].
+
+2008-10-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* asf.h: Move asf related bits from pipeline.[h|cpp] to
 	  pipeline-asf.[h|cpp].
 

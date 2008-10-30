@@ -16,6 +16,7 @@
 #include <glib.h>
 #include "brush.h"
 #include "media.h"
+#include "mediaelement.h"
 #include "color.h"
 #include "transform.h"
 

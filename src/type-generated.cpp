@@ -24,6 +24,7 @@
 #include "frameworkelement.h"
 #include "geometry.h"
 #include "media.h"
+#include "mediaelement.h"
 #include "mediaplayer.h"
 #include "mp3.h"
 #include "namescope.h"

@@ -15,6 +15,7 @@
 #include "asf.h"
 #include "debug.h"
 #include "clock.h"
+#include "mediaelement.h"
 
 /*
 	ASFParser

@@ -20,6 +20,7 @@
 #include "xaml.h"
 #include "runtime.h"
 #include "clock.h"
+#include "mediaelement.h"
 
 
 #define d(x)

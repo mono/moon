@@ -1,5 +1,13 @@
 2008-10-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* audio.cpp, brush.cpp, cbinding.h, dependencyproperty.g.cpp,
+	  Makefile.am, media.cpp, media.h, mediaelement.cpp, mediaelement.h,
+	  mediaplayer.cpp, mediaplayer.h, pipeline.cpp, type-generated.cpp,
+	  src.mdp, playlist.cpp: Split MediaElement out from media.[cpp|h]
+	  into its own mediaelement.[cpp|h].
+
+2008-10-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* type-generated.cpp, Makefile.am, media.h, mediaplayer.cpp,
 	  mediaplayer.h, mplayer.cpp, mplayer.h, src.mdp: Rename
 	  mplayer.[cpp|h] -> mediaplayer.[cpp|h].

@@ -74,7 +74,6 @@
     <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
     <File name="media.cpp" subtype="Code" buildaction="Compile" />
     <File name="media.h" subtype="Code" buildaction="Nothing" />
-    <File name="mkcolor.cs" subtype="Code" buildaction="Nothing" />
     <File name="moon-path.c" subtype="Code" buildaction="Nothing" />
     <File name="moon-path.h" subtype="Code" buildaction="Nothing" />
     <File name="mediaplayer.cpp" subtype="Code" buildaction="Compile" />
@@ -221,6 +220,8 @@
     <File name="pipeline-logo.cpp" subtype="Code" buildaction="Compile" />
     <File name="pipeline-asf.cpp" subtype="Code" buildaction="Compile" />
     <File name="pipeline-asf.h" subtype="Code" buildaction="Nothing" />
+    <File name="mediaelement.cpp" subtype="Code" buildaction="Compile" />
+    <File name="mediaelement.h" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>

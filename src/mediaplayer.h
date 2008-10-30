@@ -10,8 +10,8 @@
  * See the LICENSE file included with the distribution for details.
  */
 
-#ifndef __MOON_MPLAYER_H__
-#define __MOON_MPLAYER_H__
+#ifndef __MOON_MEDIAPLAYER_H__
+#define __MOON_MEDIAPLAYER_H__
 
 #include <glib.h>
 #include <cairo.h>
