@@ -1,5 +1,12 @@
 2008-10-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* audio.cpp, audio-pulse.cpp, media.cpp, mms-downloader.h, mp3.cpp,
+	  mplayer.h, pipeline.cpp, pipeline.h, pipeline-asf.cpp,
+	  pipeline-asf.h, src.mdp, xaml.cpp: Move asf related bits from
+	  pipeline.[h|cpp] to pipeline-asf.[h|cpp].
+
+2008-10-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* pipeline.h: IMediaDemuxer: Add Source getter.
 	* pipeline.cpp: IMediaDemuxer::GetLastAvailablePts: don't take into
 	  account streams which aren't selected. IMediaStream::AppendFrame:

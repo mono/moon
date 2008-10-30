@@ -16,6 +16,7 @@
 
 #include "audio-pulse.h"
 #include "runtime.h"
+#include "clock.h"
 
 #define LOG_PULSE(...)// printf (__VA_ARGS__);
 // This one prints out spew on every sample

@@ -49,6 +49,7 @@ class ASFContext;
 #include "asf-debug.h"
 
 #include "pipeline.h"
+#include "pipeline-asf.h"
 #include "clock.h"
 #include "error.h"
 

@@ -18,7 +18,6 @@
 
 class MediaPlayer;
 
-#include "asf.h"
 #include "pipeline.h"
 #include "audio.h"
 

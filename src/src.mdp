@@ -219,6 +219,8 @@
     <File name="moonlightconfiguration.cpp" subtype="Code" buildaction="Compile" />
     <File name="moonlightconfiguration.h" subtype="Code" buildaction="Nothing" />
     <File name="pipeline-logo.cpp" subtype="Code" buildaction="Compile" />
+    <File name="pipeline-asf.cpp" subtype="Code" buildaction="Compile" />
+    <File name="pipeline-asf.h" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>

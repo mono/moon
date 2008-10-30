@@ -19,6 +19,7 @@
 #include "audio-pulse.h"
 #include "pipeline.h"
 #include "runtime.h"
+#include "clock.h"
 #include "debug.h"
 
 #define LOG_AUDIO(...)// printf (__VA_ARGS__);

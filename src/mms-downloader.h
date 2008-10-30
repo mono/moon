@@ -24,6 +24,7 @@ G_BEGIN_DECLS
 #include "downloader.h"
 #include "http-streaming.h"
 #include "pipeline.h"
+#include "pipeline-asf.h"
 
 #define MMS_DATA		0x44
 #define MMS_HEADER	      0x48

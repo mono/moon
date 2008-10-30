@@ -16,6 +16,7 @@
 
 #include "mp3.h"
 #include "pipeline.h"
+#include "clock.h"
 
 //
 // Relevant links to documentation:

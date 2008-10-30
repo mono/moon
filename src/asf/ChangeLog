@@ -1,5 +1,10 @@
 2008-10-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* asf.h: Move asf related bits from pipeline.[h|cpp] to
+	  pipeline-asf.[h|cpp].
+
+2008-10-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* asf.cpp, asf.h: Store the IMediaStream in the frame reader and update
 	  the stream's LatestAvailablePts field whenever we read a frame.
 	  Also only accept ASFDemuxer instead of IMediaDemuxer, given that it

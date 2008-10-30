@@ -18,6 +18,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include "runtime.h"
 #include "media.h"
@@ -26,7 +27,9 @@
 #include "playlist.h"
 #include "geometry.h"
 #include "pipeline.h"
+#include "pipeline-asf.h"
 #include "pipeline-ui.h"
+#include "clock.h"
 
 #define d(x)
 #define e(x)
