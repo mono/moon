@@ -205,6 +205,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Markup/XamlReader.cs				\
 	$(srcdir)/System.Windows.Markup/XmlLanguage.cs				\
 	$(srcdir)/System.Windows.Markup/XmlnsDefinitionAttribute.cs		\
+	$(srcdir)/System.Windows.Markup/XmlnsPrefixAttribute.cs		\
 	$(srcdir)/System.Windows.Markup/ContentPropertyAttribute.cs		\
 	$(srcdir)/System.Windows.Media/AlignmentX.cs				\
 	$(srcdir)/System.Windows.Media/AlignmentY.cs				\
