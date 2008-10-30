@@ -899,24 +899,24 @@ ellipse_geometry_new (void)
  * EventObject
  **/
 int
-event_object_add_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data)
+event_object_add_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor)
 {
 	if (instance == NULL)
 		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
 		return (int) 0;
 	
-	return instance->AddHandler (event_name, handler, data);
+	return instance->AddHandler (event_name, handler, data, data_dtor);
 }
 
 
 int
-event_object_add_xaml_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data)
+event_object_add_xaml_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor)
 {
 	if (instance == NULL)
 		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
 		return (int) 0;
 	
-	return instance->AddXamlHandler (event_name, handler, data);
+	return instance->AddXamlHandler (event_name, handler, data, data_dtor);
 }
 
 

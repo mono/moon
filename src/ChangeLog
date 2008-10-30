@@ -1,5 +1,9 @@
 2008-10-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* cbinding.cpp, cbinding.h: Regenerated.
+
+2008-10-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* audio.cpp, audio-pulse.cpp, media.cpp, mms-downloader.h, mp3.cpp,
 	  mplayer.h, pipeline.cpp, pipeline.h, pipeline-asf.cpp,
 	  pipeline-asf.h, src.mdp, xaml.cpp: Move asf related bits from
