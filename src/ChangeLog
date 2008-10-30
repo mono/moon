@@ -1,5 +1,16 @@
 2008-10-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* pipeline.h: IMediaDemuxer: Add Source getter.
+	* pipeline.cpp: IMediaDemuxer::GetLastAvailablePts: don't take into
+	  account streams which aren't selected. IMediaStream::AppendFrame:
+	  update last available pts with the frame's pts.
+	* media.cpp: MediaElement::CalculateBufferingProgress: never use last
+	  available pts to calculate buffering progress for streams which can
+	  seek to directly to the requested pts. Fix math to check for
+	  negative values to avoid weird results.
+
+2008-10-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* media.cpp, media.h: MediaElement: fix buffering progress after
 	  seeking regression - don't only use the buffer level in the
 	  pipeline to report buffering progress, but take into accout the

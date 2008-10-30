@@ -2443,6 +2443,8 @@ IMediaStream::EnqueueFrame (MediaFrame *frame)
 	queue->LinkedList ()->Append (new StreamNode (frame));
 	queue->Unlock ();
 
+	SetLastAvailablePts (frame->pts);
+
 	LOG_BUFFERING ("IMediaStream::EnqueueFrame (): codec: %.5s, first_pts: %llu ms, last_popped_pts: %llu ms, last_enqueued_pts: %llu ms, buffer: %llu ms, frame: %p, frame->buflen: %i\n",
 		codec, MilliSeconds_FromPts (first_pts), MilliSeconds_FromPts (last_popped_pts), MilliSeconds_FromPts (last_enqueued_pts), 
 		MilliSeconds_FromPts (last_popped_pts != G_MAXUINT64 ? last_enqueued_pts - last_popped_pts : last_enqueued_pts - first_pts), frame, frame->buflen);
@@ -2570,7 +2572,7 @@ IMediaDemuxer::FillBuffers ()
 				stream->codec, result, MilliSeconds_FromPts (stream->GetBufferedSize ()), MilliSeconds_FromPts (buffering_time), MilliSeconds_FromPts (stream->GetLastPoppedPts ()));
 	}
 	
-	LOG_BUFFERING ("IMediaDemuxer::FillBuffers () [Done]. BufferedSize: %llu ms\n", GetBufferedSize ());
+	LOG_BUFFERING ("IMediaDemuxer::FillBuffers () [Done]. BufferedSize: %llu ms\n", MilliSeconds_FromPts (GetBufferedSize ()));
 }
 
 guint64
@@ -2599,7 +2601,7 @@ IMediaDemuxer::GetLastAvailablePts ()
 	for (int i = 0; i < GetStreamCount (); i++) {
 		stream = GetStream (i);
 
-		if (stream == NULL)
+		if (stream == NULL || !stream->GetSelected ())
 			continue;
 
 		result = MIN (result, stream->GetLastAvailablePts ());

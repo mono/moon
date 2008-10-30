@@ -1083,7 +1083,7 @@ MediaElement::CalculateBufferingProgress ()
 	if (buffering_mode == 0) {
 		if (position_pts == 0) {
 			buffering_mode = 1;
-		} else if (IsLive ()) {
+		} else if (demuxer->GetSource ()->CanSeekToPts ()) {
 			buffering_mode = 2;
 		} else if (position_pts + buffering_time > last_available_pts) {
 			buffering_mode = 3;
@@ -1100,14 +1100,17 @@ MediaElement::CalculateBufferingProgress ()
 	}
 	case 3: {
 //      ("last available pts" - "last played pts") / ("seeked to pts" - "last played pts" + BufferingTime)
-		double a = (last_available_pts - last_played_pts);
-		double b = (position_pts - last_played_pts + buffering_time);
+		double a = ((double) last_available_pts - (double) last_played_pts);
+		double b = ((double) position_pts - (double) last_played_pts + (double) buffering_time);
 
-		// check for /0
-		result = b == 0 ? 1.0 : a / b;
-		// ensure 0.0 <= result <= 1.0
-		result = result < 0.0 ? 0.0 : (result > 1.0 ? 1.0 : result);
-
+		if (a < 0.0 || b < 0.0) {
+			result = 0.0;
+		} else {
+			// check for /0
+			result = b == 0 ? 1.0 : a / b;
+			// ensure 0.0 <= result <= 1.0
+			result = result < 0.0 ? 0.0 : (result > 1.0 ? 1.0 : result);
+		}
 		// The pipeline might stop buffering because it determines it has buffered enough,
 		// while this calculation only gets us to 99% (and it will never get to 100% since
 		// the pipeline has stopped reading more media).
