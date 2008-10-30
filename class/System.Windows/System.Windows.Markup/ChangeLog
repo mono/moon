@@ -1,3 +1,7 @@
+2008-10-30  Jb Evain  <jbevain@novell.com>
+
+	* XmlnsPrefixAttribute.cs: add.
+
 2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* XmlnsDefinitionAttribute.cs, XmlLanguage.cs: Gui-compare fixes.
