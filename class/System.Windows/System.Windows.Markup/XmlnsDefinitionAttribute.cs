@@ -25,30 +25,30 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+
 using System;
 
 namespace System.Windows.Markup {
 
-	[AttributeUsage (AttributeTargets.Assembly, AllowMultiple= true)]
+	[AttributeUsage (AttributeTargets.Assembly, AllowMultiple = true)]
 	public sealed class XmlnsDefinitionAttribute : Attribute {
+
 		private string clr_namespace;
 		private string xml_namespace;
 		private string assembly_name;
 
 		public XmlnsDefinitionAttribute (string xmlNamespace, string clrNamespace)
 		{
-			XmlNamespace = xmlNamespace;
-			ClrNamespace = clrNamespace;
+			xml_namespace = xmlNamespace;
+			clr_namespace = clrNamespace;
 		}
 
 		public string ClrNamespace {
 			get { return clr_namespace; }
-			internal set { clr_namespace = value; }
 		}
 
 		public string XmlNamespace {
 			get { return xml_namespace; }
-			internal set { xml_namespace = value; }
 		}
 
 		public string AssemblyName {
