@@ -47,18 +47,19 @@ libmoon_include_headers = 	\
 	libmoon.h		\
 	list.h			\
 	media.h			\
+	mediaplayer.h		\
 	mms-downloader.h	\
 	moon-curves.h		\
 	moonlightconfiguration.h	\
 	moon-path.h		\
 	mp3.h			\
-	mplayer.h		\
 	multiscaleimage.h	\
 	multiscalesubimage.h	\
 	namescope.h		\
 	openfile.h		\
 	panel.h			\
 	pipeline.h		\
+	pipeline-asf.h	\
 	pipeline-ui.h		\
 	playlist.h		\
 	point.h			\
@@ -121,6 +122,7 @@ libmoon_la_SOURCES = 		\
 	layout.cpp		\
 	list.cpp		\
 	media.cpp		\
+	mediaplayer.cpp		\
 	mms-downloader.cpp	\
 	moon-path.c		\
 	moon-curves.c		\
@@ -128,11 +130,11 @@ libmoon_la_SOURCES = 		\
 	applier.cpp		\
 	enums.cpp		\
 	mp3.cpp			\
-	mplayer.cpp		\
 	namescope.cpp		\
 	openfile.cpp		\
 	panel.cpp		\
 	pipeline.cpp		\
+	pipeline-asf.cpp	\
 	pipeline-ui.cpp		\
 	pipeline-logo.cpp		\
 	point.cpp		\

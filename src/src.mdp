@@ -77,8 +77,8 @@
     <File name="mkcolor.cs" subtype="Code" buildaction="Nothing" />
     <File name="moon-path.c" subtype="Code" buildaction="Nothing" />
     <File name="moon-path.h" subtype="Code" buildaction="Nothing" />
-    <File name="mplayer.cpp" subtype="Code" buildaction="Compile" />
-    <File name="mplayer.h" subtype="Code" buildaction="Nothing" />
+    <File name="mediaplayer.cpp" subtype="Code" buildaction="Compile" />
+    <File name="mediaplayer.h" subtype="Code" buildaction="Nothing" />
     <File name="namescope.cpp" subtype="Code" buildaction="Compile" />
     <File name="namescope.h" subtype="Code" buildaction="Nothing" />
     <File name="openfile.cpp" subtype="Code" buildaction="Compile" />

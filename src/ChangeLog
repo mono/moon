@@ -1,5 +1,11 @@
 2008-10-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* type-generated.cpp, Makefile.am, media.h, mediaplayer.cpp,
+	  mediaplayer.h, mplayer.cpp, mplayer.h, src.mdp: Rename
+	  mplayer.[cpp|h] -> mediaplayer.[cpp|h].
+
+2008-10-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* cbinding.cpp, cbinding.h: Regenerated.
 
 2008-10-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 

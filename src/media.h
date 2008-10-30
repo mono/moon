@@ -16,7 +16,7 @@
 #include <glib.h>
 #include <gdk/gdkpixbuf.h>
 
-#include "mplayer.h"
+#include "mediaplayer.h"
 #include "value.h"
 #include "brush.h"
 #include "frameworkelement.h"

@@ -18,7 +18,7 @@
 #include <glib.h>
 
 #include "clock.h"
-#include "mplayer.h"
+#include "mediaplayer.h"
 #include "pipeline.h"
 #include "runtime.h"
 #include "list.h"
@@ -597,6 +597,7 @@ MediaPlayer::AdvanceFrame ()
 		target_pts = GetTargetPts ();	
 		if (target_pts == G_MAXUINT64) {
 			// This might happen if we've called Play on the audio source, but it hasn't actually played anything yet.
+			LOG_MEDIAPLAYER_EX ("MediaPlayer::AdvanceFrame (): invalid target pts from the audio stream.\n");
 			return false;
 		}
 	} else {
@@ -619,8 +620,8 @@ MediaPlayer::AdvanceFrame ()
 	
 	if (current_pts >= target_pts_end && GetBit (SeekSynched) && !(HasAudio () && GetBit (AudioEnded))) {
 #if DEBUG_ADVANCEFRAME
-		printf ("MediaPlayer::AdvanceFrame (): video is running too fast, wait a bit (current_pts: %llu, target_pts: %llu, delta: %llu, diff: %lld (%lld ms)).\n",
-			current_pts, target_pts, target_pts_delta, current_pts - target_pts, MilliSeconds_FromPts (current_pts - target_pts));
+		printf ("MediaPlayer::AdvanceFrame (): video is running too fast, wait a bit (current_pts: %llu ms, target_pts: %llu ms, delta: %llu ms, diff: %lld (%lld ms)).\n",
+			MilliSeconds_FromPts (current_pts), MilliSeconds_FromPts (target_pts), MilliSeconds_FromPts (target_pts_delta), current_pts - target_pts, MilliSeconds_FromPts (current_pts - target_pts));
 #endif
 		return false;
 	}
