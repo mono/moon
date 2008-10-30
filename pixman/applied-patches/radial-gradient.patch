@@ -1,0 +1,75 @@
+diff --git a/pixman/pixman/pixman-source.c b/pixman/pixman/pixman-source.c
+index 6a640fa..058c6a3 100644
+--- a/pixman/pixman/pixman-source.c
++++ b/pixman/pixman/pixman-source.c
+@@ -542,40 +542,47 @@ void pixmanFetchSourcePict(source_image_t * pict, int x, int y, int width,
+         if (pict->common.type == RADIAL) {
+ 	    radial_gradient_t *radial = (radial_gradient_t *)pict;
+             if (affine) {
++
++                double c1x = radial->c1.x / 65536.0;
++                double c1y = radial->c1.y / 65536.0;
++                double r1  = radial->c1.radius / 65536.0;
++                double det;
++                pixman_fixed_48_16_t t;
++
++                double r1pow2 = r1 * r1;
++                double pdx = rx - c1x - cx;
++                double pdy = ry - c1y - cy;
++
++                double A = radial->A;
++                double InvA2 = 65536. / (2. * A);
++                double A4 = (4. * A);
++                double Bstep = -2. * (cx*radial->cdx + cy*radial->cdy);
++
++                double B = -2. * ((pdx+cx)*radial->cdx + (pdy+cy)*radial->cdy + r1*radial->dr) - Bstep;
++                double C;
++
+                 while (buffer < end) {
+ 		    if (!mask || *mask++ & maskBits)
+ 		    {
+-			double pdx, pdy;
+-			double B, C;
+-			double det;
+-			double c1x = radial->c1.x / 65536.0;
+-			double c1y = radial->c1.y / 65536.0;
+-			double r1  = radial->c1.radius / 65536.0;
+-                        pixman_fixed_48_16_t t;
++			pdx += cx;
++			pdy += cy;	
+ 
+-			pdx = rx - c1x;
+-			pdy = ry - c1y;
++			B += Bstep;
+ 
+-			B = -2 * (  pdx * radial->cdx
+-				    + pdy * radial->cdy
+-				    + r1 * radial->dr);
+-			C = (pdx * pdx + pdy * pdy - r1 * r1);
++                        C = (pdx * pdx + pdy * pdy - r1pow2);
+ 
+-                        det = (B * B) - (4 * radial->A * C);
+-			if (det < 0.0)
+-			    det = 0.0;
++                        det = (B * B) - (A4 * C);
+ 
+-			if (radial->A < 0)
+-			    t = (pixman_fixed_48_16_t) ((- B - sqrt(det)) / (2.0 * radial->A) * 65536);
+-			else
+-			    t = (pixman_fixed_48_16_t) ((- B + sqrt(det)) / (2.0 * radial->A) * 65536);
++                        if (det < 0.0)
++                            t = (pixman_fixed_48_16_t) ((- B) * InvA2);
++                        else if (A < 0)
++                            t = (pixman_fixed_48_16_t) ((- B - sqrt(det)) * InvA2);
++                        else
++                            t = (pixman_fixed_48_16_t) ((- B + sqrt(det)) * InvA2);
+ 
+ 			*(buffer) = _gradient_walker_pixel (&walker, t);
+ 		    }
+ 		    ++buffer;
+-
+-                    rx += cx;
+-                    ry += cy;
+                 }
+             } else {
+ 		/* projective */

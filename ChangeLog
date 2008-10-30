@@ -1,3 +1,10 @@
+2008-10-30  Michael Dominic K.  <mdk@mdk.am>
+
+	* pixman/applied-patches/PATCHES:
+	* pixman/applied-patches/radial-gradient.patch:
+	* pixman/pixman/pixman-source.c: A patch by Andre Tupinamba for radial gradients.
+	Moves some calculations outside the walker loop.
+
 2008-10-24  Jeffrey Stedfast  <fejj@novell.com>
 
 	* configure.ac: Disable the xcb cairo backend. Fixes bug #438265.
