@@ -138,12 +138,12 @@ Collection::InsertWithError (int index, Value *value, MoonError *error)
 		index = GetCount ();
 	
 	added = new Value (*value);
-
+	
 	if (AddedToCollection (added, error)) {
 		g_ptr_array_insert (array, index, added);
 	
 		SetCount ((int) array->len);
-	
+		
 		EmitChanged (CollectionChangedActionAdd, added, NULL, index);
 	
 		return true;

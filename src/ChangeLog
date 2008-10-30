@@ -1,3 +1,13 @@
+2008-10-30  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fix for bug #435815.
+
+	* stylus.cpp (StrokeCollection::AddedToCollection): Override so
+	that we can avoid aborting if a stroke already has a logical
+	parent (not an error for strokes).
+
+	* error.h (MoonError::Clear): New convenience method.
+
 2008-10-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* libmoon.h: Fix build.

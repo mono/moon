@@ -19,6 +19,7 @@
 #include "collection.h"
 #include "color.h"
 #include "moon-path.h"
+#include "error.h"
 
 #define DEBUG_HITTEST 0
 
@@ -674,6 +675,31 @@ StrokeCollection::CanAdd (Value *value)
 	// We skip DependencyObjectCollection::CanAdd because that one
 	// mandates 1 parent per DO, which strokes violate.
 	return Collection::CanAdd (value) && !Contains (value);
+}
+
+bool
+StrokeCollection::AddedToCollection (Value *value, MoonError *error)
+{
+	DependencyObject *obj = value->AsDependencyObject ();
+	
+	// Call SetSurface() /before/ setting the logical parent
+	// because Storyboard::SetSurface() needs to be able to
+	// distinguish between the two cases.
+	
+	obj->SetSurface (GetSurface ());
+	obj->SetLogicalParent (this, error);
+	obj->AddPropertyChangeListener (this);
+	
+	// Bypass DependencyObjectCollection::AddedToCollection(), we
+	// are handling everything it would normally do. Also Clear()
+	// the MoonError because we ignore any errors from
+	// SetLogicalParent() since we'll only get an error if the
+	// stroke already has a logical parent (which is OK for
+	// strokes).
+	
+	error->Clear ();
+	
+	return Collection::AddedToCollection (value, error);
 }
 
 Rect

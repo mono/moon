@@ -92,12 +92,13 @@ public:
 class MoonError {
 public:
 	enum ErrorType {
-	  EXCEPTION = 1,
-	  ARGUMENT = 2,
-	  ARGUMENT_NULL = 3,
-	  ARGUMENT_OUT_OF_RANGE = 4,
-	  INVALID_OPERATION = 5,
-	  XAML_PARSE_EXCEPTION = 6
+		NO_ERROR = 0,
+		EXCEPTION = 1,
+		ARGUMENT = 2,
+		ARGUMENT_NULL = 3,
+		ARGUMENT_OUT_OF_RANGE = 4,
+		INVALID_OPERATION = 5,
+		XAML_PARSE_EXCEPTION = 6
 	};
 
 	// non-zero if an error occurred.
@@ -112,7 +113,9 @@ public:
 	
 	MoonError () : number ((ErrorType)0), code (0), message (0) {}
 	~MoonError ();
-
+	
+	void Clear () { number = NO_ERROR; code = 0; g_free (message); message = NULL; }
+	
 	static void FillIn (MoonError *error, ErrorType type, int code, char *message /* this message must be allocated using glib methods */);
   	static void FillIn (MoonError *error, ErrorType type, int code, const char *message);
 

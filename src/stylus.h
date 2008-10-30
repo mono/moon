@@ -215,6 +215,8 @@ class StrokeCollection : public DependencyObjectCollection {
 	virtual Type::Kind GetObjectType () { return Type::STROKE_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::STROKE; }
 	
+	virtual bool AddedToCollection (Value *value, MoonError *error);
+	
 	/* @GenerateCBinding,GeneratePInvoke */
 	StrokeCollection *HitTest (StylusPointCollection *stylusPoints);
 	
