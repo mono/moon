@@ -59,33 +59,6 @@ AnimationStorage::AnimationStorage (AnimationClock *clock, Animation/*Timeline*/
 	}
 }
 
-/*void
-AnimationStorage::AttachToPrevStorage (void)
-{
-	if (wasAttached)
-		return;
-
-	AnimationStorage *prev_storage = targetprop->AttachAnimationStorage (targetobj, this);
-	
-	delete baseValue;
-	baseValue = new Value(*targetobj->GetValue (targetprop));
-
-	if (prev_storage) {
-		Value *v = prev_storage->GetResetValue ();
-
-		if (stopValue)
-			delete (stopValue);
-
-		stopValue = new Value (*v);
-
-		prev_storage->FlagAsNonResetable ();
-		if (prev_storage->IsFloating ())
-			delete prev_storage;
-	}
-
-	wasAttached = TRUE;
-}*/
-
 void
 AnimationStorage::target_object_destroyed (EventObject *, EventArgs *, gpointer closure)
 {

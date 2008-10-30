@@ -149,7 +149,6 @@ class AnimationStorage {
 	Value* GetResetValue ();
 	void UpdatePropertyValueWith (Value *v);
 	Value* GetStopValue (void);
-	void AttachToPrevStorage (void);
 	void DetachFromPrevStorage (void);
 
  private:
