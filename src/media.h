@@ -313,24 +313,19 @@ class MediaElement : public MediaBase {
 	TimeSpan seek_to_position;
 	
 	// Buffering can be caused by:
-	//   * When the media is opened, we automatically buffer an amount equal to BufferingTime.
-	//     - In this case the buffering progress is calculated as:
-	//       "currently available pts" / BufferingTime, which equals
-	//       ("currently available pts" - "last played pts") / ("current pts" - "last played pts" + BufferingTime)
+	//   [1] When the media is opened, we automatically buffer an amount equal to BufferingTime.
+	//     - In this case we ask the pipeline how much it has buffered.
 	//
-	//   * When during playback we realize that we don't have enough data.
-	//     - In this case the buffering progress is calculated as:
-	//       ("currently available pts" - "last played pts") / BufferingTime, which equals
-	//       ("currently available pts" - "last played pts") / ("current pts" - "last played pts" + BufferingTime)
+	//   [2] When during playback we realize that we don't have enough data.
+	//     - In this case we ask the pipelien how much it has buffered.
 	//
-	//   * When we seek, and realize that we don't have enough data.
+	//   [3] When we seek, and realize that we don't have enough data.
 	//     - In this case the buffering progress is calculated as:
-	//       ("currently available pts" - "last played pts") / ("seeked to pts" - "last played pts" + BufferingTime)
+	//       ("last available pts" - "last played pts") / ("seeked to pts" - "last played pts" + BufferingTime)
 	//
-	//   So the general formula turns out to be:
-	//     ("currently available pts" - last_played_pts) / (mplayer->GetPosition () - last_played_pts + BufferingTime)
 	guint64 last_played_pts;
 	guint64 first_pts; // the first pts, starts off at GUINT_MAX
+	int buffering_mode; // if we're in [3] or not: 0 = unknown, 1 = [1], etc.
 	
 	// this is used to know what to do after a Buffering state finishes
 	MediaElementState prev_state;
@@ -349,6 +344,7 @@ class MediaElement : public MediaBase {
 	virtual void DownloaderFailed (EventArgs *args);
 	void BufferingComplete ();
 	double GetBufferedSize ();
+	double CalculateBufferingProgress ();
 	void UpdateProgress ();
 	
 	virtual void OnLoaded ();

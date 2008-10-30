@@ -694,6 +694,7 @@ MediaElement::Reinitialize (bool dtor)
 	last_played_pts = 0;
 	first_pts = G_MAXUINT64;
 	seek_to_position = -1;
+	buffering_mode = 0;
 	
 	if (streamed_markers) {
 		streamed_markers->unref ();
@@ -1026,8 +1027,9 @@ MediaElement::Render (cairo_t *cr, Region *region)
 double
 MediaElement::GetBufferedSize ()
 {
-	guint64 buffering_time;
-	guint64 buffered_time;
+	double result = 0.0;
+	guint64 buffering_time = G_MAXUINT64;
+	guint64 buffered_time = G_MAXUINT64;
 	IMediaDemuxer *demuxer;
 
 	buffering_time = TimeSpan_ToPts (GetBufferingTime ());
@@ -1048,7 +1050,82 @@ MediaElement::GetBufferedSize ()
 	if (buffered_time >= buffering_time)
 		return 1.0;
 		
-	return (double) buffered_time / (double) buffering_time;
+	result = (double) buffered_time / (double) buffering_time;
+	
+	return result;
+}
+
+double
+MediaElement::CalculateBufferingProgress ()
+{
+	double result = 0.0;
+	guint64 buffering_time = G_MAXUINT64;
+	guint64 last_available_pts = G_MAXUINT64;
+	guint64 position_pts = G_MAXUINT64;
+	IMediaDemuxer *demuxer;
+
+	buffering_time = TimeSpan_ToPts (GetBufferingTime ());
+	position_pts = TimeSpan_ToPts (GetPosition ());
+	
+	if (buffering_time == 0)
+		return 1.0;
+
+	if (!media)
+		return 0.0;
+		
+	demuxer = media->GetDemuxer ();
+
+	if (!demuxer)
+		return 0.0;
+
+	last_available_pts = demuxer->GetLastAvailablePts ();
+	
+	if (buffering_mode == 0) {
+		if (position_pts == 0) {
+			buffering_mode = 1;
+		} else if (IsLive ()) {
+			buffering_mode = 2;
+		} else if (position_pts + buffering_time > last_available_pts) {
+			buffering_mode = 3;
+		} else {
+			buffering_mode = 2;
+		}
+	}
+
+	switch (buffering_mode) {
+	case 1:
+	case 2: {
+		result = GetBufferedSize ();
+		break;
+	}
+	case 3: {
+//      ("last available pts" - "last played pts") / ("seeked to pts" - "last played pts" + BufferingTime)
+		double a = (last_available_pts - last_played_pts);
+		double b = (position_pts - last_played_pts + buffering_time);
+
+		// check for /0
+		result = b == 0 ? 1.0 : a / b;
+		// ensure 0.0 <= result <= 1.0
+		result = result < 0.0 ? 0.0 : (result > 1.0 ? 1.0 : result);
+
+		// The pipeline might stop buffering because it determines it has buffered enough,
+		// while this calculation only gets us to 99% (and it will never get to 100% since
+		// the pipeline has stopped reading more media).
+		if (last_available_pts > position_pts && result != 1.0 && GetBufferedSize () == 1.0)
+			result = 1.0;
+
+		break;
+	}
+	default:
+		fprintf (stderr, "Moonlight: MediaElement got an unexpected buffering mode (%i).\n", buffering_mode);
+		result = 0.0;
+		break;
+	}
+
+	e (printf ("MediaElement::CalculateBufferingProgress () buffering mode: %i, result: %.2f, buffering time: %llu ms, position: %llu ms, last available pts: %llu ms\n",
+		buffering_mode, result, MilliSeconds_FromPts (buffering_time), MilliSeconds_FromPts (position_pts), MilliSeconds_FromPts (last_available_pts)));
+
+	return result;
 }
 
 void
@@ -1083,7 +1160,7 @@ MediaElement::UpdateProgress ()
 	//	media->GetDemuxer ()->PrintBufferInformation ();
 			
 	if (IsBuffering ()) {
-		progress = GetBufferedSize ();
+		progress = CalculateBufferingProgress ();
 		current = GetBufferingProgress ();
 		
 		if (current > progress) {
@@ -1176,6 +1253,8 @@ MediaElement::size_notify (gint64 size, gpointer data)
 void
 MediaElement::BufferingComplete ()
 {
+	buffering_mode = 0;
+
 	if (state != Buffering) {
 		d(printf ("MediaElement::BufferingComplete (): current state is invalid ('%s'), should only be 'Buffering'\n",
 			  GetStateName (state)));

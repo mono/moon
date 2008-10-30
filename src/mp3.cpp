@@ -332,7 +332,7 @@ mpeg_check_vbr_headers (MpegFrameHeader *mpeg, MpegVBRHeader *vbr, IMediaSource 
 
 #define MPEG_JUMP_TABLE_GROW_SIZE 16
 
-Mp3FrameReader::Mp3FrameReader (IMediaSource *source, gint64 start, guint32 frame_len, guint32 frame_duration, bool xing)
+Mp3FrameReader::Mp3FrameReader (IMediaSource *source, AudioStream *stream, gint64 start, guint32 frame_len, guint32 frame_duration, bool xing)
 {
 	jmptab = g_new (MpegFrame, MPEG_JUMP_TABLE_GROW_SIZE);
 	avail = MPEG_JUMP_TABLE_GROW_SIZE;
@@ -343,7 +343,8 @@ Mp3FrameReader::Mp3FrameReader (IMediaSource *source, gint64 start, guint32 fram
 	this->xing = xing;
 	
 	stream_start = start;
-	stream = source;
+	this->source = source;
+	this->stream = stream;
 	
 	bit_rate = 0;
 	cur_pts = 0;
@@ -421,7 +422,7 @@ Mp3FrameReader::MpegFrameSearch (guint64 pts)
 MediaResult
 Mp3FrameReader::Seek (guint64 pts)
 {
-	gint64 offset = stream->GetPosition ();
+	gint64 offset = source->GetPosition ();
 	gint32 bit_rate = this->bit_rate;
 	guint64 cur_pts = this->cur_pts;
 	guint32 frame;
@@ -431,7 +432,7 @@ Mp3FrameReader::Seek (guint64 pts)
 		return MEDIA_SUCCESS;
 	
 	if (pts == 0) {
-		if (!stream->Seek (stream_start, SEEK_SET))
+		if (!source->Seek (stream_start, SEEK_SET))
 			goto exception;
 		
 		bit_rate = 0;
@@ -443,7 +444,7 @@ Mp3FrameReader::Seek (guint64 pts)
 	// if we are seeking to some place we've been, then we can use our jump table
 	if (used > 0 && pts < (jmptab[used - 1].pts + jmptab[used - 1].dur)) {
 		if (pts >= jmptab[used - 1].pts) {
-			if (!stream->Seek (jmptab[used - 1].offset, SEEK_SET))
+			if (!source->Seek (jmptab[used - 1].offset, SEEK_SET))
 				goto exception;
 			
 			this->bit_rate = jmptab[used - 1].bit_rate;
@@ -455,7 +456,7 @@ Mp3FrameReader::Seek (guint64 pts)
 		// search for our requested pts
 		frame = MpegFrameSearch (pts);
 		
-		if (!stream->Seek (jmptab[frame].offset, SEEK_SET))
+		if (!source->Seek (jmptab[frame].offset, SEEK_SET))
 			goto exception;
 		
 		this->bit_rate = jmptab[frame].bit_rate;
@@ -472,12 +473,12 @@ Mp3FrameReader::Seek (guint64 pts)
 			goto exception;
 	}
 	
-	// pts requested is at the start of the next frame in the stream
+	// pts requested is at the start of the next frame in the source
 	if (this->cur_pts == pts)
 		return MEDIA_SUCCESS;
 	
 	// pts requested was non-key frame, need to seek back to the most recent key frame
-	if (!stream->Seek (jmptab[used - 1].offset, SEEK_SET))
+	if (!source->Seek (jmptab[used - 1].offset, SEEK_SET))
 		goto exception;
 	
 	this->bit_rate = jmptab[used - 1].bit_rate;
@@ -488,7 +489,7 @@ Mp3FrameReader::Seek (guint64 pts)
 exception:
 	
 	// restore FrameReader to previous state
-	stream->Seek (offset, SEEK_SET);
+	source->Seek (offset, SEEK_SET);
 	this->bit_rate = bit_rate;
 	this->cur_pts = cur_pts;
 	
@@ -505,12 +506,12 @@ Mp3FrameReader::SkipFrame ()
 	guint32 len;
 	bool eof;
 	
-	offset = stream->GetPosition ();
+	offset = source->GetPosition ();
 
-	if (!stream->IsPositionAvailable (offset + 4, &eof))
+	if (!source->IsPositionAvailable (offset + 4, &eof))
 		return eof ? MEDIA_FAIL : MEDIA_NOT_ENOUGH_DATA;
 
-	if (!stream->Peek (buffer, 4))
+	if (!source->Peek (buffer, 4))
 		return MEDIA_FAIL;
 	
 	if (!mpeg_parse_header (&mpeg, buffer))
@@ -530,19 +531,21 @@ Mp3FrameReader::SkipFrame ()
 	
 	len = (guint32) mpeg_frame_length (&mpeg, xing);
 	
-	if (!stream->IsPositionAvailable (offset + len, &eof))
+	if (!source->IsPositionAvailable (offset + len, &eof))
 		return eof ? MEDIA_FAIL : MEDIA_NOT_ENOUGH_DATA;
 		
-	if (!stream->Seek ((gint64) len, SEEK_CUR))
+	if (!source->Seek ((gint64) len, SEEK_CUR))
 		return MEDIA_FAIL;
 	
 	cur_pts += duration;
-	
+
+	stream->SetLastAvailablePts (cur_pts);
+
 	return MEDIA_SUCCESS;
 }
 
 MediaResult
-Mp3FrameReader::TryReadFrame (IMediaStream *str, MediaFrame **f)
+Mp3FrameReader::TryReadFrame (MediaFrame **f)
 {
 	MpegFrameHeader mpeg;
 	guint64 duration;
@@ -552,15 +555,15 @@ Mp3FrameReader::TryReadFrame (IMediaStream *str, MediaFrame **f)
 	MediaFrame *frame;
 	bool eof = false;
 	
-	offset = stream->GetPosition ();
+	offset = source->GetPosition ();
 	
 	// Check if there is enough data available
-	if (!stream->IsPositionAvailable (offset + 4, &eof)) {
-		//printf ("Mp3FrameReader::TryReadFrame (): Exit 2: Buffer underflow (last available pos: %lld, offset: %llu, diff: %llu, len: %u)\n", stream->GetLastAvailablePosition (), offset, stream->GetLastAvailablePosition () - offset, len);
+	if (!source->IsPositionAvailable (offset + 4, &eof)) {
+		//printf ("Mp3FrameReader::TryReadFrame (): Exit 2: Buffer underflow (last available pos: %lld, offset: %llu, diff: %llu, len: %u)\n", source->GetLastAvailablePosition (), offset, source->GetLastAvailablePosition () - offset, len);
 		return eof? MEDIA_NO_MORE_DATA : MEDIA_NOT_ENOUGH_DATA;
 	}
 	
-	if (!stream->Peek (buffer, 4)) {
+	if (!source->Peek (buffer, 4)) {
 		//printf ("Mp3FrameReader::TryReadFrame (): Exit 3\n");
 		return MEDIA_FAIL; // Now this shouldn't fail, given that we've checked for the previous error conditions
 	}
@@ -590,12 +593,12 @@ Mp3FrameReader::TryReadFrame (IMediaStream *str, MediaFrame **f)
 	
 	len = (guint32) mpeg_frame_length (&mpeg, xing);
 
-	if (!stream->IsPositionAvailable (offset + len, &eof)) {
-		//printf ("Mp3FrameReader::TryReadFrame (): Exit 6: Buffer underflow (last available pos: %lld, offset: %llu, diff: %llu, len: %u)\n", stream->GetLastAvailablePosition (), offset, stream->GetLastAvailablePosition () - offset, len);
+	if (!source->IsPositionAvailable (offset + len, &eof)) {
+		//printf ("Mp3FrameReader::TryReadFrame (): Exit 6: Buffer underflow (last available pos: %lld, offset: %llu, diff: %llu, len: %u)\n", source->GetLastAvailablePosition (), offset, source->GetLastAvailablePosition () - offset, len);
 		return eof ? MEDIA_NO_MORE_DATA : MEDIA_BUFFER_UNDERFLOW;
 	}
 
-	frame = new MediaFrame (str);
+	frame = new MediaFrame (stream);
 	*f = frame;
 	frame->buflen = len;
 	
@@ -610,7 +613,7 @@ Mp3FrameReader::TryReadFrame (IMediaStream *str, MediaFrame **f)
 	if (mpeg.layer != 1 && !mpeg.padded)
 		frame->buffer[frame->buflen - 1] = 0;
 	
-	if (!stream->ReadAll (frame->buffer, len)) {
+	if (!source->ReadAll (frame->buffer, len)) {
 		//printf ("Mp3FrameReader::TryReadFrame (): Exit 7\n");
 		return MEDIA_FAIL;
 	}
@@ -837,9 +840,9 @@ Mp3Demuxer::ReadHeader ()
 	// calculate the duration of the first frame
 	duration = mpeg_frame_duration (&mpeg);
 	
-	reader = new Mp3FrameReader (source, stream_start, len, duration, xing);
-	
 	stream = audio = new AudioStream (GetMedia ());
+	reader = new Mp3FrameReader (source, audio, stream_start, len, duration, xing);
+	
 	audio->codec_id = CODEC_MP3;
 	audio->codec = g_strdup ("mp3");
 	
@@ -865,7 +868,7 @@ Mp3Demuxer::ReadHeader ()
 MediaResult
 Mp3Demuxer::TryReadFrame (IMediaStream *stream, MediaFrame **frame)
 {
-	return reader->TryReadFrame (stream, frame);
+	return reader->TryReadFrame (frame);
 }
 
 /*

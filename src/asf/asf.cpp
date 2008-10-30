@@ -799,7 +799,7 @@ ASFPacket::Read ()
  * ASFReader
  */
 
-ASFReader::ASFReader (ASFParser *parser, IMediaDemuxer *demuxer)
+ASFReader::ASFReader (ASFParser *parser, ASFDemuxer *demuxer)
 {
 	this->parser = parser;
 	this->demuxer = demuxer;
@@ -826,7 +826,7 @@ ASFReader::SelectStream (gint32 stream_index, bool value)
 
 	if (value) {
 		if (readers [stream_index] == NULL) {
-			readers [stream_index] = new ASFFrameReader (parser, stream_index, demuxer, this);
+			readers [stream_index] = new ASFFrameReader (parser, stream_index, demuxer, this, demuxer->GetStreamOfASFIndex (stream_index));
 		}
 	} else {
 		if (readers [stream_index] != NULL) {
@@ -1072,6 +1072,8 @@ ASFReader::Seek (guint64 pts)
 			if (reader == NULL)
 				continue;
 
+			reader->GetStream ()->SetLastAvailablePts (payload_pts);
+
 			// We're not interested in payloads with pts above the requested pts
 			if (payload_pts > pts) {
 				found_above [stream_id] = true;
@@ -1181,6 +1183,8 @@ ASFReader::Seek (guint64 pts)
 				if (reader == NULL)
 					continue;
 	
+				reader->GetStream ()->SetLastAvailablePts (payload_pts);
+			
 				// Found a pts above the requested pts, save it.
 				if (payload_pts > pts) {
 					found_above [stream_id] = true;
@@ -1260,12 +1264,14 @@ ASFReader::GetLastAvailablePacketIndex ()
  *	ASFFrameReader
  */
 
-ASFFrameReader::ASFFrameReader (ASFParser *p, int s, IMediaDemuxer *d, ASFReader *r)
+ASFFrameReader::ASFFrameReader (ASFParser *parser, int stream_number, ASFDemuxer *demuxer, ASFReader *reader, IMediaStream *stream)
 {
-	reader = r;
-	stream_number = s;
-	parser = p;
-	demuxer = d;
+	this->reader = reader;
+	this->stream_number = stream_number;
+	this->parser = parser;
+	this->demuxer = demuxer;
+	this->stream = stream;
+	this->stream->ref ();
 	first = NULL;
 	last = NULL;
 	size = 0;
@@ -1276,8 +1282,6 @@ ASFFrameReader::ASFFrameReader (ASFParser *p, int s, IMediaDemuxer *d, ASFReader
 	payloads = NULL;
 	
 	first_pts = 0;
-	
-	marker_stream = NULL;		
 	
 	index = NULL;
 	index_size = 0;
@@ -1299,18 +1303,10 @@ ASFFrameReader::~ASFFrameReader ()
 	
 	g_free (index);
 	
-	if (marker_stream)
-		marker_stream->unref ();
-}
-
-void
-ASFFrameReader::SetMarkerStream (MarkerStream *stream)
-{
-	if (marker_stream)
-		marker_stream->unref ();
-	marker_stream = stream;
-	if (marker_stream)
-		marker_stream->ref ();
+	if (stream) {
+		stream->unref ();
+		stream = NULL;
+	}
 }
 
 void
@@ -1547,7 +1543,9 @@ ASFFrameReader::Advance (bool read_if_needed)
 		
 		asf_single_payload* payload = current->payload;
 		current_pts = MilliSeconds_ToPts (payload->get_presentation_time () - parser->GetFileProperties ()->preroll);
-		
+
+		stream->SetLastAvailablePts (current_pts);
+
 		if (current_pts < first_pts) {
 			ASFFrameReaderData* tmp = current;
 			current = current->next;
@@ -1717,7 +1715,7 @@ ASFFrameReader::AppendPayload (asf_single_payload *payload, guint64 packet_index
 		last = node;
 	}
 	
-	if (marker_stream != NULL) {
+	if (stream->GetType () == MediaTypeMarker) {
 		// Here we try to figure out if we have an entire marker or not
 		// (determined by finding two NULL WCHARs in the data).
 		// Make a copy of our payloads, Advance will delete them, 
@@ -1761,6 +1759,7 @@ ASFFrameReader::AppendPayload (asf_single_payload *payload, guint64 packet_index
 			ASF_LOG ("ASFFrameReader::AppendPayload () in data with size %llu found %i nulls.\n", Size (), nulls);
 	
 			if (nulls >= 2) {
+				MarkerStream *marker_stream = (MarkerStream *) stream;
 				MediaFrame *frame = new MediaFrame (marker_stream);
 				frame->pts = Pts ();
 				frame->buflen = Size ();

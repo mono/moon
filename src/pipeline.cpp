@@ -1049,20 +1049,8 @@ ASFDemuxer::ReadMarkers ()
 	*/
 	
 	// Hookup to the marker (ASF_COMMAND_MEDIA) stream
-	MarkerStream *marker_stream;
-	ASFFrameReader *reader;
 	MediaMarker *marker;
 	
-	for (int i = 0; i < GetStreamCount (); i++) {
-		if (GetStream (i)->GetType () == MediaTypeMarker) {
-			marker_stream = (MarkerStream *) GetStream (i);
-			this->reader->SelectStream (stream_to_asf_index [marker_stream->index], true);
-			reader = this->reader->GetFrameReader (stream_to_asf_index [marker_stream->index]);
-			reader->SetMarkerStream (marker_stream);
-			printf ("ASFDemuxer::ReadMarkers (): Hooked up marker stream.\n");
-		}
-	}
-		
 	// Read the markers (if any)
 	List *markers = media->GetMarkers ();
 	const char *type;
@@ -1354,6 +1342,16 @@ failure:
 	}
 	
 	return result;
+}
+
+IMediaStream *
+ASFDemuxer::GetStreamOfASFIndex (gint32 asf_index)
+{
+	for (gint32 i = 0; i < GetStreamCount (); i++) {
+		if (stream_to_asf_index [i] == asf_index)
+			return GetStream (i);
+	}
+	return NULL;
 }
 
 MediaResult
@@ -1750,7 +1748,7 @@ FileSource::ReadInternal (void *buf, guint32 n)
 	clearerr (fd);
 	nread = fread (buf, 1, n, fd);
 
-	LOG_PIPELINE ("FileSource::ReadInternal (0x????????, %i), prev pos: %i, post pos: %i, nread: %i\n", (int) n, (int) current_position, (int) after_position, (int) nread);
+	LOG_PIPELINE ("FileSource::ReadInternal (0x????????, %i), nread: %i\n", (int) n, (int) nread);
 
 	return nread;
 }
@@ -2342,6 +2340,7 @@ IMediaStream::IMediaStream (Media *media) : IMediaObject (media)
 	first_pts = G_MAXUINT64; // The first pts in the stream, initialized to G_MAXUINT64
 	last_popped_pts = G_MAXUINT64; // The pts of the last frame returned, initialized to G_MAXUINT64
 	last_enqueued_pts = G_MAXUINT64; // The pts of the last frame enqueued, initialized to G_MAXUINT64
+	last_available_pts = 0; // The pts of the last available frame, initialized to 0
 }
 
 IMediaStream::~IMediaStream ()
@@ -2587,6 +2586,27 @@ IMediaDemuxer::GetBufferedSize ()
 
 		result = MIN (result, stream->GetBufferedSize ());
 	}
+
+	return result;
+}
+
+guint64
+IMediaDemuxer::GetLastAvailablePts ()
+{
+	guint64 result = G_MAXUINT64;
+	IMediaStream *stream;
+	
+	for (int i = 0; i < GetStreamCount (); i++) {
+		stream = GetStream (i);
+
+		if (stream == NULL)
+			continue;
+
+		result = MIN (result, stream->GetLastAvailablePts ());
+	}
+
+	if (result == G_MAXUINT64)
+		result = 0;
 
 	return result;
 }

@@ -93,7 +93,7 @@ private:
 	ASFFrameReader *readers [128];
 	ASFParser *parser;
 	IMediaSource *source;
-	IMediaDemuxer *demuxer;
+	ASFDemuxer *demuxer;
 	// The index of the next packet to be read.
 	uint64_t next_packet_index;
 
@@ -101,7 +101,7 @@ private:
 	MediaResult SeekToPts (uint64_t pts);
 
 public:
-	ASFReader (ASFParser *parser, IMediaDemuxer *demuxer);
+	ASFReader (ASFParser *parser, ASFDemuxer *demuxer);
 	~ASFReader ();
 	// Select the specified stream.
 	// No streams are selected by default.
@@ -191,10 +191,10 @@ struct ASFFrameReaderIndex {
 
 class ASFFrameReader {
 private:
-	IMediaDemuxer *demuxer;
+	ASFDemuxer *demuxer;
+	IMediaStream *stream;
 	ASFParser *parser;
 	ASFReader *reader;
-	MarkerStream *marker_stream;
 	
 	// The first pts that should be returned, any frames with pts below this one will be dropped.
 	uint64_t first_pts;
@@ -227,7 +227,7 @@ private:
 	void Remove (ASFFrameReaderData *data); // Unlinks the payload from the queue and deletes it.
 		
 public:
-	ASFFrameReader (ASFParser *parser, int stream_index, IMediaDemuxer *demuxer, ASFReader *reader);
+	ASFFrameReader (ASFParser *parser, int stream_index, ASFDemuxer *demuxer, ASFReader *reader, IMediaStream *stream);
 	~ASFFrameReader ();
 	
 	// Advance to the next frame
@@ -258,9 +258,8 @@ public:
 	void SetOnlyKeyFrames (); // Sets the key_frames_only flag to true
 	void SetFirstPts (uint64_t); // Sets the first pts which is to be returned.
 	void Reset ();
-	
-	void SetMarkerStream (MarkerStream *stream);
-	MarkerStream *GetMarkerStream () { return marker_stream; }
+
+	IMediaStream *GetStream () { return stream; }
 };
 
 class ASFParser : public EventObject {

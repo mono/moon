@@ -32,7 +32,7 @@
 #define MAX_VIDEO_HEIGHT	2048
 #define MAX_VIDEO_WIDTH		2048
 
-#define MOONLIGHT_CODEC_ABI_VERSION 4
+#define MOONLIGHT_CODEC_ABI_VERSION 5
 typedef void (*register_codec) (int abi_version);
 
 /*
@@ -108,6 +108,7 @@ class MarkerStream;
 class IImageConverter;
 class MediaMarker;
 class ProgressiveSource;
+class ASFDemuxer;
 struct ManagedStreamCallbacks;
 
 typedef gint32 MediaResult;
@@ -497,7 +498,6 @@ public:
 	virtual const char* GetTypeName () { return "IMediaObject"; }
 };
 
-
 class IMediaStream : public IMediaObject {
 private:
 	void *context;
@@ -505,7 +505,8 @@ private:
 	bool selected;
 	guint64 first_pts; // The first pts in the stream, initialized to G_MAXUINT64
 	guint64 last_popped_pts; // The pts of the last frame returned, initialized to G_MAXUINT64
-	guint64 last_enqueued_pts; // The pts of the last frame enqueued, initialized to G_MAXUINT64
+	guint64 last_enqueued_pts; // The pts of the last frae enqueued, initialized to G_MAXUINT64
+	guint64 last_available_pts; // The last pts available, initialized to 0
 	Queue *queue; // Our queue of demuxed frames
 	IMediaDecoder *decoder;
 
@@ -563,6 +564,8 @@ public:
 	guint64 GetFirstPts () { return first_pts; }
 	guint64 GetLastPoppedPts () { return last_popped_pts; }
 	guint64 GetLastEnqueuedPts () { return last_enqueued_pts; }
+	void SetLastAvailablePts (guint64 value) { last_available_pts = MAX (value, last_available_pts); }
+	guint64 GetLastAvailablePts () { return last_available_pts; }
 	guint64 GetBufferedSize (); // Returns the time between the last frame returned and the last frame available (buffer time)
 #if DEBUG
 	void PrintBufferInformation ();
@@ -605,6 +608,7 @@ public:
 	virtual void UpdateSelected (IMediaStream *stream) {};
 	
 	virtual const char* GetTypeName () { return GetName (); }
+	guint64 GetLastAvailablePts ();
 };
 
 class IMediaDecoder : public IMediaObject {
@@ -1062,6 +1066,8 @@ public:
 	ASFParser *GetParser () { return parser; }
 	void SetParser (ASFParser *parser);
 	virtual const char *GetName () { return "ASFDemuxer"; }
+
+	IMediaStream *GetStreamOfASFIndex (gint32 asf_index);
 };
 
 class ASFDemuxerInfo : public DemuxerInfo {

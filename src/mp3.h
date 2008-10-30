@@ -69,7 +69,8 @@ struct MpegFrame {
 };
 
 class Mp3FrameReader {
-	IMediaSource *stream;
+	IMediaSource *source;
+	AudioStream *stream;
 	gint64 stream_start;
 	guint32 frame_dur;
 	guint32 frame_len;
@@ -87,12 +88,12 @@ class Mp3FrameReader {
 	MediaResult SkipFrame ();
 	
 public:
-	Mp3FrameReader (IMediaSource *source, gint64 start, guint32 frame_len, guint32 frame_duration, bool xing);
+	Mp3FrameReader (IMediaSource *source, AudioStream *stream, gint64 start, guint32 frame_len, guint32 frame_duration, bool xing);
 	~Mp3FrameReader ();
 	
 	MediaResult Seek (guint64 pts);
 	
-	MediaResult TryReadFrame (IMediaStream *stream, MediaFrame **frame);
+	MediaResult TryReadFrame (MediaFrame **frame);
 };
 
 class Mp3Demuxer : public IMediaDemuxer {

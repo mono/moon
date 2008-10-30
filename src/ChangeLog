@@ -1,3 +1,18 @@
+2008-10-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* media.cpp, media.h: MediaElement: fix buffering progress after
+	  seeking regression - don't only use the buffer level in the
+	  pipeline to report buffering progress, but take into accout the
+	  point from where we seek.
+	* mp3.h, mp3.cpp: Store the AudioStream in the frame reader and update
+	  the stream's LatestAvailablePts field whenever we read a frame.
+	  Also rename the previous 'stream' (IMediaSource*) field to 'source'
+	  to avoid confusion with AudioStream.
+	* pipeline.cpp, pipeline.h: Add a last_available_pts field to
+	  IMediaStream and the corresponding GetLastAvailablePts to
+	  IMediaDemuxer, enabling the calculation of correct buffering
+	  progress after a seek. This also requires a codec abi version bump.
+
 2008-10-29  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* clock.h: Change MilliSeconds_[From|To]Pts to use the new
