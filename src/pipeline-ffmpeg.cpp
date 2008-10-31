@@ -20,6 +20,7 @@
 #include <glib.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <dlfcn.h>
 
 #include "pipeline-ffmpeg.h"
 #include "pipeline.h"
@@ -27,18 +28,142 @@
 #include "debug.h"
 
 #define LOG_FFMPEG(...)// printf(__VA_ARGS__);
+#define CODECS_DEBUG(...) if (moonlight_flags & RUNTIME_INIT_CODECS_DEBUG) printf (__VA_ARGS__);
+
+// libavcodec
+typedef void             (dyn_avcodec_init)                 ();
+typedef void             (dyn_avcodec_register_all)         ();
+typedef AVCodecContext * (dyn_avcodec_alloc_context)        ();
+typedef AVFrame *        (dyn_avcodec_alloc_frame)          ();
+typedef int              (dyn_avcodec_close)                (AVCodecContext *avctx);
+typedef int              (dyn_avcodec_decode_audio2)        (AVCodecContext *avctx, int16_t *samples, int *frame_size_ptr, const uint8_t *buf, int buf_size);
+typedef int              (dyn_avcodec_decode_video)         (AVCodecContext *avctx, AVFrame *picture, int *got_picture_ptr, const uint8_t *buf, int buf_size);
+typedef AVCodec *        (dyn_avcodec_find_decoder_by_name) (const char *name);
+typedef void             (dyn_avcodec_flush_buffers)        (AVCodecContext *avctx);
+typedef int              (dyn_avcodec_open)                 (AVCodecContext *avctx, AVCodec *codec);
+typedef unsigned         (dyn_avcodec_version)              ();
+
+dyn_avcodec_init *                 d_avcodec_init = NULL;
+dyn_avcodec_register_all *         d_avcodec_register_all = NULL;
+dyn_avcodec_alloc_context *        d_avcodec_alloc_context = NULL;
+dyn_avcodec_alloc_frame *          d_avcodec_alloc_frame = NULL;
+dyn_avcodec_close *                d_avcodec_close = NULL;
+dyn_avcodec_decode_audio2 *        d_avcodec_decode_audio2 = NULL;
+dyn_avcodec_decode_video *         d_avcodec_decode_video = NULL;
+dyn_avcodec_find_decoder_by_name * d_avcodec_find_decoder_by_name = NULL;
+dyn_avcodec_flush_buffers *        d_avcodec_flush_buffers = NULL;
+dyn_avcodec_open *                 d_avcodec_open = NULL;
+dyn_avcodec_version *              d_avcodec_version = NULL;
+
+#define avcodec_init                 d_avcodec_init
+#define avcodec_register_all         d_avcodec_register_all
+#define avcodec_alloc_context        d_avcodec_alloc_context
+#define avcodec_alloc_frame          d_avcodec_alloc_frame
+#define avcodec_close                d_avcodec_close
+#define avcodec_decode_audio2        d_avcodec_decode_audio2
+#define avcodec_decode_video         d_avcodec_decode_video
+#define avcodec_find_decoder_by_name d_avcodec_find_decoder_by_name
+#define avcodec_flush_buffers        d_avcodec_flush_buffers
+#define avcodec_open                 d_avcodec_open
+#define avcodec_version              d_avcodec_version
+
+// libavutil
+typedef void             (dyn_av_free)                      (void *ptr);
+typedef void *           (dyn_av_mallocz)                   (unsigned int size);
+
+dyn_av_free *                      d_av_free = NULL;
+dyn_av_mallocz *                   d_av_mallocz = NULL;
+
+#define av_free                      d_av_free
+#define av_mallocz                   d_av_mallocz
 
 bool ffmpeg_initialized = false;
-bool ffmpeg_registered = false;
+int is_ffmpeg_usable = 0; // 0 - unknown, 1 - yes, 2 - false
 
 pthread_mutex_t ffmpeg_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-void
+static bool
+load_ffmpeg ()
+{
+	bool result = true;
+	unsigned int libavcodec_version = 0;
+	void *libavcodec = NULL;
+	void *libavutil = NULL;
+	char *libavcodec_so = NULL;
+	char *libavutil_so = NULL;
+	
+	switch (is_ffmpeg_usable) {
+	case 0:
+		libavcodec_so = g_strdup_printf ("libavcodec.so.%i", LIBAVCODEC_VERSION_MAJOR);
+		libavutil_so = g_strdup_printf ("libavutil.so.%i", LIBAVUTIL_VERSION_MAJOR);
+		libavcodec = dlopen (libavcodec_so, RTLD_LAZY);
+		libavutil = dlopen (libavutil_so, RTLD_LAZY);
+
+		if (libavcodec == NULL) {
+			result = false;
+			fprintf (stderr, "Moonlight: Could not find '%s'.\n", libavcodec_so);
+		} 
+		if (libavutil == NULL) {
+			result = false;
+			fprintf (stderr, "Moonlight: Could not find '%s'.\n", libavutil_so);
+		}
+
+		g_free (libavcodec_so);
+		g_free (libavutil_so);
+		
+		if (!result) {
+			is_ffmpeg_usable = 2;
+			if (libavutil != NULL)
+				dlclose (libavutil);
+			if (libavcodec != NULL)
+				dlclose (libavcodec);
+			return false;
+		}
+
+		result &= NULL != (d_avcodec_init                 = (dyn_avcodec_init *)                 dlsym (libavcodec, "avcodec_init"));
+		result &= NULL != (d_avcodec_register_all         = (dyn_avcodec_register_all *)         dlsym (libavcodec, "avcodec_register_all"));
+		result &= NULL != (d_avcodec_alloc_context        = (dyn_avcodec_alloc_context *)        dlsym (libavcodec, "avcodec_alloc_context"));
+		result &= NULL != (d_avcodec_alloc_frame          = (dyn_avcodec_alloc_frame *)          dlsym (libavcodec, "avcodec_alloc_frame"));
+		result &= NULL != (d_avcodec_close                = (dyn_avcodec_close *)                dlsym (libavcodec, "avcodec_close"));
+		result &= NULL != (d_avcodec_decode_audio2        = (dyn_avcodec_decode_audio2 *)        dlsym (libavcodec, "avcodec_decode_audio2"));
+		result &= NULL != (d_avcodec_decode_video         = (dyn_avcodec_decode_video *)         dlsym (libavcodec, "avcodec_decode_video"));
+		result &= NULL != (d_avcodec_find_decoder_by_name = (dyn_avcodec_find_decoder_by_name *) dlsym (libavcodec, "avcodec_find_decoder_by_name"));
+		result &= NULL != (d_avcodec_flush_buffers        = (dyn_avcodec_flush_buffers *)        dlsym (libavcodec, "avcodec_flush_buffers"));
+		result &= NULL != (d_avcodec_open                 = (dyn_avcodec_open *)                 dlsym (libavcodec, "avcodec_open"));
+		result &= NULL != (d_avcodec_version              = (dyn_avcodec_version *)              dlsym (libavcodec, "avcodec_version"));
+		
+		result &= NULL != (d_av_free    = (dyn_av_free *)    dlsym (libavutil, "av_free"));
+		result &= NULL != (d_av_mallocz = (dyn_av_mallocz *) dlsym (libavutil, "av_mallocz"));
+		
+		if (d_avcodec_version != NULL) {
+			libavcodec_version = d_avcodec_version ();
+			fprintf (stdout, "Moonlight: Loaded libavcodec version: '%02i.%02i.%02i'\n", 
+					(libavcodec_version >> 16) & 0xFF, (libavcodec_version >> 8) & 0xFF, libavcodec_version & 0xFF);
+		}
+		
+		if (!result)
+			fprintf (stderr, "Moonlight: Failed to load one or more required functions in libavcodec.so or libavutil.so.");
+
+		is_ffmpeg_usable = result ? 1 : 2;
+		return result;
+	case 1:
+		return true;
+	default:
+		return false;
+	}
+	
+	return true;
+}
+
+static void
 initialize_ffmpeg ()
 {
 	if (ffmpeg_initialized)
 		return;
 	
+	if (!load_ffmpeg ())
+		return;
+		
 	avcodec_init ();
 	avcodec_register_all ();
 		
@@ -49,6 +174,9 @@ void
 register_ffmpeg ()
 {
 	initialize_ffmpeg ();
+
+	if (is_ffmpeg_usable != 1)
+		return;
 		
 	Media::RegisterDecoder (new FfmpegDecoderInfo ());
 	//Media::RegisterDemuxer (new FfmpegDemuxerInfo ());
@@ -266,7 +394,7 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 {
 	AVFrame *frame = NULL;
 	guint64 prev_pts;
-	guint64 input_pts = mf->pts;
+	//guint64 input_pts = mf->pts;
 	int got_picture = 0;
 	int length = 0;
 	
@@ -292,7 +420,7 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 				Media::Warning (MEDIA_CODEC_ERROR, "Error while decoding frame (got length: %d).", length);
 				return MEDIA_CODEC_ERROR;
 			} else {
-				Media::Warning (MEDIA_CODEC_ERROR, "Error while decoding frame (got length: %d), delaying.", length);
+				//Media::Warning (MEDIA_CODEC_ERROR, "Error while decoding frame (got length: %d), delaying.", length);
 				has_delayed_frame = true;
 				return MEDIA_CODEC_DELAYED;
 			}
