@@ -71,4 +71,22 @@
 	width="400"
 	height="400"
    />
+  <DrtItem uniqueId="9"
+	name="A rotating path on path background"
+	inputFile="rotating-paths.html"
+	startTime="0"
+	endTime="5000"
+	interval="40"
+	width="290"
+	height="290"
+   />
+  <DrtItem uniqueId="10"
+	name="Simple path scaling"
+	inputFile="scaling-path.html"
+	endTime="5000"
+	interval="20"
+	runs="5"
+	width="540"
+	height="540"
+   />
 </DrtList>
