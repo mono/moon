@@ -411,6 +411,7 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 		length = avcodec_decode_video (context, frame, &got_picture, mf->buffer, mf->buflen);
 		
 		if (length < 0 || !got_picture) {
+			av_free (frame);
 			// This is normally because the codec is a delayed codec,
 			// the first decoding request doesn't give any result,
 			// then every subsequent request returns the previous frame.
@@ -464,6 +465,7 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 			if (plane_bytes [i] != 0) {
 				if (posix_memalign ((void **)&mf->data_stride [i], 16, plane_bytes[i] + stream->min_padding)) {
 					g_warning ("Could not allocate memory for data stride");
+					av_free (frame);
 					return MEDIA_OUT_OF_MEMORY;
 				}
 				memcpy (mf->data_stride[i], frame->data[i], plane_bytes[i]);

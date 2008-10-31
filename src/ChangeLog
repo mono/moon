@@ -1,5 +1,10 @@
 2008-10-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* pipeline-ffmpeg.cpp: DecodeFrame: free the frame after error
+	  conditions.
+
+2008-10-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* pipeline-ffmpeg.cpp: dlopen ffmpeg.
 
 2008-10-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
