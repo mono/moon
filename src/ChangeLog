@@ -1,5 +1,12 @@
 2008-10-31  Larry Ewing  <lewing@novell.com>
 
+	* runtime.cpp (Surface::PaintToDrawable): instead of the content
+	type check if active_window is fullscreen. This is uglier but the
+	mozilla hands us rgb drawables not rgba drawables so until we have
+	a better plan this will solve the problem.
+
+2008-10-31  Larry Ewing  <lewing@novell.com>
+
 	* runtime.cpp (Surface::PaintToDrawable): only follow the
 	transparent path if our target supports it.
 

@@ -866,7 +866,7 @@ Surface::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpo
 	//
 	cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
 
-	if (transparent && (cairo_surface_get_content (cairo_get_target (ctx)) == CAIRO_CONTENT_COLOR_ALPHA)) {
+	if (transparent && !active_window->IsFullScreen ()) {
 		if (clear_transparent) {
 			cairo_set_operator (ctx, CAIRO_OPERATOR_CLEAR);
 			cairo_fill_preserve (ctx);
