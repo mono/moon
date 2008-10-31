@@ -91,11 +91,13 @@ load_ffmpeg ()
 	void *libavutil = NULL;
 	char *libavcodec_so = NULL;
 	char *libavutil_so = NULL;
+	const int LIBAVUTIL_MAJOR = (LIBAVUTIL_VERSION_INT >> 16) & 0xFF;
+	const int LIBAVCODEC_MAJOR = (LIBAVCODEC_VERSION_INT >> 16) & 0xFF;
 	
 	switch (is_ffmpeg_usable) {
 	case 0:
-		libavcodec_so = g_strdup_printf ("libavcodec.so.%i", LIBAVCODEC_VERSION_MAJOR);
-		libavutil_so = g_strdup_printf ("libavutil.so.%i", LIBAVUTIL_VERSION_MAJOR);
+		libavcodec_so = g_strdup_printf ("libavcodec.so.%i", LIBAVCODEC_MAJOR);
+		libavutil_so = g_strdup_printf ("libavutil.so.%i", LIBAVUTIL_MAJOR);
 		libavcodec = dlopen (libavcodec_so, RTLD_LAZY);
 		libavutil = dlopen (libavutil_so, RTLD_LAZY);
 

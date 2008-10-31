@@ -1,5 +1,10 @@
 2008-10-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* pipeline-ffmpeg.cpp: Don't use ffmpeg version defines which aren't
+	  present in older ffmpeg version (r10885).
+
+2008-10-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* pipeline-ffmpeg.cpp: DecodeFrame: free the frame after error
 	  conditions.
 
