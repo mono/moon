@@ -1024,7 +1024,7 @@ start_element (void *data, const char *el, const char **attr)
 	XamlElementInfo *elem = NULL;
 	XamlElementInstance *inst;
 
-	char *dot = strchr (el, '.');
+	const char *dot = strchr (el, '.');
 	if (!dot)
 		elem = p->current_namespace->FindElement (p, el);
 
@@ -1654,7 +1654,7 @@ static int
 parse_int (const char **pp, const char *end)
 {
 	const char *p = *pp;
-#if false
+#if 0
 	if (optional && AtEnd)
 		return 0;
 #endif
@@ -1668,7 +1668,7 @@ parse_int (const char **pp, const char *end)
 		count++;
 	}
 
-#if false
+#if 0
 	if (count == 0)
 		formatError = true;
 #endif
@@ -1693,7 +1693,7 @@ parse_ticks (const char **pp, const char *end)
 		digitseen = true;
 	}
 
-#if false
+#if 0
 	if (!digitseen)
 		formatError = true;
 #endif
@@ -1765,7 +1765,7 @@ repeat_behavior_from_str (const char *str, RepeatBehavior *res)
 
 	// XXX more validation work is needed here.. but how do we
 	// report an error?
-	char *x = strchr (str, 'x');
+	const char *x = strchr (str, 'x');
 	if (x) {
 		if (*(x + 1) != '\0') {
 			return false;

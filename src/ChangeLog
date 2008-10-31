@@ -1,3 +1,12 @@
+2008-10-31  Jeffrey Stedfast  <fejj@novell.com>
+
+	Portability patch by Argiris Kirtzidis.
+
+	* *.cpp: s/#if false/#if 0/g and s/#if true/#if 1/g
+
+	* xaml.cpp (start_element): strchr() returns const.
+	(repeat_behavior_from_str): Same.
+
 2008-10-31  Larry Ewing  <lewing@novell.com>
 
 	* runtime.cpp (Surface::PaintToDrawable): instead of the content

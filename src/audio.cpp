@@ -462,7 +462,7 @@ AudioSource::Write (void *dest, guint32 samples)
 void
 AudioSource::Enqueue ()
 {
-#if false
+#if 0
 	mplayer->EnqueueFramesAsync (1, 0);
 #else
 	MediaClosure *closure;

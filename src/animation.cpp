@@ -481,7 +481,7 @@ Storyboard::Begin ()
 {
 	ClockGroup *group = NULL;
 	
-#if false
+#if 0
 	if (root_clock && root_clock->GetClockState() == Clock::Stopped) {
 		group->ComputeBeginTime ();
 		root_clock->Begin();

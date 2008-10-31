@@ -880,7 +880,7 @@ Clock::ComputeNewTime ()
 	seeking = false;
 	return ret_time;
 
-#if false
+#if 0
 	// XXX I think we only need to check repeat_count in
 	// the forward direction.
 	if (forward) {

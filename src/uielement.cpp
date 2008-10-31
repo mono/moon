@@ -211,7 +211,7 @@ UIElement::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *arg
 	}
 }
 
-#if true
+#if 1
 int
 UIElement::DumpHierarchy (UIElement *obj)
 {
