@@ -283,20 +283,6 @@ Surface::Surface (MoonWindow *window, bool silverlight2)
 
 Surface::~Surface ()
 {
-	//
-	// This removes one source of problems: the unrealize handler is not
-	// being called when Mozilla destroys our window, so we remove it here.
-	//
-	// This is easy to trigger, open two clocks and try to load a different
-	// page on one of the pages (that keeps the timer ticking, and eventually
-	// kills this
-	//
-	// There is still another problem: sometimes we are getting:
-	//     The error was 'RenderBadPicture (invalid Picture parameter)'.
-	//
-	// And I have yet to track what causes this, the stack trace is not 
-	// very useful
-	//
 	time_manager->RemoveHandler (TimeManager::RenderEvent, render_cb, this);
 	time_manager->RemoveHandler (TimeManager::UpdateInputEvent, update_input_cb, this);
 		
