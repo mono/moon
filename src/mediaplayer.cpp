@@ -29,12 +29,7 @@
 #define LOG_MEDIAPLAYER(...)// printf (__VA_ARGS__);
 
 // This one prints out spew on every frame
-//#define VERBOSE_DEBUG
-#ifdef VERBOSE_DEBUG
-#define LOG_MEDIAPLAYER_EX(...) printf (__VA_ARGS__);
-#else
-#define LOG_MEDIAPLAYER_EX(...)
-#endif
+#define LOG_MEDIAPLAYER_EX(...)// printf (__VA_ARGS__);
 
 
 /*
@@ -130,12 +125,6 @@ MediaPlayer::LoadFrameCallback (EventObject *user_data)
 	}		
 }
 
-#ifdef VERBOSE_DEBUG
-static const char *media_type_name[] = {
-	"None", "Video", "Audio", "Marker"
-};
-#endif
-
 MediaResult
 MediaPlayer::FrameCallback (MediaClosure *closure)
 {
@@ -144,12 +133,9 @@ MediaPlayer::FrameCallback (MediaClosure *closure)
 	MediaFrame *frame = closure->frame;
 	IMediaStream *stream = frame ? frame->stream : NULL;
 	
-	LOG_MEDIAPLAYER_EX ("MediaPlayer::FrameCallback (closure=%p)\n"
-			    "\tstate: %d, frame: %p, pts: %llu = %llu, type: %s\n"
-			    "\taudio packets: ?, video packets: %d\n",
-			    closure, player->state, closure->frame, frame ? frame->pts : 0,
-			    frame ? MilliSeconds_FromPts (frame->pts) : 0, media_type_name[stream ? stream->GetType () : 0],
-			    player->video.queue.Length ());
+	LOG_MEDIAPLAYER_EX ("MediaPlayer::FrameCallback (closure=%p) state: %d, frame: %p, pts: %llu ms, type: %s, video packets: %d, eof: %i\n",
+			    closure, player->state, closure->frame, frame ? MilliSeconds_FromPts (frame->pts) : 0, 
+			    stream ? stream->GetStreamTypeName () : "None", player->video.queue.Length (), frame ? frame->event == FrameEventEOF : -1);
 	
 	if (player->GetBit (MediaPlayer::Seeking)) {
 		// We don't want any frames while we're waiting for a seek.

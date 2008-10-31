@@ -1,3 +1,8 @@
+2008-10-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* asf.cpp: Use IMediaStream::GetMediaTypeName instead of complex ifs on
+	  the GetType return value.
+
 2008-10-30  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf.cpp: Split MediaElement out from media.[cpp|h] into its own

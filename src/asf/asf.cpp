@@ -1612,7 +1612,7 @@ end_frame:
 /*
 	if (MEDIA_SUCCEEDED (result)) {
 		printf ("ASFFrameReader::Advance (): frame data: size = %.4lld, key = %s, Pts = %.5llu = %llu ms, pts = %.5u, stream# = %i (%s), media_object_number = %.3u (advanced).\n", 
-			size, IsKeyFrame () ? "true " : "false", Pts (), MilliSeconds_FromPts (Pts ()), payloads [0]->presentation_time, StreamId (), IsAudio () ? "audio" : (marker_stream != NULL ? "marker" : "video"), media_object_number);
+			size, IsKeyFrame () ? "true " : "false", Pts (), MilliSeconds_FromPts (Pts ()), payloads [0]->presentation_time, StreamId (), stream->GetStreamTypeName (), media_object_number);
 	}
 */
 	

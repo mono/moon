@@ -1,5 +1,11 @@
 2008-10-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* pipeline.h, pipeline.cpp: Added IMediaStream::GetMediaTypeName.
+	* mediaplayer.cpp: Use IMediaStream::GetMediaTypeName instead of
+	  complex ifs on the GetType return value.
+
+2008-10-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* debug.cpp: dlopen libmono too for our stack walking methods.
 
 2008-10-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 

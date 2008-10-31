@@ -1576,6 +1576,17 @@ IMediaStream::Dispose ()
 	codec = NULL;
 }
 
+const char *
+IMediaStream::GetStreamTypeName ()
+{
+	switch (GetType ()) {
+	case MediaTypeVideo: return "Video";
+	case MediaTypeAudio: return "Audio";
+	case MediaTypeMarker: return "Marker";
+	default: return "Unknown";
+	}
+}
+
 IMediaDecoder *
 IMediaStream::GetDecoder ()
 {
@@ -1764,6 +1775,8 @@ IMediaDemuxer::FillBuffers ()
 			if (MEDIA_SUCCEEDED (result)) {
 				stream->EnqueueFrame (frame);
 			} else if (result == MEDIA_NO_MORE_DATA) {
+				LOG_BUFFERING ("IMediaDemuxer::FillBuffers (): codec: %s, no more data for stream #%i = %s\n",
+					stream->codec, i, stream->GetStreamTypeName ());
 				if (frame != NULL) {
 					g_warning ("IMediaDemuxer::FillBuffers (): we shouldn't get a frame back when there's no more data.\n");
 					delete frame;

@@ -524,6 +524,7 @@ public:
 	
 	//	Video, Audio, Markers, etc.
 	virtual MoonMediaType GetType () = 0;
+	const char *GetStreamTypeName ();
 	
 	IMediaDecoder *GetDecoder ();
 	void SetDecoder (IMediaDecoder *value);
