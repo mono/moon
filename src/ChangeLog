@@ -1,5 +1,9 @@
 2008-10-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* debug.cpp: dlopen libmono too for our stack walking methods.
+
+2008-10-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* pipeline-ffmpeg.cpp: Don't use ffmpeg version defines which aren't
 	  present in older ffmpeg version (r10885).
 
