@@ -1590,6 +1590,7 @@ Surface::HandleUICrossing (GdkEventCrossing *event)
 {
 	bool handled;
 
+	/* FIXME Disabling this for now... causes issues in ink journal
 	GdkWindow *active_gdk_window = active_window->GetGdkWindow ();
 
 	if (event->window && event->window != active_window->GetGdkWindow ()) {
@@ -1597,6 +1598,7 @@ Surface::HandleUICrossing (GdkEventCrossing *event)
 		return TRUE;
 	} else
 		g_object_unref (active_gdk_window);
+	*/
 
 	if (event->type == GDK_ENTER_NOTIFY) {
 		if (mouse_event)

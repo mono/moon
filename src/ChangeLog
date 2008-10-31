@@ -1,3 +1,8 @@
+2008-10-31  Michael Dominic K.  <mdk@mdk.am>
+
+	* runtime.cpp: Reverting for now the recent crossing events 
+	changes -- causes issues with Ink Journal.
+
 2008-10-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline.h, pipeline.cpp: Added IMediaStream::GetMediaTypeName.
