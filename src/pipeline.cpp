@@ -770,7 +770,7 @@ Media::WorkerLoop (void *data)
 void
 Media::WorkerLoop ()
 {
-	MediaResult result;
+	MediaResult result = MEDIA_SUCCESS;
 	
 	LOG_PIPELINE ("Media::WorkerLoop ().\n");
 

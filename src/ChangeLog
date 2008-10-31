@@ -1,3 +1,7 @@
+2008-10-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* pipeline.cpp: Fix warning (variable might be used uninitialized).
+
 2008-10-30  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fix for bug #435815.
