@@ -1,3 +1,9 @@
+2008-10-31  Michael Dominic K.  <mdk@mdk.am>
+
+	* perf-suite-set/drtlist.xml:
+	* perf-suite-set/rotating-paths.html:
+	* perf-suite-set/scaling-path.html: Adding path tests for Larry.
+
 2008-10-30  Michael Dominic K.  <mdk@mdk.am>
 
 	* perf-suite-set/ftb-rendering-ref.html:
