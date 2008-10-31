@@ -302,6 +302,9 @@ ASFDemuxer::ReadHeader ()
 		} else {
 			// Unknown stream, don't include it in the count since it's NULL
 			stream_count--;
+			// also adjust indexes so we don't create a hole in the streams array
+			count--;
+			i--;
 		}
 		
 		if (stream != NULL) {

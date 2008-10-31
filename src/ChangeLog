@@ -1,3 +1,8 @@
+2008-10-31  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* pipeline-asp.cpp (ASFDemuxer::ReadHeader): Fix logic when skipping
+	a bad stream so we dont include NULL holes streams[]
+
 2008-10-31  Michael Dominic K.  <mdk@mdk.am>
 
 	* runtime.cpp: Reverting for now the recent crossing events 
