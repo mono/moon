@@ -396,6 +396,7 @@ AC_ARG_ENABLE(user-plugin,[  --enable-user-plugin    Build the plugin installer]
 			  [user_plugin=yes
 			   AC_DEFINE([PLUGIN_INSTALL],[1],[Load libraries from ~/.mozilla/plugins and build a Mozilla XPInstall file])],
 			  [user_plugin=no
+			   MOON_LIBS="$MONO_LIBS"
 			  ])
 AM_CONDITIONAL([PLUGIN_INSTALL],[test x$user_plugin = xyes])
 
