@@ -1,3 +1,8 @@
+2008-10-31  Chris Toshok  <toshok@ximian.com>
+
+	* gtk.cs: track change to api - get/set_transparent is on
+	MoonWindow now, not Surface.
+
 2008-10-14  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* gtk.cs: new moon_window_gtk_new ctor signature
