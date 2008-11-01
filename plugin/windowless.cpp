@@ -155,7 +155,7 @@ MoonWindowless::HandleEvent (XEvent *event)
 
 				expose.area.x = expose.area.y = 0;
 
-				surface->PaintToDrawable (drawable, visual, &expose, x, y, false);
+				surface->PaintToDrawable (drawable, visual, &expose, x, y, GetTransparent(), false);
 				handled = TRUE;
 
 				gdk_region_destroy (expose.region);

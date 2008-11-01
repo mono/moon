@@ -766,15 +766,13 @@ PluginInstance::CreateWindow ()
 {
 	if (windowless) {
 		moon_window = new MoonWindowless (window->width, window->height, this);
+		moon_window->SetTransparent (true);
 	}
 	else {
 		moon_window = new MoonWindowGtk (false, window->width, window->height);
 	}
 
 	surface = new Surface (moon_window, silverlight2);
-
-	if (windowless)
-		surface->SetTransparent (true);
 
 	if (onError != NULL) {
 		char *retval = NPN_strdup (onError);
