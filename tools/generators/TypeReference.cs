@@ -117,6 +117,10 @@ class TypeReference {
 			case "ArrangeOverrideCallback":
 				managed_type = "Mono.ArrangeOverrideCallback";
 				break;
+			case "GDestroyNotify":
+				managed_type = "IntPtr"; // hack, because we never pass this from managed code
+				                         // (it's used for EventObject::AddHandler).
+				break;
 			case "char*":
 				managed_type = "string";
 				break;
