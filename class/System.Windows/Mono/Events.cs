@@ -252,13 +252,12 @@ namespace Mono {
 
 		internal static void InitSurface (IntPtr surface)
 		{
-			// We don't really need a closure for this event
-			NativeMethods.event_object_add_handler (surface, "Resize", surface_resized, (IntPtr) new GCHandle ());
+			NativeMethods.event_object_add_handler (surface, "Resize", surface_resized, IntPtr.Zero, IntPtr.Zero);
 		}
 
 		internal static void AddHandler (DependencyObject obj, string eventName, UnmanagedEventHandler handler)
 		{
-			NativeMethods.event_object_add_handler (obj.native, eventName, handler, (IntPtr) obj.GCHandle);
+			NativeMethods.event_object_add_handler (obj.native, eventName, handler, (IntPtr) obj.GCHandle, IntPtr.Zero);
 		}
 
 		internal static void RemoveHandler (DependencyObject obj, string eventName, UnmanagedEventHandler handler)

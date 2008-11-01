@@ -433,12 +433,12 @@ namespace Mono {
 		public extern static IntPtr ellipse_geometry_new ();
 
 		[DllImport ("moon")]
-		// int event_object_add_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data);
-		public extern static int event_object_add_handler (IntPtr instance, string event_name, UnmanagedEventHandler handler, IntPtr data);
+		// int event_object_add_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor);
+		public extern static int event_object_add_handler (IntPtr instance, string event_name, UnmanagedEventHandler handler, IntPtr data, IntPtr data_dtor);
 
 		[DllImport ("moon")]
-		// int event_object_add_xaml_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data);
-		public extern static int event_object_add_xaml_handler (IntPtr instance, string event_name, UnmanagedEventHandler handler, IntPtr data);
+		// int event_object_add_xaml_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor);
+		public extern static int event_object_add_xaml_handler (IntPtr instance, string event_name, UnmanagedEventHandler handler, IntPtr data, IntPtr data_dtor);
 
 		[DllImport ("moon", EntryPoint="event_object_get_type_name")]
 		// const char *event_object_get_type_name (EventObject *instance);
@@ -649,6 +649,14 @@ namespace Mono {
 		[DllImport ("moon")]
 		// void media_element_stop (MediaElement *instance);
 		public extern static void media_element_stop (IntPtr instance);
+
+		[DllImport ("moon")]
+		// bool moon_window_get_transparent (MoonWindow *instance);
+		public extern static bool moon_window_get_transparent (IntPtr instance);
+
+		[DllImport ("moon")]
+		// void moon_window_set_transparent (MoonWindow *instance, bool flag);
+		public extern static void moon_window_set_transparent (IntPtr instance, bool flag);
 
 		[DllImport ("moon")]
 		// GtkWidget *moon_window_gtk_get_widget (MoonWindowGtk *instance);
@@ -1048,10 +1056,6 @@ namespace Mono {
 		public extern static IntPtr surface_get_time_manager (IntPtr instance);
 
 		[DllImport ("moon")]
-		// bool surface_get_transparent (Surface *instance);
-		public extern static bool surface_get_transparent (IntPtr instance);
-
-		[DllImport ("moon")]
 		// bool surface_in_main_thread ();
 		public extern static bool surface_in_main_thread ();
 
@@ -1062,10 +1066,6 @@ namespace Mono {
 		[DllImport ("moon")]
 		// void surface_resize (Surface *instance, int width, int height);
 		public extern static void surface_resize (IntPtr instance, int width, int height);
-
-		[DllImport ("moon")]
-		// void surface_set_transparent (Surface *instance, bool transparent);
-		public extern static void surface_set_transparent (IntPtr instance, bool transparent);
 
 		[DllImport ("moon")]
 		// Surface *surface_new (MoonWindow *window, bool silverlight2);
