@@ -1,3 +1,15 @@
+2008-10-31  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.h, runtime.cpp: remove transparency from properties of
+	the surface
+	(Surface::PaintToDrawable): add a @transparent argument to this
+	method.
+
+	* window-gtk.cpp (MoonWindowGtk::expose_event): pass the window's
+	transparency to Surface::PaintToDrawable.
+
+	* window.h: move the idea of transparency here from Surface.
+
 2008-10-31  Jeffrey Stedfast  <fejj@novell.com>
 
 	Portability patch by Argiris Kirtzidis.

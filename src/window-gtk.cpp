@@ -369,6 +369,7 @@ MoonWindowGtk::expose_event (GtkWidget *widget, GdkEventExpose *event, gpointer 
 					  event,
 					  widget->allocation.x,
 					  widget->allocation.y,
+					  window->GetTransparent (),
 					  true);
 
 	GdkGC *gc = gdk_gc_new (pixmap);

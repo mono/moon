@@ -113,12 +113,6 @@ public:
 	void EmitError (ErrorEventArgs *args);
 	void EmitLoad ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
-	void SetTransparent (bool transparent);
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	bool GetTransparent () { return transparent; }
-	
 	void SetBackgroundColor (Color *color);
 
 	int GetFrameCount () { return frames; }
@@ -185,7 +179,7 @@ public:
 	UIElement *debug_selected_element;
 #endif
 
-	void PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpose *event, int off_x, int off_y, bool clear_transparent);
+	void PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpose *event, int off_x, int off_y, bool transparent, bool clear_transparent);
 
 
 	gboolean HandleUIMotion (GdkEventMotion *event);
@@ -237,7 +231,6 @@ private:
 	void DetachDownloaders ();
 	static void OnDownloaderDestroyed (EventObject *sender, EventArgs *args, gpointer closure);
 	
-	bool transparent;
 	Color *background_color;
 	
 	// This is the normal-sized window

@@ -1460,6 +1460,29 @@ media_element_stop (MediaElement *instance)
 
 
 /**
+ * MoonWindow
+ **/
+bool
+moon_window_get_transparent (MoonWindow *instance)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->GetTransparent ();
+}
+
+
+void
+moon_window_set_transparent (MoonWindow *instance, bool flag)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetTransparent (flag);
+}
+
+
+/**
  * MoonWindowGtk
  **/
 GtkWidget *
@@ -2516,16 +2539,6 @@ surface_get_time_manager (Surface *instance)
 }
 
 
-bool
-surface_get_transparent (Surface *instance)
-{
-	if (instance == NULL)
-		return false;
-	
-	return instance->GetTransparent ();
-}
-
-
 MoonWindow *
 surface_get_window (Surface *instance)
 {
@@ -2560,16 +2573,6 @@ surface_resize (Surface *instance, int width, int height)
 		return;
 	
 	instance->Resize (width, height);
-}
-
-
-void
-surface_set_transparent (Surface *instance, bool transparent)
-{
-	if (instance == NULL)
-		return;
-	
-	instance->SetTransparent (transparent);
 }
 
 

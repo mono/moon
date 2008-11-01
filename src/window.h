@@ -27,9 +27,10 @@
 
 class Surface;
 
+/* @Namespace=System.Windows */
 class MoonWindow {
  public:
-	MoonWindow (int w, int h) : width(w), height(h), surface(NULL) { }
+	MoonWindow (int w, int h) : width(w), height(h), surface(NULL), transparent(false) { }
 
 	virtual ~MoonWindow () { }
 
@@ -57,6 +58,12 @@ class MoonWindow {
 	virtual void SetSurface (Surface* s) { surface = s; }
 	Surface *GetSurface () { return surface; }
 
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetTransparent (bool flag) { if (transparent != flag) Invalidate (); transparent = flag; }
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	bool GetTransparent () { return transparent; }
+
 	virtual bool IsFullScreen () = 0;
 
 	virtual GdkWindow* GetGdkWindow () = 0;
@@ -65,6 +72,7 @@ class MoonWindow {
 	int width;
 	int height;
 	Surface *surface;
+	bool transparent;
 };
 
 #endif /* __MOON_WINDOW__ */

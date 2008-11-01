@@ -47,6 +47,7 @@
 #include "type.h"
 #include "uielement.h"
 #include "usercontrol.h"
+#include "window.h"
 #include "window-gtk.h"
 #include "xaml.h"
 #include "xap.h"
@@ -747,6 +748,15 @@ void media_element_set_stream_source (MediaElement *instance, ManagedStreamCallb
 void media_element_stop (MediaElement *instance);
 
 /**
+ * MoonWindow
+ **/
+/* @GeneratePInvoke */
+bool moon_window_get_transparent (MoonWindow *instance);
+
+/* @GeneratePInvoke */
+void moon_window_set_transparent (MoonWindow *instance, bool flag);
+
+/**
  * MoonWindowGtk
  **/
 /* @GeneratePInvoke */
@@ -1276,9 +1286,6 @@ UIElement *surface_get_focused_element (Surface *instance);
 /* @GeneratePInvoke */
 TimeManager *surface_get_time_manager (Surface *instance);
 
-/* @GeneratePInvoke */
-bool surface_get_transparent (Surface *instance);
-
 MoonWindow *surface_get_window (Surface *instance);
 
 /* @GeneratePInvoke */
@@ -1289,9 +1296,6 @@ void surface_paint (Surface *instance, cairo_t *ctx, int x, int y, int width, in
 
 /* @GeneratePInvoke */
 void surface_resize (Surface *instance, int width, int height);
-
-/* @GeneratePInvoke */
-void surface_set_transparent (Surface *instance, bool transparent);
 
 /* @GeneratePInvoke */
 Surface *surface_new (MoonWindow *window, bool silverlight2);

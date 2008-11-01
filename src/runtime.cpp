@@ -218,7 +218,6 @@ Surface::Surface (MoonWindow *window, bool silverlight2)
 	zombie = false;
 	downloader_context = NULL;
 	downloaders = NULL;
-	transparent = false;
 	background_color = NULL;
 	cursor = MouseCursorDefault;
 	mouse_event = NULL;
@@ -821,7 +820,7 @@ Surface::HandleUIWindowUnavailable ()
 }
 
 void
-Surface::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpose *event, int off_x, int off_y, bool clear_transparent)
+Surface::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpose *event, int off_x, int off_y, bool transparent, bool clear_transparent)
 {
 	frames++;
 
@@ -866,7 +865,7 @@ Surface::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpo
 	//
 	cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
 
-	if (transparent && !active_window->IsFullScreen ()) {
+	if (transparent) {
 		if (clear_transparent) {
 			cairo_set_operator (ctx, CAIRO_OPERATOR_CLEAR);
 			cairo_fill_preserve (ctx);
@@ -1781,14 +1780,6 @@ Surface::HandleUIWindowDestroyed (MoonWindow *window)
 
 	if (window == active_window)
 		active_window = NULL;
-}
-
-void
-Surface::SetTransparent (bool transparent)
-{
-	this->transparent = transparent;
-	
-	active_window->Invalidate ();
 }
 
 void
