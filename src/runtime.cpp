@@ -1302,6 +1302,21 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 		input_list = new_input_list;
 	}
 
+#define SPEW_INPUT_LIST 0
+
+#if SPEW_INPUT_LIST
+	{
+		printf ("input_list: ");
+		UIElementNode *node;
+		for (node = (UIElementNode*)input_list->First(); node; node = (UIElementNode*)node->next) {
+			if (node != input_list->First())
+				printf ("->");
+			printf ("(%s)", node->uielement->GetName());
+		}
+		printf ("\n");
+	}
+#endif
+
 	// Perform any captures/releases that are pending after the
 	// event is bubbled.
 	if (pendingCapture)
