@@ -301,7 +301,7 @@ TextBlock::InsideObject (cairo_t *cr, double x, double y)
 		
 	TransformPoint (&nx, &ny);
 	
-	if (nx >= 0.0 && ny >= 0.0 && nx < GetBoundingWidth () && ny < GetBoundingHeight ())
+	if (nx >= 0.0 && ny >= 0.0 && nx < GetActualWidth () && ny < GetActualHeight ())
 		ret = true;
 	
 	cairo_restore (cr);

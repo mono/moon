@@ -1,3 +1,9 @@
+2008-11-02  Chris Toshok  <toshok@ximian.com>
+
+	* text.cpp (TextBlock::InsideObject): textblocks are hit only in
+	their ActualWidth/ActualHeight, not in the full bounding
+	rectangle.  Fixes bug #434258.
+
 2008-10-31  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.h, runtime.cpp: remove transparency from properties of
