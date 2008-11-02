@@ -89,4 +89,13 @@
 	width="540"
 	height="540"
    />
+  <DrtItem uniqueId="11"
+	name="Alpha blending a stretched image"
+	inputFile="stretched-blending.html"
+	endTime="10000"
+	interval="40"
+	runs="3"
+	width="540"
+	height="540"
+   />
 </DrtList>
