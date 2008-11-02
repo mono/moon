@@ -37,9 +37,6 @@ MAGIG_HEADER_LOVE
 echo \#ifndef ${PROTECTOR} >> $OUTFILE
 echo \#define ${PROTECTOR} >> $OUTFILE
 
-for sym in `nm $LIBFILE | cut -d\  -f3 | grep ^_cairo | egrep -v *:` ; do echo "#define $sym _moonlight$sym" ; done >> $OUTFILE
-for sym in `nm $LIBFILE | cut -d\  -f3 | grep ^cairo | egrep -v *:` ; do echo "#define $sym moonlight_$sym" ; done >> $OUTFILE
-for sym in `nm $LIBFILE | cut -d\  -f3 | grep ^_pixman | egrep -v *:` ; do echo "#define $sym _moonlight$sym" ; done >> $OUTFILE
-for sym in `nm $LIBFILE | cut -d\  -f3 | grep ^pixman | egrep -v *:` ; do echo "#define $sym moonlight_$sym" ; done >> $OUTFILE
+nm $LIBFILE | awk '/ T \_/ { if ($3 != "__i686.get_pc_thunk.bx" && $3 != "__i686.get_pc_thunk.cx") printf "#define %s _moonlight%s\n",$3,$3} / T [^_]/ {printf "#define %s moonlight_%s\n",$3,$3}' >> $OUTFILE
 
 echo "#endif" >> $OUTFILE
