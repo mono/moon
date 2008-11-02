@@ -1,0 +1,74 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>Clipping Update test</title>
+<meta></meta>
+</head>
+<body>
+
+<script type="text/javascript">
+function onRootLoaded (sender, eventArgs)
+{
+  var actualrect = sender.findName ("actualrect");
+  var text = sender.findName ("text");
+  actualrect.width = text.actualWidth;
+  actualrect.height = text.actualHeight;
+}
+
+function onTesterEnter (sender, eventArgs)
+{
+	sender.findName ("active").begin ();
+}
+
+function onTesterLeave (sender, eventArgs)
+{
+	sender.findName ("inactive").begin ();
+}
+
+</script>
+
+<object type="application/x-silverlight" data="data:," id="slControl" width="500" height="500">
+<param name="background" value="#FFFFFF"/>
+<param name="source" value="#xamlContent"/>
+</object>
+
+<script type="text/xaml" id="xamlContent">
+<?xml version="1.0"?>
+<Canvas xmlns="http://schemas.microsoft.com/client/2007"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	x:Name="root" Loaded="onRootLoaded">
+	<Canvas x:Name="tester" Canvas.Left="10" Canvas.Top="120" Width="80" Height="20" MouseEnter="onTesterEnter" MouseLeave="onTesterLeave">
+	  <Canvas.Background>
+	    <SolidColorBrush x:Name="testerBackground" Color="Blue" />
+	  </Canvas.Background>
+	</Canvas>
+
+	<TextBlock Canvas.Left="10" Canvas.Top="100" Width="70" x:Name="text">
+		<TextBlock.Inlines>
+			<Run Text="Line 1"/>
+			<LineBreak/>
+			<LineBreak/>
+			<Run Text="Line 2"/>
+			<LineBreak/>
+		</TextBlock.Inlines>
+
+		<TextBlock.Foreground>
+			<SolidColorBrush Color="Red"/>
+		</TextBlock.Foreground>
+	</TextBlock>
+
+	<Rectangle Stroke="Orange" Canvas.Left="10" Canvas.Top="100" x:Name="actualrect"/>
+
+	<Canvas.Resources>
+	  <Storyboard x:Name="active">
+	    <ColorAnimation Storyboard.TargetName="testerBackground" Storyboard.TargetProperty="Color" To="Red" />
+	  </Storyboard>
+	  <Storyboard x:Name="inactive">
+	    <ColorAnimation Storyboard.TargetName="testerBackground" Storyboard.TargetProperty="Color" To="Blue" />
+	  </Storyboard>
+	</Canvas.Resources>
+</Canvas>
+</script>
+
+</body>
+</html>
+
