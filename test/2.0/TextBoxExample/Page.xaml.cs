@@ -3,20 +3,31 @@ using System.Windows;
 using System.Windows.Controls;
 
 namespace TextBoxExample {
-	public partial class Page : UserControl {
+	public partial class Page : Canvas {
 		public Page ()
 		{
 			InitializeComponent ();
-		}
-
-		public void OnMouseEnter (object sender, EventArgs args)
-		{
-			txtTextBox.AcceptsReturn = false;
+			
+			txtTextBox.TextChanged += OnTextChanged;
+			
+			//cbAcceptReturn.IsChecked = txtTextBox.AcceptsReturn;
+			//cbAcceptReturn.Unchecked += OnUnchecked;
+			//cbAcceptReturn.Checked += OnChecked;
 		}
 		
-		public void OnMouseLeave (object sender, EventArgs args)
+		void OnTextChanged (object sender, EventArgs args)
 		{
-			txtTextBox.AcceptsReturn = true;
+			txtTextBlock.Text = txtTextBox.Text;
 		}
+		
+		//void OnUnchecked (object sender, EventArgs args)
+		//{
+		//	txtTextBox.AcceptsReturn = false;
+		//}
+		
+		//void OnChecked (object sender, EventArgs args)
+		//{
+		//	txtTextBox.AcceptsReturn = true;
+		//}
 	}
 }
