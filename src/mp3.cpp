@@ -342,6 +342,7 @@ Mp3FrameReader::Mp3FrameReader (IMediaSource *source, AudioStream *stream, gint6
 	this->frame_dur = frame_duration;
 	this->frame_len = frame_len;
 	this->xing = xing;
+	this->sync_lost = false;
 	
 	stream_start = start;
 	this->source = source;
@@ -515,8 +516,10 @@ Mp3FrameReader::SkipFrame ()
 	if (!source->Peek (buffer, 4))
 		return MEDIA_FAIL;
 	
-	if (!mpeg_parse_header (&mpeg, buffer))
+	if (!mpeg_parse_header (&mpeg, buffer)) {
+		sync_lost = true;
 		return MEDIA_FAIL;
+	}
 	
 	if (mpeg.bit_rate == 0) {
 		// use the most recently specified bit rate
@@ -555,8 +558,23 @@ Mp3FrameReader::TryReadFrame (MediaFrame **f)
 	guint32 len;
 	MediaFrame *frame;
 	bool eof = false;
+	MediaResult result;
 	
-	offset = source->GetPosition ();
+
+	if (sync_lost) {
+		result = FindMpegHeader (&mpeg, NULL, source, source->GetPosition (), &offset);
+		if (!MEDIA_SUCCEEDED (result))
+			return result;
+			
+		if (!source->IsPositionAvailable (offset, &eof))
+			return eof ? MEDIA_NO_MORE_DATA : MEDIA_NOT_ENOUGH_DATA;
+			
+		if (!source->Seek (offset, SEEK_SET))
+			return MEDIA_FAIL;
+		sync_lost = false;
+	} else {
+		offset = source->GetPosition ();
+	}
 	
 	// Check if there is enough data available
 	if (!source->IsPositionAvailable (offset + 4, &eof)) {
@@ -571,6 +589,7 @@ Mp3FrameReader::TryReadFrame (MediaFrame **f)
 	
 	if (!mpeg_parse_header (&mpeg, buffer)) {
 		//printf ("Mp3FrameReader::TryReadFrame (): Exit 4\n");
+		sync_lost = true;
 		return MEDIA_DEMUXER_ERROR;
 	}
 	
@@ -659,10 +678,8 @@ Mp3Demuxer::SeekInternal (guint64 pts)
 	return result;
 }
 
-// FindMpegHeader
-//   Might change the current position of the source
-static MediaResult
-FindMpegHeader (MpegFrameHeader *mpeg, MpegVBRHeader *vbr, IMediaSource *source, gint64 start, gint64 *result)
+MediaResult
+Mp3FrameReader::FindMpegHeader (MpegFrameHeader *mpeg, MpegVBRHeader *vbr, IMediaSource *source, gint64 start, gint64 *result)
 {
 	guint8 buf[4096], hdr[4], *inbuf, *inend;
 	gint64 pos, offset = start;
@@ -688,7 +705,7 @@ FindMpegHeader (MpegFrameHeader *mpeg, MpegVBRHeader *vbr, IMediaSource *source,
 		}
 		
 		if ((n = source->ReadSome (inbuf, sizeof (buf) - n)) <= 0)
-			return MEDIA_FAIL;
+			return MEDIA_NO_MORE_DATA;
 		
 		inend = inbuf + n;
 		inptr = buf;
@@ -809,7 +826,7 @@ Mp3Demuxer::ReadHeader ()
 	// beginning of an mp3 stream, so we need to find the first
 	// MPEG sync header by scanning.
 	vbr.type = MpegNoVBRHeader;
-	if (!MEDIA_SUCCEEDED (result = FindMpegHeader (&mpeg, &vbr, source, stream_start, &header_start))) {
+	if (!MEDIA_SUCCEEDED (result = Mp3FrameReader::FindMpegHeader (&mpeg, &vbr, source, stream_start, &header_start))) {
 		source->Seek (0, SEEK_SET);
 		return result;
 	}
@@ -912,7 +929,7 @@ Mp3DemuxerInfo::Supports (IMediaSource *source)
 		stream_start = (gint64) size;
 	}
 	
-	result = FindMpegHeader (&mpeg, &vbr, source, stream_start, &header_start);
+	result = Mp3FrameReader::FindMpegHeader (&mpeg, &vbr, source, stream_start, &header_start);
 	
 	source->Seek (0, SEEK_SET);
 	

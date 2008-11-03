@@ -77,6 +77,7 @@ class Mp3FrameReader {
 	guint64 cur_pts;
 	gint32 bit_rate;
 	bool xing;
+	bool sync_lost;
 	
 	MpegFrame *jmptab;
 	guint32 avail;
@@ -94,13 +95,17 @@ public:
 	MediaResult Seek (guint64 pts);
 	
 	MediaResult TryReadFrame (MediaFrame **frame);
+	
+	// FindMpegHeader
+	//   Might change the current position of the source
+	static MediaResult FindMpegHeader (MpegFrameHeader *mpeg, MpegVBRHeader *vbr, IMediaSource *source, gint64 start, gint64 *result);
 };
 
 class Mp3Demuxer : public IMediaDemuxer {
 private:
 	Mp3FrameReader *reader;
 	bool xing;
-
+	
 protected:
 	virtual ~Mp3Demuxer ();
 	virtual MediaResult SeekInternal (guint64 pts);

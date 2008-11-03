@@ -8,80 +8,76 @@
 <body>
 <div id="PlaylistHost" style="background:#FFFFFF"></div>
 <div id="log"></div>
+
+<script type="text/xaml" id="xaml">
+	<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="208" Height="160">
+		<MediaElement x:Name="0" Source="bip.mp3"  AutoPlay="True" MediaEnded="OnMediaEnded" MediaFailed="OnMediaFailed" MediaOpened="OnMediaOpened" />
+		<MediaElement x:Name="1" Source="bip1.mp3" AutoPlay="True" MediaEnded="OnMediaEnded" MediaFailed="OnMediaFailed" MediaOpened="OnMediaOpened" />  
+	</Canvas>
+</script>
+
     <script type="text/javascript">
-		var ended = false;
-		var opened = false;
-		var failed = false;
-		var tester = null;
-		var timerID = null;
-		var mediaElement;
+		var tests = ["0", "1"];
+		var ended = [false, false];
+		var opened = [false, false];
+		var failed = [false, false];
 
-		function LogDebug (msg)
-		{
-			TestLogger.LogDebug (msg);
-		}
-	
-		function LogError (msg)
-		{
-			TestLogger.LogError (msg);
-		}
-
-		function LogResult (result)
-		{
-			TestLogger.LogResult (result);
-		}		
-
-		function StartTest ()
-		{
-			if (timerID)
-				return;
-
-			mediaElement = document.getElementById ("ML").content.findName ("Media");
-			LogDebug ("StartTest, state: " + mediaElement.CurrentState);
-			setTimeout ("mediaElement.Play ();", 500);
-			timerID = setTimeout ("EndTest ();", 5000);
-		}
 		function EndTest ()
 		{
-			if (timerID != null)
-				clearTimeout (timerID);
+			var failed = false;
 
-			if (ended && opened) {
-				LogDebug ("Test succeded");
-				LogResult (1);
-			} else {
-				LogError ("Test failed");
-				LogDebug ("opened and ended must be true, but: ");
-				LogDebug ("ended: " + ended + ", failed: " + failed + ", opened: " + opened);
-				LogResult (-1);
+			TestLogger.LogDebug ("EndTest");
+
+			if (failed [0] || failed [1]) {
+				//
+			} else if (!ended [0] || !ended [1]) {
+				return;
 			}
+
+			for (var i = 0; i < tests.length; i++) {
+				if (ended [i] && opened [i]) {
+					TestLogger.LogDebug ("Test #" + i + " succeeded.");
+				} else {
+					failed = true;
+					TestLogger.LogError ("Test #" + i + " failed.");
+					TestLogger.LogDebug ("Expected opened = true, ended = true, failed = false");
+					TestLogger.LogDebug ("Got: opened = " + opened [i] + ", ended = " + ended [i] + ", failed = " + failed [i]);
+				}
+			}			
+			TestLogger.LogResult (failed ? -1 : 1);
 			SignalShutdown ();
 		}
+
 		function OnMediaEnded (obj, args)
 		{
-			LogDebug ("OnMediaEnded");
-			ended = true;
+			TestLogger.LogDebug ("OnMediaEnded: " + obj.Name);
+			ended [obj.Name] = true;
 			EndTest ();
 		}
+
 		function OnMediaOpened (obj, args)
 		{
-			if (tester == null)
-				StartTest ();
-
-			LogDebug ("OnMediaOpened");
-			opened = true;
+			TestLogger.LogDebug ("OnMediaOpened: " + obj.Name);
+			opened [obj.Name] = true;
 		}
+		
 		function OnMediaFailed (obj, args)
 		{
-			LogDebug ("OnMediaFailed");
-			failed = true;
+			TestLogger.LogDebug ("OnMediaFailed: " + obj.Name);
+			failed [obj.Name] = true;
 			EndTest ();
 		}
 
 		function OnPluginLoaded (obj, args)
 		{	
-			StartTest ();
+			setTimeout (function ()
+				{
+					TestLogger.LogError ("Test timed out. We didn't get MediaEnded for all media.");
+					TestLogger.LogResult (-1);
+					SignalShutdown ();
+				}, 5000);
 		}
+
 		function OnPluginError (obj, args)
 		{
 			EndTest ();
@@ -89,7 +85,7 @@
     </script>
 
 	<embed type="application/x-silverlight" width="20" height="20"
-		 id="ML" Source="test-media-ended.xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
+		 id="ML" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
 		 style="position:absolute; left:0px; top:0px" background="#CCCCCC">
 	</embed>
 

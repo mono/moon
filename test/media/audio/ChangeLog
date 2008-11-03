@@ -1,3 +1,9 @@
+2008-11-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* test-media-ended.html, test-media-ended.xaml: Include another media
+	  file in this test.
+	* bip1.mp3: Added.
+
 2008-10-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* test-media-ended.html: Use our testplugin.js file instead of
