@@ -1,3 +1,9 @@
+2008-11-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mediaplayer.cpp: FrameCallback: If the frame couldn't be retrieved
+	  because of a buffer underflow and we're waiting for the initial
+	  frame, enqueue a request for another frame. Fixes #440317.
+
 2008-11-03  Larry Ewing  <lewing@novell.com>
 
 	* rect.h (struct Rect): clamp the intersection w/h to 0 fixes some

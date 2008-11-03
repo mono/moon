@@ -139,8 +139,11 @@ MediaPlayer::FrameCallback (MediaClosure *closure)
 		return MEDIA_SUCCESS;
 	}
 	
-	if (closure->frame == NULL)
+	if (closure->frame == NULL) {
+		if (closure->result == MEDIA_BUFFER_UNDERFLOW && player->IsLoadFramePending () && player->HasVideo ())
+			player->EnqueueFramesAsync (0, 1);
 		return MEDIA_SUCCESS;
+	}
 	
 	closure->frame = NULL;
 	
