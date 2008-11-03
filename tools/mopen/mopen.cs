@@ -75,7 +75,7 @@ class MonoOpen {
 	
 	static void ShowHelp (OptionSet o)
 	{
-		Console.WriteLine ("Usage is: mopen [args] [file.xaml|dirname]\n\n" +
+		Console.WriteLine ("Usage is: mopen [args] [file.xaml|file.xap|dirname]\n\n" +
 				   "Arguments are:\n");
 		o.WriteOptionDescriptions (Console.Out);
 	}
@@ -239,6 +239,122 @@ class MonoOpen {
 		return 0;
 	}
 
+	static int LoadXap (string file, List<string> args)
+	{
+		string [] test = { "" };
+
+		if (sync)
+			test [0] = "--sync";
+
+		Application.Init ("mopen", ref test);
+		GtkSilver.Init ();
+		window = new Window (file);
+
+		string full = System.IO.Path.GetFullPath (file);
+		string dir = System.IO.Path.GetDirectoryName (full);
+		
+		Moonlight.RegisterLoader (delegate (string asm_file) {
+			if (System.IO.Path.IsPathRooted (asm_file)){
+				return Assembly.LoadFile (asm_file);
+			} else {
+				return Assembly.LoadFile (System.IO.Path.Combine (dir, asm_file));
+			}
+		}, delegate (string path) {
+			if (System.IO.Path.IsPathRooted (path)){
+				return new FileStream (path, FileMode.Open, FileAccess.Read);
+			} else {
+				return new FileStream (System.IO.Path.Combine (dir, path), FileMode.Open, FileAccess.Read);
+			}
+		});
+
+		if (transparent) {
+			CompositeHelper.SetRgbaColormap (window);
+			window.AppPaintable = true;
+			window.ExposeEvent += HandleExposeEvent;
+		}    	
+
+		if (desklet) {
+			ConfigureDeskletWindow (window);
+		}
+
+		window.DeleteEvent += delegate {
+			Application.Quit ();
+		};
+
+		GtkSilver silver = new GtkSilver (400, 400);
+		System.Windows.Application app;
+		
+		if (!silver.LoadXap (file, out app)) {
+			Console.Error.WriteLine ("mopen: Could not load xaml");
+			return 1;
+		}
+
+		FrameworkElement top = (FrameworkElement)app.RootVisual;
+
+		if (parse_only)
+			return 0;
+
+		if (width == -1)
+			width = (int) top.Width;
+		if (height == -1)
+			height = (int) top.Height;
+
+		if (width > 0 && height > 0) {
+			silver.Resize (width, height);
+			window.Resize (width, height);
+		} 
+
+		if (transparent){
+			silver.AppPaintable = true;
+			silver.Transparent = true;
+		}
+
+		if (desklet) {
+			top.MouseLeftButtonDown += new MouseButtonEventHandler (HandleMouseLeftButtonDown);
+			top.MouseLeftButtonUp += new MouseButtonEventHandler (HandleMouseLeftButtonUp);
+			top.MouseMove += new MouseEventHandler (HandleMouseMove);
+		}
+
+		window.Add (silver);
+
+		window.ShowAll ();
+
+		if (story_names != null){
+			storyboards = new List<Storyboard> ();
+			
+			foreach (string story in story_names){
+				object o = top.FindName (story);
+				Storyboard sb = o as Storyboard;
+
+				if (sb == null){
+					Console.Error.WriteLine ("mopen: there is no Storyboard object named {0} in the XAML file", story);
+					return 1;
+				}
+				sb.Completed += delegate {
+					window.Title = String.Format ("Storyboard {0} completed", current_storyboard-1);
+				};
+				
+				storyboards.Add (sb);
+			};
+
+			top.MouseLeftButtonUp += delegate {
+				if (current_storyboard == storyboards.Count)
+					current_storyboard = 0;
+				if (current_storyboard == storyboards.Count)
+					return;
+				
+				window.Title = String.Format ("Storyboard {0} running", current_storyboard);
+				storyboards [current_storyboard++].Begin ();
+			};
+		}
+
+		if (timeout > 0)
+			GLib.Timeout.Add ((uint)(timeout * 1000), new TimeoutHandler (Quit));
+
+		Application.Run ();
+		return 0;
+	}
+
 	static bool Quit ()
 	{
 		Application.Quit ();
@@ -273,11 +389,15 @@ class MonoOpen {
 		// Here:
 		//    implement loading the DLL or executanle, search in path perhaps?
 		//
-		if (file.EndsWith (".dll")){
+		if (file.EndsWith (".dll"))
 			return 1;
-		}
+		else if (file.EndsWith (".xaml"))
+			return LoadXaml (file, args);
+		else if (file.EndsWith (".xap"))
+			return LoadXap (file, args);
 
-		return LoadXaml (file, args);
+		else
+			return 1;
 	}
 	
 	static int Main (string [] args)
@@ -334,8 +454,8 @@ class MonoOpen {
 			file = rest [0];
 		}
 
-		if (File.Exists (file)){
-			if (all_stories){
+		if (File.Exists (file)) {
+			if (all_stories && file.EndsWith (".xaml")) {
 				string xns = "http://schemas.microsoft.com/winfx/2006/xaml";
 				XmlDocument d = new XmlDocument ();
 				d.Load (file);
