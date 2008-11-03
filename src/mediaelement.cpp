@@ -45,6 +45,7 @@ enum MediaElementFlags {
 	WaitingForOpen      = (1 << 8),  // set if we've called OpenAsync on a media and we're waiting for the result	
 	MediaOpenedEmitted  = (1 << 9),  // set if MediaOpened has been emitted.
 	Broadcast           = (1 << 10), // set if we have a live stream as source
+	MissingCodecs       = (1 << 11), // set if we have no video codecs
 };
 
 
@@ -494,6 +495,12 @@ MediaElement::IsLive ()
 	return flags & Broadcast;
 }
 
+bool
+MediaElement::IsMissingCodecs ()
+{
+	return flags & MissingCodecs;
+}
+
 DownloaderAccessPolicy
 MediaElement::GetDownloaderPolicy (const char *uri)
 {
@@ -590,7 +597,6 @@ MediaElement::MediaOpened (Media *media)
 {
 	IMediaDemuxer *demuxer = media->GetDemuxer ();
 	const char *demux_name = demuxer->GetName ();
-	bool missing_codecs = false;
 	
 	LOG_MEDIAELEMENT ("MediaElement::MediaOpened (%p), demuxer name: %s, download complete: %i\n", media, demux_name, flags & DownloadComplete);
 	
@@ -599,11 +605,11 @@ MediaElement::MediaOpened (Media *media)
 		IMediaDecoder *decoder = stream->GetDecoder ();
 		const char *decoder_name = decoder ? decoder->GetName () : NULL;
 		if (decoder_name != NULL && strcmp (decoder_name, "NullDecoder") == 0) {
-			missing_codecs = true;
+			flags |= MissingCodecs;
 			break;
 		}
 	}
-	if (missing_codecs)
+	if (flags & MissingCodecs)
 		CodecDownloader::ShowUI (GetSurface ());
 
 	if (demux_name != NULL && strcmp (demux_name, "ASXDemuxer") == 0) {
@@ -1729,7 +1735,7 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 	} else if (args->property == MediaElement::IsMutedProperty) {
 		mplayer->SetMuted (args->new_value->AsBool ());
 	} else if (args->property == MediaElement::MarkersProperty) {
-
+		// 
 	} else if (args->property == MediaElement::NaturalVideoHeightProperty) {
 		// read-only property
 		flags |= RecalculateMatrix;
@@ -1740,7 +1746,7 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 		if (!(flags & UpdatingPosition)) {
 			seek_to_position = args->new_value->AsTimeSpan ();
 			AddTickCall (MediaElement::SeekNow);
-		} else if (IsPlaying() && mplayer->HasVideo ()) {
+		} else if (IsPlaying() && mplayer->HasVideo () && !IsMissingCodecs ()) {
 			Invalidate ();
 		}
 	} else if (args->property == MediaElement::VolumeProperty) {

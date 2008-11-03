@@ -1,5 +1,10 @@
 2008-11-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mediaelement.h, mediaelement.cpp: Add a MissingCodecs flag and don't
+	  invalidate when that flag is set.
+
+2008-11-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* runtime.cpp: get_flags: take the default flags as an argument, this
 	  way the environment variables can disable flags which are enabled
 	  by default.

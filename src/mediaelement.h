@@ -257,6 +257,7 @@ class MediaElement : public MediaBase {
 	bool IsStopped () { return state == Stopped; }
 	
 	bool IsLive ();
+	bool IsMissingCodecs ();
 	void EmitMediaOpened ();
 	void Reinitialize (bool dtor); // dtor is true if we're calling from the destructor.
 	
