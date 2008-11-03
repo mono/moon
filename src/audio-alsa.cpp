@@ -39,6 +39,7 @@ typedef int               (dyn_snd_pcm_hw_params)                      (snd_pcm_
 typedef int               (dyn_snd_pcm_hw_params_can_pause)            (const snd_pcm_hw_params_t *params);
 typedef void              (dyn_snd_pcm_hw_params_free)                 (snd_pcm_hw_params_t *obj);
 typedef snd_pcm_state_t   (dyn_snd_pcm_state)                          (snd_pcm_t *pcm);
+typedef const char *      (dyn_snd_pcm_state_name)                     (const snd_pcm_state_t state);
 typedef int               (dyn_snd_pcm_drop)                           (snd_pcm_t *pcm);
 typedef snd_pcm_sframes_t (dyn_snd_pcm_writei)                         (snd_pcm_t *pcm, const void *buffer, snd_pcm_uframes_t size);
 typedef int               (dyn_snd_pcm_mmap_begin)                     (snd_pcm_t *pcm, const snd_pcm_channel_area_t **areas, snd_pcm_uframes_t *offset, snd_pcm_uframes_t *frames);
@@ -72,6 +73,7 @@ dyn_snd_pcm_hw_params *                      d_snd_pcm_hw_params = NULL;
 dyn_snd_pcm_hw_params_can_pause *            d_snd_pcm_hw_params_can_pause = NULL;
 dyn_snd_pcm_hw_params_free *                 d_snd_pcm_hw_params_free = NULL;
 dyn_snd_pcm_state *                          d_snd_pcm_state = NULL;
+dyn_snd_pcm_state_name *                     d_snd_pcm_state_name = NULL;
 dyn_snd_pcm_drop *                           d_snd_pcm_drop = NULL;
 dyn_snd_pcm_writei *                         d_snd_pcm_writei = NULL;
 dyn_snd_pcm_mmap_begin *                     d_snd_pcm_mmap_begin = NULL;
@@ -105,6 +107,7 @@ dyn_snd_asoundlib_version *                  d_snd_asoundlib_version = NULL;
 #define snd_pcm_hw_params_can_pause            d_snd_pcm_hw_params_can_pause
 #define snd_pcm_hw_params_free                 d_snd_pcm_hw_params_free
 #define snd_pcm_state                          d_snd_pcm_state
+#define snd_pcm_state_name                     d_snd_pcm_state_name
 #define snd_pcm_drop                           d_snd_pcm_drop
 #define snd_pcm_writei                         d_snd_pcm_writei
 #define snd_pcm_mmap_begin                     d_snd_pcm_mmap_begin
@@ -725,6 +728,7 @@ AlsaPlayer::IsInstalled ()
 		result &= NULL != (d_snd_pcm_hw_params_can_pause = (dyn_snd_pcm_hw_params_can_pause *) dlsym (libalsa, "snd_pcm_hw_params_can_pause"));
 		result &= NULL != (d_snd_pcm_hw_params_free = (dyn_snd_pcm_hw_params_free *) dlsym (libalsa, "snd_pcm_hw_params_free"));
 		result &= NULL != (d_snd_pcm_state = (dyn_snd_pcm_state *) dlsym (libalsa, "snd_pcm_state"));
+		result &= NULL != (d_snd_pcm_state_name = (dyn_snd_pcm_state_name *) dlsym (libalsa, "snd_pcm_state_name"));
 		result &= NULL != (d_snd_pcm_drop = (dyn_snd_pcm_drop *) dlsym (libalsa, "snd_pcm_drop"));
 		result &= NULL != (d_snd_pcm_writei = (dyn_snd_pcm_writei *) dlsym (libalsa, "snd_pcm_writei"));
 		result &= NULL != (d_snd_pcm_mmap_begin = (dyn_snd_pcm_mmap_begin *) dlsym (libalsa, "snd_pcm_mmap_begin"));
