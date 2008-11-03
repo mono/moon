@@ -15,6 +15,7 @@ namespace Moonlight {
 		private List<string> mdb_files;
 		private List<string> csharp_files;
 		private List<string> xaml_files;
+		private bool desktop = false; // Defaults to false
 		private bool generate_html = true; // Defaults to true
 		private bool include_mdb = true; // Defaults to true
 		private bool generate_manifest = true; 
@@ -42,6 +43,11 @@ namespace Moonlight {
 		public bool GenerateHtml {
 			get { return generate_html; }
 			set { generate_html = value; }
+		}
+
+		public bool Desktop {
+			get { return desktop; }
+			set { desktop = value; }
 		}
 
 		public bool IncludeMdb {
@@ -172,18 +178,23 @@ namespace Moonlight {
 
 		public void CreateApplicationAssembly ()
 		{
-			StringBuilder smcs_args = new StringBuilder ();
+			StringBuilder compiler_args = new StringBuilder ();
 
-			smcs_args.AppendFormat (" -debug+ -target:library -out:{0}.dll ", ApplicationName);
+			compiler_args.AppendFormat (" -debug+ -target:library -out:{0}.dll ", ApplicationName);
 
 			foreach (string asm in ReferenceAssemblies) {
-				smcs_args.AppendFormat (" -r:{0} ", asm);
+				compiler_args.AppendFormat (" -r:{0} ", asm);
+			}
+			
+			if (desktop) {
+				compiler_args.Append (" -pkg:silverdesktop ");
+				compiler_args.Append (" -pkg:gtksilver ");
 			}
 
 			foreach (string cs in CSharpFiles) {
 				if (cs.EndsWith (".g.cs"))
 					continue;
-				smcs_args.AppendFormat (" {0} ", cs);
+				compiler_args.AppendFormat (" {0} ", cs);
 			}
 
 			foreach (string xaml in XamlFiles) {
@@ -191,12 +202,12 @@ namespace Moonlight {
 					continue;
 				if (!File.Exists (xaml + ".g.cs"))
 					continue;
-				smcs_args.AppendFormat (" {0}.g.cs ", xaml);
+				compiler_args.AppendFormat (" {0}.g.cs ", xaml);
 			}
 
-			smcs_args.AppendFormat (" -resource:{0}.g.resources ", ApplicationName);
+			compiler_args.AppendFormat (" -resource:{0}.g.resources ", ApplicationName);
 
-			RunProcess ("smcs", smcs_args.ToString ());
+			RunProcess (desktop ? "gmcs" : "smcs", compiler_args.ToString ());
 		}
 
 		public void CreateXap ()
@@ -269,7 +280,8 @@ namespace Moonlight {
 				{ "application-name=", v => mxap.ApplicationName = v },
 				{ "generate-manifest", v => mxap.GenerateManifest = v != null },
 				{ "entry-point-type=", v => mxap.EntryPointType = v },
-				{ "cs-sources=", v => mxap.CSSources = v }
+				{ "cs-sources=", v => mxap.CSSources = v },
+				{ "desktop", v => mxap.Desktop = v != null }
 			};
 
 			List<string> extra = null;
