@@ -28,6 +28,7 @@
 //
 
 using System;
+using System.Windows.Interop;
 using Mono.Xaml;
 
 namespace System.Windows.Markup
@@ -36,7 +37,7 @@ namespace System.Windows.Markup
 	{
 		public static object Load (string xaml)
 		{
-			XamlLoader loader = XamlLoader.CreateManagedXamlLoader (IntPtr.Zero, IntPtr.Zero);
+			XamlLoader loader = XamlLoader.CreateManagedXamlLoader (Application.s_surface, PluginHost.Handle);
 			
 			return loader.CreateDependencyObjectFromString (xaml, false);
 		}
