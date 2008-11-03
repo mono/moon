@@ -64,3 +64,7 @@ using System.Windows.Markup;
 [assembly: XmlnsDefinition("http://schemas.microsoft.com/winfx/2006/xaml/presentation", "System.Windows.Controls")]
 [assembly: XmlnsDefinition("http://schemas.microsoft.com/client/2007", "System.Windows.Controls.Primitives")] 
 [assembly: XmlnsDefinition("http://schemas.microsoft.com/winfx/2006/xaml/presentation", "System.Windows.Controls.Primitives")]
+
+#if !NET_2_1
+	[assembly: InternalsVisibleTo ("gtksilver, PublicKey=002400000480000094000000060200000024000052534131000400001100000005E62DA51722818A2ADC73D5CE64289260012A442031582E808F5C290EF155F10AB93441F92A7A59736D3481245ED4E0E864F5E1ACCADD217D53EE0263E6E3852FE94AB6B708984C6C69BA79F40A0896E1FFF820B7C55D4968C8F41CAE2AABC136B16B8AF83D013946CE190BC03C2A6C8DE8C0CB135ED656F46BF9A2D03E8188")]
+#endif
