@@ -10,14 +10,15 @@
 ..
 .TH mopen "Mono 1.2, Moonlight 1.0"
 .SH NAME
-mopen \- Application launcher (including Mono, Moonlight and Silverlight).
+mopen, mopen1 \- Application launcher (including Mono, Moonlight and Silverlight).
 .SH SYNOPSIS
 .PP
 .B mopen [options] file [arguments...]
 .SH DESCRIPTION
 The \fImopen\fP command is a tool to open applications, XAML files or
 packages that contains executables, images and other resources in a
-directory.
+directory, it is designed to launch Silverligh 2.0 applications.   For
+testing only 1.0 applications use the \fImopen1\fP command.
 .PP
 In addition to launching these applications, it is possible to run
 multiple applications using the same Mono virtual machine.  This is
@@ -29,14 +30,22 @@ equivalent to processes within a Mono virtual machine, and it is the
 same infrastructure used by ASP.NET applications to run multiple
 isolated applications in the same virtual machine.
 .PP
-In its simplest incarnation, you can open a XAML file like this:
+In its simplest incarnation, you can open a XAP file like this:
 .nf
 
-	$ mopen /opt/myapp/test.xaml
+	$ mopen /opt/myapp/test.xap
 
 .fi
-This will load the test.xaml file and any of the dependencies it might
-have from the directory where test.xaml is located.
+This will load the test.xap file which is a self-contained Silverlight
+application.    
+.PP
+It is possible to also load 1.0-style Silverlight applications
+by passing it a XAML file and using the \fImopen1\FP command instead:
+.nf
+	$ mopen1 /opt/myapp/test.xaml
+.fi
+This will laod the xaml file and all of the dependencies it might have
+from the directory where test.xaml is located.
 .PP
 mopen also supports launching these applications if they are contained
 in a directory thta is on the PATH and such directory contains a file
