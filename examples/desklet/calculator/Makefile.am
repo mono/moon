@@ -1,19 +1,24 @@
-bin_SCRIPTS = example-calculator
-deskletdir = $(libdir)/desklets/example-calculator
+noinst_SCRIPTS = example-calculator
+desklet = calculator.xap
 
-desklet_DATA = default.xaml calculator.dll
+noinst_DATA = default.xaml App.xaml calculator.xap
 
-EXTRA_DIST = default.xaml calculator.cs
+EXTRA_DIST = calculator.cs
 
 example-calculator: Makefile
 	echo "#!/bin/sh" > example-calculator
-	echo "mopen -d $(deskletdir)" >> example-calculator
+	echo "mopen -d $(desklet)" >> example-calculator
 	chmod +x example-calculator
 
-calculator.dll: $(srcdir)/calculator.cs $(top_builddir)/gtk/gtksilver.dll $(top_builddir)/class/lib/3.0/System.Windows.dll $(top_builddir)/class/lib/3.0/Mono.Moonlight.dll
-	gmcs -debug -target:library -out:$@ -r:$(top_builddir)/gtk/gtksilver.dll -r:$(top_builddir)/class/lib/3.0/System.Windows.dll -r:$(top_builddir)/class/lib/3.0/Mono.Moonlight.dll $(srcdir)/calculator.cs
+calculator.xap: calculator.cs default.xaml App.xaml
+	mxap --desktop --entry-point-type=Desklet.Calculator.App
 
 CLEANFILES =			\
 	example-calculator	\
+	calculator.g.resources	\
+	default.xaml.g.cs	\
+	App.xaml.g.cs		\
+	AppManifest.xaml	\
+	calculator.xap		\
 	calculator.dll		\
 	calculator.dll.mdb
