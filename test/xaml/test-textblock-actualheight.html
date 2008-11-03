@@ -1,0 +1,108 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>TextBlock ActualHeight test</title>
+<meta></meta>
+</head>
+<body>
+
+<script type="text/javascript">
+var content = null;
+
+function Log (logger, msg)
+{
+    var linebreak = content.createFromXaml ("<LineBreak/>");
+    var run = content.createFromXaml ("<Run/>");
+    
+    run.text = msg;
+    
+    logger.inlines.add (run);
+    logger.inlines.add (linebreak);
+}
+
+function OnLoaded (sender, eventArgs)
+{
+    var control = document.getElementById ("agControl");
+    var logger = sender.findName ("logger");
+    var text, rect;
+    
+    content = control.content;
+    
+    rect = sender.findName ("rect1");
+    text = sender.findName ("tb1");
+    Log (logger, "First TextBlock has an ActualHeight of " + text.actualHeight);
+    rect.height = text.actualHeight;
+    rect.width = text.actualWidth;
+    
+    rect = sender.findName ("rect2");
+    text = sender.findName ("tb2");
+    Log (logger, "Second TextBlock has an ActualHeight of " + text.actualHeight);
+    rect.height = text.actualHeight;
+    rect.width = text.actualWidth;
+    
+    rect = sender.findName ("rect3");
+    text = sender.findName ("tb3");
+    Log (logger, "Third TextBlock has an ActualHeight of " + text.actualHeight);
+    rect.height = text.actualHeight;
+    rect.width = text.actualWidth;
+    
+    rect = sender.findName ("rect4");
+    text = sender.findName ("tb4");
+    Log (logger, "Fourth TextBlock has an ActualHeight of " + text.actualHeight);
+    rect.height = text.actualHeight;
+    rect.width = text.actualWidth;
+}
+</script>
+
+<object type="application/x-silverlight" data="data:," id="agControl" width="500" height="500">
+<param name="background" value="#FFFFFF"/>
+<param name="source" value="#xamlContent"/>
+</object>
+
+<script type="text/xaml" id="xamlContent">
+<?xml version="1.0"?>
+<Canvas xmlns="http://schemas.microsoft.com/client/2007"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	Loaded="OnLoaded">
+
+  <Rectangle x:Name="rect1" Canvas.Left="10" Canvas.Top="10" Stroke="Red"/>
+  <TextBlock x:Name="tb1" Canvas.Left="10" Canvas.Top="10" Width="70">
+    <TextBlock.Inlines>
+      <Run Text="Line 1"/><LineBreak/>
+      <Run Text="Line 2"/>
+    </TextBlock.Inlines>
+  </TextBlock>
+
+  <Rectangle x:Name="rect2" Canvas.Left="100" Canvas.Top="10" Stroke="Red"/>
+  <TextBlock x:Name="tb2" Canvas.Left="100" Canvas.Top="10" Width="70">
+    <TextBlock.Inlines>
+      <Run Text="Line 1"/><LineBreak/>
+      <Run Text="Line 2"/><LineBreak/>
+    </TextBlock.Inlines>
+  </TextBlock>
+
+  <Rectangle x:Name="rect3" Canvas.Left="200" Canvas.Top="10" Stroke="Red"/>
+  <TextBlock x:Name="tb3" Canvas.Left="200" Canvas.Top="10" Width="70">
+    <TextBlock.Inlines>
+      <Run Text="Line 1"/><LineBreak/>
+      <Run Text="Line 2"/><LineBreak/>
+      <LineBreak/>
+    </TextBlock.Inlines>
+  </TextBlock>
+
+  <Rectangle x:Name="rect4" Canvas.Left="300" Canvas.Top="10" Stroke="Red"/>
+  <TextBlock x:Name="tb4" Canvas.Left="300" Canvas.Top="10" Width="70">
+    <TextBlock.Inlines>
+      <Run Text="Line 1"/><LineBreak/>
+      <Run Text="Line 2"/><LineBreak/>
+      <LineBreak/>
+      <LineBreak/>
+    </TextBlock.Inlines>
+  </TextBlock>
+
+  <TextBlock x:Name="logger" Canvas.Left="10" Canvas.Top="150"/>
+</Canvas>
+</script>
+
+</body>
+</html>
+
