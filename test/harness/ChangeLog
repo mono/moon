@@ -1,3 +1,7 @@
+2008-11-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* shocker/input.cpp: Fix typo.
+
 2008-10-29  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* shocker/input.cpp: SendKeyInput: add error checking before faking a

@@ -348,7 +348,7 @@ InputProvider::SendKeyInput (uint32 keysym, bool key_down)
 	int keycode = XKeysymToKeycode (display, mapped);
 
 	if (keycode == 0) {
-		printf ("Moonlight harness: InputProvider could send map key. keysym: %u, mapped: %i, keycode: %i\n", keysym, mapped, keycode);
+		printf ("Moonlight harness: InputProvider could not map key. keysym: %u, mapped: %i, keycode: %i\n", keysym, mapped, keycode);
 		return;
 	}
 
