@@ -1,0 +1,144 @@
+<html>
+  <head>
+      <title>Moonlight Test Page</title>
+
+		<script type="text/xaml" id="xaml">
+			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
+			<MediaElement x:Name="A" AutoPlay="True"  MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" MediaEnded="OnMediaEnded" CurrentStateChanged="OnCurrentStateChanged" Canvas.Top="0"   />
+			<MediaElement x:Name="B" AutoPlay="False" MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" MediaEnded="OnMediaEnded" CurrentStateChanged="OnCurrentStateChanged" Canvas.Top="100" />
+			</Canvas>
+		</script>
+
+		<script language="javascript" src="../../js/js/utils.js"></script>
+		<script language="javascript" src="../../js/js/testplugin.js"></script>
+		<script language="javascript">
+
+		var statesA = [];
+		var statesB = [];
+		var expectedA = ["Opening", "Playing", "Paused"];
+		var expectedB = ["Opening", "Playing", "Stopped", "[Play called]", "Playing", "Paused"];
+		var A = null, B = null;
+		var doneA = false, doneB = false;
+		var lastA = "", lastB = "";
+		var failed = false;
+
+		function StartTest ()
+		{
+			var src = "timecode-short-vc1-adv.wmv";
+			A.Source = src;
+			B.Source = src;
+			setTimeout (function ()
+				{
+					TestLogger.LogDebug ("Calling B.Play ()");
+					statesB.push ("[Play called]");
+					B.Play ();
+				}, 1000);
+		}
+
+		function OnCurrentStateChanged (sender, args)
+		{
+			TestLogger.LogDebug ("OnCurrentStateChanged () " + sender.Name + " - " + sender.CurrentState);
+
+			if (sender.CurrentState == "Buffering")
+				return;
+
+			if (sender.Name == "A" && lastA != sender.CurrentState) {
+				lastA = sender.CurrentState;
+				statesA.push (sender.CurrentState);
+			}
+
+			if (sender.Name == "B" && lastB != sender.CurrentState) {
+				lastB = sender.CurrentState;
+				statesB.push (sender.CurrentState);
+			}
+		}
+
+		function OnMediaOpened (sender, args)
+		{
+			TestLogger.LogDebug ("OnMediaOpened () " + sender.Name);
+		}
+
+		function OnMediaFailed (sender, args)
+		{
+			TestLogger.LogError ("OnMediaFailed: " + ErrorEventArgsToOneLineString (args) + " " + sender.Name);
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+		function OnMediaEnded (sender, args)
+		{
+			TestLogger.LogDebug ("OnMediaEnded () " + sender.Name);
+
+			if (sender.Name == "A")
+				doneA = true;
+			else if (sender.Name == "B")
+				doneB = true;
+	
+			if (doneA && doneB) {
+				setTimeout (function ()
+					{
+						var ok;
+						var success = true;
+						var msg;
+						TestLogger.LogResult (failed ? -1 : 1);
+
+						TestLogger.LogDebug ("A:");
+						for (var i = 0; i < expectedA.length; i++) {
+							ok = expectedA [i] == statesA [i];
+							msg = " #" + i + " got " + statesA [i] + ", expected " + expectedA [i] + ": " + ok;
+							if (ok)
+								TestLogger.LogDebug (msg);
+							else
+								TestLogger.LogError (msg);
+							success &= ok;
+						}
+
+						TestLogger.LogDebug ("B:");
+						for (var i = 0; i < expectedB.length; i++) {
+							ok = expectedB [i] == statesB [i];
+							msg = " #" + i + " got " + statesB [i] + ", expected " + expectedB [i] + ": " + ok;
+							if (ok)
+								TestLogger.LogDebug (msg);
+							else
+								TestLogger.LogError (msg);
+							success &= ok;
+						}
+		
+						SignalShutdown ();
+					}, 250);
+			}
+		}
+
+		function OnPluginLoad (sender, args)
+		{
+			TestLogger.LogDebug ("OnPluginLoad");
+			A = sender.findName ("A");
+			B = sender.findName ("B");
+			setTimeout (StartTest, 250);
+		}
+
+		function OnPluginError (sender, args)
+		{
+			TestLogger.LogError ("Plugin failed to initialize: " + args.ErrorMessage);
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+		
+		</script>
+	</head>
+
+  <body>
+    <div>
+        <embed type="application/x-silverlight" width="800" height="800" id="moon" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoad" background="green" >
+        </embed>
+    </div>
+<!--
+    <div>
+        <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
+        </embed>
+    </div>
+-->
+  </body>
+</html>
+
+

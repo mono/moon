@@ -244,8 +244,8 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 				emit = pts >= (from - MilliSeconds_ToPts (1000)) && pts <= to;
 			}
 			
-			LOG_MARKERS_EX ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu in marker with Text = %s, Type = %s (removed from from)\n",
-					from - MilliSeconds_ToPts (100), to, pts, marker->GetText (), marker->GetType ());
+			LOG_MARKERS_EX ("MediaElement::CheckMarkers (%llu, %llu): emit: %i, Checking pts: %llu in marker with Text = %s, Type = %s (removed from from)\n",
+					from <= MilliSeconds_ToPts (1000) ? 0 : from - MilliSeconds_ToPts (1000), to, emit, pts, marker->GetText (), marker->GetType ());
 		} else {
 			// Normal markers.
 			emit = pts >= from && pts <= to;
@@ -272,7 +272,7 @@ MediaElement::MediaFinished ()
 {
 	LOG_MEDIAELEMENT ("MediaElement::MediaFinished ()\n");
 	
-	SetState (Stopped);
+	SetState (Paused);
 	EmitMediaEnded ();
 }
 
@@ -629,7 +629,7 @@ MediaElement::MediaOpened (Media *media)
 		
 		if (flags & DownloadComplete) {
 			SetState (Buffering);
-			PlayOrPauseNow ();
+			PlayOrStopNow ();
 			Invalidate ();
 			EmitMediaOpened ();
 		}
@@ -1039,7 +1039,7 @@ MediaElement::BufferingComplete ()
 	
 	switch (prev_state) {
 	case Opening: // Start playback
-		PlayOrPauseNow ();
+		PlayOrStopNow ();
 		return;
 	case Playing: // Restart playback
 		PlayNow ();
@@ -1290,7 +1290,7 @@ MediaElement::DownloaderComplete ()
 	case Buffering:
 	 	// Media finished downloading before the buffering time was reached.
 		// Play it.
-		PlayOrPauseNow ();
+		PlayOrStopNow ();
 		EmitMediaOpened ();
 		break;
 	case Opening:
@@ -1394,7 +1394,7 @@ MediaElement::SetPlayRequested ()
 }
 
 void
-MediaElement::PlayOrPauseNow ()
+MediaElement::PlayOrStopNow ()
 {
 	LOG_MEDIAELEMENT ("MediaElement::PlayOrPause (): GetCanPause (): %s, PlayRequested: %s, GetAutoPlay: %s, AutoPlayed: %s\n",
 			  GetCanPause () ? "true" : "false", (flags & PlayRequested) ? "true" : "false",
@@ -1411,7 +1411,8 @@ MediaElement::PlayOrPauseNow ()
 		playlist->SetAutoPlayed (true);
 		PlayNow ();
 	} else {
-		PauseNow ();
+		SetState (Playing);
+		SetState (Stopped);
 	}
 }
 
@@ -1728,7 +1729,7 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 	} else if (args->property == MediaElement::IsMutedProperty) {
 		mplayer->SetMuted (args->new_value->AsBool ());
 	} else if (args->property == MediaElement::MarkersProperty) {
-		// FIXME: keep refs to these?
+
 	} else if (args->property == MediaElement::NaturalVideoHeightProperty) {
 		// read-only property
 		flags |= RecalculateMatrix;

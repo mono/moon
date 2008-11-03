@@ -1,3 +1,8 @@
+2008-11-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* test-states.html: Added test for CurrentState.
+	* drtlist.xml: Added test-states.html.
+
 2008-10-27  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* drtlist.xml: Put more tests in the 'mediaserver' category.

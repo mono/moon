@@ -1,5 +1,11 @@
 2008-11-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mediaelement.h, mediaelement.cpp: When a AutoPlay=False media is
+	  opened, the final state is Stopped, not Paused. When media finish,
+	  the final state is Paused, not Stopped. Fixes #365827.
+
+2008-11-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* audio-alsa.cpp: Add another dlopened symbol, fixes an unresolved
 	  external reference.
 

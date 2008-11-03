@@ -145,7 +145,7 @@ class MediaElement : public MediaBase {
 	void SetNaturalVideoHeight (double height);
 	void SetNaturalVideoWidth (double width);
 	
-	void PlayOrPauseNow ();
+	void PlayOrStopNow ();
 	void PauseNow ();
 	void PlayNow ();
 	void StopNow ();
