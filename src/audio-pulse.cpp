@@ -191,7 +191,7 @@ PulseSource::InitializePA ()
 	pa_channel_map channel_map;
 	bool result = false;
 	
-	AUDIO_DEBUG ("PulseSource::InitializePA ()\n");
+	LOG_AUDIO ("PulseSource::InitializePA ()\n");
 	
 	player->LockLoop ();
 	
@@ -204,13 +204,13 @@ PulseSource::InitializePA ()
 	} else if (format.channels == 2) {
 		pa_channel_map_init_stereo (&channel_map);
 	} else {
-		AUDIO_DEBUG ("PulseSource::InitializePA (): Invalid number of channels: %i\n", format.channels);
+		LOG_AUDIO ("PulseSource::InitializePA (): Invalid number of channels: %i\n", format.channels);
 		goto cleanup;
 	}
 	
 	pulse_stream = pa_stream_new (player->GetPAContext (), "Audio stream", &format, &channel_map);
 	if (pulse_stream == NULL) {
-		AUDIO_DEBUG ("PulseSource::InitializePA (): Stream creation failed: %s\n", pa_strerror (pa_context_errno (player->GetPAContext ())));
+		LOG_AUDIO ("PulseSource::InitializePA (): Stream creation failed: %s\n", pa_strerror (pa_context_errno (player->GetPAContext ())));
 		goto cleanup;
 	}
 			
@@ -220,7 +220,7 @@ PulseSource::InitializePA ()
 	
 	err = pa_stream_connect_playback (pulse_stream, NULL, NULL, (pa_stream_flags_t) (PA_STREAM_INTERPOLATE_TIMING | PA_STREAM_AUTO_TIMING_UPDATE | PA_STREAM_START_CORKED), NULL, NULL);
 	if (err < 0) {
-		AUDIO_DEBUG ("PulseSource::InitializePA (): failed to connect stream: %s.\n", pa_strerror (pa_context_errno (player->GetPAContext ())));
+		LOG_AUDIO ("PulseSource::InitializePA (): failed to connect stream: %s.\n", pa_strerror (pa_context_errno (player->GetPAContext ())));
 		goto cleanup;
 	}
 	
@@ -317,7 +317,7 @@ PulseSource::OnStateChanged (pa_stream *pulse_stream)
 	pa_stream_state_t state;
 	
 	if (pulse_stream != this->pulse_stream && this->pulse_stream != NULL) {
-		AUDIO_DEBUG ("PulseSource::OnStateChanged (%p): Invalid stream.\n", pulse_stream);
+		LOG_AUDIO ("PulseSource::OnStateChanged (%p): Invalid stream.\n", pulse_stream);
 		return;
 	}
 	
@@ -336,7 +336,7 @@ PulseSource::OnStateChanged (pa_stream *pulse_stream)
 	case PA_STREAM_FAILED:
 	default:
 		is_ready = false;
-		AUDIO_DEBUG ("PulseSource::OnStateChanged (): Stream error: %s\n", pa_strerror (pa_context_errno (player->GetPAContext ())));
+		LOG_AUDIO ("PulseSource::OnStateChanged (): Stream error: %s\n", pa_strerror (pa_context_errno (player->GetPAContext ())));
 		SetState (AudioError);
 		break;
 	}
@@ -376,7 +376,7 @@ PulseSource::OnWrite (size_t length)
 		// if called from WriteAvailable, that method has locked
 		err = pa_stream_write (pulse_stream, buffer, frames * GetBytesPerFrame (), (pa_free_cb_t) g_free, 0, PA_SEEK_RELATIVE);
 		if (err < 0) {
-			AUDIO_DEBUG ("PulseSource::OnWrite (): Write error: %s\n", pa_strerror (pa_context_errno (player->GetPAContext ())));
+			LOG_AUDIO ("PulseSource::OnWrite (): Write error: %s\n", pa_strerror (pa_context_errno (player->GetPAContext ())));
 		} else if (play_pending) {
 			Played ();
 		}
@@ -398,7 +398,7 @@ PulseSource::WriteAvailable ()
 		if (available != (size_t) -1) {
 			OnWrite (available);
 		} else {
-			AUDIO_DEBUG ("PulseSource::WriteAvailable (): Write error: %s\n", pa_strerror (pa_context_errno (player->GetPAContext ())));
+			LOG_AUDIO ("PulseSource::WriteAvailable (): Write error: %s\n", pa_strerror (pa_context_errno (player->GetPAContext ())));
 		}
 	}
 	player->UnlockLoop ();
@@ -483,7 +483,7 @@ PulseSource::GetDelayInternal ()
 	if (pulse_stream && is_ready) {
 		err = pa_stream_get_latency (pulse_stream, &latency, &negative);
 		if (err < 0) {
-			AUDIO_DEBUG ("PulseSource::GetDelay (): Error: %s\n", pa_strerror (pa_context_errno (player->GetPAContext ())));
+			LOG_AUDIO ("PulseSource::GetDelay (): Error: %s\n", pa_strerror (pa_context_errno (player->GetPAContext ())));
 			result = G_MAXUINT64;
 		} else {
 			result = MilliSeconds_ToPts (latency / 1000);
@@ -621,11 +621,11 @@ PulsePlayer::IsInstalled ()
 
 		if (d_pa_get_library_version != NULL) {
 			version = d_pa_get_library_version ();
-			AUDIO_DEBUG ("PulsePlayer: Found libpulse version: '%s'\n", version);
+			LOG_AUDIO ("PulsePlayer: Found libpulse version: '%s'\n", version);
 		}
 
 		if (!result)
-			AUDIO_DEBUG ("PulsePlayer: Failed to load one or more required functions in libpulse.so.");
+			LOG_AUDIO ("PulsePlayer: Failed to load one or more required functions in libpulse.so.");
 		
 		is_pulse_usable = result ? 1 : 2;
 		return result;
@@ -697,7 +697,7 @@ PulsePlayer::OnContextStateChanged () {
 		break;
 	case PA_CONTEXT_FAILED:
 	default:
-		AUDIO_DEBUG ("Connection failure: %s\n", pa_strerror (pa_context_errno (context)));
+		LOG_AUDIO ("Connection failure: %s\n", pa_strerror (pa_context_errno (context)));
 		break;
 	}
 }
@@ -728,20 +728,20 @@ PulsePlayer::Initialize ()
 	
 	loop = pa_threaded_mainloop_new ();	
 	if (loop == NULL) {
-		AUDIO_DEBUG ("PulsePlayer::InitializeInternal (): Failed to create main loop.\n");
+		LOG_AUDIO ("PulsePlayer::InitializeInternal (): Failed to create main loop.\n");
 		return false;
 	}
 	
 	api = pa_threaded_mainloop_get_api (loop);
 	
 	if (api == NULL) {
-		AUDIO_DEBUG ("PulsePlayer::InitializeInternal (): Failed to get api.\n");
+		LOG_AUDIO ("PulsePlayer::InitializeInternal (): Failed to get api.\n");
 		return false;
 	}
 	
 	context = pa_context_new (api, "Moonlight");
 	if (context == NULL) {
-		AUDIO_DEBUG ("PulsePlayer::InitializeInternal (); Failed to create context.\n");
+		LOG_AUDIO ("PulsePlayer::InitializeInternal (); Failed to create context.\n");
 		return false;
 	}
 	
@@ -749,7 +749,7 @@ PulsePlayer::Initialize ()
 	
 	err = pa_context_connect (context, NULL, (pa_context_flags_t) 0, NULL);
 	if (err < 0) {
-		AUDIO_DEBUG ("PulsePlayer::InitializeInternal (): Error %i while connecting to server.\n", err);
+		LOG_AUDIO ("PulsePlayer::InitializeInternal (): Error %i while connecting to server.\n", err);
 		return false;
 	}
 	
