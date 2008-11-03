@@ -697,7 +697,7 @@ PulsePlayer::OnContextStateChanged () {
 		break;
 	case PA_CONTEXT_FAILED:
 	default:
-		LOG_AUDIO ("Connection failure: %s\n", pa_strerror (pa_context_errno (context)));
+		fprintf (stderr, "Moonlight: Connection failure while trying to connect to pulseaudio daemon: %s\n", pa_strerror (pa_context_errno (context)));
 		break;
 	}
 }

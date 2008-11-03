@@ -1,5 +1,10 @@
 2008-11-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* audio-pulse.cpp: OnContextStateChanged: always print an error message
+	  if we fail to connect to pa daemon.
+
+2008-11-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* mediaelement.h, mediaelement.cpp: Add a MissingCodecs flag and don't
 	  invalidate when that flag is set.
 
