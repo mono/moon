@@ -1,5 +1,11 @@
 2008-11-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* runtime.cpp: get_flags: take the default flags as an argument, this
+	  way the environment variables can disable flags which are enabled
+	  by default.
+
+2008-11-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* pipeline-ui.cpp, runtime.h, runtime.cpp, pipeline.cpp: Only enable ms
 	  codecs by default for browsers.
 

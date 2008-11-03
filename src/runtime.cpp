@@ -1863,9 +1863,9 @@ runtime_init_desktop ()
 }
 
 static gint32
-get_flags (const char *envname, struct env_options options[])
+get_flags (gint32 def, const char *envname, struct env_options options[])
 {
-	gint32 flags = 0;
+	gint32 flags = def;
 	const char *env;
 	
 	if (envname && (env = g_getenv (envname))) {
@@ -1922,9 +1922,9 @@ runtime_init (guint32 flags)
 	flags |= RUNTIME_INIT_SHOW_FPS;
 
 	// Allow the user to override the flags via his/her environment
-	flags |= get_flags ("MOONLIGHT_OVERRIDES", overrides);
+	flags = get_flags (flags, "MOONLIGHT_OVERRIDES", overrides);
 #if DEBUG
-	debug_flags = get_flags ("MOONLIGHT_DEBUG", debugs);
+	debug_flags = get_flags (0, "MOONLIGHT_DEBUG", debugs);
 #endif
 
 	
