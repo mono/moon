@@ -398,21 +398,18 @@ TextLayout::LayoutWrapWithOverflow (TextLayoutHints *hints)
 			line->descend = descend;
 			line->height = height;
 			line->width = width;
+			dy += height;
 			
 			lines->Append (line);
 			
-			dy += height;
-			
-			// blank lines do not count toward 'ActualHeight' extents
-			// unless underlined
-			if (!blank || underlined)
-				actual_height = dy;
-			
-			if (run->next)
+			if (run->next) {
 				line = new TextLine ();
-			else
+			} else {
+				dy += height;
 				line = NULL;
+			}
 			
+			actual_height = dy;
 			underlined = false;
 			blank = true;
 			
@@ -490,15 +487,10 @@ TextLayout::LayoutWrapWithOverflow (TextLayoutHints *hints)
 				line->descend = descend;
 				line->height = height;
 				line->width = width;
-				
-				lines->Append (line);
-				
 				dy += height;
 				
-				// blank lines do not count toward 'ActualHeight' extents
-				// unless underlined
-				if (!blank || underlined)
-					actual_height = dy;
+				lines->Append (line);
+				actual_height = dy;
 				
 				line = new TextLine ();
 				blank = true;
@@ -558,15 +550,10 @@ TextLayout::LayoutWrapWithOverflow (TextLayoutHints *hints)
 		line->descend = descend;
 		line->height = height;
 		line->width = width;
-		
-		lines->Append (line);
-		
 		dy += height;
 		
-		// blank lines do not count toward 'ActualHeight' extents
-		// unless underlined
-		if (!blank || underlined)
-			actual_height = dy;
+		lines->Append (line);
+		actual_height = dy;
 	}
 }
 
@@ -604,21 +591,18 @@ TextLayout::LayoutNoWrap (TextLayoutHints *hints)
 			line->descend = descend;
 			line->height = height;
 			line->width = width;
+			dy += height;
 			
 			lines->Append (line);
 			
-			dy += height;
-			
-			// blank lines do not count toward 'ActualHeight' extents
-			// unless underlined
-			if (!blank || underlined)
-				actual_height = dy;
-			
-			if (run->next)
+			if (run->next) {
 				line = new TextLine ();
-			else
+			} else {
+				dy += height;
 				line = NULL;
+			}
 			
+			actual_height = dy;
 			underlined = false;
 			clipped = false;
 			blank = true;
@@ -729,15 +713,10 @@ TextLayout::LayoutNoWrap (TextLayoutHints *hints)
 		line->descend = descend;
 		line->height = height;
 		line->width = width;
-		
-		lines->Append (line);
-		
 		dy += height;
 		
-		// blank lines do not count toward 'ActualHeight' extents
-		// unless underlined
-		if (!blank || underlined)
-			actual_height = dy;
+		lines->Append (line);
+		actual_height = dy;
 	}
 }
 
@@ -834,21 +813,18 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 			line->descend = descend;
 			line->height = height;
 			line->width = width;
+			dy += height;
 			
 			lines->Append (line);
 			
-			dy += height;
-			
-			// blank lines do not count toward 'ActualHeight' extents
-			// unless underlined
-			if (!blank || underlined)
-				actual_height = dy;
-			
-			if (run->next)
+			if (run->next) {
 				line = new TextLine ();
-			else
+			} else {
+				dy += height;
 				line = NULL;
+			}
 			
+			actual_height = dy;
 			underlined = false;
 			last_word = false;
 			in_word = false;
@@ -948,15 +924,10 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 				line->descend = descend;
 				line->height = height;
 				line->width = width;
-				
-				lines->Append (line);
-				
 				dy += height;
 				
-				// blank lines do not count toward 'ActualHeight' extents
-				// unless underlined
-				if (!blank || underlined)
-					actual_height = dy;
+				lines->Append (line);
+				actual_height = dy;
 				
 				line = new TextLine ();
 				blank = true;
@@ -1105,15 +1076,10 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 		line->descend = descend;
 		line->height = height;
 		line->width = width;
-		
-		lines->Append (line);
-		
 		dy += height;
 		
-		// blank lines do not count toward 'ActualHeight' extents
-		// unless underlined
-		if (!blank || underlined)
-			actual_height = dy;
+		lines->Append (line);
+		actual_height = dy;
 	}
 	
 	g_array_free (array, true);

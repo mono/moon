@@ -1,3 +1,12 @@
+2008-11-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	See tests/xaml/test-textblock-actualheight.html and
+	test-textblock-hittest.html as compared with Microsoft
+	Silverlight.
+
+	* layout.cpp (TextLayout::Layout*): trailing LineBreak elements
+	actually do count toward ActualHeight metrics.
+
 2008-11-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* audio-pulse.cpp: OnContextStateChanged: always print an error message
