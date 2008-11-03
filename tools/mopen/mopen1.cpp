@@ -19,6 +19,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <stdlib.h>
 
 #include "downloader.h"
 #include "runtime.h"
@@ -26,13 +27,74 @@
 #include "canvas.h"
 #include "window-gtk.h"
 #include "frameworkelement.h"
+#include "asf.h"
+#include "pipeline.h"
+
+static bool
+get_video_size (const char *filename, int *width, int *height)
+{
+	MediaResult tmp;
+	FileSource *src = NULL;
+	ASFParser *parser = NULL;
+	bool result = false;
+	const asf_stream_properties* stream_properties;
+	const asf_video_stream_data* video_data;
+	const BITMAPINFOHEADER* bmp;
+	
+	src = new FileSource (NULL, filename);
+	if (!MEDIA_SUCCEEDED (tmp = src->Initialize ())) {
+		fprintf (stderr, "mopen1: Error while opening the file %s\n", filename);
+		goto cleanup;
+	}
+
+	parser = new ASFParser (src, NULL);
+	if (!MEDIA_SUCCEEDED (tmp = parser->ReadHeader ())) {
+		fprintf (stderr, "mopen1: Error while reading asf header in file %s\n", filename);
+		goto cleanup;
+	}
+
+	for (int i = 0; i <= 127; i++) {
+		if (!parser->IsValidStream (i))
+			continue;
+		
+		stream_properties = parser->GetStream (i);
+
+		if (!stream_properties->is_video ())
+			continue;
+
+ 		video_data = stream_properties->get_video_data ();
+ 		
+ 		if (!video_data)
+ 			continue;
+
+		bmp = video_data->get_bitmap_info_header ();
+		if (!bmp)
+			continue;
+
+
+		*width = bmp->image_width;
+		*height = bmp->image_height;
+		result = true;
+		goto cleanup;
+	}
+
+cleanup:
+	if (parser)
+		parser->unref ();
+	if (src)
+		src->unref ();
+	return result;
+}
 
 static void 
 Help (void)
 {
 	printf ("Usage is: mopen1 [args] [file.xaml]\n\n"
 			   "Arguments are:\n"
-			   "   (none supported yet)\n");
+			   "   --media <filename>  Automatically creates some xaml with a MediaElement whose source is set to the filename\n"
+			   "                       This is also automatically assumed if 1 filename is passed and the extension is either\n"
+			   "                       wmv, wma, vc1, asf or mp3.\n"
+			   );
 /*
 	TODO: 
 			   "   --desklet       Remove window decoration for desklets use\n" +
@@ -183,10 +245,10 @@ static int LoadXaml (const char* file)
 		int width = ui->GetWidth ();
 		int height = ui->GetHeight ();
 
-		if (width < 300)
-			width = 300;
-		if (height < 300)
-			height = 300;
+		if (width < 100)
+			width = 100;
+		if (height < 100)
+			height = 100;
 
 		surface->Resize (width, height);
 
@@ -208,7 +270,8 @@ static int LoadXaml (const char* file)
 		printf ("nopen::LoadXaml ('%s'): didn't get an uielement from the xaml.\n", file);
 		result = 1;
 	}
-	
+
+	surface->Zombify ();
 	surface->unref ();
 
 	runtime_shutdown ();
@@ -221,16 +284,71 @@ static int LoadXaml (const char* file)
 int
 main (int argc, char *argv [])
 {
+	int result = 0;
+	const char *media_extensions [] = { ".wmv", ".wma", ".vc1", ".asf", ".mp3", NULL };
+	const char *media_filename = NULL;
+	const char *filename = NULL;
+	const char *tmpfile = NULL;
+	int media_width = 0;
+	int media_height = 0;
+	
 	gtk_init (&argc, &argv);
 	g_thread_init (NULL);
 	gdk_threads_init ();
+
 	
-	if (argc != 2) {
-		Help ();
-		return 1;
+	for (int i = 1; i < argc; i++) {
+		if (!strcmp (argv [i], "--media")) {
+			if (i + 1 >= argc) {
+				Help ();
+				return 1;
+			}
+			media_filename = argv [++i];
+		} else {
+			if (filename != NULL) {
+				Help ();
+				return 1;
+			}
+			filename = argv [i];
+			for (int j = 0; media_extensions [j] != NULL && media_filename == NULL; j++) {
+				if (g_str_has_suffix (filename, media_extensions [j]))
+					media_filename = filename;
+			}
+		}
 	}
-	
-	// printf ("nopen::main (): loading '%s'.\n", argv [1]);
-	
-	return LoadXaml (argv [1]);
+
+	if (media_filename) {
+		char *xaml;
+		
+		tmpfile = "mopen1.default.xaml";
+		
+		if (!get_video_size (media_filename, &media_width, &media_height)) {
+			fprintf (stdout, "mopen1: Could not get video size, using 400x300.\n");
+			media_width = 400;
+			media_height = 300;
+		}
+		
+		xaml = g_strdup_printf (
+"<Canvas xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' Width='%i' Height='%i'>\n"
+"       <MediaElement x:Name='TestVideo' Width='%i' Height='%i' Source='%s'/>\n"
+"</Canvas>\n", media_width, media_height, media_width, media_height, media_filename);
+
+		if (!g_file_set_contents (tmpfile, xaml, -1, NULL)) {
+			fprintf (stderr, "mopen1: Error while writing temporary file.\n");
+			return 1;
+		}
+
+		g_free (xaml);
+		filename = tmpfile;
+
+	}
+
+		
+	result = LoadXaml (filename);
+
+	if (tmpfile)
+		unlink (tmpfile);
+
+
+	return result;
 }

@@ -1,3 +1,8 @@
+2008-11-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mopen1.cpp: Add support for doing mopen1 video.wmv instead of having
+	  to create xaml to test media.
+
 2008-09-06  Chris Toshok  <toshok@ximian.com>
 
 	* mopen.cs: remove the canvas-only restriction.
