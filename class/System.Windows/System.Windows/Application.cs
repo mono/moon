@@ -73,11 +73,13 @@ namespace System.Windows {
 			if (current == null) {
 				current = this;
 
-				// IsolatedStorage (inside mscorlib.dll) needs some information about the XAP file
-				// to initialize it's application and site directory storage.
-				AppDomain ad = AppDomain.CurrentDomain;
-				ad.SetData ("xap_uri", Host.Source.AbsoluteUri);
-				ad.SetData ("xap_host", Host.Source.Host);
+				if (Host.Source != null) {
+					// IsolatedStorage (inside mscorlib.dll) needs some information about the XAP file
+					// to initialize it's application and site directory storage.
+					AppDomain ad = AppDomain.CurrentDomain;
+					ad.SetData ("xap_uri", Host.Source.AbsoluteUri);
+					ad.SetData ("xap_host", Host.Source.Host);
+				}
 			} else {
 				root_visual = current.root_visual;
 			}
@@ -112,7 +114,7 @@ namespace System.Windows {
 			return CreateFromXap (plugin, surface, xapPath) != null;
 		}
 		
-		static Application CreateFromXap (IntPtr plugin, IntPtr surface, string xapPath)
+		internal static Application CreateFromXap (IntPtr plugin, IntPtr surface, string xapPath)
 		{			
 			if (plugin != IntPtr.Zero)
 				PluginHost.SetPluginHandle (plugin);
@@ -233,7 +235,7 @@ namespace System.Windows {
 			return instance;
 		}
 		
-		static Application CreateFromXap (string xapPath)
+		internal static Application CreateFromXap (string xapPath)
 		{
 			return CreateFromXap (IntPtr.Zero, IntPtr.Zero, xapPath);
 		}
@@ -262,7 +264,7 @@ namespace System.Windows {
 				return;
 
 			string xaml = new StreamReader (sr.Stream).ReadToEnd ();
-			ManagedXamlLoader loader = new ManagedXamlLoader ();
+			ManagedXamlLoader loader = new ManagedXamlLoader (app != null ? app.surface : Application.s_surface, PluginHost.Handle);
 			Assembly loading_asm = component.GetType ().Assembly;
 
 			if (cdo != null) {
