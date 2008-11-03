@@ -237,6 +237,22 @@ public class GtkSilver : EventBox {
 		return true;
 	}
 
+	public bool LoadXap (string xap, out System.Windows.Application application)
+	{
+		application = null;
+
+		if (xap == null)
+			throw new ArgumentNullException ("xaml");
+
+		application = System.Windows.Application.CreateFromXap (IntPtr.Zero, surface, xap);
+
+		Console.WriteLine ("application = {0}", application);
+		Console.WriteLine ("application.RootVisual = {0}", application.RootVisual);
+
+		// we don't Attach() here because CreateFromXap has already done that for us.
+		return true;
+	}
+
 	/// <summary>
 	///    Initializes the GtkSilver widget from the XAML contents
 	///    in a file
