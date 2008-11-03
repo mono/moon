@@ -169,6 +169,9 @@ class asf
 			writer.WriteLine ("\tcase ASF_LANGUAGE_LIST:");
 			writer.WriteLine ("\tcase ASF_METADATA:");
 			writer.WriteLine ("\tcase ASF_PADDING:");
+			writer.WriteLine ("\tcase ASF_ADVANCED_MUTUAL_EXCLUSION:");
+			writer.WriteLine ("\tcase ASF_STREAM_PRIORITIZATION:");
+			writer.WriteLine ("\tcase ASF_INDEX_PARAMETERS:");
 			writer.WriteLine ("\t\treturn true; // Do nothing, we don't use these objects at all, so there's no need to validate either.");
 			writer.WriteLine ("\tdefault:");
 			writer.WriteLine ("#if DEBUG");

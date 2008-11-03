@@ -65,6 +65,9 @@ bool asf_object_validate_exact (const asf_object* obj, ASFParser* parser)
 	case ASF_LANGUAGE_LIST:
 	case ASF_METADATA:
 	case ASF_PADDING:
+	case ASF_ADVANCED_MUTUAL_EXCLUSION:
+	case ASF_STREAM_PRIORITIZATION:
+	case ASF_INDEX_PARAMETERS:
 		return true; // Do nothing, we don't use these objects at all, so there's no need to validate either.
 	default:
 #if DEBUG
