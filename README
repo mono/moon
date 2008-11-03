@@ -55,6 +55,19 @@ Runtime Options
 	* timesource=manual/system
 
 		Defaults to `system'.   
+
+
+	Also if --with-debug=yes option was provided to configure script, the
+	MOONLIGHT_DEBUG env variable controls which debug output is printed
+	on the console. Valid values are: 
+
+        	alsa, alsa-ex, audio, audio-ex, pulse, pulse-ex, httpstreaming, 
+        	markers, markers-ex, mms, mediaplayer, mediaplayer-ex, pipeline, 
+        	pipeline-error, framereaderloop, ui, ffmpeg, codecs, dependencyobject, 
+        	downloader, font, layout, media, mediaelement, mediaelement-ex, 
+        	buffering, asf, playlist, playlist-warn, text, xaml
+
+
 Licensing
 =========
 
