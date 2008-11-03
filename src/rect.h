@@ -77,8 +77,8 @@ struct Rect {
 		Rect result = Rect ();
 		result.x = x > rect.x ? x : rect.x;
 		result.y = y > rect.y ? y : rect.y;
-		result.width = ((x + width < rect.x + rect.width) ? (x + width) : (rect.x + rect.width)) - result.x;
-		result.height = ((y + height < rect.y + rect.height) ? (y + height) : (rect.y + rect.height)) - result.y;
+		result.width = MAX (0, ((x + width < rect.x + rect.width) ? (x + width) : (rect.x + rect.width)) - result.x);
+		result.height = MAX (0, ((y + height < rect.y + rect.height) ? (y + height) : (rect.y + rect.height)) - result.y);
 		return result;
 	}
 
