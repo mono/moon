@@ -58,6 +58,7 @@ public:
 
 bool Media::registering_ms_codecs = false;
 bool Media::registered_ms_codecs = false;
+
 DemuxerInfo *Media::registered_demuxers = NULL;
 DecoderInfo *Media::registered_decoders = NULL;
 ConverterInfo *Media::registered_converters = NULL;
@@ -182,6 +183,11 @@ Media::RegisterMSCodecs (void)
 	char *libmscodecs_path = config.GetStringValue ("Codecs", "MSCodecsPath");
 	const char *functions [] = {"register_mswma", "register_mswmv", "register_msmp3"};
 	registering_ms_codecs = true;
+
+	if (!(moonlight_flags & RUNTIME_INIT_ENABLE_MS_CODECS)) {
+		LOG_CODECS ("Moonlight: mscodecs haven't been enabled.\n");
+		return;
+	}
 
 	if (libmscodecs_path == NULL || !(g_file_test (libmscodecs_path, G_FILE_TEST_EXISTS) && g_file_test (libmscodecs_path, G_FILE_TEST_IS_REGULAR))) {
 		const gchar *home = g_get_home_dir ();
@@ -352,7 +358,7 @@ Media::Initialize ()
 
 	// decoders
 	Media::RegisterDecoder (new ASFMarkerDecoderInfo ());
-	if (!(moonlight_flags & RUNTIME_INIT_DISABLE_MS_CODECS)) {
+	if (moonlight_flags & RUNTIME_INIT_ENABLE_MS_CODECS) {
 		RegisterMSCodecs ();
 	}
 #ifdef INCLUDE_FFMPEG

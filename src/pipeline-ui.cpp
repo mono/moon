@@ -68,6 +68,9 @@ CodecDownloader::ShowUI (Surface *surface)
 		return;
 	}
 
+	if (!(moonlight_flags & RUNTIME_INIT_ENABLE_MS_CODECS))
+		return;
+
 	CodecDownloader *cd = new CodecDownloader (surface);
 	cd->Show ();
 	cd->unref ();
