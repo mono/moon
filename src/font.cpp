@@ -31,15 +31,9 @@
 #include "utils.h"
 #include "list.h"
 #include "font.h"
+#include "debug.h"
 
 #include FT_OUTLINE_H
-
-//#define FONT_DEBUG 1
-#ifdef FONT_DEBUG
-#define d(x) x
-#else
-#define d(x)
-#endif
 
 
 #define FONT_FACE_SIZE 41.0
@@ -460,7 +454,7 @@ style_info_parse (const char *style, FontStyleInfo *info)
 	}
 }
 
-#ifdef FONT_DEBUG
+#ifdef DEBUG
 static const char *
 style_name (FontStyleInfo *style, char *namebuf)
 {
@@ -503,8 +497,8 @@ style_name (FontStyleInfo *style, char *namebuf)
 
 FontFileFace::FontFileFace (FontFile *file, FT_Face face, int index)
 {
-	d(fprintf (stderr, "\t\t\t* index=%d: family=\"%s\"; style=\"%s\"\n",
-		   index, face->family_name, face->style_name));
+	LOG_FONT (stderr, "\t\t\t* index=%d: family=\"%s\"; style=\"%s\"\n",
+		  index, face->family_name, face->style_name);
 	
 	style_info_parse (face->style_name, &style);
 	family_name = g_strdup (face->family_name);
@@ -546,7 +540,7 @@ FontDir::CacheFileInfo (const char *filename, FT_Face face)
 		if (i > 0 && FT_New_Face (libft2, filename, i, &face) != 0)
 			break;
 		
-		d(fprintf (stderr, "\t\t* caching font info for `%s'...\n", filename));
+		LOG_FONT (stderr, "\t\t* caching font info for `%s'...\n", filename);
 		fface = new FontFileFace (file, face, i);
 		g_ptr_array_add (file->faces, fface);
 		
@@ -867,7 +861,7 @@ struct FontFaceSimilarity {
 bool
 FontFace::OpenFontDirectory (FT_Face *face, FcPattern *pattern, const char *path, const char **families)
 {
-#ifdef FONT_DEBUG
+#ifdef DEBUG
 	char stylebuf1[256], stylebuf2[256];
 #endif
 	FontFaceSimilarity similar;
@@ -889,13 +883,13 @@ FontFace::OpenFontDirectory (FT_Face *face, FcPattern *pattern, const char *path
 		style.slant = FC_SLANT_ROMAN;
 	
 	if (!(dir = (FontDir *) g_hash_table_lookup (fontdirs, path))) {
-		d(fprintf (stderr, "\t* indexing font directory...\n"));
+		LOG_FONT (stderr, "\t* indexing font directory...\n");
 		if (!(dir = IndexFontDirectory (path)))
 			return false;
 		
 		g_hash_table_insert (fontdirs, dir->key, dir);
 	} else {
-		d(fprintf (stderr, "\t* reusing an extracted zip archive...\n"));
+		LOG_FONT (stderr, "\t* reusing an extracted zip archive...\n");
 	}
 	
 	array = g_ptr_array_new ();
@@ -931,23 +925,23 @@ FontFace::OpenFontDirectory (FT_Face *face, FcPattern *pattern, const char *path
 				style.width = family->width;
 				style.slant = family->slant;
 				
-				d(fprintf (stderr, "\t* checking if '%s' matches '%s'... ",
-					   fface->family_name, family->name));
+				LOG_FONT (stderr, "\t* checking if '%s' matches '%s'... ",
+					  fface->family_name, family->name);
 				
 				// compare against parsed family name (don't want to include style info)
 				if (strcmp (family->name, fface->family_name) != 0) {
-					d(fprintf (stderr, "no\n"));
+					LOG_FONT (stderr, "no\n");
 					continue;
 				}
 				
-				d(fprintf (stderr, "yes\n\t\t* checking if '%s' matches '%s'... ",
-					   style_name (&fface->style, stylebuf1), style_name (&style, stylebuf2)));
+				LOG_FONT (stderr, "yes\n\t\t* checking if '%s' matches '%s'... ",
+					  style_name (&fface->style, stylebuf1), style_name (&style, stylebuf2));
 				
 				if (fface->style.weight == style.weight &&
 				    fface->style.width == style.width &&
 				    fface->style.slant == style.slant) {
 					// found an exact match
-					d(fprintf (stderr, "yes\n"));
+					LOG_FONT (stderr, "yes\n");
 					goto found;
 				}
 				
@@ -955,13 +949,13 @@ FontFace::OpenFontDirectory (FT_Face *face, FcPattern *pattern, const char *path
 				if (abs (fface->style.weight - style.weight) <= similar.weight &&
 				    abs (fface->style.width - style.width) <= similar.width &&
 				    abs (fface->style.slant - style.slant) <= similar.slant) {
-					d(fprintf (stderr, "no, but closest match\n"));
+					LOG_FONT (stderr, "no, but closest match\n");
 					similar.weight = abs (fface->style.weight - style.weight);
 					similar.width = abs (fface->style.width - style.width);
 					similar.slant = abs (fface->style.slant - style.slant);
 					similar.face = fface;
 				} else {
-					d(fprintf (stderr, "no\n"));
+					LOG_FONT (stderr, "no\n");
 				}
 			}
 		}
@@ -985,7 +979,7 @@ FontFace::OpenFontDirectory (FT_Face *face, FcPattern *pattern, const char *path
 	
  found:
 	
-	d(fprintf (stderr, "\t* using font '%s, %s'\n", fface->family_name, style_name (&fface->style, stylebuf1)));
+	LOG_FONT (stderr, "\t* using font '%s, %s'\n", fface->family_name, style_name (&fface->style, stylebuf1));
 	
 	for (i = 0; i < array->len; i++)
 		delete (FontFamilyInfo *) array->pdata[i];
@@ -1038,11 +1032,11 @@ FontFace::LoadFontFace (FT_Face *face, FcPattern *pattern, const char **families
 		if (FcPatternGetInteger (matched, FC_INDEX, 0, &index) != FcResultMatch)
 			goto fail;
 		
-		d(fprintf (stderr, "\t* loading font from `%s' (index=%d)... ", filename, index));
+		LOG_FONT (stderr, "\t* loading font from `%s' (index=%d)... ", filename, index);
 		if ((err = FT_New_Face (libft2, (const char *) filename, index, &ftface)) == 0) {
 			if (FT_IS_SCALABLE (ftface)) {
 				if (!families || !ftface->family_name) {
-					d(fprintf (stderr, "success!\n"));
+					LOG_FONT (stderr, "success!\n");
 					break;
 				}
 				
@@ -1053,29 +1047,31 @@ FontFace::LoadFontFace (FT_Face *face, FcPattern *pattern, const char **families
 				}
 				
 				if (families[i]) {
-					d(fprintf (stderr, "success!\n"));
+					LOG_FONT (stderr, "success!\n");
 					break;
 				}
 				
-#if d(!)0
-				fprintf (stderr, "no\n\t\t* incorrect family: '%s' does not match any of: ",
-					 ftface->family_name);
-				for (i = 0; families[i]; i++) {
-					fputs (families[i], stderr);
-					if (families[i+1])
-						fputs (", ", stderr);
-				}
+#if DEBUG
+				if (debug_flags & RUNTIME_DEBUG_FONT) {
+					fprintf (stderr, "no\n\t\t* incorrect family: '%s' does not match any of: ",
+						ftface->family_name);
+					for (i = 0; families[i]; i++) {
+						fputs (families[i], stderr);
+						if (families[i+1])
+							fputs (", ", stderr);
+					}
 				
-				fputc ('\n', stderr);
+					fputc ('\n', stderr);
+				}
 #endif
 			} else {
-				d(fprintf (stderr, "no\n\t\t* not a scalable font\n"));
+				LOG_FONT (stderr, "no\n\t\t* not a scalable font\n");
 			}
 			
 			FT_Done_Face (ftface);
 			ftface = NULL;
 		} else {
-			d(fprintf (stderr, "failed :(\n"));
+			LOG_FONT (stderr, "failed :(\n");
 		}
 		
 	 fail:
@@ -1085,15 +1081,17 @@ FontFace::LoadFontFace (FT_Face *face, FcPattern *pattern, const char **families
 			// We couldn't find a matching font in the font directory, so let's try
 			// removing the filename from the pattern and see if that gets us what
 			// we are looking for.
-#if d(!)0
-			d(fprintf (stderr, "\t* falling back to matching by family: "));
-			for (i = 0; families[i]; i++) {
-				fputs (families[i], stderr);
-				if (families[i+1])
-					fputs (", ", stderr);
-			}
+#if DEBUG
+			if (debug_flags & RUNTIME_DEBUG_FONT) {
+				LOG_FONT (stderr, "\t* falling back to matching by family: ");
+				for (i = 0; families[i]; i++) {
+					fputs (families[i], stderr);
+					if (families[i+1])
+						fputs (", ", stderr);
+				}
 			
-			fputc ('\n', stderr);
+				fputc ('\n', stderr);
+			}
 #endif
 			
 			fallback = FcPatternDuplicate (pattern);
@@ -1205,11 +1203,11 @@ FontFace::LoadDefaultFace ()
 	bool loaded = false;
 	FcPattern *pattern;
 	
-	d(fprintf (stderr, "Attempting to load default system font\n"));
+	LOG_FONT (stderr, "Attempting to load default system font\n");
 	for (guint i = 0; i < G_N_ELEMENTS (default_font_names) && !loaded; i++) {
 		const char **families = default_font_names[i].families;
 		
-		d(fprintf (stderr, "    %s\n", default_font_names[i].source));
+		LOG_FONT (stderr, "    %s\n", default_font_names[i].source);
 		pattern = create_default_pattern (families);
 		loaded = LoadFontFace (&default_face, pattern, families);
 		FcPatternDestroy (pattern);
@@ -1238,16 +1236,18 @@ FontFace::Load (const TextFontDescription *desc)
 			char **families = desc->GetFamilies ();
 			FT_Face ftface;
 			
-#if d(!)0
-			char *debug = desc->ToString ();
-			fprintf (stderr, "Attempting to load %s\n", debug);
-			g_free (debug);
+#if DEBUG
+			if (debug_flags & RUNTIME_DEBUG_FONT) {
+				char *debug = desc->ToString ();
+				fprintf (stderr, "Attempting to load %s\n", debug);
+				g_free (debug);
+			}
 #endif
 			
 			if ((loaded = LoadFontFace (&ftface, pattern, (const char **) families)))
 				face = new FontFace (ftface, pattern, true);
 			else
-				d(fprintf (stderr, "\t* falling back to default system font...\n"));
+				LOG_FONT (stderr, "\t* falling back to default system font...\n");
 			
 			g_strfreev (families);
 		}

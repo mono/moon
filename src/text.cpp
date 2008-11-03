@@ -27,9 +27,8 @@
 #include "text.h"
 #include "uri.h"
 #include "utils.h"
+#include "debug.h"
 
-
-#define d(x) x
 
 static SolidColorBrush *default_foreground_brush = NULL;
 
@@ -1231,7 +1230,7 @@ Glyphs::Layout ()
 	
 	while (attr) {
 		if (attr->set & Cluster) {
-			d(fprintf (stderr, "Can't use clusters past the end of the UnicodeString\n"));
+			LOG_TEXT (stderr, "Can't use clusters past the end of the UnicodeString\n");
 			moon_path_destroy (path);
 			invalid = true;
 			path = NULL;
@@ -1239,7 +1238,7 @@ Glyphs::Layout ()
 		}
 		
 		if (!(attr->set & Index)) {
-			d(fprintf (stderr, "No index specified for glyph %d\n", n + 1));
+			LOG_TEXT (stderr, "No index specified for glyph %d\n", n + 1);
 			moon_path_destroy (path);
 			invalid = true;
 			path = NULL;
@@ -1443,13 +1442,17 @@ Glyphs::DownloaderComplete ()
 static void
 print_parse_error (const char *in, const char *where, const char *reason)
 {
-	int i;
+#if DEBUG
+	if (debug_flags & RUNTIME_DEBUG_TEXT) {
+		int i;
 	
-	fprintf (stderr, "Glyph Indices parse error: \"%s\": %s\n", in, reason);
-	fprintf (stderr, "                            ");
-	for (i = 0; i < (where - in); i++)
-		fputc (' ', stderr);
-	fprintf (stderr, "^\n");
+		fprintf (stderr, "Glyph Indices parse error: \"%s\": %s\n", in, reason);
+		fprintf (stderr, "                            ");
+		for (i = 0; i < (where - in); i++)
+			fputc (' ', stderr);
+		fprintf (stderr, "^\n");
+	}
+#endif
 }
 
 void
@@ -1486,7 +1489,7 @@ Glyphs::SetIndicesInternal (const char *in)
 			glyph->code_units = strtoul (inptr, &end, 10);
 			if (glyph->code_units == 0 || (glyph->code_units == LONG_MAX && errno != 0)) {
 				// invalid cluster
-				d(print_parse_error (in, inptr, errno ? strerror (errno) : "invalid cluster mapping; CodeUnitCount cannot be 0"));
+				print_parse_error (in, inptr, errno ? strerror (errno) : "invalid cluster mapping; CodeUnitCount cannot be 0");
 				delete glyph;
 				return;
 			}
@@ -1497,7 +1500,7 @@ Glyphs::SetIndicesInternal (const char *in)
 			
 			if (*inptr != ':') {
 				// invalid cluster
-				d(print_parse_error (in, inptr, "expected ':'"));
+				print_parse_error (in, inptr, "expected ':'");
 				delete glyph;
 				return;
 			}
@@ -1510,7 +1513,7 @@ Glyphs::SetIndicesInternal (const char *in)
 			glyph->glyph_count = strtoul (inptr, &end, 10);
 			if (glyph->glyph_count == 0 || (glyph->glyph_count == LONG_MAX && errno != 0)) {
 				// invalid cluster
-				d(print_parse_error (in, inptr, errno ? strerror (errno) : "invalid cluster mapping; GlyphCount cannot be 0"));
+				print_parse_error (in, inptr, errno ? strerror (errno) : "invalid cluster mapping; GlyphCount cannot be 0");
 				delete glyph;
 				return;
 			}
@@ -1521,7 +1524,7 @@ Glyphs::SetIndicesInternal (const char *in)
 			
 			if (*inptr != ')') {
 				// invalid cluster
-				d(print_parse_error (in, inptr, "expected ')'"));
+				print_parse_error (in, inptr, "expected ')'");
 				delete glyph;
 				return;
 			}
@@ -1538,7 +1541,7 @@ Glyphs::SetIndicesInternal (const char *in)
 			glyph->index = strtoul (inptr, &end, 10);
 			if ((glyph->index == 0 || glyph->index == LONG_MAX) && errno != 0) {
 				// invalid glyph index
-				d(print_parse_error (in, inptr, strerror (errno)));
+				print_parse_error (in, inptr, strerror (errno));
 				delete glyph;
 				return;
 			}
@@ -1562,7 +1565,7 @@ Glyphs::SetIndicesInternal (const char *in)
 				value = g_ascii_strtod (inptr, &end);
 				if ((value == 0.0 || value == HUGE_VAL || value == -HUGE_VAL) && errno != 0) {
 					// invalid advance or offset
-					d(print_parse_error (in, inptr, strerror (errno)));
+					print_parse_error (in, inptr, strerror (errno));
 					delete glyph;
 					return;
 				}
@@ -1603,7 +1606,7 @@ Glyphs::SetIndicesInternal (const char *in)
 			inptr++;
 		
 		if (*inptr && *inptr != ';') {
-			d(print_parse_error (in, inptr, "expected ';'"));
+			print_parse_error (in, inptr, "expected ';'");
 			return;
 		}
 		

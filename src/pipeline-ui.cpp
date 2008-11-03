@@ -21,6 +21,7 @@
 #include "downloader.h"
 #include "utils.h"
 #include "pipeline.h"
+#include "debug.h"
 
 #define EULA_URL "http://anonsvn.mono-project.com/viewvc/trunk/moon/LICENSE?revision=112447"
 #define CODEC_URL "http://localhost:8080/"
@@ -28,8 +29,6 @@
 //Use these for testing the downloader UI, they're large and slow
 //#define EULA_URL "http://download.banshee-project.org/banshee/banshee-1-1.3.1.changes"
 //#define CODEC_URL "http://kirk.provo.novell.com/dist/install/SLES-11-Beta1/SLES-11-DVD-x86_64-Beta1-mini.iso"
-
-#define LOG_UI(...)// printf (__VA_ARGS__);
 
 bool CodecDownloader::running = false;
 

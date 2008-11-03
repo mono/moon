@@ -8,6 +8,7 @@
  */
 
 #include "config.h"
+#include "runtime.h"
 #include "debug.h"
  
 #if DEBUG

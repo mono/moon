@@ -22,11 +22,8 @@
 #include "pipeline-asf.h"
 #include "pipeline-ui.h"
 #include "mediaelement.h"
+#include "debug.h"
 
-#define d(x)
-#define e(x)
-#define LOG_MARKERS(...)// printf (__VA_ARGS__);
-#define LOG_MARKERS_EX(...)// printf (__VA_ARGS__);
 
 // still too ugly to be exposed in the header files ;-)
 void image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double height, int sw, int sh, 
@@ -97,9 +94,9 @@ class MarkerNode : public List::Node {
 void
 MediaElement::AddStreamedMarker (TimelineMarker *marker)
 {	
-	d(printf ("MediaElement::AddStreamedMarker (): got marker %s, %s, %llu = %llu ms\n",
-		  marker->GetText (), marker->GetType (), marker->GetTime (),
-		  MilliSeconds_FromPts (marker->GetTime ())));
+	LOG_MEDIAELEMENT ("MediaElement::AddStreamedMarker (): got marker %s, %s, %llu = %llu ms\n",
+			  marker->GetText (), marker->GetType (), marker->GetTime (),
+			  MilliSeconds_FromPts (marker->GetTime ()));
 	
 	pending_streamed_markers->Push (new MarkerNode (marker));
 }
@@ -115,7 +112,7 @@ MediaElement::AddStreamedMarkers ()
 {
 	MarkerNode *node;
 	
-	d(printf ("MediaElement::AddStreamedMarkers ()\n"));
+	LOG_MEDIAELEMENT ("MediaElement::AddStreamedMarkers ()\n");
 	
 	if (streamed_markers == NULL)
 		streamed_markers = new TimelineMarkerCollection ();
@@ -180,7 +177,7 @@ MediaElement::ReadMarkers ()
 	}
 	
 	// Docs says we overwrite whatever's been loaded already.
-	d (printf ("MediaElement::ReadMarkers (): setting %d markers.\n", markers->GetCount ()));
+	LOG_MEDIAELEMENT ("MediaElement::ReadMarkers (): setting %d markers.\n", markers->GetCount ());
 	SetMarkers (markers);
 	markers->unref ();
 }
@@ -273,7 +270,7 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 void
 MediaElement::MediaFinished ()
 {
-	d(printf ("MediaElement::MediaFinished ()\n"));
+	LOG_MEDIAELEMENT ("MediaElement::MediaFinished ()\n");
 	
 	SetState (Stopped);
 	EmitMediaEnded ();
@@ -285,8 +282,8 @@ MediaElement::AdvanceFrame ()
 	guint64 position; // pts
 	bool advanced;
 	
-	e(printf ("MediaElement::AdvanceFrame (), IsPlaying: %i, HasVideo: %i, HasAudio: %i, IsSeeking: %i\n",
-		  IsPlaying (), mplayer->HasVideo (), mplayer->HasAudio (), mplayer->IsSeeking ()));
+	LOG_MEDIAELEMENT_EX ("MediaElement::AdvanceFrame (), IsPlaying: %i, HasVideo: %i, HasAudio: %i, IsSeeking: %i\n",
+			     IsPlaying (), mplayer->HasVideo (), mplayer->HasAudio (), mplayer->IsSeeking ());
 	
 	if (!IsPlaying ())
 		return false;
@@ -298,7 +295,7 @@ MediaElement::AdvanceFrame ()
 	position = mplayer->GetPosition ();
 	
 	if (advanced && position != G_MAXUINT64) {
-		d (printf ("MediaElement::AdvanceFrame (): advanced, setting position to: %llu = %llu ms\n", position, MilliSeconds_FromPts (position)));
+		LOG_MEDIAELEMENT ("MediaElement::AdvanceFrame (): advanced, setting position to: %llu = %llu ms\n", position, MilliSeconds_FromPts (position));
 		flags |= UpdatingPosition;
 		SetPosition (TimeSpan_FromPts (position));
 		flags &= ~UpdatingPosition;
@@ -309,8 +306,10 @@ MediaElement::AdvanceFrame ()
 	}
 	
 	if (advanced || !mplayer->IsSeeking ()) {
-		e (printf ("MediaElement::AdvanceFrame () previous_position: %llu = %llu ms, position: %llu = %llu ms, advanced: %i\n", 
-			previous_position, MilliSeconds_FromPts (previous_position), position, MilliSeconds_FromPts (position), advanced));
+		LOG_MEDIAELEMENT_EX ("MediaElement::AdvanceFrame () previous_position: %llu = %llu ms, "
+				     "position: %llu = %llu ms, advanced: %i\n", 
+				     previous_position, MilliSeconds_FromPts (previous_position), position,
+				     MilliSeconds_FromPts (position), advanced);
 			
 		AddStreamedMarkers ();
 		if (position != G_MAXUINT64)
@@ -395,7 +394,7 @@ MediaElement::Reinitialize (bool dtor)
 	MediaAttributeCollection *attrs;
 	IMediaDemuxer *demuxer = NULL;
 	
-	d(printf ("MediaElement::Reinitialize (%i)\n", dtor));
+	LOG_MEDIAELEMENT ("MediaElement::Reinitialize (%i)\n", dtor);
 	
 	if (mplayer)
 		mplayer->Close (dtor);
@@ -509,7 +508,7 @@ MediaElement::SetMedia (Media *media)
 {
 	bool broadcast = false, seekable = true;
 	
-	d(printf ("MediaElement::SetMedia (%p), current media: %p\n", media, this->media));
+	LOG_MEDIAELEMENT ("MediaElement::SetMedia (%p), current media: %p\n", media, this->media);
 	
 	if (this->media == media)
 		return;	
@@ -524,8 +523,8 @@ MediaElement::SetMedia (Media *media)
 		broadcast = downloader->GetHttpStreamingFeatures () & HttpStreamingBroadcast;
 		seekable = downloader->GetHttpStreamingFeatures () & HttpStreamingSeekable;
 		
-		d(printf ("MediaElement::SetMedia () setting features %d to broadcast (%d) and seekable (%d)\n",
-			  downloader->GetHttpStreamingFeatures (), broadcast, seekable));
+		LOG_MEDIAELEMENT ("MediaElement::SetMedia () setting features %d to broadcast (%d) and seekable (%d)\n",
+				  downloader->GetHttpStreamingFeatures (), broadcast, seekable);
 		
 		SetCanPause (!broadcast);
 		SetCanSeek (seekable);
@@ -593,7 +592,7 @@ MediaElement::MediaOpened (Media *media)
 	const char *demux_name = demuxer->GetName ();
 	bool missing_codecs = false;
 	
-	d(printf ("MediaElement::MediaOpened (%p), demuxer name: %s, download complete: %i\n", media, demux_name, flags & DownloadComplete));
+	LOG_MEDIAELEMENT ("MediaElement::MediaOpened (%p), demuxer name: %s, download complete: %i\n", media, demux_name, flags & DownloadComplete);
 	
 	for (int i = 0; i < demuxer->GetStreamCount (); i++) {
 		IMediaStream *stream = demuxer->GetStream (i);
@@ -644,7 +643,7 @@ MediaElement::MediaOpened (Media *media)
 void
 MediaElement::EmitMediaOpened ()
 {
-	d (printf ("MediaElement::EmitMediaOpened (): already emitted: %s, current state: %s\n", flags & MediaOpenedEmitted ? "true" : "false", GetStateName (state)));
+	LOG_MEDIAELEMENT ("MediaElement::EmitMediaOpened (): already emitted: %s, current state: %s\n", flags & MediaOpenedEmitted ? "true" : "false", GetStateName (state));
 
 	if (flags & MediaOpenedEmitted)
 		return;
@@ -658,7 +657,7 @@ MediaElement::EmitMediaOpened ()
 void
 MediaElement::EmitMediaEnded ()
 {
-	d (printf ("MediaElement::EmitMediaEnded (), playlist: %p, isCurrentLastEntry: %i\n", playlist, playlist ? playlist->IsCurrentEntryLastEntry () : -1));
+	LOG_MEDIAELEMENT_EX ("MediaElement::EmitMediaEnded (), playlist: %p, isCurrentLastEntry: %i\n", playlist, playlist ? playlist->IsCurrentEntryLastEntry () : -1);
 	
 	if (playlist == NULL || playlist->IsCurrentEntryLastEntry ())
 		Emit (MediaEndedEvent);
@@ -670,7 +669,7 @@ MediaElement::EmitMediaEnded ()
 void
 MediaElement::MediaFailed (ErrorEventArgs *args)
 {
-	d(printf ("MediaElement::MediaFailed (%p)\n", args));
+	LOG_MEDIAELEMENT ("MediaElement::MediaFailed (%p)\n", args);
 	
 	if (state == MediaElement::Error)
 		return;
@@ -899,8 +898,8 @@ MediaElement::CalculateBufferingProgress ()
 		break;
 	}
 
-	e (printf ("MediaElement::CalculateBufferingProgress () buffering mode: %i, result: %.2f, buffering time: %llu ms, position: %llu ms, last available pts: %llu ms\n",
-		buffering_mode, result, MilliSeconds_FromPts (buffering_time), MilliSeconds_FromPts (position_pts), MilliSeconds_FromPts (last_available_pts)));
+	LOG_MEDIAELEMENT_EX ("MediaElement::CalculateBufferingProgress () buffering mode: %i, result: %.2f, buffering time: %llu ms, position: %llu ms, last available pts: %llu ms\n",
+			     buffering_mode, result, MilliSeconds_FromPts (buffering_time), MilliSeconds_FromPts (position_pts), MilliSeconds_FromPts (last_available_pts));
 
 	return result;
 }
@@ -911,19 +910,19 @@ MediaElement::UpdateProgress ()
 	double progress, current;
 	bool emit = false;
 	
-	e(printf ("MediaElement::UpdateProgress (). Current state: %s\n", GetStateName (state)));
+	LOG_MEDIAELEMENT_EX ("MediaElement::UpdateProgress (). Current state: %s\n", GetStateName (state));
 	
 	if (state & WaitingForOpen)
 		return;
 	
 	if (downloaded_file != NULL && IsPlaying () && mplayer->IsBufferUnderflow () && GetBufferedSize () == 0.0) {
 		// We're waiting for more data, switch to the 'Buffering' state.
-		d(printf ("MediaElement::UpdateProgress (): Switching to 'Buffering', previous_position: "
-			  "%llu = %llu ms, mplayer->GetPosition (): %llu = %llu ms, buffered size: %llu, "
-			  "buffering progress: %.2f\n", 
-			  previous_position, MilliSeconds_FromPts (previous_position), mplayer->GetPosition (),
-			  MilliSeconds_FromPts (mplayer->GetPosition ()),
-			  media ? media->GetDemuxer ()->GetBufferedSize () : 0, GetBufferedSize ()));
+		LOG_MEDIAELEMENT ("MediaElement::UpdateProgress (): Switching to 'Buffering', previous_position: "
+				  "%llu = %llu ms, mplayer->GetPosition (): %llu = %llu ms, buffered size: %llu, "
+				  "buffering progress: %.2f\n", 
+				  previous_position, MilliSeconds_FromPts (previous_position), mplayer->GetPosition (),
+				  MilliSeconds_FromPts (mplayer->GetPosition ()),
+				  media ? media->GetDemuxer ()->GetBufferedSize () : 0, GetBufferedSize ());
 		
 		flags |= PlayRequested;
 		SetBufferingProgress (0.0);
@@ -978,13 +977,13 @@ MediaElement::SetState (MediaElementState state)
 		return;
 	
 	if (!(name = GetStateName (state))) {
-		d(printf ("MediaElement::SetState (%d) state is not valid.\n", state));
+		LOG_MEDIAELEMENT ("MediaElement::SetState (%d) state is not valid.\n", state);
 		return;
 	}
 	
-	d(printf ("MediaElement::SetState (%d): New state: %s, old state: %s\n",
-		  state, GetStateName (state), GetStateName (this->state)));
-	
+	LOG_MEDIAELEMENT ("MediaElement::SetState (%d): New state: %s, old state: %s\n",
+			  state, GetStateName (state), GetStateName (this->state));	
+
 	prev_state = this->state;
 	this->state = state;
 	
@@ -1033,8 +1032,8 @@ MediaElement::BufferingComplete ()
 	buffering_mode = 0;
 
 	if (state != Buffering) {
-		d(printf ("MediaElement::BufferingComplete (): current state is invalid ('%s'), should only be 'Buffering'\n",
-			  GetStateName (state)));
+		LOG_MEDIAELEMENT ("MediaElement::BufferingComplete (): current state is invalid ('%s'), should only be 'Buffering'\n",
+				  GetStateName (state));
 		return;
 	}
 	
@@ -1052,8 +1051,8 @@ MediaElement::BufferingComplete ()
 	case Buffering:
 	case Closed:
 	case Stopped: // This should not happen.
-		d(printf ("MediaElement::BufferingComplete (): previous state is invalid ('%s').\n",
-			  GetStateName (prev_state)));
+		LOG_MEDIAELEMENT ("MediaElement::BufferingComplete (): previous state is invalid ('%s').\n",
+				  GetStateName (prev_state));
 		return;
 	}
 }
@@ -1081,7 +1080,7 @@ media_element_open_callback (MediaClosure *closure)
 void
 MediaElement::TryOpenFinished (EventObject *user_data)
 {
-	d(printf ("MediaElement::TryOpenFinished ()\n"));
+	LOG_MEDIAELEMENT ("MediaElement::TryOpenFinished ()\n");
 	
 	// No locking should be necessary here, since we can't have another open request pending.
 	MediaElement *element = (MediaElement *) user_data;
@@ -1093,8 +1092,8 @@ MediaElement::TryOpenFinished (EventObject *user_data)
 		return;
 	
 	if (MEDIA_SUCCEEDED (closure->result)) {
-		d(printf ("MediaElement::TryOpen (): download is not complete, but media was "
-			  "opened successfully and we'll now start buffering.\n"));
+		LOG_MEDIAELEMENT ("MediaElement::TryOpen (): download is not complete, but media was "
+				  "opened successfully and we'll now start buffering.\n");
 		element->last_played_pts = 0;
 		element->SetState (Buffering);
 		element->MediaOpened (closure->GetMedia ());
@@ -1121,19 +1120,19 @@ MediaElement::TryOpen ()
 {
 	MediaResult result; 
 	
-	d(printf ("MediaElement::TryOpen (), state: %s, flags: %i, Loaded: %i, WaitingForOpen: %i, DownloadComplete: %i\n", GetStateName (state), flags, flags & Loaded, flags & WaitingForOpen, flags & DownloadComplete));
+	LOG_MEDIAELEMENT ("MediaElement::TryOpen (), state: %s, flags: %i, Loaded: %i, WaitingForOpen: %i, DownloadComplete: %i\n", GetStateName (state), flags, flags & Loaded, flags & WaitingForOpen, flags & DownloadComplete);
 	
 	switch (state) {
 	case Closed:
 	case Error:
-		d(printf ("MediaElement::TryOpen (): Current state (%s) is invalid.\n", GetStateName (state))); 
+		LOG_MEDIAELEMENT ("MediaElement::TryOpen (): Current state (%s) is invalid.\n", GetStateName (state)); 
 		// Should not happen
 		return;
 	case Playing:
 	case Paused:
 	case Buffering:
 		// I don't think this should happen either
-		d(printf ("MediaElement::TryOpen (): Current state (%s) was unexpected.\n", GetStateName (state)));
+		LOG_MEDIAELEMENT ("MediaElement::TryOpen (): Current state (%s) was unexpected.\n", GetStateName (state));
 		// Media is already open.
 		// There's nothing to do here.
 		return;
@@ -1144,7 +1143,7 @@ MediaElement::TryOpen ()
 		// Try to open it now
 		break;
 	default:
-		d(printf ("MediaElement::TryOpen (): Unknown state: %d\n", state));
+		LOG_MEDIAELEMENT ("MediaElement::TryOpen (): Unknown state: %d\n", state);
 		return;
 	}
 	
@@ -1256,8 +1255,8 @@ MediaElement::DownloaderFailed (EventArgs *args)
 void
 MediaElement::DownloaderComplete ()
 {
-	d(printf ("MediaElement::DownloaderComplete (), downloader: %d, state: %s, previous state: %s\n",
-		  GET_OBJ_ID (downloader), GetStateName (state), GetStateName (prev_state)));
+	LOG_MEDIAELEMENT ("MediaElement::DownloaderComplete (), downloader: %d, state: %s, previous state: %s\n",
+			  GET_OBJ_ID (downloader), GetStateName (state), GetStateName (prev_state));
 	
 	flags |= DownloadComplete;
 	
@@ -1275,7 +1274,7 @@ MediaElement::DownloaderComplete ()
 	case Closed:
 	case Error:
 		// Should not happen
-		d(printf ("MediaElement::DownloaderComplete (): Current state (%d) is invalid.\n", state));
+		LOG_MEDIAELEMENT ("MediaElement::DownloaderComplete (): Current state (%d) is invalid.\n", state);
 		return;
 	case Playing:
 	case Paused:
@@ -1300,7 +1299,7 @@ MediaElement::DownloaderComplete ()
 		TryOpen ();
 		break;
 	default:
-		d(printf ("MediaElement::DownloaderComplete (): Unknown state: %d\n", state));
+		LOG_MEDIAELEMENT ("MediaElement::DownloaderComplete (): Unknown state: %d\n", state);
 		return;
 	}
 }
@@ -1311,7 +1310,7 @@ MediaElement::SetSourceInternal (Downloader *downloader, char *PartName)
 	const char *uri = downloader ? downloader->GetUri () : NULL;
 	bool is_streaming = uri ? g_str_has_prefix (uri, "mms:") : false;
 	
-	d(printf ("MediaElement::SetSourceInternal (%p, '%s'), uri: %s\n", downloader, PartName, uri));
+	LOG_MEDIAELEMENT ("MediaElement::SetSourceInternal (%p, '%s'), uri: %s\n", downloader, PartName, uri);
 	
 	Reinitialize (false);
 	
@@ -1397,9 +1396,9 @@ MediaElement::SetPlayRequested ()
 void
 MediaElement::PlayOrPauseNow ()
 {
-	d(printf ("MediaElement::PlayOrPause (): GetCanPause (): %s, PlayRequested: %s, GetAutoPlay: %s, AutoPlayed: %s\n",
-		  GetCanPause () ? "true" : "false", (flags & PlayRequested) ? "true" : "false",
-		  GetAutoPlay () ? "true" : "false", playlist->GetAutoPlayed () ? "true" : "false"));
+	LOG_MEDIAELEMENT ("MediaElement::PlayOrPause (): GetCanPause (): %s, PlayRequested: %s, GetAutoPlay: %s, AutoPlayed: %s\n",
+			  GetCanPause () ? "true" : "false", (flags & PlayRequested) ? "true" : "false",
+			  GetAutoPlay () ? "true" : "false", playlist->GetAutoPlayed () ? "true" : "false");
 	
 	if (!GetCanPause ()) {
 		// If we can't pause, we play
@@ -1419,7 +1418,7 @@ MediaElement::PlayOrPauseNow ()
 void
 MediaElement::Pause ()
 {
-	d(printf ("MediaElement::Pause (): current state: %s\n", GetStateName (state)));
+	LOG_MEDIAELEMENT ("MediaElement::Pause (): current state: %s\n", GetStateName (state));
 	
 	AddTickCall (MediaElement::PauseNow);
 }
@@ -1433,7 +1432,7 @@ MediaElement::PauseNow (EventObject *data)
 void
 MediaElement::PauseNow ()
 {
-	d(printf ("MediaElement::PauseNow (): current state: %s\n", GetStateName (state)));
+	LOG_MEDIAELEMENT ("MediaElement::PauseNow (): current state: %s\n", GetStateName (state));
 	
 	if (GetSurface () == NULL)
 		return;
@@ -1461,7 +1460,7 @@ MediaElement::PauseNow ()
 void
 MediaElement::Play ()
 {
-	d(printf ("MediaElement::Play (): current state: %s\n", GetStateName (state)));
+	LOG_MEDIAELEMENT ("MediaElement::Play (): current state: %s\n", GetStateName (state));
 	
 	switch (state) {
 	case Opening:
@@ -1485,7 +1484,7 @@ MediaElement::PlayNow (EventObject *data)
 void
 MediaElement::PlayNow ()
 {
-	d(printf ("MediaElement::PlayNow (): current state: %s\n", GetStateName (state)));
+	LOG_MEDIAELEMENT ("MediaElement::PlayNow (): current state: %s\n", GetStateName (state));
 	
 	if (GetSurface () == NULL)
 		return;
@@ -1516,8 +1515,8 @@ media_element_advance_frame (void *user_data)
 void
 MediaElement::PlayInternal ()
 {
-	d(printf ("MediaElement::PlayInternal (), state = %s, timeout_id: %i\n",
-		  GetStateName (state), advance_frame_timeout_id));
+	LOG_MEDIAELEMENT ("MediaElement::PlayInternal (), state = %s, timeout_id: %i\n",
+			  GetStateName (state), advance_frame_timeout_id);
 	
 	flags &= ~PlayRequested;
 	SetState (Playing);
@@ -1533,8 +1532,8 @@ MediaElement::PlayInternal ()
 								  mplayer->GetTimeoutInterval (),
 								  media_element_advance_frame, this);
 	
-	d(printf ("MediaElement::PlayInternal (), state = %s, timeout_id: %i, interval: %i [Done]\n",
-		  GetStateName (state), advance_frame_timeout_id, mplayer->GetTimeoutInterval ()));
+	LOG_MEDIAELEMENT ("MediaElement::PlayInternal (), state = %s, timeout_id: %i, interval: %i [Done]\n",
+			  GetStateName (state), advance_frame_timeout_id, mplayer->GetTimeoutInterval ());
 		  
 	EmitMediaOpened ();
 }
@@ -1542,7 +1541,7 @@ MediaElement::PlayInternal ()
 void
 MediaElement::Stop ()
 {
-	d(printf ("MediaElement::Stop (): current state: %s\n", GetStateName (state)));
+	LOG_MEDIAELEMENT ("MediaElement::Stop (): current state: %s\n", GetStateName (state));
 	
 	AddTickCall (MediaElement::StopNow);
 }
@@ -1556,7 +1555,7 @@ MediaElement::StopNow (EventObject *data)
 void
 MediaElement::StopNow ()
 {
-	d(printf ("MediaElement::StopNow (): current state: %s\n", GetStateName (state)));
+	LOG_MEDIAELEMENT ("MediaElement::StopNow (): current state: %s\n", GetStateName (state));
 	
 	if (GetSurface () == NULL)
 		return;
@@ -1635,9 +1634,9 @@ MediaElement::UpdatePlayerPosition (TimeSpan position)
 	mplayer->Seek (TimeSpan_ToPts (position));
 	Invalidate ();
 	
-	d(printf ("MediaElement::UpdatePlayerPosition (%llu = %llu ms, "
-		  "mplayer->GetPosition (): %llu = %llu ms\n", position, MilliSeconds_FromPts (position),
-		  mplayer->GetPosition (), MilliSeconds_FromPts (mplayer->GetPosition ())));
+	LOG_MEDIAELEMENT ("MediaElement::UpdatePlayerPosition (%llu = %llu ms, "
+			  "mplayer->GetPosition (): %llu = %llu ms\n", position, MilliSeconds_FromPts (position),
+			  mplayer->GetPosition (), MilliSeconds_FromPts (mplayer->GetPosition ()));
 	
 	previous_position = position;
 	
@@ -1666,7 +1665,7 @@ MediaElement::SeekNow (EventObject *data)
 void
 MediaElement::SeekNow ()
 {
-	d (printf ("MediaElement::SeekNow (), position: %llu = %llu ms\n", seek_to_position, MilliSeconds_FromPts (seek_to_position)));
+	LOG_MEDIAELEMENT ("MediaElement::SeekNow (), position: %llu = %llu ms\n", seek_to_position, MilliSeconds_FromPts (seek_to_position));
 
 	if (GetSurface () == NULL)
 		return;

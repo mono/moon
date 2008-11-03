@@ -1,3 +1,34 @@
+2008-11-03  Fernando Herrera  <fherrera@novell.com>
+
+	* audio-alsa.cpp:
+	* audio-pulse.cpp:
+	* audio.cpp:
+	* audio.h:
+	* debug.cpp:
+	* debug.h:
+	* dependencyobject.cpp:
+	* downloader.cpp:
+	* font.cpp:
+	* http-streaming.cpp:
+	* layout.cpp:
+	* media.cpp:
+	* mediaelement.cpp:
+	* mediaplayer.cpp:
+	* mms-downloader.cpp:
+	* pipeline-asf.cpp:
+	* pipeline-ffmpeg.cpp:
+	* pipeline-ui.cpp:
+	* pipeline.cpp:
+	* playlist.cpp:
+	* runtime.cpp:
+	* runtime.h:
+	* text.cpp:
+	* textbox.cpp:
+	* xaml.cpp:
+	* yuv-converter.cpp: Change debug macros to runtime conditionals based
+	  on MOONLIGHT_DEBUG env variable of compile time. Checks are only
+	  enabled if configured with --with-debug=yes option.
+
 2008-11-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* debug.cpp: Don't dlopen mono, just link with it if -with-debug is

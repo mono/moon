@@ -24,12 +24,9 @@
 #include "list.h"
 #include "media.h"
 #include "mediaelement.h"
+#include "debug.h"
 
 #define DEBUG_ADVANCEFRAME 0
-#define LOG_MEDIAPLAYER(...)// printf (__VA_ARGS__);
-
-// This one prints out spew on every frame
-#define LOG_MEDIAPLAYER_EX(...)// printf (__VA_ARGS__);
 
 
 /*

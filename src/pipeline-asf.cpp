@@ -16,8 +16,7 @@
 
 #include "pipeline-asf.h"
 #include "mms-downloader.h"
-
-#define LOG_PIPELINE_ASF(...) // printf (__VA_ARGS__);
+#include "debug.h"
 
 /*
  * ASFDemuxer

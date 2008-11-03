@@ -49,8 +49,7 @@
 #include "runtime.h"
 #include "utils.h"
 #include "error.h"
-
-#define d(x)
+#include "debug.h"
 
 //
 // Downloader
@@ -67,7 +66,7 @@ downloader_create_webrequest_func Downloader::request_func = NULL;
 
 Downloader::Downloader ()
 {
-	d (printf ("Downloader::Downloader ()\n"));
+	LOG_DOWNLOADER ("Downloader::Downloader ()\n");
 	
 	downloader_state = Downloader::create_state (this);
 	consumer_closure = NULL;
@@ -91,7 +90,7 @@ Downloader::Downloader ()
 
 Downloader::~Downloader ()
 {
-	d (printf ("Downloader::~Downloader ()\n"));
+	LOG_DOWNLOADER ("Downloader::~Downloader ()\n");
 	
 	Downloader::destroy_state (downloader_state);
 	
@@ -105,7 +104,7 @@ Downloader::~Downloader ()
 void
 Downloader::InternalAbort ()
 {
-	d (printf ("Downloader::InternalAbort ()\n"));
+	LOG_DOWNLOADER ("Downloader::InternalAbort ()\n");
 	if (!GetSurface ())
 		return;
 
@@ -115,7 +114,7 @@ Downloader::InternalAbort ()
 void
 Downloader::Abort ()
 {
-	d (printf ("Downloader::Abort ()\n"));
+	LOG_DOWNLOADER ("Downloader::Abort ()\n");
 	
 	if (!aborted && !failed_msg) {
 		InternalAbort ();
@@ -128,7 +127,7 @@ Downloader::Abort ()
 char *
 Downloader::GetDownloadedFilename (const char *partname)
 {
-	d (printf ("Downloader::GetDownloadedFilename (%s)\n", filename));
+	LOG_DOWNLOADER ("Downloader::GetDownloadedFilename (%s)\n", filename);
 	
 	return internal_dl->GetDownloadedFilename (partname);
 }
@@ -136,7 +135,7 @@ Downloader::GetDownloadedFilename (const char *partname)
 char *
 Downloader::GetResponseText (const char *PartName, guint64 *size)
 {
-	d (printf ("Downloader::GetResponseText (%s, %p)\n", PartName, size));
+	LOG_DOWNLOADER ("Downloader::GetResponseText (%s, %p)\n", PartName, size);
 	
 	return internal_dl->GetResponseText (PartName, size);
 }
@@ -144,7 +143,7 @@ Downloader::GetResponseText (const char *PartName, guint64 *size)
 void
 Downloader::InternalOpen (const char *verb, const char *uri, bool streaming)
 {
-	d (printf ("Downloader::InternalOpen (%s, %s, %i)\n", verb, uri, streaming));
+	LOG_DOWNLOADER ("Downloader::InternalOpen (%s, %s, %i)\n", verb, uri, streaming);
 
 	open_func (verb, uri, streaming, downloader_state);
 }
@@ -241,7 +240,7 @@ validate_policy (const char *location, const char *uri, DownloaderAccessPolicy p
 void
 Downloader::Open (const char *verb, const char *uri, DownloaderAccessPolicy policy)
 {
-	d(printf ("Downloader::Open (%s, %s)\n", verb, uri));
+	LOG_DOWNLOADER ("Downloader::Open (%s, %s)\n", verb, uri);
 	
 	send_queued = false;
 	started = false;
@@ -257,7 +256,7 @@ Downloader::Open (const char *verb, const char *uri, DownloaderAccessPolicy poli
 	//FIXME: ONLY VALIDATE IF USED FROM THE PLUGIN
 	char *location = g_strdup (GetSurface()->GetSourceLocation ());
 	if (!validate_policy (location, uri, policy)) {
-		d(printf ("aborting due to security policy violation\n"));
+		LOG_DOWNLOADER ("aborting due to security policy violation\n");
 		failed_msg = g_strdup ("Security Policy Violation");
 		Abort ();
 		g_free (location);
@@ -281,7 +280,7 @@ Downloader::Open (const char *verb, const char *uri, DownloaderAccessPolicy poli
 void
 Downloader::InternalSetHeader (const char *header, const char *value)
 {
-	d (printf ("Downloader::InternalSetHeader (%s, %s)\n", header, value));
+	LOG_DOWNLOADER ("Downloader::InternalSetHeader (%s, %s)\n", header, value);
 	
 	header_func (downloader_state, header, value);
 }
@@ -289,7 +288,7 @@ Downloader::InternalSetHeader (const char *header, const char *value)
 void
 Downloader::InternalSetBody (void *body, guint32 length)
 {
-	d (printf ("Downloader::InternalSetBody (%p, %u)\n", body, length));
+	LOG_DOWNLOADER ("Downloader::InternalSetBody (%p, %u)\n", body, length);
 	
 	body_func (downloader_state, body, length);
 }
@@ -297,7 +296,7 @@ Downloader::InternalSetBody (void *body, guint32 length)
 void
 Downloader::SendInternal ()
 {
-	d (printf ("Downloader::SendInternal ()\n"));
+	LOG_DOWNLOADER ("Downloader::SendInternal ()\n");
 	
 	if (!GetSurface ()) {
 		// The plugin is already checking for surface before calling Send, so
@@ -339,7 +338,7 @@ send_async (EventObject *user_data)
 void
 Downloader::Send ()
 {
-	d (printf ("Downloader::Send ()\n"));
+	LOG_DOWNLOADER ("Downloader::Send ()\n");
 	
 	if (!GetSurface ()) {
 		// The plugin is already checking for surface before calling Send, so
@@ -360,7 +359,7 @@ Downloader::Send ()
 void
 Downloader::SendNow ()
 {
-	d (printf ("Downloader::SendNow ()\n"));
+	LOG_DOWNLOADER ("Downloader::SendNow ()\n");
 	
 	send_queued = true;
 	SetStatusText ("");
@@ -375,7 +374,7 @@ Downloader::SendNow ()
 void
 Downloader::Write (void *buf, gint32 offset, gint32 n)
 {
-	d (printf ("Downloader::Write (%p, %i, %i). Uri: %s\n", buf, offset, n, GetUri ()));
+	LOG_DOWNLOADER ("Downloader::Write (%p, %i, %i). Uri: %s\n", buf, offset, n, GetUri ());
 	
 	if (aborted)
 		return;
@@ -389,7 +388,7 @@ Downloader::Write (void *buf, gint32 offset, gint32 n)
 void
 Downloader::InternalWrite (void *buf, gint32 offset, gint32 n)
 {
-	d (printf ("Downloader::InternalWrite (%p, %i, %i)\n", buf, offset, n));
+	LOG_DOWNLOADER ("Downloader::InternalWrite (%p, %i, %i)\n", buf, offset, n);
 	
 	double progress;
 
@@ -414,7 +413,7 @@ Downloader::InternalWrite (void *buf, gint32 offset, gint32 n)
 void
 Downloader::SetFilename (const char *fname)
 {
-	d (printf ("Downloader::SetFilename (%s)\n", fname));
+	LOG_DOWNLOADER ("Downloader::SetFilename (%s)\n", fname);
 	
 	if (filename)
 		g_free (filename);
@@ -448,7 +447,7 @@ Downloader::NotifyFinished ()
 void
 Downloader::NotifyFailed (const char *msg)
 {
-	d (printf ("Downloader::NotifyFailed (%s)\n", msg));
+	LOG_DOWNLOADER ("Downloader::NotifyFailed (%s)\n", msg);
 	
 	/* if we've already been notified of failure, no-op */
 	if (failed_msg)
@@ -470,7 +469,7 @@ Downloader::NotifyFailed (const char *msg)
 void
 Downloader::NotifySize (gint64 size)
 {
-	d (printf ("Downloader::NotifySize (%lld)\n", size));
+	LOG_DOWNLOADER ("Downloader::NotifySize (%lld)\n", size);
 	
 	file_size = size;
 	
@@ -487,7 +486,7 @@ Downloader::NotifySize (gint64 size)
 bool
 Downloader::Started ()
 {
-	d (printf ("Downloader::Started (): %i\n", started));
+	LOG_DOWNLOADER ("Downloader::Started (): %i\n", started);
 	
 	return started;
 }
@@ -495,7 +494,7 @@ Downloader::Started ()
 bool
 Downloader::Completed ()
 {
-	d (printf ("Downloader::Completed (), filename: %s\n", filename));
+	LOG_DOWNLOADER ("Downloader::Completed (), filename: %s\n", filename);
 	
 	return completed;
 }
@@ -505,7 +504,7 @@ Downloader::SetWriteFunc (downloader_write_func write,
 			  downloader_notify_size_func notify_size,
 			  gpointer data)
 {
-	d (printf ("Downloader::SetWriteFunc\n"));
+	LOG_DOWNLOADER ("Downloader::SetWriteFunc\n");
 	
 	this->write = write;
 	this->notify_size = notify_size;
@@ -523,7 +522,7 @@ Downloader::SetFunctions (downloader_create_state_func create_state,
 			  downloader_create_webrequest_func request,
 			  bool only_if_not_set)
 {
-	d (printf ("Downloader::SetFunctions\n"));
+	LOG_DOWNLOADER ("Downloader::SetFunctions\n");
 	
 	if (only_if_not_set &&
 	    (Downloader::create_state != NULL ||
@@ -549,7 +548,7 @@ Downloader::SetFunctions (downloader_create_state_func create_state,
 void
 Downloader::SetDownloadProgress (double progress)
 {
-	d (printf ("Downloader::SetDownloadProgress\n"));
+	LOG_DOWNLOADER ("Downloader::SetDownloadProgress\n");
 	
 	SetValue (Downloader::DownloadProgressProperty, Value (progress));
 }
@@ -557,7 +556,7 @@ Downloader::SetDownloadProgress (double progress)
 double
 Downloader::GetDownloadProgress ()
 {
-	d (printf ("Downloader::GetDownloadProgress\n"));
+	LOG_DOWNLOADER ("Downloader::GetDownloadProgress\n");
 	
 	return GetValue (Downloader::DownloadProgressProperty)->AsDouble ();
 }
@@ -565,7 +564,7 @@ Downloader::GetDownloadProgress ()
 void
 Downloader::SetStatusText (const char *text)
 {
-	d (printf ("Downloader::SetStatusText\n"));
+	LOG_DOWNLOADER ("Downloader::SetStatusText\n");
 	
 	SetValue (Downloader::StatusTextProperty, Value (text));
 }
@@ -573,7 +572,7 @@ Downloader::SetStatusText (const char *text)
 const char *
 Downloader::GetStatusText ()
 {
-	d (printf ("Downloader::GetStatusText\n"));
+	LOG_DOWNLOADER ("Downloader::GetStatusText\n");
 	
 	Value *value = GetValue (Downloader::StatusTextProperty);
 	
@@ -583,7 +582,7 @@ Downloader::GetStatusText ()
 void
 Downloader::SetStatus (int status)
 {
-	d (printf ("Downloader::SetStatus\n"));
+	LOG_DOWNLOADER ("Downloader::SetStatus\n");
 	
 	SetValue (Downloader::StatusProperty, Value (status));
 }
@@ -591,7 +590,7 @@ Downloader::SetStatus (int status)
 int
 Downloader::GetStatus ()
 {
-	d (printf ("Downloader::GetStatus\n"));
+	LOG_DOWNLOADER ("Downloader::GetStatus\n");
 	
 	return GetValue (Downloader::StatusProperty)->AsInt32 ();
 }
@@ -599,7 +598,7 @@ Downloader::GetStatus ()
 void
 Downloader::SetUri (const char *uri)
 {
-	d (printf ("Downloader::SetUri (%s)\n", uri));
+	LOG_DOWNLOADER ("Downloader::SetUri (%s)\n", uri);
 	
 	SetValue (Downloader::UriProperty, Value (uri));
 
@@ -608,7 +607,7 @@ Downloader::SetUri (const char *uri)
 const char *
 Downloader::GetUri ()
 {
-	d (printf ("Downloader::GetUri ()\n"));
+	LOG_DOWNLOADER ("Downloader::GetUri ()\n");
 	
 	Value *value = GetValue (Downloader::UriProperty);
 	

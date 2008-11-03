@@ -14,8 +14,8 @@
 #include <string.h>
 
 #include "http-streaming.h"
+#include "debug.h"
 
-#define LOG_HTTPSTREAMING(...) // printf (__VA_ARGS__);
 
 static const char * features [] = {"broadcast", "last", "live", "playlist", "reliable", "seekable", "skipbackwards", "skipforward", "stridable", NULL};
 

@@ -15,6 +15,7 @@
 #define __RUNTIME_H__
 
 #include <glib.h>
+#include <config.h>
 
 G_BEGIN_DECLS
 
@@ -66,16 +67,54 @@ enum RuntimeInitFlags {
 	RUNTIME_INIT_AUDIO_ALSA_RW         = 1 << 16,
 	RUNTIME_INIT_AUDIO_ALSA            = 1 << 17,
 	RUNTIME_INIT_AUDIO_PULSE           = 1 << 18,
-	RUNTIME_INIT_AUDIO_DEBUG           = 1 << 19,
-	RUNTIME_INIT_USE_IDLE_HINT         = 1 << 20,
-	RUNTIME_INIT_USE_BACKEND_XLIB      = 1 << 21,
-	RUNTIME_INIT_KEEP_MEDIA            = 1 << 22,
-	RUNTIME_INIT_DISABLE_MS_CODECS     = 1 << 23,
-	RUNTIME_INIT_DISABLE_FFMPEG_CODECS = 1 << 24,
-	RUNTIME_INIT_CODECS_DEBUG           = 1 << 25,
+	RUNTIME_INIT_USE_IDLE_HINT         = 1 << 19,
+	RUNTIME_INIT_USE_BACKEND_XLIB      = 1 << 20,
+	RUNTIME_INIT_KEEP_MEDIA            = 1 << 21,
+	RUNTIME_INIT_DISABLE_MS_CODECS     = 1 << 22,
+	RUNTIME_INIT_DISABLE_FFMPEG_CODECS = 1 << 23,
 };
 
 extern guint32 moonlight_flags;
+
+
+#if DEBUG
+enum RuntimeDebugFlags {
+	RUNTIME_DEBUG_ALSA              = 1 << 0,
+	RUNTIME_DEBUG_ALSA_EX           = 1 << 1,
+	RUNTIME_DEBUG_AUDIO             = 1 << 2,
+	RUNTIME_DEBUG_AUDIO_EX          = 1 << 3,
+	RUNTIME_DEBUG_PULSE             = 1 << 4,
+	RUNTIME_DEBUG_PULSE_EX          = 1 << 5,
+	RUNTIME_DEBUG_HTTPSTREAMING     = 1 << 6,
+	RUNTIME_DEBUG_MARKERS           = 1 << 7,
+	RUNTIME_DEBUG_MARKERS_EX        = 1 << 8,
+	RUNTIME_DEBUG_MMS               = 1 << 9,
+	RUNTIME_DEBUG_MEDIAPLAYER       = 1 << 10,
+	RUNTIME_DEBUG_MEDIAPLAYER_EX    = 1 << 11,
+	RUNTIME_DEBUG_PIPELINE          = 1 << 12,
+	RUNTIME_DEBUG_PIPELINE_ERROR    = 1 << 13,
+	RUNTIME_DEBUG_FRAMEREADERLOOP   = 1 << 14,
+	RUNTIME_DEBUG_FFMPEG            = 1 << 15,
+	RUNTIME_DEBUG_UI                = 1 << 16,
+	RUNTIME_DEBUG_CODECS            = 1 << 17,
+	RUNTIME_DEBUG_DP                = 1 << 18,
+	RUNTIME_DEBUG_DOWNLOADER        = 1 << 19,
+	RUNTIME_DEBUG_FONT              = 1 << 20,
+	RUNTIME_DEBUG_LAYOUT            = 1 << 21,
+	RUNTIME_DEBUG_MEDIA             = 1 << 22,
+	RUNTIME_DEBUG_MEDIAELEMENT      = 1 << 23,
+	RUNTIME_DEBUG_MEDIAELEMENT_EX   = 1 << 24,
+	RUNTIME_DEBUG_BUFFERING         = 1 << 25,
+	RUNTIME_DEBUG_ASF               = 1 << 26,
+	RUNTIME_DEBUG_PLAYLIST          = 1 << 27,
+	RUNTIME_DEBUG_PLAYLIST_WARN     = 1 << 28,
+	RUNTIME_DEBUG_TEXT              = 1 << 29,
+	RUNTIME_DEBUG_XAML              = 1 << 30,
+};
+
+extern guint32 debug_flags;
+#endif
+
 
 class TimeManager;
 class Surface;

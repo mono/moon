@@ -49,18 +49,6 @@
 #include "grid.h"
 #endif
 
-#ifdef DEBUG_XAML
-#define d(x) x
-#else
-#define d(x)
-#endif
-
-#ifdef XAML_WARNINGS
-#define w(x) x
-#else
-#define w(x)
-#endif
-
 
 class XamlElementInfo;
 class XamlElementInstance;
@@ -890,8 +878,8 @@ XamlLoader::XamlLoader (const char* filename, const char* str, Surface* surface)
 	this->vm_loaded = false;
 	this->error_args = NULL;
 	
-#if d(!)0
-	if (!surface) {
+#if DEBUG
+	if (!surface && debug_flags & RUNTIME_DEBUG_XAML) {
 		printf ("XamlLoader::XamlLoader ('%s', '%s', %p): Initializing XamlLoader without a surface.\n",
 			filename, str, surface);
 	}
@@ -937,7 +925,7 @@ void
 xaml_loader_add_missing (XamlLoader* loader, const char* file)
 {
 	if (!loader) {
-		d(printf ("Trying to add missing file '%s' to a null loader.\n", file));
+		LOG_XAML ("Trying to add missing file '%s' to a null loader.\n", file);
 		return;
 	}
 	
@@ -948,7 +936,7 @@ void
 xaml_loader_set_callbacks (XamlLoader* loader, XamlLoaderCallbacks callbacks)
 {
 	if (!loader) {
-		d(printf ("Trying to set callbacks for a null object\n"));
+		LOG_XAML ("Trying to set callbacks for a null object\n");
 		return;
 	}
 	
@@ -975,8 +963,8 @@ parser_error (XamlParserInfo *p, const char *el, const char *attr, int error_cod
 
 	p->error_args = new ParserErrorEventArgs (message, p->file_name, line_number, char_position, error_code, el, attr);
 
-	w(g_warning ("PARSER ERROR, STOPPING PARSING:  (%d) %s  line: %d   char: %d\n", error_code, message,
-		     line_number, char_position));
+	LOG_XAML ("PARSER ERROR, STOPPING PARSING:  (%d) %s  line: %d   char: %d\n", error_code, message,
+		  line_number, char_position);
 
 	XML_StopParser (p->parser, FALSE);
 }
@@ -991,7 +979,7 @@ expat_parser_error (XamlParserInfo *p, XML_Error expat_error)
 	int error_code;
 	char *message;
 	
-	d(printf ("expat error is:  %d\n", expat_error));
+	LOG_XAML ("expat error is:  %d\n", expat_error);
 	
 	switch (expat_error) {
 	case XML_ERROR_DUPLICATE_ATTRIBUTE:
@@ -1338,19 +1326,23 @@ add_default_namespaces (XamlParserInfo *p)
 static void
 print_tree (XamlElementInstance *el, int depth)
 {
-	for (int i = 0; i < depth; i++)
-		printf ("\t");
+#if DEBUG
+	if (debug_flags & RUNTIME_DEBUG_XAML) {
+		for (int i = 0; i < depth; i++)
+			printf ("\t");
 	
-	const char *name = NULL;
+		const char *name = NULL;
 
-	if (el->element_type == XamlElementInstance::ELEMENT && !el->IsValueType ())
-		name = el->item->GetName ();
-	printf ("%s  (%s)  (%p)\n", el->element_name, name ? name : "-no name-", el->parent);
+		if (el->element_type == XamlElementInstance::ELEMENT && !el->IsValueType ())
+			name = el->item->GetName ();
+		printf ("%s  (%s)  (%p)\n", el->element_name, name ? name : "-no name-", el->parent);
 
-	for (List::Node *walk = el->children->First (); walk != NULL; walk = walk->next) {
-		XamlElementInstance *el = (XamlElementInstance *) walk;
-		print_tree (el, depth + 1);
+		for (List::Node *walk = el->children->First (); walk != NULL; walk = walk->next) {
+			XamlElementInstance *el = (XamlElementInstance *) walk;
+			print_tree (el, depth + 1);
+		}
 	}
+#endif
 }
 
 void		
@@ -1398,16 +1390,16 @@ XamlLoader::CreateFromFile (const char *xaml_file, bool create_namescope,
 	char buffer[4096];
 	ssize_t nread, n;
 	
-	d(printf ("attemtping to load xaml file: %s\n", xaml_file));
+	LOG_XAML ("attemtping to load xaml file: %s\n", xaml_file);
 	
 	stream = new TextStream ();
 	if (!stream->Open (xaml_file, false)) {
-		d(printf ("can not open file\n"));
+		LOG_XAML ("can not open file\n");
 		goto cleanup_and_return;
 	}
 	
 	if (!(p = XML_ParserCreateNS ("UTF-8", '|'))) {
-		d(printf ("can not create parser\n"));
+		LOG_XAML ("can not create parser\n");
 		goto cleanup_and_return;
 	}
 
@@ -1459,7 +1451,7 @@ XamlLoader::CreateFromFile (const char *xaml_file, bool create_namescope,
 			break;
 	}
 	
-	d (print_tree (parser_info->top_element, 0));
+	print_tree (parser_info->top_element, 0);
 	
 	if (parser_info->top_element) {
 		res = parser_info->top_element->item;
@@ -1513,7 +1505,7 @@ XamlLoader::HydrateFromString (const char *xaml, const char *assembly_name, cons
 	char *start = (char*)xaml;
 
 	if (!p) {
-		d(printf ("can not create parser\n"));
+		LOG_XAML ("can not create parser\n");
 		goto cleanup_and_return;
 	}
 	
@@ -1572,11 +1564,11 @@ XamlLoader::HydrateFromString (const char *xaml, const char *assembly_name, cons
 
 	if (!XML_Parse (p, start, strlen (start), TRUE)) {
 		expat_parser_error (parser_info, XML_GetErrorCode (p));
-		d(printf ("error parsing:  %s\n\n", xaml));
+		LOG_XAML ("error parsing:  %s\n\n", xaml);
 		goto cleanup_and_return;
 	}
 	
-	d (print_tree (parser_info->top_element, 0));
+	print_tree (parser_info->top_element, 0);
 	
 	if (parser_info->top_element) {
 		res = parser_info->top_element->item;

@@ -18,9 +18,8 @@
 
 #include "moon-path.h"
 #include "layout.h"
+#include "debug.h"
 
-
-#define d(x)
 
 
 #define BBOX_MARGIN 1.0
@@ -283,7 +282,7 @@ TextLayout::GetLayoutExtents (double *width, double *height)
 #endif
 
 
-#if d(!)0
+#if DEBUG
 static void
 print_run_text (const char *msg, gunichar *start, gunichar *end)
 {
@@ -877,8 +876,12 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 		}
 		
 		segment = new TextSegment (run, 0);
-		d(print_run_text ("Laying out Run.Text", run->text, NULL));
-		d(print_break_info (run->text));
+#if DEBUG
+		if (debug_flags & RUNTIME_DEBUG_LAYOUT) {
+			print_run_text ("Laying out Run.Text", run->text, NULL);
+			print_break_info (run->text);
+		}
+#endif
 		inptr = run->text;
 		prev = 0;
 		x1 = x0;
@@ -1116,7 +1119,7 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 	g_array_free (array, true);
 }
 
-#if d(!)0
+#if DEBUG
 static void
 print_lines (List *lines)
 {
@@ -1169,39 +1172,47 @@ TextLayout::Layout (TextLayoutHints *hints)
 	
 	switch (wrapping) {
 	case TextWrappingWrapWithOverflow:
-#if d(!)0
-		if (max_width > 0.0)
-			printf ("TextLayout::LayoutWrapWithOverflow(%f)\n", max_width);
-		else
-			printf ("TextLayout::LayoutWrapWithOverflow()\n");
+#if DEBUG
+		if (debug_flags & RUNTIME_DEBUG_LAYOUT) {
+			if (max_width > 0.0)
+				printf ("TextLayout::LayoutWrapWithOverflow(%f)\n", max_width);
+			else
+				printf ("TextLayout::LayoutWrapWithOverflow()\n");
+		}
 #endif
 		LayoutWrapWithOverflow (hints);
 		break;
 	case TextWrappingNoWrap:
-#if d(!)0
-		if (max_width > 0.0)
-			printf ("TextLayout::LayoutWrapNoWrap(%f)\n", max_width);
-		else
-			printf ("TextLayout::LayoutNoWrap()\n");
+#if DEBUG
+		if (debug_flags & RUNTIME_DEBUG_LAYOUT) {
+			if (max_width > 0.0)
+				printf ("TextLayout::LayoutWrapNoWrap(%f)\n", max_width);
+			else
+				printf ("TextLayout::LayoutNoWrap()\n");
+		}
 #endif
 		LayoutNoWrap (hints);
 		break;
 	case TextWrappingWrap:
 	// Silverlight default is to wrap for invalid values
 	default:
-#if d(!)0
-		if (max_width > 0.0)
-			printf ("TextLayout::LayoutWrap(%f)\n", max_width);
-		else
-			printf ("TextLayout::LayoutWrap()\n");
+#if DEBUG
+		if (debug_flags & RUNTIME_DEBUG_LAYOUT) {
+			if (max_width > 0.0)
+				printf ("TextLayout::LayoutWrap(%f)\n", max_width);
+			else
+				printf ("TextLayout::LayoutWrap()\n");
+		}
 #endif
 		LayoutWrap (hints);
 		break;
 	}
 	
-#if d(!)0
-	print_lines (lines);
-	printf ("actualWidth = %f, actualHeight = %f\n", actual_width, actual_height);
+#if DEBUG
+	if (debug_flags & RUNTIME_DEBUG_LAYOUT) {
+		print_lines (lines);
+		printf ("actualWidth = %f, actualHeight = %f\n", actual_width, actual_height);
+	}
 #endif
 	
 	//bbox_height = actual_height;

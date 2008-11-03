@@ -26,9 +26,7 @@
 #include "downloader.h"
 #include "geometry.h"
 #include "clock.h"
-
-#define d(x)
-#define e(x)
+#include "debug.h"
 
 // still too ugly to be exposed in the header files ;-)
 void image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double height, int sw, int sh, 
@@ -297,7 +295,7 @@ Image::CleanupSurface ()
 	if (surface) {
 		surface->ref_count--;
 		if (surface->ref_count == 0) {
-			d(printf ("removing %s\n", surface->filename);)
+			LOG_MEDIA ("removing %s\n", surface->filename);
 			g_hash_table_remove (surface_cache, surface->filename);
 			g_free (surface->filename);
 			cairo_surface_destroy (surface->cairo);
@@ -400,7 +398,7 @@ Image::IsSurfaceCached ()
 
 	found = uri && surface_cache && g_hash_table_lookup (surface_cache, uri);
 
-	d(g_print ("%s cache for (%s)\n", found ? "found" : "no", uri);)
+	LOG_MEDIA ("%s cache for (%s)\n", found ? "found" : "no", uri);
 
 	return found;
 }

@@ -17,10 +17,7 @@
 #include "audio-alsa.h"
 #include "runtime.h"
 #include "clock.h"
-
-#define LOG_ALSA(...)// printf (__VA_ARGS__);
-// This one prints out spew on every sample
-#define LOG_ALSA_EX(...)// printf (__VA_ARGS__);
+#include "debug.h"
 
 typedef int               (dyn_snd_pcm_open)                           (snd_pcm_t **pcm, const char *name, snd_pcm_stream_t stream, int mode);
 typedef int               (dyn_snd_pcm_close)                          (snd_pcm_t *pcm);
@@ -160,32 +157,32 @@ AlsaSource::InitializeInternal ()
 	int result;
 	AudioStream *stream = GetStream ();
 	
-	AUDIO_DEBUG ("AlsaSource::Initialize (%p)\n", this);
+	LOG_AUDIO ("AlsaSource::Initialize (%p)\n", this);
 		
 	if (stream == NULL) {
 		// Shouldn't really happen, but handle this case anyway.
-		AUDIO_DEBUG ("AlsaSource::Initialize (): trying to initialize an audio device, but there's no audio to play.\n");
+		LOG_AUDIO ("AlsaSource::Initialize (): trying to initialize an audio device, but there's no audio to play.\n");
 		return false;
 	}
 		
 	// Open a pcm device
 	result = snd_pcm_open (&pcm, "default", SND_PCM_STREAM_PLAYBACK, 0 /*SND_PCM_NONBLOCK*/);
 	if (result != 0) {
-		AUDIO_DEBUG ("AlsaSource::Initialize (): cannot open audio device: %s\n", snd_strerror (result));
+		LOG_AUDIO ("AlsaSource::Initialize (): cannot open audio device: %s\n", snd_strerror (result));
 		pcm = NULL;
 		return false;
 	}
 
 	// Configure the hardware
 	if (!SetupHW ()) {
-		AUDIO_DEBUG ("AlsaSource::Initialize (): could not configure hardware for audio playback\n");
+		LOG_AUDIO ("AlsaSource::Initialize (): could not configure hardware for audio playback\n");
 		Close ();
 		return false;
 	}
 	
 	result = snd_pcm_get_params (pcm, &buffer_size, &period_size);
 	if (result != 0) {
-		AUDIO_DEBUG ("AlsaSource::Initialize (): error while getting parameters: %s\n", snd_strerror (result));
+		LOG_AUDIO ("AlsaSource::Initialize (): error while getting parameters: %s\n", snd_strerror (result));
 		Close ();
 		return false;
 	}
@@ -193,19 +190,19 @@ AlsaSource::InitializeInternal ()
 	// Get the file descriptors to poll on
 	ndfs = snd_pcm_poll_descriptors_count (pcm);
 	if (ndfs <= 0) {
-		AUDIO_DEBUG ("AlsaSource::Initialize(): Unable to initialize audio for playback (could not get poll descriptor count).\n");
+		LOG_AUDIO ("AlsaSource::Initialize(): Unable to initialize audio for playback (could not get poll descriptor count).\n");
 		Close ();
 		return false;
 	}
 
 	udfs = (pollfd *) g_malloc0 (sizeof (pollfd) * ndfs);
 	if (snd_pcm_poll_descriptors (pcm, udfs, ndfs) < 0) {
-		AUDIO_DEBUG ("AlsaSource::Initialize (): Unable to initialize audio for playback (could not get poll descriptors).\n");
+		LOG_AUDIO ("AlsaSource::Initialize (): Unable to initialize audio for playback (could not get poll descriptors).\n");
 		Close ();
 		return false;
 	}
 	
-	AUDIO_DEBUG ("AlsaSource::Initialize (%p): Succeeded. Buffer size: %lu, period size: %lu\n", this, buffer_size, period_size);
+	LOG_AUDIO ("AlsaSource::Initialize (%p): Succeeded. Buffer size: %lu, period size: %lu\n", this, buffer_size, period_size);
 	
 	return true;
 }
@@ -216,7 +213,11 @@ AlsaSource::SetupHW ()
 	bool result = false;
 	bool rw_available = false;
 	bool mmap_available = false;
-	bool debug = moonlight_flags & RUNTIME_INIT_AUDIO_DEBUG;
+#if DEBUG
+	bool debug = debug_flags & RUNTIME_DEBUG_AUDIO;
+#else
+	bool debug = false;
+#endif
 	
 	snd_pcm_hw_params_t *params = NULL;
 	snd_output_t *output = NULL;
@@ -231,31 +232,31 @@ AlsaSource::SetupHW ()
 		snd_output_t *output = NULL;
 		err = snd_output_stdio_attach (&output, stdout, 0);
 		if (err < 0)
-			AUDIO_DEBUG ("AlsaSource::SetupHW (): Could not create alsa output: %s\n", snd_strerror (err));
+			LOG_AUDIO ("AlsaSource::SetupHW (): Could not create alsa output: %s\n", snd_strerror (err));
 	}
 
 	err = snd_pcm_hw_params_malloc (&params);
 	if (err < 0) {
-		AUDIO_DEBUG ("AlsaSource::SetupHW (): Audio HW setup failed (malloc): %s\n", snd_strerror (err));
+		LOG_AUDIO ("AlsaSource::SetupHW (): Audio HW setup failed (malloc): %s\n", snd_strerror (err));
 		return false;
 	}
 
 	// choose all parameters
 	err = snd_pcm_hw_params_any (pcm, params);
 	if (err < 0) {
-		AUDIO_DEBUG ("AlsaSource::SetupHW (): Audio HW setup failed (no configurations available): %s\n", snd_strerror (err));
+		LOG_AUDIO ("AlsaSource::SetupHW (): Audio HW setup failed (no configurations available): %s\n", snd_strerror (err));
 		goto cleanup;
 	}
 	
 	if (debug && output != NULL) {
-		AUDIO_DEBUG ("AlsaSource::SetupHW (): hw configurations:\n");
+		LOG_AUDIO ("AlsaSource::SetupHW (): hw configurations:\n");
 		snd_pcm_hw_params_dump (params, output);
 	}
 	
 	// enable software resampling
 	err = snd_pcm_hw_params_set_rate_resample (pcm, params, 1);
 	if (err < 0) {
-		AUDIO_DEBUG ("AlsaSource::SetupHW (): Audio HW setup failed (could not enable resampling): %s\n", snd_strerror (err));
+		LOG_AUDIO ("AlsaSource::SetupHW (): Audio HW setup failed (could not enable resampling): %s\n", snd_strerror (err));
 		goto cleanup;
 	}
 	
@@ -263,7 +264,7 @@ AlsaSource::SetupHW ()
 	if (!(moonlight_flags & RUNTIME_INIT_AUDIO_ALSA_MMAP)) {
 		err = snd_pcm_hw_params_test_access (pcm, params, SND_PCM_ACCESS_RW_INTERLEAVED);
 		if (err < 0) {
-			AUDIO_DEBUG ("AlsaSource::SetupHW (): Audio HW setup: RW access mode not supported (%s).\n", snd_strerror (err));			
+			LOG_AUDIO ("AlsaSource::SetupHW (): Audio HW setup: RW access mode not supported (%s).\n", snd_strerror (err));			
 		} else {
 			rw_available = true;
 		}
@@ -271,7 +272,7 @@ AlsaSource::SetupHW ()
 	if (!(moonlight_flags & RUNTIME_INIT_AUDIO_ALSA_RW)) {
 		err = snd_pcm_hw_params_test_access (pcm, params, SND_PCM_ACCESS_MMAP_INTERLEAVED);
 		if (err < 0) {
-			AUDIO_DEBUG ("AlsaSource::SetupHW (): Audio HW setup: MMAP access mode not supported (%s).\n", snd_strerror (err));
+			LOG_AUDIO ("AlsaSource::SetupHW (): Audio HW setup: MMAP access mode not supported (%s).\n", snd_strerror (err));
 		} else {
 			mmap_available = true;
 		}
@@ -281,60 +282,60 @@ AlsaSource::SetupHW ()
 	} else if (rw_available) {
 		mmap = false;
 	} else {
-		AUDIO_DEBUG ("AlsaSource::SetupHW (): Audio HW setup failed, no available access mode\n");
+		LOG_AUDIO ("AlsaSource::SetupHW (): Audio HW setup failed, no available access mode\n");
 		goto cleanup;
 	}
 
-	AUDIO_DEBUG ("AlsaSource::SetupHW (): Audio HW setup: using %s access mode.\n", mmap ? "MMAP" : "RW");
+	LOG_AUDIO ("AlsaSource::SetupHW (): Audio HW setup: using %s access mode.\n", mmap ? "MMAP" : "RW");
 
 	// set transfer mode (mmap or rw in our case)
 	err = snd_pcm_hw_params_set_access (pcm, params, mmap ? SND_PCM_ACCESS_MMAP_INTERLEAVED : SND_PCM_ACCESS_RW_INTERLEAVED);
 	if (err < 0) {
-		AUDIO_DEBUG ("AlsaSource::SetupHW (): Audio HW setup failed (access type not available for playback): %s\n", snd_strerror (err));
+		LOG_AUDIO ("AlsaSource::SetupHW (): Audio HW setup failed (access type not available for playback): %s\n", snd_strerror (err));
 		goto cleanup;
 	}
 
 	// set audio format
 	err = snd_pcm_hw_params_set_format (pcm, params, SND_PCM_FORMAT_S16);
 	if (err < 0) {
-		AUDIO_DEBUG ("AlsaSource::SetupHW (): Audio HW setup failed (sample format not available for playback): %s\n", snd_strerror (err));
+		LOG_AUDIO ("AlsaSource::SetupHW (): Audio HW setup failed (sample format not available for playback): %s\n", snd_strerror (err));
 		goto cleanup;
 	}
 	
 	// set channel count
 	err = snd_pcm_hw_params_set_channels (pcm, params, channels);
 	if (err < 0) {
-		AUDIO_DEBUG ("AlsaSource::SetupHW (): Audio HW setup failed (channels count %i not available for playback): %s\n", channels, snd_strerror (err));
+		LOG_AUDIO ("AlsaSource::SetupHW (): Audio HW setup failed (channels count %i not available for playback): %s\n", channels, snd_strerror (err));
 		goto cleanup;
 	}
 	
 	// set sample rate
 	err = snd_pcm_hw_params_set_rate_near (pcm, params, &actual_rate, 0);
 	if (err < 0) {
-		AUDIO_DEBUG ("AlsaSource::SetupHW (): Audio HW setup failed (sample rate %i Hz not available for playback): %s\n", rate, snd_strerror (err));
+		LOG_AUDIO ("AlsaSource::SetupHW (): Audio HW setup failed (sample rate %i Hz not available for playback): %s\n", rate, snd_strerror (err));
 		goto cleanup;
 	} else if (actual_rate != rate) {
-		AUDIO_DEBUG ("AlsaSource::SetupHW (): Audio HW setup failed (sample rate %i Hz not available for playback, only got %i Hz).\n", rate, actual_rate);
+		LOG_AUDIO ("AlsaSource::SetupHW (): Audio HW setup failed (sample rate %i Hz not available for playback, only got %i Hz).\n", rate, actual_rate);
 		goto cleanup;
 	}
 	
 	// set the buffer time
 	err = snd_pcm_hw_params_set_buffer_time_near (pcm, params, &buffer_time, &dir);
 	if (err < 0) {
-		AUDIO_DEBUG ("AudioNode::SetupHW (): Audio HW setup failed (unable to set buffer time %i for playback: %s\n", buffer_time, snd_strerror (err));
+		LOG_AUDIO ("AudioNode::SetupHW (): Audio HW setup failed (unable to set buffer time %i for playback: %s\n", buffer_time, snd_strerror (err));
 		goto cleanup;
 	}
 
 	// write the parameters to device
 	err = snd_pcm_hw_params (pcm, params);
 	if (err < 0) {
-		AUDIO_DEBUG ("AlsaSource::SetupHW (): Audio HW setup failed (unable to set hw params for playback: %s)\n", snd_strerror (err));
+		LOG_AUDIO ("AlsaSource::SetupHW (): Audio HW setup failed (unable to set hw params for playback: %s)\n", snd_strerror (err));
 		goto cleanup;
 	}
 	
 	if (debug) {
-		AUDIO_DEBUG ("AlsaSource::SetupHW (): hardware pause support: %s\n", snd_pcm_hw_params_can_pause (params) == 0 ? "no" : "yes"); 
-		AUDIO_DEBUG ("AlsaSource::SetupHW (): succeeded\n");
+		LOG_AUDIO ("AlsaSource::SetupHW (): hardware pause support: %s\n", snd_pcm_hw_params_can_pause (params) == 0 ? "no" : "yes"); 
+		LOG_AUDIO ("AlsaSource::SetupHW (): succeeded\n");
 		if (output != NULL) 
 			snd_pcm_hw_params_dump (params, output);
 	}
@@ -382,7 +383,7 @@ AlsaSource::DropAlsa ()
 	if (snd_pcm_state (pcm) == SND_PCM_STATE_RUNNING) {
 		err = snd_pcm_drop (pcm);
 		if (err < 0)
-			AUDIO_DEBUG ("AlsaSource::DropAlsa (): Could not stop/drain pcm: %s\n", snd_strerror (err)); 
+			LOG_AUDIO ("AlsaSource::DropAlsa (): Could not stop/drain pcm: %s\n", snd_strerror (err)); 
 	}
 }
 
@@ -422,9 +423,9 @@ AlsaSource::WriteRW ()
 	
 	if (commitres < 0 || (snd_pcm_uframes_t) commitres != frames) {
 		if (commitres == -EAGAIN)
-			AUDIO_DEBUG ("AlsaSource::WriteRW (): not enough space for all the data\n");
+			LOG_AUDIO ("AlsaSource::WriteRW (): not enough space for all the data\n");
 		if (!XrunRecovery (commitres >= 0 ? -EPIPE : commitres)) {
-			AUDIO_DEBUG ("AudioPlayer: could not write audio data: %s, commitres: %li, frames: %u\n", snd_strerror(err), commitres, frames);
+			LOG_AUDIO ("AudioPlayer: could not write audio data: %s, commitres: %li, frames: %u\n", snd_strerror(err), commitres, frames);
 			return false;
 		}
 		started = false;
@@ -453,20 +454,20 @@ AlsaSource::WriteMmap ()
 	if (!PreparePcm (&available_samples))
 		return false;
 	
-	LOG_ALSA_EX ("AlsaSource::WriteMmap (): entering play loop, avail: %lld, sample size: %i\n", (gint64) avail, (int) period_size);
+	LOG_ALSA_EX ("AlsaSource::WriteMmap (): entering play loop, avail: %lld, sample size: %i\n", (gint64) available_samples, (int) period_size);
 	
 	frames = available_samples;
 	
 	err = snd_pcm_mmap_begin (pcm, (const snd_pcm_channel_area_t** ) &areas, &offset, &frames);
 	if (err < 0) {
 		if (!XrunRecovery (err)) {
-			AUDIO_DEBUG ("AudioPlayer: could not get mmapped memory: %s\n", snd_strerror (err));
+			LOG_AUDIO ("AudioPlayer: could not get mmapped memory: %s\n", snd_strerror (err));
 			return false;
 		}
 		started = false;
 	}
 	
-	LOG_ALSA_EX ("AlsaSource::WriteMmap (): can write %lu frames, pending_samples: %lu, avail: %lu\n", frames, pending_samples, available_samples);
+	LOG_ALSA_EX ("AlsaSource::WriteMmap (): can write %lu frames, avail: %lu\n", frames, available_samples);
 	
 	for (guint32 channel = 0; channel < channels; channel++) {
 		data [channel] = (AudioData *) g_malloc (sizeof (AudioData));
@@ -489,7 +490,7 @@ AlsaSource::WriteMmap ()
 	
 	if (commitres < 0 || (snd_pcm_uframes_t) commitres != frames) {
 		if (!XrunRecovery (commitres >= 0 ? -EPIPE : commitres)) {
-			AUDIO_DEBUG ("AudioPlayer: could not commit mmapped memory: %s\n", snd_strerror(err));
+			LOG_AUDIO ("AudioPlayer: could not commit mmapped memory: %s\n", snd_strerror(err));
 			return false;
 		}
 		started = false;
@@ -515,11 +516,11 @@ AlsaSource::XrunRecovery (int err)
 		Underflowed ();
 		err = snd_pcm_prepare (pcm);
 		if (err < 0)
-			AUDIO_DEBUG ("AlsaPlayer: Can't recover from underrun, prepare failed: %s.\n", snd_strerror (err));
+			LOG_AUDIO ("AlsaPlayer: Can't recover from underrun, prepare failed: %s.\n", snd_strerror (err));
 		break;
 	case -ESTRPIPE:
 		while ((err = snd_pcm_resume (pcm)) == -EAGAIN) {
-			AUDIO_DEBUG ("XrunRecovery: waiting for resume\n");
+			LOG_AUDIO ("XrunRecovery: waiting for resume\n");
 			sleep (1); // wait until the suspend flag is released
 		}
 		if (err >= 0)
@@ -527,11 +528,11 @@ AlsaSource::XrunRecovery (int err)
 
 		err = snd_pcm_prepare (pcm);
 		if (err < 0)
-			AUDIO_DEBUG ("AlsaPlayer: Can't recover from suspend, prepare failed: %s.\n", snd_strerror (err));
+			LOG_AUDIO ("AlsaPlayer: Can't recover from suspend, prepare failed: %s.\n", snd_strerror (err));
 
 		break;
 	default:
-		AUDIO_DEBUG ("AlsaPlayer: Can't recover from underrun: %s\n", snd_strerror (err));
+		LOG_AUDIO ("AlsaPlayer: Can't recover from underrun: %s\n", snd_strerror (err));
 		break;
 	}
 	
@@ -589,7 +590,7 @@ AlsaSource::PreparePcm (snd_pcm_sframes_t *avail)
 			LOG_ALSA ("AlsaSource::PreparePcm (): starting pcm (period size: %li, available: %li)\n", period_size, *avail);
 			err = snd_pcm_start (pcm);
 			if (err < 0) {
-				AUDIO_DEBUG ("AlsaPlayer: Could not start pcm: %s\n", snd_strerror (err));
+				LOG_AUDIO ("AlsaPlayer: Could not start pcm: %s\n", snd_strerror (err));
 				return false;
 			}
 			started = true;
@@ -614,17 +615,17 @@ AlsaSource::GetDelayInternal ()
 	err = snd_pcm_avail_update (pcm);
 	
 	if (err < 0) {
-		AUDIO_DEBUG ("AlsaSource::GetDelayInternal (): Could not update delay (%s)\n", snd_strerror (err));
+		LOG_AUDIO ("AlsaSource::GetDelayInternal (): Could not update delay (%s)\n", snd_strerror (err));
 		return G_MAXUINT64;
 	}
 	
 	err = snd_pcm_delay (pcm, &delay);
 	
 	if (err < 0) {
-		AUDIO_DEBUG ("AlsaSource::GetDelayInternal (): Could not get delay (%s)\n", snd_strerror (err));
+		LOG_AUDIO ("AlsaSource::GetDelayInternal (): Could not get delay (%s)\n", snd_strerror (err));
 		result = G_MAXUINT64;
 	} else if (delay < 0) {
-		AUDIO_DEBUG ("AlsaSource::GetDelayInternal (): Got negative delay (%li)\n", delay);
+		LOG_AUDIO ("AlsaSource::GetDelayInternal (): Got negative delay (%li)\n", delay);
 		result = G_MAXUINT64;
 	} else {
 		result = (guint64) TIMESPANTICKS_IN_SECOND * (guint64) delay / (guint64) GetSampleRate ();
@@ -664,7 +665,7 @@ AlsaPlayer::Initialize ()
 	
 	// Create our spipe
 	if (pipe (fds) != 0) {
-		AUDIO_DEBUG ("AlsaPlayer::Initialize (): Unable to create pipe (%s).\n", strerror (errno));
+		LOG_AUDIO ("AlsaPlayer::Initialize (): Unable to create pipe (%s).\n", strerror (errno));
 		return false;
 	}
 
@@ -675,7 +676,7 @@ AlsaPlayer::Initialize ()
 	audio_thread = (pthread_t *) g_malloc (sizeof (pthread_t));
 	result = pthread_create (audio_thread, NULL, Loop, this);
 	if (result != 0) {
-		AUDIO_DEBUG ("AlsaPlayer::Initialize (): could not create audio thread (error code: %i = '%s').\n", result, strerror (result));
+		LOG_AUDIO ("AlsaPlayer::Initialize (): could not create audio thread (error code: %i = '%s').\n", result, strerror (result));
 		g_free (audio_thread);
 		audio_thread = NULL;
 		return false;
@@ -738,11 +739,11 @@ AlsaPlayer::IsInstalled ()
 
 		if (d_snd_asoundlib_version != NULL) {
 			version = d_snd_asoundlib_version ();
-			AUDIO_DEBUG ("AlsaPlayer: Found alsa/asound version: '%s'\n", version);
+			LOG_AUDIO ("AlsaPlayer: Found alsa/asound version: '%s'\n", version);
 		}
 		
 		if (!result)
-			AUDIO_DEBUG ("AlsaPlayer: Failed to load one or more required functions in libasound.so.");
+			LOG_AUDIO ("AlsaPlayer: Failed to load one or more required functions in libasound.so.");
 
 		is_alsa_usable = result ? 1 : 2;
 		return result;
@@ -782,7 +783,7 @@ AlsaPlayer::PrepareShutdownInternal ()
 		WakeUp ();
 		result = pthread_join (*audio_thread, NULL);
 		if (result != 0) {
-			AUDIO_DEBUG ("AudioPlayer::Shutdown (): failed to join the audio thread (error code: %i).\n", result);
+			LOG_AUDIO ("AudioPlayer::Shutdown (): failed to join the audio thread (error code: %i).\n", result);
 		} else {
 			// Only free the thread if we could join it.
 			g_free (audio_thread);
@@ -947,7 +948,7 @@ AlsaPlayer::WakeUp ()
 	} while (result == 0);
 	
 	if (result == -1)
-		AUDIO_DEBUG ("AlsaPlayer::WakeUp (): Could not wake up audio thread: %s\n", strerror (errno));
+		LOG_AUDIO ("AlsaPlayer::WakeUp (): Could not wake up audio thread: %s\n", strerror (errno));
 		
 	LOG_ALSA_EX ("AlsaPlayer::WakeUp (): thread should now wake up (or have woken up already).\n");
 	

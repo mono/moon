@@ -18,9 +18,8 @@
 #include "asf/asf.h"
 
 #include "clock.h"
+#include "debug.h"
 #include "mms-downloader.h"
-
-#define LOG_MMS(...) //printf (__VA_ARGS__);
 
 static inline bool
 is_valid_mms_header (MmsHeader *header)

@@ -26,8 +26,6 @@
 #include "utils.h"
 
 
-#define d(x) x
-
 static SolidColorBrush *default_selection_background_brush = NULL;
 static SolidColorBrush *default_selection_foreground_brush = NULL;
 static SolidColorBrush *default_background_brush = NULL;

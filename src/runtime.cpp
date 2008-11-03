@@ -70,14 +70,20 @@ pthread_t Surface::main_thread = 0;
 
 static bool inited = false;
 static bool g_type_inited = false;
-guint32 moonlight_flags = 0;
 static GList* surface_list = NULL;
+guint32 moonlight_flags = 0;
+#if DEBUG
+guint32 debug_flags = 0;
+#endif
 
-static struct {
-	const char *override;
+
+struct env_options {
+	const char *name;
 	guint32 flag;
 	bool set;
-} overrides[] = {
+};
+
+static struct env_options overrides[] = {
 	{ "ms-codecs=no",      RUNTIME_INIT_DISABLE_MS_CODECS,     true  },
 	{ "ms-codecs=yes",     RUNTIME_INIT_DISABLE_MS_CODECS,     false },
 	{ "ffmpeg-codecs=no",  RUNTIME_INIT_DISABLE_FFMPEG_CODECS, true  },
@@ -110,18 +116,54 @@ static struct {
 	{ "audio=alsa-mmap",   RUNTIME_INIT_AUDIO_ALSA_MMAP,       true  },
 	{ "audio=alsa-rw",     RUNTIME_INIT_AUDIO_ALSA_RW,         true  },
 	{ "audio=pulseaudio",  RUNTIME_INIT_AUDIO_PULSE,           true  },
-	{ "audio=debug",       RUNTIME_INIT_AUDIO_DEBUG,           true  },
 	{ "idlehint=yes",      RUNTIME_INIT_USE_IDLE_HINT,         false },
 	{ "idlehint=no",       RUNTIME_INIT_USE_IDLE_HINT,         true  },
 	{ "backend=xlib",      RUNTIME_INIT_USE_BACKEND_XLIB,      true  },
 	{ "backend=image",     RUNTIME_INIT_USE_BACKEND_XLIB,      false },
 	{ "keepmedia=no",      RUNTIME_INIT_KEEP_MEDIA,            false },
 	{ "keepmedia=yes",     RUNTIME_INIT_KEEP_MEDIA,            true  },
-	{ "codecs=debug",      RUNTIME_INIT_CODECS_DEBUG,          true  },
 };
 
 #define RUNTIME_INIT_DESKTOP (RUNTIME_INIT_PANGO_TEXT_LAYOUT | RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_XLIB)
 #define RUNTIME_INIT_BROWSER (RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_ALLOW_WINDOWLESS | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_XLIB)
+
+#if DEBUG
+static struct env_options debugs[] = {
+	{ "alsa",              RUNTIME_DEBUG_ALSA,             true },
+	{ "alsa-ex",           RUNTIME_DEBUG_ALSA_EX,          true },
+	{ "audio",             RUNTIME_DEBUG_AUDIO,            true },
+	{ "audio-ex",          RUNTIME_DEBUG_AUDIO_EX,         true },
+	{ "pulse",             RUNTIME_DEBUG_PULSE,            true },
+	{ "pulse-ex",          RUNTIME_DEBUG_PULSE_EX,         true },
+	{ "httpstreaming",     RUNTIME_DEBUG_HTTPSTREAMING,    true },
+	{ "markers",           RUNTIME_DEBUG_MARKERS,          true },
+	{ "markers-ex",        RUNTIME_DEBUG_MARKERS_EX,       true },
+	{ "mms",               RUNTIME_DEBUG_MMS,              true },
+	{ "mediaplayer",       RUNTIME_DEBUG_MEDIAPLAYER,      true },
+	{ "mediaplayer-ex",    RUNTIME_DEBUG_MEDIAPLAYER_EX,   true },
+	{ "pipeline",          RUNTIME_DEBUG_PIPELINE,         true },
+	{ "pipeline-error",    RUNTIME_DEBUG_PIPELINE_ERROR,   true },
+	{ "framereaderloop",   RUNTIME_DEBUG_FRAMEREADERLOOP,  true },
+	{ "ui",                RUNTIME_DEBUG_UI,               true },
+	{ "ffmpeg",            RUNTIME_DEBUG_FFMPEG,           true },
+	{ "codecs",            RUNTIME_DEBUG_CODECS,           true },
+	{ "dependencyobject",  RUNTIME_DEBUG_DP,               true },
+	{ "downloader",        RUNTIME_DEBUG_DOWNLOADER,       true },
+	{ "font",              RUNTIME_DEBUG_FONT,             true },
+	{ "layout",            RUNTIME_DEBUG_LAYOUT,           true },
+	{ "media",             RUNTIME_DEBUG_MEDIA,            true },
+	{ "mediaelement",      RUNTIME_DEBUG_MEDIAELEMENT,     true },
+	{ "mediaelement-ex",   RUNTIME_DEBUG_MEDIAELEMENT_EX,  true },
+	{ "buffering",         RUNTIME_DEBUG_BUFFERING,        true },
+	{ "asf",               RUNTIME_DEBUG_ASF,              true },
+	{ "playlist",          RUNTIME_DEBUG_PLAYLIST,         true },
+	{ "playlist-warn",     RUNTIME_DEBUG_PLAYLIST_WARN,    true },
+	{ "text",              RUNTIME_DEBUG_TEXT,             true },
+	{ "xaml",              RUNTIME_DEBUG_XAML,             true },
+	{ NULL, 0, false }
+};
+#endif
+
 
 
 #define RENDER_EXPOSE (moonlight_flags & RUNTIME_INIT_SHOW_EXPOSE)
@@ -1820,25 +1862,13 @@ runtime_init_desktop ()
 	runtime_init (RUNTIME_INIT_DESKTOP);
 }
 
-void
-runtime_init (guint32 flags)
+static gint32
+get_flags (const char *envname, struct env_options options[])
 {
+	gint32 flags = 0;
 	const char *env;
 	
-	if (inited)
-		return;
-	
-	if (cairo_version () < CAIRO_VERSION_ENCODE(1,4,0)) {
-		printf ("*** WARNING ***\n");
-		printf ("*** Cairo versions < 1.4.0 should not be used for Moon.\n");
-		printf ("*** Moon is being run against version %s.\n", cairo_version_string ());
-		printf ("*** Proceed at your own risk\n");
-	}
-	
-	flags |= RUNTIME_INIT_SHOW_FPS;
-	
-	// Allow the user to override the flags via his/her environment
-	if ((env = g_getenv ("MOONLIGHT_OVERRIDES"))) {
+	if (envname && (env = g_getenv (envname))) {
 		const char *flag = env;
 		const char *inptr;
 		size_t n;
@@ -1854,15 +1884,15 @@ runtime_init (guint32 flags)
 				inptr++;
 			
 			n = (inptr - flag);
-			for (i = 0; i < G_N_ELEMENTS (overrides); i++) {
-				if (n != strlen (overrides[i].override))
+			for (i = 0; options[i].name != NULL; i++) {
+				if (n != strlen (options[i].name))
 					continue;
 				
-				if (!strncmp (overrides[i].override, flag, n)) {
-					if (!overrides[i].set)
-						flags &= ~overrides[i].flag;
+				if (!strncmp (options[i].name, flag, n)) {
+					if (!options[i].set)
+						flags &= ~options[i].flag;
 					else
-						flags |= overrides[i].flag;
+						flags |= options[i].flag;
 				}
 			}
 			
@@ -1872,6 +1902,31 @@ runtime_init (guint32 flags)
 			flag = inptr;
 		}
 	}
+	return flags;
+}
+
+void
+runtime_init (guint32 flags)
+{
+
+	if (inited)
+		return;
+
+	if (cairo_version () < CAIRO_VERSION_ENCODE(1,4,0)) {
+		printf ("*** WARNING ***\n");
+		printf ("*** Cairo versions < 1.4.0 should not be used for Moon.\n");
+		printf ("*** Moon is being run against version %s.\n", cairo_version_string ());
+		printf ("*** Proceed at your own risk\n");
+	}
+
+	flags |= RUNTIME_INIT_SHOW_FPS;
+
+	// Allow the user to override the flags via his/her environment
+	flags |= get_flags ("MOONLIGHT_OVERRIDES", overrides);
+#if DEBUG
+	debug_flags = get_flags ("MOONLIGHT_DEBUG", debugs);
+#endif
+
 	
 #if OBJECT_TRACKING
 	if (EventObject::objects_created == EventObject::objects_destroyed) {

@@ -23,10 +23,6 @@
 #include "debug.h"
 #include "mediaplayer.h"
 
-#define LOG_AUDIO(...)// printf (__VA_ARGS__);
-// This one prints out spew on every sample
-#define LOG_AUDIO_EX(...)// printf (__VA_ARGS__);
-
 /*
  * AudioFrameNode
  */
@@ -191,7 +187,7 @@ AudioSource::SetState (AudioState value)
 	Lock ();
 	if (state != value) {
 		if (state == AudioError) {
-			AUDIO_DEBUG ("AudioSource::SetState (%s): Current state is Error, can't change that state\n", GetStateName (value));
+			LOG_AUDIO ("AudioSource::SetState (%s): Current state is Error, can't change that state\n", GetStateName (value));
 		} else {
 			old_state = state;
 			state = value;
@@ -507,7 +503,7 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 	}
 	for (guint32 i = 0; i < channels; i++) {
 		if (channel_data [i] == NULL) {
-			AUDIO_DEBUG ("AudioSource::WriteFull (%p, %u): channel data #%i is NULL\n", channel_data, samples, i );
+			LOG_AUDIO ("AudioSource::WriteFull (%p, %u): channel data #%i is NULL\n", channel_data, samples, i );
 			SetState (AudioError);
 			return 0;
 		}
@@ -862,36 +858,36 @@ AudioPlayer::CreatePlayer ()
 
 #if INCLUDE_PULSEAUDIO
 	if (result != NULL) {
-		AUDIO_DEBUG ("AudioPlayer: Not checking for PulseAudio support, we already found support for another configuration.\n");
+		LOG_AUDIO ("AudioPlayer: Not checking for PulseAudio support, we already found support for another configuration.\n");
 	} else if (overridden && !(moonlight_flags & RUNTIME_INIT_AUDIO_PULSE)) {
-		AUDIO_DEBUG ("AudioPlayer: PulseAudio disabled with environment variable (MOONLIGHT_OVERRIDES)\n");
+		LOG_AUDIO ("AudioPlayer: PulseAudio disabled with environment variable (MOONLIGHT_OVERRIDES)\n");
 	} else if (!PulsePlayer::IsInstalled ()) {
-		AUDIO_DEBUG ("AudioPlayer: PulseAudio is not installed or configured correctly.\n");
+		LOG_AUDIO ("AudioPlayer: PulseAudio is not installed or configured correctly.\n");
 	} else {
 		printf ("AudioPlayer: Using PulseAudio.\n");
 		result = new PulsePlayer ();
 	}	
 #else
-	AUDIO_DEBUG ("AudioPlayer: Built without support for pulseaudio.\n");
+	LOG_AUDIO ("AudioPlayer: Built without support for pulseaudio.\n");
 #endif
 
 #if INCLUDE_ALSA
 	if (result != NULL) {
-		AUDIO_DEBUG ("AudioPlayer: Not checking for Alsa support, we already found support for another configuration.\n");
+		LOG_AUDIO ("AudioPlayer: Not checking for Alsa support, we already found support for another configuration.\n");
 	} else if (overridden && !(moonlight_flags & (RUNTIME_INIT_AUDIO_ALSA | RUNTIME_INIT_AUDIO_ALSA_MMAP | RUNTIME_INIT_AUDIO_ALSA_RW))) {
-		AUDIO_DEBUG ("AudioPlayer: Alsa disabled with environment variable (MOONLIGHT_OVERRIDES)\n");
+		LOG_AUDIO ("AudioPlayer: Alsa disabled with environment variable (MOONLIGHT_OVERRIDES)\n");
 	} else if (!AlsaPlayer::IsInstalled ()) {
-		AUDIO_DEBUG ("AudioPlayer: Alsa is not installed or configured correctly.\n");
+		LOG_AUDIO ("AudioPlayer: Alsa is not installed or configured correctly.\n");
 	} else {
 		printf ("AudioPlayer: Using Alsa.\n");
 		result = new AlsaPlayer ();
 	}
 #else
-	AUDIO_DEBUG ("AudioPlayer: Built without support for alsa.\n");
+	LOG_AUDIO ("AudioPlayer: Built without support for alsa.\n");
 #endif
 
 	if (result && !result->Initialize ()) {
-		AUDIO_DEBUG ("AudioPlayer: Failed initialization.\n");
+		LOG_AUDIO ("AudioPlayer: Failed initialization.\n");
 		result->ShutdownImpl ();
 		delete result;
 		result = NULL;

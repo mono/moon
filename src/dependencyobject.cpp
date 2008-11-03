@@ -23,13 +23,7 @@
 #include "runtime.h"
 #include "uielement.h"
 #include "animation.h"
-
-
-#ifdef DEBUG
-#define d(x) x
-#else
-#define d(x)
-#endif
+#include "debug.h"
 
 
 
@@ -147,7 +141,10 @@ EventObject::SetSurface (Surface *surface)
 {
 	if (!Surface::InMainThread ()) {
 		g_warning ("EventObject::SetSurface (): This method must not be called on any other than the main thread!\n");
-		d (print_stack_trace ());
+#if DEBUG
+		if (debug_flags & RUNTIME_DEBUG_DP)
+			print_stack_trace ();
+#endif
 		return;
 	}
 	
@@ -186,7 +183,10 @@ EventObject::AddTickCall (TickCallHandler handler)
 {
 	if (!Surface::InMainThread ()) {
 		g_warning ("EventObject::AddTickCall (): This method must not be called on any other than the main thread! Tick call won't be added.\n");
-		d (print_stack_trace ());
+#if DEBUG
+		if (debug_flags & RUNTIME_DEBUG_DP)
+			print_stack_trace ();
+#endif
 		return;
 	}
 	
@@ -202,14 +202,14 @@ EventObject::AddTickCallInternal (TickCallHandler handler)
 	surface = GetSurface ();
 	
 	if (!surface) {
-		d(printf ("EventObject::AddTickCall (): Could not add tick call, no surface\n"));
+		LOG_DP ("EventObject::AddTickCall (): Could not add tick call, no surface\n");
 		return;
 	}
 	
 	timemanager = surface->GetTimeManager ();
 	
 	if (!timemanager) {
-		d(printf ("EventObject::AddTickCall (): Could not add tick call, no time manager\n"));
+		LOG_DP ("EventObject::AddTickCall (): Could not add tick call, no time manager\n");
 		return;
 	}
 

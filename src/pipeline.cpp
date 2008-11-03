@@ -39,12 +39,6 @@
 #include "pipeline-ui.h"
 #include "pipeline-asf.h"
 
-#define LOG_PIPELINE(...)// printf (__VA_ARGS__);
-#define LOG_PIPELINE_ERROR(...) printf (__VA_ARGS__);
-#define LOG_PIPELINE_ERROR_CONDITIONAL(x, ...) if (x) printf (__VA_ARGS__);
-#define LOG_FRAMEREADERLOOP(...)// printf (__VA_ARGS__);
-#define LOG_BUFFERING(...)// printf (__VA_ARGS__);
-
 /*
  * MediaNode
  */
@@ -202,20 +196,19 @@ Media::RegisterMSCodecs (void)
 
 	dl = dlopen (libmscodecs_path, RTLD_LAZY);
 	if (dl != NULL) {
-		if (moonlight_flags & RUNTIME_INIT_CODECS_DEBUG)
-			printf ("Moonlight: Loaded mscodecs from: %s.\n", libmscodecs_path);
+		LOG_CODECS ("Moonlight: Loaded mscodecs from: %s.\n", libmscodecs_path);
 			
 		for (int i = 0; i < 3; i++) {
 			reg = (register_codec) dlsym (dl, functions [i]);
 			if (reg != NULL) {
 				(*reg) (MOONLIGHT_CODEC_ABI_VERSION);
-			} else if (moonlight_flags & RUNTIME_INIT_CODECS_DEBUG) {
-				printf ("Moonlight: Cannot find %s in %s.\n", functions [i], libmscodecs_path);
+			} else {
+				LOG_CODECS ("Moonlight: Cannot find %s in %s.\n", functions [i], libmscodecs_path);
 			}
 		}		
 		registered_ms_codecs = true;
-	} else if (moonlight_flags & RUNTIME_INIT_CODECS_DEBUG) {
-		printf ("Moonlight: Cannot load %s: %s\n", libmscodecs_path, dlerror ());
+	} else {
+		LOG_CODECS ("Moonlight: Cannot load %s: %s\n", libmscodecs_path, dlerror ());
 	}
 	g_free (libmscodecs_path);
 
@@ -338,8 +331,7 @@ Media::RegisterDecoder (DecoderInfo *info)
 			current->next = info;
 		}
 	}
-	if (moonlight_flags & RUNTIME_INIT_CODECS_DEBUG)
-		printf ("Moonlight: Codec has been registered: %s\n", info->GetName ());
+	LOG_CODECS ("Moonlight: Codec has been registered: %s\n", info->GetName ());
 }
 
 void
@@ -623,21 +615,18 @@ Media::Open (IMediaSource *source)
 		const char *codec = stream->GetCodec ();
 		IMediaDecoder *decoder = NULL;
 		
-		if (moonlight_flags & RUNTIME_INIT_CODECS_DEBUG)
-			printf ("Moonlight: Searching registered decoders for a decoder which supports '%s'\n", codec);
+		LOG_CODECS ("Moonlight: Searching registered decoders for a decoder which supports '%s'\n", codec);
 		
 		DecoderInfo *current_decoder = registered_decoders;
 		while (current_decoder != NULL && !current_decoder->Supports (codec)) {
-			if (moonlight_flags & RUNTIME_INIT_CODECS_DEBUG)
-				printf ("Moonlight: Checking if registered decoder '%s' supports codec '%s': no.\n", current_decoder->GetName (), codec);
+			LOG_CODECS ("Moonlight: Checking if registered decoder '%s' supports codec '%s': no.\n", current_decoder->GetName (), codec);
 			current_decoder = (DecoderInfo*) current_decoder->next;
 		}
 
 		if (current_decoder == NULL) {
 			Media::Warning (MEDIA_UNKNOWN_CODEC, "Unknown codec: '%s'.", codec);	
 		} else {
-			if (moonlight_flags & RUNTIME_INIT_CODECS_DEBUG)
-				printf ("Moonlight: Checking if registered decoder '%s' supports codec '%s': yes.\n", current_decoder->GetName (), codec);
+			LOG_CODECS ("Moonlight: Checking if registered decoder '%s' supports codec '%s': yes.\n", current_decoder->GetName (), codec);
 			decoder = current_decoder->Create (this, stream);
 		}
 		

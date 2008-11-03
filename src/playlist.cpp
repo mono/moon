@@ -21,12 +21,8 @@
 #include "runtime.h"
 #include "clock.h"
 #include "mediaelement.h"
+#include "debug.h"
 
-
-#define d(x)
-
-// warnings
-#define w(x)
 
 class ParserInternal {
 public:
@@ -73,7 +69,7 @@ PlaylistNode::~PlaylistNode ()
 
 PlaylistEntry::PlaylistEntry (MediaElement *element, Playlist *parent, Media *media)
 {
-	d(printf ("PlaylistEntry::PlaylistEntry (%p, %p, %p)\n", element, parent, media));
+	LOG_PLAYLIST ("PlaylistEntry::PlaylistEntry (%p, %p, %p)\n", element, parent, media);
 
 	this->parent = parent;
 	this->element = element;
@@ -99,7 +95,7 @@ PlaylistEntry::PlaylistEntry (MediaElement *element, Playlist *parent, Media *me
 
 PlaylistEntry::~PlaylistEntry ()
 {
-	d(printf ("PlaylistEntry::~PlaylistEntry ()\n"));
+	LOG_PLAYLIST ("PlaylistEntry::~PlaylistEntry ()\n");
 	
 	delete source_name;
 	g_free (full_source_name);
@@ -301,7 +297,7 @@ add_attribute (MediaAttributeCollection *attributes, const char *name, const cha
 void
 PlaylistEntry::PopulateMediaAttributes ()
 {
-	d(printf ("PlaylistEntry::PopulateMediaAttributes ()\n"));
+	LOG_PLAYLIST ("PlaylistEntry::PopulateMediaAttributes ()\n");
 
 	const char *abstract = NULL;
 	const char *author = NULL;
@@ -434,7 +430,7 @@ PlaylistEntry::GetFullSourceName ()
 void
 PlaylistEntry::Open ()
 {
-	d(printf ("PlaylistEntry::Open (), media = %p, FullSourceName = %s\n", media, GetFullSourceName ()));
+	LOG_PLAYLIST ("PlaylistEntry::Open (), media = %p, FullSourceName = %s\n", media, GetFullSourceName ());
 
 	if (media != NULL) {
 		element->SetMedia (media);
@@ -452,7 +448,7 @@ PlaylistEntry::Open ()
 bool
 PlaylistEntry::Play ()
 {
-	d(printf ("PlaylistEntry::Play (), play_when_available: %s, media: %p, source name: %s\n", play_when_available ? "true" : "false", media, source_name ? source_name->ToString () : "NULL"));
+	LOG_PLAYLIST ("PlaylistEntry::Play (), play_when_available: %s, media: %p, source name: %s\n", play_when_available ? "true" : "false", media, source_name ? source_name->ToString () : "NULL");
 
 	if (media == NULL) {
 		play_when_available = true;
@@ -471,7 +467,7 @@ PlaylistEntry::Play ()
 bool
 PlaylistEntry::Pause ()
 {
-	d(printf ("PlaylistEntry::Pause ()\n"));
+	LOG_PLAYLIST ("PlaylistEntry::Pause ()\n");
 	
 	play_when_available = false;
 	element->GetMediaPlayer ()->Pause ();
@@ -481,7 +477,7 @@ PlaylistEntry::Pause ()
 void
 PlaylistEntry::Stop ()
 {
-	d(printf ("PlaylistEntry::Stop ()\n"));
+	LOG_PLAYLIST ("PlaylistEntry::Stop ()\n");
 
 	play_when_available = false;
 	element->GetMediaPlayer ()->Stop ();
@@ -501,7 +497,7 @@ PlaylistEntry::GetMedia ()
 void 	
 PlaylistEntry::SetMedia (Media *media)
 {
-	d(printf ("PlaylistEntry::SetMedia (%p), previous media: %p\n", media, this->media));
+	LOG_PLAYLIST ("PlaylistEntry::SetMedia (%p), previous media: %p\n", media, this->media);
 
 	if (this->media)
 		this->media->unref ();
@@ -545,7 +541,7 @@ Playlist::Playlist (MediaElement *element, Media *media)
 
 Playlist::~Playlist ()
 {
-	d(printf ("Playlist::~Playlist ()\n"));
+	LOG_PLAYLIST ("Playlist::~Playlist ()\n");
 	
 	delete entries;
 }
@@ -553,7 +549,7 @@ Playlist::~Playlist ()
 void
 Playlist::Init (MediaElement *element)
 {	
-	d(printf ("Playlist::Init (%p)\n", element));
+	LOG_PLAYLIST ("Playlist::Init (%p)\n", element);
 
 	this->element = element;
 	entries = new List ();
@@ -588,14 +584,14 @@ Playlist::Open ()
 {
 	PlaylistEntry *current_entry;
 
-	d(printf ("Playlist::Open ()\n"));
+	LOG_PLAYLIST ("Playlist::Open ()\n");
 	
 	current_node = (PlaylistNode *) entries->First ();
 
 	current_entry = GetCurrentEntry ();	
 	
 	while (current_entry && current_entry->HasDuration () && current_entry->GetDuration () == 0) {
-		d(printf ("Playlist::Open (), current entry (%s) has zero duration, skipping it.\n", current_entry->GetSourceName ()->ToString ()));
+		LOG_PLAYLIST ("Playlist::Open (), current entry (%s) has zero duration, skipping it.\n", current_entry->GetSourceName ()->ToString ());
 		current_node = (PlaylistNode *) current_node->next;
 		current_entry = GetCurrentEntry ();
 	}
@@ -603,7 +599,7 @@ Playlist::Open ()
 	if (current_entry)
 		current_entry->Open ();
 
-	d(printf ("Playlist::Open (): current node: %p, current entry: %p\n", current_entry, GetCurrentEntry ()));
+	LOG_PLAYLIST ("Playlist::Open (): current node: %p, current entry: %p\n", current_entry, GetCurrentEntry ());
 }
 
 void
@@ -611,7 +607,7 @@ Playlist::OnEntryEnded ()
 {
 	PlaylistEntry *current_entry;
 	
-	d (printf ("Playlist::OnEntryEnded () current_node: %p\n", current_node));
+	LOG_PLAYLIST ("Playlist::OnEntryEnded () current_node: %p\n", current_node);
 	
 	if (!current_node)
 		return;
@@ -624,7 +620,7 @@ Playlist::OnEntryEnded ()
 		current_entry->Play ();
 	}
 	
-	d(printf ("Playlist::OnEntryEnded () current_node: %p [Done]\n", current_node));
+	LOG_PLAYLIST ("Playlist::OnEntryEnded () current_node: %p [Done]\n", current_node);
 }
 
 bool
@@ -635,10 +631,10 @@ Playlist::Play ()
 
 	PlaylistEntry *current_entry = GetCurrentEntry ();
 
-	d(printf ("Playlist::Play (), current entry: %p\n", current_entry));
+	LOG_PLAYLIST ("Playlist::Play (), current entry: %p\n", current_entry);
 
 	while (current_entry && current_entry->HasDuration () && current_entry->GetDuration () == 0) {
-		d(printf ("Playlist::Open (), current entry (%s) has zero duration, skipping it.\n", current_entry->GetSourceName ()->ToString ()));
+		LOG_PLAYLIST ("Playlist::Open (), current entry (%s) has zero duration, skipping it.\n", current_entry->GetSourceName ()->ToString ());
 		OnEntryEnded ();
 		current_entry = GetCurrentEntry ();
 	}
@@ -654,7 +650,7 @@ Playlist::Pause ()
 {
 	PlaylistEntry *current_entry = GetCurrentEntry ();
 
-	d(printf ("Playlist::Pause ()\n"));
+	LOG_PLAYLIST ("Playlist::Pause ()\n");
 
 	if (!current_entry)
 		return false;
@@ -667,7 +663,7 @@ Playlist::Stop ()
 {
 	PlaylistEntry *current_entry = GetCurrentEntry ();
 
-	d(printf ("Playlist::Stop ()\n"));
+	LOG_PLAYLIST ("Playlist::Stop ()\n");
 
 	if (!current_entry)
 		return;
@@ -687,7 +683,7 @@ Playlist::PopulateMediaAttributes ()
 {
 	PlaylistEntry *current_entry = GetCurrentEntry ();
 
-	d(printf ("Playlist::PopulateMediaAttributes ()\n"));
+	LOG_PLAYLIST ("Playlist::PopulateMediaAttributes ()\n");
 
 	if (!current_entry)
 		return;
@@ -698,7 +694,7 @@ Playlist::PopulateMediaAttributes ()
 void
 Playlist::AddEntry (PlaylistEntry *entry)
 {
-	d(printf ("Playlist::AddEntry (%p)\n", entry));
+	LOG_PLAYLIST ("Playlist::AddEntry (%p)\n", entry);
 
 	entries->Append (new PlaylistNode (entry));
 	entry->unref ();
@@ -709,7 +705,7 @@ Playlist::ReplaceCurrentEntry (Playlist *pl)
 {
 	PlaylistEntry *current_entry = GetCurrentEntry ();
 
-	d(printf ("Playlist::ReplaceCurrentEntry (%p)\n", pl));
+	LOG_PLAYLIST ("Playlist::ReplaceCurrentEntry (%p)\n", pl);
 
 	int counter = 0;
 	PlaylistEntry *e = current_entry;
@@ -739,7 +735,7 @@ Playlist::ReplaceCurrentEntry (Playlist *pl)
 void
 Playlist::MergeWith (PlaylistEntry *entry)
 {
-	d(printf ("Playlist::MergeWith (%p)\n", entry));
+	LOG_PLAYLIST ("Playlist::MergeWith (%p)\n", entry);
 
 	SetBase (entry->GetBase () ? entry->GetBase ()->Clone () : NULL);
 	SetTitle (g_strdup (entry->GetTitle ()));
@@ -957,7 +953,7 @@ PlaylistParser::OnStartElement (const char *name, const char **attrs)
 	Uri *uri;
 	bool failed;
 
-	d(printf ("PlaylistParser::OnStartElement (%s, %p), kind = %d\n", name, attrs, kind));
+	LOG_PLAYLIST ("PlaylistParser::OnStartElement (%s, %p), kind = %d\n", name, attrs, kind);
 
 	g_free (current_text);
 	current_text = NULL;
@@ -1047,7 +1043,7 @@ PlaylistParser::OnStartElement (const char *name, const char **attrs)
 			if (str_match (attrs [i], "VALUE")) {
 				if (time_value_from_str (this, attrs [i+1], &ts)) {
 					if (GetCurrentEntry () != NULL && GetParentKind () != PlaylistNode::Ref) {
-						d(printf ("PlaylistParser::OnStartElement (%s, %p), found VALUE/timespan = %f s\n", name, attrs, TimeSpan_ToSecondsFloat (ts)));
+						LOG_PLAYLIST ("PlaylistParser::OnStartElement (%s, %p), found VALUE/timespan = %f s\n", name, attrs, TimeSpan_ToSecondsFloat (ts));
 						GetCurrentEntry ()->SetDuration (ts);
 					}
 				}
@@ -1141,7 +1137,7 @@ PlaylistParser::OnStartElement (const char *name, const char **attrs)
 			if (str_match (attrs [i], "VALUE")) {
 				if (time_value_from_str (this, attrs [i+1], &ts)) {
 					if (GetCurrentEntry () != NULL && GetParentKind () != PlaylistNode::Ref) {
-						d(printf ("PlaylistParser::OnStartElement (%s, %p), found VALUE/timespan = %f s\n", name, attrs, TimeSpan_ToSecondsFloat (ts)));
+						LOG_PLAYLIST ("PlaylistParser::OnStartElement (%s, %p), found VALUE/timespan = %f s\n", name, attrs, TimeSpan_ToSecondsFloat (ts));
 						GetCurrentEntry ()->SetStartTime (ts);
 					}
 				}
@@ -1187,7 +1183,7 @@ PlaylistParser::OnStartElement (const char *name, const char **attrs)
 	case PlaylistNode::Root:
 	case PlaylistNode::Unknown:
 	default:
-		d(printf ("PlaylistParser::OnStartElement ('%s', %p): Unknown kind: %d\n", name, attrs, kind));
+		LOG_PLAYLIST ("PlaylistParser::OnStartElement ('%s', %p): Unknown kind: %d\n", name, attrs, kind);
 		ParsingError (new ErrorEventArgs (MediaError, 3004, "Invalid ASX element"));
 		break;
 	}
@@ -1199,7 +1195,7 @@ PlaylistParser::OnEndElement (const char *name)
 	PlaylistNode::Kind kind = GetCurrentKind ();
 	TimeSpan ts; 
 
-	d(printf ("PlaylistParser::OnEndElement (%s), GetCurrentKind (): %d, GetCurrentKind () to string: %s\n", name, kind, KindToString (kind)));
+	LOG_PLAYLIST ("PlaylistParser::OnEndElement (%s), GetCurrentKind (): %d, GetCurrentKind () to string: %s\n", name, kind, KindToString (kind));
 
 	switch (kind) {
 	case PlaylistNode::Abstract:
@@ -1279,7 +1275,7 @@ PlaylistParser::OnEndElement (const char *name)
 		}
 		break;
 	default:
-		d(printf ("PlaylistParser::OnEndElement ('%s'): Unknown kind %d.\n", name, kind));
+		LOG_PLAYLIST ("PlaylistParser::OnEndElement ('%s'): Unknown kind %d.\n", name, kind);
 		ParsingError (new ErrorEventArgs (MediaError, 3008, "ASX parse error"));
 		break;
 	}
@@ -1310,7 +1306,7 @@ PlaylistParser::OnText (const char *text, int len)
 		if (p [i] == 10 || p [i] == 13)
 			p [i] = ' ';
 
-	d(printf ("PlaylistParser::OnText (%s, %d)\n", p, len));
+	LOG_PLAYLIST ("PlaylistParser::OnText (%s, %d)\n", p, len);
 	g_free (p);
 #endif
 
@@ -1364,27 +1360,27 @@ PlaylistParser::ParseASX2 ()
 
 	bytes_read = source->ReadSome (buffer, BUFFER_SIZE);
 	if (bytes_read < 0) {
-		w(fprintf (stderr, "Could not read asx document for parsing.\n"));
+		LOG_PLAYLIST_WARN ("Could not read asx document for parsing.\n");
 		return false;
 	}
 
 	key_file = g_key_file_new ();
 	if (!g_key_file_load_from_data (key_file, buffer, bytes_read,
 					G_KEY_FILE_NONE, NULL)) {
-		w(fprintf (stderr, "Invalid asx2 document.\n"));
+		LOG_PLAYLIST_WARN ("Invalid asx2 document.\n");
 		g_key_file_free (key_file);
 		return false;
 	}
 
 	ref = g_key_file_get_value (key_file, "Reference", "Ref1", NULL);
 	if (ref == NULL) {
-		w(fprintf (stderr, "Could not find Ref1 entry in asx2 document.\n"));
+		LOG_PLAYLIST_WARN ("Could not find Ref1 entry in asx2 document.\n");
 		g_key_file_free (key_file);
 		return false;
 	}
 
 	if (!g_str_has_prefix (ref, "http://") || !g_str_has_suffix (ref, "MSWMExt=.asf")) {
-		w(fprintf (stderr, "Could not find a valid uri within Ref1 entry in asx2 document.\n"));
+		LOG_PLAYLIST_WARN ("Could not find a valid uri within Ref1 entry in asx2 document.\n");
 		g_free (ref);
 		g_key_file_free (key_file);
 		return false;
@@ -1421,7 +1417,7 @@ PlaylistParser::TryFixError (gint8 *current_buffer, int bytes_read)
 	if (index > bytes_read)
 		return false;
 	
-	d (printf ("Attempting to fix invalid token error  %d.\n", index));
+	LOG_PLAYLIST ("Attempting to fix invalid token error  %d.\n", index);
 
 	// OK, so we are going to guess that we are in an attribute here and walk back
 	// until we hit a control char that should be escaped.
@@ -1446,7 +1442,7 @@ PlaylistParser::TryFixError (gint8 *current_buffer, int bytes_read)
 	}
 
 	if (!escape) {
-		w (printf ("Unable to find an invalid escape character to fix in ASX: %s.\n", current_buffer));
+		LOG_PLAYLIST_WARN ("Unable to find an invalid escape character to fix in ASX: %s.\n", current_buffer);
 		g_free (escape);
 		return false;
 	}
@@ -1483,7 +1479,7 @@ PlaylistParser::Parse ()
 	gint64 last_available_pos;
 	gint64 size;
 
-	d(printf ("PlaylistParser::Parse ()\n"));
+	LOG_PLAYLIST ("PlaylistParser::Parse ()\n");
 
 	do {
 		Setup ();
@@ -1572,13 +1568,13 @@ void
 PlaylistParser::PushCurrentKind (PlaylistNode::Kind kind)
 {
 	kind_stack->Append (new KindNode (kind));
-	d(printf ("PlaylistParser::Push (%d)\n", kind));
+	LOG_PLAYLIST ("PlaylistParser::Push (%d)\n", kind);
 }
 
 void
 PlaylistParser::PopCurrentKind ()
 {
-	d(printf ("PlaylistParser::PopCurrentKind (), current: %d\n", ((KindNode *)kind_stack->Last ())->kind));
+	LOG_PLAYLIST ("PlaylistParser::PopCurrentKind (), current: %d\n", ((KindNode *)kind_stack->Last ())->kind);
 	kind_stack->Remove (kind_stack->Last ());
 }
 
@@ -1599,7 +1595,7 @@ PlaylistParser::GetParentKind ()
 bool
 PlaylistParser::AssertParentKind (int kind)
 {
-	d(printf ("PlaylistParser::AssertParentKind (%d), GetParentKind: %d, result: %d\n", kind, GetParentKind (), GetParentKind () & kind));
+	LOG_PLAYLIST ("PlaylistParser::AssertParentKind (%d), GetParentKind: %d, result: %d\n", kind, GetParentKind (), GetParentKind () & kind);
 
 	if (GetParentKind () & kind)
 		return true;
@@ -1612,7 +1608,7 @@ PlaylistParser::AssertParentKind (int kind)
 void
 PlaylistParser::ParsingError (ErrorEventArgs *args)
 {
-	d(printf ("PlaylistParser::ParsingError (%s)\n", args->error_message));
+	LOG_PLAYLIST ("PlaylistParser::ParsingError (%s)\n", args->error_message);
 	
 	XML_StopParser (internal->parser, false);
 	element->MediaFailed (args);
@@ -1655,7 +1651,7 @@ PlaylistParser::StringToKind (const char *str)
 		}
 	}
 
-	d(printf ("PlaylistParser::StringToKind ('%s') = %d\n", str, kind));
+	LOG_PLAYLIST ("PlaylistParser::StringToKind ('%s') = %d\n", str, kind);
 
 	return kind;
 }
@@ -1672,7 +1668,7 @@ PlaylistParser::KindToString (PlaylistNode::Kind kind)
 		}
 	}
 
-	d(printf ("PlaylistParser::KindToString (%d) = '%s'\n", kind, result));
+	LOG_PLAYLIST ("PlaylistParser::KindToString (%d) = '%s'\n", kind, result);
 
 	return result;
 }

@@ -17,10 +17,7 @@
 #include "audio-pulse.h"
 #include "runtime.h"
 #include "clock.h"
-
-#define LOG_PULSE(...)// printf (__VA_ARGS__);
-// This one prints out spew on every sample
-#define LOG_PULSE_EX(...)// printf (__VA_ARGS__);
+#include "debug.h"
 
 // stream.h
 typedef pa_stream*            (dyn_pa_stream_new)                    (pa_context *c, const char *name, const pa_sample_spec *ss, const pa_channel_map *map);

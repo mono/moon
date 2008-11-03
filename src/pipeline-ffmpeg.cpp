@@ -19,14 +19,15 @@
 #include <stdlib.h>
 #include <glib.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include <pthread.h>
 
 #include "pipeline-ffmpeg.h"
 #include "pipeline.h"
 #include "mp3.h"
+#include "clock.h"
 #include "debug.h"
 
-#define LOG_FFMPEG(...)// printf(__VA_ARGS__);
 
 bool ffmpeg_initialized = false;
 bool ffmpeg_registered = false;
@@ -302,8 +303,8 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 		if (prev_pts != G_MAXUINT64 && has_delayed_frame)
 			mf->pts = prev_pts;
 
-		LOG_FFMPEG ("FfmpegDecoder::DecodeFrame (%p): got picture, input pts: %llu, actual pts: %llu, has delayed frame: %i, prev_pts: %llu ms\n", 
-			mf, MilliSeconds_FromPts (input_pts), MilliSeconds_FromPts (mf->pts), has_delayed_frame, MilliSeconds_FromPts (prev_pts));
+		LOG_FFMPEG ("FfmpegDecoder::DecodeFrame (%p): got picture, actual pts: %llu, has delayed frame: %i, prev_pts: %llu ms\n", 
+			mf, MilliSeconds_FromPts (mf->pts), has_delayed_frame, MilliSeconds_FromPts (prev_pts));
 
 		mf->AddState (FRAME_PLANAR);
 		

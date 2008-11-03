@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <glib.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #include "yuv-converter.h"
 

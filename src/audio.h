@@ -25,8 +25,6 @@ class AudioPlayer;
 #include "dependencyobject.h"
 #include "pipeline.h"
 
-#define AUDIO_DEBUG(...) if (moonlight_flags & RUNTIME_INIT_AUDIO_DEBUG) printf (__VA_ARGS__);
-
 enum AudioFlags {
 	// The AudioSource has been initialized correctly.
 	// This flag is removed if SetState (AudioError) is called.
