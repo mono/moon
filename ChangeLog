@@ -1,5 +1,9 @@
 2008-11-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* configure.ac: Remove SWSCALE flags, we don't use swscale anymore.
+
+2008-11-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* configure.ac: Revert r117547 and related.
 
 2008-10-31  Rolf Bjarne Kvinge <RKvinge@novell.com> 
