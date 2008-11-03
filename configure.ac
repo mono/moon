@@ -54,6 +54,10 @@ if test x$with_ffmpeg = xyes; then
 fi
 AM_CONDITIONAL(INCLUDE_FFMPEG,test x$with_ffmpeg = xyes)
 
+if test x$with_ffmpeg = no; then
+  media_warning = "WARNING: No media decoding backends configured.  AUDIO AND VIDEO WON'T WORK"
+fi
+
 dnl
 dnl Mozilla checks
 dnl
@@ -394,9 +398,15 @@ dnl plugin checks
 dnl
 AC_ARG_ENABLE(user-plugin,[  --enable-user-plugin    Build the plugin installer],
 			  [user_plugin=yes
-			   AC_DEFINE([PLUGIN_INSTALL],[1],[Load libraries from ~/.mozilla/plugins and build a Mozilla XPInstall file])],
+			   AC_DEFINE([PLUGIN_INSTALL],[1],[Load libraries from ~/.mozilla/plugins and build a Mozilla XPInstall file])
+			   avutil_libdir="$(pkg-config --variable=libdir libavutil)"
+			   avcodec_libdir="$(pkg-config --variable=libdir libavcodec)"
+			   AC_SUBST([avutil_libdir])
+			   AC_SUBST([avcodec_libdir])],
 			  [user_plugin=no
-			   MOON_LIBS="$MONO_LIBS"
+			   dnl We only want to link against these if we are NOT building
+			   dnl the user plugin installer
+			   MOON_LIBS="$FFMPEG_LIBS $SWSCALE_LIBS $MONO_LIBS"
 			  ])
 AM_CONDITIONAL([PLUGIN_INSTALL],[test x$user_plugin = xyes])
 
@@ -527,7 +537,7 @@ PERF_TOOL_LIBS="$GTK_LIBS $XULRUNNER_LIBS"
 AC_SUBST(PERF_TOOL_CFLAGS)
 AC_SUBST(PERF_TOOL_LIBS)
 
-MOON_CFLAGS="$CAIRO_CFLAGS $FREETYPE2_CFLAGS $FONTCONFIG_CFLAGS $GTK_CFLAGS $ALSA_CFLAGS $PULSEAUDIO_CFLAGS $FFMPEG_CFLAGS $MONO_CFLAGS"
+MOON_CFLAGS="$CAIRO_CFLAGS $FREETYPE2_CFLAGS $FONTCONFIG_CFLAGS $GTK_CFLAGS $ALSA_CFLAGS $PULSEAUDIO_CFLAGS $FFMPEG_CFLAGS $SWSCALE_CFLAGS $MONO_CFLAGS"
 dnl MOON_LIBS is partially defined above for the user-plugin build
 MOON_LIBS="$MOON_LIBS $CAIRO_LIBS $FREETYPE2_LIBS $FONTCONFIG_LIBS $GTK_LIBS $ZLIB $PTHREAD_LIBS"
 
@@ -537,13 +547,13 @@ MOON_LIBS="$(echo $MOON_LIBS | sed -e s/-lglitz//g)"
 AC_SUBST(MOON_CFLAGS)
 AC_SUBST(MOON_LIBS)
 
-MOON_EXTRA_CFLAGS="$GTK_CFLAGS $ALSA_CFLAGS $FFMPEG_CFLAGS $PULSEAUDIO_CFLAGS"
-MOON_EXTRA_LIBS="$GTK_LIBS"
+MOON_EXTRA_CFLAGS="$GTK_CFLAGS $ALSA_CFLAGS $FFMPEG_CFLAGS $SWSCALE_CFLAGS $PULSEAUDIO_CFLAGS"
+MOON_EXTRA_LIBS="$GTK_LIBS $FFMPEG_LIBS $SWSCALE_LIBS"
 AC_SUBST(MOON_EXTRA_CFLAGS)
 AC_SUBST(MOON_EXTRA_LIBS)
 
-MOON_PROG_CFLAGS="$GTK_CFLAGS $ALSA_CFLAGS $FFMPEG_CFLAGS $PULSEAUDIO_CFLAGS -I\$(top_srcdir)/src/"
-MOON_PROG_LIBS="$GTK_LIBS \$(top_builddir)/src/libmoon.la"
+MOON_PROG_CFLAGS="$GTK_CFLAGS $ALSA_CFLAGS $FFMPEG_CFLAGS $SWSCALE_CFLAGS $PULSEAUDIO_CFLAGS -I\$(top_srcdir)/src/"
+MOON_PROG_LIBS="$GTK_LIBS $FFMPEG_LIBS $SWSCALE_LIBS \$(top_builddir)/src/libmoon.la"
 AC_SUBST(MOON_PROG_CFLAGS)
 AC_SUBST(MOON_PROG_LIBS)
 
@@ -629,7 +639,7 @@ EOF
 # media info
 cat <<EOF
 
-  Media Support:
+  Media Support: $media_warning
 	FFmpeg: $with_ffmpeg $ffmpeg_reason
 	Alsa: $with_alsa $alsa_reason
 	Pulseaudio: $with_pulseaudio $pulseaudio_reason
