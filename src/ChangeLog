@@ -1,5 +1,9 @@
 2008-11-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* runtime.h: Remove #include <config.h> from headers
+
+2008-11-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* mp3.h, mp3.cpp: Mp3FrameReader::TryReadFrame: if we don't succeed in
 	  reading a header, try to sync to one. FindMpegHeader: Return proper
 	  error code (MEDIA_NO_MORE_DATA) if we can't read more data. Fixes

@@ -15,7 +15,6 @@
 #define __RUNTIME_H__
 
 #include <glib.h>
-#include <config.h>
 
 G_BEGIN_DECLS
 
