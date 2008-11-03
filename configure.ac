@@ -380,6 +380,9 @@ if test x$with_debug = xyes; then
   CFLAGS="$DEBUG_OPTIONS $CFLAGS"
   CXXFLAGS=`echo $CXXFLAGS | sed 's/-O2//'`
   CXXFLAGS="$DEBUG_OPTIONS $CXXFLAGS"
+  if test x$managed_code = xyes; then
+    MOON_LIBS="$MOON_LIBS $MONO_LIBS"
+  fi
   AC_DEFINE([DEBUG],[1],[Include debugging support])
 fi
 

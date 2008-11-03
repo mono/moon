@@ -1,5 +1,10 @@
 2008-11-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* debug.cpp: Don't dlopen mono, just link with it if -with-debug is
+	  specified.
+
+2008-11-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* pipeline-ffmpeg.cpp: Revert r117547 and related.
 
 2008-11-02  Chris Toshok  <toshok@ximian.com>

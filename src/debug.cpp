@@ -7,8 +7,6 @@
  * 
  */
 
-#include <dlfcn.h>
-
 #include "config.h"
 #include "debug.h"
  
@@ -16,83 +14,44 @@
 
 #if SL_2_0
 // Define to enable stack traces for managed frames.
-// You'll also need to call enable_vm_stack_trace when the vm is loaded to dlopen libmono and resolve the methods.
 #define MONO_STACK_ENABLED 1
 #endif
 
 // Type safety at it's best.
 #if MONO_STACK_ENABLED
-
-// Very very hackish, but it seems to work.
 #define MonoMethod void
 #define MonoJitInfo void
 #define MonoDomain void
 typedef struct _MonoDebugSourceLocation	MonoDebugSourceLocation;
+
+// Very very hackish, but it seems to work.
+extern "C" {
+	extern char* mono_pmip (void *ip);
+	extern MonoMethod* mono_jit_info_get_method (MonoJitInfo* ji);
+	extern MonoDomain* mono_domain_get ();
+	extern MonoJitInfo* mono_jit_info_table_find (MonoDomain* domain, void* ip);
+	extern char* mono_method_full_name (MonoMethod *method, gboolean signature);
+
+	extern MonoDebugSourceLocation * mono_debug_lookup_source_location (MonoMethod *method, guint32 address, MonoDomain *domain);
+	extern void mono_debug_free_source_location (MonoDebugSourceLocation *location);
+
+	extern gpointer mono_jit_info_get_code_start (MonoJitInfo* ji);
+
+	extern int mono_jit_info_get_code_size (MonoJitInfo* ji);
+};
 
 struct _MonoDebugSourceLocation {
 	gchar *source_file;
 	guint32 row, column;
 	guint32 il_offset;
 };
-
-typedef char*                     (dyn_mono_pmip)                         (void *ip);
-typedef MonoMethod*               (dyn_mono_jit_info_get_method)          (MonoJitInfo* ji);
-typedef MonoDomain*               (dyn_mono_domain_get)                   ();
-typedef MonoJitInfo*              (dyn_mono_jit_info_table_find)          (MonoDomain* domain, void* ip);
-typedef char*                     (dyn_mono_method_full_name)             (MonoMethod *method, gboolean signature);
-typedef MonoDebugSourceLocation * (dyn_mono_debug_lookup_source_location) (MonoMethod *method, guint32 address, MonoDomain *domain);
-typedef void                      (dyn_mono_debug_free_source_location)   (MonoDebugSourceLocation *location);
-typedef gpointer                  (dyn_mono_jit_info_get_code_start)      (MonoJitInfo* ji);
-typedef int                       (dyn_mono_jit_info_get_code_size)       (MonoJitInfo* ji);
-
-dyn_mono_pmip * mono_pmip = NULL;
-dyn_mono_jit_info_get_method *mono_jit_info_get_method = NULL;
-dyn_mono_domain_get *mono_domain_get = NULL;
-dyn_mono_jit_info_table_find *mono_jit_info_table_find = NULL;
-dyn_mono_method_full_name * mono_method_full_name = NULL;
-dyn_mono_debug_lookup_source_location * mono_debug_lookup_source_location = NULL;
-dyn_mono_debug_free_source_location * mono_debug_free_source_location = NULL;
-dyn_mono_jit_info_get_code_start * mono_jit_info_get_code_start = NULL;
-dyn_mono_jit_info_get_code_size * mono_jit_info_get_code_size = NULL;
-
 #endif
 
 static bool vm_stack_trace_enabled = false;
-static bool vm_stack_trace_tried = false;
 
 void
 enable_vm_stack_trace ()
 {
-#if MONO_STACK_ENABLED
-	bool result = true;
-
-	if (vm_stack_trace_tried)
-		return;
-	vm_stack_trace_tried = true;
-	
-	void *libmono = dlopen ("libmono.so.0", RTLD_LAZY);
-	if (libmono == NULL) {
-		fprintf (stderr, "Moonlight: Could not load libmono.so.\n");
-		return;
-	}
-
-	result = result && (NULL != (mono_pmip                         = (dyn_mono_pmip *)                         dlsym (libmono, "mono_pmip")));
-	result = result && (NULL != (mono_jit_info_get_method          = (dyn_mono_jit_info_get_method *)          dlsym (libmono, "mono_jit_info_get_method")));
-	result = result && (NULL != (mono_domain_get                   = (dyn_mono_domain_get *)                   dlsym (libmono, "mono_domain_get")));
-	result = result && (NULL != (mono_jit_info_table_find          = (dyn_mono_jit_info_table_find *)          dlsym (libmono, "mono_jit_info_table_find")));
-	result = result && (NULL != (mono_method_full_name             = (dyn_mono_method_full_name *)             dlsym (libmono, "mono_method_full_name")));
-	result = result && (NULL != (mono_debug_lookup_source_location = (dyn_mono_debug_lookup_source_location *) dlsym (libmono, "mono_debug_lookup_source_location")));
-	result = result && (NULL != (mono_debug_free_source_location   = (dyn_mono_debug_free_source_location *)   dlsym (libmono, "mono_debug_free_source_location")));
-	result = result && (NULL != (mono_jit_info_get_code_start      = (dyn_mono_jit_info_get_code_start *)      dlsym (libmono, "mono_jit_info_get_code_start")));
-	result = result && (NULL != (mono_jit_info_get_code_size       = (dyn_mono_jit_info_get_code_size *)       dlsym (libmono, "mono_jit_info_get_code_size")));
-
-	if (!result) {
-		fprintf (stderr, "Moonlight: Could not load the required functions from libmono.so.\n");
-		dlclose (libmono);
-		return;
-	}
-#endif
-
 	vm_stack_trace_enabled = true;
 }
 
