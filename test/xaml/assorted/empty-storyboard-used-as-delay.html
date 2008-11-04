@@ -1,0 +1,39 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>Empty storyboard used as timer</title>
+<meta></meta>
+</head>
+<body>
+
+<script type="text/javascript">
+function Completed (sender, eventArgs)
+{
+	alert("DONE! This should be fired after ~5s");
+}
+
+function OnLoaded (sender, eventArgs)
+{
+	sender.findName('timer').Begin ();
+}
+</script>
+
+<object type="application/x-silverlight" data="data:," id="slControl" width="640" height="480">
+<param name="background" value="#FFFFFF"/>
+<param name="source" value="#xamlContent"/>
+</object>
+
+<script type="text/xaml" id="xamlContent">
+<?xml version="1.0"?>
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	Loaded="OnLoaded">
+
+	<Canvas.Resources>
+			<Storyboard x:Name="timer" Duration="00:00:5" Completed="Completed"/>
+	</Canvas.Resources>
+
+</Canvas>
+</script>
+
+</body>
+</html>
