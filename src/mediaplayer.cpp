@@ -384,9 +384,50 @@ MediaPlayer::Open (Media *media)
 			// Only select the audio stream if we can actually play it
 			astream->SetSelected (true);
 			audio->ref ();
+			LOG_MEDIAPLAYER ("MediaPlayer::Open(): Selected audio stream (%d) properties:\n"
+					 "\tchannels: %d\n"
+					 "\tsample_rate: %d\n"
+					 "\tbit_rate: %d\n"
+					 "\tblock_align: %d\n"
+					 "\tbits_per_sample: %d\n"
+					 "\tcodec_id: 0x%x\n"
+					 "\tduration: %llu\n"
+					 "\textra data size: %d\n",
+					 astream->index, astream->channels, astream->sample_rate, astream->bit_rate,
+					 astream->block_align, astream->bits_per_sample, astream->codec_id,
+					 astream->duration, astream->extra_data_size);
+			if (astream->extra_data_size > 0) {
+				int n;
+				LOG_MEDIAPLAYER ("\textra data: ");
+				for (n = 0; n < astream->extra_data_size; n++)
+					LOG_MEDIAPLAYER ("[0x%x] ", ((gint8*)astream->extra_data)[n]);
+				LOG_MEDIAPLAYER ("\n"); 
+			}
+
 		}
 	}
-	
+	if (video.stream != NULL) {
+		LOG_MEDIAPLAYER ("MediaPlayer::Open(): Selected Video stream (%d) properties:\n"
+					  "\twidth: %d\n"
+					  "\theight: %d\n"
+					  "\tbits_per_sample: %d\n"
+					  "\tbit_rate: %d\n"
+					  "\tcodec_id: 0x%x\n"
+					  "\tpts_per_frame: %llu\n"
+					  "\tduration: %llu\n"
+					  "\textra data size: %d\n",
+					  video.stream->index, video.stream->width, video.stream->height, video.stream->bits_per_sample,
+					  video.stream->bit_rate, video.stream->codec_id, video.stream->pts_per_frame,
+					  video.stream->duration, video.stream->extra_data_size);
+			if (video.stream->extra_data_size > 0) {
+				int n;
+				LOG_MEDIAPLAYER ("\textra data: ");
+				for (n = 0; n < video.stream->extra_data_size; n++)
+					LOG_MEDIAPLAYER ("[0x%x] ", ((gint8*)video.stream->extra_data)[n]);
+				LOG_MEDIAPLAYER ("\n");
+			}
+	}
+
 	current_pts = 0;
 	target_pts = 0;
 	start_pts = 0;
