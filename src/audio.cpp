@@ -423,7 +423,7 @@ AudioSource::Close ()
 guint32
 AudioSource::Write (void *dest, guint32 samples)
 {
-	AudioData *data [channels + 1];
+	AudioData **data = (AudioData **) g_alloca (sizeof (AudioData *) * (channels + 1));
 	guint32 result = 0;
 	
 	switch (channels) {
@@ -480,11 +480,11 @@ guint32
 AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 {
 	guint32 channels = GetChannels ();
-	gint32 volumes [channels];
+	gint32 *volumes = (gint32 *) g_alloca (sizeof (gint32) * channels);
 	gint32 volume;
 	double balance;
 	bool muted;
-	gint16 *write_ptr [channels];
+	gint16 **write_ptr = (gint16 **) g_alloca (sizeof (gint16 *) * channels);
 	gint16 *read_ptr = NULL;
 	guint32 result = 0;
 	guint32 bytes_per_sample = 2 * channels;
