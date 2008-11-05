@@ -1,3 +1,11 @@
+2008-11-05  Jeffrey Stedfast  <fejj@novell.com>
+
+	* audio.cpp: Use g_alloca() to create dynamically sized arrays on
+	the stack rather than relying on g++ features.
+
+	* clock.cpp: Applied MSVC portability patch which implements
+	gettimeofday().
+
 2008-11-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	See tests/xaml/test-textblock-actualheight.html and

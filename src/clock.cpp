@@ -19,13 +19,30 @@
 
 #include <stdlib.h>
 #include <string.h>
+#ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
+#endif
 #include <time.h>
 
 #include "clock.h"
 
 #include "uielement.h"
 #include "runtime.h"
+
+#ifdef _MSC_VER
+#include "Winsock2.h"
+
+static int
+gettimeofday (struct timeval *tv, void *tz)
+{
+	long int l = GetTickCount();
+	
+	tv->tv_sec = l / 1000;
+	tv->tv_usec = (l % 1000) * 1000;
+	
+	return 0;
+} 
+#endif // _MSC_VER
 
 #define CLOCK_DEBUG 0
 #define TIME_TICK 0
@@ -761,7 +778,7 @@ Clock::CalcProgress ()
 TimeSpan
 Clock::ComputeNewTime ()
 {
-	TimeSpan our_delta = ceil ((TimeSpan)((GetParentTime() - GetLastParentTime()) * speed));
+	TimeSpan our_delta = ceil ((double)(TimeSpan)((GetParentTime() - GetLastParentTime()) * speed));
 	TimeSpan ret_time = current_time;
 
 	our_delta = (TimeSpan) ceil ((our_delta * timeline->GetSpeedRatio()));
