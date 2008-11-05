@@ -1,5 +1,7 @@
 2008-11-05  Jeffrey Stedfast  <fejj@novell.com>
 
+	Patches by Argiris Kirtzidis to fix bug #441687
+
 	* audio.cpp: Use g_alloca() to create dynamically sized arrays on
 	the stack rather than relying on g++ features.
 
