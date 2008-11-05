@@ -26,7 +26,7 @@ changequote([,])dnl
 dnl *****************************
 dnl *** Checks for zlib       ***
 dnl *****************************
-AC_CHECK_HEADERS(zlib.h)
+AC_CHECK_HEADERS(sys/time.h zlib.h)
 AC_CHECK_LIB(z, inflate, ZLIB="-lz")
 
 dnl
