@@ -1,3 +1,8 @@
+2008-11-05  Michael Dominic K.  <mdk@mdk.am>
+
+	* xaml/assorted/storyboard-continuity.html: Adding a storyboard continuity test. 
+	A testcase for a memleak in AnimationStorage.
+
 2008-11-04  Michael Dominic K.  <mdk@mdk.am>
 
 	* xaml/assorted/empty-storyboard-used-as-delay.html: A test-case for #440662.
