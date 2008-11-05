@@ -1,3 +1,9 @@
+2008-11-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mopen1.cpp: Add support for --timeout X to ease testing (mopen 
+	brings the mono runtime in the picture) and show the help info when
+	no arguments are provided.
+
 2008-11-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mopen1.cpp: Add support for doing mopen1 video.wmv instead of having

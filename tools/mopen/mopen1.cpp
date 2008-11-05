@@ -16,6 +16,7 @@
 
 #include <config.h>
 #include <gtk/gtk.h>
+#include <glib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -94,6 +95,7 @@ Help (void)
 			   "   --media <filename>  Automatically creates some xaml with a MediaElement whose source is set to the filename\n"
 			   "                       This is also automatically assumed if 1 filename is passed and the extension is either\n"
 			   "                       wmv, wma, vc1, asf or mp3.\n"
+			   "   --timeout T         Time, in seconds, before closing the window\n"
 			   );
 /*
 	TODO: 
@@ -106,7 +108,6 @@ Help (void)
 			   "   -s,--stories    Automatically prepare to play all stories on click\n" + 
 			   "   --sync          Make the gdk connection synchronous\n" +
 			   "   --transparent   Transparent toplevel\n" +
-			   "   --timeout T     Time, in seconds, before closing the window\n"
 			   );
 */
 }
@@ -281,6 +282,14 @@ static int LoadXaml (const char* file)
 	return result;
 }
 
+gboolean
+QuitTimeout (gpointer data)
+{
+	gtk_main_quit ();
+	return false;
+}
+
+
 int
 main (int argc, char *argv [])
 {
@@ -291,6 +300,13 @@ main (int argc, char *argv [])
 	const char *tmpfile = NULL;
 	int media_width = 0;
 	int media_height = 0;
+	int timeout = 0;
+
+	// quick out if no arguments are provided
+	if (argc == 0) {
+		Help ();
+		return 1;
+	}
 	
 	gtk_init (&argc, &argv);
 	g_thread_init (NULL);
@@ -304,6 +320,12 @@ main (int argc, char *argv [])
 				return 1;
 			}
 			media_filename = argv [++i];
+		} else if (!strcmp (argv [i], "--timeout")) {
+			if (i + 1 >= argc) {
+				Help ();
+				return 1;
+			}
+			timeout = atoi (argv [++i]);
 		} else {
 			if (filename != NULL) {
 				Help ();
@@ -341,6 +363,10 @@ main (int argc, char *argv [])
 		g_free (xaml);
 		filename = tmpfile;
 
+	}
+
+	if (timeout > 0) {
+		g_timeout_add (timeout * 1000, QuitTimeout, NULL);
 	}
 
 		
