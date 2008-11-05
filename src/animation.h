@@ -145,6 +145,7 @@ class AnimationStorage {
 	void FlagAsNonResetable ();
 	void Float ();
 	bool IsFloating () { return floating; };
+	bool IsLonely () { return (targetobj == NULL); };
 	bool IsCurrentStorage ();
 	Value* GetResetValue ();
 	void UpdatePropertyValueWith (Value *v);

@@ -1,3 +1,8 @@
+2008-11-05  Michael Dominic K.  <mdk@mdk.am>
+
+	* animation.cpp:
+	* animation.h: Fixing one more mem-leak case. Fixes #436068.
+
 2008-11-05  Jeffrey Stedfast  <fejj@novell.com>
 
 	Patches by Argiris Kirtzidis to fix bug #441687
