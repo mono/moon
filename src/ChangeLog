@@ -1,3 +1,8 @@
+2008-11-06  Geoff Norton  <gnorton@novell.com>
+
+	* pipline(-ui).cpp: Move the codec location on more time.
+	r: miguel
+
 2008-11-05  Jeffrey Stedfast  <fejj@novell.com>
 
 	Patches by Argiris Kirtzidis to fix bug #441687
