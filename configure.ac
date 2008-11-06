@@ -499,7 +499,7 @@ fi
 dnl *************************************
 dnl ***       Codec settings          ***
 dnl *************************************
-MOONLIGHT_CODEC_AVI_VERSION=`grep MOONLIGHT_CODEC_ABI_VERSION ./src/pipeline.h | awk -F" " '{print $3}'`
+MOONLIGHT_CODEC_AVI_VERSION=`grep MOONLIGHT_CODEC_ABI_VERSION $srcdir/src/pipeline.h | awk -F" " '{print $3}'`
 OSTYPE="unknown"
 ARCH="unknown"
 # Do we know of a way to detect when the GCC ABI breaks? will it ever again? we'll hardcode this for now
