@@ -168,6 +168,41 @@ same_domain (const Uri *uri1, const Uri *uri2)
 }
 
 static bool
+check_redirection_policy (const char *uri, const char *final_uri, DownloaderAccessPolicy policy)
+{
+	if (!uri || !final_uri)
+		return true;
+
+	Uri *orig = new Uri ();
+	orig->Parse (uri);
+
+	Uri *final = new Uri ();
+	final->Parse (final_uri);
+
+	bool retval = true;
+	switch(policy) {
+	case DownloaderPolicy:
+	case XamlPolicy:
+	case StreamingPolicy: //Streaming media
+		//Redirection allowed: same domain.
+		if (g_ascii_strcasecmp (uri, final_uri) == 0)
+			break;
+		if (!same_domain (orig, final))
+			retval = false;
+		break;
+	case MediaPolicy:
+		if (g_ascii_strcasecmp (uri, final_uri) != 0)
+			retval = false;
+		break;
+	default:
+		break;
+	}
+	delete orig;
+	delete final;
+	return retval;
+}
+
+static bool
 validate_policy (const char *location, const char *uri, DownloaderAccessPolicy policy)
 {
 	if (!location || !uri)
@@ -196,7 +231,6 @@ validate_policy (const char *location, const char *uri, DownloaderAccessPolicy p
 		//X-Domain: no
 		if (!same_domain (target, source))
 			retval = false;
-		//Redirection allowed: same domain. FIXME NotImplemented
 		break;
 	case MediaPolicy: //Media, images, ASX
 		//Allowed schemes: http, https, file
@@ -219,7 +253,6 @@ validate_policy (const char *location, const char *uri, DownloaderAccessPolicy p
 		//X-domain: no
 		if (!same_domain (target, source))
 			retval = false;
-		//Redirection allowed: same domain. FIXME NotImplemented
 		break;
 	case StreamingPolicy: //Streaming media
 		//Allowed schemes: http
@@ -228,7 +261,6 @@ validate_policy (const char *location, const char *uri, DownloaderAccessPolicy p
 		//X-scheme: Not from https
 		if (scheme_is (source, "https") && !same_scheme (source, target))
 			retval = false;
-		//Redirection allowed: same domain. FIXME NotImplemented
 	default:
 		break;
 	}
@@ -248,6 +280,7 @@ Downloader::Open (const char *verb, const char *uri, DownloaderAccessPolicy poli
 	completed = false;
 	file_size = -2;
 	total = 0;
+	access_policy = policy;
 
 	g_free (failed_msg);
 	failed_msg = NULL;
@@ -311,7 +344,7 @@ Downloader::SendInternal ()
 	
 	if (completed) {
 		// Consumer is re-sending a request which finished successfully.
-		NotifyFinished ();
+		NotifyFinished (NULL);
 		return;
 	}
 	
@@ -423,13 +456,20 @@ Downloader::SetFilename (const char *fname)
 }
 
 void
-Downloader::NotifyFinished ()
+Downloader::NotifyFinished (const char* final_uri)
 {
 	if (aborted)
 		return;
 	
 	if (!GetSurface ())
 		return;
+
+	if (!check_redirection_policy (GetUri (), final_uri, access_policy)) {
+		LOG_DOWNLOADER ("aborting due to security policy violation\n");
+		failed_msg = g_strdup ("Security Policy Violation");
+		Abort ();
+		return;
+	}
 
 	SetDownloadProgress (1.0);
 	
@@ -781,7 +821,7 @@ void
 downloader_notify_finished (Downloader *dl, const char *fname)
 {
 	dl->SetFilename (fname);
-	dl->NotifyFinished ();
+	dl->NotifyFinished (NULL);
 }
 
 void

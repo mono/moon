@@ -51,13 +51,13 @@ plugin_downloader_available (DownloaderResponse *response, gpointer state, char 
 }
 
 uint32_t
-plugin_downloader_finished (DownloaderResponse *response, gpointer state, bool success, gpointer data)
+plugin_downloader_finished (DownloaderResponse *response, gpointer state, bool success, gpointer data, const char *uri)
 {
 	d(printf ("plugin_downloader_finished (%p, %p).\n", response, state));
 	PluginDownloader *pd = (PluginDownloader *)state;
 
 	if (pd != NULL) {
-		pd->Finished (success, data);
+		pd->Finished (success, data, uri);
 	}
 
 	return DOWNLOADER_OK;
@@ -236,7 +236,7 @@ PluginDownloader::Read (char *buffer, uint32_t length)
 }
 
 void
-PluginDownloader::Finished (bool success, gpointer data)
+PluginDownloader::Finished (bool success, gpointer data, const char *uri)
 {
 	d (printf ("PluginDownloader::Finished (), this: %p, dl: %p\n", this, dl));
 
@@ -246,7 +246,7 @@ PluginDownloader::Finished (bool success, gpointer data)
 		if (success) {
 			dl->NotifySize (this->offset);
 			dl->SetFilename ((const char *)data);
-			dl->NotifyFinished ();
+			dl->NotifyFinished (uri);
 		} else {
 			dl->NotifyFailed ("download failed");
 		}

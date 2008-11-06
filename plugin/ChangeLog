@@ -1,3 +1,10 @@
+2008-11-06  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* plugin.cpp:
+	* plugin-downloader.h|cpp:
+	* firefox/browser-http.inc: pass the uri with the finished handler 
+	for further validation. r:gnorton
+
 2008-10-31  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.cpp (PluginInstance::CreateWindow): call SetTransparent

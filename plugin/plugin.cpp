@@ -1452,7 +1452,7 @@ PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 				break;
 			}
 		} else {
-			dl->NotifyFinished ();
+			dl->NotifyFinished (url);
 		}
 	}
 	

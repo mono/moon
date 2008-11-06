@@ -3,6 +3,15 @@
 	* animation.cpp:
 	* animation.h: Fixing one more mem-leak case. Fixes #436068.
 
+2008-11-06  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* downloader.h: change the signature of downloaderRequestFinishedHandler
+	to pass the resulting uri.
+
+	* downloader.cpp: validate the returned uri against redirection policies
+
+	r:gnorton
+
 2008-11-05  Jeffrey Stedfast  <fejj@novell.com>
 
 	Patches by Argiris Kirtzidis to fix bug #441687
