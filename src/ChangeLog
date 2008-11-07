@@ -1,3 +1,8 @@
+2008-11-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* pipeline-ffmpeg.cpp: FfmpegDecoder::DecodeFrame: for audio packets we
+	  need to keep decoding until the entire input has been consumed.
+
 2008-11-06  Geoff Norton  <gnorton@novell.com>
 
 	* pipline(-ui).cpp: Move the codec location on more time.
