@@ -152,7 +152,7 @@ NS_IMETHODIMP
 GECKO_SYM(DownloaderResponse)::OnStopRequest (nsIRequest *request, nsISupports *ctx, nsresult status)
 {
 	if (!aborted)
-		return finished (this, this->context, (status == NS_OK), NULL);
+		return finished (this, this->context, (status == NS_OK), NULL, NULL);
 	return NS_OK;
 }
 

@@ -83,6 +83,8 @@ class Downloader : public DependencyObject {
 	bool completed;
 	InternalDownloader *internal_dl;
 
+	DownloaderAccessPolicy access_policy;
+
  protected:
 	virtual ~Downloader ();
 	
@@ -130,7 +132,7 @@ class Downloader : public DependencyObject {
 	void InternalSetBody (void *body, guint32 length);
 
 	void Write (void *buf, gint32 offset, gint32 n);
-	void NotifyFinished ();
+	void NotifyFinished (const char *final_uri);
 	void NotifyFailed (const char *msg);
 	void NotifySize (gint64 size);
 	char *GetDownloadedFilename (const char *partname);
@@ -188,7 +190,7 @@ class DownloaderRequest;
 
 typedef uint32_t (* DownloaderResponseStartedHandler) (DownloaderResponse *response, gpointer context);
 typedef uint32_t (* DownloaderResponseDataAvailableHandler) (DownloaderResponse *response, gpointer context, char *buffer, uint32_t length);
-typedef uint32_t (* DownloaderResponseFinishedHandler) (DownloaderResponse *response, gpointer context, bool success, gpointer data);
+typedef uint32_t (* DownloaderResponseFinishedHandler) (DownloaderResponse *response, gpointer context, bool success, gpointer data, const char *uri);
 typedef void (*DownloaderResponseHeaderVisitorCallback) (const char *header, const char *value);
 
 class DownloaderResponse {

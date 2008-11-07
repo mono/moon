@@ -52,7 +52,7 @@ class PluginDownloader {
 
 	uint32_t Read (char *buffer, uint32_t length);
 	void Started ();
-	void Finished (bool success, gpointer data);
+	void Finished (bool success, gpointer data, const char *uri);
 
 	void SetHttpHeader (const char *header, const char *value);
 	void SetBody (void *body, uint32_t length);

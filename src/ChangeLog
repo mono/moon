@@ -1,3 +1,12 @@
+2008-11-06  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* downloader.h: change the signature of downloaderRequestFinishedHandler
+	to pass the resulting uri.
+
+	* downloader.cpp: validate the returned uri against redirection policies
+
+	r:gnorton
+
 2008-11-06  Geoff Norton  <gnorton@novell.com>
 
 	* pipline(-ui).cpp: Move the codec location on more time.
