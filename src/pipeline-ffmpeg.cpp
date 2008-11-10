@@ -362,7 +362,11 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 		int decoded_size = 0;
 		guint8 *decoded_frames = NULL;
 
+		LOG_FFMPEG ("FfmpegDecoder::DecodeFrame (), got %i bytes to decode.\n", mf->buflen);
+		
 		if (frame_buffer != NULL) {
+			// copy data previously not decoded in front of this data
+			LOG_FFMPEG ("FfmpegDecoder::DecodeFrame (), adding %i bytes previously not decoded.\n", frame_buffer_length);
 			mf->buffer = (guint8 *) g_realloc (mf->buffer, mf->buflen+frame_buffer_length);
 			memmove (mf->buffer + frame_buffer_length, mf->buffer, mf->buflen);
 			memcpy (mf->buffer, frame_buffer, frame_buffer_length);
@@ -370,6 +374,7 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 			
 			g_free (frame_buffer);
 			frame_buffer = NULL;
+			mf->buflen += frame_buffer_length;
 		}
 
 		do {
@@ -380,14 +385,15 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 				frame_size = mpeg_frame_length (&mpeg, false);
 	
 				if (frame_size > remain) {
+					// the remaining data is not a complete mp3 frame
+					// save it and decode it next time we're called.
 					frame_buffer_length = remain;
-					frame_buffer = (guint8 *) malloc (remain);
-					memcpy (frame_buffer, mf->buffer+offset, remain);
+					frame_buffer = (guint8 *) g_memdup (mf->buffer + offset, remain);
 					remain = 0;
 					continue;
 				}
 			} else {
-				frame_size = mf->buflen;
+				frame_size = mf->buflen - offset;
 			}
 
 			length = avcodec_decode_audio2 (context, (gint16 *) audio_buffer, &buffer_size, mf->buffer+offset, frame_size);
@@ -397,12 +403,14 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 				return MEDIA_CODEC_ERROR;
 			}
 
+			LOG_FFMPEG ("FfmpegDecoder::DecodeFrame (), used %i bytes of %i input bytes to get %i output bytes\n", length, mf->buflen, buffer_size);
+
 			if (buffer_size > 0) {
 				decoded_frames = (guint8 *) g_realloc (decoded_frames, buffer_size+decoded_size);
 				memcpy (decoded_frames+decoded_size, audio_buffer, buffer_size);
-				offset += frame_size;
+				offset += length;
+				remain -= length;
 				decoded_size += buffer_size;
-				remain -= frame_size;
 			} else {
 				if (decoded_frames != NULL)
 					g_free (decoded_frames);
@@ -416,6 +424,8 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 
 		mf->buffer = decoded_frames;
 		mf->buflen = decoded_size;;
+
+		LOG_FFMPEG ("FfmpegDecoder::DecodeFrame (), got a total of %i output bytes.\n", mf->buflen);
 	} else {
 		Media::Warning (MEDIA_FAIL, "Invalid media type.");
 		return MEDIA_FAIL;
