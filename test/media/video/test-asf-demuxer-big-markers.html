@@ -73,6 +73,7 @@
 	{
 		TestLogger.LogDebug ("OnMediaEnded");
 		if (!ShutdownRequested) {
+			TestLogger.LogError ("We should have shutdown before MediaEnded event got raised.");
 			TestLogger.LogResult (-1);
 			SignalShutdown ();
 		}
