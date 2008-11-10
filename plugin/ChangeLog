@@ -1,3 +1,11 @@
+2008-11-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fix for bug #442770
+
+	* plugin-debug.cpp (plugin_debug): Connect to surface
+	DestroyedEvent to close the debug window so that it won't crash
+	when trying to use it once the site has been navigated away from.
+
 2008-11-06  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* plugin.cpp:
