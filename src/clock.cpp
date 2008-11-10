@@ -1390,6 +1390,12 @@ Timeline::Validate ()
 	    (GetFillBehavior () == FillBehaviorStop || (repeat->HasCount () && repeat->GetCount () > 1.0)))
 		timeline_status = TIMELINE_STATUS_DETACHED;
 
+	// FIXME This should prolly be changed to a more generic if BeginTime > Duration
+	// Need to investigate, though SL checking seems to be very selective
+	if (duration->HasTimeSpan () && duration->GetTimeSpan () == 0 && 
+	    this->HasBeginTime () && this->GetBeginTime () > 0)
+		return false;
+
 	return true;
 }
 

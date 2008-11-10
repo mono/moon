@@ -3,6 +3,11 @@
 	* audio.cpp, audio.h, mediaelement.cpp, mediaplayer.cpp, mediaplayer.h:
 	  Implement MediaElement.AudioStreamIndex.
 
+2008-11-07  Michael Dominic K.  <mdk@mdk.am>
+
+	* clock.cpp: Fixing one broken block in the AnimationMatrix2 test. 
+	It was broken but diff was too small to be picked by the test runner.
+
 2008-11-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline-ffmpeg.cpp: FfmpegDecoder::DecodeFrame: for audio packets we
