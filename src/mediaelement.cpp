@@ -1720,7 +1720,7 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 		// MediaBase will handle the rest
 		flags |= RecalculateMatrix;
 	} else if (args->property == MediaElement::AudioStreamIndexProperty) {
-		// FIXME: set the audio stream index
+		mplayer->SetAudioStreamIndex (args->new_value->AsInt32 ());
 	} else if (args->property == MediaElement::AutoPlayProperty) {
 		// no state to change
 	} else if (args->property == MediaElement::BalanceProperty) {

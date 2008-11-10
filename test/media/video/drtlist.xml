@@ -35,4 +35,5 @@
     <Test id="54" inputFile="test-inexistent-medias.html" masterFile10="None" timeout="45000" categories="video,audio,media" />
     <Test id="55" inputFile="test-dns-failure.html" masterFile10="None" timeout="45000" categories="video,audio,media,mediaserver" />
     <Test id="56" inputFile="test-states.html" masterFile10="None" timeout="10000" categories="video,audio,media" />
+    <Test id="57" inputFile="test-audiostreamindex.html" masterFile10="None" timeout="30000" categories="video,audio,media" />
 </DRTList>

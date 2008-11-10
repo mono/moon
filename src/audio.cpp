@@ -98,6 +98,28 @@ AudioSource::Unlock ()
 	pthread_mutex_unlock (&mutex);
 }
 
+AudioStream *
+AudioSource::GetAudioStream ()
+{
+	AudioStream *result;
+	Lock ();
+	result = stream;
+	Unlock ();
+	return result;
+}
+
+void
+AudioSource::SetAudioStream (AudioStream *value)
+{
+	Lock ();
+	if (stream)
+		stream->unref ();
+	stream = value;
+	if (stream)
+		stream->ref ();
+	Unlock ();
+}
+
 guint32
 AudioSource::GetBytesPerFrame ()
 {
@@ -107,8 +129,11 @@ AudioSource::GetBytesPerFrame ()
 AudioStream *
 AudioSource::GetStream ()
 {
-	// This can only be set during initialization, so there's no need to lock here.
-	return stream;
+	AudioStream *result;
+	Lock ();
+	result = stream;
+	Unlock ();
+	return result;
 }
 
 void
@@ -492,8 +517,8 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 	guint32 bytes_available;
 	guint32 bytes_written;
 	gint32 value;
-	guint64 last_frame_pts; // The pts of the last frame which was used to write samples
-	guint64 last_frame_samples; // Samples written from the last frame
+	guint64 last_frame_pts = 0; // The pts of the last frame which was used to write samples
+	guint64 last_frame_samples = 0; // Samples written from the last frame
 	AudioFrameNode *node;
 	
 	// Validate input
