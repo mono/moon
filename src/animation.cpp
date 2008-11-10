@@ -628,20 +628,34 @@ BeginStoryboard::~BeginStoryboard ()
 
 DoubleAnimation::DoubleAnimation ()
 {
+	doubleToCached = NULL;
+	doubleFromCached = NULL;
+	doubleByCached = NULL;
+}
+	
+void DoubleAnimation::EnsureCache (void)
+{
+	if (doubleFromCached == NULL)
+		doubleFromCached = GetFrom ();
+
+	if (doubleToCached == NULL)
+		doubleToCached = GetTo ();
+
+	if (doubleByCached == NULL)
+		doubleByCached = GetBy ();
 }
 
 Value*
 DoubleAnimation::GetTargetValue (Value *defaultOriginValue)
 {
-	double *by = GetBy ();
-	double *from = GetFrom ();
-	double *to = GetTo ();
-	double start = from ? *from : defaultOriginValue->AsDouble();
+	this->EnsureCache ();
 
-	if (to)
-		return new Value (*to);
-	else if (by) 
-		return new Value (start + *by);
+	double start = doubleFromCached ? *doubleFromCached : defaultOriginValue->AsDouble();
+
+	if (doubleToCached)
+		return new Value (*doubleToCached);
+	else if (doubleByCached) 
+		return new Value (start + *doubleByCached);
 	else
 		return new Value (defaultOriginValue->AsDouble ());
 }
@@ -650,20 +664,16 @@ Value*
 DoubleAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 				  AnimationClock* animationClock)
 {
-	// we should cache these in the clock, probably, instead of
-	// using the getters at every iteration
-	double* from = GetFrom ();
-	double* to = GetTo ();
-	double* by = GetBy ();
+	this->EnsureCache ();
 
-	double start = from ? *from : defaultOriginValue->AsDouble();
+	double start = doubleFromCached ? *doubleFromCached : defaultOriginValue->AsDouble();
 	double end;
 
-	if (to) {
-		end = *to;
+	if (doubleToCached) {
+		end = *doubleToCached;
 	}
-	else if (by) {
-		end = start + *by;
+	else if (doubleByCached) {
+		end = start + *doubleByCached;
 	}
 	else {
 		end = defaultOriginValue->AsDouble();
@@ -674,23 +684,51 @@ DoubleAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDesti
 	return new Value (LERP (start, end, progress));
 }
 
+void
+DoubleAnimation::OnPropertyChanged (PropertyChangedEventArgs *args)
+{
+	if (args->property->GetOwnerType() != Type::DOUBLEANIMATION) {
+		DependencyObject::OnPropertyChanged (args);
+		return;
+	}
+
+	// Get rid of the cache
+	doubleToCached = NULL;
+	doubleFromCached = NULL;
+	doubleByCached = NULL;
+
+	NotifyListenersOfPropertyChange (args);
+}
 
 ColorAnimation::ColorAnimation ()
 {
+	colorToCached = NULL;
+	colorFromCached = NULL;
+	colorByCached = NULL;
+}
+
+void ColorAnimation::EnsureCache (void)
+{
+	if (colorFromCached == NULL)
+		colorFromCached = GetFrom ();
+
+	if (colorToCached == NULL)
+		colorToCached = GetTo ();
+
+	if (colorByCached == NULL)
+		colorByCached = GetBy ();
 }
 
 Value*
 ColorAnimation::GetTargetValue (Value *defaultOriginValue)
 {
-	Color *by = GetBy ();
-	Color *from = GetFrom ();
-	Color *to = GetTo ();
-	Color start = from ? *from : *defaultOriginValue->AsColor();
+	this->EnsureCache ();
+	Color start = colorFromCached ? *colorFromCached : *defaultOriginValue->AsColor();
 
-	if (to)
-		return new Value (*to);
-	else if (by) 
-		return new Value (start + *by);
+	if (colorToCached)
+		return new Value (*colorToCached);
+	else if (colorByCached) 
+		return new Value (start + *colorByCached);
 	else
 		return new Value (*defaultOriginValue->AsColor ());
 }
@@ -699,18 +737,16 @@ Value*
 ColorAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 				 AnimationClock* animationClock)
 {
-	Color *by = GetBy ();
-	Color *from = GetFrom ();
-	Color *to = GetTo ();
+	this->EnsureCache ();
 
-	Color start = from ? *from : *defaultOriginValue->AsColor();
+	Color start = colorFromCached ? *colorFromCached : *defaultOriginValue->AsColor();
 	Color end;
 
-	if (to) {
-		end = *to;
+	if (colorToCached) {
+		end = *colorToCached;
 	}
-	else if (by) {
-		end = start + *by;
+	else if (colorByCached) {
+		end = start + *colorByCached;
 	}
 	else {
 		end = *defaultOriginValue->AsColor ();
@@ -721,19 +757,52 @@ ColorAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 	return new Value (LERP (start, end, progress));
 }
 
+void
+ColorAnimation::OnPropertyChanged (PropertyChangedEventArgs *args)
+{
+	if (args->property->GetOwnerType() != Type::COLORANIMATION) {
+		DependencyObject::OnPropertyChanged (args);
+		return;
+	}
+
+	// Get rid of the cache
+	colorToCached = NULL;
+	colorFromCached = NULL;
+	colorByCached = NULL;
+
+	NotifyListenersOfPropertyChange (args);
+}
+
+void PointAnimation::EnsureCache (void)
+{
+	if (pointFromCached == NULL)
+		pointFromCached = GetFrom ();
+
+	if (pointToCached == NULL)
+		pointToCached = GetTo ();
+
+	if (pointByCached == NULL)
+		pointByCached = GetBy ();
+}
+
+PointAnimation::PointAnimation ()
+{
+	pointToCached = NULL;
+	pointFromCached = NULL;
+	pointByCached = NULL;
+}
 
 Value*
 PointAnimation::GetTargetValue (Value *defaultOriginValue)
 {
-	Point *by = GetBy ();
-	Point *from = GetFrom ();
-	Point *to = GetTo ();
-	Point start = from ? *from : *defaultOriginValue->AsPoint();
+	this->EnsureCache ();
+	
+	Point start = pointFromCached ? *pointFromCached : *defaultOriginValue->AsPoint();
 
-	if (to)
-		return new Value (*to);
-	else if (by) 
-		return new Value (start + *by);
+	if (pointToCached)
+		return new Value (*pointToCached);
+	else if (pointByCached) 
+		return new Value (start + *pointByCached);
 	else
 		return new Value (*defaultOriginValue->AsPoint ());
 }
@@ -742,18 +811,16 @@ Value*
 PointAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 				 AnimationClock* animationClock)
 {
-	Point *by = GetBy ();
-	Point *from = GetFrom ();
-	Point *to = GetTo ();
+	this->EnsureCache ();
 
-	Point start = from ? *from : *defaultOriginValue->AsPoint();
+	Point start = pointFromCached ? *pointFromCached : *defaultOriginValue->AsPoint();
 	Point end;
 
-	if (to) {
-		end = *to;
+	if (pointToCached) {
+		end = *pointToCached;
 	}
-	else if (by) {
-		end = start + *by;
+	else if (pointByCached) {
+		end = start + *pointByCached;
 	}
 	else {
 		end = *defaultOriginValue->AsPoint ();
@@ -762,6 +829,22 @@ PointAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 	double progress = animationClock->GetCurrentProgress ();
 
 	return new Value (LERP (start, end, progress));
+}
+
+void
+PointAnimation::OnPropertyChanged (PropertyChangedEventArgs *args)
+{
+	if (args->property->GetOwnerType() != Type::POINTANIMATION) {
+		DependencyObject::OnPropertyChanged (args);
+		return;
+	}
+
+	// Get rid of the cache
+	pointToCached = NULL;
+	pointFromCached = NULL;
+	pointByCached = NULL;
+
+	NotifyListenersOfPropertyChange (args);
 }
 
 void

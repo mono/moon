@@ -1,3 +1,9 @@
+2008-11-10  Michael Dominic K.  <mdk@mdk.am>
+
+	* animation.cpp:
+	* animation.h: Cache some vals internally in *Animation for better 
+	performance in loop-called routines.
+
 2008-11-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* audio.cpp, audio.h, mediaelement.cpp, mediaplayer.cpp, mediaplayer.h:

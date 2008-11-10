@@ -232,6 +232,13 @@ class DoubleAnimation : public Animation/*Timeline*/ {
  protected:
 	virtual ~DoubleAnimation () {}
 
+ private:
+	double *doubleToCached;
+	double *doubleFromCached;
+	double *doubleByCached;
+
+	void EnsureCache (void);
+
  public:
  	/* @PropertyType=double,Nullable,GenerateAccessors */
 	static DependencyProperty *ByProperty;
@@ -245,6 +252,8 @@ class DoubleAnimation : public Animation/*Timeline*/ {
 	
 	virtual Type::Kind GetObjectType () { return Type::DOUBLEANIMATION; };
 	virtual Type::Kind GetValueKind () { return Type::DOUBLE; };
+
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	
 	virtual Value *GetTargetValue (Value *defaultOriginValue);
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
@@ -272,6 +281,13 @@ class ColorAnimation : public Animation/*Timeline*/ {
  protected:
 	virtual ~ColorAnimation () {}
 
+ private:
+	Color *colorToCached;
+	Color *colorFromCached;
+	Color *colorByCached;
+
+	void EnsureCache (void);
+
  public:
  	/* @PropertyType=Color,Nullable,GenerateAccessors */
 	static DependencyProperty *ByProperty;
@@ -285,6 +301,8 @@ class ColorAnimation : public Animation/*Timeline*/ {
 	
 	virtual Type::Kind GetObjectType () { return Type::COLORANIMATION; };
 	virtual Type::Kind GetValueKind () { return Type::COLOR; };
+
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	
 	virtual Value *GetTargetValue (Value *defaultOriginValue);
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
@@ -312,6 +330,13 @@ class PointAnimation : public Animation/*Timeline*/ {
  protected:
 	virtual ~PointAnimation () {}
 
+ private:
+	Point *pointToCached;
+	Point *pointFromCached;
+	Point *pointByCached;
+
+	void EnsureCache (void);
+
  public:
  	/* @PropertyType=Point,Nullable,GenerateAccessors */
 	static DependencyProperty *ByProperty;
@@ -321,10 +346,12 @@ class PointAnimation : public Animation/*Timeline*/ {
 	static DependencyProperty *ToProperty;
 	
  	/* @GenerateCBinding,GeneratePInvoke */
- 	PointAnimation () {}
+ 	PointAnimation ();
  	
 	virtual Type::Kind GetObjectType () { return Type::POINTANIMATION; };
 	virtual Type::Kind GetValueKind () { return Type::POINT; };
+
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	
 	virtual Value *GetTargetValue (Value *defaultOriginValue);
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
