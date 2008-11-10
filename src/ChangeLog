@@ -1,3 +1,15 @@
+2008-11-10  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp (copy_input_list_from_node): rename
+	copy_input_list_with_visibility_check to this method.  the
+	caller (HandleMouseEvent) already walks over the list to determine
+	if an element has total render or hittest visibility == false.  By
+	definition, everything before that in the input list (the input
+	list is ordered from most deeply nested to the root) also has
+	those == false, so we can short circuit things by traversing from
+	the tail of the list, and then only copying the nodes we've seen
+	before (but which come after) the offending one.
+
 2008-11-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mediaplayer.cpp, mediaelement.cpp, playlist.cpp, playlist.h,

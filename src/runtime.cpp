@@ -1206,15 +1206,13 @@ Surface::FindFirstCommonElement (List *l1, int *index1,
 }
 
 static List*
-copy_input_list_with_visibility_check (List *input_list)
+copy_input_list_from_node (List *input_list, UIElementNode* node)
 {
 	List *list = new List ();
-	UIElementNode *node;
 
-	for (node = (UIElementNode*) input_list->First(); node; node = (UIElementNode*)node->next) {
-		if (node->uielement->GetActualTotalRenderVisibility () &&
-		    node->uielement->GetActualTotalHitTestVisibility ()) 
-			list->Append (new UIElementNode (node->uielement));
+	while (node) {
+		list->Append (new UIElementNode (node->uielement));
+		node = (UIElementNode*) node->next;
 	}
 
 	return list;
@@ -1325,12 +1323,12 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 		if (handled) {
 			UIElementNode *node;
 
-			for (node = (UIElementNode*)new_input_list->First(); node; node = (UIElementNode*)node->next) {
-				if (! node->uielement->GetActualTotalRenderVisibility () || 
-				    ! node->uielement->GetActualTotalHitTestVisibility ()) {
+			for (node = (UIElementNode*)new_input_list->Last(); node; node = (UIElementNode*)node->prev) {
+				if (! node->uielement->GetRenderVisible () ||
+				    ! node->uielement->GetHitTestVisible ()) {
 					// Ooops, looks like something changed.
 					// We need to copy the list with some elements removed.
-					List *list = copy_input_list_with_visibility_check (new_input_list);
+					List *list = copy_input_list_from_node (new_input_list, (UIElementNode*)node->next);
 					delete new_input_list;
 					new_input_list = list;
 					break;
