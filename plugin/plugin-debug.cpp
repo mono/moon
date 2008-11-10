@@ -46,7 +46,7 @@ struct ReflectForeachData {
 	DependencyObject *obj;
 };
 
-char*
+static char *
 timespan_to_str (TimeSpan ts)
 {
 	bool negative;
@@ -301,10 +301,24 @@ selection_changed (GtkTreeSelection *selection, PluginInstance *plugin)
 	}
 }
 
+static void
+surface_destroyed (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	gtk_widget_destroy ((GtkWidget *) closure);
+}
+
+static void
+remove_destroyed_handler (Surface *surface, GObject *window)
+{
+	surface->RemoveHandler (EventObject::DestroyedEvent, surface_destroyed, window);
+}
+
 void
 plugin_debug (PluginInstance *plugin)
 {
-	if (!plugin->GetSurface()) {
+	Surface *surface = plugin->GetSurface ();
+	
+	if (!surface) {
 		GtkWidget *d = gtk_message_dialog_new (NULL,
 						       GTK_DIALOG_NO_SEPARATOR,
 						       GTK_MESSAGE_ERROR,
@@ -318,7 +332,10 @@ plugin_debug (PluginInstance *plugin)
 	GtkWidget *tree_win = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_title (GTK_WINDOW (tree_win), "Xaml contents");
 	gtk_window_set_default_size (GTK_WINDOW (tree_win), 300, 400);
-
+	
+	surface->AddHandler (EventObject::DestroyedEvent, surface_destroyed, tree_win);
+	g_object_weak_ref (G_OBJECT (tree_win), (GWeakNotify) remove_destroyed_handler, surface);
+	
 	GtkTreeStore *tree_store = gtk_tree_store_new (NUM_COLUMNS,
 						       G_TYPE_STRING,
 						       G_TYPE_STRING,
@@ -337,7 +354,7 @@ plugin_debug (PluginInstance *plugin)
 #else
 	GtkWidget* tree_view = gtk_tree_view_new_with_model (GTK_TREE_MODEL (tree_store));
 #endif
-
+	
 	GtkTreeSelection *selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree_view));
 
 	gtk_tree_selection_set_mode (selection, GTK_SELECTION_SINGLE);
@@ -435,7 +452,6 @@ selection_changed_sources (GtkTreeSelection *selection, PluginInstance *plugin)
 	gtk_tree_model_get (model, &iter,
 			    2, &selected_source,
 			    -1);
-
 }
 
 static void clicked_callback (GtkWidget *widget, gpointer data)
