@@ -112,6 +112,17 @@ PlaylistEntry::~PlaylistEntry ()
 	g_free (info_url);
 }
 
+void
+PlaylistEntry::Dispose ()
+{
+	EventObject::Dispose ();
+	if (media) {
+		media->Dispose ();
+		media->unref ();
+		media = NULL;
+	}
+}
+
 Uri *
 PlaylistEntry::GetBase ()
 {
@@ -544,6 +555,12 @@ Playlist::~Playlist ()
 	LOG_PLAYLIST ("Playlist::~Playlist ()\n");
 	
 	delete entries;
+}
+
+void
+Playlist::Dispose ()
+{
+	PlaylistEntry::Dispose ();
 }
 
 void

@@ -532,7 +532,6 @@ MediaPlayer::Close (bool dtor)
 	video.stream = NULL;
 	
 	if (media) {
-		media->Dispose ();
 		media->unref ();
 		media = NULL;
 	}

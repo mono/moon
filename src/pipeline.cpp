@@ -1867,6 +1867,8 @@ MediaFrame::MediaFrame (IMediaStream *stream)
 {
 	decoder_specific_data = NULL;
 	this->stream = stream;
+	if (this->stream)
+		this->stream->ref ();
 	this->marker = NULL;
 	
 	duration = 0;
@@ -1899,6 +1901,8 @@ MediaFrame::~MediaFrame ()
 	g_free (buffer);
 	if (marker)
 		marker->unref ();
+	if (stream)
+		stream->unref ();
 }
 
 /*

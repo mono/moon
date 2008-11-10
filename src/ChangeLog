@@ -1,3 +1,11 @@
+2008-11-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mediaplayer.cpp, mediaelement.cpp, playlist.cpp, playlist.h,
+	  pipeline.cpp: Instead of calling Media::Dispose in MediaElement,
+	  move that to Playlist(Entry) and Dispose of the playlist instead.
+	  This makes re-playing already played content in playlists work
+	  again.
+
 2008-11-10  Michael Dominic K.  <mdk@mdk.am>
 
 	* animation.cpp:
