@@ -1,3 +1,8 @@
+2008-11-10  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp (get_flags): output the flags env var (both name and
+	value) if it's set.  r: kangaroo.
+
 2008-11-10  Geoff Norton  <gnorton@novell.com>
 
 	* runtime.cpp: Do not enable debug features by default, and remove a 
