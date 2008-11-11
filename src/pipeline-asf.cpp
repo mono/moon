@@ -228,6 +228,12 @@ ASFDemuxer::ReadHeader ()
 			stream = audio;
 			
 			const WAVEFORMATEX* wave = stream_properties->get_audio_data ();
+			if (wave == NULL) {
+				result = MEDIA_INVALID_STREAM;
+				Media::Warning (result, "Couldn't find audio data in the file.");
+				goto failure;
+			}
+
 			const WAVEFORMATEXTENSIBLE* wave_ex = wave->get_wave_format_extensible ();
 			int data_size = stream_properties->size - sizeof (asf_stream_properties) - sizeof (WAVEFORMATEX);
 			

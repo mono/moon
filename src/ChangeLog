@@ -1,3 +1,8 @@
+2008-11-11  Sebastien Pouliot <sebastien@ximian.com>
+
+	* pipeline-asp.cpp: Fix case where get_audio_data returns NULL
+	r: fer
+
 2008-11-11  Geoff Norton  <gnorton@novell.com>
 
 	* debug.h: Its unlikely that debug flags will be set.
