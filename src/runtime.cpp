@@ -320,8 +320,6 @@ Surface::Surface (MoonWindow *window, bool silverlight2)
 #ifdef DEBUG
 	debug_selected_element = NULL;
 #endif
-	if (!(moonlight_flags & RUNTIME_INIT_USE_BACKEND_XLIB))
-		g_warning ("using software backend");
 
 	up_dirty = new DirtyLists (true);
 	down_dirty = new DirtyLists (false);
@@ -1925,8 +1923,6 @@ runtime_init (guint32 flags)
 		printf ("*** Moon is being run against version %s.\n", cairo_version_string ());
 		printf ("*** Proceed at your own risk\n");
 	}
-
-	flags |= RUNTIME_INIT_SHOW_FPS;
 
 	if (running_on_nvidia ()) {
 		g_warning ("Binary nVidia drivers currently suffer from major performance problems in our usage profile.  This driver has been blacklisted and we force client-side rendering.");

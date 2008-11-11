@@ -1,5 +1,11 @@
 2008-11-10  Geoff Norton  <gnorton@novell.com>
 
+	* runtime.cpp: Do not enable debug features by default, and remove a 
+	superflous warning.
+	r: toshok
+
+2008-11-10  Geoff Norton  <gnorton@novell.com>
+
 	* runtime.cpp: Force NVIDIA binary driver to go to the image backend
 	to work around serious performance problems when we use accelerated
 	rendering with it.
