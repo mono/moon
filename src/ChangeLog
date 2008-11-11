@@ -1,3 +1,10 @@
+2008-11-10  Geoff Norton  <gnorton@novell.com>
+
+	* runtime.cpp: Force NVIDIA binary driver to go to the image backend
+	to work around serious performance problems when we use accelerated
+	rendering with it.
+	r: toshok
+
 2008-11-10  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp (copy_input_list_from_node): rename

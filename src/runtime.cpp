@@ -168,6 +168,13 @@ static struct env_options debugs[] = {
 
 #define RENDER_EXPOSE (moonlight_flags & RUNTIME_INIT_SHOW_EXPOSE)
 
+static bool
+running_on_nvidia ()
+{
+	int event, error, opcode;
+
+	return XQueryExtension (XOpenDisplay (NULL), "NV-GLX", &opcode, &event, &error);
+}
 
 static void
 fps_report_default (Surface *surface, int nframes, float nsecs, void *user_data)
@@ -1918,6 +1925,11 @@ runtime_init (guint32 flags)
 	}
 
 	flags |= RUNTIME_INIT_SHOW_FPS;
+
+	if (running_on_nvidia ()) {
+		g_warning ("Binary nVidia drivers currently suffer from major performance problems in our usage profile.  This driver has been blacklisted and we force client-side rendering.");
+		flags &= ~RUNTIME_INIT_USE_BACKEND_XLIB;
+	}
 
 	// Allow the user to override the flags via his/her environment
 	flags = get_flags (flags, "MOONLIGHT_OVERRIDES", overrides);
