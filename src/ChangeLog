@@ -1,3 +1,12 @@
+2008-11-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* audio.cpp, mediaplayer.cpp, audio.h, mediaelement.cpp, mediaplayer.h:
+	  Implement MediaElement.AudioStreamIndex. Backport of r118367.
+	
+	  
+	
+	  r: kangaroo.
+
 2008-11-10  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp (get_flags): output the flags env var (both name and

@@ -1,3 +1,17 @@
+2008-11-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* ChangeLog, drtlist.xml: Added test-audiostreamindex.html. Backport of
+	  r118367.
+	
+	  
+	
+	  r: kangaroo
+
+2008-11-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* ElephantsDream.en_fr.wmv, test-audiostreamindex.html, drtlist.xml:
+	  Added test-audiostreamindex.html.
+
 2008-11-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* test-states.html: Added test for CurrentState.

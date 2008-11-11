@@ -144,7 +144,8 @@ class MediaPlayer : public EventObject {
 	void SetState (PlayerState s) { state = (PlayerState) ((state & ~StateMask) | s); }
 
 	void SetBufferUnderflow () { SetBitTo (BufferUnderflow, true); }
-
+	void SetAudioStreamIndex (gint32 i);
+	
 	void Play ();
 	bool GetCanPause ();
 	void SetCanPause (bool value);

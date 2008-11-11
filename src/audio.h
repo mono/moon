@@ -161,7 +161,10 @@ class AudioSource : public EventObject {
 	
 	bool GetMuted ();
 	void SetMuted (bool value);
-	
+
+	void SetAudioStream (AudioStream *value);
+	AudioStream *GetAudioStream ();
+
 	virtual const char *GetTypeName () { return "AudioSource"; }
 };
 

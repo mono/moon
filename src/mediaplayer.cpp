@@ -292,6 +292,7 @@ MediaPlayer::Open (Media *media)
 	IMediaDecoder *encoding;
 	IMediaStream *stream;
 	guint64 asx_duration;
+	gint32 *audio_stream_index = NULL;
 	
 	LOG_MEDIAPLAYER ("MediaPlayer::Open (%p), current media: %p\n", media, this->media);
 	
@@ -321,6 +322,8 @@ MediaPlayer::Open (Media *media)
 		return false;
 	}
 
+	audio_stream_index = element->GetAudioStreamIndex ();
+
 	for (int i = 0; i < demuxer->GetStreamCount (); i++) {
 		stream = demuxer->GetStream (i);
 		encoding = stream->GetDecoder (); //stream->codec;
@@ -331,10 +334,16 @@ MediaPlayer::Open (Media *media)
 		switch (stream->GetType ()) {
 		case MediaTypeAudio:
 			audio_stream_count++;
-			astream2 = (AudioStream *) stream;
-
-			if (astream == NULL || astream->GetBitRate () < astream2->GetBitRate ())
-				astream = astream2;
+			if (audio_stream_index != NULL){
+				if (*audio_stream_index == audio_stream_count - 1) {
+					astream = (AudioStream *) stream;
+				}
+			} else {
+				astream2 = (AudioStream *) stream;
+	
+				if (astream == NULL || astream->GetBitRate () < astream2->GetBitRate ())
+					astream = astream2;
+			}
 
 			break;
 		case MediaTypeVideo: 
@@ -820,6 +829,63 @@ MediaPlayer::GetTimeoutInterval ()
 	LOG_MEDIAPLAYER ("MediaPlayer::GetTimeoutInterval (): %i ms between frames gives fps: %.1f, pts_per_frame: %llu, exact fps: %f\n", result, 1000.0 / result, pts_per_frame, TIMESPANTICKS_IN_SECOND / (double) pts_per_frame);
 
 	return result;
+}
+
+void
+MediaPlayer::SetAudioStreamIndex (gint32 index)
+{
+	IMediaDemuxer *demuxer = NULL;
+	IMediaStream *stream = NULL;
+	AudioStream *next_stream = NULL;
+	AudioStream *prev_stream = NULL;
+	gint32 audio_streams_found = 0;
+
+	LOG_MEDIAPLAYER ("MediaPlayer::SetAudioStreamIndex (%i).\n", index);
+	
+	if (index < 0 || index >= audio_stream_count) {
+		LOG_MEDIAPLAYER ("MediaPlayer::SetAudioStreamIndex (%i): Invalid audio stream index.\n", index);
+		return;
+	}
+
+	if (media == NULL) {
+		LOG_MEDIAPLAYER ("MediaPlayer::SetAudioStreamIndex (%i): No media.\n", index);
+		return;
+	}
+
+	if (audio == NULL) {
+		LOG_MEDIAPLAYER ("MediaPlayer::SetAudioStreamIndex (%i): No audio source.\n", index);
+		return;
+	}
+
+	demuxer = media->GetDemuxer ();
+
+	if (demuxer == NULL) {
+		LOG_MEDIAPLAYER ("MediaPlayer::SetAudioStreamIndex (%i): Media doesn't have a demuxer.\n", index);
+		return;
+	}
+
+	prev_stream = audio->GetAudioStream ();
+
+	for (int i = 0; i < demuxer->GetStreamCount (); i++) {
+		stream = demuxer->GetStream (i);
+
+		if (stream->GetType () != MediaTypeAudio)
+			continue;
+
+		if (audio_streams_found == index) {
+			next_stream = (AudioStream *) stream;
+			break;
+		}
+		
+		audio_streams_found++;
+	}
+
+	if (next_stream != NULL) {
+		LOG_MEDIAPLAYER ("MediaPlayer::SetAudioStreamIndex (%i). Switched stream from #%i to #%i\n", index, audio_streams_found++, index);
+		prev_stream->SetSelected (false);
+		next_stream->SetSelected (true);
+		audio->SetAudioStream (next_stream);
+	}
 }
 
 bool
