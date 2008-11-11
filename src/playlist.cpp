@@ -560,7 +560,20 @@ Playlist::~Playlist ()
 void
 Playlist::Dispose ()
 {
+	PlaylistNode *node;
+	PlaylistEntry *entry;
+	
 	PlaylistEntry::Dispose ();
+
+	if (entries != NULL) {
+		node = (PlaylistNode *) entries->First ();
+		while (node != NULL) {
+			entry = node->GetEntry ();
+			if (entry != NULL)
+				entry->Dispose ();
+			node = (PlaylistNode *) node->next;
+		}
+	}
 }
 
 void

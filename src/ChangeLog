@@ -1,5 +1,10 @@
 2008-11-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* playlist.cpp: Playlist::Dispose: dispose all the items in our entries
+	  too.
+
+2008-11-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* pipeline.cpp, pipeline.h: Plug a memory leak.
 
 2008-11-10  Geoff Norton  <gnorton@novell.com>
