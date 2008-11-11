@@ -61,7 +61,6 @@ libmoon_include_headers = 	\
 	panel.h			\
 	pipeline.h		\
 	pipeline-asf.h	\
-	pipeline-ui.h		\
 	playlist.h		\
 	point.h			\
 	rect.h			\
@@ -137,7 +136,6 @@ libmoon_la_SOURCES = 		\
 	panel.cpp		\
 	pipeline.cpp		\
 	pipeline-asf.cpp	\
-	pipeline-ui.cpp		\
 	pipeline-logo.cpp		\
 	point.cpp		\
 	playlist.cpp		\
@@ -182,6 +180,14 @@ libmoon_la_sources_2 =		\
 	thickness.cpp		\
 	usercontrol.cpp 	\
 	xap.cpp
+
+if CODECS_SUPPORTED
+libmoon_include_headers += pipline-ui.h
+libmoon_la_SOURCES += pipeline-ui.cpp
+else
+libmoon_include_headers += pipline-nocodec-ui.h
+libmoon_la_SOURCES += pipeline-nocodec-ui.cpp
+endif
 
 if INCLUDE_MANAGED_CODE
 libmoon_include_headers += $(libmoon_include_headers_2)
