@@ -1551,10 +1551,6 @@ IMediaStream::IMediaStream (Media *media) : IMediaObject (media)
 
 IMediaStream::~IMediaStream ()
 {
-	if (decoder)
-		decoder->unref ();
-	
-	delete queue;
 }
 
 void
@@ -1569,6 +1565,11 @@ IMediaStream::Dispose ()
 	extra_data = NULL;
 	g_free (codec);
 	codec = NULL;
+
+	if (queue) {
+		delete queue;
+		queue = NULL;
+	}
 }
 
 const char *
