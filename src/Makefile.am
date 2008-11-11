@@ -20,6 +20,7 @@ libmoon_include_headers = 	\
 	canvas.h		\
 	cbinding.h		\
 	clock.h			\
+	codec-url.h		\
 	collection.h		\
 	color.h			\
 	contentcontrol.h	\
