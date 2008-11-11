@@ -357,8 +357,11 @@ MediaElement::~MediaElement ()
 	if (mplayer)
 		mplayer->unref ();
 	
-	if (playlist)
+	if (playlist) {
+		playlist->Dispose ();
 		playlist->unref ();
+		playlist = NULL;
+	}
 	
 	delete pending_streamed_markers;
 	
@@ -420,7 +423,6 @@ MediaElement::Reinitialize (bool dtor)
 	}
 	
 	if (media != NULL) {
-		media->Dispose ();
 		media->unref ();
 		media = NULL;
 	}
@@ -1372,6 +1374,7 @@ MediaElement::SetSource (Downloader *downloader, const char *PartName)
 	// SetSourceInternal to avoid ending up deleting itself.
 	//
 	if (playlist) {
+		playlist->Dispose ();
 		playlist->unref ();
 		playlist = NULL;
 	}

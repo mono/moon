@@ -112,6 +112,17 @@ PlaylistEntry::~PlaylistEntry ()
 	g_free (info_url);
 }
 
+void
+PlaylistEntry::Dispose ()
+{
+	EventObject::Dispose ();
+	if (media) {
+		media->Dispose ();
+		media->unref ();
+		media = NULL;
+	}
+}
+
 Uri *
 PlaylistEntry::GetBase ()
 {
@@ -544,6 +555,25 @@ Playlist::~Playlist ()
 	LOG_PLAYLIST ("Playlist::~Playlist ()\n");
 	
 	delete entries;
+}
+
+void
+Playlist::Dispose ()
+{
+	PlaylistNode *node;
+	PlaylistEntry *entry;
+	
+	PlaylistEntry::Dispose ();
+
+	if (entries != NULL) {
+		node = (PlaylistNode *) entries->First ();
+		while (node != NULL) {
+			entry = node->GetEntry ();
+			if (entry != NULL)
+				entry->Dispose ();
+			node = (PlaylistNode *) node->next;
+		}
+	}
 }
 
 void

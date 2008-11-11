@@ -90,7 +90,8 @@ protected:
 
 public:
 	PlaylistEntry (MediaElement *element, Playlist *parent, Media *media = NULL);
-
+	void Dispose ();
+	
 	// ASX properties
 
 	Uri *GetBase ();
@@ -176,6 +177,7 @@ protected:
 public:
 	Playlist (MediaElement *element, IMediaSource *source);
 	Playlist (MediaElement *element, Media *media);
+	void Dispose ();
 
 	virtual void Open ();
 	virtual bool Play ();
