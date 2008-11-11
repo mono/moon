@@ -1928,7 +1928,7 @@ runtime_init (guint32 flags)
 	}
 
 	if (running_on_nvidia ()) {
-		g_warning ("Binary nVidia drivers currently suffer from major performance problems in our usage profile.  This driver has been blacklisted and we force client-side rendering.");
+		g_warning ("Forcing client-side rendering because we detected binary drivers which are known to suffer performance problems.");
 		flags &= ~RUNTIME_INIT_USE_BACKEND_XLIB;
 	}
 
