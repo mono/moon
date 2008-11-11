@@ -504,18 +504,24 @@ OSTYPE="unknown"
 ARCH="unknown"
 # Do we know of a way to detect when the GCC ABI breaks? will it ever again? we'll hardcode this for now
 GCC_ABI_VERSION="1"
+CODECS_SUPPORTED="no"
+CODECS_ARCH_SUPPORTED="no"
+CODECS_OS_SUPPORTED="no"
 
 case "$host" in
         i*86-*-*)
                 ARCH=x86
+		CODECS_ARCH_SUPPORTED="yes"
                 ;;
         x86_64-*-* | amd64-*-*)
                 ARCH=x64
+		CODECS_ARCH_SUPPORTED="yes"
                 ;;
 esac
 case "$host" in
     *-*-*linux*)
                 OSTYPE=linux
+		CODECS_OS_SUPPORTED="yes"
                 ;;
 esac
 
@@ -529,6 +535,13 @@ if test -z ${MOONLIGHT_CODEC_AVI_VERSION}; then
         AC_ERROR(The Moonlight Pipeline ABI could not be determined)
 fi
 
+if test x$CODECS_ARCH_SUPPORTED = xyes; then
+	if test x$CODECS_OS_SUPPORTED = xyes; then
+		CODECS_SUPPORTED="yes"
+	fi
+fi
+
+AM_CONDITIONAL(CODECS_SUPPORTED,test x$CODECS_SUPPORTED = xyes)
 AC_DEFINE_UNQUOTED([CODEC_LIBRARY_NAME],["silverlight-media-pack-$OSTYPE-$ARCH-$MOONLIGHT_CODEC_AVI_VERSION-$GCC_ABI_VERSION.so"],[The encoded codec libname for this build])
 
 

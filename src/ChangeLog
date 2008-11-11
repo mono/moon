@@ -5,6 +5,14 @@
 
 2008-11-11  Geoff Norton  <gnorton@novell.com>
 
+	* Makefile.am: Only build the appropriate pipeline-ui based on wether
+	we're building on a os/arch combo that supports the SMP.
+	* codec-url.h: Set the appropriate CODEC_URL for our target platform
+	* pipline-nocodec-ui.(cpp|h): New UI for unsupported OS/Arch targets
+	of the codec install pipeline.
+
+2008-11-11  Geoff Norton  <gnorton@novell.com>
+
 	* debug.h: Its unlikely that debug flags will be set.
 
 	r: spouliot
