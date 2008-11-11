@@ -1,3 +1,9 @@
+2008-11-11  Geoff Norton  <gnorton@novell.com>
+
+	* debug.h: Its unlikely that debug flags will be set.
+
+	r: spouliot
+
 2008-11-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline.cpp: IMediaStream::Dispose: delete our queue of frames.
