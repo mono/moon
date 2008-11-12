@@ -1,3 +1,8 @@
+2008-10-16  Alan McGovern  <amcgovern@novell.com>
+
+	* Mono.Moonlight.UnitTesting/Tester.cs: Write the current test to
+	the console before executing it
+
 2008-10-16  Jb Evain  <jbevain@novell.com>
 
 	* System.Windows/PresentationFrameworkCollectionTest.cs: fix tests.

@@ -83,6 +83,7 @@ namespace Mono.Moonlight.UnitTesting
 
 						e = null;
 						try {
+							Console.WriteLine ("Running: {0}", e.name);
 							method.Invoke (test, null);
 						} catch (Exception ex) {
 							e = ex;
