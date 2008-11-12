@@ -1,3 +1,7 @@
+2008-11-12  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (noinst_DATA): don't install moon.pc.  r: gnorton.
+
 2008-11-11  Geoff Norton  <gnorton@novell.com>
 
 	* Makefile.am: The perf suite requires managed code

@@ -24,7 +24,7 @@ endif !PLUGIN_INSTALL
 SUBDIRS = $(subdirs) src $(MONO_SUBDIRS) $(TOOLS_SUBDIR) plugin $(TEST_SUBDIR) $(PERF_SUBDIR) $(MONO_EXAMPLES)
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA=moon.pc
+noinst_DATA=moon.pc
 
 EXTRA_DIST=moon.pc.in LICENSE NOTES
 
