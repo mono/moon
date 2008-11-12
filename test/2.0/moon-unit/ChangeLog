@@ -1,5 +1,9 @@
 2008-11-12  Alan McGovern  <amcgovern@novell.com>
 
+	* Mono.Moonlight.UnitTesting/Tester.cs: Add Assert.AreNotEqual overloads
+
+2008-11-12  Alan McGovern  <amcgovern@novell.com>
+
 	* Mono.Moonlight.UnitTesting/Tester.cs: write the current test
 	properly
 

@@ -321,6 +321,73 @@ namespace Mono.Moonlight.UnitTesting
 
 		}
 
+		public static void AreNotEqual (object expected, object actual)
+		{
+			AreNotEqual (expected, actual, null);
+		}
+
+		public static void AreNotEqual (object expected, object actual, string message)
+		{
+			if (object.Equals (expected, actual)) {
+				string msg = String.Format ("Expected value and actual value were both the same");
+				throw new AssertFailedException (message, msg);
+			}
+		}
+
+		public static void AreNotEqual (object expected, object actual, string message, params object [] parameters)
+		{
+			AreNotEqual (expected, actual, string.Format (message, parameters));
+
+		}
+
+		public static void AreNotEqual (int expected, int actual)
+		{
+			if (expected == actual) {
+				string msg = String.Format ("Expected value and actual value were both the same");
+				throw new AssertFailedException (msg);
+			}
+		}
+
+		public static void AreNotEqual (int expected, int actual, string message)
+		{
+			if (expected == actual) {
+				string msg = String.Format ("Expected value and actual value were both the same");
+				throw new AssertFailedException (message, msg);
+			}
+		}
+
+		public static void AreNotEqual (int expected, int actual, string message, params object [] parameters)
+		{
+			if (expected == actual) {
+				string msg = String.Format ("Expected value and actual value were both the same");
+				throw new AssertFailedException (string.Format (message, parameters), msg);
+			}
+		}
+
+		public static void AreNotEqual (double expected, double actual)
+		{
+			if (expected == actual) {
+				string msg = String.Format ("Expected value and actual value were both the same");
+				throw new AssertFailedException (msg);
+			}
+		}
+		public static void AreNotEqual (double expected, double actual, string message)
+		{
+			if (expected == actual) {
+				string msg = String.Format ("Expected value and actual value were both the same");
+				throw new AssertFailedException (message,msg);
+			}
+
+		}
+		public static void AreNotEqual (double expected, double actual, string message, params object [] parameters)
+		{
+			if (expected == actual) {
+				string msg = String.Format ("Expected value and actual value were both the same");
+				throw new AssertFailedException (string.Format (message, parameters), msg);
+			}
+
+		}
+
 		public static void IsInstanceOfType (object value, Type expectedType)
 		{
 			IsInstanceOfType (value, expectedType, null);
