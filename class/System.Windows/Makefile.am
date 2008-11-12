@@ -1,5 +1,8 @@
 assembly = System.Windows
 
+NET_2_1_ASSEMBLY_DEPS=-r:System.Runtime.Serialization.dll
+NET_3_0_ASSEMBLY_DEPS=
+
 if INCLUDE_BROWSER_MANAGED_CODE
 assemblysl = ../lib/2.1/$(assembly).dll
 endif
@@ -12,7 +15,7 @@ assemblies = $(assemblysl) $(assemblydesktop)
 
 noinst_DATA = $(assemblies)
 
-CSCFLAGS = /codepage:65001 -d:NET_1_1 -d:NET_2_0 -d:MOONLIGHT -debug+ -noconfig -r:System -r:System.Core -r:System.Xml -r:System.Runtime.Serialization.dll -r:Mono.Moonlight -d:AGCLR -unsafe
+CSCFLAGS = /codepage:65001 -d:NET_1_1 -d:NET_2_0 -d:MOONLIGHT -debug+ -noconfig -r:System -r:System.Core -r:System.Xml -r:Mono.Moonlight -d:AGCLR -unsafe
 
 GMCS = gmcs $(CSCFLAGS) -lib:../lib/3.0
 SMCS = MONO_PATH="../lib/2.1:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack ../lib/2.1/smcs.exe -r:System.Net $(CSCFLAGS)
@@ -362,11 +365,11 @@ EXTRA_DIST = $(system_windows_sources) 	\
 	System.Windows.Shapes/ChangeLog
 
 $(assemblysl): $(system_windows_sources) Makefile $(top_builddir)/class/lib/2.1/Mono.Moonlight.dll
-	$(SMCS) -target:library -out:$@ $(system_windows_sources) -d:NET_2_1 -keyfile:$(srcdir)/../silverlight.pub -delaysign+
+	$(SMCS) $(NET_2_1_ASSEMBLY_DEPS) -target:library -out:$@ $(system_windows_sources) -d:NET_2_1 -keyfile:$(srcdir)/../silverlight.pub -delaysign+
 	sn -q -R $@ $(srcdir)/../mono.snk
 
 $(assemblydesktop): $(system_windows_sources) Makefile $(top_builddir)/class/lib/3.0/Mono.Moonlight.dll
-	$(GMCS) -target:library -out:$@ $(system_windows_sources) -keyfile:$(srcdir)/../mono.snk
+	$(GMCS) $(NET_3_0_ASSEMBLY_DEPS) -target:library -out:$@ $(system_windows_sources) -keyfile:$(srcdir)/../mono.snk
 
 clean-local:
 	-rm -rf $(assemblies) check-static check-dynamic

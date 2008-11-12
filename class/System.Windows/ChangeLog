@@ -1,3 +1,9 @@
+2008-11-11  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am: only include System.Runtime.Serialization.dll in
+	the 2.1 profile, so we can build the desktop version against mono
+	2.0.  the 2.1 profile requires mono 2.2. re: kangaroo.
+
 2008-09-15  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Add a reference to System.Runtime.Serialization.dll
