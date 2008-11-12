@@ -1,5 +1,10 @@
 2008-11-12  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingTest.cs: Add tests for the Binding class to
+	svn
+
+2008-11-12  Alan McGovern  <amcgovern@novell.com>
+
 	* Mono.Moonlight.UnitTesting/Tester.cs: Add Assert.AreNotEqual overloads
 
 2008-11-12  Alan McGovern  <amcgovern@novell.com>
