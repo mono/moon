@@ -158,7 +158,7 @@ AC_ARG_WITH(managed,
 
 if test x$managed_code = xyes; then
   if pkg-config mono; then
-    PKG_CHECK_MODULES(MONO,mono)
+    PKG_CHECK_MODULES(MONO,mono >= 2.2)
     # browser assembly specific checks
     #
     # the browser assemblies require smcs
@@ -169,7 +169,7 @@ if test x$managed_code = xyes; then
 				  AC_SUBST(SMCS_ASM)])
         else
             browser_assemblies=no
-	    browser_reason="(reason: could not find smcs package, Mono >= 1.9 not installed)"
+	    browser_reason="(reason: could not find smcs package, Mono >= 2.2 not installed)"
 	fi
     fi
 
@@ -216,9 +216,9 @@ if test x$managed_code = xyes; then
     browser_assemblies=no
     desktop_assemblies=no
 
-    managed_reason="(reason: Mono >= 1.9 not installed)"
-    browser_reason="(reason: Mono >= 1.9 not installed)"
-    desktop_reason="(reason: Mono >= 1.9 not installed)"
+    managed_reason="(reason: Mono >= 2.2 not installed)"
+    browser_reason="(reason: Mono >= 2.2 not installed)"
+    desktop_reason="(reason: Mono >= 2.2 not installed)"
   fi
 fi
 AM_CONDITIONAL(INCLUDE_MANAGED_CODE,test x$managed_code = xyes)
