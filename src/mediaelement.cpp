@@ -1476,6 +1476,7 @@ MediaElement::Play ()
 	case Opening:
 	case Buffering:
 	case Paused:
+	case Playing:
 	case Stopped:
 		AddTickCall (MediaElement::PlayNow);
 		break;

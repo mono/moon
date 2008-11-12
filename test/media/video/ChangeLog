@@ -1,3 +1,8 @@
+2008-11-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* drtlist.xml, test-pause-and-play.html: Added
+	  test-pause-and-play.html.
+
 2008-11-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* ElephantsDream.en_fr.wmv, test-audiostreamindex.html, drtlist.xml:

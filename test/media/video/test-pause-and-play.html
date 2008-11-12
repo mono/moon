@@ -1,0 +1,108 @@
+<html>
+  <head>
+      <title>Moonlight Test Page</title>
+
+		<script type="text/xaml" id="xaml">
+			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
+				<MediaElement x:Name="media" Canvas.Left="10" Canvas.Top="10" Volume="1.0"
+					MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" MediaEnded="OnMediaEnded"
+				/>
+				<TextBlock x:Name="subtitle" Text="Elephant's Dream" Canvas.Top="200" Canvas.Left="10" />
+			</Canvas>
+		</script>
+
+		<script language="javascript" src="../../js/js/utils.js"></script>
+		<script language="javascript" src="../../js/js/testplugin.js"></script>
+		<script language="javascript">
+		var mediaElement;
+	
+		function DoPausePlay ()
+		{
+			TestLogger.LogDebug ("DoPausePlay (), position: " + mediaElement.Position.Seconds + ", CurrentState: " + mediaElement.CurrentState);
+			mediaElement.Pause ();
+			mediaElement.Play ();
+		}
+
+
+		function VerifySeek ()
+		{
+			TestLogger.LogDebug ("VerifySeek (), position: " + mediaElement.Position.Seconds + ", CurrentState: " + mediaElement.CurrentState);
+			if (mediaElement.Position.Seconds != 28) {
+				TestLogger.LogError ("Expected position to be 28s, it is " + mediaElement.Position.Seconds + " seconds.");
+				TestLogger.LogResult (-1);
+			} else {
+				TestLogger.LogResult (1);
+			}
+			SignalShutdown ();		
+		}	
+
+		function DoTest ()
+		{
+			TestLogger.LogDebug ("DoTest ()");
+			mediaElement.Source = "timecode-mini-caption-all.wmv";
+		}
+		
+		function OnMediaOpened (sender, args)
+		{
+			TestLogger.LogDebug ("OnMediaOpened: " + sender.CurrentState);
+			setTimeout ("DoPausePlay ();", 100);
+		}
+
+		function OnMediaEnded (sender, args)
+		{
+			TestLogger.LogDebug ("OnMediaEnded");
+			TestLogger.LogResult (1);
+			SignalShutdown ();
+		}
+
+		function OnMediaFailed (sender, args)
+		{
+			TestLogger.LogError ("OnMediaFailed: " + ErrorEventArgsToOneLineString (args));
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+		function OnPluginLoad (sender, args)
+		{
+			TestLogger.LogDebug ("OnPluginLoad");
+			mediaElement = sender.findName ("media");
+			setTimeout ("DoTest ();", 500);
+			setTimeout (function ()
+				{
+					if (!ShutdownRequested) {
+						TestLogger.LogError ("Test timed out.");
+						TestLogger.LogResult (-1);
+						SignalShutdown ();
+					}
+				}, 5000);
+		}
+
+		function OnPluginError (sender, args)
+		{
+			TestLogger.LogError ("Plugin failed to initialize: " + args.ErrorMessage);
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+		
+		</script>
+	</head>
+
+  <body>
+    <div>
+        <embed type="application/x-silverlight"
+             width="340"
+             height="220"
+             id="_MoonlightControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoad"
+             style="position:absolute; left:0px; top:0px"
+             background="green" >
+        </embed>
+    </div>
+<!--
+    <div>
+        <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
+        </embed>
+    </div>
+-->
+  </body>
+</html>
+

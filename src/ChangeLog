@@ -1,3 +1,9 @@
+2008-11-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mediaelement.cpp: MediaElement::Play: we want to queue a PlayNow
+	  request even if we're currently playing, there might be a PauseNow
+	  request already queued.
+
 2008-11-11  Sebastien Pouliot <sebastien@ximian.com>
 
 	* pipeline-asp.cpp: Fix case where get_audio_data returns NULL
