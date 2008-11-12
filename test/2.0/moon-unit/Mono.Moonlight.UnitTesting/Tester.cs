@@ -42,7 +42,8 @@ namespace Mono.Moonlight.UnitTesting
 
 			output.StartReport ();
 			foreach (Type type in Assembly.GetExecutingAssembly ().GetTypes ()) {
-				if (!type.IsDefined (typeof (TestClassAttribute), false))
+				if (!type.IsDefined (typeof (TestClassAttribute), false) ||
+				     type.IsDefined (typeof (IgnoreAttribute), false))
 					continue;
 
 				ctor = type.GetConstructor (Type.EmptyTypes);
