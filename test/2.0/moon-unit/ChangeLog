@@ -1,3 +1,8 @@
+2008-11-12  Alan McGovern  <amcgovern@novell.com>
+
+	* Mono.Moonlight.UnitTesting/Tester.cs: write the current test
+	properly
+
 2008-10-16  Alan McGovern  <amcgovern@novell.com>
 
 	* Mono.Moonlight.UnitTesting/Tester.cs: Write the current test to
