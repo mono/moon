@@ -225,6 +225,13 @@ AM_CONDITIONAL(INCLUDE_MANAGED_CODE,test x$managed_code = xyes)
 AM_CONDITIONAL(INCLUDE_BROWSER_MANAGED_CODE,test x$browser_assemblies = xyes)
 AM_CONDITIONAL(INCLUDE_DESKTOP_MANAGED_CODE,test x$desktop_assemblies = xyes)
 
+if test x$managed_code = xyes; then
+	SL_PROFILE=2.0
+else
+	SL_PROFILE=1.0
+fi
+AC_SUBST([SL_PROFILE])
+
 dnl
 dnl Cairo checks
 dnl
@@ -433,16 +440,20 @@ if test x$user_plugin = xyes; then
   case "$target_cpu" in
     i*86 )
     TARGET_PLATFORM="$TARGET_PLATFORM"_x86-gcc3
+    INSTALL_ARCH=i586
     ;;
     x86_64 )
     TARGET_PLATFORM="$TARGET_PLATFORM"_x86_64-gcc3
+    INSTALL_ARCH=x86_64
     ;;
-    powerpc )
-    TARGET_PLATFORM="$TARGET_PLATFORM"_ppc-gcc3
-    ;;
-    sparc64 )
-    TARGET_PLATFORM="$TARGET_PLATFORM"_sparc64-gcc3
-    ;;
+dnl    powerpc )
+dnl    TARGET_PLATFORM="$TARGET_PLATFORM"_ppc-gcc3
+dnl    INSTALL_ARCH=ppc
+dnl    ;;
+dnl    sparc64 )
+dnl    TARGET_PLATFORM="$TARGET_PLATFORM"_sparc64-gcc3
+dnl    INSTALL_ARCH=sparc
+dnl    ;;
     * )
     AC_MSG_ERROR([Target cpu $target_cpu is unknown.
     Please add the appropriate string to configure.ac.
@@ -450,6 +461,7 @@ if test x$user_plugin = xyes; then
     ;;
   esac
   AC_SUBST(TARGET_PLATFORM)
+  AC_SUBST([INSTALL_ARCH])
 fi
 
 dnl *************************************

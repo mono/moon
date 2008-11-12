@@ -1,3 +1,7 @@
+2008-11-12  Rusty Howell  <rhowell@novell.com>
+
+	* install.rdf.in: Add macros for updateURL
+
 2008-08-17  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am: INCLUDE_MONO_RUNTIME ->
