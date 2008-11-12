@@ -209,6 +209,8 @@ namespace System.Windows.Browser.Net
 			Uri request_uri = uri.IsAbsoluteUri ? uri : GetAbsoluteUri (uri);
 
 			downloader = NativeMethods.surface_create_downloader (XamlLoader.SurfaceInDomain);
+			if (downloader == null)
+				throw new NotSupportedException ("Failed to create unmanaged downloader");
 			native = NativeMethods.downloader_create_webrequest (downloader, method, request_uri.AbsoluteUri);
 			if (native == IntPtr.Zero)
 				throw new NotSupportedException ("Failed to create unmanaged WebHttpRequest object.  unsupported browser.");
