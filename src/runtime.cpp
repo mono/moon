@@ -173,7 +173,11 @@ running_on_nvidia ()
 {
 	int event, error, opcode;
 
-	return XQueryExtension (XOpenDisplay (NULL), "NV-GLX", &opcode, &event, &error);
+	Display *display = XOpenDisplay (NULL);
+	bool result = XQueryExtension (display, "NV-GLX", &opcode, &event, &error);
+	XCloseDisplay (display);
+
+	return result;
 }
 
 static void

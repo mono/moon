@@ -1,3 +1,8 @@
+2008-11-13  Sebastien Pouliot <sebastien@ximian.com>
+
+	* runtime.cpp (running_on_nvidia): Fix leak of Display
+	r: kangaroo
+
 2008-11-11  Sebastien Pouliot <sebastien@ximian.com>
 
 	* pipeline-asp.cpp: Fix case where get_audio_data returns NULL
