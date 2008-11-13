@@ -1,3 +1,8 @@
+2008-11-13  Sebastien Pouliot <sebastien@ximian.com>
+
+	* runtime.cpp (running_on_nvidia): Fix leak of Display
+	r: kangaroo
+
 2008-11-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mediaelement.cpp: MediaElement::Play: we want to queue a PlayNow
