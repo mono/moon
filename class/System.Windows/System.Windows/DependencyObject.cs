@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using System.Security;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Markup;
@@ -47,6 +48,7 @@ using System.Threading;
 namespace System.Windows {
 	public abstract partial class DependencyObject {
 		static Thread moonlight_thread;
+		Dictionary<DependencyProperty, BindingExpressionBase> bindings = new Dictionary<DependencyProperty, BindingExpressionBase> ();
 		static Dictionary<IntPtr, DependencyObject> objects = new Dictionary<IntPtr, DependencyObject> ();
 		internal IntPtr _native;
 
@@ -280,10 +282,15 @@ namespace System.Windows {
 				throw new ArgumentNullException ("property");
 			
 			CheckNativeAndThread ();
-			
-			IntPtr val = NativeMethods.dependency_object_get_value (native, Types.TypeToKind (GetType ()), dp.Native);
-			if (val != IntPtr.Zero)
-				result = ValueToObject (dp.PropertyType, val);
+
+			BindingExpressionBase expression;
+			if (false && bindings.TryGetValue (dp, out expression)) {
+				//expression.TryGetValue (out result);
+			} else {
+				IntPtr val = NativeMethods.dependency_object_get_value (native, Types.TypeToKind (GetType ()), dp.Native);
+				if (val != IntPtr.Zero)
+					result = ValueToObject (dp.PropertyType, val);
+			}
 			
 			if (result == null && dp.PropertyType.IsValueType)
 				result = Activator.CreateInstance (dp.PropertyType);
@@ -300,7 +307,10 @@ namespace System.Windows {
 		[SecuritySafeCritical]
 		public object ReadLocalValue (DependencyProperty dp)
 		{
-			throw new System.NotImplementedException ();
+			if (bindings.ContainsKey (dp))
+				return bindings [dp];
+			else
+				return GetValue (dp);
 		}
 		
 		
@@ -674,6 +684,29 @@ namespace System.Windows {
 				throw new ArgumentNullException ("property");
 
 			CheckNativeAndThread ();
+
+			BindingExpressionBase expression = value as BindingExpressionBase;
+			if (expression != null) {
+				if (bindings.ContainsKey (dp)) {
+					BindingExpressionBase old = bindings [dp];
+					// FIXME: Unregister it if it's twoway i suppose
+					bindings[dp] = expression;
+				}
+				else {
+					bindings.Add (dp, expression);
+				}
+
+				if (expression.Binding.Mode == BindingMode.OneTime)
+					bindings.Remove (dp);
+				
+				// FIXME: Is this ok to do? Am i supposed to use the default value
+				// if the binding cannot retrieve a value?
+				object val;
+				if (!expression.TryGetValue (out val))
+					val = dp.DefaultValue;
+				SetValue (dp, val);
+				return;
+			}
 			
 			if (dp.DeclaringType != null && !dp.IsAttached) {
 				if (!dp.DeclaringType.IsAssignableFrom (GetType ()))

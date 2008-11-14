@@ -1,3 +1,11 @@
+2008-11-14  Alan McGovern  <amcgovern@novell.com>
+
+	* Makefile.am:
+	* System.Windows.Data/Binding.cs:
+	* System.Windows.Data/BindingExpression.cs:
+	* System.Windows.Data/BindingExpressionBase.cs: Add initial support for
+	DataBinding.
+
 2008-11-11  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am: only include System.Runtime.Serialization.dll in

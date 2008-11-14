@@ -53,15 +53,14 @@ namespace System.Windows {
 
 		public BindingExpressionBase SetBinding (DependencyProperty dp, Binding binding)
 		{
-			throw new NotImplementedException ();
-		}
-
-		public override object GetValue (DependencyProperty dp)
-		{
-			// XXX reason for the override?  maybe this is
-			// where some portion of databinding is done?
-
-			return base.GetValue (dp);
+			BindingExpression e = new BindingExpression {
+				Binding = binding,
+				Element = this,
+				Property = dp
+			};
+			binding.SetUsed ();
+			SetValue (dp, e);
+			return e;
 		}
 
 		[SecuritySafeCritical]

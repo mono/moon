@@ -29,35 +29,114 @@
 using System.ComponentModel;
 using System.Globalization;
 using System.Windows;
+using System.Collections.Generic;
 
 namespace System.Windows.Data {
 
 	public class Binding {
-		string path;
+		
+		IValueConverter converter;
+		CultureInfo converterCulture;
+		object converterParameter;
+		BindingMode mode;
+		bool notifyOnvalidationError;
+		PropertyPath path;
+		object source;
+		bool validatesOnExceptions;
+		
+		public IValueConverter Converter {
+			get { return converter; }
+			set {
+				CheckUsed ();
+				converter = value;
+			}
+		}
+		
+		public CultureInfo ConverterCulture {
+			get { return converterCulture; }
+			set {
+				CheckUsed ();
+				converterCulture = value;
+			}
+		}
+		
+		public object ConverterParameter {
+			get { return converterParameter; }
+			set {
+				CheckUsed ();
+				converterParameter = value;
+			}
+		}
+		
+		public BindingMode Mode {
+			get { return mode; }
+			set {
+				CheckUsed ();
+				mode = value;
+			}
+		}
+		
+		public bool NotifyOnValidationError {
+			get { return notifyOnvalidationError; }
+			set {
+				CheckUsed ();
+				notifyOnvalidationError = value;
+			}
+		}
+		
+		[TypeConverter (typeof (PropertyPathConverter))]
+		public PropertyPath Path {
+			get { return path; }
+			set {
+				CheckUsed ();
+				path = value;
+			}
+		}
+		
+		public object Source {
+			get { return source; }
+			set {
+				CheckUsed ();
+				source = value;
+			}
+		}
 
+		internal bool Used {
+			get; private set;
+		}
+		
+		public bool ValidatesOnExceptions {
+			get { return validatesOnExceptions; }
+			set {
+				CheckUsed ();
+				validatesOnExceptions = value;
+			}
+		}
+		
 		public Binding ()
+			: this ("")
 		{
+			
 		}
 
 		public Binding (string path)
 		{
-			this.path = path;
+			Mode = BindingMode.OneWay;
+			Path = new PropertyPath (path);
 		}
-		
-		public BindingMode Mode { get; set; }
 
-		public IValueConverter Converter { get; set; }
+		void CheckUsed ()
+		{
+			if (Used)
+				throw new InvalidOperationException ("The Binding cannot be changed after it has been used");
+		}
 
-		public bool NotifyOnValidationError { get; set; }
-
-		public bool ValidatesOnExceptions { get; set; }
-
-		public CultureInfo ConverterCulture { get; set; }
-		public object ConverterParameter { get; set; }
-
-		public object Source { get; set; }
-
-		[TypeConverter (typeof (PropertyPathConverter))]
-		public PropertyPath Path { get; set; }
+		internal void SetUsed ()
+		{
+			if (Used)
+				return;
+			
+			Used = true;
+		}
 	}
 }

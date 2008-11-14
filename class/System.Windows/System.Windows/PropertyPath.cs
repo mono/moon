@@ -37,6 +37,9 @@ namespace System.Windows
 		
 		public PropertyPath (string path, params object [] pathParameters)
 		{
+			if (path == null)
+				throw new ArgumentNullException ("path");
+			
 			this.path = path;
 			this.path_parameters = pathParameters;
 		}

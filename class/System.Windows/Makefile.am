@@ -195,6 +195,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/VisualTransition.cs				\
 	$(srcdir)/System.Windows/XapHackProxyImpl.cs				\
 	$(srcdir)/System.Windows.Data/Binding.cs				\
+	$(srcdir)/System.Windows.Data/BindingExpression.cs			\
 	$(srcdir)/System.Windows.Data/BindingExpressionBase.cs			\
 	$(srcdir)/System.Windows.Data/BindingMode.cs				\
 	$(srcdir)/System.Windows.Data/IValueConverter.cs			\
