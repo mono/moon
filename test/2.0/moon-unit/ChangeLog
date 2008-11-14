@@ -1,5 +1,10 @@
 2008-11-14  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/IValueConverterTest.cs: Add tests for the
+	IConverter code
+
+2008-11-14  Alan McGovern  <amcgovern@novell.com>
+
 	* BindingXaml.xaml:
 	* BindingXaml.xaml.cs:
 	* BindingXaml.xaml.g.cs:
