@@ -1,5 +1,10 @@
 2008-11-14  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/IValueConverterTest.cs: Spaces -> Tabs. Add an
+	Ignore attribute to the test as it's not implemented yet.
+
+2008-11-14  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/IValueConverterTest.cs: Add tests for the
 	IConverter code
 
