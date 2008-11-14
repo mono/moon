@@ -1,5 +1,10 @@
 2008-11-14  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingExpressionBase.cs: If the property doesn't
+	exist, report failure.
+
+2008-11-14  Alan McGovern  <amcgovern@novell.com>
+
 	* Makefile.am:
 	* System.Windows.Data/Binding.cs:
 	* System.Windows.Data/BindingExpression.cs:

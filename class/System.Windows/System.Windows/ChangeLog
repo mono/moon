@@ -1,5 +1,11 @@
 2008-11-14  Alan McGovern  <amcgovern@novell.com>
 
+	* DependencyObject.cs: Only set the value if the Binding has a value. No
+	need to call Activator.CreateInstance because dp.DefaultValue already
+	contains the correct value.
+
+2008-11-14  Alan McGovern  <amcgovern@novell.com>
+
 	* PropertyPath.cs:
 	* FrameworkElement.cs:
 	* DependencyObject.cs: Add initial support for DataBinding.

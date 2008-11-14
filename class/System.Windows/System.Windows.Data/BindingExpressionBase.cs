@@ -127,9 +127,9 @@ namespace System.Windows.Data {
 		{
 			value = null;
 
-			// If value is null, is this ok?
+			// If the property doesn't exist, return false
 			if (PropertyInfo == null)
-				value = Property.DefaultValue;
+				return false;
 			else
 				value = PropertyInfo.GetValue (PropertyTarget, null);
 			
