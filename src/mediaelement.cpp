@@ -619,6 +619,7 @@ MediaElement::MediaOpened (Media *media)
 		if (playlist == NULL) {
 			playlist = pl;
 			playlist->ref ();
+			playlist->SetMedia (media, false);
 			playlist->Open ();
 		} else {
 			if (playlist->ReplaceCurrentEntry (pl))

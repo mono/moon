@@ -1,3 +1,13 @@
+2008-11-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mediaelement.cpp: SetMedia: when getting the playlist for an
+	  asxdemuxer, set the media for it. Fixes a memory leak (the media
+	  should get disposed with the playlist gets disposed).
+	* pipeline.cpp, pipeline.h: Implement ASXDemuxer::Dispose.
+	* playlist.cpp, playlist.h: Implement Playlist[Entry]::GetTypeName, and
+	  add a parameter to PlaylistEntry::SetMedia to specify whether the
+	  entry should start playing the media or not.
+
 2008-11-13  Sebastien Pouliot <sebastien@ximian.com>
 
 	* runtime.cpp (running_on_nvidia): Fix leak of Display

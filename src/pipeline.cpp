@@ -1000,8 +1000,16 @@ ASXDemuxer::ASXDemuxer (Media *media, IMediaSource *source) : IMediaDemuxer (med
 
 ASXDemuxer::~ASXDemuxer ()
 {
-	if (playlist)
+}
+
+void
+ASXDemuxer::Dispose ()
+{
+	IMediaDemuxer::Dispose ();
+	if (playlist) {
 		playlist->unref ();
+		playlist = NULL;
+	}
 }
 
 MediaResult

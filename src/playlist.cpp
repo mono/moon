@@ -115,6 +115,7 @@ PlaylistEntry::~PlaylistEntry ()
 void
 PlaylistEntry::Dispose ()
 {
+	LOG_PLAYLIST ("PlaylistEntry::Dispose () id: %i media: %i\n", GET_OBJ_ID (this), GET_OBJ_ID (media));
 	EventObject::Dispose ();
 	if (media) {
 		media->Dispose ();
@@ -506,7 +507,7 @@ PlaylistEntry::GetMedia ()
 }
 
 void 	
-PlaylistEntry::SetMedia (Media *media)
+PlaylistEntry::SetMedia (Media *media, bool try_to_play)
 {
 	LOG_PLAYLIST ("PlaylistEntry::SetMedia (%p), previous media: %p\n", media, this->media);
 
@@ -516,7 +517,7 @@ PlaylistEntry::SetMedia (Media *media)
 	this->media = media;
 	this->media->ref ();
 
-	if (play_when_available && element->GetState () != MediaElement::Buffering)
+	if (try_to_play && play_when_available && element->GetState () != MediaElement::Buffering)
 		Play ();
 }
 
@@ -542,6 +543,7 @@ Playlist::Playlist (MediaElement *element, IMediaSource *source)
 Playlist::Playlist (MediaElement *element, Media *media)
 	: PlaylistEntry (element, NULL, media)
 {
+	LOG_PLAYLIST ("Playlist::Playlist (%p, %p = %i)\n", element, media, GET_OBJ_ID (media));
 	is_single_file = true;
 	autoplayed = false;
 	Init (element);
@@ -560,6 +562,7 @@ Playlist::~Playlist ()
 void
 Playlist::Dispose ()
 {
+	LOG_PLAYLIST ("Playlist::Dispose () id: %i\n", GET_OBJ_ID (this));
 	PlaylistNode *node;
 	PlaylistEntry *entry;
 	

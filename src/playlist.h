@@ -137,7 +137,7 @@ public:
 	void SetElement (MediaElement *element) { this->element = element; }
 
 	Media *GetMedia ();
-	void SetMedia (Media *media);
+	void SetMedia (Media *media, bool try_to_play = true);
 
 	const char *GetFullSourceName ();
 	virtual bool IsPlaylist () { return false; }
@@ -152,6 +152,8 @@ public:
 	
 	virtual PlaylistEntry *GetCurrentPlaylistEntry () { return this; }
 	virtual bool IsSingleFile ();
+
+	virtual const char *GetTypeName () { return "PlaylistEntry"; }
 };
 
 class Playlist : public PlaylistEntry {
@@ -198,6 +200,8 @@ public:
 	void SetAutoPlayed (bool value) { autoplayed = value; }
 	bool IsCurrentEntryLastEntry ();
 	void OnEntryEnded ();
+
+	virtual const char *GetTypeName () { return "PlaylistEntry"; }
 };
 
 class ParserInternal;

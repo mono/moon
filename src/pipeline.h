@@ -972,6 +972,7 @@ protected:
 
 public:
 	ASXDemuxer (Media *media, IMediaSource *source);
+	virtual void Dispose ();
 	
 	virtual MediaResult ReadHeader ();
 	MediaResult TryReadFrame (IMediaStream *stream, MediaFrame **frame) { return MEDIA_FAIL; }
