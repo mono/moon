@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Ink;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
@@ -16,7 +17,6 @@ using System.ComponentModel;
 namespace MoonTest.System.Windows.Data
 {
 	[TestClass]
-	[Ignore ("Not implemented")]
 	public class BindingTest
 	{
 		class InternalData
@@ -27,26 +27,26 @@ namespace MoonTest.System.Windows.Data
 			public Data InnerData {
 				get; set;
 			}
-			public float Opacity {
+			public double Opacity {
 				get; set;
 			}
 
 			public InternalData ()
 			{
 				Brush = new SolidColorBrush(Colors.Brown);
-				Opacity = 0.5f;
+				Opacity = 0.5;
 			}
 		}
 
 		class InheritedData : Data
 		{
-			public float Float {
+			public double Float {
 				get; set;
 			}
 
 			public InheritedData()
 			{
-				Float = 0.2f;
+				Float = 0.2;
 			}
 		}
 
@@ -58,7 +58,7 @@ namespace MoonTest.System.Windows.Data
 			public Data InnerData {
 				get; set;
 			}
-			public float Opacity {
+			public double Opacity {
 				get; set;
 			}
 
@@ -73,9 +73,10 @@ namespace MoonTest.System.Windows.Data
 		{
 			public event PropertyChangedEventHandler PropertyChanged;
 
-			private float opacity;
+			// Under MS.NET this works when it's classified as a float
+			private double opacity;
 			
-			public float Opacity
+			public double Opacity
 			{
 				get { return opacity; }
 				set {
@@ -201,7 +202,7 @@ namespace MoonTest.System.Windows.Data
 			rectangle.SetBinding (Rectangle.OpacityProperty, binding);
 			Assert.AreEqual (data.Opacity, rectangle.Opacity);
 			data.Opacity = 0.0f;
-			Assert.AreNotEqual (data.Opacity, rectangle.Opacity);
+			Assert.AreNotEqual (data.Opacity, rectangle.Opacity, string.Format ("{0}-{1}", data.Opacity, rectangle.Opacity));
 		}
 
 		[TestMethod]
@@ -285,11 +286,109 @@ namespace MoonTest.System.Windows.Data
 				Mode = BindingMode.OneWay,
 				Source = data
 			};
-			Assert.AreEqual (0.0, (double) rectangle.ReadLocalValue (Rectangle.OpacityProperty));
+			Assert.AreEqual (0.0, (double) rectangle.ReadLocalValue (Rectangle.OpacityProperty), "#1");
 			
 			rectangle.SetBinding (Rectangle.OpacityProperty, binding);
 			
-			Assert.IsTrue(rectangle.ReadLocalValue (Rectangle.OpacityProperty) is BindingExpressionBase);
+			Assert.IsTrue(rectangle.ReadLocalValue (Rectangle.OpacityProperty) is BindingExpressionBase, "#2");
+		}
+
+		[TestMethod]
+		[Ignore ("I don't know how to find the default value that a DP has")]
+		public void PathNotValid()
+		{
+			Binding binding = new Binding {
+				Path = new PropertyPath ("PrivOpacity"),
+				Source = new Data (),
+			};
+
+			Rectangle r = new Rectangle { Opacity = 0.0 };
+			r.SetBinding (Shape.OpacityProperty, binding);
+			Assert.AreEqual (1.0, r.Opacity);
+		}
+
+		[TestMethod]
+		public void ChangeAfterBinding ()
+		{
+			Data data = new Data ();
+			Binding binding = new Binding {
+				Path = new PropertyPath ("Opacity"),
+				Source = data,
+				Mode = BindingMode.OneWay
+			};
+
+			Rectangle r = new Rectangle { Opacity = 0.0 };
+			r.SetBinding (Shape.OpacityProperty, binding);
+			Assert.AreEqual (data.Opacity, r.Opacity);
+			r.Opacity = 1.0;
+			Assert.AreEqual (1.0, r.Opacity);
+			data.Opacity = 0.0f;
+			Assert.AreEqual (1.0, r.Opacity);
+		}
+
+		[TestClass]
+		[Ignore ("Test fails on mono")]
+		public class BindingTest
+		{
+			[TestMethod]
+			public void XamlCreateBinding()
+			{
+				object o = XamlReader.Load(
+@"	
+<Canvas
+	Width=""100""
+	Height=""100""
+	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+	xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+	>
+		<TextBlock Text=""{Binding MyProperty}"" Foreground=""Green""/>
+</Canvas>
+
+");
+				TextBlock block = (TextBlock) ((Canvas)o).Children[0];
+				Assert.IsTrue(block.ReadLocalValue(TextBlock.TextProperty) is BindingExpressionBase);
+			}
+			
+			
+			[TestMethod]
+			public void XamlBindToClr()
+			{
+				Assert.Throws<XamlParseException>(delegate {
+					XamlReader.Load(
+	@"	
+<Canvas	
+	Width=""100""
+	Height=""100""
+	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+	xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+	xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
+	
+	>
+		<Canvas.Resources>
+			<my:Data x:Name=""CLRObject"" />
+		</Canvas.Resources>
+		<TextBox Text=""{Binding OpacityString, Source={StaticResource CLRObject}, Mode=OneTime}""/>
+</Canvas>
+
+");
+				});
+			}
+			
+			[TestMethod]
+			[Ignore ("Test fails on mono")]
+			public void XamlBoundToClr()
+			{
+				TestNamespace.BindingXaml a = new TestNamespace.BindingXaml();
+				TextBlock block = (TextBlock)a.LayoutRoot.Children[0];
+				Assert.IsNotNull(block, "#1");
+				//Assert.IsNull(a.CLRObject, "#2");
+				
+				BindingExpressionBase expression = block.ReadLocalValue(TextBlock.TextProperty) as BindingExpressionBase;
+				Assert.IsNotNull(expression, "3");
+				Assert.IsNull(block.DataContext);
+				Assert.IsNull(a.FindName("CLRObject"));
+				Assert.IsNull(a.DataContext);
+			}
 		}
 	}
 }
