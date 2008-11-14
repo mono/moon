@@ -40,7 +40,6 @@ CodecDownloader::CodecDownloader (Surface *surf)
 	message_label = NULL;
 	progress_bar = NULL;
 	eula_scrollwindow = NULL;
-	eula_buffer = NULL;
 	eula_view = NULL;
 	accept_button = NULL;
 	cancel_button = NULL;
@@ -171,7 +170,6 @@ CodecDownloader::DownloadCompleted (EventObject *sender, EventArgs *args)
 	gchar *codec_path = NULL;
 	gchar *codec_dir = NULL;
 	int codec_fd = 0;
-	GtkTextIter iter = { 0 };
 	
 	LOG_UI ("CodecDownloader::DownloadCompleted ()\n");
 	
@@ -187,9 +185,7 @@ CodecDownloader::DownloadCompleted (EventObject *sender, EventArgs *args)
 		ToggleEula (true);
 
 		gtk_button_set_label (GTK_BUTTON (accept_button), "_Accept");
-		gtk_text_buffer_set_text (eula_buffer, eula, strlen (eula));
-		gtk_text_view_get_iter_at_location (GTK_TEXT_VIEW (eula_view), &iter, 0, 0);
-		gtk_text_view_scroll_to_iter (GTK_TEXT_VIEW (eula_view), &iter, 0, true, 0, 0);
+		gtk_label_set_markup (GTK_LABEL (eula_view), eula);
 
 		gtk_dialog_set_response_sensitive (GTK_DIALOG (dialog), GTK_RESPONSE_OK, true);
 
@@ -398,6 +394,7 @@ CodecDownloader::Show ()
 	}
 	
 	gint label_width = 400;
+	GdkColor white = {0, 65535, 65535, 65535};
 
 	// Build HIG Dialog Box
 	dialog = gtk_dialog_new_with_buttons ("Moonlight Codecs Installer", NULL, (GtkDialogFlags)
@@ -455,13 +452,18 @@ CodecDownloader::Show ()
 	gtk_box_pack_start (GTK_BOX (vbox), progress_bar, false, false, 0);
 	
 	// EULA
-	eula_buffer = gtk_text_buffer_new (NULL);
-	eula_view = gtk_text_view_new_with_buffer (eula_buffer);
-	gtk_text_view_set_editable (GTK_TEXT_VIEW (eula_view), FALSE);
+	eula_view = gtk_label_new (NULL);
+	gtk_label_set_selectable (GTK_LABEL (eula_view), TRUE);
+	gtk_label_set_line_wrap (GTK_LABEL (eula_view), TRUE);
 
 	eula_scrollwindow = gtk_scrolled_window_new (NULL, NULL);
+	eula_evtbox = gtk_event_box_new ();
+
+	gtk_widget_modify_bg (GTK_WIDGET (eula_evtbox), GTK_STATE_NORMAL, &white); 
+	gtk_container_add (GTK_CONTAINER (eula_evtbox), eula_view);
+
 	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (eula_scrollwindow), GTK_SHADOW_IN);
-	gtk_container_add (GTK_CONTAINER (eula_scrollwindow), eula_view);
+	gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (eula_scrollwindow), eula_evtbox);
 	gtk_widget_set_size_request (eula_scrollwindow, -1, 225);
 	gtk_box_pack_end (GTK_BOX (vbox), eula_scrollwindow, false, false, 0);
 
