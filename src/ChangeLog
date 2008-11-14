@@ -1,3 +1,10 @@
+2008-11-14  Geoff Norton  <gnorton@novell.com>
+
+	* pipeline-ui.(cpp|h): Rework the pipeline for codec installation to 
+	handle the pango markup we're using.
+
+	r: miguel
+
 2008-11-13  Sebastien Pouliot <sebastien@ximian.com>
 
 	* runtime.cpp (running_on_nvidia): Fix leak of Display

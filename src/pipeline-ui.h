@@ -43,8 +43,8 @@ private:
 	GtkWidget *message_label;
 	GtkWidget *progress_bar;
 	GtkWidget *eula_scrollwindow;
-	GtkTextBuffer *eula_buffer;
 	GtkWidget *eula_view;
+	GtkWidget *eula_evtbox;
 	GtkWidget *accept_button;
 	GtkWidget *cancel_button;
 	GtkWidget *icon;
