@@ -132,8 +132,27 @@ namespace System.Windows.Data {
 				return false;
 			else
 				value = PropertyInfo.GetValue (PropertyTarget, null);
-			
+
+			if (Binding.Converter != null) {
+				value = Binding.Converter.Convert (value,
+				                                   Property.PropertyType,
+				                                   Binding.ConverterParameter,
+				                                   Binding.ConverterCulture ?? System.Globalization.CultureInfo.CurrentCulture);
+			}
 			return true;
+		}
+		
+		internal void SetValue (object value)
+		{
+			if (Binding.Converter != null)
+				value = Binding.Converter.ConvertBack (value,
+				                                       PropertyInfo.PropertyType,
+				                                       Binding.ConverterParameter,
+				                                       Binding.ConverterCulture ?? System.Globalization.CultureInfo.CurrentCulture);
+			// We can only set a property on the source if it has a backing DependencyProperty
+			// I also need to test what happens in the case where it's a sub property (Foo.Bar.Baz)
+			// Do we call SetValue on Foo, or do we drop all the way down to Baz and call SetValue there?
+			// It'd have to be Baz, otherwise it's inconsistent with how we get the value.
 		}
 	}
 }

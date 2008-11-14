@@ -718,14 +718,18 @@ namespace System.Windows {
 			object_type = value.GetType ();
 			if (!dp.PropertyType.IsAssignableFrom (object_type))
 				throw new ArgumentException (string.Format ("The DependencyProperty '{2}', whose property type is {0} can't be set to value whose type is {1}", dp.PropertyType.FullName, object_type.FullName, dp.Name));
-			
+
+			if (bindings.TryGetValue (dp, out expression) &&
+			    expression.Binding.Mode == BindingMode.TwoWay) {
+				expression.SetValue (value);
+			}
+				                     
 			v = GetAsValue (value, (dp is CustomDependencyProperty) || (dp.PropertyType == typeof (object) || dp.PropertyType == typeof (Type)));
 			try {
 				NativeMethods.dependency_object_set_value (native, dp.Native, ref v);
 			} finally {
 				NativeMethods.value_free_value (ref v);
 			}
-
 		}
 
 		internal DependencyObject DepObjectFindName (string name)

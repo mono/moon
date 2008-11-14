@@ -36,5 +36,9 @@ namespace System.Windows.Media {
 			SetValue (ColorProperty, color);
 		}
 
+		public override string ToString ()
+		{
+			return Color.ToString ();
+		}
 	}
 }

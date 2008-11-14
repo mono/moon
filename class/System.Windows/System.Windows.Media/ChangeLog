@@ -1,3 +1,8 @@
+2008-11-14  Alan McGovern  <amcgovern@novell.com>
+
+	* SolidColorBrush.cs: Add partial support for two way binding and for
+	using Binding.Converter
+
 2008-09-11  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* DeepZoomImageTileSource.cs: set the TileWidth, Height
