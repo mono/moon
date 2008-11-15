@@ -28,7 +28,7 @@ INCLUDES = \
 libmoonloader_la_LDFLAGS = \
 	-avoid-version
 
-libmoonloader_la_LIBADD = $(PLUGIN_LIBS)
+libmoonloader_la_LIBADD = -ldl $(LOADER_LIBS)
 
 libmoonloader_la_SOURCES = \
 	plugin-proxy.cpp

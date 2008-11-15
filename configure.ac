@@ -232,6 +232,11 @@ else
 fi
 AC_SUBST([SL_PROFILE])
 
+dnl 
+dnl glib
+dnl
+PKG_CHECK_MODULES(GLIB,glib-2.0)
+
 dnl
 dnl Cairo checks
 dnl
@@ -595,6 +600,9 @@ PLUGIN_LIBS="$(echo $PLUGIN_LIBS | sed -e s/-lglitz//g)"
 
 AC_SUBST(PLUGIN_CFLAGS)
 AC_SUBST(PLUGIN_LIBS)
+
+LOADER_LIBS="$GLIB_LIBS"
+AC_SUBST(LOADER_LIBS)
 
 if test x$with_ff3 = xyes; then
    MOZILLA_CFLAGS=$FF3_CFLAGS
