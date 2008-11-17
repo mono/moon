@@ -313,8 +313,6 @@ void
 AnimationClock::Begin ()
 {
 	Clock::Begin ();
-	//if (storage)
-	//	storage->AttachToPrevStorage ();
 }
 
 AnimationClock::~AnimationClock ()
