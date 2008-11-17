@@ -631,24 +631,22 @@ DoubleAnimation::DoubleAnimation ()
 	doubleToCached = NULL;
 	doubleFromCached = NULL;
 	doubleByCached = NULL;
+	hasCached = FALSE;
 }
 	
 void DoubleAnimation::EnsureCache (void)
 {
-	if (doubleFromCached == NULL)
-		doubleFromCached = GetFrom ();
-
-	if (doubleToCached == NULL)
-		doubleToCached = GetTo ();
-
-	if (doubleByCached == NULL)
-		doubleByCached = GetBy ();
+	doubleFromCached = GetFrom ();
+	doubleToCached = GetTo ();
+	doubleByCached = GetBy ();
+	hasCached = TRUE;
 }
 
 Value*
 DoubleAnimation::GetTargetValue (Value *defaultOriginValue)
 {
-	this->EnsureCache ();
+	if (! hasCached)
+		this->EnsureCache ();
 
 	double start = doubleFromCached ? *doubleFromCached : defaultOriginValue->AsDouble();
 
@@ -664,7 +662,8 @@ Value*
 DoubleAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 				  AnimationClock* animationClock)
 {
-	this->EnsureCache ();
+	if (! hasCached)
+		this->EnsureCache ();
 
 	double start = doubleFromCached ? *doubleFromCached : defaultOriginValue->AsDouble();
 	double end;
@@ -693,6 +692,7 @@ DoubleAnimation::OnPropertyChanged (PropertyChangedEventArgs *args)
 	}
 
 	// Get rid of the cache
+	hasCached = FALSE;
 	doubleToCached = NULL;
 	doubleFromCached = NULL;
 	doubleByCached = NULL;
@@ -705,24 +705,23 @@ ColorAnimation::ColorAnimation ()
 	colorToCached = NULL;
 	colorFromCached = NULL;
 	colorByCached = NULL;
+	hasCached = FALSE;
 }
 
 void ColorAnimation::EnsureCache (void)
 {
-	if (colorFromCached == NULL)
-		colorFromCached = GetFrom ();
-
-	if (colorToCached == NULL)
-		colorToCached = GetTo ();
-
-	if (colorByCached == NULL)
-		colorByCached = GetBy ();
+	colorFromCached = GetFrom ();
+	colorToCached = GetTo ();
+	colorByCached = GetBy ();
+	hasCached = TRUE;
 }
 
 Value*
 ColorAnimation::GetTargetValue (Value *defaultOriginValue)
 {
-	this->EnsureCache ();
+	if (! hasCached)
+		this->EnsureCache ();
+
 	Color start = colorFromCached ? *colorFromCached : *defaultOriginValue->AsColor();
 
 	if (colorToCached)
@@ -737,7 +736,8 @@ Value*
 ColorAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 				 AnimationClock* animationClock)
 {
-	this->EnsureCache ();
+	if (! hasCached)
+		this->EnsureCache ();
 
 	Color start = colorFromCached ? *colorFromCached : *defaultOriginValue->AsColor();
 	Color end;
@@ -769,20 +769,17 @@ ColorAnimation::OnPropertyChanged (PropertyChangedEventArgs *args)
 	colorToCached = NULL;
 	colorFromCached = NULL;
 	colorByCached = NULL;
+	hasCached = FALSE;
 
 	NotifyListenersOfPropertyChange (args);
 }
 
 void PointAnimation::EnsureCache (void)
 {
-	if (pointFromCached == NULL)
-		pointFromCached = GetFrom ();
-
-	if (pointToCached == NULL)
-		pointToCached = GetTo ();
-
-	if (pointByCached == NULL)
-		pointByCached = GetBy ();
+	pointFromCached = GetFrom ();
+	pointToCached = GetTo ();
+	pointByCached = GetBy ();
+	hasCached = TRUE;
 }
 
 PointAnimation::PointAnimation ()
@@ -790,12 +787,14 @@ PointAnimation::PointAnimation ()
 	pointToCached = NULL;
 	pointFromCached = NULL;
 	pointByCached = NULL;
+	hasCached = FALSE;
 }
 
 Value*
 PointAnimation::GetTargetValue (Value *defaultOriginValue)
 {
-	this->EnsureCache ();
+	if (! hasCached)
+		this->EnsureCache ();
 	
 	Point start = pointFromCached ? *pointFromCached : *defaultOriginValue->AsPoint();
 
@@ -811,7 +810,8 @@ Value*
 PointAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 				 AnimationClock* animationClock)
 {
-	this->EnsureCache ();
+	if (! hasCached)
+		this->EnsureCache ();
 
 	Point start = pointFromCached ? *pointFromCached : *defaultOriginValue->AsPoint();
 	Point end;
@@ -843,6 +843,7 @@ PointAnimation::OnPropertyChanged (PropertyChangedEventArgs *args)
 	pointToCached = NULL;
 	pointFromCached = NULL;
 	pointByCached = NULL;
+	hasCached = FALSE;
 
 	NotifyListenersOfPropertyChange (args);
 }

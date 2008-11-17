@@ -236,6 +236,7 @@ class DoubleAnimation : public Animation/*Timeline*/ {
 	double *doubleToCached;
 	double *doubleFromCached;
 	double *doubleByCached;
+	bool hasCached;
 
 	void EnsureCache (void);
 
@@ -285,6 +286,7 @@ class ColorAnimation : public Animation/*Timeline*/ {
 	Color *colorToCached;
 	Color *colorFromCached;
 	Color *colorByCached;
+	bool hasCached;
 
 	void EnsureCache (void);
 
@@ -334,6 +336,7 @@ class PointAnimation : public Animation/*Timeline*/ {
 	Point *pointToCached;
 	Point *pointFromCached;
 	Point *pointByCached;
+	bool hasCached;
 
 	void EnsureCache (void);
 

@@ -1,3 +1,8 @@
+2008-11-14  Michael Dominic K.  <mdk@mdk.am>
+
+	* animation.cpp:
+	* animation.h: Slightly more nice value caching.
+
 2008-11-14  Geoff Norton  <gnorton@novell.com>
 
 	* pipeline-ui.cpp:
