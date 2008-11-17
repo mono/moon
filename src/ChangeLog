@@ -1,3 +1,9 @@
+2008-11-17  Michael Dominic K.  <mdk@mdk.am>
+
+	* clock.cpp: When running without idle hint (runtime init) do not apply it 
+	here. Makes the idle hint switch actually do something and makes debugging
+	easier.
+
 2008-11-14  Michael Dominic K.  <mdk@mdk.am>
 
 	* animation.cpp:

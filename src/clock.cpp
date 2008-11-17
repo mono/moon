@@ -1304,7 +1304,7 @@ ClockGroup::Tick ()
 			   SL seems to do something similiar. We never fill ie. the
 			   main (time manager) clock group.
 			*/
-			idle_hint = true;
+			idle_hint = true & RUNTIME_INIT_USE_IDLE_HINT;
 			if (! never_fill)
 				SkipToFill ();
 		} else
