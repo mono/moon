@@ -55,6 +55,15 @@ static enum_map_t alignment_y_map [] = {
 	END_MAPPING
 };
 
+#ifdef SL_2_0
+static enum_map_t binding_mode_map [] = {
+	MAP_ENUM_SL2 (BindingMode, OneWay),
+	MAP_ENUM_SL2 (BindingMode, OneTime),
+	MAP_ENUM_SL2 (BindingMode, TwoWay),
+	END_MAPPING
+};
+#endif
+
 static enum_map_t brush_mapping_mode_map [] = {
 	MAP_ENUM (BrushMappingMode, Absolute),
 	MAP_ENUM (BrushMappingMode, RelativeToBoundingBox),
@@ -306,6 +315,7 @@ initialize_enums (void)
 	g_hash_table_insert (enum_map, (char *) "Visibility", visibility_map);
 
 #if SL_2_0
+	g_hash_table_insert (enum_map, (char *) "BindingMode", binding_mode_map);
 	g_hash_table_insert (enum_map, (char *) "ExternalCallersFromCrossDomain", cross_domain_access_map);
 	g_hash_table_insert (enum_map, (char *) "HorizontalScrollBarVisibility", scrollbar_visibility_map);
 	g_hash_table_insert (enum_map, (char *) "VerticalScrollBarVisibility", scrollbar_visibility_map);

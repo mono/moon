@@ -1,3 +1,7 @@
+2008-11-17  Jeffrey Stedfast  <fejj@novell.com>
+
+	* enums.cpp (initialize_enums): Map BindingMode in unmanaged land.
+
 2008-11-17  Michael Dominic K.  <mdk@mdk.am>
 
 	* clock.cpp: Fixing seek-test-multiple-repeat.html (a problem with multiple 

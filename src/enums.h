@@ -227,6 +227,12 @@ enum Key {
 
 // Silverlight 2.0 Enums:
 
+enum BindingMode {
+	BindingModeOneWay  = 1,
+	BindingModeOneTime = 2,
+	BindingModeTwoWay  = 3
+};
+
 enum GridUnitType {
        GridUnitTypeAuto,
        GridUnitTypePixel,
