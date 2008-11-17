@@ -822,7 +822,7 @@ Clock::ComputeNewTime ()
 				int repeated_count = (duration_timespan != 0) ? ret_time / duration_timespan : 1;
 				if (repeated_count % 2 == 1) {
 					forward = false;
-					ret_time = duration_timespan - (ret_time - duration_timespan);
+					ret_time = (duration_timespan * repeated_count) - (ret_time - duration_timespan);
 				} else {
 					forward = true;
 					ret_time = ret_time % duration_timespan;

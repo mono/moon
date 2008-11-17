@@ -1,5 +1,10 @@
 2008-11-17  Michael Dominic K.  <mdk@mdk.am>
 
+	* clock.cpp: Fixing seek-test-multiple-repeat.html (a problem with multiple 
+	repeats when seeking anims with RepeatBehavior >= 2.0).
+
+2008-11-17  Michael Dominic K.  <mdk@mdk.am>
+
 	* clock.cpp: When running without idle hint (runtime init) do not apply it 
 	here. Makes the idle hint switch actually do something and makes debugging
 	easier.
