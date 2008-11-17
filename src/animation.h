@@ -27,10 +27,10 @@
 // misc types
 /* @Namespace=System.Windows.Media.Animation */
 class KeySpline : public DependencyObject {
-	moon_quadratic quadraticsArray [16];
+	moon_quadratic *quadraticsArray;
 	
  protected:
-	virtual ~KeySpline () {}
+	virtual ~KeySpline ();
 	
  public:
 	/* @GenerateCBinding,GeneratePInvoke */

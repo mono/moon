@@ -30,6 +30,10 @@
 
 #define LERP(f,t,p) ((f) + ((t) - (f)) * (p))
 
+#define KEYSPLINE_PRECISION_LEVEL 4
+
+// This is 2 to power of KEYSPLINE_PRECISION_LEVEL
+#define KEYSPLINE_TOTAL_COUNT 16
 
 AnimationStorage::AnimationStorage (AnimationClock *clock, Animation/*Timeline*/ *timeline,
 				    DependencyObject *targetobj, DependencyProperty *targetprop)
@@ -849,6 +853,8 @@ PointAnimation::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 KeySpline::RegenerateQuadratics ()
 {
+	quadraticsArray = (moon_quadratic *) g_malloc (sizeof (moon_quadratic) * KEYSPLINE_TOTAL_COUNT);
+
 	Point c1 = *GetControlPoint1 ();
 	Point c2 = *GetControlPoint2 ();
 
@@ -858,18 +864,20 @@ KeySpline::RegenerateQuadratics ()
 	src.c2.x = c2.x; src.c2.y = c2.y;
 	src.c3.x  = 1.0; src.c3.y = 1.0;
 
-	moon_cubic carr [16];
+	moon_cubic carr [KEYSPLINE_TOTAL_COUNT];
 	
-	moon_subdivide_cubic_at_level (carr, 4, &src);
-	moon_convert_cubics_to_quadratics (quadraticsArray, carr, 16);
+	moon_subdivide_cubic_at_level (carr, KEYSPLINE_PRECISION_LEVEL, &src);
+	moon_convert_cubics_to_quadratics (quadraticsArray, carr, KEYSPLINE_TOTAL_COUNT);
 }
 
 KeySpline::KeySpline ()
 {
+	quadraticsArray = NULL;
 }
 
 KeySpline::KeySpline (Point controlPoint1, Point controlPoint2)
 {
+	quadraticsArray = NULL;
 	SetControlPoint1 (&controlPoint1);
 	SetControlPoint2 (&controlPoint2);
 }
@@ -877,6 +885,8 @@ KeySpline::KeySpline (Point controlPoint1, Point controlPoint2)
 KeySpline::KeySpline (double x1, double y1,
 		      double x2, double y2)
 {
+	quadraticsArray = NULL;
+
 	Point p1 = Point (x1, y1);
 	Point p2 = Point (x2, y2);
 
@@ -892,7 +902,8 @@ KeySpline::OnPropertyChanged (PropertyChangedEventArgs *args)
 		return;
 	}
 
-	RegenerateQuadratics ();
+	g_free (quadraticsArray);
+	quadraticsArray = NULL;
 
 	NotifyListenersOfPropertyChange (args);
 }
@@ -906,7 +917,16 @@ KeySpline::GetSplineProgress (double linearProgress)
 	if (linearProgress <= 0.0)
 		return 0.0;
 
-	return moon_quadratic_array_y_for_x (quadraticsArray, linearProgress, 16);
+	if (quadraticsArray == NULL)
+		RegenerateQuadratics ();
+
+	return moon_quadratic_array_y_for_x (quadraticsArray, linearProgress, KEYSPLINE_TOTAL_COUNT);
+}
+
+KeySpline::~KeySpline ()
+{
+	g_free (quadraticsArray);
+	quadraticsArray = NULL;
 }
 
 KeyFrame::KeyFrame ()
