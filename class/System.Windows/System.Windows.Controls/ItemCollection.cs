@@ -35,35 +35,6 @@ namespace System.Windows.Controls {
 		internal ItemCollection (IntPtr raw) : base (raw) {
 			throw new NotImplementedException ();
 		}
-
-		public override void Add(Object value) {
-			throw new NotImplementedException ();
-		}
-
-		public override bool Contains(Object value) {
-			throw new NotImplementedException ();
-		}
-		
-		public override int IndexOf(Object value)  {
-			throw new NotImplementedException ();
-		}
-
-		public override void Insert(int index, Object value) {
-			throw new NotImplementedException ();
-		}
-
-		public override bool Remove(Object value) {
-			throw new NotImplementedException ();
-		}
-
-		public override Object this[ int index ] {
-			get {
-				throw new NotImplementedException ();
-			}
-			set {
-				throw new NotImplementedException ();
-			}
-		}
 	}
 }
 

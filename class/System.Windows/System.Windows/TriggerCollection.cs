@@ -35,34 +35,5 @@ namespace System.Windows {
 
 	public sealed partial class TriggerCollection : PresentationFrameworkCollection<EventTrigger> {
 
-		public override void Add (EventTrigger value)
-		{
-			AddImpl (value);
-		}
-		
-		public override bool Contains (EventTrigger value)
-		{
-			return ContainsImpl (value);
-		}
-		
-		public override int IndexOf (EventTrigger value)
-		{
-			return IndexOfImpl (value);
-		}
-		
-		public override void Insert (int index, EventTrigger value)
-		{
-			InsertImpl (index, value);
-		}
-		
-		public override bool Remove (EventTrigger value)
-		{
-			return RemoveImpl (value);
-		}
-		
-		public override EventTrigger this[int index] {
-			get { return GetItemImpl (index); }
-			set { SetItemImpl (index, value); }
-		}
 	}
 }

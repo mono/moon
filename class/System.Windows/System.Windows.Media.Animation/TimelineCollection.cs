@@ -33,35 +33,5 @@ using Mono;
 namespace System.Windows.Media.Animation {
 
 	public sealed partial class TimelineCollection : PresentationFrameworkCollection<Timeline> {
-
-		public override void Add (Timeline value)
-		{
-			AddImpl (value);
-		}
-		
-		public override bool Contains (Timeline value)
-		{
-			return ContainsImpl (value);
-		}
-		
-		public override int IndexOf (Timeline value)
-		{
-			return IndexOfImpl (value);
-		}
-		
-		public override void Insert (int index, Timeline value)
-		{
-			InsertImpl (index, value);
-		}
-		
-		public override bool Remove (Timeline value)
-		{
-			return RemoveImpl (value);
-		}
-		
-		public override Timeline this[int index] {
-			get { return GetItemImpl (index); }
-			set { SetItemImpl (index, value); }
-		}
 	}
 }

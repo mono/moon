@@ -32,34 +32,6 @@ namespace System.Windows
 {
 	public sealed partial class TriggerActionCollection : PresentationFrameworkCollection<BeginStoryboard>  
 	{
-		public override void Add (BeginStoryboard value)
-		{
-			AddImpl (value);
-		}
-		
-		public override bool Contains (BeginStoryboard value)
-		{
-			return ContainsImpl (value);
-		}
-		
-		public override int IndexOf (BeginStoryboard value)
-		{
-			return IndexOfImpl (value);
-		}
-		
-		public override void Insert (int index, BeginStoryboard value)
-		{
-			InsertImpl (index, value);
-		}
-		
-		public override bool Remove (BeginStoryboard value)
-		{
-			return RemoveImpl (value);
-		}
-		
-		public override BeginStoryboard this[int index] {
-			get { return GetItemImpl (index); }
-			set { SetItemImpl (index, value); }
-		}
+
 	}
 }

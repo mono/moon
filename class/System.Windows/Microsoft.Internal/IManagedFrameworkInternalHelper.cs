@@ -30,7 +30,7 @@ using System;
 using System.Security;
 using System.Runtime.InteropServices;
 
-namespace MS.Internal
+namespace Microsoft.Internal
 {	
 	[ComVisible(true)]
 	[Guid("7B41BAC0-1AAC-4c4b-8A6E-9DCA6DE3E778")]

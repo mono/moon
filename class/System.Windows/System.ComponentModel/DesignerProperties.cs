@@ -30,7 +30,7 @@ using System.Windows;
 
 namespace System.ComponentModel {
 	public static class DesignerProperties {
-		public static DependencyProperty IsInDesignModeProperty;
+		public static readonly DependencyProperty IsInDesignModeProperty;
 
 		public static bool GetIsInDesignMode(DependencyObject element) {
 			throw new NotImplementedException();

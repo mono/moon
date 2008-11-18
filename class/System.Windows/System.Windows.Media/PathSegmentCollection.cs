@@ -33,34 +33,6 @@ namespace System.Windows.Media {
 
 	public sealed partial class PathSegmentCollection : PresentationFrameworkCollection<PathSegment> {
 
-		public override void Add (PathSegment value)
-		{
-			AddImpl (value);
-		}
-		
-		public override bool Contains (PathSegment value)
-		{
-			return ContainsImpl (value);
-		}
-		
-		public override int IndexOf (PathSegment value)
-		{
-			return IndexOfImpl (value);
-		}
-		
-		public override void Insert (int index, PathSegment value)
-		{
-			InsertImpl (index, value);
-		}
-		
-		public override bool Remove (PathSegment value)
-		{
-			return RemoveImpl (value);
-		}
-		
-		public override PathSegment this[int index] {
-			get { return GetItemImpl (index); }
-			set { SetItemImpl (index, value); }
-		}
+
 	}
 }

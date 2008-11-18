@@ -105,6 +105,12 @@ namespace System.Windows {
 		internal override Kind GetKind () { return Kind.TRIGGERACTION_COLLECTION; }
 	}
 
+	partial class TriggerBase {
+		public TriggerBase () : base (NativeMethods.trigger_base_new ()) {}
+		internal TriggerBase (IntPtr raw) : base (raw) {}
+		internal override Kind GetKind () { return Kind.TRIGGERBASE; }
+	}
+
 	partial class TriggerCollection {
 		internal TriggerCollection () : base (NativeMethods.trigger_collection_new ()) {}
 		internal TriggerCollection (IntPtr raw) : base (raw) {}

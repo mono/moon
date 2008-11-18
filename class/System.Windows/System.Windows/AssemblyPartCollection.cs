@@ -34,34 +34,5 @@ using Mono;
 namespace System.Windows {
 	public sealed partial class AssemblyPartCollection : PresentationFrameworkCollection<AssemblyPart> {
 	
-		public override void Add (AssemblyPart value)
-		{
-			AddImpl (value);
-		}
-		
-		public override bool Contains (AssemblyPart value)
-		{
-			return ContainsImpl (value);
-		}
-		
-		public override int IndexOf (AssemblyPart value)
-		{
-			return IndexOfImpl (value);
-		}
-		
-		public override void Insert (int index, AssemblyPart value)
-		{
-			InsertImpl (index, value);
-		}
-		
-		public override bool Remove (AssemblyPart value)
-		{
-			return RemoveImpl (value);
-		}
-		
-		public override AssemblyPart this[int index] {
-			get { return GetItemImpl (index); }
-			set { SetItemImpl (index, value); }
-		}
 	}
 }

@@ -32,35 +32,5 @@ using System.Windows;
 namespace System.Windows.Media {
 
 	public sealed partial class GeometryCollection : PresentationFrameworkCollection<Geometry> {
-
-		public override void Add (Geometry value)
-		{
-			AddImpl (value);
-		}
-		
-		public override bool Contains (Geometry value)
-		{
-			return ContainsImpl (value);
-		}
-		
-		public override int IndexOf (Geometry value)
-		{
-			return IndexOfImpl (value);
-		}
-		
-		public override void Insert (int index, Geometry value)
-		{
-			InsertImpl (index, value);
-		}
-		
-		public override bool Remove (Geometry value)
-		{
-			return RemoveImpl (value);
-		}
-		
-		public override Geometry this[int index] {
-			get { return GetItemImpl (index); }
-			set { SetItemImpl (index, value); }
-		}
 	}
 }

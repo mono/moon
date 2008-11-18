@@ -83,7 +83,7 @@ namespace System.Windows {
 			Helper.Agclr = typeof (DependencyObject).Assembly;
 		}
 
-		internal DependencyObject ()
+		protected DependencyObject ()
 		{
 			native = NativeMethods.dependency_object_new ();
 			events = new EventHandlerList ();
@@ -273,8 +273,7 @@ namespace System.Windows {
 			}
 		}
 
-		[SecuritySafeCritical]
-		public virtual object GetValue (DependencyProperty dp)
+		public object GetValue (DependencyProperty dp)
 		{
 			object result = null;
 			

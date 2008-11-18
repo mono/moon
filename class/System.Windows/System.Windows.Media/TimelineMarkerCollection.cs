@@ -28,35 +28,5 @@ using Mono;
 
 namespace System.Windows.Media {
 	public sealed partial class TimelineMarkerCollection : PresentationFrameworkCollection<TimelineMarker> {
-
-		public override void Add (TimelineMarker value)
-		{
-			AddImpl (value);
-		}
-		
-		public override bool Contains (TimelineMarker value)
-		{
-			return ContainsImpl (value);
-		}
-		
-		public override int IndexOf (TimelineMarker value)
-		{
-			return IndexOfImpl (value);
-		}
-		
-		public override void Insert (int index, TimelineMarker value)
-		{
-			InsertImpl (index, value);
-		}
-		
-		public override bool Remove (TimelineMarker value)
-		{
-			return RemoveImpl (value);
-		}
-		
-		public override TimelineMarker this[int index] {
-			get { return GetItemImpl (index); }
-			set { SetItemImpl (index, value); }
-		}
 	}
 }

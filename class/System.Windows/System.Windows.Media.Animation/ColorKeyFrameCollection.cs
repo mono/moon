@@ -30,34 +30,5 @@ namespace System.Windows.Media.Animation
 {
 	public sealed partial class ColorKeyFrameCollection : PresentationFrameworkCollection<ColorKeyFrame> {
 
-		public override void Add (ColorKeyFrame value)
-		{
-			AddImpl (value);
-		}
-		
-		public override bool Contains (ColorKeyFrame value)
-		{
-			return ContainsImpl (value);
-		}
-		
-		public override int IndexOf (ColorKeyFrame value)
-		{
-			return IndexOfImpl (value);
-		}
-		
-		public override void Insert (int index, ColorKeyFrame value)
-		{
-			InsertImpl (index, value);
-		}
-		
-		public override bool Remove (ColorKeyFrame value)
-		{
-			return RemoveImpl (value);
-		}
-		
-		public override ColorKeyFrame this[int index] {
-			get { return GetItemImpl (index); }
-			set { SetItemImpl (index, value); }
-		}
 	}
 }

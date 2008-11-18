@@ -1,3 +1,11 @@
+2008-11-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Application.cs, AssemblyPartCollection.cs, DataTemplate.cs,
+	  DependencyObject.cs, DependencyObject.g.cs, DurationConverter.cs,
+	  EventTrigger.cs, PresentationFrameworkCollection.cs,
+	  SetterBaseCollection.cs, TriggerActionCollection.cs,
+	  TriggerBase.cs, TriggerCollection.cs: Corcompare work.
+
 2008-11-14  Alan McGovern  <amcgovern@novell.com>
 
 	* DependencyObject.cs: Add partial support for two way binding and for

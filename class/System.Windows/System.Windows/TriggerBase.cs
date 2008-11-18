@@ -1,5 +1,5 @@
 /*
- * ObjectKeyFrameCollection.cs.
+ * TriggerBase.cs.
  *
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
@@ -11,11 +11,8 @@
  */
 
 using System;
-using System.Windows;
 
-namespace System.Windows.Media.Animation
-{
-	public sealed partial class ObjectKeyFrameCollection : PresentationFrameworkCollection<ObjectKeyFrame> {
-
+namespace System.Windows {	
+	public abstract partial class TriggerBase : DependencyObject {
 	}
 }

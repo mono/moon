@@ -32,9 +32,6 @@ namespace System.Windows {
 
 	public class DataTemplate : FrameworkTemplate {
 
-#if NET_2_1
-		[SecuritySafeCritical]
-#endif
 		public DependencyObject LoadContent ()
 		{
 			Console.WriteLine ("Not implemented: System.Windows.DataTemplate.LoadContent");

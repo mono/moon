@@ -29,35 +29,5 @@ using System.Windows;
 namespace System.Windows.Media {
 	public sealed partial class DoubleCollection : PresentationFrameworkCollection<double>
 	{
-
-		public override void Add (double value)
-		{
-			AddImpl (value);
-		}
-		
-		public override bool Contains (double value)
-		{
-			return ContainsImpl (value);
-		}
-		
-		public override int IndexOf (double value)
-		{
-			return IndexOfImpl (value);
-		}
-		
-		public override void Insert (int index, double value)
-		{
-			InsertImpl (index, value);
-		}
-		
-		public override bool Remove (double value)
-		{
-			return RemoveImpl (value);
-		}
-		
-		public override double this[int index] {
-			get { return GetItemImpl (index); }
-			set { SetItemImpl (index, value); }
-		}
 	}
 }

@@ -33,34 +33,5 @@ namespace System.Windows.Media {
 
 	public sealed partial class PathFigureCollection : PresentationFrameworkCollection<PathFigure> {
 
-		public override void Add (PathFigure value)
-		{
-			AddImpl (value);
-		}
-		
-		public override bool Contains (PathFigure value)
-		{
-			return ContainsImpl (value);
-		}
-		
-		public override int IndexOf (PathFigure value)
-		{
-			return IndexOfImpl (value);
-		}
-		
-		public override void Insert (int index, PathFigure value)
-		{
-			InsertImpl (index, value);
-		}
-		
-		public override bool Remove (PathFigure value)
-		{
-			return RemoveImpl (value);
-		}
-		
-		public override PathFigure this[int index] {
-			get { return GetItemImpl (index); }
-			set { SetItemImpl (index, value); }
-		}
 	}
 }

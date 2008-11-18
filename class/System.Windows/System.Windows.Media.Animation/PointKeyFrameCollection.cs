@@ -31,34 +31,5 @@ namespace System.Windows.Media.Animation
 {
 	public sealed partial class PointKeyFrameCollection : PresentationFrameworkCollection<PointKeyFrame> {
 
-		public override void Add (PointKeyFrame value)
-		{
-			AddImpl (value);
-		}
-		
-		public override bool Contains (PointKeyFrame value)
-		{
-			return ContainsImpl (value);
-		}
-		
-		public override int IndexOf (PointKeyFrame value)
-		{
-			return IndexOfImpl (value);
-		}
-		
-		public override void Insert (int index, PointKeyFrame value)
-		{
-			InsertImpl (index, value);
-		}
-		
-		public override bool Remove (PointKeyFrame value)
-		{
-			return RemoveImpl (value);
-		}
-		
-		public override PointKeyFrame this[int index] {
-			get { return GetItemImpl (index); }
-			set { SetItemImpl (index, value); }
-		}
 	}
 }

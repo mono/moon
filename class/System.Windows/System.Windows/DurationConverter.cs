@@ -41,7 +41,7 @@ namespace System.Windows
 #if NET_2_1
 		override
 #endif
-		public bool CanConvertFrom (Type sourceType)
+		public bool CanConvertFrom (/*ITypeDescriptorContext context, */Type sourceType)
 		{
 			return TypeConverters.CanConvertFrom<Duration>(sourceType);
 		}
@@ -49,7 +49,7 @@ namespace System.Windows
 #if NET_2_1
 		override
 #endif
-		public object ConvertFrom (object value)
+		public object ConvertFrom (/*ITypeDescriptorContext context, CultureInfo culture, */object value)
 		{
 			return TypeConverters.ConvertFrom<Duration>(this, value);
 		}

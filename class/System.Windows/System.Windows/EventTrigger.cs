@@ -28,7 +28,7 @@
 using Mono;
 namespace System.Windows 
 {
-	public sealed partial class EventTrigger : DependencyObject 
+	public sealed partial class EventTrigger : TriggerBase 
 	{
 	}
 }

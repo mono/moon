@@ -30,35 +30,5 @@ using System.Windows;
 namespace System.Windows.Media.Animation
 {
 	public sealed partial class DoubleKeyFrameCollection : PresentationFrameworkCollection<DoubleKeyFrame> {
-
-		public override void Add (DoubleKeyFrame value)
-		{
-			AddImpl (value);
-		}
-		
-		public override bool Contains (DoubleKeyFrame value)
-		{
-			return ContainsImpl (value);
-		}
-		
-		public override int IndexOf (DoubleKeyFrame value)
-		{
-			return IndexOfImpl (value);
-		}
-		
-		public override void Insert (int index, DoubleKeyFrame value)
-		{
-			InsertImpl (index, value);
-		}
-		
-		public override bool Remove (DoubleKeyFrame value)
-		{
-			return RemoveImpl (value);
-		}
-		
-		public override DoubleKeyFrame this[int index] {
-			get { return GetItemImpl (index); }
-			set { SetItemImpl (index, value); }
-		}
 	}
 }

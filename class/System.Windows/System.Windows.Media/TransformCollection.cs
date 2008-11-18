@@ -31,35 +31,5 @@ using System.Windows;
 
 namespace System.Windows.Media {
 	public sealed partial class TransformCollection : PresentationFrameworkCollection <Transform> {
-		
-		public override void Add (Transform value)
-		{
-			AddImpl (value);
-		}
-		
-		public override bool Contains (Transform value)
-		{
-			return ContainsImpl (value);
-		}
-		
-		public override int IndexOf (Transform value)
-		{
-			return IndexOfImpl (value);
-		}
-		
-		public override void Insert (int index, Transform value)
-		{
-			InsertImpl (index, value);
-		}
-		
-		public override bool Remove (Transform value)
-		{
-			return RemoveImpl (value);
-		}
-		
-		public override Transform this[int index] {
-			get { return GetItemImpl (index); }
-			set { SetItemImpl (index, value); }
-		}
 	}
 }

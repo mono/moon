@@ -33,34 +33,5 @@ namespace System.Windows.Controls
 {
 	public sealed partial class UIElementCollection : PresentationFrameworkCollection <UIElement>
 	{
-		public override void Add (UIElement value)
-		{
-			AddImpl (value);
-		}
-		
-		public override bool Contains (UIElement value)
-		{
-			return ContainsImpl (value);
-		}
-		
-		public override int IndexOf (UIElement value)
-		{
-			return IndexOfImpl (value);
-		}
-		
-		public override void Insert (int index, UIElement value)
-		{
-			InsertImpl (index, value);
-		}
-		
-		public override bool Remove (UIElement value)
-		{
-			return RemoveImpl (value);
-		}
-		
-		public override UIElement this[int index] {
-			get { return GetItemImpl (index); }
-			set { SetItemImpl (index, value); }
-		}
 	}
 }

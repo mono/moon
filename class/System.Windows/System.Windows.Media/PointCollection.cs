@@ -29,34 +29,6 @@ using System.Windows;
 namespace System.Windows.Media {
 	public sealed partial class PointCollection : PresentationFrameworkCollection<Point>
 	{
-		public override void Add (Point value)
-		{
-			AddImpl (value);
-		}
-		
-		public override bool Contains (Point value)
-		{
-			return ContainsImpl (value);
-		}
-		
-		public override int IndexOf (Point value)
-		{
-			return IndexOfImpl (value);
-		}
-		
-		public override void Insert (int index, Point value)
-		{
-			InsertImpl (index, value);
-		}
-		
-		public override bool Remove (Point value)
-		{
-			return RemoveImpl (value);
-		}
-		
-		public override Point this[int index] {
-			get { return GetItemImpl (index); }
-			set { SetItemImpl (index, value); }
-		}
+
 	}
 }

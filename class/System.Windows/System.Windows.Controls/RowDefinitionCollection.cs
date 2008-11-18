@@ -32,35 +32,5 @@ using Mono;
 namespace System.Windows.Controls {
 
 	public sealed partial class RowDefinitionCollection : PresentationFrameworkCollection<RowDefinition> {
-	
-		public override void Add (RowDefinition value)
-		{
-			AddImpl (value);
-		}
-		
-		public override bool Contains (RowDefinition value)
-		{
-			return ContainsImpl (value);
-		}
-		
-		public override int IndexOf (RowDefinition value)
-		{
-			return IndexOfImpl (value);
-		}
-		
-		public override void Insert (int index, RowDefinition value)
-		{
-			InsertImpl (index, value);
-		}
-		
-		public override bool Remove (RowDefinition value)
-		{
-			return RemoveImpl (value);
-		}
-		
-		public override RowDefinition this[int index] {
-			get { return GetItemImpl (index); }
-			set { SetItemImpl (index, value); }
-		}
 	}
 }

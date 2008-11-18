@@ -32,6 +32,6 @@ namespace System.Collections.Specialized {
 		Add,
 		Remove,
 		Replace,
-		Reset
+		Reset = 4
 	}
 }

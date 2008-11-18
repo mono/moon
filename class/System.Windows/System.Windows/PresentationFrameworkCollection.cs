@@ -81,16 +81,39 @@ namespace System.Windows {
 			NativeMethods.collection_remove_at (native, index);
 		}
 
-		public abstract void Add (T value);
-		public abstract void Insert (int index, T value);
-		public abstract bool Remove (T value);
-		public abstract T this [int index] {
-			get;
-			set;
+		public void Add (T value)
+		{
+			AddImpl (value);
+		}
+		
+		public void Insert (int index, T value)
+		{
+			InsertImpl (index, value);
+		}
+		
+		public bool Remove (T value)
+		{
+			return RemoveImpl (value);
+		}
+		
+		public T this [int index] {
+			get {
+				return GetItemImpl (index);
+			}
+			set {
+				SetItemImpl (index, value);
+			}
 		}
 
-		public abstract bool Contains (T value);
-		public abstract int IndexOf (T value);
+		public bool Contains (T value)
+		{
+			return ContainsImpl (value);
+		}
+		
+		public int IndexOf (T value)
+		{
+			return IndexOfImpl (value);
+		}
 
 
 		internal void AddImpl (T value)
@@ -338,26 +361,8 @@ namespace System.Windows {
 			else
 				return false;
 		}
-		
-		protected internal bool ContainsDouble (double value)
-		{
-			if (typeof(double) != typeof(T))
-				return false;
 
-			Value v = DependencyObject.GetAsValue (value);
-			return NativeMethods.collection_index_of (native, ref v) != -1;
-		}
-		
-		protected internal bool ContainsPoint (Point value)
-		{
-			if (typeof(Point) != typeof(T))
-				return false;
-
-			Value v = DependencyObject.GetAsValue (value);
-			return NativeMethods.collection_index_of (native, ref v) != -1;
-		}
-		
-		protected internal virtual bool ContainsImpl (object value)
+		internal virtual bool ContainsImpl (object value)
 		{
 			if (value == null)
 				throw new ArgumentNullException ("value");

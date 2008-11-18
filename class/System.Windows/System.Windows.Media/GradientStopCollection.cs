@@ -32,34 +32,5 @@ namespace System.Windows.Media {
 
 	public sealed partial class GradientStopCollection : PresentationFrameworkCollection<GradientStop> {
 
-		public override void Add (GradientStop value)
-		{
-			AddImpl (value);
-		}
-		
-		public override bool Contains (GradientStop value)
-		{
-			return ContainsImpl (value);
-		}
-		
-		public override int IndexOf (GradientStop value)
-		{
-			return IndexOfImpl (value);
-		}
-		
-		public override void Insert (int index, GradientStop value)
-		{
-			InsertImpl (index, value);
-		}
-		
-		public override bool Remove (GradientStop value)
-		{
-			return RemoveImpl (value);
-		}
-		
-		public override GradientStop this[int index] {
-			get { return GetItemImpl (index); }
-			set { SetItemImpl (index, value); }
-		}
 	}
 }

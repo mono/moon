@@ -32,34 +32,5 @@ using Mono;
 namespace System.Windows.Documents {
 	public sealed partial class InlineCollection : PresentationFrameworkCollection<Inline> {
 
-		public override void Add (Inline value)
-		{
-			AddImpl (value);
-		}
-		
-		public override bool Contains (Inline value)
-		{
-			return ContainsImpl (value);
-		}
-		
-		public override int IndexOf (Inline value)
-		{
-			return IndexOfImpl (value);
-		}
-		
-		public override void Insert (int index, Inline value)
-		{
-			InsertImpl (index, value);
-		}
-		
-		public override bool Remove (Inline value)
-		{
-			return RemoveImpl (value);
-		}
-		
-		public override Inline this[int index] {
-			get { return GetItemImpl (index); }
-			set { SetItemImpl (index, value); }
-		}
 	}
 }

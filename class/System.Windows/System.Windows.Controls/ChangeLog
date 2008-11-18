@@ -1,3 +1,9 @@
+2008-11-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* ColumnDefinitionCollection.cs, MediaElement.cs, ItemCollection.cs,
+	  UIElementCollection.cs, RowDefinitionCollection.cs: Corcompare
+	  work.
+
 2008-09-02  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* MultiScaleImage.cs: stub

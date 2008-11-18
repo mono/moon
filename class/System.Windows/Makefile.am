@@ -27,7 +27,7 @@ system_windows_sources =							\
 	$(srcdir)/Assembly/AssemblyInfo.cs					\
 	$(srcdir)/Assembly/MonoTODOAttribute.cs					\
 	$(srcdir)/../Consts.cs							\
-	$(srcdir)/MS.Internal/IManagedFrameworkInternalHelper.cs		\
+	$(srcdir)/Microsoft.Internal/IManagedFrameworkInternalHelper.cs		\
 	$(srcdir)/Mono/EventHandlerList.cs					\
 	$(srcdir)/Mono/Events.cs						\
 	$(srcdir)/Mono/Hosting.cs						\
@@ -184,6 +184,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/TextDecorations.cs				\
 	$(srcdir)/System.Windows/TextWrapping.cs				\
 	$(srcdir)/System.Windows/Thickness.cs					\
+	$(srcdir)/System.Windows/TriggerBase.cs				\
 	$(srcdir)/System.Windows/TriggerCollection.cs				\
 	$(srcdir)/System.Windows/TriggerActionCollection.cs			\
 	$(srcdir)/System.Windows/UIElement.cs					\

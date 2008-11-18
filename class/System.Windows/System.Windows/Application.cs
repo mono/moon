@@ -286,7 +286,6 @@ namespace System.Windows {
 		 * 	1. Application manifest resources
 		 * 	2. XAP content
 		 */
-		[SecuritySafeCritical]
 		public static StreamResourceInfo GetResourceStream (Uri resourceUri)
 		{
 			if (resourceUri == null)
@@ -330,7 +329,6 @@ namespace System.Windows {
 			return null;
 		}
 
-		[SecuritySafeCritical]
 		public static StreamResourceInfo GetResourceStream (StreamResourceInfo zipPackageStreamResourceInfo, Uri resourceUri)
 		{
 			if (zipPackageStreamResourceInfo == null)
@@ -349,19 +347,16 @@ namespace System.Windows {
 		}
 
 		public ResourceDictionary Resources {
-			[SecuritySafeCritical]
 			get {
 				throw new NotImplementedException ("Resources");
 			}
 		}
 
 		public UIElement RootVisual {
-			[SecuritySafeCritical]
 			get {
 				return root_visual;
 			}
 
-			[SecuritySafeCritical]
 			set {
 				if (value == null)
 					throw new InvalidOperationException ();

@@ -34,36 +34,6 @@ namespace System.Windows.Input
 {
 	public sealed partial class StylusPointCollection : PresentationFrameworkCollection <StylusPoint>
 	{
-		public override void Add (StylusPoint value)
-		{
-			AddImpl (value);
-		}
-		
-		public override bool Contains (StylusPoint value)
-		{
-			return ContainsImpl (value);
-		}
-		
-		public override int IndexOf (StylusPoint value)
-		{
-			return IndexOfImpl (value);
-		}
-		
-		public override void Insert (int index, StylusPoint value)
-		{
-			InsertImpl (index, value);
-		}
-		
-		public override bool Remove (StylusPoint value)
-		{
-			return RemoveImpl (value);
-		}
-		
-		public override StylusPoint this[int index] {
-			get { return GetItemImpl (index); }
-			set { SetItemImpl (index, value); }
-		}
-
 		[SecuritySafeCritical]
 		public void Add (StylusPointCollection stylusPoints)
 		{

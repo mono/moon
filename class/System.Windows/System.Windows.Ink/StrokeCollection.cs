@@ -51,35 +51,5 @@ namespace System.Windows.Ink
 
 			return (StrokeCollection)DependencyObject.Lookup (Kind.STROKE_COLLECTION, col);
 		}
-
-		public override void Add (Stroke value)
-		{
-			AddImpl (value);
-		}
-		
-		public override bool Contains (Stroke value)
-		{
-			return ContainsImpl (value);
-		}
-		
-		public override int IndexOf (Stroke value)
-		{
-			return IndexOfImpl (value);
-		}
-		
-		public override void Insert (int index, Stroke value)
-		{
-			InsertImpl (index, value);
-		}
-		
-		public override bool Remove (Stroke value)
-		{
-			return RemoveImpl (value);
-		}
-		
-		public override Stroke this[int index] {
-			get { return GetItemImpl (index); }
-			set { SetItemImpl (index, value); }
-		}
 	}
 }

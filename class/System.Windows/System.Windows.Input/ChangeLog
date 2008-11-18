@@ -1,3 +1,7 @@
+2008-11-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* StylusPointCollection.cs: Corcompare work.
+
 2008-08-18  Chris Toshok  <toshok@ximian.com>
 
 	* MouseEventArgs.cs: the Handled property in unmanaged code is on

@@ -51,11 +51,6 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty StretchProperty =
 			DependencyProperty.Lookup (Kind.MEDIABASE, "Stretch", typeof (Stretch));
 				
-		public override object GetValue (DependencyProperty dp)
-		{
-			return base.GetValue (dp);
-		}
-		
 		[SecuritySafeCritical]
 		public void Pause ()
 		{

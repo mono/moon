@@ -43,36 +43,6 @@ namespace System.Windows {
 			foreach (SetterBase setter in this)
 				setter.Seal ();
 		}
-
-		public override void Add (SetterBase value)
-		{
-			AddImpl (value);
-		}
-		
-		public override bool Contains (SetterBase value)
-		{
-			return ContainsImpl (value);
-		}
-		
-		public override int IndexOf (SetterBase value)
-		{
-			return IndexOfImpl (value);
-		}
-		
-		public override void Insert (int index, SetterBase value)
-		{
-			InsertImpl (index, value);
-		}
-		
-		public override bool Remove (SetterBase value)
-		{
-			return RemoveImpl (value);
-		}
-		
-		public override SetterBase this[int index] {
-			get { return GetItemImpl (index); }
-			set { SetItemImpl (index, value); }
-		}
 	}
 
 }
