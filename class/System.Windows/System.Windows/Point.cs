@@ -27,7 +27,7 @@
 //
 
 namespace System.Windows {
-	public struct Point  {
+	public struct Point : IFormattable  {
 		double x, y;
 
 		public Point (double x, double y)
@@ -59,6 +59,11 @@ namespace System.Windows {
 			return String.Format ("{0},{1}", x, y);
 		}
 
+		public string ToString (IFormatProvider provider)
+		{
+			throw new NotImplementedException ();
+		}
+
 		public static bool operator == (Point point1, Point point2)
 		{
 			return (point1.x == point2.x) && (point1.y == point2.y);
@@ -79,5 +84,10 @@ namespace System.Windows {
 			set { y = value; } 
 		}
 
+		string System.IFormattable.ToString (string format, IFormatProvider provider)
+		{
+			throw new NotImplementedException ();
+		}
+		
 	}
 }

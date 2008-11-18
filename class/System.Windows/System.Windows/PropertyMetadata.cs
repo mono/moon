@@ -31,9 +31,21 @@ namespace System.Windows
 	public class PropertyMetadata
 	{
 		internal PropertyChangedCallback property_changed_callback;
+		object default_value;
 		
 		public PropertyMetadata (PropertyChangedCallback propertyChangedCallback)
 		{
+			property_changed_callback = propertyChangedCallback;
+		}
+
+		public PropertyMetadata (object defaultValue)
+		{
+			default_value = defaultValue;
+		}
+
+		public PropertyMetadata (object defaultValue, PropertyChangedCallback propertyChangedCallback)
+		{
+			default_value = defaultValue;
 			property_changed_callback = propertyChangedCallback;
 		}
 	}

@@ -409,6 +409,7 @@ dependency_property_g_init (void)
 	UIElement::ResourcesProperty = DependencyProperty::Register (Type::UIELEMENT, "Resources", Type::RESOURCE_DICTIONARY);
 	UIElement::TagProperty = DependencyProperty::Register (Type::UIELEMENT, "Tag", Type::STRING);
 	UIElement::TriggersProperty = DependencyProperty::Register (Type::UIELEMENT, "Triggers", Type::TRIGGER_COLLECTION);
+	UIElement::UseLayoutRoundingProperty = DependencyProperty::Register (Type::UIELEMENT, "UseLayoutRounding", new Value (true));
 	UIElement::VisibilityProperty = DependencyProperty::Register (Type::UIELEMENT, "Visibility", new Value (VisibilityVisible));
 #if SL_2_0
 	UserControl::ContentProperty = DependencyProperty::Register (Type::USERCONTROL, "Content", Type::UIELEMENT);
@@ -771,6 +772,7 @@ DependencyProperty *UIElement::RenderTransformProperty = NULL;
 DependencyProperty *UIElement::ResourcesProperty = NULL;
 DependencyProperty *UIElement::TagProperty = NULL;
 DependencyProperty *UIElement::TriggersProperty = NULL;
+DependencyProperty *UIElement::UseLayoutRoundingProperty = NULL;
 DependencyProperty *UIElement::VisibilityProperty = NULL;
 #if SL_2_0
 DependencyProperty *UserControl::ContentProperty = NULL;
@@ -4775,6 +4777,19 @@ void
 UIElement::SetTriggers (TriggerCollection * value)
 {
 	SetValue (UIElement::TriggersProperty, Value (value));
+}
+
+bool
+UIElement::GetUseLayoutRounding ()
+{
+	Value *value = GetValue (UIElement::UseLayoutRoundingProperty);
+	return value->AsBool ();
+}
+
+void
+UIElement::SetUseLayoutRounding (bool value)
+{
+	SetValue (UIElement::UseLayoutRoundingProperty, Value (value));
 }
 
 Visibility

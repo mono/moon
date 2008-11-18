@@ -1,5 +1,9 @@
 2008-11-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Makefile.am, System.Windows.mdp: More corcompare work.
+
+2008-11-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Makefile.am, Microsoft.Internal,
 	  Microsoft.Internal/IManagedFrameworkInternalHelper.cs, MS.Internal,
 	  MS.Internal/IManagedFrameworkInternalHelper.cs, System.Windows.mdp:

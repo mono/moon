@@ -27,7 +27,9 @@
 //
 
 using System.Windows.Markup;
+using System.Collections;
 using System.Collections.ObjectModel;
+using Mono;
 
 namespace System.Windows {
 
@@ -35,11 +37,11 @@ namespace System.Windows {
 	public sealed class VisualStateGroup : DependencyObject
 	{
 		private static readonly DependencyProperty StatesProperty = DependencyProperty.Register ("States",
-													 typeof (Collection<VisualState>),
+													 typeof (IList),
 													 typeof (VisualStateGroup),
 													 null);
 		private static readonly DependencyProperty TransitionsProperty = DependencyProperty.Register ("Transitions",
-													      typeof (Collection<VisualTransition>),
+													      typeof (IList),
 													      typeof (VisualStateGroup),
 													      null);
 
@@ -47,14 +49,55 @@ namespace System.Windows {
 			get { throw new NotImplementedException (); }
 		}
 
-		public Collection<VisualState> States {
-			get { return (Collection<VisualState>)GetValue(StatesProperty); }
-			set { SetValue (StatesProperty, value); }
+		public IList States {
+			get { return (IList) GetValue(StatesProperty); }
 		}
 
-		public Collection<VisualTransition> Transitions {
-			get { return (Collection<VisualTransition>)GetValue(TransitionsProperty); }
-			set { SetValue (TransitionsProperty, value); }
+		public IList Transitions {
+			get { return (IList) GetValue(TransitionsProperty); }
+		}
+
+		static object CurrentStateChangingEvent = new object ();
+		static object CurrentStateChangedEvent = new object ();
+		
+		public event EventHandler<VisualStateChangedEventArgs> CurrentStateChanging {
+			add {
+				if (events[CurrentStateChangingEvent] == null)
+					Events.AddHandler (this, "CurrentStateChanging", Events.current_state_changing);
+				events.AddHandler (CurrentStateChangingEvent, value);
+			}
+			remove {
+				events.RemoveHandler (CurrentStateChangingEvent, value);
+				if (events[CurrentStateChangingEvent] == null)
+					Events.RemoveHandler (this, "CurrentStateChanging", Events.current_state_changing);
+			}
+		}
+		
+		public event EventHandler<VisualStateChangedEventArgs> CurrentStateChanged {
+			add {
+				if (events[CurrentStateChangedEvent] == null)
+					Events.AddHandler (this, "CurrentStateChanged", Events.current_state_changed);
+				events.AddHandler (CurrentStateChangedEvent, value);
+			}
+			remove {
+				events.RemoveHandler (CurrentStateChangedEvent, value);
+				if (events[CurrentStateChangedEvent] == null)
+					Events.RemoveHandler (this, "CurrentStateChanged", Events.current_state_changed);
+			}
+		}
+
+		internal void InvokeCurrentStateChanging (VisualStateChangedEventArgs e)
+		{
+			EventHandler<VisualStateChangedEventArgs> h = (EventHandler<VisualStateChangedEventArgs>) events[CurrentStateChangingEvent];
+			if (h != null)
+				h (this, e);
+		}
+		
+		internal void InvokeCurrentStateChanged (VisualStateChangedEventArgs e)
+		{
+			EventHandler<VisualStateChangedEventArgs> h = (EventHandler<VisualStateChangedEventArgs>) events[CurrentStateChangedEvent];
+			if (h != null)
+				h (this, e);
 		}
 	}
 }

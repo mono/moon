@@ -292,13 +292,11 @@ namespace System.Windows {
 			return result;
 		}
 
-		[SecuritySafeCritical]
 		public object GetAnimationBaseValue (DependencyProperty dp)
 		{
 			throw new System.NotImplementedException ();
 		}
-		
-		[SecuritySafeCritical]
+
 		public object ReadLocalValue (DependencyProperty dp)
 		{
 			if (bindings.ContainsKey (dp))
@@ -307,8 +305,6 @@ namespace System.Windows {
 				return GetValue (dp);
 		}
 		
-		
-		[SecuritySafeCritical]
 		public void ClearValue (DependencyProperty dp)
 		{
 			throw new System.NotImplementedException ();
@@ -746,7 +742,6 @@ namespace System.Windows {
 			return Kind.DEPENDENCY_OBJECT;
 		}
 
-		[SecuritySafeCritical ()]
 		[System.ComponentModel.EditorBrowsable (System.ComponentModel.EditorBrowsableState.Never)]
 		public bool CheckAccess ()
 		{

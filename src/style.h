@@ -68,7 +68,7 @@ class SetterBase : public DependencyObject {
 	virtual ~SetterBase () { }
 	
  public:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	SetterBase ();
 	
 	virtual Type::Kind GetObjectType () { return Type::SETTERBASE; }

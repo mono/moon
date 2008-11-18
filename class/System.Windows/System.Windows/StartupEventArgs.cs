@@ -34,10 +34,9 @@ namespace System.Windows {
 	public sealed class StartupEventArgs : EventArgs {
 		private Dictionary<string,string> init_params;
 
-		public StartupEventArgs () {}
+		internal StartupEventArgs () {}
 
 		public IDictionary<string,string> InitParams {
-			[SecuritySafeCritical]
 			get {
 				if (init_params == null) {
 					char [] param_separator = new char [] { ',' };

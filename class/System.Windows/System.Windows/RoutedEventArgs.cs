@@ -53,7 +53,6 @@ namespace System.Windows {
 		}
 
 		public object OriginalSource {
-			[SecuritySafeCritical]
 			get {
 				if (source_set)
 					return source;

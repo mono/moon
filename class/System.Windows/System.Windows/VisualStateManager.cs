@@ -39,7 +39,7 @@ namespace System.Windows {
 														   typeof (Collection<VisualStateGroup>),
 														   typeof (VisualStateManager), null);
 
-		public static DependencyProperty CustomVisualStateManagerProperty = DependencyProperty.RegisterAttached ("CustomVisualStateManager",
+		public static readonly DependencyProperty CustomVisualStateManagerProperty = DependencyProperty.RegisterAttached ("CustomVisualStateManager",
 															 typeof (VisualStateManager),
 															 typeof (VisualStateManager), null);
 
@@ -91,6 +91,16 @@ namespace System.Windows {
 		{
 			Console.Error.WriteLine ("GoToStateCore not implemented");
 			return true;
+		}
+
+		protected void RaiseCurrentStateChanged (VisualStateGroup stateGroup, VisualState oldState, VisualState newState, Control control)
+		{
+			stateGroup.InvokeCurrentStateChanged (new VisualStateChangedEventArgs (oldState, newState, control));
+		}
+		
+		protected void RaiseCurrentStateChanging (VisualStateGroup stateGroup, VisualState oldState, VisualState newState, Control control)
+		{
+			stateGroup.InvokeCurrentStateChanging (new VisualStateChangedEventArgs (oldState, newState, control));
 		}
 	}
 

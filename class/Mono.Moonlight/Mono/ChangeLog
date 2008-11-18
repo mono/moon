@@ -1,5 +1,9 @@
 2008-11-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Types.g.cs: More corcompare work.
+
+2008-11-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* GeneratedPInvokes.cs, Kind.cs, Types.g.cs: Add TriggerBase, make
 	  EventTrigger inherit from it and regenerate.
 

@@ -34,10 +34,10 @@ namespace System.Windows {
 	public class TemplateBindingExpression : Expression {
 		internal TemplateBindingExpression () { }
 
-		protected internal Control _source;
-		protected internal DependencyProperty _sourceProperty;
+		internal Control _source;
+		internal DependencyProperty _sourceProperty;
 
-		protected internal FrameworkElement _target;
-		protected internal DependencyProperty _targetProperty;
+		internal FrameworkElement _target;
+		internal DependencyProperty _targetProperty;
 	}
 }

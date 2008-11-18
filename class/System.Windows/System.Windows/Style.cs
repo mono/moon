@@ -42,7 +42,6 @@ namespace System.Windows {
 			TargetType = targetType;
 		}
 
-		[SecuritySafeCritical]
 		public void Seal()
 		{
 			isSealed = true;

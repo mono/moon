@@ -43,6 +43,8 @@ namespace Mono {
 
 	internal class Events {
 		internal static UnmanagedEventHandler binding_validation_error = new UnmanagedEventHandler (binding_validation_error_callback);
+		internal static UnmanagedEventHandler current_state_changing = new UnmanagedEventHandler (current_state_changing_callback);
+		internal static UnmanagedEventHandler current_state_changed = new UnmanagedEventHandler (current_state_changed_callback);
 		internal static UnmanagedEventHandler mouse_motion = new UnmanagedEventHandler (mouse_motion_notify_callback);
 		internal static UnmanagedEventHandler mouse_button_down = new UnmanagedEventHandler (mouse_button_down_callback);
 		internal static UnmanagedEventHandler mouse_button_up = new UnmanagedEventHandler (mouse_button_up_callback);
@@ -51,6 +53,7 @@ namespace Mono {
 		internal static UnmanagedEventHandler key_up = new UnmanagedEventHandler (key_up_callback);
 		internal static UnmanagedEventHandler got_focus = new UnmanagedEventHandler (got_focus_callback);
 		internal static UnmanagedEventHandler lost_focus = new UnmanagedEventHandler (lost_focus_callback);
+		internal static UnmanagedEventHandler lost_mouse_capture = new UnmanagedEventHandler (lost_mouse_capture_callback);
 		internal static UnmanagedEventHandler layout_updated = new UnmanagedEventHandler (layout_updated_callback);
 		internal static UnmanagedEventHandler loaded = new UnmanagedEventHandler (loaded_callback);
 		internal static UnmanagedEventHandler mouse_leave = new UnmanagedEventHandler (mouse_leave_callback);
@@ -63,6 +66,34 @@ namespace Mono {
 			throw new NotImplementedException ();
 		}
 
+		static void current_state_changing_callback (IntPtr target, IntPtr calldata, IntPtr closure)
+		{
+			try {
+				VisualStateGroup e = (VisualStateGroup) Helper.GCHandleFromIntPtr (closure).Target;
+				e.InvokeCurrentStateChanging (new VisualStateChangedEventArgs (calldata));
+			}
+			catch (Exception ex) {
+				if (IsPlugin ())
+					ReportException (ex);
+				else
+					throw;
+			}
+		}
+		
+		static void current_state_changed_callback (IntPtr target, IntPtr calldata, IntPtr closure)
+		{
+			try {
+				VisualStateGroup e = (VisualStateGroup) Helper.GCHandleFromIntPtr (closure).Target;
+				e.InvokeCurrentStateChanged (new VisualStateChangedEventArgs (calldata));
+			}
+			catch (Exception ex) {
+				if (IsPlugin ())
+					ReportException (ex);
+				else
+					throw;
+			}
+		}
+		
 		static void got_focus_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
 			try {
@@ -91,6 +122,20 @@ namespace Mono {
 			}
 		}
 
+		static void lost_mouse_capture_callback (IntPtr target, IntPtr calldata, IntPtr closure)
+		{
+			try {
+				UIElement e = (UIElement) Helper.GCHandleFromIntPtr (closure).Target;
+				e.InvokeLostMouseCapture (new MouseEventArgs (calldata));
+			}
+			catch (Exception ex) {
+				if (IsPlugin ())
+					ReportException (ex);
+				else
+					throw;
+			}
+		}
+		
 		static void layout_updated_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
 			try {

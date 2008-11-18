@@ -43,6 +43,11 @@ namespace System.Windows
 			this.path = path;
 			this.path_parameters = pathParameters;
 		}
+
+		public PropertyPath (object parameter)
+		{
+			throw new NotImplementedException ();
+		}
 		
 		public string Path {
 			get { return path; }

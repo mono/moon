@@ -221,6 +221,7 @@ namespace System.Windows {
 		public static readonly DependencyProperty OpacityProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Opacity", typeof (double));
 		public static readonly DependencyProperty RenderTransformOriginProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "RenderTransformOrigin", typeof (Point));
 		public static readonly DependencyProperty RenderTransformProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "RenderTransform", typeof (Transform));
+		public static readonly DependencyProperty UseLayoutRoundingProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "UseLayoutRounding", typeof (bool));
 		public static readonly DependencyProperty VisibilityProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Visibility", typeof (Visibility));
 
 		public Geometry Clip {
@@ -251,6 +252,11 @@ namespace System.Windows {
 		public Transform RenderTransform {
 			get { return (Transform) GetValue (RenderTransformProperty); }
 			set { SetValue (RenderTransformProperty, value); }
+		}
+
+		public bool UseLayoutRounding {
+			get { return (bool) GetValue (UseLayoutRoundingProperty); }
+			set { SetValue (UseLayoutRoundingProperty, value); }
 		}
 
 		public Visibility Visibility {

@@ -45,7 +45,6 @@ namespace System.Windows {
 			NativeMethods.framework_element_register_managed_overrides (native, measure_cb, arrange_cb);
 		}
 
-		[SecuritySafeCritical]
 		public object FindName (string name)
 		{
 			return DepObjectFindName (name);
@@ -63,7 +62,6 @@ namespace System.Windows {
 			return e;
 		}
 
-		[SecuritySafeCritical]
 		protected virtual Size MeasureOverride (Size availableSize)
 		{
 			UnmanagedSize uavail = new UnmanagedSize();
@@ -76,7 +74,6 @@ namespace System.Windows {
 			return new Size (rv.width, rv.height);
 		}
 
-		[SecuritySafeCritical]
 		protected virtual Size ArrangeOverride (Size finalSize)
 		{
 			UnmanagedSize ufinal = new UnmanagedSize();
@@ -90,7 +87,6 @@ namespace System.Windows {
 		}
 
 		public DependencyObject Parent {
-			[SecuritySafeCritical]
 			get {
 				IntPtr parent_handle = NativeMethods.uielement_get_visual_parent (native);
 				if (parent_handle == IntPtr.Zero)
@@ -220,6 +216,12 @@ namespace System.Windows {
 			sz.width = rv.Width;
 			sz.height = rv.Height;
 			return sz;
+		}
+		
+		[SecuritySafeCriticalAttribute ()]
+		public virtual void OnApplyTemplate ()
+		{
+			throw new NotImplementedException ();
 		}
 	}
 }

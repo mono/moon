@@ -299,6 +299,16 @@
     <File name="System.IO.IsolatedStorage/IsolatedStorageSettings.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/DurationConverter.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/TriggerBase.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/MessageBox.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/MessageBoxButton.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/MessageBoxResult.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/PropertyPathConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/StyleTypedPropertyAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/SystemParameters.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/TemplateVisualStateAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/TriggerAction.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/VisualStateChangedEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/DependencyPropertyChangedEventHandler.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="Mono.Moonlight" />

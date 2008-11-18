@@ -38,7 +38,6 @@ namespace System.Windows {
 
 	public partial class ResourceDictionary	: DependencyObject, IDictionary<Object, Object> {
 
-		[SecuritySafeCritical]
 		public void Add (string key, object value)
 		{
 			if (key == null)
@@ -54,7 +53,6 @@ namespace System.Windows {
 			}
 		}
 
-		[SecuritySafeCritical]
 		public void Clear ()
 		{
 			NativeMethods.resource_dictionary_clear (native);
@@ -82,7 +80,6 @@ namespace System.Windows {
 			return str_key;
 		}
 
-		[SecuritySafeCritical]
 		public void Remove (string key)
 		{
 			RemoveInternal (key);
@@ -116,7 +113,6 @@ namespace System.Windows {
 		}
 
 		public object this[object key] { 
-			[SecuritySafeCritical]
 			get {
 				bool exists;
 				IntPtr val = NativeMethods.resource_dictionary_get (native, ToStringKey (key), out exists);

@@ -34,10 +34,6 @@ namespace System.Windows {
 
 	[ContentProperty ("Storyboard")]
 	public class VisualTransition {
-
-		string from;
-		string to;
-		Storyboard storyboard;
 		Duration duration;
 
 		public VisualTransition ()
@@ -45,24 +41,13 @@ namespace System.Windows {
 		}
 
 		[TypeConverter (typeof (DurationConverter))]
-		public Duration Duration {
+		public Duration GeneratedDuration {
 			get { return duration; }
 			set { duration = value; }
 		}
 
-		public string From {
-			get { return from; }
-			set { from = value; }
-		}
-
-		public Storyboard Storyboard {
-			get { return storyboard; }
-			set { storyboard = value; }
-		}
-
-		public string To {
-			get { return to; }
-			set { to = value; }
-		}
+		public string From { get; set; }
+		public Storyboard Storyboard { get; set; }
+		public string To { get; set; }
 	}
 }

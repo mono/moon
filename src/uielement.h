@@ -396,6 +396,8 @@ public:
 	static DependencyProperty *RenderTransformProperty;
  	/* @PropertyType=Visibility,DefaultValue=VisibilityVisible,GenerateAccessors */
 	static DependencyProperty *VisibilityProperty;
+	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
+	static DependencyProperty *UseLayoutRoundingProperty;
 
 	// in 2.0 these properties are actually in FrameworkElement
  	/* @PropertyType=MouseCursor,DefaultValue=MouseCursorDefault,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=Cursor,ManagedFieldAccess=Internal,GenerateAccessors */

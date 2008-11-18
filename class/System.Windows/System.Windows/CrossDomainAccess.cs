@@ -32,7 +32,6 @@ namespace System.Windows {
 
 	public enum CrossDomainAccess {
 		NoAccess,
-		FullAccess,
-		ScriptableOnly,
+		ScriptableOnly = 2,
 	}
 }

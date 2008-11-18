@@ -53,7 +53,7 @@ public:
 	/* @PropertyType=Style,Version=2.0,GenerateAccessors */
 	static DependencyProperty *StyleProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	FrameworkElement ();
 	
 	virtual Type::Kind GetObjectType () { return Type::FRAMEWORKELEMENT; }

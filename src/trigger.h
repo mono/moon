@@ -18,16 +18,16 @@
 /* @Namespace=System.Windows */
 class TriggerBase : public DependencyObject {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	TriggerBase () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::TRIGGERBASE; }
 };
 
-/* @Namespace=None */
+/* @Namespace=System.Windows */
 class TriggerAction : public DependencyObject {
  public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	TriggerAction () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::TRIGGERACTION; }

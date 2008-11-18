@@ -28,7 +28,7 @@
 
 namespace System.Windows {
 
-	public struct Rect {
+	public struct Rect : IFormattable {
 
 		private double x, y, w, h;
 
@@ -47,12 +47,25 @@ namespace System.Windows {
 			this.w = Math.Abs (point2.X - point1.X);
 			this.h = Math.Abs (point2.Y - point1.Y);
 		}
+
+		public Rect (Point location, Size size)
+		{
+			this.x = location.X;
+			this.y = location.Y;
+			this.w = size.Width;
+			this.h = size.Height;
+		}
 		
 		public override string ToString ()
 		{
 			return String.Format ("{0},{1},{2},{3}", x, y, w, h);
 		}
 
+		public string ToString (IFormatProvider provider)
+		{
+			throw new NotImplementedException ();
+		}
+		
 		public double X {
 			get { return x; }
 			set { x = value; }
@@ -178,6 +191,11 @@ namespace System.Windows {
 		public override int GetHashCode()
 		{
 			return base.GetHashCode ();
+		}
+		
+		string System.IFormattable.ToString (string format, IFormatProvider provider)
+		{
+			throw new NotImplementedException ();
 		}
 	}
 }

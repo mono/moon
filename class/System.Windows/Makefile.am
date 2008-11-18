@@ -135,6 +135,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/DependencyProperty.cs				\
 	$(srcdir)/System.Windows/DependencyProperty.g.cs			\
 	$(srcdir)/System.Windows/DependencyPropertyChangedEventArgs.cs		\
+	$(srcdir)/System.Windows/DependencyPropertyChangedEventHandler.cs	\
 	$(srcdir)/System.Windows/DurationConverter.cs				\
 	$(srcdir)/System.Windows/Duration.cs					\
 	$(srcdir)/System.Windows/ExceptionRoutedEventArgs.cs			\
@@ -156,6 +157,9 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/GridUnitType.cs				\
 	$(srcdir)/System.Windows/HorizontalAlignment.cs				\
 	$(srcdir)/System.Windows/LineStackingStrategy.cs			\
+	$(srcdir)/System.Windows/MessageBox.cs					\
+	$(srcdir)/System.Windows/MessageBoxButton.cs				\
+	$(srcdir)/System.Windows/MessageBoxResult.cs				\
 	$(srcdir)/System.Windows/Point.cs					\
 	$(srcdir)/System.Windows/PresentationFrameworkCollection.cs		\
 	$(srcdir)/System.Windows/PropertyChangedCallback.cs			\
@@ -176,22 +180,27 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/StartupEventArgs.cs				\
 	$(srcdir)/System.Windows/StartupEventHandler.cs				\
 	$(srcdir)/System.Windows/Style.cs					\
+	$(srcdir)/System.Windows/StyleTypedPropertyAttribute.cs			\
+	$(srcdir)/System.Windows/SystemParameters.cs				\
 	$(srcdir)/System.Windows/TemplateBindingExpression.cs			\
 	$(srcdir)/System.Windows/TemplatePart.cs				\
+	$(srcdir)/System.Windows/TemplateVisualStateAttribute.cs		\
 	$(srcdir)/System.Windows/TextAlignment.cs				\
 	$(srcdir)/System.Windows/TextDecorationCollection.cs			\
 	$(srcdir)/System.Windows/TextDecorationKind.cs				\
 	$(srcdir)/System.Windows/TextDecorations.cs				\
 	$(srcdir)/System.Windows/TextWrapping.cs				\
 	$(srcdir)/System.Windows/Thickness.cs					\
-	$(srcdir)/System.Windows/TriggerBase.cs				\
+	$(srcdir)/System.Windows/TriggerBase.cs					\
 	$(srcdir)/System.Windows/TriggerCollection.cs				\
+	$(srcdir)/System.Windows/TriggerAction.cs				\
 	$(srcdir)/System.Windows/TriggerActionCollection.cs			\
 	$(srcdir)/System.Windows/UIElement.cs					\
 	$(srcdir)/System.Windows/VerticalAlignment.cs				\
 	$(srcdir)/System.Windows/Visibility.cs					\
 	$(srcdir)/System.Windows/VisualStateGroup.cs				\
 	$(srcdir)/System.Windows/VisualState.cs					\
+	$(srcdir)/System.Windows/VisualStateChangedEventArgs.cs			\
 	$(srcdir)/System.Windows/VisualStateManager.cs				\
 	$(srcdir)/System.Windows/VisualTransition.cs				\
 	$(srcdir)/System.Windows/XapHackProxyImpl.cs				\

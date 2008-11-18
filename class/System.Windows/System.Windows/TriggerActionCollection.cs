@@ -30,7 +30,7 @@ using System.Windows.Media.Animation;
 
 namespace System.Windows 
 {
-	public sealed partial class TriggerActionCollection : PresentationFrameworkCollection<BeginStoryboard>  
+	public sealed partial class TriggerActionCollection : PresentationFrameworkCollection<TriggerAction>  
 	{
 
 	}

@@ -32,7 +32,7 @@ namespace System.Windows
 {
 	public abstract class Expression
 	{
-		protected Expression()
+		internal Expression()
 		{
 		}
 	}

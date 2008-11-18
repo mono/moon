@@ -34,7 +34,7 @@ namespace System.Windows
 	{
 		private Exception error_exception;
 		
-		public ExceptionRoutedEventArgs()
+		internal ExceptionRoutedEventArgs()
 		{
 		}
 		

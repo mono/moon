@@ -349,19 +349,6 @@ namespace System.Windows {
 			return new CollectionIterator (typeof (T), NativeMethods.collection_get_iterator (native));
 		}
 		
-		protected internal bool ContainsDependencyObject (DependencyObject value)
-		{
-			if (value == null)
-				throw new ArgumentNullException ("value");
-
-			if (typeof(DependencyObject).IsAssignableFrom(typeof(T))) {
-				Value v = DependencyObject.GetAsValue (value);
-				return NativeMethods.collection_index_of (native, ref v) != -1;
-			}
-			else
-				return false;
-		}
-
 		internal virtual bool ContainsImpl (object value)
 		{
 			if (value == null)

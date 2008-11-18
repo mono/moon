@@ -35,7 +35,7 @@ namespace System.Windows
 {
 	public class SizeChangedEventArgs : RoutedEventArgs
 	{
-		public SizeChangedEventArgs () : base (NativeMethods.size_changed_event_args_new ())
+		internal SizeChangedEventArgs () : base (NativeMethods.size_changed_event_args_new ())
 		{
 		}
 
@@ -44,9 +44,6 @@ namespace System.Windows
 		}
 
 		public Size NewSize {
-#if NET_2_1
-			[SecuritySafeCritical]
-#endif
 			get {
 				UnmanagedSize u = new UnmanagedSize();
 				NativeMethods.size_changed_event_args_get_new_size (native, ref u);
@@ -55,9 +52,6 @@ namespace System.Windows
 		}
 
 		public Size PreviousSize {
-#if NET_2_1
-			[SecuritySafeCritical]
-#endif
 			get {
 				UnmanagedSize u = new UnmanagedSize();
 				NativeMethods.size_changed_event_args_get_prev_size (native, ref u);

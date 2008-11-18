@@ -47,7 +47,7 @@ namespace System.Windows {
 	}
 
 	partial class FrameworkElement {
-		internal FrameworkElement () : base (NativeMethods.framework_element_new ())
+		protected FrameworkElement () : base (NativeMethods.framework_element_new ())
 		{
 			Initialize ();
 		}
@@ -82,7 +82,7 @@ namespace System.Windows {
 	}
 
 	partial class SetterBase {
-		protected SetterBase () : base (NativeMethods.setter_base_new ()) {}
+		internal SetterBase () : base (NativeMethods.setter_base_new ()) {}
 		internal SetterBase (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.SETTERBASE; }
 	}
@@ -99,6 +99,12 @@ namespace System.Windows {
 		internal override Kind GetKind () { return Kind.STYLE; }
 	}
 
+	partial class TriggerAction {
+		internal TriggerAction () : base (NativeMethods.trigger_action_new ()) {}
+		internal TriggerAction (IntPtr raw) : base (raw) {}
+		internal override Kind GetKind () { return Kind.TRIGGERACTION; }
+	}
+
 	partial class TriggerActionCollection {
 		public TriggerActionCollection () : base (NativeMethods.trigger_action_collection_new ()) {}
 		internal TriggerActionCollection (IntPtr raw) : base (raw) {}
@@ -106,7 +112,7 @@ namespace System.Windows {
 	}
 
 	partial class TriggerBase {
-		public TriggerBase () : base (NativeMethods.trigger_base_new ()) {}
+		internal TriggerBase () : base (NativeMethods.trigger_base_new ()) {}
 		internal TriggerBase (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.TRIGGERBASE; }
 	}

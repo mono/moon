@@ -33,7 +33,7 @@ using Mono;
 
 namespace System.Windows {
 
-	public sealed partial class TriggerCollection : PresentationFrameworkCollection<EventTrigger> {
+	public sealed partial class TriggerCollection : PresentationFrameworkCollection<TriggerBase> {
 
 	}
 }

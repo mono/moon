@@ -1,5 +1,10 @@
 2008-11-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* dependencyproperty.g.cpp, frameworkelement.h, style.h, trigger.h,
+	  uielement.h: More corcompare work.
+
+2008-11-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* cbinding.cpp, cbinding.h, trigger.h, type.h, type-generated.cpp,
 	  value.h: Add TriggerBase, make EventTrigger inherit from it and
 	  regenerate.

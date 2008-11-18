@@ -47,13 +47,11 @@ namespace System.Windows {
 			return NativeMethods.uielement_capture_mouse (native);
 		}
 
-		[SecuritySafeCritical]
 		public void ReleaseMouseCapture ()
 		{
 			NativeMethods.uielement_release_mouse_capture (native);
 		}
 
-		[SecuritySafeCritical]
 		public void Arrange (Rect finalRect)
 		{
 			UnmanagedRect unmanagedFinalRect = new UnmanagedRect();
@@ -64,13 +62,11 @@ namespace System.Windows {
 			NativeMethods.uielement_arrange(native, unmanagedFinalRect);
 		}
 
-		[SecuritySafeCritical]
 		public void InvalidateArrange ()
 		{
 			NativeMethods.uielement_invalidate_arrange(native);
 		}
 
-		[SecuritySafeCritical]
 		public void Measure (Size availableSize)
 		{
 			UnmanagedSize unmanagedAvailableSize = new UnmanagedSize();
@@ -81,19 +77,16 @@ namespace System.Windows {
 			NativeMethods.uielement_measure (native, unmanagedAvailableSize);
 		}
 
-		[SecuritySafeCritical]
 		public void InvalidateMeasure ()
 		{
 			NativeMethods.uielement_invalidate_measure (native);
 		}
 
-		[SecuritySafeCritical]
 		public void UpdateLayout ()
 		{
 			NativeMethods.uielement_update_layout (native);
 		}
 
-		[SecuritySafeCritical]
 		public GeneralTransform TransformToVisual (UIElement visual)
 		{
 			IntPtr t = NativeMethods.uielement_get_transform_to_uielement (native, visual.native);
@@ -123,7 +116,6 @@ namespace System.Windows {
 #endif
 
 		public Size DesiredSize {
-			[SecuritySafeCritical]
 			get {
 				UnmanagedSize sz = NativeMethods.uielement_get_desired_size (native);
 				return new Size (sz.width, sz.height);
@@ -139,6 +131,7 @@ namespace System.Windows {
 
 		static object GotFocusEvent = new object ();
 		static object LostFocusEvent = new object ();
+		static object LostMouseCaptureEvent = new object ();
 		static object KeyDownEvent = new object ();
 		static object KeyUpEvent = new object ();
 		static object MouseEnterEvent = new object ();
@@ -170,6 +163,19 @@ namespace System.Windows {
 				events.RemoveHandler (LostFocusEvent, value);
 				if (events[LostFocusEvent] == null)
 					Events.RemoveHandler (this, "LostFocus", Events.lost_focus);
+			}
+		}
+
+		public event MouseEventHandler LostMouseCapture {
+			add {
+				if (events[LostMouseCaptureEvent] == null)
+					Events.AddHandler (this, "LostMouseCapture", Events.lost_mouse_capture);
+				events.AddHandler (LostMouseCaptureEvent, value);
+			}
+			remove {
+				events.RemoveHandler (LostMouseCaptureEvent, value);
+				if (events[LostMouseCaptureEvent] == null)
+					Events.RemoveHandler (this, "LostMouseCapture", Events.lost_mouse_capture);
 			}
 		}
 
@@ -279,6 +285,13 @@ namespace System.Windows {
 				h (this, r);
 		}
 
+		internal void InvokeLostMouseCapture (MouseEventArgs m)
+		{
+			MouseEventHandler h = (MouseEventHandler) events [LostMouseCaptureEvent];
+			if (h != null)
+				h (this, m);
+		}
+		
 		internal void InvokeMouseMove (MouseEventArgs m)
 		{
 			MouseEventHandler h = (MouseEventHandler)events[MouseMoveEvent];
