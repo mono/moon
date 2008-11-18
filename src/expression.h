@@ -15,6 +15,8 @@
 
 #include "dependencyobject.h"
 
+/* @SilverlightVersion="2" */
+/* @Namespace=System.Windows */
 class Expression : public EventObject {
  protected:
 	virtual ~Expression () { }

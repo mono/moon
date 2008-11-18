@@ -14,6 +14,8 @@ namespace Mono {
 		ASSEMBLYPART_COLLECTION,// Silverlight 2.0 only
 		BEGINSTORYBOARD,
 		BEZIERSEGMENT,
+		BINDINGEXPRESSION,// Silverlight 2.0 only
+		BINDINGEXPRESSIONBASE,// Silverlight 2.0 only
 		BITMAPIMAGE,
 		BOOL,
 		BORDER,// Silverlight 2.0 only
@@ -57,6 +59,7 @@ namespace Mono {
 		EVENTARGS,
 		EVENTOBJECT,
 		EVENTTRIGGER,
+		EXPRESSION,// Silverlight 2.0 only
 		FRAMEWORKELEMENT,
 		FRAMEWORKTEMPLATE,// Silverlight 2.0 only
 		GENERALTRANSFORM,

@@ -38,6 +38,34 @@ namespace Mono {
 		public extern static IntPtr bezier_segment_new ();
 
 		[DllImport ("moon")]
+		// BindingExpression *binding_expression_new ();
+		public extern static IntPtr binding_expression_new ();
+
+		[DllImport ("moon")]
+		// Binding *binding_expression_base_get_binding (BindingExpressionBase *instance);
+		public extern static IntPtr binding_expression_base_get_binding (IntPtr instance);
+
+		[DllImport ("moon")]
+		// FrameworkElement *binding_expression_base_get_element (BindingExpressionBase *instance);
+		public extern static IntPtr binding_expression_base_get_element (IntPtr instance);
+
+		[DllImport ("moon")]
+		// DependencyProperty *binding_expression_base_get_property (BindingExpressionBase *instance);
+		public extern static IntPtr binding_expression_base_get_property (IntPtr instance);
+
+		[DllImport ("moon")]
+		// void binding_expression_base_set_binding (BindingExpressionBase *instance, Binding *binding);
+		public extern static void binding_expression_base_set_binding (IntPtr instance, IntPtr binding);
+
+		[DllImport ("moon")]
+		// void binding_expression_base_set_element (BindingExpressionBase *instance, FrameworkElement *element);
+		public extern static void binding_expression_base_set_element (IntPtr instance, IntPtr element);
+
+		[DllImport ("moon")]
+		// void binding_expression_base_set_property (BindingExpressionBase *instance, DependencyProperty *property);
+		public extern static void binding_expression_base_set_property (IntPtr instance, IntPtr property);
+
+		[DllImport ("moon")]
 		// BitmapImage *bitmap_image_new ();
 		public extern static IntPtr bitmap_image_new ();
 

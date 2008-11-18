@@ -9,6 +9,7 @@
 // This should probably be changed to somehow not include c++ headers.
 #include "animation.h"
 #include "animation2.h"
+#include "binding.h"
 #include "bitmapimage.h"
 #include "border.h"
 #include "brush.h"
@@ -95,6 +96,47 @@ BeginStoryboard *begin_storyboard_new (void);
  **/
 /* @GeneratePInvoke */
 BezierSegment *bezier_segment_new (void);
+
+#if SL_2_0
+/**
+ * BindingExpression
+ **/
+/* @GeneratePInvoke */
+BindingExpression *binding_expression_new (void);
+#endif
+
+#if SL_2_0
+/**
+ * BindingExpressionBase
+ **/
+/* @GeneratePInvoke */
+Binding *binding_expression_base_get_binding (BindingExpressionBase *instance);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
+FrameworkElement *binding_expression_base_get_element (BindingExpressionBase *instance);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
+DependencyProperty *binding_expression_base_get_property (BindingExpressionBase *instance);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
+void binding_expression_base_set_binding (BindingExpressionBase *instance, Binding *binding);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
+void binding_expression_base_set_element (BindingExpressionBase *instance, FrameworkElement *element);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
+void binding_expression_base_set_property (BindingExpressionBase *instance, DependencyProperty *property);
+#endif
 
 #if SL_2_0
 /**

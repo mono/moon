@@ -23,7 +23,8 @@ struct Binding {
 	bool in_use;
 };
 
-
+/* @SilverlightVersion="2" */
+/* @Namespace=System.Windows.Data */
 class BindingExpressionBase : public Expression {
  protected:
 	DependencyProperty *property;
@@ -53,6 +54,8 @@ class BindingExpressionBase : public Expression {
 };
 
 
+/* @SilverlightVersion="2" */
+/* @Namespace=System.Windows.Data */
 class BindingExpression : public BindingExpressionBase {
  protected:
 	virtual ~BindingExpression () { }

@@ -54,6 +54,8 @@ class AssemblyPart;
 class AssemblyPartCollection;
 class BeginStoryboard;
 class BezierSegment;
+class BindingExpression;
+class BindingExpressionBase;
 class BitmapImage;
 class Border;
 class Brush;
@@ -91,6 +93,7 @@ class ErrorEventArgs;
 class EventArgs;
 class EventObject;
 class EventTrigger;
+class Expression;
 class FrameworkElement;
 class FrameworkTemplate;
 class GeneralTransform;
@@ -294,6 +297,8 @@ public:
 	AssemblyPartCollection*        AsAssemblyPartCollection () { checked_get_subclass (Type::ASSEMBLYPART_COLLECTION, AssemblyPartCollection) }
 	BeginStoryboard*               AsBeginStoryboard () { checked_get_subclass (Type::BEGINSTORYBOARD, BeginStoryboard) }
 	BezierSegment*                 AsBezierSegment () { checked_get_subclass (Type::BEZIERSEGMENT, BezierSegment) }
+	BindingExpression*             AsBindingExpression () { checked_get_subclass (Type::BINDINGEXPRESSION, BindingExpression) }
+	BindingExpressionBase*         AsBindingExpressionBase () { checked_get_subclass (Type::BINDINGEXPRESSIONBASE, BindingExpressionBase) }
 	BitmapImage*                   AsBitmapImage () { checked_get_subclass (Type::BITMAPIMAGE, BitmapImage) }
 	Border*                        AsBorder () { checked_get_subclass (Type::BORDER, Border) }
 	Brush*                         AsBrush () { checked_get_subclass (Type::BRUSH, Brush) }
@@ -331,6 +336,7 @@ public:
 	EventArgs*                     AsEventArgs () { checked_get_subclass (Type::EVENTARGS, EventArgs) }
 	EventObject*                   AsEventObject () { checked_get_subclass (Type::EVENTOBJECT, EventObject) }
 	EventTrigger*                  AsEventTrigger () { checked_get_subclass (Type::EVENTTRIGGER, EventTrigger) }
+	Expression*                    AsExpression () { checked_get_subclass (Type::EXPRESSION, Expression) }
 	FrameworkElement*              AsFrameworkElement () { checked_get_subclass (Type::FRAMEWORKELEMENT, FrameworkElement) }
 	FrameworkTemplate*             AsFrameworkTemplate () { checked_get_subclass (Type::FRAMEWORKTEMPLATE, FrameworkTemplate) }
 	GeneralTransform*              AsGeneralTransform () { checked_get_subclass (Type::GENERALTRANSFORM, GeneralTransform) }

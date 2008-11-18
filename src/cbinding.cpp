@@ -79,6 +79,93 @@ bezier_segment_new (void)
 
 #if SL_2_0
 /**
+ * BindingExpression
+ **/
+BindingExpression *
+binding_expression_new (void)
+{
+	return new BindingExpression ();
+}
+#endif
+
+
+#if SL_2_0
+/**
+ * BindingExpressionBase
+ **/
+Binding *
+binding_expression_base_get_binding (BindingExpressionBase *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetBinding ();
+}
+#endif
+
+
+#if SL_2_0
+FrameworkElement *
+binding_expression_base_get_element (BindingExpressionBase *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetElement ();
+}
+#endif
+
+
+#if SL_2_0
+DependencyProperty *
+binding_expression_base_get_property (BindingExpressionBase *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetProperty ();
+}
+#endif
+
+
+#if SL_2_0
+void
+binding_expression_base_set_binding (BindingExpressionBase *instance, Binding *binding)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetBinding (binding);
+}
+#endif
+
+
+#if SL_2_0
+void
+binding_expression_base_set_element (BindingExpressionBase *instance, FrameworkElement *element)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetElement (element);
+}
+#endif
+
+
+#if SL_2_0
+void
+binding_expression_base_set_property (BindingExpressionBase *instance, DependencyProperty *property)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetProperty (property);
+}
+#endif
+
+
+#if SL_2_0
+/**
  * BitmapImage
  **/
 BitmapImage *

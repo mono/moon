@@ -36,6 +36,7 @@ libmoon_include_headers = 	\
 	enums.h			\
 	error.h			\
 	eventargs.h		\
+	expression.h		\
 	file-downloader.h	\
 	font.h			\
 	frameworkelement.h 	\
@@ -48,11 +49,11 @@ libmoon_include_headers = 	\
 	libmoon.h		\
 	list.h			\
 	media.h			\
-	mediaelement.h	\
+	mediaelement.h		\
 	mediaplayer.h		\
 	mms-downloader.h	\
 	moon-curves.h		\
-	moonlightconfiguration.h	\
+	moonlightconfiguration.h\
 	moon-path.h		\
 	mp3.h			\
 	multiscaleimage.h	\
@@ -61,7 +62,7 @@ libmoon_include_headers = 	\
 	openfile.h		\
 	panel.h			\
 	pipeline.h		\
-	pipeline-asf.h	\
+	pipeline-asf.h		\
 	pipeline-ui.h		\
 	pipeline-nocodec-ui.h	\
 	playlist.h		\
@@ -139,7 +140,7 @@ libmoon_la_SOURCES = 		\
 	panel.cpp		\
 	pipeline.cpp		\
 	pipeline-asf.cpp	\
-	pipeline-logo.cpp		\
+	pipeline-logo.cpp	\
 	point.cpp		\
 	playlist.cpp		\
 	rect.cpp		\
@@ -168,6 +169,7 @@ libmoon_la_SOURCES = 		\
 	zip/crypt.h
 
 libmoon_la_sources_2 =		\
+	binding.cpp		\
 	border.cpp		\
 	contentcontrol.cpp	\
 	control.cpp		\

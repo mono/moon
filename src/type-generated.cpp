@@ -46,12 +46,14 @@
 #include "yuv-converter.h"
 #if SL_2_0
 #include "animation2.h"
+#include "binding.h"
 #include "bitmapimage.h"
 #include "border.h"
 #include "contentcontrol.h"
 #include "control.h"
 #include "deepzoomimagetilesource.h"
 #include "deployment.h"
+#include "expression.h"
 #include "grid.h"
 #include "multiscaleimage.h"
 #include "multiscalesubimage.h"
@@ -141,6 +143,8 @@ Type type_infos [] = {
 	{ Type::ASSEMBLYPART_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "AssemblyPartCollection", "ASSEMBLYPART_COLLECTION", 0, 1, NULL, (create_inst_func *) assembly_part_collection_new, NULL, NULL, NULL }, 
 	{ Type::BEGINSTORYBOARD, Type::TRIGGERACTION, false, "BeginStoryboard", "BEGINSTORYBOARD", 0, 1, NULL, (create_inst_func *) begin_storyboard_new, "Storyboard", NULL, NULL }, 
 	{ Type::BEZIERSEGMENT, Type::PATHSEGMENT, false, "BezierSegment", "BEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) bezier_segment_new, NULL, NULL, NULL }, 
+	{ Type::BINDINGEXPRESSION, Type::BINDINGEXPRESSIONBASE, false, "BindingExpression", "BINDINGEXPRESSION", 0, 1, NULL, (create_inst_func *) binding_expression_new, NULL, NULL, NULL }, 
+	{ Type::BINDINGEXPRESSIONBASE, Type::EXPRESSION, false, "BindingExpressionBase", "BINDINGEXPRESSIONBASE", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::BITMAPIMAGE, Type::DEPENDENCY_OBJECT, false, "BitmapImage", "BITMAPIMAGE", 0, 1, NULL, (create_inst_func *) bitmap_image_new, NULL, NULL, NULL }, 
 	{ Type::BOOL, Type::OBJECT, false, "bool", "BOOL", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::BORDER, Type::FRAMEWORKELEMENT, false, "Border", "BORDER", 0, 16, NULL, (create_inst_func *) border_new, "Child", NULL, NULL }, 
@@ -184,6 +188,7 @@ Type type_infos [] = {
 	{ Type::EVENTARGS, Type::DEPENDENCY_OBJECT, false, "EventArgs", "EVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::EVENTOBJECT, Type::OBJECT, false, "EventObject", "EVENTOBJECT", 1, 1, EventObject_Events, NULL, NULL, NULL, NULL }, 
 	{ Type::EVENTTRIGGER, Type::TRIGGERBASE, false, "EventTrigger", "EVENTTRIGGER", 0, 1, NULL, (create_inst_func *) event_trigger_new, "Actions", NULL, NULL }, 
+	{ Type::EXPRESSION, Type::EVENTOBJECT, false, "Expression", "EXPRESSION", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::FRAMEWORKELEMENT, Type::UIELEMENT, false, "FrameworkElement", "FRAMEWORKELEMENT", 3, 16, FrameworkElement_Events, (create_inst_func *) framework_element_new, NULL, NULL, NULL }, 
 	{ Type::FRAMEWORKTEMPLATE, Type::DEPENDENCY_OBJECT, false, "FrameworkTemplate", "FRAMEWORKTEMPLATE", 0, 1, NULL, (create_inst_func *) framework_template_new, NULL, NULL, NULL }, 
 	{ Type::GENERALTRANSFORM, Type::DEPENDENCY_OBJECT, false, "GeneralTransform", "GENERALTRANSFORM", 0, 1, NULL, (create_inst_func *) general_transform_new, NULL, NULL, NULL }, 
@@ -388,6 +393,8 @@ Type type_infos [] = {
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'ASSEMBLYPART_COLLECTION'", "ASSEMBLYPART_COLLECTION", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::BEGINSTORYBOARD, Type::TRIGGERACTION, false, "BeginStoryboard", "BEGINSTORYBOARD", 0, 1, NULL, (create_inst_func *) begin_storyboard_new, "Storyboard", NULL, NULL }, 
 	{ Type::BEZIERSEGMENT, Type::PATHSEGMENT, false, "BezierSegment", "BEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) bezier_segment_new, NULL, NULL, NULL }, 
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'BINDINGEXPRESSION'", "BINDINGEXPRESSION", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'BINDINGEXPRESSIONBASE'", "BINDINGEXPRESSIONBASE", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'BITMAPIMAGE'", "BITMAPIMAGE", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::BOOL, Type::OBJECT, false, "bool", "BOOL", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'BORDER'", "BORDER", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
@@ -431,6 +438,7 @@ Type type_infos [] = {
 	{ Type::EVENTARGS, Type::DEPENDENCY_OBJECT, false, "EventArgs", "EVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::EVENTOBJECT, Type::OBJECT, false, "EventObject", "EVENTOBJECT", 1, 1, EventObject_Events, NULL, NULL, NULL, NULL }, 
 	{ Type::EVENTTRIGGER, Type::TRIGGERBASE, false, "EventTrigger", "EVENTTRIGGER", 0, 1, NULL, (create_inst_func *) event_trigger_new, "Actions", NULL, NULL }, 
+	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'EXPRESSION'", "EXPRESSION", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::FRAMEWORKELEMENT, Type::UIELEMENT, false, "FrameworkElement", "FRAMEWORKELEMENT", 0, 13, FrameworkElement_Events, (create_inst_func *) framework_element_new, NULL, NULL, NULL }, 
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'FRAMEWORKTEMPLATE'", "FRAMEWORKTEMPLATE", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::GENERALTRANSFORM, Type::DEPENDENCY_OBJECT, false, "GeneralTransform", "GENERALTRANSFORM", 0, 1, NULL, (create_inst_func *) general_transform_new, NULL, NULL, NULL }, 
