@@ -14,6 +14,7 @@ libmoon_include_headers = 	\
 	asf/asf.h		\
 	asf/asf-structures.h	\
 	audio.h			\
+	binding.h		\
 	bitmapimage.h		\
 	border.h		\
 	brush.h			\
