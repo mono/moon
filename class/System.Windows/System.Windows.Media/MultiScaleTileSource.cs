@@ -20,27 +20,32 @@ namespace System.Windows.Media
 {	
 	public abstract partial class MultiScaleTileSource : DependencyObject
 	{
-		protected internal int ImageWidth {
+		internal int ImageWidth {
 			get { return NativeMethods.multi_scale_tile_source_get_image_width (this.native); }
 			set { NativeMethods.multi_scale_tile_source_set_image_width (this.native, value); }
 		}
-		protected internal int ImageHeight {
+		internal int ImageHeight {
 			get { return NativeMethods.multi_scale_tile_source_get_image_height (this.native); }
 			set { NativeMethods.multi_scale_tile_source_set_image_height (this.native, value); }
 		}
-		protected internal int TileWidth {
+		internal int TileWidth {
 			get { return NativeMethods.multi_scale_tile_source_get_tile_width (this.native); }
 			set { NativeMethods.multi_scale_tile_source_set_tile_width (this.native, value); }
 		}
-		protected internal int TileHeight {
+		internal int TileHeight {
 			get { return NativeMethods.multi_scale_tile_source_get_tile_height (this.native); }
 			set { NativeMethods.multi_scale_tile_source_set_tile_height (this.native, value); }
 		}
-		protected internal int TileOverlap {
+		internal int TileOverlap {
 			get { return NativeMethods.multi_scale_tile_source_get_tile_overlap (this.native); }
 			set { NativeMethods.multi_scale_tile_source_set_tile_overlap (this.native, value); }
 		}
 
+		protected TimeSpan TileBlendTime {
+			get { throw new NotImplementedException (); }
+			set { throw new NotImplementedException (); }
+		}
+		
 		public MultiScaleTileSource (int imageWidth, int imageHeight, int tileWidth, int tileHeight, int tileOverlap)
 		{
 			ImageWidth = imageWidth;
@@ -49,8 +54,12 @@ namespace System.Windows.Media
 			TileHeight = tileHeight;
 			TileOverlap = tileOverlap;
 		}
+
+		public MultiScaleTileSource (long imageWidth, long imageHeight, int tileWidth, int tileHeight, int tileOverlap)
+		{
+			throw new NotImplementedException ();
+		}
 		
-		[SecuritySafeCritical ()]
 		protected void InvalidateTileLayer (int level, int tilePositionX, int tilePositionY, int tileLayer)
 		{
 			throw new NotImplementedException ();

@@ -28,6 +28,8 @@
 
 using System.Windows;
 using System.Windows.Controls;
+using System.Collections.Generic;
+using System.Security;
 using Mono;
 
 namespace System.Windows.Media {
@@ -75,6 +77,18 @@ namespace System.Windows.Media {
 			if (fw == null)
 				throw new InvalidOperationException ("Reference is not a valid visual DependencyObject");
 			return fw.Parent;
+		}
+
+		[SecuritySafeCriticalAttribute ()]
+		public static IEnumerable<UIElement> FindElementsInHostCoordinates (Point intersectingPoint, UIElement subtree)
+		{
+			throw new NotImplementedException ();
+		}
+
+		[SecuritySafeCriticalAttribute ()]
+		public static IEnumerable<UIElement> FindElementsInHostCoordinates (Rect intersectingRect, UIElement subtree)
+		{
+			throw new NotImplementedException ();
 		}
 	}
 }

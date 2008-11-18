@@ -230,6 +230,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/Color.cs					\
 	$(srcdir)/System.Windows.Media/Colors.cs				\
 	$(srcdir)/System.Windows.Media/ColorInterpolationMode.cs		\
+	$(srcdir)/System.Windows.Media/CompositionTarget.cs			\
 	$(srcdir)/System.Windows.Media/DeepZoomImageTileSource.cs		\
 	$(srcdir)/System.Windows.Media/DoubleCollection.cs			\
 	$(srcdir)/System.Windows.Media/EllipseGeometry.cs			\
@@ -245,6 +246,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/GradientStopCollection.cs		\
 	$(srcdir)/System.Windows.Media/ImageBrush.cs				\
 	$(srcdir)/System.Windows.Media/ImageSource.cs				\
+	$(srcdir)/System.Windows.Media/LicenseAcquirer.cs			\
 	$(srcdir)/System.Windows.Media/LinearGradientBrush.cs			\
 	$(srcdir)/System.Windows.Media/LineGeometry.cs				\
 	$(srcdir)/System.Windows.Media/LineSegment.cs				\
@@ -274,6 +276,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/QuadraticBezierSegment.cs		\
 	$(srcdir)/System.Windows.Media/RadialGradientBrush.cs			\
 	$(srcdir)/System.Windows.Media/RectangleGeometry.cs			\
+	$(srcdir)/System.Windows.Media/RenderingEventArgs.cs			\
 	$(srcdir)/System.Windows.Media/RotateTransform.cs			\
 	$(srcdir)/System.Windows.Media/ScaleTransform.cs			\
 	$(srcdir)/System.Windows.Media/SkewTransform.cs				\

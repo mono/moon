@@ -1,5 +1,10 @@
 2008-11-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* CompositionTarget.cs, LicenseAcquirer.cs, RenderingEventArgs.cs,
+	  MultiScaleTileSource.cs, VisualTreeHelper.cs: Corcompare work.
+
+2008-11-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* DoubleCollection.cs, GradientStopCollection.cs,
 	  PathFigureCollection.cs, GeometryCollection.cs,
 	  PathSegmentCollection.cs, PointCollection.cs,
