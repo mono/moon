@@ -36,14 +36,20 @@ class BindingExpressionBase : public Expression {
  public:
 	virtual Type::Kind GetObjectType () { return Type::BINDINGEXPRESSIONBASE; }
 	
-	void SetBinding (Binding *binding);
+	/* @GenerateCBinding,GeneratePInvoke */
 	Binding *GetBinding () { return binding; }
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetBinding (Binding *binding);
 	
-	void SetElement (FrameworkElement *element);
+	/* @GenerateCBinding,GeneratePInvoke */
 	FrameworkElement *GetElement () { return element; }
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetElement (FrameworkElement *element);
 	
-	void SetProperty (DependencyProperty *property);
+	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyProperty *GetProperty () { return property; }
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetProperty (DependencyProperty *property);
 };
 
 
@@ -52,6 +58,7 @@ class BindingExpression : public BindingExpressionBase {
 	virtual ~BindingExpression () { }
 	
  public:
+	/* @GenerateCBinding,GeneratePInvoke */
 	BindingExpression () { }
 	
 	virtual Type::Kind GetObjectType () { return Type::BINDINGEXPRESSION; }
