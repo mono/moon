@@ -245,9 +245,10 @@ namespace Mono.Xaml
 		
 		public string GetMapping (string key)
 		{
-			if (!mappings.ContainsKey (key))
+			string value;
+			if (!mappings.TryGetValue (key, out value))
 				return null;
-			return mappings [key];
+			return value;
 		}
 
 		public void InsertMapping (string key, string name)
@@ -443,7 +444,7 @@ namespace Mono.Xaml
 				pi = target.GetType ().GetProperty (name);
 
 				if (pi == null){
-					Console.Error.WriteLine ("ManagedXamlLoader::SetCustomAttribute ({0}, {1}, {2}, {3}) no property descriptor found.", target_ptr, xmlns, name, value);
+					Console.Error.WriteLine ("ManagedXamlLoader::SetCustomAttribute ({0}, {1}, {2}, {3}, {4}) no property descriptor found.", target_ptr, target.GetType (), xmlns, name, value);
 					return false;
 				}
 

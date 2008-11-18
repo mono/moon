@@ -1,3 +1,9 @@
+2008-11-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ManagedXamlLoader.cs: Get a mapping without accessing two times
+	the dictionary. Display the type of the current object when we 
+	can't find a property setter inside SetCustomAttribute.
+
 2008-11-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Events.cs: More corcompare work.
