@@ -445,6 +445,9 @@ public:
 	Visibility GetVisibility ();
 	void SetVisibility (Visibility value);
 
+	bool GetUseLayoutRounding ();
+	void SetUseLayoutRounding (bool value);
+
 	// Events you can AddHandler to
 	const static int LoadedEvent;
 	const static int UnloadedEvent;

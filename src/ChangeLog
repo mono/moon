@@ -1,5 +1,9 @@
 2008-11-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* uielement.h: Define UseLayoutRounding accessors to unbreak build.
+
+2008-11-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* dependencyproperty.g.cpp, frameworkelement.h, style.h, trigger.h,
 	  uielement.h: More corcompare work.
 
