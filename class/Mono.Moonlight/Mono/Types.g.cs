@@ -48,6 +48,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.STYLE));
 				t = agclr.GetType ("System.Windows.TriggerActionCollection", true); 
 				types.Add (t, new ManagedType (t, Kind.TRIGGERACTION_COLLECTION));
+				t = agclr.GetType ("System.Windows.TriggerBase", true); 
+				types.Add (t, new ManagedType (t, Kind.TRIGGERBASE));
 				t = agclr.GetType ("System.Windows.TriggerCollection", true); 
 				types.Add (t, new ManagedType (t, Kind.TRIGGER_COLLECTION));
 				t = agclr.GetType ("System.Windows.UIElement", true); 

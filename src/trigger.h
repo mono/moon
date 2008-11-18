@@ -15,6 +15,15 @@
 
 #include "dependencyobject.h"
 
+/* @Namespace=System.Windows */
+class TriggerBase : public DependencyObject {
+public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	TriggerBase () {}
+	
+	virtual Type::Kind GetObjectType () { return Type::TRIGGERBASE; }
+};
+
 /* @Namespace=None */
 class TriggerAction : public DependencyObject {
  public:
@@ -33,7 +42,7 @@ class TriggerAction : public DependencyObject {
 
 /* @ContentProperty="Actions" */
 /* @Namespace=System.Windows */
-class EventTrigger : public DependencyObject {
+class EventTrigger : public TriggerBase {
 	int registered_event_id;
 	
 	static void event_trigger_fire_actions (EventObject *sender, EventArgs *calldata, gpointer closure);

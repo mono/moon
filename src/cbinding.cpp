@@ -2770,6 +2770,16 @@ trigger_action_collection_new (void)
 
 
 /**
+ * TriggerBase
+ **/
+TriggerBase *
+trigger_base_new (void)
+{
+	return new TriggerBase ();
+}
+
+
+/**
  * TriggerCollection
  **/
 TriggerCollection *

@@ -1140,6 +1140,10 @@ namespace Mono {
 		public extern static IntPtr trigger_action_collection_new ();
 
 		[DllImport ("moon")]
+		// TriggerBase *trigger_base_new ();
+		public extern static IntPtr trigger_base_new ();
+
+		[DllImport ("moon")]
 		// TriggerCollection *trigger_collection_new ();
 		public extern static IntPtr trigger_collection_new ();
 

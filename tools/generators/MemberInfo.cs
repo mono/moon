@@ -307,7 +307,7 @@ class Members : Dictionary <string, MemberInfo>{
 			value.Name = tmp;
 			base.Add (value.Name, value);
 		} else {
-			throw new Exception (string.Format ("Could not add the member: {0}.{1} in parent {3}: There already is a member with the same signature ({2}).", parent.Name, value.Name, signature, parent.GetType ().FullName));
+			Console.WriteLine (string.Format ("Could not add the member: {0}.{1} in parent {3}: There already is a member with the same signature ({2}).", parent.Name, value.Name, signature, parent.GetType ().FullName));
 		}
 		return value;
 	}

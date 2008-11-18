@@ -206,6 +206,7 @@ class TranslateTransform;
 class TriggerCollection;
 class TriggerAction;
 class TriggerActionCollection;
+class TriggerBase;
 class UIElement;
 class UIElementCollection;
 class UserControl;
@@ -445,6 +446,7 @@ public:
 	TriggerCollection*             AsTriggerCollection () { checked_get_subclass (Type::TRIGGER_COLLECTION, TriggerCollection) }
 	TriggerAction*                 AsTriggerAction () { checked_get_subclass (Type::TRIGGERACTION, TriggerAction) }
 	TriggerActionCollection*       AsTriggerActionCollection () { checked_get_subclass (Type::TRIGGERACTION_COLLECTION, TriggerActionCollection) }
+	TriggerBase*                   AsTriggerBase () { checked_get_subclass (Type::TRIGGERBASE, TriggerBase) }
 	UIElement*                     AsUIElement () { checked_get_subclass (Type::UIELEMENT, UIElement) }
 	UIElementCollection*           AsUIElementCollection () { checked_get_subclass (Type::UIELEMENT_COLLECTION, UIElementCollection) }
 	UserControl*                   AsUserControl () { checked_get_subclass (Type::USERCONTROL, UserControl) }

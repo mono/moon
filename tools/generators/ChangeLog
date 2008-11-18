@@ -1,3 +1,7 @@
+2008-11-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* MemberInfo.cs: Don't throw exceptions for duplicate types.
+
 2008-10-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Generator.cs: Teach functions with ... arguments to the parser.

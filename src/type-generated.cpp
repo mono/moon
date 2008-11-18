@@ -32,7 +32,7 @@
 #include "pipeline.h"
 #include "pipeline-asf.h"
 #include "pipeline-ffmpeg.h"
-#include "pipeline-ui.h"
+#include "pipeline-nocodec-ui.h"
 #include "playlist.h"
 #include "resources.h"
 #include "runtime.h"
@@ -183,7 +183,7 @@ Type type_infos [] = {
 	{ Type::ERROREVENTARGS, Type::EVENTARGS, false, "ErrorEventArgs", "ERROREVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::EVENTARGS, Type::DEPENDENCY_OBJECT, false, "EventArgs", "EVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::EVENTOBJECT, Type::OBJECT, false, "EventObject", "EVENTOBJECT", 1, 1, EventObject_Events, NULL, NULL, NULL, NULL }, 
-	{ Type::EVENTTRIGGER, Type::DEPENDENCY_OBJECT, false, "EventTrigger", "EVENTTRIGGER", 0, 1, NULL, (create_inst_func *) event_trigger_new, "Actions", NULL, NULL }, 
+	{ Type::EVENTTRIGGER, Type::TRIGGERBASE, false, "EventTrigger", "EVENTTRIGGER", 0, 1, NULL, (create_inst_func *) event_trigger_new, "Actions", NULL, NULL }, 
 	{ Type::FRAMEWORKELEMENT, Type::UIELEMENT, false, "FrameworkElement", "FRAMEWORKELEMENT", 3, 16, FrameworkElement_Events, (create_inst_func *) framework_element_new, NULL, NULL, NULL }, 
 	{ Type::FRAMEWORKTEMPLATE, Type::DEPENDENCY_OBJECT, false, "FrameworkTemplate", "FRAMEWORKTEMPLATE", 0, 1, NULL, (create_inst_func *) framework_template_new, NULL, NULL, NULL }, 
 	{ Type::GENERALTRANSFORM, Type::DEPENDENCY_OBJECT, false, "GeneralTransform", "GENERALTRANSFORM", 0, 1, NULL, (create_inst_func *) general_transform_new, NULL, NULL, NULL }, 
@@ -313,6 +313,7 @@ Type type_infos [] = {
 	{ Type::TRIGGER_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "TriggerCollection", "TRIGGER_COLLECTION", 0, 1, NULL, (create_inst_func *) trigger_collection_new, NULL, NULL, NULL }, 
 	{ Type::TRIGGERACTION, Type::DEPENDENCY_OBJECT, false, "TriggerAction", "TRIGGERACTION", 0, 1, NULL, (create_inst_func *) trigger_action_new, NULL, NULL, NULL }, 
 	{ Type::TRIGGERACTION_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "TriggerActionCollection", "TRIGGERACTION_COLLECTION", 0, 1, NULL, (create_inst_func *) trigger_action_collection_new, NULL, NULL, NULL }, 
+	{ Type::TRIGGERBASE, Type::DEPENDENCY_OBJECT, false, "TriggerBase", "TRIGGERBASE", 0, 1, NULL, (create_inst_func *) trigger_base_new, NULL, NULL, NULL }, 
 	{ Type::UIELEMENT, Type::DEPENDENCY_OBJECT, false, "UIElement", "UIELEMENT", 12, 13, UIElement_Events, NULL, NULL, NULL, NULL }, 
 	{ Type::UIELEMENT_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "UIElementCollection", "UIELEMENT_COLLECTION", 0, 1, NULL, (create_inst_func *) uielement_collection_new, NULL, NULL, NULL }, 
 	{ Type::UINT32, Type::OBJECT, false, "guint32", "UINT32", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
@@ -429,7 +430,7 @@ Type type_infos [] = {
 	{ Type::ERROREVENTARGS, Type::EVENTARGS, false, "ErrorEventArgs", "ERROREVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::EVENTARGS, Type::DEPENDENCY_OBJECT, false, "EventArgs", "EVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::EVENTOBJECT, Type::OBJECT, false, "EventObject", "EVENTOBJECT", 1, 1, EventObject_Events, NULL, NULL, NULL, NULL }, 
-	{ Type::EVENTTRIGGER, Type::DEPENDENCY_OBJECT, false, "EventTrigger", "EVENTTRIGGER", 0, 1, NULL, (create_inst_func *) event_trigger_new, "Actions", NULL, NULL }, 
+	{ Type::EVENTTRIGGER, Type::TRIGGERBASE, false, "EventTrigger", "EVENTTRIGGER", 0, 1, NULL, (create_inst_func *) event_trigger_new, "Actions", NULL, NULL }, 
 	{ Type::FRAMEWORKELEMENT, Type::UIELEMENT, false, "FrameworkElement", "FRAMEWORKELEMENT", 0, 13, FrameworkElement_Events, (create_inst_func *) framework_element_new, NULL, NULL, NULL }, 
 	{ Type::INVALID, Type::INVALID, false, "2.0 specific type 'FRAMEWORKTEMPLATE'", "FRAMEWORKTEMPLATE", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::GENERALTRANSFORM, Type::DEPENDENCY_OBJECT, false, "GeneralTransform", "GENERALTRANSFORM", 0, 1, NULL, (create_inst_func *) general_transform_new, NULL, NULL, NULL }, 
@@ -559,6 +560,7 @@ Type type_infos [] = {
 	{ Type::TRIGGER_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "TriggerCollection", "TRIGGER_COLLECTION", 0, 1, NULL, (create_inst_func *) trigger_collection_new, NULL, NULL, NULL }, 
 	{ Type::TRIGGERACTION, Type::DEPENDENCY_OBJECT, false, "TriggerAction", "TRIGGERACTION", 0, 1, NULL, (create_inst_func *) trigger_action_new, NULL, NULL, NULL }, 
 	{ Type::TRIGGERACTION_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "TriggerActionCollection", "TRIGGERACTION_COLLECTION", 0, 1, NULL, (create_inst_func *) trigger_action_collection_new, NULL, NULL, NULL }, 
+	{ Type::TRIGGERBASE, Type::DEPENDENCY_OBJECT, false, "TriggerBase", "TRIGGERBASE", 0, 1, NULL, (create_inst_func *) trigger_base_new, NULL, NULL, NULL }, 
 	{ Type::UIELEMENT, Type::DEPENDENCY_OBJECT, false, "UIElement", "UIELEMENT", 12, 13, UIElement_Events, NULL, NULL, NULL, NULL }, 
 	{ Type::UIELEMENT_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "UIElementCollection", "UIELEMENT_COLLECTION", 0, 1, NULL, (create_inst_func *) uielement_collection_new, NULL, NULL, NULL }, 
 	{ Type::UINT32, Type::OBJECT, false, "guint32", "UINT32", 0, 0, NULL, NULL, NULL, NULL, NULL }, 

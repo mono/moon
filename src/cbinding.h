@@ -1405,6 +1405,12 @@ TriggerAction *trigger_action_new (void);
 TriggerActionCollection *trigger_action_collection_new (void);
 
 /**
+ * TriggerBase
+ **/
+/* @GeneratePInvoke */
+TriggerBase *trigger_base_new (void);
+
+/**
  * TriggerCollection
  **/
 /* @GeneratePInvoke */
