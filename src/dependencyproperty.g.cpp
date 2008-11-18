@@ -261,7 +261,7 @@ dependency_property_g_init (void)
 #if SL_2_0
 	ObjectAnimationUsingKeyFrames::KeyFramesProperty = DependencyProperty::Register (Type::OBJECTANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::OBJECTKEYFRAME_COLLECTION);
 	ObjectKeyFrame::KeyTimeProperty = DependencyProperty::RegisterNullable (Type::OBJECTKEYFRAME, "KeyTime", Type::KEYTIME);
-	ObjectKeyFrame::ValueProperty = DependencyProperty::Register (Type::OBJECTKEYFRAME, "Value", Type::DEPENDENCY_OBJECT);
+	ObjectKeyFrame::ValueProperty = DependencyProperty::Register (Type::OBJECTKEYFRAME, "Value", Type::OBJECT);
 #endif
 	Panel::BackgroundProperty = DependencyProperty::Register (Type::PANEL, "Background", Type::BRUSH);
 	Panel::ChildrenProperty = DependencyProperty::Register (Type::PANEL, "Children", Type::UIELEMENT_COLLECTION);
@@ -3061,15 +3061,15 @@ ObjectKeyFrame::SetKeyTime (KeyTime * value)
 
 #endif
 #if SL_2_0
-DependencyObject *
+object
 ObjectKeyFrame::GetValue ()
 {
 	Value *value = DependencyObject::GetValue (ObjectKeyFrame::ValueProperty);
-	return value ? value->AsDependencyObject () : NULL;
+	return value->Asobject ();
 }
 
 void
-ObjectKeyFrame::SetValue (DependencyObject * value)
+ObjectKeyFrame::SetValue (object value)
 {
 	DependencyObject::SetValue (ObjectKeyFrame::ValueProperty, Value (value));
 }

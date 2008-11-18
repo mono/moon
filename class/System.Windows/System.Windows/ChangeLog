@@ -1,5 +1,9 @@
 2008-11-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* DependencyProperty.g.cs: Corcompare fixes.
+
+2008-11-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* CrossDomainAccess.cs, DependencyObject.cs,
 	  DependencyPropertyChangedEventHandler.cs, DependencyObject.g.cs,
 	  DependencyProperty.g.cs, ExceptionRoutedEventArgs.cs,

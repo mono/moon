@@ -115,5 +115,13 @@ namespace System.Windows.Media.Animation {
 		public KeyTimeType Type { 
 			get { return type; }
 		}
+
+		public static KeyTime Uniform {
+			get {
+				KeyTime result = new KeyTime ();
+				result.type = KeyTimeType.Uniform;
+				return result;
+			}
+		}
 	}
 }

@@ -1671,15 +1671,15 @@ namespace System.Windows.Media.Animation {
 
 	partial class ObjectKeyFrame {
 		public static readonly DependencyProperty KeyTimeProperty = DependencyProperty.Lookup (Kind.OBJECTKEYFRAME, "KeyTime", typeof (KeyTime));
-		public static readonly DependencyProperty ValueProperty = DependencyProperty.Lookup (Kind.OBJECTKEYFRAME, "Value", typeof (DependencyObject));
+		public static readonly DependencyProperty ValueProperty = DependencyProperty.Lookup (Kind.OBJECTKEYFRAME, "Value", typeof (object));
 
 		public KeyTime KeyTime {
 			get { return (KeyTime) GetValue (KeyTimeProperty); }
 			set { SetValue (KeyTimeProperty, value); }
 		}
 
-		public DependencyObject Value {
-			get { return (DependencyObject) GetValue (ValueProperty); }
+		public object Value {
+			get { return (object) GetValue (ValueProperty); }
 			set { SetValue (ValueProperty, value); }
 		}
 	}

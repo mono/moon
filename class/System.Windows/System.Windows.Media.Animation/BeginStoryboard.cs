@@ -29,7 +29,7 @@ using Mono;
 using System.Windows;
 namespace System.Windows.Media.Animation 
 {
-	public sealed partial class BeginStoryboard : DependencyObject 
+	public sealed partial class BeginStoryboard : TriggerAction 
 	{
 
 	}
