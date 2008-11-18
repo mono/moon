@@ -8,8 +8,8 @@
  * 
  */
 
-#ifndef __MOONLIGHT_DEPENDENCY_OBJECT_H__
-#define __MOONLIGHT_DEPENDENCY_OBJECT_H__
+#ifndef __DEPENDENCY_PROPERTY_H__
+#define __DEPENDENCY_PROPERTY_H__
 
 #include <glib.h>
 
@@ -95,7 +95,7 @@ private:
 G_BEGIN_DECLS
 
 DependencyProperty *resolve_property_path (DependencyObject **o, const char *path);
-void dependency_property_g_init ();
+void dependency_property_g_init (void);
 G_END_DECLS
 
-#endif /* __MOONLIGHT_DEPENDENCY_OBJECT_H__ */
+#endif /* __DEPENDENCY_PROPERTY_H__ */
