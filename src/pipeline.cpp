@@ -1083,7 +1083,6 @@ gint32
 ManagedStreamSource::PeekInternal (void *buf, guint32 n)
 {
 	int read;
-	gint64 position;
 	
 	read = stream.Read (stream.handle, buf, 0, n);
 	stream.Seek (stream.handle, -read, 1 /* SeekOrigin.Current */);

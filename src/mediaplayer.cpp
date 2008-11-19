@@ -499,9 +499,7 @@ MediaPlayer::Initialize ()
 	width = 0;
 
 	frames_update_timestamp = 0;
-	rendered_frames_per_second = 0;
 	rendered_frames = 0;
-	dropped_frames_per_second = 0;
 	dropped_frames = 0;
 }
 
@@ -606,6 +604,9 @@ MediaPlayer::AdvanceFrame ()
 	guint64 target_pts_delta = MilliSeconds_ToPts (100);
 	bool update = false;
 	bool result = false;
+	double dropped_frames_per_second = -1;
+	double rendered_frames_per_second = -1;
+	
 	guint64 now = 0;
 	
 	LOG_MEDIAPLAYER_EX ("MediaPlayer::AdvanceFrame () state: %i, current_pts = %llu, IsPaused: %i, IsSeeking: %i, VideoEnded: %i, AudioEnded: %i, HasVideo: %i, HasAudio: %i\n", 
@@ -772,6 +773,9 @@ MediaPlayer::AdvanceFrame ()
 		rendered_frames_per_second = (double) rendered_frames / time_elapsed;
 		dropped_frames = rendered_frames = 0;
 		frames_update_timestamp = now;
+
+		element->SetDroppedFramesPerSecond (dropped_frames_per_second);
+		element->SetRenderedFramesPerSecond (rendered_frames_per_second);
 	}
 		
 	return result;

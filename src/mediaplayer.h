@@ -89,8 +89,6 @@ class MediaPlayer : public EventObject {
 	guint64 frames_update_timestamp;
 	guint32 dropped_frames;
 	guint32 rendered_frames;
-	double dropped_frames_per_second;
-	double rendered_frames_per_second;
 
 	bool LoadVideoFrame ();
 	void Initialize ();
@@ -185,9 +183,6 @@ class MediaPlayer : public EventObject {
 	void SetVolume (double volume);
 	
 	guint64 GetTargetPts ();
-
-	double GetRenderedFramesPerSecond () { return rendered_frames_per_second; }
-	double GetDroppedFramesPerSecond () { return dropped_frames_per_second; }
 	
 	virtual const char * GetTypeName () { return "MediaPlayer"; }
 };

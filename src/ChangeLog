@@ -1,5 +1,11 @@
 2008-11-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* mediaplayer.h, mediaplayer.cpp: Make MediaPlayer use MediaElement's
+	  Rendered/DroppedFramesPerSecond DP.
+	* pipeline.cpp: Fix warning.
+
+2008-11-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* dependencyproperty.g.cpp: Regenerated.
 	* grid.h: ColumnDefinitionCollection doesn't have a public ctor.
 	* mediaelement.h: Add RenderedFramesPerSecond, DownloadProgressOffset
