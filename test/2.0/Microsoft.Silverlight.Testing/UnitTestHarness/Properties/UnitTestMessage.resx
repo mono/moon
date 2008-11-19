@@ -1,0 +1,214 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="CompositeWorkItem_Invoke_NoRemainingWorkItems" xml:space="preserve">
+    <value>There are no remaining test work items</value>
+    <comment>Happens if the work item queue is expected to be non-empty.</comment>
+  </data>
+  <data name="LogException" xml:space="preserve">
+    <value>Exception: Type "{0}" Message "{1}"</value>
+    <comment>Exception log text.</comment>
+  </data>
+  <data name="LogIgnore" xml:space="preserve">
+    <value>Ignoring "{0}"</value>
+    <comment>Ignore log text.</comment>
+  </data>
+  <data name="LogIncorrectExceptionType" xml:space="preserve">
+    <value>Incorrect exception type "{0}" received. Was expecting a "{1}" type.</value>
+    <comment>Incorrect exception log text. {0} = the type received, {1} = the type expected.</comment>
+  </data>
+  <data name="LogNoException" xml:space="preserve">
+    <value>No Exception was observed. Was expecting a "{0}" type exception.</value>
+    <comment>No exception observed. {0} = the type expected.</comment>
+  </data>
+  <data name="TagAttribute_ctor_EmptyTag" xml:space="preserve">
+    <value>Tag cannot be empty!</value>
+    <comment>A TagAttribute's Tag property cannot be empty.</comment>
+  </data>
+  <data name="TagAttribute_ctor_ReservedCharacter" xml:space="preserve">
+    <value>The tag "{0}" contains the invalid character "{1}"!</value>
+    <comment>{0} = the tag, {1} = the invalid character used in the tag</comment>
+  </data>
+  <data name="TagAttribute_ctor_ReservedTag" xml:space="preserve">
+    <value>Tag "{0}" is reserved!</value>
+    <comment>{0} = the tag</comment>
+  </data>
+  <data name="TagManager_ExpressionEvaluator_EmptyTagExpression" xml:space="preserve">
+    <value>tagExpression cannot be empty!</value>
+    <comment>A tag expression cannot be empty.</comment>
+  </data>
+  <data name="TagManager_ExpressionEvaluator_ExpectedEndOfTagExpression" xml:space="preserve">
+    <value>Expected end of tag expression "{0}" at position {1}!</value>
+    <comment>{0} = the tag expression, {1} = the position</comment>
+  </data>
+  <data name="TagManager_ExpressionEvaluator_ExpectedTag" xml:space="preserve">
+    <value>Tag expected in expression "{0}" at position {1}!</value>
+    <comment>{0} = the tag, {1} = the position</comment>
+  </data>
+  <data name="TagManager_ExpressionEvaluator_InvalidTagExpression" xml:space="preserve">
+    <value>Invalid tag expression "{0}" (expected "{1}" at position {2})!</value>
+    <comment>{0} = the invalid expression, {1} = the expected, {2} = the position</comment>
+  </data>
+  <data name="TagTestRunFilter_TaggingInUse" xml:space="preserve">
+    <value>Tag expression "{0}" is in use.</value>
+    <comment>A message that tag expressions are in use.  {0} = tag expression</comment>
+  </data>
+  <data name="TestClassHelper_ExclusiveClassesInUse" xml:space="preserve">
+    <value>Exclusive classes are in use</value>
+    <comment>A message that exclusive classes are in use.</comment>
+  </data>
+  <data name="TestMethodHelper_ExclusiveMethodsInUse" xml:space="preserve">
+    <value>Exclusive methods are in use</value>
+    <comment>A message that exclusive methods are in use.</comment>
+  </data>
+  <data name="TestMethodManager_CompleteMethod_UnVerifiedBug" xml:space="preserve">
+    <value>The known issue could not be verified. A failure will be recorded. If this bug has been fixed, please mark the Fixed attribute value to True.</value>
+    <comment>When a known issue and its result are mismatched.</comment>
+  </data>
+  <data name="UnitTestCompositeWorkItem_ctor_NoTestHarness" xml:space="preserve">
+    <value>No TestHarness is available.</value>
+    <comment>A message that no TestHarness instance is present.</comment>
+  </data>
+  <data name="UnitTestContext_FeatureNotSupported" xml:space="preserve">
+    <value>The "{0}" functionality is not supported within this unit test system.</value>
+    <comment>Message that a feature is not supported. {0} =  a string representation of the feature.</comment>
+  </data>
+  <data name="UnitTestHarness_Initialize_UnitTestHarnessInitialize" xml:space="preserve">
+    <value>Initialization of UnitTestHarness</value>
+    <comment>Log message for unit test harness initialization</comment>
+  </data>
+  <data name="UnitTestHarness_RunNextStep_NoCompositeWorkItemsExist" xml:space="preserve">
+    <value>No composite work items exist to be cleared.</value>
+    <comment>A message that no work items exist.</comment>
+  </data>
+  <data name="UnitTestHarness_TestAssembliesNotActionable" xml:space="preserve">
+    <value>No test classes were selected to be in the test run.</value>
+    <comment>Either
+- unit test provider found no tests
+- no test classes</comment>
+  </data>
+  <data name="UnitTestSystem_Run_NoTestHarnessInSettings" xml:space="preserve">
+    <value>Test harness was not specified on test harness settings object. If a test harness settings object was passed in, please verify that it contains a reference to a test harness.</value>
+    <comment>No test harness was instantiated and provided in the test settings.</comment>
+  </data>
+  <data name="WorkItemTest_EnqueueWorkItem_AsynchronousFeatureUnavailable" xml:space="preserve">
+    <value>Test bug: A test cannot use Test Task objects, such as callbacks and conditionals, or the PumpMessages feature, unless marked with the [Asynchronous] attribute.</value>
+    <comment>When a test author attempts to use task callback features when they are not permitted.</comment>
+  </data>
+</root>
