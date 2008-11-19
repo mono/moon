@@ -13,9 +13,13 @@ CC := cl
 LINK := link
 
 ifeq ($(CFG),debug)
+MS_MDFLAGS := -MDd
+MS_LDFLAGS := -LDd
 OPT := -Od -Zi
 else
-OPT := -O2
+MS_MDFLAGS := -MD
+MS_LDFLAGS := -LD
+OPT := -MD -O2
 endif
 
 PIXMAN_CFLAGS := -I$(top_srcdir)/../pixman/pixman
@@ -30,7 +34,7 @@ else
 CAIRO_LIBS += zdll.lib
 endif
 
-DEFAULT_CFLAGS = -MD -nologo $(OPT)
+DEFAULT_CFLAGS = -nologo $(MS_MDFLAGS) $(OPT)
 DEFAULT_CFLAGS += -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE
 DEFAULT_CFLAGS += -I. -I$(top_srcdir)
 DEFAULT_CFLAGS += $(PIXMAN_CFLAGS)

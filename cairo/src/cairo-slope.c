@@ -66,15 +66,13 @@ _cairo_slope_init (cairo_slope_t *slope,
 int
 _cairo_slope_compare (const cairo_slope_t *a, const cairo_slope_t *b)
 {
-    cairo_fixed_48_16_t diff;
+    cairo_int64_t ady_bdx = _cairo_int32x32_64_mul (a->dy, b->dx);
+    cairo_int64_t bdy_adx = _cairo_int32x32_64_mul (b->dy, a->dx);
+    int cmp;
 
-    diff = ((cairo_fixed_48_16_t) a->dy * (cairo_fixed_48_16_t) b->dx
-	    - (cairo_fixed_48_16_t) b->dy * (cairo_fixed_48_16_t) a->dx);
-
-    if (diff > 0)
-	return 1;
-    if (diff < 0)
-	return -1;
+    cmp = _cairo_int64_cmp (ady_bdx, bdy_adx);
+    if (cmp)
+	return cmp;
 
     /* special-case zero vectors.  the intended logic here is:
      * zero vectors all compare equal, and more positive than any

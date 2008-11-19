@@ -38,7 +38,7 @@ content_files =	\
 	$(NULL)
 
 version.xml: $(top_srcdir)/cairo-version.h
-	echo $(CAIRO_VERSION_MAJOR).$(CAIRO_VERSION_MICRO).$(CAIRO_VERSION_MINOR) > $@
+	echo $(CAIRO_VERSION_MAJOR).$(CAIRO_VERSION_MINOR).$(CAIRO_VERSION_MICRO) > $@
 
 # Images to copy into HTML directory
 HTML_IMAGES =

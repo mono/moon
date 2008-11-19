@@ -44,10 +44,11 @@
 #include "cairo-pdf.h"
 #include "cairo-pdf-surface-private.h"
 #include "cairo-pdf-operators-private.h"
-#include "cairo-scaled-font-subsets-private.h"
-#include "cairo-paginated-private.h"
-#include "cairo-output-stream-private.h"
+#include "cairo-analysis-surface-private.h"
 #include "cairo-meta-surface-private.h"
+#include "cairo-output-stream-private.h"
+#include "cairo-paginated-private.h"
+#include "cairo-scaled-font-subsets-private.h"
 #include "cairo-type3-glyph-surface-private.h"
 
 #include <time.h>
@@ -325,7 +326,10 @@ BAIL0:
 
 /**
  * cairo_pdf_surface_create_for_stream:
- * @write_func: a #cairo_write_func_t to accept the output data
+ * @write_func: a #cairo_write_func_t to accept the output data, may be %NULL
+ *              to indicate a no-op @write_func. With a no-op @write_func,
+ *              the surface may be queried or used as a source without
+ *              generating any temporary files.
  * @closure: the closure argument for @write_func
  * @width_in_points: width of the surface, in points (1 point == 1/72.0 inch)
  * @height_in_points: height of the surface, in points (1 point == 1/72.0 inch)
@@ -362,7 +366,10 @@ cairo_pdf_surface_create_for_stream (cairo_write_func_t		 write_func,
 
 /**
  * cairo_pdf_surface_create:
- * @filename: a filename for the PDF output (must be writable)
+ * @filename: a filename for the PDF output (must be writable), %NULL may be
+ *            used to specify no output. This will generate a PDF surface that
+ *            may be queried and used as a source, without generating a
+ *            temporary file.
  * @width_in_points: width of the surface, in points (1 point == 1/72.0 inch)
  * @height_in_points: height of the surface, in points (1 point == 1/72.0 inch)
  *
@@ -1276,8 +1283,8 @@ _cairo_pdf_surface_start_page (void *abstract_surface)
 }
 
 static cairo_int_status_t
-_cairo_pdf_surface_has_fallback_images (void 		*abstract_surface,
-					cairo_bool_t 	 has_fallbacks)
+_cairo_pdf_surface_has_fallback_images (void		*abstract_surface,
+					cairo_bool_t	 has_fallbacks)
 {
     cairo_status_t status;
     cairo_pdf_surface_t *surface = abstract_surface;
@@ -1288,6 +1295,12 @@ _cairo_pdf_surface_has_fallback_images (void 		*abstract_surface,
 	return status;
 
     return CAIRO_STATUS_SUCCESS;
+}
+
+static cairo_bool_t
+_cairo_pdf_surface_supports_fine_grained_fallbacks (void *abstract_surface)
+{
+    return TRUE;
 }
 
 /* Emit alpha channel from the image into the given data, providing
@@ -2956,7 +2969,11 @@ _cairo_pdf_surface_emit_to_unicode_stream (cairo_pdf_surface_t		*surface,
                                          "<%02x> ",
                                          i + 1);
         }
-	_cairo_pdf_surface_emit_unicode_for_glyph (surface, font_subset->utf8[i + 1]);
+	status = _cairo_pdf_surface_emit_unicode_for_glyph (surface,
+							    font_subset->utf8[i + 1]);
+	if (status)
+	    return status;
+
 	_cairo_output_stream_printf (surface->output,
 				     "\n");
     }
@@ -3496,7 +3513,7 @@ _cairo_pdf_surface_analyze_user_font_subset (cairo_scaled_font_subset_t *font_su
 							  _cairo_pdf_surface_add_font,
 							  surface);
 
-    for (i = 1; i < font_subset->num_glyphs; i++) {
+    for (i = 0; i < font_subset->num_glyphs; i++) {
 	status = _cairo_type3_glyph_surface_analyze_glyph (type3_surface,
 							   font_subset->glyphs[i]);
 	if (status)
@@ -3561,18 +3578,11 @@ _cairo_pdf_surface_emit_type3_font_subset (cairo_pdf_surface_t		*surface,
 	    break;
 
 	glyphs[i] = surface->pdf_stream.self;
-	if (i == 0) {
-	    status = _cairo_type3_glyph_surface_emit_notdef_glyph (type3_surface,
-								   surface->output,
-								   &bbox,
-								   &widths[i]);
-	} else {
-	    status = _cairo_type3_glyph_surface_emit_glyph (type3_surface,
-							    surface->output,
-							    font_subset->glyphs[i],
-							    &bbox,
-							    &widths[i]);
-	}
+	status = _cairo_type3_glyph_surface_emit_glyph (type3_surface,
+							surface->output,
+							font_subset->glyphs[i],
+							&bbox,
+							&widths[i]);
 	if (status)
 	    break;
 
@@ -4471,30 +4481,16 @@ _cairo_pdf_surface_mask	(void			*abstract_surface,
     if (surface->paginated_mode == CAIRO_PAGINATED_MODE_ANALYZE) {
 	cairo_status_t source_status, mask_status;
 
-	source_status =  _cairo_pdf_surface_analyze_operation (surface, op, source);
-	if (source_status != CAIRO_STATUS_SUCCESS &&
-	    source_status < CAIRO_INT_STATUS_UNSUPPORTED)
+	source_status = _cairo_pdf_surface_analyze_operation (surface, op, source);
+	if (_cairo_status_is_error (source_status))
 	    return source_status;
 
 	mask_status = _cairo_pdf_surface_analyze_operation (surface, op, mask);
-	if (mask_status != CAIRO_STATUS_SUCCESS &&
-	    mask_status < CAIRO_INT_STATUS_UNSUPPORTED)
+	if (_cairo_status_is_error (mask_status))
 	    return mask_status;
 
-	/* return the most important status from either the source or mask */
-	if (source_status == CAIRO_INT_STATUS_UNSUPPORTED ||
-	    mask_status == CAIRO_INT_STATUS_UNSUPPORTED)
-	    return CAIRO_INT_STATUS_UNSUPPORTED;
-
-	if (source_status == CAIRO_INT_STATUS_IMAGE_FALLBACK ||
-	    mask_status == CAIRO_INT_STATUS_IMAGE_FALLBACK)
-	    return CAIRO_INT_STATUS_IMAGE_FALLBACK;
-
-	if (source_status == CAIRO_INT_STATUS_ANALYZE_META_SURFACE_PATTERN ||
-	    mask_status == CAIRO_INT_STATUS_ANALYZE_META_SURFACE_PATTERN)
-	    return CAIRO_INT_STATUS_ANALYZE_META_SURFACE_PATTERN;
-
-	return CAIRO_STATUS_SUCCESS;
+	return _cairo_analysis_surface_merge_status (source_status,
+						     mask_status);
     } else if (surface->paginated_mode == CAIRO_PAGINATED_MODE_FALLBACK) {
 	status = _cairo_pdf_surface_start_fallback (surface);
 	if (status)
@@ -4990,9 +4986,11 @@ static const cairo_surface_backend_t cairo_pdf_surface_backend = {
     _cairo_pdf_surface_show_text_glyphs,
 };
 
-static const cairo_paginated_surface_backend_t cairo_pdf_surface_paginated_backend = {
+static const cairo_paginated_surface_backend_t
+cairo_pdf_surface_paginated_backend = {
     _cairo_pdf_surface_start_page,
     _cairo_pdf_surface_set_paginated_mode,
     NULL, /* set_bounding_box */
     _cairo_pdf_surface_has_fallback_images,
+    _cairo_pdf_surface_supports_fine_grained_fallbacks,
 };

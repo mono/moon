@@ -228,17 +228,18 @@ png_diff (const char *filename_a,
 			 surface_a, surface_b, surface_diff,
 			 result);
 
-    cairo_surface_destroy (surface_a);
-    cairo_surface_destroy (surface_b);
-    cairo_surface_destroy (surface_diff);
+    if (filename_diff)
+	_xunlink (filename_diff);
 
-    _xunlink (filename_diff);
     if (status == CAIRO_STATUS_SUCCESS &&
 	result->pixels_changed)
     {
 	status = write_png (surface_diff, filename_diff);
     }
 
+    cairo_surface_destroy (surface_a);
+    cairo_surface_destroy (surface_b);
+    cairo_surface_destroy (surface_diff);
 
     return status;
 }

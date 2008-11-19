@@ -38,8 +38,7 @@ static cairo_test_draw_function_t draw;
 
 static const cairo_test_t test = {
     "filter-nearest-offset",
-    "Test sampling offset of CAIRO_FILTER_NEAREST"
-    "\nwrong sampling location for nearest-neighbor filter in libpixman and Render",
+    "Test sampling offset of CAIRO_FILTER_NEAREST",
     IMAGE_WIDTH, IMAGE_HEIGHT,
     draw
 };
@@ -56,6 +55,12 @@ draw (cairo_t *cr, int width, int height)
 	0xff00ff00, 0xff00ff00,		0xff0000ff, 0xff0000ff
     };
     int i, j;
+
+    /* fill with off-white to avoid a separate rgb24 ref image */
+    cairo_save (cr);
+    cairo_set_source_rgb (cr, .7, .7, .7);
+    cairo_paint (cr);
+    cairo_restore (cr);
 
     /* Draw reference lines where the jump should be. */
     cairo_move_to (cr, PAD + STEPS / 2 * (STAMP_WIDTH + PAD), 0);

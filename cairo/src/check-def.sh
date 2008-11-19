@@ -40,7 +40,7 @@ for def in $defs; do
 		eval $get_cairo_syms | grep -v '^_cairo_test_\|^_fini\|^_init\|^_save[fg]pr\|^_rest[fg]pr' | sort -u
 		# cheat: copy the last line from the def file!
 		tail -n1 "$def"
-	} | diff "$def" - || stat=1
+	} | diff "$def" - >&2 || stat=1
 done
 
 exit $stat

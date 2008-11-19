@@ -54,34 +54,51 @@ static const cairo_test_t test = {
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
-    cairo_surface_t *checker;
+    cairo_surface_t *image;
     cairo_t *cr2;
 
-    /* Create a 2x2 blue+red checker */
-    checker = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, 2, 2);
-    cr2 = cairo_create (checker);
+    image = cairo_image_surface_create (CAIRO_FORMAT_RGB24, 2, 2);
 
+    /* Fill with an opaque background to avoid a separate rgb24 ref image */
+    cairo_set_source_rgb (cr, 0, 0, 0);
+    cairo_paint (cr);
+
+    /* First check handling of pattern extents > surface extents */
+    cairo_save (cr);
+    cairo_scale (cr, width/2., height/2.);
+
+    /* Create a solid black source to merge with the background */
+    cr2 = cairo_create (image);
+    cairo_set_source_rgb (cr2, 0, 0 ,0);
+    cairo_paint (cr2);
+    cairo_set_source_surface (cr, cairo_get_target (cr2), 0, 0);
+    cairo_destroy (cr2);
+    cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_BILINEAR);
+    cairo_paint (cr);
+    cairo_restore (cr);
+
+    /* Then scale to smaller so we can see the full bilinear extents */
+    cairo_save (cr);
+    cairo_translate (cr, PAD, PAD);
+    cairo_scale (cr, SCALE, SCALE);
+    cairo_translate (cr, 0.5, 0.5);
+
+    /* Create a 2x2 blue+red checkerboard source */
+    cr2 = cairo_create (image);
     cairo_set_source_rgb (cr2, 1, 0 ,0); /* red */
     cairo_paint (cr2);
     cairo_set_source_rgb (cr2, 0, 0, 1); /* blue */
     cairo_rectangle (cr2, 0, 1, 1, 1);
     cairo_rectangle (cr2, 1, 0, 1, 1);
     cairo_fill (cr2);
+    cairo_set_source_surface (cr, cairo_get_target (cr2), 0, 0);
     cairo_destroy (cr2);
 
-    /* Draw our surface scaled with EXTEND_NONE */
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_paint (cr);
-
-    cairo_save (cr);
-    cairo_translate (cr, PAD, PAD);
-    cairo_scale (cr, SCALE, SCALE);
-    cairo_translate (cr, 0.5, 0.5);
-    cairo_set_source_surface (cr, checker, 0, 0);
+    cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_BILINEAR);
     cairo_paint (cr);
     cairo_restore (cr);
 
-    cairo_surface_destroy (checker);
+    cairo_surface_destroy (image);
 
     return CAIRO_TEST_SUCCESS;
 }

@@ -123,11 +123,16 @@ typedef cairo_surface_t *
 				       int                        id,
 				       void			**closure);
 
+typedef void
+(*cairo_boilerplate_force_fallbacks_t) (cairo_surface_t *surface,
+	                                unsigned int flags);
+
 typedef cairo_status_t
 (*cairo_boilerplate_finish_surface_t) (cairo_surface_t *surface);
 
 typedef cairo_surface_t *
 (*cairo_boilerplate_get_image_surface_t) (cairo_surface_t *surface,
+	                                  int page,
 					  int width,
 					  int height);
 
@@ -149,6 +154,7 @@ typedef struct _cairo_boilerplate_target
     cairo_content_t				 content;
     unsigned int				 error_tolerance;
     cairo_boilerplate_create_surface_t		 create_surface;
+    cairo_boilerplate_force_fallbacks_t		 force_fallbacks;
     cairo_boilerplate_finish_surface_t		 finish_surface;
     cairo_boilerplate_get_image_surface_t	 get_image_surface;
     cairo_boilerplate_write_to_png_t		 write_to_png;
@@ -165,6 +171,7 @@ cairo_boilerplate_free_targets (cairo_boilerplate_target_t **targets);
 
 cairo_surface_t *
 _cairo_boilerplate_get_image_surface (cairo_surface_t *src,
+				      int page,
 				      int width,
 				      int height);
 cairo_surface_t *
@@ -176,12 +183,19 @@ cairo_boilerplate_get_image_surface_from_png (const char *filename,
 cairo_surface_t *
 cairo_boilerplate_surface_create_in_error (cairo_status_t status);
 
+enum {
+    CAIRO_BOILERPLATE_OPEN_NO_DAEMON = 0x1,
+};
+
 FILE *
 cairo_boilerplate_open_any2ppm (const char *filename,
-				int page);
-
+				int page,
+				unsigned int flags);
 cairo_surface_t *
 cairo_boilerplate_image_surface_create_from_ppm_stream (FILE *file);
+
+cairo_surface_t *
+cairo_boilerplate_convert_to_image (const char *filename, int page);
 
 int
 cairo_boilerplate_version (void);

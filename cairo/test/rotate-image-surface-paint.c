@@ -51,6 +51,8 @@ draw (cairo_t *cr, int width, int height)
     surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24,
 					  surface_size, surface_size);
     cr_surface = cairo_create (surface);
+    cairo_surface_destroy (surface);
+
     cairo_set_source_rgb (cr_surface, 1, 1, 1);
     cairo_rectangle (cr_surface,
 		     0, 0,
@@ -71,7 +73,6 @@ draw (cairo_t *cr, int width, int height)
 		     surface_size / 2, surface_size / 2,
 		     surface_size / 2, surface_size / 2);
     cairo_fill (cr_surface);
-    cairo_destroy (cr_surface);
 
     /* First paint opaque background (black) so we don't need separate
      * ARGB32 and RGB24 reference images. */
@@ -82,11 +83,11 @@ draw (cairo_t *cr, int width, int height)
     cairo_rotate (cr, M_PI / 4.0);
     cairo_translate (cr, -surface_size/2, -surface_size/2);
 
-    cairo_set_source_surface (cr, surface, 0, 0);
+    cairo_set_source_surface (cr, cairo_get_target (cr_surface), 0, 0);
+    cairo_destroy (cr_surface);
     cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_NEAREST);
     cairo_paint (cr);
 
-    cairo_surface_destroy (surface);
 
     return CAIRO_TEST_SUCCESS;
 }

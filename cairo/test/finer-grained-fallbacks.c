@@ -31,7 +31,7 @@ static cairo_test_draw_function_t draw;
 #define CIRCLE_SIZE 10
 #define PAD 2
 #define WIDTH (CIRCLE_SIZE*6.5 + PAD)
-#define HEIGHT (CIRCLE_SIZE*3.5 + PAD)
+#define HEIGHT (CIRCLE_SIZE*7.0 + PAD)
 
 static const cairo_test_t test = {
     "finer-grained-fallbacks",
@@ -51,6 +51,19 @@ draw_circle (cairo_t *cr, double x, double y)
 }
 
 static void
+draw_image_circle (cairo_t *cr, cairo_surface_t *source, double x, double y)
+{
+    cairo_save (cr);
+
+    cairo_set_source_surface (cr, source, x, y);
+    cairo_pattern_set_extend (cairo_get_source (cr), CAIRO_EXTEND_REFLECT);
+    cairo_rectangle (cr, x, y, CIRCLE_SIZE, CIRCLE_SIZE);
+    cairo_fill (cr);
+
+    cairo_restore (cr);
+}
+
+static void
 draw_circles (cairo_t *cr)
 {
     draw_circle (cr, 0,               -CIRCLE_SIZE*0.1);
@@ -59,6 +72,17 @@ draw_circles (cairo_t *cr)
     draw_circle (cr, CIRCLE_SIZE*2, 0);
     draw_circle (cr, CIRCLE_SIZE*4, 0);
     draw_circle (cr, CIRCLE_SIZE*6, 0);
+}
+
+static void
+draw_image_circles (cairo_t *cr, cairo_surface_t *source)
+{
+    draw_image_circle (cr, source, 0,               -CIRCLE_SIZE*0.1);
+    draw_image_circle (cr, source, CIRCLE_SIZE*0.4,  CIRCLE_SIZE*0.25);
+
+    draw_image_circle (cr, source, CIRCLE_SIZE*2, 0);
+    draw_image_circle (cr, source, CIRCLE_SIZE*4, 0);
+    draw_image_circle (cr, source, CIRCLE_SIZE*6, 0);
 }
 
 /* For each of circle and fallback_circle we draw:
@@ -74,11 +98,39 @@ draw_circles (cairo_t *cr)
  *
  * Fallback circles are drawn in red. CAIRO_OPERATOR_ADD is used to
  * ensure they will be emitted as a fallback image in PS/PDF.
+ *
+ * In order to trigger a fallback for SVG, we need to use a surface with
+ * REFLECT.
  */
+static cairo_surface_t *
+surface_create (cairo_t *target)
+{
+    cairo_surface_t *surface;
+    cairo_t *cr;
+
+    surface = cairo_surface_create_similar (cairo_get_target (target),
+					    CAIRO_CONTENT_COLOR_ALPHA,
+					    CIRCLE_SIZE, CIRCLE_SIZE);
+    cr = cairo_create (surface);
+    cairo_surface_destroy (surface);
+
+    cairo_set_source_rgb (cr, 1.0, 0.0, 0.0);
+    draw_circle (cr, CIRCLE_SIZE/2, CIRCLE_SIZE/2);
+
+    surface = cairo_surface_reference (cairo_get_target (cr));
+    cairo_destroy (cr);
+
+    return surface;
+}
+
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
+    cairo_surface_t *surface;
+
     cairo_translate (cr, PAD, PAD);
+
+    cairo_save (cr);
 
     /* Draw overlapping circle and fallback circle */
     cairo_set_source_rgb (cr, 0.0, 1.0, 0.0);
@@ -100,6 +152,31 @@ draw (cairo_t *cr, int width, int height)
     cairo_set_operator (cr, CAIRO_OPERATOR_ADD);
     cairo_translate (cr, 0, CIRCLE_SIZE*2);
     draw_circles (cr);
+
+    cairo_restore (cr);
+    cairo_translate (cr, 0, CIRCLE_SIZE * 3.5);
+
+    /* Draw using fallback surface */
+    surface = surface_create (cr);
+
+    cairo_set_source_rgb (cr, 0.0, 1.0, 0.0);
+    cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
+    draw_circle (cr, CIRCLE_SIZE*0.5,  CIRCLE_SIZE*1.5);
+
+    cairo_set_operator (cr, CAIRO_OPERATOR_ADD);
+    draw_image_circle (cr, surface, CIRCLE_SIZE/4, CIRCLE_SIZE + CIRCLE_SIZE/4);
+
+    /* Draw circles */
+    cairo_set_source_rgb (cr, 0.0, 1.0, 0.0);
+    cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
+    cairo_translate (cr, CIRCLE_SIZE*2.5, CIRCLE_SIZE*0.6);
+    draw_circles (cr);
+
+    cairo_set_operator (cr, CAIRO_OPERATOR_ADD);
+    cairo_translate (cr, -CIRCLE_SIZE/2, CIRCLE_SIZE*1.5);
+    draw_image_circles (cr, surface);
+
+    cairo_surface_destroy (surface);
 
     return CAIRO_TEST_SUCCESS;
 }

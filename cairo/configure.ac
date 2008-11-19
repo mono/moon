@@ -1,4 +1,4 @@
-AC_PREREQ(2.58)
+AC_PREREQ(2.59)
 CAIRO_PARSE_VERSION
 AC_INIT([cairo],
 	[cairo_version_major.cairo_version_minor.cairo_version_micro],
@@ -7,9 +7,10 @@ AC_CONFIG_SRCDIR(src/cairo.h)
 AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_AUX_DIR(build)
 AC_CONFIG_MACRO_DIR(build)
-AM_INIT_AUTOMAKE([1.8 gnu -Wall no-define])
+AM_INIT_AUTOMAKE([1.9.6 gnu -Wall no-define])
 AC_LIBTOOL_WIN32_DLL dnl Must be called before AC_PROG_LIBTOOL
 AC_PROG_LIBTOOL dnl ([1.4]) Don't remove!
+DOLT dnl Make my libtool fast!
 GTK_DOC_CHECK([1.6])
 
 dnl ===========================================================================
@@ -337,7 +338,9 @@ CAIRO_ENABLE_SURFACE_BACKEND(ps, PostScript, yes, [
 
 dnl ===========================================================================
 
+SPECTRE_VERSION_REQUIRED=0.2.0
 test_ps=no
+any2ppm_ps=no
 if test "x$use_ps" = "xyes"; then
   AC_CHECK_PROG(GS, gs, gs)
   if test "$GS"; then
@@ -347,9 +350,20 @@ if test "x$use_ps" = "xyes"; then
     AC_MSG_WARN([PS backend will not be tested since ghostscript is not available])
     test_ps="no (requires ghostscript)"
   fi
+
+  libspectre_DEPENDENCY="libspectre >= $SPECTRE_VERSION_REQUIRED"
+  PKG_CHECK_MODULES(LIBSPECTRE, $libspectre_DEPENDENCY,
+		    [any2ppm_ps=yes],
+		    [AC_MSG_RESULT(no)])
 fi
 
 AM_CONDITIONAL(CAIRO_CAN_TEST_PS_SURFACE, test "x$test_ps" = "xyes")
+AM_CONDITIONAL(CAIRO_HAS_SPECTRE, test "x$any2ppm_ps" = "xyes")
+if test "x$any2ppm_ps" = "xyes"; then
+    AC_DEFINE([CAIRO_HAS_SPECTRE], 1, [Define to 1 if libspectre is available])
+fi
+AC_SUBST(LIBSPECTRE_CFLAGS)
+AC_SUBST(LIBSPECTRE_LIBS)
 
 dnl ===========================================================================
 
@@ -365,11 +379,12 @@ dnl ===========================================================================
 # enhancement not to gobble nearly 1GiB of memory during test/large-font.
 POPPLER_VERSION_REQUIRED=0.9.2
 test_pdf=no
+any2ppm_pdf=no
 if test "x$use_pdf" = "xyes"; then
   poppler_DEPENDENCY="poppler-glib >= $POPPLER_VERSION_REQUIRED"
   PKG_CHECK_MODULES(POPPLER, $poppler_DEPENDENCY pango gtk+-2.0,
 		    [CAIRO_CHECK_FUNCS_WITH_FLAGS(poppler_page_render, [$POPPLER_CFLAGS], [$POPPLER_LIBS],
-                    [test_pdf=yes],
+                    [test_pdf=yes; any2ppm_pdf=yes],
 		    [AC_MSG_RESULT(no); test_pdf="no (requires $poppler_DEPENDENCY)"])],
 		    [AC_MSG_RESULT(no); test_pdf="no (requires $poppler_DEPENDENCY)"])
   if test "x$test_pdf" = "xyes"; then
@@ -395,11 +410,12 @@ CAIRO_ENABLE_SURFACE_BACKEND(svg, SVG, yes, [
 
 LIBRSVG_VERSION_REQUIRED=2.15.0
 test_svg=no
+any2ppm_svg=no
 if test "x$use_svg" = "xyes"; then
   librsvg_DEPENDENCY="librsvg-2.0 >= $LIBRSVG_VERSION_REQUIRED"
   PKG_CHECK_MODULES(LIBRSVG, $librsvg_DEPENDENCY gdk-2.0,
 		    [CAIRO_CHECK_FUNCS_WITH_FLAGS(rsvg_pixbuf_from_file, [$LIBRSVG_CFLAGS], [$LIBRSVG_LIBS],
-                    [test_svg=yes],
+                    [test_svg=yes; any2ppm_svg=yes],
 		    [AC_MSG_RESULT(no); test_svg="no (requires $librsvg_DEPENDENCY)"])],
 		    [AC_MSG_RESULT(no); test_svg="no (requires $librsvg_DEPENDENCY)"])
   if test "x$test_svg" = "xyes"; then
@@ -439,8 +455,9 @@ CAIRO_ENABLE_FONT_BACKEND(user, user, always)
 dnl ===========================================================================
 dnl Build the external converter if we have any of the test backends
 AM_CONDITIONAL(BUILD_ANY2PPM,
-	       test "x$test_svg" = "xyes" \
-	         -o "x$test_pdf" = "xyes" ) # -o "x$test_ps"  = "xyes")
+	       test "x$any2ppm_svg" = "xyes" \
+	         -o "x$any2ppm_pdf" = "xyes" \
+		 -o "x$any2ppm_ps"  = "xyes")
 
 dnl ===========================================================================
 
@@ -466,6 +483,9 @@ if test "x$disable_some_floating_point" = "xyes"; then
 fi
 
 dnl ===========================================================================
+
+# We use GTK+ for some utility/debugging tools
+PKG_CHECK_MODULES(gtk, "gtk+-2.0",, AC_MSG_RESULT(no))
 
 AC_CONFIG_FILES([
 Makefile

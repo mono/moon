@@ -61,6 +61,7 @@ typedef unsigned __int64 uint64_t;
 
 typedef enum cairo_test_status {
     CAIRO_TEST_SUCCESS = 0,
+    CAIRO_TEST_NO_MEMORY,
     CAIRO_TEST_FAILURE,
     CAIRO_TEST_CRASHED,
     CAIRO_TEST_UNTESTED = 77 /* match automake's skipped exit status */
@@ -128,6 +129,9 @@ struct _cairo_test_context {
     cairo_bool_t limited_targets;
     cairo_boilerplate_target_t **targets_to_test;
 
+    int malloc_failure;
+    int last_fault_count;
+
     int thread;
 };
 
@@ -175,7 +179,7 @@ cairo_pattern_t *
 cairo_test_create_pattern_from_png (const cairo_test_context_t *ctx,
 	                            const char *filename);
 
-cairo_status_t
+void
 cairo_test_paint_checkered (cairo_t *cr);
 
 #define CAIRO_TEST_DOUBLE_EQUALS(a,b)  (fabs((a)-(b)) < 0.00001)
@@ -183,6 +187,26 @@ cairo_test_paint_checkered (cairo_t *cr);
 cairo_bool_t
 cairo_test_is_target_enabled (const cairo_test_context_t *ctx,
 	                      const char *target);
+
+cairo_bool_t
+cairo_test_malloc_failure (const cairo_test_context_t *ctx,
+	                   cairo_status_t status);
+
+cairo_test_status_t
+cairo_test_status_from_status (const cairo_test_context_t *ctx,
+			       cairo_status_t status);
+
+char *
+cairo_test_reference_image_filename (const cairo_test_context_t *ctx,
+	                             const char *base_name,
+				     const char *test_name,
+				     const char *target_name,
+				     const char *format);
+
+cairo_surface_t *
+cairo_test_get_reference_image (cairo_test_context_t *ctx,
+				const char *filename,
+				cairo_bool_t flatten);
 
 CAIRO_END_DECLS
 

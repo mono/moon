@@ -32,7 +32,7 @@ It should contain a (space-, comma-, etc-separated) list of backends to test.
 To limit the tests run, use the TESTS make variable, which should be a
 space-separated list of tests to run.  For example:
 
-  make test TARGETS=image,ps TESTS="zero-alpha"
+  make test TARGETS=image,ps3 TESTS="zero-alpha"
 
 Another very handy mechanism when trying to fix bugs is:
 
@@ -85,8 +85,12 @@ the software configuration used to generate the reference images.
 
 Here are some of the relevant details:
 
-  * Your system must have a copy of the Bitstream Vera font, (this is
-    a free software font that is often in a file named Vera.ttf).
+  * Your system must have a copy of the Bitstream Vera font. These are
+      "Bitstream Vera Sans" (Vera.ttf);
+      "Bitstream Vera Sans Mono" (VeraMono.ttf);
+      "Bitstream Vera Serif" (VeraSe.ttf);
+    and also
+      "Nimbus Sans L" (n019003l.pfb).
 
   * Currently, you must be using a build of cairo using freetype
     (cairo-ft) as the default font backend. Otherwise all tests
@@ -102,6 +106,24 @@ Here are some of the relevant details:
     suite.
 
   * To test the ps backend, you will need ghostscript version 8.62.
+
+  * Testing the xlib backend is problematic since many X server
+    drivers have bugs that are exercised by the test suite. (Or, if
+    not actual bugs, differ slightly in their output in such a way
+    that the test suite will report errors.) This can be quite handy
+    if you want to debug an X server driver, but since most people
+    don't want to do that, another option is to run against a headless
+    X server that uses only software for all rendering. One such X
+    server is Xvfb which can be started like this:
+
+	Xfvb -screen 0 1280x1024x24 -ac -nolisten tcp :2
+
+    after which the test suite can be run against it like so:
+
+	DISPLAY=:2 make test
+
+    We have been using Xvfb for testing cairo releases and ensuring
+    that all tests behave as expected with this X server.
 
 What if I can't make my system match?
 -------------------------------------
@@ -261,3 +283,8 @@ Incorrect clipping of group object (regression?)
 https://bugs.freedesktop.org/show_bug.cgi?id=14580
 --------------------------------------------------
 push-group
+
+Ghostscript does not correctly render small miters
+http://bugs.ghostscript.com/show_bug.cgi?id=690098
+--------------------------------------------------
+miter-precision

@@ -98,7 +98,9 @@ main (void)
     char dsc[255];
 
     cairo_test_init (&ctx, "ps-features");
-    if (! cairo_test_is_target_enabled (&ctx, "ps")) {
+    if (! (cairo_test_is_target_enabled (&ctx, "ps2") ||
+	   cairo_test_is_target_enabled (&ctx, "ps3")))
+    {
 	cairo_test_fini (&ctx);
 	return CAIRO_TEST_UNTESTED;
     }

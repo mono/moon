@@ -37,4 +37,8 @@ $(CFG)/cairo-perf.exe: $(OBJECTS)
 
 cairo-perf-diff-files:
 	@mkdir -p $(CFG)
-	@$(CC) $(CFLAGS) -Fe"$@" cairo-perf-diff-files.c cairo-stats.c -link $(LDFLAGS)
+	@$(CC) $(CFLAGS) -Fe"$@" cairo-perf-diff-files.c cairo-perf-report.c cairo-stats.c -link $(LDFLAGS)
+
+cairo-perf-graph-files:
+	@mkdir -p $(CFG)
+	@$(CC) $(CFLAGS) -Fe"$@" cairo-perf-graph-files.c cairo-perf-report.c cairo-stats.c -link $(LDFLAGS)

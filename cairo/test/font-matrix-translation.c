@@ -58,6 +58,7 @@ box_text (const cairo_test_context_t *ctx, cairo_t *cr,
     double line_width;
     cairo_text_extents_t extents = {0}, scaled_extents = {0};
     cairo_scaled_font_t *scaled_font;
+    cairo_status_t status;
 
     cairo_save (cr);
 
@@ -65,6 +66,10 @@ box_text (const cairo_test_context_t *ctx, cairo_t *cr,
 
     scaled_font = cairo_get_scaled_font (cr);
     cairo_scaled_font_text_extents (scaled_font, TEXT, &scaled_extents);
+    status = cairo_scaled_font_status (scaled_font);
+    if (status)
+	return cairo_test_status_from_status (ctx, status);
+
     if (! text_extents_equal (&extents, &scaled_extents)) {
         cairo_test_log (ctx,
 			"Error: extents differ when they shouldn't:\n"

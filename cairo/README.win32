@@ -1,15 +1,20 @@
 Building Cairo on Windows
 =========================
-There are two primary ways to build Cairo on Windows.  You can use a
-UN*X-like setup, such as Cygwin, with the conventional configure
-script shipped with Cairo releases.  In this configuration, you will
-build with GCC and end up with (for instance) a Cygwin-dependent
-library.  In theory, this technique is no different than the ordinary
-build process for the Cairo library.
+There are two primary ways to build Cairo on Windows. You can use a
+UNIX emulation based setup, such as Cygwin or MSYS, with the
+conventional configure script shipped with Cairo releases. In this
+configuration, you will build with GCC and (implicitly) libtool. In
+the Cygwin case you end up with a DLL that depends on Cygwin and
+should be used only from Cygwin applications. In the MSYS case you end
+up with a "normal" Win32 DLL that can be used either from GCC- or
+Microsoft Visual C++-compiled code. In theory, this technique is no
+different than the ordinary build process for the Cairo library. In
+practise there are lots of small details that can go wrong.
 
 The second way is to use a GNU-compatible make, but build using
 Microsoft's Visual C++ compiler to produce native libraries.  This is
-the setup this README is written for.
+the setup this README.win32 is written for. Also the DLL produced this
+way is usable either from GCC- or MSVC-compiled code.
 
 Tools required
 ==============

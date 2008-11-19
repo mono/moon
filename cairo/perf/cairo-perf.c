@@ -29,6 +29,7 @@
 #define _GNU_SOURCE 1	/* for sched_getaffinity() */
 
 #include "cairo-perf.h"
+#include "cairo-stats.h"
 
 #include "cairo-boilerplate-getopt.h"
 
@@ -454,6 +455,8 @@ const cairo_perf_case_t perf_cases[] = {
     { long_lines, 100, 100},
     { unaligned_clip, 100, 100},
     { rectangles, 512, 512},
+    { rounded_rectangles, 512, 512},
     { long_dashed_lines, 512, 512},
+    { composite_checker, 16, 512},
     { NULL }
 };

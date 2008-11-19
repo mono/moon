@@ -62,6 +62,38 @@ typedef struct {
 
 } cairo_analysis_surface_t;
 
+cairo_int_status_t
+_cairo_analysis_surface_merge_status (cairo_int_status_t status_a,
+				      cairo_int_status_t status_b)
+{
+    /* fatal errors should be checked and propagated at source */
+    assert (! _cairo_status_is_error (status_a));
+    assert (! _cairo_status_is_error (status_b));
+
+    /* return the most important status */
+    if (status_a == CAIRO_INT_STATUS_UNSUPPORTED ||
+	status_b == CAIRO_INT_STATUS_UNSUPPORTED)
+	return CAIRO_INT_STATUS_UNSUPPORTED;
+
+    if (status_a == CAIRO_INT_STATUS_IMAGE_FALLBACK ||
+	status_b == CAIRO_INT_STATUS_IMAGE_FALLBACK)
+	return CAIRO_INT_STATUS_IMAGE_FALLBACK;
+
+    if (status_a == CAIRO_INT_STATUS_ANALYZE_META_SURFACE_PATTERN ||
+	status_b == CAIRO_INT_STATUS_ANALYZE_META_SURFACE_PATTERN)
+	return CAIRO_INT_STATUS_ANALYZE_META_SURFACE_PATTERN;
+
+    if (status_a == CAIRO_INT_STATUS_FLATTEN_TRANSPARENCY ||
+	status_b == CAIRO_INT_STATUS_FLATTEN_TRANSPARENCY)
+	return CAIRO_INT_STATUS_FLATTEN_TRANSPARENCY;
+
+    /* at this point we have checked all the valid internal codes, so... */
+    assert (status_a == CAIRO_STATUS_SUCCESS &&
+	    status_b == CAIRO_STATUS_SUCCESS);
+
+    return CAIRO_STATUS_SUCCESS;
+}
+
 static cairo_int_status_t
 _analyze_meta_surface_pattern (cairo_analysis_surface_t	*surface,
 			       cairo_pattern_t		*pattern)
@@ -253,6 +285,7 @@ _cairo_analysis_surface_intersect_clip_path (void		*abstract_surface,
     cairo_analysis_surface_t *surface = abstract_surface;
     double                    x1, y1, x2, y2;
     cairo_rectangle_int_t   extent;
+    cairo_bool_t is_empty;
 
     if (path == NULL) {
 	surface->current_clip.x = 0;
@@ -271,7 +304,7 @@ _cairo_analysis_surface_intersect_clip_path (void		*abstract_surface,
 	extent.width  = ceil (x2) - extent.x;
 	extent.height = ceil (y2) - extent.y;
 
-	_cairo_rectangle_intersect (&surface->current_clip, &extent);
+	is_empty = _cairo_rectangle_intersect (&surface->current_clip, &extent);
     }
 
     return CAIRO_STATUS_SUCCESS;
@@ -294,6 +327,7 @@ _cairo_analysis_surface_paint (void			*abstract_surface,
     cairo_analysis_surface_t *surface = abstract_surface;
     cairo_status_t	     status, backend_status;
     cairo_rectangle_int_t  extents;
+    cairo_bool_t is_empty;
 
     if (!surface->target->backend->paint)
 	backend_status = CAIRO_INT_STATUS_UNSUPPORTED;
@@ -310,14 +344,15 @@ _cairo_analysis_surface_paint (void			*abstract_surface,
 
     if (_cairo_operator_bounded_by_source (op)) {
 	cairo_rectangle_int_t source_extents;
+
 	status = _cairo_pattern_get_extents (source, &source_extents);
 	if (status)
 	    return status;
 
-	_cairo_rectangle_intersect (&extents, &source_extents);
+	is_empty = _cairo_rectangle_intersect (&extents, &source_extents);
     }
 
-    _cairo_rectangle_intersect (&extents, &surface->current_clip);
+    is_empty = _cairo_rectangle_intersect (&extents, &surface->current_clip);
 
     status = _add_operation (surface, &extents, backend_status);
 
@@ -333,6 +368,7 @@ _cairo_analysis_surface_mask (void		*abstract_surface,
     cairo_analysis_surface_t *surface = abstract_surface;
     cairo_int_status_t	      status, backend_status;
     cairo_rectangle_int_t   extents;
+    cairo_bool_t is_empty;
 
     if (!surface->target->backend->mask)
 	backend_status = CAIRO_INT_STATUS_UNSUPPORTED;
@@ -349,8 +385,7 @@ _cairo_analysis_surface_mask (void		*abstract_surface,
 	    if (_cairo_surface_is_meta (surface_pattern->surface)) {
 		backend_source_status =
 		    _analyze_meta_surface_pattern (surface, source);
-		if (backend_source_status != CAIRO_STATUS_SUCCESS &&
-		    backend_source_status != CAIRO_INT_STATUS_IMAGE_FALLBACK)
+		if (_cairo_status_is_error (backend_source_status))
 		    return backend_source_status;
 	    }
 	}
@@ -360,19 +395,14 @@ _cairo_analysis_surface_mask (void		*abstract_surface,
 	    if (_cairo_surface_is_meta (surface_pattern->surface)) {
 		backend_mask_status =
 		    _analyze_meta_surface_pattern (surface, mask);
-		if (backend_mask_status != CAIRO_STATUS_SUCCESS &&
-		    backend_mask_status != CAIRO_INT_STATUS_IMAGE_FALLBACK)
-		    return backend_status;
+		if (_cairo_status_is_error (backend_mask_status))
+		    return backend_mask_status;
 	    }
 	}
 
-	backend_status = CAIRO_STATUS_SUCCESS;
-
-	if (backend_source_status == CAIRO_INT_STATUS_IMAGE_FALLBACK ||
-	    backend_mask_status == CAIRO_INT_STATUS_IMAGE_FALLBACK)
-	{
-	    backend_status = CAIRO_INT_STATUS_IMAGE_FALLBACK;
-	}
+	backend_status =
+	    _cairo_analysis_surface_merge_status (backend_source_status,
+						  backend_mask_status);
     }
 
     status = _cairo_surface_get_extents (&surface->base, &extents);
@@ -385,16 +415,20 @@ _cairo_analysis_surface_mask (void		*abstract_surface,
 	if (status)
 	    return status;
 
-	_cairo_rectangle_intersect (&extents, &source_extents);
+	is_empty = _cairo_rectangle_intersect (&extents, &source_extents);
+    }
 
-	status = _cairo_pattern_get_extents (mask, &source_extents);
+    if (_cairo_operator_bounded_by_mask (op)) {
+	cairo_rectangle_int_t mask_extents;
+
+	status = _cairo_pattern_get_extents (mask, &mask_extents);
 	if (status)
 	    return status;
 
-	_cairo_rectangle_intersect (&extents, &source_extents);
+	is_empty = _cairo_rectangle_intersect (&extents, &mask_extents);
     }
 
-    _cairo_rectangle_intersect (&extents, &surface->current_clip);
+    is_empty = _cairo_rectangle_intersect (&extents, &surface->current_clip);
 
     status = _add_operation (surface, &extents, backend_status);
 
@@ -415,7 +449,8 @@ _cairo_analysis_surface_stroke (void			*abstract_surface,
     cairo_analysis_surface_t *surface = abstract_surface;
     cairo_status_t	     status, backend_status;
     cairo_traps_t            traps;
-    cairo_rectangle_int_t  extents;
+    cairo_rectangle_int_t    extents;
+    cairo_bool_t             is_empty;
 
     if (!surface->target->backend->stroke)
 	backend_status = CAIRO_INT_STATUS_UNSUPPORTED;
@@ -434,14 +469,15 @@ _cairo_analysis_surface_stroke (void			*abstract_surface,
 
     if (_cairo_operator_bounded_by_source (op)) {
 	cairo_rectangle_int_t source_extents;
+
 	status = _cairo_pattern_get_extents (source, &source_extents);
 	if (status)
 	    return status;
 
-	_cairo_rectangle_intersect (&extents, &source_extents);
+	is_empty = _cairo_rectangle_intersect (&extents, &source_extents);
     }
 
-    _cairo_rectangle_intersect (&extents, &surface->current_clip);
+    is_empty = _cairo_rectangle_intersect (&extents, &surface->current_clip);
 
     if (_cairo_operator_bounded_by_mask (op)) {
 	cairo_box_t box;
@@ -483,7 +519,8 @@ _cairo_analysis_surface_fill (void			*abstract_surface,
     cairo_analysis_surface_t *surface = abstract_surface;
     cairo_status_t	     status, backend_status;
     cairo_traps_t            traps;
-    cairo_rectangle_int_t  extents;
+    cairo_rectangle_int_t    extents;
+    cairo_bool_t             is_empty;
 
     if (!surface->target->backend->fill)
 	backend_status = CAIRO_INT_STATUS_UNSUPPORTED;
@@ -501,14 +538,15 @@ _cairo_analysis_surface_fill (void			*abstract_surface,
 
     if (_cairo_operator_bounded_by_source (op)) {
 	cairo_rectangle_int_t source_extents;
+
 	status = _cairo_pattern_get_extents (source, &source_extents);
 	if (status)
 	    return status;
 
-	_cairo_rectangle_intersect (&extents, &source_extents);
+	is_empty = _cairo_rectangle_intersect (&extents, &source_extents);
     }
 
-    _cairo_rectangle_intersect (&extents, &surface->current_clip);
+    is_empty = _cairo_rectangle_intersect (&extents, &surface->current_clip);
 
     if (_cairo_operator_bounded_by_mask (op)) {
 	cairo_box_t box;
@@ -549,6 +587,7 @@ _cairo_analysis_surface_show_glyphs (void		  *abstract_surface,
     cairo_analysis_surface_t *surface = abstract_surface;
     cairo_status_t	     status, backend_status;
     cairo_rectangle_int_t    extents, glyph_extents;
+    cairo_bool_t             is_empty;
 
     /* Adapted from _cairo_surface_show_glyphs */
     if (surface->target->backend->show_glyphs)
@@ -577,14 +616,15 @@ _cairo_analysis_surface_show_glyphs (void		  *abstract_surface,
 
     if (_cairo_operator_bounded_by_source (op)) {
 	cairo_rectangle_int_t source_extents;
+
 	status = _cairo_pattern_get_extents (source, &source_extents);
 	if (status)
 	    return status;
 
-	_cairo_rectangle_intersect (&extents, &source_extents);
+	is_empty = _cairo_rectangle_intersect (&extents, &source_extents);
     }
 
-    _cairo_rectangle_intersect (&extents, &surface->current_clip);
+    is_empty = _cairo_rectangle_intersect (&extents, &surface->current_clip);
 
     if (_cairo_operator_bounded_by_mask (op)) {
 	status = _cairo_scaled_font_glyph_device_extents (scaled_font,
@@ -594,7 +634,7 @@ _cairo_analysis_surface_show_glyphs (void		  *abstract_surface,
 	if (status)
 	    return status;
 
-	_cairo_rectangle_intersect (&extents, &glyph_extents);
+	is_empty = _cairo_rectangle_intersect (&extents, &glyph_extents);
     }
 
     status = _add_operation (surface, &extents, backend_status);
@@ -626,6 +666,7 @@ _cairo_analysis_surface_show_text_glyphs (void			    *abstract_surface,
     cairo_analysis_surface_t *surface = abstract_surface;
     cairo_status_t	     status, backend_status;
     cairo_rectangle_int_t    extents, glyph_extents;
+    cairo_bool_t             is_empty;
 
     /* Adapted from _cairo_surface_show_glyphs */
     backend_status = CAIRO_INT_STATUS_UNSUPPORTED;
@@ -658,14 +699,15 @@ _cairo_analysis_surface_show_text_glyphs (void			    *abstract_surface,
 
     if (_cairo_operator_bounded_by_source (op)) {
 	cairo_rectangle_int_t source_extents;
+
 	status = _cairo_pattern_get_extents (source, &source_extents);
 	if (status)
 	    return status;
 
-	_cairo_rectangle_intersect (&extents, &source_extents);
+	is_empty = _cairo_rectangle_intersect (&extents, &source_extents);
     }
 
-    _cairo_rectangle_intersect (&extents, &surface->current_clip);
+    is_empty = _cairo_rectangle_intersect (&extents, &surface->current_clip);
 
     if (_cairo_operator_bounded_by_mask (op)) {
 	status = _cairo_scaled_font_glyph_device_extents (scaled_font,
@@ -675,7 +717,7 @@ _cairo_analysis_surface_show_text_glyphs (void			    *abstract_surface,
 	if (status)
 	    return status;
 
-	_cairo_rectangle_intersect (&extents, &glyph_extents);
+	is_empty = _cairo_rectangle_intersect (&extents, &glyph_extents);
     }
 
     status = _add_operation (surface, &extents, backend_status);
@@ -726,6 +768,11 @@ _cairo_analysis_surface_create (cairo_surface_t		*target,
 				int			 height)
 {
     cairo_analysis_surface_t *surface;
+    cairo_status_t status;
+
+    status = target->status;
+    if (status)
+	return _cairo_surface_create_in_error (status);
 
     surface = malloc (sizeof (cairo_analysis_surface_t));
     if (surface == NULL)
@@ -769,17 +816,22 @@ _cairo_analysis_surface_create (cairo_surface_t		*target,
     return &surface->base;
 }
 
-cairo_private void
+void
 _cairo_analysis_surface_set_ctm (cairo_surface_t *abstract_surface,
 				 cairo_matrix_t  *ctm)
 {
-    cairo_analysis_surface_t	*surface = (cairo_analysis_surface_t *) abstract_surface;
+    cairo_analysis_surface_t	*surface;
+
+    if (abstract_surface->status)
+	return;
+
+    surface = (cairo_analysis_surface_t *) abstract_surface;
 
     surface->ctm = *ctm;
     surface->has_ctm = !_cairo_matrix_is_identity (&surface->ctm);
 }
 
-cairo_private void
+void
 _cairo_analysis_surface_get_ctm (cairo_surface_t *abstract_surface,
 				 cairo_matrix_t  *ctm)
 {

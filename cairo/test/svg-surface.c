@@ -95,7 +95,9 @@ main (void)
     cairo_surface_t *surface;
 
     cairo_test_init (&ctx, "svg-surface");
-    if (! cairo_test_is_target_enabled (&ctx, "svg")) {
+    if (! (cairo_test_is_target_enabled (&ctx, "svg11") ||
+	   cairo_test_is_target_enabled (&ctx, "svg12")))
+    {
 	cairo_test_fini (&ctx);
 	return CAIRO_TEST_UNTESTED;
     }

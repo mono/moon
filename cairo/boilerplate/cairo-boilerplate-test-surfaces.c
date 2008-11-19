@@ -166,12 +166,17 @@ _cairo_boilerplate_test_paginated_surface_write_to_png (cairo_surface_t	*surface
 
 cairo_surface_t *
 _cairo_boilerplate_test_paginated_get_image_surface (cairo_surface_t *surface,
+						     int page,
 						     int width,
 						     int height)
 {
     cairo_format_t format;
     test_paginated_closure_t *tpc;
     cairo_status_t status;
+
+    /* XXX separate finish as per PDF */
+    if (page != 0)
+	return cairo_boilerplate_surface_create_in_error (CAIRO_STATUS_SURFACE_TYPE_MISMATCH);
 
     /* show page first.  the automatic show_page is too late for us */
     cairo_surface_show_page (surface);
@@ -200,7 +205,7 @@ _cairo_boilerplate_test_paginated_get_image_surface (cairo_surface_t *surface,
 	cairo_surface_set_device_offset (image,
 					 tpc->width - width,
 					 tpc->height - height);
-	surface = _cairo_boilerplate_get_image_surface (image, width, height);
+	surface = _cairo_boilerplate_get_image_surface (image, 0, width, height);
 	cairo_surface_destroy (image);
 	return surface;
     }

@@ -65,17 +65,15 @@ draw_mask (cairo_t *cr, int x, int y)
 						 CAIRO_CONTENT_ALPHA,
 						 width, height);
     cr2 = cairo_create (mask_surface);
+    cairo_surface_destroy (mask_surface);
 
     cairo_set_source_rgb (cr2, 1, 1, 1); /* white */
 
     cairo_arc (cr2, 0.5 * width, 0.5 * height, 0.45 * height, 0, 2 * M_PI);
     cairo_fill (cr2);
 
+    cairo_mask_surface (cr, cairo_get_target (cr2), x, y);
     cairo_destroy (cr2);
-
-    cairo_mask_surface (cr, mask_surface, x, y);
-
-    cairo_surface_destroy (mask_surface);
 }
 
 static void

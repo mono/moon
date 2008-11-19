@@ -17,7 +17,7 @@ MAYBE_WARN="-Wall -Wextra \
 
 dnl We also abuse the warning-flag facility to enable other compiler
 dnl options.  Namely, the following:
-MAYBE_WARN="$MAYBE_WARN -fno-strict-aliasing"
+MAYBE_WARN="$MAYBE_WARN -fno-strict-aliasing -fno-common"
 
 dnl Also to turn various gcc/glibc-specific preprocessor checks
 MAYBE_WARN="$MAYBE_WARN -Wp,-D_FORTIFY_SOURCE=2"
@@ -69,7 +69,7 @@ AC_DEFINE_UNQUOTED([WARN_UNUSED_RESULT], [$cairo_cv_warn_unused_result],
 
 dnl check linker flags
 AC_CACHE_CHECK([how to allow undefined symbols in shared libraries used by test suite], cairo_cv_test_undefined_ldflags,
-	       [CAIRO_CC_TRY_FLAG([-Wl,--allow-shlib-undefined],
+	       [CAIRO_CC_TRY_LINK_FLAG([-Wl,--allow-shlib-undefined],
 				  [cairo_cv_test_undefined_ldflags="-Wl,--allow-shlib-undefined]")])
 CAIRO_TEST_UNDEFINED_LDFLAGS="$cairo_cv_test_undefined_ldflags"
 AC_SUBST(CAIRO_TEST_UNDEFINED_LDFLAGS)

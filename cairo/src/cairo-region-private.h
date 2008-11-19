@@ -108,7 +108,8 @@ _cairo_region_translate (cairo_region_t *region,
 			 int x, int y);
 
 cairo_private pixman_region_overlap_t
-_cairo_region_contains_rectangle (cairo_region_t *region, cairo_rectangle_int_t *box);
+_cairo_region_contains_rectangle (cairo_region_t *region,
+				  const cairo_rectangle_int_t *box);
 
 
 CAIRO_END_DECLS

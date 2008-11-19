@@ -37,23 +37,29 @@ static const cairo_test_t test = {
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
-    cairo_surface_t *mask, *mask2;
+    cairo_surface_t *mask;
     cairo_pattern_t *pattern;
-    cairo_t *cr2;
+    cairo_t *cr2, *cr3;
+
+    cairo_set_source_rgb (cr, 0, 0, 1.0);
+    cairo_paint (cr);
 
     mask = cairo_surface_create_similar (cairo_get_group_target (cr),
 				         CAIRO_CONTENT_ALPHA,
 					 width, height);
+    cr2 = cairo_create (mask);
+    cairo_surface_destroy (mask);
 
-    mask2 = cairo_surface_create_similar (mask,
-				          CAIRO_CONTENT_ALPHA,
-					  width, height);
-    cr2 = cairo_create (mask2);
+    mask = cairo_surface_create_similar (cairo_get_group_target (cr2),
+				       CAIRO_CONTENT_ALPHA,
+				       width, height);
+    cr3 = cairo_create (mask);
+    cairo_surface_destroy (mask);
 
-    cairo_save (cr2); {
-	cairo_set_operator (cr2, CAIRO_OPERATOR_CLEAR);
-	cairo_paint (cr2);
-    } cairo_restore (cr2);
+    cairo_save (cr3); {
+	cairo_set_operator (cr3, CAIRO_OPERATOR_CLEAR);
+	cairo_paint (cr3);
+    } cairo_restore (cr3);
 
     pattern = cairo_pattern_create_linear (0, 0, width, height);
     cairo_pattern_add_color_stop_rgba (pattern, 0.00, 0., 0., 0., 0.);
@@ -61,13 +67,10 @@ draw (cairo_t *cr, int width, int height)
     cairo_pattern_add_color_stop_rgba (pattern, 0.50, 1., 1., 1., .5);
     cairo_pattern_add_color_stop_rgba (pattern, 0.75, 1., 1., 1., 1.);
     cairo_pattern_add_color_stop_rgba (pattern, 1.00, 0., 0., 0., 0.);
-    cairo_set_source (cr2, pattern);
+    cairo_set_source (cr3, pattern);
     cairo_pattern_destroy (pattern);
-    cairo_paint (cr2);
-    cairo_destroy (cr2);
+    cairo_paint (cr3);
 
-
-    cr2 = cairo_create (mask);
 
     cairo_save (cr2); {
 	cairo_set_operator (cr2, CAIRO_OPERATOR_CLEAR);
@@ -84,17 +87,12 @@ draw (cairo_t *cr, int width, int height)
     cairo_set_source (cr2, pattern);
     cairo_pattern_destroy (pattern);
 
-    cairo_mask_surface (cr2, mask2, 0, 0);
-    cairo_surface_destroy (mask2);
-    cairo_destroy (cr2);
-
-
-    cairo_set_source_rgb (cr, 0, 0, 1.0);
-    cairo_paint (cr);
+    cairo_mask_surface (cr2, cairo_get_target (cr3), 0, 0);
+    cairo_destroy (cr3);
 
     cairo_set_source_rgb (cr, 1.0, 0, 0);
-    cairo_mask_surface (cr, mask, 0, 0);
-    cairo_surface_destroy (mask);
+    cairo_mask_surface (cr, cairo_get_target (cr2), 0, 0);
+    cairo_destroy (cr2);
 
     return CAIRO_TEST_SUCCESS;
 }

@@ -32,7 +32,13 @@
 
 typedef uint64_t cairo_perf_ticks_t;
 
-#include "cairo-stats.h"
+typedef struct _cairo_stats {
+    cairo_perf_ticks_t min_ticks;
+    cairo_perf_ticks_t median_ticks;
+    double ticks_per_ms;
+    double std_dev;
+    int iterations;
+} cairo_stats_t;
 
 /* timers */
 
@@ -93,6 +99,59 @@ cairo_perf_cover_sources_and_operators (cairo_perf_t		*perf,
 					const char		*name,
 					cairo_perf_func_t	 perf_func);
 
+/* reporter convenience routines */
+
+typedef struct _test_report {
+    int id;
+    const char *configuration;
+    char *backend;
+    char *content;
+    char *name;
+    int size;
+
+    /* The samples only exists for "raw" reports */
+    cairo_perf_ticks_t *samples;
+    unsigned int samples_size;
+    unsigned int samples_count;
+
+    /* The stats are either read directly or computed from samples.
+     * If the stats have not yet been computed from samples, then
+     * iterations will be 0. */
+    cairo_stats_t stats;
+} test_report_t;
+
+typedef struct _test_diff {
+    test_report_t **tests;
+    int num_tests;
+    double min;
+    double max;
+    double change;
+} test_diff_t;
+
+typedef struct _cairo_perf_report {
+    char *configuration;
+    const char *name;
+    test_report_t *tests;
+    int tests_size;
+    int tests_count;
+} cairo_perf_report_t;
+
+typedef enum {
+    TEST_REPORT_STATUS_SUCCESS,
+    TEST_REPORT_STATUS_COMMENT,
+    TEST_REPORT_STATUS_ERROR
+} test_report_status_t;
+
+void
+cairo_perf_report_load (cairo_perf_report_t *report,
+	                const char *filename);
+
+void
+cairo_perf_report_sort_and_compute_stats (cairo_perf_report_t *report);
+
+int
+test_report_cmp_backend_then_name (const void *a, const void *b);
+
 #define CAIRO_PERF_DECL(func) void (func) (cairo_perf_t *perf, cairo_t *cr, int width, int height)
 
 CAIRO_PERF_DECL (fill);
@@ -110,6 +169,8 @@ CAIRO_PERF_DECL (mosaic);
 CAIRO_PERF_DECL (long_lines);
 CAIRO_PERF_DECL (unaligned_clip);
 CAIRO_PERF_DECL (rectangles);
+CAIRO_PERF_DECL (rounded_rectangles);
 CAIRO_PERF_DECL (long_dashed_lines);
+CAIRO_PERF_DECL (composite_checker);
 
 #endif

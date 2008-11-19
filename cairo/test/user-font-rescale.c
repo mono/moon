@@ -34,7 +34,7 @@
 #define TEXT_SIZE 32
 #define WIDTH  (TEXT_SIZE * 13.75 + 2*BORDER)
 #define HEIGHT ((TEXT_SIZE + 2*BORDER)*3 + BORDER)
-#define TEXT   "test of rescaled glyphs";
+#define TEXT   "test of rescaled glyphs"
 
 static cairo_test_draw_function_t draw;
 
@@ -178,15 +178,17 @@ static void rescale_font_closure_destroy (void *data)
     free (r);
 }
 
-static cairo_font_face_t *
+static cairo_status_t
 create_rescaled_font (cairo_font_face_t *substitute_font,
 		      int glyph_start,
 		      int glyph_count,
-		      double *desired_width)
+		      double *desired_width,
+		      cairo_font_face_t **out)
 {
     cairo_font_face_t *user_font_face;
     struct rescaled_font *r;
     cairo_font_options_t *options;
+    cairo_status_t status;
     cairo_matrix_t m;
     unsigned long i;
 
@@ -221,18 +223,24 @@ create_rescaled_font (cairo_font_face_t *substitute_font,
 	r->rescale_factor[i] = strtod ("NaN", NULL);
     }
 
-    cairo_font_face_set_user_data (user_font_face, &rescale_font_closure_key,
-				   r, rescale_font_closure_destroy);
+    status = cairo_font_face_set_user_data (user_font_face,
+					    &rescale_font_closure_key,
+					    r, rescale_font_closure_destroy);
+    if (status) {
+	rescale_font_closure_destroy (r);
+	cairo_font_face_destroy (user_font_face);
+	return status;
+    }
 
-    return user_font_face;
+    *out = user_font_face;
+    return CAIRO_STATUS_SUCCESS;
 }
 
-
-
-static cairo_font_face_t *
+static cairo_status_t
 get_user_font_face (cairo_font_face_t *substitute_font,
 		    const char *text,
-		    cairo_font_face_t *old)
+		    cairo_font_face_t *old,
+		    cairo_font_face_t **out)
 {
     cairo_font_options_t *options;
     cairo_matrix_t m;
@@ -242,7 +250,7 @@ get_user_font_face (cairo_font_face_t *substitute_font,
     int count;
     int num_glyphs;
     unsigned long min_index, max_index;
-    cairo_font_face_t *ret;
+    cairo_status_t status;
 
     cairo_glyph_t *glyphs = NULL;
 
@@ -254,10 +262,15 @@ get_user_font_face (cairo_font_face_t *substitute_font,
     cairo_matrix_init_identity (&m);
     measure = cairo_scaled_font_create (old, &m, &m, options);
 
-    cairo_scaled_font_text_to_glyphs (measure, 0, 0,
-				      text, -1,
-				      &glyphs, &num_glyphs,
-				      NULL, NULL, NULL);
+    status = cairo_scaled_font_text_to_glyphs (measure, 0, 0,
+					       text, -1,
+					       &glyphs, &num_glyphs,
+					       NULL, NULL, NULL);
+    if (status) {
+	cairo_font_options_destroy (options);
+	cairo_scaled_font_destroy (measure);
+	return status;
+    }
 
     /* find the glyph range the text covers */
     max_index = glyphs[0].index;
@@ -283,9 +296,11 @@ get_user_font_face (cairo_font_face_t *substitute_font,
     cairo_font_options_destroy (options);
     cairo_scaled_font_destroy (measure);
 
-    ret = create_rescaled_font (substitute_font, min_index, count, widths);
+    status = create_rescaled_font (substitute_font,
+				   min_index, count, widths,
+				   out);
     free (widths);
-    return ret;
+    return status;
 }
 
 static cairo_test_status_t
@@ -297,6 +312,7 @@ draw (cairo_t *cr, int width, int height)
     cairo_font_face_t *old;
     cairo_font_face_t *substitute;
     const char text[] = TEXT;
+    cairo_status_t status;
 
     cairo_set_source_rgb (cr, 1, 1, 1);
     cairo_paint (cr);
@@ -321,18 +337,19 @@ draw (cairo_t *cr, int width, int height)
 			    "Bitstream Vera Sans Mono",
 			    CAIRO_FONT_SLANT_NORMAL,
 			    CAIRO_FONT_WEIGHT_NORMAL);
-    substitute = cairo_font_face_reference (cairo_get_font_face (cr));
+    substitute = cairo_get_font_face (cr);
 
-    rescaled = get_user_font_face (substitute, text, old);
+    status = get_user_font_face (substitute, text, old, &rescaled);
+    if (status) {
+	return cairo_test_status_from_status (cairo_test_get_context (cr),
+					      status);
+    }
     cairo_set_font_face (cr, rescaled);
-
-    cairo_font_face_destroy (substitute);
+    cairo_font_face_destroy (rescaled);
 
     cairo_set_source_rgb (cr, 0, 0, 1);
     cairo_move_to (cr, BORDER, BORDER + font_extents.height + 2*BORDER + font_extents.ascent);
     cairo_show_text (cr, text);
-
-    cairo_font_face_destroy (rescaled);
 
     /* mono text */
     cairo_select_font_face (cr,

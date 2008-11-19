@@ -24,6 +24,12 @@
  */
 #include "cairo-perf.h"
 
+#if 0
+#define MODE cairo_perf_run
+#else
+#define MODE cairo_perf_cover_sources_and_operators
+#endif
+
 #define RECTANGLE_COUNT (1000)
 
 static struct
@@ -53,6 +59,19 @@ do_rectangles (cairo_t *cr, int width, int height)
     return cairo_perf_timer_elapsed ();
 }
 
+static cairo_perf_ticks_t
+do_rectangle (cairo_t *cr, int width, int height)
+{
+    cairo_perf_timer_start ();
+
+    cairo_rectangle (cr, 0, 0, width, height);
+    cairo_fill (cr);
+
+    cairo_perf_timer_stop ();
+
+    return cairo_perf_timer_elapsed ();
+}
+
 void
 rectangles (cairo_perf_t *perf, cairo_t *cr, int width, int height)
 {
@@ -67,5 +86,6 @@ rectangles (cairo_perf_t *perf, cairo_t *cr, int width, int height)
         rects[i].height = (rand () % (height / 10)) + 1;
     }
 
-    cairo_perf_run (perf, "rectangles", do_rectangles);
+    MODE (perf, "one-rectangle", do_rectangle);
+    MODE (perf, "rectangles", do_rectangles);
 }

@@ -1208,6 +1208,8 @@ cairo_os2_surface_set_manual_window_refresh (cairo_surface_t *surface,
  * cairo_os2_surface_get_manual_window_refresh:
  * @surface: the cairo surface to query the refresh mode from
  *
+ * This space left intentionally blank.
+ *
  * Return value: current refresh mode of the surface (true by default)
  *
  * Since: 1.4

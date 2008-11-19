@@ -207,7 +207,8 @@ _cairo_region_translate (cairo_region_t *region,
 }
 
 pixman_region_overlap_t
-_cairo_region_contains_rectangle (cairo_region_t *region, cairo_rectangle_int_t *rect)
+_cairo_region_contains_rectangle (cairo_region_t *region,
+				  const cairo_rectangle_int_t *rect)
 {
     pixman_box32_t pbox;
 

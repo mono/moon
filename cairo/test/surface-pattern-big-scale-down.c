@@ -37,28 +37,36 @@ static const cairo_test_t test = {
     draw
 };
 
-static void
-setup_source_surface (cairo_surface_t *surface, int w, int h)
+static cairo_surface_t *
+create_source_surface (int w, int h)
 {
-  cairo_t *cr = cairo_create (surface);
+    cairo_surface_t *surface;
+    cairo_t *cr;
 
-  cairo_set_source_rgb (cr, 1.0, 0.0, 0.0);
-  cairo_rectangle (cr, 0, 0, w/2, h/2);
-  cairo_fill (cr);
+    surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, SRC_WIDTH, SRC_HEIGHT);
+    cr = cairo_create (surface);
+    cairo_surface_destroy (surface);
 
-  cairo_set_source_rgb (cr, 0.0, 1.0, 0.0);
-  cairo_rectangle (cr, w/2, 0, w/2, h/2);
-  cairo_fill (cr);
+    cairo_set_source_rgb (cr, 1.0, 0.0, 0.0);
+    cairo_rectangle (cr, 0, 0, w/2, h/2);
+    cairo_fill (cr);
 
-  cairo_set_source_rgb (cr, 0.0, 0.0, 1.0);
-  cairo_rectangle (cr, 0, h/2, w/2, h/2);
-  cairo_fill (cr);
+    cairo_set_source_rgb (cr, 0.0, 1.0, 0.0);
+    cairo_rectangle (cr, w/2, 0, w/2, h/2);
+    cairo_fill (cr);
 
-  cairo_set_source_rgb (cr, 1.0, 1.0, 0.0);
-  cairo_rectangle (cr, w/2, h/2, w/2, h/2);
-  cairo_fill (cr);
+    cairo_set_source_rgb (cr, 0.0, 0.0, 1.0);
+    cairo_rectangle (cr, 0, h/2, w/2, h/2);
+    cairo_fill (cr);
 
-  cairo_destroy (cr);
+    cairo_set_source_rgb (cr, 1.0, 1.0, 0.0);
+    cairo_rectangle (cr, w/2, h/2, w/2, h/2);
+    cairo_fill (cr);
+
+    surface = cairo_surface_reference (cairo_get_target (cr));
+    cairo_destroy (cr);
+
+    return surface;
 }
 
 static void
@@ -85,8 +93,7 @@ draw (cairo_t *cr, int width, int height)
     cairo_set_source_rgb (cr, 0, 0, 0);
     cairo_paint (cr);
 
-    surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, SRC_WIDTH, SRC_HEIGHT);
-    setup_source_surface (surface, SRC_WIDTH, SRC_HEIGHT);
+    surface = create_source_surface (SRC_WIDTH, SRC_HEIGHT);
 
     pat = cairo_pattern_create_for_surface (surface);
     cairo_surface_destroy (surface);

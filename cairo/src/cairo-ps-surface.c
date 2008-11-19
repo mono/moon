@@ -455,7 +455,7 @@ _cairo_ps_surface_analyze_user_font_subset (cairo_scaled_font_subset_t *font_sub
 						       _cairo_ps_emit_imagemask,
 						       surface->font_subsets);
 
-    for (i = 1; i < font_subset->num_glyphs; i++) {
+    for (i = 0; i < font_subset->num_glyphs; i++) {
 	status = _cairo_type3_glyph_surface_analyze_glyph (type3_surface,
 							   font_subset->glyphs[i]);
 	if (status)
@@ -480,6 +480,9 @@ _cairo_ps_surface_emit_type3_font_subset (cairo_ps_surface_t		*surface,
     cairo_surface_t *type3_surface;
     double width;
 
+    if (font_subset->num_glyphs == 0)
+	return CAIRO_STATUS_SUCCESS;
+
 #if DEBUG_PS
     _cairo_output_stream_printf (surface->final_stream,
 				 "%% _cairo_ps_surface_emit_type3_font_subset\n");
@@ -497,7 +500,7 @@ _cairo_ps_surface_emit_type3_font_subset (cairo_ps_surface_t		*surface,
 						       _cairo_ps_emit_imagemask,
 						       surface->font_subsets);
 
-    for (i = 1; i < font_subset->num_glyphs; i++) {
+    for (i = 0; i < font_subset->num_glyphs; i++) {
 	if (font_subset->glyph_names != NULL) {
 	    _cairo_output_stream_printf (surface->final_stream,
 					 "Encoding %d /%s put\n",
@@ -514,20 +517,13 @@ _cairo_ps_surface_emit_type3_font_subset (cairo_ps_surface_t		*surface,
     for (i = 0; i < font_subset->num_glyphs; i++) {
 	_cairo_output_stream_printf (surface->final_stream,
 				     "    { %% %d\n", i);
-	if (i == 0) {
-	    status = _cairo_type3_glyph_surface_emit_notdef_glyph (type3_surface,
-								   surface->final_stream,
-								   &bbox,
-								   &width);
-	} else {
-	    status = _cairo_type3_glyph_surface_emit_glyph (type3_surface,
-							    surface->final_stream,
-							    font_subset->glyphs[i],
-							    &bbox,
-							    &width);
-	}
+	status = _cairo_type3_glyph_surface_emit_glyph (type3_surface,
+							surface->final_stream,
+							font_subset->glyphs[i],
+							&bbox,
+							&width);
 	if (status)
-	    return status;
+	    break;
 
 	_cairo_output_stream_printf (surface->final_stream,
 				     "    }\n");
@@ -548,6 +544,8 @@ _cairo_ps_surface_emit_type3_font_subset (cairo_ps_surface_t		*surface,
         }
     }
     cairo_surface_destroy (type3_surface);
+    if (status)
+	return status;
 
     _cairo_output_stream_printf (surface->final_stream,
 				 "] def\n"
@@ -788,7 +786,10 @@ _cairo_ps_surface_create_for_stream_internal (cairo_output_stream_t *stream,
 
 /**
  * cairo_ps_surface_create:
- * @filename: a filename for the PS output (must be writable)
+ * @filename: a filename for the PS output (must be writable), %NULL may be
+ *            used to specify no output. This will generate a PS surface that
+ *            may be queried and used as a source, without generating a
+ *            temporary file.
  * @width_in_points: width of the surface, in points (1 point == 1/72.0 inch)
  * @height_in_points: height of the surface, in points (1 point == 1/72.0 inch)
  *
@@ -828,7 +829,10 @@ cairo_ps_surface_create (const char		*filename,
 
 /**
  * cairo_ps_surface_create_for_stream:
- * @write_func: a #cairo_write_func_t to accept the output data
+ * @write_func: a #cairo_write_func_t to accept the output data, may be %NULL
+ *              to indicate a no-op @write_func. With a no-op @write_func,
+ *              the surface may be queried or used as a source without
+ *              generating any temporary files.
  * @closure: the closure argument for @write_func
  * @width_in_points: width of the surface, in points (1 point == 1/72.0 inch)
  * @height_in_points: height of the surface, in points (1 point == 1/72.0 inch)
@@ -3284,6 +3288,12 @@ _cairo_ps_surface_set_bounding_box (void		*abstract_surface,
     return _cairo_output_stream_get_status (surface->stream);
 }
 
+static cairo_bool_t
+_cairo_ps_surface_supports_fine_grained_fallbacks (void	    *abstract_surface)
+{
+    return TRUE;
+}
+
 static const cairo_surface_backend_t cairo_ps_surface_backend = {
     CAIRO_SURFACE_TYPE_PS,
     _cairo_ps_surface_create_similar,
@@ -3322,4 +3332,6 @@ static const cairo_paginated_surface_backend_t cairo_ps_surface_paginated_backen
     _cairo_ps_surface_start_page,
     _cairo_ps_surface_set_paginated_mode,
     _cairo_ps_surface_set_bounding_box,
+    NULL, /* _cairo_ps_surface_has_fallback_images, */
+    _cairo_ps_surface_supports_fine_grained_fallbacks,
 };

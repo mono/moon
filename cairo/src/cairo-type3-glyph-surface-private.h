@@ -73,12 +73,6 @@ _cairo_type3_glyph_surface_analyze_glyph (void		     *abstract_surface,
 					  unsigned long	      glyph_index);
 
 cairo_private cairo_status_t
-_cairo_type3_glyph_surface_emit_notdef_glyph (void		    *abstract_surface,
-					      cairo_output_stream_t *stream,
-					      cairo_box_t           *bbox,
-					      double                *width);
-
-cairo_private cairo_status_t
 _cairo_type3_glyph_surface_emit_glyph (void		     *abstract_surface,
 				       cairo_output_stream_t *stream,
 				       unsigned long	      glyph_index,

@@ -322,29 +322,29 @@ CAIRO_FEATURE_HOOK_REGISTER(no,yes,*,
 ])dnl
 
 
-dnl Collect enabled native surface backend features
+dnl Collect enabled native surface/font backend features
 CAIRO_ACCUMULATORS_REGISTER([NATIVE_SURFACE_BACKENDS])dnl
+CAIRO_ACCUMULATORS_REGISTER([NATIVE_FONT_BACKENDS])dnl
 CAIRO_FEATURE_HOOK_REGISTER(yes,auto,surface,
 [dnl
 	CAIRO_ACCUMULATE([NATIVE_SURFACE_BACKENDS], [$1])
 ])dnl
+CAIRO_FEATURE_HOOK_REGISTER(yes,auto,font,
+[dnl
+	CAIRO_ACCUMULATE([NATIVE_FONT_BACKENDS], [$1])
+])dnl
 
-dnl Collect warning message if no native surface backend feature enabled
+dnl Collect warning message if no native surface/font backend feature enabled
 AC_CONFIG_COMMANDS_PRE(dnl
 [dnl
 	AS_IF([test -z "$CAIRO_NATIVE_SURFACE_BACKENDS"],dnl
 	[dnl
 		CAIRO_ACCUMULATE([WARNING_MESSAGE], CAIRO_TEXT_WRAP([It is strictly recommended that you enable the native surface backend feature for your platform.], [*** ]))
 	])
-])dnl
-
-
-
-dnl Collect enabled native font backend features
-CAIRO_ACCUMULATORS_REGISTER([NATIVE_FONT_BACKENDS])dnl
-CAIRO_FEATURE_HOOK_REGISTER(yes,auto,font,
-[dnl
-	CAIRO_ACCUMULATE([NATIVE_FONT_BACKENDS], [$1])
+	AS_IF([test -z "$CAIRO_NATIVE_FONT_BACKENDS"],dnl
+	[dnl
+		CAIRO_ACCUMULATE([WARNING_MESSAGE], CAIRO_TEXT_WRAP([It is strictly recommended that you enable the native font backend feature for your platform.], [*** ]))
+	])
 ])dnl
 
 
@@ -394,9 +394,5 @@ AC_DEFUN([CAIRO_REPORT],
 	fi
 	echo "$CAIRO_WARNING_MESSAGE"
 	echo ""
-	AS_IF([test -z "$CAIRO_NATIVE_FONT_BACKENDS"],dnl
-	[dnl
-		AC_MSG_ERROR([Cairo requires at least one native font backend.  Please install FreeType and fontconfig and try again.])
-	])
 ])dnl
 

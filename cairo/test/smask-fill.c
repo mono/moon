@@ -41,10 +41,14 @@ draw (cairo_t *cr, int width, int height)
     cairo_pattern_t *pattern;
     cairo_t *cr2;
 
+    cairo_set_source_rgb (cr, 0, 0, 1.0);
+    cairo_paint (cr);
+
     mask = cairo_surface_create_similar (cairo_get_group_target (cr),
 				         CAIRO_CONTENT_ALPHA,
 					 width, height);
     cr2 = cairo_create (mask);
+    cairo_surface_destroy (mask);
 
     cairo_save (cr2); {
 	cairo_set_operator (cr2, CAIRO_OPERATOR_CLEAR);
@@ -62,15 +66,10 @@ draw (cairo_t *cr, int width, int height)
 
     cairo_arc (cr2, 0.5 * width, 0.5 * height, 0.45 * height, 0, 2 * M_PI);
     cairo_fill (cr2);
-    cairo_destroy (cr2);
-
-
-    cairo_set_source_rgb (cr, 0, 0, 1.0);
-    cairo_paint (cr);
 
     cairo_set_source_rgb (cr, 1.0, 0, 0);
-    cairo_mask_surface (cr, mask, 0, 0);
-    cairo_surface_destroy (mask);
+    cairo_mask_surface (cr, cairo_get_target (cr2), 0, 0);
+    cairo_destroy (cr2);
 
     return CAIRO_TEST_SUCCESS;
 }

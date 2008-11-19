@@ -84,8 +84,7 @@ static const cairo_t _cairo_nil = {
 cairo_status_t
 _cairo_error (cairo_status_t status)
 {
-    assert (status > CAIRO_STATUS_SUCCESS &&
-	    status <= CAIRO_STATUS_LAST_STATUS);
+    assert (_cairo_status_is_error (status));
 
     return status;
 }
@@ -926,6 +925,7 @@ cairo_set_line_width (cairo_t *cr, double width)
     if (status)
 	_cairo_set_error (cr, status);
 }
+slim_hidden_def (cairo_set_line_width);
 
 /**
  * cairo_set_line_cap:
@@ -955,6 +955,7 @@ cairo_set_line_cap (cairo_t *cr, cairo_line_cap_t line_cap)
     if (status)
 	_cairo_set_error (cr, status);
 }
+slim_hidden_def (cairo_set_line_cap);
 
 /**
  * cairo_set_line_join:
@@ -984,6 +985,7 @@ cairo_set_line_join (cairo_t *cr, cairo_line_join_t line_join)
     if (status)
 	_cairo_set_error (cr, status);
 }
+slim_hidden_def (cairo_set_line_join);
 
 /**
  * cairo_set_dash:
@@ -2087,6 +2089,7 @@ cairo_stroke (cairo_t *cr)
 
     cairo_new_path (cr);
 }
+slim_hidden_def(cairo_stroke);
 
 /**
  * cairo_stroke_preserve:
@@ -3187,9 +3190,9 @@ cairo_show_glyphs (cairo_t *cr, const cairo_glyph_t *glyphs, int num_glyphs)
  * This operation has rendering effects similar to cairo_show_glyphs()
  * but, if the target surface supports it, uses the provided text and
  * cluster mapping to embed the text for the glyphs shown in the output.
- * The cairo_has_show_text_glyphs() function can be used to query that.
- * If the target does not support it, this function acts like
- * cairo_show_glyphs().
+ * If the target does not support the extended attributes, this function
+ * acts like the basic cairo_show_glyphs() as if it had been passed
+ * @glyphs and @num_glyphs.
  *
  * The mapping between @utf8 and @glyphs is provided by an array of
  * <firstterm>clusters</firstterm>.  Each cluster covers a number of
@@ -3558,6 +3561,7 @@ cairo_get_line_width (cairo_t *cr)
 
     return _cairo_gstate_get_line_width (cr->gstate);
 }
+slim_hidden_def (cairo_get_line_width);
 
 /**
  * cairo_get_line_cap:

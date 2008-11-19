@@ -27,18 +27,15 @@ cairo_boilerplate_directfb_sources = cairo-boilerplate-directfb.c
 cairo_boilerplate_glitz_private = cairo-boilerplate-glitz-private.h
 cairo_boilerplate_glitz_sources = cairo-boilerplate-glitz.c
 
-cairo_boilerplate_pdf_headers = cairo-boilerplate-pdf.h
 cairo_boilerplate_pdf_private = cairo-boilerplate-pdf-private.h
 cairo_boilerplate_pdf_sources = cairo-boilerplate-pdf.c
 
-cairo_boilerplate_ps_headers = cairo-boilerplate-ps.h
 cairo_boilerplate_ps_private = cairo-boilerplate-ps-private.h
 cairo_boilerplate_ps_sources = cairo-boilerplate-ps.c
 
 cairo_boilerplate_quartz_private = cairo-boilerplate-quartz-private.h
 cairo_boilerplate_quartz_sources = cairo-boilerplate-quartz.c
 
-cairo_boilerplate_svg_headers = cairo-boilerplate-svg.h
 cairo_boilerplate_svg_private = cairo-boilerplate-svg-private.h
 cairo_boilerplate_svg_sources = cairo-boilerplate-svg.c
 

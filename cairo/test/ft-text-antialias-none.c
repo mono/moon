@@ -42,8 +42,9 @@ static const cairo_test_t test = {
     draw
 };
 
-static cairo_scaled_font_t *
-create_scaled_font (cairo_t * cr)
+static cairo_status_t
+create_scaled_font (cairo_t * cr,
+		    cairo_scaled_font_t **out)
 {
     FcPattern *pattern, *resolved;
     FcResult result;
@@ -51,6 +52,7 @@ create_scaled_font (cairo_t * cr)
     cairo_scaled_font_t *scaled_font;
     cairo_font_options_t *font_options;
     cairo_matrix_t font_matrix, ctm;
+    cairo_status_t status;
     double pixel_size;
 
     font_options = cairo_font_options_create ();
@@ -58,6 +60,8 @@ create_scaled_font (cairo_t * cr)
     cairo_get_font_options (cr, font_options);
 
     pattern = FcPatternCreate ();
+    if (pattern == NULL)
+	return CAIRO_STATUS_NO_MEMORY;
 
     FcPatternAddString (pattern, FC_FAMILY, (FcChar8 *)"Bitstream vera sans");
     FcPatternAddDouble (pattern, FC_SIZE, TEXT_SIZE);
@@ -67,6 +71,10 @@ create_scaled_font (cairo_t * cr)
 
     FcDefaultSubstitute (pattern);
     resolved = FcFontMatch (NULL, pattern, &result);
+    if (resolved == NULL) {
+	FcPatternDestroy (pattern);
+	return CAIRO_STATUS_NO_MEMORY;
+    }
 
     /* turn antialiasing off */
     FcPatternDel (resolved, FC_ANTIALIAS);
@@ -91,14 +99,22 @@ create_scaled_font (cairo_t * cr)
     FcPatternDestroy (pattern);
     FcPatternDestroy (resolved);
 
-    return scaled_font;
+    status = cairo_scaled_font_status (scaled_font);
+    if (status) {
+	cairo_scaled_font_destroy (scaled_font);
+	return status;
+    }
+
+    *out = scaled_font;
+    return CAIRO_STATUS_SUCCESS;
 }
 
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
     cairo_text_extents_t extents;
-    cairo_scaled_font_t * scaled_font;
+    cairo_scaled_font_t *scaled_font;
+    cairo_status_t status;
     const char black[] = "black", blue[] = "blue";
 
     /* We draw in the default black, so paint white first. */
@@ -107,7 +123,12 @@ draw (cairo_t *cr, int width, int height)
     cairo_paint (cr);
     cairo_restore (cr);
 
-    scaled_font = create_scaled_font (cr);
+    status = create_scaled_font (cr, &scaled_font);
+    if (status) {
+	return cairo_test_status_from_status (cairo_test_get_context (cr),
+					      status);
+    }
+
     cairo_set_scaled_font (cr, scaled_font);
 
     cairo_set_source_rgb (cr, 0, 0, 0); /* black */

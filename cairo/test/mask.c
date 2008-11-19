@@ -79,6 +79,7 @@ mask_polygon (cairo_t *cr, int x, int y)
 						 CAIRO_CONTENT_ALPHA,
 						 WIDTH, HEIGHT);
     cr2 = cairo_create (mask_surface);
+    cairo_surface_destroy (mask_surface);
 
     cairo_save (cr2);
     cairo_set_operator (cr2, CAIRO_OPERATOR_CLEAR);
@@ -97,11 +98,8 @@ mask_polygon (cairo_t *cr, int x, int y)
     cairo_close_path (cr2);
     cairo_fill (cr2);
 
+    cairo_mask_surface (cr, cairo_get_target (cr2), x, y);
     cairo_destroy (cr2);
-
-    cairo_mask_surface (cr, mask_surface, x, y);
-
-    cairo_surface_destroy (mask_surface);
 }
 
 static void
@@ -193,7 +191,6 @@ draw (cairo_t *cr, int width, int height)
 {
     const cairo_test_context_t *ctx = cairo_test_get_context (cr);
     cairo_surface_t *tmp_surface;
-    cairo_pattern_t *tmp_pattern;
     size_t i, j, k;
     cairo_t *cr2;
 
@@ -204,10 +201,6 @@ draw (cairo_t *cr, int width, int height)
 						CAIRO_CONTENT_COLOR_ALPHA,
 						IMAGE_WIDTH, IMAGE_HEIGHT);
     cr2 = cairo_create (tmp_surface);
-
-    tmp_pattern = cairo_pattern_create_for_surface (tmp_surface);
-    cairo_set_source (cr, tmp_pattern);
-    cairo_pattern_destroy (tmp_pattern);
     cairo_surface_destroy (tmp_surface);
 
     for (k = 0; k < ARRAY_SIZE (clip_funcs); k++) {
@@ -232,6 +225,7 @@ draw (cairo_t *cr, int width, int height)
 		cairo_restore (cr2);
 
 		/* Copy back to the main pixmap */
+		cairo_set_source_surface (cr, cairo_get_target (cr2), 0, 0);
 		cairo_rectangle (cr, x, y, WIDTH, HEIGHT);
 		cairo_fill (cr);
 	    }

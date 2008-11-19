@@ -28,15 +28,31 @@
 #define _CAIRO_BOILERPLATE_SVG_PRIVATE_H_
 
 cairo_surface_t *
-_cairo_boilerplate_svg_create_surface (const char		 *name,
-				       cairo_content_t		  content,
-				       int			  width,
-				       int			  height,
-				       int			  max_width,
-				       int			  max_height,
-				       cairo_boilerplate_mode_t	  mode,
-				       int                        id,
-				       void			**closure);
+_cairo_boilerplate_svg11_create_surface (const char		 *name,
+					 cairo_content_t          content,
+					 int			  width,
+					 int			  height,
+					 int			  max_width,
+					 int			  max_height,
+					 cairo_boilerplate_mode_t mode,
+					 int                      id,
+					 void			**closure);
+
+cairo_surface_t *
+_cairo_boilerplate_svg12_create_surface (const char		 *name,
+					 cairo_content_t	  content,
+					 int			  width,
+					 int			  height,
+					 int			  max_width,
+					 int			  max_height,
+					 cairo_boilerplate_mode_t mode,
+					 int                      id,
+					 void			**closure);
+
+void
+_cairo_boilerplate_svg_force_fallbacks (cairo_surface_t *surface,
+	                                unsigned int flags);
+
 
 cairo_status_t
 _cairo_boilerplate_svg_finish_surface (cairo_surface_t		*surface);
@@ -46,6 +62,7 @@ _cairo_boilerplate_svg_surface_write_to_png (cairo_surface_t *surface, const cha
 
 cairo_surface_t *
 _cairo_boilerplate_svg_get_image_surface (cairo_surface_t *surface,
+					  int page,
 					  int width,
 					  int height);
 

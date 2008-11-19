@@ -1,3 +1,7 @@
+2008-11-19  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* cairo/: update cairo to 1.8,4
+
 2008-11-12  Rusty Howell <rhowell@novell.com>
 
 	* configure.ac: Set ac_subst for INSTALL_ARCH, SL_PROFILE, for install.rdf

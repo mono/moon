@@ -8,6 +8,8 @@
 #		make snapshot
 
 
+TAR_OPTIONS = --owner=0 --group=0
+
 dist-hook: dist-clear-sticky-bits
 
 # Clean up any sticky bits we may inherit from parent dir
@@ -18,7 +20,12 @@ dist-clear-sticky-bits:
 snapshot:
 	distdir="$(distdir)-`date '+%Y%m%d'`"; \
 	test -d "$(srcdir)/.git" && distdir=$$distdir-`cd "$(srcdir)" && git-rev-parse HEAD | cut -c 1-6`; \
-	$(MAKE) $(AM_MAKEFLAGS) distdir="$$distdir" dist
+	TAR_OPTIONS="$(TAR_OPTIONS)" $(MAKE) $(AM_MAKEFLAGS) distdir="$$distdir" snapshot-dist
+
+snapshot-dist: dist
+	@(echo "$(distdir) archives ready for distribution: "; \
+	  list='$(DIST_ARCHIVES)'; for i in $$list; do echo $$i; done) | \
+	  sed -e 1h -e 1s/./=/g -e 1p -e 1x -e '$$p' -e '$$x'
 
 RELEASE_OR_SNAPSHOT = $$(if test "x$(CAIRO_VERSION_MINOR)" = "x$$(echo "$(CAIRO_VERSION_MINOR)/2*2" | bc)" ; then echo release; else echo snapshot; fi)
 RELEASE_UPLOAD_HOST =   cairographics.org
@@ -27,9 +34,11 @@ RELEASE_UPLOAD_DIR =	$(RELEASE_UPLOAD_BASE)/$(RELEASE_OR_SNAPSHOT)s
 RELEASE_URL_BASE = 	http://cairographics.org/$(RELEASE_OR_SNAPSHOT)s
 RELEASE_ANNOUNCE_LIST = cairo-announce@cairographics.org (and CC gnome-announce-list@gnome.org)
 
-MANUAL_DATED =		cairo-manual-`date +%Y%m%d`
-MANUAL_TAR_FILE = 	$(MANUAL_DATED).tar.gz
-MANUAL_UPLOAD_DIR =	$(RELEASE_UPLOAD_BASE)
+MANUAL_DATED =			cairo-manual-`date +%Y%m%d`
+MANUAL_TAR_FILE = 		$(MANUAL_DATED).tar.gz
+MANUAL_VERSIONED =		manual-$(VERSION)
+MANUAL_VERSIONED_TAR_FILE =	$(MANUAL_VERSIONED).tar.gz
+MANUAL_UPLOAD_DIR =		$(RELEASE_UPLOAD_BASE)
 
 tar_file = $(PACKAGE)-$(VERSION).tar.gz
 sha1_file = $(tar_file).sha1
@@ -83,7 +92,7 @@ release-check: \
 	release-verify-newer \
 	$(NULL)
 	$(MAKE) $(AM_MAKEFLAGS) release-remove-old
-	$(MAKE) $(AM_MAKEFLAGS) distcheck
+	TAR_OPTIONS="$(TAR_OPTIONS)" $(MAKE) $(AM_MAKEFLAGS) distcheck
 
 release-upload: $(tar_file) $(sha1_file) $(gpg_file)
 	mkdir -p releases
@@ -127,11 +136,6 @@ release-publish-message: releases/$(sha1_file)
 	@echo ""
 	@echo "============================== CUT HERE =============================="
 
-# Strict ordering enforced for parallel make to work
-release-publish: release-check
-	$(MAKE) $(AM_MAKEFLAGS) release-upload
-	$(MAKE) $(AM_MAKEFLAGS) release-publish-message
-
 doc-publish: doc
 	rm -rf ./$(MANUAL_DATED)
 	cp -a doc/public/html $(MANUAL_DATED)
@@ -139,7 +143,18 @@ doc-publish: doc
 	scp $(MANUAL_TAR_FILE) $(RELEASE_UPLOAD_HOST):$(MANUAL_UPLOAD_DIR)
 	ssh $(RELEASE_UPLOAD_HOST) "cd $(MANUAL_UPLOAD_DIR) && tar xzf $(MANUAL_TAR_FILE) && rm -f manual && ln -s $(MANUAL_DATED) manual && ln -sf $(MANUAL_TAR_FILE) cairo-manual.tar.gz"
 
+doc-publish-versioned: doc
+	rm -rf ./$(MANUAL_VERSIONED)
+	cp -a doc/public/html $(MANUAL_VERSIONED)
+	tar czf $(MANUAL_VERSIONED_TAR_FILE) $(MANUAL_VERSIONED)
+	scp $(MANUAL_VERSIONED_TAR_FILE) $(RELEASE_UPLOAD_HOST):$(MANUAL_UPLOAD_DIR)
+	ssh $(RELEASE_UPLOAD_HOST) "cd $(MANUAL_UPLOAD_DIR) && tar xzf $(MANUAL_VERSIONED_TAR_FILE)"
 
+# Strict ordering enforced for parallel make to work
+release-publish: release-check
+	$(MAKE) $(AM_MAKEFLAGS) release-upload
+	$(MAKE) $(AM_MAKEFLAGS) doc-publish-versioned
+	$(MAKE) $(AM_MAKEFLAGS) release-publish-message
 
 if OS_WIN32
 
@@ -164,7 +179,8 @@ endif
 
 .PHONY: \
 	dist-clear-sticky-bits \
-	docs-publish \
+	doc-publish \
+	doc-publish-versioned \
 	release-check \
 	release-publish \
 	release-publish-message \
@@ -174,4 +190,6 @@ endif
 	release-verify-newer \
 	release-verify-sane-changelogs \
 	release-verify-sane-tests \
+	snapshot \
+	snapshot-dist \
 	$(NULL)

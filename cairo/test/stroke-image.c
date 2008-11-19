@@ -42,8 +42,15 @@ static const cairo_test_t test = {
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
-    cairo_surface_t *isurf = cairo_image_surface_create (CAIRO_FORMAT_RGB24, IMAGE_SIZE, IMAGE_SIZE);
-    cairo_t *cr_image = cairo_create (isurf);
+    cairo_surface_t *image;
+    cairo_t *cr_image;
+
+    cairo_set_source_rgb (cr, 0, 0, 0);
+    cairo_paint (cr);
+
+    image = cairo_image_surface_create (CAIRO_FORMAT_RGB24, IMAGE_SIZE, IMAGE_SIZE);
+    cr_image = cairo_create (image);
+    cairo_surface_destroy (image);
 
     /* Create the image */
     cairo_set_source_rgb (cr_image, 0, 0, 0);
@@ -52,16 +59,12 @@ draw (cairo_t *cr, int width, int height)
     cairo_set_line_width (cr_image, LINE_WIDTH);
     cairo_arc (cr_image, IMAGE_SIZE/2, IMAGE_SIZE/2, IMAGE_SIZE/2 - LINE_WIDTH/2, 0, M_PI * 2.0);
     cairo_stroke (cr_image);
-    cairo_destroy (cr_image);
 
     /* Now stroke with it */
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_paint (cr);
-
     cairo_translate (cr, PAD, PAD);
 
-    cairo_set_source_surface (cr, isurf, 0, 0);
-    cairo_surface_destroy (isurf);
+    cairo_set_source_surface (cr, cairo_get_target (cr_image), 0, 0);
+    cairo_destroy (cr_image);
 
     cairo_new_path (cr);
     cairo_set_line_width (cr, LINE_WIDTH);

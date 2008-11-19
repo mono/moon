@@ -302,6 +302,7 @@ _cairo_boilerplate_win32_printing_surface_write_to_png (cairo_surface_t *surface
 
 cairo_surface_t *
 _cairo_boilerplate_win32_printing_get_image_surface (cairo_surface_t *surface,
+						     int page,
 						     int width,
 						     int height)
 {
@@ -309,6 +310,10 @@ _cairo_boilerplate_win32_printing_get_image_surface (cairo_surface_t *surface,
 							       &win32_closure_key);
     char *filename;
     cairo_status_t status;
+
+    /* XXX test paginated interface */
+    if (page != 0)
+	return cairo_boilerplate_surface_create_in_error (CAIRO_STATUS_SURFACE_TYPE_MISMATCH);
 
     xasprintf (&filename, "%s.png", ptc->filename);
     status = _cairo_boilerplate_win32_printing_surface_write_to_png (surface, filename);

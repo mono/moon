@@ -53,7 +53,7 @@
 #endif
 
 #ifndef cairo_public
-# ifdef _MSC_VER
+# if defined (_MSC_VER) && ! defined (CAIRO_WIN32_STATIC_BUILD)
 #  define cairo_public __declspec(dllimport)
 # else
 #  define cairo_public
@@ -1525,35 +1525,30 @@ typedef cairo_status_t (*cairo_user_scaled_font_render_glyph_func_t) (cairo_scal
  * as well as complex <firstterm>shaping</firstterm> required for scripts like
  * Arabic and Indic.
  *
- * The @num_glyphs argument is preset to -1.  The callback should allocate an
- * array for the resulting glyphs (using malloc()), and populate the glyph indices and
- * positions (in font space) assuming that the text is to be shown at the
- * origin.  Cairo will free the glyph array when done with it, no matter what
- * the return value of the callback is.
- *
- * If @glyphs initially points to a non-%NULL value, that array can be used
- * as a glyph buffer, and @num_glyphs points to the number of glyph
- * entries available there.  If the provided glyph array is too short for
+ * The @num_glyphs argument is preset to the number of glyph entries available
+ * in the @glyphs buffer. If the @glyphs buffer is %NULL, the value of
+ * @num_glyphs will be zero.  If the provided glyph array is too short for
  * the conversion (or for convenience), a new glyph array may be allocated
  * using cairo_glyph_allocate() and placed in @glyphs.  Upon return,
- * @num_glyphs should contain the number of generated glyphs.
- * If the value @glyphs points at has changed after the call, cairo will
- * free the allocated glyph array using cairo_glyph_free().
+ * @num_glyphs should contain the number of generated glyphs.  If the value
+ * @glyphs points at has changed after the call, the caller will free the
+ * allocated glyph array using cairo_glyph_free().
+ * The callback should populate the glyph indices and positions (in font space)
+ * assuming that the text is to be shown at the origin.
  *
- * If @clusters is not %NULL, @num_clusters and @cluster_flags are also non-%NULL,
- * and cluster mapping should be computed.
- * The semantics of how cluster array allocation works is similar to the glyph
- * array.  That is,
+ * If @clusters is not %NULL, @num_clusters and @cluster_flags are also
+ * non-%NULL, and cluster mapping should be computed. The semantics of how
+ * cluster array allocation works is similar to the glyph array.  That is,
  * if @clusters initially points to a non-%NULL value, that array may be used
  * as a cluster buffer, and @num_clusters points to the number of cluster
  * entries available there.  If the provided cluster array is too short for
  * the conversion (or for convenience), a new cluster array may be allocated
  * using cairo_text_cluster_allocate() and placed in @clusters.  Upon return,
  * @num_clusters should contain the number of generated clusters.
- * If the value @clusters points at has changed after the call, cairo will
- * free the allocated cluster array using cairo_text_cluster_free().
+ * If the value @clusters points at has changed after the call, the caller
+ * will free the allocated cluster array using cairo_text_cluster_free().
  *
- * The callback is optional.  If not set, or if @num_glyphs is negative upon
+ * The callback is optional.  If @num_glyphs is negative upon
  * the callback returning, the unicode_to_glyph callback
  * is tried.  See #cairo_user_scaled_font_unicode_to_glyph_func_t.
  *

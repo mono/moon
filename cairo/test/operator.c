@@ -33,8 +33,7 @@ static cairo_test_draw_function_t draw;
 
 static const cairo_test_t test = {
     "operator",
-    "Tests using set_operator()"
-    "\nCurrently failing on the PDF backend for an unknown reason.",
+    "Tests using set_operator()",
     (SIZE+PAD) * N_OPERATORS + PAD, SIZE + 2*PAD,
     draw
 };

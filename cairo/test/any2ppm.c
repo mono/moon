@@ -22,6 +22,9 @@
  *
  * Author: Chris Wilson <chris@chris-wilson.co.uk>
  *
+ * Contributor(s):
+ *	Carlos Garcia Campos <carlosgc@gnome.org>
+ *
  * Adapted from pdf2png.c:
  * Copyright © 2005 Red Hat, Inc.
  *
@@ -69,7 +72,8 @@
 #include <librsvg/rsvg-cairo.h>
 #endif
 
-#if CAIRO_CAN_TEST_PS_SURFACE
+#if CAIRO_HAS_SPECTRE
+#include <libspectre/spectre.h>
 #endif
 
 #if HAVE_FCNTL_H && HAVE_SIGNAL_H && HAVE_SYS_STAT_H && HAVE_SYS_SOCKET_H && HAVE_SYS_POLL_H && HAVE_SYS_UN_H
@@ -79,6 +83,7 @@
 #include <sys/socket.h>
 #include <sys/poll.h>
 #include <sys/un.h>
+#include <errno.h>
 
 #define SOCKET_PATH "./.any2ppm"
 #define TIMEOUT 60000 /* 60 seconds */
@@ -87,6 +92,30 @@
 #endif
 
 #define ARRAY_LENGTH(A) (sizeof (A) / sizeof (A[0]))
+
+static int
+_writen (int fd, char *buf, int len)
+{
+    while (len) {
+	int ret;
+
+	ret = write (fd, buf, len);
+	if (ret == -1) {
+	    int err = errno;
+	    switch (err) {
+	    case EINTR:
+	    case EAGAIN:
+		continue;
+	    default:
+		return 0;
+	    }
+	}
+	len -= ret;
+	buf += ret;
+    }
+
+    return 1;
+}
 
 static int
 _write (int fd,
@@ -110,8 +139,9 @@ _write (int fd,
 	src += len;
 
 	if (buflen == maxlen) {
-	    if (write (fd, buf, maxlen) != maxlen)
+	    if (! _writen (fd, buf, buflen))
 		return -1;
+
 	    buflen = 0;
 	}
     }
@@ -180,10 +210,8 @@ write_ppm (cairo_surface_t *surface, int fd)
 	    return "write failed";
     }
 
-    if (len) {
-	if (write (fd, buf, len) != len)
-	    return "write failed";
-    }
+    if (len && ! _writen (fd, buf, len))
+	return "write failed";
 
     return NULL;
 }
@@ -265,6 +293,12 @@ pdf_convert (char **argv, int fd)
 
     return err;
 }
+#else
+static const char *
+pdf_convert (char **argv, int fd)
+{
+    return "compiled without PDF support.";
+}
 #endif
 
 #if CAIRO_CAN_TEST_SVG_SURFACE
@@ -319,15 +353,92 @@ svg_convert (char **argv, int fd)
 
     return err;
 }
+#else
+static const char *
+svg_convert (char **argv, int fd)
+{
+    return "compiled without SVG support.";
+}
 #endif
 
-#if CAIRO_CAN_TEST_PS_SURFACE
+#if CAIRO_HAS_SPECTRE
+static const char *
+_spectre_render_page (const char *filename,
+		      const char *page_label,
+		      cairo_surface_t **surface_out)
+{
+    static const cairo_user_data_key_t key;
+
+    SpectreDocument *document;
+    SpectreStatus status;
+    int width, height, stride;
+    unsigned char *pixels;
+    cairo_surface_t *surface;
+
+    document = spectre_document_new ();
+    spectre_document_load (document, filename);
+    status = spectre_document_status (document);
+    if (status) {
+	spectre_document_free (document);
+	return spectre_status_to_string (status);
+    }
+
+    if (page_label) {
+	SpectrePage *page;
+	SpectreRenderContext *rc;
+
+	page = spectre_document_get_page_by_label (document, page_label);
+	spectre_document_free (document);
+	if (page == NULL)
+	    return "page not found";
+
+	spectre_page_get_size (page, &width, &height);
+	rc = spectre_render_context_new ();
+	spectre_render_context_set_page_size (rc, width, height);
+	spectre_page_render (page, rc, &pixels, &stride);
+	spectre_render_context_free (rc);
+	status = spectre_page_status (page);
+	spectre_page_free (page);
+	if (status) {
+	    free (pixels);
+	    return spectre_status_to_string (status);
+	}
+    } else {
+	spectre_document_get_page_size (document, &width, &height);
+	spectre_document_render (document, &pixels, &stride);
+	spectre_document_free (document);
+    }
+
+    surface = cairo_image_surface_create_for_data (pixels,
+						   CAIRO_FORMAT_RGB24,
+						   width, height,
+						   stride);
+    cairo_surface_set_user_data (surface, &key,
+				 pixels, (cairo_destroy_func_t) free);
+    *surface_out = surface;
+    return NULL;
+}
+
 static const char *
 ps_convert (char **argv, int fd)
 {
-    /* XXX libspectre */
+    const char *err;
+    cairo_surface_t *surface = NULL; /* silence compiler warning */
 
-    return "no method to convert PS";
+    err = _spectre_render_page (argv[0], argv[1], &surface);
+    if (err != NULL)
+	return err;
+
+    err = write_ppm (surface, fd);
+    cairo_surface_destroy (surface);
+
+    return err;
+}
+#else
+static const char *
+ps_convert (char **argv, int fd)
+{
+    return "compiled without PostScript support.";
 }
 #endif
 
@@ -338,15 +449,9 @@ convert (char **argv, int fd)
 	const char *type;
 	const char *(*func) (char **, int);
     } converters[] = {
-#if CAIRO_CAN_TEST_PDF_SURFACE
 	{ "pdf", pdf_convert },
-#endif
-#if CAIRO_CAN_TEST_PS_SURFACE
 	{ "ps", ps_convert },
-#endif
-#if CAIRO_CAN_TEST_SVG_SURFACE
 	{ "svg", svg_convert },
-#endif
 	{ NULL, NULL }
     };
     const struct converter *converter = converters;
@@ -548,8 +653,20 @@ any2ppm_daemon (void)
 	    if (_getline (fd, &line, &len) != -1) {
 		char *argv[10];
 
-		if (split_line (line, argv, ARRAY_LENGTH (argv)) > 0)
-		    convert (argv, fd);
+		if (split_line (line, argv, ARRAY_LENGTH (argv)) > 0) {
+		    const char *err;
+
+		    err = convert (argv, fd);
+		    if (err != NULL) {
+			FILE *file = fopen (".any2ppm.errors", "a");
+			if (file != NULL) {
+			    fprintf (file,
+				     "Failed to convert '%s': %s\n",
+				     argv[0], err);
+			    fclose (file);
+			}
+		    }
+		}
 	    }
 	    close (fd);
 	}

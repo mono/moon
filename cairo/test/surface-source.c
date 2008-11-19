@@ -28,19 +28,28 @@
 static cairo_test_draw_function_t draw;
 static cairo_surface_t *create_source_surface (int size);
 
-#define SIZE 90
+/* We use a relatively large source to exercise bug:
+ *   Bug 7360 painting huge surfaces fails
+ *   [https://bugs.freedesktop.org/show_bug.cgi?id=7360]
+ * but still keep the resultant image small for reasonably quick checking.
+ */
+#define SOURCE_SIZE 2000
+#define INTER_SIZE 512
 
 static const cairo_test_t test = {
     NAME "-surface-source",
     "Test using various surfaces as the source",
-    SIZE, SIZE,
+    90, 90,
     draw
 };
 
 static void
-draw_pattern (cairo_surface_t *surface, int surface_size)
+draw_pattern (cairo_surface_t **surface_inout, int surface_size)
 {
-    cairo_t *cr = cairo_create (surface);
+    cairo_t *cr;
+
+    cr = cairo_create (*surface_inout);
+    cairo_surface_destroy (*surface_inout);
 
     cairo_set_source_rgb (cr, 1, 1, 1);
     cairo_rectangle (cr,
@@ -63,6 +72,7 @@ draw_pattern (cairo_surface_t *surface, int surface_size)
 		     surface_size / 2, surface_size / 2);
     cairo_fill (cr);
 
+    *surface_inout = cairo_surface_reference (cairo_get_target (cr));
     cairo_destroy (cr);
 }
 
@@ -70,21 +80,39 @@ static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
     cairo_surface_t *surface;
-    int surface_size;
+    cairo_surface_t *similar;
+    cairo_t *cr2;
 
     cairo_set_source_rgb (cr, 0, 0, 0);
     cairo_paint (cr);
 
-    surface_size = SIZE - 30;
-    surface = create_source_surface (surface_size);
+    surface = create_source_surface (SOURCE_SIZE);
     if (surface == NULL) /* can't create the source so skip the test */
 	return CAIRO_TEST_UNTESTED;
 
-    draw_pattern (surface, surface_size);
+    draw_pattern (&surface, SOURCE_SIZE);
 
-    cairo_set_source_surface (cr, surface, 15, 15);
+    /* copy a subregion to a smaller intermediate surface */
+    similar = cairo_surface_create_similar (surface,
+					    CAIRO_CONTENT_COLOR_ALPHA,
+					    INTER_SIZE, INTER_SIZE);
+    cr2 = cairo_create (similar);
+    cairo_surface_destroy (similar);
+    cairo_set_source_surface (cr2, surface,
+			      (INTER_SIZE - SOURCE_SIZE)/2,
+			      (INTER_SIZE - SOURCE_SIZE)/2);
+    cairo_paint (cr2);
+
+    /* and then paint onto a small surface for checking */
+    cairo_set_source_surface (cr, cairo_get_target (cr2),
+			      (width - INTER_SIZE)/2,
+			      (height - INTER_SIZE)/2);
+    cairo_destroy (cr2);
+    cairo_rectangle (cr, 15, 15, 60, 60);
+    cairo_fill (cr);
+
+    /* destroy the surface last, as this triggers XCloseDisplay */
     cairo_surface_destroy (surface);
-    cairo_paint (cr);
 
     return CAIRO_TEST_SUCCESS;
 }
@@ -94,7 +122,7 @@ main (void)
 {
     cairo_surface_t *surface;
 
-    surface = create_source_surface (SIZE);
+    surface = create_source_surface (SOURCE_SIZE);
     if (surface == NULL) /* can't create the source so skip the test */
 	return CAIRO_TEST_UNTESTED;
 

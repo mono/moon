@@ -60,7 +60,7 @@ _cairo_gstate_ensure_scaled_font (cairo_gstate_t *gstate);
 static void
 _cairo_gstate_unset_scaled_font (cairo_gstate_t *gstate);
 
-static void
+static cairo_status_t
 _cairo_gstate_transform_glyphs_to_backend (cairo_gstate_t      *gstate,
                                            const cairo_glyph_t *glyphs,
                                            int                  num_glyphs,
@@ -314,6 +314,8 @@ _cairo_gstate_redirect_target (cairo_gstate_t *gstate, cairo_surface_t *child)
  * _cairo_gstate_is_redirected
  * @gstate: a #cairo_gstate_t
  *
+ * This space left intentionally blank.
+ *
  * Return value: %TRUE if the gstate is redirected to a target
  * different than the original, %FALSE otherwise.
  **/
@@ -371,6 +373,8 @@ _cairo_gstate_get_original_target (cairo_gstate_t *gstate)
 /**
  * _cairo_gstate_get_clip:
  * @gstate: a #cairo_gstate_t
+ *
+ * This space left intentionally blank.
  *
  * Return value: a pointer to the gstate's #cairo_clip_t structure.
  */
@@ -781,12 +785,25 @@ _cairo_gstate_path_extents (cairo_gstate_t     *gstate,
 			    double *x2, double *y2)
 {
     cairo_status_t status;
+    double px1, py1, px2, py2;
 
-    status = _cairo_path_fixed_bounds (path, x1, y1, x2, y2, gstate->tolerance);
+    status = _cairo_path_fixed_bounds (path,
+				       &px1, &py1, &px2, &py2,
+				       gstate->tolerance);
     if (status)
 	return status;
 
-    _cairo_gstate_backend_to_user_rectangle (gstate, x1, y1, x2, y2, NULL);
+    _cairo_gstate_backend_to_user_rectangle (gstate,
+					     &px1, &py1, &px2, &py2,
+					     NULL);
+    if (x1)
+	*x1 = px1;
+    if (y1)
+	*y1 = py1;
+    if (x2)
+	*x2 = px2;
+    if (y2)
+	*y2 = py2;
 
     return CAIRO_STATUS_SUCCESS;
 }
@@ -1079,18 +1096,26 @@ _cairo_gstate_traps_extents_to_user_rectangle (cairo_gstate_t	  *gstate,
 	if (y2)
 	    *y2 = 0.0;
     } else {
+	double px1, py1, px2, py2;
+
 	_cairo_traps_extents (traps, &extents);
 
-	if (x1)
-	    *x1 = _cairo_fixed_to_double (extents.p1.x);
-	if (y1)
-	    *y1 = _cairo_fixed_to_double (extents.p1.y);
-	if (x2)
-	    *x2 = _cairo_fixed_to_double (extents.p2.x);
-	if (y2)
-	    *y2 = _cairo_fixed_to_double (extents.p2.y);
+	px1 = _cairo_fixed_to_double (extents.p1.x);
+	py1 = _cairo_fixed_to_double (extents.p1.y);
+	px2 = _cairo_fixed_to_double (extents.p2.x);
+	py2 = _cairo_fixed_to_double (extents.p2.y);
 
-        _cairo_gstate_backend_to_user_rectangle (gstate, x1, y1, x2, y2, NULL);
+        _cairo_gstate_backend_to_user_rectangle (gstate,
+						 &px1, &py1, &px2, &py2,
+						 NULL);
+	if (x1)
+	    *x1 = px1;
+	if (y1)
+	    *y1 = py1;
+	if (x2)
+	    *x2 = px2;
+	if (y2)
+	    *y2 = py2;
     }
 }
 
@@ -1124,7 +1149,8 @@ _cairo_gstate_stroke_extents (cairo_gstate_t	 *gstate,
 						gstate->tolerance,
 						&traps);
     if (status == CAIRO_STATUS_SUCCESS) {
-        _cairo_gstate_traps_extents_to_user_rectangle(gstate, &traps, x1, y1, x2, y2);
+	_cairo_gstate_traps_extents_to_user_rectangle (gstate, &traps,
+						       x1, y1, x2, y2);
     }
 
     _cairo_traps_fini (&traps);
@@ -1148,7 +1174,8 @@ _cairo_gstate_fill_extents (cairo_gstate_t     *gstate,
 					      gstate->tolerance,
 					      &traps);
     if (status == CAIRO_STATUS_SUCCESS) {
-        _cairo_gstate_traps_extents_to_user_rectangle(gstate, &traps, x1, y1, x2, y2);
+	_cairo_gstate_traps_extents_to_user_rectangle (gstate, &traps,
+						       x1, y1, x2, y2);
     }
 
     _cairo_traps_fini (&traps);
@@ -1191,26 +1218,34 @@ cairo_status_t
 _cairo_gstate_clip_extents (cairo_gstate_t *gstate,
 		            double         *x1,
 		            double         *y1,
-        		    double         *x2,
-        		    double         *y2)
+			    double         *x2,
+			    double         *y2)
 {
     cairo_rectangle_int_t extents;
+    double px1, py1, px2, py2;
     cairo_status_t status;
-    
+
     status = _cairo_gstate_int_clip_extents (gstate, &extents);
     if (status)
         return status;
 
-    if (x1)
-	*x1 = extents.x;
-    if (y1)
-	*y1 = extents.y;
-    if (x2)
-	*x2 = extents.x + extents.width;
-    if (y2)
-	*y2 = extents.y + extents.height;
+    px1 = extents.x;
+    py1 = extents.y;
+    px2 = extents.x + (int) extents.width;
+    py2 = extents.y + (int) extents.height;
 
-    _cairo_gstate_backend_to_user_rectangle (gstate, x1, y1, x2, y2, NULL);
+    _cairo_gstate_backend_to_user_rectangle (gstate,
+					     &px1, &py1, &px2, &py2,
+					     NULL);
+
+    if (x1)
+	*x1 = px1;
+    if (y1)
+	*y1 = py1;
+    if (x2)
+	*x2 = px2;
+    if (y2)
+	*y2 = py2;
 
     return CAIRO_STATUS_SUCCESS;
 }
@@ -1570,10 +1605,12 @@ _cairo_gstate_show_text_glyphs (cairo_gstate_t		   *gstate,
 	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
     }
 
-    _cairo_gstate_transform_glyphs_to_backend (gstate, glyphs, num_glyphs,
-                                               transformed_glyphs, &num_glyphs);
+    status = _cairo_gstate_transform_glyphs_to_backend (gstate,
+							glyphs, num_glyphs,
+							transformed_glyphs,
+							&num_glyphs);
 
-    if (!num_glyphs)
+    if (status || num_glyphs == 0)
 	goto CLEANUP_GLYPHS;
 
     status = _cairo_gstate_copy_transformed_source (gstate, &source_pattern.base);
@@ -1609,11 +1646,9 @@ _cairo_gstate_show_text_glyphs (cairo_gstate_t		   *gstate,
 
 	_cairo_path_fixed_init (&path);
 
-	CAIRO_MUTEX_LOCK (gstate->scaled_font->mutex);
 	status = _cairo_scaled_font_glyph_path (gstate->scaled_font,
 						transformed_glyphs, num_glyphs,
 						&path);
-	CAIRO_MUTEX_UNLOCK (gstate->scaled_font->mutex);
 
 	if (status == CAIRO_STATUS_SUCCESS)
 	  status = _cairo_surface_fill (gstate->target,
@@ -1657,15 +1692,18 @@ _cairo_gstate_glyph_path (cairo_gstate_t      *gstate,
     if (transformed_glyphs == NULL)
 	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
 
-    _cairo_gstate_transform_glyphs_to_backend (gstate, glyphs, num_glyphs,
-                                               transformed_glyphs, NULL);
+    status = _cairo_gstate_transform_glyphs_to_backend (gstate,
+							glyphs, num_glyphs,
+							transformed_glyphs,
+							NULL);
+    if (status)
+	goto CLEANUP_GLYPHS;
 
-    CAIRO_MUTEX_LOCK (gstate->scaled_font->mutex);
     status = _cairo_scaled_font_glyph_path (gstate->scaled_font,
 					    transformed_glyphs, num_glyphs,
 					    path);
-    CAIRO_MUTEX_UNLOCK (gstate->scaled_font->mutex);
 
+  CLEANUP_GLYPHS:
     if (transformed_glyphs != stack_transformed_glyphs)
       cairo_glyph_free (transformed_glyphs);
 
@@ -1705,7 +1743,7 @@ _cairo_gstate_get_antialias (cairo_gstate_t *gstate)
  * This also uses information from the scaled font and the surface to
  * cull/drop glyphs that will not be visible.
  **/
-static void
+static cairo_status_t
 _cairo_gstate_transform_glyphs_to_backend (cairo_gstate_t      *gstate,
                                            const cairo_glyph_t *glyphs,
                                            int                  num_glyphs,
@@ -1718,20 +1756,24 @@ _cairo_gstate_transform_glyphs_to_backend (cairo_gstate_t      *gstate,
     cairo_matrix_t *device_transform = &gstate->target->device_transform;
     cairo_bool_t drop = FALSE;
     double x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+    cairo_status_t status;
 
     if (num_transformed_glyphs != NULL) {
 	cairo_rectangle_int_t surface_extents;
 	double scale = _cairo_scaled_font_get_max_scale (gstate->scaled_font);
 
 	drop = TRUE;
+	status = _cairo_gstate_int_clip_extents (gstate, &surface_extents);
+	if (_cairo_status_is_error (status))
+	    return status;
 
-	if (_cairo_gstate_int_clip_extents (gstate, &surface_extents))
+	if (status == CAIRO_INT_STATUS_UNSUPPORTED) {
 	    drop = FALSE; /* unbounded surface */
-	else {
+	} else {
 	    if (surface_extents.width == 0 || surface_extents.height == 0) {
 	      /* No visible area.  Don't draw anything */
 	      *num_transformed_glyphs = 0;
-	      return;
+	      return CAIRO_STATUS_SUCCESS;
 	    }
 	    /* XXX We currently drop any glyphs that has its position outside
 	     * of the surface boundaries by a safety margin depending on the
@@ -1743,8 +1785,8 @@ _cairo_gstate_transform_glyphs_to_backend (cairo_gstate_t      *gstate,
 	     */
 	    x1 = surface_extents.x - 2*scale;
 	    y1 = surface_extents.y - 2*scale;
-	    x2 = surface_extents.x + surface_extents.width  + scale;
-	    y2 = surface_extents.y + surface_extents.height + scale;
+	    x2 = surface_extents.x + (int) surface_extents.width  + scale;
+	    y2 = surface_extents.y + (int) surface_extents.height + scale;
 	}
 
 	if (!drop)
@@ -1811,4 +1853,6 @@ _cairo_gstate_transform_glyphs_to_backend (cairo_gstate_t      *gstate,
         }
 	*num_transformed_glyphs = j;
     }
+
+    return CAIRO_STATUS_SUCCESS;
 }

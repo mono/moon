@@ -217,8 +217,8 @@ _cairo_boilerplate_glitz_glx_create_surface (const char			 *name,
     gxtc->base.width = width;
     gxtc->base.height = height;
     gxtc->base.content = content;
-    status = cairo_boilerplate_surface_set_user_data (surface,
-	                                      &glitz_closure_key, gxtc, NULL);
+    status = cairo_surface_set_user_data (surface,
+					  &glitz_closure_key, gxtc, NULL);
     if (status == CAIRO_STATUS_SUCCESS)
 	return surface;
 
@@ -361,8 +361,8 @@ _cairo_boilerplate_glitz_agl_create_surface (const char			 *name,
     aglc->base.width = width;
     aglc->base.height = height;
     aglc->base.content = content;
-    status = cairo_boilerplate_surface_set_user_data (surface,
-	                                      &glitz_closure_key, aglc, NULL);
+    status = cairo_surface_set_user_data (surface,
+					  &glitz_closure_key, aglc, NULL);
     if (status == CAIRO_STATUS_SUCCESS)
 	return surface;
 
@@ -493,8 +493,8 @@ _cairo_boilerplate_glitz_wgl_create_surface (const char			 *name,
     wglc->base.width = width;
     wglc->base.height = height;
     wglc->base.content = content;
-    status = cairo_boilerplate_surface_set_user_data (surface,
-	                                      &glitz_closure_key, wglc, NULL);
+    status = cairo_surface_set_user_data (surface,
+					  &glitz_closure_key, wglc, NULL);
     if (status == CAIRO_STATUS_SUCCESS)
 	return surface;
 

@@ -25,7 +25,7 @@ for x in $HEADERS; do
 done |
 grep -v '"cairo[.]h"' |
 grep -v 'cairo[.]h:' |
-grep . && stat=1
+grep . >&2 && stat=1
 
 
 echo 'Checking that private header files #include "some cairo header" first (or none)'
@@ -35,7 +35,7 @@ for x in $PRIVATE; do
 done |
 grep -v '"cairo.*[.]h"' |
 grep -v 'cairoint[.]h:' |
-grep . && stat=1
+grep . >&2 && stat=1
 
 
 echo 'Checking that source files #include "cairoint.h" first (or none)'
@@ -44,14 +44,14 @@ for x in $SOURCES; do
 	grep '#.*\<include\>' "$x" /dev/null | head -n 1
 done |
 grep -v '"cairoint[.]h"' |
-grep . && stat=1
+grep . >&2 && stat=1
 
 
 echo 'Checking that there is no #include <cairo.*.h>'
-grep '#.*\<include\>.*<.*cairo' $ALL && stat=1
+grep '#.*\<include\>.*<.*cairo' $ALL >&2 && stat=1
 
 
 echo 'Checking that feature conditionals are used with #if only (not #ifdef)'
-grep '#if.*CAIRO_HAS_' $ALL | grep def && stat=1
+grep '#if.*CAIRO_HAS_' $ALL | grep def >&2 && stat=1
 
 exit $stat

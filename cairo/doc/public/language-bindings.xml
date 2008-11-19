@@ -513,7 +513,7 @@ CAIRO_STATUS_WRITE_ERROR
 cairo_pattern_t
       <link linkend="cairo-pattern-set-matrix"><function>cairo_pattern_set_matrix()</function></link>
       <link linkend="cairo-pattern-get-matrix"><function>cairo_pattern_get_matrix()</function></link>
-   cairo_solid_pattern_t
+   cairo_solid_pattern_t (<link linkend="cairo-pattern-create-rgb"><function>cairo_pattern_create_rgb()</function></link> and <link linkend="cairo-pattern-create-rgba"><function>cairo_pattern_create_rgba()</function></link>)
    cairo_surface_pattern_t (<link linkend="cairo-pattern-create-for-surface"><function>cairo_pattern_create_for_surface()</function></link>)
          <link linkend="cairo-pattern-set-extend"><function>cairo_pattern_set_extend()</function></link>
          <link linkend="cairo-pattern-get-extend"><function>cairo_pattern_get_extend()</function></link>

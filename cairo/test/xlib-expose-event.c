@@ -85,6 +85,7 @@ draw_mask (cairo_t *cr)
     cairo_boilerplate_xlib_surface_disable_render (surface);
 
     cr2 = cairo_create (surface);
+    cairo_surface_destroy (surface);
 
     /* This complex clip and forcing of fallbacks is to reproduce bug
      * http://bugs.freedesktop.org/show_bug.cgi?id=10921
@@ -103,11 +104,10 @@ draw_mask (cairo_t *cr)
     cairo_line_to (cr2, 25, 50);
     cairo_set_source_rgb (cr2, 1, 1, 1);
     cairo_stroke (cr2);
-    cairo_destroy (cr2);
 
     cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_mask_surface (cr, surface, 50, 50);
-    cairo_surface_destroy (surface);
+    cairo_mask_surface (cr, cairo_get_target (cr2), 50, 50);
+    cairo_destroy (cr2);
 }
 
 static cairo_surface_t *
@@ -122,9 +122,13 @@ clone_similar_surface (cairo_surface_t * target, cairo_surface_t *surface)
 				      cairo_image_surface_get_height (surface));
 
     cr = cairo_create (similar);
+    cairo_surface_destroy (similar);
+
     cairo_set_source_surface (cr, surface, 0, 0);
     cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
     cairo_paint (cr);
+
+    similar = cairo_surface_reference (cairo_get_target (cr));
     cairo_destroy (cr);
 
     return similar;
@@ -186,6 +190,7 @@ compare (const cairo_test_context_t *ctx, cairo_surface_t *surface)
     cairo_set_source_surface (cr, surface, 0, 0);
     cairo_paint (cr);
     cairo_destroy (cr);
+    cairo_surface_write_to_png (image, "xlib-expose-event-out.png");
 
     reference = cairo_test_create_surface_from_png (ctx, "xlib-expose-event-ref.png");
     status = image_diff (ctx, reference, image, diff, &result);

@@ -25,7 +25,7 @@ if test -f "$DOC_MODULE-undeclared.txt"; then
 		cat "$DOC_MODULE-undeclared.txt" 1>&2
 		stat=1
 	fi
-fi
+fi >&2
 if test -f "$DOC_MODULE-unused.txt"; then
 	unused=`cat "$DOC_MODULE-unused.txt"`
 	if test -n "$unused"; then
@@ -33,7 +33,7 @@ if test -f "$DOC_MODULE-unused.txt"; then
 		cat "$DOC_MODULE-unused.txt" 1>&2
 		stat=1
 	fi
-fi
+fi >&2
 if test -f "$DOC_MODULE-undocumented.txt"; then
 	if grep '^0 symbols incomplete' "$DOC_MODULE-undocumented.txt" >/dev/null &&
 	   grep '^0 not documented'     "$DOC_MODULE-undocumented.txt" >/dev/null; then
@@ -43,6 +43,6 @@ if test -f "$DOC_MODULE-undocumented.txt"; then
 		cat "$DOC_MODULE-undocumented.txt" 1>&2
 		stat=1
 	fi
-fi
+fi >&2
 
 exit $stat

@@ -1,5 +1,198 @@
-Snapshot 1.8.0 (2008-09-25 Carl Worth <cworth@cworth.org>)
-==========================================================
+Release 1.8.4 (2008-11-14 Carl Worth <cworth@cworth.org>)
+=========================================================
+The cairo community is pleased to announce the 1.8.4 release of the
+cairo graphics library. This is the second update to cairo's stable
+1.8 series and contains a small number of bug fixes, (in particular a
+few fixes for build failures of cairo 1.8.2 on various systems). This
+is being released just over two weeks after cairo 1.8.2.
+
+We recommend that everyone using cairo upgrade to 1.8.4.
+
+-Carl
+
+Build fixes
+-----------
+Fix build with older XRender that doesn't define RepeatNone:
+
+   Build of xlib backend fails against old XRender (RepeatNone undeclared)
+   https://bugs.freedesktop.org/show_bug.cgi?id=18385
+
+Fix build with bash version <= 3.0:
+
+   doltlibtool broken on linux with bash 3.00.0
+   https://bugs.freedesktop.org/show_bug.cgi?id=18363
+
+Bug fixes
+---------
+Avoid triggering a bug in X.org server 6.9 resulting in a hung machine
+requiring a reboot:
+
+    https://bugs.freedesktop.org/show_bug.cgi?id=15628#c2
+
+Fix display of user fonts as exercised by proposed support for type3
+fonts in poppler (unsigned promotion fixes):
+
+    Use cairo user-font for Type 3 fonts
+    http://lists.freedesktop.org/archives/poppler/2008-October/004181.html
+
+Avoid miscomputing size of fallback images required when rendering
+with CLEAR, IN, or SOURCE operator to vector surfaces, (PS, PDF, SVG,
+etc.).
+
+Be more tolerant of broken fonts when subsetting type1 fonts:
+
+   Error handling in cairo_type1_font_subset_get_glyph_names_and_widths
+   http://lists.cairographics.org/archives/cairo/2008-October/015569.html
+
+Fix cairo_fill_extents, cairo_stroke_extents, cairo_path_extents, to
+correctly allow NULL parameters as documented.
+
+Fix potential crash on emitting a type3 glyph after having drawn text
+paths from the same font, (for example with cairo_text_path).
+
+Release 1.8.2 (2008-10-29 Carl Worth <cworth@cworth.org>)
+=========================================================
+The cairo community is pleased to announce the 1.8.2 release of the
+cairo graphics library. This is the first update to cairo's stable 1.8
+series and contains a large number of bug fixes. It is being released
+just over one month since cairo 1.8.0.
+
+This release consists primarily of bug fixes, but there is one notable
+new feature, (the ability to build cairo without an external font
+backend), and there are a few optimizations as well. See below for
+details on these changes and the most important bug fixes.
+
+While many people have contributed to this release, Chris Wilson
+deserves particular mention. He has contributed well over twice as
+many changes to cairo since 1.8.0 than everyone else combined. We
+greatly appreciate the tremendous efforts of Chris and all cairo
+contributors.
+
+We recommend everyone upgrade to cairo 1.8.2 and hope that everyone
+will have lots of fun with cairo!
+
+-Carl
+
+New feature
+-----------
+It is now possible to build cairo without any font backend, (such as
+freetype, win32 or quartz). This is most useful when the application
+provides custom font rendering through the user-font API. But in the
+case where no external font backend is available, and no user-font is
+provided, cairo will render with a failsafe font, (a stroked font
+covering visible ASCII character). (Behdad Esfahbod)
+
+Optimizations
+-------------
+Dramatically speed up compilation with dolt (removes much of the
+libtool overhead) (Behdad Esfahbod with thanks to Josh Triplett).
+
+Several minor optimizations to tessellator (special-cased comparisons,
+faster insert for skiplist, etc.) (Chris Wilson).
+
+Optimize away fractional translation component when doing
+EXTEND_NEAREST filtering, (for better performance).
+
+General bug fixes
+-----------------
+Allow cloning sub-regions of similar surfaces to fix this bug
+(Chris Wilson):
+
+	Crafted gif file will crash firefox
+	[XError: 'BadAlloc (insufficient resources for operation)']
+	https://bugzilla.mozilla.org/show_bug.cgi?id=424333
+
+Fix some matrix confusion to fix this regression (Chris Wilson):
+
+	Translucent star exports in a wrong way to PDF
+	https://bugs.launchpad.net/inkscape/+bug/234546
+
+Fix some long-standing bugs with respect to properly computing the
+extents of transformed, filtered surfaces (Owen Taylor, Carl Worth,
+and Chris Wilson):
+
+	Bad clipping with EXTEND_NONE
+	http://bugs.freedesktop.org/show_bug.cgi?id=15349
+
+	Improve filtering handling in cairo-pattern.c
+	http://bugs.freedesktop.org/show_bug.cgi?id=15367
+
+	Many thanks to Chris Wilson for digging out and cleaning up
+	these fixes.
+
+Fix compilation on Solaris 10 (Chris Wilson):
+
+	Cairo requires -DREENTRANT (along with	-D_POSIX_THREAD_SEMANTICS)
+	to compile on Solaris 10 with pthreads
+	https://bugs.freedesktop.org/show_bug.cgi?id=18010
+
+Fix very old bug causing dashes to be rendered at the wrong length in
+fallback images (Adrian Johnson)
+
+	Dashed strokes too long in fallback images
+	https://bugs.freedesktop.org/show_bug.cgi?id=9189
+
+Fix broken dashing when a dashed path starts outside the clip region
+(Chris Wilson).
+
+Avoid range overflow when computing large patterns (Benjamin Otte and
+Chris Wilson).
+
+Avoid crashing due to an invalid font with an incorrect entry in its
+CMAP table (Adrian Johnson).
+
+Fix bugs in computing maximum size of text requests that can be sent
+with the Render extension, (avoiding potential crashes when rendering
+large amounts of text) (Behdad Esfahbod and Chris Wilson).
+
+Fix rendering of operators unbounded by the mask (Chris Wilson).
+
+Fix compilation on systems without compiler support for a native
+64-bit type (Chris Wilson).
+
+Fix several cases of missing error-status propagation. (Chris Wilson,
+doing the work he seems to never tire of).
+
+Fix several locking issues found with the lockdep valgrind skin (Chris
+Wilson).
+
+Backend-specific bug fixes
+--------------------------
+xlib: Avoid crash due to attempting XRender calls on pixmaps with
+formats not supported by the Render extension (Chris Wilson):
+
+	XRender crashes due to NULL pointer from Cairo on SGI O2
+	https://bugs.freedesktop.org/show_bug.cgi?id=1173
+
+xlib: Add support for XImages with depth of 4, 20, 24, or 28 bits
+(Chris Wilson):
+
+	cairo doesn't support 24 bits per pixel mode on X11
+	https://bugs.freedesktop.org/show_bug.cgi?id=9102
+
+xlib: Avoid mistakenly considering two surfaces as similar just
+because their depths match (while their Render formats do not) (Karl
+Tomlinson).
+
+ps: Fix slight mis-scaling of bitmapped fonts (Adrian Johnson)
+
+svg: Correctly emit comp-op for paint, mask, and show_glyphs
+operations (Emmanuel Pacaud).
+
+svg: Use finer-grained fallbacks for SVG 1.2 (as PS and PDF backends
+have been doing since 1.6.0) (Chris Wilson).
+
+win32: Fallback to DIB if DDB create fails for
+cairo_surface_create_similar (Vladimir Vukicevic).
+
+win32: Fix compatibility with Windows Mobile (Vladimir Vukicevic).
+
+win32: Fix static builds to not do __declspec(dllimport) on public
+functions. This requires the user to set a CAIRO_WIN32_STATIC_BUILD
+environment variable when compiling (Behdad Esfahbod).
+
+Release 1.8.0 (2008-09-25 Carl Worth <cworth@cworth.org>)
+=========================================================
 The cairo community is happy (and relieved) to announce the 1.8.0
 release of the cairo graphics library. This is a major update to
 cairo, with new features and enhanced functionality which maintains
@@ -205,7 +398,7 @@ series:
 	convenience function on the cairo_t is not obviously
 	necessary. An application can easily call:
 
-	cairo_surface_has_show_glyphs (cairo_get_target (Sr));
+	cairo_surface_has_show_glyphs (cairo_get_target (cr));
 
 	as needed.
 
@@ -369,7 +562,7 @@ cairo_glyph_free
 cairo_text_cluster_t
 cairo_text_cluster_allocate
 cairo_text_cluster_free
-cairo_has_show_text_glyphs
+cairo_surface_has_show_text_glyphs
 
 
 cairo_user_font_face_create

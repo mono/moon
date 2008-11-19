@@ -24,6 +24,7 @@
  */
 
 #define _GNU_SOURCE 1	/* for feenableexcept() et al */
+#define _POSIX_C_SOURCE 2000112L /* for flockfile() et al */
 
 #if HAVE_CONFIG_H
 #include "config.h"
@@ -37,7 +38,7 @@
 #include <fenv.h>
 #endif
 #include <assert.h>
-#ifdef HAVE_UNISTD_H
+#if HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 #include <errno.h>
@@ -45,8 +46,24 @@
 #if HAVE_FCFINI
 #include <fontconfig/fontconfig.h>
 #endif
-#ifdef HAVE_PTHREAD_H
+#if HAVE_PTHREAD_H
 #include <pthread.h>
+#endif
+#if HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
+
+#if HAVE_VALGRIND
+#include <valgrind.h>
+#else
+#define RUNNING_ON_VALGRIND 0
+#endif
+
+#if HAVE_MEMFAULT
+#include <memfault.h>
+#define MF(x) x
+#else
+#define MF(x)
 #endif
 
 #include "cairo-test.h"
@@ -111,6 +128,8 @@ _cairo_test_init (cairo_test_context_t *ctx,
 {
     char *log_name;
 
+    MF (VALGRIND_DISABLE_FAULTS ());
+
 #if HAVE_FEENABLEEXCEPT
     feenableexcept (FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
 #endif
@@ -118,6 +137,14 @@ _cairo_test_init (cairo_test_context_t *ctx,
     ctx->test = test;
     ctx->test_name = test_name;
     ctx->expectation = expectation;
+
+    ctx->malloc_failure = 0;
+#if HAVE_MEMFAULT
+    if (getenv ("CAIRO_TEST_MALLOC_FAILURE"))
+	ctx->malloc_failure = atoi (getenv ("CAIRO_TEST_MALLOC_FAILURE"));
+    if (ctx->malloc_failure && ! RUNNING_ON_MEMFAULT ())
+	ctx->malloc_failure = 0;
+#endif
 
     xasprintf (&log_name, "%s%s", test_name, CAIRO_TEST_LOG_SUFFIX);
     _xunlink (NULL, log_name);
@@ -160,8 +187,12 @@ cairo_test_init (cairo_test_context_t *ctx,
 }
 
 static void
-cairo_test_init_thread (cairo_test_context_t *ctx, cairo_test_context_t *master, int thread)
+cairo_test_init_thread (cairo_test_context_t *ctx,
+			cairo_test_context_t *master,
+			int thread)
 {
+    MF (VALGRIND_DISABLE_FAULTS ());
+
     *ctx = *master;
     ctx->thread = thread;
 }
@@ -249,12 +280,12 @@ _xunlink (const cairo_test_context_t *ctx, const char *pathname)
     }
 }
 
-static char *
-cairo_ref_name_for_test_target_format (const cairo_test_context_t *ctx,
-	                               const char *base_name,
-	                               const char *test_name,
-				       const char *target_name,
-				       const char *format)
+char *
+cairo_test_reference_image_filename (const cairo_test_context_t *ctx,
+	                             const char *base_name,
+				     const char *test_name,
+				     const char *target_name,
+				     const char *format)
 {
     char *ref_name = NULL;
 
@@ -324,6 +355,7 @@ cairo_test_target_has_similar (const cairo_test_context_t *ctx,
     cairo_bool_t has_similar;
     cairo_t * cr;
     cairo_surface_t *similar;
+    cairo_status_t status;
     void *closure;
 
     /* ignore image intermediate targets */
@@ -333,30 +365,39 @@ cairo_test_target_has_similar (const cairo_test_context_t *ctx,
     if (getenv ("CAIRO_TEST_IGNORE_SIMILAR"))
 	return FALSE;
 
-    surface = (target->create_surface) (ctx->test->name,
-					target->content,
-					ctx->test->width,
-					ctx->test->height,
-					ctx->test->width + 25 * NUM_DEVICE_OFFSETS,
-					ctx->test->height + 25 * NUM_DEVICE_OFFSETS,
-					CAIRO_BOILERPLATE_MODE_TEST,
-					0,
-					&closure);
-    if (surface == NULL)
-	return FALSE;
+    do {
+	do {
+	    surface = (target->create_surface) (ctx->test->name,
+						target->content,
+						ctx->test->width,
+						ctx->test->height,
+						ctx->test->width + 25 * NUM_DEVICE_OFFSETS,
+						ctx->test->height + 25 * NUM_DEVICE_OFFSETS,
+						CAIRO_BOILERPLATE_MODE_TEST,
+						0,
+						&closure);
+	    if (surface == NULL)
+		return FALSE;
+	} while (cairo_test_malloc_failure (ctx, cairo_surface_status (surface)));
 
-    cr = cairo_create (surface);
-    cairo_push_group_with_content (cr,
-				   cairo_boilerplate_content (target->content));
-    similar = cairo_get_group_target (cr);
+	if (cairo_surface_status (surface))
+	    return FALSE;
 
-    has_similar = cairo_surface_get_type (similar) == cairo_surface_get_type (surface);
 
-    cairo_destroy (cr);
-    cairo_surface_destroy (surface);
+	cr = cairo_create (surface);
+	cairo_push_group_with_content (cr,
+				       cairo_boilerplate_content (target->content));
+	similar = cairo_get_group_target (cr);
+	status = cairo_surface_status (similar);
 
-    if (target->cleanup)
-	target->cleanup (closure);
+	has_similar = cairo_surface_get_type (similar) == cairo_surface_get_type (surface);
+
+	cairo_destroy (cr);
+	cairo_surface_destroy (surface);
+
+	if (target->cleanup)
+	    target->cleanup (closure);
+    } while (cairo_test_malloc_failure (ctx, status));
 
     return has_similar;
 }
@@ -394,7 +435,7 @@ _cairo_test_flatten_reference_image (cairo_test_context_t *ctx,
     return surface;
 }
 
-static cairo_surface_t *
+cairo_surface_t *
 cairo_test_get_reference_image (cairo_test_context_t *ctx,
 				const char *filename,
 				cairo_bool_t flatten)
@@ -432,7 +473,7 @@ static cairo_bool_t
 cairo_test_file_is_older (const char *filename,
 	                  const char *ref_filename)
 {
-#ifdef HAVE_STAT
+#if HAVE_SYS_STAT_H
     struct stat st, ref;
 
     if (stat (filename, &st) < 0)
@@ -441,7 +482,7 @@ cairo_test_file_is_older (const char *filename,
     if (stat (ref_filename, &ref) < 0)
 	return TRUE;
 
-    return st.m_time < ref.m_time;
+    return st.st_mtime < ref.st_mtime;
 #else
     /* XXX */
     return FALSE;
@@ -532,8 +573,10 @@ cairo_test_for_target (cairo_test_context_t		 *ctx,
     const char *format;
     cairo_bool_t have_output = FALSE;
     cairo_bool_t have_result = FALSE;
+    int malloc_failure_iterations = ctx->malloc_failure;
     void *closure;
     int width, height;
+    int last_fault_count = 0;
 
     /* Get the strings ready that we'll need. */
     format = cairo_boilerplate_content_name (target->content);
@@ -560,11 +603,11 @@ cairo_test_for_target (cairo_test_context_t		 *ctx,
       free (thread_str);
 
 
-    ref_name = cairo_ref_name_for_test_target_format (ctx,
-						      base_name,
-						      ctx->test->name,
-						      target->name,
-						      format);
+    ref_name = cairo_test_reference_image_filename (ctx,
+						    base_name,
+						    ctx->test->name,
+						    target->name,
+						    format);
     xasprintf (&png_name,  "%s%s", base_name, CAIRO_TEST_PNG_SUFFIX);
     xasprintf (&diff_name, "%s%s", base_name, CAIRO_TEST_DIFF_SUFFIX);
 
@@ -586,6 +629,14 @@ cairo_test_for_target (cairo_test_context_t		 *ctx,
 	height += dev_offset;
     }
 
+REPEAT:
+#if HAVE_MEMFAULT
+    VALGRIND_CLEAR_FAULTS ();
+    VALGRIND_RESET_LEAKS ();
+    ctx->last_fault_count = 0;
+    last_fault_count = VALGRIND_COUNT_FAULTS ();
+    VALGRIND_ENABLE_FAULTS ();
+#endif
     have_output = FALSE;
     have_result = FALSE;
 
@@ -605,7 +656,11 @@ cairo_test_for_target (cairo_test_context_t		 *ctx,
 	goto UNWIND_STRINGS;
     }
 
+    if (cairo_test_malloc_failure (ctx, cairo_surface_status (surface)))
+	goto REPEAT;
+
     if (cairo_surface_status (surface)) {
+	MF (VALGRIND_PRINT_FAULTS ());
 	cairo_test_log (ctx, "Error: Created an error surface\n");
 	ret = CAIRO_TEST_FAILURE;
 	goto UNWIND_STRINGS;
@@ -613,6 +668,7 @@ cairo_test_for_target (cairo_test_context_t		 *ctx,
 
     /* Check that we created a surface of the expected type. */
     if (cairo_surface_get_type (surface) != target->expected_type) {
+	MF (VALGRIND_PRINT_FAULTS ());
 	cairo_test_log (ctx, "Error: Created surface is of type %d (expected %d)\n",
 			cairo_surface_get_type (surface), target->expected_type);
 	ret = CAIRO_TEST_FAILURE;
@@ -625,6 +681,7 @@ cairo_test_for_target (cairo_test_context_t		 *ctx,
     expected_content = cairo_boilerplate_content (target->content);
 
     if (cairo_surface_get_content (surface) != expected_content) {
+	MF (VALGRIND_PRINT_FAULTS ());
 	cairo_test_log (ctx, "Error: Created surface has content %d (expected %d)\n",
 			cairo_surface_get_content (surface), expected_content);
 	ret = CAIRO_TEST_FAILURE;
@@ -635,8 +692,18 @@ cairo_test_for_target (cairo_test_context_t		 *ctx,
 
     cr = cairo_create (surface);
     if (cairo_set_user_data (cr, &_cairo_test_context_key, (void*) ctx, NULL)) {
+#if HAVE_MEMFAULT
+	cairo_destroy (cr);
+	cairo_surface_destroy (surface);
+
+	if (target->cleanup)
+	    target->cleanup (closure);
+
+	goto REPEAT;
+#else
 	ret = CAIRO_TEST_FAILURE;
 	goto UNWIND_CAIRO;
+#endif
     }
 
     if (similar)
@@ -668,6 +735,35 @@ cairo_test_for_target (cairo_test_context_t		 *ctx,
 	cairo_paint (cr);
     }
 
+#if HAVE_MEMFAULT
+    VALGRIND_DISABLE_FAULTS ();
+
+    /* repeat test after malloc failure injection */
+    if (ctx->malloc_failure &&
+	VALGRIND_COUNT_FAULTS () - last_fault_count > 0 &&
+	(status == CAIRO_TEST_NO_MEMORY ||
+	 cairo_status (cr) == CAIRO_STATUS_NO_MEMORY ||
+	 cairo_surface_status (surface) == CAIRO_STATUS_NO_MEMORY))
+    {
+	cairo_destroy (cr);
+	cairo_surface_destroy (surface);
+	if (target->cleanup)
+	    target->cleanup (closure);
+	if (ctx->thread == 0) {
+	    cairo_debug_reset_static_data ();
+#if HAVE_FCFINI
+	    FcFini ();
+#endif
+	    if (VALGRIND_COUNT_LEAKS () > 0) {
+		VALGRIND_PRINT_FAULTS ();
+		VALGRIND_PRINT_LEAKS ();
+	    }
+	}
+
+	goto REPEAT;
+    }
+#endif
+
     /* Then, check all the different ways it could fail. */
     if (status) {
 	cairo_test_log (ctx, "Error: Function under test failed\n");
@@ -681,6 +777,13 @@ cairo_test_for_target (cairo_test_context_t		 *ctx,
 	ret = CAIRO_TEST_FAILURE;
 	goto UNWIND_CAIRO;
     }
+
+#if HAVE_MEMFAULT
+    if (VALGRIND_COUNT_FAULTS () - last_fault_count > 0) {
+	VALGRIND_PRINTF ("Unreported memfaults...");
+	VALGRIND_PRINT_FAULTS ();
+    }
+#endif
 
     /* Skip image check for tests with no image (width,height == 0,0) */
     if (ctx->test->width != 0 && ctx->test->height != 0) {
@@ -706,9 +809,9 @@ cairo_test_for_target (cairo_test_context_t		 *ctx,
 
 	    /* we may be running this test to generate reference images */
 	    _xunlink (ctx, png_name);
-	    test_image = target->get_image_surface (surface,
-		    ctx->test->width,
-		    ctx->test->height);
+	    test_image = target->get_image_surface (surface, 0,
+		                                    ctx->test->width,
+						    ctx->test->height);
 	    diff_status = cairo_surface_write_to_png (test_image, png_name);
 	    if (diff_status) {
 		cairo_test_log (ctx,
@@ -733,7 +836,7 @@ cairo_test_for_target (cairo_test_context_t		 *ctx,
 	    if (cairo_test_file_is_older (pass_filename, ref_name))
 		_xunlink (ctx, pass_filename);
 	    if (cairo_test_file_is_older (fail_filename, ref_name))
-		_xunlink (ctx, pass_filename);
+		_xunlink (ctx, fail_filename);
 
 	    if (cairo_test_files_equal (test_filename, pass_filename)) {
 		/* identical output as last known PASS */
@@ -752,9 +855,9 @@ cairo_test_for_target (cairo_test_context_t		 *ctx,
 	    }
 	}
 
-	test_image = target->get_image_surface (surface,
-					       ctx->test->width,
-					       ctx->test->height);
+	test_image = target->get_image_surface (surface, 0,
+					        ctx->test->width,
+						ctx->test->height);
 	if (cairo_surface_status (test_image)) {
 	    cairo_test_log (ctx, "Error: Failed to extract image: %s\n",
 			    cairo_status_to_string (cairo_surface_status (test_image)));
@@ -783,7 +886,7 @@ cairo_test_for_target (cairo_test_context_t		 *ctx,
 	    if (cairo_test_file_is_older (pass_filename, ref_name))
 		_xunlink (ctx, pass_filename);
 	    if (cairo_test_file_is_older (fail_filename, ref_name))
-		_xunlink (ctx, pass_filename);
+		_xunlink (ctx, fail_filename);
 
 	    if (cairo_test_files_equal (test_filename, pass_filename)) {
 		/* identical output as last known PASS, pass */
@@ -865,12 +968,51 @@ cairo_test_for_target (cairo_test_context_t		 *ctx,
     }
 
 UNWIND_CAIRO:
+    if (test_filename != NULL) {
+	free (test_filename);
+	test_filename = NULL;
+    }
+    if (fail_filename != NULL) {
+	free (fail_filename);
+	fail_filename = NULL;
+    }
+    if (pass_filename != NULL) {
+	free (pass_filename);
+	pass_filename = NULL;
+    }
+
+#if HAVE_MEMFAULT
+    if (ret == CAIRO_TEST_FAILURE && ctx->expectation != CAIRO_TEST_FAILURE)
+	VALGRIND_PRINT_FAULTS ();
+#endif
     cairo_destroy (cr);
 UNWIND_SURFACE:
     cairo_surface_destroy (surface);
 
     if (target->cleanup)
 	target->cleanup (closure);
+
+#if HAVE_MEMFAULT
+    if (ctx->thread == 0) {
+	cairo_debug_reset_static_data ();
+
+#if HAVE_FCFINI
+	FcFini ();
+#endif
+
+	if (VALGRIND_COUNT_LEAKS () > 0) {
+	    if (ret != CAIRO_TEST_FAILURE ||
+		ctx->expectation == CAIRO_TEST_FAILURE)
+	    {
+		VALGRIND_PRINT_FAULTS ();
+	    }
+	    VALGRIND_PRINT_LEAKS ();
+	}
+    }
+
+    if (ret == CAIRO_TEST_SUCCESS && --malloc_failure_iterations > 0)
+	goto REPEAT;
+#endif
 
     if (ctx->thread == 0) {
 	if (have_output)
@@ -884,12 +1026,6 @@ UNWIND_SURFACE:
     }
 
 UNWIND_STRINGS:
-    if (test_filename != NULL)
-	free (test_filename);
-    if (fail_filename != NULL)
-	free (fail_filename);
-    if (pass_filename != NULL)
-	free (pass_filename);
     if (png_name)
       free (png_name);
     if (ref_name)
@@ -926,7 +1062,7 @@ cairo_test_run (cairo_test_context_t *ctx)
     volatile cairo_bool_t print_fail_on_stdout = ctx->thread == 0;
     volatile cairo_test_status_t status, ret;
 
-#ifdef HAVE_UNISTD_H
+#if HAVE_UNISTD_H
     if (ctx->thread == 0 && isatty (2)) {
 	fail_face = "\033[41m\033[37m\033[1m";
 	normal_face = "\033[m";
@@ -972,7 +1108,7 @@ cairo_test_run (cairo_test_context_t *ctx)
 		}
 
 #if defined(HAVE_SIGNAL_H) && defined(HAVE_SETJMP_H)
-		if (ctx->thread == 0) {
+		if (ctx->thread == 0 && ! RUNNING_ON_VALGRIND) {
 		    void (* volatile old_segfault_handler)(int);
 		    void (* volatile old_sigpipe_handler)(int);
 
@@ -1033,6 +1169,7 @@ cairo_test_run (cairo_test_context_t *ctx)
 			ret = CAIRO_TEST_FAILURE;
 			break;
 		    default:
+		    case CAIRO_TEST_NO_MEMORY:
 		    case CAIRO_TEST_FAILURE:
 			if (ctx->expectation == CAIRO_TEST_FAILURE) {
 			    printf ("XFAIL\n");
@@ -1056,7 +1193,7 @@ cairo_test_run (cairo_test_context_t *ctx)
 		    }
 		    fflush (stdout);
 		} else {
-#ifdef HAVE_FLOCKFILE
+#if _POSIX_THREAD_SAFE_FUNCTIONS
 		    flockfile (stdout);
 #endif
 		    printf ("%s-%s-%s %d [%d]:\t",
@@ -1076,6 +1213,7 @@ cairo_test_run (cairo_test_context_t *ctx)
 			ret = CAIRO_TEST_FAILURE;
 			break;
 		    default:
+		    case CAIRO_TEST_NO_MEMORY:
 		    case CAIRO_TEST_FAILURE:
 			if (ctx->expectation == CAIRO_TEST_FAILURE) {
 			    printf ("XFAIL\n");
@@ -1087,7 +1225,7 @@ cairo_test_run (cairo_test_context_t *ctx)
 		    }
 
 		    fflush (stdout);
-#ifdef HAVE_FLOCKFILE
+#if _POSIX_THREAD_SAFE_FUNCTIONS
 		    funlockfile (stdout);
 #endif
 		}
@@ -1098,7 +1236,7 @@ cairo_test_run (cairo_test_context_t *ctx)
     return ret;
 }
 
-#ifdef HAVE_PTHREAD_H
+#if HAVE_PTHREAD_H
 typedef struct _cairo_test_thread {
     pthread_t thread;
     cairo_test_context_t *ctx;
@@ -1137,7 +1275,7 @@ cairo_test_expecting (const cairo_test_t *test,
     if (expectation == CAIRO_TEST_FAILURE)
 	printf ("Expecting failure\n");
 
-#ifdef HAVE_PTHREAD_H
+#if HAVE_PTHREAD_H
     num_threads = 0;
     if (getenv ("CAIRO_TEST_NUM_THREADS"))
 	num_threads = atoi (getenv ("CAIRO_TEST_NUM_THREADS"));
@@ -1231,9 +1369,11 @@ cairo_test_create_surface_from_png (const cairo_test_context_t *ctx,
 	                            const char *filename)
 {
     cairo_surface_t *image;
+    cairo_status_t status;
 
     image = cairo_image_surface_create_from_png (filename);
-    if (cairo_surface_status(image)) {
+    status = cairo_surface_status (image);
+    if (status == CAIRO_STATUS_FILE_NOT_FOUND) {
         /* expect not found when running with srcdir != builddir
          * such as when 'make distcheck' is run
          */
@@ -1266,13 +1406,16 @@ cairo_test_create_pattern_from_png (const cairo_test_context_t *ctx,
     return pattern;
 }
 
-static cairo_status_t
-_draw_check (cairo_surface_t *surface, int width, int height)
+static cairo_surface_t *
+_draw_check (int width, int height)
 {
+    cairo_surface_t *surface;
     cairo_t *cr;
-    cairo_status_t status;
 
+    surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, 12, 12);
     cr = cairo_create (surface);
+    cairo_surface_destroy (surface);
+
     cairo_set_source_rgb (cr, 0.75, 0.75, 0.75); /* light gray */
     cairo_paint (cr);
 
@@ -1281,37 +1424,28 @@ _draw_check (cairo_surface_t *surface, int width, int height)
     cairo_rectangle (cr, 0, height / 2, width / 2, height / 2);
     cairo_fill (cr);
 
-    status = cairo_status (cr);
-
+    surface = cairo_surface_reference (cairo_get_target (cr));
     cairo_destroy (cr);
 
-    return status;
+    return surface;
 }
 
-cairo_status_t
+void
 cairo_test_paint_checkered (cairo_t *cr)
 {
-    cairo_status_t status;
     cairo_surface_t *check;
 
-    check = cairo_image_surface_create (CAIRO_FORMAT_RGB24, 12, 12);
-    status = _draw_check (check, 12, 12);
-    if (status) {
-	cairo_surface_destroy (check);
-	return status;
-    }
+    check = _draw_check (12, 12);
 
     cairo_save (cr);
     cairo_set_source_surface (cr, check, 0, 0);
+    cairo_surface_destroy (check);
+
     cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_NEAREST);
     cairo_pattern_set_extend (cairo_get_source (cr), CAIRO_EXTEND_REPEAT);
     cairo_paint (cr);
+
     cairo_restore (cr);
-
-    status = cairo_surface_status (check);
-    cairo_surface_destroy (check);
-
-    return status;
 }
 
 cairo_bool_t
@@ -1331,4 +1465,41 @@ cairo_test_is_target_enabled (const cairo_test_context_t *ctx, const char *targe
     }
 
     return FALSE;
+}
+
+cairo_bool_t
+cairo_test_malloc_failure (const cairo_test_context_t *ctx,
+			   cairo_status_t status)
+{
+    int n_faults;
+
+    if (! ctx->malloc_failure)
+	return FALSE;
+
+    if (status != CAIRO_STATUS_NO_MEMORY)
+	return FALSE;
+
+#if HAVE_MEMFAULT
+    /* prevent infinite loops... */
+    n_faults = VALGRIND_COUNT_FAULTS ();
+    if (n_faults == ctx->last_fault_count)
+	return FALSE;
+
+    ((cairo_test_context_t *) ctx)->last_fault_count = n_faults;
+#endif
+
+    return TRUE;
+}
+
+cairo_test_status_t
+cairo_test_status_from_status (const cairo_test_context_t *ctx,
+			       cairo_status_t status)
+{
+    if (status == CAIRO_STATUS_SUCCESS)
+	return CAIRO_TEST_SUCCESS;
+
+    if (cairo_test_malloc_failure (ctx, status))
+	return CAIRO_TEST_NO_MEMORY;
+
+    return CAIRO_TEST_FAILURE;
 }

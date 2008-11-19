@@ -25,7 +25,7 @@ if test "x$SGML_DOCS" = x; then
     fi
 fi
 
-enum_regexp='\([^%@]\|^\)\<\(FALSE\|TRUE\|NULL\|CAIRO_[0-9A-Z_]*\)\($\|[^(A-Za-z0-9_]\)'
+enum_regexp="\([^%@']\|^\)\<\(FALSE\|TRUE\|NULL\|CAIRO_[0-9A-Z_]*\)\($\|[^(A-Za-z0-9_]\)"
 if test "x$SGML_DOCS" = x; then
 	enum_regexp='^[^:]*:[/ ][*]\(\|[ \t].*\)'$enum_regexp
 fi
@@ -34,9 +34,9 @@ if echo $FILES | xargs grep . /dev/null | sed -e '/<programlisting>/,/<\/program
 	echo Error: some macros in the docs are not prefixed by percent sign.
 	echo Fix this by searching for the following regexp in the above files:
 	echo "	'$enum_regexp'"
-fi
+fi >&2
 
-type_regexp='\( .*[^#]\| \|^\)\<cairo[0-9a-z_]*_t\>\($\|[^:]$\|[^:].\)'
+type_regexp="\( .*[^#']\| \|^\)\<cairo[0-9a-z_]*_t\>\($\|[^:]$\|[^:].\)"
 if test "x$SGML_DOCS" = x; then
 	type_regexp='^[^:]*:[/ ][*]'$type_regexp
 else
@@ -49,9 +49,9 @@ if echo $FILES | xargs grep . /dev/null | sed -e '/<programlisting>/,/<\/program
 	echo neither are the only token in the doc line followed by colon.
 	echo Fix this by searching for the following regexp in the above files:
 	echo "	'$type_regexp'"
-fi
+fi >&2
 
-func_regexp='\([^#]\|^\)\<\(cairo_[][<>/0-9a-z_]*\>[^][<>(]\)'
+func_regexp="\([^#']\|^\)\<\(cairo_[][<>/0-9a-z_]*\>[^][<>(]\)"
 if test "x$SGML_DOCS" = x; then
 	func_regexp='^[^:]*:[/ ][*]\(\|[ \t].*\)'$func_regexp
 fi
@@ -62,13 +62,13 @@ if echo $FILES | xargs grep . /dev/null | sed -e '/<programlisting>/,/<\/program
 	echo Error: some function names in the docs are not followed by parentheses.
 	echo Fix this by searching for the following regexp in the above files:
 	echo "	'$func_regexp'"
-fi
+fi >&2
 
 note_regexp='NOTE'
 if echo $FILES | xargs grep "$note_regexp" /dev/null; then
 	stat=1
 	echo Error: some source files contain the string 'NOTE'.
 	echo Be civil and replace it by 'Note' please.
-fi
+fi >&2
 
 exit $stat

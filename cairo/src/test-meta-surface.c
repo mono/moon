@@ -277,29 +277,14 @@ _test_meta_surface_show_text_glyphs (void		    *abstract_surface,
 				     cairo_scaled_font_t    *scaled_font)
 {
     test_meta_surface_t *surface = abstract_surface;
-    cairo_int_status_t status;
 
     surface->image_reflects_meta = FALSE;
 
-    /* Since this is a "wrapping" surface, we're calling back into
-     * _cairo_surface_show_text_glyphs from within a call to the same.
-     * Since _cairo_surface_show_text_glyphs acquires a mutex, we release
-     * and re-acquire the mutex around this nested call.
-     *
-     * Yes, this is ugly, but we consider it pragmatic as compared to
-     * adding locking code to all 18 surface-backend-specific
-     * show_glyphs functions, (which would get less testing and likely
-     * lead to bugs).
-     */
-    CAIRO_MUTEX_UNLOCK (scaled_font->mutex);
-    status = _cairo_surface_show_text_glyphs (surface->meta, op, source,
-					      utf8, utf8_len,
-					      glyphs, num_glyphs,
-					      clusters, num_clusters, cluster_flags,
-					      scaled_font);
-    CAIRO_MUTEX_LOCK (scaled_font->mutex);
-
-    return status;
+    return _cairo_surface_show_text_glyphs (surface->meta, op, source,
+					    utf8, utf8_len,
+					    glyphs, num_glyphs,
+					    clusters, num_clusters, cluster_flags,
+					    scaled_font);
 }
 
 

@@ -283,25 +283,54 @@ _cairo_xlib_display_get (Display *dpy)
 	    sizeof (display->cached_xrender_formats));
 
     display->buggy_repeat = FALSE;
-    if (strstr (ServerVendor (dpy), "X.Org") != NULL) {
-	/* When modularized, the X.Org server VendorRelease was
-	 * bogusly reset to a very small number, without any change in
-	 * the ServerVendor string. We avoid considering the new
-	 * servers with the small number as buggy by restricting the
-	 * test to known bad releases. But there could be a problem
-	 * again in the future if X.Org server versions ever climb
-	 * back up to 6.7 or 6.8. */
-	if (VendorRelease (dpy) >= 60700000 && VendorRelease (dpy) <= 60802000)
-	    display->buggy_repeat = TRUE;
 
-	/* But even the new modular server has bugs, (bad enough to
-	 * crash the X server), that it so happens we can avoid with
-	 * the exact same buggy_repeat workaround. We've verified that
-	 * this bug exists as least as late as version 1.3.0.0, (which
-	 * is in Fedora 8), and is gone again in version 1.4.99.901
-	 * (from a Fedora 9 Beta). Versions between those are still
-	 * unknown, but until we learn more, we'll assume that any 1.3
-	 * version is buggy.  */
+    /* This buggy_repeat condition is very complicated because there
+     * are multiple X server code bases (with multiple versioning
+     * schemes within a code base), and multiple bugs.
+     *
+     * The X servers:
+     *
+     *    1. The Vendor=="XFree86" code base with release numbers such
+     *    as 4.7.0 (VendorRelease==40700000).
+     *
+     *    2. The Vendor=="X.Org" code base (a descendant of the
+     *    XFree86 code base). It originally had things like
+     *    VendorRelease==60700000 for release 6.7.0 but then changed
+     *    its versioning scheme so that, for example,
+     *    VendorRelease==10400000 for the 1.4.0 X server within the
+     *    X.Org 7.3 release.
+     *
+     * The bugs:
+     *
+     *    1. The original bug that led to the buggy_repeat
+     *    workaround. This was a bug that Owen Taylor investigated,
+     *    understood well, and characterized against carious X
+     *    servers. Confirmed X servers with this bug include:
+     *
+     *		"XFree86" <= 40500000
+     *		"X.Org" <= 60802000 (only with old numbering >= 60700000)
+     *
+     *    2. A separate bug resulting in a crash of the X server when
+     *    using cairo's extend-reflect test case, (which, surprisingly
+     *    enough was not passing RepeatReflect to the X server, but
+     *    instead using RepeatNormal in a workaround). Nobody to date
+     *    has understood the bug well, but it appears to be gone as of
+     *    the X.Org 1.4.0 server. This bug is coincidentally avoided
+     *    by using the same buggy_repeat workaround. Confirmed X
+     *    servers with this bug include:
+     *
+     *		"X.org" == 60900000 (old versioning scheme)
+     *		"X.org"  < 10400000 (new numbering scheme)
+     *
+     *    For the old-versioning-scheme X servers we don't know
+     *    exactly when second the bug started, but since bug 1 is
+     *    present through 6.8.2 and bug 2 is present in 6.9.0 it seems
+     *    safest to just blacklist all old-versioning-scheme X servers,
+     *    (just using VendorRelase < 70000000), as buggy_repeat=TRUE.
+     */
+    if (strstr (ServerVendor (dpy), "X.Org") != NULL) {
+	if (VendorRelease (dpy) >= 60700000 && VendorRelease (dpy) < 70000000)
+	    display->buggy_repeat = TRUE;
 	if (VendorRelease (dpy) < 10400000)
 	    display->buggy_repeat = TRUE;
     } else if (strstr (ServerVendor (dpy), "XFree86") != NULL) {

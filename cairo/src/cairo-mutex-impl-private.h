@@ -47,6 +47,9 @@
 #include "config.h"
 #endif
 
+#if HAVE_LOCKDEP
+#include <lockdep.h>
+#endif
 
 /* A fully qualified no-operation statement */
 #define CAIRO_MUTEX_IMPL_NOOP	do {/*no-op*/} while (0)
@@ -171,10 +174,20 @@
   typedef pthread_mutex_t cairo_mutex_impl_t;
 
 # define CAIRO_MUTEX_IMPL_PTHREAD 1
+#if HAVE_LOCKDEP
+/* expose all mutexes to the validator */
+# define CAIRO_MUTEX_IMPL_INIT(mutex) pthread_mutex_init (&(mutex), NULL)
+#endif
 # define CAIRO_MUTEX_IMPL_LOCK(mutex) pthread_mutex_lock (&(mutex))
 # define CAIRO_MUTEX_IMPL_UNLOCK(mutex) pthread_mutex_unlock (&(mutex))
+#if HAVE_LOCKDEP
+# define CAIRO_MUTEX_IS_LOCKED(mutex) LOCKDEP_IS_LOCKED (&(mutex))
+# define CAIRO_MUTEX_IS_UNLOCKED(mutex) LOCKDEP_IS_UNLOCKED (&(mutex))
+#endif
 # define CAIRO_MUTEX_IMPL_FINI(mutex) pthread_mutex_destroy (&(mutex))
+#if ! HAVE_LOCKDEP
 # define CAIRO_MUTEX_IMPL_FINALIZE() CAIRO_MUTEX_IMPL_NOOP
+#endif
 # define CAIRO_MUTEX_IMPL_NIL_INITIALIZER PTHREAD_MUTEX_INITIALIZER
 
 #elif defined(HAVE_WINDOWS_H) || defined(_MSC_VER) /*************************/

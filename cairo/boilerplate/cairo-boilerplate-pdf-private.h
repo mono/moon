@@ -38,6 +38,10 @@ _cairo_boilerplate_pdf_create_surface (const char		 *name,
 				       int                        id,
 				       void			**closure);
 
+void
+_cairo_boilerplate_pdf_force_fallbacks (cairo_surface_t *abstract_surface,
+	                                unsigned int flags);
+
 cairo_status_t
 _cairo_boilerplate_pdf_finish_surface (cairo_surface_t		*surface);
 
@@ -46,6 +50,7 @@ _cairo_boilerplate_pdf_surface_write_to_png (cairo_surface_t *surface, const cha
 
 cairo_surface_t *
 _cairo_boilerplate_pdf_get_image_surface (cairo_surface_t *surface,
+					  int page,
 					  int width,
 					  int height);
 

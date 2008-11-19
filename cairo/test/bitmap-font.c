@@ -62,9 +62,15 @@ static cairo_test_status_t
 check_font_extents (const cairo_test_context_t *ctx, cairo_t *cr, const char *comment)
 {
     cairo_font_extents_t font_extents, ref_font_extents = {11, 2, 13, 6, 0};
+    cairo_status_t status;
 
     memset (&font_extents, 0xff, sizeof (cairo_font_extents_t));
     cairo_font_extents (cr, &font_extents);
+
+    status = cairo_status (cr);
+    if (status)
+	return cairo_test_status_from_status (ctx, status);
+
     if (! font_extents_equal (&font_extents, &ref_font_extents)) {
 	cairo_test_log (ctx, "Error: %s: cairo_font_extents(); extents (%g, %g, %g, %g, %g)\n",
 			comment,
@@ -111,6 +117,7 @@ draw (cairo_t *cr, int width, int height)
 	cairo_test_log (ctx, "Error creating font face for %s: %s\n",
 			filename,
 			cairo_status_to_string (status));
+	FcPatternDestroy (pattern);
 	return CAIRO_TEST_FAILURE;
     }
 
@@ -118,6 +125,7 @@ draw (cairo_t *cr, int width, int height)
 	cairo_test_log (ctx, "Unexpected value from cairo_font_face_get_type: %d (expected %d)\n",
 			cairo_font_face_get_type (font_face), CAIRO_FONT_TYPE_FT);
 	cairo_font_face_destroy (font_face);
+	FcPatternDestroy (pattern);
 	return CAIRO_TEST_FAILURE;
     }
 

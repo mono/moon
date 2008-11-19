@@ -121,9 +121,16 @@ cpu_count() {
 # results from a run with an equivalent src tree.
 rev2perf() {
     rev=$1
+    sha=`rev2sha $rev`
     src_tree_sha=`rev2sha $rev:src`
     perf_tree_sha=`rev2sha HEAD:perf`
-    echo "$CAIRO_PERF_DIR/${perf_tree_sha}-${src_tree_sha}.perf"
+    echo "$CAIRO_PERF_DIR/${sha}-${perf_tree_sha}-${src_tree_sha}.perf"
+}
+rev2perf_glob() {
+    rev=$1
+    src_tree_sha=`rev2sha $rev:src`
+    perf_tree_sha=`rev2sha HEAD:perf`
+    echo "$CAIRO_PERF_DIR/*-${perf_tree_sha}-${src_tree_sha}.perf"
 }
 
 # Usage: run_cairo_perf_if_not_cached <rev> <suffix>
@@ -138,7 +145,8 @@ run_cairo_perf_if_not_cached() {
     owd=`pwd`
     sha=`rev2sha $rev`
     perf=`rev2perf $rev`
-    if [ -e $perf ] && [ "$force_cairo_perf" != "true" ]; then
+    glob=`rev2perf_glob $rev`
+    if [ -e $glob ] && [ "$force_cairo_perf" != "true" ]; then
 	return 0
     fi
     if [ ! -d $CAIRO_PERF_DIR ]; then

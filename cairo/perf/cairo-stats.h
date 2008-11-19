@@ -28,14 +28,6 @@
 
 #include "cairo-perf.h"
 
-typedef struct _cairo_stats {
-    cairo_perf_ticks_t min_ticks;
-    cairo_perf_ticks_t median_ticks;
-    double ticks_per_ms;
-    double std_dev;
-    int iterations;
-} cairo_stats_t;
-
 void
 _cairo_stats_compute (cairo_stats_t		*stats,
 		      cairo_perf_ticks_t	*values,

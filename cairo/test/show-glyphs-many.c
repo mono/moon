@@ -65,49 +65,104 @@
  *
  *  Status: I replicated bug. The largest value of NUM_GLYPHS for
  *      which I saw success is 21842.
+ *
+ * 2008-30-08 Chris Wilson <chris@chris-wilson.co.uk>
+ *   This is also a valid test case for:
+ *
+ *     Bug 5913 crash on overlong string
+ *     https://bugs.freedesktop.org/show_bug.cgi?id=5913
+ *
+ *  which is still causing a crash in the Xlib backend - presumably, just
+ *  a miscalculation of the length of the available request.
  */
 
 #define TEXT_SIZE 12
 #define NUM_GLYPHS 65535
 
-/* This is the index into the font for what glyph we'll draw. Since we
- * don't guarantee we'll get any particular font, we can't relibably
- * get any particular glyph. But we don't care what we draw anyway,
- * (see discussion of white-on-white drawing above). For what it's
- * worth, this appears to be giving me 'M' with Bitstream Vera
- * Sans Mono. */
-#define GLYPH_INDEX 48
-
 static cairo_test_draw_function_t draw;
 
-cairo_test_t test = {
+static const cairo_test_t test = {
     "show-glyphs-many",
-    "Test that cairo_show_glyps works when handed 'many' glyphs",
+    "Test that cairo_show_glyphs works when handed 'many' glyphs",
     9, 11,
     draw
 };
 
 static cairo_test_status_t
+get_glyph (cairo_t *cr, const char *utf8, cairo_glyph_t *glyph)
+{
+    cairo_glyph_t *text_to_glyphs;
+    cairo_status_t status;
+    int i;
+
+    text_to_glyphs = glyph;
+    i = 1;
+    status = cairo_scaled_font_text_to_glyphs (cairo_get_scaled_font (cr),
+					       0, 0,
+					       utf8, -1,
+					       &text_to_glyphs, &i,
+					       NULL, NULL,
+					       0);
+    if (status != CAIRO_STATUS_SUCCESS)
+	return cairo_test_status_from_status (cairo_test_get_context (cr),
+					      status);
+
+    if (text_to_glyphs != glyph) {
+	*glyph = text_to_glyphs[0];
+	cairo_glyph_free (text_to_glyphs);
+    }
+
+    return CAIRO_TEST_SUCCESS;
+}
+
+static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
     cairo_glyph_t glyphs[NUM_GLYPHS];
-    int i;
-
-    /* Initialize our giant array of glyphs. */
-    for (i=0; i < NUM_GLYPHS; i++) {
-	glyphs[i].index = GLYPH_INDEX;
-	glyphs[i].x = 1.0;
-	glyphs[i].y = height - 1;
-    }
+    const char *characters[] = { /* try to exercise different widths of index */
+	"m", /* Latin letter m, index=0x50 */
+	"μ", /* Greek letter mu, index=0x349 */
+	NULL,
+    }, **utf8;
+    int i, j;
+    cairo_status_t status;
 
     /* Paint white background. */
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
+    cairo_set_source_rgb (cr, 1, 1, 1);
     cairo_paint (cr);
 
-    cairo_select_font_face (cr, "Bitstream Vera Sans Mono",
+    cairo_select_font_face (cr, "Sans",
 			    CAIRO_FONT_SLANT_NORMAL,
 			    CAIRO_FONT_WEIGHT_NORMAL);
     cairo_set_font_size (cr, TEXT_SIZE);
+
+    for (utf8 = characters; *utf8 != NULL; utf8++) {
+	status = get_glyph (cr, *utf8, &glyphs[0]);
+	if (status)
+	    return status;
+
+	if (glyphs[0].index) {
+	    glyphs[0].x = 1.0;
+	    glyphs[0].y = height - 1;
+	    for (i=1; i < NUM_GLYPHS; i++)
+		glyphs[i] = glyphs[0];
+
+	    cairo_show_glyphs (cr, glyphs, NUM_GLYPHS);
+	}
+    }
+
+    /* we can pack ~21k 1-byte glyphs into a single XRenderCompositeGlyphs8 */
+    status = get_glyph (cr, "m", &glyphs[0]);
+    if (status)
+	return status;
+    for (i=1; i < 21500; i++)
+	glyphs[i] = glyphs[0];
+    /* so check expanding the current 1-byte request for 2-byte glyphs */
+    status = get_glyph (cr, "μ", &glyphs[i]);
+    if (status)
+	return status;
+    for (j=i+1; j < NUM_GLYPHS; j++)
+	glyphs[j] = glyphs[i];
 
     cairo_show_glyphs (cr, glyphs, NUM_GLYPHS);
 

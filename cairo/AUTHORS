@@ -9,6 +9,7 @@ Christian Biesinger <cbiesinger@web.de> BeOS backend
 Billy Biggs <vektor@dumbterm.net> Pixman code merge. Optimization. Fixes for subtle rendering bugs.
 Hans Breuer <hans@breuer.org> win32 bug fixes, build fixes, and improvements
 Brian Cameron <brian.cameron@sun.com> Flag bug in Sun's X server
+Carlos Garcia Campos <carlosgc@gnome.org> libspectre integration into the test-suite
 Damien Carbery <damien.carbery@sun.com> Build fixes
 Andrew Chant <andrew.chant@utoronto.ca> Adding const where needed
 Steve Chaplin <stevech1097@yahoo.com.au> Bug fixes for PNG reading
@@ -33,6 +34,7 @@ Richard Henderson <rth@twiddle.net> "slim" macros for better shared libraries
 James Henstridge <james@daa.com.au> Build fixes related to freetype
 Graydon Hoare <graydon@redhat.com> Support for non-render X server, first real text support
 Thomas Hunger <info@teh-web.de> Initial version of cairo_in_stroke/fill
+Björn Lindqvist <bjourne@gmail.com> Performance test cases
 Kristian Høgsberg <krh@redhat.com> PDF backend, PS backend with meta-surfaces
 Amaury Jacquot <sxpert@esitcom.org> Documentation review, appplication testing
 Adrian Johnson <ajohnson@redneon.com> PDF backend improvement
@@ -83,6 +85,7 @@ Travis Spencer <tspencer@cs.pdx.edu> XCB backend fix
 Bill Spitzak <spitzak@d2.com> Build fix to find Xrender.h without xrender.pc
 Zhe Su <james.su@gmail.com> Add support for fontconfig's embeddedbitmap option
 Owen Taylor <otaylor@redhat.com> Font rewrite, documentation, win32 backend
+Karl Tomlinson <karlt+@karlt.net>
 Alp Toker <alp@atoker.com> Fix several code/comment typos
 Malcolm Tredinnick <malcolm@commsecure.com.au> Documentation fixes
 David Turner <david@freetype.org> Optimize gradient calculations

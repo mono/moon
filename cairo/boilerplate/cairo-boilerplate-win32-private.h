@@ -58,6 +58,7 @@ _cairo_boilerplate_win32_printing_surface_write_to_png (cairo_surface_t *surface
 
 cairo_surface_t *
 _cairo_boilerplate_win32_printing_get_image_surface (cairo_surface_t *surface,
+						     int page,
 						     int width,
 						     int height);
 

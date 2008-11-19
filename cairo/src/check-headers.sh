@@ -21,6 +21,6 @@ awk '
 { context=$0; }
 ' |
 sed 's/[.]h-/.h:/' |
-grep . && stat=1
+grep . >&2 && stat=1
 
 exit $stat

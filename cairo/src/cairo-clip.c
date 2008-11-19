@@ -166,7 +166,8 @@ _cairo_clip_path_intersect_to_rectangle (cairo_clip_path_t       *clip_path,
         _cairo_traps_fini (&traps);
 
         _cairo_box_round_to_rectangle (&extents, &extents_rect);
-        _cairo_rectangle_intersect (rectangle, &extents_rect);
+        if (! _cairo_rectangle_intersect (rectangle, &extents_rect))
+	    return CAIRO_STATUS_SUCCESS;
 
         clip_path = clip_path->prev;
     }
@@ -178,6 +179,9 @@ cairo_status_t
 _cairo_clip_intersect_to_rectangle (cairo_clip_t            *clip,
 				    cairo_rectangle_int_t *rectangle)
 {
+    cairo_status_t status;
+    cairo_bool_t is_empty;
+
     if (!clip)
 	return CAIRO_STATUS_SUCCESS;
 
@@ -187,8 +191,6 @@ _cairo_clip_intersect_to_rectangle (cairo_clip_t            *clip,
     }
 
     if (clip->path) {
-        cairo_status_t status;
-
         status = _cairo_clip_path_intersect_to_rectangle (clip->path,
                                                           rectangle);
         if (status)
@@ -196,7 +198,6 @@ _cairo_clip_intersect_to_rectangle (cairo_clip_t            *clip,
     }
 
     if (clip->has_region) {
-	cairo_status_t status = CAIRO_STATUS_SUCCESS;
 	cairo_region_t intersection;
 
 	_cairo_region_init_rect (&intersection, rectangle);
@@ -214,7 +215,7 @@ _cairo_clip_intersect_to_rectangle (cairo_clip_t            *clip,
     }
 
     if (clip->surface)
-	_cairo_rectangle_intersect (rectangle, &clip->surface_rect);
+	is_empty = _cairo_rectangle_intersect (rectangle, &clip->surface_rect);
 
     return CAIRO_STATUS_SUCCESS;
 }
@@ -421,7 +422,7 @@ _cairo_clip_intersect_mask (cairo_clip_t      *clip,
     cairo_pattern_union_t pattern;
     cairo_box_t extents;
     cairo_rectangle_int_t surface_rect, target_rect;
-    cairo_surface_t *surface;
+    cairo_surface_t *surface = NULL;
     cairo_status_t status;
 
     if (clip->all_clipped)
@@ -434,22 +435,21 @@ _cairo_clip_intersect_mask (cairo_clip_t      *clip,
     _cairo_traps_extents (traps, &extents);
     _cairo_box_round_to_rectangle (&extents, &surface_rect);
 
-    if (clip->surface != NULL)
-	_cairo_rectangle_intersect (&surface_rect, &clip->surface_rect);
+    if (clip->surface != NULL) {
+	if (! _cairo_rectangle_intersect (&surface_rect, &clip->surface_rect))
+	    goto DONE;
+    }
 
     /* Intersect with the target surface rectangle so we don't use
      * more memory and time than we need to. */
     status = _cairo_surface_get_extents (target, &target_rect);
-    if (status == CAIRO_STATUS_SUCCESS)
-	_cairo_rectangle_intersect (&surface_rect, &target_rect);
-
-    if (surface_rect.width == 0 || surface_rect.height == 0) {
-	surface = NULL;
-	status = CAIRO_STATUS_SUCCESS;
-	if (clip->surface != NULL)
-	    cairo_surface_destroy (clip->surface);
-	goto DONE;
+    if (status == CAIRO_STATUS_SUCCESS) {
+	if (! _cairo_rectangle_intersect (&surface_rect, &target_rect))
+	    goto DONE;
     }
+
+    if (surface_rect.width == 0 || surface_rect.height == 0)
+	goto DONE;
 
     _cairo_pattern_init_solid (&pattern.solid, CAIRO_COLOR_WHITE,
 			       CAIRO_CONTENT_COLOR);
@@ -539,11 +539,10 @@ _cairo_clip_intersect_mask (cairo_clip_t      *clip,
 	    cairo_surface_destroy (surface);
 	    return status;
 	}
-
-	cairo_surface_destroy (clip->surface);
     }
 
  DONE:
+    cairo_surface_destroy (clip->surface);
     clip->surface = surface;
     clip->surface_rect = surface_rect;
     clip->serial = _cairo_surface_allocate_clip_serial (target);
@@ -690,16 +689,22 @@ _cairo_clip_init_deep_copy (cairo_clip_t    *clip,
         }
 
         if (other->surface) {
+	    int dx, dy;
             status = _cairo_surface_clone_similar (target, other->surface,
 					           0,
 						   0,
 						   other->surface_rect.width,
 						   other->surface_rect.height,
+						   &dx, &dy,
 						   &clip->surface);
 	    if (status)
 		goto BAIL;
 
             clip->surface_rect = other->surface_rect;
+
+	    /* src offset was 0, so we expect an exact replica of the surface */
+	    assert (dx == 0);
+	    assert (dy == 0);
         }
 
         if (other->path) {
@@ -734,10 +739,12 @@ _cairo_clip_int_rect_to_user (cairo_gstate_t *gstate,
 
     double x1 = clip_rect->x;
     double y1 = clip_rect->y;
-    double x2 = clip_rect->x + clip_rect->width;
-    double y2 = clip_rect->y + clip_rect->height;
+    double x2 = clip_rect->x + (int) clip_rect->width;
+    double y2 = clip_rect->y + (int) clip_rect->height;
 
-    _cairo_gstate_backend_to_user_rectangle (gstate, &x1, &y1, &x2, &y2, &is_tight);
+    _cairo_gstate_backend_to_user_rectangle (gstate,
+					     &x1, &y1, &x2, &y2,
+					     &is_tight);
 
     user_rect->x = x1;
     user_rect->y = y1;

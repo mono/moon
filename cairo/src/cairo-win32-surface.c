@@ -87,7 +87,7 @@ _cairo_win32_print_gdi_error (const char *context)
     void *lpMsgBuf;
     DWORD last_error = GetLastError ();
 
-    if (!FormatMessageA (FORMAT_MESSAGE_ALLOCATE_BUFFER |
+    if (!FormatMessageW (FORMAT_MESSAGE_ALLOCATE_BUFFER |
 			 FORMAT_MESSAGE_FROM_SYSTEM,
 			 NULL,
 			 last_error,
@@ -96,7 +96,7 @@ _cairo_win32_print_gdi_error (const char *context)
 			 0, NULL)) {
 	fprintf (stderr, "%s: Unknown GDI error", context);
     } else {
-	fprintf (stderr, "%s: %s", context, (char *)lpMsgBuf);
+	fwprintf (stderr, "%S: %s", context, (char *)lpMsgBuf);
 
 	LocalFree (lpMsgBuf);
     }
@@ -387,12 +387,15 @@ _cairo_win32_surface_create_similar_internal (void	    *abstract_src,
 {
     cairo_win32_surface_t *src = abstract_src;
     cairo_format_t format = _cairo_format_from_content (content);
-    cairo_win32_surface_t *new_surf;
+    cairo_surface_t *new_surf = NULL;
 
     /* We force a DIB always if:
      * - we need alpha; or
      * - the parent is a DIB; or
      * - the parent is for printing (because we don't care about the bit depth at that point)
+     *
+     * We also might end up with a DIB even if a DDB is requested if DDB creation failed
+     * due to out of memory.
      */
     if (src->is_dib ||
 	(content & CAIRO_CONTENT_ALPHA) ||
@@ -401,30 +404,19 @@ _cairo_win32_surface_create_similar_internal (void	    *abstract_src,
 	force_dib = TRUE;
     }
 
-    if (force_dib) {
-	new_surf = (cairo_win32_surface_t*)
-	    _cairo_win32_surface_create_for_dc (src->dc, format, width, height);
-    } else {
-	/* otherwise, create a ddb */
-	HBITMAP ddb = CreateCompatibleBitmap (src->dc, width, height);
-	HDC ddb_dc = CreateCompatibleDC (src->dc);
-	HBITMAP saved_dc_bitmap;
+    if (!force_dib) {
+	/* try to create a ddb */
+	new_surf = cairo_win32_surface_create_with_ddb (src->dc, CAIRO_FORMAT_RGB24, width, height);
 
-	saved_dc_bitmap = SelectObject (ddb_dc, ddb);
-
-	new_surf = (cairo_win32_surface_t*) cairo_win32_surface_create (ddb_dc);
-	if (new_surf->base.status == CAIRO_STATUS_SUCCESS) {
-	    new_surf->bitmap = ddb;
-	    new_surf->saved_dc_bitmap = saved_dc_bitmap;
-	    new_surf->is_dib = FALSE;
-	} else {
-	    SelectObject (ddb_dc, saved_dc_bitmap);
-	    DeleteDC (ddb_dc);
-	    DeleteObject (ddb);
-	}
+	if (new_surf->status != CAIRO_STATUS_SUCCESS)
+	    new_surf = NULL;
     }
 
-    return (cairo_surface_t*) new_surf;
+    if (new_surf == NULL) {
+	new_surf = _cairo_win32_surface_create_for_dc (src->dc, format, width, height);
+    }
+
+    return new_surf;
 }
 
 cairo_surface_t *
@@ -443,6 +435,8 @@ _cairo_win32_surface_clone_similar (void *abstract_surface,
 				    int src_y,
 				    int width,
 				    int height,
+				    int *clone_offset_x,
+				    int *clone_offset_y,
 				    cairo_surface_t **clone_out)
 {
     cairo_content_t src_content;
@@ -452,10 +446,16 @@ _cairo_win32_surface_clone_similar (void *abstract_surface,
 
     src_content = cairo_surface_get_content(src);
     new_surface =
-	_cairo_win32_surface_create_similar_internal (abstract_surface, src_content, width, height, FALSE);
+	_cairo_win32_surface_create_similar_internal (abstract_surface,
+						      src_content,
+						      width, height,
+						      FALSE);
+    if (new_surface == NULL)
+	return CAIRO_INT_STATUS_UNSUPPORTED;
 
-    if (cairo_surface_status(new_surface))
-	return cairo_surface_status(new_surface);
+    status = new_surface->status;
+    if (status)
+	return status;
 
     _cairo_pattern_init_for_surface (&pattern, src);
 
@@ -470,9 +470,11 @@ _cairo_win32_surface_clone_similar (void *abstract_surface,
 
     _cairo_pattern_fini (&pattern.base);
 
-    if (status == CAIRO_STATUS_SUCCESS)
+    if (status == CAIRO_STATUS_SUCCESS) {
+	*clone_offset_x = src_x;
+	*clone_offset_y = src_y;
 	*clone_out = new_surface;
-    else
+    } else
 	cairo_surface_destroy (new_surface);
 
     return status;
@@ -520,8 +522,10 @@ _cairo_win32_surface_get_subimage (cairo_win32_surface_t  *surface,
     local =
 	(cairo_win32_surface_t *) _cairo_win32_surface_create_similar_internal
 	(surface, content, width, height, TRUE);
+    if (local == NULL)
+	return CAIRO_INT_STATUS_UNSUPPORTED;
     if (local->base.status)
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	return local->base.status;
 
     status = CAIRO_INT_STATUS_UNSUPPORTED;
 
@@ -634,9 +638,9 @@ _cairo_win32_surface_acquire_dest_image (void                    *abstract_surfa
 	x1 = interest_rect->x;
     if (interest_rect->y > y1)
 	y1 = interest_rect->y;
-    if (interest_rect->x + interest_rect->width < x2)
+    if ((int) (interest_rect->x + interest_rect->width) < x2)
 	x2 = interest_rect->x + interest_rect->width;
-    if (interest_rect->y + interest_rect->height < y2)
+    if ((int) (interest_rect->y + interest_rect->height) < y2)
 	y2 = interest_rect->y + interest_rect->height;
 
     if (x1 >= x2 || y1 >= y2) {
@@ -748,7 +752,7 @@ _composite_alpha_blend (cairo_win32_surface_t *dst,
 	if (VER_PLATFORM_WIN32_WINDOWS != os.dwPlatformId ||
 	    os.dwMajorVersion != 4 || os.dwMinorVersion != 10)
 	{
-	    HMODULE msimg32_dll = LoadLibraryA ("msimg32");
+	    HMODULE msimg32_dll = LoadLibraryW (L"msimg32");
 
 	    if (msimg32_dll != NULL)
 		alpha_blend = (cairo_alpha_blend_func_t)GetProcAddress (msimg32_dll,
@@ -1831,7 +1835,6 @@ cairo_win32_surface_create_with_ddb (HDC hdc,
 
     ddb_dc = CreateCompatibleDC (hdc);
     if (ddb_dc == NULL) {
-	_cairo_win32_print_gdi_error("CreateCompatibleDC");
 	new_surf = (cairo_win32_surface_t*) _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
 	goto FINISH;
     }
@@ -1842,9 +1845,9 @@ cairo_win32_surface_create_with_ddb (HDC hdc,
 
 	/* Note that if an app actually does hit this out of memory
 	 * condition, it's going to have lots of other issues, as
-	 * video memory is probably exhausted.
+	 * video memory is probably exhausted.  However, it can often
+	 * continue using DIBs instead of DDBs.
 	 */
-	_cairo_win32_print_gdi_error("CreateCompatibleBitmap");
 	new_surf = (cairo_win32_surface_t*) _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
 	goto FINISH;
     }

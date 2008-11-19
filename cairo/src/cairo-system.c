@@ -50,7 +50,7 @@
 
 
 #if CAIRO_MUTEX_IMPL_WIN32
-#if !defined(CAIRO_WIN32_STATIC_BUILD)
+#if !CAIRO_WIN32_STATIC_BUILD
 
 #define WIN32_LEAN_AND_MEAN
 /* We require Windows 2000 features such as ETO_PDY */

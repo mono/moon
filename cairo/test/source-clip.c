@@ -49,6 +49,7 @@ draw (cairo_t *cr, int width, int height)
 					   SIZE, SIZE);
 
     cr2 = cairo_create (source);
+    cairo_surface_destroy (source);
 
     /* Fill the source surface with green */
     cairo_set_source_rgb (cr2, 0, 1, 0);
@@ -69,11 +70,10 @@ draw (cairo_t *cr, int width, int height)
     cairo_paint (cr);
 
     /* Now draw the source surface onto the destination surface */
-    cairo_set_source_surface (cr, source, 0, 0);
+    cairo_set_source_surface (cr, cairo_get_target (cr2), 0, 0);
     cairo_paint (cr);
 
     cairo_destroy (cr2);
-    cairo_surface_destroy (source);
 
     return CAIRO_TEST_SUCCESS;
 }

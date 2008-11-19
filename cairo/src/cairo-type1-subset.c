@@ -553,18 +553,14 @@ cairo_type1_font_subset_get_glyph_names_and_widths (cairo_type1_font_subset_t *f
 	error = FT_Load_Glyph (font->face, i,
 			       FT_LOAD_NO_SCALE | FT_LOAD_NO_HINTING |
 			       FT_LOAD_NO_BITMAP | FT_LOAD_IGNORE_TRANSFORM);
-	if (error != 0) {
-	    printf ("could not load glyph %d\n", i);
-	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
-	}
+	if (error != 0)
+	    return CAIRO_INT_STATUS_UNSUPPORTED;
 
 	font->glyphs[i].width = font->face->glyph->metrics.horiAdvance;
 
 	error = FT_Get_Glyph_Name(font->face, i, buffer, sizeof buffer);
-	if (error != 0) {
-	    printf ("could not get glyph name for glyph %d\n", i);
-	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
-	}
+	if (error != 0)
+	    return CAIRO_INT_STATUS_UNSUPPORTED;
 
 	font->glyphs[i].name = strdup (buffer);
 	if (font->glyphs[i].name == NULL)
@@ -1214,10 +1210,15 @@ cairo_type1_font_subset_generate (void       *abstract_font,
 	goto fail;
     }
 
-    if (font->face->stream->read) {
-	ret = font->face->stream->read (font->face->stream, 0,
-					(unsigned char *) font->type1_data,
-					font->type1_length);
+    if (font->face->stream->read != NULL) {
+	/* Note that read() may be implemented as a macro, thanks POSIX!, so we
+	 * need to wrap the following usage in parentheses in order to
+	 * disambiguate it for the pre-processor - using the verbose function
+	 * pointer dereference for clarity.
+	 */
+	ret = (* font->face->stream->read) (font->face->stream, 0,
+					    (unsigned char *) font->type1_data,
+					    font->type1_length);
 	if (ret != font->type1_length) {
 	    status = _cairo_error (CAIRO_STATUS_READ_ERROR);
 	    goto fail;

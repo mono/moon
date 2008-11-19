@@ -49,8 +49,9 @@ draw (cairo_t *cr, int width, int height)
     cairo_t *cr2;
 
     image = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, SIZE2, SIZE2);
-
     cr2 = cairo_create (image);
+    cairo_surface_destroy (image);
+
     cairo_set_source_rgba (cr2, 1, 0, 0, 1);
     cairo_rectangle (cr2, 0, 0, SIZE2/2, SIZE2/2);
     cairo_fill (cr2);
@@ -63,9 +64,10 @@ draw (cairo_t *cr, int width, int height)
     cairo_set_source_rgba (cr2, 1, 1, 0, 1);
     cairo_rectangle (cr2, SIZE2/2, SIZE2/2, SIZE2/2, SIZE2/2);
     cairo_fill (cr2);
+
+    pat = cairo_pattern_create_for_surface (cairo_get_target (cr2));
     cairo_destroy (cr2);
 
-    pat = cairo_pattern_create_for_surface (image);
     cairo_pattern_set_extend (pat, CAIRO_EXTEND_REPEAT);
 
     cairo_set_source_rgba (cr, 0, 0, 0, 1);
@@ -78,7 +80,6 @@ draw (cairo_t *cr, int width, int height)
     cairo_rectangle (cr, 0, 0, SIZE - OFFSET, SIZE - OFFSET);
     cairo_fill (cr);
 
-    cairo_surface_destroy (image);
     cairo_pattern_destroy (pat);
 
     return CAIRO_TEST_SUCCESS;

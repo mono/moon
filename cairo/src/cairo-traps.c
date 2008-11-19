@@ -82,6 +82,8 @@ _cairo_traps_clear (cairo_traps_t *traps)
     traps->status = CAIRO_STATUS_SUCCESS;
 
     traps->num_traps = 0;
+    traps->extents.p1.x = traps->extents.p1.y = INT32_MAX;
+    traps->extents.p2.x = traps->extents.p2.y = INT32_MIN;
 }
 
 void
@@ -214,9 +216,16 @@ _cairo_traps_add_trap (cairo_traps_t *traps,
 	}
     }
 
-    if (top >= bottom) {
+    /* Trivial discards for empty trapezoids that are likely to be produced
+     * by our tessellators (most notably convex_quad when given a simple
+     * rectangle).
+     */
+    if (top >= bottom)
 	return;
-    }
+    /* cheap colinearity check */
+    if (right->p1.x <= left->p1.x && right->p1.y == left->p1.y &&
+	right->p2.x <= left->p2.x && right->p2.y == left->p2.y)
+	return;
 
     if (traps->num_traps == traps->traps_size) {
 	if (! _cairo_traps_grow (traps))

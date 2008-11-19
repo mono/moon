@@ -34,6 +34,7 @@ do_unaligned_clip (cairo_t *cr, int width, int height)
     cairo_save (cr);
 
     cairo_perf_timer_start ();
+
     /* First a triangular clip that obviously isn't along device-pixel
      * boundaries. */
     cairo_move_to (cr, 50, 50);
@@ -45,13 +46,9 @@ do_unaligned_clip (cairo_t *cr, int width, int height)
     /* Then a rectangular clip that would be but for the non-integer
      * scaling. */
     cairo_scale (cr, 1.1, 1.1);
-    cairo_move_to (cr, 55, 55);
-    cairo_line_to (cr, 90, 55);
-    cairo_line_to (cr, 90, 90);
-    cairo_line_to (cr, 90, 55);
-    cairo_close_path (cr);
-
+    cairo_rectangle (cr, 55, 55, 35, 35);
     cairo_clip (cr);
+
     cairo_perf_timer_stop ();
 
     cairo_restore (cr);

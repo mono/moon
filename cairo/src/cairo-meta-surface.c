@@ -822,7 +822,7 @@ _cairo_meta_surface_replay_internal (cairo_surface_t	     *surface,
 	    if (has_device_transform) {
 		cairo_matrix_multiply (&dev_ctm, &dev_ctm, device_transform);
 		cairo_matrix_multiply (&dev_ctm_inverse,
-				       &surface->device_transform_inverse,
+				       &target->device_transform_inverse,
 				       &dev_ctm_inverse);
 	    }
 

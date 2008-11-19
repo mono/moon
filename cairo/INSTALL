@@ -160,6 +160,7 @@ order to compile cairo. Specifically, you need the following utilities:
 	autoheader
 	aclocal
 	libtoolize
+	pkg-config [at least version 0.16]
 	gtk-doc (recommended)
 
 Hopefully your platform of choice has packages readily available so

@@ -139,7 +139,9 @@ main (void)
     cairo_test_init (&ctx, "multi-page");
 
 #if CAIRO_HAS_PS_SURFACE
-    if (cairo_test_is_target_enabled (&ctx, "ps")) {
+    if (cairo_test_is_target_enabled (&ctx, "ps2") ||
+        cairo_test_is_target_enabled (&ctx, "ps3"))
+    {
 	if (result == CAIRO_TEST_UNTESTED)
 	    result = CAIRO_TEST_SUCCESS;
 

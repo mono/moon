@@ -243,7 +243,9 @@ main (void)
     cairo_test_init (&ctx, test_name);
 
 #if CAIRO_HAS_PS_SURFACE
-    if (cairo_test_is_target_enabled (&ctx, "ps")) {
+    if (cairo_test_is_target_enabled (&ctx, "ps2") ||
+	cairo_test_is_target_enabled (&ctx, "ps3"))
+    {
 	if (status == CAIRO_TEST_UNTESTED)
 	    status = CAIRO_TEST_SUCCESS;
 
@@ -275,7 +277,9 @@ main (void)
 #endif
 
 #if CAIRO_HAS_SVG_SURFACE
-    if (cairo_test_is_target_enabled (&ctx, "svg")) {
+    if (cairo_test_is_target_enabled (&ctx, "svg11") ||
+	cairo_test_is_target_enabled (&ctx, "svg12"))
+    {
 	if (status == CAIRO_TEST_UNTESTED)
 	    status = CAIRO_TEST_SUCCESS;
 

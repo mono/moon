@@ -1303,7 +1303,10 @@ _cairo_pdf_operators_emit_cluster (cairo_pdf_operators_t      *pdf_operators,
 
     /* Fallback to using ActualText to map zero or more glyphs to a
      * unicode string. */
-    _cairo_pdf_operators_flush_glyphs (pdf_operators);
+    status = _cairo_pdf_operators_flush_glyphs (pdf_operators);
+    if (status)
+	return status;
+
     status = _cairo_pdf_operators_begin_actualtext (pdf_operators, utf8, utf8_len);
     if (status)
 	return status;
@@ -1367,7 +1370,9 @@ _cairo_pdf_operators_show_text_glyphs (cairo_pdf_operators_t	  *pdf_operators,
 
     pdf_operators->is_new_text_object = FALSE;
     if (pdf_operators->in_text_object == FALSE) {
-	_cairo_pdf_operators_begin_text (pdf_operators);
+	status = _cairo_pdf_operators_begin_text (pdf_operators);
+	if (status)
+	    return status;
 
 	/* Force Tm and Tf to be emitted when starting a new text
 	 * object.*/
@@ -1386,7 +1391,10 @@ _cairo_pdf_operators_show_text_glyphs (cairo_pdf_operators_t	  *pdf_operators,
     if (pdf_operators->is_new_text_object ||
 	! _cairo_matrix_scale_equal (&pdf_operators->text_matrix, &text_matrix))
     {
-	_cairo_pdf_operators_flush_glyphs (pdf_operators);
+	status = _cairo_pdf_operators_flush_glyphs (pdf_operators);
+	if (status)
+	    return status;
+
 	x = glyphs[0].x;
 	y = glyphs[0].y;
 	cairo_matrix_transform_point (&pdf_operators->cairo_to_pdf, &x, &y);
