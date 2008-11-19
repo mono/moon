@@ -167,9 +167,9 @@ dependency_property_g_init (void)
 	FrameworkElement::VerticalAlignmentProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "VerticalAlignment", new Value (VerticalAlignmentStretch));
 #endif
 	FrameworkElement::WidthProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Width", new Value (0.0));
-	Geometry::FillRuleProperty = DependencyProperty::Register (Type::GEOMETRY, "FillRule", new Value (FillRuleEvenOdd));
 	Geometry::TransformProperty = DependencyProperty::Register (Type::GEOMETRY, "Transform", Type::TRANSFORM);
 	GeometryGroup::ChildrenProperty = DependencyProperty::Register (Type::GEOMETRYGROUP, "Children", Type::GEOMETRY_COLLECTION);
+	GeometryGroup::FillRuleProperty = DependencyProperty::Register (Type::GEOMETRYGROUP, "FillRule", new Value (FillRuleEvenOdd));
 	Glyphs::FillProperty = DependencyProperty::Register (Type::GLYPHS, "Fill", Type::BRUSH);
 	Glyphs::FontRenderingEmSizeProperty = DependencyProperty::Register (Type::GLYPHS, "FontRenderingEmSize", new Value (0.0));
 	Glyphs::FontUriProperty = DependencyProperty::Register (Type::GLYPHS, "FontUri", Type::STRING);
@@ -273,6 +273,7 @@ dependency_property_g_init (void)
 	PathFigure::SegmentsProperty = DependencyProperty::Register (Type::PATHFIGURE, "Segments", Type::PATHSEGMENT_COLLECTION);
 	PathFigure::StartPointProperty = DependencyProperty::Register (Type::PATHFIGURE, "StartPoint", Type::POINT);
 	PathGeometry::FiguresProperty = DependencyProperty::Register (Type::PATHGEOMETRY, "Figures", Type::PATHFIGURE_COLLECTION);
+	PathGeometry::FillRuleProperty = DependencyProperty::Register (Type::PATHGEOMETRY, "FillRule", new Value (FillRuleEvenOdd));
 	PointAnimation::ByProperty = DependencyProperty::RegisterNullable (Type::POINTANIMATION, "By", Type::POINT);
 	PointAnimation::FromProperty = DependencyProperty::RegisterNullable (Type::POINTANIMATION, "From", Type::POINT);
 	PointAnimation::ToProperty = DependencyProperty::RegisterNullable (Type::POINTANIMATION, "To", Type::POINT);
@@ -530,9 +531,9 @@ DependencyProperty *FrameworkElement::StyleProperty = NULL;
 DependencyProperty *FrameworkElement::VerticalAlignmentProperty = NULL;
 #endif
 DependencyProperty *FrameworkElement::WidthProperty = NULL;
-DependencyProperty *Geometry::FillRuleProperty = NULL;
 DependencyProperty *Geometry::TransformProperty = NULL;
 DependencyProperty *GeometryGroup::ChildrenProperty = NULL;
+DependencyProperty *GeometryGroup::FillRuleProperty = NULL;
 DependencyProperty *Glyphs::FillProperty = NULL;
 DependencyProperty *Glyphs::FontRenderingEmSizeProperty = NULL;
 DependencyProperty *Glyphs::FontUriProperty = NULL;
@@ -636,6 +637,7 @@ DependencyProperty *PathFigure::IsFilledProperty = NULL;
 DependencyProperty *PathFigure::SegmentsProperty = NULL;
 DependencyProperty *PathFigure::StartPointProperty = NULL;
 DependencyProperty *PathGeometry::FiguresProperty = NULL;
+DependencyProperty *PathGeometry::FillRuleProperty = NULL;
 DependencyProperty *PointAnimation::ByProperty = NULL;
 DependencyProperty *PointAnimation::FromProperty = NULL;
 DependencyProperty *PointAnimation::ToProperty = NULL;
@@ -1936,19 +1938,6 @@ FrameworkElement::SetWidth (double value)
 	SetValue (FrameworkElement::WidthProperty, Value (value));
 }
 
-FillRule
-Geometry::GetFillRule ()
-{
-	Value *value = GetValue (Geometry::FillRuleProperty);
-	return (FillRule) value->AsInt32 ();
-}
-
-void
-Geometry::SetFillRule (FillRule value)
-{
-	SetValue (Geometry::FillRuleProperty, Value (value));
-}
-
 Transform *
 Geometry::GetTransform ()
 {
@@ -1973,6 +1962,19 @@ void
 GeometryGroup::SetChildren (GeometryCollection * value)
 {
 	SetValue (GeometryGroup::ChildrenProperty, Value (value));
+}
+
+FillRule
+GeometryGroup::GetFillRule ()
+{
+	Value *value = GetValue (GeometryGroup::FillRuleProperty);
+	return (FillRule) value->AsInt32 ();
+}
+
+void
+GeometryGroup::SetFillRule (FillRule value)
+{
+	SetValue (GeometryGroup::FillRuleProperty, Value (value));
 }
 
 double
@@ -3180,6 +3182,19 @@ void
 PathGeometry::SetFigures (PathFigureCollection * value)
 {
 	SetValue (PathGeometry::FiguresProperty, Value (value));
+}
+
+FillRule
+PathGeometry::GetFillRule ()
+{
+	Value *value = GetValue (PathGeometry::FillRuleProperty);
+	return (FillRule) value->AsInt32 ();
+}
+
+void
+PathGeometry::SetFillRule (FillRule value)
+{
+	SetValue (PathGeometry::FillRuleProperty, Value (value));
 }
 
 Point *

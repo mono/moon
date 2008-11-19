@@ -52,12 +52,10 @@ class Geometry : public DependencyObject {
 	virtual Rect ComputePathBounds ();
 	
  public:
- 	/* @PropertyType=FillRule,DefaultValue=FillRuleEvenOdd,Access=Internal,GenerateAccessors */
-	static DependencyProperty *FillRuleProperty;
  	/* @PropertyType=Transform,GenerateAccessors */
 	static DependencyProperty *TransformProperty;
 
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	Geometry () : path (NULL) { local_bounds = Rect (0,0, -INFINITY, -INFINITY); }
 	
 	virtual Type::Kind GetObjectType () { return Type::GEOMETRY; }
@@ -80,8 +78,7 @@ class Geometry : public DependencyObject {
 	//
 	// Property Accessors
 	//
-	void SetFillRule (FillRule rule);
-	FillRule GetFillRule ();
+	virtual FillRule GetFillRule () { return FillRuleNonzero; };
 	
 	void SetTransform (Transform *transform);
 	Transform *GetTransform ();
@@ -116,6 +113,8 @@ class GeometryGroup : public Geometry {
 	virtual Rect ComputePathBounds ();
 
  public:
+ 	/* @PropertyType=FillRule,DefaultValue=FillRuleEvenOdd,GenerateAccessors */
+	static DependencyProperty *FillRuleProperty;
  	/* @PropertyType=GeometryCollection,GenerateAccessors */
 	static DependencyProperty *ChildrenProperty;
 	
@@ -132,6 +131,9 @@ class GeometryGroup : public Geometry {
 	//
 	// Property Accessors
 	//
+	void SetFillRule (FillRule rule);
+	virtual FillRule GetFillRule ();
+	
 	void SetChildren (GeometryCollection *children);
 	GeometryCollection *GetChildren ();
 };
@@ -238,6 +240,8 @@ class PathGeometry : public Geometry {
 	virtual Rect ComputePathBounds ();
 	
  public:
+ 	/* @PropertyType=FillRule,DefaultValue=FillRuleEvenOdd,GenerateAccessors */
+	static DependencyProperty *FillRuleProperty;
  	/* @PropertyType=PathFigureCollection,GenerateAccessors */
 	static DependencyProperty *FiguresProperty;
 	
@@ -256,6 +260,9 @@ class PathGeometry : public Geometry {
 	//
 	// Property Accessors
 	//
+	void SetFillRule (FillRule rule);
+	virtual FillRule GetFillRule ();
+	
 	void SetFigures (PathFigureCollection *figures);
 	PathFigureCollection *GetFigures ();
 };
@@ -380,7 +387,7 @@ class PathSegment : public DependencyObject {
 	virtual ~PathSegment () {}
 	
  public:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	PathSegment () {}
 	
 	virtual Type::Kind GetObjectType () { return Type::PATHSEGMENT; }

@@ -349,13 +349,13 @@ namespace System.Windows.Media {
 	}
 
 	partial class GeneralTransform {
-		protected GeneralTransform () : base (NativeMethods.general_transform_new ()) {}
+		internal GeneralTransform () : base (NativeMethods.general_transform_new ()) {}
 		internal GeneralTransform (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.GENERALTRANSFORM; }
 	}
 
 	partial class Geometry {
-		protected Geometry () : base (NativeMethods.geometry_new ()) {}
+		internal Geometry () : base (NativeMethods.geometry_new ()) {}
 		internal Geometry (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.GEOMETRY; }
 	}
@@ -445,7 +445,7 @@ namespace System.Windows.Media {
 	}
 
 	partial class PathSegment {
-		protected PathSegment () : base (NativeMethods.path_segment_new ()) {}
+		internal PathSegment () : base (NativeMethods.path_segment_new ()) {}
 		internal PathSegment (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.PATHSEGMENT; }
 	}
@@ -541,7 +541,7 @@ namespace System.Windows.Media {
 	}
 
 	partial class Transform {
-		protected Transform () : base (NativeMethods.transform_new ()) {}
+		internal Transform () : base (NativeMethods.transform_new ()) {}
 		internal Transform (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.TRANSFORM; }
 	}

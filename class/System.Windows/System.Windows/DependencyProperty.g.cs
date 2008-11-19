@@ -1131,13 +1131,7 @@ namespace System.Windows.Media {
 	}
 
 	partial class Geometry {
-		internal static readonly DependencyProperty FillRuleProperty = DependencyProperty.Lookup (Kind.GEOMETRY, "FillRule", typeof (FillRule));
 		public static readonly DependencyProperty TransformProperty = DependencyProperty.Lookup (Kind.GEOMETRY, "Transform", typeof (Transform));
-
-		internal FillRule FillRule {
-			get { return (FillRule) GetValue (FillRuleProperty); }
-			set { SetValue (FillRuleProperty, value); }
-		}
 
 		public Transform Transform {
 			get { return (Transform) GetValue (TransformProperty); }
@@ -1147,10 +1141,16 @@ namespace System.Windows.Media {
 
 	partial class GeometryGroup {
 		public static readonly DependencyProperty ChildrenProperty = DependencyProperty.Lookup (Kind.GEOMETRYGROUP, "Children", typeof (GeometryCollection));
+		public static readonly DependencyProperty FillRuleProperty = DependencyProperty.Lookup (Kind.GEOMETRYGROUP, "FillRule", typeof (FillRule));
 
 		public GeometryCollection Children {
 			get { return (GeometryCollection) GetValue (ChildrenProperty); }
 			set { SetValue (ChildrenProperty, value); }
+		}
+
+		public FillRule FillRule {
+			get { return (FillRule) GetValue (FillRuleProperty); }
+			set { SetValue (FillRuleProperty, value); }
 		}
 	}
 
@@ -1288,10 +1288,16 @@ namespace System.Windows.Media {
 
 	partial class PathGeometry {
 		public static readonly DependencyProperty FiguresProperty = DependencyProperty.Lookup (Kind.PATHGEOMETRY, "Figures", typeof (PathFigureCollection));
+		public static readonly DependencyProperty FillRuleProperty = DependencyProperty.Lookup (Kind.PATHGEOMETRY, "FillRule", typeof (FillRule));
 
 		public PathFigureCollection Figures {
 			get { return (PathFigureCollection) GetValue (FiguresProperty); }
 			set { SetValue (FiguresProperty, value); }
+		}
+
+		public FillRule FillRule {
+			get { return (FillRule) GetValue (FillRuleProperty); }
+			set { SetValue (FillRuleProperty, value); }
 		}
 	}
 

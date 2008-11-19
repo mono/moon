@@ -30,7 +30,7 @@ class GeneralTransform : public DependencyObject {
 	void MaybeUpdateTransform ();
 	
  public:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	GeneralTransform () : need_update (true) { }
 	
 	virtual Type::Kind GetObjectType () { return Type::GENERALTRANSFORM; }
@@ -49,7 +49,7 @@ protected:
 	virtual ~Transform () {}
 
 public:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	Transform () { }
 	
 	virtual Type::Kind GetObjectType () { return Type::TRANSFORM; }

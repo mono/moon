@@ -1,3 +1,8 @@
+2008-11-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* ImageSource.cs, SolidColorBrush.cs, TimelineMarkerRoutedEventArgs.cs:
+	  Corcompare.
+
 2008-11-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* CompositionTarget.cs, LicenseAcquirer.cs, RenderingEventArgs.cs,

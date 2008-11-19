@@ -35,9 +35,9 @@ namespace System.Windows.Media {
 		private StreamWrapper wrapper;
 		private ManagedStreamCallbacks callbacks;
 
-		[MonoTODO ("this should use ': base (NativeMethods.image_source_new())'")]
-		protected ImageSource ()
+		internal ImageSource ()
 		{
+			// Can this ctor be deleted?
 		}
 
 		internal ImageSource (IntPtr native) : base (native)

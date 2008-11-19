@@ -47,9 +47,7 @@ namespace System.Windows.Media
 		}
 		
 		public TimelineMarker Marker {
-			[SecuritySafeCritical]
 			get { return marker; }
-			[SecuritySafeCritical]
 			set { marker = value; }
 		}
 	}

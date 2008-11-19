@@ -1,3 +1,9 @@
+2008-11-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* dependencyproperty.g.cpp, transform.h: Corcompare.
+	* geometry.h: Move FillRule from Geometry to
+	  PathGeometry/GeometryGroup.
+
 2008-11-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	* expression.h, binding.cpp|h: added to the build
