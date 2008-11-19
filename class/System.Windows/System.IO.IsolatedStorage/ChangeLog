@@ -1,3 +1,8 @@
+2008-11-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* IsolatedStorageSettings.cs: Fix IDictionary.Contains wrt null values
+	since it now behaves differently than Dictionary<T,K>. Fix failure
+
 2008-11-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* IsolatedStorageSettings.cs: Added comment about corcompare issue.

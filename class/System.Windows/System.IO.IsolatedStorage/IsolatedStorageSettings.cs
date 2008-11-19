@@ -255,7 +255,10 @@ namespace System.IO.IsolatedStorage {
 
 		bool IDictionary.Contains (object key)
 		{
-			return settings.ContainsKey (ExtractKey (key));
+			string skey = ExtractKey (key);
+			if (skey == null)
+				return false;
+			return settings.ContainsKey (skey);
 		}
 
 		object IDictionary.this [object key] {
