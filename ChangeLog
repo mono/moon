@@ -1,3 +1,7 @@
+2008-11-19  Sebastien Pouliot <sebastien@ximian.com>
+
+	* configure.ac: Use -fstack-protector-all when compiling with GCC
+
 2008-11-19  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* cairo/: update cairo to 1.8,4

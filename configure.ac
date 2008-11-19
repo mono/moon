@@ -36,6 +36,12 @@ dnl Pthread checks
 dnl
 PTHREAD_CHECK()
 
+dnl add -fstack-protector-all when compiling with gcc
+if test "x$GCC" = "xyes" ; then
+	CFLAGS="-fstack-protector-all $CFLAGS"
+	CXXFLAGS="-fstack-protector-all $CXXFLAGS"
+fi
+
 dnl
 dnl Pipeline checks
 dnl
