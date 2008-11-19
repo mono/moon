@@ -88,7 +88,7 @@ static bool move_to_next_test ();
 static void request_test_runner_shutdown ();
 static void signal_test_complete (const char* test_name, bool successful);
 static bool wait_for_next_test (int* timeout);
-static void mark_test_as_complete_and_start_next_test (bool successful);
+static void mark_test_as_complete_and_start_next_test (gboolean successful);
 static void log_message (const char* test_name, const char* message);
 static void log_output (const char* test_name, const char* message, const char* level);
 static void set_current_dir (const char* test_path);
@@ -300,7 +300,7 @@ move_to_next_test ()
 }
 
 static void
-mark_test_as_complete_and_start_next_test (bool successful)
+mark_test_as_complete_and_start_next_test (gboolean successful)
 {
 	DBusGProxy* dbus_proxy;
 	DBusGConnection* connection;
@@ -320,7 +320,7 @@ mark_test_as_complete_and_start_next_test (bool successful)
 			DRT_RUNNER_INTERFACE);
 
 	int timeout;
-	bool available;
+	gboolean available;
 	char* test_name = g_path_get_basename (test_path);
 
 	g_free (test_path);
@@ -496,7 +496,7 @@ wait_for_next_test (int *timeout)
 		test_path = NULL;
 	}
 
-	bool available;
+	gboolean available;
 	if (!dbus_g_proxy_call (dbus_proxy, "GetNextTest", &error,
 			G_TYPE_INVALID,
 			G_TYPE_BOOLEAN, &available,

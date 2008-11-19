@@ -1,3 +1,9 @@
+2008-11-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* agviewer/agviewer.cpp: Don't mix one byte bool with four bytes
+	gboolean.
+	r: jackson
+
 2008-11-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* shocker/input.cpp: Fix typo.
