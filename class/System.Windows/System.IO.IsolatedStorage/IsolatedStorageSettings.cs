@@ -134,6 +134,7 @@ namespace System.IO.IsolatedStorage {
 			settings.Add (key, value);
 		}
 
+		// This method is emitted as virtual due to: https://bugzilla.novell.com/show_bug.cgi?id=446507
 		public void Clear ()
 		{
 			settings.Clear ();
