@@ -1,3 +1,10 @@
+2008-11-19  Geoff Norton  <gnorton@novell.com>
+
+	* configure.ac: Don't link our plugin against unnecessary things.
+	Saves about .5MB in our uncompressed disk profile.
+
+	r: toshok
+
 2008-11-13 Rusty Howell <rhowell@novell.com>
 
 	* configure.ac: ac_subst for install.rdf  r:toshok

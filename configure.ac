@@ -592,11 +592,8 @@ MOON_PROG_LIBS="$GTK_LIBS $FFMPEG_LIBS \$(top_builddir)/src/libmoon.la"
 AC_SUBST(MOON_PROG_CFLAGS)
 AC_SUBST(MOON_PROG_LIBS)
 
-PLUGIN_CFLAGS="$MOON_CFLAGS -DPLUGIN_DIR=\\\"\$(pkglibdir)\\\""
-PLUGIN_LIBS="$MOON_LIBS"
-
-# Remove glitz from the link flags (fixes Bug 338506)
-PLUGIN_LIBS="$(echo $PLUGIN_LIBS | sed -e s/-lglitz//g)"
+PLUGIN_CFLAGS="$GTK_CFLAGS $MONO_CFLAGS -DPLUGIN_DIR=\\\"\$(pkglibdir)\\\""
+PLUGIN_LIBS="$GTK_LIBS $MONO_LIBS"
 
 AC_SUBST(PLUGIN_CFLAGS)
 AC_SUBST(PLUGIN_LIBS)
