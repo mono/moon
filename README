@@ -77,6 +77,14 @@ Licensing
 	systems or other systems where the end-user can not upgrade
 	the LGPL code on his own.
 
+	The C# tests in test/2.0/Microsoft.Silverlight.Testing are
+	copyrighted by Microsoft and released by them under the 
+	open source MS-PL license.
+	
+	The C# controls in class/Microsoft.SilverlightControls/ are
+	copyrighted by Microsoft and released by them under the 
+	open source MS-PL license.
+
 Technical Details
 =================
 
