@@ -1,6 +1,11 @@
 #!/bin/sh
 EXEC="exec "
 
+if test x$1 = x--uninstalled; then
+   UNINSTALLED="yes"
+   shift
+fi
+
 if test x$1 = x--debug; then
    DEBUG=--debug
    shift
@@ -17,4 +22,8 @@ if test x$1 = x--valgrind; then
 fi
 
 
-$EXEC mono $DEBUG $MONO_OPTIONS @moondir@/@TOOL@ $@
+if [ "$UNINSTALLED" == "yes" ]; then
+	$EXEC mono $DEBUG $MONO_OPTIONS @TOOL@ $@
+else
+	$EXEC mono $DEBUG $MONO_OPTIONS @moondir@/@TOOL@ $@
+fi

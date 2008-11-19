@@ -11,7 +11,7 @@ example-calculator: Makefile
 	chmod +x example-calculator
 
 calculator.xap: calculator.cs default.xaml App.xaml
-	mono ../../../tools/mxap/mxap.exe --desktop --entry-point-type=Desklet.Calculator.App
+	PATH="../../../tools/xamlg/:../../../tools/respack/:$$PATH" MONO_PATH="../../../tools/xamlg/:../../../tools/respack/:$$MONO_PATH" mono ../../../tools/mxap/mxap.exe --tool-options="--uninstalled" --desktop --entry-point-type=Desklet.Calculator.App
 
 CLEANFILES =			\
 	example-calculator	\
