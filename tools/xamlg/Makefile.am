@@ -22,7 +22,7 @@ xamlg: $(srcdir)/../launcher.in Makefile
 	$(do_subst) < $(srcdir)/../launcher.in > xamlg
 	chmod +x xamlg
 
-do_subst = sed -e 's,[@]moondir[@],$(moondir),g' -e 's,[@]VERSION[@],$(VERSION),g' -e 's,[@]TOOL[@],xamlg.exe,g'
+do_subst = sed -e 's,[@]moondir[@],$(moondir),g' -e 's,[@]VERSION[@],$(VERSION),g' -e 's,[@]TOOL[@],xamlg.exe,g' -e 's,[@]PWD[@],$(abs_srcdir),g'
 
 run:
 	mono --debug xamlg.exe

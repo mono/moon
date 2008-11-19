@@ -23,7 +23,7 @@ fi
 
 
 if [ "$UNINSTALLED" == "yes" ]; then
-	$EXEC mono $DEBUG $MONO_OPTIONS @TOOL@ $@
+	$EXEC mono $DEBUG $MONO_OPTIONS @PWD@/@TOOL@ $@
 else
 	$EXEC mono $DEBUG $MONO_OPTIONS @moondir@/@TOOL@ $@
 fi

@@ -173,6 +173,8 @@ namespace Moonlight {
 		{
 			StringBuilder respack_args = new StringBuilder ();
 
+			if (ToolOptions != null)
+				respack_args.AppendFormat (" {0} ", ToolOptions);
 			respack_args.AppendFormat ("{0}.g.resources ", ApplicationName);
 
 			foreach (string xaml_file in XamlFiles) {
