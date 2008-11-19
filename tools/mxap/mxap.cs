@@ -22,14 +22,8 @@ namespace Moonlight {
 		private int result;
 		private string entry_point_type = null;
 		private string cs_sources;
-		private string tool_options;
 
 		const string RuntimeVersion = "2.0.31005.0";
-
-		public string ToolOptions {
-			get {return tool_options; }
-			set { tool_options = value; }
-		}
 
 		public string CSSources {
 			get { return cs_sources; }
@@ -156,8 +150,6 @@ namespace Moonlight {
 		{
 			StringBuilder xamlg_args = new StringBuilder ();
 
-			if (ToolOptions != null)
-				xamlg_args.AppendFormat (" {0} ", ToolOptions);
 			xamlg_args.AppendFormat (" -sl2app:{0} ", ApplicationName);
 
 			foreach (string xaml_file in XamlFiles) {
@@ -173,8 +165,6 @@ namespace Moonlight {
 		{
 			StringBuilder respack_args = new StringBuilder ();
 
-			if (ToolOptions != null)
-				respack_args.AppendFormat (" {0} ", ToolOptions);
 			respack_args.AppendFormat ("{0}.g.resources ", ApplicationName);
 
 			foreach (string xaml_file in XamlFiles) {
@@ -291,8 +281,7 @@ namespace Moonlight {
 				{ "generate-manifest", v => mxap.GenerateManifest = v != null },
 				{ "entry-point-type=", v => mxap.EntryPointType = v },
 				{ "cs-sources=", v => mxap.CSSources = v },
-				{ "desktop", v => mxap.Desktop = v != null },
-				{ "tool-options=", v => mxap.ToolOptions = v }
+				{ "desktop", v => mxap.Desktop = v != null }
 			};
 
 			List<string> extra = null;
