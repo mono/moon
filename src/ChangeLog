@@ -1,5 +1,9 @@
 2008-11-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* geometry.cpp: Fix breakage in r119300.
+
+2008-11-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* dependencyproperty.g.cpp, transform.h: Corcompare.
 	* geometry.h: Move FillRule from Geometry to
 	  PathGeometry/GeometryGroup.
