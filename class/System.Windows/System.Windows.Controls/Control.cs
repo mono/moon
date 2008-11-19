@@ -43,13 +43,11 @@ namespace System.Windows.Controls {
 			set { /* nothing yet */; }
 		}
 
-		[SecuritySafeCritical]
 		public bool ApplyTemplate()
 		{
 			return NativeMethods.control_apply_template (native);
 		}
 		
-		[SecuritySafeCritical]
 		public bool Focus()
 		{
 			return NativeMethods.surface_focus_element (Application.s_surface, native);

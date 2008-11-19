@@ -50,20 +50,22 @@ namespace System.Windows.Controls {
 		
 		public static readonly DependencyProperty StretchProperty =
 			DependencyProperty.Lookup (Kind.MEDIABASE, "Stretch", typeof (Stretch));
-				
-		[SecuritySafeCritical]
+
+		public LicenseAcquirer LicenseAcquirer {
+			get { throw new NotImplementedException (); }
+			set { throw new NotImplementedException (); }
+		}
+		
 		public void Pause ()
 		{
 			NativeMethods.media_element_pause (native);
 		}
 		
-		[SecuritySafeCritical]
 		public void Play ()
 		{
 			NativeMethods.media_element_play (native);
 		}
 		
-		[SecuritySafeCritical]
 		public void SetSource (Stream stream)
 		{
 			if (stream != null) {
@@ -78,13 +80,11 @@ namespace System.Windows.Controls {
 			}
 		}
 		
-		[SecuritySafeCritical]
 		public void SetSource (MediaStreamSource mediaStreamSource)
 		{
 			Console.WriteLine ("WARNING: MediaElement.SetSource(MediaStreamSource) is unimplemented");
 		}
 		
-		[SecuritySafeCritical]
 		public void Stop ()
 		{
 			NativeMethods.media_element_stop (native);

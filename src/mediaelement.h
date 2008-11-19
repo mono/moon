@@ -196,6 +196,12 @@ class MediaElement : public MediaBase {
  	/* @PropertyType=double,DefaultValue=0.5,GenerateAccessors */
 	static DependencyProperty *VolumeProperty;
 
+ 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors,ReadOnly */
+	static DependencyProperty *DownloadProgressOffsetProperty;
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors,ReadOnly */
+	static DependencyProperty *DroppedFramesPerSecondProperty;
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors,ReadOnly */
+	static DependencyProperty *RenderedFramesPerSecondProperty;
 	
 	// events
 	const static int BufferingProgressChangedEvent;
@@ -327,6 +333,15 @@ class MediaElement : public MediaBase {
 	
 	void SetVolume (double volume);
 	double GetVolume ();
+
+	void SetDownloadProgressOffset (double value);
+	double GetDownloadProgressOffset ();
+
+	void SetRenderedFramesPerSecond (double value);
+	double GetRenderedFramesPerSecond ();
+
+	void SetDroppedFramesPerSecond (double value);
+	double GetDroppedFramesPerSecond ();
 };
 
 #endif /* __MEDIAELEMENT_H__ */

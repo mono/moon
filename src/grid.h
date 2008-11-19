@@ -113,7 +113,7 @@ class ColumnDefinitionCollection : public DependencyObjectCollection {
 	virtual ~ColumnDefinitionCollection () {}
 	
  public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	ColumnDefinitionCollection () {}
 	
 	virtual Type::Kind GetObjectType ()  { return Type::COLUMNDEFINITION_COLLECTION; }

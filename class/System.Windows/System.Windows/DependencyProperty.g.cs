@@ -486,12 +486,15 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty CanPauseProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "CanPause", typeof (bool));
 		public static readonly DependencyProperty CanSeekProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "CanSeek", typeof (bool));
 		public static readonly DependencyProperty CurrentStateProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "CurrentState", typeof (MediaElementState));
+		public static readonly DependencyProperty DownloadProgressOffsetProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "DownloadProgressOffset", typeof (double));
+		public static readonly DependencyProperty DroppedFramesPerSecondProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "DroppedFramesPerSecond", typeof (double));
 		public static readonly DependencyProperty IsMutedProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "IsMuted", typeof (bool));
 		internal static readonly DependencyProperty MarkersProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Markers", typeof (TimelineMarkerCollection));
 		public static readonly DependencyProperty NaturalDurationProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "NaturalDuration", typeof (Duration));
 		public static readonly DependencyProperty NaturalVideoHeightProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "NaturalVideoHeight", typeof (double));
 		public static readonly DependencyProperty NaturalVideoWidthProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "NaturalVideoWidth", typeof (double));
 		public static readonly DependencyProperty PositionProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Position", typeof (TimeSpan));
+		public static readonly DependencyProperty RenderedFramesPerSecondProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "RenderedFramesPerSecond", typeof (double));
 		public static readonly DependencyProperty VolumeProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Volume", typeof (double));
 
 		public Dictionary<string,string> Attributes {
@@ -539,6 +542,14 @@ namespace System.Windows.Controls {
 			get { return (MediaElementState) GetValue (CurrentStateProperty); }
 		}
 
+		public double DownloadProgressOffset {
+			get { return (double) GetValue (DownloadProgressOffsetProperty); }
+		}
+
+		public double DroppedFramesPerSecond {
+			get { return (double) GetValue (DroppedFramesPerSecondProperty); }
+		}
+
 		public bool IsMuted {
 			get { return (bool) GetValue (IsMutedProperty); }
 			set { SetValue (IsMutedProperty, value); }
@@ -564,6 +575,10 @@ namespace System.Windows.Controls {
 		public TimeSpan Position {
 			get { return (TimeSpan) GetValue (PositionProperty); }
 			set { SetValue (PositionProperty, value); }
+		}
+
+		public double RenderedFramesPerSecond {
+			get { return (double) GetValue (RenderedFramesPerSecondProperty); }
 		}
 
 		public double Volume {

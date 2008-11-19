@@ -149,7 +149,7 @@ namespace System.Windows.Controls {
 	}
 
 	partial class ColumnDefinitionCollection {
-		public ColumnDefinitionCollection () : base (NativeMethods.column_definition_collection_new ()) {}
+		internal ColumnDefinitionCollection () : base (NativeMethods.column_definition_collection_new ()) {}
 		internal ColumnDefinitionCollection (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.COLUMNDEFINITION_COLLECTION; }
 	}
