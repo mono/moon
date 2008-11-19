@@ -1,5 +1,10 @@
 2008-11-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* cbinding.cpp, cbinding.h, dependencyproperty.g.cpp, text.h, type.h,
+	  type-generated.cpp, value.h: Added InputMethod.
+
+2008-11-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* geometry.cpp: Fix breakage in r119300.
 
 2008-11-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 

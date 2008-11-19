@@ -29,7 +29,6 @@ namespace System.Windows.Input
 			get { throw new NotImplementedException (); }
 		}
 		
-		[SecuritySafeCritical ()]
 		public StylusPointCollection GetStylusPoints (UIElement relativeTo)
 		{
 			IntPtr col = NativeMethods.mouse_event_args_get_stylus_points (mouse_event_args.native, relativeTo == null ? IntPtr.Zero : relativeTo.native);

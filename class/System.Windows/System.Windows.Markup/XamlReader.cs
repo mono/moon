@@ -28,6 +28,8 @@
 //
 
 using System;
+using System.ComponentModel;
+using System.Security;
 using System.Windows.Interop;
 using Mono.Xaml;
 
@@ -40,6 +42,13 @@ namespace System.Windows.Markup
 			XamlLoader loader = XamlLoader.CreateManagedXamlLoader (Application.s_surface, PluginHost.Handle);
 			
 			return loader.CreateDependencyObjectFromString (xaml, false);
+		}
+
+		[EditorBrowsable (EditorBrowsableState.Never)]
+		[SecurityCritical ()]
+		public static object LoadWithInitialTemplateValidation (string xaml)
+		{
+			throw new NotImplementedException ();
 		}
 	}
 }

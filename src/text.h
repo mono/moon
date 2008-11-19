@@ -406,4 +406,20 @@ class Glyphs : public FrameworkElement {
 	const char *GetUnicodeString ();
 };
 
+/* @Namespace=System.Windows.Input */
+class InputMethod : public DependencyObject {
+
+ protected:
+	virtual ~InputMethod () {}
+	
+ public:
+ 	/* @ManagedAccess=Internal,GeneratePInvoke,GenerateCBinding */
+	InputMethod () {}
+
+ 	/* @PropertyType=bool,Attached */
+	static DependencyProperty *IsInputMethodEnabledProperty;
+	
+	virtual Type::Kind GetObjectType () { return Type::INPUTMETHOD; };
+};
+
 #endif /* __TEXT_H__ */

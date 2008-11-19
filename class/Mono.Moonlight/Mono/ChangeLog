@@ -1,3 +1,7 @@
+2008-11-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* GeneratedPInvokes.cs, Kind.cs, Types.g.cs: Added InputMethod.
+
 2008-11-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Types.g.cs: More corcompare work.

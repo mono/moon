@@ -112,6 +112,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.STROKE));
 				t = agclr.GetType ("System.Windows.Ink.StrokeCollection", true); 
 				types.Add (t, new ManagedType (t, Kind.STROKE_COLLECTION));
+				t = agclr.GetType ("System.Windows.Input.InputMethod", true); 
+				types.Add (t, new ManagedType (t, Kind.INPUTMETHOD));
 				t = agclr.GetType ("System.Windows.Input.StylusPointCollection", true); 
 				types.Add (t, new ManagedType (t, Kind.STYLUSPOINT_COLLECTION));
 				t = agclr.GetType ("System.Windows.Media.ArcSegment", true); 

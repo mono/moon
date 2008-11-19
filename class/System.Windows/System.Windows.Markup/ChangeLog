@@ -1,3 +1,8 @@
+2008-11-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* XamlReader.cs: Added InputMethod, ICommand,
+	  HostingRenderTargetBitmap. Corcompare fixes.
+
 2008-10-30  Jb Evain  <jbevain@novell.com>
 
 	* XmlnsPrefixAttribute.cs: add.

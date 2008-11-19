@@ -26,17 +26,18 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using System.Windows;
+using Mono;
 
 namespace System.Windows.Input {
 
-	public sealed class MouseButtonEventArgs : MouseEventArgs {
+	public sealed class MouseButtonEventArgs : MouseEventArgs {		
 		internal MouseButtonEventArgs (IntPtr raw) : base (raw)
 		{
 		}
 
-		public MouseButtonEventArgs ()
-		{
+		public bool Handled {
+			get { return NativeMethods.routed_event_args_get_handled (native); }
+			set { NativeMethods.routed_event_args_set_handled (native, value); }
 		}
-
 	}
 }

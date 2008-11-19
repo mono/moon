@@ -656,6 +656,12 @@ Inline *inline_new (void);
 InlineCollection *inline_collection_new (void);
 
 /**
+ * InputMethod
+ **/
+/* @GeneratePInvoke */
+InputMethod *input_method_new (void);
+
+/**
  * Keyboard
  **/
 /* @GeneratePInvoke */

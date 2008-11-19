@@ -1283,6 +1283,16 @@ inline_collection_new (void)
 
 
 /**
+ * InputMethod
+ **/
+InputMethod *
+input_method_new (void)
+{
+	return new InputMethod ();
+}
+
+
+/**
  * Keyboard
  **/
 ModifierKeys

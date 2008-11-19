@@ -1027,6 +1027,12 @@ namespace System.Windows.Ink {
 	}
 }
 
+namespace System.Windows.Input {
+	partial class InputMethod {
+		public static readonly DependencyProperty IsInputMethodEnabledProperty = DependencyProperty.Lookup (Kind.INPUTMETHOD, "IsInputMethodEnabled", typeof (bool));
+	}
+}
+
 namespace System.Windows.Media {
 	partial class ArcSegment {
 		public static readonly DependencyProperty IsLargeArcProperty = DependencyProperty.Lookup (Kind.ARCSEGMENT, "IsLargeArc", typeof (bool));

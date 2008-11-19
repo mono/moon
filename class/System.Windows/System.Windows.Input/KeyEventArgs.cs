@@ -36,24 +36,20 @@ namespace System.Windows.Input {
 		{
 		}
 
-		public KeyEventArgs () : base (NativeMethods.key_event_args_new ())
+		internal KeyEventArgs () : base (NativeMethods.key_event_args_new ())
 		{
 		}
 
 		public bool Handled {
-			[SecuritySafeCritical]
 			get { return NativeMethods.routed_event_args_get_handled (native); }
-			[SecuritySafeCritical]
 			set { NativeMethods.routed_event_args_set_handled (native, value); }
 		}
 
 		public Key Key {
-			[SecuritySafeCritical]
 			get { return (Key) NativeMethods.key_event_args_get_key (native); }
 		}
 
 		public int PlatformKeyCode {
-			[SecuritySafeCritical]
 			get { return NativeMethods.key_event_args_get_platform_key_code (native); }
 		}
 	}

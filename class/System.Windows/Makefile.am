@@ -79,6 +79,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Input/Cursor.cs				\
 	$(srcdir)/System.Windows.Input/Cursors.cs				\
 	$(srcdir)/System.Windows.Input/FocusManager.cs				\
+	$(srcdir)/System.Windows.Input/ICommand.cs				\
+	$(srcdir)/System.Windows.Input/InputMethod.cs				\
 	$(srcdir)/System.Windows.Input/KeyboardNavigationMode.cs		\
 	$(srcdir)/System.Windows.Input/ModifierKeys.cs				\
 	$(srcdir)/System.Windows.Input/StylusDevice.cs				\
@@ -94,6 +96,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Input/MouseEventHandler.cs			\
 	$(srcdir)/System.Windows.Interop/BrowserHost.cs				\
 	$(srcdir)/System.Windows.Interop/Content.cs				\
+	$(srcdir)/System.Windows.Interop/HostingRenderTargetBitmap.cs		\
 	$(srcdir)/System.Windows.Interop/Settings.cs				\
 	$(srcdir)/System.Windows.Interop/SilverlightHost.cs			\
 	$(srcdir)/System.Windows.Media.Animation/ClockState.cs			\

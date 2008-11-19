@@ -1,3 +1,8 @@
+2008-11-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Makefile.am, System.Windows.mdp: Added InputMethod, ICommand,
+	  HostingRenderTargetBitmap. Corcompare fixes.
+
 2008-11-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Makefile.am, System.Windows.mdp: Corcompare work.

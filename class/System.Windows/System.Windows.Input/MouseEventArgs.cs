@@ -38,11 +38,6 @@ namespace System.Windows.Input {
 		{
 		}
 
-		public MouseEventArgs () : base (NativeMethods.mouse_event_args_new ())
-		{
-		}
-
-		[SecuritySafeCritical]
 		public Point GetPosition (UIElement relativeTo)
 		{
 			double nx;
@@ -53,6 +48,7 @@ namespace System.Windows.Input {
 			return new Point (nx, ny);
 		}
 
+		[ObsoleteAttribute ("Moved to MouseButtonEventArgs SL 2.0 final, keep until controls have been updated.")]
 		public bool Handled {
 			[SecuritySafeCritical]
 			get { return NativeMethods.routed_event_args_get_handled (native); }

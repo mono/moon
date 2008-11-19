@@ -35,7 +35,6 @@ namespace System.Windows.Input {
 
 	public static class Keyboard {
 		public static ModifierKeys Modifiers {
-			[SecuritySafeCritical]
 			get {
 				return (ModifierKeys)NativeMethods.keyboard_get_modifiers ();
 			}

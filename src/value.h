@@ -111,6 +111,7 @@ class ImageErrorEventArgs;
 class InkPresenter;
 class Inline;
 class InlineCollection;
+class InputMethod;
 class KeyEventArgs;
 class KeyFrame;
 class KeyFrameCollection;
@@ -354,6 +355,7 @@ public:
 	InkPresenter*                  AsInkPresenter () { checked_get_subclass (Type::INKPRESENTER, InkPresenter) }
 	Inline*                        AsInline () { checked_get_subclass (Type::INLINE, Inline) }
 	InlineCollection*              AsInlineCollection () { checked_get_subclass (Type::INLINE_COLLECTION, InlineCollection) }
+	InputMethod*                   AsInputMethod () { checked_get_subclass (Type::INPUTMETHOD, InputMethod) }
 	KeyEventArgs*                  AsKeyEventArgs () { checked_get_subclass (Type::KEYEVENTARGS, KeyEventArgs) }
 	KeyFrame*                      AsKeyFrame () { checked_get_subclass (Type::KEYFRAME, KeyFrame) }
 	KeyFrameCollection*            AsKeyFrameCollection () { checked_get_subclass (Type::KEYFRAME_COLLECTION, KeyFrameCollection) }

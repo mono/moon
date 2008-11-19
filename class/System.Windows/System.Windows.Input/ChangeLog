@@ -1,3 +1,10 @@
+2008-11-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* FocusManager.cs, ICommand.cs, InputMethod.cs, Keyboard.cs,
+	  KeyEventArgs.cs, MouseButtonEventArgs.cs, MouseEventArgs.cs,
+	  StylusDevice.cs: Added InputMethod, ICommand,
+	  HostingRenderTargetBitmap. Corcompare fixes.
+
 2008-11-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* StylusPointCollection.cs: Corcompare work.

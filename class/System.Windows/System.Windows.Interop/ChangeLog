@@ -1,3 +1,8 @@
+2008-11-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* HostingRenderTargetBitmap.cs: Added InputMethod, ICommand,
+	  HostingRenderTargetBitmap. Corcompare fixes.
+
 2008-09-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Content.cs: Don't typecast int into uint when we return doubles.

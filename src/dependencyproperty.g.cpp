@@ -206,6 +206,7 @@ dependency_property_g_init (void)
 	Inline::LanguageProperty = DependencyProperty::Register (Type::INLINE, "Language", new Value ("en-US"));
 #endif
 	Inline::TextDecorationsProperty = DependencyProperty::Register (Type::INLINE, "TextDecorations", new Value (TextDecorationsNone));
+	InputMethod::IsInputMethodEnabledProperty = DependencyProperty::RegisterFull (Type::INPUTMETHOD, "IsInputMethodEnabled", NULL, Type::BOOL, true, false);
 	KeySpline::ControlPoint1Property = DependencyProperty::Register (Type::KEYSPLINE, "ControlPoint1", new Value (Point (0,0)));
 	KeySpline::ControlPoint2Property = DependencyProperty::Register (Type::KEYSPLINE, "ControlPoint2", new Value (Point (1.0, 1.0)));
 	Line::X1Property = DependencyProperty::Register (Type::LINE, "X1", new Value (0.0));
@@ -570,6 +571,7 @@ DependencyProperty *Inline::ForegroundProperty = NULL;
 DependencyProperty *Inline::LanguageProperty = NULL;
 #endif
 DependencyProperty *Inline::TextDecorationsProperty = NULL;
+DependencyProperty *InputMethod::IsInputMethodEnabledProperty = NULL;
 DependencyProperty *KeySpline::ControlPoint1Property = NULL;
 DependencyProperty *KeySpline::ControlPoint2Property = NULL;
 DependencyProperty *Line::X1Property = NULL;

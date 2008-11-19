@@ -304,6 +304,12 @@ namespace System.Windows.Ink {
 }
 
 namespace System.Windows.Input {
+	partial class InputMethod {
+		internal InputMethod () : base (NativeMethods.input_method_new ()) {}
+		internal InputMethod (IntPtr raw) : base (raw) {}
+		internal override Kind GetKind () { return Kind.INPUTMETHOD; }
+	}
+
 	partial class StylusPointCollection {
 		public StylusPointCollection () : base (NativeMethods.stylus_point_collection_new ()) {}
 		internal StylusPointCollection (IntPtr raw) : base (raw) {}
