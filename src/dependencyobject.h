@@ -242,13 +242,6 @@ public:
 	//
 	DependencyObject *GetContent ();
 	DependencyProperty *GetDependencyProperty (const char *name);
-
-	//
-	// Returns true if a value is valid.  If the value is invalid return false.
-	// If error is non NULL and the value is not valid, error will be given an error code and error message that should be
-	// propogated to OnError
-	//
-	virtual bool IsValueValid (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error);
 	
 	bool SetValue (DependencyProperty *property, Value *value);
 	bool SetValue (DependencyProperty *property, Value value);
@@ -355,6 +348,15 @@ public:
 
 protected:
 	virtual ~DependencyObject ();
+	
+	//
+	// Returns true if a value is valid.  If the value is invalid return false.
+	// If error is non NULL and the value is not valid, error will be given an error code and error message that should be
+	// propogated to OnError
+	//
+	virtual bool IsValueValid (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error);
+	
+	virtual bool SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error);
 	
 	void NotifyListenersOfPropertyChange (PropertyChangedEventArgs *args);
 	void NotifyListenersOfPropertyChange (DependencyProperty *property);

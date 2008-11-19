@@ -18,11 +18,19 @@
 #include "trigger.h"
 #include "thickness.h"
 #include "collection.h"
+#include "binding.h"
 
 FrameworkElement::FrameworkElement ()
 {
 	measure_cb = NULL;
 	arrange_cb = NULL;
+	bindings = NULL;
+}
+
+FrameworkElement::~FrameworkElement ()
+{
+	if (bindings)
+		g_hash_table_destroy (bindings);
 }
 
 bool
@@ -35,6 +43,49 @@ FrameworkElement::IsValueValid (Types *additional_types, DependencyProperty *pro
 	return UIElement::IsValueValid (additional_types, property, value, error);
 }
 
+bool
+FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error)
+{
+	BindingExpressionBase *binding;
+	
+	if (value && value->Is (Type::BINDINGEXPRESSIONBASE)) {
+		if (!bindings)
+			bindings = g_hash_table_new (g_direct_hash, g_direct_equal);
+		
+		binding = value->AsBindingExpressionBase ();
+		g_hash_table_insert (bindings, property, binding);
+		binding->ref ();
+		
+		// FIXME: need to attach listeners to appropriate property changes and possibly clear the current value?
+		// ClearValue (property, false);
+		
+		// FIXME: should we also get the value from the binding and then chain up with that value?
+		// value = binding->GetValue ();
+		// return UIElement::SetValueWithErrorImpl (property, value, error);
+		return true;
+	} else {
+		if (bindings && (binding = (BindingExpressionBase *) g_hash_table_lookup (bindings, property))) {
+			switch (binding->GetBinding ()->mode) {
+			case BindingModeOneWay:
+				// DetachAndRemoveTheBinding ();
+				break;
+			case BindingModeOneTime:
+				break;
+			case BindingModeTwoWay:
+				// UpdateTheBindingDataSource ();
+				break;
+			default:
+				break;
+			}
+			
+			g_hash_table_remove (bindings, property);
+			binding->unref ();
+		}
+		
+		return UIElement::SetValueWithErrorImpl (property, value, error);
+	}
+}
+	
 void
 FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 {

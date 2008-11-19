@@ -968,14 +968,11 @@ DependencyObject::SetValueWithError (Types *additional_types, DependencyProperty
 }
 
 bool
-DependencyObject::SetValueWithError (Types *additional_types, DependencyProperty* property, Value* value, MoonError *error)
+DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error)
 {
-	if (!IsValueValid (additional_types, property, value, error))
-		return false;
-
 	Value *current_value = (Value*)g_hash_table_lookup (current_values, property);
 	bool equal = false;
-
+	
 	if (current_value != NULL && value != NULL) {
 		equal = !property->AlwaysChange() && (*current_value == *value);
 	} else {
@@ -1047,6 +1044,15 @@ DependencyObject::SetValueWithError (Types *additional_types, DependencyProperty
 	}
 
 	return true;
+}
+
+bool
+DependencyObject::SetValueWithError (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error)
+{
+	if (!IsValueValid (additional_types, property, value, error))
+		return false;
+	
+	return SetValueWithErrorImpl (property, value, error);
 }
 
 struct RegisterNamesClosure {

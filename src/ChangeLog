@@ -1,5 +1,21 @@
 2008-11-19  Jeffrey Stedfast  <fejj@novell.com>
 
+	Note: the way this is abstracted will probably go thru several
+	iterations of change.
+
+	* frameworkelement.cpp (FrameworkElement::SetValueWithErrorImpl):
+	Do special handling if setting a binding expression or if the
+	value is replacing a binding expression.
+
+	* dependencyobject.cpp (DependencyObject::IsValueValid): Made
+	protected, no reason for this to be public.
+	(DependencyObject::SetValueWithErrorImpl): New virtual method, has
+	all the code logic of the old SetValueWithError().
+	(DependencyObject::SetValueWithError): Call IsValueValid() and
+	then SetValueWithErrorImpl().
+
+2008-11-19  Jeffrey Stedfast  <fejj@novell.com>
+
 	* frameworkelement.cpp (FrameworkElement::IsValueValid):
 	Overridden so that we can check if the Value is a
 	BindingExpression. All DependencyProperties of FrameworkElements

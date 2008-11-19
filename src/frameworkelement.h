@@ -141,9 +141,12 @@ public:
 	void SetVerticalAlignment (VerticalAlignment value);
 
 protected:
-	virtual bool IsValueValid (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error);
+	GHashTable *bindings;
 	
-	virtual ~FrameworkElement () {}
+	virtual bool IsValueValid (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error);
+	virtual bool SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error);
+	
+	virtual ~FrameworkElement ();
 	
 private:
 	MeasureOverrideCallback measure_cb;
