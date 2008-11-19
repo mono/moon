@@ -15,6 +15,8 @@ namespace MoonTest.System.Windows.Input
 	[TestClass]
 	public class StylusDeviceTest
 	{
+// MouseEventArgs ctor is not public anymore
+#if false
 		[TestMethod]
 		[Ignore ()]
 		public void TestNRE ()
@@ -23,5 +25,6 @@ namespace MoonTest.System.Windows.Input
 			StylusDevice device;
 			Assert.Throws (delegate { device = args.StylusDevice; }, typeof (NullReferenceException));
 		}
+#endif
 	}
 }

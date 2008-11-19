@@ -1,3 +1,8 @@
+2008-11-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Input/StylusDeviceTest.cs: #if false-out the test
+	case since MouseEventArgs ctor is not public anymore. Fix build
+
 2008-11-14  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/IValueConverterTest.cs: Spaces -> Tabs. Add an
