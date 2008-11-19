@@ -1,6 +1,6 @@
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * dependencyobject.h: 
+ * dependencyobject.cpp: 
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
@@ -23,7 +23,6 @@
 #include "runtime.h"
 #include "uielement.h"
 #include "animation.h"
-#include "debug.h"
 
 
 

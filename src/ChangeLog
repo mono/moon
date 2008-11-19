@@ -1,3 +1,10 @@
+2008-11-19  Jeffrey Stedfast  <fejj@novell.com>
+
+	* frameworkelement.cpp (FrameworkElement::IsValueValid):
+	Overridden so that we can check if the Value is a
+	BindingExpression. All DependencyProperties of FrameworkElements
+	may be data-bound.
+
 2008-11-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* mediaplayer.h, mediaplayer.cpp: Make MediaPlayer use MediaElement's

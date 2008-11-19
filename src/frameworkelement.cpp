@@ -1,6 +1,6 @@
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * frameworkelement.cpp
+ * frameworkelement.cpp: 
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
@@ -23,6 +23,16 @@ FrameworkElement::FrameworkElement ()
 {
 	measure_cb = NULL;
 	arrange_cb = NULL;
+}
+
+bool
+FrameworkElement::IsValueValid (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error)
+{
+	// We can databind any property of a FrameworkElement 
+	if (value && value->Is (Type::BINDINGEXPRESSIONBASE))
+		return true;
+	
+	return UIElement::IsValueValid (additional_types, property, value, error);
 }
 
 void

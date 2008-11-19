@@ -141,8 +141,10 @@ public:
 	void SetVerticalAlignment (VerticalAlignment value);
 
 protected:
+	virtual bool IsValueValid (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error);
+	
 	virtual ~FrameworkElement () {}
-
+	
 private:
 	MeasureOverrideCallback measure_cb;
 	ArrangeOverrideCallback arrange_cb;
