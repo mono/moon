@@ -33,6 +33,13 @@ using System.Windows.Markup;
 
 namespace System.Windows.Documents {
 	public abstract partial class Inline : DependencyObject {
-		
+		public object FindName (string name)
+		{
+			return DepObjectFindName (name);
+		}
+
+		public string Name {
+			get { throw new NotImplementedException (); }
+		}
 	}
 }

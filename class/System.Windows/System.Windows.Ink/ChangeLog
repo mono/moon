@@ -1,3 +1,7 @@
+2008-11-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* StrokeCollection.cs, Stroke.cs: Corcompare.
+
 2008-11-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* StrokeCollection.cs: Corcompare work.

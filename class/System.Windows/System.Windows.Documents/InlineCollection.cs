@@ -31,6 +31,9 @@ using Mono;
 
 namespace System.Windows.Documents {
 	public sealed partial class InlineCollection : PresentationFrameworkCollection<Inline> {
-
+		public void Add (string text)
+		{
+			throw new NotImplementedException ();
+		}
 	}
 }
