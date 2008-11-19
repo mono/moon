@@ -30,6 +30,11 @@
 	The code is licensed under the terms of the Microsoft
 	Public License (MS-PL).
 
+* Microsoft Silverlight Unit Test Framework (test/2.0/Microsoft.Silverlight.Testing)
+
+	The code is licensed under the terms of the Microsoft
+	Public License (MS-PL).
+
 * Moonlight managed source code (class/* other than
                                  Microsoft.SilverlightControls)
   and end-user tools (tools/mopen, tools/mxap, tools/svg2xml,
