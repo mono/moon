@@ -1,3 +1,7 @@
+2008-11-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* AssemblyInfo.cs: Added missing attributes.
+
 2008-09-02  Zoltan Varga  <vargaz@gmail.com>
 
 	* AssemblyInfo.cs: Add XmlnsDefinition attributes so the control classes
