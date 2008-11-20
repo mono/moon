@@ -1,3 +1,12 @@
+2008-11-20  Jeffrey Stedfast  <fejj@novell.com>
+
+	* binding.cpp (BindingExpressionBase::AttachListener): Now takes
+	an FE argument as the listener.
+	(BindingExpressionBase::DetachListener): Same.
+
+	* frameworkelement.cpp (FrameworkElement::SetValueWithErrorImpl):
+	Fixed up a bit.
+
 2008-11-20  Full Name  <Email Address>
 
 	* src.mdp:

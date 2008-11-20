@@ -23,6 +23,7 @@ struct Binding {
 	bool in_use;
 };
 
+
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Data */
 class BindingExpressionBase : public Expression {
@@ -51,13 +52,17 @@ class BindingExpressionBase : public Expression {
 	DependencyProperty *GetProperty () { return property; }
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetProperty (DependencyProperty *property);
-
-	void AttachListeners ();
-
-	void DetachListeners ();
-
-	Value *GetBoundValue ();
-
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void AttachListener (FrameworkElement *listener);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void DetachListener (FrameworkElement *listener);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	Value *GetValue ();
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	void UpdateSource (Value *value);
 };
 

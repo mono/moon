@@ -46,30 +46,25 @@ BindingExpressionBase::SetElement (FrameworkElement *element)
 void
 BindingExpressionBase::SetProperty (DependencyProperty *property)
 {
-	// FIXME: do we want to ref the property? or at least listen for the destroy signal?
 	this->property = property;
 }
 
 void
-BindingExpressionBase::AttachListeners ()
+BindingExpressionBase::AttachListener (FrameworkElement *listener)
 {
-	FrameworkElement *element = this->element;
-	while (element) {
-		element->AddPropertyChangeListener ((DependencyObject *) this, FrameworkElement::DataContextProperty);
-	}
+	if (element)
+		element->AddPropertyChangeListener (listener, FrameworkElement::DataContextProperty);
 }
 
 void
-BindingExpressionBase::DetachListeners ()
+BindingExpressionBase::DetachListener (FrameworkElement *listener)
 {
-	FrameworkElement *element = this->element;
-	while (element) {
-		element->RemovePropertyChangeListener ((DependencyObject *) this, FrameworkElement::DataContextProperty);
-	}
+	if (element)
+		element->RemovePropertyChangeListener (listener, FrameworkElement::DataContextProperty);
 }
 
 Value *
-BindingExpressionBase::GetBoundValue ()
+BindingExpressionBase::GetValue ()
 {
 	return NULL;
 }

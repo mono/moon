@@ -20,11 +20,19 @@
 #include "collection.h"
 #include "binding.h"
 
+
+static void
+binding_destroy (gpointer value)
+{
+	((BindingExpressionBase *) value)->unref ();
+}
+
 FrameworkElement::FrameworkElement ()
 {
+	bindings = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, binding_destroy);
 	measure_cb = NULL;
 	arrange_cb = NULL;
-	bindings = g_hash_table_new (g_direct_hash, g_direct_equal);
+	bindings = NULL;
 }
 
 FrameworkElement::~FrameworkElement ()
@@ -45,31 +53,32 @@ FrameworkElement::IsValueValid (Types *additional_types, DependencyProperty *pro
 bool
 FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error)
 {
-	BindingExpressionBase *binding = NULL;
-	BindingExpressionBase *existing = (BindingExpressionBase *) g_hash_table_lookup (bindings, property);
+	BindingExpressionBase *cur_binding = (BindingExpressionBase *) g_hash_table_lookup (bindings, property);
+	BindingExpressionBase *new_binding = NULL;
 	
 	if (value && value->Is (Type::BINDINGEXPRESSIONBASE))
-		binding = value->AsBindingExpressionBase ();
-
-	if (existing) {
+		new_binding = value->AsBindingExpressionBase ();
+	
+	if (cur_binding) {
 		// If there is an existing binding, remove it if we are placing
 		// a new binding *or* it is not a two-way binding.
-		if (binding || existing->GetBinding ()->mode != BindingModeTwoWay) {
+		if (new_binding || cur_binding->GetBinding ()->mode != BindingModeTwoWay) {
+			cur_binding->DetachListener (this);
+			
 			g_hash_table_remove (bindings, property);
-			existing->unref ();
-			existing->DetachListeners ();
 		} else {
 			// We have a two way binding, so we update the source object
-			existing->UpdateSource (value);
+			cur_binding->UpdateSource (value);
 		}
 	}
 	
-	if (binding) {
-		// We are placing a new binding
-		g_hash_table_insert (bindings, property, binding);
-		binding->ref ();
-		binding->AttachListeners ();
-		value = binding->GetBoundValue ();
+	if (new_binding) {
+		// We are setting a new data binding
+		g_hash_table_insert (bindings, property, new_binding);
+		new_binding->AttachListener (this);
+		new_binding->ref ();
+		
+		value = new_binding->GetValue ();
 	}
 	
 	return UIElement::SetValueWithErrorImpl (property, value, error);
