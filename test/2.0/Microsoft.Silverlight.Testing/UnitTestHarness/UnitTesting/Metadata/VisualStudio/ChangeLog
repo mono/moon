@@ -1,5 +1,9 @@
 2008-11-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* UnitTestContext.cs: Fix compilation.
+
+2008-11-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* VsttProvider.cs, UnitTestFrameworkAssembly.cs, ExpectedException.cs,
 	  TestMethod.cs, ProviderAttributes.cs, UnitTestContext.cs,
 	  TestClass.cs: ifdef out all code to access VisualStudio. Add MD

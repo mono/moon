@@ -3,6 +3,8 @@
 // Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
 // All other rights reserved.
 
+#if VISUALSTUDIO_SUPPORT
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,7 +12,6 @@ using System.Data;
 using System.Data.Common;
 using System.Globalization;
 
-#if VISUALSTUDIO_SUPPORT
 
 using VS = Microsoft.VisualStudio.TestTools.UnitTesting;
 
