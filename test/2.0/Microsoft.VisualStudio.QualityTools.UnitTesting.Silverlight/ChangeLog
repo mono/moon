@@ -1,5 +1,10 @@
 2008-11-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Microsoft.VisualStudio.QualityTools.UnitTesting.mdp: Add some more
+	  bits to make the harness compatible with our tests.
+
+2008-11-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Makefile: Implement more bits, add a Makefile.
 
 2008-11-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 

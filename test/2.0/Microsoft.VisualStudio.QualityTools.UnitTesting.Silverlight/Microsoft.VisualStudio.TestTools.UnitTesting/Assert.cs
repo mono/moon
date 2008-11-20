@@ -256,5 +256,45 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 		{
 			IsInstanceOfType (value, expectedType, string.Format (message, parameters));
 		}
+
+		// Moonlight addition
+		public static void Throws<TException> (TestCode code) where TException : Exception
+		{
+			Throws (code, typeof (TException), null);
+		}
+
+		// Moonlight addition
+		public static void Throws<TException> (TestCode code, string message) where TException : Exception
+		{
+			Throws (code, typeof (TException), message);
+		}
+
+		// Moonlight addition
+		public static void Throws (TestCode code, Type expected_exception)
+		{
+			Throws (code, expected_exception, null);
+		}
+		
+ 		// Moonlight addition
+		public static void Throws (TestCode code, Type expected_exception, string message)
+		{
+			bool failed = false;
+			try {
+				code ();
+				failed = true;
+			} catch (Exception ex) {
+				if (!(ex.GetType () == expected_exception))
+					throw new AssertFailedException (string.Format ("Expected '{0}', got '{1}'. {2}", expected_exception.FullName, ex.GetType ().FullName, message));
+				//System.Diagnostics.Debug.WriteLine (ex.ToString ());
+			}
+			if (failed)
+				throw new AssertFailedException (string.Format ("Expected '{0}', but got no exception. {1}", expected_exception.FullName, message));
+		}
+
+		// Moonlight addition
+		public static void Throws (TestCode code, Type exception, string message, params object [] parameters)
+		{
+			Throws (code, exception, string.Format (message, parameters));
+		}
 	}
 }

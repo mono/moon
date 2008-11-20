@@ -52,6 +52,7 @@
     <File name="Microsoft.VisualStudio.TestTools.UnitTesting.Web/UrlToTestAttribute.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Data/DataRow.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Data.Common/DbConnection.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting/TestCode.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System.Core, Version=2.1.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

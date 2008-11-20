@@ -1,5 +1,10 @@
 2008-11-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Assert.cs, IgnoreAttribute.cs, TestCode.cs: Add some more bits to
+	  make the harness compatible with our tests.
+
+2008-11-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* AssemblyCleanupAttribute.cs, UnitTestOutcome.cs, TestContext.cs,
 	  TestInitializeAttribute.cs, ExpectedExceptionAttribute.cs,
 	  DescriptionAttribute.cs, TimeoutAttribute.cs,

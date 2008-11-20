@@ -18,5 +18,19 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 	[AttributeUsage (AttributeTargets.Method | AttributeTargets.Class, AllowMultiple=false)]
 	public sealed class IgnoreAttribute : Attribute
 	{
+		private string reason; // Moonlight addition
+
+		public IgnoreAttribute ()
+		{
+		}
+
+		public IgnoreAttribute (string reason)  // Moonlight addition
+		{
+			this.reason = reason;
+		}
+
+		public string Reason {  // Moonlight addition
+			get { return reason; }
+		}
 	}
 }
