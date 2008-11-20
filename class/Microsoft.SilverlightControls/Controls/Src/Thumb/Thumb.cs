@@ -64,53 +64,6 @@ namespace System.Windows.Controls.Primitives
  
         #endregion IsDragging
 
-        #region IsEnabled 
-        /// <summary>
-        /// Gets or sets a value that indicates whether this element is enabled
-        /// in the user interface (UI). 
-        /// </summary> 
-        public bool IsEnabled
-        { 
-            get { return (bool)GetValue(IsEnabledProperty); }
-            set { SetValue(IsEnabledProperty, value); }
-        } 
-
-        /// <summary>
-        /// Identifies the IsEnabled dependency property. 
-        /// </summary> 
-        public static readonly DependencyProperty IsEnabledProperty =
-            DependencyProperty.Register( 
-                "IsEnabled",
-                typeof(bool),
-                typeof(Thumb), 
-                new PropertyMetadata(OnIsEnabledPropertyChanged));
-
-        /// <summary> 
-        /// IsEnabledProperty property changed handler. 
-        /// </summary>
-        /// <param name="d">Thumb that changed IsEnabled.</param> 
-        /// <param name="e">DependencyPropertyChangedEventArgs.</param>
-        private static void OnIsEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        { 
-            Thumb t = d as Thumb;
-            Debug.Assert(t != null);
- 
-            t.OnIsEnabledChanged(); 
-        }
- 
-        /// <summary>
-        /// Called when the IsEnabled property changes.
-        /// </summary> 
-        private void OnIsEnabledChanged()
-        {
-            if (ElementRoot != null) 
-            { 
-                UpdateVisualState();
-            } 
-        }
-
-        #endregion IsEnabled 
-
         #region Events
         /// <summary> 
         /// Identifies the DragStarted routed event. 

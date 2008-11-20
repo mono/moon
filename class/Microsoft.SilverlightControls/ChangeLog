@@ -1,3 +1,11 @@
+2008-11-20  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Controls/Extended/Src/Slider/Slider.cs: Remove IsEnabled (and
+	related). Add On[Got|Lost]Focus. Internalize some stuff. Remove 'b1'
+	references in namespaces.
+	* Controls/Src/Thumb/Thumb.cs: Remove IsEnabled and related.
+	* Controls/Src/RangeBase/RangeBase.cs: Remove Tooltip property
+
 2008-10-16  Jb Evain  <jbevain@novell.com>
 
 	* Controls/Src/ScrollBar/ScrollBar.cs

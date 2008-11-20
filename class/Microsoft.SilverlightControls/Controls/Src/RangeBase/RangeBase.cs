@@ -324,19 +324,6 @@ namespace System.Windows.Controls.Primitives
         }
         #endregion Value 
 
-        #region ToolTip
-        /// <summary> 
-        /// Gets or sets the tool-tip object that is displayed for this element
-        /// in the user interface (UI).
-        /// </summary> 
-        public object ToolTip 
-        {
-            get { return ToolTipService.GetToolTip(this); } 
-            set { ToolTipService.SetToolTip(this, value); }
-        }
- 
-        #endregion ToolTip
-
         /// <summary> 
         /// Occurs when the range value changes. 
         /// </summary>

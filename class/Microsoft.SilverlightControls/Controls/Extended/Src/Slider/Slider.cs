@@ -7,11 +7,11 @@ using System.Diagnostics;
 using System.Windows.Input; 
 using System.Windows.Markup; 
 using System.Windows.Media.Animation;
-using System.Windows.Controls.Primitivesb1; 
+using System.Windows.Controls.Primitives; 
 using System.Windows.Media;
 using System.Windows.Controls;
 
-namespace System.Windows.Controlsb1
+namespace System.Windows.Controls
 {
     /// <summary>
     /// Slider control lets the user select from a range of values by moving a slider. 
@@ -46,14 +46,14 @@ namespace System.Windows.Controlsb1
             IsTabStop = true;
             IsEnabled = true; 
             Orientation = Orientation.Horizontal;
-            GotFocus += delegate { IsFocused = true; };
-            LostFocus += delegate { IsFocused = false; }; 
+            GotFocus += delegate(object sender, RoutedEventArgs e) { IsFocused = true; OnGotFocus (e); };
+            LostFocus += delegate(object sender, RoutedEventArgs e) { IsFocused = false; OnLostFocus (e); }; 
             KeyDown += delegate(object sender, KeyEventArgs e){ OnKeyPressed(e); };
             MouseEnter += delegate(object sender, MouseEventArgs e) { OnMouseEnter(e); };
             MouseLeave += delegate(object sender, MouseEventArgs e) { OnMouseLeave(e); }; 
             MouseLeftButtonDown += delegate(object sender, MouseButtonEventArgs e) { OnMouseLeftButtonDown(e); }; 
             MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e) { OnMouseLeftButtonUp(e); };
-            SizeChanged += delegate { UpdateTrackLayout(); }; 
+            SizeChanged += delegate { UpdateTrackLayout(); };
         }
 
         /// <summary> 
@@ -111,8 +111,7 @@ namespace System.Windows.Controlsb1
             }
             // Updating states for parts where properties might have been updated through
             // XAML before the template was loaded. 
-            OnIsEnabledChanged(IsEnabled);
-            OnOrientationChanged();
+            IsEnabledChanged += delegate { OnIsEnabledChanged(IsEnabled); };
             UpdateVisualState(); 
         } 
         #endregion Constructor
@@ -187,21 +186,17 @@ namespace System.Windows.Controlsb1
 
             if (s.ElementRoot != null) 
             { 
-                s.OnIsFocusChanged(e);
+                s.UpdateVisualState(); 
             } 
         }
 
-        /// <summary> 
-        /// Called when the IsFocused property changes.
-        /// </summary>
-        /// <param name="e"> 
-        /// The data for DependencyPropertyChangedEventArgs. 
-        /// </param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "e", Justification = "Compat with WPF.")] 
-        protected virtual void OnIsFocusChanged(DependencyPropertyChangedEventArgs e)
-        {
-            UpdateVisualState(); 
-        }
+	protected override void OnGotFocus (RoutedEventArgs e)
+	{
+	}
+
+	protected override void OnLostFocus (RoutedEventArgs e)
+	{
+	}
 
         #endregion IsFocused 
  
@@ -244,45 +239,11 @@ namespace System.Windows.Controlsb1
         #endregion IsDirectionReversed
  
         #region IsEnabled
-        /// <summary>
-        /// Gets or sets a value that indicates whether this element is enabled 
-        /// in the user interface (UI).
-        /// </summary>
-        public bool IsEnabled 
-        { 
-            get { return (bool)GetValue(IsEnabledProperty); }
-            set { SetValue(IsEnabledProperty, value); } 
-        }
-
-        /// <summary> 
-        /// Identifies the IsEnabled dependency property.
-        /// </summary>
-        public static readonly DependencyProperty IsEnabledProperty = 
-            DependencyProperty.Register( 
-                "IsEnabled",
-                typeof(bool), 
-                typeof(Slider),
-                new PropertyMetadata(OnIsEnabledPropertyChanged));
- 
-        /// <summary>
-        /// IsEnabledProperty property changed handler.
-        /// </summary> 
-        /// <param name="d">Slider that changed IsEnabled.</param> 
-        /// <param name="e">DependencyPropertyChangedEventArgs.</param>
-        private static void OnIsEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) 
-        {
-            Slider s = d as Slider;
-            Debug.Assert(s != null); 
-
-            bool value = (bool)e.NewValue;
-            s.OnIsEnabledChanged(value); 
-        } 
-
         /// <summary> 
         /// Called when the IsEnabled property changes.
         /// </summary>
         /// <param name="isEnabled">New value of the IsEnabled property.</param> 
-        protected virtual void OnIsEnabledChanged(bool isEnabled)
+        internal void OnIsEnabledChanged(bool isEnabled)
         {
             if (ElementHorizontalLargeDecrease != null) 
             { 
@@ -577,7 +538,7 @@ namespace System.Windows.Controlsb1
         /// This code will run whenever Orientation changes, to change the template
         /// being used to display this control. 
         /// </summary>
-        protected virtual void OnOrientationChanged()
+        private void OnOrientationChanged()
         { 
             if (ElementHorizontalTemplate != null)
             {
@@ -594,7 +555,7 @@ namespace System.Windows.Controlsb1
         /// This method will take the current min, max, and value to 
         /// calculate and layout the current control measurements.
         /// </summary> 
-        protected virtual void UpdateTrackLayout()
+        private void UpdateTrackLayout()
         {
             double maximum = Maximum; 
             double minimum = Minimum;
