@@ -50,3 +50,32 @@ BindingExpressionBase::SetProperty (DependencyProperty *property)
 	this->property = property;
 }
 
+void
+BindingExpressionBase::AttachListeners ()
+{
+	FrameworkElement *element = this->element;
+	while (element) {
+		element->AddPropertyChangeListener ((DependencyObject *) this, FrameworkElement::DataContextProperty);
+	}
+}
+
+void
+BindingExpressionBase::DetachListeners ()
+{
+	FrameworkElement *element = this->element;
+	while (element) {
+		element->RemovePropertyChangeListener ((DependencyObject *) this, FrameworkElement::DataContextProperty);
+	}
+}
+
+Value *
+BindingExpressionBase::GetBoundValue ()
+{
+	return NULL;
+}
+
+void
+BindingExpressionBase::UpdateSource (Value *value)
+{
+	
+}

@@ -1,3 +1,10 @@
+2008-11-20  Full Name  <Email Address>
+
+	* src.mdp:
+	* binding.h:
+	* binding.cpp:
+	* frameworkelement.cpp: Add more support code for databinding.
+
 2008-11-19  Geoff Norton  <gnorton@novell.com>
 
 	* audio.cpp: If we fail to initialize pulseaudio, lets try alsa before

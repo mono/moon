@@ -1,5 +1,5 @@
 <Project name="src" fileversion="2.0" language="CPP" Target="Bin" ctype="CProject">
-  <Configurations active="Default">
+  <Configurations active="Debug">
     <Configuration name="Debug" SourceDirectory="." ctype="CProjectConfiguration">
       <Output directory="bin/Debug" output="src" />
       <Build debugmode="True" target="SharedLibrary" />
@@ -222,6 +222,9 @@
     <File name="pipeline-asf.h" subtype="Code" buildaction="Nothing" />
     <File name="mediaelement.cpp" subtype="Code" buildaction="Compile" />
     <File name="mediaelement.h" subtype="Code" buildaction="Nothing" />
+    <File name="binding.cpp" subtype="Code" buildaction="Compile" />
+    <File name="binding.h" subtype="Code" buildaction="Nothing" />
+    <File name="expression.h" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>

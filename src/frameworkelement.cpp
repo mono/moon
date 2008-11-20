@@ -24,13 +24,12 @@ FrameworkElement::FrameworkElement ()
 {
 	measure_cb = NULL;
 	arrange_cb = NULL;
-	bindings = NULL;
+	bindings = g_hash_table_new (g_direct_hash, g_direct_equal);
 }
 
 FrameworkElement::~FrameworkElement ()
 {
-	if (bindings)
-		g_hash_table_destroy (bindings);
+	g_hash_table_destroy (bindings);
 }
 
 bool
@@ -46,44 +45,34 @@ FrameworkElement::IsValueValid (Types *additional_types, DependencyProperty *pro
 bool
 FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error)
 {
-	BindingExpressionBase *binding;
+	BindingExpressionBase *binding = NULL;
+	BindingExpressionBase *existing = (BindingExpressionBase *) g_hash_table_lookup (bindings, property);
 	
-	if (value && value->Is (Type::BINDINGEXPRESSIONBASE)) {
-		if (!bindings)
-			bindings = g_hash_table_new (g_direct_hash, g_direct_equal);
-		
+	if (value && value->Is (Type::BINDINGEXPRESSIONBASE))
 		binding = value->AsBindingExpressionBase ();
+
+	if (existing) {
+		// If there is an existing binding, remove it if we are placing
+		// a new binding *or* it is not a two-way binding.
+		if (binding || existing->GetBinding ()->mode != BindingModeTwoWay) {
+			g_hash_table_remove (bindings, property);
+			existing->unref ();
+			existing->DetachListeners ();
+		} else {
+			// We have a two way binding, so we update the source object
+			existing->UpdateSource (value);
+		}
+	}
+	
+	if (binding) {
+		// We are placing a new binding
 		g_hash_table_insert (bindings, property, binding);
 		binding->ref ();
-		
-		// FIXME: need to attach listeners to appropriate property changes and possibly clear the current value?
-		// ClearValue (property, false);
-		
-		// FIXME: should we also get the value from the binding and then chain up with that value?
-		// value = binding->GetValue ();
-		// return UIElement::SetValueWithErrorImpl (property, value, error);
-		return true;
-	} else {
-		if (bindings && (binding = (BindingExpressionBase *) g_hash_table_lookup (bindings, property))) {
-			switch (binding->GetBinding ()->mode) {
-			case BindingModeOneWay:
-				// DetachAndRemoveTheBinding ();
-				break;
-			case BindingModeOneTime:
-				break;
-			case BindingModeTwoWay:
-				// UpdateTheBindingDataSource ();
-				break;
-			default:
-				break;
-			}
-			
-			g_hash_table_remove (bindings, property);
-			binding->unref ();
-		}
-		
-		return UIElement::SetValueWithErrorImpl (property, value, error);
+		binding->AttachListeners ();
+		value = binding->GetBoundValue ();
 	}
+	
+	return UIElement::SetValueWithErrorImpl (property, value, error);
 }
 	
 void

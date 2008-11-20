@@ -51,6 +51,14 @@ class BindingExpressionBase : public Expression {
 	DependencyProperty *GetProperty () { return property; }
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetProperty (DependencyProperty *property);
+
+	void AttachListeners ();
+
+	void DetachListeners ();
+
+	Value *GetBoundValue ();
+
+	void UpdateSource (Value *value);
 };
 
 
