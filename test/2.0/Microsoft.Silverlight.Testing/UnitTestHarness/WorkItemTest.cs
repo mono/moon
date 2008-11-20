@@ -4,9 +4,7 @@
 // All other rights reserved.
 
 using System;
-#if VISUALSTUDIO_SUPPORT
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-#endif
 using Microsoft.Silverlight.Testing.UnitTesting;
 using UnitTestHarness = Microsoft.Silverlight.Testing.UnitTesting.Harness.UnitTestHarness;
 

@@ -29,10 +29,8 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Metadata
         {
             _providers = new List<IUnitTestProvider>();
 
-#if VISUALSTUDIO_SUPPORT
             // Visual Studio Team Test (VSTT)
             _providers.Add(new Microsoft.Silverlight.Testing.UnitTesting.Metadata.VisualStudio.VsttProvider());
-#endif
             // Additional providers can be listed here.
             // At runtime the Providers list can be extended to add additional 
             // providers as well.

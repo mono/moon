@@ -112,10 +112,8 @@ namespace Microsoft.Silverlight.Testing
         /// <param name="settings">The test harness settings object.</param>
         private static void TryAddVisualStudioLogProvider(TestHarnessSettings settings)
         {
-#if VISUALSTUDIO_SUPPORT
             VisualStudioLogProvider trx = new VisualStudioLogProvider();
             settings.LogProviders.Add(trx);
-#endif
         }
 
         /// <summary>

@@ -8,9 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Windows.Controls;
 using Microsoft.Silverlight.Testing.UnitTesting;
 using Microsoft.Silverlight.Testing.UnitTesting.UI;
-#if VISUALSTUDIO_SUPPORT
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-#endif
 
 namespace Microsoft.Silverlight.Testing
 {

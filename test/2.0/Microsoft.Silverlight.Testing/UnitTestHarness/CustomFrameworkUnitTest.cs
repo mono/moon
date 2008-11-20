@@ -5,9 +5,7 @@
 
 using System;
 using System.ComponentModel;
-#if VISUALSTUDIO_SUPPORT
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-#endif
 using Microsoft.Silverlight.Testing.UnitTesting;
 using Microsoft.Silverlight.Testing.UnitTesting.Harness;
 

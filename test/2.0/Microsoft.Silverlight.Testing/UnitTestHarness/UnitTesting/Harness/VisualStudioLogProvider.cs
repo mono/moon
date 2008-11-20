@@ -4,7 +4,6 @@
 // All other rights reserved.
 
 
-#if VISUALSTUDIO_SUPPORT
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -349,4 +348,3 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Harness
     }
 }
 
-#endif

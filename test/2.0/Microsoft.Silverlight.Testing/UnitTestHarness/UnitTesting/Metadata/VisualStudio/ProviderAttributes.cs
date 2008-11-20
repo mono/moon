@@ -4,7 +4,6 @@
 // All other rights reserved.
 
 
-#if VISUALSTUDIO_SUPPORT
 using System;
 using VS = Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -154,4 +153,3 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Metadata.VisualStudio
     }
 }
 
-#endif

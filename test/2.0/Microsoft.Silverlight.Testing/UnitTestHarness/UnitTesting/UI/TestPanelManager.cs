@@ -11,9 +11,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Browser;
 using System.Windows.Controls;
-#if VISUALSTUDIO_SUPPORT
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-#endif
 
 namespace Microsoft.Silverlight.Testing.UnitTesting.UI
 {

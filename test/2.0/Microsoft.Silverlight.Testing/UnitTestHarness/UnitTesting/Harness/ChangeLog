@@ -1,5 +1,10 @@
 2008-11-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* VisualStudioLogProvider.Writer.cs, VisualStudioLogProvider.cs: Remove
+	  the VISUALSTUDIO_SUPPORT ifdef, not needed anymore.
+
+2008-11-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* VisualStudioLogProvider.Writer.cs, VisualStudioLogProvider.cs: ifdef
 	  out all code to access VisualStudio. Add MD project and solutions.
 
