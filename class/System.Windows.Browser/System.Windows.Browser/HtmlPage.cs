@@ -36,7 +36,6 @@ namespace System.Windows.Browser{
 		private static BrowserInformation browser_info = new BrowserInformation ();
 
 		public static BrowserInformation BrowserInformation {
-		[SecuritySafeCritical ()]
 			get {
 				return browser_info;
 			}
@@ -70,7 +69,6 @@ namespace System.Windows.Browser{
 		}
 
 		public static HtmlWindow Window {
-			[SecuritySafeCritical]
 			get {
 				return new HtmlWindow (HtmlObject.GetPropertyInternal<IntPtr> (IntPtr.Zero, "window"));
 			}
@@ -79,6 +77,15 @@ namespace System.Windows.Browser{
 		public static HtmlElement Plugin {
 			[SecuritySafeCritical]
 			get { throw new System.NotImplementedException (); }
+		}
+
+		public static bool IsPopupWindowAllowed {
+			get { throw new System.NotImplementedException (); }
+		}
+
+		public static HtmlWindow PopupWindow (Uri navigateToUri, string target, HtmlPopupWindowOptions options)
+		{
+			throw new System.NotImplementedException ();
 		}
 	}
 }

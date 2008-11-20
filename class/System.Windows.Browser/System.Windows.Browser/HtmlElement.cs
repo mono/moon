@@ -94,11 +94,6 @@ namespace System.Windows.Browser
 			InvokeInternal<object> (Handle, "setAttribute", name, value);
 		}
 
-		public override void SetProperty (string name, object value)
-		{
-			SetPropertyInternal (Handle, name, value);
-		}
-
 		[MonoTODO ("This doesn't seem to work.")]
 		public void SetStyleAttribute (string name, string value)
 		{
@@ -106,9 +101,9 @@ namespace System.Windows.Browser
 			SetPropertyInternal (style, name, value);
 		}
 
-		public HtmlElementCollection Children {
+		public ScriptObjectCollection Children {
 			[SecuritySafeCritical]
-			get { return new HtmlElementCollection ((IntPtr) GetProperty ("childNodes")); }
+			get { return new ScriptObjectCollection ((IntPtr) GetProperty ("childNodes")); }
 		}
 
 		public string CssClass {

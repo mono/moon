@@ -1,3 +1,7 @@
+2008-11-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* WebApplication.cs: Corcompare fixes.
+
 2008-08-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* ScriptableObjectGenerator.cs: Moved and stubbed stuff according to

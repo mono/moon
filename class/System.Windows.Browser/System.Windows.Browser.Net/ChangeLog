@@ -1,3 +1,7 @@
+2008-11-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* SoapHttpClientProtocol.cs: Corcompare fixes.
+
 2008-10-16  Jb Evain  <jbevain@novell.com>
 
 	* BrowserHttpWebRequest.cs: update to SL2 api.

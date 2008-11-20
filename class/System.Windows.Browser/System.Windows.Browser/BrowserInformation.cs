@@ -56,7 +56,7 @@ namespace System.Windows.Browser {
 			this.user_agent = Marshal.PtrToStringAnsi (user_agent);
 		}
 
-		public BrowserInformation (string name, string version, string platform, string userAgent, bool cookieEnabled)
+		internal BrowserInformation (string name, string version, string platform, string userAgent, bool cookieEnabled)
 		{
 			this.name = name;
 			this.version = version;

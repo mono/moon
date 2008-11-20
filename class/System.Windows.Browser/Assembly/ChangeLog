@@ -1,3 +1,7 @@
+2008-11-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* AssemblyInfo.cs: Corcompare fixes.
+
 2008-07-31  Jeffrey Stedfast  <fejj@novell.com>
 
 	* AssemblyInfo.cs: Remove CLSCompliant attribute

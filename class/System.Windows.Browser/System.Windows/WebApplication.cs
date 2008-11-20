@@ -35,7 +35,7 @@ using System.Windows.Interop;
 
 namespace System.Windows
 {
-	public class WebApplication
+	internal class WebApplication
 	{
 		static readonly object lockobj = new object ();
 		static WebApplication current;

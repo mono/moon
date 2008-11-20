@@ -39,7 +39,7 @@ namespace System.Windows.Browser
 {
 	public sealed class HttpUtility
 	{
-		public HttpUtility () {}
+		internal HttpUtility () {}
 		
 		static Dictionary<string,char> entities;
 
@@ -416,18 +416,7 @@ namespace System.Windows.Browser
 			}
 			return output.ToString ();
 		}
-	
-		/// <summary>
-		/// Decodes an HTML-encoded string and sends the resulting output to a TextWriter output stream.
-		/// </summary>
-		/// <param name="s">The HTML string to decode</param>
-		/// <param name="output">The TextWriter output stream containing the decoded string. </param>
-		public static void HtmlDecode(string s, TextWriter output) 
-		{
-			if (s != null)
-				output.Write (HtmlDecode (s));
-		}
-	
+		
 		/// <summary>
 		/// HTML-encodes a string and returns the encoded string.
 		/// </summary>
@@ -481,17 +470,6 @@ namespace System.Windows.Browser
 					break;
 				}
 			return output.ToString ();
-		}
-	
-		/// <summary>
-		/// HTML-encodes a string and sends the resulting output to a TextWriter output stream.
-		/// </summary>
-		/// <param name="s">The string to encode. </param>
-		/// <param name="output">The TextWriter output stream containing the encoded string. </param>
-		public static void HtmlEncode(string s, TextWriter output) 
-		{
-			if (s != null)
-				output.Write (HtmlEncode (s));
 		}
 
 		private static int GetInt (byte b)
@@ -551,7 +529,7 @@ namespace System.Windows.Browser
 			return UrlDecode(str, Encoding.UTF8);
 		}
 	
-		public static string UrlDecode (string str, Encoding e)
+		internal static string UrlDecode (string str, Encoding e)
 		{
 			if (null == str) 
 				return null;
@@ -611,15 +589,7 @@ namespace System.Windows.Browser
 			return output.ToString ();
 		}
 	
-		public static string UrlDecode (byte [] bytes, Encoding e)
-		{
-			if (bytes == null)
-				return null;
-
-			return UrlDecode (bytes, 0, bytes.Length, e);
-		}
-
-		public static string UrlDecode (byte [] bytes, int offset, int count, Encoding e)
+		internal static string UrlDecode (byte [] bytes, int offset, int count, Encoding e)
 		{
 			if (bytes == null)
 				return null;
@@ -679,32 +649,8 @@ namespace System.Windows.Browser
 			acc = null;
 			return output.ToString ();
 		}
-	
-		public static byte [] UrlDecodeToBytes (byte [] bytes)
-		{
-			if (bytes == null)
-				return null;
 
-			return UrlDecodeToBytes (bytes, 0, bytes.Length);
-		}
-
-		public static byte [] UrlDecodeToBytes (string str)
-		{
-			return UrlDecodeToBytes (str, Encoding.UTF8);
-		}
-
-		public static byte [] UrlDecodeToBytes (string str, Encoding e)
-		{
-			if (str == null)
-				return null;
-
-			if (e == null)
-				throw new ArgumentNullException ("e");
-
-			return UrlDecodeToBytes (e.GetBytes (str));
-		}
-
-		public static byte [] UrlDecodeToBytes (byte [] bytes, int offset, int count)
+		internal static byte [] UrlDecodeToBytes (byte [] bytes, int offset, int count)
 		{
 			if (bytes == null)
 				return null;
@@ -754,29 +700,6 @@ namespace System.Windows.Browser
 			return new string (copy);
 		}
 	  
-		public static byte [] UrlEncodeToBytes (string str, Encoding e)
-		{
-			if (str == null)
-				return null;
-
-			if (str == "")
-				return new byte [0];
-
-			byte [] bytes = e.GetBytes (str);
-			return UrlEncodeToBytes (bytes, 0, bytes.Length);
-		}
-
-		public static byte [] UrlEncodeToBytes (byte [] bytes)
-		{
-			if (bytes == null)
-				return null;
-
-			if (bytes.Length == 0)
-				return new byte [0];
-
-			return UrlEncodeToBytes (bytes, 0, bytes.Length);
-		}
-
 		static char [] hexChars = "0123456789abcdef".ToCharArray ();
 		const string notEncoded = "!'()*-._";
 
@@ -831,7 +754,7 @@ namespace System.Windows.Browser
 				result.WriteByte ((byte)c);
 		}
 
-		public static byte [] UrlEncodeToBytes (byte [] bytes, int offset, int count)
+		internal static byte [] UrlEncodeToBytes (byte [] bytes, int offset, int count)
 		{
 			if (bytes == null)
 				return null;

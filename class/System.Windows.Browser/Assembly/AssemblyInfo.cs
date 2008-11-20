@@ -29,6 +29,7 @@
 //
 
 using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Resources;
 using System.Security;
@@ -43,18 +44,20 @@ using System.Runtime.InteropServices;
 #else
 [assembly: AssemblyVersion ("2.0.5.0")]
 [assembly: SatelliteContractVersion ("2.0.5.0")]
+[assembly: AssemblyFileVersion ("2.0.31005.0")]
 #endif
 
 [assembly: AssemblyTitle ("System.Windows.Browser.dll")]
 [assembly: AssemblyDescription ("System.Windows.Browser.dll")]
-[assembly: AssemblyConfiguration ("Development version")]
 [assembly: AssemblyCompany ("MONO development team")]
 [assembly: AssemblyProduct ("MONO CLI")]
 [assembly: AssemblyCopyright ("(c) 2007 Various Authors")]
-[assembly: AssemblyTrademark ("")]
 
 [assembly: AssemblyDefaultAlias ("System.Windows.Browser.dll")]
 [assembly: AssemblyInformationalVersion ("0.0.0.1")]
 [assembly: NeutralResourcesLanguage ("en-US")]
 
 [assembly: ComVisible (false)]
+[assembly: CLSCompliant (true)]
+[assembly: CompilationRelaxations (CompilationRelaxations.NoStringInterning)]
+[assembly: Debuggable (DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints)]

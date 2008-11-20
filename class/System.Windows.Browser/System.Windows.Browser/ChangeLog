@@ -1,3 +1,10 @@
+2008-11-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* BrowserInformation.cs, BrowserRuntimeSettings.cs, HtmlDocument.cs,
+	  HtmlElement.cs, HtmlElementCollection.cs, HtmlPage.cs,
+	  HtmlPopupWindowOptions.cs, HttpUtility.cs,
+	  ScriptObjectCollection.cs: Corcompare fixes.
+
 2008-08-14  Geoff Norton  <gnorton@novell.com>
 
 	* Makefile, HtmlTimer.cs: HtmlTimer no longer exiss.

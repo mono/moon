@@ -65,9 +65,9 @@ namespace System.Windows.Browser
 		}
 
 		[SecuritySafeCritical ()]
-		public HtmlElementCollection GetElementsByTagName (string tagName)
+		public ScriptObjectCollection GetElementsByTagName (string tagName)
 		{
-			return new HtmlElementCollection (InvokeInternal<IntPtr> (Handle, "getElementsByTagName", tagName));
+			return new ScriptObjectCollection (InvokeInternal<IntPtr> (Handle, "getElementsByTagName", tagName));
 		}
 		
 		public IDictionary<string,string> QueryString {
@@ -129,7 +129,7 @@ namespace System.Windows.Browser
 		
 		public void Submit ()
 		{
-			HtmlElementCollection forms = GetElementsByTagName ("form");
+			ScriptObjectCollection forms = GetElementsByTagName ("form");
 			if (forms.Count < 1)
 				return;
 			InvokeInternal<object> (forms [0].Handle, "submit");
