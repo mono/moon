@@ -100,10 +100,10 @@ Canvas::OnLoaded ()
 {
 	UIElement::OnLoaded ();
 
-       if (GetSurface ()) {
-	       // queue a resort based on ZIndex
-	       GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
-       }
+	if (GetSurface ()) {
+		// queue a resort based on ZIndex
+		GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
+	}
 }
 
 void

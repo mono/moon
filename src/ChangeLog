@@ -1,5 +1,23 @@
 2008-11-20  Jeffrey Stedfast  <fejj@novell.com>
 
+	* text.cpp (Inline::OnSubPropertyChanged): Always chain up.
+	(TextBlock::OnSubPropertyChanged): Always chain up.
+	(Glyphs::OnSubPropertyChanged): Always chain up.
+
+	* geometry.cpp (Geometry::OnSubPropertyChanged): Always chain up.
+
+	* brush.cpp (Brush::OnSubPropertyChanged): Always chain up.
+
+	* panel.cpp (Panel::OnSubPropertyChanged): Always chain up.
+
+	* binding.cpp (BindingExpressionBase::GetValue): Implemented, but
+	might not be correct.
+
+	* frameworkelement.cpp (FrameworkElement::OnSubPropertyChanged):
+	Stubbed out.
+
+2008-11-20  Jeffrey Stedfast  <fejj@novell.com>
+
 	* binding.cpp (BindingExpressionBase::AttachListener): Now takes
 	an FE argument as the listener.
 	(BindingExpressionBase::DetachListener): Same.
@@ -7,7 +25,7 @@
 	* frameworkelement.cpp (FrameworkElement::SetValueWithErrorImpl):
 	Fixed up a bit.
 
-2008-11-20  Full Name  <Email Address>
+2008-11-20  Alan McGovern  <amcgovern@novell.com>
 
 	* src.mdp:
 	* binding.h:

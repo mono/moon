@@ -66,6 +66,9 @@ BindingExpressionBase::DetachListener (FrameworkElement *listener)
 Value *
 BindingExpressionBase::GetValue ()
 {
+	if (element && property)
+		return element->GetValue (property);
+	
 	return NULL;
 }
 

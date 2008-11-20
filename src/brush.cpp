@@ -57,6 +57,8 @@ Brush::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, Pr
 	// if our transforms change in some fashion, we need to redraw
 	// the element.
 	NotifyListenersOfPropertyChange (Brush::ChangedProperty);
+	
+	DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
 bool

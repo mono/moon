@@ -59,7 +59,8 @@ public:
 	virtual Type::Kind GetObjectType () { return Type::FRAMEWORKELEMENT; }
 
 	virtual void ComputeBounds ();
-
+	
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);

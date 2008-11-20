@@ -186,6 +186,8 @@ Inline::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, P
 		// think... but it'll have to do.
 		NotifyListenersOfPropertyChange (prop);
 	}
+	
+	DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
 
@@ -764,13 +766,10 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 TextBlock::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
-	if (prop->GetOwnerType () != Type::TEXTBLOCK) {
-		FrameworkElement::OnSubPropertyChanged (prop, obj, subobj_args);
-		return;
-	}
-	
 	if (prop == TextBlock::ForegroundProperty)
 		Invalidate ();
+	
+	FrameworkElement::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
 void
@@ -1389,8 +1388,8 @@ Glyphs::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, P
 {
 	if (prop == Glyphs::FillProperty)
 		Invalidate ();
-	else
-		FrameworkElement::OnSubPropertyChanged (prop, obj, subobj_args);
+	
+	FrameworkElement::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
 void

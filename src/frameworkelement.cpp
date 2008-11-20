@@ -32,7 +32,6 @@ FrameworkElement::FrameworkElement ()
 	bindings = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, binding_destroy);
 	measure_cb = NULL;
 	arrange_cb = NULL;
-	bindings = NULL;
 }
 
 FrameworkElement::~FrameworkElement ()
@@ -113,6 +112,16 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 	}
 
 	NotifyListenersOfPropertyChange (args);
+}
+
+void
+FrameworkElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
+{
+	if (prop == FrameworkElement::DataContextProperty) {
+		// FIXME: do data binding stuff
+	}
+	
+	UIElement::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
 void

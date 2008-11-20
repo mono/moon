@@ -137,6 +137,8 @@ void
 Geometry::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
 	NotifyListenersOfPropertyChange (prop);
+	
+	DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
 //
