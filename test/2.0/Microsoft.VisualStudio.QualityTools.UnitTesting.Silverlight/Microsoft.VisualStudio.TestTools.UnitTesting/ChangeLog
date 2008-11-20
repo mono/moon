@@ -1,0 +1,19 @@
+2008-11-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* AssemblyCleanupAttribute.cs, AssemblyInitializeAttribute.cs,
+	  Assert.cs, AssertFailedException.cs,
+	  AssertInconclusiveException.cs, ClassCleanupAttribute.cs,
+	  ClassInitializeAttribute.cs, CollectionAssert.cs,
+	  CssIterationAttribute.cs, CssProjectStructureAttribute.cs,
+	  DeploymentItemAttribute.cs, DescriptionAttribute.cs,
+	  ExpectedExceptionAttribute.cs, GenericParameterHelper.cs,
+	  HostTypeAttribute.cs, IgnoreAttribute.cs,
+	  InternalTestFailureException.cs, IVerifiable.cs, OwnerAttribute.cs,
+	  PriorityAttribute.cs, StringAssert.cs, TestClassAttribute.cs,
+	  TestCleanupAttribute.cs, TestContext.cs,
+	  TestInitializeAttribute.cs, TestMethodAttribute.cs,
+	  TestPropertyAttribute.cs, TimeoutAttribute.cs,
+	  UnitTestAssertException.cs, UnitTestOutcome.cs,
+	  WorkItemAttribute.cs: Initial (and almost empty) implementation of
+	  Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.
+

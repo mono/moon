@@ -1,0 +1,7 @@
+2008-11-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* AspNetDevelopmentServerAttribute.cs,
+	  AspNetDevelopmentServerHostAttribute.cs, CredentialAttribute.cs,
+	  UrlToTestAttribute.cs: Initial (and almost empty) implementation of
+	  Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.
+

@@ -1,0 +1,61 @@
+<Project name="Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight" fileversion="2.0" language="C#" clr-version="Clr_2_1" ctype="MoonlightProject">
+  <Configurations active="Default">
+    <Configuration name="Debug" ctype="DotNetProjectConfiguration">
+      <Output directory="ClientBin" assembly="Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight" />
+      <Build debugmode="True" target="Library" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Clr_2_1" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" definesymbols="DEBUG" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+    <Configuration name="Release" ctype="DotNetProjectConfiguration">
+      <Output directory="ClientBin" assembly="Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight" />
+      <Build debugmode="False" target="Library" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Clr_2_1" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+  </Configurations>
+  <Contents>
+    <File name="." subtype="Directory" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting/AssemblyCleanupAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting/AssemblyInitializeAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting/Assert.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting/AssertFailedException.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting/AssertInconclusiveException.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting/ClassCleanupAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting/ClassInitializeAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting/CollectionAssert.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting/CssIterationAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting/CssProjectStructureAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting/DeploymentItemAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting/DescriptionAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting/ExpectedExceptionAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting/GenericParameterHelper.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting/HostTypeAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting/IgnoreAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting/InternalTestFailureException.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting/IVerifiable.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting/OwnerAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting/PriorityAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting/StringAssert.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting/TestClassAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting/TestCleanupAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting/TestContext.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting/TestInitializeAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting/TestMethodAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting/TestPropertyAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting/TimeoutAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting/UnitTestAssertException.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting/UnitTestOutcome.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting/WorkItemAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting.Web/AspNetDevelopmentServerAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting.Web/AspNetDevelopmentServerHostAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting.Web/CredentialAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.VisualStudio.TestTools.UnitTesting.Web/UrlToTestAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Data/DataRow.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Data.Common/DbConnection.cs" subtype="Code" buildaction="Compile" />
+  </Contents>
+  <References>
+    <ProjectReference type="Gac" localcopy="True" refto="System.Core, Version=2.1.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.1.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e0899" />
+  </References>
+  <GtkDesignInfo />
+</Project>

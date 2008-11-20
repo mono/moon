@@ -1,0 +1,8 @@
+2008-11-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Microsoft.VisualStudio.QualityTools.UnitTesting.mdp,
+	  Microsoft.VisualStudio.TestTools.UnitTesting,
+	  Microsoft.VisualStudio.TestTools.UnitTesting.Web, System.Data,
+	  System.Data.Common: Initial (and almost empty) implementation of
+	  Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.
+
