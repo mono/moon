@@ -1,5 +1,14 @@
 2008-11-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* AssemblyCleanupAttribute.cs, UnitTestOutcome.cs, TestContext.cs,
+	  TestInitializeAttribute.cs, ExpectedExceptionAttribute.cs,
+	  DescriptionAttribute.cs, TimeoutAttribute.cs,
+	  TestCleanupAttribute.cs, ClassInitializeAttribute.cs,
+	  OwnerAttribute.cs, AssemblyInitializeAttribute.cs,
+	  ClassCleanupAttribute.cs: Implement more bits, add a Makefile.
+
+2008-11-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* AssemblyCleanupAttribute.cs, AssemblyInitializeAttribute.cs,
 	  Assert.cs, AssertFailedException.cs,
 	  AssertInconclusiveException.cs, ClassCleanupAttribute.cs,

@@ -10,3 +10,22 @@
  * 
  */
 
+using System;
+
+namespace Microsoft.VisualStudio.TestTools.UnitTesting
+{
+	[AttributeUsage (AttributeTargets.Method, AllowMultiple=false)]
+	public sealed class DescriptionAttribute : Attribute
+	{
+		private string description;
+
+		public DescriptionAttribute (string description)
+		{
+			this.description = description;
+		}
+
+		public string Description {
+			get { return description; }
+		}
+	}	
+}

@@ -10,3 +10,7 @@
  * 
  */
 
+namespace System.Data.Common {
+	public class DbConnection {
+	}
+}

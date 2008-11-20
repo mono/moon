@@ -10,3 +10,23 @@
  * 
  */
 
+using System;
+
+namespace Microsoft.VisualStudio.TestTools.UnitTesting
+{
+	[AttributeUsage (AttributeTargets.Method, AllowMultiple=false)]
+	public sealed class TimeoutAttribute : Attribute
+	{
+		private int timeout;
+
+		public TimeoutAttribute (int timeout)
+		{
+			this.timeout = timeout;
+		}
+
+		public int Timeout {
+			get { return timeout; }
+		}
+	}
+}
+

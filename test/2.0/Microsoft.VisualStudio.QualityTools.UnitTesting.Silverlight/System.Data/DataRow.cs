@@ -10,3 +10,7 @@
  * 
  */
 
+namespace System.Data {
+	public class DataRow {
+	}
+}

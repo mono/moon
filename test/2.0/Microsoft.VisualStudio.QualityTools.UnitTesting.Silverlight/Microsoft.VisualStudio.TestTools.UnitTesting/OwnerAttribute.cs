@@ -9,4 +9,23 @@
  * See the LICENSE file included with the distribution for details.
  * 
  */
+using System;
+
+namespace Microsoft.VisualStudio.TestTools.UnitTesting
+{
+	[AttributeUsage (AttributeTargets.Method, AllowMultiple=false)]
+	public sealed class OwnerAttribute : Attribute
+	{
+		private string owner;
+
+		public OwnerAttribute (string owner)
+		{
+			this.owner = owner;
+		}
+
+		public string Owner {
+			get { return owner; }
+		}
+	}
+}
 

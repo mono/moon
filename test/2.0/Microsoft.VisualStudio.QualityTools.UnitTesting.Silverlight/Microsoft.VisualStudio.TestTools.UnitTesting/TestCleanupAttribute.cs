@@ -10,3 +10,12 @@
  * 
  */
 
+using System;
+
+namespace Microsoft.VisualStudio.TestTools.UnitTesting
+{
+	[AttributeUsage (AttributeTargets.Method, AllowMultiple=false)]
+	public sealed class TestCleanupAttribute : Attribute
+	{
+	}	
+}

@@ -10,3 +10,16 @@
  * 
  */
 
+namespace Microsoft.VisualStudio.TestTools.UnitTesting
+{
+	public enum UnitTestOutcome {
+		Failed,
+		Inconclusive,
+		Passed,
+		InProgress,
+		Error,
+		Timeout,
+		Aborted,
+		Unknown
+	}	
+}

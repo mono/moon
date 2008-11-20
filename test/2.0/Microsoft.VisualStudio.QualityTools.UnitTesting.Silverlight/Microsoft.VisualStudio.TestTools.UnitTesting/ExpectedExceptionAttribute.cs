@@ -10,3 +10,34 @@
  * 
  */
 
+using System;
+
+namespace Microsoft.VisualStudio.TestTools.UnitTesting
+{
+	[AttributeUsage (AttributeTargets.Method, AllowMultiple=false)]
+	public class ExpectedExceptionAttribute : Attribute
+	{
+		private Type exception_type;
+		private string message;
+
+		public ExpectedExceptionAttribute (Type exceptionType) 
+			: this (exceptionType, null)
+		{
+		}
+
+		public ExpectedExceptionAttribute (Type exceptionType, string message)
+		{
+			this.exception_type = exceptionType;
+			this.message = message;
+		}
+		
+		public string Message {
+			get { return message; }
+		}
+	
+		public Type ExceptionType {
+			get { return exception_type; }
+		}
+		
+	}
+}

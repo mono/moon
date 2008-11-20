@@ -1,5 +1,9 @@
 2008-11-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Makefile: Implement more bits, add a Makefile.
+
+2008-11-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Microsoft.VisualStudio.QualityTools.UnitTesting.mdp,
 	  Microsoft.VisualStudio.TestTools.UnitTesting,
 	  Microsoft.VisualStudio.TestTools.UnitTesting.Web, System.Data,
