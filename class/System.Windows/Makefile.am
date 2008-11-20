@@ -364,7 +364,8 @@ system_windows_sources =							\
 	$(MSCONTROLS)/Src/Thumb/Thumb.cs					\
 	$(MSCONTROLS)/Src/ToggleButton/ToggleButton.cs				\
 	$(MSCONTROLS)/Src/ToolTip/ToolTip.cs					\
-	$(MSCONTROLS)/Src/ToolTip/ToolTipService.cs
+	$(MSCONTROLS)/Src/ToolTip/ToolTipService.cs				\
+	$(MSCONTROLS)/Extended/Src/Slider/Slider.cs
 
 EXTRA_DIST = $(system_windows_sources) 	\
 	scripts/checks.cs 			\

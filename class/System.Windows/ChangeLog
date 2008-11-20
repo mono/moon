@@ -1,3 +1,10 @@
+2008-11-20  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Controls/Control.cs: Add stubs for IsEnabled and
+	Focus to let the control build. Remove extra stuff not present in SL2
+	final.
+	* Makefile.am: Add Slider from MS controls to the build.
+
 2008-11-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Makefile.am, System.Windows.mdp: Added InputMethod, ICommand,

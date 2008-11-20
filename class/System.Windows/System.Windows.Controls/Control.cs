@@ -43,6 +43,15 @@ namespace System.Windows.Controls {
 			set { /* nothing yet */; }
 		}
 
+		[MonoTODO]
+		public bool IsEnabled {
+			get { return true; }
+			set { ; }
+		}
+
+		[MonoTODO]
+		public event DependencyPropertyChangedEventHandler IsEnabledChanged;
+
 		public bool ApplyTemplate()
 		{
 			return NativeMethods.control_apply_template (native);
@@ -53,17 +62,19 @@ namespace System.Windows.Controls {
 			return NativeMethods.surface_focus_element (Application.s_surface, native);
 		}
 
-		[SecuritySafeCritical]
-		protected DependencyObject GetTemplateChild(string childName)
+		protected DependencyObject GetTemplateChild (string childName)
 		{
 			throw new NotImplementedException ();
 		}
 
-		[SecuritySafeCritical]
-		public virtual void OnApplyTemplate()
+		[MonoTODO]
+		protected virtual void OnGotFocus (RoutedEventArgs e)
 		{
-			// FIXME
 		}
 
+		[MonoTODO]
+		protected virtual void OnLostFocus (RoutedEventArgs e)
+		{
+		}
 	}
 }
