@@ -1,4 +1,9 @@
 2008-11-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* HtmlAnchor.cs, HtmlButton.cs: Create EventHandler explicitly to work
+	  around compiler bug #447027.
+
+2008-11-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	
 
