@@ -1,0 +1,5 @@
+2008-11-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* UnitTestMessage.resources: ifdef out all code to access VisualStudio.
+	  Add MD project and solutions.
+

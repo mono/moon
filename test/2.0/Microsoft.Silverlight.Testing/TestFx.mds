@@ -1,0 +1,16 @@
+<Combine name="UnitTestHarness" fileversion="2.0">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="CombineConfiguration">
+      <Entry build="True" name="UnitTestHarness" configuration="Debug" />
+    </Configuration>
+    <Configuration name="Release" ctype="CombineConfiguration">
+      <Entry build="True" name="UnitTestHarness" configuration="Release" />
+    </Configuration>
+  </Configurations>
+  <StartMode startupentry="UnitTestHarness" single="True">
+    <Execute type="None" entry="UnitTestHarness" />
+  </StartMode>
+  <Entries>
+    <Entry filename="UnitTestHarness/UnitTestHarness.mdp" />
+  </Entries>
+</Combine>

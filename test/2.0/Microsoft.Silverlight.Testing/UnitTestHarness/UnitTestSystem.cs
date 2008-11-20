@@ -1,4 +1,4 @@
-﻿// (c) Copyright Microsoft Corporation.
+// (c) Copyright Microsoft Corporation.
 // This source is subject to the Microsoft Public License (Ms-PL).
 // Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
 // All other rights reserved.
@@ -112,8 +112,10 @@ namespace Microsoft.Silverlight.Testing
         /// <param name="settings">The test harness settings object.</param>
         private static void TryAddVisualStudioLogProvider(TestHarnessSettings settings)
         {
+#if VISUALSTUDIO_SUPPORT
             VisualStudioLogProvider trx = new VisualStudioLogProvider();
             settings.LogProviders.Add(trx);
+#endif
         }
 
         /// <summary>

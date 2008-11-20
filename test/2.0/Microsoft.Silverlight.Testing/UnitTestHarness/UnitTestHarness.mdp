@@ -1,0 +1,218 @@
+<Project releaseversion="0.1" name="UnitTestHarness" fileversion="2.0" language="C#" DefaultNamespace="Microsoft.Silverlight.Testing" clr-version="Clr_2_1" Configuration="Debug" Platform="AnyCPU" AssemblyName="Microsoft.Silverlight.Testing" TargetFrameworkVersion="v2.0" ctype="DotNetProject">
+  <Configurations active="Debug">
+    <Configuration name="Debug" Optimize="false" DefineConstants="DEBUG;TRACE;SILVERLIGHT" NoStdLib="true" NoConfig="true" WarningLevel="4" RunCodeAnalysis="true" DocumentationFile="" ctype="DotNetProjectConfiguration">
+      <Output directory="../bin/" assembly="Microsoft.Silverlight.Testing" />
+      <Build debugmode="True" target="Library" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" definesymbols="DEBUG;TRACE;SILVERLIGHT" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+    <Configuration name="Release" Optimize="true" DefineConstants="TRACE;SILVERLIGHT" NoStdLib="true" NoConfig="true" WarningLevel="4" DocumentationFile="" RunCodeAnalysis="true" ctype="DotNetProjectConfiguration">
+      <Output directory="../bin/" assembly="Microsoft.Silverlight.Testing" />
+      <Build debugmode="False" target="Library" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="False" definesymbols="TRACE;SILVERLIGHT" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+  </Configurations>
+  <Contents>
+    <File name="AsynchronousAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="BugAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="CodeCoverage.cs" subtype="Code" buildaction="Compile" />
+    <File name="CustomFrameworkUnitTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/Service/CodeCoverageProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/Service/EnvironmentProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/Service/Extensions.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/Service/IsolatedStorageSettingsProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/Service/ProviderBase.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/Service/ServiceResult.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/Service/ServiceType.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/Service/SettingsProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/Service/SilverlightTestService.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/Service/SilverlightTestService.ServiceVerifier.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/Service/TestReportingProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/Service/TestServiceFeature.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/Service/WebCodeCoverageProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/Service/WebEnvironmentProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/Service/WebServiceResult.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/Service/WebSettingsProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/Service/WebTestReportingProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/Service/WebTestService.CrossThreadState.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/Service/WebTestService.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/Service/WebTestService.RequestData.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/TestServiceProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="TagAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Harness/HarnessExtensions.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Harness/IProvideDynamicTestMethods.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Harness/RetryTestRunFilter.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Harness/TagManager.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Harness/TagManager.ExpressionEvaluator.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Harness/TagManager.Tags.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Harness/TagTestRunFilter.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Harness/TestAssemblyHelper.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Harness/TestClassHelper.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Harness/TestMethodHelper.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Harness/TestMethodManager.Silverlight.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Harness/TestRunFilter.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Harness/UnitTestLogicFactory.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Harness/VisualStudioLogProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Harness/VisualStudioLogProvider.Writer.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/UI/TextFailuresLogProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/UI/BrowserInformation.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/UI/HtmlPropertyGrid.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/UI/ResultInspector.Details.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/UI/ResultInspector.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/UI/ResultInspector.ExceptionDetails.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/UI/TestPage.xaml.cs" subtype="Code" buildaction="Compile" dependson="/mono/main/src/moon-2.0/test/2.0/Microsoft.Silverlight.Testing/UnitTestHarness/UnitTesting/UI/TestPage.xaml" />
+    <File name="UnitTesting/UI/TestRunProgress.cs" subtype="Code" buildaction="Compile" />
+    <File name="Properties/UnitTestMessage.Designer.cs" subtype="Code" buildaction="Compile" dependson="/mono/main/src/moon-2.0/test/2.0/Microsoft.Silverlight.Testing/UnitTestHarness/Properties/UnitTestMessage.resx" />
+    <File name="UnitTestSystem.Silverlight.cs" subtype="Code" buildaction="Compile" />
+    <File name="WorkItemTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="ExclusiveAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="GlobalSuppressions.cs" subtype="Code" buildaction="Compile" />
+    <File name="IWorkItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="PresentationTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="SilverlightTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="WorkItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Harness/UnitTestLogMessageWriter.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Harness/UnitTestHarness.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Harness/UnitTestLogDecorator.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Harness/UnitTestMessageConditional.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Harness/LazyMethodAssemblyInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Metadata/IAssembly.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Metadata/IExpectedException.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Metadata/IHostType.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Metadata/IPriority.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Metadata/ITestClass.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Metadata/ITestMethod.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Metadata/ITestProperty.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Metadata/IUnitTestProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Metadata/IWorkItemMetadata.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Metadata/StringEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Metadata/UnitTestProviderCapabilities.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/SleepWorkItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/UI/BrowserUtility.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/UI/FailureEntry.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/UI/FailureSummaryControl.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/UI/TestHtmlElementManager.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Metadata/VisualStudio/ExpectedException.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Metadata/VisualStudio/Priority.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Metadata/VisualStudio/ProviderAttributes.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Metadata/VisualStudio/TestClass.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Metadata/VisualStudio/TestMethod.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Metadata/VisualStudio/TestProperty.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Metadata/VisualStudio/UnitTestContext.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Metadata/VisualStudio/UnitTestFrameworkAssembly.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Metadata/VisualStudio/VsttProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Metadata/VisualStudio/WorkItemMetadata.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/UI/FailureControl.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTestSystem.cs" subtype="Code" buildaction="Compile" />
+    <File name="Properties/AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTestSettings.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/UI/CurrentTestStatus.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/UI/TestPanelManager.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/UI/UnitTestWebpageLog.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Harness/ScenarioResult.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Harness/AssemblyManager.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/ICompositeWorkItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Harness/LazyMethodInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Harness/MethodContainer.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Harness/TestClassInstanceDictionary.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Harness/TestClassManager.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/WorkItemsManager.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Harness/TestMethodManager.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/CompositeWorkItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Harness/UnitTestMethodContainer.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Harness/UnitTestCompositeWorkItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/CallbackWorkItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/ConditionalWorkItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/MethodInvokeWorkItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="UnitTesting/Metadata/UnitTestProviders.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/DecoratorDictionary.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/ResourceUtility.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/LogMessageFactory.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/LogMessageWriter.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/LogDecorator.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/TestOutcome.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/TestStage.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/LogProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/TestHarness.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/GlobalExceptionHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/LogMessage.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/TestGranularity.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/DebugOutputProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/ITestHarness.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/LogMessageType.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/ITestSettingsLogProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="UI/WebpageHeaderLogProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="UI/WebpageLogProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="UI/WebpageLogProviderBase.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/TestHarnessCompletedEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/RunDispatcher.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/TestHarnessSettings.cs" subtype="Code" buildaction="Compile" />
+    <File name="UI/HtmlTestColumn.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/CssPosition.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/EventAttachment.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/HtmlControlBase.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/BorderStyle.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/CssDisplay.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/CssSize.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/CssAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/CssMargin.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/CssPadding.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/CssBox.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/FontInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/FontNamesConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/FontSize.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/FontUnit.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/FontUnitConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/HtmlAnchor.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/HtmlAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/HtmlButton.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/HtmlContainerControl.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/HtmlControlCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/HtmlControlManager.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/HtmlDiv.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/HtmlElementWrapperBag.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/HtmlElementWrapper.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/HtmlEvent.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/HtmlHeaderControl.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/HtmlInputControl.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/HtmlInputText.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/HtmlLineBreak.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/HtmlPageControl.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/HtmlProperty.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/Box.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/CssBorder.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/HtmlControl.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/Extensions.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/HtmlSpan.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/HtmlTag.cs" subtype="Code" buildaction="Compile" />
+    <File name="UI/Color.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/BrowserScreenInformation.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/Paragraph.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/Size.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/StyleProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/Unit.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/UnitConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="Html/UnitType.cs" subtype="Code" buildaction="Compile" />
+    <File name="UI/ResultIndicatorColor.cs" subtype="Code" buildaction="Compile" />
+    <File name="UI/TestColumnHeader.cs" subtype="Code" buildaction="Compile" />
+    <File name="UI/TestStyleProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="UI/WebBrowserTestPage.cs" subtype="Code" buildaction="Compile" />
+    <File name="UI/WebBrowserTick.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/TestHarnessState.cs" subtype="Code" buildaction="Compile" />
+    <File name="Harness/ReflectionUtility.cs" subtype="Code" buildaction="Compile" />
+    <File name="Properties/UnitTestMessage.resx" subtype="Code" contentType="Designer" buildaction="EmbedAsResource" resource_id="Microsoft.Silverlight.Testing.Properties.UnitTestMessage.resources" />
+    <File name="UnitTesting/UI/TestPage.xaml.g.cs" subtype="Code" buildaction="Compile" />
+  </Contents>
+  <References>
+    <ProjectReference type="Gac" localcopy="True" refto="System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Windows.Browser, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Core, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
+    <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Xml.Linq, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Project" localcopy="True" refto="Microsoft.VisualStudio.TestTools.UnitTesting" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  </References>
+  <GtkDesignInfo />
+</Project>

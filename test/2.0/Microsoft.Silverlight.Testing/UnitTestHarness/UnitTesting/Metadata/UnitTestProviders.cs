@@ -1,4 +1,4 @@
-﻿// (c) Copyright Microsoft Corporation.
+// (c) Copyright Microsoft Corporation.
 // This source is subject to the Microsoft Public License (Ms-PL).
 // Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
 // All other rights reserved.
@@ -29,9 +29,10 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Metadata
         {
             _providers = new List<IUnitTestProvider>();
 
+#if VISUALSTUDIO_SUPPORT
             // Visual Studio Team Test (VSTT)
             _providers.Add(new Microsoft.Silverlight.Testing.UnitTesting.Metadata.VisualStudio.VsttProvider());
-
+#endif
             // Additional providers can be listed here.
             // At runtime the Providers list can be extended to add additional 
             // providers as well.

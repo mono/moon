@@ -1,4 +1,4 @@
-﻿// (c) Copyright Microsoft Corporation.
+// (c) Copyright Microsoft Corporation.
 // This source is subject to the Microsoft Public License (Ms-PL).
 // Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
 // All other rights reserved.
@@ -11,7 +11,9 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Browser;
 using System.Windows.Controls;
+#if VISUALSTUDIO_SUPPORT
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+#endif
 
 namespace Microsoft.Silverlight.Testing.UnitTesting.UI
 {
