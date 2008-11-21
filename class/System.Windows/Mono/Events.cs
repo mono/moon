@@ -70,7 +70,7 @@ namespace Mono {
 		{
 			try {
 				VisualStateGroup e = (VisualStateGroup) Helper.GCHandleFromIntPtr (closure).Target;
-				e.InvokeCurrentStateChanging (new VisualStateChangedEventArgs (calldata));
+				e.RaiseCurrentStateChanging (new VisualStateChangedEventArgs (calldata));
 			}
 			catch (Exception ex) {
 				if (IsPlugin ())
@@ -84,7 +84,7 @@ namespace Mono {
 		{
 			try {
 				VisualStateGroup e = (VisualStateGroup) Helper.GCHandleFromIntPtr (closure).Target;
-				e.InvokeCurrentStateChanged (new VisualStateChangedEventArgs (calldata));
+				e.RaiseCurrentStateChanged (new VisualStateChangedEventArgs (calldata));
 			}
 			catch (Exception ex) {
 				if (IsPlugin ())
