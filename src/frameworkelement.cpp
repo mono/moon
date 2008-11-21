@@ -22,27 +22,34 @@
 #include "style.h"
 
 
+#if SL_2_0
 static void
 binding_destroy (gpointer value)
 {
 	((BindingExpressionBase *) value)->unref ();
 }
+#endif
 
 FrameworkElement::FrameworkElement ()
 {
+#if SL_2_0
 	bindings = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, binding_destroy);
+#endif
 	measure_cb = NULL;
 	arrange_cb = NULL;
 }
 
 FrameworkElement::~FrameworkElement ()
 {
+#if SL_2_0
 	g_hash_table_destroy (bindings);
+#endif
 }
 
 void
 FrameworkElement::SetBindingExpression (DependencyProperty *property, BindingExpressionBase *expr)
 {
+#if SL_2_0
 	BindingExpressionBase *cur_expr = GetBindingExpression (property);
 	
 	if (cur_expr) {
@@ -55,20 +62,27 @@ FrameworkElement::SetBindingExpression (DependencyProperty *property, BindingExp
 		expr->AttachListener (this);
 		expr->ref ();
 	}
+#endif
 }
 
 BindingExpressionBase *
 FrameworkElement::GetBindingExpression (DependencyProperty *property)
 {
+#if SL_2_0
 	return (BindingExpressionBase *) g_hash_table_lookup (bindings, property);
+#else
+	return NULL;
+#endif
 }
 
 bool
 FrameworkElement::IsValueValid (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error)
 {
+#if SL_2_0
 	// We can databind any property of a FrameworkElement 
 	if (value && value->Is (Type::BINDINGEXPRESSIONBASE))
 		return true;
+#endif
 	
 	return UIElement::IsValueValid (additional_types, property, value, error);
 }
@@ -76,6 +90,7 @@ FrameworkElement::IsValueValid (Types *additional_types, DependencyProperty *pro
 bool
 FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error)
 {
+#if SL_2_0
 	BindingExpressionBase *cur_binding = GetBindingExpression (property);
 	BindingExpressionBase *new_binding = NULL;
 	
@@ -146,8 +161,11 @@ FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 			}
 		}
 	}
-
+	
 	return result;
+#else
+	return UIElement::SetValueWithErrorImpl (property, value, error);
+#endif
 }
 
 void
