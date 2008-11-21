@@ -1,3 +1,8 @@
+2008-11-20  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* WPF.Toolkit/VSM: import VisualStateManager from
+	the MsPL WPFToolkit
+
 2008-08-17  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am (SUBDIRS): don't include
