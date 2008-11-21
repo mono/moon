@@ -55,7 +55,7 @@ namespace System.Windows
 		}
 
 		internal IList<object> PathParameters {
-			get { return new List<object> (path_parameters); }
+			get { return path_parameters; }
 		}
 	}
 }
