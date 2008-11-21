@@ -525,8 +525,10 @@ Shape::ArrangeOverride (Size availableSize)
 	
 	// XXX hack to handle rectangle and ellipse specially until more is understood
 	// at which point they can be their own overrides
+	/*
 	if (GetStretch () != StretchNone && !(Is (Type::RECTANGLE) || Is (Type::ELLIPSE)))
 		size = size.Min (0,0);
+	*/
 
 	return size;
 }

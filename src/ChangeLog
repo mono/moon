@@ -1,3 +1,8 @@
+2008-11-21  Larry Ewing  <lewing@novell.com>
+
+	* shape.cpp: disable custom layout code as it seems to have
+	changed in 2.0 final.
+
 2008-11-21  Alan McGovern  <amcgovern@novell.com>
 
 	* frameworkelement.cpp: If a style is already set, you cannot set it
