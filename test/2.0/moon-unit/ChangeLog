@@ -1,3 +1,8 @@
+2008-11-21  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/StyleTest.cs: Added some new Style tests and updated
+	existing ones to work with the latest silverlight
+
 2008-11-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* App.xaml.cs, Makefile, Mono.Moonlight.UnitTesting/Tester.cs,
