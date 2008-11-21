@@ -11,6 +11,11 @@ namespace System.Windows
     /// </summary>
     public sealed class VisualStateChangedEventArgs : EventArgs
     {
+		internal VisualStateChangedEventArgs (IntPtr raw)
+		{
+			throw new NotImplementedException ();
+		}
+
         internal VisualStateChangedEventArgs(VisualState oldState, VisualState newState, Control control)
         {
             _oldState = oldState;

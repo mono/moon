@@ -11,13 +11,14 @@ using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Windows.Media.Animation;
 
+using Mono;
+
 namespace System.Windows
 {
     /// <summary>
     ///     A group of mutually exclusive visual states.
     /// </summary>
     [ContentProperty("States")]
-    [RuntimeNameProperty("Name")]
     public class VisualStateGroup : DependencyObject
     {
         /// <summary>
@@ -38,7 +39,7 @@ namespace System.Windows
             {
                 if (_states == null)
                 {
-                    _states = new FreezableCollection<VisualState>();
+                    _states = new Collection<VisualState>();
                 }
 
                 return _states;
@@ -54,7 +55,7 @@ namespace System.Windows
             {
                 if (_transitions == null)
                 {
-                    _transitions = new FreezableCollection<VisualTransition>();
+                    _transitions = new Collection<VisualTransition>();
                 }
 
                 return _transitions;
@@ -106,7 +107,7 @@ namespace System.Windows
                     continue;
                 }
 
-                newStoryboards[index].Begin(element, HandoffBehavior.SnapshotAndReplace, true);
+                newStoryboards[index].Begin();
 
                 // Silverlight had an issue where initially, a checked CheckBox would not show the check mark
                 // until the second frame. They chose to do a Seek(0) at this point, which this line
@@ -124,7 +125,7 @@ namespace System.Windows
                     continue;
                 }
 
-                CurrentStoryboards[index].Stop(element);
+                CurrentStoryboards[index].Stop();
             }
 
             // Hold on to the running Storyboards
@@ -135,34 +136,68 @@ namespace System.Windows
             }
         }
 
-        internal void RaiseCurrentStateChanging(FrameworkElement element, VisualState oldState, VisualState newState, Control control)
-        {
-            if (CurrentStateChanging != null)
-            {
-                CurrentStateChanging(element, new VisualStateChangedEventArgs(oldState, newState, control));
-            }
-        }
+		internal void RaiseCurrentStateChanging(FrameworkElement element, VisualState oldState, VisualState newState, Control control)
+		{
+			RaiseCurrentStateChanging (new VisualStateChangedEventArgs(oldState, newState, control));
+		}
 
-        internal void RaiseCurrentStateChanged(FrameworkElement element, VisualState oldState, VisualState newState, Control control)
-        {
-            if (CurrentStateChanged != null)
-            {
-                CurrentStateChanged(element, new VisualStateChangedEventArgs(oldState, newState, control));
-            }
-        }
+		internal void RaiseCurrentStateChanged(FrameworkElement element, VisualState oldState, VisualState newState, Control control)
+		{
+			RaiseCurrentStateChanged(new VisualStateChangedEventArgs(oldState, newState, control));
+		}
+
+		internal void RaiseCurrentStateChanging (VisualStateChangedEventArgs e)
+		{
+			EventHandler<VisualStateChangedEventArgs> h = (EventHandler<VisualStateChangedEventArgs>) events[CurrentStateChangingEvent];
+			if (h != null)
+				h (this, e);
+		}
+
+		internal void RaiseCurrentStateChanged (VisualStateChangedEventArgs e)
+		{
+			EventHandler<VisualStateChangedEventArgs> h = (EventHandler<VisualStateChangedEventArgs>) events[CurrentStateChangedEvent];
+			if (h != null)
+				h (this, e);
+		}
+
+		static object CurrentStateChangingEvent = new object ();
+		static object CurrentStateChangedEvent = new object ();
 
         /// <summary>
         ///     Raised when transition begins
         /// </summary>
-        public event EventHandler<VisualStateChangedEventArgs> CurrentStateChanged;
+		public event EventHandler<VisualStateChangedEventArgs> CurrentStateChanging {
+			add {
+				if (events[CurrentStateChangingEvent] == null)
+					Events.AddHandler (this, "CurrentStateChanging", Events.current_state_changing);
+				events.AddHandler (CurrentStateChangingEvent, value);
+			}
+			remove {
+				events.RemoveHandler (CurrentStateChangingEvent, value);
+				if (events[CurrentStateChangingEvent] == null)
+					Events.RemoveHandler (this, "CurrentStateChanging", Events.current_state_changing);
+			}
+		}
 
         /// <summary>
         ///     Raised when transition ends and new state storyboard begins.
         /// </summary>
-        public event EventHandler<VisualStateChangedEventArgs> CurrentStateChanging;
+		public event EventHandler<VisualStateChangedEventArgs> CurrentStateChanged {
+			add {
+				if (events[CurrentStateChangedEvent] == null)
+					Events.AddHandler (this, "CurrentStateChanged", Events.current_state_changed);
+				events.AddHandler (CurrentStateChangedEvent, value);
+			}
+			remove {
+				events.RemoveHandler (CurrentStateChangedEvent, value);
+				if (events[CurrentStateChangedEvent] == null)
+					Events.RemoveHandler (this, "CurrentStateChanged", Events.current_state_changed);
+			}
+		}
+
 
         private Collection<Storyboard> _currentStoryboards;
-        private FreezableCollection<VisualState> _states;
-        private FreezableCollection<VisualTransition> _transitions;
+        private Collection<VisualState> _states;
+        private Collection<VisualTransition> _transitions;
     }
 }

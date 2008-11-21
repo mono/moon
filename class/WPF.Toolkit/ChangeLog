@@ -1,0 +1,6 @@
+2008-11-21  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* VSM/System/Windows/VisualStateChangedEventArgs.cs:
+	* VSM/System/Windows/VisualStateGroup.cs:
+	* VSM/System/Windows/VisualStateManager.cs: Various changes to
+	integrate those WPF.Toolkits parts in our System.Windows.dll

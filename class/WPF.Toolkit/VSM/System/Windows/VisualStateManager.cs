@@ -110,13 +110,9 @@ namespace System.Windows
         #endregion
 
         #region VisualStateGroups
-
-        internal static readonly DependencyProperty VisualStateGroupsProperty =
-            DependencyProperty.RegisterAttached(
-            "InternalVisualStateGroups",
-            typeof(Collection<VisualStateGroup>),
-            typeof(VisualStateManager),
-            new FrameworkPropertyMetadata(null, new PropertyChangedCallback(OnVisualStateGroupsChanged)));
+		private static DependencyProperty VisualStateGroupsProperty = DependencyProperty.RegisterAttached ("VisualStateGroups",
+														   typeof (Collection<VisualStateGroup>),
+														   typeof (VisualStateManager), null);
 
         internal static Collection<VisualStateGroup> GetVisualStateGroupsInternal(FrameworkElement obj)
         {
@@ -159,7 +155,7 @@ namespace System.Windows
                 if (control != null)
                 {
                     System.Diagnostics.Debug.Assert(element == VisualStateManager.GetTemplateRoot(control));
-                    Microsoft.Windows.Controls.VisualStateBehaviorFactory.AttachBehavior(control);
+//                    Microsoft.Windows.Controls.VisualStateBehaviorFactory.AttachBehavior(control);
                 }
             }
         }
@@ -250,13 +246,7 @@ namespace System.Windows
                 // Hook up generated Storyboard's Completed event handler
                 dynamicTransition.Completed += delegate(object sender, EventArgs e)
                 {
-                    if ((transition.Storyboard == null || transition.ExplicitStoryboardCompleted) &&
-
-                        // If the element or control is removed from the tree, then the new
-                        // storyboards will not be able to resolve target names. Thus,
-                        // if the element or control is unloaded, don't start the new
-                        // storyboards.
-                        (element.IsLoaded && control.IsLoaded))
+                    if (transition.Storyboard == null || transition.ExplicitStoryboardCompleted)
                     {
                         group.StartNewThenStopOld(element, state.Storyboard);
                         group.RaiseCurrentStateChanged(element, lastState, state, control);
@@ -270,13 +260,7 @@ namespace System.Windows
                     EventHandler transitionCompleted = null;
                     transitionCompleted = new EventHandler(delegate(object sender, EventArgs e)
                     {
-                        if (transition.DynamicStoryboardCompleted &&
-
-                            // If the element or control is removed from the tree, then the new
-                            // storyboards will not be able to resolve target names. Thus,
-                            // if the element or control is unloaded, don't start the new
-                            // storyboards.
-                            (element.IsLoaded && control.IsLoaded))
+                        if (transition.DynamicStoryboardCompleted)
                         {
                             group.StartNewThenStopOld(element, state.Storyboard);
                             group.RaiseCurrentStateChanged(element, lastState, state, control);
@@ -754,32 +738,32 @@ namespace System.Windows
         /// </summary>
         private static FrameworkElement GetTemplateRoot(Control control)
         {
-            UserControl userControl = control as UserControl;
-            if (userControl != null)
-            {
-                // If using a UserControl, the states will be specified on the
-                // root of the content instead of the root of the template.
-                return userControl.Content as FrameworkElement;
-            }
-            else
-            {
+//            UserControl userControl = control as UserControl;
+//            if (userControl != null)
+//            {
+//                // If using a UserControl, the states will be specified on the
+//                // root of the content instead of the root of the template.
+//                return userControl.Content as FrameworkElement;
+//            }
+//            else
+//            {
                 if (VisualTreeHelper.GetChildrenCount(control) > 0)
                 {
                     return VisualTreeHelper.GetChild(control, 0) as FrameworkElement;
                 }
-            }
+//            }
 
             return null;
         }
 
         private static Control GetTemplatedParent(FrameworkElement element)
         {
-            // If the element has a templated parent, then return that.
-            DependencyObject templatedParent = element.TemplatedParent;
-            if (templatedParent != null)
-            {
-                return templatedParent as Control;
-            }
+//            // If the element has a templated parent, then return that.
+//            DependencyObject templatedParent = element.TemplatedParent;
+//            if (templatedParent != null)
+//            {
+//                return templatedParent as Control;
+//            }
 
             // If the element is the root of a UserControl, then it
             // will not have a templated parent. It's Parent property
