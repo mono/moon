@@ -358,7 +358,7 @@ map_moon_id_to_event_name (int moon_id)
 	switch (moon_id) {
 	case MoonId_BufferingProgressChanged: name = "BufferingProgressChanged"; break;
 	case MoonId_CurrentStateChanged:  name = "CurrentStateChanged"; break;
-	case MoonId_DownloadProgressChanged: name = "DownloadProgressCanged"; break;
+	case MoonId_DownloadProgressChanged: name = "DownloadProgressChanged"; break;
 	case MoonId_GotFocus: name = "GotFocus"; break;
 	case MoonId_KeyDown: name = "KeyDown"; break;
 	case MoonId_KeyUp: name = "KeyUp"; break;
