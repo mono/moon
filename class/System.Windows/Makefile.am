@@ -22,6 +22,7 @@ SMCS = MONO_PATH="../lib/2.1:$$MONO_PATH" mono --runtime=moonlight --security=te
 GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib
 
 MSCONTROLS=$(srcdir)/../Microsoft.SilverlightControls/Controls
+WPFTOOLKIT=$(srcdir)/../WPF.Toolkit
 
 system_windows_sources =							\
 	$(srcdir)/Assembly/AssemblyInfo.cs					\
@@ -187,7 +188,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/SystemParameters.cs				\
 	$(srcdir)/System.Windows/TemplateBindingExpression.cs			\
 	$(srcdir)/System.Windows/TemplatePart.cs				\
-	$(srcdir)/System.Windows/TemplateVisualStateAttribute.cs		\
 	$(srcdir)/System.Windows/TextAlignment.cs				\
 	$(srcdir)/System.Windows/TextDecorationCollection.cs			\
 	$(srcdir)/System.Windows/TextDecorationKind.cs				\
@@ -201,11 +201,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/UIElement.cs					\
 	$(srcdir)/System.Windows/VerticalAlignment.cs				\
 	$(srcdir)/System.Windows/Visibility.cs					\
-	$(srcdir)/System.Windows/VisualStateGroup.cs				\
 	$(srcdir)/System.Windows/VisualState.cs					\
-	$(srcdir)/System.Windows/VisualStateChangedEventArgs.cs			\
-	$(srcdir)/System.Windows/VisualStateManager.cs				\
-	$(srcdir)/System.Windows/VisualTransition.cs				\
 	$(srcdir)/System.Windows/XapHackProxyImpl.cs				\
 	$(srcdir)/System.Windows.Data/Binding.cs				\
 	$(srcdir)/System.Windows.Data/BindingExpression.cs			\
@@ -324,6 +320,11 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Threading/DispatcherOperation.cs		\
 	$(srcdir)/System.Windows.Threading/DispatcherSynchronizationContext.cs	\
 	$(srcdir)/System.Windows.Threading/DispatcherTimer.cs			\
+	$(WPFTOOLKIT)/VSM/System/Windows/TemplateVisualStateAttribute.cs	\
+	$(WPFTOOLKIT)/VSM/System/Windows/VisualStateGroup.cs			\
+	$(WPFTOOLKIT)/VSM/System/Windows/VisualStateChangedEventArgs.cs		\
+	$(WPFTOOLKIT)/VSM/System/Windows/VisualStateManager.cs			\
+	$(WPFTOOLKIT)/VSM/System/Windows/VisualTransition.cs			\
 	$(MSCONTROLS)/Src/Resource.Designer.cs					\
 	$(MSCONTROLS)/Src/Button/Button.cs					\
 	$(MSCONTROLS)/Src/ButtonBase/ButtonBase.cs				\
