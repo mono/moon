@@ -24,3 +24,9 @@
 /cairo-xlib-uninstalled.pc
 /cairo-xlib-xrender-uninstalled.pc
 /build/ltmain.sh
+/build/aclocal.dolt.m4
+/build/libtool.m4
+/build/ltoptions.m4
+/build/ltsugar.m4
+/build/ltversion.m4
+
