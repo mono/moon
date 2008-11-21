@@ -81,9 +81,9 @@ Licensing
 	copyrighted by Microsoft and released by them under the 
 	open source MS-PL license.
 	
-	The C# controls in class/Microsoft.SilverlightControls/ are
-	copyrighted by Microsoft and released by them under the 
-	open source MS-PL license.
+	The C# controls in class/Microsoft.SilverlightControls/ and
+	class/WPF.Toolkit are copyrighted by Microsoft and released by
+	them under the open source MS-PL license.
 
 Technical Details
 =================
