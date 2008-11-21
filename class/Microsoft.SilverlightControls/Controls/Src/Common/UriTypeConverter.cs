@@ -1,4 +1,4 @@
-﻿// Copyright © Microsoft Corporation. 
+// Copyright © Microsoft Corporation. 
 // This source is subject to the Microsoft Source License for Silverlight Controls (March 2008 Release).
 // Please see http://go.microsoft.com/fwlink/?LinkID=111693 for details.
 // All other rights reserved. 
@@ -36,7 +36,7 @@ namespace System
 #if NET_2_1
 	override
 #endif
-        public bool CanConvertFrom(Type sourceType)
+        public bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
         { 
             return TypeConverters.CanConvertFrom<Uri>(sourceType);
         }
@@ -49,7 +49,7 @@ namespace System
 #if NET_2_1
 	override
 #endif
-        public object ConvertFrom(object value) 
+        public object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value) 
         {
             return TypeConverters.ConvertFrom<Uri>(this, value);
         } 
