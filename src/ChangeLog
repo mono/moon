@@ -1,3 +1,8 @@
+2008-11-21  Alan McGovern  <amcgovern@novell.com>
+
+	* frameworkelement.cpp: Implement initial support for using a Style when
+	it is present.
+
 2008-11-20  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp (Inline::OnSubPropertyChanged): Always chain up.

@@ -19,6 +19,7 @@
 #include "thickness.h"
 #include "collection.h"
 #include "binding.h"
+#include "style.h"
 
 
 static void
@@ -80,7 +81,47 @@ FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 		value = new_binding->GetValue ();
 	}
 	
-	return UIElement::SetValueWithErrorImpl (property, value, error);
+	bool result = UIElement::SetValueWithErrorImpl (property, value, error);
+	Value *styleVal = GetValueNoDefault (FrameworkElement::StyleProperty);
+	
+	if (result && styleVal) {
+		Style *style = styleVal->AsStyle ();
+		SetterBaseCollection *setters = style->GetValue (Style::SettersProperty)->AsSetterBaseCollection ();
+		if (!setters)
+			return true;
+
+		int e;
+		Value *setterBase;
+		CollectionIterator *iter = setters->GetIterator ();
+
+		while (iter->Next () && (setterBase = iter->GetCurrent (&e))) {
+			if(e) {
+		 		// Something bad happened - what to do?
+		 	}
+
+			if (!setterBase->Is (Type::SETTER))
+				continue;
+
+			Setter *setter = setterBase->AsSetter ();
+			if (!(value = setter->GetValue (Setter::PropertyProperty)))
+				continue;
+			
+			char *propertyName = value->AsString ();
+			if (!(property = DependencyProperty::GetDependencyProperty (this->GetType ()->GetKind (), propertyName))) {
+				continue;
+			}
+			
+			if (!GetValueNoDefault (property)) {
+				value = setter->GetValue (Setter::ValueProperty);
+				
+				// Ensure we don't end up recursing forever - call the base method
+				if (!UIElement::SetValueWithErrorImpl(property, value, error))
+					return false;
+			}
+		}
+	}
+
+	return result;
 }
 	
 void
