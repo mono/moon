@@ -31,6 +31,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Interop;
 using Mono.Moonlight.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows.Interop {
 

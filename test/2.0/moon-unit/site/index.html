@@ -1,233 +1,85 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" >
-<!-- saved from url=(0014)about:internet -->
+
 <head>
-    <title>Silverlight Project Test Page </title>
+	<title>SilverlightApplication2</title>
+	<meta></meta>
 
-    <link rel="stylesheet" type="text/css" media="all" href="tree/tree.css" />
-    <script type="text/javascript" src="tree/tree.js"></script>
-
-    <style type="text/css">
-
-    #testroot {
-  	font-size: 0.8em;
-    }
-
-    #testname {
-  	font-size: 0.8em;
-        font-weight: bold;
-        background-color: #ffffff;
-    }
-   
-    .Pass 
-    {
-    	color: Green;
-    	background-color:Gray;
-    }
-
-    .KnownFailure 
-    {
-    	color: Blue;
-    }
-    
-    .UnexpectedPass 
-    {
-    	color: #00FFFF; 
-    }
-    
-    .Fail 
-    {
-    	color: Red;
-    }
-    
-    .Ignore
-    {
-    	color: #FF8040;
-    }
-    
-    #testreason, #testoutput {
-        margin-left: 5px;
-    }
-
-    .output {
-  	font-size: 0.8em;
-    }
-
-    </style>
-    
-    <script type="text/javascript">
-        function onSilverlightError(sender, args) {
-        
-            var appSource = "";
-            if (sender != null && sender != 0) {
-                appSource = sender.getHost().Source;
-            } 
-            var errorType = args.ErrorType;
-            var iErrorCode = args.ErrorCode;
-            
-            var errMsg = "Unhandled Error in Silverlight 2 Application " +  appSource + "\n" ;
-
-            errMsg += "Code: "+ iErrorCode + "    \n";
-            errMsg += "Category: " + errorType + "       \n";
-            errMsg += "Message: " + args.ErrorMessage + "     \n";
-
-            if (errorType == "ParserError")
-            {
-                errMsg += "File: " + args.xamlFile + "     \n";
-                errMsg += "Line: " + args.lineNumber + "     \n";
-                errMsg += "Position: " + args.charPosition + "     \n";
-            }
-            else if (errorType == "RuntimeError")
-            {           
-                if (args.lineNumber != 0)
-                {
-                    errMsg += "Line: " + args.lineNumber + "     \n";
-                    errMsg += "Position: " +  args.charPosition + "     \n";
-                }
-                errMsg += "MethodName: " + args.methodName + "     \n";
-            }
-
-            throw new Error(errMsg);
-        }
-        
-        function OnCanvasClick ()
-        {
-            try {
-                alert ("Clicked on Canvas!");
-                var app = document.getElementById ("SLTest");
-                var canvas = app.content.findName ("TheCanvas");
-                
-                alert ("Canvas: " + canvas);
-                
-                canvas.Height = 800;
-                var prop = canvas.Height;
-                
-                alert ("Canvas prop: " + prop);
-                alert ("Canvas custom: " + canvas.CustomCanvas);
-            } catch (ex) {
-                alert ("Exception: " + ex);
-                alert (ex.description);
-            }
-        }
-
-	function AddNames (parent, names, level)
-	{
-	    if (level == names.length - 1)
-	        return parent;
-
-	    /* check for the node in parent's list of children */
-	    for (var node = parent.firstChild; node; node = node.nextSibling) {
-	        if (node.nodeType != 1)
-	            continue;
-	        if (node.id == names[level])
-	            return AddNames (findChildWithTag (node, "ul"), names, level + 1);
-	    }
-
-            /* create the new node, append it (should really be sorted), and recurse */
-	    var new_parent = document.createElement ("li");
-	    var a_node = document.createElement ("a");
-	    a_node.setAttribute ("href", "#");
-	    var text_node = document.createTextNode (names[level]);
-	    var new_sublist = document.createElement ("ul");
-
-	    addClass (new_parent, "Pass");
-	    addClass (a_node, "Pass");
-
-	    new_parent.id = names[level];
-
-	    a_node.appendChild (text_node);
-	    new_parent.appendChild (a_node);
-	    new_parent.appendChild (new_sublist);
-	    parent.appendChild (new_parent);
-
-	    return AddNames (new_sublist, names, level + 1);
+	<style type="text/css">
+	html, body {
+		height: 100%;
+		overflow: auto;
 	}
-
-	var Tests = {};
-
-        function AddTest (testname, status, reason, output)
-	{
-	    var root = document.getElementById ("testroot");
-	    var names = testname.split ('.');
-	    var test_parent = AddNames (root, names, 0);
-
-	    var test = document.createElement ("li");
-            test.innerHTML = "<a href=\"javascript:selectTest('" + testname + "')\">" + names[names.length-1] + "</a>";
-
-	    test_parent.appendChild (test);
-
-	    addClass (test, status);
-	    addClass (test.childNodes[0], status);
-
-	    if (status == "Fail") {
-	        var node = test.parentNode;
-	        while (node != root) {
-	            removeClass (node, "Pass");
-	            removeClass (node.childNodes[0], "Pass");
-	            addClass (node, "Fail");
-	            addClass (node.childNodes[0], "Fail");
-	            node = node.parentNode;
-  	        }
-	    }
-
-	    Tests[testname] = { Reason: reason, Output: output };
+	body {
+		padding: 0;
+		margin: 0;
 	}
-
-	function EndReport ()
-	{
-	    var root = document.getElementById ("testroot");
-	    addClass (root, "tree");
-	    initTree (root);
+	#silverlightControlHost {
+		height: 100%;
 	}
+	</style>
 
-	function selectTest (test)
-	{
-	    var testname = document.getElementById ("testname");
-	    var testreason = document.getElementById ("testreason");
-	    var testoutput = document.getElementById ("testoutput");
+	<script type="text/javascript">
+	function onSilverlightError(sender, args) {
 
-	    testname.innerHTML = test.replace (/\./g, ".&#8203;");
-	    testreason.innerHTML = Tests[test].Reason;
-	    testoutput.innerHTML = Tests[test].Output;
+		var appSource = "";
+		if (sender != null && sender != 0) {
+			appSource = sender.getHost ().Source;
+		} 
+		var errorType = args.ErrorType;
+		var iErrorCode = args.ErrorCode;
+
+		var errMsg = "Unhandled Error in Silverlight 2 Application " +  appSource + "\n" ;
+
+		errMsg += "Code: "+ iErrorCode + "    \n";
+		errMsg += "Category: " + errorType + "       \n";
+		errMsg += "Message: " + args.ErrorMessage + "     \n";
+
+		if (errorType == "ParserError") {
+			errMsg += "File: " + args.xamlFile + "     \n";
+			errMsg += "Line: " + args.lineNumber + "     \n";
+			errMsg += "Position: " + args.charPosition + "     \n";
+		} else if (errorType == "RuntimeError") {           
+			if (args.lineNumber != 0) {
+				errMsg += "Line: " + args.lineNumber + "     \n";
+				errMsg += "Position: " +  args.charPosition + "     \n";
+			}
+			errMsg += "MethodName: " + args.methodName + "     \n";
+		}
+
+		throw new Error (errMsg);
 	}
-
-        function AppendTestResult (text)
-        {
-            document.getElementById ("TestResult").innerHTML += text;
-        }
-    </script>
+	</script>
 </head>
 
 <body>
-    <div style="position: fixed; top: 5px; right: 10px; width: 50%;" id="testname">
-    </div>
-    <div style="position: fixed; top: 50px; right: 10px; width: 50%; height: 300px; border: solid 1px; overflow: auto; background-color:#eeeeee;">
-      Error:
-      <pre id="testreason" class="output">
-      </pre>
-    </div>
-    <div style="position: fixed; top: 360px; right: 10px; width: 50%; bottom: 20px; border: solid 1px; overflow: auto; background-color:#eeeeee;">
-      Output:
-      <pre id="testoutput" class="output">
-      </pre>
-    </div>
-
-    <!-- Runtime errors from Silverlight will be displayed here.
+	<!-- Runtime errors from Silverlight will be displayed here.
 	This will contain debugging information and should be removed or hidden when debugging is completed -->
-    <div id='errorLocation' style="font-size: small;color: Gray;"></div>
+	<div id='errorLocation' style="font-size: small;color: Gray;"></div>
 
-    <div id="testtree" >
-      <ul id="testroot">
-      </ul>
-    </div>
+	<div id="silverlightControlHost">
+<!--
+		<object data="data:application/x-silverlight-2," type="application/x-silverlight-2" width="1600" height="1200">
+			<param name="source" value="SilverlightApplication2.xap"/>
+			<param name="onerror" value="onSilverlightError" />
+			<param name="background" value="white" />
 
-    <div id="silverlightControlHost">
-		<object data="data:application/x-silverlight," type="application/x-silverlight-2" width="20" height="20" name="SLTest">
+			<a href="http://go.microsoft.com/fwlink/?LinkID=115261" style="text-decoration: none;">
+				<img src="http://go.microsoft.com/fwlink/?LinkId=108181" alt="Get Microsoft Silverlight" style="border-style: none"/>
+			</a>
+		</object>
+-->
+		<object data="data:application/x-silverlight-2," type="application/x-silverlight-2" width="1600" height="1200">
 			<param name="source" value="ClientBin/moon-unit.xap"/>
 			<param name="onerror" value="onSilverlightError" />
 			<param name="background" value="white" />
 		</object>
-    </div>
 
+		<iframe style='visibility:hidden;height:0;width:0;border:0px'></iframe>
+
+
+
+	</div>
 </body>
 </html>
+

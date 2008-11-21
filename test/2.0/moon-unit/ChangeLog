@@ -1,3 +1,46 @@
+2008-11-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* App.xaml.cs, Makefile, Mono.Moonlight.UnitTesting/Tester.cs,
+	  site/index.html,
+	  System.Collections.ObjectModel/ObservableCollectionTest.cs,
+	  System.IO.IsolatedStorage/IsolatedStorageFileStreamTest.cs,
+	  System.IO.IsolatedStorage/IsolatedStorageFileTest.cs,
+	  System.IO.IsolatedStorage/IsolatedStorageSettingsTest.cs,
+	  System.Windows.Controls/BorderTest.cs,
+	  System.Windows.Controls/CanvasTest.cs,
+	  System.Windows.Controls/ControlTemplateTest.cs,
+	  System.Windows.Controls/ControlTest.cs,
+	  System.Windows.Controls/GridTest.cs,
+	  System.Windows.Controls/MediaElementTest.cs,
+	  System.Windows.Controls/MediaElementTest.SlowStream.cs,
+	  System.Windows.Controls/PanelTest.cs,
+	  System.Windows.Data/BindingTest.cs,
+	  System.Windows.Data/IValueConverterTest.cs,
+	  System.Windows.Input/StylusDeviceTest.cs,
+	  System.Windows.Interop/ContentTest.cs,
+	  System.Windows.Interop/SettingsTest.cs,
+	  System.Windows.Interop/SilverlightHostTest.cs,
+	  System.Windows.Media.Imaging/BitmapImageTest.cs,
+	  System.Windows.Media/ColorTest.cs,
+	  System.Windows.Media/LineGeometryTest.cs,
+	  System.Windows.Media/VisualTreeHelperTest.cs,
+	  System.Windows.Shapes/PathTest.cs,
+	  System.Windows.Shapes/RectangleTest.cs,
+	  System.Windows/ApplicationTest.cs,
+	  System.Windows/DependencyPropertyAttachedTest.cs,
+	  System.Windows/DependencyPropertyTest.cs,
+	  System.Windows/DurationTest.cs,
+	  System.Windows/FrameworkElementTest.cs,
+	  System.Windows/PresentationFrameworkCollectionTest.cs,
+	  System.Windows/ResourceDictionaryTest.cs,
+	  System.Windows/RoutedEventArgsTest.cs,
+	  System.Windows/SetterBaseCollectionTest.cs,
+	  System.Windows/SetterTest.cs, System.Windows/SizeTest.cs,
+	  System.Windows/StyleTest.cs, System.Windows/ThicknessTest.cs,
+	  System.Windows/VisualStateManagerTest.cs,
+	  System.Windows/VisualStateTest.cs: Use MS' test harness.
+	* moon-unit.mdp: Updated.
+
 2008-11-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Input/StylusDeviceTest.cs: #if false-out the test

@@ -15,7 +15,6 @@
   </Configurations>
   <Contents>
     <File name="Properties/AppManifest.xml" subtype="Code" buildaction="Nothing" />
-    <File name="AppManifest.xaml" subtype="Code" buildaction="Nothing" />
     <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
     <File name="moon-unit.mdp" subtype="Code" buildaction="Nothing" />
     <File name="site" subtype="Directory" buildaction="Compile" />
@@ -39,8 +38,33 @@
     <File name="Mono.Moonlight.UnitTesting/HtmlOutput.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.Moonlight.UnitTesting/IOutput.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.Moonlight.UnitTesting/Tester.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows/MediaElementTest.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows/MediaElementTest.SlowStream.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.IO.IsolatedStorage/IsolatedStorageFileStreamTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.IO.IsolatedStorage/IsolatedStorageFileTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.IO.IsolatedStorage/IsolatedStorageSettingsTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/ApplicationTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/DurationTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/FrameworkElementTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/ResourceDictionaryTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/VisualStateManagerTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/VisualStateTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/BorderTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/CanvasTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/ControlTemplateTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/ControlTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/GridTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/MediaElementTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/MediaElementTest.SlowStream.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/PanelTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Data/BindingTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Data/IValueConverterTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Input/StylusDeviceTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Interop/ContentTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Interop/SettingsTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Interop/SilverlightHostTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/ColorTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Imaging/BitmapImageTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Shapes/PathTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Shapes/RectangleTest.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
@@ -48,6 +72,8 @@
     <ProjectReference type="Gac" localcopy="True" refto="mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
     <ProjectReference type="Project" localcopy="True" refto="System.Windows" />
     <ProjectReference type="Project" localcopy="True" refto="System.Windows.Browser" />
+    <ProjectReference type="Project" localcopy="True" refto="Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight" />
+    <ProjectReference type="Project" localcopy="True" refto="UnitTestHarness" />
   </References>
-  <GtkDesignInfo gtkVersion="2.12.2" />
+  <GtkDesignInfo />
 </Project>

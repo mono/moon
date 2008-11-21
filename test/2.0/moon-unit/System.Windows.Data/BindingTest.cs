@@ -13,6 +13,7 @@ using Mono.Moonlight.UnitTesting;
 using System.Windows.Data;
 using System.Globalization;
 using System.ComponentModel;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows.Data
 {

@@ -33,6 +33,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Resources;
 using Mono.Moonlight.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows {
 

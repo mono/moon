@@ -4,6 +4,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 using Mono.Moonlight.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 // FIXME: the exceptions shouldn't be NRE's, but I'm not sure what
 // they will be so amde them something they won't be so that the
@@ -12,8 +13,8 @@ using Mono.Moonlight.UnitTesting;
 namespace MoonTest.System.Windows.Media.Imaging {
 	[TestClass]
 	public class BitmapImageTest {
-		static Uri corruptImage = new Uri ("images/invalid-image-data.png");
-		static Uri badUri = new Uri ("non-existent-uri.png");
+		static Uri corruptImage = new Uri ("images/invalid-image-data.png", UriKind.Relative);
+		static Uri badUri = new Uri ("non-existent-uri.png", UriKind.Relative);
 		
 		// Invalid/bad Uri
 		

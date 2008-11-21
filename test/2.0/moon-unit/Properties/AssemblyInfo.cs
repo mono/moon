@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("first")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("bbbb")]
+[assembly: AssemblyCompany ("MONO development team")]
 [assembly: AssemblyProduct("first")]
-[assembly: AssemblyCopyright("Copyright © bbbb 2008")]
+[assembly: AssemblyCopyright ("(c) 2008 Various Authors")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

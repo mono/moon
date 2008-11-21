@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using Mono.Moonlight.UnitTesting;
 using System.Windows.Shapes;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows.Shapes
 {

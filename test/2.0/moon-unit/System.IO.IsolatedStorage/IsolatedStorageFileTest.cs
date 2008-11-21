@@ -31,6 +31,8 @@ using System.IO;
 using System.IO.IsolatedStorage;
 using Mono.Moonlight.UnitTesting;
 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 namespace MoonTest.System.IO.IsolatedStorage {
 
 	[TestClass]

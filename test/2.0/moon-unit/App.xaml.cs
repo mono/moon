@@ -10,6 +10,8 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
+using Microsoft.Silverlight.Testing;
+
 namespace Mono.Moonlight.UnitTesting
 {
 	public partial class App : Application
@@ -25,9 +27,7 @@ namespace Mono.Moonlight.UnitTesting
 
 		private void Application_Startup(object sender, StartupEventArgs e)
 		{
-			this.RootVisual = new Canvas ();
-
-			Tester.Execute (new HtmlOutput ());
+			this.RootVisual = UnitTestSystem.CreateTestPage ();
 		}
 
 		private void Application_Exit(object sender, EventArgs e)

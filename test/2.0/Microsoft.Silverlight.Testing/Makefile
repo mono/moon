@@ -190,7 +190,7 @@ SOURCES = \
     UnitTestHarness/UnitTesting/UI/TestPage.xaml.g.cs
 
 RESOURCES = \
-    UnitTestHarness/Properties/UnitTestMessage.resx
+    -res:UnitTestHarness/Properties/UnitTestMessage.resources,Microsoft.Silverlight.Testing.Properties.UnitTestMessage.resources
 
 REFERENCES = \
 	-r:System \
@@ -200,9 +200,13 @@ REFERENCES = \
 	-r:System.Core \
 	-r:Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll
 
-default: Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll
-	smcs $(SOURCES) $(REFERENCES) `pkg-config --libs silver` -noconfig -define:SILVERLIGHT,VISUALSTUDIO_SUPPORT -target:library -out:Microsoft.Silverlight.Testing.dll
 
+default: Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll resources
+	smcs $(SOURCES) $(RESOURCES) $(REFERENCES) `pkg-config --libs silver` -noconfig -define:SILVERLIGHT,VISUALSTUDIO_SUPPORT -target:library -out:Microsoft.Silverlight.Testing.dll -debug:full
+
+
+resources: UnitTestHarness/Properties/UnitTestMessage.resx
+	resgen2 UnitTestHarness/Properties/UnitTestMessage.resx
 
 Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll: 
 	cd ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/ && $(MAKE)
