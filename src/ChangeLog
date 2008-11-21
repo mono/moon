@@ -1,3 +1,20 @@
+2008-11-21  Jeffrey Stedfast  <fejj@novell.com>
+
+	* binding.cpp (BindingExpressionBase::AttachListener): We want to
+	use AddPropertyChangeHandler(), not AddPropertyChangeListener() -
+	we want to provide our own callback, not re-use
+	OnSubPropertyChanged() for a purpose it wasn't meant for.
+
+	* frameworkelement.cpp (FrameworkElement::OnSubPropertyChanged):
+	#if 0'd out, we might not need this afterall.
+
+	* panel.cpp (Panel::OnSubPropertyChanged): Reverted back to only
+	chaining up if the property change wasn't handled.
+
+	* text.cpp (Inline::OnSubPropertyChanged): Same.
+	(TextBlock::OnSubPropertyChanged): Same.
+	(Glyphs::OnSubPropertyChanged): Same.
+
 2008-11-21  Larry Ewing  <lewing@novell.com>
 
 	* shape.cpp: disable custom layout code as it seems to have

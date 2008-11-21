@@ -185,9 +185,9 @@ Inline::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, P
 		// this isn't exactly what we want, I don't
 		// think... but it'll have to do.
 		NotifyListenersOfPropertyChange (prop);
+	} else {
+		DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);
 	}
-	
-	DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
 
@@ -766,10 +766,11 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 TextBlock::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
-	if (prop == TextBlock::ForegroundProperty)
+	if (prop == TextBlock::ForegroundProperty) {
 		Invalidate ();
-	
-	FrameworkElement::OnSubPropertyChanged (prop, obj, subobj_args);
+	} else {
+		FrameworkElement::OnSubPropertyChanged (prop, obj, subobj_args);
+	}
 }
 
 void
@@ -1386,10 +1387,11 @@ Glyphs::GetTransformOrigin ()
 void
 Glyphs::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
-	if (prop == Glyphs::FillProperty)
+	if (prop == Glyphs::FillProperty) {
 		Invalidate ();
-	
-	FrameworkElement::OnSubPropertyChanged (prop, obj, subobj_args);
+	} else {
+		FrameworkElement::OnSubPropertyChanged (prop, obj, subobj_args);
+	}
 }
 
 void

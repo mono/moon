@@ -49,18 +49,24 @@ BindingExpressionBase::SetProperty (DependencyProperty *property)
 	this->property = property;
 }
 
+static void
+changed_cb (DependencyObject *sender, PropertyChangedEventArgs *args, gpointer closure)
+{
+	
+}
+
 void
 BindingExpressionBase::AttachListener (FrameworkElement *listener)
 {
 	if (element)
-		element->AddPropertyChangeListener (listener, FrameworkElement::DataContextProperty);
+		element->AddPropertyChangeHandler (FrameworkElement::DataContextProperty, changed_cb, listener);
 }
 
 void
-BindingExpressionBase::DetachListener (FrameworkElement *listener)
+BindingExpressionBase::DetachListener ()
 {
 	if (element)
-		element->RemovePropertyChangeListener (listener, FrameworkElement::DataContextProperty);
+		element->RemovePropertyChangeHandler (FrameworkElement::DataContextProperty, changed_cb);
 }
 
 Value *

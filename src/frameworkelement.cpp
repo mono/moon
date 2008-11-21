@@ -63,7 +63,7 @@ FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 		// If there is an existing binding, remove it if we are placing
 		// a new binding *or* it is not a two-way binding.
 		if (new_binding || cur_binding->GetBinding ()->mode != BindingModeTwoWay) {
-			cur_binding->DetachListener (this);
+			cur_binding->DetachListener ();
 			
 			g_hash_table_remove (bindings, property);
 		} else {
@@ -86,33 +86,34 @@ FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 			g_strdup_printf ("Property 'Style' cannot be assigned to more than once"));
 		return false;
 	}
+	
 	bool result = UIElement::SetValueWithErrorImpl (property, value, error);
 	Value *styleVal = GetValueNoDefault (FrameworkElement::StyleProperty);
 	
 	if (result && styleVal) {
 		Style *style = styleVal->AsStyle ();
-		SetterBaseCollection *setters = style->GetValue (Style::SettersProperty)->AsSetterBaseCollection ();
+		SetterBaseCollection *setters = style->GetSetters ();
 		if (!setters)
 			return true;
 
-		int e;
-		Value *setterBase;
 		CollectionIterator *iter = setters->GetIterator ();
-
-		while (iter->Next () && (setterBase = iter->GetCurrent (&e))) {
-			if(e) {
+		Value *setterBase;
+		int err;
+		
+		while (iter->Next () && (setterBase = iter->GetCurrent (&err))) {
+			if (err) {
 		 		// Something bad happened - what to do?
 		 	}
 
 			if (!setterBase->Is (Type::SETTER))
 				continue;
-
+			
 			Setter *setter = setterBase->AsSetter ();
 			if (!(value = setter->GetValue (Setter::PropertyProperty)))
 				continue;
 			
 			char *propertyName = value->AsString ();
-			if (!(property = DependencyProperty::GetDependencyProperty (this->GetType ()->GetKind (), propertyName))) {
+			if (!(property = DependencyProperty::GetDependencyProperty (GetType ()->GetKind (), propertyName))) {
 				continue;
 			}
 			
@@ -160,6 +161,7 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 	NotifyListenersOfPropertyChange (args);
 }
 
+#if 0
 void
 FrameworkElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
@@ -169,6 +171,7 @@ FrameworkElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObje
 	
 	UIElement::OnSubPropertyChanged (prop, obj, subobj_args);
 }
+#endif
 
 void
 FrameworkElement::ComputeBounds ()

@@ -57,7 +57,7 @@ class BindingExpressionBase : public Expression {
 	void AttachListener (FrameworkElement *listener);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	void DetachListener (FrameworkElement *listener);
+	void DetachListener ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Value *GetValue ();
