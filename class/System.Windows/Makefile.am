@@ -42,6 +42,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Collections.Specialized/NotifyCollectionChangedEventArgs.cs \
 	$(srcdir)/System.Collections.Specialized/NotifyCollectionChangedEventHandler.cs \
 	$(srcdir)/System.IO.IsolatedStorage/IsolatedStorageSettings.cs		\
+	$(srcdir)/System.Windows.Automation.Peers/AutomationPeer.cs		\
 	$(srcdir)/System.Windows.Controls/Border.cs				\
 	$(srcdir)/System.Windows.Controls/InkPresenter.cs			\
 	$(srcdir)/System.Windows.Controls/MediaElement.cs			\

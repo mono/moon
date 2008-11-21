@@ -31,9 +31,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Windows;
-#if notyet
 using System.Windows.Automation.Peers;
-#endif
 using System.Windows.Media;
 using System.Windows.Input;
 using Mono;
@@ -107,13 +105,10 @@ namespace System.Windows {
 			throw new NotImplementedException ();
 		}
 
-#if notyet
-		[SecuritySafeCritical]
-		public AutomationPeer OnCreateAutomationPeer ()
+		protected virtual AutomationPeer OnCreateAutomationPeer ()
 		{
 			throw new NotImplementedException ();
 		}
-#endif
 
 		public Size DesiredSize {
 			get {

@@ -76,5 +76,40 @@ namespace System.Windows.Controls {
 		protected virtual void OnLostFocus (RoutedEventArgs e)
 		{
 		}
+
+		[MonoTODO]
+		protected virtual void OnKeyDown (KeyEventArgs e)
+		{
+		}
+
+		[MonoTODO]
+		protected virtual void OnKeyUp (KeyEventArgs e)
+		{
+		}
+
+		[MonoTODO]
+		protected virtual void OnMouseEnter (MouseEventArgs e)
+		{
+		}
+
+		[MonoTODO]
+		protected virtual void OnMouseLeave (MouseEventArgs e)
+		{
+		}
+
+		[MonoTODO]
+		protected virtual void OnMouseLeftButtonDown (MouseButtonEventArgs e)
+		{
+		}
+
+		[MonoTODO]
+		protected virtual void OnMouseLeftButtonUp (MouseButtonEventArgs e)
+		{
+		}
+
+		[MonoTODO]
+		protected virtual void OnMouseMove (MouseEventArgs e)
+		{
+		}
 	}
 }
