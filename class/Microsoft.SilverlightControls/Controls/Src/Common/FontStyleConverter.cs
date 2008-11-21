@@ -66,23 +66,6 @@ namespace System.Windows
         public object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value) 
         {
             return TypeConverters.ConvertFrom<FontStyle>(this, value);
-        } 
- 
-        /// <summary>
-        /// Attempts to convert a specified String to an instance of FontStyle. 
-        /// </summary>
-        /// <param name="text">
-        /// The String to be converted into the FontStyle object. 
-        /// </param>
-        /// <returns>
-        /// The instance of FontStyle created from the converted text. 
-        /// </returns> 
-#if NET_2_1
-	override
-#endif
-        public object ConvertFromString(string text)
-        { 
-            return TypeConverters.ConvertFromString(text, KnownValues);
         }
     } 
 }

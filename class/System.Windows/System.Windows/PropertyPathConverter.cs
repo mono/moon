@@ -54,15 +54,5 @@ namespace System.Windows
 		{
 			return TypeConverters.ConvertFrom<PropertyPath>(this, value);
 		}
-
-#if NET_2_1
-		override
-#endif
-		public object ConvertFromString (string text)
-		{
-			return (!string.IsNullOrEmpty(text)) ?
-				new PropertyPath(text) :
-				null;
-		}
 	}
 }

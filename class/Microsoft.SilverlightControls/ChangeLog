@@ -4,6 +4,17 @@
 	  Controls/Src/Common/FontStretchConverter.cs,
 	  Controls/Src/Common/FontStyleConverter.cs,
 	  Controls/Src/Common/FontWeightConverter.cs,
+	  Controls/Src/Common/NullableBoolConverter.cs,
+	  Controls/Src/Common/TextDecorationCollectionConverter.cs,
+	  Controls/Src/Common/UriTypeConverter.cs: Remove ConvertFromString,
+	  it doesn't exist in SL2.
+
+2008-11-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Controls/Src/Common/FontFamilyConverter.cs,
+	  Controls/Src/Common/FontStretchConverter.cs,
+	  Controls/Src/Common/FontStyleConverter.cs,
+	  Controls/Src/Common/FontWeightConverter.cs,
 	  Controls/Src/Common/TextDecorationCollectionConverter.cs,
 	  Controls/Src/Common/NullableBoolConverter.cs,
 	  Controls/Src/Common/UriTypeConverter.cs: Fix method signatures to

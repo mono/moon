@@ -54,22 +54,5 @@ namespace System.Windows
 		{
 			return TypeConverters.ConvertFrom<Duration>(this, value);
 		}
-
-		[MonoTODO("we need unit tests for this")]
-#if NET_2_1
-		override
-#endif
-		public object ConvertFromString (string text)
-		{
-			if (string.IsNullOrEmpty(text))
-				return Duration.Automatic;
-
-			if (text.ToLower () == "automatic")
-				return Duration.Automatic;
-			else if (text.ToLower () == "forever")
-				return Duration.Forever;
-			else
-				return new Duration(TimeSpan.Parse (text));
-		}
 	}
 }

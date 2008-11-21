@@ -56,22 +56,5 @@ namespace System.Windows.Media
         {
             return TypeConverters.ConvertFrom<FontFamily>(this, value); 
         }
-
-        /// <summary> 
-        /// Attempts to convert a specified String to an instance of FontFamily. 
-        /// </summary>
-        /// <param name="text"> 
-        /// The String to be converted into the FontFamily object.
-        /// </param>
-        /// <returns> 
-        /// The instance of FontFamily created from the converted text.
-        /// </returns>
-#if NET_2_1
-	override
-#endif
-        public object ConvertFromString(string text) 
-        { 
-            return new FontFamily(text);
-        } 
     }
 }

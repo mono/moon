@@ -53,23 +53,5 @@ namespace System
         {
             return TypeConverters.ConvertFrom<Uri>(this, value);
         } 
-
-        /// <summary>
-        /// Converts the specified text to a Uri. 
-        /// </summary> 
-        /// <param name="text">
-        /// The text representation of the Uri to convert. 
-        /// </param>
-        /// <returns>A Uri that represents the converted text.</returns>
-#if NET_2_1
-	override
-#endif
-        public object ConvertFromString(string text) 
-        {
-            // Let the Uri constructor throw any informative exceptions
-            return (!string.IsNullOrEmpty(text)) ? 
-                new Uri(text, UriKind.RelativeOrAbsolute) : 
-                null;
-        } 
     }
 }

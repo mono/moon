@@ -75,22 +75,5 @@ namespace System.Windows
         { 
             return TypeConverters.ConvertFrom<FontWeight>(this, value);
         }
- 
-        /// <summary> 
-        /// Attempts to convert a specified String to an instance of FontWeight.
-        /// </summary> 
-        /// <param name="text">
-        /// The String to be converted into the FontWeight object.
-        /// </param> 
-        /// <returns>
-        /// The instance of FontWeight created from the converted text.
-        /// </returns> 
-#if NET_2_1
-	override
-#endif
-        public object ConvertFromString(string text) 
-        {
-            return TypeConverters.ConvertFromString(text, KnownValues); 
-        }
     }
 } 

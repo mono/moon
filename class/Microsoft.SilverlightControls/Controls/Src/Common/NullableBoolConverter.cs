@@ -63,27 +63,5 @@ namespace System.Windows
  
             return TypeConverters.ConvertFrom<bool?>(this, value);
         } 
-
-        /// <summary>
-        /// Converts the specified text to a nullable boolean. 
-        /// </summary>
-        /// <param name="text">
-        /// The text representation of the nullable boolean to convert. 
-        /// </param> 
-        /// <returns>
-        /// A nullable boolean that represents the converted text. 
-        /// </returns>
-#if NET_2_1
-	override
-#else
-	new
-#endif
-        public object ConvertFromString(string text)
-        { 
-            // Let bool.Parse throw any informative exceptions
-            return (!string.IsNullOrEmpty(text)) ?
-                (bool?) bool.Parse(text) : 
-                null; 
-        }
     } 
 }

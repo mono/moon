@@ -74,23 +74,5 @@ namespace System.Windows
         { 
             return TypeConverters.ConvertFrom<FontStretch>(this, value);
         }
- 
-        /// <summary> 
-        /// Attempts to convert a specified String to an instance of
-        /// FontStretch. 
-        /// </summary>
-        /// <param name="text">
-        /// The String to be converted into the FontStretch object. 
-        /// </param>
-        /// <returns>
-        /// The instance of FontStretch created from the converted text. 
-        /// </returns> 
-#if NET_2_1
-	override
-#endif
-        public object ConvertFromString(string text)
-        { 
-            return TypeConverters.ConvertFromString(text, KnownValues);
-        }
     } 
 }

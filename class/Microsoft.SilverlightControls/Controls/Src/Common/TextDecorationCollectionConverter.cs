@@ -70,28 +70,5 @@ namespace System.Windows
         {
             return TypeConverters.ConvertFrom<TextDecorationCollection>(this, value); 
         }
-
-        /// <summary> 
-        /// Attempts to convert a specified String to an instance of
-        /// TextDecorationCollection.
-        /// </summary> 
-        /// <param name="text"> 
-        /// The String to be converted into the TextDecorationCollection object.
-        /// </param> 
-        /// <returns>
-        /// The instance of TextDecorationCollection created from the converted
-        /// text. 
-        /// </returns>
-#if NET_2_1
-	override
-#endif
-        public object ConvertFromString(string text)
-        { 
-            if (text == null) 
-            {
-                return null; 
-            }
-            return TypeConverters.ConvertFromString(text, KnownValues);
-        } 
     }
 }

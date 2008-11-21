@@ -1,5 +1,10 @@
 2008-11-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* DurationConverter.cs, PropertyPathConverter.cs: Remove
+	  ConvertFromString, it doesn't exist in SL2.
+
+2008-11-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* DurationConverter.cs, PropertyPathConverter.cs: Fix method signatures
 	  to match SL2 api.
 
