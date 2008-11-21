@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 
 namespace System.Windows
 {
@@ -51,6 +52,10 @@ namespace System.Windows
 		
 		public string Path {
 			get { return path; }
+		}
+
+		internal IList<object> PathParameters {
+			get { return new List<object> (path_parameters); }
 		}
 	}
 }
