@@ -4,6 +4,7 @@
 // All other rights reserved. 
 
 using System.Diagnostics;
+using System.Windows.Automation.Peers;
 using System.Windows.Input; 
 using System.Windows.Markup; 
 using System.Windows.Media.Animation;
@@ -48,7 +49,7 @@ namespace System.Windows.Controls
             Orientation = Orientation.Horizontal;
             GotFocus += delegate(object sender, RoutedEventArgs e) { IsFocused = true; OnGotFocus (e); };
             LostFocus += delegate(object sender, RoutedEventArgs e) { IsFocused = false; OnLostFocus (e); }; 
-            KeyDown += delegate(object sender, KeyEventArgs e){ OnKeyPressed(e); };
+            KeyDown += delegate(object sender, KeyEventArgs e){ OnKeyDown(e); };
             MouseEnter += delegate(object sender, MouseEventArgs e) { OnMouseEnter(e); };
             MouseLeave += delegate(object sender, MouseEventArgs e) { OnMouseLeave(e); }; 
             MouseLeftButtonDown += delegate(object sender, MouseButtonEventArgs e) { OnMouseLeftButtonDown(e); }; 
@@ -336,7 +337,7 @@ namespace System.Windows.Controls
         /// </summary>
         /// <param name="e">The event data for the MouseEnter event.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "e", Justification = "Compat with WPF.")] 
-        private void OnMouseEnter(MouseEventArgs e) 
+        protected override void OnMouseEnter(MouseEventArgs e) 
         {
             e.Handled = true; 
             IsMouseOver = true;
@@ -352,7 +353,7 @@ namespace System.Windows.Controls
         /// </summary>
         /// <param name="e">The event data for the MouseLeave event.</param> 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "e", Justification = "Compat with WPF.")]
-        private void OnMouseLeave(MouseEventArgs e)
+        protected override void OnMouseLeave(MouseEventArgs e)
         { 
             e.Handled = true; 
             IsMouseOver = false;
@@ -368,7 +369,7 @@ namespace System.Windows.Controls
         /// </summary> 
         /// <param name="e">The event data for the MouseLeftButtonDown event.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "e", Justification = "Compat with WPF.")]
-        private void OnMouseLeftButtonDown(MouseButtonEventArgs e) 
+        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e) 
         {
             e.Handled = true;
             Focus(); 
@@ -380,7 +381,7 @@ namespace System.Windows.Controls
         /// </summary> 
         /// <param name="e">The event data for the MouseLeftButtonUp event.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "e", Justification = "Compat with WPF.")]
-        private void OnMouseLeftButtonUp(MouseButtonEventArgs e) 
+        protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e) 
         { 
             e.Handled = true;
             ReleaseMouseCapture(); 
@@ -390,10 +391,10 @@ namespace System.Windows.Controls
 
         #region KeyEvents
         /// <summary> 
-        /// Responds to the KeyPressed event. 
+        /// Responds to the KeyDown event. 
         /// </summary>
-        /// <param name="e">The event data for the KeyPressed event.</param> 
-        private void OnKeyPressed(KeyEventArgs e)
+        /// <param name="e">The event data for the KeyDown event.</param> 
+        protected override void OnKeyDown(KeyEventArgs e)
         {
             if (!IsEnabled) 
             {
@@ -607,6 +608,11 @@ namespace System.Windows.Controls
 
         #endregion UpdateTrackLayout 
  
+	protected override AutomationPeer OnCreateAutomationPeer ()
+	{
+		throw new NotImplementedException ();
+	}
+
         #region Template Parts
         /// <summary> 
         /// Root of the thumb template.

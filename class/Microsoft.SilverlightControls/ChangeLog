@@ -1,3 +1,11 @@
+2008-11-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Controls/Extended/Src/Slider/Slider.cs: Expose some private
+	stuff as protected override to match SL2 API.
+	* Controls/Src/Thumb/Thumb.cs: Expose some private stuff as 
+	protected override to match SL2 API. Add some stubs for missing
+	methods.
+
 2008-11-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Controls/Src/Common/FontFamilyConverter.cs,

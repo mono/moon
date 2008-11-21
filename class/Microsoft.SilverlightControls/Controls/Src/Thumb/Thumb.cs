@@ -4,6 +4,7 @@
 // All other rights reserved. 
 
 using System.Diagnostics;
+using System.Windows.Automation.Peers;
 using System.Windows.Input; 
 using System.Windows.Markup; 
 using System.Windows.Media.Animation;
@@ -122,7 +123,7 @@ namespace System.Windows.Controls.Primitives
         /// </summary> 
         /// <param name="e">MouseButtonEventArgs.</param> 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "e", Justification = "Compat with WPF.")]
-        internal void OnMouseLeftButtonDown(MouseButtonEventArgs e) 
+        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e) 
         {
             if (!IsDragging && IsEnabled)
             { 
@@ -162,7 +163,7 @@ namespace System.Windows.Controls.Primitives
         /// </summary>
         /// <param name="e">MouseButtonEventArgs.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "e", Justification = "Compat with WPF.")] 
-        private void OnMouseLeftButtonUp(MouseButtonEventArgs e)
+        protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
         {
             if (IsDragging && IsEnabled) 
             { 
@@ -178,7 +179,7 @@ namespace System.Windows.Controls.Primitives
         /// </summary>
         /// <param name="e">MouseEventArgs.</param> 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "e", Justification = "Compat with WPF.")]
-        private void OnMouseEnter(MouseEventArgs e)
+        protected override void OnMouseEnter(MouseEventArgs e)
         { 
             e.Handled = true;
             if (IsEnabled)
@@ -193,7 +194,7 @@ namespace System.Windows.Controls.Primitives
         /// </summary>
         /// <param name="e">MouseEventArgs.</param> 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "e", Justification = "Compat with WPF.")] 
-        private void OnMouseLeave(MouseEventArgs e)
+        protected override void OnMouseLeave(MouseEventArgs e)
         { 
             e.Handled = true;
             if (IsEnabled)
@@ -208,7 +209,7 @@ namespace System.Windows.Controls.Primitives
         /// </summary>
         /// <param name="e">MouseEventArgs.</param> 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "e", Justification = "Compat with WPF.")]
-        internal void OnMouseMove(MouseEventArgs e)
+        protected override void OnMouseMove(MouseEventArgs e)
         { 
             if (IsDragging) 
             {
@@ -324,6 +325,19 @@ namespace System.Windows.Controls.Primitives
         }
         #endregion Drag Cancel/Complete
  
+	protected override AutomationPeer OnCreateAutomationPeer ()
+	{
+		throw new NotImplementedException ();
+	}
+
+	protected override void OnGotFocus (RoutedEventArgs e)
+	{
+	}
+
+	protected override void OnLostFocus (RoutedEventArgs e)
+	{
+	}
+
         #region Template Parts
         /// <summary>
         /// Root of the thumb template. 
