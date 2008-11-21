@@ -97,7 +97,11 @@ public:
 	virtual Size ArrangeOverride (Size finalSize);
 
 	virtual bool UpdateLayout ();
-
+	
+	// Methods for accessing a binding expression on a property
+	void SetBindingExpression (DependencyProperty *property, BindingExpressionBase *expr);
+	BindingExpressionBase *GetBindingExpression (DependencyProperty *property);
+	
 	/* @SilverlightVersion="2" */
 	const static int BindingValidationErrorEvent;
 	/* @SilverlightVersion="2" */

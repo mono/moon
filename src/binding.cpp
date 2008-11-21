@@ -52,21 +52,39 @@ BindingExpressionBase::SetProperty (DependencyProperty *property)
 static void
 changed_cb (DependencyObject *sender, PropertyChangedEventArgs *args, gpointer closure)
 {
+	FrameworkElement *listener = (FrameworkElement *) closure;
+	BindingExpressionBase *expr = listener->GetBindingExpression (args->property);
+	Binding *binding = expr->GetBinding ();
 	
+	// FIXME: args->property isn't the same property sued as a key
+	// in FW::bindings... ugh, gotta figure this out.
+	
+	// Setting the value will unregister the binding, so grab a
+	// ref before we set the new value.
+	expr->ref ();
+	
+	// update the bound value on the listener
+	listener->SetValue (expr->GetProperty (), args->new_value);
+	
+	// restore the binding
+	if (binding->mode != BindingModeOneTime)
+		listener->SetBindingExpression (args->property, expr);
+	
+	expr->unref ();
 }
 
 void
 BindingExpressionBase::AttachListener (FrameworkElement *listener)
 {
-	if (element)
-		element->AddPropertyChangeHandler (FrameworkElement::DataContextProperty, changed_cb, listener);
+	if (element && property)
+		element->AddPropertyChangeHandler (property, changed_cb, listener);
 }
 
 void
 BindingExpressionBase::DetachListener ()
 {
-	if (element)
-		element->RemovePropertyChangeHandler (FrameworkElement::DataContextProperty, changed_cb);
+	if (element && property)
+		element->RemovePropertyChangeHandler (property, changed_cb);
 }
 
 Value *

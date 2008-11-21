@@ -40,6 +40,29 @@ FrameworkElement::~FrameworkElement ()
 	g_hash_table_destroy (bindings);
 }
 
+void
+FrameworkElement::SetBindingExpression (DependencyProperty *property, BindingExpressionBase *expr)
+{
+	BindingExpressionBase *cur_expr = GetBindingExpression (property);
+	
+	if (cur_expr) {
+		cur_expr->DetachListener ();
+		g_hash_table_remove (bindings, property);
+	}
+	
+	if (expr) {
+		g_hash_table_insert (bindings, property, expr);
+		expr->AttachListener (this);
+		expr->ref ();
+	}
+}
+
+BindingExpressionBase *
+FrameworkElement::GetBindingExpression (DependencyProperty *property)
+{
+	return (BindingExpressionBase *) g_hash_table_lookup (bindings, property);
+}
+
 bool
 FrameworkElement::IsValueValid (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error)
 {
@@ -53,34 +76,31 @@ FrameworkElement::IsValueValid (Types *additional_types, DependencyProperty *pro
 bool
 FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error)
 {
-	BindingExpressionBase *cur_binding = (BindingExpressionBase *) g_hash_table_lookup (bindings, property);
+	BindingExpressionBase *cur_binding = GetBindingExpression (property);
 	BindingExpressionBase *new_binding = NULL;
 	
 	if (value && value->Is (Type::BINDINGEXPRESSIONBASE))
 		new_binding = value->AsBindingExpressionBase ();
 	
-	if (cur_binding) {
-		// If there is an existing binding, remove it if we are placing
-		// a new binding *or* it is not a two-way binding.
-		if (new_binding || cur_binding->GetBinding ()->mode != BindingModeTwoWay) {
-			cur_binding->DetachListener ();
-			
-			g_hash_table_remove (bindings, property);
-		} else {
-			// We have a two way binding, so we update the source object
+	if (new_binding) {
+		// We are setting a new data binding; replace the
+		// existing binding if there is one.
+		SetBindingExpression (property, new_binding);
+		value = new_binding->GetValue ();
+	} else if (cur_binding) {
+		switch (cur_binding->GetBinding ()->mode) {
+		case BindingModeTwoWay:
+			// We have a two way binding, so we update the
+			// source object
 			cur_binding->UpdateSource (value);
+			break;
+		default:
+			// Remove the current binding
+			SetBindingExpression (property, NULL);
+			break;
 		}
 	}
 	
-	if (new_binding) {
-		// We are setting a new data binding
-		g_hash_table_insert (bindings, property, new_binding);
-		new_binding->AttachListener (this);
-		new_binding->ref ();
-		
-		value = new_binding->GetValue ();
-	}
-
 	if (property == FrameworkElement::StyleProperty && GetValue (property)) {
 		MoonError::FillIn (error, MoonError::EXCEPTION, 1001,
 			g_strdup_printf ("Property 'Style' cannot be assigned to more than once"));
@@ -129,7 +149,7 @@ FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 
 	return result;
 }
-	
+
 void
 FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 {

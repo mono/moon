@@ -1,5 +1,18 @@
 2008-11-21  Jeffrey Stedfast  <fejj@novell.com>
 
+	* binding.cpp (changed_cb): Implemented... but it's
+	wrong. Committing anyay with a big FIXME explaining why it's
+	wrong.
+
+	* frameworkelement.cpp (FrameworkElement::SetBindingExpression):
+	New method to set a binding expression for a property.
+	(FrameworkElement::GetBindingExpression): Get the binding
+	expression for a property.
+	(FrameworkElement::SetValueWithErrorImpl): Cleaned up the binding
+	stuff to make the logic a bit clearer.
+
+2008-11-21  Jeffrey Stedfast  <fejj@novell.com>
+
 	* binding.cpp (BindingExpressionBase::AttachListener): We want to
 	use AddPropertyChangeHandler(), not AddPropertyChangeListener() -
 	we want to provide our own callback, not re-use
