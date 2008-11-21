@@ -30,6 +30,8 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Security;
 
+using Mono;
+
 namespace System.Windows.Browser{
 
 	public static class HtmlPage {
@@ -40,16 +42,20 @@ namespace System.Windows.Browser{
 				return browser_info;
 			}
 		}
-
+		
+		[MonoTODO ("This method should return false when we're not running in a browser.")]
 		public static bool IsEnabled {		
 		[SecuritySafeCritical ()]
-			get { throw new System.NotImplementedException (); }
+			get {
+				return true;
+			}
 		}
 		
 		public static HtmlDocument Document {
 		[SecuritySafeCritical ()]
 			get {
-				return new HtmlDocument (HtmlObject.GetPropertyInternal<IntPtr> (IntPtr.Zero, "document"));
+				IntPtr handle = HtmlObject.GetPropertyInternal<IntPtr> (IntPtr.Zero, "document");
+				return new HtmlDocument (handle);
 			}
 		}
 
@@ -70,13 +76,18 @@ namespace System.Windows.Browser{
 
 		public static HtmlWindow Window {
 			get {
-				return new HtmlWindow (HtmlObject.GetPropertyInternal<IntPtr> (IntPtr.Zero, "window"));
+				IntPtr window = HtmlObject.GetPropertyInternal<IntPtr> (IntPtr.Zero, "window");
+				//Console.WriteLine ("HtmlPage.Window: {0}", window);
+				return new HtmlWindow (window);
 			}
 		}
 
 		public static HtmlElement Plugin {
 			[SecuritySafeCritical]
-			get { throw new System.NotImplementedException (); }
+			get {
+				IntPtr obj = NativeMethods.plugin_instance_get_host (Mono.Xaml.XamlLoader.PluginInDomain);
+				return new HtmlElement (obj);
+			}
 		}
 
 		public static bool IsPopupWindowAllowed {

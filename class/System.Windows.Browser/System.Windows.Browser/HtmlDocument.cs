@@ -118,13 +118,24 @@ namespace System.Windows.Browser
 
 		public Uri DocumentUri {
 			get {
+				IntPtr location = GetPropertyInternal<IntPtr> (Handle, "location");
+				string href;
+				
+				if (location == IntPtr.Zero)
+					return null;
 
-				return new Uri (GetPropertyInternal<string> (Handle, "URL"));
+				href = GetPropertyInternal<string> (location, "href");
+				
+				return new Uri (href);
 			}
 		}
 		
 		public HtmlElement Body {
-			get { throw new NotImplementedException (); }
+			get {
+				IntPtr body = GetPropertyInternal<IntPtr> (Handle, "body");
+				//Console.WriteLine ("HtmlDocument.Body: {0} Handle: {1}", body, Handle);
+				return new HtmlElement (body);
+			}
 		}
 		
 		public void Submit ()

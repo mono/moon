@@ -10,6 +10,9 @@
       <Entry build="True" name="test" configuration="Debug" />
       <Entry build="True" name="tools" configuration="Debug" />
       <Entry build="True" name="Microsoft.SilverlightControls" configuration="Debug" />
+      <Entry build="True" name="Moonlight Unit Tests" configuration="Debug" />
+      <Entry build="True" name="UnitTestHarness" configuration="Debug" />
+      <Entry build="True" name="Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="src" configuration="Release" />
@@ -21,6 +24,9 @@
       <Entry build="True" name="test" configuration="Release" />
       <Entry build="True" name="tools" configuration="Release" />
       <Entry build="True" name="Microsoft.SilverlightControls" configuration="Release" />
+      <Entry build="True" name="Moonlight Unit Tests" configuration="Release" />
+      <Entry build="True" name="UnitTestHarness" configuration="Release" />
+      <Entry build="True" name="Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight" configuration="Release" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="src" single="True">
@@ -33,6 +39,9 @@
     <Execute type="None" entry="test" />
     <Execute type="None" entry="tools" />
     <Execute type="None" entry="Microsoft.SilverlightControls" />
+    <Execute type="None" entry="Moonlight Unit Tests" />
+    <Execute type="None" entry="UnitTestHarness" />
+    <Execute type="None" entry="Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight" />
   </StartMode>
   <MonoDevelop.ChangeLogAddIn.ChangeLogInfo policy="UpdateNearestChangeLog" />
   <Entries>
@@ -45,5 +54,8 @@
     <Entry filename="test/test.mdp" />
     <Entry filename="tools/tools.mdp" />
     <Entry filename="class/Microsoft.SilverlightControls/Microsoft.SilverlightControls.mdp" />
+    <Entry filename="test/2.0/moon-unit/moon-unit.mdp" />
+    <Entry filename="test/2.0/Microsoft.Silverlight.Testing/UnitTestHarness/UnitTestHarness.mdp" />
+    <Entry filename="test/2.0/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.mdp" />
   </Entries>
 </Combine>

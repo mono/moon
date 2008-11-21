@@ -1,3 +1,8 @@
+2008-11-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* ScriptableObjectGenerator.cs: Some marshalling fixes for managed
+	  objects deriving from ScriptObject.
+
 2008-11-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* WebApplication.cs: Corcompare fixes.

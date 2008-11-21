@@ -1,3 +1,9 @@
+2008-11-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin-class.cpp: Implement variant<->value conversion for NPObjects.
+	* plugin.h, plugin.cpp: Added plugin_instance_get_id and
+	  plugin_instance_get_host.
+
 2008-11-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fix for bug #442770

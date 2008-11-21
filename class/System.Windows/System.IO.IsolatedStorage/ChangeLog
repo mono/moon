@@ -1,3 +1,8 @@
+2008-11-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* IsolatedStorageSettings.cs: If the serializer can't deserialize the
+	  settings file, initialize with an empty dictionary.
+
 2008-11-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* IsolatedStorageSettings.cs: Fix IDictionary.Contains wrt null values

@@ -312,6 +312,8 @@ namespace System.Windows
 				return v.u.d;
 			case Kind.STRING:
 				return Marshal.PtrToStringAnsi (v.u.p);
+			case Kind.NPOBJ:
+				return v.u.p;
 			default:
 				Console.WriteLine ("unsupported Kind.{0}", v.k);
 				throw new NotSupportedException ();
@@ -349,8 +351,22 @@ namespace System.Windows
 				Marshal.WriteByte (result, bytes.Length, 0);
 				v.u.p = result;
 				break;
+			case TypeCode.Object:
+				//Console.Write ("Trying to marshal managed object {0}...", o.GetType ().FullName);
+				ScriptObject so = o as ScriptObject;
+				if (o != null) {
+					v.u.p = so.Handle;
+					v.k = Kind.NPOBJ;
+				} else {
+					GCHandle handle = new GCHandle ();
+					handle.Target = o;
+					v.u.p = Helper.GCHandleToIntPtr (handle);
+					v.k = Kind.MANAGED;
+				}
+				//Console.WriteLine ("  Marshalled as {0}", v.k);
+				break;
 			default:
-				Console.WriteLine ("unsupported TypeCode.{0}", Type.GetTypeCode(o.GetType()));
+				Console.WriteLine ("unsupported TypeCode.{0} = {1}", Type.GetTypeCode(o.GetType()), o.GetType ().FullName);
 				throw new NotSupportedException ();
 			}
 		}

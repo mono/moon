@@ -69,7 +69,11 @@ namespace System.IO.IsolatedStorage {
 					else
 						fs.Position = header.Length;
 					DataContractSerializer reader = new DataContractSerializer (typeof (Dictionary<string, object>));
-					settings = (Dictionary<string, object>) reader.ReadObject (fs);
+					try {
+						settings = (Dictionary<string, object>) reader.ReadObject (fs);
+					} catch (Xml.XmlException ex) {
+						settings = new Dictionary<string, object> ();
+					}
 				}
 			}
 		}

@@ -1700,6 +1700,12 @@ plugin_instance_get_actual_height (PluginInstance *instance)
 }
 
 char*
+plugin_instance_get_id (PluginInstance *instance)
+{
+	return instance->GetId ();
+}
+
+char*
 plugin_instance_get_init_params  (PluginInstance *instance)
 {
 	return instance->GetInitParams();
@@ -1709,6 +1715,12 @@ char*
 plugin_instance_get_source  (PluginInstance *instance)
 {
 	return instance->GetSource();
+}
+
+NPObject *
+plugin_instance_get_host (PluginInstance *instance)
+{
+	return instance->GetHost ();
 }
 
 char*

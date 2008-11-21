@@ -58,7 +58,7 @@ namespace System.Windows.Browser {
 		[SecuritySafeCritical ()]
 		public virtual void SetProperty (string name, object value)
 		{
-			WebApplication.SetProperty (handle, name, value);
+			HtmlObject.SetPropertyInternal (handle, name, value);
 		}
 
 		public void SetProperty (int index, object value)
@@ -69,7 +69,21 @@ namespace System.Windows.Browser {
 		[SecuritySafeCritical ()]
 		public virtual object GetProperty (string name)
 		{
-			return WebApplication.GetProperty (handle, name);
+			object result;
+			
+			result = HtmlObject.GetPropertyInternal <object> (handle, name);
+
+			if (result != null && result is int) {
+				// When the target type is object, SL converts ints to doubles to wash out
+				// browser differences. (Safari apparently always returns doubles, FF
+				// ints and doubles, depending on the value).
+				// See: http://msdn.microsoft.com/en-us/library/cc645079(VS.95).aspx
+				result = (double) (int) result;
+			}
+			
+			//Console.WriteLine ("ScriptObject.GetProperty ({0}) returned: {1} ({2})", name, result, result != null ? result.GetType () : null);
+			
+			return result;
 		}
 		
 		public object GetProperty (int index)

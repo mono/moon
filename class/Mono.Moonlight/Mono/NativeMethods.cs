@@ -194,6 +194,18 @@ namespace Mono {
 		[DllImport("moonplugin")]
 		public extern static IntPtr plugin_instance_get_init_params (IntPtr plugin_handle);
 
+		[DllImport ("moonplugin", EntryPoint="plugin_instance_get_id")]
+		private extern static IntPtr plugin_instance_get_id_ (IntPtr plugin_handle);
+		public static string plugin_instance_get_id (IntPtr instance)
+		{
+			IntPtr result;
+			result = plugin_instance_get_id_ (instance);
+			return (result == IntPtr.Zero) ? null : Marshal.PtrToStringAnsi (result);
+		}
+
+		[DllImport("moonplugin")]
+		public extern static IntPtr plugin_instance_get_host (IntPtr plugin_handle);
+		
 		[DllImport("moonplugin")]
 		public extern static IntPtr plugin_instance_get_source (IntPtr plugin_handle);
 		

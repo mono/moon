@@ -68,7 +68,18 @@ namespace System.Windows.Browser
 		[MonoTODO]
 		public string GetStyleAttribute (string name)
 		{
-			throw new NotImplementedException ();
+			IntPtr style = GetPropertyInternal<IntPtr> (Handle, "style");
+
+			if (style == IntPtr.Zero) {
+				//Console.WriteLine ("HtmlElement.GetStyleAttribute ('{0}'). Getting style failed.", name);
+				return null;
+			}
+
+			object result = HtmlObject.GetPropertyInternal<object> (style, name);
+
+			//Console.WriteLine ("HtmlElement.GetStyleAttribute ('{0}'): {1} {2}", name, result, result == null ? null : result.GetType ());
+			
+			return (string) result;
 		}
 
 		public void RemoveAttribute (string name)

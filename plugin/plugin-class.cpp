@@ -449,12 +449,19 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result, DependencyObject
 		OBJECT_TO_NPVARIANT (keytime, *result);
 		break;
 	}
+	case Type::NPOBJ: {
+		OBJECT_TO_NPVARIANT ((NPObject *) v->AsNPObj (), *result);
+		break;
+	}
 	default:
 		/* more builtins.. */
 		if (v->Is (Type::DEPENDENCY_OBJECT)) {
 			MoonlightEventObjectObject *depobj =
 				EventObjectCreateWrapper (((MoonlightObject *) npobj)->instance, v->AsDependencyObject ());
 			OBJECT_TO_NPVARIANT (depobj, *result);
+		} else {
+			printf ("value_to_variant, can't create a variant of a %i = %s\n", v->GetKind (), Type::Find (v->GetKind ())->GetName ());
+			NULL_TO_NPVARIANT (*result);
 		}
 		break;
 	}
@@ -488,10 +495,11 @@ variant_to_value (const NPVariant *v, Value **result)
 		*result = new Value (Type::DEPENDENCY_OBJECT);
 		break;
 	case NPVariantType_Object:
-		// This should never happen, we should do type checking of the
-		// arguments before this point and refuse arguments we don't understand.
-		//d(printf ("Got invalid value from javascript.\n"));
-		*result = new Value ();
+		*result = new Value (Type::NPOBJ, NPVARIANT_TO_OBJECT (*v));
+		break;
+	default:
+		d (printf ("Got invalid value from javascript.\n"));
+		*result = NULL;
 		break;
 	}
 }
@@ -4188,6 +4196,67 @@ moonlight_scriptable_object_emit_event (PluginInstance *plugin,
 
 
 /****************************** HtmlObject *************************/
+
+#if 0
+// Debug method to reflect over a NPObject and dump it to stdout.
+static void
+enumerate_html_object (NPP npp, NPObject *npobj, int recurse, int initial_recurse)
+{
+	NPVariant npresult;
+	NPIdentifier *identifiers = NULL;
+	uint32_t id_count = 0;
+
+	if (recurse == 0)
+		return;
+		
+	char *tab = (char *) g_malloc (sizeof (char *) * (initial_recurse + 1) * 4);
+	char *tab2 = (char *) g_malloc (sizeof (char *) * (initial_recurse + 1) * 4);
+	
+	memset (tab, 0, (initial_recurse + 1) * 4);
+	memset (tab, ' ', (initial_recurse - recurse) * 4);
+	
+	memset (tab2, 0, (initial_recurse + 1) * 4);
+	memset (tab2, ' ', (initial_recurse - recurse + 1) * 4);
+
+	if (NPN_Enumerate (npp, npobj, &identifiers, &id_count)) {
+		//printf ("%senumerate_html_object (%p, %p, %i, %i): Enumerating %i identifiers.\n", tab, npp, npobj, recurse, initial_recurse, id_count);
+		for (uint32_t i = 0; i < id_count; i++) {
+			if (NPN_IdentifierIsString (identifiers [i])) {
+				printf ("%s'%s': ", tab2, NPN_UTF8FromIdentifier (identifiers [i]));
+			} else {
+				printf ("%s%i: ", tab2, NPN_IntFromIdentifier (identifiers [i]));
+			}
+
+			NPN_GetProperty (npp, npobj, identifiers [i], &npresult);
+
+			if (NPVARIANT_IS_VOID (npresult)) {
+				printf ("void\n");
+			} else if (NPVARIANT_IS_NULL (npresult)) {
+				printf ("NULL\n");
+			} else if (NPVARIANT_IS_STRING (npresult)) {
+				printf ("String: %s\n", NPVARIANT_TO_STRING (npresult).utf8characters);
+			} else if (NPVARIANT_IS_BOOLEAN (npresult)) {
+				printf ("Boolean: %i\n", NPVARIANT_TO_BOOLEAN (npresult));
+			} else if (NPVARIANT_IS_INT32 (npresult)) {
+				printf ("Int32: %i\n", NPVARIANT_TO_INT32 (npresult));
+			} else if (NPVARIANT_IS_DOUBLE (npresult)) {
+				printf ("Double: %f\n", NPVARIANT_TO_DOUBLE (npresult));
+			} else if (NPVARIANT_IS_OBJECT (npresult)) {
+				printf ("Object.\n");
+				
+				if (recurse >= 1) {
+					enumerate_html_object (npp, NPVARIANT_TO_OBJECT (npresult), recurse - 1, initial_recurse);
+				}
+			} else {
+				printf ("Invalid value.\n");
+			}
+		}
+	}
+
+	g_free (tab);
+	g_free (tab2);
+}
+#endif
 
 void
 html_object_get_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *result)
