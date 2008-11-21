@@ -74,20 +74,24 @@ namespace MoonTest.System.Windows.Shapes
 
   </Border>
 </Canvas>");
-			b.Child = c;
 			Path foo = (Path)c.FindName ("foo");
+			Assert.AreEqual (new Size (0,0), foo.DesiredSize, "foo desired-2");
+
+			b.Child = c;
+
+			Assert.AreEqual (new Size (0,0), foo.DesiredSize, "foo desired-1");
 
 			b.Measure (new Size (300, 300));
 			Assert.AreEqual (new Size (0,0), b.DesiredSize, "b desired0");
-			Assert.AreEqual (new Size (0,0), foo.DesiredSize, "foo desired0");
+			Assert.AreEqual (new Size (50,50), foo.DesiredSize, "foo desired0");
 			Assert.AreEqual (new Size (0,0), foo.RenderSize, "foo render0");
 
 			b.Arrange (new Rect (0, 0, 300, 300));
 			Assert.AreEqual (new Size (0,0), b.DesiredSize, "b desired1");
 
-			Assert.AreEqual (new Size (0,0), foo.DesiredSize, "foo desired1");
-			Assert.AreEqual (new Size (0,0), foo.RenderSize, "foo render1");
-			Assert.AreEqual (new Size (0,0), new Size (foo.ActualWidth, foo.ActualHeight), "foo actual0");
+			Assert.AreEqual (new Size (50,50), foo.DesiredSize, "foo desired1");
+			Assert.AreEqual (new Size (50,50), foo.RenderSize, "foo render1");
+			Assert.AreEqual (new Size (50,50), new Size (foo.ActualWidth, foo.ActualHeight), "foo actual0");
 			Border foo_parent = (Border)VisualTreeHelper.GetParent (foo);
 			Assert.AreEqual (new Size (50,50), foo_parent.DesiredSize, "foo_parent desired1");
 			Assert.AreEqual (new Size (50,50), foo_parent.RenderSize, "foo_parent render1");
@@ -144,9 +148,9 @@ namespace MoonTest.System.Windows.Shapes
 			Assert.AreEqual (new Size (0,0), b.DesiredSize, "b desired1");
 
 			Assert.AreEqual (new Size (25,25), foo.DesiredSize, "foo desired1");
-			Assert.AreEqual (new Size (0,0), foo.RenderSize, "foo render1");
+			Assert.AreEqual (new Size (25,25), foo.RenderSize, "foo render1");
 			Tester.WriteLine (String.Format ("foo.Actual ({0},{1})", foo.ActualWidth, foo.ActualHeight));
-			Assert.AreEqual (new Size (0,0), new Size (foo.ActualWidth, foo.ActualHeight), "foo actual0");
+			Assert.AreEqual (new Size (25,25), new Size (foo.ActualWidth, foo.ActualHeight), "foo actual0");
 
 			Border foo_parent = (Border)VisualTreeHelper.GetParent (foo);
 			Assert.AreEqual (new Size (50,50), foo_parent.DesiredSize, "foo_parent desired1");
@@ -176,8 +180,8 @@ namespace MoonTest.System.Windows.Shapes
 			Assert.AreEqual (new Size (25,25), foo.DesiredSize, "foo desired1");
 			Tester.WriteLine (String.Format ("foo.Actual ({0},{1})", foo.ActualWidth, foo.ActualHeight));
 
-			Assert.AreEqual (new Size (0,0), new Size (foo.ActualWidth, foo.ActualHeight), "foo actual0");
-			Assert.AreEqual (new Size (0,0), foo.RenderSize, "foo render1");
+			Assert.AreEqual (new Size (25,25), new Size (foo.ActualWidth, foo.ActualHeight), "foo actual0");
+			Assert.AreEqual (new Size (25,25), foo.RenderSize, "foo render1");
 
 			Border foo_parent = (Border)VisualTreeHelper.GetParent (foo);
 			Assert.AreEqual (new Size (50,50), foo_parent.DesiredSize, "foo_parent desired1");
