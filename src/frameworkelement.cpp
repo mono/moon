@@ -80,7 +80,12 @@ FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 		
 		value = new_binding->GetValue ();
 	}
-	
+
+	if (property == FrameworkElement::StyleProperty && GetValue (property)) {
+		MoonError::FillIn (error, MoonError::EXCEPTION, 1001,
+			g_strdup_printf ("Property 'Style' cannot be assigned to more than once"));
+		return false;
+	}
 	bool result = UIElement::SetValueWithErrorImpl (property, value, error);
 	Value *styleVal = GetValueNoDefault (FrameworkElement::StyleProperty);
 	
