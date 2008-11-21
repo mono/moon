@@ -184,6 +184,13 @@ Value::Value (EventObject* obj)
 	u.dependency_object = obj;
 }
 
+Value::Value (Type::Kind kind, void *npobj)
+{
+	Init ();
+	k = kind;
+	u.managed_object = npobj;
+}
+
 Value::Value (Point pt)
 {
 	Init ();

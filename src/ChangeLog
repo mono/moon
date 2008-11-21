@@ -1,3 +1,8 @@
+2008-11-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* value.cpp, value.h, value.h.in: Added a npobj field and Value ctor to
+	  create such a Value.
+
 2008-11-21  Alan McGovern  <amcgovern@novell.com>
 
 	* frameworkelement.cpp: Implement initial support for using a Style when

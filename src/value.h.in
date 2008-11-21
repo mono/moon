@@ -72,6 +72,7 @@ public:
 	Value (const char *s);
 	Value (Point *points, int count);
 	Value (double *values, int count);
+	Value (Type::Kind, void *npobj);
 
 	~Value ();
 
@@ -103,6 +104,7 @@ public:
 	char*		AsString ()	{ checked_get_exact (Type::STRING, NULL, u.s); }
 	
 	void *		AsManagedObject () { checked_get_exact (Type::MANAGED, NULL, u.managed_object); }
+	void *		AsNPObj () { checked_get_exact (Type::NPOBJ, NULL, u.npobj); }
 	
 	RepeatBehavior*	AsRepeatBehavior ()	{ checked_get_exact (Type::REPEATBEHAVIOR, NULL, u.repeat); }
 	Duration*	AsDuration ()	{ checked_get_exact (Type::DURATION, NULL, u.duration); }
@@ -147,6 +149,7 @@ public:
 		Thickness *thickness;
 		CornerRadius *corner;
 		void *managed_object;
+		void *npobj;
 	} u;
 	
 	// You don't want to be using this ctor.  it's here to help
