@@ -758,6 +758,7 @@ VideoBrush::SetupBrush (cairo_t *cr, const Rect &area)
 	}
 	
 	pattern = cairo_pattern_create_for_surface (surface);
+	cairo_pattern_set_filter (pattern, CAIRO_FILTER_FAST);
 
 	image_brush_compute_pattern_matrix (&matrix, area.width, area.height, mplayer->GetVideoWidth (),
 					    mplayer->GetVideoHeight (), stretch, ax, ay,

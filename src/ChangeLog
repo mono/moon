@@ -1,3 +1,10 @@
+2008-11-21  Larry Ewing  <lewing@novell.com>
+
+	* brush.cpp (VideoBrush::SetupBrush): make sure we use the fast
+	filter in videobrush when scaling.
+
+	r: kangaroo
+
 2008-11-21  Jeffrey Stedfast  <fejj@novell.com>
 
 	* binding.cpp (changed_cb): Implemented... but it's
