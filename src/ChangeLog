@@ -1,3 +1,10 @@
+2008-11-21  Larry Ewing  <lewing@novell.com>
+ 
+ 	* brush.cpp (VideoBrush::SetupBrush): make sure we use the fast
+ 	filter in videobrush when scaling.
+ 
+ 	r: kangaroo
+
 2008-11-19  Geoff Norton  <gnorton@novell.com>
 
 	* audio.cpp: If we fail to initialize pulseaudio, lets try alsa before
