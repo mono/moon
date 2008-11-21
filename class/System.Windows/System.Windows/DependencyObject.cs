@@ -759,7 +759,7 @@ namespace System.Windows {
 				throw new UnauthorizedAccessException ("Invalid access of Moonlight from an external thread");
 		}
 
-#if SL_2_1
+#if NET_2_1
 		internal
 #else
 		public
