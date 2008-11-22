@@ -332,8 +332,8 @@ MoonWindowless::SetSurface (Surface *s)
 GdkWindow*
 MoonWindowless::GetGdkWindow ()
 {
-	/* GdkNativeWindow is a CARD32 on X11.  gcc with -fstack-protector-all has a bug on
-	 * amd64 where it compiles the following code:
+	/* GdkNativeWindow is a CARD32 on X11.  gcc/netscape with -fstack-protector-all has a
+	 * bug on amd64 where it compiles the following code:
 	 * 
 	 * GdkNativeWindow window;
 	 * NPN_GetValue (plugin->GetInstance(), NPNVnetscapeWindow, (void*)&window);
@@ -347,28 +347,27 @@ MoonWindowless::GetGdkWindow ()
 	 * This ends up with a stack layout like this:
 	 * 
 	 * --------------   [top of stack] %rbp
-	 * |    -0x0    |
-	 *      .... 
-	 * |    -0x8    |   [stack cookie]
+	 * |    -0x0    |   [stack cookie]
+	 * |    -0x1    |          |
+	 * |    -0x2    |          |
+	 * |    -0x3    |          |
+	 * |    -0x4    |          |
+	 * |    -0x5    |          |
+	 * |    -0x5    |          |
+	 * |    -0x7    |   [stack cookie]
+	 * |    -0x8    |   [GdkNativeWindow]
 	 * |    -0x9    |          |
 	 * |    -0xa    |          |
 	 * |    -0xb    |          |
-	 * |    -0xc    |          |       [GdkNativeWindow]
-	 * |    -0xd    |          |               |
-	 * |    -0xe    |          |               |
-	 * |    -0xf    |   [stack cookie] [GdkNativewindow]
+	 * |    -0xc    |   [GdkNativeWindow]
 	 *      ....
 	 * --------------   [bottom of stack]
 	 *
-	 * GdkNativeWindow overlaps the stack cookie, causing the NPN_GetValue call to clobber 4
-	 * bytes of it, causing the stack-smarh detector to assert.
+	 * NPN_GetValue however is treating NPNVnetscapeWindow as a long, so when it writes the
+	 * GdkNativeWindow to clobbers the bottom 4 bytes of the stack cookie.
 	 *
-	 * If we promote GdkNativeWindow to a long, it correctly gives 8 bytes for the stack cookie
-	 * and generates a:
-	 *
-	 *      lea    -0x10(%rbp),%rdx [load the address of GdkNativeWindow from the stack into $rdx]
-	 *
-	 * gcc version 4.3.1 20080507 (prerelease) [gcc-4_3-branch revision 135036] (SUSE Linux) 
+	 * We're going to manually allocate a long which will put the GdkNativeWindow from 
+	 * 0x08->0x10, preventing Mozilla from overwriting the stack cookie.
 	 *
 	 * This sucks.
 	 */ 

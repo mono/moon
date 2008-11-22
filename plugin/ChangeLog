@@ -1,5 +1,10 @@
 2008-11-22  Geoff Norton  <gnorton@novell.com>
 
+	* windowless.cpp: Turns out this was a Firefox bug, updating comment with
+	correct information.
+
+2008-11-22  Geoff Norton  <gnorton@novell.com>
+
 	* windowless.cpp: Work around a gcc bug when using -fstack-protector-all
 
 2008-11-21  Alp Toker  <alp@nuanti.com>
