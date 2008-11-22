@@ -358,8 +358,7 @@ MoonWindowless::GetGdkWindow ()
 	 * |    -0x8    |   [GdkNativeWindow]
 	 * |    -0x9    |          |
 	 * |    -0xa    |          |
-	 * |    -0xb    |          |
-	 * |    -0xc    |   [GdkNativeWindow]
+	 * |    -0xb    |   [GdkNativeWindow]
 	 *      ....
 	 * --------------   [bottom of stack]
 	 *
