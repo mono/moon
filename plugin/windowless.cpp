@@ -334,16 +334,16 @@ MoonWindowless::GetGdkWindow ()
 {
 	/* GdkNativeWindow is a CARD32 on X11.  gcc with -fstack-protector-all has a bug on
 	 * amd64 where it compiles the following code:
-     * 
-     * GdkNativeWindow window;
+	 * 
+	 * GdkNativeWindow window;
 	 * NPN_GetValue (plugin->GetInstance(), NPNVnetscapeWindow, (void*)&window);
-     * 
-     * and emits assembly like: 
+	 * 
+	 * and emits assembly like: 
 	 *      mov    %fs:0x28,%rax   [calculate the stack cookie and put it in $rax]
 	 *      mov    %rax,-0x8(%rbp) [store the stack cookit at $rbp-0x8]
 	 *      ...
 	 *      lea    -0xc(%rbp),%rdx [load the address of GdkNativeWindow from the stack into $rdx]
-     *
+	 *
 	 * This ends up with a stack layout like this:
 	 * 
 	 * --------------   [top of stack] %rbp
@@ -359,17 +359,17 @@ MoonWindowless::GetGdkWindow ()
 	 * |    -0xf    |   [stack cookie] [GdkNativewindow]
 	 *      ....
 	 * --------------   [bottom of stack]
-     *
-     * GdkNativeWindow overlaps the stack cookie, causing the NPN_GetValue call to clobber 4
-     * bytes of it, causing the stack-smarh detector to assert.
-     *
-     * If we promote GdkNativeWindow to a long, it correctly gives 8 bytes for the stack cookie
-     * and generates a:
-     *
+	 *
+	 * GdkNativeWindow overlaps the stack cookie, causing the NPN_GetValue call to clobber 4
+	 * bytes of it, causing the stack-smarh detector to assert.
+	 *
+	 * If we promote GdkNativeWindow to a long, it correctly gives 8 bytes for the stack cookie
+	 * and generates a:
+	 *
 	 *      lea    -0x10(%rbp),%rdx [load the address of GdkNativeWindow from the stack into $rdx]
-     *
-     * gcc version 4.3.1 20080507 (prerelease) [gcc-4_3-branch revision 135036] (SUSE Linux) 
-     *
+	 *
+	 * gcc version 4.3.1 20080507 (prerelease) [gcc-4_3-branch revision 135036] (SUSE Linux) 
+	 *
 	 * This sucks.
 	 */ 
 	long window;
