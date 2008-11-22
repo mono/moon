@@ -98,10 +98,6 @@ public:
 
 	virtual bool UpdateLayout ();
 	
-	// Methods for accessing a binding expression on a property
-	void SetBindingExpression (DependencyProperty *property, BindingExpressionBase *expr);
-	BindingExpressionBase *GetBindingExpression (DependencyProperty *property);
-	
 	/* @SilverlightVersion="2" */
 	const static int BindingValidationErrorEvent;
 	/* @SilverlightVersion="2" */
@@ -147,6 +143,13 @@ public:
 
 protected:
 	GHashTable *bindings;
+	
+	// Methods for accessing a binding expression on a property
+	void SetBindingExpression (DependencyProperty *property, BindingExpressionBase *expr);
+	BindingExpressionBase *GetBindingExpression (DependencyProperty *property);
+	
+	void BoundPropertyChanged (DependencyObject *sender, PropertyChangedEventArgs *args);
+	static void bound_property_changed (DependencyObject *sender, PropertyChangedEventArgs *args, gpointer user_data);
 	
 	virtual bool IsValueValid (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error);
 	virtual bool SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error);

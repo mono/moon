@@ -53,11 +53,8 @@ class BindingExpressionBase : public Expression {
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetProperty (DependencyProperty *property);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
-	void AttachListener (FrameworkElement *listener);
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	void DetachListener ();
+	void AttachListener (PropertyChangeHandler handler, gpointer user_data);
+	void DetachListener (PropertyChangeHandler handler);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Value *GetValue ();

@@ -49,42 +49,18 @@ BindingExpressionBase::SetProperty (DependencyProperty *property)
 	this->property = property;
 }
 
-static void
-changed_cb (DependencyObject *sender, PropertyChangedEventArgs *args, gpointer closure)
+void
+BindingExpressionBase::AttachListener (PropertyChangeHandler handler, gpointer user_data)
 {
-	FrameworkElement *listener = (FrameworkElement *) closure;
-	BindingExpressionBase *expr = listener->GetBindingExpression (args->property);
-	Binding *binding = expr->GetBinding ();
-	
-	// FIXME: args->property isn't the same property sued as a key
-	// in FW::bindings... ugh, gotta figure this out.
-	
-	// Setting the value will unregister the binding, so grab a
-	// ref before we set the new value.
-	expr->ref ();
-	
-	// update the bound value on the listener
-	listener->SetValue (expr->GetProperty (), args->new_value);
-	
-	// restore the binding
-	if (binding->mode != BindingModeOneTime)
-		listener->SetBindingExpression (args->property, expr);
-	
-	expr->unref ();
+	if (element && property && handler)
+		element->AddPropertyChangeHandler (property, handler, user_data);
 }
 
 void
-BindingExpressionBase::AttachListener (FrameworkElement *listener)
+BindingExpressionBase::DetachListener (PropertyChangeHandler handler)
 {
-	if (element && property)
-		element->AddPropertyChangeHandler (property, changed_cb, listener);
-}
-
-void
-BindingExpressionBase::DetachListener ()
-{
-	if (element && property)
-		element->RemovePropertyChangeHandler (property, changed_cb);
+	if (element && property && handler)
+		element->RemovePropertyChangeHandler (property, handler);
 }
 
 Value *

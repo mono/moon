@@ -47,19 +47,50 @@ FrameworkElement::~FrameworkElement ()
 }
 
 void
+FrameworkElement::BoundPropertyChanged (DependencyObject *sender, PropertyChangedEventArgs *args)
+{
+#if SL_2_0
+	BindingExpressionBase *expr = GetBindingExpression (args->property);
+	Binding *binding = expr->GetBinding ();
+	
+	// FIXME: args->property isn't the same property sued as a key
+	// in FW::bindings... ugh, gotta figure this out.
+	
+	// Setting the value will unregister the binding, so grab a
+	// ref before we set the new value.
+	expr->ref ();
+	
+	// update the bound value on the listener
+	SetValue (expr->GetProperty (), args->new_value);
+	
+	// restore the binding
+	if (binding->mode != BindingModeOneTime)
+		SetBindingExpression (args->property, expr);
+	
+	expr->unref ();
+#endif
+}
+
+void
+FrameworkElement::bound_property_changed (DependencyObject *sender, PropertyChangedEventArgs *args, gpointer user_data)
+{
+	((FrameworkElement *) user_data)->BoundPropertyChanged (sender, args);
+}
+
+void
 FrameworkElement::SetBindingExpression (DependencyProperty *property, BindingExpressionBase *expr)
 {
 #if SL_2_0
 	BindingExpressionBase *cur_expr = GetBindingExpression (property);
 	
 	if (cur_expr) {
-		cur_expr->DetachListener ();
+		cur_expr->DetachListener (FrameworkElement::bound_property_changed);
 		g_hash_table_remove (bindings, property);
 	}
 	
 	if (expr) {
 		g_hash_table_insert (bindings, property, expr);
-		expr->AttachListener (this);
+		expr->AttachListener (FrameworkElement::bound_property_changed, this);
 		expr->ref ();
 	}
 #endif
