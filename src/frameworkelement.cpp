@@ -50,24 +50,38 @@ void
 FrameworkElement::BoundPropertyChanged (DependencyObject *sender, PropertyChangedEventArgs *args)
 {
 #if SL_2_0
-	BindingExpressionBase *expr = GetBindingExpression (args->property);
-	Binding *binding = expr->GetBinding ();
+	DependencyProperty *property;
+	BindingExpressionBase *expr;
+	GHashTableIter iter;
+	Binding *binding;
+	gpointer value;
+	gpointer key;
 	
-	// FIXME: args->property isn't the same property sued as a key
-	// in FW::bindings... ugh, gotta figure this out.
+	// FIXME: perhaps the bindings hash table should be rethought...
 	
-	// Setting the value will unregister the binding, so grab a
-	// ref before we set the new value.
-	expr->ref ();
-	
-	// update the bound value on the listener
-	SetValue (expr->GetProperty (), args->new_value);
-	
-	// restore the binding
-	if (binding->mode != BindingModeOneTime)
-		SetBindingExpression (args->property, expr);
-	
-	expr->unref ();
+	g_hash_table_iter_init (&iter, bindings);
+	while (g_hash_table_iter_next (&iter, &key, &value)) {
+		property = (DependencyProperty *) key;
+		expr = (BindingExpressionBase *) value;
+		
+		// check to see if the binding expression describes this property change
+		if (expr->GetElement () == sender && expr->GetProperty () == args->property) {
+			binding = expr->GetBinding ();
+			
+			// Setting the value will unregister the binding, so grab a
+			// ref before we set the new value.
+			expr->ref ();
+			
+			// update the bound value
+			SetValue (property, args->new_value);
+			
+			// restore the binding
+			if (binding->mode != BindingModeOneTime)
+				SetBindingExpression (property, expr);
+			
+			expr->unref ();
+		}
+	}
 #endif
 }
 

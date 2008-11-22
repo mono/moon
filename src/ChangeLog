@@ -1,5 +1,10 @@
 2008-11-21  Jeffrey Stedfast  <fejj@novell.com>
 
+	* frameworkelement.cpp (FrameworkElement::BoundPropertyChanged):
+	Implemented properly (I think/hope).
+
+2008-11-21  Jeffrey Stedfast  <fejj@novell.com>
+
 	* binding.cpp (BindingExpressionBase::AttachListener): Now takes a
 	callback and user data.
 	(BindingExpressionBase::DetachListener): Now takes a callback.
