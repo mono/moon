@@ -1,3 +1,15 @@
+2008-11-22  Jeffrey Stedfast  <fejj@novell.com>
+
+	* frameworkelement.cpp (FrameworkElement::SetBindingExpression):
+	Set the destination element and property on the binding expression
+	so that we can easily get at them in the callback when the source
+	property changes. Instead of passing 'this' as the user_data
+	argument to the property change handler, pass the expression.
+	(FrameworkElement::BoundPropertyChanged): No longer need to
+	iterate thru the hash table, we now are able to get all the info
+	we need from the binding expression.
+	(FrameworkElement::bound_property_changed): Updated.
+
 2008-11-21  Jeffrey Stedfast  <fejj@novell.com>
 
 	* frameworkelement.cpp (FrameworkElement::BoundPropertyChanged):

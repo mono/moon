@@ -47,48 +47,37 @@ FrameworkElement::~FrameworkElement ()
 }
 
 void
-FrameworkElement::BoundPropertyChanged (DependencyObject *sender, PropertyChangedEventArgs *args)
+FrameworkElement::BoundPropertyChanged (DependencyObject *sender, PropertyChangedEventArgs *args, BindingExpressionBase *expr)
 {
 #if SL_2_0
-	DependencyProperty *property;
-	BindingExpressionBase *expr;
-	GHashTableIter iter;
+	DependencyProperty *property = expr->GetDestinationProperty ();
 	Binding *binding;
-	gpointer value;
-	gpointer key;
 	
-	// FIXME: perhaps the bindings hash table should be rethought...
+	binding = expr->GetBinding ();
 	
-	g_hash_table_iter_init (&iter, bindings);
-	while (g_hash_table_iter_next (&iter, &key, &value)) {
-		property = (DependencyProperty *) key;
-		expr = (BindingExpressionBase *) value;
-		
-		// check to see if the binding expression describes this property change
-		if (expr->GetElement () == sender && expr->GetProperty () == args->property) {
-			binding = expr->GetBinding ();
-			
-			// Setting the value will unregister the binding, so grab a
-			// ref before we set the new value.
-			expr->ref ();
-			
-			// update the bound value
-			SetValue (property, args->new_value);
-			
-			// restore the binding
-			if (binding->mode != BindingModeOneTime)
-				SetBindingExpression (property, expr);
-			
-			expr->unref ();
-		}
-	}
+	// Setting the value will unregister the binding, so grab a
+	// ref before we set the new value.
+	expr->ref ();
+	
+	// update the destination property value
+	SetValue (property, args->new_value);
+	
+	// restore the binding
+	if (binding->mode != BindingModeOneTime)
+		SetBindingExpression (property, expr);
+	
+	expr->unref ();
 #endif
 }
 
 void
 FrameworkElement::bound_property_changed (DependencyObject *sender, PropertyChangedEventArgs *args, gpointer user_data)
 {
-	((FrameworkElement *) user_data)->BoundPropertyChanged (sender, args);
+#if SL_2_0
+	BindingExpressionBase *expr = (BindingExpressionBase *) user_data;
+	
+	expr->GetDestinationElement ()->BoundPropertyChanged (sender, args, expr);
+#endif
 }
 
 void
@@ -103,8 +92,10 @@ FrameworkElement::SetBindingExpression (DependencyProperty *property, BindingExp
 	}
 	
 	if (expr) {
+		expr->AttachListener (FrameworkElement::bound_property_changed, expr);
 		g_hash_table_insert (bindings, property, expr);
-		expr->AttachListener (FrameworkElement::bound_property_changed, this);
+		expr->SetDestinationProperty (property);
+		expr->SetDestinationElement (this);
 		expr->ref ();
 	}
 #endif

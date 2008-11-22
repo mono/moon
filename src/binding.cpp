@@ -19,6 +19,8 @@
 
 BindingExpressionBase::BindingExpressionBase ()
 {
+	dest_property = NULL;
+	dest_element = NULL;
 	property = NULL;
 	element = NULL;
 	binding = NULL;

@@ -28,6 +28,8 @@ struct Binding {
 /* @Namespace=System.Windows.Data */
 class BindingExpressionBase : public Expression {
  protected:
+	DependencyProperty *dest_property;
+	FrameworkElement *dest_element;
 	DependencyProperty *property;
 	FrameworkElement *element;
 	Binding *binding;
@@ -53,14 +55,21 @@ class BindingExpressionBase : public Expression {
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetProperty (DependencyProperty *property);
 	
-	void AttachListener (PropertyChangeHandler handler, gpointer user_data);
-	void DetachListener (PropertyChangeHandler handler);
-	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Value *GetValue ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	void UpdateSource (Value *value);
+	
+	// The following methods are meant only for use by FrameworkElement internals.
+	void AttachListener (PropertyChangeHandler handler, gpointer user_data);
+	void DetachListener (PropertyChangeHandler handler);
+	
+	void SetDestinationProperty (DependencyProperty *property) { dest_property = property; }
+	DependencyProperty *GetDestinationProperty () { return dest_property; }
+	
+	void SetDestinationElement (FrameworkElement *element) { dest_element = element; }
+	FrameworkElement *GetDestinationElement () { return dest_element; }
 };
 
 

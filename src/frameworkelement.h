@@ -148,7 +148,7 @@ protected:
 	void SetBindingExpression (DependencyProperty *property, BindingExpressionBase *expr);
 	BindingExpressionBase *GetBindingExpression (DependencyProperty *property);
 	
-	void BoundPropertyChanged (DependencyObject *sender, PropertyChangedEventArgs *args);
+	void BoundPropertyChanged (DependencyObject *sender, PropertyChangedEventArgs *args, BindingExpressionBase *expr);
 	static void bound_property_changed (DependencyObject *sender, PropertyChangedEventArgs *args, gpointer user_data);
 	
 	virtual bool IsValueValid (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error);
