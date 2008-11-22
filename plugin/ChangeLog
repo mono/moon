@@ -1,11 +1,9 @@
 2008-11-22  Geoff Norton  <gnorton@novell.com>
 
-	* windowless.cpp: Turns out this was a Firefox bug, updating comment with
-	correct information.
-
-2008-11-22  Geoff Norton  <gnorton@novell.com>
-
-	* windowless.cpp: Work around a gcc bug when using -fstack-protector-all
+	* windowless.cpp: Revert
+	* windowless.h: Include glib.h and moonlight.h so that GDK_NATIVE_WINDOW_POINTER
+	is defined and GdkNativeWindow gets its correct width of 8 bytes to prevent
+	a stack smash.
 
 2008-11-21  Alp Toker  <alp@nuanti.com>
 

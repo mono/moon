@@ -332,46 +332,8 @@ MoonWindowless::SetSurface (Surface *s)
 GdkWindow*
 MoonWindowless::GetGdkWindow ()
 {
-	/* GdkNativeWindow is a CARD32 on X11.  gcc/netscape with -fstack-protector-all has a
-	 * bug on amd64 where it compiles the following code:
-	 * 
-	 * GdkNativeWindow window;
-	 * NPN_GetValue (plugin->GetInstance(), NPNVnetscapeWindow, (void*)&window);
-	 * 
-	 * and emits assembly like: 
-	 *      mov    %fs:0x28,%rax   [calculate the stack cookie and put it in $rax]
-	 *      mov    %rax,-0x8(%rbp) [store the stack cookit at $rbp-0x8]
-	 *      ...
-	 *      lea    -0xc(%rbp),%rdx [load the address of GdkNativeWindow from the stack into $rdx]
-	 *
-	 * This ends up with a stack layout like this:
-	 * 
-	 * --------------   [top of stack] %rbp
-	 * |    -0x0    |   [stack cookie]
-	 * |    -0x1    |          |
-	 * |    -0x2    |          |
-	 * |    -0x3    |          |
-	 * |    -0x4    |          |
-	 * |    -0x5    |          |
-	 * |    -0x5    |          |
-	 * |    -0x7    |   [stack cookie]
-	 * |    -0x8    |   [GdkNativeWindow]
-	 * |    -0x9    |          |
-	 * |    -0xa    |          |
-	 * |    -0xb    |   [GdkNativeWindow]
-	 *      ....
-	 * --------------   [bottom of stack]
-	 *
-	 * NPN_GetValue however is treating NPNVnetscapeWindow as a long, so when it writes the
-	 * GdkNativeWindow to clobbers the bottom 4 bytes of the stack cookie.
-	 *
-	 * We're going to manually allocate a long which will put the GdkNativeWindow from 
-	 * 0x08->0x10, preventing Mozilla from overwriting the stack cookie.
-	 *
-	 * This sucks.
-	 */ 
-	long window;
+	GdkNativeWindow window;
 	NPN_GetValue (plugin->GetInstance(), NPNVnetscapeWindow, (void*)&window);
-	GdkWindow *gdk = gdk_window_foreign_new ((GdkNativeWindow) window);
+	GdkWindow *gdk = gdk_window_foreign_new (window);
 	return gdk;
 }
