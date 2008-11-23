@@ -1,3 +1,8 @@
+2008-11-23  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (map_moon_id_to_event_name): port alp's trunk
+	typo fix to the branch.  r: Andreia.
+
 2008-11-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fix for bug #442770
