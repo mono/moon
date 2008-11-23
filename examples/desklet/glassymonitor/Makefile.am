@@ -1,19 +1,21 @@
-bin_SCRIPTS = example-glassymonitor
-deskletdir = $(libdir)/desklets/example-glassymonitor
+desklet = glassymonitor.xap
+noinst_DATA = default.xaml $(desklet)
 
-desklet_DATA = default.xaml monitor.dll
+EXTRA_DIST = monitor.cs
 
-EXTRA_DIST = default.xaml monitor.cs
-
-example-glassymonitor: Makefile
-	echo "#!/bin/sh" > example-glassymonitor
-	echo "mopen -d $(deskletdir)" >> example-glassymonitor
-	chmod +x example-glassymonitor
-
-monitor.dll: monitor.cs $(top_builddir)/gtk/gtksilver.dll $(top_builddir)/class/lib/3.0/System.Windows.dll $(top_builddir)/class/lib/3.0/Mono.Moonlight.dll
-	gmcs -debug -out:$@ -target:library -r:$(top_builddir)/gtk/gtksilver.dll -r:$(top_builddir)/class/lib/3.0/System.Windows.dll -r:$(top_builddir)/class/lib/3.0/Mono.Moonlight.dll $(srcdir)/monitor.cs
-
-CLEANFILES =			\
-	example-glassymonitor	\
-	monitor.dll		\
-	monitor.dll.mdb
+run: $(desklet)
+	mono ../../../tools/mopen/mopen.exe -d $(desklet)
+	
+glassymonitor.xap: monitor.cs default.xaml App.xaml
+	mono ../../../tools/mxap/mxap.exe --desktop --entry-point-type=Desklets.GlassyMonitor.App
+	
+CLEANFILES =				\
+	$(desklet)			\
+	glassymonitor.dll		\
+	glassymonitor.dll.mdb		\
+	glassymonitor.g.resources	\
+	default.xaml.g.cs       	\
+        App.xaml.g.cs           	\
+        AppManifest.xaml        	\
+	glassymonitor.html
+	

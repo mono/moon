@@ -18,14 +18,14 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.IO;
 
-namespace Desklets
+namespace Desklets.GlassyMonitor
 {
-	public class Monitor : Canvas 
+	public partial class Monitor : Canvas 
 	{
 		// TODO: use eth0 for now, later we must have a place to select it.
-		string device = GetActiveInterface();
+//		string device = GetActiveInterface();
 
-		Storyboard storyboard;
+//		Storyboard storyboard;
 		TextBlock device_text;
 		TextBlock received_text;
 		TextBlock sent_text;
@@ -34,7 +34,7 @@ namespace Desklets
 		
 		Brush buttonHilite = new SolidColorBrush (Color.FromArgb (0xAA, 0xFF, 0xFF, 0xFF));
 		Brush buttonNormal = new SolidColorBrush (Color.FromArgb (0x66, 0xFF, 0xFF, 0xFF));
-
+public Monitor() { InitializeComponent();}
 	static string GetActiveInterface()
 	{
 		string iface="eth0";
@@ -68,11 +68,11 @@ namespace Desklets
 				while ((line = sr.ReadLine()) != null) {
 					String[] pieces = line.Split (new char[] {':'});
 
-					if ((pieces.Length > 1) && (pieces [0].Trim() == device)) {
+					if ((pieces.Length > 1) && (pieces [0].Trim() == device.Text)) {
 						String[] fields = pieces [1].Split (new char[] {' '}, 
 										    StringSplitOptions.RemoveEmptyEntries);
 
-						device_text.Text   = device;
+						device_text.Text   = device.Text;
 						received_text.Text = fields [1];
 						sent_text.Text     = fields [9];
 
