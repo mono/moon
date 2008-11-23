@@ -17,18 +17,23 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
-namespace Desklets
+namespace Desklets.Clock
 {
-	public class Clock : Canvas 
+	public partial class Clock : Canvas 
 	{
-		RotateTransform secondsHand;
+/*		RotateTransform secondsHand;
 		RotateTransform minuteHand;
 		RotateTransform hourHand;
-
+*/
 		Polygon closeButton;
 		
 		Brush buttonHilite = new SolidColorBrush (Color.FromArgb (0xAA, 0xFF, 0xFF, 0xFF));
 		Brush buttonNormal = new SolidColorBrush (Color.FromArgb (0x66, 0xFF, 0xFF, 0xFF));
+
+		public Clock()
+		{
+			InitializeComponent(); 
+		}
 
 		void HighlightButton (Polygon button)
 		{

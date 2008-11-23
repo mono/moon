@@ -1,19 +1,23 @@
-bin_SCRIPTS = example-glassyclock
-deskletdir = $(libdir)/desklets/example-glassyclock
+desklet=glassyclock.xap
 
-desklet_DATA = default.xaml clock.dll
+noinst_DATA = default.xaml App.xaml $(desklet)
 
-EXTRA_DIST = default.xaml clock.cs
+EXTRA_DIST = clock.cs
 
-example-glassyclock: Makefile
-	echo "#!/bin/sh" > example-glassyclock
-	echo "mopen -d $(deskletdir)" >> example-glassyclock
-	chmod +x example-glassyclock
+run: $(desklet)
+	mono ../../../tools/mopen/mopen.exe -d $(desklet)
 
-clock.dll: clock.cs $(top_builddir)/gtk/gtksilver.dll $(top_builddir)/class/lib/3.0/System.Windows.dll $(top_builddir)/class/lib/3.0/Mono.Moonlight.dll
-	gmcs -debug -out:$@ -target:library -r:$(top_builddir)/gtk/gtksilver.dll -r:$(top_builddir)/class/lib/3.0/System.Windows.dll -r:$(top_builddir)/class/lib/3.0/Mono.Moonlight.dll $(srcdir)/clock.cs
+glassyclock.xap: clock.cs default.xaml App.xaml
+	mono ../../../tools/mxap/mxap.exe --desktop --entry-point-type=Desklets.Clock.App
 
 CLEANFILES =			\
-	example-glassyclock	\
-	clock.dll		\
-	clock.dll.mdb
+	$(desklet)		\
+	glassyclock.dll		\
+	glassyclock.dll.mdb	\
+	glassyclock.g.resources \
+	default.xaml.g.cs       \
+        App.xaml.g.cs           \
+        AppManifest.xaml        \
+	glassyclock.xap		\
+	glassyclock.html
+
