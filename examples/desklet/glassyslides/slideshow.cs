@@ -18,24 +18,28 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.IO;
 
-namespace Desklets
+namespace Desklets.GlassySlides
 {
-	public class SlideShow : Canvas 
+	public partial class SlideShow : Canvas 
 	{
 		int image_index = 1;
 
-		Storyboard change;
+/*		Storyboard change;
 		Storyboard fadein;
 		Storyboard fadeout;
 		Storyboard replace;
 		Rectangle irect;
 		ImageBrush image;
-
+*/
 		Polygon closeButton;
 		
 		Brush buttonHilite = new SolidColorBrush (Color.FromArgb (0xAA, 0xFF, 0xFF, 0xFF));
 		Brush buttonNormal = new SolidColorBrush (Color.FromArgb (0x66, 0xFF, 0xFF, 0xFF));
 		
+		public SlideShow () {
+		
+		InitializeComponent();
+}
 		public void ChangePicture (object o, EventArgs e)
 		{
 			fadein.Begin ();
@@ -91,7 +95,7 @@ namespace Desklets
 
 			change.Begin ();
 
-			closeButton = FindName ("desklet-close") as Polygon;
+			closeButton = FindName ("desklet_close") as Polygon;
 
 			closeButton.MouseEnter += delegate {
 				HighlightButton (closeButton);

@@ -1,19 +1,21 @@
-bin_SCRIPTS = example-glassyslides
-deskletdir = $(libdir)/desklets/example-glassyslides
+desklet=glassyslides.xap
 
-desklet_DATA = default.xaml slideshow.dll
+noinst_DATA = default.xaml App.xaml $(desklet)
 
-EXTRA_DIST = default.xaml slideshow.cs
+EXTRA_DIST = slideshow.cs
 
-example-glassyslides: Makefile
-	echo "#!/bin/sh" > example-glassyslides
-	echo "mopen -d $(deskletdir)" >> example-glassyslides
-	chmod +x example-glassyslides
+glassyslides.xap: slideshow.cs default.xaml App.xaml
+	mono ../../../tools/mxap/mxap.exe --desktop --entry-point-type=Desklets.GlassySlides.App
 
-slideshow.dll: slideshow.cs $(top_builddir)/gtk/gtksilver.dll $(top_builddir)/class/lib/3.0/System.Windows.dll $(top_builddir)/class/lib/3.0/Mono.Moonlight.dll
-	gmcs -debug -out:$@ -target:library -r:$(top_builddir)/gtk/gtksilver.dll -r:$(top_builddir)/class/lib/3.0/System.Windows.dll -r:$(top_builddir)/class/lib/3.0/Mono.Moonlight.dll $(srcdir)/slideshow.cs
+run: $(desklet)
+	mono ../../../tools/mopen/mopen.exe -d $(desklet)
 
-CLEANFILES =	\
-	example-glassyslides	\
-	slideshow.dll		\
-	slideshow.dll.mdb
+CLEANFILES =			\
+	glassyslides.dll	\
+	glassyslides.dll.mdb	\
+	glassyslides.xap	\
+	glassyslides.html	\
+	glassyslides.g.resources\
+        default.xaml.g.cs       \
+        App.xaml.g.cs           \
+        AppManifest.xaml
