@@ -654,6 +654,7 @@ examples/desklet/cpumonitor/Makefile
 examples/desklet/glassyclock/Makefile
 examples/desklet/glassymonitor/Makefile
 examples/desklet/glassyslides/Makefile
+examples/desklet/ruler/Makefile
 examples/desklet/simpleclock/Makefile
 plugin/Makefile
 plugin/firefox/Makefile
