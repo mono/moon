@@ -19,11 +19,13 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.IO;
 
-namespace Desklets
+namespace Desklets.Ruler
 {
-	public class Monitor : Canvas 
+	public partial class Monitor : Canvas 
 	{
-		Storyboard storyboard;
+		public Monitor() {
+			InitializeComponent();
+		}
 
 		static readonly Brush LinesColor = new SolidColorBrush (Colors.Black);
 		static readonly Brush ActiveColor = new SolidColorBrush (Color.FromArgb (255, 30, 30, 30));
@@ -112,11 +114,11 @@ namespace Desklets
 			
 			DrawRuler ();
 
-			Shape close_button = FindName ("desklet-close") as Shape;
-			close_button.MouseLeftButtonDown += new MouseEventHandler (MouseDown);
-			close_button.MouseLeftButtonUp += new MouseEventHandler (MouseUp);
+			Shape close_button = FindName ("desklet_close") as Shape;
+			close_button.MouseLeftButtonDown += new MouseButtonEventHandler (MouseDown);
+			close_button.MouseLeftButtonUp += new MouseButtonEventHandler (MouseUp);
 			close_button.MouseEnter += new MouseEventHandler (MouseEnter);
-			close_button.MouseLeave += new EventHandler (MouseLeft);
+			close_button.MouseLeave += new MouseEventHandler (MouseLeft);
 		}
 	}
 }

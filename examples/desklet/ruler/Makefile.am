@@ -1,19 +1,20 @@
-bin_SCRIPTS = example-ruler
-deskletdir = $(libdir)/desklets/example-ruler
+desklet = ruler.xap
+noinst_DATA = default.xaml $(desklet)
 
-desklet_DATA = default.xaml ruler.dll
+EXTRA_DIST = ruler.cs
 
-EXTRA_DIST = default.xaml ruler.cs
+run: $(desklet)
+	mono ../../../tools/mopen/mopen.exe -d $(desklet)
 
-example-ruler: Makefile
-	echo "#!/bin/sh" > example-ruler
-	echo "mopen -d $(deskletdir)" >> example-ruler
-	chmod +x example-ruler
-
-ruler.dll: ruler.cs $(top_builddir)/gtk/gtksilver.dll $(top_builddir)/class/lib/3.0/System.Windows.dll $(top_builddir)/class/lib/3.0/Mono.Moonlight.dll
-	gmcs -debug -out:$@ -target:library -r:$(top_builddir)/gtk/gtksilver.dll -r:$(top_builddir)/class/lib/3.0/System.Windows.dll -r:$(top_builddir)/class/lib/3.0/Mono.Moonlight.dll $(srcdir)/ruler.cs
+ruler.xap: default.xaml ruler.cs
+	mono ../../../tools/mxap/mxap.exe --desktop --entry-point-type=Desklets.Ruler.App
 
 CLEANFILES = 		\
-	example-ruler	\
+	$(desklet)	\
 	ruler.dll	\
-	ruler.dll.mdb
+	ruler.dll.mdb	\
+	ruler.html	\
+	ruler.g.resources \
+	App.xaml.g.cs	\
+	default.xaml.g.cs \
+	AppManifest.xaml 
