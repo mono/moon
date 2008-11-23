@@ -57,6 +57,10 @@ FrameworkElement::BoundPropertyChanged (DependencyObject *sender, PropertyChange
 	
 	// Setting the value will unregister the binding, so grab a
 	// ref before we set the new value.
+	//
+	// FIXME: I think this will mean that we might emit 2 (or
+	// more) property changed events for this property which is
+	// not ideal. We may want to rework some logic to avoid that.
 	expr->ref ();
 	
 	// update the destination property value
