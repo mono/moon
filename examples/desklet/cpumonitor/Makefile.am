@@ -1,19 +1,21 @@
-bin_SCRIPTS = example-cpumonitor
-deskletdir = $(libdir)/desklets/example-cpumonitor
+desklet=cpumonitor.xap
 
-desklet_DATA = default.xaml monitor.dll
+noinst_DATA = default.xaml App.xaml $(desklet)
 
-EXTRA_DIST = default.xaml monitor.cs
+EXTRA_DIST = monitor.cs
 
-example-cpumonitor: Makefile
-	echo "#!/bin/sh" > example-cpumonitor
-	echo "mopen -d $(deskletdir)" >> example-cpumonitor
-	chmod +x example-cpumonitor
+run: cpumonitor.xap
+	mono ../../../tools/mopen/mopen.exe -d $(desklet)
 
-monitor.dll: monitor.cs $(top_builddir)/gtk/gtksilver.dll $(top_builddir)/class/lib/3.0/System.Windows.dll $(top_builddir)/class/lib/3.0/Mono.Moonlight.dll
-	gmcs -debug -out:$@ -target:library -r:$(top_builddir)/gtk/gtksilver.dll -r:$(top_builddir)/class/lib/3.0/System.Windows.dll -r:$(top_builddir)/class/lib/3.0/Mono.Moonlight.dll $(srcdir)/monitor.cs
+cpumonitor.xap: monitor.cs default.xaml App.xaml
+	mono ../../../tools/mxap/mxap.exe --desktop --entry-point-type=Desklets.CpuMonitorPanel.App
 
 CLEANFILES =			\
-	example-cpumonitor	\
-	monitor.dll		\
-	monitor.dll.mdb
+	$(desklet)		\
+        default.xaml.g.cs       \
+        App.xaml.g.cs           \
+        AppManifest.xaml        \
+	cpumonitor.g.resources	\
+	cpumonitor.dll		\
+	cpumonitor.dll.mdb	\
+	cpumonitor.html

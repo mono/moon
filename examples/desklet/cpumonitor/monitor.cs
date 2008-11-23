@@ -9,7 +9,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
-namespace Desklet
+namespace Desklets.CpuMonitorPanel
 {
 	public struct CpuCounter {
 		long user;
@@ -60,7 +60,7 @@ namespace Desklet
 		}
 	}
 
-	public class CpuMonitorPanel : Canvas 
+	public partial class CpuMonitorPanel : Canvas 
 	{
 		Shape circle;
 		TextBlock load;
@@ -144,6 +144,9 @@ namespace Desklet
 			};
 			sb.Begin ();
 			DrawLoad ();
+		}
+		public CpuMonitorPanel () {
+			InitializeComponent();
 		}
 	}
 }
