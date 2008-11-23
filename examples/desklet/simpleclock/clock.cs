@@ -6,14 +6,14 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
-namespace Clock {
+namespace Desklets.Clock {
 	
-	public class Display : Canvas {
-		TextBlock hour, minute, ampm;
+	public partial class Display : Canvas {
+/*		TextBlock hour, minute, ampm;
 		Storyboard to_config, to_clock;
-		DateTime last = DateTime.MinValue;
+*/		DateTime last = DateTime.MinValue;
 		bool isAm, use24h;
-		
+		public Display() { InitializeComponent(); }		
 		void UpdateTime ()
 		{
 			DateTime dt = DateTime.Now;

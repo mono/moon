@@ -1,19 +1,22 @@
-bin_SCRIPTS = example-simpleclock
-deskletdir = $(libdir)/desklets/example-simpleclock
+desklet=simpleclock.xap
 
-desklet_DATA = default.xaml clock.dll
+noinst_DATA = default.xaml simpleclock.xap $(desklet)
 
-EXTRA_DIST = default.xaml clock.cs
+EXTRA_DIST = clock.cs
 
-example-simpleclock: Makefile
-	echo "#!/bin/sh" > example-simpleclock
-	echo "mopen -d $(deskletdir)" >> example-simpleclock
-	chmod +x example-simpleclock
+run: simpleclock.xap
+	mono ../../../tools/mopen/mopen.exe -d simpleclock.xap
 
-clock.dll: clock.cs $(top_builddir)/gtk/gtksilver.dll $(top_builddir)/class/lib/3.0/System.Windows.dll $(top_builddir)/class/lib/3.0/Mono.Moonlight.dll
-	gmcs -debug -out:$@ -target:library -r:$(top_builddir)/gtk/gtksilver.dll -r:$(top_builddir)/class/lib/3.0/System.Windows.dll -r:$(top_builddir)/class/lib/3.0/Mono.Moonlight.dll $(srcdir)/clock.cs
+simpleclock.xap:
+	mono ../../../tools/mxap/mxap.exe --desktop --entry-point-type=Desklets.Clock.App
 
 CLEANFILES =			\
-	example-simpleclock	\
-	clock.dll		\
-	clock.dll.mdb
+	$(desklet)		\
+	simpleclock.dll		\
+	simpleclock.dll.mdb	\
+	simpleclock.g.resources \
+	simpleclock.html	\
+	default.xaml.g.cs	\
+	App.xaml.g.cs		\
+	AppManifest.xaml
+	
