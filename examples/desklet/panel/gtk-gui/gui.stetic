@@ -1,8 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
-    <images-root-path>../</images-root-path>
+    <images-root-path>..</images-root-path>
   </configuration>
+  <import>
+    <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <widget-library name="../desklets-panel.exe" internal="true" />
+    <widget-library name="gnome-sharp, Version=2.20.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+  </import>
   <widget class="Gtk.Window" id="PanelWindow" design-size="447 446">
     <property name="MemberName" />
     <property name="Title" translatable="yes">Moonlight Desklets Panel</property>
@@ -57,8 +62,6 @@
           <widget class="Gtk.ScrolledWindow" id="DeskletsScrolledWindow">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="VscrollbarPolicy">Automatic</property>
-            <property name="HscrollbarPolicy">Automatic</property>
             <property name="ShadowType">In</property>
             <child>
               <widget class="Gtk.TreeView" id="DeskletsView">
@@ -114,7 +117,6 @@
                 <property name="UseStock">True</property>
                 <property name="Type">StockItem</property>
                 <property name="StockId">gtk-help</property>
-                <property name="IsDialogButton">False</property>
                 <signal name="Clicked" handler="OnHelpButtonClicked" />
                 <property name="label">gtk-help</property>
               </widget>
@@ -132,7 +134,6 @@
                 <property name="Icon">stock:gtk-find Menu</property>
                 <property name="Label" translatable="yes">Get desklets</property>
                 <property name="UseUnderline">True</property>
-                <property name="IsDialogButton">False</property>
                 <signal name="Clicked" handler="OnDeskletsButtonClicked" />
               </widget>
               <packing>
@@ -148,7 +149,6 @@
                 <property name="UseStock">True</property>
                 <property name="Type">StockItem</property>
                 <property name="StockId">gtk-close</property>
-                <property name="IsDialogButton">False</property>
                 <signal name="Clicked" handler="OnCloseButtonClicked" />
                 <property name="label">gtk-close</property>
               </widget>
@@ -162,84 +162,6 @@
           <packing>
             <property name="Position">3</property>
             <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-      </widget>
-    </child>
-  </widget>
-  <widget class="Gtk.Dialog" id="AboutBox" design-size="370 280">
-    <property name="MemberName" />
-    <property name="Title" translatable="yes">About Mono Desklets</property>
-    <property name="Icon">stock:gtk-about Menu</property>
-    <property name="Modal">True</property>
-    <property name="Buttons">1</property>
-    <property name="HelpButton">False</property>
-    <property name="HasSeparator">False</property>
-    <child internal-child="VBox">
-      <widget class="Gtk.VBox" id="dialog1_VBox">
-        <property name="MemberName" />
-        <child>
-          <widget class="Gtk.VBox" id="vbox2">
-            <property name="MemberName" />
-            <property name="Spacing">6</property>
-            <child>
-              <widget class="Gtk.Label" id="label1">
-                <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">Mono Desklets 0.1</property>
-              </widget>
-              <packing>
-                <property name="Position">0</property>
-                <property name="AutoSize">True</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="Gtk.Label" id="label3">
-                <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">Copyright (c) 2007
-Novell, Inc</property>
-                <property name="Justify">Center</property>
-              </widget>
-              <packing>
-                <property name="Position">1</property>
-                <property name="AutoSize">True</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
-              </packing>
-            </child>
-            <child>
-              <placeholder />
-            </child>
-          </widget>
-          <packing>
-            <property name="Position">0</property>
-            <property name="AutoSize">True</property>
-          </packing>
-        </child>
-      </widget>
-    </child>
-    <child internal-child="ActionArea">
-      <widget class="Gtk.HButtonBox" id="dialog1_ActionArea">
-        <property name="MemberName" />
-        <property name="Spacing">6</property>
-        <property name="BorderWidth">5</property>
-        <property name="Size">1</property>
-        <property name="LayoutStyle">End</property>
-        <child>
-          <widget class="Gtk.Button" id="OKButton">
-            <property name="MemberName" />
-            <property name="CanDefault">True</property>
-            <property name="CanFocus">True</property>
-            <property name="Type">TextOnly</property>
-            <property name="Label" translatable="yes">_Ok</property>
-            <property name="UseUnderline">True</property>
-            <property name="IsDialogButton">True</property>
-            <property name="ResponseId">0</property>
-          </widget>
-          <packing>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
           </packing>

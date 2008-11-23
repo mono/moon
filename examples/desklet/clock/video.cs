@@ -32,10 +32,14 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
-namespace Desklets
+namespace Desklet.VideoPlayer
 {
-	public class VideoPlayer : Canvas 
+	public partial class VideoPlayer : Canvas 
 	{
+		public VideoPlayer()
+		{
+			InitializeComponent();
+		}
 		public void PageLoaded (object o, EventArgs e)
 		{
 			MediaElement media = FindName ("Video") as MediaElement;

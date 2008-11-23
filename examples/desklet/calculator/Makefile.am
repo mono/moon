@@ -1,22 +1,22 @@
-desklet = calculator.xap
+desklet = calculator
+entrypoint= Desklet.Calculator.App
 
-noinst_DATA = default.xaml App.xaml $(desklet)
+noinst_DATA = default.xaml App.xaml $(desklet).xap
 
-EXTRA_DIST = calculator.cs
+EXTRA_DIST = $(desklet).cs
 
-run: $(desklet)
-	mono ../../../tools/mopen/mopen.exe -d $(desklet)
+run: $(desklet).xap
+	mono ../../../tools/mopen/mopen.exe -d $(desklet).xap
 
-calculator.xap: calculator.cs default.xaml App.xaml
-	mono ../../../tools/mxap/mxap.exe --desktop --entry-point-type=Desklet.Calculator.App
+$(desklet).xap: $(desklet).cs default.xaml App.xaml
+	mono ../../../tools/mxap/mxap.exe --desktop --entry-point-type=$(entrypoint)
 
 CLEANFILES =			\
-	$(desklet)		\
-	example-calculator	\
-	calculator.g.resources	\
 	default.xaml.g.cs	\
 	App.xaml.g.cs		\
 	AppManifest.xaml	\
-	calculator.dll		\
-	calculator.dll.mdb	\
-	calculator.html
+	$(desklet).xap		\
+	$(desklet).g.resources	\
+	$(desklet).dll		\
+	$(desklet).dll.mdb	\
+	$(desklet).html

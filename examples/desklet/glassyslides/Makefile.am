@@ -1,21 +1,22 @@
-desklet=glassyslides.xap
+desklet=glassyslides
+entrypoint= Desklets.GlassySlides.App
 
-noinst_DATA = default.xaml App.xaml $(desklet)
+noinst_DATA = default.xaml App.xaml $(desklet).xap
 
-EXTRA_DIST = slideshow.cs
+EXTRA_DIST = $(desklet).cs
 
-glassyslides.xap: slideshow.cs default.xaml App.xaml
-	mono ../../../tools/mxap/mxap.exe --desktop --entry-point-type=Desklets.GlassySlides.App
-
-run: $(desklet)
+run: $(desklet).xap
 	mono ../../../tools/mopen/mopen.exe -d $(desklet)
 
+$(desklet).xap: $(desklet).cs default.xaml App.xaml
+	mono ../../../tools/mxap/mxap.exe --desktop --entry-point-type=$(entrypoint)
+
 CLEANFILES =			\
-	glassyslides.dll	\
-	glassyslides.dll.mdb	\
-	glassyslides.xap	\
-	glassyslides.html	\
-	glassyslides.g.resources\
+	$(desklet).xap		\
+	$(desklet).dll		\
+	$(desklet).dll.mdb	\
+	$(desklet).html		\
+	$(desklet).g.resources	\
         default.xaml.g.cs       \
         App.xaml.g.cs           \
         AppManifest.xaml

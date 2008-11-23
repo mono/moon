@@ -1,20 +1,22 @@
-desklet = ruler.xap
-noinst_DATA = default.xaml $(desklet)
+desklet = ruler
+entrypoint=Desklets.Ruler.App
 
-EXTRA_DIST = ruler.cs
+noinst_DATA = default.xaml $(desklet).xap
 
-run: $(desklet)
-	mono ../../../tools/mopen/mopen.exe -d $(desklet)
+EXTRA_DIST = $(desklet).cs
 
-ruler.xap: default.xaml ruler.cs
-	mono ../../../tools/mxap/mxap.exe --desktop --entry-point-type=Desklets.Ruler.App
+run: $(desklet).xap
+	mono ../../../tools/mopen/mopen.exe -d $(desklet).xap
 
-CLEANFILES = 		\
-	$(desklet)	\
-	ruler.dll	\
-	ruler.dll.mdb	\
-	ruler.html	\
-	ruler.g.resources \
-	App.xaml.g.cs	\
-	default.xaml.g.cs \
-	AppManifest.xaml 
+$(desklet).xap: default.xaml $(desklet).cs
+	mono ../../../tools/mxap/mxap.exe --desktop --entry-point-type=$(entrypoint)
+
+CLEANFILES = 			\
+	App.xaml.g.cs		\
+	default.xaml.g.cs	\
+	AppManifest.xaml 	\
+	$(desklet).xap		\
+	$(desklet).dll		\
+	$(desklet).dll.mdb	\
+	$(desklet).html		\
+	$(desklet).g.resources

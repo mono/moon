@@ -1,23 +1,22 @@
-desklet=glassyclock.xap
+desklet=glassyclock
+entrypoint= Desklets.Clock.App
 
-noinst_DATA = default.xaml App.xaml $(desklet)
+noinst_DATA = default.xaml App.xaml $(desklet).xap
 
-EXTRA_DIST = clock.cs
+EXTRA_DIST = $(desklet).cs
 
-run: $(desklet)
-	mono ../../../tools/mopen/mopen.exe -d $(desklet)
+run: $(desklet).xap
+	mono ../../../tools/mopen/mopen.exe -d $(desklet).xap
 
-glassyclock.xap: clock.cs default.xaml App.xaml
-	mono ../../../tools/mxap/mxap.exe --desktop --entry-point-type=Desklets.Clock.App
+$(desklet).xap: $(desklet).cs default.xaml App.xaml
+	mono ../../../tools/mxap/mxap.exe --desktop --entry-point-type=$(entrypoint)
 
 CLEANFILES =			\
-	$(desklet)		\
-	glassyclock.dll		\
-	glassyclock.dll.mdb	\
-	glassyclock.g.resources \
 	default.xaml.g.cs       \
         App.xaml.g.cs           \
         AppManifest.xaml        \
-	glassyclock.xap		\
-	glassyclock.html
-
+	$(desklet).xap		\
+	$(desklet).dll		\
+	$(desklet).dll.mdb	\
+	$(desklet).g.resources	\
+	$(desklet).html

@@ -1,21 +1,22 @@
-desklet=cpumonitor.xap
+desklet=cpumonitor
+entrypoint=Desklets.CpuMonitorPanel.App
 
-noinst_DATA = default.xaml App.xaml $(desklet)
+noinst_DATA = default.xaml App.xaml $(desklet).xap
 
-EXTRA_DIST = monitor.cs
+EXTRA_DIST = $(desklet).cs
 
-run: $(desklet)
-	mono ../../../tools/mopen/mopen.exe -d $(desklet)
+run: $(desklet).xap
+	mono ../../../tools/mopen/mopen.exe -d $(desklet).xap
 
-cpumonitor.xap: monitor.cs default.xaml App.xaml
-	mono ../../../tools/mxap/mxap.exe --desktop --entry-point-type=Desklets.CpuMonitorPanel.App
+$(desklet).xap: $(desklet).cs default.xaml App.xaml
+	mono ../../../tools/mxap/mxap.exe --desktop --entry-point-type=$(entrypoint)
 
 CLEANFILES =			\
-	$(desklet)		\
         default.xaml.g.cs       \
         App.xaml.g.cs           \
         AppManifest.xaml        \
-	cpumonitor.g.resources	\
-	cpumonitor.dll		\
-	cpumonitor.dll.mdb	\
-	cpumonitor.html
+	$(desklet).xap		\
+	$(desklet).g.resources	\
+	$(desklet).dll		\
+	$(desklet).dll.mdb	\
+	$(desklet).html

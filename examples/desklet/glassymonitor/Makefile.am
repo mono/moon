@@ -1,21 +1,23 @@
-desklet = glassymonitor.xap
-noinst_DATA = default.xaml $(desklet)
+desklet = glassymonitor
+entrypoint=Desklets.GlassyMonitor.App
 
-EXTRA_DIST = monitor.cs
+noinst_DATA = default.xaml $(desklet).xap
 
-run: $(desklet)
-	mono ../../../tools/mopen/mopen.exe -d $(desklet)
+EXTRA_DIST = $(desklet).cs
+
+run: $(desklet).xap
+	mono ../../../tools/mopen/mopen.exe -d $(desklet).xap
 	
-glassymonitor.xap: monitor.cs default.xaml App.xaml
-	mono ../../../tools/mxap/mxap.exe --desktop --entry-point-type=Desklets.GlassyMonitor.App
+$(desklet).xap: $(desklet).cs default.xaml App.xaml
+	mono ../../../tools/mxap/mxap.exe --desktop --entry-point-type=$(entrypoint)
 	
 CLEANFILES =				\
-	$(desklet)			\
-	glassymonitor.dll		\
-	glassymonitor.dll.mdb		\
-	glassymonitor.g.resources	\
 	default.xaml.g.cs       	\
         App.xaml.g.cs           	\
         AppManifest.xaml        	\
-	glassymonitor.html
+	$(desklet).xap			\
+	$(desklet).dll			\
+	$(desklet).dll.mdb		\
+	$(desklet).g.resources		\
+	$(desklet).html
 	
