@@ -4,7 +4,7 @@ noinst_DATA = default.xaml App.xaml $(desklet)
 
 EXTRA_DIST = monitor.cs
 
-run: cpumonitor.xap
+run: $(desklet)
 	mono ../../../tools/mopen/mopen.exe -d $(desklet)
 
 cpumonitor.xap: monitor.cs default.xaml App.xaml

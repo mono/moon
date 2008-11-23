@@ -4,7 +4,7 @@ noinst_DATA = default.xaml simpleclock.xap $(desklet)
 
 EXTRA_DIST = clock.cs
 
-run: simpleclock.xap
+run: $(desklet)
 	mono ../../../tools/mopen/mopen.exe -d simpleclock.xap
 
 simpleclock.xap:
