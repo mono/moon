@@ -1,19 +1,21 @@
-bin_SCRIPTS = example-calendar
-deskletdir = $(libdir)/desklets/example-calendar
+desklet = calendar.xap
 
-desklet_DATA = default.xaml calendar.dll
+noinst_DATA = default.xaml App.xaml $(desklet)
 
-EXTRA_DIST = default.xaml calendar.cs
+EXTRA_DIST = calendar.cs
 
-example-calendar: Makefile
-	echo "#!/bin/sh" > example-calendar
-	echo "mopen -d $(deskletdir)" >> example-calendar
-	chmod +x example-calendar
+run: $(desklet)
+	mono ../../../tools/mopen/mopen.exe -d $(desklet)
 
-calendar.dll: calendar.cs $(top_builddir)/gtk/gtksilver.dll $(top_builddir)/class/lib/3.0/System.Windows.dll $(top_builddir)/class/lib/3.0/Mono.Moonlight.dll
-	gmcs -debug -out:$@ -target:library -r:$(top_builddir)/gtk/gtksilver.dll -r:$(top_builddir)/class/lib/3.0/System.Windows.dll -r:$(top_builddir)/class/lib/3.0/Mono.Moonlight.dll $(srcdir)/calendar.cs
+$(desklet): calendar.cs default.xaml App.xaml
+	mono ../../../tools/mxap/mxap.exe --desktop --entry-point-type=Desklet.CalendarPanel.App
 
 CLEANFILES =			\
-	example-calendar	\
+	$(desklet)		\
+	calendar.g.resources	\
+	default.xaml.g.cs	\
+	App.xaml.g.cs		\
+	AppManifest.xaml	\
 	calendar.dll		\
-	calendar.dll.mdb
+	calendar.dll.mdb	\
+	calendar.html

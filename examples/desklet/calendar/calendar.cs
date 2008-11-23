@@ -31,6 +31,8 @@ using System.Xml;
 using System.Xml.XPath;
 using System.Collections.Generic; 
 
+using System.Runtime.CompilerServices;
+
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Controls;
@@ -38,7 +40,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
-namespace Desklet
+namespace Desklet.CalendarPanel
 {
 	public class Entry : IComparable <Entry> {
 		private String title;
@@ -85,7 +87,7 @@ namespace Desklet
 		}
 	}
 
-	public class CalendarPanel : Canvas 
+	public partial class CalendarPanel : Canvas 
 	{
 		TextBlock monthText;
 		TextBlock detailText;
@@ -113,6 +115,10 @@ namespace Desklet
 		
 		Brush buttonHilite = new SolidColorBrush (Color.FromArgb (0xAA, 0xFF, 0xFF, 0xFF));
 		Brush buttonNormal = new SolidColorBrush (Color.FromArgb (0x66, 0xFF, 0xFF, 0xFF));
+
+		public CalendarPanel(){
+			InitializeComponent();
+		}
 		
 		void drawDay (int l, int c, int day, bool mainMonth, bool curDay) {
 			days[l, c].Text = day.ToString ();
@@ -213,6 +219,7 @@ namespace Desklet
 		public void UpdateCalendarData (DateTime start, DateTime end)
 		{
 			Console.WriteLine ("updating calendar "+start);
+
 			Downloader downloader = new Downloader ();
 			downloader.Completed += delegate {
 				CalendarDownloadComplete (start.Date, downloader.GetResponseText (""));
