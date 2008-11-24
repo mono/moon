@@ -408,6 +408,13 @@ Shape::IsCandidateForCaching (void)
 	if (! GetSurface ())
 		return FALSE;
 
+
+	if (fill && fill->IsAnimating ())
+		return FALSE;
+
+	if (stroke && stroke->IsAnimating ())
+		return FALSE;
+
 	// This is not 100% correct check -- the actual surface size might be
 	// a tiny little bit larger. It's not a problem though if we go few
 	// bytes above the cache limit.

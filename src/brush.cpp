@@ -67,6 +67,12 @@ Brush::IsOpaque ()
 	return !IS_TRANSLUCENT (GetOpacity ());
 }
 
+bool
+Brush::IsAnimating ()
+{
+	return FALSE;
+}
+
 static void
 transform_get_absolute_transform (Transform *relative_transform, double width, double height, cairo_matrix_t *result)
 {
@@ -805,13 +811,16 @@ VideoBrush::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 VideoBrush::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
+	/* this is being handled in the base class */
+	/*
 	if (subobj_args->property == MediaElement::PositionProperty) {
 		// We to changes in this MediaElement property so we
 		// can notify whoever is using us to paint that they
 		// need to redraw themselves.
 		NotifyListenersOfPropertyChange (Brush::ChangedProperty);
 	}
-	
+	*/
+
 	TileBrush::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
@@ -820,6 +829,15 @@ VideoBrush::IsOpaque ()
 {
 	// XXX punt for now and return false here.
 	return false;
+}
+
+bool
+VideoBrush::IsAnimating ()
+{
+	if (media && media->IsPlaying ())
+		return true;
+
+	return TileBrush::IsAnimating ();
 }
 
 //

@@ -82,7 +82,11 @@ class Brush : public DependencyObject {
 	// returns true if OpacityProperty == 1.0.
 	// subclasses override this to deal with their local coloring
 	virtual bool IsOpaque ();
-	
+
+	// returns true if the brush is expected to change each render
+	// pass. subclasses should override this to handle
+	virtual bool IsAnimating ();
+
 	//
 	// Property Accessors
 	//
@@ -383,6 +387,7 @@ class VideoBrush : public TileBrush {
 	virtual void SetupBrush (cairo_t *cr, const Rect &area);
 
 	virtual bool IsOpaque ();
+	virtual bool IsAnimating ();
 	
 	//
 	// Property Accessors

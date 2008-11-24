@@ -1,3 +1,10 @@
+2008-11-24  Larry Ewing  <lewing@novell.com>
+
+	* brush.cpp, brush.h: add IsAnimating member to indicate if the
+	brush is expected to change each render tick.
+
+	* shape.cpp: don't cache animating brushes.
+
 2008-11-22  Jeffrey Stedfast  <fejj@novell.com>
 
 	* frameworkelement.cpp (FrameworkElement::SetBindingExpression):
