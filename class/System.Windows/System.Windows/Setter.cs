@@ -42,44 +42,30 @@ namespace System.Windows {
 		}
 
 		string PropertyName {
-			get { return (string)GetValue (PropertyNameProperty); }
 			set { SetValue (PropertyNameProperty, value); }
 		}
 
-		bool propertySet;
+		DependencyProperty property;
 		public DependencyProperty Property {
 			get {
-				if (propertySet) {
-					return (DependencyProperty)GetValue (PropertyProperty);
-				}
-				else {
-					string name = PropertyName;
-					if (name == null)
-						return null;
-
-					// XXX we need to look up a
-					// DependencyProperty of
-					// named @name from our
-					// containing style's type.
-					// if we have no containing
-					// style, return null here.
-					Console.WriteLine ("Setter.get_Property needs some love");
-					return null;
-				}
+				return property;
 			}
 			set {
 				if (value == null)
-					throw new NullReferenceException ();
-
-				propertySet = true;
-				SetValue (PropertyProperty, value);
+					PropertyName = null;
+				else
+					PropertyName = value.Name;
+				property = value;
 			}
 		}
 
+		object value;
 		public object Value {
-			get { return GetValue (ValueProperty); }
-			set { SetValue (ValueProperty, value); }
+			get { return this.value; }
+			set {
+				SetValue (ValueProperty, value);
+				this.value = value;
+			}
 		}
 	}
-
 }

@@ -1,3 +1,9 @@
+2008-11-24  Alan McGovern  <amcgovern@novell.com>
+
+	* Setter.cs: If a value is set through Xaml/unmanaged code, it is not
+	visible through these properties. If a value is set, propagate it to
+	the unmanaged code.
+
 2008-11-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Thickness.cs, Application.cs: Fix parameter names to match SL.
