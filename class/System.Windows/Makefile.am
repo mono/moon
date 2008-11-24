@@ -42,7 +42,37 @@ system_windows_sources =							\
 	$(srcdir)/System.Collections.Specialized/NotifyCollectionChangedEventArgs.cs \
 	$(srcdir)/System.Collections.Specialized/NotifyCollectionChangedEventHandler.cs \
 	$(srcdir)/System.IO.IsolatedStorage/IsolatedStorageSettings.cs		\
+	$(srcdir)/System.Windows.Automation/DockPosition.cs			\
+	$(srcdir)/System.Windows.Automation/ExpandCollapseState.cs		\
+	$(srcdir)/System.Windows.Automation/RowOrColumnMajor.cs			\
+	$(srcdir)/System.Windows.Automation/ScrollAmount.cs			\
+	$(srcdir)/System.Windows.Automation/ToggleState.cs			\
+	$(srcdir)/System.Windows.Automation/WindowInteractionState.cs		\
+	$(srcdir)/System.Windows.Automation/WindowVisualState.cs		\
 	$(srcdir)/System.Windows.Automation.Peers/AutomationPeer.cs		\
+	$(srcdir)/System.Windows.Automation.Peers/AutomationControlType.cs	\
+	$(srcdir)/System.Windows.Automation.Peers/FrameworkElementAutomationPeer.cs	\
+	$(srcdir)/System.Windows.Automation.Peers/ItemAutomationPeer.cs		\
+	$(srcdir)/System.Windows.Automation.Peers/ItemsControlAutomationPeer.cs	\
+	$(srcdir)/System.Windows.Automation.Peers/PatternInterface.cs		\
+	$(srcdir)/System.Windows.Automation.Provider/IDockProvider.cs		\
+	$(srcdir)/System.Windows.Automation.Provider/IExpandCollapseProvider.cs	\
+	$(srcdir)/System.Windows.Automation.Provider/IGridItemProvider.cs	\
+	$(srcdir)/System.Windows.Automation.Provider/IGridProvider.cs		\
+	$(srcdir)/System.Windows.Automation.Provider/IInvokeProvider.cs		\
+	$(srcdir)/System.Windows.Automation.Provider/IMultipleViewProvider.cs	\
+	$(srcdir)/System.Windows.Automation.Provider/IRangeValueProvider.cs	\
+	$(srcdir)/System.Windows.Automation.Provider/IRawElementProviderSimple.cs	\
+	$(srcdir)/System.Windows.Automation.Provider/IScrollItemProvider.cs	\
+	$(srcdir)/System.Windows.Automation.Provider/IScrollProvider.cs		\
+	$(srcdir)/System.Windows.Automation.Provider/ISelectionItemProvider.cs	\
+	$(srcdir)/System.Windows.Automation.Provider/ISelectionProvider.cs	\
+	$(srcdir)/System.Windows.Automation.Provider/ITableItemProvider.cs	\
+	$(srcdir)/System.Windows.Automation.Provider/ITableProvider.cs		\
+	$(srcdir)/System.Windows.Automation.Provider/IToggleProvider.cs		\
+	$(srcdir)/System.Windows.Automation.Provider/ITransformProvider.cs	\
+	$(srcdir)/System.Windows.Automation.Provider/IValueProvider.cs		\
+	$(srcdir)/System.Windows.Automation.Provider/IWindowProvider.cs		\
 	$(srcdir)/System.Windows.Controls/Border.cs				\
 	$(srcdir)/System.Windows.Controls/InkPresenter.cs			\
 	$(srcdir)/System.Windows.Controls/MediaElement.cs			\
