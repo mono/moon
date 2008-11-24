@@ -275,5 +275,40 @@ namespace MoonTest.System.Windows.Controls
 			Assert.IsNull (b.FindName ("foo"),"b after");
 			Assert.IsNotNull (c.FindName ("foo"),"c after");
 		}
+
+		class ConcreteControl : Control {
+
+			public object DefaultStyleKey_ {
+				get { return base.DefaultStyleKey; }
+				set { base.DefaultStyleKey = value; }
+			}
+		}
+
+		[TestMethod]
+		public void Defaults ()
+		{
+			ConcreteControl c = new ConcreteControl ();
+			// default properties on Control
+			Assert.IsNull (c.Background, "Background");
+			Assert.IsNull (c.BorderBrush, "BorderBrush");
+			Assert.AreEqual (new Thickness (0, 0, 0, 0), c.BorderThickness, "BorderThickness");
+			Assert.IsNull (c.DefaultStyleKey_, "DefaultStyleKey");
+			Assert.IsNotNull (c.FontFamily, "FontFamily");
+			Assert.AreEqual (FontStretches.Normal, c.FontStretch, "FontStretch");
+			Assert.AreEqual (FontStyles.Normal, c.FontStyle, "FontStyle");
+			Assert.AreEqual (FontWeights.Normal, c.FontWeight, "FontWeight");
+// FIXME: default is null right now
+//			Assert.IsNotNull (c.Foreground, "Foreground");
+//			Assert.IsTrue (c.Foreground is SolidColorBrush, "Foreground/SolidColorBrush");
+//			Assert.AreEqual (Colors.Black, (c.Foreground as SolidColorBrush).Color, "Foreground.Color");
+			Assert.AreEqual (HorizontalAlignment.Center, c.HorizontalContentAlignment, "HorizontalContentAlignment");
+			Assert.IsTrue (c.IsEnabled, "IsEnabled");
+			Assert.IsTrue (c.IsTabStop, "IsTabStop");
+			Assert.AreEqual (new Thickness (0, 0, 0, 0), c.Padding, "Padding");
+			Assert.AreEqual (Int32.MaxValue, c.TabIndex, "AreEqual");
+			Assert.AreEqual (KeyboardNavigationMode.Local, c.TabNavigation, "TabNavigation");
+			Assert.IsNull (c.Template, "Template");
+			Assert.AreEqual (VerticalAlignment.Center, c.VerticalContentAlignment, "VerticalContentAlignment");
+		}
 	}
 }

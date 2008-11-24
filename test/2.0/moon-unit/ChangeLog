@@ -1,3 +1,14 @@
+2008-11-24  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Controls/ControlTest.cs: Add test case for default
+	properties.
+	* System.Windows/FontStretchesTest.cs: New. Ensure GetHashCode match
+	the old (1.0) enum value used in unmanaged code.
+	* System.Windows/FontWeigthsTest.cs: New. Ensure GetHashCode match
+	the old (1.0) enum value used in unmanaged code.
+	* System.Windows/FontStylesTest.cs: New. Ensure GetHashCode match
+	the old (1.0) enum value used in unmanaged code.
+
 2008-11-21  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows/StyleTest.cs: Added some new Style tests and updated
