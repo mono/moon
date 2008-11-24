@@ -1,3 +1,11 @@
+2008-11-24  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows/DependencyObject.cs: Fix support for FontStretch,
+	FontStyle, FontWeight which were enums in 1.0/1.1 and are now structs 
+	in 2.0. Fix InvalidCastException in unit tests.
+	* System.Windows/FontStyleKind.cs: Fix value for Italic to match
+	the unmanaged value.
+
 2008-11-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows/UIElement.cs: Un-ifdef OnCreateAutomationPeer

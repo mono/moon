@@ -351,12 +351,19 @@ namespace System.Windows {
 						
 				case Kind.INT32:
 					// marshall back to the .NET type that we simply serialised as int for unmanaged usage
+					int i32 = val->u.i32;
 					if (type == typeof (System.Windows.Input.Cursor))
-						return new Cursor ((CursorType)val->u.i32);
+						return new Cursor ((CursorType) i32);
+					else if (type == typeof (FontStretch))
+						return new FontStretch ((FontStretchKind) i32);
+					else if (type == typeof (FontStyle))
+						return new FontStyle ((FontStyleKind) i32);
+					else if (type == typeof (FontWeight))
+						return new FontWeight ((FontWeightKind) i32);
 					else if (type != null && type.IsEnum)
-						return Enum.ToObject (type, val->u.i32);
+						return Enum.ToObject (type, i32);
 					else
-						return val->u.i32;
+						return i32;
 
 				case Kind.MANAGED:
 					IntPtr managed_object = val->u.p;
@@ -647,6 +654,10 @@ namespace System.Windows {
 					grid_length->type = (int)gl.GridUnitType;
 					grid_length->val = gl.Value;
 				}
+				else if ((v is FontStretch) || (v is FontStyle) || (v is FontWeight)) {
+					value.k = Kind.INT32;
+					value.u.i32 = v.GetHashCode (); // unit tested as such
+				}
 				else if (as_managed_object) {
 					// TODO: We probably need to marshal types that can animate as the 
 					// corresponding type (Point, Double, Color, etc).
@@ -655,7 +666,6 @@ namespace System.Windows {
 					GCHandle handle = GCHandle.Alloc (v);
 					value.k = Kind.MANAGED;
 					value.u.p = Helper.GCHandleToIntPtr (handle);
-					return value;
 				}
 				else {
 					throw new Exception (
