@@ -5,6 +5,7 @@
 
 using System;
 using System.Diagnostics; 
+using System.Windows.Automation.Peers;
 using System.Windows.Controls.Primitives; 
 using System.Windows.Input;
 using System.Windows.Media.Animation; 
@@ -177,6 +178,9 @@ namespace System.Windows.Controls.Primitives
             ClickMode = ClickMode.Press;
             Delay = 250;
             Interval = 250; 
+            LostFocus += delegate(object sender, RoutedEventArgs e) { OnLostFocus (e); }; 
+            KeyDown += delegate(object sender, KeyEventArgs e){ OnKeyDown(e); };
+            KeyUp += delegate(object sender, KeyEventArgs e){ OnKeyUp(e); };
          } 
 
         /// <summary> 
@@ -350,7 +354,40 @@ namespace System.Windows.Controls.Primitives
             _mousePosition = e.GetPosition(parent as UIElement); 
         } 
 
+	protected override void OnClick ()
+	{
+		base.OnClick ();
+	}
+
         #endregion Mouse Handlers 
+
+        #region KeyEvents
+        /// <summary> 
+        /// Responds to the KeyDown event. 
+        /// </summary>
+        /// <param name="e">The event data for the KeyDown event.</param> 
+        protected override void OnKeyDown(KeyEventArgs e)
+	{
+	}
+
+        /// <summary> 
+        /// Responds to the KeyUp event. 
+        /// </summary>
+        /// <param name="e">The event data for the KeyUp event.</param> 
+        protected override void OnKeyUp(KeyEventArgs e)
+	{
+	}
+
+        #endregion KeyEvents
+
+	protected override void OnLostFocus (RoutedEventArgs e)
+	{
+	}
+
+	protected override AutomationPeer OnCreateAutomationPeer ()
+	{
+		throw new NotImplementedException ();
+	}
 
         #region Template Parts
         /// <summary> 

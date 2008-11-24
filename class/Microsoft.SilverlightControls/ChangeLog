@@ -1,3 +1,8 @@
+2008-11-24  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Controls/Src/Thumb/Thumb.cs: Add IsFocused DP.
+	* Controls/Src/RepeatButton/RepeatButton.cs: Add missing overrides.
+
 2008-11-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Controls/Extended/Src/Slider/Slider.cs: Expose some private

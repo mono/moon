@@ -65,6 +65,54 @@ namespace System.Windows.Controls.Primitives
  
         #endregion IsDragging
 
+        #region IsFocused 
+	// copy-pasted from Slider.cs
+
+        /// <summary>
+        /// Gets a value that determines whether this element has logical focus.
+        /// </summary> 
+        public bool IsFocused 
+        {
+            get { return (bool)GetValue(IsFocusedProperty); } 
+            internal set { SetValue(IsFocusedProperty, value); }
+        }
+ 
+        /// <summary>
+        /// Identifies the IsFocused dependency property.
+        /// </summary> 
+        public static readonly DependencyProperty IsFocusedProperty = 
+            DependencyProperty.Register(
+                "IsFocused", 
+                typeof(bool),
+                typeof(Thumb),
+                new PropertyMetadata(OnIsFocusedPropertyChanged)); 
+
+        /// <summary>
+        /// IsFocusedProperty property changed handler. 
+        /// </summary> 
+        /// <param name="d">Thumb that changed IsFocused.</param>
+        /// <param name="e">DependencyPropertyChangedEventArgs.</param> 
+        private static void OnIsFocusedPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Thumb t = d as Thumb; 
+            Debug.Assert(t != null);
+
+            if (t.ElementRoot != null) 
+            { 
+                t.UpdateVisualState(); 
+            } 
+        }
+
+	protected override void OnGotFocus (RoutedEventArgs e)
+	{
+	}
+
+	protected override void OnLostFocus (RoutedEventArgs e)
+	{
+	}
+
+        #endregion IsFocused 
+
         #region Events
         /// <summary> 
         /// Identifies the DragStarted routed event. 
@@ -89,6 +137,8 @@ namespace System.Windows.Controls.Primitives
         public Thumb()
         { 
             IsEnabled = true;
+            this.GotFocus += delegate(object sender, RoutedEventArgs e) { IsFocused = true; OnGotFocus (e); };
+            this.LostFocus += delegate(object sender, RoutedEventArgs e) { IsFocused = false; OnLostFocus (e); }; 
             this.MouseEnter += delegate(object sender, MouseEventArgs e) { OnMouseEnter(e); };
             this.MouseLeave += delegate(object sender, MouseEventArgs e) { OnMouseLeave(e); }; 
             this.MouseLeftButtonDown += delegate(object sender, MouseButtonEventArgs e) { OnMouseLeftButtonDown(e); };
@@ -241,6 +291,7 @@ namespace System.Windows.Controls.Primitives
         /// </summary> 
         internal void UpdateVisualState()
         { 
+// FIXME: adjust wrt IsFocused property ?
             if (!IsEnabled)
             {
                 ChangeVisualState(StateDisabled ?? StateNormal); 
@@ -328,14 +379,6 @@ namespace System.Windows.Controls.Primitives
 	protected override AutomationPeer OnCreateAutomationPeer ()
 	{
 		throw new NotImplementedException ();
-	}
-
-	protected override void OnGotFocus (RoutedEventArgs e)
-	{
-	}
-
-	protected override void OnLostFocus (RoutedEventArgs e)
-	{
 	}
 
         #region Template Parts
