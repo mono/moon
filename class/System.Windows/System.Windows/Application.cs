@@ -286,18 +286,18 @@ namespace System.Windows {
 		 * 	1. Application manifest resources
 		 * 	2. XAP content
 		 */
-		public static StreamResourceInfo GetResourceStream (Uri resourceUri)
+		public static StreamResourceInfo GetResourceStream (Uri uriResource)
 		{
-			if (resourceUri == null)
+			if (uriResource == null)
 				throw new ArgumentNullException ("resourceUri");
 			// FIXME: URI must point to
 			// - the application assembly (embedded resources)
 			// - an assembly part of the application package (embedded resources)
 			// - something included in the package
-			if (resourceUri.IsAbsoluteUri)
+			if (uriResource.IsAbsoluteUri)
 				throw new ArgumentException ("resourceUri");
 
-			string loc = resourceUri.ToString ();
+			string loc = uriResource.ToString ();
 			string aname;
 			string res;
 			int p = loc.IndexOf (';');
@@ -329,11 +329,11 @@ namespace System.Windows {
 			return null;
 		}
 
-		public static StreamResourceInfo GetResourceStream (StreamResourceInfo zipPackageStreamResourceInfo, Uri resourceUri)
+		public static StreamResourceInfo GetResourceStream (StreamResourceInfo zipPackageStreamResourceInfo, Uri uriResource)
 		{
 			if (zipPackageStreamResourceInfo == null)
 				throw new ArgumentNullException ("zipPackageStreamResourceInfo");
-			if (resourceUri == null)
+			if (uriResource == null)
 				throw new ArgumentNullException ("resourceUri");
 
 			throw new NotImplementedException ("GetResourceStream-2");

@@ -40,8 +40,8 @@ namespace System.Windows
 		private double right;
 		private double bottom;
 		
-		public Thickness (double uniformThickness) : 
-			this (uniformThickness, uniformThickness, uniformThickness, uniformThickness)
+		public Thickness (double uniformLength) : 
+			this (uniformLength, uniformLength, uniformLength, uniformLength)
 		{
 		}
 		
