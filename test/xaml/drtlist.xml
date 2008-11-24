@@ -221,18 +221,24 @@
    />
    <Test id="46"
 	inputFile="test-path-group-ellipse.xaml"
-	masterFile10="../harness/masters/test-path-group-ellipseMaster.png"
+	masterFile10="None"
 	categories="ellipse"
-   />
+	expectedError="ParserError"
+   >
+   <!-- This xaml is parsed in 1.0, but throws an error in 2.0 due to a breaking change: FillRule doesn't exist on EllipseGeometry anymore. -->
+   </Test>
    <Test id="47"
 	inputFile="test-path-group-empty.xaml"
 	masterFile10="../harness/masters/test-path-group-emptyMaster.png"
    />
    <Test id="48"
 	inputFile="test-path-group-rectangle.xaml"
-	masterFile10="../harness/masters/test-path-group-rectangleMaster.png"
+	masterFile10="None"
 	categories="rectangle"
-   />
+	expectedError="ParserError"
+   >
+   <!-- This xaml is parsed in 1.0, but throws an error in 2.0 due to a breaking change: FillRule doesn't exist on RectangleGeometry anymore. -->
+   </Test>
    <Test id="49"
 	inputFile="test-path-group-stretch.xaml"
 	masterFile10="../harness/masters/test-path-group-stretchMaster.png"
@@ -956,7 +962,10 @@
    <Test id="204"
 	 inputFile="test-fillrule.xaml"
 	 masterFile10="None"
-	 />
+	 expectedError="ParserError"
+	 >
+   <!-- This xaml is parsed in 1.0, but throws an error in 2.0 due to a breaking change: FillRule doesn't exist on LineGeometry anymore. -->
+   </Test>
    <Test id="205"
 	 inputFile="test-createFromXaml-nodownload.html"
 	 masterFile10="None"
