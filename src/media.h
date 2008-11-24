@@ -23,6 +23,15 @@
 #include "downloader.h"
 #include "pipeline.h"
 
+
+/* NOTE: both of these formats are 32bits wide per pixel */
+#if USE_OPT_RGB24
+#define MOON_FORMAT_RGB CAIRO_FORMAT_RGB24
+#else
+#define MOON_FORMAT_RGB CAIRO_FORMAT_ARGB32
+#endif
+#define MOON_FORMAT_ARGB CAIRO_FORMAT_ARGB32
+
 /* @Namespace=None */
 /* @ManagedDependencyProperties=None */
 class MediaAttribute : public DependencyObject {

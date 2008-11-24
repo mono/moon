@@ -358,7 +358,7 @@ MediaPlayer::Open (Media *media)
 			height = video.stream->height;
 			width = video.stream->width;
 
-			stride = cairo_format_stride_for_width (CAIRO_FORMAT_ARGB32, width);
+			stride = cairo_format_stride_for_width (MOON_FORMAT_RGB, width);
 			if (stride % 64) {
 				int remain = stride % 64;
 				stride += 64 - remain;
@@ -374,7 +374,7 @@ MediaPlayer::Open (Media *media)
 			
 			// rendering surface
 			video.surface = cairo_image_surface_create_for_data (
-				video.rgb_buffer, CAIRO_FORMAT_ARGB32,
+				video.rgb_buffer, MOON_FORMAT_RGB,
 				width, height, stride);
 			
 			// printf ("video size: %i, %i\n", video.stream->width, video.stream->height);

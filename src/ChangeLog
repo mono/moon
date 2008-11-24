@@ -1,5 +1,12 @@
 2008-11-24  Larry Ewing  <lewing@novell.com>
 
+	* media.cpp, media.h: hide USE_OPT_RGB24 inside MOON_FORMAT_* use
+	them where appropriate.
+
+	* mediaplayer.cpp: use MOON_FORMAT_RGB.
+
+2008-11-24  Larry Ewing  <lewing@novell.com>
+
 	* brush.cpp, brush.h: add IsAnimating member to indicate if the
 	brush is expected to change each render tick.
 

@@ -769,18 +769,13 @@ Image::CreateSurface (const char *uri)
 		}
 
 		surface->cairo = cairo_image_surface_create_for_data (data,
-#if USE_OPT_RGB24
-								      has_alpha ? CAIRO_FORMAT_ARGB32 : CAIRO_FORMAT_RGB24,
-#else
-								      CAIRO_FORMAT_ARGB32,
-#endif
+								      has_alpha ? MOON_FORMAT_ARGB : MOON_FORMAT_RGB,
 								      surface->width,
 								      surface->height,
 								      stride);
 
-#if USE_OPT_RGB24
 		surface->has_alpha = has_alpha;
-#endif
+
 		if (surface->filename != NULL)
 			g_hash_table_insert (surface_cache, surface->filename, surface);
 	} else {
