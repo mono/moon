@@ -457,6 +457,20 @@ namespace Mono {
 		public extern static IntPtr double_key_frame_collection_new ();
 
 		[DllImport ("moon")]
+		// int downloader_response_get_response_status (DownloaderResponse *instance);
+		public extern static int downloader_response_get_response_status (IntPtr instance);
+
+		[DllImport ("moon", EntryPoint="downloader_response_get_response_status_text")]
+		// const char *downloader_response_get_response_status_text (DownloaderResponse *instance);
+		private extern static IntPtr downloader_response_get_response_status_text_ (IntPtr instance);
+		public static string downloader_response_get_response_status_text (IntPtr instance)
+		{
+			IntPtr result;
+			result = downloader_response_get_response_status_text_ (instance);
+			return (result == IntPtr.Zero) ? null : Marshal.PtrToStringAnsi (result);
+		}
+
+		[DllImport ("moon")]
 		// DrawingAttributes *drawing_attributes_new ();
 		public extern static IntPtr drawing_attributes_new ();
 
