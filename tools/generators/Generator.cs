@@ -1357,8 +1357,10 @@ class Generator {
 					text.Append ("\t\treturn Type::INVALID");
 				} else if (cmethod.ReturnType.Value == "bool") {
 					text.Append ("\t\treturn false");
+				} else if (cmethod.ReturnType.Value == "Point") {
+					text.Append ("\t\treturn Point (0, 0)");
 				} else {
-					text.AppendLine ("\t\t// Need to find a property way to get the default value for the specified type and return that if instance is NULL.");
+					text.AppendLine ("\t\t// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.");
 					text.Append ("\t\treturn");
 					text.Append (" (");
 					text.Append (cmethod.ReturnType.Value);
