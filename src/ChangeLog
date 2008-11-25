@@ -1,3 +1,13 @@
+2008-11-24  Geoff Norton  <gnorton@novell.com>
+
+	* media.cpp: If we do a SetSource on a image element with a 
+	completed downloader, short circuit the async call, as the downloader
+	theoretically can be immediately reused in javascript after the call.
+	Also remove the internal completed event after its been fired, for the
+	same reason (downloader reuse).  Fixes halo3
+	
+	r: lewing
+
 2008-11-24  Larry Ewing  <lewing@novell.com>
 
 	* media.cpp, media.h: hide USE_OPT_RGB24 inside MOON_FORMAT_* use

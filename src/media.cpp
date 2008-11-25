@@ -197,10 +197,13 @@ MediaBase::SetSource (Downloader *downloader, const char *PartName)
 	if (downloader)
 		downloader->ref ();
 
-	if (!source.queued)
+	if (source.downloader && source.downloader->Completed ()) {
+		SetSourceInternal (source.downloader, source.part_name);
+		source.downloader->unref ();
+	} else {
 		AddTickCall (MediaBase::set_source_async);
-
-	source.queued = true;
+		source.queued = true;
+	}
 }
 
 void
@@ -471,6 +474,9 @@ void
 Image::DownloaderComplete ()
 {
 	char *uri;
+
+	downloader->RemoveHandler (Downloader::DownloadFailedEvent, downloader_failed, this);
+	downloader->RemoveHandler (Downloader::CompletedEvent, downloader_complete, this);
 
 	if (strcmp (part_name, "") == 0)
 		uri = g_strdup (downloader->GetUri ());
