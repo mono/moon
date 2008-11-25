@@ -1,5 +1,8 @@
 2008-11-25  Larry Ewing  <lewing@novell.com>
 
+	* uielement.cpp (UIElement::FrontToBack): enable ftb on 90 degress
+	rotations as well.
+
 	* media.cpp (Image::GetCoverageBounds): be slightly smarter about
 	computing coverage.
 

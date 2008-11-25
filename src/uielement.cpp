@@ -790,7 +790,8 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 	render_list->Prepend (new RenderNode (this, self_region, !self_region->IsEmpty(), UIElement::CallPreRender, NULL));
 
 	if (!self_region->IsEmpty()) {
-		if ((absolute_xform.yx == 0 && absolute_xform.xy == 0) /* no skew/rotation */
+		if (((absolute_xform.yx == 0 && absolute_xform.xy == 0) /* no skew/rotation */
+		     || (absolute_xform.xx == 0 && absolute_xform.yy == 0)) /* allow 90 degree rotations */
 		    && can_subtract_self)
 			region->Subtract (GetCoverageBounds ());
 	}
