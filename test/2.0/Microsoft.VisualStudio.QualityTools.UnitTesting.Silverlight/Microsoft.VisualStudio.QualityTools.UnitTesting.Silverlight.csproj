@@ -1,0 +1,112 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{01D5C633-B082-4D14-AE78-CFCF7CC5699B}</ProjectGuid>
+    <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight</RootNamespace>
+    <AssemblyName>Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <SilverlightApplication>false</SilverlightApplication>
+    <ValidateXaml>true</ValidateXaml>
+    <ThrowErrorsInValidation>false</ThrowErrorsInValidation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE;SILVERLIGHT</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Bin\Release</OutputPath>
+    <DefineConstants>TRACE;SILVERLIGHT</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Windows" />
+    <Reference Include="mscorlib" />
+    <Reference Include="system" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Windows.Browser" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting.Web\AspNetDevelopmentServerAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting.Web\AspNetDevelopmentServerHostAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting.Web\CredentialAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting.Web\UrlToTestAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\AssemblyCleanupAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\AssemblyInitializeAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\Assert.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\AssertFailedException.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\AssertInconclusiveException.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\ClassCleanupAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\ClassInitializeAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\CollectionAssert.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\CssIterationAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\CssProjectStructureAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\DeploymentItemAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\DescriptionAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\ExpectedExceptionAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\GenericParameterHelper.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\HostTypeAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\IgnoreAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\InternalTestFailureException.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\IVerifiable.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\OwnerAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\PriorityAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\StringAssert.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\TestClassAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\TestCleanupAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\TestCode.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\TestContext.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\TestInitializeAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\TestMethodAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\TestPropertyAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\TimeoutAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\UnitTestAssertException.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\UnitTestOutcome.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\WorkItemAttribute.cs" />
+    <Compile Include="System.Data.Common\DbConnection.cs" />
+    <Compile Include="System.Data\DataRow.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Microsoft.VisualStudio.TestTools.UnitTesting.Web\ChangeLog" />
+    <None Include="Microsoft.VisualStudio.TestTools.UnitTesting\ChangeLog" />
+    <None Include="System.Data.Common\ChangeLog" />
+    <None Include="System.Data\ChangeLog" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{A1591282-1198-4647-A2B1-27E5FF5F6F3B}">
+        <SilverlightProjectProperties />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{7DEE9C1F-5D4B-4944-8654-1698B707B28E}</ProjectGuid>
     <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
@@ -64,12 +64,36 @@
     <Compile Include="Mono.Moonlight.UnitTesting\Tester.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="System.Collections.ObjectModel\ObservableCollectionTest.cs" />
+    <Compile Include="System.IO.IsolatedStorage\IsolatedStorageFileStreamTest.cs" />
+    <Compile Include="System.IO.IsolatedStorage\IsolatedStorageFileTest.cs" />
+    <Compile Include="System.IO.IsolatedStorage\IsolatedStorageSettingsTest.cs" />
+    <Compile Include="System.Windows.Controls\BorderTest.cs" />
+    <Compile Include="System.Windows.Controls\CanvasTest.cs" />
+    <Compile Include="System.Windows.Controls\ControlTemplateTest.cs" />
+    <Compile Include="System.Windows.Controls\ControlTest.cs" />
+    <Compile Include="System.Windows.Controls\GridTest.cs" />
+    <Compile Include="System.Windows.Controls\MediaElementTest.cs" />
+    <Compile Include="System.Windows.Controls\MediaElementTest.SlowStream.cs" />
+    <Compile Include="System.Windows.Controls\PanelTest.cs" />
+    <Compile Include="System.Windows.Data\BindingTest.cs" />
+    <Compile Include="System.Windows.Data\IValueConverterTest.cs" />
     <Compile Include="System.Windows.Input\StylusDeviceTest.cs" />
+    <Compile Include="System.Windows.Interop\ContentTest.cs" />
+    <Compile Include="System.Windows.Interop\SettingsTest.cs" />
+    <Compile Include="System.Windows.Interop\SilverlightHostTest.cs" />
+    <Compile Include="System.Windows.Media.Imaging\BitmapImageTest.cs" />
+    <Compile Include="System.Windows.Media\ColorTest.cs" />
     <Compile Include="System.Windows.Media\LineGeometryTest.cs" />
     <Compile Include="System.Windows.Media\VisualTreeHelperTest.cs" />
+    <Compile Include="System.Windows.Shapes\PathTest.cs" />
+    <Compile Include="System.Windows.Shapes\RectangleTest.cs" />
+    <Compile Include="System.Windows\ApplicationTest.cs" />
     <Compile Include="System.Windows\DependencyPropertyAttachedTest.cs" />
     <Compile Include="System.Windows\DependencyPropertyTest.cs" />
+    <Compile Include="System.Windows\DurationTest.cs" />
+    <Compile Include="System.Windows\FrameworkElementTest.cs" />
     <Compile Include="System.Windows\PresentationFrameworkCollectionTest.cs" />
+    <Compile Include="System.Windows\ResourceDictionaryTest.cs" />
     <Compile Include="System.Windows\RoutedEventArgsTest.cs" />
     <Compile Include="System.Windows\SetterBaseCollectionTest.cs" />
     <Compile Include="System.Windows\SetterTest.cs" />
@@ -89,18 +113,23 @@
     <None Include="Properties\AppManifest.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Silverlight.Testing\UnitTestHarness\UnitTestHarness.csproj">
+      <Project>{FBACE883-73A3-45C6-BDBF-72C34EF57334}</Project>
+      <Name>UnitTestHarness</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight\Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.csproj">
+      <Project>{01D5C633-B082-4D14-AE78-CFCF7CC5699B}</Project>
+      <Name>Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <Folder Include="System.Collections.Specialized\" />
     <Folder Include="System.Windows.Controls.Primitives\" />
-    <Folder Include="System.Windows.Controls\" />
-    <Folder Include="System.Windows.Data\" />
     <Folder Include="System.Windows.Documents\" />
     <Folder Include="System.Windows.Ink\" />
-    <Folder Include="System.Windows.Interop\" />
     <Folder Include="System.Windows.Markup\" />
     <Folder Include="System.Windows.Media.Animation\" />
-    <Folder Include="System.Windows.Media.Imaging\" />
     <Folder Include="System.Windows.Resources\" />
-    <Folder Include="System.Windows.Shapes\" />
     <Folder Include="System.Windows.Threading\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets" />
