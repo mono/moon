@@ -38,6 +38,12 @@ MultiScaleImage::ZoomAboutLogicalPoint (double zoomIncrementFactor, double zoomC
 
 }
 
+Point
+MultiScaleImage::ElementToLogicalPoint (Point elementPoint)
+{
+	//FIXME
+	return Point (0, 0);
+}
 
 void
 MultiScaleImage::RenderLayer (cairo_t *cr, MultiScaleTileSource *source, int layer)
