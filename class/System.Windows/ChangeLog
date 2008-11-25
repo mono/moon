@@ -1,3 +1,8 @@
+2008-11-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Exclude *Converter types that were not part of the 
+	final SL2 release.
+
 2008-11-24  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows/DependencyObject.cs: Fix support for FontStretch,

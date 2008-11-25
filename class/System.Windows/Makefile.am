@@ -367,16 +367,12 @@ system_windows_sources =							\
 	$(MSCONTROLS)/Src/Common/DragDeltaEventArgs.cs				\
 	$(MSCONTROLS)/Src/Common/DragStartedEventArgs.cs			\
 	$(MSCONTROLS)/Src/Common/FontFamilyConverter.cs				\
-	$(MSCONTROLS)/Src/Common/FontStretchConverter.cs			\
-	$(MSCONTROLS)/Src/Common/FontStyleConverter.cs				\
-	$(MSCONTROLS)/Src/Common/FontWeightConverter.cs				\
 	$(MSCONTROLS)/Src/Common/KeyboardNavigation.cs				\
 	$(MSCONTROLS)/Src/Common/NullableBoolConverter.cs			\
 	$(MSCONTROLS)/Src/Common/RoutedPropertyChangedEventArgs.cs		\
 	$(MSCONTROLS)/Src/Common/RoutedPropertyChangedEventHandler.cs		\
 	$(MSCONTROLS)/Src/Common/SelectionChangedEventArgs.cs			\
 	$(MSCONTROLS)/Src/Common/SelectionChangedEventHandler.cs		\
-	$(MSCONTROLS)/Src/Common/TextDecorationCollectionConverter.cs		\
 	$(MSCONTROLS)/Src/Common/TypeConverters.cs				\
 	$(MSCONTROLS)/Src/Common/UriTypeConverter.cs				\
 	$(MSCONTROLS)/Src/ContentControl/ContentControl.cs			\
