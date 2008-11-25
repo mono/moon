@@ -200,7 +200,7 @@ MediaBase::SetSource (Downloader *downloader, const char *PartName)
 	if (source.downloader && source.downloader->Completed ()) {
 		SetSourceInternal (source.downloader, source.part_name);
 		source.downloader->unref ();
-	} else {
+	} else if (!source.queued) {
 		AddTickCall (MediaBase::set_source_async);
 		source.queued = true;
 	}
