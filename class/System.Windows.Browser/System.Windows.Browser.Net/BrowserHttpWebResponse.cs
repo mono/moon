@@ -119,9 +119,8 @@ namespace System.Windows.Browser.Net
 			if (native == IntPtr.Zero)
 				return;
 
-			int code;
-			status_desc = NativeMethods.browser_http_response_get_status (native, out code);
-			status_code = (HttpStatusCode) code;
+			status_desc = NativeMethods.downloader_response_get_response_status_text (native);
+			status_code = (HttpStatusCode) NativeMethods.downloader_response_get_response_status (native);
 		}
 
 		public override HttpStatusCode StatusCode {
