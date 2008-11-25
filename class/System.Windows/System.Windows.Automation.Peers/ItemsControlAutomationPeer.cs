@@ -19,8 +19,8 @@
 //
 // Copyright (c) 2008 Novell, Inc. (http://www.novell.com)
 //
-// Author:
-//	Chris Toshok (toshok@ximian.com)
+// Contact:
+//   Moonlight Team (moonlight-list@lists.ximian.com)
 //
 
 using System.Windows;
@@ -30,7 +30,7 @@ using System.Collections.Generic;
 namespace System.Windows.Automation.Peers {
 
 	public class ItemsControlAutomationPeer : FrameworkElementAutomationPeer {
-		protected ItemsControlAutomationPeer (ItemsControl items)
+		protected ItemsControlAutomationPeer (ItemsControl items) : base (items)
 		{
 			throw new NotImplementedException ();
 		}

@@ -42,6 +42,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Collections.Specialized/NotifyCollectionChangedEventArgs.cs \
 	$(srcdir)/System.Collections.Specialized/NotifyCollectionChangedEventHandler.cs \
 	$(srcdir)/System.IO.IsolatedStorage/IsolatedStorageSettings.cs		\
+	$(srcdir)/System.Windows.Automation/AutomationProperty.cs		\
 	$(srcdir)/System.Windows.Automation/DockPosition.cs			\
 	$(srcdir)/System.Windows.Automation/ExpandCollapseState.cs		\
 	$(srcdir)/System.Windows.Automation/RowOrColumnMajor.cs			\
@@ -49,6 +50,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Automation/ToggleState.cs			\
 	$(srcdir)/System.Windows.Automation/WindowInteractionState.cs		\
 	$(srcdir)/System.Windows.Automation/WindowVisualState.cs		\
+	$(srcdir)/System.Windows.Automation.Peers/AutomationEvents.cs		\
 	$(srcdir)/System.Windows.Automation.Peers/AutomationPeer.cs		\
 	$(srcdir)/System.Windows.Automation.Peers/AutomationControlType.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/FrameworkElementAutomationPeer.cs	\

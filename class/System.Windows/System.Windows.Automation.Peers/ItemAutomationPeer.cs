@@ -19,8 +19,8 @@
 //
 // Copyright (c) 2008 Novell, Inc. (http://www.novell.com)
 //
-// Author:
-//	Chris Toshok (toshok@ximian.com)
+// Contact:
+//   Moonlight Team (moonlight-list@lists.ximian.com)
 //
 
 using System;
@@ -28,7 +28,7 @@ using System.Windows;
 
 namespace System.Windows.Automation.Peers {
 	public class ItemAutomationPeer : FrameworkElementAutomationPeer {
-		protected ItemAutomationPeer (UIElement uielement)
+		protected ItemAutomationPeer (UIElement uielement) : base ((FrameworkElement)uielement)
 		{
 			throw new NotImplementedException ();
 		}

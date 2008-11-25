@@ -19,27 +19,34 @@
 //
 // Copyright (c) 2008 Novell, Inc. (http://www.novell.com)
 //
-// Author:
-//	Chris Toshok (toshok@ximian.com)
+// Contact:
+//   Moonlight Team (moonlight-list@lists.ximian.com)
 //
 
 using System;
 using System.Windows;
+using System.Security;
 using System.Collections.Generic;
 
 namespace System.Windows.Automation.Peers {
 
 	public abstract class FrameworkElementAutomationPeer : AutomationPeer {
-		internal FrameworkElementAutomationPeer ()
+		[SecuritySafeCritical]
+		public FrameworkElementAutomationPeer (FrameworkElement element)
 		{
 		}
 
-		protected virtual string GetNameCore ()
+		protected override string GetNameCore ()
 		{
 			throw new NotImplementedException ();
 		}
 
-		protected virtual string GetItemTypeCore ()
+		protected override string GetItemTypeCore ()
+		{
+			throw new NotImplementedException ();
+		}
+
+		protected override AutomationPeer GetLabeledByCore ()
 		{
 			throw new NotImplementedException ();
 		}
@@ -50,6 +57,16 @@ namespace System.Windows.Automation.Peers {
 		}
 
 		public virtual object GetPattern (PatternInterface pattern)
+		{
+			throw new NotImplementedException ();
+		}
+
+
+		public UIElement Owner {
+			get { throw new NotImplementedException (); }
+		}
+
+		public static AutomationPeer FromElement (UIElement element)
 		{
 			throw new NotImplementedException ();
 		}

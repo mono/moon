@@ -26,13 +26,64 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System;
+using System.Security;
+using System.Collections.Generic;
+using System.Windows.Automation.Provider;
+
 namespace System.Windows.Automation.Peers {
 
 	[MonoTODO]
-	abstract public class AutomationPeer : DependencyObject {
+	public abstract class AutomationPeer : DependencyObject {
 
 		protected AutomationPeer ()
 		{
 		}
+
+		public AutomationPeer EventsSource {
+			get { throw new NotImplementedException (); }
+			set { throw new NotImplementedException (); }
+		}
+
+		[SecuritySafeCritical]
+		public void RaiseAutomationEvent (AutomationEvents events)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public static bool ListenerExists (AutomationEvents events)
+		{
+			throw new NotImplementedException ();
+		}
+
+		protected IRawElementProviderSimple ProviderFromPeer (AutomationPeer peer)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public AutomationPeer GetLabeledBy ()
+		{
+			throw new NotImplementedException ();
+		}
+
+		public string GetName ()
+		{
+			throw new NotImplementedException ();
+		}
+
+		public string GetItemType ()
+		{
+			throw new NotImplementedException ();
+		}
+
+		public List<AutomationPeer> GetChildren ()
+		{
+			throw new NotImplementedException ();
+		}
+
+		protected abstract AutomationPeer GetLabeledByCore ();
+		protected abstract string GetNameCore ();
+		protected abstract string GetItemTypeCore ();
+		protected abstract List<AutomationPeer> GetChildrenCore ();
 	}
 }

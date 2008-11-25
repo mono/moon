@@ -23,14 +23,23 @@
 //   Moonlight Team (moonlight-list@lists.ximian.com)
 //
 
-namespace System.Windows.Automation {
+namespace System.Windows.Automation.Peers {
 
-	public enum WindowInteractionState {
-		Running,
-		Closing,
-		ReadyForUserInteraction,
-		BlockedByModalWindow,
-		NotResponding
+	public enum AutomationEvents {
+		ToolTipOpened,
+		ToolTipClosed,
+		MenuOpened,
+		MenuClosed,
+		AutomationFocusChanged,
+		InvokePatternOnInvoked,
+		SelectionItemPatternOnElementAddedToSelection,
+		SelectionItemPatternOnElementRemovedFromSelection,
+		SelectionItemPatternOnElementSelected,
+		SelectionPatternOnInvalidated,
+		TextPatternOnTextSelectionChanged,
+		TextPatternOnTextChanged,
+		AsyncContentLoaded,
+		PropertyChanged,
+		StructureChanged
 	}
-
 }

@@ -25,12 +25,10 @@
 
 namespace System.Windows.Automation {
 
-	public enum WindowInteractionState {
-		Running,
-		Closing,
-		ReadyForUserInteraction,
-		BlockedByModalWindow,
-		NotResponding
+	public class AutomationProperty {
+		internal AutomationProperty ()
+		{
+		}
 	}
 
 }
