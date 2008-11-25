@@ -1,4 +1,4 @@
-﻿// (c) Copyright Microsoft Corporation.
+// (c) Copyright Microsoft Corporation.
 // This source is subject to the Microsoft Public License (Ms-PL).
 // Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
 // All other rights reserved.
@@ -478,7 +478,10 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.UI
                 }
             }
 
-            return null;
+            //return null;	
+            //workaround for bug #448560:
+            object dummy = null;
+            return (CONTROL_TYPE) dummy;
         }
 
         /// <summary>

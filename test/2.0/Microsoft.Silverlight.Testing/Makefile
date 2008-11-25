@@ -192,25 +192,35 @@ SOURCES = \
 RESOURCES = \
     -res:UnitTestHarness/Properties/UnitTestMessage.resources,Microsoft.Silverlight.Testing.Properties.UnitTestMessage.resources
 
+# System.Xml.Linq.dll requires full path, otherwise the compiler references the one in the gac 
 REFERENCES = \
 	-r:System \
 	-r:System.Net \
 	-r:System.Xml \
-	-r:System.Xml.Linq \
+	-r:$(CURDIR)/System.Xml.Linq.dll \
 	-r:System.Core \
 	-r:Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll
 
 
-default: Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll resources
-	smcs $(SOURCES) $(RESOURCES) $(REFERENCES) `pkg-config --libs silver` -noconfig -define:SILVERLIGHT,VISUALSTUDIO_SUPPORT -target:library -out:Microsoft.Silverlight.Testing.dll -debug:full
+Microsoft.Silverlight.Testing.dll: Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll UnitTestHarness/Properties/UnitTestMessage.resources $(SOURCES) System.Xml.Linq.dll 
+	smcs $(SOURCES) $(RESOURCES) $(REFERENCES) `pkg-config --libs silver` -noconfig -define:SILVERLIGHT -target:library -out:Microsoft.Silverlight.Testing.dll -debug:full
 
-
-resources: UnitTestHarness/Properties/UnitTestMessage.resx
+UnitTestHarness/Properties/UnitTestMessage.resources: UnitTestHarness/Properties/UnitTestMessage.resx
 	resgen2 UnitTestHarness/Properties/UnitTestMessage.resx
 
-Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll: 
-	cd ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/ && $(MAKE)
-	cp ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll .
+# this desperately needs a better way
+SYSTEM_XML_LINQ_DLL = $(shell dirname $(shell dirname $(shell which gacutil)))/lib/mono/gac/System.Xml.Linq/2.0.5.0__31bf3856ad364e35/System.Xml.Linq.dll
 
+System.Xml.Linq.dll: $(SYSTEM_XML_LINQ_DLL)
+	# get System.Xml.Linq.dll from the gac and remove the strong name signature
+	$(MAKE) -C ../../../tools/unsign
+	mono --debug ../../../tools/unsign/unsign.exe $(SYSTEM_XML_LINQ_DLL)
+	mv System.Xml.Linq.dll.Unsigned System.Xml.Linq.dll
+	# get the mdb too
+	-cp $(SYSTEM_XML_LINQ_DLL).mdb .
+
+Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll:
+	$(MAKE) -C ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/
+	cp ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll* .
 
 

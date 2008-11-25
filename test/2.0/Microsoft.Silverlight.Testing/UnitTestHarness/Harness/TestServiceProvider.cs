@@ -1,4 +1,4 @@
-﻿// (c) Copyright Microsoft Corporation.
+// (c) Copyright Microsoft Corporation.
 // This source is subject to the Microsoft Public License (Ms-PL).
 // Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
 // All other rights reserved.
@@ -137,7 +137,14 @@ namespace Microsoft.Silverlight.Testing.Harness
             where TService : ProviderBase
         {
             RequireService(feature);
-            return GetService(feature) as TService;
+            //return GetService(feature) as TService;
+            //workaround for bug #448560:
+            object o = GetService (feature);
+            object dummy = null;
+            if (o is TService)
+                return (TService) o;
+            else
+                return (TService) dummy;
         }
 
         /// <summary>
