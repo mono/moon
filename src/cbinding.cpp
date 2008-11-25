@@ -129,6 +129,18 @@ binding_expression_base_get_property (BindingExpressionBase *instance)
 
 
 #if SL_2_0
+Value *
+binding_expression_base_get_value (BindingExpressionBase *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetValue ();
+}
+#endif
+
+
+#if SL_2_0
 void
 binding_expression_base_set_binding (BindingExpressionBase *instance, Binding *binding)
 {
@@ -160,6 +172,18 @@ binding_expression_base_set_property (BindingExpressionBase *instance, Dependenc
 		return;
 	
 	instance->SetProperty (property);
+}
+#endif
+
+
+#if SL_2_0
+void
+binding_expression_base_update_source (BindingExpressionBase *instance, Value *value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->UpdateSource (value);
 }
 #endif
 
@@ -216,7 +240,7 @@ int
 collection_add_with_error (Collection *instance, Value *value, MoonError *error)
 {
 	if (instance == NULL)
-		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
 		return (int) 0;
 	
 	if (error == NULL)
@@ -250,7 +274,7 @@ int
 collection_get_count (Collection *instance)
 {
 	if (instance == NULL)
-		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
 		return (int) 0;
 	
 	return instance->GetCount ();
@@ -295,7 +319,7 @@ int
 collection_index_of (Collection *instance, Value *value)
 {
 	if (instance == NULL)
-		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
 		return (int) 0;
 	
 	return instance->IndexOf (value);
@@ -307,7 +331,7 @@ int
 collection_insert_with_error (Collection *instance, int index, Value *value, MoonError *error)
 {
 	if (instance == NULL)
-		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
 		return (int) 0;
 	
 	if (error == NULL)
@@ -369,7 +393,7 @@ CollectionChangedAction
 collection_changed_event_args_get_changed_action (CollectionChangedEventArgs *instance)
 {
 	if (instance == NULL)
-		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
 		return (CollectionChangedAction) 0;
 	
 	return instance->GetChangedAction ();
@@ -380,7 +404,7 @@ int
 collection_changed_event_args_get_index (CollectionChangedEventArgs *instance)
 {
 	if (instance == NULL)
-		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
 		return (int) 0;
 	
 	return instance->GetIndex ();
@@ -471,7 +495,7 @@ int
 collection_iterator_next (CollectionIterator *instance)
 {
 	if (instance == NULL)
-		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
 		return (int) 0;
 	
 	return instance->Next ();
@@ -545,7 +569,7 @@ double
 column_definition_get_actual_width (ColumnDefinition *instance)
 {
 	if (instance == NULL)
-		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
 		return (double) 0;
 	
 	return instance->GetActualWidth ();
@@ -989,7 +1013,7 @@ int
 event_object_add_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor)
 {
 	if (instance == NULL)
-		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
 		return (int) 0;
 	
 	return instance->AddHandler (event_name, handler, data, data_dtor);
@@ -1000,7 +1024,7 @@ int
 event_object_add_xaml_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor)
 {
 	if (instance == NULL)
-		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
 		return (int) 0;
 	
 	return instance->AddXamlHandler (event_name, handler, data, data_dtor);
@@ -1081,7 +1105,7 @@ Size
 framework_element_arrange_override (FrameworkElement *instance, Size finalSize)
 {
 	if (instance == NULL)
-		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
 		return (Size) 0;
 	
 	return instance->ArrangeOverride (finalSize);
@@ -1099,7 +1123,7 @@ Size
 framework_element_measure_override (FrameworkElement *instance, Size availableSize)
 {
 	if (instance == NULL)
-		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
 		return (Size) 0;
 	
 	return instance->MeasureOverride (availableSize);
@@ -1309,7 +1333,7 @@ int
 key_event_args_get_key (KeyEventArgs *instance)
 {
 	if (instance == NULL)
-		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
 		return (int) 0;
 	
 	return instance->GetKey ();
@@ -1320,7 +1344,7 @@ int
 key_event_args_get_platform_key_code (KeyEventArgs *instance)
 {
 	if (instance == NULL)
-		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
 		return (int) 0;
 	
 	return instance->GetPlatformKeyCode ();
@@ -1673,7 +1697,7 @@ int
 multi_scale_tile_source_get_image_height (MultiScaleTileSource *instance)
 {
 	if (instance == NULL)
-		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
 		return (int) 0;
 	
 	return instance->GetImageHeight ();
@@ -1686,7 +1710,7 @@ int
 multi_scale_tile_source_get_image_width (MultiScaleTileSource *instance)
 {
 	if (instance == NULL)
-		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
 		return (int) 0;
 	
 	return instance->GetImageWidth ();
@@ -1699,7 +1723,7 @@ int
 multi_scale_tile_source_get_tile_height (MultiScaleTileSource *instance)
 {
 	if (instance == NULL)
-		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
 		return (int) 0;
 	
 	return instance->GetTileHeight ();
@@ -1712,7 +1736,7 @@ int
 multi_scale_tile_source_get_tile_overlap (MultiScaleTileSource *instance)
 {
 	if (instance == NULL)
-		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
 		return (int) 0;
 	
 	return instance->GetTileOverlap ();
@@ -1725,7 +1749,7 @@ int
 multi_scale_tile_source_get_tile_width (MultiScaleTileSource *instance)
 {
 	if (instance == NULL)
-		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
 		return (int) 0;
 	
 	return instance->GetTileWidth ();
@@ -2208,7 +2232,7 @@ double
 row_definition_get_actual_height (RowDefinition *instance)
 {
 	if (instance == NULL)
-		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
 		return (double) 0;
 	
 	return instance->GetActualHeight ();
@@ -2958,7 +2982,7 @@ Size
 uielement_get_desired_size (UIElement *instance)
 {
 	if (instance == NULL)
-		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
 		return (Size) 0;
 	
 	return instance->GetDesiredSize ();
@@ -2969,7 +2993,7 @@ Size
 uielement_get_render_size (UIElement *instance)
 {
 	if (instance == NULL)
-		// Need to find a property way to get the default value for the specified type and return that if instance is NULL.
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
 		return (Size) 0;
 	
 	return instance->GetRenderSize ();

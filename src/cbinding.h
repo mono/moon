@@ -125,6 +125,11 @@ DependencyProperty *binding_expression_base_get_property (BindingExpressionBase 
 
 #if SL_2_0
 /* @GeneratePInvoke */
+Value *binding_expression_base_get_value (BindingExpressionBase *instance);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
 void binding_expression_base_set_binding (BindingExpressionBase *instance, Binding *binding);
 #endif
 
@@ -136,6 +141,11 @@ void binding_expression_base_set_element (BindingExpressionBase *instance, Frame
 #if SL_2_0
 /* @GeneratePInvoke */
 void binding_expression_base_set_property (BindingExpressionBase *instance, DependencyProperty *property);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
+void binding_expression_base_update_source (BindingExpressionBase *instance, Value *value);
 #endif
 
 #if SL_2_0
