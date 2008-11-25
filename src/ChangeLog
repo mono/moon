@@ -1,3 +1,8 @@
+2008-11-25  Larry Ewing  <lewing@novell.com>
+
+	* media.cpp (Image::GetCoverageBounds): be slightly smarter about
+	computing coverage.
+
 2008-11-25  Geoff Norton  <gnorton@novell.com>
 
 	* cbinding.(cpp|h): Regenerate
