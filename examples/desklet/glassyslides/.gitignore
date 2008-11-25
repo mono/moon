@@ -4,3 +4,9 @@
 /*mdb
 /*dll
 /example-glassyslides
+/App.xaml.g.cs
+/AppManifest.xaml
+/default.xaml.g.cs
+/glassyslides.g.resources
+/glassyslides.html
+/glassyslides.xap

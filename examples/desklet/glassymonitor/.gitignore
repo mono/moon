@@ -4,3 +4,9 @@
 /Makefile
 /Makefile.in
 /example-glassymonitor
+/App.xaml.g.cs
+/AppManifest.xaml
+/default.xaml.g.cs
+/glassymonitor.g.resources
+/glassymonitor.html
+/glassymonitor.xap

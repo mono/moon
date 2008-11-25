@@ -3,3 +3,9 @@
 /Makefile.in
 /example-cpumonitor
 /*.mdb
+/App.xaml.g.cs
+/AppManifest.xaml
+/cpumonitor.g.resources
+/cpumonitor.html
+/cpumonitor.xap
+/default.xaml.g.cs

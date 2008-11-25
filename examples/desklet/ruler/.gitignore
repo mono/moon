@@ -3,3 +3,10 @@
 /Makefile.in
 /*dll
 /*mdb
+/App.xaml.g.cs
+/AppManifest.xaml
+/default.xaml.g.cs
+/ruler.g.resources
+/ruler.html
+/ruler.xap
+

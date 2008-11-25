@@ -4,3 +4,9 @@
 /*dll.mdb
 /example-calculator
 /Makefile.in
+/App.xaml.g.cs
+/AppManifest.xaml
+/calculator.g.resources
+/calculator.html
+/calculator.xap
+/default.xaml.g.cs

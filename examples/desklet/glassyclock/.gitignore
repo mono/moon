@@ -4,3 +4,9 @@
 /*dll
 /*mdb
 /example-glassyclock
+/App.xaml.g.cs
+/AppManifest.xaml
+/default.xaml.g.cs
+/glassyclock.g.resources
+/glassyclock.html
+/glassyclock.xap
