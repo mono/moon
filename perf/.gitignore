@@ -8,3 +8,4 @@
 /.deps
 /perf-tool
 /perf-results.db
+/perf-results.db-journal
