@@ -94,6 +94,9 @@
     <Compile Include="System.Windows\DependencyPropertyAttachedTest.cs" />
     <Compile Include="System.Windows\DependencyPropertyTest.cs" />
     <Compile Include="System.Windows\DurationTest.cs" />
+    <Compile Include="System.Windows\FontStretchesTest.cs" />
+    <Compile Include="System.Windows\FontStylesTest.cs" />
+    <Compile Include="System.Windows\FontWeigthsTest.cs" />
     <Compile Include="System.Windows\FrameworkElementTest.cs" />
     <Compile Include="System.Windows\PresentationFrameworkCollectionTest.cs" />
     <Compile Include="System.Windows\ResourceDictionaryTest.cs" />
