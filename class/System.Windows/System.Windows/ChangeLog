@@ -1,3 +1,7 @@
+2008-11-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* FrameworkElement.cs: Yet time for BindingValidationError.
+
 2008-11-25  Alan McGovern  <amcgovern@novell.com>
 
 	* Setter.cs: Silverlight throws a null ref in this case

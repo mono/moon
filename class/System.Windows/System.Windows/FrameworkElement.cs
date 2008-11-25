@@ -27,6 +27,7 @@
 //
 
 using Mono;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Markup;
@@ -117,7 +118,6 @@ namespace System.Windows {
 		static object LayoutUpdatedEvent = new object ();
 		static object SizeChangedEvent = new object ();
 		
-#if notyet
 		public event EventHandler<ValidationErrorEventArgs> BindingValidationError {
 			add {
 				if (events[BindingValidationErrorEvent] == null)
@@ -130,7 +130,7 @@ namespace System.Windows {
 					Events.RemoveHandler (this, "BindingValidationError", Events.binding_validation_error);
 			}
 		}
-#endif
+
 		public event EventHandler LayoutUpdated {
 			add {
 				if (events[LayoutUpdatedEvent] == null)
