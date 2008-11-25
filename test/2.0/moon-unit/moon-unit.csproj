@@ -59,6 +59,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="BindingXaml.xaml.cs">
+      <DependentUpon>BindingXaml.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Mono.Moonlight.UnitTesting\HtmlOutput.cs" />
     <Compile Include="Mono.Moonlight.UnitTesting\IOutput.cs" />
     <Compile Include="Mono.Moonlight.UnitTesting\Tester.cs" />
@@ -121,6 +124,12 @@
       <Project>{01D5C633-B082-4D14-AE78-CFCF7CC5699B}</Project>
       <Name>Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="BindingXaml.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="System.Collections.Specialized\" />
