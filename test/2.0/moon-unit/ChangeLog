@@ -1,3 +1,7 @@
+2008-11-25  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/StyleTest.cs: Added two more tests 
+
 2008-11-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Makefile: Fixicate a bit more.

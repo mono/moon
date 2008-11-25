@@ -133,5 +133,31 @@ namespace MoonTest.System.Windows
 				XamlReader.Load(@"<Style xmlns=""http://schemas.microsoft.com/client/2007""><Setter Property=""WidthOrHeight"" Value=""10""/></Style>");
 			});
 		}
+
+        [TestMethod]
+        public void UseSetterTwice()
+        {
+            Style s1 = new Style(typeof(Rectangle));
+            Style s2 = new Style(typeof(Rectangle));
+            Setter setter = new Setter(Rectangle.WidthProperty, 5);
+            s1.Setters.Add(setter);
+            Assert.Throws<InvalidOperationException>(delegate {
+                s2.Setters.Add(setter);
+            });
+        }
+
+		public void LoadFromXaml ()
+		{
+            Button b = (Button)XamlReader.Load(@"
+<Button xmlns=""http://schemas.microsoft.com/client/2007"" >
+    <Button.Style>
+        <Style TargetType=""Button"">
+            <Setter Property=""Width"" Value=""10"" />
+        </Style>
+    </Button.Style>
+</Button>");
+
+            Assert.IsTrue(b.Style.IsSealed);
+		}
 	}
 }
