@@ -12,21 +12,26 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Silverlight.Testing;
 
 namespace MoonTest.System.Windows.Controls
 {
 	[TestClass]
-	public partial class MediaElementTest
+	public partial class MediaElementTest : Microsoft.Silverlight.Testing.SilverlightTest
 	{
 		MediaElement media = new MediaElement ();
 		WebClient client = new WebClient ();
-			
+		bool completed = false;
+
 		[TestMethod]
+		[Asynchronous ()]
 		public void SetSourceTest () 
 		{
 			client.DownloadProgressChanged += new DownloadProgressChangedEventHandler (client_DownloadProgressChanged);
 			client.OpenReadCompleted += new OpenReadCompletedEventHandler (client_OpenReadCompleted);
 			client.OpenReadAsync (new Uri ("http://localhost:8080/elephants-dream-320x180-first-minute.wmv", UriKind.Absolute));
+			EnqueueConditional (delegate () { return completed; });
+			EnqueueTestComplete ();
 		}
 		
 		[TestMethod]
@@ -43,9 +48,14 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		void client_OpenReadCompleted (object sender, OpenReadCompletedEventArgs e) {
-			Console.WriteLine ("client_OpenRead: e.Result: {0}, e.ex: {1}", e.Result, e.Error);
-			if (e.Result != null)
-				media.SetSource (new SlowStream (e.Result));
+			completed = true;
+			try {
+				Console.WriteLine ("client_OpenRead: e.Result: {0}, e.ex: {1}", e.Result, e.Error);
+				if (e.Result != null)
+					media.SetSource (new SlowStream (e.Result));
+			} catch (Exception ex) {
+				Console.WriteLine (ex.Message);
+			}
 		}
 	}
 }
