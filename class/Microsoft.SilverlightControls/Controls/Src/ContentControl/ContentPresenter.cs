@@ -207,7 +207,7 @@ namespace System.Windows.Controls
         /// Gets or sets a TextDecorationCollection that contains the effects to 
         /// apply to the Content text. 
         /// </summary>
-        [TypeConverter(typeof(TextDecorationCollectionConverter))] 
+//        [TypeConverter(typeof(TextDecorationCollectionConverter))] 
         public TextDecorationCollection TextDecorations
         {
             get { return GetValue(TextDecorationsProperty) as TextDecorationCollection; } 

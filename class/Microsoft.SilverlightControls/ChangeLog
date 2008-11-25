@@ -1,3 +1,9 @@
+2008-11-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Controls/Src/ContentControl/ContentControl.cs,
+	  Controls/Src/ContentControl/ContentPresenter.cs: Comment the use
+	  of TextDecorationCollectionConverter (not part of SL2 final).
+
 2008-11-24  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Controls/Src/Thumb/Thumb.cs: Add IsFocused DP.
