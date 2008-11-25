@@ -1,3 +1,9 @@
+2008-11-25  Geoff Norton  <gnorton@novell.com>
+
+	* cbinding.(cpp|h): Regenerate
+	* downloader.h: Expose the status code and status text to the
+	DownloaderResponse object.
+
 2008-11-25  Alan McGovern  <amcgovern@novell.com>
 
 	* style.h:

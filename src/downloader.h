@@ -210,6 +210,10 @@ class DownloaderResponse {
 	virtual void Abort () = 0;
 	virtual const bool IsAborted () { return this->aborted; }
 	virtual void SetHeaderVisitor (DownloaderResponseHeaderVisitorCallback visitor) = 0;
+	/* @GenerateCBinding,GeneratePInvoke */
+	virtual int GetResponseStatus () = 0;
+	/* @GenerateCBinding,GeneratePInvoke */
+	virtual const char * GetResponseStatusText () = 0;
 	DownloaderRequest *GetDownloaderRequest () { return request; }
 	void SetDownloaderRequest (DownloaderRequest *value) { request = value; }
 };

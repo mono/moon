@@ -977,6 +977,30 @@ downloader_new (void)
 
 
 /**
+ * DownloaderResponse
+ **/
+int
+downloader_response_get_response_status (DownloaderResponse *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetResponseStatus ();
+}
+
+
+const char *
+downloader_response_get_response_status_text (DownloaderResponse *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetResponseStatusText ();
+}
+
+
+/**
  * DrawingAttributes
  **/
 DrawingAttributes *
@@ -1662,7 +1686,7 @@ multi_scale_image_element_to_logical_point (MultiScaleImage *instance, Point ele
 {
 	if (instance == NULL)
 		return Point (0, 0);
-
+	
 	return instance->ElementToLogicalPoint (elementPoint);
 }
 #endif

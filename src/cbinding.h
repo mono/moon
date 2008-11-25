@@ -503,6 +503,15 @@ DoubleKeyFrameCollection *double_key_frame_collection_new (void);
 Downloader *downloader_new (void);
 
 /**
+ * DownloaderResponse
+ **/
+/* @GeneratePInvoke */
+int downloader_response_get_response_status (DownloaderResponse *instance);
+
+/* @GeneratePInvoke */
+const char *downloader_response_get_response_status_text (DownloaderResponse *instance);
+
+/**
  * DrawingAttributes
  **/
 /* @GeneratePInvoke */
