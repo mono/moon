@@ -91,6 +91,8 @@ class GECKO_SYM(DownloaderResponse) : public DownloaderResponse, public nsIStrea
 
 	void Abort ();
 	void SetHeaderVisitor (DownloaderResponseHeaderVisitorCallback visitor);
+	int GetResponseStatus ();
+	const char *GetResponseStatusText ();
 };
 
 class GECKO_SYM(DownloaderRequest) : public DownloaderRequest {
@@ -129,6 +131,28 @@ GECKO_SYM(DownloaderResponse)::SetHeaderVisitor (DownloaderResponseHeaderVisitor
 	nsCOMPtr<nsIHttpChannel> httpchannel = do_QueryInterface (channel);
 
 	httpchannel->VisitResponseHeaders (hv);	
+}
+
+int
+GECKO_SYM(DownloaderResponse)::GetResponseStatus ()
+{
+	PRUint32 status;
+	nsCOMPtr<nsIHttpChannel> httpchannel = do_QueryInterface (channel);
+
+	httpchannel->GetResponseStatus (&status);
+
+	return status;
+}
+
+const char *
+GECKO_SYM(DownloaderResponse)::GetResponseStatusText ()
+{
+	nsCString status;
+	nsCOMPtr<nsIHttpChannel> httpchannel = do_QueryInterface (channel);
+
+	httpchannel->GetResponseStatusText (status);
+
+	return status.get();
 }
 
 void
