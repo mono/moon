@@ -880,13 +880,28 @@ Image::GetCoverageBounds ()
 {
 	Stretch stretch = GetStretch ();
 
-	if (surface && !surface->has_alpha
-	    && ((GetImageWidth () == GetBounds ().width
-		 && GetImageHeight () == GetBounds ().height)
-		|| (stretch == StretchFill || stretch == StretchUniformToFill)))
+	if (!surface || surface->has_alpha)
+		return Rect ();
+
+        if (stretch == StretchFill || stretch == StretchUniformToFill)
 		return bounds;
 
-	return Rect ();
+	cairo_matrix_t matrix;
+	Rect image = Rect (0, 0, surface->width, surface->height);
+	Rect paint = Rect (0, 0, GetWidth (), GetHeight ());
+
+	image_brush_compute_pattern_matrix (&matrix, 
+					    paint.width, paint.height,
+					    image.width, image.height, stretch, 
+					    AlignmentXCenter, AlignmentYCenter, NULL, NULL);
+
+	cairo_matrix_invert (&matrix);
+	cairo_matrix_multiply (&matrix, &matrix, &absolute_xform);
+
+	image = image.Transform (&matrix);
+	image = image.Intersection (bounds);
+	
+	return image;
 }
 
 cairo_surface_t *
