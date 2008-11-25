@@ -25,6 +25,13 @@
 
 2008-11-24  Larry Ewing  <lewing@novell.com>
 
+	* media.cpp (MediaBase::SetSource): only queue a tick if we need
+	to, fixes regression on mediaelement downloaders.
+
+	r:toshok
+
+2008-11-24  Larry Ewing  <lewing@novell.com>
+
 	* mediaelement.cpp (MediaElement::GetCoverageBounds): be more
 	precise about the coverage bounds.  Use the coveragebounds when
 	invalidating based on position so that we don't invalidate a lot
