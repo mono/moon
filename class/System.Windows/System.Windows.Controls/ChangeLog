@@ -1,3 +1,7 @@
+2008-11-25  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* MultiScaleImage.cs: ElementToLogicalPoint impl.
+
 2008-11-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Canvas.cs, Control.cs, MediaElement.cs: Corcompare fixes.

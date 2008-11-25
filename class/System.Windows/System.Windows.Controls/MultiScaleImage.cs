@@ -39,6 +39,15 @@ namespace System.Windows.Controls {
 			NativeMethods.multi_scale_image_zoom_about_logical_point (this.native, zoomIncrementFactor, zoomCenterLogicalX, zoomCenterLogicalY);
 		}
 
+		public Point ElementToLogicalPoint (Point elementPoint)
+		{
+			UnmanagedPoint point = new UnmanagedPoint ();
+			point.x = elementPoint.X;
+			point.y = elementPoint.Y;
+			UnmanagedPoint ret = NativeMethods.multi_scale_image_element_to_logical_point (this.native, point);
+			return new Point (ret.x, ret.y);
+		}
+
 		static object ImageFailedEvent = new object ();
 		static object ImageOpenFailedEvent = new object ();
 		static object ImageOpenSucceededEvent = new object ();

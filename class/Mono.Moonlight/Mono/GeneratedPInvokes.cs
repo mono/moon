@@ -711,6 +711,10 @@ namespace Mono {
 		public extern static IntPtr mouse_event_args_new ();
 
 		[DllImport ("moon")]
+		// Point multi_scale_image_element_to_logical_point (MultiScaleImage *instance, Point elementPoint);
+		public extern static UnmanagedPoint multi_scale_image_element_to_logical_point (IntPtr instance, UnmanagedPoint elementPoint);
+
+		[DllImport ("moon")]
 		// MultiScaleImage *multi_scale_image_new ();
 		public extern static IntPtr multi_scale_image_new ();
 

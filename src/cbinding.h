@@ -840,6 +840,11 @@ MouseEventArgs *mouse_event_args_new (void);
  * MultiScaleImage
  **/
 /* @GeneratePInvoke */
+Point multi_scale_image_element_to_logical_point (MultiScaleImage *instance, Point elementPoint);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
 MultiScaleImage *multi_scale_image_new (void);
 #endif
 

@@ -58,6 +58,8 @@ class MultiScaleImage : public MediaBase {
 	//
 	/* @GenerateCBinding,GeneratePInvoke */
 	void ZoomAboutLogicalPoint (double zoomIncrementFactor, double zoomCenterLogicalX, double zoomCenterLogicalY);
+	/* @GenerateCBinding,GeneratePInvoke */
+	Point ElementToLogicalPoint (Point elementPoint);
 
 	//
 	// Property Accessors

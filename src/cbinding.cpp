@@ -1657,6 +1657,18 @@ mouse_event_args_new (void)
 /**
  * MultiScaleImage
  **/
+Point
+multi_scale_image_element_to_logical_point (MultiScaleImage *instance, Point elementPoint)
+{
+	if (instance == NULL)
+		return Point (0, 0);
+
+	return instance->ElementToLogicalPoint (elementPoint);
+}
+#endif
+
+
+#if SL_2_0
 MultiScaleImage *
 multi_scale_image_new (void)
 {
