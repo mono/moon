@@ -37,6 +37,9 @@ namespace System.Windows {
 
 		public Setter (DependencyProperty property, object value)
 		{
+			if (property == null)
+				throw new NullReferenceException ();
+			
 			Property = property;
 			Value = value;
 		}

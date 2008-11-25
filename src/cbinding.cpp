@@ -2577,6 +2577,18 @@ stroke_collection_new (void)
 /**
  * Style
  **/
+void
+style_seal (Style *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->Seal ();
+}
+#endif
+
+
+#if SL_2_0
 Style *
 style_new (void)
 {

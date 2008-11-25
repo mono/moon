@@ -319,6 +319,8 @@ dependency_property_g_init (void)
 	Setter::DependencyPropertyProperty = DependencyProperty::Register (Type::SETTER, "DependencyProperty", Type::DEPENDENCYPROPERTY);
 	Setter::PropertyProperty = DependencyProperty::Register (Type::SETTER, "Property", Type::STRING);
 	Setter::ValueProperty = DependencyProperty::Register (Type::SETTER, "Value", Type::OBJECT);
+	SetterBase::IsSealedProperty = DependencyProperty::Register (Type::SETTERBASE, "IsSealed", new Value (false));
+	SetterBaseCollection::IsSealedProperty = DependencyProperty::Register (Type::SETTERBASE_COLLECTION, "IsSealed", new Value (false));
 #endif
 	Shape::FillProperty = DependencyProperty::Register (Type::SHAPE, "Fill", Type::BRUSH);
 	Shape::StretchProperty = DependencyProperty::Register (Type::SHAPE, "Stretch", new Value (StretchNone));
@@ -347,6 +349,7 @@ dependency_property_g_init (void)
 	Stroke::DrawingAttributesProperty = DependencyProperty::Register (Type::STROKE, "DrawingAttributes", Type::DRAWINGATTRIBUTES);
 	Stroke::StylusPointsProperty = DependencyProperty::Register (Type::STROKE, "StylusPoints", Type::STYLUSPOINT_COLLECTION);
 #if SL_2_0
+	Style::IsSealedProperty = DependencyProperty::Register (Type::STYLE, "IsSealed", new Value (false));
 	Style::SettersProperty = DependencyProperty::Register (Type::STYLE, "Setters", Type::SETTERBASE_COLLECTION);
 	Style::TargetTypeProperty = DependencyProperty::Register (Type::STYLE, "TargetType", Type::MANAGED);
 #endif
@@ -687,6 +690,8 @@ DependencyProperty *ScaleTransform::ScaleYProperty = NULL;
 DependencyProperty *Setter::DependencyPropertyProperty = NULL;
 DependencyProperty *Setter::PropertyProperty = NULL;
 DependencyProperty *Setter::ValueProperty = NULL;
+DependencyProperty *SetterBase::IsSealedProperty = NULL;
+DependencyProperty *SetterBaseCollection::IsSealedProperty = NULL;
 #endif
 DependencyProperty *Shape::FillProperty = NULL;
 DependencyProperty *Shape::StretchProperty = NULL;
@@ -715,6 +720,7 @@ DependencyProperty *Storyboard::TargetPropertyProperty = NULL;
 DependencyProperty *Stroke::DrawingAttributesProperty = NULL;
 DependencyProperty *Stroke::StylusPointsProperty = NULL;
 #if SL_2_0
+DependencyProperty *Style::IsSealedProperty = NULL;
 DependencyProperty *Style::SettersProperty = NULL;
 DependencyProperty *Style::TargetTypeProperty = NULL;
 #endif
@@ -3756,6 +3762,36 @@ ScaleTransform::SetScaleY (double value)
 	SetValue (ScaleTransform::ScaleYProperty, Value (value));
 }
 
+#if SL_2_0
+bool
+SetterBase::GetIsSealed ()
+{
+	Value *value = GetValue (SetterBase::IsSealedProperty);
+	return value->AsBool ();
+}
+
+void
+SetterBase::SetIsSealed (bool value)
+{
+	SetValue (SetterBase::IsSealedProperty, Value (value));
+}
+
+#endif
+#if SL_2_0
+bool
+SetterBaseCollection::GetIsSealed ()
+{
+	Value *value = GetValue (SetterBaseCollection::IsSealedProperty);
+	return value->AsBool ();
+}
+
+void
+SetterBaseCollection::SetIsSealed (bool value)
+{
+	SetValue (SetterBaseCollection::IsSealedProperty, Value (value));
+}
+
+#endif
 Brush *
 Shape::GetFill ()
 {
@@ -4075,6 +4111,21 @@ Stroke::SetStylusPoints (StylusPointCollection * value)
 	SetValue (Stroke::StylusPointsProperty, Value (value));
 }
 
+#if SL_2_0
+bool
+Style::GetIsSealed ()
+{
+	Value *value = GetValue (Style::IsSealedProperty);
+	return value->AsBool ();
+}
+
+void
+Style::SetIsSealed (bool value)
+{
+	SetValue (Style::IsSealedProperty, Value (value));
+}
+
+#endif
 #if SL_2_0
 SetterBaseCollection *
 Style::GetSetters ()

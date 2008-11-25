@@ -31,18 +31,7 @@ using Mono;
 namespace System.Windows {
 
 	public sealed partial class SetterBaseCollection : PresentationFrameworkCollection<SetterBase> {
-		bool isSealed;
 
-		public bool IsSealed {
-			get { return isSealed; }
-		}
-
-		internal void Seal ()
-		{
-			isSealed = true;
-			foreach (SetterBase setter in this)
-				setter.Seal ();
-		}
 	}
 
 }

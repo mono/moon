@@ -35,7 +35,6 @@ namespace System.Windows {
 
 	[ContentPropertyAttribute("Setters", true)]
 	public sealed partial class Style : DependencyObject {
-		private bool isSealed;
 
 		public Style (Type targetType) : this ()
 		{
@@ -44,12 +43,7 @@ namespace System.Windows {
 
 		public void Seal()
 		{
-			isSealed = true;
-			Setters.Seal ();
-		}
-
-		public bool IsSealed {
-			get { return isSealed; }
+			NativeMethods.style_seal (native);
 		}
 	}
 

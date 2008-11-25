@@ -31,16 +31,7 @@ using Mono;
 namespace System.Windows {
 
 	public abstract partial class SetterBase : DependencyObject {
-		bool isSealed;
-		
-		public bool IsSealed {
-			get { return isSealed; }
-		}
 
-		internal void Seal ()
-		{
-			isSealed = true;
-		}
 	}
 
 }

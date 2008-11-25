@@ -98,7 +98,8 @@ public:
 		ARGUMENT_NULL = 3,
 		ARGUMENT_OUT_OF_RANGE = 4,
 		INVALID_OPERATION = 5,
-		XAML_PARSE_EXCEPTION = 6
+		XAML_PARSE_EXCEPTION = 6,
+		UNAUTHORIZED_ACCESS = 7
 	};
 
 	// non-zero if an error occurred.

@@ -27,6 +27,8 @@ class Style : public DependencyObject {
 	virtual ~Style () { }
 	
  public:
+  	/* @PropertyType=bool,DefaultValue=false,ManagedSetterAccess=Private,GenerateAccessors */
+	static DependencyProperty *IsSealedProperty;
  	/* @PropertyType=SetterBaseCollection,Access=Internal,ManagedFieldAccess=Private,ManagedAccess=Public,ManagedSetterAccess=Private,GenerateAccessors */
 	static DependencyProperty *SettersProperty;
  	/* @PropertyType=Managed,ManagedPropertyType=System.Type,Access=Internal,ManagedAccess=Public,ManagedFieldAccess=Internal */
@@ -39,6 +41,12 @@ class Style : public DependencyObject {
 
 	SetterBaseCollection* GetSetters();
 	void SetSetters (SetterBaseCollection* value);
+
+	bool GetIsSealed();
+	void SetIsSealed(bool value);
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	void Seal ();
 };
 
 //
@@ -54,8 +62,21 @@ class SetterBaseCollection : public DependencyObjectCollection {
 	/* @GenerateCBinding,GeneratePInvoke */
 	SetterBaseCollection ();
 	
+  	/* @PropertyType=bool,DefaultValue=false,ManagedSetterAccess=Private,GenerateAccessors */
+	static DependencyProperty *IsSealedProperty;
+	
+	virtual int AddWithError (Value *value, MoonError *error);
+	virtual int InsertWithError (int index, Value *value, MoonError *error);
+	virtual bool SetValueAtWithError (int index, Value *value, MoonError *error);
+	
 	virtual Type::Kind GetObjectType () { return Type::SETTERBASE_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::SETTERBASE; }
+	Style *style;
+
+	bool GetIsSealed();
+	void SetIsSealed(bool value);
+	
+	void Seal ();
 };
 
 //
@@ -68,10 +89,22 @@ class SetterBase : public DependencyObject {
 	virtual ~SetterBase () { }
 	
  public:
+   	/* @PropertyType=bool,DefaultValue=false,ManagedSetterAccess=Private,GenerateAccessors */
+	static DependencyProperty *IsSealedProperty;
+	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	SetterBase ();
-	
+
+	virtual bool SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error);
 	virtual Type::Kind GetObjectType () { return Type::SETTERBASE; }
+
+	bool GetIsSealed();
+	void SetIsSealed(bool value);
+	
+	void Seal ()
+	{
+		SetIsSealed (true);
+	}
 };
 
 //
@@ -94,7 +127,7 @@ class Setter : public SetterBase {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Setter ();
-	
+
 	virtual Type::Kind GetObjectType () { return Type::SETTER; }
 };
 

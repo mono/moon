@@ -1306,6 +1306,11 @@ StrokeCollection *stroke_collection_new (void);
  * Style
  **/
 /* @GeneratePInvoke */
+void style_seal (Style *instance);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
 Style *style_new (void);
 #endif
 

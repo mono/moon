@@ -1,3 +1,8 @@
+2008-11-25  Alan McGovern  <amcgovern@novell.com>
+
+	* NativeMethods.cs:
+	* GeneratedPInvokes.cs: Added full support for sealing styles.
+
 2008-11-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* NativeMethods.cs: Added plugin_instance_get_id and

@@ -1,3 +1,12 @@
+2008-11-25  Alan McGovern  <amcgovern@novell.com>
+
+	* Setter.cs: Silverlight throws a null ref in this case
+
+	* Style.cs:
+	* SetterBase.cs:
+	* DependencyProperty.g.cs:
+	* SetterBaseCollection.cs: Added full support for sealing styles.
+
 2008-11-24  Alan McGovern  <amcgovern@novell.com>
 
 	* Setter.cs: If a value is set through Xaml/unmanaged code, it is not

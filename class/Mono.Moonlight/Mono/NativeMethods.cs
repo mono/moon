@@ -289,6 +289,8 @@ namespace Mono {
 				Exception e = (Exception)Activator.CreateInstance (t, BindingFlags.Instance | BindingFlags.NonPublic, null, new object[] { msg }, CultureInfo.CurrentCulture );
 				throw e;
 			}
+			case 7:
+				throw new UnauthorizedAccessException (msg);
 			}
 		}
 	}

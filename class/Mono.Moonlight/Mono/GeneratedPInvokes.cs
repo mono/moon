@@ -54,6 +54,10 @@ namespace Mono {
 		public extern static IntPtr binding_expression_base_get_property (IntPtr instance);
 
 		[DllImport ("moon")]
+		// Value *binding_expression_base_get_value (BindingExpressionBase *instance);
+		public extern static IntPtr binding_expression_base_get_value (IntPtr instance);
+
+		[DllImport ("moon")]
 		// void binding_expression_base_set_binding (BindingExpressionBase *instance, Binding *binding);
 		public extern static void binding_expression_base_set_binding (IntPtr instance, IntPtr binding);
 
@@ -64,6 +68,10 @@ namespace Mono {
 		[DllImport ("moon")]
 		// void binding_expression_base_set_property (BindingExpressionBase *instance, DependencyProperty *property);
 		public extern static void binding_expression_base_set_property (IntPtr instance, IntPtr property);
+
+		[DllImport ("moon")]
+		// void binding_expression_base_update_source (BindingExpressionBase *instance, Value *value);
+		public extern static void binding_expression_base_update_source (IntPtr instance, ref Value value);
 
 		[DllImport ("moon")]
 		// BitmapImage *bitmap_image_new ();
@@ -1054,6 +1062,10 @@ namespace Mono {
 		[DllImport ("moon")]
 		// StrokeCollection *stroke_collection_new ();
 		public extern static IntPtr stroke_collection_new ();
+
+		[DllImport ("moon")]
+		// void style_seal (Style *instance);
+		public extern static void style_seal (IntPtr instance);
 
 		[DllImport ("moon")]
 		// Style *style_new ();

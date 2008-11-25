@@ -48,7 +48,7 @@ public:
 	virtual int GetCount ();
 	
 	int Add (Value value);
-	virtual int Add (Value *value);
+	int Add (Value *value);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual bool Clear ();
@@ -59,11 +59,11 @@ public:
 	int IndexOf (Value *value);
 	
 	bool Insert (int index, Value value);
-	virtual bool Insert (int index, Value *value);
+	bool Insert (int index, Value *value);
 	
 	bool Remove (Value value);
 	/* @GenerateCBinding,GeneratePInvoke */
-	virtual bool Remove (Value *value);
+	bool Remove (Value *value);
 	
 	bool RemoveAt (int index);
 	
@@ -71,15 +71,15 @@ public:
 	Value *GetValueAt (int index);
 
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
-	int AddWithError (Value *value, MoonError *error);
+	virtual int AddWithError (Value *value, MoonError *error);
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
-	int InsertWithError (int index, Value *value, MoonError *error);
+	virtual int InsertWithError (int index, Value *value, MoonError *error);
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
-	Value *GetValueAtWithError (int index, MoonError *error);
+	virtual Value *GetValueAtWithError (int index, MoonError *error);
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
-	bool SetValueAtWithError (int index, Value *value, MoonError *error);
+	virtual bool SetValueAtWithError (int index, Value *value, MoonError *error);
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
-	bool RemoveAtWithError (int index, MoonError *error);
+	virtual bool RemoveAtWithError (int index, MoonError *error);
 
 protected:
 	GPtrArray *array;

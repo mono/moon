@@ -1,3 +1,13 @@
+2008-11-25  Alan McGovern  <amcgovern@novell.com>
+
+	* style.h:
+	* error.h:
+	* style.cpp:
+	* cbinding.h:
+	* cbinding.cpp:
+	* collection.h:
+	* dependencyproperty.g.cpp: Added full support for sealing styles.
+
 2008-11-24  Larry Ewing  <lewing@novell.com>
 
 	* media.cpp (MediaBase::SetSource): only queue a tick if we need

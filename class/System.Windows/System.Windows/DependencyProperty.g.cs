@@ -199,9 +199,33 @@ namespace System.Windows {
 		}
 	}
 
+	partial class SetterBase {
+		public static readonly DependencyProperty IsSealedProperty = DependencyProperty.Lookup (Kind.SETTERBASE, "IsSealed", typeof (bool));
+
+		public bool IsSealed {
+			get { return (bool) GetValue (IsSealedProperty); }
+			private set { SetValue (IsSealedProperty, value); }
+		}
+	}
+
+	partial class SetterBaseCollection {
+		public static readonly DependencyProperty IsSealedProperty = DependencyProperty.Lookup (Kind.SETTERBASE_COLLECTION, "IsSealed", typeof (bool));
+
+		public bool IsSealed {
+			get { return (bool) GetValue (IsSealedProperty); }
+			private set { SetValue (IsSealedProperty, value); }
+		}
+	}
+
 	partial class Style {
+		public static readonly DependencyProperty IsSealedProperty = DependencyProperty.Lookup (Kind.STYLE, "IsSealed", typeof (bool));
 		private static readonly DependencyProperty SettersProperty = DependencyProperty.Lookup (Kind.STYLE, "Setters", typeof (SetterBaseCollection));
 		internal static readonly DependencyProperty TargetTypeProperty = DependencyProperty.Lookup (Kind.STYLE, "TargetType", typeof (System.Type));
+
+		public bool IsSealed {
+			get { return (bool) GetValue (IsSealedProperty); }
+			private set { SetValue (IsSealedProperty, value); }
+		}
 
 		public SetterBaseCollection Setters {
 			get { return (SetterBaseCollection) GetValue (SettersProperty); }
