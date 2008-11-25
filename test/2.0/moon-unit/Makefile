@@ -1,4 +1,8 @@
-default: moon-unit.sources Microsoft.Silverlight.Testing.dll Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll
+default: moon-unit.sources
+	$(MAKE) -C ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight
+	$(MAKE) -C ../Microsoft.Silverlight.Testing
+	cp ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll .
+	cp ../Microsoft.Silverlight.Testing/Microsoft.Silverlight.Testing.dll .
 	mxap --debug --generate-html- --entry-point-type=Mono.Moonlight.UnitTesting.App --cs-sources=moon-unit.sources
 	cp *.xap site/ClientBin
 
