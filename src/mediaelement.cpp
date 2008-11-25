@@ -719,22 +719,28 @@ MediaElement::GetCoverageBounds ()
 	MediaPlayer *mplayer = GetMediaPlayer ();
 	Stretch stretch = GetStretch ();
 
-	if  (!IsClosed () 
-	     && mplayer && mplayer->HasRenderedFrame ()
-	     && ((mplayer->GetVideoWidth () == bounds.width
-		  && mplayer->GetVideoHeight () == bounds.height)
-		 || (stretch == StretchFill || stretch == StretchUniformToFill)))
+	if  (IsClosed () || !mplayer || !mplayer->HasRenderedFrame ())
+		return Rect ();
+
+	if (stretch == StretchFill || stretch == StretchUniformToFill)
 		return bounds;
 
-	return Rect ();
+	Rect video = Rect (0, 0, mplayer->GetVideoWidth (), mplayer->GetVideoHeight ());
+	cairo_matrix_t brush_xform = matrix;
+
+	cairo_matrix_invert (&brush_xform);
+	cairo_matrix_multiply (&brush_xform, &brush_xform, &absolute_xform);
+
+	video = video.Transform (&brush_xform);
+	video = video.Intersection (bounds);
+
+	return video;
 }
 
 void
 MediaElement::Render (cairo_t *cr, Region *region)
 {
 	Stretch stretch = GetStretch ();
-	double h = GetHeight ();
-	double w = GetWidth ();
 	cairo_surface_t *surface;
 	cairo_pattern_t *pattern;
 	
@@ -743,11 +749,6 @@ MediaElement::Render (cairo_t *cr, Region *region)
 	
 	if (downloader == NULL)
 		return;
-	
-	if (w == 0.0 && h == 0.0) {
-		h = (double) mplayer->GetVideoHeight ();
-		w = (double) mplayer->GetVideoWidth ();
-	}
 	
 	cairo_save (cr);
 	
@@ -758,49 +759,44 @@ MediaElement::Render (cairo_t *cr, Region *region)
 	//cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
 	cairo_new_path (cr);
 	
-	double x, y, x2, y2;
+	Rect paint = Rect (0, 0, GetWidth (), GetHeight ());
+	Rect video = Rect (0, 0, mplayer->GetVideoWidth (), mplayer->GetVideoHeight ());
+
+	/* FIXME NaN */
+	if (paint.width == 0.0 && paint.height == 0.0)
+		paint = video;
 	
-	x = y = 0;
-	x2 = w;
-	y2 = h;
-	
+	/* snap paint rect to device space */
 	if (absolute_xform.xy == 0 && absolute_xform.yx == 0) {
-		cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
-		
-		cairo_user_to_device (cr, &x, &y);
-		cairo_user_to_device (cr, &x2, &y2);
-		
-		// effectively RoundIn.  not sure if this is what we want..
-		x = floor (x);
-		y = floor (y);
-		
-		x2 = ceil (x2);
-		y2 = ceil (y2);
-		
-		cairo_device_to_user (cr, &x, &y);
-		cairo_device_to_user (cr, &x2, &y2);
+		//cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
+		cairo_matrix_t inv = absolute_xform;
+		cairo_matrix_invert (&inv);
+		paint = paint.Transform (&absolute_xform);
+		paint = paint.RoundIn ();
+		paint = paint.Transform (&inv);
 	}
 	
-	w = x2 - x;
-	h = y2 - y;
-	
 	if (flags & RecalculateMatrix) {
-		image_brush_compute_pattern_matrix (&matrix, w, h, mplayer->GetVideoWidth (), mplayer->GetVideoHeight (),
+		image_brush_compute_pattern_matrix (&matrix, 
+						    paint.width, paint.height, 
+						    video.width, video.height,
 						    stretch, AlignmentXCenter, AlignmentYCenter, NULL, NULL);
+
 		flags &= ~RecalculateMatrix;
 	}
 	
 	pattern = cairo_pattern_create_for_surface (surface);	
 	
-	cairo_pattern_set_matrix (pattern, &matrix);
 	
+	cairo_pattern_set_matrix (pattern, &matrix);
+		
 	cairo_set_source (cr, pattern);
 	cairo_pattern_destroy (pattern);
 	
-	cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_FAST);
+	if (IsPlaying ())
+		cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_FAST);
 	
-	cairo_rectangle (cr, x, y, w, h);
-	
+	paint.Draw (cr);
 	cairo_fill (cr);
 	
 	cairo_restore (cr);
@@ -1737,6 +1733,7 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 			media->SetBufferingTime (TimeSpan_ToPts (GetBufferingTime ()));
 	} else if (args->property == MediaElement::CurrentStateProperty) {
 		Emit (CurrentStateChangedEvent);
+		Invalidate ();
 	} else if (args->property == MediaElement::IsMutedProperty) {
 		mplayer->SetMuted (args->new_value->AsBool ());
 	} else if (args->property == MediaElement::MarkersProperty) {
@@ -1752,7 +1749,7 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 			seek_to_position = args->new_value->AsTimeSpan ();
 			AddTickCall (MediaElement::SeekNow);
 		} else if (IsPlaying() && mplayer->HasVideo () && !IsMissingCodecs ()) {
-			Invalidate ();
+			Invalidate (GetCoverageBounds ());
 		}
 	} else if (args->property == MediaElement::VolumeProperty) {
 		mplayer->SetVolume (args->new_value->AsDouble ());

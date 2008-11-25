@@ -1,3 +1,11 @@
+2008-11-24  Larry Ewing  <lewing@novell.com>
+
+	* mediaelement.cpp (MediaElement::GetCoverageBounds): be more
+	precise about the coverage bounds.  Use the coveragebounds when
+	invalidating based on position so that we don't invalidate a lot
+	more area than we need to.  Only use CAIRO_FILTER_FAST when
+	playing use the default when in other states.
+
 2008-11-24  Geoff Norton  <gnorton@novell.com>
 
 	* media.cpp: If we do a SetSource on a image element with a 
