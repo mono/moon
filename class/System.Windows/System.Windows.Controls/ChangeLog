@@ -1,3 +1,8 @@
+2008-11-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ValidationError.cs: New. Needed for FrameworkElement.
+	* ValidationErrorEventArgs.cs: New. Needed for FrameworkElement.
+
 2008-11-25  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* MultiScaleImage.cs: ElementToLogicalPoint impl.
