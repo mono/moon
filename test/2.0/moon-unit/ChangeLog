@@ -1,3 +1,11 @@
+2008-11-25  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/ApplicationTest.cs:
+	* System.Windows.Data/BindingTest.cs:
+	* System.Windows.Interop/SettingsTest.cs:
+	* System.Windows.Media.Imaging/BitmapImageTest.cs: Update the tests to
+	pass on silverlight
+
 2008-11-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Makefile: Make this mess slightly better.

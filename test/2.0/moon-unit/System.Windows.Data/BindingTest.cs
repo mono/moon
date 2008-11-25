@@ -327,69 +327,64 @@ namespace MoonTest.System.Windows.Data
 			Assert.AreEqual (1.0, r.Opacity);
 		}
 
-		[TestClass]
-		[Ignore ("Test fails on mono")]
-		public class BindingTest
+		[TestMethod]
+		public void XamlCreateBinding()
 		{
-			[TestMethod]
-			public void XamlCreateBinding()
-			{
-				object o = XamlReader.Load(
+			object o = XamlReader.Load(
 @"	
 <Canvas
-	Width=""100""
-	Height=""100""
-	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-	xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-	>
-		<TextBlock Text=""{Binding MyProperty}"" Foreground=""Green""/>
+Width=""100""
+Height=""100""
+xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+>
+	<TextBlock Text=""{Binding MyProperty}"" Foreground=""Green""/>
 </Canvas>
 
 ");
-				TextBlock block = (TextBlock) ((Canvas)o).Children[0];
-				Assert.IsTrue(block.ReadLocalValue(TextBlock.TextProperty) is BindingExpressionBase);
-			}
-			
-			
-			[TestMethod]
-			public void XamlBindToClr()
-			{
-				Assert.Throws<XamlParseException>(delegate {
-					XamlReader.Load(
-	@"	
+			TextBlock block = (TextBlock) ((Canvas)o).Children[0];
+			Assert.IsTrue(block.ReadLocalValue(TextBlock.TextProperty) is BindingExpressionBase);
+		}
+		
+		
+		[TestMethod]
+		public void XamlBindToClr()
+		{
+			Assert.Throws<XamlParseException>(delegate {
+				XamlReader.Load(
+@"	
 <Canvas	
-	Width=""100""
-	Height=""100""
-	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-	xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-	xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
-	
-	>
-		<Canvas.Resources>
-			<my:Data x:Name=""CLRObject"" />
-		</Canvas.Resources>
-		<TextBox Text=""{Binding OpacityString, Source={StaticResource CLRObject}, Mode=OneTime}""/>
+Width=""100""
+Height=""100""
+xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
+
+>
+	<Canvas.Resources>
+		<my:Data x:Name=""CLRObject"" />
+	</Canvas.Resources>
+	<TextBox Text=""{Binding OpacityString, Source={StaticResource CLRObject}, Mode=OneTime}""/>
 </Canvas>
 
 ");
-				});
-			}
+			});
+		}
+		
+		[TestMethod]
+		[Ignore ("Test fails on mono")]
+		public void XamlBoundToClr()
+		{
+			TestNamespace.BindingXaml a = new TestNamespace.BindingXaml();
+			TextBlock block = (TextBlock)a.LayoutRoot.Children[0];
+			Assert.IsNotNull(block, "#1");
+			//Assert.IsNull(a.CLRObject, "#2");
 			
-			[TestMethod]
-			[Ignore ("Test fails on mono")]
-			public void XamlBoundToClr()
-			{
-				TestNamespace.BindingXaml a = new TestNamespace.BindingXaml();
-				TextBlock block = (TextBlock)a.LayoutRoot.Children[0];
-				Assert.IsNotNull(block, "#1");
-				//Assert.IsNull(a.CLRObject, "#2");
-				
-				BindingExpressionBase expression = block.ReadLocalValue(TextBlock.TextProperty) as BindingExpressionBase;
-				Assert.IsNotNull(expression, "3");
-				Assert.IsNull(block.DataContext);
-				Assert.IsNull(a.FindName("CLRObject"));
-				Assert.IsNull(a.DataContext);
-			}
+			BindingExpressionBase expression = block.ReadLocalValue(TextBlock.TextProperty) as BindingExpressionBase;
+			Assert.IsNotNull(expression, "3");
+			Assert.IsNull(block.DataContext);
+			Assert.IsNull(a.FindName("CLRObject"));
+			Assert.IsNull(a.DataContext);
 		}
 	}
 }

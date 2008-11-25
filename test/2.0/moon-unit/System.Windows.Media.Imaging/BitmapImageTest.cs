@@ -21,27 +21,21 @@ namespace MoonTest.System.Windows.Media.Imaging {
 		[TestMethod]
 		public void BadUriInCtor ()
 		{
-			Assert.Throws (delegate {
-				BitmapImage bitmap = new BitmapImage (badUri);
-			}, typeof (NullReferenceException));
+			Assert.IsNotNull(new BitmapImage (badUri));
 		}
 		
 		[TestMethod]
 		public void BadUriSetUriSource ()
 		{
-			Assert.Throws (delegate {
-				BitmapImage bitmap = new BitmapImage ();
-				bitmap.UriSource = badUri;
-			}, typeof (NullReferenceException));
+			BitmapImage bitmap = new BitmapImage ();
+			bitmap.UriSource = badUri;
 		}
 		
 		[TestMethod]
 		public void BadUriSetUriSourceProperty ()
 		{
-			Assert.Throws (delegate {
-				BitmapImage bitmap = new BitmapImage ();
-				bitmap.SetValue (BitmapImage.UriSourceProperty, badUri);
-			}, typeof (NullReferenceException));
+			BitmapImage bitmap = new BitmapImage ();
+			bitmap.SetValue (BitmapImage.UriSourceProperty, badUri);
 		}
 		
 		
@@ -50,27 +44,21 @@ namespace MoonTest.System.Windows.Media.Imaging {
 		[TestMethod]
 		public void CorruptImageInCtor ()
 		{
-			Assert.Throws (delegate {
-				BitmapImage bitmap = new BitmapImage (corruptImage);
-			}, typeof (NullReferenceException));
+			Assert.IsNotNull(new BitmapImage (corruptImage));
 		}
 		
 		[TestMethod]
 		public void CorruptImageSetUriSource ()
 		{
-			Assert.Throws (delegate {
-				BitmapImage bitmap = new BitmapImage ();
-				bitmap.UriSource = corruptImage;
-			}, typeof (NullReferenceException));
+			BitmapImage bitmap = new BitmapImage ();
+			bitmap.UriSource = corruptImage;
 		}
 		
 		[TestMethod]
 		public void CorruptImageSetUriSourceProperty ()
 		{
-			Assert.Throws (delegate {
-				BitmapImage bitmap = new BitmapImage ();
-				bitmap.SetValue (BitmapImage.UriSourceProperty, corruptImage);
-			}, typeof (NullReferenceException));
+			BitmapImage bitmap = new BitmapImage ();
+			bitmap.SetValue (BitmapImage.UriSourceProperty, corruptImage);
 		}
 		
 		

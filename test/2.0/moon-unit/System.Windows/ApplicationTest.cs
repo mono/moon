@@ -59,7 +59,7 @@ namespace MoonTest.System.Windows {
 			// AFAIK this is *nearly* identical to Application.Current
 			Check (app);
 			// funny thing is that creating a SilverlightHost defaults to true :|
-			Assert.IsFalse (app.Host.IsLoaded, "Host.IsLoaded");
+			Assert.IsTrue (app.Host.IsLoaded, "Host.IsLoaded");
 		}
 
 		[TestMethod]

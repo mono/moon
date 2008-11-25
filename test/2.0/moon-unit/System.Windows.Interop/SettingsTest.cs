@@ -86,11 +86,14 @@ namespace MoonTest.System.Windows.Interop {
 		{
 			Settings settings = new Settings ();
 			settings.MaxFrameRate = 0;
-			Assert.AreEqual (0, settings.MaxFrameRate, "Zero");
+			Assert.AreEqual (1, settings.MaxFrameRate, "Zero");
 			settings.MaxFrameRate = Int32.MaxValue;
 			Assert.AreEqual (Int32.MaxValue, settings.MaxFrameRate, "Max");
 			settings.MaxFrameRate = Int32.MinValue;
 			Assert.AreEqual (Int32.MinValue, settings.MaxFrameRate, "Min");
+
+			Assert.AreEqual(new Settings().MaxFrameRate, settings.MaxFrameRate, "inherit settings");
+			settings.MaxFrameRate = 60;
 			// no validation
 		}
 	}
