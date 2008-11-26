@@ -838,15 +838,6 @@
          inputFile="test-shape-path-overdraw.xaml"
          masterFile10="../harness/masters/test-shape-path-overdrawMaster.png"
    />
-   <Test id="178"
-	 inputFile="test-shape-path-stretch-animated.xaml"
-	 masterFile10="../harness/masters/test-shape-path-stretch-animatedMaster.png"
-         categories="stretch"
-   />
-   <Test id="179"
-	 inputFile="test-inkpresenter-image.xaml"
-	 masterFile10="../harness/masters/test-inkpresenter-imageMaster.png"
-   />
    <Test id="180"
 	 inputFile="test-parser-empty-property.xaml"
 	 masterFile10="../harness/masters/test-parser-empty-propertyMaster.png"
@@ -1006,4 +997,13 @@
 	masterFile10="../harness/masters/test-shape-rectangle-imagebrush-stretchMaster.png"
 	categories="imagebrush,stretch"
    />	 
+   <Test id="10212"
+	 inputFile="test-shape-path-stretch-animated.xaml"
+	 masterFile10="../harness/masters/test-shape-path-stretch-animatedMaster.png"
+         categories="stretch"
+   />
+   <Test id="10213"
+	 inputFile="test-inkpresenter-image.xaml"
+	 masterFile10="../harness/masters/test-inkpresenter-imageMaster.png"
+   />
 </DRTList>
