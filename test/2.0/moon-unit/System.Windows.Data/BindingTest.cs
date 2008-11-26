@@ -18,6 +18,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Data
 {
 	[TestClass]
+	[Ignore ("Not implemented yet")]
 	public class BindingTest
 	{
 		class InternalData

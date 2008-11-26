@@ -1,5 +1,10 @@
 2008-11-26  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingTest.cs: Remove the managed binding stuff
+	and ignore the tests.
+
+2008-11-26  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/FrameworkElementTest.cs: Styles are now used/ignored
 	correctly when local values are set/unset. Added tests for this.
 

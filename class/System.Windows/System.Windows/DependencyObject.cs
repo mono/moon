@@ -48,7 +48,6 @@ using System.Threading;
 namespace System.Windows {
 	public abstract partial class DependencyObject {
 		static Thread moonlight_thread;
-		Dictionary<DependencyProperty, BindingExpressionBase> bindings = new Dictionary<DependencyProperty, BindingExpressionBase> ();
 		static Dictionary<IntPtr, DependencyObject> objects = new Dictionary<IntPtr, DependencyObject> ();
 		internal IntPtr _native;
 
@@ -688,28 +687,6 @@ namespace System.Windows {
 				throw new ArgumentNullException ("property");
 
 			CheckNativeAndThread ();
-
-			BindingExpressionBase expression = value as BindingExpressionBase;
-			if (expression != null) {
-				if (bindings.ContainsKey (dp)) {
-					BindingExpressionBase old = bindings [dp];
-					// FIXME: Unregister it if it's twoway i suppose
-					bindings[dp] = expression;
-				}
-				else {
-					bindings.Add (dp, expression);
-				}
-
-				if (expression.Binding.Mode == BindingMode.OneTime)
-					bindings.Remove (dp);
-				
-				// FIXME: Is this ok to do? Am i supposed to use the default value
-				// if the binding cannot retrieve a value?
-				object val;
-				if (expression.TryGetValue (out val))
-					SetValue (dp, val);
-				return;
-			}
 			
 			if (dp.DeclaringType != null && !dp.IsAttached) {
 				if (!dp.DeclaringType.IsAssignableFrom (GetType ()))
@@ -727,11 +704,6 @@ namespace System.Windows {
 			object_type = value.GetType ();
 			if (!dp.PropertyType.IsAssignableFrom (object_type))
 				throw new ArgumentException (string.Format ("The DependencyProperty '{2}', whose property type is {0} can't be set to value whose type is {1}", dp.PropertyType.FullName, object_type.FullName, dp.Name));
-
-			if (bindings.TryGetValue (dp, out expression) &&
-			    expression.Binding.Mode == BindingMode.TwoWay) {
-				expression.SetValue (value);
-			}
 				                     
 			v = GetAsValue (value, (dp is CustomDependencyProperty) || (dp.PropertyType == typeof (object) || dp.PropertyType == typeof (Type)));
 			try {
