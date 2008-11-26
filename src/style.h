@@ -66,7 +66,7 @@ class SetterBaseCollection : public DependencyObjectCollection {
 	static DependencyProperty *IsSealedProperty;
 	
 	virtual int AddWithError (Value *value, MoonError *error);
-	virtual int InsertWithError (int index, Value *value, MoonError *error);
+	virtual bool InsertWithError (int index, Value *value, MoonError *error);
 	virtual bool SetValueAtWithError (int index, Value *value, MoonError *error);
 	
 	virtual Type::Kind GetObjectType () { return Type::SETTERBASE_COLLECTION; }

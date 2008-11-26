@@ -1,3 +1,14 @@
+2008-11-26  Alan McGovern  <amcgovern@novell.com>
+
+	* style.h:
+	* style.cpp:
+	* collection.h:
+	* collection.cpp: InsertWithError should return a bool to match Insert
+
+	* media.h:
+	* media.cpp: Fix regression introduced in r119963 when changing which
+	collection functions were virtual
+
 2008-11-25  Larry Ewing  <lewing@novell.com>
 
 	* uielement.cpp (UIElement::FrontToBack): enable ftb on 90 degress

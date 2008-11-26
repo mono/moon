@@ -89,8 +89,8 @@ class TimelineMarkerCollection : public DependencyObjectCollection {
 	virtual Type::Kind GetObjectType () { return Type::TIMELINEMARKER_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::TIMELINEMARKER; }
 	
-	virtual int Add (Value *value);
-	virtual bool Insert (int index, Value *value);
+	virtual int AddWithError (Value *value, MoonError *error);
+	virtual bool InsertWithError (int index, Value *value, MoonError *error);
 };
 
 

@@ -44,7 +44,7 @@ SetterBaseCollection::AddWithError (Value *value, MoonError *error)
 	return DependencyObjectCollection::AddWithError (value, error);	
 }
 
-int
+bool
 SetterBaseCollection:: InsertWithError (int index, Value *value, MoonError *error)
 {
 	if (style && style->GetIsSealed ()) {

@@ -968,7 +968,7 @@ MediaAttributeCollection::GetItemByName (const char *name)
 //
 
 int
-TimelineMarkerCollection::Add (Value *value)
+TimelineMarkerCollection::AddWithError (Value *value, MoonError *error)
 {
 	TimelineMarker *marker, *cur;
 	
@@ -977,18 +977,18 @@ TimelineMarkerCollection::Add (Value *value)
 	for (guint i = 0; i < array->len; i++) {
 		cur = ((Value *) array->pdata[i])->AsTimelineMarker ();
 		if (cur->GetTime () >= marker->GetTime ()) {
-			DependencyObjectCollection::Insert (i, value);
+			DependencyObjectCollection::InsertWithError (i, value, error);
 			return i;
 		}
 	}
 	
-	return DependencyObjectCollection::Insert (array->len, value) ? array->len - 1 : -1;
+	return DependencyObjectCollection::InsertWithError (array->len, value, error) ? array->len - 1 : -1;
 }
 
 bool
-TimelineMarkerCollection::Insert (int index, Value *value)
+TimelineMarkerCollection::InsertWithError (int index, Value *value, MoonError *error)
 {
-	return Add (value) != -1;
+	return AddWithError (value, error) != -1;
 }
 
 

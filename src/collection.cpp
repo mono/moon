@@ -121,7 +121,7 @@ Collection::Insert (int index, Value value)
 	return Insert (index, &value);
 }
 
-int
+bool
 Collection::InsertWithError (int index, Value *value, MoonError *error)
 {
 	Value *added;

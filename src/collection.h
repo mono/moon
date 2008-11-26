@@ -73,7 +73,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	virtual int AddWithError (Value *value, MoonError *error);
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
-	virtual int InsertWithError (int index, Value *value, MoonError *error);
+	virtual bool InsertWithError (int index, Value *value, MoonError *error);
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	virtual Value *GetValueAtWithError (int index, MoonError *error);
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
