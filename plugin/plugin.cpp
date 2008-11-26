@@ -1352,6 +1352,11 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 		
 		dl->SetFilename (fname);
 	} else if (IS_NOTIFY_REQUEST (stream->notifyData)) {
+/*
+  ///
+  ///  Commented out for now, I don't think we should need this code at all anymore since we never request assemblies
+  ///  to be downloaded anymore.
+  ///
 		bool reload = true;
 
 		if (!vm_missing_file)
@@ -1381,6 +1386,7 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 		}
 
 		g_free (missing);
+*/
 	}
 }
 
@@ -1841,11 +1847,15 @@ PluginXamlLoader::TryLoad (int *error)
 			GetSurface ()->EmitError (error_args);
 			return NULL;
 		} else {
+			/*
 			d(printf ("PluginXamlLoader::TryLoad: Could not load xaml %s: %s (missing_assembly: %s)\n",
 				  GetFilename () ? "file" : "string", GetFilename () ? GetFilename () : GetString (),
 				  GetMissing ()));
+
 			xaml_is_managed = true;
 			return GetMissing ();
+			*/
+			return NULL;
 		}
 	}
 	
@@ -1877,10 +1887,23 @@ PluginXamlLoader::TryLoad (int *error)
 }
 
 bool
-PluginXamlLoader::HookupEvent (void *target, void *dest, const char *name, const char *value)
+PluginXamlLoader::SetProperty (void *top_level, const char *xmlns, void* target, const char *name, Value* value)
 {
-	if (!XamlLoader::HookupEvent (target, dest, name, value))
-		event_object_add_xaml_listener ((EventObject*) target, plugin, name, value);
+	if (XamlLoader::SetProperty (top_level, xmlns, target, name, value))
+		return true;
+
+	if (value->GetKind () != Type::STRING)
+		return false;
+
+	if (!xaml_is_valid_event_name (name))
+		return false;
+
+	const char* function_name = value->AsString ();
+
+	if (!strncmp (function_name, "javascript:", strlen ("javascript:")))
+			return false;
+
+	event_object_add_xaml_listener ((EventObject *) target, plugin, name, function_name);
 	
 	return true;
 }

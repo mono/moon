@@ -1608,7 +1608,7 @@ DependencyObject *xaml_loader_create_from_file_with_error (XamlLoader *instance,
 DependencyObject *xaml_loader_create_from_string_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error);
 
 /* @GeneratePInvoke */
-DependencyObject *xaml_loader_hydrate_from_string_with_error (XamlLoader *instance, const char *default_asm_name, const char *default_asm_path, const char *xaml, DependencyObject *obj, bool create_namescope, Type::Kind *element_type, MoonError *error);
+DependencyObject *xaml_loader_hydrate_from_string_with_error (XamlLoader *instance, const char *xaml, DependencyObject *obj, bool create_namescope, Type::Kind *element_type, MoonError *error);
 
 #if SL_2_0
 /**

@@ -21,37 +21,22 @@
 
 class XamlLoader;
 
-typedef void* (*xaml_load_managed_object_callback) (const char *asm_name, const char *asm_path, const char *name, const char *type_name, bool *is_dependency_object);
-typedef bool (*xaml_set_custom_attribute_callback) (void *target, const char* xmlns, const char *name, const char *value);
-typedef bool (*xaml_add_child_callback) (void *parent, const char *prop_name, void *child);
-typedef bool (*xaml_hookup_event_callback) (void *target, void *dest, const char *ename, const char *evalue);
-typedef void (*xaml_insert_mapping_callback) (const char *key, const char *value); 
-typedef const char* (*xaml_get_mapping_callback) (const char *key);
-typedef bool (*xaml_load_code_callback) (const char *source, const char *type);
-typedef void (*xaml_set_name_attribute_callback) (void *target, const char *name);
+typedef bool (*xaml_create_object_callback) (void *top_level, const char *xmlns, const char *name, Value *value);
+typedef bool (*xaml_set_property_callback) (void *top_level, const char* xmlns, void *target, const char *name, Value *value);
 typedef void (*xaml_import_xaml_xmlns_callback) (const char* xmlns);
-typedef DependencyObject* (*xaml_create_component_from_name_callback) (const char* name);
 typedef const char* (*xaml_get_content_property_name_callback) (void *obj);
 
 struct XamlLoaderCallbacks {
-	xaml_load_managed_object_callback load_managed_object;
-	xaml_set_custom_attribute_callback set_custom_attribute;
-	xaml_add_child_callback add_child;
-	xaml_hookup_event_callback hookup_event;
-	xaml_get_mapping_callback get_mapping;
-	xaml_insert_mapping_callback insert_mapping;
-	xaml_load_code_callback load_code;
-	xaml_set_name_attribute_callback set_name_attribute;
+	xaml_create_object_callback create_object;
+	xaml_set_property_callback set_property;
 	xaml_import_xaml_xmlns_callback import_xaml_xmlns;
-	xaml_create_component_from_name_callback create_component_from_name;
 	xaml_get_content_property_name_callback get_content_property_name;
 
 	XamlLoaderCallbacks () :
-		load_managed_object (NULL), set_custom_attribute (NULL),
-		add_child (NULL), hookup_event (NULL), get_mapping (NULL),
-		insert_mapping (NULL), load_code (NULL),
-		set_name_attribute (NULL), import_xaml_xmlns (NULL),
-		create_component_from_name (NULL), get_content_property_name (NULL)
+		create_object (NULL),
+		set_property (NULL),
+		import_xaml_xmlns (NULL),
+		get_content_property_name (NULL)
 	{
 	}
 };
@@ -69,11 +54,12 @@ bool        convert_property_value_to_enum_str (DependencyProperty *prop, Value 
 
 void	    xaml_parse_xmlns (const char *xmlns, char **type_name, char **ns, char **assembly);
 
+bool        xaml_is_valid_event_name (const char *name);
+
 XamlLoader *xaml_loader_new (const char *filename, const char *str, Surface *surface);
 void	    xaml_loader_free (XamlLoader *loader);
 
 void        xaml_loader_set_callbacks (XamlLoader *loader, XamlLoaderCallbacks callbacks);
-void	    xaml_loader_add_missing (XamlLoader *loader, const char *file);
 
 G_END_DECLS
 
@@ -82,24 +68,24 @@ G_END_DECLS
   Plugin:
     - calls PluginXamlLoader::TryLoad to try to load some xaml.
     -  calls xaml_create_from_*
-    -     calls XamlLoader::CreateManagedObject (,) if it encounters xmlns/name
+    -     calls XamlLoader::CreateObject (,) if it encounters xmlns/name
     -      parses the xmlns and name
     -       calls XamlLoader::LoadVM.
     -        PluginXamlLoader::LoadVM will load the vm and create a ManagedXamlLoader (which will set the callbacks in XamlLoader)
-    -       calls XamlLoader::CreateManagedObject (,,,) with the parsed xml
+    -       calls XamlLoader::CreateObject (,,,) with the parsed xml
     -        calls the create_managed_object callback (if any).
     -          will try to load the assembly, if it fails, it's requested.
-    -  if XamlLoader::CreateManagedObject failed, try to download the missing assembly (if any).
+    -  if XamlLoader::CreateObject failed, try to download the missing assembly (if any).
     -  if no missing assembly, the xaml load fails.
 
   Deskop:
     - calls System.Windows.XamlReader::Load
     -  creates a ManagedXamlLoader and a native XamlLoader (setting the callbacks).
     -  calls xaml_create_from_str
-    -     calls XamlLoader::CreateManagedObject (,) if it encounters xmlns/name
+    -     calls XamlLoader::CreateObject (,) if it encounters xmlns/name
     -      parses the xmlns and name
     -       calls XamlLoader::LoadVM (which does nothing).
-    -       calls XamlLoader::CreateManagedObject (,,,) with the parsed xml
+    -       calls XamlLoader::CreateObject (,,,) with the parsed xml
     -        calls the create_managed_object callback (if any).
     -          will try to load the assembly, if it fails, it's requested.
     -    destroy the native/managed XamlLoader. Any requested assemblies are ignored, no retries are done.
@@ -110,8 +96,6 @@ class XamlLoader {
 	Surface *surface;
 	char *filename;
 	char *str;
-	GHashTable *mappings;
-	GHashTable *missing_assemblies;
 
  public:
 	enum AssemblyLoadResult {
@@ -124,40 +108,28 @@ class XamlLoader {
 	virtual ~XamlLoader ();
 	
 	virtual bool LoadVM ();
-	virtual void *CreateManagedObjectFromXmlns (const char *default_asm_name, const char *default_asm_path, const char *xmlns, const char *name, bool *is_dependency_object);
-	virtual void *CreateManagedObject (const char *asm_name, const char *asm_path, const char *name, const char *type_name, bool *is_dependency_object);
-	virtual bool AddChild (void *parent, const char *prop_name, void *child);
-	virtual bool SetAttribute (void *target, const char *xmlns, const char *name, const char *value);
-	virtual void SetNameAttribute (void *target, const char *name);
-	virtual bool HookupEvent (void *target, void *dest, const char *name, const char *value);
-	virtual void InsertMapping (const char *key, const char *value);
-	virtual DependencyObject *CreateComponentFromName (const char* name);
+
+	virtual bool CreateObject (void *top_element, const char* xmlns, const char* name, Value *value);
+	virtual bool SetProperty (void *top_level, const char* xmlns, void *target, const char *name, Value *value);
+
 	virtual const char *GetContentPropertyName (void *dob);
 
-	
-	const char *GetMapping (const char *key);
-	bool LoadCode (const char *source, const char *type);
-	
 	char *GetFilename () { return filename; }
 	char *GetString () { return str; }
 	Surface *GetSurface () { return surface; }
-	
-	const char *GetMissing ();
-	virtual void AddMissing (const char *assembly);
-	void RemoveMissing (const char *assembly);
-	
+
 	bool vm_loaded;
 
 	DependencyObject* CreateFromFile (const char *xaml, bool create_namescope, Type::Kind *element_type);
 	DependencyObject* CreateFromString  (const char *xaml, bool create_namescope, Type::Kind *element_type);
-	DependencyObject* HydrateFromString (const char *default_asm_name, const char *default_asm_path, const char *xaml, DependencyObject *object, bool create_namescope, Type::Kind *element_type);
+	DependencyObject* HydrateFromString (const char *xaml, DependencyObject *object, bool create_namescope, Type::Kind *element_type);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject* CreateFromFileWithError (const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error);
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject* CreateFromStringWithError  (const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error);
 	/* @GenerateCBinding,GeneratePInvoke */
-	DependencyObject* HydrateFromStringWithError (const char *default_asm_name, const char *default_asm_path, const char *xaml, DependencyObject *obj, bool create_namescope, Type::Kind *element_type, MoonError *error);
+	DependencyObject* HydrateFromStringWithError (const char *xaml, DependencyObject *obj, bool create_namescope, Type::Kind *element_type, MoonError *error);
 	
 	XamlLoaderCallbacks callbacks;
 	ParserErrorEventArgs *error_args;

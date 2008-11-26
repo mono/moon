@@ -261,7 +261,9 @@ class PluginXamlLoader : public XamlLoader
  public:
 	virtual ~PluginXamlLoader ();
 	const char *TryLoad (int *error);
-	
+
+	bool SetProperty (void *top_level, const char *xmlns, void *target, const char *name, Value* value);
+
 	static PluginXamlLoader *FromFilename (const char *filename, PluginInstance *plugin, Surface *surface)
 	{
 		return new PluginXamlLoader (filename, NULL, plugin, surface);
@@ -273,7 +275,6 @@ class PluginXamlLoader : public XamlLoader
 	}
 	
 	bool IsManaged () { return xaml_is_managed; }
-	virtual bool HookupEvent (void *target, void *dest, const char *name, const char *value);
 	virtual bool LoadVM ();
 };
 

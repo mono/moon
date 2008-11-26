@@ -1,3 +1,12 @@
+2008-11-26  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp|h: clean up the managed/plugin interface, use Values
+	for most things instead of expected DependencyObjects.
+	* deepzoomimagetilesource.h|cpp: Add the uri property and a public
+	constructor so we can parse these from attributes.
+	* cbinding.h|cpp:
+	* dependencyproperty.g.cpp: regen
+
 2008-11-26  Alan McGovern  <amcgovern@novell.com>
 
 	* frameworkelement.cpp: Store a Value * rather than

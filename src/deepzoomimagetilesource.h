@@ -16,6 +16,7 @@
 
 #include "tilesource.h"
 #include "downloader.h"
+#include "uri.h"
 
 typedef void (*downloaded_cb) (const char* path);
 
@@ -36,13 +37,24 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	/* @GenerateCBinding,GeneratePInvoke */
 	DeepZoomImageTileSource ();
 
+	DeepZoomImageTileSource (const char *uri);
+
 	virtual Type::Kind GetObjectType () { return Type::DEEPZOOMIMAGETILESOURCE; }	
 
 	//
 	// Methods
 	//
 	/* @GenerateCBinding */
-	void download_urisource (const char* uri, downloaded_cb callback); 
+	void download_urisource (const char* uri, downloaded_cb callback);
+
+
+	//
+	// Properties
+	//
+
+	/* @PropertyType=string,ManagedPropertyType=Uri,GenerateAccesors=false */
+	static DependencyProperty *UriSourceProperty;
+		
 };
 
 #endif /* __DEEPZOOMIMAGETILESOURCE_H__ */

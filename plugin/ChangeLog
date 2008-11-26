@@ -1,3 +1,10 @@
+2008-11-26  Jackson Harper  <jackson@ximian.com>
+
+	* plugin.cpp|h: The parser no longer requires assemblies to be
+	downloaded, so the mapping stuff is commented out.
+	- The parser now treats events as properties, so we use
+	SetProperty instead of HookupEvent.
+
 2008-11-22  Geoff Norton  <gnorton@novell.com>
 
 	* windowless.cpp: Revert

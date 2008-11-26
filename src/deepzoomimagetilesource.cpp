@@ -23,6 +23,11 @@ DeepZoomImageTileSource::DeepZoomImageTileSource ()
 	downloader = NULL;
 }
 
+DeepZoomImageTileSource::DeepZoomImageTileSource (const char *uri)
+{
+	SetValue (DeepZoomImageTileSource::UriSourceProperty, Value (uri));
+}
+
 DeepZoomImageTileSource::~DeepZoomImageTileSource ()
 {
 	if (downloader) {
@@ -82,3 +87,4 @@ DeepZoomImageTileSource::downloader_complete (EventObject *sender, EventArgs *ca
 {
 	((DeepZoomImageTileSource *) closure)->DownloaderComplete ();
 }
+

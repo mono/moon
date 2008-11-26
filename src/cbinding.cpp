@@ -3237,14 +3237,14 @@ xaml_loader_create_from_string_with_error (XamlLoader *instance, const char *xam
 
 
 DependencyObject *
-xaml_loader_hydrate_from_string_with_error (XamlLoader *instance, const char *default_asm_name, const char *default_asm_path, const char *xaml, DependencyObject *obj, bool create_namescope, Type::Kind *element_type, MoonError *error)
+xaml_loader_hydrate_from_string_with_error (XamlLoader *instance, const char *xaml, DependencyObject *obj, bool create_namescope, Type::Kind *element_type, MoonError *error)
 {
 	if (instance == NULL)
 		return NULL;
 	
 	if (error == NULL)
 		g_warning ("Moonlight: Called xaml_loader_hydrate_from_string_with_error () with error == NULL.");
-	return instance->HydrateFromStringWithError (default_asm_name, default_asm_path, xaml, obj, create_namescope, element_type, error);
+	return instance->HydrateFromStringWithError (xaml, obj, create_namescope, element_type, error);
 }
 
 

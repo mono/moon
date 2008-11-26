@@ -34,6 +34,7 @@
 #include "border.h"
 #include "contentcontrol.h"
 #include "control.h"
+#include "deepzoomimagetilesource.h"
 #include "deployment.h"
 #include "frameworkelement.h"
 #include "geometry.h"
@@ -120,6 +121,7 @@ dependency_property_g_init (void)
 	Control::TemplateProperty = DependencyProperty::Register (Type::CONTROL, "Template", Type::CONTROLTEMPLATE);
 	Control::VerticalContentAlignmentProperty = DependencyProperty::Register (Type::CONTROL, "VerticalContentAlignment", new Value (VerticalAlignmentCenter));
 	ControlTemplate::TargetTypeProperty = DependencyProperty::Register (Type::CONTROLTEMPLATE, "TargetType", Type::MANAGED);
+	DeepZoomImageTileSource::UriSourceProperty = DependencyProperty::Register (Type::DEEPZOOMIMAGETILESOURCE, "UriSource", Type::STRING);
 #endif
 	DependencyObject::NameProperty = DependencyProperty::Register (Type::DEPENDENCY_OBJECT, "Name", Type::STRING);
 #if SL_2_0
@@ -491,6 +493,7 @@ DependencyProperty *Control::TabNavigationProperty = NULL;
 DependencyProperty *Control::TemplateProperty = NULL;
 DependencyProperty *Control::VerticalContentAlignmentProperty = NULL;
 DependencyProperty *ControlTemplate::TargetTypeProperty = NULL;
+DependencyProperty *DeepZoomImageTileSource::UriSourceProperty = NULL;
 #endif
 DependencyProperty *DependencyObject::NameProperty = NULL;
 #if SL_2_0

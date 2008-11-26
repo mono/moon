@@ -11,6 +11,8 @@
  * 
  */
 
+#define DEBUG
+
 #include <config.h>
 #include <string.h>
 #include <malloc.h>
@@ -47,6 +49,7 @@
 #include "cornerradius.h"
 #include "deployment.h"
 #include "grid.h"
+#include "deepzoomimagetilesource.h"
 #endif
 
 
@@ -62,7 +65,6 @@ class XamlElementInstanceValueType;
 class XamlElementInfoManaged;
 class XamlElementInstanceManaged;
 class XamlElementInfoImportedManaged;
-class XamlElementInstanceImportedManaged;
 class XamlElementInstanceTemplate;
 
 		
@@ -79,7 +81,7 @@ static const char* default_namespace_names [] = {
 };
 
 
-static void dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value);
+static bool dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value);
 static void dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child);
 static void dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
 static void value_type_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
@@ -117,6 +119,10 @@ class XamlElementInfo {
 
 
 class XamlElementInstance : public List::Node {
+
+ protected:
+	DependencyObject *item;
+
  public:
 	const char *element_name;
 	XamlElementInfo *info;
@@ -131,7 +137,6 @@ class XamlElementInstance : public List::Node {
 	};
 
 	int element_type;
-	DependencyObject *item;
 	char *x_key;
 
 	GHashTable *set_properties;
@@ -164,7 +169,7 @@ class XamlElementInstance : public List::Node {
 	}
 
 	
-	virtual void SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value) = 0;
+	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value) = 0;
 	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char* value) = 0;
 	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child) = 0;
 	virtual void SetAttributes (XamlParserInfo *p, const char **attr) = 0;
@@ -175,14 +180,29 @@ class XamlElementInstance : public List::Node {
 	void SetKey (const char *key) { this->x_key = g_strdup (key); }
 	char *GetKey () { return x_key; }
 
-	virtual bool IsValueType ()
+	virtual bool IsDependencyObject ()
 	{
-		return false;
+		return true;
 	}
 
 	virtual Value *GetAsValue ()
 	{
 		return new Value (item);
+	}
+
+	virtual DependencyObject *GetAsDependencyObject ()
+	{
+		return item;
+	}
+
+	virtual void SetDependencyObject (DependencyObject *value)
+	{
+		item = value;
+	}
+	
+	virtual void* GetManagedPointer ()
+	{
+		return item;
 	}
 
 	virtual bool IsTemplate ()
@@ -267,10 +287,6 @@ class XamlParserInfo {
 
 	const char *file_name;
 
-	// The assembly that is parsing this XAML (2.0 only)
-	const char *assembly_name;
-	const char *assembly_path;
-
 	NameScope *namescope;
 	XamlElementInstance *top_element;
 	XamlNamespace *current_namespace;
@@ -300,7 +316,7 @@ class XamlParserInfo {
 	}
 
 	XamlParserInfo (XML_Parser parser, const char *file_name) :
-		parser (parser), file_name (file_name), assembly_name (NULL), assembly_path (NULL),
+		parser (parser), file_name (file_name),
 		namescope (new NameScope()), top_element (NULL),
 		current_namespace (NULL), current_element (NULL), cdata_content (false), cdata (NULL),
 		implicit_default_namespace (false), error_args (NULL), loader (NULL), created_elements (NULL),
@@ -362,7 +378,7 @@ class XamlElementInstanceNative : public XamlElementInstance {
 
 	virtual DependencyObject *CreateItem ();
 
-	virtual void SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value);
+	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value);
 	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char* value);
 	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child);
 	virtual void SetAttributes (XamlParserInfo *p, const char **attr);
@@ -377,9 +393,9 @@ class XamlElementInstanceValueType : public XamlElementInstance {
  public:
 	XamlElementInstanceValueType (XamlElementInfoNative *element_info, XamlParserInfo *parser_info, const char *name, ElementType type);
 
-	virtual bool IsValueType ()
+	virtual bool IsDependencyObject ()
 	{
-		return true;
+		return false;
 	}
 
 	virtual Value *GetAsValue ()
@@ -391,7 +407,7 @@ class XamlElementInstanceValueType : public XamlElementInstance {
 
 	// A Value type doesn't really support anything. It's just here so people can do <SolidColorBrush.Color><Color>#FF00FF</Color></SolidColorBrush.Color>
 	virtual DependencyObject *CreateItem () { return NULL; }
-	virtual void SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value) { }
+	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value) { return false; }
 	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char *value) { return false; }
 	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child) { }
 	virtual void SetAttributes (XamlParserInfo *p, const char **attr);
@@ -416,8 +432,8 @@ public:
 
 	void AddTemplateBinding (XamlElementInstance *element, const char *source_property, const char *target_property)
 	{
-		XamlTemplateBinding *b = new XamlTemplateBinding ((FrameworkElement*)element->item, source_property, target_property);
-		((FrameworkTemplate*)item)->AddXamlBinding (b);
+		XamlTemplateBinding *b = new XamlTemplateBinding ((FrameworkElement*)element->GetManagedPointer (), source_property, target_property);
+		((FrameworkTemplate*)GetManagedPointer ())->AddXamlBinding (b);
 		b->unref ();
 	}
 
@@ -450,11 +466,9 @@ class DefaultNamespace : public XamlNamespace {
 			return new XamlElementInfoNative (t);
 
 		XamlElementInfo* managed_element = create_element_info_from_imported_managed_type (p, el);
-		if (managed_element)
+		if (managed_element)			
 			return managed_element;
 
-		if (!strchr (el, '.'))
-			g_critical ("Type not found:  %s\n", el);
 		return NULL;
 		
 	}
@@ -500,12 +514,9 @@ class XNamespace : public XamlNamespace {
 			}
 			item->SetKey (value);
 
-			if (!item->IsValueType()) {
-				item->item->SetValue (DependencyObject::NameProperty, Value (value));
-				if (p->loader) {
-					p->loader->SetNameAttribute (item->item, value);
-					return true;
-				}
+			if (item->IsDependencyObject ()) {
+				item->GetAsDependencyObject ()->SetValue (DependencyObject::NameProperty, Value (value));
+				return true;
 			}
 
 			return false;
@@ -523,7 +534,7 @@ class XNamespace : public XamlNamespace {
 		}
 
 		if (!strcmp ("Class", attr)) {
-			if (item->IsValueType()) {
+			if (!item->IsDependencyObject ()) {
 				// XXX don't know the proper values here...
 				parser_error (p, item->element_name, attr, -1,
 					      g_strdup_printf ("Cannot specify x:Class type '%s' on value type element\n", value));
@@ -538,17 +549,19 @@ class XNamespace : public XamlNamespace {
 			// FIXME: On Silverlight 2.0 only the toplevel node should contain an x:Class
 			// must validate that.
 			//
-			DependencyObject *old = item->item;
+			DependencyObject *old = item->GetAsDependencyObject ();
 
-			item->item = NULL;
+			item->SetDependencyObject (NULL);
 			DependencyObject *dob = NULL;
 			if (p->loader) {
 				// The managed DependencyObject will unref itself
 				// once it's finalized, so don't unref anything here.
-				bool is_dependency_object;
-				void *obj = p->loader->CreateManagedObjectFromXmlns (p->assembly_name, p->assembly_path, value, NULL, &is_dependency_object);
-				if (is_dependency_object)
-					dob = (DependencyObject*)obj;
+				Value *v = new Value ();
+				if (p->loader->CreateObject (p->top_element ? p->top_element->GetAsDependencyObject () : NULL, NULL, value, v) && v->Is (Type::DEPENDENCY_OBJECT)) {
+					dob = v->AsDependencyObject ();
+					dob->SetSurface (p->loader->GetSurface ());
+				} else
+					delete v;
 			}
 
 			if (!dob) {
@@ -561,9 +574,9 @@ class XNamespace : public XamlNamespace {
 			NameScope *ns = NameScope::GetNameScope (old);
 			if (ns)
 				NameScope::SetNameScope (dob, ns);
-			item->item = dob;
+			item->SetDependencyObject (dob);
 
-			p->AddCreatedElement (item->item);
+			p->AddCreatedElement (item->GetAsDependencyObject ());
 
 			*reparse = true;
 			return true;
@@ -576,14 +589,14 @@ class XNamespace : public XamlNamespace {
 
 class XamlElementInfoManaged : public XamlElementInfo {
  public:
-	XamlElementInfoManaged (const char *name, XamlElementInfo *parent, Type::Kind dependency_type, void *obj, bool is_dependency_object) : XamlElementInfo (name, dependency_type)
+	XamlElementInfoManaged (const char *xmlns, const char *name, XamlElementInfo *parent, Type::Kind dependency_type, Value *obj) : XamlElementInfo (name, dependency_type)
 	{
-		this->is_dependency_object = is_dependency_object;
+		this->xmlns = xmlns;
 		this->obj = obj;
 	}
 
-	bool is_dependency_object;
-	void *obj;
+	const char *xmlns;
+	Value *obj;
 
 	const char* GetName () { return name; }
 
@@ -597,27 +610,35 @@ class XamlElementInfoManaged : public XamlElementInfo {
 
 class XamlElementInstanceManaged : public XamlElementInstance {
  public:
-	XamlElementInstanceManaged (XamlElementInfo *info, const char *name, ElementType type, void *obj, bool is_dependency_object);
+	XamlElementInstanceManaged (XamlElementInfo *info, const char *name, ElementType type, Value *obj);
 
-	virtual void SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value);
+	virtual bool IsDependencyObject ()
+	{
+		return false;
+	}
+
+	virtual Value *GetAsValue () { return obj; }
+
+	virtual bool SetAttachedProperty (XamlParserInfo *p, XamlElementInstance *target, XamlElementInstance *value);
+
+	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value);
 	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char* value);
 	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child);
 	virtual void SetAttributes (XamlParserInfo *p, const char **attr);
 
 	virtual bool TrySetContentProperty (XamlParserInfo *p, const char *value);
 
-	bool is_dependency_object;
-	void *obj;
+	virtual void* GetManagedPointer ();
+ protected:
+	Value *obj;
 };
 
 
-class XamlElementInfoImportedManaged : public XamlElementInfo {
-	DependencyObject *dependency_object;
-	
+class XamlElementInfoImportedManaged : public XamlElementInfoManaged {
+
  public:
-	XamlElementInfoImportedManaged (const char *name, XamlElementInfo *parent, Type::Kind dependency_type, DependencyObject *dob) : XamlElementInfo (name, dependency_type)
+	XamlElementInfoImportedManaged (const char *name, XamlElementInfo *parent, Value *obj) : XamlElementInfoManaged (NULL, name, parent, obj->GetKind (), obj)
 	{
-		this->dependency_object = dob;
 	}
 
 	const char* GetContentProperty (XamlParserInfo *p);
@@ -627,18 +648,6 @@ class XamlElementInfoImportedManaged : public XamlElementInfo {
 	XamlElementInstance* CreatePropertyElementInstance (XamlParserInfo *p, const char *name);
 };
 
-
-class XamlElementInstanceImportedManaged : public XamlElementInstance {
- public:
-	XamlElementInstanceImportedManaged (XamlElementInfo *info, const char *name, ElementType type, DependencyObject *dob);
-
-	virtual void SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value);
-	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char* value);
-	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child);
-	virtual void SetAttributes (XamlParserInfo *p, const char **attr);
-
-	virtual bool TrySetContentProperty (XamlParserInfo *p, const char *value);
-};
 
 
 class ManagedNamespace : public XamlNamespace {
@@ -650,104 +659,48 @@ class ManagedNamespace : public XamlNamespace {
 		this->xmlns = xmlns;
 	}
 
-	virtual ~ManagedNamespace () { }
+	virtual ~ManagedNamespace ()
+	{
+		g_free (xmlns);
+	}
 
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el)
 	{
-		bool is_do = false;
-		void *obj = NULL;
-
-		if (p->loader)
-			obj = p->loader->CreateManagedObjectFromXmlns (p->assembly_name, p->assembly_path, xmlns, el, &is_do);
-
-		if (!obj) {
-			parser_error (p, el, NULL, -1, g_strdup_printf ("Unable to resolve managed type %s\n", el));
+		if (!p->loader)
 			return NULL;
+
+		Value *value = new Value ();
+		if (!p->loader->CreateObject (p->top_element ? p->top_element->GetManagedPointer () : NULL, xmlns, el, value)) {
+			parser_error (p, el, NULL, -1, g_strdup_printf ("Unable to resolve managed type %s\n", el));
+			return  NULL;
 		}
 
-		XamlElementInfoManaged *info = new XamlElementInfoManaged (g_strdup (el), NULL,
-									   is_do ? ((DependencyObject*)obj)->GetObjectType () : Type::MANAGED,
-									   obj, is_do);
-
+		XamlElementInfoManaged *info = new XamlElementInfoManaged (xmlns, g_strdup (el), NULL, value->GetKind (), value);
 		return info;
 	}
 
 	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse)
 	{
-		XamlElementInfoManaged *info = (XamlElementInfoManaged*)item->info;
-		XamlElementInstanceManaged *instance = (XamlElementInstanceManaged *)item;
+		XamlElementInstanceManaged *instance = (XamlElementInstanceManaged *) item;
 
-		if (p->loader)
-			return p->loader->SetAttribute (info->is_dependency_object ? instance->item : instance->obj, xmlns, attr, value);
+		if (p->loader) {
+			Value v = Value (value);
+			return p->loader->SetProperty (p->top_element ? p->top_element->GetManagedPointer () : NULL, xmlns, instance->GetManagedPointer (), attr, &v);
+		}
 		return false;
 	}
 };
 
-
-/*
-	XamlLoader
-*/
-void*
-XamlLoader::CreateManagedObjectFromXmlns (const char* default_asm_name, const char* default_asm_path, const char* xmlns, const char* name, bool *is_dependency_object)
+bool
+XamlLoader::CreateObject (void *top_level, const char* xmlns, const char* type_name, Value *value)
 {
-	void* result = NULL;
-	char *assembly = NULL, *ns = NULL, *type_name = NULL;
-	const char* assembly_name = NULL, *assembly_path = NULL;
-	
-	// printf ("XamlLoader::CreateManagedObject (%s, %s)\n", xmlns, name);
-
-	xaml_parse_xmlns (xmlns, &type_name, &ns, &assembly);
-	
-	// printf ("XamlLoader::CreateManagedObject: assembly: %s, ns: %s, typename: %s\n", assembly, ns, type_name);
-
-	if (!assembly) {
-		if (!default_asm_name || !default_asm_path) {
-			printf ("XamlLoader::CreateManagedObject (%s, %s): Invalid assembly: %s and no default assembly info available.\n", xmlns, name, assembly);
-			goto cleanup;
-		}
-		assembly_name = default_asm_name;
-		assembly_path = default_asm_path;
-	} else {
-		assembly_name = assembly_path = assembly;
-	}
-	
-	if (!vm_loaded && !LoadVM ())
-		return NULL;
-	
-	if (type_name == NULL)
-		type_name = g_strdup (name);
-	
-	// printf ("XamlLoader::CreateManagedObject: assembly: (%s, %s)   type: %s::%s\n", assembly_name, assembly_path, ns, type_name);
-	
-	result = CreateManagedObject (assembly_name, assembly_path, ns, type_name, is_dependency_object);
-	
-cleanup:
-	g_free (assembly);
-	g_free (type_name);
-	g_free (ns);
-	
-	return result;
-
-}
-
-void*
-XamlLoader::CreateManagedObject (const char* asm_name, const char* asm_path, const char* name, const char* type_name, bool *is_dependency_object)
-{
-	//printf ("XamlLoader::CreateManagedObject (%s, %s, %s, %s)\n", asm_name, asm_path, name, type_name);
-	
-	if (callbacks.load_managed_object) {
-		return callbacks.load_managed_object (asm_name, asm_path, name, type_name, is_dependency_object);
+	if (callbacks.create_object) {
+		if (!vm_loaded && !LoadVM ())
+			return NULL;
+		bool res = callbacks.create_object (top_level, xmlns, type_name, value);
+		return res;
 	}
 		
-	return NULL;
-}
-
-DependencyObject *
-XamlLoader::CreateComponentFromName (const char* name)
-{
-	if (callbacks.create_component_from_name) {
-		return callbacks.create_component_from_name (name);
-	}
 	return NULL;
 }
 
@@ -761,111 +714,20 @@ XamlLoader::GetContentPropertyName (void *obj)
 }
 
 bool
-XamlLoader::SetAttribute (void* target, const char* xmlns, const char* name, const char* value)
+XamlLoader::SetProperty (void *top_level, const char* xmlns, void *target, const char *name, Value *value)
 {
-	if (callbacks.set_custom_attribute)
-		return callbacks.set_custom_attribute (target, xmlns, name, value);
+	if (callbacks.set_property)
+		return callbacks.set_property (top_level, xmlns, target, name, value);
 
 	return false;
 }
-
-bool
-XamlLoader::AddChild (void* parent, const char* prop_name, void *child)
-{
-	if (callbacks.add_child)
-		return callbacks.add_child (parent, prop_name, child);
-
-	return false;
-}
-
-void 
-XamlLoader::SetNameAttribute (void* target, const char* name)
-{
-	if (callbacks.set_name_attribute) {
-		callbacks.set_name_attribute (target, name);
-		return;
-	}
-}
-
-bool
-XamlLoader::HookupEvent (void* target, void* dest, const char* name, const char* value)
-{
-	if (callbacks.hookup_event)
-		return callbacks.hookup_event (target, dest, name, value);
-	
-	//printf ("XamlLoader::HookupEvent (%p, %s, %s)\n", target, name, value);
-	return false;
-}
-
-void
-XamlLoader::AddMissing (const char* assembly)
-{		
-	//printf ("XamlLoader::AddMissing (%s).\n", assembly);
-	
-	if (!vm_loaded)
-		LoadVM ();
-	
-	if (!missing_assemblies)
-		missing_assemblies = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
 		
-	g_hash_table_insert (missing_assemblies, g_strdup (assembly), g_strdup (assembly));
-}
-
-void 
-XamlLoader::RemoveMissing (const char* assembly)
-{
-	//printf ("XamlLoader::RemoveMissing ('%s').\n", assembly);
-
-	g_hash_table_remove (missing_assemblies, assembly);
-}
-
 gboolean
 xaml_loader_find_any (gpointer key, gpointer value, gpointer user_data)
 {
 	return TRUE;
 }
 
-const char*
-XamlLoader::GetMissing ()
-{
-	if (!missing_assemblies)
-		return NULL;
-
-	return (const char*) g_hash_table_find (missing_assemblies, xaml_loader_find_any, NULL);
-}
-
-void
-XamlLoader::InsertMapping (const char* key, const char* value)
-{
-	//printf ("XamlLoader::InsertMapping (%s, %s), insert_mapping: %p, mappings: %p\n", key, value, callbacks.insert_mapping, mappings);
-	
-	if (!mappings)
-		mappings = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
-	g_hash_table_insert (mappings, g_strdup (key), g_strdup (value));
-	
-	if (callbacks.insert_mapping)
-		callbacks.insert_mapping (key, value);
-}
-
-const char*
-XamlLoader::GetMapping (const char* key)
-{
-	const char* result = NULL;
-	if (mappings) {
-		result = (const char*) g_hash_table_lookup (mappings, key);
-		if (result) {
-			// printf ("XamlLoader::GetMapping (%s): returning cached result: %s\n", key, result);
-			return result;
-		}
-	}
-	
-	if (callbacks.get_mapping) {
-		result = callbacks.get_mapping (key);
-		 // printf ("XamlLoader::GetMapping (%s): returning managed result: %s\n", key, result);
-	}
-
-	return result;
-}
 
 XamlLoader::XamlLoader (const char* filename, const char* str, Surface* surface)
 {
@@ -873,8 +735,6 @@ XamlLoader::XamlLoader (const char* filename, const char* str, Surface* surface)
 	this->str = g_strdup (str);
 	this->surface = surface;
 	surface->ref ();
-	this->missing_assemblies = NULL;
-	this->mappings = NULL;
 	this->vm_loaded = false;
 	this->error_args = NULL;
 	
@@ -891,13 +751,6 @@ XamlLoader::~XamlLoader ()
 	g_free (filename);
 	g_free (str);
 	surface->unref ();
-	if (missing_assemblies)
-		g_hash_table_destroy (missing_assemblies);
-	if (mappings)
-		g_hash_table_destroy (mappings);
-	
-	mappings = NULL;
-	missing_assemblies = NULL;
 	surface = NULL;
 	filename = NULL;
 	str = NULL;
@@ -919,17 +772,6 @@ void
 xaml_loader_free (XamlLoader* loader)
 {
 	delete loader;
-}
-
-void
-xaml_loader_add_missing (XamlLoader* loader, const char* file)
-{
-	if (!loader) {
-		LOG_XAML ("Trying to add missing file '%s' to a null loader.\n", file);
-		return;
-	}
-	
-	loader->AddMissing (file);
 }
 
 void 
@@ -1042,15 +884,15 @@ start_element (void *data, const char *el, const char **attr)
 
 		if (!p->top_element) {
 			p->top_element = inst;
-			if (inst->item)
-				NameScope::SetNameScope (inst->item, p->namescope);
+			if (inst->GetAsDependencyObject ())
+				NameScope::SetNameScope (inst->GetAsDependencyObject (), p->namescope);
 		}
 
 		inst->SetAttributes (p, attr);
 		if (p->error_args)
 			return;
 
-		if (!inst->IsValueType ()) {
+		if (inst->IsDependencyObject ()) {
 			if (p->current_element){
 				if (p->current_element->info) {
 					p->current_element->AddChild (p, inst);
@@ -1072,7 +914,6 @@ start_element (void *data, const char *el, const char **attr)
 
 		if (prop_info != NULL) {
 			inst = prop_info->CreatePropertyElementInstance (p, g_strdup (el));
-
 			inst->parent = p->current_element;
 
 			if (attr [0] != NULL) {
@@ -1084,7 +925,7 @@ start_element (void *data, const char *el, const char **attr)
 			if (!p->top_element) {
 				if (Type::Find (prop_info->GetKind ())->IsSubclassOf (Type::COLLECTION)) {
 					XamlElementInstance *wrap = prop_info->CreateElementInstance (p);
-					NameScope::SetNameScope (wrap->item, p->namescope);
+					NameScope::SetNameScope (wrap->GetAsDependencyObject (), p->namescope);
 					p->top_element = wrap;
 					p->current_element = wrap;
 					return;
@@ -1193,8 +1034,8 @@ end_element_handler (void *data, const char *el)
 	switch (info->current_element->element_type) {
 	case XamlElementInstance::ELEMENT:
 		flush_char_data (info);
-		if (info->current_element->IsValueType() && info->current_element->parent) {
-			info->current_element->parent->AddChild(info, info->current_element);
+		if (!info->current_element->IsDependencyObject () && info->current_element->parent) {
+			info->current_element->parent->AddChild (info, info->current_element);
 		}
 		break;
 	case XamlElementInstance::PROPERTY: {
@@ -1333,9 +1174,9 @@ print_tree (XamlElementInstance *el, int depth)
 	
 		const char *name = NULL;
 
-		if (el->element_type == XamlElementInstance::ELEMENT && !el->IsValueType ())
-			name = el->item->GetName ();
-		printf ("%s  (%s)  (%p)\n", el->element_name, name ? name : "-no name-", el->parent);
+		if (el->element_type == XamlElementInstance::ELEMENT && el->IsDependencyObject ())
+			name = el->GetAsDependencyObject ()->GetName ();
+		printf ("%s  (%s)  (%p) (%s)\n", el->element_name, name ? name : "-no name-", el->parent, el->element_type == XamlElementInstance::PROPERTY ? "PROPERTY" : "ELEMENT");
 
 		for (List::Node *walk = el->children->First (); walk != NULL; walk = walk->next) {
 			XamlElementInstance *el = (XamlElementInstance *) walk;
@@ -1454,7 +1295,7 @@ XamlLoader::CreateFromFile (const char *xaml_file, bool create_namescope,
 	print_tree (parser_info->top_element, 0);
 	
 	if (parser_info->top_element) {
-		res = parser_info->top_element->item;
+		res = parser_info->top_element->GetAsDependencyObject ();
 		if (element_type)
 			*element_type = parser_info->top_element->info->GetKind ();
 
@@ -1488,7 +1329,7 @@ DependencyObject *
 XamlLoader::CreateFromString (const char *xaml, bool create_namescope,
 			      Type::Kind *element_type)
 {
-	return HydrateFromString (xaml, NULL, NULL, NULL, create_namescope, element_type);
+	return HydrateFromString (xaml, NULL, create_namescope, element_type);
 }
 
 /**
@@ -1496,8 +1337,7 @@ XamlLoader::CreateFromString (const char *xaml, bool create_namescope,
  * data
  */
 DependencyObject *
-XamlLoader::HydrateFromString (const char *xaml, const char *assembly_name, const char *assembly_path,
-			       DependencyObject *object, bool create_namescope, Type::Kind *element_type)
+XamlLoader::HydrateFromString (const char *xaml, DependencyObject *object, bool create_namescope, Type::Kind *element_type)
 {
 	XML_Parser p = XML_ParserCreateNS ("utf-8", '|');
 	XamlParserInfo *parser_info = NULL;
@@ -1528,8 +1368,6 @@ XamlLoader::HydrateFromString (const char *xaml, const char *assembly_name, cons
 	parser_info->namescope->SetTemporary (!create_namescope);
 
 	parser_info->loader = this;
-	parser_info->assembly_name = assembly_name;
-	parser_info->assembly_path = assembly_path;
 	
 	//
 	// If we are hydrating, we are not null
@@ -1571,7 +1409,7 @@ XamlLoader::HydrateFromString (const char *xaml, const char *assembly_name, cons
 	print_tree (parser_info->top_element, 0);
 	
 	if (parser_info->top_element) {
-		res = parser_info->top_element->item;
+		res = parser_info->top_element->GetAsDependencyObject ();
 		if (element_type)
 			*element_type = parser_info->top_element->info->GetKind ();
 
@@ -1623,9 +1461,9 @@ XamlLoader::CreateFromStringWithError  (const char *xaml, bool create_namescope,
 }
 
 DependencyObject*
-XamlLoader::HydrateFromStringWithError (const char *default_asm_name, const char *default_asm_path, const char *xaml, DependencyObject *object, bool create_namescope, Type::Kind *element_type, MoonError *error)
+XamlLoader::HydrateFromStringWithError (const char *xaml, DependencyObject *object, bool create_namescope, Type::Kind *element_type, MoonError *error)
 {
-	DependencyObject *res = HydrateFromString (default_asm_name, default_asm_path, xaml, object, create_namescope, element_type);
+	DependencyObject *res = HydrateFromString (xaml, object, create_namescope, element_type);
 	if (error_args && error_args->error_code != -1) {
 		MoonError::FillIn (error, MoonError::XAML_PARSE_EXCEPTION, error_args->error_message);
 	}
@@ -2646,6 +2484,21 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 		*v = new Value (grid_length);
 		break;
 	}
+
+	case Type::MULTISCALETILESOURCE:
+	case Type::DEEPZOOMIMAGETILESOURCE: {
+		// As far as I know the only thing you can create here is a URI based DeepZoomImageTileSource
+
+		Uri *uri = new Uri ();
+		if (!uri->Parse (str)) {
+			delete uri;
+			return false;
+		}
+		*v = new Value (new DeepZoomImageTileSource (str));
+		delete uri;
+
+		break;
+	}
 #endif
 	default:
 		// we don't care about NULL or empty values
@@ -2659,7 +2512,7 @@ bool
 XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, XamlElementInstance *value)
 {
 	const char* prop_name = info->GetContentProperty (p);
-	
+
 	if (!prop_name)
 		return false;
 
@@ -2672,8 +2525,7 @@ XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, XamlElementInstan
 
 	if (!is_collection && Type::Find (value->info->GetKind ())->IsSubclassOf (dep->GetPropertyType())) {
 		MoonError err;
-		Value item_value (value->item);
-		if (!item->SetValueWithError (NULL /* XXX */, dep, &item_value, &err)) {
+		if (!item->SetValueWithError (NULL /* XXX */, dep, value->GetAsValue (), &err)) {
 		    parser_error (p, value->element_name, NULL, err.code, err.message);
 		    return false;
 		}
@@ -2695,9 +2547,8 @@ XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, XamlElementInstan
 			col = (Collection *) col_v->AsCollection ();
 		}
 
-		Value item_value (value->item);
 		MoonError err;
-		if (-1 == col->AddWithError (&item_value, &err)) {
+		if (-1 == col->AddWithError (value->GetAsValue (), &err)) {
 			parser_error (p, value->element_name, NULL, err.code, err.message);
 			return false;
 		}
@@ -2723,7 +2574,7 @@ XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, const char *value
 	// types, i should pull the property setting out of set_attributes
 	// and use that code
 
-	if (content && (content->GetPropertyType()) == Type::STRING && value) {
+	if (content && (content->GetPropertyType ()) == Type::STRING && value) {
 		item->SetValue (content, Value (g_strstrip (p->cdata->str)));
 		return true;
 	} else if (Type::Find (info->GetKind ())->IsSubclassOf (Type::TEXTBLOCK)) {
@@ -2779,16 +2630,16 @@ create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *n
 	if (!p->loader)
 		return NULL;
 
-	DependencyObject *obj = p->loader->CreateComponentFromName (name);
-	if (!obj) {
+	Value *v = new Value ();
+	if (!p->loader->CreateObject (NULL, NULL, name, v) /*|| v->Is (Type::DEPENDENCY_OBJECT)*/) {
+		delete v;
 		return NULL;
 	}
 
-	XamlElementInfoImportedManaged *info = new  XamlElementInfoImportedManaged (name, NULL, obj->GetObjectType (), obj);
-	
-	if (p->loader)
-		obj->SetSurface (p->loader->GetSurface ());
-	
+	XamlElementInfoImportedManaged *info = new  XamlElementInfoImportedManaged (g_strdup (name), NULL, v);
+	DependencyObject *dob = v->AsDependencyObject ();
+	dob->SetSurface (p->loader->GetSurface ());
+
 	return info;
 }
 
@@ -2814,7 +2665,7 @@ XamlElementInstance *
 XamlElementInfoNative::CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o)
 {
 	XamlElementInstance *res = new XamlElementInstanceNative (this, p, GetName (), XamlElementInstance::ELEMENT, false);
-	res->item = o;
+	res->SetDependencyObject (o);
 
 	return res;
 }
@@ -2831,7 +2682,7 @@ XamlElementInstanceNative::XamlElementInstanceNative (XamlElementInfoNative *ele
 	this->element_info = element_info;
 	this->parser_info = parser_info;
 	if (create_item)
-		item = CreateItem ();
+		SetDependencyObject (CreateItem ());
 }
 
 
@@ -2866,7 +2717,7 @@ XamlElementInstanceNative::CreateItem ()
 		}
 
 		if (dep && Type::Find (dep->GetPropertyType())->IsSubclassOf (type->type)) {
-			Value *v = ((DependencyObject * ) walk->item)->GetValue (dep);
+			Value *v = ((DependencyObject * ) walk->GetAsDependencyObject ())->GetValue (dep);
 			if (v) {
 				item = v->AsDependencyObject ();
 				dep = NULL;
@@ -2886,7 +2737,7 @@ XamlElementInstanceNative::CreateItem ()
 			if (dep && dep->GetPropertyType() == type->type) {
 				MoonError err;
 				Value item_value (item);
-				if (!((DependencyObject * ) walk->item)->SetValueWithError (NULL/* XXX */, dep, &item_value, &err))
+				if (!((DependencyObject * ) walk->GetAsDependencyObject ())->SetValueWithError (NULL/* XXX */, dep, &item_value, &err))
 					parser_error (parser_info, element_name, NULL, err.code, err.message);
 			}
 			
@@ -2901,10 +2752,10 @@ XamlElementInstanceNative::CreateItem ()
 	return item;
 }
 
-void
+bool
 XamlElementInstanceNative::SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value)
 {
-	dependency_object_set_property (p, this, property, value);
+	return dependency_object_set_property (p, this, property, value);
 }
 
 bool
@@ -2947,7 +2798,9 @@ XamlElementInstanceValueType::XamlElementInstanceValueType (XamlElementInfoNativ
 bool
 XamlElementInstanceValueType::CreateValueItemFromString (const char* str)
 {
-	return value_from_str (element_info->GetType ()->GetKind (), NULL, str, &value_item, parser_info->loader->GetSurface()->IsSilverlight2 ());
+
+	bool res = value_from_str (element_info->GetType ()->GetKind (), NULL, str, &value_item, parser_info->loader->GetSurface()->IsSilverlight2 ());
+	return res;
 }
 
 void
@@ -2972,12 +2825,12 @@ XamlElementInfoManaged::GetContentProperty (XamlParserInfo *p)
 XamlElementInstance *
 XamlElementInfoManaged::CreateElementInstance (XamlParserInfo *p)
 {
-	XamlElementInstanceManaged *inst = new XamlElementInstanceManaged (this, GetName (), XamlElementInstance::ELEMENT, obj, is_dependency_object);
+	XamlElementInstanceManaged *inst = new XamlElementInstanceManaged (this, GetName (), XamlElementInstance::ELEMENT, obj);
 
-	if (is_dependency_object) {
+	if (obj->Is (Type::DEPENDENCY_OBJECT)) {
 		if (p->loader)
-			inst->item->SetSurface (p->loader->GetSurface ());
-		p->AddCreatedElement (inst->item);
+			inst->GetAsDependencyObject ()->SetSurface (p->loader->GetSurface ());
+		p->AddCreatedElement (inst->GetAsDependencyObject ());
 	}
 
 	return inst;
@@ -2986,11 +2839,11 @@ XamlElementInfoManaged::CreateElementInstance (XamlParserInfo *p)
 XamlElementInstance *
 XamlElementInfoManaged::CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o)
 {
-	XamlElementInstanceManaged *inst = new XamlElementInstanceManaged (this, GetName (), XamlElementInstance::ELEMENT, o, true);
+	XamlElementInstanceManaged *inst = new XamlElementInstanceManaged (this, GetName (), XamlElementInstance::ELEMENT, new Value (o));
 
 	if (p->loader)
-		inst->item->SetSurface (p->loader->GetSurface ());
-	p->AddCreatedElement (inst->item);
+		inst->GetAsDependencyObject ()->SetSurface (p->loader->GetSurface ());
+	p->AddCreatedElement (inst->GetAsDependencyObject ());
 
 	return inst;
 }
@@ -2998,38 +2851,49 @@ XamlElementInfoManaged::CreateWrappedElementInstance (XamlParserInfo *p, Depende
 XamlElementInstance *
 XamlElementInfoManaged::CreatePropertyElementInstance (XamlParserInfo *p, const char *name)
 {
-	XamlElementInstanceManaged *inst = new XamlElementInstanceManaged (this, name, XamlElementInstance::PROPERTY, obj, is_dependency_object);
+	XamlElementInstanceManaged *inst = new XamlElementInstanceManaged (this, name, XamlElementInstance::PROPERTY, obj);
 
-	if (is_dependency_object) {
+	if (obj->Is (Type::DEPENDENCY_OBJECT)) {
 		if (p->loader)
-			inst->item->SetSurface (p->loader->GetSurface ());
-		p->AddCreatedElement (inst->item);
+			inst->GetAsDependencyObject ()->SetSurface (p->loader->GetSurface ());
+		p->AddCreatedElement (inst->GetAsDependencyObject ());
 	}
 
 	return inst;
 }
 
-XamlElementInstanceManaged::XamlElementInstanceManaged (XamlElementInfo *info, const char *name, ElementType type, void *obj, bool is_dependency_object) :
+XamlElementInstanceManaged::XamlElementInstanceManaged (XamlElementInfo *info, const char *name, ElementType type, Value *obj) :
 	XamlElementInstance (info, name, type)
 {
-	this->is_dependency_object = is_dependency_object;
 	this->obj = obj;
 
-	if (is_dependency_object)
-		this->item = (DependencyObject*)obj;
-};
+	if (obj->Is (Type::DEPENDENCY_OBJECT))
+		this->SetDependencyObject (obj->AsDependencyObject ());
+}
 
-void
+void *
+XamlElementInstanceManaged::GetManagedPointer ()
+{
+	if (obj->Is (Type::DEPENDENCY_OBJECT)) {
+		
+		return obj->AsDependencyObject ();
+	}
+	return obj->AsManagedObject ();
+}
+
+bool
 XamlElementInstanceManaged::SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value)
 {
-	dependency_object_set_property (p, this, property, value);
+	if (GetAsDependencyObject () != NULL && dependency_object_set_property (p, this, property, value))
+		return true;
+	return p->loader->SetProperty (p->top_element ? p->top_element->GetManagedPointer () : NULL, ((XamlElementInfoManaged *) info)->xmlns, GetManagedPointer (), property->element_name, value->GetAsValue ());
 }
 
 bool
 XamlElementInstanceManaged::SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char *value)
 {
-	printf ("SETTING MANAGED ATTRIBUTE:  %s  to '%s'\n", property->element_name, value);
-	return p->loader->SetAttribute (item, NULL, property->element_name, value);
+	Value v = Value (value);
+	return p->loader->SetProperty (p->top_element ? p->top_element->GetManagedPointer () : NULL, ((XamlElementInfoManaged *) info)->xmlns, GetManagedPointer (), property->element_name, &v);
 }
 
 void
@@ -3051,19 +2915,27 @@ XamlElementInstanceManaged::TrySetContentProperty (XamlParserInfo *p, const char
 		const char* prop_name = info->GetContentProperty (p);
 		if (!prop_name || !p->cdata_content)
 			return false;
-		return p->loader->SetAttribute (item, NULL, prop_name, value);
+		Value v = Value (value);
+		return p->loader->SetProperty (p->top_element ? p->top_element->GetManagedPointer () : NULL, ((XamlElementInfoManaged *) info)->xmlns, GetManagedPointer (), prop_name, &v);
 	}
 	return true;
+}
+
+bool
+XamlElementInstanceManaged::SetAttachedProperty (XamlParserInfo *p, XamlElementInstance *target, XamlElementInstance *value)
+{
+	if (!element_type == PROPERTY) {
+		printf ("somehow we are setting an attached property on an ELEMENT instance (%s).", element_name);
+		return false;
+	}
+
+	p->loader->SetProperty (p->top_element ? p->top_element->GetManagedPointer () : NULL, ((XamlElementInfoManaged *) info)->xmlns, target->GetManagedPointer (), element_name, value->GetAsValue ());
 }
 
 XamlElementInstance *
 XamlElementInfoImportedManaged::CreateElementInstance (XamlParserInfo *p)
 {
-	XamlElementInstanceImportedManaged *inst = new XamlElementInstanceImportedManaged (this, dependency_object->GetTypeName (), XamlElementInstance::ELEMENT, dependency_object);
-
-	if (p->loader)
-		inst->item->SetSurface (p->loader->GetSurface ());
-	p->AddCreatedElement (inst->item);
+	XamlElementInstanceManaged *inst = new XamlElementInstanceManaged (this, name, XamlElementInstance::ELEMENT, obj);
 
 	return inst;
 }
@@ -3074,8 +2946,13 @@ XamlElementInfoImportedManaged::GetContentProperty (XamlParserInfo *p)
 	if (!p->loader)
 		return NULL;
 
+	// TODO: Test, it's possible that managed objects that aren't DOs are allowed to have content properties.
+	if (!obj->Is (Type::DEPENDENCY_OBJECT))
+		return XamlElementInfo::GetContentProperty (p);
+
+	
 	// TODO: We could cache this, but for now lets keep things as simple as possible.
-	const char *res = p->loader->GetContentPropertyName (dependency_object);
+	const char *res = p->loader->GetContentPropertyName (obj->AsDependencyObject ());
 	if (res)
 		return res;
 	
@@ -3085,11 +2962,7 @@ XamlElementInfoImportedManaged::GetContentProperty (XamlParserInfo *p)
 XamlElementInstance *
 XamlElementInfoImportedManaged::CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o)
 {
-	XamlElementInstanceImportedManaged *inst = new XamlElementInstanceImportedManaged (this, o->GetTypeName (), XamlElementInstance::ELEMENT, o);
-
-	if (p->loader)
-		inst->item->SetSurface (p->loader->GetSurface ());
-	p->AddCreatedElement (inst->item);
+	XamlElementInstanceManaged *inst = new XamlElementInstanceManaged (this, o->GetTypeName (), XamlElementInstance::ELEMENT, new Value (o));
 
 	return inst;
 }
@@ -3097,55 +2970,9 @@ XamlElementInfoImportedManaged::CreateWrappedElementInstance (XamlParserInfo *p,
 XamlElementInstance *
 XamlElementInfoImportedManaged::CreatePropertyElementInstance (XamlParserInfo *p, const char *name)
 {
-	XamlElementInstanceImportedManaged *inst = new XamlElementInstanceImportedManaged (this, name, XamlElementInstance::PROPERTY, dependency_object);
-
-	if (p->loader)
-		inst->item->SetSurface (p->loader->GetSurface ());
-	p->AddCreatedElement (inst->item);
+	XamlElementInstanceManaged *inst = new XamlElementInstanceManaged (this, name, XamlElementInstance::PROPERTY, obj);
 
 	return inst;
-}
-
-XamlElementInstanceImportedManaged::XamlElementInstanceImportedManaged (XamlElementInfo *info, const char *name, ElementType type, DependencyObject *dob) :
-	XamlElementInstance (info, name, type)
-{
-	this->item = dob;
-}
-
-bool
-XamlElementInstanceImportedManaged::TrySetContentProperty (XamlParserInfo *p, const char *value)
-{
-	if (!XamlElementInstance::TrySetContentProperty (p, value)) {
-		const char* prop_name = info->GetContentProperty (p);
-		if (!prop_name)
-			return false;
-		return p->loader->SetAttribute (item, NULL, prop_name, value);
-	}
-	return true;
-}
-
-void
-XamlElementInstanceImportedManaged::SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value)
-{
-	dependency_object_set_property (p, this, property, value);
-}
-
-bool
-XamlElementInstanceImportedManaged::SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char *value)
-{
-	return p->loader->SetAttribute (item, NULL, property->element_name, value);
-}
-
-void
-XamlElementInstanceImportedManaged::AddChild (XamlParserInfo *p, XamlElementInstance *child)
-{
-	dependency_object_add_child (p, this, child);
-}
-
-void
-XamlElementInstanceImportedManaged::SetAttributes (XamlParserInfo *p, const char **attr)
-{
-	dependency_object_set_attributes (p, this, attr);
 }
 
 
@@ -3181,7 +3008,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 				return;
 
 			// Most common case, we will have a parent that we can snag the collection from
-			DependencyObject *obj = (DependencyObject *) parent->parent->item;
+			DependencyObject *obj = (DependencyObject *) parent->parent->GetAsDependencyObject ();
 			if (!obj)
 				return;
 
@@ -3198,7 +3025,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 					col = (Collection *) col_v->AsCollection ();
 				}
 
-				Value child_val ((DependencyObject*)child->item);
+				Value child_val (child->GetAsDependencyObject ());
 				if (-1 == col->AddWithError (&child_val, &err))
 					return parser_error (p, child->element_name, NULL, err.code, err.message);
 			}
@@ -3221,7 +3048,9 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 							     "You must specify an x:Key or x:Name for elements in a ResourceDictionary");
 				}
 
+
 				Value *child_as_value = child->GetAsValue ();
+
 				bool added = dict->AddWithError (key, child_as_value, &err);
 				delete child_as_value;
 				if (!added)
@@ -3233,54 +3062,63 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 		else {
 			g_strfreev (prop_name);
 
-			void *parent_ptr = parent->info->GetKind() == Type::MANAGED ? ((XamlElementInstanceManaged*)parent)->obj : parent->item;
-			void *child_ptr = child->info->GetKind() == Type::MANAGED ? ((XamlElementInstanceManaged*)child)->obj : child->item;
-			
+			/* 
+			parent->SetProperty (p, 
 
+			void *parent_ptr = parent->GetKind () == Type::MANAGED ? parent->GetManagedPointer () : parent->item;
+			void *child_ptr = child->GetKind () == Type::MANAGED ? child->GetManagedPointer () : child->item;
+
+			bool
+XamlLoader::
 			// This might be a property of a managed object
-			if (p->loader && p->loader->AddChild (parent_ptr, parent->element_name, child_ptr)) {
+			if (p->loader && p->loader->SetProperty (p->top_element->item, const char* xmlns, void *target, const char *name, Value *value)) {
 				return;
 			}
+			
 
 			g_warning ("Unknown element 3: %s.", parent->element_name);
 			return parser_error (p, parent->element_name, NULL, 2007,
 					     g_strdup_printf ("Unknown element: %s.", parent->element_name));
+			*/
 		}
 
 	}
 
 #if SL_2_0
 	if (Type::Find (parent->info->GetKind ())->IsSubclassOf (Type::FRAMEWORKTEMPLATE)) {
-		FrameworkTemplate *t = (FrameworkTemplate*) parent->item;
+		FrameworkTemplate *t = (FrameworkTemplate*) parent->GetAsDependencyObject ();
 
 		// XXX a SetVisualTreeWithError, maybe?
-		t->SetVisualTree ((FrameworkElement*) child->item);
+		t->SetVisualTree ((FrameworkElement*) child->GetAsDependencyObject ());
 		return;
 	}
 	else 
 #endif
 	if (Type::Find (parent->info->GetKind ())->IsSubclassOf (Type::DEPENDENCY_OBJECT_COLLECTION)) {
-		Collection *col = (Collection *) parent->item;
+		Collection *col = (Collection *) parent->GetAsDependencyObject ();
 		MoonError err;
-		Value child_val ((DependencyObject*)child->item);
+		Value child_val ((DependencyObject*)child->GetAsDependencyObject ());
 
 		if (-1 == col->AddWithError (&child_val, &err))
 			return parser_error (p, child->element_name, NULL, err.code, err.message);
 		return;
 	}
 	else if (Type::Find (parent->info->GetKind ())->IsSubclassOf (Type::RESOURCE_DICTIONARY)) {
-		ResourceDictionary *dict = (ResourceDictionary *) parent->item;
+		ResourceDictionary *dict = (ResourceDictionary *) parent->GetAsDependencyObject ();
 		MoonError err;
 		char *key = child->GetKey ();
 
 		Value *child_as_value = child->GetAsValue ();
 		bool added = dict->AddWithError (key, child_as_value, &err);
 		delete child_as_value;
+
 		if (!added)
 			return parser_error (p, child->element_name, NULL, err.code, err.message);
 	}
 
-	parent->TrySetContentProperty (p, child);
+
+	if (parent->element_type != XamlElementInstance::PROPERTY)
+		parent->TrySetContentProperty (p, child);
 
 	// Do nothing if we aren't adding to a collection, or a content property collection
 }
@@ -3297,19 +3135,34 @@ dependency_object_missed_property (XamlElementInstance *item, XamlElementInstanc
 
 }
 
-static void
+static bool
 dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value)
 {
 	char **prop_name = g_strsplit (property->element_name, ".", -1);
-	DependencyObject *dep = (DependencyObject *) item->item;
+	DependencyObject *dep = item->GetAsDependencyObject ();
 	DependencyProperty *prop = NULL;
-	
+	bool res;
+
 	if (!dep) {
 		// FIXME is this really where this check should live
 		parser_error (p, item->element_name, NULL, 2030,
 			      g_strdup_printf ("Property element %s cannot be used inside another property element.",
 					       property->element_name));
-		return;
+		res = false;
+	}
+
+	if (!property->IsDependencyObject ()) {
+		// This means we are either setting a managed attached property or value property
+
+		// FIXME: I made this error message up.
+		// OTHER FIXME: so this doesn't really work because PROPERTY element's have their parent for the kind
+		/*
+		if (property->info->GetKind () != Type::MANAGED) {
+			parser_error (p, item->element_name, NULL, -1, g_strdup_printf ("Value types (%s) do not have properties.", property->element_name));
+		}
+		*/
+		XamlElementInstanceManaged *mp = (XamlElementInstanceManaged *) property;
+		res = mp->SetAttachedProperty (p, item, value);
 	}
 
 	prop = DependencyProperty::GetDependencyProperty (item->info->GetKind (), prop_name [1]);
@@ -3318,32 +3171,38 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 		if (prop->IsReadOnly ()) {
 			parser_error (p, item->element_name, NULL, 2014,
 				      g_strdup_printf ("The attribute %s is read only and cannot be set.", prop->GetName()));
+			res = false;
 		} else if (Type::Find (value->info->GetKind ())->IsSubclassOf (prop->GetPropertyType())) {
 			// an empty collection can be NULL and valid
-			if (value->item) {
+			if (value->GetAsDependencyObject ()) {
 				if (item->IsPropertySet (prop->GetName())) {
 					parser_error (p, item->element_name, NULL, 2033,
 						g_strdup_printf ("Cannot specify the value multiple times for property: %s.",
 								 property->element_name));
+					res = false;
 				} else {
 					MoonError err;
-					
-					if (!dep->SetValueWithError (NULL, prop, Value (value->item), &err))
+
+					if (!dep->SetValueWithError (NULL, prop, value->GetAsValue (), &err))
 						parser_error (p, item->element_name, NULL, err.code, err.message);
 					
 					item->MarkPropertyAsSet (prop->GetName());
+					res = true;
 				}
 			}
 		} else {
 			// TODO: Do some error checking in here, this is a valid place to be
 			// if we are adding a non collection to a collection, so the non collection
 			// item will have already been added to the collection in add_child
+			res = false;
 		}
 	} else {
 		dependency_object_missed_property (item, property, value, prop_name);
+		res = false;
 	}
 
 	g_strfreev (prop_name);
+	return res;
 }
 
 bool
@@ -3363,8 +3222,8 @@ xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, con
 	return true;
 }
 
-static bool
-is_valid_event_name (const char *name)
+bool
+xaml_is_valid_event_name (const char *name)
 {
 	return (!strcmp (name, "ImageFailed") ||
 		!strcmp (name, "MediaEnded") ||
@@ -3393,6 +3252,7 @@ is_valid_event_name (const char *name)
 		!strcmp (name, "MouseMove"));
 }
 
+/*
 static bool
 dependency_object_hookup_event (XamlParserInfo *p, XamlElementInstance *item, const char *name, const char *value)
 {
@@ -3411,13 +3271,15 @@ dependency_object_hookup_event (XamlParserInfo *p, XamlElementInstance *item, co
 		}
 
 		if (p->loader)
-			p->loader->HookupEvent (item->item, p->top_element->item, name, value);
+		// TODO: Do a set property here to hookup events, lets just think of events as proeprties and make the managed code handle it.
+		// p->loader->HookupEvent (item->item, p->top_element->item, name, value);
 		
 		return false;
 	}
 
 	return true;
 }
+*/
 
 static void
 value_type_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr)
@@ -3473,7 +3335,7 @@ start_parse:
 		
 		// Setting attributes like x:Class can change item->item, so we
 		// need to make sure we have an up to date pointer
-		DependencyObject *dep = (DependencyObject *) item->item;
+		DependencyObject *dep = item->GetAsDependencyObject ();
 		char **attr_name = g_strsplit (attr [i], "|", -1);
 
 		if (attr_name [1]) {
@@ -3626,7 +3488,8 @@ start_parse:
 
 			if (!v && !value_from_str (prop->GetPropertyType(), prop->GetName(), attr [i + 1], &v, p->loader->GetSurface()->IsSilverlight2())) {
 				if (prop->GetPropertyType () == Type::MANAGED || prop->GetPropertyType() == Type::OBJECT) {
-					if (p->loader->SetAttribute (item->item, NULL, prop->GetName (), attr [i + 1]))
+					Value v = Value (g_strdup (attr [i + 1]));
+					if (p->loader->SetProperty (p->top_element ? p->top_element->GetManagedPointer () : NULL, NULL, item->GetManagedPointer (), g_strdup (prop->GetName ()), &v))
 						return;
 				}
 
@@ -3640,7 +3503,7 @@ start_parse:
 
 			if (v) {
 				MoonError err;
-				
+
 				if (!dep->SetValueWithError (NULL, prop, v, &err))
 					parser_error (p, item->element_name, attr [i], err.code, err.message);
 				else
@@ -3654,16 +3517,15 @@ start_parse:
 					dep->SetValue (prop, NULL);
 			}
 		} else {
-			// This might be a property of a managed object
-			if (p->loader && p->loader->SetAttribute (item->info->GetKind() == Type::MANAGED ? ((XamlElementInstanceManaged*)item)->obj : item->item, NULL, attr [i], attr [i + 1])) {
+			Value v = Value (attr [i + 1]);
+			if (!p->loader || !p->loader->SetProperty (p->top_element ? p->top_element->GetManagedPointer () : NULL, NULL, item->GetManagedPointer (), attr [i], &v)) {
 				if (atchname)
 					g_free (atchname);
-				continue;
-			}
-			if (dependency_object_hookup_event (p, item, pname, attr [i + 1]))
 				parser_error (p, item->element_name, attr [i], 2012,
 					      g_strdup_printf ("Unknown attribute %s on element %s.",
 							       attr [i], item->element_name));
+				continue;
+			}
 		}
 
 		if (atchname)
