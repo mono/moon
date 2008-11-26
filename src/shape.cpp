@@ -683,11 +683,13 @@ Shape::OnPropertyChanged (PropertyChangedEventArgs *args)
 			InvalidatePathCache ();
 
 		if (args->property == UIElement::OpacityProperty) {
-			if (IS_INVISIBLE (args->new_value->AsDouble ()))
+			double value = args->new_value ? args->new_value->AsDouble () : UIElement::OpacityProperty->GetDefaultValue ()->AsDouble ();
+			if (IS_INVISIBLE (value))
 				InvalidateSurfaceCache ();
 		} else {
 			if (args->property == UIElement::VisibilityProperty) {
-				if (args->new_value->AsInt32() != VisibilityVisible)
+				int value = args->new_value ? args->new_value->AsInt32 () : UIElement::VisibilityProperty->GetDefaultValue ()->AsInt32 ();
+				if (value != VisibilityVisible)
 					InvalidateSurfaceCache ();
 			}
 		}

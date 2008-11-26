@@ -1,3 +1,8 @@
+2008-11-26  Alan McGovern  <amcgovern@novell.com>
+
+	* DependencyObject.cs: Implement ReadLocalValue by calling the native
+	GetLocalValue function. Implement ClearValue aswell.
+
 2008-11-25  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* FrameworkElement.cs: Yet time for BindingValidationError.

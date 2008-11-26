@@ -1,5 +1,17 @@
 2008-11-26  Alan McGovern  <amcgovern@novell.com>
 
+	* frameworkelement.h:
+	* dependencyobject.h:
+	* frameworkelement.cpp: Styles are now used/ignored correctly when local
+	values are set/unset. Added tests for this.
+
+	* dependencyobject.cpp: GetLocalValueWithError should call GetLocalValue
+
+	* shape.cpp: args->new_value will be null if DO.ClearValue has been
+	called. In this case use DP.DefaultValue
+
+2008-11-26  Alan McGovern  <amcgovern@novell.com>
+
 	* binding.h:
 	* cbinding.h:
 	* binding.cpp:

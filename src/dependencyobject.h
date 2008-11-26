@@ -266,7 +266,7 @@ public:
 	Value *GetValueNoDefault (DependencyProperty *property);
 
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
-	void ClearValue (DependencyProperty *property, bool notify_listeners = true);
+	virtual void ClearValue (DependencyProperty *property, bool notify_listeners = true);
 	bool HasProperty (const char *name, bool inherits);
 	bool HasProperty (Types *additional_types, Type::Kind whatami, DependencyProperty *property, bool inherits);
 

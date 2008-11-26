@@ -34,6 +34,7 @@ FrameworkElement::FrameworkElement ()
 {
 #if SL_2_0
 	bindings = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, binding_destroy);
+	styles = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, NULL);
 #endif
 	measure_cb = NULL;
 	arrange_cb = NULL;
@@ -43,6 +44,7 @@ FrameworkElement::~FrameworkElement ()
 {
 #if SL_2_0
 	g_hash_table_destroy (bindings);
+	g_hash_table_destroy (styles);
 #endif
 }
 
@@ -111,12 +113,33 @@ FrameworkElement::GetBindingExpression (DependencyProperty *property)
 #endif
 }
 
+void
+FrameworkElement::ClearValue (DependencyProperty *property, bool notify_listeners)
+{
+	if (g_hash_table_lookup (bindings, property))
+		g_hash_table_remove (bindings, property);
+	if (g_hash_table_lookup (styles, property))
+		g_hash_table_remove (styles, property);
+
+	UIElement::ClearValue (property, notify_listeners);
+	
+	Value *style = GetValue (FrameworkElement::StyleProperty);
+	if (style)
+		UpdateFromStyle (style->AsStyle ());
+}
+
 Value *
 FrameworkElement::GetLocalValue (DependencyProperty *property)
 {
-	// Will the Value created here leak? If so, how do we stop it leaking?
-	BindingExpressionBase *binding = (BindingExpressionBase *) g_hash_table_lookup (bindings, property);
-	return binding ? new Value (binding) : UIElement::GetLocalValue (property);
+	// Will the Value created here for the binding leak? If so, how do we stop it leaking?
+	BindingExpressionBase *binding;
+	
+	if ((binding = (BindingExpressionBase *) g_hash_table_lookup (bindings, property)))
+		return new Value (binding);
+	if (g_hash_table_lookup (styles, property))
+		return NULL;
+	
+	return UIElement::GetLocalValue (property);
 }
 
 bool
@@ -167,49 +190,59 @@ FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 	}
 	
 	bool result = UIElement::SetValueWithErrorImpl (property, value, error);
+	if (result && g_hash_table_lookup (styles, property))
+		g_hash_table_remove (styles, property);
+	
 	Value *styleVal = GetValueNoDefault (FrameworkElement::StyleProperty);
 	
-	if (result && styleVal) {
-		Style *style = styleVal->AsStyle ();
-		SetterBaseCollection *setters = style->GetSetters ();
-		if (!setters)
-			return true;
-
-		CollectionIterator *iter = setters->GetIterator ();
-		Value *setterBase;
-		int err;
-		
-		while (iter->Next () && (setterBase = iter->GetCurrent (&err))) {
-			if (err) {
-		 		// Something bad happened - what to do?
-		 	}
-
-			if (!setterBase->Is (Type::SETTER))
-				continue;
-			
-			Setter *setter = setterBase->AsSetter ();
-			if (!(value = setter->GetValue (Setter::PropertyProperty)))
-				continue;
-			
-			char *propertyName = value->AsString ();
-			if (!(property = DependencyProperty::GetDependencyProperty (GetType ()->GetKind (), propertyName))) {
-				continue;
-			}
-			
-			if (!GetValueNoDefault (property)) {
-				value = setter->GetValue (Setter::ValueProperty);
-				
-				// Ensure we don't end up recursing forever - call the base method
-				if (!UIElement::SetValueWithErrorImpl(property, value, error))
-					return false;
-			}
-		}
-	}
+	if (result && styleVal)
+		UpdateFromStyle (styleVal->AsStyle ());
 	
 	return result;
 #else
 	return UIElement::SetValueWithErrorImpl (property, value, error);
 #endif
+}
+
+void
+FrameworkElement::UpdateFromStyle (Style *style)
+{
+	DependencyProperty *property = NULL;
+	Value *value = NULL;
+	SetterBaseCollection *setters = style->GetSetters ();
+	if (!setters)
+		return;
+
+	CollectionIterator *iter = setters->GetIterator ();
+	Value *setterBase;
+	int err;
+	
+	while (iter->Next () && (setterBase = iter->GetCurrent (&err))) {
+		if (err) {
+	 		// Something bad happened - what to do?
+	 	}
+
+		if (!setterBase->Is (Type::SETTER))
+			continue;
+		
+		Setter *setter = setterBase->AsSetter ();
+		if (!(value = setter->GetValue (Setter::PropertyProperty)))
+			continue;
+		
+		char *propertyName = value->AsString ();
+		if (!(property = DependencyProperty::GetDependencyProperty (GetType ()->GetKind (), propertyName))) {
+			continue;
+		}
+		
+		if (!GetValueNoDefault (property)) {
+			value = setter->GetValue (Setter::ValueProperty);
+			
+			// Ensure we don't end up recursing forever - call the base method
+			MoonError error;
+			if (UIElement::SetValueWithErrorImpl(property, value, &error))
+				g_hash_table_insert (styles, property, property);
+		}
+	}
 }
 
 void

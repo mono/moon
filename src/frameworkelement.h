@@ -142,9 +142,11 @@ public:
 	void SetVerticalAlignment (VerticalAlignment value);
 
 	virtual Value *GetLocalValue (DependencyProperty *property);
+	virtual void ClearValue (DependencyProperty *property, bool notify_listeners = true);
 
 protected:
 	GHashTable *bindings;
+	GHashTable *styles;
 	
 	// Methods for accessing a binding expression on a property
 	void SetBindingExpression (DependencyProperty *property, BindingExpressionBase *expr);
@@ -161,6 +163,7 @@ protected:
 private:
 	MeasureOverrideCallback measure_cb;
 	ArrangeOverrideCallback arrange_cb;
+	void UpdateFromStyle (Style *style);
 };
 
 #endif /* __FRAMEWORKELEMENT_H__ */

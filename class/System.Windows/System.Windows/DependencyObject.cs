@@ -299,15 +299,19 @@ namespace System.Windows {
 
 		public object ReadLocalValue (DependencyProperty dp)
 		{
-			if (bindings.ContainsKey (dp))
-				return bindings [dp];
-			else
-				return GetValue (dp);
+			IntPtr val = NativeMethods.dependency_object_get_local_value (native, dp.Native);
+			if (val == IntPtr.Zero) {
+				return DependencyProperty.UnsetValue;
+			} else {
+				// We can get a style or bindingexpression or something else here
+				// so the Value* will not always be of type 'DP.PropertyType'.
+				return ValueToObject (dp.PropertyType, val);
+			}
 		}
 		
 		public void ClearValue (DependencyProperty dp)
 		{
-			throw new System.NotImplementedException ();
+			NativeMethods.dependency_object_clear_value (native, dp.Native, true);
 		}
 		
 		[System.ComponentModel.EditorBrowsable (System.ComponentModel.EditorBrowsableState.Advanced)]

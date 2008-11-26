@@ -1183,7 +1183,7 @@ DependencyObject::GetValue (DependencyProperty *property)
 
 Value *
 DependencyObject::GetLocalValue (DependencyProperty *property)
-{ 
+{
 	return GetValueNoDefault (property);
 }
 
@@ -1191,7 +1191,12 @@ DependencyObject::GetLocalValue (DependencyProperty *property)
 Value *
 DependencyObject::GetLocalValueWithError (Types *additional_types, DependencyProperty *property, MoonError *error)
 {
-	return GetValueNoDefaultWithError (additional_types, property, error);
+	if (!HasProperty (additional_types, Type::INVALID, property, true)) {
+		Type *pt = Type::Find (additional_types, property->GetOwnerType ());
+		MoonError::FillIn (error, MoonError::EXCEPTION, g_strdup_printf ("Cannot get the DependencyProperty %s.%s on an object of type %s", pt ? pt->name : "<unknown>", property->GetName (), GetTypeName ()));
+		return NULL;
+	}
+	return GetLocalValue (property);
 }
 #endif
 
