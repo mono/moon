@@ -115,12 +115,17 @@ Binding *binding_expression_base_get_binding (BindingExpressionBase *instance);
 
 #if SL_2_0
 /* @GeneratePInvoke */
-FrameworkElement *binding_expression_base_get_element (BindingExpressionBase *instance);
+DependencyObject *binding_expression_base_get_source (BindingExpressionBase *instance);
 #endif
 
 #if SL_2_0
 /* @GeneratePInvoke */
-DependencyProperty *binding_expression_base_get_property (BindingExpressionBase *instance);
+FrameworkElement *binding_expression_base_get_target (BindingExpressionBase *instance);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
+DependencyProperty *binding_expression_base_get_target_property (BindingExpressionBase *instance);
 #endif
 
 #if SL_2_0
@@ -135,12 +140,17 @@ void binding_expression_base_set_binding (BindingExpressionBase *instance, Bindi
 
 #if SL_2_0
 /* @GeneratePInvoke */
-void binding_expression_base_set_element (BindingExpressionBase *instance, FrameworkElement *element);
+void binding_expression_base_set_source (BindingExpressionBase *instance, FrameworkElement *element);
 #endif
 
 #if SL_2_0
 /* @GeneratePInvoke */
-void binding_expression_base_set_property (BindingExpressionBase *instance, DependencyProperty *property);
+void binding_expression_base_set_target (BindingExpressionBase *instance, FrameworkElement *element);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
+void binding_expression_base_set_target_property (BindingExpressionBase *instance, DependencyProperty *property);
 #endif
 
 #if SL_2_0
@@ -209,7 +219,7 @@ int collection_index_of (Collection *instance, Value *value);
 
 #if SL_2_0
 /* @GeneratePInvoke */
-int collection_insert_with_error (Collection *instance, int index, Value *value, MoonError *error);
+bool collection_insert_with_error (Collection *instance, int index, Value *value, MoonError *error);
 #endif
 
 /* @GeneratePInvoke */

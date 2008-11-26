@@ -105,25 +105,37 @@ binding_expression_base_get_binding (BindingExpressionBase *instance)
 
 
 #if SL_2_0
-FrameworkElement *
-binding_expression_base_get_element (BindingExpressionBase *instance)
+DependencyObject *
+binding_expression_base_get_source (BindingExpressionBase *instance)
 {
 	if (instance == NULL)
 		return NULL;
 	
-	return instance->GetElement ();
+	return instance->GetSource ();
+}
+#endif
+
+
+#if SL_2_0
+FrameworkElement *
+binding_expression_base_get_target (BindingExpressionBase *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetTarget ();
 }
 #endif
 
 
 #if SL_2_0
 DependencyProperty *
-binding_expression_base_get_property (BindingExpressionBase *instance)
+binding_expression_base_get_target_property (BindingExpressionBase *instance)
 {
 	if (instance == NULL)
 		return NULL;
 	
-	return instance->GetProperty ();
+	return instance->GetTargetProperty ();
 }
 #endif
 
@@ -154,24 +166,36 @@ binding_expression_base_set_binding (BindingExpressionBase *instance, Binding *b
 
 #if SL_2_0
 void
-binding_expression_base_set_element (BindingExpressionBase *instance, FrameworkElement *element)
+binding_expression_base_set_source (BindingExpressionBase *instance, FrameworkElement *element)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->SetElement (element);
+	instance->SetSource (element);
 }
 #endif
 
 
 #if SL_2_0
 void
-binding_expression_base_set_property (BindingExpressionBase *instance, DependencyProperty *property)
+binding_expression_base_set_target (BindingExpressionBase *instance, FrameworkElement *element)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->SetProperty (property);
+	instance->SetTarget (element);
+}
+#endif
+
+
+#if SL_2_0
+void
+binding_expression_base_set_target_property (BindingExpressionBase *instance, DependencyProperty *property)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetTargetProperty (property);
 }
 #endif
 
@@ -327,12 +351,11 @@ collection_index_of (Collection *instance, Value *value)
 
 
 #if SL_2_0
-int
+bool
 collection_insert_with_error (Collection *instance, int index, Value *value, MoonError *error)
 {
 	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (int) 0;
+		return false;
 	
 	if (error == NULL)
 		g_warning ("Moonlight: Called collection_insert_with_error () with error == NULL.");

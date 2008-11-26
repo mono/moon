@@ -50,7 +50,7 @@ void
 FrameworkElement::BoundPropertyChanged (DependencyObject *sender, PropertyChangedEventArgs *args, BindingExpressionBase *expr)
 {
 #if SL_2_0
-	DependencyProperty *property = expr->GetDestinationProperty ();
+	DependencyProperty *property = expr->GetTargetProperty ();
 	Binding *binding;
 	
 	binding = expr->GetBinding ();
@@ -76,7 +76,7 @@ FrameworkElement::bound_property_changed (DependencyObject *sender, PropertyChan
 #if SL_2_0
 	BindingExpressionBase *expr = (BindingExpressionBase *) user_data;
 	
-	expr->GetDestinationElement ()->BoundPropertyChanged (sender, args, expr);
+	expr->GetTarget ()->BoundPropertyChanged (sender, args, expr);
 #endif
 }
 
@@ -94,8 +94,8 @@ FrameworkElement::SetBindingExpression (DependencyProperty *property, BindingExp
 	if (expr) {
 		expr->AttachListener (FrameworkElement::bound_property_changed, expr);
 		g_hash_table_insert (bindings, property, expr);
-		expr->SetDestinationProperty (property);
-		expr->SetDestinationElement (this);
+		expr->SetTargetProperty (property);
+		expr->SetTarget (this);
 		expr->ref ();
 	}
 #endif

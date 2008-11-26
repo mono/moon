@@ -19,11 +19,10 @@
 
 BindingExpressionBase::BindingExpressionBase ()
 {
-	dest_property = NULL;
-	dest_element = NULL;
-	property = NULL;
-	element = NULL;
 	binding = NULL;
+	source = NULL;
+	target = NULL;
+	target_property = NULL;
 }
 
 BindingExpressionBase::~BindingExpressionBase ()
@@ -39,37 +38,40 @@ BindingExpressionBase::SetBinding (Binding *binding)
 }
 
 void
-BindingExpressionBase::SetElement (FrameworkElement *element)
+BindingExpressionBase::SetSource (FrameworkElement *element)
 {
 	// FIXME: do we want to ref the element? or at least listen for the destroy signal?
-	this->element = element;
-}
-
-void
-BindingExpressionBase::SetProperty (DependencyProperty *property)
-{
-	this->property = property;
+	this->source = element;
 }
 
 void
 BindingExpressionBase::AttachListener (PropertyChangeHandler handler, gpointer user_data)
 {
-	if (element && property && handler)
-		element->AddPropertyChangeHandler (property, handler, user_data);
+	if (source && binding && binding->property_path && handler) {
+		DependencyProperty *property = DependencyProperty::GetDependencyProperty (source->GetType ()->GetKind (), binding->property_path);
+		if (property)
+			source->AddPropertyChangeHandler (property, handler, user_data);
+	}
 }
 
 void
 BindingExpressionBase::DetachListener (PropertyChangeHandler handler)
 {
-	if (element && property && handler)
-		element->RemovePropertyChangeHandler (property, handler);
+	if (source && binding && binding->property_path && handler) {
+		DependencyProperty *property = DependencyProperty::GetDependencyProperty (source->GetType ()->GetKind (), binding->property_path);
+		if (property)
+			source->RemovePropertyChangeHandler (property, handler);
+	}
 }
 
 Value *
 BindingExpressionBase::GetValue ()
 {
-	if (element && property)
-		return element->GetValue (property);
+	if (source && binding && binding->property_path) {
+		DependencyProperty *property = DependencyProperty::GetDependencyProperty (source->GetType ()->GetKind (), binding->property_path);
+		if (property)
+			return source->GetValue (property);
+	}
 	
 	return NULL;
 }
@@ -77,5 +79,9 @@ BindingExpressionBase::GetValue ()
 void
 BindingExpressionBase::UpdateSource (Value *value)
 {
-	
+	if (source && binding && binding->property_path) {
+		DependencyProperty *property = DependencyProperty::GetDependencyProperty (source->GetType ()->GetKind (), binding->property_path);
+		if (property)
+			source->SetValue (property, value);
+	}
 }

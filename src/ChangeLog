@@ -1,5 +1,14 @@
 2008-11-26  Alan McGovern  <amcgovern@novell.com>
 
+	* binding.h:
+	* cbinding.h:
+	* binding.cpp:
+	* cbinding.cpp:
+	* frameworkelement.cpp: Rename the members of BidningExpressionBase to
+	better reflect their actual usage.
+
+2008-11-26  Alan McGovern  <amcgovern@novell.com>
+
 	* style.h:
 	* style.cpp:
 	* collection.h:

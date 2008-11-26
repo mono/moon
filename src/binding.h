@@ -28,11 +28,11 @@ struct Binding {
 /* @Namespace=System.Windows.Data */
 class BindingExpressionBase : public Expression {
  protected:
-	DependencyProperty *dest_property;
-	FrameworkElement *dest_element;
-	DependencyProperty *property;
-	FrameworkElement *element;
-	Binding *binding;
+ 	Binding *binding;
+	DependencyObject *source;
+	DependencyProperty *target_property;
+	FrameworkElement *target;
+
 	
 	virtual ~BindingExpressionBase ();
 	BindingExpressionBase ();
@@ -46,14 +46,19 @@ class BindingExpressionBase : public Expression {
 	void SetBinding (Binding *binding);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	FrameworkElement *GetElement () { return element; }
+	DependencyObject *GetSource () { return source; }
 	/* @GenerateCBinding,GeneratePInvoke */
-	void SetElement (FrameworkElement *element);
+	void SetSource (FrameworkElement *element);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	DependencyProperty *GetProperty () { return property; }
+	FrameworkElement *GetTarget () { return target; }
 	/* @GenerateCBinding,GeneratePInvoke */
-	void SetProperty (DependencyProperty *property);
+	void SetTarget (FrameworkElement *element);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	DependencyProperty *GetTargetProperty () { return target_property; }
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetTargetProperty (DependencyProperty *property);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Value *GetValue ();
@@ -64,12 +69,6 @@ class BindingExpressionBase : public Expression {
 	// The following methods are meant only for use by FrameworkElement internals.
 	void AttachListener (PropertyChangeHandler handler, gpointer user_data);
 	void DetachListener (PropertyChangeHandler handler);
-	
-	void SetDestinationProperty (DependencyProperty *property) { dest_property = property; }
-	DependencyProperty *GetDestinationProperty () { return dest_property; }
-	
-	void SetDestinationElement (FrameworkElement *element) { dest_element = element; }
-	FrameworkElement *GetDestinationElement () { return dest_element; }
 };
 
 
