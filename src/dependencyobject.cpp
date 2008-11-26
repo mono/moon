@@ -1182,6 +1182,20 @@ DependencyObject::GetValue (DependencyProperty *property)
 }
 
 Value *
+DependencyObject::GetLocalValue (DependencyProperty *property)
+{ 
+	return GetValueNoDefault (property);
+}
+
+#if SL_2_0
+Value *
+DependencyObject::GetLocalValueWithError (Types *additional_types, DependencyProperty *property, MoonError *error)
+{
+	return GetValueNoDefaultWithError (additional_types, property, error);
+}
+#endif
+
+Value *
 DependencyObject::GetValueNoDefault (DependencyProperty *property)
 {
 	return (Value *) g_hash_table_lookup (current_values, property);

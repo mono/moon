@@ -111,6 +111,14 @@ FrameworkElement::GetBindingExpression (DependencyProperty *property)
 #endif
 }
 
+Value *
+FrameworkElement::GetLocalValue (DependencyProperty *property)
+{
+	// Will the Value created here leak? If so, how do we stop it leaking?
+	BindingExpressionBase *binding = (BindingExpressionBase *) g_hash_table_lookup (bindings, property);
+	return binding ? new Value (binding) : UIElement::GetLocalValue (property);
+}
+
 bool
 FrameworkElement::IsValueValid (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error)
 {

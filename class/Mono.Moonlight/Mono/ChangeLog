@@ -1,3 +1,8 @@
+2008-11-26  Alan McGovern  <amcgovern@novell.com>
+
+	* GeneratedPInvokes.cs: Implement a basic ReadLocalValue equivalent for
+	unmanaged code. Only handles databindings.
+
 2008-11-25  Geoff Norton  <gnorton@novell.com>
 
 	* GeneratedPInvokes.cs: Regenerate

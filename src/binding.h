@@ -58,7 +58,7 @@ class BindingExpressionBase : public Expression {
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyProperty *GetTargetProperty () { return target_property; }
 	/* @GenerateCBinding,GeneratePInvoke */
-	void SetTargetProperty (DependencyProperty *property);
+	void SetTargetProperty (DependencyProperty *property) { target_property = property; }
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Value *GetValue ();

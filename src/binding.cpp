@@ -45,6 +45,13 @@ BindingExpressionBase::SetSource (FrameworkElement *element)
 }
 
 void
+BindingExpressionBase::SetTarget (FrameworkElement *element)
+{
+	// We have to listen to property changes on the target
+	this->target = element;	
+}
+
+void
 BindingExpressionBase::AttachListener (PropertyChangeHandler handler, gpointer user_data)
 {
 	if (source && binding && binding->property_path && handler) {

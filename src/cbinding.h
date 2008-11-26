@@ -385,6 +385,11 @@ DependencyObject *dependency_object_find_name (DependencyObject *instance, const
 Value *dependency_object_get_default_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, MoonError *error);
 #endif
 
+#if SL_2_0
+/* @GeneratePInvoke */
+Value *dependency_object_get_local_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, MoonError *error);
+#endif
+
 /* @GeneratePInvoke */
 const char *dependency_object_get_name (DependencyObject *instance);
 

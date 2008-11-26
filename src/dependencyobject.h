@@ -258,6 +258,10 @@ public:
 	virtual Value *GetDefaultValue (DependencyProperty *property);
 	
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	Value *GetLocalValueWithError  (Types *additional_types, DependencyProperty *property, MoonError *error);
+	virtual Value *GetLocalValue (DependencyProperty *property);
+	
+	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Value *GetValueNoDefaultWithError (Types *additional_types, DependencyProperty *property, MoonError *error);
 	Value *GetValueNoDefault (DependencyProperty *property);
 

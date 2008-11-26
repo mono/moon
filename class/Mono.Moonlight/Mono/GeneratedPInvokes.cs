@@ -46,12 +46,16 @@ namespace Mono {
 		public extern static IntPtr binding_expression_base_get_binding (IntPtr instance);
 
 		[DllImport ("moon")]
-		// FrameworkElement *binding_expression_base_get_element (BindingExpressionBase *instance);
-		public extern static IntPtr binding_expression_base_get_element (IntPtr instance);
+		// DependencyObject *binding_expression_base_get_source (BindingExpressionBase *instance);
+		public extern static IntPtr binding_expression_base_get_source (IntPtr instance);
 
 		[DllImport ("moon")]
-		// DependencyProperty *binding_expression_base_get_property (BindingExpressionBase *instance);
-		public extern static IntPtr binding_expression_base_get_property (IntPtr instance);
+		// FrameworkElement *binding_expression_base_get_target (BindingExpressionBase *instance);
+		public extern static IntPtr binding_expression_base_get_target (IntPtr instance);
+
+		[DllImport ("moon")]
+		// DependencyProperty *binding_expression_base_get_target_property (BindingExpressionBase *instance);
+		public extern static IntPtr binding_expression_base_get_target_property (IntPtr instance);
 
 		[DllImport ("moon")]
 		// Value *binding_expression_base_get_value (BindingExpressionBase *instance);
@@ -62,12 +66,16 @@ namespace Mono {
 		public extern static void binding_expression_base_set_binding (IntPtr instance, IntPtr binding);
 
 		[DllImport ("moon")]
-		// void binding_expression_base_set_element (BindingExpressionBase *instance, FrameworkElement *element);
-		public extern static void binding_expression_base_set_element (IntPtr instance, IntPtr element);
+		// void binding_expression_base_set_source (BindingExpressionBase *instance, FrameworkElement *element);
+		public extern static void binding_expression_base_set_source (IntPtr instance, IntPtr element);
 
 		[DllImport ("moon")]
-		// void binding_expression_base_set_property (BindingExpressionBase *instance, DependencyProperty *property);
-		public extern static void binding_expression_base_set_property (IntPtr instance, IntPtr property);
+		// void binding_expression_base_set_target (BindingExpressionBase *instance, FrameworkElement *element);
+		public extern static void binding_expression_base_set_target (IntPtr instance, IntPtr element);
+
+		[DllImport ("moon")]
+		// void binding_expression_base_set_target_property (BindingExpressionBase *instance, DependencyProperty *property);
+		public extern static void binding_expression_base_set_target_property (IntPtr instance, IntPtr property);
 
 		[DllImport ("moon")]
 		// void binding_expression_base_update_source (BindingExpressionBase *instance, Value *value);
@@ -140,11 +148,11 @@ namespace Mono {
 		public extern static int collection_index_of (IntPtr instance, ref Value value);
 
 		[DllImport ("moon", EntryPoint="collection_insert_with_error")]
-		// int collection_insert_with_error (Collection *instance, int index, Value *value, MoonError *error);
-		private extern static int collection_insert_with_error_ (IntPtr instance, int index, ref Value value, out MoonError error);
-		public static int collection_insert (IntPtr instance, int index, ref Value value)
+		// bool collection_insert_with_error (Collection *instance, int index, Value *value, MoonError *error);
+		private extern static bool collection_insert_with_error_ (IntPtr instance, int index, ref Value value, out MoonError error);
+		public static bool collection_insert (IntPtr instance, int index, ref Value value)
 		{
-			int result;
+			bool result;
 			MoonError error;
 			result = collection_insert_with_error_ (instance, index, ref value, out error);
 			if (error.Number != 0)
@@ -304,6 +312,19 @@ namespace Mono {
 			IntPtr result;
 			MoonError error;
 			result = dependency_object_get_default_value_with_error_ (instance, Mono.Types.Native, property, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+			return result;
+		}
+
+		[DllImport ("moon", EntryPoint="dependency_object_get_local_value_with_error")]
+		// Value *dependency_object_get_local_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, MoonError *error);
+		private extern static IntPtr dependency_object_get_local_value_with_error_ (IntPtr instance, IntPtr additional_types, IntPtr property, out MoonError error);
+		public static IntPtr dependency_object_get_local_value (IntPtr instance, IntPtr property)
+		{
+			IntPtr result;
+			MoonError error;
+			result = dependency_object_get_local_value_with_error_ (instance, Mono.Types.Native, property, out error);
 			if (error.Number != 0)
 				throw CreateManagedException (error);
 			return result;

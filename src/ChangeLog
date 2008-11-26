@@ -4,6 +4,18 @@
 	* cbinding.h:
 	* binding.cpp:
 	* cbinding.cpp:
+	* frameworkelement.h:
+	* dependencyobject.h:
+	* frameworkelement.cpp:
+	* dependencyobject.cpp: Implement a basic ReadLocalValue equivalent for
+	unmanaged code. Only handles databindings.
+
+2008-11-26  Alan McGovern  <amcgovern@novell.com>
+
+	* binding.h:
+	* cbinding.h:
+	* binding.cpp:
+	* cbinding.cpp:
 	* frameworkelement.cpp: Rename the members of BidningExpressionBase to
 	better reflect their actual usage.
 

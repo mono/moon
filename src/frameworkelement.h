@@ -141,6 +141,8 @@ public:
 	VerticalAlignment GetVerticalAlignment ();
 	void SetVerticalAlignment (VerticalAlignment value);
 
+	virtual Value *GetLocalValue (DependencyProperty *property);
+
 protected:
 	GHashTable *bindings;
 	
