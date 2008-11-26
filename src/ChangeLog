@@ -1,5 +1,11 @@
 2008-11-26  Alan McGovern  <amcgovern@novell.com>
 
+	* frameworkelement.cpp: Store a Value * rather than
+	BindingExpressionBase in the bindings hashtable to allow
+	GetLocalValue to work.
+
+2008-11-26  Alan McGovern  <amcgovern@novell.com>
+
 	* frameworkelement.h:
 	* dependencyobject.h:
 	* frameworkelement.cpp: Styles are now used/ignored correctly when local

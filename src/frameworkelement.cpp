@@ -26,7 +26,7 @@
 static void
 binding_destroy (gpointer value)
 {
-	((BindingExpressionBase *) value)->unref ();
+	delete (Value *) value;
 }
 #endif
 
@@ -86,16 +86,18 @@ void
 FrameworkElement::SetBindingExpression (DependencyProperty *property, BindingExpressionBase *expr)
 {
 #if SL_2_0
+
 	BindingExpressionBase *cur_expr = GetBindingExpression (property);
 	
 	if (cur_expr) {
 		cur_expr->DetachListener (FrameworkElement::bound_property_changed);
+		delete (Value *)g_hash_table_lookup (bindings, property);
 		g_hash_table_remove (bindings, property);
 	}
 	
 	if (expr) {
 		expr->AttachListener (FrameworkElement::bound_property_changed, expr);
-		g_hash_table_insert (bindings, property, expr);
+		g_hash_table_insert (bindings, property, new Value (expr));
 		expr->SetTargetProperty (property);
 		expr->SetTarget (this);
 		expr->ref ();
@@ -107,7 +109,8 @@ BindingExpressionBase *
 FrameworkElement::GetBindingExpression (DependencyProperty *property)
 {
 #if SL_2_0
-	return (BindingExpressionBase *) g_hash_table_lookup (bindings, property);
+	Value *value = (Value *) g_hash_table_lookup (bindings, property);
+	return value ? value->AsBindingExpressionBase () : NULL;
 #else
 	return NULL;
 #endif
@@ -116,8 +119,11 @@ FrameworkElement::GetBindingExpression (DependencyProperty *property)
 void
 FrameworkElement::ClearValue (DependencyProperty *property, bool notify_listeners)
 {
-	if (g_hash_table_lookup (bindings, property))
+	Value *value = (Value *) g_hash_table_lookup (bindings, property);
+	if (value) {
 		g_hash_table_remove (bindings, property);
+		delete value;
+	}
 	if (g_hash_table_lookup (styles, property))
 		g_hash_table_remove (styles, property);
 
@@ -131,11 +137,9 @@ FrameworkElement::ClearValue (DependencyProperty *property, bool notify_listener
 Value *
 FrameworkElement::GetLocalValue (DependencyProperty *property)
 {
-	// Will the Value created here for the binding leak? If so, how do we stop it leaking?
-	BindingExpressionBase *binding;
-	
-	if ((binding = (BindingExpressionBase *) g_hash_table_lookup (bindings, property)))
-		return new Value (binding);
+	Value *binding = (Value *) g_hash_table_lookup (bindings, property);
+	if (binding)
+		return binding;
 	if (g_hash_table_lookup (styles, property))
 		return NULL;
 	
