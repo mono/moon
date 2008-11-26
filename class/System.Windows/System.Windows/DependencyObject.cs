@@ -465,7 +465,7 @@ namespace System.Windows {
  					return DependencyObject.Lookup (val->k, val->u.p);
 				}
 
-				throw new Exception (String.Format ("Do not know how to convert {0}", val->k));
+				throw new Exception (String.Format ("Do not know how to convert {0}  {1}", val->k, (int) val->k));
 			}
 		}
 

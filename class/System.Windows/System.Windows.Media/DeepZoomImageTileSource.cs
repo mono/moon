@@ -29,12 +29,8 @@ namespace System.Windows.Media
 		{
 			throw new NotImplementedException ();
 		}
-            
-	    
 
-		public static readonly DependencyProperty UriSourceProperty = 
-			DependencyProperty.Register ("UriSource", typeof (Uri), typeof (DeepZoomImageTileSource), null);
-		
+		/*
 		public Uri UriSource {
 			get { return (Uri)GetValue(UriSourceProperty); }
 			set { 
@@ -42,6 +38,7 @@ namespace System.Windows.Media
 				NativeMethods.deep_zoom_image_tile_source_download_urisource (this.native, value.ToString (), ParseDeepZoom);
 			}
 		}
+		*/
 
 		void ParseDeepZoom (string path)
 		{

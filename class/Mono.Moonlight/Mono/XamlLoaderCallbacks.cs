@@ -33,29 +33,15 @@ using Mono;
 
 namespace Mono.Xaml
 {
-	public delegate IntPtr LoadObjectCallback (string asm_name, string asm_path, string ns, string type_name, out bool is_dependency_object);
-	public delegate bool SetAttributeCallback (IntPtr target, string xmlns, string name, string value);
-	public delegate bool AddChildCallback (IntPtr parent, string propname, IntPtr child);
-	public delegate bool HookupEventCallback (IntPtr target, IntPtr dest, string name, string value);
-	public delegate void InsertMappingCallback (string key, string value);
-	public delegate string GetMappingCallback (string key);
-	public delegate bool LoadCodeCallback (string source, string type);
-	public delegate void SetNameAttributeCallback (IntPtr target, string name);
+	public delegate bool CreateObjectCallback (IntPtr top_level, string xmlns, string name, out Value value);
+	public delegate bool SetPropertyCallback (IntPtr top_level, string xmlns, IntPtr target, string name, IntPtr value_ptr);
 	public delegate void ImportXamlNamespaceCallback (string xmlns);
-	public delegate IntPtr CreateComponentFromNameCallback (string name);
 	public delegate string GetContentPropertyNameCallback (IntPtr dob);
 	
 	public struct XamlLoaderCallbacks {
-		public LoadObjectCallback load_managed_object;
-		public SetAttributeCallback set_custom_attribute;
-		public AddChildCallback add_child;
-		public HookupEventCallback hookup_event;
-		public GetMappingCallback get_mapping;
-		public InsertMappingCallback insert_mapping;
-		public LoadCodeCallback load_code;
-		public SetNameAttributeCallback set_name_attribute;
+		public CreateObjectCallback create_object;
+		public SetPropertyCallback set_property;
 		public ImportXamlNamespaceCallback import_xaml_xmlns;
-		public CreateComponentFromNameCallback create_component_from_name;
 		public GetContentPropertyNameCallback get_content_property_name;
 	}
 
@@ -253,12 +239,12 @@ namespace Mono.Xaml
 		//
 		// Hydrates the object dob from the given xaml
 		//
-		public void Hydrate (IntPtr dependency_object, string assembly_name, string assembly_path, string xaml)
+		public void Hydrate (IntPtr dependency_object, string xaml)
 		{
 			Kind k;
 			
 			CreateNativeLoader (null, xaml);
-			IntPtr ret = NativeMethods.xaml_loader_hydrate_from_string (NativeLoader, xaml, assembly_name, assembly_path, dependency_object, true, out k);
+			IntPtr ret = NativeMethods.xaml_loader_hydrate_from_string (NativeLoader, xaml, dependency_object, true, out k);
 			FreeNativeLoader ();
 			if (ret == IntPtr.Zero)
 				throw new Exception ("Invalid XAML file");

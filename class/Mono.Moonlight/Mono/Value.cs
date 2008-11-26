@@ -112,5 +112,9 @@ namespace Mono {
 
 		[FieldOffset (8)]
 		public ValUnion u;
+
+		public static Value Empty {
+			get { return new Value (); }
+		}
 	}
 }

@@ -65,6 +65,12 @@ namespace System.Windows {
 		UIElement root_visual;
 		SilverlightHost host;
 
+		static Application ()
+		{
+			ImportXamlNamespace ("clr-namespace:System.Windows;assembly:System.Windows.dll");
+			ImportXamlNamespace ("clr-namespace:System.Windows.Controls;assembly:System.Windows.dll");
+		}
+
 		public Application ()
 		{
 			xap_dir = s_xap_dir;
@@ -264,16 +270,17 @@ namespace System.Windows {
 				return;
 
 			string xaml = new StreamReader (sr.Stream).ReadToEnd ();
-			ManagedXamlLoader loader = new ManagedXamlLoader (app != null ? app.surface : Application.s_surface, PluginHost.Handle);
 			Assembly loading_asm = component.GetType ().Assembly;
+			ManagedXamlLoader loader = new ManagedXamlLoader (loading_asm, app != null ? app.surface : Application.s_surface, PluginHost.Handle);
+			
 
 			if (cdo != null) {
 				// This can throw a System.Exception if the XAML file is invalid.
 				
-				loader.Hydrate (cdo.native, loading_asm.GetName ().Name, loading_asm.CodeBase, xaml);
+				loader.Hydrate (cdo.native, xaml);
 			} else {
 				ApplicationInternal temp = new ApplicationInternal ();
-				loader.Hydrate (temp.native, loading_asm.GetName ().Name, loading_asm.CodeBase, xaml);
+				loader.Hydrate (temp.native, xaml);
 
 				// TODO: Copy the important stuff such as Resourcesfrom the temp DO to the app
 			}
@@ -414,8 +421,10 @@ namespace System.Windows {
 		{
 			Type t = GetComponentTypeFromName (name);
 
-			if (t == null)
+			if (t == null) {
+				Console.Error.WriteLine ("Application.CreateComponentFromName - could not find type");
 				return null;
+			}
 
 			return (DependencyObject) Activator.CreateInstance (t);
 		}

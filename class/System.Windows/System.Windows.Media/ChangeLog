@@ -1,3 +1,9 @@
+2008-11-26  Jackson Harper  <jackson@ximian.com>
+
+	* DeepZoomImageTileSource.cs: The dependency proeprty is now in
+	managed, comment out the setter because the generator creates one
+	for us.
+
 2008-11-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* ImageSource.cs, SolidColorBrush.cs, TimelineMarkerRoutedEventArgs.cs:

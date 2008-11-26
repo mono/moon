@@ -1337,13 +1337,13 @@ namespace Mono {
 		}
 
 		[DllImport ("moon", EntryPoint="xaml_loader_hydrate_from_string_with_error")]
-		// DependencyObject *xaml_loader_hydrate_from_string_with_error (XamlLoader *instance, const char *default_asm_name, const char *default_asm_path, const char *xaml, DependencyObject *obj, bool create_namescope, Type::Kind *element_type, MoonError *error);
-		private extern static IntPtr xaml_loader_hydrate_from_string_with_error_ (IntPtr instance, string default_asm_name, string default_asm_path, string xaml, IntPtr obj, bool create_namescope, out Kind element_type, out MoonError error);
-		public static IntPtr xaml_loader_hydrate_from_string (IntPtr instance, string default_asm_name, string default_asm_path, string xaml, IntPtr obj, bool create_namescope, out Kind element_type)
+		// DependencyObject *xaml_loader_hydrate_from_string_with_error (XamlLoader *instance, const char *xaml, DependencyObject *obj, bool create_namescope, Type::Kind *element_type, MoonError *error);
+		private extern static IntPtr xaml_loader_hydrate_from_string_with_error_ (IntPtr instance, string xaml, IntPtr obj, bool create_namescope, out Kind element_type, out MoonError error);
+		public static IntPtr xaml_loader_hydrate_from_string (IntPtr instance, string xaml, IntPtr obj, bool create_namescope, out Kind element_type)
 		{
 			IntPtr result;
 			MoonError error;
-			result = xaml_loader_hydrate_from_string_with_error_ (instance, default_asm_name, default_asm_path, xaml, obj, create_namescope, out element_type, out error);
+			result = xaml_loader_hydrate_from_string_with_error_ (instance, xaml, obj, create_namescope, out element_type, out error);
 			if (error.Number != 0)
 				throw CreateManagedException (error);
 			return result;

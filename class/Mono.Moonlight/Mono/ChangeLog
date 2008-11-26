@@ -1,3 +1,10 @@
+2008-11-26  Jackson Harper  <jackson@ximian.com>
+
+	* Value.cs: Add a static Empty prop.
+	* GeneratedPInvokes.cs: regen to update the interface between the
+	parser and managed code.
+	* XamlLoaderCallbacks.cs: New callbacks for the parser.
+
 2008-11-26  Alan McGovern  <amcgovern@novell.com>
 
 	* GeneratedPInvokes.cs: Implement a basic ReadLocalValue equivalent for

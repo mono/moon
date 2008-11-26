@@ -1,3 +1,9 @@
+2008-11-26  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: The parser now likes to deal with Values
+	instead of DependencyObjects, also the interface has been
+	simplified a little bit.
+
 2008-11-21  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* Events.cs: use VisualStateGroupe.Raise* methods instead of

@@ -1,3 +1,9 @@
+2008-11-26  Jackson Harper  <jackson@ximian.com>
+
+	* Application.cs: Import some namespaces by default.
+	- Update signatures to parser functions
+	* DependencyProperty.g.cs: regen.
+
 2008-11-26  Alan McGovern  <amcgovern@novell.com>
 
 	* DependencyObject.cs: Remove the managed binding stuff and ignore the
