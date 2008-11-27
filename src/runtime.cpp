@@ -1760,7 +1760,7 @@ Surface::HandleUIKeyPress (GdkEventKey *event)
 	if (FullScreenKeyHandled (event))
 		return true;
 	
-//#if DEBUG_MARKER_KEY
+#if DEBUG_MARKER_KEY
 	static int debug_marker_key_in = 0;
 	if (event->keyval == GDK_d || event->keyval == GDK_D) {
 		if (!debug_marker_key_in)
@@ -1770,7 +1770,7 @@ Surface::HandleUIKeyPress (GdkEventKey *event)
 		debug_marker_key_in = ! debug_marker_key_in;
 		return true;
 	}
-//#endif
+#endif
 	
 	SetCanFullScreen (true);
 	bool handled;

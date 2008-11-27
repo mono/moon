@@ -1,3 +1,7 @@
+2008-11-27  Andreia Gaita  <shana@jitted.com>
+
+	* runtime.cpp: enable debug #if that was disabling the D key.
+
 2008-11-27  Alan McGovern  <amcgovern@novell.com>
 
 	* frameworkelement.cpp: Fix some build breakage under the SL1 profile.
