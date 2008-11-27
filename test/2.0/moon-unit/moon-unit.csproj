@@ -70,6 +70,9 @@
     <Compile Include="System.IO.IsolatedStorage\IsolatedStorageFileStreamTest.cs" />
     <Compile Include="System.IO.IsolatedStorage\IsolatedStorageFileTest.cs" />
     <Compile Include="System.IO.IsolatedStorage\IsolatedStorageSettingsTest.cs" />
+    <Compile Include="System.Windows.Controls.Primitives\RangeBaseTest.cs" />
+    <Compile Include="System.Windows.Controls.Primitives\RepeatButtonTest.cs" />
+    <Compile Include="System.Windows.Controls.Primitives\ThumbTest.cs" />
     <Compile Include="System.Windows.Controls\BorderTest.cs" />
     <Compile Include="System.Windows.Controls\CanvasTest.cs" />
     <Compile Include="System.Windows.Controls\ControlTemplateTest.cs" />
@@ -91,6 +94,7 @@
     <Compile Include="System.Windows.Shapes\PathTest.cs" />
     <Compile Include="System.Windows.Shapes\RectangleTest.cs" />
     <Compile Include="System.Windows\ApplicationTest.cs" />
+    <Compile Include="System.Windows\DependencyObjectTest.cs" />
     <Compile Include="System.Windows\DependencyPropertyAttachedTest.cs" />
     <Compile Include="System.Windows\DependencyPropertyTest.cs" />
     <Compile Include="System.Windows\DurationTest.cs" />
@@ -106,6 +110,7 @@
     <Compile Include="System.Windows\SizeTest.cs" />
     <Compile Include="System.Windows\StyleTest.cs" />
     <Compile Include="System.Windows\ThicknessTest.cs" />
+    <Compile Include="System.Windows\UIElementTest.cs" />
     <Compile Include="System.Windows\VisualStateManagerTest.cs" />
     <Compile Include="System.Windows\VisualStateTest.cs" />
   </ItemGroup>
@@ -136,7 +141,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="System.Collections.Specialized\" />
-    <Folder Include="System.Windows.Controls.Primitives\" />
     <Folder Include="System.Windows.Documents\" />
     <Folder Include="System.Windows.Ink\" />
     <Folder Include="System.Windows.Markup\" />
