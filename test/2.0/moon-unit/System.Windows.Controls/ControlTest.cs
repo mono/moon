@@ -285,14 +285,19 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		public void Defaults ()
+		public void DefaultProperties ()
 		{
 			ConcreteControl c = new ConcreteControl ();
+			Assert.IsNull (c.DefaultStyleKey_, "DefaultStyleKey");
+			CheckDefaultProperties (c);
+		}
+
+		static public void CheckDefaultProperties (Control c)
+		{
 			// default properties on Control
 			Assert.IsNull (c.Background, "Background");
 			Assert.IsNull (c.BorderBrush, "BorderBrush");
 			Assert.AreEqual (new Thickness (0, 0, 0, 0), c.BorderThickness, "BorderThickness");
-			Assert.IsNull (c.DefaultStyleKey_, "DefaultStyleKey");
 			Assert.IsNotNull (c.FontFamily, "FontFamily");
 			Assert.AreEqual (FontStretches.Normal, c.FontStretch, "FontStretch");
 			Assert.AreEqual (FontStyles.Normal, c.FontStyle, "FontStyle");
@@ -309,6 +314,8 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (KeyboardNavigationMode.Local, c.TabNavigation, "TabNavigation");
 			Assert.IsNull (c.Template, "Template");
 			Assert.AreEqual (VerticalAlignment.Center, c.VerticalContentAlignment, "VerticalContentAlignment");
+
+			FrameworkElementTest.CheckDefaultProperties (c);
 		}
 	}
 }

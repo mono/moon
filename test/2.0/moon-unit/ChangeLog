@@ -1,3 +1,19 @@
+2008-11-26  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows/DependencyObjectTest.cs: New. Test default 
+	properties.
+	* System.Windows/FrameworkElementTest.cs: New. Test default 
+	properties.
+	* System.Windows/UIElementTest.cs: New. Test default properties.
+	* System.Windows.Controls/ControlTest.cs: Chain default properties
+	checks into FrameworkElementTest
+	* System.Windows.Controls.Primitives/RepeatButtonTest.cs: New.
+	Test default properties.
+	* System.Windows.Controls.Primitives/ThumbTest.cs: New. Test 
+	default properties.
+	* System.Windows.Controls.Primitives/RangeBaseTest.cs: New. Test 
+	default properties, methods and events.
+
 2008-11-26  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingTest.cs: Remove the managed binding stuff
