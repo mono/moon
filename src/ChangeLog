@@ -1,3 +1,8 @@
+2008-11-26  Larry Ewing  <lewing@novell.com>
+
+	* shape.cpp (Shape::IsCandidateForCaching): add more logic to
+	avoid the cache in special cases.
+
 2008-11-26  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp|h: clean up the managed/plugin interface, use Values
