@@ -1,3 +1,10 @@
+2008-11-26  Geoff Norton  <gnorton@novell.com>
+
+	* SilverlightTestService.cs: Attempting to use the web service on localhost
+	when we might be running against a remote site raises a security exception
+	on MSFT's runtime, causing the harness to fail.  Lets just use the direct
+	connection method which appears to work everywhere.
+
 2008-11-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	

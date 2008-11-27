@@ -47,7 +47,10 @@ namespace Microsoft.Silverlight.Testing.Harness.Service
                         break;
 
                     case "http":
-                        ServiceType = ServiceType.WebService;
+			// MOON Changes: If we use the WebService we're generating a SecurityException on
+			// MS's runtime (Mac and Windows).  This allows us to run moon-unit2 everywhere
+                        ServiceType = ServiceType.Direct;
+                        //ServiceType = ServiceType.WebService;
                         SetServicePath();
                         SetCustomIdentification();
                         break;
