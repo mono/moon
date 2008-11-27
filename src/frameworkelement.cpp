@@ -65,7 +65,7 @@ FrameworkElement::BoundPropertyChanged (DependencyObject *sender, PropertyChange
 	SetValue (property, args->new_value);
 	
 	// restore the binding
-	if (binding->mode != BindingModeOneTime)
+	if (binding->GetBindingMode () != BindingModeOneTime)
 		SetBindingExpression (property, expr);
 	
 	expr->unref ();
@@ -174,7 +174,7 @@ FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 		SetBindingExpression (property, new_binding);
 		value = new_binding->GetValue ();
 	} else if (cur_binding) {
-		switch (cur_binding->GetBinding ()->mode) {
+		switch (cur_binding->GetBinding ()->GetBindingMode ()) {
 		case BindingModeTwoWay:
 			// We have a two way binding, so we update the
 			// source object

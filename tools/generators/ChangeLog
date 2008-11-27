@@ -1,3 +1,8 @@
+2008-11-27  Alan McGovern  <amcgovern@novell.com>
+
+	* TypeReference.cs: Allow the Binding class to be mapped between managed
+	and unmanaged code.
+
 2008-11-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Generator.cs: Add support for Point return types.

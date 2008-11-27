@@ -33,7 +33,15 @@ namespace System.Windows.Data
 	class BindingExpression : BindingExpressionBase
 	{
 		public BindingExpression()
+			: this (Mono.NativeMethods.binding_expression_new ())
 		{
+		}
+
+		
+		internal BindingExpression (IntPtr native)
+			: base (native)
+		{
+			
 		}
 	}
 }

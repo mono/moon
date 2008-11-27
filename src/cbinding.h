@@ -99,6 +99,44 @@ BezierSegment *bezier_segment_new (void);
 
 #if SL_2_0
 /**
+ * Binding
+ **/
+/* @GeneratePInvoke */
+Binding *binding_new (void);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
+BindingMode binding_get_binding_mode (Binding *instance);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
+bool binding_get_is_sealed (Binding *instance);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
+char *binding_get_property_path (Binding *instance);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
+void binding_set_binding_mode (Binding *instance, BindingMode mode);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
+void binding_set_is_sealed (Binding *instance, bool isSealed);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
+void binding_set_property_path (Binding *instance, char *path);
+#endif
+
+#if SL_2_0
+/**
  * BindingExpression
  **/
 /* @GeneratePInvoke */

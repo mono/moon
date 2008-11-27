@@ -31,6 +31,8 @@ using System.Globalization;
 using System.Windows;
 using System.Collections.Generic;
 
+using Mono;
+
 namespace System.Windows.Data {
 
 	public class Binding {
@@ -38,7 +40,6 @@ namespace System.Windows.Data {
 		IValueConverter converter;
 		CultureInfo converterCulture;
 		object converterParameter;
-		BindingMode mode;
 		bool notifyOnvalidationError;
 		PropertyPath path;
 		object source;
@@ -47,7 +48,7 @@ namespace System.Windows.Data {
 		public IValueConverter Converter {
 			get { return converter; }
 			set {
-				CheckUsed ();
+				CheckSealed ();
 				converter = value;
 			}
 		}
@@ -55,7 +56,7 @@ namespace System.Windows.Data {
 		public CultureInfo ConverterCulture {
 			get { return converterCulture; }
 			set {
-				CheckUsed ();
+				CheckSealed ();
 				converterCulture = value;
 			}
 		}
@@ -63,52 +64,65 @@ namespace System.Windows.Data {
 		public object ConverterParameter {
 			get { return converterParameter; }
 			set {
-				CheckUsed ();
+				CheckSealed ();
 				converterParameter = value;
 			}
 		}
 		
 		public BindingMode Mode {
-			get { return mode; }
+			get { return (BindingMode) NativeMethods.binding_get_binding_mode (Native); }
 			set {
-				CheckUsed ();
-				mode = value;
+				CheckSealed ();
+				NativeMethods.binding_set_binding_mode (Native, (int) value);
 			}
+		}
+
+		internal IntPtr Native {
+			get; set;
 		}
 		
 		public bool NotifyOnValidationError {
 			get { return notifyOnvalidationError; }
 			set {
-				CheckUsed ();
+				CheckSealed ();
 				notifyOnvalidationError = value;
 			}
 		}
 		
 		[TypeConverter (typeof (PropertyPathConverter))]
 		public PropertyPath Path {
-			get { return path; }
+			get {
+				if (Sealed && path == null)
+					path = new PropertyPath (NativeMethods.binding_get_property_path (Native));
+				return path;
+			}
 			set {
-				CheckUsed ();
+				CheckSealed ();
 				path = value;
+			}
+		}
+
+		internal bool Sealed {
+			get {
+				return NativeMethods.binding_get_is_sealed (Native);
+			}
+			private set {
+				NativeMethods.binding_set_is_sealed (Native, value);
 			}
 		}
 		
 		public object Source {
 			get { return source; }
 			set {
-				CheckUsed ();
+				CheckSealed ();
 				source = value;
 			}
-		}
-
-		internal bool Used {
-			get; private set;
 		}
 		
 		public bool ValidatesOnExceptions {
 			get { return validatesOnExceptions; }
 			set {
-				CheckUsed ();
+				CheckSealed ();
 				validatesOnExceptions = value;
 			}
 		}
@@ -120,23 +134,39 @@ namespace System.Windows.Data {
 		}
 
 		public Binding (string path)
+			: this (NativeMethods.binding_new ())
 		{
 			Mode = BindingMode.OneWay;
 			Path = new PropertyPath (path);
 		}
 
-		void CheckUsed ()
+		internal Binding (IntPtr native)
 		{
-			if (Used)
+			Native = native;
+		}
+
+		~Binding ()
+		{
+			if (Native != IntPtr.Zero) {
+				Mono.NativeMethods.event_object_unref (Native);
+				Native = IntPtr.Zero;
+			}
+		}
+
+		void CheckSealed ()
+		{
+			if (Sealed)
 				throw new InvalidOperationException ("The Binding cannot be changed after it has been used");
 		}
 
-		internal void SetUsed ()
+		internal void Seal ()
 		{
-			if (Used)
+			if (Sealed)
 				return;
 			
-			Used = true;
+			Sealed = true;
+			if (path != null)
+				NativeMethods.binding_set_property_path (Native, path.Path);
 		}
 	}
 }

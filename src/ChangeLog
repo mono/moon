@@ -1,3 +1,12 @@
+2008-11-27  Alan McGovern  <amcgovern@novell.com>
+
+	* binding.h:
+	* cbinding.h:
+	* binding.cpp:
+	* cbinding.cpp:
+	* frameworkelement.cpp: Allow the Binding class to be mapped between
+	managed and unmanaged code.
+
 2008-11-26  Larry Ewing  <lewing@novell.com>
 
 	* shape.cpp (Shape::IsCandidateForCaching): add more logic to

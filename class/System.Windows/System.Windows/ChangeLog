@@ -1,3 +1,10 @@
+2008-11-27  Alan McGovern  <amcgovern@novell.com>
+
+	* Expression.cs:
+	* FrameworkElement.cs:
+	* DependencyObject.cs: Allow the Binding class to be mapped between
+	managed and unmanaged code.
+
 2008-11-26  Jackson Harper  <jackson@ximian.com>
 
 	* Application.cs: Import some namespaces by default.

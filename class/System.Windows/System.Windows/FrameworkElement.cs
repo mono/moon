@@ -58,7 +58,7 @@ namespace System.Windows {
 				Element = this,
 				Property = dp
 			};
-			binding.SetUsed ();
+			binding.Seal ();
 			SetValue (dp, e);
 			return e;
 		}

@@ -49,6 +49,7 @@ namespace System.Windows {
 	public abstract partial class DependencyObject {
 		static Thread moonlight_thread;
 		static Dictionary<IntPtr, DependencyObject> objects = new Dictionary<IntPtr, DependencyObject> ();
+		static Dictionary<IntPtr, object> managedObjects = new Dictionary<IntPtr, object> ();
 		internal IntPtr _native;
 
 		internal EventHandlerList events;
@@ -144,6 +145,7 @@ namespace System.Windows {
 			case Kind.ASSEMBLYPART_COLLECTION: return new AssemblyPartCollection (raw);
 			case Kind.BEGINSTORYBOARD: return new BeginStoryboard (raw);
 			case Kind.BEZIERSEGMENT: return new BezierSegment (raw);
+			case Kind.BINDINGEXPRESSION: return new BindingExpression ();
 			case Kind.BORDER: return new Border (raw);
 			case Kind.CANVAS: return new Canvas (raw);
 			case Kind.COLORANIMATION: return new ColorAnimation (raw);
@@ -334,6 +336,12 @@ namespace System.Windows {
 				Value *val = (Value *) value;
 				
 				switch (val->k) {
+				case Kind.BINDINGEXPRESSION:
+					object o = null;
+					if (managedObjects.TryGetValue (val->u.p, out o))
+						return o;
+					managedObjects.Add (val->u.p, new BindingExpression (val->u.p));
+					return managedObjects [val->u.p];
 				case Kind.INVALID:
 					return null;
 					
@@ -498,6 +506,11 @@ namespace System.Windows {
 					value.k = dov.GetKind ();
 					value.u.p = dov_native;
 					NativeMethods.event_object_ref (dov_native);
+				}
+				else if (v is BindingExpressionBase) {
+					value.k = Kind.BINDINGEXPRESSION;
+					value.u.p = ((BindingExpression)v).Native;
+					managedObjects [value.u.p] = v;
 				}
 				else if (v is int || (v.GetType ().IsEnum && Enum.GetUnderlyingType (v.GetType()) == typeof(int))) {
 					value.k = Kind.INT32;

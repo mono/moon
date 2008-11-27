@@ -58,12 +58,16 @@ namespace System.Windows.Data {
 				
 				while (target == null && element != null) {
 					if (element.DataContext != null)
-					target = element.DataContext;
+						target = element.DataContext;
 					else
 						element = element.Parent as FrameworkElement;
 				}
 				return target;
 			}
+		}
+
+		internal IntPtr Native {
+			get; set;
 		}
 
 		PropertyInfo PropertyInfo {
@@ -83,8 +87,22 @@ namespace System.Windows.Data {
 
 		
 		protected BindingExpressionBase ()
+			: this (Mono.NativeMethods.binding_expression_new ())
 		{
 			
+		}
+
+		internal BindingExpressionBase (IntPtr native)
+		{
+			Native = native;
+		}
+
+		~BindingExpressionBase ()
+		{
+			if (Native != IntPtr.Zero) {
+				Mono.NativeMethods.event_object_unref (Native);
+				Native = IntPtr.Zero;
+			}
 		}
 
 		PropertyInfo GetPropertyInfo ()
@@ -123,6 +141,7 @@ namespace System.Windows.Data {
 			throw new Exception ("Should not be reached");
 		}
 
+		
 		internal bool TryGetValue (out object value)
 		{
 			value = null;

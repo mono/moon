@@ -27,13 +27,15 @@
 //
 
 using System;
+using Mono;
 
 namespace System.Windows
 {
 	public abstract class Expression
 	{
-		internal Expression()
+		protected Expression()
 		{
+			
 		}
 	}
 }

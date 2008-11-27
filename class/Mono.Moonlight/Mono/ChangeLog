@@ -1,3 +1,8 @@
+2008-11-27  Alan McGovern  <amcgovern@novell.com>
+
+	* GeneratedPInvokes.cs: Allow the Binding class to be mapped between
+	managed and unmanaged code.
+
 2008-11-26  Jackson Harper  <jackson@ximian.com>
 
 	* Value.cs: Add a static Empty prop.

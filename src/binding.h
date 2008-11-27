@@ -17,10 +17,32 @@
 #include "expression.h"
 #include "enums.h"
 
-struct Binding {
-	char *property_path;
-	BindingMode mode;
-	bool in_use;
+/* @SilverlightVersion="2" */
+/* @Namespace=System.Windows.Data */
+class Binding : public EventObject {
+ public:
+ 	/* @GenerateCBinding,GeneratePInvoke */
+ 	Binding () { }
+ 	
+	/* @GenerateCBinding,GeneratePInvoke */
+ 	char *GetPropertyPath ();
+ 	/* @GenerateCBinding,GeneratePInvoke */
+ 	void SetPropertyPath (char* path);
+
+	/* @GenerateCBinding,GeneratePInvoke */
+ 	BindingMode GetBindingMode ();
+	/* @GenerateCBinding,GeneratePInvoke */
+ 	void SetBindingMode (BindingMode mode);
+
+	/* @GenerateCBinding,GeneratePInvoke */
+ 	bool GetIsSealed ();
+	/* @GenerateCBinding,GeneratePInvoke */
+ 	void SetIsSealed (bool isSealed);
+ 	
+ private:
+ 	char *property_path;
+ 	BindingMode binding_mode;
+ 	bool is_sealed;
 };
 
 

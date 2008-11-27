@@ -182,6 +182,9 @@ class TypeReference {
 			case "ModifierKeys":
 				managed_type = "int";
 				break;
+			case "BindingMode":
+				managed_type = "int";
+				break;
 			default:
 				if (Value.Contains ("*"))
 					managed_type = "IntPtr";

@@ -38,6 +38,40 @@ namespace Mono {
 		public extern static IntPtr bezier_segment_new ();
 
 		[DllImport ("moon")]
+		// Binding *binding_new ();
+		public extern static IntPtr binding_new ();
+
+		[DllImport ("moon")]
+		// BindingMode binding_get_binding_mode (Binding *instance);
+		public extern static int binding_get_binding_mode (IntPtr instance);
+
+		[DllImport ("moon")]
+		// bool binding_get_is_sealed (Binding *instance);
+		public extern static bool binding_get_is_sealed (IntPtr instance);
+
+		[DllImport ("moon", EntryPoint="binding_get_property_path")]
+		// char *binding_get_property_path (Binding *instance);
+		private extern static IntPtr binding_get_property_path_ (IntPtr instance);
+		public static string binding_get_property_path (IntPtr instance)
+		{
+			IntPtr result;
+			result = binding_get_property_path_ (instance);
+			return (result == IntPtr.Zero) ? null : Marshal.PtrToStringAnsi (result);
+		}
+
+		[DllImport ("moon")]
+		// void binding_set_binding_mode (Binding *instance, BindingMode mode);
+		public extern static void binding_set_binding_mode (IntPtr instance, int mode);
+
+		[DllImport ("moon")]
+		// void binding_set_is_sealed (Binding *instance, bool isSealed);
+		public extern static void binding_set_is_sealed (IntPtr instance, bool isSealed);
+
+		[DllImport ("moon")]
+		// void binding_set_property_path (Binding *instance, char *path);
+		public extern static void binding_set_property_path (IntPtr instance, string path);
+
+		[DllImport ("moon")]
 		// BindingExpression *binding_expression_new ();
 		public extern static IntPtr binding_expression_new ();
 

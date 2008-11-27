@@ -16,6 +16,41 @@
 
 #include "binding.h"
 
+char *
+Binding::GetPropertyPath ()
+{
+	return this->property_path;	
+}
+
+void
+Binding::SetPropertyPath (char *path)
+{
+	this->property_path = path;	
+}
+
+BindingMode
+Binding::GetBindingMode ()
+{
+	return this->binding_mode;	
+}
+
+void
+Binding::SetBindingMode (BindingMode mode)
+{
+	this->binding_mode = mode;
+}
+
+bool
+Binding::GetIsSealed ()
+{
+	return this->is_sealed;	
+}
+
+void
+Binding::SetIsSealed (bool sealed)
+{
+	this->is_sealed = sealed;
+}
 
 BindingExpressionBase::BindingExpressionBase ()
 {
@@ -54,8 +89,8 @@ BindingExpressionBase::SetTarget (FrameworkElement *element)
 void
 BindingExpressionBase::AttachListener (PropertyChangeHandler handler, gpointer user_data)
 {
-	if (source && binding && binding->property_path && handler) {
-		DependencyProperty *property = DependencyProperty::GetDependencyProperty (source->GetType ()->GetKind (), binding->property_path);
+	if (source && binding && binding->GetPropertyPath () && handler) {
+		DependencyProperty *property = DependencyProperty::GetDependencyProperty (source->GetType ()->GetKind (), binding->GetPropertyPath ());
 		if (property)
 			source->AddPropertyChangeHandler (property, handler, user_data);
 	}
@@ -64,8 +99,8 @@ BindingExpressionBase::AttachListener (PropertyChangeHandler handler, gpointer u
 void
 BindingExpressionBase::DetachListener (PropertyChangeHandler handler)
 {
-	if (source && binding && binding->property_path && handler) {
-		DependencyProperty *property = DependencyProperty::GetDependencyProperty (source->GetType ()->GetKind (), binding->property_path);
+	if (source && binding && binding->GetPropertyPath () && handler) {
+		DependencyProperty *property = DependencyProperty::GetDependencyProperty (source->GetType ()->GetKind (), binding->GetPropertyPath ());
 		if (property)
 			source->RemovePropertyChangeHandler (property, handler);
 	}
@@ -74,8 +109,8 @@ BindingExpressionBase::DetachListener (PropertyChangeHandler handler)
 Value *
 BindingExpressionBase::GetValue ()
 {
-	if (source && binding && binding->property_path) {
-		DependencyProperty *property = DependencyProperty::GetDependencyProperty (source->GetType ()->GetKind (), binding->property_path);
+	if (source && binding && binding->GetPropertyPath ()) {
+		DependencyProperty *property = DependencyProperty::GetDependencyProperty (source->GetType ()->GetKind (), binding->GetPropertyPath ());
 		if (property)
 			return source->GetValue (property);
 	}
@@ -86,8 +121,8 @@ BindingExpressionBase::GetValue ()
 void
 BindingExpressionBase::UpdateSource (Value *value)
 {
-	if (source && binding && binding->property_path) {
-		DependencyProperty *property = DependencyProperty::GetDependencyProperty (source->GetType ()->GetKind (), binding->property_path);
+	if (source && binding && binding->GetPropertyPath ()) {
+		DependencyProperty *property = DependencyProperty::GetDependencyProperty (source->GetType ()->GetKind (), binding->GetPropertyPath ());
 		if (property)
 			source->SetValue (property, value);
 	}

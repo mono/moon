@@ -79,6 +79,91 @@ bezier_segment_new (void)
 
 #if SL_2_0
 /**
+ * Binding
+ **/
+Binding *
+binding_new (void)
+{
+	return new Binding ();
+}
+#endif
+
+
+#if SL_2_0
+BindingMode
+binding_get_binding_mode (Binding *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (BindingMode) 0;
+	
+	return instance->GetBindingMode ();
+}
+#endif
+
+
+#if SL_2_0
+bool
+binding_get_is_sealed (Binding *instance)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->GetIsSealed ();
+}
+#endif
+
+
+#if SL_2_0
+char *
+binding_get_property_path (Binding *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetPropertyPath ();
+}
+#endif
+
+
+#if SL_2_0
+void
+binding_set_binding_mode (Binding *instance, BindingMode mode)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetBindingMode (mode);
+}
+#endif
+
+
+#if SL_2_0
+void
+binding_set_is_sealed (Binding *instance, bool isSealed)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetIsSealed (isSealed);
+}
+#endif
+
+
+#if SL_2_0
+void
+binding_set_property_path (Binding *instance, char *path)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetPropertyPath (path);
+}
+#endif
+
+
+#if SL_2_0
+/**
  * BindingExpression
  **/
 BindingExpression *
