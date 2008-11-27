@@ -1,3 +1,9 @@
+2008-11-27  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* OpenFileDialog.cs: Replace "old" FileDialogFileInfo with standard
+	FileInfo. Remove title since it's not user settable anymore. Rename
+	properties.
+
 2008-11-25  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* ValidationError.cs: New. Needed for FrameworkElement.

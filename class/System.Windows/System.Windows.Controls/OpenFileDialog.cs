@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2007-2008 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -25,10 +25,13 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices;
+using System.Security;
 
 namespace System.Windows.Controls
 {
@@ -36,21 +39,21 @@ namespace System.Windows.Controls
 
 	public sealed class OpenFileDialog
 	{
-		FileDialogFileInfo [] files;
+		FileInfo[] files;
 		
 		bool allow_multiple_selection;
 		string filter = String.Empty;
 		int filter_index;
-		string title;
 		
 		public OpenFileDialog ()
 		{
 		}
 
+		// it's not clear from doc or tests when this can return null
+		[SecuritySafeCritical]
 		public bool? ShowDialog ()
 		{
-			IntPtr result = open_file_dialog_show (
-				String.IsNullOrEmpty (title) ? "Open" : title,
+			IntPtr result = open_file_dialog_show ("Open",
 				allow_multiple_selection,
 				filter,
 				filter_index);
@@ -67,28 +70,23 @@ namespace System.Windows.Controls
 			for (uint ofs = 0; (p = Marshal.ReadIntPtr ((IntPtr)((ulong)result + ofs))) != IntPtr.Zero; ofs += inc)
 				n++;
 
-			files = new FileDialogFileInfo [n];
+			files = new FileInfo [n];
 			for (uint i = 0, ofs = 0; (p = Marshal.ReadIntPtr ((IntPtr)((ulong)result + ofs))) != IntPtr.Zero; ofs += inc)
-				files [i++] = new FileDialogFileInfo (Marshal.PtrToStringAnsi (p));
+				files [i++] = new FileInfo (Marshal.PtrToStringAnsi (p));
 			
 			return true;
 		}
 
 		// selection results
 
-		public FileDialogFileInfo SelectedFile {
+		public FileInfo File {
 			get {
-				return files == null ? null : files [0];
+				return ((files == null) || (files.Length == 0)) ? null : files [0];
 			}
 		}
 
-		public IEnumerable<FileDialogFileInfo> SelectedFiles {
-			get {
-				if (files == null)
-					yield break;
-				foreach (FileDialogFileInfo f in files)
-					yield return f;
-			}
+		public IEnumerable<FileInfo> Files {
+			get { return files; }
 		}
 
 		// dialog options
