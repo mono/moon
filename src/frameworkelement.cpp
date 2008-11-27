@@ -128,10 +128,12 @@ FrameworkElement::ClearValue (DependencyProperty *property, bool notify_listener
 		g_hash_table_remove (styles, property);
 
 	UIElement::ClearValue (property, notify_listeners);
-	
+
+#if SL_2_0
 	Value *style = GetValue (FrameworkElement::StyleProperty);
 	if (style)
 		UpdateFromStyle (style->AsStyle ());
+#endif
 }
 
 Value *
@@ -208,6 +210,7 @@ FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 #endif
 }
 
+#if SL_2_0
 void
 FrameworkElement::UpdateFromStyle (Style *style)
 {
@@ -248,6 +251,7 @@ FrameworkElement::UpdateFromStyle (Style *style)
 		}
 	}
 }
+#endif
 
 void
 FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args)

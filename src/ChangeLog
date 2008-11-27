@@ -1,5 +1,9 @@
 2008-11-27  Alan McGovern  <amcgovern@novell.com>
 
+	* frameworkelement.cpp: Fix some build breakage under the SL1 profile.
+
+2008-11-27  Alan McGovern  <amcgovern@novell.com>
+
 	* binding.h:
 	* cbinding.h:
 	* binding.cpp:
