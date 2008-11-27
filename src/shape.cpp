@@ -251,8 +251,9 @@ Shape::ComputeStretchBounds ()
 		return Rect ();
 	}
 
+	Stretch stretch = GetStretch ();
 	Rect shape_bounds = ComputeShapeBounds (false, NULL);
-
+	
 	h = (h == 0.0) ? shape_bounds.height : h;
 	w = (w == 0.0) ? shape_bounds.width : w;
 
@@ -261,7 +262,6 @@ Shape::ComputeStretchBounds ()
 		return Rect();
 	}
 
-	Stretch stretch = GetStretch ();
 	if (stretch != StretchNone) {
 		Rect logical_bounds = ComputeShapeBounds (true, NULL);
 
@@ -408,11 +408,29 @@ Shape::IsCandidateForCaching (void)
 	if (! GetSurface ())
 		return FALSE;
 
+	/* 
+	 * these fill and stroke short circuits are attempts be smart
+	 * about determining when the cost of caching is greater than
+	 * the cost of simply drawing all the choices here should really
+	 * have best and worst case perf tests associated with them
+	 * but they don't right now
+	 */
+	bool gradient_fill = false;
+	/* XXX FIXME this should be a property on the shape */
+	bool simple = Is (Type::RECTANGLE) || Is (Type::ELLIPSE);
 
-	if (fill && fill->IsAnimating ())
-		return FALSE;
+	if (fill) {
+		if (fill->IsAnimating ())
+			return FALSE;
+
+		gradient_fill |= fill->Is (Type::GRADIENTBRUSH);
+	}
+
 
 	if (stroke && stroke->IsAnimating ())
+		return FALSE;
+	
+	if (simple && !gradient_fill)
 		return FALSE;
 
 	// This is not 100% correct check -- the actual surface size might be
