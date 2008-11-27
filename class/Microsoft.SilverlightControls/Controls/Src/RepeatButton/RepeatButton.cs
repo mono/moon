@@ -176,8 +176,8 @@ namespace System.Windows.Controls.Primitives
         public RepeatButton()
         { 
             ClickMode = ClickMode.Press;
-            Delay = 250;
-            Interval = 250; 
+            Delay = 500;
+            Interval = 33; 
             LostFocus += delegate(object sender, RoutedEventArgs e) { OnLostFocus (e); }; 
             KeyDown += delegate(object sender, KeyEventArgs e){ OnKeyDown(e); };
             KeyUp += delegate(object sender, KeyEventArgs e){ OnKeyUp(e); };
