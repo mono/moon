@@ -1,5 +1,7 @@
-2008-11-28  Sebastien Pouliot  <sebastien@ximian.com>
+2008-11-28  Sebastien Pouliot  <sebastien@ximian.com> 
 
+	* moon-unit.csproj: Add SliderTest.cs and OpenFileDialogTest.cs to
+	the build.
 	* System.Windows.Controls/ControlTest.cs: Add test cases for 
 	GetTemplateChildTest.
 	* System.Windows.Controls/SliderTest.cs: New. Basic tests for Slider.

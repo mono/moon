@@ -82,6 +82,7 @@
     <Compile Include="System.Windows.Controls\MediaElementTest.cs" />
     <Compile Include="System.Windows.Controls\MediaElementTest.SlowStream.cs" />
     <Compile Include="System.Windows.Controls\PanelTest.cs" />
+    <Compile Include="System.Windows.Controls\SliderTest.cs" />
     <Compile Include="System.Windows.Data\BindingTest.cs" />
     <Compile Include="System.Windows.Data\IValueConverterTest.cs" />
     <Compile Include="System.Windows.Input\StylusDeviceTest.cs" />
@@ -103,6 +104,7 @@
     <Compile Include="System.Windows\FontStylesTest.cs" />
     <Compile Include="System.Windows\FontWeigthsTest.cs" />
     <Compile Include="System.Windows\FrameworkElementTest.cs" />
+    <Compile Include="System.Windows\OpenFileDialogTest.cs" />
     <Compile Include="System.Windows\PresentationFrameworkCollectionTest.cs" />
     <Compile Include="System.Windows\ResourceDictionaryTest.cs" />
     <Compile Include="System.Windows\RoutedEventArgsTest.cs" />
