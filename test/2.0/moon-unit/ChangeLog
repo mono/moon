@@ -1,3 +1,9 @@
+2008-11-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Mono.Moonlight.UnitTesting/HtmlOutput.cs,
+	  Mono.Moonlight.UnitTesting/IOutput.cs,
+	  Mono.Moonlight.UnitTesting/Tester.cs: Deleted old code.
+
 2008-11-27  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows.Controls/OpenFileDialogTest.cs: New. Test default
