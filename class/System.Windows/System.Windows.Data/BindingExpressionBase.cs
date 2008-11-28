@@ -32,15 +32,31 @@ using System.Security;
 using System.Windows;
 using System.Collections.Generic;
 
+using Mono;
+
 namespace System.Windows.Data {
 
 	public abstract class BindingExpressionBase : Expression
 	{
+		static Dictionary<IntPtr, Binding> bindings = new Dictionary<IntPtr, Binding> ();
 		bool parsedPath;
 		PropertyInfo info;
 		
 		internal Binding Binding {
-			get; set;
+			get {
+				IntPtr binding = NativeMethods.binding_expression_base_get_binding (Native);
+				if (binding == IntPtr.Zero)
+					return null;
+				if (!bindings.ContainsKey (binding))
+					bindings.Add (binding, new Binding (binding));
+				return bindings [binding];
+			}
+			set {
+				IntPtr binding = value == null ? IntPtr.Zero : value.Native;
+				NativeMethods.binding_expression_base_set_binding (Native, binding);
+				if (binding != IntPtr.Zero && !bindings.ContainsKey (binding))
+					bindings.Add (binding, value);
+			}
 		}
 
 		internal FrameworkElement Element {
@@ -108,7 +124,11 @@ namespace System.Windows.Data {
 		PropertyInfo GetPropertyInfo ()
 		{
 			object target = DataSource;
-			
+
+			if (target == null) {
+				Console.WriteLine ("Target was null");
+				return null;
+			}
 			// FIXME: What if the path is invalid? A.B....C, AB.C£$.D etc
 			// Can you have an explicit interface implementation? Probably not.
 			string[] parts = Binding.Path.Path.Split (new char[] { '.' });
@@ -116,9 +136,10 @@ namespace System.Windows.Data {
 				PropertyInfo p = target.GetType ().GetProperty (parts [i]);
 
 				// The property does not exist, so abort.
-				if (p == null)
+				if (p == null) {
+					Console.WriteLine ("The property didn't exist");
 					return null;
-				
+				}
 				if (!p.DeclaringType.IsVisible)
 					throw new MethodAccessException (string.Format ("Property {0} cannot be accessed", p.Name));
 				
@@ -147,8 +168,10 @@ namespace System.Windows.Data {
 			value = null;
 
 			// If the property doesn't exist, return false
-			if (PropertyInfo == null)
+			if (PropertyInfo == null) {
+				Console.WriteLine ("PropertyInfo was null");
 				return false;
+			}
 			else
 				value = PropertyInfo.GetValue (PropertyTarget, null);
 
@@ -168,10 +191,8 @@ namespace System.Windows.Data {
 				                                       PropertyInfo.PropertyType,
 				                                       Binding.ConverterParameter,
 				                                       Binding.ConverterCulture ?? System.Globalization.CultureInfo.CurrentCulture);
-			// We can only set a property on the source if it has a backing DependencyProperty
-			// I also need to test what happens in the case where it's a sub property (Foo.Bar.Baz)
-			// Do we call SetValue on Foo, or do we drop all the way down to Baz and call SetValue there?
-			// It'd have to be Baz, otherwise it's inconsistent with how we get the value.
+
+			PropertyInfo.SetValue (PropertyTarget, value, null);
 		}
 	}
 }

@@ -1,3 +1,10 @@
+2008-11-28  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/Binding.cs:
+	* System.Windows.Data/BindingExpression.cs:
+	* System.Windows.Data/BindingExpressionBase.cs: DataBinding now works
+	for one-way, one-time and two-way bindings with managed objects.
+
 2008-11-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Makefile.am: Make make check actually work.

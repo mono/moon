@@ -26,7 +26,7 @@
 static void
 binding_destroy (gpointer value)
 {
-	delete (Value *) value;
+	((Value *) value)->FreeValue ();
 }
 #endif
 
@@ -91,7 +91,7 @@ FrameworkElement::SetBindingExpression (DependencyProperty *property, BindingExp
 	
 	if (cur_expr) {
 		cur_expr->DetachListener (FrameworkElement::bound_property_changed);
-		delete (Value *)g_hash_table_lookup (bindings, property);
+		((Value *)g_hash_table_lookup (bindings, property))->FreeValue ();
 		g_hash_table_remove (bindings, property);
 	}
 	
@@ -122,7 +122,7 @@ FrameworkElement::ClearValue (DependencyProperty *property, bool notify_listener
 	Value *value = (Value *) g_hash_table_lookup (bindings, property);
 	if (value) {
 		g_hash_table_remove (bindings, property);
-		delete value;
+		value->FreeValue ();
 	}
 	if (g_hash_table_lookup (styles, property))
 		g_hash_table_remove (styles, property);

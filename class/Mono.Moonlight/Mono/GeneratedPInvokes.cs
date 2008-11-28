@@ -96,6 +96,10 @@ namespace Mono {
 		public extern static IntPtr binding_expression_base_get_value (IntPtr instance);
 
 		[DllImport ("moon")]
+		// void binding_expression_base_register_managed_overrides (BindingExpressionBase *instance, GetValueCallback gv_callback, SetValueCallback sv_callback);
+		public extern static void binding_expression_base_register_managed_overrides (IntPtr instance, Mono.GetValueCallback gv_callback, Mono.SetValueCallback sv_callback);
+
+		[DllImport ("moon")]
 		// void binding_expression_base_set_binding (BindingExpressionBase *instance, Binding *binding);
 		public extern static void binding_expression_base_set_binding (IntPtr instance, IntPtr binding);
 

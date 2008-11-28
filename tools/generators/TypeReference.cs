@@ -117,6 +117,12 @@ class TypeReference {
 			case "ArrangeOverrideCallback":
 				managed_type = "Mono.ArrangeOverrideCallback";
 				break;
+			case "GetValueCallback":
+				managed_type = "Mono.GetValueCallback";
+				break;
+			case "SetValueCallback":
+				managed_type = "Mono.SetValueCallback";
+				break;
 			case "GDestroyNotify":
 				managed_type = "IntPtr"; // hack, because we never pass this from managed code
 				                         // (it's used for EventObject::AddHandler).

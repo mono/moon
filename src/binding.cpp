@@ -15,6 +15,14 @@
 #endif
 
 #include "binding.h"
+#include "enums.h"
+
+Binding::Binding ()
+{
+ 	property_path = g_strdup ("");
+ 	binding_mode = BindingModeOneWay;
+ 	is_sealed = false;
+}
 
 char *
 Binding::GetPropertyPath ()
@@ -25,7 +33,9 @@ Binding::GetPropertyPath ()
 void
 Binding::SetPropertyPath (char *path)
 {
-	this->property_path = path;	
+	if (this->property_path)
+		g_free (this->property_path);
+	this->property_path = g_strdup (path);	
 }
 
 BindingMode
@@ -52,23 +62,43 @@ Binding::SetIsSealed (bool sealed)
 	this->is_sealed = sealed;
 }
 
+Binding::~Binding ()
+{
+	if (this->property_path) {
+		g_free (this->property_path);
+		this->property_path = NULL;
+	}
+}
+
 BindingExpressionBase::BindingExpressionBase ()
 {
-	binding = NULL;
-	source = NULL;
-	target = NULL;
-	target_property = NULL;
+	this->binding = NULL;
+	this->got_value = false;
+	this->gv_callback = NULL;
+	this->source = NULL;
+	this->stored_value = NULL;
+	this->sv_callback = NULL;
+	this->target = NULL;
+	this->target_property = NULL;
 }
 
 BindingExpressionBase::~BindingExpressionBase ()
 {
-	delete binding;
+	if (this->binding) {
+		this->binding->unref ();
+		this->binding = NULL;	
+	}
+	if (stored_value) {
+		this->stored_value->FreeValue ();
+		this->stored_value = NULL;	
+	}
 }
 
 void
 BindingExpressionBase::SetBinding (Binding *binding)
 {
-	delete this->binding;
+	if (this->binding)
+		this->binding->unref ();
 	this->binding = binding;
 }
 
@@ -109,19 +139,46 @@ BindingExpressionBase::DetachListener (PropertyChangeHandler handler)
 Value *
 BindingExpressionBase::GetValue ()
 {
-	if (source && binding && binding->GetPropertyPath ()) {
-		DependencyProperty *property = DependencyProperty::GetDependencyProperty (source->GetType ()->GetKind (), binding->GetPropertyPath ());
-		if (property)
-			return source->GetValue (property);
+	if (!got_value || true) {
+		got_value = true;
+		
+		if (stored_value) {
+			stored_value->FreeValue ();
+			stored_value = NULL;
+		}
+		
+		if (gv_callback) {
+				
+			Value value = gv_callback ();
+			if (value.GetKind () == Type::INVALID)
+				stored_value = NULL;
+			else
+				stored_value = new Value (value);
+			value.FreeValue ();
+		}
+		else if (source && binding && binding->GetPropertyPath ()) {
+			DependencyProperty *property = DependencyProperty::GetDependencyProperty (source->GetType ()->GetKind (), binding->GetPropertyPath ());
+			if (property)
+				stored_value = source->GetValue (property);
+		}
 	}
 	
-	return NULL;
+	return stored_value;
+}
+
+void
+BindingExpressionBase::RegisterManagedOverrides (GetValueCallback gv_callback, SetValueCallback sv_callback)
+{
+	this->gv_callback = gv_callback;
+	this->sv_callback = sv_callback;
 }
 
 void
 BindingExpressionBase::UpdateSource (Value *value)
 {
-	if (source && binding && binding->GetPropertyPath ()) {
+	if (sv_callback)
+		sv_callback (value);
+	else if (source && binding && binding->GetPropertyPath ()) {
 		DependencyProperty *property = DependencyProperty::GetDependencyProperty (source->GetType ()->GetKind (), binding->GetPropertyPath ());
 		if (property)
 			source->SetValue (property, value);

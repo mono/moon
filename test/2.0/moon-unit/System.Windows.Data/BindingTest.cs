@@ -18,7 +18,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Data
 {
 	[TestClass]
-	[Ignore ("Not implemented yet")]
 	public class BindingTest
 	{
 		class InternalData
@@ -122,6 +121,29 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
+		public void BasicBind ()
+		{
+			Rectangle rectangle = new Rectangle ();
+			Binding binding = new Binding ("Opacity");
+			binding.Source = new Data { Opacity = 0.0 };
+
+			rectangle.SetBinding (Rectangle.OpacityProperty, binding);
+			
+			Assert.AreEqual (0.0, rectangle.Opacity, "#1");
+			Assert.IsTrue (rectangle.ReadLocalValue (Rectangle.OpacityProperty) is BindingExpressionBase, "#2");
+			rectangle.Opacity = 1.0;
+			Assert.AreEqual(1.0, rectangle.Opacity, "#3");
+			Assert.AreEqual (1.0, rectangle.ReadLocalValue (Rectangle.OpacityProperty), "#4");
+			rectangle.SetBinding (Rectangle.OpacityProperty, binding);
+			Assert.IsTrue (rectangle.ReadLocalValue (Rectangle.OpacityProperty) is BindingExpressionBase, "#5");
+			Assert.AreEqual (0.0, rectangle.Opacity, "#6");
+			rectangle.ClearValue (Rectangle.OpacityProperty);
+			Assert.AreEqual (1.0, rectangle.Opacity, "#7");
+			
+			Assert.AreEqual (DependencyProperty.UnsetValue, rectangle.ReadLocalValue (Rectangle.OpacityProperty), "#8");
+		}
+
+		[TestMethod]
 		public void BindRectangle ()
 		{
 			Data data = new Data ();
@@ -174,6 +196,39 @@ namespace MoonTest.System.Windows.Data
 			});
 		}
 
+		[TestMethod]
+		public void ChangeSourceValue()
+		{
+			Data data = new Data { Opacity = 0.5 };
+			Rectangle r = new Rectangle();
+			r.SetBinding(Rectangle.OpacityProperty, new Binding { Path = new PropertyPath("Opacity"), Source = data });
+			Assert.AreEqual(data.Opacity, r.Opacity, "#1");
+			data.Opacity = 0;
+			Assert.AreNotEqual(data.Opacity, r.Opacity, "#2");
+		}
+
+		[TestMethod]
+		public void TestTwoWayBinding()
+		{
+			Data data = new Data { Opacity = 0.5 };
+			Rectangle r = new Rectangle();
+			r.SetBinding(Rectangle.OpacityProperty, new Binding { Path = new PropertyPath("Opacity"),
+																  Source = data,
+																  Mode = BindingMode.TwoWay });
+			Assert.AreEqual(0.5, r.Opacity, "#1");
+			Assert.AreEqual(0.5, data.Opacity, "#2");
+			data.Opacity = 0;
+			Assert.AreEqual(0.5, r.Opacity, "#3");
+			r.Opacity = 1;
+			Assert.IsTrue (r.ReadLocalValue (Rectangle.OpacityProperty) is BindingExpressionBase, "#4");
+			Assert.AreEqual(1, r.Opacity, "#5");
+			Assert.AreEqual(1, data.Opacity, "#6");
+
+			r.ClearValue(Rectangle.OpacityProperty);
+			r.Opacity = 0.5;
+			Assert.AreEqual(1, data.Opacity, "#7");
+		}
+		
 		[TestMethod]
 		public void TestOnceOffBinding ()
 		{
@@ -349,6 +404,7 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		
 		
 		[TestMethod]
+		[Ignore ("The parser should throw an exception for this")]
 		public void XamlBindToClr()
 		{
 			Assert.Throws<XamlParseException>(delegate {

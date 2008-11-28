@@ -1,3 +1,8 @@
+2008-11-28  Alan McGovern  <amcgovern@novell.com>
+
+	* TypeReference.cs: DataBinding now works for one-way, one-time and
+	two-way bindings with managed objects.
+
 2008-11-27  Alan McGovern  <amcgovern@novell.com>
 
 	* TypeReference.cs: Allow the Binding class to be mapped between managed

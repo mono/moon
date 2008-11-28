@@ -508,9 +508,11 @@ namespace System.Windows {
 					NativeMethods.event_object_ref (dov_native);
 				}
 				else if (v is BindingExpressionBase) {
+					IntPtr native = ((BindingExpression)v).Native;
+					value.u.p = native;
 					value.k = Kind.BINDINGEXPRESSION;
-					value.u.p = ((BindingExpression)v).Native;
-					managedObjects [value.u.p] = v;
+					managedObjects [native] = v;
+					NativeMethods.event_object_ref (native);
 				}
 				else if (v is int || (v.GetType ().IsEnum && Enum.GetUnderlyingType (v.GetType()) == typeof(int))) {
 					value.k = Kind.INT32;
@@ -715,7 +717,7 @@ namespace System.Windows {
 			}
 
 			object_type = value.GetType ();
-			if (!dp.PropertyType.IsAssignableFrom (object_type))
+			if (!dp.PropertyType.IsAssignableFrom (object_type) && !(value is BindingExpression))
 				throw new ArgumentException (string.Format ("The DependencyProperty '{2}', whose property type is {0} can't be set to value whose type is {1}", dp.PropertyType.FullName, object_type.FullName, dp.Name));
 				                     
 			v = GetAsValue (value, (dp is CustomDependencyProperty) || (dp.PropertyType == typeof (object) || dp.PropertyType == typeof (Type)));

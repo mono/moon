@@ -239,6 +239,18 @@ binding_expression_base_get_value (BindingExpressionBase *instance)
 
 #if SL_2_0
 void
+binding_expression_base_register_managed_overrides (BindingExpressionBase *instance, GetValueCallback gv_callback, SetValueCallback sv_callback)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->RegisterManagedOverrides (gv_callback, sv_callback);
+}
+#endif
+
+
+#if SL_2_0
+void
 binding_expression_base_set_binding (BindingExpressionBase *instance, Binding *binding)
 {
 	if (instance == NULL)

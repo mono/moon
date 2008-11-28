@@ -92,8 +92,9 @@ namespace System.Windows.Data {
 		[TypeConverter (typeof (PropertyPathConverter))]
 		public PropertyPath Path {
 			get {
-				if (Sealed && path == null)
+				if (Sealed && path == null) {
 					path = new PropertyPath (NativeMethods.binding_get_property_path (Native));
+				}
 				return path;
 			}
 			set {

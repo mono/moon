@@ -17,12 +17,15 @@
 #include "expression.h"
 #include "enums.h"
 
+typedef Value (*GetValueCallback)();
+typedef void  (*SetValueCallback)(void *value);
+
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Data */
 class Binding : public EventObject {
  public:
  	/* @GenerateCBinding,GeneratePInvoke */
- 	Binding () { }
+ 	Binding ();
  	
 	/* @GenerateCBinding,GeneratePInvoke */
  	char *GetPropertyPath ();
@@ -38,6 +41,9 @@ class Binding : public EventObject {
  	bool GetIsSealed ();
 	/* @GenerateCBinding,GeneratePInvoke */
  	void SetIsSealed (bool isSealed);
+
+ protected:
+ 	virtual ~Binding ();
  	
  private:
  	char *property_path;
@@ -91,6 +97,15 @@ class BindingExpressionBase : public Expression {
 	// The following methods are meant only for use by FrameworkElement internals.
 	void AttachListener (PropertyChangeHandler handler, gpointer user_data);
 	void DetachListener (PropertyChangeHandler handler);
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	void RegisterManagedOverrides (GetValueCallback gv_callback, SetValueCallback sv_callback);
+	
+ private:
+ 	bool got_value;
+ 	GetValueCallback gv_callback;
+ 	SetValueCallback sv_callback;
+ 	Value *stored_value;
 };
 
 

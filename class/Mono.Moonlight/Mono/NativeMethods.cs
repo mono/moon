@@ -35,6 +35,10 @@ namespace Mono {
 	public delegate UnmanagedSize MeasureOverrideCallback (UnmanagedSize availableSize);
 	public delegate UnmanagedSize ArrangeOverrideCallback (UnmanagedSize finalSize);
 
+	// Used in databinding to interact with managed objects
+	public delegate Value GetValueCallback ();
+	public delegate void SetValueCallback (IntPtr value);
+
 	public delegate IntPtr CreateCustomXamlElementCallback (string xmlns, string name);
 	public delegate void SetCustomXamlAttributeCallback (IntPtr target, string name, string value);
 	public delegate void XamlHookupEventCallback (IntPtr target, string name, string value);

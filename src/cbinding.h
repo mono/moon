@@ -173,6 +173,11 @@ Value *binding_expression_base_get_value (BindingExpressionBase *instance);
 
 #if SL_2_0
 /* @GeneratePInvoke */
+void binding_expression_base_register_managed_overrides (BindingExpressionBase *instance, GetValueCallback gv_callback, SetValueCallback sv_callback);
+#endif
+
+#if SL_2_0
+/* @GeneratePInvoke */
 void binding_expression_base_set_binding (BindingExpressionBase *instance, Binding *binding);
 #endif
 

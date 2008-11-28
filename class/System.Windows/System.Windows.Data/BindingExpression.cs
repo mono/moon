@@ -27,14 +27,21 @@
 //
 
 using System;
+using Mono;
 
 namespace System.Windows.Data
 {
 	class BindingExpression : BindingExpressionBase
 	{
+		GetValueCallback gv_callback;
+		SetValueCallback sv_callback;
+		
 		public BindingExpression()
-			: this (Mono.NativeMethods.binding_expression_new ())
+			: this (NativeMethods.binding_expression_new ())
 		{
+			gv_callback = new GetValueCallback (GetValueOverride);
+			sv_callback = new SetValueCallback (UpdateSourceOverride);
+			NativeMethods.binding_expression_base_register_managed_overrides (Native, gv_callback, sv_callback);
 		}
 
 		
@@ -42,6 +49,27 @@ namespace System.Windows.Data
 			: base (native)
 		{
 			
+		}
+
+		Value GetValueOverride ()
+		{
+			Value v;
+			object o;
+			if (base.TryGetValue (out o)) {
+				Console.WriteLine ("Databound value is: {0}", o);
+				v = DependencyObject.GetAsValue (o);
+			} else {
+				Console.WriteLine ("Couldn't get databound value");
+				v = new Value();
+				v.k = Kind.INVALID;
+			}
+
+			return v;
+		}
+
+		void UpdateSourceOverride (IntPtr value)
+		{
+			base.SetValue (DependencyObject.ValueToObject (base.Property.PropertyType, value));
 		}
 	}
 }
