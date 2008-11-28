@@ -1,5 +1,13 @@
 2008-11-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* site/test.html: Shutdown the process when we're done.
+	* site/index.html: Leave the process running when we're done.
+	* Mono.Moonlight.UnitTesting/MoonLogProvider.cs: Comment out spew.
+	* App.xaml.cs: Handle TestHarnessCompleted event and call a js method
+	  to possibly shutdown the process.
+
+2008-11-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* site/test.html: Added html file for harness testing.
 	* moon-unit.mdp: Updated.
 	* Mono.Moonlight.UnitTesting/MoonLogProvider.cs: Fix log uri to include

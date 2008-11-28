@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Browser;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -12,11 +13,14 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
 using Microsoft.Silverlight.Testing;
+using Microsoft.Silverlight.Testing.Harness;
 
 namespace Mono.Moonlight.UnitTesting
 {
 	public partial class App : Application
 	{
+		MoonLogProvider moonlog;
+
 		public App()
 		{
 			this.Startup += this.Application_Startup;
@@ -29,11 +33,23 @@ namespace Mono.Moonlight.UnitTesting
 		private void Application_Startup(object sender, StartupEventArgs e)
 		{
 			UnitTestSettings settings = new UnitTestSettings ();
+			moonlog = new MoonLogProvider ();
 			settings.TestHarness = new Microsoft.Silverlight.Testing.UnitTesting.Harness.UnitTestHarness ();
 			settings.TestAssemblies.Add (Assembly.GetExecutingAssembly ());
 			UnitTestSystem.PrepareCustomLogProviders (settings);
-			settings.LogProviders.Add (new MoonLogProvider ());
+			settings.LogProviders.Add (moonlog);
 			this.RootVisual = UnitTestSystem.CreateTestPage (settings);
+			settings.TestHarness.TestHarnessCompleted += new EventHandler<TestHarnessCompletedEventArgs> (Harness_Completed);
+		}
+
+		void Harness_Completed (object sender, TestHarnessCompletedEventArgs e)
+		{
+			try {
+				moonlog.ProcessCompleted (e);
+				HtmlPage.Window.Eval ("try { ShutdownHarness (); } catch (e) { }");
+			} catch (Exception ex) {
+				Console.WriteLine (ex.Message);
+			}
 		}
 
 		private void Application_Exit(object sender, EventArgs e)

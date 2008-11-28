@@ -44,6 +44,10 @@ namespace Mono.Moonlight.UnitTesting
 				DateTime.Now.Ticks.ToString (CultureInfo.InvariantCulture.NumberFormat));
 		}
 
+		public void ProcessCompleted (TestHarnessCompletedEventArgs e)
+		{
+		}
+
 		private string MessageToXml (LogMessage logMessage)
 		{
 			TestClass c;
@@ -102,7 +106,7 @@ namespace Mono.Moonlight.UnitTesting
 				if (filename == null)
 					return;
 				
-				Console.WriteLine ("Process {0}", logMessage);
+				// Console.WriteLine ("Process {0}", logMessage);
 
 				msg = MessageToXml (logMessage);
 
