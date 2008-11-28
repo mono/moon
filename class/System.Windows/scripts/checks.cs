@@ -19,7 +19,9 @@ class t
 		for (int i = types.Count - 1; i >= 0; i--) {
 			if (types [i] == DO)
 				types.RemoveAt (i);
-			if (!types [i].IsSubclassOf (DO))
+			else if (!types [i].IsSubclassOf (DO))
+				types.RemoveAt (i);
+			else if (types [i].IsNotPublic)
 				types.RemoveAt (i);
 		}
 
@@ -109,14 +111,23 @@ using System.Windows.Ink;
 				continue;
 			}
 		
+			if (tp.GetConstructor (Type.EmptyTypes) == null) {
+				result.AppendLine ("// Don't know how to create a " + tp.FullName);
+				continue;
+			}
+
 			result.AppendLine ("try {");
 			//result.AppendLine (string.Format ("    Console.WriteLine (\"Testing {0}\");", tp.FullName));
 			result.AppendLine (string.Format ("    {1} var_{0} = new {1} ();", tp.Name, tp.FullName));
-			foreach (PropertyInfo field in tp.GetProperties()) {
+			foreach (PropertyInfo field in tp.GetProperties ()) {
 				Type ftp = field.PropertyType;
 				string var = string.Empty;
 				string nullvar = string.Empty;
 				string vartp = ftp.FullName;
+				
+				if ((field.CanRead && field.GetGetMethod (true).IsStatic) || (field.CanWrite && field.GetSetMethod (true).IsStatic))
+					continue;
+
 				if (ftp == typeof(int)) {
 					var = "1";
 				} else if (ftp == typeof(double)) {
@@ -142,7 +153,7 @@ using System.Windows.Ink;
 				} else if (ftp == typeof (Point [])) {
 					var = "new Point [] {new Point (1, 2), new Point (3, 4)}";
 				} else if (ftp == typeof (Color)) {
-					var = "Color.FromRgb (25, 25, 25)";
+					var = "Color.FromArgb (0, 25, 25, 25)";
 				} else if (ftp == typeof (Geometry)) {
 					var = "new PathGeometry  ()";
 				} else if (ftp == typeof (Rect)) {
@@ -165,16 +176,16 @@ using System.Windows.Ink;
 					vartp = "Nullable<double>";	
 				} else if (ftp == typeof (Nullable<Color>)) {
 					nullvar = "null";
-					var = "new Nullable<Color> (Color.FromRgb (25, 50, 75))";
+					var = "new Nullable<Color> (Color.FromArgb (0, 25, 50, 75))";
 					vartp = "Nullable<Color>";	
 				} else if (ftp == typeof (Nullable<Point>)) {
 					nullvar = "null";
 					var = "new Nullable<Point> (new Point (25, 75))";
 					vartp = "Nullable<Point>";
 				} else if (ftp == typeof (Brush)) {
-					var = "new SolidColorBrush (Color.FromRgb (25, 50, 75))";
+					var = "new SolidColorBrush (Color.FromArgb (0, 25, 50, 75))";
 				} else if (ftp == typeof (KeyTime)) {
-					var = "KeyTime.FromPercent (0.5)";
+					var = "KeyTime.Uniform";
 				} else if (ftp == typeof (TimeSpan)) {
 					var = "new TimeSpan (123456)";
 				} else {
@@ -206,15 +217,17 @@ using System.Windows.Ink;
 				foreach (string code in new string [] {var, nullvar}) {
 					if (code == string.Empty || code == null)
 					    continue;
-					    
-					if (field.CanWrite) {
+					bool cw = field.CanWrite && field.GetSetMethod (true).IsPublic; //!field.GetSetMethod (true).IsPrivate && !field.GetSetMethod (true).IsAssembly && !field.;
+					bool cr = field.CanRead && field.GetGetMethod (true).IsPublic; //!field.GetGetMethod (true).IsPrivate && !field.GetGetMethod (true).IsAssembly;
+
+					if (cw) {
 						result.AppendLine (string.Format ("    field_{0}_{1}_a = {3};", tp.Name, field.Name, vartp, code));
 						result.AppendLine (string.Format ("    var_{0}.{1} = field_{0}_{1}_a;", tp.Name, field.Name));
 					}
-					if (field.CanRead) {
+					if (cr) {
 						result.AppendLine (string.Format ("    field_{0}_{1}_b = var_{0}.{1};", tp.Name, field.Name, vartp));
 					}
-					if (field.CanRead && field.CanWrite) {
+					if (cr && cw) {
 						if (ftp.IsClass) {
 							result.AppendLine (string.Format ("    a = field_{0}_{1}_a == null ? \"<null>\" : field_{0}_{1}_a.ToString ();", tp.Name, field.Name));
 							result.AppendLine (string.Format ("    b = field_{0}_{1}_b == null ? \"<null>\" : field_{0}_{1}_b.ToString ();", tp.Name, field.Name));

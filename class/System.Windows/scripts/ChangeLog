@@ -1,3 +1,7 @@
+2008-11-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* checks.cs: Make make check actually work.
+
 2008-04-17  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* checks.cs: Don't check MS.Internal.Collection, nor any Item fields.
