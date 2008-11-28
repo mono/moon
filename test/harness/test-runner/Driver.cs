@@ -44,6 +44,7 @@ namespace MoonlightTests {
 		private string fixture_start;
 		private ArrayList categories;
 		private List<string> exclude_categories;
+		private List<string> exclude_fixtures;
 		private ArrayList fixtures;
 
 		private VerboseLevel verbose_level = VerboseLevel.None;
@@ -91,6 +92,13 @@ namespace MoonlightTests {
 			exclude_categories = new List<string> ();
 			exclude_categories.AddRange (excl_str.Split (new char [] { ',' }));
 		}
+
+		public void SetExcludeFixtures (string excl_str)
+		{
+			if (exclude_fixtures == null)
+				exclude_fixtures = new List<string> ();
+			exclude_fixtures.AddRange (excl_str.Split (new char [] { ','}));
+		}
 		
 		public void SetCategories (string cat_str)
 		{
@@ -112,14 +120,6 @@ namespace MoonlightTests {
 
 			foreach (string fix in fixs)
 				fixtures.Add (fix.Trim ());
-		}
-
-		public bool TestIsInFixtureList (Test test)
-		{
-			if (fixtures == null)
-				return false;
-
-			return fixtures.Contains (test.Id);
 		}
 
 		private static string GetRemoteDrtlist (string drtlist)
@@ -181,9 +181,12 @@ namespace MoonlightTests {
 				if (exclude_categories != null && t.IsInCategoryList (exclude_categories))
 					continue;
 
-				if (fixtures != null && !TestIsInFixtureList (t))
+				if (fixtures != null && !fixtures.Contains (t.Id))
 					continue;
 
+				if (exclude_fixtures != null && exclude_fixtures.Contains (t.Id))
+					continue;
+				
 				if (t.Ignore) {
 					ignored_tests.Add (t);
 					continue;
@@ -517,6 +520,8 @@ namespace MoonlightTests {
 			string fixtures = Environment.GetEnvironmentVariable ("MOON_DRT_FIXTURES");
 			string categories = Environment.GetEnvironmentVariable ("MOON_DRT_CATEGORIES");
 			string exclude = Environment.GetEnvironmentVariable ("MOON_DRT_EXCLUDE_CATEGORIES");
+			string exclude_fixture = Environment.GetEnvironmentVariable ("MOON_DRT_EXCLUDE_FIXTURE");
+			string exclude_fixtures = Environment.GetEnvironmentVariable ("MOON_DRT_EXCLUDE_FIXTURES");
 			string fixture_start = Environment.GetEnvironmentVariable ("MOON_DRT_FIXTURE_START");
 			string swallow = Environment.GetEnvironmentVariable ("MOON_DRT_SWALLOW_STREAMS");
 			string stdout = Environment.GetEnvironmentVariable ("MOON_DRT_LOG_TO_STDOUT");
@@ -537,6 +542,10 @@ namespace MoonlightTests {
 				d.SetFixtureStart (fixture_start);
 			if (!string.IsNullOrEmpty (exclude))
 				d.SetExcludeCategories (exclude);
+			if (!string.IsNullOrEmpty (exclude_fixture))
+				d.SetExcludeFixtures (exclude_fixture);
+			if (!string.IsNullOrEmpty (exclude_fixtures))
+				d.SetExcludeFixtures (exclude_fixtures);
 		}
 	}
 }
