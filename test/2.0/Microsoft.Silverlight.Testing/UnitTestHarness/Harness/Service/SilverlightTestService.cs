@@ -1,4 +1,4 @@
-﻿// (c) Copyright Microsoft Corporation.
+// (c) Copyright Microsoft Corporation.
 // This source is subject to the Microsoft Public License (Ms-PL).
 // Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
 // All other rights reserved.
@@ -47,10 +47,7 @@ namespace Microsoft.Silverlight.Testing.Harness.Service
                         break;
 
                     case "http":
-			// MOON Changes: If we use the WebService we're generating a SecurityException on
-			// MS's runtime (Mac and Windows).  This allows us to run moon-unit2 everywhere
-                        ServiceType = ServiceType.Direct;
-                        //ServiceType = ServiceType.WebService;
+                        ServiceType = ServiceType.WebService;
                         SetServicePath();
                         SetCustomIdentification();
                         break;

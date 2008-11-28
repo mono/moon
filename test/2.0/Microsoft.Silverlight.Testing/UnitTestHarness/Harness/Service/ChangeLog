@@ -1,3 +1,8 @@
+2008-11-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* SilverlightTestService.cs: Revert r120118, it's no longer needed (we
+	  don't hit this code at all).
+
 2008-11-26  Geoff Norton  <gnorton@novell.com>
 
 	* SilverlightTestService.cs: Attempting to use the web service on localhost
