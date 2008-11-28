@@ -122,12 +122,6 @@ namespace MoonlightTests {
 				fixtures.Add (fix.Trim ());
 		}
 
-		public bool TestIsInFixtureList (Test test)
-		{
-			return (fixtures == null || fixtures.Contains (test.Id))
-				&& (exclude_fixtures == null || !exclude_fixtures.Contains (test.Id));
-		}
-
 		private static string GetRemoteDrtlist (string drtlist)
 		{
 			string filename = null;
@@ -187,9 +181,12 @@ namespace MoonlightTests {
 				if (exclude_categories != null && t.IsInCategoryList (exclude_categories))
 					continue;
 
-				if (!TestIsInFixtureList (t))
+				if (fixtures != null && !fixtures.Contains (t.Id))
 					continue;
 
+				if (exclude_fixtures != null && exclude_fixtures.Contains (t.Id))
+					continue;
+				
 				if (t.Ignore) {
 					ignored_tests.Add (t);
 					continue;
