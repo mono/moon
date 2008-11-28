@@ -1,3 +1,9 @@
+2008-11-28  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Control.cs (GetTemplateChild): Throw only if childName is null
+	otherwise return null (for the moment) since it's the "default"
+	action (see tests).
+
 2008-11-28  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* ItemCollection.cs: Remove public ctor.

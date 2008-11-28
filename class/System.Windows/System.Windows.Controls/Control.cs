@@ -62,9 +62,15 @@ namespace System.Windows.Controls {
 			return NativeMethods.surface_focus_element (Application.s_surface, native);
 		}
 
+		[MonoTODO]
 		protected DependencyObject GetTemplateChild (string childName)
 		{
-			throw new NotImplementedException ();
+			if (childName == null)
+				throw new ArgumentException ("childName");
+
+			// null is returned for unknown names (e.g. String.Empty) or when no templates are present
+			// FIXME: return something when that something is present
+			return null;
 		}
 
 		[MonoTODO]
