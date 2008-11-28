@@ -79,6 +79,21 @@ namespace MoonTest.System.Windows.Controls
 			}
 		}
 
+		class ConcreteControl : Control {
+
+			public object DefaultStyleKey_
+			{
+				get { return base.DefaultStyleKey; }
+				set { base.DefaultStyleKey = value; }
+			}
+		}
+
+		class MoreConcreteControl : ConcreteControl {
+		}
+
+		class SiblingControl : Control {
+		}
+
 		[TestMethod]
 		[KnownFailure]
 		public void DefaultStyleKeyTest ()
@@ -98,6 +113,27 @@ namespace MoonTest.System.Windows.Controls
 				       typeof (ArgumentException), "5");
 			Assert.Throws (delegate { DefaultStyleKey_NonTypeClass ntc = new DefaultStyleKey_NonTypeClass (); },
 				       typeof (ArgumentException), "6");
+
+			// and some working tests
+			ConcreteControl c = new ConcreteControl ();
+			c.DefaultStyleKey_ = typeof (ConcreteControl);
+			Assert.AreEqual (typeof (ConcreteControl), c.DefaultStyleKey_, "DefaultStyleKey");
+
+			MoreConcreteControl mc = new MoreConcreteControl ();
+			mc.DefaultStyleKey_ = typeof (ConcreteControl);
+			Assert.AreEqual (typeof (ConcreteControl), mc.DefaultStyleKey_, "DefaultStyleKey-Base");
+
+			c = new ConcreteControl ();
+			c.DefaultStyleKey_ = typeof (MoreConcreteControl);
+			Assert.AreEqual (typeof (MoreConcreteControl), c.DefaultStyleKey_, "DefaultStyleKey-Inherited");
+
+			mc = new MoreConcreteControl ();
+			mc.DefaultStyleKey_ = typeof (SiblingControl);
+			Assert.AreEqual (typeof (SiblingControl), mc.DefaultStyleKey_, "DefaultStyleKey-Sibling");
+
+			Assert.Throws<ArgumentException> (delegate {
+				mc.DefaultStyleKey_ = typeof (Control);
+			}, "7");
 		}
 
 		[TestMethod]
@@ -274,14 +310,6 @@ namespace MoonTest.System.Windows.Controls
 			
 			Assert.IsNull (b.FindName ("foo"),"b after");
 			Assert.IsNotNull (c.FindName ("foo"),"c after");
-		}
-
-		class ConcreteControl : Control {
-
-			public object DefaultStyleKey_ {
-				get { return base.DefaultStyleKey; }
-				set { base.DefaultStyleKey = value; }
-			}
 		}
 
 		[TestMethod]

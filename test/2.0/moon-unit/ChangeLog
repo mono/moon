@@ -1,3 +1,10 @@
+2008-11-28  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.Controls/ControlTest.cs: Add test cases for
+	DefaultStyleKeyTest where the property does not throw exceptions.
+	* System.Windows.Controls/OpenFileDialogTest.cs: Add test cases for
+	Filter and FilterIndex properties.
+
 2008-11-28  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingTest.cs: DataBinding now works for one-way,

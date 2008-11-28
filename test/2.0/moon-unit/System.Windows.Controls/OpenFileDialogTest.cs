@@ -50,6 +50,45 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsFalse (ofd.Multiselect, "Multiselect");
 		}
 
+		[TestMethod]
+		public void Filter ()
+		{
+			OpenFileDialog ofd = new OpenFileDialog ();
+			ofd.Filter = null;
+			Assert.AreEqual (String.Empty, ofd.Filter, "Null->Empty");
+
+			ofd.Filter = "a|b";
+			Assert.AreEqual ("a|b", ofd.Filter, "Filter");
+
+			Assert.Throws<ArgumentException> (delegate {
+				ofd.Filter = "a|b|";
+			}, "Even |");
+			Assert.AreEqual ("a|b", ofd.Filter, "Unchanged");
+		}
+
+		[TestMethod]
+		public void FilterIndex ()
+		{
+			OpenFileDialog ofd = new OpenFileDialog ();
+
+			Assert.AreEqual (0, ofd.FilterIndex, "0");
+			Assert.Throws<ArgumentOutOfRangeException> (delegate {
+				// it's default value is unacceptable ;-)
+				ofd.FilterIndex = ofd.FilterIndex;
+			}, "0");
+
+			ofd.FilterIndex = 1;
+			Assert.AreEqual (1, ofd.FilterIndex, "1");
+
+			ofd.FilterIndex = Int32.MaxValue;
+			Assert.AreEqual (Int32.MaxValue, ofd.FilterIndex, "MaxValue");
+
+			Assert.Throws<ArgumentOutOfRangeException> (delegate {
+				ofd.FilterIndex = -1;
+			}, "negative");
+			Assert.AreEqual (Int32.MaxValue, ofd.FilterIndex, "Unchanged");
+		}
+
 		[Ignore ("blocking UI")]
 		[TestMethod]
 		public void SingleSelection ()
