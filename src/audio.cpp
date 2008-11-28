@@ -225,12 +225,6 @@ AudioSource::SetState (AudioState value)
 	
 	LOG_AUDIO_EX ("AudioSource::SetState (%s), old state: %s, changed: %i\n", GetStateName (value), GetStateName (old_state), changed);
 	
-#if DEBUG
-	if (value == AudioError) {
-		print_stack_trace ();
-	}
-#endif
-	
 	if (changed)
 		StateChanged (old_state);
 }
