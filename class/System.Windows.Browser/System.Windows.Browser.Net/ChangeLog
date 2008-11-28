@@ -1,5 +1,10 @@
 2008-11-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* BrowserHttpWebRequest.cs: Use a GCHandle to prevent delegates from
+	  being disposed when they shouldn't be.
+
+2008-11-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* BrowserHttpWebRequestStream.cs: Added.
 	* BrowserHttpWebRequest.cs: Hack together a simple implementation of
 	  Begin/EndGetRequestStream to get the test harness working.

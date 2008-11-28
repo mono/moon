@@ -29,6 +29,7 @@
 #if NET_2_1
 
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Collections;
 using System.Globalization;
@@ -45,6 +46,7 @@ namespace System.Windows.Browser.Net
 	class BrowserHttpWebRequest : HttpWebRequest
 	{
 		IntPtr native;
+		GCHandle managed;
 		IntPtr downloader;
 		Uri uri;
 		long bytes_read;
@@ -54,20 +56,13 @@ namespace System.Windows.Browser.Net
 		BrowserHttpWebResponse response;
 		BrowserHttpWebAsyncResult async_result;
 		ManualResetEvent wait_handle = new ManualResetEvent (false);
-
-		NativeMethods.DownloaderResponseStartedDelegate started;
-		NativeMethods.DownloaderResponseAvailableDelegate available;
-		NativeMethods.DownloaderResponseFinishedDelegate finished;
 		
-		//NOTE: This field name needs to stay in sync with WebRequest_2_1.cs in Systme.Net
+		//NOTE: This field name needs to stay in sync with WebRequest_2_1.cs in System.Net
 		Delegate progress_delegate;
-
 		public BrowserHttpWebRequest (Uri uri)
 		{
-			started = new NativeMethods.DownloaderResponseStartedDelegate (OnAsyncResponseStarted);
-			available = new NativeMethods.DownloaderResponseAvailableDelegate (OnAsyncDataAvailable);
-			finished = new NativeMethods.DownloaderResponseFinishedDelegate (OnAsyncResponseFinished);
 			this.uri = uri;
+			managed = GCHandle.Alloc (this, GCHandleType.Normal);
 		}
 
 		~BrowserHttpWebRequest ()
@@ -83,6 +78,11 @@ namespace System.Windows.Browser.Net
 
 		public override void Abort ()
 		{
+			// Is it safe to free here?
+			// We need some clear life-time rules for when the callbacks can be called
+			// and when they can't
+			managed.Free ();
+			
 			if (native == IntPtr.Zero)
 				return;
 
@@ -122,39 +122,48 @@ namespace System.Windows.Browser.Net
 			return async_result;
 		}
 
-		uint OnAsyncResponseStarted (IntPtr native, IntPtr context)
+		static uint OnAsyncResponseStarted (IntPtr native, IntPtr context)
 		{
+			GCHandle handle = Helper.GCHandleFromIntPtr (context);
+			BrowserHttpWebRequest obj = (BrowserHttpWebRequest) handle.Target;
+			
 			try {
-				bytes_read = 0;
-				async_result.Response = new BrowserHttpWebResponse (this, native);
+				obj.bytes_read = 0;
+				obj.async_result.Response = new BrowserHttpWebResponse (obj, obj.native);
 			} catch (Exception e) {
-				async_result.Exception = e;
+				obj.async_result.Exception = e;
 			}
 			return 0;
 		}
 
-		uint OnAsyncResponseFinished (IntPtr native, IntPtr context, bool success, IntPtr data)
+		static uint OnAsyncResponseFinished (IntPtr native, IntPtr context, bool success, IntPtr data)
 		{
+			GCHandle handle = Helper.GCHandleFromIntPtr (context);
+			BrowserHttpWebRequest obj = (BrowserHttpWebRequest) handle.Target;
+			
 			try {
-				async_result.SetComplete ();
+				obj.async_result.SetComplete ();
 			} catch (Exception e) {
-				async_result.Exception = e;
+				obj.async_result.Exception = e;
 			}
 			return 0;
 		}
 
-		uint OnAsyncDataAvailable (IntPtr native, IntPtr context, IntPtr data, uint length)
+		static uint OnAsyncDataAvailable (IntPtr native, IntPtr context, IntPtr data, uint length)
 		{
+			GCHandle handle = Helper.GCHandleFromIntPtr (context);
+			BrowserHttpWebRequest obj = (BrowserHttpWebRequest) handle.Target;
+			
 			try {
-				bytes_read += length;
-				if (progress_delegate != null)
-					progress_delegate.DynamicInvoke (new object[] { bytes_read, async_result.Response.ContentLength, async_result.AsyncState});
+				obj.bytes_read += length;
+				if (obj.progress_delegate != null)
+					obj.progress_delegate.DynamicInvoke (new object[] { obj.bytes_read, obj.async_result.Response.ContentLength, obj.async_result.AsyncState});
 			} catch {}
 
 			try {
-				async_result.Response.Write (data, (int) length);
+				obj.async_result.Response.Write (data, (int) length);
 			} catch (Exception e) {
-				async_result.Exception = e;
+				obj.async_result.Exception = e;
 			}
 			return 0;
 		}
@@ -184,6 +193,11 @@ namespace System.Windows.Browser.Net
 			response = async_result.Response;
 			async_result.Dispose ();
 
+			// Is it safe to free here?
+			// We need some clear life-time rules for when the callbacks can be called
+			// and when they can't
+			managed.Free ();
+			
 			return response;
 		}
 
@@ -226,7 +240,7 @@ namespace System.Windows.Browser.Net
 				NativeMethods.downloader_request_set_body (native, body, body.Length);
 			}
 			
-			NativeMethods.downloader_request_get_response (native, started, available, finished, IntPtr.Zero);
+			NativeMethods.downloader_request_get_response (native, OnAsyncResponseStarted, OnAsyncDataAvailable, OnAsyncResponseFinished, Helper.GCHandleToIntPtr (managed));
 
 			wait_handle.Set ();
 		}
