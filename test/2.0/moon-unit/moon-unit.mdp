@@ -19,7 +19,6 @@
     <File name="moon-unit.mdp" subtype="Code" buildaction="Nothing" />
     <File name="site" subtype="Directory" buildaction="Compile" />
     <File name="site/index.html" subtype="Code" buildaction="Nothing" />
-    <File name="site/web.config" subtype="Code" buildaction="Nothing" />
     <File name="Makefile" subtype="Code" buildaction="Nothing" />
     <File name="System.Collections.ObjectModel/ObservableCollectionTest.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/DependencyPropertyAttachedTest.cs" subtype="Code" buildaction="Compile" />
@@ -35,9 +34,6 @@
     <File name="System.Windows.Media/VisualTreeHelperTest.cs" subtype="Code" buildaction="Compile" />
     <File name="App.xaml" subtype="Code" buildaction="Nothing" />
     <File name="App.xaml.cs" subtype="Code" buildaction="Compile" />
-    <File name="Mono.Moonlight.UnitTesting/HtmlOutput.cs" subtype="Code" buildaction="Compile" />
-    <File name="Mono.Moonlight.UnitTesting/IOutput.cs" subtype="Code" buildaction="Compile" />
-    <File name="Mono.Moonlight.UnitTesting/Tester.cs" subtype="Code" buildaction="Compile" />
     <File name="System.IO.IsolatedStorage/IsolatedStorageFileStreamTest.cs" subtype="Code" buildaction="Compile" />
     <File name="System.IO.IsolatedStorage/IsolatedStorageFileTest.cs" subtype="Code" buildaction="Compile" />
     <File name="System.IO.IsolatedStorage/IsolatedStorageSettingsTest.cs" subtype="Code" buildaction="Compile" />
@@ -65,6 +61,12 @@
     <File name="System.Windows.Media.Imaging/BitmapImageTest.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Shapes/PathTest.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Shapes/RectangleTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="App.xaml.g.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Moonlight.UnitTesting" subtype="Directory" buildaction="Compile" />
+    <File name="System.Windows/FontStretchesTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/FontStylesTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/FontWeigthsTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Moonlight.UnitTesting/Tester.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />

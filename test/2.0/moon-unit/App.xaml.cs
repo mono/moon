@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -27,7 +28,12 @@ namespace Mono.Moonlight.UnitTesting
 
 		private void Application_Startup(object sender, StartupEventArgs e)
 		{
-			this.RootVisual = UnitTestSystem.CreateTestPage ();
+			UnitTestSettings settings = new UnitTestSettings ();
+			settings.TestHarness = new Microsoft.Silverlight.Testing.UnitTesting.Harness.UnitTestHarness ();
+			settings.TestAssemblies.Add (Assembly.GetExecutingAssembly ());
+			UnitTestSystem.PrepareCustomLogProviders (settings);
+			settings.LogProviders.Add (new MoonLogProvider ());
+			this.RootVisual = UnitTestSystem.CreateTestPage (settings);
 		}
 
 		private void Application_Exit(object sender, EventArgs e)

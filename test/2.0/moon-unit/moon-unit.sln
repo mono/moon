@@ -21,6 +21,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "site", "site\", "{FC2F8A15-
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "3200"
+		VWDVirtualPath = "/"
 		ProjOutputReferences = "{7DEE9C1F-5D4B-4944-8654-1698B707B28E}|ClientBin|false;"
 	EndProjectSection
 EndProject
