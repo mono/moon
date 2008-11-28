@@ -1,3 +1,11 @@
+2008-11-28  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Controls/ControlTest.cs: Add test cases for 
+	GetTemplateChildTest.
+	* System.Windows.Controls/SliderTest.cs: New. Basic tests for Slider.
+	* System.Windows.Controls.Primitives/RangeBaseTest.cs: Refactor so
+	the default properties checks are re-usable for Slider.
+
 2008-11-28  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows.Controls/ControlTest.cs: Add test cases for

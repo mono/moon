@@ -73,15 +73,19 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 		public void DefaultProperties ()
 		{
 			ConcreteRange rb = new ConcreteRange ();
+			CheckDefaultProperties (rb);
+			// default properties on Control...
+			ControlTest.CheckDefaultProperties (rb);
+		}
+
+		static public void CheckDefaultProperties (RangeBase rb)
+		{
 			// default properties on RangeBase
 			Assert.AreEqual (0.1, rb.SmallChange, "SmallChange");
 			Assert.AreEqual (1.0, rb.LargeChange, "LargeChange");
 			Assert.AreEqual (1.0, rb.Maximum, "Maximum");
 			Assert.AreEqual (0.0, rb.Minimum, "Minimum");
 			Assert.AreEqual (0.0, rb.Value, "IsFocused");
-
-			// default properties on Control...
-			ControlTest.CheckDefaultProperties (rb);
 		}
 
 		[TestMethod]

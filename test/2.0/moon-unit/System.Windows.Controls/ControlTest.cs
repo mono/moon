@@ -81,10 +81,15 @@ namespace MoonTest.System.Windows.Controls
 
 		class ConcreteControl : Control {
 
-			public object DefaultStyleKey_
-			{
+			public object DefaultStyleKey_ {
 				get { return base.DefaultStyleKey; }
 				set { base.DefaultStyleKey = value; }
+			}
+
+
+			public DependencyObject GetTemplateChild_ (string s)
+			{
+				return base.GetTemplateChild (s);
 			}
 		}
 
@@ -292,6 +297,11 @@ namespace MoonTest.System.Windows.Controls
 		[TestMethod]
 		public void GetTemplateChildTest ()
 		{
+			ConcreteControl c = new ConcreteControl ();
+			Assert.Throws<ArgumentException> (delegate {
+				c.GetTemplateChild_ (null);
+			}, "null");
+			Assert.IsNull (c.GetTemplateChild_ (String.Empty), "Empty");
 		}
 
 		[TestMethod]
