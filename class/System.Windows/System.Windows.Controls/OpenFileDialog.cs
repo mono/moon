@@ -99,17 +99,19 @@ namespace System.Windows.Controls
 		public string Filter {
 			get { return filter; }
 			set {
-				if (String.IsNullOrEmpty (value))
+				if (String.IsNullOrEmpty (value)) {
 					filter = String.Empty;
-				// an odd number of '|' must be present (so an exact number of name+pattern pairs exists)
-				int count = 0;
-				for (int i=0; i < value.Length; i++) {
-					if (value [i] == '|')
-						count++;
+				} else {
+					// an odd number of '|' must be present (so an exact number of name+pattern pairs exists)
+					int count = 0;
+					for (int i=0; i < value.Length; i++) {
+						if (value [i] == '|')
+							count++;
+					}
+					if ((count & 1) == 0)
+						throw new ArgumentException ("Filter");
+					filter = value;
 				}
-				if ((count & 1) == 1)
-					throw new ArgumentException ("Filter");
-				filter = value;
 			}
 		}
 
@@ -117,7 +119,7 @@ namespace System.Windows.Controls
 			get { return filter_index; }
 			set {
 				// note: the value isn't semi-validated (no maximum check wrt filters)
-				if (value < 0)
+				if (value <= 0)
 					throw new ArgumentOutOfRangeException ("FilterIndex");
 				filter_index = value;
 			}

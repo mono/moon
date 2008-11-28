@@ -36,7 +36,7 @@ namespace System.Windows.Controls {
 		{
 		}
 		
-		public TextChangedEventArgs () : base (NativeMethods.text_changed_event_args_new ())
+		internal TextChangedEventArgs () : base (NativeMethods.text_changed_event_args_new ())
 		{
 		}
 	}

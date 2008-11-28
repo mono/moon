@@ -28,17 +28,8 @@
 
 namespace System.Windows.Controls {
 	public sealed class ItemCollection : PresentationFrameworkCollection<Object> {
-		public ItemCollection () : base (IntPtr.Zero) {
-			throw new NotImplementedException ();
-		}
-		
 		internal ItemCollection (IntPtr raw) : base (raw) {
 			throw new NotImplementedException ();
 		}
 	}
 }
-
-		
-
-
-

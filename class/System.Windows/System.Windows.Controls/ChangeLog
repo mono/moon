@@ -1,3 +1,9 @@
+2008-11-28  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ItemCollection.cs: Remove public ctor.
+	* OpenFileDialog.cs: Fix Filter and FilterIndex properties.
+	* TextChangedEventArgs.cs: Internalize default ctor.
+
 2008-11-27  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* OpenFileDialog.cs: Replace "old" FileDialogFileInfo with standard
