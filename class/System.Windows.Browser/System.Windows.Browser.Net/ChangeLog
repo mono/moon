@@ -1,3 +1,9 @@
+2008-11-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* BrowserHttpWebRequestStream.cs: Added.
+	* BrowserHttpWebRequest.cs: Hack together a simple implementation of
+	  Begin/EndGetRequestStream to get the test harness working.
+
 2008-11-25  Geoff Norton  <gnorton@novell.com>
 
 	* BrowserHttpWebResponse.cs: Get the status code and text from firefox, instead

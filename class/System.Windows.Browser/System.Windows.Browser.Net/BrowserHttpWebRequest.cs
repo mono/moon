@@ -50,7 +50,7 @@ namespace System.Windows.Browser.Net
 		long bytes_read;
 		string method = "GET";
 		WebHeaderCollection headers = new WebHeaderCollection ();
-		MemoryStream request;
+		BrowserHttpWebRequestStream request;
 		BrowserHttpWebResponse response;
 		BrowserHttpWebAsyncResult async_result;
 		ManualResetEvent wait_handle = new ManualResetEvent (false);
@@ -97,7 +97,10 @@ namespace System.Windows.Browser.Net
 
 		public override IAsyncResult BeginGetRequestStream (AsyncCallback callback, object state)
 		{
-			throw new NotImplementedException ();
+			Console.WriteLine ("BrowserHttpWebRequest.BeginGetRequestStream: Should be async, doing it sync for now.");
+			IAsyncResult result = new BrowserHttpWebAsyncResult (callback, state);
+			callback (result);
+			return result;
 		}
 
 		public override IAsyncResult BeginGetResponse (AsyncCallback callback, object state)
@@ -158,7 +161,11 @@ namespace System.Windows.Browser.Net
 
 		public override Stream EndGetRequestStream (IAsyncResult asyncResult)
 		{
-			throw new NotImplementedException ();
+			if (request == null) {
+				request = new BrowserHttpWebRequestStream ();
+				request.WriteByte ((byte) '\n');
+			}
+			return request;
 		}
 
 		public override WebResponse EndGetResponse (IAsyncResult asyncResult)
@@ -178,14 +185,6 @@ namespace System.Windows.Browser.Net
 			async_result.Dispose ();
 
 			return response;
-		}
-
-		public Stream GetRequestStream ()
-		{
-			if (request == null)
-				request = new MemoryStream ();
-
-			return request;
 		}
 
 		static Uri GetBaseUri ()
@@ -215,11 +214,15 @@ namespace System.Windows.Browser.Net
 			if (native == IntPtr.Zero)
 				throw new NotSupportedException ("Failed to create unmanaged WebHttpRequest object.  unsupported browser.");
 
+			if (request != null && request.Length > 1) {
+				headers ["Content-Length"] = (request.Length - 1).ToString ();
+			}
+			
 			foreach (string header in headers.AllKeys)
 				NativeMethods.downloader_request_set_http_header (native, header, headers [header]);
 
-			if (request != null && request.Length > 0) {
-				byte [] body = request.ToArray ();
+			if (request != null && request.Length > 1) {
+				byte [] body = request.stream.ToArray ();
 				NativeMethods.downloader_request_set_body (native, body, body.Length);
 			}
 			
@@ -227,21 +230,6 @@ namespace System.Windows.Browser.Net
 
 			wait_handle.Set ();
 		}
-
-//		public HttpWebResponse GetResponse ()
-//		{
-//			InitializeNativeRequest ();
-//
-//			IntPtr resp = NativeMethods.browser_http_request_get_response (native);
-//
-//			if (resp == IntPtr.Zero)
-//				throw new InvalidOperationException ();
-//
-//			response = new BrowserHttpWebResponse (this, resp);
-//			response.Read ();
-//
-//			return response;
-//		}
 
 		public override string ContentType {
 			get { return headers [HttpRequestHeader.ContentType]; }
