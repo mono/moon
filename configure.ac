@@ -347,7 +347,7 @@ if test x$with_ff3 = xyes; then
 		   performance_reason="(reason: failed to find FF3 development packages)"])
 else
   with_performance=no
-  testing_reason="(reason: performance suite requires FF3)"
+  performance_reason="(reason: performance suite requires FF3)"
 fi
 AM_CONDITIONAL(INCLUDE_PERFORMANCE,test x$with_performance = xyes)
 
