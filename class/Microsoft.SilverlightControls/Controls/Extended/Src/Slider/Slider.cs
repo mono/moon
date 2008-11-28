@@ -40,10 +40,6 @@ namespace System.Windows.Controls
         /// </summary>
         public Slider()
         { 
-            Minimum = 0;
-            Value = 0;
-            Maximum = 10; 
- 
             IsTabStop = true;
             IsEnabled = true; 
             Orientation = Orientation.Horizontal;
