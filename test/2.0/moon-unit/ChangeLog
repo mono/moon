@@ -1,5 +1,13 @@
 2008-11-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* site/test.html: Added html file for harness testing.
+	* moon-unit.mdp: Updated.
+	* Mono.Moonlight.UnitTesting/MoonLogProvider.cs: Fix log uri to include
+	  path of the html file. This way the aspx file doesn't have to
+	  reside at the root directory.
+
+2008-11-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* App.xaml.cs: Provide our own settings for the unit tests.
 	* Mono.Moonlight.UnitTesting/MoonLogProvider.cs: Added, sends log
 	  output to disk.

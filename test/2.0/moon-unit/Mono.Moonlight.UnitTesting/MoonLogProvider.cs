@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Net;
@@ -36,7 +36,7 @@ namespace Mono.Moonlight.UnitTesting
 				return;
 			}
 
-			baseuri = string.Concat (docuri.Scheme, "://", docuri.Host, ":", docuri.Port.ToString ());
+			baseuri = string.Concat (docuri.Scheme, "://", docuri.Host, ":", docuri.Port.ToString (), System.IO.Path.GetDirectoryName (docuri.LocalPath));
 
 			// Create a unique filename
 			filename = string.Format ("moon-unit-log-{0}-{1}.xml",
