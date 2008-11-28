@@ -1,3 +1,8 @@
+2008-11-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Makefile.am, System.Windows.Browser.mdp: Updated with
+	  BrowserHttpWebRequestStream.cs
+
 2008-11-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Makefile.am, System.Windows.Browser.mdp: Corcompare fixes.

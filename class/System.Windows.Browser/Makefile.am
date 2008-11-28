@@ -27,6 +27,7 @@ system_windows_browser_sources =					\
 	$(srcdir)/System.Windows.Browser.Net/BrowserHttpWebRequest.cs		\
 	$(srcdir)/System.Windows.Browser.Net/BrowserHttpWebResponse.cs		\
 	$(srcdir)/System.Windows.Browser.Net/BrowserHttpWebAsyncResult.cs		\
+	$(srcdir)/System.Windows.Browser.Net/BrowserHttpWebRequestStream.cs		\
 	$(srcdir)/System.Windows.Browser/BrowserInformation.cs			\
 	$(srcdir)/System.Windows.Browser/HtmlDocument.cs				\
 	$(srcdir)/System.Windows.Browser/HtmlElement.cs				\
