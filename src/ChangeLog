@@ -1,3 +1,11 @@
+2008-11-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* audio.cpp: Remove a print_stack_trace. Backport of r120211.
+	
+	  
+	
+	  r: sde
+
 2008-11-24  Larry Ewing  <lewing@novell.com>
 
 	* media.cpp (MediaBase::SetSource): only queue a tick if we need
