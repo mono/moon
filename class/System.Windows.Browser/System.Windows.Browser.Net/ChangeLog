@@ -1,3 +1,9 @@
+2008-11-28  Geoff Norton  <gnorton@novell.com>
+
+	* BrowserHttpWebRequest.cs: Fix up some GCHandle lifecycle issues.
+	Restore the delegate references that are passed to firefox to prevent
+	them from being collected.
+
 2008-11-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* BrowserHttpWebRequest.cs: Use a GCHandle to prevent delegates from

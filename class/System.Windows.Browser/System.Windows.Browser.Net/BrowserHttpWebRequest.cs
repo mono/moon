@@ -57,11 +57,19 @@ namespace System.Windows.Browser.Net
 		BrowserHttpWebAsyncResult async_result;
 		ManualResetEvent wait_handle = new ManualResetEvent (false);
 		
-		//NOTE: This field name needs to stay in sync with WebRequest_2_1.cs in System.Net
-		Delegate progress_delegate;
-		public BrowserHttpWebRequest (Uri uri)
-		{
-			this.uri = uri;
+		NativeMethods.DownloaderResponseStartedDelegate started;
+		NativeMethods.DownloaderResponseAvailableDelegate available;
+		NativeMethods.DownloaderResponseFinishedDelegate finished;
+ 		
+		//NOTE: This field name needs to stay in sync with WebRequest_2_1.cs in Systme.Net
+ 		Delegate progress_delegate;
+
+ 		public BrowserHttpWebRequest (Uri uri)
+ 		{
+			started = new NativeMethods.DownloaderResponseStartedDelegate (OnAsyncResponseStarted);
+			available = new NativeMethods.DownloaderResponseAvailableDelegate (OnAsyncDataAvailable);
+			finished = new NativeMethods.DownloaderResponseFinishedDelegate (OnAsyncResponseFinished);
+ 			this.uri = uri;
 			managed = GCHandle.Alloc (this, GCHandleType.Normal);
 		}
 
@@ -78,15 +86,12 @@ namespace System.Windows.Browser.Net
 
 		public override void Abort ()
 		{
-			// Is it safe to free here?
-			// We need some clear life-time rules for when the callbacks can be called
-			// and when they can't
-			managed.Free ();
-			
 			if (native == IntPtr.Zero)
 				return;
 
 			NativeMethods.browser_http_request_abort (native);
+
+			managed.Free ();
 		}
 
 		static bool IsSameRangeKind (string range, string rangeSpecifier)
@@ -193,9 +198,6 @@ namespace System.Windows.Browser.Net
 			response = async_result.Response;
 			async_result.Dispose ();
 
-			// Is it safe to free here?
-			// We need some clear life-time rules for when the callbacks can be called
-			// and when they can't
 			managed.Free ();
 			
 			return response;
@@ -240,7 +242,7 @@ namespace System.Windows.Browser.Net
 				NativeMethods.downloader_request_set_body (native, body, body.Length);
 			}
 			
-			NativeMethods.downloader_request_get_response (native, OnAsyncResponseStarted, OnAsyncDataAvailable, OnAsyncResponseFinished, Helper.GCHandleToIntPtr (managed));
+			NativeMethods.downloader_request_get_response (native, started, available, finished, Helper.GCHandleToIntPtr (managed));
 
 			wait_handle.Set ();
 		}
