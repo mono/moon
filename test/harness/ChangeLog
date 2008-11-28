@@ -1,5 +1,10 @@
 2008-11-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* test-runner/Test.cs: Newest advances in testing technology require
+	  xsp2.
+
+2008-11-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* test-runner/Driver.cs: Simplify included/excluded logic.
 
 2008-11-19  Sebastien Pouliot  <sebastien@ximian.com>
