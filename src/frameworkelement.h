@@ -154,6 +154,7 @@ protected:
 	// Methods for accessing a binding expression on a property
 	void SetBindingExpression (DependencyProperty *property, BindingExpressionBase *expr);
 	BindingExpressionBase *GetBindingExpression (DependencyProperty *property);
+	void ClearBindingExpression (DependencyProperty *property, BindingExpressionBase *expr);
 	
 	void BoundPropertyChanged (DependencyObject *sender, PropertyChangedEventArgs *args, BindingExpressionBase *expr);
 	static void bound_property_changed (DependencyObject *sender, PropertyChangedEventArgs *args, gpointer user_data);

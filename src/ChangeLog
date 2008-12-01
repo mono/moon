@@ -1,5 +1,30 @@
 2008-12-01  Chris Toshok  <toshok@ximian.com>
 
+	* frameworkelement.h: add decl for ClearBindingExpression.
+	
+	* frameworkelement.cpp (FrameworkElement::ClearBindingExpression):
+	factor out the 2 operations (Detach + hash_remove) here since
+	we'll be calling it in a couple places.
+	(binding_destroy): this should delete value, not call ValueFree.
+	(FrameworkElement::SetBindingExpression): call
+	ClearBindingExpression if there's a current one, and don't ref the
+	expression.  Value will hold one.
+	(FrameworkElement::ClearValue): a couple of changes.
+	
+	1. Call ClearBindingExpression instead of just removing the
+	binding from the hash (and not detaching it...)
+
+	2. don't remove the style value from the style has.
+
+	3. instead of looping over all the setters in the style just set
+	the value back to the value in the styles hash.
+	
+	4. if we're going to be resetting the value to the style, don't
+	notify listeners in UIElement::ClearValue.  it'll happen in
+	SetValue.
+
+2008-12-01  Chris Toshok  <toshok@ximian.com>
+
 	* template.cpp, template.h: when copying the tree over, register
 	the template element names to their instantiated counterparts.
 	and build up a NameScope object as we go.

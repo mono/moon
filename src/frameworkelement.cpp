@@ -27,7 +27,7 @@
 static void
 binding_destroy (gpointer value)
 {
-	((Value *) value)->FreeValue ();
+	delete ((Value *) value);
 }
 #endif
 
@@ -96,18 +96,14 @@ FrameworkElement::SetBindingExpression (DependencyProperty *property, BindingExp
 
 	BindingExpressionBase *cur_expr = GetBindingExpression (property);
 	
-	if (cur_expr) {
-		cur_expr->DetachListener (FrameworkElement::bound_property_changed);
-		((Value *)g_hash_table_lookup (bindings, property))->FreeValue ();
-		g_hash_table_remove (bindings, property);
-	}
+	if (cur_expr)
+		ClearBindingExpression (property, cur_expr);
 	
 	if (expr) {
 		expr->AttachListener (FrameworkElement::bound_property_changed, expr);
 		g_hash_table_insert (bindings, property, new Value (expr));
 		expr->SetTargetProperty (property);
 		expr->SetTarget (this);
-		expr->ref ();
 	}
 #endif
 }
@@ -124,22 +120,30 @@ FrameworkElement::GetBindingExpression (DependencyProperty *property)
 }
 
 void
+FrameworkElement::ClearBindingExpression (DependencyProperty *property, BindingExpressionBase *expr)
+{
+	expr->DetachListener (FrameworkElement::bound_property_changed);
+	g_hash_table_remove (bindings, property);
+}
+
+void
 FrameworkElement::ClearValue (DependencyProperty *property, bool notify_listeners)
 {
-	Value *value = (Value *) g_hash_table_lookup (bindings, property);
-	if (value) {
-		g_hash_table_remove (bindings, property);
-		value->FreeValue ();
-	}
-	if (g_hash_table_lookup (styles, property))
-		g_hash_table_remove (styles, property);
+#if SL_2_0
+	BindingExpressionBase *cur_expr = GetBindingExpression (property);
+	if (cur_expr)
+		ClearBindingExpression (property, cur_expr);
+
+	Value *style_value = (Value*)g_hash_table_lookup (styles, property);
+
+	notify_listeners = notify_listeners && !style_value;
+#endif
 
 	UIElement::ClearValue (property, notify_listeners);
 
 #if SL_2_0
-	Value *style = GetValue (FrameworkElement::StyleProperty);
-	if (style)
-		UpdateFromStyle (style->AsStyle ());
+	if (style_value)
+		SetValue (property, style_value);
 #endif
 }
 
