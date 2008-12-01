@@ -1,3 +1,9 @@
+2008-12-01  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: We need to compile and link the MS control resources
+	otherwise we're missing (and throwing) when accessing the exception
+	strings.
+
 2008-12-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* System, System/ChangeLog: Deleted empty directory.
