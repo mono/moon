@@ -152,15 +152,9 @@ namespace System.Windows {
 					return; // Nothing changed
 			
 			args = new DependencyPropertyChangedEventArgs (old_obj, new_obj, property);
-			
-			try {
-				custom_property.Metadata.property_changed_callback (obj, args);
-			}
-			catch (Exception e) {
-				Console.WriteLine ("Exception calling managed PropertyChangedCallback");
-				Console.WriteLine(e);
-			}
-			
+
+			// note: since callbacks might throw exceptions but we cannot catch them
+			custom_property.Metadata.property_changed_callback (obj, args);
 		}
 		
 		internal static DependencyProperty Lookup (Kind declaring_kind, string name, Type property_type)
