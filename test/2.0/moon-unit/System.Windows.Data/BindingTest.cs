@@ -351,7 +351,6 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
-		[Ignore ("I don't know how to find the default value that a DP has")]
 		public void PathNotValid()
 		{
 			Binding binding = new Binding {

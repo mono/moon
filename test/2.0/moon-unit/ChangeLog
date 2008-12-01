@@ -1,3 +1,8 @@
+2008-12-01  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs: If a null value is being set to a
+	DP when using databinding, clear the value instead. Makes test pass.
+
 2008-11-28  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* moon-unit.csproj: Add SliderTest.cs and OpenFileDialogTest.cs to
