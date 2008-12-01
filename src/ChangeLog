@@ -1,3 +1,12 @@
+2008-12-01  Fernando Herrera  <fherrera@novell.com>
+
+	* mediaelement.cpp:
+	* mediaplayer.cpp:
+	* pipeline.cpp:
+	* playlist.cpp:
+	* playlist.h: Implement Server side playlists. Still missing duration based
+	constraints.
+
 2008-12-01  Alan McGovern  <amcgovern@novell.com>
 
 	* border.h: ChildProperty should not be exposed

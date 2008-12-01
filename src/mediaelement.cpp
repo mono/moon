@@ -696,6 +696,9 @@ MediaElement::MediaFailed (ErrorEventArgs *args)
 	DownloaderAbort ();
 	
 	Emit (MediaFailedEvent, args);
+
+	if (playlist)
+		playlist->OnEntryFailed ();
 }
 
 Point

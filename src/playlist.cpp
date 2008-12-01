@@ -79,7 +79,12 @@ PlaylistEntry::PlaylistEntry (MediaElement *element, Playlist *parent, Media *me
 	source_name = NULL;
 	full_source_name = NULL;
 	start_time = 0;
-	duration = 0;
+	duration = NULL;
+	role = NULL;
+	repeat_count = 1;
+        is_sequential = false;
+        is_switch = false;
+        waiting = false;
 	play_when_available = false;
 	base = NULL;
 	title = NULL;
@@ -110,6 +115,7 @@ PlaylistEntry::~PlaylistEntry ()
 	g_free (copyright);
 	g_free (info_target);
 	g_free (info_url);
+	g_free (role);
 }
 
 void
@@ -241,20 +247,35 @@ PlaylistEntry::SetStartTime (TimeSpan start_time)
 	}
 }
 
-TimeSpan 
+Duration*
 PlaylistEntry::GetDuration ()
 {
 	return duration;
 }
 
 void 
-PlaylistEntry::SetDuration (TimeSpan duration)
+PlaylistEntry::SetDuration (Duration *duration)
 {
 	if (!(set_values & PlaylistNode::Duration)) {
 		this->duration = duration;
 		set_values = (PlaylistNode::Kind) (set_values | PlaylistNode::Duration);
 	}
 }
+
+Duration*
+PlaylistEntry::GetRepeatDuration ()
+{
+	return repeat_duration;
+}
+
+void 
+PlaylistEntry::SetRepeatDuration (Duration *duration)
+{
+	this->repeat_duration = duration;
+}
+
+
+
 
 const char *
 PlaylistEntry::GetInfoTarget ()
@@ -457,10 +478,42 @@ PlaylistEntry::Open ()
 	}
 }
 
+static gboolean
+playlist_check_duration (void *data)
+{
+	((PlaylistEntry*)data)->CheckDuration ();
+	return false;
+}
+
+void
+PlaylistEntry::CheckDuration ()
+{
+	element->Stop ();
+}
+	
+
+
+static gboolean
+element_play (void *data)
+{
+	MediaElement *element = (MediaElement*) data;
+	element->PlayInternal ();
+	return false;
+}
+
+
 bool
 PlaylistEntry::Play ()
 {
 	LOG_PLAYLIST ("PlaylistEntry::Play (), play_when_available: %s, media: %p, source name: %s\n", play_when_available ? "true" : "false", media, source_name ? source_name->ToString () : "NULL");
+
+	// FIXME we should set the timeout when the playing starts not when we request it
+	if (HasDuration ()) {
+		if (GetDuration ()->HasTimeSpan ())
+			element->GetTimeManager ()->AddTimeout (G_PRIORITY_DEFAULT - 10,
+								1000 * TimeSpan_ToSeconds (GetDuration ()->GetTimeSpan ()), 
+                                        			playlist_check_duration, this);
+	}
 
 	if (media == NULL) {
 		play_when_available = true;
@@ -469,7 +522,7 @@ PlaylistEntry::Play ()
 	}
 
 	element->SetMedia (media);
-	element->PlayInternal ();
+	element->GetTimeManager ()->AddTimeout (G_PRIORITY_DEFAULT - 10, 10000, element_play, element);
 
 	play_when_available = false;
 
@@ -531,11 +584,13 @@ PlaylistEntry::IsSingleFile ()
  * Playlist
  */
 
-Playlist::Playlist (MediaElement *element, IMediaSource *source)
-	: PlaylistEntry (element, NULL)
+Playlist::Playlist (MediaElement *element, Playlist *parent, IMediaSource *source)
+	: PlaylistEntry (element, parent, NULL)
 {
 	is_single_file = false;
 	autoplayed = false;
+	is_sequential = false;
+	is_switch = false;
 	Init (element);
 	this->source = source;
 }
@@ -636,25 +691,78 @@ Playlist::Open ()
 }
 
 void
-Playlist::OnEntryEnded ()
+Playlist::PlayNext (bool fail)
 {
 	PlaylistEntry *current_entry;
+	int count;
 	
-	LOG_PLAYLIST ("Playlist::OnEntryEnded () current_node: %p\n", current_node);
+	LOG_PLAYLIST ("Playlist::PlayNext () current_node: %p\n", current_node);
 	
 	if (!current_node)
 		return;
-	
-	current_node = (PlaylistNode *) current_node->next;
-	
+
+	SetWaiting (false);
+
 	current_entry = GetCurrentEntry ();
-	if (current_entry) {
+
+	if (fail)
+		current_entry->SetRepeatCount (0);
+
+	count = current_entry->GetRepeatCount ();
+	if (count > 1) {
+		current_entry->SetRepeatCount (count - 1);
 		element->SetPlayRequested ();
 		current_entry->Play ();
+		return;
 	}
+
+	if (HasDuration() && current_entry->GetDuration()->IsForever ()) {
+		element->SetPlayRequested ();
+		current_entry->Play ();
+		return;
+	}
+
+
+	if (current_entry->IsPlaylist ()) {
+		((Playlist*)current_entry)->PlayNext (fail);
+		if (((Playlist*)current_entry)->GetWaiting())
+			return;
+	}
+
 	
-	LOG_PLAYLIST ("Playlist::OnEntryEnded () current_node: %p [Done]\n", current_node);
+	if (current_node->next) {
+		current_node = (PlaylistNode *) current_node->next;
+	
+		current_entry = GetCurrentEntry ();
+		if (current_entry && (current_entry->GetParent ()->GetSequential() ||
+				      !current_entry->GetParent ()->GetSwitch() ||
+				      fail)) {
+			element->SetPlayRequested ();
+			if (!current_entry->Play ())
+				current_entry->GetParent ()->SetWaiting(true);
+		} 
+	} 
+
+	return;
+		
+	
+	LOG_PLAYLIST ("Playlist::PlayNext () current_node: %p [Done]\n", current_node);
 }
+
+void
+Playlist::OnEntryEnded ()
+{
+	LOG_PLAYLIST ("Playlist::OnEntryEnded ()\n");
+	PlayNext (false);
+}
+void
+Playlist::OnEntryFailed ()
+{
+	
+	LOG_PLAYLIST ("Playlist::OnEntryFailed ()\n");
+	PlayNext (true);
+}
+
 
 bool
 Playlist::Play ()
@@ -802,7 +910,7 @@ PlaylistParser::SetSource (IMediaSource *new_source)
 }
 
 void
-PlaylistParser::Setup ()
+PlaylistParser::Setup (XmlType type)
 {
 	playlist = NULL;
 	current_entry = NULL;
@@ -814,9 +922,15 @@ PlaylistParser::Setup ()
 	kind_stack = new List ();
 	PushCurrentKind (PlaylistNode::Root);
 
-	XML_SetUserData (internal->parser, this);
-	XML_SetElementHandler (internal->parser, on_start_element, on_end_element);
-	XML_SetCharacterDataHandler (internal->parser, on_text);
+	if (type == XML_TYPE_ASX3) {
+		XML_SetUserData (internal->parser, this);
+		XML_SetElementHandler (internal->parser, on_asx_start_element, on_asx_end_element);
+		XML_SetCharacterDataHandler (internal->parser, on_asx_text);
+	} else if (type == XML_TYPE_SMIL) {
+		XML_SetUserData (internal->parser, this);
+		XML_SetElementHandler (internal->parser, on_smil_start_element, on_smil_end_element);
+	}
+	
 }
 
 void
@@ -841,22 +955,35 @@ str_match (const char *candidate, const char *tag)
 }
 
 void
-PlaylistParser::on_start_element (gpointer user_data, const char *name, const char **attrs)
+PlaylistParser::on_asx_start_element (gpointer user_data, const char *name, const char **attrs)
 {
-	((PlaylistParser *) user_data)->OnStartElement (name, attrs);
+	((PlaylistParser *) user_data)->OnASXStartElement (name, attrs);
 }
 
 void
-PlaylistParser::on_end_element (gpointer user_data, const char *name)
+PlaylistParser::on_asx_end_element (gpointer user_data, const char *name)
 {
-	((PlaylistParser *) user_data)->OnEndElement (name);
+	((PlaylistParser *) user_data)->OnASXEndElement (name);
 }
 
 void
-PlaylistParser::on_text (gpointer user_data, const char *data, int len)
+PlaylistParser::on_asx_text (gpointer user_data, const char *data, int len)
 {
-	((PlaylistParser *) user_data)->OnText (data, len);
+	((PlaylistParser *) user_data)->OnASXText (data, len);
 }
+
+void
+PlaylistParser::on_smil_start_element (gpointer user_data, const char *name, const char **attrs)
+{
+	((PlaylistParser *) user_data)->OnSMILStartElement (name, attrs);
+}
+
+void
+PlaylistParser::on_smil_end_element (gpointer user_data, const char *name)
+{
+	((PlaylistParser *) user_data)->OnSMILEndElement (name);
+}
+
 
 static bool
 is_all_whitespace (const char *str)
@@ -911,7 +1038,7 @@ parse_int (const char **pp, const char *end, int *result)
 }
 
 static bool
-time_value_from_str (PlaylistParser *parser, const char *str, TimeSpan *res)
+duration_from_asx_str (PlaylistParser *parser, const char *str, Duration **res)
 {
 	const char *end = str + strlen (str);
 	const char *p;
@@ -973,14 +1100,101 @@ time_value_from_str (PlaylistParser *parser, const char *str, TimeSpan *res)
 
 	gint64 ms = ((hh * 3600) + (mm * 60) + ss) * 1000 + milliseconds;
 	TimeSpan result = TimeSpan_FromPts (MilliSeconds_ToPts (ms));
+	Duration *duration = new Duration (result);
 
-	*res = result;
+	*res = duration;
+
+	return true;
+}
+
+static bool
+duration_from_smil_clock_str (PlaylistParser *parser, const char *str, Duration **res)
+{
+	const char *end = str + strlen (str);
+	const char *p;
+
+	int hh = 0, mm = 0, ss = 0;
+	int milliseconds = 0;
+
+	if (str_match ("indefinite", str)) {
+		Duration *duration = new Duration (Duration::FOREVER);
+		*res = duration;
+		return true;
+	}
+
+	if (index (str, ':')) {
+		// Full or partial clock
+		return duration_from_asx_str (parser, str, res);
+	}
+
+
+	// Timecount
+	// http://www.w3.org/TR/2005/REC-SMIL2-20050107/smil-timing.html#Timing-ClockValueSyntax
+
+	p = str;
+
+	if (g_str_has_suffix (str, "h")) {
+		if (!parse_int (&p, end, &hh)) {
+			parser->ParsingError (new ErrorEventArgs (MediaError, 2210, "AG_E_INVALID_ARGUMENT"));
+			return false;
+		}
+		if (*p == '.') {
+			double fraction = atof (p);
+			mm = 60 * fraction;
+		}
+	} else if (g_str_has_suffix (str, "min")) {
+		if (!parse_int (&p, end, &mm)) {
+			parser->ParsingError (new ErrorEventArgs (MediaError, 2210, "AG_E_INVALID_ARGUMENT"));
+			return false;
+		}
+		if (*p == '.') {
+			double fraction = atof (p);
+			ss = 60 * fraction;
+		}
+	} else if (g_str_has_suffix (str, "ms")) {
+		if (!parse_int (&p, end, &milliseconds)) {
+			parser->ParsingError (new ErrorEventArgs (MediaError, 2210, "AG_E_INVALID_ARGUMENT"));
+			return false;
+		}
+	} else if (g_str_has_suffix (str, "s") || g_ascii_isdigit (str [strlen (str) - 1])) {
+		if (!parse_int (&p, end, &ss)) {
+			parser->ParsingError (new ErrorEventArgs (MediaError, 2210, "AG_E_INVALID_ARGUMENT"));
+			return false;
+		}
+		if (*p == '.') {
+			double fraction = atof (p);
+			milliseconds = 1000 * fraction;
+		}
+	} else {
+		parser->ParsingError (new ErrorEventArgs (MediaError, 2210, "AG_E_INVALID_ARGUMENT"));
+		return false;
+	}
+
+	gint64 ms = ((hh * 3600) + (mm * 60) + ss) * 1000 + milliseconds;
+	TimeSpan result = TimeSpan_FromPts (MilliSeconds_ToPts (ms));
+	Duration *duration = new Duration (result);
+
+	*res = duration;
+
+	return true;
+}
+
+static bool
+count_from_smil_str (PlaylistParser *parser, const char *str, int *res)
+{
+	if (str_match ("indefinite", str)) {
+		*res = -1;
+		return true;
+	}
+
+	double value = strtod (str, NULL);
+	*res = (int) ceil (value);
 
 	return true;
 }
 
 void
-PlaylistParser::OnStartElement (const char *name, const char **attrs)
+PlaylistParser::OnASXStartElement (const char *name, const char **attrs)
 {
 	PlaylistNode::Kind kind = StringToKind (name);
 	Uri *uri;
@@ -1005,7 +1219,8 @@ PlaylistParser::OnStartElement (const char *name, const char **attrs)
 			return;
 		}
 
-		playlist = new Playlist (element, source);
+		playlist = new Playlist (element, NULL, source);
+		playlist->SetSequential (true);
 
 		for (int i = 0; attrs [i] != NULL; i += 2) {
 			if (str_match (attrs [i], "VERSION")) {
@@ -1071,13 +1286,13 @@ PlaylistParser::OnStartElement (const char *name, const char **attrs)
 			ParsingError (new ErrorEventArgs (MediaError, 3005, "Invalid ASX attribute"));
 		break;
 	case PlaylistNode::Duration: {
-		TimeSpan ts;
+		Duration *dur;
 		for (int i = 0; attrs [i] != NULL; i += 2) {
 			if (str_match (attrs [i], "VALUE")) {
-				if (time_value_from_str (this, attrs [i+1], &ts)) {
+				if (duration_from_asx_str (this, attrs [i+1], &dur)) {
 					if (GetCurrentEntry () != NULL && GetParentKind () != PlaylistNode::Ref) {
-						LOG_PLAYLIST ("PlaylistParser::OnStartElement (%s, %p), found VALUE/timespan = %f s\n", name, attrs, TimeSpan_ToSecondsFloat (ts));
-						GetCurrentEntry ()->SetDuration (ts);
+						LOG_PLAYLIST ("PlaylistParser::OnStartElement (%s, %p), found VALUE/timespan = %f s\n", name, attrs, TimeSpan_ToSecondsFloat (dur->GetTimeSpan()));
+						GetCurrentEntry ()->SetDuration (dur);
 					}
 				}
 			} else {
@@ -1165,13 +1380,13 @@ PlaylistParser::OnStartElement (const char *name, const char **attrs)
 		}
 		break;
 	case PlaylistNode::StartTime: {
-		TimeSpan ts;
+		Duration *dur;
 		for (int i = 0; attrs [i] != NULL; i += 2) {
 			if (str_match (attrs [i], "VALUE")) {
-				if (time_value_from_str (this, attrs [i+1], &ts)) {
+				if (duration_from_asx_str (this, attrs [i+1], &dur) && dur->HasTimeSpan ()) {
 					if (GetCurrentEntry () != NULL && GetParentKind () != PlaylistNode::Ref) {
-						LOG_PLAYLIST ("PlaylistParser::OnStartElement (%s, %p), found VALUE/timespan = %f s\n", name, attrs, TimeSpan_ToSecondsFloat (ts));
-						GetCurrentEntry ()->SetStartTime (ts);
+						LOG_PLAYLIST ("PlaylistParser::OnStartElement (%s, %p), found VALUE/timespan = %f s\n", name, attrs, TimeSpan_ToSecondsFloat (dur->GetTimeSpan()));
+						GetCurrentEntry ()->SetStartTime (dur->GetTimeSpan ());
 					}
 				}
 			} else {
@@ -1223,10 +1438,10 @@ PlaylistParser::OnStartElement (const char *name, const char **attrs)
 }
 
 void
-PlaylistParser::OnEndElement (const char *name)
+PlaylistParser::OnASXEndElement (const char *name)
 {
 	PlaylistNode::Kind kind = GetCurrentKind ();
-	TimeSpan ts; 
+	Duration *dur; 
 
 	LOG_PLAYLIST ("PlaylistParser::OnEndElement (%s), GetCurrentKind (): %d, GetCurrentKind () to string: %s\n", name, kind, KindToString (kind));
 
@@ -1261,9 +1476,9 @@ PlaylistParser::OnEndElement (const char *name)
 			break;
 		if (current_text == NULL)
 			break;
-		time_span_from_str (current_text, &ts);
+		duration_from_asx_str (this, current_text, &dur);
 		if (GetCurrentEntry () != NULL)
-			GetCurrentEntry ()->SetDuration (ts);
+			GetCurrentEntry ()->SetDuration (dur);
 		break;
 	case PlaylistNode::Entry:
 		if (!AssertParentKind (PlaylistNode::Asx))
@@ -1329,7 +1544,7 @@ PlaylistParser::OnEndElement (const char *name)
 }
 
 void
-PlaylistParser::OnText (const char *text, int len)
+PlaylistParser::OnASXText (const char *text, int len)
 {
 	char *a = g_strndup (text, len);
 
@@ -1350,6 +1565,257 @@ PlaylistParser::OnText (const char *text, int len)
 		g_free (current_text);
 		current_text = b;
 	}
+}
+
+
+void
+PlaylistParser::GetSMILCommonAttrs (PlaylistEntry *entry, const char *name, const char **attrs)
+{
+	PlaylistNode::Kind kind = StringToKind (name);
+
+	for (int i = 0; attrs [i] != NULL; i += 2) {
+		if (str_match (attrs [i], "id")) {
+			if (attrs [i+1] == NULL || !g_ascii_isalpha (attrs [i+1][0])) {
+				ParsingError (new ErrorEventArgs (MediaError, 3005, "Invalid ASX attribute"));
+			}
+		} else if (str_match (attrs [i], "repeatDur")) {
+			Duration *dur;
+			if (duration_from_smil_clock_str (this, attrs [i+1], &dur)) {
+				if (dur->HasTimeSpan()) {
+					LOG_PLAYLIST ("PlaylistParser::GetSMILCommonAttrs (%p), found repeatDur/timespan = %f s\n", attrs, TimeSpan_ToSecondsFloat (dur->GetTimeSpan()));
+				} else {
+					LOG_PLAYLIST ("PlaylistParser::GetSMILCommonAttrs, found repeatDur/indefinite");
+				}
+				entry->SetRepeatDuration (dur);
+			}
+		} else if (str_match (attrs [i], "dur")) {
+			Duration *dur;
+			if (duration_from_smil_clock_str (this, attrs [i+1], &dur)) {
+				if (dur->HasTimeSpan()) {
+					LOG_PLAYLIST ("PlaylistParser::GetSMILCommonAttrs (%p), found dur/timespan = %f s\n", attrs, TimeSpan_ToSecondsFloat (dur->GetTimeSpan()));
+				} else {
+					LOG_PLAYLIST ("PlaylistParser::GetSMILCommonAttrs, found dur/indefinite");
+				}
+				entry->SetDuration (dur);
+			}
+		} else if (str_match (attrs [i], "repeatCount")) {
+			int count;
+			if (count_from_smil_str (this, attrs [i+1], &count)) {
+				LOG_PLAYLIST ("PlaylistParser::GetSMILCommonAttrs (%p), found repeatCount = %d\n", attrs,  count);
+				entry->SetRepeatCount (count);
+			}
+		} else if (kind == PlaylistNode::Media && (str_match (attrs [i], "src") ||
+							   str_match (attrs [i], "clipBegin") ||
+							   str_match (attrs [i], "clipBegin"))) {
+			// These are valid only for the media case, but we don't hanlde them here
+		} else {
+			ParsingError (new ErrorEventArgs (MediaError, 3005, "Invalid ASX attribute"));
+		}
+	}
+}
+	
+
+void
+PlaylistParser::OnSMILStartElement (const char *name, const char **attrs)
+{
+	PlaylistNode::Kind kind = StringToKind (name);
+	Uri *uri;
+	bool failed;
+
+	LOG_PLAYLIST ("PlaylistParser::OnSMILStartElement (%s, %p), kind = %d\n", name, attrs, kind);
+
+	PushCurrentKind (kind);
+
+	switch (kind) {
+	case PlaylistNode::Smil:
+		// Here the kind stack should be: Root+Smil
+		if (kind_stack->Length () != 2 || !AssertParentKind (PlaylistNode::Root)) {
+			// FIXME: no specific error codes for SMIL found at
+			// http://msdn.microsoft.com/en-us/library/cc189020(VS.95).aspx
+			// Check on SL 2.0 which one they throw
+			ParsingError (new ErrorEventArgs (MediaError, 3008, "ASX parse error"));
+			return;
+		}
+		playlist = new Playlist (element, NULL, source);
+		playlist->SetSwitch (false);
+		playlist->SetSequential (true);
+		GetSMILCommonAttrs (playlist, name, attrs);
+		current_entry = playlist;
+		break;
+	case PlaylistNode::Switch: {
+		 Playlist *newplaylist;
+
+		for (int i = 0; attrs [i] != NULL; i += 2) {
+			if (str_match (attrs [i], "id")) {
+				if (attrs [i+1] == NULL || !g_ascii_isalpha (attrs [i+1][0])) {
+					ParsingError (new ErrorEventArgs (MediaError, 3005, "Invalid ASX attribute"));
+				}
+			} else {
+				ParsingError (new ErrorEventArgs (MediaError, 3005, "Invalid ASX attribute"));
+			}
+		}
+
+		if (current_entry->IsPlaylist ()) {
+			newplaylist = new Playlist (element, (Playlist*)current_entry, source);
+			((Playlist*)current_entry)->AddEntry (newplaylist);
+		} else {
+			newplaylist = new Playlist (element, current_entry->GetParent (), source);
+			current_entry->GetParent ()->AddEntry (newplaylist);
+		}
+		newplaylist->SetSwitch (true);
+		newplaylist->SetSequential (false);
+
+                current_entry = newplaylist;
+		break;
+	}
+	case PlaylistNode::Excl: {
+		Playlist *newplaylist;
+
+		if (current_entry->IsPlaylist ()) {
+			newplaylist = new Playlist (element, (Playlist*)current_entry, source);
+			((Playlist*)current_entry)->AddEntry (newplaylist);
+		} else {
+			newplaylist = new Playlist (element, current_entry->GetParent (), source);
+			current_entry->GetParent ()->AddEntry (newplaylist);
+		}
+		newplaylist->SetSequential (false);
+		newplaylist->SetSwitch (false);
+		GetSMILCommonAttrs (newplaylist, name, attrs);
+                current_entry = newplaylist;
+		break;
+	}
+	case PlaylistNode::Seq: {
+		Playlist *newplaylist;
+
+		if (current_entry->IsPlaylist ()) {
+			newplaylist = new Playlist (element, (Playlist*)current_entry, source);
+			((Playlist*)current_entry)->AddEntry (newplaylist);
+		} else {
+			newplaylist = new Playlist (element, current_entry->GetParent (), source);
+			current_entry->GetParent ()->AddEntry (newplaylist);
+		}
+		newplaylist->SetSequential (true);
+		newplaylist->SetSwitch (false);
+		GetSMILCommonAttrs (newplaylist, name, attrs);
+		current_entry = newplaylist;
+		break;
+	}
+	case PlaylistNode::Media: {
+		PlaylistEntry *entry;
+		if (current_entry->IsPlaylist ()) {
+			entry = new PlaylistEntry (element, (Playlist*)current_entry);
+			((Playlist*)current_entry)->AddEntry (entry);
+		} else {
+			entry = new PlaylistEntry (element, current_entry->GetParent ());
+			current_entry->GetParent ()->AddEntry (entry);
+		}
+                current_entry = entry;
+		GetSMILCommonAttrs (entry, name, attrs);
+		for (int i = 0; attrs [i] != NULL; i += 2) {
+			if (str_match (attrs [i], "role") && attrs [i+1] != NULL) {
+				entry->SetRole (attrs [i+1]);
+			} else if (str_match (attrs [i], "src") && attrs [i+1] != NULL) {
+				if (GetCurrentContent () != NULL) {
+					failed = false;
+					uri = new Uri ();
+					if (!uri->Parse (attrs [i+1], true)) {
+						failed = true;
+					} else if (uri->protocol == NULL) {
+						failed = true;
+					} else if (g_strcasecmp (uri->protocol, "http") && 
+						   g_strcasecmp (uri->protocol, "https") && 
+						   g_strcasecmp (uri->protocol, "mms") &&
+						   g_strcasecmp (uri->protocol, "rtsp") && 
+						   g_strcasecmp (uri->protocol, "rstpt")) {
+						failed = true;
+					}
+
+					if (!failed) {
+						current_entry->SetSourceName (uri);
+					} else {
+						delete uri;
+						ParsingError (new ErrorEventArgs (MediaError, 1001, "AG_E_UNKNOWN_ERROR"));
+					}
+					uri = NULL;
+				}
+			}
+		}
+		break;
+	}
+	case PlaylistNode::Root:
+	case PlaylistNode::Unknown:
+	default:
+		LOG_PLAYLIST ("PlaylistParser::OnStartElement ('%s', %p): Unknown kind: %d\n", name, attrs, kind);
+		ParsingError (new ErrorEventArgs (MediaError, 3004, "Invalid ASX element"));
+		break;
+	}
+}
+
+void
+PlaylistEntry::Print (int depth)
+{
+	for (int i = 0; i <= depth; i++) printf (" ");
+	printf("media %s\n", ((PlaylistEntry*)this)->GetFullSourceName());
+}
+
+void
+Playlist::Print (int depth)
+{
+	current_node = (PlaylistNode *) entries->First ();
+
+	for (int i = 0; i <= depth; i++) printf (" ");
+	PlaylistEntry *entry;
+	if (GetSequential())
+		printf("seq\n");
+	else if (GetSwitch())
+		printf("switch\n");
+	else 
+		printf("excl\n");
+	while (current_node) {
+		entry = GetCurrentEntry();
+		if (entry) {
+			if (entry->IsPlaylist())
+				((Playlist*)entry)->Print (depth+1);
+			else
+				entry->Print (depth+1);
+		}
+		current_node = (PlaylistNode*)current_node->next;
+	} 
+	current_node = (PlaylistNode*) entries->First();
+}
+		
+		
+		
+		
+	
+
+void
+PlaylistParser::OnSMILEndElement (const char *name)
+{
+	PlaylistNode::Kind kind = GetCurrentKind ();
+
+	LOG_PLAYLIST ("PlaylistParser::OnSMILEndElement (%s), GetCurrentKind (): %d, GetCurrentKind () to string: %s\n", name, kind, KindToString (kind));
+
+	switch (kind) {
+	case PlaylistNode::Switch:
+	case PlaylistNode::Seq:
+	case PlaylistNode::Excl:
+		if (current_entry->IsPlaylist())
+			current_entry = current_entry->GetParent();
+		else
+			current_entry = current_entry->GetParent ()->GetParent();
+                break;
+	case PlaylistNode::Smil:
+		if (debug_flags & RUNTIME_DEBUG_PLAYLIST) {
+			playlist->Print (0);
+		}
+		break;
+	default:
+		break;
+	}
+
+
+	PopCurrentKind ();
 }
 
 bool
@@ -1377,6 +1843,20 @@ PlaylistParser::IsASX2 (IMediaSource *source)
 		
 	return strncmp (asx2_header, buffer, asx2_header_length) == 0;
 }
+
+bool
+PlaylistParser::IsSMIL (IMediaSource *source)
+{
+	static const char *smil_header = "<?wsx";
+	int smil_header_length = strlen (smil_header);
+	char buffer [20];
+
+	if (!source->Peek (buffer, smil_header_length))
+		return false;
+
+	return strncmp (smil_header, buffer, smil_header_length) == 0;
+}
+
 
 bool
 PlaylistParser::ParseASX2 ()
@@ -1424,7 +1904,7 @@ PlaylistParser::ParseASX2 ()
 	g_key_file_free (key_file);
 
 
-	playlist = new Playlist (element, source);
+	playlist = new Playlist (element, NULL, source);
 
 	PlaylistEntry *entry = new PlaylistEntry (element, playlist);
 	uri = new Uri ();
@@ -1515,19 +1995,24 @@ PlaylistParser::Parse ()
 	LOG_PLAYLIST ("PlaylistParser::Parse ()\n");
 
 	do {
-		Setup ();
-
 		// Don't try to parse anything until we have all the data.
 		size = source->GetSize ();
 		last_available_pos = source->GetLastAvailablePosition ();
 		if (size != -1 && last_available_pos != -1 && size != last_available_pos)
 			return MEDIA_NOT_ENOUGH_DATA; 
 
-		if (!this->IsASX3 (source) && this->IsASX2 (source)) {
+		if (this->IsASX2 (source)) {
 			/* Parse as a asx2 mms file */
+			Setup (XML_TYPE_NONE);
 			result = this->ParseASX2 ();
-		} else {
+		} else if (this->IsASX3 (source)) {
+			Setup (XML_TYPE_ASX3);
 			result = this->ParseASX3 ();
+		} else if (this->IsSMIL (source)) {
+			Setup (XML_TYPE_SMIL);
+			result = this->ParseSMIL ();
+		} else {
+			result = false;
 		}
 
 		if (internal->reparse)
@@ -1574,6 +2059,12 @@ PlaylistParser::ParseASX3 ()
 	}
 
 	return playlist != NULL;
+}
+
+bool
+PlaylistParser::ParseSMIL () {
+	//FIXME actually it's the same, but redo it to get nice error strings
+	return PlaylistParser::ParseASX3 ();
 }
 
 PlaylistEntry *
@@ -1649,6 +2140,7 @@ PlaylistParser::ParsingError (ErrorEventArgs *args)
 
 
 PlaylistParser::PlaylistKind PlaylistParser::playlist_kinds [] = {
+	/* ASX3 */
 	PlaylistParser::PlaylistKind ("ABSTRACT", PlaylistNode::Abstract), 
 	PlaylistParser::PlaylistKind ("ASX", PlaylistNode::Asx),
 	PlaylistParser::PlaylistKind ("ROOT", PlaylistNode::Root),
@@ -1669,6 +2161,13 @@ PlaylistParser::PlaylistKind PlaylistParser::playlist_kinds [] = {
 	PlaylistParser::PlaylistKind ("ENDMARKER", PlaylistNode::EndMarker),
 	PlaylistParser::PlaylistKind ("PARAM", PlaylistNode::Param),
 	PlaylistParser::PlaylistKind ("EVENT", PlaylistNode::Event),
+	/* SMIL */
+	PlaylistParser::PlaylistKind ("smil", PlaylistNode::Smil),
+	PlaylistParser::PlaylistKind ("switch", PlaylistNode::Switch),
+	PlaylistParser::PlaylistKind ("media", PlaylistNode::Media),
+	PlaylistParser::PlaylistKind ("excl", PlaylistNode::Excl),
+	PlaylistParser::PlaylistKind ("seq", PlaylistNode::Seq),
+
 	PlaylistParser::PlaylistKind (NULL, PlaylistNode::Unknown)
 };
 

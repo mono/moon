@@ -220,6 +220,7 @@ MediaPlayer::NotifyFinished ()
 	LOG_MEDIAPLAYER ("MediaPlayer::NotifyFinished (): Element: %p\n", element);
 	
 	Stop ();
+
 	if (element)
 		element->MediaFinished ();
 }
@@ -454,13 +455,14 @@ MediaPlayer::Open (Media *media)
 		return false;
 	}
 
-	if (entry != NULL && entry->HasDuration ()) {
-		asx_duration = TimeSpan_ToPts (entry->GetDuration ());
+	if (entry != NULL && entry->HasDuration () && entry->GetDuration ()->HasTimeSpan ()) {
+		asx_duration = TimeSpan_ToPts (entry->GetDuration ()->GetTimeSpan ());
 		if (asx_duration < duration || element->IsLive ()) {
 			duration = asx_duration;
 			SetBit (FixedDuration);
 		}
 	}
+	// FIME handle here repeat and infinite durations and so...
 
 	if (start_pts <= duration)
 		duration -= start_pts;

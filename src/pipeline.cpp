@@ -1046,7 +1046,8 @@ ASXDemuxerInfo::Supports (IMediaSource *source)
 		return MEDIA_FAIL;
 	
 	result = !g_ascii_strncasecmp (buffer, "<asx", 4) ||
-		!g_ascii_strncasecmp (buffer, "[Ref", 4);
+		!g_ascii_strncasecmp (buffer, "[Ref", 4) ||
+		!g_ascii_strncasecmp (buffer, "<?ws", 4);
 
 	return result ? MEDIA_SUCCESS : MEDIA_FAIL;
 }
