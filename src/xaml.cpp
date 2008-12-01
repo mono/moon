@@ -3143,26 +3143,28 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 	DependencyProperty *prop = NULL;
 	bool res;
 
+	if (Type::Find (property->info->GetKind ())->IsValueType ()) {
+		parser_error (p, item->element_name, NULL, -1, g_strdup_printf ("Value types (%s) do not have properties.", property->element_name));
+		g_strfreev (prop_name);
+		return false;
+	}
+
+	if (!property->IsDependencyObject ()) {
+		// Kinda an ugly assumption: It's not a DO and it's not a ValueType so it must be Managed.
+		XamlElementInstanceManaged *mp = (XamlElementInstanceManaged *) property;
+		g_strfreev (prop_name);
+
+		return mp->SetAttachedProperty (p, item, value);
+	}
+
 	if (!dep) {
 		// FIXME is this really where this check should live
 		parser_error (p, item->element_name, NULL, 2030,
 			      g_strdup_printf ("Property element %s cannot be used inside another property element.",
 					       property->element_name));
-		res = false;
-	}
 
-	if (!property->IsDependencyObject ()) {
-		// This means we are either setting a managed attached property or value property
-
-		// FIXME: I made this error message up.
-		// OTHER FIXME: so this doesn't really work because PROPERTY element's have their parent for the kind
-		/*
-		if (property->info->GetKind () != Type::MANAGED) {
-			parser_error (p, item->element_name, NULL, -1, g_strdup_printf ("Value types (%s) do not have properties.", property->element_name));
-		}
-		*/
-		XamlElementInstanceManaged *mp = (XamlElementInstanceManaged *) property;
-		res = mp->SetAttachedProperty (p, item, value);
+		g_strfreev (prop_name);
+		return false;
 	}
 
 	prop = DependencyProperty::GetDependencyProperty (item->info->GetKind (), prop_name [1]);

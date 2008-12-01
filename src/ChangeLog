@@ -1,3 +1,7 @@
+2008-12-01  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Value types can not have properties set on them.
+
 2008-12-01  Fernando Herrera  <fherrera@novell.com>
 
 	* mediaelement.cpp:
