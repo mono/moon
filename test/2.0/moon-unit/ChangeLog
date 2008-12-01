@@ -1,5 +1,15 @@
 2008-12-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* site/moon-unit-log.xsl: Added, shows html for our unit test results.
+	* moon-unit.mdp, moon-unit.csproj: Updated.
+	* Mono.Moonlight.UnitTesting/MoonLogProvider.cs, App.xaml.cs: Instead
+	  of sending one request for each message, add them all to an xml
+	  document and when the test harness has finished send the entire xml
+	  document. This fixes issues where the messages would reach the
+	  logfile in another order than they were sent.
+
+2008-12-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* System.Windows.Controls/ControlTemplateTest.cs,
 	  System.Windows.Controls/MediaElementTest.cs,
 	  System.Windows.Shapes/PathTest.cs, System.Windows/StyleTest.cs,

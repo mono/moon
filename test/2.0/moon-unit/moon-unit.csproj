@@ -81,6 +81,7 @@
     <Compile Include="System.Windows.Controls\GridTest.cs" />
     <Compile Include="System.Windows.Controls\MediaElementTest.cs" />
     <Compile Include="System.Windows.Controls\MediaElementTest.SlowStream.cs" />
+    <Compile Include="System.Windows.Controls\OpenFileDialogTest.cs" />
     <Compile Include="System.Windows.Controls\PanelTest.cs" />
     <Compile Include="System.Windows.Controls\SliderTest.cs" />
     <Compile Include="System.Windows.Data\BindingTest.cs" />
@@ -94,7 +95,9 @@
     <Compile Include="System.Windows.Media\LineGeometryTest.cs" />
     <Compile Include="System.Windows.Media\VisualTreeHelperTest.cs" />
     <Compile Include="System.Windows.Shapes\PathTest.cs" />
-    <Compile Include="System.Windows.Shapes\RectangleTest.cs" />
+    <Compile Include="System.Windows.Shapes\RectangleTest.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="System.Windows\ApplicationTest.cs" />
     <Compile Include="System.Windows\DependencyObjectTest.cs" />
     <Compile Include="System.Windows\DependencyPropertyAttachedTest.cs" />
@@ -104,7 +107,6 @@
     <Compile Include="System.Windows\FontStylesTest.cs" />
     <Compile Include="System.Windows\FontWeigthsTest.cs" />
     <Compile Include="System.Windows\FrameworkElementTest.cs" />
-    <Compile Include="System.Windows\OpenFileDialogTest.cs" />
     <Compile Include="System.Windows\PresentationFrameworkCollectionTest.cs" />
     <Compile Include="System.Windows\ResourceDictionaryTest.cs" />
     <Compile Include="System.Windows\RoutedEventArgsTest.cs" />

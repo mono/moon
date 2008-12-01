@@ -20,6 +20,7 @@ namespace Mono.Moonlight.UnitTesting
 	public partial class App : Application
 	{
 		MoonLogProvider moonlog;
+		UIElement test_page;
 
 		public App()
 		{
@@ -38,15 +39,29 @@ namespace Mono.Moonlight.UnitTesting
 			settings.TestAssemblies.Add (Assembly.GetExecutingAssembly ());
 			UnitTestSystem.PrepareCustomLogProviders (settings);
 			settings.LogProviders.Add (moonlog);
-			this.RootVisual = UnitTestSystem.CreateTestPage (settings);
+			test_page = UnitTestSystem.CreateTestPage (settings);
 			settings.TestHarness.TestHarnessCompleted += new EventHandler<TestHarnessCompletedEventArgs> (Harness_Completed);
+			this.RootVisual = test_page;
 		}
 
 		void Harness_Completed (object sender, TestHarnessCompletedEventArgs e)
 		{
 			try {
-				moonlog.ProcessCompleted (e);
-				HtmlPage.Window.Eval ("try { ShutdownHarness (); } catch (e) { }");
+				if (moonlog.ProcessCompleted (e, ShutdownHarness)) {
+					ShutdownHarness ();
+				}
+			} catch (Exception ex) {
+				Console.WriteLine (ex.Message);
+			}
+		}
+
+		void ShutdownHarness ()
+		{
+			try {
+				if (!test_page.CheckAccess ())
+					test_page.Dispatcher.BeginInvoke (ShutdownHarness);
+				else
+					HtmlPage.Window.Eval ("try { ShutdownHarness (); } catch (e) { }");
 			} catch (Exception ex) {
 				Console.WriteLine (ex.Message);
 			}
