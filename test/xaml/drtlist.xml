@@ -86,17 +86,14 @@
    <Test id="16"
 	inputFile="test-brush-linear-points.xaml"
 	masterFile10="../harness/masters/test-brush-linear-pointsMaster.png"
-	knownFailure="true"
    />
    <Test id="17"
 	inputFile="test-brush-linear.xaml"
 	masterFile10="../harness/masters/test-brush-linearMaster.png"
-	knownFailure="true"
    />
    <Test id="18"
 	inputFile="test-brush-radial.xaml"
 	masterFile10="../harness/masters/test-brush-radialMaster.png"
-	knownFailure="true"
    />
    <Test id="19"
 	inputFile="test-canvas-inside-canvas.xaml"
@@ -115,7 +112,6 @@
    <Test id="22"
 	inputFile="test-colors.xaml"
 	masterFile10="../harness/masters/test-colorsMaster.png"
-	knownFailure="true"
    />
    <Test id="23"
 	inputFile="test-custom-element.xaml"
@@ -367,7 +363,6 @@
    <Test id="77"
 	inputFile="test-relativetransform.xaml"
 	masterFile10="../harness/masters/test-relativetransformMaster.png"
-	knownFailure="true"
    />
    <Test id="78"
 	inputFile="test-render-xorigin.xaml"
@@ -518,7 +513,6 @@
 	inputFile="test-shape-rectangle.xaml"
 	masterFile10="../harness/masters/test-shape-rectangleMaster.png"
 	categories="rectangle"
-	knownFailure="true"
    />
    <Test id="112"
 	inputFile="test-shape-styles.xaml"
@@ -732,7 +726,6 @@
    <Test id="158"
         inputFile="test-blending-gradients.xaml"
         masterFile10="../harness/masters/test-blending-gradientsMaster.png"
-	knownFailure="true"
    />
    <Test id="159"
 	 inputFile="test-shape-path-stretch.xaml"
@@ -813,7 +806,6 @@
    <Test id="174"
          inputFile="test-canvas-no-size.html"
          masterFile10="../harness/masters/test-canvas-no-sizeMaster.png"
-	 knownFailure="true"
    />
    <Test id="175"
 	 inputFile="test-shape-line-stretch5.xaml"
@@ -869,7 +861,6 @@
    <Test id="186"
 	 inputFile="test-dead-downloaders.html"
 	 masterFile10="None"
-	 knownFailure="true"
 	 />
    <Test id="187"
 	 inputFile="test-downloaderprogress.html"
@@ -889,8 +880,6 @@
    <Test id="190"
 	 inputFile="test-downloader-events.html"
 	 masterFile10="None"
-	 knownFailure="True"
-	 knownFailureReason="We never call removed event handlers"
 	 />
    <Test id="191"
 	 inputFile="test-bubbling.html"
