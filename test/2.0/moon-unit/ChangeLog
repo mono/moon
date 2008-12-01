@@ -1,3 +1,8 @@
+2008-12-01  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Controls.Primitives/RepeatButtonTest.cs: Add tests
+	for Delay and Internal properties.
+
 2008-12-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* site/moon-unit-log.xsl: Added, shows html for our unit test results.

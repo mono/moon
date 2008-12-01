@@ -49,5 +49,77 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 			// default properties on Control...
 			ControlTest.CheckDefaultProperties (rb);
 		}
+
+		[TestMethod]
+		public void Delay ()
+		{
+			RepeatButton rb = new RepeatButton ();
+			Assert.Throws<ArgumentException> (delegate {
+				rb.Delay = -1;
+			}, "negative");
+
+			rb.Delay = 0;
+			Assert.AreEqual (0, rb.Delay, "0");
+
+			rb.Delay = Int32.MaxValue;
+			Assert.AreEqual (Int32.MaxValue, rb.Delay, "MaxValue");
+		}
+
+		[TestMethod]
+		public void Delay_SetValue ()
+		{
+			RepeatButton rb = new RepeatButton ();
+			Assert.Throws<ArgumentException> (delegate {
+				rb.SetValue (RepeatButton.DelayProperty, -1);
+			}, "negative");
+
+			rb.SetValue (RepeatButton.DelayProperty, 0);
+			Assert.AreEqual (0, rb.Delay, "0");
+
+			rb.SetValue (RepeatButton.DelayProperty, Int32.MaxValue);
+			Assert.AreEqual (Int32.MaxValue, rb.Delay, "MaxValue");
+
+			Assert.Throws<ArgumentException> (delegate {
+				rb.SetValue (RepeatButton.DelayProperty, null);
+			}, "non-int");
+			Assert.AreEqual (Int32.MaxValue, rb.Delay, "unchanged");
+		}
+
+		[TestMethod]
+		public void Interval ()
+		{
+			RepeatButton rb = new RepeatButton ();
+			Assert.Throws<ArgumentException> (delegate {
+				rb.Interval = -1;
+			}, "negative");
+
+			Assert.Throws<ArgumentException> (delegate {
+				rb.Interval = 0;
+			}, "0");
+
+			rb.Interval = Int32.MaxValue;
+			Assert.AreEqual (Int32.MaxValue, rb.Interval, "MaxValue");
+		}
+
+		[TestMethod]
+		public void Interval_SetValue ()
+		{
+			RepeatButton rb = new RepeatButton ();
+			Assert.Throws<ArgumentException> (delegate {
+				rb.SetValue (RepeatButton.IntervalProperty, -1);
+			}, "negative");
+
+			Assert.Throws<ArgumentException> (delegate {
+				rb.SetValue (RepeatButton.IntervalProperty, 0);
+			}, "0");
+
+			rb.SetValue (RepeatButton.IntervalProperty, Int32.MaxValue);
+			Assert.AreEqual (Int32.MaxValue, rb.Interval, "MaxValue");
+
+			Assert.Throws<ArgumentException> (delegate {
+				rb.SetValue (RepeatButton.IntervalProperty, null);
+			}, "non-int");
+			Assert.AreEqual (Int32.MaxValue, rb.Interval, "unchanged");
+		}
 	}
 }
