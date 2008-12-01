@@ -164,6 +164,7 @@ bool
 FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error)
 {
 #if SL_2_0
+	bool activeBinding = false;
 	BindingExpressionBase *cur_binding = GetBindingExpression (property);
 	BindingExpressionBase *new_binding = NULL;
 	
@@ -173,6 +174,7 @@ FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 	if (new_binding) {
 		// We are setting a new data binding; replace the
 		// existing binding if there is one.
+		activeBinding = true;
 		SetBindingExpression (property, new_binding);
 		value = new_binding->GetValue ();
 	} else if (cur_binding) {
@@ -181,6 +183,7 @@ FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 			// We have a two way binding, so we update the
 			// source object
 			cur_binding->UpdateSource (value);
+			activeBinding = true;
 			break;
 		default:
 			// Remove the current binding
@@ -195,7 +198,12 @@ FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 		return false;
 	}
 	
-	bool result = UIElement::SetValueWithErrorImpl (property, value, error);
+	bool result = true;
+	if (value == NULL && activeBinding)
+		UIElement::ClearValue (property);
+	else
+		result = UIElement::SetValueWithErrorImpl (property, value, error);
+
 	if (result && g_hash_table_lookup (styles, property))
 		g_hash_table_remove (styles, property);
 	
