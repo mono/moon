@@ -59,7 +59,7 @@ namespace System.Windows.Data {
 			}
 		}
 
-		internal FrameworkElement Element {
+		internal FrameworkElement Target {
 			get; set;
 		}
 		
@@ -67,18 +67,19 @@ namespace System.Windows.Data {
 			get; set;
 		}
 
+		// This is the object we're databound to
 		internal object DataSource {
 			get {
-				object target = Binding.Source;
-				FrameworkElement element = Element;
+				object source = Binding.Source;
+				FrameworkElement target = Target;
 				
-				while (target == null && element != null) {
-					if (element.DataContext != null)
-						target = element.DataContext;
+				while (source == null && target != null) {
+					if (target.DataContext != null)
+						source = target.DataContext;
 					else
-						element = element.Parent as FrameworkElement;
+						target = target.Parent as FrameworkElement;
 				}
-				return target;
+				return source;
 			}
 		}
 
@@ -97,6 +98,7 @@ namespace System.Windows.Data {
 			}
 		}
 
+		// This is the object at the end of the PropertyPath 
 		internal object PropertyTarget {
 			get; private set;
 		}
@@ -151,7 +153,7 @@ namespace System.Windows.Data {
 				if (Binding.Mode == BindingMode.OneWay && target is INotifyPropertyChanged) {
 					((INotifyPropertyChanged)target).PropertyChanged += delegate(object sender, PropertyChangedEventArgs e) {
 						if (p.Name.EndsWith (e.PropertyName))
-							Element.SetValue (Property, PropertyInfo.GetValue (PropertyTarget, null));
+							Target.SetValue (Property, PropertyInfo.GetValue (PropertyTarget, null));
 					};
 				}
 				

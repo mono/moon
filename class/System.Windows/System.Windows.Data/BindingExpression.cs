@@ -56,12 +56,9 @@ namespace System.Windows.Data
 			Value v;
 			object o;
 			if (base.TryGetValue (out o)) {
-				Console.WriteLine ("Databound value is: {0}", o);
 				v = DependencyObject.GetAsValue (o);
 			} else {
-				Console.WriteLine ("Couldn't get databound value");
-				v = new Value();
-				v.k = Kind.INVALID;
+				v = new Value { k = Kind.INVALID };
 			}
 
 			return v;

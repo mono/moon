@@ -55,7 +55,7 @@ namespace System.Windows {
 		{
 			BindingExpression e = new BindingExpression {
 				Binding = binding,
-				Element = this,
+				Target = this,
 				Property = dp
 			};
 			binding.Seal ();

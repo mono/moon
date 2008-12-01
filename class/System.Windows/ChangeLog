@@ -1,3 +1,9 @@
+2008-12-01  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingExpression.cs:
+	* System.Windows.Data/BindingExpressionBase.cs: Rename variables to
+	match the unmanaged API.
+
 2008-12-01  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* Makefile.am: add HyperlinkButton from MSCONTROLS in the build
