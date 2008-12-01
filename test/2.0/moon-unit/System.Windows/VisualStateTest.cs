@@ -28,6 +28,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void TestParse_NoManagedNamespace ()
 		{
 			Assert.Throws (delegate { 

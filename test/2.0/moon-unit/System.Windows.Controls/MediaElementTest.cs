@@ -50,6 +50,8 @@ namespace MoonTest.System.Windows.Controls
 		void client_OpenReadCompleted (object sender, OpenReadCompletedEventArgs e) {
 			completed = true;
 			try {
+				// Accessing e.Result causes a security exception in SL which makes the harness stop working
+				// if we don't handle the exception 
 				Console.WriteLine ("client_OpenRead: e.Result: {0}, e.ex: {1}", e.Result, e.Error);
 				if (e.Result != null)
 					media.SetSource (new SlowStream (e.Result));

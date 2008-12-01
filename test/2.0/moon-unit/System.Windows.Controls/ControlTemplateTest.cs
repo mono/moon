@@ -90,6 +90,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void TemplateInStaticResource ()
 		{
 			Console.WriteLine ("TemplateInStaticResource");
@@ -118,6 +119,7 @@ namespace MoonTest.System.Windows.Controls
 
 
 		[TestMethod]
+		[KnownFailure]
 		public void TemplateBindingTest ()
 		{
 			Console.WriteLine ("TemplateBindingTest");

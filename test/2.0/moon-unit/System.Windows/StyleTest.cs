@@ -101,6 +101,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		[KnownFailure]
 		public void MismatchTargetType ()
 		{
 			Style s = (Style)XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""CheckBox""><Setter Property=""Width"" Value=""10""/></Style>");
@@ -135,6 +136,7 @@ namespace MoonTest.System.Windows
 		}
 
         [TestMethod]
+		[KnownFailure]
         public void UseSetterTwice()
         {
             Style s1 = new Style(typeof(Rectangle));
