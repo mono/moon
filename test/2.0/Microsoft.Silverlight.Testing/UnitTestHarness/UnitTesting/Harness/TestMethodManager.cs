@@ -92,7 +92,7 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Harness
             // [Ignore]
             if (Provider.HasCapability(UnitTestProviderCapabilities.MethodCanIgnore) && _testMethod.Ignore) 
             {
-                LogWriter.Ignore(TestGranularity.TestScenario, _testMethod.Name);
+                LogWriter.Ignore(TestGranularity.TestScenario, _testMethod.Name, _testMethod);
                 return;
             }
 

@@ -1,3 +1,9 @@
+2008-12-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* TestMethodManager.cs, TestClassManager.cs,
+	  UnitTestLogMessageWriter.cs: Provide class or method in the log
+	  message for ignored tests.
+
 2008-11-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* VisualStudioLogProvider.Writer.cs, VisualStudioLogProvider.cs: Remove

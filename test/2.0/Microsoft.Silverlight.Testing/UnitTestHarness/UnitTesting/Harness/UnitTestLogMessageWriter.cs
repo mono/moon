@@ -96,7 +96,7 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Harness
         /// </summary>
         /// <param name="granularity">The granularity of the ignore operation.</param>
         /// <param name="name">The name of the test skipped.</param>
-        public void Ignore(TestGranularity granularity, string name)
+        public void Ignore(TestGranularity granularity, string name, ITestMethod method)
         {
             string message = String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.UnitTestMessage.LogIgnore, name);
             LogMessage m = Create(LogMessageType.TestExecution, message);
@@ -104,6 +104,24 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Harness
             DecorateNameProperty(m, name);
             DecorateTestGranularity(m, granularity);
             m[UnitTestLogDecorator.IgnoreMessage] = true;
+            m[UnitTestLogDecorator.TestMethodMetadata] = method;
+            Enqueue(m);
+        }
+
+        /// <summary>
+        /// Enqueues a Ignore message.
+        /// </summary>
+        /// <param name="granularity">The granularity of the ignore operation.</param>
+        /// <param name="name">The name of the test skipped.</param>
+        public void Ignore(TestGranularity granularity, string name, ITestClass test)
+        {
+            string message = String.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.UnitTestMessage.LogIgnore, name);
+            LogMessage m = Create(LogMessageType.TestExecution, message);
+            MarkUnitTestMessage(m);
+            DecorateNameProperty(m, name);
+            DecorateTestGranularity(m, granularity);
+            m[UnitTestLogDecorator.IgnoreMessage] = true;
+            m[UnitTestLogDecorator.TestClassMetadata] = test;
             Enqueue(m);
         }
 

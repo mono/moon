@@ -59,7 +59,7 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Harness
         {
             if (Provider.HasCapability(UnitTestProviderCapabilities.ClassCanIgnore) && _testClass.Ignore) 
             {
-                LogWriter.Ignore(TestGranularity.Test, _testClass.Name);
+                LogWriter.Ignore(TestGranularity.Test, _testClass.Name, _testClass);
                 return;
             }
 
