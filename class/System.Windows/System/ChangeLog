@@ -1,5 +1,0 @@
-2008-08-08  Sebastien Pouliot  <sebastien@ximian.com>
-
-	* UriTypeConverter.cs: Implement based on System.dll's version.
-	Don't include the type outside of Silverlight 2.0 (since it
-	already exists in the "normal" framework).

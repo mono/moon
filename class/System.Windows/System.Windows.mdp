@@ -211,7 +211,6 @@
     <File name="System.Windows.Media.Animation/ClockState.cs" subtype="Code" buildaction="Compile" />
     <File name="Microsoft.Internal" subtype="Directory" buildaction="Compile" />
     <File name="Microsoft.Internal/IManagedFrameworkInternalHelper.cs" subtype="Code" buildaction="Compile" />
-    <File name="System" subtype="Directory" buildaction="Compile" />
     <File name="System.Windows/ExceptionRoutedEventArgs.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/Expression.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/FontStretch.cs" subtype="Code" buildaction="Compile" />
@@ -260,7 +259,6 @@
     <File name="System.Windows/VisualStateManager.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/VisualTransition.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/ControlTemplate.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows.Controls/FileDialogFileInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/ItemCollection.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/ItemsControl.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/ItemsPanelTemplate.cs" subtype="Code" buildaction="Compile" />
@@ -320,6 +318,7 @@
     <File name="System.Windows.Controls/TextChangedEventHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/MultiScaleSubImage.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/MultiScaleImage.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/AutomationPeer.cs" subtype="Code" buildaction="Compile" />
     <File name="../Mono.Moonlight/Mono/GeneratedPInvokes.cs" subtype="Code" buildaction="Compile" />
     <File name="../Mono.Moonlight/Mono/Helper.cs" subtype="Code" buildaction="Compile" />
     <File name="../Mono.Moonlight/Mono/Kind.cs" subtype="Code" buildaction="Compile" />
@@ -335,6 +334,43 @@
     <File name="../Mono.Moonlight/Mono/XamlLoaderCallbacks.cs" subtype="Code" buildaction="Compile" />
     <File name="../Mono.Moonlight/Mono/XapHack.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Data/BindingExpression.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation/AutomationProperty.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation/DockPosition.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation/ExpandCollapseState.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation/RowOrColumnMajor.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation/ScrollAmount.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation/ToggleState.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation/WindowInteractionState.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation/WindowVisualState.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/AutomationControlType.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/AutomationEvents.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/FrameworkElementAutomationPeer.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/ItemAutomationPeer.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/ItemsControlAutomationPeer.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/PatternInterface.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Provider/IDockProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Provider/IGridItemProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Provider/IExpandCollapseProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Provider/IGridProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Provider/IInvokeProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Provider/IMultipleViewProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Provider/IRangeValueProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Provider/IRawElementProviderSimple.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Provider/IScrollItemProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Provider/IScrollProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Provider/ISelectionItemProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Provider/ISelectionProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Provider/ITableItemProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Provider/ITableProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Provider/IToggleProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Provider/ITransformProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Provider/IValueProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Provider/IWindowProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Markup/XmlnsPrefixAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls.Primitives/LayoutInformation.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls.Primitives/ScrollEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/ValidationError.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/ValidationErrorEventArgs.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="Mono.Moonlight" />

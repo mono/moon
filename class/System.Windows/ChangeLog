@@ -1,3 +1,8 @@
+2008-12-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* System, System/ChangeLog: Deleted empty directory.
+	* System.Windows.mdp: Updated with new files.
+
 2008-12-01  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingExpression.cs:
