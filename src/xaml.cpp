@@ -2929,7 +2929,7 @@ XamlElementInstanceManaged::SetAttachedProperty (XamlParserInfo *p, XamlElementI
 		return false;
 	}
 
-	p->loader->SetProperty (p->top_element ? p->top_element->GetManagedPointer () : NULL, ((XamlElementInfoManaged *) info)->xmlns, target->GetManagedPointer (), element_name, value->GetAsValue ());
+	return p->loader->SetProperty (p->top_element ? p->top_element->GetManagedPointer () : NULL, ((XamlElementInfoManaged *) info)->xmlns, target->GetManagedPointer (), element_name, value->GetAsValue ());
 }
 
 XamlElementInstance *
