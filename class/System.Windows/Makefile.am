@@ -379,6 +379,7 @@ system_windows_sources =							\
 	$(MSCONTROLS)/Src/ContentControl/ContentControl.cs			\
 	$(MSCONTROLS)/Src/ContentControl/ContentPresenter.cs			\
 	$(MSCONTROLS)/Src/GlobalSuppressions.cs					\
+	$(MSCONTROLS)/Src/HyperlinkButton/HyperlinkButton.cs			\
 	$(MSCONTROLS)/Src/ListBox/DisplayMemberValueConverter.cs		\
 	$(MSCONTROLS)/Src/ListBox/ListBox.cs					\
 	$(MSCONTROLS)/Src/ListBox/ListBoxItem.cs				\

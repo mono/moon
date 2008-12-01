@@ -7,7 +7,7 @@ using System;
 using System.ComponentModel; 
 using System.Diagnostics; 
 using System.Globalization;
-using System.Windows.Browser; 
+//using System.Windows.Browser; 
 using System.Windows.Controls.Primitives;
 using System.Windows.Media.Animation;
  
@@ -267,28 +267,29 @@ namespace System.Windows.Controls
         /// </summary>
         private void Navigate() 
         { 
-            Uri destination = GetAbsoluteUri();
- 
-            string target = TargetName;
-            try
-            { 
-                if (!string.IsNullOrEmpty(target))
-                {
-                    HtmlPage.Window.Navigate(destination, target); 
-                } 
-                else
-                { 
-                    HtmlPage.Window.Navigate(destination);
-                }
-            } 
-            catch (InvalidOperationException ex)
-            {
-                throw new InvalidOperationException( 
-                    string.Format(CultureInfo.InvariantCulture, 
-                        Resource.HyperlinkButton_Navigate_Failed,
-                        destination.ToString()), 
-                    ex);
-            }
+		throw new NotImplementedException ();
+//            Uri destination = GetAbsoluteUri();
+// 
+//            string target = TargetName;
+//            try
+//            { 
+//                if (!string.IsNullOrEmpty(target))
+//                {
+//                    HtmlPage.Window.Navigate(destination, target); 
+//                } 
+//                else
+//                { 
+//                    HtmlPage.Window.Navigate(destination);
+//                }
+//            } 
+//            catch (InvalidOperationException ex)
+//            {
+//                throw new InvalidOperationException( 
+//                    string.Format(CultureInfo.InvariantCulture, 
+//                        Resource.HyperlinkButton_Navigate_Failed,
+//                        destination.ToString()), 
+//                    ex);
+//            }
         } 
     }
 }

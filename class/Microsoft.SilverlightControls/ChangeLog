@@ -1,3 +1,8 @@
+2008-12-01  Stephane Delcroix  <stephane@delcroix.org>
+
+	* Controls/Src/HyperlinkButton/HyperlinkButton.cs: comment out the
+	internal Navigate (), throws NotImplemented instead
+
 2008-11-28  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Controls/Extended/Src/Slider/Slider.cs: Slider default values are
