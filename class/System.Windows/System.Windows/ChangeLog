@@ -1,5 +1,9 @@
 2008-12-01  Alan McGovern  <amcgovern@novell.com>
 
+	* DependencyProperty.g.cs: ChildProperty should not be exposed
+
+2008-12-01  Alan McGovern  <amcgovern@novell.com>
+
 	* FrameworkElement.cs: Rename variables to match the unmanaged API.
 
 2008-11-28  Alan McGovern  <amcgovern@novell.com>

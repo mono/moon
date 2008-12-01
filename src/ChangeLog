@@ -1,5 +1,9 @@
 2008-12-01  Alan McGovern  <amcgovern@novell.com>
 
+	* border.h: ChildProperty should not be exposed
+
+2008-12-01  Alan McGovern  <amcgovern@novell.com>
+
 	* frameworkelement.cpp: If a null value is being set to a DP when using
 	databinding, clear the value instead. Makes test pass. (left this out
 	of the last commit)

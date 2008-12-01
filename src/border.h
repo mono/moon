@@ -34,7 +34,7 @@ public:
 	static DependencyProperty *BorderBrushProperty;
 	/* @PropertyType=Thickness,DefaultValue=Thickness(0),GenerateAccessors */
 	static DependencyProperty *BorderThicknessProperty;
-	/* @PropertyType=UIElement,GenerateAccessors */
+	/* @PropertyType=UIElement,GenerateAccessors,ManagedFieldAccess=Internal */
 	static DependencyProperty *ChildProperty;
 	/* @PropertyType=CornerRadius,GenerateAccessors */
 	static DependencyProperty *CornerRadiusProperty;

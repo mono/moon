@@ -295,7 +295,7 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty BackgroundProperty = DependencyProperty.Lookup (Kind.BORDER, "Background", typeof (Brush));
 		public static readonly DependencyProperty BorderBrushProperty = DependencyProperty.Lookup (Kind.BORDER, "BorderBrush", typeof (Brush));
 		public static readonly DependencyProperty BorderThicknessProperty = DependencyProperty.Lookup (Kind.BORDER, "BorderThickness", typeof (Thickness));
-		public static readonly DependencyProperty ChildProperty = DependencyProperty.Lookup (Kind.BORDER, "Child", typeof (UIElement));
+		internal static readonly DependencyProperty ChildProperty = DependencyProperty.Lookup (Kind.BORDER, "Child", typeof (UIElement));
 		public static readonly DependencyProperty CornerRadiusProperty = DependencyProperty.Lookup (Kind.BORDER, "CornerRadius", typeof (CornerRadius));
 		public static readonly DependencyProperty PaddingProperty = DependencyProperty.Lookup (Kind.BORDER, "Padding", typeof (Thickness));
 
