@@ -14,6 +14,7 @@
 
 #include <config.h>
 #include "template.h"
+#include "namescope.h"
 
 class XamlTemplateBindingNode : public List::Node {
 public:
@@ -102,6 +103,7 @@ struct duplicate_value_closure {
 	ControlTemplate *t;
 	Control *source;
 	DependencyObject *dob;
+	NameScope *template_namescope;
 	List *bindings;
 };
 
@@ -114,17 +116,18 @@ ControlTemplate::duplicate_value (DependencyProperty *key,
 	ControlTemplate *t = closure->t;
 	Control *source = closure->source;
 	DependencyObject *dob = closure->dob;
+	NameScope *template_namescope = closure->template_namescope;
 	List *bindings = closure->bindings;
 
 	if (value->Is (Type::DEPENDENCY_OBJECT))
-		dob->SetValue (key, Value (t->DuplicateObject (source, value->AsDependencyObject(), bindings)));
+		dob->SetValue (key, Value (t->DuplicateObject (source, template_namescope, value->AsDependencyObject(), bindings)));
 	else
 		dob->SetValue (key, new Value (*value));
 }
 
 
 DependencyObject*
-ControlTemplate::DuplicateObject (Control *source, DependencyObject *dob, List* bindings)
+ControlTemplate::DuplicateObject (Control *source, NameScope *template_namescope, DependencyObject *dob, List* bindings)
 {
 	DependencyObject *new_dob = dob->GetType()->CreateInstance ();
 
@@ -144,7 +147,7 @@ ControlTemplate::DuplicateObject (Control *source, DependencyObject *dob, List* 
 
 		if (Type::Find(c->GetElementType())->IsSubclassOf(Type::DEPENDENCY_OBJECT)) {
 			for (int i = 0; i < c->GetCount(); i ++)
-				new_c->Add(Value (DuplicateObject(source, c->GetValueAt(i)->AsDependencyObject(), bindings)));
+				new_c->Add(Value (DuplicateObject(source, template_namescope, c->GetValueAt(i)->AsDependencyObject(), bindings)));
 		}
 		else {
 			for (int i = 0; i < c->GetCount(); i ++)
@@ -154,7 +157,7 @@ ControlTemplate::DuplicateObject (Control *source, DependencyObject *dob, List* 
 	else if (dob->Is (Type::FRAMEWORKTEMPLATE)) {
 		FrameworkTemplate *t = (FrameworkTemplate*)dob;
 		FrameworkTemplate *new_t = (FrameworkTemplate*)new_dob;
-		new_t->SetVisualTree ((FrameworkElement*)DuplicateObject (source, t->GetVisualTree(), bindings));
+		new_t->SetVisualTree ((FrameworkElement*)DuplicateObject (source, template_namescope, t->GetVisualTree(), bindings));
 	}
 
 	/* check if dob exists in the xaml binding hash. */
@@ -174,6 +177,10 @@ ControlTemplate::DuplicateObject (Control *source, DependencyObject *dob, List* 
 		}
 	}
 
+	/* check if the dob has an Name, and if so, register it in the returned namescope */
+	if (new_dob->GetName())
+		template_namescope->RegisterName (new_dob->GetName(), new_dob);
+
 	return new_dob;
 }
 
@@ -183,9 +190,15 @@ ControlTemplate::Apply (Control *control, List *bindings)
 	if (!visual_tree)
 		return NULL;
 
-	DependencyObject *instantiated_tree = DuplicateObject (control, visual_tree, bindings);
+	NameScope *template_namescope = new NameScope ();
 
-	return (FrameworkElement *)instantiated_tree;
+	DependencyObject *instantiated_tree = DuplicateObject (control, template_namescope, visual_tree, bindings);
+
+	FrameworkElement* fwe = (FrameworkElement*)instantiated_tree;
+	fwe->SetTemplateNameScope (template_namescope);
+	template_namescope->unref ();
+
+	return (FrameworkElement *)fwe;
 }
 
 XamlTemplateBinding::XamlTemplateBinding (FrameworkElement *target,

@@ -1,3 +1,16 @@
+2008-12-01  Chris Toshok  <toshok@ximian.com>
+
+	* template.cpp, template.h: when copying the tree over, register
+	the template element names to their instantiated counterparts.
+	and build up a NameScope object as we go.
+
+	* frameworkelement.cpp: add a "template_namescope" which maps
+	names that were registered in the template itself to elements in
+	the instantiated visual tree.
+
+	* control.cpp (Control::GetTemplateChild): look the child up in
+	the template namescope, not against the visual tree.
+
 2008-12-01  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Value types can not have properties set on them.

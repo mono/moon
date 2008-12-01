@@ -141,10 +141,13 @@ public:
 	VerticalAlignment GetVerticalAlignment ();
 	void SetVerticalAlignment (VerticalAlignment value);
 
+	void SetTemplateNameScope (NameScope *namescope);
+
 	virtual Value *GetLocalValue (DependencyProperty *property);
 	virtual void ClearValue (DependencyProperty *property, bool notify_listeners = true);
 
 protected:
+	NameScope *template_namescope;
 	GHashTable *bindings;
 	GHashTable *styles;
 	

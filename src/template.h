@@ -63,7 +63,7 @@ public:
 protected:
 	virtual ~ControlTemplate () {}
 
-	DependencyObject* DuplicateObject (Control *source, DependencyObject *dob, List* bindings);
+	DependencyObject* DuplicateObject (Control *source, NameScope *template_namescope, DependencyObject *dob, List* bindings);
 
 	static void duplicate_value (DependencyProperty *key, Value *value, gpointer closure);
 };

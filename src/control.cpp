@@ -16,6 +16,7 @@
 #include "runtime.h"
 #include "control.h"
 #include "canvas.h"
+#include "namescope.h"
 
 Control::Control ()
 {
@@ -211,8 +212,8 @@ Control::ElementRemoved (UIElement *item)
 DependencyObject *
 Control::GetTemplateChild (char *name)
 {
-	if (template_root)
-		return template_root->FindName (name);
+	if (template_namescope)
+		return template_namescope->FindName (name);
 	
 	return NULL;
 }

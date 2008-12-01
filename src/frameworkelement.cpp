@@ -14,6 +14,7 @@
 #include <math.h>
 
 #include "runtime.h"
+#include "namescope.h"
 #include "frameworkelement.h"
 #include "trigger.h"
 #include "thickness.h"
@@ -38,6 +39,7 @@ FrameworkElement::FrameworkElement ()
 #endif
 	measure_cb = NULL;
 	arrange_cb = NULL;
+	template_namescope = NULL;
 }
 
 FrameworkElement::~FrameworkElement ()
@@ -46,6 +48,11 @@ FrameworkElement::~FrameworkElement ()
 	g_hash_table_destroy (bindings);
 	g_hash_table_destroy (styles);
 #endif
+
+	if (template_namescope) {
+		template_namescope->unref();
+		template_namescope = NULL;
+	}
 }
 
 void
@@ -486,4 +493,11 @@ FrameworkElement::RegisterManagedOverrides (MeasureOverrideCallback measure_cb, 
 {
 	this->measure_cb = measure_cb;
 	this->arrange_cb = arrange_cb;
+}
+
+void
+FrameworkElement::SetTemplateNameScope (NameScope *namescope)
+{
+	template_namescope = namescope;
+	template_namescope->ref();
 }
