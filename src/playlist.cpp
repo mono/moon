@@ -82,9 +82,6 @@ PlaylistEntry::PlaylistEntry (MediaElement *element, Playlist *parent, Media *me
 	duration = NULL;
 	role = NULL;
 	repeat_count = 1;
-        is_sequential = false;
-        is_switch = false;
-        waiting = false;
 	play_when_available = false;
 	base = NULL;
 	title = NULL;
@@ -591,6 +588,7 @@ Playlist::Playlist (MediaElement *element, Playlist *parent, IMediaSource *sourc
 	autoplayed = false;
 	is_sequential = false;
 	is_switch = false;
+        waiting = false;
 	Init (element);
 	this->source = source;
 }
