@@ -1,3 +1,7 @@
+2008-12-02  Andreia Gaita  <shana@jitted.com>
+
+	* System.Windows/DependencyObject.cs: Register StackPanel as a DO
+
 2008-12-01  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* DependencyProperty.cs: Remove try/catch around custom_property.

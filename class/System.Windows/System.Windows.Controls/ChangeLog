@@ -1,3 +1,8 @@
+2008-12-02  Andreia Gaita  <shana@jitted.com>
+
+	* System.Windows.Controls/StackPanel.cs: Implement ArrangeOverride
+	and MeasureOverride
+
 2008-11-28  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* Control.cs (GetTemplateChild): Throw only if childName is null

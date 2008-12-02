@@ -34,11 +34,11 @@ namespace System.Windows.Controls {
 	public partial class StackPanel : Panel {
 
 		protected override sealed Size ArrangeOverride(Size arrangeSize) {
-			throw new NotImplementedException ();
+			return base.ArrangeOverride (arrangeSize);
 		}
 		
 		protected override sealed Size MeasureOverride(Size constraint) {
-			throw new NotImplementedException ();
+			return base.MeasureOverride (constraint);
 		}
 	}
 }
