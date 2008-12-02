@@ -194,7 +194,7 @@ namespace Moonlight {
 			foreach (string cs in CSharpFiles) {
 				if (cs.EndsWith (".g.cs"))
 					continue;
-				compiler_args.AppendFormat (" {0} ", Path.GetFileName (cs));
+				compiler_args.AppendFormat (" \"{0}\" ", cs);
 			}
 
 			foreach (string xaml in XamlFiles) {

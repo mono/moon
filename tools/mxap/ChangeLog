@@ -1,5 +1,9 @@
 2008-12-02  Jackson Harper  <jackson@ximian.com>
 
+	* mxap.cs: Just escape so we can have cs files in directories.
+
+2008-12-02  Jackson Harper  <jackson@ximian.com>
+
 	* mxap.cs: Make things work with directories that have spaces in
 	their names.
 
