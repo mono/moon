@@ -1,3 +1,7 @@
+2008-12-02  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* DependencyProperty.g.cs: regenerated
+
 2008-12-02  Alan McGovern  <amcgovern@novell.com>
 
 	* PropertyMetadata.cs:
