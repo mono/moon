@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="Windows-1252"?>
 <Canvas xmlns="http://schemas.microsoft.com/client/2007">
 <!-- http://www.w3.org/TR/SVG/paths.html#PathDataEllipticalArcCommands -->
 	<Ellipse Stroke="Black" StrokeThickness="1" Canvas.Left="25" Canvas.Top="25" Width="200" Height="100" />

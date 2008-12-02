@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="Windows-1252"?>
 <Canvas xmlns="http://schemas.microsoft.com/client/2007">
    <TextBlock Canvas.Left="0" Canvas.Top="0" Text="S 0,0 E 0,0" />
    <Rectangle Canvas.Left="0" Canvas.Top="20" Stroke="Black" Width="100" Height="50" >

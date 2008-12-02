@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="Windows-1252"?>
 <Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 <Rectangle Stroke="#000000" StrokeThickness="1" Canvas.Left="0" Canvas.Top="0" Width="400" Height="400" />
 
@@ -74,7 +75,8 @@
 		<Rectangle Fill="#000000" Stroke="#00FF00" StrokeThickness="0" Stretch="UniformToFill" Canvas.Left="330" Canvas.Top="50" Width="10" />
 		<!-- height only -->
 		<Rectangle Fill="#000000" Stroke="#0000FF" StrokeThicknews="0" Stretch="UniformToFill" Canvas.Left="350" Canvas.Top="50" Height="15" />
-	<!-- width and height -->
+
+	<!-- width and height -->
 		<Rectangle Fill="#000000" Stroke="#FF00FF" StrokeThickness="0" Stretch="UniformToFill" Canvas.Left="370" Canvas.Top="50" Width="10" Height="15" />
 
 <!-- StrokeThickness 2 -->
@@ -172,7 +174,8 @@
 		<!-- width and height -->
 		<Rectangle Fill="#000000" Stroke="#FF00FF" StrokeThickness="4" Stretch="Fill" Canvas.Left="170" Canvas.Top="170" Width="10" Height="15" />
 	<!-- Stretch="Uniform" -->
-		<!-- no width, no height ->
+		<!-- no width, no height 
+->
 		<Rectangle Fill="#000000" Stroke="#FF0000" StrokeThickness="4" Stretch="Uniform" Canvas.Left="210" Banvas.Top="170" />
 		<!-- width only --6
 		<Rectangle Fill="#000000" Stroke="#00FF00" StrokeThickness="4" Stretch="Uniform" Canvas.Left="230" Canvas.Top="170" Width="10" />
