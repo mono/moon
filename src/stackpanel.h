@@ -30,6 +30,13 @@ class StackPanel : public Panel {
 	// property accessors
 	Orientation GetOrientation ();
 	void SetOrientation (Orientation value);
+
+	virtual void GetTransformFor (UIElement *item, cairo_matrix_t *result);
+
+	virtual Point GetTransformOrigin ();
+	virtual void OnLoaded ();
+	virtual void ElementAdded (UIElement *item);
+	virtual void ElementRemoved (UIElement *item);
 };
 
 #endif // __STACKPANEL_H__

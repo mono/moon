@@ -1,5 +1,9 @@
 2008-12-02  Andreia Gaita  <shana@jitted.com>
 
+	* Makefile.am, stackpanel.cpp|h: Add StackPanel implementation
+
+2008-12-02  Andreia Gaita  <shana@jitted.com>
+
 	* panel.cpp: Fix debugging messages
 
 2008-12-01  Larry Ewing  <lewing@novell.com>

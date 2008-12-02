@@ -150,6 +150,7 @@ libmoon_la_SOURCES = 		\
 	runtime.cpp		\
 	shape.cpp		\
 	size.cpp		\
+	stackpanel.cpp		\
 	stylus.cpp		\
 	text.cpp		\
 	transform.cpp		\
