@@ -17,6 +17,32 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows.Data
 {
+
+    public class Data
+    {
+        public Brush Brush
+        {
+            get;
+            set;
+        }
+        public Data InnerData
+        {
+            get;
+            set;
+        }
+        public double Opacity
+        {
+            get;
+            set;
+        }
+
+        public Data()
+        {
+            Brush = new SolidColorBrush(Colors.Brown);
+            Opacity = 0.5f;
+        }
+    }
+
 	[TestClass]
 	public class BindingTest
 	{
@@ -51,24 +77,6 @@ namespace MoonTest.System.Windows.Data
 			}
 		}
 
-		public class Data
-		{
-			public Brush Brush {
-				get; set; 
-			}
-			public Data InnerData {
-				get; set;
-			}
-			public double Opacity {
-				get; set;
-			}
-
-			public Data()
-			{
-				Brush = new SolidColorBrush(Colors.Brown);
-				Opacity = 0.5f;
-			}
-		}
 
 		public class PropertyUpdater : INotifyPropertyChanged
 		{
@@ -401,6 +409,28 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 			Assert.IsTrue(block.ReadLocalValue(TextBlock.TextProperty) is BindingExpressionBase);
 		}
 		
+        [TestMethod]
+        public void XamlDataContext()
+        {
+            Canvas c = (Canvas)XamlReader.Load(@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+        xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+        x:Name=""LayoutRoot"">
+    <Canvas.DataContext>
+        <Rectangle Fill=""Blue"" />
+    </Canvas.DataContext>
+    <TextBlock Foreground=""{Binding Fill, Mode=OneWay}"" />
+</Canvas>");
+            Assert.IsInstanceOfType(c.Children[0], typeof(TextBlock), "#1");
+            TextBlock block = (TextBlock)c.Children[0];
+            Assert.IsInstanceOfType(block.Foreground, typeof(SolidColorBrush), "#2");
+
+            SolidColorBrush brush = (SolidColorBrush)block.Foreground;
+            Assert.AreNotEqual(brush.Color, Colors.Blue, "#3");
+
+            TextBlock normal = new TextBlock();
+            Assert.AreEqual(((SolidColorBrush)normal.Foreground).Color, brush.Color, "#3");
+        }
 		
 		[TestMethod]
 		[Ignore ("The parser should throw an exception for this")]

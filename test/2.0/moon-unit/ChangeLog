@@ -1,5 +1,9 @@
 2008-12-02  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingTest.cs: Add new test
+
+2008-12-02  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/DependencyPropertyAttachedTest.cs: Ensure the default
 	value of a CustomDP is propagated to the unmanaged
 
