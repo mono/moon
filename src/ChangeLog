@@ -1,5 +1,12 @@
 2008-12-01  Geoff Norton  <gnorton@novell.com>
 
+	* runtime.cpp:  Remove a comment around a debug guard that should
+	have never been here in the first place.  Fixes #449524
+
+	r: lewing
+
+2008-12-01  Geoff Norton  <gnorton@novell.com>
+
 	* audio.cpp: Fix a logic bug making it impossible to use Alsa
 	support
 
