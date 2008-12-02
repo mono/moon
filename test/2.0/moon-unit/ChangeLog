@@ -1,3 +1,8 @@
+2008-12-02  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* System.Windows.Controls/ProgressBarTest.cs: Tests for default
+	properties.
+
 2008-12-01  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Controls.Primitives/RepeatButtonTest.cs: Add tests
