@@ -9,7 +9,7 @@ run: $(desklet).xap
 	mono ../../../tools/mopen/mopen.exe -d $(desklet).xap
 
 $(desklet).xap: default.xaml $(desklet).cs
-	mono ../../../tools/mxap/mxap.exe --desktop --entry-point-type=$(entrypoint)
+	PKG_CONFIG_PATH=$(top_builddir)/gtk:$(top_builddir)/data:$(PKG_CONFIG_PATH) mono ../../../tools/mxap/mxap.exe --desktop --entry-point-type=$(entrypoint)
 
 CLEANFILES =			\
 	$(desklet).xap		\
@@ -20,4 +20,3 @@ CLEANFILES =			\
 	default.xaml.g.cs	\
 	App.xaml.g.cs		\
 	AppManifest.xaml
-	

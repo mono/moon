@@ -7,10 +7,10 @@ EXTRA_DIST = $(desklet).cs
 
 run: $(desklet).xap
 	mono ../../../tools/mopen/mopen.exe -d $(desklet).xap
-	
+
 $(desklet).xap: $(desklet).cs default.xaml App.xaml
-	mono ../../../tools/mxap/mxap.exe --desktop --entry-point-type=$(entrypoint)
-	
+	PKG_CONFIG_PATH=$(top_builddir)/gtk:$(top_builddir)/data:$(PKG_CONFIG_PATH) mono ../../../tools/mxap/mxap.exe --desktop --entry-point-type=$(entrypoint)
+
 CLEANFILES =				\
 	default.xaml.g.cs       	\
         App.xaml.g.cs           	\
@@ -20,4 +20,3 @@ CLEANFILES =				\
 	$(desklet).dll.mdb		\
 	$(desklet).g.resources		\
 	$(desklet).html
-	

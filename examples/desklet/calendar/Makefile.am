@@ -1,4 +1,5 @@
 desklet = calendar.xap
+entrypoint= Desklet.CalendarPanel.App
 
 noinst_DATA = default.xaml App.xaml $(desklet)
 
@@ -7,15 +8,15 @@ EXTRA_DIST = calendar.cs
 run: $(desklet)
 	mono ../../../tools/mopen/mopen.exe -d $(desklet)
 
-$(desklet): calendar.cs default.xaml App.xaml
-	mono ../../../tools/mxap/mxap.exe --desktop --entry-point-type=Desklet.CalendarPanel.App
+$(desklet).xap: $(desklet).cs default.xaml App.xaml
+	PKG_CONFIG_PATH=$(top_builddir)/gtk:$(top_builddir)/data:$(PKG_CONFIG_PATH) mono ../../../tools/mxap/mxap.exe --desktop --entry-point-type=$(entrypoint)
 
 CLEANFILES =			\
-	$(desklet)		\
-	calendar.g.resources	\
 	default.xaml.g.cs	\
 	App.xaml.g.cs		\
 	AppManifest.xaml	\
-	calendar.dll		\
-	calendar.dll.mdb	\
-	calendar.html
+	$(desklet).xap		\
+	$(desklet).g.resources	\
+	$(desklet).dll		\
+	$(desklet).dll.mdb	\
+	$(desklet).html
