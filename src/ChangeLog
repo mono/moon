@@ -1,3 +1,8 @@
+2008-12-02  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* control.h: Add DefaultStyleKeyProperty and IsEnabledProperty
+	* dependencyproperty.g.cpp: regenerated
+
 2008-12-02  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Map in enumerations in 2.0. So you can do something
