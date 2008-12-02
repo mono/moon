@@ -2637,8 +2637,14 @@ create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *n
 	}
 
 	XamlElementInfoImportedManaged *info = new  XamlElementInfoImportedManaged (g_strdup (name), NULL, v);
-	DependencyObject *dob = v->AsDependencyObject ();
-	dob->SetSurface (p->loader->GetSurface ());
+
+	if (v->Is (Type::DEPENDENCY_OBJECT)) {
+		DependencyObject *dob = v->AsDependencyObject ();
+		if (p->loader)
+			dob->SetSurface (p->loader->GetSurface ());
+		p->AddCreatedElement (dob);
+		dob->SetSurface (p->loader->GetSurface ());
+	}
 
 	return info;
 }
@@ -2913,7 +2919,7 @@ XamlElementInstanceManaged::TrySetContentProperty (XamlParserInfo *p, const char
 {
 	if (!XamlElementInstance::TrySetContentProperty (p, value)) {
 		const char* prop_name = info->GetContentProperty (p);
-		if (!prop_name || !p->cdata_content)
+		if (!p->cdata_content)
 			return false;
 		Value v = Value (value);
 		return p->loader->SetProperty (p->top_element ? p->top_element->GetManagedPointer () : NULL, ((XamlElementInfoManaged *) info)->xmlns, GetManagedPointer (), prop_name, &v);

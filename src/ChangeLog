@@ -1,5 +1,13 @@
 2008-12-02  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: We can map in non-DO managed elements now, so check to
+	make sure it's actually a dependency object.
+	- Pass NULL for the property name if we weren't able to query for
+	a content property name.  The managed backing might be able to
+	find a name some other way.
+
+2008-12-02  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: Return false if the base content property setter didnt
 	work.
 
