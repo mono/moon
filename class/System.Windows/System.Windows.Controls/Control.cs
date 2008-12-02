@@ -37,19 +37,6 @@ using System.Windows.Markup;
 namespace System.Windows.Controls {
 	public abstract partial class Control : FrameworkElement {
 
-		[MonoTODO]
-		protected object DefaultStyleKey {
-			get { return null; }
-			set { /* nothing yet */; }
-		}
-
-		[MonoTODO]
-		public bool IsEnabled {
-			get { return true; }
-			set { ; }
-		}
-
-		[MonoTODO]
 		public event DependencyPropertyChangedEventHandler IsEnabledChanged;
 
 		public bool ApplyTemplate()

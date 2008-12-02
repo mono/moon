@@ -1,3 +1,7 @@
+2008-12-02  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Control.cpp: Remove temporary properties (they are now generated)
+
 2008-12-02  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* ProgressBar.cs: stubbed to pass basic unit-tests
