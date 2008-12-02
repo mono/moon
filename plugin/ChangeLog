@@ -1,3 +1,10 @@
+2008-12-02  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (MoonlightScriptControlObject::Invoke): fix
+	isVersionSupported - i don't like knocking off 2.0 except when
+	PLUGIN_SL_2_0 is enabled, but it seems like if people are checking
+	2.0, they'll assume managed code.
+
 2008-11-26  Jackson Harper  <jackson@ximian.com>
 
 	* plugin.cpp|h: The parser no longer requires assemblies to be
