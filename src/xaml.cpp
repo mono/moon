@@ -62,6 +62,8 @@ class XNamespace;
 class XamlElementInfoNative;
 class XamlElementInstanceNative;
 class XamlElementInstanceValueType;
+class XamlElementInfoEnum;
+class XamlElementInstanceEnum;
 class XamlElementInfoManaged;
 class XamlElementInstanceManaged;
 class XamlElementInfoImportedManaged;
@@ -416,6 +418,49 @@ class XamlElementInstanceValueType : public XamlElementInstance {
 	virtual bool TrySetContentProperty (XamlParserInfo *p, const char *value) { return CreateValueItemFromString (value); }
 };
 
+class XamlElementInfoEnum : public XamlElementInfo {
+ public:
+	XamlElementInfoEnum (const char *name) : XamlElementInfo (name, Type::INVALID)
+	{
+	}
+
+	XamlElementInstance* CreateElementInstance (XamlParserInfo *p);
+	XamlElementInstance* CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o);
+	XamlElementInstance* CreatePropertyElementInstance (XamlParserInfo *p, const char *name) { return NULL; }
+};
+
+
+class XamlElementInstanceEnum : public XamlElementInstance {
+
+ protected:
+	Value *value_item;
+
+ public:
+	XamlElementInstanceEnum (XamlElementInfoEnum *element_info, const char *name, ElementType type);
+
+	virtual bool IsDependencyObject ()
+	{
+		return false;
+	}
+
+	virtual Value *GetAsValue ()
+	{
+		return value_item;
+	}
+
+	bool CreateEnumFromString (const char* str);
+
+	// An enum type doesn't really support anything. It's just here so people can do <Visibility>Visible</Visibility>
+	virtual DependencyObject *CreateItem () { return NULL; }
+	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value) { return false; }
+	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char *value) { return false; }
+	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child) { }
+	virtual void SetAttributes (XamlParserInfo *p, const char **attr) { }
+
+	virtual bool TrySetContentProperty (XamlParserInfo *p, XamlElementInstance *value) { return false; }
+	virtual bool TrySetContentProperty (XamlParserInfo *p, const char *value) { return CreateEnumFromString (value); }
+};
+
 
 class XamlElementInstanceTemplate : public XamlElementInstanceNative {
 public:
@@ -464,6 +509,11 @@ class DefaultNamespace : public XamlNamespace {
 		Type* t = Type::Find (el);
 		if (t)
 			return new XamlElementInfoNative (t);
+
+#if SL_2_0
+		if (enums_is_enum_name (el))
+			return new XamlElementInfoEnum (g_strdup (el));
+#endif
 
 		XamlElementInfo* managed_element = create_element_info_from_imported_managed_type (p, el);
 		if (managed_element)			
@@ -2814,6 +2864,32 @@ XamlElementInstanceValueType::SetAttributes (XamlParserInfo *p, const char **att
 {
 	value_type_set_attributes (p, this, attr);
 }
+
+
+bool
+XamlElementInstanceEnum::CreateEnumFromString (const char* str)
+{
+	int i = enums_str_to_int (element_name, str, true);
+	if (i == -1)
+		return false;
+		
+	value_item = new Value (i);
+	return true;
+}
+
+XamlElementInstance *
+XamlElementInfoEnum::CreateElementInstance (XamlParserInfo *p)
+{
+	return new XamlElementInstanceEnum (this, name, XamlElementInstance::ELEMENT);
+}
+
+XamlElementInstance *
+XamlElementInfoEnum::CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o)
+{
+	XamlElementInstance *res = new XamlElementInstanceEnum (this, name, XamlElementInstance::ELEMENT);
+	return res;
+}
+
 
 const char *
 XamlElementInfoManaged::GetContentProperty (XamlParserInfo *p)

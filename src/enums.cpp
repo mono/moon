@@ -392,3 +392,11 @@ enums_int_to_str (const char *prop_name, int e, bool sl2)
 	return str_from_enum (emu, e, sl2);
 }
 
+bool
+enums_is_enum_name (const char *enum_name)
+{
+	if (enum_map == NULL)
+		initialize_enums ();
+
+	return g_hash_table_lookup (enum_map, enum_name) != NULL;
+}

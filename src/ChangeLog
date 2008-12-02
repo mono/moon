@@ -1,5 +1,12 @@
 2008-12-02  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Map in enumerations in 2.0. So you can do something
+	like <Visibility>Collapsed</Visibility>
+	* enums.h|cpp: Expose a function so we can check if a certain enum
+	exists.
+
+2008-12-02  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: We can map in non-DO managed elements now, so check to
 	make sure it's actually a dependency object.
 	- Pass NULL for the property name if we weren't able to query for
