@@ -52,24 +52,12 @@ namespace MoonTest.System.Windows.Controls {
 
 		static public void CheckDefaultProperties (RangeBase rb)
 		{
-			// default properties on RangeBase
+			// default properties on ProgressBar, same as RangeBase defaults except for Maximum
 			Assert.AreEqual (0.1, rb.SmallChange, "SmallChange");
 			Assert.AreEqual (1.0, rb.LargeChange, "LargeChange");
 			Assert.AreEqual (100.0, rb.Maximum, "Maximum");
 			Assert.AreEqual (0.0, rb.Minimum, "Minimum");
 			Assert.AreEqual (0.0, rb.Value, "IsFocused");
-		}
-
-		[TestMethod]
-		public void Properties ()
-		{
-			Slider s = new Slider ();
-			// default properties on Slider
-			s.IsDirectionReversed = !s.IsDirectionReversed;
-
-			Assert.AreEqual (Orientation.Horizontal, s.Orientation, "Orientation");
-			s.Orientation = (Orientation) Int32.MaxValue;
-			Assert.AreEqual ((Orientation) Int32.MaxValue, s.Orientation, "MaxValue");
 		}
 
 		[TestMethod]
