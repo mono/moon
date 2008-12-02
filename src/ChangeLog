@@ -44,6 +44,13 @@
 	notify listeners in UIElement::ClearValue.  it'll happen in
 	SetValue.
 
+2008-12-01  Geoff Norton  <gnorton@novell.com>
+
+	* audio.cpp: Fix a logic error that prevented falling back to alsa when
+	built with both pulse and alsa support.
+
+	r: toshok
+
 2008-12-01  Chris Toshok  <toshok@ximian.com>
 
 	* template.cpp, template.h: when copying the tree over, register
