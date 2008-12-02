@@ -71,8 +71,10 @@ namespace MoonlightTests {
 		private string xsp_exec_dir;
 
 		private ExternalProcess location_xsp;
-		private Uri location;
-		private int LocationPort;
+		private string location;
+		private Uri location_uri;
+		private UriBuilder location_builder;
+		private int location_port;
 
 		private string codebehind;
 		private TestResult test_result;
@@ -153,16 +155,8 @@ namespace MoonlightTests {
 
 			
 			if (node.Attributes ["location"] != null) {
-				UriBuilder u = new UriBuilder (node.Attributes ["location"].Value);
-
+				test.location = node.Attributes ["location"].Value;
 				test.LocationPort = AvailableLocationPort++;
-				if (test.LocationPort == 8080)
-					test.LocationPort = AvailableLocationPort++;
-
-				u.Port = test.LocationPort;
-				test.location = u.Uri;
-				u.Path = Path.Combine (u.Path, Path.GetFileName (input_file));
-				test.input_file = u.ToString ();
 				test.remote = true;
 			}
 
@@ -179,6 +173,20 @@ namespace MoonlightTests {
 		public TestResult Result {
 			get { return test_result; }
 			set { test_result = value; }
+		}
+
+		public int LocationPort {
+			get {
+				return location_port;
+			}
+			set {
+				UriBuilder u = new UriBuilder (location);
+				location_port = value;
+				u.Port = location_port;
+				location_uri = u.Uri;
+				u.Path = Path.Combine (u.Path, Path.GetFileName (input_file));
+				input_file = u.ToString ();
+			}
 		}
 		
 		public string Id {
@@ -202,7 +210,7 @@ namespace MoonlightTests {
 		}
 
 		public string Location {
-			get { return location == null ? null : location.ToString (); }
+			get { return location; }
 		}
 
 		public bool Ignore {
@@ -448,24 +456,64 @@ namespace MoonlightTests {
 			string args = String.Format ("--root {0} --nonstop", Path.Combine (Path.GetDirectoryName (LocalFilePath), xsp_exec_dir));
 
 			xsp = new ExternalProcess ("xsp", args, -1);
+			xsp.RedirectStdOut = true;
 			xsp.Run (false);
-			// Wait a second to let xsp startup before continuing
-			// otherwise the test might make requests before xsp is ready
-			System.Threading.Thread.Sleep (1000);			
+
+			if (!WaitForXsp (xsp)) {
+				// We can't try another port, given that tests assume xsp is running on 8080.
+				Console.WriteLine ("Harness: xsp didn't startup correctly, assuming there already is an xsp process running.");
+			}
 		}
 
+		private static bool WaitForXsp (ExternalProcess process)
+		{
+			DateTime start = DateTime.Now;
+			string stdout;
+			while (true) {
+				Thread.Sleep (100);
+				if (start.AddSeconds (5) < DateTime.Now) {
+					Console.WriteLine ("Harness: timeout while waiting for xsp to start. Assuming xsp started successfully.");
+					return true;
+				}
+				
+				stdout = process.Stdout;
+				if (string.IsNullOrEmpty (stdout))
+					continue;
+
+				if (stdout.Contains ("Listening on port:"))
+					return true;
+
+				if (stdout.Contains ("Address already in use"))
+					return false;
+
+				if (!process.IsRunning) {
+					Console.WriteLine ("Harness: xsp quitted unexpectedly.");
+					return true;
+				}
+			}
+		}
+		
 		private void RunLocationServerIfNeeded ()
 		{
 			if (location == null)
 				return;
 
-			string args = String.Format ("--applications '{0}:{1},/:.' --nonstop --port {2}", location.AbsolutePath, base_directory, LocationPort);
-			location_xsp = new ExternalProcess ("xsp2", args, -1);
-			location_xsp.Run (false);
-
-			// Wait a second to let xsp startup before continuing
-			// otherwise the test might make requests before xsp is ready
-			System.Threading.Thread.Sleep (1000);			
+			Console.WriteLine ("Harness: Trying to start xsp on port {0}", LocationPort);
+			do {
+				string args = String.Format ("--applications '{0}:{1},/:.' --nonstop --port {2}", location_uri.AbsolutePath, base_directory, LocationPort);
+				location_xsp = new ExternalProcess ("xsp2", args, -1);
+				location_xsp.RedirectStdOut = true;
+				location_xsp.Run (false);
+				
+				if (!WaitForXsp (location_xsp)) {
+					Console.WriteLine ("Harness: Could not start xsp at port {0}, trying port {1}", LocationPort, AvailableLocationPort);
+					LocationPort = AvailableLocationPort++;
+					continue;
+				} else {
+					Console.WriteLine ("Harness. Started xsp on port {0} (args: {1})", LocationPort, args);
+					break;
+				}
+			} while (true);
 		}
 		
 		private void StopXspIfNeeded ()

@@ -1,3 +1,9 @@
+2008-12-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* test-runner/ExternalProcess.cs, test-runner/Test.cs: Detect if xsp
+	  started successfully or not, and if xsp failed to start due to port
+	  being in use, try another port.
+
 2008-11-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* test-runner/Test.cs: Newest advances in testing technology require

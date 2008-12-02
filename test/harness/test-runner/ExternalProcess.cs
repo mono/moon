@@ -28,6 +28,7 @@ using System.IO;
 using System.Threading;
 using System.Reflection;
 using System.Diagnostics;
+using System.Text;
 
 namespace MoonlightTests {
 
@@ -37,12 +38,13 @@ namespace MoonlightTests {
 		private bool process_running;
 		private Thread stdout_thread;
 		private Thread stderr_thread;
+		private bool redirect_stdout;
 
 		private string process_path;
 		private string arguments;
 		private int timeout;
 
-		private string stdout;
+		private StringBuilder stdout;
 		private string stderr;
 		private int exit_code = -1;
 
@@ -63,8 +65,13 @@ namespace MoonlightTests {
 			this.timeout = timeout;
 		}
 
+		public bool RedirectStdOut {
+			get { return redirect_stdout; }
+			set { redirect_stdout = value; }
+		}
+		
 		public string Stdout {
-			get { return stdout; }
+			get { return stdout == null ? null : stdout.ToString (); }
 		}
 
 		public string Stderr {
@@ -94,14 +101,27 @@ namespace MoonlightTests {
 			process.StartInfo.UseShellExecute = false;
 
 			if (Driver.SwallowStreams) {
-				process.StartInfo.RedirectStandardOutput = true;
 				process.StartInfo.RedirectStandardError = true;
 	
-				stdout_thread = new Thread (delegate () { stdout = process.StandardOutput.ReadToEnd (); });
 				stderr_thread = new Thread (delegate () { stderr = process.StandardError.ReadToEnd (); });
-				stdout_thread.IsBackground = true;
 				stderr_thread.IsBackground = true;
 			}
+
+			if (Driver.SwallowStreams || RedirectStdOut) {
+				process.StartInfo.RedirectStandardOutput = true;
+				stdout = new StringBuilder ();
+				stdout_thread = new Thread (delegate ()
+					{
+						string line;
+						while (null != (line = process.StandardOutput.ReadLine ())) {
+							stdout.AppendLine (line);
+							Console.WriteLine (line);
+						}
+					}
+					);
+				stdout_thread.IsBackground = true;
+			}
+			
 			try {
 				process.EnableRaisingEvents = true;
 				process_running = process.Start ();
@@ -113,10 +133,11 @@ namespace MoonlightTests {
 					ExitedEvent.Set ();
 				}; 
 
-				if (Driver.SwallowStreams) {
-					stdout_thread.Start ();
+				if (Driver.SwallowStreams)
 					stderr_thread.Start ();
-				}
+
+				if (Driver.SwallowStreams || RedirectStdOut)
+					stdout_thread.Start ();
 
 				if (wait && !process.WaitForExit (timeout))
 					process_timed_out = true;
