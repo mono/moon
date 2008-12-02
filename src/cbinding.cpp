@@ -989,9 +989,9 @@ dependency_property_register_full (Types *additional_types, Type::Kind type, con
 
 #if SL_2_0
 DependencyProperty *
-dependency_property_register_managed_property (Types *additional_types, const char *name, Type::Kind property_type, Type::Kind owner_type, bool attached, NativePropertyChangedHandler *callback)
+dependency_property_register_managed_property (Types *additional_types, const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, NativePropertyChangedHandler *callback)
 {
-	return DependencyProperty::RegisterManagedProperty (additional_types, name, property_type, owner_type, attached, callback);
+	return DependencyProperty::RegisterManagedProperty (additional_types, name, property_type, owner_type, defaultValue, attached, callback);
 }
 #endif
 

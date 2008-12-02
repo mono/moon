@@ -1,3 +1,8 @@
+2008-12-02  Alan McGovern  <amcgovern@novell.com>
+
+	* GeneratedPInvokes.cs: Ensure the default value of a CustomDP is
+	propagated to the unmanaged
+
 2008-12-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* GeneratedPInvokes.cs: Added a IsNullable setter (instead of adding

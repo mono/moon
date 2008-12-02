@@ -76,6 +76,8 @@ namespace System.Windows {
 			ManagedType owner_type;
 			NativePropertyChangedHandler handler = null;
 			CustomDependencyProperty result;
+
+			object defaultVal = null;
 			bool is_nullable = false;
 			
 			if (name == null)
@@ -98,11 +100,23 @@ namespace System.Windows {
 			
 			property_type = Types.Find (propertyType);
 			owner_type = Types.Find (ownerType);
-			
-			if (metadata != null)
+
+			if (metadata != null) {
 				handler = NativePropertyChangedCallback;
-			
-			IntPtr handle = NativeMethods.dependency_property_register_managed_property (name, property_type.native_handle, owner_type.native_handle, attached, handler);
+				defaultVal = metadata.default_value;
+			}
+
+			if (defaultVal == null && propertyType.IsValueType && !is_nullable)
+				defaultVal = Activator.CreateInstance (propertyType);
+
+			Value v = new Value { k = Kind.INVALID };
+			if (defaultVal == null)
+				v = new Value { k = Kind.INVALID };
+			else
+				v = DependencyObject.GetAsValue (defaultVal);
+
+			IntPtr handle = NativeMethods.dependency_property_register_managed_property (name, property_type.native_handle, owner_type.native_handle, ref v, attached, handler);
+			NativeMethods.value_free_value (ref v);
 			
 			if (handle == IntPtr.Zero)
 				return null;

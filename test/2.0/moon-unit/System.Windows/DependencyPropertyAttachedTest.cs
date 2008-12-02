@@ -79,6 +79,28 @@ namespace MoonTest.System.Windows
 			Assert.Throws (delegate { canvas.GetValue (InkPresenter.StrokesProperty); }, typeof (Exception)); // And this throws a catastrophic error.
 		}
 
+		[TestMethod ()]
+		public void Check_Default ()
+		{
+			DependencyProperty property = DependencyProperty.Register ("MyProp", typeof (int), typeof(Rectangle), new PropertyMetadata (100));
+			Rectangle r = new Rectangle ();
+			r.SetValue (property, 10);
+			Assert.AreEqual (10, r.GetValue (property), "#1");
+			r.ClearValue (property);
+			Assert.AreEqual (100, r.GetValue (property), "#2");
+		}
+
+		[TestMethod ()]
+		public void Check_Default_Nullable ()
+		{
+			DependencyProperty property = DependencyProperty.Register ("MyPropNullable", typeof (int?), typeof(Rectangle), null);
+			Rectangle r = new Rectangle ();
+			r.SetValue (property, 10);
+			Assert.AreEqual (10, r.GetValue (property), "#1");
+			r.ClearValue (property);
+			Assert.AreEqual (null, r.GetValue (property), "#2");
+		}
+
 		#region Canvas Custom
 		[TestMethod ()]
 		public void Register_Canvas_Custom_double ()

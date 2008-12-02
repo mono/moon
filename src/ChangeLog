@@ -1,3 +1,11 @@
+2008-12-02  Alan McGovern  <amcgovern@novell.com>
+
+	* cbinding.h:
+	* cbinding.cpp:
+	* dependencyproperty.h:
+	* dependencyproperty.cpp: Ensure the default value of a CustomDP is
+	propagated to the unmanaged
+
 2008-12-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* dependencyobject.cpp: We need to raise changed events when clearing

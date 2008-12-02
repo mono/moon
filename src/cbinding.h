@@ -488,7 +488,7 @@ DependencyProperty *dependency_property_register_full (Types *additional_types, 
 
 #if SL_2_0
 /* @GeneratePInvoke */
-DependencyProperty *dependency_property_register_managed_property (Types *additional_types, const char *name, Type::Kind property_type, Type::Kind owner_type, bool attached, NativePropertyChangedHandler *callback);
+DependencyProperty *dependency_property_register_managed_property (Types *additional_types, const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, NativePropertyChangedHandler *callback);
 #endif
 
 /* @GeneratePInvoke */

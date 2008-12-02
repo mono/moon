@@ -216,9 +216,13 @@ DependencyProperty::RegisterFull (Types *additional_types, Type::Kind type, cons
 }
 
 DependencyProperty *
-DependencyProperty::RegisterManagedProperty (Types *additional_types, const char *name, Type::Kind property_type, Type::Kind owner_type, bool attached, NativePropertyChangedHandler *callback)
+DependencyProperty::RegisterManagedProperty (Types *additional_types, const char *name, Type::Kind property_type, Type::Kind owner_type, Value *default_value, bool attached, NativePropertyChangedHandler *callback)
 {
-	return DependencyProperty::RegisterFull (additional_types, owner_type, name, NULL, property_type, attached, false, false, callback);
+	if (default_value && default_value->GetKind () == Type::INVALID)
+		default_value = NULL;
+	else
+		default_value = new Value (*default_value);
+	return DependencyProperty::RegisterFull (additional_types, owner_type, name, default_value, property_type, attached, false, false, callback);
 }
 #endif
 
