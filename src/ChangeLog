@@ -1,5 +1,11 @@
 2008-12-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* dependencyobject.cpp: We need to raise changed events when clearing
+	  values too.
+	* cbinding.cpp, cbinding.h: Regenerated.
+
+2008-12-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* dependencyproperty.h: Added a IsNullable setter (instead of adding
 	  yet another parameter to the Register methods).
 

@@ -996,6 +996,16 @@ dependency_property_register_managed_property (Types *additional_types, const ch
 #endif
 
 
+void
+dependency_property_set_is_nullable (DependencyProperty *instance, bool value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetIsNullable (value);
+}
+
+
 #if SL_2_0
 /**
  * Deployment

@@ -22,6 +22,7 @@ namespace MoonTest.System.Windows
 		 * Declaring Type _ Property Name _ [index, not included in property name _] _ Property Type
 		 */
 		private DependencyPropertyInfo Canvas_Custom_double;
+		private DependencyPropertyInfo Canvas_Custom_nullable_double;
 		private DependencyPropertyInfo Canvas_Custom_Canvas;
 		private DependencyPropertyInfo Canvas_Custom_CustomClass;
 		private DependencyPropertyInfo Canvas_Custom_CustomCanvasType;
@@ -129,7 +130,55 @@ namespace MoonTest.System.Windows
 				Assert.AreEqual (changes, info.Changes.Count, "Iteration #{0} there should be {1} changes, but there were {2} changes", iterations, changes, info.Changes.Count);
 			}
 		}
+		[TestMethod ()]
+		public void Register_Canvas_Custom_nullable_double ()
+		{
+			Canvas canvas = new Canvas ();
+			CustomCanvasType custom_canvas = new CustomCanvasType ();
+			DependencyProperty property;
+			DependencyPropertyInfo info;
+			DependencyPropertyInfo.ChangedInfo changed_info;
+			InkPresenter ink = new InkPresenter (); // The only builtin type derived from Canvas
+			object actual_value;
+			object previous_expected_value = null;
+			int iterations = 0;
+			int changes = 0;
+			
+			Canvas_Custom_nullable_double = new DependencyPropertyInfo ("Custom", typeof (Canvas), typeof (Nullable<double>), false);
+			info = Canvas_Custom_nullable_double;
 
+			property = info.Property;
+
+			Assert.AreEqual (null, (Nullable<double>) canvas.GetValue (property));
+
+			Assert.AreEqual (null, (Nullable<double>) ink.GetValue (property));
+
+			Assert.Throws (delegate { canvas.SetValue (property, 1); }, typeof (ArgumentException));
+			Assert.Throws (delegate { canvas.SetValue (property, ""); }, typeof (ArgumentException));
+			Assert.Throws (delegate { canvas.SetValue (property, new CustomClass ()); }, typeof (ArgumentException));
+			Assert.Throws (delegate { canvas.SetValue (property, new Canvas ()); }, typeof (ArgumentException));
+
+			foreach (object expected_value in new object [] { (Nullable<double>) 1.1, null, 2.2 }) {
+				iterations++;
+				
+				canvas.SetValue (property, expected_value);
+				actual_value = canvas.GetValue (property);
+
+				if ((Nullable<double>) expected_value != (Nullable<double>) previous_expected_value) {
+					changes++;
+					changed_info = info.Changes [info.Changes.Count - 1];
+					Assert.AreEqual ((Nullable<double>) changed_info.args.OldValue, (Nullable<double>) previous_expected_value);
+					Assert.AreEqual ((Nullable<double>) changed_info.args.NewValue, (Nullable<double>) expected_value);
+					Assert.AreSame (changed_info.obj, canvas);
+				}
+
+				previous_expected_value = expected_value;
+
+				Assert.AreEqual ((Nullable<double>) expected_value, (Nullable<double>) actual_value, "Iteration #{0}", iterations);
+				Assert.AreEqual (changes, info.Changes.Count, "Iteration #{0} there should be {1} changes, but there were {2} changes", iterations, changes, info.Changes.Count);
+			}			
+		}
+		
 		[TestMethod ()]
 		public void Register_Canvas_Custom_CustomClass ()
 		{

@@ -491,6 +491,9 @@ DependencyProperty *dependency_property_register_full (Types *additional_types, 
 DependencyProperty *dependency_property_register_managed_property (Types *additional_types, const char *name, Type::Kind property_type, Type::Kind owner_type, bool attached, NativePropertyChangedHandler *callback);
 #endif
 
+/* @GeneratePInvoke */
+void dependency_property_set_is_nullable (DependencyProperty *instance, bool value);
+
 #if SL_2_0
 /**
  * Deployment

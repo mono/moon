@@ -1260,6 +1260,13 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 				   Type::Find(property->GetOwnerType())->GetName (), property->GetName(), GetTypeName ());
 	}
 
+#if SL_2_0
+		if (property && property->GetChangedCallback () != NULL) {
+			NativePropertyChangedHandler *callback = property->GetChangedCallback ();
+			callback (property, this, current_value, NULL);
+		}
+#endif
+
 	delete current_value;
 }
 
