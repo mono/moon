@@ -1,0 +1,31 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<Rectangle Width="100" Height="100" Fill="Black" />
+	<Canvas Width="100" Height="100">
+	<Canvas.Background>
+		<ImageBrush ImageSource="mono.png" Stretch="None" />
+	</Canvas.Background>
+	</Canvas>
+
+	<Rectangle Width="100" Height="100" Canvas.Left="101" Fill="Red" />
+	<Canvas Width="100" Height="100" Canvas.Left="101" Opacity="0.5">
+	<Canvas.Background>
+		<ImageBrush ImageSource="mono.png" Stretch="None" />
+	</Canvas.Background>
+	</Canvas>
+
+	<Rectangle Width="100" Height="100" Canvas.Top="101" Fill="Green" />
+	<Rectangle Width="50" Height="50" Canvas.Top="125" Canvas.Left="25" StrokeThickness="20">
+	<Rectangle.Stroke>
+<!-- MS bug: the Opacity value isn't used in 1.0 but is in 2.0 -->
+		<ImageBrush ImageSource="mono.png" Stretch="None" Opacity="0.5" />
+	</Rectangle.Stroke>
+	</Rectangle>
+
+	<Rectangle Width="100" Height="100" Canvas.Top="101" Canvas.Left="101" Fill="Blue"/>
+	<Canvas Width="100" Height="100" Canvas.Top="101" Canvas.Left="101" Opacity="0.5">
+	<Canvas.Background>
+<!-- MS bug: the Opacity value isn't used in 1.0 but is in 2.0 -->
+		<ImageBrush ImageSource="mono.png" Stretch="None" Opacity="0.5" />
+	</Canvas.Background>
+	</Canvas>
+</Canvas>

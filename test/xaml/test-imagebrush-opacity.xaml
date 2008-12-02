@@ -16,7 +16,7 @@
 	<Rectangle Width="100" Height="100" Canvas.Top="101" Fill="Green" />
 	<Rectangle Width="100" Height="100" Canvas.Top="101">
 	<Rectangle.Fill>
-<!-- MS bug ? the Opacity value isn't used -->
+<!-- MS bug: the Opacity value isn't used in 1.0 but is used in 2.0 -->
 		<ImageBrush ImageSource="mono.png" Stretch="None" Opacity="0.5" />
 	</Rectangle.Fill>
 	</Rectangle>
@@ -24,7 +24,7 @@
 	<Rectangle Width="100" Height="100" Canvas.Top="101" Canvas.Left="101" Fill="Blue"/>
 	<Rectangle Width="100" Height="100" Canvas.Top="101" Canvas.Left="101" Opacity="0.5">
 	<Rectangle.Fill>
-<!-- MS bug ? the Opacity value isn't used -->
+<!-- MS bug: the Opacity value isn't used in 1.0 but is used in 2.0 -->
 		<ImageBrush ImageSource="mono.png" Stretch="None" Opacity="0.5" />
 	</Rectangle.Fill>
 	</Rectangle>

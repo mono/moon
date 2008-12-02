@@ -28,7 +28,6 @@
 	masterFile10="../harness/masters/test-animation-ellipse-strokeMaster.tif"
 	captureSpecifier="300,15"
         categories="animation"
-	knownFailure="true"
    />
    <Test id="8"
 	inputFile="test-animation-ellipse.xaml"
@@ -135,6 +134,8 @@
 	inputFile="test-imagebrush-opacity.xaml"
 	masterFile10="../harness/masters/test-imagebrush-opacityMaster.png"
 	categories="imagebrush,brush"
+	knownFailure="true"
+	knownFailureReason="Master is for 1.0"
    />
    <Test id="29"
 	inputFile="test-imagebrush-transform.xaml"
@@ -861,6 +862,7 @@
    <Test id="186"
 	 inputFile="test-dead-downloaders.html"
 	 masterFile10="None"
+	 knownFailure="true"
 	 />
    <Test id="187"
 	 inputFile="test-downloaderprogress.html"
@@ -994,5 +996,12 @@
    <Test id="10213"
 	 inputFile="test-inkpresenter-image.xaml"
 	 masterFile10="../harness/masters/test-inkpresenter-imageMaster.png"
+   />
+   <Test id="10214"
+	inputFile="test-imagebrush-opacity2.xaml"
+	masterFile10="../harness/masters/test-imagebrush-opacity2Master.png"
+	categories="imagebrush,brush"
+	knownFailure="true"
+	knownFailureReason="Master is for 1.0"
    />
 </DRTList>
