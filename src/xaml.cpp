@@ -2865,6 +2865,10 @@ XamlElementInstanceValueType::SetAttributes (XamlParserInfo *p, const char **att
 	value_type_set_attributes (p, this, attr);
 }
 
+XamlElementInstanceEnum::XamlElementInstanceEnum (XamlElementInfoEnum *element_info, const char *name, ElementType type) :
+	XamlElementInstance (element_info, name, type)
+{
+}
 
 bool
 XamlElementInstanceEnum::CreateEnumFromString (const char* str)
