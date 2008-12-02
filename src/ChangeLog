@@ -1,3 +1,7 @@
+2008-12-02  Andreia Gaita  <shana@jitted.com>
+
+	* panel.cpp: Fix debugging messages
+
 2008-12-01  Larry Ewing  <lewing@novell.com>
 
 	* brush.cpp, brush.h: add Fill and Stroke methods to brush so that

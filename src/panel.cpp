@@ -64,8 +64,8 @@ Panel::ComputeBounds ()
 
 #if DEBUG_BOUNDS
 		space (levelb + 4);
-		printf ("Item (%s, %s) bounds %g %g %g %g\n", item->GetName (), item->GetTypeName ()
-			r.x, r.y, r.w, r.h);
+		printf ("Item (%s, %s) bounds %g %g %g %g\n", item->GetName (), item->GetTypeName (),
+			r.x, r.y, r.width, r.height);
 #endif
 		bounds_with_children = bounds_with_children.Union (r);
 	}
@@ -78,9 +78,11 @@ Panel::ComputeBounds ()
 
 #if DEBUG_BOUNDS
 	space (levelb);
-	printf ("Panel: Leave ComputeBounds (%g %g %g %g)\n", bounds.x, bounds.y, bounds.w, bounds.h);
+	printf ("Panel: Leave ComputeBounds (%g %g %g %g)\n",
+		bounds.x, bounds.y, bounds.width, bounds.height);
 	space (levelb);
-	printf ("Panel: Leave ComputeBounds (%g %g %g %g)\n", bounds_with_children.x, bounds_with_children.y, bounds_with_children.w, bounds_with_children.h);
+	printf ("Panel: Leave ComputeBounds (%g %g %g %g)\n",
+		bounds_with_children.x, bounds_with_children.y, bounds_with_children.width, bounds_with_children.height);
 	levelb -= 4;
 #endif
 }
