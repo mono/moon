@@ -476,6 +476,10 @@ namespace Mono {
 		}
 
 		[DllImport ("moon")]
+		// void dependency_property_set_is_nullable (DependencyProperty *instance, bool value);
+		public extern static void dependency_property_set_is_nullable (IntPtr instance, bool value);
+
+		[DllImport ("moon")]
 		// Deployment *deployment_new ();
 		public extern static IntPtr deployment_new ();
 

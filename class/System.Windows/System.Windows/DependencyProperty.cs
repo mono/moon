@@ -55,7 +55,7 @@ namespace System.Windows {
 			
 			properties.Add (handle, this);
 			
-			if (this.property_type.IsValueType)
+			if (this.property_type.IsValueType && !IsNullable)
 				this.default_value = Activator.CreateInstance (this.property_type);
 			//Console.WriteLine ("DependencyProperty.DependencyProperty ({0:X}, {1}, {2})", handle, property_type.FullName, declaring_type.FullName);
 		}
@@ -76,6 +76,7 @@ namespace System.Windows {
 			ManagedType owner_type;
 			NativePropertyChangedHandler handler = null;
 			CustomDependencyProperty result;
+			bool is_nullable = false;
 			
 			if (name == null)
 				throw new ArgumentNullException ("name");
@@ -88,6 +89,12 @@ namespace System.Windows {
 			
 			if (ownerType == null)
 				throw new ArgumentNullException ("ownerType");
+
+			if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition () == typeof (Nullable<>)) {
+				is_nullable = true;
+				// Console.WriteLine ("DependencyProperty.RegisterAny (): found nullable {0}, got nullable {1}", propertyType.FullName, propertyType.GetGenericArguments () [0].FullName);
+				propertyType = propertyType.GetGenericArguments () [0];
+			}
 			
 			property_type = Types.Find (propertyType);
 			owner_type = Types.Find (ownerType);
@@ -99,7 +106,10 @@ namespace System.Windows {
 			
 			if (handle == IntPtr.Zero)
 				return null;
-			
+
+			if (is_nullable)
+				NativeMethods.dependency_property_set_is_nullable (handle, true);
+			    
 			result = new CustomDependencyProperty (handle, name, property_type, owner_type, metadata);
 			result.attached = attached;
 			result.PropertyChangedHandler = handler;
@@ -126,6 +136,8 @@ namespace System.Windows {
 				Console.Error.WriteLine ("DependencyProperty.NativePropertyChangedCallback: Got the event for a builtin dependency property.");
 				return;
 			}
+
+			// Console.WriteLine ("NativePropertyChangedCallback {3} {2} {0} {1}", old_value, new_value, custom_property.name, custom_property.property_type.FullName);
 			
 			if (custom_property.Metadata == null || custom_property.Metadata.property_changed_callback == null)
 				return;				
@@ -138,7 +150,7 @@ namespace System.Windows {
 			old_obj = DependencyObject.ValueToObject (property.property_type, old_value);
 			new_obj = DependencyObject.ValueToObject (property.property_type, new_value);
 			
-			if (old_obj == null && property.property_type.IsValueType)
+			if (old_obj == null && property.property_type.IsValueType && !property.IsNullable)
 				old_obj = property.DefaultValue;
 			
 			if (old_obj == null && new_obj == null)

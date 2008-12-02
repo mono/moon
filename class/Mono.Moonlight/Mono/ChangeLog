@@ -1,3 +1,8 @@
+2008-12-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* GeneratedPInvokes.cs: Added a IsNullable setter (instead of adding
+	  yet another parameter to the Register methods).
+
 2008-11-28  Alan McGovern  <amcgovern@novell.com>
 
 	* NativeMethods.cs:

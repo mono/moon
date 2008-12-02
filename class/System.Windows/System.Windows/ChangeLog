@@ -1,3 +1,8 @@
+2008-12-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* DependencyObject.cs, DependencyProperty.cs: Add support for
+	  Nullable<> DependencyProperties.
+
 2008-12-02  Andreia Gaita  <shana@jitted.com>
 
 	* System.Windows/DependencyObject.cs: Register StackPanel as a DO

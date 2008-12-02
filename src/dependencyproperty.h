@@ -38,6 +38,8 @@ class DependencyProperty {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool IsNullable () { return is_nullable; }
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetIsNullable (bool value) { is_nullable = value; }
 	bool IsReadOnly () { return is_readonly; }
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool IsAttached () { return is_attached; }
