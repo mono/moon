@@ -52,6 +52,24 @@ Brush::SetupBrush (cairo_t *cr, const Rect &area)
 }
 
 void
+Brush::Fill (cairo_t *cr, bool preserve)
+{
+	if (preserve)
+		cairo_fill_preserve (cr);
+	else 
+		cairo_fill (cr);
+}
+
+void
+Brush::Stroke (cairo_t *cr, bool preserve)
+{
+	if (preserve)
+		cairo_stroke_preserve (cr);
+	else
+		cairo_stroke (cr);
+}
+
+void
 Brush::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
 	// if our transforms change in some fashion, we need to redraw
@@ -696,6 +714,64 @@ ImageBrush::SetupBrush (cairo_t *cr, const Rect &area)
 	
 	cairo_set_source (cr, pattern);
 	cairo_pattern_destroy (pattern);
+}
+
+//
+// TileBrush
+//
+void
+TileBrush::Fill (cairo_t *cr, bool preserve)
+{
+	double opacity = GetOpacity ();
+
+	if (IS_INVISIBLE (opacity)) {
+		if (!preserve)
+			cairo_new_path (cr);
+		return;
+	}
+
+	if (!IS_TRANSLUCENT (opacity)) {
+		Brush::Fill (cr, preserve);
+		return;
+	}
+		
+	cairo_save (cr);
+	cairo_clip (cr);
+	cairo_paint_with_alpha (cr, opacity);
+	cairo_restore (cr);
+	
+	if (!preserve)
+		cairo_new_path (cr);
+}
+
+void
+TileBrush::Stroke (cairo_t *cr, bool preserve)
+{
+	double opacity = GetOpacity ();
+
+	if (IS_INVISIBLE (opacity)) {
+		if (!preserve)
+			cairo_new_path (cr);
+		return;
+	}
+
+	if (!IS_TRANSLUCENT (opacity)) {
+		Brush::Stroke (cr, preserve);
+		return;
+	}
+		
+	cairo_save (cr);
+	cairo_push_group_with_content (cr, CAIRO_CONTENT_ALPHA);
+	cairo_set_source_rgba (cr, 1.0, 1.0, 1.0, opacity);
+	cairo_stroke (cr);
+
+	cairo_pattern_t *mask = cairo_pop_group (cr);
+	cairo_restore (cr);
+	cairo_mask (cr, mask);
+	cairo_pattern_destroy (mask);
+
+	if (!preserve)
+		cairo_new_path (cr);
 }
 
 //

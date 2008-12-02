@@ -116,7 +116,7 @@ Panel::Render (cairo_t *cr, Region *region)
 			// FIXME - UIElement::Opacity may play a role here
 			cairo_new_path (cr);
 			area.Draw (cr);
-			cairo_fill (cr);
+			background->Fill (cr);
 		}
 	}
 }

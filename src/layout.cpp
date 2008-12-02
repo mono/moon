@@ -1271,14 +1271,14 @@ RenderLine (cairo_t *cr, const Point &origin, const Point &position, TextLayoutH
 				moon_close_path (path);
 				cairo_close_path (cr);
 				segment->path = path;
-				cairo_fill (cr);
+				fg->Fill (cr);
 			}
 		} else {
 			// it is an error to append a path with no data
 			if (segment->path->cairo.data)
 				cairo_append_path (cr, &segment->path->cairo);
 			
-			cairo_fill (cr);
+			fg->Fill (cr);
 		}
 		
 		if ((deco & TextDecorationsUnderline) && segment->width > 0.0) {
@@ -1291,9 +1291,10 @@ RenderLine (cairo_t *cr, const Point &origin, const Point &position, TextLayoutH
 			x1 = segment->width;
 			
 			cairo_new_path (cr);
+			
 			cairo_move_to (cr, 0.0, pos);
 			cairo_line_to (cr, x1, pos);
-			cairo_stroke (cr);
+			fg->Stroke (cr);
 			
 			cairo_set_antialias (cr, aa);
 		}

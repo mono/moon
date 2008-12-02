@@ -1352,7 +1352,7 @@ Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
 	fill->SetupBrush (cr, area);
 	
 	cairo_append_path (cr, &path->cairo);
-	cairo_fill (cr);
+	fill->Fill (cr);
 	
 	cairo_restore (cr);
 }

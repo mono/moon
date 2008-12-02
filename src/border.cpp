@@ -77,7 +77,7 @@ Border::Render (cairo_t *cr, Region *region)
 
 		cairo_new_path (cr);
 		extents.Draw (cr);
-		cairo_fill (cr);
+		background->Fill (cr);
 	}
 }
 

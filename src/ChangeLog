@@ -1,3 +1,16 @@
+2008-12-01  Larry Ewing  <lewing@novell.com>
+
+	* brush.cpp, brush.h: add Fill and Stroke methods to brush so that
+	we can handle image and video brush opacity properly.
+
+	* src/control.cpp
+	* src/layout.cpp
+	* src/panel.cpp
+	* src/shape.cpp
+	* src/text.cpp: use the new Fill and Stroke methods when using
+	brushes.  Fixes test-imagebrush-opacity* when the masters are
+	correctly updated.
+
 2008-12-01  Chris Toshok  <toshok@ximian.com>
 
 	* frameworkelement.h: add decl for ClearBindingExpression.

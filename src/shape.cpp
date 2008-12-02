@@ -218,7 +218,7 @@ Shape::Fill (cairo_t *cr, bool do_op)
 	if (do_op) {
 		fill->SetupBrush (cr, extents);
 		cairo_set_fill_rule (cr, convert_fill_rule (GetFillRule ()));
-		cairo_fill_preserve (cr);
+		fill->Fill (cr, true);
 	}
 	return true;
 }
@@ -368,7 +368,7 @@ Shape::Stroke (cairo_t *cr, bool do_op)
 {
 	if (do_op) {
 		stroke->SetupBrush (cr, extents);
-		cairo_stroke (cr);
+		stroke->Stroke (cr);
 	}
 }
 

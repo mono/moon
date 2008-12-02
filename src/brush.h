@@ -79,6 +79,9 @@ class Brush : public DependencyObject {
 
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 
+	virtual void Fill (cairo_t *cr, bool preserve = FALSE);
+	virtual void Stroke (cairo_t *cr, bool preserve = FALSE);
+
 	// returns true if OpacityProperty == 1.0.
 	// subclasses override this to deal with their local coloring
 	virtual bool IsOpaque ();
@@ -297,6 +300,8 @@ class TileBrush : public Brush {
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	TileBrush () { }
+	virtual void Fill (cairo_t *cr, bool preserve);
+	virtual void Stroke (cairo_t *cr, bool preserve);
 	
 	virtual Type::Kind GetObjectType () { return Type::TILEBRUSH; }
 
