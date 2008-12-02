@@ -170,7 +170,7 @@ namespace Moonlight {
 			foreach (string xaml_file in XamlFiles) {
 				if (Path.GetFileName (xaml_file) == "AppManifest.xaml")
 					continue;
-				respack_args.AppendFormat (" {0}", xaml_file);
+				respack_args.AppendFormat (" {0}", Path.GetFileName (xaml_file));
 			}
 
 			RunProcess ("respack", respack_args.ToString ());
@@ -194,7 +194,7 @@ namespace Moonlight {
 			foreach (string cs in CSharpFiles) {
 				if (cs.EndsWith (".g.cs"))
 					continue;
-				compiler_args.AppendFormat (" {0} ", cs);
+				compiler_args.AppendFormat (" {0} ", Path.GetFileName (cs));
 			}
 
 			foreach (string xaml in XamlFiles) {
@@ -202,7 +202,7 @@ namespace Moonlight {
 					continue;
 				if (!File.Exists (xaml + ".g.cs"))
 					continue;
-				compiler_args.AppendFormat (" {0}.g.cs ", xaml);
+				compiler_args.AppendFormat (" {0}.g.cs ", Path.GetFileName (xaml));
 			}
 
 			compiler_args.AppendFormat (" -resource:{0}.g.resources ", ApplicationName);

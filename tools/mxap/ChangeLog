@@ -1,3 +1,8 @@
+2008-12-02  Jackson Harper  <jackson@ximian.com>
+
+	* mxap.cs: Make things work with directories that have spaces in
+	their names.
+
 2008-11-02  Chris Toshok  <toshok@ximian.com>
 
 	* mxap.cs: if --desktop is given, invoke gmcs with the proper
