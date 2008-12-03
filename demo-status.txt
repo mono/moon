@@ -5,6 +5,12 @@ rating:2
  *  color gradient is wrong. Should go purple(top) to light blue(bottom)
  *  Mouse over animation is slow
 
+site:All Blacks
+url:http://allblack.com/gadget/default.htm
+rating:4
+ * Video / audio work great
+ * combing effect on video (happens in SL as well)
+
 site:Asset Allocator
 url:http://weihong.us/silverlight/asset.htm 
 rating:4
@@ -38,10 +44,8 @@ rating:4
 
 site:CoolWall
 url:http://mycooluncool.com
-rating:3
- * Kind of works.
- * Cpu is pegged a lot.
- * Cannot grab slider Bug 391677
+rating:4
+ * Works!
 
 site:E-commerce Catalog
 url:http://www.flowers-for-you.com.my/catalog2.aspx
@@ -66,14 +70,13 @@ rating:4
 
 site:Ink Journal
 url:http://www.thedatafarm.com/silverlight/journalsample
-rating:3
- * Line drawing lags behind the mouse cursor Bug 409793
+rating:4
+ * Fixed - Line drawing lags behind the mouse cursor Bug 409793
 
 site:Ink Tattoo Studio
 url:http://silverlight.net/samples/1.0/Ink-Tattoo-Studio/default.html
 rating:4
  * Works!
- * Sounds are delayed slightly Bug 409797
 
 site:Kit 3D
 url:http://www.markdawson.org/kit3d
@@ -88,7 +91,7 @@ rating:4
 
 site:Matrix Falling Chars
 url:http://blogs.msdn.com/synergist/archive/2007/09/28/matrix-falling-characters-in-silverlight.aspx
-rating:2
+rating:4
  * Works!
 
 site:Matrix Multiplication
@@ -98,8 +101,8 @@ rating:4
 
 site:Media Preview TV
 url:http://www.mediapreview.tv/
-rating:0
- * Never finishes loading. Stays at 99% Bug 424971
+rating:4
+ * Works
 
 site:Minesweeper
 url:http://www.softencrypt.com/mines/
@@ -113,21 +116,13 @@ rating:4
 
 site:Office Ribbon
 url:http://xmldocs.net
-rating:3
- * Drop down list doesn't stay open Bug 351568
-
-site:On9Games
-url:http://www.on9games.net/GameAction.aspx
-rating:3
- * [windowless] Animated runners do not appear Bug 375225
- * [windowless] In 'Featured', the FAQ doesn't show the answers to the questions Bug 375226
- * Mouse disappears during game play
+rating:4
+ * Works
 
 site:Page Turn
 url:http://silverlight.net/samples/1.0/Page-Turn/default.html
-rating:3
- * right page is black while page is turning Bug 385682
- * turning page is slow Bug 383907
+rating:4
+ * Works great!
 
 site:Photo Gallery Viewer
 url:http://www.designwithsilverlight.com/tutorials/photoGallery/gallery.html
@@ -148,10 +143,11 @@ rating:4
 
 site:Popfly
 url:http://www.popfly.com
-rating:3
- * Color picker not releaseing mouse cursor. Bug 410619
- * SIGABRT when playing game Bug 424984
- * Block menus don't show items Bug 412674
+rating:4
+ * Works great
+ * Fixed - Color picker not releaseing mouse cursor. Bug 410619
+ * Fixed - SIGABRT when playing game Bug 424984
+ * Fixed - Block menus don't show items Bug 412674
 
 site:Scrolling Video Playlist
 url:http://williablog.net/post/2007/11/Sample-Scrolling-Silverlight-Video-Playlist.aspx
@@ -196,8 +192,8 @@ rating:4
 
 site:Tafiti
 url:http://www.tafiti.com
-rating:2
- * Mouse over event not working Bug 412986
+rating:4
+ * Fixed - Mouse over event not working Bug 412986
 
 site:Tile Text
 url:http://silverlight.net/samples/1.0/Tile-Text/default.html
@@ -207,17 +203,22 @@ rating:4
 
 site:Trainmaster Cannonball Watch
 url: http://xmldocs.net/ball/
-rating:2
+rating:4
  * Night time lights are slow Bug 412445
 
 site:Video Tutorials
 url:http://mapul.com/Tutorials.html
-rating:2
+rating:4
  * Animation is slow if there is a video playing Bug 410638
  * Playback controls don't work Bug 412444
 
 site:Video Slide puzzle
 url:http://miguelmoreno.net/sandbox/Silverlight_0/
+rating:4
+ * Works
+
+site:Video.Show
+url:http://videoshow.vertigo.com
 rating:4
  * Works
 
