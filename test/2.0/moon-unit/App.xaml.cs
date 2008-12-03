@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 
 using Microsoft.Silverlight.Testing;
 using Microsoft.Silverlight.Testing.Harness;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Mono.Moonlight.UnitTesting
 {
@@ -39,9 +40,12 @@ namespace Mono.Moonlight.UnitTesting
 			settings.TestAssemblies.Add (Assembly.GetExecutingAssembly ());
 			UnitTestSystem.PrepareCustomLogProviders (settings);
 			settings.LogProviders.Add (moonlog);
+			if (!string.IsNullOrEmpty (HtmlPage.Document.DocumentUri.Query))
+				settings.TagExpression = HtmlPage.Document.DocumentUri.Query.Substring (1);
 			test_page = UnitTestSystem.CreateTestPage (settings);
 			settings.TestHarness.TestHarnessCompleted += new EventHandler<TestHarnessCompletedEventArgs> (Harness_Completed);
 			this.RootVisual = test_page;
+
 		}
 
 		void Harness_Completed (object sender, TestHarnessCompletedEventArgs e)
