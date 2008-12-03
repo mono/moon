@@ -323,6 +323,28 @@ namespace Mono.Xaml
 			if (error == null && unmanaged_value != IntPtr.Zero)
 				o_value = DependencyObject.ValueToObject (null, unmanaged_value);
 
+			//
+			// The Setter might actually want a collection, in this case we grab the old collection with the getter
+			// and then add the new object to the collection
+			//
+			// TODO: Check if the setter method still gets called on Silverlight
+			if (typeof (IList).IsAssignableFrom (set_params [1].ParameterType)) {
+				MethodInfo get_method = attach_type.GetMethod (String.Concat ("Get", name), BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+
+				if (get_method != null || get_method.GetParameters () == null || get_method.GetParameters ().Length != 1) {
+					IList the_list = (IList) get_method.Invoke (null, new object [] { target });
+
+					if (the_list != null) {
+						the_list.Add (o_value);
+						return true;
+					} else {
+						// Create an empty list here?
+					}
+				} else {
+					// I guess we need to wrap the current value in a collection, or does this error out?
+				}
+			}
+
 			set_method.Invoke (null, new object [] {target, o_value});
 			return true;
 		}
@@ -549,52 +571,7 @@ namespace Mono.Xaml
 				return SetProperty (top_level, xmlns, target, name, value_ptr);
 			} catch (Exception ex) {
 				Console.Error.WriteLine ("ManagedXamlLoader::SetProperty ({0}, {1}, {2}, {3}, {4}) threw an exception: {5}.", top_level, xmlns, target, name, value_ptr, ex.Message);
-				return false;
-			}
-		}
-
-		private bool cb_hookup_event (IntPtr target_ptr, IntPtr dest_ptr, string name, string value)
-		{
-			DependencyObject target = DependencyObject.Lookup (target_ptr);
-			DependencyObject dest = DependencyObject.Lookup (dest_ptr);
-
-			if (target == null) {
-				Console.WriteLine ("ManagedXamlLoader::HookupEvent ({0}, {1}, {2}): unable to create target object.", target_ptr, name, value);
-				return false;
-			}
-
-
-			EventInfo src = target.GetType ().GetEvent (name);
-			if (src == null) {
-				Console.WriteLine ("ManagedXamlLoader::HookupEvent ({0}, {1}, {2}): unable to find event name.", target, name, value);
-				return false;
-			}
-
-#if WITH_DLR
-			if (dlr_host != null) {
-				try {
-					dlr_host.HookupEvent (target, name, value);
-				}
-				catch (Exception ex) {
-					Console.WriteLine ("ManagedXamlLoader::HookupEvent ({0}, {1}, {2}): unable to hookup event: {3}", target_ptr, name, value, ex);
-					return false;
-				}
-			} else {
-				RememberEvent (target, name, value);
-			}
-#endif
-
-			try {
-				Delegate d = Delegate.CreateDelegate (src.EventHandlerType, dest, value);
-				if (d == null) {
-					//Console.WriteLine ("ManagedXamlLoader::HookupEvent ({0}, {1}, {2}): unable to create delegate (src={3} target={4}).", target_ptr, name, value, src.EventHandlerType, target);
-					return false;
-				}
-
-				src.AddEventHandler (target, d);
-				return true;
-			}
-			catch {
+				Console.Error.WriteLine (ex);
 				return false;
 			}
 		}

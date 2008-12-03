@@ -1,5 +1,13 @@
 2008-12-02  Jackson Harper  <jackson@ximian.com>
 
+	* ManagedXamlLoader.cs: Sometimes we are setting an attached
+	property to a single value, but the property is actually a
+	collection.  In this case we use the getter to get the collection
+	and then add the item to the collection.
+	- remove some dead code (event hookup)
+	
+2008-12-02  Jackson Harper  <jackson@ximian.com>
+
 	* ManagedXamlLoader.cs: CreateComponent can create non-DO objects
 	now.
 	- Fix error message.
