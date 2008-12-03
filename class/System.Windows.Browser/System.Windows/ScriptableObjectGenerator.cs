@@ -322,6 +322,12 @@ namespace System.Windows
 
 		internal static void ValueFromObject (ref Value v, object o)
 		{
+			if (o == null) {
+				v.k = Kind.NPOBJ;
+				v.u.p = IntPtr.Zero;
+				return;
+			}
+			
 			switch (Type.GetTypeCode (o.GetType())) {
 			case TypeCode.Boolean:
 				v.k = Kind.BOOL;

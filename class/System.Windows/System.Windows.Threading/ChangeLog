@@ -1,3 +1,9 @@
+2008-12-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* DispatcherTimer.cs: timer_callback: Catch all exceptions. Prevents
+	  mono from crashing due to exceptions crossing managed-native
+	  boundary.
+
 2008-08-14  Geoff Norton  <gnorton@novell.com>
 
 	* Dispatcher.cs, DispatcherTimer.cs: Use the time manager

@@ -1,3 +1,8 @@
+2008-12-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* ScriptableObjectGenerator.cs: Add support for retrieving a null
+	  Value.
+
 2008-11-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* ScriptableObjectGenerator.cs: Some marshalling fixes for managed

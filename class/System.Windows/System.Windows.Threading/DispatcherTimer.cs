@@ -73,10 +73,17 @@ namespace System.Windows.Threading {
 
 		bool timer_callback (IntPtr data)
 		{
-			Tick (this, EventArgs.Empty);
+			try {
+				Tick (this, EventArgs.Empty);
+				// If we are killed by Enabled or Stop, still return that value
+				return source_id != 0;
+			} catch (Exception ex) {
+				Console.WriteLine (ex.ToString ());
+			} catch {
+				Console.WriteLine ("DispatcherTimer.timer_callback exception.");
+			}
 
-			// If we are killed by Enabled or Stop, still return that value
-			return source_id != 0;
+			return false;
 		}
 	}
 
