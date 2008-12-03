@@ -1,3 +1,10 @@
+2008-12-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+	* pipeline.cpp: IMediaStream::Dispose: delete our queue of frames.
+	  Plugs a memory leak. [Backport of r118496]
+	* pipeline.cpp, pipeline.h: Plug a memory leak. [Backport of r118491].
+
+	r: kangaroo
+
 2008-12-01  Geoff Norton  <gnorton@novell.com>
 
 	* runtime.cpp:  Remove a comment around a debug guard that should
@@ -15,10 +22,8 @@
 2008-11-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* audio.cpp: Remove a print_stack_trace. Backport of r120211.
-	
-	  
-	
-	  r: sde
+
+	r: sde
 
 2008-11-24  Larry Ewing  <lewing@novell.com>
 
@@ -97,16 +102,14 @@
 	  makes re-playing already played content in playlists work again.
 	  Backport of r118391 and r118493.
 	
-	  r: Fernando.
+	r: Fernando.
 
 2008-11-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* audio.cpp, mediaplayer.cpp, audio.h, mediaelement.cpp, mediaplayer.h:
 	  Implement MediaElement.AudioStreamIndex. Backport of r118367.
-	
 	  
-	
-	  r: kangaroo.
+	r: kangaroo.
 
 2008-11-10  Chris Toshok  <toshok@ximian.com>
 
@@ -130,10 +133,8 @@
 
 	* pipeline-ffmpeg.cpp: FfmpegDecoder::DecodeFrame: for audio packets we
 	  need to keep decoding until the entire input has been consumed.
-	
-	  
-	
-	  r: Fernando.
+
+	r: Fernando.
 
 2008-11-06  Stephane Delcroix  <sdelcroix@novell.com>
 

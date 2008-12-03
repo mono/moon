@@ -1551,10 +1551,6 @@ IMediaStream::IMediaStream (Media *media) : IMediaObject (media)
 
 IMediaStream::~IMediaStream ()
 {
-	if (decoder)
-		decoder->unref ();
-	
-	delete queue;
 }
 
 void
@@ -1569,6 +1565,11 @@ IMediaStream::Dispose ()
 	extra_data = NULL;
 	g_free (codec);
 	codec = NULL;
+
+	if (queue) {
+		delete queue;
+		queue = NULL;
+	}
 }
 
 const char *
@@ -1730,13 +1731,24 @@ IMediaDemuxer::IMediaDemuxer (Media *media, IMediaSource *source) : IMediaObject
 
 IMediaDemuxer::~IMediaDemuxer ()
 {
+}
+
+void
+IMediaDemuxer::Dispose ()
+{
+	IMediaObject::Dispose ();
 	if (streams != NULL) {
-		for (int i = 0; i < stream_count; i++)
-			streams[i]->unref ();
-		
+		for (int i = 0; i < stream_count; i++) {
+			streams [i]->Dispose ();
+			streams [i]->unref ();
+		}
 		g_free (streams);
+		streams = NULL;
 	}
-	source->unref ();
+	if (source) {
+		source->unref ();
+		source = NULL;
+	}
 }
 
 void
@@ -2180,8 +2192,17 @@ VideoStream::VideoStream (Media *media) : IMediaStream (media)
 
 VideoStream::~VideoStream ()
 {
-	if (converter)
+}
+
+void
+VideoStream::Dispose ()
+{
+	IMediaStream::Dispose ();
+	if (converter) {
+		converter->Dispose ();
 		converter->unref ();
+		converter = NULL;
+	}
 }
 
 /*

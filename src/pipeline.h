@@ -586,6 +586,7 @@ protected:
 	
 public:
 	IMediaDemuxer (Media *media, IMediaSource *source);
+	void Dispose ();
 	
 	virtual MediaResult ReadHeader () = 0;
 	// Fills the uncompressed_data field in the frame with data.
@@ -921,6 +922,8 @@ protected:
 	virtual ~VideoStream ();
 
 public:
+	void Dispose ();
+	
 	IImageConverter *converter; // This stream has the ownership of the converter, it will be deleted upon destruction.
 	guint32 bits_per_sample;
 	guint64 pts_per_frame; // Duration (in pts) of each frame. Set to 0 if unknown.
