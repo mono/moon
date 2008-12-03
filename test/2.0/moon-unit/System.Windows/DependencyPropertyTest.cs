@@ -475,7 +475,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod ()]
-		[MoonlightBug]
 		public void Register_CustomCanvasType_Height_CustomStruct ()
 		{
 			CustomCanvasType the_object = new CustomCanvasType ();

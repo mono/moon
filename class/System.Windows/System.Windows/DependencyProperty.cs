@@ -113,7 +113,7 @@ namespace System.Windows {
 			if (defaultVal == null)
 				v = new Value { k = Kind.INVALID };
 			else
-				v = DependencyObject.GetAsValue (defaultVal);
+				v = DependencyObject.GetAsValue (defaultVal, true);
 
 			IntPtr handle = NativeMethods.dependency_property_register_managed_property (name, property_type.native_handle, owner_type.native_handle, ref v, attached, handler);
 			NativeMethods.value_free_value (ref v);

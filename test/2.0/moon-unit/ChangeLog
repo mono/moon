@@ -1,5 +1,13 @@
 2008-12-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* System.Windows/DependencyPropertyAttachedTest.cs,
+	  System.Windows/DependencyPropertyTest.cs:
+	  DependencyProperty.RegisterAny: When getting default values for
+	  structures, we need to handle managed structures too. Fixes two
+	  unit tests.
+
+2008-12-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* moon-unit.mdp: Updated.
 
 2008-12-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
