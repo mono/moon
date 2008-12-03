@@ -1,3 +1,8 @@
+2008-12-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* test-runner/Test.cs, test-runner/TestRun.cs: Add support for printing
+	  unit tests summary to stdout.
+
 2008-12-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* test-runner/ExternalProcess.cs, test-runner/Test.cs: Detect if xsp

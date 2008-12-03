@@ -32,6 +32,7 @@ using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Xml;
 
 namespace MoonlightTests {
 
@@ -52,7 +53,8 @@ namespace MoonlightTests {
 
 		private bool ignore;
 		private bool remote;
-
+		private bool unittest;
+		
 		private string stdout;
 		private string stderr;
 		private string ignore_reason;
@@ -87,12 +89,16 @@ namespace MoonlightTests {
 			string master_file = null;
 			string extension = null;
 			bool remote = false;
+			bool unittest = false;
 			
 			if (node.Attributes ["id"] != null)
 				id = node.Attributes ["id"].Value;
 			
 			if (node.Attributes ["remote"] != null && bool.Parse (node.Attributes ["remote"].Value))
 				remote = true;
+
+			if (node.Attributes ["unittest"] != null)
+				bool.TryParse (node.Attributes ["unittest"].Value, out unittest);
 			
 			if (node.Attributes ["inputFile"] != null) {
 				input_file = node.Attributes ["inputFile"].Value;
@@ -128,6 +134,7 @@ namespace MoonlightTests {
 			
 			test.base_directory = base_directory;
 			test.remote = remote;
+			test.unittest = unittest;
 			
 			if (node.Attributes ["knownFailure"] != null && Boolean.Parse (node.Attributes ["knownFailure"].Value)) {
 				test.known_failure = true;
@@ -159,7 +166,7 @@ namespace MoonlightTests {
 				test.LocationPort = AvailableLocationPort++;
 				test.remote = true;
 			}
-
+			
 			return test;
 		}
 
@@ -175,6 +182,10 @@ namespace MoonlightTests {
 			set { test_result = value; }
 		}
 
+		public bool UnitTest {
+			get { return unittest; }
+		}
+		
 		public int LocationPort {
 			get {
 				return location_port;
@@ -349,6 +360,76 @@ namespace MoonlightTests {
 			failed_reason = reason;
 		}
 
+		public TestResult ProcessUnitTestResult ()
+		{
+			if (!unittest)
+				return test_result;
+
+			try {
+				string filename = null;
+				foreach (string line in location_xsp.Stdout.Split ('\n')) {
+					if (line.StartsWith ("MoonLogProvider: Saving file to: ")) {
+						filename = line.Substring ("MoonLogProvider: Saving file to: ".Length);
+						break;
+					}
+				}
+				
+				if (filename == null)
+					return test_result;
+
+				if (!System.IO.File.Exists (filename))
+					return test_result;
+
+				int failed = 0;
+				int knownissue = 0;
+				int notexecuted = 0;
+				int counter = 0;
+				int passed = 0;
+				string result = null;
+				using (FileStream fs = new FileStream (filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
+					using (StreamReader stream = new StreamReader (fs, System.Text.Encoding.UTF8)) {
+						XmlReaderSettings rs = new XmlReaderSettings ();
+						rs.ConformanceLevel = ConformanceLevel.Document;
+						rs.IgnoreComments = true;
+						rs.IgnoreProcessingInstructions = true;
+						rs.IgnoreWhitespace = true;
+						XmlReader reader = XmlReader.Create (stream, rs);
+						reader.Read ();
+						reader.ReadToFollowing ("MoonLog");
+						if (reader.ReadToDescendant ("Test")) {
+							do {
+								result = reader.GetAttribute ("Result");
+								
+								counter++;
+								if (result == "Failed")
+									failed++;
+								else if (result == "KnownIssue")
+									knownissue++;
+								else if (result == "NotExecuted")
+									notexecuted++;
+								else if (result == "Passed")
+									passed++;
+								
+								if (result != "Passed") {
+									if (string.IsNullOrEmpty (result))
+										result = "<unknown>";
+									
+									Console.WriteLine ("{0,-12} {1}: {2}", result + ":", reader.GetAttribute ("FullName"), reader.GetAttribute ("Message"));
+								}
+							} while (reader.ReadToFollowing ("Test"));
+						}
+					}
+				}
+				Console.WriteLine ("Unit tests executed: {0} {1} Pass, {2} Not executed, {3} Failures, {4} Known issues.", counter, passed, notexecuted, failed, knownissue);
+				return failed == 0 ? TestResult.Pass : TestResult.Fail;
+			} catch (Exception ex) {
+				Console.WriteLine ("Exception while trying to parse unit test result:");
+				Console.WriteLine (ex.ToString ());
+			}
+			
+			return test_result;
+		}
+		
 		public virtual void Setup ()
 		{
 			if (!Remote && !File.Exists (InputFile)) {

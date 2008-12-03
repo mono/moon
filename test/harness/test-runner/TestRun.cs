@@ -196,7 +196,10 @@ namespace MoonlightTests {
 				test.SetFailedReason (String.Format ("Test did not complete properly ({0})", test.CompleteReason));
 				result = TestResult.Fail;
 			}
-
+			
+			if (result == TestResult.Pass && test.UnitTest)
+				result = test.ProcessUnitTestResult ();
+			
 			if (test.IsKnownFailure)
 				result = (result == TestResult.Pass) ? TestResult.UnexpectedPass : TestResult.KnownFailure;
 

@@ -1,3 +1,8 @@
+2008-12-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* Makefile.am: Add new targets to run individual files using agviewer
+	  and for running unit tests.
+
 2008-11-24  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* xaml/drtlist.xml: test-path-group-ellipse.xaml,

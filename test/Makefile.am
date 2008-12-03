@@ -40,10 +40,11 @@ run-valgrind:
 run-xephyr:
 	(test -z "$$XEPHYR" && XEPHYR=$(XEPHYR_DEFAULT); export XEPHYR; echo Running Xephyr in display $$XEPHYR; \
 	test -z "$$DRT_TARGET" && DRT_TARGET="run-drtlist"; export DRT_TARGET; echo Executing target $$DRT_TARGET; \
+	test -n "$$MAKEFLAGS" && MFLAGS="-$$MAKEFLAGS"; export MFLAGS; echo Makeflags: $$MFLAGS; \
 	Xephyr -screen 1200x960 -ac -noreset :$$XEPHYR & xephyr_pid=$$!; \
 	sleep 1; \
 	DISPLAY=:$$XEPHYR xsetroot -solid '#ffffff'; \
-	DISPLAY=:$$XEPHYR $(MAKE) $(MAKEFLAGS) $$DRT_TARGET; \
+	DISPLAY=:$$XEPHYR $(MAKE) $(MFLAGS) $$DRT_TARGET; \
 	kill $$xephyr_pid)
 
 run-drtlist: all check-testing
@@ -54,6 +55,25 @@ run-tests:
 
 run-ms-tests:
 	DRTLIST=$(MS_DRTLIST) $(MAKE) run-drtlist
+
+run-test:
+	$(MAKE) run-test-impl
+
+run-test-impl:
+	GNOME_DISABLE_CRASH_DIALOG=1 MOON_PLUGIN_DIR=$(MOON_PLUGIN_DIR) MOZ_PLUGIN_PATH=$(MOZ_PATH) LD_LIBRARY_PATH=$(LD_PATH):$(LD_LIBRARY_PATH) $(TEST_COMMAND) $(top_srcdir)/test/harness/agviewer/agviewer $(DRTTEST) 
+
+run-test-gdb:
+	TEST_COMMAND="gdb --eval-command=run --args" $(MAKE) run-test-impl
+
+run-test-valgrind:
+	TEST_COMMAND="valgrind" $(MAKE) run-test-command
+
+run-unit-tests:
+	$(MAKE) -C 2.0/moon-unit test
+
+run-unit-tests-harness:
+	$(MAKE) -C 2.0/moon-unit
+	MOONLIGHT_UNIT_HARNESS_LOG_DIRECTORY=$(srcdir)/test-run-data DRTLIST=2.0/moon-unit/site/drtlist.xml $(MAKE) run-xephyr
 
 gtksilver.dll: ../gtk/gtksilver.dll
 	cp ../gtk/gtksilver.dll .

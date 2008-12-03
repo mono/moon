@@ -1,5 +1,10 @@
 2008-12-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* site/drtlist.xml: Mark as unittest.
+	* site/MoonLogProvider.aspx.cs: Print out where we're saving the file.
+
+2008-12-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* Mono.Moonlight.UnitTesting/MoonlightBugAttribute.cs,
 	  Mono.Moonlight.UnitTesting/SilverlightBugAttribute.cs: Added.
 	* Mono.Moonlight.UnitTesting/MoonLogProvider.cs: Add support for known

@@ -46,6 +46,8 @@ public partial class MoonLogProvider : System.Web.UI.Page
 
 			path = Path.Combine (directory, filename);
 			
+			Log ("MoonLogProvider: Saving file to: {0}", path);
+			
 			using (BinaryReader reader = new BinaryReader (Request.InputStream)) {
 				using (FileStream fs = new FileStream (path, FileMode.Append, FileAccess.Write, FileShare.ReadWrite)) {
 					while (true) {
