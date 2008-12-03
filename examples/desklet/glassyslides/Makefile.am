@@ -1,6 +1,11 @@
 desklet=glassyslides
 entrypoint= Desklets.GlassySlides.App
 
+DESKTOP_ASSEMBLIES=-r:$(top_builddir)/gtk/gtksilver.dll \
+		   -r:$(top_builddir)/class/lib/3.0/System.Windows.dll \
+		   -r:$(top_builddir)/class/lib/3.0/System.Windows.Browser.dll \
+		   -r:$(top_builddir)/class/lib/3.0/Mono.Moonlight.dll
+
 noinst_DATA = default.xaml App.xaml $(desklet).xap
 
 EXTRA_DIST = $(desklet).cs
@@ -9,7 +14,7 @@ run: $(desklet).xap
 	mono ../../../tools/mopen/mopen.exe -d $(desklet)
 
 $(desklet).xap: $(desklet).cs default.xaml App.xaml
-	PKG_CONFIG_PATH=$(top_builddir)/gtk:$(top_builddir)/data:$(PKG_CONFIG_PATH) mono ../../../tools/mxap/mxap.exe --desktop --entry-point-type=$(entrypoint)
+	mono ../../../tools/mxap/mxap.exe --desktop --entry-point-type=$(entrypoint) --builddirhack=$(top_builddir) $(DESKTOP_ASSEMBLIES)
 
 CLEANFILES =			\
 	$(desklet).xap		\
