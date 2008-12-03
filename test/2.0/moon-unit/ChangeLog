@@ -1,5 +1,9 @@
 2008-12-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* System.Windows.Data/BindingTest.cs: Fix test logic to pass on SL.
+
+2008-12-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* App.xaml.cs: Add a hack to only run specific tests.
 
 2008-12-02  Alan McGovern  <amcgovern@novell.com>

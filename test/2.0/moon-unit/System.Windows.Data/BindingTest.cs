@@ -431,7 +431,7 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
             TextBlock normal = new TextBlock();
             Assert.AreEqual(((SolidColorBrush)normal.Foreground).Color, brush.Color, "#4");
 
-            Assert.IsNull(c.DataContext, "#5");
+            Assert.IsNotNull(c.DataContext, "#5");
         }
 		
 		[TestMethod]
