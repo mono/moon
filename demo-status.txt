@@ -6,7 +6,7 @@ rating:2
  *  Mouse over animation is slow
 
 site:All Blacks
-url:http://allblack.com/gadget/default.htm
+url:http://allblacks.com/gadget/default.htm
 rating:4
  * Video / audio work great
  * combing effect on video (happens in SL as well)
