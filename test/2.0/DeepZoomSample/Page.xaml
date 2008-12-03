@@ -1,9 +1,0 @@
-<UserControl x:Class="DeepZoomSample.Page"
-	     xmlns="http://schemas.microsoft.com/client/2007"
-	     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	     Width="400" Height="300">
-	<Canvas>
-
-	<MultiScaleImage x:Name="msimage" Canvas.Top="50" Canvas.Left="50" Width="600" Height="600" UseSprings="false" ViewportWidth="1000" ViewportOrigin="600,600"  Loaded="msi_loaded" />
-	</Canvas>
-</UserControl>
