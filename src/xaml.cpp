@@ -1094,7 +1094,6 @@ end_element_handler (void *data, const char *el)
 			XamlElementInstance *child = (XamlElementInstance *) walk;
 			if (info->current_element->parent) {
 				info->current_element->parent->SetProperty (info, info->current_element, child);
-				break;
 			}
 			walk = walk->next;
 		}

@@ -1,3 +1,9 @@
+2008-12-03  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Call setproperty for all the children in the property
+	block, this is needed because we aren't doing as much magic
+	collection handling in addchild anymore.
+
 2008-12-02  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* control.h: Add DefaultStyleKeyProperty and IsEnabledProperty
