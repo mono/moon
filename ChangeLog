@@ -9,20 +9,6 @@
 	
 	* Retag for 1.0b1
 
-2008-12-01  Larry Ewing  <lewing@novell.com>
-
-	* test/xaml/drtlist.xml: remove failure tag from a bunch of tests
-	that are passing.
-
-2008-11-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
-
-	* tools/unsign, tools/unsign/Makefile, tools/unsign/unsign.cs: Added,
-	  tool to remove strong name signature from an assembly.
-
-2008-11-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
-
-	* moon.mds: Updated.
-
 2008-11-19  Geoff Norton  <gnorton@novell.com>
 
 	* configure.ac: Don't link our plugin against unnecessary things.
