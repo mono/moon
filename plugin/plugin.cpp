@@ -1901,7 +1901,7 @@ PluginXamlLoader::SetProperty (void *top_level, const char *xmlns, void* target,
 	const char* function_name = value->AsString ();
 
 	if (!strncmp (function_name, "javascript:", strlen ("javascript:")))
-			return false;
+		return false;
 
 	event_object_add_xaml_listener ((EventObject *) target, plugin, name, function_name);
 	
