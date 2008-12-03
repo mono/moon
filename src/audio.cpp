@@ -887,13 +887,15 @@ AudioPlayer::CreatePlayer ()
 		result = new PulsePlayer ();
 	}	
 
-	if (result && !result->Initialize ()) {
-		LOG_AUDIO ("AudioPlayer: Failed initialization.\n");
-		result->ShutdownImpl ();
-		delete result;
-		result = NULL;
-	} else {
-		return result;
+	if (result != NULL) {
+		if (!result->Initialize ()) {
+			LOG_AUDIO ("AudioPlayer: Failed initialization.\n");
+			result->ShutdownImpl ();
+			delete result;
+			result = NULL;
+		} else {
+			return result;
+		}
 	}
 #else
 	LOG_AUDIO ("AudioPlayer: Built without support for pulseaudio.\n");
@@ -911,13 +913,15 @@ AudioPlayer::CreatePlayer ()
 		result = new AlsaPlayer ();
 	}
 
-	if (result && !result->Initialize ()) {
-		LOG_AUDIO ("AudioPlayer: Failed initialization.\n");
-		result->ShutdownImpl ();
-		delete result;
-		result = NULL;
-	} else {
-		return result;
+	if (result != NULL) {
+		if (!result->Initialize ()) {
+			LOG_AUDIO ("AudioPlayer: Failed initialization.\n");
+			result->ShutdownImpl ();
+			delete result;
+			result = NULL;
+		} else {
+			return result;
+		}
 	}
 #else
 	LOG_AUDIO ("AudioPlayer: Built without support for alsa.\n");
