@@ -32,7 +32,7 @@ public:
 	static DependencyProperty *ActualHeightProperty;
 	/* @PropertyType=double,DefaultValue=0.0,Version=2,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *ActualWidthProperty;
-	/* @PropertyType=Managed,Version=2.0 */
+	/* @PropertyType=object,Version=2.0 */
 	static DependencyProperty *DataContextProperty;
 	/* @PropertyType=HorizontalAlignment,DefaultValue=HorizontalAlignmentStretch,Version=2.0,GenerateAccessors */
 	static DependencyProperty *HorizontalAlignmentProperty;

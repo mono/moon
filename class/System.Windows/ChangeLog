@@ -1,3 +1,9 @@
+2008-12-03  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingExpressionBase.cs: When the binding path is
+	an empty string, we directly return the DataSource. Also, we don't
+	recurse up through parent framework elements to select a datacontext.
+
 2008-12-01  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: We need to compile and link the MS control resources

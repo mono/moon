@@ -70,16 +70,11 @@ namespace System.Windows.Data {
 		// This is the object we're databound to
 		internal object DataSource {
 			get {
-				object source = Binding.Source;
-				FrameworkElement target = Target;
-				
-				while (source == null && target != null) {
-					if (target.DataContext != null)
-						source = target.DataContext;
-					else
-						target = target.Parent as FrameworkElement;
-				}
-				return source;
+				if (Binding.Source != null)
+					return Binding.Source;
+				if (Target != null)
+					return Target.DataContext;
+				return null;
 			}
 		}
 
@@ -134,6 +129,9 @@ namespace System.Windows.Data {
 			// FIXME: What if the path is invalid? A.B....C, AB.C£$.D etc
 			// Can you have an explicit interface implementation? Probably not.
 			string[] parts = Binding.Path.Path.Split (new char[] { '.' });
+			if (parts.Length == 0) {
+				return null;
+			}
 			for (int i = 0; i < parts.Length; i++) {
 				PropertyInfo p = target.GetType ().GetProperty (parts [i]);
 
@@ -167,11 +165,14 @@ namespace System.Windows.Data {
 		
 		internal bool TryGetValue (out object value)
 		{
-			value = null;
-
-			// If the property doesn't exist, return false
-			if (PropertyInfo == null) {
-				Console.WriteLine ("PropertyInfo was null");
+			if (string.IsNullOrEmpty (Binding.Path.Path)) {
+				// If the path is empty, return the active DataSource
+				value = DataSource;
+				return true;
+			}	
+			else if (PropertyInfo == null) {
+				// If the property doesn't exist, the value is null
+				value = null;
 				return false;
 			}
 			else
