@@ -52,7 +52,7 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
-		[KnownFailure]
+		[MoonlightBug]
 		public void New ()
 		{
 			SilverlightHost host = new SilverlightHost ();
@@ -60,7 +60,7 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
-		[KnownFailure]
+		[MoonlightBug]
 		public void Current ()
 		{
 			SilverlightHost host = Application.Current.Host;
@@ -68,7 +68,7 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
-		[KnownFailure]
+		[MoonlightBug]
 		public void IsVersionSupported ()
 		{
 			SilverlightHost host = new SilverlightHost ();

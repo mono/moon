@@ -32,6 +32,8 @@ namespace Mono.Moonlight.UnitTesting
 		private string baseuri;
 		private Action on_completed;
 		private int[] totals;
+		private readonly int KnownIssueIndex;
+		private bool known_issue;
 
 		public MoonLogProvider ()
 		{
@@ -59,7 +61,8 @@ namespace Mono.Moonlight.UnitTesting
 			writer.WriteStartDocument ();
 			writer.WriteProcessingInstruction ("xml-stylesheet", "type='text/xsl' href='moon-unit-log.xsl'");
 
-			totals = new int [typeof (TestOutcome).GetFields (BindingFlags.Static | BindingFlags.Public).Length];
+			totals = new int [typeof (TestOutcome).GetFields (BindingFlags.Static | BindingFlags.Public).Length + 1];
+			KnownIssueIndex = totals.Length - 1;
 		}
 
 		/// <summary>
@@ -111,10 +114,7 @@ namespace Mono.Moonlight.UnitTesting
 		}
 
 		private void ProcessMessage (LogMessage logMessage) {
-			TestClass c;
 			TestMethod m;
-			Exception e;
-			string name;
 			TestOutcome outcome;
 			TestGranularity granularity;
 			TestStage stage;
@@ -130,17 +130,21 @@ namespace Mono.Moonlight.UnitTesting
 				case LogMessageType.Error:
 					// Ignore this
 					break;
+				case LogMessageType.KnownIssue:
+					known_issue = true;
+					break;
 				case LogMessageType.TestResult:
 					result = (ScenarioResult) logMessage.Decorators [UnitTestLogDecorator.ScenarioResult];
 					outcome = result.Result;
 
-					if (outcome == TestOutcome.Failed) {
-						m = (TestMethod) logMessage.Decorators [UnitTestLogDecorator.TestMethodMetadata];
-						if (m.Method.IsDefined (typeof (KnownFailureAttribute), false))
-							outcome = TestOutcome.Pending; // Overload 'Pending' to be 'KnownFailure'
+					if (known_issue) {
+						writer.WriteAttributeString ("Result", "KnownIssue");
+						totals [KnownIssueIndex]++;
+					} else {
+						writer.WriteAttributeString ("Result", outcome.ToString ());
+						totals [(int) outcome]++;
 					}
-
-					writer.WriteAttributeString ("Result", outcome == TestOutcome.Pending ? "KnownFailure" : outcome.ToString ());
+					known_issue = false;
 					writer.WriteAttributeString ("StartTime", result.Started.ToUniversalTime ().ToString ("yyyy/MM/dd HH:mm:ss.fffffff"));
 					writer.WriteAttributeString ("EndTime", result.Finished.ToUniversalTime ().ToString ("yyyy/MM/dd HH:mm:ss.fffffff"));
 					if (result.Exception != null) {
@@ -151,9 +155,9 @@ namespace Mono.Moonlight.UnitTesting
 						writer.WriteElementString ("StackTrace", result.Exception.StackTrace);
 						writer.WriteEndElement ();
 					}
-					totals [(int) outcome]++;
 					break;
 				case LogMessageType.TestExecution:
+					known_issue = false;
 					granularity = (TestGranularity) logMessage.Decorators [LogDecorator.TestGranularity];
 
 					switch (granularity) {
@@ -168,8 +172,8 @@ namespace Mono.Moonlight.UnitTesting
 
 							writer.WriteStartElement ("Totals");
 							for (int i = 0; i < totals.Length; i++) {
-								if (i == (int) TestOutcome.Pending) {
-									writer.WriteAttributeString ("KnownFailure", totals [i].ToString ());
+								if (i == KnownIssueIndex) {
+									writer.WriteAttributeString ("KnownIssue", totals [i].ToString ());
 								} else {
 									writer.WriteAttributeString (((TestOutcome) i).ToString (), totals [i].ToString ());
 								}									
@@ -221,7 +225,7 @@ namespace Mono.Moonlight.UnitTesting
 				case LogMessageType.TestInfrastructure:
 					break;
 				default:
-					writer.WriteComment (string.Format ("Unknown log type '{1}': {0}", logMessage.ToString (), logMessage.MessageType));
+					Console.WriteLine (string.Format ("Unknown log type '{1}': {0}", logMessage.ToString (), logMessage.MessageType));
 					break;
 				}
 			} catch (Exception ex) {

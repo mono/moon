@@ -52,6 +52,9 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Harness
         /// </summary>
         private bool _bugAttributePresent;
 
+		private bool _moonlightBug;
+		private bool _silverlightBug;
+
         /// <summary>
         /// Constructor for a test method manager, which handles executing a single test method 
         /// for a unit test provider.
@@ -114,6 +117,8 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Harness
                     _bugAttributePresent = true;
                     Enqueue(() => LogWriter.KnownIssue(bug.Description));
                 }
+				_silverlightBug = bug.GetType ().Name == "SilverlightBugAttribute";
+				_moonlightBug = bug.GetType ().Name == "MoonlightBugAttribute";
             }
 
             // [TestInitialize]
@@ -178,7 +183,9 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Harness
             }
 
             // Invert the result when the bug attribute is present
-            if (_bugAttributePresent)
+            if (_bugAttributePresent && 
+				((_moonlightBug && Environment.OSVersion.Platform == PlatformID.Unix) ||
+				(_silverlightBug && Environment.OSVersion.Platform != PlatformID.Unix)))
             {
                 bool bugVerified = _result.Result == TestOutcome.Failed;
                 TestOutcome newOutcome = bugVerified ? TestOutcome.Passed : TestOutcome.Failed;

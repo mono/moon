@@ -31,6 +31,4 @@ namespace Mono.Moonlight.UnitTesting
 			//test_output.AppendLine (line);
 		}
 	}
-
-	public class KnownFailureAttribute : Attribute  { }
 }

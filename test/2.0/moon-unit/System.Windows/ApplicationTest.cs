@@ -52,7 +52,7 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
-		[KnownFailure]
+		[MoonlightBug]
 		public void New ()
 		{
 			Application app = new Application ();
@@ -63,7 +63,7 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
-		[KnownFailure]
+		[MoonlightBug]
 		public void Current ()
 		{
 			Application app = Application.Current;

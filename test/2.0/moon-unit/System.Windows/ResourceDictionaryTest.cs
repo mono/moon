@@ -255,7 +255,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[KnownFailure]
+		[MoonlightBug]
 		public void TestStaticResourceParentElement_Property ()
 		{
 			Canvas top = (Canvas)XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Color x:Key=""color"">#ffffffff</Color></Canvas.Resources><Rectangle x:Name=""child""><Rectangle.Stroke><SolidColorBrush Color=""{StaticResource color}""/></Rectangle.Stroke></Rectangle></Canvas>");

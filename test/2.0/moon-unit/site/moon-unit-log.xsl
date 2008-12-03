@@ -13,7 +13,7 @@
 				<td>Total:</td>
 				<td colspan="3"> 
 					Passed: <xsl:value-of select="MoonLog/Totals/@Passed" />, 
-					KnownFailure: <xsl:value-of select="MoonLog/Totals/@KnownFailure" />, 
+					KnownIssue: <xsl:value-of select="MoonLog/Totals/@KnownIssue" />, 
 					NotExecuted: <xsl:value-of select="MoonLog/Totals/@NotExecuted" />, 
 					Failed: <xsl:value-of select="MoonLog/Totals/@Failed" />
 				</td>
@@ -46,7 +46,7 @@
 				<td>Total:</td>
 				<td colspan="3"> 
 					Passed: <xsl:value-of select="MoonLog/Totals/@Passed" />, 
-					KnownFailure: <xsl:value-of select="MoonLog/Totals/@KnownFailure" />, 
+					KnownIssue: <xsl:value-of select="MoonLog/Totals/@KnownIssue" />, 
 					NotExecuted: <xsl:value-of select="MoonLog/Totals/@NotExecuted" />, 
 					Failed: <xsl:value-of select="MoonLog/Totals/@Failed" />
 				</td>

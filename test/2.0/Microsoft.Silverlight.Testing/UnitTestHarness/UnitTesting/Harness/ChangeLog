@@ -1,3 +1,9 @@
+2008-12-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* TestMethodManager.cs: Add support for MoonlightBug and
+	  SilverlightBug, and only report them as failed bugs if platform
+	  actually matches the bug.
+
 2008-12-01  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* TestMethodManager.cs, TestClassManager.cs,

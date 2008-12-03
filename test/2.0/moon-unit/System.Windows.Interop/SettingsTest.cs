@@ -48,7 +48,7 @@ namespace MoonTest.System.Windows.Interop {
 		}
 
 		[TestMethod]
-		[KnownFailure]
+		[MoonlightBug]
 		public void New ()
 		{
 			Settings settings = new Settings ();
@@ -56,7 +56,7 @@ namespace MoonTest.System.Windows.Interop {
 		}
 
 		[TestMethod]
-		[KnownFailure]
+		[MoonlightBug]
 		public void Current ()
 		{
 			Settings settings = Application.Current.Host.Settings;
@@ -64,7 +64,7 @@ namespace MoonTest.System.Windows.Interop {
 		}
 
 		[TestMethod]
-		[KnownFailure]
+		[MoonlightBug]
 		public void Updates ()
 		{
 			Settings settings = new Settings ();
@@ -81,7 +81,7 @@ namespace MoonTest.System.Windows.Interop {
 		}
 
 		[TestMethod]
-		[KnownFailure]
+		[MoonlightBug]
 		public void MaxFrameRate ()
 		{
 			Settings settings = new Settings ();

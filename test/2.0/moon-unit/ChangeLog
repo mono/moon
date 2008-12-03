@@ -1,5 +1,30 @@
 2008-12-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Mono.Moonlight.UnitTesting/MoonlightBugAttribute.cs,
+	  Mono.Moonlight.UnitTesting/SilverlightBugAttribute.cs: Added.
+	* Mono.Moonlight.UnitTesting/MoonLogProvider.cs: Add support for known
+	  issues.
+	* Mono.Moonlight.UnitTesting/Tester.cs: Remove KnownFailureAttribute.
+	* moon-unit.csproj, moon-unit.mdp, site/moon-unit-log.xsl: Updated.
+	* System.Windows.Controls/ControlTemplateTest.cs,
+	  System.Windows.Controls/ControlTest.cs,
+	  System.Windows.Data/BindingTest.cs,
+	  System.Windows.Controls/PanelTest.cs,
+	  System.Windows.Interop/SettingsTest.cs,
+	  System.Windows.Interop/SilverlightHostTest.cs,
+	  System.Windows.Shapes/PathTest.cs,
+	  System.Windows/ApplicationTest.cs,
+	  System.Windows/DependencyPropertyAttachedTest.cs,
+	  System.Windows/DependencyPropertyTest.cs,
+	  System.Windows/FrameworkElementTest.cs,
+	  System.Windows/ResourceDictionaryTest.cs,
+	  System.Windows/SetterBaseCollectionTest.cs,
+	  System.Windows/SetterTest.cs, System.Windows/StyleTest.cs,
+	  System.Windows/VisualStateTest.cs: KnownFailureAttribute is now
+	  known as MoonlightBugAttribute.
+
+2008-12-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* System.Windows.Data/BindingTest.cs: Fix test logic to pass on SL.
 
 2008-12-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 

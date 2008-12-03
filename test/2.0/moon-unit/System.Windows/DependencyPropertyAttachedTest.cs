@@ -159,7 +159,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod ()]
-		[KnownFailure]
 		public void Register_Canvas_Custom_Canvas ()
 		{
 			Canvas canvas = new Canvas ();
@@ -393,7 +392,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod ()]
-		[KnownFailure]
 		public void Register_CustomCanvasType_Height_CustomInterface ()
 		{
 			CustomCanvasType the_object = new CustomCanvasType ();
@@ -450,6 +448,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod ()]
+		[MoonlightBug]
 		public void Register_CustomCanvasType_Height_CustomStruct ()
 		{
 			CustomCanvasType the_object = new CustomCanvasType ();

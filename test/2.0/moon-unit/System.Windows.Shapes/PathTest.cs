@@ -64,7 +64,7 @@ namespace MoonTest.System.Windows.Shapes
 		}
 
 		[TestMethod]
-		[KnownFailure]
+		[MoonlightBug]
 		public void Measure_StretchFill_Test1 ()
 		{
 			Border b = new Border ();

@@ -19,7 +19,7 @@ namespace Microsoft.Silverlight.Testing
     /// once the issue is resolved.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public sealed class BugAttribute : Attribute
+    public class BugAttribute : Attribute
     {
         /// <summary>
         /// Gets the bug description.

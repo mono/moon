@@ -44,7 +44,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[KnownFailure]
+		[MoonlightBug]
 		public void SetTemplateInXamlOnUserControl ()
 		{
 			// "Invalid Property: UserControl.Template"
@@ -62,6 +62,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void SetTemplateInXamlOnButton ()
 		{
 			Button b;
@@ -90,7 +91,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[KnownFailure]
+		[MoonlightBug]
 		public void TemplateInStaticResource ()
 		{
 			Console.WriteLine ("TemplateInStaticResource");
@@ -119,7 +120,7 @@ namespace MoonTest.System.Windows.Controls
 
 
 		[TestMethod]
-		[KnownFailure]
+		[MoonlightBug]
 		public void TemplateBindingTest ()
 		{
 			Console.WriteLine ("TemplateBindingTest");

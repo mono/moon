@@ -19,7 +19,7 @@ namespace MoonTest.System.Windows
 	public class VisualStateTest
 	{
 		[TestMethod]
-		[KnownFailure]
+		[MoonlightBug]
 		public void TestParse ()
 		{
 			VisualState vs = (VisualState)XamlReader.Load (@"<vsm:VisualState xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns:vsm=""clr-namespace:System.Windows;assembly=System.Windows"" x:Name=""foo""><Storyboard /></vsm:VisualState>");
@@ -28,7 +28,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[KnownFailure]
+		[MoonlightBug]
 		public void TestParse_NoManagedNamespace ()
 		{
 			Assert.Throws (delegate { 
@@ -46,7 +46,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[KnownFailure]
+		[MoonlightBug]
 		public void TestParse_NoName ()
 		{
 			VisualState vs = (VisualState)XamlReader.Load (@"<vsm:VisualState xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns:vsm=""clr-namespace:System.Windows;assembly=System.Windows""><Storyboard /></vsm:VisualState>");
@@ -54,7 +54,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[KnownFailure]
+		[MoonlightBug]
 		public void TestDefaults ()
 		{
 			VisualState st = new VisualState ();

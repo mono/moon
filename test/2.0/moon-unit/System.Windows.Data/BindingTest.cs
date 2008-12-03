@@ -410,6 +410,7 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		}
 		
         [TestMethod]
+		[MoonlightBug]
         public void XamlDataContext()
         {
             Canvas c = (Canvas)XamlReader.Load(@"

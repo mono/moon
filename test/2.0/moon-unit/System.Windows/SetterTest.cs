@@ -20,7 +20,6 @@ namespace MoonTest.System.Windows
 	public class SetterTest
 	{
 		[TestMethod]
-		[KnownFailure]
 		public void CreateTest ()
 		{
 			Setter s = new Setter (UIElement.OpacityProperty, 2.0);
@@ -36,14 +35,12 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[KnownFailure]
 		public void TypeMismatch ()
 		{
 			Setter s = new Setter (UIElement.OpacityProperty, "does this work?");
 		}
 
 		[TestMethod]
-		[KnownFailure]
 		public void StyleOfDifferentType ()
 		{
 			Setter s = new Setter (Line.X1Property, 10.0);

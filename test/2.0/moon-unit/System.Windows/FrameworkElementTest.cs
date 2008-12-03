@@ -49,7 +49,7 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
-		[KnownFailure]
+		[MoonlightBug]
 		public void BrokenProperties ()
 		{
 			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();

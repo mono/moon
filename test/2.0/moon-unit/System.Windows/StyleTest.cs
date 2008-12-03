@@ -46,7 +46,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[KnownFailure]
+		[MoonlightBug]
 		public void AvailableBeforeLoaded ()
 		{
 			Style s = (Style)XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Button""><Setter Property=""Width"" Value=""10""/></Style>");
@@ -62,7 +62,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[KnownFailure]
+		[MoonlightBug]
 		public void ModifyAfterBinding()
 		{
 			Button b = new Button();
@@ -90,7 +90,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[KnownFailure] // Button should default to NaN
+		[MoonlightBug] // Button should default to NaN
 		public void InvalidValue()
 		{
 			Button b = new Button();
@@ -101,7 +101,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[KnownFailure]
+		[MoonlightBug]
 		public void MismatchTargetType ()
 		{
 			Style s = (Style)XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""CheckBox""><Setter Property=""Width"" Value=""10""/></Style>");
@@ -120,7 +120,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[KnownFailure]
+		[MoonlightBug]
 		public void InvalidPropertyNameInSetter ()
 		{
 			Assert.Throws (delegate { XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Button""><Setter Property=""WidthOrHeight"" Value=""10""/></Style>"); }, typeof (XamlParseException));
@@ -136,7 +136,7 @@ namespace MoonTest.System.Windows
 		}
 
         [TestMethod]
-		[KnownFailure]
+		[MoonlightBug]
         public void UseSetterTwice()
         {
             Style s1 = new Style(typeof(Rectangle));
