@@ -1,5 +1,9 @@
 2008-12-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* moon-unit.mdp: Updated.
+
+2008-12-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* site/drtlist.xml: Mark as unittest.
 	* site/MoonLogProvider.aspx.cs: Print out where we're saving the file.
 
