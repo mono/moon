@@ -1,3 +1,7 @@
+2008-12-02  Jackson Harper  <jackson@ximian.com>
+
+	* Application.cs: Don't restrict components to DOs.
+
 2008-12-02  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* DependencyProperty.g.cs: regenerated

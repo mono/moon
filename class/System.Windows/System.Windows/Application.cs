@@ -409,7 +409,7 @@ namespace System.Windows {
 				let clr_namespace = def.Key.ClrNamespace
 				let assembly = def.Value
 				from type in assembly.GetTypes ()
-				where type.Namespace == clr_namespace && type.Name == name && type.IsSubclassOf (typeof (DependencyObject))
+					where type.Namespace == clr_namespace && type.Name == name /* && type.IsSubclassOf (typeof (DependencyObject)) */
 				select type).FirstOrDefault ();
 		}
 
@@ -417,16 +417,16 @@ namespace System.Windows {
 		// Creates the proper component by looking the namespace and name
 		// in the various assemblies loaded
 		//
-		internal static DependencyObject CreateComponentFromName (string name)
+		internal static object CreateComponentFromName (string name)
 		{
 			Type t = GetComponentTypeFromName (name);
 
 			if (t == null) {
-				Console.Error.WriteLine ("Application.CreateComponentFromName - could not find type");
+				Console.Error.WriteLine ("Application.CreateComponentFromName - could not find type: {0}", name);
 				return null;
 			}
 
-			return (DependencyObject) Activator.CreateInstance (t);
+			return Activator.CreateInstance (t);
 		}
 
 		internal static Assembly GetAssembly (string assembly_name)

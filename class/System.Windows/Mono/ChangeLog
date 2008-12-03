@@ -1,3 +1,9 @@
+2008-12-02  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: CreateComponent can create non-DO objects
+	now.
+	- Fix error message.
+
 2008-11-26  Jackson Harper  <jackson@ximian.com>
 
 	* ManagedXamlLoader.cs: The parser now likes to deal with Values

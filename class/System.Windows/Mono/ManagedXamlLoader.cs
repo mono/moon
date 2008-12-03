@@ -240,13 +240,13 @@ namespace Mono.Xaml
 
 		private bool CreateComponentFromName (IntPtr top_level, string name, out Value value)
 		{
-			DependencyObject dob = Application.CreateComponentFromName (name);
-			if (dob == null) {
+			object obj = Application.CreateComponentFromName (name);
+			if (obj == null) {
 				value = Value.Empty;
 				return false;
 			}
 
-			value = DependencyObject.GetAsValue (dob, true);
+			value = DependencyObject.GetAsValue (obj, true);
 			return true;
 		}
 
@@ -548,7 +548,7 @@ namespace Mono.Xaml
 			try {
 				return SetProperty (top_level, xmlns, target, name, value_ptr);
 			} catch (Exception ex) {
-				Console.Error.WriteLine ("ManagedXamlLoader::SetCustomAttribute ({0}, {1}, {2}, {3}, {4}) threw an exception: {5}.", top_level, xmlns, target, name, value_ptr, ex.Message);
+				Console.Error.WriteLine ("ManagedXamlLoader::SetProperty ({0}, {1}, {2}, {3}, {4}) threw an exception: {5}.", top_level, xmlns, target, name, value_ptr, ex.Message);
 				return false;
 			}
 		}
