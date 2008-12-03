@@ -11,7 +11,7 @@ noinst_DATA = default.xaml $(desklet).xap
 EXTRA_DIST = $(desklet).cs
 
 run: $(desklet).xap
-	LD_LIBRARY_PATH=$(top_builddir)/src/.libs MONO_PATH=$(top_builddir)/gtk:$(top_builddir)/class/lib/3.0:$(MONO_PATH) mono ../../../tools/mopen/mopen.exe -d $(desklet).xap
+	LD_LIBRARY_PATH=$(top_builddir)/src/.libs:$(LD_LIBRARY_PATH) MONO_PATH=$(top_builddir)/gtk:$(top_builddir)/class/lib/3.0:$(MONO_PATH) mono ../../../tools/mopen/mopen.exe -d $(desklet).xap
 
 $(desklet).xap: $(desklet).cs default.xaml App.xaml
 	mono ../../../tools/mxap/mxap.exe --desktop --entry-point-type=$(entrypoint) --builddirhack=$(top_builddir) $(DESKTOP_ASSEMBLIES)
