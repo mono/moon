@@ -1,0 +1,109 @@
+<html>
+  <head>
+      <title>Moonlight Test Page</title>
+
+		<script type="text/xaml" id="xaml">
+			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
+			<MediaElement Source="ElephantsDream.en_fr.wmv" MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" Volume="1.0" AudioStreamIndex="1" />
+			</Canvas>
+		</script>
+
+		<script language="javascript" src="../../js/js/utils.js"></script>
+		<script language="javascript" src="../../js/js/testplugin.js"></script>
+		<script language="javascript">
+		var mediaElement = null;
+
+/*
+ * Test MediaElement.AudioStreamIndex
+ *
+ *      NOTE: This test requires somebody to listen to it to confirm that the audio/language actually changes.
+ *            it's still in the drtlist though (no reason not to be there really).
+ */
+
+		function Log (msg)
+		{
+			document.getElementById ("output").innerHTML += (msg + "<br/>");
+		}
+
+		function OnMediaOpened (sender, args)
+		{
+			TestLogger.LogDebug ("OnMediaOpened: " + sender.CurrentState);
+			document.getElementById ("output").innerHTML = "French and English video."
+			Log ("AudioStreamCount: " + sender.AudioStreamCount);
+			mediaElement = sender;
+			Log ("You should now be hearing in English.");
+			setTimeout ("SwitchToFrench ();", 2000);
+
+			setInterval (function ()
+				{
+					TestLogger.LogDebug ("State: " + sender.CurrentState);
+				}, 50);
+
+		}
+
+		function SwitchToEnglish ()
+		{
+			mediaElement.AudioStreamIndex = 1;
+			Log ("You should now be hearing in English.");
+			setTimeout ("SignalShutdown ();", 7500);
+		}
+
+		function SwitchToFrench ()
+		{
+			mediaElement.AudioStreamIndex = 0;
+			Log ("You should now be hearing in French.");
+			setTimeout ("SignalShutdown ();", 7500);
+		}
+
+		function OnMediaFailed (sender, args)
+		{
+			TestLogger.LogError ("OnMediaFailed: " + ErrorEventArgsToOneLineString (args));
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+		function OnPluginLoad (sender, args)
+		{
+			TestLogger.LogDebug ("OnPluginLoad");
+		}
+
+		function OnPluginError (sender, args)
+		{
+			TestLogger.LogError ("Plugin failed to initialize: " + args.ErrorMessage);
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+		
+
+		function select_audio (index)
+		{
+			mediaElement.AudioStreamIndex = index;
+		}
+		</script>
+	</head>
+
+  <body>
+    <div>
+        <embed type="application/x-silverlight" width="200" height="200"
+             id="_MoonlightControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoad"
+             background="green" >
+        </embed>
+    </div>
+    <div id="output">
+    </div>
+    <div id="audio0" onmousedown="select_audio (0);" style="width: 200px;height: 200 px; background-color: blue">
+        Select Audio Source #1<br/>
+    </div>
+    <div id="audio0" onmousedown="select_audio (1);" style="width: 200px;height: 200 px; background-color: green">
+        Select Audio Source #2<br/>
+    </div>
+<!--
+    <div>
+        <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
+        </embed>
+    </div>
+-->
+  </body>
+</html>
+
+
