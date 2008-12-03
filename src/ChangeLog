@@ -1,3 +1,9 @@
+2008-12-03  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Cleanup managed namespaces when we shutdown.
+	- Reduce the number of Value's we are creating. These still aren't
+	being freed properly, but at least there isn't as many of them.
+
 2008-12-03  Geoff Norton  <gnorton at novell.com>
 
 	* media.cpp: Ensure we null our reference to the image loader in

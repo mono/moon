@@ -90,7 +90,7 @@ static void value_type_set_attributes (XamlParserInfo *p, XamlElementInstance *i
 void parser_error (XamlParserInfo *p, const char *el, const char *attr, int error_code, const char *message);
 
 static XamlElementInfo *create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *name);
-
+static void destroy_created_namespace (gpointer data, gpointer user_data);
 
 class XamlElementInfo {
  protected:
@@ -124,6 +124,7 @@ class XamlElementInstance : public List::Node {
 
  protected:
 	DependencyObject *item;
+	Value *value;
 
  public:
 	const char *element_name;
@@ -151,6 +152,7 @@ class XamlElementInstance : public List::Node {
 		this->parent = NULL;
 		this->info = info;
 		this->item = NULL;
+		this->value = NULL;
 		this->x_key = NULL;
 		
 		children = new List ();
@@ -189,7 +191,9 @@ class XamlElementInstance : public List::Node {
 
 	virtual Value *GetAsValue ()
 	{
-		return new Value (item);
+		if (!value)
+			value = new Value (item);
+		return value;
 	}
 
 	virtual DependencyObject *GetAsDependencyObject ()
@@ -305,6 +309,7 @@ class XamlParserInfo {
 
 	XamlLoader *loader;
 	GList *created_elements;
+	GList *created_namespaces;
 
 	//
 	// If set, this is used to hydrate an existing object, not to create a new toplevel one
@@ -317,11 +322,16 @@ class XamlParserInfo {
 		created_elements = g_list_prepend (created_elements, element);
 	}
 
+	void AddCreatedNamespace (XamlNamespace* ns)
+	{
+		created_namespaces = g_list_prepend (created_namespaces, ns);
+	}
+
 	XamlParserInfo (XML_Parser parser, const char *file_name) :
 		parser (parser), file_name (file_name),
 		namescope (new NameScope()), top_element (NULL),
 		current_namespace (NULL), current_element (NULL), cdata_content (false), cdata (NULL),
-		implicit_default_namespace (false), error_args (NULL), loader (NULL), created_elements (NULL),
+		implicit_default_namespace (false), error_args (NULL), loader (NULL), created_elements (NULL), created_namespaces (NULL),
 		hydrate_expecting(NULL), hydrating(false)
 	{
 		namespace_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
@@ -332,6 +342,9 @@ class XamlParserInfo {
 		created_elements = g_list_reverse (created_elements);
 		g_list_foreach (created_elements, unref_xaml_element, NULL);
 		g_list_free (created_elements);
+
+		g_list_foreach (created_namespaces, destroy_created_namespace, NULL);
+		g_list_free (created_namespaces);
 
 		g_hash_table_destroy (namespace_map);
 
@@ -635,6 +648,14 @@ class XNamespace : public XamlNamespace {
 		return false;
 	}
 };
+
+
+static void
+destroy_created_namespace (gpointer data, gpointer user_data)
+{
+	XamlNamespace* ns = (XamlNamespace *) data;
+	delete ns;
+}
 
 
 class XamlElementInfoManaged : public XamlElementInfo {
@@ -1189,6 +1210,7 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 		
 		ManagedNamespace *c = new ManagedNamespace (g_strdup (uri));
 		g_hash_table_insert (p->namespace_map, g_strdup (c->xmlns), c);
+		p->AddCreatedNamespace (c);
 	}
 }
 
