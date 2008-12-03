@@ -11,10 +11,12 @@ namespace Moonlight {
 	public class MXap {
 
 		private string application_name;
+		private List<string> external_assemblies;
 		private List<string> reference_assemblies;
 		private List<string> mdb_files;
 		private List<string> csharp_files;
 		private List<string> xaml_files;
+		private string top_builddir = null; // Defaults to null
 		private bool desktop = false; // Defaults to false
 		private bool generate_html = true; // Defaults to true
 		private bool include_mdb = true; // Defaults to true
@@ -50,6 +52,11 @@ namespace Moonlight {
 			set { desktop = value; }
 		}
 
+		public string TopBuildDir {
+			get { return top_builddir; }
+			set { top_builddir = value; }
+		}
+
 		public bool IncludeMdb {
 			get { return include_mdb; }
 			set { include_mdb = value; }
@@ -79,6 +86,14 @@ namespace Moonlight {
 				if (reference_assemblies == null)
 					reference_assemblies = new List<string> ();
 				return reference_assemblies;
+			}
+		}
+
+		public List<string> ExternalAssemblies {
+			get {
+				if (external_assemblies == null)
+					external_assemblies = new List<string> ();
+				return external_assemblies;
 			}
 		}
 		
@@ -158,7 +173,16 @@ namespace Moonlight {
 				xamlg_args.AppendFormat (" {0}", Path.GetFileName (xaml_file));
 			}
 
-			RunProcess ("xamlg", xamlg_args.ToString ());
+			string command;
+
+			if (top_builddir != null) {
+				command = "mono";
+				xamlg_args.Insert (0, String.Format ("{0}/tools/xamlg/xamlg.exe ", top_builddir));
+			}
+			else
+				command = "xamlg";
+
+			RunProcess (command, xamlg_args.ToString ());
 		}
 
 		public void CreateResources ()
@@ -173,7 +197,16 @@ namespace Moonlight {
 				respack_args.AppendFormat (" {0}", Path.GetFileName (xaml_file));
 			}
 
-			RunProcess ("respack", respack_args.ToString ());
+			string command;
+
+			if (top_builddir != null) {
+				command = "mono";
+				respack_args.Insert (0, String.Format ("{0}/tools/respack/respack.exe ", top_builddir));
+			}
+			else
+				command = "respack";
+
+			RunProcess (command, respack_args.ToString ());
 		}
 
 		public void CreateApplicationAssembly ()
@@ -186,7 +219,11 @@ namespace Moonlight {
 				compiler_args.AppendFormat (" -r:{0} ", asm);
 			}
 			
-			if (desktop) {
+			foreach (string asm in ExternalAssemblies) {
+				compiler_args.AppendFormat (" -r:{0} ", asm);
+			}
+
+			if (desktop && top_builddir == null) {
 				compiler_args.Append (" -pkg:silverdesktop ");
 				compiler_args.Append (" -pkg:gtksilver ");
 			}
@@ -239,7 +276,16 @@ namespace Moonlight {
 
 			xaml2html_args.AppendFormat (" {0}.xap ", ApplicationName);
 
-			RunProcess ("xaml2html", xaml2html_args.ToString ());
+			string command;
+
+			if (top_builddir != null) {
+				command = "mono";
+				xaml2html_args.Insert (0, String.Format ("{0}/tools/xaml2html/xaml2html.exe ", top_builddir));
+			}
+			else
+				command = "xaml2html";
+
+			RunProcess (command, xaml2html_args.ToString ());
 		}
 
 		private void RunProcess (string name, string args)
@@ -281,7 +327,9 @@ namespace Moonlight {
 				{ "generate-manifest", v => mxap.GenerateManifest = v != null },
 				{ "entry-point-type=", v => mxap.EntryPointType = v },
 				{ "cs-sources=", v => mxap.CSSources = v },
-				{ "desktop", v => mxap.Desktop = v != null }
+				{ "desktop", v => mxap.Desktop = v != null },
+				{ "builddirhack=", v => mxap.TopBuildDir = v },
+				{ "r:|reference:", v => mxap.ExternalAssemblies.Add (v) }
 			};
 
 			List<string> extra = null;
@@ -299,7 +347,12 @@ namespace Moonlight {
 
 			if (extra.Count > 0)
 				cd = extra [0];
-			
+
+			if (!mxap.Desktop && mxap.ExternalAssemblies.Count > 0) {
+				Console.Error.WriteLine ("-reference requires -desktop");
+				return 1;
+			}
+
 			mxap.ReferenceAssemblies.AddRange (Directory.GetFiles (cd, "*.dll"));
 			mxap.XamlFiles.AddRange (Directory.GetFiles (cd, "*.xaml"));
 			if (mxap.CSSources == null) {

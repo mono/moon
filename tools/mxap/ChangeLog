@@ -1,3 +1,9 @@
+2008-12-03  Chris Toshok  <toshok@ximian.com>
+
+	* mxap.cs: add --builddirhack=$(top_builddir) hack so that we can
+	locate the right .exe's to run to make the desklets without
+	installing.
+
 2008-12-02  Jackson Harper  <jackson@ximian.com>
 
 	* mxap.cs: Just escape so we can have cs files in directories.
