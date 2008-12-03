@@ -1,3 +1,8 @@
+2008-12-03  Geoff Norton  <gnorton at novell.com>
+
+	* media.cpp: Ensure we null our reference to the image loader in
+	all the failure cases to avoid a possible double free/unref.
+
 2008-12-03  Alan McGovern  <amcgovern@novell.com>
 
 	* binding.h:
