@@ -1,3 +1,10 @@
+2008-12-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* ff2-bridge.h, ff2-dom.cpp: Rework event attaching/detaching a bit:
+	  html_object_attach_event now takes a context argument, which is
+	  passed to the event callback. ff2/3-dom.cpp: After removing the
+	  event listener we delete the wrapper.
+
 2008-09-16  Fernando Herrera  <fherrera@novell.com>
 
 	* Makefile.am: Add asf include dir

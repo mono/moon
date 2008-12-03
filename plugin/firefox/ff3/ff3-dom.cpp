@@ -47,6 +47,7 @@ class FF3DomEventWrapper : public nsIDOMEventListener {
 
 	callback_dom_event *callback;
 	nsCOMPtr<nsIDOMEventTarget> target;
+	gpointer context;
 };
 
 NS_IMPL_ISUPPORTS1(FF3DomEventWrapper, nsIDOMEventListener)
@@ -57,7 +58,10 @@ FF3DomEventWrapper::HandleEvent (nsIDOMEvent *aDOMEvent)
 	int client_x, client_y, offset_x, offset_y, mouse_button;
 	gboolean alt_key, ctrl_key, shift_key;
 	nsString str_event;
-	
+
+	if (callback == NULL)
+		return NS_OK;
+
 	aDOMEvent->GetType (str_event);
 
 	client_x = client_y = offset_x = offset_y = mouse_button = 0;
@@ -85,7 +89,7 @@ FF3DomEventWrapper::HandleEvent (nsIDOMEvent *aDOMEvent)
 		mouse_button = umouse_button;
 	}
 
-	callback (strdup (NS_ConvertUTF16toUTF8 (str_event).get ()), client_x, client_y, offset_x, offset_y,
+	callback (context, strdup (NS_ConvertUTF16toUTF8 (str_event).get ()), client_x, client_y, offset_x, offset_y,
 			alt_key, ctrl_key, shift_key, mouse_button);
 
 	return NS_OK;
@@ -147,7 +151,7 @@ FF3BrowserBridge::HtmlElementGetText (NPP npp, const char *element_id)
 }
 
 gpointer
-FF3BrowserBridge::HtmlObjectAttachEvent (NPP npp, NPObject *npobj, const char *name, callback_dom_event cb)
+FF3BrowserBridge::HtmlObjectAttachEvent (NPP npp, NPObject *npobj, const char *name, callback_dom_event cb, gpointer context)
 {
 	nsresult rv;
 	NPVariant npresult;
@@ -214,6 +218,7 @@ FF3BrowserBridge::HtmlObjectAttachEvent (NPP npp, NPObject *npobj, const char *n
 	FF3DomEventWrapper *wrapper = new FF3DomEventWrapper ();
 	wrapper->callback = cb;
 	wrapper->target = target;
+	wrapper->context = context;
 
 	rv = target->AddEventListener (NS_ConvertUTF8toUTF16 (name, strlen (name)), wrapper, PR_TRUE);
 
@@ -226,4 +231,6 @@ FF3BrowserBridge::HtmlObjectDetachEvent (NPP instance, const char *name, gpointe
 	FF3DomEventWrapper *wrapper = (FF3DomEventWrapper *) listener_ptr;
 
 	wrapper->target->RemoveEventListener (NS_ConvertUTF8toUTF16 (name, strlen (name)), wrapper, PR_TRUE);
+	wrapper->callback = NULL;
+	delete wrapper;
 }

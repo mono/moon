@@ -1,3 +1,13 @@
+2008-12-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* NativeMethods.cs: Rework event attaching/detaching a bit:
+	  html_object_attach_event now takes a context argument, which is
+	  passed to the event callback. ff2/3-dom.cpp: After removing the
+	  event listener we delete the wrapper. Managed: move pinvoke
+	  declarations to NativeMethods.cs, and use a GCHandle to ensure the
+	  HtmlObject (and the corresponding delegate) aren't gc'ed. Implement
+	  event detaching.
+
 2008-12-02  Alan McGovern  <amcgovern@novell.com>
 
 	* GeneratedPInvokes.cs: Ensure the default value of a CustomDP is

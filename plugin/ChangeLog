@@ -1,3 +1,11 @@
+2008-12-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* browser-bridge.h, plugin-class.cpp, plugin-class.h: Rework event
+	  attaching/detaching a bit: html_object_attach_event now takes a
+	  context argument, which is passed to the event callback.
+	  ff2/3-dom.cpp: After removing the event listener we delete the
+	  wrapper.
+
 2008-12-02  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp (MoonlightScriptControlObject::Invoke): fix

@@ -4343,11 +4343,11 @@ html_get_element_text (PluginInstance *plugin, const char *element_id)
 }
 
 gpointer
-html_object_attach_event (PluginInstance *plugin, NPObject *npobj, char *name, callback_dom_event *cb)
+html_object_attach_event (PluginInstance *plugin, NPObject *npobj, char *name, callback_dom_event *cb, gpointer context)
 {
         if (!plugin->GetBridge())
                 return NULL;
-        return plugin->GetBridge()->HtmlObjectAttachEvent (plugin->GetInstance(), npobj, name, cb);
+        return plugin->GetBridge()->HtmlObjectAttachEvent (plugin->GetInstance(), npobj, name, cb, context);
 }
 
 void

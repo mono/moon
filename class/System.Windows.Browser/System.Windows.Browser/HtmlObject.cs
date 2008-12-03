@@ -26,27 +26,74 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using Mono;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace System.Windows.Browser {
 
-	public abstract class HtmlObject : ScriptObject {
-
-		internal delegate void DomEventCallback (string name, int client_x, int client_y, int offset_x, int offset_y,
-				bool alt_key, bool ctrl_key, bool shift_key, MouseButtons mouse_button);
-
+	public abstract class HtmlObject : ScriptObject {		
 		private class EventInfo {
-			public Delegate handler;
+			public EventHandler handler;
+			public EventHandler<HtmlEventArgs> handler_args;
 			public IntPtr wrapper;
-			public DomEventCallback callback;
+			public HtmlObject obj;
+			public GCHandle handle;
+			public string event_name;
+			public static NativeMethods.DomEventCallback callback = new NativeMethods.DomEventCallback (DomEventHandler);
 
-			public EventInfo (Delegate handler, DomEventCallback callback, IntPtr wrapper)
+			static void DomEventHandler (IntPtr context, string name, int client_x, int client_y, int offset_x, int offset_y, bool alt_key, bool ctrl_key, bool shift_key, int mouse_button)
 			{
-				this.handler = handler;
-				this.wrapper = wrapper;
-				this.callback = callback;
+				try {
+					GCHandle handle = Helper.GCHandleFromIntPtr (context);
+					EventInfo info = (EventInfo) handle.Target;
+					
+					if (info.handler != null) {
+						info.handler (info.obj, EventArgs.Empty);
+					} else if (info.handler_args != null) {
+						info.handler_args (info.obj, new HtmlEventArgs (info.obj, client_x, client_y, offset_x, offset_y, alt_key, ctrl_key, shift_key, (MouseButtons) mouse_button, 0, 0, name));
+					}
+				} catch (Exception ex) {
+					Console.WriteLine ("Unhandled exception un HtmlObject.EventInfo.DomEventHandler callback: {0}", ex.Message);
+				}
+			}
+
+			public string EventNameMozilla {
+				get {
+					if (event_name.StartsWith ("on"))
+						return event_name.Substring (2);
+					return event_name;
+				}
+			}
+
+			public void DetachEvent ()
+			{
+				if (wrapper != IntPtr.Zero) {
+					NativeMethods.html_object_detach_event (WebApplication.Current.PluginHandle, EventNameMozilla, wrapper);
+					handle.Free ();
+					wrapper = IntPtr.Zero;
+				}
+			}
+			
+			public static EventInfo AttachEvent (string eventName, EventHandler handler, EventHandler<HtmlEventArgs> handler_args, HtmlObject obj)
+			{
+				EventInfo info;
+
+				info = new EventInfo ();
+				info.handler = handler;
+				info.handler_args = handler_args;
+				info.obj = obj;
+				info.handle = GCHandle.Alloc (info);
+				info.event_name = eventName;
+				info.wrapper = NativeMethods.html_object_attach_event (WebApplication.Current.PluginHandle, obj.Handle, info.EventNameMozilla, callback, Helper.GCHandleToIntPtr (info.handle));
+
+				if (info.wrapper == IntPtr.Zero) {
+					info.handle.Free ();
+					return null;
+				}
+				
+				return info;
 			}
 		}
 
@@ -64,72 +111,62 @@ namespace System.Windows.Browser {
 
 		public bool AttachEvent (string eventName, EventHandler handler)
 		{
-			DomEventCallback pe = delegate (string name, int client_x, int client_y,
-					int offset_x, int offset_y, bool alt_key,
-					bool ctrl_key, bool shift_key, MouseButtons mouse_button)
-			{
-				handler (this, EventArgs.Empty);
-			};
-
-			IntPtr res = html_object_attach_event (WebApplication.Current.PluginHandle, Handle, FixEventName (eventName), pe);
-			if (res == IntPtr.Zero)
-				return false;
-
-			TrackEvent (eventName, handler, pe, res);
-			return true;
+			return AddEventInfo (EventInfo.AttachEvent (eventName, handler, null, this));
 		}
 
 		public bool AttachEvent (string eventName, EventHandler<HtmlEventArgs> handler)
 		{
-			DomEventCallback pe = delegate (string name, int client_x, int client_y,
-					int offset_x, int offset_y, bool alt_key,
-					bool ctrl_key, bool shift_key, MouseButtons mouse_button)
-			{
-				handler (this, new HtmlEventArgs ((HtmlElement) this, client_x, client_y, offset_x, offset_y, alt_key,
-							 ctrl_key, shift_key, mouse_button, 0, 0, name));
-			};
+			return AddEventInfo (EventInfo.AttachEvent (eventName, null, handler, this));
+		}
 
-			IntPtr res = html_object_attach_event (WebApplication.Current.PluginHandle, Handle, FixEventName (eventName), pe);
+		private bool AddEventInfo (EventInfo info)
+		{
+			List<EventInfo> list;
 
-			if (res == IntPtr.Zero)
+			if (info == null)
 				return false;
 
-			TrackEvent (eventName, handler, pe, res);
+			if (events == null)
+				events = new Dictionary<string, List<EventInfo>> ();
+			
+			if (!events.TryGetValue (info.event_name, out list)) {
+				list = new List<EventInfo> ();
+				events.Add (info.event_name, list);
+			}
+			list.Add (info);
 			return true;
 		}
-
-		private void TrackEvent (string name, Delegate handler, DomEventCallback callback, IntPtr wrapper)
-		{
-			if (events ==  null)
-				events = new Dictionary<string, List<EventInfo>> ();
-
-			List<EventInfo> info_list = null;
-			if (events.ContainsKey (name))
-				info_list = events [name];
-			else {
-				info_list = new List<EventInfo> ();
-				events [name] = info_list;
-			}
-
-			EventInfo info = new EventInfo (handler, callback, wrapper);
-			info_list.Add (info);
-		}
-
-		private string FixEventName (string name)
-		{
-			if (name.StartsWith ("on"))
-				return name.Substring (2, name.Length - 2);
-			return name;
-		}
-
+		
 		public void DetachEvent (string eventName, EventHandler handler)
 		{
-			DetachEvent (WebApplication.Current.PluginHandle, Handle, eventName, handler);
+			DetachEvent (eventName, handler, null);
 		}
 
 		public void DetachEvent (string eventName, EventHandler<HtmlEventArgs> handler)
 		{
-			DetachEvent (WebApplication.Current.PluginHandle, Handle, eventName, handler);
+			DetachEvent (eventName, null, handler);
+		}
+
+		private void DetachEvent (string eventName, EventHandler handler, EventHandler<HtmlEventArgs> handler_args)
+		{
+			List<EventInfo> list;
+
+			if (events == null)
+				return;
+			
+			if (!events.TryGetValue (eventName, out list)) {
+				return;
+			}
+
+			for (int i = list.Count - 1; i >= 0; i--) {
+				EventInfo info = list [i];
+				if (info.handler == handler || info.handler_args == handler_args) {
+					list.RemoveAt (i);
+					info.DetachEvent ();
+					// Do we continue looking for duplicates?
+					// break;
+				}
+			}
 		}
 		
 		protected virtual object ConvertTo (Type targetType, bool allowSerialization)
@@ -140,7 +177,7 @@ namespace System.Windows.Browser {
 		internal static T GetPropertyInternal<T> (IntPtr handle, string name)
 		{
 			Mono.Value res;
-			html_object_get_property (WebApplication.Current.PluginHandle, handle, name, out res);
+			NativeMethods.html_object_get_property (WebApplication.Current.PluginHandle, handle, name, out res);
 
 			if (res.k != Mono.Kind.INVALID) {
 				object o = ScriptableObjectWrapper.ObjectFromValue (res);
@@ -154,7 +191,7 @@ namespace System.Windows.Browser {
 		{
 			Mono.Value dp = new Mono.Value ();
 			ScriptableObjectWrapper.ValueFromObject (ref dp, value);
-			html_object_set_property (WebApplication.Current.PluginHandle, handle, name, ref dp);
+			NativeMethods.html_object_set_property (WebApplication.Current.PluginHandle, handle, name, ref dp);
 		}
 
 		internal static T InvokeInternal<T> (IntPtr handle, string name, params object [] args)
@@ -165,7 +202,7 @@ namespace System.Windows.Browser {
 			for (int i = 0; i < args.Length; i++)
 				ScriptableObjectWrapper.ValueFromObject (ref vargs [i], args [i]);
 
-			html_object_invoke (WebApplication.Current.PluginHandle, handle, name, vargs, args.Length, out res);
+			NativeMethods.html_object_invoke (WebApplication.Current.PluginHandle, handle, name, vargs, args.Length, out res);
 
 			if (res.k != Mono.Kind.INVALID) {
 				object o = ScriptableObjectWrapper.ObjectFromValue (res);
@@ -174,30 +211,5 @@ namespace System.Windows.Browser {
 
 			return default (T);
 		}
-
-		[DllImport ("moonplugin")]
-		static extern bool AttachEvent (IntPtr xpp, IntPtr obj, string name, EventHandler handler);
-
-		[DllImport ("moonplugin")]
-		static extern bool AttachEvent (IntPtr xpp, IntPtr obj, string name, EventHandler<HtmlEventArgs> handler);
-
-		[DllImport ("moonplugin")]
-		static extern void DetachEvent (IntPtr xpp, IntPtr obj, string name, EventHandler handler);
-
-		[DllImport ("moonplugin")]
-		static extern void DetachEvent (IntPtr xpp, IntPtr obj, string name, EventHandler<HtmlEventArgs> handler);
-
-		[DllImport ("moonplugin")]
-		internal static extern void html_object_get_property (IntPtr plugin, IntPtr obj, string name, out Mono.Value result);
-
-		[DllImport ("moonplugin")]
-		internal static extern void html_object_set_property (IntPtr plugin, IntPtr obj, string name, ref Mono.Value value);
-
-		[DllImport ("moonplugin")]
-		internal static extern void html_object_invoke (IntPtr plugin, IntPtr obj, string name,
-				Mono.Value [] args, int arg_count, out Mono.Value result);
-
-		[DllImport ("moonplugin")]
-		internal static extern IntPtr html_object_attach_event (IntPtr plugin, IntPtr obj, string name, DomEventCallback cb);
 	}
 }

@@ -770,7 +770,7 @@ void moonlight_scriptable_object_emit_event (PluginInstance *plugin,
 
 // int clientX, int clientY,
 
-typedef void callback_dom_event (char *name, int client_x, int client_y, int offset_x, int offset_y, gboolean alt_key,
+typedef void callback_dom_event (gpointer context, char *name, int client_x, int client_y, int offset_x, int offset_y, gboolean alt_key,
 				 gboolean ctrl_key, gboolean shift_key, int mouse_button);
 
 
@@ -781,7 +781,7 @@ const char *html_get_element_text (PluginInstance *plugin, const char *element_i
 void html_object_get_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *result);
 void html_object_set_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *value);
 void html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name, Value *args, uint32_t arg_count, Value *result);
-gpointer html_object_attach_event (PluginInstance *plugin, NPObject *npobj, char *name, callback_dom_event *cb);
+gpointer html_object_attach_event (PluginInstance *plugin, NPObject *npobj, char *name, callback_dom_event *cb, gpointer context);
 void html_object_detach_event (PluginInstance *plugin, const char *name, gpointer listener);
 void html_object_release (PluginInstance *plugin, NPObject *npobj);
 

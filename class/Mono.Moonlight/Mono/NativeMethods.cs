@@ -267,7 +267,23 @@ namespace Mono {
 
 		[DllImport("moonplugin")]
 		public extern static void browser_http_response_destroy (IntPtr handle);
-		
+
+		public delegate void DomEventCallback (IntPtr context, string name, int client_x, int client_y, int offset_x, int offset_y, bool alt_key, bool ctrl_key, bool shift_key, int /* System.Windows.Browser.MouseButtons */ mouse_button);
+
+		[DllImport ("moonplugin")]
+		public static extern void html_object_get_property (IntPtr plugin, IntPtr obj, string name, out Mono.Value result);
+
+		[DllImport ("moonplugin")]
+		public static extern void html_object_set_property (IntPtr plugin, IntPtr obj, string name, ref Mono.Value value);
+
+		[DllImport ("moonplugin")]
+		public static extern void html_object_invoke (IntPtr plugin, IntPtr obj, string name, Mono.Value [] args, int arg_count, out Mono.Value result);
+
+		[DllImport ("moonplugin")]
+		public static extern IntPtr html_object_attach_event (IntPtr plugin, IntPtr obj, string name, DomEventCallback cb, IntPtr context);
+
+		[DllImport ("moonplugin")]
+		public static extern IntPtr html_object_detach_event (IntPtr plugin, string name, IntPtr wrapper);
 		
 #endregion
 
