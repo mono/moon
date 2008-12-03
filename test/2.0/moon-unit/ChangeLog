@@ -1,3 +1,8 @@
+2008-12-03  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs: If a Binding has bound to a
+	datacontext, refresh the binding when the context is altered.
+
 2008-12-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* System.Windows/DependencyPropertyAttachedTest.cs,

@@ -29,6 +29,24 @@ binding_destroy (gpointer value)
 {
 	delete ((Value *) value);
 }
+
+static void
+invalidate_binding (gpointer key, gpointer value, gpointer user_data)
+{
+	FrameworkElement *element = (FrameworkElement *) user_data;
+	DependencyProperty *property = (DependencyProperty *)key;
+	BindingExpressionBase *binding = ((Value *)value)->AsBindingExpressionBase ();
+	
+	if (!binding->GetSource ())
+		element->InvalidateBinding (property, binding);
+}
+
+static void
+datacontext_changed (DependencyObject *sender, PropertyChangedEventArgs *args, gpointer user_data)
+{
+	FrameworkElement *element = (FrameworkElement *) user_data;
+	g_hash_table_foreach (element->bindings, invalidate_binding, element);
+}
 #endif
 
 FrameworkElement::FrameworkElement ()
@@ -36,6 +54,7 @@ FrameworkElement::FrameworkElement ()
 #if SL_2_0
 	bindings = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, binding_destroy);
 	styles = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, NULL);
+	AddPropertyChangeHandler (FrameworkElement::DataContextProperty, datacontext_changed, this);
 #endif
 	measure_cb = NULL;
 	arrange_cb = NULL;
@@ -47,6 +66,7 @@ FrameworkElement::~FrameworkElement ()
 #if SL_2_0
 	g_hash_table_destroy (bindings);
 	g_hash_table_destroy (styles);
+	RemovePropertyChangeHandler (FrameworkElement::DataContextProperty, datacontext_changed);
 #endif
 
 	if (template_namescope) {
@@ -205,7 +225,7 @@ FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 	
 	if (property == FrameworkElement::StyleProperty && GetValue (property)) {
 		MoonError::FillIn (error, MoonError::EXCEPTION, 1001,
-			g_strdup_printf ("Property 'Style' cannot be assigned to more than once"));
+			g_strdup_printf ("Property 'Style' cannot be assigned to more than once\n"));
 		return false;
 	}
 	
@@ -230,6 +250,16 @@ FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 }
 
 #if SL_2_0
+
+void
+FrameworkElement::InvalidateBinding (DependencyProperty *property, BindingExpressionBase *binding)
+{
+	binding->SetGotValue (false);
+	
+	// Reset the binding so the new value is used
+	SetValue (property, binding);
+}
+
 void
 FrameworkElement::UpdateFromStyle (Style *style)
 {

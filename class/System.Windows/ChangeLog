@@ -1,5 +1,10 @@
 2008-12-03  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingExpression.cs: If a Binding has bound to a
+	datacontext, refresh the binding when the context is altered.
+
+2008-12-03  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/BindingExpressionBase.cs: When the binding path is
 	an empty string, we directly return the DataSource. Also, we don't
 	recurse up through parent framework elements to select a datacontext.

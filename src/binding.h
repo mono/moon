@@ -101,6 +101,7 @@ class BindingExpressionBase : public Expression {
 	/* @GenerateCBinding,GeneratePInvoke */
 	void RegisterManagedOverrides (GetValueCallback gv_callback, SetValueCallback sv_callback);
 	
+	void SetGotValue (bool value) { this->got_value = value; }
  private:
  	bool got_value;
  	GetValueCallback gv_callback;

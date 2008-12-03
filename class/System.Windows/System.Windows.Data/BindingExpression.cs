@@ -55,7 +55,7 @@ namespace System.Windows.Data
 		{
 			Value v;
 			object o;
-			if (base.TryGetValue (out o)) {
+			if (base.TryGetValue (out o) && o != null) {
 				v = DependencyObject.GetAsValue (o);
 			} else {
 				v = new Value { k = Kind.INVALID };

@@ -1,5 +1,12 @@
 2008-12-03  Alan McGovern  <amcgovern@novell.com>
 
+	* binding.h:
+	* frameworkelement.h:
+	* frameworkelement.cpp: If a Binding has bound to a datacontext, refresh
+	the binding when the context is altered.
+
+2008-12-03  Alan McGovern  <amcgovern@novell.com>
+
 	* frameworkelement.h:
 	* dependencyproperty.g.cpp: DataContext should take 'object'
 

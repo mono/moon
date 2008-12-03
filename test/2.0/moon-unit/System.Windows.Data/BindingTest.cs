@@ -121,6 +121,41 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
+		public void DataContextTest ()
+		{
+			Binding b = new Binding("");
+
+			Console.WriteLine ("Setting canvas");
+			Canvas c = new Canvas();
+			c.DataContext = new SolidColorBrush(Colors.Blue);
+
+			Rectangle r = new Rectangle();
+			r.DataContext = new SolidColorBrush(Colors.Green);
+
+			c.Children.Add(r);
+			r.SetBinding(Rectangle.FillProperty, b);
+
+			Assert.AreEqual(r.Fill, r.DataContext, "#1");
+			Console.WriteLine ("Setting datacontext to null");
+			r.DataContext = null;
+			Console.WriteLine ("Set to null");
+			Assert.AreEqual(r.Fill, null, "#2");
+			r.SetBinding(Rectangle.FillProperty, b);
+			Assert.AreEqual(r.Fill, null, "#3");
+
+			b = new Binding ("");
+			b.Source = new SolidColorBrush (Colors.Yellow);
+			r.SetBinding(Rectangle.FillProperty, b);
+			Assert.AreEqual(r.Fill, b.Source, "#4");
+
+			b = new Binding("");
+			r.SetBinding(Rectangle.FillProperty, b);
+			Assert.AreEqual(r.Fill, null, "#5");
+			r.DataContext = new LinearGradientBrush();
+			Assert.AreEqual(r.Fill, r.DataContext, "#6");
+		}
+		
+		[TestMethod]
 		public void ConstructorTest2 ()
 		{
 			Assert.Throws<ArgumentNullException> (delegate {
