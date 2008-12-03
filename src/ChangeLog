@@ -1,3 +1,10 @@
+2008-12-03  Geoff Norton  <gnorton@novell.com>
+
+	* media.cpp: Ensure we null our reference to the image loader in 
+	all the failure cases to avoid a possible double free/unref.
+
+	r: toshok
+
 2008-12-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 	* pipeline.cpp: IMediaStream::Dispose: delete our queue of frames.
 	  Plugs a memory leak. [Backport of r118496]

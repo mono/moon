@@ -274,9 +274,10 @@ Image::Image ()
 
 Image::~Image ()
 {
-	if (loader) {
+	if (loader != NULL) {
 		gdk_pixbuf_loader_close (GDK_PIXBUF_LOADER (loader), NULL);
 		g_object_unref (loader);
+		loader = NULL;
 	}
 	CleanupSurface ();
 }
@@ -706,6 +707,7 @@ Image::CreateSurface (const char *uri)
 			if ((fd = open (filename, O_RDONLY)) == -1) {
 				gdk_pixbuf_loader_close (GDK_PIXBUF_LOADER (loader), NULL);
 				g_object_unref (loader);
+				loader = NULL;
 				msg = g_strdup_printf ("Failed to load image %s: %s", filename, g_strerror (errno));
 				Emit (ImageFailedEvent, new ImageErrorEventArgs (msg));
 				return false;
@@ -729,6 +731,7 @@ Image::CreateSurface (const char *uri)
 		
 		if (!(pixbuf = gdk_pixbuf_loader_get_pixbuf (GDK_PIXBUF_LOADER (loader)))) {
 			g_object_unref (loader);
+			loader = NULL;
 			if (loader_err && loader_err->message)
 				msg = g_strdup_printf ("Failed to load image %s: %s", uri, loader_err->message);
 			else
