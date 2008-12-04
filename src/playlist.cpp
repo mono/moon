@@ -519,7 +519,7 @@ PlaylistEntry::Play ()
 	}
 
 	element->SetMedia (media);
-	element->GetTimeManager ()->AddTimeout (G_PRIORITY_DEFAULT - 10, 10000, element_play, element);
+	element->GetTimeManager ()->AddTimeout (G_PRIORITY_DEFAULT - 10, 100, element_play, element);
 
 	play_when_available = false;
 

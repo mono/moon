@@ -1,3 +1,8 @@
+2008-12-04  Geoff Norton  <gnorton@novell.com>
+
+	* playlist.cpp: 100ms not 10s should be when we start playing the
+	playlist entries.
+
 2008-12-04  Larry Ewing  <lewing@novell.com>
 
 	* layout.cpp (RenderLine): do all the filling in one pass rather
