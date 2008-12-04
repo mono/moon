@@ -11,7 +11,7 @@ using System.Windows.Shapes;
 using System.Collections.Generic;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+using System.Threading;
 
 namespace MoonTest.System.Windows
 {
@@ -88,6 +88,18 @@ namespace MoonTest.System.Windows
 			Assert.AreEqual (10, r.GetValue (property), "#1");
 			r.ClearValue (property);
 			Assert.AreEqual (100, r.GetValue (property), "#2");
+		}
+
+		object triggered;
+		[TestMethod()]
+		public void Register_Callback()
+		{
+			ManualResetEvent handle = new ManualResetEvent(false);
+			DependencyProperty prop = DependencyProperty.Register("Callback", typeof(int), typeof(Rectangle),
+										new PropertyMetadata((PropertyChangedCallback)delegate { triggered = new object(); }));
+			Rectangle r = new Rectangle();
+			r.SetValue(prop, 5);
+			Assert.IsNotNull(triggered);
 		}
 
 		[TestMethod ()]

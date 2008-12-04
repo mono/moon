@@ -1,3 +1,8 @@
+2008-12-04  Full Name  <Email Address>
+
+	* System.Windows/DependencyPropertyAttachedTest.cs: Add test to ensure
+	that the supplied callback is invoked.
+
 2008-12-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Controls/ControlTest.cs: Add test case for 
