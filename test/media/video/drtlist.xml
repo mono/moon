@@ -37,4 +37,5 @@
     <Test id="56" inputFile="test-states.html" masterFile10="None" timeout="10000" categories="video,audio,media" />
     <Test id="57" inputFile="test-audiostreamindex.html" masterFile10="None" timeout="30000" categories="video,audio,media" />
     <Test id="58" inputFile="test-pause-and-play.html" masterFile10="None" timeout="10000" categories="video,audio,media" />
+    <Test id="59" inputFile="test-mms-with-markers.html" masterFile10="None" timeout="30000" categories="video,audio,media,mediaserver" location="http://localhost/media/video" />
 </DRTList>
