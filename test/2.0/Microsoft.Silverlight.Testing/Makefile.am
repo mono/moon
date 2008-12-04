@@ -199,7 +199,7 @@ REFERENCES = \
 	-r:System.Xml \
 	-r:$(CURDIR)/System.Xml.Linq.dll \
 	-r:System.Core \
-	-r:Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll
+	-r:../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll
 
 BROWSER_ASSEMBLIES=-r:$(top_builddir)/class/lib/2.1/System.Windows.dll \
 		   -r:$(top_builddir)/class/lib/2.1/System.Windows.Browser.dll \
@@ -210,7 +210,7 @@ noinst_DATA=	Microsoft.Silverlight.Testing.dll
 CLEANFILES= System.Xml.Linq.dll System.Xml.Linq.dll.Unsigned Microsoft.Silverlight.Testing.dll Microsoft.Silverlight.Testing.dll.mdb \
 	    Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll.mdb
 
-Microsoft.Silverlight.Testing.dll: Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll UnitTestHarness/Properties/UnitTestMessage.resources $(SOURCES) System.Xml.Linq.dll 
+Microsoft.Silverlight.Testing.dll: ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll UnitTestHarness/Properties/UnitTestMessage.resources $(SOURCES) System.Xml.Linq.dll 
 	smcs $(SOURCES) $(RESOURCES) $(REFERENCES) $(BROWSER_ASSEMBLIES) -noconfig -define:SILVERLIGHT -target:library -out:Microsoft.Silverlight.Testing.dll -debug:full
 
 UnitTestHarness/Properties/UnitTestMessage.resources: UnitTestHarness/Properties/UnitTestMessage.resx
@@ -223,9 +223,6 @@ System.Xml.Linq.dll: $(SYSTEM_XML_LINQ_DLL)
 	$(MONO) --debug $(top_builddir)/tools/unsign/unsign.exe $(SYSTEM_XML_LINQ_DLL)
 	mv System.Xml.Linq.dll.Unsigned System.Xml.Linq.dll
 	-cp $(SYSTEM_XML_LINQ_DLL).mdb .
-
-Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll: ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll
-	cp ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll* .
 
 ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll:
 	$(MAKE) -C ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/
