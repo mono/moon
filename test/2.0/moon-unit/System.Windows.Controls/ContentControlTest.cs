@@ -77,14 +77,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
-		public void PeekProperties ()
-		{
-			ContentControlPoker cc = new ContentControlPoker ();
-			Assert.IsNotNull (cc.DefaultStyleKey_, "DefaultStyleKey");
-		}
-
-		[TestMethod]
 		public void DefaultMethods ()
 		{
 			ContentControl cc = new ContentControl ();
