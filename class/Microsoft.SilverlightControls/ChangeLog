@@ -1,3 +1,16 @@
+2008-12-04  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Controls/Src/Button/Button.cs: Change OnIsEnabledChanged to 
+	internal
+	* Controls/Src/ButtonBase/ButtonBase.cs: Change OnIsEnabledChanged
+	to internal
+	* Controls/Src/ContentControl/ContentControl.cs: Don't call (and 
+	#if out) OnContentTemplateChanged
+	* Controls/Src/HyperlinkButton/HyperlinkButton.cs: Change 
+	OnIsEnabledChanged to internal
+	* Controls/Src/ToggleButton/ToggleButton.cs: Change 
+	OnIsEnabledChanged to internal
+
 2008-12-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Controls/Src/ContentControl/ContentControl.cs: #if out the extra

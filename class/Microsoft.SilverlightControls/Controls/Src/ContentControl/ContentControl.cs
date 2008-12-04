@@ -102,7 +102,7 @@ namespace System.Windows.Controls
             DataTemplate oldValue = (DataTemplate) e.OldValue;
 
             // Notify derived classes of the change 
-            source.OnContentTemplateChanged(oldValue, value);
+//            source.OnContentTemplateChanged(oldValue, value);
         }
         #endregion ContentTemplate 
 #if false
@@ -246,6 +246,7 @@ namespace System.Windows.Controls
         { 
         }
 
+#if false
         /// <summary> 
         /// Called when the ContentTemplate property changes.
         /// </summary>
@@ -259,7 +260,6 @@ namespace System.Windows.Controls
         {
         }
 
-#if false
         /// <summary> 
         /// Called when the IsEnabled property changes.
         /// </summary> 

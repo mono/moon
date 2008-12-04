@@ -219,7 +219,7 @@ namespace System.Windows.Controls
         /// Called when the IsEnabled property changes.
         /// </summary> 
         /// <param name="isEnabled">New value of the IsEnabled property.</param>
-        protected override void OnIsEnabledChanged(bool isEnabled)
+        internal override void OnIsEnabledChanged(bool isEnabled)
         { 
             base.OnIsEnabledChanged(isEnabled); 
 
