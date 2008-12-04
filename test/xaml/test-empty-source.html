@@ -1,0 +1,62 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+
+<script type="text/javascript">
+function load () {
+    doc = document;
+    holder = document.getElementById ("holder");
+
+    var xaml = doc.createElement ("script");
+    xaml.id = "dorkwad";
+    xaml.type = "text/xaml";
+    xaml.appendChild (doc.createTextNode ('\
+        <Canvas xmlns="http://schemas.microsoft.com/client/2007" Background="Yellow"> \
+        <TextBlock Canvas.Left="20" Canvas.Top="20" Width="150" Height="200">Hello!</TextBlock> \
+        </Canvas>'
+    ));
+    holder.appendChild (xaml);
+
+    var silver = doc.createElement ("embed");
+    silver.type = "application/x-silverlight";
+    silver.width = "300";
+    silver.height = "200";
+    silver.id = "banannas";
+    silver.Background = "#ffff00";
+    
+    holder.appendChild (silver);	
+    silver.Source = "#xamlContent";
+    silver.Source = "#dorkwad";
+}
+
+function disable (sender, args) {
+    var t2 = document.getElementById ("Test2");
+    var bananna = document.getElementById ("banannas");
+
+    t2.source = "#dorkwad";
+    bananna.Source = "#dorkwad";
+
+    var test_plugin = document.getElementById ("_TestPlugin");
+    window.setTimeout (function () {
+	test_plugin.CaptureSingleImage ("", "test-empty-source.html.png", 0, 0, 500, 500);
+	test_plugin.SignalShutdown (document.name);
+    }, 200);
+}
+
+</script>
+</head><body onload="load ()">
+    <div id="holder">
+    <script type="text/xaml" id="xamlContent">
+      <?xml version="1.0"?>
+      <Canvas Width="100" Height="100" xmlns="http://schemas.microsoft.com/client/2007"
+              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Name="rootCanvas" >
+	<Image Source="mono.png" x:Name="img" Loaded="disable">
+	</Image>
+      </Canvas> 
+    </script>
+    <embed id="Test2" width="300" height="200" type="application/x-silverlight" Source="#xamlContent" background="#ff00ff">
+    </embed>
+    </div>
+<embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
+</embed>
+</body>
+</html>

@@ -1004,4 +1004,8 @@
 	knownFailure="true"
 	knownFailureReason="Master is for 1.0"
    />
+   <Test id="10215"
+	inputFile="test-empty-source.html"
+	masterFile10="None"
+   />
 </DRTList>

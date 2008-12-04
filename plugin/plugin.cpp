@@ -860,6 +860,11 @@ PluginInstance::CreateWindow ()
 void
 PluginInstance::UpdateSource ()
 {
+	if (source_idle) {
+		g_source_remove (source_idle);
+		source_idle = 0;
+	}
+
 	if (!source)
 		return;
 
@@ -877,12 +882,16 @@ PluginInstance::UpdateSource ()
 
 gboolean
 PluginInstance::IdleUpdateSourceByReference (gpointer data)
-{
+{	
 	PluginInstance *instance = (PluginInstance*)data;
+	char *pos = NULL;
+	
+	instance->source_idle = 0;
 
-	char *pos = strchr (instance->source, '#');
+	if (instance->source)
+		pos = strchr (instance->source, '#');
 
-	if (strlen (pos+1) > 0)
+	if (pos && strlen (pos+1) > 0)
 		instance->UpdateSourceByReference (pos+1);
 
 	return FALSE;
@@ -1524,17 +1533,13 @@ PluginInstance::RemoveCleanupPointer (gpointer p)
 void
 PluginInstance::SetSource (const char *value)
 {
-	if (!value)
-		return;
-
-	if (source)
+	if (source) {
 		g_free (source);
-
-	if (source_idle)
-		g_source_remove (source_idle);
-	source_idle = 0;
+		source = NULL;
+	}
 
 	source = g_strdup (value);
+
 	UpdateSource ();
 }
 
