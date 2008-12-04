@@ -475,42 +475,10 @@ PlaylistEntry::Open ()
 	}
 }
 
-static gboolean
-playlist_check_duration (void *data)
-{
-	((PlaylistEntry*)data)->CheckDuration ();
-	return false;
-}
-
-void
-PlaylistEntry::CheckDuration ()
-{
-	element->Stop ();
-}
-	
-
-
-static gboolean
-element_play (void *data)
-{
-	MediaElement *element = (MediaElement*) data;
-	element->PlayInternal ();
-	return false;
-}
-
-
 bool
 PlaylistEntry::Play ()
 {
 	LOG_PLAYLIST ("PlaylistEntry::Play (), play_when_available: %s, media: %p, source name: %s\n", play_when_available ? "true" : "false", media, source_name ? source_name->ToString () : "NULL");
-
-	// FIXME we should set the timeout when the playing starts not when we request it
-	if (HasDuration ()) {
-		if (GetDuration ()->HasTimeSpan ())
-			element->GetTimeManager ()->AddTimeout (G_PRIORITY_DEFAULT - 10,
-								1000 * TimeSpan_ToSeconds (GetDuration ()->GetTimeSpan ()), 
-                                        			playlist_check_duration, this);
-	}
 
 	if (media == NULL) {
 		play_when_available = true;
@@ -519,7 +487,9 @@ PlaylistEntry::Play ()
 	}
 
 	element->SetMedia (media);
-	element->GetTimeManager ()->AddTimeout (G_PRIORITY_DEFAULT - 10, 100, element_play, element);
+	// FIXME: If we are replaying the same media we may have still pending the Seek(0)
+	//        call that happened on Stop()
+	element->PlayInternal ();
 
 	play_when_available = false;
 
@@ -809,7 +779,7 @@ Playlist::Stop ()
 		return;
 
 	current_entry->Stop ();
-	
+
 	current_node = NULL;
 
 	if (GetParent () == NULL && !IsSingleFile ()) {

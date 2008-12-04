@@ -180,7 +180,6 @@ public:
 
 	virtual const char *GetTypeName () { return "PlaylistEntry"; }
 	void Print (int depth);
-	void CheckDuration ();
 
 };
 

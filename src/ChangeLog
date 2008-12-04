@@ -1,3 +1,10 @@
+2008-12-05  Fernando Herrera  <fherrera@novell.com>
+
+	* playlist.cpp:
+	* playlist.h: Don't check duration at playlist level but let MediaPlayer
+	handle it. Don't do a delayed element->Play() for repeats because that
+	can broke js doing "e.Play();e.Stop()"
+
 2008-12-04  Fernando Herrera  <fherrera@novell.com>
 
 	* playlist.cpp (Playlist::Open): Check duration properly.
