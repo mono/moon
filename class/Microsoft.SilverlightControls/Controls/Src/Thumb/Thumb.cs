@@ -1,4 +1,4 @@
-﻿// Copyright © Microsoft Corporation. 
+// Copyright © Microsoft Corporation. 
 // This source is subject to the Microsoft Source License for Silverlight Controls (March 2008 Release).
 // Please see http://go.microsoft.com/fwlink/?LinkID=111693 for details.
 // All other rights reserved. 
@@ -14,11 +14,12 @@ namespace System.Windows.Controls.Primitives
     /// <summary> 
     /// Initializes a new instance of the Thumb class.
     /// </summary>
-    [TemplatePart(Name = Thumb.ElementRootName, Type = typeof(FrameworkElement))] 
-    [TemplatePart(Name = Thumb.StateNormalName, Type = typeof(Storyboard))] 
-    [TemplatePart(Name = Thumb.StateMouseOverName, Type = typeof(Storyboard))]
-    [TemplatePart(Name = Thumb.StatePressedName, Type = typeof(Storyboard))] 
-    [TemplatePart(Name = Thumb.StateDisabledName, Type = typeof(Storyboard))]
+    [TemplateVisualStateAttribute(Name = "Unfocused", GroupName = "FocusStates")]
+    [TemplateVisualStateAttribute(Name = "Focused", GroupName = "FocusStates")]
+    [TemplateVisualStateAttribute(Name = "Normal", GroupName = "CommonStates")]
+    [TemplateVisualStateAttribute(Name = "MouseOver", GroupName = "CommonStates")]
+    [TemplateVisualStateAttribute(Name = "Pressed", GroupName = "CommonStates")]
+    [TemplateVisualStateAttribute(Name = "Disabled", GroupName = "CommonStates")]
     public sealed class Thumb : Control
     { 
         #region IsDragging

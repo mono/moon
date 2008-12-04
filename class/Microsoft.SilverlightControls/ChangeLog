@@ -1,3 +1,7 @@
+2008-12-04  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/Thumb/Thumb.cs: Update the attributes
+
 2008-12-01  Stephane Delcroix  <stephane@delcroix.org>
 
 	* Controls/Src/HyperlinkButton/HyperlinkButton.cs: comment out the
