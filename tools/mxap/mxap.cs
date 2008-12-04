@@ -348,8 +348,8 @@ namespace Moonlight {
 			if (extra.Count > 0)
 				cd = extra [0];
 
-			if (!mxap.Desktop && mxap.ExternalAssemblies.Count > 0) {
-				Console.Error.WriteLine ("-reference requires -desktop");
+			if (mxap.TopBuildDir == null && mxap.ExternalAssemblies.Count > 0) {
+				Console.Error.WriteLine ("--reference requires --builddirhack");
 				return 1;
 			}
 

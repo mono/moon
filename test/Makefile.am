@@ -1,6 +1,10 @@
 
 SUBDIRS=harness parsertest sizes
 
+if INCLUDE_BROWSER_MANAGED_CODE
+SUBDIRS += 2.0
+endif
+
 MOZ_PATH = `pwd`/$(top_builddir)/test/harness/shocker/.libs:`pwd`/$(top_builddir)/plugin/.libs
 if HAVE_GECKO_1_9 
 LD_PATH = $(top_builddir)/plugin/.libs:$(top_builddir)/src/.libs:`pkg-config --variable=sdkdir mozilla-gtkmozembed`/lib

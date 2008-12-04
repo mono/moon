@@ -5,7 +5,7 @@ AC_CANONICAL_SYSTEM
 AM_CONFIG_HEADER(config.h)
 AM_INIT_AUTOMAKE([tar-ustar])
 AM_MAINTAINER_MODE
-
+n
 AC_PROG_CXX
 AC_HEADER_STDC
 AC_DISABLE_STATIC
@@ -13,6 +13,8 @@ AC_PROG_LIBTOOL
 DOLT
 
 PKG_PROG_PKG_CONFIG
+AC_PATH_PROG([GACUTIL], [gacutil])
+AC_PATH_PROG([MONO], [mono])
 
 AC_DEFINE(__STDC_CONSTANT_MACROS,[],[To make avformat work with C++])
 AC_DEFINE(__STDC_LIMIT_MACROS,[],[To get limits of specified-width integer types])
@@ -635,6 +637,10 @@ man/Makefile
 gtk/gtksilver.pc
 data/Makefile
 test/Makefile
+test/2.0/Makefile
+test/2.0/moon-unit/Makefile
+test/2.0/Microsoft.Silverlight.Testing/Makefile
+test/2.0/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Makefile
 test/harness/Makefile
 test/harness/shocker/Makefile
 test/harness/agviewer/Makefile
@@ -644,6 +650,7 @@ test/sizes/Makefile
 tools/Makefile
 tools/mopen/Makefile
 tools/mxap/Makefile
+tools/unsign/Makefile
 tools/xamlg/Makefile
 tools/xaml2html/Makefile
 tools/respack/Makefile
