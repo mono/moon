@@ -1,3 +1,7 @@
+2008-12-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	* binding.cpp: Get rid of excessive use of 'this' keyword.
+
 2008-12-04  Geoff Norton  <gnorton@novell.com>
 
 	* playlist.cpp: 100ms not 10s should be when we start playing the

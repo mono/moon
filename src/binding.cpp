@@ -27,71 +27,64 @@ Binding::Binding ()
 char *
 Binding::GetPropertyPath ()
 {
-	return this->property_path;	
+	return property_path;	
 }
 
 void
 Binding::SetPropertyPath (char *path)
 {
-	if (this->property_path)
-		g_free (this->property_path);
-	this->property_path = g_strdup (path);	
+	g_free (property_path);
+	property_path = g_strdup (path);	
 }
 
 BindingMode
 Binding::GetBindingMode ()
 {
-	return this->binding_mode;	
+	return binding_mode;	
 }
 
 void
 Binding::SetBindingMode (BindingMode mode)
 {
-	this->binding_mode = mode;
+	binding_mode = mode;
 }
 
 bool
 Binding::GetIsSealed ()
 {
-	return this->is_sealed;	
+	return is_sealed;	
 }
 
 void
 Binding::SetIsSealed (bool sealed)
 {
-	this->is_sealed = sealed;
+	is_sealed = sealed;
 }
 
 Binding::~Binding ()
 {
-	if (this->property_path) {
-		g_free (this->property_path);
-		this->property_path = NULL;
-	}
+	g_free (property_path);
 }
 
 BindingExpressionBase::BindingExpressionBase ()
 {
-	this->binding = NULL;
-	this->got_value = false;
-	this->gv_callback = NULL;
-	this->source = NULL;
-	this->stored_value = NULL;
-	this->sv_callback = NULL;
-	this->target = NULL;
-	this->target_property = NULL;
+	binding = NULL;
+	got_value = false;
+	gv_callback = NULL;
+	source = NULL;
+	stored_value = NULL;
+	sv_callback = NULL;
+	target = NULL;
+	target_property = NULL;
 }
 
 BindingExpressionBase::~BindingExpressionBase ()
 {
-	if (this->binding) {
-		this->binding->unref ();
-		this->binding = NULL;	
-	}
-	if (stored_value) {
-		this->stored_value->FreeValue ();
-		this->stored_value = NULL;	
-	}
+	if (binding)
+		binding->unref ();
+	
+	if (stored_value)
+		stored_value->FreeValue ();
 }
 
 void

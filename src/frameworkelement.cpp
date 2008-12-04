@@ -113,7 +113,6 @@ void
 FrameworkElement::SetBindingExpression (DependencyProperty *property, BindingExpressionBase *expr)
 {
 #if SL_2_0
-
 	BindingExpressionBase *cur_expr = GetBindingExpression (property);
 	
 	if (cur_expr)
