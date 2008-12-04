@@ -1,4 +1,4 @@
-SUBDIRS = mopen
+SUBDIRS = mopen generators
 if INCLUDE_DESKTOP_MANAGED_CODE
 SUBDIRS += xamlg xaml2html respack mxap unsign
 endif

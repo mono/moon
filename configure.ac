@@ -137,17 +137,14 @@ AM_CONDITIONAL(HAVE_MOZILLA, test x$with_mozilla = xyes)
 dnl
 dnl Mono (both 2.1 and 3.0 profiles) checks
 dnl
-managed_code=no
-desktop_assemblies=no
-browser_assemblies=no
+managed_code=yes
+desktop_assemblies=yes
+browser_assemblies=yes
 
 AC_ARG_WITH(managed,
-	    [ --with-managed=yes/no/browser/desktop   If you want to enable support for managed code.  Default is "no"],
+	    [ --with-managed=yes/no/browser/desktop   If you want to enable support for managed code.  Default is "yes"],
 	    [case "$with_managed" in
     	     yes)
-	     	 managed_code=yes
-		 desktop_assemblies=yes
-		 browser_assemblies=yes
 	     ;;
 	     browser)
 	         managed_code=yes
@@ -158,6 +155,9 @@ AC_ARG_WITH(managed,
 		 desktop_assemblies=yes
 	     ;;
 	     no)
+	     	 managed_code=no
+		 desktop_assemblies=no
+		 browser_assemblies=no
 	     ;;
 	     *)
 	         AC_MSG_ERROR([Unknown value for --with-managed.  Please specify "yes", "no", "desktop", or "browser"])
@@ -648,6 +648,7 @@ test/harness/test-runner/Makefile
 test/parsertest/Makefile
 test/sizes/Makefile
 tools/Makefile
+tools/generators/Makefile
 tools/mopen/Makefile
 tools/mxap/Makefile
 tools/unsign/Makefile
