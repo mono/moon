@@ -169,16 +169,9 @@ namespace Moonlight {
 				xamlg_args.AppendFormat (" {0}", Path.GetFileName (xaml_file));
 			}
 
-			string command;
-
-			if (top_builddir != null) {
-				command = "mono";
-				xamlg_args.Insert (0, String.Format ("{0}/tools/xamlg/xamlg.exe ", top_builddir));
-			}
-			else
-				command = "xamlg";
-
-			return RunProcess (command, xamlg_args.ToString ());
+			return RunTool ("xamlg",
+					"tools/xamlg/xamlg.exe",
+					xamlg_args.ToString ());
 		}
 
 		public bool CreateResources ()
@@ -193,16 +186,9 @@ namespace Moonlight {
 				respack_args.AppendFormat (" {0}", Path.GetFileName (xaml_file));
 			}
 
-			string command;
-
-			if (top_builddir != null) {
-				command = "mono";
-				respack_args.Insert (0, String.Format ("{0}/tools/respack/respack.exe ", top_builddir));
-			}
-			else
-				command = "respack";
-
-			return RunProcess (command, respack_args.ToString ());
+			return RunTool ("respack",
+					"tools/respack/respack.exe",
+					respack_args.ToString ());
 		}
 
 		public bool CreateApplicationAssembly ()
@@ -272,23 +258,26 @@ namespace Moonlight {
 
 			xaml2html_args.AppendFormat (" {0}.xap ", ApplicationName);
 
-			string command;
-
-			if (top_builddir != null) {
-				command = "mono";
-				xaml2html_args.Insert (0, String.Format ("{0}/tools/xaml2html/xaml2html.exe ", top_builddir));
-			}
-			else
-				command = "xaml2html";
-
-			return RunProcess (command, xaml2html_args.ToString ());
+			return RunTool ("xaml2html",
+					"tools/xaml2html/xaml2html.exe",
+					xaml2html_args.ToString ());
 		}
 
-		private bool RunProcess (string name, string args)
+		private bool RunTool (string filename, string builddir_exe, string args)
+		{
+			if (top_builddir != null) {
+				filename = "mono";
+				args = String.Format ("{0}/{1} {2}", top_builddir, builddir_exe, args);
+			}
+
+			return RunProcess (filename, args);
+		}
+
+		private bool RunProcess (string filename, string args)
 		{
 			Process process = new Process ();
 
-			process.StartInfo.FileName = name;
+			process.StartInfo.FileName = filename;
 			process.StartInfo.Arguments = args;
 
 			process.StartInfo.CreateNoWindow = true;
@@ -330,7 +319,7 @@ namespace Moonlight {
 			List<string> extra = null;
 			try {
 				extra = p.Parse(args);
-			} catch (OptionException e){
+			} catch (OptionException){
 				Console.WriteLine ("Try `mxap --help' for more information.");
 				return 1;
 			}
