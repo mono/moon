@@ -1,3 +1,9 @@
+2008-12-04  Larry Ewing  <lewing@novell.com>
+
+	* layout.cpp (RenderLine): do all the filling in one pass rather
+	than adding a stroke at the end.  Tidy up the path creation and
+	modification logic.
+
 2008-12-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	We only support vector fonts, so get rid of the TextFont::Render()
