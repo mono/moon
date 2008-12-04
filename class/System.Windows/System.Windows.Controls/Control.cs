@@ -37,6 +37,55 @@ using System.Windows.Markup;
 namespace System.Windows.Controls {
 	public abstract partial class Control : FrameworkElement {
 
+		private static Type ControlType = typeof (Control);
+		
+		protected object DefaultStyleKey {
+			get { return (object) GetValue (DefaultStyleKeyProperty); }
+			set {
+				// feels weird but that's unit tested as such
+				if (value == null)
+					throw new ArgumentException ("DefaultStyleKey");
+				SetValue (DefaultStyleKeyProperty, value);
+			}
+		}
+
+		protected static readonly System.Windows.DependencyProperty DefaultStyleKeyProperty = 
+			DependencyProperty.Register (
+				"DefaultStyleKey",
+				typeof (object),
+				typeof (Control),
+				new PropertyMetadata (OnDefaultStyleKeyPropertyChanged)
+			);
+
+		private static void OnDefaultStyleKeyPropertyChanged (DependencyObject d, DependencyPropertyChangedEventArgs e) 
+		{
+			if (e.NewValue == null)
+				return;
+			// expected to be a Type
+			Type nv = (e.NewValue as Type);
+			if ((nv == null) || (nv == ControlType) || !nv.IsSubclassOf (ControlType))
+				throw new ArgumentException ("DefaultStyleKey");
+		}
+
+		public bool IsEnabled {
+			get { return (bool) GetValue (IsEnabledProperty); }
+			set { SetValue (IsEnabledProperty, value); }
+		}
+
+		public static readonly DependencyProperty IsEnabledProperty = DependencyProperty.Register (
+			"IsEnabled",
+			typeof (bool),
+			typeof (Control),
+			new PropertyMetadata (true, OnIsEnabledPropertyChanged));
+
+		private static void OnIsEnabledPropertyChanged (DependencyObject d, DependencyPropertyChangedEventArgs e) 
+		{
+			Control c = (d as Control);
+			DependencyPropertyChangedEventHandler handler = c.IsEnabledChanged;
+			if (handler != null)
+				handler (d, e);
+		}
+		
 		public event DependencyPropertyChangedEventHandler IsEnabledChanged;
 
 		public bool ApplyTemplate()

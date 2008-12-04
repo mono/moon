@@ -1,6 +1,11 @@
+2008-12-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Control.cs: Add back DefaultStyleKey and IsEnabled with managed
+	validation and events.
+
 2008-12-02  Sebastien Pouliot  <sebastien@ximian.com>
 
-	* Control.cpp: Remove temporary properties (they are now generated)
+	* Control.cs: Remove temporary properties (they are now generated)
 
 2008-12-02  Stephane Delcroix  <sdelcroix@novell.com>
 
