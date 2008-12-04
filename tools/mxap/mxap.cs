@@ -226,7 +226,12 @@ namespace Moonlight {
 
 			compiler_args.AppendFormat (" -resource:{0}.g.resources ", ApplicationName);
 
-			return RunProcess (desktop ? "gmcs" : "smcs", compiler_args.ToString ());
+			if (desktop)
+				return RunProcess ("gmcs", compiler_args.ToString());
+			else
+				return RunTool ("smcs",
+						"class/lib/2.1/smcs.exe",
+						compiler_args.ToString());
 		}
 
 		public bool CreateXap ()

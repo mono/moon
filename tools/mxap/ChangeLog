@@ -1,3 +1,8 @@
+2008-12-04  Chris Toshok  <toshok@ximian.com>
+
+	* mxap.cs: use the builddir version of smcs.exe so it resolves the
+	builddir versions of all the class libraries.
+
 2008-12-03  Chris Toshok  <toshok@ximian.com>
 
 	* mxap.cs: factor out the builddirhack stuff into RunTool (used
