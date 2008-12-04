@@ -1,3 +1,7 @@
+2008-12-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* DependencyProperty.g.cs: regenerated
+
 2008-12-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* DependencyProperty.cs: DependencyProperty.RegisterAny: When getting

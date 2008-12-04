@@ -361,7 +361,6 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty BackgroundProperty = DependencyProperty.Lookup (Kind.CONTROL, "Background", typeof (Brush));
 		public static readonly DependencyProperty BorderBrushProperty = DependencyProperty.Lookup (Kind.CONTROL, "BorderBrush", typeof (Brush));
 		public static readonly DependencyProperty BorderThicknessProperty = DependencyProperty.Lookup (Kind.CONTROL, "BorderThickness", typeof (Thickness));
-		protected static readonly DependencyProperty DefaultStyleKeyProperty = DependencyProperty.Lookup (Kind.CONTROL, "DefaultStyleKey", typeof (object));
 		public static readonly DependencyProperty FontFamilyProperty = DependencyProperty.Lookup (Kind.CONTROL, "FontFamily", typeof (FontFamily));
 		public static readonly DependencyProperty FontSizeProperty = DependencyProperty.Lookup (Kind.CONTROL, "FontSize", typeof (double));
 		public static readonly DependencyProperty FontStretchProperty = DependencyProperty.Lookup (Kind.CONTROL, "FontStretch", typeof (FontStretch));
@@ -369,7 +368,6 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty FontWeightProperty = DependencyProperty.Lookup (Kind.CONTROL, "FontWeight", typeof (FontWeight));
 		public static readonly DependencyProperty ForegroundProperty = DependencyProperty.Lookup (Kind.CONTROL, "Foreground", typeof (Brush));
 		public static readonly DependencyProperty HorizontalContentAlignmentProperty = DependencyProperty.Lookup (Kind.CONTROL, "HorizontalContentAlignment", typeof (HorizontalAlignment));
-		public static readonly DependencyProperty IsEnabledProperty = DependencyProperty.Lookup (Kind.CONTROL, "IsEnabled", typeof (bool));
 		public static readonly DependencyProperty IsTabStopProperty = DependencyProperty.Lookup (Kind.CONTROL, "IsTabStop", typeof (bool));
 		public static readonly DependencyProperty PaddingProperty = DependencyProperty.Lookup (Kind.CONTROL, "Padding", typeof (Thickness));
 		public static readonly DependencyProperty TabIndexProperty = DependencyProperty.Lookup (Kind.CONTROL, "TabIndex", typeof (int));
@@ -390,11 +388,6 @@ namespace System.Windows.Controls {
 		public Thickness BorderThickness {
 			get { return (Thickness) GetValue (BorderThicknessProperty); }
 			set { SetValue (BorderThicknessProperty, value); }
-		}
-
-		protected object DefaultStyleKey {
-			get { return (object) GetValue (DefaultStyleKeyProperty); }
-			set { SetValue (DefaultStyleKeyProperty, value); }
 		}
 
 		public FontFamily FontFamily {
@@ -430,11 +423,6 @@ namespace System.Windows.Controls {
 		public HorizontalAlignment HorizontalContentAlignment {
 			get { return (HorizontalAlignment) GetValue (HorizontalContentAlignmentProperty); }
 			set { SetValue (HorizontalContentAlignmentProperty, value); }
-		}
-
-		public bool IsEnabled {
-			get { return (bool) GetValue (IsEnabledProperty); }
-			set { SetValue (IsEnabledProperty, value); }
 		}
 
 		public bool IsTabStop {
