@@ -80,9 +80,6 @@ public:
 	void SetBorderThickness (Thickness *thickness);
 	Thickness *GetBorderThickness ();
 	
-	void SetDefaultStyleKey (DependencyObject* key);
-	DependencyObject* GetDefaultStyleKey ();
-
 	void SetFontFamily (const char *family);
 	const char *GetFontFamily ();
 	
@@ -104,9 +101,6 @@ public:
 	void SetHorizontalContentAlignment (HorizontalAlignment alignment);
 	HorizontalAlignment GetHorizontalContentAlignment ();
 	
-	void SetIsEnabled (bool value);
-	bool GetIsEnabled ();
-
 	void SetIsTabStop (bool value);
 	bool GetIsTabStop ();
 	
@@ -131,8 +125,6 @@ public:
 	static DependencyProperty *BorderBrushProperty;
  	/* @PropertyType=Thickness,DefaultValue=Thickness(0.0),GenerateAccessors */
 	static DependencyProperty *BorderThicknessProperty;
-	/* @PropertyType=DependencyObject,ManagedPropertyType=object,GenerateAccessors,ManagedAccess=Protected */
-	static DependencyProperty *DefaultStyleKeyProperty;
  	/* @PropertyType=string,DefaultValue=CONTROL_FONT_FAMILY,ManagedPropertyType=FontFamily,GenerateAccessors */
 	static DependencyProperty *FontFamilyProperty;
  	/* @PropertyType=double,DefaultValue=CONTROL_FONT_SIZE,GenerateAccessors */
@@ -147,8 +139,6 @@ public:
 	static DependencyProperty *ForegroundProperty;
  	/* @PropertyType=HorizontalAlignment,DefaultValue=HorizontalAlignmentCenter,GenerateAccessors */
 	static DependencyProperty *HorizontalContentAlignmentProperty;
- 	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
-	static DependencyProperty *IsEnabledProperty;
  	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
 	static DependencyProperty *IsTabStopProperty;
  	/* @PropertyType=Thickness,DefaultValue=Thickness(0.0),GenerateAccessors */

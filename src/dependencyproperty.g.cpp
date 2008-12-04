@@ -107,7 +107,6 @@ dependency_property_g_init (void)
 	Control::BackgroundProperty = DependencyProperty::Register (Type::CONTROL, "Background", Type::BRUSH);
 	Control::BorderBrushProperty = DependencyProperty::Register (Type::CONTROL, "BorderBrush", Type::BRUSH);
 	Control::BorderThicknessProperty = DependencyProperty::Register (Type::CONTROL, "BorderThickness", new Value (Thickness(0.0)));
-	Control::DefaultStyleKeyProperty = DependencyProperty::Register (Type::CONTROL, "DefaultStyleKey", Type::DEPENDENCY_OBJECT);
 	Control::FontFamilyProperty = DependencyProperty::Register (Type::CONTROL, "FontFamily", new Value (CONTROL_FONT_FAMILY));
 	Control::FontSizeProperty = DependencyProperty::Register (Type::CONTROL, "FontSize", new Value (CONTROL_FONT_SIZE));
 	Control::FontStretchProperty = DependencyProperty::Register (Type::CONTROL, "FontStretch", new Value (CONTROL_FONT_STRETCH));
@@ -115,7 +114,6 @@ dependency_property_g_init (void)
 	Control::FontWeightProperty = DependencyProperty::Register (Type::CONTROL, "FontWeight", new Value (CONTROL_FONT_WEIGHT));
 	Control::ForegroundProperty = DependencyProperty::Register (Type::CONTROL, "Foreground", Type::BRUSH);
 	Control::HorizontalContentAlignmentProperty = DependencyProperty::Register (Type::CONTROL, "HorizontalContentAlignment", new Value (HorizontalAlignmentCenter));
-	Control::IsEnabledProperty = DependencyProperty::Register (Type::CONTROL, "IsEnabled", new Value (true));
 	Control::IsTabStopProperty = DependencyProperty::Register (Type::CONTROL, "IsTabStop", new Value (true));
 	Control::PaddingProperty = DependencyProperty::Register (Type::CONTROL, "Padding", new Value (Thickness(0.0)));
 	Control::TabIndexProperty = DependencyProperty::Register (Type::CONTROL, "TabIndex", new Value (INT_MAX));
@@ -481,7 +479,6 @@ DependencyProperty *ContentControl::TextWrappingProperty = NULL;
 DependencyProperty *Control::BackgroundProperty = NULL;
 DependencyProperty *Control::BorderBrushProperty = NULL;
 DependencyProperty *Control::BorderThicknessProperty = NULL;
-DependencyProperty *Control::DefaultStyleKeyProperty = NULL;
 DependencyProperty *Control::FontFamilyProperty = NULL;
 DependencyProperty *Control::FontSizeProperty = NULL;
 DependencyProperty *Control::FontStretchProperty = NULL;
@@ -489,7 +486,6 @@ DependencyProperty *Control::FontStyleProperty = NULL;
 DependencyProperty *Control::FontWeightProperty = NULL;
 DependencyProperty *Control::ForegroundProperty = NULL;
 DependencyProperty *Control::HorizontalContentAlignmentProperty = NULL;
-DependencyProperty *Control::IsEnabledProperty = NULL;
 DependencyProperty *Control::IsTabStopProperty = NULL;
 DependencyProperty *Control::PaddingProperty = NULL;
 DependencyProperty *Control::TabIndexProperty = NULL;
@@ -1331,21 +1327,6 @@ Control::SetBorderThickness (Thickness * value)
 
 #endif
 #if SL_2_0
-DependencyObject *
-Control::GetDefaultStyleKey ()
-{
-	Value *value = GetValue (Control::DefaultStyleKeyProperty);
-	return value ? value->AsDependencyObject () : NULL;
-}
-
-void
-Control::SetDefaultStyleKey (DependencyObject * value)
-{
-	SetValue (Control::DefaultStyleKeyProperty, Value (value));
-}
-
-#endif
-#if SL_2_0
 const char *
 Control::GetFontFamily ()
 {
@@ -1447,21 +1428,6 @@ void
 Control::SetHorizontalContentAlignment (HorizontalAlignment value)
 {
 	SetValue (Control::HorizontalContentAlignmentProperty, Value (value));
-}
-
-#endif
-#if SL_2_0
-bool
-Control::GetIsEnabled ()
-{
-	Value *value = GetValue (Control::IsEnabledProperty);
-	return value->AsBool ();
-}
-
-void
-Control::SetIsEnabled (bool value)
-{
-	SetValue (Control::IsEnabledProperty, Value (value));
 }
 
 #endif

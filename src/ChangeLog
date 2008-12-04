@@ -1,3 +1,9 @@
+2008-12-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* control.h: Changed my mind and moved DefaultStyleKeyProperty and
+	IsEnabledProperty to the managed world
+	* dependencyproperty.g.cpp: regenerated
+
 2008-12-04  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline.cpp: IMediaDemuxer::GetBufferedSize: Only calculate buffered
