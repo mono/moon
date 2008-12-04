@@ -1,3 +1,8 @@
+2008-12-04  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am: split up the other-dir build from the copying, so
+	we don't always end up recompiling the xap.
+
 2008-12-04  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows.Controls/ContentControlTest.cs: New. Basic unit 

@@ -21,13 +21,21 @@ BROWSER_ASSEMBLIES=-r:$(top_builddir)/class/lib/2.1/System.Windows.dll \
 moon-unit.xap: moon-unit.sources Microsoft.Silverlight.Testing.dll Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll System.Xml.Linq.dll
 	$(MONO) --debug $(top_builddir)/tools/mxap/mxap.exe --generate-html- --entry-point-type=Mono.Moonlight.UnitTesting.App --cs-sources=moon-unit.sources --builddirhack=$(top_builddir) $(BROWSER_ASSEMBLIES)
 
-Microsoft.Silverlight.Testing.dll System.Xml.Linq.dll:
-	$(MAKE) -C ../Microsoft.Silverlight.Testing
-	cp ../Microsoft.Silverlight.Testing/Microsoft.Silverlight.Testing.dll* ../Microsoft.Silverlight.Testing/System.Xml.Linq.dll* .
+Microsoft.Silverlight.Testing.dll: ../Microsoft.Silverlight.Testing/Microsoft.Silverlight.Testing.dll
+	cp ../Microsoft.Silverlight.Testing/Microsoft.Silverlight.Testing.dll* .
 
-Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll:
-	$(MAKE) -C ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight
+System.Xml.Linq.dll: ../Microsoft.Silverlight.Testing/System.Xml.Linq.dll
+	cp ../Microsoft.Silverlight.Testing/System.Xml.Linq.dll* .
+
+Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll: ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll
 	cp ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll* .
+
+
+../Microsoft.Silverlight.Testing/Microsoft.Silverlight.Testing.dll ../Microsoft.Silverlight.Testing/System.Xml.Linq.dll:
+	$(MAKE) -C ../Microsoft.Silverlight.Testing
+
+../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll:
+	$(MAKE) -C ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight
 
 moon-unit.sources: *.cs */*.cs
 	ls *.cs */*.cs | grep -v aspx > $@
@@ -39,4 +47,4 @@ copy-xap-to-site: moon-unit.xap
 	@mkdir -p site/ClientBin
 	@cp moon-unit.xap site/ClientBin
 
-.PHONY: copy-xap-to-site Microsoft.Silverlight.Testing.dll Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll
+.PHONY: copy-xap-to-site
