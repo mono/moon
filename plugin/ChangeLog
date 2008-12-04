@@ -4,6 +4,8 @@
  	always set and we don't accidentally schedule more than one idle
  	call.
  
+	r:toshok
+
 2008-11-23  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp (map_moon_id_to_event_name): port alp's trunk
