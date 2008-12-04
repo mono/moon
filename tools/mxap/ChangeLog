@@ -1,5 +1,10 @@
 2008-12-04  Chris Toshok  <toshok@ximian.com>
 
+	* mxap.cs: add -l|--list-generated which just outputs the list of
+	files mxap would create if you ran it with those flags.
+
+2008-12-04  Chris Toshok  <toshok@ximian.com>
+
 	* mxap.cs: use the builddir version of smcs.exe so it resolves the
 	builddir versions of all the class libraries.
 

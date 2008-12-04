@@ -21,6 +21,7 @@ namespace Moonlight {
 		private bool generate_html = true; // Defaults to true
 		private bool include_mdb = true; // Defaults to true
 		private bool generate_manifest = true; 
+		private bool list_generated = false;
 		private string entry_point_type = null;
 		private string cs_sources;
 
@@ -59,6 +60,11 @@ namespace Moonlight {
 		public bool IncludeMdb {
 			get { return include_mdb; }
 			set { include_mdb = value; }
+		}
+
+		public bool ListGenerated {
+			get { return list_generated; }
+			set { list_generated = value; }
 		}
 		
 		public string ApplicationName {
@@ -128,9 +134,16 @@ namespace Moonlight {
 
 		public bool CreateManifest ()
 		{
+			string AppManifest_Filename = "AppManifest.xaml";
+
 			if (!GenerateManifest)
 				return true;
 			
+			if (ListGenerated) {
+				Console.WriteLine (AppManifest_Filename);
+				return true;
+			}
+
 			StringBuilder manifest = new StringBuilder ();
 
 			manifest.Append ("<Deployment xmlns=\"http://schemas.microsoft.com/client/2007/deployment\"");
@@ -152,30 +165,45 @@ namespace Moonlight {
 			manifest.AppendLine ("  </Deployment.Parts>");
 			manifest.AppendLine ("</Deployment>");
 
-			File.WriteAllText ("AppManifest.xaml", manifest.ToString ());
+			File.WriteAllText (AppManifest_Filename, manifest.ToString ());
 
 			return true;
 		}
 
 		public bool CreateCodeBehind ()
 		{
-			StringBuilder xamlg_args = new StringBuilder ();
-
-			xamlg_args.AppendFormat (" -sl2app:{0} ", ApplicationName);
-
-			foreach (string xaml_file in XamlFiles) {
-				if (Path.GetFileName (xaml_file) == "AppManifest.xaml")
-					continue;
-				xamlg_args.AppendFormat (" {0}", Path.GetFileName (xaml_file));
+			if (ListGenerated) {
+				foreach (string xaml_file in XamlFiles) {
+					if (Path.GetFileName (xaml_file) == "AppManifest.xaml")
+						continue;
+					Console.WriteLine ("{0}.g.cs", Path.GetFileName (xaml_file));
+				}
+				return true;
 			}
+			else {
+				StringBuilder xamlg_args = new StringBuilder ();
 
-			return RunTool ("xamlg",
-					"tools/xamlg/xamlg.exe",
-					xamlg_args.ToString ());
+				xamlg_args.AppendFormat (" -sl2app:{0} ", ApplicationName);
+
+				foreach (string xaml_file in XamlFiles) {
+					if (Path.GetFileName (xaml_file) == "AppManifest.xaml")
+						continue;
+					xamlg_args.AppendFormat (" {0}", Path.GetFileName (xaml_file));
+				}
+
+				return RunTool ("xamlg",
+						"tools/xamlg/xamlg.exe",
+						xamlg_args.ToString ());
+			}
 		}
 
 		public bool CreateResources ()
 		{
+			if (ListGenerated) {
+				Console.WriteLine ("{0}.g.resources", ApplicationName);
+				return true;
+			}
+
 			StringBuilder respack_args = new StringBuilder ();
 
 			respack_args.AppendFormat ("{0}.g.resources ", ApplicationName);
@@ -193,6 +221,11 @@ namespace Moonlight {
 
 		public bool CreateApplicationAssembly ()
 		{
+			if (ListGenerated) {
+				Console.WriteLine ("{0}.dll", ApplicationName);
+				return true;
+			}
+
 			StringBuilder compiler_args = new StringBuilder ();
 
 			compiler_args.AppendFormat (" -debug+ -target:library -out:{0}.dll ", ApplicationName);
@@ -236,6 +269,11 @@ namespace Moonlight {
 
 		public bool CreateXap ()
 		{
+			if (ListGenerated) {
+				Console.WriteLine ("{0}.xap", ApplicationName);
+				return true;
+			}
+
 			StringBuilder zip_args = new StringBuilder ();
 
 			zip_args.AppendFormat (" {0}.xap ", ApplicationName);
@@ -258,6 +296,11 @@ namespace Moonlight {
 		{
 			if (!GenerateHtml)
 				return true;
+
+			if (ListGenerated) {
+				Console.WriteLine ("{0}.html", ApplicationName);
+				return true;
+			}
 
 			StringBuilder xaml2html_args = new StringBuilder ();
 
@@ -318,7 +361,8 @@ namespace Moonlight {
 				{ "cs-sources=", v => mxap.CSSources = v },
 				{ "desktop", v => mxap.Desktop = v != null },
 				{ "builddirhack=", v => mxap.TopBuildDir = v },
-				{ "r:|reference:", v => mxap.ExternalAssemblies.Add (v) }
+				{ "r:|reference:", v => mxap.ExternalAssemblies.Add (v) },
+				{ "l|list-generated", v => mxap.ListGenerated = v != null }
 			};
 
 			List<string> extra = null;
