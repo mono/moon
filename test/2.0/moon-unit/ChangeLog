@@ -1,3 +1,8 @@
+2008-12-04  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.Controls/ContentControlTest.cs: New. Basic unit 
+	tests for default properties and methods.
+
 2008-12-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Controls/ControlTest.cs: Add more test cases for 
