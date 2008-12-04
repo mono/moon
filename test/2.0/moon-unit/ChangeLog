@@ -1,3 +1,10 @@
+2008-12-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Controls/ControlTest.cs: Add test case for 
+	default methods calls and events.
+	* System.Windows.Controls.Primitives/RangeBaseTest.cs: Add test
+	cases for all properties validations and default method calls.
+
 2008-12-03  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingTest.cs: spaces -> tabs to make file
