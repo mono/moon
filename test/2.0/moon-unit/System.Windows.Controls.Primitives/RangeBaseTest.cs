@@ -85,13 +85,173 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 			Assert.AreEqual (1.0, rb.LargeChange, "LargeChange");
 			Assert.AreEqual (1.0, rb.Maximum, "Maximum");
 			Assert.AreEqual (0.0, rb.Minimum, "Minimum");
-			Assert.AreEqual (0.0, rb.Value, "IsFocused");
+			Assert.AreEqual (0.0, rb.Value, "Value");
 		}
 
 		[TestMethod]
-		public void ToStringTest ()
+		public void SmallChange ()
 		{
 			ConcreteRange rb = new ConcreteRange ();
+			Assert.Throws<ArgumentException> (delegate {
+				rb.SmallChange = -1.0;
+			}, "negative");
+
+			rb.SmallChange = 0.0d;
+			Assert.AreEqual (0.0d, rb.SmallChange, "0.0");
+
+			rb.SmallChange = Double.MaxValue;
+			Assert.AreEqual (Double.MaxValue, rb.SmallChange, "MaxValue");
+
+			Assert.Throws<ArgumentException> (delegate {
+				rb.SmallChange = Double.NaN;
+			}, "NAN");
+
+			Assert.Throws<ArgumentException> (delegate {
+				rb.SmallChange = Double.PositiveInfinity;
+			}, "PositiveInfinity");
+
+			Assert.Throws<ArgumentException> (delegate {
+				rb.SmallChange = Double.NegativeInfinity;
+			}, "NegativeInfinity");
+		}
+
+		[TestMethod]
+		public void LargeChange ()
+		{
+			ConcreteRange rb = new ConcreteRange ();
+			Assert.Throws<ArgumentException> (delegate {
+				rb.SetValue (RangeBase.LargeChangeProperty, -0.1);
+			}, "negative");
+
+			rb.SetValue (RangeBase.LargeChangeProperty, 0.0);
+			Assert.AreEqual (0.0d, rb.GetValue (RangeBase.LargeChangeProperty), "0.0");
+
+			rb.SetValue (RangeBase.LargeChangeProperty, Double.MaxValue);
+			Assert.AreEqual (Double.MaxValue, rb.GetValue (RangeBase.LargeChangeProperty), "MaxValue");
+
+			Assert.Throws<ArgumentException> (delegate {
+				rb.SetValue (RangeBase.LargeChangeProperty, Double.NaN);
+			}, "NAN");
+
+			Assert.Throws<ArgumentException> (delegate {
+				rb.SetValue (RangeBase.LargeChangeProperty, Double.PositiveInfinity);
+			}, "PositiveInfinity");
+
+			Assert.Throws<ArgumentException> (delegate {
+				rb.SetValue (RangeBase.LargeChangeProperty, Double.NegativeInfinity);
+			}, "NegativeInfinity");
+		}
+
+		[TestMethod]
+		public void Minimum ()
+		{
+			ConcreteRange rb = new ConcreteRange ();
+			rb.Minimum = Double.MinValue;
+			Assert.AreEqual (Double.MinValue, rb.Minimum, "MinValue");
+
+			rb.Minimum = 0.0d;
+			Assert.AreEqual (0.0d, rb.Minimum, "0.0");
+
+			rb.Minimum = Double.MaxValue;
+			Assert.AreEqual (Double.MaxValue, rb.Minimum, "MaxValue");
+
+			Assert.Throws<ArgumentException> (delegate {
+				rb.Minimum = Double.NaN;
+			}, "NAN");
+
+			Assert.Throws<ArgumentException> (delegate {
+				rb.Minimum = Double.PositiveInfinity;
+			}, "PositiveInfinity");
+
+			Assert.Throws<ArgumentException> (delegate {
+				rb.Minimum = Double.NegativeInfinity;
+			}, "NegativeInfinity");
+		}
+
+		[TestMethod]
+		public void Maximum ()
+		{
+			ConcreteRange rb = new ConcreteRange ();
+			rb.SetValue (RangeBase.MaximumProperty, Double.MinValue);
+			// Maximum cannot be under Minimum
+			Assert.AreEqual (0.0d, rb.GetValue (RangeBase.MaximumProperty), "MinValue");
+			rb.Minimum = Double.MinValue;
+			rb.SetValue (RangeBase.MaximumProperty, Double.MinValue);
+			Assert.AreEqual (Double.MinValue, rb.GetValue (RangeBase.MaximumProperty), "MinValue");
+
+			rb.SetValue (RangeBase.MaximumProperty, 0.0);
+			Assert.AreEqual (0.0d, rb.GetValue (RangeBase.MaximumProperty), "0.0");
+
+			rb.SetValue (RangeBase.MaximumProperty, Double.MaxValue);
+			Assert.AreEqual (Double.MaxValue, rb.GetValue (RangeBase.MaximumProperty), "MaxValue");
+
+			Assert.Throws<ArgumentException> (delegate {
+				rb.SetValue (RangeBase.MaximumProperty, Double.NaN);
+			}, "NAN");
+
+			Assert.Throws<ArgumentException> (delegate {
+				rb.SetValue (RangeBase.MaximumProperty, Double.PositiveInfinity);
+			}, "PositiveInfinity");
+
+			Assert.Throws<ArgumentException> (delegate {
+				rb.SetValue (RangeBase.MaximumProperty, Double.NegativeInfinity);
+			}, "NegativeInfinity");
+		}
+
+		[TestMethod]
+		public void Value ()
+		{
+			ConcreteRange rb = new ConcreteRange ();
+			rb.Value = Double.MinValue;
+			// Value cannot be under Minimum
+			Assert.AreEqual (rb.Minimum, rb.Value, "MinValue/0");
+
+			Assert.AreEqual (1.0d, rb.Maximum, "Maximum==1");
+			rb.Minimum = -1000;
+// waiting for 2.0 final controls to see if it's a bug or not
+#if false
+			// doing the above changes Maximum from 1.0 to 0.0 ?!?
+			Assert.AreEqual (0.0d, rb.Maximum, "Maximum==0");
+#endif
+			rb.Value = Double.MinValue;
+			Assert.AreEqual (rb.Minimum, rb.Value, "MinValue/-1000");
+
+			rb.Minimum = Double.MinValue;
+			rb.Value = Double.MinValue;
+			Assert.AreEqual (Double.MinValue, rb.Value, "MinValue");
+
+			rb.Value = 0.0d;
+			Assert.AreEqual (0.0d, rb.Value, "0.0");
+#if false
+			rb.Value = Double.MaxValue;
+			Assert.AreEqual (0.0d, rb.Value, "MaxValue/0");
+#endif
+			rb.Maximum = 1000;
+			rb.Value = Double.MaxValue;
+			Assert.AreEqual (rb.Maximum, rb.Value, "MaxValue/1000");
+
+			rb.Maximum = Double.MaxValue;
+			rb.Value = Double.MaxValue;
+			Assert.AreEqual (Double.MaxValue, rb.Value, "MaxValue");
+
+			Assert.Throws<ArgumentException> (delegate {
+				rb.Value = Double.NaN;
+			}, "NAN");
+
+			Assert.Throws<ArgumentException> (delegate {
+				rb.Value = Double.PositiveInfinity;
+			}, "PositiveInfinity");
+
+			Assert.Throws<ArgumentException> (delegate {
+				rb.Value = Double.NegativeInfinity;
+			}, "NegativeInfinity");
+		}
+
+		[TestMethod]
+		public void DefaultMethods ()
+		{
+			ConcreteRange rb = new ConcreteRange ();
+			ControlTest.CheckDefaultMethods (rb);
 			Assert.AreEqual ("MoonTest.System.Windows.Controls.Primitives.RangeBaseTest+ConcreteRange Minimum:0 Maximum:1 Value:0", rb.ToString (), "ToString");
 		}
 

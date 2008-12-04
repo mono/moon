@@ -91,6 +91,26 @@ namespace MoonTest.System.Windows.Controls
 			{
 				return base.GetTemplateChild (s);
 			}
+
+			public bool GotFocusCalled = false;
+			public bool LostFocusCalled = false;
+
+			protected override void OnGotFocus (RoutedEventArgs e)
+			{
+				GotFocusCalled = true;
+				base.OnGotFocus (e);
+			}
+
+			protected override void OnLostFocus (RoutedEventArgs e)
+			{
+				LostFocusCalled = true;
+				base.OnLostFocus (e);
+			}
+
+			static public DependencyProperty DefaultStyleKeyProperty_
+			{
+				get { return Control.DefaultStyleKeyProperty; }
+			}
 		}
 
 		class MoreConcreteControl : ConcreteControl {
@@ -354,6 +374,36 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (VerticalAlignment.Center, c.VerticalContentAlignment, "VerticalContentAlignment");
 
 			FrameworkElementTest.CheckDefaultProperties (c);
+		}
+
+		[TestMethod]
+		public void DefaultMethods ()
+		{
+			ConcreteControl c = new ConcreteControl ();
+			CheckDefaultMethods (c);
+			// Focus returns false and does not trigger [Get|Lost]Focus
+			Assert.IsFalse (c.GotFocusCalled, "GotFocusCalled");
+			Assert.IsFalse (c.LostFocusCalled, "LostFocusCalled");
+		}
+
+		static public void CheckDefaultMethods (Control c)
+		{
+			Assert.IsFalse (c.ApplyTemplate (), "ApplyTemplate");
+			Assert.IsFalse (c.Focus (), "Focus");
+		}
+
+		[TestMethod]
+		public void Events ()
+		{
+			ConcreteControl c = new ConcreteControl ();
+			c.IsEnabledChanged += delegate (object sender, DependencyPropertyChangedEventArgs e) {
+				Assert.AreSame (c, sender, "sender");
+				Assert.AreEqual (Control.IsEnabledProperty, e.Property, "IsEnabledProperty");
+				Assert.IsFalse ((bool) e.NewValue, "NewValue");
+				Assert.IsTrue ((bool) e.OldValue, "OldValue");
+			};
+			c.IsEnabled = false;
+			Assert.IsFalse (c.IsEnabled, "IsEnabled");
 		}
 	}
 }
