@@ -68,17 +68,6 @@ namespace MoonTest.System.Windows.Controls
 			}
 		}
 
-		class DefaultStyleKey_GetterClass : UserControl {
-			public DefaultStyleKey_GetterClass ()
-			{
-			}
-
-			public Type GetDefaultStyleKey()
-			{
-				return (Type)DefaultStyleKey;
-			}
-		}
-
 		class ConcreteControl : Control {
 
 			public object DefaultStyleKey_ {
@@ -121,26 +110,47 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[MoonlightBug]
-		public void DefaultStyleKeyTest ()
+		public void DefaultStyleKeyTest_NotWorking ()
 		{
-			DefaultStyleKey_GetterClass gc = new DefaultStyleKey_GetterClass ();
-			Assert.AreEqual (null, gc.GetDefaultStyleKey());
-
 			Assert.Throws (delegate { DefaultStyleKey_TypeClass tc = new DefaultStyleKey_TypeClass (); },
 				       typeof (ArgumentException), "1");
 			Assert.Throws (delegate { DefaultStyleKey_TypeClass2 tc = new DefaultStyleKey_TypeClass2 (); },
 				       typeof (ArgumentException), "2");
-			Assert.Throws (delegate { DefaultStyleKey_NullClass nc = new DefaultStyleKey_NullClass (); },
-				       typeof (ArgumentException), "3");
 			Assert.Throws (delegate { DefaultStyleKey_DifferentTypeClass dtc = new DefaultStyleKey_DifferentTypeClass (); },
 				       typeof (InvalidOperationException), "4");
+		}
+
+		public void DefaultStyleKeyTest_Working ()
+		{
 			Assert.Throws (delegate { DefaultStyleKey_NonDOTypeClass ndotc = new DefaultStyleKey_NonDOTypeClass (); },
 				       typeof (ArgumentException), "5");
 			Assert.Throws (delegate { DefaultStyleKey_NonTypeClass ntc = new DefaultStyleKey_NonTypeClass (); },
 				       typeof (ArgumentException), "6");
+		}
+
+		[TestMethod]
+		public void DefaultStyleKeyTest_Null ()
+		{
+			ConcreteControl c = new ConcreteControl ();
+			Assert.IsNull (c.DefaultStyleKey_, "null");
+
+			// issue here is that we can't assign the current (null) value without an exception
+			// but the PropertyChange logic is "smart" enough not to allow this...
+			Assert.Throws<ArgumentException> (delegate {
+				c.DefaultStyleKey_ = null;
+			}, "null");
+
+			// ... and guess what it's not part of the PropertyChange validation!
+			c.SetValue (ConcreteControl.DefaultStyleKeyProperty_, null);
+		}
+
+		[TestMethod]
+		public void DefaultStyleKeyTest_More ()
+		{
+			ConcreteControl c = new ConcreteControl ();
+			Assert.IsNull (c.DefaultStyleKey_, "null");
 
 			// and some working tests
-			ConcreteControl c = new ConcreteControl ();
 			c.DefaultStyleKey_ = typeof (ConcreteControl);
 			Assert.AreEqual (typeof (ConcreteControl), c.DefaultStyleKey_, "DefaultStyleKey");
 
@@ -156,9 +166,10 @@ namespace MoonTest.System.Windows.Controls
 			mc.DefaultStyleKey_ = typeof (SiblingControl);
 			Assert.AreEqual (typeof (SiblingControl), mc.DefaultStyleKey_, "DefaultStyleKey-Sibling");
 
+			mc = new MoreConcreteControl ();
 			Assert.Throws<ArgumentException> (delegate {
 				mc.DefaultStyleKey_ = typeof (Control);
-			}, "7");
+			}, "Control");
 		}
 
 		[TestMethod]

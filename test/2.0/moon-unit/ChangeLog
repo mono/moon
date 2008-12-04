@@ -1,3 +1,9 @@
+2008-12-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Controls/ControlTest.cs: Add more test cases for 
+	DefaultStyleKey and split the non-working one (so working test gets
+	executed).
+
 2008-12-04  Full Name  <Email Address>
 
 	* System.Windows/DependencyPropertyAttachedTest.cs: Add test to ensure
