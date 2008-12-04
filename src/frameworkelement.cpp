@@ -142,8 +142,10 @@ FrameworkElement::GetBindingExpression (DependencyProperty *property)
 void
 FrameworkElement::ClearBindingExpression (DependencyProperty *property, BindingExpressionBase *expr)
 {
+#if SL_2_0
 	expr->DetachListener (FrameworkElement::bound_property_changed);
 	g_hash_table_remove (bindings, property);
+#endif
 }
 
 void
