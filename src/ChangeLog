@@ -1,3 +1,8 @@
+2008-12-04  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* pipeline.cpp: IMediaDemuxer::GetBufferedSize: Only calculate buffered
+	  size using video and audio streams. Fixes #456154.
+
 2008-12-04  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: The element instance now has ownership of the Value
