@@ -676,7 +676,8 @@ Playlist::Open ()
 
 	current_entry = GetCurrentEntry ();	
 	
-	while (current_entry && current_entry->HasDuration () && current_entry->GetDuration () == 0) {
+	while (current_entry && current_entry->HasDuration () && current_entry->GetDuration ()->HasTimeSpan() &&
+	       current_entry->GetDuration ()->GetTimeSpan () == 0) {
 		LOG_PLAYLIST ("Playlist::Open (), current entry (%s) has zero duration, skipping it.\n", current_entry->GetSourceName ()->ToString ());
 		current_node = (PlaylistNode *) current_node->next;
 		current_entry = GetCurrentEntry ();

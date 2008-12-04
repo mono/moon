@@ -1,3 +1,7 @@
+2008-12-04  Fernando Herrera  <fherrera@novell.com>
+
+	* playlist.cpp (Playlist::Open): Check duration properly.
+
 2008-12-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* binding.cpp: Get rid of excessive use of 'this' keyword.
