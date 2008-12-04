@@ -224,8 +224,8 @@ System.Xml.Linq.dll: $(SYSTEM_XML_LINQ_DLL)
 	mv System.Xml.Linq.dll.Unsigned System.Xml.Linq.dll
 	-cp $(SYSTEM_XML_LINQ_DLL).mdb .
 
-Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll:
-	$(MAKE) -C ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/
+Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll: ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll
 	cp ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll* .
 
-.PHONY: Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll
+../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll:
+	$(MAKE) -C ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/
