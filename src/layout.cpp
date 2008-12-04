@@ -1228,7 +1228,7 @@ RenderLine (cairo_t *cr, const Point &origin, const Point &position, TextLayoutH
 		fg->SetupBrush (cr, area);
 		
 		if (!segment->path) {
-			if (font->IsScalable () && segment->start < segment->end) {
+			if (segment->start < segment->end) {
 				// count how many path data items we'll need to allocate
 				for (size = 0, i = segment->start; i < segment->end; i++) {
 					if (!(glyph = font->GetGlyphInfo (text[i])))
@@ -1255,19 +1255,15 @@ RenderLine (cairo_t *cr, const Point &origin, const Point &position, TextLayoutH
 				
 				prev = glyph->index;
 				
-				if (font->IsScalable ()) {
-					if (path)
-						font->AppendPath (path, glyph, x1, y1);
-					
-					font->Path (cr, glyph, x1, y1);
-				} else {
-					font->Render (cr, glyph, x1, y1);
-				}
+				if (path)
+					font->AppendPath (path, glyph, x1, y1);
+				
+				font->Path (cr, glyph, x1, y1);
 				
 				x1 += glyph->metrics.horiAdvance;
 			}
 			
-			if (font->IsScalable () && segment->start < segment->end) {
+			if (segment->start < segment->end) {
 				moon_close_path (path);
 				cairo_close_path (cr);
 				segment->path = path;

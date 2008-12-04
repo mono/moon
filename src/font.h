@@ -135,8 +135,6 @@ class TextFont {
 	TextFont (FontFace *face, FcPattern *pattern);
 	~TextFont ();
 	
-	void RenderGlyphPath (cairo_t *cr, GlyphInfo *glyph, double x, double y);
-	
  public:
 	static void Init ();
 	static void Shutdown ();
@@ -164,9 +162,6 @@ class TextFont {
 	
 	void Path (cairo_t *cr, GlyphInfo *glyph, double x, double y);
 	void Path (cairo_t *cr, gunichar unichar, double x, double y);
-	
-	void Render (cairo_t *cr, GlyphInfo *glyph, double x, double y);
-	void Render (cairo_t *cr, gunichar unichar, double x, double y);
 	
 	void AppendPath (moon_path *path, GlyphInfo *glyph, double x, double y);
 	void AppendPath (moon_path *path, gunichar unichar, double x, double y);

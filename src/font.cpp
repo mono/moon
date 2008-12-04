@@ -1715,33 +1715,6 @@ TextFont::UnderlineThickness ()
 }
 
 void
-TextFont::RenderGlyphPath (cairo_t *cr, GlyphInfo *glyph, double x, double y)
-{
-       cairo_new_path (cr);
-       Path (cr, glyph, x, y);
-       cairo_close_path (cr);
-       cairo_fill (cr);
-}
-
-void
-TextFont::Render (cairo_t *cr, GlyphInfo *glyph, double x, double y)
-{
-	if (glyph->path)
-		RenderGlyphPath (cr, glyph, x, y);
-}
-
-void
-TextFont::Render (cairo_t *cr, gunichar unichar, double x, double y)
-{
-	GlyphInfo *glyph;
-	
-	if (!(glyph = GetGlyphInfo (unichar)))
-		return;
-	
-	Render (cr, glyph, x, y);
-}
-
-void
 TextFont::Path (cairo_t *cr, GlyphInfo *glyph, double x, double y)
 {
 	if (!glyph->path || !(&glyph->path->cairo)->data)
