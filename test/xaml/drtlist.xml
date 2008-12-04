@@ -997,4 +997,8 @@
 	masterFile10="../harness/masters/test-shape-rectangle-imagebrush-stretchMaster.png"
 	categories="imagebrush,stretch"
    />	 
+   <Test id="10215"
+	inputFile="test-empty-source.html"
+	masterFile10="None"
+   />
 </DRTList>
