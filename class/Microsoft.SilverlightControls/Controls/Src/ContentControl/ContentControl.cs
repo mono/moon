@@ -105,7 +105,7 @@ namespace System.Windows.Controls
             source.OnContentTemplateChanged(oldValue, value);
         }
         #endregion ContentTemplate 
- 
+#if false
         #region IsEnabled 
         /// <summary>
         /// Gets or sets a value that indicates whether this element is enabled 
@@ -225,7 +225,7 @@ namespace System.Windows.Controls
         } 
  
         #endregion ToolTip
- 
+#endif
         /// <summary>
         /// Initializes a new instance of the ContentControl class.
         /// </summary> 
@@ -255,10 +255,11 @@ namespace System.Windows.Controls
         /// <param name="newContentTemplate"> 
         /// The new value of the ContentTemplate property.
         /// </param>
-        protected virtual void OnContentTemplateChanged(DataTemplate oldContentTemplate, DataTemplate newContentTemplate) 
+        internal virtual void OnContentTemplateChanged(DataTemplate oldContentTemplate, DataTemplate newContentTemplate) 
         {
         }
- 
+
+#if false
         /// <summary> 
         /// Called when the IsEnabled property changes.
         /// </summary> 
@@ -266,5 +267,6 @@ namespace System.Windows.Controls
         protected virtual void OnIsEnabledChanged(bool isEnabled)
         { 
         }
+#endif
     }
 } 

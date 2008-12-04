@@ -1,3 +1,8 @@
+2008-12-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Controls/Src/ContentControl/ContentControl.cs: #if out the extra
+	stuff (not in SL2 final).
+
 2008-12-04  Alan McGovern  <amcgovern@novell.com>
 
 	* Controls/Src/Thumb/Thumb.cs: Update the attributes
