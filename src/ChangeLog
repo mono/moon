@@ -1,3 +1,8 @@
+2008-12-04  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: The element instance now has ownership of the Value
+	objects.
+
 2008-12-03  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Cleanup managed namespaces when we shutdown.

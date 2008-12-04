@@ -163,6 +163,7 @@ class XamlElementInstance : public List::Node {
 		children->Clear (true);
 		delete children;
 		delete info;
+		delete value;
 		g_free (x_key);
 
 		if (set_properties)
@@ -3159,7 +3160,6 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 				Value *child_as_value = child->GetAsValue ();
 
 				bool added = dict->AddWithError (key, child_as_value, &err);
-				delete child_as_value;
 				if (!added)
 					return parser_error (p, child->element_name, NULL, err.code, err.message);
 			}
@@ -3217,8 +3217,6 @@ XamlLoader::
 
 		Value *child_as_value = child->GetAsValue ();
 		bool added = dict->AddWithError (key, child_as_value, &err);
-		delete child_as_value;
-
 		if (!added)
 			return parser_error (p, child->element_name, NULL, err.code, err.message);
 	}
