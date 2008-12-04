@@ -314,8 +314,12 @@ namespace Moonlight {
 		private bool RunTool (string filename, string builddir_exe, string args)
 		{
 			if (top_builddir != null) {
+				bool need_smcs_hack = false;
+				if (filename == "smcs")
+					need_smcs_hack = true;
 				filename = "mono";
-				args = String.Format ("{0}/{1} {2}", top_builddir, builddir_exe, args);
+				args = String.Format ("{3}{0}/{1} {2}", top_builddir, builddir_exe, args,
+						      need_smcs_hack ? "--runtime=moonlight --security=temporary-smcs-hack " : "");
 			}
 
 			return RunProcess (filename, args);
