@@ -84,9 +84,19 @@ namespace System.Windows.Controls {
 			DependencyPropertyChangedEventHandler handler = c.IsEnabledChanged;
 			if (handler != null)
 				handler (d, e);
+
+			c.OnIsEnabledChanged ((bool) e.NewValue);
 		}
 		
 		public event DependencyPropertyChangedEventHandler IsEnabledChanged;
+
+
+		// moved from ContentControl, needed to satisfy the beta1 controls
+		// FIXME 1: needs to be internalized (corcompare) everywhere (including all controls)
+		// FIXME 2: remove/update using the new event once we get the final controls 
+		protected virtual void OnIsEnabledChanged (bool isEnabled)
+		{
+		}
 
 		public bool ApplyTemplate()
 		{

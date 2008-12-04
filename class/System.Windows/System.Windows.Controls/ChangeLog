@@ -1,3 +1,8 @@
+2008-12-04  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Control.cs: Add protected OnIsEnabledChanged since all controls
+	depends on it and it's not in ContentControl anymore.
+
 2008-12-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Control.cs: Add back DefaultStyleKey and IsEnabled with managed
