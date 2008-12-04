@@ -21,7 +21,6 @@ namespace Moonlight {
 		private bool generate_html = true; // Defaults to true
 		private bool include_mdb = true; // Defaults to true
 		private bool generate_manifest = true; 
-		private int result;
 		private string entry_point_type = null;
 		private string cs_sources;
 
@@ -62,10 +61,6 @@ namespace Moonlight {
 			set { include_mdb = value; }
 		}
 		
-		public int Result {
-			get { return result; }
-		}
-
 		public string ApplicationName {
 			get {
 				if (application_name == null) {
@@ -123,19 +118,18 @@ namespace Moonlight {
 
 		public int Run ()
 		{
-			CreateManifest ();
-			CreateCodeBehind ();
-			CreateResources ();
-			CreateApplicationAssembly ();
-			CreateXap ();
-			CreateHtmlWrapper ();
-			return result;
+			return (CreateManifest ()
+				&& CreateCodeBehind ()
+				&& CreateResources ()
+				&& CreateApplicationAssembly ()
+				&& CreateXap ()
+				&& CreateHtmlWrapper ()) ? 0 : 1;
 		}
 
-		public void CreateManifest ()
+		public bool CreateManifest ()
 		{
 			if (!GenerateManifest)
-				return;
+				return true;
 			
 			StringBuilder manifest = new StringBuilder ();
 
@@ -159,9 +153,11 @@ namespace Moonlight {
 			manifest.AppendLine ("</Deployment>");
 
 			File.WriteAllText ("AppManifest.xaml", manifest.ToString ());
+
+			return true;
 		}
 
-		public void CreateCodeBehind ()
+		public bool CreateCodeBehind ()
 		{
 			StringBuilder xamlg_args = new StringBuilder ();
 
@@ -182,10 +178,10 @@ namespace Moonlight {
 			else
 				command = "xamlg";
 
-			RunProcess (command, xamlg_args.ToString ());
+			return RunProcess (command, xamlg_args.ToString ());
 		}
 
-		public void CreateResources ()
+		public bool CreateResources ()
 		{
 			StringBuilder respack_args = new StringBuilder ();
 
@@ -206,10 +202,10 @@ namespace Moonlight {
 			else
 				command = "respack";
 
-			RunProcess (command, respack_args.ToString ());
+			return RunProcess (command, respack_args.ToString ());
 		}
 
-		public void CreateApplicationAssembly ()
+		public bool CreateApplicationAssembly ()
 		{
 			StringBuilder compiler_args = new StringBuilder ();
 
@@ -244,10 +240,10 @@ namespace Moonlight {
 
 			compiler_args.AppendFormat (" -resource:{0}.g.resources ", ApplicationName);
 
-			RunProcess (desktop ? "gmcs" : "smcs", compiler_args.ToString ());
+			return RunProcess (desktop ? "gmcs" : "smcs", compiler_args.ToString ());
 		}
 
-		public void CreateXap ()
+		public bool CreateXap ()
 		{
 			StringBuilder zip_args = new StringBuilder ();
 
@@ -263,14 +259,14 @@ namespace Moonlight {
 			zip_args.AppendFormat (" AppManifest.xaml ");
 			zip_args.AppendFormat (" {0}.dll ", ApplicationName);
 
-			RunProcess ("zip", zip_args.ToString ());
+			return RunProcess ("zip", zip_args.ToString ());
 			
 		}
 
-		public void CreateHtmlWrapper ()
+		public bool CreateHtmlWrapper ()
 		{
 			if (!GenerateHtml)
-				return;
+				return true;
 
 			StringBuilder xaml2html_args = new StringBuilder ();
 
@@ -285,10 +281,10 @@ namespace Moonlight {
 			else
 				command = "xaml2html";
 
-			RunProcess (command, xaml2html_args.ToString ());
+			return RunProcess (command, xaml2html_args.ToString ());
 		}
 
-		private void RunProcess (string name, string args)
+		private bool RunProcess (string name, string args)
 		{
 			Process process = new Process ();
 
@@ -302,8 +298,7 @@ namespace Moonlight {
 
 			process.WaitForExit ();
 
-			if (process.ExitCode != 0)
-				result = 1;
+			return (process.ExitCode == 0);
 		}
 
 		static void ShowHelp (OptionSet os)

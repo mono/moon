@@ -1,5 +1,10 @@
 2008-12-03  Chris Toshok  <toshok@ximian.com>
 
+	* mxap.cs: short-circuit out if any step fails to return true (for
+	success).  return non-zero status in that case.
+	
+2008-12-03  Chris Toshok  <toshok@ximian.com>
+
 	* mxap.cs: add --builddirhack=$(top_builddir) hack so that we can
 	locate the right .exe's to run to make the desklets without
 	installing.
