@@ -13,8 +13,10 @@
  
 #if DEBUG
 
+#if SL_2_0
 // Define to enable stack traces for managed frames.
 #define MONO_STACK_ENABLED 1
+#endif
 
 // Type safety at it's best.
 #if MONO_STACK_ENABLED
