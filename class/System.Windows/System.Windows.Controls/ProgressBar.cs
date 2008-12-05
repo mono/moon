@@ -1,5 +1,5 @@
 //
-// ProgressBar.cs
+// System.Windows.Controls.ProgressBar.cs
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -25,20 +25,30 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+using System;
+
 using System.Windows;
 using System.Windows.Controls.Primitives;
-using Mono;
+using System.Windows.Automation.Peers;
 
-namespace System.Windows.Controls {
-	[TemplatePart (Name = "ProgressBarTrack", Type = typeof (FrameworkElement))]
-	[TemplateVisualState (Name = "Determinate", GroupName = "CommonStates")]
-	[TemplateVisualState (Name = "Indeterminate", GroupName = "CommonStates")]
-	[TemplatePart (Name = "ProgressBarIndicator", Type = typeof (FrameworkElement))]
+namespace System.Windows.Controls{
+	[TemplatePart (Name = ProgressBar.ProgressBarTrack, Type = typeof (FrameworkElement))]
+	[TemplatePart (Name = ProgressBar.ProgressBarIndicator, Type = typeof (FrameworkElement))]
+	[TemplateVisualState (Name = ProgressBar.DeterminateState, GroupName = ProgressBar.GroupName)]
+	[TemplateVisualState (Name = ProgressBar.IndeterminateState, GroupName = ProgressBar.GroupName)]
 	public partial class ProgressBar : RangeBase {
-		public static readonly DependencyProperty IsIndeterminateProperty = DependencyProperty.Register ("IsIndeterminate",
-													 typeof (bool),
-													 typeof (ProgressBar),
-													 null);
+
+		const string ProgressBarTrack = "ProgressBarTrack";
+		const string ProgressBarIndicator = "ProgressBarIndicator";
+		const string DeterminateState = "Determinate";
+		const string IndeterminateState = "Indeterminate";
+		const string GroupName = "CommonStates";
+
+		FrameworkElement progressbar_track;
+		FrameworkElement progressbar_indicator;
+
+		public static readonly DependencyProperty IsIndeterminateProperty =
+			DependencyProperty.Register ("IsIndeterminate", typeof (bool), typeof (ProgressBar), null);
 
 		public bool IsIndeterminate {
 			get { return (bool) GetValue (IsIndeterminateProperty); }
@@ -47,7 +57,63 @@ namespace System.Windows.Controls {
 
 		public ProgressBar () : base ()
 		{
+			DefaultStyleKey = typeof (ProgressBar);
 			Maximum = 100;
+			SizeChanged += delegate { UpdateTrackLayout(); };
+		}
+
+		public override void OnApplyTemplate()
+		{
+			base.OnApplyTemplate();
+
+			progressbar_track = GetTemplateChild (ProgressBarTrack) as FrameworkElement;
+			progressbar_indicator = GetTemplateChild (ProgressBarIndicator) as FrameworkElement;
+
+			ChangeVisualState(false);
+		}
+
+		protected override AutomationPeer OnCreateAutomationPeer ()
+		{
+			throw new NotImplementedException ();
+		}
+
+		protected override void OnMaximumChanged(double oldMaximum, double newMaximum)
+		{
+			base.OnMaximumChanged(oldMaximum, newMaximum);
+			UpdateTrackLayout();
+		}
+
+		protected override void OnMinimumChanged(double oldMinimum, double newMinimum)
+		{
+			base.OnMinimumChanged(oldMinimum, newMinimum);
+			UpdateTrackLayout();
+		}
+
+		protected override void OnValueChanged(double oldValue, double newValue)
+		{
+			base.OnValueChanged (oldValue, newValue);
+			UpdateTrackLayout();
+		}
+
+		void ChangeVisualState(bool useTransitions)
+		{
+			VisualStateManager.GoToState(this, IsIndeterminate ? IndeterminateState : DeterminateState, useTransitions);
+		}
+
+		void UpdateTrackLayout()
+		{
+			if (IsIndeterminate)
+				return;
+
+			if (progressbar_indicator == null || progressbar_track == null)
+				return;
+
+			double maximum = Maximum;
+			double minimum = Minimum;
+			double value = Value;
+			double multiplier = 1 - (maximum - value) / (maximum - minimum);
+
+			progressbar_indicator.Width = multiplier * (ActualWidth - progressbar_track.Margin.Left - progressbar_track.Margin.Right);
 		}
 	}
 }

@@ -1,3 +1,9 @@
+2008-12-05  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* ProgressBar.cs:
+	* generic.xaml: managed implementation of the progressbar, and 
+	default template.
+
 2008-12-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Control.cs: Change OnIsEnabledChanged to internal so it does not

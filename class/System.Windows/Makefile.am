@@ -420,7 +420,7 @@ $(MSCONTROLS)/Resource.resources: $(MSCONTROLS)/Src/Resource.resx
 
 $(assemblysl): $(system_windows_sources) Makefile $(top_builddir)/class/lib/2.1/Mono.Moonlight.dll $(MSCONTROLS)/Resource.resources
 	$(SMCS) $(NET_2_1_ASSEMBLY_DEPS) -target:library -out:$@ $(system_windows_sources) -d:NET_2_1 -keyfile:$(srcdir)/../silverlight.pub -delaysign+ \
-		-resource:$(MSCONTROLS)/Resource.resources,System.Windows.Controls.Resource.resources
+		-resource:$(MSCONTROLS)/Resource.resources,System.Windows.Controls.Resource.resources -resource:$(srcdir)/System.Windows.Controls/generic.xaml,themes/generic.xaml
 	sn -q -R $@ $(srcdir)/../mono.snk
 
 $(assemblydesktop): $(system_windows_sources) Makefile $(top_builddir)/class/lib/3.0/Mono.Moonlight.dll $(MSCONTROLS)/Resource.resources
