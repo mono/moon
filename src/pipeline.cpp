@@ -1062,8 +1062,6 @@ ASXDemuxerInfo::Create (Media *media, IMediaSource *source)
  * ManagedStreamSource
  */
 
-#if SL_2_0
-
 ManagedStreamSource::ManagedStreamSource (Media *media, ManagedStreamCallbacks *stream) : IMediaSource (media)
 {
 	memcpy (&this->stream, stream, sizeof (this->stream));
@@ -1109,8 +1107,6 @@ ManagedStreamSource::GetSizeInternal ()
 	return stream.Length (stream.handle);
 }
 	
-#endif
-
 /*
  * FileSource
  */

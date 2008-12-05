@@ -194,10 +194,8 @@ else
 libmoon_la_SOURCES += pipeline-nocodec-ui.cpp
 endif
 
-if INCLUDE_MANAGED_CODE
 libmoon_include_headers += $(libmoon_include_headers_2)
 libmoon_la_SOURCES      += $(libmoon_la_sources_2)
-endif
 
 if INCLUDE_FFMPEG
 libmoon_la_SOURCES += pipeline-ffmpeg.cpp pipeline-ffmpeg.h

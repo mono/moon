@@ -208,7 +208,6 @@ DependencyProperty::RegisterFull (Type::Kind type, const char *name, Value *defa
 	return RegisterFull (NULL, Type::Find (type), name, default_value, vtype, attached, readonly, always_change, changed_callback, false);
 }
 
-#if SL_2_0
 DependencyProperty *
 DependencyProperty::RegisterFull (Types *additional_types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback)
 {
@@ -224,7 +223,6 @@ DependencyProperty::RegisterManagedProperty (Types *additional_types, const char
 		default_value = new Value (*default_value);
 	return DependencyProperty::RegisterFull (additional_types, owner_type, name, default_value, property_type, attached, false, false, callback);
 }
-#endif
 
 //
 // Register the dependency property that belongs to @type with the name @name
