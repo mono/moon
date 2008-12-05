@@ -1,3 +1,9 @@
+2008-12-04  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: If there is no collection retrieved from
+	the getter, try creating a new collection and setting it as the
+	value.
+
 2008-12-02  Jackson Harper  <jackson@ximian.com>
 
 	* ManagedXamlLoader.cs: Sometimes we are setting an attached

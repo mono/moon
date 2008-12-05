@@ -334,14 +334,18 @@ namespace Mono.Xaml
 				if (get_method != null || get_method.GetParameters () == null || get_method.GetParameters ().Length != 1) {
 					IList the_list = (IList) get_method.Invoke (null, new object [] { target });
 
-					if (the_list != null) {
-						the_list.Add (o_value);
-						return true;
-					} else {
-						// Create an empty list here?
+					if (the_list == null) {
+						the_list = (IList) Activator.CreateInstance (attach_type);
+						if (the_list == null)
+							return false;
+						set_method.Invoke (null, new object [] {target, the_list});
 					}
+
+					the_list.Add (o_value);
+					return true;
 				} else {
 					// I guess we need to wrap the current value in a collection, or does this error out?
+					return false;
 				}
 			}
 
