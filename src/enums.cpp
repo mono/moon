@@ -55,14 +55,12 @@ static enum_map_t alignment_y_map [] = {
 	END_MAPPING
 };
 
-#ifdef SL_2_0
 static enum_map_t binding_mode_map [] = {
 	MAP_ENUM_SL2 (BindingMode, OneWay),
 	MAP_ENUM_SL2 (BindingMode, OneTime),
 	MAP_ENUM_SL2 (BindingMode, TwoWay),
 	END_MAPPING
 };
-#endif
 
 static enum_map_t brush_mapping_mode_map [] = {
 	MAP_ENUM (BrushMappingMode, Absolute),
@@ -154,15 +152,12 @@ static enum_map_t font_weights_map [] = {
 	END_MAPPING
 };
 
-#if SL_2_0
 static enum_map_t line_stacking_strategy_map [] = {
 	MAP_ENUM_SL2 (LineStackingStrategy, MaxHeight),
 	MAP_ENUM_SL2 (LineStackingStrategy, BlockLineHeight),
 	END_MAPPING
 };
-#endif
 
-#if SL_2_0
 static enum_map_t horizontal_alignment_map [] = {
 	MAP_ENUM_SL2 (HorizontalAlignment, Left),
 	MAP_ENUM_SL2 (HorizontalAlignment, Center),
@@ -170,7 +165,6 @@ static enum_map_t horizontal_alignment_map [] = {
 	MAP_ENUM_SL2 (HorizontalAlignment, Stretch),
 	END_MAPPING
 };
-#endif
 
 static enum_map_t gradient_spread_method_map [] = {
 	MAP_ENUM (GradientSpreadMethod, Pad),
@@ -220,14 +214,12 @@ static enum_map_t tablet_device_type_map [] = {
 	END_MAPPING
 };
 
-#if SL_2_0
 static enum_map_t text_alignment_map [] = {
 	MAP_ENUM_SL2 (TextAlignment, Center),
 	MAP_ENUM_SL2 (TextAlignment, Left),
 	MAP_ENUM_SL2 (TextAlignment, Right),
 	END_MAPPING
 };
-#endif
 
 static enum_map_t text_decorations_map [] = {
 	MAP_ENUM (TextDecorations, None),
@@ -242,7 +234,6 @@ static enum_map_t text_wrapping_map [] = {
 	END_MAPPING
 };
 
-#if SL_2_0
 static enum_map_t scrollbar_visibility_map [] = {
 	MAP_ENUM_SL2 (ScrollBarVisibility, Disabled),
 	MAP_ENUM_SL2 (ScrollBarVisibility, Auto),
@@ -250,9 +241,7 @@ static enum_map_t scrollbar_visibility_map [] = {
 	MAP_ENUM_SL2 (ScrollBarVisibility, Visible),
 	END_MAPPING
 };
-#endif
 
-#if SL_2_0
 static enum_map_t vertical_alignment_map [] = {
 	MAP_ENUM_SL2 (VerticalAlignment, Top),
 	MAP_ENUM_SL2 (VerticalAlignment, Center),
@@ -260,7 +249,6 @@ static enum_map_t vertical_alignment_map [] = {
 	MAP_ENUM_SL2 (VerticalAlignment, Stretch),
 	END_MAPPING
 };
-#endif
 
 static enum_map_t visibility_map [] = {
 	MAP_ENUM (Visibility, Visible),
@@ -268,7 +256,6 @@ static enum_map_t visibility_map [] = {
 	END_MAPPING
 };
 
-#if SL_2_0
 static enum_map_t orientation_map [] = {
 	MAP_ENUM_SL2 (Orientation, Vertical),
 	MAP_ENUM_SL2 (Orientation, Horizontal),
@@ -281,7 +268,6 @@ static enum_map_t cross_domain_access_map [] = {
 	MAP_ENUM_SL2 (CrossDomainAccess, ScriptableOnly),
 	END_MAPPING 
 };
-#endif
 
 static void
 initialize_enums (void)
@@ -314,7 +300,6 @@ initialize_enums (void)
 	g_hash_table_insert (enum_map, (char *) "TextWrapping", text_wrapping_map);
 	g_hash_table_insert (enum_map, (char *) "Visibility", visibility_map);
 
-#if SL_2_0
 	g_hash_table_insert (enum_map, (char *) "BindingMode", binding_mode_map);
 	g_hash_table_insert (enum_map, (char *) "ExternalCallersFromCrossDomain", cross_domain_access_map);
 	g_hash_table_insert (enum_map, (char *) "HorizontalScrollBarVisibility", scrollbar_visibility_map);
@@ -324,7 +309,6 @@ initialize_enums (void)
 	g_hash_table_insert (enum_map, (char *) "VerticalAlignment", vertical_alignment_map);
 	g_hash_table_insert (enum_map, (char *) "TextAlignment", text_alignment_map);
 	g_hash_table_insert (enum_map, (char *) "Orientation", orientation_map);
-#endif
 }
 
 static int

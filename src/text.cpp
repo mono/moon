@@ -372,12 +372,8 @@ TextBlock::Layout (cairo_t *cr)
 	layout->SetWrapping (GetTextWrapping ());
 	
 	if ((value = GetValueNoDefault (FrameworkElement::WidthProperty))) {
-#if SL_2_0
 		Thickness *padding = GetPadding ();
 		double pad = padding->left + padding->right;
-#else
-		double pad = 0.0;
-#endif
 		double width = value->AsDouble ();
 		
 		if (pad >= width) {
@@ -489,19 +485,13 @@ TextBlock::Layout (cairo_t *cr)
 void
 TextBlock::Paint (cairo_t *cr)
 {
-#if SL_2_0
-#endif
 	Brush *fg;
 	
 	if (!(fg = GetForeground ()))
 		fg = default_foreground ();
 
-	Point offset = Point (0.0, 0.0);
-#if SL_2_0
 	Thickness *padding = GetPadding ();
-        offset.x = padding->left;
-	offset.y = padding->top;
-#endif
+	Point offset (padding->left, padding->top);
 	
 	layout->Render (cr, GetOriginPoint (), offset, hints, fg);
 	
@@ -735,7 +725,6 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 			// result of a change to the TextBlock.Text property
 			invalidate = false;
 		}
-#if SL_2_0
 	} else if (args->property == TextBlock::LineStackingStrategyProperty) {
 		hints->SetLineStackingStrategy ((LineStackingStrategy) args->new_value->AsInt32 ());
 		dirty = true;
@@ -746,7 +735,6 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 		hints->SetTextAlignment ((TextAlignment) args->new_value->AsInt32 ());
 	} else if (args->property == TextBlock::PaddingProperty) {
 		dirty = true;
-#endif
 	} else if (args->property == TextBlock::ActualHeightProperty) {
 		invalidate = false;
 	} else if (args->property == TextBlock::ActualWidthProperty) {

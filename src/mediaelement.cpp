@@ -1384,7 +1384,6 @@ MediaElement::SetSource (Downloader *downloader, const char *PartName)
 	MediaBase::SetSource (downloader, PartName);
 }
 
-#if SL_2_0
 void
 MediaElement::SetStreamSource (ManagedStreamCallbacks *callbacks)
 {
@@ -1394,7 +1393,6 @@ MediaElement::SetStreamSource (ManagedStreamCallbacks *callbacks)
 	flags |= Loaded;
 	TryOpen ();
 }
-#endif
 
 void
 MediaElement::SetPlayRequested ()

@@ -23,7 +23,6 @@
 #include "style.h"
 
 
-#if SL_2_0
 static void
 binding_destroy (gpointer value)
 {
@@ -47,15 +46,14 @@ datacontext_changed (DependencyObject *sender, PropertyChangedEventArgs *args, g
 	FrameworkElement *element = (FrameworkElement *) user_data;
 	g_hash_table_foreach (element->bindings, invalidate_binding, element);
 }
-#endif
 
 FrameworkElement::FrameworkElement ()
 {
-#if SL_2_0
 	bindings = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, binding_destroy);
 	styles = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, NULL);
+
 	AddPropertyChangeHandler (FrameworkElement::DataContextProperty, datacontext_changed, this);
-#endif
+
 	measure_cb = NULL;
 	arrange_cb = NULL;
 	template_namescope = NULL;
@@ -63,11 +61,10 @@ FrameworkElement::FrameworkElement ()
 
 FrameworkElement::~FrameworkElement ()
 {
-#if SL_2_0
 	g_hash_table_destroy (bindings);
 	g_hash_table_destroy (styles);
+
 	RemovePropertyChangeHandler (FrameworkElement::DataContextProperty, datacontext_changed);
-#endif
 
 	if (template_namescope) {
 		template_namescope->unref();
@@ -78,7 +75,6 @@ FrameworkElement::~FrameworkElement ()
 void
 FrameworkElement::BoundPropertyChanged (DependencyObject *sender, PropertyChangedEventArgs *args, BindingExpressionBase *expr)
 {
-#if SL_2_0
 	DependencyProperty *property = expr->GetTargetProperty ();
 	Binding *binding;
 	
@@ -96,23 +92,19 @@ FrameworkElement::BoundPropertyChanged (DependencyObject *sender, PropertyChange
 		SetBindingExpression (property, expr);
 	
 	expr->unref ();
-#endif
 }
 
 void
 FrameworkElement::bound_property_changed (DependencyObject *sender, PropertyChangedEventArgs *args, gpointer user_data)
 {
-#if SL_2_0
 	BindingExpressionBase *expr = (BindingExpressionBase *) user_data;
 	
 	expr->GetTarget ()->BoundPropertyChanged (sender, args, expr);
-#endif
 }
 
 void
 FrameworkElement::SetBindingExpression (DependencyProperty *property, BindingExpressionBase *expr)
 {
-#if SL_2_0
 	BindingExpressionBase *cur_expr = GetBindingExpression (property);
 	
 	if (cur_expr)
@@ -124,33 +116,25 @@ FrameworkElement::SetBindingExpression (DependencyProperty *property, BindingExp
 		expr->SetTargetProperty (property);
 		expr->SetTarget (this);
 	}
-#endif
 }
 
 BindingExpressionBase *
 FrameworkElement::GetBindingExpression (DependencyProperty *property)
 {
-#if SL_2_0
 	Value *value = (Value *) g_hash_table_lookup (bindings, property);
 	return value ? value->AsBindingExpressionBase () : NULL;
-#else
-	return NULL;
-#endif
 }
 
 void
 FrameworkElement::ClearBindingExpression (DependencyProperty *property, BindingExpressionBase *expr)
 {
-#if SL_2_0
 	expr->DetachListener (FrameworkElement::bound_property_changed);
 	g_hash_table_remove (bindings, property);
-#endif
 }
 
 void
 FrameworkElement::ClearValue (DependencyProperty *property, bool notify_listeners)
 {
-#if SL_2_0
 	BindingExpressionBase *cur_expr = GetBindingExpression (property);
 	if (cur_expr)
 		ClearBindingExpression (property, cur_expr);
@@ -158,14 +142,11 @@ FrameworkElement::ClearValue (DependencyProperty *property, bool notify_listener
 	Value *style_value = (Value*)g_hash_table_lookup (styles, property);
 
 	notify_listeners = notify_listeners && !style_value;
-#endif
 
 	UIElement::ClearValue (property, notify_listeners);
 
-#if SL_2_0
 	if (style_value)
 		SetValue (property, style_value);
-#endif
 }
 
 Value *
@@ -183,11 +164,9 @@ FrameworkElement::GetLocalValue (DependencyProperty *property)
 bool
 FrameworkElement::IsValueValid (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error)
 {
-#if SL_2_0
 	// We can databind any property of a FrameworkElement 
 	if (value && value->Is (Type::BINDINGEXPRESSIONBASE))
 		return true;
-#endif
 	
 	return UIElement::IsValueValid (additional_types, property, value, error);
 }
@@ -195,7 +174,6 @@ FrameworkElement::IsValueValid (Types *additional_types, DependencyProperty *pro
 bool
 FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error)
 {
-#if SL_2_0
 	bool activeBinding = false;
 	BindingExpressionBase *cur_binding = GetBindingExpression (property);
 	BindingExpressionBase *new_binding = NULL;
@@ -245,12 +223,8 @@ FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 		UpdateFromStyle (styleVal->AsStyle ());
 	
 	return result;
-#else
-	return UIElement::SetValueWithErrorImpl (property, value, error);
-#endif
 }
 
-#if SL_2_0
 
 void
 FrameworkElement::InvalidateBinding (DependencyProperty *property, BindingExpressionBase *binding)
@@ -301,7 +275,6 @@ FrameworkElement::UpdateFromStyle (Style *style)
 		}
 	}
 }
-#endif
 
 void
 FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args)
@@ -312,12 +285,10 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 	}
 
 	if (args->property == FrameworkElement::WidthProperty ||
-#if SL_2_0
 	    args->property == FrameworkElement::MaxWidthProperty ||
 	    args->property == FrameworkElement::MinWidthProperty ||
 	    args->property == FrameworkElement::MaxHeightProperty ||
 	    args->property == FrameworkElement::MinHeightProperty ||
-#endif
 	    args->property == FrameworkElement::HeightProperty) {
 
 		Point *p = GetRenderTransformOrigin ();
@@ -386,7 +357,6 @@ FrameworkElement::Measure (Size availableSize)
 	Size specified = Size (vw ? GetWidth () : NAN, vh ? GetHeight () : NAN);
 	
 	
-#if SL_2_0
 	Thickness margin = *GetMargin ();
 	Size size = availableSize.GrowBy (-margin);
 
@@ -396,22 +366,14 @@ FrameworkElement::Measure (Size availableSize)
 
 	size = size.Min (GetMaxWidth (), GetMaxHeight ());
 	size = size.Max (GetMinWidth (), GetMinHeight ());
-#else
-	Size size = availableSize;
-
-	size = size.Min (specified);
-	size = size.Max (specified);
-#endif
 
 	if (measure_cb)
 		size = (*measure_cb)(size);
 	else
 		size = MeasureOverride (size);
 
-#if SL_2_0
 	SetActualWidth (GetWidth ());
 	SetActualHeight (GetHeight ());
-#endif
 
 	// XXX ugly hack to fake some sort of exception case
 	if (isnan (size.width) || isnan (size.height)) {
@@ -423,12 +385,11 @@ FrameworkElement::Measure (Size availableSize)
 	size = size.Min (specified);
 	size = size.Max (specified);
 
-#if SL_2_0
 	size = size.Min (GetMaxWidth (), GetMaxHeight ());
 	size = size.Max (GetMinWidth (), GetMinHeight ());
 
 	size = size.GrowBy (margin);
-#endif
+
 	size = size.Min (availableSize);
 
 	SetDesiredSize (size);
@@ -452,10 +413,9 @@ FrameworkElement::Arrange (Rect finalRect)
 {
 	this->dirty_flags &= ~DirtyArrange;
 
-#if SL_2_0
 	Thickness margin = *GetMargin ();
 	finalRect = finalRect.GrowBy (-margin);
-#endif
+
 	Size size = Size (finalRect.width, finalRect.height);
 
 	if (arrange_cb)
@@ -470,7 +430,7 @@ FrameworkElement::Arrange (Rect finalRect)
         }
 
 	SetRenderSize (size);
-#if SL_2_0
+
 	double old_width = GetActualWidth ();
 	double old_height = GetActualHeight ();
 
@@ -481,7 +441,6 @@ FrameworkElement::Arrange (Rect finalRect)
 
 		Emit(SizeChangedEvent, args);
 	}
-#endif
 	// XXX what do we do with finalRect.x and y?
 
 	g_warning ("more here in FrameworkElement::Arrange.  move the bounds or something?  set properties?  who knows!?");
@@ -512,13 +471,11 @@ FrameworkElement::UpdateLayout ()
 {
 	bool rv = UIElement::UpdateLayout ();
 
-#if SL_2_0
 	if (rv) {
 		// we only emit the event if either a measure or
 		// arrange pass was done.
 		Emit (LayoutUpdatedEvent);
 	}
-#endif
 
 	return rv;
 }

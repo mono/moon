@@ -331,7 +331,6 @@ Image::UpdateProgress ()
 }
 
 
-#if SL_2_0
 void
 Image::SetStreamSource (ManagedStreamCallbacks *callbacks)
 {
@@ -384,7 +383,6 @@ Image::SetStreamSource (ManagedStreamCallbacks *callbacks)
 	} else
 		Invalidate ();
 }
-#endif
 
 bool 
 Image::IsSurfaceCached ()

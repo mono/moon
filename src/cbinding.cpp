@@ -11,7 +11,6 @@
 
 #include "cbinding.h"
 
-#if SL_2_0
 /**
  * Application
  **/
@@ -20,7 +19,6 @@ application_new (void)
 {
 	return new Application ();
 }
-#endif
 
 
 /**
@@ -33,7 +31,6 @@ arc_segment_new (void)
 }
 
 
-#if SL_2_0
 /**
  * AssemblyPart
  **/
@@ -42,10 +39,8 @@ assembly_part_new (void)
 {
 	return new AssemblyPart ();
 }
-#endif
 
 
-#if SL_2_0
 /**
  * AssemblyPartCollection
  **/
@@ -54,7 +49,6 @@ assembly_part_collection_new (void)
 {
 	return new AssemblyPartCollection ();
 }
-#endif
 
 
 /**
@@ -77,7 +71,6 @@ bezier_segment_new (void)
 }
 
 
-#if SL_2_0
 /**
  * Binding
  **/
@@ -86,10 +79,8 @@ binding_new (void)
 {
 	return new Binding ();
 }
-#endif
 
 
-#if SL_2_0
 BindingMode
 binding_get_binding_mode (Binding *instance)
 {
@@ -99,10 +90,8 @@ binding_get_binding_mode (Binding *instance)
 	
 	return instance->GetBindingMode ();
 }
-#endif
 
 
-#if SL_2_0
 bool
 binding_get_is_sealed (Binding *instance)
 {
@@ -111,10 +100,8 @@ binding_get_is_sealed (Binding *instance)
 	
 	return instance->GetIsSealed ();
 }
-#endif
 
 
-#if SL_2_0
 char *
 binding_get_property_path (Binding *instance)
 {
@@ -123,10 +110,8 @@ binding_get_property_path (Binding *instance)
 	
 	return instance->GetPropertyPath ();
 }
-#endif
 
 
-#if SL_2_0
 void
 binding_set_binding_mode (Binding *instance, BindingMode mode)
 {
@@ -135,10 +120,8 @@ binding_set_binding_mode (Binding *instance, BindingMode mode)
 	
 	instance->SetBindingMode (mode);
 }
-#endif
 
 
-#if SL_2_0
 void
 binding_set_is_sealed (Binding *instance, bool isSealed)
 {
@@ -147,22 +130,18 @@ binding_set_is_sealed (Binding *instance, bool isSealed)
 	
 	instance->SetIsSealed (isSealed);
 }
-#endif
 
 
-#if SL_2_0
 void
-binding_set_property_path (Binding *instance, char *path)
+binding_set_property_path (Binding *instance, const char *path)
 {
 	if (instance == NULL)
 		return;
 	
 	instance->SetPropertyPath (path);
 }
-#endif
 
 
-#if SL_2_0
 /**
  * BindingExpression
  **/
@@ -171,10 +150,8 @@ binding_expression_new (void)
 {
 	return new BindingExpression ();
 }
-#endif
 
 
-#if SL_2_0
 /**
  * BindingExpressionBase
  **/
@@ -186,10 +163,8 @@ binding_expression_base_get_binding (BindingExpressionBase *instance)
 	
 	return instance->GetBinding ();
 }
-#endif
 
 
-#if SL_2_0
 DependencyObject *
 binding_expression_base_get_source (BindingExpressionBase *instance)
 {
@@ -198,10 +173,8 @@ binding_expression_base_get_source (BindingExpressionBase *instance)
 	
 	return instance->GetSource ();
 }
-#endif
 
 
-#if SL_2_0
 FrameworkElement *
 binding_expression_base_get_target (BindingExpressionBase *instance)
 {
@@ -210,10 +183,8 @@ binding_expression_base_get_target (BindingExpressionBase *instance)
 	
 	return instance->GetTarget ();
 }
-#endif
 
 
-#if SL_2_0
 DependencyProperty *
 binding_expression_base_get_target_property (BindingExpressionBase *instance)
 {
@@ -222,10 +193,8 @@ binding_expression_base_get_target_property (BindingExpressionBase *instance)
 	
 	return instance->GetTargetProperty ();
 }
-#endif
 
 
-#if SL_2_0
 Value *
 binding_expression_base_get_value (BindingExpressionBase *instance)
 {
@@ -234,10 +203,8 @@ binding_expression_base_get_value (BindingExpressionBase *instance)
 	
 	return instance->GetValue ();
 }
-#endif
 
 
-#if SL_2_0
 void
 binding_expression_base_register_managed_overrides (BindingExpressionBase *instance, GetValueCallback gv_callback, SetValueCallback sv_callback)
 {
@@ -246,10 +213,8 @@ binding_expression_base_register_managed_overrides (BindingExpressionBase *insta
 	
 	instance->RegisterManagedOverrides (gv_callback, sv_callback);
 }
-#endif
 
 
-#if SL_2_0
 void
 binding_expression_base_set_binding (BindingExpressionBase *instance, Binding *binding)
 {
@@ -258,10 +223,8 @@ binding_expression_base_set_binding (BindingExpressionBase *instance, Binding *b
 	
 	instance->SetBinding (binding);
 }
-#endif
 
 
-#if SL_2_0
 void
 binding_expression_base_set_source (BindingExpressionBase *instance, FrameworkElement *element)
 {
@@ -270,10 +233,8 @@ binding_expression_base_set_source (BindingExpressionBase *instance, FrameworkEl
 	
 	instance->SetSource (element);
 }
-#endif
 
 
-#if SL_2_0
 void
 binding_expression_base_set_target (BindingExpressionBase *instance, FrameworkElement *element)
 {
@@ -282,10 +243,8 @@ binding_expression_base_set_target (BindingExpressionBase *instance, FrameworkEl
 	
 	instance->SetTarget (element);
 }
-#endif
 
 
-#if SL_2_0
 void
 binding_expression_base_set_target_property (BindingExpressionBase *instance, DependencyProperty *property)
 {
@@ -294,10 +253,8 @@ binding_expression_base_set_target_property (BindingExpressionBase *instance, De
 	
 	instance->SetTargetProperty (property);
 }
-#endif
 
 
-#if SL_2_0
 void
 binding_expression_base_update_source (BindingExpressionBase *instance, Value *value)
 {
@@ -306,10 +263,8 @@ binding_expression_base_update_source (BindingExpressionBase *instance, Value *v
 	
 	instance->UpdateSource (value);
 }
-#endif
 
 
-#if SL_2_0
 /**
  * BitmapImage
  **/
@@ -318,10 +273,8 @@ bitmap_image_new (void)
 {
 	return new BitmapImage ();
 }
-#endif
 
 
-#if SL_2_0
 /**
  * Border
  **/
@@ -330,7 +283,6 @@ border_new (void)
 {
 	return new Border ();
 }
-#endif
 
 
 /**
@@ -353,7 +305,6 @@ canvas_new (void)
 }
 
 
-#if SL_2_0
 /**
  * Collection
  **/
@@ -368,7 +319,6 @@ collection_add_with_error (Collection *instance, Value *value, MoonError *error)
 		g_warning ("Moonlight: Called collection_add_with_error () with error == NULL.");
 	return instance->AddWithError (value, error);
 }
-#endif
 
 
 bool
@@ -422,7 +372,6 @@ collection_get_iterator (Collection *instance)
 }
 
 
-#if SL_2_0
 Value *
 collection_get_value_at_with_error (Collection *instance, int index, MoonError *error)
 {
@@ -433,7 +382,6 @@ collection_get_value_at_with_error (Collection *instance, int index, MoonError *
 		g_warning ("Moonlight: Called collection_get_value_at_with_error () with error == NULL.");
 	return instance->GetValueAtWithError (index, error);
 }
-#endif
 
 
 int
@@ -447,7 +395,6 @@ collection_index_of (Collection *instance, Value *value)
 }
 
 
-#if SL_2_0
 bool
 collection_insert_with_error (Collection *instance, int index, Value *value, MoonError *error)
 {
@@ -458,7 +405,6 @@ collection_insert_with_error (Collection *instance, int index, Value *value, Moo
 		g_warning ("Moonlight: Called collection_insert_with_error () with error == NULL.");
 	return instance->InsertWithError (index, value, error);
 }
-#endif
 
 
 bool
@@ -471,7 +417,6 @@ collection_remove (Collection *instance, Value *value)
 }
 
 
-#if SL_2_0
 bool
 collection_remove_at_with_error (Collection *instance, int index, MoonError *error)
 {
@@ -482,10 +427,8 @@ collection_remove_at_with_error (Collection *instance, int index, MoonError *err
 		g_warning ("Moonlight: Called collection_remove_at_with_error () with error == NULL.");
 	return instance->RemoveAtWithError (index, error);
 }
-#endif
 
 
-#if SL_2_0
 bool
 collection_set_value_at_with_error (Collection *instance, int index, Value *value, MoonError *error)
 {
@@ -496,7 +439,6 @@ collection_set_value_at_with_error (Collection *instance, int index, Value *valu
 		g_warning ("Moonlight: Called collection_set_value_at_with_error () with error == NULL.");
 	return instance->SetValueAtWithError (index, value, error);
 }
-#endif
 
 
 /**
@@ -672,7 +614,6 @@ color_key_frame_collection_new (void)
 }
 
 
-#if SL_2_0
 /**
  * ColumnDefinition
  **/
@@ -681,10 +622,8 @@ column_definition_new (void)
 {
 	return new ColumnDefinition ();
 }
-#endif
 
 
-#if SL_2_0
 double
 column_definition_get_actual_width (ColumnDefinition *instance)
 {
@@ -694,10 +633,8 @@ column_definition_get_actual_width (ColumnDefinition *instance)
 	
 	return instance->GetActualWidth ();
 }
-#endif
 
 
-#if SL_2_0
 /**
  * ColumnDefinitionCollection
  **/
@@ -706,10 +643,8 @@ column_definition_collection_new (void)
 {
 	return new ColumnDefinitionCollection ();
 }
-#endif
 
 
-#if SL_2_0
 /**
  * ContentControl
  **/
@@ -718,10 +653,8 @@ content_control_new (void)
 {
 	return new ContentControl ();
 }
-#endif
 
 
-#if SL_2_0
 /**
  * Control
  **/
@@ -733,19 +666,15 @@ control_apply_template (Control *instance)
 	
 	return instance->ApplyTemplate ();
 }
-#endif
 
 
-#if SL_2_0
 Control *
 control_new (void)
 {
 	return new Control ();
 }
-#endif
 
 
-#if SL_2_0
 /**
  * ControlTemplate
  **/
@@ -754,10 +683,8 @@ control_template_new (void)
 {
 	return new ControlTemplate ();
 }
-#endif
 
 
-#if SL_2_0
 /**
  * DeepZoomImageTileSource
  **/
@@ -766,10 +693,8 @@ deep_zoom_image_tile_source_new (void)
 {
 	return new DeepZoomImageTileSource ();
 }
-#endif
 
 
-#if SL_2_0
 void
 deep_zoom_image_tile_source_download_urisource (DeepZoomImageTileSource *instance, const char *uri, downloaded_cb callback)
 {
@@ -778,10 +703,8 @@ deep_zoom_image_tile_source_download_urisource (DeepZoomImageTileSource *instanc
 	
 	instance->download_urisource (uri, callback);
 }
-#endif
 
 
-#if SL_2_0
 /**
  * DependencyObject
  **/
@@ -793,7 +716,6 @@ dependency_object_clear_value (DependencyObject *instance, DependencyProperty *p
 	
 	instance->ClearValue (property, notify_listeners);
 }
-#endif
 
 
 DependencyObject *
@@ -813,7 +735,6 @@ dependency_object_find_name (DependencyObject *instance, const char *name, Type:
 }
 
 
-#if SL_2_0
 Value *
 dependency_object_get_default_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, MoonError *error)
 {
@@ -824,10 +745,8 @@ dependency_object_get_default_value_with_error (DependencyObject *instance, Type
 		g_warning ("Moonlight: Called dependency_object_get_default_value_with_error () with error == NULL.");
 	return instance->GetDefaultValueWithError (additional_types, property, error);
 }
-#endif
 
 
-#if SL_2_0
 Value *
 dependency_object_get_local_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, MoonError *error)
 {
@@ -838,7 +757,6 @@ dependency_object_get_local_value_with_error (DependencyObject *instance, Types 
 		g_warning ("Moonlight: Called dependency_object_get_local_value_with_error () with error == NULL.");
 	return instance->GetLocalValueWithError (additional_types, property, error);
 }
-#endif
 
 
 const char *
@@ -861,7 +779,6 @@ dependency_object_get_object_type (DependencyObject *instance)
 }
 
 
-#if SL_2_0
 Value *
 dependency_object_get_value_no_default_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, MoonError *error)
 {
@@ -872,10 +789,8 @@ dependency_object_get_value_no_default_with_error (DependencyObject *instance, T
 		g_warning ("Moonlight: Called dependency_object_get_value_no_default_with_error () with error == NULL.");
 	return instance->GetValueNoDefaultWithError (additional_types, property, error);
 }
-#endif
 
 
-#if SL_2_0
 Value *
 dependency_object_get_value_with_error (DependencyObject *instance, Types *additional_types, Type::Kind whatami, DependencyProperty *property, MoonError *error)
 {
@@ -886,7 +801,6 @@ dependency_object_get_value_with_error (DependencyObject *instance, Types *addit
 		g_warning ("Moonlight: Called dependency_object_get_value_with_error () with error == NULL.");
 	return instance->GetValueWithError (additional_types, whatami, property, error);
 }
-#endif
 
 
 void
@@ -978,22 +892,18 @@ dependency_property_register (Type::Kind type, const char *name, Value *default_
 }
 
 
-#if SL_2_0
 DependencyProperty *
 dependency_property_register_full (Types *additional_types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler *changed_callback)
 {
 	return DependencyProperty::RegisterFull (additional_types, type, name, default_value, vtype, attached, read_only, always_change, changed_callback);
 }
-#endif
 
 
-#if SL_2_0
 DependencyProperty *
 dependency_property_register_managed_property (Types *additional_types, const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, NativePropertyChangedHandler *callback)
 {
 	return DependencyProperty::RegisterManagedProperty (additional_types, name, property_type, owner_type, defaultValue, attached, callback);
 }
-#endif
 
 
 void
@@ -1006,7 +916,6 @@ dependency_property_set_is_nullable (DependencyProperty *instance, bool value)
 }
 
 
-#if SL_2_0
 /**
  * Deployment
  **/
@@ -1015,7 +924,6 @@ deployment_new (void)
 {
 	return new Deployment ();
 }
-#endif
 
 
 /**
@@ -1038,7 +946,6 @@ discrete_double_key_frame_new (void)
 }
 
 
-#if SL_2_0
 /**
  * DiscreteObjectKeyFrame
  **/
@@ -1047,7 +954,6 @@ discrete_object_key_frame_new (void)
 {
 	return new DiscreteObjectKeyFrame ();
 }
-#endif
 
 
 /**
@@ -1308,7 +1214,6 @@ framework_element_register_managed_overrides (FrameworkElement *instance, Measur
 }
 
 
-#if SL_2_0
 /**
  * FrameworkTemplate
  **/
@@ -1317,7 +1222,6 @@ framework_template_new (void)
 {
 	return new FrameworkTemplate ();
 }
-#endif
 
 
 /**
@@ -1400,7 +1304,6 @@ gradient_stop_collection_new (void)
 }
 
 
-#if SL_2_0
 /**
  * Grid
  **/
@@ -1409,7 +1312,6 @@ grid_new (void)
 {
 	return new Grid ();
 }
-#endif
 
 
 /**
@@ -1422,7 +1324,6 @@ image_new (void)
 }
 
 
-#if SL_2_0
 void
 image_set_stream_source (Image *instance, ManagedStreamCallbacks *stream)
 {
@@ -1431,7 +1332,6 @@ image_set_stream_source (Image *instance, ManagedStreamCallbacks *stream)
 	
 	instance->SetStreamSource (stream);
 }
-#endif
 
 
 /**
@@ -1726,7 +1626,6 @@ media_element_play (MediaElement *instance)
 }
 
 
-#if SL_2_0
 void
 media_element_set_stream_source (MediaElement *instance, ManagedStreamCallbacks *stream)
 {
@@ -1735,7 +1634,6 @@ media_element_set_stream_source (MediaElement *instance, ManagedStreamCallbacks 
 	
 	instance->SetStreamSource (stream);
 }
-#endif
 
 
 void
@@ -1821,7 +1719,6 @@ mouse_event_args_new (void)
 }
 
 
-#if SL_2_0
 /**
  * MultiScaleImage
  **/
@@ -1833,19 +1730,15 @@ multi_scale_image_element_to_logical_point (MultiScaleImage *instance, Point ele
 	
 	return instance->ElementToLogicalPoint (elementPoint);
 }
-#endif
 
 
-#if SL_2_0
 MultiScaleImage *
 multi_scale_image_new (void)
 {
 	return new MultiScaleImage ();
 }
-#endif
 
 
-#if SL_2_0
 void
 multi_scale_image_zoom_about_logical_point (MultiScaleImage *instance, double zoomIncrementFactor, double zoomCenterLogicalX, double zoomCenterLogicalY)
 {
@@ -1854,10 +1747,8 @@ multi_scale_image_zoom_about_logical_point (MultiScaleImage *instance, double zo
 	
 	instance->ZoomAboutLogicalPoint (zoomIncrementFactor, zoomCenterLogicalX, zoomCenterLogicalY);
 }
-#endif
 
 
-#if SL_2_0
 /**
  * MultiScaleSubImage
  **/
@@ -1866,10 +1757,8 @@ multi_scale_sub_image_new (void)
 {
 	return new MultiScaleSubImage ();
 }
-#endif
 
 
-#if SL_2_0
 /**
  * MultiScaleTileSource
  **/
@@ -1882,10 +1771,8 @@ multi_scale_tile_source_get_image_height (MultiScaleTileSource *instance)
 	
 	return instance->GetImageHeight ();
 }
-#endif
 
 
-#if SL_2_0
 int
 multi_scale_tile_source_get_image_width (MultiScaleTileSource *instance)
 {
@@ -1895,10 +1782,8 @@ multi_scale_tile_source_get_image_width (MultiScaleTileSource *instance)
 	
 	return instance->GetImageWidth ();
 }
-#endif
 
 
-#if SL_2_0
 int
 multi_scale_tile_source_get_tile_height (MultiScaleTileSource *instance)
 {
@@ -1908,10 +1793,8 @@ multi_scale_tile_source_get_tile_height (MultiScaleTileSource *instance)
 	
 	return instance->GetTileHeight ();
 }
-#endif
 
 
-#if SL_2_0
 int
 multi_scale_tile_source_get_tile_overlap (MultiScaleTileSource *instance)
 {
@@ -1921,10 +1804,8 @@ multi_scale_tile_source_get_tile_overlap (MultiScaleTileSource *instance)
 	
 	return instance->GetTileOverlap ();
 }
-#endif
 
 
-#if SL_2_0
 int
 multi_scale_tile_source_get_tile_width (MultiScaleTileSource *instance)
 {
@@ -1934,19 +1815,15 @@ multi_scale_tile_source_get_tile_width (MultiScaleTileSource *instance)
 	
 	return instance->GetTileWidth ();
 }
-#endif
 
 
-#if SL_2_0
 MultiScaleTileSource *
 multi_scale_tile_source_new (void)
 {
 	return new MultiScaleTileSource ();
 }
-#endif
 
 
-#if SL_2_0
 void
 multi_scale_tile_source_set_image_height (MultiScaleTileSource *instance, int height)
 {
@@ -1955,10 +1832,8 @@ multi_scale_tile_source_set_image_height (MultiScaleTileSource *instance, int he
 	
 	instance->SetImageHeight (height);
 }
-#endif
 
 
-#if SL_2_0
 void
 multi_scale_tile_source_set_image_width (MultiScaleTileSource *instance, int width)
 {
@@ -1967,10 +1842,8 @@ multi_scale_tile_source_set_image_width (MultiScaleTileSource *instance, int wid
 	
 	instance->SetImageWidth (width);
 }
-#endif
 
 
-#if SL_2_0
 void
 multi_scale_tile_source_set_tile_height (MultiScaleTileSource *instance, int height)
 {
@@ -1979,10 +1852,8 @@ multi_scale_tile_source_set_tile_height (MultiScaleTileSource *instance, int hei
 	
 	instance->SetTileHeight (height);
 }
-#endif
 
 
-#if SL_2_0
 void
 multi_scale_tile_source_set_tile_overlap (MultiScaleTileSource *instance, int overlap)
 {
@@ -1991,10 +1862,8 @@ multi_scale_tile_source_set_tile_overlap (MultiScaleTileSource *instance, int ov
 	
 	instance->SetTileOverlap (overlap);
 }
-#endif
 
 
-#if SL_2_0
 void
 multi_scale_tile_source_set_tile_width (MultiScaleTileSource *instance, int width)
 {
@@ -2003,10 +1872,8 @@ multi_scale_tile_source_set_tile_width (MultiScaleTileSource *instance, int widt
 	
 	instance->SetTileWidth (width);
 }
-#endif
 
 
-#if SL_2_0
 /**
  * ObjectAnimationUsingKeyFrames
  **/
@@ -2015,10 +1882,8 @@ object_animation_using_key_frames_new (void)
 {
 	return new ObjectAnimationUsingKeyFrames ();
 }
-#endif
 
 
-#if SL_2_0
 /**
  * ObjectKeyFrame
  **/
@@ -2027,10 +1892,8 @@ object_key_frame_new (void)
 {
 	return new ObjectKeyFrame ();
 }
-#endif
 
 
-#if SL_2_0
 /**
  * ObjectKeyFrameCollection
  **/
@@ -2039,7 +1902,6 @@ object_key_frame_collection_new (void)
 {
 	return new ObjectKeyFrameCollection ();
 }
-#endif
 
 
 /**
@@ -2404,7 +2266,6 @@ routed_event_args_set_source (RoutedEventArgs *instance, DependencyObject *el)
 }
 
 
-#if SL_2_0
 /**
  * RowDefinition
  **/
@@ -2417,19 +2278,15 @@ row_definition_get_actual_height (RowDefinition *instance)
 	
 	return instance->GetActualHeight ();
 }
-#endif
 
 
-#if SL_2_0
 RowDefinition *
 row_definition_new (void)
 {
 	return new RowDefinition ();
 }
-#endif
 
 
-#if SL_2_0
 /**
  * RowDefinitionCollection
  **/
@@ -2438,7 +2295,6 @@ row_definition_collection_new (void)
 {
 	return new RowDefinitionCollection ();
 }
-#endif
 
 
 /**
@@ -2461,7 +2317,6 @@ scale_transform_new (void)
 }
 
 
-#if SL_2_0
 /**
  * SelectionChangedEventArgs
  **/
@@ -2473,10 +2328,8 @@ selection_changed_event_args_get_added_items (SelectionChangedEventArgs *instanc
 	
 	return instance->GetAddedItems ();
 }
-#endif
 
 
-#if SL_2_0
 GPtrArray *
 selection_changed_event_args_get_removed_items (SelectionChangedEventArgs *instance)
 {
@@ -2485,19 +2338,15 @@ selection_changed_event_args_get_removed_items (SelectionChangedEventArgs *insta
 	
 	return instance->GetRemovedItems ();
 }
-#endif
 
 
-#if SL_2_0
 SelectionChangedEventArgs *
 selection_changed_event_args_new (void)
 {
 	return new SelectionChangedEventArgs ();
 }
-#endif
 
 
-#if SL_2_0
 void
 selection_changed_event_args_set_added_items (SelectionChangedEventArgs *instance, GPtrArray *addedItems)
 {
@@ -2506,10 +2355,8 @@ selection_changed_event_args_set_added_items (SelectionChangedEventArgs *instanc
 	
 	instance->SetAddedItems (addedItems);
 }
-#endif
 
 
-#if SL_2_0
 void
 selection_changed_event_args_set_removed_items (SelectionChangedEventArgs *instance, GPtrArray *removedItems)
 {
@@ -2518,10 +2365,8 @@ selection_changed_event_args_set_removed_items (SelectionChangedEventArgs *insta
 	
 	instance->SetRemovedItems (removedItems);
 }
-#endif
 
 
-#if SL_2_0
 /**
  * Setter
  **/
@@ -2530,10 +2375,8 @@ setter_new (void)
 {
 	return new Setter ();
 }
-#endif
 
 
-#if SL_2_0
 /**
  * SetterBase
  **/
@@ -2542,10 +2385,8 @@ setter_base_new (void)
 {
 	return new SetterBase ();
 }
-#endif
 
 
-#if SL_2_0
 /**
  * SetterBaseCollection
  **/
@@ -2554,7 +2395,6 @@ setter_base_collection_new (void)
 {
 	return new SetterBaseCollection ();
 }
-#endif
 
 
 /**
@@ -2567,7 +2407,6 @@ shape_new (void)
 }
 
 
-#if SL_2_0
 /**
  * SizeChangedEventArgs
  **/
@@ -2576,7 +2415,6 @@ size_changed_event_args_new (void)
 {
 	return new SizeChangedEventArgs ();
 }
-#endif
 
 
 /**
@@ -2629,7 +2467,6 @@ spline_point_key_frame_new (void)
 }
 
 
-#if SL_2_0
 /**
  * StackPanel
  **/
@@ -2638,7 +2475,6 @@ stack_panel_new (void)
 {
 	return new StackPanel ();
 }
-#endif
 
 
 /**
@@ -2741,7 +2577,6 @@ stroke_collection_new (void)
 }
 
 
-#if SL_2_0
 /**
  * Style
  **/
@@ -2753,16 +2588,13 @@ style_seal (Style *instance)
 	
 	instance->Seal ();
 }
-#endif
 
 
-#if SL_2_0
 Style *
 style_new (void)
 {
 	return new Style ();
 }
-#endif
 
 
 /**
@@ -2818,7 +2650,6 @@ surface_create_downloader (Surface *instance)
 }
 
 
-#if SL_2_0
 bool
 surface_focus_element (Surface *instance, UIElement *element)
 {
@@ -2827,10 +2658,8 @@ surface_focus_element (Surface *instance, UIElement *element)
 	
 	return instance->FocusElement (element);
 }
-#endif
 
 
-#if SL_2_0
 UIElement *
 surface_get_focused_element (Surface *instance)
 {
@@ -2839,7 +2668,6 @@ surface_get_focused_element (Surface *instance)
 	
 	return instance->GetFocusedElement ();
 }
-#endif
 
 
 TimeManager *
@@ -2906,7 +2734,6 @@ text_block_new (void)
 }
 
 
-#if SL_2_0
 /**
  * TextBox
  **/
@@ -2918,19 +2745,15 @@ text_box_select (TextBox *instance, int start, int length)
 	
 	instance->Select (start, length);
 }
-#endif
 
 
-#if SL_2_0
 TextBox *
 text_box_new (void)
 {
 	return new TextBox ();
 }
-#endif
 
 
-#if SL_2_0
 /**
  * TextChangedEventArgs
  **/
@@ -2939,7 +2762,6 @@ text_changed_event_args_new (void)
 {
 	return new TextChangedEventArgs ();
 }
-#endif
 
 
 /**
@@ -3102,7 +2924,6 @@ trigger_collection_new (void)
 }
 
 
-#if SL_2_0
 /**
  * Types
  **/
@@ -3111,10 +2932,8 @@ types_free (Types *instance)
 {
 	delete instance;
 }
-#endif
 
 
-#if SL_2_0
 Type *
 types_find (Types *instance, Type::Kind type)
 {
@@ -3123,10 +2942,8 @@ types_find (Types *instance, Type::Kind type)
 	
 	return instance->Find (type);
 }
-#endif
 
 
-#if SL_2_0
 Type::Kind
 types_register_type (Types *instance, const char *name, void *gc_handle, Type::Kind parent)
 {
@@ -3135,16 +2952,13 @@ types_register_type (Types *instance, const char *name, void *gc_handle, Type::K
 	
 	return instance->RegisterType (name, gc_handle, parent);
 }
-#endif
 
 
-#if SL_2_0
 Types *
 types_new (void)
 {
 	return new Types ();
 }
-#endif
 
 
 /**
@@ -3202,7 +3016,6 @@ uielement_get_subtree_object (UIElement *instance)
 }
 
 
-#if SL_2_0
 GeneralTransform *
 uielement_get_transform_to_uielement (UIElement *instance, UIElement *to_element)
 {
@@ -3211,7 +3024,6 @@ uielement_get_transform_to_uielement (UIElement *instance, UIElement *to_element
 	
 	return instance->GetTransformToUIElement (to_element);
 }
-#endif
 
 
 UIElement *
@@ -3284,7 +3096,6 @@ uielement_collection_new (void)
 }
 
 
-#if SL_2_0
 /**
  * UserControl
  **/
@@ -3293,7 +3104,6 @@ user_control_new (void)
 {
 	return new UserControl ();
 }
-#endif
 
 
 /**
@@ -3355,7 +3165,6 @@ xaml_loader_hydrate_from_string_with_error (XamlLoader *instance, const char *xa
 }
 
 
-#if SL_2_0
 /**
  * Xap
  **/
@@ -3364,6 +3173,5 @@ xap_unpack (const char *fname)
 {
 	return Xap::Unpack (fname);
 }
-#endif
 
 

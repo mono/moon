@@ -46,10 +46,8 @@ UIElement::UIElement ()
 	force_invalidate_of_new_bounds = false;
 	dirty_region = new Region ();
 
-#if SL_2_0
 	desired_size = Size (0, 0);
 	render_size = Size (0, 0);
-#endif
 	
 	ComputeLocalTransform ();
 	ComputeTotalRenderVisibility ();
@@ -955,7 +953,6 @@ UIElement::GetTimeManager ()
 	return surface ? surface->GetTimeManager() : NULL;
 }
 
-#if SL_2_0
 GeneralTransform *
 UIElement::GetTransformToUIElement (UIElement *to_element)
 {
@@ -972,9 +969,6 @@ UIElement::GetTransformToUIElement (UIElement *to_element)
 
 	return transform;
 }
-#endif
-
-
 
 void
 UIElement::TransformPoint (double *x, double *y)

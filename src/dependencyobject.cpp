@@ -1032,12 +1032,10 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 			g_warning ("setting property %s::%s on object of type %s didn't result in listeners being notified\n",
 				   Type::Find(property->GetOwnerType())->GetName (), property->GetName(), GetTypeName ());
 
-#if SL_2_0
 		if (property && property->GetChangedCallback () != NULL) {
 			NativePropertyChangedHandler *callback = property->GetChangedCallback ();
 			callback (property, this, current_value, new_value);
 		}
-#endif
 
 		if (current_value)
 			delete current_value;
@@ -1146,7 +1144,6 @@ DependencyObject::GetDefaultValue (DependencyProperty *property)
 	return property->GetDefaultValue();
 }
 
-#if SL_2_0
 Value *
 DependencyObject::GetDefaultValueWithError (Types *additional_types, DependencyProperty *property, MoonError *error)
 {
@@ -1168,7 +1165,6 @@ DependencyObject::GetValueWithError (Types *additional_types, Type::Kind whatami
 	}
 	return GetValue (property);
 }
-#endif
 
 Value *
 DependencyObject::GetValue (DependencyProperty *property)
@@ -1187,7 +1183,6 @@ DependencyObject::GetLocalValue (DependencyProperty *property)
 	return GetValueNoDefault (property);
 }
 
-#if SL_2_0
 Value *
 DependencyObject::GetLocalValueWithError (Types *additional_types, DependencyProperty *property, MoonError *error)
 {
@@ -1198,7 +1193,6 @@ DependencyObject::GetLocalValueWithError (Types *additional_types, DependencyPro
 	}
 	return GetLocalValue (property);
 }
-#endif
 
 Value *
 DependencyObject::GetValueNoDefault (DependencyProperty *property)
@@ -1206,7 +1200,6 @@ DependencyObject::GetValueNoDefault (DependencyProperty *property)
 	return (Value *) g_hash_table_lookup (current_values, property);
 }
 
-#if SL_2_0
 Value *
 DependencyObject::GetValueNoDefaultWithError (Types *additional_types, DependencyProperty *property, MoonError *error)
 {
@@ -1217,7 +1210,6 @@ DependencyObject::GetValueNoDefaultWithError (Types *additional_types, Dependenc
 	}
 	return GetValueNoDefault (property);	
 }
-#endif
 
 void
 DependencyObject::ClearValue (DependencyProperty *property, bool notify_listeners)
@@ -1260,12 +1252,10 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 				   Type::Find(property->GetOwnerType())->GetName (), property->GetName(), GetTypeName ());
 	}
 
-#if SL_2_0
 		if (property && property->GetChangedCallback () != NULL) {
 			NativePropertyChangedHandler *callback = property->GetChangedCallback ();
 			callback (property, this, current_value, NULL);
 		}
-#endif
 
 	delete current_value;
 }
@@ -1341,7 +1331,6 @@ DependencyObject::HasProperty (const char *name, bool inherits)
 	return DependencyProperty::GetDependencyProperty (GetObjectType (), name, inherits) != NULL;
 }
 
-#if SL_2_0
 bool
 DependencyObject::HasProperty (Types *additional_types, Type::Kind whatami, DependencyProperty *property, bool inherits)
 {
@@ -1392,7 +1381,6 @@ DependencyObject::HasProperty (Types *additional_types, Type::Kind whatami, Depe
 	
 	return true;
 }
-#endif
 
 DependencyObject *
 DependencyObject::FindName (const char *name)

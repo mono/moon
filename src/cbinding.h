@@ -55,13 +55,11 @@
 
 G_BEGIN_DECLS
 
-#if SL_2_0
 /**
  * Application
  **/
 /* @GeneratePInvoke */
 Application *application_new (void);
-#endif
 
 /**
  * ArcSegment
@@ -69,21 +67,17 @@ Application *application_new (void);
 /* @GeneratePInvoke */
 ArcSegment *arc_segment_new (void);
 
-#if SL_2_0
 /**
  * AssemblyPart
  **/
 /* @GeneratePInvoke */
 AssemblyPart *assembly_part_new (void);
-#endif
 
-#if SL_2_0
 /**
  * AssemblyPartCollection
  **/
 /* @GeneratePInvoke */
 AssemblyPartCollection *assembly_part_collection_new (void);
-#endif
 
 /**
  * BeginStoryboard
@@ -97,125 +91,83 @@ BeginStoryboard *begin_storyboard_new (void);
 /* @GeneratePInvoke */
 BezierSegment *bezier_segment_new (void);
 
-#if SL_2_0
 /**
  * Binding
  **/
 /* @GeneratePInvoke */
 Binding *binding_new (void);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 BindingMode binding_get_binding_mode (Binding *instance);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 bool binding_get_is_sealed (Binding *instance);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 char *binding_get_property_path (Binding *instance);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 void binding_set_binding_mode (Binding *instance, BindingMode mode);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 void binding_set_is_sealed (Binding *instance, bool isSealed);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
-void binding_set_property_path (Binding *instance, char *path);
-#endif
+void binding_set_property_path (Binding *instance, const char *path);
 
-#if SL_2_0
 /**
  * BindingExpression
  **/
 /* @GeneratePInvoke */
 BindingExpression *binding_expression_new (void);
-#endif
 
-#if SL_2_0
 /**
  * BindingExpressionBase
  **/
 /* @GeneratePInvoke */
 Binding *binding_expression_base_get_binding (BindingExpressionBase *instance);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 DependencyObject *binding_expression_base_get_source (BindingExpressionBase *instance);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 FrameworkElement *binding_expression_base_get_target (BindingExpressionBase *instance);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 DependencyProperty *binding_expression_base_get_target_property (BindingExpressionBase *instance);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 Value *binding_expression_base_get_value (BindingExpressionBase *instance);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 void binding_expression_base_register_managed_overrides (BindingExpressionBase *instance, GetValueCallback gv_callback, SetValueCallback sv_callback);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 void binding_expression_base_set_binding (BindingExpressionBase *instance, Binding *binding);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 void binding_expression_base_set_source (BindingExpressionBase *instance, FrameworkElement *element);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 void binding_expression_base_set_target (BindingExpressionBase *instance, FrameworkElement *element);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 void binding_expression_base_set_target_property (BindingExpressionBase *instance, DependencyProperty *property);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 void binding_expression_base_update_source (BindingExpressionBase *instance, Value *value);
-#endif
 
-#if SL_2_0
 /**
  * BitmapImage
  **/
 /* @GeneratePInvoke */
 BitmapImage *bitmap_image_new (void);
-#endif
 
-#if SL_2_0
 /**
  * Border
  **/
 /* @GeneratePInvoke */
 Border *border_new (void);
-#endif
 
 /**
  * Brush
@@ -229,13 +181,11 @@ Brush *brush_new (void);
 /* @GeneratePInvoke */
 Canvas *canvas_new (void);
 
-#if SL_2_0
 /**
  * Collection
  **/
 /* @GeneratePInvoke */
 int collection_add_with_error (Collection *instance, Value *value, MoonError *error);
-#endif
 
 /* @GeneratePInvoke */
 bool collection_clear (Collection *instance);
@@ -252,31 +202,23 @@ Type::Kind collection_get_element_type (Collection *instance);
 /* @GeneratePInvoke */
 CollectionIterator *collection_get_iterator (Collection *instance);
 
-#if SL_2_0
 /* @GeneratePInvoke */
 Value *collection_get_value_at_with_error (Collection *instance, int index, MoonError *error);
-#endif
 
 /* @GeneratePInvoke */
 int collection_index_of (Collection *instance, Value *value);
 
-#if SL_2_0
 /* @GeneratePInvoke */
 bool collection_insert_with_error (Collection *instance, int index, Value *value, MoonError *error);
-#endif
 
 /* @GeneratePInvoke */
 bool collection_remove (Collection *instance, Value *value);
 
-#if SL_2_0
 /* @GeneratePInvoke */
 bool collection_remove_at_with_error (Collection *instance, int index, MoonError *error);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 bool collection_set_value_at_with_error (Collection *instance, int index, Value *value, MoonError *error);
-#endif
 
 /**
  * CollectionChangedEventArgs
@@ -347,75 +289,55 @@ ColorKeyFrame *color_key_frame_new (void);
 /* @GeneratePInvoke */
 ColorKeyFrameCollection *color_key_frame_collection_new (void);
 
-#if SL_2_0
 /**
  * ColumnDefinition
  **/
 /* @GeneratePInvoke */
 ColumnDefinition *column_definition_new (void);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 double column_definition_get_actual_width (ColumnDefinition *instance);
-#endif
 
-#if SL_2_0
 /**
  * ColumnDefinitionCollection
  **/
 /* @GeneratePInvoke */
 ColumnDefinitionCollection *column_definition_collection_new (void);
-#endif
 
-#if SL_2_0
 /**
  * ContentControl
  **/
 /* @GeneratePInvoke */
 ContentControl *content_control_new (void);
-#endif
 
-#if SL_2_0
 /**
  * Control
  **/
 /* @GeneratePInvoke */
 bool control_apply_template (Control *instance);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 Control *control_new (void);
-#endif
 
-#if SL_2_0
 /**
  * ControlTemplate
  **/
 /* @GeneratePInvoke */
 ControlTemplate *control_template_new (void);
-#endif
 
-#if SL_2_0
 /**
  * DeepZoomImageTileSource
  **/
 /* @GeneratePInvoke */
 DeepZoomImageTileSource *deep_zoom_image_tile_source_new (void);
-#endif
 
-#if SL_2_0
 void deep_zoom_image_tile_source_download_urisource (DeepZoomImageTileSource *instance, const char *uri, downloaded_cb callback);
-#endif
 
-#if SL_2_0
 /**
  * DependencyObject
  **/
 /* @GeneratePInvoke */
 void dependency_object_clear_value (DependencyObject *instance, DependencyProperty *property, bool notify_listeners);
-#endif
 
 /* @GeneratePInvoke */
 DependencyObject *dependency_object_new (void);
@@ -423,15 +345,11 @@ DependencyObject *dependency_object_new (void);
 /* @GeneratePInvoke */
 DependencyObject *dependency_object_find_name (DependencyObject *instance, const char *name, Type::Kind *element_kind);
 
-#if SL_2_0
 /* @GeneratePInvoke */
 Value *dependency_object_get_default_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, MoonError *error);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 Value *dependency_object_get_local_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, MoonError *error);
-#endif
 
 /* @GeneratePInvoke */
 const char *dependency_object_get_name (DependencyObject *instance);
@@ -439,15 +357,11 @@ const char *dependency_object_get_name (DependencyObject *instance);
 /* @GeneratePInvoke */
 Type::Kind dependency_object_get_object_type (DependencyObject *instance);
 
-#if SL_2_0
 /* @GeneratePInvoke */
 Value *dependency_object_get_value_no_default_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, MoonError *error);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 Value *dependency_object_get_value_with_error (DependencyObject *instance, Types *additional_types, Type::Kind whatami, DependencyProperty *property, MoonError *error);
-#endif
 
 /* @GeneratePInvoke */
 void dependency_object_set_name (DependencyObject *instance, const char *name);
@@ -481,26 +395,20 @@ bool dependency_property_is_nullable (DependencyProperty *instance);
 
 DependencyProperty *dependency_property_register (Type::Kind type, const char *name, Value *default_value);
 
-#if SL_2_0
 /* @GeneratePInvoke */
 DependencyProperty *dependency_property_register_full (Types *additional_types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler *changed_callback);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 DependencyProperty *dependency_property_register_managed_property (Types *additional_types, const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, NativePropertyChangedHandler *callback);
-#endif
 
 /* @GeneratePInvoke */
 void dependency_property_set_is_nullable (DependencyProperty *instance, bool value);
 
-#if SL_2_0
 /**
  * Deployment
  **/
 /* @GeneratePInvoke */
 Deployment *deployment_new (void);
-#endif
 
 /**
  * DiscreteColorKeyFrame
@@ -514,13 +422,11 @@ DiscreteColorKeyFrame *discrete_color_key_frame_new (void);
 /* @GeneratePInvoke */
 DiscreteDoubleKeyFrame *discrete_double_key_frame_new (void);
 
-#if SL_2_0
 /**
  * DiscreteObjectKeyFrame
  **/
 /* @GeneratePInvoke */
 DiscreteObjectKeyFrame *discrete_object_key_frame_new (void);
-#endif
 
 /**
  * DiscretePointKeyFrame
@@ -636,13 +542,11 @@ Size framework_element_measure_override (FrameworkElement *instance, Size availa
 /* @GeneratePInvoke */
 void framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb);
 
-#if SL_2_0
 /**
  * FrameworkTemplate
  **/
 /* @GeneratePInvoke */
 FrameworkTemplate *framework_template_new (void);
-#endif
 
 /**
  * GeneralTransform
@@ -692,13 +596,11 @@ GradientStop *gradient_stop_new (void);
 /* @GeneratePInvoke */
 GradientStopCollection *gradient_stop_collection_new (void);
 
-#if SL_2_0
 /**
  * Grid
  **/
 /* @GeneratePInvoke */
 Grid *grid_new (void);
-#endif
 
 /**
  * Image
@@ -706,10 +608,8 @@ Grid *grid_new (void);
 /* @GeneratePInvoke */
 Image *image_new (void);
 
-#if SL_2_0
 /* @GeneratePInvoke */
 void image_set_stream_source (Image *instance, ManagedStreamCallbacks *stream);
-#endif
 
 /**
  * ImageBrush
@@ -867,10 +767,8 @@ void media_element_pause (MediaElement *instance);
 /* @GeneratePInvoke */
 void media_element_play (MediaElement *instance);
 
-#if SL_2_0
 /* @GeneratePInvoke */
 void media_element_set_stream_source (MediaElement *instance, ManagedStreamCallbacks *stream);
-#endif
 
 /* @GeneratePInvoke */
 void media_element_stop (MediaElement *instance);
@@ -905,113 +803,77 @@ StylusPointCollection *mouse_event_args_get_stylus_points (MouseEventArgs *insta
 /* @GeneratePInvoke */
 MouseEventArgs *mouse_event_args_new (void);
 
-#if SL_2_0
 /**
  * MultiScaleImage
  **/
 /* @GeneratePInvoke */
 Point multi_scale_image_element_to_logical_point (MultiScaleImage *instance, Point elementPoint);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 MultiScaleImage *multi_scale_image_new (void);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 void multi_scale_image_zoom_about_logical_point (MultiScaleImage *instance, double zoomIncrementFactor, double zoomCenterLogicalX, double zoomCenterLogicalY);
-#endif
 
-#if SL_2_0
 /**
  * MultiScaleSubImage
  **/
 /* @GeneratePInvoke */
 MultiScaleSubImage *multi_scale_sub_image_new (void);
-#endif
 
-#if SL_2_0
 /**
  * MultiScaleTileSource
  **/
 /* @GeneratePInvoke */
 int multi_scale_tile_source_get_image_height (MultiScaleTileSource *instance);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 int multi_scale_tile_source_get_image_width (MultiScaleTileSource *instance);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 int multi_scale_tile_source_get_tile_height (MultiScaleTileSource *instance);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 int multi_scale_tile_source_get_tile_overlap (MultiScaleTileSource *instance);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 int multi_scale_tile_source_get_tile_width (MultiScaleTileSource *instance);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 MultiScaleTileSource *multi_scale_tile_source_new (void);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 void multi_scale_tile_source_set_image_height (MultiScaleTileSource *instance, int height);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 void multi_scale_tile_source_set_image_width (MultiScaleTileSource *instance, int width);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 void multi_scale_tile_source_set_tile_height (MultiScaleTileSource *instance, int height);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 void multi_scale_tile_source_set_tile_overlap (MultiScaleTileSource *instance, int overlap);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 void multi_scale_tile_source_set_tile_width (MultiScaleTileSource *instance, int width);
-#endif
 
-#if SL_2_0
 /**
  * ObjectAnimationUsingKeyFrames
  **/
 /* @GeneratePInvoke */
 ObjectAnimationUsingKeyFrames *object_animation_using_key_frames_new (void);
-#endif
 
-#if SL_2_0
 /**
  * ObjectKeyFrame
  **/
 /* @GeneratePInvoke */
 ObjectKeyFrame *object_key_frame_new (void);
-#endif
 
-#if SL_2_0
 /**
  * ObjectKeyFrameCollection
  **/
 /* @GeneratePInvoke */
 ObjectKeyFrameCollection *object_key_frame_collection_new (void);
-#endif
 
 /**
  * Panel
@@ -1195,26 +1057,20 @@ void routed_event_args_set_handled (RoutedEventArgs *instance, bool handled);
 /* @GeneratePInvoke */
 void routed_event_args_set_source (RoutedEventArgs *instance, DependencyObject *el);
 
-#if SL_2_0
 /**
  * RowDefinition
  **/
 /* @GeneratePInvoke */
 double row_definition_get_actual_height (RowDefinition *instance);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 RowDefinition *row_definition_new (void);
-#endif
 
-#if SL_2_0
 /**
  * RowDefinitionCollection
  **/
 /* @GeneratePInvoke */
 RowDefinitionCollection *row_definition_collection_new (void);
-#endif
 
 /**
  * Run
@@ -1228,57 +1084,41 @@ Run *run_new (void);
 /* @GeneratePInvoke */
 ScaleTransform *scale_transform_new (void);
 
-#if SL_2_0
 /**
  * SelectionChangedEventArgs
  **/
 /* @GeneratePInvoke */
 GPtrArray *selection_changed_event_args_get_added_items (SelectionChangedEventArgs *instance);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 GPtrArray *selection_changed_event_args_get_removed_items (SelectionChangedEventArgs *instance);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 SelectionChangedEventArgs *selection_changed_event_args_new (void);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 void selection_changed_event_args_set_added_items (SelectionChangedEventArgs *instance, GPtrArray *addedItems);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 void selection_changed_event_args_set_removed_items (SelectionChangedEventArgs *instance, GPtrArray *removedItems);
-#endif
 
-#if SL_2_0
 /**
  * Setter
  **/
 /* @GeneratePInvoke */
 Setter *setter_new (void);
-#endif
 
-#if SL_2_0
 /**
  * SetterBase
  **/
 /* @GeneratePInvoke */
 SetterBase *setter_base_new (void);
-#endif
 
-#if SL_2_0
 /**
  * SetterBaseCollection
  **/
 /* @GeneratePInvoke */
 SetterBaseCollection *setter_base_collection_new (void);
-#endif
 
 /**
  * Shape
@@ -1286,13 +1126,11 @@ SetterBaseCollection *setter_base_collection_new (void);
 /* @GeneratePInvoke */
 Shape *shape_new (void);
 
-#if SL_2_0
 /**
  * SizeChangedEventArgs
  **/
 /* @GeneratePInvoke */
 SizeChangedEventArgs *size_changed_event_args_new (void);
-#endif
 
 /**
  * SkewTransform
@@ -1324,13 +1162,11 @@ SplineDoubleKeyFrame *spline_double_key_frame_new (void);
 /* @GeneratePInvoke */
 SplinePointKeyFrame *spline_point_key_frame_new (void);
 
-#if SL_2_0
 /**
  * StackPanel
  **/
 /* @GeneratePInvoke */
 StackPanel *stack_panel_new (void);
-#endif
 
 /**
  * Storyboard
@@ -1371,18 +1207,14 @@ StrokeCollection *stroke_collection_hit_test (StrokeCollection *instance, Stylus
 /* @GeneratePInvoke */
 StrokeCollection *stroke_collection_new (void);
 
-#if SL_2_0
 /**
  * Style
  **/
 /* @GeneratePInvoke */
 void style_seal (Style *instance);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 Style *style_new (void);
-#endif
 
 /**
  * StylusInfo
@@ -1411,15 +1243,11 @@ void surface_attach (Surface *instance, UIElement *toplevel);
 /* @GeneratePInvoke */
 Downloader *surface_create_downloader (Surface *instance);
 
-#if SL_2_0
 /* @GeneratePInvoke */
 bool surface_focus_element (Surface *instance, UIElement *element);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 UIElement *surface_get_focused_element (Surface *instance);
-#endif
 
 /* @GeneratePInvoke */
 TimeManager *surface_get_time_manager (Surface *instance);
@@ -1444,26 +1272,20 @@ Surface *surface_new (MoonWindow *window, bool silverlight2);
 /* @GeneratePInvoke */
 TextBlock *text_block_new (void);
 
-#if SL_2_0
 /**
  * TextBox
  **/
 /* @GeneratePInvoke */
 void text_box_select (TextBox *instance, int start, int length);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 TextBox *text_box_new (void);
-#endif
 
-#if SL_2_0
 /**
  * TextChangedEventArgs
  **/
 /* @GeneratePInvoke */
 TextChangedEventArgs *text_changed_event_args_new (void);
-#endif
 
 /**
  * TileBrush
@@ -1554,28 +1376,20 @@ TriggerBase *trigger_base_new (void);
 /* @GeneratePInvoke */
 TriggerCollection *trigger_collection_new (void);
 
-#if SL_2_0
 /**
  * Types
  **/
 /* @GeneratePInvoke */
 void types_free (Types *instance);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 Type *types_find (Types *instance, Type::Kind type);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 Type::Kind types_register_type (Types *instance, const char *name, void *gc_handle, Type::Kind parent);
-#endif
 
-#if SL_2_0
 /* @GeneratePInvoke */
 Types *types_new (void);
-#endif
 
 /**
  * UIElement
@@ -1595,10 +1409,8 @@ Size uielement_get_render_size (UIElement *instance);
 /* @GeneratePInvoke */
 DependencyObject *uielement_get_subtree_object (UIElement *instance);
 
-#if SL_2_0
 /* @GeneratePInvoke */
 GeneralTransform *uielement_get_transform_to_uielement (UIElement *instance, UIElement *to_element);
-#endif
 
 /* @GeneratePInvoke */
 UIElement *uielement_get_visual_parent (UIElement *instance);
@@ -1624,13 +1436,11 @@ bool uielement_update_layout (UIElement *instance);
 /* @GeneratePInvoke */
 UIElementCollection *uielement_collection_new (void);
 
-#if SL_2_0
 /**
  * UserControl
  **/
 /* @GeneratePInvoke */
 UserControl *user_control_new (void);
-#endif
 
 /**
  * VideoBrush
@@ -1656,13 +1466,11 @@ DependencyObject *xaml_loader_create_from_string_with_error (XamlLoader *instanc
 /* @GeneratePInvoke */
 DependencyObject *xaml_loader_hydrate_from_string_with_error (XamlLoader *instance, const char *xaml, DependencyObject *obj, bool create_namescope, Type::Kind *element_type, MoonError *error);
 
-#if SL_2_0
 /**
  * Xap
  **/
 /* @GeneratePInvoke */
 char *xap_unpack (const char *fname);
-#endif
 
 
 G_END_DECLS

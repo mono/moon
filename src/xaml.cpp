@@ -49,13 +49,11 @@
 #include "control.h"
 #include "template.h"
 
-#if SL_2_0
 #include "thickness.h"
 #include "cornerradius.h"
 #include "deployment.h"
 #include "grid.h"
 #include "deepzoomimagetilesource.h"
-#endif
 
 
 class XamlElementInfo;
@@ -531,10 +529,8 @@ class DefaultNamespace : public XamlNamespace {
 		if (t)
 			return new XamlElementInfoNative (t);
 
-#if SL_2_0
 		if (enums_is_enum_name (el))
 			return new XamlElementInfoEnum (g_strdup (el));
-#endif
 
 		XamlElementInfo* managed_element = create_element_info_from_imported_managed_type (p, el);
 		if (managed_element)			
@@ -1802,7 +1798,6 @@ matrix_from_str (const char *str)
 	return matrix;
 }
 
-#if SL_2_0
 bool
 grid_length_from_str (const char *str, GridLength *grid_length)
 {
@@ -1826,7 +1821,6 @@ grid_length_from_str (const char *str, GridLength *grid_length)
 	*grid_length = GridLength (d, GridUnitTypePixel);
 	return true;
 }
-#endif
 
 static void
 advance (char **in)
@@ -2529,7 +2523,6 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 		geometry->unref ();
 		break;
 	}
-#if SL_2_0
 	case Type::THICKNESS: {
 		Thickness t;
 
@@ -2539,7 +2532,6 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 		*v = new Value (t);
 		break;
 	}
-
 	case Type::CORNERRADIUS: {
 		CornerRadius c;
 
@@ -2549,7 +2541,6 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 		*v = new Value (c);
 		break;
 	}
-
 	case Type::GRIDLENGTH: {
 		GridLength grid_length;
 
@@ -2559,7 +2550,6 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 		*v = new Value (grid_length);
 		break;
 	}
-
 	case Type::MULTISCALETILESOURCE:
 	case Type::DEEPZOOMIMAGETILESOURCE: {
 		// As far as I know the only thing you can create here is a URI based DeepZoomImageTileSource
@@ -2574,7 +2564,6 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 
 		break;
 	}
-#endif
 	default:
 		// we don't care about NULL or empty values
 		return IS_NULL_OR_EMPTY(str);
@@ -3195,7 +3184,6 @@ XamlLoader::
 
 	}
 
-#if SL_2_0
 	if (Type::Find (parent->info->GetKind ())->IsSubclassOf (Type::FRAMEWORKTEMPLATE)) {
 		FrameworkTemplate *t = (FrameworkTemplate*) parent->GetAsDependencyObject ();
 
@@ -3203,9 +3191,7 @@ XamlLoader::
 		t->SetVisualTree ((FrameworkElement*) child->GetAsDependencyObject ());
 		return;
 	}
-	else 
-#endif
-	if (Type::Find (parent->info->GetKind ())->IsSubclassOf (Type::DEPENDENCY_OBJECT_COLLECTION)) {
+	else if (Type::Find (parent->info->GetKind ())->IsSubclassOf (Type::DEPENDENCY_OBJECT_COLLECTION)) {
 		Collection *col = (Collection *) parent->GetAsDependencyObject ();
 		MoonError err;
 		Value child_val ((DependencyObject*)child->GetAsDependencyObject ());
@@ -3611,7 +3597,6 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 		}
 		return false;
 	}
-#if SL_2_0
 	else if (!strncmp (start, "TemplateBinding ", strlen ("TemplateBinding "))) {
 		XamlElementInstance *parent = item->parent;
 
@@ -3649,7 +3634,6 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 		template_parent->AddTemplateBinding (item, argument, attr_name);
 		return true;
 	}
-#endif
 		
 	return false;
 }

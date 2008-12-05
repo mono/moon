@@ -7,47 +7,340 @@
 #include <config.h>
 #endif
 
-#include "animation.h"
-#include "brush.h"
-#include "canvas.h"
-#include "clock.h"
-#include "collection.h"
-#include "color.h"
-#include "dependencyobject.h"
 #include "dependencyproperty.h"
-#include "downloader.h"
-#include "frameworkelement.h"
-#include "geometry.h"
-#include "media.h"
-#include "mediaelement.h"
-#include "namescope.h"
-#include "panel.h"
-#include "shape.h"
-#include "stylus.h"
-#include "text.h"
-#include "transform.h"
-#include "trigger.h"
-#include "uielement.h"
-#if SL_2_0
-#include "animation2.h"
-#include "bitmapimage.h"
-#include "border.h"
-#include "contentcontrol.h"
-#include "control.h"
-#include "deepzoomimagetilesource.h"
-#include "deployment.h"
-#include "frameworkelement.h"
-#include "geometry.h"
-#include "grid.h"
-#include "multiscaleimage.h"
-#include "multiscalesubimage.h"
-#include "stackpanel.h"
-#include "style.h"
-#include "template.h"
-#include "text.h"
-#include "textbox.h"
-#include "usercontrol.h"
-#endif
+#include "color.h"
+#include "/home/toshok/src/mono/moon/src/deployment.h"
+#include "/home/toshok/src/mono/moon/src/geometry.h"
+#include "/home/toshok/src/mono/moon/src/geometry.h"
+#include "/home/toshok/src/mono/moon/src/geometry.h"
+#include "/home/toshok/src/mono/moon/src/geometry.h"
+#include "/home/toshok/src/mono/moon/src/geometry.h"
+#include "/home/toshok/src/mono/moon/src/deployment.h"
+#include "/home/toshok/src/mono/moon/src/animation.h"
+#include "/home/toshok/src/mono/moon/src/geometry.h"
+#include "/home/toshok/src/mono/moon/src/geometry.h"
+#include "/home/toshok/src/mono/moon/src/geometry.h"
+#include "/home/toshok/src/mono/moon/src/bitmapimage.h"
+#include "/home/toshok/src/mono/moon/src/border.h"
+#include "/home/toshok/src/mono/moon/src/border.h"
+#include "/home/toshok/src/mono/moon/src/border.h"
+#include "/home/toshok/src/mono/moon/src/border.h"
+#include "/home/toshok/src/mono/moon/src/border.h"
+#include "/home/toshok/src/mono/moon/src/border.h"
+#include "/home/toshok/src/mono/moon/src/brush.h"
+#include "/home/toshok/src/mono/moon/src/brush.h"
+#include "/home/toshok/src/mono/moon/src/brush.h"
+#include "/home/toshok/src/mono/moon/src/brush.h"
+#include "/home/toshok/src/mono/moon/src/canvas.h"
+#include "/home/toshok/src/mono/moon/src/canvas.h"
+#include "/home/toshok/src/mono/moon/src/canvas.h"
+#include "/home/toshok/src/mono/moon/src/collection.h"
+#include "/home/toshok/src/mono/moon/src/animation.h"
+#include "/home/toshok/src/mono/moon/src/animation.h"
+#include "/home/toshok/src/mono/moon/src/animation.h"
+#include "/home/toshok/src/mono/moon/src/animation.h"
+#include "/home/toshok/src/mono/moon/src/animation.h"
+#include "/home/toshok/src/mono/moon/src/animation.h"
+#include "/home/toshok/src/mono/moon/src/grid.h"
+#include "/home/toshok/src/mono/moon/src/grid.h"
+#include "/home/toshok/src/mono/moon/src/grid.h"
+#include "/home/toshok/src/mono/moon/src/contentcontrol.h"
+#include "/home/toshok/src/mono/moon/src/contentcontrol.h"
+#include "/home/toshok/src/mono/moon/src/contentcontrol.h"
+#include "/home/toshok/src/mono/moon/src/contentcontrol.h"
+#include "/home/toshok/src/mono/moon/src/contentcontrol.h"
+#include "/home/toshok/src/mono/moon/src/contentcontrol.h"
+#include "/home/toshok/src/mono/moon/src/control.h"
+#include "/home/toshok/src/mono/moon/src/control.h"
+#include "/home/toshok/src/mono/moon/src/control.h"
+#include "/home/toshok/src/mono/moon/src/control.h"
+#include "/home/toshok/src/mono/moon/src/control.h"
+#include "/home/toshok/src/mono/moon/src/control.h"
+#include "/home/toshok/src/mono/moon/src/control.h"
+#include "/home/toshok/src/mono/moon/src/control.h"
+#include "/home/toshok/src/mono/moon/src/control.h"
+#include "/home/toshok/src/mono/moon/src/control.h"
+#include "/home/toshok/src/mono/moon/src/control.h"
+#include "/home/toshok/src/mono/moon/src/control.h"
+#include "/home/toshok/src/mono/moon/src/control.h"
+#include "/home/toshok/src/mono/moon/src/control.h"
+#include "/home/toshok/src/mono/moon/src/control.h"
+#include "/home/toshok/src/mono/moon/src/control.h"
+#include "/home/toshok/src/mono/moon/src/template.h"
+#include "/home/toshok/src/mono/moon/src/deepzoomimagetilesource.h"
+#include "/home/toshok/src/mono/moon/src/dependencyobject.h"
+#include "/home/toshok/src/mono/moon/src/deployment.h"
+#include "/home/toshok/src/mono/moon/src/deployment.h"
+#include "/home/toshok/src/mono/moon/src/deployment.h"
+#include "/home/toshok/src/mono/moon/src/deployment.h"
+#include "/home/toshok/src/mono/moon/src/deployment.h"
+#include "/home/toshok/src/mono/moon/src/animation.h"
+#include "/home/toshok/src/mono/moon/src/animation.h"
+#include "/home/toshok/src/mono/moon/src/animation.h"
+#include "/home/toshok/src/mono/moon/src/animation.h"
+#include "/home/toshok/src/mono/moon/src/animation.h"
+#include "/home/toshok/src/mono/moon/src/animation.h"
+#include "/home/toshok/src/mono/moon/src/downloader.h"
+#include "/home/toshok/src/mono/moon/src/downloader.h"
+#include "/home/toshok/src/mono/moon/src/downloader.h"
+#include "/home/toshok/src/mono/moon/src/downloader.h"
+#include "/home/toshok/src/mono/moon/src/downloader.h"
+#include "/home/toshok/src/mono/moon/src/stylus.h"
+#include "/home/toshok/src/mono/moon/src/stylus.h"
+#include "/home/toshok/src/mono/moon/src/stylus.h"
+#include "/home/toshok/src/mono/moon/src/stylus.h"
+#include "/home/toshok/src/mono/moon/src/geometry.h"
+#include "/home/toshok/src/mono/moon/src/geometry.h"
+#include "/home/toshok/src/mono/moon/src/geometry.h"
+#include "/home/toshok/src/mono/moon/src/trigger.h"
+#include "/home/toshok/src/mono/moon/src/trigger.h"
+#include "/home/toshok/src/mono/moon/src/frameworkelement.h"
+#include "/home/toshok/src/mono/moon/src/frameworkelement.h"
+#include "/home/toshok/src/mono/moon/src/frameworkelement.h"
+#include "/home/toshok/src/mono/moon/src/frameworkelement.h"
+#include "/home/toshok/src/mono/moon/src/frameworkelement.h"
+#include "/home/toshok/src/mono/moon/src/frameworkelement.h"
+#include "/home/toshok/src/mono/moon/src/frameworkelement.h"
+#include "/home/toshok/src/mono/moon/src/frameworkelement.h"
+#include "/home/toshok/src/mono/moon/src/frameworkelement.h"
+#include "/home/toshok/src/mono/moon/src/frameworkelement.h"
+#include "/home/toshok/src/mono/moon/src/frameworkelement.h"
+#include "/home/toshok/src/mono/moon/src/frameworkelement.h"
+#include "/home/toshok/src/mono/moon/src/frameworkelement.h"
+#include "/home/toshok/src/mono/moon/src/frameworkelement.h"
+#include "/home/toshok/src/mono/moon/src/geometry.h"
+#include "/home/toshok/src/mono/moon/src/geometry.h"
+#include "/home/toshok/src/mono/moon/src/geometry.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/brush.h"
+#include "/home/toshok/src/mono/moon/src/brush.h"
+#include "/home/toshok/src/mono/moon/src/brush.h"
+#include "/home/toshok/src/mono/moon/src/brush.h"
+#include "/home/toshok/src/mono/moon/src/brush.h"
+#include "/home/toshok/src/mono/moon/src/brush.h"
+#include "/home/toshok/src/mono/moon/src/grid.h"
+#include "/home/toshok/src/mono/moon/src/grid.h"
+#include "/home/toshok/src/mono/moon/src/grid.h"
+#include "/home/toshok/src/mono/moon/src/grid.h"
+#include "/home/toshok/src/mono/moon/src/grid.h"
+#include "/home/toshok/src/mono/moon/src/grid.h"
+#include "/home/toshok/src/mono/moon/src/grid.h"
+#include "/home/toshok/src/mono/moon/src/brush.h"
+#include "/home/toshok/src/mono/moon/src/brush.h"
+#include "/home/toshok/src/mono/moon/src/stylus.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/animation.h"
+#include "/home/toshok/src/mono/moon/src/animation.h"
+#include "/home/toshok/src/mono/moon/src/shape.h"
+#include "/home/toshok/src/mono/moon/src/shape.h"
+#include "/home/toshok/src/mono/moon/src/shape.h"
+#include "/home/toshok/src/mono/moon/src/shape.h"
+#include "/home/toshok/src/mono/moon/src/brush.h"
+#include "/home/toshok/src/mono/moon/src/brush.h"
+#include "/home/toshok/src/mono/moon/src/geometry.h"
+#include "/home/toshok/src/mono/moon/src/geometry.h"
+#include "/home/toshok/src/mono/moon/src/geometry.h"
+#include "/home/toshok/src/mono/moon/src/transform.h"
+#include "/home/toshok/src/mono/moon/src/transform.h"
+#include "/home/toshok/src/mono/moon/src/transform.h"
+#include "/home/toshok/src/mono/moon/src/transform.h"
+#include "/home/toshok/src/mono/moon/src/transform.h"
+#include "/home/toshok/src/mono/moon/src/transform.h"
+#include "/home/toshok/src/mono/moon/src/transform.h"
+#include "/home/toshok/src/mono/moon/src/media.h"
+#include "/home/toshok/src/mono/moon/src/media.h"
+#include "/home/toshok/src/mono/moon/src/media.h"
+#include "/home/toshok/src/mono/moon/src/media.h"
+#include "/home/toshok/src/mono/moon/src/mediaelement.h"
+#include "/home/toshok/src/mono/moon/src/mediaelement.h"
+#include "/home/toshok/src/mono/moon/src/mediaelement.h"
+#include "/home/toshok/src/mono/moon/src/mediaelement.h"
+#include "/home/toshok/src/mono/moon/src/mediaelement.h"
+#include "/home/toshok/src/mono/moon/src/mediaelement.h"
+#include "/home/toshok/src/mono/moon/src/mediaelement.h"
+#include "/home/toshok/src/mono/moon/src/mediaelement.h"
+#include "/home/toshok/src/mono/moon/src/mediaelement.h"
+#include "/home/toshok/src/mono/moon/src/mediaelement.h"
+#include "/home/toshok/src/mono/moon/src/mediaelement.h"
+#include "/home/toshok/src/mono/moon/src/mediaelement.h"
+#include "/home/toshok/src/mono/moon/src/mediaelement.h"
+#include "/home/toshok/src/mono/moon/src/mediaelement.h"
+#include "/home/toshok/src/mono/moon/src/mediaelement.h"
+#include "/home/toshok/src/mono/moon/src/mediaelement.h"
+#include "/home/toshok/src/mono/moon/src/mediaelement.h"
+#include "/home/toshok/src/mono/moon/src/mediaelement.h"
+#include "/home/toshok/src/mono/moon/src/mediaelement.h"
+#include "/home/toshok/src/mono/moon/src/mediaelement.h"
+#include "/home/toshok/src/mono/moon/src/multiscaleimage.h"
+#include "/home/toshok/src/mono/moon/src/multiscaleimage.h"
+#include "/home/toshok/src/mono/moon/src/multiscaleimage.h"
+#include "/home/toshok/src/mono/moon/src/multiscaleimage.h"
+#include "/home/toshok/src/mono/moon/src/multiscaleimage.h"
+#include "/home/toshok/src/mono/moon/src/multiscalesubimage.h"
+#include "/home/toshok/src/mono/moon/src/multiscalesubimage.h"
+#include "/home/toshok/src/mono/moon/src/multiscalesubimage.h"
+#include "/home/toshok/src/mono/moon/src/multiscalesubimage.h"
+#include "/home/toshok/src/mono/moon/src/multiscalesubimage.h"
+#include "/home/toshok/src/mono/moon/src/namescope.h"
+#include "/home/toshok/src/mono/moon/src/animation2.h"
+#include "/home/toshok/src/mono/moon/src/animation2.h"
+#include "/home/toshok/src/mono/moon/src/animation2.h"
+#include "/home/toshok/src/mono/moon/src/panel.h"
+#include "/home/toshok/src/mono/moon/src/panel.h"
+#include "/home/toshok/src/mono/moon/src/shape.h"
+#include "/home/toshok/src/mono/moon/src/geometry.h"
+#include "/home/toshok/src/mono/moon/src/geometry.h"
+#include "/home/toshok/src/mono/moon/src/geometry.h"
+#include "/home/toshok/src/mono/moon/src/geometry.h"
+#include "/home/toshok/src/mono/moon/src/geometry.h"
+#include "/home/toshok/src/mono/moon/src/geometry.h"
+#include "/home/toshok/src/mono/moon/src/animation.h"
+#include "/home/toshok/src/mono/moon/src/animation.h"
+#include "/home/toshok/src/mono/moon/src/animation.h"
+#include "/home/toshok/src/mono/moon/src/animation.h"
+#include "/home/toshok/src/mono/moon/src/animation.h"
+#include "/home/toshok/src/mono/moon/src/animation.h"
+#include "/home/toshok/src/mono/moon/src/geometry.h"
+#include "/home/toshok/src/mono/moon/src/shape.h"
+#include "/home/toshok/src/mono/moon/src/shape.h"
+#include "/home/toshok/src/mono/moon/src/shape.h"
+#include "/home/toshok/src/mono/moon/src/shape.h"
+#include "/home/toshok/src/mono/moon/src/geometry.h"
+#include "/home/toshok/src/mono/moon/src/geometry.h"
+#include "/home/toshok/src/mono/moon/src/geometry.h"
+#include "/home/toshok/src/mono/moon/src/geometry.h"
+#include "/home/toshok/src/mono/moon/src/brush.h"
+#include "/home/toshok/src/mono/moon/src/brush.h"
+#include "/home/toshok/src/mono/moon/src/brush.h"
+#include "/home/toshok/src/mono/moon/src/brush.h"
+#include "/home/toshok/src/mono/moon/src/shape.h"
+#include "/home/toshok/src/mono/moon/src/shape.h"
+#include "/home/toshok/src/mono/moon/src/geometry.h"
+#include "/home/toshok/src/mono/moon/src/geometry.h"
+#include "/home/toshok/src/mono/moon/src/geometry.h"
+#include "/home/toshok/src/mono/moon/src/transform.h"
+#include "/home/toshok/src/mono/moon/src/transform.h"
+#include "/home/toshok/src/mono/moon/src/transform.h"
+#include "/home/toshok/src/mono/moon/src/grid.h"
+#include "/home/toshok/src/mono/moon/src/grid.h"
+#include "/home/toshok/src/mono/moon/src/grid.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/transform.h"
+#include "/home/toshok/src/mono/moon/src/transform.h"
+#include "/home/toshok/src/mono/moon/src/transform.h"
+#include "/home/toshok/src/mono/moon/src/transform.h"
+#include "/home/toshok/src/mono/moon/src/style.h"
+#include "/home/toshok/src/mono/moon/src/style.h"
+#include "/home/toshok/src/mono/moon/src/style.h"
+#include "/home/toshok/src/mono/moon/src/style.h"
+#include "/home/toshok/src/mono/moon/src/style.h"
+#include "/home/toshok/src/mono/moon/src/shape.h"
+#include "/home/toshok/src/mono/moon/src/shape.h"
+#include "/home/toshok/src/mono/moon/src/shape.h"
+#include "/home/toshok/src/mono/moon/src/shape.h"
+#include "/home/toshok/src/mono/moon/src/shape.h"
+#include "/home/toshok/src/mono/moon/src/shape.h"
+#include "/home/toshok/src/mono/moon/src/shape.h"
+#include "/home/toshok/src/mono/moon/src/shape.h"
+#include "/home/toshok/src/mono/moon/src/shape.h"
+#include "/home/toshok/src/mono/moon/src/shape.h"
+#include "/home/toshok/src/mono/moon/src/shape.h"
+#include "/home/toshok/src/mono/moon/src/transform.h"
+#include "/home/toshok/src/mono/moon/src/transform.h"
+#include "/home/toshok/src/mono/moon/src/transform.h"
+#include "/home/toshok/src/mono/moon/src/transform.h"
+#include "/home/toshok/src/mono/moon/src/brush.h"
+#include "/home/toshok/src/mono/moon/src/animation.h"
+#include "/home/toshok/src/mono/moon/src/animation.h"
+#include "/home/toshok/src/mono/moon/src/animation.h"
+#include "/home/toshok/src/mono/moon/src/stackpanel.h"
+#include "/home/toshok/src/mono/moon/src/animation.h"
+#include "/home/toshok/src/mono/moon/src/animation.h"
+#include "/home/toshok/src/mono/moon/src/stylus.h"
+#include "/home/toshok/src/mono/moon/src/stylus.h"
+#include "/home/toshok/src/mono/moon/src/style.h"
+#include "/home/toshok/src/mono/moon/src/style.h"
+#include "/home/toshok/src/mono/moon/src/style.h"
+#include "/home/toshok/src/mono/moon/src/stylus.h"
+#include "/home/toshok/src/mono/moon/src/stylus.h"
+#include "/home/toshok/src/mono/moon/src/stylus.h"
+#include "/home/toshok/src/mono/moon/src/stylus.h"
+#include "/home/toshok/src/mono/moon/src/stylus.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/text.h"
+#include "/home/toshok/src/mono/moon/src/textbox.h"
+#include "/home/toshok/src/mono/moon/src/textbox.h"
+#include "/home/toshok/src/mono/moon/src/textbox.h"
+#include "/home/toshok/src/mono/moon/src/textbox.h"
+#include "/home/toshok/src/mono/moon/src/textbox.h"
+#include "/home/toshok/src/mono/moon/src/textbox.h"
+#include "/home/toshok/src/mono/moon/src/textbox.h"
+#include "/home/toshok/src/mono/moon/src/textbox.h"
+#include "/home/toshok/src/mono/moon/src/textbox.h"
+#include "/home/toshok/src/mono/moon/src/textbox.h"
+#include "/home/toshok/src/mono/moon/src/textbox.h"
+#include "/home/toshok/src/mono/moon/src/textbox.h"
+#include "/home/toshok/src/mono/moon/src/textbox.h"
+#include "/home/toshok/src/mono/moon/src/brush.h"
+#include "/home/toshok/src/mono/moon/src/brush.h"
+#include "/home/toshok/src/mono/moon/src/brush.h"
+#include "/home/toshok/src/mono/moon/src/clock.h"
+#include "/home/toshok/src/mono/moon/src/clock.h"
+#include "/home/toshok/src/mono/moon/src/clock.h"
+#include "/home/toshok/src/mono/moon/src/clock.h"
+#include "/home/toshok/src/mono/moon/src/clock.h"
+#include "/home/toshok/src/mono/moon/src/clock.h"
+#include "/home/toshok/src/mono/moon/src/clock.h"
+#include "/home/toshok/src/mono/moon/src/clock.h"
+#include "/home/toshok/src/mono/moon/src/clock.h"
+#include "/home/toshok/src/mono/moon/src/clock.h"
+#include "/home/toshok/src/mono/moon/src/transform.h"
+#include "/home/toshok/src/mono/moon/src/transform.h"
+#include "/home/toshok/src/mono/moon/src/transform.h"
+#include "/home/toshok/src/mono/moon/src/uielement.h"
+#include "/home/toshok/src/mono/moon/src/uielement.h"
+#include "/home/toshok/src/mono/moon/src/uielement.h"
+#include "/home/toshok/src/mono/moon/src/uielement.h"
+#include "/home/toshok/src/mono/moon/src/uielement.h"
+#include "/home/toshok/src/mono/moon/src/uielement.h"
+#include "/home/toshok/src/mono/moon/src/uielement.h"
+#include "/home/toshok/src/mono/moon/src/uielement.h"
+#include "/home/toshok/src/mono/moon/src/uielement.h"
+#include "/home/toshok/src/mono/moon/src/uielement.h"
+#include "/home/toshok/src/mono/moon/src/uielement.h"
+#include "/home/toshok/src/mono/moon/src/uielement.h"
+#include "/home/toshok/src/mono/moon/src/usercontrol.h"
+#include "/home/toshok/src/mono/moon/src/brush.h"
+#include "/home/toshok/src/mono/moon/src/brush.h"
 
 bool dependency_properties_initialized = false;
 void
@@ -56,22 +349,17 @@ dependency_property_g_init (void)
 	if (dependency_properties_initialized)
 		return;
 	dependency_properties_initialized = true;
-#if SL_2_0
 	Application::ResourcesProperty = DependencyProperty::Register (Type::APPLICATION, "Resources", Type::RESOURCE_DICTIONARY);
-#endif
 	ArcSegment::IsLargeArcProperty = DependencyProperty::Register (Type::ARCSEGMENT, "IsLargeArc", new Value (false));
 	ArcSegment::PointProperty = DependencyProperty::Register (Type::ARCSEGMENT, "Point", Type::POINT);
 	ArcSegment::RotationAngleProperty = DependencyProperty::Register (Type::ARCSEGMENT, "RotationAngle", new Value (0.0));
 	ArcSegment::SizeProperty = DependencyProperty::Register (Type::ARCSEGMENT, "Size", Type::POINT);
 	ArcSegment::SweepDirectionProperty = DependencyProperty::Register (Type::ARCSEGMENT, "SweepDirection", new Value (SweepDirectionCounterclockwise));
-#if SL_2_0
 	AssemblyPart::SourceProperty = DependencyProperty::Register (Type::ASSEMBLYPART, "Source", Type::STRING);
-#endif
 	BeginStoryboard::StoryboardProperty = DependencyProperty::Register (Type::BEGINSTORYBOARD, "Storyboard", Type::STORYBOARD);
 	BezierSegment::Point1Property = DependencyProperty::Register (Type::BEZIERSEGMENT, "Point1", Type::POINT);
 	BezierSegment::Point2Property = DependencyProperty::Register (Type::BEZIERSEGMENT, "Point2", Type::POINT);
 	BezierSegment::Point3Property = DependencyProperty::Register (Type::BEZIERSEGMENT, "Point3", Type::POINT);
-#if SL_2_0
 	BitmapImage::UriSourceProperty = DependencyProperty::Register (Type::BITMAPIMAGE, "UriSource", Type::STRING);
 	Border::BackgroundProperty = DependencyProperty::Register (Type::BORDER, "Background", Type::BRUSH);
 	Border::BorderBrushProperty = DependencyProperty::Register (Type::BORDER, "BorderBrush", Type::BRUSH);
@@ -79,7 +367,6 @@ dependency_property_g_init (void)
 	Border::ChildProperty = DependencyProperty::Register (Type::BORDER, "Child", Type::UIELEMENT);
 	Border::CornerRadiusProperty = DependencyProperty::Register (Type::BORDER, "CornerRadius", Type::CORNERRADIUS);
 	Border::PaddingProperty = DependencyProperty::Register (Type::BORDER, "Padding", new Value (Thickness(0)));
-#endif
 	Brush::ChangedProperty = DependencyProperty::Register (Type::BRUSH, "Changed", Type::BOOL);
 	Brush::OpacityProperty = DependencyProperty::Register (Type::BRUSH, "Opacity", new Value (1.0));
 	Brush::RelativeTransformProperty = DependencyProperty::Register (Type::BRUSH, "RelativeTransform", Type::TRANSFORM);
@@ -94,7 +381,6 @@ dependency_property_g_init (void)
 	ColorAnimationUsingKeyFrames::KeyFramesProperty = DependencyProperty::Register (Type::COLORANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::COLORKEYFRAME_COLLECTION);
 	ColorKeyFrame::KeyTimeProperty = DependencyProperty::RegisterNullable (Type::COLORKEYFRAME, "KeyTime", Type::KEYTIME);
 	ColorKeyFrame::ValueProperty = DependencyProperty::RegisterNullable (Type::COLORKEYFRAME, "Value", Type::COLOR);
-#if SL_2_0
 	ColumnDefinition::MaxWidthProperty = DependencyProperty::Register (Type::COLUMNDEFINITION, "MaxWidth", new Value (INFINITY));
 	ColumnDefinition::MinWidthProperty = DependencyProperty::Register (Type::COLUMNDEFINITION, "MinWidth", new Value (0.0));
 	ColumnDefinition::WidthProperty = DependencyProperty::Register (Type::COLUMNDEFINITION, "Width", Type::GRIDLENGTH);
@@ -122,15 +408,12 @@ dependency_property_g_init (void)
 	Control::VerticalContentAlignmentProperty = DependencyProperty::Register (Type::CONTROL, "VerticalContentAlignment", new Value (VerticalAlignmentCenter));
 	ControlTemplate::TargetTypeProperty = DependencyProperty::Register (Type::CONTROLTEMPLATE, "TargetType", Type::MANAGED);
 	DeepZoomImageTileSource::UriSourceProperty = DependencyProperty::Register (Type::DEEPZOOMIMAGETILESOURCE, "UriSource", Type::STRING);
-#endif
 	DependencyObject::NameProperty = DependencyProperty::Register (Type::DEPENDENCY_OBJECT, "Name", Type::STRING);
-#if SL_2_0
 	Deployment::EntryPointAssemblyProperty = DependencyProperty::Register (Type::DEPLOYMENT, "EntryPointAssembly", Type::STRING);
 	Deployment::EntryPointTypeProperty = DependencyProperty::Register (Type::DEPLOYMENT, "EntryPointType", Type::STRING);
 	Deployment::ExternalCallersFromCrossDomainProperty = DependencyProperty::Register (Type::DEPLOYMENT, "ExternalCallersFromCrossDomain", new Value (CrossDomainAccessNoAccess));
 	Deployment::PartsProperty = DependencyProperty::Register (Type::DEPLOYMENT, "Parts", Type::ASSEMBLYPART_COLLECTION);
 	Deployment::RuntimeVersionProperty = DependencyProperty::Register (Type::DEPLOYMENT, "RuntimeVersion", Type::STRING);
-#endif
 	DoubleAnimation::ByProperty = DependencyProperty::RegisterNullable (Type::DOUBLEANIMATION, "By", Type::DOUBLE);
 	DoubleAnimation::FromProperty = DependencyProperty::RegisterNullable (Type::DOUBLEANIMATION, "From", Type::DOUBLE);
 	DoubleAnimation::ToProperty = DependencyProperty::RegisterNullable (Type::DOUBLEANIMATION, "To", Type::DOUBLE);
@@ -151,13 +434,10 @@ dependency_property_g_init (void)
 	EllipseGeometry::RadiusYProperty = DependencyProperty::Register (Type::ELLIPSEGEOMETRY, "RadiusY", new Value (0.0));
 	EventTrigger::ActionsProperty = DependencyProperty::Register (Type::EVENTTRIGGER, "Actions", Type::TRIGGERACTION_COLLECTION);
 	EventTrigger::RoutedEventProperty = DependencyProperty::Register (Type::EVENTTRIGGER, "RoutedEvent", Type::STRING);
-#if SL_2_0
 	FrameworkElement::ActualHeightProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "ActualHeight", new Value (0.0));
 	FrameworkElement::ActualWidthProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "ActualWidth", new Value (0.0));
 	FrameworkElement::DataContextProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "DataContext", Type::OBJECT);
-#endif
 	FrameworkElement::HeightProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Height", new Value (0.0));
-#if SL_2_0
 	FrameworkElement::HorizontalAlignmentProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "HorizontalAlignment", new Value (HorizontalAlignmentStretch));
 	FrameworkElement::LanguageProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Language", new Value ("en-US"));
 	FrameworkElement::MarginProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Margin", new Value (Thickness (0)));
@@ -167,7 +447,6 @@ dependency_property_g_init (void)
 	FrameworkElement::MinWidthProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "MinWidth", new Value (0.0));
 	FrameworkElement::StyleProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Style", Type::STYLE);
 	FrameworkElement::VerticalAlignmentProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "VerticalAlignment", new Value (VerticalAlignmentStretch));
-#endif
 	FrameworkElement::WidthProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Width", new Value (0.0));
 	Geometry::TransformProperty = DependencyProperty::Register (Type::GEOMETRY, "Transform", Type::TRANSFORM);
 	GeometryGroup::ChildrenProperty = DependencyProperty::Register (Type::GEOMETRYGROUP, "Children", Type::GEOMETRY_COLLECTION);
@@ -186,7 +465,6 @@ dependency_property_g_init (void)
 	GradientBrush::SpreadMethodProperty = DependencyProperty::Register (Type::GRADIENTBRUSH, "SpreadMethod", new Value (GradientSpreadMethodPad));
 	GradientStop::ColorProperty = DependencyProperty::Register (Type::GRADIENTSTOP, "Color", new Value (Color (0x00000000)));
 	GradientStop::OffsetProperty = DependencyProperty::Register (Type::GRADIENTSTOP, "Offset", new Value (0.0));
-#if SL_2_0
 	Grid::ColumnDefinitionsProperty = DependencyProperty::Register (Type::GRID, "ColumnDefinitions", Type::COLUMNDEFINITION_COLLECTION);
 	Grid::ColumnProperty = DependencyProperty::RegisterFull (Type::GRID, "Column", new Value (0), Type::INT32, true, false);
 	Grid::ColumnSpanProperty = DependencyProperty::RegisterFull (Type::GRID, "ColumnSpan", new Value (1), Type::INT32, true, false);
@@ -194,7 +472,6 @@ dependency_property_g_init (void)
 	Grid::RowProperty = DependencyProperty::RegisterFull (Type::GRID, "Row", new Value (0), Type::INT32, true, false);
 	Grid::RowSpanProperty = DependencyProperty::RegisterFull (Type::GRID, "RowSpan", new Value (1), Type::INT32, true, false);
 	Grid::ShowGridLinesProperty = DependencyProperty::Register (Type::GRID, "ShowGridLines", new Value (false));
-#endif
 	ImageBrush::DownloadProgressProperty = DependencyProperty::Register (Type::IMAGEBRUSH, "DownloadProgress", new Value (0.0));
 	ImageBrush::ImageSourceProperty = DependencyProperty::Register (Type::IMAGEBRUSH, "ImageSource", new Value (""));
 	InkPresenter::StrokesProperty = DependencyProperty::Register (Type::INKPRESENTER, "Strokes", Type::STROKE_COLLECTION);
@@ -204,9 +481,7 @@ dependency_property_g_init (void)
 	Inline::FontStyleProperty = DependencyProperty::Register (Type::INLINE, "FontStyle", new Value (TEXTBLOCK_FONT_STYLE));
 	Inline::FontWeightProperty = DependencyProperty::Register (Type::INLINE, "FontWeight", new Value (TEXTBLOCK_FONT_WEIGHT));
 	Inline::ForegroundProperty = DependencyProperty::Register (Type::INLINE, "Foreground", Type::BRUSH);
-#if SL_2_0
 	Inline::LanguageProperty = DependencyProperty::Register (Type::INLINE, "Language", new Value ("en-US"));
-#endif
 	Inline::TextDecorationsProperty = DependencyProperty::Register (Type::INLINE, "TextDecorations", new Value (TextDecorationsNone));
 	InputMethod::IsInputMethodEnabledProperty = DependencyProperty::RegisterFull (Type::INPUTMETHOD, "IsInputMethodEnabled", NULL, Type::BOOL, true, false);
 	KeySpline::ControlPoint1Property = DependencyProperty::Register (Type::KEYSPLINE, "ControlPoint1", new Value (Point (0,0)));
@@ -251,7 +526,6 @@ dependency_property_g_init (void)
 	MediaElement::PositionProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "Position", Type::TIMESPAN);
 	MediaElement::RenderedFramesPerSecondProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "RenderedFramesPerSecond", new Value (0.0), Type::DOUBLE, false, true);
 	MediaElement::VolumeProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "Volume", new Value (0.5));
-#if SL_2_0
 	MultiScaleImage::AspectRatioProperty = DependencyProperty::Register (Type::MULTISCALEIMAGE, "AspectRatio", new Value (1.0));
 	MultiScaleImage::SourceProperty = DependencyProperty::Register (Type::MULTISCALEIMAGE, "Source", Type::MULTISCALETILESOURCE);
 	MultiScaleImage::UseSpringsProperty = DependencyProperty::Register (Type::MULTISCALEIMAGE, "UseSprings", new Value (true));
@@ -262,20 +536,15 @@ dependency_property_g_init (void)
 	MultiScaleSubImage::ViewportOriginProperty = DependencyProperty::Register (Type::MULTISCALESUBIMAGE, "ViewportOrigin", Type::POINT);
 	MultiScaleSubImage::ViewportWidthProperty = DependencyProperty::Register (Type::MULTISCALESUBIMAGE, "ViewportWidth", Type::DOUBLE);
 	MultiScaleSubImage::ZIndexProperty = DependencyProperty::Register (Type::MULTISCALESUBIMAGE, "ZIndex", Type::INT32);
-#endif
 	NameScope::NameScopeProperty = DependencyProperty::RegisterFull (Type::NAMESCOPE, "NameScope", NULL, Type::NAMESCOPE, true, false);
-#if SL_2_0
 	ObjectAnimationUsingKeyFrames::KeyFramesProperty = DependencyProperty::Register (Type::OBJECTANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::OBJECTKEYFRAME_COLLECTION);
 	ObjectKeyFrame::KeyTimeProperty = DependencyProperty::RegisterNullable (Type::OBJECTKEYFRAME, "KeyTime", Type::KEYTIME);
 	ObjectKeyFrame::ValueProperty = DependencyProperty::Register (Type::OBJECTKEYFRAME, "Value", Type::DEPENDENCY_OBJECT);
-#endif
 	Panel::BackgroundProperty = DependencyProperty::Register (Type::PANEL, "Background", Type::BRUSH);
 	Panel::ChildrenProperty = DependencyProperty::Register (Type::PANEL, "Children", Type::UIELEMENT_COLLECTION);
 	Path::DataProperty = DependencyProperty::Register (Type::PATH, "Data", Type::GEOMETRY);
 	PathFigure::IsClosedProperty = DependencyProperty::Register (Type::PATHFIGURE, "IsClosed", new Value (false));
-#if SL_2_0
 	PathFigure::IsFilledProperty = DependencyProperty::Register (Type::PATHFIGURE, "IsFilled", Type::BOOL);
-#endif
 	PathFigure::SegmentsProperty = DependencyProperty::Register (Type::PATHFIGURE, "Segments", Type::PATHSEGMENT_COLLECTION);
 	PathFigure::StartPointProperty = DependencyProperty::Register (Type::PATHFIGURE, "StartPoint", Type::POINT);
 	PathGeometry::FiguresProperty = DependencyProperty::Register (Type::PATHGEOMETRY, "Figures", Type::PATHFIGURE_COLLECTION);
@@ -307,23 +576,19 @@ dependency_property_g_init (void)
 	RotateTransform::AngleProperty = DependencyProperty::Register (Type::ROTATETRANSFORM, "Angle", new Value (0.0));
 	RotateTransform::CenterXProperty = DependencyProperty::Register (Type::ROTATETRANSFORM, "CenterX", new Value (0.0));
 	RotateTransform::CenterYProperty = DependencyProperty::Register (Type::ROTATETRANSFORM, "CenterY", new Value (0.0));
-#if SL_2_0
 	RowDefinition::HeightProperty = DependencyProperty::Register (Type::ROWDEFINITION, "Height", Type::GRIDLENGTH);
 	RowDefinition::MaxHeightProperty = DependencyProperty::Register (Type::ROWDEFINITION, "MaxHeight", new Value (INFINITY));
 	RowDefinition::MinHeightProperty = DependencyProperty::Register (Type::ROWDEFINITION, "MinHeight", new Value (0.0));
-#endif
 	Run::TextProperty = DependencyProperty::Register (Type::RUN, "Text", Type::STRING);
 	ScaleTransform::CenterXProperty = DependencyProperty::Register (Type::SCALETRANSFORM, "CenterX", new Value (0.0));
 	ScaleTransform::CenterYProperty = DependencyProperty::Register (Type::SCALETRANSFORM, "CenterY", new Value (0.0));
 	ScaleTransform::ScaleXProperty = DependencyProperty::Register (Type::SCALETRANSFORM, "ScaleX", new Value (1.0));
 	ScaleTransform::ScaleYProperty = DependencyProperty::Register (Type::SCALETRANSFORM, "ScaleY", new Value (1.0));
-#if SL_2_0
 	Setter::DependencyPropertyProperty = DependencyProperty::Register (Type::SETTER, "DependencyProperty", Type::DEPENDENCYPROPERTY);
 	Setter::PropertyProperty = DependencyProperty::Register (Type::SETTER, "Property", Type::STRING);
 	Setter::ValueProperty = DependencyProperty::Register (Type::SETTER, "Value", Type::OBJECT);
 	SetterBase::IsSealedProperty = DependencyProperty::Register (Type::SETTERBASE, "IsSealed", new Value (false));
 	SetterBaseCollection::IsSealedProperty = DependencyProperty::Register (Type::SETTERBASE_COLLECTION, "IsSealed", new Value (false));
-#endif
 	Shape::FillProperty = DependencyProperty::Register (Type::SHAPE, "Fill", Type::BRUSH);
 	Shape::StretchProperty = DependencyProperty::Register (Type::SHAPE, "Stretch", new Value (StretchNone));
 	Shape::StrokeDashArrayProperty = DependencyProperty::Register (Type::SHAPE, "StrokeDashArray", Type::DOUBLE_COLLECTION);
@@ -343,18 +608,14 @@ dependency_property_g_init (void)
 	SplineColorKeyFrame::KeySplineProperty = DependencyProperty::Register (Type::SPLINECOLORKEYFRAME, "KeySpline", Type::KEYSPLINE);
 	SplineDoubleKeyFrame::KeySplineProperty = DependencyProperty::Register (Type::SPLINEDOUBLEKEYFRAME, "KeySpline", Type::KEYSPLINE);
 	SplinePointKeyFrame::KeySplineProperty = DependencyProperty::Register (Type::SPLINEPOINTKEYFRAME, "KeySpline", Type::KEYSPLINE);
-#if SL_2_0
 	StackPanel::OrientationProperty = DependencyProperty::Register (Type::STACKPANEL, "Orientation", Type::INT32);
-#endif
 	Storyboard::TargetNameProperty = DependencyProperty::RegisterFull (Type::STORYBOARD, "TargetName", NULL, Type::STRING, true, false);
 	Storyboard::TargetPropertyProperty = DependencyProperty::RegisterFull (Type::STORYBOARD, "TargetProperty", NULL, Type::STRING, true, false);
 	Stroke::DrawingAttributesProperty = DependencyProperty::Register (Type::STROKE, "DrawingAttributes", Type::DRAWINGATTRIBUTES);
 	Stroke::StylusPointsProperty = DependencyProperty::Register (Type::STROKE, "StylusPoints", Type::STYLUSPOINT_COLLECTION);
-#if SL_2_0
 	Style::IsSealedProperty = DependencyProperty::Register (Type::STYLE, "IsSealed", new Value (false));
 	Style::SettersProperty = DependencyProperty::Register (Type::STYLE, "Setters", Type::SETTERBASE_COLLECTION);
 	Style::TargetTypeProperty = DependencyProperty::Register (Type::STYLE, "TargetType", Type::MANAGED);
-#endif
 	StylusInfo::DeviceTypeProperty = DependencyProperty::Register (Type::STYLUSINFO, "DeviceType", new Value (TabletDeviceTypeMouse));
 	StylusInfo::IsInvertedProperty = DependencyProperty::Register (Type::STYLUSINFO, "IsInverted", new Value (false));
 	StylusPoint::PressureFactorProperty = DependencyProperty::Register (Type::STYLUSPOINT, "PressureFactor", new Value (0.5));
@@ -369,16 +630,13 @@ dependency_property_g_init (void)
 	TextBlock::FontWeightProperty = DependencyProperty::Register (Type::TEXTBLOCK, "FontWeight", new Value (TEXTBLOCK_FONT_WEIGHT));
 	TextBlock::ForegroundProperty = DependencyProperty::Register (Type::TEXTBLOCK, "Foreground", Type::BRUSH);
 	TextBlock::InlinesProperty = DependencyProperty::Register (Type::TEXTBLOCK, "Inlines", Type::INLINE_COLLECTION);
-#if SL_2_0
 	TextBlock::LineHeightProperty = DependencyProperty::Register (Type::TEXTBLOCK, "LineHeight", new Value (NAN));
 	TextBlock::LineStackingStrategyProperty = DependencyProperty::Register (Type::TEXTBLOCK, "LineStackingStrategy", new Value (LineStackingStrategyMaxHeight));
 	TextBlock::PaddingProperty = DependencyProperty::Register (Type::TEXTBLOCK, "Padding", new Value (Thickness (0)));
 	TextBlock::TextAlignmentProperty = DependencyProperty::Register (Type::TEXTBLOCK, "TextAlignment", new Value (TextAlignmentLeft));
-#endif
 	TextBlock::TextDecorationsProperty = DependencyProperty::Register (Type::TEXTBLOCK, "TextDecorations", new Value (TextDecorationsNone));
 	TextBlock::TextProperty = DependencyProperty::Register (Type::TEXTBLOCK, "Text", Type::STRING);
 	TextBlock::TextWrappingProperty = DependencyProperty::Register (Type::TEXTBLOCK, "TextWrapping", new Value (TextWrappingNoWrap));
-#if SL_2_0
 	TextBox::AcceptsReturnProperty = DependencyProperty::Register (Type::TEXTBOX, "AcceptsReturn", new Value (false));
 	TextBox::HorizontalScrollBarVisibilityProperty = DependencyProperty::Register (Type::TEXTBOX, "HorizontalScrollBarVisibility", new Value (ScrollBarVisibilityHidden));
 	TextBox::IsReadOnlyProperty = DependencyProperty::Register (Type::TEXTBOX, "IsReadOnly", new Value (false));
@@ -392,7 +650,6 @@ dependency_property_g_init (void)
 	TextBox::TextProperty = DependencyProperty::Register (Type::TEXTBOX, "Text", Type::STRING);
 	TextBox::TextWrappingProperty = DependencyProperty::Register (Type::TEXTBOX, "TextWrapping", new Value (TextWrappingNoWrap));
 	TextBox::VerticalScrollBarVisibilityProperty = DependencyProperty::Register (Type::TEXTBOX, "VerticalScrollBarVisibility", new Value (ScrollBarVisibilityHidden));
-#endif
 	TileBrush::AlignmentXProperty = DependencyProperty::Register (Type::TILEBRUSH, "AlignmentX", new Value (AlignmentXCenter));
 	TileBrush::AlignmentYProperty = DependencyProperty::Register (Type::TILEBRUSH, "AlignmentY", new Value (AlignmentYCenter));
 	TileBrush::StretchProperty = DependencyProperty::Register (Type::TILEBRUSH, "Stretch", new Value (StretchFill));
@@ -421,29 +678,22 @@ dependency_property_g_init (void)
 	UIElement::TriggersProperty = DependencyProperty::Register (Type::UIELEMENT, "Triggers", Type::TRIGGER_COLLECTION);
 	UIElement::UseLayoutRoundingProperty = DependencyProperty::Register (Type::UIELEMENT, "UseLayoutRounding", new Value (true));
 	UIElement::VisibilityProperty = DependencyProperty::Register (Type::UIELEMENT, "Visibility", new Value (VisibilityVisible));
-#if SL_2_0
 	UserControl::ContentProperty = DependencyProperty::Register (Type::USERCONTROL, "Content", Type::UIELEMENT);
-#endif
 	VideoBrush::SourceNameProperty = DependencyProperty::Register (Type::VIDEOBRUSH, "SourceName", new Value (""));
 	VisualBrush::VisualProperty = DependencyProperty::Register (Type::VISUALBRUSH, "Visual", Type::UIELEMENT);
 }
 
-#if SL_2_0
 DependencyProperty *Application::ResourcesProperty = NULL;
-#endif
 DependencyProperty *ArcSegment::IsLargeArcProperty = NULL;
 DependencyProperty *ArcSegment::PointProperty = NULL;
 DependencyProperty *ArcSegment::RotationAngleProperty = NULL;
 DependencyProperty *ArcSegment::SizeProperty = NULL;
 DependencyProperty *ArcSegment::SweepDirectionProperty = NULL;
-#if SL_2_0
 DependencyProperty *AssemblyPart::SourceProperty = NULL;
-#endif
 DependencyProperty *BeginStoryboard::StoryboardProperty = NULL;
 DependencyProperty *BezierSegment::Point1Property = NULL;
 DependencyProperty *BezierSegment::Point2Property = NULL;
 DependencyProperty *BezierSegment::Point3Property = NULL;
-#if SL_2_0
 DependencyProperty *BitmapImage::UriSourceProperty = NULL;
 DependencyProperty *Border::BackgroundProperty = NULL;
 DependencyProperty *Border::BorderBrushProperty = NULL;
@@ -451,7 +701,6 @@ DependencyProperty *Border::BorderThicknessProperty = NULL;
 DependencyProperty *Border::ChildProperty = NULL;
 DependencyProperty *Border::CornerRadiusProperty = NULL;
 DependencyProperty *Border::PaddingProperty = NULL;
-#endif
 DependencyProperty *Brush::ChangedProperty = NULL;
 DependencyProperty *Brush::OpacityProperty = NULL;
 DependencyProperty *Brush::RelativeTransformProperty = NULL;
@@ -466,7 +715,6 @@ DependencyProperty *ColorAnimation::ToProperty = NULL;
 DependencyProperty *ColorAnimationUsingKeyFrames::KeyFramesProperty = NULL;
 DependencyProperty *ColorKeyFrame::KeyTimeProperty = NULL;
 DependencyProperty *ColorKeyFrame::ValueProperty = NULL;
-#if SL_2_0
 DependencyProperty *ColumnDefinition::MaxWidthProperty = NULL;
 DependencyProperty *ColumnDefinition::MinWidthProperty = NULL;
 DependencyProperty *ColumnDefinition::WidthProperty = NULL;
@@ -494,15 +742,12 @@ DependencyProperty *Control::TemplateProperty = NULL;
 DependencyProperty *Control::VerticalContentAlignmentProperty = NULL;
 DependencyProperty *ControlTemplate::TargetTypeProperty = NULL;
 DependencyProperty *DeepZoomImageTileSource::UriSourceProperty = NULL;
-#endif
 DependencyProperty *DependencyObject::NameProperty = NULL;
-#if SL_2_0
 DependencyProperty *Deployment::EntryPointAssemblyProperty = NULL;
 DependencyProperty *Deployment::EntryPointTypeProperty = NULL;
 DependencyProperty *Deployment::ExternalCallersFromCrossDomainProperty = NULL;
 DependencyProperty *Deployment::PartsProperty = NULL;
 DependencyProperty *Deployment::RuntimeVersionProperty = NULL;
-#endif
 DependencyProperty *DoubleAnimation::ByProperty = NULL;
 DependencyProperty *DoubleAnimation::FromProperty = NULL;
 DependencyProperty *DoubleAnimation::ToProperty = NULL;
@@ -523,13 +768,10 @@ DependencyProperty *EllipseGeometry::RadiusXProperty = NULL;
 DependencyProperty *EllipseGeometry::RadiusYProperty = NULL;
 DependencyProperty *EventTrigger::ActionsProperty = NULL;
 DependencyProperty *EventTrigger::RoutedEventProperty = NULL;
-#if SL_2_0
 DependencyProperty *FrameworkElement::ActualHeightProperty = NULL;
 DependencyProperty *FrameworkElement::ActualWidthProperty = NULL;
 DependencyProperty *FrameworkElement::DataContextProperty = NULL;
-#endif
 DependencyProperty *FrameworkElement::HeightProperty = NULL;
-#if SL_2_0
 DependencyProperty *FrameworkElement::HorizontalAlignmentProperty = NULL;
 DependencyProperty *FrameworkElement::LanguageProperty = NULL;
 DependencyProperty *FrameworkElement::MarginProperty = NULL;
@@ -539,7 +781,6 @@ DependencyProperty *FrameworkElement::MinHeightProperty = NULL;
 DependencyProperty *FrameworkElement::MinWidthProperty = NULL;
 DependencyProperty *FrameworkElement::StyleProperty = NULL;
 DependencyProperty *FrameworkElement::VerticalAlignmentProperty = NULL;
-#endif
 DependencyProperty *FrameworkElement::WidthProperty = NULL;
 DependencyProperty *Geometry::TransformProperty = NULL;
 DependencyProperty *GeometryGroup::ChildrenProperty = NULL;
@@ -558,7 +799,6 @@ DependencyProperty *GradientBrush::MappingModeProperty = NULL;
 DependencyProperty *GradientBrush::SpreadMethodProperty = NULL;
 DependencyProperty *GradientStop::ColorProperty = NULL;
 DependencyProperty *GradientStop::OffsetProperty = NULL;
-#if SL_2_0
 DependencyProperty *Grid::ColumnDefinitionsProperty = NULL;
 DependencyProperty *Grid::ColumnProperty = NULL;
 DependencyProperty *Grid::ColumnSpanProperty = NULL;
@@ -566,7 +806,6 @@ DependencyProperty *Grid::RowDefinitionsProperty = NULL;
 DependencyProperty *Grid::RowProperty = NULL;
 DependencyProperty *Grid::RowSpanProperty = NULL;
 DependencyProperty *Grid::ShowGridLinesProperty = NULL;
-#endif
 DependencyProperty *ImageBrush::DownloadProgressProperty = NULL;
 DependencyProperty *ImageBrush::ImageSourceProperty = NULL;
 DependencyProperty *InkPresenter::StrokesProperty = NULL;
@@ -576,9 +815,7 @@ DependencyProperty *Inline::FontStretchProperty = NULL;
 DependencyProperty *Inline::FontStyleProperty = NULL;
 DependencyProperty *Inline::FontWeightProperty = NULL;
 DependencyProperty *Inline::ForegroundProperty = NULL;
-#if SL_2_0
 DependencyProperty *Inline::LanguageProperty = NULL;
-#endif
 DependencyProperty *Inline::TextDecorationsProperty = NULL;
 DependencyProperty *InputMethod::IsInputMethodEnabledProperty = NULL;
 DependencyProperty *KeySpline::ControlPoint1Property = NULL;
@@ -623,7 +860,6 @@ DependencyProperty *MediaElement::NaturalVideoWidthProperty = NULL;
 DependencyProperty *MediaElement::PositionProperty = NULL;
 DependencyProperty *MediaElement::RenderedFramesPerSecondProperty = NULL;
 DependencyProperty *MediaElement::VolumeProperty = NULL;
-#if SL_2_0
 DependencyProperty *MultiScaleImage::AspectRatioProperty = NULL;
 DependencyProperty *MultiScaleImage::SourceProperty = NULL;
 DependencyProperty *MultiScaleImage::UseSpringsProperty = NULL;
@@ -634,20 +870,15 @@ DependencyProperty *MultiScaleSubImage::OpacityProperty = NULL;
 DependencyProperty *MultiScaleSubImage::ViewportOriginProperty = NULL;
 DependencyProperty *MultiScaleSubImage::ViewportWidthProperty = NULL;
 DependencyProperty *MultiScaleSubImage::ZIndexProperty = NULL;
-#endif
 DependencyProperty *NameScope::NameScopeProperty = NULL;
-#if SL_2_0
 DependencyProperty *ObjectAnimationUsingKeyFrames::KeyFramesProperty = NULL;
 DependencyProperty *ObjectKeyFrame::KeyTimeProperty = NULL;
 DependencyProperty *ObjectKeyFrame::ValueProperty = NULL;
-#endif
 DependencyProperty *Panel::BackgroundProperty = NULL;
 DependencyProperty *Panel::ChildrenProperty = NULL;
 DependencyProperty *Path::DataProperty = NULL;
 DependencyProperty *PathFigure::IsClosedProperty = NULL;
-#if SL_2_0
 DependencyProperty *PathFigure::IsFilledProperty = NULL;
-#endif
 DependencyProperty *PathFigure::SegmentsProperty = NULL;
 DependencyProperty *PathFigure::StartPointProperty = NULL;
 DependencyProperty *PathGeometry::FiguresProperty = NULL;
@@ -679,23 +910,19 @@ DependencyProperty *RectangleGeometry::RectProperty = NULL;
 DependencyProperty *RotateTransform::AngleProperty = NULL;
 DependencyProperty *RotateTransform::CenterXProperty = NULL;
 DependencyProperty *RotateTransform::CenterYProperty = NULL;
-#if SL_2_0
 DependencyProperty *RowDefinition::HeightProperty = NULL;
 DependencyProperty *RowDefinition::MaxHeightProperty = NULL;
 DependencyProperty *RowDefinition::MinHeightProperty = NULL;
-#endif
 DependencyProperty *Run::TextProperty = NULL;
 DependencyProperty *ScaleTransform::CenterXProperty = NULL;
 DependencyProperty *ScaleTransform::CenterYProperty = NULL;
 DependencyProperty *ScaleTransform::ScaleXProperty = NULL;
 DependencyProperty *ScaleTransform::ScaleYProperty = NULL;
-#if SL_2_0
 DependencyProperty *Setter::DependencyPropertyProperty = NULL;
 DependencyProperty *Setter::PropertyProperty = NULL;
 DependencyProperty *Setter::ValueProperty = NULL;
 DependencyProperty *SetterBase::IsSealedProperty = NULL;
 DependencyProperty *SetterBaseCollection::IsSealedProperty = NULL;
-#endif
 DependencyProperty *Shape::FillProperty = NULL;
 DependencyProperty *Shape::StretchProperty = NULL;
 DependencyProperty *Shape::StrokeDashArrayProperty = NULL;
@@ -715,18 +942,14 @@ DependencyProperty *SolidColorBrush::ColorProperty = NULL;
 DependencyProperty *SplineColorKeyFrame::KeySplineProperty = NULL;
 DependencyProperty *SplineDoubleKeyFrame::KeySplineProperty = NULL;
 DependencyProperty *SplinePointKeyFrame::KeySplineProperty = NULL;
-#if SL_2_0
 DependencyProperty *StackPanel::OrientationProperty = NULL;
-#endif
 DependencyProperty *Storyboard::TargetNameProperty = NULL;
 DependencyProperty *Storyboard::TargetPropertyProperty = NULL;
 DependencyProperty *Stroke::DrawingAttributesProperty = NULL;
 DependencyProperty *Stroke::StylusPointsProperty = NULL;
-#if SL_2_0
 DependencyProperty *Style::IsSealedProperty = NULL;
 DependencyProperty *Style::SettersProperty = NULL;
 DependencyProperty *Style::TargetTypeProperty = NULL;
-#endif
 DependencyProperty *StylusInfo::DeviceTypeProperty = NULL;
 DependencyProperty *StylusInfo::IsInvertedProperty = NULL;
 DependencyProperty *StylusPoint::PressureFactorProperty = NULL;
@@ -741,16 +964,13 @@ DependencyProperty *TextBlock::FontStyleProperty = NULL;
 DependencyProperty *TextBlock::FontWeightProperty = NULL;
 DependencyProperty *TextBlock::ForegroundProperty = NULL;
 DependencyProperty *TextBlock::InlinesProperty = NULL;
-#if SL_2_0
 DependencyProperty *TextBlock::LineHeightProperty = NULL;
 DependencyProperty *TextBlock::LineStackingStrategyProperty = NULL;
 DependencyProperty *TextBlock::PaddingProperty = NULL;
 DependencyProperty *TextBlock::TextAlignmentProperty = NULL;
-#endif
 DependencyProperty *TextBlock::TextDecorationsProperty = NULL;
 DependencyProperty *TextBlock::TextProperty = NULL;
 DependencyProperty *TextBlock::TextWrappingProperty = NULL;
-#if SL_2_0
 DependencyProperty *TextBox::AcceptsReturnProperty = NULL;
 DependencyProperty *TextBox::HorizontalScrollBarVisibilityProperty = NULL;
 DependencyProperty *TextBox::IsReadOnlyProperty = NULL;
@@ -764,7 +984,6 @@ DependencyProperty *TextBox::TextAlignmentProperty = NULL;
 DependencyProperty *TextBox::TextProperty = NULL;
 DependencyProperty *TextBox::TextWrappingProperty = NULL;
 DependencyProperty *TextBox::VerticalScrollBarVisibilityProperty = NULL;
-#endif
 DependencyProperty *TileBrush::AlignmentXProperty = NULL;
 DependencyProperty *TileBrush::AlignmentYProperty = NULL;
 DependencyProperty *TileBrush::StretchProperty = NULL;
@@ -793,9 +1012,7 @@ DependencyProperty *UIElement::TagProperty = NULL;
 DependencyProperty *UIElement::TriggersProperty = NULL;
 DependencyProperty *UIElement::UseLayoutRoundingProperty = NULL;
 DependencyProperty *UIElement::VisibilityProperty = NULL;
-#if SL_2_0
 DependencyProperty *UserControl::ContentProperty = NULL;
-#endif
 DependencyProperty *VideoBrush::SourceNameProperty = NULL;
 DependencyProperty *VisualBrush::VisualProperty = NULL;
 
@@ -921,7 +1138,6 @@ BezierSegment::SetPoint3 (Point * value)
 	SetValue (BezierSegment::Point3Property, Value (*value));
 }
 
-#if SL_2_0
 Brush *
 Border::GetBackground ()
 {
@@ -935,8 +1151,6 @@ Border::SetBackground (Brush * value)
 	SetValue (Border::BackgroundProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 Brush *
 Border::GetBorderBrush ()
 {
@@ -950,8 +1164,6 @@ Border::SetBorderBrush (Brush * value)
 	SetValue (Border::BorderBrushProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 Thickness *
 Border::GetBorderThickness ()
 {
@@ -966,8 +1178,6 @@ Border::SetBorderThickness (Thickness * value)
 	SetValue (Border::BorderThicknessProperty, Value (*value));
 }
 
-#endif
-#if SL_2_0
 UIElement *
 Border::GetChild ()
 {
@@ -981,8 +1191,6 @@ Border::SetChild (UIElement * value)
 	SetValue (Border::ChildProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 CornerRadius *
 Border::GetCornerRadius ()
 {
@@ -997,8 +1205,6 @@ Border::SetCornerRadius (CornerRadius * value)
 	SetValue (Border::CornerRadiusProperty, Value (*value));
 }
 
-#endif
-#if SL_2_0
 Thickness *
 Border::GetPadding ()
 {
@@ -1013,7 +1219,6 @@ Border::SetPadding (Thickness * value)
 	SetValue (Border::PaddingProperty, Value (*value));
 }
 
-#endif
 double
 Brush::GetOpacity ()
 {
@@ -1234,7 +1439,6 @@ ColorKeyFrame::SetValue (Color * value)
 		DependencyObject::SetValue (ColorKeyFrame::ValueProperty, Value (*value));
 }
 
-#if SL_2_0
 double
 ColumnDefinition::GetMaxWidth ()
 {
@@ -1248,8 +1452,6 @@ ColumnDefinition::SetMaxWidth (double value)
 	SetValue (ColumnDefinition::MaxWidthProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 double
 ColumnDefinition::GetMinWidth ()
 {
@@ -1263,8 +1465,6 @@ ColumnDefinition::SetMinWidth (double value)
 	SetValue (ColumnDefinition::MinWidthProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 GridLength *
 ColumnDefinition::GetWidth ()
 {
@@ -1279,8 +1479,6 @@ ColumnDefinition::SetWidth (GridLength * value)
 	SetValue (ColumnDefinition::WidthProperty, Value (*value));
 }
 
-#endif
-#if SL_2_0
 Brush *
 Control::GetBackground ()
 {
@@ -1294,8 +1492,6 @@ Control::SetBackground (Brush * value)
 	SetValue (Control::BackgroundProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 Brush *
 Control::GetBorderBrush ()
 {
@@ -1309,8 +1505,6 @@ Control::SetBorderBrush (Brush * value)
 	SetValue (Control::BorderBrushProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 Thickness *
 Control::GetBorderThickness ()
 {
@@ -1325,8 +1519,6 @@ Control::SetBorderThickness (Thickness * value)
 	SetValue (Control::BorderThicknessProperty, Value (*value));
 }
 
-#endif
-#if SL_2_0
 const char *
 Control::GetFontFamily ()
 {
@@ -1340,8 +1532,6 @@ Control::SetFontFamily (const char * value)
 	SetValue (Control::FontFamilyProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 double
 Control::GetFontSize ()
 {
@@ -1355,8 +1545,6 @@ Control::SetFontSize (double value)
 	SetValue (Control::FontSizeProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 FontStretches
 Control::GetFontStretch ()
 {
@@ -1370,8 +1558,6 @@ Control::SetFontStretch (FontStretches value)
 	SetValue (Control::FontStretchProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 FontStyles
 Control::GetFontStyle ()
 {
@@ -1385,8 +1571,6 @@ Control::SetFontStyle (FontStyles value)
 	SetValue (Control::FontStyleProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 FontWeights
 Control::GetFontWeight ()
 {
@@ -1400,8 +1584,6 @@ Control::SetFontWeight (FontWeights value)
 	SetValue (Control::FontWeightProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 Brush *
 Control::GetForeground ()
 {
@@ -1415,8 +1597,6 @@ Control::SetForeground (Brush * value)
 	SetValue (Control::ForegroundProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 HorizontalAlignment
 Control::GetHorizontalContentAlignment ()
 {
@@ -1430,8 +1610,6 @@ Control::SetHorizontalContentAlignment (HorizontalAlignment value)
 	SetValue (Control::HorizontalContentAlignmentProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 bool
 Control::GetIsTabStop ()
 {
@@ -1445,8 +1623,6 @@ Control::SetIsTabStop (bool value)
 	SetValue (Control::IsTabStopProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 Thickness *
 Control::GetPadding ()
 {
@@ -1461,8 +1637,6 @@ Control::SetPadding (Thickness * value)
 	SetValue (Control::PaddingProperty, Value (*value));
 }
 
-#endif
-#if SL_2_0
 gint32
 Control::GetTabIndex ()
 {
@@ -1476,8 +1650,6 @@ Control::SetTabIndex (gint32 value)
 	SetValue (Control::TabIndexProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 KeyboardNavigationMode
 Control::GetTabNavigation ()
 {
@@ -1491,8 +1663,6 @@ Control::SetTabNavigation (KeyboardNavigationMode value)
 	SetValue (Control::TabNavigationProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 ControlTemplate *
 Control::GetTemplate ()
 {
@@ -1506,8 +1676,6 @@ Control::SetTemplate (ControlTemplate * value)
 	SetValue (Control::TemplateProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 VerticalAlignment
 Control::GetVerticalContentAlignment ()
 {
@@ -1521,7 +1689,19 @@ Control::SetVerticalContentAlignment (VerticalAlignment value)
 	SetValue (Control::VerticalContentAlignmentProperty, Value (value));
 }
 
-#endif
+const char *
+DeepZoomImageTileSource::GetUriSource ()
+{
+	Value *value = GetValue (DeepZoomImageTileSource::UriSourceProperty);
+	return value ? value->AsString () : NULL;
+}
+
+void
+DeepZoomImageTileSource::SetUriSource (const char * value)
+{
+	SetValue (DeepZoomImageTileSource::UriSourceProperty, Value (value));
+}
+
 const char *
 DependencyObject::GetName ()
 {
@@ -1778,7 +1958,6 @@ EventTrigger::SetRoutedEvent (const char * value)
 	SetValue (EventTrigger::RoutedEventProperty, Value (value));
 }
 
-#if SL_2_0
 double
 FrameworkElement::GetActualHeight ()
 {
@@ -1792,8 +1971,6 @@ FrameworkElement::SetActualHeight (double value)
 	SetValue (FrameworkElement::ActualHeightProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 double
 FrameworkElement::GetActualWidth ()
 {
@@ -1807,7 +1984,6 @@ FrameworkElement::SetActualWidth (double value)
 	SetValue (FrameworkElement::ActualWidthProperty, Value (value));
 }
 
-#endif
 double
 FrameworkElement::GetHeight ()
 {
@@ -1821,7 +1997,6 @@ FrameworkElement::SetHeight (double value)
 	SetValue (FrameworkElement::HeightProperty, Value (value));
 }
 
-#if SL_2_0
 HorizontalAlignment
 FrameworkElement::GetHorizontalAlignment ()
 {
@@ -1835,8 +2010,6 @@ FrameworkElement::SetHorizontalAlignment (HorizontalAlignment value)
 	SetValue (FrameworkElement::HorizontalAlignmentProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 Thickness *
 FrameworkElement::GetMargin ()
 {
@@ -1851,8 +2024,6 @@ FrameworkElement::SetMargin (Thickness * value)
 	SetValue (FrameworkElement::MarginProperty, Value (*value));
 }
 
-#endif
-#if SL_2_0
 double
 FrameworkElement::GetMaxHeight ()
 {
@@ -1866,8 +2037,6 @@ FrameworkElement::SetMaxHeight (double value)
 	SetValue (FrameworkElement::MaxHeightProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 double
 FrameworkElement::GetMaxWidth ()
 {
@@ -1881,8 +2050,6 @@ FrameworkElement::SetMaxWidth (double value)
 	SetValue (FrameworkElement::MaxWidthProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 double
 FrameworkElement::GetMinHeight ()
 {
@@ -1896,8 +2063,6 @@ FrameworkElement::SetMinHeight (double value)
 	SetValue (FrameworkElement::MinHeightProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 double
 FrameworkElement::GetMinWidth ()
 {
@@ -1911,8 +2076,6 @@ FrameworkElement::SetMinWidth (double value)
 	SetValue (FrameworkElement::MinWidthProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 Style *
 FrameworkElement::GetStyle ()
 {
@@ -1926,8 +2089,6 @@ FrameworkElement::SetStyle (Style * value)
 	SetValue (FrameworkElement::StyleProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 VerticalAlignment
 FrameworkElement::GetVerticalAlignment ()
 {
@@ -1941,7 +2102,6 @@ FrameworkElement::SetVerticalAlignment (VerticalAlignment value)
 	SetValue (FrameworkElement::VerticalAlignmentProperty, Value (value));
 }
 
-#endif
 double
 FrameworkElement::GetWidth ()
 {
@@ -2164,7 +2324,6 @@ GradientStop::SetOffset (double value)
 	SetValue (GradientStop::OffsetProperty, Value (value));
 }
 
-#if SL_2_0
 ColumnDefinitionCollection *
 Grid::GetColumnDefinitions ()
 {
@@ -2178,8 +2337,6 @@ Grid::SetColumnDefinitions (ColumnDefinitionCollection * value)
 	SetValue (Grid::ColumnDefinitionsProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 gint32
 Grid::GetColumn (DependencyObject *obj)
 {
@@ -2195,8 +2352,6 @@ Grid::SetColumn (DependencyObject *obj, gint32 value)
 	obj->SetValue (Grid::ColumnProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 gint32
 Grid::GetColumnSpan (DependencyObject *obj)
 {
@@ -2212,8 +2367,6 @@ Grid::SetColumnSpan (DependencyObject *obj, gint32 value)
 	obj->SetValue (Grid::ColumnSpanProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 RowDefinitionCollection *
 Grid::GetRowDefinitions ()
 {
@@ -2227,8 +2380,6 @@ Grid::SetRowDefinitions (RowDefinitionCollection * value)
 	SetValue (Grid::RowDefinitionsProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 gint32
 Grid::GetRow (DependencyObject *obj)
 {
@@ -2244,8 +2395,6 @@ Grid::SetRow (DependencyObject *obj, gint32 value)
 	obj->SetValue (Grid::RowProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 gint32
 Grid::GetRowSpan (DependencyObject *obj)
 {
@@ -2261,8 +2410,6 @@ Grid::SetRowSpan (DependencyObject *obj, gint32 value)
 	obj->SetValue (Grid::RowSpanProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 bool
 Grid::GetShowGridLines ()
 {
@@ -2276,7 +2423,6 @@ Grid::SetShowGridLines (bool value)
 	SetValue (Grid::ShowGridLinesProperty, Value (value));
 }
 
-#endif
 double
 ImageBrush::GetDownloadProgress ()
 {
@@ -2924,7 +3070,6 @@ MediaElement::SetVolume (double value)
 	SetValue (MediaElement::VolumeProperty, Value (value));
 }
 
-#if SL_2_0
 double
 MultiScaleImage::GetAspectRatio ()
 {
@@ -2932,8 +3077,6 @@ MultiScaleImage::GetAspectRatio ()
 	return value->AsDouble ();
 }
 
-#endif
-#if SL_2_0
 MultiScaleTileSource *
 MultiScaleImage::GetSource ()
 {
@@ -2947,8 +3090,6 @@ MultiScaleImage::SetSource (MultiScaleTileSource * value)
 	SetValue (MultiScaleImage::SourceProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 bool
 MultiScaleImage::GetUseSprings ()
 {
@@ -2962,8 +3103,6 @@ MultiScaleImage::SetUseSprings (bool value)
 	SetValue (MultiScaleImage::UseSpringsProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 Point *
 MultiScaleImage::GetViewportOrigin ()
 {
@@ -2978,8 +3117,6 @@ MultiScaleImage::SetViewportOrigin (Point * value)
 	SetValue (MultiScaleImage::ViewportOriginProperty, Value (*value));
 }
 
-#endif
-#if SL_2_0
 double
 MultiScaleImage::GetViewportWidth ()
 {
@@ -2993,8 +3130,6 @@ MultiScaleImage::SetViewportWidth (double value)
 	SetValue (MultiScaleImage::ViewportWidthProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 double
 MultiScaleSubImage::GetAspectRatio ()
 {
@@ -3002,8 +3137,6 @@ MultiScaleSubImage::GetAspectRatio ()
 	return value->AsDouble ();
 }
 
-#endif
-#if SL_2_0
 double
 MultiScaleSubImage::GetOpacity ()
 {
@@ -3017,8 +3150,6 @@ MultiScaleSubImage::SetOpacity (double value)
 	SetValue (MultiScaleSubImage::OpacityProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 Point *
 MultiScaleSubImage::GetViewportOrigin ()
 {
@@ -3033,8 +3164,6 @@ MultiScaleSubImage::SetViewportOrigin (Point * value)
 	SetValue (MultiScaleSubImage::ViewportOriginProperty, Value (*value));
 }
 
-#endif
-#if SL_2_0
 double
 MultiScaleSubImage::GetViewportWidth ()
 {
@@ -3048,8 +3177,6 @@ MultiScaleSubImage::SetViewportWidth (double value)
 	SetValue (MultiScaleSubImage::ViewportWidthProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 gint32
 MultiScaleSubImage::GetZIndex ()
 {
@@ -3063,7 +3190,6 @@ MultiScaleSubImage::SetZIndex (gint32 value)
 	SetValue (MultiScaleSubImage::ZIndexProperty, Value (value));
 }
 
-#endif
 NameScope *
 NameScope::GetNameScope (DependencyObject *obj)
 {
@@ -3079,7 +3205,6 @@ NameScope::SetNameScope (DependencyObject *obj, NameScope * value)
 	obj->SetValue (NameScope::NameScopeProperty, Value (value));
 }
 
-#if SL_2_0
 ObjectKeyFrameCollection *
 ObjectAnimationUsingKeyFrames::GetKeyFrames ()
 {
@@ -3093,8 +3218,6 @@ ObjectAnimationUsingKeyFrames::SetKeyFrames (ObjectKeyFrameCollection * value)
 	SetValue (ObjectAnimationUsingKeyFrames::KeyFramesProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 KeyTime *
 ObjectKeyFrame::GetKeyTime ()
 {
@@ -3117,8 +3240,6 @@ ObjectKeyFrame::SetKeyTime (KeyTime * value)
 		DependencyObject::SetValue (ObjectKeyFrame::KeyTimeProperty, Value (*value));
 }
 
-#endif
-#if SL_2_0
 DependencyObject *
 ObjectKeyFrame::GetValue ()
 {
@@ -3132,7 +3253,6 @@ ObjectKeyFrame::SetValue (DependencyObject * value)
 	DependencyObject::SetValue (ObjectKeyFrame::ValueProperty, Value (value));
 }
 
-#endif
 Brush *
 Panel::GetBackground ()
 {
@@ -3185,7 +3305,6 @@ PathFigure::SetIsClosed (bool value)
 	SetValue (PathFigure::IsClosedProperty, Value (value));
 }
 
-#if SL_2_0
 bool
 PathFigure::GetIsFilled ()
 {
@@ -3199,7 +3318,6 @@ PathFigure::SetIsFilled (bool value)
 	SetValue (PathFigure::IsFilledProperty, Value (value));
 }
 
-#endif
 PathSegmentCollection *
 PathFigure::GetSegments ()
 {
@@ -3654,7 +3772,6 @@ RotateTransform::SetCenterY (double value)
 	SetValue (RotateTransform::CenterYProperty, Value (value));
 }
 
-#if SL_2_0
 GridLength *
 RowDefinition::GetHeight ()
 {
@@ -3669,8 +3786,6 @@ RowDefinition::SetHeight (GridLength * value)
 	SetValue (RowDefinition::HeightProperty, Value (*value));
 }
 
-#endif
-#if SL_2_0
 double
 RowDefinition::GetMaxHeight ()
 {
@@ -3684,8 +3799,6 @@ RowDefinition::SetMaxHeight (double value)
 	SetValue (RowDefinition::MaxHeightProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 double
 RowDefinition::GetMinHeight ()
 {
@@ -3699,7 +3812,6 @@ RowDefinition::SetMinHeight (double value)
 	SetValue (RowDefinition::MinHeightProperty, Value (value));
 }
 
-#endif
 const char *
 Run::GetText ()
 {
@@ -3765,7 +3877,6 @@ ScaleTransform::SetScaleY (double value)
 	SetValue (ScaleTransform::ScaleYProperty, Value (value));
 }
 
-#if SL_2_0
 bool
 SetterBase::GetIsSealed ()
 {
@@ -3779,8 +3890,6 @@ SetterBase::SetIsSealed (bool value)
 	SetValue (SetterBase::IsSealedProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 bool
 SetterBaseCollection::GetIsSealed ()
 {
@@ -3794,7 +3903,6 @@ SetterBaseCollection::SetIsSealed (bool value)
 	SetValue (SetterBaseCollection::IsSealedProperty, Value (value));
 }
 
-#endif
 Brush *
 Shape::GetFill ()
 {
@@ -4043,7 +4151,6 @@ SplinePointKeyFrame::SetKeySpline (KeySpline * value)
 	DependencyObject::SetValue (SplinePointKeyFrame::KeySplineProperty, Value (value));
 }
 
-#if SL_2_0
 Orientation
 StackPanel::GetOrientation ()
 {
@@ -4057,7 +4164,6 @@ StackPanel::SetOrientation (Orientation value)
 	SetValue (StackPanel::OrientationProperty, Value (value));
 }
 
-#endif
 const char *
 Storyboard::GetTargetName (DependencyObject *obj)
 {
@@ -4114,7 +4220,6 @@ Stroke::SetStylusPoints (StylusPointCollection * value)
 	SetValue (Stroke::StylusPointsProperty, Value (value));
 }
 
-#if SL_2_0
 bool
 Style::GetIsSealed ()
 {
@@ -4128,8 +4233,6 @@ Style::SetIsSealed (bool value)
 	SetValue (Style::IsSealedProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 SetterBaseCollection *
 Style::GetSetters ()
 {
@@ -4143,7 +4246,6 @@ Style::SetSetters (SetterBaseCollection * value)
 	SetValue (Style::SettersProperty, Value (value));
 }
 
-#endif
 TabletDeviceType
 StylusInfo::GetDeviceType ()
 {
@@ -4300,7 +4402,6 @@ TextBlock::SetInlines (InlineCollection * value)
 	SetValue (TextBlock::InlinesProperty, Value (value));
 }
 
-#if SL_2_0
 double
 TextBlock::GetLineHeight ()
 {
@@ -4314,8 +4415,6 @@ TextBlock::SetLineHeight (double value)
 	SetValue (TextBlock::LineHeightProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 LineStackingStrategy
 TextBlock::GetLineStackingStrategy ()
 {
@@ -4329,8 +4428,6 @@ TextBlock::SetLineStackingStrategy (LineStackingStrategy value)
 	SetValue (TextBlock::LineStackingStrategyProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 Thickness *
 TextBlock::GetPadding ()
 {
@@ -4345,8 +4442,6 @@ TextBlock::SetPadding (Thickness * value)
 	SetValue (TextBlock::PaddingProperty, Value (*value));
 }
 
-#endif
-#if SL_2_0
 TextAlignment
 TextBlock::GetTextAlignment ()
 {
@@ -4360,7 +4455,6 @@ TextBlock::SetTextAlignment (TextAlignment value)
 	SetValue (TextBlock::TextAlignmentProperty, Value (value));
 }
 
-#endif
 TextDecorations
 TextBlock::GetTextDecorations ()
 {
@@ -4400,7 +4494,6 @@ TextBlock::SetTextWrapping (TextWrapping value)
 	SetValue (TextBlock::TextWrappingProperty, Value (value));
 }
 
-#if SL_2_0
 bool
 TextBox::GetAcceptsReturn ()
 {
@@ -4414,8 +4507,6 @@ TextBox::SetAcceptsReturn (bool value)
 	SetValue (TextBox::AcceptsReturnProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 ScrollBarVisibility
 TextBox::GetHorizontalScrollBarVisibility ()
 {
@@ -4429,8 +4520,6 @@ TextBox::SetHorizontalScrollBarVisibility (ScrollBarVisibility value)
 	SetValue (TextBox::HorizontalScrollBarVisibilityProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 bool
 TextBox::GetIsReadOnly ()
 {
@@ -4444,8 +4533,6 @@ TextBox::SetIsReadOnly (bool value)
 	SetValue (TextBox::IsReadOnlyProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 gint32
 TextBox::GetMaxLength ()
 {
@@ -4459,8 +4546,6 @@ TextBox::SetMaxLength (gint32 value)
 	SetValue (TextBox::MaxLengthProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 const char *
 TextBox::GetSelectedText ()
 {
@@ -4474,8 +4559,6 @@ TextBox::SetSelectedText (const char * value)
 	SetValue (TextBox::SelectedTextProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 Brush *
 TextBox::GetSelectionBackground ()
 {
@@ -4489,8 +4572,6 @@ TextBox::SetSelectionBackground (Brush * value)
 	SetValue (TextBox::SelectionBackgroundProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 Brush *
 TextBox::GetSelectionForeground ()
 {
@@ -4504,8 +4585,6 @@ TextBox::SetSelectionForeground (Brush * value)
 	SetValue (TextBox::SelectionForegroundProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 gint32
 TextBox::GetSelectionLength ()
 {
@@ -4519,8 +4598,6 @@ TextBox::SetSelectionLength (gint32 value)
 	SetValue (TextBox::SelectionLengthProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 gint32
 TextBox::GetSelectionStart ()
 {
@@ -4534,8 +4611,6 @@ TextBox::SetSelectionStart (gint32 value)
 	SetValue (TextBox::SelectionStartProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 TextAlignment
 TextBox::GetTextAlignment ()
 {
@@ -4549,8 +4624,6 @@ TextBox::SetTextAlignment (TextAlignment value)
 	SetValue (TextBox::TextAlignmentProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 const char *
 TextBox::GetText ()
 {
@@ -4564,8 +4637,6 @@ TextBox::SetText (const char * value)
 	SetValue (TextBox::TextProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 TextWrapping
 TextBox::GetTextWrapping ()
 {
@@ -4579,8 +4650,6 @@ TextBox::SetTextWrapping (TextWrapping value)
 	SetValue (TextBox::TextWrappingProperty, Value (value));
 }
 
-#endif
-#if SL_2_0
 ScrollBarVisibility
 TextBox::GetVerticalScrollBarVisibility ()
 {
@@ -4594,7 +4663,6 @@ TextBox::SetVerticalScrollBarVisibility (ScrollBarVisibility value)
 	SetValue (TextBox::VerticalScrollBarVisibilityProperty, Value (value));
 }
 
-#endif
 AlignmentX
 TileBrush::GetAlignmentX ()
 {

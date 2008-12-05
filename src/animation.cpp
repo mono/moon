@@ -19,10 +19,7 @@
 #include <math.h>
 
 #include "animation.h"
-
-#if SL_2_0
 #include "animation2.h"
-#endif
 
 #include "color.h"
 #include "runtime.h"
@@ -1696,8 +1693,6 @@ Duration Duration::Forever (Duration::FOREVER);
 KeyTime KeyTime::Paced (KeyTime::PACED);
 KeyTime KeyTime::Uniform (KeyTime::UNIFORM);
 
-#if SL_2_0
-
 Value*
 DiscreteObjectKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
@@ -1806,7 +1801,6 @@ ObjectAnimationUsingKeyFrames::Validate ()
 	return generic_keyframe_validator (GetKeyFrames ());
 }
 
-#endif
 
 void
 animation_shutdown (void)

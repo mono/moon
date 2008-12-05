@@ -49,12 +49,10 @@
 #include "utils.h"
 #include "window-gtk.h"
 
-#if SL_2_0
 #include "contentcontrol.h"
 #include "usercontrol.h"
 #include "deployment.h"
 #include "grid.h"
-#endif
 
 //#define DEBUG_INVALIDATE 1
 //#define RENDER_INDIVIDUALLY 1

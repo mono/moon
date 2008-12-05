@@ -212,14 +212,10 @@ Type::Find (Types *additional_types, Type::Kind type)
 	if (type < Type::LASTTYPE)
 		return &type_infos [type];
 
-#if SL_2_0				
 	if (additional_types == NULL)
 		return NULL;
 	
 	return additional_types->Find (type);
-#else
-	return NULL;
-#endif
 }
 
 DependencyObject *
@@ -397,12 +393,7 @@ types_init ()
 {
 #if DEBUG
 	for (int i = 0; i <= Type::LASTTYPE; i++) {
-#if !SL_2_0
-		if (type_infos [i].type != i && (type_infos [i].name == NULL || strstr (type_infos [i].name, "2.0 specific") == NULL)) {
-			
-#else
 		if (type_infos [i].type != i) {
-#endif
 			fprintf (stderr, "Type verification: type #%i is stored with Kind %i, name %s\n", i, type_infos [i].type, type_infos [i].name);
 		}
 	}
