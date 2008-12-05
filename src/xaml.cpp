@@ -3557,7 +3557,6 @@ start_parse:
 	}
 }
 
-#if SL_2_0
 typedef struct _BindingExtensionProperty {
 	struct _BindingExtensionProperty *next;
 	char *name, *value;
@@ -3713,7 +3712,6 @@ binding_expression_from_str (XamlParserInfo *parser, XamlElementInstance *item, 
 	
 	return expr;
 }
-#endif /* SL_2_0 */
 
 static bool
 handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, const char *attr_name, const char *attr_value, Value **value)

@@ -896,14 +896,12 @@ DependencyObject::IsValueValid (Types *additional_types, DependencyProperty* pro
 			return true;
 		}
 		
-#if SL_2_0
 		if (value->Is (additional_types, Type::MANAGED)) {
 			// This is a big hack, we do no type-checking if we try to set a managed type.
 			// Given that for the moment we might not have the surface available, we can't
 			// do any type checks since we can't access types registered on the surface.
 			return true;
 		}
-#endif
 		
 		if (!value->Is (additional_types, property->GetPropertyType())) {
 			MoonError::FillIn (error, MoonError::ARGUMENT, 1001,

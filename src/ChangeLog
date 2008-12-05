@@ -1,5 +1,10 @@
 2008-12-05  Jeffrey Stedfast  <fejj@novell.com>
 
+	* runtime.cpp (Surface::FocusElement): Removed #if SL_2_0 check.
+
+	* dependencyobject.cpp (DependencyObject::IsValueValid): Removed
+	#if SL_2_0 check.
+
 	* binding.h (class Binding): Added more bool members.
 
 	* xaml.cpp (binding_expression_from_str): New method to
