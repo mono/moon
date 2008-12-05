@@ -47,24 +47,14 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsFalse (pb.IsIndeterminate, "IsIndeterminate");
 
 			// default properties on RangeBase...
-			CheckDefaultProperties (pb);
-		}
-
-		static public void CheckDefaultProperties (RangeBase rb)
-		{
-			// default properties on ProgressBar, same as RangeBase defaults except for Maximum
-			Assert.AreEqual (0.1, rb.SmallChange, "SmallChange");
-			Assert.AreEqual (1.0, rb.LargeChange, "LargeChange");
-			Assert.AreEqual (100.0, rb.Maximum, "Maximum");
-			Assert.AreEqual (0.0, rb.Minimum, "Minimum");
-			Assert.AreEqual (0.0, rb.Value, "IsFocused");
+			RangeBaseTest.CheckDefaultProperties (pb);
 		}
 
 		[TestMethod]
 		public void ToStringTest ()
 		{
 			ProgressBar pb = new ProgressBar ();
-			Assert.AreEqual ("System.Windows.Controls.ProgressBar Minimum:0 Maximum:100 Value:0", pb.ToString (), "ToString");
+			Assert.AreEqual ("System.Windows.Controls.ProgressBar Minimum:0 Maximum:1 Value:0", pb.ToString (), "ToString");
 		}
 	}
 }
