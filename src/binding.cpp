@@ -21,6 +21,8 @@ Binding::Binding ()
 {
  	property_path = g_strdup ("");
  	binding_mode = BindingModeOneWay;
+	notify_on_validation_error = false;
+	validates_on_exceptions = false;
  	is_sealed = false;
 }
 
@@ -49,22 +51,11 @@ Binding::SetBindingMode (BindingMode mode)
 	binding_mode = mode;
 }
 
-bool
-Binding::GetIsSealed ()
-{
-	return is_sealed;
-}
-
-void
-Binding::SetIsSealed (bool sealed)
-{
-	is_sealed = sealed;
-}
-
 Binding::~Binding ()
 {
 	g_free (property_path);
 }
+
 
 BindingExpressionBase::BindingExpressionBase ()
 {
@@ -96,17 +87,17 @@ BindingExpressionBase::SetBinding (Binding *binding)
 }
 
 void
-BindingExpressionBase::SetSource (FrameworkElement *element)
+BindingExpressionBase::SetSource (DependencyObject *source)
 {
 	// FIXME: do we want to ref the element? or at least listen for the destroy signal?
-	this->source = element;
+	this->source = source;
 }
 
 void
-BindingExpressionBase::SetTarget (FrameworkElement *element)
+BindingExpressionBase::SetTarget (FrameworkElement *target)
 {
 	// We have to listen to property changes on the target
-	this->target = element;	
+	this->target = target;
 }
 
 void

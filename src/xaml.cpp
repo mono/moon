@@ -49,6 +49,7 @@
 #include "control.h"
 #include "template.h"
 
+#include "binding.h"
 #include "thickness.h"
 #include "cornerradius.h"
 #include "deployment.h"
@@ -1344,7 +1345,7 @@ XamlLoader::CreateFromFile (const char *xaml_file, bool create_namescope,
 			// Remove preceding white space
 			inend = buffer + nread;
 			
-			while (inptr < inend && isspace ((unsigned char) *inptr))
+			while (inptr < inend && g_ascii_isspace (*inptr))
 				inptr++;
 			
 			if (inptr == inend)
@@ -1468,7 +1469,7 @@ XamlLoader::HydrateFromString (const char *xaml, DependencyObject *object, bool 
 	*/
 
 	// don't freak out if the <?xml ... ?> isn't on the first line (see #328907)
-	while (isspace ((unsigned char) *start))
+	while (g_ascii_isspace (*start))
 		start++;
 
 	if (!XML_Parse (p, start, strlen (start), TRUE)) {
@@ -2294,13 +2295,13 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 		*v = NULL;
 		return true;
 	}
-
+	
 	switch (type) {
 	case Type::BOOL: {
 		bool b;
-		if (!g_strcasecmp ("true", str))
+		if (!g_ascii_strcasecmp ("true", str))
 			b = true;
-		else if (!g_strcasecmp ("false", str))
+		else if (!g_ascii_strcasecmp ("false", str))
 			b = false;
 		else {
 			// Check if it's a string representing a decimal value
@@ -3556,16 +3557,177 @@ start_parse:
 	}
 }
 
-static bool
-handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, const char* attr_name, const char* attr_value, Value **value)
-{
-	const char *start = attr_value + 1; // skip the initial {
-	while (*start && isspace (*start)) start++;
+#if SL_2_0
+typedef struct _BindingExtensionProperty {
+	struct _BindingExtensionProperty *next;
+	char *name, *value;
+} BindingExtensionProperty;
 
+struct BindingExtensionMarkup {
+	BindingExtensionProperty *properties;
+	char *path;
+	
+	BindingExtensionMarkup ()
+	{
+		properties = NULL;
+		path = NULL;
+	}
+	
+	~BindingExtensionMarkup ()
+	{
+		BindingExtensionProperty *next, *prop = properties;
+		
+		while (prop) {
+			next = prop->next;
+			g_free (prop->value);
+			g_free (prop->name);
+			delete prop;
+			prop = next;
+		}
+		
+		g_free (path);
+	}
+};
+
+static BindingExtensionMarkup *
+binding_extension_markup_decode (const char *markup)
+{
+	const char *inptr, *start, *value = NULL;
+	BindingExtensionProperty *prop, *tail;
+	BindingExtensionMarkup *binding;
+	bool is_path = true;
+	
+	binding = new BindingExtensionMarkup ();
+	tail = (BindingExtensionProperty *) &binding->properties;
+	
+	// skip over "{Binding"
+	inptr = markup + 8;
+	while (*inptr == ' ')
+		inptr++;
+	
+	if (*inptr == '}')
+		return binding;
+	
+	start = inptr;
+	while (*inptr && !strchr (" ,}", *inptr)) {
+		if (!value && *inptr == '=') {
+			is_path = false;
+			value = inptr;
+		}
+		
+		inptr++;
+	}
+	
+	if (is_path)
+		binding->path = g_strndup (start, inptr - start);
+	else
+		goto property;
+	
+	do {
+		while (*inptr == ' ')
+			inptr++;
+		
+		if (*inptr == ',')
+			inptr++;
+		
+		while (*inptr == ' ')
+			inptr++;
+		
+		if (*inptr == '}')
+			break;
+		
+		start = inptr;
+		value = NULL;
+		
+		while (*inptr && !strchr (" ,}", *inptr)) {
+			if (!value && *inptr == '=')
+				value = inptr;
+			inptr++;
+		}
+		
+	property:
+		
+		prop = new BindingExtensionProperty ();
+		prop->name = g_strndup (start, value - start);
+		value++;
+		prop->value = g_strndup (value, inptr - value);
+		prop->next = NULL;
+		
+		tail->next = prop;
+		tail = prop;
+	} while (*inptr && *inptr != '}');
+	
+	return binding;
+}
+
+static BindingExpression *
+binding_expression_from_str (XamlParserInfo *parser, XamlElementInstance *item, const char *str)
+{
+	BindingExtensionMarkup *markup = binding_extension_markup_decode (str);
+	BindingExtensionProperty *prop = markup->properties;
+	BindingExpression *expr;
+	Binding *binding;
+	
+	expr = new BindingExpression ();
+	binding = new Binding ();
+	
+	if (markup->path)
+		binding->SetPropertyPath (markup->path);
+	
+	while (prop != NULL) {
+		if (!g_ascii_strcasecmp (prop->name, "Path")) {
+			// FIXME: what if the path is already set?
+			binding->SetPropertyPath (prop->value);
+		} else if (!g_ascii_strcasecmp (prop->name, "Converter")) {
+			// FIXME: ugh
+		} else if (!g_ascii_strcasecmp (prop->name, "ConverterCulture")) {
+			// FIXME: ugh
+		} else if (!g_ascii_strcasecmp (prop->name, "ConverterParameter")) {
+			// FIXME: ugh
+		} else if (!g_ascii_strcasecmp (prop->name, "Mode")) {
+			int mode = enums_str_to_int ("BindingMode", prop->value, true);
+			
+			if (mode != -1)
+				binding->SetBindingMode ((BindingMode) mode);
+		} else if (!g_ascii_strcasecmp (prop->name, "Source")) {
+			DependencyObject *source = NULL;
+			
+			// FIXME: use the parser to resolve the Source element
+			
+			expr->SetSource (source);
+		} else if (!g_ascii_strcasecmp (prop->name, "NotifyOnValidationError")) {
+			bool value = !g_ascii_strcasecmp ("true", prop->value);
+			
+			binding->SetNotifyOnValidationError (value);
+		} else if (!g_ascii_strcasecmp (prop->name, "ValidatesOnExceptions")) {
+			bool value = !g_ascii_strcasecmp ("true", prop->value);
+			
+			binding->SetValidatesOnExceptions (value);
+		}
+		
+		prop = prop->next;
+	}
+	
+	expr->SetBinding (binding);
+	delete markup;
+	
+	return expr;
+}
+#endif /* SL_2_0 */
+
+static bool
+handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, const char *attr_name, const char *attr_value, Value **value)
+{
+	const char *start = attr_value + 1; // skip the initial '{'
+	
+	while (*start && g_ascii_isspace (*start))
+		start++;
+	
 	if (!strncmp (start, "StaticResource ", strlen ("StaticResource "))) {
 		start += strlen ("StaticResource ");
 
-		while (*start && isspace (*start)) start++;
+		while (*start && g_ascii_isspace (*start))
+			start++;
 
 		if (*start == '}') {
 			parser_error (p, item->element_name, attr_name, 2024,
@@ -3578,8 +3740,8 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 
 		/* now trim off the trailing } and any spaces after the resource name */
 		char *end = resource_name + (strlen (resource_name) - 2);
-		while (end != resource_name && isspace (*end))
-				end --;
+		while (end != resource_name && g_ascii_isspace (*end))
+			end--;
 		end++;
 		*end = '\0';
 
@@ -3613,8 +3775,9 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 
 		start += strlen ("TemplateBinding ");
 
-		while (*start && isspace (*start)) start++;
-
+		while (*start && g_ascii_isspace (*start))
+			start++;
+		
 		if (*start == '}') {
 			parser_error (p, item->element_name, attr_name, 2024,
 					g_strdup_printf ("Empty TemplateBinding reference for property %s.",
@@ -3626,13 +3789,20 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 
 		/* now trim off the trailing } and any spaces after the resource name */
 		char *end = argument + (strlen (argument) - 2);
-		while (end != argument && isspace (*end))
+		while (end != argument && g_ascii_isspace (*end))
 			end --;
 		end++;
 		*end = '\0';
 
 		template_parent->AddTemplateBinding (item, argument, attr_name);
 		return true;
+	} else if (!strncmp (start, "Binding", strlen ("Binding"))) {
+		BindingExpression *expr = binding_expression_from_str (p, item, attr_value);
+		
+		*value = new Value (expr);
+		expr->unref ();
+		
+		return false;
 	}
 		
 	return false;

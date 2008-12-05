@@ -104,7 +104,13 @@ BindingMode binding_get_binding_mode (Binding *instance);
 bool binding_get_is_sealed (Binding *instance);
 
 /* @GeneratePInvoke */
+bool binding_get_notify_on_validation_error (Binding *instance);
+
+/* @GeneratePInvoke */
 char *binding_get_property_path (Binding *instance);
+
+/* @GeneratePInvoke */
+bool binding_get_validates_on_exceptions (Binding *instance);
 
 /* @GeneratePInvoke */
 void binding_set_binding_mode (Binding *instance, BindingMode mode);
@@ -113,7 +119,13 @@ void binding_set_binding_mode (Binding *instance, BindingMode mode);
 void binding_set_is_sealed (Binding *instance, bool isSealed);
 
 /* @GeneratePInvoke */
+void binding_set_notify_on_validation_error (Binding *instance, bool value);
+
+/* @GeneratePInvoke */
 void binding_set_property_path (Binding *instance, const char *path);
+
+/* @GeneratePInvoke */
+void binding_set_validates_on_exceptions (Binding *instance, bool value);
 
 /**
  * BindingExpression
@@ -146,10 +158,10 @@ void binding_expression_base_register_managed_overrides (BindingExpressionBase *
 void binding_expression_base_set_binding (BindingExpressionBase *instance, Binding *binding);
 
 /* @GeneratePInvoke */
-void binding_expression_base_set_source (BindingExpressionBase *instance, FrameworkElement *element);
+void binding_expression_base_set_source (BindingExpressionBase *instance, DependencyObject *source);
 
 /* @GeneratePInvoke */
-void binding_expression_base_set_target (BindingExpressionBase *instance, FrameworkElement *element);
+void binding_expression_base_set_target (BindingExpressionBase *instance, FrameworkElement *target);
 
 /* @GeneratePInvoke */
 void binding_expression_base_set_target_property (BindingExpressionBase *instance, DependencyProperty *property);

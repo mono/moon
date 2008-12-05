@@ -23,6 +23,8 @@ typedef void  (*SetValueCallback)(void *value);
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Data */
 class Binding : public EventObject {
+	bool notify_on_validation_error;
+	bool validates_on_exceptions;
 	BindingMode binding_mode;
 	char *property_path;
 	bool is_sealed;
@@ -35,19 +37,29 @@ class Binding : public EventObject {
 	Binding ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	char *GetPropertyPath ();
-	/* @GenerateCBinding,GeneratePInvoke */
 	void SetPropertyPath (const char *path);
-	
 	/* @GenerateCBinding,GeneratePInvoke */
-	BindingMode GetBindingMode ();
+	char *GetPropertyPath ();
+	
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetBindingMode (BindingMode mode);
+	/* @GenerateCBinding,GeneratePInvoke */
+	BindingMode GetBindingMode ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	bool GetIsSealed ();
+	void SetNotifyOnValidationError (bool value) { notify_on_validation_error = value; }
 	/* @GenerateCBinding,GeneratePInvoke */
-	void SetIsSealed (bool isSealed);
+	bool GetNotifyOnValidationError () { return notify_on_validation_error; }
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetValidatesOnExceptions (bool value) { validates_on_exceptions = value; }
+	/* @GenerateCBinding,GeneratePInvoke */
+	bool GetValidatesOnExceptions () { return validates_on_exceptions; }
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetIsSealed (bool isSealed) { is_sealed = isSealed; }
+	/* @GenerateCBinding,GeneratePInvoke */
+	bool GetIsSealed () { return is_sealed; }
 };
 
 
@@ -74,12 +86,12 @@ class BindingExpressionBase : public Expression {
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject *GetSource () { return source; }
 	/* @GenerateCBinding,GeneratePInvoke */
-	void SetSource (FrameworkElement *element);
+	void SetSource (DependencyObject *source);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	FrameworkElement *GetTarget () { return target; }
 	/* @GenerateCBinding,GeneratePInvoke */
-	void SetTarget (FrameworkElement *element);
+	void SetTarget (FrameworkElement *target);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyProperty *GetTargetProperty () { return target_property; }

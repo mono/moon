@@ -1,3 +1,11 @@
+2008-12-05  Jeffrey Stedfast  <fejj@novell.com>
+
+	* binding.h (class Binding): Added more bool members.
+
+	* xaml.cpp (binding_expression_from_str): New method to
+	parse {Binding} markup syntax into a BindingExpression.
+	(handle_xaml_markup_extension): Parse Binding markup extensions.
+
 2008-12-05  Chris Toshok  <toshok@ximian.com>
 
 	* deepzoomimagetilesource.h (class DeepZoomImageTileSource): fix

@@ -102,6 +102,16 @@ binding_get_is_sealed (Binding *instance)
 }
 
 
+bool
+binding_get_notify_on_validation_error (Binding *instance)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->GetNotifyOnValidationError ();
+}
+
+
 char *
 binding_get_property_path (Binding *instance)
 {
@@ -109,6 +119,16 @@ binding_get_property_path (Binding *instance)
 		return NULL;
 	
 	return instance->GetPropertyPath ();
+}
+
+
+bool
+binding_get_validates_on_exceptions (Binding *instance)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->GetValidatesOnExceptions ();
 }
 
 
@@ -133,12 +153,32 @@ binding_set_is_sealed (Binding *instance, bool isSealed)
 
 
 void
+binding_set_notify_on_validation_error (Binding *instance, bool value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetNotifyOnValidationError (value);
+}
+
+
+void
 binding_set_property_path (Binding *instance, const char *path)
 {
 	if (instance == NULL)
 		return;
 	
 	instance->SetPropertyPath (path);
+}
+
+
+void
+binding_set_validates_on_exceptions (Binding *instance, bool value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetValidatesOnExceptions (value);
 }
 
 
@@ -226,22 +266,22 @@ binding_expression_base_set_binding (BindingExpressionBase *instance, Binding *b
 
 
 void
-binding_expression_base_set_source (BindingExpressionBase *instance, FrameworkElement *element)
+binding_expression_base_set_source (BindingExpressionBase *instance, DependencyObject *source)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->SetSource (element);
+	instance->SetSource (source);
 }
 
 
 void
-binding_expression_base_set_target (BindingExpressionBase *instance, FrameworkElement *element)
+binding_expression_base_set_target (BindingExpressionBase *instance, FrameworkElement *target)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->SetTarget (element);
+	instance->SetTarget (target);
 }
 
 
