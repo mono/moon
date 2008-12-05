@@ -92,6 +92,7 @@ static bool dependency_object_set_property (XamlParserInfo *p, XamlElementInstan
 static void dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child);
 static void dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
 static void value_type_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
+static bool handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, const char* attr_name, const char* attr_value, Value **value);
 void parser_error (XamlParserInfo *p, const char *el, const char *attr, int error_code, const char *message);
 
 static XamlElementInfo *create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *name);
@@ -3518,82 +3519,8 @@ start_parse:
 
 			Value *v = NULL;
 			if (attr[i+1][0] == '{' && attr[i+1][strlen(attr[i+1]) - 1] == '}') {
-				const char *start = attr[i+1] + 1; // skip the initial {
-				while (*start && isspace (*start)) start++;
-
-				if (!strncmp (start, "StaticResource ", strlen ("StaticResource "))) {
-					start += strlen ("StaticResource ");
-
-					while (*start && isspace (*start)) start++;
-
-					if (*start == '}') {
-						parser_error (p, item->element_name, attr[i], 2024,
-							      g_strdup_printf ("Empty StaticResource reference for property %s.",
-									       attr[i]));
-						return;
-					}
-
-					char *resource_name = g_strdup (start);
-
-					/* now trim off the trailing } and any spaces after the resource name */
-					char *end = resource_name + (strlen (resource_name) - 2);
-					while (end != resource_name && isspace (*end))
-						end --;
-					end++;
-					*end = '\0';
-
-					if (p->current_element)
-						p->current_element->LookupNamedResource (resource_name, &v);
-
-					if (!v) {
-						// XXX don't know the proper values here...
-						parser_error (p, item->element_name, attr[i], 2024,
-							      g_strdup_printf ("Could not locate StaticResource %s for property %s.",
-									       resource_name,
-									       attr[i]));
-						g_free (resource_name);
-						return;
-					}
-				}
-#if SL_2_0
-				else if (!strncmp (start, "TemplateBinding ", strlen ("TemplateBinding "))) {
-					XamlElementInstance *parent = item->parent;
-
-					while (parent && !parent->IsTemplate())
-						parent = parent->parent;
-
-					if (!parent) {
-						parser_error (p, item->element_name, attr[i], 2024,
-							      g_strdup ("TemplateBinding expression found outside of a template"));
-						return;
-					}
-
-					XamlElementInstanceTemplate *template_parent = (XamlElementInstanceTemplate*)parent;
-
-					start += strlen ("TemplateBinding ");
-
-					while (*start && isspace (*start)) start++;
-
-					if (*start == '}') {
-						parser_error (p, item->element_name, attr[i], 2024,
-							      g_strdup_printf ("Empty TemplateBinding reference for property %s.",
-									       attr[i]));
-						return;
-					}
-
-					char *argument = g_strdup (start);
-
-					/* now trim off the trailing } and any spaces after the resource name */
-					char *end = argument + (strlen (argument) - 2);
-					while (end != argument && isspace (*end))
-						end --;
-					end++;
-					*end = '\0';
-
-					template_parent->AddTemplateBinding (item, argument, attr[i]);
+				if (handle_xaml_markup_extension (p, item, attr [i], attr [i+1], &v))
 					return;
-				}
-#endif
 			}
 
 			if (!v && !value_from_str (prop->GetPropertyType(), prop->GetName(), attr [i + 1], &v, p->loader->GetSurface()->IsSilverlight2())) {
@@ -3641,6 +3568,90 @@ start_parse:
 		if (atchname)
 			g_free (atchname);
 	}
+}
+
+static bool
+handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, const char* attr_name, const char* attr_value, Value **value)
+{
+	const char *start = attr_value + 1; // skip the initial {
+	while (*start && isspace (*start)) start++;
+
+	if (!strncmp (start, "StaticResource ", strlen ("StaticResource "))) {
+		start += strlen ("StaticResource ");
+
+		while (*start && isspace (*start)) start++;
+
+		if (*start == '}') {
+			parser_error (p, item->element_name, attr_name, 2024,
+					g_strdup_printf ("Empty StaticResource reference for property %s.",
+							attr_name));
+			return true;
+		}
+
+		char *resource_name = g_strdup (start);
+
+		/* now trim off the trailing } and any spaces after the resource name */
+		char *end = resource_name + (strlen (resource_name) - 2);
+		while (end != resource_name && isspace (*end))
+				end --;
+		end++;
+		*end = '\0';
+
+		if (p->current_element)
+			p->current_element->LookupNamedResource (resource_name, value);
+
+		if (!value) {
+			// XXX don't know the proper values here...
+			parser_error (p, item->element_name, attr_name, 2024,
+					g_strdup_printf ("Could not locate StaticResource %s for property %s.",
+							resource_name,
+							attr_name));
+			g_free (resource_name);
+			return true;
+		}
+		return false;
+	}
+#if SL_2_0
+	else if (!strncmp (start, "TemplateBinding ", strlen ("TemplateBinding "))) {
+		XamlElementInstance *parent = item->parent;
+
+		while (parent && !parent->IsTemplate())
+			parent = parent->parent;
+
+		if (!parent) {
+			parser_error (p, item->element_name, attr_name, 2024,
+					g_strdup ("TemplateBinding expression found outside of a template"));
+			return true;
+		}
+
+		XamlElementInstanceTemplate *template_parent = (XamlElementInstanceTemplate*)parent;
+
+		start += strlen ("TemplateBinding ");
+
+		while (*start && isspace (*start)) start++;
+
+		if (*start == '}') {
+			parser_error (p, item->element_name, attr_name, 2024,
+					g_strdup_printf ("Empty TemplateBinding reference for property %s.",
+							attr_name));
+			return true;
+		}
+
+		char *argument = g_strdup (start);
+
+		/* now trim off the trailing } and any spaces after the resource name */
+		char *end = argument + (strlen (argument) - 2);
+		while (end != argument && isspace (*end))
+			end --;
+		end++;
+		*end = '\0';
+
+		template_parent->AddTemplateBinding (item, argument, attr_name);
+		return true;
+	}
+#endif
+		
+	return false;
 }
 
 void

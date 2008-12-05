@@ -1,3 +1,9 @@
+2008-12-05  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Move the markup extension handler out of
+	set_attributes, ideally each markup extension will get it's own
+	function eventually.
+
 2008-12-05  Jeffrey Stedfast  <fejj@novell.com>
 
 	* binding.cpp (Binding::SetPropertyPath): Fixed to take a const
