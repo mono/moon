@@ -30,16 +30,6 @@ namespace System.Windows.Media
 			throw new NotImplementedException ();
 		}
 
-		/*
-		public Uri UriSource {
-			get { return (Uri)GetValue(UriSourceProperty); }
-			set { 
-	//			SetValue(UriSourceProperty, value);
-				NativeMethods.deep_zoom_image_tile_source_download_urisource (this.native, value.ToString (), ParseDeepZoom);
-			}
-		}
-		*/
-
 		void ParseDeepZoom (string path)
 		{
 			Console.WriteLine ("Downloaded {0}", path);
