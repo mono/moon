@@ -1,5 +1,7 @@
 xapname=moon-unit
 
+all-local: copy-xap-to-site
+
 noinst_DATA= $(xapname).xap
 
 CLEANFILES=	$(xapname).xap 		\
