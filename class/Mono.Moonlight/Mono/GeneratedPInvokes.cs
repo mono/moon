@@ -49,6 +49,10 @@ namespace Mono {
 		// bool binding_get_is_sealed (Binding *instance);
 		public extern static bool binding_get_is_sealed (IntPtr instance);
 
+		[DllImport ("moon")]
+		// bool binding_get_notify_on_validation_error (Binding *instance);
+		public extern static bool binding_get_notify_on_validation_error (IntPtr instance);
+
 		[DllImport ("moon", EntryPoint="binding_get_property_path")]
 		// char *binding_get_property_path (Binding *instance);
 		private extern static IntPtr binding_get_property_path_ (IntPtr instance);
@@ -60,6 +64,10 @@ namespace Mono {
 		}
 
 		[DllImport ("moon")]
+		// bool binding_get_validates_on_exceptions (Binding *instance);
+		public extern static bool binding_get_validates_on_exceptions (IntPtr instance);
+
+		[DllImport ("moon")]
 		// void binding_set_binding_mode (Binding *instance, BindingMode mode);
 		public extern static void binding_set_binding_mode (IntPtr instance, int mode);
 
@@ -68,8 +76,16 @@ namespace Mono {
 		public extern static void binding_set_is_sealed (IntPtr instance, bool isSealed);
 
 		[DllImport ("moon")]
+		// void binding_set_notify_on_validation_error (Binding *instance, bool value);
+		public extern static void binding_set_notify_on_validation_error (IntPtr instance, bool value);
+
+		[DllImport ("moon")]
 		// void binding_set_property_path (Binding *instance, const char *path);
 		public extern static void binding_set_property_path (IntPtr instance, string path);
+
+		[DllImport ("moon")]
+		// void binding_set_validates_on_exceptions (Binding *instance, bool value);
+		public extern static void binding_set_validates_on_exceptions (IntPtr instance, bool value);
 
 		[DllImport ("moon")]
 		// BindingExpression *binding_expression_new ();
@@ -104,12 +120,12 @@ namespace Mono {
 		public extern static void binding_expression_base_set_binding (IntPtr instance, IntPtr binding);
 
 		[DllImport ("moon")]
-		// void binding_expression_base_set_source (BindingExpressionBase *instance, FrameworkElement *element);
-		public extern static void binding_expression_base_set_source (IntPtr instance, IntPtr element);
+		// void binding_expression_base_set_source (BindingExpressionBase *instance, DependencyObject *source);
+		public extern static void binding_expression_base_set_source (IntPtr instance, IntPtr source);
 
 		[DllImport ("moon")]
-		// void binding_expression_base_set_target (BindingExpressionBase *instance, FrameworkElement *element);
-		public extern static void binding_expression_base_set_target (IntPtr instance, IntPtr element);
+		// void binding_expression_base_set_target (BindingExpressionBase *instance, FrameworkElement *target);
+		public extern static void binding_expression_base_set_target (IntPtr instance, IntPtr target);
 
 		[DllImport ("moon")]
 		// void binding_expression_base_set_target_property (BindingExpressionBase *instance, DependencyProperty *property);
