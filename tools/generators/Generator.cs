@@ -345,8 +345,15 @@ class Generator {
 		
 		headers.Add ("dependencyproperty.h");
 		headers.Add ("color.h");
-		foreach (FieldInfo field in fields)
-			headers.Add (field.Header);
+		foreach (FieldInfo field in fields) {
+			string h;
+			if (string.IsNullOrEmpty (field.Header))
+				continue;
+			h = Path.GetFileName (field.Header);
+			
+			if (!headers.Contains (h))
+				headers.Add (h);
+		}
 		
 		Helper.WriteWarningGenerated (text);
 		text.AppendLine ();
@@ -354,7 +361,12 @@ class Generator {
 		text.AppendLine ("#include <config.h>");
 		text.AppendLine ("#endif");
 		text.AppendLine ();
-		HeaderCollection.Write (headers, text);
+		headers.Sort ();
+		foreach (string h in headers) {
+			text.Append ("#include \"");
+			text.Append (h);
+			text.AppendLine ("\"");
+		}
 		text.AppendLine ();
 		text.AppendLine ("bool dependency_properties_initialized = false;");
 		text.AppendLine ("void");
