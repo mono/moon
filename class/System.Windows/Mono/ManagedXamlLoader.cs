@@ -335,7 +335,7 @@ namespace Mono.Xaml
 					IList the_list = (IList) get_method.Invoke (null, new object [] { target });
 
 					if (the_list == null) {
-						the_list = (IList) Activator.CreateInstance (attach_type);
+						the_list = (IList) Activator.CreateInstance (set_params [1].ParameterType);
 						if (the_list == null)
 							return false;
 						set_method.Invoke (null, new object [] {target, the_list});
