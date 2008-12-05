@@ -58,7 +58,6 @@ namespace System.Windows.Controls{
 		public ProgressBar () : base ()
 		{
 			DefaultStyleKey = typeof (ProgressBar);
-			Maximum = 100;
 			SizeChanged += delegate { UpdateTrackLayout(); };
 		}
 

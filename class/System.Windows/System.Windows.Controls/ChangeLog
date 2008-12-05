@@ -1,3 +1,7 @@
+2008-12-05  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* ProgressBar.cs: Default is 1 (not 100) in SL2 final.
+
 2008-12-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Control.cs: Override Invoke* methods and call our On* methods
