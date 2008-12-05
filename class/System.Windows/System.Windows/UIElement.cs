@@ -266,70 +266,70 @@ namespace System.Windows {
 		}
 
 
-		internal void InvokeGotFocus (RoutedEventArgs r)
+		internal virtual void InvokeGotFocus (RoutedEventArgs r)
 		{
 			RoutedEventHandler h = (RoutedEventHandler)events[GotFocusEvent];
 			if (h != null)
 				h (this, r);
 		}
 
-		internal void InvokeLostFocus (RoutedEventArgs r)
+		internal virtual void InvokeLostFocus (RoutedEventArgs r)
 		{
 			RoutedEventHandler h = (RoutedEventHandler)events[LostFocusEvent];
 			if (h != null)
 				h (this, r);
 		}
 
-		internal void InvokeLostMouseCapture (MouseEventArgs m)
+		internal virtual void InvokeLostMouseCapture (MouseEventArgs m)
 		{
 			MouseEventHandler h = (MouseEventHandler) events [LostMouseCaptureEvent];
 			if (h != null)
 				h (this, m);
 		}
 		
-		internal void InvokeMouseMove (MouseEventArgs m)
+		internal virtual void InvokeMouseMove (MouseEventArgs m)
 		{
 			MouseEventHandler h = (MouseEventHandler)events[MouseMoveEvent];
 			if (h != null)
 				h (this, m);
 		}
 
-		internal void InvokeMouseButtonDown (MouseButtonEventArgs m)
+		internal virtual void InvokeMouseButtonDown (MouseButtonEventArgs e)
 		{
 			MouseButtonEventHandler h = (MouseButtonEventHandler)events[MouseLeftButtonDownEvent];
 			if (h != null)
-				h (this, m);
+				h (this, e);
 		}
 
-		internal void InvokeMouseButtonUp (MouseButtonEventArgs m)
+		internal virtual void InvokeMouseButtonUp (MouseButtonEventArgs e)
 		{
 			MouseButtonEventHandler h = (MouseButtonEventHandler)events[MouseLeftButtonUpEvent];
 			if (h != null)
-				h (this, m);
+				h (this, e);
 		}
 
-		internal void InvokeKeyDown (KeyEventArgs k)
+		internal virtual void InvokeKeyDown (KeyEventArgs k)
 		{
 			KeyEventHandler h = (KeyEventHandler)events[KeyDownEvent];
 			if (h != null)
 				h (this, k);
 		}
 
-		internal void InvokeKeyUp (KeyEventArgs k)
+		internal virtual void InvokeKeyUp (KeyEventArgs k)
 		{
 			KeyEventHandler h = (KeyEventHandler)events[KeyUpEvent];
 			if (h != null)
 				h (this, k);
 		}
 
-		internal void InvokeMouseLeave ()
+		internal virtual void InvokeMouseLeave (MouseEventArgs e)
 		{
 			MouseEventHandler h = (MouseEventHandler)events[MouseLeaveEvent];
 			if (h != null)
-				h (this, null);
+				h (this, e);
 		}
 
-		internal void InvokeMouseEnter (MouseEventArgs m)
+		internal virtual void InvokeMouseEnter (MouseEventArgs m)
 		{
 			MouseEventHandler h = (MouseEventHandler)events[MouseEnterEvent];
 			if (h != null)

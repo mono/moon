@@ -172,7 +172,7 @@ namespace Mono {
 		{
 			try {
 				UIElement e = (UIElement)Helper.GCHandleFromIntPtr (closure).Target;
-				e.InvokeMouseLeave ();
+				e.InvokeMouseLeave (new MouseEventArgs (calldata));
 			}
 			catch (Exception ex) {
 				if (IsPlugin ())

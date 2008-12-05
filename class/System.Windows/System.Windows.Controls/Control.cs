@@ -118,47 +118,101 @@ namespace System.Windows.Controls {
 			return null;
 		}
 
-		[MonoTODO]
+		internal override void InvokeGotFocus (RoutedEventArgs e)
+		{
+			OnGotFocus (e);
+			base.InvokeGotFocus (e);
+		}
+
+		// called before the event
 		protected virtual void OnGotFocus (RoutedEventArgs e)
 		{
 		}
 
-		[MonoTODO]
+		internal override void InvokeLostFocus (RoutedEventArgs e)
+		{
+			OnLostFocus (e);
+			base.InvokeLostFocus (e);
+		}
+
+		// called before the event
 		protected virtual void OnLostFocus (RoutedEventArgs e)
 		{
 		}
 
-		[MonoTODO]
+		internal override void InvokeKeyDown (KeyEventArgs e)
+		{
+			OnKeyDown (e);
+			base.InvokeKeyDown (e);
+		}
+
+		// called before the event
 		protected virtual void OnKeyDown (KeyEventArgs e)
 		{
 		}
 
-		[MonoTODO]
+		internal override void InvokeKeyUp (KeyEventArgs e)
+		{
+			OnKeyUp (e);
+			base.InvokeKeyUp (e);
+		}
+
+		// called before the event
 		protected virtual void OnKeyUp (KeyEventArgs e)
 		{
 		}
 
-		[MonoTODO]
+		internal override void InvokeMouseEnter (MouseEventArgs e)
+		{
+			OnMouseEnter (e);
+			base.InvokeMouseEnter (e);
+		}
+
+		// called before the event
 		protected virtual void OnMouseEnter (MouseEventArgs e)
 		{
 		}
 
-		[MonoTODO]
+		internal override void InvokeMouseLeave (MouseEventArgs e)
+		{
+			OnMouseLeave (e);
+			base.InvokeMouseLeave (e);
+		}
+
+		// called before the event
 		protected virtual void OnMouseLeave (MouseEventArgs e)
 		{
 		}
 
-		[MonoTODO]
+		internal override void InvokeMouseButtonDown (MouseButtonEventArgs e)
+		{
+			OnMouseLeftButtonDown (e);
+			base.InvokeMouseButtonDown (e);
+		}
+
+		// called before the event
 		protected virtual void OnMouseLeftButtonDown (MouseButtonEventArgs e)
 		{
 		}
 
-		[MonoTODO]
+		internal override void InvokeMouseButtonUp (MouseButtonEventArgs e)
+		{
+			OnMouseLeftButtonUp (e);
+			base.InvokeMouseButtonUp (e);
+		}
+
+		// called before the event
 		protected virtual void OnMouseLeftButtonUp (MouseButtonEventArgs e)
 		{
 		}
 
-		[MonoTODO]
+		internal override void InvokeMouseMove (MouseEventArgs e)
+		{
+			OnMouseMove (e);
+			base.InvokeMouseMove (e);
+		}
+
+		// called before the event
 		protected virtual void OnMouseMove (MouseEventArgs e)
 		{
 		}

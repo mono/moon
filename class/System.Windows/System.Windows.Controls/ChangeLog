@@ -1,3 +1,8 @@
+2008-12-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Control.cs: Override Invoke* methods and call our On* methods
+	before the base method (that fire the events).
+
 2008-12-05  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* ProgressBar.cs:

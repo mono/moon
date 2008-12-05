@@ -1,3 +1,8 @@
+2008-12-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* UIElement.cs: virtualize all Invoke* since Control to call On* 
+	methods	before the events are fired.
+
 2008-12-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* DependencyProperty.g.cs: regenerated

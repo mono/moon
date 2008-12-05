@@ -1,3 +1,7 @@
+2008-12-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Events.cs: MouseLeave needs to supply MouseEventArgs.
+
 2008-12-05  Jackson Harper  <jackson@ximian.com>
 
 	* ManagedXamlLoader.cs: Use teh auto-collection adding trick for
