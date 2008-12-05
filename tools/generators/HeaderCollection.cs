@@ -15,44 +15,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-class HeaderCollection
+static class HeaderCollection
 {
-	private Dictionary <int, List<string>> all = new Dictionary<int,List<string>> ();
-	
-	public void Add (string header, int version)
+	public static void Write (List<string> headers, StringBuilder text)
 	{
-		List<string> headers;
-		
-		header = Path.GetFileName (header);
-		
-		if (!all.TryGetValue (version, out headers)) {
-			headers = new List<string> ();
-			all.Add (version, headers);
-		}
-		
-		if (!headers.Contains (header))
-			headers.Add (header);
-	}
-	
-	public void Write (StringBuilder text)
-	{
-		int version;
-		foreach (KeyValuePair <int, List<string>> pair in all) {
-			version = pair.Key;
-			if (version > 1) {
-				text.Append ("#if SL_");
-				text.Append (version);
-				text.AppendLine ("_0");
-			}
-			pair.Value.Sort ();
-			foreach (string header in pair.Value) {
-				text.Append ("#include \"");
-				text.Append (header);
-				text.AppendLine ("\"");
-			}
-			
-			if (version > 1)
-				text.AppendLine ("#endif");
+		foreach (string header in headers) {
+			text.Append ("#include \"");
+			text.Append (header);
+			text.AppendLine ("\"");
 		}
 	}
 }

@@ -144,21 +144,15 @@ class TypeInfo : MemberInfo {
 		}
 	}
 	
-	public int GetEventId (FieldInfo Event, int version)
+	public int GetEventId (FieldInfo Event)
 	{
-		int found = 0;
 		for (int i = 0; i < Events.Count; i++) {
 			FieldInfo field = Events [i];
 			
-			if (version < field.SilverlightVersion)
-				continue;
-			
-			found++;
-			
 			if (field == Event)
-				return i + GetBaseEventCount (version);
+				return i + GetBaseEventCount ();
 		}
-		return ((TypeInfo) Parent.Children [Base.Value]).GetEventId (Event, version);
+		return ((TypeInfo) Parent.Children [Base.Value]).GetEventId (Event);
 	}
 	
 	public string KindName {
@@ -174,7 +168,7 @@ class TypeInfo : MemberInfo {
 		}
 	}
 			
-	public int GetBaseEventCount (int version)	
+	public int GetBaseEventCount ()	
 	{
 		int result;
 		if (Base == null || string.IsNullOrEmpty (Base.Value)) {
@@ -184,7 +178,7 @@ class TypeInfo : MemberInfo {
 		} else if (!Parent.Children.ContainsKey (Base.Value)) {
 			result = -3;
 		} else
-			result = ((TypeInfo) Parent.Children [Base.Value]).GetTotalEventCount (version);
+			result = ((TypeInfo) Parent.Children [Base.Value]).GetTotalEventCount ();
 		//Console.WriteLine ("GetBaseEventCount '{2}' {0}, base: '{1}'", result, Base != null ? Base.Value : "<no base>", FullName);
 		return result < 0 ? 0 : result;
 	}
@@ -199,19 +193,14 @@ class TypeInfo : MemberInfo {
 	/// <returns>
 	/// A <see cref="System.Int32"/>
 	/// </returns>
-	public int GetEventCount (int version)
+	public int GetEventCount ()
 	{
-		int found = 0;
-		for (int i = 0; i < Events.Count; i++) {
-			if (version >= Events [i].SilverlightVersion)
-				found++;
-		}
-		return found;
+		return Events.Count;
 	}
 	
-	public int GetTotalEventCount (int version)
+	public int GetTotalEventCount ()
 	{
-		return GetEventCount (version) + GetBaseEventCount (version);
+		return GetEventCount () + GetBaseEventCount ();
 	}
 	
 	public string ContentProperty {

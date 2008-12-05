@@ -338,15 +338,15 @@ class Generator {
 	{	
 		string base_dir = Environment.CurrentDirectory;
 		string moon_dir = Path.Combine (base_dir, "src");
-		int version_previous = 0;
+// 		int version_previous = 0;
 		StringBuilder text = new StringBuilder ();
 		List<FieldInfo> fields = all.DependencyProperties;
-		HeaderCollection headers = new HeaderCollection ();
+		List<string> headers = new List<string> ();
 		
-		headers.Add ("dependencyproperty.h", 1);
-		headers.Add ("color.h", 1);
+		headers.Add ("dependencyproperty.h");
+		headers.Add ("color.h");
 		foreach (FieldInfo field in fields)
-			headers.Add (field.Header, field.SilverlightVersion);
+			headers.Add (field.Header);
 		
 		Helper.WriteWarningGenerated (text);
 		text.AppendLine ();
@@ -354,7 +354,7 @@ class Generator {
 		text.AppendLine ("#include <config.h>");
 		text.AppendLine ("#endif");
 		text.AppendLine ();
-		headers.Write (text);
+		HeaderCollection.Write (headers, text);
 		text.AppendLine ();
 		text.AppendLine ("bool dependency_properties_initialized = false;");
 		text.AppendLine ("void");
@@ -375,13 +375,6 @@ class Generator {
 			bool is_readonly = field.IsDPReadOnly;
 			bool is_always_change = field.IsDPAlwaysChange;
 			bool is_full = is_attached || is_readonly || is_always_change;
-			int version = field.SilverlightVersion;
-			int version_next = (i + 1 < fields.Count) ? fields [i + 1].SilverlightVersion : -1;
-			
-			if (version > 1 && version_previous != version) {
-				text.Append ("#if ");
-				Helper.WriteVersion (text, version);
-			}
 			
 			propertyType = field.GetDPPropertyType (all);
 			
@@ -390,7 +383,7 @@ class Generator {
 			if (propertyType == null) {
 				text.Append ("// (no PropertyType was found for this DependencyProperty) ");
 			} else {
-				headers.Add (propertyType.Header, version);
+				headers.Add (propertyType.Header);
 			}
 			
 			text.Append (type.Name);
@@ -455,9 +448,6 @@ class Generator {
 			}
 			
 			text.AppendLine (");");
-			if (version > 1 && version_next != version)
-				text.AppendLine ("#endif");
-			version_previous = version;
 		}
 		text.AppendLine ("}");
 		text.AppendLine ();
@@ -465,21 +455,11 @@ class Generator {
 		// Static initializers
 		for (int i = 0; i < fields.Count; i++) {
 			FieldInfo field = fields [i];
-			int version = field.SilverlightVersion;
-			int version_next = i + 1 < fields.Count ? fields [i + 1].SilverlightVersion : -1;
-			if (version > 1 && version_previous != version) {
-				text.Append ("#if SL_");
-				text.Append (version);
-				text.AppendLine ("_0");
-			}
 			text.Append ("DependencyProperty *");
 			text.Append (field.Parent.Name);
 			text.Append ("::");
 			text.Append (field.Name);
 			text.AppendLine (" = NULL;");
-			if (version > 1 && version_next != version)
-				text.AppendLine ("#endif");
-			version_previous = version;
 		}
 		text.AppendLine ();
 		
@@ -527,11 +507,6 @@ class Generator {
 				prop_type_str = prop_type.Name; 
 				value_str = prop_type.Name;
 				break;
-			}
-		
-			if (field.SilverlightVersion > 1) {
-				text.Append ("#if ");
-				Helper.WriteVersion (text, field.SilverlightVersion);
 			}
 
 			string GetterName = string.Format ("{0}::Get{1}", field.ParentType.Name, field.GetDependencyPropertyName());
@@ -654,10 +629,6 @@ class Generator {
 				nullable_setter = false;
 				doing_nullable_setter = true;
 				goto do_nullable_setter;
-			}
-			
-			if (field.SilverlightVersion > 1) {
-				text.AppendLine ("#endif");
 			}
 		}
 		
@@ -1249,9 +1220,6 @@ class Generator {
 		foreach (MemberInfo member in methods) {
 			MethodInfo method = (MethodInfo) member;			
 			
-			WriteMethodIfVersion (method.CMethod, header, false);
-			WriteMethodIfVersion (method.CMethod, impl, false);
-			
 			if (last_type != method.Parent.Name) {
 				last_type = method.Parent.Name;
 				foreach (StringBuilder text in new StringBuilder [] {header, impl}) {
@@ -1263,11 +1231,9 @@ class Generator {
 			}
 			
 			WriteHeaderMethod (method.CMethod, method, header);
-			WriteMethodIfVersion (method.CMethod, header, true);
 			header.AppendLine ();
 			
 			WriteImplMethod (method.CMethod, method, impl);
-			WriteMethodIfVersion (method.CMethod, impl, true);
 			impl.AppendLine ();
 			impl.AppendLine ();
 		}
@@ -1279,23 +1245,6 @@ class Generator {
 		
 		Helper.WriteAllText (Path.Combine (moon_dir, "cbinding.h"), header.ToString ());
 		Helper.WriteAllText (Path.Combine (moon_dir, "cbinding.cpp"), impl.ToString ());
-	}
-	
-	static void WriteMethodIfVersion (MethodInfo method, StringBuilder text, bool end)
-	{
-		if (method.SilverlightVersion > 1) {
-			if (!end) {
-				switch (method.SilverlightVersion) {
-				case 2:
-					text.AppendLine ("#if SL_2_0");
-					break;
-				default:
-					throw new Exception (string.Format ("Unknown SilverlightVersion: {0}", method.SilverlightVersion));
-				}
-			} else {
-				text.AppendLine ("#endif");
-			}
-		}
 	}
 	
 	static void WriteHeaderMethod (MethodInfo cmethod, MethodInfo cppmethod, StringBuilder text)	
@@ -1401,7 +1350,6 @@ class Generator {
 	{
 		string header;
 		List<string> headers = new List<string> ();
-		List<string> headers2 = new List<string> ();
 		
 		StringBuilder text = new StringBuilder ();
 		
@@ -1417,7 +1365,7 @@ class Generator {
 		foreach (TypeInfo t in all.Children.SortedTypesByKind) {
 			if (t.C_Constructor == string.Empty || t.C_Constructor == null || !t.GenerateCBindingCtor) {
 				//Console.WriteLine ("{0} does not have a C ctor", t.FullName);
-				if (t.GetTotalEventCount (int.MaxValue) == 0)
+				if (t.GetTotalEventCount () == 0)
 					continue;
 			}
 	
@@ -1429,20 +1377,8 @@ class Generator {
 			//Console.WriteLine ("{0}'s header is {1}", t.FullName, t.Header);
 			
 			header = Path.GetFileName (t.Header);
-			if (t.SilverlightVersion == 1) {
-				if (headers2.Contains (header))
-					throw new Exception (string.Format ("header {0} contains both a 1.0 and 2.0 class", header));
-				
-				if (!headers.Contains (header))
-					headers.Add (header);
-			}
-			else if (t.SilverlightVersion == 2) {
-				if (headers.Contains (header))
-					throw new Exception (string.Format ("header {0} contains both a 1.0 and 2.0 class", header));
-				
-				if (!headers2.Contains (header))
-					headers2.Add (header);
-			}
+			if (!headers.Contains (header))
+				headers.Add (header);
 		}
 		
 		// Loop through all the classes and check which headers
@@ -1454,118 +1390,79 @@ class Generator {
 			text.Append (h);
 			text.AppendLine ("\"");
 		}
-		
-		text.AppendLine ("#if SL_2_0");
-		headers2.Sort ();
-		foreach (string h in headers2) {
-			text.Append ("#include \"");
-			text.Append (h);
-			text.AppendLine ("\"");
-		}
-		text.AppendLine ("#endif");
-		
-		int [] versions = new int [] {2, 1};
-		
-		for (int i = 0; i < versions.Length; i++) {
-			int version = versions [i];
-			// Set the event ids for all the events
-			text.AppendLine ();
+		text.AppendLine ();
 			
-			text.Append (i == 0 ? "#if " : "#else ");
-			if (i == 0)
-				Helper.WriteVersion (text, version);
-						
-			text.AppendLine ();
-			
-			foreach (TypeInfo t in all.Children.SortedTypesByKind) {
-				if (version < t.SilverlightVersion)
-					continue;
-				
-				if (t.GetEventCount (version) == 0)
-					continue;
+		foreach (TypeInfo t in all.Children.SortedTypesByKind) {
+			if (t.GetEventCount () == 0)
+				continue;
 				
 				
-				foreach (FieldInfo field in t.Events) {
-					if (version < field.SilverlightVersion)
-						continue;
-					text.Append ("const int ");
-					text.Append (t.Name);
-					text.Append ("::");
-					text.Append (field.EventName);
-					text.Append ("Event = ");
-					text.Append (t.GetEventId (field, version));
-					text.AppendLine (";");
-				}
-			}
-	
-			// Create the arrays of event names for the classes which have events
-			text.AppendLine ("");
-			foreach (TypeInfo t in all.Children.SortedTypesByKind) {
-				if (t.Events == null || t.Events.Count == 0)
-					continue;
-				
-				if (version < t.SilverlightVersion)
-					continue;
-				
-				text.Append ("const char *");
+			foreach (FieldInfo field in t.Events) {
+				text.Append ("const int ");
 				text.Append (t.Name);
-				text.Append ("_Events [] = { ");
-				
-				foreach (FieldInfo field in t.Events) {
-					if (version < field.SilverlightVersion)
-						continue;
-					
-					text.Append ("\"");
-					text.Append (field.EventName);
-					text.Append ("\", ");
-				}
-				
-				text.AppendLine ("NULL };");
+				text.Append ("::");
+				text.Append (field.EventName);
+				text.Append ("Event = ");
+				text.Append (t.GetEventId (field));
+				text.AppendLine (";");
 			}
-	
-			// Create the array of type data
-			text.AppendLine ("");
-			text.AppendLine ("Type type_infos [] = {");
-			text.AppendLine ("\t{ Type::INVALID, Type::INVALID, false, \"INVALID\", NULL, 0, 0, NULL, NULL, NULL, NULL, NULL },");
-			foreach (TypeInfo type in all.Children.SortedTypesByKind) {
-				MemberInfo member;
-				TypeInfo parent = null;
-				string events = "NULL";
-				
-				if (!type.ImplementsGetObjectType && !type.Annotations.ContainsKey ("IncludeInKinds"))
-					continue;
-				
-				if (type.Base != null && type.Base.Value != null && all.Children.TryGetValue (type.Base.Value, out member))
-					parent = (TypeInfo) member;
-				
-				if (type.Events != null && type.Events.Count != 0)
-					events = type.Name + "_Events";
-	
-				if (version >= type.SilverlightVersion) {
-					text.AppendLine (string.Format (@"	{{ {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, NULL, NULL }}, ",
-					                                "Type::" + type.KindName, 
-					                                type.KindName == "OBJECT" ? "Type::INVALID" : ("Type::" + (parent != null ? parent.KindName : "OBJECT")),
-					                                type.IsValueType ? "true" : "false",
-					                                "\"" + type.Name + "\"", 
-					                                "\"" + type.KindName + "\"", 
-					                                type.GetEventCount (version),
-					                                type.GetTotalEventCount (version),
-					                                events,
-					                                (type.C_Constructor != null && type.GenerateCBindingCtor) ? string.Concat ("(create_inst_func *) ", type.C_Constructor) : "NULL", 
-					                                type.ContentProperty != null ? string.Concat ("\"", type.ContentProperty, "\"") : "NULL"
-					                                )
-					                 );
-				} else {
-					text.AppendLine (string.Format ("	{{ Type::INVALID, Type::INVALID, false, \"2.0 specific type '{0}'\", {1}, 0, 0, NULL, NULL, NULL, NULL, NULL }}, ",
-									type.KindName,
-									"\"" + type.KindName + "\""));
-				}
-				
-			}
-			text.AppendLine ("\t{ Type::LASTTYPE, Type::INVALID, false, NULL, NULL, 0, 0, NULL, NULL, NULL, NULL, NULL }");
-			text.AppendLine ("};");
 		}
-		text.AppendLine ("#endif");
+	
+		// Create the arrays of event names for the classes which have events
+		text.AppendLine ("");
+		foreach (TypeInfo t in all.Children.SortedTypesByKind) {
+			if (t.Events == null || t.Events.Count == 0)
+				continue;
+				
+			text.Append ("const char *");
+			text.Append (t.Name);
+			text.Append ("_Events [] = { ");
+				
+			foreach (FieldInfo field in t.Events) {
+				text.Append ("\"");
+				text.Append (field.EventName);
+				text.Append ("\", ");
+			}
+				
+			text.AppendLine ("NULL };");
+		}
+	
+		// Create the array of type data
+		text.AppendLine ("");
+		text.AppendLine ("Type type_infos [] = {");
+		text.AppendLine ("\t{ Type::INVALID, Type::INVALID, false, \"INVALID\", NULL, 0, 0, NULL, NULL, NULL, NULL, NULL },");
+		foreach (TypeInfo type in all.Children.SortedTypesByKind) {
+			MemberInfo member;
+			TypeInfo parent = null;
+			string events = "NULL";
+				
+			if (!type.ImplementsGetObjectType && !type.Annotations.ContainsKey ("IncludeInKinds"))
+				continue;
+				
+			if (type.Base != null && type.Base.Value != null && all.Children.TryGetValue (type.Base.Value, out member))
+				parent = (TypeInfo) member;
+				
+			if (type.Events != null && type.Events.Count != 0)
+				events = type.Name + "_Events";
+	
+			text.AppendLine (string.Format (@"	{{ {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, NULL, NULL }}, ",
+							"Type::" + type.KindName, 
+							type.KindName == "OBJECT" ? "Type::INVALID" : ("Type::" + (parent != null ? parent.KindName : "OBJECT")),
+							type.IsValueType ? "true" : "false",
+							"\"" + type.Name + "\"", 
+							"\"" + type.KindName + "\"", 
+							type.GetEventCount (),
+							type.GetTotalEventCount (),
+							events,
+							(type.C_Constructor != null && type.GenerateCBindingCtor) ? string.Concat ("(create_inst_func *) ", type.C_Constructor) : "NULL", 
+							type.ContentProperty != null ? string.Concat ("\"", type.ContentProperty, "\"") : "NULL"
+							)
+					 );
+		}
+
+		text.AppendLine ("\t{ Type::LASTTYPE, Type::INVALID, false, NULL, NULL, 0, 0, NULL, NULL, NULL, NULL, NULL }");
+		text.AppendLine ("};");
+
 		text.AppendLine ();
 				
 		Helper.WriteAllText ("src/type-generated.cpp", text.ToString ());
