@@ -67,7 +67,6 @@
 #include "/home/toshok/src/mono/moon/src/control.h"
 #include "/home/toshok/src/mono/moon/src/control.h"
 #include "/home/toshok/src/mono/moon/src/template.h"
-#include "/home/toshok/src/mono/moon/src/deepzoomimagetilesource.h"
 #include "/home/toshok/src/mono/moon/src/dependencyobject.h"
 #include "/home/toshok/src/mono/moon/src/deployment.h"
 #include "/home/toshok/src/mono/moon/src/deployment.h"
@@ -407,7 +406,6 @@ dependency_property_g_init (void)
 	Control::TemplateProperty = DependencyProperty::Register (Type::CONTROL, "Template", Type::CONTROLTEMPLATE);
 	Control::VerticalContentAlignmentProperty = DependencyProperty::Register (Type::CONTROL, "VerticalContentAlignment", new Value (VerticalAlignmentCenter));
 	ControlTemplate::TargetTypeProperty = DependencyProperty::Register (Type::CONTROLTEMPLATE, "TargetType", Type::MANAGED);
-	DeepZoomImageTileSource::UriSourceProperty = DependencyProperty::Register (Type::DEEPZOOMIMAGETILESOURCE, "UriSource", Type::STRING);
 	DependencyObject::NameProperty = DependencyProperty::Register (Type::DEPENDENCY_OBJECT, "Name", Type::STRING);
 	Deployment::EntryPointAssemblyProperty = DependencyProperty::Register (Type::DEPLOYMENT, "EntryPointAssembly", Type::STRING);
 	Deployment::EntryPointTypeProperty = DependencyProperty::Register (Type::DEPLOYMENT, "EntryPointType", Type::STRING);
@@ -741,7 +739,6 @@ DependencyProperty *Control::TabNavigationProperty = NULL;
 DependencyProperty *Control::TemplateProperty = NULL;
 DependencyProperty *Control::VerticalContentAlignmentProperty = NULL;
 DependencyProperty *ControlTemplate::TargetTypeProperty = NULL;
-DependencyProperty *DeepZoomImageTileSource::UriSourceProperty = NULL;
 DependencyProperty *DependencyObject::NameProperty = NULL;
 DependencyProperty *Deployment::EntryPointAssemblyProperty = NULL;
 DependencyProperty *Deployment::EntryPointTypeProperty = NULL;
@@ -1687,19 +1684,6 @@ void
 Control::SetVerticalContentAlignment (VerticalAlignment value)
 {
 	SetValue (Control::VerticalContentAlignmentProperty, Value (value));
-}
-
-const char *
-DeepZoomImageTileSource::GetUriSource ()
-{
-	Value *value = GetValue (DeepZoomImageTileSource::UriSourceProperty);
-	return value ? value->AsString () : NULL;
-}
-
-void
-DeepZoomImageTileSource::SetUriSource (const char * value)
-{
-	SetValue (DeepZoomImageTileSource::UriSourceProperty, Value (value));
 }
 
 const char *

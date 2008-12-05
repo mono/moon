@@ -1,3 +1,10 @@
+2008-12-05  Chris Toshok  <toshok@ximian.com>
+
+	* deepzoomimagetilesource.h (class DeepZoomImageTileSource): fix
+	the GenerateAccessors thing the right way.
+
+	* dependencyproperty.g.cpp: regen.
+	
 2008-12-05  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Move the markup extension handler out of
