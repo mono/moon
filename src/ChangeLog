@@ -1,3 +1,9 @@
+2008-12-05  Geoff Norton  <gnorton@novell.com>
+
+	* audio-pulse.cpp: PulseAudio sometimes gives us errors sync, 
+	and sometimes async.  Lets ensure we can actually connect before
+	continuing on.
+
 2008-12-05  Jeffrey Stedfast  <fejj@novell.com>
 
 	* runtime.cpp (Surface::FocusElement): Removed #if SL_2_0 check.
