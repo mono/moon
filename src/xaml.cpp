@@ -125,6 +125,7 @@ class XamlElementInstance : public List::Node {
  protected:
 	DependencyObject *item;
 	Value *value;
+	bool cleanup_value;
 
  public:
 	const char *element_name;
@@ -154,6 +155,7 @@ class XamlElementInstance : public List::Node {
 		this->item = NULL;
 		this->value = NULL;
 		this->x_key = NULL;
+		this->cleanup_value = true;
 		
 		children = new List ();
 	}
@@ -163,8 +165,11 @@ class XamlElementInstance : public List::Node {
 		children->Clear (true);
 		delete children;
 		delete info;
-		delete value;
+
 		g_free (x_key);
+
+		if (cleanup_value)
+			delete value;
 
 		if (set_properties)
 			g_hash_table_destroy (set_properties);
@@ -2965,6 +2970,9 @@ XamlElementInfoManaged::CreatePropertyElementInstance (XamlParserInfo *p, const 
 XamlElementInstanceManaged::XamlElementInstanceManaged (XamlElementInfo *info, const char *name, ElementType type, Value *obj) :
 	XamlElementInstance (info, name, type)
 {
+	// The managed code owns our Value objects
+	cleanup_value = false;
+
 	this->value = obj;
 
 	if (obj->Is (Type::DEPENDENCY_OBJECT))

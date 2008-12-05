@@ -1,3 +1,7 @@
+2008-12-05  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Let managed code own it's Value pointers.
+
 2008-12-04  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: We can store the Value* in the base element instance
