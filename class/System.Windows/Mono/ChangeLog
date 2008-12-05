@@ -1,5 +1,10 @@
 2008-12-05  Jackson Harper  <jackson@ximian.com>
 
+	* ManagedXamlLoader.cs: Use teh auto-collection adding trick for
+	setting normal properties too, not just attached properties.
+
+2008-12-05  Jackson Harper  <jackson@ximian.com>
+
 	* ManagedXamlLoader.cs: Only do this list add trick on a property
 	if we are not a list. ie don't add a list to the list.
 

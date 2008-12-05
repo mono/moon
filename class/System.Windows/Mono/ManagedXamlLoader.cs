@@ -439,8 +439,26 @@ namespace Mono.Xaml
 			} else
 				obj_value = DependencyObject.ValueToObject (pi.PropertyType, value_ptr);
 
-			Helper.SetPropertyFromValue (target, pi, obj_value, out error);
-			return error == null;
+			if (typeof (IList).IsAssignableFrom (pi.PropertyType) && !(obj_value is IList)) {
+				IList the_list = (IList) pi.GetValue (target, null);
+
+				if (the_list == null) {
+					the_list = (IList) Activator.CreateInstance (pi.PropertyType);
+					if (the_list == null) {
+						error = "Unable to create instance of list: " + pi.PropertyType;
+						return false;
+					}
+					pi.SetValue (target, the_list, null);
+					the_list.Add (obj_value);
+					return true;
+				} else {
+					// I guess we need to wrap the current value in a collection, or does this error out?
+					return false;
+				}
+			}
+
+			pi.SetValue (target, obj_value, null);
+			return true;
 		}
 
 		private bool AddChild (IntPtr parent_ptr, string prop_name, IntPtr child_ptr)
