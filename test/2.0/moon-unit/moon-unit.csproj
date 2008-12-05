@@ -73,11 +73,13 @@
     <Compile Include="System.IO.IsolatedStorage\IsolatedStorageFileStreamTest.cs" />
     <Compile Include="System.IO.IsolatedStorage\IsolatedStorageFileTest.cs" />
     <Compile Include="System.IO.IsolatedStorage\IsolatedStorageSettingsTest.cs" />
+    <Compile Include="System.Windows.Controls.Primitives\ButtonBaseTest.cs" />
     <Compile Include="System.Windows.Controls.Primitives\RangeBaseTest.cs" />
     <Compile Include="System.Windows.Controls.Primitives\RepeatButtonTest.cs" />
     <Compile Include="System.Windows.Controls.Primitives\ThumbTest.cs" />
     <Compile Include="System.Windows.Controls\BorderTest.cs" />
     <Compile Include="System.Windows.Controls\CanvasTest.cs" />
+    <Compile Include="System.Windows.Controls\ContentControlTest.cs" />
     <Compile Include="System.Windows.Controls\ControlTemplateTest.cs" />
     <Compile Include="System.Windows.Controls\ControlTest.cs" />
     <Compile Include="System.Windows.Controls\GridTest.cs" />
@@ -85,6 +87,7 @@
     <Compile Include="System.Windows.Controls\MediaElementTest.SlowStream.cs" />
     <Compile Include="System.Windows.Controls\OpenFileDialogTest.cs" />
     <Compile Include="System.Windows.Controls\PanelTest.cs" />
+    <Compile Include="System.Windows.Controls\ProgressBarTest.cs" />
     <Compile Include="System.Windows.Controls\SliderTest.cs" />
     <Compile Include="System.Windows.Data\BindingTest.cs" />
     <Compile Include="System.Windows.Data\IValueConverterTest.cs" />
