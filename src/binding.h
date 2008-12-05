@@ -23,32 +23,31 @@ typedef void  (*SetValueCallback)(void *value);
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Data */
 class Binding : public EventObject {
- public:
- 	/* @GenerateCBinding,GeneratePInvoke */
- 	Binding ();
- 	
-	/* @GenerateCBinding,GeneratePInvoke */
- 	char *GetPropertyPath ();
- 	/* @GenerateCBinding,GeneratePInvoke */
- 	void SetPropertyPath (char* path);
-
-	/* @GenerateCBinding,GeneratePInvoke */
- 	BindingMode GetBindingMode ();
-	/* @GenerateCBinding,GeneratePInvoke */
- 	void SetBindingMode (BindingMode mode);
-
-	/* @GenerateCBinding,GeneratePInvoke */
- 	bool GetIsSealed ();
-	/* @GenerateCBinding,GeneratePInvoke */
- 	void SetIsSealed (bool isSealed);
-
+	BindingMode binding_mode;
+	char *property_path;
+	bool is_sealed;
+	
  protected:
- 	virtual ~Binding ();
- 	
- private:
- 	char *property_path;
- 	BindingMode binding_mode;
- 	bool is_sealed;
+	virtual ~Binding ();
+	
+ public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	Binding ();
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	char *GetPropertyPath ();
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetPropertyPath (const char *path);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	BindingMode GetBindingMode ();
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetBindingMode (BindingMode mode);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	bool GetIsSealed ();
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetIsSealed (bool isSealed);
 };
 
 
@@ -60,7 +59,6 @@ class BindingExpressionBase : public Expression {
 	DependencyObject *source;
 	DependencyProperty *target_property;
 	FrameworkElement *target;
-
 	
 	virtual ~BindingExpressionBase ();
 	BindingExpressionBase ();
@@ -102,7 +100,8 @@ class BindingExpressionBase : public Expression {
 	void RegisterManagedOverrides (GetValueCallback gv_callback, SetValueCallback sv_callback);
 	
 	void SetGotValue (bool value) { this->got_value = value; }
- private:
+	
+private:
  	bool got_value;
  	GetValueCallback gv_callback;
  	SetValueCallback sv_callback;

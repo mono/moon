@@ -27,20 +27,20 @@ Binding::Binding ()
 char *
 Binding::GetPropertyPath ()
 {
-	return property_path;	
+	return property_path;
 }
 
 void
-Binding::SetPropertyPath (char *path)
+Binding::SetPropertyPath (const char *path)
 {
 	g_free (property_path);
-	property_path = g_strdup (path);	
+	property_path = g_strdup (path);
 }
 
 BindingMode
 Binding::GetBindingMode ()
 {
-	return binding_mode;	
+	return binding_mode;
 }
 
 void
@@ -52,7 +52,7 @@ Binding::SetBindingMode (BindingMode mode)
 bool
 Binding::GetIsSealed ()
 {
-	return is_sealed;	
+	return is_sealed;
 }
 
 void

@@ -1,5 +1,8 @@
 2008-12-05  Jeffrey Stedfast  <fejj@novell.com>
 
+	* binding.cpp (Binding::SetPropertyPath): Fixed to take a const
+	char *
+
 	* xaml.cpp: Conditionally define DEBUG, which I guess is a
 	temporary thing, in a way which will not spew gcc warnings.
 
