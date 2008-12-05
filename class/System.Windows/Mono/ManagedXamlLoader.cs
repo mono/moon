@@ -328,7 +328,7 @@ namespace Mono.Xaml
 			// and then add the new object to the collection
 			//
 			// TODO: Check if the setter method still gets called on Silverlight
-			if (typeof (IList).IsAssignableFrom (set_params [1].ParameterType)) {
+			if (typeof (IList).IsAssignableFrom (set_params [1].ParameterType) && !(o_value is IList)) {
 				MethodInfo get_method = attach_type.GetMethod (String.Concat ("Get", name), BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
 
 				if (get_method != null || get_method.GetParameters () == null || get_method.GetParameters ().Length != 1) {
