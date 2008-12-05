@@ -82,6 +82,7 @@ static char* test_path = NULL;
 static const char* working_dir = NULL;
 static guint timeout_id = 0;
 static time_t hung_time = 0;
+static bool handling_sigsegv = false;
 
 static void run_test (char* test_path, int timeout);
 static bool move_to_next_test ();
@@ -104,8 +105,18 @@ hang_detector (gpointer data)
 	while (true) {
 		now = time (NULL);
 		if (hung_time > 0 && hung_time < now) {
-			fprintf (stderr, "Agviewer seems to be hung, aborting process.\n");
-			print_stack_traces ();
+			if (handling_sigsegv) {
+				/*
+				 * In our normal sigsegv handling we do signal-unsafe things to provide better 
+				 * output to what actually happened. This may go wrong (a sigsegv in malloc will
+				 * cause a dead-lock, since we end up calling malloc again), so if we did get
+				 * dead-locked, do only signal-safe stuff.
+				 */
+				_exit (1);
+			} else {
+				fprintf (stderr, "Agviewer seems to be hung, aborting process.\n");
+				print_stack_traces ();
+			}
 			abort ();
 		}
 		//printf ("hang_detector: We're %li seconds from hanging\n", hung_time - now);
@@ -556,8 +567,6 @@ agviewer_add_signal_handler ()
  *   (this is a slightly modified version of mono_handle_native_sigsegv from mono/mono/mini/mini-exceptions.c)
  *
  */
- 
-static bool handling_sigsegv = false;
 
 typedef void void_method ();
 
@@ -574,8 +583,12 @@ agviewer_handle_native_sigsegv (int signal)
 	}
 	
 	if (handling_sigsegv) {
-		fprintf (stderr, "\nGot a SIGSEGV while executing the SIGSEGV handler, aborting.\n");
-		abort ();
+		/*
+		 * In our normal sigsegv handling we do signal-unsafe things to provide better 
+		 * output to what actually happened. If we get another one, do only signal-safe
+		 * things
+		 */
+		_exit (1);
 		return;
 	}
 

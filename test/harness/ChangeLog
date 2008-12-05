@@ -1,3 +1,10 @@
+2008-12-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* agviewer/agviewer.cpp: If the hang detector detects that we're hung
+	  in a sigsegv handler, just exit, we probably deadlocked in malloc
+	  and trying to provide stack traces will just deadlock the hang
+	  detector too.
+
 2008-12-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* test-runner/Test.cs, test-runner/TestRun.cs: Add support for printing
