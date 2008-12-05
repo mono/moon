@@ -68,7 +68,7 @@ namespace Mono {
 		public extern static void binding_set_is_sealed (IntPtr instance, bool isSealed);
 
 		[DllImport ("moon")]
-		// void binding_set_property_path (Binding *instance, char *path);
+		// void binding_set_property_path (Binding *instance, const char *path);
 		public extern static void binding_set_property_path (IntPtr instance, string path);
 
 		[DllImport ("moon")]
