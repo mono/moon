@@ -62,10 +62,12 @@ class PulseSource: public AudioSource {
 };
 
 class PulsePlayer : public AudioPlayer {
- public:
+ private:
 	pa_context *context;
 	pa_threaded_mainloop *loop;
 	pa_mainloop_api *api;
+	pthread_cond_t cond;
+	pthread_mutex_t mutex;
 	
 	bool connected;
 	

@@ -1,3 +1,11 @@
+2008-12-05  Geoff Norton  <gnorton@novell.com>
+
+	* audio-pulse.cpp: PulseAudio sometimes gives us errors sync, 
+	and sometimes async.  Lets ensure we can actually connect before
+	continuing on.
+
+	r: toshok
+
 2008-12-03  Geoff Norton  <gnorton@novell.com>
 
 	* media.cpp: Ensure we null our reference to the image loader in 

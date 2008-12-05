@@ -508,10 +508,15 @@ PulsePlayer::PulsePlayer ()
 {
 	loop = NULL;
 	context = NULL;
+	connected = false;
+	pthread_mutex_init (&mutex, NULL);
+	pthread_cond_init (&cond, NULL);
 }
 
 PulsePlayer::~PulsePlayer ()
 {
+	pthread_mutex_destroy (&mutex);
+	pthread_cond_destroy (&cond);
 }
  
 void
@@ -625,7 +630,7 @@ PulsePlayer::IsInstalled ()
 		}
 
 		if (!result)
-			LOG_AUDIO ("PulsePlayer: Failed to load one or more required functions in libpulse.so.");
+			LOG_AUDIO ("PulsePlayer: Failed to load one or more required functions in libpulse.so.\n");
 		
 		is_pulse_usable = result ? 1 : 2;
 		return result;
@@ -692,11 +697,21 @@ PulsePlayer::OnContextStateChanged () {
 			source->unref ();
 		}
 		UnlockLoop ();
+		pthread_mutex_lock (&mutex);
+		LOG_AUDIO ("PulsePlayer::InitializeInternal (): Signalling main thread that we've connected\n");
+		connected = true;
+		pthread_cond_signal (&cond);
+		pthread_mutex_unlock (&mutex);
 		break;
 	case PA_CONTEXT_TERMINATED:
 		break;
 	case PA_CONTEXT_FAILED:
 	default:
+		pthread_mutex_lock (&mutex);
+		LOG_AUDIO ("PulsePlayer::InitializeInternal (): Signalling main thread that we've failed to connect\n");
+		connected = false;
+		pthread_cond_signal (&cond);
+		pthread_mutex_unlock (&mutex);
 		fprintf (stderr, "Moonlight: Connection failure while trying to connect to pulseaudio daemon: %s\n", pa_strerror (pa_context_errno (context)));
 		break;
 	}
@@ -751,9 +766,34 @@ PulsePlayer::Initialize ()
 	if (err < 0) {
 		LOG_AUDIO ("PulsePlayer::InitializeInternal (): Error %i while connecting to server.\n", err);
 		return false;
+	} 
+	if (!connected) {
+		LOG_AUDIO ("PulsePlayer::InitializeInternal (): pa_context_connect returned but we're not connected.\n");
+		// Its possible that pulse can return an error to us async
+		// We need to aquire a lock, then start the mainloop
+		pthread_mutex_lock (&mutex);
+		
+		// Of course it wont raise the async error unless we try
+		// to start the mainloop
+		pa_threaded_mainloop_start (loop);
+		// We now yield the lock as it will be aquired in the
+		// callback and will signal us when to continue
+		LOG_AUDIO ("PulsePlayer::InitializeInternal (): Waiting to see if we can connect.\n");
+		pthread_cond_wait (&cond, &mutex);
+		pthread_mutex_unlock (&mutex);
+
+		// At this stag we have had connected set regardless of wether
+		// PA wants to be sync or async
+		if (!connected) {
+			LOG_AUDIO ("PulsePlayer::InitializeInternal (): Asynchronous error while connecting to the pulse daemon\n");
+			return false;
+		}
+	} else {
+		LOG_AUDIO ("PulsePlayer::InitializeInternal (): pa_context_connect returned and connected.\n");
+		// We've already connected successfully in a sync fashion
+		// there is no need to lock, we can just start the loop
+		pa_threaded_mainloop_start (loop);
 	}
-	
-	pa_threaded_mainloop_start (loop);
 	
 	return true;
 }
