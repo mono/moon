@@ -1,3 +1,8 @@
+2008-12-05  Jeffrey Stedfast  <fejj@novell.com>
+
+	* xaml.cpp: Conditionally define DEBUG, which I guess is a
+	temporary thing, in a way which will not spew gcc warnings.
+
 2008-12-05  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Let managed code own it's Value pointers.

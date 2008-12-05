@@ -11,9 +11,14 @@
  * 
  */
 
-#define DEBUG
-
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
+
+#ifndef DEBUG
+#define DEBUG
+#endif
+
 #include <string.h>
 #include <malloc.h>
 #include <glib.h>
