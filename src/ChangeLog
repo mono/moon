@@ -1,3 +1,8 @@
+2008-12-04  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: We can store the Value* in the base element instance
+	now, since they all use a Value.
+
 2008-12-05  Fernando Herrera  <fherrera@novell.com>
 
 	* playlist.cpp:

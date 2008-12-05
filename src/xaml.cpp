@@ -404,7 +404,6 @@ class XamlElementInstanceNative : public XamlElementInstance {
 class XamlElementInstanceValueType : public XamlElementInstance {
 	XamlElementInfoNative *element_info;
 	XamlParserInfo *parser_info;
-	Value *value_item;
 
  public:
 	XamlElementInstanceValueType (XamlElementInfoNative *element_info, XamlParserInfo *parser_info, const char *name, ElementType type);
@@ -416,7 +415,7 @@ class XamlElementInstanceValueType : public XamlElementInstance {
 
 	virtual Value *GetAsValue ()
 	{
-		return value_item;
+		return value;
 	}
 
 	bool CreateValueItemFromString (const char* str);
@@ -446,9 +445,6 @@ class XamlElementInfoEnum : public XamlElementInfo {
 
 class XamlElementInstanceEnum : public XamlElementInstance {
 
- protected:
-	Value *value_item;
-
  public:
 	XamlElementInstanceEnum (XamlElementInfoEnum *element_info, const char *name, ElementType type);
 
@@ -459,7 +455,7 @@ class XamlElementInstanceEnum : public XamlElementInstance {
 
 	virtual Value *GetAsValue ()
 	{
-		return value_item;
+		return value;
 	}
 
 	bool CreateEnumFromString (const char* str);
@@ -689,8 +685,6 @@ class XamlElementInstanceManaged : public XamlElementInstance {
 		return false;
 	}
 
-	virtual Value *GetAsValue () { return obj; }
-
 	virtual bool SetAttachedProperty (XamlParserInfo *p, XamlElementInstance *target, XamlElementInstance *value);
 
 	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value);
@@ -701,8 +695,6 @@ class XamlElementInstanceManaged : public XamlElementInstance {
 	virtual bool TrySetContentProperty (XamlParserInfo *p, const char *value);
 
 	virtual void* GetManagedPointer ();
- protected:
-	Value *obj;
 };
 
 
@@ -2877,7 +2869,7 @@ bool
 XamlElementInstanceValueType::CreateValueItemFromString (const char* str)
 {
 
-	bool res = value_from_str (element_info->GetType ()->GetKind (), NULL, str, &value_item, parser_info->loader->GetSurface()->IsSilverlight2 ());
+	bool res = value_from_str (element_info->GetType ()->GetKind (), NULL, str, &value, parser_info->loader->GetSurface()->IsSilverlight2 ());
 	return res;
 }
 
@@ -2899,7 +2891,7 @@ XamlElementInstanceEnum::CreateEnumFromString (const char* str)
 	if (i == -1)
 		return false;
 		
-	value_item = new Value (i);
+	value = new Value (i);
 	return true;
 }
 
@@ -2973,7 +2965,7 @@ XamlElementInfoManaged::CreatePropertyElementInstance (XamlParserInfo *p, const 
 XamlElementInstanceManaged::XamlElementInstanceManaged (XamlElementInfo *info, const char *name, ElementType type, Value *obj) :
 	XamlElementInstance (info, name, type)
 {
-	this->obj = obj;
+	this->value = obj;
 
 	if (obj->Is (Type::DEPENDENCY_OBJECT))
 		this->SetDependencyObject (obj->AsDependencyObject ());
@@ -2982,11 +2974,9 @@ XamlElementInstanceManaged::XamlElementInstanceManaged (XamlElementInfo *info, c
 void *
 XamlElementInstanceManaged::GetManagedPointer ()
 {
-	if (obj->Is (Type::DEPENDENCY_OBJECT)) {
-		
-		return obj->AsDependencyObject ();
-	}
-	return obj->AsManagedObject ();
+	if (value->Is (Type::DEPENDENCY_OBJECT))
+		return value->AsDependencyObject ();
+	return value->AsManagedObject ();
 }
 
 bool
