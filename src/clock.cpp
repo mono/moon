@@ -32,13 +32,14 @@
 #ifdef _MSC_VER
 #include "Winsock2.h"
 
-static int gettimeofday(struct timeval *tv, void *tz)
+static int
+gettimeofday (struct timeval *tv, void *tz)
 {
-  long int l = GetTickCount();
-
-  tv->tv_sec = l / 1000;
-  tv->tv_usec = (l % 1000) * 1000;
-  return 0;
+	long int l = GetTickCount ();
+	
+	tv->tv_sec = l / 1000;
+	tv->tv_usec = (l % 1000) * 1000;
+	return 0;
 } 
 #endif // _MSC_VER
 

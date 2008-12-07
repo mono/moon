@@ -61,8 +61,8 @@ MultiScaleImage::RenderLayer (cairo_t *cr, MultiScaleTileSource *source, int lay
 
 	int levels = 13;
 
-	double v_tile_w = tile_width * ldexp (1, 13 - layer);
-	double v_tile_h = tile_height * ldexp (1, 13 - layer);
+	double v_tile_w = tile_width * ldexp (1.0, 13 - layer);
+	double v_tile_h = tile_height * ldexp (1.0, 13 - layer);
 	double zoom = w / (double)vp_w;
 
 	int i,j;

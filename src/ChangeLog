@@ -1,3 +1,19 @@
+2008-12-07  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes bug #444872
+
+	Patches by Argiris Kirtzidis
+
+	* dependencyobject.h: Fix forward declarations of classes declared
+	struct.
+
+	* multiscaleimage.cpp (MultiScaleImage::RenderLayer): Use floating
+	point constant to make sure we get the correct overload in MSVC.
+
+	* playlist.cpp (duration_from_asx_str): Same.
+
+	* value.cpp (Value::FreeValue): Free corner radius.
+
 2008-12-05  Geoff Norton  <gnorton@novell.com>
 
 	* audio-pulse.cpp: PulseAudio sometimes gives us errors sync, 

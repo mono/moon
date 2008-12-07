@@ -1039,7 +1039,7 @@ duration_from_asx_str (PlaylistParser *parser, const char *str, Duration **res)
 	if (*p == '.') {
 		p++;
 		while (digits >= 0 && isdigit (*p)) {
-			milliseconds += pow (10, digits) * (*p - '0');
+			milliseconds += pow (10.0f, digits) * (*p - '0');
 			p++;
 			digits--;
 		}

@@ -304,6 +304,9 @@ Value::FreeValue ()
 	case Type::THICKNESS:
 		g_free (u.thickness);
 		break;
+	case Type::CORNERRADIUS:
+		g_free (u.corner);
+		break;
 	default:
 		if (Is (Type::EVENTOBJECT) && u.dependency_object)
 			u.dependency_object->unref ();

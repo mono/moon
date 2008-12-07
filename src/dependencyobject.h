@@ -30,13 +30,13 @@ class CollectionChangedEventArgs;
 class EventObject;
 class EventArgs;
 struct EmitContext;
-struct MoonError;
+class MoonError;
 
 typedef void (* TickCallHandler) (EventObject *object);
 typedef void (* EventHandler) (EventObject *sender, EventArgs *args, gpointer closure);
 typedef bool (* EventHandlerPredicate) (EventHandler cb_handler, gpointer cb_data, gpointer data);
 
-struct EventLists;
+class EventLists;
 
 // 
 // An EventObject starts out with a reference count of 1 (no need to
