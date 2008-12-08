@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2007-2008 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -81,15 +81,19 @@ namespace System.Windows.Controls {
 		private static void OnIsEnabledPropertyChanged (DependencyObject d, DependencyPropertyChangedEventArgs e) 
 		{
 			Control c = (d as Control);
-			DependencyPropertyChangedEventHandler handler = c.IsEnabledChanged;
+			c.OnIsEnabledChanged ((bool) e.NewValue);
+
+			DependencyPropertyChangedEventHandler handler = (DependencyPropertyChangedEventHandler) c.events [IsEnabledEvent];
 			if (handler != null)
 				handler (d, e);
-
-			c.OnIsEnabledChanged ((bool) e.NewValue);
 		}
 		
-		public event DependencyPropertyChangedEventHandler IsEnabledChanged;
+		static object IsEnabledEvent = new object ();
 
+		public event DependencyPropertyChangedEventHandler IsEnabledChanged {
+			add { events.AddHandler (IsEnabledEvent, value); }
+			remove { events.RemoveHandler (IsEnabledEvent, value); }
+		}
 
 		// moved from ContentControl, needed to satisfy the beta1 controls
 		// FIXME: remove/update using the new event once we get the final controls 
@@ -127,6 +131,8 @@ namespace System.Windows.Controls {
 		// called before the event
 		protected virtual void OnGotFocus (RoutedEventArgs e)
 		{
+			if (e == null)
+				throw new ArgumentNullException ("e");
 		}
 
 		internal override void InvokeLostFocus (RoutedEventArgs e)
@@ -138,28 +144,36 @@ namespace System.Windows.Controls {
 		// called before the event
 		protected virtual void OnLostFocus (RoutedEventArgs e)
 		{
+			if (e == null)
+				throw new ArgumentNullException ("e");
 		}
 
 		internal override void InvokeKeyDown (KeyEventArgs e)
 		{
 			OnKeyDown (e);
-			base.InvokeKeyDown (e);
+			if (!e.Handled)
+				base.InvokeKeyDown (e);
 		}
 
 		// called before the event
 		protected virtual void OnKeyDown (KeyEventArgs e)
 		{
+			if (e == null)
+				throw new ArgumentNullException ("e");
 		}
 
 		internal override void InvokeKeyUp (KeyEventArgs e)
 		{
 			OnKeyUp (e);
-			base.InvokeKeyUp (e);
+			if (!e.Handled)
+				base.InvokeKeyUp (e);
 		}
 
 		// called before the event
 		protected virtual void OnKeyUp (KeyEventArgs e)
 		{
+			if (e == null)
+				throw new ArgumentNullException ("e");
 		}
 
 		internal override void InvokeMouseEnter (MouseEventArgs e)
@@ -171,6 +185,8 @@ namespace System.Windows.Controls {
 		// called before the event
 		protected virtual void OnMouseEnter (MouseEventArgs e)
 		{
+			if (e == null)
+				throw new ArgumentNullException ("e");
 		}
 
 		internal override void InvokeMouseLeave (MouseEventArgs e)
@@ -182,28 +198,36 @@ namespace System.Windows.Controls {
 		// called before the event
 		protected virtual void OnMouseLeave (MouseEventArgs e)
 		{
+			if (e == null)
+				throw new ArgumentNullException ("e");
 		}
 
 		internal override void InvokeMouseButtonDown (MouseButtonEventArgs e)
 		{
 			OnMouseLeftButtonDown (e);
-			base.InvokeMouseButtonDown (e);
+			if (!e.Handled)
+				base.InvokeMouseButtonDown (e);
 		}
 
 		// called before the event
 		protected virtual void OnMouseLeftButtonDown (MouseButtonEventArgs e)
 		{
+			if (e == null)
+				throw new ArgumentNullException ("e");
 		}
 
 		internal override void InvokeMouseButtonUp (MouseButtonEventArgs e)
 		{
 			OnMouseLeftButtonUp (e);
-			base.InvokeMouseButtonUp (e);
+			if (!e.Handled)
+				base.InvokeMouseButtonUp (e);
 		}
 
 		// called before the event
 		protected virtual void OnMouseLeftButtonUp (MouseButtonEventArgs e)
 		{
+			if (e == null)
+				throw new ArgumentNullException ("e");
 		}
 
 		internal override void InvokeMouseMove (MouseEventArgs e)
@@ -215,6 +239,8 @@ namespace System.Windows.Controls {
 		// called before the event
 		protected virtual void OnMouseMove (MouseEventArgs e)
 		{
+			if (e == null)
+				throw new ArgumentNullException ("e");
 		}
 	}
 }

@@ -1,3 +1,9 @@
+2008-12-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Control.cs: Add null check on EventArgs for all On* methods.
+	Check Handled (when provided) before making the calls to On*.
+	Re-use internal 'events' for IsEnabledChanged
+
 2008-12-05  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* ProgressBar.cs: Default is 1 (not 100) in SL2 final.
