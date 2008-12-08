@@ -27,15 +27,9 @@
 //
 
 using System;
-using System.Net;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
 using System.Windows.Markup;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
 using Mono.Moonlight.UnitTesting;
@@ -105,6 +99,11 @@ namespace MoonTest.System.Windows.Controls {
 			public void SetContent (UIElement ui)
 			{
 				Content = ui;
+			}
+
+			public UIElement Content_ {
+				get { return base.Content; }
+				set { base.Content = value; }
 			}
 		}
 
@@ -277,6 +276,23 @@ namespace MoonTest.System.Windows.Controls {
 			p.Measure (new Size (100, 100));
 
 			Assert.AreEqual (new Size (60, 60), p.DesiredSize);
+		}
+
+		[TestMethod]
+		public void DefaultProperties ()
+		{
+			UserControlPoker uc = new UserControlPoker ();
+			Assert.IsNull (uc.Content_);
+			uc.Content_ = null;
+			// TabStop default to false for UserControl
+			ControlTest.CheckDefaultProperties (uc, false);
+		}
+
+		[TestMethod]
+		public void DefaultMethods ()
+		{
+			UserControlPoker uc = new UserControlPoker ();
+			ControlTest.CheckDefaultMethods (uc);
 		}
 	}
 }

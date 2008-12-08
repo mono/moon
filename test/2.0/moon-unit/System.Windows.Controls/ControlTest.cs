@@ -27,20 +27,10 @@
 //
 
 using System;
-using System.Net;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
 using System.Windows.Input;
-using System.Windows.Markup;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
-using System.Collections.Generic;
-using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 
 namespace MoonTest.System.Windows.Controls {
 
@@ -197,6 +187,11 @@ namespace MoonTest.System.Windows.Controls {
 
 		static public void CheckDefaultProperties (Control c)
 		{
+			CheckDefaultProperties (c, true);
+		}
+
+		static public void CheckDefaultProperties (Control c, bool tabStop)
+		{
 			// default properties on Control
 			Assert.IsNull (c.Background, "Background");
 			Assert.IsNull (c.BorderBrush, "BorderBrush");
@@ -211,7 +206,7 @@ namespace MoonTest.System.Windows.Controls {
 //			Assert.AreEqual (Colors.Black, (c.Foreground as SolidColorBrush).Color, "Foreground.Color");
 			Assert.AreEqual (HorizontalAlignment.Center, c.HorizontalContentAlignment, "HorizontalContentAlignment");
 			Assert.IsTrue (c.IsEnabled, "IsEnabled");
-			Assert.IsTrue (c.IsTabStop, "IsTabStop");
+			Assert.AreEqual (tabStop, c.IsTabStop, "IsTabStop");
 			Assert.AreEqual (new Thickness (0, 0, 0, 0), c.Padding, "Padding");
 			Assert.AreEqual (Int32.MaxValue, c.TabIndex, "AreEqual");
 			Assert.AreEqual (KeyboardNavigationMode.Local, c.TabNavigation, "TabNavigation");

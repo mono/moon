@@ -1,3 +1,10 @@
+2008-12-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Controls/ControlTest.cs: Add an overload for
+	CheckDefaultProperties to allow specifying IsTabStop value.
+	* System.Windows.Controls/UserControlTest.cs: Add test cases
+	for default properties and methods.
+
 2008-12-08  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows.Controls/ControlTest.cs: Move some tests to
