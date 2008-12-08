@@ -1,3 +1,7 @@
+2008-12-08  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* UserControl.cs: Add Initialize and set IsTabStop to false
+
 2008-12-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Control.cs: Add null check on EventArgs for all On* methods.

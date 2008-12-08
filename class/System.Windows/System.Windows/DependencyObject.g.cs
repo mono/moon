@@ -245,8 +245,14 @@ namespace System.Windows.Controls {
 	}
 
 	partial class UserControl {
-		public UserControl () : base (NativeMethods.user_control_new ()) {}
-		internal UserControl (IntPtr raw) : base (raw) {}
+		public UserControl () : base (NativeMethods.user_control_new ())
+		{
+			Initialize ();
+		}
+		internal UserControl (IntPtr raw) : base (raw)
+		{
+			Initialize ();
+		}
 		internal override Kind GetKind () { return Kind.USERCONTROL; }
 	}
 }

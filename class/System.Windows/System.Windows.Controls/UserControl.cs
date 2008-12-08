@@ -33,6 +33,10 @@ namespace System.Windows.Controls {
 
 	[ContentProperty ("Content", true)]
 	public partial class UserControl : Control {
-		
+
+		private void Initialize ()
+		{
+			IsTabStop = false;
+		}
 	}
 } 

@@ -1,3 +1,7 @@
+2008-12-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* DependencyProperty.g.cs: Regenerated for UserControl
+
 2008-12-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* UIElement.cs: virtualize all Invoke* since Control to call On* 
