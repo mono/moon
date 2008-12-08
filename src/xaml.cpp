@@ -3557,8 +3557,92 @@ start_parse:
 	}
 }
 
+
+enum XamlMarkupParseError {
+	XamlMarkupParseErrorNone,
+	XamlMarkupParseErrorEmpty,
+	XamlMarkupParseErrorSyntax,
+};
+
+enum MarkupExtensionType {
+	MarkupExtensionNone = -1,
+	MarkupExtensionStaticResource,
+	MarkupExtensionTemplateBinding,
+	MarkupExtensionBinding,
+};
+
+static char *
+xaml_markup_parse_argument (const char **markup, XamlMarkupParseError *err)
+{
+	const char *start, *inptr = *markup;
+	
+	while (*inptr && g_ascii_isspace (*inptr))
+		inptr++;
+	
+	start = inptr;
+	while (*inptr && *inptr != '}')
+		inptr++;
+	
+	if (*inptr != '}') {
+		*err = XamlMarkupParseErrorSyntax;
+		return NULL;
+	}
+	
+	if (inptr == start) {
+		*err = XamlMarkupParseErrorEmpty;
+		return NULL;
+	}
+	
+	*err = XamlMarkupParseErrorNone;
+	*markup = inptr + 1;
+	
+	while (g_ascii_isspace (inptr[-1]))
+		inptr--;
+	
+	return g_strndup (start, inptr - start);
+}
+
+static struct {
+	MarkupExtensionType type;
+	const char *name;
+	size_t n;
+} markup_extensions[] = {
+	{ MarkupExtensionStaticResource,  "StaticResource",  14 },
+	{ MarkupExtensionTemplateBinding, "TemplateBinding", 15 },
+	{ MarkupExtensionBinding,         "Binding",          7 },
+};
+
+enum BindingExtensionPropertyType {
+	BindingExtensionPropertyNone = -1,
+	NotifyOnValidationError,
+	ValidatesOnExceptions,
+	ConverterParameter,
+	ConverterCulture,
+	Converter,
+	Source,
+	Mode,
+	Path,
+};
+
+static struct {
+	BindingExtensionPropertyType type;
+	const char *name;
+	size_t n;
+} binding_extension_properties[] = {
+	{ NotifyOnValidationError, "NotifyOnValidationError", 23 },
+	{ ValidatesOnExceptions,   "ValidatesOnExceptions",   21 },
+	{ ConverterParameter,      "ConverterParameter",      18 },
+	{ ConverterCulture,        "ConverterCulture",        16 },
+	{ Converter,               "Converter",                9 },
+	{ Source,                  "Source",                   6 },
+	{ Mode,                    "Mode",                     4 },
+	{ Path,                    "Path",                     4 },
+};
+
 typedef struct _BindingExtensionProperty {
 	struct _BindingExtensionProperty *next;
+	BindingExtensionPropertyType type;
+	MarkupExtensionType markup;
 	char *name, *value;
 } BindingExtensionProperty;
 
@@ -3712,90 +3796,103 @@ binding_expression_from_str (XamlParserInfo *parser, XamlElementInstance *item, 
 static bool
 handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, const char *attr_name, const char *attr_value, Value **value)
 {
-	const char *start = attr_value + 1; // skip the initial '{'
+	const char *inptr = attr_value + 1; // skip the initial '{'
+	MarkupExtensionType type = MarkupExtensionNone;
+	XamlElementInstanceTemplate *template_parent;
+	XamlElementInstance *parent;
+	XamlMarkupParseError err;
+	BindingExpression *expr;
+	char *argument;
+	guint i;
 	
-	while (*start && g_ascii_isspace (*start))
-		start++;
+	while (*inptr && g_ascii_isspace (*inptr))
+		inptr++;
 	
-	if (!strncmp (start, "StaticResource ", strlen ("StaticResource "))) {
-		start += strlen ("StaticResource ");
-
-		while (*start && g_ascii_isspace (*start))
-			start++;
-
-		if (*start == '}') {
-			parser_error (p, item->element_name, attr_name, 2024,
-					g_strdup_printf ("Empty StaticResource reference for property %s.",
-							attr_name));
-			return true;
+	for (i = 0; i < G_N_ELEMENTS (markup_extensions); i++) {
+		if (!strncmp (markup_extensions[i].name, inptr, markup_extensions[i].n)) {
+			type = markup_extensions[i].type;
+			inptr += markup_extensions[i].n;
+			break;
 		}
-
-		char *resource_name = g_strdup (start);
-
-		/* now trim off the trailing } and any spaces after the resource name */
-		char *end = resource_name + (strlen (resource_name) - 2);
-		while (end != resource_name && g_ascii_isspace (*end))
-			end--;
-		end++;
-		*end = '\0';
-
-		if (p->current_element)
-			p->current_element->LookupNamedResource (resource_name, value);
-
-		if (!value) {
-			// XXX don't know the proper values here...
-			parser_error (p, item->element_name, attr_name, 2024,
-					g_strdup_printf ("Could not locate StaticResource %s for property %s.",
-							resource_name,
-							attr_name));
-			g_free (resource_name);
-			return true;
-		}
-		return false;
 	}
-	else if (!strncmp (start, "TemplateBinding ", strlen ("TemplateBinding "))) {
-		XamlElementInstance *parent = item->parent;
-
+	
+	switch (type) {
+	case MarkupExtensionStaticResource:
+		if (!(argument = xaml_markup_parse_argument (&inptr, &err)) || *inptr != '\0') {
+			switch (err) {
+			case XamlMarkupParseErrorEmpty:
+				parser_error (p, item->element_name, attr_name, 2024,
+					      g_strdup_printf ("Empty StaticResource reference for property %s.",
+							       attr_name));
+				break;
+			default:
+				parser_error (p, item->element_name, attr_name, 2024,
+					      g_strdup_printf ("Syntax error in StaticResource markup for property %s.",
+							       attr_name));
+				break;
+			}
+			
+			g_free (argument);
+			return true;
+		} else {
+			if (p->current_element)
+				p->current_element->LookupNamedResource (argument, value);
+			
+			if (!value) {
+				// XXX don't know the proper values here...
+				parser_error (p, item->element_name, attr_name, 2024,
+					      g_strdup_printf ("Could not locate StaticResource %s for property %s.",
+							       argument, attr_name));
+				g_free (argument);
+				return true;
+			}
+			
+			g_free (argument);
+			return false;
+		}
+		break;
+	case MarkupExtensionTemplateBinding:
+		parent = item->parent;
 		while (parent && !parent->IsTemplate())
 			parent = parent->parent;
-
+		
 		if (!parent) {
 			parser_error (p, item->element_name, attr_name, 2024,
 					g_strdup ("TemplateBinding expression found outside of a template"));
 			return true;
 		}
-
-		XamlElementInstanceTemplate *template_parent = (XamlElementInstanceTemplate*)parent;
-
-		start += strlen ("TemplateBinding ");
-
-		while (*start && g_ascii_isspace (*start))
-			start++;
 		
-		if (*start == '}') {
-			parser_error (p, item->element_name, attr_name, 2024,
-					g_strdup_printf ("Empty TemplateBinding reference for property %s.",
-							attr_name));
+		template_parent = (XamlElementInstanceTemplate *) parent;
+		
+		if (!(argument = xaml_markup_parse_argument (&inptr, &err)) || *inptr != '\0') {
+			switch (err) {
+			case XamlMarkupParseErrorEmpty:
+				parser_error (p, item->element_name, attr_name, 2024,
+					      g_strdup_printf ("Empty TemplateBinding reference for property %s.",
+							       attr_name));
+				break;
+			default:
+				parser_error (p, item->element_name, attr_name, 2024,
+					      g_strdup_printf ("Syntax error in TemplateBinding markup for property %s.",
+							       attr_name));
+				break;
+			}
+			
+			g_free (argument);
+			return true;
+		} else {
+			template_parent->AddTemplateBinding (item, argument, attr_name);
 			return true;
 		}
-
-		char *argument = g_strdup (start);
-
-		/* now trim off the trailing } and any spaces after the resource name */
-		char *end = argument + (strlen (argument) - 2);
-		while (end != argument && g_ascii_isspace (*end))
-			end --;
-		end++;
-		*end = '\0';
-
-		template_parent->AddTemplateBinding (item, argument, attr_name);
-		return true;
-	} else if (!strncmp (start, "Binding", strlen ("Binding"))) {
-		BindingExpression *expr = binding_expression_from_str (p, item, attr_value);
+		break;
+	case MarkupExtensionBinding:
+		expr = binding_expression_from_str (p, item, attr_value);
 		
 		*value = new Value (expr);
 		expr->unref ();
 		
+		return false;
+	default:
 		return false;
 	}
 		

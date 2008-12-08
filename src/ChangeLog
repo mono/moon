@@ -5,6 +5,8 @@
 
 2008-12-08  Jeffrey Stedfast  <fejj@novell.com>
 
+	* xaml.cpp: A bit of refactoring...
+
 	* binding.cpp (BindingExpressionBase::SetConverterParameter):
 	Added.
 	(BindingExpressionBase::SetConverterCulture): Same.
