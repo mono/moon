@@ -1,3 +1,8 @@
+2008-12-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* usercontrol.h: Tag with @CallInitialize since IsTabStop is false
+	for UserControl while it's true for Control
+
 2008-12-08  Jeffrey Stedfast  <fejj@novell.com>
 
 	* binding.cpp (BindingExpressionBase::SetConverterParameter):
