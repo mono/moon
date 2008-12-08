@@ -67,10 +67,14 @@ class Binding : public EventObject {
 /* @Namespace=System.Windows.Data */
 class BindingExpressionBase : public Expression {
  protected:
- 	Binding *binding;
-	DependencyObject *source;
 	DependencyProperty *target_property;
 	FrameworkElement *target;
+	DependencyObject *source;
+	char *source_name;
+	Binding *binding;
+	char *converter;
+	char *culture;
+	char *param;
 	
 	virtual ~BindingExpressionBase ();
 	BindingExpressionBase ();
@@ -82,6 +86,26 @@ class BindingExpressionBase : public Expression {
 	Binding *GetBinding () { return binding; }
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetBinding (Binding *binding);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	const char *GetConverterParameter () { return param; }
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetConverterParameter (const char *param);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	const char *GetConverterCulture () { return culture; }
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetConverterCulture (const char *culture);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	const char *GetConverter () { return converter; }
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetConverter (const char *converter);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	const char *GetSourceName () { return source_name; }
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetSourceName (const char *name);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject *GetSource () { return source; }
@@ -105,7 +129,7 @@ class BindingExpressionBase : public Expression {
 	void UpdateSource (Value *value);
 	
 	// The following methods are meant only for use by FrameworkElement internals.
-	void AttachListener (PropertyChangeHandler handler, gpointer user_data);
+	void AttachListener (DependencyObject *target, PropertyChangeHandler handler, gpointer user_data);
 	void DetachListener (PropertyChangeHandler handler);
 
 	/* @GenerateCBinding,GeneratePInvoke */

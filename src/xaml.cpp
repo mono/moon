@@ -3678,22 +3678,18 @@ binding_expression_from_str (XamlParserInfo *parser, XamlElementInstance *item, 
 			// FIXME: what if the path is already set?
 			binding->SetPropertyPath (prop->value);
 		} else if (!g_ascii_strcasecmp (prop->name, "Converter")) {
-			// FIXME: ugh
+			expr->SetConverter (prop->value);
 		} else if (!g_ascii_strcasecmp (prop->name, "ConverterCulture")) {
-			// FIXME: ugh
+			expr->SetConverterCulture (prop->value);
 		} else if (!g_ascii_strcasecmp (prop->name, "ConverterParameter")) {
-			// FIXME: ugh
+			expr->SetConverterParameter (prop->value);
 		} else if (!g_ascii_strcasecmp (prop->name, "Mode")) {
 			int mode = enums_str_to_int ("BindingMode", prop->value, true);
 			
 			if (mode != -1)
 				binding->SetBindingMode ((BindingMode) mode);
 		} else if (!g_ascii_strcasecmp (prop->name, "Source")) {
-			DependencyObject *source = NULL;
-			
-			// FIXME: use the parser to resolve the Source element
-			
-			expr->SetSource (source);
+			expr->SetSourceName (prop->value);
 		} else if (!g_ascii_strcasecmp (prop->name, "NotifyOnValidationError")) {
 			bool value = !g_ascii_strcasecmp ("true", prop->value);
 			

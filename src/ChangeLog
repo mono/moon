@@ -1,3 +1,17 @@
+2008-12-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* binding.cpp (BindingExpressionBase::SetConverterParameter):
+	Added.
+	(BindingExpressionBase::SetConverterCulture): Same.
+	(BindingExpressionBase::SetConverter): Same.
+	(BindingExpressionBase::SetSourceName): Same.
+	(BindingExpressionBase::AttachListener): Lookup the source by name
+	if we don't already have it.
+	(BindingExpressionBase::GetValue): Same.
+	(BindingExpressionBase::UpdateSource): Same.
+
+	* xaml.cpp (binding_expression_from_str): Finished implementing.
+
 2008-12-07  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fixes bug #444872

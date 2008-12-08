@@ -111,7 +111,7 @@ FrameworkElement::SetBindingExpression (DependencyProperty *property, BindingExp
 		ClearBindingExpression (property, cur_expr);
 	
 	if (expr) {
-		expr->AttachListener (FrameworkElement::bound_property_changed, expr);
+		expr->AttachListener (this, FrameworkElement::bound_property_changed, expr);
 		g_hash_table_insert (bindings, property, new Value (expr));
 		expr->SetTargetProperty (property);
 		expr->SetTarget (this);
