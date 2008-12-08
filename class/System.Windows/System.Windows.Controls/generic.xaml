@@ -5,6 +5,7 @@
     xmlns:local="clr-namespace:System.Windows.Control;assembly=System.Windows">
 
     <Style TargetType="local:ProgressBar">
+	<Setter Property="Maximum" Value="100"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:ProgressBar">
