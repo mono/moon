@@ -1,3 +1,11 @@
+2008-12-08  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.Controls/ControlTest.cs: Move some tests to
+	UserControlTest since they don't behave the same (or don't apply)
+	on Control
+	* System.Windows.Controls/UserControlTest.cs: New file, old 
+	tests moved from ControlTest.cs
+
 2008-12-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Controls/ControlTest.cs: Add null check tests
