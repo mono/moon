@@ -1,3 +1,7 @@
+2008-12-08  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: Remove some dead code.
+
 2008-12-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Events.cs: MouseLeave needs to supply MouseEventArgs.

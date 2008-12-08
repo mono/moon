@@ -43,13 +43,7 @@ namespace Mono.Xaml
 
 		Assembly assembly;
 		XamlLoaderCallbacks callbacks;
-		
 
-#if WITH_DLR
-		DLRHost dlr_host;
-#endif
-
-		
 		public ManagedXamlLoader ()
 		{
 		}
@@ -459,84 +453,6 @@ namespace Mono.Xaml
 
 			pi.SetValue (target, obj_value, null);
 			return true;
-		}
-
-		private bool AddChild (IntPtr parent_ptr, string prop_name, IntPtr child_ptr)
-		{
-			string[] prop_path = prop_name.Split ('.');
-			if (prop_path.Length < 2)
-				return false;
-
-			object parent = LookupObject (parent_ptr);
-			object child = LookupObject (child_ptr);
-
-			if (parent == null) {
-				Console.Error.WriteLine ("parent is null");
-				return false;
-			}
-
-			if (child == null) {
-				Console.Error.WriteLine ("child is null");
-				return false;
-			}
-
-			FieldInfo fi = parent.GetType ().GetField (prop_path[1] + "Property", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy);
-			if (fi != null) {
-				DependencyProperty dp = fi.GetValue (parent) as DependencyProperty;
-				if (dp == null)
-					return false;
-
-				if (dp.IsAttached) {
-					if (typeof (IList).IsAssignableFrom (dp.PropertyType)) {
-						// it's a collection type
-						MethodInfo mi = parent.GetType ().GetMethod ("Get" + prop_path[1], BindingFlags.Static | BindingFlags.Public);
-						object o = mi.Invoke (parent, new object[] { child });
-						if (o is IList) {
-							((IList)o).Add (child);
-							return true;
-						}
-						else {
-							Console.Error.WriteLine ("unable to add child to attached property");
-							return false;
-						}
-					}
-					else {
-						Console.Error.WriteLine ("unfinished - we need attached non-collection properties");
-					}
-				}
-				else {
-					DependencyObject parent_depobj = parent as DependencyObject;
-					if (parent == null) {
-						Console.Error.WriteLine ("we're adding a child to a non-DO parent?  nuh uh!");
-						return false;
-					}
-
-					if (typeof (IList).IsAssignableFrom (dp.PropertyType)) {
-						object col = parent_depobj.GetValue(dp);
-						if (col == null) {
-							Console.Error.WriteLine ("Creating instant of {0} collection", dp.PropertyType);
-							// automatically create the collection if it doesn't exist
-							col = Activator.CreateInstance (dp.PropertyType);
-							parent_depobj.SetValue (dp, col);
-						}
-
-						// XXX do we check the child
-						// type vs the collection
-						// type?  or do we catch the
-						// exception?
-						IList l = col as IList;
-						if (l != null)
-							l.Add (child);
-					}
-					else {
-						parent_depobj.SetValue (dp, child);
-					}
-
-					return true;
-				}
-			}
-
-			return false;
 		}
 
 		private static string ClrNamespaceFromXmlns (string xmlns)
