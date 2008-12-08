@@ -100,6 +100,51 @@ namespace MoonTest.System.Windows.Controls
 			{
 				get { return Control.DefaultStyleKeyProperty; }
 			}
+
+			public void OnGotFocus_ (RoutedEventArgs e)
+			{
+				base.OnGotFocus (e);
+			}
+
+			public void OnLostFocus_ (RoutedEventArgs e)
+			{
+				base.OnLostFocus (e);
+			}
+
+			public void OnKeyDown_ (KeyEventArgs e)
+			{
+				base.OnKeyDown (e);
+			}
+
+			public void OnKeyUp_ (KeyEventArgs e)
+			{
+				base.OnKeyUp (e);
+			}
+
+			public void OnMouseEnter_ (MouseEventArgs e)
+			{
+				base.OnMouseEnter (e);
+			}
+
+			public void OnMouseLeave_ (MouseEventArgs e)
+			{
+				base.OnMouseLeave (e);
+			}
+
+			public void OnMouseMove_ (MouseEventArgs e)
+			{
+				base.OnMouseMove (e);
+			}
+
+			public void OnMouseLeftButtonDown_ (MouseButtonEventArgs e)
+			{
+				base.OnMouseLeftButtonDown (e);
+			}
+
+			public void OnMouseLeftButtonUp_ (MouseButtonEventArgs e)
+			{
+				base.OnMouseLeftButtonUp (e);
+			}
 		}
 
 		class MoreConcreteControl : ConcreteControl {
@@ -415,6 +460,39 @@ namespace MoonTest.System.Windows.Controls
 			};
 			c.IsEnabled = false;
 			Assert.IsFalse (c.IsEnabled, "IsEnabled");
+		}
+
+		[TestMethod]
+		public void OnNull ()
+		{
+			ConcreteControl c = new ConcreteControl ();
+			Assert.Throws<ArgumentNullException> (delegate {
+				c.OnGotFocus_ (null);
+			}, "OnGotFocus");
+			Assert.Throws<ArgumentNullException> (delegate {
+				c.OnLostFocus_ (null);
+			}, "LostFocus");
+			Assert.Throws<ArgumentNullException> (delegate {
+				c.OnKeyDown_ (null);
+			}, "OnKeyDown");
+			Assert.Throws<ArgumentNullException> (delegate {
+				c.OnKeyUp_ (null);
+			}, "OnKeyU");
+			Assert.Throws<ArgumentNullException> (delegate {
+				c.OnMouseEnter_ (null);
+			}, "OnMouseEnter");
+			Assert.Throws<ArgumentNullException> (delegate {
+				c.OnMouseLeave_ (null);
+			}, "OnMouseLeave");
+			Assert.Throws<ArgumentNullException> (delegate {
+				c.OnMouseMove_ (null);
+			}, "OnMouseMove");
+			Assert.Throws<ArgumentNullException> (delegate {
+				c.OnMouseLeftButtonDown_ (null);
+			}, "OnMouseLeftButtonDown");
+			Assert.Throws<ArgumentNullException> (delegate {
+				c.OnMouseLeftButtonUp_ (null);
+			}, "OnMouseLeftButtonUp");
 		}
 	}
 }
