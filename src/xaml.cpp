@@ -3564,11 +3564,11 @@ enum XamlMarkupParseError {
 	XamlMarkupParseErrorSyntax,
 };
 
-enum MarkupExtensionType {
-	MarkupExtensionNone = -1,
-	MarkupExtensionStaticResource,
-	MarkupExtensionTemplateBinding,
-	MarkupExtensionBinding,
+enum XamlMarkupExtensionType {
+	XamlMarkupExtensionNone = -1,
+	XamlMarkupExtensionStaticResource,
+	XamlMarkupExtensionTemplateBinding,
+	XamlMarkupExtensionBinding,
 };
 
 static char *
@@ -3603,25 +3603,39 @@ xaml_markup_parse_argument (const char **markup, XamlMarkupParseError *err)
 }
 
 static struct {
-	MarkupExtensionType type;
+	XamlMarkupExtensionType type;
 	const char *name;
 	size_t n;
 } markup_extensions[] = {
-	{ MarkupExtensionStaticResource,  "StaticResource",  14 },
-	{ MarkupExtensionTemplateBinding, "TemplateBinding", 15 },
-	{ MarkupExtensionBinding,         "Binding",          7 },
+	{ XamlMarkupExtensionStaticResource,  "StaticResource",  14 },
+	{ XamlMarkupExtensionTemplateBinding, "TemplateBinding", 15 },
+	{ XamlMarkupExtensionBinding,         "Binding",          7 },
 };
+
+static XamlMarkupExtensionType
+xaml_markup_extension_type (const char *name, size_t n)
+{
+	guint i;
+	
+	for (i = 0; i < G_N_ELEMENTS (markup_extensions); i++) {
+		if (!strncmp (markup_extensions[i].name, name, markup_extensions[i].n) &&
+		    markup_extensions[i].n == n)
+			return markup_extensions[i].type;
+	}
+	
+	return XamlMarkupExtensionNone;
+}
 
 enum BindingExtensionPropertyType {
 	BindingExtensionPropertyNone = -1,
-	NotifyOnValidationError,
-	ValidatesOnExceptions,
-	ConverterParameter,
-	ConverterCulture,
-	Converter,
-	Source,
-	Mode,
-	Path,
+	BindingExtensionPropertyNotifyOnValidationError,
+	BindingExtensionPropertyValidatesOnExceptions,
+	BindingExtensionPropertyConverterParameter,
+	BindingExtensionPropertyConverterCulture,
+	BindingExtensionPropertyConverter,
+	BindingExtensionPropertySource,
+	BindingExtensionPropertyMode,
+	BindingExtensionPropertyPath,
 };
 
 static struct {
@@ -3629,41 +3643,40 @@ static struct {
 	const char *name;
 	size_t n;
 } binding_extension_properties[] = {
-	{ NotifyOnValidationError, "NotifyOnValidationError", 23 },
-	{ ValidatesOnExceptions,   "ValidatesOnExceptions",   21 },
-	{ ConverterParameter,      "ConverterParameter",      18 },
-	{ ConverterCulture,        "ConverterCulture",        16 },
-	{ Converter,               "Converter",                9 },
-	{ Source,                  "Source",                   6 },
-	{ Mode,                    "Mode",                     4 },
-	{ Path,                    "Path",                     4 },
+	{ BindingExtensionPropertyNotifyOnValidationError, "NotifyOnValidationError", 23 },
+	{ BindingExtensionPropertyValidatesOnExceptions,   "ValidatesOnExceptions",   21 },
+	{ BindingExtensionPropertyConverterParameter,      "ConverterParameter",      18 },
+	{ BindingExtensionPropertyConverterCulture,        "ConverterCulture",        16 },
+	{ BindingExtensionPropertyConverter,               "Converter",                9 },
+	{ BindingExtensionPropertySource,                  "Source",                   6 },
+	{ BindingExtensionPropertyMode,                    "Mode",                     4 },
+	{ BindingExtensionPropertyPath,                    "Path",                     4 },
 };
 
 typedef struct _BindingExtensionProperty {
 	struct _BindingExtensionProperty *next;
 	BindingExtensionPropertyType type;
-	MarkupExtensionType markup;
-	char *name, *value;
+	XamlMarkupExtensionType markup;
+	char *value;
 } BindingExtensionProperty;
 
-struct BindingExtensionMarkup {
+struct BindingExtension {
 	BindingExtensionProperty *properties;
 	char *path;
 	
-	BindingExtensionMarkup ()
+	BindingExtension ()
 	{
 		properties = NULL;
 		path = NULL;
 	}
 	
-	~BindingExtensionMarkup ()
+	~BindingExtension ()
 	{
 		BindingExtensionProperty *next, *prop = properties;
 		
 		while (prop) {
 			next = prop->next;
 			g_free (prop->value);
-			g_free (prop->name);
 			delete prop;
 			prop = next;
 		}
@@ -3672,69 +3685,109 @@ struct BindingExtensionMarkup {
 	}
 };
 
-static BindingExtensionMarkup *
-binding_extension_markup_decode (const char *markup)
+static BindingExtensionPropertyType
+binding_extension_property_type (const char *name, size_t n)
 {
-	const char *inptr, *start, *value = NULL;
-	BindingExtensionProperty *prop, *tail;
-	BindingExtensionMarkup *binding;
-	bool is_path = true;
+	guint i;
 	
-	binding = new BindingExtensionMarkup ();
+	for (i = 0; i < G_N_ELEMENTS (binding_extension_properties); i++) {
+		if (!strncmp (binding_extension_properties[i].name, name, n) &&
+		    binding_extension_properties[i].n == n)
+			return binding_extension_properties[i].type;
+	}
+	
+	return BindingExtensionPropertyNone;
+}
+
+static BindingExtension *
+xaml_markup_parse_binding (const char **markup, XamlMarkupParseError *err)
+{
+	BindingExtensionProperty *prop, *tail;
+	BindingExtension *binding;
+	const char *inptr, *start;
+	
+	binding = new BindingExtension ();
 	tail = (BindingExtensionProperty *) &binding->properties;
 	
-	// skip over "{Binding"
-	inptr = markup + 8;
-	while (*inptr == ' ')
+	// markup starts at first char after "{Binding"
+	inptr = *markup;
+	while (*inptr && g_ascii_isspace (*inptr))
 		inptr++;
 	
 	if (*inptr == '}')
 		return binding;
 	
 	start = inptr;
-	while (*inptr && !strchr (" ,}", *inptr)) {
-		if (!value && *inptr == '=') {
-			is_path = false;
-			value = inptr;
-		}
+	while (*inptr && *inptr != '}' && !g_ascii_isspace (*inptr)) {
+		if (*inptr == '=')
+			goto property;
 		
 		inptr++;
 	}
 	
-	if (is_path)
-		binding->path = g_strndup (start, inptr - start);
-	else
-		goto property;
+	binding->path = g_strndup (start, inptr - start);
 	
 	do {
-		while (*inptr == ' ')
+		while (g_ascii_isspace (*inptr))
 			inptr++;
 		
 		if (*inptr == ',')
 			inptr++;
 		
-		while (*inptr == ' ')
+		while (g_ascii_isspace (*inptr))
 			inptr++;
 		
 		if (*inptr == '}')
 			break;
 		
 		start = inptr;
-		value = NULL;
-		
-		while (*inptr && !strchr (" ,}", *inptr)) {
-			if (!value && *inptr == '=')
-				value = inptr;
+		while (*inptr && *inptr != '}' && !g_ascii_isspace (*inptr)) {
+			if (*inptr == '=')
+				break;
+			
 			inptr++;
 		}
 		
 	property:
 		
 		prop = new BindingExtensionProperty ();
-		prop->name = g_strndup (start, value - start);
-		value++;
-		prop->value = g_strndup (value, inptr - value);
+		prop->type = binding_extension_property_type (start, inptr - start);
 		prop->next = NULL;
+		
+		if (*inptr == '=') {
+			inptr++;
+			if (*inptr == '{') {
+				inptr++;
+				while (*inptr && g_ascii_isspace (*inptr))
+					inptr++;
+				
+				start = inptr;
+				while (*inptr && *inptr != '}' && !g_ascii_isspace (*inptr))
+					inptr++;
+				
+				prop->markup = xaml_markup_extension_type (start, inptr - start);
+				if (prop->markup != XamlMarkupExtensionStaticResource) {
+					*err = XamlMarkupParseErrorSyntax;
+					delete binding;
+					delete prop;
+					return NULL;
+				}
+				
+				if (!(prop->value = xaml_markup_parse_argument (&inptr, err))) {
+					delete binding;
+					delete prop;
+					return NULL;
+				}
+			} else {
+				prop->markup = XamlMarkupExtensionNone;
+				
+				start = inptr;
+				while (*inptr && *inptr != '}' && !g_ascii_isspace (*inptr))
+					inptr++;
+				
+				prop->value = g_strndup (start, inptr - start);
+			}
+		}
 		
 		tail->next = prop;
 		tail = prop;
@@ -3744,12 +3797,13 @@ binding_extension_markup_decode (const char *markup)
 }
 
 static BindingExpression *
-binding_expression_from_str (XamlParserInfo *parser, XamlElementInstance *item, const char *str)
+create_binding_expression_from_markup (BindingExtension *markup)
 {
-	BindingExtensionMarkup *markup = binding_extension_markup_decode (str);
 	BindingExtensionProperty *prop = markup->properties;
 	BindingExpression *expr;
 	Binding *binding;
+	bool value;
+	int mode;
 	
 	expr = new BindingExpression ();
 	binding = new Binding ();
@@ -3758,37 +3812,43 @@ binding_expression_from_str (XamlParserInfo *parser, XamlElementInstance *item, 
 		binding->SetPropertyPath (markup->path);
 	
 	while (prop != NULL) {
-		if (!g_ascii_strcasecmp (prop->name, "Path")) {
+		switch (prop->type) {
+		case BindingExtensionPropertyConverter:
+			expr->SetConverter (prop->value);
+			break;
+		case BindingExtensionPropertyConverterCulture:
+			expr->SetConverterCulture (prop->value);
+			break;
+		case BindingExtensionPropertyConverterParameter:
+			expr->SetConverterParameter (prop->value);
+			break;
+		case BindingExtensionPropertyNotifyOnValidationError:
+			value = !g_ascii_strcasecmp ("true", prop->value);
+			binding->SetNotifyOnValidationError (value);
+			break;
+		case BindingExtensionPropertyValidatesOnExceptions:
+			value = !g_ascii_strcasecmp ("true", prop->value);
+			binding->SetValidatesOnExceptions (value);
+			break;
+		case BindingExtensionPropertySource:
+			expr->SetSourceName (prop->value);
+			break;
+		case BindingExtensionPropertyMode:
+			if ((mode = enums_str_to_int ("BindingMode", prop->value, true)) != -1)
+				binding->SetBindingMode ((BindingMode) mode);
+			break;
+		case BindingExtensionPropertyPath:
 			// FIXME: what if the path is already set?
 			binding->SetPropertyPath (prop->value);
-		} else if (!g_ascii_strcasecmp (prop->name, "Converter")) {
-			expr->SetConverter (prop->value);
-		} else if (!g_ascii_strcasecmp (prop->name, "ConverterCulture")) {
-			expr->SetConverterCulture (prop->value);
-		} else if (!g_ascii_strcasecmp (prop->name, "ConverterParameter")) {
-			expr->SetConverterParameter (prop->value);
-		} else if (!g_ascii_strcasecmp (prop->name, "Mode")) {
-			int mode = enums_str_to_int ("BindingMode", prop->value, true);
-			
-			if (mode != -1)
-				binding->SetBindingMode ((BindingMode) mode);
-		} else if (!g_ascii_strcasecmp (prop->name, "Source")) {
-			expr->SetSourceName (prop->value);
-		} else if (!g_ascii_strcasecmp (prop->name, "NotifyOnValidationError")) {
-			bool value = !g_ascii_strcasecmp ("true", prop->value);
-			
-			binding->SetNotifyOnValidationError (value);
-		} else if (!g_ascii_strcasecmp (prop->name, "ValidatesOnExceptions")) {
-			bool value = !g_ascii_strcasecmp ("true", prop->value);
-			
-			binding->SetValidatesOnExceptions (value);
+			break;
+		default:
+			break;
 		}
 		
 		prop = prop->next;
 	}
 	
 	expr->SetBinding (binding);
-	delete markup;
 	
 	return expr;
 }
@@ -3796,28 +3856,28 @@ binding_expression_from_str (XamlParserInfo *parser, XamlElementInstance *item, 
 static bool
 handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, const char *attr_name, const char *attr_value, Value **value)
 {
-	const char *inptr = attr_value + 1; // skip the initial '{'
-	MarkupExtensionType type = MarkupExtensionNone;
+	const char *inptr, *start = attr_value + 1; // skip the initial '{'
+	XamlMarkupExtensionType type = XamlMarkupExtensionNone;
 	XamlElementInstanceTemplate *template_parent;
 	XamlElementInstance *parent;
+	BindingExtension *binding;
 	XamlMarkupParseError err;
 	BindingExpression *expr;
 	char *argument;
-	guint i;
 	
-	while (*inptr && g_ascii_isspace (*inptr))
+	// Find the beginning of the extension name
+	while (*start && g_ascii_isspace (*start))
+		start++;
+	
+	// Find the end of the extension name
+	inptr = start;
+	while (*inptr && *inptr != '}' && g_ascii_isspace (*inptr))
 		inptr++;
 	
-	for (i = 0; i < G_N_ELEMENTS (markup_extensions); i++) {
-		if (!strncmp (markup_extensions[i].name, inptr, markup_extensions[i].n)) {
-			type = markup_extensions[i].type;
-			inptr += markup_extensions[i].n;
-			break;
-		}
-	}
+	type = xaml_markup_extension_type (start, inptr - start);
 	
 	switch (type) {
-	case MarkupExtensionStaticResource:
+	case XamlMarkupExtensionStaticResource:
 		if (!(argument = xaml_markup_parse_argument (&inptr, &err)) || *inptr != '\0') {
 			switch (err) {
 			case XamlMarkupParseErrorEmpty:
@@ -3851,7 +3911,7 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 			return false;
 		}
 		break;
-	case MarkupExtensionTemplateBinding:
+	case XamlMarkupExtensionTemplateBinding:
 		parent = item->parent;
 		while (parent && !parent->IsTemplate())
 			parent = parent->parent;
@@ -3885,8 +3945,16 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 			return true;
 		}
 		break;
-	case MarkupExtensionBinding:
-		expr = binding_expression_from_str (p, item, attr_value);
+	case XamlMarkupExtensionBinding:
+		if (!(binding = xaml_markup_parse_binding (&inptr, &err))) {
+			parser_error (p, item->element_name, attr_name, 2024,
+				      g_strdup_printf ("Error parsing Binding markup for property %s.",
+						       attr_name));
+			return true;
+		}
+		
+		expr = create_binding_expression_from_markup (binding);
+		delete binding;
 		
 		*value = new Value (expr);
 		expr->unref ();

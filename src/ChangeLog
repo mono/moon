@@ -1,3 +1,10 @@
+2008-12-09  Jeffrey Stedfast  <fejj@novell.com>
+
+	* xaml.cpp (handle_xaml_markup_extension): Lots more refactoring
+	action.
+	(xaml_markup_parse_binding): Fixed to handle
+	"Source={StaticResource ...}" syntax.
+
 2008-12-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* usercontrol.h: Tag with @CallInitialize since IsTabStop is false
