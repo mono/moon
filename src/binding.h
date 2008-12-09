@@ -73,7 +73,7 @@ class BindingExpressionBase : public Expression {
 	Binding *binding;
 	char *converter;
 	char *culture;
-	char *param;
+	Value *param;
 	
 	virtual ~BindingExpressionBase ();
 	BindingExpressionBase ();
@@ -87,9 +87,9 @@ class BindingExpressionBase : public Expression {
 	void SetBinding (Binding *binding);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	const char *GetConverterParameter () { return param; }
+	const Value *GetConverterParameter () { return param; }
 	/* @GenerateCBinding,GeneratePInvoke */
-	void SetConverterParameter (const char *param);
+	void SetConverterParameter (Value *param);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	const char *GetConverterCulture () { return culture; }

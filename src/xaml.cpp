@@ -3835,7 +3835,22 @@ create_binding_expression_from_markup (XamlParserInfo *p, XamlElementInstance *i
 			expr->SetConverterCulture (prop->value);
 			break;
 		case BindingExtensionPropertyConverterParameter:
-			expr->SetConverterParameter (prop->value);
+			if (prop->markup == XamlMarkupExtensionStaticResource) {
+				if (!p->current_element || !p->current_element->LookupNamedResource (prop->value, &value)) {
+					parser_error (p, item->element_name, attr_name, 2024,
+						      g_strdup_printf ("Could not locate StaticResource %s for ConverterParameter property %s.",
+								       prop->value, attr_name));
+					
+					binding->unref ();
+					expr->unref ();
+					
+					return NULL;
+				}
+			} else {
+				value = new Value (prop->value);
+			}
+			
+			expr->SetConverterParameter (value);
 			break;
 		case BindingExtensionPropertyNotifyOnValidationError:
 			enable = !g_ascii_strcasecmp ("true", prop->value);
@@ -3849,7 +3864,7 @@ create_binding_expression_from_markup (XamlParserInfo *p, XamlElementInstance *i
 			if (prop->markup == XamlMarkupExtensionStaticResource && p->current_element) {
 				if (!p->current_element->LookupNamedResource (prop->value, &value)) {
 					parser_error (p, item->element_name, attr_name, 2024,
-						      g_strdup_printf ("Could not locate StaticResource %s for property %s.",
+						      g_strdup_printf ("Could not locate StaticResource %s for Source property %s.",
 								       prop->value, attr_name));
 					
 					binding->unref ();

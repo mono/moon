@@ -95,10 +95,10 @@ BindingExpressionBase::SetBinding (Binding *binding)
 }
 
 void
-BindingExpressionBase::SetConverterParameter (const char *param)
+BindingExpressionBase::SetConverterParameter (Value *param)
 {
-	g_free (this->param);
-	this->param = g_strdup (param);
+	delete this->param;
+	this->param = param;
 }
 
 void
