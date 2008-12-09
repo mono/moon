@@ -188,7 +188,8 @@ namespace Moonlight {
 				foreach (string xaml_file in XamlFiles) {
 					if (Path.GetFileName (xaml_file) == "AppManifest.xaml")
 						continue;
-					xamlg_args.AppendFormat (" {0}", Path.GetFileName (xaml_file));
+					//xamlg_args.AppendFormat (" {0}", Path.GetFileName (xaml_file));
+					xamlg_args.AppendFormat (" \"{0}\"", xaml_file);
 				}
 
 				return RunTool ("xamlg",
@@ -211,7 +212,8 @@ namespace Moonlight {
 			foreach (string xaml_file in XamlFiles) {
 				if (Path.GetFileName (xaml_file) == "AppManifest.xaml")
 					continue;
-				respack_args.AppendFormat (" {0}", Path.GetFileName (xaml_file));
+				//respack_args.AppendFormat (" {0}", Path.GetFileName (xaml_file));
+				respack_args.AppendFormat (" \"{0}\"", xaml_file);
 			}
 
 			return RunTool ("respack",
@@ -231,7 +233,7 @@ namespace Moonlight {
 			compiler_args.AppendFormat (" -debug+ -target:library -out:{0}.dll ", ApplicationName);
 
 			foreach (string asm in ReferenceAssemblies) {
-				compiler_args.AppendFormat (" -r:{0} ", asm);
+				compiler_args.AppendFormat (" -r:\"{0}\" ", asm);
 			}
 			
 			foreach (string asm in ExternalAssemblies) {

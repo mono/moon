@@ -1,3 +1,8 @@
+2008-12-09  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* mxap.cs: pass the full path for xamlg and respack, so we can fix
+	the Makefiles. Escape ReferenceAssemblies before calling [s|g]mcs
+
 2008-12-04  Chris Toshok  <toshok@ximian.com>
 
 	* mxap.cs: add -l|--list-generated which just outputs the list of
