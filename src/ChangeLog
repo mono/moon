@@ -1,3 +1,11 @@
+2008-12-09  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* pipeline.cpp: IMediaDemuxer::GetBufferedSize: Only calculate buffered
+	  size using video and audio streams. Fixes #456154. 
+	  [Backport of r120687]
+	  
+	  r: kangaroo
+
 2008-12-05  Geoff Norton  <gnorton@novell.com>
 
 	* audio-pulse.cpp: PulseAudio sometimes gives us errors sync, 

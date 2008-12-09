@@ -1817,6 +1817,9 @@ IMediaDemuxer::GetBufferedSize ()
 		if (!stream->GetSelected ())
 			continue;
 
+		if (stream->GetType () != MediaTypeVideo && stream->GetType () != MediaTypeAudio)
+			continue;
+
 		result = MIN (result, stream->GetBufferedSize ());
 	}
 

@@ -1,9 +1,14 @@
+2008-12-09  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* drtlist.xml, test-mms-with-markers.html: Added test for #456154.
+	  [Backport of r120688]
+
+	  r: kangaroo
+
 2008-11-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* ChangeLog, drtlist.xml: Added test-audiostreamindex.html. Backport of
 	  r118367.
-	
-	  
 	
 	  r: kangaroo
 

@@ -1,0 +1,108 @@
+<html>
+  <head>
+      <title>Moonlight Test Page</title>
+
+		<script type="text/xaml" id="xaml">
+			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
+			<MediaElement Source="mms://moonlightmedia/elephants-dream-320x180-first-minute-markers.wmv" MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" 
+				DownloadProgressChanged="OnDownloadProgressChanged" BufferingProgressChanged="OnBufferingProgressChanged" 
+				CurrentStateChanged="OnCurrentStateChanged" />
+			</Canvas>
+		</script>
+
+		<script language="javascript" src="../../js/js/utils.js"></script>
+		<script language="javascript" src="../../js/js/testplugin.js"></script>
+		<script language="javascript">
+
+		var start_time = new Date ().getTime ();;
+
+		/*
+		 * This test reproduces bug #456154: mms sources with marker streams will always stay at 0% buffered.
+		 */ 
+
+		function get_time ()
+		{
+			return (new Date ().getTime () - start_time) / 1000;
+		}
+		
+		function timeOut ()
+		{
+			TestLogger.LogError ("Nothing happened, didn't get neither MediaOpened nor MediaFailed events.");
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+		function OnCurrentStateChanged (sender, args)
+		{
+			TestLogger.LogDebug (get_time () + " OnCurrentStateChanged: " + sender.CurrentState);
+
+			if (sender.CurrentState == "Playing") {
+				TestLogger.LogDebug ("Test succeeded, we started playing in " + get_time () + " seconds.");
+				TestLogger.LogResult (1);
+				SignalShutdown ();
+			}
+		}
+
+		function OnDownloadProgressChanged (sender, args)
+		{
+			TestLogger.LogDebug (get_time () + " OnDownloadProgressChanged: " + sender.DownloadProgress);
+		}
+		
+		function OnBufferingProgressChanged (sender, args)
+		{
+			TestLogger.LogDebug (get_time () + " OnBufferingProgressChanged: " + sender.BufferingProgress);
+		}
+
+		function OnMediaOpened (sender, args)
+		{
+			TestLogger.LogDebug (get_time () + "OnMediaOpened: " + sender.CurrentState);
+		}
+
+		function OnMediaFailed (sender, args)
+		{
+			TestLogger.LogError (get_time () + "OnMediaFailed: " + ErrorEventArgsToOneLineString (args));
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+		function OnPluginLoad (sender, args)
+		{
+			TestLogger.LogDebug ("OnPluginLoad");
+			setTimeout (function ()
+				{
+					TestLogger.LogError ("The media didn't start playing in 15 seconds. Check if the moonlightmedia server is running.");
+					TestLogger.LogResult (-1);
+					SignalShutdown ();
+				}, 15000);
+		}
+
+		function OnPluginError (sender, args)
+		{
+			TestLogger.LogError ("Plugin failed to initialize: " + args.ErrorMessage);
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+		
+		</script>
+	</head>
+
+  <body>
+    <div>
+        <embed type="application/x-silverlight"
+             width="1200"
+             height="800"
+             id="_MoonlightControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoad"
+             style="position:absolute; left:0px; top:0px"
+             background="green" >
+        </embed>
+    </div>
+<!--
+    <div>
+        <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
+        </embed>
+    </div>
+-->
+  </body>
+</html>
+
+
