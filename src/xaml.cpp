@@ -1578,7 +1578,7 @@ parse_int (const char **pp, const char *end)
 	int res = 0;
 	int count = 0;
 
-	while (p <= end && isdigit (*p)) {
+	while (p <= end && g_ascii_isdigit (*p)) {
 		res = res * 10 + *p - '0';
 		p++;
 		count++;
@@ -1602,7 +1602,7 @@ parse_ticks (const char **pp, const char *end)
 
 	const char *p = *pp;
 
-	while (mag > 0 && p <= end && isdigit (*p)) {
+	while (mag > 0 && p <= end && g_ascii_isdigit (*p)) {
 		res = res + (*p - '0') * mag;
 		p++;
 		mag = mag / 10;
