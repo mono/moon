@@ -1,7 +1,7 @@
 site:Aglux Silverlight
 url:http://www.aglux.com.my
-rating:2
- *  Site is super slow
+rating:3
+ *  Site is slow
  *  color gradient is wrong. Should go purple(top) to light blue(bottom)
  *  Mouse over animation is slow
 
@@ -31,42 +31,38 @@ url:http://www.vertigo.com/downloads/SilverlightChess/10RC/default.html
 rating:4
  * Works
 
-site:Clock
-url:http://silverlight.net/samples/1.0/clock/default.html
-rating:4
- * Works
- * Canvas isn't transparent - windowless == true
-
 site:Comic Book Viewer
 url:http://mycomix.wintellect.com/Spotlight.aspx?Item=1041
 rating:4
- * Works
+ * It _used_ to work :(
+ * Site has changed to 2.0 
 
 site:CoolWall
 url:http://mycooluncool.com
 rating:4
+ * Requires GreaseMonkey
  * Works!
 
-site:E-commerce Catalog
-url:http://www.flowers-for-you.com.my/catalog2.aspx
+site:DefiWind
+url:http://www.defiwind.com
 rating:3
- * Audio/video works!
- * Animation for the list on the left is kind of slow.
+ * Works well 
 
 site:Festive Greetings
 url:http://www.mason-zimbler.com/festivegreetings
 rating:4
+ * Requires GreaseMonkey
  * Audio and video work!
+
+site:Fragmenti
+url:http://fragmenti.milliflora.com/Fragmenti_Play.aspx
+rating:4
+ * Works great!
 
 site:Glyph Map
 url:http://www.wynapse.com/Silverlight/Silverlight_GlyphMap_Utility.aspx
 rating:4
  * Works great!  Glyphs load super fast now!
-
-site:Grand Piano
-url:http://silverlight.net/samples/1.0/Grand-Piano/default.html
-rating:4
- * Works
 
 site:Ink Journal
 url:http://www.thedatafarm.com/silverlight/journalsample
@@ -83,12 +79,6 @@ url:http://www.markdawson.org/kit3d
 rating:4
  * Works
 
-site:LCD Clock
-url:http://www.designwithsilverlight.com/tutorials/LCDClock/Default.html
-rating:4
- * Works! 
- * Outer frame is still showing - windowless / FF3
-
 site:Matrix Falling Chars
 url:http://blogs.msdn.com/synergist/archive/2007/09/28/matrix-falling-characters-in-silverlight.aspx
 rating:4
@@ -97,16 +87,19 @@ rating:4
 site:Matrix Multiplication
 url:http://minbashian.com/matrixanim.html
 rating:4
+ * Requires GreaseMonkey
  * works
 
 site:Media Preview TV
 url:http://www.mediapreview.tv/
 rating:4
+ * Requires GreaseMonkey
  * Works
 
 site:Minesweeper
 url:http://www.softencrypt.com/mines/
 rating:4
+ * Requires GreaseMonkey
  * works
 
 site:Mircosoft Downloads
@@ -114,15 +107,15 @@ url:http://www.microsoft.com/beta/downloads/Default.aspx
 rating:4
  * Works great!
 
-site:Office Ribbon
-url:http://xmldocs.net
-rating:4
- * Works
-
 site:Page Turn
 url:http://silverlight.net/samples/1.0/Page-Turn/default.html
 rating:4
  * Works great!
+
+site:Photo Fader
+url:http://www.adamkinney.com/studios/photofader/
+rating:4
+ * Works
 
 site:Photo Gallery Viewer
 url:http://www.designwithsilverlight.com/tutorials/photoGallery/gallery.html
@@ -178,17 +171,14 @@ rating:4
 site:Simon
 url:http://www.vertigo.com/downloads/Simon/
 rating:4
- * Works!
-
-site:Sparkleball
-url:http://www.ddjsilverlight.com/sparkleball
-rating:4
+ * Requires GreaseMonkey
  * Works!
 
 site:Sprawl
 url:http://silverlight.net/samples/1.0/Sprawl/default.html
 rating:4
  * Works
+ * 'd' does not work on Beta 1 - Issue already fixed for final
 
 site:Tafiti
 url:http://www.tafiti.com
@@ -227,7 +217,3 @@ url:http://silverlight.r2musings.com/weatherwidget/default.aspx
 rating:4
  * Works
 
-site:Web Analytics
-url:http://xmldocs.net/Analytics
-rating:4
- * Works
