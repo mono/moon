@@ -1,3 +1,8 @@
+2008-12-09  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* audio-pulse.cpp, audio-pulse.h: Improve locking while waiting for
+	  pulseaudio to initialize - keep waiting if we get spurious wakeups.
+
 2008-12-09  Jeffrey Stedfast  <fejj@novell.com>
 
 	* xaml.cpp (create_binding_expression_from_markup): Lookup the

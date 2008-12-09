@@ -69,7 +69,7 @@ class PulsePlayer : public AudioPlayer {
 	pthread_cond_t cond;
 	pthread_mutex_t mutex;
 	
-	bool connected;
+	int connected; // 0 = don't know, 1 = failed to connect, 2 = connected
 	
 	static void OnContextStateChanged (pa_context *context, void *userdata);
 	void OnContextStateChanged ();
