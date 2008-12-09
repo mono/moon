@@ -1,5 +1,8 @@
 2008-12-09  Jeffrey Stedfast  <fejj@novell.com>
 
+	* xaml.cpp (create_binding_expression_from_markup): Converter can
+	also take a StaticResource.
+
 	* playlist.cpp: Don't use ctype is*() with a char argument, these
 	functions are meant to take unsigned char values cast to an
 	int. Use the g_ascii_is*() functions instead.

@@ -3829,7 +3829,22 @@ create_binding_expression_from_markup (XamlParserInfo *p, XamlElementInstance *i
 	while (prop != NULL) {
 		switch (prop->type) {
 		case BindingExtensionPropertyConverter:
-			expr->SetConverter (prop->value);
+			if (prop->markup == XamlMarkupExtensionStaticResource) {
+				if (!p->current_element || !p->current_element->LookupNamedResource (prop->value, &value)) {
+					parser_error (p, item->element_name, attr_name, 2024,
+						      g_strdup_printf ("Could not locate StaticResource %s for Converter property %s.",
+								       prop->value, attr_name));
+					
+					binding->unref ();
+					expr->unref ();
+					
+					return NULL;
+				}
+			} else {
+				value = new Value (prop->value);
+			}
+			
+			expr->SetConverter (value);
 			break;
 		case BindingExtensionPropertyConverterCulture:
 			expr->SetConverterCulture (prop->value);
