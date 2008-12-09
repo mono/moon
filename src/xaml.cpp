@@ -1106,39 +1106,39 @@ start_element_handler (void *data, const char *el, const char **attr)
 static void
 end_element_handler (void *data, const char *el)
 {
-	XamlParserInfo *info = (XamlParserInfo *) data;
+	XamlParserInfo *p = (XamlParserInfo *) data;
 
-	if (info->error_args)
+	if (p->error_args)
 		return;
 
-	if (!info->current_element) {
-		g_warning ("info->current_element == NULL, current_element = %p (%s)\n",
-			   info->current_element, info->current_element ? info->current_element->element_name : "<NULL>");
+	if (!p->current_element) {
+		g_warning ("p->current_element == NULL, current_element = %p (%s)\n",
+			   p->current_element, p->current_element ? p->current_element->element_name : "<NULL>");
 		return;
 	}
 
-	switch (info->current_element->element_type) {
+	switch (p->current_element->element_type) {
 	case XamlElementInstance::ELEMENT:
-		flush_char_data (info);
-		if (!info->current_element->IsDependencyObject () && info->current_element->parent) {
-			info->current_element->parent->AddChild (info, info->current_element);
+		flush_char_data (p);
+		if (!p->current_element->IsDependencyObject () && p->current_element->parent) {
+			p->current_element->parent->AddChild (p, p->current_element);
 		}
 		break;
 	case XamlElementInstance::PROPERTY: {
-		List::Node *walk = info->current_element->children->First ();
+		List::Node *walk = p->current_element->children->First ();
 		while (walk) {
 			XamlElementInstance *child = (XamlElementInstance *) walk;
-			if (info->current_element->parent) {
-				info->current_element->parent->SetProperty (info, info->current_element, child);
+			if (p->current_element->parent) {
+				p->current_element->parent->SetProperty (p, p->current_element, child);
 			}
 			walk = walk->next;
 		}
-		flush_char_data (info);
+		flush_char_data (p);
 		break;
 	}
 	}
 
-	info->current_element = info->current_element->parent;
+	p->current_element = p->current_element->parent;
 }
 
 static void

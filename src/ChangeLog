@@ -15,6 +15,7 @@
 2008-12-09  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Don't use the cpp initializers.
+	- More consistent naming.
 
 2008-12-09  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
