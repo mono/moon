@@ -71,7 +71,7 @@ class BindingExpressionBase : public Expression {
 	FrameworkElement *target;
 	DependencyObject *source;
 	Binding *binding;
-	char *converter;
+	Value *converter;
 	char *culture;
 	Value *param;
 	
@@ -97,9 +97,9 @@ class BindingExpressionBase : public Expression {
 	void SetConverterCulture (const char *culture);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	const char *GetConverter () { return converter; }
+	const Value *GetConverter () { return converter; }
 	/* @GenerateCBinding,GeneratePInvoke */
-	void SetConverter (const char *converter);
+	void SetConverter (Value *converter);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject *GetSource () { return source; }

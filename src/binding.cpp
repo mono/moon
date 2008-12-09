@@ -80,9 +80,10 @@ BindingExpressionBase::~BindingExpressionBase ()
 	if (stored_value)
 		stored_value->FreeValue ();
 	
-	g_free (converter);
+	delete converter;
+	delete param;
+	
 	g_free (culture);
-	g_free (param);
 }
 
 void
@@ -109,10 +110,10 @@ BindingExpressionBase::SetConverterCulture (const char *culture)
 }
 
 void
-BindingExpressionBase::SetConverter (const char *converter)
+BindingExpressionBase::SetConverter (Value *converter)
 {
-	g_free (this->converter);
-	this->converter = g_strdup (converter);
+	delete this->converter;
+	this->converter = converter;
 }
 
 void
