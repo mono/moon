@@ -96,6 +96,24 @@ namespace Mono {
 		public extern static IntPtr binding_expression_base_get_binding (IntPtr instance);
 
 		[DllImport ("moon")]
+		// const Value *binding_expression_base_get_converter (BindingExpressionBase *instance);
+		public extern static IntPtr binding_expression_base_get_converter (IntPtr instance);
+
+		[DllImport ("moon", EntryPoint="binding_expression_base_get_converter_culture")]
+		// const char *binding_expression_base_get_converter_culture (BindingExpressionBase *instance);
+		private extern static IntPtr binding_expression_base_get_converter_culture_ (IntPtr instance);
+		public static string binding_expression_base_get_converter_culture (IntPtr instance)
+		{
+			IntPtr result;
+			result = binding_expression_base_get_converter_culture_ (instance);
+			return (result == IntPtr.Zero) ? null : Marshal.PtrToStringAnsi (result);
+		}
+
+		[DllImport ("moon")]
+		// const Value *binding_expression_base_get_converter_parameter (BindingExpressionBase *instance);
+		public extern static IntPtr binding_expression_base_get_converter_parameter (IntPtr instance);
+
+		[DllImport ("moon")]
 		// DependencyObject *binding_expression_base_get_source (BindingExpressionBase *instance);
 		public extern static IntPtr binding_expression_base_get_source (IntPtr instance);
 
@@ -118,6 +136,18 @@ namespace Mono {
 		[DllImport ("moon")]
 		// void binding_expression_base_set_binding (BindingExpressionBase *instance, Binding *binding);
 		public extern static void binding_expression_base_set_binding (IntPtr instance, IntPtr binding);
+
+		[DllImport ("moon")]
+		// void binding_expression_base_set_converter (BindingExpressionBase *instance, Value *converter);
+		public extern static void binding_expression_base_set_converter (IntPtr instance, ref Value converter);
+
+		[DllImport ("moon")]
+		// void binding_expression_base_set_converter_culture (BindingExpressionBase *instance, const char *culture);
+		public extern static void binding_expression_base_set_converter_culture (IntPtr instance, string culture);
+
+		[DllImport ("moon")]
+		// void binding_expression_base_set_converter_parameter (BindingExpressionBase *instance, Value *param);
+		public extern static void binding_expression_base_set_converter_parameter (IntPtr instance, ref Value param);
 
 		[DllImport ("moon")]
 		// void binding_expression_base_set_source (BindingExpressionBase *instance, DependencyObject *source);
