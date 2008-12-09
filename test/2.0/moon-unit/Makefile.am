@@ -20,8 +20,10 @@ BROWSER_ASSEMBLIES=-r:$(top_builddir)/class/lib/2.1/System.Windows.dll \
 		   -r:$(top_builddir)/class/lib/2.1/System.Windows.Browser.dll \
 		   -r:$(top_builddir)/class/lib/2.1/Mono.Moonlight.dll
 
-moon-unit.xap: moon-unit.sources Microsoft.Silverlight.Testing.dll Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll System.Xml.Linq.dll
-	$(MONO) --debug $(top_builddir)/tools/mxap/mxap.exe --generate-html- --entry-point-type=Mono.Moonlight.UnitTesting.App --cs-sources=moon-unit.sources --builddirhack=$(top_builddir) $(BROWSER_ASSEMBLIES)
+moon-unit.xap: $(builddir)/moon-unit.sources Microsoft.Silverlight.Testing.dll Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll System.Xml.Linq.dll
+	@if [ ! -e App.xaml ]; then cp $(srcdir)/App.xaml .; chmod +w App.xaml; fi
+	@if [ ! -e BindingXaml.xaml ]; then cp $(srcdir)/BindingXaml.xaml .; chmod +w BindingXaml.xaml; fi
+	$(MONO) --debug $(top_builddir)/tools/mxap/mxap.exe --generate-html- --entry-point-type=Mono.Moonlight.UnitTesting.App --cs-sources=$(builddir)/moon-unit.sources --builddirhack=$(top_builddir) $(BROWSER_ASSEMBLIES)
 
 Microsoft.Silverlight.Testing.dll: ../Microsoft.Silverlight.Testing/Microsoft.Silverlight.Testing.dll
 	cp ../Microsoft.Silverlight.Testing/Microsoft.Silverlight.Testing.dll* .
@@ -39,8 +41,13 @@ Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll: ../Microsoft.Vi
 ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll:
 	$(MAKE) -C ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight
 
-moon-unit.sources: *.cs */*.cs
-	ls *.cs */*.cs | grep -v aspx > $@
+moon-unit.sources: $(srcdir)/*.cs $(srcdir)/*/*.cs
+	ls $(srcdir)/*.cs $(srcdir)/*/*.cs | grep -v aspx > $@
+
+EXTRA_DIST = 			\
+	$(srcdir)/*xaml.cs	\
+	$(srcdir)/*xaml		\
+	$(srcdir)/*/*.cs
 
 test: copy-xap-to-site
 	MONO_PATH=$(top_builddir)/class/lib/2.1:$(MONO_PATH) LD_LIBRARY_PATH=$(top_builddir)/src/.libs:$(top_builddir)/plugin/.libs firefox site/index.html
