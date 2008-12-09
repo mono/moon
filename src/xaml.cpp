@@ -2383,7 +2383,7 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 	case Type::INT32: {
 		int i;
 
-		if (isalpha (str [0]) && prop_name) {
+		if (g_ascii_isalpha (str[0]) && prop_name) {
 			i = enums_str_to_int (prop_name, str, sl2);
 			if (i == -1) {
 				g_warning ("'%s' enum is not valid on '%s' property", str, prop_name);
