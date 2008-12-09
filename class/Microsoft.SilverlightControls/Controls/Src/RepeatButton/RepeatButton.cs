@@ -337,7 +337,7 @@ namespace System.Windows.Controls.Primitives
         /// </remarks> 
         protected override void OnMouseMove(MouseEventArgs e)
         { 
-            e.Handled = true;
+//            e.Handled = true;
 
             // this code will cache the mouse position relative to the top level UIElement 
             // in the Silverlight page.

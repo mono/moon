@@ -1,3 +1,18 @@
+2008-12-09  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Controls/Extended/Src/Slider/Slider.cs: Comment usage of Handled
+	on MouseEventArgs (it's not present anymore).
+	* Controls/Src/ButtonBase/ButtonBase.cs: Comment usage of Handled 
+	on MouseEventArgs (it's not present anymore).
+	* Controls/Src/Common/DragCompletedEventArgs.cs: Add missing 
+	properties.
+	* Controls/Src/RepeatButton/RepeatButton.cs: Comment usage of 
+	Handled on MouseEventArgs (it's not present anymore).
+	* Controls/Src/ScrollBar/ScrollBar.cs: Comment usage of Handled on
+	MouseEventArgs (it's not present anymore).
+	* Controls/Src/Thumb/Thumb.cs: Comment usage of Handled on 
+	MouseEventArgs (it's not present anymore).
+
 2008-12-04  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* Controls/Src/Button/Button.cs: Change OnIsEnabledChanged to 

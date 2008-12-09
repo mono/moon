@@ -335,7 +335,7 @@ namespace System.Windows.Controls
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "e", Justification = "Compat with WPF.")] 
         protected override void OnMouseEnter(MouseEventArgs e) 
         {
-            e.Handled = true; 
+//            e.Handled = true; 
             IsMouseOver = true;
             if ((Orientation == Orientation.Horizontal && ElementHorizontalThumb != null && !ElementHorizontalThumb.IsDragging) ||
                 (Orientation == Orientation.Vertical && ElementVerticalThumb != null && !ElementVerticalThumb.IsDragging)) 
@@ -351,7 +351,7 @@ namespace System.Windows.Controls
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "e", Justification = "Compat with WPF.")]
         protected override void OnMouseLeave(MouseEventArgs e)
         { 
-            e.Handled = true; 
+//           e.Handled = true; 
             IsMouseOver = false;
             if ((Orientation == Orientation.Horizontal && ElementHorizontalThumb != null && !ElementHorizontalThumb.IsDragging) || 
                 (Orientation == Orientation.Vertical && ElementVerticalThumb != null && !ElementVerticalThumb.IsDragging))

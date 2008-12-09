@@ -19,6 +19,10 @@ namespace System.Windows.Controls.Primitives
         /// </summary> 
         public bool Canceled { get; private set; }
 
+        public double HorizontalChange { get; private set; }
+
+        public double VerticalChange { get; private set; }
+
         /// <summary> 
         /// Initializes a new instance of the DragCompletedEventArgs class.
         /// </summary>
@@ -38,6 +42,8 @@ namespace System.Windows.Controls.Primitives
             : base()
         {
             Canceled = canceled; 
+            HorizontalChange = horizontalChange;
+            VerticalChange = verticalChange;
         }
     }
  

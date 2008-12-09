@@ -232,7 +232,7 @@ namespace System.Windows.Controls.Primitives
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "e", Justification = "Compat with WPF.")]
         protected override void OnMouseEnter(MouseEventArgs e)
         { 
-            e.Handled = true;
+//            e.Handled = true;
             if (IsEnabled)
             { 
                 IsMouseOver = true; 
@@ -247,7 +247,7 @@ namespace System.Windows.Controls.Primitives
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "e", Justification = "Compat with WPF.")] 
         protected override void OnMouseLeave(MouseEventArgs e)
         { 
-            e.Handled = true;
+ //           e.Handled = true;
             if (IsEnabled)
             { 
                 IsMouseOver = false;
@@ -270,7 +270,7 @@ namespace System.Windows.Controls.Primitives
  
                 if (position != _previousPosition)
                 {
-                    e.Handled = true; 
+//                    e.Handled = true; 
  
                     // Raise the DragDelta event
                     DragDeltaEventHandler handler = DragDelta; 

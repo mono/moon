@@ -613,10 +613,10 @@ namespace System.Windows.Controls.Primitives
             {
                 throw new ArgumentNullException("e"); 
             }
-            else if (e.Handled)
+/*            else if (e.Handled)
             { 
                 return;
-            }
+            }*/
  
             _suspendStateChanges = true; 
             try
@@ -625,7 +625,7 @@ namespace System.Windows.Controls.Primitives
                 {
                     IsPressed = true; 
                     OnClick();
-                    e.Handled = true;
+//                    e.Handled = true;
                 } 
  
             }
@@ -657,10 +657,10 @@ namespace System.Windows.Controls.Primitives
             { 
                 throw new ArgumentNullException("e");
             } 
-            else if (e.Handled)
+/*            else if (e.Handled)
             {
                 return; 
-            }
+            }*/
 
             _suspendStateChanges = true; 
             try 
@@ -668,7 +668,7 @@ namespace System.Windows.Controls.Primitives
                 if ((ClickMode == ClickMode.Hover) && IsEnabled) 
                 {
                     IsPressed = false;
-                    e.Handled = true; 
+//                    e.Handled = true; 
                 }
             }
             finally 
@@ -805,10 +805,10 @@ namespace System.Windows.Controls.Primitives
             // Cache the latest mouse position.
             _mousePosition = e.GetPosition(this); 
 
-            if (e.Handled)
+/*            if (e.Handled)
             { 
                 return; 
-            }
+            }*/
  
             // Determine if the button is still pressed based on the mouse's
             // current position.
@@ -819,7 +819,7 @@ namespace System.Windows.Controls.Primitives
                 !_isSpaceKeyDown) 
             {
                 IsPressed = IsValidMousePosition(); 
-                e.Handled = true;
+//                e.Handled = true;
             }
         } 
 
