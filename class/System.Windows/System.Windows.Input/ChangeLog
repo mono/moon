@@ -1,3 +1,7 @@
+2008-12-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* MouseEventArgs.cs: Remove Handled property.
+
 2008-11-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* FocusManager.cs, ICommand.cs, InputMethod.cs, Keyboard.cs,

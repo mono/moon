@@ -48,14 +48,6 @@ namespace System.Windows.Input {
 			return new Point (nx, ny);
 		}
 
-		[ObsoleteAttribute ("Moved to MouseButtonEventArgs SL 2.0 final, keep until controls have been updated.")]
-		public bool Handled {
-			[SecuritySafeCritical]
-			get { return NativeMethods.routed_event_args_get_handled (native); }
-			[SecuritySafeCritical]
-			set { NativeMethods.routed_event_args_set_handled (native, value); }
-		}
-		
 		public StylusDevice StylusDevice {
 			[SecuritySafeCritical]
 			get {
