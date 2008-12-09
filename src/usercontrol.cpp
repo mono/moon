@@ -42,6 +42,7 @@ UserControl::OnPropertyChanged (PropertyChangedEventArgs *args)
 
 UserControl::UserControl ()
 {
+	SetIsTabStop (false);
 }
 
 UserControl::~UserControl ()

@@ -1,3 +1,8 @@
+2008-12-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* usercontrol.cpp|h: Remove @CallInitialize and set IsTabStop to 
+	false in C++ constructor.
+
 2008-12-09  Jeffrey Stedfast  <fejj@novell.com>
 
 	* xaml.cpp (handle_xaml_markup_extension): Lots more refactoring
