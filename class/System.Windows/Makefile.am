@@ -413,7 +413,8 @@ EXTRA_DIST = $(system_windows_sources) 	\
 	System.Windows.Input/ChangeLog		\
 	System.Windows.Media.Animation/ChangeLog\
 	System.Windows.Media/ChangeLog		\
-	System.Windows.Shapes/ChangeLog
+	System.Windows.Shapes/ChangeLog		\
+	System.Windows.Controls/generic.xaml
 
 $(MSCONTROLS)/Resource.resources: $(MSCONTROLS)/Src/Resource.resx
 	resgen2 $(MSCONTROLS)/Src/Resource.resx $(MSCONTROLS)/Data/src/Resource.resx $(MSCONTROLS)/Extended/Src/Resource.resx $(MSCONTROLS)/Resource.resources
