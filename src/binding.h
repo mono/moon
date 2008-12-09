@@ -70,7 +70,6 @@ class BindingExpressionBase : public Expression {
 	DependencyProperty *target_property;
 	FrameworkElement *target;
 	DependencyObject *source;
-	char *source_name;
 	Binding *binding;
 	char *converter;
 	char *culture;
@@ -101,11 +100,6 @@ class BindingExpressionBase : public Expression {
 	const char *GetConverter () { return converter; }
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetConverter (const char *converter);
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	const char *GetSourceName () { return source_name; }
-	/* @GenerateCBinding,GeneratePInvoke */
-	void SetSourceName (const char *name);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject *GetSource () { return source; }

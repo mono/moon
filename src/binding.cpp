@@ -62,7 +62,6 @@ BindingExpressionBase::BindingExpressionBase ()
 	binding = NULL;
 	got_value = false;
 	gv_callback = NULL;
-	source_name = NULL;
 	source = NULL;
 	stored_value = NULL;
 	sv_callback = NULL;
@@ -81,7 +80,6 @@ BindingExpressionBase::~BindingExpressionBase ()
 	if (stored_value)
 		stored_value->FreeValue ();
 	
-	g_free (source_name);
 	g_free (converter);
 	g_free (culture);
 	g_free (param);
@@ -118,13 +116,6 @@ BindingExpressionBase::SetConverter (const char *converter)
 }
 
 void
-BindingExpressionBase::SetSourceName (const char *name)
-{
-	g_free (source_name);
-	source_name = g_strdup (name);
-}
-
-void
 BindingExpressionBase::SetSource (DependencyObject *source)
 {
 	// FIXME: do we want to ref the element? or at least listen for the destroy signal?
@@ -143,11 +134,8 @@ BindingExpressionBase::AttachListener (DependencyObject *target, PropertyChangeH
 {
 	DependencyProperty *property;
 	
-	if (binding && binding->GetPropertyPath () && handler) {
-		if (!source && source_name)
-			source = target->FindName (source_name);
-		
-		if (source && (property = DependencyProperty::GetDependencyProperty (source->GetType ()->GetKind (), binding->GetPropertyPath ())))
+	if (source && binding && binding->GetPropertyPath () && handler) {
+		if ((property = DependencyProperty::GetDependencyProperty (source->GetType ()->GetKind (), binding->GetPropertyPath ())))
 			source->AddPropertyChangeHandler (property, handler, user_data);
 	}
 }
@@ -181,13 +169,10 @@ BindingExpressionBase::GetValue ()
 			else
 				stored_value = new Value (value);
 			value.FreeValue ();
-		} else if (binding && binding->GetPropertyPath ()) {
+		} else if (source && binding && binding->GetPropertyPath ()) {
 			DependencyProperty *property;
 			
-			if (!source && source_name && target)
-				source = target->FindName (source_name);
-			
-			if (source && (property = DependencyProperty::GetDependencyProperty (source->GetType ()->GetKind (), binding->GetPropertyPath ())))
+			if ((property = DependencyProperty::GetDependencyProperty (source->GetType ()->GetKind (), binding->GetPropertyPath ())))
 				stored_value = source->GetValue (property);
 		}
 	}
@@ -209,11 +194,8 @@ BindingExpressionBase::UpdateSource (Value *value)
 	
 	if (sv_callback) {
 		sv_callback (value);
-	} else if (binding && binding->GetPropertyPath ()) {
-		if (!source && source_name && target)
-			source = target->FindName (source_name);
-		
-		if (source && (property = DependencyProperty::GetDependencyProperty (source->GetType ()->GetKind (), binding->GetPropertyPath ())))
+	} else if (source && binding && binding->GetPropertyPath ()) {
+		if ((property = DependencyProperty::GetDependencyProperty (source->GetType ()->GetKind (), binding->GetPropertyPath ())))
 			source->SetValue (property, value);
 	}
 }

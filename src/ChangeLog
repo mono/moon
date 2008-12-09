@@ -1,3 +1,13 @@
+2008-12-09  Jeffrey Stedfast  <fejj@novell.com>
+
+	* xaml.cpp (create_binding_expression_from_markup): Lookup the
+	StaticResource property for Source.
+
+	* binding.cpp (BindingExpressionBase::SetSourceName): Removed. No
+	longer needed.
+	(BindingExpressionBase::*): No longer do dynamic lookup of the
+	source_name.
+
 2008-12-09  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* usercontrol.cpp|h: Remove @CallInitialize and set IsTabStop to 

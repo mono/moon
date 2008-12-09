@@ -258,11 +258,11 @@ class XamlElementInstance : public List::Node {
 #endif
 	}
 
-	void LookupNamedResource (const char *name, Value **v)
+	bool LookupNamedResource (const char *name, Value **v)
 	{
 		if (!item) {
 			*v = NULL;
-			return;
+			return false;
 		}
 
 		if (item->Is(Type::FRAMEWORKELEMENT)) {
@@ -274,7 +274,7 @@ class XamlElementInstance : public List::Node {
 
 			if (exists) {
 				*v = new Value (*resource_value);
-				return;
+				return true;
 			}
 		}
 
@@ -285,7 +285,9 @@ class XamlElementInstance : public List::Node {
 		// check ResourceDictionaryTest.TestStaticResourceParentElement_Property
 		//
 		if (parent)
-			parent->LookupNamedResource (name, v);
+			return parent->LookupNamedResource (name, v);
+		
+		return false;
 	}
 };
 
@@ -3797,12 +3799,13 @@ xaml_markup_parse_binding (const char **markup, XamlMarkupParseError *err)
 }
 
 static BindingExpression *
-create_binding_expression_from_markup (BindingExtension *markup)
+create_binding_expression_from_markup (XamlParserInfo *p, XamlElementInstance *item, const char *attr_name, BindingExtension *markup)
 {
 	BindingExtensionProperty *prop = markup->properties;
 	BindingExpression *expr;
 	Binding *binding;
-	bool value;
+	Value *value;
+	bool enable;
 	int mode;
 	
 	expr = new BindingExpression ();
@@ -3823,22 +3826,38 @@ create_binding_expression_from_markup (BindingExtension *markup)
 			expr->SetConverterParameter (prop->value);
 			break;
 		case BindingExtensionPropertyNotifyOnValidationError:
-			value = !g_ascii_strcasecmp ("true", prop->value);
-			binding->SetNotifyOnValidationError (value);
+			enable = !g_ascii_strcasecmp ("true", prop->value);
+			binding->SetNotifyOnValidationError (enable);
 			break;
 		case BindingExtensionPropertyValidatesOnExceptions:
-			value = !g_ascii_strcasecmp ("true", prop->value);
-			binding->SetValidatesOnExceptions (value);
+			enable = !g_ascii_strcasecmp ("true", prop->value);
+			binding->SetValidatesOnExceptions (enable);
 			break;
 		case BindingExtensionPropertySource:
-			expr->SetSourceName (prop->value);
+			if (prop->markup == XamlMarkupExtensionStaticResource && p->current_element) {
+				if (!p->current_element->LookupNamedResource (prop->value, &value)) {
+					parser_error (p, item->element_name, attr_name, 2024,
+						      g_strdup_printf ("Could not locate StaticResource %s for property %s.",
+								       prop->value, attr_name));
+					
+					binding->unref ();
+					expr->unref ();
+					
+					return NULL;
+				}
+				
+				// FIXME: we may want to make BindingExpression::SetSource() take
+				// a Value instead of a DO since the managed API takes an 'object'.
+				expr->SetSource (value->AsDependencyObject ());
+				delete value;
+			}
 			break;
 		case BindingExtensionPropertyMode:
 			if ((mode = enums_str_to_int ("BindingMode", prop->value, true)) != -1)
 				binding->SetBindingMode ((BindingMode) mode);
 			break;
 		case BindingExtensionPropertyPath:
-			// FIXME: what if the path is already set?
+			// FIXME: what if the path is already set? Which has priority?
 			binding->SetPropertyPath (prop->value);
 			break;
 		default:
@@ -3895,10 +3914,7 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 			g_free (argument);
 			return true;
 		} else {
-			if (p->current_element)
-				p->current_element->LookupNamedResource (argument, value);
-			
-			if (!value) {
+			if (p->current_element && !p->current_element->LookupNamedResource (argument, value)) {
 				// XXX don't know the proper values here...
 				parser_error (p, item->element_name, attr_name, 2024,
 					      g_strdup_printf ("Could not locate StaticResource %s for property %s.",
@@ -3955,13 +3971,16 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 			return true;
 		}
 		
-		expr = create_binding_expression_from_markup (binding);
+		expr = create_binding_expression_from_markup (p, item, attr_name, binding);
 		delete binding;
 		
-		*value = new Value (expr);
-		expr->unref ();
+		if (expr) {
+			*value = new Value (expr);
+			expr->unref ();
+			return false;
+		}
 		
-		return false;
+		return true;
 	default:
 		return false;
 	}
