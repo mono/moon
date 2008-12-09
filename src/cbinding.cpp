@@ -205,6 +205,36 @@ binding_expression_base_get_binding (BindingExpressionBase *instance)
 }
 
 
+const Value *
+binding_expression_base_get_converter (BindingExpressionBase *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetConverter ();
+}
+
+
+const char *
+binding_expression_base_get_converter_culture (BindingExpressionBase *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetConverterCulture ();
+}
+
+
+const Value *
+binding_expression_base_get_converter_parameter (BindingExpressionBase *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetConverterParameter ();
+}
+
+
 DependencyObject *
 binding_expression_base_get_source (BindingExpressionBase *instance)
 {
@@ -262,6 +292,36 @@ binding_expression_base_set_binding (BindingExpressionBase *instance, Binding *b
 		return;
 	
 	instance->SetBinding (binding);
+}
+
+
+void
+binding_expression_base_set_converter (BindingExpressionBase *instance, Value *converter)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetConverter (converter);
+}
+
+
+void
+binding_expression_base_set_converter_culture (BindingExpressionBase *instance, const char *culture)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetConverterCulture (culture);
+}
+
+
+void
+binding_expression_base_set_converter_parameter (BindingExpressionBase *instance, Value *param)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetConverterParameter (param);
 }
 
 

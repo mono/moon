@@ -140,6 +140,15 @@ BindingExpression *binding_expression_new (void);
 Binding *binding_expression_base_get_binding (BindingExpressionBase *instance);
 
 /* @GeneratePInvoke */
+const Value *binding_expression_base_get_converter (BindingExpressionBase *instance);
+
+/* @GeneratePInvoke */
+const char *binding_expression_base_get_converter_culture (BindingExpressionBase *instance);
+
+/* @GeneratePInvoke */
+const Value *binding_expression_base_get_converter_parameter (BindingExpressionBase *instance);
+
+/* @GeneratePInvoke */
 DependencyObject *binding_expression_base_get_source (BindingExpressionBase *instance);
 
 /* @GeneratePInvoke */
@@ -156,6 +165,15 @@ void binding_expression_base_register_managed_overrides (BindingExpressionBase *
 
 /* @GeneratePInvoke */
 void binding_expression_base_set_binding (BindingExpressionBase *instance, Binding *binding);
+
+/* @GeneratePInvoke */
+void binding_expression_base_set_converter (BindingExpressionBase *instance, Value *converter);
+
+/* @GeneratePInvoke */
+void binding_expression_base_set_converter_culture (BindingExpressionBase *instance, const char *culture);
+
+/* @GeneratePInvoke */
+void binding_expression_base_set_converter_parameter (BindingExpressionBase *instance, Value *param);
 
 /* @GeneratePInvoke */
 void binding_expression_base_set_source (BindingExpressionBase *instance, DependencyObject *source);
