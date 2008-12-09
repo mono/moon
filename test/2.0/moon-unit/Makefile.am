@@ -45,7 +45,9 @@ moon-unit.sources: *.cs */*.cs
 test: copy-xap-to-site
 	MONO_PATH=$(top_builddir)/class/lib/2.1:$(MONO_PATH) LD_LIBRARY_PATH=$(top_builddir)/src/.libs:$(top_builddir)/plugin/.libs firefox site/index.html
 
-copy-xap-to-site: moon-unit.xap
+copy-xap-to-site: site/ClientBin/moon-unit.xap
+
+site/ClientBin/moon-unit.xap: moon-unit.xap
 	@mkdir -p site/ClientBin
 	@cp moon-unit.xap site/ClientBin
 
