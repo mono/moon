@@ -21,9 +21,7 @@ BROWSER_ASSEMBLIES=-r:$(top_builddir)/class/lib/2.1/System.Windows.dll \
 		   -r:$(top_builddir)/class/lib/2.1/Mono.Moonlight.dll
 
 moon-unit.xap: $(builddir)/moon-unit.sources Microsoft.Silverlight.Testing.dll Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll System.Xml.Linq.dll
-	@if [ ! -e App.xaml ]; then cp $(srcdir)/App.xaml .; chmod +w App.xaml; fi
-	@if [ ! -e BindingXaml.xaml ]; then cp $(srcdir)/BindingXaml.xaml .; chmod +w BindingXaml.xaml; fi
-	$(MONO) --debug $(top_builddir)/tools/mxap/mxap.exe --generate-html- --entry-point-type=Mono.Moonlight.UnitTesting.App --cs-sources=$(builddir)/moon-unit.sources --builddirhack=$(top_builddir) $(BROWSER_ASSEMBLIES)
+	$(MONO) --debug $(top_builddir)/tools/mxap/mxap.exe --generate-html- --entry-point-type=Mono.Moonlight.UnitTesting.App --cs-sources=$(builddir)/moon-unit.sources --builddirhack=$(top_builddir) $(BROWSER_ASSEMBLIES) -r:$(builddir)/Microsoft.Silverlight.Testing.dll -r:$(builddir)/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll  $(srcdir)/
 
 Microsoft.Silverlight.Testing.dll: ../Microsoft.Silverlight.Testing/Microsoft.Silverlight.Testing.dll
 	cp ../Microsoft.Silverlight.Testing/Microsoft.Silverlight.Testing.dll* .
