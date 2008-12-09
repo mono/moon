@@ -1,5 +1,9 @@
 2008-12-09  Jeffrey Stedfast  <fejj@novell.com>
 
+	* playlist.cpp: Don't use ctype is*() with a char argument, these
+	functions are meant to take unsigned char values cast to an
+	int. Use the g_ascii_is*() functions instead.
+
 	* xaml.cpp (create_binding_expression_from_markup):
 	ConverterParameter can either be a string or a StaticResource. If
 	it is a StaticResource, lookup the resource object.

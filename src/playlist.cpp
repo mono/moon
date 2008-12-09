@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * playlist.cpp:
  *
@@ -13,7 +14,6 @@
 #include <expat.h>
 #include <string.h>
 #include <math.h>
-#include <ctype.h>
 
 #include "playlist.h"
 #include "downloader.h"
@@ -993,7 +993,7 @@ parse_int (const char **pp, const char *end, int *result)
 	int res = 0;
 	bool success = false;
 
-	while (p <= end && isdigit (*p)) {
+	while (p <= end && g_ascii_isdigit (*p)) {
 		res = res * 10 + *p - '0';
 		p++;
 	}
@@ -1020,7 +1020,7 @@ duration_from_asx_str (PlaylistParser *parser, const char *str, Duration **res)
 
 	p = str;
 
-	if (!isdigit (*p)) {
+	if (!g_ascii_isdigit (*p)) {
 		parser->ParsingError (new ErrorEventArgs (MediaError, 2210, "AG_E_INVALID_ARGUMENT"));
 		return false;
 	}
@@ -1038,12 +1038,12 @@ duration_from_asx_str (PlaylistParser *parser, const char *str, Duration **res)
 	
 	if (*p == '.') {
 		p++;
-		while (digits >= 0 && isdigit (*p)) {
+		while (digits >= 0 && g_ascii_isdigit (*p)) {
 			milliseconds += pow (10.0f, digits) * (*p - '0');
 			p++;
 			digits--;
 		}
-		if (counter == 3 && *p != 0 && !isdigit (*p)) {
+		if (counter == 3 && *p != 0 && !g_ascii_isdigit (*p)) {
 			parser->ParsingError (new ErrorEventArgs (MediaError, 2210, "AG_E_INVALID_ARGUMENT"));
 			return false;
 		}
