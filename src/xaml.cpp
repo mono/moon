@@ -340,13 +340,25 @@ class XamlParserInfo {
 		created_namespaces = g_list_prepend (created_namespaces, ns);
 	}
 
-	XamlParserInfo (XML_Parser parser, const char *file_name) :
-		parser (parser), file_name (file_name),
-		namescope (new NameScope()), top_element (NULL),
-		current_namespace (NULL), current_element (NULL), cdata_content (false), cdata (NULL),
-		implicit_default_namespace (false), error_args (NULL), loader (NULL), created_elements (NULL), created_namespaces (NULL),
-		hydrate_expecting(NULL), hydrating(false)
+	XamlParserInfo (XML_Parser parser, const char *file_name)
 	{
+		this->parser = parser;
+		this->file_name = file_name;
+		this->namescope = new NameScope ();
+
+		top_element = NULL;
+		current_namespace = NULL;
+		current_element = NULL;
+		cdata_content = false;
+		cdata = NULL;
+		implicit_default_namespace = false;
+		error_args = NULL;
+		loader = NULL;
+		created_elements = NULL;
+		created_namespaces = NULL;
+		hydrate_expecting = NULL;
+		hydrating = false;
+
 		namespace_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 	}
 
