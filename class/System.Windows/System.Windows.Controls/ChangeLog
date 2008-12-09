@@ -1,3 +1,8 @@
+2008-12-09  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* UserControl.cs: Remove IsTabStop initialization (moved to 
+	unmanaged code)
+
 2008-12-08  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* UserControl.cs: Add Initialize and set IsTabStop to false
