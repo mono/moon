@@ -3946,10 +3946,12 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 		}
 		break;
 	case XamlMarkupExtensionBinding:
-		if (!(binding = xaml_markup_parse_binding (&inptr, &err))) {
+		if (!(binding = xaml_markup_parse_binding (&inptr, &err)) || *inptr != '\0') {
 			parser_error (p, item->element_name, attr_name, 2024,
 				      g_strdup_printf ("Error parsing Binding markup for property %s.",
 						       attr_name));
+			
+			delete binding;
 			return true;
 		}
 		
