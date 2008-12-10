@@ -34,6 +34,12 @@ namespace System.Windows {
 		internal override Kind GetKind () { return Kind.ASSEMBLYPART_COLLECTION; }
 	}
 
+	partial class DataTemplate {
+		public DataTemplate () : base (NativeMethods.data_template_new ()) {}
+		internal DataTemplate (IntPtr raw) : base (raw) {}
+		internal override Kind GetKind () { return Kind.DATATEMPLATE; }
+	}
+
 	partial class Deployment {
 		public Deployment () : base (NativeMethods.deployment_new ()) {}
 		internal Deployment (IntPtr raw) : base (raw) {}

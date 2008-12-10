@@ -24,6 +24,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.ASSEMBLYPART));
 				t = agclr.GetType ("System.Windows.AssemblyPartCollection", true); 
 				types.Add (t, new ManagedType (t, Kind.ASSEMBLYPART_COLLECTION));
+				t = agclr.GetType ("System.Windows.DataTemplate", true); 
+				types.Add (t, new ManagedType (t, Kind.DATATEMPLATE));
 				t = agclr.GetType ("System.Windows.DependencyObject", true); 
 				types.Add (t, new ManagedType (t, Kind.DEPENDENCY_OBJECT));
 				t = agclr.GetType ("System.Windows.Deployment", true); 

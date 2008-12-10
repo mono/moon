@@ -373,6 +373,23 @@ namespace Mono {
 		public extern static IntPtr control_template_new ();
 
 		[DllImport ("moon")]
+		// DataTemplate *data_template_new ();
+		public extern static IntPtr data_template_new ();
+
+		[DllImport ("moon", EntryPoint="data_template_load_content_with_error")]
+		// DependencyObject *data_template_load_content_with_error (DataTemplate *instance, MoonError *error);
+		private extern static IntPtr data_template_load_content_with_error_ (IntPtr instance, out MoonError error);
+		public static IntPtr data_template_load_content (IntPtr instance)
+		{
+			IntPtr result;
+			MoonError error;
+			result = data_template_load_content_with_error_ (instance, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+			return result;
+		}
+
+		[DllImport ("moon")]
 		// DeepZoomImageTileSource *deep_zoom_image_tile_source_new ();
 		public extern static IntPtr deep_zoom_image_tile_source_new ();
 
