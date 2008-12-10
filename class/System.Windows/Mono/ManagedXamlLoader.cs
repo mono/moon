@@ -35,6 +35,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Markup;
 using System.Runtime.InteropServices;
+using System.ComponentModel;
 using Mono;
 
 namespace Mono.Xaml
@@ -176,6 +177,8 @@ namespace Mono.Xaml
 
 		private bool CreateObject (IntPtr top_level, string xmlns, string name, out Value value)
 		{
+			
+
 			if (name == null)
 				throw new ArgumentNullException ("type_name");
 
@@ -343,6 +346,8 @@ namespace Mono.Xaml
 				}
 			}
 
+			o_value = ConvertType (set_params [1].ParameterType, o_value);
+
 			set_method.Invoke (null, new object [] {target, o_value});
 			return true;
 		}
@@ -451,8 +456,49 @@ namespace Mono.Xaml
 				}
 			}
 
+			obj_value = ConvertType (pi.PropertyType, obj_value);
 			pi.SetValue (target, obj_value, null);
 			return true;
+		}
+
+		private object ConvertType (Type t, object value)
+		{
+			if (value.GetType () == t)
+				return value;
+
+			TypeConverter converter = GetConverterFor (t);
+			Console.WriteLine ("converter:  " + converter);
+			if (converter != null && converter.CanConvertFrom (value.GetType ()))
+				return converter.ConvertFrom (value);
+
+			// TODO: Handle IConvertible
+			
+			// This will just let thigns fail
+			return value;
+		}
+
+		public static TypeConverter GetConverterFor (Type type)
+		{
+			Attribute[] attrs = (Attribute []) type.GetCustomAttributes (true);
+			TypeConverterAttribute at = null;
+			TypeConverter converter = null;
+
+			foreach (Attribute attr in attrs) {
+				if (attr is TypeConverterAttribute) {
+					at = (TypeConverterAttribute) attr;
+					break;
+				}
+			}
+
+			if (at == null)
+				return null;
+
+			Type t = Type.GetType (at.ConverterTypeName);
+			if (t == null)
+				return null;
+
+			converter = (TypeConverter) Activator.CreateInstance (t);
+			return converter;
 		}
 
 		private static string ClrNamespaceFromXmlns (string xmlns)
