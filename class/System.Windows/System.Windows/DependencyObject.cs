@@ -152,6 +152,7 @@ namespace System.Windows {
 			case Kind.COLORKEYFRAME_COLLECTION: return new ColorKeyFrameCollection (raw);
 			case Kind.COLUMNDEFINITION_COLLECTION: return new ColumnDefinitionCollection (raw);
 			case Kind.CONTROLTEMPLATE: return new ControlTemplate (raw);
+			case Kind.DATATEMPLATE: return new DataTemplate (raw);
 			case Kind.DEPLOYMENT: return new Deployment (raw);
 			case Kind.DISCRETECOLORKEYFRAME: return new DiscreteColorKeyFrame (raw);
 			case Kind.DISCRETEDOUBLEKEYFRAME: return new DiscreteDoubleKeyFrame (raw);

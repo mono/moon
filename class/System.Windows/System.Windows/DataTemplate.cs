@@ -25,17 +25,31 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+using Mono;
 using System;
 using System.Security;
 
 namespace System.Windows {
 
-	public class DataTemplate : FrameworkTemplate {
+	public partial class DataTemplate : FrameworkTemplate {
 
 		public DependencyObject LoadContent ()
 		{
-			Console.WriteLine ("Not implemented: System.Windows.DataTemplate.LoadContent");
-			throw new NotImplementedException ();
+			IntPtr top = NativeMethods.data_template_load_content (native);
+
+			if (top == IntPtr.Zero)
+				return null;
+
+			Kind k = NativeMethods.dependency_object_get_object_type (top);
+
+			DependencyObject result = DependencyObject.Lookup (k, top);
+
+			if (result != null) {
+				// Delete our reference, result already has one.
+				NativeMethods.event_object_unref (top);
+			}
+
+			return result;
 		}
 	}
 }

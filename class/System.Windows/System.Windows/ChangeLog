@@ -1,3 +1,10 @@
+2008-12-09  Chris Toshok  <toshok@ximian.com>
+
+	* DataTemplate.cs: make class partial to allow for the generated
+	partial class, and implement LoadContent.
+
+	* DependencyObject.cs: add DATATEMPLATE case to CreateObject.
+
 2008-12-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* UIElement.cs: virtualize all Invoke* since Control to call On* 
