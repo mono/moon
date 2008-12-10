@@ -14,7 +14,9 @@ CLEANFILES=	$(xapname).xap 		\
 		Microsoft.Silverlight.Testing.dll \
 		Microsoft.Silverlight.Testing.dll.mdb \
 		Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll \
-		Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll.mdb
+		Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll.mdb \
+		System.Xml.Linq.dll	\
+		System.Xml.Linq.dll.mdb
 
 BROWSER_ASSEMBLIES=-r:$(top_builddir)/class/lib/2.1/System.Windows.dll \
 		   -r:$(top_builddir)/class/lib/2.1/System.Windows.Browser.dll \
