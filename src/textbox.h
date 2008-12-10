@@ -210,42 +210,41 @@ class TextBox : public Control {
 /* @Namespace=System.Windows.Controls */
 class PasswordBox : public TextBox {
  public:
- 	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors */
- 	static DependencyProperty *MaxLengthProperty;
- 	/* @PropertyType=string,ManagedFieldAccess=Internal,Version=2.0,GenerateAccessors */
- 	static DependencyProperty *PasswordProperty;
- 	/* @PropertyType=string,Version=2.0,GenerateAccessors */
- 	static DependencyProperty *PasswordCharProperty;
- 	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
- 	static DependencyProperty *SelectionBackgroundProperty;
- 	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
- 	static DependencyProperty *SelectionForegroundProperty;
- 	
- 	/* @SilverlightVersion="2" */
-	const static int PasswordChangedEvent;
-
- 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors */
+	static DependencyProperty *MaxLengthProperty;
+	/* @PropertyType=string,ManagedFieldAccess=Internal,Version=2.0,GenerateAccessors */
+	static DependencyProperty *PasswordProperty;
+	/* @PropertyType=string,Version=2.0,GenerateAccessors */
+	static DependencyProperty *PasswordCharProperty;
+	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
+	static DependencyProperty *SelectionBackgroundProperty;
+	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
+	static DependencyProperty *SelectionForegroundProperty;
 	
- 	/* @GenerateCBinding,GeneratePInvoke */
+	/* @SilverlightVersion="2" */
+	const static int PasswordChangedEvent;
+	
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	PasswordBox () { }
 	
- 	virtual Type::Kind GetObjectType () { return Type::PASSWORDBOX; }
- 	
- 	int GetMaxLength ();
+	virtual Type::Kind GetObjectType () { return Type::PASSWORDBOX; }
+	
+	int GetMaxLength ();
 	void SetMaxLength (int length);
 	
- 	const char *GetPassword ();
+	const char *GetPassword ();
 	void SetPassword (const char* password);
 	
 	const char *GetPasswordChar ();
 	void SetPasswordChar (const char *passwordChar);
 	
- 	Brush *GetSelectionBackground ();
+	Brush *GetSelectionBackground ();
 	void SetSelectionBackground (Brush *brush);
 	
- 	Brush *GetSelectionForeground ();
+	Brush *GetSelectionForeground ();
 	void SetSelectionForeground (Brush *brush);
-
 };
 
 #endif /* __TEXTBOX_H__ */
