@@ -1,3 +1,10 @@
+2008-12-10  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Add a buffering mode to the parser, this mode is used
+	for templates and simply buffers all the text without doing
+	any real parsing. So everything between a
+	<DataTemplate>..</DataTemplate> block is turned into a string.
+
 2008-12-10  Full Name  <Email Address>
 
 	* textbox.h:

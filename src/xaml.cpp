@@ -86,12 +86,19 @@ static const char* default_namespace_names [] = {
 	NULL
 };
 
+static const char* begin_buffering_element_names [] = {
+	"DataTemplate",
+	"ItemTemplate",
+	"ControlTemplate",
+	NULL
+};
 
 static bool dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value);
 static void dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child);
 static void dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
 static void value_type_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
 static bool handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, const char* attr_name, const char* attr_value, Value **value);
+static bool element_begins_buffering (const char* element);
 void parser_error (XamlParserInfo *p, const char *el, const char *attr, int error_code, const char *message);
 
 static XamlElementInfo *create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *name);
@@ -321,25 +328,25 @@ class XamlParserInfo {
 	ParserErrorEventArgs *error_args;
 
 	XamlLoader *loader;
-	GList *created_elements;
-	GList *created_namespaces;
 
-	//
+	
+        //
 	// If set, this is used to hydrate an existing object, not to create a new toplevel one
 	//
 	DependencyObject *hydrate_expecting;
 	bool hydrating;
-	
-	void AddCreatedElement (DependencyObject* element)
-	{
-		created_elements = g_list_prepend (created_elements, element);
-	}
 
-	void AddCreatedNamespace (XamlNamespace* ns)
-	{
-		created_namespaces = g_list_prepend (created_namespaces, ns);
-	}
+	char* buffer_until_element;
+	int buffer_depth;
+	GString *buffer;
 
+ private:
+	GList *created_elements;
+	GList *created_namespaces;
+	const char* xml_buffer;
+	int xml_buffer_start_index;
+
+ public:
 	XamlParserInfo (XML_Parser parser, const char *file_name)
 	{
 		this->parser = parser;
@@ -359,7 +366,81 @@ class XamlParserInfo {
 		hydrate_expecting = NULL;
 		hydrating = false;
 
+		buffer_until_element = NULL;
+		buffer_depth = -1;
+		buffer = NULL;
+		xml_buffer = NULL;
+
 		namespace_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+	}
+
+	void AddCreatedElement (DependencyObject* element)
+	{
+		created_elements = g_list_prepend (created_elements, element);
+	}
+
+	void AddCreatedNamespace (XamlNamespace* ns)
+	{
+		created_namespaces = g_list_prepend (created_namespaces, ns);
+	}
+
+	void QueueBeginBuffering (char* buffer_until)
+	{
+		buffer_until_element = buffer_until;
+		buffer_depth = 1;
+
+		xml_buffer_start_index = -1;
+	}
+
+	void BeginBuffering ()
+	{
+		xml_buffer_start_index = XML_GetCurrentByteIndex (parser);
+		buffer = g_string_new (NULL);
+	}
+
+	void EndBuffering ()
+	{
+		g_free (buffer_until_element);
+		buffer_until_element = NULL;
+	}
+
+	bool ShouldBeginBuffering ()
+	{
+		return InBufferingMode () && xml_buffer_start_index == -1;
+	}
+
+	bool InBufferingMode ()
+	{
+		return buffer_until_element != NULL;
+	}
+
+	void AppendCurrentXml ()
+	{
+		if (!buffer)
+			return;
+		int pos = XML_GetCurrentByteIndex (parser);
+		g_string_append_len (buffer, xml_buffer + xml_buffer_start_index, pos - xml_buffer_start_index);
+	}
+	
+	char* ClearBuffer ()
+	{
+		AppendCurrentXml ();
+
+		buffer_depth = 0;
+		buffer_until_element = NULL;
+
+		char* res = buffer->str;
+		g_string_free (buffer, FALSE);
+		return res;
+	}
+
+	void SetXmlBuffer (const char* xml_buffer)
+	{
+		if (InBufferingMode ())
+			AppendCurrentXml ();
+
+		this->xml_buffer = xml_buffer;
+		xml_buffer_start_index = 0;
 	}
 
 	~XamlParserInfo ()
@@ -379,6 +460,8 @@ class XamlParserInfo {
 			delete top_element;
 		namescope->unref ();
 	}
+
+ 
 };
 
 
@@ -940,6 +1023,17 @@ start_element (void *data, const char *el, const char **attr)
 	XamlElementInfo *elem = NULL;
 	XamlElementInstance *inst;
 
+	if (p->ShouldBeginBuffering ()) {
+		p->BeginBuffering ();
+		return;
+	}
+
+	if (p->InBufferingMode ()) {
+		if (!strcmp (p->buffer_until_element, el))
+			p->buffer_depth++;
+		return;
+	}
+
 	const char *dot = strchr (el, '.');
 	if (!dot)
 		elem = p->current_namespace->FindElement (p, el);
@@ -1028,6 +1122,10 @@ start_element (void *data, const char *el, const char **attr)
 		p->current_element->children->Append (inst);
 	}
 	p->current_element = inst;
+
+	if (element_begins_buffering (el)) {
+		p->QueueBeginBuffering (g_strdup (el));
+	}
 }
 
 static void
@@ -1053,6 +1151,16 @@ flush_char_data (XamlParserInfo *p)
 		p->cdata_content = false;
 		p->cdata = NULL;
 	}
+}
+
+static bool
+element_begins_buffering (const char* element)
+{
+	for (int i = 0; begin_buffering_element_names [i]; i++) {
+		if (!strcmp (begin_buffering_element_names [i], element))
+			return true;
+	}
+	return false;
 }
 
 static void
@@ -1103,6 +1211,17 @@ start_element_handler (void *data, const char *el, const char **attr)
 	g_strfreev (name);
 }
 
+static char*
+get_element_name (XamlParserInfo* p, const char *el)
+{
+	char **names = g_strsplit (el, "|",  -1);
+	char *name = g_strdup (names [g_strv_length (names) - 1]);
+
+	g_strfreev (names);
+
+	return name;
+}
+
 static void
 end_element_handler (void *data, const char *el)
 {
@@ -1114,6 +1233,24 @@ end_element_handler (void *data, const char *el)
 	if (!p->current_element) {
 		g_warning ("p->current_element == NULL, current_element = %p (%s)\n",
 			   p->current_element, p->current_element ? p->current_element->element_name : "<NULL>");
+		return;
+	}
+
+	if (p->InBufferingMode ()) {
+		char* name = get_element_name (p, el);
+		if (!strcmp (p->buffer_until_element, name)) {
+			p->buffer_depth--;
+
+			if (p->buffer_depth == 0) {
+				// OK we are done buffering, the element we are buffering for
+				FrameworkTemplate* template_ = (FrameworkTemplate *) p->current_element->GetAsDependencyObject ();
+
+                                char* buffer = p->ClearBuffer ();
+                                template_->SetXamlBuffer(buffer);
+			}
+			p->current_element = p->current_element->parent;
+		}
+		g_free (name);
 		return;
 	}
 
@@ -1368,7 +1505,8 @@ XamlLoader::CreateFromFile (const char *xaml_file, bool create_namescope,
 			n = (inend - inptr);
 			first_read = false;
 		}
-		
+
+		parser_info->SetXmlBuffer (inptr);
 		if (!XML_Parse (p, inptr, n, nread == 0)) {
 			expat_parser_error (parser_info, XML_GetErrorCode (p));
 			goto cleanup_and_return;
@@ -1486,6 +1624,7 @@ XamlLoader::HydrateFromString (const char *xaml, DependencyObject *object, bool 
 	while (g_ascii_isspace (*start))
 		start++;
 
+	parser_info->SetXmlBuffer (start);
 	if (!XML_Parse (p, start, strlen (start), TRUE)) {
 		expat_parser_error (parser_info, XML_GetErrorCode (p));
 		LOG_XAML ("error parsing:  %s\n\n", xaml);
