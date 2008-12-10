@@ -24,7 +24,49 @@ namespace MoonTest.System.Windows.Controls
 		{
 			Border c = new Border ();
 
+			Assert.AreEqual(null, c.Background);
+			Assert.AreEqual(null, c.BorderBrush);
+			Assert.AreEqual(new Thickness(0), c.BorderThickness);
+			Assert.AreEqual(null, c.Child);
+			Assert.AreEqual(new CornerRadius(0, 0, 0, 0), c.CornerRadius);
 			Assert.AreEqual (new Thickness(0), c.Padding);
+		}
+
+		[TestMethod]
+		public void InvalidValues()
+		{
+			Border c = new Border();
+
+			Assert.Throws<Exception>(delegate {
+				c.BorderThickness = new Thickness(double.MinValue);
+			}, "#1");
+			Assert.Throws<ArgumentException>(delegate {
+				c.BorderThickness = new Thickness(-1);
+			}, "#2");
+			Assert.Throws<Exception>(delegate {
+				c.BorderThickness = new Thickness(double.MaxValue);
+			}, "#3");
+
+			Assert.Throws<ArgumentException>(delegate {
+				c.CornerRadius = new CornerRadius(double.MinValue);
+			}, "#4");
+			Assert.Throws<ArgumentException>(delegate {
+				c.CornerRadius = new CornerRadius(-1);
+			}, "#5");
+			Assert.Throws<Exception>(delegate {
+				c.CornerRadius = new CornerRadius(double.MaxValue);
+			}, "#6");
+
+			// FIXME: The maximum value for padding seems to be ~1.7976931348623149E+308
+			Assert.Throws<Exception>(delegate {
+				c.Padding = new Thickness(double.MinValue);
+			}, "#7");
+			Assert.Throws<ArgumentException>(delegate {
+				c.Padding = new Thickness(-1);
+			}, "#8");
+			Assert.Throws<Exception>(delegate {
+				c.Padding = new Thickness(double.MaxValue);
+			}, "#9");
 		}
 
 		[TestMethod]
@@ -523,7 +565,7 @@ namespace MoonTest.System.Windows.Controls
 		public void ChildNameScope ()
 		{
 			Border b = new Border ();
-		        Canvas c = (Canvas)XamlReader.Load (@"
+			Canvas c = (Canvas)XamlReader.Load (@"
 <Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
   <Border>
     <Path x:Name=""foo"" Data=""F1 M 10,10 20,20 10,20"" Stroke=""Red""/>
