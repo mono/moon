@@ -22,7 +22,7 @@
 	any real parsing. So everything between a
 	<DataTemplate>..</DataTemplate> block is turned into a string.
 
-2008-12-10  Full Name  <Email Address>
+2008-12-10  Alan McGovern  <amcgovern@novell.com>
 
 	* textbox.h:
 	* textbox.cpp: Implement the SelectAll function and raise an event when
@@ -35,7 +35,7 @@
 	* type-generated.cpp:
 	* dependencyproperty.g.cpp: Commit the files from the generator.
 
-2008-12-10  Full Name  <Email Address>
+2008-12-10  Alan McGovern  <amcgovern@novell.com>
 
 	* textbox.h: Partial implementation of the PasswordBox control
 
