@@ -1,5 +1,9 @@
 2008-12-10  Full Name  <Email Address>
 
+	* TextBox.cs: Commit the files from the generator.
+
+2008-12-10  Full Name  <Email Address>
+
 	* TextBox.cs:
 	* PasswordBox.cs: Partial implementation of the PasswordBox control
 

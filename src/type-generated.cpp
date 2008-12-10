@@ -90,6 +90,7 @@ const int MultiScaleImage::ImageOpenFailedEvent = 18;
 const int MultiScaleImage::ImageOpenSucceededEvent = 19;
 const int MultiScaleImage::MotionFinishedEvent = 20;
 const int MultiScaleImage::ViewportChangedEvent = 21;
+const int PasswordBox::PasswordChangedEvent = 18;
 const int Storyboard::CompletedEvent = 1;
 const int Surface::ErrorEvent = 1;
 const int Surface::FullScreenChangeEvent = 2;
@@ -122,6 +123,7 @@ const char *ImageBrush_Events [] = { "DownloadProgressChanged", "ImageFailed", N
 const char *MediaBase_Events [] = { "DownloadProgressChanged", NULL };
 const char *MediaElement_Events [] = { "BufferingProgressChanged", "CurrentStateChanged", "MarkerReached", "MediaEnded", "MediaFailed", "MediaOpened", NULL };
 const char *MultiScaleImage_Events [] = { "ImageFailed", "ImageOpenFailed", "ImageOpenSucceeded", "MotionFinished", "ViewportChanged", NULL };
+const char *PasswordBox_Events [] = { "PasswordChanged", NULL };
 const char *Storyboard_Events [] = { "Completed", NULL };
 const char *Surface_Events [] = { "Error", "FullScreenChange", "Load", "Resize", NULL };
 const char *TextBox_Events [] = { "SelectionChanged", "TextChanged", NULL };
@@ -243,6 +245,7 @@ Type type_infos [] = {
 	{ Type::PANEL, Type::FRAMEWORKELEMENT, false, "Panel", "PANEL", 0, 16, NULL, (create_inst_func *) panel_new, "Children", NULL, NULL }, 
 	{ Type::PARALLELTIMELINE, Type::TIMELINEGROUP, false, "ParallelTimeline", "PARALLELTIMELINE", 0, 1, NULL, (create_inst_func *) parallel_timeline_new, NULL, NULL, NULL }, 
 	{ Type::PARSERERROREVENTARGS, Type::ERROREVENTARGS, false, "ParserErrorEventArgs", "PARSERERROREVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
+	{ Type::PASSWORDBOX, Type::TEXTBOX, false, "PasswordBox", "PASSWORDBOX", 1, 19, PasswordBox_Events, (create_inst_func *) password_box_new, NULL, NULL, NULL }, 
 	{ Type::PATH, Type::SHAPE, false, "Path", "PATH", 0, 16, NULL, (create_inst_func *) path_new, NULL, NULL, NULL }, 
 	{ Type::PATHFIGURE, Type::DEPENDENCY_OBJECT, false, "PathFigure", "PATHFIGURE", 0, 1, NULL, (create_inst_func *) path_figure_new, "Segments", NULL, NULL }, 
 	{ Type::PATHFIGURE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "PathFigureCollection", "PATHFIGURE_COLLECTION", 0, 1, NULL, (create_inst_func *) path_figure_collection_new, NULL, NULL, NULL }, 

@@ -71,7 +71,7 @@ namespace System.Windows.Controls {
 
 		public void SelectAll ()
 		{
-			NativeMethods.text_box_select_all ();
+			NativeMethods.text_box_select_all (native);
 		}
 		
 		static UnmanagedEventHandler selection_changed = new UnmanagedEventHandler (selection_changed_cb);

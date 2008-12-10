@@ -1,3 +1,8 @@
+2008-12-10  Full Name  <Email Address>
+
+	* DependencyObject.g.cs:
+	* DependencyProperty.g.cs: Commit the files from the generator.
+
 2008-12-09  Chris Toshok  <toshok@ximian.com>
 
 	* DataTemplate.cs: make class partial to allow for the generated

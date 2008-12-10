@@ -244,6 +244,11 @@ dependency_property_g_init (void)
 	ObjectKeyFrame::ValueProperty = DependencyProperty::Register (Type::OBJECTKEYFRAME, "Value", Type::DEPENDENCY_OBJECT);
 	Panel::BackgroundProperty = DependencyProperty::Register (Type::PANEL, "Background", Type::BRUSH);
 	Panel::ChildrenProperty = DependencyProperty::Register (Type::PANEL, "Children", Type::UIELEMENT_COLLECTION);
+	PasswordBox::MaxLengthProperty = DependencyProperty::Register (Type::PASSWORDBOX, "MaxLength", new Value (0));
+	PasswordBox::PasswordCharProperty = DependencyProperty::Register (Type::PASSWORDBOX, "PasswordChar", Type::STRING);
+	PasswordBox::PasswordProperty = DependencyProperty::Register (Type::PASSWORDBOX, "Password", Type::STRING);
+	PasswordBox::SelectionBackgroundProperty = DependencyProperty::Register (Type::PASSWORDBOX, "SelectionBackground", Type::BRUSH);
+	PasswordBox::SelectionForegroundProperty = DependencyProperty::Register (Type::PASSWORDBOX, "SelectionForeground", Type::BRUSH);
 	Path::DataProperty = DependencyProperty::Register (Type::PATH, "Data", Type::GEOMETRY);
 	PathFigure::IsClosedProperty = DependencyProperty::Register (Type::PATHFIGURE, "IsClosed", new Value (false));
 	PathFigure::IsFilledProperty = DependencyProperty::Register (Type::PATHFIGURE, "IsFilled", Type::BOOL);
@@ -578,6 +583,11 @@ DependencyProperty *ObjectKeyFrame::KeyTimeProperty = NULL;
 DependencyProperty *ObjectKeyFrame::ValueProperty = NULL;
 DependencyProperty *Panel::BackgroundProperty = NULL;
 DependencyProperty *Panel::ChildrenProperty = NULL;
+DependencyProperty *PasswordBox::MaxLengthProperty = NULL;
+DependencyProperty *PasswordBox::PasswordCharProperty = NULL;
+DependencyProperty *PasswordBox::PasswordProperty = NULL;
+DependencyProperty *PasswordBox::SelectionBackgroundProperty = NULL;
+DependencyProperty *PasswordBox::SelectionForegroundProperty = NULL;
 DependencyProperty *Path::DataProperty = NULL;
 DependencyProperty *PathFigure::IsClosedProperty = NULL;
 DependencyProperty *PathFigure::IsFilledProperty = NULL;
@@ -2979,6 +2989,71 @@ void
 Panel::SetChildren (UIElementCollection * value)
 {
 	SetValue (Panel::ChildrenProperty, Value (value));
+}
+
+gint32
+PasswordBox::GetMaxLength ()
+{
+	Value *value = GetValue (PasswordBox::MaxLengthProperty);
+	return value->AsInt32 ();
+}
+
+void
+PasswordBox::SetMaxLength (gint32 value)
+{
+	SetValue (PasswordBox::MaxLengthProperty, Value (value));
+}
+
+const char *
+PasswordBox::GetPasswordChar ()
+{
+	Value *value = GetValue (PasswordBox::PasswordCharProperty);
+	return value ? value->AsString () : NULL;
+}
+
+void
+PasswordBox::SetPasswordChar (const char * value)
+{
+	SetValue (PasswordBox::PasswordCharProperty, Value (value));
+}
+
+const char *
+PasswordBox::GetPassword ()
+{
+	Value *value = GetValue (PasswordBox::PasswordProperty);
+	return value ? value->AsString () : NULL;
+}
+
+void
+PasswordBox::SetPassword (const char * value)
+{
+	SetValue (PasswordBox::PasswordProperty, Value (value));
+}
+
+Brush *
+PasswordBox::GetSelectionBackground ()
+{
+	Value *value = GetValue (PasswordBox::SelectionBackgroundProperty);
+	return value ? value->AsBrush () : NULL;
+}
+
+void
+PasswordBox::SetSelectionBackground (Brush * value)
+{
+	SetValue (PasswordBox::SelectionBackgroundProperty, Value (value));
+}
+
+Brush *
+PasswordBox::GetSelectionForeground ()
+{
+	Value *value = GetValue (PasswordBox::SelectionForegroundProperty);
+	return value ? value->AsBrush () : NULL;
+}
+
+void
+PasswordBox::SetSelectionForeground (Brush * value)
+{
+	SetValue (PasswordBox::SelectionForegroundProperty, Value (value));
 }
 
 Geometry *

@@ -145,6 +145,7 @@ class ObjectKeyFrameCollection;
 class Panel;
 class ParallelTimeline;
 class ParserErrorEventArgs;
+class PasswordBox;
 class Path;
 class PathFigure;
 class PathFigureCollection;
@@ -392,6 +393,7 @@ public:
 	Panel*                         AsPanel () { checked_get_subclass (Type::PANEL, Panel) }
 	ParallelTimeline*              AsParallelTimeline () { checked_get_subclass (Type::PARALLELTIMELINE, ParallelTimeline) }
 	ParserErrorEventArgs*          AsParserErrorEventArgs () { checked_get_subclass (Type::PARSERERROREVENTARGS, ParserErrorEventArgs) }
+	PasswordBox*                   AsPasswordBox () { checked_get_subclass (Type::PASSWORDBOX, PasswordBox) }
 	Path*                          AsPath () { checked_get_subclass (Type::PATH, Path) }
 	PathFigure*                    AsPathFigure () { checked_get_subclass (Type::PATHFIGURE, PathFigure) }
 	PathFigureCollection*          AsPathFigureCollection () { checked_get_subclass (Type::PATHFIGURE_COLLECTION, PathFigureCollection) }

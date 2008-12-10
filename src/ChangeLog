@@ -1,5 +1,18 @@
 2008-12-10  Full Name  <Email Address>
 
+	* textbox.h:
+	* textbox.cpp: Implement the SelectAll function and raise an event when
+	the Password changes
+
+	* type.h:
+	* value.h:
+	* cbinding.h:
+	* cbinding.cpp:
+	* type-generated.cpp:
+	* dependencyproperty.g.cpp: Commit the files from the generator.
+
+2008-12-10  Full Name  <Email Address>
+
 	* textbox.h: Partial implementation of the PasswordBox control
 
 2008-12-09  Chris Toshok  <toshok@ximian.com>

@@ -154,6 +154,7 @@ class TextBox : public Control {
 	//
 	// Methods
 	//
+	
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SelectAll ();
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -244,8 +245,7 @@ class PasswordBox : public TextBox {
 	
  	Brush *GetSelectionForeground ();
 	void SetSelectionForeground (Brush *brush);
- private:
- 	
+
 };
 
 #endif /* __TEXTBOX_H__ */

@@ -2047,6 +2047,16 @@ parallel_timeline_new (void)
 
 
 /**
+ * PasswordBox
+ **/
+PasswordBox *
+password_box_new (void)
+{
+	return new PasswordBox ();
+}
+
+
+/**
  * Path
  **/
 Path *
@@ -2866,6 +2876,16 @@ text_box_select (TextBox *instance, int start, int length)
 		return;
 	
 	instance->Select (start, length);
+}
+
+
+void
+text_box_select_all (TextBox *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SelectAll ();
 }
 
 

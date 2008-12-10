@@ -939,6 +939,10 @@ namespace Mono {
 		public extern static IntPtr parallel_timeline_new ();
 
 		[DllImport ("moon")]
+		// PasswordBox *password_box_new ();
+		public extern static IntPtr password_box_new ();
+
+		[DllImport ("moon")]
 		// Path *path_new ();
 		public extern static IntPtr path_new ();
 
@@ -1266,6 +1270,10 @@ namespace Mono {
 		[DllImport ("moon")]
 		// void text_box_select (TextBox *instance, int start, int length);
 		public extern static void text_box_select (IntPtr instance, int start, int length);
+
+		[DllImport ("moon")]
+		// void text_box_select_all (TextBox *instance);
+		public extern static void text_box_select_all (IntPtr instance);
 
 		[DllImport ("moon")]
 		// TextBox *text_box_new ();

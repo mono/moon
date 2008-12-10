@@ -214,6 +214,12 @@ namespace System.Windows.Controls {
 		internal override Kind GetKind () { return Kind.PANEL; }
 	}
 
+	partial class PasswordBox {
+		public PasswordBox () : base (NativeMethods.password_box_new ()) {}
+		internal PasswordBox (IntPtr raw) : base (raw) {}
+		internal override Kind GetKind () { return Kind.PASSWORDBOX; }
+	}
+
 	partial class RowDefinition {
 		public RowDefinition () : base (NativeMethods.row_definition_new ()) {}
 		internal RowDefinition (IntPtr raw) : base (raw) {}

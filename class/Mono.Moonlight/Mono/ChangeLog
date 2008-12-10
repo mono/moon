@@ -1,3 +1,9 @@
+2008-12-10  Full Name  <Email Address>
+
+	* Kind.cs:
+	* Types.g.cs:
+	* GeneratedPInvokes.cs: Commit the files from the generator.
+
 2008-12-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* NativeMethods.cs: Rework event attaching/detaching a bit:

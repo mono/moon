@@ -84,6 +84,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.MULTISCALESUBIMAGE));
 				t = agclr.GetType ("System.Windows.Controls.Panel", true); 
 				types.Add (t, new ManagedType (t, Kind.PANEL));
+				t = agclr.GetType ("System.Windows.Controls.PasswordBox", true); 
+				types.Add (t, new ManagedType (t, Kind.PASSWORDBOX));
 				t = agclr.GetType ("System.Windows.Controls.RowDefinition", true); 
 				types.Add (t, new ManagedType (t, Kind.ROWDEFINITION));
 				t = agclr.GetType ("System.Windows.Controls.RowDefinitionCollection", true); 

@@ -927,6 +927,12 @@ Panel *panel_new (void);
 ParallelTimeline *parallel_timeline_new (void);
 
 /**
+ * PasswordBox
+ **/
+/* @GeneratePInvoke */
+PasswordBox *password_box_new (void);
+
+/**
  * Path
  **/
 /* @GeneratePInvoke */
@@ -1316,6 +1322,9 @@ TextBlock *text_block_new (void);
  **/
 /* @GeneratePInvoke */
 void text_box_select (TextBox *instance, int start, int length);
+
+/* @GeneratePInvoke */
+void text_box_select_all (TextBox *instance);
 
 /* @GeneratePInvoke */
 TextBox *text_box_new (void);

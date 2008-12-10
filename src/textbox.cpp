@@ -515,3 +515,18 @@ TextBox::Select (int start, int length)
 	SetSelectionStart (start);
 	SetSelectionLength (length);
 }
+
+void
+TextBox::SelectAll ()
+{
+	Select (0, buffer->len);
+}
+
+void
+PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args)
+{
+	if (args->property == PasswordBox::PasswordProperty)
+		Emit (PasswordBox::PasswordChangedEvent);
+	
+	TextBox::OnPropertyChanged (args);	
+}
