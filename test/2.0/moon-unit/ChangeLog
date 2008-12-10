@@ -1,3 +1,9 @@
+2008-12-10  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/PasswordBoxTest: Added tests for
+	default values and invalid values.
+	* moon-unit.csproj: Added PasswordTest.cs to the build
+
 2008-12-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Controls/ControlTest.cs: Add an overload for
