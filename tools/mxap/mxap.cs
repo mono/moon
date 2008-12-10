@@ -20,6 +20,7 @@ namespace Moonlight {
 		private bool desktop = false; // Defaults to false
 		private bool generate_html = true; // Defaults to true
 		private bool include_mdb = true; // Defaults to true
+		private bool verbose = false; //default to false
 		private bool generate_manifest = true; 
 		private bool list_generated = false;
 		private string entry_point_type = null;
@@ -60,6 +61,11 @@ namespace Moonlight {
 		public bool IncludeMdb {
 			get { return include_mdb; }
 			set { include_mdb = value; }
+		}
+
+		public bool Verbose {
+			get { return verbose; }
+			set { verbose = value; }
 		}
 
 		public bool ListGenerated {
@@ -329,6 +335,9 @@ namespace Moonlight {
 
 		private bool RunProcess (string filename, string args)
 		{
+			if (Verbose)
+				Console.WriteLine ("Running {0} {1}", filename, args);
+
 			Process process = new Process ();
 
 			process.StartInfo.FileName = filename;
@@ -368,7 +377,8 @@ namespace Moonlight {
 				{ "desktop", v => mxap.Desktop = v != null },
 				{ "builddirhack=", v => mxap.TopBuildDir = v },
 				{ "r:|reference:", v => mxap.ExternalAssemblies.Add (v) },
-				{ "l|list-generated", v => mxap.ListGenerated = v != null }
+				{ "l|list-generated", v => mxap.ListGenerated = v != null },
+				{ "v|verbose", v => mxap.Verbose =  v != null }
 			};
 
 			List<string> extra = null;

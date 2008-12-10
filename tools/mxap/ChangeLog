@@ -1,3 +1,7 @@
+2008-12-10  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* mxap.cs: v|verbose option to print the actual commands with args
+
 2008-12-09  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* mxap.cs: pass the full path for xamlg and respack, so we can fix
