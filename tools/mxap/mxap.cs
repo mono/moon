@@ -254,7 +254,7 @@ namespace Moonlight {
 			foreach (string xaml in XamlFiles) {
 				if (Path.GetFileName (xaml) == "AppManifest.xaml")
 					continue;
-				if (!File.Exists (xaml + ".g.cs"))
+				if (!File.Exists (Path.GetFileName (xaml) + ".g.cs"))
 					continue;
 				compiler_args.AppendFormat (" {0}.g.cs ", Path.GetFileName (xaml));
 			}
