@@ -235,7 +235,7 @@ class PasswordBox : public TextBox {
 	void SetMaxLength (int length);
 	
 	const char *GetPassword ();
-	void SetPassword (const char* password);
+	void SetPassword (const char *password);
 	
 	gint32 GetPasswordChar ();
 	void SetPasswordChar (gint32 passwordChar);

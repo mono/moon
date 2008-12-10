@@ -1,3 +1,9 @@
+2008-12-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* xaml.cpp (parser_error): Now takes varargs to simplify
+	things. Fixed all callers to not strdup/g_strdup_printf (and leak)
+	the message argument.
+
 2008-12-10  Alan McGovern  <amcgovern@novell.com>
 
 	* type.h:
