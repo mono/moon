@@ -45,6 +45,7 @@ public:
 		BORDER,// Silverlight 2.0 only
 		BRUSH,
 		CANVAS,
+		CHAR,
 		CLOCK,
 		CLOCKGROUP,
 		COLLECTION,

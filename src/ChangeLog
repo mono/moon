@@ -1,3 +1,11 @@
+2008-12-10  Alan McGovern  <amcgovern@novell.com>
+
+	* type.h:
+	* textbox.h:
+	* type-generated.cpp:
+	* dependencyproperty.g.cpp: PasswordCharProperty should be a char. This
+	is represented by an int32 in unmanaged code.
+
 2008-12-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* audio-pulse.cpp: Fix int->enum conversion.

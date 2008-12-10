@@ -148,6 +148,7 @@ Type type_infos [] = {
 	{ Type::BORDER, Type::FRAMEWORKELEMENT, false, "Border", "BORDER", 0, 16, NULL, (create_inst_func *) border_new, "Child", NULL, NULL }, 
 	{ Type::BRUSH, Type::DEPENDENCY_OBJECT, false, "Brush", "BRUSH", 0, 1, NULL, (create_inst_func *) brush_new, NULL, NULL, NULL }, 
 	{ Type::CANVAS, Type::PANEL, false, "Canvas", "CANVAS", 0, 16, NULL, (create_inst_func *) canvas_new, NULL, NULL, NULL }, 
+	{ Type::CHAR, Type::OBJECT, false, "char", "CHAR", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::CLOCK, Type::DEPENDENCY_OBJECT, false, "Clock", "CLOCK", 4, 5, Clock_Events, NULL, NULL, NULL, NULL }, 
 	{ Type::CLOCKGROUP, Type::CLOCK, false, "ClockGroup", "CLOCKGROUP", 0, 5, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::COLLECTION, Type::DEPENDENCY_OBJECT, false, "Collection", "COLLECTION", 0, 1, NULL, NULL, NULL, NULL, NULL }, 

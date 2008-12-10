@@ -349,7 +349,7 @@ namespace System.Windows {
 					
 				case Kind.BOOL:
 					return val->u.i32 != 0;
-					
+
 				case Kind.DOUBLE:
 					return val->u.d;
 					
@@ -375,6 +375,8 @@ namespace System.Windows {
 						return new FontWeight ((FontWeightKind) i32);
 					else if (type != null && type.IsEnum)
 						return Enum.ToObject (type, i32);
+					else if (type == typeof (char))
+						return (char) i32;
 					else
 						return i32;
 
@@ -540,6 +542,10 @@ namespace System.Windows {
 				else if (v is ulong) {
 					value.k = Kind.UINT64;
 					value.u.ui64 = (ulong) v;
+				}
+				else if (v is char) {
+					value.k = Kind.CHAR;
+					value.u.i32 = (int) (char)v;
 				}
 				else if (v is string) {
 					value.k = Kind.STRING;

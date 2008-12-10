@@ -214,7 +214,7 @@ class PasswordBox : public TextBox {
 	static DependencyProperty *MaxLengthProperty;
 	/* @PropertyType=string,ManagedFieldAccess=Internal,Version=2.0,GenerateAccessors */
 	static DependencyProperty *PasswordProperty;
-	/* @PropertyType=string,Version=2.0,GenerateAccessors */
+	/* @PropertyType=char,Version=2.0,GenerateAccessors */
 	static DependencyProperty *PasswordCharProperty;
 	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
 	static DependencyProperty *SelectionBackgroundProperty;
@@ -237,8 +237,8 @@ class PasswordBox : public TextBox {
 	const char *GetPassword ();
 	void SetPassword (const char* password);
 	
-	const char *GetPasswordChar ();
-	void SetPasswordChar (const char *passwordChar);
+	gint32 GetPasswordChar ();
+	void SetPasswordChar (gint32 passwordChar);
 	
 	Brush *GetSelectionBackground ();
 	void SetSelectionBackground (Brush *brush);

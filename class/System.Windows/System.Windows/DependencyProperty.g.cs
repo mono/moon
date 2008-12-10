@@ -693,7 +693,7 @@ namespace System.Windows.Controls {
 
 	partial class PasswordBox {
 		public static readonly DependencyProperty MaxLengthProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "MaxLength", typeof (int));
-		public static readonly DependencyProperty PasswordCharProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "PasswordChar", typeof (string));
+		public static readonly DependencyProperty PasswordCharProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "PasswordChar", typeof (char));
 		internal static readonly DependencyProperty PasswordProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "Password", typeof (string));
 		public static readonly DependencyProperty SelectionBackgroundProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "SelectionBackground", typeof (Brush));
 		public static readonly DependencyProperty SelectionForegroundProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "SelectionForeground", typeof (Brush));
@@ -703,8 +703,8 @@ namespace System.Windows.Controls {
 			set { SetValue (MaxLengthProperty, value); }
 		}
 
-		public string PasswordChar {
-			get { return (string) GetValue (PasswordCharProperty); }
+		public char PasswordChar {
+			get { return (char) GetValue (PasswordCharProperty); }
 			set { SetValue (PasswordCharProperty, value); }
 		}
 

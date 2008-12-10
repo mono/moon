@@ -245,7 +245,7 @@ dependency_property_g_init (void)
 	Panel::BackgroundProperty = DependencyProperty::Register (Type::PANEL, "Background", Type::BRUSH);
 	Panel::ChildrenProperty = DependencyProperty::Register (Type::PANEL, "Children", Type::UIELEMENT_COLLECTION);
 	PasswordBox::MaxLengthProperty = DependencyProperty::Register (Type::PASSWORDBOX, "MaxLength", new Value (0));
-	PasswordBox::PasswordCharProperty = DependencyProperty::Register (Type::PASSWORDBOX, "PasswordChar", Type::STRING);
+	PasswordBox::PasswordCharProperty = DependencyProperty::Register (Type::PASSWORDBOX, "PasswordChar", Type::CHAR);
 	PasswordBox::PasswordProperty = DependencyProperty::Register (Type::PASSWORDBOX, "Password", Type::STRING);
 	PasswordBox::SelectionBackgroundProperty = DependencyProperty::Register (Type::PASSWORDBOX, "SelectionBackground", Type::BRUSH);
 	PasswordBox::SelectionForegroundProperty = DependencyProperty::Register (Type::PASSWORDBOX, "SelectionForeground", Type::BRUSH);
@@ -3004,15 +3004,15 @@ PasswordBox::SetMaxLength (gint32 value)
 	SetValue (PasswordBox::MaxLengthProperty, Value (value));
 }
 
-const char *
+gint32
 PasswordBox::GetPasswordChar ()
 {
 	Value *value = GetValue (PasswordBox::PasswordCharProperty);
-	return value ? value->AsString () : NULL;
+	return value->AsInt32 ();
 }
 
 void
-PasswordBox::SetPasswordChar (const char * value)
+PasswordBox::SetPasswordChar (gint32 value)
 {
 	SetValue (PasswordBox::PasswordCharProperty, Value (value));
 }

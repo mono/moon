@@ -1,3 +1,9 @@
+2008-12-10  Alan McGovern  <amcgovern@novell.com>
+
+	* DependencyObject.cs:
+	* DependencyProperty.g.cs: PasswordCharProperty should be a char. This
+	is represented by an int32 in unmanaged code.
+
 2008-12-10  Full Name  <Email Address>
 
 	* DependencyObject.g.cs:
