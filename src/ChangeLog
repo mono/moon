@@ -1,5 +1,9 @@
 2008-12-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* audio-pulse.cpp: Fix int->enum conversion.
+
+2008-12-10  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* audio-pulse.h, audio-pulse.cpp: PulsePlayer: Use enum instead of
 	  random constants for the connected variable.
 

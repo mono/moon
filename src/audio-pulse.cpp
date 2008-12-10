@@ -789,7 +789,7 @@ PulsePlayer::Initialize ()
 
 		// At this stag we have had connected set regardless of wether
 		// PA wants to be sync or async
-		if (connected == ConnectionSuccess) {
+		if (connected == ConnectionFailed) {
 			LOG_AUDIO ("PulsePlayer::InitializeInternal (): Asynchronous error while connecting to the pulse daemon\n");
 			return false;
 		}
