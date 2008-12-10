@@ -786,6 +786,28 @@ control_template_new (void)
 
 
 /**
+ * DataTemplate
+ **/
+DataTemplate *
+data_template_new (void)
+{
+	return new DataTemplate ();
+}
+
+
+DependencyObject *
+data_template_load_content_with_error (DataTemplate *instance, MoonError *error)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	if (error == NULL)
+		g_warning ("Moonlight: Called data_template_load_content_with_error () with error == NULL.");
+	return instance->LoadContentWithError (error);
+}
+
+
+/**
  * DeepZoomImageTileSource
  **/
 DeepZoomImageTileSource *

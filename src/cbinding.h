@@ -356,6 +356,15 @@ Control *control_new (void);
 ControlTemplate *control_template_new (void);
 
 /**
+ * DataTemplate
+ **/
+/* @GeneratePInvoke */
+DataTemplate *data_template_new (void);
+
+/* @GeneratePInvoke */
+DependencyObject *data_template_load_content_with_error (DataTemplate *instance, MoonError *error);
+
+/**
  * DeepZoomImageTileSource
  **/
 /* @GeneratePInvoke */

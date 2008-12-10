@@ -61,6 +61,7 @@ FrameworkTemplate::FrameworkTemplate ()
 					       NULL,
 					       delete_list);
 	visual_tree = NULL;
+	xaml_buffer = NULL;
 }
 
 FrameworkTemplate::~FrameworkTemplate ()
@@ -68,6 +69,10 @@ FrameworkTemplate::~FrameworkTemplate ()
 	g_hash_table_destroy (xaml_bindings);
 	if (visual_tree)
 		visual_tree->unref();
+	if (xaml_buffer) {
+		g_free (xaml_buffer);
+		xaml_buffer = NULL;
+	}
 }
 
 void
@@ -75,6 +80,33 @@ FrameworkTemplate::SetVisualTree (FrameworkElement *value)
 {
 	visual_tree = value;
 	visual_tree->ref ();
+}
+
+void
+FrameworkTemplate::SetXamlBuffer (const char *xaml_buffer)
+{
+	printf ("%p setting xaml buffer to %s\n", this, xaml_buffer);
+	this->xaml_buffer = g_strdup (xaml_buffer);
+}
+
+DependencyObject*
+FrameworkTemplate::GetVisualTree ()
+{
+	if (visual_tree)
+		return visual_tree;
+
+	if (xaml_buffer) {
+		XamlLoader *loader = new XamlLoader (NULL, xaml_buffer, GetSurface());
+		Type::Kind dummy;
+
+		DependencyObject *result = loader->CreateFromString (xaml_buffer, false, &dummy);
+
+		delete loader;
+
+		return result;
+	}
+
+	return NULL;
 }
 
 void
@@ -199,6 +231,28 @@ ControlTemplate::Apply (Control *control, List *bindings)
 	template_namescope->unref ();
 
 	return (FrameworkElement *)fwe;
+}
+
+DataTemplate::DataTemplate ()
+{
+}
+
+DependencyObject*
+DataTemplate::LoadContentWithError (MoonError *error)
+{
+	printf ("%p: LoadContentWithError (buffer = %s)\n", this, xaml_buffer);
+
+	// this isn't the best way to do this, perhaps...
+	if (g_hash_table_size (xaml_bindings) > 0) {
+		// there are TemplateBinding elements inside this
+		// DataTemplate.  those are illegal in this context.
+		// Oddly enough, the error isn't given at parse time
+		// but at LoadContent time, with a XamlParseException.
+		MoonError::FillIn (error, MoonError::XAML_PARSE_EXCEPTION, 4004, "Invalid use of {TemplateBinding} markup extension in DataTemplate");
+		return NULL;
+	}
+
+	return GetVisualTree ();
 }
 
 XamlTemplateBinding::XamlTemplateBinding (FrameworkElement *target,

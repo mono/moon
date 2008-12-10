@@ -160,6 +160,7 @@ Type type_infos [] = {
 	{ Type::CONTROL, Type::FRAMEWORKELEMENT, false, "Control", "CONTROL", 0, 16, NULL, (create_inst_func *) control_new, NULL, NULL, NULL }, 
 	{ Type::CONTROLTEMPLATE, Type::FRAMEWORKTEMPLATE, false, "ControlTemplate", "CONTROLTEMPLATE", 0, 1, NULL, (create_inst_func *) control_template_new, NULL, NULL, NULL }, 
 	{ Type::CORNERRADIUS, Type::OBJECT, true, "CornerRadius", "CORNERRADIUS", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
+	{ Type::DATATEMPLATE, Type::FRAMEWORKTEMPLATE, false, "DataTemplate", "DATATEMPLATE", 0, 1, NULL, (create_inst_func *) data_template_new, NULL, NULL, NULL }, 
 	{ Type::DEEPZOOMIMAGETILESOURCE, Type::MULTISCALETILESOURCE, false, "DeepZoomImageTileSource", "DEEPZOOMIMAGETILESOURCE", 0, 1, NULL, (create_inst_func *) deep_zoom_image_tile_source_new, NULL, NULL, NULL }, 
 	{ Type::DEPENDENCY_OBJECT, Type::EVENTOBJECT, false, "DependencyObject", "DEPENDENCY_OBJECT", 0, 1, NULL, (create_inst_func *) dependency_object_new, NULL, NULL, NULL }, 
 	{ Type::DEPENDENCY_OBJECT_COLLECTION, Type::COLLECTION, false, "DependencyObjectCollection", "DEPENDENCY_OBJECT_COLLECTION", 0, 1, NULL, (create_inst_func *) dependency_object_collection_new, NULL, NULL, NULL }, 

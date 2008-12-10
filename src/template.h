@@ -31,16 +31,19 @@ public:
 
 	virtual Type::Kind GetObjectType () { return Type::FRAMEWORKTEMPLATE; }
 
-	FrameworkElement *GetVisualTree () { return visual_tree; }
+	DependencyObject *GetVisualTree ();
 	void SetVisualTree (FrameworkElement* value);
 
 	void AddXamlBinding (XamlTemplateBinding *binding);
+
+	void SetXamlBuffer (const char *buffer);
 
 protected:
 	virtual ~FrameworkTemplate ();
 
 	GHashTable *xaml_bindings;
 	FrameworkElement *visual_tree;
+	char *xaml_buffer;
 };
 
 //
@@ -66,6 +69,25 @@ protected:
 	DependencyObject* DuplicateObject (Control *source, NameScope *template_namescope, DependencyObject *dob, List* bindings);
 
 	static void duplicate_value (DependencyProperty *key, Value *value, gpointer closure);
+};
+
+//
+// DataTemplate
+//
+/* @SilverlightVersion="2" */
+/* @Namespace=System.Windows */
+class DataTemplate : public FrameworkTemplate {
+public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	DataTemplate ();
+
+	virtual Type::Kind GetObjectType () { return Type::DATATEMPLATE; }
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	DependencyObject* LoadContentWithError (MoonError *error);
+
+protected:
+	virtual ~DataTemplate () {}
 };
 
 /* @SilverlightVersion="2" */

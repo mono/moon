@@ -1,3 +1,10 @@
+2008-12-09  Chris Toshok  <toshok@ximian.com>
+
+	* template.h, template.cpp: add DataTemplates.
+
+	* cbinding.h, cbinding.cpp, value.h, type.h, type-generated.cpp:
+	regen.
+	
 2008-12-09  Jeffrey Stedfast  <fejj@novell.com>
 
 	* xaml.cpp (create_binding_expression_from_markup): Converter can

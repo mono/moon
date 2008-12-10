@@ -72,6 +72,7 @@ class ColumnDefinitionCollection;
 class ContentControl;
 class Control;
 class ControlTemplate;
+class DataTemplate;
 class DeepZoomImageTileSource;
 class DependencyObject;
 class DependencyObjectCollection;
@@ -318,6 +319,7 @@ public:
 	ContentControl*                AsContentControl () { checked_get_subclass (Type::CONTENTCONTROL, ContentControl) }
 	Control*                       AsControl () { checked_get_subclass (Type::CONTROL, Control) }
 	ControlTemplate*               AsControlTemplate () { checked_get_subclass (Type::CONTROLTEMPLATE, ControlTemplate) }
+	DataTemplate*                  AsDataTemplate () { checked_get_subclass (Type::DATATEMPLATE, DataTemplate) }
 	DeepZoomImageTileSource*       AsDeepZoomImageTileSource () { checked_get_subclass (Type::DEEPZOOMIMAGETILESOURCE, DeepZoomImageTileSource) }
 	DependencyObject*              AsDependencyObject () { checked_get_subclass (Type::DEPENDENCY_OBJECT, DependencyObject) }
 	DependencyObjectCollection*    AsDependencyObjectCollection () { checked_get_subclass (Type::DEPENDENCY_OBJECT_COLLECTION, DependencyObjectCollection) }
