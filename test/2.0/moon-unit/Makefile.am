@@ -39,7 +39,7 @@ Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll: ../Microsoft.Vi
 ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll:
 	$(MAKE) -C ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight
 
-moon-unit.sources: $(srcdir)/*.cs $(srcdir)/*/*.cs
+moon-unit.sources: $(srcdir)/*.xaml.cs $(srcdir)/*/*.cs
 	ls $(srcdir)/*.cs $(srcdir)/*/*.cs | grep -v aspx > $@
 
 EXTRA_DIST = 			\
