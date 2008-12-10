@@ -34,16 +34,12 @@ using System.Collections.Generic;
 using Mono;
 
 namespace System.Windows.Data {
-
 	public class Binding {
-		
 		IValueConverter converter;
 		CultureInfo converterCulture;
 		object converterParameter;
-		bool notifyOnvalidationError;
 		PropertyPath path;
 		object source;
-		bool validatesOnExceptions;
 		
 		public IValueConverter Converter {
 			get { return converter; }
@@ -82,10 +78,10 @@ namespace System.Windows.Data {
 		}
 		
 		public bool NotifyOnValidationError {
-			get { return notifyOnvalidationError; }
+			get { return NativeMethods.binding_get_notify_on_validation_error (Native); }
 			set {
 				CheckSealed ();
-				notifyOnvalidationError = value;
+				NativeMethods.binding_set_notify_on_validation_error (Native, value);
 			}
 		}
 		
@@ -121,10 +117,10 @@ namespace System.Windows.Data {
 		}
 		
 		public bool ValidatesOnExceptions {
-			get { return validatesOnExceptions; }
+			get { return NativeMethods.binding_get_validates_on_exceptions (Native); }
 			set {
 				CheckSealed ();
-				validatesOnExceptions = value;
+				NativeMethods.binding_set_validates_on_exceptions (Native, value);
 			}
 		}
 		

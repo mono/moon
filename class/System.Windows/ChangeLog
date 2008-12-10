@@ -1,4 +1,9 @@
-2008-12-10  Full Name  <Email Address>
+2008-12-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* System.Windows.Data/Binding.cs: Updated to use native methods
+	for some more stuff.
+
+2008-12-10  Alan McGovern  <amcgovern@novell.com>
 
 	* Makefile.am:
 	* System.Windows.mdp: Partial implementation of the PasswordBox control
