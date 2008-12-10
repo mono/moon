@@ -25,7 +25,7 @@ namespace Moonlight {
 		private bool list_generated = false;
 		private string entry_point_type = null;
 		private string cs_sources;
-
+		private string cd;
 		const string RuntimeVersion = "2.0.31005.0";
 
 		public string CSSources {
@@ -73,6 +73,11 @@ namespace Moonlight {
 			set { list_generated = value; }
 		}
 		
+		public string Cd {
+			get { return cd; }
+			set { cd = value; }
+		}
+
 		public string ApplicationName {
 			get {
 				if (application_name == null) {
@@ -190,6 +195,7 @@ namespace Moonlight {
 				StringBuilder xamlg_args = new StringBuilder ();
 
 				xamlg_args.AppendFormat (" -sl2app:{0} ", ApplicationName);
+				xamlg_args.AppendFormat (" -root:{0} ", Cd);
 
 				foreach (string xaml_file in XamlFiles) {
 					if (Path.GetFileName (xaml_file) == "AppManifest.xaml")
@@ -364,7 +370,7 @@ namespace Moonlight {
 		{
 			MXap mxap = new MXap ();
 			bool help = false;
-			string cd = Directory.GetCurrentDirectory ();
+			mxap.Cd = Directory.GetCurrentDirectory ();
 			
 			var p = new OptionSet () {
 				{ "h|?|help", v => help = v != null },
@@ -395,23 +401,23 @@ namespace Moonlight {
 			}
 
 			if (extra.Count > 0)
-				cd = extra [0];
+				mxap.Cd = extra [0];
 
 			if (mxap.TopBuildDir == null && mxap.ExternalAssemblies.Count > 0) {
 				Console.Error.WriteLine ("--reference requires --builddirhack");
 				return 1;
 			}
 
-			mxap.ReferenceAssemblies.AddRange (Directory.GetFiles (cd, "*.dll"));
-			mxap.XamlFiles.AddRange (Directory.GetFiles (cd, "*.xaml"));
+			mxap.ReferenceAssemblies.AddRange (Directory.GetFiles (mxap.Cd, "*.dll"));
+			mxap.XamlFiles.AddRange (Directory.GetFiles (mxap.Cd, "*.xaml"));
 			if (mxap.CSSources == null) {
-				mxap.CSharpFiles.AddRange (Directory.GetFiles (cd, "*.cs"));
+				mxap.CSharpFiles.AddRange (Directory.GetFiles (mxap.Cd, "*.cs"));
 			} else {
 				mxap.CSharpFiles.AddRange (File.ReadAllLines (mxap.CSSources));
 			}
 			
 			if (mxap.IncludeMdb)
-				mxap.MdbFiles.AddRange (Directory.GetFiles (cd, "*.mdb"));
+				mxap.MdbFiles.AddRange (Directory.GetFiles (mxap.Cd, "*.mdb"));
 
 			if (mxap.XamlFiles.Count == 0 || mxap.CSharpFiles.Count == 0) {
 				Console.Error.WriteLine ("No XAML files or C# files found");
@@ -420,10 +426,10 @@ namespace Moonlight {
 			}
 
 			// Make sure we didn't add the Application assembly into the referenced assemblies
-			DirectoryInfo info = new DirectoryInfo (cd);
+			DirectoryInfo info = new DirectoryInfo (mxap.Cd);
 
-			if (mxap.ReferenceAssemblies.Contains (Path.Combine (cd, info.Name + ".dll")))
-				mxap.ReferenceAssemblies.Remove (Path.Combine (cd, info.Name + ".dll"));
+			if (mxap.ReferenceAssemblies.Contains (Path.Combine (mxap.Cd, info.Name + ".dll")))
+				mxap.ReferenceAssemblies.Remove (Path.Combine (mxap.Cd, info.Name + ".dll"));
 
 
 			return mxap.Run ();
