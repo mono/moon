@@ -3,6 +3,8 @@
 	* xaml.cpp (parser_error): Now takes varargs to simplify
 	things. Fixed all callers to not strdup/g_strdup_printf (and leak)
 	the message argument.
+	(create_binding_expression_from_markup): Check that the source is
+	a DO before casting.
 
 2008-12-10  Alan McGovern  <amcgovern@novell.com>
 

@@ -4014,9 +4014,9 @@ create_binding_expression_from_markup (XamlParserInfo *p, XamlElementInstance *i
 					return NULL;
 				}
 				
-				// FIXME: we may want to make BindingExpression::SetSource() take
-				// a Value instead of a DO since the managed API takes an 'object'.
-				expr->SetSource (value->AsDependencyObject ());
+				if (value->Is (Type::DEPENDENCY_OBJECT))
+					expr->SetSource (value->AsDependencyObject ());
+				
 				delete value;
 			}
 			break;
