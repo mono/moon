@@ -515,6 +515,11 @@ class Generator {
 				value_str = "Bool";
 				prop_default = "false";
 				break;
+			case "char":
+				prop_type_str = "gint32";
+				value_str = "Int32";
+				prop_default = "0";
+				break;
 			default:
 				prop_type_str = prop_type.Name; 
 				value_str = prop_type.Name;
@@ -676,6 +681,7 @@ class Generator {
 		all.Children.Add (new TypeInfo ("NPObj", "NPOBJ", "OBJECT", true));
 		all.Children.Add (new TypeInfo ("Managed", "MANAGED", "OBJECT", true, 2));
 		all.Children.Add (new TypeInfo ("TimeSpan", "TIMESPAN", "OBJECT", true));
+		all.Children.Add (new TypeInfo ("char", "CHAR", "OBJECT", true));
 		
 		return all;
 	}
@@ -1150,6 +1156,7 @@ class Generator {
 			text.AppendLine ("));");
 		};
 
+		f ("char", "INT32");
 		f ("object", "OBJECT");
 		f ("bool", "BOOL");
 		f ("double", "DOUBLE");

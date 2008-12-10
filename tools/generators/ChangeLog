@@ -1,3 +1,8 @@
+2008-12-10  Alan McGovern  <amcgovern@novell.com>
+
+	* Generator.cs: PasswordCharProperty should be a char. This is
+	represented by an int32 in unmanaged code.
+
 2008-11-28  Alan McGovern  <amcgovern@novell.com>
 
 	* TypeReference.cs: DataBinding now works for one-way, one-time and
