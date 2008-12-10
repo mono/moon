@@ -212,8 +212,13 @@ BROWSER_ASSEMBLIES=-r:$(top_builddir)/class/lib/2.1/System.Windows.dll \
 
 noinst_DATA=	Microsoft.Silverlight.Testing.dll
 
-CLEANFILES= System.Xml.Linq.dll System.Xml.Linq.dll.Unsigned Microsoft.Silverlight.Testing.dll Microsoft.Silverlight.Testing.dll.mdb \
-	    Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll.mdb
+CLEANFILES= 			\
+	System.Xml.Linq.dll	\
+	System.Xml.Linq.dll.mdb	\
+	System.Xml.Linq.dll.Unsigned Microsoft.Silverlight.Testing.dll	\
+	Microsoft.Silverlight.Testing.dll.mdb \
+	Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll	\
+	Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll.mdb
 
 Microsoft.Silverlight.Testing.dll: ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll UnitTestHarness/Properties/UnitTestMessage.resources $(SOURCES) System.Xml.Linq.dll 
 	smcs $(SOURCES) $(RESOURCES) $(REFERENCES) $(BROWSER_ASSEMBLIES) -noconfig -define:SILVERLIGHT -target:library -out:Microsoft.Silverlight.Testing.dll -debug:full

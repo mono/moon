@@ -16,7 +16,8 @@ CLEANFILES=	$(xapname).xap 		\
 		Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll \
 		Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll.mdb \
 		System.Xml.Linq.dll	\
-		System.Xml.Linq.dll.mdb
+		System.Xml.Linq.dll.mdb	\
+		site/ClientBin/moon-unit.xap
 
 BROWSER_ASSEMBLIES=-r:$(top_builddir)/class/lib/2.1/System.Windows.dll \
 		   -r:$(top_builddir)/class/lib/2.1/System.Windows.Browser.dll \
