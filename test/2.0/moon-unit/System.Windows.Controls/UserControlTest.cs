@@ -284,8 +284,8 @@ namespace MoonTest.System.Windows.Controls {
 			UserControlPoker uc = new UserControlPoker ();
 			Assert.IsNull (uc.Content_);
 			uc.Content_ = null;
-			// TabStop default to false for UserControl
-			ControlTest.CheckDefaultProperties (uc, false);
+			// TabStop default to false for UserControl, null for Parent
+			ControlTest.CheckDefaultProperties (uc, false, null);
 		}
 
 		[TestMethod]

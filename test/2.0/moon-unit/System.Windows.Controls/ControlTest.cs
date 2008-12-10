@@ -187,10 +187,10 @@ namespace MoonTest.System.Windows.Controls {
 
 		static public void CheckDefaultProperties (Control c)
 		{
-			CheckDefaultProperties (c, true);
+			CheckDefaultProperties (c, true, null);
 		}
 
-		static public void CheckDefaultProperties (Control c, bool tabStop)
+		static public void CheckDefaultProperties (Control c, bool tabStop, DependencyObject parent)
 		{
 			// default properties on Control
 			Assert.IsNull (c.Background, "Background");
@@ -213,7 +213,7 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsNull (c.Template, "Template");
 			Assert.AreEqual (VerticalAlignment.Center, c.VerticalContentAlignment, "VerticalContentAlignment");
 
-			FrameworkElementTest.CheckDefaultProperties (c);
+			FrameworkElementTest.CheckDefaultProperties (c, parent);
 		}
 
 		[TestMethod]

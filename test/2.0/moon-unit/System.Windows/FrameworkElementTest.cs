@@ -61,6 +61,11 @@ namespace MoonTest.System.Windows {
 
 		static public void CheckDefaultProperties (FrameworkElement fe)
 		{
+			CheckDefaultProperties (fe, null);
+		}
+
+		static public void CheckDefaultProperties (FrameworkElement fe, DependencyObject parent)
+		{
 			// default properties on FrameworkElement
 			Assert.AreEqual (0.0, fe.ActualHeight, "ActualHeight");
 			Assert.AreEqual (0.0, fe.ActualWidth, "ActualWidth");
@@ -75,7 +80,7 @@ namespace MoonTest.System.Windows {
 			Assert.AreEqual (0.0, fe.MinHeight, "MinHeight");
 			Assert.AreEqual (0.0, fe.MinWidth, "MinWidth");
 //			Assert.AreEqual (String.Empty, fe.Name, "Name");
-			Assert.IsNull (fe.Parent, "Parent");
+			Assert.AreEqual (parent, fe.Parent, "Parent");
 			Assert.IsNotNull (fe.Resources, "Resources");
 			Assert.IsNull (fe.Style, "Style");
 			Assert.IsNull (fe.Tag, "Tag");
