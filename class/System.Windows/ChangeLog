@@ -1,3 +1,8 @@
+2008-12-10  Full Name  <Email Address>
+
+	* Makefile.am:
+	* System.Windows.mdp: Partial implementation of the PasswordBox control
+
 2008-12-03  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingExpression.cs: If a Binding has bound to a

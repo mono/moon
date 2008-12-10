@@ -93,6 +93,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/MultiScaleSubImage.cs			\
 	$(srcdir)/System.Windows.Controls/OpenFileDialog.cs			\
 	$(srcdir)/System.Windows.Controls/Panel.cs				\
+	$(srcdir)/System.Windows.Controls/PasswordBox.cs			\
 	$(srcdir)/System.Windows.Controls/ProgressBar.cs			\
 	$(srcdir)/System.Windows.Controls/StackPanel.cs				\
 	$(srcdir)/System.Windows.Controls/TextBlock.cs				\

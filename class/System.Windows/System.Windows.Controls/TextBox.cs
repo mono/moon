@@ -34,6 +34,10 @@ using System.Collections.Generic;
 
 namespace System.Windows.Controls {
 	public partial class TextBox : Control {
+		public FontSource FontSource {
+			get; set;
+		}
+		
 		protected override Size ArrangeOverride (Size size)
 		{
 			// FIXME: implement me
@@ -63,6 +67,11 @@ namespace System.Windows.Controls {
 			// not, what is supposed to happen?
 			
 			NativeMethods.text_box_select (this.native, start, length);
+		}
+
+		public void SelectAll ()
+		{
+			NativeMethods.text_box_select_all ();
 		}
 		
 		static UnmanagedEventHandler selection_changed = new UnmanagedEventHandler (selection_changed_cb);

@@ -94,8 +94,6 @@ class TextBox : public Control {
 	
 	TextSelection selection;
 	
-	bool dirty;
-	
 	void Layout (cairo_t *cr);
 	void Paint (cairo_t *cr);
 	
@@ -106,6 +104,8 @@ class TextBox : public Control {
 	void SetSelectionLength (int length);
 	
  protected:
+ 	bool dirty;
+ 	
 	virtual ~TextBox ();
 	
  public:
@@ -155,6 +155,8 @@ class TextBox : public Control {
 	// Methods
 	//
 	/* @GenerateCBinding,GeneratePInvoke */
+	void SelectAll ();
+	/* @GenerateCBinding,GeneratePInvoke */
 	void Select (int start, int length);
 	
 	//
@@ -201,6 +203,49 @@ class TextBox : public Control {
 	//
 	const static int SelectionChangedEvent;
 	const static int TextChangedEvent;
+};
+
+/* @SilverlightVersion="2" */
+/* @Namespace=System.Windows.Controls */
+class PasswordBox : public TextBox {
+ public:
+ 	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors */
+ 	static DependencyProperty *MaxLengthProperty;
+ 	/* @PropertyType=string,ManagedFieldAccess=Internal,Version=2.0,GenerateAccessors */
+ 	static DependencyProperty *PasswordProperty;
+ 	/* @PropertyType=string,Version=2.0,GenerateAccessors */
+ 	static DependencyProperty *PasswordCharProperty;
+ 	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
+ 	static DependencyProperty *SelectionBackgroundProperty;
+ 	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
+ 	static DependencyProperty *SelectionForegroundProperty;
+ 	
+ 	/* @SilverlightVersion="2" */
+	const static int PasswordChangedEvent;
+
+ 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	
+ 	/* @GenerateCBinding,GeneratePInvoke */
+	PasswordBox () { }
+	
+ 	virtual Type::Kind GetObjectType () { return Type::PASSWORDBOX; }
+ 	
+ 	int GetMaxLength ();
+	void SetMaxLength (int length);
+	
+ 	const char *GetPassword ();
+	void SetPassword (const char* password);
+	
+	const char *GetPasswordChar ();
+	void SetPasswordChar (const char *passwordChar);
+	
+ 	Brush *GetSelectionBackground ();
+	void SetSelectionBackground (Brush *brush);
+	
+ 	Brush *GetSelectionForeground ();
+	void SetSelectionForeground (Brush *brush);
+ private:
+ 	
 };
 
 #endif /* __TEXTBOX_H__ */

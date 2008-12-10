@@ -371,6 +371,7 @@
     <File name="System.Windows.Controls.Primitives/ScrollEventHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/ValidationError.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/ValidationErrorEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/PasswordBox.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="Mono.Moonlight" />

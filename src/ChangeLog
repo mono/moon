@@ -1,3 +1,7 @@
+2008-12-10  Full Name  <Email Address>
+
+	* textbox.h: Partial implementation of the PasswordBox control
+
 2008-12-09  Chris Toshok  <toshok@ximian.com>
 
 	* template.h, template.cpp: add DataTemplates.

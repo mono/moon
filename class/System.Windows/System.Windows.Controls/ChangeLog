@@ -1,3 +1,8 @@
+2008-12-10  Full Name  <Email Address>
+
+	* TextBox.cs:
+	* PasswordBox.cs: Partial implementation of the PasswordBox control
+
 2008-12-09  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* UserControl.cs: Remove IsTabStop initialization (moved to 
