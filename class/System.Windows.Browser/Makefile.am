@@ -92,6 +92,3 @@ install-data-local: install-sl install-desktop
 uninstall-local:
 	$(GACUTIL) /u $(assembly)
 
-check: $(assemblydesktop) Makefile
-	$(GMCS) -out:test.dll -target:library -r:$(assemblydesktop) $(nunit) $(test_sources)
-	MONO_PATH="../lib/3.0:$$MONO_PATH" mono --debug $(monoloc)/nunit-console.exe /exclude:NotWorking,ValueAdd,CAS,InetAccess /output:TestResult-net_3_0.log /xml:TestResult-net_3_0.xml test.dll 
