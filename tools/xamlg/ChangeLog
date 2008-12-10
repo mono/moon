@@ -1,4 +1,9 @@
 2008-12-10  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* xamlg.cs: parse the -root: argument, insert the relative path
+	in LoadComponent lines
+
+2008-12-10  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* xamlg.cs: only insert the filename (without path) in the 
 	LoadComponent line.

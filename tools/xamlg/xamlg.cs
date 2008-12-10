@@ -43,13 +43,15 @@ namespace Moonlight {
 	public class XamlG {
 
 		private static readonly string help_string = "xamlg.exe - a utility for generating partial classes from XAML.\n" +
-				"xamlg.exe [/lang:NAME] xamlfile[,outputfile]...\n\n" +
+				"xamlg.exe [/lang:NAME] [/root:FOLDER] xamlfile[,outputfile]...\n\n" +
 				"If an outputfile is not specified one will be created using the format <xamlfile>.g.cs\n" +
-				"lang may be CS for C Sharp or VB for Visual Basic\n";
+				"lang may be CS for C Sharp or VB for Visual Basic\n" +
+				"root is the root folder for the application. default to current working directory";
 
 		private static CodeDomProvider provider = new CSharpCodeProvider ();
 		private static bool sl2 = false;  // Silverlight 2 support
 		private static string app_name;   // Only used in SL2
+		private static string root_folder = Environment.CurrentDirectory;
 
 		public static void Main (string [] args)
 		{
@@ -74,6 +76,9 @@ namespace Moonlight {
 						Console.WriteLine ("unknown language specified.");
 						break;
 					}
+				} else if (args [ind].StartsWith ("-root:")) {
+					int sub = "-root:".Length;
+					root_folder = Path.GetFullPath (args [ind].Substring (sub, args [ind].Length - sub));
 				} else if (args [ind].StartsWith ("-sl2app:")) {
 					int sub = "-sl2app:".Length;
 					app_name = args [ind].Substring (sub, args [ind].Length - sub);
@@ -169,7 +174,11 @@ namespace Moonlight {
 
 				initcomp.Statements.Add (set_content_loaded);
 
-				string component_path = String.Format ("/{0};component/{1}", app_name, Path.GetFileName (xaml_file));
+				if (!Path.GetFullPath (xaml_file).StartsWith (root_folder))
+					throw new ApplicationException ("the -root directory is not a parent of the xaml file");
+
+				string component_path = String.Format ("/{0};component/{1}", app_name, Path.GetFullPath (xaml_file).Substring (root_folder.Length + 1));
+				//string component_path = String.Format ("/{0};component/{1}", app_name, Path.GetFileName (xaml_file));
 				CodeMethodInvokeExpression load_component = new CodeMethodInvokeExpression (
 					new CodeTypeReferenceExpression ("System.Windows.Application"), "LoadComponent",
 					new CodeExpression [] { new CodeThisReferenceExpression (),
