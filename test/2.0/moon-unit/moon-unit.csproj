@@ -90,6 +90,7 @@
     <Compile Include="System.Windows.Controls\PasswordBoxTest.cs" />
     <Compile Include="System.Windows.Controls\ProgressBarTest.cs" />
     <Compile Include="System.Windows.Controls\SliderTest.cs" />
+    <Compile Include="System.Windows.Controls\TextBoxTest.cs" />
     <Compile Include="System.Windows.Data\BindingTest.cs" />
     <Compile Include="System.Windows.Data\IValueConverterTest.cs" />
     <Compile Include="System.Windows.Input\StylusDeviceTest.cs" />
