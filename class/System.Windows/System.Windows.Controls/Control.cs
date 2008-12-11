@@ -111,15 +111,12 @@ namespace System.Windows.Controls {
 			return NativeMethods.surface_focus_element (Application.s_surface, native);
 		}
 
-		[MonoTODO]
 		protected DependencyObject GetTemplateChild (string childName)
 		{
 			if (childName == null)
 				throw new ArgumentException ("childName");
 
-			// null is returned for unknown names (e.g. String.Empty) or when no templates are present
-			// FIXME: return something when that something is present
-			return null;
+			return DependencyObject.FromIntPtr (NativeMethods.control_get_template_child (native, childName));
 		}
 
 		internal override void InvokeGotFocus (RoutedEventArgs e)

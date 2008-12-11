@@ -1,3 +1,7 @@
+2008-12-11  Chris Toshok  <toshok@ximian.com>
+
+	* Control.cs: implement GetTemplateChild.
+
 2008-12-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* PasswordBox.cs: Stub out to fix build.
