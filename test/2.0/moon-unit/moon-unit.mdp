@@ -77,6 +77,17 @@
     <File name="Mono.Moonlight.UnitTesting/MoonLogProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.Moonlight.UnitTesting/SilverlightBugAttribute.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.Moonlight.UnitTesting/MoonlightBugAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/ContentControlTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/OpenFileDialogTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/PasswordBoxTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/ProgressBarTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/SliderTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/TextBoxTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/UserControlTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls.Primitives/ButtonBaseTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls.Primitives/RangeBaseTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls.Primitives/RepeatButtonTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls.Primitives/ThumbTest.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />

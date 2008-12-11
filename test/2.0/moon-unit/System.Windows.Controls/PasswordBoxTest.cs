@@ -1,4 +1,4 @@
-﻿//
+//
 // PasswordBox Unit Tests
 //
 // Contact:
@@ -54,6 +54,7 @@ namespace Mono.Moonlight.UnitTesting
         }
 
         [TestMethod]
+		[MoonlightBug]
         public void Defaults()
         {
             Assert.AreEqual(null, box.FontSource, "#1");
@@ -65,6 +66,7 @@ namespace Mono.Moonlight.UnitTesting
         }
 
         [TestMethod]
+		[MoonlightBug]
         public void SetInvalidValues()
         {
             Assert.Throws<ArgumentNullException>(delegate {

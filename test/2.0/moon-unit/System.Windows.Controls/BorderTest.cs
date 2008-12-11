@@ -33,6 +33,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void InvalidValues()
 		{
 			Border c = new Border();

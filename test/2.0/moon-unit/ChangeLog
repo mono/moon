@@ -1,3 +1,14 @@
+2008-12-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* System.Windows.Controls/ContentControlTest.cs,
+	  System.Windows.Controls/PasswordBoxTest.cs,
+	  System.Windows.Controls/BorderTest.cs,
+	  System.Windows.Controls/TextBoxTest.cs,
+	  System.Windows.Controls.Primitives/ThumbTest.cs,
+	  System.Windows/ResourceDictionaryTest.cs: Sprinkle [MoonlightBug] a
+	  bit.
+	* moon-unit.mdp: Updated.
+
 2008-12-10  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/BorderTest.cs: Added tests for

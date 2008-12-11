@@ -93,7 +93,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("can't assign DataTemplate to ContentTemplate")]
 		public void ContentTemplate ()
 		{
 			ContentControlPoker cc = new ContentControlPoker ();
