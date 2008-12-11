@@ -62,13 +62,9 @@ namespace System.Windows {
 			}
 		}
 
-		object value;
 		public object Value {
-			get { return this.value; }
-			set {
-				SetValue (ValueProperty, value);
-				this.value = value;
-			}
+			get { return GetValue (ValueProperty); }
+			set { SetValue (ValueProperty, value); }
 		}
 	}
 }
