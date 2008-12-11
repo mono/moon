@@ -79,13 +79,13 @@ namespace System.Windows.Media {
 			return fw.Parent;
 		}
 
-		[SecuritySafeCriticalAttribute ()]
+		[SecuritySafeCritical]
 		public static IEnumerable<UIElement> FindElementsInHostCoordinates (Point intersectingPoint, UIElement subtree)
 		{
 			throw new NotImplementedException ();
 		}
 
-		[SecuritySafeCriticalAttribute ()]
+		[SecuritySafeCritical]
 		public static IEnumerable<UIElement> FindElementsInHostCoordinates (Rect intersectingRect, UIElement subtree)
 		{
 			throw new NotImplementedException ();
