@@ -1,3 +1,12 @@
+2008-12-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	[Backports of r121143, 121228 and 121230]
+
+	* audio-pulse.cpp, audio-pulse.h: Improve locking while waiting for
+	  pulseaudio to initialize - keep waiting if we get spurious wakeups.
+
+	  r: kangaroo
+
 2008-12-09  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* pipeline.cpp: IMediaDemuxer::GetBufferedSize: Only calculate buffered

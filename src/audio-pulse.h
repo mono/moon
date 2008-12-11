@@ -63,13 +63,19 @@ class PulseSource: public AudioSource {
 
 class PulsePlayer : public AudioPlayer {
  private:
+ 	enum ConnectedState {
+	 	ConnectionUnknown,
+	 	ConnectionFailed,
+	 	ConnectionSuccess
+	};
+ private:
 	pa_context *context;
 	pa_threaded_mainloop *loop;
 	pa_mainloop_api *api;
 	pthread_cond_t cond;
 	pthread_mutex_t mutex;
 	
-	bool connected;
+	ConnectedState connected; // 0 = don't know, 1 = failed to connect, 2 = connected
 	
 	static void OnContextStateChanged (pa_context *context, void *userdata);
 	void OnContextStateChanged ();
