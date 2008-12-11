@@ -1,3 +1,7 @@
+2008-12-11  Andreia Gaita  <shana@jitted.com>
+
+	* CompositionTarget.cs: Implemented
+
 2008-11-26  Jackson Harper  <jackson@ximian.com>
 
 	* DeepZoomImageTileSource.cs: The dependency proeprty is now in

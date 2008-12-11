@@ -11,17 +11,38 @@
  */
 
 using System;
+using Mono;
 
 namespace System.Windows.Media
 {
 	public static class CompositionTarget
 	{
+		private static EventHandlerList events = new EventHandlerList ();
+		static UnmanagedEventHandler rendering_proxy = new UnmanagedEventHandler (UnmanagedRendering);
+
+		private static void UnmanagedRendering (IntPtr target, IntPtr calldata, IntPtr closure)
+		{
+			EventHandler h = (EventHandler)events[RenderingEvent];
+			if (h != null) {
+				h (null, EventArgs.Empty);
+			}
+		}
+
+		static object RenderingEvent = new object ();
 		public static event EventHandler Rendering {
 			add {
-				throw new NotImplementedException ();
+				if (events[RenderingEvent] == null) {
+					IntPtr t = NativeMethods.surface_get_time_manager (Application.s_surface);
+					NativeMethods.event_object_add_handler (t, "Render", rendering_proxy, t, IntPtr.Zero);
+				}
+				events.AddHandler (RenderingEvent, value);
 			}
 			remove {
-				throw new NotImplementedException ();
+				events.RemoveHandler (RenderingEvent, value);
+				if (events[RenderingEvent] == null) {
+					IntPtr t = NativeMethods.surface_get_time_manager (Application.s_surface);
+					NativeMethods.event_object_remove_handler (t, "Render", rendering_proxy, (IntPtr) Helper.GCHandleFromIntPtr (t));
+				}
 			}
 		}
 	}
