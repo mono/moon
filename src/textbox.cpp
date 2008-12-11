@@ -530,3 +530,16 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 	
 	TextBox::OnPropertyChanged (args);	
 }
+
+bool
+PasswordBox::IsValueValid (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error)
+{
+	if (property == PasswordBox::PasswordProperty && value && !value->AsString ()) {
+		MoonError::FillIn (error, MoonError::ARGUMENT_NULL, 1001,
+			g_strdup_printf ("Can not set a null password",
+				property->GetName()));
+		return false;	
+	}
+	
+	return TextBox::IsValueValid (additional_types, property, value, error))
+}
