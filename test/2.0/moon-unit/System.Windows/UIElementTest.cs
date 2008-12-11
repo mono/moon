@@ -28,7 +28,10 @@
 
 using System;
 using System.Windows;
+using System.Windows.Automation.Peers;
+using System.Windows.Media;
 
+using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows {
@@ -38,6 +41,11 @@ namespace MoonTest.System.Windows {
 
 		// we can't directly inherit from UIElement (no ctor)
 		class ConcreteUIElement : FrameworkElement {
+
+			public AutomationPeer OnCreateAutomationPeer_ ()
+			{
+				return base.OnCreateAutomationPeer ();
+			}
 		}
 
 		[TestMethod]
@@ -58,13 +66,63 @@ namespace MoonTest.System.Windows {
 			Assert.AreEqual (1.0d, ui.Opacity, "Opacity");
 			Assert.IsNull (ui.OpacityMask, "OpacityMask");
 			Assert.AreEqual (new Size (0, 0), ui.RenderSize, "RenderSize");
-//			Assert.IsNotNull (ui.RenderTransform, "RenderTransform");
+//			Assert.IsTrue (ui.RenderTransform is MatrixTransform, "RenderTransform");
+//			Assert.IsTrue ((ui.RenderTransform as MatrixTransform).Matrix.IsIdentity, "RenderTransform/Identity");
 			Assert.AreEqual (new Point (0, 0), ui.RenderTransformOrigin, "RenderTransformOrigin");
 			Assert.IsTrue (ui.UseLayoutRounding, "UseLayoutRounding");
 			Assert.AreEqual (Visibility.Visible, ui.Visibility, "Visibility");
 
 			// default properties on DependencyObject
 			DependencyObjectTest.CheckDefaultProperties (ui);
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void BadDefaultProperties ()
+		{
+			ConcreteUIElement ui = new ConcreteUIElement ();
+			Assert.IsTrue (ui.RenderTransform is MatrixTransform, "RenderTransform");
+			Assert.IsTrue ((ui.RenderTransform as MatrixTransform).Matrix.IsIdentity, "RenderTransform/Identity");
+		}
+
+		[TestMethod]
+		public void DefaultMethods ()
+		{
+			ConcreteUIElement ui = new ConcreteUIElement ();
+
+			Assert.Throws<InvalidOperationException> (delegate {
+				ui.Arrange (Rect.Empty);
+			}, "Arrange(Empty)");
+
+			Assert.IsFalse (ui.CaptureMouse (), "CaptureMouse");
+
+			ui.InvalidateArrange ();
+			ui.InvalidateMeasure ();
+
+			Assert.IsNull (ui.OnCreateAutomationPeer_ (), "OnCreateAutomationPeer_");
+
+			// no exception, unlike Arrange
+			ui.Measure (Size.Empty);
+
+			ui.ReleaseMouseCapture ();
+
+			Assert.Throws<ArgumentException> (delegate {
+				ui.TransformToVisual (null);
+			}, "TransformToVisual(null)");
+		}
+
+		[TestMethod]
+		[MoonlightBug ("no exception is thrown")]
+		public void TransformToVisual ()
+		{
+			ConcreteUIElement ui = new ConcreteUIElement ();
+			Assert.Throws<ArgumentException> (delegate {
+				ui.TransformToVisual (ui);
+			}, "TransformToVisual(self)");
+			Assert.Throws<ArgumentException> (delegate {
+				ui.TransformToVisual (new ConcreteUIElement ());
+			}, "TransformToVisual(new)");
+			// an UIElement is probably not complete enough to complete the call
 		}
 	}
 }
