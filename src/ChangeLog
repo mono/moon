@@ -1,5 +1,9 @@
 2008-12-11  Alan McGovern  <amcgovern@novell.com>
 
+	* textbox.cpp: Unbreak the build.
+
+2008-12-11  Alan McGovern  <amcgovern@novell.com>
+
 	* textbox.cpp: It should not be possible to set a null value as the
 	password.
 

@@ -536,10 +536,9 @@ PasswordBox::IsValueValid (Types *additional_types, DependencyProperty *property
 {
 	if (property == PasswordBox::PasswordProperty && value && !value->AsString ()) {
 		MoonError::FillIn (error, MoonError::ARGUMENT_NULL, 1001,
-			g_strdup_printf ("Can not set a null password",
-				property->GetName()));
+			g_strdup_printf ("Cannot set a null password"));
 		return false;	
 	}
 	
-	return TextBox::IsValueValid (additional_types, property, value, error))
+	return TextBox::IsValueValid (additional_types, property, value, error);
 }
