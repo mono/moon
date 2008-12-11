@@ -1,3 +1,7 @@
+2008-12-11  Chris Toshok  <toshok@ximian.com>
+
+	* FocusManager.cs: use DependencyObject.FromIntPtr.
+
 2008-12-09  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* MouseEventArgs.cs: Remove Handled property.

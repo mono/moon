@@ -34,12 +34,7 @@ namespace System.Windows.Input {
 	public static class FocusManager {
 		public static object GetFocusedElement ()
 		{
-			IntPtr v = NativeMethods.surface_get_focused_element (Application.s_surface);
-			if (v == IntPtr.Zero)
-				return null;
-
-			return DependencyObject.Lookup (NativeMethods.dependency_object_get_object_type (v),
-							v);
+			return DependencyObject.FromIntPtr (NativeMethods.surface_get_focused_element (Application.s_surface));
 		}
 	}
 
