@@ -16,7 +16,8 @@ CLEANFILES =				\
 	docs/Gtk.Moonlight/Desklet.xml	\
 	docs/Gtk.Moonlight/GtkSilver.xml\
 	docs/Gtk.Moonlight.xml		\
-	docs/ns-Gtk.Moonlight.xml
+	docs/ns-Gtk.Moonlight.xml	\
+	docs/index.xml
 
 DISTCLEANFILES=$(CLEANFILES)
 
@@ -35,7 +36,7 @@ gtksilver.dll: $(gtksilver_dll_CS) $(top_builddir)/class/lib/3.0/Mono.Moonlight.
 
 MONODOCER = MONO_PATH="../class/lib/3.0:$$MONO_PATH" monodocer
 gtksilver.tree: gtksilver.zip
-gtksilver.zip: gtksilver.dll $(srcdir)/docs/index.xml
+gtksilver.zip: gtksilver.dll
 	rm -f $(top_builddir)/gtk/docs/ns-Gtk.Moonlight.xml
 	$(MONODOCER) -importslashdoc:gtksilver.xml -path:$(top_builddir)/gtk/docs -assembly:gtksilver.dll
 	mdassembler --ecma $(top_builddir)/gtk/docs/ --out gtksilver
@@ -46,14 +47,14 @@ install-data-local:
 uninstall-local:
 	gacutil -gacdir $(DESTDIR)$(prefix) -u gtksilver
 
-NAMESPACES=Gtk.Moonlight
-dist-hook:
-	mkdir -p $(distdir)/docs
-	cp $(srcdir)/docs/*.xml $(distdir)/docs/.
-#	for i in $(NAMESPACES); do                                      \
-		mkdir -p $(distdir)/docs/$$i;                           \
-		cp $(srcdir)/docs/$$i/*.xml $(distdir)/docs/$$i;        \
-	done
+#NAMESPACES=Gtk.Moonlight
+#dist-hook:
+#	mkdir -p $(distdir)/docs
+#	cp -f $(srcdir)/docs/*.xml $(distdir)/docs/.
+##	for i in $(NAMESPACES); do                                      \
+#		mkdir -p $(distdir)/docs/$$i;                           \
+#		cp $(srcdir)/docs/$$i/*.xml $(distdir)/docs/$$i;        \
+#	done
 
  
 push:
