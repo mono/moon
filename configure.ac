@@ -84,7 +84,7 @@ if test x$with_ff3 = xyes; then
 
   if test x$with_ff3 = xyes; then
     AC_DEFINE([HAVE_GECKO_1_9],[1],[Gecko 1.9 support])
-    PKG_CHECK_MODULES(FF3, [$FF3_MODULES])
+    PKG_CHECK_MODULES(FF3, [$FF3_MODULES glib-2.0])
     dnl Strip out problem libraries (should already be in process space)
     FF3_LIBS="$(echo $FF3_LIBS | sed -e 's/-lmozjs\|-lplds4\|-lplc4\|-lnspr4//g')"
   fi
@@ -108,7 +108,7 @@ if test x$with_ff2 = xyes; then
     with_ff2=no
     ff2_reason="(reason: missing FF2 development packages)"
   else
-    PKG_CHECK_MODULES(FF2,[$mozilla_xpcom $mozilla_plugin])
+    PKG_CHECK_MODULES(FF2,[$mozilla_xpcom $mozilla_plugin glib-2.0])
     dnl Strip out problem libraries (should already be in process space)
     FF2_LIBS="$(echo $FF2_LIBS | sed -e 's/-lmozjs\|-lplds4\|-lplc4\|-lnspr4//g')"
   fi

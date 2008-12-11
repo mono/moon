@@ -1,3 +1,10 @@
+2008-12-11  Jeffrey Stedfast  <fejj@novell.com>
+
+	* configure.ac: Add glib-2.0 to the dependencies for FF2 and FF3
+	LIBS. Partial fix for bug #455885.
+
+	r: toshok, kangaroo
+
 2008-12-01  Geoff Norton  <gnorton@novell.com>
 
 	* configure.ac: Ensure that we always link against libexpat, we cannot
