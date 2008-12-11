@@ -161,8 +161,14 @@ namespace System.Windows.Controls {
 	}
 
 	partial class Control {
-		protected Control () : base (NativeMethods.control_new ()) {}
-		internal Control (IntPtr raw) : base (raw) {}
+		protected Control () : base (NativeMethods.control_new ())
+		{
+			Initialize ();
+		}
+		internal Control (IntPtr raw) : base (raw)
+		{
+			Initialize ();
+		}
 		internal override Kind GetKind () { return Kind.CONTROL; }
 	}
 
