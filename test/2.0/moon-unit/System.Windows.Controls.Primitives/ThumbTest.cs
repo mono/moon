@@ -55,7 +55,6 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void DefaultMethods ()
 		{
 			Thumb t = new Thumb ();

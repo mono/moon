@@ -1,3 +1,10 @@
+2008-12-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows/FrameworkElementTest.cs: Add basic test cases for
+	the methods, some of them marked with [MoonlightBug]
+	* System.Windows.Controls.Primitives/ThumbTest.cs: Remove 
+	the [MoonlightBug] on DefaultMethods
+
 2008-12-11  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingTest.cs: Add test for databinding a float

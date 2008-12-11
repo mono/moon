@@ -39,6 +39,16 @@ namespace MoonTest.System.Windows {
 	public class FrameworkElementTest {
 
 		class ConcreteFrameworkElement : FrameworkElement {
+
+			public Size ArrangeOverride_ (Size finalSize)
+			{
+				return base.ArrangeOverride (finalSize);
+			}
+
+			public Size MeasureOverride_ (Size availableSize)
+			{
+				return base.MeasureOverride (availableSize);
+			}
 		}
 
 		[TestMethod]
@@ -89,6 +99,57 @@ namespace MoonTest.System.Windows {
 //			Assert.IsTrue (Double.IsNaN (fe.Width), "Width");
 
 			UIElementTest.CheckDefaultProperties (fe);
+		}
+
+		[TestMethod]
+		public void OnApplyTemplate ()
+		{
+			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
+			fe.OnApplyTemplate ();
+		}
+
+		[TestMethod]
+		public void FindName ()
+		{
+			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
+			Assert.Throws<ArgumentNullException> (delegate {
+				fe.FindName (null);
+			}, "FindName(null)");
+			Assert.IsNull (fe.FindName (String.Empty), "FindName(Empty)");
+		}
+
+		[TestMethod]
+		public void SetBinding ()
+		{
+			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
+			Assert.Throws<ArgumentNullException> (delegate {
+				fe.SetBinding (null, null);
+			}, "SetBinding(null,null)");
+			Assert.Throws<ArgumentNullException> (delegate {
+				fe.SetBinding (FrameworkElement.ActualHeightProperty, null);
+			}, "SetBinding(DP,null)");
+		}
+
+		[TestMethod]
+		[MoonlightBug ("mishandling Size.Empty")]
+		public void ArrangeOverride ()
+		{
+			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
+			Size result = fe.ArrangeOverride_ (new Size (0, 0));
+			Assert.AreEqual (new Size (0, 0), result, "0,0");
+			result = fe.MeasureOverride_ (Size.Empty);
+			Assert.AreEqual (new Size (0, 0), result, "Empty");
+		}
+
+		[TestMethod]
+		[MoonlightBug ("mishandling Size.Empty")]
+		public void MeasureOverride ()
+		{
+			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
+			Size result = fe.MeasureOverride_ (new Size (0, 0));
+			Assert.AreEqual (new Size (0, 0), result, "0,0");
+			result = fe.MeasureOverride_ (Size.Empty);
+			Assert.AreEqual (new Size (0, 0), result, "Empty");
 		}
 	}
 }
