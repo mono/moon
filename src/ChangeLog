@@ -1,3 +1,9 @@
+2008-12-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* mediaplayer.cpp, mediaplayer.h: Added locking to accesses to the
+	  audio field. Added comments/explicit verification in every method
+	  describing which methods must be thread-safe and which aren't.
+
 2008-12-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	* xaml.cpp (parser_error): Now takes varargs to simplify

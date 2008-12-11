@@ -27,7 +27,10 @@
 #include "debug.h"
 
 #define DEBUG_ADVANCEFRAME 0
-
+#define VERIFY_MAIN_THREAD \
+	if (!Surface::InMainThread ()) {	\
+		printf ("Moonlight: This method should be only be called from the main thread (%s)\n", __PRETTY_FUNCTION__);	\
+	}
 
 /*
  * Packet
@@ -66,18 +69,44 @@ MediaPlayer::MediaPlayer (MediaElement *el)
 {
 	LOG_MEDIAPLAYER ("MediaPlayer::MediaPlayer (%p, id=%i), id=%i\n", el, GET_OBJ_ID (el), GET_OBJ_ID (this));
 
+	VERIFY_MAIN_THREAD;
+	
 	element = el;
 
 	media = NULL;
-	audio = NULL;
-	
+	audio_unlocked = NULL;
+
+	pthread_mutex_init (&mutex, NULL);
+
 	Initialize ();
 }
 
 MediaPlayer::~MediaPlayer ()
 {
 	LOG_MEDIAPLAYER ("MediaPlayer::~MediaPlayer (), id=%i\n", GET_OBJ_ID (this));
+	
+	VERIFY_MAIN_THREAD;
+
 	Close (true);
+
+	pthread_mutex_destroy (&mutex);
+}
+
+AudioSource *
+MediaPlayer::GetAudio ()
+{
+	AudioSource *result = NULL;
+
+	// Thread-safe
+	
+	pthread_mutex_lock (&mutex);
+	if (audio_unlocked != NULL) {
+		result = audio_unlocked;
+		result->ref ();
+	}	
+	pthread_mutex_unlock (&mutex);
+
+	return result;
 }
 
 void
@@ -95,6 +124,8 @@ void
 MediaPlayer::EnqueueVideoFrameCallback (EventObject *user_data)
 {
 	LOG_MEDIAPLAYER_EX ("MediaPlayer::EnqueueVideoFrameCallback ()\n");
+	VERIFY_MAIN_THREAD;
+	
 	MediaPlayer *mplayer = (MediaPlayer *) user_data;
 	mplayer->EnqueueFrames (0, 1);
 }
@@ -103,6 +134,8 @@ void
 MediaPlayer::EnqueueAudioFrameCallback (EventObject *user_data)
 {
 	LOG_MEDIAPLAYER_EX ("MediaPlayer::EnqueueAudioFrameCallback ()\n");
+	VERIFY_MAIN_THREAD;
+	
 	MediaPlayer *mplayer = (MediaPlayer *) user_data;
 	mplayer->EnqueueFrames (1, 0);
 }
@@ -113,7 +146,8 @@ MediaPlayer::LoadFrameCallback (EventObject *user_data)
 	bool result = false;
 
 	LOG_MEDIAPLAYER ("MediaPlayer::LoadFrameCallback ()\n");
-
+	VERIFY_MAIN_THREAD;
+	
 	MediaPlayer *player = (MediaPlayer*) user_data;
 	if (player != NULL) {
 		// Check again if LoadFrame is still pending.
@@ -129,10 +163,13 @@ MediaPlayer::FrameCallback (MediaClosure *closure)
 	MediaPlayer *player = element->GetMediaPlayer ();
 	MediaFrame *frame = closure->frame;
 	IMediaStream *stream = frame ? frame->stream : NULL;
+	AudioSource *audio;
 	
 	LOG_MEDIAPLAYER_EX ("MediaPlayer::FrameCallback (closure=%p) state: %d, frame: %p, pts: %llu ms, type: %s, video packets: %d, eof: %i\n",
 			    closure, player->state, closure->frame, frame ? MilliSeconds_FromPts (frame->pts) : 0, 
 			    stream ? stream->GetStreamTypeName () : "None", player->video.queue.Length (), frame ? frame->event == FrameEventEOF : -1);
+
+	// Thread-safe
 	
 	if (player->GetBit (MediaPlayer::Seeking)) {
 		// We don't want any frames while we're waiting for a seek.
@@ -164,9 +201,11 @@ MediaPlayer::FrameCallback (MediaClosure *closure)
 			player->AddTickCallSafe (LoadFrameCallback);
 		}
 		return MEDIA_SUCCESS;
-	case MediaTypeAudio: 
-		if (player->audio != NULL) {
-			player->audio->AppendFrame (frame);
+	case MediaTypeAudio:
+		audio = player->GetAudio ();
+		if (audio != NULL) {
+			audio->AppendFrame (frame);
+			audio->unref ();
 		} else {
 			//fprintf (stderr, "MediaPlayer::FrameCallback (): Got audio frame, but there is no audio player.\n");
 		}
@@ -180,6 +219,7 @@ void
 MediaPlayer::AudioFinishedCallback (EventObject *user_data)
 {
 	LOG_MEDIAPLAYER ("MediaPlayer::AudioFinishedCallback ()\n");
+	VERIFY_MAIN_THREAD;
 
 	MediaPlayer *mplayer = (MediaPlayer *) user_data;
 	mplayer->AudioFinished ();
@@ -190,11 +230,14 @@ MediaPlayer::AudioFinished ()
 {
 	LOG_MEDIAPLAYER ("MediaPlayer::AudioFinished ()\n");
 
+	// This method is must be thread-safe
+
 	if (!Surface::InMainThread ()) {
 		AddTickCallSafe (AudioFinishedCallback);
 		return;
 	}
-
+	
+	VERIFY_MAIN_THREAD;
 	SetBit (AudioEnded);
 	CheckFinished ();
 }
@@ -203,6 +246,7 @@ void
 MediaPlayer::VideoFinished ()
 {
 	LOG_MEDIAPLAYER ("MediaPlayer::VideoFinished ()\n");
+	VERIFY_MAIN_THREAD;
 	
 	SetBit (VideoEnded);
 	CheckFinished ();
@@ -218,6 +262,7 @@ void
 MediaPlayer::NotifyFinished ()
 {
 	LOG_MEDIAPLAYER ("MediaPlayer::NotifyFinished (): Element: %p\n", element);
+	VERIFY_MAIN_THREAD;
 	
 	Stop ();
 
@@ -230,6 +275,7 @@ MediaPlayer::CheckFinished ()
 {
 	LOG_MEDIAPLAYER ("MediaPlayer::CheckFinished (), HasVideo: %i, VideoEnded: %i, HasAudio: %i, AudioEnded: %i\n",
 		HasVideo (), GetBit (VideoEnded), HasAudio (), GetBit (AudioEnded));
+	VERIFY_MAIN_THREAD;
 		
 	if (HasVideo () && !GetBit (VideoEnded))
 		return;
@@ -243,15 +289,21 @@ MediaPlayer::CheckFinished ()
 void
 MediaPlayer::AudioFailed (AudioSource *source)
 {
-	if (this->audio == source) {
-		AudioPlayer::Remove (this->audio);
-		this->audio = NULL;
+	// This method must be thread-safe
+	
+	pthread_mutex_lock (&mutex);
+	if (this->audio_unlocked == source) {
+		AudioPlayer::Remove (this->audio_unlocked);
+		this->audio_unlocked->unref ();
+		this->audio_unlocked = NULL;
 	}
+	pthread_mutex_unlock (&mutex);
 }
 
 void
 MediaPlayer::EnqueueFramesAsync (int audio_frames, int video_frames)
 {
+	// Thread-safe
 	for (int i = 0; i < audio_frames; i++)
 		AddTickCallSafe (EnqueueAudioFrameCallback);
 	
@@ -263,18 +315,22 @@ void
 MediaPlayer::EnqueueFrames (int audio_frames, int video_frames)
 {
 	MediaClosure *closure;
-
-	LOG_MEDIAPLAYER_EX ("MediaPlayer::EnqueueFrames (%i, %i)\n", audio_frames, video_frames);
+	AudioSource *audio;
 	
+	LOG_MEDIAPLAYER_EX ("MediaPlayer::EnqueueFrames (%i, %i)\n", audio_frames, video_frames);
+	VERIFY_MAIN_THREAD;
+
 	if (element == NULL || GetBit (Seeking))
 		return;
 
-	if (HasAudio ()) {
+	audio = GetAudio ();
+	if (audio != NULL) {
 		for (int i = 0; i < audio_frames; i++) {
 			closure = new MediaClosure (FrameCallback);
 			closure->SetContext (element);
 			media->GetNextFrameAsync (closure, audio->GetStream (), FRAME_DEMUXED | FRAME_DECODED);
 		}
+		audio->unref ();
 	}
 	
 	if (HasVideo ()) {
@@ -294,8 +350,10 @@ MediaPlayer::Open (Media *media)
 	IMediaStream *stream;
 	guint64 asx_duration;
 	gint32 *audio_stream_index = NULL;
+	AudioSource *audio;
 	
 	LOG_MEDIAPLAYER ("MediaPlayer::Open (%p), current media: %p\n", media, this->media);
+	VERIFY_MAIN_THREAD;
 	
 	Close (false);
 
@@ -413,7 +471,9 @@ MediaPlayer::Open (Media *media)
 					LOG_MEDIAPLAYER ("[0x%x] ", ((gint8*)astream->extra_data)[n]);
 				LOG_MEDIAPLAYER ("\n"); 
 			}
-
+			pthread_mutex_lock (&mutex);
+			this->audio_unlocked = audio;
+			pthread_mutex_unlock (&mutex);
 		}
 	}
 	if (video.stream != NULL) {
@@ -481,6 +541,7 @@ void
 MediaPlayer::Initialize ()
 {
 	LOG_MEDIAPLAYER ("MediaPlayer::Initialize ()\n");
+	VERIFY_MAIN_THREAD;
 
 	// Clear out any state, bits, etc
 	state = (PlayerState) 0;
@@ -509,12 +570,15 @@ void
 MediaPlayer::Close (bool dtor)
 {
 	LOG_MEDIAPLAYER ("MediaPlayer::Close ()\n");
+	VERIFY_MAIN_THREAD;
 
-	if (audio) {
-		AudioPlayer::Remove (audio);
-		audio->unref ();
-		audio = NULL;
+	pthread_mutex_lock (&mutex);
+	if (audio_unlocked) {
+		AudioPlayer::Remove (audio_unlocked);
+		audio_unlocked->unref ();
+		audio_unlocked = NULL;
 	}
+	pthread_mutex_unlock (&mutex);
 
 	Stop (false);
 	
@@ -555,6 +619,7 @@ MediaPlayer::RenderFrame (MediaFrame *frame)
 	VideoStream *stream = (VideoStream *) frame->stream;
 
 	LOG_MEDIAPLAYER_EX ("MediaPlayer::RenderFrame (%p), pts: %llu ms, buflen: %i, buffer: %p, IsPlanar: %i\n", frame, MilliSeconds_FromPts (frame->pts), frame->buflen, frame->buffer, frame->IsPlanar ());
+	VERIFY_MAIN_THREAD;
 	
 	if (!frame->IsDecoded ()) {
 		fprintf (stderr, "MediaPlayer::RenderFrame (): Trying to render a frame which hasn't been decoded yet.\n");
@@ -608,11 +673,13 @@ MediaPlayer::AdvanceFrame ()
 	bool result = false;
 	double dropped_frames_per_second = -1;
 	double rendered_frames_per_second = -1;
+	AudioSource *audio;
 	
 	guint64 now = 0;
 	
 	LOG_MEDIAPLAYER_EX ("MediaPlayer::AdvanceFrame () state: %i, current_pts = %llu, IsPaused: %i, IsSeeking: %i, VideoEnded: %i, AudioEnded: %i, HasVideo: %i, HasAudio: %i\n", 
 		state, current_pts, IsPaused (), IsSeeking (), GetBit (VideoEnded), GetBit (AudioEnded), HasVideo (), HasAudio ());
+	VERIFY_MAIN_THREAD;
 
 	RemoveBit (LoadFramePending);
 	
@@ -631,7 +698,8 @@ MediaPlayer::AdvanceFrame ()
 	// If the audio isn't playing, there might be slight length-difference between
 	// audio and video streams (the audio is shorted and finished earlier for instance)
 	// Treat this case as if there's no audio at all.
-	if (HasAudio () && audio->GetState () == AudioPlaying) {
+	audio = GetAudio ();
+	if (audio != NULL && audio->GetState () == AudioPlaying) {
 		// use target_pts as set by audio thread
 		target_pts = GetTargetPts ();	
 		if (target_pts == G_MAXUINT64) {
@@ -650,6 +718,10 @@ MediaPlayer::AdvanceFrame ()
 		printf ("MediaPlayer::AdvanceFrame (): determined target_pts to be: %llu = %llu ms, elapsed_pts: %llu = %llu ms, start_time: %llu = %llu ms\n",
 			target_pts, MilliSeconds_FromPts (target_pts), elapsed_pts, MilliSeconds_FromPts (elapsed_pts), start_time, MilliSeconds_FromPts (start_time));
 		*/
+	}
+	if (audio != NULL) {
+		audio->unref ();
+		audio = NULL;
 	}
 	
 	this->target_pts = target_pts;
@@ -791,6 +863,7 @@ MediaPlayer::LoadVideoFrame ()
 	guint64 target_pts;
 	
 	LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (), HasVideo: %i, LoadFramePending: %i, queue size: %i\n", HasVideo (), state & LoadFramePending, video.queue.Length ());
+	VERIFY_MAIN_THREAD;
 
 	if (!HasVideo ())
 		return false;
@@ -831,7 +904,10 @@ MediaPlayer::LoadVideoFrame ()
 void
 MediaPlayer::Play ()
 {
+	AudioSource *audio;
+	
 	LOG_MEDIAPLAYER ("MediaPlayer::Play (), state: %i, IsPlaying: %i, IsSeeking: %i\n", state, IsPlaying (), IsSeeking ());
+	VERIFY_MAIN_THREAD;
 
 	if (IsPlaying () && !IsSeeking ())
 		return;
@@ -841,8 +917,11 @@ MediaPlayer::Play ()
 	start_time = TimeSpan_ToPts (element->GetTimeManager()->GetCurrentTime ());
 	start_time -= target_pts;
 
-	if (audio)
+	audio = GetAudio ();
+	if (audio) {
 		audio->Play ();
+		audio->unref ();
+	}
 	
 	// Request 10 audio packets from the start, the audio thread will in some cases
 	// be able to send more audio samples to the hardware in one call than what's
@@ -858,6 +937,8 @@ MediaPlayer::GetTimeoutInterval ()
 {
 	gint32 result; // ms between timeouts
 	guint64 pts_per_frame = 0;
+	
+	VERIFY_MAIN_THREAD;
 	
 	if (HasVideo ()) {
 		pts_per_frame = video.stream->pts_per_frame;
@@ -885,8 +966,10 @@ MediaPlayer::SetAudioStreamIndex (gint32 index)
 	AudioStream *next_stream = NULL;
 	AudioStream *prev_stream = NULL;
 	gint32 audio_streams_found = 0;
+	AudioSource *audio;
 
 	LOG_MEDIAPLAYER ("MediaPlayer::SetAudioStreamIndex (%i).\n", index);
+	VERIFY_MAIN_THREAD;
 	
 	if (index < 0 || index >= audio_stream_count) {
 		LOG_MEDIAPLAYER ("MediaPlayer::SetAudioStreamIndex (%i): Invalid audio stream index.\n", index);
@@ -898,6 +981,7 @@ MediaPlayer::SetAudioStreamIndex (gint32 index)
 		return;
 	}
 
+	audio = GetAudio ();
 	if (audio == NULL) {
 		LOG_MEDIAPLAYER ("MediaPlayer::SetAudioStreamIndex (%i): No audio source.\n", index);
 		return;
@@ -932,33 +1016,43 @@ MediaPlayer::SetAudioStreamIndex (gint32 index)
 		next_stream->SetSelected (true);
 		audio->SetAudioStream (next_stream);
 	}
+
+	audio->unref ();
 }
 
 bool
 MediaPlayer::GetCanPause ()
 {
 	// FIXME: should return false if it is streaming media
+	VERIFY_MAIN_THREAD;
 	return GetBit (CanPause);
 }
 
 void
 MediaPlayer::SetCanPause (bool value)
 {
+	VERIFY_MAIN_THREAD;
 	SetBitTo (CanPause, value);
 }
 
 void
 MediaPlayer::Pause ()
 {
+	AudioSource *audio;
+	
 	LOG_MEDIAPLAYER ("MediaPlayer::Pause (), state: %i\n", state);
+	VERIFY_MAIN_THREAD;
 
 	if (IsPaused ())
 		return;
 	
 	SetState (Paused);
-	
-	if (audio)
+
+	audio = GetAudio ();
+	if (audio) {
 		audio->Pause ();
+		audio->unref ();
+	}
 
 	LOG_MEDIAPLAYER ("MediaPlayer::Pause (), state: %i [Done]\n", state);	
 }
@@ -966,14 +1060,22 @@ MediaPlayer::Pause ()
 guint64
 MediaPlayer::GetTargetPts ()
 {
-	LOG_MEDIAPLAYER_EX ("MediaPlayer::GetTargetPts (): target_pts: %llu, HasAudio (): %i, audio->GetCurrentPts (): %llu\n", target_pts, HasAudio (), HasAudio () ? audio->GetCurrentPts () : 0);
-
+	AudioSource *audio;
 	guint64 result;
+
+	VERIFY_MAIN_THREAD;
 	
-	if (HasAudio () && audio->GetState () == AudioPlaying)
+	audio = GetAudio ();
+
+	LOG_MEDIAPLAYER_EX ("MediaPlayer::GetTargetPts (): target_pts: %llu, HasAudio (): %i, audio->GetCurrentPts (): %llu\n", target_pts, audio != NULL, audio != NULL ? audio->GetCurrentPts () : 0);
+
+	if (audio != NULL && audio->GetState () == AudioPlaying)
 		result = audio->GetCurrentPts ();
 	else
 		result = target_pts;
+
+	if (audio)
+		audio->unref ();
 		
 	return result;
 }
@@ -981,17 +1083,24 @@ MediaPlayer::GetTargetPts ()
 void
 MediaPlayer::SeekCallback ()
 {
+	AudioSource *audio;
+	
 	LOG_MEDIAPLAYER ("MediaPlayer::SeekCallback ()\n");
-
+	// Thread-safe
+	
 	// Clear all queues.
 	video.queue.Clear (true);
-	if (audio != NULL)
+
+	audio = GetAudio ();
+	if (audio != NULL) {
 		audio->ClearFrames ();
+		audio->unref ();
+	}
 	
 	RemoveBit (Seeking);
 	current_pts = 0;
 	
-	EnqueueFrames (1, 1);
+	EnqueueFramesAsync (1, 1);
 }
 
 void
@@ -1004,6 +1113,7 @@ MediaResult
 MediaPlayer::SeekCallback (MediaClosure *closure)
 {
 	LOG_MEDIAPLAYER ("MediaPlayer::SeekCallback (%p)\n", closure);
+	// Thread-safe
 
 	MediaElement *element = (MediaElement *) closure->GetContext ();
 	MediaPlayer *mplayer = element->GetMediaPlayer ();
@@ -1016,6 +1126,7 @@ void
 MediaPlayer::SeekInternal (guint64 pts)
 {
 	LOG_MEDIAPLAYER ("MediaPlayer::SeekInternal (%llu = %llu ms), media: %p, state: %i, Position (): %llu\n", pts, MilliSeconds_FromPts (pts), media, state, GetPosition ());
+	VERIFY_MAIN_THREAD;
 
 	if (media == NULL)
 		return;
@@ -1033,7 +1144,9 @@ void
 MediaPlayer::Seek (guint64 pts)
 {
 	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%llu = %llu ms), media: %p, state: %i, current_pts: %llu, IsPlaying (): %i\n", pts, MilliSeconds_FromPts (pts), media, state, current_pts, IsPlaying ());
+	VERIFY_MAIN_THREAD;
 
+	AudioSource *audio;
 	guint64 duration = GetDuration ();
 	bool resume = IsPlaying ();
 	
@@ -1053,8 +1166,11 @@ MediaPlayer::Seek (guint64 pts)
 	video.queue.Clear (true);
 	
 	// Stop the audio
-	if (audio)
+	audio = GetAudio ();
+	if (audio) {
 		audio->Stop ();
+		audio->unref ();
+	}
 
 	SetBit (Seeking);
 	RemoveBit (AudioEnded);
@@ -1078,22 +1194,30 @@ MediaPlayer::Seek (guint64 pts)
 bool
 MediaPlayer::GetCanSeek ()
 {
+	VERIFY_MAIN_THREAD;
 	return GetBit (CanSeek);
 }
 
 void
 MediaPlayer::SetCanSeek (bool value)
 {
+	VERIFY_MAIN_THREAD;
 	SetBitTo (CanSeek, value);
 }
 
 void
 MediaPlayer::Stop (bool seek_to_start)
 {
+	AudioSource *audio;
+	
 	LOG_MEDIAPLAYER ("MediaPlayer::Stop (), state: %i\n", state);
+	VERIFY_MAIN_THREAD;
 
-	if (audio)
+	audio = GetAudio ();
+	if (audio) {
 		audio->Stop ();
+		audio->unref ();
+	}
 
 	video.queue.Clear (true);
 		
@@ -1114,26 +1238,40 @@ MediaPlayer::Stop (bool seek_to_start)
 double
 MediaPlayer::GetBalance ()
 {
+	double result;
+	AudioSource *audio;
+
+	VERIFY_MAIN_THREAD;
+	
+	audio = GetAudio ();
 	if (audio) {
-		return audio->GetBalance ();
+		result = audio->GetBalance ();
+		audio->unref ();
 	} else {
 		fprintf (stderr, "MediaPlayer::GetBalance (): There's no audio source to get the balance from\n");
-		return 0.0;
+		result = 0.0;
 	}
+
+	return result;
 }
 
 void
 MediaPlayer::SetBalance (double balance)
 {
+	AudioSource *audio;
+	
 	LOG_MEDIAPLAYER ("MediaPlayer::SetBalance (%f)\n", balance);
+	VERIFY_MAIN_THREAD;
 
 	if (balance < -1.0)
 		balance = -1.0;
 	else if (balance > 1.0)
 		balance = 1.0;
-	
+
+	audio = GetAudio ();
 	if (audio) {
 		audio->SetBalance (balance);
+		audio->unref ();
 	} else {
 		//fprintf (stderr, "MediaPlayer::SetBalance (%f): There's no audio source to set the balance\n", balance);
 	}
@@ -1142,26 +1280,39 @@ MediaPlayer::SetBalance (double balance)
 double
 MediaPlayer::GetVolume ()
 {
+	AudioSource *audio;
+	double result;
+	
+	VERIFY_MAIN_THREAD;
+	
 	if (audio) {
-		return audio->GetVolume ();
+		result = audio->GetVolume ();
+		audio->unref ();
 	} else {
 		fprintf (stderr, "MediaPlayer::GetVolume (): There's no audio source to get the volume from\n");
-		return 0.0;
+		result = 0.0;
 	}
+
+	return result;
 }
 
 void
 MediaPlayer::SetVolume (double volume)
 {
+	AudioSource *audio;
+	
 	LOG_MEDIAPLAYER ("MediaPlayer::SetVolume (%f)\n", volume);
+	VERIFY_MAIN_THREAD;
 
 	if (volume < -1.0)
 		volume = -1.0;
 	else if (volume > 1.0)
 		volume = 1.0;
-	
+
+	audio = GetAudio ();
 	if (audio) {
 		audio->SetVolume (volume);
+		audio->unref ();
 	} else {
 		//fprintf (stderr, "MediaPlayer::SetVolume (%f): There's no audio source to set the volume\n", volume);
 	}		
@@ -1170,21 +1321,35 @@ MediaPlayer::SetVolume (double volume)
 bool
 MediaPlayer::GetMuted ()
 {
+	bool result;
+	AudioSource *audio;
+
+	VERIFY_MAIN_THREAD;
+	
+	audio = GetAudio ();
 	if (audio) {
-		return audio->GetMuted ();
+		result = audio->GetMuted ();
+		audio->unref ();
 	} else {
 		fprintf (stderr, "MediaPlayer::GetMuted (): There's no audio.\n");
-		return false;
+		result = false;
 	}
+
+	return result;
 }
 
 void
 MediaPlayer::SetMuted (bool muted)
 {
-	LOG_MEDIAPLAYER ("MediaPlayer::SetMuted (%i)\n", muted);
+	AudioSource *audio;
 	
+	LOG_MEDIAPLAYER ("MediaPlayer::SetMuted (%i)\n", muted);
+	VERIFY_MAIN_THREAD;
+
+	audio = GetAudio ();
 	if (audio) {
 		audio->SetMuted (true);
+		audio->unref ();
 	} else {
 		//fprintf (stderr, "MediaPlayer::SetMuted (%i): There's no audio to mute.\n", muted);
 	}

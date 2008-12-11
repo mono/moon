@@ -15,6 +15,7 @@
 
 #include <glib.h>
 #include <cairo.h>
+#include <pthread.h>
 
 class MediaPlayer;
 
@@ -65,7 +66,11 @@ class MediaPlayer : public EventObject {
 	};
 	
  private:
-	AudioSource *audio;
+ 	// Some instance variables can be accessed from multiple threads.
+ 	// This mutex must be locked while these variables are accessed from
+ 	// any thread.
+ 	pthread_mutex_t mutex; 
+	AudioSource *audio_unlocked; // mutex must be locked.
 	Video video;
 	
 	MediaElement *element;
@@ -98,7 +103,9 @@ class MediaPlayer : public EventObject {
 	
 	void SeekInternal (guint64 pts/* 100-nanosecond units (pts) */);
 	void RenderFrame (MediaFrame *frame);
+	// Thread-safe
 	static MediaResult SeekCallback (MediaClosure *closure);
+	// Thread-safe
 	static MediaResult FrameCallback (MediaClosure *closure);
 	
 	static void EnqueueVideoFrameCallback (EventObject *user_data);
@@ -121,8 +128,14 @@ class MediaPlayer : public EventObject {
 	bool Open (Media *media);
 	void Close (bool dtor);
 	void EnqueueFrames (int audio_frames, int video_frames);
+	// Thread-safe
 	void EnqueueFramesAsync (int audio_frames, int video_frames);
-	
+
+	// Thread-safe.
+	// Returns a refcounted AudioStream.
+	// Caller must call unref when done with it.
+	AudioSource *GetAudio (); 
+
 	bool IsPlaying () { return (state & StateMask) == Playing; }
 	bool IsPaused () { return (state & StateMask) == Paused; }
 	bool IsStopped () { return (state & StateMask) == Stopped; }
@@ -132,7 +145,9 @@ class MediaPlayer : public EventObject {
 	
 	bool HasRenderedFrame () { return (state & RenderedFrame); }
 	void VideoFinished (); // not thread safe.
-	void AudioFinished (); // Called by the audio player when audio reaches the end (this method is thread-safe).
+	// Thread-safe
+	void AudioFinished (); // Called by the audio player when audio reaches the end
+	// Thread-safe
 	void AudioFailed (AudioSource *source); // Called by the audio engine if audio failed to load (async)
 	
 	void SetBit (PlayerState s) { state = (PlayerState) (s | state); }
@@ -165,7 +180,10 @@ class MediaPlayer : public EventObject {
 	Media *GetMedia () { return media; }
 	
 	bool HasVideo () { return video.stream != NULL; }
-	bool HasAudio () { return audio != NULL; }
+	// We may go from having audio to not having audio at any time
+	// (async - this function may return true, but by the time it 
+	// returns we don't have audio anymore).
+	bool HasAudio () { return audio_unlocked != NULL; }
 	
 	guint64 GetPosition () { return GetTargetPts (); }
 	guint64 GetDuration () { return duration; }
