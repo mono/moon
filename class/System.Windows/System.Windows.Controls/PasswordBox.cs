@@ -77,5 +77,10 @@ namespace System.Windows.Controls
 			if (h != null)
 				h (this, new RoutedEventArgs (native));
 		}
+
+		public FontSource FontSource {
+			get { throw new NotImplementedException (); }
+			set { throw new NotImplementedException (); }
+		}
 	}
 }

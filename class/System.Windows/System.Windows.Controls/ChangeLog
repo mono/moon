@@ -1,3 +1,7 @@
+2008-12-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* PasswordBox.cs: Stub out to fix build.
+
 2008-12-10  Full Name  <Email Address>
 
 	* TextBox.cs: Commit the files from the generator.
