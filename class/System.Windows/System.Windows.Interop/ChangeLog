@@ -1,3 +1,8 @@
+2008-12-11  Andreia Gaita  <shana@jitted.com>
+
+	* Settings, SilverlightHost.cs: Settings getter implementation, for
+	  using the MaxFrameRate property
+
 2008-11-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* HostingRenderTargetBitmap.cs: Added InputMethod, ICommand,

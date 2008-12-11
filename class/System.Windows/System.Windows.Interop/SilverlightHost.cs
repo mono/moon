@@ -34,7 +34,9 @@ using Mono;
 
 namespace System.Windows.Interop {
 	public class SilverlightHost {
-		private Content content;
+		Content content;
+		Settings settings;
+
 
 		public SilverlightHost ()
 		{}
@@ -60,7 +62,7 @@ namespace System.Windows.Interop {
 		}
 
 		public Settings Settings {
-			get { throw new NotImplementedException (); }
+			get { return settings ?? (settings = new Settings ()); }
 		}
 
 		public Uri Source {

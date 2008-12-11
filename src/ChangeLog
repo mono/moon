@@ -1,3 +1,7 @@
+2008-12-11  Andreia Gaita  <shana@jitted.com>
+
+	* cbinding.h|cpp, clock.h: Framerate accessors
+
 2008-12-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* audio.cpp: Enqueue: don't enqueue anything if we've reached EOF. Also

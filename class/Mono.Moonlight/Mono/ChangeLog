@@ -1,3 +1,7 @@
+2008-12-11  Andreia Gaita  <shana@jitted.com>
+
+	* GeneratedPInvokes.cs: Generated framerate accessors
+
 2008-12-10  Alan McGovern  <amcgovern@novell.com>
 
 	* Kind.cs:

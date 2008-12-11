@@ -1312,6 +1312,14 @@ namespace Mono {
 		public extern static IntPtr timeline_marker_collection_new ();
 
 		[DllImport ("moon")]
+		// int time_manager_get_maximum_refresh_rate (TimeManager *instance);
+		public extern static int time_manager_get_maximum_refresh_rate (IntPtr instance);
+
+		[DllImport ("moon")]
+		// void time_manager_set_maximum_refresh_rate (TimeManager *instance, int hz);
+		public extern static void time_manager_set_maximum_refresh_rate (IntPtr instance, int hz);
+
+		[DllImport ("moon")]
 		// Transform *transform_new ();
 		public extern static IntPtr transform_new ();
 

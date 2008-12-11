@@ -441,7 +441,10 @@ class TimeManager : public EventObject {
 	guint AddTimeout (gint priority, guint ms_interval, GSourceFunc func, gpointer timeout_data);
 	void RemoveTimeout (guint timeout_id);
 
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal,Version=2 */
 	void SetMaximumRefreshRate (int hz);
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal,Version=2 */
+	int GetMaximumRefreshRate () { return max_fps; }
 
 	// Events you can AddHandler to
 	const static int UpdateInputEvent;

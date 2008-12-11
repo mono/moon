@@ -2977,6 +2977,30 @@ timeline_marker_collection_new (void)
 
 
 /**
+ * TimeManager
+ **/
+int
+time_manager_get_maximum_refresh_rate (TimeManager *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+
+	return instance->GetMaximumRefreshRate ();
+}
+
+
+void
+time_manager_set_maximum_refresh_rate (TimeManager *instance, int hz)
+{
+	if (instance == NULL)
+		return;
+
+	instance->SetMaximumRefreshRate (hz);
+}
+
+
+/**
  * Transform
  **/
 Transform *

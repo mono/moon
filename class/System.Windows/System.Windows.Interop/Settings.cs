@@ -28,6 +28,7 @@
 
 using System;
 using System.Security;
+using Mono;
 
 namespace System.Windows.Interop {
 	public sealed class Settings
@@ -62,9 +63,13 @@ namespace System.Windows.Interop {
 		//FIXME
 		public int MaxFrameRate {
 			[SecuritySafeCritical ()]
-			get {return 1;}
+			get {
+				return NativeMethods.time_manager_get_maximum_refresh_rate (NativeMethods.surface_get_time_manager (Application.s_surface));
+			}
 			[SecuritySafeCritical ()]
-			set {}
+			set {
+				NativeMethods.time_manager_set_maximum_refresh_rate (NativeMethods.surface_get_time_manager (Application.s_surface), value);
+			}
 		}
 
 		//FIXME

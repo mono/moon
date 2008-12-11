@@ -1375,6 +1375,15 @@ TimelineMarker *timeline_marker_new (void);
 TimelineMarkerCollection *timeline_marker_collection_new (void);
 
 /**
+ * TimeManager
+ **/
+/* @GeneratePInvoke */
+int time_manager_get_maximum_refresh_rate (TimeManager *instance);
+
+/* @GeneratePInvoke */
+void time_manager_set_maximum_refresh_rate (TimeManager *instance, int hz);
+
+/**
  * Transform
  **/
 /* @GeneratePInvoke */
