@@ -18,6 +18,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Data
 {
 
+	public class OpacityTest
+	{
+		public float Opacity {
+			get; set;
+		}
+	}
 	public class Data
 	{
 		public Brush Brush
@@ -186,6 +192,17 @@ namespace MoonTest.System.Windows.Data
 			Assert.AreEqual (DependencyProperty.UnsetValue, rectangle.ReadLocalValue (Rectangle.OpacityProperty), "#8");
 		}
 
+		[TestMethod]
+		[MoonlightBug]
+		public void BindFloatToDouble ()
+		{
+			Binding binding = new Binding ("Opacity");
+			binding.Source = new OpacityTest { Opacity = 0.5f };
+			Rectangle r = new Rectangle ();
+			r.SetBinding (Rectangle.OpacityProperty, binding);
+			double d = r.Opacity;
+		}
+		
 		[TestMethod]
 		public void BindRectangle ()
 		{
