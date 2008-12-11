@@ -40,33 +40,33 @@ namespace System.Windows.Interop {
 		//FIXME: this should enable the fps counter in the browser status bar
 		public bool EnableFrameRateCounter
 		{
-			[SecuritySafeCritical ()]
+			[SecuritySafeCritical]
 			get { return false; }
-			[SecuritySafeCritical ()]
+			[SecuritySafeCritical]
 			set {}
 		}
 
 		//FIXME
 		public bool EnableHTMLAccess {
-			[SecuritySafeCritical ()]
+			[SecuritySafeCritical]
 			get { return false ;}
 		}
 
 		//FIXME
 		public bool EnableRedrawRegions {
-			[SecuritySafeCritical ()]
+			[SecuritySafeCritical]
 			get { return false; }
-			[SecuritySafeCritical ()]
+			[SecuritySafeCritical]
 			set {}
 		}
 		
 		//FIXME
 		public int MaxFrameRate {
-			[SecuritySafeCritical ()]
+			[SecuritySafeCritical]
 			get {
 				return NativeMethods.time_manager_get_maximum_refresh_rate (NativeMethods.surface_get_time_manager (Application.s_surface));
 			}
-			[SecuritySafeCritical ()]
+			[SecuritySafeCritical]
 			set {
 				NativeMethods.time_manager_set_maximum_refresh_rate (NativeMethods.surface_get_time_manager (Application.s_surface), value);
 			}
@@ -74,7 +74,7 @@ namespace System.Windows.Interop {
 
 		//FIXME
 		public bool Windowless {
-			[SecuritySafeCritical ()]
+			[SecuritySafeCritical]
 			get { return false; }
 		}
 	}
