@@ -28,6 +28,7 @@
 using System;
 using System.Text;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Runtime.InteropServices;
@@ -59,6 +60,22 @@ namespace Mono {
 		internal static UnmanagedEventHandler mouse_leave = new UnmanagedEventHandler (mouse_leave_callback);
 		internal static UnmanagedEventHandler size_changed = new UnmanagedEventHandler (size_changed_callback);
 		internal static UnmanagedEventHandler surface_resized = new UnmanagedEventHandler (surface_resized_callback);
+		internal static UnmanagedEventHandler template_applied = new UnmanagedEventHandler (template_applied_callback);
+
+		static void template_applied_callback (IntPtr target, IntPtr calldata, IntPtr closure)
+		{
+			try {
+				Control c = (Control) Helper.GCHandleFromIntPtr (closure).Target;
+				c.OnApplyTemplate ();
+			}
+			catch (Exception ex) {
+				if (IsPlugin ())
+					ReportException (ex);
+				else
+					throw;
+			}
+		}
+
 
 		static void binding_validation_error_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
