@@ -102,6 +102,24 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[MoonlightBug]
+		public void NullLocalValue ()
+		{
+			Brush blue = new SolidColorBrush(Colors.Blue);
+			Brush red = new SolidColorBrush(Colors.Red);
+			Style style = new Style(typeof(Canvas));
+			style.Setters.Add(new Setter(Canvas.BackgroundProperty, red));
+			Canvas c = new Canvas();
+			c.Background = blue;
+			c.Style = style;
+			Assert.AreEqual(blue, c.Background, "#1");
+			c.Background = null;
+			Assert.AreEqual(null, c.Background, "#2");
+			c.ClearValue(Canvas.BackgroundProperty);
+			Assert.AreEqual(red, c.Background, "#3");
+		}
+		
+		[TestMethod]
+		[MoonlightBug]
 		public void MismatchTargetType ()
 		{
 			Style s = (Style)XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""CheckBox""><Setter Property=""Width"" Value=""10""/></Style>");
