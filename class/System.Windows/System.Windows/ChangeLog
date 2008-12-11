@@ -1,3 +1,8 @@
+2008-12-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* FrameworkElement.cs: Add missing exception checks in FindName and 
+	SetBindings (crasher). Remove unneeded NIE in OnApplyTemplate.
+
 2008-12-10  Alan McGovern  <amcgovern@novell.com>
 
 	* DependencyObject.cs:

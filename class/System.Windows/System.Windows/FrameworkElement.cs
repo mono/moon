@@ -48,11 +48,18 @@ namespace System.Windows {
 
 		public object FindName (string name)
 		{
+			if (name == null)
+				throw new ArgumentNullException ("name");
 			return DepObjectFindName (name);
 		}
 
 		public BindingExpressionBase SetBinding (DependencyProperty dp, Binding binding)
 		{
+			if (dp == null)
+				throw new ArgumentNullException ("dp");
+			if (binding == null)
+				throw new ArgumentNullException ("binding");
+
 			BindingExpression e = new BindingExpression {
 				Binding = binding,
 				Target = this,
@@ -221,7 +228,8 @@ namespace System.Windows {
 		[SecuritySafeCriticalAttribute ()]
 		public virtual void OnApplyTemplate ()
 		{
-			throw new NotImplementedException ();
+			// according to doc this is not fully implemented since SL templates applies
+			// to Control/ContentPresenter and is defined here for WPF compatibility
 		}
 	}
 }
