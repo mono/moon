@@ -35,8 +35,10 @@ using System.Xml.XPath;
 using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.Collections;
+using System.Collections.Generic;
 
 using Microsoft.CSharp;
+using NDesk.Options;
 
 namespace Moonlight {
 
@@ -60,41 +62,27 @@ namespace Moonlight {
 				Environment.Exit (0);
 			}
 
-			int ind;
-			for (ind = 0; ind < args.Length; ind++) {
-				if (args [ind].StartsWith ("-lang:")) {
-					int sub = "-lang:".Length;
-					string lang = args [ind].Substring (sub, args [ind].Length - sub);
-					switch (lang) {
-					case "CS":
-						provider = new CSharpCodeProvider ();
-						break;
-					case "VB":
-						provider = new Microsoft.VisualBasic.VBCodeProvider ();
-						break;
-					default:
-						Console.WriteLine ("unknown language specified.");
-						break;
-					}
-				} else if (args [ind].StartsWith ("-root:")) {
-					int sub = "-root:".Length;
-					root_folder = Path.GetFullPath (args [ind].Substring (sub, args [ind].Length - sub));
-				} else if (args [ind].StartsWith ("-sl2app:")) {
-					int sub = "-sl2app:".Length;
-					app_name = args [ind].Substring (sub, args [ind].Length - sub);
-					sl2 = true;
-				} else if (args [ind] == "-help" || args [ind] == "-?") {
-					Console.WriteLine (help_string);
-					return;
-				} else
-					break;
+			bool help = false;
+			var p = new OptionSet () {
+				{ "lang:", v => SetLang (v) },
+				{ "sl2app:", v => SetAppName (v) },
+				{ "root:", v => root_folder = Path.GetFullPath (v) },
+				{ "h|?|help", v => help = true }
+			};
+
+			List<string> extra = null;
+			try {
+				extra = p.Parse (args);
+			} catch (OptionException) {
+				Console.WriteLine ("Try `xamlg --help' for more information.");
+				return;
 			}
 
-			for ( ; ind < args.Length; ind++) {
-				string f = args [ind];
+			foreach (string file in extra) {
+				string f = file;
 				string n;
 
-				int sub = args [ind].IndexOf (",");
+				int sub = file.IndexOf (",");
 				if (sub > 0) {
 					n = f.Substring (sub + 1);
 					f = f.Substring (0, sub);
@@ -104,6 +92,27 @@ namespace Moonlight {
 
 				GenerateFile (f, n);
 			}
+		}
+
+		private static void SetLang (string lang)
+		{
+			switch (lang) {
+			case "CS":
+				provider = new CSharpCodeProvider ();
+				break;
+			case "VB":
+				provider = new Microsoft.VisualBasic.VBCodeProvider ();
+				break;
+			default:
+				Console.WriteLine ("unknown language specified.");
+				break;
+			}
+		}
+
+		private static void SetAppName (string name)
+		{
+			 app_name = name;
+			 sl2 = true;
 		}
 
 		public static void GenerateFile (string xaml_file, string out_file)
@@ -179,6 +188,7 @@ namespace Moonlight {
 
 				string component_path = String.Format ("/{0};component/{1}", app_name, Path.GetFullPath (xaml_file).Substring (root_folder.Length + 1));
 				//string component_path = String.Format ("/{0};component/{1}", app_name, Path.GetFileName (xaml_file));
+
 				CodeMethodInvokeExpression load_component = new CodeMethodInvokeExpression (
 					new CodeTypeReferenceExpression ("System.Windows.Application"), "LoadComponent",
 					new CodeExpression [] { new CodeThisReferenceExpression (),

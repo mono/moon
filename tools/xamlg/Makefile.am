@@ -12,8 +12,9 @@ CLEANFILES = 		\
 	xamlg.exe	\
 	xamlg.exe.mdb
 
-xamlg_exe_CS = 		\
-	$(srcdir)/xamlg.cs
+xamlg_exe_CS = 			\
+	$(srcdir)/xamlg.cs	\
+	$(srcdir)/../Options.cs
 
 xamlg.exe: $(xamlg_exe_CS) 
 	gmcs -debug -out:$@ $(xamlg_exe_CS) -r:System -r:System.Xml

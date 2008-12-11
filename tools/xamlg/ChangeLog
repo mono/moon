@@ -1,3 +1,8 @@
+2008-12-11  Jackson Harper  <jackson@ximian.com>
+
+	* xamlg.cs:
+	* Makefile.am: Update to use Options.cs
+
 2008-12-10  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* xamlg.cs: parse the -root: argument, insert the relative path
