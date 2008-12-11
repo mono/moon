@@ -39,7 +39,6 @@ using Mono;
 namespace System.Windows {
 	public abstract partial class UIElement : DependencyObject {
 
-		[SecuritySafeCritical]
 		public bool CaptureMouse ()
 		{
 			return NativeMethods.uielement_capture_mouse (native);
@@ -52,6 +51,9 @@ namespace System.Windows {
 
 		public void Arrange (Rect finalRect)
 		{
+			if (finalRect.IsEmpty)
+				throw new InvalidOperationException ("Empty Rect");
+
 			UnmanagedRect unmanagedFinalRect = new UnmanagedRect();
 			unmanagedFinalRect.left = finalRect.X;
 			unmanagedFinalRect.top = finalRect.Y;
@@ -87,27 +89,20 @@ namespace System.Windows {
 
 		public GeneralTransform TransformToVisual (UIElement visual)
 		{
+			if (visual == null)
+				throw new ArgumentException ("visual");
+
 			IntPtr t = NativeMethods.uielement_get_transform_to_uielement (native, visual.native);
 
 			return (GeneralTransform)DependencyObject.Lookup (Kind.GENERALTRANSFORM, t);
 		}
 
-
-		[SecuritySafeCritical]
-		public IEnumerable<UIElement> HitTest (Point point)
-		{
-			throw new NotImplementedException ();
-		}
-
-		[SecuritySafeCritical]
-		public IEnumerable<UIElement> HitTest (Rect rect)
-		{
-			throw new NotImplementedException ();
-		}
-
 		protected virtual AutomationPeer OnCreateAutomationPeer ()
 		{
-			throw new NotImplementedException ();
+			// there's no automation object associated with UIElement so null is returned
+			// it could have been abtract but that that would have forced everyone (without 
+			// automation support) to override this default
+			return null;
 		}
 
 		public Size DesiredSize {

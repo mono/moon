@@ -1,3 +1,11 @@
+2008-12-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* DependencyProperty.g.cs: Regenerated (so we expose the setter
+	on the Name property).
+	* UIElement.cs: Add missing validations in methods. Remove extra 
+	API (not in SL2 final). Return null in OnCreateAutomationPeer (like
+	SL does). Remove extra [SecuritySafeCritical] on MouseCapture.
+
 2008-12-11  Chris Toshok  <toshok@ximian.com>
 
 	* DependencyObject.cs: finally factor out this duplicated code

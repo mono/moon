@@ -165,7 +165,7 @@ namespace System.Windows {
 
 		public string Name {
 			get { return (string) GetValue (NameProperty); }
-			internal set { SetValue (NameProperty, value); }
+			set { SetValue (NameProperty, value); }
 		}
 
 		public ResourceDictionary Resources {
