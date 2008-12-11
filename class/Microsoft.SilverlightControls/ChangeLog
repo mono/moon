@@ -1,3 +1,15 @@
+2008-12-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Controls/Extended/Src/Slider/Slider.cs: Dont set properties 
+	to their default values. Remove delegates since On* methods is now
+	prefered. Match template attributes without breaking current (old)
+	model.
+	* Controls/Src/Thumb/Thumb.cs: Remove delegates since On* methods
+	is now prefered. Add comments about extra calls we have on focus 
+	events.
+	* Controls/Src/RepeatButton/RepeatButton.cs: #if out an MS 
+	workaround that requires API not available in SL2 final.
+
 2008-12-09  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* Controls/Extended/Src/Slider/Slider.cs: Comment usage of Handled

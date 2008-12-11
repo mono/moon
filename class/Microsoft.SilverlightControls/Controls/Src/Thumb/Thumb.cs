@@ -106,10 +106,12 @@ namespace System.Windows.Controls.Primitives
 
 	protected override void OnGotFocus (RoutedEventArgs e)
 	{
+		// On SL2 subscribing to the Thumb.GotFocus event does call our delegate
 	}
 
 	protected override void OnLostFocus (RoutedEventArgs e)
 	{
+		// On SL2 subscribing to the Thumb.LostFocus event does call our delegate
 	}
 
         #endregion IsFocused 
@@ -138,13 +140,13 @@ namespace System.Windows.Controls.Primitives
         public Thumb()
         { 
             IsEnabled = true;
-            this.GotFocus += delegate(object sender, RoutedEventArgs e) { IsFocused = true; OnGotFocus (e); };
-            this.LostFocus += delegate(object sender, RoutedEventArgs e) { IsFocused = false; OnLostFocus (e); }; 
+/*
             this.MouseEnter += delegate(object sender, MouseEventArgs e) { OnMouseEnter(e); };
             this.MouseLeave += delegate(object sender, MouseEventArgs e) { OnMouseLeave(e); }; 
             this.MouseLeftButtonDown += delegate(object sender, MouseButtonEventArgs e) { OnMouseLeftButtonDown(e); };
             this.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e) { OnMouseLeftButtonUp(e); };
             this.MouseMove += delegate(object sender, MouseEventArgs e) { OnMouseMove(e); }; 
+*/
         } 
 
         /// <summary> 

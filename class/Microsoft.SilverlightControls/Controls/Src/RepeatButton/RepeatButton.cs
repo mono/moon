@@ -153,6 +153,8 @@ namespace System.Windows.Controls.Primitives
                 _timer.Interval = TimeSpan.FromMilliseconds(interval); 
             } 
 
+// spouliot: I guess workaround is not needed anymore since SL2 final does not provide the HitTest method anymore
+#if false
             if (IsPressed) 
             {
                 // this is a workaround to check the HitTest to see
@@ -165,6 +167,7 @@ namespace System.Windows.Controls.Primitives
                         OnClick(); 
                 }
             }
+#endif
         } 
 
         #endregion Timer

@@ -19,19 +19,19 @@ namespace System.Windows.Controls
     /// Slider is used to enable to user to gradually modify a value (range selection). 
     /// Slider is an easy and natural interface for users, because it provides good visual feedback.
     /// </summary> 
-    [TemplatePart(Name = Slider.ElementRootName, Type = typeof(FrameworkElement))]
-    [TemplatePart(Name = Slider.ElementHorizontalTemplateName, Type = typeof(FrameworkElement))]
-    [TemplatePart(Name = Slider.ElementHorizontalLargeIncreaseName, Type = typeof(RepeatButton))] 
-    [TemplatePart(Name = Slider.ElementHorizontalLargeDecreaseName, Type = typeof(RepeatButton))]
-    [TemplatePart(Name = Slider.ElementHorizontalThumbName, Type = typeof(Thumb))]
-    [TemplatePart(Name = Slider.ElementVerticalTemplateName, Type = typeof(FrameworkElement))] 
-    [TemplatePart(Name = Slider.ElementVerticalLargeIncreaseName, Type = typeof(RepeatButton))] 
-    [TemplatePart(Name = Slider.ElementVerticalLargeDecreaseName, Type = typeof(RepeatButton))]
-    [TemplatePart(Name = Slider.ElementVerticalThumbName, Type = typeof(Thumb))] 
-    [TemplatePart(Name = Slider.ElementFocusVisualName, Type = typeof(FrameworkElement))]
-    [TemplatePart(Name = Slider.StateNormalName, Type = typeof(Storyboard))]
-    [TemplatePart(Name = Slider.StateMouseOverName, Type = typeof(Storyboard))] 
-    [TemplatePart(Name = Slider.StateDisabledName, Type = typeof(Storyboard))]
+    [TemplatePart (Name = "HorizontalTemplate", Type = typeof(FrameworkElement))]
+    [TemplatePart (Name = "HorizontalTrackLargeChangeIncreaseRepeatButton", Type = typeof(RepeatButton))] 
+    [TemplatePart (Name = "HorizontalTrackLargeChangeDecreaseRepeatButton", Type = typeof(RepeatButton))]
+    [TemplatePart (Name = "HorizontalThumb", Type = typeof(Thumb))]
+    [TemplatePart (Name = "VerticalTemplate", Type = typeof(FrameworkElement))] 
+    [TemplatePart (Name = "VerticalTrackLargeChangeIncreaseRepeatButton", Type = typeof(RepeatButton))] 
+    [TemplatePart (Name = "VerticalTrackLargeChangeDecreaseRepeatButton", Type = typeof(RepeatButton))]
+    [TemplatePart (Name = "ElementVerticalThumb", Type = typeof(Thumb))] 
+    [TemplateVisualState (Name = "Normal", GroupName = "CommonStates")]
+    [TemplateVisualState (Name = "Disabled", GroupName = "CommonStates")]
+    [TemplateVisualState (Name = "MouseOver", GroupName = "CommonStates")]
+    [TemplateVisualState (Name = "Focused", GroupName = "FocusStates")]
+    [TemplateVisualState (Name = "Unfocused", GroupName = "FocusStates")]
     public class Slider : RangeBase
     { 
         #region Constructor 
@@ -40,9 +40,10 @@ namespace System.Windows.Controls
         /// </summary>
         public Slider()
         { 
+            Orientation = Orientation.Horizontal;
+#if false
             IsTabStop = true;
             IsEnabled = true; 
-            Orientation = Orientation.Horizontal;
             GotFocus += delegate(object sender, RoutedEventArgs e) { IsFocused = true; OnGotFocus (e); };
             LostFocus += delegate(object sender, RoutedEventArgs e) { IsFocused = false; OnLostFocus (e); }; 
             KeyDown += delegate(object sender, KeyEventArgs e){ OnKeyDown(e); };
@@ -50,6 +51,7 @@ namespace System.Windows.Controls
             MouseLeave += delegate(object sender, MouseEventArgs e) { OnMouseLeave(e); }; 
             MouseLeftButtonDown += delegate(object sender, MouseButtonEventArgs e) { OnMouseLeftButtonDown(e); }; 
             MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e) { OnMouseLeftButtonUp(e); };
+#endif
             SizeChanged += delegate { UpdateTrackLayout(); };
         }
 
