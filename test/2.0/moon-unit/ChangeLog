@@ -1,5 +1,11 @@
 2008-12-11  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/TextBoxTest.cs:
+	* System.Windows.Controls/PasswordBoxTest.cs: Fix several issues with
+	default values for TextBox and PasswordBox
+
+2008-12-11  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/StyleTest.cs: 'null' should be an acceptable value
 
 2008-12-11  Alan McGovern  <amcgovern@novell.com>

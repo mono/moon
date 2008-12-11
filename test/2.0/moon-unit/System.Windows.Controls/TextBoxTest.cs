@@ -53,7 +53,6 @@ namespace Mono.Moonlight.UnitTesting
         }
 
         [TestMethod]
-		[MoonlightBug]
         public void Defaults()
         {
             Assert.AreEqual(false, box.AcceptsReturn, "#1");
@@ -73,7 +72,7 @@ namespace Mono.Moonlight.UnitTesting
         }
 
         [TestMethod]
-		[MoonlightBug]
+        [MoonlightBug]
         public void InvalidValues()
         {
             Assert.Throws<ArgumentOutOfRangeException>(delegate {

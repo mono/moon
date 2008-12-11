@@ -54,7 +54,7 @@ namespace Mono.Moonlight.UnitTesting
         }
 
         [TestMethod]
-		[MoonlightBug]
+        [MoonlightBug]
         public void Defaults()
         {
             Assert.AreEqual(null, box.FontSource, "#1");
@@ -66,18 +66,18 @@ namespace Mono.Moonlight.UnitTesting
         }
 
         [TestMethod]
-		[MoonlightBug]
+        [MoonlightBug]
         public void SetInvalidValues()
         {
             Assert.Throws<ArgumentNullException>(delegate {
                 box.Password = null;
-            });
+            }, "#1");
             Assert.Throws<ArgumentOutOfRangeException>(delegate {
                 box.MaxLength = -1;
-            });
+            }, "#2");
             Assert.Throws<ArgumentException>(delegate {
                 box.SetValue(PasswordBox.MaxLengthProperty, -1);
-            });
+            }, "#3");
             box.MaxLength = Int32.MaxValue;
 
             Assert.Throws<XamlParseException>(delegate {
@@ -87,7 +87,7 @@ namespace Mono.Moonlight.UnitTesting
 
 	<PasswordBox MaxLength=""-1"" />
 </Canvas>");
-            });
+            }, "#4");
         }
     }
 }

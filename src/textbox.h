@@ -117,17 +117,17 @@ class TextBox : public Control {
 	static DependencyProperty *IsReadOnlyProperty;
 	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors */
 	static DependencyProperty *MaxLengthProperty;
-	/* @PropertyType=string,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
+	/* @PropertyType=string,DefaultValue=\"\",Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
 	static DependencyProperty *SelectedTextProperty;
-	/* @PropertyType=Brush,DefaultValue=0,Version=2.0,GenerateAccessors */
+	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
 	static DependencyProperty *SelectionBackgroundProperty;
-	/* @PropertyType=Brush,DefaultValue=0,Version=2.0,GenerateAccessors */
+	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
 	static DependencyProperty *SelectionForegroundProperty;
 	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
 	static DependencyProperty *SelectionLengthProperty;
 	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
 	static DependencyProperty *SelectionStartProperty;
-	/* @PropertyType=string,Version=2.0,GenerateAccessors */
+	/* @PropertyType=string,DefaultValue=\"\",Version=2.0,GenerateAccessors */
 	static DependencyProperty *TextProperty;
 	/* @PropertyType=TextAlignment,DefaultValue=TextAlignmentLeft,Version=2.0,GenerateAccessors */
 	static DependencyProperty *TextAlignmentProperty;
@@ -212,9 +212,9 @@ class PasswordBox : public TextBox {
  public:
 	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors */
 	static DependencyProperty *MaxLengthProperty;
-	/* @PropertyType=string,ManagedFieldAccess=Internal,Version=2.0,GenerateAccessors */
+	/* @PropertyType=string,DefaultValue=\"\",ManagedFieldAccess=Internal,Version=2.0,GenerateAccessors */
 	static DependencyProperty *PasswordProperty;
-	/* @PropertyType=char,Version=2.0,GenerateAccessors */
+	/* @PropertyType=char,DefaultValue=9679,Version=2.0,GenerateAccessors */
 	static DependencyProperty *PasswordCharProperty;
 	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
 	static DependencyProperty *SelectionBackgroundProperty;
@@ -245,6 +245,9 @@ class PasswordBox : public TextBox {
 	
 	Brush *GetSelectionForeground ();
 	void SetSelectionForeground (Brush *brush);
+
+ protected:
+	virtual bool IsValueValid (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error);
 };
 
 #endif /* __TEXTBOX_H__ */
