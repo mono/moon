@@ -66,6 +66,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool ApplyTemplate ();
 
+	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject *GetTemplateChild (char *name);
 
 	//

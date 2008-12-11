@@ -349,6 +349,9 @@ bool control_apply_template (Control *instance);
 /* @GeneratePInvoke */
 Control *control_new (void);
 
+/* @GeneratePInvoke */
+DependencyObject *control_get_template_child (Control *instance, char *name);
+
 /**
  * ControlTemplate
  **/
