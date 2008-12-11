@@ -345,7 +345,7 @@ public:
 	virtual void UnregisterAllNamesRootedAt (NameScope *from_ns);
 	virtual void RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error);
 
-	/* @PropertyType=string,GenerateAccessors,ManagedDeclaringType=FrameworkElement,ManagedSetterAccess=Internal */
+	/* @PropertyType=string,GenerateAccessors,ManagedDeclaringType=FrameworkElement */
 	static DependencyProperty *NameProperty;
 
 	static void Shutdown ();

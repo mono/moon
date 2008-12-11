@@ -1,3 +1,7 @@
+2008-12-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* dependencyobject.h: Name setter is public in SL2 final.
+
 2008-12-11  Chris Toshok  <toshok@ximian.com>
 
 	* control.h, control.cpp: hook up TemplateApplied event.
