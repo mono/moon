@@ -16,7 +16,6 @@ CLEANFILES =				\
 	docs/Gtk.Moonlight/Desklet.xml	\
 	docs/Gtk.Moonlight/GtkSilver.xml\
 	docs/Gtk.Moonlight.xml		\
-	docs/index.xml			\
 	docs/ns-Gtk.Moonlight.xml
 
 DISTCLEANFILES=$(CLEANFILES)
