@@ -57,11 +57,7 @@ namespace System.Windows {
 				if (source_set)
 					return source;
 
-				IntPtr v = NativeMethods.routed_event_args_get_source (native);
-				if (v == IntPtr.Zero)
-					return null;
-
-				return DependencyObject.Lookup (NativeMethods.dependency_object_get_object_type (v), v);
+				return DependencyObject.FromIntPtr (NativeMethods.routed_event_args_get_source (native));
 			}
 
 			[SecuritySafeCritical]

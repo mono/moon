@@ -120,6 +120,16 @@ namespace System.Windows {
 			return dop;
 		}
 
+		internal static DependencyObject FromIntPtr (IntPtr ptr)
+		{
+			if (ptr == IntPtr.Zero)
+				return null;
+
+			Kind k = NativeMethods.dependency_object_get_object_type (ptr);
+
+			return DependencyObject.Lookup (k, ptr);
+		}
+
 		//
 		// This version only looks up the object, if it has not been exposed,
 		// we return null

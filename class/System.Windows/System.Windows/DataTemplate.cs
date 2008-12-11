@@ -35,21 +35,7 @@ namespace System.Windows {
 
 		public DependencyObject LoadContent ()
 		{
-			IntPtr top = NativeMethods.data_template_load_content (native);
-
-			if (top == IntPtr.Zero)
-				return null;
-
-			Kind k = NativeMethods.dependency_object_get_object_type (top);
-
-			DependencyObject result = DependencyObject.Lookup (k, top);
-
-			if (result != null) {
-				// Delete our reference, result already has one.
-				NativeMethods.event_object_unref (top);
-			}
-
-			return result;
+			return DependencyObject.FromIntPtr (NativeMethods.data_template_load_content (native));
 		}
 	}
 }

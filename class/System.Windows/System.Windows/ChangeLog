@@ -1,5 +1,14 @@
 2008-12-11  Chris Toshok  <toshok@ximian.com>
 
+	* DependencyObject.cs: finally factor out this duplicated code
+	block (calling both get_object_type and DO.Lookup) and add it
+	here, called FromIntPtr.
+
+	* DataTemplate.cs, RoutedEventArgs.cs, FrameworkElement.cs: use it
+	here.
+	
+2008-12-11  Chris Toshok  <toshok@ximian.com>
+
 	* Setter.cs: no reason to cache the value here.
 
 2008-12-11  Sebastien Pouliot  <sebastien@ximian.com>

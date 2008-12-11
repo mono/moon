@@ -96,24 +96,14 @@ namespace System.Windows {
 
 		public DependencyObject Parent {
 			get {
-				IntPtr parent_handle = NativeMethods.uielement_get_visual_parent (native);
-				if (parent_handle == IntPtr.Zero)
-					return null;
-				
-				Kind k = NativeMethods.dependency_object_get_object_type (parent_handle);
-				return DependencyObject.Lookup (k, parent_handle);
+				return DependencyObject.FromIntPtr (NativeMethods.uielement_get_visual_parent (native));
 			}
 		}
 
 		internal DependencyObject SubtreeObject {
 			[SecuritySafeCritical]
 			get {
-				IntPtr parent_handle = NativeMethods.uielement_get_subtree_object (native);
-				if (parent_handle == IntPtr.Zero)
-					return null;
-				
-				Kind k = NativeMethods.dependency_object_get_object_type (parent_handle);
-				return DependencyObject.Lookup (k, parent_handle);
+				return DependencyObject.FromIntPtr (NativeMethods.uielement_get_subtree_object (native));
 			}
 		}		
 
