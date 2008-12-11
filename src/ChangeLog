@@ -1,5 +1,10 @@
 2008-12-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* audio.cpp: Enqueue: don't enqueue anything if we've reached EOF. Also
+	  remove some stale code.
+
+2008-12-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* mediaplayer.cpp, mediaplayer.h: Added locking to accesses to the
 	  audio field. Added comments/explicit verification in every method
 	  describing which methods must be thread-safe and which aren't.

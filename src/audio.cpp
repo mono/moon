@@ -477,11 +477,12 @@ AudioSource::Write (void *dest, guint32 samples)
 void
 AudioSource::Enqueue ()
 {
-#if 0
-	mplayer->EnqueueFramesAsync (1, 0);
-#else
+	if (GetFlag (AudioEOF))
+		return;
+		
 	MediaClosure *closure;
 	Media *media;
+
 
 	media = mplayer->GetMedia ();
 
@@ -492,7 +493,6 @@ AudioSource::Enqueue ()
 	closure->SetContext (this);
 	
 	media->GetNextFrameAsync (closure, stream, FRAME_DEMUXED | FRAME_DECODED);
-#endif
 }
 
 guint32
