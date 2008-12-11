@@ -68,6 +68,7 @@ const int Clock::CompletedEvent = 1;
 const int Clock::CurrentGlobalSpeedInvalidatedEvent = 2;
 const int Clock::CurrentStateInvalidatedEvent = 3;
 const int Clock::CurrentTimeInvalidatedEvent = 4;
+const int Control::TemplateAppliedEvent = 16;
 const int Downloader::CompletedEvent = 1;
 const int Downloader::DownloadFailedEvent = 2;
 const int Downloader::DownloadProgressChangedEvent = 3;
@@ -90,14 +91,14 @@ const int MultiScaleImage::ImageOpenFailedEvent = 18;
 const int MultiScaleImage::ImageOpenSucceededEvent = 19;
 const int MultiScaleImage::MotionFinishedEvent = 20;
 const int MultiScaleImage::ViewportChangedEvent = 21;
-const int PasswordBox::PasswordChangedEvent = 18;
+const int PasswordBox::PasswordChangedEvent = 19;
 const int Storyboard::CompletedEvent = 1;
 const int Surface::ErrorEvent = 1;
 const int Surface::FullScreenChangeEvent = 2;
 const int Surface::LoadEvent = 3;
 const int Surface::ResizeEvent = 4;
-const int TextBox::SelectionChangedEvent = 16;
-const int TextBox::TextChangedEvent = 17;
+const int TextBox::SelectionChangedEvent = 17;
+const int TextBox::TextChangedEvent = 18;
 const int TimeManager::RenderEvent = 1;
 const int TimeManager::UpdateInputEvent = 2;
 const int TimeSource::TickEvent = 1;
@@ -115,6 +116,7 @@ const int UIElement::MouseMoveEvent = 11;
 const int UIElement::UnloadedEvent = 12;
 
 const char *Clock_Events [] = { "Completed", "CurrentGlobalSpeedInvalidated", "CurrentStateInvalidated", "CurrentTimeInvalidated", NULL };
+const char *Control_Events [] = { "TemplateApplied", NULL };
 const char *Downloader_Events [] = { "Completed", "DownloadFailed", "DownloadProgressChanged", NULL };
 const char *EventObject_Events [] = { "Destroyed", NULL };
 const char *FrameworkElement_Events [] = { "BindingValidationError", "LayoutUpdated", "SizeChanged", NULL };
@@ -159,8 +161,8 @@ Type type_infos [] = {
 	{ Type::COLORKEYFRAME_COLLECTION, Type::KEYFRAME_COLLECTION, false, "ColorKeyFrameCollection", "COLORKEYFRAME_COLLECTION", 0, 1, NULL, (create_inst_func *) color_key_frame_collection_new, NULL, NULL, NULL }, 
 	{ Type::COLUMNDEFINITION, Type::DEPENDENCY_OBJECT, false, "ColumnDefinition", "COLUMNDEFINITION", 0, 1, NULL, (create_inst_func *) column_definition_new, NULL, NULL, NULL }, 
 	{ Type::COLUMNDEFINITION_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "ColumnDefinitionCollection", "COLUMNDEFINITION_COLLECTION", 0, 1, NULL, (create_inst_func *) column_definition_collection_new, NULL, NULL, NULL }, 
-	{ Type::CONTENTCONTROL, Type::CONTROL, false, "ContentControl", "CONTENTCONTROL", 0, 16, NULL, (create_inst_func *) content_control_new, "Content", NULL, NULL }, 
-	{ Type::CONTROL, Type::FRAMEWORKELEMENT, false, "Control", "CONTROL", 0, 16, NULL, (create_inst_func *) control_new, NULL, NULL, NULL }, 
+	{ Type::CONTENTCONTROL, Type::CONTROL, false, "ContentControl", "CONTENTCONTROL", 0, 17, NULL, (create_inst_func *) content_control_new, "Content", NULL, NULL }, 
+	{ Type::CONTROL, Type::FRAMEWORKELEMENT, false, "Control", "CONTROL", 1, 17, Control_Events, (create_inst_func *) control_new, NULL, NULL, NULL }, 
 	{ Type::CONTROLTEMPLATE, Type::FRAMEWORKTEMPLATE, false, "ControlTemplate", "CONTROLTEMPLATE", 0, 1, NULL, (create_inst_func *) control_template_new, NULL, NULL, NULL }, 
 	{ Type::CORNERRADIUS, Type::OBJECT, true, "CornerRadius", "CORNERRADIUS", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::DATATEMPLATE, Type::FRAMEWORKTEMPLATE, false, "DataTemplate", "DATATEMPLATE", 0, 1, NULL, (create_inst_func *) data_template_new, NULL, NULL, NULL }, 
@@ -246,7 +248,7 @@ Type type_infos [] = {
 	{ Type::PANEL, Type::FRAMEWORKELEMENT, false, "Panel", "PANEL", 0, 16, NULL, (create_inst_func *) panel_new, "Children", NULL, NULL }, 
 	{ Type::PARALLELTIMELINE, Type::TIMELINEGROUP, false, "ParallelTimeline", "PARALLELTIMELINE", 0, 1, NULL, (create_inst_func *) parallel_timeline_new, NULL, NULL, NULL }, 
 	{ Type::PARSERERROREVENTARGS, Type::ERROREVENTARGS, false, "ParserErrorEventArgs", "PARSERERROREVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::PASSWORDBOX, Type::TEXTBOX, false, "PasswordBox", "PASSWORDBOX", 1, 19, PasswordBox_Events, (create_inst_func *) password_box_new, NULL, NULL, NULL }, 
+	{ Type::PASSWORDBOX, Type::TEXTBOX, false, "PasswordBox", "PASSWORDBOX", 1, 20, PasswordBox_Events, (create_inst_func *) password_box_new, NULL, NULL, NULL }, 
 	{ Type::PATH, Type::SHAPE, false, "Path", "PATH", 0, 16, NULL, (create_inst_func *) path_new, NULL, NULL, NULL }, 
 	{ Type::PATHFIGURE, Type::DEPENDENCY_OBJECT, false, "PathFigure", "PATHFIGURE", 0, 1, NULL, (create_inst_func *) path_figure_new, "Segments", NULL, NULL }, 
 	{ Type::PATHFIGURE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "PathFigureCollection", "PATHFIGURE_COLLECTION", 0, 1, NULL, (create_inst_func *) path_figure_collection_new, NULL, NULL, NULL }, 
@@ -301,7 +303,7 @@ Type type_infos [] = {
 	{ Type::SURFACE, Type::EVENTOBJECT, false, "Surface", "SURFACE", 4, 5, Surface_Events, NULL, NULL, NULL, NULL }, 
 	{ Type::SYSTEMTIMESOURCE, Type::TIMESOURCE, false, "SystemTimeSource", "SYSTEMTIMESOURCE", 0, 2, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::TEXTBLOCK, Type::FRAMEWORKELEMENT, false, "TextBlock", "TEXTBLOCK", 0, 16, NULL, (create_inst_func *) text_block_new, "Inlines", NULL, NULL }, 
-	{ Type::TEXTBOX, Type::CONTROL, false, "TextBox", "TEXTBOX", 2, 18, TextBox_Events, (create_inst_func *) text_box_new, NULL, NULL, NULL }, 
+	{ Type::TEXTBOX, Type::CONTROL, false, "TextBox", "TEXTBOX", 2, 19, TextBox_Events, (create_inst_func *) text_box_new, NULL, NULL, NULL }, 
 	{ Type::TEXTCHANGEDEVENTARGS, Type::ROUTEDEVENTARGS, false, "TextChangedEventArgs", "TEXTCHANGEDEVENTARGS", 0, 1, NULL, (create_inst_func *) text_changed_event_args_new, NULL, NULL, NULL }, 
 	{ Type::THICKNESS, Type::OBJECT, true, "Thickness", "THICKNESS", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::TILEBRUSH, Type::BRUSH, false, "TileBrush", "TILEBRUSH", 0, 1, NULL, (create_inst_func *) tile_brush_new, NULL, NULL, NULL }, 
@@ -325,7 +327,7 @@ Type type_infos [] = {
 	{ Type::UIELEMENT_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "UIElementCollection", "UIELEMENT_COLLECTION", 0, 1, NULL, (create_inst_func *) uielement_collection_new, NULL, NULL, NULL }, 
 	{ Type::UINT32, Type::OBJECT, false, "guint32", "UINT32", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::UINT64, Type::OBJECT, false, "guint64", "UINT64", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::USERCONTROL, Type::CONTROL, false, "UserControl", "USERCONTROL", 0, 16, NULL, (create_inst_func *) user_control_new, "Content", NULL, NULL }, 
+	{ Type::USERCONTROL, Type::CONTROL, false, "UserControl", "USERCONTROL", 0, 17, NULL, (create_inst_func *) user_control_new, "Content", NULL, NULL }, 
 	{ Type::VIDEOBRUSH, Type::TILEBRUSH, false, "VideoBrush", "VIDEOBRUSH", 0, 1, NULL, (create_inst_func *) video_brush_new, NULL, NULL, NULL }, 
 	{ Type::VISUALBRUSH, Type::TILEBRUSH, false, "VisualBrush", "VISUALBRUSH", 0, 1, NULL, (create_inst_func *) visual_brush_new, NULL, NULL, NULL }, 
 	{ Type::LASTTYPE, Type::INVALID, false, NULL, NULL, 0, 0, NULL, NULL, NULL, NULL, NULL }

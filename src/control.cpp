@@ -178,7 +178,15 @@ Control::ApplyTemplate ()
 
 	ElementAdded (el);
 
+	OnApplyTemplate ();
+
 	return true;
+}
+
+void
+Control::OnApplyTemplate ()
+{
+	Emit (TemplateAppliedEvent);
 }
 
 void

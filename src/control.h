@@ -31,6 +31,7 @@
 //
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
+/* @CallInitialize */
 class Control : public FrameworkElement {
 public:
 	Rect bounds_with_children;
@@ -63,11 +64,17 @@ public:
 	
 	virtual void OnLoaded ();
 
+	virtual void OnApplyTemplate ();
+
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool ApplyTemplate ();
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject *GetTemplateChild (char *name);
+
+
+	/* @SilverlightVersion="2" */
+	const static int TemplateAppliedEvent;
 
 	//
 	// Property Accessors

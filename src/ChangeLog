@@ -1,5 +1,11 @@
 2008-12-11  Chris Toshok  <toshok@ximian.com>
 
+	* control.h, control.cpp: hook up TemplateApplied event.
+
+	* type-generated.cpp: regen.
+
+2008-12-11  Chris Toshok  <toshok@ximian.com>
+
 	* control.h (class Control): generate cbinding/pinvoke for
 	GetTemplateChild.
 
