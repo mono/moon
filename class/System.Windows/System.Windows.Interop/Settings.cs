@@ -60,7 +60,6 @@ namespace System.Windows.Interop {
 			set {}
 		}
 		
-		//FIXME
 		public int MaxFrameRate {
 			[SecuritySafeCritical]
 			get {
