@@ -193,7 +193,6 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void BindFloatToDouble ()
 		{
 			Binding binding = new Binding ("Opacity");

@@ -184,6 +184,13 @@ namespace System.Windows.Data {
 				                                   Binding.ConverterParameter,
 				                                   Binding.ConverterCulture ?? System.Globalization.CultureInfo.CurrentCulture);
 			}
+
+			if (value != null) {
+				if (Property.PropertyType != value.GetType() && Property.PropertyType.IsValueType && value.GetType().IsValueType) {
+					Console.WriteLine ("Converting");
+					value = Convert.ChangeType (value, Property.PropertyType, null);
+				}
+			}
 			return true;
 		}
 		

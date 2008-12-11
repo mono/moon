@@ -1,3 +1,9 @@
+2008-12-11  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingExpressionBase.cs: Ensure the types match
+	when databinding a valuetype property. For example a float should be
+	converted to a Double when databinding.
+
 2008-12-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	* System.Windows.Data/Binding.cs: Updated to use native methods
