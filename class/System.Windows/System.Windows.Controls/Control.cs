@@ -37,6 +37,14 @@ using System.Windows.Markup;
 namespace System.Windows.Controls {
 	public abstract partial class Control : FrameworkElement {
 
+		private void Initialize ()
+		{
+			// hook up the TemplateApplied callback so we
+			// can notify controls when their template has
+			// been instantiated as a visual tree.
+			Events.AddHandler (this, "TemplateApplied", Events.template_applied);
+		}
+
 		private static Type ControlType = typeof (Control);
 		
 		protected object DefaultStyleKey {

@@ -1,5 +1,11 @@
 2008-12-11  Chris Toshok  <toshok@ximian.com>
 
+	* Control.cs: add Initialize method to add a handler for the
+	TemplateApplied unmanaged event.  Call
+	FrameworkElement.OnApplyTemplate from there.
+
+2008-12-11  Chris Toshok  <toshok@ximian.com>
+
 	* Control.cs: implement GetTemplateChild.
 
 2008-12-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
