@@ -1,3 +1,14 @@
+2008-12-11  Andreia Gaita <shana@jitted.com>
+
+	* Dispatcher.cs, DispatcherOperation.cs: Implement Dispatcher. It now
+	  registers delegates to one list of DispatcherOperations and adds a
+	  single tick call for a callback that handles all the operations on the
+	  list. DispatcherOperation is just a wrapper for a delegate and
+	  it's arguments. Dispatcher also includes a synchronous Invoke method
+	  for internal use, so our code can also use the Dispatcher when it needs
+	  to do synchronous calls to the ui thread from ui or non-ui threads without
+	  worrying whether it's on the right thread or not.
+
 2008-12-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* DispatcherTimer.cs: timer_callback: Catch all exceptions. Prevents

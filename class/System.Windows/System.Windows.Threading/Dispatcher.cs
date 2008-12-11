@@ -27,53 +27,83 @@ using System;
 using System.ComponentModel;
 using System.Security;
 using System.Threading;
+using System.Collections.Generic;
 using Mono;
 
 namespace System.Windows.Threading {
 
 	[CLSCompliant (false)]
 	public class Dispatcher {
-		private Action a;
-		private Delegate d;
-		private object[] args;
 		NativeMethods.TickCallHandler callback;
+		Queue<DispatcherOperation> queuedOperations;
+		uint source;
 
 		internal Dispatcher ()
 		{
+			queuedOperations = new Queue<DispatcherOperation>();
+			callback = new NativeMethods.TickCallHandler (dispatcher_callback);
+			source = 0;
 		}
 
 		[EditorBrowsable (EditorBrowsableState.Never)]
 		[SecuritySafeCritical]
 		public bool CheckAccess ()
 		{
-			throw new NotImplementedException ();
+			return NativeMethods.surface_in_main_thread ();
 		}
 
 		public DispatcherOperation BeginInvoke (Action a)
 		{
-			this.a = a;
-			return BeginInvoke ();
+			return BeginInvoke (a, null);
 		}
 
 		public DispatcherOperation BeginInvoke (Delegate d, object[] args)
 		{
-			this.d = d;
-			this.args = args;
-			return BeginInvoke ();
+			DispatcherOperation op = null;
+			lock (queuedOperations) {
+				op = new DispatcherOperation (d, args);
+				queuedOperations.Enqueue (op);
+				if (source == 0)
+					source = NativeMethods.time_manager_add_tick_call (NativeMethods.surface_get_time_manager (Application.s_surface), callback, IntPtr.Zero);
+			}
+
+			return op;
 		}
-		
-		private DispatcherOperation BeginInvoke ()
+
+		void Invoke (Delegate d, object[] args)
 		{
-			callback = new NativeMethods.TickCallHandler (dispatcher_callback);
-			return new DispatcherOperation (NativeMethods.time_manager_add_tick_call (NativeMethods.surface_get_time_manager (Application.s_surface), callback, IntPtr.Zero));
-                }
+			if (CheckAccess ()) {
+				d.DynamicInvoke (args);
+			} else {
+				ManualResetEvent wait = new ManualResetEvent (false);
+				BeginInvoke (delegate {
+					try {
+						d.DynamicInvoke (args);
+					} finally {
+						wait.Set ();
+					}
+				});
+				wait.WaitOne ();
+			}
+		}
+
+		void Dispatch ()
+		{
+			DispatcherOperation[] ops;
+			lock (queuedOperations) {
+				ops = queuedOperations.ToArray ();
+				queuedOperations.Clear ();
+				source = 0;
+			}
+
+			foreach (DispatcherOperation op in ops) {
+				op.Invoke ();
+			}
+		}
 
 		void dispatcher_callback (IntPtr data)
 		{
-			if (a != null)
-				a.Invoke ();
-			else if (d != null)
-				d.DynamicInvoke (args);
+			Dispatch ();
 		}
 
 	}

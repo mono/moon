@@ -30,17 +30,18 @@ namespace System.Windows.Threading {
 
 	[CLSCompliant (false)]
 	public class DispatcherOperation {
-		internal uint source_id;
+		Delegate d;
+		object[] args;
 
-		internal DispatcherOperation ()
+		internal DispatcherOperation (Delegate d, object[] args)
 		{
+			this.d = d;
+			this.args = args;
 		}
 
-		internal DispatcherOperation (uint source_id)
+		internal void Invoke ()
 		{
-			this.source_id = source_id;
+			d.DynamicInvoke (args);
 		}
-
 	}
-
 }
