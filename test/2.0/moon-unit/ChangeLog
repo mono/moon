@@ -1,5 +1,10 @@
 2008-12-11  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/TextBoxTest.cs: Add more tests for
+	TextBox.Text
+
+2008-12-11  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/TextBoxTest.cs:
 	* System.Windows.Controls/PasswordBoxTest.cs: Fix several issues with
 	default values for TextBox and PasswordBox

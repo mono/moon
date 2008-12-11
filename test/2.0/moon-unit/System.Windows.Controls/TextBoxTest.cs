@@ -102,9 +102,16 @@ namespace Mono.Moonlight.UnitTesting
             Assert.Throws<ArgumentNullException>(delegate {
                 box.Text = null;
             }, "#6");
+
+            box.SetValue(TextBox.TextProperty, null);
+            Assert.AreEqual ("", box.Text, "#7");
+
+            box.ClearValue (TextBox.TextProperty);
+            Assert.AreEqual("", box.Text, "#8");
+
             Assert.Throws<Exception>(delegate {
                 box.SetValue(TextBlock.TextProperty, null);
-            }, "#7");
+            }, "#9");
         }
     }
 }
