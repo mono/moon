@@ -215,7 +215,7 @@ namespace System.Windows {
 			return sz;
 		}
 		
-		[SecuritySafeCriticalAttribute ()]
+		[SecuritySafeCritical]
 		public virtual void OnApplyTemplate ()
 		{
 			// according to doc this is not fully implemented since SL templates applies
