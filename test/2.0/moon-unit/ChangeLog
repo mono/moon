@@ -1,3 +1,8 @@
+2008-12-12  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/TextBoxTest.cs: Remove two useless checks and
+	add a xaml parsing test
+
 2008-12-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows/UIElementTest.cs: Add test cases for method 

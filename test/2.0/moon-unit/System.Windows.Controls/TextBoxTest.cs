@@ -37,7 +37,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+using System.Windows.Markup;
 
 namespace Mono.Moonlight.UnitTesting
 {
@@ -77,9 +77,6 @@ namespace Mono.Moonlight.UnitTesting
         {
             Assert.Throws<ArgumentOutOfRangeException>(delegate {
                 box.MaxLength = -1;
-            });
-            Assert.Throws<Exception>(delegate {
-                box.SetValue(PasswordBox.MaxLengthProperty, -1);
             }, "#1");
             box.SelectedText = "BLAH";
             Assert.AreEqual("BLAH", box.Text, "#2");
@@ -88,13 +85,13 @@ namespace Mono.Moonlight.UnitTesting
             }, "#3");
 
             box.SelectionStart = 6;
-            Assert.AreEqual(4, box.SelectionStart);
-            Assert.AreEqual("", box.SelectedText, "#3a");
+            Assert.AreEqual(4, box.SelectionStart, "#3a");
+            Assert.AreEqual("", box.SelectedText, "#3b");
 
             box.SelectionStart = 2;
             box.SelectionLength = 10;
-            Assert.AreEqual(2, box.SelectionLength, "#3b");
-            Assert.AreEqual("AH", box.SelectedText, "#3c");
+            Assert.AreEqual(2, box.SelectionLength, "#3c");
+            Assert.AreEqual("AH", box.SelectedText, "#3d");
 
             Assert.Throws<ArgumentOutOfRangeException>(delegate {
                 box.SelectionStart = -1;
@@ -109,8 +106,13 @@ namespace Mono.Moonlight.UnitTesting
             box.ClearValue (TextBox.TextProperty);
             Assert.AreEqual("", box.Text, "#8");
 
-            Assert.Throws<Exception>(delegate {
-                box.SetValue(TextBlock.TextProperty, null);
+            Assert.Throws<XamlParseException>(delegate {
+                object block = XamlReader.Load(@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+		xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+
+	<TextBox MaxLength=""-1"" />
+</Canvas>");
             }, "#9");
         }
     }
