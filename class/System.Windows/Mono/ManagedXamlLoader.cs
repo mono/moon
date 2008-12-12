@@ -267,7 +267,7 @@ namespace Mono.Xaml
 			return name.IndexOf ('.') > 0;
 		}
 
-		private bool SetAttachedProperty (IntPtr top_level, string xmlns, IntPtr target_ptr, string name, IntPtr value_ptr)
+		private bool TrySetAttachedProperty (IntPtr top_level, string xmlns, IntPtr target_ptr, string type_name, string name, IntPtr value_ptr)
 		{
 			string assembly_name = AssemblyNameFromXmlns (xmlns);
 			string ns = ClrNamespaceFromXmlns (xmlns);
@@ -277,9 +277,6 @@ namespace Mono.Xaml
 				return false;
 			}
 
-			int dot = name.IndexOf ('.');
-			string type = String.Concat (ns, ".", name.Substring (0, dot));
-
 			object target = LookupObject (target_ptr);
 
 			if (target == null) {
@@ -287,17 +284,15 @@ namespace Mono.Xaml
 				return false;
 			}
 
-			name = name.Substring (++dot, name.Length - dot);
-
 			Assembly clientlib;
 			if (LoadAssembly (assembly_name, out clientlib) != AssemblyLoadResult.Success) {
 				Console.Error.WriteLine ("couldn't load assembly:  {0}   namespace:  {1}", assembly_name, ns);
 				return false;
 			}
 				
-			Type attach_type = clientlib.GetType (type, false);
+			Type attach_type = clientlib.GetType (type_name, false);
 			if (attach_type == null) {
-				Console.Error.WriteLine ("attach type is null  {0}", type);
+				Console.Error.WriteLine ("attach type is null  {0}", type_name);
 				return false;
 			}
 
@@ -352,7 +347,7 @@ namespace Mono.Xaml
 			return true;
 		}
 
-		private bool TrySetPropertyReflection (IntPtr top_level, string xmlns, object target, string name, IntPtr value_ptr, out string error)
+		private bool TrySetPropertyReflection (IntPtr top_level, string xmlns, object target, string type_name, string name, IntPtr value_ptr, out string error)
 		{
 			PropertyInfo pi = target.GetType ().GetProperty (name);
 
@@ -368,7 +363,7 @@ namespace Mono.Xaml
 			return true;
 		}
 
-		private bool TrySetEventReflection (IntPtr top_level, string xmlns, object publisher, string name, IntPtr value_ptr, out string error)
+		private bool TrySetEventReflection (IntPtr top_level, string xmlns, object publisher, string type_name, string name, IntPtr value_ptr, out string error)
 		{
 			object subscriber = DependencyObject.Lookup (top_level);
 			EventInfo ie = publisher.GetType ().GetEvent (name);
@@ -407,13 +402,25 @@ namespace Mono.Xaml
 				return false;
 			}
 
-			if (IsAttachedProperty (name))
-				return SetAttachedProperty (top_level, xmlns, target_ptr, name, value_ptr);
+			int dot = name.IndexOf ('.');
+			string type_name = null;
 
-			if (TrySetPropertyReflection (top_level, xmlns, target, name, value_ptr, out error))
+			if (dot >= 0) {
+				type_name = name.Substring (0, dot);
+				if (xmlns != null) {
+					string ns = ClrNamespaceFromXmlns (xmlns);
+					type_name = String.Concat (ns, ".", type_name);
+				}
+				name = name.Substring (++dot, name.Length - dot);
+			}
+
+			if (TrySetPropertyReflection (top_level, xmlns, target, type_name, name, value_ptr, out error))
 				return true;
 
-			if (TrySetEventReflection (top_level, xmlns, target, name, value_ptr, out error))
+			if (TrySetEventReflection (top_level, xmlns, target, type_name, name, value_ptr, out error))
+				return true;
+
+			if (!TrySetAttachedProperty (top_level, xmlns, target_ptr, type_name, name, value_ptr))
 				return true;
 
 			return false;
@@ -467,7 +474,6 @@ namespace Mono.Xaml
 				return value;
 
 			TypeConverter converter = GetConverterFor (t);
-			Console.WriteLine ("converter:  " + converter);
 			if (converter != null && converter.CanConvertFrom (value.GetType ()))
 				return converter.ConvertFrom (value);
 

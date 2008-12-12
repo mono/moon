@@ -1,3 +1,7 @@
+2008-12-12  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: Fix setting non attached properties.
+
 2008-12-11  Chris Toshok  <toshok@ximian.com>
 
 	* Events.cs: add template_applied(_callback).
