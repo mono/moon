@@ -269,6 +269,9 @@ namespace Mono.Xaml
 
 		private bool TrySetAttachedProperty (IntPtr top_level, string xmlns, IntPtr target_ptr, string type_name, string name, IntPtr value_ptr)
 		{
+			if (type_name == null)
+				return false;
+
 			string assembly_name = AssemblyNameFromXmlns (xmlns);
 			string ns = ClrNamespaceFromXmlns (xmlns);
 
@@ -289,7 +292,7 @@ namespace Mono.Xaml
 				Console.Error.WriteLine ("couldn't load assembly:  {0}   namespace:  {1}", assembly_name, ns);
 				return false;
 			}
-				
+
 			Type attach_type = clientlib.GetType (type_name, false);
 			if (attach_type == null) {
 				Console.Error.WriteLine ("attach type is null  {0}", type_name);
@@ -420,7 +423,7 @@ namespace Mono.Xaml
 			if (TrySetEventReflection (top_level, xmlns, target, type_name, name, value_ptr, out error))
 				return true;
 
-			if (!TrySetAttachedProperty (top_level, xmlns, target_ptr, type_name, name, value_ptr))
+			if (TrySetAttachedProperty (top_level, xmlns, target_ptr, type_name, name, value_ptr))
 				return true;
 
 			return false;
@@ -509,6 +512,9 @@ namespace Mono.Xaml
 
 		private static string ClrNamespaceFromXmlns (string xmlns)
 		{
+			if (xmlns == null)
+				return null;
+
 			int start = xmlns.IndexOf ("clr-namespace:") + "clr-namespace:".Length;
 			int end = xmlns.IndexOf (';', start);
 			if (end == -1)
@@ -518,6 +524,9 @@ namespace Mono.Xaml
 
 		private static string AssemblyNameFromXmlns (string xmlns)
 		{
+			if (xmlns == null)
+				return null;
+
 			int start = xmlns.IndexOf ("assembly=");
 			if (start < 0)
 				return null;
