@@ -1,3 +1,7 @@
+2008-12-12  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* GridLength.cs: Fix validation and default value. Complete todo.
+
 2008-12-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* CornerRadius.cs: Add missing validations. Complete GetHashCode and

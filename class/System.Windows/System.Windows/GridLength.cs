@@ -35,28 +35,28 @@ namespace System.Windows {
 		double val;
 		GridUnitType type;
 		
-		static GridLength auto;
+		static GridLength auto = new GridLength ();
 		
-		static GridLength ()
-		{
-			auto = new GridLength (0, GridUnitType.Auto);
-		}
 
-		public GridLength (double pixels)
+		public GridLength (double pixels) :
+			this (pixels, GridUnitType.Pixel)
 		{
-			val = pixels;
-			type = GridUnitType.Pixel;
 		}
 
 		public GridLength (double value, GridUnitType type)
 		{
+			if ((value < 0.0d) || Double.IsNaN (value) || Double.IsInfinity (value))
+				throw new ArgumentException ("Invalid value", "value");
+			if ((type < GridUnitType.Auto) || (type > GridUnitType.Star))
+				throw new ArgumentException ("Invalid value", "type");
+
 			val = value;
 			this.type = type;
 		}
 
 		public double Value {
 			get {
-				return val;
+				return IsAuto ? 1.0d : val;
 			}
 		}
 
@@ -117,16 +117,18 @@ namespace System.Windows {
 			return !(gl1 == gl2);
 		}
 		
-		[MonoTODO ("We need a hash code algorithm based on the values in the struct")]
 		public override int GetHashCode()
 		{
-			return base.GetHashCode ();
+			return val.GetHashCode () ^ type.GetHashCode ();
 		}
 		
-		[MonoTODO ()]
 		public override string ToString ()
 		{
-			return base.ToString ();
+			if (IsAuto)
+				return "Auto";
+
+			string s = val.ToString ();
+			return IsStar ? s + "*" : s;
 		}
 	}
 }
