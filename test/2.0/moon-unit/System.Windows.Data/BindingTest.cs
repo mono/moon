@@ -272,8 +272,8 @@ namespace MoonTest.System.Windows.Data
 			Data data = new Data { Opacity = 0.5 };
 			Rectangle r = new Rectangle();
 			r.SetBinding(Rectangle.OpacityProperty, new Binding { Path = new PropertyPath("Opacity"),
-																  Source = data,
-																  Mode = BindingMode.TwoWay });
+						Source = data,
+						Mode = BindingMode.TwoWay });
 			Assert.AreEqual(0.5, r.Opacity, "#1");
 			Assert.AreEqual(0.5, data.Opacity, "#2");
 			data.Opacity = 0;
@@ -293,9 +293,10 @@ namespace MoonTest.System.Windows.Data
 		{
 			Data data = new Data ();
 			Rectangle rectangle = new Rectangle { Opacity = 0f };
-			Binding binding = new Binding { Path = new PropertyPath("Opacity"), 
-											Mode = BindingMode.OneTime, 
-											Source = data
+			Binding binding = new Binding {
+					Path = new PropertyPath("Opacity"), 
+					Mode = BindingMode.OneTime, 
+					Source = data
 			};
 
 			rectangle.SetBinding (Rectangle.OpacityProperty, binding);
@@ -484,6 +485,26 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 			Assert.AreEqual(((SolidColorBrush)normal.Foreground).Color, brush.Color, "#4");
 
 			Assert.IsNotNull(c.DataContext, "#5");
+		}
+
+		[TestMethod]
+		public void XamlBindingPropertyPathPriority()
+		{
+			Canvas canvas = (Canvas) XamlReader.Load(@"	
+<Canvas	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+Width=""100"" Height=""100"">
+	<Canvas.Resources>
+		<Rectangle x:Name=""rect"" Width=""20"" Height=""30"" RadiusX=""2"" RadiusY=""3""/>
+	</Canvas.Resources>
+	<TextBlock x:Name=""text"" Text=""{Binding Width, Path=Height, Source={StaticResource rect}, Mode=OneTime, Path=RadiusX}""/>
+</Canvas>
+");
+			
+			TextBlock block = (TextBlock) canvas.Children[0];
+			object text = block.ReadLocalValue (TextBlock.TextProperty);
+			Assert.IsTrue (text is BindingExpressionBase);
+			Assert.AreEqual (block.Text, "20");
 		}
 		
 		[TestMethod]
