@@ -40,23 +40,21 @@ namespace System.Windows
 		private double bottom_right;
 		private double bottom_left;
 		
-		public CornerRadius (double uniformRadius)
-			: this (uniformRadius, uniformRadius, uniformRadius, uniformRadius)
+		public CornerRadius (double uniformRadius) : this (uniformRadius, uniformRadius, uniformRadius, uniformRadius)
 		{
 		}
 		
-		public CornerRadius (double topLeft, double topRight, double bottmRight, double bottomLeft)
+		public CornerRadius (double topLeft, double topRight, double bottomRight, double bottomLeft)
 		{
-			top_left = topLeft;
-			top_right = topRight;
-			bottom_right = bottmRight; // Typo??
-			bottom_left = bottomLeft;
+			TopLeft = topLeft;
+			TopRight = topRight;
+			BottomRight = bottomRight;
+			BottomLeft = bottomLeft;
 		}
 		
-		[MonoTODO ()]
 		public override string ToString ()
 		{
-			return base.ToString ();
+			return String.Format ("{0},{1},{2},{3}", top_left, top_right, bottom_right, bottom_left);
 		}
 		
 		public override bool Equals (object obj)
@@ -75,10 +73,10 @@ namespace System.Windows
 			return this == cornerRadius;
 		}
 		
-		[MonoTODO ("We need a hash code algorithm based on the values in the struct")]
 		public override int GetHashCode()
 		{
-			return base.GetHashCode ();
+			return top_left.GetHashCode () ^ top_right.GetHashCode () ^ 
+				bottom_right.GetHashCode () ^ bottom_left.GetHashCode ();
 		}
 		
 		public static bool operator == (CornerRadius cr1, CornerRadius cr2)
@@ -94,24 +92,31 @@ namespace System.Windows
 			return !(cr1 == cr2);
 		}
 		
+		private double CheckValue (double value, string name)
+		{
+			if ((value < 0.0) || Double.IsNaN (value))
+				throw new ArgumentException ("Invalid value", name);
+			return value;
+		}
+
 		public double TopLeft {
 			get { return top_left; }
-			set { top_left = value; }
+			set { top_left = CheckValue (value, "TopLeft"); }
 		}
 		
 		public double TopRight { 
 			get { return top_right; }
-			set { top_right = value; }
+			set { top_right = CheckValue (value, "TopRight"); }
 		}
 			
 		public double BottomRight {
 			get { return bottom_right; }
-			set { bottom_right = value; }
+			set { bottom_right = CheckValue (value, "BottomRight"); }
 		}
 		
 		public double BottomLeft {
 			get { return bottom_left; }
-			set { bottom_left = value; }
+			set { bottom_left = CheckValue (value, "BottomLeft"); }
 		}
 	}
 }

@@ -1,3 +1,8 @@
+2008-12-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* CornerRadius.cs: Add missing validations. Complete GetHashCode and
+	ToString.
+
 2008-12-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* DependencyProperty.g.cs: Regenerated (so we expose the setter
