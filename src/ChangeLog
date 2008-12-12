@@ -1,5 +1,9 @@
 2008-12-12  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Remove some old code.
+
+2008-12-12  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: Still need to call setproperty on non managed
 	attributes, they could be events.
 

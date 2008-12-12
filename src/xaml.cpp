@@ -3520,35 +3520,6 @@ xaml_is_valid_event_name (const char *name)
 		!strcmp (name, "MouseMove"));
 }
 
-/*
-static bool
-dependency_object_hookup_event (XamlParserInfo *p, XamlElementInstance *item, const char *name, const char *value)
-{
-	if (is_valid_event_name (name)) {
-		if (!strncmp (value, "javascript:", strlen ("javascript:"))) {
-			parser_error (p, item->element_name, name, 2024,
-				      "Invalid attribute value %s for property %s.",
-				      value, name);
-			return true;
-		}
-
-		if (!p->loader) {
-			parser_error (p, item->element_name, name, -1,
-				      "No hookup event callback handler installed '%s' event will not be hooked up.", name);
-			return true;
-		}
-
-		if (p->loader)
-		// TODO: Do a set property here to hookup events, lets just think of events as proeprties and make the managed code handle it.
-		// p->loader->HookupEvent (item->item, p->top_element->item, name, value);
-		
-		return false;
-	}
-
-	return true;
-}
-*/
-
 static void
 value_type_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr)
 {
