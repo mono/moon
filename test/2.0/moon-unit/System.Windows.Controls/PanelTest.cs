@@ -281,6 +281,12 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		public void DefaultTest()
+		{
+			Assert.IsNull(new LayoutPoker().Background);
+		}
+
+		[TestMethod]
 		[MoonlightBug]
 		public void InvalidateArrangeTest ()
 		{
