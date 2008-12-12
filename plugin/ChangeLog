@@ -1,3 +1,9 @@
+2008-12-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin.cpp: SetSource: in case we already have a surface, detach
+	  downloaders from it right away, this should fix the random failures
+	  of ResetCore.
+
 2008-12-03  Larry Ewing  <lewing@novell.com>
 
 	* plugin.cpp: clean up source setting so that the property is

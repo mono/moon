@@ -865,6 +865,9 @@ PluginInstance::UpdateSource ()
 		source_idle = 0;
 	}
 
+	if (surface != NULL)
+		surface->DetachDownloaders ();
+
 	if (!source)
 		return;
 

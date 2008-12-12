@@ -208,6 +208,8 @@ public:
 	// objects will be destroyed)
 	void Zombify ();
 	
+	void DetachDownloaders ();
+	
 #if FRONT_TO_BACK_STATS
 	int uielements_rendered_front_to_back;
 	int uielements_rendered_back_to_front;
@@ -266,7 +268,6 @@ private:
 	
 	gpointer downloader_context;
 	List *downloaders;
-	void DetachDownloaders ();
 	static void OnDownloaderDestroyed (EventObject *sender, EventArgs *args, gpointer closure);
 	
 	Color *background_color;
