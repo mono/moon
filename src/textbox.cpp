@@ -525,8 +525,10 @@ TextBox::SelectAll ()
 bool 
 TextBox::IsValueValid (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error)
 {
-	if ((property == TextBox::MaxLengthProperty || property == TextBox::SelectionLengthProperty)) {
-		 if (value && value->AsInt32 () < 0) {
+	if (property == TextBox::MaxLengthProperty ||
+		property == TextBox::SelectionLengthProperty ||
+		property == TextBox::SelectionStartProperty) {
+		if (value && value->AsInt32 () < 0) {
 			MoonError::FillIn (error, MoonError::ARGUMENT_OUT_OF_RANGE, 1001,
 				g_strdup_printf ("Value cannot be negative"));
 			return false;	
