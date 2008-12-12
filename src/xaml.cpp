@@ -207,6 +207,11 @@ class XamlElementInstance : public List::Node {
 		return true;
 	}
 
+	virtual bool SetUnknownAttribute (XamlParserInfo *p, const char* name, const char* value)
+	{
+		return false;
+	}
+
 	virtual Value *GetAsValue ()
 	{
 		if (!value)
@@ -787,6 +792,7 @@ class XamlElementInstanceManaged : public XamlElementInstance {
 		return false;
 	}
 
+	virtual bool SetUnknownAttribute (XamlParserInfo *p, const char* name, const char* value);
 	virtual bool SetAttachedProperty (XamlParserInfo *p, XamlElementInstance *target, XamlElementInstance *value);
 
 	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value);
@@ -3176,6 +3182,19 @@ XamlElementInstanceManaged::SetAttachedProperty (XamlParserInfo *p, XamlElementI
 	return p->loader->SetProperty (p->top_element ? p->top_element->GetManagedPointer () : NULL, ((XamlElementInfoManaged *) info)->xmlns, target->GetManagedPointer (), element_name, value->GetAsValue ());
 }
 
+bool
+XamlElementInstanceManaged::SetUnknownAttribute (XamlParserInfo *p, const char* name, const char* value)
+{
+	if (!p->loader)
+		return false;
+
+	Value v = Value (value);
+	if (!p->loader->SetProperty (p->top_element ? p->top_element->GetManagedPointer () : NULL, NULL, GetManagedPointer (), name, &v)) {
+		return false;
+	}
+	return true;
+}
+
 XamlElementInstance *
 XamlElementInfoImportedManaged::CreateElementInstance (XamlParserInfo *p)
 {
@@ -3681,8 +3700,7 @@ start_parse:
 					dep->SetValue (prop, NULL);
 			}
 		} else {
-			Value v = Value (attr [i + 1]);
-			if (!p->loader || !p->loader->SetProperty (p->top_element ? p->top_element->GetManagedPointer () : NULL, NULL, item->GetManagedPointer (), attr [i], &v)) {
+			if (!item->SetUnknownAttribute (p, attr [i], attr [i + 1])) {
 				if (atchname)
 					g_free (atchname);
 				parser_error (p, item->element_name, attr [i], 2012,
