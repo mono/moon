@@ -1,3 +1,8 @@
+2008-12-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows/GridLengthTest.cs: New. Test cases to check 
+	validations on ctors and properties and ToString output.
+
 2008-12-12  Jeffrey Stedfast  <fejj@novell.com>
 
 	* System.Windows.Data/BindingTest.cs: Test priority of Path
