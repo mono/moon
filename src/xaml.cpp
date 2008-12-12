@@ -207,10 +207,7 @@ class XamlElementInstance : public List::Node {
 		return true;
 	}
 
-	virtual bool SetUnknownAttribute (XamlParserInfo *p, const char* name, const char* value)
-	{
-		return false;
-	}
+	virtual bool SetUnknownAttribute (XamlParserInfo *p, const char* name, const char* value);
 
 	virtual Value *GetAsValue ()
 	{
@@ -2838,6 +2835,18 @@ XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, const char *value
 	return false;
 }
 
+bool
+XamlElementInstance::SetUnknownAttribute (XamlParserInfo *p, const char *name, const char *value)
+{
+	if (!p->loader)
+		return false;
+
+	Value v = Value (value);
+	if (!p->loader->SetProperty (p->top_element ? p->top_element->GetManagedPointer () : NULL, NULL, GetManagedPointer (), name, &v)) {
+		return false;
+	}
+	return true;
+}
 
 static XamlElementInfo *
 create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *name)

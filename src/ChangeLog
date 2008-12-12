@@ -1,5 +1,10 @@
 2008-12-12  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Still need to call setproperty on non managed
+	attributes, they could be events.
+
+2008-12-12  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: A little cleanup so that we only try setting non-dp
 	attributes on managed objects. (previously we would try but fail,
 	so the results are basically the same, just less waste).
