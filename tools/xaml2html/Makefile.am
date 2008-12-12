@@ -13,8 +13,9 @@ CLEANFILES = 		\
 	xaml2html.exe	\
 	xaml2html.exe.mdb
 
-xaml2html_exe_CS = 	\
-	$(srcdir)/xaml2html.cs
+xaml2html_exe_CS = 		\
+	$(srcdir)/xaml2html.cs	\
+	$(srcdir)/../Options.cs
 
 xaml2html_exe_RESOURCES = \
 	$(srcdir)/sl2template.html

@@ -1,3 +1,7 @@
+2008-12-12  Jackson Harper  <jackson@ximian.com>
+
+	* xaml2html.cs: Update to use ndesk.options.
+
 2008-10-16  Jb Evain  <jbevain@novell.com>
 
 	* sl2template.html: update SL2 mime type.

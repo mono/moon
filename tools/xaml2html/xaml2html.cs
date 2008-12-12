@@ -16,6 +16,8 @@ using System.IO;
 using System.Xml;
 using System.Reflection;
 
+using NDesk.Options;
+
 class XamlToHtml {
 
 	static readonly string html_template =  "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">\n" + 
@@ -108,19 +110,17 @@ class XamlToHtml {
 			return 1;
 		}
 
-		List<string> files = new List<string> ();
-		foreach (string arg in args) {
-			switch (arg) {
-			case "--v":
-				verbose++;
-				break;
-			case "--chain":
-				chain = true;
-				break;
-			default:
-				files.Add (arg);
-				break;
-			}
+		var p = new OptionSet () {
+			{ "-v", v => verbose++ },
+			{ "-chain", v => chain = true }
+		};
+
+		List<string> files = null;
+		try {
+			files = p.Parse (args);
+		} catch (OptionException) {
+			Console.WriteLine ("Try `xaml2html --help' for more information.");
+			return 1;
 		}
 
 		for (int i=0; i < files.Count; i++) {
