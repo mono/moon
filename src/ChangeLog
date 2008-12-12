@@ -1,3 +1,9 @@
+2008-12-12  Alan McGovern  <amcgovern@novell.com>
+
+	* textbox.h:
+	* textbox.cpp: Add range checking for MaxLengthProperty and
+	SelectionLengthProperty
+
 2008-12-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* dependencyobject.h: Name setter is public in SL2 final.
