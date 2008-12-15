@@ -488,7 +488,6 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void XamlBindingPropertyPathPriority()
 		{
 			Canvas canvas = (Canvas) XamlReader.Load(@"	
@@ -496,7 +495,7 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 Width=""100"" Height=""100"">
 	<Canvas.Resources>
-		<Rectangle x:Name=""rect"" Width=""20"" Height=""30"" RadiusX=""2"" RadiusY=""3""/>
+		<Rectangle x:Name=""rect"" Width=""20"" Height=""30"" RadiusX=""4"" RadiusY=""5""/>
 	</Canvas.Resources>
 	<TextBlock x:Name=""text"" Text=""{Binding Width, Path=Height, Source={StaticResource rect}, Mode=OneTime, Path=RadiusX}""/>
 </Canvas>
@@ -505,7 +504,7 @@ Width=""100"" Height=""100"">
 			TextBlock block = (TextBlock) canvas.Children[0];
 			object text = block.ReadLocalValue (TextBlock.TextProperty);
 			Assert.IsTrue (text is BindingExpressionBase);
-			Assert.AreEqual (block.Text, "2");
+			Assert.AreEqual (block.Text, "4");
 		}
 		
 		[TestMethod]
