@@ -42,6 +42,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void Defaults()
 		{
 			Grid g = new Grid();
@@ -63,6 +64,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void InvalidValues()
 		{
 			Grid g = new Grid();
