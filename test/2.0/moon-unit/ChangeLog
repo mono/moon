@@ -1,3 +1,8 @@
+2008-12-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows/TemplatePartAttributeTest.cs: New. Unit tests
+	for the attribute (and lack of validation).
+
 2008-12-15  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/GridTest.cs: This should be true by default.
