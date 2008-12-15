@@ -1,3 +1,7 @@
+2008-12-15  Jeffrey Stedfast  <fejj@novell.com>
+
+	* xaml.cpp: Macroize the static tables.
+
 2008-12-15  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: fix typo.

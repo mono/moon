@@ -3753,14 +3753,16 @@ xaml_markup_parse_argument (const char **markup, XamlMarkupParseError *err)
 	return g_strndup (start, inptr - start);
 }
 
+#define MARKUP_EXTENSION(name) { XamlMarkupExtension##name, #name, sizeof (#name) - 1 }
+
 static struct {
 	XamlMarkupExtensionType type;
 	const char *name;
 	size_t n;
 } markup_extensions[] = {
-	{ XamlMarkupExtensionStaticResource,  "StaticResource",  14 },
-	{ XamlMarkupExtensionTemplateBinding, "TemplateBinding", 15 },
-	{ XamlMarkupExtensionBinding,         "Binding",          7 },
+	MARKUP_EXTENSION (StaticResource),
+	MARKUP_EXTENSION (TemplateBinding),
+	MARKUP_EXTENSION (Binding),
 };
 
 static XamlMarkupExtensionType
@@ -3769,8 +3771,7 @@ xaml_markup_extension_type (const char *name, size_t n)
 	guint i;
 	
 	for (i = 0; i < G_N_ELEMENTS (markup_extensions); i++) {
-		if (!strncmp (markup_extensions[i].name, name, markup_extensions[i].n) &&
-		    markup_extensions[i].n == n)
+		if (markup_extensions[i].n == n && !strncmp (markup_extensions[i].name, name, n))
 			return markup_extensions[i].type;
 	}
 	
@@ -3789,19 +3790,21 @@ enum BindingExtensionPropertyType {
 	BindingExtensionPropertyPath,
 };
 
+#define BINDING_EXTENSION(prop) { BindingExtensionProperty##prop, #prop, sizeof (#prop) - 1 }
+
 static struct {
 	BindingExtensionPropertyType type;
 	const char *name;
 	size_t n;
 } binding_extension_properties[] = {
-	{ BindingExtensionPropertyNotifyOnValidationError, "NotifyOnValidationError", 23 },
-	{ BindingExtensionPropertyValidatesOnExceptions,   "ValidatesOnExceptions",   21 },
-	{ BindingExtensionPropertyConverterParameter,      "ConverterParameter",      18 },
-	{ BindingExtensionPropertyConverterCulture,        "ConverterCulture",        16 },
-	{ BindingExtensionPropertyConverter,               "Converter",                9 },
-	{ BindingExtensionPropertySource,                  "Source",                   6 },
-	{ BindingExtensionPropertyMode,                    "Mode",                     4 },
-	{ BindingExtensionPropertyPath,                    "Path",                     4 },
+	BINDING_EXTENSION (NotifyOnValidationError),
+	BINDING_EXTENSION (ValidatesOnExceptions),
+	BINDING_EXTENSION (ConverterParameter),
+	BINDING_EXTENSION (ConverterCulture),
+	BINDING_EXTENSION (Converter),
+	BINDING_EXTENSION (Source),
+	BINDING_EXTENSION (Mode),
+	BINDING_EXTENSION (Path),
 };
 
 typedef struct _BindingExtensionProperty {
@@ -3842,8 +3845,7 @@ binding_extension_property_type (const char *name, size_t n)
 	guint i;
 	
 	for (i = 0; i < G_N_ELEMENTS (binding_extension_properties); i++) {
-		if (!strncmp (binding_extension_properties[i].name, name, n) &&
-		    binding_extension_properties[i].n == n)
+		if (binding_extension_properties[i].n == n && !strncmp (binding_extension_properties[i].name, name, n))
 			return binding_extension_properties[i].type;
 	}
 	
