@@ -31,6 +31,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Mono.Moonlight.UnitTesting;
 
 namespace MoonTest.System.Windows.Controls {
 
@@ -217,7 +218,8 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		public void aaaInvalidValues()
+		[MoonlightBug]
+		public void InvalidValues()
 		{
 			ConcreteControl c = new ConcreteControl();
 			c.FontSize = -1;

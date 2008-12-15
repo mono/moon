@@ -1,3 +1,7 @@
+2008-12-15  Alan McGovern  <amcgovern@novell.com>
+
+	* control.cpp: Default foreground brush is black
+
 2008-12-12  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Remove some old code.

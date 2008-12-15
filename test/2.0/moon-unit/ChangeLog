@@ -1,3 +1,7 @@
+2008-12-15  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ControlTest.cs: Mark tests with MoonlightBug
+
 2008-12-15  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows/TemplatePartAttributeTest.cs: New. Unit tests
