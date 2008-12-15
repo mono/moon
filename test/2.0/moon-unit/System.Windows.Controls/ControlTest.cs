@@ -197,13 +197,13 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsNull (c.BorderBrush, "BorderBrush");
 			Assert.AreEqual (new Thickness (0, 0, 0, 0), c.BorderThickness, "BorderThickness");
 			Assert.IsNotNull (c.FontFamily, "FontFamily");
+			Assert.AreEqual(11, c.FontSize, "FontSize");
 			Assert.AreEqual (FontStretches.Normal, c.FontStretch, "FontStretch");
 			Assert.AreEqual (FontStyles.Normal, c.FontStyle, "FontStyle");
 			Assert.AreEqual (FontWeights.Normal, c.FontWeight, "FontWeight");
-// FIXME: default is null right now
-//			Assert.IsNotNull (c.Foreground, "Foreground");
-//			Assert.IsTrue (c.Foreground is SolidColorBrush, "Foreground/SolidColorBrush");
-//			Assert.AreEqual (Colors.Black, (c.Foreground as SolidColorBrush).Color, "Foreground.Color");
+			Assert.IsNotNull (c.Foreground, "Foreground");
+			Assert.IsTrue (c.Foreground is global::System.Windows.Media.SolidColorBrush, "Foreground/SolidColorBrush");
+			Assert.AreEqual (global::System.Windows.Media.Colors.Black, (c.Foreground as global::System.Windows.Media.SolidColorBrush).Color, "Foreground.Color");
 			Assert.AreEqual (HorizontalAlignment.Center, c.HorizontalContentAlignment, "HorizontalContentAlignment");
 			Assert.IsTrue (c.IsEnabled, "IsEnabled");
 			Assert.AreEqual (tabStop, c.IsTabStop, "IsTabStop");
@@ -214,6 +214,21 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual (VerticalAlignment.Center, c.VerticalContentAlignment, "VerticalContentAlignment");
 
 			FrameworkElementTest.CheckDefaultProperties (c, parent);
+		}
+
+		[TestMethod]
+		public void aaaInvalidValues()
+		{
+			ConcreteControl c = new ConcreteControl();
+			c.FontSize = -1;
+			c.FontSize = 0;
+			c.FontSize = 1000000;
+
+			c.Foreground = null;
+			c.FontFamily = null;
+			Assert.Throws<NullReferenceException>(delegate {
+				object o = c.FontFamily;
+			});
 		}
 
 		[TestMethod]

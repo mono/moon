@@ -151,6 +151,39 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		public void DefaultsTest()
+		{
+			Rectangle r = new Rectangle();
+			Assert.AreEqual(0, Canvas.GetLeft(r), "#1");
+			Assert.AreEqual(0, Canvas.GetTop(r), "#2");
+			Assert.AreEqual(0, Canvas.GetZIndex(r), "#3");
+		}
+
+		[TestMethod]
+		public void InvalidTest()
+		{
+			Assert.Throws<NullReferenceException>(delegate {
+				Canvas.GetLeft(null);
+			}, "#1");
+			Assert.Throws<NullReferenceException>(delegate {
+				Canvas.GetTop(null);
+			}, "#2");
+			Assert.Throws<NullReferenceException>(delegate {
+				Canvas.GetZIndex(null);
+			}, "#3");
+
+			Assert.Throws<NullReferenceException>(delegate {
+				Canvas.SetLeft(null, -100);
+			}, "#4");
+			Assert.Throws<NullReferenceException>(delegate {
+				Canvas.SetTop(null, -100);
+			}, "#5");
+			Assert.Throws<NullReferenceException>(delegate {
+				Canvas.SetZIndex(null, -100);
+			}, "#6");
+		}
+
+		[TestMethod]
 		public void WidthHeightMeasureTest1 ()
 		{
 			Canvas c = new Canvas ();

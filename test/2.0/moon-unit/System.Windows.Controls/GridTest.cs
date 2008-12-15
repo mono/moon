@@ -42,6 +42,61 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		public void Defaults()
+		{
+			Grid g = new Grid();
+			Assert.AreEqual(0, g.GetValue(Grid.ColumnProperty), "#1");
+			Assert.AreEqual(1, g.GetValue(Grid.ColumnSpanProperty), "#2");
+			Assert.AreEqual(0, g.GetValue(Grid.RowProperty), "#3");
+			Assert.AreEqual(1, g.GetValue(Grid.RowSpanProperty), "#4");
+			Assert.AreEqual(false, g.GetValue(Grid.ShowGridLinesProperty), "#5");
+
+			Rectangle r1 = new Rectangle();
+			Rectangle r2 = new Rectangle();
+			g.Children.Add(r1);
+			g.Children.Add(r2);
+
+			Assert.AreEqual(0, Grid.GetColumn(r1), "#6");
+			Assert.AreEqual(0, Grid.GetColumn(r2), "#7");
+			Assert.AreEqual(0, Grid.GetRow(r1), "#8");
+			Assert.AreEqual(0, Grid.GetRow(r2), "#9");
+		}
+
+		[TestMethod]
+		public void InvalidValues()
+		{
+			Grid g = new Grid();
+			Rectangle r1 = new Rectangle();
+			Rectangle r2 = new Rectangle();
+
+			g.Children.Add(r1);
+			g.Children.Add(r2);
+
+			Assert.Throws<ArgumentException>(delegate {
+				r1.SetValue(Grid.ColumnProperty, -1);
+			});
+			Assert.Throws<ArgumentException>(delegate {
+				Grid.SetColumn(r1, -1);
+			});
+			Assert.Throws<ArgumentException>(delegate {
+				Grid.SetColumnSpan(r1, 0);
+			});
+			Assert.Throws<ArgumentException>(delegate {
+				Grid.SetColumnSpan(r1, -1);
+			});
+
+			Assert.Throws<ArgumentException>(delegate {
+				Grid.SetRow(r1, -1);
+			});
+			Assert.Throws<ArgumentException>(delegate {
+				Grid.SetRowSpan(r1, 0);
+			});
+			Assert.Throws<ArgumentException>(delegate {
+				Grid.SetRowSpan(r1, -1);
+			});
+		}
+
+		[TestMethod]
 		public void ChildlessMeasureTest ()
 		{
 			Grid g = new Grid ();
