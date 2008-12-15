@@ -504,7 +504,7 @@ Width=""100"" Height=""100"">
 			TextBlock block = (TextBlock) canvas.Children[0];
 			object text = block.ReadLocalValue (TextBlock.TextProperty);
 			Assert.IsTrue (text is BindingExpressionBase);
-			Assert.AreEqual (block.Text, "20");
+			Assert.AreEqual (block.Text, "2");
 		}
 		
 		[TestMethod]
