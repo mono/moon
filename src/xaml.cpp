@@ -3816,12 +3816,10 @@ typedef struct _BindingExtensionProperty {
 
 struct BindingExtension {
 	BindingExtensionProperty *properties;
-	char *path;
 	
 	BindingExtension ()
 	{
 		properties = NULL;
-		path = NULL;
 	}
 	
 	~BindingExtension ()
@@ -3834,8 +3832,6 @@ struct BindingExtension {
 			delete prop;
 			prop = next;
 		}
-		
-		g_free (path);
 	}
 };
 
@@ -3862,23 +3858,31 @@ xaml_markup_parse_binding (const char **markup, XamlMarkupParseError *err)
 	binding = new BindingExtension ();
 	tail = (BindingExtensionProperty *) &binding->properties;
 	
+	printf ("xaml_markup_parse_binding(): attempting to parse \"%s\"\n", *markup);
+	
 	// markup starts at first char after "{Binding"
 	inptr = *markup;
 	while (*inptr && g_ascii_isspace (*inptr))
 		inptr++;
 	
 	if (*inptr == '}')
-		return binding;
+		goto success;
 	
 	start = inptr;
-	while (*inptr && *inptr != '}' && !g_ascii_isspace (*inptr)) {
+	while (*inptr && *inptr != '}' && *inptr != ',' && !g_ascii_isspace (*inptr)) {
 		if (*inptr == '=')
 			goto property;
 		
 		inptr++;
 	}
 	
-	binding->path = g_strndup (start, inptr - start);
+	prop = new BindingExtensionProperty ();
+	prop->value = g_strndup (start, inptr - start);
+	prop->type = BindingExtensionPropertyPath;
+	prop->next = NULL;
+	
+	tail->next = prop;
+	tail = prop;
 	
 	do {
 		while (g_ascii_isspace (*inptr))
@@ -3946,6 +3950,13 @@ xaml_markup_parse_binding (const char **markup, XamlMarkupParseError *err)
 		tail = prop;
 	} while (*inptr && *inptr != '}');
 	
+ success:
+	
+	if (*inptr == '}')
+		inptr++;
+	
+	*markup = inptr;
+	
 	return binding;
 }
 
@@ -3962,8 +3973,7 @@ create_binding_expression_from_markup (XamlParserInfo *p, XamlElementInstance *i
 	expr = new BindingExpression ();
 	binding = new Binding ();
 	
-	if (markup->path)
-		binding->SetPropertyPath (markup->path);
+	// Note: the last property of the same type specified is the one that wins out.
 	
 	while (prop != NULL) {
 		switch (prop->type) {
@@ -4038,7 +4048,6 @@ create_binding_expression_from_markup (XamlParserInfo *p, XamlElementInstance *i
 				binding->SetBindingMode ((BindingMode) mode);
 			break;
 		case BindingExtensionPropertyPath:
-			// FIXME: what if the path is already set? Which has priority?
 			binding->SetPropertyPath (prop->value);
 			break;
 		default:
@@ -4143,6 +4152,7 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 		}
 		break;
 	case XamlMarkupExtensionBinding:
+		printf ("handle_xaml_markup_extension(): attempting to parse %s=\"%s\"\n", attr_name, attr_value);
 		if (!(binding = xaml_markup_parse_binding (&inptr, &err)) || *inptr != '\0') {
 			parser_error (p, item->element_name, attr_name, 2024,
 				      "Error parsing Binding markup for property %s.",

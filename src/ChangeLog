@@ -1,6 +1,10 @@
 2008-12-15  Jeffrey Stedfast  <fejj@novell.com>
 
 	* xaml.cpp: Macroize the static tables.
+	(create_binding_expression_from_markup): Got rid of
+	BindingExtension::path.
+	(xaml_markup_parse_binding): Update the markup pointer before a
+	successful return.
 
 2008-12-15  Jackson Harper  <jackson@ximian.com>
 
