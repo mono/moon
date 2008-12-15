@@ -3858,8 +3858,6 @@ xaml_markup_parse_binding (const char **markup, XamlMarkupParseError *err)
 	binding = new BindingExtension ();
 	tail = (BindingExtensionProperty *) &binding->properties;
 	
-	printf ("xaml_markup_parse_binding(): attempting to parse \"%s\"\n", *markup);
-	
 	// markup starts at first char after "{Binding"
 	inptr = *markup;
 	while (*inptr && g_ascii_isspace (*inptr))
@@ -4152,7 +4150,6 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 		}
 		break;
 	case XamlMarkupExtensionBinding:
-		printf ("handle_xaml_markup_extension(): attempting to parse %s=\"%s\"\n", attr_name, attr_value);
 		if (!(binding = xaml_markup_parse_binding (&inptr, &err)) || *inptr != '\0') {
 			parser_error (p, item->element_name, attr_name, 2024,
 				      "Error parsing Binding markup for property %s.",
