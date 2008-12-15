@@ -1,3 +1,8 @@
+2008-12-15  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows/ThicknessTest.cs: Add test cases for special Double
+	values wrt validation (none) and ToString (NaN == Auto).
+
 2008-12-15  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/GridTest.cs: The Defaults test now passes.
