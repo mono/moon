@@ -151,5 +151,25 @@ namespace MoonTest.System.Windows {
 			result = fe.MeasureOverride_ (Size.Empty);
 			Assert.AreEqual (new Size (0, 0), result, "Empty");
 		}
+
+		[TestMethod]
+		public void SetName ()
+		{
+			SetName (new ConcreteFrameworkElement ());
+		}
+
+		static public void SetName (FrameworkElement fe)
+		{
+			// a setter exists in SL2 but can only be assigned from XAML
+			// so either (a) something else must happen after that; or
+			// (b) nothing happens, the name is just not considered (for some uses ?)
+			fe.Name = "ouch";
+			// not really
+			Assert.AreEqual ("ouch", fe.Name, "set_Name");
+			// unless it's a set once ?
+			fe.Name = "ouch^2";
+			Assert.AreEqual ("ouch^2", fe.Name, "again");
+			// no, the doc is not (always) right, i.e. other conditions applies
+		}
 	}
 }

@@ -301,5 +301,11 @@ namespace MoonTest.System.Windows.Controls {
 				c.OnMouseLeftButtonUp_ (null);
 			}, "OnMouseLeftButtonUp");
 		}
+
+		[TestMethod]
+		public void SetName ()
+		{
+			FrameworkElementTest.SetName (new ConcreteControl ());
+		}
 	}
 }

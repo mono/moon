@@ -1,3 +1,13 @@
+2008-12-15  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows/FrameworkElementTest.cs: Add test for Name setter
+	* System.Windows.Controls/BorderTest.cs: Test properties from base
+	FrameworkElement
+	* System.Windows.Controls/ControlTest.cs: Add test for Name setter
+	* System.Windows.Controls/MediaElementTest.cs: Split working and 
+	non-working properties and give them unique id. Test properties from 
+	base FrameworkElement.
+
 2008-12-15  Andreia Gaita  <shana@jitted.com>
 
         * System.Windows.Threading/CrossThreadAccessTest.cs: Added tests for

@@ -30,6 +30,8 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual(null, c.Child);
 			Assert.AreEqual(new CornerRadius(0, 0, 0, 0), c.CornerRadius);
 			Assert.AreEqual (new Thickness(0), c.Padding);
+
+			FrameworkElementTest.CheckDefaultProperties (c);
 		}
 
 		[TestMethod]
