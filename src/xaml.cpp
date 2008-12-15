@@ -1246,7 +1246,6 @@ end_element_handler (void *data, const char *el)
                                 template_->SetXamlBuffer(buffer);
 			}
 			p->current_element = p->current_element->parent;
-			printf ("ending the buffer for element: %s, the current cdata string is:  %s\n", el, p->cdata ? p->cdata->str : " -- null -- ");
 		}
 		
 		g_free (name);

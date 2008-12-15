@@ -1,6 +1,7 @@
 2008-12-15  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: fix typo.
+	- remove sneaky debug
 
 2008-12-15  Jackson Harper  <jackson@ximian.com>
 
