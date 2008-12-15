@@ -4070,7 +4070,7 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 	
 	// Find the end of the extension name
 	inptr = start;
-	while (*inptr && *inptr != '}' && g_ascii_isspace (*inptr))
+	while (*inptr && *inptr != '}' && !g_ascii_isspace (*inptr))
 		inptr++;
 	
 	type = xaml_markup_extension_type (start, inptr - start);

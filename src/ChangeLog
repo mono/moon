@@ -1,5 +1,9 @@
 2008-12-15  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: fix typo.
+
+2008-12-15  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: Always check if we are in buffering mode. (Otherwise
 	we'll get cdata content at the end of a template or a namespace
 	handler during a template).
