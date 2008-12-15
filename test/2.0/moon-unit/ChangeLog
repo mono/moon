@@ -1,3 +1,8 @@
+2008-12-15  Andreia Gaita  <shana@jitted.com>
+
+        * System.Windows.Threading/CrossThreadAccessTest.cs: Added tests for
+	creating and accessing objects from non-ui threads
+
 2008-12-15  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows/ThicknessTest.cs: Add test cases for special Double

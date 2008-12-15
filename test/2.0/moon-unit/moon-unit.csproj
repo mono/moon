@@ -105,6 +105,7 @@
     <Compile Include="System.Windows.Shapes\RectangleTest.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="System.Windows.Threading\CrossThreadAccessTest.cs" />
     <Compile Include="System.Windows\ApplicationTest.cs" />
     <Compile Include="System.Windows\DependencyObjectTest.cs" />
     <Compile Include="System.Windows\DependencyPropertyAttachedTest.cs" />

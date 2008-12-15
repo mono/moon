@@ -88,6 +88,7 @@
     <File name="System.Windows.Controls.Primitives/RangeBaseTest.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls.Primitives/RepeatButtonTest.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls.Primitives/ThumbTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Threading/CrossThreadAccessTest.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
