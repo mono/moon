@@ -1,3 +1,8 @@
+2008-12-15  Jackson Harper  <jackson@ximian.com>
+
+	* System.Windows.Data/BindingTest.cs: This test fails now that we
+	are parsing the extensions correctly.
+
 2008-12-15  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* moon-unit.csproj: Add recent test fixtures to the project.
