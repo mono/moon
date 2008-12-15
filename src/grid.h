@@ -155,7 +155,7 @@ class Grid : public Panel {
 	static DependencyProperty *RowDefinitionsProperty;
  	/* @PropertyType=gint32,DefaultValue=1,Attached,GenerateAccessors */
 	static DependencyProperty *RowSpanProperty;
- 	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
+ 	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
 	static DependencyProperty *ShowGridLinesProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */

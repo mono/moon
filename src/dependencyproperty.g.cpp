@@ -173,7 +173,7 @@ dependency_property_g_init (void)
 	Grid::RowDefinitionsProperty = DependencyProperty::Register (Type::GRID, "RowDefinitions", Type::ROWDEFINITION_COLLECTION);
 	Grid::RowProperty = DependencyProperty::RegisterFull (Type::GRID, "Row", new Value (0), Type::INT32, true, false);
 	Grid::RowSpanProperty = DependencyProperty::RegisterFull (Type::GRID, "RowSpan", new Value (1), Type::INT32, true, false);
-	Grid::ShowGridLinesProperty = DependencyProperty::Register (Type::GRID, "ShowGridLines", new Value (false));
+	Grid::ShowGridLinesProperty = DependencyProperty::Register (Type::GRID, "ShowGridLines", new Value (true));
 	ImageBrush::DownloadProgressProperty = DependencyProperty::Register (Type::IMAGEBRUSH, "DownloadProgress", new Value (0.0));
 	ImageBrush::ImageSourceProperty = DependencyProperty::Register (Type::IMAGEBRUSH, "ImageSource", new Value (""));
 	InkPresenter::StrokesProperty = DependencyProperty::Register (Type::INKPRESENTER, "Strokes", Type::STROKE_COLLECTION);

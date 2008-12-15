@@ -1,3 +1,8 @@
+2008-12-15  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ControlTest.cs: Added extra checks for when
+	FontFamily is null.
+
 2008-12-15  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Controls/ControlTest.cs: Comment FontSize check since

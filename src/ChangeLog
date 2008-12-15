@@ -1,5 +1,10 @@
 2008-12-15  Alan McGovern  <amcgovern@novell.com>
 
+	* grid.h:
+	* dependencyproperty.g.cpp: ShowGridLines is true by default.
+
+2008-12-15  Alan McGovern  <amcgovern@novell.com>
+
 	* control.cpp: Default foreground brush is black
 
 2008-12-12  Jackson Harper  <jackson@ximian.com>
