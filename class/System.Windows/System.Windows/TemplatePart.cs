@@ -1,5 +1,5 @@
 //
-// TemplatePart.cs
+// TemplatePartAttribute.cs
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -33,26 +33,21 @@ namespace System.Windows {
 	[AttributeUsageAttribute(AttributeTargets.Class, AllowMultiple = true)]
 	public sealed class TemplatePartAttribute : Attribute {
 
-		public TemplatePartAttribute() {
+		private string name;
+		private Type type;
+
+		public TemplatePartAttribute ()
+		{
 		}
 
 		public string Name { 
-			get {
-				throw new NotImplementedException ();	
-			}
-			set {
-				throw new NotImplementedException ();
-			}
+			get { return name; }
+			set { name = value; }
 		}
-		public Type Type {
-			get {
-				throw new NotImplementedException ();
-			}
-			set {
-				throw new NotImplementedException ();
-			}
-		}
-	
 
+		public Type Type {
+			get { return type; }
+			set { type = value; }
+		}
 	}
 }
