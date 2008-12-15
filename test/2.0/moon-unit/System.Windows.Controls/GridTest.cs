@@ -42,7 +42,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void Defaults()
 		{
 			Grid g = new Grid();
@@ -76,26 +75,26 @@ namespace MoonTest.System.Windows.Controls
 
 			Assert.Throws<ArgumentException>(delegate {
 				r1.SetValue(Grid.ColumnProperty, -1);
-			});
+			}, "#1");
 			Assert.Throws<ArgumentException>(delegate {
 				Grid.SetColumn(r1, -1);
-			});
+			}, "#2");
 			Assert.Throws<ArgumentException>(delegate {
 				Grid.SetColumnSpan(r1, 0);
-			});
+			}, "#3");
 			Assert.Throws<ArgumentException>(delegate {
 				Grid.SetColumnSpan(r1, -1);
-			});
+			}, "#4");
 
 			Assert.Throws<ArgumentException>(delegate {
 				Grid.SetRow(r1, -1);
-			});
+			}, "#5");
 			Assert.Throws<ArgumentException>(delegate {
 				Grid.SetRowSpan(r1, 0);
-			});
+			}, "#6");
 			Assert.Throws<ArgumentException>(delegate {
 				Grid.SetRowSpan(r1, -1);
-			});
+			}, "#7");
 		}
 
 		[TestMethod]

@@ -1,5 +1,9 @@
 2008-12-15  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/GridTest.cs: The Defaults test now passes.
+
+2008-12-15  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ControlTest.cs: Added extra checks for when
 	FontFamily is null.
 
