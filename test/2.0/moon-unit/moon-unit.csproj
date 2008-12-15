@@ -107,6 +107,7 @@
     </Compile>
     <Compile Include="System.Windows.Threading\CrossThreadAccessTest.cs" />
     <Compile Include="System.Windows\ApplicationTest.cs" />
+    <Compile Include="System.Windows\CornerRadiusTest.cs" />
     <Compile Include="System.Windows\DependencyObjectTest.cs" />
     <Compile Include="System.Windows\DependencyPropertyAttachedTest.cs" />
     <Compile Include="System.Windows\DependencyPropertyTest.cs" />
@@ -115,6 +116,7 @@
     <Compile Include="System.Windows\FontStylesTest.cs" />
     <Compile Include="System.Windows\FontWeigthsTest.cs" />
     <Compile Include="System.Windows\FrameworkElementTest.cs" />
+    <Compile Include="System.Windows\GridLengthTest.cs" />
     <Compile Include="System.Windows\PresentationFrameworkCollectionTest.cs" />
     <Compile Include="System.Windows\ResourceDictionaryTest.cs" />
     <Compile Include="System.Windows\RoutedEventArgsTest.cs" />
@@ -122,6 +124,7 @@
     <Compile Include="System.Windows\SetterTest.cs" />
     <Compile Include="System.Windows\SizeTest.cs" />
     <Compile Include="System.Windows\StyleTest.cs" />
+    <Compile Include="System.Windows\TemplatePartAttributeTest.cs" />
     <Compile Include="System.Windows\ThicknessTest.cs" />
     <Compile Include="System.Windows\UIElementTest.cs" />
     <Compile Include="System.Windows\VisualStateManagerTest.cs" />

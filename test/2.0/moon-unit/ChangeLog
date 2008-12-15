@@ -1,3 +1,7 @@
+2008-12-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* moon-unit.csproj: Add recent test fixtures to the project.
+
 2008-12-15  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows/FrameworkElementTest.cs: Add test for Name setter
