@@ -1,5 +1,9 @@
 2008-12-15  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/GridTest.cs: This should be true by default.
+
+2008-12-15  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/CanvasTest.cs:
 	* System.Windows.Controls/ControlTest.cs:
 	* System.Windows.Controls/GridTest.cs: Add tests for
