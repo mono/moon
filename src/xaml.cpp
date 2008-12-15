@@ -1127,6 +1127,9 @@ start_element (void *data, const char *el, const char **attr)
 static void
 flush_char_data (XamlParserInfo *p)
 {
+	if (p->InBufferingMode ())
+		return;
+
 	if (!p->cdata || !p->current_element)
 		return;
 
@@ -1243,7 +1246,9 @@ end_element_handler (void *data, const char *el)
                                 template_->SetXamlBuffer(buffer);
 			}
 			p->current_element = p->current_element->parent;
+			printf ("ending the buffer for element: %s, the current cdata string is:  %s\n", el, p->cdata ? p->cdata->str : " -- null -- ");
 		}
+		
 		g_free (name);
 		return;
 	}
@@ -1279,7 +1284,10 @@ char_data_handler (void *data, const char *in, int inlen)
 	register const char *inptr = in;
 	const char *inend = in + inlen;
 	const char *start;
-	
+
+	if (p->InBufferingMode ())
+		return;
+
 	if (p->error_args)
 		return;
 	
@@ -1327,6 +1335,9 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 {
 	XamlParserInfo *p = (XamlParserInfo *) data;
 
+	if (p->InBufferingMode ())
+		return;
+
 	if (p->error_args)
 		return;
 
@@ -1368,6 +1379,9 @@ start_doctype_handler (void *data,
 		int has_internal_subset)
 {
 	XamlParserInfo *p = (XamlParserInfo *) data;
+
+	if (p->InBufferingMode ())
+		return;
 
 	if (sysid)
 		parser_error (p, NULL, NULL, 5050, "DTD was found but is prohibited");
