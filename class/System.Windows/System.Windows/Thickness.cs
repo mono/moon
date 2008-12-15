@@ -55,7 +55,10 @@ namespace System.Windows
 		
 		public override string ToString ()
 		{
-			return string.Format ("{0},{1},{2},{3}", left, top, right, bottom);
+			return string.Format ("{0},{1},{2},{3}", Double.IsNaN (left) ? "Auto" : left.ToString (),
+				Double.IsNaN (top) ? "Auto" : top.ToString (), 
+				Double.IsNaN (right) ? "Auto" : right.ToString (), 
+				Double.IsNaN (bottom) ? "Auto" : bottom.ToString ()); 
 		}
 
 		public override bool Equals(object obj)
@@ -74,10 +77,9 @@ namespace System.Windows
 			return this == thickness;
 		}
 		
-		[MonoTODO ("We need a hash code algorithm based on the values in the struct")]
 		public override int GetHashCode()
 		{
-			return base.GetHashCode ();
+			return left.GetHashCode () ^ top.GetHashCode () ^ right.GetHashCode () ^ bottom.GetHashCode ();
 		}
 		
 		public static bool operator == (Thickness t1, Thickness t2)

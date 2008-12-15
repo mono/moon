@@ -1,3 +1,7 @@
+2008-12-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Thickness.cs: Fix case for NaN. Complete GetHashCode.
+
 2008-12-15  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* TemplatePart.cs: Complete.
