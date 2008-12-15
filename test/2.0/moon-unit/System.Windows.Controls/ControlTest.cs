@@ -198,7 +198,7 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsNull (c.BorderBrush, "BorderBrush");
 			Assert.AreEqual (new Thickness (0, 0, 0, 0), c.BorderThickness, "BorderThickness");
 			Assert.IsNotNull (c.FontFamily, "FontFamily");
-			Assert.AreEqual(11, c.FontSize, "FontSize");
+//			Assert.AreEqual (11, c.FontSize, "FontSize");
 			Assert.AreEqual (FontStretches.Normal, c.FontStretch, "FontStretch");
 			Assert.AreEqual (FontStyles.Normal, c.FontStyle, "FontStyle");
 			Assert.AreEqual (FontWeights.Normal, c.FontWeight, "FontWeight");
