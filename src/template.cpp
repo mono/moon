@@ -219,12 +219,15 @@ ControlTemplate::DuplicateObject (Control *source, NameScope *template_namescope
 FrameworkElement *
 ControlTemplate::Apply (Control *control, List *bindings)
 {
-	if (!visual_tree)
+	DependencyObject* tree = GetVisualTree ();
+	if (!tree)
 		return NULL;
+
+	tree->ClearValue (NameScope::NameScopeProperty);
 
 	NameScope *template_namescope = new NameScope ();
 
-	DependencyObject *instantiated_tree = DuplicateObject (control, template_namescope, visual_tree, bindings);
+	DependencyObject *instantiated_tree = DuplicateObject (control, template_namescope, tree, bindings);
 
 	FrameworkElement* fwe = (FrameworkElement*)instantiated_tree;
 	fwe->SetTemplateNameScope (template_namescope);

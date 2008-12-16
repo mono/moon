@@ -1,3 +1,10 @@
+2008-12-15  Chris Toshok  <toshok@ximian.com>
+
+	* template.cpp (ControlTemplate::Apply): make sure we clear the
+	toplevel namescope from the template tree.  instead we keep a
+	different namescope around (full of the duplicated elements) which
+	is populated during DuplicateObject.
+
 2008-12-15  Jeffrey Stedfast  <fejj@novell.com>
 
 	* xaml.cpp: Macroize the static tables.
