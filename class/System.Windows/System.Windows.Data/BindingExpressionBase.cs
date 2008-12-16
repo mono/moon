@@ -45,6 +45,7 @@ namespace System.Windows.Data {
 		
 		bool parsedPath;
 		PropertyInfo info;
+		bool updating;
 		
 		internal Binding Binding {
 			get {
@@ -152,7 +153,7 @@ namespace System.Windows.Data {
 					continue;
 				}
 				
-				if (Binding.Mode == BindingMode.OneWay && target is INotifyPropertyChanged) {
+				if (Binding.Mode != BindingMode.OneTime && target is INotifyPropertyChanged) {
 					((INotifyPropertyChanged)target).PropertyChanged += delegate(object sender, PropertyChangedEventArgs e) {
 						if (p.Name.EndsWith (e.PropertyName)) {
 							object value = PropertyInfo.GetValue (PropertyTarget, null);
@@ -215,13 +216,24 @@ namespace System.Windows.Data {
 		
 		internal void SetValue (object value)
 		{
+			if (updating)
+				return;
+			
+			if (value != null && PropertyInfo.PropertyType.IsValueType && PropertyInfo.PropertyType != value.GetType ())
+				value = Convert.ChangeType (value, PropertyInfo.PropertyType, null);
+
 			if (Binding.Converter != null)
 				value = Binding.Converter.ConvertBack (value,
 				                                       PropertyInfo.PropertyType,
 				                                       Binding.ConverterParameter,
 				                                       Binding.ConverterCulture ?? System.Globalization.CultureInfo.CurrentCulture);
-
-			PropertyInfo.SetValue (PropertyTarget, value, null);
+			try {
+				updating = true;
+				PropertyInfo.SetValue (PropertyTarget, value, null);
+			}
+			finally {
+				updating = false;
+			}
 		}
 	}
 }
