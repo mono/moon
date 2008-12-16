@@ -266,6 +266,22 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
+		public void SetBindingExpression()
+		{
+			Binding b = new Binding("");
+			b.Source = "This is a string";
+
+			TextBlock b1 = new TextBlock();
+			TextBlock b2 = new TextBlock();
+
+			BindingExpressionBase expression = b1.SetBinding(TextBlock.TextProperty, b);
+			b2.SetValue(TextBlock.TextProperty, expression);
+
+			Assert.AreEqual(b1.Text, b.Source, "#1");
+			Assert.AreEqual(b2.Text, b.Source, "#1");
+		}
+
+		[TestMethod]
 		public void TestTwoWayBinding()
 		{
 			Data data = new Data { Opacity = 0.5 };
