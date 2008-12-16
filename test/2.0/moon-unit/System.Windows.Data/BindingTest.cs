@@ -606,7 +606,7 @@ Width=""100"" Height=""100"">
 		}
 		
 		[TestMethod]
-		[Ignore ("The parser should throw an exception for this")]
+		[MoonlightBug]
 		public void XamlBindToClr()
 		{
 			Assert.Throws<XamlParseException>(delegate {
@@ -631,7 +631,7 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 		}
 		
 		[TestMethod]
-		[Ignore ("Test fails on mono")]
+		[MoonlightBug]
 		public void XamlBoundToClr()
 		{
 			TestNamespace.BindingXaml a = new TestNamespace.BindingXaml();
