@@ -62,7 +62,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void SetTemplateInXamlOnButton ()
 		{
 			Button b;
