@@ -497,6 +497,10 @@ namespace Mono {
 		public extern static IntPtr dependency_object_collection_new ();
 
 		[DllImport ("moon")]
+		// Value *dependency_property_get_default_value (DependencyProperty *instance);
+		public extern static IntPtr dependency_property_get_default_value (IntPtr instance);
+
+		[DllImport ("moon")]
 		// DependencyProperty *dependency_property_get_dependency_property (Type::Kind type, const char *name);
 		public extern static IntPtr dependency_property_get_dependency_property (Kind type, string name);
 

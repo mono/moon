@@ -55,8 +55,9 @@ namespace System.Windows {
 			
 			properties.Add (handle, this);
 			
-			if (this.property_type.IsValueType && !IsNullable)
-				this.default_value = Activator.CreateInstance (this.property_type);
+			this.default_value = DependencyObject.ValueToObject (property_type, NativeMethods.dependency_property_get_default_value (handle));
+			if (default_value == null && this.property_type.IsValueType && !IsNullable)
+				this.default_value = Activator.CreateInstance (property_type);
 			//Console.WriteLine ("DependencyProperty.DependencyProperty ({0:X}, {1}, {2})", handle, property_type.FullName, declaring_type.FullName);
 		}
 		

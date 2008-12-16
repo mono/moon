@@ -970,6 +970,16 @@ dependency_object_collection_new (void)
 /**
  * DependencyProperty
  **/
+Value *
+dependency_property_get_default_value (DependencyProperty *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetDefaultValue ();
+}
+
+
 DependencyProperty *
 dependency_property_get_dependency_property (Type::Kind type, const char *name)
 {

@@ -46,7 +46,8 @@ class DependencyProperty {
 	bool AlwaysChange () { return always_change; }
 	bool IsCustom () { return is_custom; }
 	NativePropertyChangedHandler *GetChangedCallback () { return changed_callback; }
-	
+
+	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Value *GetDefaultValue () { return default_value; }
 
 	AnimationStorage *AttachAnimationStorage (DependencyObject *obj, AnimationStorage *storage);

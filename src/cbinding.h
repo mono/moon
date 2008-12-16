@@ -421,6 +421,9 @@ DependencyObjectCollection *dependency_object_collection_new (void);
  * DependencyProperty
  **/
 /* @GeneratePInvoke */
+Value *dependency_property_get_default_value (DependencyProperty *instance);
+
+/* @GeneratePInvoke */
 DependencyProperty *dependency_property_get_dependency_property (Type::Kind type, const char *name);
 
 /* @GeneratePInvoke */
