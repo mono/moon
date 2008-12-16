@@ -1,3 +1,7 @@
+2008-12-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* configure.ac: Added checks for libexpat. Fixes bug #449528
+
 2008-12-11  Jeffrey Stedfast  <fejj@novell.com>
 
 	* configure.ac: Add glib-2.0 to the dependencies for FF2 and FF3

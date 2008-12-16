@@ -264,6 +264,28 @@ else
 fi
 
 dnl
+dnl Expat checks
+dnl
+AC_CHECK_HEADER(expat.h)
+
+AC_MSG_CHECKING(for libexpat)
+LDFLAGS_save="$LDFLAGS"
+LIBS_save="$LIBS"
+LDFLAGS="$LDFLAGS -lexpat"
+LIBS="$LIBS -lexpat"
+AC_TRY_LINK_FUNC(XML_ParserCreateNS, have_expat_libs="yes", have_expat_libs="no")
+LDFLAGS="$LDFLAGS_save"
+LIBS="$LIBS_save"
+
+if test "$have_expat_libs" = "no"; then
+  AC_MSG_RESULT(no)
+  AC_MSG_ERROR([Failed to find suitable libexpat libraries. Please make sure that libexpat-2.0.x is installed.])
+else
+  AC_MSG_RESULT(yes)
+  EXPAT_LIBS="-lexpat"
+fi
+
+dnl
 dnl Gtk+ checks
 dnl
 PKG_CHECK_MODULES(GTK,gtk+-2.0 gthread-2.0)
@@ -582,7 +604,7 @@ AC_SUBST(PERF_TOOL_LIBS)
 
 MOON_CFLAGS="$CAIRO_CFLAGS $FREETYPE2_CFLAGS $FONTCONFIG_CFLAGS $GTK_CFLAGS $ALSA_CFLAGS $PULSEAUDIO_CFLAGS $FFMPEG_CFLAGS $MONO_CFLAGS"
 dnl MOON_LIBS is partially defined above for the user-plugin build
-MOON_LIBS="$MOON_LIBS $CAIRO_LIBS $FREETYPE2_LIBS $FONTCONFIG_LIBS $GTK_LIBS $ZLIB $PTHREAD_LIBS -lexpat"
+MOON_LIBS="$MOON_LIBS $CAIRO_LIBS $FREETYPE2_LIBS $FONTCONFIG_LIBS $GTK_LIBS $ZLIB $PTHREAD_LIBS $EXPAT_LIBS"
 
 # Remove glitz from the link flags (fixes Bug 338506)
 MOON_LIBS="$(echo $MOON_LIBS | sed -e s/-lglitz//g)"
