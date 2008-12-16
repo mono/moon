@@ -6,6 +6,12 @@
 
 2008-12-16  Alan McGovern  <amcgovern@novell.com>
 
+	
+
+
+
+2008-12-16  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/BindingTest.cs: Added new DataBinding test when
 	loading from xaml
 

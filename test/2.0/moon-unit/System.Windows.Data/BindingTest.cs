@@ -88,10 +88,9 @@ namespace MoonTest.System.Windows.Data
 		{
 			public event PropertyChangedEventHandler PropertyChanged;
 
-			// Under MS.NET this works when it's classified as a float
-			private double opacity;
+			private float opacity;
 			
-			public double Opacity
+			public float Opacity
 			{
 				get { return opacity; }
 				set {
@@ -287,6 +286,32 @@ namespace MoonTest.System.Windows.Data
 			r.Opacity = 0.5;
 			Assert.AreEqual(1, data.Opacity, "#7");
 		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void TestTwoWayBinding2()
+		{
+			PropertyUpdater data = new PropertyUpdater { Opacity = 0.5f };
+			Rectangle r = new Rectangle();
+			r.SetBinding(Rectangle.OpacityProperty, new Binding
+			{
+				Path = new PropertyPath("Opacity"),
+				Source = data,
+				Mode = BindingMode.TwoWay
+			});
+			Assert.AreEqual(0.5, r.Opacity, "#1");
+			Assert.AreEqual(0.5, data.Opacity, "#2");
+			data.Opacity = 0;
+			Assert.AreEqual(0.0, r.Opacity, "#3");
+			r.Opacity = 1;
+			Assert.IsTrue(r.ReadLocalValue(Rectangle.OpacityProperty) is BindingExpressionBase, "#4");
+			Assert.AreEqual(1, r.Opacity, "#5");
+			Assert.AreEqual(1, data.Opacity, "#6");
+
+			r.ClearValue(Rectangle.OpacityProperty);
+			r.Opacity = 0.5;
+			Assert.AreEqual(1, data.Opacity, "#7");
+		}
 		
 		[TestMethod]
 		public void TestOnceOffBinding ()
@@ -324,9 +349,10 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void TestOneWayBinding2 ()
 		{
-			PropertyUpdater data = new PropertyUpdater ();
+			PropertyUpdater data = new PropertyUpdater { Opacity = 0.5f };
 			Rectangle rectangle = new Rectangle { Opacity = 0f };
 			Binding binding = new Binding {
 				Path = new PropertyPath ("Opacity"),
