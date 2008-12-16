@@ -496,9 +496,9 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 <Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
 		xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		x:Name=""LayoutRoot"">
-	<TextBlock Foreground=""{Binding Fill, Mode=OneWay}"">
+	<TextBlock Foreground=""{Binding}"">
 		<TextBlock.DataContext>
-			<Rectangle Fill=""Blue"" />
+			<SolidColorBrush Color=""Blue"" />
 		</TextBlock.DataContext>
 	</TextBlock>
 </Canvas>");
@@ -513,6 +513,36 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 			Assert.AreEqual (((SolidColorBrush) normal.Foreground).Color, brush.Color, "#4");
 
 			Assert.IsNotNull (block.DataContext, "#5");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void XamlDataContext3()
+		{
+			Canvas c = (Canvas) XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+		xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+		x:Name=""LayoutRoot"">
+	<Canvas.Resources>
+		<SolidColorBrush x:Name=""Brush"" Color=""Blue"" />
+	</Canvas.Resources>
+	<TextBlock Foreground=""{Binding Source={StaticResource Brush}}"" />
+</Canvas>");
+			Assert.IsInstanceOfType (c.Children [0], typeof (TextBlock), "#1");
+			TextBlock block = (TextBlock) c.Children[0];
+			Assert.IsInstanceOfType (block.Foreground, typeof (SolidColorBrush), "#2");
+
+			SolidColorBrush brush = (SolidColorBrush) block.Foreground;
+			Assert.AreEqual (brush.Color, Colors.Blue, "#3");
+
+			TextBlock normal = new TextBlock ();
+			Assert.AreNotEqual (((SolidColorBrush) normal.Foreground).Color, brush.Color, "#4");
+
+			Assert.IsNull (block.DataContext, "#5");
+			block.DataContext = new SolidColorBrush (Colors.Red);
+
+			brush = (SolidColorBrush) block.Foreground;
+			Assert.AreEqual (brush.Color, Colors.Blue, "#6");
 		}
 
 		[TestMethod]
