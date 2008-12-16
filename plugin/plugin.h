@@ -16,6 +16,18 @@
 
 #include "moonlight.h"
 
+#if PLUGIN_SL_2_0
+#include <mono/jit/jit.h>
+#include <mono/metadata/appdomain.h>
+#include <mono/metadata/assembly.h>
+#include <mono/metadata/debug-helpers.h>
+G_BEGIN_DECLS
+/* because this header sucks */
+#include <mono/metadata/mono-debug.h>
+G_END_DECLS
+#include <mono/metadata/mono-config.h>
+#endif
+
 class MoonlightScriptControlObject;
 class PluginXamlLoader;
 class PluginInstance;
@@ -24,7 +36,6 @@ class BrowserBridge;
 class Xap;
 #endif
 
-typedef void plugin_unload_callback (PluginInstance *plugin);
 char *NPN_strdup (const char *val);
 
 class PluginInstance
@@ -33,7 +44,6 @@ class PluginInstance
 	PluginInstance (NPMIMEType pluginType, NPP instance, uint16_t mode);
 	~PluginInstance ();
 	
-	void SetUnloadCallback (plugin_unload_callback *puc);
 	void Initialize (int argc, char *const argn[], char *const argv[]);
 	void Finalize ();
 	
@@ -119,6 +129,15 @@ class PluginInstance
 	void AddSource (const char *uri, const char *filename);
 	List *GetSources ();
 #endif
+
+#if PLUGIN_SL_2_0
+	bool MonoIsLoaded ();
+	bool MonoInit ();
+
+	gpointer ManagedCreateXamlLoaderForFile (XamlLoader* loader, const char *file);
+	gpointer ManagedCreateXamlLoaderForString (XamlLoader* loader, const char *str);
+	void ManagedLoaderDestroy (gpointer loader_object);
+#endif
 	
  private:
 #if DEBUG
@@ -169,12 +188,27 @@ class PluginInstance
 	PluginXamlLoader *xaml_loader;
 #if PLUGIN_SL_2_0
 	bool xap_loaded;
+
+	MonoDomain   *moon_domain;
+	MonoAssembly *moon_boot_assembly;
+	char *boot_assembly;
+	bool mono_is_loaded;
+
+	// Methods
+	MonoMethod   *moon_load_xaml;
+	MonoMethod   *moon_load_xap;
+	MonoMethod   *moon_destroy_application;
+
+	void LoadXAP  (const char *fname);
+	void DestroyApplication ();
+
+	MonoMethod *MonoGetMethodFromName (const char *name);
+
+	bool ManagedCreateApplication (const char *file);
+	void ManagedDestroyApplication ();
+
+	gpointer ManagedCreateXamlLoader (XamlLoader* native_loader, const char *file, const char *str);
 #endif
-	
-	//
-	// A (managed) callback to call when the plugin is unloaded.
-	//
-	plugin_unload_callback *plugin_unload;
 
 	// The name of the file that we are missing, and we requested to be loaded
 	char *vm_missing_file;
@@ -184,10 +218,6 @@ class PluginInstance
 	void UpdateSource ();
 	void UpdateSourceByReference (const char *value);
 	void LoadXAML ();
-#if PLUGIN_SL_2_0
-	void LoadXAP  (const char *fname);
-	void DestroyApplication ();
-#endif
 	void SetPageURL ();
 
 	void TryLoadBridge (const char *prefix);
@@ -304,7 +334,6 @@ void *plugin_instance_load_url (PluginInstance *instance, char *url, int32_t *le
 
 void *plugin_instance_evaluate (PluginInstance *instance, const char *code);
 
-void     plugin_set_unload_callback (PluginInstance *instance, plugin_unload_callback *puc);
 PluginXamlLoader *plugin_xaml_loader_from_str (const char *str, PluginInstance *plugin, Surface *surface);
 
 G_END_DECLS

@@ -52,30 +52,13 @@ namespace Moonlight {
 	
 	public class ApplicationLauncher {
 
-		delegate void PluginUnloadCallback (IntPtr plugin);
-
-		[DllImport ("moonplugin")]
-		static extern void plugin_set_unload_callback (IntPtr plugin, PluginUnloadCallback puc);
-
-		//
-		// Tracks a list of callbacks to invoke on domain
-		// unload, indexed by the plugin handle
-		//
-		static Dictionary<IntPtr, PluginUnloadCallback> callbacks = new Dictionary<IntPtr, PluginUnloadCallback> ();
-
-		//
-		// Tracks all the created domains, it is indexed by
-		// the plugin handle (IntPtr value).
-		//
-		static Dictionary<IntPtr, AppDomain> domains = new Dictionary<IntPtr, AppDomain> ();
-
 		/// <summary>
 		///   Creates a new Loader for a XAML file.
 		/// </summary>
 		public static Loader CreateXamlLoader (IntPtr native_loader, IntPtr plugin, IntPtr surface, string filename, string contents)
 		{
 			try {
-				return new Loader (GetDomain (plugin), native_loader, plugin, surface, filename, contents);
+				return new Loader (native_loader, plugin, surface, filename, contents);
 			} catch (Exception ex) {
 				Console.Error.WriteLine ("Loader::CreateXamlLoader: Unable to create managed xaml loader: {0}", ex.Message);
 				return null;
@@ -88,10 +71,9 @@ namespace Moonlight {
 		public static bool CreateApplication (IntPtr plugin, IntPtr surface, string xapFile)
 		{
 			try {
-				AppDomain d = GetDomain (plugin);
-				
-				object rl = Helper.CreateInstanceAndUnwrap (d, typeof (DependencyObject).Assembly.FullName, "System.Windows.XapHackProxyImpl");
-				bool v = (bool) rl.GetType ().GetMethod ("Setup").Invoke (rl, new object [] { plugin, surface, xapFile });
+				Type t = typeof (DependencyObject).Assembly.GetType("System.Windows.XapHackProxyImpl");
+				object rl = Activator.CreateInstance (t);
+				bool v = (bool) t.GetMethod ("Setup").Invoke (rl, new object [] { plugin, surface, xapFile });
 
 				return v;
 			} catch (Exception e){
@@ -108,62 +90,11 @@ namespace Moonlight {
 		public static void DestroyApplication (IntPtr plugin)
 		{
 			try {
-				AppDomain d = GetDomain (plugin);
-				
-				Console.WriteLine (typeof (Application).Assembly.FullName);
-				object rl = Helper.CreateInstanceAndUnwrap (d, typeof (DependencyObject).Assembly.FullName, "System.Windows.XapHackProxyImpl");
-				rl.GetType ().GetMethod ("Terminate").Invoke (rl, new object [0]);
+				Type t = typeof (DependencyObject).Assembly.GetType("System.Windows.XapHackProxyImpl");
+				object rl = Activator.CreateInstance (t);
+				t.GetMethod ("Terminate").Invoke (rl, new object [0]);
 			} catch (Exception e){
 				Console.WriteLine (e);
-			}
-		}
-		
-		static AppDomain CreateDomain (IntPtr plugin)
-		{
-			AppDomain domain = Helper.CreateDomain (plugin);
-			if (plugin == IntPtr.Zero)
-				return null;
-
-			// Set the plugin unload callback so that we get a chance to unload the domain when 
-			// the plugin unloads.
-			PluginUnloadCallback callback = new PluginUnloadCallback (UnloadDomain);
-			plugin_set_unload_callback (plugin, callback);
-			callbacks.Add (plugin, callback);
-			return domain;
-		}
-
-		public static AppDomain GetDomain (IntPtr plugin)
-		{
-			AppDomain domain;
-			if (domains.TryGetValue (plugin, out domain))
-				return domain;
-
-			domain = CreateDomain (plugin);
-			domains.Add (plugin, domain);
-
-			return domain;
-		}
-
-		static void UnloadDomain (IntPtr plugin, AppDomain domain)
-		{
-			Console.WriteLine ("Moonlight.Loader::UnloadDomain ({0}): {1}.", plugin, domain.FriendlyName);
-
-			domains.Remove (plugin);
-			callbacks.Remove (plugin);
-
-			Helper.UnloadDomain (domain);
-		}
-
-		static void UnloadDomain (IntPtr plugin)
-		{
-			try {
-				AppDomain domain;
-				if (!domains.TryGetValue (plugin, out domain))
-					return;
-
-				UnloadDomain (plugin, domain);
-			} catch (Exception ex) {
-				Console.Error.WriteLine ("Moonlight.Loader::UnloadDomain ({0}): Unable to unload domain:\n {1}.", plugin, ex);
 			}
 		}
 	}
@@ -190,17 +121,17 @@ namespace Moonlight {
 		// 6. Run the method
 		// 7. If none of those properties are there, we can return
 
-		public Loader (AppDomain domain, IntPtr native_loader, IntPtr plugin, IntPtr surface, string filename, string contents)
+		public Loader (IntPtr native_loader, IntPtr plugin, IntPtr surface, string filename, string contents)
 		{
 			//
 			// Mono.Xaml.Loader is defined in agmono, the actual
 			// instance of Mono.Xaml.ManagedXamlLoader is defined
 			// as an internal class in agclr's Mono namespace
 			//
-			rl = Helper.CreateInstanceAndUnwrap (
-				domain, typeof (DependencyObject).Assembly.FullName, "Mono.Xaml.ManagedXamlLoader");
+			Type managedXamlLoaderType = typeof (DependencyObject).Assembly.GetType ("Mono.Xaml.ManagedXamlLoader");
+			object rl = Activator.CreateInstance (managedXamlLoaderType);
 
-			rl.GetType ().GetMethod ("Setup").Invoke (rl, new object [] { native_loader, plugin, surface, filename, contents });
+			managedXamlLoaderType.GetMethod ("Setup").Invoke (rl, new object [] { native_loader, plugin, surface, filename, contents });
 
 			//rl.Setup (native_loader, plugin, surface, filename, contents);
 		}

@@ -1,3 +1,21 @@
+2008-12-16  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.h, plugin.cpp: move all the stuff from mono.cpp (and
+	moon-mono.h) here.  Remove all global variables and make them
+	instance variables on PluginInstance (of particular importance is
+	the AppDomain).  This means every PluginInstance gets their own
+	app domain, their own boot assembly, etc, and we can drop all the
+	AppDomain stuff from moonlight.cs.
+
+	* mono.cpp, moon-mono.h: nuke.
+
+	* plugin-glue.cpp: remove include of moon-mono.h
+
+	* moonlight.cs: remove all the AppDomain specific stuff here - the
+	unload handler is gone (replaced by a mono_domain_free call in
+	plugin.cpp), the Helper calls to create instances and unwrap them
+	has been replaced with type lookups + Activator.CreateInstance.
+
 2008-12-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin.cpp: SetSource: in case we already have a surface, detach

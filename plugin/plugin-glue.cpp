@@ -18,7 +18,6 @@
 #include "moonlight.h"
 #include "plugin.h"
 #include "plugin-class.h"
-#include "moon-mono.h"
 #include "plugin-downloader.h"
 
 static int plugins_alive = 0;

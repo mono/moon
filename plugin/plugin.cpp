@@ -15,11 +15,14 @@
 #include <config.h>
 #endif
 
+#include <glib.h>
+#include <stdlib.h>
+#include <dlfcn.h>
+
 #include "plugin.h"
 #include "plugin-class.h"
 #include "plugin-debug.h"
 #include "browser-bridge.h"
-#include "moon-mono.h"
 #include "downloader.h"
 #include "pipeline-ui.h"
 #include "plugin-downloader.h"
@@ -34,8 +37,6 @@
 #include "gdk/gdkx.h"
 #undef Visual
 #undef Region
-
-#include <dlfcn.h>
 
 #ifdef DEBUG
 #define d(x) x
@@ -176,17 +177,6 @@ NPN_strdup (const char *tocopy)
 /*** PluginInstance:: *********************************************************/
 
 GSList *plugin_instances = NULL;
-
-void
-plugin_set_unload_callback (PluginInstance *plugin, plugin_unload_callback *puc)
-{
-	if (!plugin) {
-		d(printf ("Trying to set plugin unload callback on a null plugin.\n"));
-		return;
-	}
-
-	plugin->SetUnloadCallback (puc);
-}
 
 static void
 table_add (GtkWidget *table, const char *txt, int col, int row)
@@ -394,9 +384,17 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, uint16_t mo
 	xaml_loader = NULL;
 #if PLUGIN_SL_2_0
 	xap_loaded = false;
+
+	moon_domain = NULL;
+	moon_boot_assembly = NULL;
+	boot_assembly = NULL;
+	mono_is_loaded = false;
+
+	moon_load_xaml =
+		moon_load_xap =
+		moon_destroy_application = NULL;
+
 #endif
-	plugin_unload = NULL;
-	
 	timers = NULL;
 	
 	wrapped_objects = g_hash_table_new (g_direct_hash, g_direct_equal);
@@ -469,8 +467,10 @@ PluginInstance::~PluginInstance ()
 		delete bridge;
 	bridge = NULL;
 
-	if (plugin_unload)
-		plugin_unload (this);
+#if PLUGIN_SL_2_0
+	if (moon_domain)
+		mono_domain_free (moon_domain, FALSE);
+#endif
 	
 #if DEBUG
 	delete moon_sources;
@@ -496,12 +496,6 @@ PluginInstance::GetSources ()
 }
 #endif
 
-
-void
-PluginInstance::SetUnloadCallback (plugin_unload_callback* puc)
-{
-	plugin_unload = puc;
-}
 
 void
 PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
@@ -1098,10 +1092,10 @@ PluginInstance::LoadXAML ()
 void
 PluginInstance::LoadXAP (const char *fname)
 {
-	if (!vm_is_loaded ())
-		vm_init ();
+	if (!MonoIsLoaded ())
+		MonoInit ();
 
-	vm_application_create (this, surface, fname);
+	ManagedCreateApplication (fname);
 	xap_loaded = true;
 }
 
@@ -1109,7 +1103,7 @@ void
 PluginInstance::DestroyApplication ()
 {
 	if (xap_loaded)
-		vm_application_destroy (this);
+		ManagedDestroyApplication ();
 	xap_loaded = false;
 }
 #endif
@@ -1785,10 +1779,10 @@ bool
 PluginXamlLoader::LoadVM ()
 {
 #if PLUGIN_SL_2_0
-	if (!vm_is_loaded ())
-		vm_init ();
+	if (!plugin->MonoIsLoaded ())
+		plugin->MonoInit ();
 
-	if (vm_is_loaded ())
+	if (plugin->MonoIsLoaded ())
 		return InitializeLoader ();
 #endif
 	return false;
@@ -1801,16 +1795,16 @@ PluginXamlLoader::InitializeLoader ()
 		return true;
 
 #if PLUGIN_SL_2_0
-	if (!vm_is_loaded ())
+	if (!plugin->MonoIsLoaded ())
 		return false;
 
 	if (managed_loader)
 		return true;
 
 	if (GetFilename ()) {
-		managed_loader = vm_xaml_file_loader_new (this, plugin, GetSurface (), GetFilename ());
+		managed_loader = plugin->ManagedCreateXamlLoaderForFile (this, GetFilename ());
 	} else if (GetString ()) {
-		managed_loader = vm_xaml_str_loader_new (this, plugin, GetSurface (), GetString ());
+		managed_loader = plugin->ManagedCreateXamlLoaderForString (this, GetString ());
 	} else {
 		return false;
 	}
@@ -1937,7 +1931,7 @@ PluginXamlLoader::~PluginXamlLoader ()
 		delete xap;
 	
 	if (managed_loader)
-		vm_loader_destroy (managed_loader);
+		plugin->ManagedLoaderDestroy (managed_loader);
 #endif
 }
 
@@ -1946,3 +1940,166 @@ plugin_xaml_loader_from_str (const char *str, PluginInstance *plugin, Surface *s
 {
 	return PluginXamlLoader::FromStr (str, plugin, surface);
 }
+
+
+// Our Mono embedding bits are here.  By storing the mono_domain in
+// the PluginInstance instead of in a global variable, we don't need
+// the code in moonlight.cs for managing app domains.
+#if PLUGIN_SL_2_0
+MonoMethod *
+PluginInstance::MonoGetMethodFromName (const char *name)
+{
+	MonoMethod *method;
+	MonoMethodDesc *desc;
+
+	desc = mono_method_desc_new (name, true);
+	method = mono_method_desc_search_in_image (desc, mono_assembly_get_image (moon_boot_assembly));
+	mono_method_desc_free (desc);
+
+	if (method == NULL)
+		printf ("Warning: could not find method %s in the assembly", name);
+	
+	return method;
+}
+
+bool
+PluginInstance::MonoIsLoaded ()
+{
+	return mono_is_loaded;
+}
+
+extern "C" {
+extern gpointer mono_jit_trace_calls;
+extern gpointer mono_trace_parse_options (char *options);
+};
+
+bool
+PluginInstance::MonoInit ()
+{
+	bool result = false;
+	char *trace_options;
+	
+	if (mono_is_loaded)
+		return true;
+	
+#if PLUGIN_INSTALL
+	Dl_info dlinfo;
+	char *dirname;
+	
+	if (dladdr ((void *) &vm_init, &dlinfo) == 0) {
+		fprintf (stderr, "Unable to find the location of libmoonplugin %s\n", dlerror ());
+		return false;
+	}
+	
+	dirname = g_path_get_dirname (dlinfo.dli_fname);
+	boot_assembly = g_build_filename (dirname, "moonlight.exe", NULL);
+	g_free (dirname);
+#else
+	boot_assembly = g_build_filename (PLUGIN_DIR, "plugin", "moonlight.exe", NULL);
+#endif
+	
+	d(printf ("The file is %s\n", boot_assembly));
+	
+	mono_config_parse (NULL);
+	trace_options = getenv ("MOON_TRACE");
+	if (trace_options != NULL){
+		printf ("Setting trace options to: %s\n", trace_options);
+		mono_jit_trace_calls = mono_trace_parse_options (trace_options);
+	}
+	
+	mono_debug_init (MONO_DEBUG_FORMAT_MONO);
+	moon_domain = mono_jit_init_version (boot_assembly, "moonlight");
+	moon_boot_assembly = mono_domain_assembly_open (moon_domain, boot_assembly);
+	
+	if (moon_boot_assembly) {
+		char *argv [2];
+		
+		argv [0] = boot_assembly;
+		argv [1] = NULL;
+		
+		mono_jit_exec (moon_domain, moon_boot_assembly, 1, argv);
+		
+		moon_load_xaml  = MonoGetMethodFromName ("Moonlight.ApplicationLauncher:CreateXamlLoader");
+		moon_load_xap   = MonoGetMethodFromName ("Moonlight.ApplicationLauncher:CreateApplication");
+		moon_destroy_application = MonoGetMethodFromName ("Moonlight.ApplicationLauncher:DestroyApplication");
+
+		if (moon_load_xaml != NULL && moon_load_xap != NULL && moon_destroy_application != NULL)
+			result = true;
+	}
+
+	printf ("Mono Runtime: %s\n", result ? "OK" : "Failed");
+	
+	mono_is_loaded = true;
+	
+#if DEBUG
+	d(enable_vm_stack_trace ());
+#endif
+	
+	return result;
+}
+
+gpointer
+PluginInstance::ManagedCreateXamlLoader (XamlLoader* native_loader, const char *file, const char *str)
+{
+	MonoObject *loader;
+	if (moon_load_xaml == NULL)
+		return NULL;
+
+	PluginInstance *this_obj = this;
+	void *params [5];
+	params [0] = &native_loader;
+	params [1] = &this_obj;
+	params [2] = &surface;
+	params [3] = file ? mono_string_new (moon_domain, file) : NULL;
+	params [4] = str ? mono_string_new (moon_domain, str) : NULL;
+	loader = mono_runtime_invoke (moon_load_xaml, NULL, params, NULL);
+	return GUINT_TO_POINTER (mono_gchandle_new (loader, false));
+}
+
+gpointer
+PluginInstance::ManagedCreateXamlLoaderForFile (XamlLoader *native_loader, const char *file)
+{
+	return ManagedCreateXamlLoader (native_loader, file, NULL);
+}
+
+gpointer
+PluginInstance::ManagedCreateXamlLoaderForString (XamlLoader* native_loader, const char *str)
+{
+	return ManagedCreateXamlLoader (native_loader, NULL, str);
+}
+
+void
+PluginInstance::ManagedLoaderDestroy (gpointer loader_object)
+{
+	guint32 loader = GPOINTER_TO_UINT (loader_object);
+	if (loader)
+		mono_gchandle_free (loader);
+}
+
+bool
+PluginInstance::ManagedCreateApplication (const char *file)
+{
+	if (moon_load_xap == NULL)
+		return NULL;
+
+	PluginInstance *this_obj = this;
+	void *params [3];
+	params [0] = &this_obj;
+	params [1] = &surface;
+	params [2] = mono_string_new (moon_domain, file);
+	MonoObject *ret = mono_runtime_invoke (moon_load_xap, NULL, params, NULL);
+	
+	return (bool) (*(MonoBoolean *) mono_object_unbox(ret));
+}
+
+void
+PluginInstance::ManagedDestroyApplication ()
+{
+	PluginInstance *this_obj = this;
+	void *params [1];
+	params [0] = &this_obj;
+
+	mono_runtime_invoke (moon_destroy_application, NULL, params, NULL);
+}
+
+#endif

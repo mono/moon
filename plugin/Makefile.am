@@ -47,8 +47,6 @@ INCLUDES += -I$(top_srcdir)/src/asf
 libmoonplugin_la_SOURCES = \
 	browser-bridge.h	\
 	moonlight.h		\
-	mono.cpp		\
-	moon-mono.h		\
 	npstream-request.cpp	\
 	npstream-request.h	\
 	plugin.cpp		\
