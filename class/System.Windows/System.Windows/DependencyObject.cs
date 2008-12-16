@@ -312,6 +312,11 @@ namespace System.Windows {
 
 		public object ReadLocalValue (DependencyProperty dp)
 		{
+			return ReadLocalValueImpl (dp);
+		}
+
+		internal virtual object ReadLocalValueImpl (DependencyProperty dp)
+		{
 			IntPtr val = NativeMethods.dependency_object_get_local_value (native, dp.Native);
 			if (val == IntPtr.Zero) {
 				return DependencyProperty.UnsetValue;
@@ -323,6 +328,11 @@ namespace System.Windows {
 		}
 		
 		public void ClearValue (DependencyProperty dp)
+		{
+			ClearValueImpl (dp);
+		}
+
+		internal virtual void ClearValueImpl (DependencyProperty dp)
 		{
 			NativeMethods.dependency_object_clear_value (native, dp.Native, true);
 		}
@@ -712,6 +722,11 @@ namespace System.Windows {
 		}
 
 		public void SetValue (DependencyProperty dp, object value)
+		{
+			SetValueImpl (dp, value);
+		}
+
+		internal virtual void SetValueImpl (DependencyProperty dp, object value)
 		{
 			Type object_type;
 			Value v;

@@ -33,15 +33,15 @@ namespace System.Windows.Data
 {
 	class BindingExpression : BindingExpressionBase
 	{
-		GetValueCallback gv_callback;
-		SetValueCallback sv_callback;
+//		GetValueCallback gv_callback;
+//		SetValueCallback sv_callback;
 		
 		public BindingExpression()
 			: this (NativeMethods.binding_expression_new ())
 		{
-			gv_callback = new GetValueCallback (GetValueOverride);
-			sv_callback = new SetValueCallback (UpdateSourceOverride);
-			NativeMethods.binding_expression_base_register_managed_overrides (Native, gv_callback, sv_callback);
+//			gv_callback = new GetValueCallback (GetValueOverride);
+//			sv_callback = new SetValueCallback (UpdateSourceOverride);
+//			NativeMethods.binding_expression_base_register_managed_overrides (Native, gv_callback, sv_callback);
 		}
 
 		
@@ -50,23 +50,23 @@ namespace System.Windows.Data
 		{
 			
 		}
-
-		Value GetValueOverride ()
-		{
-			Value v;
-			object o;
-			if (base.TryGetValue (out o) && o != null) {
-				v = DependencyObject.GetAsValue (o);
-			} else {
-				v = new Value { k = Kind.INVALID };
-			}
-
-			return v;
-		}
-
-		void UpdateSourceOverride (IntPtr value)
-		{
-			base.SetValue (DependencyObject.ValueToObject (base.Property.PropertyType, value));
-		}
+//
+//		Value GetValueOverride ()
+//		{
+//			Value v;
+//			object o;
+//			if (base.TryGetValue (out o) && o != null) {
+//				v = DependencyObject.GetAsValue (o);
+//			} else {
+//				v = new Value { k = Kind.INVALID };
+//			}
+//
+//			return v;
+//		}
+//
+//		void UpdateSourceOverride (IntPtr value)
+//		{
+//			base.SetValue (DependencyObject.ValueToObject (base.Property.PropertyType, value));
+//		}
 	}
 }

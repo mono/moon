@@ -1,3 +1,9 @@
+2008-12-16  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingExpression.cs:
+	* System.Windows.Data/BindingExpressionBase.cs: Move databinding to
+	managed code.
+
 2008-12-11  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingExpressionBase.cs: Ensure the types match

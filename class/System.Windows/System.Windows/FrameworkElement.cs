@@ -27,6 +27,7 @@
 //
 
 using Mono;
+using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -38,6 +39,7 @@ namespace System.Windows {
 
 		MeasureOverrideCallback measure_cb;
 		ArrangeOverrideCallback arrange_cb;
+		Dictionary<DependencyProperty, BindingExpressionBase> bindings = new Dictionary<DependencyProperty, BindingExpressionBase> ();
 
 		private void Initialize ()
 		{
@@ -220,6 +222,58 @@ namespace System.Windows {
 		{
 			// according to doc this is not fully implemented since SL templates applies
 			// to Control/ContentPresenter and is defined here for WPF compatibility
+		}
+
+		internal override void ClearValueImpl (DependencyProperty dp)
+		{
+			if (bindings.ContainsKey (dp))
+				bindings.Remove (dp);
+			base.ClearValueImpl (dp);
+		}
+
+		internal override void SetValueImpl (DependencyProperty dp, object value)
+		{
+			BindingExpressionBase existing;
+			BindingExpressionBase expression = value as BindingExpressionBase;
+			bindings.TryGetValue (dp, out existing);
+			
+			if (expression != null) {
+				if (existing != null)
+					bindings.Remove (dp);
+				bindings.Add (dp, expression);
+
+				object val;
+				Console.WriteLine ("Property: '{0}', Value: '{1}'", dp.Name, value);
+				if (expression.TryGetValue (dp, out val)) {
+					Console.WriteLine ("Setting: '{0}'", val);
+					base.SetValueImpl (dp, val);
+				}
+			} else if (existing != null) {
+				if (existing.Binding.Mode == BindingMode.TwoWay)
+					existing.SetValue (value);
+				else
+					bindings.Remove (dp);
+				
+				base.SetValueImpl (dp, value);
+			} else {
+				base.SetValueImpl (dp, value);
+			}
+
+			if (dp == FrameworkElement.DataContextProperty && bindings.Count > 0) {
+				Console.WriteLine ("Reseating all the bindings");
+				Dictionary<DependencyProperty, BindingExpressionBase> old = bindings;
+				bindings = new Dictionary<DependencyProperty, BindingExpressionBase> ();
+				foreach (var keypair in old)
+					SetValue (keypair.Key, keypair.Value);
+			}
+		}
+
+		internal override object ReadLocalValueImpl (DependencyProperty dp)
+		{
+			BindingExpressionBase expression;
+			if (bindings.TryGetValue (dp, out expression))
+				return expression;
+			return base.ReadLocalValueImpl (dp);
 		}
 	}
 }

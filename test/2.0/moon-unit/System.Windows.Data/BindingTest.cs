@@ -145,7 +145,7 @@ namespace MoonTest.System.Windows.Data
 			Console.WriteLine ("Setting datacontext to null");
 			r.DataContext = null;
 			Console.WriteLine ("Set to null");
-			Assert.AreEqual(r.Fill, null, "#2");
+			Assert.AreEqual(null, r.Fill, "#2");
 			r.SetBinding(Rectangle.FillProperty, b);
 			Assert.AreEqual(r.Fill, null, "#3");
 
@@ -300,9 +300,10 @@ namespace MoonTest.System.Windows.Data
 			};
 
 			rectangle.SetBinding (Rectangle.OpacityProperty, binding);
-			Assert.AreEqual (data.Opacity, rectangle.Opacity);
+			Assert.AreEqual (data.Opacity, rectangle.Opacity, "#1");
+			Assert.IsTrue(rectangle.ReadLocalValue(Rectangle.OpacityProperty) is BindingExpressionBase, "#2");
 			data.Opacity = 0;
-			Assert.AreNotEqual (data.Opacity, rectangle.Opacity);
+			Assert.AreNotEqual (data.Opacity, rectangle.Opacity, "#3");
 		}
 
 		[TestMethod]

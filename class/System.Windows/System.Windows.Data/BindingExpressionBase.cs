@@ -163,17 +163,21 @@ namespace System.Windows.Data {
 		}
 
 		
-		internal bool TryGetValue (out object value)
+		internal bool TryGetValue (DependencyProperty dp, out object value)
 		{
+			if (DataSource == null) {
+				value = dp.DefaultValue;
+				return true;
+			}
 			if (string.IsNullOrEmpty (Binding.Path.Path)) {
 				// If the path is empty, return the active DataSource
 				value = DataSource;
 				return true;
 			}	
 			else if (PropertyInfo == null) {
-				// If the property doesn't exist, the value is null
-				value = null;
-				return false;
+				Console.WriteLine ("Default value is: {0}", dp.DefaultValue);
+				value = dp.DefaultValue;
+				return true;
 			}
 			else
 				value = PropertyInfo.GetValue (PropertyTarget, null);
