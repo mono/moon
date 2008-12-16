@@ -489,6 +489,33 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		}
 
 		[TestMethod]
+		[MoonlightBug]
+		public void XamlDataContext2 ()
+		{
+			Canvas c = (Canvas) XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+		xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+		x:Name=""LayoutRoot"">
+	<TextBlock Foreground=""{Binding Fill, Mode=OneWay}"">
+		<TextBlock.DataContext>
+			<Rectangle Fill=""Blue"" />
+		</TextBlock.DataContext>
+	</TextBlock>
+</Canvas>");
+			Assert.IsInstanceOfType (c.Children [0], typeof (TextBlock), "#1");
+			TextBlock block = (TextBlock) c.Children[0];
+			Assert.IsInstanceOfType (block.Foreground, typeof (SolidColorBrush), "#2");
+
+			SolidColorBrush brush = (SolidColorBrush) block.Foreground;
+			Assert.AreNotEqual (brush.Color, Colors.Blue, "#3");
+
+			TextBlock normal = new TextBlock ();
+			Assert.AreEqual (((SolidColorBrush) normal.Foreground).Color, brush.Color, "#4");
+
+			Assert.IsNotNull (block.DataContext, "#5");
+		}
+
+		[TestMethod]
 		public void XamlBindingPropertyPathPriority()
 		{
 			Canvas canvas = (Canvas) XamlReader.Load(@"	
