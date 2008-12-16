@@ -242,12 +242,8 @@ namespace System.Windows {
 					bindings.Remove (dp);
 				bindings.Add (dp, expression);
 
-				object val;
-				Console.WriteLine ("Property: '{0}', Value: '{1}'", dp.Name, value);
-				if (expression.TryGetValue (dp, out val)) {
-					Console.WriteLine ("Setting: '{0}'", val);
-					base.SetValueImpl (dp, val);
-				}
+				object val = expression.GetValue (dp);
+				base.SetValueImpl (dp, val);
 			} else if (existing != null) {
 				if (existing.Binding.Mode == BindingMode.TwoWay)
 					existing.SetValue (value);
@@ -260,11 +256,12 @@ namespace System.Windows {
 			}
 
 			if (dp == FrameworkElement.DataContextProperty && bindings.Count > 0) {
-				Console.WriteLine ("Reseating all the bindings");
 				Dictionary<DependencyProperty, BindingExpressionBase> old = bindings;
 				bindings = new Dictionary<DependencyProperty, BindingExpressionBase> ();
-				foreach (var keypair in old)
+				foreach (var keypair in old) {
+					keypair.Value.Invalidate ();
 					SetValue (keypair.Key, keypair.Value);
+				}
 			}
 		}
 

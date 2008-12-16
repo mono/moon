@@ -1,5 +1,10 @@
 2008-12-16  Alan McGovern  <amcgovern@novell.com>
 
+	* FrameworkElement.cs: Do type conversions when setting the value in a
+	two way binding.
+
+2008-12-16  Alan McGovern  <amcgovern@novell.com>
+
 	* DependencyObject.cs:
 	* FrameworkElement.cs: Move databinding to managed code.
 

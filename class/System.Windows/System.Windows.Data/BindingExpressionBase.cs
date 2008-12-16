@@ -39,6 +39,10 @@ namespace System.Windows.Data {
 	public abstract class BindingExpressionBase : Expression
 	{
 		static Dictionary<IntPtr, Binding> bindings = new Dictionary<IntPtr, Binding> ();
+		internal bool cached;
+		object cachedValue;
+		object cachedTarget;
+		
 		bool parsedPath;
 		PropertyInfo info;
 		
@@ -150,8 +154,12 @@ namespace System.Windows.Data {
 				
 				if (Binding.Mode == BindingMode.OneWay && target is INotifyPropertyChanged) {
 					((INotifyPropertyChanged)target).PropertyChanged += delegate(object sender, PropertyChangedEventArgs e) {
-						if (p.Name.EndsWith (e.PropertyName))
-							Target.SetValue (Property, PropertyInfo.GetValue (PropertyTarget, null));
+						if (p.Name.EndsWith (e.PropertyName)) {
+							object value = PropertyInfo.GetValue (PropertyTarget, null);
+							if (Property.PropertyType.IsValueType && value.GetType () != Property.PropertyType)
+								value = Convert.ChangeType (value, Property.PropertyType, null);
+							Target.SetValue (Property, value);
+						}
 					};
 				}
 				
@@ -162,40 +170,47 @@ namespace System.Windows.Data {
 			throw new Exception ("Should not be reached");
 		}
 
-		
-		internal bool TryGetValue (DependencyProperty dp, out object value)
+		public void Invalidate ()
 		{
+			if (Binding.Mode != BindingMode.OneTime)
+				cached = false;
+		}
+		
+		internal object GetValue (DependencyProperty dp)
+		{
+			if (cached)
+				return cachedValue;
+
+			cached = true;
 			if (DataSource == null) {
-				value = dp.DefaultValue;
-				return true;
+				cachedValue = dp.DefaultValue;
 			}
 			if (string.IsNullOrEmpty (Binding.Path.Path)) {
 				// If the path is empty, return the active DataSource
-				value = DataSource;
-				return true;
+				cachedValue = DataSource;
 			}	
 			else if (PropertyInfo == null) {
 				Console.WriteLine ("Default value is: {0}", dp.DefaultValue);
-				value = dp.DefaultValue;
-				return true;
+				cachedValue = dp.DefaultValue;
 			}
 			else
-				value = PropertyInfo.GetValue (PropertyTarget, null);
+				cachedValue = PropertyInfo.GetValue (PropertyTarget, null);
 
 			if (Binding.Converter != null) {
-				value = Binding.Converter.Convert (value,
+				cachedValue = Binding.Converter.Convert (cachedValue,
 				                                   Property.PropertyType,
 				                                   Binding.ConverterParameter,
 				                                   Binding.ConverterCulture ?? System.Globalization.CultureInfo.CurrentCulture);
 			}
 
-			if (value != null) {
-				if (Property.PropertyType != value.GetType() && Property.PropertyType.IsValueType && value.GetType().IsValueType) {
+			if (cachedValue != null) {
+				if (Property.PropertyType != cachedValue.GetType() && Property.PropertyType.IsValueType && cachedValue.GetType().IsValueType) {
 					Console.WriteLine ("Converting");
-					value = Convert.ChangeType (value, Property.PropertyType, null);
+					cachedValue = Convert.ChangeType (cachedValue, Property.PropertyType, null);
 				}
 			}
-			return true;
+
+			return cachedValue;
 		}
 		
 		internal void SetValue (object value)

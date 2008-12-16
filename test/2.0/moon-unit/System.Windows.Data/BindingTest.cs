@@ -365,7 +365,6 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void TestOneWayBinding2 ()
 		{
 			PropertyUpdater data = new PropertyUpdater { Opacity = 0.5f };
