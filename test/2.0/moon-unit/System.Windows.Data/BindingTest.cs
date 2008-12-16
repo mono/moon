@@ -381,6 +381,29 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
+		[MoonlightBug]
+		public void TestOneWayBinding3 ()
+		{
+			PropertyUpdater data = new PropertyUpdater { Opacity = 0.5f };
+			Rectangle rectangle = new Rectangle { Opacity = 0f , DataContext = data };
+			Binding binding = new Binding
+			{
+				Path = new PropertyPath ("Opacity"),
+				Mode = BindingMode.OneWay,
+			};
+
+			rectangle.SetBinding (Rectangle.OpacityProperty, binding);
+			Assert.AreEqual (data.Opacity, rectangle.Opacity, "#1");
+			data.Opacity = 0.0f;
+			Assert.AreEqual (data.Opacity, rectangle.Opacity, "#2");
+			rectangle.DataContext = null;
+			data.Opacity = 0.5f;
+			Assert.AreEqual (1.0f, rectangle.Opacity, "#3");
+			rectangle.DataContext = data;
+			Assert.AreEqual (0.5f, rectangle.Opacity, "#4");
+		}
+
+		[TestMethod]
 		public void ModifyAfterRegisterOneWay ()
 		{
 			Binding binding = new Binding {
