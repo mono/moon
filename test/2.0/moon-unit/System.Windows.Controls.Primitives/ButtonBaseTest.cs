@@ -30,6 +30,8 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Threading;
+using System.Threading;
 
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -60,6 +62,11 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 			{
 				base.OnClick ();
 			}
+
+			public object DefaultStyleKey_ {
+				get { return base.DefaultStyleKey; }
+				set { base.DefaultStyleKey = value; }
+			}
 		}
 
 		[TestMethod]
@@ -67,13 +74,18 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 		{
 			ConcreteButtonBase bb = new ConcreteButtonBase ();
 			// default properties on ButtonBase
+			CheckDefaultProperties (bb, ClickMode.Release);
+		}
+
+		static public void CheckDefaultProperties (ButtonBase bb, ClickMode mode)
+		{
 			Assert.IsFalse (bb.IsFocused, "IsFocused");
 			Assert.IsFalse (bb.IsMouseOver, "IsMouseOver");
 			Assert.IsFalse (bb.IsPressed, "IsPressed");
-			Assert.AreEqual (ClickMode.Release, bb.ClickMode, "ClickMode");
+			Assert.AreEqual (mode, bb.ClickMode, "ClickMode");
 
-			// default properties on Control...
-			ControlTest.CheckDefaultProperties (bb);
+			// default properties on ContentControl...
+			ContentControlTest.CheckDefaultProperties (bb);
 		}
 
 		[TestMethod]
@@ -117,6 +129,15 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 			Assert.Throws<ArgumentException> (delegate {
 				bb.ClickMode = (ClickMode) Int32.MinValue;
 			});
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void PeekProperties ()
+		{
+			ConcreteButtonBase cc = new ConcreteButtonBase ();
+			Assert.IsNotNull (cc.DefaultStyleKey_, "DefaultStyleKey");
+			Assert.AreEqual (typeof (ContentControl), cc.DefaultStyleKey_, "DefaultStyleKey/Type");
 		}
 
 		[TestMethod]

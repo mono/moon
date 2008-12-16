@@ -46,8 +46,8 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 			Assert.AreEqual (500, rb.Delay, "Delay");
 			Assert.AreEqual (33, rb.Interval, "Interval");
 
-			// default properties on Control...
-			ControlTest.CheckDefaultProperties (rb);
+			// default properties on ButtonBase...
+			ButtonBaseTest.CheckDefaultProperties (rb, ClickMode.Press);
 		}
 
 		[TestMethod]
@@ -120,6 +120,14 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 				rb.SetValue (RepeatButton.IntervalProperty, null);
 			}, "non-int");
 			Assert.AreEqual (Int32.MaxValue, rb.Interval, "unchanged");
+		}
+
+		[TestMethod]
+		public void DefaultMethods ()
+		{
+			RepeatButton rb = new RepeatButton ();
+			rb.OnApplyTemplate ();
+			ControlTest.CheckDefaultMethods (rb);
 		}
 	}
 }

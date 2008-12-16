@@ -100,10 +100,9 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 			Assert.AreEqual (FontStretches.Normal, t.FontStretch, "FontStretch");
 			Assert.AreEqual (FontStyles.Normal, t.FontStyle, "FontStyle");
 			Assert.AreEqual (FontWeights.Normal, t.FontWeight, "FontWeight");
-// FIXME: default is null right now
-//			Assert.IsNotNull (t.Foreground, "Foreground");
-//			Assert.IsTrue (t.Foreground is SolidColorBrush, "Foreground/SolidColorBrush");
-//			Assert.AreEqual (Colors.Black, (t.Foreground as SolidColorBrush).Color, "Foreground.Color");
+			Assert.IsNotNull (t.Foreground, "Foreground");
+			Assert.IsTrue (t.Foreground is SolidColorBrush, "Foreground/SolidColorBrush");
+			Assert.AreEqual (Colors.Black, (t.Foreground as SolidColorBrush).Color, "Foreground.Color");
 			Assert.AreEqual (HorizontalAlignment.Center, t.HorizontalContentAlignment, "HorizontalContentAlignment");
 			Assert.IsTrue (t.IsEnabled, "IsEnabled");
 			Assert.IsFalse (t.IsTabStop, "IsTabStop");

@@ -61,6 +61,11 @@ namespace MoonTest.System.Windows.Controls {
 		{
 			ContentControl cc = new ContentControl ();
 			// default properties on ContentControl
+			CheckDefaultProperties (cc);
+		}
+
+		static public void CheckDefaultProperties (ContentControl cc)
+		{
 			Assert.IsNull (cc.Content, "Content");
 			Assert.IsNull (cc.ContentTemplate, "ContentTemplate");
 
@@ -74,6 +79,7 @@ namespace MoonTest.System.Windows.Controls {
 		{
 			ContentControlPoker cc = new ContentControlPoker ();
 			Assert.IsNotNull (cc.DefaultStyleKey_, "DefaultStyleKey");
+			Assert.AreEqual (typeof (ContentControl), cc.DefaultStyleKey_, "DefaultStyleKey/Type");
 		}
 
 		[TestMethod]
