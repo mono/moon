@@ -1,3 +1,9 @@
+2008-12-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* test-runner/ExternalProcess.cs: Thread reading stdout: catch and exit
+	  thread if we get any exceptions (instead of crashing the entire
+	  harness due to an uncaught exception).
+
 2008-12-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* agviewer/agviewer.cpp: If the hang detector detects that we're hung

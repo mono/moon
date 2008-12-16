@@ -113,9 +113,14 @@ namespace MoonlightTests {
 				stdout_thread = new Thread (delegate ()
 					{
 						string line;
-						while (null != (line = process.StandardOutput.ReadLine ())) {
-							stdout.AppendLine (line);
-							Console.WriteLine (line);
+						try {
+							while (null != (line = process.StandardOutput.ReadLine ())) {
+								stdout.AppendLine (line);
+								Console.WriteLine (line);
+							}
+						} catch (Exception ex) {
+							Console.WriteLine ("Stdout tee for '{0}' threw an exception: {1}", process_path, ex.Message);
+							Console.WriteLine (ex.StackTrace);
 						}
 					}
 					);
