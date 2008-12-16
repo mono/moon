@@ -181,9 +181,7 @@ class TextBlock : public FrameworkElement {
 	
 	void DownloaderComplete ();
 	
-	static void data_write (void *data, gint32 offset, gint32 n, void *closure);
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
-	static void size_notify (gint64 size, gpointer data);
 	
  protected:
 	virtual ~TextBlock ();
@@ -334,9 +332,7 @@ class Glyphs : public FrameworkElement {
 	
 	void DownloaderComplete ();
 	
-	static void data_write (void *data, gint32 offset, gint32 n, void *closure);
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
-	static void size_notify (gint64 size, gpointer data);
 	
 	void DownloadFont (Surface *surface, const char *url);
 	

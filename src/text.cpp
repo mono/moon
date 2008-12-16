@@ -257,8 +257,6 @@ TextBlock::SetFontSource (Downloader *downloader)
 			if (downloader->Completed ())
 				DownloaderComplete ();
 		} else {
-			downloader->SetWriteFunc (data_write, size_notify, this);
-			
 			// This is what actually triggers the download
 			downloader->Send ();
 		}
@@ -850,18 +848,6 @@ TextBlock::GetValue (DependencyProperty *property)
 }
 
 void
-TextBlock::data_write (void *buf, gint32 offset, gint32 n, gpointer data)
-{
-	;
-}
-
-void
-TextBlock::size_notify (gint64 size, gpointer data)
-{
-	;
-}
-
-void
 TextBlock::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	((TextBlock *) closure)->DownloaderComplete ();
@@ -1383,18 +1369,6 @@ Glyphs::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, P
 }
 
 void
-Glyphs::data_write (void *buf, gint32 offset, gint32 n, gpointer data)
-{
-	;
-}
-
-void
-Glyphs::size_notify (gint64 size, gpointer data)
-{
-	;
-}
-
-void
 Glyphs::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	((Glyphs *) closure)->DownloaderComplete ();
@@ -1628,8 +1602,6 @@ Glyphs::DownloadFont (Surface *surface, const char *url)
 				if (downloader->Completed ())
 					DownloaderComplete ();
 			} else {
-				downloader->SetWriteFunc (data_write, size_notify, this);
-				
 				// This is what actually triggers the download
 				downloader->Send ();
 			}
