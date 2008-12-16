@@ -525,14 +525,13 @@ TextBox::SelectAll ()
 bool 
 TextBox::IsValueValid (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error)
 {
-	if (property == TextBox::MaxLengthProperty ||
-		property == TextBox::SelectionLengthProperty ||
-		property == TextBox::SelectionStartProperty) {
-		if (value && value->AsInt32 () < 0) {
-			MoonError::FillIn (error, MoonError::ARGUMENT_OUT_OF_RANGE, 1001,
-				g_strdup_printf ("Value cannot be negative"));
-			return false;	
-		}
+	if ((property == TextBox::MaxLengthProperty ||
+	     property == TextBox::SelectionLengthProperty ||
+	     property == TextBox::SelectionStartProperty) &&
+	    value && value->AsInt32 () < 0) {
+		MoonError::FillIn (error, MoonError::ARGUMENT_OUT_OF_RANGE, 1001,
+				   g_strdup_printf ("Value cannot be negative"));
+		return false;	
 	}
 	
 	return Control::IsValueValid (additional_types, property, value, error);
@@ -552,13 +551,13 @@ PasswordBox::IsValueValid (Types *additional_types, DependencyProperty *property
 {
 	if (property == PasswordBox::PasswordProperty && value && !value->AsString ()) {
 		MoonError::FillIn (error, MoonError::ARGUMENT_OUT_OF_RANGE, 1001,
-			g_strdup_printf ("Cannot set a null password"));
+				   g_strdup_printf ("Cannot set a null password"));
 		return false;	
 	}
 	
 	if (property == PasswordBox::MaxLengthProperty && value && value->AsInt32 () < 0) {
 		MoonError::FillIn (error, MoonError::ARGUMENT_OUT_OF_RANGE, 1001,
-			g_strdup_printf ("MaxLength cannot be negative"));
+				   g_strdup_printf ("MaxLength cannot be negative"));
 		return false;	
 	}
 	
