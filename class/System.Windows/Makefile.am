@@ -110,6 +110,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls.Primitives/LayoutInformation.cs	\
 	$(srcdir)/System.Windows.Controls.Primitives/Popup.cs			\
 	$(srcdir)/System.Windows.Controls.Primitives/ScrollEventHandler.cs	\
+	$(srcdir)/System.Windows.Controls.Primitives/Selector.cs		\
 	$(srcdir)/System.Windows.Ink/DrawingAttributes.cs			\
 	$(srcdir)/System.Windows.Ink/Stroke.cs					\
 	$(srcdir)/System.Windows.Ink/StrokeCollection.cs			\
