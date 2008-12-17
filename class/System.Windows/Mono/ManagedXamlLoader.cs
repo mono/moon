@@ -480,9 +480,12 @@ namespace Mono.Xaml
 			if (converter != null && converter.CanConvertFrom (value.GetType ()))
 				return converter.ConvertFrom (value);
 
-			// TODO: Handle IConvertible
+			try {
+				value = Convert.ChangeType (value, t, System.Globalization.CultureInfo.CurrentCulture);
+			} catch {
+			}
 			
-			// This will just let thigns fail
+			// This will just let things fail
 			return value;
 		}
 

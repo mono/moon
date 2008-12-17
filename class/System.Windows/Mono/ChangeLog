@@ -1,3 +1,7 @@
+2008-12-17  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: Handle IConvertible.
+
 2008-12-12  Jackson Harper  <jackson@ximian.com>
 
 	* ManagedXamlLoader.cs: Allow null for the xmlns
