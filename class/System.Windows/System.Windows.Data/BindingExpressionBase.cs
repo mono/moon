@@ -94,10 +94,10 @@ namespace System.Windows.Data {
 				return target;
 			}
 		}
-
-		internal IntPtr Native {
-			get; set;
-		}
+//
+//		internal IntPtr Native {
+//			get; set;
+//		}
 
 		PropertyInfo PropertyInfo {
 			get {

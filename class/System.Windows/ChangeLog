@@ -1,5 +1,10 @@
 2008-12-17  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingExpressionBase.cs: Comment out the native
+	IntPtr as it's not used
+
+2008-12-17  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/BindingExpression.cs:
 	* System.Windows.Data/BindingExpressionBase.cs:
 	BindingExpression/BindingExpressionBase should not be passed to/from
