@@ -1,3 +1,8 @@
+2008-12-17  Geoff Norton  <gnorton@novell.com>
+
+	* plugin.cpp: gtk_plug_new takes a GdkNativeWindow which has
+	differing precision on amd64 and i586.
+
 2008-12-16  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.h, plugin.cpp: move all the stuff from mono.cpp (and
