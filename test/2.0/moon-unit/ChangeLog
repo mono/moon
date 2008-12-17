@@ -1,5 +1,11 @@
 2008-12-17  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingTest.cs:
+	BindingExpression/BindingExpressionBase should not be passed to/from
+	native code anymore.
+
+2008-12-17  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/BindingTest.cs: Default to rectangle.Opacity to 1f
 	as the test sets data.Opacity to 0f and then checks to see if
 	rectangle.Opacity is 0f

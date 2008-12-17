@@ -155,7 +155,6 @@ namespace System.Windows {
 			case Kind.ASSEMBLYPART_COLLECTION: return new AssemblyPartCollection (raw);
 			case Kind.BEGINSTORYBOARD: return new BeginStoryboard (raw);
 			case Kind.BEZIERSEGMENT: return new BezierSegment (raw);
-			case Kind.BINDINGEXPRESSION: return new BindingExpression ();
 			case Kind.BORDER: return new Border (raw);
 			case Kind.CANVAS: return new Canvas (raw);
 			case Kind.COLORANIMATION: return new ColorAnimation (raw);
@@ -358,12 +357,6 @@ namespace System.Windows {
 				Value *val = (Value *) value;
 				
 				switch (val->k) {
-				case Kind.BINDINGEXPRESSION:
-					object o = null;
-					if (managedObjects.TryGetValue (val->u.p, out o))
-						return o;
-					managedObjects.Add (val->u.p, new BindingExpression (val->u.p));
-					return managedObjects [val->u.p];
 				case Kind.INVALID:
 					return null;
 					
@@ -530,13 +523,6 @@ namespace System.Windows {
 					value.k = dov.GetKind ();
 					value.u.p = dov_native;
 					NativeMethods.event_object_ref (dov_native);
-				}
-				else if (v is BindingExpressionBase) {
-					IntPtr native = ((BindingExpression)v).Native;
-					value.u.p = native;
-					value.k = Kind.BINDINGEXPRESSION;
-					managedObjects [native] = v;
-					NativeMethods.event_object_ref (native);
 				}
 				else if (v is int || (v.GetType ().IsEnum && Enum.GetUnderlyingType (v.GetType()) == typeof(int))) {
 					value.k = Kind.INT32;
@@ -750,7 +736,7 @@ namespace System.Windows {
 			}
 
 			object_type = value.GetType ();
-			if (!dp.PropertyType.IsAssignableFrom (object_type) && !(value is BindingExpression))
+			if (!dp.PropertyType.IsAssignableFrom (object_type))
 				throw new ArgumentException (string.Format ("The DependencyProperty '{2}', whose property type is {0} can't be set to value whose type is {1}", dp.PropertyType.FullName, object_type.FullName, dp.Name));
 				                     
 			v = GetAsValue (value, (dp is CustomDependencyProperty) || (dp.PropertyType == typeof (object) || dp.PropertyType == typeof (Type)));

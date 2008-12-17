@@ -48,20 +48,21 @@ namespace System.Windows.Data {
 		bool updating;
 		
 		internal Binding Binding {
-			get {
-				IntPtr binding = NativeMethods.binding_expression_base_get_binding (Native);
-				if (binding == IntPtr.Zero)
-					return null;
-				if (!bindings.ContainsKey (binding))
-					bindings.Add (binding, new Binding (binding));
-				return bindings [binding];
-			}
-			set {
-				IntPtr binding = value == null ? IntPtr.Zero : value.Native;
-				NativeMethods.binding_expression_base_set_binding (Native, binding);
-				if (binding != IntPtr.Zero && !bindings.ContainsKey (binding))
-					bindings.Add (binding, value);
-			}
+			get; set;
+//			get {
+//				IntPtr binding = NativeMethods.binding_expression_base_get_binding (Native);
+//				if (binding == IntPtr.Zero)
+//					return null;
+//				if (!bindings.ContainsKey (binding))
+//					bindings.Add (binding, new Binding (binding));
+//				return bindings [binding];
+//			}
+//			set {
+//				IntPtr binding = value == null ? IntPtr.Zero : value.Native;
+//				NativeMethods.binding_expression_base_set_binding (Native, binding);
+//				if (binding != IntPtr.Zero && !bindings.ContainsKey (binding))
+//					bindings.Add (binding, value);
+//			}
 		}
 
 		internal FrameworkElement Target {
@@ -116,23 +117,23 @@ namespace System.Windows.Data {
 
 		
 		internal BindingExpressionBase ()
-			: this (Mono.NativeMethods.binding_expression_new ())
+//			: this (Mono.NativeMethods.binding_expression_new ())
 		{
 			
 		}
 
-		internal BindingExpressionBase (IntPtr native)
-		{
-			Native = native;
-		}
-
-		~BindingExpressionBase ()
-		{
-			if (Native != IntPtr.Zero) {
-				Mono.NativeMethods.event_object_unref (Native);
-				Native = IntPtr.Zero;
-			}
-		}
+//		internal BindingExpressionBase (IntPtr native)
+//		{
+//			Native = native;
+//		}
+//
+//		~BindingExpressionBase ()
+//		{
+//			if (Native != IntPtr.Zero) {
+//				Mono.NativeMethods.event_object_unref (Native);
+//				Native = IntPtr.Zero;
+//			}
+//		}
 
 		PropertyInfo GetPropertyInfo ()
 		{

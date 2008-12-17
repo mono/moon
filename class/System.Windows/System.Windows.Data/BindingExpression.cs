@@ -37,7 +37,7 @@ namespace System.Windows.Data
 //		SetValueCallback sv_callback;
 		
 		public BindingExpression()
-			: this (NativeMethods.binding_expression_new ())
+//			: this (NativeMethods.binding_expression_new ())
 		{
 //			gv_callback = new GetValueCallback (GetValueOverride);
 //			sv_callback = new SetValueCallback (UpdateSourceOverride);
@@ -45,11 +45,11 @@ namespace System.Windows.Data
 		}
 
 		
-		internal BindingExpression (IntPtr native)
-			: base (native)
-		{
-			
-		}
+//		internal BindingExpression (IntPtr native)
+//			: base (native)
+//		{
+//			
+//		}
 //
 //		Value GetValueOverride ()
 //		{

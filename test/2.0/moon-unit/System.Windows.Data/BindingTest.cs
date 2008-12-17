@@ -506,6 +506,7 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void XamlCreateBinding()
 		{
 			object o = XamlReader.Load(

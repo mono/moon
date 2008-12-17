@@ -1,5 +1,12 @@
 2008-12-17  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingExpression.cs:
+	* System.Windows.Data/BindingExpressionBase.cs:
+	BindingExpression/BindingExpressionBase should not be passed to/from
+	native code anymore.
+
+2008-12-17  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/BindingExpressionBase.cs: I don't know why
 	'EndsWith' was used instead of 'Equals' when comparing property
 	names.
