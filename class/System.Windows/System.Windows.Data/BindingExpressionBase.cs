@@ -115,7 +115,7 @@ namespace System.Windows.Data {
 		}
 
 		
-		protected BindingExpressionBase ()
+		internal BindingExpressionBase ()
 			: this (Mono.NativeMethods.binding_expression_new ())
 		{
 			

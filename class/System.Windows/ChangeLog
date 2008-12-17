@@ -1,5 +1,10 @@
 2008-12-17  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingExpressionBase.cs: This constructor should
+	be internal, not protected.
+
+2008-12-17  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/BindingExpressionBase.cs: Completed support for
 	1way/2way bindings with INotifyPropertyChanged sources.
 
