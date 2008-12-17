@@ -22,6 +22,7 @@ SMCS = MONO_PATH="../lib/2.1:$$MONO_PATH" mono --runtime=moonlight --security=te
 GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib
 
 MSCONTROLS=$(srcdir)/../Microsoft.SilverlightControls/Controls
+MSTOOLKIT=$(srcdir)/../Microsoft.Windows.Controls/Source
 WPFTOOLKIT=$(srcdir)/../WPF.Toolkit
 
 system_windows_sources =							\
@@ -400,7 +401,10 @@ system_windows_sources =							\
 	$(MSCONTROLS)/Src/ToggleButton/ToggleButton.cs				\
 	$(MSCONTROLS)/Src/ToolTip/ToolTip.cs					\
 	$(MSCONTROLS)/Src/ToolTip/ToolTipService.cs				\
-	$(MSCONTROLS)/Extended/Src/Slider/Slider.cs
+	$(MSCONTROLS)/Extended/Src/Slider/Slider.cs				\
+	$(MSTOOLKIT)/Controls/Common/InteractionHelper.cs			\
+	$(MSTOOLKIT)/Controls/Common/IUpdateVisualState.cs			\
+	$(MSTOOLKIT)/Controls/Common/VisualStates.cs
 
 EXTRA_DIST = $(system_windows_sources) 	\
 	scripts/checks.cs 			\

@@ -8,20 +8,24 @@ using System.Windows.Automation.Peers;
 using System.Windows.Input; 
 using System.Windows.Markup; 
 using System.Windows.Media.Animation;
+
+// use the cool stuff from SL Toolkit
+using Microsoft.Windows.Controls;
  
 namespace System.Windows.Controls.Primitives
 {
     /// <summary> 
     /// Initializes a new instance of the Thumb class.
     /// </summary>
-    [TemplateVisualStateAttribute(Name = "Unfocused", GroupName = "FocusStates")]
-    [TemplateVisualStateAttribute(Name = "Focused", GroupName = "FocusStates")]
-    [TemplateVisualStateAttribute(Name = "Normal", GroupName = "CommonStates")]
-    [TemplateVisualStateAttribute(Name = "MouseOver", GroupName = "CommonStates")]
-    [TemplateVisualStateAttribute(Name = "Pressed", GroupName = "CommonStates")]
-    [TemplateVisualStateAttribute(Name = "Disabled", GroupName = "CommonStates")]
-    public sealed class Thumb : Control
-    { 
+	[TemplateVisualState (Name = VisualStates.StateNormal, GroupName = VisualStates.GroupCommon)]
+	[TemplateVisualState (Name = VisualStates.StateMouseOver, GroupName = VisualStates.GroupCommon)]
+	[TemplateVisualState (Name = VisualStates.StatePressed, GroupName = VisualStates.GroupCommon)]
+	[TemplateVisualState (Name = VisualStates.StateDisabled, GroupName = VisualStates.GroupCommon)]
+
+	[TemplateVisualState (Name = VisualStates.StateFocused, GroupName = VisualStates.GroupFocus)]
+	[TemplateVisualState (Name = VisualStates.StateUnfocused, GroupName = VisualStates.GroupFocus)]
+	public sealed class Thumb : Control, IUpdateVisualState {
+
         #region IsDragging
         /// <summary>
         /// Gets whether the Thumb control has logical focus and mouse capture 
@@ -61,7 +65,7 @@ namespace System.Windows.Controls.Primitives
         /// </summary>
         private void OnDraggingChanged()
         { 
-            UpdateVisualState(); 
+            UpdateVisualState (true); 
         }
  
         #endregion IsDragging
@@ -100,18 +104,26 @@ namespace System.Windows.Controls.Primitives
 
             if (t.ElementRoot != null) 
             { 
-                t.UpdateVisualState(); 
+                t.UpdateVisualState (true); 
             } 
         }
 
 	protected override void OnGotFocus (RoutedEventArgs e)
 	{
-		// On SL2 subscribing to the Thumb.GotFocus event does call our delegate
+		if (Interaction.AllowGotFocus (e)) {
+			Interaction.OnGotFocusBase ();
+		}
+		// we're not calling base on purpose
+		// SL2 does not fire the GotFocus event on Thumbs
 	}
 
 	protected override void OnLostFocus (RoutedEventArgs e)
 	{
-		// On SL2 subscribing to the Thumb.LostFocus event does call our delegate
+		if (Interaction.AllowLostFocus (e)) {
+			Interaction.OnLostFocusBase ();
+		}
+		// we're not calling base on purpose
+		// SL2 does not fire the GotFocus event on Thumbs
 	}
 
         #endregion IsFocused 
@@ -133,20 +145,34 @@ namespace System.Windows.Controls.Primitives
         public event DragCompletedEventHandler DragCompleted;
         #endregion Events
  
+		#region Visual state management
+		/// <summary>
+		/// Gets or sets the helper that provides all of the standard
+		/// interaction functionality.
+		/// </summary>
+		private InteractionHelper Interaction { get; set; }
+
+		/// <summary>
+		/// Update the visual state of the control.
+		/// </summary>
+		/// <param name="useTransitions">
+		/// A value indicating whether to automatically generate transitions to
+		/// the new state, or instantly transition to the new state.
+		/// </param>
+		void IUpdateVisualState.UpdateVisualState (bool useTransitions)
+		{
+			UpdateVisualState (useTransitions);
+		}
+		#endregion
+
         #region Constructor
         /// <summary>
         /// Initializes a new instance of the Thumb class. 
         /// </summary> 
         public Thumb()
         { 
-            IsEnabled = true;
-/*
-            this.MouseEnter += delegate(object sender, MouseEventArgs e) { OnMouseEnter(e); };
-            this.MouseLeave += delegate(object sender, MouseEventArgs e) { OnMouseLeave(e); }; 
-            this.MouseLeftButtonDown += delegate(object sender, MouseButtonEventArgs e) { OnMouseLeftButtonDown(e); };
-            this.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e) { OnMouseLeftButtonUp(e); };
-            this.MouseMove += delegate(object sender, MouseEventArgs e) { OnMouseMove(e); }; 
-*/
+		this.DefaultStyleKey = typeof (Thumb);
+		Interaction = new InteractionHelper (this);
         } 
 
         /// <summary> 
@@ -158,15 +184,9 @@ namespace System.Windows.Controls.Primitives
  
             // Get the parts 
             ElementRoot = GetTemplateChild(ElementRootName) as FrameworkElement;
- 
-            // Get the states
-            if (ElementRoot != null)
-            { 
-                StateNormal = ElementRoot.Resources[StateNormalName] as Storyboard;
-                StateMouseOver = ElementRoot.Resources[StateMouseOverName] as Storyboard;
-                StatePressed = ElementRoot.Resources[StatePressedName] as Storyboard; 
-                StateDisabled = ElementRoot.Resources[StateDisabledName] as Storyboard; 
-            }
+
+		// Get the states
+		Interaction.OnApplyTemplateBase ();
         } 
         #endregion Constructor
 
@@ -178,7 +198,7 @@ namespace System.Windows.Controls.Primitives
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "e", Justification = "Compat with WPF.")]
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e) 
         {
-            if (!IsDragging && IsEnabled)
+            if (!IsDragging && Interaction.AllowMouseLeftButtonDown (e))
             { 
                 e.Handled = true;
 
@@ -207,6 +227,7 @@ namespace System.Windows.Controls.Primitives
                     {
                         CancelDrag();
                     } 
+			Interaction.OnMouseLeftButtonDownBase ();
                 }
             }
         } 
@@ -218,12 +239,14 @@ namespace System.Windows.Controls.Primitives
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "e", Justification = "Compat with WPF.")] 
         protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
         {
-            if (IsDragging && IsEnabled) 
+            if (IsDragging && Interaction.AllowMouseLeftButtonUp (e)) 
             { 
                 e.Handled = true;
                 IsDragging = false; 
                 ReleaseMouseCapture();
                 RaiseDragCompleted(false);
+
+		Interaction.OnMouseLeftButtonUpBase ();
             } 
         }
 
@@ -234,12 +257,8 @@ namespace System.Windows.Controls.Primitives
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "e", Justification = "Compat with WPF.")]
         protected override void OnMouseEnter(MouseEventArgs e)
         { 
-//            e.Handled = true;
-            if (IsEnabled)
-            { 
-                IsMouseOver = true; 
-                UpdateVisualState();
-            } 
+		if (Interaction.AllowMouseEnter (e))
+			Interaction.OnMouseEnterBase ();
         }
 
         /// <summary> 
@@ -249,12 +268,8 @@ namespace System.Windows.Controls.Primitives
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "e", Justification = "Compat with WPF.")] 
         protected override void OnMouseLeave(MouseEventArgs e)
         { 
- //           e.Handled = true;
-            if (IsEnabled)
-            { 
-                IsMouseOver = false;
-                UpdateVisualState();
-            } 
+		if (Interaction.AllowMouseLeave (e))
+			Interaction.OnMouseLeaveBase ();
         } 
 
         /// <summary> 
@@ -292,56 +307,10 @@ namespace System.Windows.Controls.Primitives
         /// <summary>
         /// Change to the correct visual state for the thumb. 
         /// </summary> 
-        internal void UpdateVisualState()
+        internal void UpdateVisualState (bool useTransitions)
         { 
-// FIXME: adjust wrt IsFocused property ?
-            if (!IsEnabled)
-            {
-                ChangeVisualState(StateDisabled ?? StateNormal); 
-            }
-            else if (IsDragging)
-            { 
-                ChangeVisualState(StatePressed ?? StateMouseOver ?? StateNormal); 
-            }
-            else 
-            {
-                if (IsMouseOver)
-                { 
-                    ChangeVisualState(StateMouseOver ?? StateNormal);
-                }
-                else 
-                { 
-                    ChangeVisualState(StateNormal);
-                } 
-            }
-        }
- 
-        /// <summary>
-        /// Change the visual state of the thumb.
-        /// </summary> 
-        /// <param name="state">Next visual state of the thumb.</param> 
-        /// <remarks>
-        /// This method should not be called by controls to force a change to 
-        /// the current visual state.  UpdateVisualState is preferred because
-        /// it properly handles suspension of state changes.
-        /// </remarks> 
-        private void ChangeVisualState(Storyboard state)
-        {
-            Storyboard previousState = _currentState; 
-            if (state == previousState) 
-            {
-                return; 
-            }
-
-            if (state != null) 
-            {
-                if (previousState != null)
-                { 
-                    previousState.Stop(); 
-                }
-                _currentState = state; 
-                state.Begin();
-            }
+		// all states are managed by the default InteractionHelper
+		Interaction.UpdateVisualStateBase (useTransitions);
         } 
         #endregion Change State
 
@@ -390,37 +359,15 @@ namespace System.Windows.Controls.Primitives
         /// </summary> 
         internal FrameworkElement ElementRoot { get; set; }
         internal const string ElementRootName = "RootElement"; 
-
-        /// <summary>
-        /// Transition into the normal state in the thumb template. 
-        /// </summary>
-        internal Storyboard StateNormal { get; set; }
-        internal const string StateNormalName = "Normal State"; 
- 
-        /// <summary>
-        /// Transition into the MouseOver state in the thumb template. 
-        /// </summary>
-        internal Storyboard StateMouseOver { get; set; }
-        internal const string StateMouseOverName = "MouseOver State"; 
-
-        /// <summary>
-        /// Transition into the Pressed state in the thumb template. 
-        /// </summary> 
-        internal Storyboard StatePressed { get; set; }
-        internal const string StatePressedName = "Pressed State"; 
-
-        /// <summary>
-        /// Transition into the Disabled state in the thumb template. 
-        /// </summary>
-        internal Storyboard StateDisabled { get; set; }
-        internal const string StateDisabledName = "Disabled State"; 
         #endregion Template Parts 
 
         #region Member Variables 
         /// <summary>
         /// Whether the mouse is currently over the control
         /// </summary> 
-        internal bool IsMouseOver { get; set; }
+	internal bool IsMouseOver {
+		get { return Interaction.IsMouseOver; }
+	}
         /// <summary>
         /// Origin of the thumb's drag operation. 
         /// </summary> 
@@ -429,10 +376,6 @@ namespace System.Windows.Controls.Primitives
         /// Last position of the thumb while during a drag operation.
         /// </summary>
         internal Point _previousPosition; 
-        /// <summary>
-        /// Current state of the control
-        /// </summary> 
-        internal Storyboard _currentState; 
         #endregion Member Variables
     } 
 }

@@ -1,3 +1,8 @@
+2008-12-17  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Controls/Src/Thumb/Thumb.cs: Updated to work with SL Toolkit 
+	helpers	(simplify things a lot) and VSM support.
+
 2008-12-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Controls/Extended/Src/Slider/Slider.cs: Dont set properties 
