@@ -381,11 +381,10 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void TestOneWayBinding3 ()
 		{
 			PropertyUpdater data = new PropertyUpdater { Opacity = 0.5f };
-			Rectangle rectangle = new Rectangle { Opacity = 0f , DataContext = data };
+			Rectangle rectangle = new Rectangle { Opacity = 1f , DataContext = data };
 			Binding binding = new Binding
 			{
 				Path = new PropertyPath ("Opacity"),

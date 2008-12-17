@@ -254,7 +254,7 @@ namespace System.Windows {
 			} else {
 				base.SetValueImpl (dp, value);
 			}
-
+			
 			if (dp == FrameworkElement.DataContextProperty && bindings.Count > 0) {
 				Dictionary<DependencyProperty, BindingExpressionBase> old = bindings;
 				bindings = new Dictionary<DependencyProperty, BindingExpressionBase> ();
@@ -263,6 +263,11 @@ namespace System.Windows {
 					SetValue (keypair.Key, keypair.Value);
 				}
 			}
+		}
+
+		internal void UpdateFromBinding (DependencyProperty dp, object value)
+		{
+			base.SetValueImpl (dp, value);
 		}
 
 		internal override object ReadLocalValueImpl (DependencyProperty dp)

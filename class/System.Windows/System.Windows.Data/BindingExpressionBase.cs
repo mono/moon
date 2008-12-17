@@ -41,7 +41,7 @@ namespace System.Windows.Data {
 		static Dictionary<IntPtr, Binding> bindings = new Dictionary<IntPtr, Binding> ();
 		internal bool cached;
 		object cachedValue;
-		object cachedTarget;
+		INotifyPropertyChanged cachedTarget;
 		
 		bool parsedPath;
 		PropertyInfo info;
@@ -75,11 +75,22 @@ namespace System.Windows.Data {
 		// This is the object we're databound to
 		internal object DataSource {
 			get {
+				object target = null;
 				if (Binding.Source != null)
-					return Binding.Source;
-				if (Target != null)
-					return Target.DataContext;
-				return null;
+					target = Binding.Source;
+				if (target == null && Target != null)
+					target = Target.DataContext;
+
+				// If the datasource has changed, disconnect from the old object and reconnect
+				// to the new one.
+				if (target != cachedTarget) {
+					if (cachedTarget != null)
+						cachedTarget.PropertyChanged -= PropertyChanged;
+					cachedTarget = target as INotifyPropertyChanged;
+					if (cachedTarget != null)
+						cachedTarget.PropertyChanged += PropertyChanged;
+				}
+				return target;
 			}
 		}
 
@@ -127,10 +138,9 @@ namespace System.Windows.Data {
 		{
 			object target = DataSource;
 
-			if (target == null) {
-				Console.WriteLine ("Target was null");
+			if (target == null)
 				return null;
-			}
+
 			// FIXME: What if the path is invalid? A.B....C, AB.C£$.D etc
 			// Can you have an explicit interface implementation? Probably not.
 			string[] parts = Binding.Path.Path.Split (new char[] { '.' });
@@ -141,10 +151,9 @@ namespace System.Windows.Data {
 				PropertyInfo p = target.GetType ().GetProperty (parts [i]);
 
 				// The property does not exist, so abort.
-				if (p == null) {
-					Console.WriteLine ("The property didn't exist");
+				if (p == null)
 					return null;
-				}
+
 				if (!p.DeclaringType.IsVisible)
 					throw new MethodAccessException (string.Format ("Property {0} cannot be accessed", p.Name));
 				
@@ -152,18 +161,7 @@ namespace System.Windows.Data {
 					target = p.GetValue (target, null);
 					continue;
 				}
-				
-				if (Binding.Mode != BindingMode.OneTime && target is INotifyPropertyChanged) {
-					((INotifyPropertyChanged)target).PropertyChanged += delegate(object sender, PropertyChangedEventArgs e) {
-						if (p.Name.EndsWith (e.PropertyName)) {
-							object value = PropertyInfo.GetValue (PropertyTarget, null);
-							if (Property.PropertyType.IsValueType && value.GetType () != Property.PropertyType)
-								value = Convert.ChangeType (value, Property.PropertyType, null);
-							Target.SetValue (Property, value);
-						}
-					};
-				}
-				
+
 				PropertyTarget = target;
 				return p;
 			}
@@ -173,8 +171,13 @@ namespace System.Windows.Data {
 
 		public void Invalidate ()
 		{
-			if (Binding.Mode != BindingMode.OneTime)
-				cached = false;
+			if (Binding.Mode == BindingMode.OneTime)
+				return;
+			
+			cached = false;
+			cachedValue = null;
+			info = null;
+			parsedPath = false;
 		}
 		
 		internal object GetValue (DependencyProperty dp)
@@ -186,17 +189,16 @@ namespace System.Windows.Data {
 			if (DataSource == null) {
 				cachedValue = dp.DefaultValue;
 			}
-			if (string.IsNullOrEmpty (Binding.Path.Path)) {
+			else if (string.IsNullOrEmpty (Binding.Path.Path)) {
 				// If the path is empty, return the active DataSource
 				cachedValue = DataSource;
 			}	
 			else if (PropertyInfo == null) {
-				Console.WriteLine ("Default value is: {0}", dp.DefaultValue);
 				cachedValue = dp.DefaultValue;
 			}
-			else
+			else {
 				cachedValue = PropertyInfo.GetValue (PropertyTarget, null);
-
+			}
 			if (Binding.Converter != null) {
 				cachedValue = Binding.Converter.Convert (cachedValue,
 				                                   Property.PropertyType,
@@ -206,12 +208,22 @@ namespace System.Windows.Data {
 
 			if (cachedValue != null) {
 				if (Property.PropertyType != cachedValue.GetType() && Property.PropertyType.IsValueType && cachedValue.GetType().IsValueType) {
-					Console.WriteLine ("Converting");
 					cachedValue = Convert.ChangeType (cachedValue, Property.PropertyType, null);
 				}
 			}
 
 			return cachedValue;
+		}
+
+		void PropertyChanged (object sender, PropertyChangedEventArgs e)
+		{
+			if (PropertyInfo.Name.EndsWith (e.PropertyName)) {
+				object value = PropertyInfo.GetValue (PropertyTarget, null);
+				if (Property.PropertyType.IsValueType && value.GetType () != Property.PropertyType)
+					value = Convert.ChangeType (value, Property.PropertyType, null);
+
+				Target.UpdateFromBinding (Property, value);
+			}
 		}
 		
 		internal void SetValue (object value)
