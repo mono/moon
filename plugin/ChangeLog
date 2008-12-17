@@ -1,3 +1,10 @@
+2008-12-17  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (PluginInstance::MonoInit): supply a function pointer
+	that actually exists to dladdr when PLUGIN_INSTALL is defined.
+	Also, use a similar app domain name ("moonlight-%p" where %p is
+	the PluginInstance*).
+
 2008-12-17  Geoff Norton  <gnorton@novell.com>
 
 	* plugin.cpp: gtk_plug_new takes a GdkNativeWindow which has

@@ -1986,7 +1986,7 @@ PluginInstance::MonoInit ()
 	Dl_info dlinfo;
 	char *dirname;
 	
-	if (dladdr ((void *) &vm_init, &dlinfo) == 0) {
+	if (dladdr ((void *) plugin_xaml_loader_from_str, &dlinfo) == 0) {
 		fprintf (stderr, "Unable to find the location of libmoonplugin %s\n", dlerror ());
 		return false;
 	}
@@ -2007,9 +2007,11 @@ PluginInstance::MonoInit ()
 		mono_jit_trace_calls = mono_trace_parse_options (trace_options);
 	}
 	
+	char *domain_name = g_strdup_printf ("moonlight-%p", this);
 	mono_debug_init (MONO_DEBUG_FORMAT_MONO);
-	moon_domain = mono_jit_init_version (boot_assembly, "moonlight");
+	moon_domain = mono_jit_init_version (boot_assembly, domain_name);
 	moon_boot_assembly = mono_domain_assembly_open (moon_domain, boot_assembly);
+	g_free (domain_name);
 	
 	if (moon_boot_assembly) {
 		char *argv [2];
