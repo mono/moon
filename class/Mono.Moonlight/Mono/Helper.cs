@@ -200,23 +200,6 @@ namespace Mono {
 			return Environment.StackTrace;
 		}
 
-		public static AppDomain CreateDomain (IntPtr key)
-		{
-			AppDomain a = AppDomain.CreateDomain ("moonlight-" + key);
-
-			return a;
-		}
-
-		public static void UnloadDomain (AppDomain domain)
-		{
-			AppDomain.Unload (domain);
-		}
-		
-		public static object CreateInstanceAndUnwrap (AppDomain target, string assemblyName, string typeName)
-		{
-			return target.CreateInstanceAndUnwrap (assemblyName, typeName);
-		}
-
 		public static object CreateInstance (Type type, bool nonPublic)
 		{
 			return Activator.CreateInstance (type, nonPublic);
