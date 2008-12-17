@@ -217,7 +217,7 @@ namespace System.Windows.Data {
 
 		void PropertyChanged (object sender, PropertyChangedEventArgs e)
 		{
-			if (PropertyInfo.Name.EndsWith (e.PropertyName)) {
+			if (PropertyInfo.Name.Equals (e.PropertyName)) {
 				object value = PropertyInfo.GetValue (PropertyTarget, null);
 				if (Property.PropertyType.IsValueType && value.GetType () != Property.PropertyType)
 					value = Convert.ChangeType (value, Property.PropertyType, null);

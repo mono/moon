@@ -1,5 +1,11 @@
 2008-12-17  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingExpressionBase.cs: I don't know why
+	'EndsWith' was used instead of 'Equals' when comparing property
+	names.
+
+2008-12-17  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/BindingExpressionBase.cs: This constructor should
 	be internal, not protected.
 
