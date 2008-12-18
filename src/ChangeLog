@@ -1,5 +1,10 @@
 2008-12-18  Alan McGovern  <amcgovern@novell.com>
 
+	* grid.cpp: Correctly set the validators - forgot to revert changes
+	before committing.
+
+2008-12-18  Alan McGovern  <amcgovern@novell.com>
+
 	* grid.cpp:
 	* dependencyobject.cpp:
 	* dependencyproperty.h:

@@ -46,11 +46,11 @@ Grid::Grid ()
 	static bool init = true;
 	if (init) {
 		init = false;
-		Grid::ColumnProperty->SetValueValidator (&(this->RowColValidator));
-		Grid::RowProperty->SetValueValidator (&(this->RowColValidator));
+		Grid::ColumnProperty->SetValueValidator (RowColValidator);
+		Grid::RowProperty->SetValueValidator (RowColValidator);
 	
-		Grid::ColumnSpanProperty->SetValueValidator ((ValueValidator *) this->SpanValidator);
-		Grid::RowSpanProperty->SetValueValidator ((ValueValidator *) this->SpanValidator);
+		Grid::ColumnSpanProperty->SetValueValidator (SpanValidator);
+		Grid::RowSpanProperty->SetValueValidator (SpanValidator);
 	}
 	SetValue (Grid::ColumnDefinitionsProperty, Value::CreateUnref (new ColumnDefinitionCollection ()));
 	SetValue (Grid::RowDefinitionsProperty, Value::CreateUnref (new RowDefinitionCollection ()));
