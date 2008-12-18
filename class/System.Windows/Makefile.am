@@ -21,6 +21,7 @@ GMCS = gmcs $(CSCFLAGS) -lib:../lib/3.0
 SMCS = MONO_PATH="../lib/2.1:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack ../lib/2.1/smcs.exe -r:System.Net $(CSCFLAGS)
 GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib
 
+MSRUNTIMECONTROLS=$(srcdir)/../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls
 MSCONTROLS=$(srcdir)/../Microsoft.SilverlightControls/Controls
 MSTOOLKIT=$(srcdir)/../Microsoft.Windows.Controls/Source
 WPFTOOLKIT=$(srcdir)/../WPF.Toolkit
@@ -94,7 +95,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/Border.cs				\
 	$(srcdir)/System.Windows.Controls/InkPresenter.cs			\
 	$(srcdir)/System.Windows.Controls/MediaElement.cs			\
-	$(srcdir)/System.Windows.Controls/Orientation.cs			\
 	$(srcdir)/System.Windows.Controls/ValidationErrorEventAction.cs		\
 	$(srcdir)/System.Windows.Controls/Canvas.cs				\
 	$(srcdir)/System.Windows.Controls/ColumnDefinition.cs			\
@@ -110,7 +110,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/OpenFileDialog.cs			\
 	$(srcdir)/System.Windows.Controls/Panel.cs				\
 	$(srcdir)/System.Windows.Controls/PasswordBox.cs			\
-	$(srcdir)/System.Windows.Controls/ProgressBar.cs			\
 	$(srcdir)/System.Windows.Controls/StackPanel.cs				\
 	$(srcdir)/System.Windows.Controls/TextBlock.cs				\
 	$(srcdir)/System.Windows.Controls/TextBox.cs				\
@@ -125,7 +124,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/ValidationErrorEventArgs.cs		\
 	$(srcdir)/System.Windows.Controls.Primitives/LayoutInformation.cs	\
 	$(srcdir)/System.Windows.Controls.Primitives/Popup.cs			\
-	$(srcdir)/System.Windows.Controls.Primitives/ScrollEventHandler.cs	\
 	$(srcdir)/System.Windows.Controls.Primitives/Selector.cs		\
 	$(srcdir)/System.Windows.Ink/DrawingAttributes.cs			\
 	$(srcdir)/System.Windows.Ink/Stroke.cs					\
@@ -374,18 +372,36 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Threading/DispatcherOperation.cs		\
 	$(srcdir)/System.Windows.Threading/DispatcherSynchronizationContext.cs	\
 	$(srcdir)/System.Windows.Threading/DispatcherTimer.cs			\
+\
 	$(WPFTOOLKIT)/VSM/System/Windows/TemplateVisualStateAttribute.cs	\
 	$(WPFTOOLKIT)/VSM/System/Windows/VisualStateGroup.cs			\
 	$(WPFTOOLKIT)/VSM/System/Windows/VisualStateChangedEventArgs.cs		\
 	$(WPFTOOLKIT)/VSM/System/Windows/VisualStateManager.cs			\
 	$(WPFTOOLKIT)/VSM/System/Windows/VisualTransition.cs			\
+\
+	$(MSRUNTIMECONTROLS)/Button.cs						\
+	$(MSRUNTIMECONTROLS)/Slider.cs						\
+	$(MSRUNTIMECONTROLS)/CheckBox.cs					\
+	$(MSRUNTIMECONTROLS)/Primitives/RepeatButton.cs				\
+	$(MSRUNTIMECONTROLS)/Primitives/ScrollEventArgs.cs			\
+	$(MSRUNTIMECONTROLS)/Primitives/ToggleButton.cs				\
+	$(MSRUNTIMECONTROLS)/Primitives/Thumb.cs				\
+	$(MSRUNTIMECONTROLS)/Primitives/ScrollEventType.cs			\
+	$(MSRUNTIMECONTROLS)/Primitives/ScrollBar.cs				\
+	$(MSRUNTIMECONTROLS)/Primitives/IScrollInfo.cs				\
+	$(MSRUNTIMECONTROLS)/Primitives/DragDeltaEventArgs.cs			\
+	$(MSRUNTIMECONTROLS)/Primitives/ButtonBase.cs				\
+	$(MSRUNTIMECONTROLS)/Primitives/RangeBase.cs				\
+	$(MSRUNTIMECONTROLS)/Primitives/DragCompletedEventArgs.cs		\
+	$(MSRUNTIMECONTROLS)/VisualStates.cs					\
+	$(MSRUNTIMECONTROLS)/ProgressBar.cs					\
+	$(MSRUNTIMECONTROLS)/ClickMode.cs					\
+	$(MSRUNTIMECONTROLS)/RadioButton.cs					\
+	$(MSRUNTIMECONTROLS)/Orientation.cs					\
+	$(MSRUNTIMECONTROLS)/ScrollBarVisibility.cs				\
+	$(MSRUNTIMECONTROLS)/HyperlinkButton.cs					\
+\
 	$(MSCONTROLS)/Src/Resource.Designer.cs					\
-	$(MSCONTROLS)/Src/Button/Button.cs					\
-	$(MSCONTROLS)/Src/ButtonBase/ButtonBase.cs				\
-	$(MSCONTROLS)/Src/ButtonBase/ClickMode.cs				\
-	$(MSCONTROLS)/Src/CheckBox/CheckBox.cs					\
-	$(MSCONTROLS)/Src/Common/DragCompletedEventArgs.cs			\
-	$(MSCONTROLS)/Src/Common/DragDeltaEventArgs.cs				\
 	$(MSCONTROLS)/Src/Common/DragStartedEventArgs.cs			\
 	$(MSCONTROLS)/Src/Common/FontFamilyConverter.cs				\
 	$(MSCONTROLS)/Src/Common/KeyboardNavigation.cs				\
@@ -399,28 +415,17 @@ system_windows_sources =							\
 	$(MSCONTROLS)/Src/ContentControl/ContentControl.cs			\
 	$(MSCONTROLS)/Src/ContentControl/ContentPresenter.cs			\
 	$(MSCONTROLS)/Src/GlobalSuppressions.cs					\
-	$(MSCONTROLS)/Src/HyperlinkButton/HyperlinkButton.cs			\
 	$(MSCONTROLS)/Src/ListBox/DisplayMemberValueConverter.cs		\
 	$(MSCONTROLS)/Src/ListBox/ListBox.cs					\
 	$(MSCONTROLS)/Src/ListBox/ListBoxItem.cs				\
 	$(MSCONTROLS)/Src/ListBox/SelectionMode.cs				\
-	$(MSCONTROLS)/Src/RadioButton/RadioButton.cs				\
-	$(MSCONTROLS)/Src/RangeBase/RangeBase.cs				\
-	$(MSCONTROLS)/Src/RepeatButton/RepeatButton.cs				\
-	$(MSCONTROLS)/Src/ScrollBar/ScrollBar.cs				\
-	$(MSCONTROLS)/Src/ScrollBar/ScrollBarVisibility.cs			\
-	$(MSCONTROLS)/Src/ScrollBar/ScrollEventArgs.cs				\
-	$(MSCONTROLS)/Src/ScrollBar/ScrollEventType.cs				\
 	$(MSCONTROLS)/Src/ScrollViewer/ScrollViewer.cs				\
 	$(MSCONTROLS)/Src/ScrollViewer/ScrollContentPresenter.cs		\
-	$(MSCONTROLS)/Src/Thumb/Thumb.cs					\
-	$(MSCONTROLS)/Src/ToggleButton/ToggleButton.cs				\
 	$(MSCONTROLS)/Src/ToolTip/ToolTip.cs					\
 	$(MSCONTROLS)/Src/ToolTip/ToolTipService.cs				\
-	$(MSCONTROLS)/Extended/Src/Slider/Slider.cs				\
+\
 	$(MSTOOLKIT)/Controls/Common/InteractionHelper.cs			\
-	$(MSTOOLKIT)/Controls/Common/IUpdateVisualState.cs			\
-	$(MSTOOLKIT)/Controls/Common/VisualStates.cs
+	$(MSTOOLKIT)/Controls/Common/IUpdateVisualState.cs
 
 EXTRA_DIST = $(system_windows_sources) 	\
 	scripts/checks.cs 			\
