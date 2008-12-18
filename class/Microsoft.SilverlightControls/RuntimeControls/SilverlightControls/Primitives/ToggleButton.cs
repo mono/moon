@@ -66,7 +66,7 @@ namespace System.Windows.Controls.Primitives
 
             // Raise the appropriate changed event 
             RoutedEventArgs args = new RoutedEventArgs();
-
+            args.OriginalSource = source; // like beta1 (and unit test confirmed)
             if (value == true) 
             { 
                 source.OnChecked(args);
