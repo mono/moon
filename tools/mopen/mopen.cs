@@ -136,23 +136,6 @@ class MonoOpen {
 		GtkSilver.Init ();
 		window = new Window (file);
 
-		string full = System.IO.Path.GetFullPath (file);
-		string dir = System.IO.Path.GetDirectoryName (full);
-		
-		Moonlight.RegisterLoader (delegate (string asm_file) {
-			if (System.IO.Path.IsPathRooted (asm_file)){
-				return Assembly.LoadFile (asm_file);
-			} else {
-				return Assembly.LoadFile (System.IO.Path.Combine (dir, asm_file));
-			}
-		}, delegate (string path) {
-			if (System.IO.Path.IsPathRooted (path)){
-				return new FileStream (path, FileMode.Open, FileAccess.Read);
-			} else {
-				return new FileStream (System.IO.Path.Combine (dir, path), FileMode.Open, FileAccess.Read);
-			}
-		});
-
 		if (transparent) {
 			CompositeHelper.SetRgbaColormap (window);
 			window.AppPaintable = true;
@@ -249,23 +232,6 @@ class MonoOpen {
 		Application.Init ("mopen", ref test);
 		GtkSilver.Init ();
 		window = new Window (file);
-
-		string full = System.IO.Path.GetFullPath (file);
-		string dir = System.IO.Path.GetDirectoryName (full);
-		
-		Moonlight.RegisterLoader (delegate (string asm_file) {
-			if (System.IO.Path.IsPathRooted (asm_file)){
-				return Assembly.LoadFile (asm_file);
-			} else {
-				return Assembly.LoadFile (System.IO.Path.Combine (dir, asm_file));
-			}
-		}, delegate (string path) {
-			if (System.IO.Path.IsPathRooted (path)){
-				return new FileStream (path, FileMode.Open, FileAccess.Read);
-			} else {
-				return new FileStream (System.IO.Path.Combine (dir, path), FileMode.Open, FileAccess.Read);
-			}
-		});
 
 		if (transparent) {
 			CompositeHelper.SetRgbaColormap (window);
