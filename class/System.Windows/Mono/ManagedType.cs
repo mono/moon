@@ -1,5 +1,5 @@
 //
-// MoonError.cs
+// ManagedType.cs
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -25,39 +25,29 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-//
 
 using System;
+using System.Windows;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace Mono
-{
-	[StructLayout (LayoutKind.Sequential)]
-	public struct MoonError : IDisposable
+{	
+	internal class ManagedType
 	{
-		private int number;
-		private int code;
-		private IntPtr message;
+		public GCHandle gc_handle;
+		public Type type;
+		public Kind native_handle;
+		public ManagedType parent;
 		
-		public int Number {
-			get { return number; }
-		}
-		
-		public int Code {
-			get { return code; }
-		}
-
-		public string Message {
-			get { return message == IntPtr.Zero ? null : Marshal.PtrToStringAnsi (message); }
-		}
-		
-		public void Dispose ()
+		public ManagedType ()
 		{
-			if (message == IntPtr.Zero)
-				return;
-			
-			Marshal.FreeHGlobal (message);
-			message = IntPtr.Zero;
+		}
+		
+		public ManagedType (Type type, Kind kind)
+		{
+			this.type = type;
+			this.native_handle = kind;
 		}
 	}
 }

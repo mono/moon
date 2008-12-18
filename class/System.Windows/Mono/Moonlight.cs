@@ -42,7 +42,7 @@ namespace Mono {
 	///    desktop usage of Moonlight without having to expose other
 	///    entry points in agclr, or resorting to reflection hacks. 
 	/// </remarks>
-	public static class Moonlight {
+	internal static class Moonlight {
 		static LoaderCallback loader_callback;
 		static ResourceLoaderCallback resource_loader_callback;
 

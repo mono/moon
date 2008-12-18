@@ -12,7 +12,7 @@ assemblies = $(assemblysl) $(assemblydesktop)
 
 noinst_DATA = $(assemblies)
 
-CSCFLAGS = /codepage:65001 -d:NET_1_1 -d:NET_2_0 -debug+ -noconfig -r:System -r:Mono.Moonlight -r:System.Windows -d:AGCLR -unsafe
+CSCFLAGS = /codepage:65001 -d:NET_1_1 -d:NET_2_0 -debug+ -noconfig -r:System -r:System.Windows -d:AGCLR -unsafe
 
 GMCS = gmcs $(CSCFLAGS) -lib:../lib/3.0
 SMCS = MONO_PATH="../lib/2.1:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack ../lib/2.1/smcs.exe $(CSCFLAGS)
@@ -62,11 +62,11 @@ CLEANFILES =			\
 	TestResult-net_3_0.log	\
 	TestResult-net_3_0.xml
 
-$(assemblysl): $(system_windows_browser_sources) Makefile
-	$(SMCS) -target:library -out:$@ $(system_windows_browser_sources) -d:NET_2_1 -r:System.Net -keyfile:$(srcdir)/../silverlight.pub -delaysign+
+$(assemblysl): $(system_windows_browser_sources) Makefile $(top_builddir)/class/lib/2.1/System.Windows.dll
+	$(SMCS) -target:library -out:$@ $(system_windows_browser_sources) -d:NET_2_1 -r:$(top_builddir)/class/lib/2.1/System.Windows.dll -r:System.Net -keyfile:$(srcdir)/../silverlight.pub -delaysign+
 	sn -q -R $@ $(srcdir)/../mono.snk
 
-$(assemblydesktop): $(system_windows_browser_sources) Makefile
+$(assemblydesktop): $(system_windows_browser_sources) Makefile $(top_builddir)/class/lib/3.0/System.Windows.dll
 	$(GMCS) -target:library -out:$@ $(system_windows_browser_sources) -keyfile:$(srcdir)/../mono.snk
 
 clean-local:

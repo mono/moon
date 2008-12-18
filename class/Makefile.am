@@ -1,4 +1,4 @@
-SUBDIRS = . Mono.Moonlight System.Windows System.Windows.Browser
+SUBDIRS = . System.Windows System.Windows.Browser
 
 if INCLUDE_BROWSER_MANAGED_CODE
 noinst_SCRIPTS = lib/2.1/smcs.exe

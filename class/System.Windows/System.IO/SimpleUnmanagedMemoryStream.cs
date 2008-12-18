@@ -35,7 +35,7 @@ using System.Runtime.InteropServices;
 
 namespace System.IO
 {
-	public class SimpleUnmanagedMemoryStream : Stream
+	internal class SimpleUnmanagedMemoryStream : Stream
 	{
 		long length;
 		long capacity;

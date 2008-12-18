@@ -30,63 +30,63 @@ using System.Runtime.InteropServices;
 
 namespace Mono {
 
-	public struct UnmanagedRepeatBehavior {
+	internal struct UnmanagedRepeatBehavior {
 		public int kind;
 		public int unused_padding;
 		public double count;
 		public long timespan;
 	}
 
-	public struct UnmanagedKeyTime {
+	internal struct UnmanagedKeyTime {
 		public int kind;
 		public int unused_padding;
 		public double percent;
 		public long timespan;
 	}
 
-	public struct UnmanagedDuration {
+	internal struct UnmanagedDuration {
 		public int kind;
 		public int unused_padding;
 		public long timespan;
 	}
 
-	public struct UnmanagedColor {
+	internal struct UnmanagedColor {
 		public double r;
 		public double g;
 		public double b;
 		public double a;
 	}
 
-	public struct UnmanagedGridLength {
+	internal struct UnmanagedGridLength {
 		public double val;
 		public int type;
 	}
 
-	public struct UnmanagedPoint {
+	internal struct UnmanagedPoint {
 		public double x;
 		public double y;
 	}
 
-	public struct UnmanagedRect {
+	internal struct UnmanagedRect {
 		public double left;
 		public double top;
 		public double width;
 		public double height;
 	}
 
-	public struct UnmanagedThickness {
+	internal struct UnmanagedThickness {
 		public double left;
 		public double top;
 		public double right;
 		public double bottom;
 	}
 
-	public struct UnmanagedSize {
+	internal struct UnmanagedSize {
 		public double width;
 		public double height;
 	}
 
-	public struct UnmanagedCornerRadius {
+	internal struct UnmanagedCornerRadius {
 		public double topLeft;
 		public double topRight;
 		public double bottomLeft;
@@ -94,7 +94,7 @@ namespace Mono {
 	}
 
 	[StructLayout(LayoutKind.Explicit)]
-	public struct ValUnion {
+	internal struct ValUnion {
 		[FieldOffset(0)] public double d;
 		[FieldOffset(0)] public long i64;
 		[FieldOffset(0)] public ulong ui64;
@@ -103,7 +103,7 @@ namespace Mono {
 	}
 
 	[StructLayout(LayoutKind.Explicit)]
-	public struct Value {
+	internal struct Value {
 		[FieldOffset (0)]
 		public Kind k;
 

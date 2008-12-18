@@ -15,7 +15,7 @@ assemblies = $(assemblysl) $(assemblydesktop)
 
 noinst_DATA = $(assemblies)
 
-CSCFLAGS = /codepage:65001 -d:NET_1_1 -d:NET_2_0 -d:MOONLIGHT -debug+ -noconfig -r:System -r:System.Core -r:System.Xml -r:Mono.Moonlight -d:AGCLR -unsafe
+CSCFLAGS = /codepage:65001 -d:NET_1_1 -d:NET_2_0 -d:MOONLIGHT -debug+ -noconfig -r:System -r:System.Core -r:System.Xml -d:AGCLR -unsafe
 
 GMCS = gmcs $(CSCFLAGS) -lib:../lib/3.0
 SMCS = MONO_PATH="../lib/2.1:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack ../lib/2.1/smcs.exe -r:System.Net $(CSCFLAGS)
@@ -30,12 +30,27 @@ system_windows_sources =							\
 	$(srcdir)/Assembly/MonoTODOAttribute.cs					\
 	$(srcdir)/../Consts.cs							\
 	$(srcdir)/Microsoft.Internal/IManagedFrameworkInternalHelper.cs		\
+	$(srcdir)/System.IO/SimpleUnmanagedMemoryStream.cs			\
 	$(srcdir)/Mono/EventHandlerList.cs					\
 	$(srcdir)/Mono/Events.cs						\
+	$(srcdir)/Mono/GeneratedPInvokes.cs					\
+	$(srcdir)/Mono/Helper.cs						\
 	$(srcdir)/Mono/Hosting.cs						\
+	$(srcdir)/Mono/Kind.cs							\
+	$(srcdir)/Mono/ManagedType.cs						\
 	$(srcdir)/Mono/ManagedXamlLoader.cs					\
+	$(srcdir)/Mono/MoonError.cs						\
+	$(srcdir)/Mono/Moonlight.cs						\
+	$(srcdir)/Mono/NativeMethods.cs						\
 	$(srcdir)/Mono/Report.cs						\
+	$(srcdir)/Mono/StreamCallbacks.cs					\
 	$(srcdir)/Mono/StreamWrapper.cs						\
+	$(srcdir)/Mono/Surface.cs						\
+	$(srcdir)/Mono/Types.cs							\
+	$(srcdir)/Mono/Types.g.cs						\
+	$(srcdir)/Mono/Value.cs							\
+	$(srcdir)/Mono/XamlLoaderCallbacks.cs					\
+	$(srcdir)/Mono/XapHack.cs						\
 	$(srcdir)/System.ComponentModel/DesignerProperties.cs			\
 	$(srcdir)/System.Collections.ObjectModel/ObservableCollection_T.cs	\
 	$(srcdir)/System.Collections.Specialized/INotifyCollectionChanged.cs	\
@@ -136,6 +151,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Interop/BrowserHost.cs				\
 	$(srcdir)/System.Windows.Interop/Content.cs				\
 	$(srcdir)/System.Windows.Interop/HostingRenderTargetBitmap.cs		\
+	$(srcdir)/System.Windows.Interop/PluginHost.cs				\
 	$(srcdir)/System.Windows.Interop/Settings.cs				\
 	$(srcdir)/System.Windows.Interop/SilverlightHost.cs			\
 	$(srcdir)/System.Windows.Media.Animation/ClockState.cs			\
@@ -425,12 +441,12 @@ EXTRA_DIST = $(system_windows_sources) 	\
 $(MSCONTROLS)/Resource.resources: $(MSCONTROLS)/Src/Resource.resx
 	resgen2 $(MSCONTROLS)/Src/Resource.resx $(MSCONTROLS)/Data/src/Resource.resx $(MSCONTROLS)/Extended/Src/Resource.resx $(MSCONTROLS)/Resource.resources
 
-$(assemblysl): $(system_windows_sources) Makefile $(top_builddir)/class/lib/2.1/Mono.Moonlight.dll $(MSCONTROLS)/Resource.resources
+$(assemblysl): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources
 	$(SMCS) $(NET_2_1_ASSEMBLY_DEPS) -target:library -out:$@ $(system_windows_sources) -d:NET_2_1 -keyfile:$(srcdir)/../silverlight.pub -delaysign+ \
 		-resource:$(MSCONTROLS)/Resource.resources,System.Windows.Controls.Resource.resources -resource:$(srcdir)/System.Windows.Controls/generic.xaml,themes/generic.xaml
 	sn -q -R $@ $(srcdir)/../mono.snk
 
-$(assemblydesktop): $(system_windows_sources) Makefile $(top_builddir)/class/lib/3.0/Mono.Moonlight.dll $(MSCONTROLS)/Resource.resources
+$(assemblydesktop): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources
 	$(GMCS) $(NET_3_0_ASSEMBLY_DEPS) -target:library -out:$@ $(system_windows_sources) -keyfile:$(srcdir)/../mono.snk
 
 clean-local:

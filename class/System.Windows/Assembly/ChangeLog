@@ -1,3 +1,9 @@
+2008-12-17  Chris Toshok  <toshok@ximian.com>
+
+	* AssemblyInfo.cs: internals are always visible to
+	System.Windows.Browser, and in the 3.0 case, also visible to
+	gtksilver.
+
 2008-11-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* AssemblyInfo.cs: Added missing attributes.

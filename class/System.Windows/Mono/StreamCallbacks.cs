@@ -16,14 +16,14 @@ using System.Runtime.InteropServices;
 
 namespace Mono
 {
-	public delegate bool Stream_CanSeek (IntPtr handle);
-	public delegate bool Stream_CanRead (IntPtr handle);
-	public delegate long Stream_Length (IntPtr handle);
-	public delegate long Stream_Position (IntPtr handle);
-	public delegate int Stream_Read (IntPtr handle, [In (), Out (), MarshalAs (UnmanagedType.LPArray, SizeParamIndex=3)] byte [] buffer, int offset, int count);
-	public delegate void Stream_Seek (IntPtr handle, long offset, SeekOrigin origin);
+	internal delegate bool Stream_CanSeek (IntPtr handle);
+	internal delegate bool Stream_CanRead (IntPtr handle);
+	internal delegate long Stream_Length (IntPtr handle);
+	internal delegate long Stream_Position (IntPtr handle);
+	internal delegate int Stream_Read (IntPtr handle, [In (), Out (), MarshalAs (UnmanagedType.LPArray, SizeParamIndex=3)] byte [] buffer, int offset, int count);
+	internal delegate void Stream_Seek (IntPtr handle, long offset, SeekOrigin origin);
 	
-	public struct ManagedStreamCallbacks
+	internal struct ManagedStreamCallbacks
 	{
 		public IntPtr handle;
 		public Stream_CanSeek CanSeek;

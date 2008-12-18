@@ -6,7 +6,7 @@ using System;
 using System.Runtime.InteropServices;
 
 namespace Mono {
-	public static partial class NativeMethods
+	internal static partial class NativeMethods
 	{
 		/* moonplugin methods */
 	

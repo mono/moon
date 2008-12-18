@@ -40,7 +40,7 @@ using System.IO;
 
 namespace Mono {
 
-	public static class Helper {
+	internal static class Helper {
 
 		public static Assembly Agclr { get; set; }
 

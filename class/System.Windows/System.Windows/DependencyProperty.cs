@@ -203,9 +203,9 @@ namespace System.Windows {
 			if (handle == IntPtr.Zero)
 				throw new Exception (
 					String.Format ("DependencyProperty.Lookup: {0} lacks {1}. This is normally " +
-				        "because System.Windows.dll or Mono.Moonlight.dll and libmoon is out of sync. " + 
-						"Update /moon and do 'make install' in /moon/src and 'make clean install' " +
-				        "TWICE in /moon/class/ will probably fix it.", declaring_kind, name));
+						       "because System.Windows.dll libmoon is out of sync. " + 
+						       "Update /moon and do 'make generate' in moon/tools/generators and then " +
+						       "'make all install' in moon/ to fix it.", declaring_kind, name));
 			
 			if (properties.TryGetValue (handle, out result))
 				return result;

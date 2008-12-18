@@ -1,3 +1,10 @@
+2008-12-17  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am: add in all the Mono.Moonlight files that were moved
+	here.
+
+	* */*.cs: move from Mono.Moonlight/ here.
+
 2008-12-17  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* System.Windows.Controls.Primitives/Selector.cs: filing some blanks

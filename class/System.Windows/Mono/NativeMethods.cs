@@ -32,25 +32,25 @@ using System.Runtime.InteropServices;
 
 namespace Mono {
 
-	public delegate UnmanagedSize MeasureOverrideCallback (UnmanagedSize availableSize);
-	public delegate UnmanagedSize ArrangeOverrideCallback (UnmanagedSize finalSize);
+	internal delegate UnmanagedSize MeasureOverrideCallback (UnmanagedSize availableSize);
+	internal delegate UnmanagedSize ArrangeOverrideCallback (UnmanagedSize finalSize);
 
 	// Used in databinding to interact with managed objects
-	public delegate Value GetValueCallback ();
-	public delegate void SetValueCallback (IntPtr value);
+	internal delegate Value GetValueCallback ();
+	internal delegate void SetValueCallback (IntPtr value);
 
-	public delegate IntPtr CreateCustomXamlElementCallback (string xmlns, string name);
-	public delegate void SetCustomXamlAttributeCallback (IntPtr target, string name, string value);
-	public delegate void XamlHookupEventCallback (IntPtr target, string name, string value);
-	public delegate void UnmanagedEventHandler (IntPtr sender, IntPtr calldata, IntPtr closure);
+	internal delegate IntPtr CreateCustomXamlElementCallback (string xmlns, string name);
+	internal delegate void SetCustomXamlAttributeCallback (IntPtr target, string name, string value);
+	internal delegate void XamlHookupEventCallback (IntPtr target, string name, string value);
+	internal delegate void UnmanagedEventHandler (IntPtr sender, IntPtr calldata, IntPtr closure);
 
-	public delegate void PlainEvent (IntPtr target);
+	internal delegate void PlainEvent (IntPtr target);
 
-	public delegate void HttpHeaderHandler (string name, string value);
-	public delegate void AsyncResponseAvailableHandler (IntPtr response, IntPtr context);
-	public delegate void NativePropertyChangedHandler (IntPtr dependency_property, IntPtr dependency_object, IntPtr old_value, IntPtr new_value);
+	internal delegate void HttpHeaderHandler (string name, string value);
+	internal delegate void AsyncResponseAvailableHandler (IntPtr response, IntPtr context);
+	internal delegate void NativePropertyChangedHandler (IntPtr dependency_property, IntPtr dependency_object, IntPtr old_value, IntPtr new_value);
 
-	public static partial class NativeMethods {
+	internal static partial class NativeMethods {
 
 	
 		[DllImport("moon")]

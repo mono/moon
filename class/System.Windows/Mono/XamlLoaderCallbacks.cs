@@ -33,19 +33,19 @@ using Mono;
 
 namespace Mono.Xaml
 {
-	public delegate bool CreateObjectCallback (IntPtr top_level, string xmlns, string name, out Value value);
-	public delegate bool SetPropertyCallback (IntPtr top_level, string xmlns, IntPtr target, string name, IntPtr value_ptr);
-	public delegate void ImportXamlNamespaceCallback (string xmlns);
-	public delegate string GetContentPropertyNameCallback (IntPtr dob);
+	internal delegate bool CreateObjectCallback (IntPtr top_level, string xmlns, string name, out Value value);
+	internal delegate bool SetPropertyCallback (IntPtr top_level, string xmlns, IntPtr target, string name, IntPtr value_ptr);
+	internal delegate void ImportXamlNamespaceCallback (string xmlns);
+	internal delegate string GetContentPropertyNameCallback (IntPtr dob);
 	
-	public struct XamlLoaderCallbacks {
+	internal struct XamlLoaderCallbacks {
 		public CreateObjectCallback create_object;
 		public SetPropertyCallback set_property;
 		public ImportXamlNamespaceCallback import_xaml_xmlns;
 		public GetContentPropertyNameCallback get_content_property_name;
 	}
 
-	public enum AssemblyLoadResult
+	internal enum AssemblyLoadResult
 	{
 		Success = -1,
 		MissingAssembly = 1,

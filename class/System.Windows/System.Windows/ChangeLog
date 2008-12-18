@@ -1,3 +1,8 @@
+2008-12-17  Chris Toshok  <toshok@ximian.com>
+
+	* DependencyProperty.cs (Lookup): correct error message to mention
+	tools/generators instead of making clean twice/etc.
+
 2008-12-17  Alan McGovern  <amcgovern@novell.com>
 
 	* DependencyObject.cs: BindingExpression/BindingExpressionBase should

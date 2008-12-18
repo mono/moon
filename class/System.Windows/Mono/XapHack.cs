@@ -14,7 +14,7 @@ namespace Mono {
 #else
 	internal
 #endif
-	abstract class XapHackProxy : MarshalByRefObject {
+	abstract class XapHackProxy {
 
 		public abstract bool Setup (IntPtr value, IntPtr surface, string xapFile);
 

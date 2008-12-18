@@ -43,7 +43,7 @@ namespace System.Windows.Interop {
 	///   Silverlight surface created on the plugin, the plugin_handle is
 	///   actually a per-Silverlight instance variable. 
 	/// </remarks>
-	public static class PluginHost {
+	internal static class PluginHost {
 		static IntPtr plugin_handle;
 		static Uri root_uri;
 

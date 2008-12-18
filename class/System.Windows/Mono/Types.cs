@@ -39,7 +39,7 @@ namespace Mono
 	 *  TODO:
 	 *  - Find out when to call Free.
 	 */
-	public static partial class Types
+	internal static partial class Types
 	{
 		private static IntPtr native;
 		private static Dictionary<Type,ManagedType> types = new Dictionary<Type,ManagedType> ();
