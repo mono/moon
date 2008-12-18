@@ -422,10 +422,7 @@ system_windows_sources =							\
 	$(MSCONTROLS)/Src/ScrollViewer/ScrollViewer.cs				\
 	$(MSCONTROLS)/Src/ScrollViewer/ScrollContentPresenter.cs		\
 	$(MSCONTROLS)/Src/ToolTip/ToolTip.cs					\
-	$(MSCONTROLS)/Src/ToolTip/ToolTipService.cs				\
-\
-	$(MSTOOLKIT)/Controls/Common/InteractionHelper.cs			\
-	$(MSTOOLKIT)/Controls/Common/IUpdateVisualState.cs
+	$(MSCONTROLS)/Src/ToolTip/ToolTipService.cs
 
 EXTRA_DIST = $(system_windows_sources) 	\
 	scripts/checks.cs 			\
