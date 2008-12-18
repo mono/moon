@@ -1,3 +1,7 @@
+2008-12-17  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am: remove references to Mono.Moonlight.dll
+
 2008-11-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Makefile.am, System.Windows.Browser.mdp: Updated with
