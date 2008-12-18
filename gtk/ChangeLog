@@ -1,3 +1,7 @@
+2008-12-17  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am: remove references to Mono.Moonlight.dll
+
 2008-10-31  Chris Toshok  <toshok@ximian.com>
 
 	* gtk.cs: track change to api - get/set_transparent is on
