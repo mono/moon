@@ -13,12 +13,15 @@
 
 #include <glib.h>
 
+
 #include "value.h"
 #include "enums.h"
 #include "list.h"
 
+class MoonError;
 
 typedef	void NativePropertyChangedHandler (DependencyProperty *dependency_property, DependencyObject *dependency_object, Value *old_value, Value *new_value);
+typedef	bool ValueValidator (Value *value, MoonError *error);
 
 //
 // DependencyProperty
@@ -53,6 +56,9 @@ class DependencyProperty {
 	AnimationStorage *AttachAnimationStorage (DependencyObject *obj, AnimationStorage *storage);
 	void DetachAnimationStorage (DependencyObject *obj, AnimationStorage *storage);
 	AnimationStorage *GetAnimationStorageFor (DependencyObject *obj);
+	
+	bool Validate (Value *value, MoonError *error);
+	void SetValueValidator (ValueValidator *validator);
 	
 	/* @GenerateCBinding */
 	static DependencyProperty *Register (Type::Kind type, const char *name, Value *default_value);
@@ -89,6 +95,7 @@ private:
 	char *name;
 
 	Value *default_value;
+	ValueValidator *validator;
 
 	Type::Kind owner_type;
 	Type::Kind property_type;

@@ -1,3 +1,8 @@
+2008-12-18  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTest.cs: Add the ability to validate the
+	value for a DependencyProperty before setting it.
+
 2008-12-17  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingTest.cs:

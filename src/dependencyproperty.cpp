@@ -18,6 +18,11 @@
 #include "animation.h"
 #include "runtime.h"
 
+static bool default_validator (Value *value, MoonError *error)
+{
+	return true;	
+}
+
 /*
  *	DependencyProperty
  */
@@ -35,6 +40,7 @@ DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name,
 	this->always_change = always_change;
 	this->changed_callback = changed_callback;
 	this->is_custom = is_custom;
+	this->validator = default_validator;
 }
 
 AnimationStorage*
@@ -262,6 +268,19 @@ DependencyProperty::RegisterFull (Types *additional_types, Type *type, const cha
 	return property;
 }
 
+void
+DependencyProperty::SetValueValidator (ValueValidator *validator)
+{
+	if (validator == NULL)
+		validator == default_validator;
+	this->validator = validator; 
+}
+
+bool
+DependencyProperty::Validate (Value *value, MoonError *error)
+{ 
+	return validator (value, error);
+}
 
 //
 // Everything inside of a ( ) resolves to a DependencyProperty, if there is a

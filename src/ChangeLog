@@ -1,3 +1,11 @@
+2008-12-18  Alan McGovern  <amcgovern@novell.com>
+
+	* grid.cpp:
+	* dependencyobject.cpp:
+	* dependencyproperty.h:
+	* dependencyproperty.cpp: Add the ability to validate the value for a
+	DependencyProperty before setting it.
+
 2008-12-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* text.h, text.cpp: Remove some useless code.

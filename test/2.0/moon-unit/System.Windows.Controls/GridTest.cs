@@ -63,7 +63,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void InvalidValues()
 		{
 			Grid g = new Grid();
