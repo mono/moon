@@ -12,7 +12,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Automation.Peers;
 using System.Windows; 
 
-namespace SilverlightControls.Primitives
+namespace System.Windows.Controls.Primitives
 { 
     /// <summary> 
     /// Base class for controls that can switch states, such as CheckBox.

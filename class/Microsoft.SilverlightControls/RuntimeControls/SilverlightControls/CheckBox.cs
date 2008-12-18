@@ -6,12 +6,12 @@
 
 using System; 
 using System.Windows; 
-using SilverlightControls.Primitives;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input; 
 using System.Windows.Media.Animation;
 using System.Windows.Automation.Peers;
  
-namespace SilverlightControls
+namespace System.Windows.Controls
 {
     /// <summary> 
     /// Represents a control that a user can select and clear. 

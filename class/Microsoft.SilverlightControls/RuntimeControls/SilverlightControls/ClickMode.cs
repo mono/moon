@@ -6,7 +6,7 @@
 
 using System; 
  
-namespace SilverlightControls
+namespace System.Windows.Controls
 { 
     /// <summary>
     /// Specifies when the ButtonBase.Click event should fire.

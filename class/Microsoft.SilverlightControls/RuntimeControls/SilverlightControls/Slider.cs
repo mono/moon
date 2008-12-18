@@ -9,13 +9,13 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Markup; 
 using System.Windows.Media.Animation;
-using SilverlightControls.Primitives;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media; 
 using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 using MS.Internal; 
  
-namespace SilverlightControls
+namespace System.Windows.Controls
 { 
     /// <summary>
     /// Slider control lets the user select from a range of values by moving a slider.

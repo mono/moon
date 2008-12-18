@@ -7,7 +7,7 @@
 using System; 
 using System.Windows.Controls; 
 
-namespace SilverlightControls.Primitives 
+namespace System.Windows.Controls.Primitives 
 {
     /// <summary>
     /// An IScrollInfo serves as the main scrolling region inside a <see cref="System.Windows.Controls.ScrollViewer" /> 

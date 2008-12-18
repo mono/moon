@@ -7,11 +7,11 @@
 using System; 
 using System.Diagnostics; 
 using System.Windows;
-using SilverlightControls.Primitives; 
+using System.Windows.Controls.Primitives; 
 using System.Windows.Media.Animation;
 using System.Windows.Automation.Peers;
  
-namespace SilverlightControls
+namespace System.Windows.Controls
 {
     /// <summary> 
     /// Represents a button control, which reacts to the Click event. 

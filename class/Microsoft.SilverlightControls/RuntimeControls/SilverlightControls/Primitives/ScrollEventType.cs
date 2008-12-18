@@ -4,7 +4,7 @@
 // All other rights reserved. 
 
 
-namespace SilverlightControls.Primitives 
+namespace System.Windows.Controls.Primitives 
 { 
     /// <summary>
     /// Specifies the type of action used to raise the Scroll event. 

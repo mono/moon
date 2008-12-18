@@ -6,7 +6,7 @@
 
 using System.Windows; 
  
-namespace SilverlightControls.Primitives
+namespace System.Windows.Controls.Primitives
 { 
     /// <summary>
     /// Provides data for a Scroll event that occurs when the Thumb of a ScrollBar moves.

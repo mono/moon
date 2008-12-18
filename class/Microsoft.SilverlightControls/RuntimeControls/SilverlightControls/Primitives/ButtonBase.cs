@@ -12,7 +12,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Controls;
 using MS.Internal; 
 
-namespace SilverlightControls.Primitives
+namespace System.Windows.Controls.Primitives
 { 
     /// <summary> 
     /// Represents the base class for all Button controls.

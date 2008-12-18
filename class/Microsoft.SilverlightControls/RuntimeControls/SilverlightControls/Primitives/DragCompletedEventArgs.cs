@@ -6,7 +6,7 @@
 using System;
 using System.Windows; 
  
-namespace SilverlightControls.Primitives
+namespace System.Windows.Controls.Primitives
 { 
     /// <summary>
     /// Provides information about the DragCompleted event that occurs when a

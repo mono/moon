@@ -14,7 +14,7 @@ using System.Windows.Controls;
 using MS.Internal;
 using System.Windows.Media;
  
-namespace SilverlightControls.Primitives 
+namespace System.Windows.Controls.Primitives 
 {
     /// <summary> 
     /// Initializes a new instance of the Thumb class.

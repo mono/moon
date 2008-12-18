@@ -11,7 +11,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Automation.Peers;
  
-namespace SilverlightControls.Primitives
+namespace System.Windows.Controls.Primitives
 {
     /// <summary> 
     /// Represents the base class for elements that have a specific range. 

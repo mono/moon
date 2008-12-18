@@ -15,7 +15,7 @@ using System.Windows.Automation.Peers;
 using MS.Internal;
 using System.Windows.Media; 
  
-namespace SilverlightControls.Primitives
+namespace System.Windows.Controls.Primitives
 { 
     /// <summary>
     /// Control that raises its Click event repeatedly from the time it is

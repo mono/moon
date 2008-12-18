@@ -8,13 +8,13 @@ using System.ComponentModel;
 using System.Diagnostics; 
 using System.Globalization;
 using System.Windows; 
-using SilverlightControls.Primitives;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media.Animation;
 using System.Windows.Automation.Peers; 
 using System.Security;
 using System.Windows.Browser;
  
-namespace SilverlightControls 
+namespace System.Windows.Controls
 {
     /// <summary> 
     /// Represents a control that displays a link to another website.

@@ -12,7 +12,7 @@ using System.Windows.Controls;
 
 using MS.Internal; 
 
-namespace SilverlightControls
+namespace System.Windows.Controls
 { 
     /// <summary> 
     /// Names and helpers for visual states in the controls.

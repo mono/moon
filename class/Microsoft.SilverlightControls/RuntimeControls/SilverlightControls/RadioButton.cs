@@ -14,13 +14,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Windows; 
-using SilverlightControls.Primitives; 
+using System.Windows.Controls.Primitives; 
 using System.Windows.Input;
 using System.Windows.Media.Animation; 
 using System.Windows.Automation.Peers;
 using System.Windows.Controls;
  
-namespace SilverlightControls
+namespace System.Windows.Controls
 {
     /// <summary> 
     /// Represents a button that can be selected, but not cleared, by a user. 

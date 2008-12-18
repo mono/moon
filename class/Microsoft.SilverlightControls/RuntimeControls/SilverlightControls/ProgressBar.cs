@@ -8,10 +8,10 @@ using System;
 using System.Windows; 
 using System.Windows.Input;
 using System.Windows.Controls; 
-using SilverlightControls.Primitives;
+using System.Windows.Controls.Primitives;
 using System.Windows.Automation.Peers;
  
-namespace SilverlightControls
+namespace System.Windows.Controls
 {
     /// <summary> 
     /// The ProgressBar class 

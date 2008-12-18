@@ -15,7 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes; 
  
-namespace SilverlightControls
+namespace System.Windows.Controls
 { 
     public enum Orientation
     {

@@ -15,7 +15,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media;
 using System.Windows.Automation.Peers; 
  
-namespace SilverlightControls.Primitives
+namespace System.Windows.Controls.Primitives
 { 
     /// <summary>
     ///    ScrollBars are the UI widgets that both let a user drive scrolling from the UI
