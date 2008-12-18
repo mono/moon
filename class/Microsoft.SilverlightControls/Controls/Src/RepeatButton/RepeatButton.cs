@@ -1,4 +1,4 @@
-﻿// Copyright © Microsoft Corporation. 
+// Copyright © Microsoft Corporation. 
 // This source is subject to the Microsoft Source License for Silverlight Controls (March 2008 Release).
 // Please see http://go.microsoft.com/fwlink/?LinkID=111693 for details.
 // All other rights reserved. 
@@ -12,20 +12,26 @@ using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using System.Windows.Controls;
 
+// use the cool stuff from SL Toolkit
+using Microsoft.Windows.Controls;
+
 namespace System.Windows.Controls.Primitives
 {
     /// <summary>
     /// Control that raises its Click event repeatedly from the time it is 
     /// pressed until it is released. 
     /// </summary>
-    [TemplatePart(Name = RepeatButton.ElementRootName, Type = typeof(FrameworkElement))] 
-    [TemplatePart(Name = RepeatButton.ElementFocusVisualName, Type = typeof(FrameworkElement))]
-    [TemplatePart(Name = RepeatButton.StateNormalName, Type = typeof(Storyboard))]
-    [TemplatePart(Name = RepeatButton.StateMouseOverName, Type = typeof(Storyboard))] 
-    [TemplatePart(Name = RepeatButton.StatePressedName, Type = typeof(Storyboard))]
-    [TemplatePart(Name = RepeatButton.StateDisabledName, Type = typeof(Storyboard))]
-    public sealed class RepeatButton : ButtonBase 
-    { 
+
+	[TemplateVisualState (Name = VisualStates.StateNormal, GroupName = VisualStates.GroupCommon)]
+	[TemplateVisualState (Name = VisualStates.StateMouseOver, GroupName = VisualStates.GroupCommon)]
+	[TemplateVisualState (Name = VisualStates.StatePressed, GroupName = VisualStates.GroupCommon)]
+	[TemplateVisualState (Name = VisualStates.StateDisabled, GroupName = VisualStates.GroupCommon)]
+
+	[TemplateVisualState (Name = VisualStates.StateFocused, GroupName = VisualStates.GroupFocus)]
+	[TemplateVisualState (Name = VisualStates.StateUnfocused, GroupName = VisualStates.GroupFocus)]
+
+	public sealed class RepeatButton : ButtonBase, IUpdateVisualState {
+
         #region Delay
         /// <summary> 
         /// Gets or sets the amount of time, in milliseconds, the RepeatButton
@@ -61,7 +67,7 @@ namespace System.Windows.Controls.Primitives
             int delay = (int)e.NewValue;
             if (delay < 0)
             { 
-                throw new ArgumentException(Resource.RepeatButton_DelayPropertyCannotBeNegative, DelayProperty.ToString()); 
+                throw new ArgumentException(/*Resource.RepeatButton_DelayPropertyCannotBeNegative*/ "", DelayProperty.ToString()); 
             }
         } 
         #endregion Delay
@@ -100,7 +106,7 @@ namespace System.Windows.Controls.Primitives
             int interval = (int)e.NewValue; 
             if (interval <= 0)
             { 
-                throw new ArgumentException(Resource.RepeatButton_IntervalMustBePositive, IntervalProperty.ToString());
+                throw new ArgumentException(/*Resource.RepeatButton_IntervalMustBePositive*/ "", IntervalProperty.ToString());
             }
         } 
         #endregion Interval
@@ -171,20 +177,39 @@ namespace System.Windows.Controls.Primitives
         } 
 
         #endregion Timer
- 
+
+	#region Visual state management
+	/// <summary>
+	/// Gets or sets the helper that provides all of the standard
+	/// interaction functionality.
+	/// </summary>
+	private InteractionHelper Interaction { get; set; }
+
+	/// <summary>
+	/// Update the visual state of the control.
+	/// </summary>
+	/// <param name="useTransitions">
+	/// A value indicating whether to automatically generate transitions to
+	/// the new state, or instantly transition to the new state.
+	/// </param>
+	void IUpdateVisualState.UpdateVisualState (bool useTransitions)
+	{
+		UpdateVisualState (useTransitions);
+	}
+	#endregion
+
         #region Constructor 
         /// <summary>
         /// Initializes a new instance of the RepeatButton class. 
         /// </summary>
-        public RepeatButton()
+        public RepeatButton ()
         { 
             ClickMode = ClickMode.Press;
             Delay = 500;
-            Interval = 33; 
-            LostFocus += delegate(object sender, RoutedEventArgs e) { OnLostFocus (e); }; 
-            KeyDown += delegate(object sender, KeyEventArgs e){ OnKeyDown(e); };
-            KeyUp += delegate(object sender, KeyEventArgs e){ OnKeyUp(e); };
-         } 
+            Interval = 33;
+	    this.DefaultStyleKey = typeof (RepeatButton);
+	    Interaction = new InteractionHelper (this);
+	} 
 
         /// <summary> 
         /// Apply a template to the RepeatButton.
@@ -195,69 +220,26 @@ namespace System.Windows.Controls.Primitives
             ElementRoot = GetTemplateChild(ElementRootName) as FrameworkElement; 
             ElementFocusVisual = GetTemplateChild(ElementFocusVisualName) as FrameworkElement; 
 
-            // get the states 
-            if (ElementRoot != null)
-            {
-                object normal = ElementRoot.Resources[StateNormalName]; 
-                Debug.Assert(typeof(Storyboard).IsInstanceOfType(normal) || (normal == null),
-                    "The template part Normal State is not an instance of Storyboard!");
-                StateNormal = normal as Storyboard; 
- 
-                object mouseOver = ElementRoot.Resources[StateMouseOverName];
-                Debug.Assert(typeof(Storyboard).IsInstanceOfType(mouseOver) || (mouseOver == null), 
-                    "The template part MouseOver State is not an instance of Storyboard!");
-                StateMouseOver = mouseOver as Storyboard;
- 
-                object pressed = ElementRoot.Resources[StatePressedName];
-                Debug.Assert(typeof(Storyboard).IsInstanceOfType(pressed) || (pressed == null),
-                    "The template part Pressed State is not an instance of Storyboard!"); 
-                StatePressed = pressed as Storyboard; 
-
-                object disabled = ElementRoot.Resources[StateDisabledName]; 
-                Debug.Assert(typeof(Storyboard).IsInstanceOfType(disabled) || (disabled == null),
-                    "The template part Disabled State is not an instance of Storyboard!");
-                StateDisabled = disabled as Storyboard; 
-            }
-
-            // Sync the logical and visual states of the control 
-            UpdateVisualState(); 
+            Interaction.OnApplyTemplateBase ();
         }
  
         #endregion Constructor
 
         #region Change State 
 
-        /// <summary>
-        /// Change to the correct visual state for the repeatbutton. 
-        /// </summary> 
-        internal override void ChangeVisualState()
-        { 
-            if (!IsEnabled)
-            {
-                ChangeVisualState(StateDisabled ?? StateNormal); 
-            }
-            else if (IsPressed)
-            { 
-                ChangeVisualState(StatePressed ?? StateMouseOver ?? StateNormal); 
-            }
-            else 
-            {
-                if (IsMouseOver)
-                { 
-                    ChangeVisualState(StateMouseOver ?? StateNormal);
-                }
-                else 
-                { 
-                    ChangeVisualState(StateNormal);
-                } 
-            }
+	/// <summary>
+	/// Change to the correct visual state for the repeatbutton. 
+	/// </summary> 
+	internal void UpdateVisualState (bool useTransitions)
+	{
+		// all states are managed by the default InteractionHelper
+		Interaction.UpdateVisualStateBase (useTransitions);
 
-            if (ElementFocusVisual != null) 
-            {
-                ElementFocusVisual.Visibility = (IsFocused && IsEnabled) ?
-                    Visibility.Visible : Visibility.Collapsed; 
-            } 
-        }
+		if (ElementFocusVisual != null) {
+			ElementFocusVisual.Visibility = (IsFocused && IsEnabled) ?
+			    Visibility.Visible : Visibility.Collapsed;
+		} 
+	}
         #endregion Change State 
 
         #region Mouse Handlers
@@ -267,11 +249,12 @@ namespace System.Windows.Controls.Primitives
         /// <param name="e">MouseButtonEventArgs.</param> 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e) 
         {
-            base.OnMouseLeftButtonDown(e); 
-            if (ClickMode != ClickMode.Hover)
-            {
-                StartTimer(); 
-            }
+		if (Interaction.AllowMouseLeftButtonDown (e)) {
+			Interaction.OnMouseLeftButtonDownBase ();
+			if (ClickMode != ClickMode.Hover) {
+				StartTimer ();
+			}
+		}
         }
  
         /// <summary> 
@@ -279,13 +262,13 @@ namespace System.Windows.Controls.Primitives
         /// </summary> 
         /// <param name="e">MouseButtonEventArgs.</param>
         protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
-        { 
-            base.OnMouseLeftButtonUp(e);
-            if (ClickMode != ClickMode.Hover)
-            { 
-                StopTimer(); 
-            }
-            UpdateVisualState(); 
+        {
+		if (Interaction.AllowMouseLeftButtonUp (e)) {
+			if (ClickMode != ClickMode.Hover) {
+				StopTimer ();
+			}
+			Interaction.OnMouseLeftButtonUpBase ();
+		}
         }
 
         /// <summary> 
@@ -294,14 +277,15 @@ namespace System.Windows.Controls.Primitives
         /// <param name="e">Event arguments</param> 
         protected override void OnMouseEnter(MouseEventArgs e) 
         {
-            base.OnMouseEnter(e); 
-            if (IsPressed)
-            {
-                OnClick(); 
-                StartTimer();
-            }
-            UpdateVisualState(); 
- 
+		if (Interaction.AllowMouseEnter (e)) {
+			Interaction.OnMouseEnterBase ();
+
+			if (IsPressed) {
+				OnClick ();
+				StartTimer ();
+			}
+		}
+/* part of the workaround
             // this code will cache the mouse position relative to the top level UIElement
             // in the Silverlight page. 
             object parent = this;
@@ -315,6 +299,7 @@ namespace System.Windows.Controls.Primitives
                 parent = element.Parent; 
             }
             _mousePosition = e.GetPosition(parent as UIElement);
+ */
         } 
 
         /// <summary>
@@ -323,9 +308,10 @@ namespace System.Windows.Controls.Primitives
         /// <param name="e">Event arguments</param>
         protected override void OnMouseLeave(MouseEventArgs e) 
         {
-            base.OnMouseLeave(e);
-            StopTimer(); 
-            UpdateVisualState();
+		if (Interaction.AllowMouseLeave (e)) {
+			Interaction.OnMouseLeaveBase ();
+			StopTimer();
+		}
         }
  
         /// <summary> 
@@ -341,7 +327,7 @@ namespace System.Windows.Controls.Primitives
         protected override void OnMouseMove(MouseEventArgs e)
         { 
 //            e.Handled = true;
-
+/* part of the workaround
             // this code will cache the mouse position relative to the top level UIElement 
             // in the Silverlight page.
             object parent = this;
@@ -355,6 +341,7 @@ namespace System.Windows.Controls.Primitives
                 parent = element.Parent;
             }
             _mousePosition = e.GetPosition(parent as UIElement); 
+ */
         } 
 
 	protected override void OnClick ()
@@ -371,6 +358,8 @@ namespace System.Windows.Controls.Primitives
         /// <param name="e">The event data for the KeyDown event.</param> 
         protected override void OnKeyDown(KeyEventArgs e)
 	{
+		if (Interaction.AllowKeyDown (e)) {
+		}
 	}
 
         /// <summary> 
@@ -379,12 +368,17 @@ namespace System.Windows.Controls.Primitives
         /// <param name="e">The event data for the KeyUp event.</param> 
         protected override void OnKeyUp(KeyEventArgs e)
 	{
+		if (Interaction.AllowKeyUp (e)) {
+		}
 	}
 
         #endregion KeyEvents
 
 	protected override void OnLostFocus (RoutedEventArgs e)
 	{
+		if (Interaction.AllowLostFocus (e)) {
+			Interaction.OnLostFocusBase ();
+		}
 	}
 
 	protected override AutomationPeer OnCreateAutomationPeer ()
@@ -405,30 +399,6 @@ namespace System.Windows.Controls.Primitives
         internal FrameworkElement ElementFocusVisual { get; set; } 
         internal const string ElementFocusVisualName = "FocusVisualElement";
 
-        /// <summary> 
-        /// Transition into the Normal state in the RepeatButton template. 
-        /// </summary>
-        internal Storyboard StateNormal { get; set; } 
-        internal const string StateNormalName = "Normal State";
-
-        /// <summary> 
-        /// Transition into the MouseOver state in the RepeatButton template.
-        /// </summary>
-        internal Storyboard StateMouseOver { get; set; } 
-        internal const string StateMouseOverName = "MouseOver State"; 
-
-        /// <summary> 
-        /// Transition into the Pressed state in the RepeatButton template.
-        /// </summary>
-        internal Storyboard StatePressed { get; set; } 
-        internal const string StatePressedName = "Pressed State";
-
-        /// <summary> 
-        /// Transition into the Disabled state in the RepeatButton template. 
-        /// </summary>
-        internal Storyboard StateDisabled { get; set; } 
-        internal const string StateDisabledName = "Disabled State";
-
-        #endregion Template Parts 
+	#endregion Template Parts 
     }
 }
