@@ -5,6 +5,10 @@
 	Width="185" Height="220">
 
   <Canvas.Resources>
+    <DataTemplate x:Key="hithere">
+      <Ellipse> </Ellipse>
+    </DataTemplate>
+
 <!--  at some point we should be able to enable these -->
     <Style x:Key="NumberButtonStyle">
       <Setter Property="Height" Value="35" />

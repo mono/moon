@@ -37,6 +37,11 @@ namespace Desklet.Calculator
 			};
 			
 			this.AddMouseEvents ();
+
+			DataTemplate dataTemplate = (DataTemplate)Resources["hithere"];
+
+			DependencyObject obj = dataTemplate.LoadContent ();
+			Console.WriteLine ("called dataTemplate.LoadContent.  result was {0}", obj);
 		}
 
 		void HighlightButton (Polygon button)

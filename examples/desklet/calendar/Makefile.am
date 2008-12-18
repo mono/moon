@@ -3,8 +3,7 @@ entrypoint= Desklet.CalendarPanel.App
 
 DESKTOP_ASSEMBLIES=-r:$(top_builddir)/gtk/gtksilver.dll \
 		   -r:$(top_builddir)/class/lib/3.0/System.Windows.dll \
-		   -r:$(top_builddir)/class/lib/3.0/System.Windows.Browser.dll \
-		   -r:$(top_builddir)/class/lib/3.0/Mono.Moonlight.dll
+		   -r:$(top_builddir)/class/lib/3.0/System.Windows.Browser.dll
 
 
 noinst_DATA = default.xaml App.xaml $(desklet)
