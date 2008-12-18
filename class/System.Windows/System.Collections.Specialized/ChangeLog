@@ -1,3 +1,8 @@
+2008-12-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* NotifyCollectionChangedAction.cs: Fix validations and default 
+	values to match unit tests.
+
 2008-11-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* NotifyCollectionChangedAction.cs: Corcompare work.

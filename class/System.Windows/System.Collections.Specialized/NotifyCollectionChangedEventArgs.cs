@@ -35,9 +35,11 @@ namespace System.Collections.Specialized {
 		public NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction action)
 		{
 			if (action != NotifyCollectionChangedAction.Reset)
-				throw new ArgumentException();
+				throw new NotSupportedException ();
 
 			Action = action;
+			NewStartingIndex = -1;
+			OldStartingIndex = -1;
 		}
 
 		public NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction action, object changedItem, int index)
@@ -56,7 +58,7 @@ namespace System.Collections.Specialized {
 				NewStartingIndex = -1;
 				break;
 			default:
-				throw new ArgumentException ();
+				throw new NotSupportedException ();
 			}
 
 			Action = action;
@@ -65,7 +67,7 @@ namespace System.Collections.Specialized {
 		public NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction action, object newItem, object oldItem, int index)
 		{
 			if (action != NotifyCollectionChangedAction.Replace)
-				throw new ArgumentException ();
+				throw new NotSupportedException ();
 
 			Action = action;
 
@@ -76,7 +78,7 @@ namespace System.Collections.Specialized {
 			old_items.Add (oldItem);
 
 			NewStartingIndex = index;
-			OldStartingIndex = index;
+			OldStartingIndex = -1;
 		}
 
 		public NotifyCollectionChangedAction Action { get; private set; }
