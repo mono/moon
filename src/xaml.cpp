@@ -786,7 +786,7 @@ class XamlElementInstanceManaged : public XamlElementInstance {
 
 	virtual bool IsDependencyObject ()
 	{
-		return false;
+		return is_dependency_object;
 	}
 
 	virtual bool SetUnknownAttribute (XamlParserInfo *p, const char* name, const char* value);
@@ -800,6 +800,8 @@ class XamlElementInstanceManaged : public XamlElementInstance {
 	virtual bool TrySetContentProperty (XamlParserInfo *p, const char *value);
 
 	virtual void* GetManagedPointer ();
+ private:
+	bool is_dependency_object;
 };
 
 
@@ -3141,8 +3143,12 @@ XamlElementInstanceManaged::XamlElementInstanceManaged (XamlElementInfo *info, c
 
 	this->value = obj;
 
-	if (obj->Is (Type::DEPENDENCY_OBJECT))
+	if (obj->Is (Type::DEPENDENCY_OBJECT)) {
+		this->is_dependency_object = true;
 		this->SetDependencyObject (obj->AsDependencyObject ());
+	}
+	else
+		this->is_dependency_object = false;
 }
 
 void *
@@ -3368,14 +3374,7 @@ XamlLoader::
 
 	}
 
-	if (Type::Find (parent->info->GetKind ())->IsSubclassOf (Type::FRAMEWORKTEMPLATE)) {
-		FrameworkTemplate *t = (FrameworkTemplate*) parent->GetAsDependencyObject ();
-
-		// XXX a SetVisualTreeWithError, maybe?
-		t->SetVisualTree ((FrameworkElement*) child->GetAsDependencyObject ());
-		return;
-	}
-	else if (Type::Find (parent->info->GetKind ())->IsSubclassOf (Type::DEPENDENCY_OBJECT_COLLECTION)) {
+	if (Type::Find (parent->info->GetKind ())->IsSubclassOf (Type::DEPENDENCY_OBJECT_COLLECTION)) {
 		Collection *col = (Collection *) parent->GetAsDependencyObject ();
 		MoonError err;
 		Value child_val ((DependencyObject*)child->GetAsDependencyObject ());

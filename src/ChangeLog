@@ -1,3 +1,16 @@
+2008-12-18  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (class XamlElementInstanceManaged): this instance can
+	be a DependencyObject sometimes.  we need an instance field to
+	tell.
+	(XamlElementInstanceManaged::XamlElementInstanceManaged): when
+	@obj, set is_dependency_object to true.  This fixes setting x:
+	namescope properties on managed DependencyObject subclasses, as in
+	'<Button x:Name="foo" />'.
+	(dependency_object_add_child): remove the template case from here.
+	it'll be handled differently (being parsed at application time,
+	essentially).
+
 2008-12-18  Alan McGovern  <amcgovern@novell.com>
 
 	* text.cpp:
