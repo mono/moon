@@ -1,5 +1,10 @@
 2008-12-18  Alan McGovern  <amcgovern@novell.com>
 
+	* mediaelement.cpp: Add validation for NaturalVideoHeight and
+	NaturalVideoWidth.
+
+2008-12-18  Alan McGovern  <amcgovern@novell.com>
+
 	* src.mdp:
 	* grid.cpp:
 	* textbox.h:
