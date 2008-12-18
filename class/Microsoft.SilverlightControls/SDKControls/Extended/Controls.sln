@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Controls", "Src\Controls.csproj", "{0EF005FE-6988-4943-BA2D-AEE831332FB6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Controls.Test", "Test\Controls.Test.csproj", "{1CA6DC8E-F0E4-4FAE-BC26-1B91F85303CA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Controls.Test.Common", "..\Test\Controls.Test.Common\Controls.Test.Common.csproj", "{6F76307B-E07A-4498-A0EA-C8709D8FBCFA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0EF005FE-6988-4943-BA2D-AEE831332FB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0EF005FE-6988-4943-BA2D-AEE831332FB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0EF005FE-6988-4943-BA2D-AEE831332FB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0EF005FE-6988-4943-BA2D-AEE831332FB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1CA6DC8E-F0E4-4FAE-BC26-1B91F85303CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CA6DC8E-F0E4-4FAE-BC26-1B91F85303CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CA6DC8E-F0E4-4FAE-BC26-1B91F85303CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CA6DC8E-F0E4-4FAE-BC26-1B91F85303CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F76307B-E07A-4498-A0EA-C8709D8FBCFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F76307B-E07A-4498-A0EA-C8709D8FBCFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F76307B-E07A-4498-A0EA-C8709D8FBCFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F76307B-E07A-4498-A0EA-C8709D8FBCFA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

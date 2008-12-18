@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Dependency Property Test</Title>
+      <Shortcut>dptest</Shortcut>
+      <Description>Test for dependency property</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>property</ID>
+          <ToolTip>Property name</ToolTip>
+          <Default>MyProperty</Default>
+        </Literal>
+        <Literal>
+          <ID>propertyType</ID>
+          <ToolTip>Property Type</ToolTip>
+          <Default>double</Default>
+        </Literal>
+        <Literal>
+          <ID>type</ID>
+          <ToolTip>Dependency object type</ToolTip>
+          <Function>SimpleTypeName(global::System.Windows.Controls.DataGrid)</Function>
+        </Literal>
+        <Literal>
+          <ID>expectGet</ID>
+          <ToolTip>Expect Getter for Dependency Property</ToolTip>
+          <Default>true</Default>
+        </Literal>
+        <Literal>
+          <ID>expectSet</ID>
+          <ToolTip>Expect Setter for Dependency Property</ToolTip>
+          <Default>true</Default>
+        </Literal>
+        <Literal>
+          <ID>hasSideEffects</ID>
+          <ToolTip>Expect Setter for Dependency Property to have side-effects</ToolTip>
+          <Default>false</Default>
+        </Literal>
+        <Literal>
+          <ID>value</ID>
+          <ToolTip>A non-default value for testing the setter</ToolTip>
+        </Literal>
+      </Declarations>
+      <Code Language="csharp">
+        <![CDATA[[TestMethod]
+        [Description("Verify Dependency Property: ($propertyType$) $type$.$property$.")]
+        public void DependencyPropertyTest_$type$_$property$()
+        {
+            Type propertyType = typeof($propertyType$);
+            bool expectGet = $expectGet$;
+            bool expectSet = $expectSet$;
+            bool hasSideEffects = $hasSideEffects$;
+            
+            $type$ control = new $type$();
+            Assert.IsNotNull(control);
+
+            // Verify Dependency Property member
+            FieldInfo fieldInfo = typeof($type$).GetField("$property$Property", BindingFlags.Static | BindingFlags.Public); 
+            Assert.AreEqual(typeof(DependencyProperty), fieldInfo.FieldType, "$type$.$property$Property not expected type 'DependencyProperty'.");
+            
+            // Verify Dependency Property's value type
+            DependencyProperty property = fieldInfo.GetValue(null) as DependencyProperty;
+            
+            Assert.IsNotNull(property);
+            
+            // TODO SL Dependency Property's don't have a PropertyType member
+            // Assert.AreEqual(propertyType, property.PropertyType, "$type$.$property$Property.PropertyType is not '$propertyType$'.");
+
+            // Verify Dependency Property CLR property member
+            PropertyInfo propertyInfo = typeof($type$).GetProperty("$property$",  BindingFlags.Instance | BindingFlags.Public);
+            Assert.IsNotNull(propertyInfo, "Expected CLR property $type$.$property$ does not exist.");
+            Assert.AreEqual(propertyType, propertyInfo.PropertyType, "$type$.$property$ not expected type '$propertyType$'.");
+            
+            // Verify getter/setter access
+            Assert.AreEqual(expectGet, propertyInfo.CanRead, "Unexpected value for propertyInfo.CanRead.");
+            Assert.AreEqual(expectSet, propertyInfo.CanWrite, "Unexpected value for propertyInfo.CanWrite.");
+            
+            // Verify that we set what we get
+            if (expectSet) // if expectSet == false, this block can be removed
+            {
+              control.$property$ = $value$;
+              
+              Assert.AreEqual($value$, control.$property$);
+            }
+            
+            // Verify Dependency Property callback
+            if (hasSideEffects)
+            {
+              MethodInfo methodInfo = typeof($type$).GetMethod("On$property$PropertyChanged", BindingFlags.Static | BindingFlags.NonPublic);
+              Assert.IsNotNull(methodInfo, "Expected $type$.$property$ to have static, non-public side-effect callback 'On$property$PropertyChanged'.");
+              
+              // TODO verify the side-effects themselves
+            }
+            else
+            {
+              MethodInfo methodInfo = typeof($type$).GetMethod("On$property$PropertyChanged", BindingFlags.Static);
+              Assert.IsNull(methodInfo, "Expected $type$.$property$ NOT to have static side-effect callback 'On$property$PropertyChanged'.");
+            }
+        }
+]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>
