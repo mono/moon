@@ -1,3 +1,14 @@
+2008-12-17  Chris Toshok  <toshok@ximian.com>
+
+	* configure.ac: remove unnecessary --with-managed assignments.
+	also remove class/Mono.Moonlight/Makefile from AC_OUTPUT.
+
+	* data/silverdesktop.pc: remove Mono.Moonlight mention.
+
+	* data/agmono.pc.in: nuke.
+
+	* data/Makefile.am: remove agmono stuff.
+
 2008-12-16  Jeffrey Stedfast  <fejj@novell.com>
 
 	* configure.ac: Added checks for libexpat. Fixes bug #449528

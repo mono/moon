@@ -147,12 +147,10 @@ AC_ARG_WITH(managed,
     	     yes)
 	     ;;
 	     browser)
-	         managed_code=yes
-		 browser_assemblies=yes
+		 desktop_assemblies=no
 	     ;;
 	     desktop)
-	         managed_code=yes
-		 desktop_assemblies=yes
+		 browser_assemblies=no
 	     ;;
 	     no)
 	     	 managed_code=no
@@ -649,7 +647,6 @@ moon.pc
 Makefile
 src/Makefile
 class/Makefile
-class/Mono.Moonlight/Makefile
 class/System.Windows/Makefile
 class/System.Windows.Browser/Makefile
 class/Microsoft.SilverlightControls/Makefile
