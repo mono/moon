@@ -30,17 +30,23 @@ using System.Windows;
 
 namespace System.ComponentModel {
 	public static class DesignerProperties {
-		public static readonly DependencyProperty IsInDesignModeProperty;
+		public static readonly DependencyProperty IsInDesignModeProperty = DependencyProperty.RegisterAttached (
+			"IsInDesignMode", typeof (bool), typeof (DependencyObject), null);
 
-		public static bool GetIsInDesignMode(DependencyObject element) {
-			throw new NotImplementedException();
+		public static bool GetIsInDesignMode (DependencyObject element)
+		{
+			if (element == null)
+				throw new ArgumentNullException ("element");
+
+			return (bool) element.GetValue (IsInDesignModeProperty);
 		}
 
-		public static void SetIsInDesignMode(DependencyObject element, bool value) {
-			throw new NotImplementedException();
+		public static void SetIsInDesignMode (DependencyObject element, bool value)
+		{
+			if (element == null)
+				throw new ArgumentNullException ("element");
+
+			element.SetValue (IsInDesignModeProperty, value);
 		}
 	}
 }
-
-		
-

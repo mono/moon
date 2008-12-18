@@ -1,3 +1,8 @@
+2008-12-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* DesignerProperties.cs: Implement since some controls (like DataGrid
+	and HyperlinkButton) peek at the value (so throwing would be bad).
+
 2008-11-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* DesignerProperties.cs: Corcompare work.
