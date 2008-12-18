@@ -3,7 +3,11 @@
  */
 
 namespace Mono {
+#if NET_2_1
+	internal enum Kind {
+#else
 	public enum Kind {
+#endif
 
 		INVALID,
 				ANIMATION,

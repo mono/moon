@@ -1,3 +1,7 @@
+2008-12-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Kind.cs: Regenerated (to be internal in SL)
+
 2008-12-17  Jackson Harper  <jackson@ximian.com>
 
 	* ManagedXamlLoader.cs: Handle IConvertible.
