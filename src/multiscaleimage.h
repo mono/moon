@@ -35,6 +35,7 @@ class MultiScaleImage : public MediaBase {
 	/* @PropertyType=MultiScaleTileSource,Version=2.0,GenerateAccessors */
 	static DependencyProperty *SourceProperty;
 //	/* @PropertyType=ReadOnlyCollection<MultiScaleSubImage>,Version=2.0,GenerateGetter */
+// FIXME: When this DP is reinstated - uncomment the validator in the MultiScaleImage constructor
 //	static DependencyProperty *SubImagesProperty;
 	/* @PropertyType=bool,DefaultValue=true,Version=2.0,GenerateAccessors */
 	static DependencyProperty *UseSpringsProperty;

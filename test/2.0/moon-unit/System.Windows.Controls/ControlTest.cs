@@ -237,6 +237,9 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.Throws<NullReferenceException>(delegate {
 				Assert.IsNull (c.GetValue (ConcreteControl.FontFamilyProperty), "#3");
 			}, "#3");
+			Assert.Throws<ArgumentNullException>(delegate {
+				c.SetValue (Control.TemplateProperty, null);
+			}, "#4");
 		}
 
 		[TestMethod]

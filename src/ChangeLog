@@ -1,5 +1,15 @@
 2008-12-18  Alan McGovern  <amcgovern@novell.com>
 
+	* text.cpp:
+	* control.cpp:
+	* validators.h:
+	* mediaelement.cpp:
+	* multiscaleimage.h:
+	* multiscaleimage.cpp:
+	* frameworkelement.cpp: Add validation to DPs
+
+2008-12-18  Alan McGovern  <amcgovern@novell.com>
+
 	* mediaelement.cpp: Add validation for NaturalVideoHeight and
 	NaturalVideoWidth.
 

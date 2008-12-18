@@ -24,7 +24,11 @@
 
 MultiScaleImage::MultiScaleImage ()
 {
-
+//	static bool init = true;
+//	if (init) {
+//		init = false;
+//		MultiScaleImage::SubImagesProperty->SetValueValidator (MultiScaleSubImageCollectionValidator);	
+//	}
 }
 
 MultiScaleImage::~MultiScaleImage ()

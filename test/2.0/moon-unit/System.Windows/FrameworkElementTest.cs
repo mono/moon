@@ -35,6 +35,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows {
 
+	
 	[TestClass]
 	public class FrameworkElementTest {
 
@@ -99,6 +100,19 @@ namespace MoonTest.System.Windows {
 //			Assert.IsTrue (Double.IsNaN (fe.Width), "Width");
 
 			UIElementTest.CheckDefaultProperties (fe);
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void InvalidValues()
+		{
+			ConcreteFrameworkElement f = new ConcreteFrameworkElement ();
+			Assert.Throws<ArgumentNullException>(delegate {
+				f.Language = null;
+			}, "#1");
+			Assert.Throws<ArgumentNullException>(delegate {
+				f.SetValue (FrameworkElement.LanguageProperty, null);
+			}, "#2");
 		}
 
 		[TestMethod]

@@ -335,6 +335,7 @@ MediaElement::MediaElement ()
 		init = false;
 		MediaElement::NaturalVideoHeightProperty->SetValueValidator (IntGreaterThanZeroValidator);
 		MediaElement::NaturalVideoWidthProperty->SetValueValidator (IntGreaterThanZeroValidator);
+		MediaElement::AttributesProperty->SetValueValidator (MediaAttributeCollectionValidator);
 	}
 	pthread_mutex_init (&open_mutex, NULL);
 	

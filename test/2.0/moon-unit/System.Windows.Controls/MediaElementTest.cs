@@ -73,7 +73,9 @@ namespace MoonTest.System.Windows.Controls
 		public void TestInvalidValues()
 		{
 			MediaElement m = new MediaElement();
-
+			Assert.Throws<Exception>(delegate {
+				m.SetValue (MediaElement.AttributesProperty, null);
+			});
 			m.AudioStreamIndex = -1;
 			Assert.IsNull(m.AudioStreamIndex);
 			m.AudioStreamIndex = int.MaxValue;

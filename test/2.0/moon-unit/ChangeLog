@@ -1,3 +1,10 @@
+2008-12-18  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/FrameworkElementTest.cs:
+	* System.Windows.Controls/ControlTest.cs:
+	* System.Windows.Controls/MediaElementTest.cs: Add new tests to ensure
+	parameters are validated correctly.
+
 2008-12-18  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Controls.Primitives/ToggleButtonTest.cs: New. Test

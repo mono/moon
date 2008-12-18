@@ -46,4 +46,20 @@ static bool NonNullStringValidator (Value *value, MoonError *error)
 	return false;
 }
 
+static bool MediaAttributeCollectionValidator (Value *value, MoonError *error)
+{
+	if (value->AsMediaAttributeCollection ())
+		return true;
+	MoonError::FillIn (error, MoonError::EXCEPTION, 1001, "Value cannot be null");
+	return false;
+}
+
+static bool TemplateValidator (Value *value, MoonError *error)
+{
+	if (value->AsControlTemplate ())
+		return true;
+	MoonError::FillIn (error, MoonError::EXCEPTION, 1001, "Value cannot be null");
+	return false;
+}
+
 #endif /* __VALIDATORS_H__ */
