@@ -1,3 +1,8 @@
+2008-12-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Controls.Primitives/ToggleButtonTest.cs: New. Test
+	events wrt RoutedEventArgs.OriginalSource
+
 2008-12-18  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingTest.cs: Move parameter validation for DP's
