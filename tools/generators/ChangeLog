@@ -1,3 +1,8 @@
+2008-12-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Generator.cs: Change Kind enum visibility to internal when 
+	building NET_2_1
+
 2008-12-17  Chris Toshok  <toshok@ximian.com>
 
 	* Generator.cs: s/Mono.Moonlight/System.Windows/ and make

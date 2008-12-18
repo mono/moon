@@ -1516,7 +1516,11 @@ class Generator {
 		Helper.WriteWarningGenerated (text);
 					
 		text.AppendLine ("namespace Mono {");
+		text.AppendLine ("#if NET_2_1");
+		text.AppendLine ("\tinternal enum Kind {");
+		text.AppendLine ("#else");
 		text.AppendLine ("\tpublic enum Kind {");
+		text.AppendLine ("#endif");
 		text.AppendLine (values);
 		text.AppendLine ("\t}");
 		text.AppendLine ("}");
