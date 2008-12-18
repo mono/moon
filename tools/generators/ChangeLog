@@ -1,3 +1,8 @@
+2008-12-17  Chris Toshok  <toshok@ximian.com>
+
+	* Generator.cs: s/Mono.Moonlight/System.Windows/ and make
+	generated classes internal if they were public before.
+
 2008-12-10  Alan McGovern  <amcgovern@novell.com>
 
 	* Generator.cs: PasswordCharProperty should be a char. This is

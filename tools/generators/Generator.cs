@@ -1092,7 +1092,7 @@ class Generator {
 	{
 		string base_dir = Environment.CurrentDirectory;
 		string class_dir = Path.Combine (base_dir, "class");
-		string moon_moonlight_dir = Path.Combine (class_dir, "Mono.Moonlight");
+		string moon_moonlight_dir = Path.Combine (class_dir, "System.Windows");
 		List<TypeInfo> types = new List<TypeInfo> (all.GetDependencyObjects (all));
 		
 		StringBuilder text = new StringBuilder ();
@@ -1521,7 +1521,7 @@ class Generator {
 		text.AppendLine ("\t}");
 		text.AppendLine ("}");
 		
-		string realfile = "class/Mono.Moonlight/Mono/Kind.cs".Replace ('/', Path.DirectorySeparatorChar);
+		string realfile = "class/System.Windows/Mono/Kind.cs".Replace ('/', Path.DirectorySeparatorChar);
 		Helper.WriteAllText (realfile, text.ToString ());
 	}
 	
@@ -1600,7 +1600,7 @@ class Generator {
 		StringBuilder text = new StringBuilder ();
 		string NativeMethods_cs;
 		
-		NativeMethods_cs = File.ReadAllText (Path.Combine (base_dir, "class/Mono.Moonlight/Mono/NativeMethods.cs".Replace ('/', Path.DirectorySeparatorChar)));
+		NativeMethods_cs = File.ReadAllText (Path.Combine (base_dir, "class/System.Windows/Mono/NativeMethods.cs".Replace ('/', Path.DirectorySeparatorChar)));
 
 		methods = all.CPPMethodsToBind;		
 	
@@ -1609,7 +1609,7 @@ class Generator {
 		text.AppendLine ("using System.Runtime.InteropServices;");
 		text.AppendLine ("");
 		text.AppendLine ("namespace Mono {");
-		text.AppendLine ("\tpublic static partial class NativeMethods");
+		text.AppendLine ("\tinternal static partial class NativeMethods");
 		text.AppendLine ("\t{");
 		text.AppendLine ("\t\t/* moonplugin methods */");
 		text.AppendLine ("\t");
@@ -1632,7 +1632,7 @@ class Generator {
 		text.AppendLine ("\t}");
 		text.AppendLine ("}");
 		
-		Helper.WriteAllText (Path.Combine (base_dir, "class/Mono.Moonlight/Mono/GeneratedPInvokes.cs".Replace ('/', Path.DirectorySeparatorChar)), text.ToString ());
+		Helper.WriteAllText (Path.Combine (base_dir, "class/System.Windows/Mono/GeneratedPInvokes.cs".Replace ('/', Path.DirectorySeparatorChar)), text.ToString ());
 	}
 	
 	static void WritePInvokeMethod (string NativeMethods_cs, MethodInfo method, StringBuilder text, string library)
