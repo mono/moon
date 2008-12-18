@@ -649,6 +649,8 @@ src/Makefile
 class/Makefile
 class/System.Windows/Makefile
 class/System.Windows.Browser/Makefile
+class/System.Windows.Controls/Makefile
+class/System.Windows.Controls.Data/Makefile
 class/Microsoft.SilverlightControls/Makefile
 class/Microsoft.SilverlightControls/Controls/Makefile
 gtk/Makefile
