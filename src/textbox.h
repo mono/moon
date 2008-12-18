@@ -105,7 +105,6 @@ class TextBox : public Control {
 	
  protected:
  	bool dirty;
-	virtual bool IsValueValid (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error);
 	virtual ~TextBox ();
 	
  public:
@@ -227,7 +226,7 @@ class PasswordBox : public TextBox {
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	PasswordBox () { }
+	PasswordBox ();
 	
 	virtual Type::Kind GetObjectType () { return Type::PASSWORDBOX; }
 	
@@ -245,9 +244,6 @@ class PasswordBox : public TextBox {
 	
 	Brush *GetSelectionForeground ();
 	void SetSelectionForeground (Brush *brush);
-
- protected:
-	virtual bool IsValueValid (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error);
 };
 
 #endif /* __TEXTBOX_H__ */

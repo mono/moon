@@ -24,6 +24,8 @@
 
 #include "textbox.h"
 #include "utils.h"
+#include "dependencyproperty.h"
+#include "validators.h"
 
 
 static SolidColorBrush *default_selection_background_brush = NULL;
@@ -271,6 +273,13 @@ class TextBuffer {
 
 TextBox::TextBox ()
 {
+	static bool init = true;
+	if (init) {
+		init = false;
+		TextBox::MaxLengthProperty->SetValueValidator (PositiveIntValidator);
+		TextBox::SelectionLengthProperty->SetValueValidator (PositiveIntValidator);
+		TextBox::SelectionStartProperty->SetValueValidator (PositiveIntValidator);
+	}
 	/* initialize the font description and layout */
 	hints = new TextLayoutHints (TextAlignmentLeft, LineStackingStrategyMaxHeight, 0.0);
 	layout = new TextLayout ();
@@ -522,21 +531,6 @@ TextBox::SelectAll ()
 	Select (0, buffer->len);
 }
 
-bool 
-TextBox::IsValueValid (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error)
-{
-	if ((property == TextBox::MaxLengthProperty ||
-	     property == TextBox::SelectionLengthProperty ||
-	     property == TextBox::SelectionStartProperty) &&
-	    value && value->AsInt32 () < 0) {
-		MoonError::FillIn (error, MoonError::ARGUMENT_OUT_OF_RANGE, 1001,
-				   g_strdup_printf ("Value cannot be negative"));
-		return false;	
-	}
-	
-	return Control::IsValueValid (additional_types, property, value, error);
-}
-
 void
 PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
@@ -546,20 +540,12 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 	TextBox::OnPropertyChanged (args);	
 }
 
-bool
-PasswordBox::IsValueValid (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error)
+PasswordBox::PasswordBox ()
 {
-	if (property == PasswordBox::PasswordProperty && value && !value->AsString ()) {
-		MoonError::FillIn (error, MoonError::ARGUMENT_OUT_OF_RANGE, 1001,
-				   g_strdup_printf ("Cannot set a null password"));
-		return false;	
+	static bool init = true;
+	if (init) {
+		init = false;
+		PasswordBox::PasswordProperty->SetValueValidator (NonNullStringValidator);
+		PasswordBox::MaxLengthProperty->SetValueValidator (PositiveIntValidator);
 	}
-	
-	if (property == PasswordBox::MaxLengthProperty && value && value->AsInt32 () < 0) {
-		MoonError::FillIn (error, MoonError::ARGUMENT_OUT_OF_RANGE, 1001,
-				   g_strdup_printf ("MaxLength cannot be negative"));
-		return false;	
-	}
-	
-	return TextBox::IsValueValid (additional_types, property, value, error);
 }

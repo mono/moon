@@ -89,6 +89,7 @@ libmoon_include_headers = 	\
 	uri.h			\
 	usercontrol.h		\
 	utils.h			\
+	validators.h		\
 	value.h			\
 	window-gtk.h		\
 	window.h		\

@@ -109,6 +109,7 @@
     <File name="uielement.h" subtype="Code" buildaction="Nothing" />
     <File name="uri.cpp" subtype="Code" buildaction="Compile" />
     <File name="uri.h" subtype="Code" buildaction="Nothing" />
+    <File name="validators.h" subtype="Code" buildaction="Nothing" />
     <File name="value.cpp" subtype="Code" buildaction="Compile" />
     <File name="value.h" subtype="Code" buildaction="Nothing" />
     <File name="value.h.in" subtype="Code" buildaction="Nothing" />

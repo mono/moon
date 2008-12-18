@@ -162,16 +162,6 @@ FrameworkElement::GetLocalValue (DependencyProperty *property)
 }
 
 bool
-FrameworkElement::IsValueValid (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error)
-{
-	// We can databind any property of a FrameworkElement 
-	if (value && value->Is (Type::BINDINGEXPRESSIONBASE))
-		return true;
-	
-	return UIElement::IsValueValid (additional_types, property, value, error);
-}
-
-bool
 FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error)
 {
 	bool activeBinding = false;
@@ -184,8 +174,7 @@ FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 	if (new_binding) {
 		// We are setting a new data binding; replace the
 		// existing binding if there is one.
-		activeBinding = true;
-		SetBindingExpression (property, new_binding);
+		activeBinding = true;		SetBindingExpression (property, new_binding);
 		value = new_binding->GetValue ();
 	} else if (cur_binding) {
 		switch (cur_binding->GetBinding ()->GetBindingMode ()) {

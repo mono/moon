@@ -609,6 +609,7 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void XamlBindingPropertyPathPriority()
 		{
 			Canvas canvas = (Canvas) XamlReader.Load(@"	

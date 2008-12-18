@@ -1,5 +1,21 @@
 2008-12-18  Alan McGovern  <amcgovern@novell.com>
 
+	* src.mdp:
+	* grid.cpp:
+	* textbox.h:
+	* textbox.cpp:
+	* Makefile.am:
+	* dependencyobject.h:
+	* frameworkelement.h:
+	* frameworkelement.cpp:
+	* dependencyproperty.cpp: Move parameter validation for DP's to use the
+	new ValueValidator callback.
+
+	* validators.h: All validators are defined in this header file so they
+	can be easily reused for different DPs.
+
+2008-12-18  Alan McGovern  <amcgovern@novell.com>
+
 	* grid.cpp: Correctly set the validators - forgot to revert changes
 	before committing.
 

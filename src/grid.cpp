@@ -21,36 +21,18 @@
 #include "runtime.h"
 #include "namescope.h"
 #include "collection.h"
-
-class MoonError;
-
-static bool RowColValidator (Value *value, MoonError *error)
-{
-	if (value->AsInt32() < 0) {
-		MoonError::FillIn (error, MoonError::ARGUMENT, 1001, "Value must be greater than or equal to zero");
-		return false;
-	}
-	return true;
-}
-static bool SpanValidator (Value *value, MoonError *error)
-{
-	if (value->AsInt32() < 1) {
-		MoonError::FillIn (error, MoonError::ARGUMENT, 1001, "Value must be greater than zero");
-		return false;
-	}
-	return true;
-}
+#include "validators.h"
 
 Grid::Grid ()
 {
 	static bool init = true;
 	if (init) {
 		init = false;
-		Grid::ColumnProperty->SetValueValidator (RowColValidator);
-		Grid::RowProperty->SetValueValidator (RowColValidator);
+		Grid::ColumnProperty->SetValueValidator (PositiveIntValidator);
+		Grid::RowProperty->SetValueValidator (PositiveIntValidator);
 	
-		Grid::ColumnSpanProperty->SetValueValidator (SpanValidator);
-		Grid::RowSpanProperty->SetValueValidator (SpanValidator);
+		Grid::ColumnSpanProperty->SetValueValidator (IntGreaterThanZeroValidator);
+		Grid::RowSpanProperty->SetValueValidator (IntGreaterThanZeroValidator);
 	}
 	SetValue (Grid::ColumnDefinitionsProperty, Value::CreateUnref (new ColumnDefinitionCollection ()));
 	SetValue (Grid::RowDefinitionsProperty, Value::CreateUnref (new RowDefinitionCollection ()));

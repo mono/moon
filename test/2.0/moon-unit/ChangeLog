@@ -1,5 +1,10 @@
 2008-12-18  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingTest.cs: Move parameter validation for DP's
+	to use the new ValueValidator callback.
+
+2008-12-18  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/GridTest.cs: Add the ability to validate the
 	value for a DependencyProperty before setting it.
 

@@ -17,11 +17,7 @@
 #include "dependencyproperty.h"
 #include "animation.h"
 #include "runtime.h"
-
-static bool default_validator (Value *value, MoonError *error)
-{
-	return true;	
-}
+#include "validators.h"
 
 /*
  *	DependencyProperty
