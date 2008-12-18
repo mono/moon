@@ -57,10 +57,21 @@ namespace MoonTest.System.ComponentModel {
 				DesignerProperties.SetIsInDesignMode (null, true);
 			}, "null");
 
-			DesignerProperties.SetIsInDesignMode (rect, true);
-			Assert.IsTrue (DesignerProperties.GetIsInDesignMode (rect), "True");
-			DesignerProperties.SetIsInDesignMode (rect, false);
-			Assert.IsFalse (DesignerProperties.GetIsInDesignMode (rect), "True");
+			Assert.Throws<NotImplementedException> (delegate {
+				DesignerProperties.SetIsInDesignMode (rect, true);
+			}, "Rectangle/True");
+
+			rect.SetValue (DesignerProperties.IsInDesignModeProperty, true);
+			Assert.IsFalse (DesignerProperties.GetIsInDesignMode (rect), "Rectangle/SetValue/False/1");
+			Assert.IsTrue ((bool) rect.GetValue (DesignerProperties.IsInDesignModeProperty), "Rectangle/GetValue/True");
+
+			Assert.Throws<NotImplementedException> (delegate {
+				DesignerProperties.SetIsInDesignMode (rect, false);
+			}, "Rectangle/False");
+
+			rect.SetValue (DesignerProperties.IsInDesignModeProperty, false);
+			Assert.IsFalse (DesignerProperties.GetIsInDesignMode (rect), "Rectangle/SetValue/False/2");
+			Assert.IsFalse ((bool) rect.GetValue (DesignerProperties.IsInDesignModeProperty), "Rectangle/GetValue/False");
 		}
 	}
 }
