@@ -57,9 +57,11 @@ Cleanup
 
 * Consolidation
 
-	Move the moonlight.exe code into Mono.Moonlight.dll, as this
-	would give us access to mscorlib members directly, perhaps
-	even AppDomain.DoCallback, reduces yet another managed library.
+	Now that Mono.Moonlight.dll has been rolled into
+	System.Windows.dll, and the AppDomain hacks have been removed
+	from moonlight.exe, we should be able to further reduce our
+	managed footprint and per-domain costs by removing
+	moonlight.exe altogether.
 
 * AppDomains
 
