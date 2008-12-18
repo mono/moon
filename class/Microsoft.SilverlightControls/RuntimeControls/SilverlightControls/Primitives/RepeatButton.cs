@@ -12,7 +12,6 @@ using System.Windows.Input;
 using System.Windows.Media.Animation;
 using System.Windows.Threading; 
 using System.Windows.Automation.Peers;
-using MS.Internal;
 using System.Windows.Media; 
  
 namespace System.Windows.Controls.Primitives

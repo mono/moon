@@ -10,7 +10,6 @@ using System.Diagnostics;
 using System.Windows.Input; 
 using System.Windows.Media.Animation;
 using System.Windows.Controls;
-using MS.Internal; 
 
 namespace System.Windows.Controls.Primitives
 { 

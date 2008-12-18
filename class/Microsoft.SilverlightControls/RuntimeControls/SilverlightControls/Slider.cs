@@ -13,7 +13,6 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media; 
 using System.Windows.Automation.Peers;
 using System.Windows.Controls;
-using MS.Internal; 
  
 namespace System.Windows.Controls
 { 

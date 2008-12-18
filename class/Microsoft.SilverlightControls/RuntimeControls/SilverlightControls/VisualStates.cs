@@ -10,8 +10,6 @@ using System.Security;
 using System.Runtime.InteropServices; 
 using System.Windows.Controls;
 
-using MS.Internal; 
-
 namespace System.Windows.Controls
 { 
     /// <summary> 

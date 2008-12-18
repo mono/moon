@@ -11,7 +11,6 @@ using System.Windows.Markup;
 using System.Windows.Media.Animation;
 using System.Windows.Automation.Peers;
 using System.Windows.Controls; 
-using MS.Internal;
 using System.Windows.Media;
  
 namespace System.Windows.Controls.Primitives 

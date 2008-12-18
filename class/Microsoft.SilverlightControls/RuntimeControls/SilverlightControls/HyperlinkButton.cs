@@ -12,7 +12,9 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media.Animation;
 using System.Windows.Automation.Peers; 
 using System.Security;
+#if notyet
 using System.Windows.Browser;
+#endif
  
 namespace System.Windows.Controls
 {
@@ -191,11 +193,15 @@ namespace System.Windows.Controls
             {
                 if (!string.IsNullOrEmpty(target))
                 { 
+#if notyet
                     HtmlPage.Window.Navigate(destination, target);
+#endif
                 }
                 else 
                 { 
+#if notyet
                     HtmlPage.Window.Navigate(destination, "_self");
+#endif
                 } 
             }
             catch (InvalidOperationException ex)
