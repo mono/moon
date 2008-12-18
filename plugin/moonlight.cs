@@ -145,7 +145,6 @@ namespace Moonlight {
 			Console.WriteLine ("Running Moonlight.cs, boot instance: {0}", count++);
 			Console.WriteLine ("  mscorlib: {0}", typeof (object).Module.FullyQualifiedName);
 			Console.WriteLine ("  System.Windows: {0} (Initialized)", typeof (DependencyObject).Module.FullyQualifiedName);
-			Console.WriteLine ("  Mono.Moonlight: {0}", typeof (Helper).Module.FullyQualifiedName);
 		}
 	}
 }

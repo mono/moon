@@ -1,5 +1,15 @@
 2008-12-17  Chris Toshok  <toshok@ximian.com>
 
+	* plugin.cpp (PluginInstance::MonoInit): turns out this wasn't the
+	domain name, but the version.  it needs to be "moonlight".
+
+	* moonlight.cs: remove reference to Helper, as this was only used
+	to print out the Mono.Moonlight.dll fully qualified name.
+
+	* Makefile.am: remove references to Mono.Moonlight.dll.
+
+2008-12-17  Chris Toshok  <toshok@ximian.com>
+
 	* plugin.cpp (PluginInstance::MonoInit): supply a function pointer
 	that actually exists to dladdr when PLUGIN_INSTALL is defined.
 	Also, use a similar app domain name ("moonlight-%p" where %p is

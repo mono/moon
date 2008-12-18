@@ -2009,7 +2009,7 @@ PluginInstance::MonoInit ()
 	
 	char *domain_name = g_strdup_printf ("moonlight-%p", this);
 	mono_debug_init (MONO_DEBUG_FORMAT_MONO);
-	moon_domain = mono_jit_init_version (boot_assembly, domain_name);
+	moon_domain = mono_jit_init_version (boot_assembly, "moonlight");
 	moon_boot_assembly = mono_domain_assembly_open (moon_domain, boot_assembly);
 	g_free (domain_name);
 	
