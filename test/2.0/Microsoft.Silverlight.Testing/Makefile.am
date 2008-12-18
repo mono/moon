@@ -207,8 +207,7 @@ REFERENCES = \
 	-r:$(builddir)/../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll
 
 BROWSER_ASSEMBLIES=-r:$(top_builddir)/class/lib/2.1/System.Windows.dll \
-		   -r:$(top_builddir)/class/lib/2.1/System.Windows.Browser.dll \
-		   -r:$(top_builddir)/class/lib/2.1/Mono.Moonlight.dll
+		   -r:$(top_builddir)/class/lib/2.1/System.Windows.Browser.dll
 
 noinst_DATA=	Microsoft.Silverlight.Testing.dll
 

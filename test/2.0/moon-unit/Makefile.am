@@ -20,8 +20,7 @@ CLEANFILES=	$(xapname).xap 		\
 		site/ClientBin/moon-unit.xap
 
 BROWSER_ASSEMBLIES=-r:$(top_builddir)/class/lib/2.1/System.Windows.dll \
-		   -r:$(top_builddir)/class/lib/2.1/System.Windows.Browser.dll \
-		   -r:$(top_builddir)/class/lib/2.1/Mono.Moonlight.dll
+		   -r:$(top_builddir)/class/lib/2.1/System.Windows.Browser.dll
 
 moon-unit.xap: $(builddir)/moon-unit.sources Microsoft.Silverlight.Testing.dll Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll System.Xml.Linq.dll
 	$(MONO) --debug $(top_builddir)/tools/mxap/mxap.exe --generate-html- --entry-point-type=Mono.Moonlight.UnitTesting.App --cs-sources=$(builddir)/moon-unit.sources --builddirhack=$(top_builddir) $(BROWSER_ASSEMBLIES) -r:$(builddir)/Microsoft.Silverlight.Testing.dll -r:$(builddir)/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll  $(srcdir)/
