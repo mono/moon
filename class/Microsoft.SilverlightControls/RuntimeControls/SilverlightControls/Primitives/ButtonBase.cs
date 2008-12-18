@@ -318,7 +318,9 @@ namespace System.Windows.Controls.Primitives
             RoutedEventHandler handler = Click; 
             if (handler != null)
             {
-                handler(this, new RoutedEventArgs()); 
+// OriginalSource needs to be set, but that's not possible outside System.Windows.dll, so SL2 controls don't do it
+//                handler(this, new RoutedEventArgs()); 
+                handler(this, new RoutedEventArgs { OriginalSource = this });
             } 
         }
  

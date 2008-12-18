@@ -1,3 +1,10 @@
+2008-12-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* README.MOON: New. Explains directories and why some changes to the
+	published controls will be needed.
+	* RuntimeControls/SilverlightControls/Primitives/ButtonBase.cs: Fix
+	wrt unit tests.
+
 2008-12-17  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* Controls/Src/RepeatButton/RepeatButton.cs: Updated to work with 
