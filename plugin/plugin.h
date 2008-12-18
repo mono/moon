@@ -131,8 +131,10 @@ class PluginInstance
 #endif
 
 #if PLUGIN_SL_2_0
-	bool MonoIsLoaded ();
-	bool MonoInit ();
+	static bool MonoIsLoaded ();
+	static bool MonoInit ();
+
+	bool CreatePluginAppDomain ();
 
 	gpointer ManagedCreateXamlLoaderForFile (XamlLoader* loader, const char *file);
 	gpointer ManagedCreateXamlLoaderForString (XamlLoader* loader, const char *str);
@@ -189,10 +191,12 @@ class PluginInstance
 #if PLUGIN_SL_2_0
 	bool xap_loaded;
 
-	MonoDomain   *moon_domain;
+	MonoDomain   *plugin_domain;
 	MonoAssembly *moon_boot_assembly;
 	char *boot_assembly;
-	bool mono_is_loaded;
+
+	static MonoDomain *root_domain;
+	static bool mono_is_loaded;
 
 	// Methods
 	MonoMethod   *moon_load_xaml;

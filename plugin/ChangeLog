@@ -1,3 +1,10 @@
+2008-12-18  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.h, plugin.cpp: rework the app domain stuff slightly.  we
+	now only call mono_jit_init_version once (and don't attempt to
+	unload that room AppDomain), and then call mono_domain_create from
+	each plugin instance (and we *do* free that AppDomain).
+
 2008-12-17  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.cpp (PluginInstance::MonoInit): turns out this wasn't the

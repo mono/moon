@@ -385,10 +385,9 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, uint16_t mo
 #if PLUGIN_SL_2_0
 	xap_loaded = false;
 
-	moon_domain = NULL;
+	plugin_domain = NULL;
 	moon_boot_assembly = NULL;
 	boot_assembly = NULL;
-	mono_is_loaded = false;
 
 	moon_load_xaml =
 		moon_load_xap =
@@ -468,8 +467,8 @@ PluginInstance::~PluginInstance ()
 	bridge = NULL;
 
 #if PLUGIN_SL_2_0
-	if (moon_domain)
-		mono_domain_free (moon_domain, FALSE);
+	if (plugin_domain)
+		mono_domain_free (plugin_domain, FALSE);
 #endif
 	
 #if DEBUG
@@ -1092,11 +1091,10 @@ PluginInstance::LoadXAML ()
 void
 PluginInstance::LoadXAP (const char *fname)
 {
-	if (!MonoIsLoaded ())
-		MonoInit ();
-
-	ManagedCreateApplication (fname);
-	xap_loaded = true;
+	if (MonoInit () && CreatePluginAppDomain ()) {
+		ManagedCreateApplication (fname);
+		xap_loaded = true;
+	}
 }
 
 void
@@ -1779,10 +1777,7 @@ bool
 PluginXamlLoader::LoadVM ()
 {
 #if PLUGIN_SL_2_0
-	if (!plugin->MonoIsLoaded ())
-		plugin->MonoInit ();
-
-	if (plugin->MonoIsLoaded ())
+	if (plugin->MonoInit () && plugin->CreatePluginAppDomain())
 		return InitializeLoader ();
 #endif
 	return false;
@@ -1962,6 +1957,9 @@ PluginInstance::MonoGetMethodFromName (const char *name)
 	return method;
 }
 
+bool PluginInstance::mono_is_loaded = false;
+MonoDomain* PluginInstance::root_domain = NULL;
+
 bool
 PluginInstance::MonoIsLoaded ()
 {
@@ -1976,12 +1974,41 @@ extern gpointer mono_trace_parse_options (char *options);
 bool
 PluginInstance::MonoInit ()
 {
-	bool result = false;
 	char *trace_options;
 	
 	if (mono_is_loaded)
 		return true;
+
+	mono_config_parse (NULL);
+	trace_options = getenv ("MOON_TRACE");
+	if (trace_options != NULL){
+		printf ("Setting trace options to: %s\n", trace_options);
+		mono_jit_trace_calls = mono_trace_parse_options (trace_options);
+	}
 	
+	mono_debug_init (MONO_DEBUG_FORMAT_MONO);
+	root_domain = mono_jit_init_version ("Moonlight Root Domain", "moonlight");
+
+	mono_is_loaded = true;
+
+
+	printf ("Mono Runtime Initialized\n");
+	
+#if DEBUG
+	d(enable_vm_stack_trace ());
+#endif
+
+	return true;
+}
+
+
+bool
+PluginInstance::CreatePluginAppDomain ()
+{
+	bool result = false;
+	if (plugin_domain != NULL)
+		return true;
+
 #if PLUGIN_INSTALL
 	Dl_info dlinfo;
 	char *dirname;
@@ -2000,18 +2027,11 @@ PluginInstance::MonoInit ()
 	
 	d(printf ("The file is %s\n", boot_assembly));
 	
-	mono_config_parse (NULL);
-	trace_options = getenv ("MOON_TRACE");
-	if (trace_options != NULL){
-		printf ("Setting trace options to: %s\n", trace_options);
-		mono_jit_trace_calls = mono_trace_parse_options (trace_options);
-	}
-	
 	char *domain_name = g_strdup_printf ("moonlight-%p", this);
-	mono_debug_init (MONO_DEBUG_FORMAT_MONO);
-	moon_domain = mono_jit_init_version (boot_assembly, "moonlight");
-	moon_boot_assembly = mono_domain_assembly_open (moon_domain, boot_assembly);
+	plugin_domain = mono_domain_create ();
 	g_free (domain_name);
+
+	moon_boot_assembly = mono_domain_assembly_open (plugin_domain, boot_assembly);
 	
 	if (moon_boot_assembly) {
 		char *argv [2];
@@ -2019,7 +2039,7 @@ PluginInstance::MonoInit ()
 		argv [0] = boot_assembly;
 		argv [1] = NULL;
 		
-		mono_jit_exec (moon_domain, moon_boot_assembly, 1, argv);
+		mono_jit_exec (plugin_domain, moon_boot_assembly, 1, argv);
 		
 		moon_load_xaml  = MonoGetMethodFromName ("Moonlight.ApplicationLauncher:CreateXamlLoader");
 		moon_load_xap   = MonoGetMethodFromName ("Moonlight.ApplicationLauncher:CreateApplication");
@@ -2029,14 +2049,8 @@ PluginInstance::MonoInit ()
 			result = true;
 	}
 
-	printf ("Mono Runtime: %s\n", result ? "OK" : "Failed");
-	
-	mono_is_loaded = true;
-	
-#if DEBUG
-	d(enable_vm_stack_trace ());
-#endif
-	
+	printf ("Plugin AppDomain Creation: %s\n", result ? "OK" : "Failed");
+
 	return result;
 }
 
@@ -2052,8 +2066,8 @@ PluginInstance::ManagedCreateXamlLoader (XamlLoader* native_loader, const char *
 	params [0] = &native_loader;
 	params [1] = &this_obj;
 	params [2] = &surface;
-	params [3] = file ? mono_string_new (moon_domain, file) : NULL;
-	params [4] = str ? mono_string_new (moon_domain, str) : NULL;
+	params [3] = file ? mono_string_new (plugin_domain, file) : NULL;
+	params [4] = str ? mono_string_new (plugin_domain, str) : NULL;
 	loader = mono_runtime_invoke (moon_load_xaml, NULL, params, NULL);
 	return GUINT_TO_POINTER (mono_gchandle_new (loader, false));
 }
@@ -2088,7 +2102,7 @@ PluginInstance::ManagedCreateApplication (const char *file)
 	void *params [3];
 	params [0] = &this_obj;
 	params [1] = &surface;
-	params [2] = mono_string_new (moon_domain, file);
+	params [2] = mono_string_new (plugin_domain, file);
 	MonoObject *ret = mono_runtime_invoke (moon_load_xap, NULL, params, NULL);
 	
 	return (bool) (*(MonoBoolean *) mono_object_unbox(ret));
