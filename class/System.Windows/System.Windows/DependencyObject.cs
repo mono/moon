@@ -356,6 +356,10 @@ namespace System.Windows {
 
 		public void SetValue (DependencyProperty dp, object value)
 		{
+			if (dp == null)
+				throw new ArgumentNullException ("property");
+			if (dp.IsReadOnly)
+				throw new InvalidOperationException ();
 			SetValueImpl (dp, value);
 		}
 

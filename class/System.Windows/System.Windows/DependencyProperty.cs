@@ -63,15 +63,21 @@ namespace System.Windows {
 		
 		public static DependencyProperty Register (string name, Type propertyType, Type ownerType, PropertyMetadata typeMetadata)
 		{
-			return RegisterAny (name, propertyType, ownerType, typeMetadata, false);
+			return RegisterAny (name, propertyType, ownerType, typeMetadata, false, false);
 		}
 		
 		public static DependencyProperty RegisterAttached (string name, Type propertyType, Type ownerType, PropertyMetadata defaultMetadata)
 		{
-			return RegisterAny (name, propertyType, ownerType, defaultMetadata, true);
+			return RegisterAny (name, propertyType, ownerType, defaultMetadata, true, false);
 		}
 		
-		private static DependencyProperty RegisterAny (string name, Type propertyType, Type ownerType, PropertyMetadata metadata, bool attached)
+		// internally Silverlight use some read-only properties
+		internal static DependencyProperty RegisterReadOnly (string name, Type propertyType, Type ownerType, PropertyMetadata defaultMetadata)
+		{
+			return RegisterAny (name, propertyType, ownerType, defaultMetadata, true, true);
+		}
+
+		private static DependencyProperty RegisterAny (string name, Type propertyType, Type ownerType, PropertyMetadata metadata, bool attached, bool readOnly)
 		{
 			ManagedType property_type;
 			ManagedType owner_type;
@@ -116,7 +122,7 @@ namespace System.Windows {
 			else
 				v = Value.FromObject (defaultVal, true);
 
-			IntPtr handle = NativeMethods.dependency_property_register_managed_property (name, property_type.native_handle, owner_type.native_handle, ref v, attached, handler);
+			IntPtr handle = NativeMethods.dependency_property_register_managed_property (name, property_type.native_handle, owner_type.native_handle, ref v, attached, readOnly, handler);
 			NativeMethods.value_free_value (ref v);
 			
 			if (handle == IntPtr.Zero)
@@ -247,6 +253,10 @@ namespace System.Windows {
 				
 		internal object DefaultValue {
 			get { return default_value; }
+		}
+
+		internal bool IsReadOnly {
+			get { return NativeMethods.dependency_property_is_read_only (native); }
 		}
 	}
 }

@@ -527,6 +527,10 @@ namespace Mono {
 		// bool dependency_property_is_nullable (DependencyProperty *instance);
 		public extern static bool dependency_property_is_nullable (IntPtr instance);
 
+		[DllImport ("moon")]
+		// bool dependency_property_is_read_only (DependencyProperty *instance);
+		public extern static bool dependency_property_is_read_only (IntPtr instance);
+
 		[DllImport ("moon", EntryPoint="dependency_property_register_full")]
 		// DependencyProperty *dependency_property_register_full (Types *additional_types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler *changed_callback);
 		private extern static IntPtr dependency_property_register_full_ (IntPtr additional_types, Kind type, string name, ref Value default_value, Kind vtype, bool attached, bool read_only, bool always_change, Mono.NativePropertyChangedHandler changed_callback);
@@ -538,12 +542,12 @@ namespace Mono {
 		}
 
 		[DllImport ("moon", EntryPoint="dependency_property_register_managed_property")]
-		// DependencyProperty *dependency_property_register_managed_property (Types *additional_types, const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, NativePropertyChangedHandler *callback);
-		private extern static IntPtr dependency_property_register_managed_property_ (IntPtr additional_types, string name, Kind property_type, Kind owner_type, ref Value defaultValue, bool attached, Mono.NativePropertyChangedHandler callback);
-		public static IntPtr dependency_property_register_managed_property (string name, Kind property_type, Kind owner_type, ref Value defaultValue, bool attached, Mono.NativePropertyChangedHandler callback)
+		// DependencyProperty *dependency_property_register_managed_property (Types *additional_types, const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, NativePropertyChangedHandler *callback);
+		private extern static IntPtr dependency_property_register_managed_property_ (IntPtr additional_types, string name, Kind property_type, Kind owner_type, ref Value defaultValue, bool attached, bool read_only, Mono.NativePropertyChangedHandler callback);
+		public static IntPtr dependency_property_register_managed_property (string name, Kind property_type, Kind owner_type, ref Value defaultValue, bool attached, bool read_only, Mono.NativePropertyChangedHandler callback)
 		{
 			IntPtr result;
-			result = dependency_property_register_managed_property_ (Mono.Types.Native, name, property_type, owner_type, ref defaultValue, attached, callback);
+			result = dependency_property_register_managed_property_ (Mono.Types.Native, name, property_type, owner_type, ref defaultValue, attached, read_only, callback);
 			return result;
 		}
 

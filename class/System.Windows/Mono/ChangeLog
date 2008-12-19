@@ -1,3 +1,7 @@
+2008-12-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* GeneratedPInvokes.cs: Regenerated for ReadOnly DP.
+
 2008-12-19  Chris Toshok  <toshok@ximian.com>
 
 	* Value.cs: move DependencyObject.GetAsValue to Value.FromObject
