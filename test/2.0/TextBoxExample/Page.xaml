@@ -6,4 +6,5 @@
   <TextBox Canvas.Left="5" Canvas.Top="5" x:Name="txtTextBox" Width="400" Height="300" MaxLength="255"
    Text="*poke*" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" Background="Black" Foreground="Red"/>
   <TextBlock Canvas.Left="5" Canvas.Top="310" x:Name="txtTextBlock" FontSize="11" Text="This is a TextBlock"/>
+  <TextBlock Canvas.Left="410" Canvas.Top="5" x:Name="txtVisualTree"/>
 </Canvas>
