@@ -1,3 +1,10 @@
+2008-12-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Controls/SliderTest.cs: Chain default test into
+	RangeBaseTest. Add empty, but templated, test case.
+	* System.Windows.Controls.Primitives/RangeBaseTest.cs: Reworked
+	for easier reuse.
+
 2008-12-19  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* moon-unit.csproj: Add recent tests to project file.

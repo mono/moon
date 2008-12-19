@@ -30,6 +30,11 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
+using System.Windows.Markup;
+using System.Windows.Media;
+
+using Mono.Moonlight.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MoonTest.System.Windows.Controls.Primitives;
@@ -44,12 +49,17 @@ namespace MoonTest.System.Windows.Controls {
 		{
 			Slider s = new Slider ();
 			// default properties on Slider
+			CheckDefaultProperties (s, 1.0);
+		}
+
+		public static void CheckDefaultProperties (Slider s, double maximum)
+		{
 			Assert.IsFalse (s.IsDirectionReversed, "IsDirectionReversed");
 			Assert.IsFalse (s.IsFocused, "IsFocused");
 			Assert.AreEqual (Orientation.Horizontal, s.Orientation, "Orientation");
 
 			// default properties on RangeBase...
-			RangeBaseTest.CheckDefaultProperties (s);
+			RangeBaseTest.CheckDefaultProperties (s, maximum);
 		}
 
 		[TestMethod]
@@ -171,6 +181,42 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsNull (s.GetTemplateChild_ ("Normal State"), "Normal State");
 			Assert.IsNull (s.GetTemplateChild_ ("MouseOver State"), "MouseOver State");
 			Assert.IsNull (s.GetTemplateChild_ ("Disabled State"), "Disabled State");
+		}
+
+		[TestMethod]
+		[MoonlightBug ("should work once templates are applied")]
+		public void MinimalXaml ()
+		{
+			Canvas c = (Canvas) XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+       <Slider/>
+</Canvas>");
+			Slider s = c.Children [0] as Slider;
+			CheckDefaultProperties (s, 10);
+
+			// default properties on Control
+			Assert.IsNull (s.Background, "Background");
+			Assert.IsNotNull (s.BorderBrush, "BorderBrush");
+			Assert.IsTrue (s.BorderBrush is LinearGradientBrush, "BorderBrush/LinearGradientBrush");
+			Assert.AreEqual (new Thickness (1, 1, 1, 1), s.BorderThickness, "BorderThickness");
+			Assert.IsNotNull (s.FontFamily, "FontFamily");
+			Assert.AreEqual (FontStretches.Normal, s.FontStretch, "FontStretch");
+			Assert.AreEqual (FontStyles.Normal, s.FontStyle, "FontStyle");
+			Assert.AreEqual (FontWeights.Normal, s.FontWeight, "FontWeight");
+			Assert.IsNotNull (s.Foreground, "Foreground");
+			Assert.IsTrue (s.Foreground is SolidColorBrush, "Foreground/SolidColorBrush");
+			Assert.AreEqual (Colors.Black, (s.Foreground as SolidColorBrush).Color, "Foreground.Color");
+			Assert.AreEqual (HorizontalAlignment.Center, s.HorizontalContentAlignment, "HorizontalContentAlignment");
+			Assert.IsTrue (s.IsEnabled, "IsEnabled");
+			Assert.IsFalse (s.IsTabStop, "IsTabStop");
+			Assert.AreEqual (new Thickness (0, 0, 0, 0), s.Padding, "Padding");
+			Assert.AreEqual (Int32.MaxValue, s.TabIndex, "AreEqual");
+			Assert.AreEqual (KeyboardNavigationMode.Local, s.TabNavigation, "TabNavigation");
+			Assert.IsNotNull (s.Template, "Template");
+			Assert.AreEqual (typeof (Slider), (s.Template as ControlTemplate).TargetType, "Template/TargetType");
+			Assert.AreEqual (VerticalAlignment.Center, s.VerticalContentAlignment, "VerticalContentAlignment");
+
+			FrameworkElementTest.CheckDefaultProperties (s, c);
 		}
 	}
 }

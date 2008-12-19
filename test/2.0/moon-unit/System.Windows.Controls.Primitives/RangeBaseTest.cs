@@ -80,10 +80,16 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 
 		static public void CheckDefaultProperties (RangeBase rb)
 		{
+			CheckDefaultProperties (rb, 1.0);
+			ControlTest.CheckDefaultProperties (rb, true, null);
+		}
+
+		static public void CheckDefaultProperties (RangeBase rb, double maximum)
+		{
 			// default properties on RangeBase
 			Assert.AreEqual (0.1, rb.SmallChange, "SmallChange");
 			Assert.AreEqual (1.0, rb.LargeChange, "LargeChange");
-			Assert.AreEqual (1.0, rb.Maximum, "Maximum");
+			Assert.AreEqual (maximum, rb.Maximum, "Maximum");
 			Assert.AreEqual (0.0, rb.Minimum, "Minimum");
 			Assert.AreEqual (0.0, rb.Value, "Value");
 		}
