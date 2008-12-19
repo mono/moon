@@ -1,3 +1,10 @@
+2008-12-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* SDKControls/Data/src/DataGrid/DataGridCell.cs,
+	  SDKControls/Data/src/DataGrid/DataGridRow.xaml.cs,
+	  SDKControls/Data/src/DataGrid/DataGridRowHeader.xaml.cs: Work
+	  around compiler bug #456775.
+
 2008-12-18  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* RuntimeControls/SilverlightControls/Primitives/ToggleButton.cs:

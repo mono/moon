@@ -11,26 +11,26 @@ using System.Windows.Media;
 
 namespace System.Windows.Controls.Primitives
 {
-    [TemplatePart(Name = DATAGRIDROWHEADER_elementRootName, Type = typeof(FrameworkElement))]
+    [TemplatePart(Name = DataGridRowHeader.DATAGRIDROWHEADER_elementRootName, Type = typeof(FrameworkElement))]
 
-    [TemplateVisualState(Name = DATAGRIDROWHEADER_stateNormal, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = DATAGRIDROWHEADER_stateNormalCurrentRow, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = DATAGRIDROWHEADER_stateNormalEditingRow, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = DATAGRIDROWHEADER_stateNormalEditingRowFocused, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DataGridRowHeader.DATAGRIDROWHEADER_stateNormal, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DataGridRowHeader.DATAGRIDROWHEADER_stateNormalCurrentRow, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DataGridRowHeader.DATAGRIDROWHEADER_stateNormalEditingRow, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DataGridRowHeader.DATAGRIDROWHEADER_stateNormalEditingRowFocused, GroupName = VisualStates.GroupCommon)]
 
-    [TemplateVisualState(Name = DATAGRIDROWHEADER_stateMouseOver, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = DATAGRIDROWHEADER_stateMouseOverCurrentRow, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = DATAGRIDROWHEADER_stateMouseOverEditingRow, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = DATAGRIDROWHEADER_stateMouseOverEditingRowFocused, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = DATAGRIDROWHEADER_stateMouseOverSelected, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = DATAGRIDROWHEADER_stateMouseOverSelectedFocused, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = DATAGRIDROWHEADER_stateMouseOverSelectedCurrentRow, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = DATAGRIDROWHEADER_stateMouseOverSelectedCurrentRowFocused, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DataGridRowHeader.DATAGRIDROWHEADER_stateMouseOver, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DataGridRowHeader.DATAGRIDROWHEADER_stateMouseOverCurrentRow, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DataGridRowHeader.DATAGRIDROWHEADER_stateMouseOverEditingRow, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DataGridRowHeader.DATAGRIDROWHEADER_stateMouseOverEditingRowFocused, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DataGridRowHeader.DATAGRIDROWHEADER_stateMouseOverSelected, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DataGridRowHeader.DATAGRIDROWHEADER_stateMouseOverSelectedFocused, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DataGridRowHeader.DATAGRIDROWHEADER_stateMouseOverSelectedCurrentRow, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DataGridRowHeader.DATAGRIDROWHEADER_stateMouseOverSelectedCurrentRowFocused, GroupName = VisualStates.GroupCommon)]
 
-    [TemplateVisualState(Name = DATAGRIDROWHEADER_stateSelected, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = DATAGRIDROWHEADER_stateSelectedCurrentRow, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = DATAGRIDROWHEADER_stateSelectedCurrentRowFocused, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = DATAGRIDROWHEADER_stateSelectedFocused, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DataGridRowHeader.DATAGRIDROWHEADER_stateSelected, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DataGridRowHeader.DATAGRIDROWHEADER_stateSelectedCurrentRow, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DataGridRowHeader.DATAGRIDROWHEADER_stateSelectedCurrentRowFocused, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DataGridRowHeader.DATAGRIDROWHEADER_stateSelectedFocused, GroupName = VisualStates.GroupCommon)]
     
     public partial class DataGridRowHeader : ContentControl
     {

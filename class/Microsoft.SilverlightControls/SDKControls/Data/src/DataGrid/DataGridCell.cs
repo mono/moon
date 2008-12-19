@@ -10,7 +10,7 @@ using System.Windows.Shapes;
 
 namespace System.Windows.Controls
 {
-    [TemplatePart(Name = DATAGRIDCELL_elementRightGridLine, Type = typeof(Rectangle))]
+    [TemplatePart(Name = DataGridCell.DATAGRIDCELL_elementRightGridLine, Type = typeof(Rectangle))]
 
     [TemplateVisualState(Name = VisualStates.StateNormal, GroupName = VisualStates.GroupCommon)]
     [TemplateVisualState(Name = VisualStates.StateMouseOver, GroupName = VisualStates.GroupCommon)]

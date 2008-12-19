@@ -14,25 +14,25 @@ using System.Windows.Shapes;
 
 namespace System.Windows.Controls
 {
-    [TemplatePart(Name = DATAGRIDROW_elementBottomGridLine, Type = typeof(Rectangle))]
-    [TemplatePart(Name = DATAGRIDROW_elementCells, Type = typeof(DataGridCellsPresenter))]
-    [TemplatePart(Name = DATAGRIDROW_elementDetails, Type = typeof(DataGridDetailsPresenter))]
-    [TemplatePart(Name = DATAGRIDROW_elementRoot, Type = typeof(Panel))]
-    [TemplatePart(Name = DATAGRIDROW_elementRowHeader, Type = typeof(DataGridRowHeader))]
+    [TemplatePart(Name = DataGridRow.DATAGRIDROW_elementBottomGridLine, Type = typeof(Rectangle))]
+    [TemplatePart(Name = DataGridRow.DATAGRIDROW_elementCells, Type = typeof(DataGridCellsPresenter))]
+    [TemplatePart(Name = DataGridRow.DATAGRIDROW_elementDetails, Type = typeof(DataGridDetailsPresenter))]
+    [TemplatePart(Name = DataGridRow.DATAGRIDROW_elementRoot, Type = typeof(Panel))]
+    [TemplatePart(Name = DataGridRow.DATAGRIDROW_elementRowHeader, Type = typeof(DataGridRowHeader))]
 
-    [TemplateVisualState(Name = DATAGRIDROW_stateNormal, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = DATAGRIDROW_stateAlternate, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = DATAGRIDROW_stateNormalEditing, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = DATAGRIDROW_stateNormalEditingFocused, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DataGridRow.DATAGRIDROW_stateNormal, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DataGridRow.DATAGRIDROW_stateAlternate, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DataGridRow.DATAGRIDROW_stateNormalEditing, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DataGridRow.DATAGRIDROW_stateNormalEditingFocused, GroupName = VisualStates.GroupCommon)]
 
-    [TemplateVisualState(Name = DATAGRIDROW_stateSelected, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = DATAGRIDROW_stateSelectedFocused, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = DATAGRIDROW_stateMouseOver, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = DATAGRIDROW_stateMouseOverEditing, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = DATAGRIDROW_stateMouseOverEditingFocused, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DataGridRow.DATAGRIDROW_stateSelected, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DataGridRow.DATAGRIDROW_stateSelectedFocused, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DataGridRow.DATAGRIDROW_stateMouseOver, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DataGridRow.DATAGRIDROW_stateMouseOverEditing, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DataGridRow.DATAGRIDROW_stateMouseOverEditingFocused, GroupName = VisualStates.GroupCommon)]
 
-    [TemplateVisualState(Name = DATAGRIDROW_stateMouseOverSelected, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = DATAGRIDROW_stateMouseOverSelectedFocused, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DataGridRow.DATAGRIDROW_stateMouseOverSelected, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DataGridRow.DATAGRIDROW_stateMouseOverSelectedFocused, GroupName = VisualStates.GroupCommon)]
     public partial class DataGridRow : Control
     {
         #region Constants
