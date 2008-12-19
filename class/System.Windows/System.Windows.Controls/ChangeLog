@@ -1,3 +1,8 @@
+2008-12-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* CalendarMode.cs, ComboBox.cs, ComboBoxItem.cs: Stub out and fill in
+	  more bits to get even more bits compiling.
+
 2008-12-11  Chris Toshok  <toshok@ximian.com>
 
 	* Control.cs: add Initialize method to add a handler for the

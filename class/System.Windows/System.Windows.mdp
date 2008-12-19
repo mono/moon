@@ -387,6 +387,15 @@
     <File name="Mono/Value.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono/XamlLoaderCallbacks.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono/XapHack.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/ComboBox.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/ComboBoxItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls.Primitives/Selector.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/AutomationOrientation.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/CalendarMode.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation/ElementNotEnabledException.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation/SelectionItemPatternIdentifiers.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation/ScrollPatternIdentifiers.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation/ElementNotAvailableException.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="Mono.Moonlight" />

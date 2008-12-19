@@ -33,6 +33,7 @@ namespace System.Windows.Automation.Provider {
 		void SetCurrentView (int viewId);
 
 		int[] GetSupportedViews ();
+		int CurrentView { get; }
 	}
 
 }

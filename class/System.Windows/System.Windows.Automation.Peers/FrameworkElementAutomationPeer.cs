@@ -30,10 +30,14 @@ using System.Collections.Generic;
 
 namespace System.Windows.Automation.Peers {
 
-	public abstract class FrameworkElementAutomationPeer : AutomationPeer {
+	public class FrameworkElementAutomationPeer : AutomationPeer {
 		[SecuritySafeCritical]
-		public FrameworkElementAutomationPeer (FrameworkElement element)
+		public FrameworkElementAutomationPeer (FrameworkElement owner)
 		{
+		}
+
+		public UIElement Owner {
+			get { throw new NotImplementedException (); }
 		}
 
 		protected override string GetNameCore ()
@@ -51,25 +55,126 @@ namespace System.Windows.Automation.Peers {
 			throw new NotImplementedException ();
 		}
 
-		protected virtual List<AutomationPeer> GetChildrenCore ()
+		protected override List<AutomationPeer> GetChildrenCore ()
 		{
 			throw new NotImplementedException ();
 		}
 
-		public virtual object GetPattern (PatternInterface pattern)
+		public override object GetPattern (PatternInterface pattern)
 		{
 			throw new NotImplementedException ();
 		}
-
-
-		public UIElement Owner {
-			get { throw new NotImplementedException (); }
-		}
-
+		
 		public static AutomationPeer FromElement (UIElement element)
 		{
 			throw new NotImplementedException ();
 		}
+		
+		protected override string GetAcceleratorKeyCore ()
+		{
+			throw new NotImplementedException ();
+		}
+		
+		protected override string GetAccessKeyCore ()
+		{
+			throw new NotImplementedException ();
+		}
+		
+		protected override AutomationControlType GetAutomationControlTypeCore ()
+		{
+			throw new NotImplementedException ();
+		}
+		
+		protected override string GetAutomationIdCore ()
+		{
+			throw new NotImplementedException ();
+		}
+		
+		protected override Rect GetBoundingRectangleCore ()
+		{
+			throw new NotImplementedException ();
+		}
+		
+		protected override string GetClassNameCore ()
+		{
+			throw new NotImplementedException ();
+		}
+		
+		protected override Point GetClickablePointCore ()
+		{
+			throw new NotImplementedException ();
+		}
+		
+		protected override string GetHelpTextCore ()
+		{
+			throw new NotImplementedException ();
+		}
+		
+		protected override string GetItemStatusCore ()
+		{
+			throw new NotImplementedException ();
+		}
+		
+		protected override string GetLocalizedControlTypeCore ()
+		{
+			throw new NotImplementedException ();
+		}
+		
+		protected override AutomationOrientation GetOrientationCore ()
+		{
+			throw new NotImplementedException ();
+		}
+		
+		protected override bool HasKeyboardFocusCore ()
+		{
+			throw new NotImplementedException ();
+		}
+		
+		protected override bool IsContentElementCore ()
+		{
+			throw new NotImplementedException ();
+		}
+		
+		protected override bool IsControlElementCore ()
+		{
+			throw new NotImplementedException ();
+		}
+		
+		protected override bool IsEnabledCore ()
+		{
+			throw new NotImplementedException ();
+		}
+		
+		protected override bool IsKeyboardFocusableCore ()
+		{
+			throw new NotImplementedException ();
+		}
+		
+		protected override bool IsOffscreenCore ()
+		{
+			throw new NotImplementedException ();
+		}
+		
+		protected override bool IsPasswordCore ()
+		{
+			throw new NotImplementedException ();
+		}
+		
+		protected override bool IsRequiredForFormCore ()
+		{
+			throw new NotImplementedException ();
+		}
+		
+		protected override void SetFocusCore ()
+		{
+			throw new NotImplementedException ();
+		}
+		
+		public static AutomationPeer CreatePeerForElement (UIElement element)
+		{
+			throw new NotImplementedException ();
+		}
+		
 	}
 
 }

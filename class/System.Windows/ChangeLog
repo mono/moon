@@ -1,5 +1,18 @@
 2008-12-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* System.Windows.Automation.Peers/AutomationOrientation.cs,
+	  System.Windows.Automation.Peers/AutomationPeer.cs,
+	  System.Windows.Automation.Peers/FrameworkElementAutomationPeer.cs,
+	  System.Windows.Automation.Provider/IMultipleViewProvider.cs,
+	  System.Windows.Automation/ElementNotAvailableException.cs,
+	  System.Windows.Automation/ElementNotEnabledException.cs,
+	  System.Windows.Automation/ScrollPatternIdentifiers.cs,
+	  System.Windows.Automation/SelectionItemPatternIdentifiers.cs: Stub
+	  out and fill in more bits to get even more bits compiling.
+	* System.Windows.mdp: Updated.
+
+2008-12-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* System.Windows.mdp: Updated.
 
 2008-12-17  Chris Toshok  <toshok@ximian.com>

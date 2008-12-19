@@ -85,5 +85,151 @@ namespace System.Windows.Automation.Peers {
 		protected abstract string GetNameCore ();
 		protected abstract string GetItemTypeCore ();
 		protected abstract List<AutomationPeer> GetChildrenCore ();
+		protected abstract string GetAcceleratorKeyCore ();
+		protected abstract string GetAccessKeyCore ();
+		protected abstract AutomationControlType GetAutomationControlTypeCore ();
+		protected abstract string GetAutomationIdCore ();
+		protected abstract Rect GetBoundingRectangleCore ();
+		protected abstract string GetClassNameCore ();
+		protected abstract bool IsOffscreenCore ();	
+		protected abstract bool IsPasswordCore ();
+		protected abstract Point GetClickablePointCore ();
+		protected abstract string GetItemStatusCore ();
+		protected abstract string GetHelpTextCore ();
+		protected abstract AutomationOrientation GetOrientationCore ();
+		protected abstract bool HasKeyboardFocusCore ();
+		protected abstract bool IsContentElementCore ();
+		protected abstract bool IsControlElementCore ();
+		protected abstract bool IsEnabledCore ();
+		protected abstract bool IsKeyboardFocusableCore ();
+		protected abstract bool IsRequiredForFormCore ();
+		protected abstract string GetLocalizedControlTypeCore ();
+		protected abstract void SetFocusCore ();
+
+		public abstract object GetPattern (PatternInterface patternInterface);
+		
+		public string GetAcceleratorKey ()
+		{
+			throw new NotImplementedException ();
+		}
+		
+		public string GetAccessKey ()
+		{
+			throw new NotImplementedException ();
+		}
+	
+		public AutomationControlType GetAutomationControlType ()
+		{
+			throw new NotImplementedException ();
+		}
+	
+		public string GetAutomationId ()
+		{
+			throw new NotImplementedException ();
+		}
+	
+		public Rect GetBoundingRectangle ()
+		{
+			throw new NotImplementedException ();
+		}
+	
+		public string GetClassName ()
+		{
+			throw new NotImplementedException ();
+		}
+	
+	
+		public Point GetClickablePoint ()
+		{
+			throw new NotImplementedException ();
+		}
+	
+	
+		public string GetHelpText ()
+		{
+			throw new NotImplementedException ();
+		}
+	
+	
+		public string GetItemStatus ()
+		{
+			throw new NotImplementedException ();
+		}
+	
+		public string GetLocalizedControlType ()
+		{
+			throw new NotImplementedException ();
+		}
+	
+		public AutomationOrientation GetOrientation ()
+		{
+			throw new NotImplementedException ();
+		}
+	
+		public AutomationPeer GetParent ()
+		{
+			throw new NotImplementedException ();
+		}
+	
+		public bool HasKeyboardFocus ()
+		{
+			throw new NotImplementedException ();
+		}
+
+		public void InvalidatePeer ()
+		{
+			throw new NotImplementedException ();
+		}
+		
+		public bool IsContentElement ()
+		{
+			throw new NotImplementedException ();
+		}
+	
+		public bool IsControlElement ()
+		{
+			throw new NotImplementedException ();
+		}
+	
+		public bool IsEnabled ()
+		{
+			throw new NotImplementedException ();
+		}
+	
+		public bool IsKeyboardFocusable ()
+		{
+			throw new NotImplementedException ();
+		}
+	
+		public bool IsOffscreen ()
+		{
+			throw new NotImplementedException ();
+		}
+	
+		public bool IsPassword ()
+		{
+			throw new NotImplementedException ();
+		}
+	
+		public bool IsRequiredForForm ()
+		{
+			throw new NotImplementedException ();
+		}
+	
+		protected AutomationPeer PeerFromProvider (IRawElementProviderSimple provider)
+		{
+			throw new NotImplementedException ();
+		}
+	
+		[SecuritySafeCritical]
+		public void RaisePropertyChangedEvent (AutomationProperty property, object oldValue, object newValue)
+		{
+			throw new NotImplementedException ();
+		}
+	
+		public void SetFocus ()
+		{
+			throw new NotImplementedException ();
+		}
 	}
 }
