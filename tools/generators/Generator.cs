@@ -344,6 +344,7 @@ class Generator {
 		List<string> headers = new List<string> ();
 		
 		headers.Add ("dependencyproperty.h");
+		headers.Add ("validators.h");
 		headers.Add ("color.h");
 		foreach (FieldInfo field in fields) {
 			string h;
@@ -386,8 +387,9 @@ class Generator {
 			bool is_attached = field.IsDPAttached;
 			bool is_readonly = field.IsDPReadOnly;
 			bool is_always_change = field.IsDPAlwaysChange;
-			bool is_full = is_attached || is_readonly || is_always_change;
-			
+			string validator = field.DPValidator;
+			bool is_full = is_attached || is_readonly || is_always_change || validator != null;
+
 			propertyType = field.GetDPPropertyType (all);
 			
 			text.Append ("\t");
@@ -451,12 +453,12 @@ class Generator {
 				text.Append (is_attached ? "true" : "false");
 				text.Append (", ");
 				text.Append (is_readonly ? "true" : "false");
-				if (is_always_change) {
-					text.Append (", ");
-					text.Append (is_always_change ? "true" : "false");
-					text.Append (", ");
-					text.Append ("NULL");
-				}
+				text.Append (", ");
+				text.Append (is_always_change ? "true" : "false");
+				text.Append (", ");
+				text.Append ("NULL");
+				text.Append (", ");
+				text.Append (validator != null ? ("Validators::" + validator) : "NULL");
 			}
 			
 			text.AppendLine (");");

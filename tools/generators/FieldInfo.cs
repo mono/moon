@@ -68,6 +68,10 @@ class FieldInfo : MemberInfo {
 	public string DPDefaultValue {
 		get { return Annotations.GetValue ("DefaultValue"); }
 	}
+
+	public string DPValidator {
+		get { return Annotations.GetValue ("Validator"); }
+	}
 	
 	public TypeInfo GetDPPropertyType (GlobalInfo all)
 	{
