@@ -43,6 +43,7 @@ namespace System.Windows {
 		}
 
 		DurationKind kind;
+		int padding;
 		TimeSpan time_span;
 
 		static Duration automatic = new Duration (DurationKind.Automatic);
@@ -60,18 +61,21 @@ namespace System.Windows {
 		{
 			kind = k;
 			time_span = new TimeSpan (0);
+			padding = 0;
 		}
 		
 		internal Duration (int k, TimeSpan ts)
 		{
 			kind = (DurationKind) k;
 			time_span = ts;
+			padding = 0;
 		}
 		
 		public Duration (TimeSpan timeSpan)
 		{
 			time_span = timeSpan;
 			kind = DurationKind.TimeSpan;
+			padding = 0;
 		}
 
 		public static bool Equals (Duration t1, Duration t2)

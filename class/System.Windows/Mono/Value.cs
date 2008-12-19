@@ -30,67 +30,11 @@ using System.Runtime.InteropServices;
 
 namespace Mono {
 
-	internal struct UnmanagedRepeatBehavior {
-		public int kind;
-		public int unused_padding;
-		public double count;
-		public long timespan;
-	}
-
-	internal struct UnmanagedKeyTime {
-		public int kind;
-		public int unused_padding;
-		public double percent;
-		public long timespan;
-	}
-
-	internal struct UnmanagedDuration {
-		public int kind;
-		public int unused_padding;
-		public long timespan;
-	}
-
 	internal struct UnmanagedColor {
 		public double r;
 		public double g;
 		public double b;
 		public double a;
-	}
-
-	internal struct UnmanagedGridLength {
-		public double val;
-		public int type;
-	}
-
-	internal struct UnmanagedPoint {
-		public double x;
-		public double y;
-	}
-
-	internal struct UnmanagedRect {
-		public double left;
-		public double top;
-		public double width;
-		public double height;
-	}
-
-	internal struct UnmanagedThickness {
-		public double left;
-		public double top;
-		public double right;
-		public double bottom;
-	}
-
-	internal struct UnmanagedSize {
-		public double width;
-		public double height;
-	}
-
-	internal struct UnmanagedCornerRadius {
-		public double topLeft;
-		public double topRight;
-		public double bottomLeft;
-		public double bottomRight;
 	}
 
 	[StructLayout(LayoutKind.Explicit)]

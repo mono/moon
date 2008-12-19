@@ -45,17 +45,17 @@ namespace System.Windows
 
 		public Size NewSize {
 			get {
-				UnmanagedSize u = new UnmanagedSize();
-				NativeMethods.size_changed_event_args_get_new_size (native, ref u);
-				return new Size (u.width, u.height);
+				Size sz = new Size (0,0);
+				NativeMethods.size_changed_event_args_get_new_size (native, ref sz);
+				return sz;
 			}
 		}
 
 		public Size PreviousSize {
 			get {
-				UnmanagedSize u = new UnmanagedSize();
-				NativeMethods.size_changed_event_args_get_prev_size (native, ref u);
-				return new Size (u.width, u.height);
+				Size sz = new Size (0,0);
+				NativeMethods.size_changed_event_args_get_prev_size (native, ref sz);
+				return sz;
 			}
 		}
 	}

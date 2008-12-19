@@ -415,28 +415,28 @@ namespace System.Windows {
 				}
 				
 				case Kind.POINT: {
-					UnmanagedPoint *point = (UnmanagedPoint*)val->u.p;
-					return new Point (point->x, point->y);
+					Point *point = (Point*)val->u.p;
+					return (point == null) ? new Point (0,0) : *point;
 				}
 				
 				case Kind.RECT: {
-					UnmanagedRect *rect = (UnmanagedRect*)val->u.p;
-					return new Rect (rect->left, rect->top, rect->width, rect->height);
+					Rect *rect = (Rect*)val->u.p;
+					return (rect == null) ? new Rect (0,0,0,0) : *rect;
 				}
 
 				case Kind.SIZE: {
-					UnmanagedSize *size = (UnmanagedSize*)val->u.p;
-					return new Size (size->width, size->height);
+					Size *size = (Size*)val->u.p;
+					return (size == null) ? new Size (0,0) : *size;
 				}
 
 				case Kind.CORNERRADIUS: {
-					UnmanagedCornerRadius *corner = (UnmanagedCornerRadius*)val->u.p;
-					return new CornerRadius (corner->topLeft, corner->topRight, corner->bottomRight, corner->bottomLeft);
+					CornerRadius *corner = (CornerRadius*)val->u.p;
+					return (corner == null) ? new CornerRadius (0) : *corner;
 				}
 
 				case Kind.THICKNESS: {
-					UnmanagedThickness *thickness = (UnmanagedThickness*)val->u.p;
-					return new Thickness (thickness->left, thickness->top, thickness->right, thickness->bottom);
+					Thickness *thickness = (Thickness*)val->u.p;
+					return (thickness == null) ? new Thickness (0) : *thickness;
 				}
 					
 				case Kind.COLOR: {
@@ -453,26 +453,18 @@ namespace System.Windows {
 				}
 					
 				case Kind.DURATION: {
-					UnmanagedDuration* duration = (UnmanagedDuration*)val->u.p;
-					if (duration == null)
-						return Duration.Automatic;
-
-					return new Duration (duration->kind, new TimeSpan (duration->timespan));
+					Duration* duration = (Duration*)val->u.p;
+					return (duration == null) ? Duration.Automatic : *duration;
 				}
 					
 				case Kind.KEYTIME: {
-					UnmanagedKeyTime* keytime = (UnmanagedKeyTime*)val->u.p;
-					if (keytime == null)
-						return KeyTime.FromTimeSpan (TimeSpan.Zero);
-					return new KeyTime ((KeyTimeType) keytime->kind, keytime->percent, new TimeSpan (keytime->timespan));
+					KeyTime* keytime = (KeyTime*)val->u.p;
+					return (keytime == null) ? KeyTime.FromTimeSpan (TimeSpan.Zero) : *keytime;
 				}
 					
 				case Kind.REPEATBEHAVIOR: {
-					UnmanagedRepeatBehavior *repeat = (UnmanagedRepeatBehavior*)val->u.p;
-					if (repeat == null)
-						return new RepeatBehavior ();
-
-					return new RepeatBehavior (repeat->kind, repeat->count, new TimeSpan (repeat->timespan));
+					RepeatBehavior *repeat = (RepeatBehavior*)val->u.p;
+					return (repeat == null) ? new RepeatBehavior () : *repeat;
 				}
 				}
 
@@ -612,28 +604,20 @@ namespace System.Windows {
 				else if (v is Duration) {
 					Duration d = (Duration) v;
 					value.k = Kind.DURATION;
-					value.u.p = Helper.AllocHGlobal (sizeof (UnmanagedDuration));
-					UnmanagedDuration* duration = (UnmanagedDuration*) value.u.p;
-					duration->kind = d.KindInternal;
-					duration->timespan = d.TimeSpanInternal.Ticks;
+					value.u.p = Helper.AllocHGlobal (sizeof (Duration));
+					Marshal.StructureToPtr (d, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
 				else if (v is KeyTime) {
 					KeyTime k = (KeyTime) v;
 					value.k = Kind.KEYTIME;
-					value.u.p = Helper.AllocHGlobal (sizeof (UnmanagedKeyTime));
-					UnmanagedKeyTime* keytime = (UnmanagedKeyTime*) value.u.p;
-					keytime->kind = (int) k.type;
-					keytime->percent = k.percent;
-					keytime->timespan = k.time_span.Ticks;
+					value.u.p = Helper.AllocHGlobal (sizeof (KeyTime));
+					Marshal.StructureToPtr (k, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
 				else if (v is RepeatBehavior) {
 					RepeatBehavior d = (RepeatBehavior) v;
 					value.k = Kind.REPEATBEHAVIOR;
-					value.u.p = Helper.AllocHGlobal (sizeof (UnmanagedRepeatBehavior));
-					UnmanagedRepeatBehavior* rep = (UnmanagedRepeatBehavior*) value.u.p;
-					rep->kind = d.kind;
-					rep->count = d.count;
-					rep->timespan = d.duration.Ticks;
+					value.u.p = Helper.AllocHGlobal (sizeof (RepeatBehavior));
+					Marshal.StructureToPtr (d, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
 				else if (v is FontFamily) {
 					FontFamily family = (FontFamily) v;
@@ -681,10 +665,8 @@ namespace System.Windows {
 				else if (v is GridLength) {
 					GridLength gl = (GridLength) v;
 					value.k = Kind.GRIDLENGTH;
-					value.u.p = Helper.AllocHGlobal (sizeof (UnmanagedGridLength));
-					UnmanagedGridLength* grid_length = (UnmanagedGridLength*) value.u.p;
-					grid_length->type = (int)gl.GridUnitType;
-					grid_length->val = gl.Value;
+					value.u.p = Helper.AllocHGlobal (sizeof (GridLength));
+					Marshal.StructureToPtr (gl, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
 				else if ((v is FontStretch) || (v is FontStyle) || (v is FontWeight)) {
 					value.k = Kind.INT32;

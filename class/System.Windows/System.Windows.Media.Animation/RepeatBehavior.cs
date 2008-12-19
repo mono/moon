@@ -33,6 +33,7 @@ namespace System.Windows.Media.Animation {
 		const int FOREVER = 3;
 
 		internal int kind;
+		private int padding;
 		internal double count;
 		internal TimeSpan duration;
 
@@ -41,6 +42,7 @@ namespace System.Windows.Media.Animation {
 			this.kind = kind;
 			this.count = count;
 			this.duration = duration;
+			this.padding = 0;
 		}
 
 		public RepeatBehavior (double count)
@@ -48,6 +50,7 @@ namespace System.Windows.Media.Animation {
 			kind = COUNT;
 			this.count = count;
 			duration = new TimeSpan (0);
+			this.padding = 0;
 		}
 
 		public RepeatBehavior (TimeSpan duration)
@@ -55,6 +58,7 @@ namespace System.Windows.Media.Animation {
 			kind = TIMESPAN;
 			this.duration = duration;
 			count = 0;
+			this.padding = 0;
 		}
 
 		public double Count {

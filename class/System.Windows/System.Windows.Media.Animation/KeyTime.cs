@@ -33,6 +33,7 @@ using Mono;
 namespace System.Windows.Media.Animation {
 	public struct KeyTime {
 		internal KeyTimeType type;
+		private int padding;
 		internal double percent;
 		internal TimeSpan time_span;
 	
@@ -41,6 +42,7 @@ namespace System.Windows.Media.Animation {
 			this.type = type;
 			this.percent = percent;
 			this.time_span = time_span;
+			this.padding = 0;
 		}
 		
 		public static KeyTime FromTimeSpan(TimeSpan timeSpan)

@@ -3,6 +3,7 @@
  */
 
 using System;
+using System.Windows;
 using System.Runtime.InteropServices;
 
 namespace Mono {
@@ -652,7 +653,7 @@ namespace Mono {
 
 		[DllImport ("moon")]
 		// Size framework_element_arrange_override (FrameworkElement *instance, Size finalSize);
-		public extern static UnmanagedSize framework_element_arrange_override (IntPtr instance, UnmanagedSize finalSize);
+		public extern static Size framework_element_arrange_override (IntPtr instance, Size finalSize);
 
 		[DllImport ("moon")]
 		// FrameworkElement *framework_element_new ();
@@ -660,7 +661,7 @@ namespace Mono {
 
 		[DllImport ("moon")]
 		// Size framework_element_measure_override (FrameworkElement *instance, Size availableSize);
-		public extern static UnmanagedSize framework_element_measure_override (IntPtr instance, UnmanagedSize availableSize);
+		public extern static Size framework_element_measure_override (IntPtr instance, Size availableSize);
 
 		[DllImport ("moon")]
 		// void framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb);
@@ -868,7 +869,7 @@ namespace Mono {
 
 		[DllImport ("moon")]
 		// Point multi_scale_image_element_to_logical_point (MultiScaleImage *instance, Point elementPoint);
-		public extern static UnmanagedPoint multi_scale_image_element_to_logical_point (IntPtr instance, UnmanagedPoint elementPoint);
+		public extern static Point multi_scale_image_element_to_logical_point (IntPtr instance, Point elementPoint);
 
 		[DllImport ("moon")]
 		// MultiScaleImage *multi_scale_image_new ();
@@ -1377,7 +1378,7 @@ namespace Mono {
 
 		[DllImport ("moon")]
 		// void uielement_arrange (UIElement *instance, Rect finalRect);
-		public extern static void uielement_arrange (IntPtr instance, UnmanagedRect finalRect);
+		public extern static void uielement_arrange (IntPtr instance, Rect finalRect);
 
 		[DllImport ("moon")]
 		// bool uielement_capture_mouse (UIElement *instance);
@@ -1385,11 +1386,11 @@ namespace Mono {
 
 		[DllImport ("moon")]
 		// Size uielement_get_desired_size (UIElement *instance);
-		public extern static UnmanagedSize uielement_get_desired_size (IntPtr instance);
+		public extern static Size uielement_get_desired_size (IntPtr instance);
 
 		[DllImport ("moon")]
 		// Size uielement_get_render_size (UIElement *instance);
-		public extern static UnmanagedSize uielement_get_render_size (IntPtr instance);
+		public extern static Size uielement_get_render_size (IntPtr instance);
 
 		[DllImport ("moon")]
 		// DependencyObject *uielement_get_subtree_object (UIElement *instance);
@@ -1413,7 +1414,7 @@ namespace Mono {
 
 		[DllImport ("moon")]
 		// void uielement_measure (UIElement *instance, Size availableSize);
-		public extern static void uielement_measure (IntPtr instance, UnmanagedSize availableSize);
+		public extern static void uielement_measure (IntPtr instance, Size availableSize);
 
 		[DllImport ("moon")]
 		// void uielement_release_mouse_capture (UIElement *instance);

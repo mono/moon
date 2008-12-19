@@ -36,9 +36,9 @@ namespace System.Windows.Ink
 	{		
 		public Rect GetBounds ()
 		{
-			UnmanagedRect urect = new UnmanagedRect();
+			Rect urect = new Rect();
 			NativeMethods.stroke_collection_get_bounds (native, ref urect);
-			return new Rect (urect.left, urect.top, urect.width, urect.height);
+			return urect;
 		}
 
 		public StrokeCollection HitTest (StylusPointCollection stylusPointCollection)

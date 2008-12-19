@@ -36,17 +36,11 @@ namespace System.Windows.Media {
 		[SecuritySafeCritical]
 		public Point Transform (Point point)
 		{
-			UnmanagedPoint p1, p2;
+			Point retPoint = new Point (0,0);
 
-			p1 = new UnmanagedPoint ();
-			p2 = new UnmanagedPoint ();
+			NativeMethods.general_transform_transform_point (native, ref point, ref retPoint);
 
-			p1.x = point.X;
-			p1.y = point.Y;
-
-			NativeMethods.general_transform_transform_point (native, ref p1, ref p2);
-
-			return new Point (p2.x, p2.y);
+			return retPoint;
 		}
 	}
 }

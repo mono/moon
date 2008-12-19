@@ -54,12 +54,7 @@ namespace System.Windows {
 			if (finalRect.IsEmpty)
 				throw new InvalidOperationException ("Empty Rect");
 
-			UnmanagedRect unmanagedFinalRect = new UnmanagedRect();
-			unmanagedFinalRect.left = finalRect.X;
-			unmanagedFinalRect.top = finalRect.Y;
-			unmanagedFinalRect.width = finalRect.Width;
-			unmanagedFinalRect.height = finalRect.Height;
-			NativeMethods.uielement_arrange(native, unmanagedFinalRect);
+			NativeMethods.uielement_arrange(native, finalRect);
 		}
 
 		public void InvalidateArrange ()
@@ -69,12 +64,7 @@ namespace System.Windows {
 
 		public void Measure (Size availableSize)
 		{
-			UnmanagedSize unmanagedAvailableSize = new UnmanagedSize();
-
-			unmanagedAvailableSize.width = availableSize.Width;
-			unmanagedAvailableSize.height = availableSize.Height;
-
-			NativeMethods.uielement_measure (native, unmanagedAvailableSize);
+			NativeMethods.uielement_measure (native, availableSize);
 		}
 
 		public void InvalidateMeasure ()
@@ -107,15 +97,13 @@ namespace System.Windows {
 
 		public Size DesiredSize {
 			get {
-				UnmanagedSize sz = NativeMethods.uielement_get_desired_size (native);
-				return new Size (sz.width, sz.height);
+				return NativeMethods.uielement_get_desired_size (native);
 			}
 		}
 
 		public Size RenderSize {
 			get {
-				UnmanagedSize sz = NativeMethods.uielement_get_render_size (native);
-				return new Size (sz.width, sz.height);
+				return NativeMethods.uielement_get_render_size (native);
 			}
 		}
 

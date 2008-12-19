@@ -26,14 +26,15 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using System;
+using System.Windows;
 using System.Reflection;
 using System.Globalization;
 using System.Runtime.InteropServices;
 
 namespace Mono {
 
-	internal delegate UnmanagedSize MeasureOverrideCallback (UnmanagedSize availableSize);
-	internal delegate UnmanagedSize ArrangeOverrideCallback (UnmanagedSize finalSize);
+	internal delegate Size MeasureOverrideCallback (Size availableSize);
+	internal delegate Size ArrangeOverrideCallback (Size finalSize);
 
 	// Used in databinding to interact with managed objects
 	internal delegate Value GetValueCallback ();
@@ -85,15 +86,15 @@ namespace Mono {
 		
 #region Transforms
 		[DllImport("moon")]
-		public extern static void general_transform_transform_point (IntPtr handle, ref UnmanagedPoint p, ref UnmanagedPoint r);
+		public extern static void general_transform_transform_point (IntPtr handle, ref Point p, ref Point r);
 #endregion
 		
 #region Collections
 		[DllImport("moon")]
-		public extern static void stroke_collection_get_bounds (IntPtr native, ref UnmanagedRect urect);
+		public extern static void stroke_collection_get_bounds (IntPtr native, ref Rect urect);
 
 		[DllImport("moon")]
-		public extern static void stroke_get_bounds (IntPtr native, ref UnmanagedRect urect);
+		public extern static void stroke_get_bounds (IntPtr native, ref Rect urect);
 #endregion
 		
 #region Constructors
@@ -188,10 +189,10 @@ namespace Mono {
 
 #region SizeChangedEventArgs
 		[DllImport("moon")]
-		public extern static void size_changed_event_args_get_new_size (IntPtr handle, ref UnmanagedSize size);
+		public extern static void size_changed_event_args_get_new_size (IntPtr handle, ref Size size);
 
 		[DllImport("moon")]
-		public extern static void size_changed_event_args_get_prev_size (IntPtr handle, ref UnmanagedSize size);
+		public extern static void size_changed_event_args_get_prev_size (IntPtr handle, ref Size size);
 #endregion
 
 #region plugin

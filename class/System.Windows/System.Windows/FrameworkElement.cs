@@ -74,26 +74,12 @@ namespace System.Windows {
 
 		protected virtual Size MeasureOverride (Size availableSize)
 		{
-			UnmanagedSize uavail = new UnmanagedSize();
-
-			uavail.width = availableSize.Width;
-			uavail.height = availableSize.Height;
-
-			UnmanagedSize rv = NativeMethods.framework_element_measure_override (native, uavail);
-
-			return new Size (rv.width, rv.height);
+			return NativeMethods.framework_element_measure_override (native, availableSize);
 		}
 
 		protected virtual Size ArrangeOverride (Size finalSize)
 		{
-			UnmanagedSize ufinal = new UnmanagedSize();
-
-			ufinal.width = finalSize.Width;
-			ufinal.height = finalSize.Height;
-
-			UnmanagedSize rv = NativeMethods.framework_element_arrange_override (native, ufinal);
-
-			return new Size (rv.width, rv.height);
+			return NativeMethods.framework_element_arrange_override (native, finalSize);
 		}
 
 		public DependencyObject Parent {
@@ -199,22 +185,14 @@ namespace System.Windows {
 				h (this, args);
 		}
 
-		private UnmanagedSize InvokeMeasureOverride (UnmanagedSize availableSize)
+		private Size InvokeMeasureOverride (Size availableSize)
 		{
-			Size rv = MeasureOverride (new Size (availableSize.width, availableSize.height));
-			UnmanagedSize sz = new UnmanagedSize();
-			sz.width = rv.Width;
-			sz.height = rv.Height;
-			return sz;
+			return MeasureOverride (availableSize);
 		}
 
-		private UnmanagedSize InvokeArrangeOverride (UnmanagedSize finalSize)
+		private Size InvokeArrangeOverride (Size finalSize)
 		{
-			Size rv = ArrangeOverride (new Size (finalSize.width, finalSize.height));
-			UnmanagedSize sz = new UnmanagedSize();
-			sz.width = rv.Width;
-			sz.height = rv.Height;
-			return sz;
+			return ArrangeOverride (finalSize);
 		}
 		
 		[SecuritySafeCritical]
