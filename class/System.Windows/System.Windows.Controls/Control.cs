@@ -89,7 +89,6 @@ namespace System.Windows.Controls {
 		private static void OnIsEnabledPropertyChanged (DependencyObject d, DependencyPropertyChangedEventArgs e) 
 		{
 			Control c = (d as Control);
-			c.OnIsEnabledChanged ((bool) e.NewValue);
 
 			DependencyPropertyChangedEventHandler handler = (DependencyPropertyChangedEventHandler) c.events [IsEnabledEvent];
 			if (handler != null)
@@ -101,12 +100,6 @@ namespace System.Windows.Controls {
 		public event DependencyPropertyChangedEventHandler IsEnabledChanged {
 			add { events.AddHandler (IsEnabledEvent, value); }
 			remove { events.RemoveHandler (IsEnabledEvent, value); }
-		}
-
-		// moved from ContentControl, needed to satisfy the beta1 controls
-		// FIXME: remove/update using the new event once we get the final controls 
-		internal virtual void OnIsEnabledChanged (bool isEnabled)
-		{
 		}
 
 		public bool ApplyTemplate()

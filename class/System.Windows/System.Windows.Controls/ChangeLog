@@ -1,3 +1,7 @@
+2008-12-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Control.cs: Remove OnIsEnabled hack for needed by beta1 controls.
+
 2008-12-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* CalendarMode.cs, ComboBox.cs, ComboBoxItem.cs: Stub out and fill in
