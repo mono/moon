@@ -107,10 +107,10 @@ namespace MoonTest.System.Windows {
 		public void InvalidValues()
 		{
 			ConcreteFrameworkElement f = new ConcreteFrameworkElement ();
-			Assert.Throws<ArgumentNullException>(delegate {
+			Assert.Throws<ArgumentException>(delegate {
 				f.Language = null;
 			}, "#1");
-			Assert.Throws<ArgumentNullException>(delegate {
+			Assert.Throws<ArgumentException>(delegate {
 				f.SetValue (FrameworkElement.LanguageProperty, null);
 			}, "#2");
 		}
