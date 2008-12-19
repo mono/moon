@@ -1,3 +1,9 @@
+2008-12-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* PasswordBox.cs, ItemsPresenter.cs: More bits.
+	* CalendarMode.cs: Deleted, this file goes in
+	  System.Windows.Controls.dll.
+
 2008-12-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Control.cs: Remove OnIsEnabled hack for needed by beta1 controls.

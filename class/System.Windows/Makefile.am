@@ -60,6 +60,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Collections.Specialized/NotifyCollectionChangedEventArgs.cs \
 	$(srcdir)/System.Collections.Specialized/NotifyCollectionChangedEventHandler.cs \
 	$(srcdir)/System.IO.IsolatedStorage/IsolatedStorageSettings.cs		\
+	$(srcdir)/System.Windows.Automation/AutomationElementIdentifiers.cs		\
+	$(srcdir)/System.Windows.Automation/AutomationProperties.cs		\
 	$(srcdir)/System.Windows.Automation/AutomationProperty.cs		\
 	$(srcdir)/System.Windows.Automation/DockPosition.cs			\
 	$(srcdir)/System.Windows.Automation/ElementNotEnabledException.cs		\
@@ -80,6 +82,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Automation.Peers/ItemAutomationPeer.cs		\
 	$(srcdir)/System.Windows.Automation.Peers/ItemsControlAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/PatternInterface.cs		\
+	$(srcdir)/System.Windows.Automation.Peers/TextBoxAutomationPeer.cs		\
 	$(srcdir)/System.Windows.Automation.Provider/IDockProvider.cs		\
 	$(srcdir)/System.Windows.Automation.Provider/IExpandCollapseProvider.cs	\
 	$(srcdir)/System.Windows.Automation.Provider/IGridItemProvider.cs	\
@@ -104,7 +107,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/InkPresenter.cs			\
 	$(srcdir)/System.Windows.Controls/MediaElement.cs			\
 	$(srcdir)/System.Windows.Controls/ValidationErrorEventAction.cs		\
-	$(srcdir)/System.Windows.Controls/CalendarMode.cs				\
 	$(srcdir)/System.Windows.Controls/Canvas.cs				\
 	$(srcdir)/System.Windows.Controls/ColumnDefinition.cs			\
 	$(srcdir)/System.Windows.Controls/ColumnDefinitionCollection.cs		\
@@ -114,6 +116,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/ItemCollection.cs			\
 	$(srcdir)/System.Windows.Controls/ItemsControl.cs			\
 	$(srcdir)/System.Windows.Controls/ItemsPanelTemplate.cs			\
+	$(srcdir)/System.Windows.Controls/ItemsPresenter.cs			\
 	$(srcdir)/System.Windows.Controls/MultiScaleImage.cs			\
 	$(srcdir)/System.Windows.Controls/MultiScaleSubImage.cs			\
 	$(srcdir)/System.Windows.Controls/OpenFileDialog.cs			\
@@ -431,11 +434,7 @@ system_windows_sources =							\
 	$(MSCONTROLS)/Src/ScrollViewer/ScrollViewer.cs				\
 	$(MSCONTROLS)/Src/ScrollViewer/ScrollContentPresenter.cs		\
 	$(MSCONTROLS)/Src/ToolTip/ToolTip.cs					\
-	$(MSCONTROLS)/Src/ToolTip/ToolTipService.cs	\
-\
-	$(RUNTIMECONTROLS)/Extended/Src/Calendar/CalendarSelectionMode.cs	\
-	$(RUNTIMECONTROLS)/Extended/Src/DatePicker/DatePickerFormat.cs		\
-	$(RUNTIMECONTROLS)/Extended/Src/TabControl/Dock.cs
+	$(MSCONTROLS)/Src/ToolTip/ToolTipService.cs
 
 EXTRA_DIST = $(system_windows_sources) 	\
 	scripts/checks.cs 			\

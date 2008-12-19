@@ -82,5 +82,10 @@ namespace System.Windows.Controls
 			get { throw new NotImplementedException (); }
 			set { throw new NotImplementedException (); }
 		}
+
+		public void SelectAll ()
+		{
+			throw new NotImplementedException ();
+		}
 	}
 }

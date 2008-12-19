@@ -1,5 +1,5 @@
 /*
- * CalendarMode.cs.
+ * ItemsPresenter.cs.
  *
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
@@ -10,14 +10,16 @@
  * 
  */
 
+using System;
+using System.Windows;
+
 namespace System.Windows.Controls
 {
-	public enum CalendarMode
+	public sealed class ItemsPresenter : FrameworkElement
 	{
-		Month,
-		Year,
-		Decade
+		public ItemsPresenter ()
+		{
+			throw new NotImplementedException ();
+		}
 	}
-	
-
 }

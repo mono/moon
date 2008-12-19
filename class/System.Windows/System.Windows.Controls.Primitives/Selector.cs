@@ -42,7 +42,9 @@ namespace System.Windows.Controls.Primitives {
 		public object SelectedItem {
 			get { return GetValue (SelectedItemProperty); }
 			set { SetValue (SelectedItemProperty, value); }
-		} 
+		}
+
+		public event SelectionChangedEventHandler SelectionChanged;
 	}
 }
 	
