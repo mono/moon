@@ -36,7 +36,7 @@ DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name,
 	this->always_change = always_change;
 	this->changed_callback = changed_callback;
 	this->is_custom = is_custom;
-	this->validator = default_validator;
+	this->validator = Validators::default_validator;
 }
 
 AnimationStorage*
@@ -268,7 +268,7 @@ void
 DependencyProperty::SetValueValidator (ValueValidator *validator)
 {
 	if (validator == NULL)
-		validator == default_validator;
+		validator = Validators::default_validator;
 	this->validator = validator; 
 }
 

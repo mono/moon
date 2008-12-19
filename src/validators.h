@@ -13,53 +13,18 @@
 #ifndef __VALIDATORS_H__
 #define __VALIDATORS_H__
 
-class MoonError;
+#include "value.h"
+#include "error.h"
 
-static bool default_validator (Value *value, MoonError *error)
+class Validators
 {
-	return true;	
-}
-
-static bool PositiveIntValidator (Value *value, MoonError *error)
-{
-	if (value->AsInt32() < 0) {
-		MoonError::FillIn (error, MoonError::ARGUMENT, 1001, "Value must be greater than or equal to zero");
-		return false;
-	}
-	return true;
-}
-
-static bool IntGreaterThanZeroValidator (Value *value, MoonError *error)
-{
-	if (value->AsInt32() < 1) {
-		MoonError::FillIn (error, MoonError::ARGUMENT, 1001, "Value must be greater than zero");
-		return false;
-	}
-	return true;
-}
-
-static bool NonNullStringValidator (Value *value, MoonError *error)
-{
-	if (value->AsString ())
-		return true;
-	MoonError::FillIn (error, MoonError::ARGUMENT, 1001, "Value cannot be null");
-	return false;
-}
-
-static bool MediaAttributeCollectionValidator (Value *value, MoonError *error)
-{
-	if (value->AsMediaAttributeCollection ())
-		return true;
-	MoonError::FillIn (error, MoonError::EXCEPTION, 1001, "Value cannot be null");
-	return false;
-}
-
-static bool TemplateValidator (Value *value, MoonError *error)
-{
-	if (value->AsControlTemplate ())
-		return true;
-	MoonError::FillIn (error, MoonError::EXCEPTION, 1001, "Value cannot be null");
-	return false;
-}
+public:
+	static bool default_validator (Value *value, MoonError *error);
+	static bool PositiveIntValidator (Value *value, MoonError *error);
+	static bool IntGreaterThanZeroValidator (Value *value, MoonError *error);
+	static bool NonNullStringValidator (Value *value, MoonError *error);
+	static bool MediaAttributeCollectionValidator (Value *value, MoonError *error);
+	static bool TemplateValidator (Value *value, MoonError *error);
+};
 
 #endif /* __VALIDATORS_H__ */

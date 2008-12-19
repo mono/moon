@@ -333,9 +333,9 @@ MediaElement::MediaElement ()
 	static bool init = true;
 	if (init) {
 		init = false;
-		MediaElement::NaturalVideoHeightProperty->SetValueValidator (IntGreaterThanZeroValidator);
-		MediaElement::NaturalVideoWidthProperty->SetValueValidator (IntGreaterThanZeroValidator);
-		MediaElement::AttributesProperty->SetValueValidator (MediaAttributeCollectionValidator);
+		MediaElement::NaturalVideoHeightProperty->SetValueValidator (Validators::IntGreaterThanZeroValidator);
+		MediaElement::NaturalVideoWidthProperty->SetValueValidator (Validators::IntGreaterThanZeroValidator);
+		MediaElement::AttributesProperty->SetValueValidator (Validators::MediaAttributeCollectionValidator);
 	}
 	pthread_mutex_init (&open_mutex, NULL);
 	

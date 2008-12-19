@@ -161,6 +161,7 @@ libmoon_la_SOURCES = 		\
 	uielement.cpp		\
 	uri.cpp			\
 	utils.cpp		\
+	validators.cpp		\
 	value.cpp		\
 	window-gtk.cpp		\
 	xaml.cpp		\

@@ -24,7 +24,7 @@ Control::Control ()
 	static bool init = true;
 	if (init) {
 		init = false;
-		Control::TemplateProperty->SetValueValidator (TemplateValidator);	
+		Control::TemplateProperty->SetValueValidator (Validators::TemplateValidator);	
 	}
 	applied_template = NULL;
 	template_root = NULL;

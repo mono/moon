@@ -28,11 +28,11 @@ Grid::Grid ()
 	static bool init = true;
 	if (init) {
 		init = false;
-		Grid::ColumnProperty->SetValueValidator (PositiveIntValidator);
-		Grid::RowProperty->SetValueValidator (PositiveIntValidator);
+		Grid::ColumnProperty->SetValueValidator (Validators::PositiveIntValidator);
+		Grid::RowProperty->SetValueValidator (Validators::PositiveIntValidator);
 	
-		Grid::ColumnSpanProperty->SetValueValidator (IntGreaterThanZeroValidator);
-		Grid::RowSpanProperty->SetValueValidator (IntGreaterThanZeroValidator);
+		Grid::ColumnSpanProperty->SetValueValidator (Validators::IntGreaterThanZeroValidator);
+		Grid::RowSpanProperty->SetValueValidator (Validators::IntGreaterThanZeroValidator);
 	}
 	SetValue (Grid::ColumnDefinitionsProperty, Value::CreateUnref (new ColumnDefinitionCollection ()));
 	SetValue (Grid::RowDefinitionsProperty, Value::CreateUnref (new RowDefinitionCollection ()));

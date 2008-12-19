@@ -52,7 +52,7 @@ FrameworkElement::FrameworkElement ()
 	static bool init = true;
 	if (init) {
 		init = false;
-		FrameworkElement::LanguageProperty->SetValueValidator (NonNullStringValidator);
+		FrameworkElement::LanguageProperty->SetValueValidator (Validators::NonNullStringValidator);
 	}
 	bindings = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, binding_destroy);
 	styles = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, NULL);

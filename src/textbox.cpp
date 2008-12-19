@@ -276,9 +276,9 @@ TextBox::TextBox ()
 	static bool init = true;
 	if (init) {
 		init = false;
-		TextBox::MaxLengthProperty->SetValueValidator (PositiveIntValidator);
-		TextBox::SelectionLengthProperty->SetValueValidator (PositiveIntValidator);
-		TextBox::SelectionStartProperty->SetValueValidator (PositiveIntValidator);
+		TextBox::MaxLengthProperty->SetValueValidator (Validators::PositiveIntValidator);
+		TextBox::SelectionLengthProperty->SetValueValidator (Validators::PositiveIntValidator);
+		TextBox::SelectionStartProperty->SetValueValidator (Validators::PositiveIntValidator);
 	}
 	/* initialize the font description and layout */
 	hints = new TextLayoutHints (TextAlignmentLeft, LineStackingStrategyMaxHeight, 0.0);
@@ -545,7 +545,7 @@ PasswordBox::PasswordBox ()
 	static bool init = true;
 	if (init) {
 		init = false;
-		PasswordBox::PasswordProperty->SetValueValidator (NonNullStringValidator);
-		PasswordBox::MaxLengthProperty->SetValueValidator (PositiveIntValidator);
+		PasswordBox::PasswordProperty->SetValueValidator (Validators::NonNullStringValidator);
+		PasswordBox::MaxLengthProperty->SetValueValidator (Validators::PositiveIntValidator);
 	}
 }

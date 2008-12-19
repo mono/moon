@@ -63,7 +63,7 @@ Inline::Inline ()
 	static bool init = true;
 	if (init) {
 		init = false;
-		Inline::LanguageProperty->SetValueValidator (NonNullStringValidator);
+		Inline::LanguageProperty->SetValueValidator (Validators::NonNullStringValidator);
 	}
 	foreground = NULL;
 	autogen = false;
@@ -988,7 +988,7 @@ Glyphs::Glyphs ()
 	static bool init = true;
 	if (init) {
 		init = false;
-		Glyphs::FontUriProperty->SetValueValidator (NonNullStringValidator);
+		Glyphs::FontUriProperty->SetValueValidator (Validators::NonNullStringValidator);
 	}
 	desc = new TextFontDescription ();
 	desc->SetSize (0.0);
