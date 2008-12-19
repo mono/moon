@@ -1,5 +1,9 @@
 2008-12-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
+	* Makefile.am: Updated.
+
+2008-12-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
 	* System.Windows.Automation.Peers/AutomationOrientation.cs,
 	  System.Windows.Automation.Peers/AutomationPeer.cs,
 	  System.Windows.Automation.Peers/FrameworkElementAutomationPeer.cs,

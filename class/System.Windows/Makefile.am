@@ -23,6 +23,7 @@ GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib
 
 MSRUNTIMECONTROLS=$(srcdir)/../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls
 MSCONTROLS=$(srcdir)/../Microsoft.SilverlightControls/Controls
+RUNTIMECONTROLS=$(srcdir)/../Microsoft.SilverlightControls/SDKControls
 MSTOOLKIT=$(srcdir)/../Microsoft.Windows.Controls/Source
 WPFTOOLKIT=$(srcdir)/../WPF.Toolkit
 
@@ -61,13 +62,18 @@ system_windows_sources =							\
 	$(srcdir)/System.IO.IsolatedStorage/IsolatedStorageSettings.cs		\
 	$(srcdir)/System.Windows.Automation/AutomationProperty.cs		\
 	$(srcdir)/System.Windows.Automation/DockPosition.cs			\
+	$(srcdir)/System.Windows.Automation/ElementNotEnabledException.cs		\
+	$(srcdir)/System.Windows.Automation/ElementNotAvailableException.cs		\
 	$(srcdir)/System.Windows.Automation/ExpandCollapseState.cs		\
 	$(srcdir)/System.Windows.Automation/RowOrColumnMajor.cs			\
 	$(srcdir)/System.Windows.Automation/ScrollAmount.cs			\
+	$(srcdir)/System.Windows.Automation/SelectionItemPatternIdentifiers.cs		\
+	$(srcdir)/System.Windows.Automation/ScrollPatternIdentifiers.cs				\
 	$(srcdir)/System.Windows.Automation/ToggleState.cs			\
 	$(srcdir)/System.Windows.Automation/WindowInteractionState.cs		\
 	$(srcdir)/System.Windows.Automation/WindowVisualState.cs		\
 	$(srcdir)/System.Windows.Automation.Peers/AutomationEvents.cs		\
+	$(srcdir)/System.Windows.Automation.Peers/AutomationOrientation.cs		\
 	$(srcdir)/System.Windows.Automation.Peers/AutomationPeer.cs		\
 	$(srcdir)/System.Windows.Automation.Peers/AutomationControlType.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/FrameworkElementAutomationPeer.cs	\
@@ -93,9 +99,12 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Automation.Provider/IValueProvider.cs		\
 	$(srcdir)/System.Windows.Automation.Provider/IWindowProvider.cs		\
 	$(srcdir)/System.Windows.Controls/Border.cs				\
+	$(srcdir)/System.Windows.Controls/ComboBox.cs				\
+	$(srcdir)/System.Windows.Controls/ComboBoxItem.cs				\
 	$(srcdir)/System.Windows.Controls/InkPresenter.cs			\
 	$(srcdir)/System.Windows.Controls/MediaElement.cs			\
 	$(srcdir)/System.Windows.Controls/ValidationErrorEventAction.cs		\
+	$(srcdir)/System.Windows.Controls/CalendarMode.cs				\
 	$(srcdir)/System.Windows.Controls/Canvas.cs				\
 	$(srcdir)/System.Windows.Controls/ColumnDefinition.cs			\
 	$(srcdir)/System.Windows.Controls/ColumnDefinitionCollection.cs		\
@@ -422,7 +431,11 @@ system_windows_sources =							\
 	$(MSCONTROLS)/Src/ScrollViewer/ScrollViewer.cs				\
 	$(MSCONTROLS)/Src/ScrollViewer/ScrollContentPresenter.cs		\
 	$(MSCONTROLS)/Src/ToolTip/ToolTip.cs					\
-	$(MSCONTROLS)/Src/ToolTip/ToolTipService.cs
+	$(MSCONTROLS)/Src/ToolTip/ToolTipService.cs	\
+\
+	$(RUNTIMECONTROLS)/Extended/Src/Calendar/CalendarSelectionMode.cs	\
+	$(RUNTIMECONTROLS)/Extended/Src/DatePicker/DatePickerFormat.cs		\
+	$(RUNTIMECONTROLS)/Extended/Src/TabControl/Dock.cs
 
 EXTRA_DIST = $(system_windows_sources) 	\
 	scripts/checks.cs 			\
