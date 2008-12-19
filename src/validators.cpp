@@ -1,6 +1,6 @@
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * validators.h: 
+ * validators.cpp: 
  *
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)

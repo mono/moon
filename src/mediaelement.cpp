@@ -23,7 +23,6 @@
 #include "pipeline-ui.h"
 #include "mediaelement.h"
 #include "debug.h"
-#include "validators.h"
 
 
 // still too ugly to be exposed in the header files ;-)
@@ -330,13 +329,6 @@ MediaElement::AdvanceFrame ()
 
 MediaElement::MediaElement ()
 {
-	static bool init = true;
-	if (init) {
-		init = false;
-		MediaElement::NaturalVideoHeightProperty->SetValueValidator (Validators::IntGreaterThanZeroValidator);
-		MediaElement::NaturalVideoWidthProperty->SetValueValidator (Validators::IntGreaterThanZeroValidator);
-		MediaElement::AttributesProperty->SetValueValidator (Validators::MediaAttributeCollectionValidator);
-	}
 	pthread_mutex_init (&open_mutex, NULL);
 	
 	advance_frame_timeout_id = 0;

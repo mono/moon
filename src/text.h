@@ -57,7 +57,7 @@ class Inline : public DependencyObject {
 	static DependencyProperty *ForegroundProperty;
  	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone,ManagedPropertyType=TextDecorationCollection */
 	static DependencyProperty *TextDecorationsProperty;
-	/* @PropertyType=string,DefaultValue=\"en-US\",Version=2.0,ManagedPropertyType=XmlLanguage */
+	/* @PropertyType=string,DefaultValue=\"en-US\",Version=2.0,ManagedPropertyType=XmlLanguage,Validator=NonNullStringValidator */
 	static DependencyProperty *LanguageProperty;
 	
 	/* Member variables should be considered private, for use only with the parent TextBlock */
@@ -344,7 +344,7 @@ class Glyphs : public FrameworkElement {
 	static DependencyProperty *FillProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *FontRenderingEmSizeProperty;
- 	/* @PropertyType=string,ManagedPropertyType=Uri,GenerateAccessors */
+ 	/* @PropertyType=string,ManagedPropertyType=Uri,GenerateAccessors,Validator=NonNullStringValidator */
 	static DependencyProperty *FontUriProperty;
  	/* @PropertyType=string,GenerateAccessors */
 	static DependencyProperty *IndicesProperty;

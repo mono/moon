@@ -22,7 +22,7 @@
 /*
  *	DependencyProperty
  */
-DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback, bool is_custom)
+DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator, bool is_custom)
 {
 	this->owner_type = owner_type;
 	this->hash_key = g_ascii_strdown (name, -1);
@@ -35,8 +35,8 @@ DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name,
 	this->storage_hash = NULL; // Create it on first usage request
 	this->always_change = always_change;
 	this->changed_callback = changed_callback;
+	this->validator = validator ? validator : Validators::default_validator;
 	this->is_custom = is_custom;
-	this->validator = Validators::default_validator;
 }
 
 AnimationStorage*
@@ -205,15 +205,15 @@ DependencyProperty::RegisterNullable (Type::Kind type, const char *name, Type::K
 }
 
 DependencyProperty *
-DependencyProperty::RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback)
+DependencyProperty::RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator)
 {
-	return RegisterFull (NULL, Type::Find (type), name, default_value, vtype, attached, readonly, always_change, changed_callback, false);
+	return RegisterFull (NULL, Type::Find (type), name, default_value, vtype, attached, readonly, always_change, changed_callback, validator, false);
 }
 
 DependencyProperty *
 DependencyProperty::RegisterFull (Types *additional_types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback)
 {
-	return RegisterFull (additional_types, additional_types->Find (type), name, default_value, vtype, attached, readonly, always_change, changed_callback, true);
+	return RegisterFull (additional_types, additional_types->Find (type), name, default_value, vtype, attached, readonly, always_change, changed_callback, NULL, true);
 }
 
 DependencyProperty *
@@ -232,14 +232,14 @@ DependencyProperty::RegisterManagedProperty (Types *additional_types, const char
 // stored in the dependency property is of type @vtype
 //
 DependencyProperty *
-DependencyProperty::RegisterFull (Types *additional_types, Type *type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback, bool is_custom)
+DependencyProperty::RegisterFull (Types *additional_types, Type *type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator, bool is_custom)
 {
 	DependencyProperty *property;
 	
 	if (type == NULL)
 		return NULL;
 	
-	property = new DependencyProperty (type->type, name, default_value, vtype, attached, readonly, always_change, changed_callback, is_custom);
+	property = new DependencyProperty (type->type, name, default_value, vtype, attached, readonly, always_change, changed_callback, validator, is_custom);
 	
 	if (is_custom) {
 		// Managed code is allowed to register several properties with the same name
@@ -262,14 +262,6 @@ DependencyProperty::RegisterFull (Types *additional_types, Type *type, const cha
 	}
 
 	return property;
-}
-
-void
-DependencyProperty::SetValueValidator (ValueValidator *validator)
-{
-	if (validator == NULL)
-		validator = Validators::default_validator;
-	this->validator = validator; 
 }
 
 bool

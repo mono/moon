@@ -21,19 +21,9 @@
 #include "runtime.h"
 #include "namescope.h"
 #include "collection.h"
-#include "validators.h"
 
 Grid::Grid ()
 {
-	static bool init = true;
-	if (init) {
-		init = false;
-		Grid::ColumnProperty->SetValueValidator (Validators::PositiveIntValidator);
-		Grid::RowProperty->SetValueValidator (Validators::PositiveIntValidator);
-	
-		Grid::ColumnSpanProperty->SetValueValidator (Validators::IntGreaterThanZeroValidator);
-		Grid::RowSpanProperty->SetValueValidator (Validators::IntGreaterThanZeroValidator);
-	}
 	SetValue (Grid::ColumnDefinitionsProperty, Value::CreateUnref (new ColumnDefinitionCollection ()));
 	SetValue (Grid::RowDefinitionsProperty, Value::CreateUnref (new RowDefinitionCollection ()));
 }

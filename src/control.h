@@ -155,7 +155,7 @@ public:
 	static DependencyProperty *TabIndexProperty;
  	/* @PropertyType=KeyboardNavigationMode,DefaultValue=KeyboardNavigationModeLocal,GenerateAccessors */
 	static DependencyProperty *TabNavigationProperty;
- 	/* @PropertyType=ControlTemplate,GenerateAccessors */
+ 	/* @PropertyType=ControlTemplate,GenerateAccessors,Validator=TemplateValidator */
 	static DependencyProperty *TemplateProperty;
  	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentCenter,GenerateAccessors */
 	static DependencyProperty *VerticalContentAlignmentProperty;

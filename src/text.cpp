@@ -28,7 +28,6 @@
 #include "uri.h"
 #include "utils.h"
 #include "debug.h"
-#include "validators.h"
 
 
 static SolidColorBrush *default_foreground_brush = NULL;
@@ -60,11 +59,6 @@ text_shutdown (void)
 
 Inline::Inline ()
 {
-	static bool init = true;
-	if (init) {
-		init = false;
-		Inline::LanguageProperty->SetValueValidator (Validators::NonNullStringValidator);
-	}
 	foreground = NULL;
 	autogen = false;
 	
@@ -985,11 +979,6 @@ GlyphAttr::GlyphAttr ()
 
 Glyphs::Glyphs ()
 {
-	static bool init = true;
-	if (init) {
-		init = false;
-		Glyphs::FontUriProperty->SetValueValidator (Validators::NonNullStringValidator);
-	}
 	desc = new TextFontDescription ();
 	desc->SetSize (0.0);
 	downloader = NULL;

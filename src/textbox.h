@@ -114,7 +114,7 @@ class TextBox : public Control {
 	static DependencyProperty *HorizontalScrollBarVisibilityProperty;
 	/* @PropertyType=bool,DefaultValue=false,Version=2.0,GenerateAccessors */
 	static DependencyProperty *IsReadOnlyProperty;
-	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors */
+	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors,Validator=PositiveIntValidator */
 	static DependencyProperty *MaxLengthProperty;
 	/* @PropertyType=string,DefaultValue=\"\",Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
 	static DependencyProperty *SelectedTextProperty;
@@ -122,9 +122,9 @@ class TextBox : public Control {
 	static DependencyProperty *SelectionBackgroundProperty;
 	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
 	static DependencyProperty *SelectionForegroundProperty;
-	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
+	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
 	static DependencyProperty *SelectionLengthProperty;
-	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
+	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
 	static DependencyProperty *SelectionStartProperty;
 	/* @PropertyType=string,DefaultValue=\"\",Version=2.0,GenerateAccessors */
 	static DependencyProperty *TextProperty;
@@ -209,9 +209,9 @@ class TextBox : public Control {
 /* @Namespace=System.Windows.Controls */
 class PasswordBox : public TextBox {
  public:
-	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors */
+	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors,Validator=PositiveIntValidator */
 	static DependencyProperty *MaxLengthProperty;
-	/* @PropertyType=string,DefaultValue=\"\",ManagedFieldAccess=Internal,Version=2.0,GenerateAccessors */
+	/* @PropertyType=string,DefaultValue=\"\",ManagedFieldAccess=Internal,Version=2.0,GenerateAccessors,Validator=NonNullStringValidator */
 	static DependencyProperty *PasswordProperty;
 	/* @PropertyType=char,DefaultValue=9679,Version=2.0,GenerateAccessors */
 	static DependencyProperty *PasswordCharProperty;

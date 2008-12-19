@@ -161,7 +161,7 @@ class MediaElement : public MediaBase {
 	
  public:
 	// properties
- 	/* @PropertyType=MediaAttributeCollection,ManagedPropertyType=Dictionary<string\,string>,ManagedSetterAccess=Internal,GenerateAccessors */
+ 	/* @PropertyType=MediaAttributeCollection,ManagedPropertyType=Dictionary<string\,string>,ManagedSetterAccess=Internal,GenerateAccessors,Validator=MediaAttributeCollectionValidator */
 	static DependencyProperty *AttributesProperty;
  	/* @PropertyType=gint32,DefaultValue=0,ReadOnly,GenerateAccessors */
 	static DependencyProperty *AudioStreamCountProperty;
@@ -187,9 +187,9 @@ class MediaElement : public MediaBase {
 	static DependencyProperty *MarkersProperty;
  	/* @PropertyType=Duration,DefaultValue=Duration::FromSeconds (0),ReadOnly,GenerateGetter */
 	static DependencyProperty *NaturalDurationProperty;
- 	/* @PropertyType=double,DefaultValue=0.0,ReadOnly,ManagedPropertyType=int,GenerateAccessors */
+ 	/* @PropertyType=double,DefaultValue=0.0,ReadOnly,ManagedPropertyType=int,GenerateAccessors,Validator=IntGreaterThanZeroValidator */
 	static DependencyProperty *NaturalVideoHeightProperty;
- 	/* @PropertyType=double,DefaultValue=0.0,ReadOnly,ManagedPropertyType=int,GenerateAccessors */
+ 	/* @PropertyType=double,DefaultValue=0.0,ReadOnly,ManagedPropertyType=int,GenerateAccessors,Validator=IntGreaterThanZeroValidator */
 	static DependencyProperty *NaturalVideoWidthProperty;
  	/* @PropertyType=TimeSpan,GenerateAccessors */
 	static DependencyProperty *PositionProperty;

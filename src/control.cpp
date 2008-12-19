@@ -17,15 +17,9 @@
 #include "control.h"
 #include "canvas.h"
 #include "namescope.h"
-#include "validators.h"
 
 Control::Control ()
 {
-	static bool init = true;
-	if (init) {
-		init = false;
-		Control::TemplateProperty->SetValueValidator (Validators::TemplateValidator);	
-	}
 	applied_template = NULL;
 	template_root = NULL;
 	bindings = NULL;

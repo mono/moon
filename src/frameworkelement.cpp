@@ -21,7 +21,6 @@
 #include "collection.h"
 #include "binding.h"
 #include "style.h"
-#include "validators.h"
 
 static void
 binding_destroy (gpointer value)
@@ -49,11 +48,6 @@ datacontext_changed (DependencyObject *sender, PropertyChangedEventArgs *args, g
 
 FrameworkElement::FrameworkElement ()
 {
-	static bool init = true;
-	if (init) {
-		init = false;
-		FrameworkElement::LanguageProperty->SetValueValidator (Validators::NonNullStringValidator);
-	}
 	bindings = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, binding_destroy);
 	styles = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, NULL);
 

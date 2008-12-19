@@ -25,7 +25,6 @@
 #include "textbox.h"
 #include "utils.h"
 #include "dependencyproperty.h"
-#include "validators.h"
 
 
 static SolidColorBrush *default_selection_background_brush = NULL;
@@ -273,13 +272,6 @@ class TextBuffer {
 
 TextBox::TextBox ()
 {
-	static bool init = true;
-	if (init) {
-		init = false;
-		TextBox::MaxLengthProperty->SetValueValidator (Validators::PositiveIntValidator);
-		TextBox::SelectionLengthProperty->SetValueValidator (Validators::PositiveIntValidator);
-		TextBox::SelectionStartProperty->SetValueValidator (Validators::PositiveIntValidator);
-	}
 	/* initialize the font description and layout */
 	hints = new TextLayoutHints (TextAlignmentLeft, LineStackingStrategyMaxHeight, 0.0);
 	layout = new TextLayout ();
@@ -542,10 +534,4 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 
 PasswordBox::PasswordBox ()
 {
-	static bool init = true;
-	if (init) {
-		init = false;
-		PasswordBox::PasswordProperty->SetValueValidator (Validators::NonNullStringValidator);
-		PasswordBox::MaxLengthProperty->SetValueValidator (Validators::PositiveIntValidator);
-	}
 }
