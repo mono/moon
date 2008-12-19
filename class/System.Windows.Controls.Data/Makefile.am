@@ -24,6 +24,10 @@ MSSDKCONTROLS=$(srcdir)/../Microsoft.SilverlightControls/SDKControls/Data/src
 system_windows_controls_data_sources =						\
 	$(srcdir)/../System.Windows/Assembly/MonoTODOAttribute.cs		\
 	$(srcdir)/../Consts.cs							\
+	$(MSSDKCONTROLS)/Extensions.cs						\
+	$(MSSDKCONTROLS)/DoubleUtil.cs						\
+	$(MSSDKCONTROLS)/Resource.Designer.cs					\
+	$(MSSDKCONTROLS)/VisualStates.cs					\
 	$(MSSDKCONTROLS)/Properties/AssemblyInfo.cs				\
 	$(MSSDKCONTROLS)/CollectionView/CollectionViewError.cs			\
 	$(MSSDKCONTROLS)/CollectionView/CurrentChangingEventArgs.cs		\
@@ -80,18 +84,16 @@ system_windows_controls_data_sources =						\
 	$(MSSDKCONTROLS)/DataGrid/TestHooks/DataGridCellInternalTestHook.cs	\
 	$(MSSDKCONTROLS)/DataGrid/TestHooks/DataGridInternalTestHook.cs		\
 	$(MSSDKCONTROLS)/DataGrid/TestHooks/DataGridRowInternalTestHook.cs	\
-	$(MSSDKCONTROLS)/DataGrid/TypeHelper.cs
-
-# notyet
-#	$(MSSDKCONTROLS)/DataGrid/Automation/DataGridAutomationPeer.cs		
-#	$(MSSDKCONTROLS)/DataGrid/Automation/DataGridCellAutomationPeer.cs	
-#	$(MSSDKCONTROLS)/DataGrid/Automation/DataGridColumnHeaderAutomationPeer.cs		
-#	$(MSSDKCONTROLS)/DataGrid/Automation/DataGridColumnHeadersPresenterAutomationPeer.cs	
-#	$(MSSDKCONTROLS)/DataGrid/Automation/DataGridDetailsPresenterAutomationPeer.cs		
-#	$(MSSDKCONTROLS)/DataGrid/Automation/DataGridItemAutomationPeer.cs	
-#	$(MSSDKCONTROLS)/DataGrid/Automation/DataGridRowAutomationPeer.cs	
-#	$(MSSDKCONTROLS)/DataGrid/Automation/DataGridRowHeaderAutomationPeer.cs	
-#	$(MSSDKCONTROLS)/DataGrid/Automation/DataGridRowsPresenterAutomationPeer.cs		
+	$(MSSDKCONTROLS)/DataGrid/TypeHelper.cs					\
+	$(MSSDKCONTROLS)/DataGrid/Automation/DataGridAutomationPeer.cs		\
+	$(MSSDKCONTROLS)/DataGrid/Automation/DataGridCellAutomationPeer.cs	\
+	$(MSSDKCONTROLS)/DataGrid/Automation/DataGridColumnHeaderAutomationPeer.cs		\
+	$(MSSDKCONTROLS)/DataGrid/Automation/DataGridColumnHeadersPresenterAutomationPeer.cs	\
+	$(MSSDKCONTROLS)/DataGrid/Automation/DataGridDetailsPresenterAutomationPeer.cs		\
+	$(MSSDKCONTROLS)/DataGrid/Automation/DataGridItemAutomationPeer.cs			\
+	$(MSSDKCONTROLS)/DataGrid/Automation/DataGridRowAutomationPeer.cs			\
+	$(MSSDKCONTROLS)/DataGrid/Automation/DataGridRowHeaderAutomationPeer.cs			\
+	$(MSSDKCONTROLS)/DataGrid/Automation/DataGridRowsPresenterAutomationPeer.cs		
 
 EXTRA_DIST = $(system_windows_controls_data_sources) 			\
 	ChangeLog

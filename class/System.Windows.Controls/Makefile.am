@@ -12,7 +12,7 @@ assemblies = $(assemblysl) $(assemblydesktop)
 
 noinst_DATA = $(assemblies)
 
-CSCFLAGS = /codepage:65001 -d:NET_1_1 -d:NET_2_0 -debug+ -noconfig -r:System -r:System.Windows -d:AGCLR -unsafe
+CSCFLAGS = /codepage:65001 -d:NET_1_1 -d:NET_2_0 -debug+ -noconfig -r:System -r:System.Windows -d:AGCLR -unsafe -r:System.Core.dll
 
 GMCS = gmcs $(CSCFLAGS) -lib:../lib/3.0
 SMCS = MONO_PATH="../lib/2.1:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack ../lib/2.1/smcs.exe $(CSCFLAGS)
@@ -24,6 +24,9 @@ MSSDKCONTROLS=$(srcdir)/../Microsoft.SilverlightControls/SDKControls/Extended/Sr
 system_windows_controls_sources =						\
 	$(srcdir)/../System.Windows/Assembly/MonoTODOAttribute.cs		\
 	$(srcdir)/../Consts.cs							\
+	$(MSSDKCONTROLS)/Extensions.cs						\
+	$(MSSDKCONTROLS)/Resource.Designer.cs					\
+	$(MSSDKCONTROLS)/VisualStates.cs					\
 	$(MSSDKCONTROLS)/Properties/AssemblyInfo.cs				\
 	$(MSSDKCONTROLS)/Calendar/CalendarBlackoutDatesCollection.cs		\
 	$(MSSDKCONTROLS)/Calendar/CalendarButton.cs				\
@@ -48,16 +51,14 @@ system_windows_controls_sources =						\
 	$(MSSDKCONTROLS)/TabControl/Dock.cs					\
 	$(MSSDKCONTROLS)/TabControl/TabControl.cs				\
 	$(MSSDKCONTROLS)/TabControl/TabItem.cs					\
-	$(MSSDKCONTROLS)/TabControl/TabPanel.cs
-
-# notyet
-#	$(MSSDKCONTROLS)/Automation/CalendarAutomationPeer.cs			
-#	$(MSSDKCONTROLS)/Automation/CalendarButtonAutomationPeer.cs		
-#	$(MSSDKCONTROLS)/Automation/CalendarDayButtonAutomationPeer.cs		
-#	$(MSSDKCONTROLS)/Automation/DatePickerAutomationPeer.cs			
-#	$(MSSDKCONTROLS)/Automation/GridSplitterAutomationPeer.cs		
-#	$(MSSDKCONTROLS)/Automation/TabControlAutomationPeer.cs			
-#	$(MSSDKCONTROLS)/Automation/TabItemAutomationPeer.cs			
+	$(MSSDKCONTROLS)/TabControl/TabPanel.cs					\
+	$(MSSDKCONTROLS)/Automation/CalendarAutomationPeer.cs			\
+	$(MSSDKCONTROLS)/Automation/CalendarButtonAutomationPeer.cs		\
+	$(MSSDKCONTROLS)/Automation/CalendarDayButtonAutomationPeer.cs		\
+	$(MSSDKCONTROLS)/Automation/DatePickerAutomationPeer.cs			\
+	$(MSSDKCONTROLS)/Automation/GridSplitterAutomationPeer.cs		\
+	$(MSSDKCONTROLS)/Automation/TabControlAutomationPeer.cs			\
+	$(MSSDKCONTROLS)/Automation/TabItemAutomationPeer.cs			
 
 
 EXTRA_DIST = $(system_windows_controls_sources) 			\
