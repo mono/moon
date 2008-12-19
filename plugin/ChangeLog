@@ -1,3 +1,7 @@
+2008-12-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* plugin.mdp: Updated.
+
 2008-12-18  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.h, plugin.cpp: rework the app domain stuff slightly.  we

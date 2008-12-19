@@ -38,10 +38,8 @@
     <File name="debug.js" subtype="Code" buildaction="Nothing" />
     <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
     <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
-    <File name="mono.cpp" subtype="Code" buildaction="Compile" />
     <File name="moonlight.cs" subtype="Code" buildaction="Nothing" />
     <File name="moonlight.h" subtype="Code" buildaction="Nothing" />
-    <File name="moon-mono.h" subtype="Code" buildaction="Nothing" />
     <File name="plugin.cpp" subtype="Code" buildaction="Compile" />
     <File name="plugin.h" subtype="Code" buildaction="Nothing" />
     <File name="plugin-class.cpp" subtype="Code" buildaction="Compile" />

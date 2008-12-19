@@ -372,6 +372,21 @@
     <File name="System.Windows.Controls/ValidationError.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/ValidationErrorEventArgs.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/PasswordBox.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono/DLRHost.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono/GeneratedPInvokes.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono/Helper.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono/ManagedType.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono/Kind.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono/MoonError.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono/Moonlight.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono/NativeMethods.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono/StreamCallbacks.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono/Surface.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono/Types.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono/Types.g.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono/Value.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono/XamlLoaderCallbacks.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono/XapHack.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="Mono.Moonlight" />
