@@ -118,21 +118,21 @@ namespace System.Windows {
 
 		internal void AddImpl (T value)
 		{
-			Value v = DependencyObject.GetAsValue (value);
+			Value v = Value.FromObject (value);
 			NativeMethods.collection_add (native, ref v);
 			NativeMethods.value_free_value (ref v);
 		}
 
 		internal void InsertImpl (int index, T value)
 		{
-			Value v = DependencyObject.GetAsValue (value);
+			Value v = Value.FromObject (value);
 			NativeMethods.collection_insert (native, index, ref v);
 			NativeMethods.value_free_value (ref v);
 		}
 
 		internal bool RemoveImpl (T value)
 		{
-			Value v = DependencyObject.GetAsValue (value);
+			Value v = Value.FromObject (value);
 			bool rv = NativeMethods.collection_remove (native, ref v);
 			NativeMethods.value_free_value (ref v);
 			return rv;
@@ -143,19 +143,19 @@ namespace System.Windows {
 			IntPtr val = NativeMethods.collection_get_value_at (native, index);
 			if (val == IntPtr.Zero)
 				return default(T);
-			return (T) DependencyObject.ValueToObject (typeof (T), val);
+			return (T) Value.ToObject (typeof (T), val);
 		}
 
 		internal void SetItemImpl (int index, T value)
 		{
-			Value v = DependencyObject.GetAsValue (value);
+			Value v = Value.FromObject (value);
 			NativeMethods.collection_set_value_at (native, index, ref v);
 			NativeMethods.value_free_value (ref v);
 		}
 
 		internal int IndexOfImpl (T value)
 		{
-			Value v = DependencyObject.GetAsValue (value);
+			Value v = Value.FromObject (value);
 			int rv = NativeMethods.collection_index_of (native, ref v);
 			NativeMethods.value_free_value (ref v);
 			return rv;
@@ -253,7 +253,7 @@ namespace System.Windows {
 					if (val == IntPtr.Zero)
 						return null;
 					
-					return DependencyObject.ValueToObject (type, val);
+					return Value.ToObject (type, val);
 				}
 			}
 
@@ -305,7 +305,7 @@ namespace System.Windows {
 					return default(T);
 				}
 				
-				return (T) DependencyObject.ValueToObject (typeof (T), val);
+				return (T) Value.ToObject (typeof (T), val);
 			}
 			
 			public T Current {
@@ -354,7 +354,7 @@ namespace System.Windows {
 			if (value == null)
 				throw new ArgumentNullException ("value");
 
-			Value v = DependencyObject.GetAsValue (value);
+			Value v = Value.FromObject (value);
 			return NativeMethods.collection_index_of (native, ref v) != -1;
 		}
 		

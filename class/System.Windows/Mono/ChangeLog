@@ -1,3 +1,10 @@
+2008-12-19  Chris Toshok  <toshok@ximian.com>
+
+	* Value.cs: move DependencyObject.GetAsValue to Value.FromObject
+	and DependencyObject.ValueToObject to Value.ToObject.
+
+	* ManagedXamlLoader.cs: track change
+
 2008-12-18  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Kind.cs: Regenerated (to be internal in SL)

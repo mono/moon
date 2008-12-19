@@ -46,7 +46,7 @@ namespace System.Windows {
 			if (value == null)
 				throw new NotSupportedException ("value");
 
-			Value v = DependencyObject.GetAsValue (value, true);
+			Value v = Value.FromObject (value, true);
 			try {
 				NativeMethods.resource_dictionary_add (native, key, ref v);
 			} finally {
@@ -100,7 +100,7 @@ namespace System.Windows {
 			value = null;
 
 			if (exists)
-				value = DependencyObject.ValueToObject (null, val);
+				value = Value.ToObject (null, val);
 
 			return exists;
 		}
@@ -119,12 +119,12 @@ namespace System.Windows {
 				IntPtr val = NativeMethods.resource_dictionary_get (native, ToStringKey (key), out exists);
 				if (val == IntPtr.Zero)
 					return null;
-				return DependencyObject.ValueToObject (null, val);
+				return Value.ToObject (null, val);
 			}
 			set {
 				var str_key = ToStringKey (key);
 
-				Value v = DependencyObject.GetAsValue (value, true);
+				Value v = Value.FromObject (value, true);
 				try {
 					NativeMethods.resource_dictionary_set (native, str_key, ref v);
 				} finally {

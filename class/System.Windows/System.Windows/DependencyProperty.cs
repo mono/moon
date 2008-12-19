@@ -55,7 +55,7 @@ namespace System.Windows {
 			
 			properties.Add (handle, this);
 			
-			this.default_value = DependencyObject.ValueToObject (property_type, NativeMethods.dependency_property_get_default_value (handle));
+			this.default_value = Value.ToObject (property_type, NativeMethods.dependency_property_get_default_value (handle));
 			if (default_value == null && this.property_type.IsValueType && !IsNullable)
 				this.default_value = Activator.CreateInstance (property_type);
 			//Console.WriteLine ("DependencyProperty.DependencyProperty ({0:X}, {1}, {2})", handle, property_type.FullName, declaring_type.FullName);
@@ -114,7 +114,7 @@ namespace System.Windows {
 			if (defaultVal == null)
 				v = new Value { k = Kind.INVALID };
 			else
-				v = DependencyObject.GetAsValue (defaultVal, true);
+				v = Value.FromObject (defaultVal, true);
 
 			IntPtr handle = NativeMethods.dependency_property_register_managed_property (name, property_type.native_handle, owner_type.native_handle, ref v, attached, handler);
 			NativeMethods.value_free_value (ref v);
@@ -162,8 +162,8 @@ namespace System.Windows {
 			if (obj == null)
 				return;
 			
-			old_obj = DependencyObject.ValueToObject (property.property_type, old_value);
-			new_obj = DependencyObject.ValueToObject (property.property_type, new_value);
+			old_obj = Value.ToObject (property.property_type, old_value);
+			new_obj = Value.ToObject (property.property_type, new_value);
 			
 			if (old_obj == null && property.property_type.IsValueType && !property.IsNullable)
 				old_obj = property.DefaultValue;

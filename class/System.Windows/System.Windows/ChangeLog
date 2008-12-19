@@ -1,3 +1,12 @@
+2008-12-19  Chris Toshok  <toshok@ximian.com>
+
+	* DependencyObject.cs: move DependencyObject.GetAsValue to
+	Value.FromObject and DependencyObject.ValueToObject to
+	Value.ToObject.
+
+	* ResourceDictionary.cs, DependencyProperty.cs,
+	PresentationFrameworkCollection.cs: track change
+	
 2008-12-17  Chris Toshok  <toshok@ximian.com>
 
 	* DependencyProperty.cs (Lookup): correct error message to mention

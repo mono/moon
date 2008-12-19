@@ -231,7 +231,7 @@ namespace Mono.Xaml
 				return false;
 			}
 
-			value = DependencyObject.GetAsValue (res, true);
+			value = Value.FromObject (res, true);
 			return true;
 		}
 
@@ -243,7 +243,7 @@ namespace Mono.Xaml
 				return false;
 			}
 
-			value = DependencyObject.GetAsValue (obj, true);
+			value = Value.FromObject (obj, true);
 			return true;
 		}
 
@@ -314,9 +314,9 @@ namespace Mono.Xaml
 			string error = null;
 			IntPtr unmanaged_value = IntPtr.Zero;
 
-			object o_value = DependencyObject.ValueToObject (null, value_ptr);
+			object o_value = Value.ToObject (null, value_ptr);
 			if (error == null && unmanaged_value != IntPtr.Zero)
-				o_value = DependencyObject.ValueToObject (null, unmanaged_value);
+				o_value = Value.ToObject (null, unmanaged_value);
 
 			//
 			// The Setter might actually want a collection, in this case we grab the old collection with the getter
@@ -376,7 +376,7 @@ namespace Mono.Xaml
 				return false;
 			}
 
-			string handler_name = DependencyObject.ValueToObject (null, value_ptr) as string;
+			string handler_name = Value.ToObject (null, value_ptr) as string;
 
 			if (handler_name == null) {
 				error = "No method name supplied for event handler.";
@@ -431,7 +431,7 @@ namespace Mono.Xaml
 
 		private bool SetPropertyFromValue (object target, PropertyInfo pi, IntPtr value_ptr, out string error)
 		{
-			object obj_value = DependencyObject.ValueToObject (null, value_ptr);
+			object obj_value = Value.ToObject (null, value_ptr);
 			string str_value = obj_value as string;
 
 			error = null;
@@ -442,11 +442,11 @@ namespace Mono.Xaml
 				Helper.SetPropertyFromString (target, pi, str_value, out error, out unmanaged_value);
 
 				if (error == null && unmanaged_value != IntPtr.Zero)
-					obj_value = DependencyObject.ValueToObject (null, unmanaged_value);
+					obj_value = Value.ToObject (null, unmanaged_value);
 				else
 					return error == null;
 			} else
-				obj_value = DependencyObject.ValueToObject (pi.PropertyType, value_ptr);
+				obj_value = Value.ToObject (pi.PropertyType, value_ptr);
 
 			if (typeof (IList).IsAssignableFrom (pi.PropertyType) && !(obj_value is IList)) {
 				IList the_list = (IList) pi.GetValue (target, null);
