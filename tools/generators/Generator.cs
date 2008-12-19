@@ -1612,6 +1612,7 @@ class Generator {
 	
 		Helper.WriteWarningGenerated (text);
 		text.AppendLine ("using System;");
+		text.AppendLine ("using System.Windows;");
 		text.AppendLine ("using System.Runtime.InteropServices;");
 		text.AppendLine ("");
 		text.AppendLine ("namespace Mono {");

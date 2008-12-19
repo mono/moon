@@ -138,19 +138,19 @@ class TypeReference {
 				managed_type = "UnmanagedEventHandler";
 				break;
 			case "Size":
-				managed_type = "UnmanagedSize";
+				managed_type = "Size";
 				break;
 			case "Rect":
-				managed_type = "UnmanagedRect";
+				managed_type = "Rect";
 				break;
 			case "Point":
-				managed_type = "UnmanagedPoint";
+				managed_type = "Point";
 				break;
 			case "Thickness":
-				managed_type = "UnmanagedThickness";
+				managed_type = "Thickness";
 				break;
 			case "CornerRadius":
-				managed_type = "UnmanagedCornerRadius";
+				managed_type = "CornerRadius";
 				break;
 			case "TimeSpan":
 				managed_type = "long";

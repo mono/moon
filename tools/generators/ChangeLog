@@ -1,3 +1,11 @@
+2008-12-19  Chris Toshok  <toshok@ximian.com>
+
+	* TypeReference.cs: get rid of the Unmanaged* struct types where
+	we can.
+
+	* Generator.cs: GeneratedPInvokes.cs requires using System.Windows
+	now.
+	
 2008-12-18  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Generator.cs: Change Kind enum visibility to internal when 
