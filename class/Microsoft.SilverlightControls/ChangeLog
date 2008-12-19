@@ -1,3 +1,10 @@
+2008-12-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* README.MOON: Add notes about "internal" read only DP
+	* RuntimeControls/SilverlightControls/Primitives/ButtonBase.cs: 
+	Use RegisterReadOnly on Is[Focused|MouseOver|Pressed]Property. Use
+	SetValueImpl directly to by-pass readonly on (internal) setters.
+
 2008-12-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* SDKControls/Data/src/DataGrid/DataGridCell.cs,

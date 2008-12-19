@@ -72,14 +72,14 @@ namespace System.Windows.Controls.Primitives
         public bool IsFocused 
         {
             get { return (bool) GetValue(IsFocusedProperty); }
-            internal set { SetValue(IsFocusedProperty, value); } 
+            internal set { SetValueImpl(IsFocusedProperty, value); } 
         }
 
         /// <summary> 
         /// Identifies the IsFocused dependency property. 
         /// </summary>
         public static readonly DependencyProperty IsFocusedProperty = 
-            DependencyProperty.Register(
+            DependencyProperty.RegisterReadOnly(
                 "IsFocused",
                 typeof(bool), 
                 typeof(ButtonBase),
@@ -99,14 +99,14 @@ namespace System.Windows.Controls.Primitives
         public bool IsMouseOver 
         {
             get { return (bool) GetValue(IsMouseOverProperty); }
-            internal set { SetValue(IsMouseOverProperty, value); } 
+            internal set { SetValueImpl(IsMouseOverProperty, value); } 
         }
 
         /// <summary> 
         /// Identifies the IsMouseOver dependency property. 
         /// </summary>
         public static readonly DependencyProperty IsMouseOverProperty = 
-            DependencyProperty.Register(
+            DependencyProperty.RegisterReadOnly(
                 "IsMouseOver",
                 typeof(bool), 
                 typeof(ButtonBase),
@@ -121,14 +121,14 @@ namespace System.Windows.Controls.Primitives
         public bool IsPressed
         {
             get { return (bool) GetValue(IsPressedProperty); } 
-            protected internal set { SetValue(IsPressedProperty, value); } 
+            protected internal set { SetValueImpl(IsPressedProperty, value); } 
         }
  
         /// <summary>
         /// Identifies the IsPressed dependency property.
         /// </summary> 
         public static readonly DependencyProperty IsPressedProperty =
-            DependencyProperty.Register(
+            DependencyProperty.RegisterReadOnly(
                 "IsPressed", 
                 typeof(bool), 
                 typeof(ButtonBase),

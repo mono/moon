@@ -1,7 +1,8 @@
 DIRECTORIES
 
 * Files under Controls are the old beta1 controls. Many of them were
-modified to be used, temporarily, inside Moonlight.
+modified to be used, temporarily, inside Moonlight. Some are still used
+since the "final" controls source code don't include them anymore.
 
 * Files under RuntimeControls and SDKControls are the "final" controls.
 
@@ -24,3 +25,20 @@ controls don't do it.
 
 Unit tests shows that the "right" (SL2 final) behaviour is identical
 to beta1 (i.e. OriginalSource == this).
+
+
+READ-ONLY DEPENDENCY PROPERTIES
+
+They do not "officially" exists in Silverlight 2 (like they do in WPF).
+However we need to deal with a few of them.
+
+<quote>There are some read-only dependency properties that are part
+of the Silverlight 2 API, but these rely on internal support.</quote>
+Ref: http://msdn.microsoft.com/en-us/library/cc903923(VS.95).aspx
+
+So far the following properties were found
+	* ButtonBase.IsFocusedProperty
+	* ButtonBase.IsMouseOverProperty
+	* ButtonBase.IsPressedProperty
+which all throws InvalidOperationException when SetValue is used from
+use code (but obviously the runtime can change those values).
