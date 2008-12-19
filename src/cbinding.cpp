@@ -1027,6 +1027,16 @@ dependency_property_is_nullable (DependencyProperty *instance)
 }
 
 
+bool
+dependency_property_is_read_only (DependencyProperty *instance)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->IsReadOnly ();
+}
+
+
 DependencyProperty *
 dependency_property_register (Type::Kind type, const char *name, Value *default_value)
 {
@@ -1042,9 +1052,9 @@ dependency_property_register_full (Types *additional_types, Type::Kind type, con
 
 
 DependencyProperty *
-dependency_property_register_managed_property (Types *additional_types, const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, NativePropertyChangedHandler *callback)
+dependency_property_register_managed_property (Types *additional_types, const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, NativePropertyChangedHandler *callback)
 {
-	return DependencyProperty::RegisterManagedProperty (additional_types, name, property_type, owner_type, defaultValue, attached, callback);
+	return DependencyProperty::RegisterManagedProperty (additional_types, name, property_type, owner_type, defaultValue, attached, read_only, callback);
 }
 
 

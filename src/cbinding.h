@@ -438,13 +438,16 @@ bool dependency_property_is_attached (DependencyProperty *instance);
 /* @GeneratePInvoke */
 bool dependency_property_is_nullable (DependencyProperty *instance);
 
+/* @GeneratePInvoke */
+bool dependency_property_is_read_only (DependencyProperty *instance);
+
 DependencyProperty *dependency_property_register (Type::Kind type, const char *name, Value *default_value);
 
 /* @GeneratePInvoke */
 DependencyProperty *dependency_property_register_full (Types *additional_types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler *changed_callback);
 
 /* @GeneratePInvoke */
-DependencyProperty *dependency_property_register_managed_property (Types *additional_types, const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, NativePropertyChangedHandler *callback);
+DependencyProperty *dependency_property_register_managed_property (Types *additional_types, const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, NativePropertyChangedHandler *callback);
 
 /* @GeneratePInvoke */
 void dependency_property_set_is_nullable (DependencyProperty *instance, bool value);
