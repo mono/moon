@@ -89,10 +89,19 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("are we yet disallowing setting read-only properties via SetValue ?")]
-		public void SetValueOnReadOnlyProperties ()
+		public void CheckReadOnlyProperties ()
 		{
-			ConcreteButtonBase bb = new ConcreteButtonBase ();
+			// <quote>There are some read-only dependency properties that are part
+			// of the Silverlight 2 API, but these rely on internal support.</quote>
+			// http://msdn.microsoft.com/en-us/library/cc903923(VS.95).aspx
+			ReadOnlyProperties (new ConcreteButtonBase ());
+		}
+
+		static public void ReadOnlyProperties (ButtonBase bb)
+		{
+			Assert.IsFalse ((bool) bb.GetValue (ButtonBase.IsFocusedProperty), "Get/IsFocusedProperty");
+			Assert.IsFalse ((bool) bb.GetValue (ButtonBase.IsMouseOverProperty), "Get/IsMouseOverProperty");
+			Assert.IsFalse ((bool) bb.GetValue (ButtonBase.IsPressedProperty), "Get/IsPressedProperty");
 
 			Assert.Throws<InvalidOperationException> (delegate {
 				bb.SetValue (ButtonBase.IsFocusedProperty, true);
@@ -100,9 +109,18 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 			Assert.IsFalse (bb.IsFocused, "IsFocused");
 
 			Assert.Throws<InvalidOperationException> (delegate {
-				bb.SetValue (ButtonBase.IsFocusedProperty, true);
+				bb.SetValue (ButtonBase.IsMouseOverProperty, true);
 			});
 			Assert.IsFalse (bb.IsMouseOver, "IsMouseOver");
+
+			Assert.Throws<InvalidOperationException> (delegate {
+				bb.SetValue (ButtonBase.IsPressedProperty, true);
+			});
+			Assert.IsFalse (bb.IsPressed, "IsPressed");
+
+			bb.ClearValue (ButtonBase.IsFocusedProperty);
+			bb.ClearValue (ButtonBase.IsMouseOverProperty);
+			bb.ClearValue (ButtonBase.IsPressedProperty);
 		}
 
 		[TestMethod]

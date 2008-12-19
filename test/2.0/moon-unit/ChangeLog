@@ -1,3 +1,10 @@
+2008-12-19  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.Controls.Primitives/RepeatButtonTest.cs: Reuse
+	read-only tests from ButtonBaseTest. Test with XAML (not yet working).
+	* System.Windows.Controls.Primitives/ButtonBaseTest.cs: Generalize
+	the read-only test and cover more cases.
+
 2008-12-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Controls/SliderTest.cs: Chain default test into

@@ -30,7 +30,9 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Markup;
 
+using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows.Controls.Primitives {
@@ -128,6 +130,60 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 			RepeatButton rb = new RepeatButton ();
 			rb.OnApplyTemplate ();
 			ControlTest.CheckDefaultMethods (rb);
+		}
+
+		[TestMethod]
+		public void CheckReadOnlyProperties ()
+		{
+			// <quote>There are some read-only dependency properties that are part
+			// of the Silverlight 2 API, but these rely on internal support.</quote>
+			// http://msdn.microsoft.com/en-us/library/cc903923(VS.95).aspx
+			ButtonBaseTest.ReadOnlyProperties (new RepeatButton ());
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void CheckReadOnlyXaml ()
+		{
+			Assert.Throws<XamlParseException> (delegate {
+				XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+       <RepeatButton IsFocused=""true""/>
+</Canvas>");
+			}, "IsFocused/True");
+
+			Assert.Throws<XamlParseException> (delegate {
+				XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+       <RepeatButton IsFocused=""false""/>
+</Canvas>");
+			}, "IsFocused/False/Default");
+
+			Assert.Throws<XamlParseException> (delegate {
+				XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+       <RepeatButton IsMouseOver=""true""/>
+</Canvas>");
+			}, "IsMouseOver/True");
+			Assert.Throws<XamlParseException> (delegate {
+				XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+       <RepeatButton IsMouseOver=""false""/>
+</Canvas>");
+			}, "IsMouseOver/False/Default");
+
+			Assert.Throws<XamlParseException> (delegate {
+				XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+       <RepeatButton IsPressed=""true""/>
+</Canvas>");
+			}, "IsPressed/True");
+			Assert.Throws<XamlParseException> (delegate {
+				XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+       <RepeatButton IsPressed=""false""/>
+</Canvas>");
+			}, "IsPressed/False/Default");
 		}
 	}
 }
