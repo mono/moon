@@ -1,5 +1,11 @@
 2008-12-19  Alan McGovern  <amcgovern@novell.com>
 
+	* moon-unit.mdp:
+	* System.Windows.Media.Animation/StoryboardTest.cs: Add validation +
+	tests for Storyboard.TargetNameProperty and TargetPropertyProperty
+
+2008-12-19  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ControlTemplateTest.cs: This test passes now.
 
 2008-12-18  Sebastien Pouliot  <sebastien@ximian.com> 
