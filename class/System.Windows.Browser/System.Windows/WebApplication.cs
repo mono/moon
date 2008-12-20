@@ -57,7 +57,8 @@ namespace System.Windows
 		{
 			plugin_handle = PluginHost.Handle;
 
-			string initParams = plugin_instance_get_init_params (plugin_handle);
+			IntPtr raw = Mono.NativeMethods.plugin_instance_get_init_params (plugin_handle);
+			string initParams = Marshal.PtrToStringAnsi (raw);
 			if (initParams != null) {
 				startup_args = new Dictionary<string,string> ();
 
@@ -104,36 +105,23 @@ namespace System.Windows
 
 		internal static object GetProperty (IntPtr obj, string name)
 		{
-			return GetPropertyInternal (Current.plugin_handle, obj, name);
+			throw new System.NotImplementedException (); // return GetPropertyInternal (Current.plugin_handle, obj, name);
 		}
 
 		internal static void SetProperty (IntPtr obj, string name, object value)
 		{
-			SetPropertyInternal (Current.plugin_handle, obj, name, value);
+			throw new System.NotImplementedException (); //SetPropertyInternal (Current.plugin_handle, obj, name, value);
 		}
 
 		internal static void InvokeMethod (IntPtr obj, string name, params object [] args)
 		{
-			InvokeMethodInternal (Current.plugin_handle, obj, name, args);
+			throw new System.NotImplementedException (); //InvokeMethodInternal (Current.plugin_handle, obj, name, args);
 		}
 
 		internal static T InvokeMethod<T> (IntPtr obj, string name, params object [] args)
 		{
-			return (T) InvokeMethodInternal (Current.plugin_handle, obj, name, args);
+			throw new System.NotImplementedException (); //return (T) InvokeMethodInternal (Current.plugin_handle, obj, name, args);
 		}
-
-		[DllImport ("moonplugin")]
-		static extern string plugin_instance_get_init_params (IntPtr plugin_instance);
-
-		// note that those functions do not exist
-		[DllImport ("moonplugin")]
-		static extern object GetPropertyInternal (IntPtr xpp, IntPtr obj, string name);
-
-		[DllImport ("moonplugin")]
-		static extern object SetPropertyInternal (IntPtr xpp, IntPtr obj, string name, object value);
-
-		[DllImport ("moonplugin")]
-		static extern object InvokeMethodInternal (IntPtr xpp, IntPtr obj, string name, object [] args);
 	}
 }
 

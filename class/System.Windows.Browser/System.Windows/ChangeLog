@@ -1,3 +1,9 @@
+2008-12-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+
+	* WebApplication.cs: Remove pinvokes from here, they should all go into
+	  NativeMethods. Use the correct pinvoke for
+	  plugin_instance_get_init_params, fixing a memory corruption.
+
 2008-12-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* ScriptableObjectGenerator.cs: Add support for retrieving a null
