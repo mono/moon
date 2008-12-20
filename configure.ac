@@ -111,7 +111,7 @@ if test x$with_ff2 = xyes; then
   with_mozilla=yes
   MIN_FIREFOX_VERSION="1.5"
   if test x$with_ff3 = xyes; then
-    MAX_FIREFOX_VERSION="3.0.*"
+    MAX_FIREFOX_VERSION="3.1.*"
   else
     MAX_FIREFOX_VERSION="2.0.0.*"
   fi
@@ -119,7 +119,7 @@ else
   if test x$with_ff3 = xyes; then
     with_mozilla=yes
     MIN_FIREFOX_VERSION="2.9.*"
-    MAX_FIREFOX_VERSION="3.0.*"
+    MAX_FIREFOX_VERSION="3.1.*"
   fi
 fi
 AC_SUBST([MIN_FIREFOX_VERSION])

@@ -1,3 +1,10 @@
+2008-12-20  Geoff Norton  <gnorton@novell.com>
+
+	* configure.ac: We work just fine on Firefox 3 so far, so lets
+	enable support for it in the plugin.
+
+	r: miguel
+
 2008-12-11  Jeffrey Stedfast  <fejj@novell.com>
 
 	* configure.ac: Add glib-2.0 to the dependencies for FF2 and FF3
