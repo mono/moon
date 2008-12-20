@@ -954,7 +954,7 @@ MediaElement::UpdateProgress ()
 		}
 		
 		// Emit the event if it's 100%, or a change of at least 0.05%
-		if (emit || (progress == 1.0 && current != 1.0) || (progress - current) >= 0.0005) {
+		if (emit || (progress == 1.0 && current != 1.0) || (progress - current) >= 0.05) {
 			SetBufferingProgress (progress);
 			//printf ("MediaElement::UpdateProgress (): Emitting BufferingProgressChanged: progress: %.3f, current: %.3f\n", progress, current);
 			Emit (BufferingProgressChangedEvent);
@@ -969,7 +969,7 @@ MediaElement::UpdateProgress ()
 		current = GetDownloadProgress ();
 		
 		// Emit the event if it's 100%, or a change of at least 0.05%
-		if (progress == 1.0 || (progress - current) >= 0.0005) {
+		if (progress == 1.0 || (progress - current) >= 0.05) {
 			SetDownloadProgress (progress);
 			Emit (DownloadProgressChangedEvent);
 		}

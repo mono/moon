@@ -1,3 +1,9 @@
+2008-12-20  Larry Ewing  <lewing@novell.com>
+
+	* mediaelement.cpp (MediaElement::UpdateProgress): 
+	* media.cpp (Image::UpdateProgress): Change the delta from 0.0005
+	to 0.05 which appears to be what the docs actually say.
+
 2008-12-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* cbinding.cpp|h: Regenerated for read-only DP.

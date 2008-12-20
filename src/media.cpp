@@ -326,7 +326,7 @@ Image::UpdateProgress ()
 	SetDownloadProgress (progress);
 	
 	/* only emit an event if the delta is >= 0.05% */
-	if (progress == 1.0 || (progress - current) > 0.0005)
+	if (progress == 1.0 || (progress - current) > 0.05)
 		Emit (DownloadProgressChangedEvent);
 }
 
