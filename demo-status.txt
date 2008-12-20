@@ -21,11 +21,6 @@ url:http://bubblemark.com/wpfe.htm
 rating:4
  *  Works!
 
-site:Channel 9
-url:http://channel9.msdn.com
-rating:4
- * works
-
 site:Chess Viewer 1.0
 url:http://www.vertigo.com/downloads/SilverlightChess/10RC/default.html
 rating:4
