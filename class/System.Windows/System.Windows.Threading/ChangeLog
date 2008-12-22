@@ -1,3 +1,8 @@
+2008-12-22  Andreia Gaita  <avidigal@novell.com>
+
+	* DispatcherTimer.cs: Implement DispatcherTimer using an internal
+	class (Mono.DispatcherTimer).
+
 2008-12-11  Andreia Gaita <shana@jitted.com>
 
 	* Dispatcher.cs, DispatcherOperation.cs: Implement Dispatcher. It now

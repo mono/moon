@@ -15,6 +15,14 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
+namespace Mono {
+	partial class DispatcherTimer {
+		public DispatcherTimer () : base (NativeMethods.dispatcher_timer_new ()) {}
+		internal DispatcherTimer (IntPtr raw) : base (raw) {}
+		internal override Kind GetKind () { return Kind.DISPATCHERTIMER; }
+	}
+}
+
 namespace System.Windows {
 	partial class ApplicationInternal {
 		public ApplicationInternal () : base (NativeMethods.application_new ()) {}

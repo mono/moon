@@ -33,6 +33,7 @@ system_windows_sources =							\
 	$(srcdir)/../Consts.cs							\
 	$(srcdir)/Microsoft.Internal/IManagedFrameworkInternalHelper.cs		\
 	$(srcdir)/System.IO/SimpleUnmanagedMemoryStream.cs			\
+	$(srcdir)/Mono/DispatcherTimer.cs					\
 	$(srcdir)/Mono/EventHandlerList.cs					\
 	$(srcdir)/Mono/Events.cs						\
 	$(srcdir)/Mono/GeneratedPInvokes.cs					\

@@ -18,6 +18,8 @@ namespace Mono {
 					Console.Error.WriteLine ("Types.CreateNativeTypes (): Helper.Agclr () has not been set yet.");
 					return;
 				}
+				t = agclr.GetType ("Mono.DispatcherTimer", true); 
+				types.Add (t, new ManagedType (t, Kind.DISPATCHERTIMER));
 				t = agclr.GetType ("System.Windows.ApplicationInternal", true); 
 				types.Add (t, new ManagedType (t, Kind.APPLICATION));
 				t = agclr.GetType ("System.Windows.AssemblyPart", true); 

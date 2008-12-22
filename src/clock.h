@@ -296,7 +296,7 @@ class Clock : public DependencyObject {
 	virtual void SkipToFill ();
 	virtual void Stop ();
 
-	void BeginOnTick (bool begin = true) { this->begin_on_tick = begin; }
+	void BeginOnTick (bool begin = true);
 	bool GetBeginOnTick () { return begin_on_tick; }
 	void SoftStop ();
 
@@ -309,6 +309,7 @@ class Clock : public DependencyObject {
 	virtual bool Tick ();
 	void SetParent (ClockGroup *parent) { parent_clock = parent; }
 	virtual void SetTimeManager (TimeManager *manager) { time_manager = manager; }
+	virtual void Reset ();
 
 	// Events you can AddHandler to
 	const static int CurrentTimeInvalidatedEvent;
@@ -325,8 +326,8 @@ class Clock : public DependencyObject {
 	void SetClockState (ClockState state) { this->state = state; QueueEvent (CURRENT_STATE_INVALIDATED); }
 	void SetCurrentTime (TimeSpan ts) { this->current_time = ts; QueueEvent (CURRENT_TIME_INVALIDATED); }
 	void SetSpeed (double speed) { this->speed = speed; QueueEvent (CURRENT_GLOBAL_SPEED_INVALIDATED); }
-	
-	virtual void Completed () { }
+
+	virtual void Completed ();
 	
 	// events to queue up
 	enum {
@@ -357,6 +358,7 @@ class Clock : public DependencyObject {
 
 	double repeat_count;
 	TimeSpan repeat_time;
+	TimeSpan start_time;
 
  private:
 
@@ -404,9 +406,11 @@ class ClockGroup : public Clock {
 
 	GList *child_clocks;
 
+	virtual void Reset ();
+
  protected:
 	virtual void DoRepeat (TimeSpan time);
-	virtual void Completed () { emit_completed = true; }
+	virtual void Completed ();
 	
  private:
 	TimelineGroup *timeline;
@@ -568,6 +572,10 @@ class Timeline : public DependencyObject {
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetManualTarget (DependencyObject *o) { manual_target = o; }
 
+	// events
+	const static int CompletedEvent;
+
+
  private:
 	TimelineStatus timeline_status;
 
@@ -663,6 +671,31 @@ class TimelineMarker : public DependencyObject {
 
 /* useful for timing things */
 TimeSpan get_now (void);
+
+/* @Namespace=Mono,Version=2 */
+class DispatcherTimer : public TimelineGroup {
+	Clock *root_clock;
+	static void OnTick (EventObject *sender, EventArgs *calldata, gpointer data);
+	TimelineGroup * timelinegroup;
+
+ protected:
+	virtual ~DispatcherTimer ();
+
+ public:
+	/* @GenerateCBinding,GeneratePInvoke,MainThread,Version=2 */
+	DispatcherTimer ();
+
+	virtual Type::Kind GetObjectType () { return Type::DISPATCHERTIMER; }
+
+	/* @GenerateCBinding,GeneratePInvoke,Version=2 */
+	void Start ();
+
+	/* @GenerateCBinding,GeneratePInvoke,Version=2 */
+	void Stop ();
+
+	const static int TickEvent;
+};
+
 
 G_END_DECLS
 

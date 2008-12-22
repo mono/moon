@@ -1,3 +1,7 @@
+2008-12-22  Andreia Gaita  <avidigal@novell.com>
+
+	* Makefile.am, System.Windows.mdp: Added Mono/DispatcherTimer.cs
+
 2008-12-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Makefile.am: Added new files, removed files which aren't supposed to

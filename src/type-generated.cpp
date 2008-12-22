@@ -69,6 +69,7 @@ const int Clock::CurrentGlobalSpeedInvalidatedEvent = 2;
 const int Clock::CurrentStateInvalidatedEvent = 3;
 const int Clock::CurrentTimeInvalidatedEvent = 4;
 const int Control::TemplateAppliedEvent = 16;
+const int DispatcherTimer::TickEvent = 2;
 const int Downloader::CompletedEvent = 1;
 const int Downloader::DownloadFailedEvent = 2;
 const int Downloader::DownloadProgressChangedEvent = 3;
@@ -92,13 +93,13 @@ const int MultiScaleImage::ImageOpenSucceededEvent = 19;
 const int MultiScaleImage::MotionFinishedEvent = 20;
 const int MultiScaleImage::ViewportChangedEvent = 21;
 const int PasswordBox::PasswordChangedEvent = 19;
-const int Storyboard::CompletedEvent = 1;
 const int Surface::ErrorEvent = 1;
 const int Surface::FullScreenChangeEvent = 2;
 const int Surface::LoadEvent = 3;
 const int Surface::ResizeEvent = 4;
 const int TextBox::SelectionChangedEvent = 17;
 const int TextBox::TextChangedEvent = 18;
+const int Timeline::CompletedEvent = 1;
 const int TimeManager::RenderEvent = 1;
 const int TimeManager::UpdateInputEvent = 2;
 const int TimeSource::TickEvent = 1;
@@ -117,6 +118,7 @@ const int UIElement::UnloadedEvent = 12;
 
 const char *Clock_Events [] = { "Completed", "CurrentGlobalSpeedInvalidated", "CurrentStateInvalidated", "CurrentTimeInvalidated", NULL };
 const char *Control_Events [] = { "TemplateApplied", NULL };
+const char *DispatcherTimer_Events [] = { "Tick", NULL };
 const char *Downloader_Events [] = { "Completed", "DownloadFailed", "DownloadProgressChanged", NULL };
 const char *EventObject_Events [] = { "Destroyed", NULL };
 const char *FrameworkElement_Events [] = { "BindingValidationError", "LayoutUpdated", "SizeChanged", NULL };
@@ -126,16 +128,16 @@ const char *MediaBase_Events [] = { "DownloadProgressChanged", NULL };
 const char *MediaElement_Events [] = { "BufferingProgressChanged", "CurrentStateChanged", "MarkerReached", "MediaEnded", "MediaFailed", "MediaOpened", NULL };
 const char *MultiScaleImage_Events [] = { "ImageFailed", "ImageOpenFailed", "ImageOpenSucceeded", "MotionFinished", "ViewportChanged", NULL };
 const char *PasswordBox_Events [] = { "PasswordChanged", NULL };
-const char *Storyboard_Events [] = { "Completed", NULL };
 const char *Surface_Events [] = { "Error", "FullScreenChange", "Load", "Resize", NULL };
 const char *TextBox_Events [] = { "SelectionChanged", "TextChanged", NULL };
+const char *Timeline_Events [] = { "Completed", NULL };
 const char *TimeManager_Events [] = { "Render", "UpdateInput", NULL };
 const char *TimeSource_Events [] = { "Tick", NULL };
 const char *UIElement_Events [] = { "GotFocus", "Invalidated", "KeyDown", "KeyUp", "Loaded", "LostFocus", "MouseEnter", "MouseLeave", "MouseLeftButtonDown", "MouseLeftButtonUp", "MouseMove", "Unloaded", NULL };
 
 Type type_infos [] = {
 	{ Type::INVALID, Type::INVALID, false, "INVALID", NULL, 0, 0, NULL, NULL, NULL, NULL, NULL },
-	{ Type::ANIMATION, Type::TIMELINE, false, "Animation", "ANIMATION", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
+	{ Type::ANIMATION, Type::TIMELINE, false, "Animation", "ANIMATION", 0, 2, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::ANIMATIONCLOCK, Type::CLOCK, false, "AnimationClock", "ANIMATIONCLOCK", 0, 5, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::APPLICATION, Type::DEPENDENCY_OBJECT, false, "Application", "APPLICATION", 0, 1, NULL, (create_inst_func *) application_new, NULL, NULL, NULL }, 
 	{ Type::ARCSEGMENT, Type::PATHSEGMENT, false, "ArcSegment", "ARCSEGMENT", 0, 1, NULL, (create_inst_func *) arc_segment_new, NULL, NULL, NULL }, 
@@ -155,8 +157,8 @@ Type type_infos [] = {
 	{ Type::CLOCKGROUP, Type::CLOCK, false, "ClockGroup", "CLOCKGROUP", 0, 5, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::COLLECTION, Type::DEPENDENCY_OBJECT, false, "Collection", "COLLECTION", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::COLOR, Type::OBJECT, true, "Color", "COLOR", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::COLORANIMATION, Type::ANIMATION, false, "ColorAnimation", "COLORANIMATION", 0, 1, NULL, (create_inst_func *) color_animation_new, NULL, NULL, NULL }, 
-	{ Type::COLORANIMATIONUSINGKEYFRAMES, Type::COLORANIMATION, false, "ColorAnimationUsingKeyFrames", "COLORANIMATIONUSINGKEYFRAMES", 0, 1, NULL, (create_inst_func *) color_animation_using_key_frames_new, "KeyFrames", NULL, NULL }, 
+	{ Type::COLORANIMATION, Type::ANIMATION, false, "ColorAnimation", "COLORANIMATION", 0, 2, NULL, (create_inst_func *) color_animation_new, NULL, NULL, NULL }, 
+	{ Type::COLORANIMATIONUSINGKEYFRAMES, Type::COLORANIMATION, false, "ColorAnimationUsingKeyFrames", "COLORANIMATIONUSINGKEYFRAMES", 0, 2, NULL, (create_inst_func *) color_animation_using_key_frames_new, "KeyFrames", NULL, NULL }, 
 	{ Type::COLORKEYFRAME, Type::KEYFRAME, false, "ColorKeyFrame", "COLORKEYFRAME", 0, 1, NULL, (create_inst_func *) color_key_frame_new, NULL, NULL, NULL }, 
 	{ Type::COLORKEYFRAME_COLLECTION, Type::KEYFRAME_COLLECTION, false, "ColorKeyFrameCollection", "COLORKEYFRAME_COLLECTION", 0, 1, NULL, (create_inst_func *) color_key_frame_collection_new, NULL, NULL, NULL }, 
 	{ Type::COLUMNDEFINITION, Type::DEPENDENCY_OBJECT, false, "ColumnDefinition", "COLUMNDEFINITION", 0, 1, NULL, (create_inst_func *) column_definition_new, NULL, NULL, NULL }, 
@@ -175,10 +177,11 @@ Type type_infos [] = {
 	{ Type::DISCRETEDOUBLEKEYFRAME, Type::DOUBLEKEYFRAME, false, "DiscreteDoubleKeyFrame", "DISCRETEDOUBLEKEYFRAME", 0, 1, NULL, (create_inst_func *) discrete_double_key_frame_new, NULL, NULL, NULL }, 
 	{ Type::DISCRETEOBJECTKEYFRAME, Type::OBJECTKEYFRAME, false, "DiscreteObjectKeyFrame", "DISCRETEOBJECTKEYFRAME", 0, 1, NULL, (create_inst_func *) discrete_object_key_frame_new, NULL, NULL, NULL }, 
 	{ Type::DISCRETEPOINTKEYFRAME, Type::POINTKEYFRAME, false, "DiscretePointKeyFrame", "DISCRETEPOINTKEYFRAME", 0, 1, NULL, (create_inst_func *) discrete_point_key_frame_new, NULL, NULL, NULL }, 
+	{ Type::DISPATCHERTIMER, Type::TIMELINEGROUP, false, "DispatcherTimer", "DISPATCHERTIMER", 1, 3, DispatcherTimer_Events, (create_inst_func *) dispatcher_timer_new, NULL, NULL, NULL }, 
 	{ Type::DOUBLE, Type::OBJECT, false, "double", "DOUBLE", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::DOUBLE_COLLECTION, Type::COLLECTION, false, "DoubleCollection", "DOUBLE_COLLECTION", 0, 1, NULL, (create_inst_func *) double_collection_new, NULL, NULL, NULL }, 
-	{ Type::DOUBLEANIMATION, Type::ANIMATION, false, "DoubleAnimation", "DOUBLEANIMATION", 0, 1, NULL, (create_inst_func *) double_animation_new, NULL, NULL, NULL }, 
-	{ Type::DOUBLEANIMATIONUSINGKEYFRAMES, Type::DOUBLEANIMATION, false, "DoubleAnimationUsingKeyFrames", "DOUBLEANIMATIONUSINGKEYFRAMES", 0, 1, NULL, (create_inst_func *) double_animation_using_key_frames_new, "KeyFrames", NULL, NULL }, 
+	{ Type::DOUBLEANIMATION, Type::ANIMATION, false, "DoubleAnimation", "DOUBLEANIMATION", 0, 2, NULL, (create_inst_func *) double_animation_new, NULL, NULL, NULL }, 
+	{ Type::DOUBLEANIMATIONUSINGKEYFRAMES, Type::DOUBLEANIMATION, false, "DoubleAnimationUsingKeyFrames", "DOUBLEANIMATIONUSINGKEYFRAMES", 0, 2, NULL, (create_inst_func *) double_animation_using_key_frames_new, "KeyFrames", NULL, NULL }, 
 	{ Type::DOUBLEKEYFRAME, Type::KEYFRAME, false, "DoubleKeyFrame", "DOUBLEKEYFRAME", 0, 1, NULL, (create_inst_func *) double_key_frame_new, NULL, NULL, NULL }, 
 	{ Type::DOUBLEKEYFRAME_COLLECTION, Type::KEYFRAME_COLLECTION, false, "DoubleKeyFrameCollection", "DOUBLEKEYFRAME_COLLECTION", 0, 1, NULL, (create_inst_func *) double_key_frame_collection_new, NULL, NULL, NULL }, 
 	{ Type::DOWNLOADER, Type::DEPENDENCY_OBJECT, false, "Downloader", "DOWNLOADER", 3, 4, Downloader_Events, (create_inst_func *) downloader_new, NULL, NULL, NULL }, 
@@ -242,11 +245,11 @@ Type type_infos [] = {
 	{ Type::NAMESCOPE, Type::DEPENDENCY_OBJECT, false, "NameScope", "NAMESCOPE", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::NPOBJ, Type::OBJECT, false, "NPObj", "NPOBJ", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::OBJECT, Type::INVALID, false, "object", "OBJECT", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::OBJECTANIMATIONUSINGKEYFRAMES, Type::ANIMATION, false, "ObjectAnimationUsingKeyFrames", "OBJECTANIMATIONUSINGKEYFRAMES", 0, 1, NULL, (create_inst_func *) object_animation_using_key_frames_new, "KeyFrames", NULL, NULL }, 
+	{ Type::OBJECTANIMATIONUSINGKEYFRAMES, Type::ANIMATION, false, "ObjectAnimationUsingKeyFrames", "OBJECTANIMATIONUSINGKEYFRAMES", 0, 2, NULL, (create_inst_func *) object_animation_using_key_frames_new, "KeyFrames", NULL, NULL }, 
 	{ Type::OBJECTKEYFRAME, Type::KEYFRAME, false, "ObjectKeyFrame", "OBJECTKEYFRAME", 0, 1, NULL, (create_inst_func *) object_key_frame_new, NULL, NULL, NULL }, 
 	{ Type::OBJECTKEYFRAME_COLLECTION, Type::KEYFRAME_COLLECTION, false, "ObjectKeyFrameCollection", "OBJECTKEYFRAME_COLLECTION", 0, 1, NULL, (create_inst_func *) object_key_frame_collection_new, NULL, NULL, NULL }, 
 	{ Type::PANEL, Type::FRAMEWORKELEMENT, false, "Panel", "PANEL", 0, 16, NULL, (create_inst_func *) panel_new, "Children", NULL, NULL }, 
-	{ Type::PARALLELTIMELINE, Type::TIMELINEGROUP, false, "ParallelTimeline", "PARALLELTIMELINE", 0, 1, NULL, (create_inst_func *) parallel_timeline_new, NULL, NULL, NULL }, 
+	{ Type::PARALLELTIMELINE, Type::TIMELINEGROUP, false, "ParallelTimeline", "PARALLELTIMELINE", 0, 2, NULL, (create_inst_func *) parallel_timeline_new, NULL, NULL, NULL }, 
 	{ Type::PARSERERROREVENTARGS, Type::ERROREVENTARGS, false, "ParserErrorEventArgs", "PARSERERROREVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::PASSWORDBOX, Type::TEXTBOX, false, "PasswordBox", "PASSWORDBOX", 1, 20, PasswordBox_Events, (create_inst_func *) password_box_new, NULL, NULL, NULL }, 
 	{ Type::PATH, Type::SHAPE, false, "Path", "PATH", 0, 16, NULL, (create_inst_func *) path_new, NULL, NULL, NULL }, 
@@ -257,8 +260,8 @@ Type type_infos [] = {
 	{ Type::PATHSEGMENT_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "PathSegmentCollection", "PATHSEGMENT_COLLECTION", 0, 1, NULL, (create_inst_func *) path_segment_collection_new, NULL, NULL, NULL }, 
 	{ Type::POINT, Type::OBJECT, true, "Point", "POINT", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::POINT_COLLECTION, Type::COLLECTION, false, "PointCollection", "POINT_COLLECTION", 0, 1, NULL, (create_inst_func *) point_collection_new, NULL, NULL, NULL }, 
-	{ Type::POINTANIMATION, Type::ANIMATION, false, "PointAnimation", "POINTANIMATION", 0, 1, NULL, (create_inst_func *) point_animation_new, NULL, NULL, NULL }, 
-	{ Type::POINTANIMATIONUSINGKEYFRAMES, Type::POINTANIMATION, false, "PointAnimationUsingKeyFrames", "POINTANIMATIONUSINGKEYFRAMES", 0, 1, NULL, (create_inst_func *) point_animation_using_key_frames_new, "KeyFrames", NULL, NULL }, 
+	{ Type::POINTANIMATION, Type::ANIMATION, false, "PointAnimation", "POINTANIMATION", 0, 2, NULL, (create_inst_func *) point_animation_new, NULL, NULL, NULL }, 
+	{ Type::POINTANIMATIONUSINGKEYFRAMES, Type::POINTANIMATION, false, "PointAnimationUsingKeyFrames", "POINTANIMATIONUSINGKEYFRAMES", 0, 2, NULL, (create_inst_func *) point_animation_using_key_frames_new, "KeyFrames", NULL, NULL }, 
 	{ Type::POINTKEYFRAME, Type::KEYFRAME, false, "PointKeyFrame", "POINTKEYFRAME", 0, 1, NULL, (create_inst_func *) point_key_frame_new, NULL, NULL, NULL }, 
 	{ Type::POINTKEYFRAME_COLLECTION, Type::KEYFRAME_COLLECTION, false, "PointKeyFrameCollection", "POINTKEYFRAME_COLLECTION", 0, 1, NULL, (create_inst_func *) point_key_frame_collection_new, NULL, NULL, NULL }, 
 	{ Type::POLYBEZIERSEGMENT, Type::PATHSEGMENT, false, "PolyBezierSegment", "POLYBEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) poly_bezier_segment_new, NULL, NULL, NULL }, 
@@ -292,7 +295,7 @@ Type type_infos [] = {
 	{ Type::SPLINEDOUBLEKEYFRAME, Type::DOUBLEKEYFRAME, false, "SplineDoubleKeyFrame", "SPLINEDOUBLEKEYFRAME", 0, 1, NULL, (create_inst_func *) spline_double_key_frame_new, NULL, NULL, NULL }, 
 	{ Type::SPLINEPOINTKEYFRAME, Type::POINTKEYFRAME, false, "SplinePointKeyFrame", "SPLINEPOINTKEYFRAME", 0, 1, NULL, (create_inst_func *) spline_point_key_frame_new, NULL, NULL, NULL }, 
 	{ Type::STACKPANEL, Type::PANEL, false, "StackPanel", "STACKPANEL", 0, 16, NULL, (create_inst_func *) stack_panel_new, NULL, NULL, NULL }, 
-	{ Type::STORYBOARD, Type::PARALLELTIMELINE, false, "Storyboard", "STORYBOARD", 1, 2, Storyboard_Events, (create_inst_func *) storyboard_new, "Children", NULL, NULL }, 
+	{ Type::STORYBOARD, Type::PARALLELTIMELINE, false, "Storyboard", "STORYBOARD", 0, 2, NULL, (create_inst_func *) storyboard_new, "Children", NULL, NULL }, 
 	{ Type::STRING, Type::OBJECT, false, "char*", "STRING", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::STROKE, Type::DEPENDENCY_OBJECT, false, "Stroke", "STROKE", 0, 1, NULL, (create_inst_func *) stroke_new, NULL, NULL, NULL }, 
 	{ Type::STROKE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "StrokeCollection", "STROKE_COLLECTION", 0, 1, NULL, (create_inst_func *) stroke_collection_new, NULL, NULL, NULL }, 
@@ -307,9 +310,9 @@ Type type_infos [] = {
 	{ Type::TEXTCHANGEDEVENTARGS, Type::ROUTEDEVENTARGS, false, "TextChangedEventArgs", "TEXTCHANGEDEVENTARGS", 0, 1, NULL, (create_inst_func *) text_changed_event_args_new, NULL, NULL, NULL }, 
 	{ Type::THICKNESS, Type::OBJECT, true, "Thickness", "THICKNESS", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::TILEBRUSH, Type::BRUSH, false, "TileBrush", "TILEBRUSH", 0, 1, NULL, (create_inst_func *) tile_brush_new, NULL, NULL, NULL }, 
-	{ Type::TIMELINE, Type::DEPENDENCY_OBJECT, false, "Timeline", "TIMELINE", 0, 1, NULL, (create_inst_func *) timeline_new, NULL, NULL, NULL }, 
+	{ Type::TIMELINE, Type::DEPENDENCY_OBJECT, false, "Timeline", "TIMELINE", 1, 2, Timeline_Events, (create_inst_func *) timeline_new, NULL, NULL, NULL }, 
 	{ Type::TIMELINE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "TimelineCollection", "TIMELINE_COLLECTION", 0, 1, NULL, (create_inst_func *) timeline_collection_new, NULL, NULL, NULL }, 
-	{ Type::TIMELINEGROUP, Type::TIMELINE, false, "TimelineGroup", "TIMELINEGROUP", 0, 1, NULL, (create_inst_func *) timeline_group_new, NULL, NULL, NULL }, 
+	{ Type::TIMELINEGROUP, Type::TIMELINE, false, "TimelineGroup", "TIMELINEGROUP", 0, 2, NULL, (create_inst_func *) timeline_group_new, NULL, NULL, NULL }, 
 	{ Type::TIMELINEMARKER, Type::DEPENDENCY_OBJECT, false, "TimelineMarker", "TIMELINEMARKER", 0, 1, NULL, (create_inst_func *) timeline_marker_new, NULL, NULL, NULL }, 
 	{ Type::TIMELINEMARKER_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "TimelineMarkerCollection", "TIMELINEMARKER_COLLECTION", 0, 1, NULL, (create_inst_func *) timeline_marker_collection_new, NULL, NULL, NULL }, 
 	{ Type::TIMEMANAGER, Type::EVENTOBJECT, false, "TimeManager", "TIMEMANAGER", 2, 3, TimeManager_Events, NULL, NULL, NULL, NULL }, 

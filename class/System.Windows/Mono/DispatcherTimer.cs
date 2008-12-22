@@ -10,10 +10,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -24,71 +24,42 @@
 //
 
 using System;
-using System.Security;
-using Mono;
-using System.Windows.Interop;
+using System.Windows.Media.Animation;
 
-namespace System.Windows.Threading {
+namespace Mono
+{
+	internal partial class DispatcherTimer : Timeline
+	{
+		public System.Windows.Threading.DispatcherTimer managedTimer;
 
-	public class DispatcherTimer {
-		Mono.DispatcherTimer internalTimer;
+		static UnmanagedEventHandler tick_proxy = new UnmanagedEventHandler (UnmanagedTick);
 
-		private TimeSpan interval;
-		bool started;
-		NativeMethods.GSourceFunc callback;
-
-		public DispatcherTimer ()
+		private static void UnmanagedTick (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			internalTimer = new Mono.DispatcherTimer ();
-			internalTimer.managedTimer = this;
+			Mono.DispatcherTimer timer = (Mono.DispatcherTimer) Helper.GCHandleFromIntPtr (closure).Target;
+			timer.OnTick ();
 		}
 
-		~DispatcherTimer ()
+		private void OnTick ()
 		{
-			internalTimer = null;
-		}
-
-		[SecuritySafeCritical]
-		public void Start ()
-		{
-			if (!started) {
-				started = true;
-				Mono.NativeMethods.dispatcher_timer_start (internalTimer.native);
+			EventHandler h = (EventHandler)events[TickEvent];
+			if (h != null) {
+				h (this, EventArgs.Empty);
 			}
-
-		}
-
-		[SecuritySafeCritical]
-		public void Stop ()
-		{
-			if (started) {
-				started = false;
-				Mono.NativeMethods.dispatcher_timer_stop (internalTimer.native);
-			}
-		}
-
-		public TimeSpan Interval {
-			[SecuritySafeCritical]
-			get { return internalTimer.Duration.TimeSpan; }
-
-			[SecuritySafeCritical]
-			set {  internalTimer.Duration = new Duration (value); }
-		}
-
-		public bool IsEnabled {
-			get { return started; }
 		}
 
 		static object TickEvent = new object ();
 		public event EventHandler Tick {
 			add {
-				internalTimer.Tick += value;
+				if (events[TickEvent] == null)
+					Events.AddHandler (this, "Tick", tick_proxy);
+				events.AddHandler (TickEvent, value);
 			}
 			remove {
-				internalTimer.Tick -= value;
+				events.RemoveHandler (TickEvent, value);
+				if (events[TickEvent] == null)
+					Events.RemoveHandler (this, "Tick", tick_proxy);
 			}
 		}
-
 	}
-
 }

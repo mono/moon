@@ -625,7 +625,9 @@ output_clock (Clock *clock, int level)
 		printf ("'%s' ", clock->GetName());
 	}
 
-	printf ("%lld / %lld (%.2f) ", clock->GetCurrentTime(), clock->GetNaturalDuration().GetTimeSpan(), clock->GetCurrentProgress());
+	// getting the natural duration here upsets the clock, so let's not
+	// printf ("%lld / %lld (%.2f) ", clock->GetCurrentTime(), clock->GetNaturalDuration().GetTimeSpan(), clock->GetCurrentProgress());
+	printf ("%lld (%.2f) ", clock->GetCurrentTime(), clock->GetCurrentProgress());
 
 	printf ("%lld ", clock->GetBeginTime());
 
@@ -694,6 +696,8 @@ Clock::Clock (Timeline *tl)
 	begin_time = -1;
 	begin_on_tick = false;
 
+	start_time = 0;
+
 	if (timeline->HasBeginTime ())
 		begintime = timeline->GetBeginTime ();
 	/* otherwise it's filled in when we Begin the clock */
@@ -702,12 +706,18 @@ Clock::Clock (Timeline *tl)
 TimeSpan
 Clock::GetParentTime ()
 {
+	if (parent_clock && time_manager && parent_clock == time_manager->GetRootClock ())
+		return parent_clock->GetCurrentTime () - start_time;
+
 	return parent_clock ? parent_clock->GetCurrentTime() : time_manager ? time_manager->GetCurrentTime () : 0LL;
 }
 
 TimeSpan
 Clock::GetLastParentTime ()
 {
+	if (parent_clock && time_manager && parent_clock == time_manager->GetRootClock ())
+		return parent_clock->GetLastTime () - start_time;
+
 	return parent_clock ? parent_clock->GetLastTime() : time_manager ? time_manager->GetLastTime () : 0LL;
 }
 
@@ -923,6 +933,13 @@ Clock::DoRepeat (TimeSpan time)
 }
 
 void
+Clock::BeginOnTick (bool begin)
+{
+	begin_on_tick = begin;
+	start_time = GetParentTime ();
+}
+
+void
 Clock::RaiseAccumulatedEvents ()
 {
 	if ((queued_events & CURRENT_TIME_INVALIDATED) != 0) {
@@ -958,6 +975,9 @@ Clock::Begin ()
 	was_stopped = false;
 	is_paused = false;
 	forward = true;
+
+	if (start_time == 0)
+		start_time = GetParentTime ();
 
 	/* we're starting.  initialize our current_time field */
 	SetCurrentTime ((GetParentTime() - GetBeginTime ()) * timeline->GetSpeedRatio ());
@@ -1123,6 +1143,27 @@ Clock::Stop ()
 #endif
 	SetClockState (Clock::Stopped);
 	was_stopped = true;
+}
+
+void
+Clock::Reset ()
+{
+	calculated_natural_duration = false;
+	state = Clock::Stopped;
+	progress = 0.0;
+	current_time = 0;
+	last_time = 0;
+	seeking = false;
+	seek_time = 0;
+	begin_time = -1;
+	begin_on_tick = false;
+	forward = true;
+	start_time = 0;
+}
+
+void
+Clock::Completed ()
+{
 }
 
 ClockGroup::ClockGroup (TimelineGroup *timeline, bool never_f)
@@ -1324,7 +1365,7 @@ ClockGroup::DoRepeat (TimeSpan time)
 	Clock::DoRepeat (time);
 
 	BeginOnTick (true);
-	
+
 	for (GList *l = child_clocks; l; l = l->next) {
 		Clock *c = (Clock*)l->data;
 		if (! seeking)
@@ -1355,6 +1396,20 @@ ClockGroup::RaiseAccumulatedCompleted ()
 		emit_completed = false;
 		Emit (CompletedEvent);
 	}
+}
+
+void
+ClockGroup::Reset ()
+{
+	Clock::Reset ();
+	emit_completed = false;
+}
+
+void
+ClockGroup::Completed ()
+{
+	emit_completed = true;
+	start_time = -1;
 }
 
 ClockGroup::~ClockGroup ()
@@ -1569,4 +1624,60 @@ ParallelTimeline::GetNaturalDurationCore (Clock *clock)
 	}
 
 	return d;
+}
+
+DispatcherTimer::DispatcherTimer ()
+{
+	root_clock = NULL;
+}
+
+void
+DispatcherTimer::Start ()
+{
+	if (root_clock)
+		Stop ();
+
+	GList *l = g_list_first (runtime_get_surface_list ());
+	if (l == NULL)
+		return; // do what if there's no surface?
+
+	Surface *surface = static_cast<Surface*> (l->data);
+
+	root_clock = TimelineGroup::AllocateClock ();
+	char *name = g_strdup_printf ("DispatcherTimer (%p)", this);
+	root_clock->SetValue (DependencyObject::NameProperty, name);
+	g_free (name);
+	root_clock->AddHandler (root_clock->CompletedEvent, OnTick, this);
+
+	ClockGroup * group = surface->GetTimeManager()->GetRootClock();
+	group->AddChild (root_clock);
+
+	root_clock->BeginOnTick ();
+}
+
+void
+DispatcherTimer::Stop ()
+{
+	if (root_clock) {
+		root_clock->RemoveHandler (root_clock->CompletedEvent, OnTick, this);
+		ClockGroup *group = root_clock->GetParent();
+		if (group)
+			group->RemoveChild (root_clock);
+		root_clock->unref ();
+		root_clock = NULL;
+	}
+}
+void
+DispatcherTimer::OnTick (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	DispatcherTimer *obj = (DispatcherTimer *) closure;
+	obj->Emit (obj->TickEvent);
+	obj->root_clock->Reset ();
+	obj->root_clock->Begin ();
+}
+
+DispatcherTimer::~DispatcherTimer ()
+{
+	if (root_clock)
+		Stop ();
 }

@@ -861,15 +861,10 @@ class Storyboard : public ParallelTimeline {
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Stop ();
 	
-	// XXX event Completed
-	
 	static void SetTargetName (DependencyObject *o, const char *targetName);
 	static const char *GetTargetName (DependencyObject *o);
 	static void SetTargetProperty (DependencyObject *o, const char *targetProperty);
 	static const char *GetTargetProperty (DependencyObject *o);
-	
-	// events you can AddHandler to
-	const static int CompletedEvent;
 };
 
 /* @Namespace=System.Windows.Media.Animation */

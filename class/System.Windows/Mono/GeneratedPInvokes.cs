@@ -576,6 +576,18 @@ namespace Mono {
 		public extern static IntPtr discrete_point_key_frame_new ();
 
 		[DllImport ("moon")]
+		// DispatcherTimer *dispatcher_timer_new ();
+		public extern static IntPtr dispatcher_timer_new ();
+
+		[DllImport ("moon")]
+		// void dispatcher_timer_start (DispatcherTimer *instance);
+		public extern static void dispatcher_timer_start (IntPtr instance);
+
+		[DllImport ("moon")]
+		// void dispatcher_timer_stop (DispatcherTimer *instance);
+		public extern static void dispatcher_timer_stop (IntPtr instance);
+
+		[DllImport ("moon")]
 		// DoubleAnimation *double_animation_new ();
 		public extern static IntPtr double_animation_new ();
 

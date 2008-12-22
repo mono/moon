@@ -81,6 +81,7 @@ class DiscreteColorKeyFrame;
 class DiscreteDoubleKeyFrame;
 class DiscreteObjectKeyFrame;
 class DiscretePointKeyFrame;
+class DispatcherTimer;
 class DoubleCollection;
 class DoubleAnimation;
 class DoubleAnimationUsingKeyFrames;
@@ -329,6 +330,7 @@ public:
 	DiscreteDoubleKeyFrame*        AsDiscreteDoubleKeyFrame () { checked_get_subclass (Type::DISCRETEDOUBLEKEYFRAME, DiscreteDoubleKeyFrame) }
 	DiscreteObjectKeyFrame*        AsDiscreteObjectKeyFrame () { checked_get_subclass (Type::DISCRETEOBJECTKEYFRAME, DiscreteObjectKeyFrame) }
 	DiscretePointKeyFrame*         AsDiscretePointKeyFrame () { checked_get_subclass (Type::DISCRETEPOINTKEYFRAME, DiscretePointKeyFrame) }
+	DispatcherTimer*               AsDispatcherTimer () { checked_get_subclass (Type::DISPATCHERTIMER, DispatcherTimer) }
 	DoubleCollection*              AsDoubleCollection () { checked_get_subclass (Type::DOUBLE_COLLECTION, DoubleCollection) }
 	DoubleAnimation*               AsDoubleAnimation () { checked_get_subclass (Type::DOUBLEANIMATION, DoubleAnimation) }
 	DoubleAnimationUsingKeyFrames* AsDoubleAnimationUsingKeyFrames () { checked_get_subclass (Type::DOUBLEANIMATIONUSINGKEYFRAMES, DoubleAnimationUsingKeyFrames) }

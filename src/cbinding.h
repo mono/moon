@@ -483,6 +483,18 @@ DiscreteObjectKeyFrame *discrete_object_key_frame_new (void);
 DiscretePointKeyFrame *discrete_point_key_frame_new (void);
 
 /**
+ * DispatcherTimer
+ **/
+/* @GeneratePInvoke */
+DispatcherTimer *dispatcher_timer_new (void);
+
+/* @GeneratePInvoke */
+void dispatcher_timer_start (DispatcherTimer *instance);
+
+/* @GeneratePInvoke */
+void dispatcher_timer_stop (DispatcherTimer *instance);
+
+/**
  * DoubleAnimation
  **/
 /* @GeneratePInvoke */

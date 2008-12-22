@@ -1119,6 +1119,36 @@ discrete_point_key_frame_new (void)
 
 
 /**
+ * DispatcherTimer
+ **/
+DispatcherTimer *
+dispatcher_timer_new (void)
+{
+	return new DispatcherTimer ();
+}
+
+
+void
+dispatcher_timer_start (DispatcherTimer *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->Start ();
+}
+
+
+void
+dispatcher_timer_stop (DispatcherTimer *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->Stop ();
+}
+
+
+/**
  * DoubleAnimation
  **/
 DoubleAnimation *

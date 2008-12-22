@@ -1,3 +1,20 @@
+2008-12-22  Andreia Gaita  <avidigal@novell.com>
+
+	* cbinding.h|cpp, type-generated.cpp, type.h, value.h:
+	Regenerated for DispatcherTimer
+
+	* animation.h: Move Completed events to the timeline
+
+	* clock.h|cpp: Add DispatcherTimer class, a timeline to drive a
+	clock whose duration is the timer Interval property. The timeline's
+	completed event is a tick of the timer, and the clock gets restarted
+	when it completes.
+	Save the current time when a clock starts so that clocks that are
+	set to be started on the next tick with BeginOnTick include the time
+	between the BeginOnTick call and the actual Begin in their elapsed
+	time. Also, clocks beneath the time manager root clock now track time
+	since they were started, and not since the time manager started.
+
 2008-12-20  Larry Ewing  <lewing@novell.com>
 
 	* mediaelement.cpp (MediaElement::UpdateProgress): 
