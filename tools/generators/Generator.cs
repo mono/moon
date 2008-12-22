@@ -1708,6 +1708,11 @@ class Generator {
 			text.Append (name);
 		}
 		text.AppendLine ("\")]");
+
+		if (method.ReturnType.Value == "bool") {
+			text.Append (tabs);
+			text.AppendLine ("[return: MarshalAs (UnmanagedType.U1)]");
+		}
 		
 		// Always output the native signature too, makes it easier to check if the generation is wrong.
 		text.Append ("\t\t// ");

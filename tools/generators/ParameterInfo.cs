@@ -22,6 +22,11 @@ class ParameterInfo : MemberInfo {
 	
 	public void WriteSignature (StringBuilder text, SignatureType type)
 	{
+		if (type == SignatureType.PInvoke) {
+			if (ParameterType.Value == "bool")
+				text.Append ("[MarshalAs (UnmanagedType.U1)] ");
+		}
+
 		ParameterType.Write (text, type);
 		if (type != SignatureType.Native || !ParameterType.IsPointer)
 			text.Append (" ");

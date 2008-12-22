@@ -1,3 +1,9 @@
+2008-12-22  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Generator.cs, ParameterInfo.cs: The 'bool' we expose in our C 
+	API comes from C++ which use 1 byte for boolean. C# use 4 bytes so 
+	the values needs to be marshalled.
+
 2008-12-19  Chris Toshok  <toshok@ximian.com>
 
 	* TypeReference.cs: get rid of the Unmanaged* struct types where
