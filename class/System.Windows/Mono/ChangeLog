@@ -1,3 +1,7 @@
+2008-12-22  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* GeneratedPInvokes.cs: Regenerated for bool size.
+
 2008-12-22  Alan McGovern  <amcgovern@novell.com>
 
 	* Value.cs: unused_padding is now used as a bitfield. Currently used to
