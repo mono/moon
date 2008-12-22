@@ -103,7 +103,6 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void InvalidValues()
 		{
 			ConcreteFrameworkElement f = new ConcreteFrameworkElement ();

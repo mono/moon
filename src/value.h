@@ -262,6 +262,9 @@ public:
 	static Value* CreateUnrefPtr (DependencyObject* dob);
 	static Value  CreateUnref (DependencyObject* dob);
 
+	bool GetIsNull ();
+	void SetIsNull (bool isNull);
+
 	bool operator!= (const Value &v) const;
 	bool operator== (const Value &v) const;
 	

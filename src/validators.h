@@ -15,11 +15,15 @@
 
 #include "value.h"
 #include "error.h"
+#include "thickness.h"
+#include "cornerradius.h"
 
 class Validators
 {
 public:
 	static bool default_validator (Value *value, MoonError *error);
+	static bool BorderThicknessValidator (Value *value, MoonError *error);
+	static bool CornerRadiusValidator (Value *value, MoonError *error);
 	static bool PositiveIntValidator (Value *value, MoonError *error);
 	static bool IntGreaterThanZeroValidator (Value *value, MoonError *error);
 	static bool NonNullStringValidator (Value *value, MoonError *error);

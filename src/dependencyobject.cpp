@@ -969,6 +969,7 @@ bool
 DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error)
 {
 	Value *current_value = (Value*)g_hash_table_lookup (current_values, property);
+
 	bool equal = false;
 	
 	if (current_value != NULL && value != NULL) {
@@ -1022,7 +1023,7 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 
 		listeners_notified = false;
 
-		PropertyChangedEventArgs args (property, current_value, new_value ? new_value : GetDefaultValue (property));
+		PropertyChangedEventArgs args (property, current_value, new_value);
 
 		OnPropertyChanged (&args);
 
@@ -1173,7 +1174,7 @@ DependencyObject::GetValue (DependencyProperty *property)
 	
 	if (g_hash_table_lookup_extended (current_values, property, NULL, &value))
 		return (Value *) value;
-	
+
 	return GetDefaultValue (property);
 }
 
@@ -1215,6 +1216,7 @@ void
 DependencyObject::ClearValue (DependencyProperty *property, bool notify_listeners)
 {
 	Value *current_value = GetValueNoDefault (property);
+	printf ("current value is: %p\n", current_value);
 
 	if (current_value == NULL) {
 		/* the property has the default value, nothing to do */
@@ -1235,8 +1237,9 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 		}
 	}
 
+	printf ("Removing");
 	g_hash_table_remove (current_values, property);
-
+	printf ("Removed");
 	// we need to make this optional, as doing it for NameScope
 	// merging is killing performance (and noone should ever care
 	// about that property changing)
@@ -1252,10 +1255,10 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 				   Type::Find(property->GetOwnerType())->GetName (), property->GetName(), GetTypeName ());
 	}
 
-		if (property && property->GetChangedCallback () != NULL) {
-			NativePropertyChangedHandler *callback = property->GetChangedCallback ();
-			callback (property, this, current_value, NULL);
-		}
+	if (property && property->GetChangedCallback () != NULL) {
+		NativePropertyChangedHandler *callback = property->GetChangedCallback ();
+		callback (property, this, current_value, NULL);
+	}
 
 	delete current_value;
 }

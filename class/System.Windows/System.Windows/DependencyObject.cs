@@ -381,8 +381,10 @@ namespace System.Windows {
 			if (value == null) {
 				if (dp.PropertyType.IsValueType && !dp.IsNullable)
 					throw new System.ArgumentException (string.Format ("null is not a valid value for '{0}'.", dp.Name));
-				
-				NativeMethods.dependency_object_clear_value (native, dp.Native, true);
+
+				Console.WriteLine ("Kind: {0}", NativeMethods.dependency_property_get_property_type(dp.Native));
+				v = new Value { k = NativeMethods.dependency_property_get_property_type(dp.Native), IsNull = true };
+				NativeMethods.dependency_object_set_value (native, dp.Native, ref v);
 				return;
 			}
 

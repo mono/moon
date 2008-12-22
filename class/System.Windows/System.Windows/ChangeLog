@@ -1,3 +1,8 @@
+2008-12-22  Alan McGovern  <amcgovern@novell.com>
+
+	* DependencyObject.cs: When do.SetValue (dp, null) is called, correctly
+	set the null value as opposed to calling do.ClearValue(dp).
+
 2008-12-22  Andreia Gaita  <avidigal@novell.com>
 
 	* DependencyObject.g.cs: Regenerated for DispatcherTimer

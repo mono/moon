@@ -32,6 +32,8 @@
  * Value implementation
  */
 
+static const int NullFlag = 1;
+    
 Value*
 Value::CreateUnrefPtr (DependencyObject* dob)
 {
@@ -54,9 +56,25 @@ Value::GetKind ()
 	return k;
 }
 
+bool
+Value::GetIsNull ()
+{
+	return padding & NullFlag == NullFlag;
+}
+
+void
+Value::SetIsNull (bool isNull)
+{
+	if (isNull)
+		padding |= NullFlag;
+	else
+		padding &= ~NullFlag;
+}
+
 void
 Value::Init ()
 {
+	padding = 0;
 	memset (&u, 0, sizeof (u));
 }
 
@@ -68,6 +86,7 @@ Value::Value()
 
 Value::Value (const Value& v)
 {
+	padding = v.padding;
 	k = v.k;
 	u = v.u;
 
@@ -381,6 +400,9 @@ bool
 Value::operator== (const Value &v) const
 {
 	if (k != v.k)
+		return false;
+	
+	if (padding != v.padding)
 		return false;
 
 	switch (k) {

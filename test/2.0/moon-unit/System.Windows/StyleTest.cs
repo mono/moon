@@ -101,7 +101,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void NullLocalValue ()
 		{
 			Brush blue = new SolidColorBrush(Colors.Blue);

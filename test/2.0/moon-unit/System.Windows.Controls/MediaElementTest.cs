@@ -69,13 +69,12 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void TestInvalidValues()
 		{
 			MediaElement m = new MediaElement();
 			Assert.Throws<Exception>(delegate {
 				m.SetValue (MediaElement.AttributesProperty, null);
-			});
+			}, "#1");
 			m.AudioStreamIndex = -1;
 			Assert.IsNull(m.AudioStreamIndex);
 			m.AudioStreamIndex = int.MaxValue;
@@ -83,9 +82,9 @@ namespace MoonTest.System.Windows.Controls
 			m.Balance = -10000;
 			m.Balance = 10000;
 			m.BufferingTime = TimeSpan.FromSeconds(-1000);
-			Assert.Throws<Exception>(delegate { m.BufferingTime = TimeSpan.MaxValue; });
+			Assert.Throws<Exception>(delegate { m.BufferingTime = TimeSpan.MaxValue; }, "#2");
 			m.BufferingTime = TimeSpan.FromSeconds(1000);
-			Assert.Throws<ArgumentNullException>(delegate { m.LicenseAcquirer = null; });
+			Assert.Throws<ArgumentNullException>(delegate { m.LicenseAcquirer = null; }, "#3");
 			m.Position = TimeSpan.FromSeconds(-100);
 			Assert.AreEqual(TimeSpan.Zero, m.Position);
 			m.Position = TimeSpan.FromSeconds(1000000);

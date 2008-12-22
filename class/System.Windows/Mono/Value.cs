@@ -52,9 +52,22 @@ namespace Mono {
 	}
 
 	internal struct Value {
+		// Note: Keep these flags in sync with the native version
+		const int NullFlag = 1;
+		
 		public Kind k;
-		public int unused_padding;
+		public int bitfield;
 		public ValUnion u;
+
+		public bool IsNull {
+			get { return (bitfield & NullFlag) == NullFlag; }
+			set {
+				if (value)
+					bitfield |= NullFlag;
+				else
+					bitfield &= ~NullFlag;
+			}
+		}
 
 		public static Value Empty {
 			get { return new Value (); }
@@ -69,7 +82,10 @@ namespace Mono {
 			
 			unsafe {
 				Value *val = (Value *) value;
-				
+
+				if (val->IsNull) {
+					return null;
+				}
 				switch (val->k) {
 				case Kind.INVALID:
 					return null;

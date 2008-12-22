@@ -1,3 +1,8 @@
+2008-12-22  Alan McGovern  <amcgovern@novell.com>
+
+	* Value.cs: unused_padding is now used as a bitfield. Currently used to
+	indicate whether an object is null or not
+
 2008-12-22  Andreia Gaita  <avidigal@novell.com>
 
 	* DispatcherTimer.cs: Added. Internal timeline class used to drive

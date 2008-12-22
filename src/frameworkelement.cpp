@@ -138,14 +138,14 @@ FrameworkElement::ClearValue (DependencyProperty *property, bool notify_listener
 	if (cur_expr)
 		ClearBindingExpression (property, cur_expr);
 
-	Value *style_value = (Value*)g_hash_table_lookup (styles, property);
+	Value *style_value = (Value*) GetValue (FrameworkElement::StyleProperty);
 
 	notify_listeners = notify_listeners && !style_value;
 
 	UIElement::ClearValue (property, notify_listeners);
 
 	if (style_value)
-		SetValue (property, style_value);
+		UpdateFromStyle (style_value->AsStyle ());
 }
 
 Value *

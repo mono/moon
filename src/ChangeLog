@@ -1,3 +1,25 @@
+2008-12-22  Alan McGovern  <amcgovern@novell.com>
+
+	* border.h:
+	* validators.h:
+	* validators.cpp:
+	* dependencyproperty.g.cpp: Add validators for the Border class
+
+	* value.h:
+	* value.cpp:
+	* value.h.in: unused_padding is now used as a bitfield. Currently used
+	to indicate whether an object is null or not
+
+	* frameworkelement.cpp: the styles hashtable only indicates if the
+	current value comes from a style. It does not show if a dp has been
+	bound to a style. If the current value is cleared, we need to update
+	from the style to repopulate the styles hashtable and correctly set
+	the style value. This can be optimised by passing the current dp to
+	UpdateFromStyle.
+
+	* dependencyobject.cpp: When do.SetValue (dp, null) is called, correctly
+	set the null value as opposed to calling do.ClearValue(dp).
+
 2008-12-22  Andreia Gaita  <avidigal@novell.com>
 
 	* cbinding.h|cpp, type-generated.cpp, type.h, value.h:
