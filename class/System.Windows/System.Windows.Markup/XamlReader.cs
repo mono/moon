@@ -39,6 +39,10 @@ namespace System.Windows.Markup
 	{
 		public static object Load (string xaml)
 		{
+			// if 'xaml' is null then this will throw a NullReferenceException, just like SL2 throws for null
+			if (xaml.Length == 0)
+				return null;
+
 			XamlLoader loader = XamlLoader.CreateManagedXamlLoader (Application.s_surface, PluginHost.Handle);
 			
 			return loader.CreateDependencyObjectFromString (xaml, false);
