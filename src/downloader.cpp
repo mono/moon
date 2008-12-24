@@ -219,6 +219,15 @@ validate_policy (const char *location, const char *uri, DownloaderAccessPolicy p
 	Uri *target = new Uri ();
 	target->Parse (location);
 
+	LOG_DOWNLOADER ("Downloader::validate_policy target scheme: %s, source scheme: %s\n", 
+		target ? target->protocol : NULL, source ? source->protocol : NULL);
+
+	if (scheme_is (target, "chrome")) {
+		delete source;
+		delete target;
+		return true;
+	}
+
 	bool retval = true;
 	switch (policy) {
 	case DownloaderPolicy:

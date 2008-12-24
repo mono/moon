@@ -1,3 +1,11 @@
+2008-12-24  Aaron Bockover  <abockover@novell.com>
+
+	* downloader.cpp (validate_policy): Allow full rights to download if the 
+	target (XAML) URI protocol is chrome; chrome sources (e.g. extensions)
+	are fully trusted in the browser
+
+	r: kangaroo
+
 2008-12-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	[Backports of r121143, 121228 and 121230]
