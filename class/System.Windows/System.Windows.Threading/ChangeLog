@@ -1,3 +1,8 @@
+2008-12-29  Andreia Gaita  <avidigal@novell.com>
+
+	* DispatcherTimer.cs: Revert changes so that unit tests can run, while
+	I fix the callbacks
+
 2008-12-22  Andreia Gaita  <avidigal@novell.com>
 
 	* DispatcherTimer.cs: Implement DispatcherTimer using an internal

@@ -31,64 +31,60 @@ using System.Windows.Interop;
 namespace System.Windows.Threading {
 
 	public class DispatcherTimer {
-		Mono.DispatcherTimer internalTimer;
-
 		private TimeSpan interval;
-		bool started;
+		uint source_id;
 		NativeMethods.GSourceFunc callback;
-
-		public DispatcherTimer ()
-		{
-			internalTimer = new Mono.DispatcherTimer ();
-			internalTimer.managedTimer = this;
-		}
-
-		~DispatcherTimer ()
-		{
-			internalTimer = null;
-		}
 
 		[SecuritySafeCritical]
 		public void Start ()
 		{
-			if (!started) {
-				started = true;
-				Mono.NativeMethods.dispatcher_timer_start (internalTimer.native);
-			}
+			if (source_id != 0)
+				return;
 
+			callback = new NativeMethods.GSourceFunc (timer_callback);
+			source_id = NativeMethods.time_manager_add_timeout (NativeMethods.surface_get_time_manager (Application.s_surface), (int) interval.TotalMilliseconds, callback, IntPtr.Zero);
 		}
 
 		[SecuritySafeCritical]
 		public void Stop ()
 		{
-			if (started) {
-				started = false;
-				Mono.NativeMethods.dispatcher_timer_stop (internalTimer.native);
-			}
+			if (source_id == 0)
+				return;
+
+			NativeMethods.time_manager_remove_timeout (NativeMethods.surface_get_time_manager (Application.s_surface), source_id);
+			source_id = 0;
+			callback = null;
 		}
 
 		public TimeSpan Interval {
 			[SecuritySafeCritical]
-			get { return internalTimer.Duration.TimeSpan; }
+			get { return interval; }
 
 			[SecuritySafeCritical]
-			set {  internalTimer.Duration = new Duration (value); }
+			set { interval = value; }
+			
 		}
 
 		public bool IsEnabled {
-			get { return started; }
+			get { return source_id != 0; }
 		}
 
-		static object TickEvent = new object ();
-		public event EventHandler Tick {
-			add {
-				internalTimer.Tick += value;
-			}
-			remove {
-				internalTimer.Tick -= value;
-			}
-		}
+		public event EventHandler Tick;
 
+		bool timer_callback (IntPtr data)
+		{
+			try {
+				Tick (this, EventArgs.Empty);
+				// If we are killed by Enabled or Stop, still return that value
+				return source_id != 0;
+			} catch (Exception ex) {
+				Console.WriteLine (ex.ToString ());
+			} catch {
+				Console.WriteLine ("DispatcherTimer.timer_callback exception.");
+			}
+
+			return false;
+		}
 	}
 
 }
