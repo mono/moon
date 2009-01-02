@@ -59,7 +59,7 @@ Value::GetKind ()
 bool
 Value::GetIsNull ()
 {
-	return padding & NullFlag == NullFlag;
+	return (padding & NullFlag) == NullFlag;
 }
 
 void

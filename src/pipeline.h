@@ -448,14 +448,13 @@ public:
 };
 
 class MediaMarker : public EventObject {
-private:
 	guint64 pts; // 100-nanosecond units (pts)
 	char *type;
 	char *text;
 
 protected:
-	~MediaMarker ();
-
+	virtual ~MediaMarker ();
+	
 public:
 	class Node : public List::Node {
 	public:
@@ -464,10 +463,12 @@ public:
 			marker = m;
 			marker->ref ();
 		}
+		
 		virtual ~Node ()
 		{
 			marker->unref ();
 		}
+		
 		MediaMarker *marker;
 	};
 	

@@ -1,3 +1,9 @@
+2009-01-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	* value.cpp (Value::GetIsNull): Fixed compiler warning.
+
+	* pipeline.h (class MediaMarker): dtor needs to be virtual.
+
 2009-01-02  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* validators.cpp: Remove the printf calls (that won't compile under
