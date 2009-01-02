@@ -1331,6 +1331,10 @@ namespace Mono {
 		public extern static IntPtr text_box_new ();
 
 		[DllImport ("moon")]
+		// TextBoxView *text_box_view_new ();
+		public extern static IntPtr text_box_view_new ();
+
+		[DllImport ("moon")]
 		// TextChangedEventArgs *text_changed_event_args_new ();
 		public extern static IntPtr text_changed_event_args_new ();
 

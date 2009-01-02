@@ -1,3 +1,7 @@
+2009-01-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Microsoft.Internal/TextBoxView.cs: New class.
+
 2008-12-22  Andreia Gaita  <avidigal@novell.com>
 
 	* Makefile.am, System.Windows.mdp: Added Mono/DispatcherTimer.cs

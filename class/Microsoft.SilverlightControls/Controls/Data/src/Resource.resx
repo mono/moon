@@ -1,216 +1,52 @@
-﻿<?xml version="1.0" encoding="utf-8"?> 
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!--
-    Microsoft ResX Schema 
-
-    Version 2.0
- 
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the
-    various data types are done through the TypeConverter classes 
-    associated with the data types.
-
-    Example: 
-
-    ... ado.net/XML headers & schema ...
-    <resheader name="resmimetype">text/microsoft-resx</resheader> 
-    <resheader name="version">2.0</resheader> 
-    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader> 
-    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
-    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64"> 
-        <value>[base64 mime encoded serialized .NET Framework object]</value>
-    </data>
-    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64"> 
-        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value> 
-        <comment>This is a comment</comment>
-    </data> 
-
-    There are any number of "resheader" rows that contain simple
-    name/value pairs. 
-
-    Each data row contains a name, and value. The row also contains a
-    type or mimetype. Type corresponds to a .NET class that support 
-    text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the
-    mimetype set. 
-
-    The mimetype is used for serialized objects, and tells the
-    ResXResourceReader how to depersist the object. This is currently not 
-    extensible. For a given mimetype the value must be set accordingly:
-
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
-    read any of the formats listed below.
- 
-    mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with
-            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter 
-            : and then encoded with base64 encoding.
-
-    mimetype: application/x-microsoft.net.object.soap.base64 
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-            : and then encoded with base64 encoding. 
-
-    mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
-            : using a System.ComponentModel.TypeConverter
-            : and then encoded with base64 encoding.
-    --> 
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata"> 
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-    <xsd:element name="root" msdata:IsDataSet="true"> 
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
         <xsd:choice maxOccurs="unbounded">
-          <xsd:element name="metadata"> 
+          <xsd:element name="data">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" /> 
-              </xsd:sequence> 
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" /> 
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType> 
-          </xsd:element>
-          <xsd:element name="assembly">
-            <xsd:complexType> 
-              <xsd:attribute name="alias" type="xsd:string" /> 
-              <xsd:attribute name="name" type="xsd:string" />
-            </xsd:complexType> 
-          </xsd:element>
-          <xsd:element name="data">
-            <xsd:complexType> 
-              <xsd:sequence>
                 <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" /> 
-              </xsd:sequence> 
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" /> 
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
               <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType> 
+            </xsd:complexType>
           </xsd:element>
           <xsd:element name="resheader">
-            <xsd:complexType> 
-              <xsd:sequence> 
+            <xsd:complexType>
+              <xsd:sequence>
                 <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-              </xsd:sequence> 
+              </xsd:sequence>
               <xsd:attribute name="name" type="xsd:string" use="required" />
             </xsd:complexType>
-          </xsd:element> 
+          </xsd:element>
         </xsd:choice>
       </xsd:complexType>
-    </xsd:element> 
-  </xsd:schema> 
-  <resheader name="resmimetype">
-    <value>text/microsoft-resx</value> 
-  </resheader>
-  <resheader name="version">
-    <value>2.0</value> 
-  </resheader>
-  <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value> 
-  </resheader> 
-  <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value> 
-  </resheader>
-  <data name="DataGridDataErrorEventArgs_NullException" xml:space="preserve">
-    <value>Cannot throw null exception.</value> 
-  </data>
-  <data name="DataGridRow_InvalidRowIndexCannotCompleteOperation" xml:space="preserve">
-    <value>Invalid row index. Cannot complete operation.</value> 
-  </data> 
-  <data name="DataGridSelectedItemsCollection_CannotChangeSelectedItemsCollectionInSingleMode" xml:space="preserve">
-    <value>Can only change SelectedItems collection in ExtendedFullRow selection mode.  Use SelectedItem property in SingleFullRow selection mode.</value> 
-  </data>
-  <data name="DataGrid_CannotAddFrozenColumn" xml:space="preserve">
-    <value>Cannot add frozen column.</value> 
-  </data>
-  <data name="DataGrid_CannotAddNonFrozenColumn" xml:space="preserve">
-    <value>Cannot add non-frozen column.</value> 
-  </data> 
-  <data name="DataGrid_CannotChangeColumnCollectionWhileAdjustingDisplayIndexes" xml:space="preserve">
-    <value>Cannot change column collection while adjusting display indexes.</value> 
-  </data>
-  <data name="DataGrid_CannotMoveFrozenColumn" xml:space="preserve">
-    <value>Cannot move frozen column.</value> 
-  </data>
-  <data name="DataGrid_CannotMoveNonFrozenColumn" xml:space="preserve">
-    <value>Cannot move non-frozen column.</value> 
-  </data> 
-  <data name="DataGrid_ColumnCannotBeCollapsed" xml:space="preserve">
-    <value>Column cannot be collapsed.</value> 
-  </data>
-  <data name="DataGrid_ColumnCannotBeReassignedToDifferentDataGrid" xml:space="preserve">
-    <value>Column already belongs to a DataGrid instance and cannot be reassigned.</value> 
-  </data>
-  <data name="DataGrid_ColumnNotInThisDataGrid" xml:space="preserve">
-    <value>Provided column does not belong to this DataGrid.</value> 
-  </data> 
-  <data name="DataGrid_CommitFailedCannotCompleteOperation" xml:space="preserve">
-    <value>Commit failed.  Cannot complete operation.</value> 
-  </data>
-  <data name="DataGrid_InvalidEnumValue" xml:space="preserve">
-    <value>The value "{0}" is not a valid "{1}" enumeration value.</value> 
-  </data>
-  <data name="DataGrid_InvalidRowElement" xml:space="preserve">
-    <value>Invalid element, check that the element is contained in a row, and that the row is displayed or selected.</value> 
-  </data> 
-  <data name="DataGrid_ItemIsNotContainedInTheItemsSource" xml:space="preserve">
-    <value>The item is not contained in the ItemsSource.</value> 
-  </data>
-  <data name="DataGrid_ItemsSourceNullCannotCompleteOperation" xml:space="preserve">
-    <value>The ItemsSource is null.  Cannot complete operation.</value> 
-  </data>
-  <data name="DataGrid_MissingTemplateForType" xml:space="preserve">
-    <value>Missing template.  Cannot initialize {0}.</value> 
-  </data> 
-  <data name="DataGrid_NoCurrentRow" xml:space="preserve">
-    <value>There is no current row.  Operation cannot be completed.</value> 
-  </data>
-  <data name="DataGrid_NoOwningGrid" xml:space="preserve">
-    <value>There is no instance of DataGrid assigned to this {0}.  Cannot complete operation.</value> 
-  </data>
-  <data name="DataGrid_UnderlyingPropertyIsReadOnly" xml:space="preserve">
-    <value>Cannot set a column to read/write when the underlying property does not allow it.</value> 
-  </data> 
-  <data name="DataGrid_ValueCannotBeSetToNull" xml:space="preserve">
-    <value>{0} cannot be set to a null value.</value> 
-  </data>
-  <data name="DataGrid_ValueIsNotAnInstanceOf" xml:space="preserve">
-    <value>The value is not an instance of {0}.</value> 
-  </data>
-  <data name="DataGrid_ValueIsNotAnInstanceOfEitherOr" xml:space="preserve">
-    <value>The value is not an instance of {0} or {1}.</value> 
-  </data> 
-  <data name="DataGrid_ValueIsReadOnly" xml:space="preserve">
-    <value>{0} is a read-only value and cannot be reassigned.</value> 
-  </data>
-  <data name="DataGrid_ValueMustBeGreaterThan" xml:space="preserve">
-    <value>{0} must be greater than {1}.</value> 
-  </data>
-  <data name="DataGrid_ValueMustBeGreaterThanOrEqualTo" xml:space="preserve">
-    <value>{0} must be greater than or equal to {1}.</value> 
-  </data> 
-  <data name="DataGrid_ValueMustBeGTandLT" xml:space="preserve">
-    <value>{0} must be greater than {1} and less than {2}.</value> 
-  </data>
-  <data name="DataGrid_ValueMustBeGTandLTE" xml:space="preserve">
-    <value>{0} must be greater than {1} and less than or equal to {2}.</value> 
-  </data>
-  <data name="DataGrid_ValueMustBeGTEandLT" xml:space="preserve">
-    <value>{0} must be greater than or equal to {1} and less than {2}.</value> 
-  </data> 
-  <data name="DataGrid_ValueMustBeGTEandLTE" xml:space="preserve">
-    <value>{0} must be greater than or equal to {1} and less than or equal to {2}.</value> 
-  </data>
-  <data name="DataGrid_ValueMustBeLessThan" xml:space="preserve">
-    <value>{0} must be less than {1}.</value> 
-  </data>
-  <data name="DataGrid_ValueMustBeLessThanOrEqualTo" xml:space="preserve">
-    <value>{0} must be less than or equal to {1}.</value> 
-  </data> 
-</root>
+    </xsd:element>
+  </xsd:schema>
+<resheader name="resmimetype"><value>text/microsoft-resx</value></resheader><resheader name="version"><value>1.3</value></resheader><resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader><resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader><data name="ListBox_OnItemContainerStyleChanged_CanNotSetStyle"><value>FrameworkElement.Style property can be set only one time.</value></data>
+  <data name="ToolTipService_SetTimeoutProperty_InvalidValue"><value>Value must be positive.</value></data>
+  <data name="ScrollViewer_OnReadOnlyDependencyPropertyChanged_ReadOnly"><value>Unable to set a read-only DependencyProperty.</value></data>
+  <data name="ContentPresenter_OnApplyTemplate_WriteOnce"><value>The template can only be applied one time.</value></data>
+  <data name="ToolTip_PerformClipping_Ellipsis"><value>...</value></data>
+  <data name="ButtonBase_OnClickModePropertyChanged_InvalidValue"><value>ClickMode must be Release, Press, or Hover.</value></data>
+  <data name="ToggleButton_ToString_FormatString"><value>{0} Content:{1} IsChecked:{2}</value></data>
+  <data name="RepeatButton_IntervalMustBePositive"><value>Interval cannot be negative or zero.</value></data>
+  <data name="RepeatButton_DelayPropertyCannotBeNegative"><value>Delay cannot be a negative value.</value></data>
+  <data name="TypeConverters_ConvertFrom_CannotConvert"><value>{0} cannot convert from {1}.</value></data>
+  <data name="HyperlinkButton_GetAbsoluteUri_PageRelativeUri"><value>Cannot navigate to locations relative to a page.</value></data>
+  <data name="TypeConverters_ConvertFromString_CannotConvert"><value>Cannot convert {1} to type {0}.</value></data>
+  <data name="ListBox_OnSelectedItemsChanged_ReadOnly"><value>SelectedItems is a read-only DependencyProperty.</value></data>
+  <data name="ListBox_OnSelectionModeChanged_OnlySingleSelection"><value>Only SelectionMode.Single is supported.</value></data>
+  <data name="ContentControl_HasContent_Inconsistent"><value>HasContent must correspond with the value of Content.</value></data>
+  <data name="RangeBase_InvalidDoubleValue"><value>Value cannot be infinite or NaN.</value></data>
+  <data name="RangeBase_InvalidChangeValue"><value>Value cannot be negative, infinite, or NaN.</value></data>
+  <data name="Common_Extensions_LoadXamlResource_EmptyResourceName"><value>The name of the resource to load cannot be empty.</value></data>
+  <data name="HyperlinkButton_GetAbsoluteUri_NoApplication"><value>Cannot navigate to locations relative to the application when Application.Current has not been set.</value></data>
+  <data name="HyperlinkButton_Navigate_Failed"><value>Failed to navigate to {0}.</value></data>
+  <data name="ListBox_OnIsSelectionActiveChanged_ReadOnly"><value>IsSelectionActive is a read-only DependencyProperty.</value></data>
+  <data name="ListBox_OnSelectedItemsCollectionChanged_WrongMode"><value>Can only change the SelectedItems collection in multiple selection mode. Use SelectedItem in single selection mode.</value></data>
+  </root>

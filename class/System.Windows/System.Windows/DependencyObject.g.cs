@@ -15,6 +15,14 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
+namespace Microsoft.Internal {
+	partial class TextBoxView {
+		public TextBoxView () : base (NativeMethods.text_box_view_new ()) {}
+		internal TextBoxView (IntPtr raw) : base (raw) {}
+		internal override Kind GetKind () { return Kind.TEXTBOXVIEW; }
+	}
+}
+
 namespace Mono {
 	partial class DispatcherTimer {
 		public DispatcherTimer () : base (NativeMethods.dispatcher_timer_new ()) {}

@@ -32,6 +32,7 @@ system_windows_sources =							\
 	$(srcdir)/Assembly/MonoTODOAttribute.cs					\
 	$(srcdir)/../Consts.cs							\
 	$(srcdir)/Microsoft.Internal/IManagedFrameworkInternalHelper.cs		\
+	$(srcdir)/Microsoft.Internal/TextBoxView.cs				\
 	$(srcdir)/System.IO/SimpleUnmanagedMemoryStream.cs			\
 	$(srcdir)/Mono/DispatcherTimer.cs					\
 	$(srcdir)/Mono/EventHandlerList.cs					\
