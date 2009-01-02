@@ -2957,6 +2957,16 @@ text_box_new (void)
 
 
 /**
+ * TextBoxView
+ **/
+TextBoxView *
+text_box_view_new (void)
+{
+	return new TextBoxView ();
+}
+
+
+/**
  * TextChangedEventArgs
  **/
 TextChangedEventArgs *

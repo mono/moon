@@ -358,6 +358,7 @@ dependency_property_g_init (void)
 	TextBox::TextProperty = DependencyProperty::Register (Type::TEXTBOX, "Text", new Value (""));
 	TextBox::TextWrappingProperty = DependencyProperty::Register (Type::TEXTBOX, "TextWrapping", new Value (TextWrappingNoWrap));
 	TextBox::VerticalScrollBarVisibilityProperty = DependencyProperty::Register (Type::TEXTBOX, "VerticalScrollBarVisibility", new Value (ScrollBarVisibilityHidden));
+	TextBoxView::TextBoxProperty = DependencyProperty::Register (Type::TEXTBOXVIEW, "TextBox", Type::TEXTBOX);
 	TileBrush::AlignmentXProperty = DependencyProperty::Register (Type::TILEBRUSH, "AlignmentX", new Value (AlignmentXCenter));
 	TileBrush::AlignmentYProperty = DependencyProperty::Register (Type::TILEBRUSH, "AlignmentY", new Value (AlignmentYCenter));
 	TileBrush::StretchProperty = DependencyProperty::Register (Type::TILEBRUSH, "Stretch", new Value (StretchFill));
@@ -697,6 +698,7 @@ DependencyProperty *TextBox::TextAlignmentProperty = NULL;
 DependencyProperty *TextBox::TextProperty = NULL;
 DependencyProperty *TextBox::TextWrappingProperty = NULL;
 DependencyProperty *TextBox::VerticalScrollBarVisibilityProperty = NULL;
+DependencyProperty *TextBoxView::TextBoxProperty = NULL;
 DependencyProperty *TileBrush::AlignmentXProperty = NULL;
 DependencyProperty *TileBrush::AlignmentYProperty = NULL;
 DependencyProperty *TileBrush::StretchProperty = NULL;
@@ -4439,6 +4441,19 @@ void
 TextBox::SetVerticalScrollBarVisibility (ScrollBarVisibility value)
 {
 	SetValue (TextBox::VerticalScrollBarVisibilityProperty, Value (value));
+}
+
+TextBox *
+TextBoxView::GetTextBox ()
+{
+	Value *value = GetValue (TextBoxView::TextBoxProperty);
+	return value ? value->AsTextBox () : NULL;
+}
+
+void
+TextBoxView::SetTextBox (TextBox * value)
+{
+	SetValue (TextBoxView::TextBoxProperty, Value (value));
 }
 
 AlignmentX

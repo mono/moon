@@ -1,5 +1,15 @@
 2009-01-02  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.cpp (TextBox): No longer maintains a TextLayout nor a
+	dirty flag. TextBox is basically just a model now. Also added a
+	ModelChanged event.
+	(TextBox::Render): Removed.
+	(TextBox::GetValue): Removed, dunno why it was ever overridden.
+	(TextBox::OnPropertyChanged): Emit a ModelChangedEvent when the
+	view needs to be updated.
+	(TextBoxView): New class that renders the contents of a TextBox
+	control.
+
 	* value.cpp (Value::GetIsNull): Fixed compiler warning.
 
 	* pipeline.h (class MediaMarker): dtor needs to be virtual.

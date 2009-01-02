@@ -92,13 +92,14 @@ const int MultiScaleImage::ImageOpenFailedEvent = 18;
 const int MultiScaleImage::ImageOpenSucceededEvent = 19;
 const int MultiScaleImage::MotionFinishedEvent = 20;
 const int MultiScaleImage::ViewportChangedEvent = 21;
-const int PasswordBox::PasswordChangedEvent = 19;
+const int PasswordBox::PasswordChangedEvent = 20;
 const int Surface::ErrorEvent = 1;
 const int Surface::FullScreenChangeEvent = 2;
 const int Surface::LoadEvent = 3;
 const int Surface::ResizeEvent = 4;
-const int TextBox::SelectionChangedEvent = 17;
-const int TextBox::TextChangedEvent = 18;
+const int TextBox::ModelChangedEvent = 17;
+const int TextBox::SelectionChangedEvent = 18;
+const int TextBox::TextChangedEvent = 19;
 const int Timeline::CompletedEvent = 1;
 const int TimeManager::RenderEvent = 1;
 const int TimeManager::UpdateInputEvent = 2;
@@ -129,7 +130,7 @@ const char *MediaElement_Events [] = { "BufferingProgressChanged", "CurrentState
 const char *MultiScaleImage_Events [] = { "ImageFailed", "ImageOpenFailed", "ImageOpenSucceeded", "MotionFinished", "ViewportChanged", NULL };
 const char *PasswordBox_Events [] = { "PasswordChanged", NULL };
 const char *Surface_Events [] = { "Error", "FullScreenChange", "Load", "Resize", NULL };
-const char *TextBox_Events [] = { "SelectionChanged", "TextChanged", NULL };
+const char *TextBox_Events [] = { "ModelChanged", "SelectionChanged", "TextChanged", NULL };
 const char *Timeline_Events [] = { "Completed", NULL };
 const char *TimeManager_Events [] = { "Render", "UpdateInput", NULL };
 const char *TimeSource_Events [] = { "Tick", NULL };
@@ -251,7 +252,7 @@ Type type_infos [] = {
 	{ Type::PANEL, Type::FRAMEWORKELEMENT, false, "Panel", "PANEL", 0, 16, NULL, (create_inst_func *) panel_new, "Children", NULL, NULL }, 
 	{ Type::PARALLELTIMELINE, Type::TIMELINEGROUP, false, "ParallelTimeline", "PARALLELTIMELINE", 0, 2, NULL, (create_inst_func *) parallel_timeline_new, NULL, NULL, NULL }, 
 	{ Type::PARSERERROREVENTARGS, Type::ERROREVENTARGS, false, "ParserErrorEventArgs", "PARSERERROREVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::PASSWORDBOX, Type::TEXTBOX, false, "PasswordBox", "PASSWORDBOX", 1, 20, PasswordBox_Events, (create_inst_func *) password_box_new, NULL, NULL, NULL }, 
+	{ Type::PASSWORDBOX, Type::TEXTBOX, false, "PasswordBox", "PASSWORDBOX", 1, 21, PasswordBox_Events, (create_inst_func *) password_box_new, NULL, NULL, NULL }, 
 	{ Type::PATH, Type::SHAPE, false, "Path", "PATH", 0, 16, NULL, (create_inst_func *) path_new, NULL, NULL, NULL }, 
 	{ Type::PATHFIGURE, Type::DEPENDENCY_OBJECT, false, "PathFigure", "PATHFIGURE", 0, 1, NULL, (create_inst_func *) path_figure_new, "Segments", NULL, NULL }, 
 	{ Type::PATHFIGURE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "PathFigureCollection", "PATHFIGURE_COLLECTION", 0, 1, NULL, (create_inst_func *) path_figure_collection_new, NULL, NULL, NULL }, 
@@ -306,7 +307,9 @@ Type type_infos [] = {
 	{ Type::SURFACE, Type::EVENTOBJECT, false, "Surface", "SURFACE", 4, 5, Surface_Events, NULL, NULL, NULL, NULL }, 
 	{ Type::SYSTEMTIMESOURCE, Type::TIMESOURCE, false, "SystemTimeSource", "SYSTEMTIMESOURCE", 0, 2, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::TEXTBLOCK, Type::FRAMEWORKELEMENT, false, "TextBlock", "TEXTBLOCK", 0, 16, NULL, (create_inst_func *) text_block_new, "Inlines", NULL, NULL }, 
-	{ Type::TEXTBOX, Type::CONTROL, false, "TextBox", "TEXTBOX", 2, 19, TextBox_Events, (create_inst_func *) text_box_new, NULL, NULL, NULL }, 
+	{ Type::TEXTBOX, Type::CONTROL, false, "TextBox", "TEXTBOX", 3, 20, TextBox_Events, (create_inst_func *) text_box_new, NULL, NULL, NULL }, 
+	{ Type::TEXTBOXMODELCHANGEDEVENTARGS, Type::ROUTEDEVENTARGS, false, "TextBoxModelChangedEventArgs", "TEXTBOXMODELCHANGEDEVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
+	{ Type::TEXTBOXVIEW, Type::FRAMEWORKELEMENT, false, "TextBoxView", "TEXTBOXVIEW", 0, 16, NULL, (create_inst_func *) text_box_view_new, NULL, NULL, NULL }, 
 	{ Type::TEXTCHANGEDEVENTARGS, Type::ROUTEDEVENTARGS, false, "TextChangedEventArgs", "TEXTCHANGEDEVENTARGS", 0, 1, NULL, (create_inst_func *) text_changed_event_args_new, NULL, NULL, NULL }, 
 	{ Type::THICKNESS, Type::OBJECT, true, "Thickness", "THICKNESS", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::TILEBRUSH, Type::BRUSH, false, "TileBrush", "TILEBRUSH", 0, 1, NULL, (create_inst_func *) tile_brush_new, NULL, NULL, NULL }, 

@@ -1351,6 +1351,12 @@ void text_box_select_all (TextBox *instance);
 TextBox *text_box_new (void);
 
 /**
+ * TextBoxView
+ **/
+/* @GeneratePInvoke */
+TextBoxView *text_box_view_new (void);
+
+/**
  * TextChangedEventArgs
  **/
 /* @GeneratePInvoke */

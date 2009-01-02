@@ -197,6 +197,8 @@ class Surface;
 class SystemTimeSource;
 class TextBlock;
 class TextBox;
+class TextBoxModelChangedEventArgs;
+class TextBoxView;
 class TextChangedEventArgs;
 class TileBrush;
 class Timeline;
@@ -449,6 +451,8 @@ public:
 	SystemTimeSource*              AsSystemTimeSource () { checked_get_subclass (Type::SYSTEMTIMESOURCE, SystemTimeSource) }
 	TextBlock*                     AsTextBlock () { checked_get_subclass (Type::TEXTBLOCK, TextBlock) }
 	TextBox*                       AsTextBox () { checked_get_subclass (Type::TEXTBOX, TextBox) }
+	TextBoxModelChangedEventArgs*  AsTextBoxModelChangedEventArgs () { checked_get_subclass (Type::TEXTBOXMODELCHANGEDEVENTARGS, TextBoxModelChangedEventArgs) }
+	TextBoxView*                   AsTextBoxView () { checked_get_subclass (Type::TEXTBOXVIEW, TextBoxView) }
 	TextChangedEventArgs*          AsTextChangedEventArgs () { checked_get_subclass (Type::TEXTCHANGEDEVENTARGS, TextChangedEventArgs) }
 	TileBrush*                     AsTileBrush () { checked_get_subclass (Type::TILEBRUSH, TileBrush) }
 	Timeline*                      AsTimeline () { checked_get_subclass (Type::TIMELINE, Timeline) }

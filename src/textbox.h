@@ -80,22 +80,40 @@ class TextChangedEventArgs : public RoutedEventArgs {
 };
 
 
+enum TextBoxModelChangeType {
+	TextBoxModelChangedNothing,
+	TextBoxModelChangedSelection,
+	TextBoxModelChangedLayout,
+	TextBoxModelChangedBrush
+};
+
+/* @SilverlightVersion="2" */
+/* @Namespace=None */
+class TextBoxModelChangedEventArgs : public RoutedEventArgs {
+ protected:
+	virtual ~TextBoxModelChangedEventArgs () { }
+	
+ public:
+	TextBoxModelChangeType changed;
+	
+	TextBoxModelChangedEventArgs (TextBoxModelChangeType changed) { this->changed = changed; }
+	
+	virtual Type::Kind GetObjectType () { return Type::TEXTBOXMODELCHANGEDEVENTARGS; }
+};
+
+
+
 class TextBuffer;
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
 class TextBox : public Control {
 	TextFontDescription *font;
+	TextSelection selection;
 	TextLayoutHints *hints;
-	TextLayout *layout;
 	TextBuffer *buffer;
 	int maxlen;
 	int caret;
-	
-	TextSelection selection;
-	
-	void Layout (cairo_t *cr);
-	void Paint (cairo_t *cr);
 	
 	//
 	// Private Property Accessors
@@ -104,8 +122,7 @@ class TextBox : public Control {
 	void SetSelectionLength (int length);
 	
  protected:
- 	bool dirty;
-	virtual ~TextBox ();
+ 	virtual ~TextBox ();
 	
  public:
 	/* @PropertyType=bool,DefaultValue=false,Version=2.0,GenerateAccessors */
@@ -143,11 +160,8 @@ class TextBox : public Control {
 	//
 	// Overrides
 	//
-	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
-	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
-	virtual Value *GetValue (DependencyProperty *property);
 	virtual Size ArrangeOverride (Size size);
 	
 	//
@@ -158,6 +172,12 @@ class TextBox : public Control {
 	void SelectAll ();
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Select (int start, int length);
+	
+	// Methods needed by TextBoxView
+	TextFontDescription *GetFontDescription () { return font; }
+	TextLayoutHints *GetLayoutHints () { return hints; }
+	TextSelection *GetSelection () { return &selection; }
+	TextBuffer *GetBuffer () { return buffer; }
 	
 	//
 	// Property Accessors
@@ -203,7 +223,51 @@ class TextBox : public Control {
 	//
 	const static int SelectionChangedEvent;
 	const static int TextChangedEvent;
+	
+	// Internal Events
+	const static int ModelChangedEvent;
 };
+
+
+/* @SilverlightVersion="2" */
+/* @Namespace=Microsoft.Internal */
+class TextBoxView : public FrameworkElement {
+	TextLayout *layout;
+	bool dirty;
+	
+	static void model_changed (EventObject *sender, EventArgs *args, gpointer closure);
+	void ModelChanged (TextBoxModelChangedEventArgs *args);
+	
+	void Layout (cairo_t *cr);
+	void Paint (cairo_t *cr);
+	
+ protected:
+	virtual ~TextBoxView ();
+	
+ public:
+	/* @PropertyType=TextBox,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
+	static DependencyProperty *TextBoxProperty;
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	TextBoxView ();
+	
+	virtual Type::Kind GetObjectType () { return Type::TEXTBOXVIEW; }
+	
+	//
+	// Overrides
+	//
+	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
+	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual Size ArrangeOverride (Size size);
+	
+	//
+	// Property Accessors
+	//
+	void SetTextBox (TextBox *textbox);
+	TextBox *GetTextBox ();
+};
+
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
@@ -211,7 +275,7 @@ class PasswordBox : public TextBox {
  public:
 	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors,Validator=PositiveIntValidator */
 	static DependencyProperty *MaxLengthProperty;
-	/* @PropertyType=string,DefaultValue=\"\",ManagedFieldAccess=Internal,Version=2.0,GenerateAccessors,Validator=NonNullStringValidator */
+	/* @PropertyType=string,DefaultValue=\"\",Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors,Validator=NonNullStringValidator */
 	static DependencyProperty *PasswordProperty;
 	/* @PropertyType=char,DefaultValue=9679,Version=2.0,GenerateAccessors */
 	static DependencyProperty *PasswordCharProperty;
@@ -220,30 +284,34 @@ class PasswordBox : public TextBox {
 	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
 	static DependencyProperty *SelectionForegroundProperty;
 	
-	/* @SilverlightVersion="2" */
-	const static int PasswordChangedEvent;
-	
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
-	
 	/* @GenerateCBinding,GeneratePInvoke */
-	PasswordBox ();
+	PasswordBox () { }
 	
 	virtual Type::Kind GetObjectType () { return Type::PASSWORDBOX; }
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	
-	int GetMaxLength ();
+	//
+	// Property Accesors
+	//
 	void SetMaxLength (int length);
+	int GetMaxLength ();
 	
-	const char *GetPassword ();
 	void SetPassword (const char *password);
+	const char *GetPassword ();
 	
-	gint32 GetPasswordChar ();
-	void SetPasswordChar (gint32 passwordChar);
+	void SetPasswordChar (int passwordChar);
+	int GetPasswordChar ();
 	
-	Brush *GetSelectionBackground ();
 	void SetSelectionBackground (Brush *brush);
+	Brush *GetSelectionBackground ();
 	
-	Brush *GetSelectionForeground ();
 	void SetSelectionForeground (Brush *brush);
+	Brush *GetSelectionForeground ();
+	
+	//
+	// Events
+	//
+	const static int PasswordChangedEvent;
 };
 
 #endif /* __TEXTBOX_H__ */

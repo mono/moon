@@ -272,9 +272,7 @@ class TextBuffer {
 
 TextBox::TextBox ()
 {
-	/* initialize the font description and layout */
 	hints = new TextLayoutHints (TextAlignmentLeft, LineStackingStrategyMaxHeight, 0.0);
-	layout = new TextLayout ();
 	
 	font = new TextFontDescription ();
 	font->SetFamily (CONTROL_FONT_FAMILY);
@@ -291,95 +289,45 @@ TextBox::TextBox ()
 	selection.start = 0;
 	maxlen = 0;
 	caret = 0;
-	
-	dirty = true;
 }
 
 TextBox::~TextBox ()
 {
 	delete buffer;
-	delete layout;
 	delete hints;
 	delete font;
 }
 
 void
-TextBox::Render (cairo_t *cr, int x, int y, int width, int height)
-{
-	if (dirty)
-		Layout (cr);
-	
-	cairo_save (cr);
-	cairo_set_matrix (cr, &absolute_xform);
-	Paint (cr);
-	cairo_restore (cr);
-}
-
-void
-TextBox::GetSizeForBrush (cairo_t *cr, double *width, double *height)
-{
-	*height = GetActualHeight ();
-	*width = GetActualWidth ();
-}
-
-void
-TextBox::Layout (cairo_t *cr)
-{
-	double width = GetWidth ();
-	List *runs;
-	
-	layout->SetWrapping (GetTextWrapping ());
-	
-	if (width > 0.0f)
-		layout->SetMaxWidth (width);
-	else
-		layout->SetMaxWidth (-1.0);
-	
-	runs = new List ();
-	runs->Append (new TextRun (buffer->text, buffer->len, TextDecorationsNone, font, NULL));
-	
-	layout->SetTextRuns (runs);
-	layout->Layout (hints);
-	
-	dirty = false;
-}
-
-void
-TextBox::Paint (cairo_t *cr)
-{
-	Brush *fg;
-	
-	printf ("TextBox::Paint()\n");
-	
-	if (!(fg = GetForeground ()))
-		fg = default_foreground ();
-	
-	layout->Render (cr, GetOriginPoint (), Point (), hints, fg, &selection);
-}
-
-void
 TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
+	TextBoxModelChangeType changed = TextBoxModelChangedNothing;
 	bool invalidate = true;
+	bool dirty = false;
 	
 	if (args->property == Control::FontFamilyProperty) {
 		char *family = args->new_value ? args->new_value->AsString () : NULL;
+		changed = TextBoxModelChangedLayout;
 		font->SetFamily (family);
 		dirty = true;
 	} else if (args->property == Control::FontSizeProperty) {
 		double size = args->new_value->AsDouble ();
+		changed = TextBoxModelChangedLayout;
 		font->SetSize (size);
 		dirty = true;
 	} else if (args->property == Control::FontStretchProperty) {
 		FontStretches stretch = (FontStretches) args->new_value->AsInt32 ();
+		changed = TextBoxModelChangedLayout;
 		font->SetStretch (stretch);
 		dirty = true;
 	} else if (args->property == Control::FontStyleProperty) {
 		FontStyles style = (FontStyles) args->new_value->AsInt32 ();
+		changed = TextBoxModelChangedLayout;
 		font->SetStyle (style);
 		dirty = true;
 	} else if (args->property == Control::FontWeightProperty) {
 		FontWeights weight = (FontWeights) args->new_value->AsInt32 ();
+		changed = TextBoxModelChangedLayout;
 		font->SetWeight (weight);
 		dirty = true;
 	} else if (args->property == TextBox::AcceptsReturnProperty) {
@@ -406,22 +354,27 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 			caret += textlen;
 		}
 		
+		changed = TextBoxModelChangedLayout;
 		selection.start = -1;
 		selection.length = 0;
 		g_free (text);
 		dirty = true;
 	} else if (args->property == TextBox::SelectionStartProperty) {
 		selection.start = args->new_value->AsInt32 ();
+		changed = TextBoxModelChangedSelection;
 		dirty = true;
 	} else if (args->property == TextBox::SelectionLengthProperty) {
 		selection.length = args->new_value->AsInt32 ();
+		changed = TextBoxModelChangedSelection;
 		dirty = true;
 	} else if (args->property == TextBox::SelectionBackgroundProperty) {
 		if (!(selection.background = args->new_value ? args->new_value->AsBrush () : NULL))
 			selection.background = default_selection_background ();
+		changed = TextBoxModelChangedBrush;
 	} else if (args->property == TextBox::SelectionForegroundProperty) {
 		if (!(selection.foreground = args->new_value ? args->new_value->AsBrush () : NULL))
 			selection.foreground = default_selection_foreground ();
+		changed = TextBoxModelChangedBrush;
 	} else if (args->property == TextBox::TextProperty) {
 		const char *str = args->new_value ? args->new_value->AsString () : "";
 		gunichar *text;
@@ -431,6 +384,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		
 		text = g_utf8_to_ucs4_fast (str, -1, &textlen);
 		buffer->Replace (0, buffer->len, text, textlen);
+		changed = TextBoxModelChangedLayout;
 		selection.start = -1;
 		selection.length = 0;
 		caret = textlen;
@@ -441,8 +395,10 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		// in this particular case depending on how we end up
 		// implementing alignment in Layout::Render()
 		hints->SetTextAlignment ((TextAlignment) args->new_value->AsInt32 ());
+		changed = TextBoxModelChangedLayout;
 		dirty = true;
 	} else if (args->property == TextBox::TextWrappingProperty) {
+		changed = TextBoxModelChangedLayout;
 		dirty = true;
 	} else if (args->property == TextBox::HorizontalScrollBarVisibilityProperty) {
 		/* FIXME: need to figure out:
@@ -465,16 +421,11 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		Invalidate ();
 	}
 	
+	if (changed != TextBoxModelChangedNothing)
+		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (changed));
+	
 	if (args->property->GetOwnerType () != Type::TEXTBOX) {
 		Control::OnPropertyChanged (args);
-		// FIXME: does padding or anything else play a part in affecting textual wrapping?
-		if (args->property == FrameworkElement::WidthProperty) {
-			if (GetTextWrapping () != TextWrappingNoWrap)
-				dirty = true;
-			
-			UpdateBounds (true);
-		}
-		
 		return;
 	}
 	
@@ -487,17 +438,13 @@ TextBox::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, 
 	if (prop == TextBox::SelectionBackgroundProperty ||
 	    prop == TextBox::SelectionForegroundProperty ||
 	    prop == Control::BackgroundProperty ||
-	    prop == Control::ForegroundProperty)
+	    prop == Control::ForegroundProperty) {
+		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (TextBoxModelChangedBrush));
 		Invalidate ();
+	}
 	
 	if (prop->GetOwnerType () != Type::TEXTBOX)
 		Control::OnSubPropertyChanged (prop, obj, subobj_args);
-}
-
-Value *
-TextBox::GetValue (DependencyProperty *property)
-{
-	return DependencyObject::GetValue (property);
 }
 
 Size
@@ -523,6 +470,165 @@ TextBox::SelectAll ()
 	Select (0, buffer->len);
 }
 
+
+//
+// TextBoxView
+//
+
+TextBoxView::TextBoxView ()
+{
+	layout = new TextLayout ();
+	dirty = false;
+}
+
+TextBoxView::~TextBoxView ()
+{
+	delete layout;
+}
+
+void
+TextBoxView::Render (cairo_t *cr, int x, int y, int width, int height)
+{
+	if (dirty)
+		Layout (cr);
+	
+	cairo_save (cr);
+	cairo_set_matrix (cr, &absolute_xform);
+	Paint (cr);
+	cairo_restore (cr);
+}
+
+void
+TextBoxView::GetSizeForBrush (cairo_t *cr, double *width, double *height)
+{
+	*height = GetActualHeight ();
+	*width = GetActualWidth ();
+}
+
+void
+TextBoxView::Layout (cairo_t *cr)
+{
+	TextBox *textbox = GetTextBox ();
+	double width = GetWidth ();
+	TextFontDescription *font;
+	TextBuffer *buffer;
+	List *runs;
+	
+	layout->SetWrapping (textbox->GetTextWrapping ());
+	
+	if (width > 0.0f)
+		layout->SetMaxWidth (width);
+	else
+		layout->SetMaxWidth (-1.0);
+	
+	font = textbox->GetFontDescription ();
+	buffer = textbox->GetBuffer ();
+	
+	runs = new List ();
+	runs->Append (new TextRun (buffer->text, buffer->len, TextDecorationsNone, font, NULL));
+	
+	layout->SetTextRuns (runs);
+	layout->Layout (textbox->GetLayoutHints ());
+	
+	dirty = false;
+}
+
+void
+TextBoxView::Paint (cairo_t *cr)
+{
+	TextBox *textbox = GetTextBox ();
+	Brush *fg;
+	
+	printf ("TextBoxView::Paint()\n");
+	
+	if (!(fg = textbox->GetForeground ()))
+		fg = default_foreground ();
+	
+	layout->Render (cr, GetOriginPoint (), Point (), textbox->GetLayoutHints (), fg, textbox->GetSelection ());
+}
+
+void
+TextBoxView::ModelChanged (TextBoxModelChangedEventArgs *args)
+{
+	switch (args->changed) {
+	case TextBoxModelChangedSelection:
+		// FIXME: it'd be nice if we didn't have to re-layout when the selection changes
+		// the selected region has changed
+		dirty = true;
+		break;
+	case TextBoxModelChangedLayout:
+		// text, font, or some layout hints have changed
+		dirty = true;
+		break;
+	case TextBoxModelChangedBrush:
+		// a brush has changed, no layout updates needed
+		break;
+	default:
+		// nothing changed??
+		return;
+	}
+	
+	if (dirty)
+		UpdateBounds (true);
+	
+	Invalidate ();
+}
+
+void
+TextBoxView::model_changed (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	((TextBoxView *) closure)->ModelChanged ((TextBoxModelChangedEventArgs *) args);
+}
+
+void
+TextBoxView::OnPropertyChanged (PropertyChangedEventArgs *args)
+{
+	TextBox *textbox;
+	
+	if (args->property == TextBoxView::TextBoxProperty) {
+		// remove the event handler from the old textbox
+		if ((textbox = args->old_value ? args->old_value->AsTextBox () : NULL))
+			textbox->RemoveHandler (TextBox::ModelChangedEvent, TextBoxView::model_changed, this);
+		
+		// add the event handler to the new textbox
+		if ((textbox = args->new_value ? args->new_value->AsTextBox () : NULL))
+			textbox->AddHandler (TextBox::ModelChangedEvent, TextBoxView::model_changed, this);
+		
+		UpdateBounds (true);
+		Invalidate ();
+		dirty = true;
+	}
+	
+	if (args->property->GetOwnerType () != Type::TEXTBOXVIEW) {
+		FrameworkElement::OnPropertyChanged (args);
+		
+		if (args->property == FrameworkElement::WidthProperty) {
+			textbox = GetTextBox ();
+			
+			if (textbox->GetTextWrapping () != TextWrappingNoWrap)
+				dirty = true;
+			
+			UpdateBounds (true);
+		}
+		
+		return;
+	}
+	
+	NotifyListenersOfPropertyChange (args);
+}
+
+Size
+TextBoxView::ArrangeOverride (Size size)
+{
+	// FIXME: do we want to override this method? We probably do...
+	return FrameworkElement::ArrangeOverride (size);
+}
+
+
+//
+// PasswordBox
+//
+
 void
 PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
@@ -530,8 +636,4 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		Emit (PasswordBox::PasswordChangedEvent);
 	
 	TextBox::OnPropertyChanged (args);	
-}
-
-PasswordBox::PasswordBox ()
-{
 }
