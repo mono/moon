@@ -57,7 +57,6 @@ bool
 Validators::MediaAttributeCollectionValidator (Value *value, MoonError *error)
 {
 	if (!value || value->GetIsNull ()) {
-		printf ("I'm throwing me a EXCEPTION");
 		MoonError::FillIn (error, MoonError::EXCEPTION, 1001, "Value cannot be null");
 		return false;
 	}
@@ -76,9 +75,7 @@ Validators::TemplateValidator (Value *value, MoonError *error)
 
 bool RangeCheck (double d)
 {
-
 	bool b = (d > -(1E300)) && (d < (1E300));
-	printf ("Range checking: %e - %d:%d\n", d, d > -(1E308), d < (1E308));
 	return b;
 }
 

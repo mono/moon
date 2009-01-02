@@ -1,3 +1,8 @@
+2009-01-02  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* validators.cpp: Remove the printf calls (that won't compile under
+	SLED10 without changing includes).
+
 2008-12-22  Alan McGovern  <amcgovern@novell.com>
 
 	* border.h:
