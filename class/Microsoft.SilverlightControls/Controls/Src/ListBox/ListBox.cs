@@ -84,7 +84,7 @@ namespace System.Windows.Controls
         public static readonly DependencyProperty SelectedItemsProperty = DependencyProperty.Register(
                 "SelectedItems", typeof(IList), typeof(ListBox), 
                 new PropertyMetadata(new PropertyChangedCallback(OnSelectedItemsChanged)));
-
+#if false
         /// <summary> 
         /// Gets the selection behavior for a ListBox. 
         /// </summary>
@@ -100,7 +100,7 @@ namespace System.Windows.Controls
         public static readonly DependencyProperty SelectionModeProperty = DependencyProperty.Register( 
                 "SelectionMode", typeof(SelectionMode), typeof(ListBox),
                 new PropertyMetadata(new PropertyChangedCallback(OnSelectionModeChanged)));
- 
+#endif
         /// <summary>
         /// Gets or sets the Style that is applied to the container element generated for each item.
         /// </summary> 
@@ -252,7 +252,7 @@ namespace System.Windows.Controls
             observableCollection.CollectionChanged += new NotifyCollectionChangedEventHandler(OnSelectedItemsCollectionChanged);
             SetValue(SelectedItemsProperty, observableCollection); 
             SelectedIndex = -1;
-            SelectionMode = SelectionMode.Single;
+//            SelectionMode = SelectionMode.Single;
             // Set default values for ScrollViewer attached properties 
             ScrollViewer.SetHorizontalScrollBarVisibility(this, ScrollBarVisibility.Auto);
             ScrollViewer.SetVerticalScrollBarVisibility(this, ScrollBarVisibility.Auto);
@@ -930,6 +930,7 @@ namespace System.Windows.Controls
             }
         } 
 
+#if false
         /// <summary>
         /// Implements the SelectionModeProperty PropertyChangedCallback. 
         /// </summary> 
@@ -956,7 +957,7 @@ namespace System.Windows.Controls
                 throw new ArgumentException(Resource.ListBox_OnSelectionModeChanged_OnlySingleSelection);
             }
         } 
-
+#endif
         /// <summary>
         /// Implements the ItemContainerStyleProperty PropertyChangedCallback. 
         /// </summary> 
