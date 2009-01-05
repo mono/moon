@@ -24,7 +24,7 @@ namespace System.Windows.Controls.Primitives
     [TemplateVisualState(Name = VisualStates.StateDisabled, GroupName = VisualStates.GroupCommon)] 
     [TemplateVisualState(Name = VisualStates.StateFocused, GroupName = VisualStates.GroupFocus)] 
     [TemplateVisualState(Name = VisualStates.StateUnfocused, GroupName = VisualStates.GroupFocus)]
-    public sealed class Thumb : Control 
+    public sealed partial class Thumb : Control 
     {
         #region IsDragging
         /// <summary> 

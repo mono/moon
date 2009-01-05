@@ -34,7 +34,7 @@ namespace System.Windows.Controls
     [TemplateVisualState(Name = VisualStates.StateDisabled, GroupName = VisualStates.GroupCommon)] 
     [TemplateVisualState(Name = VisualStates.StateUnfocused, GroupName = VisualStates.GroupFocus)]
     [TemplateVisualState(Name = VisualStates.StateFocused, GroupName = VisualStates.GroupFocus)] 
-    public class Slider : RangeBase
+    public partial class Slider : RangeBase
     {
         #region Constructor 
 

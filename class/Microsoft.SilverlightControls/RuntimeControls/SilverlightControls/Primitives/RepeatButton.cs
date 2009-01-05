@@ -26,7 +26,7 @@ namespace System.Windows.Controls.Primitives
     [TemplateVisualState(Name = RepeatButton.StateDisabled, GroupName = RepeatButton.GroupCommon)]
     [TemplateVisualState(Name = RepeatButton.StateUnfocused, GroupName = RepeatButton.GroupFocus)] 
     [TemplateVisualState(Name = RepeatButton.StateFocused, GroupName = RepeatButton.GroupFocus)]
-    public sealed class RepeatButton : ButtonBase
+    public sealed partial class RepeatButton : ButtonBase
     { 
         #region Delay
         /// <summary>
@@ -424,6 +424,12 @@ namespace System.Windows.Controls.Primitives
             }
             _mousePosition = e.GetPosition(parent as UIElement);
         } 
+
+	// Match signature from SL2 final
+	protected override void OnClick ()
+	{
+		base.OnClick ();
+	}
 
         #region Keyboard Handlers
         /// <summary> 

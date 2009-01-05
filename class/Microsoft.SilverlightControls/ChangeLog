@@ -1,3 +1,12 @@
+2009-01-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* RuntimeControls/SilverlightControls/Slider.cs: Change to partial 
+	class.
+	* RuntimeControls/SilverlightControls/Primitives/RepeatButton.cs:
+	Change to partial class. Add missing override (wrt SL2 final).
+	* RuntimeControls/SilverlightControls/Primitives/Thumb.cs: Change
+	to partial class.
+
 2008-12-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* README.MOON: Add notes about "internal" read only DP
