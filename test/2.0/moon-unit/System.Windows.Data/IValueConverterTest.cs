@@ -69,7 +69,7 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
-		[Ignore ("Not fully implemented yet")]
+		[MoonlightBug ("Not fully implemented yet")]
 		public void Test()
 		{
 			Setup();

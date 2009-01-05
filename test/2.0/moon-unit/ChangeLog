@@ -1,3 +1,8 @@
+2009-01-05  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/IValueConverterTest.cs: Should be MoonlightBug,
+	not Ignore
+
 2008-12-22  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Markup/XamlReaderTest.cs: New. Basic tests for 
