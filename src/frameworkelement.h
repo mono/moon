@@ -50,7 +50,7 @@ public:
 	static DependencyProperty *MinWidthProperty;
 	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentStretch,Version=2.0,GenerateAccessors */
 	static DependencyProperty *VerticalAlignmentProperty;
-	/* @PropertyType=Style,Version=2.0,GenerateAccessors */
+	/* @PropertyType=Style,Version=2.0,GenerateAccessors,Validator=StyleValidator */
 	static DependencyProperty *StyleProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */

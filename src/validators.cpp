@@ -17,13 +17,23 @@
 #include "validators.h"
 
 bool
-Validators::default_validator (DependencyObject* instance, Value *value, MoonError *error)
+Validators::StyleValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error) {
+	if (instance->GetValue (property)) {
+		MoonError::FillIn (error, MoonError::EXCEPTION, 1001,
+			g_strdup_printf ("Property 'Style' cannot be assigned to more than once\n"));
+		return false;
+	}
+	return true;
+}
+
+bool
+Validators::default_validator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
 	return true;	
 }
 
 bool
-Validators::PositiveIntValidator (DependencyObject* instance, Value *value, MoonError *error)
+Validators::PositiveIntValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
 	if (value->AsInt32() < 0) {
 		MoonError::FillIn (error, MoonError::ARGUMENT, 1001, "Value must be greater than or equal to zero");
@@ -33,7 +43,7 @@ Validators::PositiveIntValidator (DependencyObject* instance, Value *value, Moon
 }
 
 bool
-Validators::IntGreaterThanZeroValidator (DependencyObject* instance, Value *value, MoonError *error)
+Validators::IntGreaterThanZeroValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
 	if (value->AsInt32() < 1) {
 		MoonError::FillIn (error, MoonError::ARGUMENT, 1001, "Value must be greater than zero");
@@ -43,7 +53,7 @@ Validators::IntGreaterThanZeroValidator (DependencyObject* instance, Value *valu
 }
 
 bool
-Validators::NonNullStringValidator (DependencyObject* instance, Value *value, MoonError *error)
+Validators::NonNullStringValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
 	if (!value || value->GetIsNull ()) {
 		MoonError::FillIn (error, MoonError::ARGUMENT, 1001, "Value cannot be null");
@@ -54,7 +64,7 @@ Validators::NonNullStringValidator (DependencyObject* instance, Value *value, Mo
 }
 
 bool
-Validators::MediaAttributeCollectionValidator (DependencyObject* instance, Value *value, MoonError *error)
+Validators::MediaAttributeCollectionValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
 	if (!value || value->GetIsNull ()) {
 		MoonError::FillIn (error, MoonError::EXCEPTION, 1001, "Value cannot be null");
@@ -64,7 +74,7 @@ Validators::MediaAttributeCollectionValidator (DependencyObject* instance, Value
 }
 
 bool
-Validators::TemplateValidator (DependencyObject* instance, Value *value, MoonError *error)
+Validators::TemplateValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
 	if (!value || value->GetIsNull ()) {
 		MoonError::FillIn (error, MoonError::EXCEPTION, 1001, "Value cannot be null");
@@ -84,7 +94,7 @@ bool RangeCheck (double d)
 }
 
 bool
-Validators::BorderThicknessValidator (DependencyObject* instance, Value *value, MoonError *error)
+Validators::BorderThicknessValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
 	Thickness t = *value->AsThickness ();
 
@@ -101,7 +111,7 @@ Validators::BorderThicknessValidator (DependencyObject* instance, Value *value, 
 }
 
 bool
-Validators::CornerRadiusValidator (DependencyObject* instance, Value *value, MoonError *error)
+Validators::CornerRadiusValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
 	CornerRadius t = *value->AsCornerRadius ();
 

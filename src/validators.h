@@ -18,17 +18,20 @@
 #include "thickness.h"
 #include "cornerradius.h"
 
+typedef	bool ValueValidator (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error);
+
 class Validators
 {
 public:
-	static bool default_validator (DependencyObject* instance, Value *value, MoonError *error);
-	static bool BorderThicknessValidator (DependencyObject* instance, Value *value, MoonError *error);
-	static bool CornerRadiusValidator (DependencyObject* instance, Value *value, MoonError *error);
-	static bool PositiveIntValidator (DependencyObject* instance, Value *value, MoonError *error);
-	static bool IntGreaterThanZeroValidator (DependencyObject* instance, Value *value, MoonError *error);
-	static bool NonNullStringValidator (DependencyObject* instance, Value *value, MoonError *error);
-	static bool MediaAttributeCollectionValidator (DependencyObject* instance, Value *value, MoonError *error);
-	static bool TemplateValidator (DependencyObject* instance, Value *value, MoonError *error);
+	static ValueValidator default_validator;
+	static ValueValidator BorderThicknessValidator;
+	static ValueValidator CornerRadiusValidator;
+	static ValueValidator PositiveIntValidator;
+	static ValueValidator IntGreaterThanZeroValidator;
+	static ValueValidator NonNullStringValidator;
+	static ValueValidator MediaAttributeCollectionValidator;
+	static ValueValidator StyleValidator;
+	static ValueValidator TemplateValidator;
 };
 
 #endif /* __VALIDATORS_H__ */

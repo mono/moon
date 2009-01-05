@@ -21,6 +21,7 @@
 #include "collection.h"
 #include "binding.h"
 #include "style.h"
+#include "validators.h"
 
 static void
 binding_destroy (gpointer value)
@@ -188,12 +189,6 @@ FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 			SetBindingExpression (property, NULL);
 			break;
 		}
-	}
-	
-	if (property == FrameworkElement::StyleProperty && GetValue (property)) {
-		MoonError::FillIn (error, MoonError::EXCEPTION, 1001,
-			g_strdup_printf ("Property 'Style' cannot be assigned to more than once\n"));
-		return false;
 	}
 	
 	bool result = true;

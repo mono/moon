@@ -2,6 +2,19 @@
 
 	* validators.h:
 	* validators.cpp:
+	* frameworkelement.h:
+	* frameworkelement.cpp:
+	* dependencyproperty.h:
+	* dependencyproperty.cpp:
+	* dependencyproperty.g.cpp: We need a reference to the current
+	DependencyProperty so that write-once properties can be properly
+	validated. Moved validation of StyleProperty from
+	FrameworkElement.SetValue into the new StyleValidator.
+
+2009-01-05  Alan McGovern  <amcgovern@novell.com>
+
+	* validators.h:
+	* validators.cpp:
 	* dependencyobject.cpp:
 	* dependencyproperty.h:
 	* dependencyproperty.cpp: When validating the Value we need a reference
