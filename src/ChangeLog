@@ -1,3 +1,13 @@
+2009-01-05  Alan McGovern  <amcgovern@novell.com>
+
+	* validators.h:
+	* validators.cpp:
+	* dependencyobject.cpp:
+	* dependencyproperty.h:
+	* dependencyproperty.cpp: When validating the Value we need a reference
+	to the current DependencyObject as some properties are
+	write-once/read-only
+
 2009-01-02  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBox): No longer maintains a TextLayout nor a

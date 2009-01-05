@@ -1048,7 +1048,7 @@ DependencyObject::SetValueWithError (Types *additional_types, DependencyProperty
 {
 	if (!IsValueValid (additional_types, property, value, error))
 		return false;
-	if (!property->Validate (value, error))
+	if (!property->Validate (this, value, error))
 		return false;
 		
 	return SetValueWithErrorImpl (property, value, error);

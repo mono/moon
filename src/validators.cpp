@@ -17,13 +17,13 @@
 #include "validators.h"
 
 bool
-Validators::default_validator (Value *value, MoonError *error)
+Validators::default_validator (DependencyObject* instance, Value *value, MoonError *error)
 {
 	return true;	
 }
 
 bool
-Validators::PositiveIntValidator (Value *value, MoonError *error)
+Validators::PositiveIntValidator (DependencyObject* instance, Value *value, MoonError *error)
 {
 	if (value->AsInt32() < 0) {
 		MoonError::FillIn (error, MoonError::ARGUMENT, 1001, "Value must be greater than or equal to zero");
@@ -33,7 +33,7 @@ Validators::PositiveIntValidator (Value *value, MoonError *error)
 }
 
 bool
-Validators::IntGreaterThanZeroValidator (Value *value, MoonError *error)
+Validators::IntGreaterThanZeroValidator (DependencyObject* instance, Value *value, MoonError *error)
 {
 	if (value->AsInt32() < 1) {
 		MoonError::FillIn (error, MoonError::ARGUMENT, 1001, "Value must be greater than zero");
@@ -43,7 +43,7 @@ Validators::IntGreaterThanZeroValidator (Value *value, MoonError *error)
 }
 
 bool
-Validators::NonNullStringValidator (Value *value, MoonError *error)
+Validators::NonNullStringValidator (DependencyObject* instance, Value *value, MoonError *error)
 {
 	if (!value || value->GetIsNull ()) {
 		MoonError::FillIn (error, MoonError::ARGUMENT, 1001, "Value cannot be null");
@@ -54,7 +54,7 @@ Validators::NonNullStringValidator (Value *value, MoonError *error)
 }
 
 bool
-Validators::MediaAttributeCollectionValidator (Value *value, MoonError *error)
+Validators::MediaAttributeCollectionValidator (DependencyObject* instance, Value *value, MoonError *error)
 {
 	if (!value || value->GetIsNull ()) {
 		MoonError::FillIn (error, MoonError::EXCEPTION, 1001, "Value cannot be null");
@@ -64,10 +64,14 @@ Validators::MediaAttributeCollectionValidator (Value *value, MoonError *error)
 }
 
 bool
-Validators::TemplateValidator (Value *value, MoonError *error)
+Validators::TemplateValidator (DependencyObject* instance, Value *value, MoonError *error)
 {
 	if (!value || value->GetIsNull ()) {
 		MoonError::FillIn (error, MoonError::EXCEPTION, 1001, "Value cannot be null");
+		return false;
+	}
+	if (instance->Is(Type::USERCONTROL)) {
+		MoonError::FillIn (error, MoonError::INVALID_OPERATION, 1001, "Cannot set the template property on a UserControl");
 		return false;
 	}
 	return true;
@@ -80,7 +84,7 @@ bool RangeCheck (double d)
 }
 
 bool
-Validators::BorderThicknessValidator (Value *value, MoonError *error)
+Validators::BorderThicknessValidator (DependencyObject* instance, Value *value, MoonError *error)
 {
 	Thickness t = *value->AsThickness ();
 
@@ -97,7 +101,7 @@ Validators::BorderThicknessValidator (Value *value, MoonError *error)
 }
 
 bool
-Validators::CornerRadiusValidator (Value *value, MoonError *error)
+Validators::CornerRadiusValidator (DependencyObject* instance, Value *value, MoonError *error)
 {
 	CornerRadius t = *value->AsCornerRadius ();
 

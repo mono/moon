@@ -21,7 +21,7 @@
 class MoonError;
 
 typedef	void NativePropertyChangedHandler (DependencyProperty *dependency_property, DependencyObject *dependency_object, Value *old_value, Value *new_value);
-typedef	bool ValueValidator (Value *value, MoonError *error);
+typedef	bool ValueValidator (DependencyObject * instance, Value *value, MoonError *error);
 
 //
 // DependencyProperty
@@ -58,7 +58,7 @@ class DependencyProperty {
 	void DetachAnimationStorage (DependencyObject *obj, AnimationStorage *storage);
 	AnimationStorage *GetAnimationStorageFor (DependencyObject *obj);
 	
-	bool Validate (Value *value, MoonError *error);
+	bool Validate (DependencyObject *instance, Value *value, MoonError *error);
 	
 	/* @GenerateCBinding */
 	static DependencyProperty *Register (Type::Kind type, const char *name, Value *default_value);

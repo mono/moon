@@ -21,14 +21,14 @@
 class Validators
 {
 public:
-	static bool default_validator (Value *value, MoonError *error);
-	static bool BorderThicknessValidator (Value *value, MoonError *error);
-	static bool CornerRadiusValidator (Value *value, MoonError *error);
-	static bool PositiveIntValidator (Value *value, MoonError *error);
-	static bool IntGreaterThanZeroValidator (Value *value, MoonError *error);
-	static bool NonNullStringValidator (Value *value, MoonError *error);
-	static bool MediaAttributeCollectionValidator (Value *value, MoonError *error);
-	static bool TemplateValidator (Value *value, MoonError *error);
+	static bool default_validator (DependencyObject* instance, Value *value, MoonError *error);
+	static bool BorderThicknessValidator (DependencyObject* instance, Value *value, MoonError *error);
+	static bool CornerRadiusValidator (DependencyObject* instance, Value *value, MoonError *error);
+	static bool PositiveIntValidator (DependencyObject* instance, Value *value, MoonError *error);
+	static bool IntGreaterThanZeroValidator (DependencyObject* instance, Value *value, MoonError *error);
+	static bool NonNullStringValidator (DependencyObject* instance, Value *value, MoonError *error);
+	static bool MediaAttributeCollectionValidator (DependencyObject* instance, Value *value, MoonError *error);
+	static bool TemplateValidator (DependencyObject* instance, Value *value, MoonError *error);
 };
 
 #endif /* __VALIDATORS_H__ */

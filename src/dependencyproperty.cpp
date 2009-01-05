@@ -265,9 +265,9 @@ DependencyProperty::RegisterFull (Types *additional_types, Type *type, const cha
 }
 
 bool
-DependencyProperty::Validate (Value *value, MoonError *error)
+DependencyProperty::Validate (DependencyObject *instance, Value *value, MoonError *error)
 { 
-	return validator (value, error);
+	return validator (instance, value, error);
 }
 
 //

@@ -21,7 +21,6 @@ namespace MoonTest.System.Windows.Controls
 	{
 
 		[TestMethod]
-		[Ignore ("this doesn't seem to work on windows.. 'c.Template = t' raises an exception")]
 		public void LoadTemplateOnlyUsingXamlReader ()
 		{
 			Console.WriteLine ("LoadTemplateOnlyUsingXamlReader");
@@ -32,19 +31,14 @@ namespace MoonTest.System.Windows.Controls
   <TextBlock Text=""hi"" />
 </ControlTemplate>");
 
-			c.Template = t;
-
-			Assert.IsTrue (c.ApplyTemplate (), "0");
-
-			Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (c), "1");
-
-			TextBlock tb = (TextBlock)VisualTreeHelper.GetChild (c, 0);
-
-			Assert.AreEqual ("hi", tb.Text, "2");
+			Assert.Throws<InvalidOperationException> (delegate {
+				c.Template = t;
+			});
+			
+			Assert.IsFalse (c.ApplyTemplate (), "0");
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void SetTemplateInXamlOnUserControl ()
 		{
 			// "Invalid Property: UserControl.Template"
