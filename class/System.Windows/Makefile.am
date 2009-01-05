@@ -80,11 +80,16 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Automation.Peers/AutomationOrientation.cs		\
 	$(srcdir)/System.Windows.Automation.Peers/AutomationPeer.cs		\
 	$(srcdir)/System.Windows.Automation.Peers/AutomationControlType.cs	\
+	$(srcdir)/System.Windows.Automation.Peers/ButtonBaseAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/FrameworkElementAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/ItemAutomationPeer.cs		\
 	$(srcdir)/System.Windows.Automation.Peers/ItemsControlAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/PatternInterface.cs		\
+	$(srcdir)/System.Windows.Automation.Peers/RangeBaseAutomationPeer.cs	\
+	$(srcdir)/System.Windows.Automation.Peers/RepeatButtonAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/TextBoxAutomationPeer.cs		\
+	$(srcdir)/System.Windows.Automation.Peers/ThumbAutomationPeer.cs	\
+	$(srcdir)/System.Windows.Automation.Peers/SliderAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Provider/IDockProvider.cs		\
 	$(srcdir)/System.Windows.Automation.Provider/IExpandCollapseProvider.cs	\
 	$(srcdir)/System.Windows.Automation.Provider/IGridItemProvider.cs	\
@@ -432,7 +437,6 @@ system_windows_sources =							\
 	$(MSCONTROLS)/Src/ListBox/DisplayMemberValueConverter.cs		\
 	$(MSCONTROLS)/Src/ListBox/ListBox.cs					\
 	$(MSCONTROLS)/Src/ListBox/ListBoxItem.cs				\
-	$(MSCONTROLS)/Src/ListBox/SelectionMode.cs				\
 	$(MSCONTROLS)/Src/ScrollViewer/ScrollViewer.cs				\
 	$(MSCONTROLS)/Src/ScrollViewer/ScrollContentPresenter.cs		\
 	$(MSCONTROLS)/Src/ToolTip/ToolTip.cs					\

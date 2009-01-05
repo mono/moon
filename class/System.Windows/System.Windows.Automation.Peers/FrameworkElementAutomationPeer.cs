@@ -31,13 +31,17 @@ using System.Collections.Generic;
 namespace System.Windows.Automation.Peers {
 
 	public class FrameworkElementAutomationPeer : AutomationPeer {
+
+		private UIElement owner;
+
 		[SecuritySafeCritical]
 		public FrameworkElementAutomationPeer (FrameworkElement owner)
 		{
+			this.owner = owner;
 		}
 
 		public UIElement Owner {
-			get { throw new NotImplementedException (); }
+			get { return owner; }
 		}
 
 		protected override string GetNameCore ()
