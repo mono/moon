@@ -41,6 +41,9 @@ namespace TextBoxView {
 		void OnTextChanged (object sender, EventArgs args)
 		{
 			txtContentType.Text = "ContentElement's type is " + txtTextBox.ContentElement.GetType ().ToString ();
+			if (txtTextBox.ContentElement is ScrollViewer)
+				txtContentType.Text += " and the content is a " +
+					((ScrollViewer) txtTextBox.ContentElement).Content.GetType ().ToString ();
 			SetVisualTreeText (txtTextBox.ContentElement);
 		}
 	}
