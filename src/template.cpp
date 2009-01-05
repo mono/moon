@@ -210,7 +210,8 @@ ControlTemplate::DuplicateObject (Control *source, NameScope *template_namescope
 	}
 
 	/* check if the dob has an Name, and if so, register it in the returned namescope */
-	if (new_dob->GetName())
+	const char* name = new_dob->GetName ();
+	if (name && strlen (name) > 0)
 		template_namescope->RegisterName (new_dob->GetName(), new_dob);
 
 	return new_dob;

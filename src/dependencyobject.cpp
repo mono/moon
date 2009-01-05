@@ -1092,8 +1092,8 @@ DependencyObject::RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error)
 	}
 
 	const char *n = GetName();
-	
-	if (n) {
+		
+	if (n && strlen (n) > 0) {
 		if (to_ns->FindName (n)) {
 			MoonError::FillIn (error, MoonError::ARGUMENT, 2028,
 					   g_strdup_printf ("The name already exists in the tree: %s.",
@@ -1133,7 +1133,7 @@ DependencyObject::UnregisterAllNamesRootedAt (NameScope *from_ns)
 	
 	const char *n = GetName();
 	
-	if (n)
+	if (n && strlen (n) > 0)
 		from_ns->UnregisterName (n);
 	
 	g_hash_table_foreach (current_values, unregister_depobj_names, from_ns);

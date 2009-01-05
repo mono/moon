@@ -1,5 +1,16 @@
 2009-01-05  Alan McGovern  <amcgovern@novell.com>
 
+	* uielement.h: Cursor shouldn't have a default value in SL2.
+
+	* template.cpp:
+	* dependencyobject.h:
+	* dependencyobject.cpp:
+	* dependencyproperty.g.cpp: DO.Name defaults to String.Empty. Modify
+	code calling NameScope::[Un]RegisterName to ignore empty names just
+	like it ignores null names.
+
+2009-01-05  Alan McGovern  <amcgovern@novell.com>
+
 	* validators.h:
 	* validators.cpp:
 	* frameworkelement.h:
