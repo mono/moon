@@ -219,7 +219,7 @@ Control::ElementRemoved (UIElement *item)
 }
 
 DependencyObject *
-Control::GetTemplateChild (char *name)
+Control::GetTemplateChild (const char *name)
 {
 	if (template_namescope)
 		return template_namescope->FindName (name);

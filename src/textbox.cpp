@@ -22,9 +22,10 @@
 #include <unistd.h>
 #include <errno.h>
 
+#include "dependencyproperty.h"
+#include "contentcontrol.h"
 #include "textbox.h"
 #include "utils.h"
-#include "dependencyproperty.h"
 
 
 static SolidColorBrush *default_selection_background_brush = NULL;
@@ -455,6 +456,24 @@ TextBox::ArrangeOverride (Size size)
 }
 
 void
+TextBox::OnApplyTemplate ()
+{
+	DependencyObject *content = GetTemplateChild ("ContentElement");
+	ContentControl *control;
+	TextBoxView *view;
+	
+	if (content->Is (Type::CONTENTCONTROL)) {
+		// Insert our TextBoxView
+		control = (ContentControl *) content;
+		view = new TextBoxView ();
+		view->SetTextBox (this);
+		control->SetContent (view);
+	}
+	
+	Control::OnApplyTemplate ();
+}
+
+void
 TextBox::Select (int start, int length)
 {
 	if (start < 0 || start > buffer->len || start + length > buffer->len)
@@ -552,7 +571,7 @@ TextBoxView::ModelChanged (TextBoxModelChangedEventArgs *args)
 {
 	switch (args->changed) {
 	case TextBoxModelChangedSelection:
-		// FIXME: it'd be nice if we didn't have to re-layout when the selection changes
+		// FIXME: it'd be nice if we didn't have to re-layout when the selection changes.
 		// the selected region has changed
 		dirty = true;
 		break;

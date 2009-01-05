@@ -70,9 +70,8 @@ public:
 	bool ApplyTemplate ();
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	DependencyObject *GetTemplateChild (char *name);
-
-
+	DependencyObject *GetTemplateChild (const char *name);
+	
 	/* @SilverlightVersion="2" */
 	const static int TemplateAppliedEvent;
 

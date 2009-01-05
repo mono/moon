@@ -163,6 +163,7 @@ class TextBox : public Control {
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual Size ArrangeOverride (Size size);
+	virtual void OnApplyTemplate ();
 	
 	//
 	// Methods

@@ -350,7 +350,7 @@ bool control_apply_template (Control *instance);
 Control *control_new (void);
 
 /* @GeneratePInvoke */
-DependencyObject *control_get_template_child (Control *instance, char *name);
+DependencyObject *control_get_template_child (Control *instance, const char *name);
 
 /**
  * ControlTemplate

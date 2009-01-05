@@ -1,3 +1,11 @@
+2009-01-05  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBox::OnApplyTemplate): Override. Insert a
+	TextBoxView in the appropriate place.
+
+	* control.cpp (Control::GetTemplateChild): Now takes a const
+	char*.
+
 2009-01-05  Alan McGovern  <amcgovern@novell.com>
 
 	* uielement.h: Cursor shouldn't have a default value in SL2.

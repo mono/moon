@@ -776,7 +776,7 @@ control_new (void)
 
 
 DependencyObject *
-control_get_template_child (Control *instance, char *name)
+control_get_template_child (Control *instance, const char *name)
 {
 	if (instance == NULL)
 		return NULL;
