@@ -230,11 +230,9 @@ ControlTemplate::Apply (Control *control, List *bindings)
 
 	DependencyObject *instantiated_tree = DuplicateObject (control, template_namescope, tree, bindings);
 
-	FrameworkElement* fwe = (FrameworkElement*)instantiated_tree;
-	fwe->SetTemplateNameScope (template_namescope);
-	template_namescope->unref ();
+	NameScope::SetNameScope (instantiated_tree, template_namescope);
 
-	return (FrameworkElement *)fwe;
+	return (FrameworkElement *)instantiated_tree;
 }
 
 DataTemplate::DataTemplate ()

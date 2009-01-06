@@ -56,7 +56,6 @@ FrameworkElement::FrameworkElement ()
 
 	measure_cb = NULL;
 	arrange_cb = NULL;
-	template_namescope = NULL;
 }
 
 FrameworkElement::~FrameworkElement ()
@@ -65,11 +64,6 @@ FrameworkElement::~FrameworkElement ()
 	g_hash_table_destroy (styles);
 
 	RemovePropertyChangeHandler (FrameworkElement::DataContextProperty, datacontext_changed);
-
-	if (template_namescope) {
-		template_namescope->unref();
-		template_namescope = NULL;
-	}
 }
 
 void
@@ -468,11 +462,4 @@ FrameworkElement::RegisterManagedOverrides (MeasureOverrideCallback measure_cb, 
 {
 	this->measure_cb = measure_cb;
 	this->arrange_cb = arrange_cb;
-}
-
-void
-FrameworkElement::SetTemplateNameScope (NameScope *namescope)
-{
-	template_namescope = namescope;
-	template_namescope->ref();
 }

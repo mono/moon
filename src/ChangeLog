@@ -1,3 +1,16 @@
+2009-01-05  Chris Toshok  <toshok@ximian.com>
+
+	* frameworkelement.h, frameworkelement.cpp: remove all reference
+	to template_namescope.
+
+	* template.cpp (ControlTemplate::Apply): remove call to
+	FrameworkElement::SetTemplateNameScope - just set it as the
+	namescope on the root of the applied template.  This way name
+	references within the template resolve correctly.
+
+	* control.cpp (Control::GetTemplateChild): with the above change,
+	this just becomes template_root->FindName ()
+
 2009-01-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* runtime.cpp: Add a null check in Surface::FocusElement since both
