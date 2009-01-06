@@ -78,5 +78,51 @@ namespace MoonTest.System.Windows
 			Assert.Throws (delegate { s.Property = Canvas.TopProperty; }, typeof (UnauthorizedAccessException));
 			Assert.Throws (delegate { s.Value = 10; }, typeof (UnauthorizedAccessException));
 		}
+
+		[TestMethod]
+		public void SetStyleToElement()
+		{
+			Style s = new Style();
+			Rectangle r = new Rectangle();
+			// FIXME: this should pass
+			//Assert.Throws<NullReferenceException>(delegate { r.Style = s; }, "#1");
+
+			s = new Style(typeof(Rectangle));
+			r = new Rectangle();
+			s.Seal();
+			r.Style = s;
+
+			s = new Style(typeof(Rectangle));
+			r = new Rectangle();
+			Setter setter = new Setter(Rectangle.HeightProperty, 50);
+			Assert.IsFalse(setter.IsSealed, "#2");
+
+			s.Seal();
+			Assert.IsTrue(s.IsSealed, "#3");
+			Assert.IsFalse(s.Setters.IsSealed, "#4");
+			s.Setters.Add(setter);
+			Assert.IsTrue(s.IsSealed, "#5");
+			Assert.IsTrue(setter.IsSealed, "#6");
+			Assert.IsFalse(s.Setters.IsSealed, "#7");
+			s.Seal();
+			Assert.IsTrue(s.Setters.IsSealed, "#8");
+
+			s = new Style(typeof(Rectangle));
+			r = new Rectangle();
+			setter = new Setter(Rectangle.HeightProperty, 50);
+
+			s.Setters.Add(setter);
+			s.Seal();
+			Assert.IsTrue(setter.IsSealed, "#9");
+			Assert.IsTrue(s.Setters.IsSealed, "#10");
+
+			s = new Style(typeof(Rectangle));
+			r = new Rectangle();
+			setter = new Setter(Rectangle.HeightProperty, 50);
+
+			s.Setters.Add(setter);
+			r.Style = s;
+			Assert.IsTrue(s.IsSealed, "#11");
+		}
 	}
 }

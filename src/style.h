@@ -64,10 +64,9 @@ class SetterBaseCollection : public DependencyObjectCollection {
 	
   	/* @PropertyType=bool,DefaultValue=false,ManagedSetterAccess=Private,GenerateAccessors */
 	static DependencyProperty *IsSealedProperty;
-	
-	virtual int AddWithError (Value *value, MoonError *error);
-	virtual bool InsertWithError (int index, Value *value, MoonError *error);
-	virtual bool SetValueAtWithError (int index, Value *value, MoonError *error);
+
+	virtual bool AddedToCollection (Value *value, MoonError *error);
+	virtual void RemovedFromCollection (Value *value);
 	
 	virtual Type::Kind GetObjectType () { return Type::SETTERBASE_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::SETTERBASE; }
@@ -97,14 +96,16 @@ class SetterBase : public DependencyObject {
 
 	virtual bool SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error);
 	virtual Type::Kind GetObjectType () { return Type::SETTERBASE; }
-
+	
+	bool GetAttached ();
+	void SetAttached (bool value);
+	
 	bool GetIsSealed();
 	void SetIsSealed(bool value);
 	
-	void Seal ()
-	{
-		SetIsSealed (true);
-	}
+	void Seal ();
+ private:
+	bool attached;
 };
 
 //

@@ -35,6 +35,8 @@ namespace System.Windows {
 		private static readonly DependencyProperty PropertyProperty = DependencyProperty.Lookup (Kind.SETTER, "DependencyProperty", typeof (DependencyProperty));
 		private static readonly DependencyProperty ValueProperty = DependencyProperty.Lookup (Kind.SETTER, "Value", typeof (object));
 
+		object value;
+		
 		public Setter (DependencyProperty property, object value)
 		{
 			if (property == null)
@@ -63,8 +65,8 @@ namespace System.Windows {
 		}
 
 		public object Value {
-			get { return GetValue (ValueProperty); }
-			set { SetValue (ValueProperty, value); }
+			get { return this.value; }
+			set { SetValue (ValueProperty, value); this.value = value; }
 		}
 	}
 }

@@ -73,24 +73,30 @@ namespace MoonTest.System.Windows
 			Assert.Throws<Exception>(delegate {
 				style.Setters.Add(setter);
 			}, "#1");
- 
+
+			Assert.AreEqual(0, style.Setters.Count, "#a");
 			Assert.AreEqual(ClickMode.Release, b.ClickMode);
 			setter = new Setter(Button.ClickModeProperty, ClickMode.Press);
 			style.Setters.Add(setter);
+			Assert.AreEqual(1, style.Setters.Count, "#b");
+			Assert.AreEqual(ClickMode.Release, b.ClickMode, "#3b");
 
 			Assert.AreEqual(ClickMode.Release, b.ClickMode);
 			style.Setters.Clear();
+			Assert.AreEqual(0, style.Setters.Count, "#c");
+			Assert.AreEqual(ClickMode.Release, b.ClickMode, "#3b");
 
 			style = new Style(typeof(Button));
 			style.Setters.Add(new Setter(Button.ClickModeProperty, ClickMode.Press));
 			b = new Button();
 			b.Style = style;
 			style.Setters.Clear();
+			Assert.AreEqual(0, style.Setters.Count, "#d");
 			Assert.AreEqual(b.ClickMode, ClickMode.Press);
 		}
 
 		[TestMethod]
-		[MoonlightBug] // Button should default to NaN
+//		[MoonlightBug] // Button should default to NaN
 		public void InvalidValue()
 		{
 			Button b = new Button();
@@ -152,31 +158,33 @@ namespace MoonTest.System.Windows
 			});
 		}
 
-        [TestMethod]
-		[MoonlightBug]
-        public void UseSetterTwice()
-        {
-            Style s1 = new Style(typeof(Rectangle));
-            Style s2 = new Style(typeof(Rectangle));
-            Setter setter = new Setter(Rectangle.WidthProperty, 5);
-            s1.Setters.Add(setter);
-            Assert.Throws<InvalidOperationException>(delegate {
-                s2.Setters.Add(setter);
-            });
-        }
+		[TestMethod]
+//		[MoonlightBug]
+		public void UseSetterTwice()
+		{
+			Style s1 = new Style(typeof(Rectangle));
+			Style s2 = new Style(typeof(Rectangle));
+			Setter setter = new Setter(Rectangle.WidthProperty, 5);
+			s1.Setters.Add(setter);
+			Assert.Throws<InvalidOperationException>(delegate {
+				s2.Setters.Add(setter);
+			});
+			s1.Setters.Clear();
+			s2.Setters.Add(setter);
+		}
 
 		public void LoadFromXaml ()
 		{
-            Button b = (Button)XamlReader.Load(@"
+			Button b = (Button)XamlReader.Load(@"
 <Button xmlns=""http://schemas.microsoft.com/client/2007"" >
-    <Button.Style>
-        <Style TargetType=""Button"">
-            <Setter Property=""Width"" Value=""10"" />
-        </Style>
-    </Button.Style>
+	<Button.Style>
+		<Style TargetType=""Button"">
+			<Setter Property=""Width"" Value=""10"" />
+		</Style>
+	</Button.Style>
 </Button>");
 
-            Assert.IsTrue(b.Style.IsSealed);
+			Assert.IsTrue(b.Style.IsSealed);
 		}
 	}
 }

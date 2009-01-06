@@ -196,9 +196,11 @@ FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 	
 	Value *styleVal = GetValueNoDefault (FrameworkElement::StyleProperty);
 	
-	if (result && styleVal)
-		UpdateFromStyle (styleVal->AsStyle ());
-	
+	if (result && styleVal) {
+		Style *s = styleVal->AsStyle ();
+		s->Seal ();
+		UpdateFromStyle (s);
+	}
 	return result;
 }
 

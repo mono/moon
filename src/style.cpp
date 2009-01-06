@@ -16,6 +16,37 @@
 #include "style.h"
 #include "error.h"
 
+bool
+ValidateSetter (SetterBaseCollection *collection, Value *value, MoonError *error)
+{
+	if (value->Is(Type::SETTER)) {
+		Setter *s = value->AsSetter ();
+		if (!s->GetValue (Setter::PropertyProperty)) {
+			MoonError::FillIn (error, MoonError::EXCEPTION, "Cannot have a null target property");
+			return false;	
+		}
+	}
+	
+	if (value->Is (Type::SETTERBASE)) {
+		SetterBase *s = value->AsSetterBase ();
+		if (s->GetAttached ()) {
+			MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Setter is currently attached to another style");
+			return false;
+		}
+		if (s->GetIsSealed ()) {
+			MoonError::FillIn (error, MoonError::EXCEPTION, "Cannot reuse a setter after it has been sealed");
+			return false;
+		}
+	}
+
+	if (collection->GetIsSealed ()) {
+		MoonError::FillIn (error, MoonError::EXCEPTION, "Cannot add a setter to a sealed style");
+		return false;
+	}
+
+	return true;
+}
+
 Style::Style ()
 {
 	SetValue (Style::SettersProperty, Value::CreateUnref (new SetterBaseCollection()));
@@ -26,32 +57,14 @@ void
 Style::Seal ()
 {
 	SetIsSealed (true);
-	GetSetters ()->Seal ();
+	SetterBaseCollection *c = GetSetters ();
+	if (c->GetCount () > 0)
+		c->Seal ();
 }
 
 SetterBaseCollection::SetterBaseCollection ()
 {
 	this->style = NULL;
-}
-
-int
-SetterBaseCollection::AddWithError (Value *value, MoonError *error)
-{
-	if (style && style->GetIsSealed ()) {
-		MoonError::FillIn (error, MoonError::EXCEPTION, "Cannot modify a style after it is used");
-		return -1;
-	}
-	return DependencyObjectCollection::AddWithError (value, error);	
-}
-
-bool
-SetterBaseCollection:: InsertWithError (int index, Value *value, MoonError *error)
-{
-	if (style && style->GetIsSealed ()) {
-		MoonError::FillIn (error, MoonError::EXCEPTION, "Cannot modify a style after it is used");
-		return -1;
-	}
-	return DependencyObjectCollection::InsertWithError (index, value, error);	
 }
 
 void
@@ -69,17 +82,48 @@ SetterBaseCollection::Seal ()
 }
 
 bool
-SetterBaseCollection::SetValueAtWithError (int index, Value *value, MoonError *error)
-{
-	if (style && style->GetIsSealed ()) {
-		MoonError::FillIn (error, MoonError::EXCEPTION, "Cannot modify a style after it is used");
+SetterBaseCollection::AddedToCollection (Value *value, MoonError *error)
+{ 
+	if (!value || !ValidateSetter (this, value, error))
 		return false;
-	}
-	return DependencyObjectCollection::SetValueAtWithError (index, value, error);	
+
+	SetterBase *setter = value->AsSetterBase ();
+	setter->SetAttached (true);
+
+	if (style->GetIsSealed ())
+		setter->Seal ();
+
+	return true;
+}
+
+void
+SetterBaseCollection::RemovedFromCollection (Value *value)
+{
+	value->AsSetterBase ()->SetAttached (false);
+}
+
+bool 
+SetterBase::GetAttached ()
+{
+	return this->attached;	
+}
+void
+SetterBase::SetAttached (bool value)
+{
+	this->attached = value;
 }
 
 SetterBase::SetterBase ()
 {
+	this->attached = false;
+}
+
+void
+SetterBase::Seal ()
+{
+	if (GetIsSealed ())
+		return;
+	SetIsSealed (true);	
 }
 
 bool
