@@ -57,7 +57,7 @@ namespace System.Windows.Threading {
 			return BeginInvoke (a, null);
 		}
 
-		public DispatcherOperation BeginInvoke (Delegate d, object[] args)
+		public DispatcherOperation BeginInvoke (Delegate d, params object[] args)
 		{
 			DispatcherOperation op = null;
 			lock (queuedOperations) {
