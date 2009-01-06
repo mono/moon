@@ -873,6 +873,10 @@ Surface::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpo
 {
 	frames++;
 
+	LOG_UI ("Surface::PaintToDrawable (%p, %p, (%d,%d %d,%d), %d, %d, %d, %d)\n",
+		drawable, visual, event->area.x, event->area.y, event->area.width, event->area.height,
+		off_x, off_y, transparent, clear_transparent);
+	
 	if (event->area.x > (off_x + active_window->GetWidth()) || event->area.y > (off_y + active_window->GetHeight()))
 		return;
 
