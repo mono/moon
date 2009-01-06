@@ -252,10 +252,6 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Value *GetValueWithError (Types *additional_types, Type::Kind whatami, DependencyProperty *property, MoonError *error);
 	virtual Value *GetValue (DependencyProperty *property);
-
-	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
-	Value *GetDefaultValueWithError (Types *additional_types, DependencyProperty *property, MoonError *error);
-	virtual Value *GetDefaultValue (DependencyProperty *property);
 	
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Value *GetLocalValueWithError  (Types *additional_types, DependencyProperty *property, MoonError *error);

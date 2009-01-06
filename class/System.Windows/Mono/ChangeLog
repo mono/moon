@@ -1,3 +1,13 @@
+2009-01-06  Alan McGovern  <amcgovern@novell.com>
+
+	* GeneratedPInvokes.cs: Nuke DO.GetDefaultValue as it just wraps the
+	DP.GetDefaultValue function. Fixed the implementation of 'null'
+	Value*. Now a Value* with GetIsNull () == true will be returned as
+	'NULL' for calls to GetValue or GetValueNoDefault. This makes
+	Value.GetIsNull opaque to native code so existing null checks will
+	work as they should. The only function which is aware of GetIsNull is
+	GetLocalValue, and this correctly handles this case.
+
 2008-12-22  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* GeneratedPInvokes.cs: Regenerated for bool size.

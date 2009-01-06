@@ -968,7 +968,7 @@ DependencyObject::SetValueWithError (Types *additional_types, DependencyProperty
 bool
 DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error)
 {
-	Value *current_value = (Value*)g_hash_table_lookup (current_values, property);
+	Value *current_value = GetValueNoDefault (property);// (Value*)g_hash_table_lookup (current_values, property);
 
 	bool equal = false;
 	
@@ -1140,23 +1140,6 @@ DependencyObject::UnregisterAllNamesRootedAt (NameScope *from_ns)
 }
 
 Value *
-DependencyObject::GetDefaultValue (DependencyProperty *property)
-{
-	return property->GetDefaultValue();
-}
-
-Value *
-DependencyObject::GetDefaultValueWithError (Types *additional_types, DependencyProperty *property, MoonError *error)
-{
-	if (!HasProperty (additional_types, Type::INVALID, property, true)) {
-		Type *pt = Type::Find (additional_types, property->GetOwnerType ());
-		MoonError::FillIn (error, MoonError::EXCEPTION, g_strdup_printf ("Cannot get the DependencyProperty %s.%s on an object of type %s", pt ? pt->name : "<unknown>", property->GetName (), GetTypeName ()));
-		return NULL;
-	}
-	return GetDefaultValue (property);
-}
-
-Value *
 DependencyObject::GetValueWithError (Types *additional_types, Type::Kind whatami, DependencyProperty *property, MoonError *error)
 {
 	if (!HasProperty (additional_types, whatami, property, true)) {
@@ -1170,12 +1153,8 @@ DependencyObject::GetValueWithError (Types *additional_types, Type::Kind whatami
 Value *
 DependencyObject::GetValue (DependencyProperty *property)
 {
-	void *value = NULL;
-	
-	if (g_hash_table_lookup_extended (current_values, property, NULL, &value))
-		return (Value *) value;
-
-	return GetDefaultValue (property);
+	Value *value =  (Value *) g_hash_table_lookup (current_values, property);
+	return value && !value->GetIsNull () ? value : property->GetDefaultValue ();
 }
 
 Value *
@@ -1198,7 +1177,8 @@ DependencyObject::GetLocalValueWithError (Types *additional_types, DependencyPro
 Value *
 DependencyObject::GetValueNoDefault (DependencyProperty *property)
 {
-	return (Value *) g_hash_table_lookup (current_values, property);
+	Value *value = (Value *) g_hash_table_lookup (current_values, property);
+	return value && !value->GetIsNull () ? value : NULL;
 }
 
 Value *

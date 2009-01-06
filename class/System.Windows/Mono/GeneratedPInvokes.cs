@@ -421,19 +421,6 @@ namespace Mono {
 		// DependencyObject *dependency_object_find_name (DependencyObject *instance, const char *name, Type::Kind *element_kind);
 		public extern static IntPtr dependency_object_find_name (IntPtr instance, string name, out Kind element_kind);
 
-		[DllImport ("moon", EntryPoint="dependency_object_get_default_value_with_error")]
-		// Value *dependency_object_get_default_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, MoonError *error);
-		private extern static IntPtr dependency_object_get_default_value_with_error_ (IntPtr instance, IntPtr additional_types, IntPtr property, out MoonError error);
-		public static IntPtr dependency_object_get_default_value (IntPtr instance, IntPtr property)
-		{
-			IntPtr result;
-			MoonError error;
-			result = dependency_object_get_default_value_with_error_ (instance, Mono.Types.Native, property, out error);
-			if (error.Number != 0)
-				throw CreateManagedException (error);
-			return result;
-		}
-
 		[DllImport ("moon", EntryPoint="dependency_object_get_local_value_with_error")]
 		// Value *dependency_object_get_local_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, MoonError *error);
 		private extern static IntPtr dependency_object_get_local_value_with_error_ (IntPtr instance, IntPtr additional_types, IntPtr property, out MoonError error);

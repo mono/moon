@@ -868,18 +868,6 @@ dependency_object_find_name (DependencyObject *instance, const char *name, Type:
 
 
 Value *
-dependency_object_get_default_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, MoonError *error)
-{
-	if (instance == NULL)
-		return NULL;
-	
-	if (error == NULL)
-		g_warning ("Moonlight: Called dependency_object_get_default_value_with_error () with error == NULL.");
-	return instance->GetDefaultValueWithError (additional_types, property, error);
-}
-
-
-Value *
 dependency_object_get_local_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, MoonError *error)
 {
 	if (instance == NULL)

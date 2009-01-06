@@ -388,9 +388,6 @@ DependencyObject *dependency_object_new (void);
 DependencyObject *dependency_object_find_name (DependencyObject *instance, const char *name, Type::Kind *element_kind);
 
 /* @GeneratePInvoke */
-Value *dependency_object_get_default_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, MoonError *error);
-
-/* @GeneratePInvoke */
 Value *dependency_object_get_local_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, MoonError *error);
 
 /* @GeneratePInvoke */
