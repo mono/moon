@@ -23,9 +23,9 @@ typedef Size (*ArrangeOverrideCallback)(Size finalSize);
 /* @CallInitialize */
 class FrameworkElement : public UIElement {
 public:
-	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=NAN,GenerateAccessors */
 	static DependencyProperty *HeightProperty;
-	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=NAN,GenerateAccessors */
 	static DependencyProperty *WidthProperty;
 
 	/* @PropertyType=double,DefaultValue=0.0,Version=2,ManagedSetterAccess=Internal,GenerateAccessors */

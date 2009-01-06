@@ -351,8 +351,10 @@ FrameworkElement::Measure (Size availableSize)
 	else
 		size = MeasureOverride (size);
 
-	SetActualWidth (GetWidth ());
-	SetActualHeight (GetHeight ());
+	double d = GetWidth ();
+	SetActualWidth (isnan(d) ? 0.0 : d);
+	d = GetHeight ();
+	SetActualHeight (isnan(d) ? 0.0 : d);
 
 	// XXX ugly hack to fake some sort of exception case
 	if (isnan (size.width) || isnan (size.height)) {

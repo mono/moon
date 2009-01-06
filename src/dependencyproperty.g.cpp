@@ -140,7 +140,7 @@ dependency_property_g_init (void)
 	FrameworkElement::ActualHeightProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "ActualHeight", new Value (0.0));
 	FrameworkElement::ActualWidthProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "ActualWidth", new Value (0.0));
 	FrameworkElement::DataContextProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "DataContext", Type::OBJECT);
-	FrameworkElement::HeightProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Height", new Value (0.0));
+	FrameworkElement::HeightProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Height", new Value (NAN));
 	FrameworkElement::HorizontalAlignmentProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "HorizontalAlignment", new Value (HorizontalAlignmentStretch));
 	FrameworkElement::LanguageProperty = DependencyProperty::RegisterFull (Type::FRAMEWORKELEMENT, "Language", new Value ("en-US"), Type::STRING, false, false, false, NULL, Validators::NonNullStringValidator);
 	FrameworkElement::MarginProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Margin", new Value (Thickness (0)));
@@ -150,7 +150,7 @@ dependency_property_g_init (void)
 	FrameworkElement::MinWidthProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "MinWidth", new Value (0.0));
 	FrameworkElement::StyleProperty = DependencyProperty::RegisterFull (Type::FRAMEWORKELEMENT, "Style", NULL, Type::STYLE, false, false, false, NULL, Validators::StyleValidator);
 	FrameworkElement::VerticalAlignmentProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "VerticalAlignment", new Value (VerticalAlignmentStretch));
-	FrameworkElement::WidthProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Width", new Value (0.0));
+	FrameworkElement::WidthProperty = DependencyProperty::Register (Type::FRAMEWORKELEMENT, "Width", new Value (NAN));
 	Geometry::TransformProperty = DependencyProperty::Register (Type::GEOMETRY, "Transform", Type::TRANSFORM);
 	GeometryGroup::ChildrenProperty = DependencyProperty::Register (Type::GEOMETRYGROUP, "Children", Type::GEOMETRY_COLLECTION);
 	GeometryGroup::FillRuleProperty = DependencyProperty::Register (Type::GEOMETRYGROUP, "FillRule", new Value (FillRuleEvenOdd));
