@@ -1,5 +1,12 @@
 2009-01-06  Alan McGovern  <amcgovern@novell.com>
 
+	* frameworkelement.cpp:
+	* dependencyobject.cpp: Fixes so that StyleTests.NullLocalValue passes
+	again after my previous commit changing the handling of
+	GetValue/GetLocalValue.
+
+2009-01-06  Alan McGovern  <amcgovern@novell.com>
+
 	* cbinding.h:
 	* cbinding.cpp:
 	* dependencyobject.h:

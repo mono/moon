@@ -1153,14 +1153,14 @@ DependencyObject::GetValueWithError (Types *additional_types, Type::Kind whatami
 Value *
 DependencyObject::GetValue (DependencyProperty *property)
 {
-	Value *value =  (Value *) g_hash_table_lookup (current_values, property);
-	return value && !value->GetIsNull () ? value : property->GetDefaultValue ();
+	Value *value = GetValueNoDefault (property);
+	return value ? value : property->GetDefaultValue ();
 }
 
 Value *
 DependencyObject::GetLocalValue (DependencyProperty *property)
 {
-	return GetValueNoDefault (property);
+	return (Value *) g_hash_table_lookup (current_values, property);
 }
 
 Value *
@@ -1177,7 +1177,7 @@ DependencyObject::GetLocalValueWithError (Types *additional_types, DependencyPro
 Value *
 DependencyObject::GetValueNoDefault (DependencyProperty *property)
 {
-	Value *value = (Value *) g_hash_table_lookup (current_values, property);
+	Value *value =  (Value *) g_hash_table_lookup (current_values, property);
 	return value && !value->GetIsNull () ? value : NULL;
 }
 
@@ -1195,8 +1195,7 @@ DependencyObject::GetValueNoDefaultWithError (Types *additional_types, Dependenc
 void
 DependencyObject::ClearValue (DependencyProperty *property, bool notify_listeners)
 {
-	Value *current_value = GetValueNoDefault (property);
-	printf ("current value is: %p\n", current_value);
+	Value *current_value = (Value *) g_hash_table_lookup (current_values, property);
 
 	if (current_value == NULL) {
 		/* the property has the default value, nothing to do */
@@ -1217,9 +1216,8 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 		}
 	}
 
-	printf ("Removing");
 	g_hash_table_remove (current_values, property);
-	printf ("Removed");
+	
 	// we need to make this optional, as doing it for NameScope
 	// merging is killing performance (and noone should ever care
 	// about that property changing)

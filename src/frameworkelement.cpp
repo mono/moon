@@ -132,13 +132,14 @@ FrameworkElement::ClearValue (DependencyProperty *property, bool notify_listener
 	BindingExpressionBase *cur_expr = GetBindingExpression (property);
 	if (cur_expr)
 		ClearBindingExpression (property, cur_expr);
-
+	
 	Value *style_value = (Value*) GetValue (FrameworkElement::StyleProperty);
 
 	notify_listeners = notify_listeners && !style_value;
 
 	UIElement::ClearValue (property, notify_listeners);
 
+	g_hash_table_remove (styles, property);
 	if (style_value)
 		UpdateFromStyle (style_value->AsStyle ());
 }
@@ -151,7 +152,7 @@ FrameworkElement::GetLocalValue (DependencyProperty *property)
 		return binding;
 	if (g_hash_table_lookup (styles, property))
 		return NULL;
-	
+
 	return UIElement::GetLocalValue (property);
 }
 
@@ -243,10 +244,11 @@ FrameworkElement::UpdateFromStyle (Style *style)
 		if (!(property = DependencyProperty::GetDependencyProperty (GetType ()->GetKind (), propertyName))) {
 			continue;
 		}
-		
-		if (!GetValueNoDefault (property)) {
+
+		value = GetLocalValue (property);
+		if (!value) {
 			value = setter->GetValue (Setter::ValueProperty);
-			
+				
 			// Ensure we don't end up recursing forever - call the base method
 			MoonError error;
 			if (UIElement::SetValueWithErrorImpl(property, value, &error))
