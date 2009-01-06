@@ -1,5 +1,12 @@
 2009-01-06  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows/StyleTest.cs:
+	* System.Windows/VisualStateTest.cs:
+	* System.Windows/FrameworkElementTest.cs: Cosmetic - removing
+	[MoonlightBug] attributes which have been commented out
+
+2009-01-06  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/StyleTest.cs: Add an explanatory message
 
 2009-01-06  Alan McGovern  <amcgovern@novell.com>

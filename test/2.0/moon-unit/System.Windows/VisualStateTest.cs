@@ -46,7 +46,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-//		[MoonlightBug]
 		public void TestParse_NoName ()
 		{
 			VisualState vs = (VisualState)XamlReader.Load (@"<vsm:VisualState xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns:vsm=""clr-namespace:System.Windows;assembly=System.Windows""><Storyboard /></vsm:VisualState>");
@@ -54,7 +53,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-//		[MoonlightBug]
 		public void TestDefaults ()
 		{
 			VisualState st = new VisualState ();

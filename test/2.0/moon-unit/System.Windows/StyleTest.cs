@@ -96,7 +96,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-//		[MoonlightBug] // Button should default to NaN
 		public void InvalidValue()
 		{
 			Button b = new Button();
@@ -159,7 +158,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-//		[MoonlightBug]
 		public void UseSetterTwice()
 		{
 			Style s1 = new Style(typeof(Rectangle));
