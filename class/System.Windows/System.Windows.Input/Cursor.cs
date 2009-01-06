@@ -39,6 +39,8 @@ namespace System.Windows.Input {
 		IBeam,
 		Stylus,
 		Eraser,
+		SizeNS,
+		SizeWE,
 		None	
 	}
 

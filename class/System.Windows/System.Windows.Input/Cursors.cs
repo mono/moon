@@ -38,7 +38,7 @@ namespace System.Windows.Input {
 			get { return new Cursor (CursorType.Arrow); }
 		}
 		public static Cursor SizeWE {
-			get { throw new NotImplementedException(); }
+			get { return new Cursor (CursorType.SizeWE); }
 		}
 		public static Cursor Eraser {
 			get { return new Cursor (CursorType.Eraser); }
@@ -50,7 +50,7 @@ namespace System.Windows.Input {
 			get { return new Cursor (CursorType.Wait); }
 		}
 		public static Cursor SizeNS {
-			get { throw new NotImplementedException(); }
+			get { return new Cursor (CursorType.SizeNS); }
 		}
 		public static Cursor IBeam {
 			get { return new Cursor (CursorType.IBeam); }
