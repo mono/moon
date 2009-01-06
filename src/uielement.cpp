@@ -427,7 +427,8 @@ void
 UIElement::ElementRemoved (UIElement *item)
 {
 	Invalidate (item->GetSubtreeBounds());
-		
+	if (GetSurface ())
+		GetSurface()->RemoveDirtyElement (item);
 	item->CacheInvalidateHint ();
 	item->SetVisualParent (NULL);
 	item->ClearLoaded ();
@@ -447,6 +448,7 @@ UIElement::ElementAdded (UIElement *item)
 		item->OnLoaded ();
 	
 	UpdateBounds (true);
+	InvalidateMeasure ();
 }
 
 void
