@@ -134,6 +134,8 @@ enum MouseCursor {
 	MouseCursorIBeam,
 	MouseCursorStylus,
 	MouseCursorEraser,
+	MouseCursorSizeNS,
+	MouseCursorSizeWE,
 	MouseCursorNone	
 };
 

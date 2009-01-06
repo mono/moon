@@ -241,6 +241,12 @@ MoonWindowGtk::SetCursor (MouseCursor cursor)
 		case MouseCursorEraser:
 			c = gdk_cursor_new_from_pixbuf (gdk_display_get_default (), gdk_pixbuf_new_from_xpm_data ((const char**) eraser), 8, 8);
 			break;
+		case MouseCursorSizeNS:
+			c = gdk_cursor_new (GDK_SB_V_DOUBLE_ARROW);
+			break;
+		case MouseCursorSizeWE:
+			c = gdk_cursor_new (GDK_SB_H_DOUBLE_ARROW);
+			break;
 		case MouseCursorNone:
 			// Silverlight display no cursor if the enumeration value is invalid (e.g. -1)
 		default:
