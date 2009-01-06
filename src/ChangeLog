@@ -1,3 +1,9 @@
+2009-01-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* runtime.cpp: Add a null check in Surface::FocusElement since both
+	the C bindings and the MouseLeftButtonDown event can call it with a
+	NULL value causing a SIGSEGV.
+
 2009-01-05  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBox::OnApplyTemplate): Override. Insert a

@@ -1708,6 +1708,9 @@ Surface::generate_focus_change_events (EventObject *object)
 bool
 Surface::FocusElement (UIElement *focused)
 {
+	if (!focused)
+		return false;
+
 	if (focused == focused_element)
 		return true;
 
