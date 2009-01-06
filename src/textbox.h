@@ -115,6 +115,12 @@ class TextBox : public Control {
 	int maxlen;
 	int caret;
 	
+	static void key_down (EventObject *sender, EventArgs *args, void *closure);
+	static void key_up (EventObject *sender, EventArgs *args, void *closure);
+	
+	void OnKeyDown (KeyEventArgs *args);
+	void OnKeyUp (KeyEventArgs *args);
+	
 	//
 	// Private Property Accessors
 	//

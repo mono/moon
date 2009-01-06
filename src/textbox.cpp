@@ -273,6 +273,9 @@ class TextBuffer {
 
 TextBox::TextBox ()
 {
+	AddHandler (UIElement::KeyDownEvent, TextBox::key_down, this);
+	AddHandler (UIElement::KeyUpEvent, TextBox::key_up, this);
+	
 	hints = new TextLayoutHints (TextAlignmentLeft, LineStackingStrategyMaxHeight, 0.0);
 	
 	font = new TextFontDescription ();
@@ -294,9 +297,50 @@ TextBox::TextBox ()
 
 TextBox::~TextBox ()
 {
+	RemoveHandler (UIElement::KeyDownEvent, TextBox::key_down, this);
+	RemoveHandler (UIElement::KeyUpEvent, TextBox::key_up, this);
+	
 	delete buffer;
 	delete hints;
 	delete font;
+}
+
+void
+TextBox::OnKeyDown (KeyEventArgs *args)
+{
+	GdkModifierType state = (GdkModifierType) args->GetState ();
+	int key = args->GetKey ();
+	
+	// FIXME: so... we'll need to do a few things here:
+	// 1. interpret the key (insert a char or move the cursor, etc)
+	// 2. update state being mindful of the current state (caret, selection, etc)
+	// 3. register some sort of repeat timeout that expires when OnKeyUp() is called
+	//
+	// Probably a good idea to lift a lot of the logic from jackson's MWF code.
+	printf ("TextBox::OnKeyDown()\n");
+	buffer->Append ('a');
+	UpdateBounds (true);
+	Invalidate ();
+	
+	Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (TextBoxModelChangedLayout));
+}
+
+void
+TextBox::OnKeyUp (KeyEventArgs *args)
+{
+	// FIXME: unregister the repeat timeout
+}
+
+void
+TextBox::key_down (EventObject *sender, EventArgs *args, void *closure)
+{
+	((TextBox *) closure)->OnKeyDown ((KeyEventArgs *) args);
+}
+
+void
+TextBox::key_up (EventObject *sender, EventArgs *args, void *closure)
+{
+	((TextBox *) closure)->OnKeyUp ((KeyEventArgs *) args);
 }
 
 void
@@ -415,6 +459,8 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		 */
 	}
 	
+	// FIXME: we can probably get rid of the "dirty" state since
+	// TextBoxView should handle that now.
 	if (invalidate) {
 		if (dirty)
 			UpdateBounds (true);
