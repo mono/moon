@@ -46,7 +46,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug]
+		[MoonlightBug ("The XamlLoader should not call the managed properties when setting the value of 'Setter.Value'")]
 		public void AvailableBeforeLoaded ()
 		{
 			Style s = (Style)XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Button""><Setter Property=""Width"" Value=""10""/></Style>");

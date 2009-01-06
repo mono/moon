@@ -1,5 +1,9 @@
 2009-01-06  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows/StyleTest.cs: Add an explanatory message
+
+2009-01-06  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/StyleTest.cs:
 	* System.Windows/FrameworkElementTest.cs:
 	* System.Windows/SetterBaseCollectionTest.cs: Uncommented tests which
