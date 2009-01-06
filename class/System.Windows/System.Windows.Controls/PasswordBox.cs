@@ -85,7 +85,7 @@ namespace System.Windows.Controls
 
 		public void SelectAll ()
 		{
-			throw new NotImplementedException ();
+			NativeMethods.text_box_select_all (native);
 		}
 	}
 }

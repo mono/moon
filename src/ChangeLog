@@ -1,5 +1,14 @@
 2009-01-06  Alan McGovern  <amcgovern@novell.com>
 
+	* textbox.h:
+	* validators.h:
+	* validators.cpp:
+	* dependencyproperty.g.cpp: Ensure correct exception is thrown when a
+	null string is passed to PasswordBox.Password. Use correct range
+	validation for MaxLength.
+
+2009-01-06  Alan McGovern  <amcgovern@novell.com>
+
 	* frameworkelement.h:
 	* frameworkelement.cpp:
 	* dependencyproperty.g.cpp: Default value for FE.Height and FE.Width is

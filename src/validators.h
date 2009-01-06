@@ -30,6 +30,7 @@ public:
 	static ValueValidator IntGreaterThanZeroValidator;
 	static ValueValidator NonNullStringValidator;
 	static ValueValidator MediaAttributeCollectionValidator;
+	static ValueValidator PasswordValidator;
 	static ValueValidator StyleValidator;
 	static ValueValidator TemplateValidator;
 };

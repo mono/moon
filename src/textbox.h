@@ -274,9 +274,9 @@ class TextBoxView : public FrameworkElement {
 /* @Namespace=System.Windows.Controls */
 class PasswordBox : public TextBox {
  public:
-	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors,Validator=PositiveIntValidator */
+	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors,Validator=IntGreaterThanZeroValidator */
 	static DependencyProperty *MaxLengthProperty;
-	/* @PropertyType=string,DefaultValue=\"\",Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors,Validator=NonNullStringValidator */
+	/* @PropertyType=string,DefaultValue=\"\",Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors,Validator=PasswordValidator */
 	static DependencyProperty *PasswordProperty;
 	/* @PropertyType=char,DefaultValue=9679,Version=2.0,GenerateAccessors */
 	static DependencyProperty *PasswordCharProperty;

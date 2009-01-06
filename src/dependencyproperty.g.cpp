@@ -245,9 +245,9 @@ dependency_property_g_init (void)
 	ObjectKeyFrame::ValueProperty = DependencyProperty::Register (Type::OBJECTKEYFRAME, "Value", Type::DEPENDENCY_OBJECT);
 	Panel::BackgroundProperty = DependencyProperty::Register (Type::PANEL, "Background", Type::BRUSH);
 	Panel::ChildrenProperty = DependencyProperty::Register (Type::PANEL, "Children", Type::UIELEMENT_COLLECTION);
-	PasswordBox::MaxLengthProperty = DependencyProperty::RegisterFull (Type::PASSWORDBOX, "MaxLength", new Value (0), Type::INT32, false, false, false, NULL, Validators::PositiveIntValidator);
+	PasswordBox::MaxLengthProperty = DependencyProperty::RegisterFull (Type::PASSWORDBOX, "MaxLength", new Value (0), Type::INT32, false, false, false, NULL, Validators::IntGreaterThanZeroValidator);
 	PasswordBox::PasswordCharProperty = DependencyProperty::Register (Type::PASSWORDBOX, "PasswordChar", new Value (9679));
-	PasswordBox::PasswordProperty = DependencyProperty::RegisterFull (Type::PASSWORDBOX, "Password", new Value (""), Type::STRING, false, false, false, NULL, Validators::NonNullStringValidator);
+	PasswordBox::PasswordProperty = DependencyProperty::RegisterFull (Type::PASSWORDBOX, "Password", new Value (""), Type::STRING, false, false, false, NULL, Validators::PasswordValidator);
 	PasswordBox::SelectionBackgroundProperty = DependencyProperty::Register (Type::PASSWORDBOX, "SelectionBackground", Type::BRUSH);
 	PasswordBox::SelectionForegroundProperty = DependencyProperty::Register (Type::PASSWORDBOX, "SelectionForeground", Type::BRUSH);
 	Path::DataProperty = DependencyProperty::Register (Type::PATH, "Data", Type::GEOMETRY);
