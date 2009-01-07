@@ -1,3 +1,10 @@
+2009-01-07  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.Controls/ContentControlTest.cs: Add new test
+	cases and remove [MoonlightBug] on PeekProperties.
+	* System.Windows.Controls.Primitives/ButtonBaseTest.cs: Remove 
+	MoonlightBug on PeekProperties.
+
 2009-01-07  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* CursorsTest.cs: More test for cursors, including shared instance tests.

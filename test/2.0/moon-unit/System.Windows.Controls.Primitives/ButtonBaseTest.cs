@@ -150,7 +150,6 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void PeekProperties ()
 		{
 			ConcreteButtonBase cc = new ConcreteButtonBase ();

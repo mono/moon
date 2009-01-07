@@ -74,7 +74,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void PeekProperties ()
 		{
 			ContentControlPoker cc = new ContentControlPoker ();
@@ -107,6 +106,112 @@ namespace MoonTest.System.Windows.Controls {
 			// and not merged (as expected) with OnContentChanged
 			Assert.IsNull (cc.OldContent, "ContentTemplate/OldContent");
 			Assert.IsNull (cc.NewContent, "ContentTemplate/NewContent");
+		}
+
+		[TestMethod]
+		public void ContentShareString ()
+		{
+			ContentControl cc1 = new ContentControl ();
+			cc1.Content = "share strings is good for the karma";
+			ContentControl cc2 = new ContentControl ();
+			cc2.Content = cc1.Content;
+			Assert.AreEqual (cc1.Content, cc2.Content, "string");
+		}
+
+		void CanShare (object obj)
+		{
+			ContentControl cc1 = new ContentControl ();
+			cc1.Content = obj;
+			ContentControl cc2 = new ContentControl ();
+			cc2.Content = cc1.Content;
+			Assert.IsTrue (Object.ReferenceEquals (cc1.Content, cc2.Content), "non-DO");
+		}
+
+		[TestMethod]
+		public void ContentShareNonDependencyObject ()
+		{
+			CanShare (new object ());
+		}
+
+		public class ConcreteDependencyObject : DependencyObject {
+		}
+
+		[TestMethod]
+		public void ContentShareDependencyObject ()
+		{
+			CanShare (new ConcreteDependencyObject ());
+		}
+
+		void CanNotShare (FrameworkElement fe)
+		{
+			ContentControl cc1 = new ContentControl ();
+			Assert.IsNull (fe.Parent, "!Parent");
+			cc1.Content = fe;
+			Assert.IsTrue (Object.ReferenceEquals (cc1, fe.Parent), "Parent");
+
+			ContentControl cc2 = new ContentControl ();
+			Assert.Throws<InvalidOperationException> (delegate {
+				cc2.Content = fe;
+			}, "shared");
+
+			// remove it from cc1.Content and use it inside cc2
+			cc1.Content = null;
+			cc2.Content = fe;
+			Assert.IsTrue (Object.ReferenceEquals (cc2.Content, fe), "non-shared");
+		}
+
+		public class ConcreteFrameworkElement : FrameworkElement {
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void ContentShareFrameworkElement ()
+		{
+			CanNotShare (new ConcreteFrameworkElement ());
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void ContentShareWithCanvas ()
+		{
+			ConcreteFrameworkElement cfe = new ConcreteFrameworkElement ();
+			Assert.IsNull (cfe.Parent, "!Parent");
+
+			Canvas canvas = new Canvas ();
+			canvas.Children.Add (cfe);
+			Assert.IsNotNull (cfe.Parent, "Parent");
+
+			ContentControl cc = new ContentControl ();
+			Assert.Throws<ArgumentException> (delegate {
+				// there's a parent to 'cfe' so ArgumentException is thrown
+				cc.Content = cfe;
+			}, "shared canvas/content");
+			Assert.IsNull (cc.Content, "Content");
+		}
+
+		public class ContentControlSharer : ContentControl {
+
+			protected override void OnContentChanged (object oldContent, object newContent)
+			{
+				// don't call base to see if this is where the sharing is checked
+			}
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void OverrideContentShareControl ()
+		{
+			ContentControlSharer cc1 = new ContentControlSharer ();
+			cc1.Content = cc1;
+			ContentControlSharer cc2 = new ContentControlSharer ();
+			Assert.Throws<InvalidOperationException> (delegate {
+				cc2.Content = cc1;
+			}, "shared");
+
+			// remove it from cc1.Content and use it inside cc2
+			cc1.Content = null;
+			cc2.Content = cc1;
+			Assert.IsTrue (Object.ReferenceEquals (cc2.Content, cc1), "non-shared");
 		}
 	}
 }
