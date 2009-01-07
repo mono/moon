@@ -231,6 +231,7 @@ namespace System.Windows.Controls
         /// </summary> 
         public ContentControl()
         {
+		DefaultStyleKey = typeof (ContentControl);
         } 
  
         /// <summary>

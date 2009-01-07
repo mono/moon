@@ -1,3 +1,7 @@
+2009-01-07  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Controls/Src/ContentControl/ContentControl.cs: Set DefaultStyleKey
+
 2009-01-05  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* Controls/Src/ListBox/ListBox.cs: Remove dependence on SelectionMode
