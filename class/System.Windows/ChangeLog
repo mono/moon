@@ -1,3 +1,9 @@
+2009-01-07  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am: fix our embedding of themes/generic.xaml, and also
+	use the supplied MS one (we should likely c&p it into our tree and
+	add in the styles from msdn)
+
 2009-01-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* AutomationPeer.cs: Implement a few methods (to call *Core)

@@ -442,6 +442,9 @@ system_windows_sources =							\
 	$(MSCONTROLS)/Src/ToolTip/ToolTip.cs					\
 	$(MSCONTROLS)/Src/ToolTip/ToolTipService.cs
 
+XAML_RESOURCES = $(MSRUNTIMECONTROLS)/themes/generic.xaml,themes/generic.xaml
+XAML_RESOURCE_DEPS = $(MSRUNTIMECONTROLS)/themes/generic.xaml
+
 EXTRA_DIST = $(system_windows_sources) 	\
 	scripts/checks.cs 			\
 	scripts/README				\
@@ -455,15 +458,17 @@ EXTRA_DIST = $(system_windows_sources) 	\
 	System.Windows.Input/ChangeLog		\
 	System.Windows.Media.Animation/ChangeLog\
 	System.Windows.Media/ChangeLog		\
-	System.Windows.Shapes/ChangeLog		\
-	System.Windows.Controls/generic.xaml
+	System.Windows.Shapes/ChangeLog
+
+$(assembly).g.resources: $(XAML_RESOURCES_DEPS)
+	respack $@ $(XAML_RESOURCES)
 
 $(MSCONTROLS)/Resource.resources: $(MSCONTROLS)/Src/Resource.resx
 	resgen2 $(MSCONTROLS)/Src/Resource.resx $(MSCONTROLS)/Data/src/Resource.resx $(MSCONTROLS)/Extended/Src/Resource.resx $(MSCONTROLS)/Resource.resources
 
-$(assemblysl): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources
+$(assemblysl): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
 	$(SMCS) $(NET_2_1_ASSEMBLY_DEPS) -target:library -out:$@ $(system_windows_sources) -d:NET_2_1 -keyfile:$(srcdir)/../silverlight.pub -delaysign+ \
-		-resource:$(MSCONTROLS)/Resource.resources,System.Windows.Controls.Resource.resources -resource:$(srcdir)/System.Windows.Controls/generic.xaml,themes/generic.xaml
+		-resource:$(MSCONTROLS)/Resource.resources,System.Windows.Controls.Resource.resources -resource:$(assembly).g.resources
 	sn -q -R $@ $(srcdir)/../mono.snk
 
 $(assemblydesktop): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources
@@ -472,6 +477,7 @@ $(assemblydesktop): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.re
 clean-local:
 	-rm -rf $(assemblies) check-static check-dynamic
 	-rm -rf *.exe *.mdb tester.cs
+	-rm -rf $(assembly).g.resources
 
 if INCLUDE_BROWSER_MANAGED_CODE
 install-sl:
