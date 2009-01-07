@@ -34,6 +34,11 @@ using System.Collections.Generic;
 
 namespace System.Windows.Controls {
 	public partial class TextBox : Control {
+		private void Initialize ()
+		{
+			DefaultStyleKey = typeof (TextBox);
+		}
+
 		public FontSource FontSource {
 			get; set;
 		}

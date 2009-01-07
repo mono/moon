@@ -120,6 +120,18 @@ namespace System.Windows.Controls {
 			return DependencyObject.FromIntPtr (NativeMethods.control_get_template_child (native, childName));
 		}
 
+		[MonoTODO]
+		internal override void InvokeLoaded ()
+		{
+			if (DefaultStyleKey != null) {
+				Style s = Application.Current.GetGenericXamlStyleFor ((Type)DefaultStyleKey);
+
+				// XXX do something with the Style here.
+			}
+
+			base.InvokeLoaded ();
+		}
+
 		internal override void InvokeGotFocus (RoutedEventArgs e)
 		{
 			OnGotFocus (e);
