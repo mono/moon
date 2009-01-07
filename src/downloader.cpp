@@ -143,9 +143,32 @@ Downloader::GetResponseText (const char *PartName, guint64 *size)
 	// Basically if a very small file is downloaded (<64KB in mozilla as of Jan5/09
 	// it can be inserted into a shared cache map, and served up to us without ever
 	// giving us the filename for a NP_ASFILE request.
-	if (buffer != NULL) {
-		*size = total;
-		return g_strdup (buffer);
+	if (PartName == NULL && buffer != NULL) {
+		char *data;
+		char b[4096];
+		ssize_t nread;
+		GByteArray *buf;
+
+		TextStream *stream = new TextStream ();
+
+		if (!stream->OpenBuffer (buffer, total)) {
+			delete stream;
+			return NULL;
+		}
+
+		buf = g_byte_array_new ();
+		while ((nread = stream->Read (b, sizeof (b))) > 0)
+			g_byte_array_append (buf, (const guint8 *) b, nread);
+
+		*size = buf->len;
+
+		g_byte_array_append (buf, (const guint8 *) "", 1);
+		data = (char *) buf->data;
+
+		g_byte_array_free (buf, false);
+		delete stream;
+
+		return data;
 	}
 
 	return internal_dl->GetResponseText (PartName, size);
@@ -469,6 +492,11 @@ Downloader::SetFilename (const char *fname)
 {
 	LOG_DOWNLOADER ("Downloader::SetFilename (%s)\n", fname);
 	
+	if (buffer) {
+		g_free (buffer);
+		buffer = NULL;
+	}
+
 	if (filename)
 		g_free (filename);
 

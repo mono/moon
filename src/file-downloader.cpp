@@ -96,7 +96,7 @@ FileDownloader::GetResponseText (const char *partname, guint64 *size)
 	if (st.st_size > 0) {
 		stream = new TextStream ();
 		
-		if (!stream->Open (path, true)) {
+		if (!stream->OpenFile (path, true)) {
 			delete stream;
 			g_free (path);
 			return NULL;

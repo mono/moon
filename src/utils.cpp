@@ -379,22 +379,43 @@ static const char *encoding_names[] = { "UTF-16BE", "UTF-16LE", "UTF-32BE", "UTF
 
 
 bool
-TextStream::Open (const char *filename, bool force)
+TextStream::OpenBuffer (const char *buf, int size)
 {
-	Encoding encoding = UNKNOWN;
-	gunichar2 bom;
-	ssize_t nread;
-	
+	fmode = false;
+
+	textbufptr = textbuf = (char *) buf;
+	textbufsize = size;	
+
+	if (size > 0)
+		eof = false;
+
+	return ReadBOM (false);
+}
+
+bool
+TextStream::OpenFile (const char *filename, bool force)
+{
+	fmode = true;
+
 	if (fd != -1)
 		Close ();
 	
 	if ((fd = open (filename, O_RDONLY)) == -1)
 		return false;
+
+	return ReadBOM (force);
+}
+
+bool
+TextStream::ReadBOM (bool force)
+{
+	Encoding encoding = UNKNOWN;
+	gunichar2 bom;
+	ssize_t nread;
 	
 	// prefetch the first chunk of data in order to determine encoding
-	if ((nread = read_internal (fd, buffer, sizeof (buffer))) == -1) {
-		close (fd);
-		fd = -1;
+	if ((nread = ReadInternal (buffer, sizeof (buffer))) == -1) {
+		Close ();
 		
 		return false;
 	}
@@ -440,8 +461,7 @@ TextStream::Open (const char *filename, bool force)
 	
 	if (encoding == UNKNOWN) {
 		if (!force) {
-			close (fd);
-			fd = -1;
+			Close ();
 			
 			return false;
 		}
@@ -450,8 +470,7 @@ TextStream::Open (const char *filename, bool force)
 	}
 	
 	if (encoding != UTF8 && (cd = g_iconv_open ("UTF-8", encoding_names[encoding])) == (GIConv) -1) {
-		close (fd);
-		fd = -1;
+		Close ();
 		
 		return false;
 	}
@@ -495,9 +514,6 @@ TextStream::Read (char *buf, size_t n)
 	ssize_t nread;
 	size_t r;
 	
-	if (fd == -1)
-		return -1;
-	
 	do {
 		if (cd != (GIConv) -1) {
 			if (g_iconv (cd, &inbuf, &inleft, &outbuf, &outleft) == (size_t) -1) {
@@ -533,7 +549,7 @@ TextStream::Read (char *buf, size_t n)
 			memmove (buffer, inbuf, inleft);
 		
 		inbuf = buffer + inleft;
-		if ((nread = read_internal (fd, inbuf, sizeof (buffer) - inleft)) <= 0) {
+		if ((nread = ReadInternal (inbuf, sizeof (buffer) - inleft)) <= 0) {
 			eof = true;
 			break;
 		}
@@ -551,6 +567,29 @@ out:
 	bufptr = inbuf;
 	
 	return (outbuf - buf);
+}
+
+ssize_t
+TextStream::ReadInternal (char *buffer, ssize_t size)
+{
+	if (fmode) {
+		return read_internal (fd, buffer, size);
+	} else {
+		ssize_t nread = size;
+
+		if (eof)
+			return -1;
+
+		if (textbufptr + size > textbuf + textbufsize) {
+			eof = true;
+			nread = textbuf + textbufsize - textbufptr;
+		}
+		memcpy (buffer, textbufptr, nread);
+
+		textbufptr += nread;
+				
+		return nread;
+	}
 }
 
 

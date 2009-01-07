@@ -1,3 +1,11 @@
+2009-01-07  Geoff Norton  <gnorton@novell.com>
+
+	* xaml.cpp, file-downloader.cpp: TextStream::Open has been renamed
+	to TextStream::OpenFile
+	* utils.h|cpp: Refactor TextStream to read in-memory and file buffers
+	* downloader.cpp: GetResponseText needs to ensure it returns data in
+	UTF-8, and doesn't handle zip files.
+
 2009-01-07  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBox::OnKeyDown): Added support for keyboard
