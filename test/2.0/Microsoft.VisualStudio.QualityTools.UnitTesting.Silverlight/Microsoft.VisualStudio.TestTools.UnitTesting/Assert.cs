@@ -257,6 +257,21 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 			IsInstanceOfType (value, expectedType, string.Format (message, parameters));
 		}
 
+		public static void Fail ()
+		{
+			throw new AssertFailedException (string.Empty);
+		}
+
+		public static void Fail (string message)
+		{
+			throw new AssertFailedException (message);
+		}
+
+		public static void Fail (string message, params object [] parameters)
+		{
+			throw new AssertFailedException (string.Format (message, parameters));
+		}
+		
 		// Moonlight addition
 		public static void Throws<TException> (TestCode code) where TException : Exception
 		{
