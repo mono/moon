@@ -109,7 +109,7 @@ namespace Mono {
 					// marshall back to the .NET type that we simply serialised as int for unmanaged usage
 					int i32 = val->u.i32;
 					if (type == typeof (System.Windows.Input.Cursor))
-						return new Cursor ((CursorType) i32);
+						return (CursorType)i32 == CursorType.Default ? null : new Cursor ((CursorType) i32);
 					else if (type == typeof (FontStretch))
 						return new FontStretch ((FontStretchKind) i32);
 					else if (type == typeof (FontStyle))

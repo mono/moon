@@ -44,7 +44,7 @@ namespace System.Windows.Input {
 		None	
 	}
 
-	public class Cursor
+	public sealed class Cursor
 	{
 		internal CursorType cursor;
 
