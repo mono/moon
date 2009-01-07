@@ -46,6 +46,9 @@ namespace System.Windows {
 			measure_cb = new MeasureOverrideCallback (InvokeMeasureOverride);
 			arrange_cb = new ArrangeOverrideCallback (InvokeArrangeOverride);
 			NativeMethods.framework_element_register_managed_overrides (native, measure_cb, arrange_cb);
+
+			// we always need to attach this event to allow for Controls to load their default style
+			Events.AddHandler (this, "Loaded", Events.loaded);
 		}
 
 		public object FindName (string name)
@@ -130,16 +133,8 @@ namespace System.Windows {
 		}
 
 		public event RoutedEventHandler Loaded {
-			add {
-				if (events[LoadedEvent_] == null)
-					Events.AddHandler (this, "Loaded", Events.loaded);
-				events.AddHandler (LoadedEvent_, value);
-			}
-			remove {
-				events.RemoveHandler (LoadedEvent_, value);
-				if (events[LoadedEvent_] == null)
-					Events.RemoveHandler (this, "Loaded", Events.loaded);
-			}
+			add { events.AddHandler (LoadedEvent_, value); }
+			remove { events.RemoveHandler (LoadedEvent_, value); }
 		}
 
 		public event SizeChangedEventHandler SizeChanged {
@@ -155,7 +150,7 @@ namespace System.Windows {
 			}
 		}
 
-		internal void InvokeLoaded ()
+		internal virtual void InvokeLoaded ()
 		{
 			// this event is special, in that it is a
 			// RoutedEvent that doesn't bubble, so we

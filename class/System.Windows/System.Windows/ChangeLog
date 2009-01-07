@@ -1,3 +1,19 @@
+2009-01-07  Chris Toshok  <toshok@ximian.com>
+
+	* DependencyObject.g.cs: regen.
+
+	* FrameworkElement.cs (Initialize): we always need to attach to
+	the Loaded event (or at least there are more reasons to now), so
+	we can tell in managed code if we need to load generic.xaml for a
+	control's style.
+	(InvokeLoaded): make this virtual so Control can override it.
+	(Loaded): remove the Events.* stuff from here.  assume the
+	unmanaged handler is always registered.
+
+	* Application.cs (Application.GetGenericXamlStyleFor): implement
+	by loading the generic.xaml resource, parsing it, and then looking
+	up the type in it.
+
 2009-01-06  Alan McGovern  <amcgovern@novell.com>
 
 	* Setter.cs: Implement proper validation of Setters and also correctly

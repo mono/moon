@@ -106,6 +106,47 @@ namespace System.Windows {
 			}
 		}				
 
+
+		Dictionary<Assembly, ResourceDictionary> assemblyToGenericXaml = new Dictionary<Assembly, ResourceDictionary>();
+
+		internal Style GetGenericXamlStyleFor (Type type)
+		{
+			ResourceDictionary rd = null;
+
+			if (assemblyToGenericXaml.ContainsKey (type.Assembly)) {
+				rd = assemblyToGenericXaml[type.Assembly];
+			}
+			else {
+				Console.WriteLine ("trying to load: /{0};component/themes/generic.xaml",
+						   type.Assembly.GetName().Name);
+				StreamResourceInfo info = GetResourceStream (new Uri (string.Format ("/{0};component/themes/generic.xaml",
+												     type.Assembly.GetName().Name), UriKind.Relative));
+				if (info != null) {
+					using (StreamReader sr = new StreamReader (info.Stream)) {
+						string generic_xaml = sr.ReadToEnd();
+
+						ManagedXamlLoader loader = new ManagedXamlLoader (surface, PluginHost.Handle);
+
+						try {
+							rd = loader.CreateDependencyObjectFromString (generic_xaml, false) as ResourceDictionary;
+						}
+						catch (Exception e) {
+							Console.WriteLine ("failed generic.xaml parsing:");
+							Console.WriteLine (e);
+						}
+					}
+				}
+
+				if (rd == null)
+					// create an empty one so we don't fall into this block again for this assembly
+					rd = new ResourceDictionary();
+
+				assemblyToGenericXaml[type.Assembly] = rd;
+			}
+
+			return rd[type.FullName] as Style;
+		}
+
 		/// <summary>
 		///    Initializes the Application singleton by creating the Application from the XAP file
 		/// </summary>
