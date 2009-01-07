@@ -143,10 +143,10 @@ Control::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 Control::OnLoaded ()
 {
+	FrameworkElement::OnLoaded ();
+
 	// XXX we need some ordering work here
 	ApplyTemplate ();
-
-	FrameworkElement::OnLoaded ();
 }
 
 bool

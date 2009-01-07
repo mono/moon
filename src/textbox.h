@@ -107,6 +107,7 @@ class TextBuffer;
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
+/* @CallInitialize */
 class TextBox : public Control {
 	TextFontDescription *font;
 	TextSelection selection;

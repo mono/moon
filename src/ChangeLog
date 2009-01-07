@@ -1,3 +1,12 @@
+2009-01-07  Chris Toshok  <toshok@ximian.com>
+
+	* textbox.h (class TextBox): add @CallInitialize so we can set the
+	DefaultStyleKey.
+
+	* control.cpp (Control::OnLoaded): move FrameworkElement::OnLoaded
+	call to before ApplyTemplate(), as the template isn't applied
+	until after the Loaded event is fired.
+
 2009-01-07  Geoff Norton  <gnorton@novell.com>
 
 	* downloader.h|cpp: Work around mozilla bug #444160 by keeping an in
