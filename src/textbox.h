@@ -82,6 +82,7 @@ class TextChangedEventArgs : public RoutedEventArgs {
 
 enum TextBoxModelChangeType {
 	TextBoxModelChangedNothing,
+	TextBoxModelChangedCursorPosition,
 	TextBoxModelChangedSelection,
 	TextBoxModelChangedLayout,
 	TextBoxModelChangedBrush
@@ -243,8 +244,26 @@ class TextBoxView : public FrameworkElement {
 	TextLayout *layout;
 	bool dirty;
 	
+	glong blink_timeout;
+	bool cursor_visible;
+	Rect cursor;
+	
+	static void focus_out (EventObject *sender, EventArgs *args, gpointer closure);
+	static void focus_in (EventObject *sender, EventArgs *args, gpointer closure);
+	void OnFocusOut (EventArgs *args);
+	void OnFocusIn (EventArgs *args);
+	
 	static void model_changed (EventObject *sender, EventArgs *args, gpointer closure);
-	void ModelChanged (TextBoxModelChangedEventArgs *args);
+	void OnModelChanged (TextBoxModelChangedEventArgs *args);
+	
+	static gboolean blink (void *user_data);
+	void ConnectBlinkTimeout (guint multiplier);
+	void DelayCursorBlink ();
+	void BeginCursorBlink ();
+	void EndCursorBlink ();
+	void ShowCursor ();
+	void HideCursor ();
+	bool Blink ();
 	
 	void Layout (cairo_t *cr);
 	void Paint (cairo_t *cr);

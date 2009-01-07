@@ -16,6 +16,7 @@
 #include <cairo.h>
 #include <gdk/gdkevents.h>
 #include "dependencyobject.h"
+#include "keyboard.h"
 #include "enums.h"
 
 class StylusInfo;
@@ -171,24 +172,6 @@ class MouseEventArgs : public RoutedEventArgs {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	StylusPointCollection *GetStylusPoints (UIElement *ink_presenter);
-};
-
-class Keyboard {
-	static ModifierKeys modifiers;
-	static GHashTable* pressedKeys;
-
- public:
-	/* @GenerateCBinding,GeneratePInvoke */
-	static ModifierKeys GetModifiers ();
-
-	static void SetModifiers (ModifierKeys m);
-
-	static void OnKeyPress (Key key);
-	static void OnKeyRelease (Key key);
-
-	static bool IsKeyPressed (Key key);
-
-	static Key MapKeyValToKey (guint keyval);
 };
 
 #endif /* __EVENTARGS_H__ */

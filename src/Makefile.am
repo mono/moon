@@ -46,6 +46,7 @@ libmoon_include_headers = 	\
 	grid.h			\
 	http-streaming.h	\
 	internal-downloader.h	\
+	keyboard.h		\
 	layout.h		\
 	libmoon.h		\
 	list.h			\
@@ -125,6 +126,7 @@ libmoon_la_SOURCES = 		\
 	frameworkelement.cpp	\
 	geometry.cpp		\
 	http-streaming.cpp	\
+	keyboard.cpp		\
 	layout.cpp		\
 	list.cpp		\
 	media.cpp		\

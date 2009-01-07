@@ -1,3 +1,14 @@
+2009-01-07  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBox::OnKeyDown): Added support for keyboard
+	input a bit. Cutting a lot of corners for now, but oh well.
+	(TextBoxView::TextBoxView): Hooked up some cursor blinking
+	action. We don't actually render the cursor yet tho.
+
+	* keyboard.cpp (Keyboard): Moved into it's own source file from
+	eventargs.cpp. I have a sneaking suspicion that this logic will
+	get large and complicated someday soon.
+
 2009-01-07  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* dependencyobject.cpp (set_surface): Add null check since the 

@@ -308,8 +308,8 @@ TextBox::~TextBox ()
 void
 TextBox::OnKeyDown (KeyEventArgs *args)
 {
-	GdkModifierType state = (GdkModifierType) args->GetState ();
-	int key = args->GetKey ();
+	ModifierKeys modifiers = (ModifierKeys) args->GetState ();
+	Key key = (Key) args->GetKey ();
 	
 	// FIXME: so... we'll need to do a few things here:
 	// 1. interpret the key (insert a char or move the cursor, etc)
@@ -318,17 +318,56 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 	//
 	// Probably a good idea to lift a lot of the logic from jackson's MWF code.
 	printf ("TextBox::OnKeyDown()\n");
-	buffer->Append ('a');
-	UpdateBounds (true);
-	Invalidate ();
 	
-	Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (TextBoxModelChangedLayout));
+	if (Keyboard::KeyIsChar (modifiers, key)) {
+		gunichar c = Keyboard::KeyToChar (modifiers, key);
+		
+		if (selection.length > 0) {
+			// replace the currently selected text
+			buffer->Replace (selection.start, selection.length, &c, 1);
+			caret = selection.start + 1;
+		} else {
+			// insert the text at the caret position
+			buffer->Insert (caret, c);
+			caret++;
+		}
+		
+		selection.start = -1;
+		selection.length = 0;
+		
+		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (TextBoxModelChangedLayout));
+	} else if (Keyboard::KeyIsMovement (modifiers, key)) {
+		//Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (TextBoxModelChangedCursorPosition));
+	} else if (key == KeyBACKSPACE || key == KeyDELETE) {
+		if (selection.length > 0) {
+			// cut the currently selected text
+			buffer->Cut (selection.start, selection.length);
+			caret = selection.start;
+			selection.start = -1;
+			selection.length = 0;
+		} else if (key == KeyBACKSPACE) {
+			if (caret > 0) {
+				// cut the char before the cursor position
+				buffer->Cut (caret - 1, 1);
+				caret--;
+			}
+		} else {
+			if (buffer->len > caret) {
+				// cut the char after the cursor position
+				buffer->Cut (caret, 1);
+			}
+		}
+		
+		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (TextBoxModelChangedLayout));
+	}
+	
+	// FIXME: register a key repeat timeout?
 }
 
 void
 TextBox::OnKeyUp (KeyEventArgs *args)
 {
-	// FIXME: unregister the repeat timeout
+	// FIXME: unregister the key repeat timeout?
 }
 
 void
@@ -389,7 +428,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		// FIXME: is the caret/selection updating logic correct?
 		
 		text = g_utf8_to_ucs4_fast (str, -1, &textlen);
-		if (selection.start >= 0) {
+		if (selection.length > 0) {
 			// replace the currently selected text
 			buffer->Replace (selection.start, selection.length, text, textlen);
 			caret = selection.start + textlen;
@@ -540,15 +579,131 @@ TextBox::SelectAll ()
 // TextBoxView
 //
 
+#define CURSOR_ON_MULTIPLIER 2
+#define CURSOR_OFF_MULTIPLIER 1
+#define CURSOR_DELAY_MULTIPLIER 3
+#define CURSOR_DIVIDER 3
+
 TextBoxView::TextBoxView ()
 {
+	AddHandler (UIElement::LostFocusEvent, TextBoxView::focus_out, this);
+	AddHandler (UIElement::GotFocusEvent, TextBoxView::focus_in, this);
+	
+	cursor = Rect (0, 0, 0, 0);
 	layout = new TextLayout ();
+	cursor_visible = false;
+	blink_timeout = 0;
 	dirty = false;
 }
 
 TextBoxView::~TextBoxView ()
 {
+	TextBox *textbox = GetTextBox ();
+	
+	if (textbox)
+		textbox->RemoveHandler (TextBox::ModelChangedEvent, TextBoxView::model_changed, this);
+	
+	RemoveHandler (UIElement::LostFocusEvent, TextBoxView::focus_out, this);
+	RemoveHandler (UIElement::GotFocusEvent, TextBoxView::focus_in, this);
+	
+	if (blink_timeout != 0)
+		g_source_remove (blink_timeout);
+	
 	delete layout;
+}
+
+gboolean
+TextBoxView::blink (void *user_data)
+{
+	return ((TextBoxView *) user_data)->Blink ();
+}
+
+void
+TextBoxView::ConnectBlinkTimeout (guint multiplier)
+{
+	blink_timeout = g_timeout_add (1000 * multiplier / CURSOR_DIVIDER, TextBoxView::blink, this);
+}
+
+bool
+TextBoxView::Blink ()
+{
+	guint multiplier;
+	
+	if (cursor_visible) {
+		multiplier = CURSOR_OFF_MULTIPLIER;
+		HideCursor ();
+	} else {
+		multiplier = CURSOR_ON_MULTIPLIER;
+		ShowCursor ();
+	}
+	
+	ConnectBlinkTimeout (multiplier);
+	
+	return false;
+}
+
+void
+TextBoxView::DelayCursorBlink ()
+{
+	TextBox *textbox = GetTextBox ();
+	
+	if (textbox->GetSelection ()->length == 0) {
+		if (blink_timeout != 0)
+			g_source_remove (blink_timeout);
+		
+		ConnectBlinkTimeout (CURSOR_DELAY_MULTIPLIER);
+		ShowCursor ();
+	}
+}
+
+void
+TextBoxView::BeginCursorBlink ()
+{
+	TextBox *textbox = GetTextBox ();
+	
+	if (textbox->GetSelection ()->length == 0) {
+		// no selection, proceed with blinking
+		if (blink_timeout == 0) {
+			ConnectBlinkTimeout (CURSOR_ON_MULTIPLIER);
+			ShowCursor ();
+		}
+	} else {
+		// temporarily disable blinking during selection
+		if (blink_timeout != 0) {
+			g_source_remove (blink_timeout);
+			blink_timeout = 0;
+		}
+		
+		cursor_visible = true;
+	}
+}
+
+void
+TextBoxView::EndCursorBlink ()
+{
+	if (blink_timeout != 0) {
+		g_source_remove (blink_timeout);
+		blink_timeout = 0;
+	}
+	
+	if (cursor_visible)
+		HideCursor ();
+}
+
+void
+TextBoxView::ShowCursor ()
+{
+	// FIXME: we may need to verify that 'cursor' is properly initialized?
+	cursor_visible = true;
+	Invalidate (cursor);
+}
+
+void
+TextBoxView::HideCursor ()
+{
+	// FIXME: we may need to verify that 'cursor' is properly initialized?
+	cursor_visible = false;
+	Invalidate (cursor);
 }
 
 void
@@ -613,7 +768,13 @@ TextBoxView::Paint (cairo_t *cr)
 }
 
 void
-TextBoxView::ModelChanged (TextBoxModelChangedEventArgs *args)
+TextBoxView::model_changed (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	((TextBoxView *) closure)->OnModelChanged ((TextBoxModelChangedEventArgs *) args);
+}
+
+void
+TextBoxView::OnModelChanged (TextBoxModelChangedEventArgs *args)
 {
 	switch (args->changed) {
 	case TextBoxModelChangedSelection:
@@ -640,9 +801,27 @@ TextBoxView::ModelChanged (TextBoxModelChangedEventArgs *args)
 }
 
 void
-TextBoxView::model_changed (EventObject *sender, EventArgs *args, gpointer closure)
+TextBoxView::focus_out (EventObject *sender, EventArgs *args, gpointer closure)
 {
-	((TextBoxView *) closure)->ModelChanged ((TextBoxModelChangedEventArgs *) args);
+	((TextBoxView *) closure)->OnFocusOut (args);
+}
+
+void
+TextBoxView::OnFocusOut (EventArgs *args)
+{
+	EndCursorBlink ();
+}
+
+void
+TextBoxView::focus_in (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	((TextBoxView *) closure)->OnFocusIn (args);
+}
+
+void
+TextBoxView::OnFocusIn (EventArgs *args)
+{
+	BeginCursorBlink ();
 }
 
 void
