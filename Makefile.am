@@ -2,6 +2,7 @@ MONO_SUBDIRS=
 PERF_SUBDIR=
 
 if INCLUDE_MANAGED_CODE
+BUILD_TOOLS = tools/respack
 MONO_SUBDIRS += class
 if INCLUDE_PERFORMANCE
 PERF_SUBDIR += perf
@@ -21,7 +22,7 @@ endif INCLUDE_TESTING
 TOOLS_SUBDIR = tools
 endif !PLUGIN_INSTALL
 
-SUBDIRS = $(subdirs) src $(MONO_SUBDIRS) $(TOOLS_SUBDIR) plugin $(TEST_SUBDIR) $(PERF_SUBDIR) $(MONO_EXAMPLES)
+SUBDIRS = $(subdirs) $(BUILD_TOOLS) src $(MONO_SUBDIRS) $(TOOLS_SUBDIR) plugin $(TEST_SUBDIR) $(PERF_SUBDIR) $(MONO_EXAMPLES)
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA=moon.pc
