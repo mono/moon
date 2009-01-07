@@ -75,6 +75,7 @@ class Downloader : public DependencyObject {
 	gint64 total;
 	
 	char *filename;
+	char *buffer;
 	
 	char *failed_msg;
 	bool send_queued;
