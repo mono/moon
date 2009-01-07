@@ -1,3 +1,7 @@
+2009-01-07  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* PresentationFrameworkCollection.cs: Add missing validations
+
 2009-01-07  Chris Toshok  <toshok@ximian.com>
 
 	* DependencyObject.g.cs: regen.

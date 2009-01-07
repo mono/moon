@@ -118,6 +118,9 @@ namespace System.Windows {
 
 		internal void AddImpl (T value)
 		{
+			if (value == null)
+				throw new ArgumentNullException ();
+
 			Value v = Value.FromObject (value);
 			NativeMethods.collection_add (native, ref v);
 			NativeMethods.value_free_value (ref v);
@@ -125,6 +128,11 @@ namespace System.Windows {
 
 		internal void InsertImpl (int index, T value)
 		{
+			if (value == null)
+				throw new ArgumentNullException ();
+			if (index < 0)
+				throw new ArgumentOutOfRangeException ();
+
 			Value v = Value.FromObject (value);
 			NativeMethods.collection_insert (native, index, ref v);
 			NativeMethods.value_free_value (ref v);
@@ -132,6 +140,9 @@ namespace System.Windows {
 
 		internal bool RemoveImpl (T value)
 		{
+			if (value == null)
+				return false;
+
 			Value v = Value.FromObject (value);
 			bool rv = NativeMethods.collection_remove (native, ref v);
 			NativeMethods.value_free_value (ref v);
@@ -155,6 +166,9 @@ namespace System.Windows {
 
 		internal int IndexOfImpl (T value)
 		{
+			if (value == null)
+				return -1;
+
 			Value v = Value.FromObject (value);
 			int rv = NativeMethods.collection_index_of (native, ref v);
 			NativeMethods.value_free_value (ref v);
@@ -352,7 +366,7 @@ namespace System.Windows {
 		internal virtual bool ContainsImpl (object value)
 		{
 			if (value == null)
-				throw new ArgumentNullException ("value");
+				return false;
 
 			Value v = Value.FromObject (value);
 			return NativeMethods.collection_index_of (native, ref v) != -1;
