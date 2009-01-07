@@ -16,6 +16,7 @@ namespace Moonlight {
 		private List<string> mdb_files;
 		private List<string> csharp_files;
 		private List<string> xaml_files;
+		private Dictionary<string, string> resources;
 		private string top_builddir = null; // Defaults to null
 		private bool desktop = false; // Defaults to false
 		private bool generate_html = true; // Defaults to true
@@ -133,6 +134,14 @@ namespace Moonlight {
 			}
 		}
 
+		public Dictionary<string, string> Resources {
+			get {
+				if (resources == null)
+					resources = new Dictionary<string, string> ();
+				return resources;
+			}
+		}
+		
 		public int Run ()
 		{
 			return (CreateManifest ()
@@ -228,6 +237,9 @@ namespace Moonlight {
 				respack_args.AppendFormat (" \"{0}\"", xaml_file);
 			}
 
+			foreach (KeyValuePair<string, string> pair in Resources)
+				respack_args.AppendFormat (" \"{0},{1}\"", pair.Value, pair.Key);
+			
 			return RunTool ("respack",
 					"tools/respack/respack.exe",
 					respack_args.ToString ());
@@ -366,6 +378,21 @@ namespace Moonlight {
 			os.WriteOptionDescriptions (Console.Out);
 		}
 
+		void AddResource (string v)
+		{
+			int comma;
+			
+			if (string.IsNullOrEmpty (v))
+				return;
+			
+			comma = v.IndexOf (',');
+			if (comma == -1) {
+				Resources.Add (Path.GetFileName (v), v);
+			} else {
+				Resources.Add (v.Substring (comma + 1), v.Substring (0, comma)); 
+			}
+		}
+		
 		public static int Main (string [] args)
 		{
 			MXap mxap = new MXap ();
@@ -384,7 +411,8 @@ namespace Moonlight {
 				{ "builddirhack=", v => mxap.TopBuildDir = v },
 				{ "r:|reference:", v => mxap.ExternalAssemblies.Add (v) },
 				{ "l|list-generated", v => mxap.ListGenerated = v != null },
-				{ "v|verbose", v => mxap.Verbose =  v != null }
+				{ "v|verbose", v => mxap.Verbose =  v != null },
+				{ "res|resource:", v => mxap.AddResource (v) }
 			};
 
 			List<string> extra = null;

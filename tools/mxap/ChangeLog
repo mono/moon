@@ -1,3 +1,7 @@
+2009-01-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mxap.cs: Add support for adding resources.
+
 2008-12-10  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* mxap.cs: pass the -root: arg to xamlg
