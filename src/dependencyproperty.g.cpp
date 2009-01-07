@@ -376,7 +376,7 @@ dependency_property_g_init (void)
 	TranslateTransform::XProperty = DependencyProperty::Register (Type::TRANSLATETRANSFORM, "X", new Value (0.0));
 	TranslateTransform::YProperty = DependencyProperty::Register (Type::TRANSLATETRANSFORM, "Y", new Value (0.0));
 	UIElement::ClipProperty = DependencyProperty::Register (Type::UIELEMENT, "Clip", Type::GEOMETRY);
-	UIElement::CursorProperty = DependencyProperty::Register (Type::UIELEMENT, "Cursor", Type::INT32);
+	UIElement::CursorProperty = DependencyProperty::Register (Type::UIELEMENT, "Cursor", new Value (MouseCursorDefault));
 	UIElement::IsHitTestVisibleProperty = DependencyProperty::Register (Type::UIELEMENT, "IsHitTestVisible", new Value (true));
 	UIElement::OpacityMaskProperty = DependencyProperty::Register (Type::UIELEMENT, "OpacityMask", Type::BRUSH);
 	UIElement::OpacityProperty = DependencyProperty::Register (Type::UIELEMENT, "Opacity", new Value (1.0));

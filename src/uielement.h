@@ -400,7 +400,7 @@ public:
 	static DependencyProperty *UseLayoutRoundingProperty;
 
 	// in 2.0 these properties are actually in FrameworkElement
- 	/* @PropertyType=MouseCursor,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=Cursor,ManagedFieldAccess=Internal,GenerateAccessors */
+ 	/* @PropertyType=MouseCursor,DefaultValue=MouseCursorDefault,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=Cursor,ManagedFieldAccess=Internal,GenerateAccessors */
 	static DependencyProperty *CursorProperty;
  	/* @PropertyType=ResourceDictionary,ManagedDeclaringType=FrameworkElement,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *ResourcesProperty;
@@ -411,6 +411,7 @@ public:
 	
 	//
 	// Property Accessors
+
 	//
 	void SetClip (Geometry *clip);
 	Geometry *GetClip ();

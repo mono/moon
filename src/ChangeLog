@@ -1,5 +1,8 @@
 2009-01-06  Larry Ewing  <lewing@novell.com>
 
+	* uielement.h (class UIElement): add a default value to
+	UIElement::CusorProperty, fixes a crossing event crash.
+
 	* uielement.cpp (UIElement::ElementRemoved): remove the element
 	from the dirty list since it is an orphan now.
 
