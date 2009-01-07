@@ -46,16 +46,25 @@ protected:
 	size_t buflen;
 	char *bufptr;
 	GIConv cd;
+
+	char *textbuf;
+	char *textbufptr;
+	int textbufsize;
+
 	int fd;
-	
 	bool eof;
 	
+	bool fmode;
+	
+	bool ReadBOM (bool force);
+	ssize_t ReadInternal (char *buf, ssize_t n);
 public:
 	
 	TextStream ();
 	~TextStream ();
 	
-	bool Open (const char *filename, bool force);
+	bool OpenBuffer (const char *buf, int size);
+	bool OpenFile (const char *filename, bool force);
 	void Close ();
 	
 	bool Eof ();

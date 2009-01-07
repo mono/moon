@@ -1,3 +1,13 @@
+2009-01-07  Geoff Norton  <gnorton at novell.com>
+
+	* xaml.cpp, file-downloader.cpp: TextStream::Open has been renamed
+	to TextStream::OpenFile
+	* utils.h|cpp: Refactor TextStream to read in-memory and file buffers
+	* downloader.cpp: GetResponseText needs to ensure it returns data in
+	UTF-8, and doesn't handle zip files.
+
+	r: fejj
+
 2009-01-07  Geoff Norton  <gnorton@novell.com>
 
 	* downloader.h|cpp: Work around mozilla bug #444160 by keeping an in

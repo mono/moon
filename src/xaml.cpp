@@ -1393,7 +1393,7 @@ XamlLoader::CreateFromFile (const char *xaml_file, bool create_namescope,
 	LOG_XAML ("attemtping to load xaml file: %s\n", xaml_file);
 	
 	stream = new TextStream ();
-	if (!stream->Open (xaml_file, false)) {
+	if (!stream->OpenFile (xaml_file, false)) {
 		LOG_XAML ("can not open file\n");
 		goto cleanup_and_return;
 	}
