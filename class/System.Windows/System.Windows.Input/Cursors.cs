@@ -31,32 +31,73 @@ using System;
 namespace System.Windows.Input {
 
 	public static class Cursors {
+
+		static Cursors ()
+		{
+			Arrow = new Cursor (CursorType.Arrow);
+			Eraser = new Cursor (CursorType.Eraser);
+			Hand = new Cursor (CursorType.Hand);
+			IBeam = new Cursor (CursorType.IBeam);
+			None = new Cursor (CursorType.None);
+			SizeNS = new Cursor (CursorType.SizeNS);
+			SizeWE = new Cursor (CursorType.SizeWE);
+			Stylus = new Cursor (CursorType.Stylus);
+			Wait = new Cursor (CursorType.Wait);
+		}
+		
+		internal static Cursor FromEnum (CursorType type)
+		{
+			switch (type){
+			case CursorType.Arrow:
+				return Arrow;
+			case CursorType.Eraser:
+				return Eraser;
+			case CursorType.Hand:
+				return Hand;
+			case CursorType.IBeam:
+				return IBeam;
+			case CursorType.None:
+				return None;
+			case CursorType.SizeNS:
+				return SizeNS;
+			case CursorType.SizeWE:
+				return SizeWE;
+			case CursorType.Stylus:
+				return Stylus;
+			case CursorType.Wait:
+				return Wait;
+			case CursorType.Default:
+			default:
+				return null;
+			}
+		}
+
 		public static Cursor None {
-			get { return new Cursor (CursorType.None); }
+			get; private set;
 		}
 		public static Cursor Arrow {
-			get { return new Cursor (CursorType.Arrow); }
+			get; private set;
 		}
 		public static Cursor SizeWE {
-			get { return new Cursor (CursorType.SizeWE); }
+			get; private set;
 		}
 		public static Cursor Eraser {
-			get { return new Cursor (CursorType.Eraser); }
+			get; private set;
 		}
 		public static Cursor Hand {
-			get { return new Cursor (CursorType.Hand); }
+			get; private set;
 		}
 		public static Cursor Wait {
-			get { return new Cursor (CursorType.Wait); }
+			get; private set;
 		}
 		public static Cursor SizeNS {
-			get { return new Cursor (CursorType.SizeNS); }
+			get; private set;
 		}
 		public static Cursor IBeam {
-			get { return new Cursor (CursorType.IBeam); }
+			get; private set;
 		}
 		public static Cursor Stylus {
-			get { return new Cursor (CursorType.Stylus); }
+			get; private set;
 		}
 	}
 }

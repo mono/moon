@@ -102,6 +102,18 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
+		public void CursorTest ()
+		{
+			ConcreteFrameworkElement c = new ConcreteFrameworkElement ();
+			Assert.IsNull (c.Cursor, "#1");
+			c.Cursor = global::System.Windows.Input.Cursors.Arrow;
+			Assert.AreEqual (c.Cursor, global::System.Windows.Input.Cursors.Arrow, "#2");
+			Assert.IsTrue (c.Cursor == global::System.Windows.Input.Cursors.Arrow, "#3");
+			c.Cursor = null;
+			Assert.AreEqual (null, c.Cursor, "#4");
+		}
+
+		[TestMethod]
 		public void InvalidValues()
 		{
 			ConcreteFrameworkElement f = new ConcreteFrameworkElement ();

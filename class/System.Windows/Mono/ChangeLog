@@ -1,5 +1,10 @@
 2009-01-07  Alan McGovern  <amcgovern@novell.com>
 
+	* Value.cs: Added new test for cursors and fixed the implementation to
+	make it pass.
+
+2009-01-07  Alan McGovern  <amcgovern@novell.com>
+
 	* Value.cs: Cursor.Default should map to a null cursor in managed land
 	as per MSDN. Fixes failing NUnit test after default cursor was
 	reinstated.

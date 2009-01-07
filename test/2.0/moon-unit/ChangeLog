@@ -1,5 +1,10 @@
 2009-01-07  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows/FrameworkElementTest.cs: Added new test for cursors and
+	fixed the implementation to make it pass.
+
+2009-01-07  Alan McGovern  <amcgovern@novell.com>
+
 	* moon-unit.mdp: Add CursorsTest to the MD solution.
 
 2009-01-06  Sebastien Pouliot  <sebastien@ximian.com>
