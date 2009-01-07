@@ -84,6 +84,7 @@ Downloader::Downloader ()
 	total = 0;
 	
 	filename = NULL;
+	buffer = NULL;
 	failed_msg = NULL;
 }
 
@@ -95,6 +96,7 @@ Downloader::~Downloader ()
 	Downloader::destroy_state (downloader_state);
 	
 	g_free (filename);
+	g_free (buffer);
 	g_free (failed_msg);
 
 	if (internal_dl != NULL)
@@ -136,7 +138,16 @@ char *
 Downloader::GetResponseText (const char *PartName, guint64 *size)
 {
 	LOG_DOWNLOADER ("Downloader::GetResponseText (%s, %p)\n", PartName, size);
-	
+
+	// This is a horrible hack to work around mozilla bug #444160
+	// Basically if a very small file is downloaded (<64KB in mozilla as of Jan5/09
+	// it can be inserted into a shared cache map, and served up to us without ever
+	// giving us the filename for a NP_ASFILE request.
+	if (buffer != NULL) {
+		*size = total;
+		return g_strdup (buffer);
+	}
+
 	return internal_dl->GetResponseText (PartName, size);
 }
 
@@ -283,8 +294,11 @@ Downloader::Open (const char *verb, const char *uri, DownloaderAccessPolicy poli
 	access_policy = policy;
 
 	g_free (failed_msg);
+	g_free (filename);
+	g_free (buffer);
 	failed_msg = NULL;
 	filename = NULL;
+	buffer = NULL;
 
 	//FIXME: ONLY VALIDATE IF USED FROM THE PLUGIN
 	char *location = g_strdup (GetSurface()->GetSourceLocation ());
@@ -441,6 +455,13 @@ Downloader::InternalWrite (void *buf, gint32 offset, gint32 n)
 
 	if (write)
 		write (buf, offset, n, consumer_closure);
+
+	// This is a horrible hack to work around mozilla bug #444160
+	// See Downloader::GetResponseText for an explanation
+	if (n == total && total < 65536) {
+		buffer = (char *) g_malloc (total);
+		memcpy (buffer, buf, total);
+	} 
 }
 
 void
