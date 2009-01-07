@@ -461,7 +461,7 @@ EXTRA_DIST = $(system_windows_sources) 	\
 	System.Windows.Shapes/ChangeLog
 
 $(assembly).g.resources: $(XAML_RESOURCES_DEPS)
-	respack $@ $(XAML_RESOURCES)
+	mono $(top_builddir)/tools/respack/respack.exe $@ $(XAML_RESOURCES)
 
 $(MSCONTROLS)/Resource.resources: $(MSCONTROLS)/Src/Resource.resx
 	resgen2 $(MSCONTROLS)/Src/Resource.resx $(MSCONTROLS)/Data/src/Resource.resx $(MSCONTROLS)/Extended/Src/Resource.resx $(MSCONTROLS)/Resource.resources
