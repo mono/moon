@@ -16,7 +16,7 @@ class ResourcePacker {
 
 	static void ShowHelp (OptionSet os)
 	{
-		Console.WriteLine ("Usage: respack outputfile [file1 .. [fileN]]");
+		Console.WriteLine ("Usage: respack outputfile [file1[,name] .. [fileN]]");
 		Console.WriteLine ();
 		os.WriteOptionDescriptions (Console.Out);
 		Environment.Exit (0);
@@ -52,8 +52,17 @@ class ResourcePacker {
 		}
 		
 
-		foreach (string file in files.Skip(1)){
-			string key = Path.GetFileName (file).ToLower ();
+		foreach (string f in files.Skip(1)){
+			string key;
+			string file = f;
+			int comma = file.IndexOf (',');
+			if (comma != -1) {
+				key = file.Substring (comma + 1);
+				file = file.Substring (0, comma);
+			} else {
+				key = Path.GetFileName (file).ToLower ();
+			}
+
 			
 			using (FileStream source = File.OpenRead (file)){
 				byte [] buffer = new byte [source.Length];

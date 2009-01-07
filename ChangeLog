@@ -1,3 +1,8 @@
+2009-01-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* tools/respack/respack.cs: Add support for specifying the name for each
+	resource.
+
 2008-12-20  Geoff Norton  <gnorton@novell.com>
 
 	* configure.ac: We work just fine on Firefox 3 so far, so lets
