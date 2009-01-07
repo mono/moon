@@ -1,3 +1,7 @@
+2009-01-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* UnitTestAssertException.cs: Message: never return null.
+
 2008-11-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Assert.cs, IgnoreAttribute.cs, TestCode.cs: Add some more bits to

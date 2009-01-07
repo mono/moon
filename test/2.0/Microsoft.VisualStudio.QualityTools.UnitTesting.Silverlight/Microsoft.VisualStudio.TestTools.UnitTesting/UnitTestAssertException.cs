@@ -35,7 +35,7 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 		}
 		
 		public override string Message {
-			get { return message; }
+			get { return message == null ? base.Message: message; }
 		}
 	}
 }
