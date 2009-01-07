@@ -1,3 +1,8 @@
+2009-01-07  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows/PresentationFrameworkCollectionTest.cs: Add test
+	cases for checking public arguments.
+
 2009-01-07  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows.Controls/ContentControlTest.cs: Add new test
