@@ -2,7 +2,7 @@
 /*
  * contentcontrol.h:
  *
- * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ * Copyright 2007-2009 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
  * 
@@ -31,14 +31,6 @@ class ContentControl : public Control {
 	
  	/* @PropertyType=DependencyObject */
 	static DependencyProperty *ContentTemplateProperty;
- 	/* @PropertyType=bool,DefaultValue=true */
-	static DependencyProperty *IsEnabledProperty;
- 	/* @PropertyType=gint32,DefaultValue=TextAlignmentLeft */
-	static DependencyProperty *TextAlignmentProperty;
- 	/* @PropertyType=gint32,DefaultValue=TextDecorationsNone */
-	static DependencyProperty *TextDecorationsProperty;
- 	/* @PropertyType=gint32,DefaultValue=TextWrappingNoWrap */
-	static DependencyProperty *TextWrappingProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	ContentControl () {}
@@ -53,18 +45,6 @@ class ContentControl : public Control {
 	
 	//void SetContentTemplate (DataTemplate *t);
 	//DataTemplate *GetContentTemplate ();
-	
-	void SetIsEnabled (bool value);
-	bool GetIsEnabled ();
-	
-	void SetTextAlignment (TextAlignment alignment);
-	TextAlignment GetTextAlignment ();
-	
-	void SetTextDecorations (TextDecorations decorations);
-	TextDecorations GetTextDecorations ();
-	
-	void SetTextWrapping (TextWrapping wrapping);
-	TextWrapping GetTextWrapping ();
 };
 
 #endif /* __MOON_CONTENT_CONTROL_H__ */
