@@ -1456,7 +1456,8 @@ set_surface (gpointer key, gpointer value, gpointer data)
 	
 	if (v && v->Is (Type::DEPENDENCY_OBJECT)) {
 		DependencyObject *dob = v->AsDependencyObject();
-		dob->SetSurface (s);
+		if (dob)
+			dob->SetSurface (s);
 	}
 }
 

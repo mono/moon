@@ -1,3 +1,8 @@
+2009-01-07  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* dependencyobject.cpp (set_surface): Add null check since the 
+	hashtable can contain Value with a NULL DependencyObject
+
 2009-01-07  Larry Ewing  <lewing@novell.com>
 
 	* canvas.cpp:
