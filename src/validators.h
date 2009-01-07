@@ -26,6 +26,7 @@ public:
 	static ValueValidator default_validator;
 	static ValueValidator BorderThicknessValidator;
 	static ValueValidator CornerRadiusValidator;
+	static ValueValidator CursorValidator;
 	static ValueValidator PositiveIntValidator;
 	static ValueValidator IntGreaterThanZeroValidator;
 	static ValueValidator NonNullStringValidator;

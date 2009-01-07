@@ -27,6 +27,16 @@ Validators::StyleValidator (DependencyObject* instance, DependencyProperty *prop
 }
 
 bool
+Validators::CursorValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	// If the value is null, it means the default cursor has been set.
+	if (value->GetIsNull ())
+		value = new Value (MouseCursorDefault, Type::INT32);
+
+	return true;
+}
+
+bool
 Validators::default_validator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
 	return true;	
