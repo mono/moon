@@ -779,8 +779,11 @@ Shape::GetTransformOrigin ()
 {
 	Point *user_xform_origin = GetRenderTransformOrigin ();
 	
-	return Point (GetWidth () * user_xform_origin->x, 
-		      GetHeight () * user_xform_origin->y);
+	double width = isnan (GetWidth ()) ? 0.0 : GetWidth ();
+	double height = isnan (GetHeight ()) ? 0.0 : GetHeight ();
+
+	return Point (width * user_xform_origin->x, 
+		      height * user_xform_origin->y);
 }
 
 void
@@ -841,8 +844,8 @@ Ellipse::ComputeShapeBounds (bool logical)
 		return Rect ();
 	}
 
-	double w = GetWidth ();
-	double h = GetHeight ();
+	double w = isnan (GetWidth ()) ? 0.0 : GetWidth ();
+	double h = isnan (GetHeight ()) ? 0.0 : GetHeight ();
 	if ((vh && (h <= 0.0)) || (vw && (w <= 0.0))) { 
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return Rect ();
@@ -884,7 +887,9 @@ Ellipse::BuildPath ()
 
 	Stretch stretch = GetStretch ();
 	double t = IsStroked () ? GetStrokeThickness () : 0.0;
-	Rect rect = Rect (0.0, 0.0, GetWidth (), GetHeight ());
+	Rect rect = Rect (0.0, 0.0, 
+			  isnan (GetWidth ()) ? 0.0 : GetWidth (), 
+			  isnan (GetHeight ()) ? 0.0 : GetHeight ());
 
 	if (rect.width < 0.0 || rect.height < 0.0) {
 		SetShapeFlags (UIElement::SHAPE_EMPTY);		
@@ -974,7 +979,9 @@ Rectangle::ComputeShapeBounds (bool logical)
 		return Rect ();
 	}
 
-	Rect rect = Rect (0, 0, GetWidth (), GetHeight ());
+	Rect rect = Rect (0, 0, 
+			  isnan (GetWidth ()) ? 0.0 : GetWidth (), 
+			  isnan (GetHeight ()) ? 0.0 : GetHeight ());
 
 	if ((vw && (rect.width <= 0.0)) || (vh && (rect.height <= 0.0))) { 
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
@@ -1080,7 +1087,9 @@ Rectangle::BuildPath ()
 	// nothing is drawn (nor filled) if no StrokeThickness="0"
 	// unless both Width and Height are specified or when no streching is required
 	double radius_x = 0.0, radius_y = 0.0;
-	Rect rect = Rect (0, 0, GetWidth (), GetHeight ());
+	Rect rect = Rect (0, 0, 
+			  width ? GetWidth () : 0.0, 
+			  height ? GetHeight () : 0.0);
 	GetRadius (&radius_x, &radius_y);
 
 	switch (stretch) {

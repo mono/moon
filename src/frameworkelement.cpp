@@ -301,15 +301,17 @@ FrameworkElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObje
 void
 FrameworkElement::ComputeBounds ()
 {
-	extents = Rect (0.0, 0.0, GetWidth (), GetHeight ());
+	extents = Rect (0.0, 0.0, 
+			isnan (GetWidth ()) ? 0.0 : GetWidth (), 
+			isnan (GetHeight ()) ? 0.0 : GetHeight ());
 	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 }
 
 bool
 FrameworkElement::InsideObject (cairo_t *cr, double x, double y)
 {
-	double height = GetHeight ();
-	double width = GetWidth ();
+	double width = isnan (GetWidth ()) ? 0.0 : GetWidth ();
+	double height = isnan (GetHeight ()) ? 0.0 : GetHeight ();
 	double nx = x, ny = y;
 	
 	TransformPoint (&nx, &ny);
@@ -322,8 +324,8 @@ FrameworkElement::InsideObject (cairo_t *cr, double x, double y)
 void
 FrameworkElement::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 {
-	*height = GetHeight ();
-	*width = GetWidth ();
+	*width = isnan (GetWidth ()) ? 0.0 : GetWidth ();
+	*height = isnan (GetHeight ()) ? 0.0 : GetHeight ();
 }
 
 void
@@ -335,7 +337,7 @@ FrameworkElement::Measure (Size availableSize)
 	// have in place due to 1.0
 	Value *vw = GetValueNoDefault (FrameworkElement::WidthProperty);
 	Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
-	Size specified = Size (vw ? GetWidth () : NAN, vh ? GetHeight () : NAN);
+	Size specified = Size (GetWidth (), GetHeight ());
 	
 	
 	Thickness margin = *GetMargin ();
@@ -440,7 +442,7 @@ FrameworkElement::ArrangeOverride (Size finalSize)
 
 	Value *vw = GetValueNoDefault (FrameworkElement::WidthProperty);
 	Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
-	Size specified = Size (vw ? GetWidth () : NAN, vh ? GetHeight () : NAN);
+	Size specified = Size (GetWidth (), GetHeight ());
 
 	// postcondition the results
 	size = size.Min (specified);

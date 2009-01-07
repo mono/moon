@@ -37,7 +37,9 @@ Canvas::ComputeBounds ()
 	Surface *surface = GetSurface ();
 	if (surface && surface->IsTopLevel (this)) {
 		// toplevel canvas don't subscribe to the same bounds computation as others
-		extents = Rect (0, 0, GetWidth (), GetHeight ());
+		extents = Rect (0, 0, 
+				isnan (GetWidth ()) ? 0.0 : GetWidth (), 
+				isnan (GetHeight ()) ? 0.0 : GetHeight ());
 		bounds = Rect (0, 0, surface->GetWindow()->GetWidth(), surface->GetWindow()->GetHeight());
 		bounds_with_children = Rect (0, 0, surface->GetWindow()->GetWidth(), surface->GetWindow()->GetHeight());
 	}
@@ -133,8 +135,11 @@ Canvas::GetTransformOrigin ()
 {
 	Point *user_xform_origin = GetRenderTransformOrigin ();
 	
-	return Point (GetWidth () * user_xform_origin->x, 
-		      GetHeight () * user_xform_origin->y);
+	double width = isnan (GetWidth ()) ? 0.0 : GetWidth ();
+	double height = isnan (GetHeight ()) ? 0.0 : GetHeight ();
+
+	return Point (width * user_xform_origin->x, 
+		      height * user_xform_origin->y);
 }
 
 Size
