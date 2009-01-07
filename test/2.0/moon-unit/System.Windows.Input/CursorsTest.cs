@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Windows;
 using System.Windows.Input;
 
 using Mono.Moonlight.UnitTesting;
@@ -49,6 +50,61 @@ namespace MoonTest.System.Windows.Input {
 			Assert.AreEqual ("SizeWE", Cursors.SizeWE.ToString (), "SizeWE");
 			Assert.AreEqual ("Stylus", Cursors.Stylus.ToString (), "Stylus");
 			Assert.AreEqual ("Wait", Cursors.Wait.ToString (), "Wait");
+		}
+
+		public class ConcreteFrameworkElement : FrameworkElement {
+		}
+
+		[TestMethod]
+		public void Set ()
+		{
+			ConcreteFrameworkElement cfe = new ConcreteFrameworkElement ();
+			Assert.IsNull (cfe.Cursor, "default");
+
+			cfe.Cursor = Cursors.Arrow;
+			Assert.IsTrue (Object.ReferenceEquals (cfe.Cursor, Cursors.Arrow), "Arrow");
+			cfe.Cursor = null;
+			Assert.IsNull (cfe.Cursor, "Arrow-null");
+
+			cfe.Cursor = Cursors.Eraser;
+			Assert.IsTrue (Object.ReferenceEquals (cfe.Cursor, Cursors.Eraser), "Eraser");
+			cfe.Cursor = null;
+			Assert.IsNull (cfe.Cursor, "Eraser-null");
+
+			cfe.Cursor = Cursors.Hand;
+			Assert.IsTrue (Object.ReferenceEquals (cfe.Cursor, Cursors.Hand), "Hand");
+			cfe.Cursor = null;
+			Assert.IsNull (cfe.Cursor, "Hand-null");
+
+			cfe.Cursor = Cursors.IBeam;
+			Assert.IsTrue (Object.ReferenceEquals (cfe.Cursor, Cursors.IBeam), "IBeam");
+			cfe.Cursor = null;
+			Assert.IsNull (cfe.Cursor, "IBeam-null");
+
+			cfe.Cursor = Cursors.None;
+			Assert.IsTrue (Object.ReferenceEquals (cfe.Cursor, Cursors.None), "None");
+			cfe.Cursor = null;
+			Assert.IsNull (cfe.Cursor, "None-null");
+
+			cfe.Cursor = Cursors.SizeNS;
+			Assert.IsTrue (Object.ReferenceEquals (cfe.Cursor, Cursors.SizeNS), "SizeNS");
+			cfe.Cursor = null;
+			Assert.IsNull (cfe.Cursor, "SizeNS-null");
+
+			cfe.Cursor = Cursors.SizeWE;
+			Assert.IsTrue (Object.ReferenceEquals (cfe.Cursor, Cursors.SizeWE), "SizeWE");
+			cfe.Cursor = null;
+			Assert.IsNull (cfe.Cursor, "SizeWE-null");
+
+			cfe.Cursor = Cursors.Stylus;
+			Assert.IsTrue (Object.ReferenceEquals (cfe.Cursor, Cursors.Stylus), "Stylus");
+			cfe.Cursor = null;
+			Assert.IsNull (cfe.Cursor, "Stylus-null");
+
+			cfe.Cursor = Cursors.Wait;
+			Assert.IsTrue (Object.ReferenceEquals (cfe.Cursor, Cursors.Wait), "Wait");
+			cfe.Cursor = null;
+			Assert.IsNull (cfe.Cursor, "Wait-null");
 		}
 	}
 }

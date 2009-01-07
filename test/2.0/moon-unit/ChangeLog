@@ -1,3 +1,7 @@
+2009-01-07  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* CursorsTest.cs: More test for cursors, including shared instance tests.
+
 2009-01-07  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows/FrameworkElementTest.cs: Added new test for cursors and
