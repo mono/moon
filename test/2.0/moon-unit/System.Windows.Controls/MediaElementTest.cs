@@ -69,6 +69,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void TestInvalidValues()
 		{
 			MediaElement m = new MediaElement();
