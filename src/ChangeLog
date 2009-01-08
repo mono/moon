@@ -1,3 +1,12 @@
+2009-01-08  Alan McGovern  <amcgovern@novell.com>
+
+	* dependencyobject.cpp: *Warning - Changing default values* When
+	DO.ClearValue is called, we always return 'NULL' as the new value.
+	This is incorrect as the pattern: do.ClearValue (property),
+	do.GetValue (property) will actually return do.GetDefaultValue
+	(DependencyProperty*). This change fixes a failing assertion in
+	StyleTest.cs - ModifyAfterBinding.
+
 2009-01-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* cbinding.h|cpp, collection.h, type.h, type-generated.cpp, value.h:

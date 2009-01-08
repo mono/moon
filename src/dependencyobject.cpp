@@ -1230,7 +1230,7 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 	if (notify_listeners) {
 		listeners_notified = false;
 
-		PropertyChangedEventArgs args (property, current_value, NULL);
+		PropertyChangedEventArgs args (property, current_value, GetDefaultValue (property));
 
 		OnPropertyChanged (&args);
 
@@ -1241,7 +1241,7 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 
 	if (property && property->GetChangedCallback () != NULL) {
 		NativePropertyChangedHandler *callback = property->GetChangedCallback ();
-		callback (property, this, current_value, NULL);
+		callback (property, this, current_value, GetDefaultValue (property));
 	}
 
 	delete current_value;
