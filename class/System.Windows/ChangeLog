@@ -1,3 +1,7 @@
+2009-01-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Remove FontFamilyConverter from build.
+
 2009-01-07  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am: fix our embedding of themes/generic.xaml, and also

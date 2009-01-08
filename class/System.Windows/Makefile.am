@@ -422,7 +422,6 @@ system_windows_sources =							\
 \
 	$(MSCONTROLS)/Src/Resource.Designer.cs					\
 	$(MSCONTROLS)/Src/Common/DragStartedEventArgs.cs			\
-	$(MSCONTROLS)/Src/Common/FontFamilyConverter.cs				\
 	$(MSCONTROLS)/Src/Common/KeyboardNavigation.cs				\
 	$(MSCONTROLS)/Src/Common/NullableBoolConverter.cs			\
 	$(MSCONTROLS)/Src/Common/RoutedPropertyChangedEventArgs.cs		\
