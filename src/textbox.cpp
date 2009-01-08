@@ -14,6 +14,7 @@
 #include <config.h>
 #endif
 
+#include <gdk/gdkkeysyms.h>
 #include <cairo.h>
 
 #include <string.h>
@@ -309,8 +310,13 @@ TextBox::~TextBox ()
 void
 TextBox::OnKeyDown (KeyEventArgs *args)
 {
-	ModifierKeys modifiers = (ModifierKeys) args->GetState ();
-	Key key = (Key) args->GetKey ();
+	GdkModifierType modifiers = (GdkModifierType) args->GetModifiers ();
+	TextBoxModelChangeType changed = TextBoxModelChangedNothing;
+	guint key = args->GetKeyVal ();
+	gunichar c;
+	
+	if (args->IsModifier ())
+		return;
 	
 	// FIXME: so... we'll need to do a few things here:
 	// 1. interpret the key (insert a char or move the cursor, etc)
@@ -320,9 +326,8 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 	// Probably a good idea to lift a lot of the logic from jackson's MWF code.
 	printf ("TextBox::OnKeyDown()\n");
 	
-	if (Keyboard::KeyIsChar (modifiers, key)) {
-		gunichar c = Keyboard::KeyToChar (modifiers, key);
-		
+	if ((c = args->GetUnicode ())) {
+		// normal character key
 		if (selection.length > 0) {
 			// replace the currently selected text
 			buffer->Replace (selection.start, selection.length, &c, 1);
@@ -334,30 +339,71 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 			caret++;
 		}
 		
-		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (TextBoxModelChangedLayout));
-	} else if (Keyboard::KeyIsMovement (modifiers, key)) {
-		//Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (TextBoxModelChangedCursorPosition));
-	} else if (key == KeyBACKSPACE || key == KeyDELETE) {
-		if (selection.length > 0) {
-			// cut the currently selected text
-			buffer->Cut (selection.start, selection.length);
-			caret = selection.start;
-			ClearSelection ();
-		} else if (key == KeyBACKSPACE) {
+		changed = TextBoxModelChangedLayout;
+	} else {
+		switch (key) {
+		case GDK_BackSpace:
+		case GDK_Delete:
+			if (selection.length > 0) {
+				// cut the currently selected text
+				buffer->Cut (selection.start, selection.length);
+				changed = TextBoxModelChangedLayout;
+				caret = selection.start;
+				ClearSelection ();
+			} else if (key == GDK_BackSpace) {
+				if (caret > 0) {
+					// cut the char before the cursor position
+					changed = TextBoxModelChangedLayout;
+					buffer->Cut (caret - 1, 1);
+					caret--;
+				}
+			} else {
+				if (buffer->len > caret) {
+					// cut the char after the cursor position
+					changed = TextBoxModelChangedLayout;
+					buffer->Cut (caret, 1);
+				}
+			}
+			break;
+		case GDK_KP_Home:
+		case GDK_Home:
+			break;
+		case GDK_KP_End:
+		case GDK_End:
+			break;
+		case GDK_KP_Left:
+		case GDK_Left:
 			if (caret > 0) {
-				// cut the char before the cursor position
-				buffer->Cut (caret - 1, 1);
+				changed = TextBoxModelChangedCursorPosition;
 				caret--;
 			}
-		} else {
-			if (buffer->len > caret) {
-				// cut the char after the cursor position
-				buffer->Cut (caret, 1);
+			break;
+		case GDK_KP_Up:
+		case GDK_Up:
+			break;
+		case GDK_KP_Right:
+		case GDK_Right:
+			if (caret < buffer->len) {
+				changed = TextBoxModelChangedCursorPosition;
+				caret++;
 			}
+			break;
+		case GDK_KP_Down:
+		case GDK_Down:
+			break;
+		case GDK_KP_Page_Up:
+		case GDK_Page_Up:
+			break;
+		case GDK_KP_Page_Down:
+		case GDK_Page_Down:
+			break;
+		default:
+			break;
 		}
-		
-		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (TextBoxModelChangedLayout));
 	}
+	
+	if (changed != TextBoxModelChangedNothing)
+		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (changed));
 	
 	// FIXME: register a key repeat timeout?
 }

@@ -170,14 +170,6 @@ KeyEventArgs::~KeyEventArgs ()
 }
 
 int
-KeyEventArgs::GetState ()
-{
-	GdkModifierType state;
-	gdk_event_get_state ((GdkEvent *) event, &state);
-	return (int)state;
-}
-
-int
 KeyEventArgs::GetKey ()
 {
 	return Keyboard::MapKeyValToKey (event->keyval);
@@ -187,4 +179,28 @@ int
 KeyEventArgs::GetPlatformKeyCode ()
 {
 	return event->hardware_keycode;
+}
+
+GdkModifierType
+KeyEventArgs::GetModifiers ()
+{
+	return (GdkModifierType) event->state;
+}
+
+bool
+KeyEventArgs::IsModifier ()
+{
+	return event->is_modifier;
+}
+
+guint
+KeyEventArgs::GetKeyVal ()
+{
+	return event->keyval;
+}
+
+gunichar
+KeyEventArgs::GetUnicode ()
+{
+	return gdk_keyval_to_unicode (event->keyval);
 }

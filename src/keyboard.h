@@ -33,11 +33,6 @@ class Keyboard {
 	static bool IsKeyPressed (Key key);
 	
 	static Key MapKeyValToKey (guint keyval);
-	
-	static bool KeyIsChar (ModifierKeys modifiers, Key key);
-	static gunichar KeyToChar (ModifierKeys modifiers, Key key);
-	
-	static bool KeyIsMovement (ModifierKeys modifiers, Key key);
 };
 
 #endif /* __KEYBOARD_H__ */

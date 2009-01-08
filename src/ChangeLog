@@ -1,12 +1,25 @@
 2009-01-08  Larry Ewing  <lewing@novell.com>
 
-	* text.cpp (TextBlock::Layout): us nan logic for FE:Width here.
+	* text.cpp (TextBlock::Layout): use nan logic for FE:Width here.
 
 	* geometry.h, geometry.cpp (class RectangleGeometry): remove
 	GetRadius logic everything is handled property by the properties
 	these days.
 
 2009-01-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBox::OnKeyDown): Updated a bit to use the new
+	KeyEventArgs APIs.
+
+	* keyboard.cpp (Keyboard::KeyIsChar): Removed.
+	(Keyboard::KeyToChar): Removed.
+	(Keyboard::KeyIsMovement): Removed.
+
+	* eventargs.cpp (KeyEventArgs::GetModifiers): Renamed from
+	GetState() to make the purpose clearer.
+	(KeyEventArgs::IsModifier): New helper method.
+	(KeyEventArgs::GetKeyVal): New helper method.
+	(KeyEventArgs::GetUnicode): New helper method.
 
 	* textbox.cpp (TextBox::OnPropertyChanged): Get rid of the 'dirty'
 	state, all places that set dirty=true are now handled by

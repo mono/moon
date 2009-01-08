@@ -139,15 +139,17 @@ class KeyEventArgs : public RoutedEventArgs {
 	KeyEventArgs (GdkEventKey *event);
 	virtual Type::Kind GetObjectType () { return Type::KEYEVENTARGS; };
 	
-	int GetState ();
-
 	/* @GenerateCBinding,GeneratePInvoke */
 	int GetKey ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	int GetPlatformKeyCode ();
-
-	static int gdk_keyval_to_key (guint keyval);
+	
+	// accessors for the native GdkEventKey
+	GdkModifierType GetModifiers ();
+	gunichar GetUnicode ();
+	guint GetKeyVal ();
+	bool IsModifier ();
 };
 
 /* @Namespace=None */
