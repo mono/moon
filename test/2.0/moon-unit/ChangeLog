@@ -1,3 +1,11 @@
+2009-01-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Controls/ItemsControlTest.cs: New.
+	* System.Windows.Automation.Peers/AutomationPeerTest.cs: New.
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs: New.
+	* System.Windows.Automation.Peers/ItemAutomationPeerTest.cs: New.
+	* System.Windows.Automation.Peers/ItemsControlAutomationPeerTest.cs: New.
+
 2009-01-07  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows/PresentationFrameworkCollectionTest.cs: Add test
