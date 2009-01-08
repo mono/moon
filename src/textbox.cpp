@@ -292,9 +292,10 @@ TextBox::TextBox ()
 	selection.foreground = default_selection_foreground ();
 	selection.length = 0;
 	selection.start = 0;
+	selection_changed = false;
 	setvalue = true;
 	maxlen = 0;
-	caret = 0;
+	cursor = 0;
 }
 
 TextBox::~TextBox ()
@@ -305,6 +306,137 @@ TextBox::~TextBox ()
 	delete buffer;
 	delete hints;
 	delete font;
+}
+
+TextBoxModelChangeType
+TextBox::CursorPageDown (GdkModifierType modifiers)
+{
+	// FIXME: implement me
+	return TextBoxModelChangedNothing;
+}
+
+TextBoxModelChangeType
+TextBox::CursorPageUp (GdkModifierType modifiers)
+{
+	// FIXME: implement me
+	return TextBoxModelChangedNothing;
+}
+
+TextBoxModelChangeType
+TextBox::CursorHome (GdkModifierType modifiers)
+{
+	// FIXME: implement me
+	return TextBoxModelChangedNothing;
+}
+
+TextBoxModelChangeType
+TextBox::CursorEnd (GdkModifierType modifiers)
+{
+	// FIXME: implement me
+	return TextBoxModelChangedNothing;
+}
+
+TextBoxModelChangeType
+TextBox::CursorRight (GdkModifierType modifiers)
+{
+	if (modifiers & GDK_SHIFT_MASK) {
+		// change the selection
+		if (cursor < buffer->len) {
+			if (selection.length > 0) {
+				if (cursor > selection.start) {
+					// the cursor is at the end of the selection, just grow by 1 char
+					SetSelectionLength (selection.length + 1);
+				} else {
+					// the cursor is at the start of the selection, shrink by 1 char
+					if (selection.length > 1) {
+						SetSelectionLength (selection.length - 1);
+						SetSelectionStart (cursor + 1);
+					} else {
+						ClearSelection ();
+					}
+				}
+			} else {
+				// select the char to the right of the cursor
+				SetSelectionStart (cursor);
+				SetSelectionLength (1);
+			}
+			
+			cursor++;
+			
+			return TextBoxModelChangedSelection;
+		}
+	} else if (selection.length > 0) {
+		// clear the selection, place cursor at the end of the selection
+		cursor = selection.start + selection.length;
+		ClearSelection ();
+		
+		return TextBoxModelChangedSelection;
+	} else if (cursor < buffer->len) {
+		// move the cursor one character to the right
+		cursor++;
+		
+		return TextBoxModelChangedCursorPosition;
+	}
+	
+	return TextBoxModelChangedNothing;
+}
+
+TextBoxModelChangeType
+TextBox::CursorLeft (GdkModifierType modifiers)
+{
+	if (modifiers & GDK_SHIFT_MASK) {
+		// change the selection
+		if (cursor > 0) {
+			if (selection.length > 0) {
+				if (cursor > selection.start) {
+					// the cursor is at the end of the selection, shrink by 1 char
+					if (selection.length > 1)
+						SetSelectionLength (selection.length - 1);
+					else
+						ClearSelection ();
+				} else {
+					// the cursor is at the start of the selection, grow by 1 char
+					SetSelectionLength (selection.length + 1);
+					SetSelectionStart (cursor - 1);
+				}
+			} else {
+				// select the char to the left of the cursor
+				SetSelectionStart (cursor - 1);
+				SetSelectionLength (1);
+			}
+			
+			cursor--;
+			
+			return TextBoxModelChangedSelection;
+		}
+	} else if (selection.length > 0) {
+		// clear the selection, place cursor at the end of the selection
+		cursor = selection.start + selection.length;
+		ClearSelection ();
+		
+		return TextBoxModelChangedSelection;
+	} else if (cursor > 0) {
+		// move the cursor one character to the left
+		cursor--;
+		
+		return TextBoxModelChangedCursorPosition;
+	}
+	
+	return TextBoxModelChangedNothing;
+}
+
+TextBoxModelChangeType
+TextBox::CursorDown (GdkModifierType modifiers)
+{
+	// FIXME: implement me
+	return TextBoxModelChangedNothing;
+}
+
+TextBoxModelChangeType
+TextBox::CursorUp (GdkModifierType modifiers)
+{
+	// FIXME: implement me
+	return TextBoxModelChangedNothing;
 }
 
 void
@@ -320,7 +452,7 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 	
 	// FIXME: so... we'll need to do a few things here:
 	// 1. interpret the key (insert a char or move the cursor, etc)
-	// 2. update state being mindful of the current state (caret, selection, etc)
+	// 2. update state being mindful of the current state (cursor, selection, etc)
 	// 3. register some sort of repeat timeout that expires when OnKeyUp() is called
 	//
 	// Probably a good idea to lift a lot of the logic from jackson's MWF code.
@@ -331,12 +463,12 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 		if (selection.length > 0) {
 			// replace the currently selected text
 			buffer->Replace (selection.start, selection.length, &c, 1);
-			caret = selection.start + 1;
+			cursor = selection.start + 1;
 			ClearSelection ();
 		} else {
-			// insert the text at the caret position
-			buffer->Insert (caret, c);
-			caret++;
+			// insert the text at the cursor position
+			buffer->Insert (cursor, c);
+			cursor++;
 		}
 		
 		changed = TextBoxModelChangedLayout;
@@ -348,54 +480,58 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 				// cut the currently selected text
 				buffer->Cut (selection.start, selection.length);
 				changed = TextBoxModelChangedLayout;
-				caret = selection.start;
+				cursor = selection.start;
 				ClearSelection ();
 			} else if (key == GDK_BackSpace) {
-				if (caret > 0) {
+				if (cursor > 0) {
 					// cut the char before the cursor position
 					changed = TextBoxModelChangedLayout;
-					buffer->Cut (caret - 1, 1);
-					caret--;
+					buffer->Cut (cursor - 1, 1);
+					cursor--;
 				}
 			} else {
-				if (buffer->len > caret) {
+				if (buffer->len > cursor) {
 					// cut the char after the cursor position
 					changed = TextBoxModelChangedLayout;
-					buffer->Cut (caret, 1);
+					buffer->Cut (cursor, 1);
 				}
 			}
+			break;
+		case GDK_KP_Page_Down:
+		case GDK_Page_Down:
+			changed = CursorPageDown (modifiers);
+			break;
+		case GDK_KP_Page_Up:
+		case GDK_Page_Up:
+			changed = CursorPageUp (modifiers);
 			break;
 		case GDK_KP_Home:
 		case GDK_Home:
+			changed = CursorHome (modifiers);
 			break;
 		case GDK_KP_End:
 		case GDK_End:
-			break;
-		case GDK_KP_Left:
-		case GDK_Left:
-			if (caret > 0) {
-				changed = TextBoxModelChangedCursorPosition;
-				caret--;
-			}
-			break;
-		case GDK_KP_Up:
-		case GDK_Up:
+			changed = CursorEnd (modifiers);
 			break;
 		case GDK_KP_Right:
 		case GDK_Right:
-			if (caret < buffer->len) {
+			changed = CursorRight (modifiers);
+			break;
+		case GDK_KP_Left:
+		case GDK_Left:
+			changed = CursorLeft (modifiers);
+			if (cursor > 0) {
 				changed = TextBoxModelChangedCursorPosition;
-				caret++;
+				cursor--;
 			}
 			break;
 		case GDK_KP_Down:
 		case GDK_Down:
+			changed = CursorDown (modifiers);
 			break;
-		case GDK_KP_Page_Up:
-		case GDK_Page_Up:
-			break;
-		case GDK_KP_Page_Down:
-		case GDK_Page_Down:
+		case GDK_KP_Up:
+		case GDK_Up:
+			changed = CursorUp (modifiers);
 			break;
 		default:
 			break;
@@ -463,32 +599,34 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 			gunichar *text;
 			glong textlen;
 			
-			// FIXME: is the caret/selection updating logic correct?
+			// FIXME: is the cursor/selection updating logic correct?
 			
 			text = g_utf8_to_ucs4_fast (str, -1, &textlen);
 			if (selection.length > 0) {
 				// replace the currently selected text
 				buffer->Replace (selection.start, selection.length, text, textlen);
-				caret = selection.start + textlen;
+				cursor = selection.start + textlen;
 				ClearSelection ();
 			} else {
-				// insert the text at the caret position
-				buffer->Insert (caret, text, textlen);
-				caret += textlen;
+				// insert the text at the cursor position
+				buffer->Insert (cursor, text, textlen);
+				cursor += textlen;
 			}
 			
 			changed = TextBoxModelChangedLayout;
 			g_free (text);
 		}
 	} else if (args->property == TextBox::SelectionStartProperty) {
+		selection.start = args->new_value->AsInt32 ();
 		if (setvalue) {
-			selection.start = args->new_value->AsInt32 ();
 			changed = TextBoxModelChangedSelection;
+			selection_changed = true;
 		}
 	} else if (args->property == TextBox::SelectionLengthProperty) {
+		selection.length = args->new_value->AsInt32 ();
 		if (setvalue) {
-			selection.length = args->new_value->AsInt32 ();
 			changed = TextBoxModelChangedSelection;
+			selection_changed = true;
 		}
 	} else if (args->property == TextBox::SelectionBackgroundProperty) {
 		if (!(selection.background = args->new_value ? args->new_value->AsBrush () : NULL))
@@ -503,13 +641,13 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		gunichar *text;
 		glong textlen;
 		
-		// FIXME: is the caret/selection updating logic correct?
+		// FIXME: is the cursor/selection updating logic correct?
 		
 		text = g_utf8_to_ucs4_fast (str, -1, &textlen);
 		buffer->Replace (0, buffer->len, text, textlen);
 		changed = TextBoxModelChangedLayout;
 		ClearSelection ();
-		caret = textlen;
+		cursor = textlen;
 		g_free (text);
 	} else if (args->property == TextBox::TextAlignmentProperty) {
 		// FIXME: we could probably avoid setting dirty=true
@@ -564,6 +702,21 @@ TextBox::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, 
 		Control::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
+Value *
+TextBox::GetValue (DependencyProperty *property)
+{
+	if (selection_changed && property == TextBox::SelectedTextProperty) {
+		char *utf8 = g_ucs4_to_utf8 (buffer->text + selection.start, selection.length, NULL, NULL, NULL);
+		selection_changed = false;
+		setvalue = false;
+		SetValue (TextBox::SelectedTextProperty, Value (utf8));
+		setvalue = true;
+		g_free (utf8);
+	}
+	
+	return Control::GetValue (property);
+}
+
 Size
 TextBox::ArrangeOverride (Size size)
 {
@@ -596,6 +749,7 @@ TextBox::ClearSelection ()
 	SetValue (TextBox::SelectionLengthProperty, Value ((int) 0));
 	SetValue (TextBox::SelectionStartProperty, Value ((int) 0));
 	SetValue (TextBox::SelectedTextProperty, Value (""));
+	selection_changed = false;
 	setvalue = true;
 }
 
@@ -818,6 +972,9 @@ void
 TextBoxView::OnModelChanged (TextBoxModelChangedEventArgs *args)
 {
 	switch (args->changed) {
+	case TextBoxModelChangedCursorPosition:
+		// cursor position changed...
+		break;
 	case TextBoxModelChangedSelection:
 		// FIXME: it'd be nice if we didn't have to re-layout when the selection changes.
 		// the selected region has changed

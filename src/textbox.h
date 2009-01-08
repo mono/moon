@@ -114,15 +114,25 @@ class TextBox : public Control {
 	TextSelection selection;
 	TextLayoutHints *hints;
 	TextBuffer *buffer;
-	bool setvalue;
+	int selection_changed:1;
+	int setvalue:1;
 	int maxlen;
-	int caret;
+	int cursor;
 	
 	static void key_down (EventObject *sender, EventArgs *args, void *closure);
 	static void key_up (EventObject *sender, EventArgs *args, void *closure);
 	
 	void OnKeyDown (KeyEventArgs *args);
 	void OnKeyUp (KeyEventArgs *args);
+	
+	TextBoxModelChangeType CursorPageDown (GdkModifierType modifiers);
+	TextBoxModelChangeType CursorPageUp (GdkModifierType modifiers);
+	TextBoxModelChangeType CursorHome (GdkModifierType modifiers);
+	TextBoxModelChangeType CursorEnd (GdkModifierType modifiers);
+	TextBoxModelChangeType CursorRight (GdkModifierType modifiers);
+	TextBoxModelChangeType CursorLeft (GdkModifierType modifiers);
+	TextBoxModelChangeType CursorDown (GdkModifierType modifiers);
+	TextBoxModelChangeType CursorUp (GdkModifierType modifiers);
 	
 	void ClearSelection ();
 	
@@ -173,6 +183,7 @@ class TextBox : public Control {
 	//
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
+	virtual Value *GetValue (DependencyProperty *property);
 	virtual Size ArrangeOverride (Size size);
 	virtual void OnApplyTemplate ();
 	

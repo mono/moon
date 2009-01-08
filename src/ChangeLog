@@ -1,5 +1,10 @@
 2009-01-08  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.cpp (TextBox::CursorRight): Implemented.
+	(TextBox::CursorLeft): Implemented.
+	(TextBox::GetValue): New override to set the SelectedText property
+	if the selection has been changed since the last request.
+
 	* eventargs.cpp (KeyEventArgs::IsModifier): Work around gtk < 2.10.
 
 	* text.cpp (TextBlock::Layout): Fix bug #435798 in a slightly
