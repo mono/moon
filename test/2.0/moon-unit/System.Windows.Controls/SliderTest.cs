@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2008 Novell, Inc.
+// Copyright 2008,2009 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -72,6 +72,15 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual (Orientation.Horizontal, s.Orientation, "Orientation");
 			s.Orientation = (Orientation) Int32.MaxValue;
 			Assert.AreEqual ((Orientation) Int32.MaxValue, s.Orientation, "MaxValue");
+		}
+
+		[TestMethod]
+		public void ReadOnlyProperties ()
+		{
+			Slider s = new Slider ();
+			Assert.Throws<InvalidOperationException> (delegate {
+				s.SetValue (Thumb.IsFocusedProperty, true);
+			}, "IsFocusedProperty");
 		}
 
 		[TestMethod]

@@ -1,3 +1,9 @@
+2009-01-08  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.Controls/SliderTest.cs,
+	* System.Windows.Controls.Primitives/ThumbTest.cs: Add test cases
+	for read-only properties.
+
 2009-01-08  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows/StyleTest.cs: Add extra (currently failing) tests to

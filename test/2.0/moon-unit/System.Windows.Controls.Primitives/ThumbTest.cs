@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2008 Novell, Inc.
+// Copyright 2008,2009 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -52,6 +52,18 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 
 			// default properties on Control...
 			ControlTest.CheckDefaultProperties (t);
+		}
+
+		[TestMethod]
+		public void ReadOnlyProperties ()
+		{
+			Thumb t = new Thumb ();
+			Assert.Throws<InvalidOperationException> (delegate {
+				t.SetValue (Thumb.IsDraggingProperty, true);
+			}, "IsDraggingProperty");
+			Assert.Throws<InvalidOperationException> (delegate {
+				t.SetValue (Thumb.IsFocusedProperty, true);
+			}, "IsFocusedProperty");
 		}
 
 		[TestMethod]
