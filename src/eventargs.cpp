@@ -190,7 +190,27 @@ KeyEventArgs::GetModifiers ()
 bool
 KeyEventArgs::IsModifier ()
 {
+#if !GTK_CHECK_VERSION(2,10,0)
+	switch (event->keyval) {
+	case GDK_Shift_L:
+	case GDK_Shift_R:
+	case GDK_Control_L:
+	case GDK_Control_R:
+	case GDK_Meta_L:
+	case GDK_Meta_R:
+	case GDK_Alt_L:
+	case GDK_Alt_R:
+	case GDK_Super_L:
+	case GDK_Super_R:
+	case GDK_Hyper_L:
+	case GDK_Hyper_R:
+		return true;
+	default:
+		return false;
+	}
+#else
 	return event->is_modifier;
+#endif
 }
 
 guint
