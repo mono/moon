@@ -1,3 +1,8 @@
+2009-01-08  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/StyleTest.cs: Add extra (currently failing) tests to
+	ensure Styles are applied correctly
+
 2009-01-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Controls/ItemsControlTest.cs: New.

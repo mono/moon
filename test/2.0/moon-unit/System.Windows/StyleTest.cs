@@ -18,6 +18,15 @@ namespace MoonTest.System.Windows
 	[TestClass]
 	public class StyleTest
 	{
+		public class T : Control
+		{
+			public static readonly DependencyProperty PropProperty = DependencyProperty.Register("Prop", typeof(int), typeof(T), null);
+			public int Prop {
+				get { throw new InvalidOperationException(); }
+				set { throw new InvalidOperationException(); }
+			}
+		}
+		
 		[TestMethod]
 		public void Sealed ()
 		{
@@ -32,6 +41,19 @@ namespace MoonTest.System.Windows
 			/*Assert.Throws (delegate {*/ style.TargetType = typeof (SolidColorBrush);/* }, typeof (Exception));*/
 		}
 
+
+
+		[TestMethod]
+		[MoonlightBug]
+		public void ApplyStyleToManagedDP()
+		{
+			T t = new T();
+			Style s = new Style(typeof(T));
+			s.Setters.Add(new Setter(T.PropProperty, 100));
+			t.Style = s;
+			Assert.AreEqual(100, t.GetValue(T.PropProperty));
+		}
+		
 		[TestMethod]
 		public void SetTwiceOnElement ()
 		{
@@ -62,37 +84,50 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug]
+		[MoonlightBug ("Managed properties cannot be found via native code, so styles can't be applied to them")]
 		public void ModifyAfterBinding()
 		{
 			Button b = new Button();
+			Assert.AreEqual(ClickMode.Release, b.ClickMode, "#a");
+
 			Style style = new Style(typeof(Button));
-			Setter setter = new Setter();
 
 			b.Style = style;
 			Assert.Throws<Exception>(delegate {
-				style.Setters.Add(setter);
-			}, "#1");
+				style.Setters.Add(new Setter());
+			}, "#b");
 
-			Assert.AreEqual(0, style.Setters.Count, "#a");
-			Assert.AreEqual(ClickMode.Release, b.ClickMode);
-			setter = new Setter(Button.ClickModeProperty, ClickMode.Press);
-			style.Setters.Add(setter);
-			Assert.AreEqual(1, style.Setters.Count, "#b");
-			Assert.AreEqual(ClickMode.Release, b.ClickMode, "#3b");
-
-			Assert.AreEqual(ClickMode.Release, b.ClickMode);
-			style.Setters.Clear();
 			Assert.AreEqual(0, style.Setters.Count, "#c");
-			Assert.AreEqual(ClickMode.Release, b.ClickMode, "#3b");
+			Assert.AreEqual(ClickMode.Release, b.ClickMode, "#d");
+
+			style.Setters.Add(new Setter(Button.ClickModeProperty, ClickMode.Press));
+			Assert.AreEqual(1, style.Setters.Count, "#e");
+			Assert.AreEqual(ClickMode.Release, b.ClickMode, "#f");
+
+			b.ClearValue(Button.ClickModeProperty);
+			Assert.AreEqual(ClickMode.Release, b.ClickMode, "#f2");
+
+			b.ClickMode = ClickMode.Hover;
+			b.ClearValue(Button.ClickModeProperty);
+			Assert.AreEqual(ClickMode.Press, b.ClickMode, "#g");
+
+			style.Setters.Clear();
+			Assert.AreEqual(0, style.Setters.Count, "#h");
+			Assert.AreEqual(ClickMode.Press, b.ClickMode, "#i");
 
 			style = new Style(typeof(Button));
 			style.Setters.Add(new Setter(Button.ClickModeProperty, ClickMode.Press));
 			b = new Button();
 			b.Style = style;
+			b.ClearValue(Button.ClickModeProperty);
+			Assert.AreEqual(b.ClickMode, ClickMode.Press, "#j");
+
 			style.Setters.Clear();
-			Assert.AreEqual(0, style.Setters.Count, "#d");
-			Assert.AreEqual(b.ClickMode, ClickMode.Press);
+			Assert.AreEqual(0, style.Setters.Count, "#k");
+			Assert.AreEqual(b.ClickMode, ClickMode.Press, "#l");
+
+			b.ClearValue(Button.ClickModeProperty);
+			Assert.AreEqual(b.ClickMode, ClickMode.Press, "#m");
 		}
 
 		[TestMethod]
