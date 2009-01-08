@@ -137,7 +137,6 @@ class Shape : public FrameworkElement {
 	virtual void BuildPath () {};
 	void Stroke (cairo_t *cr, bool do_op);
 	bool NeedsClipping ();
-	bool MixedHeightWidth (Value **width, Value **height);
 
 	virtual void CacheInvalidateHint (void);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
@@ -240,8 +239,6 @@ class Rectangle : public Shape {
 	virtual bool CanFill () { return true; }
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
-	
-	bool GetRadius (double *rx, double *ry);
 	virtual Rect ComputeLargestRectangle ();
 	
 	//

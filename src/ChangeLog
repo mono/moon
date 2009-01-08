@@ -12,6 +12,10 @@
 
 2009-01-08  Larry Ewing  <lewing@novell.com>
 
+	* shape.cpp, shape.h: remove all the GetValueNoDefault logic,
+	replace it with proper NAN state.  Remove MixedWidthAndHeight for
+	c&p checks that will be removed in the layou code.
+	
 	* frameworkelement.cpp: more nan cleanup.
 
 	* border.cpp:

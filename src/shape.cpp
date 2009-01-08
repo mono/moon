@@ -105,23 +105,6 @@ Shape::~Shape ()
 	InvalidatePathCache (true);
 }
 
-bool
-Shape::MixedHeightWidth (Value **height, Value **width)
-{
-	Value *vw = GetValueNoDefault (FrameworkElement::WidthProperty);
-	Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
-
-	// nothing is drawn if only the width or only the height is specified
-	if ((!vw && vh) || (vw && !vh)) {
-		SetShapeFlags (UIElement::SHAPE_EMPTY);
-		return true;
-	}
-
-	if (width) *width = vw;
-	if (height) *height = vh;
-	return false;
-}
-
 void
 Shape::Draw (cairo_t *cr)
 {
@@ -226,7 +209,6 @@ Shape::Fill (cairo_t *cr, bool do_op)
 Rect
 Shape::ComputeStretchBounds ()
 {
-	Value *vh, *vw;
 	needs_clip = true;
 
 	/*
@@ -234,33 +216,28 @@ Shape::ComputeStretchBounds ()
 	 * checking the results of the test harness on with MOON_DRT_CATEGORIES=stretch
 	 */
 
-	if (Shape::MixedHeightWidth (&vh, &vw)) {
+	double width = GetWidth ();
+	double height = GetHeight ();
+	bool autodim = isnan (width);
+
+	if (isnan (width) != isnan (height))
 		return Rect ();
-	}
 
-	double w = vw ? vw->AsDouble () : 0.0;
-	double h = vh ? vh->AsDouble () : 0.0;
-
-	if ((h < 0.0) || (w < 0.0)) {
-		SetShapeFlags (UIElement::SHAPE_EMPTY);
-		return Rect ();
-	}
-
-	if ((vh && (h <= 0.0)) || (vw && (w <= 0.0))) { 
+	if (height <= 0.0 || width <= 0.0) { 
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return Rect ();
 	}
 
 	Stretch stretch = GetStretch ();
 	Rect shape_bounds = ComputeShapeBounds (false, NULL);
-	
-	h = (h == 0.0) ? shape_bounds.height : h;
-	w = (w == 0.0) ? shape_bounds.width : w;
 
-	if (h <= 0.0 || w <= 0.0 || shape_bounds.width <= 0.0 || shape_bounds.height <= 0.0) {
+	if (shape_bounds.width <= 0.0 || shape_bounds.height <= 0.0) {
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return Rect();
 	}
+	
+	height = autodim ? shape_bounds.height : height;
+	width =  autodim ? shape_bounds.width : width;
 
 	if (stretch != StretchNone) {
 		Rect logical_bounds = ComputeShapeBounds (true, NULL);
@@ -270,8 +247,8 @@ Shape::ComputeStretchBounds ()
              
 		double diff_x = shape_bounds.width - logical_bounds.width;
 		double diff_y = shape_bounds.height - logical_bounds.height;
-		double sw = adj_x ? (w - diff_x) / logical_bounds.width : 1.0;
-		double sh = adj_y ? (h - diff_y) / logical_bounds.height : 1.0;
+		double sw = adj_x ? (width - diff_x) / logical_bounds.width : 1.0;
+		double sh = adj_y ? (height - diff_y) / logical_bounds.height : 1.0;
 
 		bool center = false;
 
@@ -305,8 +282,8 @@ Shape::ComputeStretchBounds ()
 			cairo_matrix_init_scale (&temp, adj_x ? sw : 1.0, adj_y ? sh : 1.0);
 			Rect stretch_bounds = ComputeShapeBounds (false, &temp);
 			if (stretch_bounds.width != shape_bounds.width && stretch_bounds.height != shape_bounds.height) {
-				sw *= adj_x ? (w - stretch_bounds.width + logical_bounds.width * sw) / (logical_bounds.width * sw): 1.0;
-				sh *= adj_y ? (h - stretch_bounds.height + logical_bounds.height * sh) / (logical_bounds.height * sh): 1.0;
+				sw *= adj_x ? (width - stretch_bounds.width + logical_bounds.width * sw) / (logical_bounds.width * sw): 1.0;
+				sh *= adj_y ? (height - stretch_bounds.height + logical_bounds.height * sh) / (logical_bounds.height * sh): 1.0;
 
 				switch (stretch) {
 				case StretchUniform:
@@ -322,12 +299,13 @@ Shape::ComputeStretchBounds ()
 			// end of the 2nd pass code
 		}
 
-		double x = vh || adj_x ? shape_bounds.x : 0;
-		double y = vw || adj_y ? shape_bounds.y : 0;
+		double x = !autodim || adj_x ? shape_bounds.x : 0;
+		double y = !autodim || adj_y ? shape_bounds.y : 0;
+
 		if (center)
 			cairo_matrix_translate (&stretch_transform, 
-						adj_x ? w * 0.5 : 0, 
-						adj_y ? h * 0.5 : 0);
+						adj_x ? width * 0.5 : 0, 
+						adj_y ? height * 0.5 : 0);
 		else //UniformToFill
 			cairo_matrix_translate (&stretch_transform, 
 						adj_x ? (logical_bounds.width * sw + diff_x) * .5 : 0,
@@ -341,7 +319,7 @@ Shape::ComputeStretchBounds ()
 					adj_x ? -shape_bounds.width * 0.5 : 0, 
 					adj_y ? -shape_bounds.height * 0.5 : 0);
 
-		if (!Is (Type::LINE) || (vh && vw))
+		if (!Is (Type::LINE) || !autodim)
 			cairo_matrix_translate (&stretch_transform, -x, -y);
 		
 		// Double check our math
@@ -353,8 +331,8 @@ Shape::ComputeStretchBounds ()
 	
 	shape_bounds = shape_bounds.Transform (&stretch_transform);
 	
-	if (vh && vw) {
-		Rect reduced_bounds = shape_bounds.Intersection (Rect (0, 0, vw->AsDouble (), vh->AsDouble ()));
+	if (!autodim) {
+		Rect reduced_bounds = shape_bounds.Intersection (Rect (0, 0, GetWidth (), GetHeight ()));
 		needs_clip = reduced_bounds != shape_bounds;
 		needs_clip = needs_clip && stretch != StretchFill;
 		needs_clip = needs_clip && stretch != StretchUniform;
@@ -377,18 +355,15 @@ Shape::Clip (cairo_t *cr)
 {
 	// some shapes, like Line, Polyline, Polygon and Path, are clipped if both Height and Width properties are present
 	if (needs_clip) {
-		Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
-		if (!vh)
-			return;
-		
-		Value *vw = GetValueNoDefault (FrameworkElement::WidthProperty);
-		if (!vw)
-			return;
+		double width = GetWidth ();
+		double height = GetHeight ();
 
+		if (isnan (width) || isnan (height))
+			return;
 #if EXACT_CLIP
-		cairo_rectangle (cr, 0, 0, vw->AsDouble (), vh->AsDouble ());
+		cairo_rectangle (cr, 0, 0, width, height);
 #else
-		cairo_rectangle (cr, 0, 0, vw->AsDouble () > 1 ? vw->AsDouble () : 1, vh->AsDouble () > 1 ? vh->AsDouble() : 1);
+		cairo_rectangle (cr, 0, 0, width > 1 ? width : 1, height > 1 ? height : 1);
 #endif
 		cairo_clip (cr);
 		cairo_new_path (cr);
@@ -582,7 +557,7 @@ Shape::ComputeShapeBounds (bool logical, cairo_matrix_t *matrix)
 	if (!path || (path->cairo.num_data == 0))
 		BuildPath ();
 
-	if (IsEmpty () || Shape::MixedHeightWidth (NULL, NULL))
+	if (IsEmpty () || (isnan (GetWidth ()) != isnan (GetHeight ())))
 		return Rect ();
 
 	double thickness = (logical || !IsStroked ()) ? 0.0 : GetStrokeThickness ();
@@ -826,19 +801,22 @@ Ellipse::ComputeStretchBounds ()
 Rect
 Ellipse::ComputeShapeBounds (bool logical)
 {
-	Value *vh, *vw;
-	if (Shape::MixedHeightWidth (&vh, &vw)) {
+	double w = GetWidth ();
+	double h = GetHeight ();
+
+	if (isnan (w) != isnan (h)) {
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return Rect ();
 	}
 
-	double w = isnan (GetWidth ()) ? 0.0 : GetWidth ();
-	double h = isnan (GetHeight ()) ? 0.0 : GetHeight ();
-	if ((vh && (h <= 0.0)) || (vw && (w <= 0.0))) { 
+	if (h <= 0.0 || w <= 0.0) { 
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return Rect ();
 	}
-
+	
+	w = isnan (w) ? 0.0 : w;
+	h = isnan (h) ? 0.0 : h;
+	
 	double t = IsStroked () ? GetStrokeThickness () : 0.0;
 	return Rect (0, 0, MAX (w, t), MAX (h, t));
 }
@@ -868,16 +846,17 @@ Ellipse::DrawShape (cairo_t *cr, bool do_op)
 void
 Ellipse::BuildPath ()
 {
-	Value *height, *width;
-	
-	if (Shape::MixedHeightWidth (&height, &width))
+	double width = GetWidth ();
+	double height = GetHeight ();
+
+	if (isnan (width) != isnan (height))
 		return;
 
 	Stretch stretch = GetStretch ();
 	double t = IsStroked () ? GetStrokeThickness () : 0.0;
 	Rect rect = Rect (0.0, 0.0, 
-			  isnan (GetWidth ()) ? 0.0 : GetWidth (), 
-			  isnan (GetHeight ()) ? 0.0 : GetHeight ());
+			  isnan (width) ? 0.0 : width, 
+			  isnan (height) ? 0.0 : height);
 
 	if (rect.width < 0.0 || rect.height < 0.0) {
 		SetShapeFlags (UIElement::SHAPE_EMPTY);		
@@ -961,17 +940,22 @@ Rectangle::ComputeStretchBounds ()
 Rect
 Rectangle::ComputeShapeBounds (bool logical)
 {
-	Value *vh, *vw;
-	if (Shape::MixedHeightWidth (&vh, &vw)) {
+	double width = GetWidth ();
+	double height = GetHeight ();
+
+	if (isnan (width) != isnan (height)) {
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return Rect ();
 	}
 
-	Rect rect = Rect (0, 0, 
-			  isnan (GetWidth ()) ? 0.0 : GetWidth (), 
-			  isnan (GetHeight ()) ? 0.0 : GetHeight ());
+	/* we can do a single check here because of the check above */
+	bool autodim = isnan (width);
 
-	if ((vw && (rect.width <= 0.0)) || (vh && (rect.height <= 0.0))) { 
+	Rect rect = Rect (0, 0, 
+			  autodim ? 0.0 : width, 
+			  autodim ? 0.0 : height);
+
+	if (!autodim && (rect.width <= 0.0 || rect.height <= 0.0)) { 
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return Rect ();
 	}
@@ -1065,20 +1049,25 @@ Rectangle::DrawShape (cairo_t *cr, bool do_op)
 void
 Rectangle::BuildPath ()
 {
-	Value *height, *width;
-	if (Shape::MixedHeightWidth (&height, &width))
+	double width = GetWidth ();
+	double height = GetHeight ();
+
+	if (isnan (width) != isnan (height))
 		return;
+
+	bool autodim = isnan (width);
 
 	Stretch stretch = GetStretch ();
 	double t = IsStroked () ? GetStrokeThickness () : 0.0;
 	
 	// nothing is drawn (nor filled) if no StrokeThickness="0"
 	// unless both Width and Height are specified or when no streching is required
-	double radius_x = 0.0, radius_y = 0.0;
 	Rect rect = Rect (0, 0, 
-			  width ? GetWidth () : 0.0, 
-			  height ? GetHeight () : 0.0);
-	GetRadius (&radius_x, &radius_y);
+			  autodim ? 0.0 : width, 
+			  autodim ? 0.0 : height);
+
+	double radius_x = GetRadiusX ();
+	double radius_y = GetRadiusY ();
 
 	switch (stretch) {
 	case StretchNone:
@@ -1130,22 +1119,6 @@ Rectangle::OnPropertyChanged (PropertyChangedEventArgs *args)
 
 	Invalidate ();
 	NotifyListenersOfPropertyChange (args);
-}
-
-bool
-Rectangle::GetRadius (double *rx, double *ry)
-{
-	Value *value = GetValueNoDefault (Rectangle::RadiusXProperty);
-	if (!value)
-		return false;
-	*rx = value->AsDouble ();
-
-	value = GetValueNoDefault (Rectangle::RadiusYProperty);
-	if (!value)
-		return false;
-	*ry = value->AsDouble ();
-
-	return ((*rx != 0.0) && (*ry != 0.0));
 }
 
 Rect
@@ -1379,7 +1352,7 @@ calc_line_bounds (double x1, double x2, double y1, double y2, double thickness, 
 void
 Line::BuildPath ()
 {
-	if (Shape::MixedHeightWidth (NULL, NULL))
+	if (isnan (GetWidth ()) != isnan (GetHeight ()))
 		return;
 
 	SetShapeFlags (UIElement::SHAPE_NORMAL);
@@ -1400,7 +1373,7 @@ Line::ComputeShapeBounds (bool logical)
 {
 	Rect shape_bounds = Rect ();
 
-	if (Shape::MixedHeightWidth (NULL, NULL))
+	if (isnan (GetWidth ()) != isnan (GetHeight ()))
 		return shape_bounds;
 
 	double thickness;
@@ -1536,7 +1509,7 @@ polygon_extend_line (double *x1, double *x2, double *y1, double *y2, double thic
 void
 Polygon::BuildPath ()
 {
-	if (Shape::MixedHeightWidth (NULL, NULL))
+	if (isnan (GetWidth ()) != isnan (GetHeight ()))
 		return;
 
 	PointCollection *col = GetPoints ();
@@ -1682,7 +1655,7 @@ Polyline::DrawShape (cairo_t *cr, bool do_op)
 void
 Polyline::BuildPath ()
 {
-	if (Shape::MixedHeightWidth (NULL, NULL))
+	if (isnan (GetWidth ()) != isnan (GetHeight ()))
 		return;
 
 	PointCollection *col = GetPoints ();
@@ -1805,10 +1778,17 @@ Path::ComputeShapeBounds (bool logical, cairo_matrix_t *matrix)
 {
 	Rect shape_bounds = Rect ();
 	
-	Value *vh, *vw;
-	if (Shape::MixedHeightWidth (&vh, &vw))
-		return shape_bounds;
+	double width = GetWidth ();
+	double height = GetHeight ();
 	
+	if (isnan (width) != isnan (height))
+		return shape_bounds;
+
+	if (height <= 0.0 || width <= 0.0) {
+		SetShapeFlags (UIElement::SHAPE_EMPTY);
+		return shape_bounds;
+	}
+
 	Geometry *geometry;
 	
 	if (!(geometry = GetData ())) {
@@ -1816,19 +1796,6 @@ Path::ComputeShapeBounds (bool logical, cairo_matrix_t *matrix)
 		return shape_bounds;
 	}
 	
-	double w = vw ? vw->AsDouble () : 0.0;
-	double h = vh ? vh->AsDouble () : 0.0;
-
-	if ((h < 0.0) || (w < 0.0)) {
-		SetShapeFlags (UIElement::SHAPE_EMPTY);
-		return shape_bounds;
-	}
-
-	if ((vh && (h <= 0.0)) || (vw && (w <= 0.0))) { 
-		SetShapeFlags (UIElement::SHAPE_EMPTY);
-		return shape_bounds;
-	}
-
 	if (logical)
 		return geometry->GetBounds ();
 		
