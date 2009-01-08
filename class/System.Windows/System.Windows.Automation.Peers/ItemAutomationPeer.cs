@@ -25,30 +25,30 @@
 
 using System;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace System.Windows.Automation.Peers {
 	public class ItemAutomationPeer : FrameworkElementAutomationPeer {
-		protected ItemAutomationPeer (UIElement uielement) : base ((FrameworkElement)uielement)
+		protected ItemAutomationPeer (UIElement uielement) : base ((ContentControl)uielement)
 		{
-			throw new NotImplementedException ();
 		}
 
 		protected override string GetNameCore ()
 		{
-			throw new NotImplementedException ();
+			return base.GetNameCore ();
 		}
 
 		protected override string GetItemTypeCore ()
 		{
-			throw new NotImplementedException ();
+			return base.GetNameCore ();
 		}
 
 		protected ItemsControlAutomationPeer ItemsControlAutomationPeer {
-			get { throw new NotImplementedException (); }
+			get { return null; }
 		}
 
 		protected object Item {
-			get { throw new NotImplementedException (); }
+			get { return Owner; }
 		}
 	}
 }

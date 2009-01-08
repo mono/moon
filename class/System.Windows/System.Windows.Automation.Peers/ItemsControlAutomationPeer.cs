@@ -32,12 +32,11 @@ namespace System.Windows.Automation.Peers {
 	public class ItemsControlAutomationPeer : FrameworkElementAutomationPeer {
 		protected ItemsControlAutomationPeer (ItemsControl items) : base (items)
 		{
-			throw new NotImplementedException ();
 		}
 
 		public override object GetPattern (PatternInterface pattern)
 		{
-			throw new NotImplementedException ();
+			return base.GetPattern (pattern);
 		}
 
 		protected override List<AutomationPeer> GetChildrenCore ()

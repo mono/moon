@@ -51,19 +51,20 @@ namespace System.Windows.Automation.Peers {
 			throw new NotImplementedException ();
 		}
 
+		[MonoTODO ("always return false since this is used by MS controls")]
 		public static bool ListenerExists (AutomationEvents events)
 		{
-			throw new NotImplementedException ();
+			return false;
 		}
 
 		protected IRawElementProviderSimple ProviderFromPeer (AutomationPeer peer)
 		{
-			throw new NotImplementedException ();
+			return null;
 		}
 
 		public AutomationPeer GetLabeledBy ()
 		{
-			throw new NotImplementedException ();
+			return GetLabeledByCore ();
 		}
 
 		public string GetName ()
@@ -183,12 +184,12 @@ namespace System.Windows.Automation.Peers {
 		
 		public bool IsContentElement ()
 		{
-			throw new NotImplementedException ();
+			return IsContentElementCore ();
 		}
 	
 		public bool IsControlElement ()
 		{
-			throw new NotImplementedException ();
+			return IsControlElementCore ();
 		}
 	
 		public bool IsEnabled ()
@@ -218,7 +219,7 @@ namespace System.Windows.Automation.Peers {
 	
 		protected AutomationPeer PeerFromProvider (IRawElementProviderSimple provider)
 		{
-			throw new NotImplementedException ();
+			return null;
 		}
 	
 		[SecuritySafeCritical]

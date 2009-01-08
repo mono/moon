@@ -30,6 +30,7 @@ using System.Collections.Generic;
 
 namespace System.Windows.Automation.Peers {
 
+	[MonoTODO]
 	public class FrameworkElementAutomationPeer : AutomationPeer {
 
 		private UIElement owner;
@@ -46,7 +47,7 @@ namespace System.Windows.Automation.Peers {
 
 		protected override string GetNameCore ()
 		{
-			throw new NotImplementedException ();
+			return String.Empty;
 		}
 
 		protected override string GetItemTypeCore ()
@@ -56,7 +57,7 @@ namespace System.Windows.Automation.Peers {
 
 		protected override AutomationPeer GetLabeledByCore ()
 		{
-			throw new NotImplementedException ();
+			return null;
 		}
 
 		protected override List<AutomationPeer> GetChildrenCore ()
@@ -66,7 +67,7 @@ namespace System.Windows.Automation.Peers {
 
 		public override object GetPattern (PatternInterface pattern)
 		{
-			throw new NotImplementedException ();
+			return null;
 		}
 		
 		public static AutomationPeer FromElement (UIElement element)
@@ -136,12 +137,12 @@ namespace System.Windows.Automation.Peers {
 		
 		protected override bool IsContentElementCore ()
 		{
-			throw new NotImplementedException ();
+			return true;
 		}
 		
 		protected override bool IsControlElementCore ()
 		{
-			throw new NotImplementedException ();
+			return true;
 		}
 		
 		protected override bool IsEnabledCore ()
@@ -176,9 +177,10 @@ namespace System.Windows.Automation.Peers {
 		
 		public static AutomationPeer CreatePeerForElement (UIElement element)
 		{
-			throw new NotImplementedException ();
-		}
-		
-	}
+			if (element == null)
+				throw new ArgumentNullException ("element");
 
+			return element.GetAutomationPeer ();
+		}
+	}
 }

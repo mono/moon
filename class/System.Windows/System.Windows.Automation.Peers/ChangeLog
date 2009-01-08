@@ -1,0 +1,7 @@
+2009-01-08  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* AutomationPeer.cs,
+	* FrameworkElementAutomationPeer.cs, 
+	* ItemAutomationPeer.cs, 
+	* ItemsControlAutomationPeer.cs: Minimal implementation of some
+	methods (returning default values) to pass controls unit tests.
