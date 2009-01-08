@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Ink;
 using System.Windows.Input;
@@ -216,6 +217,24 @@ namespace MoonTest.System.Windows
 </Button>");
 
 			Assert.IsTrue(b.Style.IsSealed);
+		}
+
+		[TestMethod]
+		[MoonlightBug ("Tag as Text stopped working after r122794")]
+		public void StyleXaml ()
+		{
+			Thumb t = (Thumb) XamlReader.Load (@"
+<Thumb xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<Thumb.Style>
+		<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Control"">
+			<Setter Property=""Tag"" Value=""Test""/>
+		</Style>
+	</Thumb.Style>
+</Thumb>");
+			Assert.IsNotNull (t, "Thumb");
+			Assert.IsTrue (t.Style.IsSealed, "IsSealed");
+			Assert.AreEqual (1, t.Style.Setters.Count, "Setters");
+			Assert.AreEqual (typeof (Control), t.Style.TargetType, "TargetType");
 		}
 	}
 }

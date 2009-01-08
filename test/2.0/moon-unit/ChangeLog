@@ -1,3 +1,8 @@
+2009-01-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows/StyleTest.cs: Add new test case with a string Tag
+	that now throws an exception
+
 2009-01-08  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows/StyleTest.cs: Add the ability to map a
