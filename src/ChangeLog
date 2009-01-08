@@ -1,3 +1,8 @@
+2009-01-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* cbinding.h|cpp, collection.h, type.h, type-generated.cpp, value.h:
+	Regenerated for ITEM_COLLECTION
+
 2009-01-08  Alan McGovern  <amcgovern@novell.com>
 
 	* text.cpp:

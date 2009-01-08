@@ -114,6 +114,7 @@ class InkPresenter;
 class Inline;
 class InlineCollection;
 class InputMethod;
+class ItemCollection;
 class KeyEventArgs;
 class KeyFrame;
 class KeyFrameCollection;
@@ -368,6 +369,7 @@ public:
 	Inline*                        AsInline () { checked_get_subclass (Type::INLINE, Inline) }
 	InlineCollection*              AsInlineCollection () { checked_get_subclass (Type::INLINE_COLLECTION, InlineCollection) }
 	InputMethod*                   AsInputMethod () { checked_get_subclass (Type::INPUTMETHOD, InputMethod) }
+	ItemCollection*                AsItemCollection () { checked_get_subclass (Type::ITEM_COLLECTION, ItemCollection) }
 	KeyEventArgs*                  AsKeyEventArgs () { checked_get_subclass (Type::KEYEVENTARGS, KeyEventArgs) }
 	KeyFrame*                      AsKeyFrame () { checked_get_subclass (Type::KEYFRAME, KeyFrame) }
 	KeyFrameCollection*            AsKeyFrameCollection () { checked_get_subclass (Type::KEYFRAME_COLLECTION, KeyFrameCollection) }

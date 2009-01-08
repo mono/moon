@@ -1555,6 +1555,16 @@ input_method_new (void)
 
 
 /**
+ * ItemCollection
+ **/
+ItemCollection *
+item_collection_new (void)
+{
+	return new ItemCollection ();
+}
+
+
+/**
  * Keyboard
  **/
 ModifierKeys

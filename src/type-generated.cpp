@@ -216,6 +216,7 @@ Type type_infos [] = {
 	{ Type::INPUTMETHOD, Type::DEPENDENCY_OBJECT, false, "InputMethod", "INPUTMETHOD", 0, 1, NULL, (create_inst_func *) input_method_new, NULL, NULL, NULL }, 
 	{ Type::INT32, Type::OBJECT, false, "gint32", "INT32", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::INT64, Type::OBJECT, false, "gint64", "INT64", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
+	{ Type::ITEM_COLLECTION, Type::COLLECTION, false, "ItemCollection", "ITEM_COLLECTION", 0, 1, NULL, (create_inst_func *) item_collection_new, NULL, NULL, NULL }, 
 	{ Type::KEYEVENTARGS, Type::ROUTEDEVENTARGS, false, "KeyEventArgs", "KEYEVENTARGS", 0, 1, NULL, (create_inst_func *) key_event_args_new, NULL, NULL, NULL }, 
 	{ Type::KEYFRAME, Type::DEPENDENCY_OBJECT, false, "KeyFrame", "KEYFRAME", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::KEYFRAME_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "KeyFrameCollection", "KEYFRAME_COLLECTION", 0, 1, NULL, (create_inst_func *) key_frame_collection_new, NULL, NULL, NULL }, 

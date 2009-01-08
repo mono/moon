@@ -1,3 +1,8 @@
+2009-01-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows/DependencyObject.g.cs: Regenerated for
+	ITEM_COLLECTION
+
 2009-01-07  Larry Ewing  <lewing@novell.com>
 
 	* FrameworkElement.cs: mark the callbacks as internal so that the

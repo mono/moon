@@ -699,6 +699,12 @@ InlineCollection *inline_collection_new (void);
 InputMethod *input_method_new (void);
 
 /**
+ * ItemCollection
+ **/
+/* @GeneratePInvoke */
+ItemCollection *item_collection_new (void);
+
+/**
  * Keyboard
  **/
 /* @GeneratePInvoke */

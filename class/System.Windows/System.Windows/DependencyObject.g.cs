@@ -212,6 +212,12 @@ namespace System.Windows.Controls {
 		internal override Kind GetKind () { return Kind.INKPRESENTER; }
 	}
 
+	partial class ItemCollection {
+		internal ItemCollection () : base (NativeMethods.item_collection_new ()) {}
+		internal ItemCollection (IntPtr raw) : base (raw) {}
+		internal override Kind GetKind () { return Kind.ITEM_COLLECTION; }
+	}
+
 	partial class MediaElement {
 		public MediaElement () : base (NativeMethods.media_element_new ()) {}
 		internal MediaElement (IntPtr raw) : base (raw) {}

@@ -1,3 +1,8 @@
+2009-01-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* GeneratedPInvokes.cs, Kind.cs, Types.g.cs: Regenerated for
+	ITEM_COLLECTION
+
 2009-01-07  Alan McGovern  <amcgovern@novell.com>
 
 	* Value.cs: Added new test for cursors and fixed the implementation to

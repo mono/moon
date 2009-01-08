@@ -256,6 +256,19 @@ class UIElementCollection : public DependencyObjectCollection {
 	void ResortByZIndex ();
 };
 
+/* @Namespace=System.Windows.Controls */
+class ItemCollection : public Collection {
+ protected:
+	virtual ~ItemCollection () {}
+	
+ public:
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	ItemCollection () {}
+	
+	virtual Type::Kind GetObjectType () { return Type::ITEM_COLLECTION; }
+	virtual Type::Kind GetElementType () { return Type::OBJECT; }
+};
+
 G_BEGIN_DECLS
 
 Collection *collection_new (Type::Kind kind);

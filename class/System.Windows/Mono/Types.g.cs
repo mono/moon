@@ -80,6 +80,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.IMAGE));
 				t = agclr.GetType ("System.Windows.Controls.InkPresenter", true); 
 				types.Add (t, new ManagedType (t, Kind.INKPRESENTER));
+				t = agclr.GetType ("System.Windows.Controls.ItemCollection", true); 
+				types.Add (t, new ManagedType (t, Kind.ITEM_COLLECTION));
 				t = agclr.GetType ("System.Windows.Controls.MediaElement", true); 
 				types.Add (t, new ManagedType (t, Kind.MEDIAELEMENT));
 				t = agclr.GetType ("System.Windows.Controls.MultiScaleImage", true); 

@@ -754,6 +754,10 @@ namespace Mono {
 		public extern static IntPtr input_method_new ();
 
 		[DllImport ("moon")]
+		// ItemCollection *item_collection_new ();
+		public extern static IntPtr item_collection_new ();
+
+		[DllImport ("moon")]
 		// ModifierKeys keyboard_get_modifiers ();
 		public extern static int keyboard_get_modifiers ();
 
