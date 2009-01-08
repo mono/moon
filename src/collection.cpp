@@ -53,8 +53,8 @@ Collection::GetIterator ()
 int
 Collection::Add (Value *value)
 {
-	bool rv = Insert (array->len, value);
-	return rv ? array->len - 1 : -1;
+	MoonError error;
+	return AddWithError (value, &error);
 }
 
 int

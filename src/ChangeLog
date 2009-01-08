@@ -15,6 +15,12 @@
 
 2009-01-07  Geoff Norton  <gnorton@novell.com>
 
+	* collection.cpp: Ensure that we call any AddWithError overrides
+	that might exist in a subclass (like TimelineMarkerCollection) as
+	it could affect the integer returned.
+
+2009-01-07  Geoff Norton  <gnorton@novell.com>
+
 	* xaml.cpp, file-downloader.cpp: TextStream::Open has been renamed
 	to TextStream::OpenFile
 	* utils.h|cpp: Refactor TextStream to read in-memory and file buffers
