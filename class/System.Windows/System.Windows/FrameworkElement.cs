@@ -37,8 +37,12 @@ using System.Security;
 namespace System.Windows {
 	public abstract partial class FrameworkElement : UIElement {
 
-		MeasureOverrideCallback measure_cb;
-		ArrangeOverrideCallback arrange_cb;
+		/* 
+		 * XXX these are marked internal because making them private seems
+		 * to cause the GC to collect them
+		 */
+		internal MeasureOverrideCallback measure_cb;
+		internal ArrangeOverrideCallback arrange_cb;
 		Dictionary<DependencyProperty, BindingExpressionBase> bindings = new Dictionary<DependencyProperty, BindingExpressionBase> ();
 
 		private void Initialize ()
