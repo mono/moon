@@ -292,8 +292,6 @@ class RectangleGeometry : public Geometry {
 	
 	virtual Type::Kind GetObjectType () { return Type::RECTANGLEGEOMETRY; }
 	
-	bool GetRadius (double *rx, double *ry);
-	
 	//
 	// Property Accesors
 	//

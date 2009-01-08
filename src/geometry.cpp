@@ -407,7 +407,8 @@ RectangleGeometry::Build ()
 	if (!rect)
 		return;
 	
-	double radius_x = 0, radius_y = 0;
+	double radius_x = GetRadiusX ();
+	double radius_y = GetRadiusY ();
 	GetRadius (&radius_x, &radius_y);
 	path = moon_path_renew (path, MOON_PATH_ROUNDED_RECTANGLE_LENGTH);
 	moon_rounded_rectangle (path, rect->x, rect->y, rect->width, rect->height, radius_x, radius_y);
