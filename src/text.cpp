@@ -109,7 +109,7 @@ Inline::GetDefaultValue (DependencyProperty *prop)
 		if (text_prop)
 			return parent->GetValue (text_prop);
 		
-		return prop->GetDefaultValue();
+		return DependencyObject::GetDefaultValue (prop);
 	}
 	
 	// not yet attached to a textblock
@@ -124,7 +124,7 @@ Inline::GetDefaultValue (DependencyProperty *prop)
 	}
 	
 	// all other properties have a default value
-	return prop->GetDefaultValue();
+	return DependencyObject::GetDefaultValue (prop);
 }
 
 void

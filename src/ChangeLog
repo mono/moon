@@ -1,3 +1,10 @@
+2009-01-08  Alan McGovern  <amcgovern@novell.com>
+
+	* text.cpp:
+	* dependencyobject.h:
+	* dependencyobject.cpp: Reinstate GetDefaultValue as it was actually
+	overridden by Inlines
+
 2009-01-07  Larry Ewing  <lewing@novell.com>
 
 	* frameworkelement.cpp, frameworkelement.h:

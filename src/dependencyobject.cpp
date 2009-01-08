@@ -1140,6 +1140,12 @@ DependencyObject::UnregisterAllNamesRootedAt (NameScope *from_ns)
 }
 
 Value *
+DependencyObject::GetDefaultValue (DependencyProperty *prop)
+{
+	return prop->GetDefaultValue ();	
+}
+	
+Value *
 DependencyObject::GetValueWithError (Types *additional_types, Type::Kind whatami, DependencyProperty *property, MoonError *error)
 {
 	if (!HasProperty (additional_types, whatami, property, true)) {
@@ -1154,7 +1160,7 @@ Value *
 DependencyObject::GetValue (DependencyProperty *property)
 {
 	Value *value = GetValueNoDefault (property);
-	return value ? value : property->GetDefaultValue ();
+	return value ? value : GetDefaultValue (property);
 }
 
 Value *

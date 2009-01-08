@@ -257,6 +257,8 @@ public:
 	Value *GetLocalValueWithError  (Types *additional_types, DependencyProperty *property, MoonError *error);
 	virtual Value *GetLocalValue (DependencyProperty *property);
 	
+	virtual Value *GetDefaultValue (DependencyProperty *prop);
+		
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Value *GetValueNoDefaultWithError (Types *additional_types, DependencyProperty *property, MoonError *error);
 	Value *GetValueNoDefault (DependencyProperty *property);
