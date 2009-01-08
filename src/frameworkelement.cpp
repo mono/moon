@@ -344,13 +344,7 @@ FrameworkElement::Measure (Size availableSize)
 {
 	this->dirty_flags &= ~DirtyMeasure;
 
-	// XXX this is hack to get around the 0.0 w/h defaults we still
-	// have in place due to 1.0
-	Value *vw = GetValueNoDefault (FrameworkElement::WidthProperty);
-	Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
 	Size specified = Size (GetWidth (), GetHeight ());
-	
-	
 	Thickness margin = *GetMargin ();
 	Size size = availableSize.GrowBy (-margin);
 
@@ -438,9 +432,7 @@ FrameworkElement::Arrange (Rect finalRect)
 		Emit(SizeChangedEvent, args);
 	}
 	// XXX what do we do with finalRect.x and y?
-
-	g_warning ("more here in FrameworkElement::Arrange.  move the bounds or something?  set properties?  who knows!?");
-				     
+	//printf ("\u231a");
 }
 
 Size
@@ -451,8 +443,6 @@ FrameworkElement::ArrangeOverride (Size finalSize)
 	if (!GetVisualParent () || GetVisualParent ()->Is (Type::CANVAS))
 		return Size (NAN,NAN);
 
-	Value *vw = GetValueNoDefault (FrameworkElement::WidthProperty);
-	Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
 	Size specified = Size (GetWidth (), GetHeight ());
 
 	// postcondition the results
