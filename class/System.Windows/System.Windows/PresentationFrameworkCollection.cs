@@ -31,6 +31,7 @@ using System;
 using System.Windows;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 
 namespace System.Windows {
 
@@ -74,11 +75,16 @@ namespace System.Windows {
 		public void Clear ()
 		{
 			NativeMethods.collection_clear (native);
+
+			NotifyCollectionChangedEventHandler handler = ItemsChanged;
+			if (handler != null) {
+				handler (this, new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
+			}
 		}
 		
 		public void RemoveAt (int index)
 		{
-			NativeMethods.collection_remove_at (native, index);
+			RemoveAtImpl (index);
 		}
 
 		public void Add (T value)
@@ -121,9 +127,11 @@ namespace System.Windows {
 			if (value == null)
 				throw new ArgumentNullException ();
 
-			Value v = Value.FromObject (value);
-			NativeMethods.collection_add (native, ref v);
+			Value v = Value.FromObject (value, true);
+			int index = NativeMethods.collection_add (native, ref v);
 			NativeMethods.value_free_value (ref v);
+
+			Notify (NotifyCollectionChangedAction.Add, value, index);
 		}
 
 		internal void InsertImpl (int index, T value)
@@ -133,9 +141,11 @@ namespace System.Windows {
 			if (index < 0)
 				throw new ArgumentOutOfRangeException ();
 
-			Value v = Value.FromObject (value);
+			Value v = Value.FromObject (value, true);
 			NativeMethods.collection_insert (native, index, ref v);
 			NativeMethods.value_free_value (ref v);
+
+			Notify (NotifyCollectionChangedAction.Add, value, index);
 		}
 
 		internal bool RemoveImpl (T value)
@@ -143,10 +153,23 @@ namespace System.Windows {
 			if (value == null)
 				return false;
 
-			Value v = Value.FromObject (value);
-			bool rv = NativeMethods.collection_remove (native, ref v);
+			Value v = Value.FromObject (value, true);
+			int index = NativeMethods.collection_index_of (native, ref v);
 			NativeMethods.value_free_value (ref v);
-			return rv;
+
+			if (index == -1)
+				return false;
+
+			NativeMethods.collection_remove_at (native, index);
+			Notify (NotifyCollectionChangedAction.Remove, value, index);
+			return true;
+		}
+
+		internal void RemoveAtImpl (int index)
+		{
+			T value = GetItemImpl (index);
+			NativeMethods.collection_remove_at (native, index);
+			Notify (NotifyCollectionChangedAction.Remove, value, index);
 		}
 
 		internal T GetItemImpl (int index)
@@ -159,9 +182,12 @@ namespace System.Windows {
 
 		internal void SetItemImpl (int index, T value)
 		{
-			Value v = Value.FromObject (value);
+			T old = GetItemImpl (index);
+			Value v = Value.FromObject (value, true);
 			NativeMethods.collection_set_value_at (native, index, ref v);
 			NativeMethods.value_free_value (ref v);
+
+			Notify (NotifyCollectionChangedAction.Replace, value, old, index);
 		}
 
 		internal int IndexOfImpl (T value)
@@ -169,10 +195,28 @@ namespace System.Windows {
 			if (value == null)
 				return -1;
 
-			Value v = Value.FromObject (value);
+			Value v = Value.FromObject (value, true);
 			int rv = NativeMethods.collection_index_of (native, ref v);
 			NativeMethods.value_free_value (ref v);
 			return rv;
+		}
+
+		internal event NotifyCollectionChangedEventHandler ItemsChanged;
+
+		internal void Notify (NotifyCollectionChangedAction action, T value, int index)
+		{
+			NotifyCollectionChangedEventHandler handler = ItemsChanged;
+			if (handler != null) {
+				handler (this, new NotifyCollectionChangedEventArgs (action, value, index));
+			}
+		}
+
+		internal void Notify (NotifyCollectionChangedAction action, T new_value, T old_value, int index)
+		{
+			NotifyCollectionChangedEventHandler handler = ItemsChanged;
+			if (handler != null) {
+				handler (this, new NotifyCollectionChangedEventArgs (action, new_value, old_value, index));
+			}
 		}
 
 		//
@@ -368,7 +412,7 @@ namespace System.Windows {
 			if (value == null)
 				return false;
 
-			Value v = Value.FromObject (value);
+			Value v = Value.FromObject (value, true);
 			return NativeMethods.collection_index_of (native, ref v) != -1;
 		}
 		

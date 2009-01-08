@@ -95,6 +95,12 @@ namespace System.Windows {
 			return null;
 		}
 
+		// needed by FrameworkElementAutomationPeer
+		internal AutomationPeer GetAutomationPeer ()
+		{
+			return OnCreateAutomationPeer ();
+		}
+
 		public Size DesiredSize {
 			get {
 				return NativeMethods.uielement_get_desired_size (native);

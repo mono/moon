@@ -1,3 +1,9 @@
+2009-01-08  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* PresentationFrameworkCollection.cs: Added change notification
+	and <object> support (needed for ItemCollection).
+	* UIElement.cs: Add helper method to return an AutomationPeer
+
 2009-01-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows/DependencyObject.g.cs: Regenerated for
