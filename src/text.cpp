@@ -369,10 +369,10 @@ TextBlock::Layout (cairo_t *cr)
 	
 	layout->SetWrapping (GetTextWrapping ());
 	
-	if ((value = GetValueNoDefault (FrameworkElement::WidthProperty))) {
+	double width = GetWidth ();
+	if (!isnan (width)) {
 		Thickness *padding = GetPadding ();
 		double pad = padding->left + padding->right;
-		double width = value->AsDouble ();
 		
 		if (pad >= width) {
 			layout->SetTextRuns (runs);
