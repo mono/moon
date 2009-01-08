@@ -1,3 +1,15 @@
+2009-01-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBox::OnPropertyChanged): Get rid of the 'dirty'
+	state, all places that set dirty=true are now handled by
+	TextBoxView instead. Only call Invalidate() when appropriate. For
+	selection state changes, check setvalue state to see if we need to
+	do anything.
+	(TextBox::ClearSelection): New helper method to clear the
+	selection.
+	(TextBox::OnKeyDown): Properly clear the selection using
+	ClearSelection() so that the DP values get updated.
+
 2009-01-08  Larry Ewing  <lewing@novell.com>
 
 	* frameworkelement.cpp: more nan cleanup.

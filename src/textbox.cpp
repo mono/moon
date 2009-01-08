@@ -142,7 +142,7 @@ class TextBuffer {
 	
 	void Append (gunichar c)
 	{
-		Resize (len + 1);
+		Resize (len + 2);
 		
 		text[len++] = c;
 		text[len] = 0;
@@ -171,7 +171,7 @@ class TextBuffer {
 	
 	void Insert (int index, gunichar c)
 	{
-		Resize (len + 1);
+		Resize (len + 2);
 		
 		if (index < len) {
 			// shift all chars beyond position @index down by 1 char
@@ -205,7 +205,7 @@ class TextBuffer {
 	
 	void Prepend (gunichar c)
 	{
-		Resize (len + 1);
+		Resize (len + 2);
 		
 		// shift the entire buffer down by 1 char
 		memmove (UNICODE_OFFSET (text, 1), text, UNICODE_LEN (len + 1));
@@ -291,6 +291,7 @@ TextBox::TextBox ()
 	selection.foreground = default_selection_foreground ();
 	selection.length = 0;
 	selection.start = 0;
+	setvalue = true;
 	maxlen = 0;
 	caret = 0;
 }
@@ -326,14 +327,12 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 			// replace the currently selected text
 			buffer->Replace (selection.start, selection.length, &c, 1);
 			caret = selection.start + 1;
+			ClearSelection ();
 		} else {
 			// insert the text at the caret position
 			buffer->Insert (caret, c);
 			caret++;
 		}
-		
-		selection.start = -1;
-		selection.length = 0;
 		
 		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (TextBoxModelChangedLayout));
 	} else if (Keyboard::KeyIsMovement (modifiers, key)) {
@@ -343,8 +342,7 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 			// cut the currently selected text
 			buffer->Cut (selection.start, selection.length);
 			caret = selection.start;
-			selection.start = -1;
-			selection.length = 0;
+			ClearSelection ();
 		} else if (key == KeyBACKSPACE) {
 			if (caret > 0) {
 				// cut the char before the cursor position
@@ -386,71 +384,66 @@ void
 TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
 	TextBoxModelChangeType changed = TextBoxModelChangedNothing;
-	bool invalidate = true;
-	bool dirty = false;
+	bool invalidate = false;
 	
 	if (args->property == Control::FontFamilyProperty) {
 		char *family = args->new_value ? args->new_value->AsString () : NULL;
 		changed = TextBoxModelChangedLayout;
 		font->SetFamily (family);
-		dirty = true;
 	} else if (args->property == Control::FontSizeProperty) {
 		double size = args->new_value->AsDouble ();
 		changed = TextBoxModelChangedLayout;
 		font->SetSize (size);
-		dirty = true;
 	} else if (args->property == Control::FontStretchProperty) {
 		FontStretches stretch = (FontStretches) args->new_value->AsInt32 ();
 		changed = TextBoxModelChangedLayout;
 		font->SetStretch (stretch);
-		dirty = true;
 	} else if (args->property == Control::FontStyleProperty) {
 		FontStyles style = (FontStyles) args->new_value->AsInt32 ();
 		changed = TextBoxModelChangedLayout;
 		font->SetStyle (style);
-		dirty = true;
 	} else if (args->property == Control::FontWeightProperty) {
 		FontWeights weight = (FontWeights) args->new_value->AsInt32 ();
 		changed = TextBoxModelChangedLayout;
 		font->SetWeight (weight);
-		dirty = true;
 	} else if (args->property == TextBox::AcceptsReturnProperty) {
-		// No layout or rendering changes needed
-		invalidate = false;
+		// no rendering changes required
 	} else if (args->property == TextBox::MaxLengthProperty) {
 		/* FIXME: What happens if the current buffer length is > MaxLength? */
 		maxlen = args->new_value->AsInt32 ();
 	} else if (args->property == TextBox::SelectedTextProperty) {
-		const char *str = args->new_value ? args->new_value->AsString () : "";
-		gunichar *text;
-		glong textlen;
-		
-		// FIXME: is the caret/selection updating logic correct?
-		
-		text = g_utf8_to_ucs4_fast (str, -1, &textlen);
-		if (selection.length > 0) {
-			// replace the currently selected text
-			buffer->Replace (selection.start, selection.length, text, textlen);
-			caret = selection.start + textlen;
-		} else {
-			// insert the text at the caret position
-			buffer->Insert (caret, text, textlen);
-			caret += textlen;
+		if (setvalue) {
+			const char *str = args->new_value ? args->new_value->AsString () : "";
+			gunichar *text;
+			glong textlen;
+			
+			// FIXME: is the caret/selection updating logic correct?
+			
+			text = g_utf8_to_ucs4_fast (str, -1, &textlen);
+			if (selection.length > 0) {
+				// replace the currently selected text
+				buffer->Replace (selection.start, selection.length, text, textlen);
+				caret = selection.start + textlen;
+				ClearSelection ();
+			} else {
+				// insert the text at the caret position
+				buffer->Insert (caret, text, textlen);
+				caret += textlen;
+			}
+			
+			changed = TextBoxModelChangedLayout;
+			g_free (text);
 		}
-		
-		changed = TextBoxModelChangedLayout;
-		selection.start = -1;
-		selection.length = 0;
-		g_free (text);
-		dirty = true;
 	} else if (args->property == TextBox::SelectionStartProperty) {
-		selection.start = args->new_value->AsInt32 ();
-		changed = TextBoxModelChangedSelection;
-		dirty = true;
+		if (setvalue) {
+			selection.start = args->new_value->AsInt32 ();
+			changed = TextBoxModelChangedSelection;
+		}
 	} else if (args->property == TextBox::SelectionLengthProperty) {
-		selection.length = args->new_value->AsInt32 ();
-		changed = TextBoxModelChangedSelection;
-		dirty = true;
+		if (setvalue) {
+			selection.length = args->new_value->AsInt32 ();
+			changed = TextBoxModelChangedSelection;
+		}
 	} else if (args->property == TextBox::SelectionBackgroundProperty) {
 		if (!(selection.background = args->new_value ? args->new_value->AsBrush () : NULL))
 			selection.background = default_selection_background ();
@@ -469,43 +462,35 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		text = g_utf8_to_ucs4_fast (str, -1, &textlen);
 		buffer->Replace (0, buffer->len, text, textlen);
 		changed = TextBoxModelChangedLayout;
-		selection.start = -1;
-		selection.length = 0;
+		ClearSelection ();
 		caret = textlen;
 		g_free (text);
-		dirty = true;
 	} else if (args->property == TextBox::TextAlignmentProperty) {
 		// FIXME: we could probably avoid setting dirty=true
 		// in this particular case depending on how we end up
 		// implementing alignment in Layout::Render()
 		hints->SetTextAlignment ((TextAlignment) args->new_value->AsInt32 ());
 		changed = TextBoxModelChangedLayout;
-		dirty = true;
 	} else if (args->property == TextBox::TextWrappingProperty) {
 		changed = TextBoxModelChangedLayout;
-		dirty = true;
 	} else if (args->property == TextBox::HorizontalScrollBarVisibilityProperty) {
 		/* FIXME: need to figure out:
 		 *
 		 * 1. whether the scrollbar should be shown or not
 		 * 2. whether the layout needs to be recalculated if the visibility changes
 		 */
+		invalidate = true;
 	} else if (args->property == TextBox::VerticalScrollBarVisibilityProperty) {
 		/* FIXME: need to figure out:
 		 *
 		 * 1. whether the scrollbar should be shown or not
 		 * 2. whether the layout needs to be recalculated if the visibility changes
 		 */
+		invalidate = true;
 	}
 	
-	// FIXME: we can probably get rid of the "dirty" state since
-	// TextBoxView should handle that now.
-	if (invalidate) {
-		if (dirty)
-			UpdateBounds (true);
-		
+	if (invalidate)
 		Invalidate ();
-	}
 	
 	if (changed != TextBoxModelChangedNothing)
 		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (changed));
@@ -556,6 +541,16 @@ TextBox::OnApplyTemplate ()
 	}
 	
 	Control::OnApplyTemplate ();
+}
+
+void
+TextBox::ClearSelection ()
+{
+	setvalue = false;
+	SetValue (TextBox::SelectionLengthProperty, Value ((int) 0));
+	SetValue (TextBox::SelectionStartProperty, Value ((int) 0));
+	SetValue (TextBox::SelectedTextProperty, Value (""));
+	setvalue = true;
 }
 
 void

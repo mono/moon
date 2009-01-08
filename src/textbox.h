@@ -114,6 +114,7 @@ class TextBox : public Control {
 	TextSelection selection;
 	TextLayoutHints *hints;
 	TextBuffer *buffer;
+	bool setvalue;
 	int maxlen;
 	int caret;
 	
@@ -122,6 +123,8 @@ class TextBox : public Control {
 	
 	void OnKeyDown (KeyEventArgs *args);
 	void OnKeyUp (KeyEventArgs *args);
+	
+	void ClearSelection ();
 	
 	//
 	// Private Property Accessors
