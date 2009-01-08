@@ -409,7 +409,6 @@ RectangleGeometry::Build ()
 	
 	double radius_x = GetRadiusX ();
 	double radius_y = GetRadiusY ();
-	GetRadius (&radius_x, &radius_y);
 	path = moon_path_renew (path, MOON_PATH_ROUNDED_RECTANGLE_LENGTH);
 	moon_rounded_rectangle (path, rect->x, rect->y, rect->width, rect->height, radius_x, radius_y);
 }
@@ -426,22 +425,6 @@ RectangleGeometry::ComputePathBounds ()
 	bounds = *rect;
 	
 	return bounds;
-}
-
-bool
-RectangleGeometry::GetRadius (double *rx, double *ry)
-{
-	Value *value = GetValueNoDefault (RectangleGeometry::RadiusXProperty);
-	if (!value)
-		return false;
-	*rx = value->AsDouble ();
-
-	value = GetValueNoDefault (RectangleGeometry::RadiusYProperty);
-	if (!value)
-		return false;
-	*ry = value->AsDouble ();
-
-	return ((*rx != 0.0) && (*ry != 0.0));
 }
 
 //
