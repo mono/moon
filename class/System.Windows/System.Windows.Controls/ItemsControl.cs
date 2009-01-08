@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2008 Novell, Inc.
+// Copyright (C) 2008-2009 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -34,76 +34,99 @@ namespace System.Windows.Controls {
 
 	[ContentPropertyAttribute("Items", true)]
 	public class ItemsControl : Control {
-		public static readonly DependencyProperty DisplayMemberPathProperty;
-		public static readonly DependencyProperty ItemsPanelProperty;
-		public static DependencyProperty ItemsSourceProperty;
-		public static readonly DependencyProperty ItemTemplateProperty;
 
-		public ItemsControl() {
+		public static readonly DependencyProperty DisplayMemberPathProperty =
+			DependencyProperty.Register ("DisplayMemberPath", typeof (string), typeof (ItemsControl), null);
+		public static readonly DependencyProperty ItemsPanelProperty =
+			DependencyProperty.Register ("ItemsPanel", typeof (ItemsPanelTemplate), typeof (ItemsControl), null);
+		public static readonly DependencyProperty ItemsSourceProperty =
+			DependencyProperty.Register ("ItemsSource", typeof (IEnumerable), typeof (ItemsControl), null);
+		public static readonly DependencyProperty ItemTemplateProperty =
+			DependencyProperty.Register ("ItemTemplate", typeof (DataTemplate), typeof (ItemsControl), null);
+
+		private ItemCollection items;
+
+
+		public ItemsControl ()
+		{
+		}
+
+		protected virtual void ClearContainerForItemOverride (DependencyObject element, object item)
+		{
+			if ((element == null) || (item == null))
+				return;
 			throw new NotImplementedException ();
 		}
 
-		protected virtual void ClearContainerForItemOverride(DependencyObject element, Object item) {
+		protected virtual DependencyObject GetContainerForItemOverride ()
+		{
 			throw new NotImplementedException ();
 		}
 
-		protected virtual DependencyObject GetContainerForItemOverride() {
+		protected virtual bool IsItemItsOwnContainerOverride (object item)
+		{
+			if (item == null)
+				return false;
 			throw new NotImplementedException ();
 		}
 
-		protected virtual bool IsItemItsOwnContainerOverride(Object item) {
-			throw new NotImplementedException ();
+		protected virtual void OnItemsChanged (NotifyCollectionChangedEventArgs e)
+		{
 		}
 
-		protected virtual void OnItemsChanged(NotifyCollectionChangedEventArgs e) {
-			throw new NotImplementedException ();
-		}
-
-		protected virtual void PrepareContainerForItemOverride(DependencyObject element, Object item) {
+		protected virtual void PrepareContainerForItemOverride (DependencyObject element, object item)
+		{
+			if ((element == null) || (item == null))
+				return;
 			throw new NotImplementedException ();
 		}
 
 		public string DisplayMemberPath { 
 			get {
-				throw new NotImplementedException ();
+				return (string) GetValue (DisplayMemberPathProperty);
 			}
 			set {
-				throw new NotImplementedException ();
+				SetValue (DisplayMemberPathProperty, value);
 			}
 		}
 
 		public ItemCollection Items {
 			get {
-				throw new NotImplementedException ();
+				if (items == null) {
+					items = new ItemCollection ();
+					items.ItemsChanged += delegate (object o, NotifyCollectionChangedEventArgs e) {
+						OnItemsChanged (e);
+					};
+				}
+				return items;
 			}
 		}
 
 		public ItemsPanelTemplate ItemsPanel { 
 			get {
-				throw new NotImplementedException ();
+				return (ItemsPanelTemplate) GetValue (ItemsPanelProperty);
 			}
 			set {
-				throw new NotImplementedException ();
+				SetValue (ItemsPanelProperty, value);
 			}
 		}
 
 		public IEnumerable ItemsSource { 
 			get {
-				throw new NotImplementedException ();
+				return (IEnumerable) GetValue (ItemsSourceProperty);
 			}
 			set {
-				throw new NotImplementedException ();
+				SetValue (ItemsSourceProperty, value);
 			}
 		}
 
 		public DataTemplate ItemTemplate { 
 			get {
-				throw new NotImplementedException ();
+				return (DataTemplate) GetValue (ItemTemplateProperty);
 			}
 			set {
-				throw new NotImplementedException ();
+				SetValue (ItemTemplateProperty, value);
 			}
 		}
-
 	}
 }
