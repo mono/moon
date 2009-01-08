@@ -1,3 +1,7 @@
+2009-01-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ItemCollection.cs: Change to partial class
+
 2009-01-07  Chris Toshok  <toshok@ximian.com>
 
 	* Control.cs (Control.InvokeLoaded): get the default style for the
