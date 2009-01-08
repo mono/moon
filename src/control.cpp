@@ -56,8 +56,6 @@ Control::ComputeBounds ()
 {
 	double width = GetWidth ();
 	double height = GetHeight ();
-	Value *vw = GetValueNoDefault (FrameworkElement::WidthProperty);
-	Value *vh = GetValueNoDefault (FrameworkElement::HeightProperty);
 	
 	Thickness border = *GetBorderThickness ();
 	Thickness padding = *GetPadding ();
@@ -76,7 +74,7 @@ Control::ComputeBounds ()
 	extents.width += border.right + padding.right;
 
 	// if width or height == NAN  Auto layout
-	if (vh && vw && (width == width) && (height == height))
+	if (!isnan (width) && !isnan (height))
 		extents = Rect (0.0, 0.0, width, height);
 	else 
 		g_warning ("AutoWidth (%f, %f, %f, %f)", extents.x, extents.y, extents.width, extents.height);
