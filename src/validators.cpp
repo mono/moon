@@ -63,6 +63,16 @@ Validators::IntGreaterThanZeroValidator (DependencyObject* instance, DependencyP
 }
 
 bool
+Validators::DoubleGreaterThanZeroValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	if (value->AsDouble () <= 0) {
+		MoonError::FillIn (error, MoonError::ARGUMENT, 1001, "Value must be greater than zero");
+		return false;
+	}
+	return true;
+}
+
+bool
 Validators::NonNullStringValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
 	if (!value || value->GetIsNull ()) {

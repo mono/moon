@@ -1,3 +1,13 @@
+2009-01-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* validators.h:
+	* validators.cpp: Added DoubleGreaterThanZeroValidator.
+
+	* mediaelement.h: Use double validator instead of int validator for
+	double properties.
+
+	* dependencyproperty.g.cpp: Regenerated.
+
 2009-01-08  Alan McGovern  <amcgovern@novell.com>
 
 	* dependencyobject.cpp: *Warning - Changing default values* When

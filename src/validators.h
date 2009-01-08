@@ -29,6 +29,7 @@ public:
 	static ValueValidator CursorValidator;
 	static ValueValidator PositiveIntValidator;
 	static ValueValidator IntGreaterThanZeroValidator;
+	static ValueValidator DoubleGreaterThanZeroValidator;
 	static ValueValidator NonNullStringValidator;
 	static ValueValidator MediaAttributeCollectionValidator;
 	static ValueValidator PasswordValidator;

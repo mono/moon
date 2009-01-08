@@ -220,8 +220,8 @@ dependency_property_g_init (void)
 	MediaElement::IsMutedProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "IsMuted", new Value (false));
 	MediaElement::MarkersProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "Markers", Type::TIMELINEMARKER_COLLECTION);
 	MediaElement::NaturalDurationProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "NaturalDuration", new Value (Duration::FromSeconds (0)), Type::DURATION, false, true, false, NULL, NULL);
-	MediaElement::NaturalVideoHeightProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "NaturalVideoHeight", new Value (0.0), Type::DOUBLE, false, true, false, NULL, Validators::IntGreaterThanZeroValidator);
-	MediaElement::NaturalVideoWidthProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "NaturalVideoWidth", new Value (0.0), Type::DOUBLE, false, true, false, NULL, Validators::IntGreaterThanZeroValidator);
+	MediaElement::NaturalVideoHeightProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "NaturalVideoHeight", new Value (0.0), Type::DOUBLE, false, true, false, NULL, Validators::DoubleGreaterThanZeroValidator);
+	MediaElement::NaturalVideoWidthProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "NaturalVideoWidth", new Value (0.0), Type::DOUBLE, false, true, false, NULL, Validators::DoubleGreaterThanZeroValidator);
 	MediaElement::PositionProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "Position", Type::TIMESPAN);
 	MediaElement::RenderedFramesPerSecondProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "RenderedFramesPerSecond", new Value (0.0), Type::DOUBLE, false, true, false, NULL, NULL);
 	MediaElement::VolumeProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "Volume", new Value (0.5));

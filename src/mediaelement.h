@@ -187,9 +187,9 @@ class MediaElement : public MediaBase {
 	static DependencyProperty *MarkersProperty;
  	/* @PropertyType=Duration,DefaultValue=Duration::FromSeconds (0),ReadOnly,GenerateGetter */
 	static DependencyProperty *NaturalDurationProperty;
- 	/* @PropertyType=double,DefaultValue=0.0,ReadOnly,ManagedPropertyType=int,GenerateAccessors,Validator=IntGreaterThanZeroValidator */
+ 	/* @PropertyType=double,DefaultValue=0.0,ReadOnly,ManagedPropertyType=int,GenerateAccessors,Validator=DoubleGreaterThanZeroValidator */
 	static DependencyProperty *NaturalVideoHeightProperty;
- 	/* @PropertyType=double,DefaultValue=0.0,ReadOnly,ManagedPropertyType=int,GenerateAccessors,Validator=IntGreaterThanZeroValidator */
+ 	/* @PropertyType=double,DefaultValue=0.0,ReadOnly,ManagedPropertyType=int,GenerateAccessors,Validator=DoubleGreaterThanZeroValidator */
 	static DependencyProperty *NaturalVideoWidthProperty;
  	/* @PropertyType=TimeSpan,GenerateAccessors */
 	static DependencyProperty *PositionProperty;
