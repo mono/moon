@@ -1545,11 +1545,11 @@ MoonlightKeyEventArgsObject::GetProperty (int id, NPIdentifier name, NPVariant *
 
 	switch (id) {
 	case MoonId_Shift:
-		BOOLEAN_TO_NPVARIANT ((args->GetState () & GDK_SHIFT_MASK) != 0, *result);
+		BOOLEAN_TO_NPVARIANT ((args->GetModifiers () & GDK_SHIFT_MASK) != 0, *result);
 		return true;
 
 	case MoonId_Ctrl:
-		BOOLEAN_TO_NPVARIANT ((args->GetState () & GDK_CONTROL_MASK) != 0, *result);
+		BOOLEAN_TO_NPVARIANT ((args->GetModifiers () & GDK_CONTROL_MASK) != 0, *result);
 		return true;
 
 	case MoonId_Handled:

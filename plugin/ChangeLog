@@ -1,3 +1,8 @@
+2009-01-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin-class.cpp (MoonlightKeyEventArgsObject::GetProperty):
+	Updated for method name changes.
+
 2008-12-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* plugin.mdp: Updated.
