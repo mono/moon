@@ -1,4 +1,4 @@
-﻿// (c) Copyright Microsoft Corporation.
+// (c) Copyright Microsoft Corporation.
 // This source is subject to the Microsoft Public License (Ms-PL).
 // Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
 // All other rights reserved.
@@ -112,13 +112,17 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Harness
             BugAttribute bug = ReflectionUtility.GetAttribute(_testMethod, typeof(BugAttribute)) as BugAttribute;
             if (bug != null)
             {
+                string name = bug.GetType ().Name;
+                _silverlightBug = name == "SilverlightBugAttribute";
+                _moonlightBug = name == "MoonlightBugAttribute";
                 if (!bug.Fixed)
                 {
                     _bugAttributePresent = true;
-                    Enqueue(() => LogWriter.KnownIssue(bug.Description));
+                    if (_moonlightBug && Environment.OSVersion.Platform == PlatformID.Unix)
+                        Enqueue(() => LogWriter.KnownIssue(bug.Description));
+                    else if (_silverlightBug && Environment.OSVersion.Platform != PlatformID.Unix)
+                        Enqueue(() => LogWriter.KnownIssue(bug.Description));
                 }
-				_silverlightBug = bug.GetType ().Name == "SilverlightBugAttribute";
-				_moonlightBug = bug.GetType ().Name == "MoonlightBugAttribute";
             }
 
             // [TestInitialize]
