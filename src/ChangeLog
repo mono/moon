@@ -1,3 +1,8 @@
+2009-01-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp (TextBlock::Layout): Fix bug #435798 in a slightly
+	different way so that we don't have to use GetValueNoDefault().
+
 2009-01-08  Larry Ewing  <lewing@novell.com>
 
 	* text.cpp (TextBlock::Layout): use nan logic for FE:Width here.

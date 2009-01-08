@@ -349,27 +349,26 @@ TextBlock::CalcActualWidthHeight (cairo_t *cr)
 void
 TextBlock::Layout (cairo_t *cr)
 {
-	Value *value = GetValueNoDefault (TextBlock::TextProperty);
 	InlineCollection *inlines = GetInlines ();
 	TextDecorations decorations;
-	List *runs;
+	double width = GetWidth ();
 	guint8 font_mask;
 	const char *text;
+	List *runs;
 	
-	if (!value) {
-		// If no text has ever been set on this TextBlock,
-		// then skip calculating actual width/height.
+	if (!(text = GetText ())) {
+		// If the TextBlock's Text property is not set,
+		// then don't modify ActualHeight.
 		// Fixes bug #435798
-		actual_height = 0.0;
+		// actual_height = 0.0;
 		actual_width = 0.0;
 		goto done;
 	}
-
+	
 	runs = new List ();
 	
 	layout->SetWrapping (GetTextWrapping ());
 	
-	double width = GetWidth ();
 	if (!isnan (width)) {
 		Thickness *padding = GetPadding ();
 		double pad = padding->left + padding->right;
