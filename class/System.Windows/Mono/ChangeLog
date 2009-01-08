@@ -1,3 +1,10 @@
+2009-01-08  Alan McGovern  <amcgovern@novell.com>
+
+	* Value.cs: Add the ability to map a DependencyProperty to/from native.
+	This removes a hack in Style where DP's used to be looked up by name,
+	which couldn't be done with properties registered through C#. Fixes 2
+	NUnit tests.
+
 2009-01-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* GeneratedPInvokes.cs, Kind.cs, Types.g.cs: Regenerated for

@@ -1,3 +1,11 @@
+2009-01-08  Alan McGovern  <amcgovern@novell.com>
+
+	* Setter.cs:
+	* DependencyProperty.cs: Add the ability to map a DependencyProperty
+	to/from native. This removes a hack in Style where DP's used to be
+	looked up by name, which couldn't be done with properties registered
+	through C#. Fixes 2 NUnit tests.
+
 2009-01-08  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* PresentationFrameworkCollection.cs: Added change notification

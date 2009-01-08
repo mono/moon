@@ -1,3 +1,14 @@
+2009-01-08  Alan McGovern  <amcgovern@novell.com>
+
+	* style.h:
+	* value.h:
+	* value.h.in:
+	* frameworkelement.cpp:
+	* dependencyproperty.g.cpp: Add the ability to map a DependencyProperty
+	to/from native. This removes a hack in Style where DP's used to be
+	looked up by name, which couldn't be done with properties registered
+	through C#. Fixes 2 NUnit tests.
+
 2009-01-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* validators.h:

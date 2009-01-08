@@ -288,8 +288,7 @@ dependency_property_g_init (void)
 	ScaleTransform::CenterYProperty = DependencyProperty::Register (Type::SCALETRANSFORM, "CenterY", new Value (0.0));
 	ScaleTransform::ScaleXProperty = DependencyProperty::Register (Type::SCALETRANSFORM, "ScaleX", new Value (1.0));
 	ScaleTransform::ScaleYProperty = DependencyProperty::Register (Type::SCALETRANSFORM, "ScaleY", new Value (1.0));
-	Setter::DependencyPropertyProperty = DependencyProperty::Register (Type::SETTER, "DependencyProperty", Type::DEPENDENCYPROPERTY);
-	Setter::PropertyProperty = DependencyProperty::Register (Type::SETTER, "Property", Type::STRING);
+	Setter::PropertyProperty = DependencyProperty::Register (Type::SETTER, "Property", Type::DEPENDENCYPROPERTY);
 	Setter::ValueProperty = DependencyProperty::Register (Type::SETTER, "Value", Type::OBJECT);
 	SetterBase::IsSealedProperty = DependencyProperty::Register (Type::SETTERBASE, "IsSealed", new Value (false));
 	SetterBaseCollection::IsSealedProperty = DependencyProperty::Register (Type::SETTERBASE_COLLECTION, "IsSealed", new Value (false));
@@ -624,7 +623,6 @@ DependencyProperty *ScaleTransform::CenterXProperty = NULL;
 DependencyProperty *ScaleTransform::CenterYProperty = NULL;
 DependencyProperty *ScaleTransform::ScaleXProperty = NULL;
 DependencyProperty *ScaleTransform::ScaleYProperty = NULL;
-DependencyProperty *Setter::DependencyPropertyProperty = NULL;
 DependencyProperty *Setter::PropertyProperty = NULL;
 DependencyProperty *Setter::ValueProperty = NULL;
 DependencyProperty *SetterBase::IsSealedProperty = NULL;

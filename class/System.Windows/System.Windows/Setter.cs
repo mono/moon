@@ -31,8 +31,7 @@ using Mono;
 namespace System.Windows {
 
 	public sealed partial class Setter : SetterBase {
-		private static readonly DependencyProperty PropertyNameProperty = DependencyProperty.Lookup (Kind.SETTER, "Property", typeof (string));
-		private static readonly DependencyProperty PropertyProperty = DependencyProperty.Lookup (Kind.SETTER, "DependencyProperty", typeof (DependencyProperty));
+		private static readonly DependencyProperty PropertyProperty = DependencyProperty.Lookup (Kind.SETTER, "Property", typeof (DependencyProperty));
 		private static readonly DependencyProperty ValueProperty = DependencyProperty.Lookup (Kind.SETTER, "Value", typeof (object));
 
 		object value;
@@ -46,22 +45,9 @@ namespace System.Windows {
 			Value = value;
 		}
 
-		string PropertyName {
-			set { SetValue (PropertyNameProperty, value); }
-		}
-
-		DependencyProperty property;
 		public DependencyProperty Property {
-			get {
-				return property;
-			}
-			set {
-				if (value == null)
-					PropertyName = null;
-				else
-					PropertyName = value.Name;
-				property = value;
-			}
+			get { return (DependencyProperty) GetValue (PropertyProperty); }
+			set { SetValue (PropertyProperty, value); }
 		}
 
 		public object Value {

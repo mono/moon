@@ -120,8 +120,6 @@ class Setter : public SetterBase {
 	
  public:
 	/* @PropertyType=DependencyProperty */
-	static DependencyProperty *DependencyPropertyProperty;
-	/* @PropertyType=string */
 	static DependencyProperty *PropertyProperty;
 	/* @PropertyType=object */
 	static DependencyProperty *ValueProperty;

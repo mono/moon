@@ -90,6 +90,9 @@ namespace Mono {
 				case Kind.INVALID:
 					return null;
 					
+				case Kind.DEPENDENCYPROPERTY:
+					return DependencyProperty.Lookup (val->u.p);
+				
 				case Kind.BOOL:
 					return val->u.i32 != 0;
 
@@ -245,6 +248,9 @@ namespace Mono {
 					value.k = dov.GetKind ();
 					value.u.p = dov.native;
 
+				} else if (v is DependencyProperty) {
+					value.k = Kind.DEPENDENCYPROPERTY;
+					value.u.p = ((DependencyProperty)v).Native;
 				}
 				else if (v is int || (v.GetType ().IsEnum && Enum.GetUnderlyingType (v.GetType()) == typeof(int))) {
 					value.k = Kind.INT32;

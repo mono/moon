@@ -189,6 +189,11 @@ namespace System.Windows {
 			// note: since callbacks might throw exceptions but we cannot catch them
 			custom_property.Metadata.property_changed_callback (obj, args);
 		}
+
+		internal static DependencyProperty Lookup (IntPtr native)
+		{
+			return properties [native];
+		}
 		
 		internal static DependencyProperty Lookup (Kind declaring_kind, string name, Type property_type)
 		{

@@ -251,9 +251,8 @@ FrameworkElement::UpdateFromStyle (Style *style)
 		Setter *setter = setterBase->AsSetter ();
 		if (!(value = setter->GetValue (Setter::PropertyProperty)))
 			continue;
-		
-		char *propertyName = value->AsString ();
-		if (!(property = DependencyProperty::GetDependencyProperty (GetType ()->GetKind (), propertyName))) {
+
+		if (!(property = value->AsDependencyProperty ())) {
 			continue;
 		}
 

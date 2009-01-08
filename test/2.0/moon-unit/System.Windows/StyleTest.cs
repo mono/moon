@@ -44,7 +44,6 @@ namespace MoonTest.System.Windows
 
 
 		[TestMethod]
-		[MoonlightBug]
 		public void ApplyStyleToManagedDP()
 		{
 			T t = new T();
@@ -177,7 +176,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void InvalidPropertyNameInSetter ()
 		{
 			Assert.Throws (delegate { XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Button""><Setter Property=""WidthOrHeight"" Value=""10""/></Style>"); }, typeof (XamlParseException));

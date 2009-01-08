@@ -285,6 +285,7 @@ public:
 	Rect*		AsRect ()	{ checked_get_exact (Type::RECT, NULL, u.rect); }
 	Size*		AsSize ()	{ checked_get_exact (Type::SIZE, NULL, u.size); }
 	char*		AsString ()	{ checked_get_exact (Type::STRING, NULL, u.s); }
+	DependencyProperty*		AsDependencyProperty ()	{ checked_get_exact (Type::DEPENDENCYPROPERTY, NULL, u.dp); }
 	
 	void *		AsManagedObject () { checked_get_exact (Type::MANAGED, NULL, u.managed_object); }
 	void *		AsNPObj () { checked_get_exact (Type::NPOBJ, NULL, u.npobj); }
@@ -498,6 +499,7 @@ public:
 		char *s;
 		EventObject *dependency_object;
 		Color *color;
+		DependencyProperty *dp;
 		Point *point;
 		Rect *rect;
 		Size *size;
