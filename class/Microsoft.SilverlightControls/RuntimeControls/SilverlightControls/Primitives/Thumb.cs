@@ -34,14 +34,14 @@ namespace System.Windows.Controls.Primitives
         public bool IsDragging 
         {
             get { return (bool)GetValue(IsDraggingProperty); } 
-            internal set { SetValue(IsDraggingProperty, value); }
+            internal set { SetValueImpl(IsDraggingProperty, value); }
         }
  
         /// <summary>
         /// Identifies the IsDragging dependency property.
         /// </summary> 
         public static readonly DependencyProperty IsDraggingProperty = 
-            DependencyProperty.Register(
+            DependencyProperty.RegisterReadOnly(
                 "IsDragging", 
                 typeof(bool),
                 typeof(Thumb),
@@ -98,14 +98,14 @@ namespace System.Windows.Controls.Primitives
         public bool IsFocused
         { 
             get { return (bool)GetValue(IsFocusedProperty); }
-            internal set { SetValue(IsFocusedProperty, value); }
+            internal set { SetValueImpl(IsFocusedProperty, value); }
         } 
 
         /// <summary>
         /// Identifies the IsFocused dependency property. 
         /// </summary> 
         public static readonly DependencyProperty IsFocusedProperty =
-            DependencyProperty.Register( 
+            DependencyProperty.RegisterReadOnly( 
                 "IsFocused",
                 typeof(bool),
                 typeof(Thumb), 

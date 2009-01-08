@@ -1,3 +1,9 @@
+2009-01-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* RuntimeControls/SilverlightControls/Slider.cs,
+	* RuntimeControls/SilverlightControls/Primitives/Thumb.cs,
+	* README.MOON: More read-only properties.
+
 2009-01-07  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Controls/Src/ContentControl/ContentControl.cs: Set DefaultStyleKey

@@ -142,14 +142,14 @@ namespace System.Windows.Controls
         public bool IsFocused 
         {
             get { return (bool)GetValue(IsFocusedProperty); } 
-            internal set { SetValue(IsFocusedProperty, value); }
+            internal set { SetValueImpl(IsFocusedProperty, value); }
         }
  
         /// <summary>
         /// Identifies the IsFocused dependency property.
         /// </summary> 
         public static readonly DependencyProperty IsFocusedProperty = 
-            DependencyProperty.Register(
+            DependencyProperty.RegisterReadOnly(
                 "IsFocused", 
                 typeof(bool),
                 typeof(Slider),

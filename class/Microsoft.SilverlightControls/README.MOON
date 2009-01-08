@@ -40,5 +40,8 @@ So far the following properties were found
 	* ButtonBase.IsFocusedProperty
 	* ButtonBase.IsMouseOverProperty
 	* ButtonBase.IsPressedProperty
+	* Slider.IsFocusedProperty
+	* Thumb.IsDraggingProperty
+	* Thumb.IsFocusedProperty
 which all throws InvalidOperationException when SetValue is used from
 use code (but obviously the runtime can change those values).
