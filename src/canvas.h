@@ -40,7 +40,6 @@ class Canvas : public Panel {
 	
 	virtual Type::Kind GetObjectType () { return Type::CANVAS; }
 
-	virtual Point GetTransformOrigin ();
 	virtual void OnLoaded ();
 
 	virtual Size MeasureOverride (Size availableSize);

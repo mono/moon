@@ -244,7 +244,6 @@ class Image : public MediaBase {
 	virtual Type::Kind GetObjectType () { return Type::IMAGE; };
 	
 	virtual void Render (cairo_t *cr, Region *region);
-	virtual Point GetTransformOrigin ();
 	
 	cairo_surface_t *GetCairoSurface ();
 	

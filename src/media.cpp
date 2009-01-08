@@ -845,8 +845,8 @@ Image::Render (cairo_t *cr, Region *region)
 	cairo_save (cr);
 
 	Stretch stretch = GetStretch ();
-	double h = GetHeight ();
-	double w = GetWidth ();
+	double h = isnan (GetHeight ()) ? 0.0 : GetHeight ();
+	double w = isnan (GetWidth ()) ? 0.0 : GetWidth ();
 	
 	if (!pattern)
 		pattern = cairo_pattern_create_for_surface (surface->cairo);
@@ -865,15 +865,6 @@ Image::Render (cairo_t *cr, Region *region)
 	cairo_fill (cr);
 
 	cairo_restore (cr);
-}
-
-Point
-Image::GetTransformOrigin ()
-{
-	Point *user_xform_origin = GetRenderTransformOrigin ();
-	
-	return Point (GetWidth () * user_xform_origin->x, 
-		      GetHeight () * user_xform_origin->y);
 }
 
 Rect

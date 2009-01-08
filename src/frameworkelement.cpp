@@ -58,6 +58,18 @@ FrameworkElement::FrameworkElement ()
 	arrange_cb = NULL;
 }
 
+Point
+FrameworkElement::GetTransformOrigin ()
+{
+	Point *user_xform_origin = GetRenderTransformOrigin ();
+	
+	double width = isnan (GetWidth ()) ? 0.0 : GetWidth ();
+	double height = isnan (GetHeight ()) ? 0.0 : GetHeight ();
+
+	return Point (width * user_xform_origin->x, 
+		      height * user_xform_origin->y);
+}
+
 FrameworkElement::~FrameworkElement ()
 {
 	g_hash_table_destroy (bindings);

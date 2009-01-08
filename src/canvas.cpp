@@ -130,18 +130,6 @@ Canvas::ElementRemoved (UIElement *item)
 	}
 }
 
-Point
-Canvas::GetTransformOrigin ()
-{
-	Point *user_xform_origin = GetRenderTransformOrigin ();
-	
-	double width = isnan (GetWidth ()) ? 0.0 : GetWidth ();
-	double height = isnan (GetHeight ()) ? 0.0 : GetHeight ();
-
-	return Point (width * user_xform_origin->x, 
-		      height * user_xform_origin->y);
-}
-
 Size
 Canvas::MeasureOverride (Size availableSize)
 {

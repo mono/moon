@@ -705,8 +705,8 @@ Point
 MediaElement::GetTransformOrigin ()
 {
 	Point *user_xform_origin = GetRenderTransformOrigin ();
-	double h = GetHeight ();
-	double w = GetWidth ();
+	double h = isnan (GetHeight ()) ? 0.0 : GetHeight ();
+	double w = isnan (GetWidth ()) ? 0.0 : GetWidth ();
 	
 	if (w == 0.0 && h == 0.0) {
 		h = (double) mplayer->GetVideoHeight ();

@@ -114,7 +114,6 @@ class Shape : public FrameworkElement {
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual void ComputeBounds ();
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
-	virtual Point GetTransformOrigin ();
 	virtual Point GetOriginPoint () { return extents.GetTopLeft (); }
 	
 	Rect ComputeLargestRectangleBounds ();

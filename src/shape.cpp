@@ -774,18 +774,6 @@ Shape::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, Pr
 		FrameworkElement::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
-Point
-Shape::GetTransformOrigin ()
-{
-	Point *user_xform_origin = GetRenderTransformOrigin ();
-	
-	double width = isnan (GetWidth ()) ? 0.0 : GetWidth ();
-	double height = isnan (GetHeight ()) ? 0.0 : GetHeight ();
-
-	return Point (width * user_xform_origin->x, 
-		      height * user_xform_origin->y);
-}
-
 void
 Shape::InvalidatePathCache (bool free)
 {
