@@ -340,6 +340,7 @@ TextBoxModelChangeType
 TextBox::CursorRight (GdkModifierType modifiers)
 {
 	if (modifiers & GDK_SHIFT_MASK) {
+		// FIXME: need to handle Ctrl+Shift (selects on word bounds afaict?)
 		// change the selection
 		if (cursor < buffer->len) {
 			if (selection.length > 0) {
@@ -385,6 +386,7 @@ TextBoxModelChangeType
 TextBox::CursorLeft (GdkModifierType modifiers)
 {
 	if (modifiers & GDK_SHIFT_MASK) {
+		// FIXME: need to handle Ctrl+Shift (selects on word bounds afaict?)
 		// change the selection
 		if (cursor > 0) {
 			if (selection.length > 0) {
