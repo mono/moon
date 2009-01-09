@@ -1,5 +1,10 @@
 2009-01-09  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingExpressionBase.cs: Fix the IValueConverter
+	stuff properly.
+
+2009-01-09  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/BindingExpressionBase.cs: Complete implementation
 	of IValueConverter. Two way binding tests are now working.
 

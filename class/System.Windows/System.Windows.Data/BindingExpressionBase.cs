@@ -222,14 +222,15 @@ namespace System.Windows.Data {
 		{
 			if (PropertyInfo.Name.Equals (e.PropertyName)) {
 				object value = PropertyInfo.GetValue (PropertyTarget, null);
-				if (Property.PropertyType.IsValueType && value.GetType () != Property.PropertyType)
-					value = Convert.ChangeType (value, Property.PropertyType, null);
 
 				if (Binding.Converter != null)
 					value = Binding.Converter.Convert (value,
-					                                   PropertyInfo.PropertyType,
+					                                   Property.PropertyType,
 					                                   Binding.ConverterParameter,
 					                                   Binding.ConverterCulture ?? enUS);
+				
+				if (Property.PropertyType.IsValueType && value.GetType () != Property.PropertyType)
+					value = Convert.ChangeType (value, Property.PropertyType, null);
 				
 				Target.UpdateFromBinding (Property, value);
 			}
@@ -239,15 +240,16 @@ namespace System.Windows.Data {
 		{
 			if (updating)
 				return;
-			
-			if (value != null && PropertyInfo.PropertyType.IsValueType && PropertyInfo.PropertyType != value.GetType ())
-				value = Convert.ChangeType (value, PropertyInfo.PropertyType, null);
 
 			if (Binding.Converter != null)
 				value = Binding.Converter.ConvertBack (value,
 				                                       PropertyInfo.PropertyType,
 				                                       Binding.ConverterParameter,
 				                                       Binding.ConverterCulture ?? enUS);
+			
+			if (value != null && PropertyInfo.PropertyType.IsValueType && PropertyInfo.PropertyType != value.GetType ())
+				value = Convert.ChangeType (value, PropertyInfo.PropertyType, null);
+
 			try {
 				updating = true;
 				PropertyInfo.SetValue (PropertyTarget, value, null);
