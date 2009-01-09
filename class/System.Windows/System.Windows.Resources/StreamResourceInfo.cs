@@ -35,11 +35,14 @@ namespace System.Windows.Resources {
 
 		internal static StreamResourceInfo FromFile (string path)
 		{
-			return new StreamResourceInfo (File.OpenRead (path), "");
+			return new StreamResourceInfo (File.OpenRead (path), String.Empty);
 		}
 			
 		public StreamResourceInfo (Stream stream, string contentType)
 		{
+			if (stream == null)
+				throw new ArgumentNullException ("stream");
+
 			this.stream = stream;
 			this.content_type = contentType;
 		}
