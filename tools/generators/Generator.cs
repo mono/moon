@@ -415,26 +415,7 @@ class Generator {
 			text.Append (field.GetDependencyPropertyName ());
 			text.Append ("\"");
 			text.Append (", ");
-			
-			if (is_full) {
-				if (has_default_value) {
-					text.Append ("new Value (");
-					text.Append (default_value);
-					text.Append (")");
-				} else {
-					text.Append ("NULL");
-				}
-			} else {
-				if (has_default_value) {
-					text.Append ("new Value (");
-					text.Append (default_value);
-					text.Append (")");
-				}
-			}
-			
-			if (is_full || !has_default_value) {
-				if (has_default_value || (is_full && !has_default_value))
-					text.Append (", ");
+			if (is_nullable) {
 				if (propertyType != null) {
 					if (propertyType.IsEnum) {
 						text.Append ("Type::INT32");
@@ -446,21 +427,55 @@ class Generator {
 					text.Append ("Type::INVALID");
 					//Console.WriteLine ("{0} does not define its property type.", field.FullName);
 				}
-			}
-			
-			if (is_full) {
-				text.Append (", ");
-				text.Append (is_attached ? "true" : "false");
-				text.Append (", ");
-				text.Append (is_readonly ? "true" : "false");
-				text.Append (", ");
-				text.Append (is_always_change ? "true" : "false");
-				text.Append (", ");
-				text.Append ("NULL");
 				text.Append (", ");
 				text.Append (validator != null ? ("Validators::" + validator) : "NULL");
 			}
-			
+			else {
+				if (is_full) {
+					if (has_default_value) {
+						text.Append ("new Value (");
+						text.Append (default_value);
+						text.Append (")");
+					} else {
+						text.Append ("NULL");
+					}
+				} else {
+					if (has_default_value) {
+						text.Append ("new Value (");
+						text.Append (default_value);
+						text.Append (")");
+					}
+				}
+				if (is_full || !has_default_value) {
+					if ((has_default_value || is_full))
+						text.Append (", ");
+					if (propertyType != null) {
+						if (propertyType.IsEnum) {
+							text.Append ("Type::INT32");
+						} else {
+							text.Append ("Type::");
+							text.Append (propertyType.KindName);
+						}
+					} else {
+						text.Append ("Type::INVALID");
+						//Console.WriteLine ("{0} does not define its property type.", field.FullName);
+					}
+				}
+				
+				if (is_full) {
+					text.Append (", ");
+					text.Append (is_attached ? "true" : "false");
+					text.Append (", ");
+					text.Append (is_readonly ? "true" : "false");
+					text.Append (", ");
+					text.Append (is_always_change ? "true" : "false");
+					text.Append (", ");
+					text.Append ("NULL");
+					text.Append (", ");
+					text.Append (validator != null ? ("Validators::" + validator) : "NULL");
+				}
+			}
+
 			text.AppendLine (");");
 		}
 		text.AppendLine ("}");

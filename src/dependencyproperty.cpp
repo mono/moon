@@ -196,11 +196,12 @@ DependencyProperty::Register (Type::Kind type, const char *name, Value *default_
 }
 
 DependencyProperty *
-DependencyProperty::RegisterNullable (Type::Kind type, const char *name, Type::Kind vtype)
+DependencyProperty::RegisterNullable (Type::Kind type, const char *name, Type::Kind vtype, ValueValidator *validator)
 {
 	DependencyProperty *property;
 	property = Register (type, name, vtype);
 	property->is_nullable = true;
+	property->validator = validator;
 	return property;
 }
 

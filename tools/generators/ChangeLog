@@ -1,3 +1,8 @@
+2009-01-09  Alan McGovern  <amcgovern@novell.com>
+
+	* Generator.cs: Make it possible to use validators with Nullable
+	properties.
+
 2008-12-22  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Generator.cs, ParameterInfo.cs: The 'bool' we expose in our C 
