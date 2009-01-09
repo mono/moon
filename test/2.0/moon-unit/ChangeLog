@@ -1,5 +1,9 @@
 2009-01-09  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows/StyleTest.cs: Added extra test for attached properties
+
+2009-01-09  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/StyleTest.cs: Add managed validation to Style so we can
 	verify Style.TargetType matches DO.GetType before setting the value.
 	The parser will have to do a similar check when parsing styles from

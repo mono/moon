@@ -84,7 +84,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug ("Managed properties cannot be found via native code, so styles can't be applied to them")]
+		[MoonlightBug ("This is caused by incorrect refreshing when the SetterCollection is modified")]
 		public void ModifyAfterBinding()
 		{
 			Button b = new Button();
@@ -238,6 +238,25 @@ namespace MoonTest.System.Windows
 			Assert.IsTrue (t.Style.IsSealed, "IsSealed");
 			Assert.AreEqual (1, t.Style.Setters.Count, "Setters");
 			Assert.AreEqual (typeof (Control), t.Style.TargetType, "TargetType");
+		}
+
+		[TestMethod]
+		[MoonlightBug ("Attached properties need to be resolved")]
+		public void StyleAttachedProperty()
+		{
+			Rectangle t = (Rectangle)XamlReader.Load(@"
+<Rectangle xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<Rectangle.Style>
+		<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Rectangle"">
+			<Setter Property=""Width"" Value=""5""/>
+		</Style>
+	</Rectangle.Style>
+</Rectangle>");
+			Assert.IsNotNull(t, "Rectangle");
+			Assert.IsTrue (t.Style.IsSealed, "IsSealed");
+			Assert.AreEqual (1, t.Style.Setters.Count, "Setters");
+			Assert.AreEqual (typeof (Rectangle), t.Style.TargetType, "TargetType");
+			Assert.AreEqual(5.0, t.GetValue(Canvas.WidthProperty), "Width");
 		}
 	}
 }
