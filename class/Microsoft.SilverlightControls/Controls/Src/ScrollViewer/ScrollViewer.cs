@@ -67,9 +67,10 @@ namespace System.Windows.Controls
         /// <summary> 
         /// Identifies the HorizontalOffset dependency property.
         /// </summary>
-        public static readonly DependencyProperty HorizontalOffsetProperty = DependencyProperty.Register( 
+        public static readonly DependencyProperty HorizontalOffsetProperty = DependencyProperty.RegisterReadOnly ( 
             "HorizontalOffset", typeof(double), typeof(ScrollViewer), 
-            new PropertyMetadata(new PropertyChangedCallback(OnReadOnlyDependencyPropertyChanged)));
+            null);
+//            new PropertyMetadata(new PropertyChangedCallback(OnReadOnlyDependencyPropertyChanged))); 
  
         /// <summary>
         /// Gets the value of the viewport width of the content.
@@ -81,9 +82,10 @@ namespace System.Windows.Controls
         /// <summary>
         /// Identifies the ViewportWidth dependency property. 
         /// </summary>
-        public static readonly DependencyProperty ViewportWidthProperty = DependencyProperty.Register(
+        public static readonly DependencyProperty ViewportWidthProperty = DependencyProperty.RegisterReadOnly (
             "ViewportWidth", typeof(double), typeof(ScrollViewer), 
-            new PropertyMetadata(new PropertyChangedCallback(OnReadOnlyDependencyPropertyChanged)));
+            null);
+//            new PropertyMetadata(new PropertyChangedCallback(OnReadOnlyDependencyPropertyChanged))); 
 
         /// <summary> 
         /// Gets the value of the scrollable width of the content. 
@@ -95,9 +97,25 @@ namespace System.Windows.Controls
         /// <summary>
         /// Identifies the ScrollableWidth dependency property.
         /// </summary> 
-        public static readonly DependencyProperty ScrollableWidthProperty = DependencyProperty.Register( 
+        public static readonly DependencyProperty ScrollableWidthProperty = DependencyProperty.RegisterReadOnly ( 
             "ScrollableWidth", typeof(double), typeof(ScrollViewer),
-            new PropertyMetadata(new PropertyChangedCallback(OnReadOnlyDependencyPropertyChanged))); 
+            null);
+//            new PropertyMetadata(new PropertyChangedCallback(OnReadOnlyDependencyPropertyChanged))); 
+
+        /// <summary>
+        /// Gets the value of the extent width of the content.
+        /// </summary> 
+        public double ExtentWidth
+        {
+            get { return (double)GetValue(ExtentWidthProperty); } 
+        } 
+        /// <summary>
+        /// Identifies the ExtentWidth dependency property. 
+        /// </summary>
+        public static readonly DependencyProperty ExtentWidthProperty = DependencyProperty.RegisterReadOnly (
+            "ExtentWidth", typeof(double), typeof(ScrollViewer), 
+            null);
+//            new PropertyMetadata(new PropertyChangedCallback(OnReadOnlyDependencyPropertyChanged))); 
 
         /// <summary>
         /// Gets a value that indicates whether the horizontal ScrollBar is visible. 
@@ -109,9 +127,10 @@ namespace System.Windows.Controls
         /// <summary> 
         /// Identifies the ComputedHorizontalScrollBarVisibility dependency property.
         /// </summary>
-        public static readonly DependencyProperty ComputedHorizontalScrollBarVisibilityProperty = DependencyProperty.Register( 
+        public static readonly DependencyProperty ComputedHorizontalScrollBarVisibilityProperty = DependencyProperty.RegisterReadOnly ( 
             "ComputedHorizontalScrollBarVisibility", typeof(Visibility), typeof(ScrollViewer),
-            new PropertyMetadata(new PropertyChangedCallback(OnReadOnlyDependencyPropertyChanged)));
+            null);
+//            new PropertyMetadata(new PropertyChangedCallback(OnReadOnlyDependencyPropertyChanged))); 
  
         /// <summary> 
         /// Gets the value of the vertical offset of the content.
@@ -123,9 +142,10 @@ namespace System.Windows.Controls
         /// <summary>
         /// Identifies the VerticalOffset dependency property. 
         /// </summary> 
-        public static readonly DependencyProperty VerticalOffsetProperty = DependencyProperty.Register(
+        public static readonly DependencyProperty VerticalOffsetProperty = DependencyProperty.RegisterReadOnly (
             "VerticalOffset", typeof(double), typeof(ScrollViewer), 
-            new PropertyMetadata(new PropertyChangedCallback(OnReadOnlyDependencyPropertyChanged)));
+            null);
+//            new PropertyMetadata(new PropertyChangedCallback(OnReadOnlyDependencyPropertyChanged))); 
 
         /// <summary> 
         /// Gets the value of the viewport height of the content.
@@ -137,9 +157,10 @@ namespace System.Windows.Controls
         /// <summary>
         /// Identifies the ViewportHeight dependency property.
         /// </summary> 
-        public static readonly DependencyProperty ViewportHeightProperty = DependencyProperty.Register(
+        public static readonly DependencyProperty ViewportHeightProperty = DependencyProperty.RegisterReadOnly (
             "ViewportHeight", typeof(double), typeof(ScrollViewer),
-            new PropertyMetadata(new PropertyChangedCallback(OnReadOnlyDependencyPropertyChanged))); 
+            null);
+//            new PropertyMetadata(new PropertyChangedCallback(OnReadOnlyDependencyPropertyChanged))); 
  
         /// <summary>
         /// Gets the value of the scrollable height of the content. 
@@ -151,9 +172,25 @@ namespace System.Windows.Controls
         /// <summary> 
         /// Identifies the ScrollableHeight dependency property. 
         /// </summary>
-        public static readonly DependencyProperty ScrollableHeightProperty = DependencyProperty.Register( 
+        public static readonly DependencyProperty ScrollableHeightProperty = DependencyProperty.RegisterReadOnly ( 
             "ScrollableHeight", typeof(double), typeof(ScrollViewer),
-            new PropertyMetadata(new PropertyChangedCallback(OnReadOnlyDependencyPropertyChanged)));
+            null);
+//            new PropertyMetadata(new PropertyChangedCallback(OnReadOnlyDependencyPropertyChanged))); 
+
+        /// <summary> 
+        /// Gets the value of the extent height of the content.
+        /// </summary>
+        public double ExtentHeight 
+        { 
+            get { return (double)GetValue(ExtentHeightProperty); }
+        } 
+        /// <summary>
+        /// Identifies the ViewportHeight dependency property.
+        /// </summary> 
+        public static readonly DependencyProperty ExtentHeightProperty = DependencyProperty.RegisterReadOnly (
+            "ExtentHeight", typeof(double), typeof(ScrollViewer),
+            null);
+//            new PropertyMetadata(new PropertyChangedCallback(OnReadOnlyDependencyPropertyChanged))); 
  
         /// <summary>
         /// Gets a value that indicates whether the vertical ScrollBar is visible.
@@ -165,9 +202,10 @@ namespace System.Windows.Controls
         /// <summary>
         /// Identifies the ComputedVerticalScrollBarVisibility dependency property. 
         /// </summary>
-        public static readonly DependencyProperty ComputedVerticalScrollBarVisibilityProperty = DependencyProperty.Register(
+        public static readonly DependencyProperty ComputedVerticalScrollBarVisibilityProperty = DependencyProperty.RegisterReadOnly (
             "ComputedVerticalScrollBarVisibility", typeof(Visibility), typeof(ScrollViewer), 
-            new PropertyMetadata(new PropertyChangedCallback(OnReadOnlyDependencyPropertyChanged))); 
+            null);
+//            new PropertyMetadata(new PropertyChangedCallback(OnReadOnlyDependencyPropertyChanged))); 
 
         /// <summary> 
         /// Indicates whether the parent handles scrolling itself.
@@ -208,7 +246,7 @@ namespace System.Windows.Controls
         /// <summary> 
         /// Tracks whether changes to read-only DependencyProperties are allowed
         /// </summary>
-        private bool _readOnlyDependencyPropertyChangesAllowed; 
+//        private bool _readOnlyDependencyPropertyChangesAllowed; 
 
         /// <summary>
         /// Gets the value of the HorizontalScrollBarVisibility dependency property from a given element. 
@@ -338,7 +376,7 @@ namespace System.Windows.Controls
             {
                 try
                 { 
-                    _readOnlyDependencyPropertyChangesAllowed = true; 
+//                    _readOnlyDependencyPropertyChangesAllowed = true; 
 
                     // Update horizontal ScrollBar 
                     Visibility horizontalVisibility;
@@ -356,9 +394,9 @@ namespace System.Windows.Controls
                             horizontalVisibility = ElementScrollContentPresenter.ExtentWidth <= ElementScrollContentPresenter.ViewportWidth ? Visibility.Collapsed : Visibility.Visible;
                             break;
                     } 
-                    SetValue(ViewportWidthProperty, ElementScrollContentPresenter.ViewportWidth); 
-                    SetValue(ScrollableWidthProperty, Math.Max(0, ElementScrollContentPresenter.ExtentWidth - ElementScrollContentPresenter.ViewportWidth));
-                    SetValue(ComputedHorizontalScrollBarVisibilityProperty, horizontalVisibility); 
+                    SetValueImpl (ViewportWidthProperty, ElementScrollContentPresenter.ViewportWidth); 
+                    SetValueImpl (ScrollableWidthProperty, Math.Max(0, ElementScrollContentPresenter.ExtentWidth - ElementScrollContentPresenter.ViewportWidth));
+                    SetValueImpl (ComputedHorizontalScrollBarVisibilityProperty, horizontalVisibility); 
 
                     // Update vertical ScrollBar
                     Visibility verticalVisibility; 
@@ -376,13 +414,13 @@ namespace System.Windows.Controls
                             verticalVisibility = ElementScrollContentPresenter.ExtentHeight <= ElementScrollContentPresenter.ViewportHeight ? Visibility.Collapsed : Visibility.Visible; 
                             break; 
                     }
-                    SetValue(ViewportHeightProperty, ElementScrollContentPresenter.ViewportHeight); 
-                    SetValue(ScrollableHeightProperty, Math.Max(0, ElementScrollContentPresenter.ExtentHeight - ElementScrollContentPresenter.ViewportHeight));
-                    SetValue(ComputedVerticalScrollBarVisibilityProperty, verticalVisibility);
+                    SetValueImpl (ViewportHeightProperty, ElementScrollContentPresenter.ViewportHeight); 
+                    SetValueImpl (ScrollableHeightProperty, Math.Max(0, ElementScrollContentPresenter.ExtentHeight - ElementScrollContentPresenter.ViewportHeight));
+                    SetValueImpl (ComputedVerticalScrollBarVisibilityProperty, verticalVisibility);
                 } 
                 finally
                 {
-                    _readOnlyDependencyPropertyChangesAllowed = false; 
+//                    _readOnlyDependencyPropertyChangesAllowed = false; 
                 } 
             }
             return baseMeasureOverride; 
@@ -440,14 +478,14 @@ namespace System.Windows.Controls
                     ElementScrollContentPresenter.VerticalOffset = Math.Max(newValue, 0); 
                 }
  
-                bool previousReadOnlyDependencyPropertyChangesAllowed = _readOnlyDependencyPropertyChangesAllowed;
+//                bool previousReadOnlyDependencyPropertyChangesAllowed = _readOnlyDependencyPropertyChangesAllowed;
                 try
                 { 
-                    _readOnlyDependencyPropertyChangesAllowed = true;
+//                    _readOnlyDependencyPropertyChangesAllowed = true;
                     // Update relevant ScrollBar
                     if (Orientation.Horizontal == orientation) 
                     { 
-                        SetValue(HorizontalOffsetProperty, ElementScrollContentPresenter.HorizontalOffset);
+                        SetValueImpl (HorizontalOffsetProperty, ElementScrollContentPresenter.HorizontalOffset);
                         if (null != ElementHorizontalScrollBar) 
                         {
                             // WPF's ScrollBar doesn't respond to TemplateBinding bound Value changes during the Scroll event
@@ -456,7 +494,7 @@ namespace System.Windows.Controls
                     }
                     else 
                     { 
-                        SetValue(VerticalOffsetProperty, ElementScrollContentPresenter.VerticalOffset);
+                        SetValueImpl (VerticalOffsetProperty, ElementScrollContentPresenter.VerticalOffset);
                         if (null != ElementVerticalScrollBar) 
                         {
                             // WPF's ScrollBar doesn't respond to TemplateBinding bound Value changes during the Scroll event
@@ -466,7 +504,7 @@ namespace System.Windows.Controls
                 } 
                 finally 
                 {
-                    _readOnlyDependencyPropertyChangesAllowed = previousReadOnlyDependencyPropertyChangesAllowed; 
+//                    _readOnlyDependencyPropertyChangesAllowed = previousReadOnlyDependencyPropertyChangesAllowed; 
                 }
             }
         } 
@@ -612,7 +650,7 @@ namespace System.Windows.Controls
                 }
             } 
         }
-
+#if false
         /// <summary> 
         /// Implements a generic PropertyChangedCallback for read-only properties.
         /// </summary>
@@ -627,5 +665,6 @@ namespace System.Windows.Controls
                 throw new InvalidOperationException(Resource.ScrollViewer_OnReadOnlyDependencyPropertyChanged_ReadOnly);
             } 
         } 
+#endif
     }
 } 

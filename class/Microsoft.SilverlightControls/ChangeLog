@@ -1,3 +1,9 @@
+2009-01-09  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Controls/Src/ScrollViewer/ScrollViewer.cs: Add new (missing) DP 
+	and make (most of) them read-only (and behave like SL2 final does)
+	* README.MOON: Document all read-only properties for ScrollViewer
+
 2009-01-09  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Controls/Src/ContentControl/ContentPresenter.cs,

@@ -40,6 +40,16 @@ So far the following properties were found
 	* ButtonBase.IsFocusedProperty
 	* ButtonBase.IsMouseOverProperty
 	* ButtonBase.IsPressedProperty
+	* ScrollViewer.ComputedHorizontalScrollBarVisibilityProperty
+	* ScrollViewer.ComputedVerticalScrollBarVisibilityProperty
+	* ScrollViewer.ExtentHeightProperty
+	* ScrollViewer.ExtentWidthProperty
+	* ScrollViewer.HorizontalOffsetProperty
+	* ScrollViewer.ScrollableHeightProperty
+	* ScrollViewer.ScrollableWidthProperty
+	* ScrollViewer.VerticalOffsetProperty
+	* ScrollViewer.ViewportHeightProperty
+	* ScrollViewer.ViewportWidthProperty
 	* Slider.IsFocusedProperty
 	* Thumb.IsDraggingProperty
 	* Thumb.IsFocusedProperty
@@ -49,4 +59,3 @@ use code (but obviously the runtime can change those values).
 notes: 
 * MediaElement has a bunch of getter only, DP-backed, properties
 * Multiscale[Sub]Image.AspectRatio only have getters
-* ScrollViewer has a bunch of getter only, DP-backed, properties
