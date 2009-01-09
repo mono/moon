@@ -37,6 +37,14 @@ using System.Security;
 namespace System.Windows {
 	public abstract partial class FrameworkElement : UIElement {
 
+		static FrameworkElement ()
+		{
+			StyleProperty.Validate = delegate (DependencyObject target, DependencyProperty propety, object value) {
+				Type styleType = ((Style)value).TargetType;
+				if (!target.GetType ().Equals (styleType))
+					throw new System.Windows.Markup.XamlParseException (string.Format ("Target is of type {0} but the Style requires {1}", target.GetType ().Name, styleType.Name));
+			};
+		}
 		/* 
 		 * XXX these are marked internal because making them private seems
 		 * to cause the GC to collect them

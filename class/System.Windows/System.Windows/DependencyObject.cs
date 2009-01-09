@@ -387,7 +387,9 @@ namespace System.Windows {
 				NativeMethods.dependency_object_set_value (native, dp.Native, ref v);
 				return;
 			}
-
+			
+			dp.Validate (this, dp, value);
+			
 			object_type = value.GetType ();
 			if (!dp.PropertyType.IsAssignableFrom (object_type))
 				throw new ArgumentException (string.Format ("The DependencyProperty '{2}', whose property type is {0} can't be set to value whose type is {1}", dp.PropertyType.FullName, object_type.FullName, dp.Name));

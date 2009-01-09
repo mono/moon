@@ -33,14 +33,19 @@ using System.Collections.Generic;
 
 namespace System.Windows {
 
+	public delegate void ValueValidator (DependencyObject target, DependencyProperty property, object value);
+	
 	public class DependencyProperty {
 
+		static ValueValidator DefaultValidator = delegate { };
+		
 		string name;
 		IntPtr native;
 		Type property_type;
 		Type declaring_type; 
 		object default_value;
 		bool? attached;
+		ValueValidator validator;
 		
 		static Dictionary <IntPtr, DependencyProperty> properties = new Dictionary<IntPtr, DependencyProperty> ();
 		
@@ -262,6 +267,11 @@ namespace System.Windows {
 
 		internal bool IsReadOnly {
 			get { return NativeMethods.dependency_property_is_read_only (native); }
+		}
+
+		internal ValueValidator Validate {
+			get { return validator ?? DefaultValidator; }
+			set { validator = value; }
 		}
 	}
 }

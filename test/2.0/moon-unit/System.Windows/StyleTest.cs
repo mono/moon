@@ -161,10 +161,13 @@ namespace MoonTest.System.Windows
 		[MoonlightBug ("The parser needs to turn the string 'Width' into the right DP")]
 		public void MismatchTargetType ()
 		{
-			Style s = (Style)XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""CheckBox""><Setter Property=""Width"" Value=""10""/></Style>");
 			Button b = new Button ();
-
-			Assert.Throws (delegate { b.Style = s; }, typeof (XamlParseException));
+			Style s = new Style (typeof (CheckBox));
+			Assert.Throws (delegate { b.Style = s; }, typeof (XamlParseException), "#1");
+			
+			s = (Style)XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""CheckBox""><Setter Property=""Width"" Value=""10""/></Style>");
+			b = new Button ();
+			Assert.Throws (delegate { b.Style = s; }, typeof (XamlParseException), "#2");
 		}
 
 		[TestMethod]
