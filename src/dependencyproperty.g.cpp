@@ -742,7 +742,7 @@ ArcSegment::GetPoint ()
 }
 
 void
-ArcSegment::SetPoint (Point * value)
+ArcSegment::SetPoint (Point *value)
 {
 	if (!value) return;
 	SetValue (ArcSegment::PointProperty, Value (*value));
@@ -769,7 +769,7 @@ ArcSegment::GetSize ()
 }
 
 void
-ArcSegment::SetSize (Point * value)
+ArcSegment::SetSize (Point *value)
 {
 	if (!value) return;
 	SetValue (ArcSegment::SizeProperty, Value (*value));
@@ -796,7 +796,7 @@ BeginStoryboard::GetStoryboard ()
 }
 
 void
-BeginStoryboard::SetStoryboard (Storyboard * value)
+BeginStoryboard::SetStoryboard (Storyboard *value)
 {
 	SetValue (BeginStoryboard::StoryboardProperty, Value (value));
 }
@@ -809,7 +809,7 @@ BezierSegment::GetPoint1 ()
 }
 
 void
-BezierSegment::SetPoint1 (Point * value)
+BezierSegment::SetPoint1 (Point *value)
 {
 	if (!value) return;
 	SetValue (BezierSegment::Point1Property, Value (*value));
@@ -823,7 +823,7 @@ BezierSegment::GetPoint2 ()
 }
 
 void
-BezierSegment::SetPoint2 (Point * value)
+BezierSegment::SetPoint2 (Point *value)
 {
 	if (!value) return;
 	SetValue (BezierSegment::Point2Property, Value (*value));
@@ -837,7 +837,7 @@ BezierSegment::GetPoint3 ()
 }
 
 void
-BezierSegment::SetPoint3 (Point * value)
+BezierSegment::SetPoint3 (Point *value)
 {
 	if (!value) return;
 	SetValue (BezierSegment::Point3Property, Value (*value));
@@ -851,7 +851,7 @@ Border::GetBackground ()
 }
 
 void
-Border::SetBackground (Brush * value)
+Border::SetBackground (Brush *value)
 {
 	SetValue (Border::BackgroundProperty, Value (value));
 }
@@ -864,7 +864,7 @@ Border::GetBorderBrush ()
 }
 
 void
-Border::SetBorderBrush (Brush * value)
+Border::SetBorderBrush (Brush *value)
 {
 	SetValue (Border::BorderBrushProperty, Value (value));
 }
@@ -877,7 +877,7 @@ Border::GetBorderThickness ()
 }
 
 void
-Border::SetBorderThickness (Thickness * value)
+Border::SetBorderThickness (Thickness *value)
 {
 	if (!value) return;
 	SetValue (Border::BorderThicknessProperty, Value (*value));
@@ -891,7 +891,7 @@ Border::GetChild ()
 }
 
 void
-Border::SetChild (UIElement * value)
+Border::SetChild (UIElement *value)
 {
 	SetValue (Border::ChildProperty, Value (value));
 }
@@ -904,7 +904,7 @@ Border::GetCornerRadius ()
 }
 
 void
-Border::SetCornerRadius (CornerRadius * value)
+Border::SetCornerRadius (CornerRadius *value)
 {
 	if (!value) return;
 	SetValue (Border::CornerRadiusProperty, Value (*value));
@@ -918,7 +918,7 @@ Border::GetPadding ()
 }
 
 void
-Border::SetPadding (Thickness * value)
+Border::SetPadding (Thickness *value)
 {
 	if (!value) return;
 	SetValue (Border::PaddingProperty, Value (*value));
@@ -945,7 +945,7 @@ Brush::GetRelativeTransform ()
 }
 
 void
-Brush::SetRelativeTransform (Transform * value)
+Brush::SetRelativeTransform (Transform *value)
 {
 	SetValue (Brush::RelativeTransformProperty, Value (value));
 }
@@ -958,7 +958,7 @@ Brush::GetTransform ()
 }
 
 void
-Brush::SetTransform (Transform * value)
+Brush::SetTransform (Transform *value)
 {
 	SetValue (Brush::TransformProperty, Value (value));
 }
@@ -1035,7 +1035,7 @@ ColorAnimation::SetBy (Color value)
 }
 
 void
-ColorAnimation::SetBy (Color * value)
+ColorAnimation::SetBy (Color *value)
 {
 	if (!value)
 		SetValue (ColorAnimation::ByProperty, NULL);
@@ -1057,7 +1057,7 @@ ColorAnimation::SetFrom (Color value)
 }
 
 void
-ColorAnimation::SetFrom (Color * value)
+ColorAnimation::SetFrom (Color *value)
 {
 	if (!value)
 		SetValue (ColorAnimation::FromProperty, NULL);
@@ -1079,7 +1079,7 @@ ColorAnimation::SetTo (Color value)
 }
 
 void
-ColorAnimation::SetTo (Color * value)
+ColorAnimation::SetTo (Color *value)
 {
 	if (!value)
 		SetValue (ColorAnimation::ToProperty, NULL);
@@ -1095,7 +1095,7 @@ ColorAnimationUsingKeyFrames::GetKeyFrames ()
 }
 
 void
-ColorAnimationUsingKeyFrames::SetKeyFrames (ColorKeyFrameCollection * value)
+ColorAnimationUsingKeyFrames::SetKeyFrames (ColorKeyFrameCollection *value)
 {
 	SetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty, Value (value));
 }
@@ -1114,7 +1114,7 @@ ColorKeyFrame::SetKeyTime (KeyTime value)
 }
 
 void
-ColorKeyFrame::SetKeyTime (KeyTime * value)
+ColorKeyFrame::SetKeyTime (KeyTime *value)
 {
 	if (!value)
 		DependencyObject::SetValue (ColorKeyFrame::KeyTimeProperty, NULL);
@@ -1136,7 +1136,7 @@ ColorKeyFrame::SetValue (Color value)
 }
 
 void
-ColorKeyFrame::SetValue (Color * value)
+ColorKeyFrame::SetValue (Color *value)
 {
 	if (!value)
 		DependencyObject::SetValue (ColorKeyFrame::ValueProperty, NULL);
@@ -1178,7 +1178,7 @@ ColumnDefinition::GetWidth ()
 }
 
 void
-ColumnDefinition::SetWidth (GridLength * value)
+ColumnDefinition::SetWidth (GridLength *value)
 {
 	if (!value) return;
 	SetValue (ColumnDefinition::WidthProperty, Value (*value));
@@ -1192,7 +1192,7 @@ Control::GetBackground ()
 }
 
 void
-Control::SetBackground (Brush * value)
+Control::SetBackground (Brush *value)
 {
 	SetValue (Control::BackgroundProperty, Value (value));
 }
@@ -1205,7 +1205,7 @@ Control::GetBorderBrush ()
 }
 
 void
-Control::SetBorderBrush (Brush * value)
+Control::SetBorderBrush (Brush *value)
 {
 	SetValue (Control::BorderBrushProperty, Value (value));
 }
@@ -1218,7 +1218,7 @@ Control::GetBorderThickness ()
 }
 
 void
-Control::SetBorderThickness (Thickness * value)
+Control::SetBorderThickness (Thickness *value)
 {
 	if (!value) return;
 	SetValue (Control::BorderThicknessProperty, Value (*value));
@@ -1297,7 +1297,7 @@ Control::GetForeground ()
 }
 
 void
-Control::SetForeground (Brush * value)
+Control::SetForeground (Brush *value)
 {
 	SetValue (Control::ForegroundProperty, Value (value));
 }
@@ -1336,7 +1336,7 @@ Control::GetPadding ()
 }
 
 void
-Control::SetPadding (Thickness * value)
+Control::SetPadding (Thickness *value)
 {
 	if (!value) return;
 	SetValue (Control::PaddingProperty, Value (*value));
@@ -1376,7 +1376,7 @@ Control::GetTemplate ()
 }
 
 void
-Control::SetTemplate (ControlTemplate * value)
+Control::SetTemplate (ControlTemplate *value)
 {
 	SetValue (Control::TemplateProperty, Value (value));
 }
@@ -1494,7 +1494,7 @@ DoubleAnimationUsingKeyFrames::GetKeyFrames ()
 }
 
 void
-DoubleAnimationUsingKeyFrames::SetKeyFrames (DoubleKeyFrameCollection * value)
+DoubleAnimationUsingKeyFrames::SetKeyFrames (DoubleKeyFrameCollection *value)
 {
 	SetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty, Value (value));
 }
@@ -1513,7 +1513,7 @@ DoubleKeyFrame::SetKeyTime (KeyTime value)
 }
 
 void
-DoubleKeyFrame::SetKeyTime (KeyTime * value)
+DoubleKeyFrame::SetKeyTime (KeyTime *value)
 {
 	if (!value)
 		DependencyObject::SetValue (DoubleKeyFrame::KeyTimeProperty, NULL);
@@ -1551,7 +1551,7 @@ DrawingAttributes::GetColor ()
 }
 
 void
-DrawingAttributes::SetColor (Color * value)
+DrawingAttributes::SetColor (Color *value)
 {
 	if (!value) return;
 	SetValue (DrawingAttributes::ColorProperty, Value (*value));
@@ -1578,7 +1578,7 @@ DrawingAttributes::GetOutlineColor ()
 }
 
 void
-DrawingAttributes::SetOutlineColor (Color * value)
+DrawingAttributes::SetOutlineColor (Color *value)
 {
 	if (!value) return;
 	SetValue (DrawingAttributes::OutlineColorProperty, Value (*value));
@@ -1605,7 +1605,7 @@ EllipseGeometry::GetCenter ()
 }
 
 void
-EllipseGeometry::SetCenter (Point * value)
+EllipseGeometry::SetCenter (Point *value)
 {
 	if (!value) return;
 	SetValue (EllipseGeometry::CenterProperty, Value (*value));
@@ -1645,7 +1645,7 @@ EventTrigger::GetActions ()
 }
 
 void
-EventTrigger::SetActions (TriggerActionCollection * value)
+EventTrigger::SetActions (TriggerActionCollection *value)
 {
 	SetValue (EventTrigger::ActionsProperty, Value (value));
 }
@@ -1723,7 +1723,7 @@ FrameworkElement::GetMargin ()
 }
 
 void
-FrameworkElement::SetMargin (Thickness * value)
+FrameworkElement::SetMargin (Thickness *value)
 {
 	if (!value) return;
 	SetValue (FrameworkElement::MarginProperty, Value (*value));
@@ -1789,7 +1789,7 @@ FrameworkElement::GetStyle ()
 }
 
 void
-FrameworkElement::SetStyle (Style * value)
+FrameworkElement::SetStyle (Style *value)
 {
 	SetValue (FrameworkElement::StyleProperty, Value (value));
 }
@@ -1828,7 +1828,7 @@ Geometry::GetTransform ()
 }
 
 void
-Geometry::SetTransform (Transform * value)
+Geometry::SetTransform (Transform *value)
 {
 	SetValue (Geometry::TransformProperty, Value (value));
 }
@@ -1841,7 +1841,7 @@ GeometryGroup::GetChildren ()
 }
 
 void
-GeometryGroup::SetChildren (GeometryCollection * value)
+GeometryGroup::SetChildren (GeometryCollection *value)
 {
 	SetValue (GeometryGroup::ChildrenProperty, Value (value));
 }
@@ -1867,7 +1867,7 @@ Glyphs::GetFill ()
 }
 
 void
-Glyphs::SetFill (Brush * value)
+Glyphs::SetFill (Brush *value)
 {
 	SetValue (Glyphs::FillProperty, Value (value));
 }
@@ -1984,7 +1984,7 @@ GradientBrush::GetGradientStops ()
 }
 
 void
-GradientBrush::SetGradientStops (GradientStopCollection * value)
+GradientBrush::SetGradientStops (GradientStopCollection *value)
 {
 	SetValue (GradientBrush::GradientStopsProperty, Value (value));
 }
@@ -2023,7 +2023,7 @@ GradientStop::GetColor ()
 }
 
 void
-GradientStop::SetColor (Color * value)
+GradientStop::SetColor (Color *value)
 {
 	if (!value) return;
 	SetValue (GradientStop::ColorProperty, Value (*value));
@@ -2050,7 +2050,7 @@ Grid::GetColumnDefinitions ()
 }
 
 void
-Grid::SetColumnDefinitions (ColumnDefinitionCollection * value)
+Grid::SetColumnDefinitions (ColumnDefinitionCollection *value)
 {
 	SetValue (Grid::ColumnDefinitionsProperty, Value (value));
 }
@@ -2093,7 +2093,7 @@ Grid::GetRowDefinitions ()
 }
 
 void
-Grid::SetRowDefinitions (RowDefinitionCollection * value)
+Grid::SetRowDefinitions (RowDefinitionCollection *value)
 {
 	SetValue (Grid::RowDefinitionsProperty, Value (value));
 }
@@ -2175,7 +2175,7 @@ InkPresenter::GetStrokes ()
 }
 
 void
-InkPresenter::SetStrokes (StrokeCollection * value)
+InkPresenter::SetStrokes (StrokeCollection *value)
 {
 	SetValue (InkPresenter::StrokesProperty, Value (value));
 }
@@ -2240,7 +2240,7 @@ Inline::GetForeground ()
 }
 
 void
-Inline::SetForeground (Brush * value)
+Inline::SetForeground (Brush *value)
 {
 	SetValue (Inline::ForegroundProperty, Value (value));
 }
@@ -2253,7 +2253,7 @@ KeySpline::GetControlPoint1 ()
 }
 
 void
-KeySpline::SetControlPoint1 (Point * value)
+KeySpline::SetControlPoint1 (Point *value)
 {
 	if (!value) return;
 	SetValue (KeySpline::ControlPoint1Property, Value (*value));
@@ -2267,7 +2267,7 @@ KeySpline::GetControlPoint2 ()
 }
 
 void
-KeySpline::SetControlPoint2 (Point * value)
+KeySpline::SetControlPoint2 (Point *value)
 {
 	if (!value) return;
 	SetValue (KeySpline::ControlPoint2Property, Value (*value));
@@ -2333,7 +2333,7 @@ LinearGradientBrush::GetEndPoint ()
 }
 
 void
-LinearGradientBrush::SetEndPoint (Point * value)
+LinearGradientBrush::SetEndPoint (Point *value)
 {
 	if (!value) return;
 	SetValue (LinearGradientBrush::EndPointProperty, Value (*value));
@@ -2347,7 +2347,7 @@ LinearGradientBrush::GetStartPoint ()
 }
 
 void
-LinearGradientBrush::SetStartPoint (Point * value)
+LinearGradientBrush::SetStartPoint (Point *value)
 {
 	if (!value) return;
 	SetValue (LinearGradientBrush::StartPointProperty, Value (*value));
@@ -2361,7 +2361,7 @@ LineGeometry::GetEndPoint ()
 }
 
 void
-LineGeometry::SetEndPoint (Point * value)
+LineGeometry::SetEndPoint (Point *value)
 {
 	if (!value) return;
 	SetValue (LineGeometry::EndPointProperty, Value (*value));
@@ -2375,7 +2375,7 @@ LineGeometry::GetStartPoint ()
 }
 
 void
-LineGeometry::SetStartPoint (Point * value)
+LineGeometry::SetStartPoint (Point *value)
 {
 	if (!value) return;
 	SetValue (LineGeometry::StartPointProperty, Value (*value));
@@ -2389,7 +2389,7 @@ LineSegment::GetPoint ()
 }
 
 void
-LineSegment::SetPoint (Point * value)
+LineSegment::SetPoint (Point *value)
 {
 	if (!value) return;
 	SetValue (LineSegment::PointProperty, Value (*value));
@@ -2481,7 +2481,7 @@ MatrixTransform::GetMatrix ()
 }
 
 void
-MatrixTransform::SetMatrix (Matrix * value)
+MatrixTransform::SetMatrix (Matrix *value)
 {
 	SetValue (MatrixTransform::MatrixProperty, Value (value));
 }
@@ -2533,7 +2533,7 @@ MediaElement::GetAttributes ()
 }
 
 void
-MediaElement::SetAttributes (MediaAttributeCollection * value)
+MediaElement::SetAttributes (MediaAttributeCollection *value)
 {
 	SetValue (MediaElement::AttributesProperty, Value (value));
 }
@@ -2711,7 +2711,7 @@ MediaElement::GetMarkers ()
 }
 
 void
-MediaElement::SetMarkers (TimelineMarkerCollection * value)
+MediaElement::SetMarkers (TimelineMarkerCollection *value)
 {
 	SetValue (MediaElement::MarkersProperty, Value (value));
 }
@@ -2803,7 +2803,7 @@ MultiScaleImage::GetSource ()
 }
 
 void
-MultiScaleImage::SetSource (MultiScaleTileSource * value)
+MultiScaleImage::SetSource (MultiScaleTileSource *value)
 {
 	SetValue (MultiScaleImage::SourceProperty, Value (value));
 }
@@ -2829,7 +2829,7 @@ MultiScaleImage::GetViewportOrigin ()
 }
 
 void
-MultiScaleImage::SetViewportOrigin (Point * value)
+MultiScaleImage::SetViewportOrigin (Point *value)
 {
 	if (!value) return;
 	SetValue (MultiScaleImage::ViewportOriginProperty, Value (*value));
@@ -2876,7 +2876,7 @@ MultiScaleSubImage::GetViewportOrigin ()
 }
 
 void
-MultiScaleSubImage::SetViewportOrigin (Point * value)
+MultiScaleSubImage::SetViewportOrigin (Point *value)
 {
 	if (!value) return;
 	SetValue (MultiScaleSubImage::ViewportOriginProperty, Value (*value));
@@ -2917,7 +2917,7 @@ NameScope::GetNameScope (DependencyObject *obj)
 }
 
 void
-NameScope::SetNameScope (DependencyObject *obj, NameScope * value)
+NameScope::SetNameScope (DependencyObject *obj, NameScope *value)
 {
 	if (!obj) return;
 	obj->SetValue (NameScope::NameScopeProperty, Value (value));
@@ -2931,7 +2931,7 @@ ObjectAnimationUsingKeyFrames::GetKeyFrames ()
 }
 
 void
-ObjectAnimationUsingKeyFrames::SetKeyFrames (ObjectKeyFrameCollection * value)
+ObjectAnimationUsingKeyFrames::SetKeyFrames (ObjectKeyFrameCollection *value)
 {
 	SetValue (ObjectAnimationUsingKeyFrames::KeyFramesProperty, Value (value));
 }
@@ -2950,7 +2950,7 @@ ObjectKeyFrame::SetKeyTime (KeyTime value)
 }
 
 void
-ObjectKeyFrame::SetKeyTime (KeyTime * value)
+ObjectKeyFrame::SetKeyTime (KeyTime *value)
 {
 	if (!value)
 		DependencyObject::SetValue (ObjectKeyFrame::KeyTimeProperty, NULL);
@@ -2966,7 +2966,7 @@ ObjectKeyFrame::GetValue ()
 }
 
 void
-ObjectKeyFrame::SetValue (DependencyObject * value)
+ObjectKeyFrame::SetValue (DependencyObject *value)
 {
 	DependencyObject::SetValue (ObjectKeyFrame::ValueProperty, Value (value));
 }
@@ -2979,7 +2979,7 @@ Panel::GetBackground ()
 }
 
 void
-Panel::SetBackground (Brush * value)
+Panel::SetBackground (Brush *value)
 {
 	SetValue (Panel::BackgroundProperty, Value (value));
 }
@@ -2992,7 +2992,7 @@ Panel::GetChildren ()
 }
 
 void
-Panel::SetChildren (UIElementCollection * value)
+Panel::SetChildren (UIElementCollection *value)
 {
 	SetValue (Panel::ChildrenProperty, Value (value));
 }
@@ -3044,7 +3044,7 @@ PasswordBox::GetSelectionBackground ()
 }
 
 void
-PasswordBox::SetSelectionBackground (Brush * value)
+PasswordBox::SetSelectionBackground (Brush *value)
 {
 	SetValue (PasswordBox::SelectionBackgroundProperty, Value (value));
 }
@@ -3057,7 +3057,7 @@ PasswordBox::GetSelectionForeground ()
 }
 
 void
-PasswordBox::SetSelectionForeground (Brush * value)
+PasswordBox::SetSelectionForeground (Brush *value)
 {
 	SetValue (PasswordBox::SelectionForegroundProperty, Value (value));
 }
@@ -3070,7 +3070,7 @@ Path::GetData ()
 }
 
 void
-Path::SetData (Geometry * value)
+Path::SetData (Geometry *value)
 {
 	SetValue (Path::DataProperty, Value (value));
 }
@@ -3109,7 +3109,7 @@ PathFigure::GetSegments ()
 }
 
 void
-PathFigure::SetSegments (PathSegmentCollection * value)
+PathFigure::SetSegments (PathSegmentCollection *value)
 {
 	SetValue (PathFigure::SegmentsProperty, Value (value));
 }
@@ -3122,7 +3122,7 @@ PathFigure::GetStartPoint ()
 }
 
 void
-PathFigure::SetStartPoint (Point * value)
+PathFigure::SetStartPoint (Point *value)
 {
 	if (!value) return;
 	SetValue (PathFigure::StartPointProperty, Value (*value));
@@ -3136,7 +3136,7 @@ PathGeometry::GetFigures ()
 }
 
 void
-PathGeometry::SetFigures (PathFigureCollection * value)
+PathGeometry::SetFigures (PathFigureCollection *value)
 {
 	SetValue (PathGeometry::FiguresProperty, Value (value));
 }
@@ -3168,7 +3168,7 @@ PointAnimation::SetBy (Point value)
 }
 
 void
-PointAnimation::SetBy (Point * value)
+PointAnimation::SetBy (Point *value)
 {
 	if (!value)
 		SetValue (PointAnimation::ByProperty, NULL);
@@ -3190,7 +3190,7 @@ PointAnimation::SetFrom (Point value)
 }
 
 void
-PointAnimation::SetFrom (Point * value)
+PointAnimation::SetFrom (Point *value)
 {
 	if (!value)
 		SetValue (PointAnimation::FromProperty, NULL);
@@ -3212,7 +3212,7 @@ PointAnimation::SetTo (Point value)
 }
 
 void
-PointAnimation::SetTo (Point * value)
+PointAnimation::SetTo (Point *value)
 {
 	if (!value)
 		SetValue (PointAnimation::ToProperty, NULL);
@@ -3228,7 +3228,7 @@ PointAnimationUsingKeyFrames::GetKeyFrames ()
 }
 
 void
-PointAnimationUsingKeyFrames::SetKeyFrames (PointKeyFrameCollection * value)
+PointAnimationUsingKeyFrames::SetKeyFrames (PointKeyFrameCollection *value)
 {
 	SetValue (PointAnimationUsingKeyFrames::KeyFramesProperty, Value (value));
 }
@@ -3247,7 +3247,7 @@ PointKeyFrame::SetKeyTime (KeyTime value)
 }
 
 void
-PointKeyFrame::SetKeyTime (KeyTime * value)
+PointKeyFrame::SetKeyTime (KeyTime *value)
 {
 	if (!value)
 		DependencyObject::SetValue (PointKeyFrame::KeyTimeProperty, NULL);
@@ -3269,7 +3269,7 @@ PointKeyFrame::SetValue (Point value)
 }
 
 void
-PointKeyFrame::SetValue (Point * value)
+PointKeyFrame::SetValue (Point *value)
 {
 	if (!value)
 		DependencyObject::SetValue (PointKeyFrame::ValueProperty, NULL);
@@ -3285,7 +3285,7 @@ PolyBezierSegment::GetPoints ()
 }
 
 void
-PolyBezierSegment::SetPoints (PointCollection * value)
+PolyBezierSegment::SetPoints (PointCollection *value)
 {
 	SetValue (PolyBezierSegment::PointsProperty, Value (value));
 }
@@ -3311,7 +3311,7 @@ Polygon::GetPoints ()
 }
 
 void
-Polygon::SetPoints (PointCollection * value)
+Polygon::SetPoints (PointCollection *value)
 {
 	SetValue (Polygon::PointsProperty, Value (value));
 }
@@ -3337,7 +3337,7 @@ Polyline::GetPoints ()
 }
 
 void
-Polyline::SetPoints (PointCollection * value)
+Polyline::SetPoints (PointCollection *value)
 {
 	SetValue (Polyline::PointsProperty, Value (value));
 }
@@ -3350,7 +3350,7 @@ PolyLineSegment::GetPoints ()
 }
 
 void
-PolyLineSegment::SetPoints (PointCollection * value)
+PolyLineSegment::SetPoints (PointCollection *value)
 {
 	SetValue (PolyLineSegment::PointsProperty, Value (value));
 }
@@ -3363,7 +3363,7 @@ PolyQuadraticBezierSegment::GetPoints ()
 }
 
 void
-PolyQuadraticBezierSegment::SetPoints (PointCollection * value)
+PolyQuadraticBezierSegment::SetPoints (PointCollection *value)
 {
 	SetValue (PolyQuadraticBezierSegment::PointsProperty, Value (value));
 }
@@ -3376,7 +3376,7 @@ QuadraticBezierSegment::GetPoint1 ()
 }
 
 void
-QuadraticBezierSegment::SetPoint1 (Point * value)
+QuadraticBezierSegment::SetPoint1 (Point *value)
 {
 	if (!value) return;
 	SetValue (QuadraticBezierSegment::Point1Property, Value (*value));
@@ -3390,7 +3390,7 @@ QuadraticBezierSegment::GetPoint2 ()
 }
 
 void
-QuadraticBezierSegment::SetPoint2 (Point * value)
+QuadraticBezierSegment::SetPoint2 (Point *value)
 {
 	if (!value) return;
 	SetValue (QuadraticBezierSegment::Point2Property, Value (*value));
@@ -3404,7 +3404,7 @@ RadialGradientBrush::GetCenter ()
 }
 
 void
-RadialGradientBrush::SetCenter (Point * value)
+RadialGradientBrush::SetCenter (Point *value)
 {
 	if (!value) return;
 	SetValue (RadialGradientBrush::CenterProperty, Value (*value));
@@ -3418,7 +3418,7 @@ RadialGradientBrush::GetGradientOrigin ()
 }
 
 void
-RadialGradientBrush::SetGradientOrigin (Point * value)
+RadialGradientBrush::SetGradientOrigin (Point *value)
 {
 	if (!value) return;
 	SetValue (RadialGradientBrush::GradientOriginProperty, Value (*value));
@@ -3510,7 +3510,7 @@ RectangleGeometry::GetRect ()
 }
 
 void
-RectangleGeometry::SetRect (Rect * value)
+RectangleGeometry::SetRect (Rect *value)
 {
 	if (!value) return;
 	SetValue (RectangleGeometry::RectProperty, Value (*value));
@@ -3563,7 +3563,7 @@ RowDefinition::GetHeight ()
 }
 
 void
-RowDefinition::SetHeight (GridLength * value)
+RowDefinition::SetHeight (GridLength *value)
 {
 	if (!value) return;
 	SetValue (RowDefinition::HeightProperty, Value (*value));
@@ -3694,7 +3694,7 @@ Shape::GetFill ()
 }
 
 void
-Shape::SetFill (Brush * value)
+Shape::SetFill (Brush *value)
 {
 	SetValue (Shape::FillProperty, Value (value));
 }
@@ -3720,7 +3720,7 @@ Shape::GetStrokeDashArray ()
 }
 
 void
-Shape::SetStrokeDashArray (DoubleCollection * value)
+Shape::SetStrokeDashArray (DoubleCollection *value)
 {
 	SetValue (Shape::StrokeDashArrayProperty, Value (value));
 }
@@ -3798,7 +3798,7 @@ Shape::GetStroke ()
 }
 
 void
-Shape::SetStroke (Brush * value)
+Shape::SetStroke (Brush *value)
 {
 	SetValue (Shape::StrokeProperty, Value (value));
 }
@@ -3889,7 +3889,7 @@ SolidColorBrush::GetColor ()
 }
 
 void
-SolidColorBrush::SetColor (Color * value)
+SolidColorBrush::SetColor (Color *value)
 {
 	if (!value) return;
 	SetValue (SolidColorBrush::ColorProperty, Value (*value));
@@ -3903,7 +3903,7 @@ SplineColorKeyFrame::GetKeySpline ()
 }
 
 void
-SplineColorKeyFrame::SetKeySpline (KeySpline * value)
+SplineColorKeyFrame::SetKeySpline (KeySpline *value)
 {
 	DependencyObject::SetValue (SplineColorKeyFrame::KeySplineProperty, Value (value));
 }
@@ -3916,7 +3916,7 @@ SplineDoubleKeyFrame::GetKeySpline ()
 }
 
 void
-SplineDoubleKeyFrame::SetKeySpline (KeySpline * value)
+SplineDoubleKeyFrame::SetKeySpline (KeySpline *value)
 {
 	DependencyObject::SetValue (SplineDoubleKeyFrame::KeySplineProperty, Value (value));
 }
@@ -3929,7 +3929,7 @@ SplinePointKeyFrame::GetKeySpline ()
 }
 
 void
-SplinePointKeyFrame::SetKeySpline (KeySpline * value)
+SplinePointKeyFrame::SetKeySpline (KeySpline *value)
 {
 	DependencyObject::SetValue (SplinePointKeyFrame::KeySplineProperty, Value (value));
 }
@@ -3985,7 +3985,7 @@ Stroke::GetDrawingAttributes ()
 }
 
 void
-Stroke::SetDrawingAttributes (DrawingAttributes * value)
+Stroke::SetDrawingAttributes (DrawingAttributes *value)
 {
 	SetValue (Stroke::DrawingAttributesProperty, Value (value));
 }
@@ -3998,7 +3998,7 @@ Stroke::GetStylusPoints ()
 }
 
 void
-Stroke::SetStylusPoints (StylusPointCollection * value)
+Stroke::SetStylusPoints (StylusPointCollection *value)
 {
 	SetValue (Stroke::StylusPointsProperty, Value (value));
 }
@@ -4024,7 +4024,7 @@ Style::GetSetters ()
 }
 
 void
-Style::SetSetters (SetterBaseCollection * value)
+Style::SetSetters (SetterBaseCollection *value)
 {
 	SetValue (Style::SettersProperty, Value (value));
 }
@@ -4167,7 +4167,7 @@ TextBlock::GetForeground ()
 }
 
 void
-TextBlock::SetForeground (Brush * value)
+TextBlock::SetForeground (Brush *value)
 {
 	SetValue (TextBlock::ForegroundProperty, Value (value));
 }
@@ -4180,7 +4180,7 @@ TextBlock::GetInlines ()
 }
 
 void
-TextBlock::SetInlines (InlineCollection * value)
+TextBlock::SetInlines (InlineCollection *value)
 {
 	SetValue (TextBlock::InlinesProperty, Value (value));
 }
@@ -4219,7 +4219,7 @@ TextBlock::GetPadding ()
 }
 
 void
-TextBlock::SetPadding (Thickness * value)
+TextBlock::SetPadding (Thickness *value)
 {
 	if (!value) return;
 	SetValue (TextBlock::PaddingProperty, Value (*value));
@@ -4350,7 +4350,7 @@ TextBox::GetSelectionBackground ()
 }
 
 void
-TextBox::SetSelectionBackground (Brush * value)
+TextBox::SetSelectionBackground (Brush *value)
 {
 	SetValue (TextBox::SelectionBackgroundProperty, Value (value));
 }
@@ -4363,7 +4363,7 @@ TextBox::GetSelectionForeground ()
 }
 
 void
-TextBox::SetSelectionForeground (Brush * value)
+TextBox::SetSelectionForeground (Brush *value)
 {
 	SetValue (TextBox::SelectionForegroundProperty, Value (value));
 }
@@ -4454,7 +4454,7 @@ TextBoxView::GetTextBox ()
 }
 
 void
-TextBoxView::SetTextBox (TextBox * value)
+TextBoxView::SetTextBox (TextBox *value)
 {
 	SetValue (TextBoxView::TextBoxProperty, Value (value));
 }
@@ -4545,7 +4545,7 @@ TimelineGroup::GetChildren ()
 }
 
 void
-TimelineGroup::SetChildren (TimelineCollection * value)
+TimelineGroup::SetChildren (TimelineCollection *value)
 {
 	SetValue (TimelineGroup::ChildrenProperty, Value (value));
 }
@@ -4597,7 +4597,7 @@ TransformGroup::GetChildren ()
 }
 
 void
-TransformGroup::SetChildren (TransformCollection * value)
+TransformGroup::SetChildren (TransformCollection *value)
 {
 	SetValue (TransformGroup::ChildrenProperty, Value (value));
 }
@@ -4636,7 +4636,7 @@ UIElement::GetClip ()
 }
 
 void
-UIElement::SetClip (Geometry * value)
+UIElement::SetClip (Geometry *value)
 {
 	SetValue (UIElement::ClipProperty, Value (value));
 }
@@ -4675,7 +4675,7 @@ UIElement::GetOpacityMask ()
 }
 
 void
-UIElement::SetOpacityMask (Brush * value)
+UIElement::SetOpacityMask (Brush *value)
 {
 	SetValue (UIElement::OpacityMaskProperty, Value (value));
 }
@@ -4701,7 +4701,7 @@ UIElement::GetRenderTransformOrigin ()
 }
 
 void
-UIElement::SetRenderTransformOrigin (Point * value)
+UIElement::SetRenderTransformOrigin (Point *value)
 {
 	if (!value) return;
 	SetValue (UIElement::RenderTransformOriginProperty, Value (*value));
@@ -4715,7 +4715,7 @@ UIElement::GetRenderTransform ()
 }
 
 void
-UIElement::SetRenderTransform (Transform * value)
+UIElement::SetRenderTransform (Transform *value)
 {
 	SetValue (UIElement::RenderTransformProperty, Value (value));
 }
@@ -4728,7 +4728,7 @@ UIElement::GetResources ()
 }
 
 void
-UIElement::SetResources (ResourceDictionary * value)
+UIElement::SetResources (ResourceDictionary *value)
 {
 	SetValue (UIElement::ResourcesProperty, Value (value));
 }
@@ -4754,7 +4754,7 @@ UIElement::GetTriggers ()
 }
 
 void
-UIElement::SetTriggers (TriggerCollection * value)
+UIElement::SetTriggers (TriggerCollection *value)
 {
 	SetValue (UIElement::TriggersProperty, Value (value));
 }
@@ -4806,7 +4806,7 @@ VisualBrush::GetVisual ()
 }
 
 void
-VisualBrush::SetVisual (UIElement * value)
+VisualBrush::SetVisual (UIElement *value)
 {
 	SetValue (VisualBrush::VisualProperty, Value (value));
 }
