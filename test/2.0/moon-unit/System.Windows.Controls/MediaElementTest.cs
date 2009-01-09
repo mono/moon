@@ -76,20 +76,22 @@ namespace MoonTest.System.Windows.Controls
 			Assert.Throws<Exception>(delegate {
 				m.SetValue (MediaElement.AttributesProperty, null);
 			}, "#1");
+			m.AudioStreamIndex = -1000;
+			Assert.AreEqual (-1000, m.AudioStreamIndex, "#2");
 			m.AudioStreamIndex = -1;
-			Assert.IsNull(m.AudioStreamIndex);
+			Assert.IsNull(m.AudioStreamIndex, "#3");
 			m.AudioStreamIndex = int.MaxValue;
-			Assert.AreEqual(int.MaxValue, m.AudioStreamIndex);
+			Assert.AreEqual(int.MaxValue, m.AudioStreamIndex, "#4");
 			m.Balance = -10000;
 			m.Balance = 10000;
 			m.BufferingTime = TimeSpan.FromSeconds(-1000);
-			Assert.Throws<Exception>(delegate { m.BufferingTime = TimeSpan.MaxValue; }, "#2");
+			Assert.Throws<Exception>(delegate { m.BufferingTime = TimeSpan.MaxValue; }, "#5");
 			m.BufferingTime = TimeSpan.FromSeconds(1000);
-			Assert.Throws<ArgumentNullException>(delegate { m.LicenseAcquirer = null; }, "#3");
+			Assert.Throws<ArgumentNullException>(delegate { m.LicenseAcquirer = null; }, "#6");
 			m.Position = TimeSpan.FromSeconds(-100);
-			Assert.AreEqual(TimeSpan.Zero, m.Position);
+			Assert.AreEqual(TimeSpan.Zero, m.Position, "#7");
 			m.Position = TimeSpan.FromSeconds(1000000);
-			Assert.AreEqual(TimeSpan.Zero, m.Position);
+			Assert.AreEqual(TimeSpan.Zero, m.Position, "#8");
 			m.Source = null;
 			m.Volume = -1000;
 			m.Volume = 10000;

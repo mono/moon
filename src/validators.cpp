@@ -29,7 +29,8 @@ Validators::StyleValidator (DependencyObject* instance, DependencyProperty *prop
 bool
 Validators::AudioStreamIndexValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
-	if (value && value->AsInt32() < 0)
+	// A value of -1 is converted to null. Any other value is left as-is
+	if (value && value->AsInt32() == -1)
 		value->SetIsNull (true);
 		
 	return true;

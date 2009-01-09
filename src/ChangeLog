@@ -1,5 +1,10 @@
 2009-01-09  Alan McGovern  <amcgovern@novell.com>
 
+	* validators.cpp: Validator only converts -1 to null. All other values
+	appear to be left the same
+
+2009-01-09  Alan McGovern  <amcgovern@novell.com>
+
 	* validators.h:
 	* mediaelement.h:
 	* validators.cpp: Add a validator to AudioStreamIndex. This converts
