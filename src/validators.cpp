@@ -27,6 +27,15 @@ Validators::StyleValidator (DependencyObject* instance, DependencyProperty *prop
 }
 
 bool
+Validators::AudioStreamIndexValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	if (value && value->AsInt32() < 0)
+		value->SetIsNull (true);
+		
+	return true;
+}
+
+bool
 Validators::CursorValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
 	// If the value is null, it means the default cursor has been set.

@@ -24,6 +24,7 @@ class Validators
 {
 public:
 	static ValueValidator default_validator;
+	static ValueValidator AudioStreamIndexValidator;
 	static ValueValidator BorderThicknessValidator;
 	static ValueValidator CornerRadiusValidator;
 	static ValueValidator CursorValidator;

@@ -165,7 +165,7 @@ class MediaElement : public MediaBase {
 	static DependencyProperty *AttributesProperty;
  	/* @PropertyType=gint32,DefaultValue=0,ReadOnly,GenerateAccessors */
 	static DependencyProperty *AudioStreamCountProperty;
- 	/* @PropertyType=gint32,Nullable,GenerateAccessors */
+ 	/* @PropertyType=gint32,Nullable,GenerateAccessors,Validator=AudioStreamIndexValidator */
 	static DependencyProperty *AudioStreamIndexProperty;
  	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
 	static DependencyProperty *AutoPlayProperty;

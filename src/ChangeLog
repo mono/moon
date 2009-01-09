@@ -1,5 +1,12 @@
 2009-01-09  Alan McGovern  <amcgovern@novell.com>
 
+	* validators.h:
+	* mediaelement.h:
+	* validators.cpp: Add a validator to AudioStreamIndex. This converts
+	negative values to null, as the unit tests show.
+
+2009-01-09  Alan McGovern  <amcgovern@novell.com>
+
 	* dependencyproperty.h:
 	* dependencyproperty.cpp:
 	* dependencyproperty.g.cpp: Make it possible to use validators with
