@@ -201,7 +201,7 @@ DependencyProperty::RegisterNullable (Type::Kind type, const char *name, Type::K
 	DependencyProperty *property;
 	property = Register (type, name, vtype);
 	property->is_nullable = true;
-	property->validator = validator;
+	property->validator = validator ? validator : Validators::default_validator;
 	return property;
 }
 

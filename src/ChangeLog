@@ -1,5 +1,11 @@
 2009-01-09  Alan McGovern  <amcgovern@novell.com>
 
+	* dependencyproperty.cpp: 'validator' should never be null - it should
+	be default_validator instead. Regression caused by previous change to
+	generator.
+
+2009-01-09  Alan McGovern  <amcgovern@novell.com>
+
 	* validators.cpp: Validator only converts -1 to null. All other values
 	appear to be left the same
 
