@@ -34,6 +34,11 @@ namespace System.Windows.Controls.Primitives {
 	        public static readonly DependencyProperty SelectedItemProperty = 
 			DependencyProperty.Register ("SelectedItem", typeof(object), typeof(Selector), null);
 
+		// looks like a bad idea (if only to test it) but SL2 does not expose it
+		internal Selector ()
+		{
+		}
+
 		public int SelectedIndex {
 			get { return (int)GetValue (SelectedIndexProperty); }
 			set { SetValue (SelectedIndexProperty, value); }
@@ -45,6 +50,19 @@ namespace System.Windows.Controls.Primitives {
 		}
 
 		public event SelectionChangedEventHandler SelectionChanged;
+
+		[MonoTODO]
+		public static bool GetIsSelectionActive (DependencyObject element)
+		{
+			if (element == null)
+				throw new ArgumentNullException ("element");
+
+			Selector s = (element as Selector);
+			if (s == null)
+				return false;
+
+			// FIXME: return true if focused (but there's no public IsFocused available)
+			return false;
+		}
 	}
 }
-	

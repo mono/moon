@@ -1,3 +1,7 @@
+2009-01-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Selector.cs: Add internal ctor and GetIsSelectionActive
+
 2008-12-19  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Selector.cs: More bits.
