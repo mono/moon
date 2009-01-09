@@ -1,3 +1,8 @@
+2009-01-09  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingExpressionBase.cs: Default culture is
+	always en-US, not the current culture.
+
 2009-01-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Remove FontFamilyConverter from build.

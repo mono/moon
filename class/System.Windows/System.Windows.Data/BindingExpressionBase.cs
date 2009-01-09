@@ -39,6 +39,8 @@ namespace System.Windows.Data {
 	public abstract class BindingExpressionBase : Expression
 	{
 		static Dictionary<IntPtr, Binding> bindings = new Dictionary<IntPtr, Binding> ();
+		static System.Globalization.CultureInfo enUS = System.Globalization.CultureInfo.GetCultureInfo ("en-US");
+		
 		internal bool cached;
 		object cachedValue;
 		INotifyPropertyChanged cachedTarget;
@@ -204,7 +206,7 @@ namespace System.Windows.Data {
 				cachedValue = Binding.Converter.Convert (cachedValue,
 				                                   Property.PropertyType,
 				                                   Binding.ConverterParameter,
-				                                   Binding.ConverterCulture ?? System.Globalization.CultureInfo.CurrentCulture);
+				                                   Binding.ConverterCulture ?? enUS);
 			}
 
 			if (cachedValue != null) {

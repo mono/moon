@@ -36,8 +36,8 @@ namespace MoonTest.System.Windows.Data
 	{
 		public object Convert(object value, Type targetType, object parameter,CultureInfo culture)
 		{
-			Assert.AreEqual(CultureInfo.CurrentCulture, culture, "#a");
-			Assert.AreEqual(typeof(Brush), targetType, "#b");
+			Assert.AreEqual(new CultureInfo("en-US"), culture, "#a1");
+			Assert.AreEqual(typeof(Brush), targetType, "#b1");
 			if (Colors.Brown.ToString() == value.ToString())
 				return new SolidColorBrush(Colors.Brown);
 
@@ -46,8 +46,8 @@ namespace MoonTest.System.Windows.Data
 
 		public object ConvertBack(object value, Type targetType, object parameter, global::System.Globalization.CultureInfo culture)
 		{
-			Assert.AreEqual(CultureInfo.CurrentCulture, culture, "#a");
-			Assert.AreEqual(typeof(Color), targetType, "#b");
+			Assert.AreEqual(new CultureInfo("en-US"), culture, "#a2");
+			Assert.AreEqual(typeof(Color), targetType, "#b2");
 			return ((SolidColorBrush)value).Color;
 		}
 	}
@@ -72,6 +72,7 @@ namespace MoonTest.System.Windows.Data
 		[MoonlightBug ("Not fully implemented yet")]
 		public void Test()
 		{
+			global::System.Threading.Thread.CurrentThread.CurrentCulture = new CultureInfo ("en-IE");
 			Setup();
 			Assert.AreEqual(Colors.Brown, rect.Fill.GetValue(SolidColorBrush.ColorProperty), "#1");
 			data.Color = Colors.Green;

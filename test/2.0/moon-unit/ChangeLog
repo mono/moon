@@ -1,5 +1,10 @@
 2009-01-09  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/IValueConverterTest.cs: Default culture is always
+	en-US, not the current culture.
+
+2009-01-09  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/StyleTest.cs: Added extra test for attached properties
 
 2009-01-09  Alan McGovern  <amcgovern@novell.com>
