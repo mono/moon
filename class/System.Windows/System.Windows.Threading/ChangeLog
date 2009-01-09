@@ -1,3 +1,13 @@
+2009-01-09  Geoff Norton  <gnorton@novell.com>
+
+	* DispatcherTimer.cs: Keep a GCHandle to the DispatcherTimer in case the
+	client code doesn't keep a reference to it to prevent a GC (from rolf).
+	Change the callback into a static member and use the GCHandle to derive
+	the target.  Fixes a crash where the callback is nulled in Stop when called
+	from the Tick and GC'd.  Check that our source_id hasn't changed in the Tick
+	to ensure that we havn't been Stop()'d and Start()'d so that we properly 
+	remove ourselves from the glib loop as well as the time manager.
+
 2009-01-06  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Dispatcher.cs: Add params to Dispatcher.BeginInvoke signature.

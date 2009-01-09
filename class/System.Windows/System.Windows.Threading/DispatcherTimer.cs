@@ -26,14 +26,17 @@
 using System;
 using System.Security;
 using Mono;
+using System.Runtime.InteropServices;
 using System.Windows.Interop;
 
 namespace System.Windows.Threading {
 
 	public class DispatcherTimer {
 		private TimeSpan interval;
-		uint source_id;
-		NativeMethods.GSourceFunc callback;
+		private GCHandle handle;
+		private uint source_id;
+		
+		static NativeMethods.GSourceFunc callback = new NativeMethods.GSourceFunc (timer_callback);
 
 		[SecuritySafeCritical]
 		public void Start ()
@@ -41,8 +44,8 @@ namespace System.Windows.Threading {
 			if (source_id != 0)
 				return;
 
-			callback = new NativeMethods.GSourceFunc (timer_callback);
-			source_id = NativeMethods.time_manager_add_timeout (NativeMethods.surface_get_time_manager (Application.s_surface), (int) interval.TotalMilliseconds, callback, IntPtr.Zero);
+			handle = GCHandle.Alloc (this);
+			source_id = NativeMethods.time_manager_add_timeout (NativeMethods.surface_get_time_manager (Application.s_surface), (int) interval.TotalMilliseconds, callback, GCHandle.ToIntPtr (handle));
 		}
 
 		[SecuritySafeCritical]
@@ -53,7 +56,7 @@ namespace System.Windows.Threading {
 
 			NativeMethods.time_manager_remove_timeout (NativeMethods.surface_get_time_manager (Application.s_surface), source_id);
 			source_id = 0;
-			callback = null;
+			handle.Free ();
 		}
 
 		public TimeSpan Interval {
@@ -71,12 +74,15 @@ namespace System.Windows.Threading {
 
 		public event EventHandler Tick;
 
-		bool timer_callback (IntPtr data)
+		static bool timer_callback (IntPtr data)
 		{
+			GCHandle handle = GCHandle.FromIntPtr (data);
+			DispatcherTimer target = (DispatcherTimer) handle.Target;
+			uint s_id = target.source_id;
 			try {
-				Tick (this, EventArgs.Empty);
+				target.Tick (target, EventArgs.Empty);
 				// If we are killed by Enabled or Stop, still return that value
-				return source_id != 0;
+				return target.source_id != 0 && s_id == target.source_id;
 			} catch (Exception ex) {
 				Console.WriteLine (ex.ToString ());
 			} catch {
