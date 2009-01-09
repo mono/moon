@@ -1,3 +1,7 @@
+2009-01-09  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* ItemsControl.cs: Implemented a bit more
+
 2009-01-08  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* ItemsControl.cs: Partial implementation (enough to pass some 

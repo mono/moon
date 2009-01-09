@@ -53,21 +53,17 @@ namespace System.Windows.Controls {
 
 		protected virtual void ClearContainerForItemOverride (DependencyObject element, object item)
 		{
-			if ((element == null) || (item == null))
-				return;
-			throw new NotImplementedException ();
+			// nothing to undo by default (since nothing was prepared)
 		}
 
 		protected virtual DependencyObject GetContainerForItemOverride ()
 		{
-			throw new NotImplementedException ();
+			return new ContentPresenter ();
 		}
 
 		protected virtual bool IsItemItsOwnContainerOverride (object item)
 		{
-			if (item == null)
-				return false;
-			throw new NotImplementedException ();
+			return (item is FrameworkElement);
 		}
 
 		protected virtual void OnItemsChanged (NotifyCollectionChangedEventArgs e)
@@ -76,9 +72,7 @@ namespace System.Windows.Controls {
 
 		protected virtual void PrepareContainerForItemOverride (DependencyObject element, object item)
 		{
-			if ((element == null) || (item == null))
-				return;
-			throw new NotImplementedException ();
+			// nothing is prepared by default
 		}
 
 		public string DisplayMemberPath { 
