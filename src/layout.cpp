@@ -152,7 +152,11 @@ TextLine::~TextLine ()
 
 TextLayout::TextLayout ()
 {
+	// Note: TextBlock and TextBox assume their default values match these
+	strategy = LineStackingStrategyMaxHeight;
+	alignment = TextAlignmentLeft;
 	wrapping = TextWrappingNoWrap;
+	line_height = NAN;
 	max_height = -1.0;
 	max_width = -1.0;
 	
@@ -175,67 +179,88 @@ TextLayout::~TextLayout ()
 	delete lines;
 }
 
-double
-TextLayout::GetMaxWidth ()
+bool
+TextLayout::SetLineStackingStrategy (LineStackingStrategy strategy)
 {
-	return max_width;
-}
-
-void
-TextLayout::SetMaxWidth (double max)
-{
-	if (max_width == max)
-		return;
+	if (this->strategy == strategy)
+		return false;
 	
-	max_width = max;
+	this->strategy = strategy;
 	
 	actual_height = -1.0;
 	actual_width = -1.0;
-}
-
-double
-TextLayout::GetMaxHeight ()
-{
-	return max_height;
-}
-
-void
-TextLayout::SetMaxHeight (double max)
-{
-	if (max_height == max)
-		return;
 	
-	max_height = max;
-	
-	actual_height = -1.0;
-	actual_width = -1.0;
+	return true;
 }
 
-TextWrapping
-TextLayout::GetWrapping ()
+bool
+TextLayout::SetTextAlignment (TextAlignment alignment)
 {
-	return wrapping;
+	if (this->alignment == alignment)
+		return false;
+	
+	this->alignment = alignment;
+	
+	return false;
 }
 
-void
-TextLayout::SetWrapping (TextWrapping wrapping)
+bool
+TextLayout::SetTextWrapping (TextWrapping wrapping)
 {
 	if (this->wrapping == wrapping)
-		return;
+		return false;
 	
 	this->wrapping = wrapping;
 	
 	actual_height = -1.0;
 	actual_width = -1.0;
+	
+	return true;
 }
 
-List *
-TextLayout::GetTextRuns ()
+bool
+TextLayout::SetLineHeight (double height)
 {
-	return runs;
+	if (this->line_height == height)
+		return false;
+	
+	this->line_height = height;
+	
+	actual_height = -1.0;
+	actual_width = -1.0;
+	
+	return true;
 }
 
-void
+bool
+TextLayout::SetMaxHeight (double max)
+{
+	if (max_height == max)
+		return false;
+	
+	max_height = max;
+	
+	actual_height = -1.0;
+	actual_width = -1.0;
+	
+	return true;
+}
+
+bool
+TextLayout::SetMaxWidth (double max)
+{
+	if (max_width == max)
+		return false;
+	
+	max_width = max;
+	
+	actual_height = -1.0;
+	actual_width = -1.0;
+	
+	return true;
+}
+
+bool
 TextLayout::SetTextRuns (List *runs)
 {
 	if (this->runs) {
@@ -247,6 +272,8 @@ TextLayout::SetTextRuns (List *runs)
 	
 	actual_height = -1.0;
 	actual_width = -1.0;
+	
+	return true;
 }
 
 /**
@@ -366,7 +393,7 @@ print_break_info (gunichar *text)
 #define BreakBefore(btype) (btype == G_UNICODE_BREAK_BEFORE || btype == G_UNICODE_BREAK_PREFIX)
 
 void
-TextLayout::LayoutWrapWithOverflow (TextLayoutHints *hints)
+TextLayout::LayoutWrapWithOverflow ()
 {
 	double x0 = 0.0, x1 = 0.0, wx = 0.0, dy = 0.0;
 	register gunichar *start, *word, *inptr;
@@ -383,14 +410,14 @@ TextLayout::LayoutWrapWithOverflow (TextLayoutHints *hints)
 	guint32 prev;
 	TextRun *run;
 	
-	if (hints->OverrideLineHeight ())
-		height = hints->GetLineHeight ();
+	if (OverrideLineHeight ())
+		height = line_height;
 	
 	line = new TextLine ();
 	for (run = (TextRun *) runs->First (); run; run = (TextRun *) run->next) {
 		if (run->text == NULL) {
 			// LineBreak
-			if (blank && !hints->OverrideLineHeight ()) {
+			if (blank && !OverrideLineHeight ()) {
 				descend = run->font->Descender ();
 				height = run->font->Height ();
 			}
@@ -413,7 +440,7 @@ TextLayout::LayoutWrapWithOverflow (TextLayoutHints *hints)
 			underlined = false;
 			blank = true;
 			
-			if (!hints->OverrideLineHeight ()) {
+			if (!OverrideLineHeight ()) {
 				descend = 0.0;
 				height = 0.0;
 			}
@@ -428,7 +455,7 @@ TextLayout::LayoutWrapWithOverflow (TextLayoutHints *hints)
 		if (!underlined)
 			underlined = run->IsUnderlined ();
 		
-		if (!hints->OverrideLineHeight ()) {
+		if (!OverrideLineHeight ()) {
 			descend = MIN (descend, run->font->Descender ());
 			height = MAX (height, run->font->Height ());
 		}
@@ -497,7 +524,7 @@ TextLayout::LayoutWrapWithOverflow (TextLayoutHints *hints)
 				
 				underlined = run->IsUnderlined ();
 				
-				if (!hints->OverrideLineHeight ()) {
+				if (!OverrideLineHeight ()) {
 					descend = run->font->Descender ();
 					height = run->font->Height ();
 				}
@@ -558,7 +585,7 @@ TextLayout::LayoutWrapWithOverflow (TextLayoutHints *hints)
 }
 
 void
-TextLayout::LayoutNoWrap (TextLayoutHints *hints)
+TextLayout::LayoutNoWrap ()
 {
 	double x0 = 0.0, x1 = 0.0, dy = 0.0;
 	register gunichar *inptr;
@@ -576,14 +603,14 @@ TextLayout::LayoutNoWrap (TextLayoutHints *hints)
 	guint32 prev;
 	TextRun *run;
 	
-	if (hints->OverrideLineHeight ())
-		height = hints->GetLineHeight ();
+	if (OverrideLineHeight ())
+		height = line_height;
 	
 	line = new TextLine ();
 	for (run = (TextRun *) runs->First (); run; run = (TextRun *) run->next) {
 		if (run->text == NULL) {
 			// LineBreak
-			if (blank && !hints->OverrideLineHeight ()) {
+			if (blank && !OverrideLineHeight ()) {
 				descend = run->font->Descender ();
 				height = run->font->Height ();
 			}
@@ -607,7 +634,7 @@ TextLayout::LayoutNoWrap (TextLayoutHints *hints)
 			clipped = false;
 			blank = true;
 			
-			if (!hints->OverrideLineHeight ()) {
+			if (!OverrideLineHeight ()) {
 				descend = 0.0;
 				height = 0.0;
 			}
@@ -626,7 +653,7 @@ TextLayout::LayoutNoWrap (TextLayoutHints *hints)
 		if (!underlined)
 			underlined = run->IsUnderlined ();
 		
-		if (!hints->OverrideLineHeight ()) {
+		if (!OverrideLineHeight ()) {
 			descend = MIN (descend, run->font->Descender ());
 			height = MAX (height, run->font->Height ());
 		}
@@ -771,7 +798,7 @@ struct WordChar {
  * Silverlight's text layout)
  **/
 void
-TextLayout::LayoutWrap (TextLayoutHints *hints)
+TextLayout::LayoutWrap ()
 {
 	double x0 = 0.0, x1 = 0.0, wx = 0.0, dy = 0.0;
 	register gunichar *start, *word, *inptr;
@@ -798,14 +825,14 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 	
 	array = g_array_new (false, false, sizeof (WordChar));
 	
-	if (hints->OverrideLineHeight ())
-		height = hints->GetLineHeight ();
+	if (OverrideLineHeight ())
+		height = line_height;
 	
 	line = new TextLine ();
 	for (run = (TextRun *) runs->First (); run; run = (TextRun *) run->next) {
 		if (run->text == NULL) {
 			// LineBreak
-			if (blank && !hints->OverrideLineHeight ()) {
+			if (blank && !OverrideLineHeight ()) {
 				descend = run->font->Descender ();
 				height = run->font->Height ();
 			}
@@ -830,7 +857,7 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 			in_word = false;
 			blank = true;
 			
-			if (!hints->OverrideLineHeight ()) {
+			if (!OverrideLineHeight ()) {
 				descend = 0.0;
 				height = 0.0;
 			}
@@ -846,7 +873,7 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 		if (!underlined)
 			underlined = run->IsUnderlined ();
 		
-		if (!hints->OverrideLineHeight ()) {
+		if (!OverrideLineHeight ()) {
 			descend = MIN (descend, run->font->Descender ());
 			height = MAX (height, run->font->Height ());
 		}
@@ -934,7 +961,7 @@ TextLayout::LayoutWrap (TextLayoutHints *hints)
 				
 				underlined = run->IsUnderlined ();
 				
-				if (!hints->OverrideLineHeight ()) {
+				if (!OverrideLineHeight ()) {
 					descend = run->font->Descender ();
 					height = run->font->Height ();
 				}
@@ -1124,7 +1151,7 @@ print_lines (List *lines)
 #endif
 
 void
-TextLayout::Layout (TextLayoutHints *hints)
+TextLayout::Layout ()
 {
 	if (actual_width != -1.0)
 		return;
@@ -1146,7 +1173,7 @@ TextLayout::Layout (TextLayoutHints *hints)
 				printf ("TextLayout::LayoutWrapWithOverflow()\n");
 		}
 #endif
-		LayoutWrapWithOverflow (hints);
+		LayoutWrapWithOverflow ();
 		break;
 	case TextWrappingNoWrap:
 #if DEBUG
@@ -1157,7 +1184,7 @@ TextLayout::Layout (TextLayoutHints *hints)
 				printf ("TextLayout::LayoutNoWrap()\n");
 		}
 #endif
-		LayoutNoWrap (hints);
+		LayoutNoWrap ();
 		break;
 	case TextWrappingWrap:
 	// Silverlight default is to wrap for invalid values
@@ -1170,7 +1197,7 @@ TextLayout::Layout (TextLayoutHints *hints)
 				printf ("TextLayout::LayoutWrap()\n");
 		}
 #endif
-		LayoutWrap (hints);
+		LayoutWrap ();
 		break;
 	}
 	
@@ -1186,7 +1213,7 @@ TextLayout::Layout (TextLayoutHints *hints)
 }
 
 static inline void
-RenderLine (cairo_t *cr, const Point &origin, const Point &position, TextLayoutHints *hints, TextLine *line, Brush *default_fg)
+RenderLine (cairo_t *cr, const Point &origin, const Point &position, TextLine *line, Brush *default_fg)
 {
 	TextFont *font = NULL;
 	TextDecorations deco;
@@ -1265,7 +1292,7 @@ RenderLine (cairo_t *cr, const Point &origin, const Point &position, TextLayoutH
 			
 			moon_close_path (path);
 			segment->path = path;
-
+			
 			if (segment->path->cairo.data)
 				cairo_append_path (cr, &segment->path->cairo);
 		}
@@ -1280,7 +1307,7 @@ RenderLine (cairo_t *cr, const Point &origin, const Point &position, TextLayoutH
 			Rect underline = Rect (0.0, pos - thickness * 0.5, x1, thickness);
 			underline.Draw (cr);
 		}
-
+		
 		fg->Fill (cr);
 		
 		x0 += segment->advance;
@@ -1291,7 +1318,7 @@ RenderLine (cairo_t *cr, const Point &origin, const Point &position, TextLayoutH
 }
 
 void
-TextLayout::Render (cairo_t *cr, const Point &origin, const Point &offset, TextLayoutHints *hints, Brush *default_fg, TextSelection *selection, int caret)
+TextLayout::Render (cairo_t *cr, const Point &origin, const Point &offset, Brush *default_fg, TextSelection *selection, int cursor)
 {
 	TextLine *line;
 	Point position;
@@ -1299,12 +1326,12 @@ TextLayout::Render (cairo_t *cr, const Point &origin, const Point &offset, TextL
 	
 	position.y = offset.y;
 	
-	Layout (hints);
+	Layout ();
 	
 	line = (TextLine *) lines->First ();
 	
 	while (line) {
-		switch (hints->GetTextAlignment ()) {
+		switch (alignment) {
 		case TextAlignmentCenter:
 			if (line->width < max_width)
 				deltax = (max_width - line->width) / 2.0;
@@ -1323,7 +1350,7 @@ TextLayout::Render (cairo_t *cr, const Point &origin, const Point &offset, TextL
 		}
 		
 		position.x = offset.x + deltax;
-		RenderLine (cr, origin, position, hints, line, default_fg);
+		RenderLine (cr, origin, position, line, default_fg);
 		position.y += (double) line->height;
 		
 		line = (TextLine *) line->next;

@@ -83,9 +83,12 @@ class TextChangedEventArgs : public RoutedEventArgs {
 enum TextBoxModelChangeType {
 	TextBoxModelChangedNothing,
 	TextBoxModelChangedCursorPosition,
+	TextBoxModelChangedTextAlignment,
+	TextBoxModelChangedTextWrapping,
 	TextBoxModelChangedSelection,
-	TextBoxModelChangedLayout,
-	TextBoxModelChangedBrush
+	TextBoxModelChangedBrush,
+	TextBoxModelChangedFont,
+	TextBoxModelChangedText
 };
 
 /* @SilverlightVersion="2" */
@@ -95,9 +98,15 @@ class TextBoxModelChangedEventArgs : public RoutedEventArgs {
 	virtual ~TextBoxModelChangedEventArgs () { }
 	
  public:
+	PropertyChangedEventArgs *property;
 	TextBoxModelChangeType changed;
+	PropertyChangedEventArgs *args;
 	
-	TextBoxModelChangedEventArgs (TextBoxModelChangeType changed) { this->changed = changed; }
+	TextBoxModelChangedEventArgs (TextBoxModelChangeType changed, PropertyChangedEventArgs *property = NULL)
+	{
+		this->property = property;
+		this->changed = changed;
+	}
 	
 	virtual Type::Kind GetObjectType () { return Type::TEXTBOXMODELCHANGEDEVENTARGS; }
 };
@@ -112,12 +121,12 @@ class TextBuffer;
 class TextBox : public Control {
 	TextFontDescription *font;
 	TextSelection selection;
-	TextLayoutHints *hints;
 	TextBuffer *buffer;
-	int selection_changed:1;
-	int setvalue:1;
 	int maxlen;
 	int cursor;
+	
+	int selection_changed:1;
+	int setvalue:1;
 	
 	static void key_down (EventObject *sender, EventArgs *args, void *closure);
 	static void key_up (EventObject *sender, EventArgs *args, void *closure);
@@ -198,7 +207,6 @@ class TextBox : public Control {
 	
 	// Methods needed by TextBoxView
 	TextFontDescription *GetFontDescription () { return font; }
-	TextLayoutHints *GetLayoutHints () { return hints; }
 	TextSelection *GetSelection () { return &selection; }
 	TextBuffer *GetBuffer () { return buffer; }
 	
@@ -256,7 +264,8 @@ class TextBox : public Control {
 /* @Namespace=Microsoft.Internal */
 class TextBoxView : public FrameworkElement {
 	TextLayout *layout;
-	bool dirty;
+	int focused:1;
+	int dirty:1;
 	
 	glong blink_timeout;
 	bool cursor_visible;

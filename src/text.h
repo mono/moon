@@ -132,9 +132,8 @@ class Run : public Inline {
 /* @Namespace=System.Windows.Controls */
 class TextBlock : public FrameworkElement {
 	TextFontDescription *font;
-	TextLayoutHints *hints;
-	TextLayout *layout;
 	Downloader *downloader;
+	TextLayout *layout;
 	
 	double actual_height;
 	double actual_width;

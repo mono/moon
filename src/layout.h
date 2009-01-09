@@ -44,34 +44,12 @@ struct TextSelection {
 	int start, length;
 };
 
-class TextLayoutHints {
-	LineStackingStrategy strategy;
-	TextAlignment alignment;
-	double lineHeight;
-	
- public:
-	TextLayoutHints (TextAlignment align, LineStackingStrategy strat, double height)
-	{
-		lineHeight = height;
-		strategy = strat;
-		alignment = align;
-	}
-	
-	void SetLineStackingStrategy (LineStackingStrategy strat) { strategy = strat; }
-	//LineStackingStrategy GetLineStackingStrtegy () { return strategy; }
-	
-	void SetLineHeight (double height) { lineHeight = height; }
-	double GetLineHeight () { return lineHeight; }
-	
-	void SetTextAlignment (TextAlignment align) { alignment = align; }
-	TextAlignment GetTextAlignment () { return alignment; }
-	
-	bool OverrideLineHeight () { return (strategy == LineStackingStrategyBlockLineHeight && !isnan (lineHeight)); }
-};
-
 class TextLayout {
 	// User-set data
+	LineStackingStrategy strategy;
+	TextAlignment alignment;
 	TextWrapping wrapping;
+	double line_height;
 	double max_height;
 	double max_width;
 	List *runs;
@@ -83,33 +61,54 @@ class TextLayout {
 	double actual_height;
 	double actual_width;
 	
-	void LayoutWrapWithOverflow (TextLayoutHints *hints);
-	void LayoutNoWrap (TextLayoutHints *hints);
-	void LayoutWrap (TextLayoutHints *hints);
+	bool OverrideLineHeight () { return (strategy == LineStackingStrategyBlockLineHeight && !isnan (line_height)); }
+	
+	void LayoutWrapWithOverflow ();
+	void LayoutNoWrap ();
+	void LayoutWrap ();
 	
  public:
 	
 	TextLayout ();
 	~TextLayout ();
 	
-	double GetMaxWidth ();
-	void SetMaxWidth (double width);
+	//
+	// Property Accessors
+	//
+	// Set[Property]() accessors return %true if the extents have
+	// changed or %false otherwise.
+	//
 	
-	double GetMaxHeight ();
-	void SetMaxHeight (double height);
+	LineStackingStrategy GetLineStackingStrtegy () { return strategy; }
+	bool SetLineStackingStrategy (LineStackingStrategy strategy);
 	
-	TextWrapping GetWrapping ();
-	void SetWrapping (TextWrapping wrapping);
+	TextAlignment GetTextAlignment () { return alignment; }
+	bool SetTextAlignment (TextAlignment alignment);
 	
-	List *GetTextRuns ();
-	void SetTextRuns (List *runs);
+	TextWrapping GetTextWrapping () { return wrapping; }
+	bool SetTextWrapping (TextWrapping wrapping);
 	
-	void Layout (TextLayoutHints *hints);
+	double GetLineHeight () { return line_height; }
+	bool SetLineHeight (double height);
+	
+	double GetMaxHeight () { return max_height; }
+	bool SetMaxHeight (double height);
+	
+	double GetMaxWidth () { return max_width; }
+	bool SetMaxWidth (double width);
+	
+	List *GetTextRuns () { return runs; }
+	bool SetTextRuns (List *runs);
+	
+	//
+	// Methods
+	//
+	
+	void Render (cairo_t *cr, const Point &origin, const Point &offset, Brush *default_fg, TextSelection *selection = NULL, int cursor = -1);
+	void Layout ();
 	
 	void GetActualExtents (double *width, double *height);
 	//void GetLayoutExtents (double *width, double *height);
-	
-	void Render (cairo_t *cr, const Point &origin, const Point &offset, TextLayoutHints *hints, Brush *default_fg, TextSelection *selection = NULL, int caret = -1);
 };
 
 #endif /* __LAYOUT_H__ */

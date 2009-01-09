@@ -204,8 +204,6 @@ TextBlock::TextBlock ()
 	actual_height = 0.0;
 	actual_width = 0.0;
 	
-	/* initialize the font description and layout */
-	hints = new TextLayoutHints (TextAlignmentLeft, LineStackingStrategyMaxHeight, 0.0);
 	layout = new TextLayout ();
 	
 	font = new TextFontDescription ();
@@ -227,7 +225,6 @@ TextBlock::TextBlock ()
 TextBlock::~TextBlock ()
 {
 	delete layout;
-	delete hints;
 	delete font;
 	
 	if (downloader != NULL) {
@@ -367,8 +364,6 @@ TextBlock::Layout (cairo_t *cr)
 	
 	runs = new List ();
 	
-	layout->SetWrapping (GetTextWrapping ());
-	
 	if (!isnan (width)) {
 		Thickness *padding = GetPadding ();
 		double pad = padding->left + padding->right;
@@ -456,7 +451,7 @@ TextBlock::Layout (cairo_t *cr)
 	}
 	
 	layout->SetTextRuns (runs);
-	layout->Layout (hints);
+	layout->Layout ();
 	
 	layout->GetActualExtents (&actual_width, &actual_height);
 	//layout->GetLayoutExtents (&bbox_width, &bbox_height);
@@ -490,7 +485,7 @@ TextBlock::Paint (cairo_t *cr)
 	Thickness *padding = GetPadding ();
 	Point offset (padding->left, padding->top);
 	
-	layout->Render (cr, GetOriginPoint (), offset, hints, fg);
+	layout->Render (cr, GetOriginPoint (), offset, fg);
 	
 	if (moonlight_flags & RUNTIME_INIT_SHOW_TEXTBOXES) {
 		cairo_set_source_rgba (cr, 0.0, 1.0, 0.0, 1.0);
@@ -655,7 +650,7 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 	if (args->property->GetOwnerType () != Type::TEXTBLOCK) {
 		FrameworkElement::OnPropertyChanged (args);
 		if (args->property == FrameworkElement::WidthProperty) {
-			if (GetTextWrapping () != TextWrappingNoWrap)
+			if (layout->GetTextWrapping () != TextWrappingNoWrap)
 				dirty = true;
 			
 			UpdateBounds (true);
@@ -707,7 +702,7 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 	} else if (args->property == TextBlock::TextDecorationsProperty) {
 		dirty = true;
 	} else if (args->property == TextBlock::TextWrappingProperty) {
-		dirty = true;
+		dirty = layout->SetTextWrapping ((TextWrapping) args->new_value->AsInt32 ());
 	} else if (args->property == TextBlock::InlinesProperty) {
 		if (setvalue) {
 			// result of a change to the TextBlock.Inlines property
@@ -723,13 +718,11 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 			invalidate = false;
 		}
 	} else if (args->property == TextBlock::LineStackingStrategyProperty) {
-		hints->SetLineStackingStrategy ((LineStackingStrategy) args->new_value->AsInt32 ());
-		dirty = true;
+		dirty = layout->SetLineStackingStrategy ((LineStackingStrategy) args->new_value->AsInt32 ());
 	} else if (args->property == TextBlock::LineHeightProperty) {
-		hints->SetLineHeight (args->new_value->AsDouble ());
-		dirty = true;
+		dirty = layout->SetLineHeight (args->new_value->AsDouble ());
 	} else if (args->property == TextBlock::TextAlignmentProperty) {
-		hints->SetTextAlignment ((TextAlignment) args->new_value->AsInt32 ());
+		dirty = layout->SetTextAlignment ((TextAlignment) args->new_value->AsInt32 ());
 	} else if (args->property == TextBlock::PaddingProperty) {
 		dirty = true;
 	} else if (args->property == TextBlock::ActualHeightProperty) {

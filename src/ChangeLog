@@ -1,3 +1,25 @@
+2009-01-09  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp (TextBlock::OnPropertyChanged): Update our TextLayout
+	with layout-hint changes (including TextWrapping hints).
+	(TextBlock::Layout): Don't pass 'hints' to layout->Layout()
+	anymore. Also no need to set the wrapping mode here anymore as it
+	is set in OnProeprtyChanged() now.
+
+	* layout.cpp (TextLayout): Move TextLayoutHints into TextLayout,
+	it doesn't make sense to have them separate.
+
+	* textbox.cpp (class TextBox): Get rid of TextLayoutHints state,
+	we'll pass changes directly to the View as they get updated.
+	(TextBox::OnPropertyChanged): If the layout hints change, set
+	changed to the appropriate TextBoxModelChanged hint enum. Also
+	pass the PropertyChangedEventArgs to the ModelChangedEventArgs
+	ctor so that TextBoxView can grab the new value to update its
+	state.
+	(TextBoxView::OnModelChanged): Handle the new enums.
+	(TextBoxView::OnPropertyChanged): Sync our layout-hints state when
+	a new TextBox gets set.
+
 2009-01-09  Alan McGovern  <amcgovern@novell.com>
 
 	* dependencyproperty.cpp: 'validator' should never be null - it should
