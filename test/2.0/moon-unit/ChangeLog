@@ -1,3 +1,9 @@
+2009-01-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Controls/ContentPresenterTest.cs: New.
+	* System.Windows.Controls/ItemsControlTest.cs: The default for
+	IsItemItsOwnContainerOverride seems to accept any FrameworkElement
+
 2009-01-09  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/IValueConverterTest.cs: Complete implementation of

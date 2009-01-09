@@ -125,6 +125,16 @@ namespace MoonTest.System.Windows.Controls {
 		{
 			ItemsControlPoker ic = new ItemsControlPoker ();
 			Assert.IsFalse (ic.IsItemItsOwnContainerOverride_ (null), "null");
+			Assert.IsFalse (ic.IsItemItsOwnContainerOverride_ (new OpenFileDialog ()), "OpenFileDialog");
+			Assert.IsFalse (ic.IsItemItsOwnContainerOverride_ (ic.Items), "ItemCollection");
+			Assert.IsFalse (ic.IsItemItsOwnContainerOverride_ (new RowDefinition ()), "RowDefinition");
+
+			Assert.IsTrue (ic.IsItemItsOwnContainerOverride_ (ic), "self");
+			Assert.IsTrue (ic.IsItemItsOwnContainerOverride_ (new Slider ()), "Slider");
+			Assert.IsTrue (ic.IsItemItsOwnContainerOverride_ (new Border ()), "Border");
+			Assert.IsTrue (ic.IsItemItsOwnContainerOverride_ (new Grid ()), "Grid");
+			Assert.IsTrue (ic.IsItemItsOwnContainerOverride_ (new ContentPresenter ()), "ContentPresenter");
+			Assert.IsTrue (ic.IsItemItsOwnContainerOverride_ (new ContentControl ()), "ContentControl");
 		}
 
 		[TestMethod]
@@ -143,7 +153,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("not implemented")]
 		public void GetContainerForItemOverride ()
 		{
 			ItemsControlPoker ic = new ItemsControlPoker ();
