@@ -69,7 +69,7 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
-		[MoonlightBug ("Not fully implemented yet")]
+//		[MoonlightBug ("Not fully implemented yet")]
 		public void Test()
 		{
 			global::System.Threading.Thread.CurrentThread.CurrentCulture = new CultureInfo ("en-IE");

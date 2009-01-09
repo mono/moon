@@ -225,6 +225,12 @@ namespace System.Windows.Data {
 				if (Property.PropertyType.IsValueType && value.GetType () != Property.PropertyType)
 					value = Convert.ChangeType (value, Property.PropertyType, null);
 
+				if (Binding.Converter != null)
+					value = Binding.Converter.Convert (value,
+					                                   PropertyInfo.PropertyType,
+					                                   Binding.ConverterParameter,
+					                                   Binding.ConverterCulture ?? enUS);
+				
 				Target.UpdateFromBinding (Property, value);
 			}
 		}
@@ -241,7 +247,7 @@ namespace System.Windows.Data {
 				value = Binding.Converter.ConvertBack (value,
 				                                       PropertyInfo.PropertyType,
 				                                       Binding.ConverterParameter,
-				                                       Binding.ConverterCulture ?? System.Globalization.CultureInfo.CurrentCulture);
+				                                       Binding.ConverterCulture ?? enUS);
 			try {
 				updating = true;
 				PropertyInfo.SetValue (PropertyTarget, value, null);
