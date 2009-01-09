@@ -817,5 +817,35 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (new Size (100, 100), c.MeasureArg, "c MeasureArg2");
 			Assert.AreEqual (new Size (210, 210), g.DesiredSize, "grid DesiredSize2");
 		}
+
+		[TestMethod]
+		public void StaticMethods_Null ()
+		{
+			Assert.Throws<NullReferenceException> (delegate {
+				Grid.GetColumn (null);
+			}, "GetColumn");
+			Assert.Throws<NullReferenceException> (delegate {
+				Grid.GetColumnSpan (null);
+			}, "GetColumnSpan");
+			Assert.Throws<NullReferenceException> (delegate {
+				Grid.GetRow (null);
+			}, "GetRow");
+			Assert.Throws<NullReferenceException> (delegate {
+				Grid.GetRowSpan (null);
+			}, "GetRowSpan");
+
+			Assert.Throws<NullReferenceException> (delegate {
+				Grid.SetColumn (null, 0);
+			}, "SetColumn");
+			Assert.Throws<NullReferenceException> (delegate {
+				Grid.SetColumnSpan (null, 0);
+			}, "SetColumnSpan");
+			Assert.Throws<NullReferenceException> (delegate {
+				Grid.SetRow (null, 0);
+			}, "SetRow");
+			Assert.Throws<NullReferenceException> (delegate {
+				Grid.SetRowSpan (null, 0);
+			}, "SetRowSpan");
+		}
 	}
 }

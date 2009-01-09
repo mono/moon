@@ -80,6 +80,27 @@ namespace MoonTest.System.Windows
 			Assert.Throws (delegate { canvas.GetValue (InkPresenter.StrokesProperty); }, typeof (Exception)); // And this throws a catastrophic error.
 		}
 
+		static DependencyProperty ValidationOrderProperty = DependencyProperty.Register (
+			"ValidationOrder", typeof (double), typeof (ScrollViewer),
+			new PropertyMetadata (new PropertyChangedCallback (OnReadOnlyDependencyPropertyChanged)));
+
+		private static void OnReadOnlyDependencyPropertyChanged (DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
+			throw new InvalidOperationException ();
+		}
+
+		[TestMethod]
+		public void ValidationOrder ()
+		{
+			ScrollViewer sc = new ScrollViewer ();
+			// we're setting a boolean value to a double DependencyProperty
+			// and even with a PropertyChangedCallback we still get the
+			// ArgumentException before the InvalidOperationException
+			Assert.Throws<ArgumentException> (delegate {
+				sc.SetValue (ValidationOrderProperty, true);
+			}, "wrong value, callback is called later");
+		}
+
 #region Canvas Custom
 		[TestMethod ()]
 		public void Register_Canvas_Custom_double ()

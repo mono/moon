@@ -1,3 +1,13 @@
+2009-01-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows/DependencyPropertyTest.cs: Add test case to 
+	confirm the old (beta1) readonly hack is not used anymore in SL2.
+	* System.Windows.Controls/SelectorTest.cs: New.
+	* System.Windows.Controls/ScrollViewerTest.cs: New.
+	* System.Windows.Controls/GridTest.cs: Add test cases for static
+	methods.
+	* System.Windows.Resources/StreamResourceInfoTest.cs:New.
+
 2009-01-09  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/MediaElementTest.cs: Addedd more tests for
