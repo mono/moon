@@ -52,7 +52,7 @@ namespace System.Windows.Controls
         /// <summary> 
         /// Gets a value that indicates whether the mouse pointer is located over this element. 
         /// </summary>
-        public bool IsMouseOver { get; private set; } 
+        internal bool IsMouseOver { get; private set; } 
 
         /// <summary>
         /// Identifies the ItemsControl item represented by this object (null when this object IS the item) 

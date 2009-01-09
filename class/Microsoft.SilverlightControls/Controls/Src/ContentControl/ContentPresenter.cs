@@ -25,7 +25,7 @@ namespace System.Windows.Controls
     /// to associate ContentControl.Content with ContentPresenter.Content (and
     /// an other relevant properties like FontSize, VeriticalAlignment, etc.). 
     /// </remarks> 
-    public class ContentPresenter : Control
+    public class ContentPresenter : FrameworkElement
     { 
         /// <summary>
         /// XAML markup used to define the write-once ContentPresenter template.
@@ -34,23 +34,24 @@ namespace System.Windows.Controls
             "<ControlTemplate " +
               "xmlns=\"http://schemas.microsoft.com/client/2007\" " + 
               "xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" " + 
-              "xmlns:controls=\"clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls\" " +
+//              "xmlns:controls=\"clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls\" " +
+              "xmlns:controls=\"clr-namespace:System.Windows.Controls;assembly=System.Windows\" " +
               "TargetType=\"controls:ContentPresenter\">" + 
                 "<Grid x:Name=\"RootElement\" " +
-                  "Background=\"{TemplateBinding Background}\" " +
+//                  "Background=\"{TemplateBinding Background}\" " +
                   "Cursor=\"{TemplateBinding Cursor}\">" + 
                     "<TextBlock x:Name=\"TextElement\" " +
-                      "FontFamily=\"{TemplateBinding FontFamily}\" " +
-                      "FontSize=\"{TemplateBinding FontSize}\" " + 
-                      "FontStretch=\"{TemplateBinding FontStretch}\" " + 
-                      "FontStyle=\"{TemplateBinding FontStyle}\" " +
-                      "FontWeight=\"{TemplateBinding FontWeight}\" " + 
-                      "Foreground=\"{TemplateBinding Foreground}\" " +
+//                      "FontFamily=\"{TemplateBinding FontFamily}\" " +
+//                      "FontSize=\"{TemplateBinding FontSize}\" " + 
+//                      "FontStretch=\"{TemplateBinding FontStretch}\" " + 
+//                      "FontStyle=\"{TemplateBinding FontStyle}\" " +
+//                      "FontWeight=\"{TemplateBinding FontWeight}\" " + 
+//                      "Foreground=\"{TemplateBinding Foreground}\" " +
                       "HorizontalAlignment=\"{TemplateBinding HorizontalContentAlignment}\" " +
-                      "Padding=\"{TemplateBinding Padding}\" " + 
-                      "TextAlignment=\"{TemplateBinding TextAlignment}\" " +
-                      "TextDecorations=\"{TemplateBinding TextDecorations}\" " +
-                      "TextWrapping=\"{TemplateBinding TextWrapping}\" " + 
+//                      "Padding=\"{TemplateBinding Padding}\" " + 
+//                      "TextAlignment=\"{TemplateBinding TextAlignment}\" " +
+//                      "TextDecorations=\"{TemplateBinding TextDecorations}\" " +
+//                      "TextWrapping=\"{TemplateBinding TextWrapping}\" " + 
                       "VerticalAlignment=\"{TemplateBinding VerticalContentAlignment}\" " + 
                       "Visibility=\"Collapsed\" />" +
                 "</Grid>" + 
@@ -179,7 +180,7 @@ namespace System.Windows.Controls
             source.PrepareContentPresenter(); 
         } 
         #endregion ContentTemplate
- 
+#if false
         #region TextAlignment 
         /// <summary>
         /// Gets or sets a value that indicates the horizontal alignment of text
@@ -246,19 +247,19 @@ namespace System.Windows.Controls
                 typeof(ContentPresenter), 
                 null);
         #endregion TextWrapping
- 
+#endif
         /// <summary>
         /// Initializes a new instance of the ContentPresenter class.
         /// </summary> 
         public ContentPresenter() 
         {
             // Apply the default Template to ContentPresenter. 
-            Template = XamlReader.Load(ContentPresenterDefaultTemplate) as ControlTemplate;
-            ApplyTemplate();
+//            Template = XamlReader.Load(ContentPresenterDefaultTemplate) as ControlTemplate;
+//            ApplyTemplate();
             Debug.Assert(_alreadyAppliedTemplate, 
                 "The write-once Template flag _alreadyAppliedTemplate was not set!");
         }
- 
+#if false
         /// <summary> 
         /// Apply the default Template to ContentPresenter.  This is only
         /// allowed to happen one time. 
@@ -290,7 +291,7 @@ namespace System.Windows.Controls
             Debug.Assert(_elementRoot.Children.Count == 1,
                 "RootElement should have TextElement as its only child!"); 
         }
-
+#endif
         /// <summary> 
         /// Update the ContentPresenter's logical tree with the appropriate
         /// visual elements when its Content is changed.
@@ -336,7 +337,7 @@ namespace System.Windows.Controls
                 _elementText.Visibility = Visibility.Collapsed; 
             }
         }
- 
+#if false
         /// <summary>
         /// Returns the specified contentPresenter element.
         /// </summary> 
@@ -356,5 +357,6 @@ namespace System.Windows.Controls
                     _elementContent :
                     _elementText); 
         }
+#endif
     }
 } 

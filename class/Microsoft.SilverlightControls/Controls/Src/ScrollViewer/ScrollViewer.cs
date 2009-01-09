@@ -304,7 +304,7 @@ namespace System.Windows.Controls
             if (null != ElementScrollContentPresenter) 
             { 
                 ElementScrollContentPresenter.ViewerParent = this;
-#if !WPF 
+#if !WPF && false
                 if (_templatedParentHandlesScrolling)
                 {
                     // Convert from standalone mode to ListBox mode 

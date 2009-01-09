@@ -45,3 +45,8 @@ So far the following properties were found
 	* Thumb.IsFocusedProperty
 which all throws InvalidOperationException when SetValue is used from
 use code (but obviously the runtime can change those values).
+
+notes: 
+* MediaElement has a bunch of getter only, DP-backed, properties
+* Multiscale[Sub]Image.AspectRatio only have getters
+* ScrollViewer has a bunch of getter only, DP-backed, properties

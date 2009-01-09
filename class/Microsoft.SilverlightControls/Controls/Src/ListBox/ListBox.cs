@@ -34,7 +34,7 @@ namespace System.Windows.Controls
     /// Control that implements a list of selectable items. 
     /// </summary> 
     [TemplatePart(Name = ListBox.ElementScrollViewerName, Type = typeof(ScrollViewer))]
-    public class ListBox : System.Windows.Controls.ItemsControl 
+    public class ListBox : System.Windows.Controls.Primitives.Selector
     {
         /// <summary>
         /// Gets or sets the index of the first item in the current selection 

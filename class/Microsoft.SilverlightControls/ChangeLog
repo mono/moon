@@ -1,3 +1,11 @@
+2009-01-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Controls/Src/ContentControl/ContentPresenter.cs,
+	* Controls/Src/ListBox/ListBox.cs,
+	* Controls/Src/ListBox/ListBoxItem.cs,
+	* Controls/Src/ScrollViewer/ScrollViewer.cs: Fix API to match Sl2
+	* README.MOON: Add a few more read-only properties candidates.
+
 2009-01-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* RuntimeControls/SilverlightControls/Slider.cs,
