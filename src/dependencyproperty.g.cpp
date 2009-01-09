@@ -1859,6 +1859,19 @@ GeometryGroup::SetFillRule (FillRule value)
 	SetValue (GeometryGroup::FillRuleProperty, Value (value));
 }
 
+Brush *
+Glyphs::GetFill ()
+{
+	Value *value = GetValue (Glyphs::FillProperty);
+	return value ? value->AsBrush () : NULL;
+}
+
+void
+Glyphs::SetFill (Brush * value)
+{
+	SetValue (Glyphs::FillProperty, Value (value));
+}
+
 double
 Glyphs::GetFontRenderingEmSize ()
 {

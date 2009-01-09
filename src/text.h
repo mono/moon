@@ -340,7 +340,7 @@ class Glyphs : public FrameworkElement {
 	virtual ~Glyphs ();
 	
  public:
- 	/* @PropertyType=Brush */
+ 	/* @PropertyType=Brush,GenerateAccessors */
 	static DependencyProperty *FillProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *FontRenderingEmSizeProperty;
@@ -360,7 +360,7 @@ class Glyphs : public FrameworkElement {
 	/* @GenerateCBinding,GeneratePInvoke */
 	Glyphs ();
 	
-	virtual Type::Kind GetObjectType () { return Type::GLYPHS; };
+	virtual Type::Kind GetObjectType () { return Type::GLYPHS; }
 	
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
@@ -402,18 +402,18 @@ class Glyphs : public FrameworkElement {
 
 /* @Namespace=System.Windows.Input */
 class InputMethod : public DependencyObject {
-
+	
  protected:
 	virtual ~InputMethod () {}
 	
  public:
- 	/* @ManagedAccess=Internal,GeneratePInvoke,GenerateCBinding */
-	InputMethod () {}
-
- 	/* @PropertyType=bool,Attached */
+	/* @PropertyType=bool,Attached */
 	static DependencyProperty *IsInputMethodEnabledProperty;
 	
-	virtual Type::Kind GetObjectType () { return Type::INPUTMETHOD; };
+ 	/* @ManagedAccess=Internal,GeneratePInvoke,GenerateCBinding */
+	InputMethod () {}
+	
+	virtual Type::Kind GetObjectType () { return Type::INPUTMETHOD; }
 };
 
 #endif /* __TEXT_H__ */

@@ -1704,18 +1704,3 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args)
 	
 	NotifyListenersOfPropertyChange (args);
 }
-
-
-void
-Glyphs::SetFill (Brush *fill)
-{
-	SetValue (Glyphs::FillProperty, Value (fill));
-}
-
-Brush *
-Glyphs::GetFill ()
-{
-	Value *value = GetValue (Glyphs::FillProperty);
-	
-	return value ? value->AsBrush () : NULL;
-}

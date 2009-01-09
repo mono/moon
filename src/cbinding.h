@@ -27,6 +27,7 @@
 #include "frameworkelement.h"
 #include "geometry.h"
 #include "grid.h"
+#include "keyboard.h"
 #include "media.h"
 #include "mediaelement.h"
 #include "multiscaleimage.h"
