@@ -16,6 +16,11 @@
 	here anymore.
 	(TextBox::TextBox): Get rid of 'setvalue' state.
 
+2009-01-10  Geoff Norton  <gnorton@novell.com>
+
+	* media.cpp: surface->filename might be NULL, so we need to guard
+	against this in our cleanup accordingly.
+
 2009-01-09  Chris Toshok  <toshok@ximian.com>
 
 	* frameworkelement.cpp (FrameworkElement::SetValueWithErrorImpl):

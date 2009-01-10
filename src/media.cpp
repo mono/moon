@@ -298,9 +298,11 @@ Image::CleanupSurface ()
 	if (surface) {
 		surface->ref_count--;
 		if (surface->ref_count == 0) {
-			LOG_MEDIA ("removing %s\n", surface->filename);
-			g_hash_table_remove (surface_cache, surface->filename);
-			g_free (surface->filename);
+			if (surface->filename != NULL) {
+				LOG_MEDIA ("removing %s\n", surface->filename);
+				g_hash_table_remove (surface_cache, surface->filename);
+				g_free (surface->filename);
+			}
 			cairo_surface_destroy (surface->cairo);
 			if (surface->backing_pixbuf)
 				g_object_unref (surface->backing_pixbuf);
@@ -481,7 +483,7 @@ Image::DownloaderComplete ()
 	else
 		uri = g_strdup (downloader->GetDownloadedFilename (part_name));
 
-	if (!surface || strcmp (uri, surface->filename)) {
+	if (surface == NULL || (surface->filename == NULL || strcmp (uri, surface->filename))) {
 		CleanupSurface ();
 
 		if (!CreateSurface (uri)) {
