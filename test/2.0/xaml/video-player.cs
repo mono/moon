@@ -96,8 +96,8 @@ public class VideoPlayer : Canvas {
 		Rectangle r = new Rectangle ();
 		r.Width = 4;
 		r.Height = 10;
-		r.SetValue<double>(Canvas.TopProperty, 3.5);
-		r.SetValue<double>(Canvas.LeftProperty, 2);
+		Canvas.SetTop (r, 3.5);
+		Canvas.SetLeft (r, 2);
 		r.Fill = new SolidColorBrush(Colors.Red);
 		r.Stroke = new SolidColorBrush(Colors.Black);
 		play.Children.Add (r);
@@ -105,8 +105,8 @@ public class VideoPlayer : Canvas {
 		r = new Rectangle ();
 		r.Width = 4;
 		r.Height = 10;
-		r.SetValue<double>(Canvas.TopProperty, 3.5);
-		r.SetValue<double>(Canvas.LeftProperty, 9);
+		Canvas.SetTop (r, 3.5);
+		Canvas.SetLeft(r, 9);
 		r.Fill = new SolidColorBrush(Colors.Red);
 		r.Stroke = new SolidColorBrush(Colors.Black);
 		play.Children.Add (r);
