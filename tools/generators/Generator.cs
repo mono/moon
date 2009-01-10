@@ -613,7 +613,8 @@ class Generator {
 				if (is_attached)
 					text.Append ("DependencyObject *obj, ");
 				text.Append (prop_type_str);
-				text.Append (' ');
+				if (prop_type.Name != "char*")
+					text.Append (' ');
 				if (!nullable_setter && (prop_type.IsClass || prop_type.IsStruct))
 					text.Append ('*');
 				text.AppendLine ("value)");
