@@ -100,7 +100,6 @@ class TextBoxModelChangedEventArgs : public RoutedEventArgs {
  public:
 	PropertyChangedEventArgs *property;
 	TextBoxModelChangeType changed;
-	PropertyChangedEventArgs *args;
 	
 	TextBoxModelChangedEventArgs (TextBoxModelChangeType changed, PropertyChangedEventArgs *property = NULL)
 	{
@@ -122,7 +121,7 @@ class TextBoxDynamicPropertyValueProvider;
 /* @CallInitialize */
 class TextBox : public Control {
 	friend class TextBoxDynamicPropertyValueProvider;
-
+	
 	TextFontDescription *font;
 	TextSelection selection;
 	TextBuffer *buffer;
@@ -130,7 +129,6 @@ class TextBox : public Control {
 	int cursor;
 	
 	int selection_changed:1;
-	int setvalue:1;
 	
 	static void key_down (EventObject *sender, EventArgs *args, void *closure);
 	static void key_up (EventObject *sender, EventArgs *args, void *closure);

@@ -268,34 +268,41 @@ class TextBuffer {
 };
 
 
-class TextBoxDynamicPropertyValueProvider : public PropertyValueProvider {
-public:
-	TextBoxDynamicPropertyValueProvider (DependencyObject *obj) : PropertyValueProvider (obj) { selection = NULL; selection_value = NULL; }
-	virtual ~TextBoxDynamicPropertyValueProvider () { g_free (selection); delete selection_value; }
+//
+// TextBoxDynamicPropertyValueProvider
+//
 
-	virtual Value* GetPropertyValue (DependencyProperty *property)
+class TextBoxDynamicPropertyValueProvider : public PropertyValueProvider {
+	Value *selection_value;
+	
+ public:
+	TextBoxDynamicPropertyValueProvider (DependencyObject *obj) : PropertyValueProvider (obj)
+	{
+		selection_value = NULL;
+	}
+	
+	virtual ~TextBoxDynamicPropertyValueProvider ()
+	{
+		delete selection_value;
+	}
+	
+	virtual Value *GetPropertyValue (DependencyProperty *property)
 	{
 		if (property != TextBox::SelectedTextProperty)
 			return NULL;
-
-		TextBox *tb = (TextBox*)obj;
+		
+		TextBox *tb = (TextBox *) obj;
+		char *selection;
+		
 		if (tb->selection_changed) {
-			if (selection) {
-				g_free (selection);
-				delete selection_value;
-			}
-
+			delete selection_value;
 			selection = g_ucs4_to_utf8 (tb->buffer->text + tb->selection.start, tb->selection.length, NULL, NULL, NULL);
+			selection_value = new Value (selection, true);
 			tb->selection_changed = false;
-
-			selection_value = new Value (selection);
 		}
-
+		
 		return selection_value;
 	}
-private:
-	Value *selection_value;
-	char *selection;
 };
 
 
@@ -306,7 +313,7 @@ private:
 TextBox::TextBox ()
 {
 	providers[PropertyPrecedence_DynamicValue] = new TextBoxDynamicPropertyValueProvider (this);
-
+	
 	AddHandler (UIElement::KeyDownEvent, TextBox::key_down, this);
 	AddHandler (UIElement::KeyUpEvent, TextBox::key_up, this);
 	
@@ -324,7 +331,6 @@ TextBox::TextBox ()
 	selection.length = 0;
 	selection.start = 0;
 	selection_changed = false;
-	setvalue = true;
 	maxlen = 0;
 	cursor = 0;
 }
@@ -492,6 +498,9 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 	
 	if ((c = args->GetUnicode ())) {
 		// normal character key
+		if ((c == '\n') && !GetAcceptsReturn ())
+			return;
+		
 		if (selection.length > 0) {
 			// replace the currently selected text
 			buffer->Replace (selection.start, selection.length, &c, 1);
@@ -627,40 +636,34 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		// FIXME: What happens if the current buffer length is > MaxLength?
 		maxlen = args->new_value->AsInt32 ();
 	} else if (args->property == TextBox::SelectedTextProperty) {
-		if (setvalue) {
-			const char *str = args->new_value ? args->new_value->AsString () : "";
-			gunichar *text;
-			glong textlen;
-			
-			// FIXME: is the cursor/selection updating logic correct?
-			
-			text = g_utf8_to_ucs4_fast (str, -1, &textlen);
-			if (selection.length > 0) {
-				// replace the currently selected text
-				buffer->Replace (selection.start, selection.length, text, textlen);
-				cursor = selection.start + textlen;
-				ClearSelection ();
-			} else {
-				// insert the text at the cursor position
-				buffer->Insert (cursor, text, textlen);
-				cursor += textlen;
-			}
-			
-			changed = TextBoxModelChangedText;
-			g_free (text);
+		const char *str = args->new_value ? args->new_value->AsString () : "";
+		gunichar *text;
+		glong textlen;
+		
+		// FIXME: is the cursor/selection updating logic correct?
+		
+		text = g_utf8_to_ucs4_fast (str, -1, &textlen);
+		if (selection.length > 0) {
+			// replace the currently selected text
+			buffer->Replace (selection.start, selection.length, text, textlen);
+			cursor = selection.start + textlen;
+			ClearSelection ();
+		} else {
+			// insert the text at the cursor position
+			buffer->Insert (cursor, text, textlen);
+			cursor += textlen;
 		}
+		
+		changed = TextBoxModelChangedText;
+		g_free (text);
 	} else if (args->property == TextBox::SelectionStartProperty) {
 		selection.start = args->new_value->AsInt32 ();
-		if (setvalue) {
-			changed = TextBoxModelChangedSelection;
-			selection_changed = true;
-		}
+		changed = TextBoxModelChangedSelection;
+		selection_changed = true;
 	} else if (args->property == TextBox::SelectionLengthProperty) {
 		selection.length = args->new_value->AsInt32 ();
-		if (setvalue) {
-			changed = TextBoxModelChangedSelection;
-			selection_changed = true;
-		}
+		changed = TextBoxModelChangedSelection;
+		selection_changed = true;
 	} else if (args->property == TextBox::SelectionBackgroundProperty) {
 		if (!(selection.background = args->new_value ? args->new_value->AsBrush () : NULL))
 			selection.background = default_selection_background ();
@@ -759,12 +762,8 @@ TextBox::OnApplyTemplate ()
 void
 TextBox::ClearSelection ()
 {
-	setvalue = false;
-	SetValue (TextBox::SelectionLengthProperty, Value ((int) 0));
-	SetValue (TextBox::SelectionStartProperty, Value ((int) 0));
-	SetValue (TextBox::SelectedTextProperty, Value (""));
-	selection_changed = false;
-	setvalue = true;
+	SetSelectionLength (0);
+	SetSelectionStart (0);
 }
 
 void
@@ -773,8 +772,8 @@ TextBox::Select (int start, int length)
 	if (start < 0 || start > buffer->len || start + length > buffer->len)
 		return;
 	
-	SetSelectionStart (start);
 	SetSelectionLength (length);
+	SetSelectionStart (start);
 }
 
 void

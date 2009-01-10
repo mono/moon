@@ -1,3 +1,21 @@
+2009-01-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* value.cpp (Value::Value): the const char* ctor now takes a bool
+	argument specifying whether to take ownership of the string
+	buffer.
+
+	* textbox.cpp (class TextBoxDynamicPropertyValueProvider): We
+	don't need to keep a char* selection, we only need it temporarily
+	while creating the Value*.
+	(TextBox::OnKeyDown): Check for AcceptsReturn when Enter is
+	pressed.
+	(TextBox::ClearSelection): Don't set the TextProperty value
+	anymore. Also don't bother with the setvalue state variable
+	anymore.
+	(TextBox::OnPropertyChanged): Don't worry about setvalue state
+	here anymore.
+	(TextBox::TextBox): Get rid of 'setvalue' state.
+
 2009-01-09  Chris Toshok  <toshok@ximian.com>
 
 	* frameworkelement.cpp (FrameworkElement::SetValueWithErrorImpl):

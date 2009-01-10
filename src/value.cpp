@@ -258,11 +258,12 @@ Value::Value (KeyTime keytime)
 	*u.keytime = KeyTime (keytime);
 }
 
-Value::Value (const char* s)
+Value::Value (const char *s, bool take)
 {
 	Init ();
 	k = Type::STRING;
-	u.s= g_strdup (s);
+	
+	u.s = take ? (char *) s : g_strdup (s);
 }
 
 Value::Value (GridLength grid_length)

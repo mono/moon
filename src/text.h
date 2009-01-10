@@ -133,7 +133,7 @@ class TextBlockDynamicPropertyValueProvider;
 /* @Namespace=System.Windows.Controls */
 class TextBlock : public FrameworkElement {
 	friend class TextBlockDynamicPropertyValueProvider;
-
+	
 	TextFontDescription *font;
 	Downloader *downloader;
 	TextLayout *layout;
@@ -154,7 +154,7 @@ class TextBlock : public FrameworkElement {
 	{
 		double actual = GetActualWidth ();
 		double width = GetWidth ();
-
+		
 		if (isnan (width))
 			return actual;
 		

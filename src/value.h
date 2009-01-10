@@ -249,7 +249,7 @@ public:
 	Value (GridLength grid_length);
 	Value (Thickness thickness);
 	Value (CornerRadius radius);
-	Value (const char *s);
+	Value (const char *s, bool take = false);
 	Value (Point *points, int count);
 	Value (double *values, int count);
 	Value (Type::Kind, void *npobj);

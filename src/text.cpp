@@ -134,55 +134,67 @@ Inline::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, P
 
 
 //
-// TextBlock
+// TextBlockDynamicPropertyValueProvider
 //
 
 class TextBlockDynamicPropertyValueProvider : public PropertyValueProvider {
-public:
-	TextBlockDynamicPropertyValueProvider (DependencyObject *obj) : PropertyValueProvider (obj) { actual_height_value = NULL; actual_width_value = NULL; }
-	virtual ~TextBlockDynamicPropertyValueProvider () { delete actual_height_value; delete actual_width_value; }
-
-	virtual Value* GetPropertyValue (DependencyProperty *property)
+	Value *actual_height_value;
+	Value *actual_width_value;
+	
+ public:
+	TextBlockDynamicPropertyValueProvider (DependencyObject *obj) : PropertyValueProvider (obj)
+	{
+		actual_height_value = NULL;
+		actual_width_value = NULL;
+	}
+	
+	virtual ~TextBlockDynamicPropertyValueProvider ()
+	{
+		delete actual_height_value;
+		delete actual_width_value;
+	}
+	
+	virtual Value *GetPropertyValue (DependencyProperty *property)
 	{
 		if (property != TextBlock::ActualHeightProperty && property != TextBlock::ActualWidthProperty)
 			return NULL;
-
-		TextBlock *tb = (TextBlock*)obj;
+		
+		TextBlock *tb = (TextBlock *) obj;
 		if (tb->dirty) {
-			delete actual_height_value; actual_height_value = NULL;
-			delete actual_width_value; actual_width_value = NULL;
+			delete actual_height_value;
+			actual_height_value = NULL;
+			delete actual_width_value;
+			actual_width_value = NULL;
 			tb->CalcActualWidthHeight (NULL);
 		}
-
+		
 		if (property == TextBlock::ActualHeightProperty) {
 			if (!actual_height_value)
 				actual_height_value = new Value (tb->actual_height);
 			return actual_height_value;
-		}
-		else {
+		} else {
 			if (!actual_width_value)
 				actual_width_value = new Value (tb->actual_width);
 			return actual_width_value;
 		}
 	}
-
-private:
-	Value *actual_height_value;
-	Value *actual_width_value;
 };
+
+
+//
+// TextBlock
+//
 
 TextBlock::TextBlock ()
 {
 	providers[PropertyPrecedence_DynamicValue] = new TextBlockDynamicPropertyValueProvider (this);
-
+	
 	downloader = NULL;
 	
-	dirty = true;
-	
+	layout = new TextLayout ();
 	actual_height = 0.0;
 	actual_width = 0.0;
-	
-	layout = new TextLayout ();
+	dirty = true;
 	
 	font = new TextFontDescription ();
 	font->SetFamily (TEXTBLOCK_FONT_FAMILY);

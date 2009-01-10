@@ -1232,7 +1232,7 @@ Control::GetFontFamily ()
 }
 
 void
-Control::SetFontFamily (const char * value)
+Control::SetFontFamily (const char *value)
 {
 	SetValue (Control::FontFamilyProperty, Value (value));
 }
@@ -1402,7 +1402,7 @@ DeepZoomImageTileSource::GetUriSource ()
 }
 
 void
-DeepZoomImageTileSource::SetUriSource (const char * value)
+DeepZoomImageTileSource::SetUriSource (const char *value)
 {
 	SetValue (DeepZoomImageTileSource::UriSourceProperty, Value (value));
 }
@@ -1415,7 +1415,7 @@ DependencyObject::GetName ()
 }
 
 void
-DependencyObject::SetName (const char * value)
+DependencyObject::SetName (const char *value)
 {
 	SetValue (DependencyObject::NameProperty, Value (value));
 }
@@ -1658,7 +1658,7 @@ EventTrigger::GetRoutedEvent ()
 }
 
 void
-EventTrigger::SetRoutedEvent (const char * value)
+EventTrigger::SetRoutedEvent (const char *value)
 {
 	SetValue (EventTrigger::RoutedEventProperty, Value (value));
 }
@@ -1893,7 +1893,7 @@ Glyphs::GetFontUri ()
 }
 
 void
-Glyphs::SetFontUri (const char * value)
+Glyphs::SetFontUri (const char *value)
 {
 	SetValue (Glyphs::FontUriProperty, Value (value));
 }
@@ -1906,7 +1906,7 @@ Glyphs::GetIndices ()
 }
 
 void
-Glyphs::SetIndices (const char * value)
+Glyphs::SetIndices (const char *value)
 {
 	SetValue (Glyphs::IndicesProperty, Value (value));
 }
@@ -1958,7 +1958,7 @@ Glyphs::GetUnicodeString ()
 }
 
 void
-Glyphs::SetUnicodeString (const char * value)
+Glyphs::SetUnicodeString (const char *value)
 {
 	SetValue (Glyphs::UnicodeStringProperty, Value (value));
 }
@@ -2162,7 +2162,7 @@ ImageBrush::GetImageSource ()
 }
 
 void
-ImageBrush::SetImageSource (const char * value)
+ImageBrush::SetImageSource (const char *value)
 {
 	SetValue (ImageBrush::ImageSourceProperty, Value (value));
 }
@@ -2494,7 +2494,7 @@ MediaAttribute::GetValue ()
 }
 
 void
-MediaAttribute::SetValue (const char * value)
+MediaAttribute::SetValue (const char *value)
 {
 	DependencyObject::SetValue (MediaAttribute::ValueProperty, Value (value));
 }
@@ -2659,7 +2659,7 @@ MediaElement::GetCurrentState ()
 }
 
 void
-MediaElement::SetCurrentState (const char * value)
+MediaElement::SetCurrentState (const char *value)
 {
 	SetValue (MediaElement::CurrentStateProperty, Value (value));
 }
@@ -3031,7 +3031,7 @@ PasswordBox::GetPassword ()
 }
 
 void
-PasswordBox::SetPassword (const char * value)
+PasswordBox::SetPassword (const char *value)
 {
 	SetValue (PasswordBox::PasswordProperty, Value (value));
 }
@@ -3603,7 +3603,7 @@ Run::GetText ()
 }
 
 void
-Run::SetText (const char * value)
+Run::SetText (const char *value)
 {
 	SetValue (Run::TextProperty, Value (value));
 }
@@ -3956,7 +3956,7 @@ Storyboard::GetTargetName (DependencyObject *obj)
 }
 
 void
-Storyboard::SetTargetName (DependencyObject *obj, const char * value)
+Storyboard::SetTargetName (DependencyObject *obj, const char *value)
 {
 	if (!obj) return;
 	obj->SetValue (Storyboard::TargetNameProperty, Value (value));
@@ -3971,7 +3971,7 @@ Storyboard::GetTargetProperty (DependencyObject *obj)
 }
 
 void
-Storyboard::SetTargetProperty (DependencyObject *obj, const char * value)
+Storyboard::SetTargetProperty (DependencyObject *obj, const char *value)
 {
 	if (!obj) return;
 	obj->SetValue (Storyboard::TargetPropertyProperty, Value (value));
@@ -4102,7 +4102,7 @@ TextBlock::GetFontFamily ()
 }
 
 void
-TextBlock::SetFontFamily (const char * value)
+TextBlock::SetFontFamily (const char *value)
 {
 	SetValue (TextBlock::FontFamilyProperty, Value (value));
 }
@@ -4259,7 +4259,7 @@ TextBlock::GetText ()
 }
 
 void
-TextBlock::SetText (const char * value)
+TextBlock::SetText (const char *value)
 {
 	SetValue (TextBlock::TextProperty, Value (value));
 }
@@ -4337,7 +4337,7 @@ TextBox::GetSelectedText ()
 }
 
 void
-TextBox::SetSelectedText (const char * value)
+TextBox::SetSelectedText (const char *value)
 {
 	SetValue (TextBox::SelectedTextProperty, Value (value));
 }
@@ -4415,7 +4415,7 @@ TextBox::GetText ()
 }
 
 void
-TextBox::SetText (const char * value)
+TextBox::SetText (const char *value)
 {
 	SetValue (TextBox::TextProperty, Value (value));
 }
@@ -4558,7 +4558,7 @@ TimelineMarker::GetText ()
 }
 
 void
-TimelineMarker::SetText (const char * value)
+TimelineMarker::SetText (const char *value)
 {
 	SetValue (TimelineMarker::TextProperty, Value (value));
 }
@@ -4584,7 +4584,7 @@ TimelineMarker::GetType ()
 }
 
 void
-TimelineMarker::SetType (const char * value)
+TimelineMarker::SetType (const char *value)
 {
 	SetValue (TimelineMarker::TypeProperty, Value (value));
 }
@@ -4741,7 +4741,7 @@ UIElement::GetTag ()
 }
 
 void
-UIElement::SetTag (const char * value)
+UIElement::SetTag (const char *value)
 {
 	SetValue (UIElement::TagProperty, Value (value));
 }
@@ -4793,7 +4793,7 @@ VideoBrush::GetSourceName ()
 }
 
 void
-VideoBrush::SetSourceName (const char * value)
+VideoBrush::SetSourceName (const char *value)
 {
 	SetValue (VideoBrush::SourceNameProperty, Value (value));
 }
