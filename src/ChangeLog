@@ -1,5 +1,9 @@
 2009-01-09  Geoff Norton  <gnorton@novell.com>
 
+	* media.cpp: Remove a unnecessary synthesized PropertyChangedEvent
+
+2009-01-09  Geoff Norton  <gnorton@novell.com>
+
 	* media.cpp: Ensure that we actually do change the value of the 
 	Source property when we call MediaBase::SetSource (char*)
 

@@ -211,8 +211,6 @@ MediaBase::SetSource (const char *uri)
 {
 	Value v(uri);
 	SetValue (MediaBase::SourceProperty, &v);
-	PropertyChangedEventArgs args (MediaBase::SourceProperty, NULL, &v);
-	OnPropertyChanged (&args);
 }
 
 
