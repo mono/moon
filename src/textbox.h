@@ -85,11 +85,10 @@ enum TextBoxModelChangeType {
 	TextBoxModelChangedCursorPosition,
 	TextBoxModelChangedTextAlignment,
 	TextBoxModelChangedTextWrapping,
-	TextBoxModelChangedSelection,
 	TextBoxModelChangedBrush,
-	TextBoxModelChangedFont,
-	TextBoxModelChangedText
+	TextBoxModelChangedFont
 };
+
 
 /* @SilverlightVersion="2" */
 /* @Namespace=None */
@@ -129,6 +128,7 @@ class TextBox : public Control {
 	int cursor;
 	
 	int selection_changed:1;
+	int emit:1;
 	
 	static void key_down (EventObject *sender, EventArgs *args, void *closure);
 	static void key_up (EventObject *sender, EventArgs *args, void *closure);
@@ -136,14 +136,14 @@ class TextBox : public Control {
 	void OnKeyDown (KeyEventArgs *args);
 	void OnKeyUp (KeyEventArgs *args);
 	
-	TextBoxModelChangeType CursorPageDown (GdkModifierType modifiers);
-	TextBoxModelChangeType CursorPageUp (GdkModifierType modifiers);
-	TextBoxModelChangeType CursorHome (GdkModifierType modifiers);
-	TextBoxModelChangeType CursorEnd (GdkModifierType modifiers);
-	TextBoxModelChangeType CursorRight (GdkModifierType modifiers);
-	TextBoxModelChangeType CursorLeft (GdkModifierType modifiers);
-	TextBoxModelChangeType CursorDown (GdkModifierType modifiers);
-	TextBoxModelChangeType CursorUp (GdkModifierType modifiers);
+	int CursorPageDown (GdkModifierType modifiers);
+	int CursorPageUp (GdkModifierType modifiers);
+	int CursorHome (GdkModifierType modifiers);
+	int CursorEnd (GdkModifierType modifiers);
+	int CursorRight (GdkModifierType modifiers);
+	int CursorLeft (GdkModifierType modifiers);
+	int CursorDown (GdkModifierType modifiers);
+	int CursorUp (GdkModifierType modifiers);
 	
 	void ClearSelection ();
 	
@@ -264,21 +264,26 @@ class TextBox : public Control {
 /* @SilverlightVersion="2" */
 /* @Namespace=Microsoft.Internal */
 class TextBoxView : public FrameworkElement {
+	glong blink_timeout;
 	TextLayout *layout;
+	Rect cursor;
+	
+	int cursor_visible:1;
 	int focused:1;
 	int dirty:1;
-	
-	glong blink_timeout;
-	bool cursor_visible;
-	Rect cursor;
 	
 	static void focus_out (EventObject *sender, EventArgs *args, gpointer closure);
 	static void focus_in (EventObject *sender, EventArgs *args, gpointer closure);
 	void OnFocusOut (EventArgs *args);
 	void OnFocusIn (EventArgs *args);
 	
+	static void selection_changed (EventObject *sender, EventArgs *args, gpointer closure);
 	static void model_changed (EventObject *sender, EventArgs *args, gpointer closure);
+	static void text_changed (EventObject *sender, EventArgs *args, gpointer closure);
+	
+	void OnSelectionChanged (SelectionChangedEventArgs *args);
 	void OnModelChanged (TextBoxModelChangedEventArgs *args);
+	void OnTextChanged (TextChangedEventArgs *args);
 	
 	static gboolean blink (void *user_data);
 	void ConnectBlinkTimeout (guint multiplier);

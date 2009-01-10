@@ -328,9 +328,10 @@ TextBox::TextBox ()
 	
 	selection.background = default_selection_background ();
 	selection.foreground = default_selection_foreground ();
+	selection_changed = false;
 	selection.length = 0;
 	selection.start = 0;
-	selection_changed = false;
+	emit = true;
 	maxlen = 0;
 	cursor = 0;
 }
@@ -344,35 +345,40 @@ TextBox::~TextBox ()
 	delete font;
 }
 
-TextBoxModelChangeType
+#define CURSOR_POSITION_CHANGED (1 << 0)
+#define SELECTION_CHANGED       (1 << 1)
+#define CONTENT_CHANGED         (1 << 2)
+#define NOTHING_CHANGED         (0)
+
+int
 TextBox::CursorPageDown (GdkModifierType modifiers)
 {
 	// FIXME: implement me
-	return TextBoxModelChangedNothing;
+	return NOTHING_CHANGED;
 }
 
-TextBoxModelChangeType
+int
 TextBox::CursorPageUp (GdkModifierType modifiers)
 {
 	// FIXME: implement me
-	return TextBoxModelChangedNothing;
+	return NOTHING_CHANGED;
 }
 
-TextBoxModelChangeType
+int
 TextBox::CursorHome (GdkModifierType modifiers)
 {
 	// FIXME: implement me
-	return TextBoxModelChangedNothing;
+	return NOTHING_CHANGED;
 }
 
-TextBoxModelChangeType
+int
 TextBox::CursorEnd (GdkModifierType modifiers)
 {
 	// FIXME: implement me
-	return TextBoxModelChangedNothing;
+	return NOTHING_CHANGED;
 }
 
-TextBoxModelChangeType
+int
 TextBox::CursorRight (GdkModifierType modifiers)
 {
 	if (modifiers & GDK_SHIFT_MASK) {
@@ -400,25 +406,25 @@ TextBox::CursorRight (GdkModifierType modifiers)
 			
 			cursor++;
 			
-			return TextBoxModelChangedSelection;
+			return CURSOR_POSITION_CHANGED | SELECTION_CHANGED;
 		}
 	} else if (selection.length > 0) {
 		// clear the selection, place cursor at the end of the selection
 		cursor = selection.start + selection.length;
 		ClearSelection ();
 		
-		return TextBoxModelChangedSelection;
+		return CURSOR_POSITION_CHANGED | SELECTION_CHANGED;
 	} else if (cursor < buffer->len) {
 		// move the cursor one character to the right
 		cursor++;
 		
-		return TextBoxModelChangedCursorPosition;
+		return CURSOR_POSITION_CHANGED;
 	}
 	
-	return TextBoxModelChangedNothing;
+	return NOTHING_CHANGED;
 }
 
-TextBoxModelChangeType
+int
 TextBox::CursorLeft (GdkModifierType modifiers)
 {
 	if (modifiers & GDK_SHIFT_MASK) {
@@ -445,44 +451,44 @@ TextBox::CursorLeft (GdkModifierType modifiers)
 			
 			cursor--;
 			
-			return TextBoxModelChangedSelection;
+			return CURSOR_POSITION_CHANGED | SELECTION_CHANGED;
 		}
 	} else if (selection.length > 0) {
 		// clear the selection, place cursor at the end of the selection
 		cursor = selection.start + selection.length;
 		ClearSelection ();
 		
-		return TextBoxModelChangedSelection;
+		return CURSOR_POSITION_CHANGED | SELECTION_CHANGED;
 	} else if (cursor > 0) {
 		// move the cursor one character to the left
 		cursor--;
 		
-		return TextBoxModelChangedCursorPosition;
+		return CURSOR_POSITION_CHANGED;
 	}
 	
-	return TextBoxModelChangedNothing;
+	return NOTHING_CHANGED;
 }
 
-TextBoxModelChangeType
+int
 TextBox::CursorDown (GdkModifierType modifiers)
 {
 	// FIXME: implement me
-	return TextBoxModelChangedNothing;
+	return NOTHING_CHANGED;
 }
 
-TextBoxModelChangeType
+int
 TextBox::CursorUp (GdkModifierType modifiers)
 {
 	// FIXME: implement me
-	return TextBoxModelChangedNothing;
+	return NOTHING_CHANGED;
 }
 
 void
 TextBox::OnKeyDown (KeyEventArgs *args)
 {
 	GdkModifierType modifiers = (GdkModifierType) args->GetModifiers ();
-	TextBoxModelChangeType changed = TextBoxModelChangedNothing;
 	guint key = args->GetKeyVal ();
+	int changed = NOTHING_CHANGED;
 	gunichar c;
 	
 	if (args->IsModifier ())
@@ -512,28 +518,28 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 			cursor++;
 		}
 		
-		changed = TextBoxModelChangedText;
+		changed = CONTENT_CHANGED | CURSOR_POSITION_CHANGED | SELECTION_CHANGED;
 	} else {
 		switch (key) {
 		case GDK_BackSpace:
 		case GDK_Delete:
 			if (selection.length > 0) {
 				// cut the currently selected text
+				changed = CONTENT_CHANGED | CURSOR_POSITION_CHANGED | SELECTION_CHANGED;
 				buffer->Cut (selection.start, selection.length);
-				changed = TextBoxModelChangedText;
 				cursor = selection.start;
 				ClearSelection ();
 			} else if (key == GDK_BackSpace) {
 				if (cursor > 0) {
 					// cut the char before the cursor position
-					changed = TextBoxModelChangedText;
+					changed = CONTENT_CHANGED | CURSOR_POSITION_CHANGED;
 					buffer->Cut (cursor - 1, 1);
 					cursor--;
 				}
 			} else {
 				if (buffer->len > cursor) {
 					// cut the char after the cursor position
-					changed = TextBoxModelChangedText;
+					changed = CONTENT_CHANGED;
 					buffer->Cut (cursor, 1);
 				}
 			}
@@ -561,10 +567,6 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 		case GDK_KP_Left:
 		case GDK_Left:
 			changed = CursorLeft (modifiers);
-			if (cursor > 0) {
-				changed = TextBoxModelChangedCursorPosition;
-				cursor--;
-			}
 			break;
 		case GDK_KP_Down:
 		case GDK_Down:
@@ -580,8 +582,20 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 		}
 	}
 	
-	if (changed != TextBoxModelChangedNothing)
-		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (changed));
+	if (changed & CONTENT_CHANGED)
+		Emit (TextChangedEvent, new TextChangedEventArgs ());
+	
+	if (changed & SELECTION_CHANGED) {
+		// FIXME: need to set the added/remove items?
+		Emit (TextChangedEvent, new SelectionChangedEventArgs ());
+	}
+	
+	// only bother emitting this event if the cursor position is
+	// the only thing that changed. If either Text or Selection
+	// changed, then TextBoxView has already been notified that it
+	// needs to invalidate.
+	if (changed == CURSOR_POSITION_CHANGED)
+		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (TextBoxModelChangedCursorPosition));
 	
 	// FIXME: register a key repeat timeout?
 }
@@ -654,16 +668,21 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 			cursor += textlen;
 		}
 		
-		changed = TextBoxModelChangedText;
+		Emit (TextBox::TextChangedEvent, new TextChangedEventArgs ());
+		
 		g_free (text);
 	} else if (args->property == TextBox::SelectionStartProperty) {
 		selection.start = args->new_value->AsInt32 ();
-		changed = TextBoxModelChangedSelection;
 		selection_changed = true;
+		
+		if (emit)
+			Emit (TextBox::SelectionChangedEvent, new SelectionChangedEventArgs ());
 	} else if (args->property == TextBox::SelectionLengthProperty) {
 		selection.length = args->new_value->AsInt32 ();
-		changed = TextBoxModelChangedSelection;
 		selection_changed = true;
+		
+		if (emit)
+			Emit (TextBox::SelectionChangedEvent, new SelectionChangedEventArgs ());
 	} else if (args->property == TextBox::SelectionBackgroundProperty) {
 		if (!(selection.background = args->new_value ? args->new_value->AsBrush () : NULL))
 			selection.background = default_selection_background ();
@@ -681,10 +700,11 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		
 		text = g_utf8_to_ucs4_fast (str, -1, &textlen);
 		buffer->Replace (0, buffer->len, text, textlen);
-		changed = TextBoxModelChangedText;
 		ClearSelection ();
 		cursor = textlen;
 		g_free (text);
+		
+		Emit (TextBox::TextChangedEvent, new TextChangedEventArgs ());
 	} else if (args->property == TextBox::TextAlignmentProperty) {
 		changed = TextBoxModelChangedTextAlignment;
 	} else if (args->property == TextBox::TextWrappingProperty) {
@@ -762,8 +782,12 @@ TextBox::OnApplyTemplate ()
 void
 TextBox::ClearSelection ()
 {
+	emit = false;
 	SetSelectionLength (0);
 	SetSelectionStart (0);
+	emit = true;
+	
+	Emit (TextBox::SelectionChangedEvent, new SelectionChangedEventArgs ());
 }
 
 void
@@ -772,8 +796,12 @@ TextBox::Select (int start, int length)
 	if (start < 0 || start > buffer->len || start + length > buffer->len)
 		return;
 	
+	emit = false;
 	SetSelectionLength (length);
 	SetSelectionStart (start);
+	emit = true;
+	
+	Emit (TextBox::SelectionChangedEvent, new SelectionChangedEventArgs ());
 }
 
 void
@@ -975,6 +1003,41 @@ TextBoxView::Paint (cairo_t *cr)
 }
 
 void
+TextBoxView::selection_changed (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	((TextBoxView *) closure)->OnSelectionChanged ((SelectionChangedEventArgs *) args);
+}
+
+void
+TextBoxView::OnSelectionChanged (SelectionChangedEventArgs *args)
+{
+	// the selected region has changed, need to recalculate layout
+	if (focused)
+		BeginCursorBlink ();
+	
+	Invalidate ();
+}
+
+void
+TextBoxView::text_changed (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	((TextBoxView *) closure)->OnTextChanged ((TextChangedEventArgs *) args);
+}
+
+void
+TextBoxView::OnTextChanged (TextChangedEventArgs *args)
+{
+	// text has changed, need to recalculate layout
+	if (focused)
+		DelayCursorBlink ();
+	
+	dirty = true;
+	
+	UpdateBounds (true);
+	Invalidate ();
+}
+
+void
 TextBoxView::model_changed (EventObject *sender, EventArgs *args, gpointer closure)
 {
 	((TextBoxView *) closure)->OnModelChanged ((TextBoxModelChangedEventArgs *) args);
@@ -997,25 +1060,11 @@ TextBoxView::OnModelChanged (TextBoxModelChangedEventArgs *args)
 		// text wrapping changed, update our layout
 		dirty = layout->SetTextWrapping ((TextWrapping) args->property->new_value->AsInt32 ());
 		break;
-	case TextBoxModelChangedSelection:
-		// the selected region has changed, need to recalculate layout
-		if (focused)
-			BeginCursorBlink ();
-		
-		// FIXME: it'd be nice if we didn't have to re-layout when the selection changes.
-		dirty = true;
-		break;
 	case TextBoxModelChangedBrush:
 		// a brush has changed, no layout updates needed, we just need to re-render
 		break;
 	case TextBoxModelChangedFont:
 		// font changed, need to recalculate layout
-		dirty = true;
-		break;
-	case TextBoxModelChangedText:
-		// text has changed, need to recalculate layout
-		if (focused)
-			DelayCursorBlink ();
 		dirty = true;
 		break;
 	default:
@@ -1062,12 +1111,17 @@ TextBoxView::OnPropertyChanged (PropertyChangedEventArgs *args)
 	
 	if (args->property == TextBoxView::TextBoxProperty) {
 		// remove the event handler from the old textbox
-		if ((textbox = args->old_value ? args->old_value->AsTextBox () : NULL))
+		if ((textbox = args->old_value ? args->old_value->AsTextBox () : NULL)) {
+			textbox->RemoveHandler (TextBox::SelectionChangedEvent, TextBoxView::selection_changed, this);
 			textbox->RemoveHandler (TextBox::ModelChangedEvent, TextBoxView::model_changed, this);
+			textbox->RemoveHandler (TextBox::TextChangedEvent, TextBoxView::text_changed, this);
+		}
 		
 		// add the event handler to the new textbox
 		if ((textbox = args->new_value ? args->new_value->AsTextBox () : NULL)) {
+			textbox->AddHandler (TextBox::SelectionChangedEvent, TextBoxView::selection_changed, this);
 			textbox->AddHandler (TextBox::ModelChangedEvent, TextBoxView::model_changed, this);
+			textbox->AddHandler (TextBox::TextChangedEvent, TextBoxView::text_changed, this);
 			
 			// sync our layout hints state
 			layout->SetTextAlignment (textbox->GetTextAlignment ());

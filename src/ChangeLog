@@ -1,5 +1,19 @@
 2009-01-10  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.cpp (TextBox::OnKeyDown): Changed a bit. We need to emit
+	TextChangedEvent and SelectionChangedEvent. Don't combine those
+	into the ModelChangedEvent that is only meant for TextBoxView.
+	(TextBox::OnPropertyChanged): Emit TextChangedEvent and
+	SelectionChangedEvent appropriately.
+	(TextBoxView::OnSelectionChanged): New event callback handler.
+	(TextBoxView::OnTextChanged): Same.
+	(TextBoxView::OnModelChanged): Don't handle text/selection change
+	notification here anymore, because those 'change' enum types have
+	been dropped.
+	(TextBoxView::OnPropertyChanged): Need to listen to more events.
+
+2009-01-10  Jeffrey Stedfast  <fejj@novell.com>
+
 	* value.cpp (Value::Value): the const char* ctor now takes a bool
 	argument specifying whether to take ownership of the string
 	buffer.
