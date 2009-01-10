@@ -1,3 +1,7 @@
+2009-01-09  Chris Toshok  <toshok@ximian.com>
+
+	* Generator.cs: hack to ignore "friend class Foo".
+
 2009-01-09  Alan McGovern  <amcgovern@novell.com>
 
 	* Generator.cs: Make it possible to use validators with Nullable

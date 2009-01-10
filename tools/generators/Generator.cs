@@ -822,6 +822,11 @@ class Generator {
 				case "enum":
 					ParseEnum (parent, tokenizer);
 					continue;
+				case "friend":
+					tokenizer.Advance (true);
+					tokenizer.Advance (true);
+					tokenizer.Advance (true);
+					continue;
 				case "struct":
 				case "class":
 				case "union":
