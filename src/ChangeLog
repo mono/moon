@@ -1,5 +1,11 @@
 2009-01-09  Chris Toshok  <toshok@ximian.com>
 
+	* frameworkelement.cpp (FrameworkElement::SetValueWithErrorImpl):
+	oops.  we still need to seal the style if that's the thing we're
+	setting.
+
+2009-01-09  Chris Toshok  <toshok@ximian.com>
+
 	* Makefile.am (libmoon_include_headers): add provider.h
 	(libmoon_la_SOURCES): add provider.cpp
 

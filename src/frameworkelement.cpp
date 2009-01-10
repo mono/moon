@@ -193,6 +193,9 @@ FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 	else
 		result = UIElement::SetValueWithErrorImpl (property, value, error);
 
+	if (result && value && value->Is(Type::STYLE))
+		value->AsStyle()->Seal();
+
 	return result;
 }
 
