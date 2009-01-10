@@ -1,3 +1,7 @@
+2009-01-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin.cpp (moonlight_authors): Updated.
+
 2009-01-08  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin-class.cpp (MoonlightKeyEventArgsObject::GetProperty):
