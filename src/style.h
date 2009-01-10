@@ -23,10 +23,7 @@
 /* @ContentProperty="Setters" */
 /* @Namespace=System.Windows */
 class Style : public DependencyObject {
- protected:
-	virtual ~Style () { }
-	
- public:
+public:
   	/* @PropertyType=bool,DefaultValue=false,ManagedSetterAccess=Private,GenerateAccessors */
 	static DependencyProperty *IsSealedProperty;
  	/* @PropertyType=SetterBaseCollection,Access=Internal,ManagedFieldAccess=Private,ManagedAccess=Public,ManagedSetterAccess=Private,GenerateAccessors */
@@ -47,6 +44,11 @@ class Style : public DependencyObject {
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Seal ();
+
+	Value *GetPropertyValue (DependencyProperty *prop);
+
+protected:
+	virtual ~Style ();
 };
 
 //
@@ -55,10 +57,7 @@ class Style : public DependencyObject {
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
 class SetterBaseCollection : public DependencyObjectCollection {
- protected:
-	virtual ~SetterBaseCollection () { }
-	
- public:
+public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	SetterBaseCollection ();
 	
@@ -70,12 +69,20 @@ class SetterBaseCollection : public DependencyObjectCollection {
 	
 	virtual Type::Kind GetObjectType () { return Type::SETTERBASE_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::SETTERBASE; }
-	Style *style;
 
 	bool GetIsSealed();
 	void SetIsSealed(bool value);
 	
 	void Seal ();
+
+	void SetStyle (Style *style);
+
+protected:
+	virtual ~SetterBaseCollection () { }
+
+private:
+	Style *style;
+	bool ValidateSetter (Value *value, MoonError *error);
 };
 
 //

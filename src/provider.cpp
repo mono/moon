@@ -17,35 +17,17 @@
 #include "text.h"
 #include "style.h"
 
-PropertyValueProvider::PropertyValueProvider (DependencyObject *obj)
-{
-	this->obj = obj;
-}
-
-PropertyValueProvider::~PropertyValueProvider ()
-{
-}
-
-AnimationPropertyValueProvider::AnimationPropertyValueProvider (DependencyObject *obj)
-	: PropertyValueProvider (obj)
-{
-}
-
-AnimationPropertyValueProvider::~AnimationPropertyValueProvider ()
-{
-}
-
 Value*
 AnimationPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 {
-	// look up the Applier for this object/property and return the value
+	// look up the Applier/AnimationStorage for this object/property and return the value
 	return NULL;
 }
 
 LocalPropertyValueProvider::LocalPropertyValueProvider (DependencyObject *obj)
 	: PropertyValueProvider (obj)
 {
-	// XXX move the "DependencyObject::current_values" hash table here
+	// XXX maybe move the "DependencyObject::current_values" hash table here?
 }
 
 LocalPropertyValueProvider::~LocalPropertyValueProvider ()
@@ -74,22 +56,12 @@ StylePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 	if (!obj->Is(Type::FRAMEWORKELEMENT))
 		return NULL;
 
-#if notyet
-	// XXX doesn't exist yet
-	FrameworkElement *el = (FrameworkElement*)obj;
+	Value *style = obj->GetValueSkippingPrecedence (FrameworkElement::StyleProperty, PropertyPrecedence_Style);
 
-	return el->GetStyle()->GetValueForProperty (property);
-#endif
-	return NULL;
-}
+	if (!style)
+		return NULL;
 
-InheritedPropertyValueProvider::InheritedPropertyValueProvider (DependencyObject *obj)
-	: PropertyValueProvider (obj)
-{
-}
-
-InheritedPropertyValueProvider::~InheritedPropertyValueProvider ()
-{
+	return style->AsStyle()->GetPropertyValue (property);
 }
 
 Value*
@@ -107,7 +79,7 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 
 	DependencyProperty *parent_property = NULL;
 
-#define INHERIT(p) \
+#define INHERIT1(p) \
 	G_STMT_START { \
 	if (property == Control::p || \
 	    property == TextBlock::p || \
@@ -121,41 +93,30 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 	} \
 	} G_STMT_END
 
+#define INHERIT2(p) \
+	G_STMT_START { \
+	if (property == Inline::p) { \
+		switch (parent_kind) { \
+		case Type::TEXTBLOCK: parent_property = TextBlock::p; break; \
+		default:              parent_property = NULL; break; \
+		} \
+	} \
+	} G_STMT_END
 
-	INHERIT (ForegroundProperty);
-	INHERIT (FontFamilyProperty);
-	INHERIT (FontStyleProperty);
-	INHERIT (FontWeightProperty);
-	INHERIT (FontSizeProperty);
+
+	INHERIT1 (ForegroundProperty);
+	INHERIT1 (FontFamilyProperty);
+	INHERIT1 (FontStretchProperty);
+	INHERIT1 (FontStyleProperty);
+	INHERIT1 (FontWeightProperty);
+	INHERIT1 (FontSizeProperty);
+
+	INHERIT2 (TextDecorationsProperty);
 
 	if (parent_property)
 		return ui->GetVisualParent()->GetValue (parent_property);
 
 	return NULL;
-}
-
-NaturalMediaSizePropertyValueProvider::NaturalMediaSizePropertyValueProvider (DependencyObject *obj)
-	: PropertyValueProvider (obj)
-{
-}
-
-NaturalMediaSizePropertyValueProvider::~NaturalMediaSizePropertyValueProvider ()
-{
-}
-
-Value*
-NaturalMediaSizePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
-{
-	return NULL;
-}
-
-DefaultValuePropertyValueProvider::DefaultValuePropertyValueProvider (DependencyObject *obj)
-	: PropertyValueProvider (obj)
-{
-}
-
-DefaultValuePropertyValueProvider::~DefaultValuePropertyValueProvider ()
-{
 }
 
 Value*

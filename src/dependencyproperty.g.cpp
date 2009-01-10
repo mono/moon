@@ -179,7 +179,7 @@ dependency_property_g_init (void)
 	Inline::FontStretchProperty = DependencyProperty::Register (Type::INLINE, "FontStretch", new Value (TEXTBLOCK_FONT_STRETCH));
 	Inline::FontStyleProperty = DependencyProperty::Register (Type::INLINE, "FontStyle", new Value (TEXTBLOCK_FONT_STYLE));
 	Inline::FontWeightProperty = DependencyProperty::Register (Type::INLINE, "FontWeight", new Value (TEXTBLOCK_FONT_WEIGHT));
-	Inline::ForegroundProperty = DependencyProperty::Register (Type::INLINE, "Foreground", Type::BRUSH);
+	Inline::ForegroundProperty = DependencyProperty::Register (Type::INLINE, "Foreground", new Value (new SolidColorBrush("black")));
 	Inline::LanguageProperty = DependencyProperty::RegisterFull (Type::INLINE, "Language", new Value ("en-US"), Type::STRING, false, false, false, NULL, Validators::NonNullStringValidator);
 	Inline::TextDecorationsProperty = DependencyProperty::Register (Type::INLINE, "TextDecorations", new Value (TextDecorationsNone));
 	InputMethod::IsInputMethodEnabledProperty = DependencyProperty::RegisterFull (Type::INPUTMETHOD, "IsInputMethodEnabled", NULL, Type::BOOL, true, false, false, NULL, NULL);

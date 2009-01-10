@@ -53,7 +53,7 @@ class Inline : public DependencyObject {
 	static DependencyProperty *FontStyleProperty;
  	/* @PropertyType=FontWeight,DefaultValue=TEXTBLOCK_FONT_WEIGHT,GenerateAccessors */
 	static DependencyProperty *FontWeightProperty;
- 	/* @PropertyType=Brush,GenerateAccessors */
+ 	/* @PropertyType=Brush,DefaultValue=new SolidColorBrush("black"),GenerateAccessors */
 	static DependencyProperty *ForegroundProperty;
  	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone,ManagedPropertyType=TextDecorationCollection */
 	static DependencyProperty *TextDecorationsProperty;
@@ -70,7 +70,6 @@ class Inline : public DependencyObject {
 	
 	virtual Type::Kind GetObjectType () { return Type::INLINE; }
 	
-	virtual Value *GetDefaultValue (DependencyProperty *prop);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 
@@ -128,9 +127,13 @@ class Run : public Inline {
 };
 
 
+class TextBlockDynamicPropertyValueProvider;
+
 /* @ContentProperty="Inlines" */
 /* @Namespace=System.Windows.Controls */
 class TextBlock : public FrameworkElement {
+	friend class TextBlockDynamicPropertyValueProvider;
+
 	TextFontDescription *font;
 	Downloader *downloader;
 	TextLayout *layout;
@@ -139,9 +142,6 @@ class TextBlock : public FrameworkElement {
 	double actual_width;
 	bool setvalue;
 	bool dirty;
-	
-	void SetActualHeight (double height);
-	void SetActualWidth (double width);
 	
 	void CalcActualWidthHeight (cairo_t *cr);
 	void Layout (cairo_t *cr);
@@ -153,13 +153,13 @@ class TextBlock : public FrameworkElement {
 	double GetBoundingWidth ()
 	{
 		double actual = GetActualWidth ();
-		Value *value;
-		
-		if (!(value = GetValueNoDefault (FrameworkElement::WidthProperty)))
+		double width = GetWidth ();
+
+		if (isnan (width))
 			return actual;
 		
-		if (value->AsDouble () > actual)
-			return value->AsDouble ();
+		if (width> actual)
+			return width;
 		
 		return actual;
 	}
@@ -167,13 +167,13 @@ class TextBlock : public FrameworkElement {
 	double GetBoundingHeight ()
 	{
 		double actual = GetActualHeight ();
-		Value *value;
+		double height = GetHeight();
 		
-		if (!(value = GetValueNoDefault (FrameworkElement::HeightProperty)))
+		if (isnan (height))
 			return actual;
 		
-		if (value->AsDouble () > actual)
-			return value->AsDouble ();
+		if (height > actual)
+			return height;
 		
 		return actual;
 	}
@@ -238,8 +238,6 @@ class TextBlock : public FrameworkElement {
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
-	
-	virtual Value *GetValue (DependencyProperty *property);
 	
 	//
 	// Property Accessors

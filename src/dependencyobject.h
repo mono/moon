@@ -13,6 +13,7 @@
 
 #include <glib.h>
 
+#include "provider.h"
 #include "dependencyproperty.h"
 #include "value.h"
 #include "enums.h"
@@ -252,13 +253,14 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Value *GetValueWithError (Types *additional_types, Type::Kind whatami, DependencyProperty *property, MoonError *error);
 	virtual Value *GetValue (DependencyProperty *property);
-	
+
+	Value *GetValue (DependencyProperty *property, PropertyPrecedence startingAtPrecedence);
+	Value *GetValueSkippingPrecedence (DependencyProperty *property, PropertyPrecedence toSkip);
+
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Value *GetLocalValueWithError  (Types *additional_types, DependencyProperty *property, MoonError *error);
 	virtual Value *GetLocalValue (DependencyProperty *property);
 	
-	virtual Value *GetDefaultValue (DependencyProperty *prop);
-		
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Value *GetValueNoDefaultWithError (Types *additional_types, DependencyProperty *property, MoonError *error);
 	Value *GetValueNoDefault (DependencyProperty *property);
@@ -364,7 +366,9 @@ protected:
 	void NotifyListenersOfPropertyChange (DependencyProperty *property);
 	
 	void RemoveAllListeners ();
-	
+
+	PropertyValueProvider **providers;
+
 private:
 	void RemoveListener (gpointer listener, DependencyProperty *child_property);
 

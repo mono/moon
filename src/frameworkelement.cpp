@@ -50,7 +50,6 @@ datacontext_changed (DependencyObject *sender, PropertyChangedEventArgs *args, g
 FrameworkElement::FrameworkElement ()
 {
 	bindings = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, binding_destroy);
-	styles = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, NULL);
 
 	AddPropertyChangeHandler (FrameworkElement::DataContextProperty, datacontext_changed, this);
 
@@ -73,7 +72,6 @@ FrameworkElement::GetTransformOrigin ()
 FrameworkElement::~FrameworkElement ()
 {
 	g_hash_table_destroy (bindings);
-	g_hash_table_destroy (styles);
 
 	RemovePropertyChangeHandler (FrameworkElement::DataContextProperty, datacontext_changed);
 }
@@ -145,15 +143,7 @@ FrameworkElement::ClearValue (DependencyProperty *property, bool notify_listener
 	if (cur_expr)
 		ClearBindingExpression (property, cur_expr);
 	
-	Value *style_value = (Value*) GetValue (FrameworkElement::StyleProperty);
-
-	notify_listeners = notify_listeners && !style_value;
-
 	UIElement::ClearValue (property, notify_listeners);
-
-	g_hash_table_remove (styles, property);
-	if (style_value)
-		UpdateFromStyle (style_value->AsStyle ());
 }
 
 Value *
@@ -162,8 +152,6 @@ FrameworkElement::GetLocalValue (DependencyProperty *property)
 	Value *binding = (Value *) g_hash_table_lookup (bindings, property);
 	if (binding)
 		return binding;
-	if (g_hash_table_lookup (styles, property))
-		return NULL;
 
 	return UIElement::GetLocalValue (property);
 }
@@ -181,7 +169,8 @@ FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 	if (new_binding) {
 		// We are setting a new data binding; replace the
 		// existing binding if there is one.
-		activeBinding = true;		SetBindingExpression (property, new_binding);
+		activeBinding = true;
+		SetBindingExpression (property, new_binding);
 		value = new_binding->GetValue ();
 	} else if (cur_binding) {
 		switch (cur_binding->GetBinding ()->GetBindingMode ()) {
@@ -204,16 +193,6 @@ FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 	else
 		result = UIElement::SetValueWithErrorImpl (property, value, error);
 
-	if (result && g_hash_table_lookup (styles, property))
-		g_hash_table_remove (styles, property);
-	
-	Value *styleVal = GetValueNoDefault (FrameworkElement::StyleProperty);
-	
-	if (result && styleVal) {
-		Style *s = styleVal->AsStyle ();
-		s->Seal ();
-		UpdateFromStyle (s);
-	}
 	return result;
 }
 
@@ -225,47 +204,6 @@ FrameworkElement::InvalidateBinding (DependencyProperty *property, BindingExpres
 	
 	// Reset the binding so the new value is used
 	SetValue (property, binding);
-}
-
-void
-FrameworkElement::UpdateFromStyle (Style *style)
-{
-	DependencyProperty *property = NULL;
-	Value *value = NULL;
-	SetterBaseCollection *setters = style->GetSetters ();
-	if (!setters)
-		return;
-
-	CollectionIterator *iter = setters->GetIterator ();
-	Value *setterBase;
-	int err;
-	
-	while (iter->Next () && (setterBase = iter->GetCurrent (&err))) {
-		if (err) {
-	 		// Something bad happened - what to do?
-	 	}
-
-		if (!setterBase->Is (Type::SETTER))
-			continue;
-		
-		Setter *setter = setterBase->AsSetter ();
-		if (!(value = setter->GetValue (Setter::PropertyProperty)))
-			continue;
-
-		if (!(property = value->AsDependencyProperty ())) {
-			continue;
-		}
-
-		value = GetLocalValue (property);
-		if (!value) {
-			value = setter->GetValue (Setter::ValueProperty);
-				
-			// Ensure we don't end up recursing forever - call the base method
-			MoonError error;
-			if (UIElement::SetValueWithErrorImpl(property, value, &error))
-				g_hash_table_insert (styles, property, property);
-		}
-	}
 }
 
 void

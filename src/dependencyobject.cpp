@@ -1140,33 +1140,9 @@ DependencyObject::UnregisterAllNamesRootedAt (NameScope *from_ns)
 }
 
 Value *
-DependencyObject::GetDefaultValue (DependencyProperty *prop)
-{
-	return prop->GetDefaultValue ();	
-}
-	
-Value *
-DependencyObject::GetValueWithError (Types *additional_types, Type::Kind whatami, DependencyProperty *property, MoonError *error)
-{
-	if (!HasProperty (additional_types, whatami, property, true)) {
-		Type *pt = Type::Find (additional_types, property->GetOwnerType ());
-		MoonError::FillIn (error, MoonError::EXCEPTION, g_strdup_printf ("Cannot get the DependencyProperty %s.%s on an object of type %s", pt ? pt->name : "<unknown>", property->GetName (), GetTypeName ()));
-		return NULL;
-	}
-	return GetValue (property);
-}
-
-Value *
-DependencyObject::GetValue (DependencyProperty *property)
-{
-	Value *value = GetValueNoDefault (property);
-	return value ? value : GetDefaultValue (property);
-}
-
-Value *
 DependencyObject::GetLocalValue (DependencyProperty *property)
 {
-	return (Value *) g_hash_table_lookup (current_values, property);
+	return providers[PropertyPrecedence_LocalValue]->GetPropertyValue (property);
 }
 
 Value *
@@ -1181,9 +1157,59 @@ DependencyObject::GetLocalValueWithError (Types *additional_types, DependencyPro
 }
 
 Value *
+DependencyObject::GetValueWithError (Types *additional_types, Type::Kind whatami, DependencyProperty *property, MoonError *error)
+{
+	if (!HasProperty (additional_types, whatami, property, true)) {
+		Type *pt = Type::Find (additional_types, property->GetOwnerType ());
+		MoonError::FillIn (error, MoonError::EXCEPTION, g_strdup_printf ("Cannot get the DependencyProperty %s.%s on an object of type %s", pt ? pt->name : "<unknown>", property->GetName (), GetTypeName ()));
+		return NULL;
+	}
+	return GetValue (property);
+}
+
+Value *
+DependencyObject::GetValue (DependencyProperty *property)
+{
+	return GetValue (property, PropertyPrecedence_Highest);
+}
+
+Value *
+DependencyObject::GetValue (DependencyProperty *property, PropertyPrecedence startingAtPrecedence)
+{
+	for (int i = startingAtPrecedence; i < PropertyPrecedence_Count; i ++) {
+		if (!providers[i])
+			continue;
+		Value *value = providers[i]->GetPropertyValue (property);
+		if (value) return value;
+	}
+	return NULL;
+}
+
+Value *
+DependencyObject::GetValueSkippingPrecedence (DependencyProperty *property, PropertyPrecedence toSkip)
+{
+	for (int i = 0; i < PropertyPrecedence_Count; i ++) {
+		if (i == toSkip)
+			continue;
+		if (!providers[i])
+			continue;
+		Value *value = providers[i]->GetPropertyValue (property);
+		if (value) return value;
+	}
+	return NULL;
+}
+
+Value *
 DependencyObject::GetValueNoDefault (DependencyProperty *property)
 {
-	Value *value =  (Value *) g_hash_table_lookup (current_values, property);
+	Value *value = NULL;
+
+	for (int i = 0; i < PropertyPrecedence_DefaultValue; i ++) {
+		if (!providers[i])
+			continue;
+		value = providers[i]->GetPropertyValue (property);
+		if (value) break;
+	}
 	return value && !value->GetIsNull () ? value : NULL;
 }
 
@@ -1201,16 +1227,17 @@ DependencyObject::GetValueNoDefaultWithError (Types *additional_types, Dependenc
 void
 DependencyObject::ClearValue (DependencyProperty *property, bool notify_listeners)
 {
-	Value *current_value = (Value *) g_hash_table_lookup (current_values, property);
+	Value *old_value = GetValue (property);
+	Value *old_local_value = providers[PropertyPrecedence_LocalValue]->GetPropertyValue (property);
 
-	if (current_value == NULL) {
-		/* the property has the default value, nothing to do */
+	if (old_local_value == NULL) {
+		// there wasn't a local value set.  don't do anything
 		return;
 	}
 
 	// detach from the existing value
-	if (current_value->Is (Type::DEPENDENCY_OBJECT)){
-		DependencyObject *dob = current_value->AsDependencyObject();
+	if (old_local_value->Is (Type::DEPENDENCY_OBJECT)){
+		DependencyObject *dob = old_local_value->AsDependencyObject();
 
 		if (dob != NULL) {
 			// unset its logical parent
@@ -1224,27 +1251,39 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 
 	g_hash_table_remove (current_values, property);
 	
-	// we need to make this optional, as doing it for NameScope
-	// merging is killing performance (and noone should ever care
-	// about that property changing)
-	if (notify_listeners) {
-		listeners_notified = false;
+	Value* new_value = GetValue (property);
 
-		PropertyChangedEventArgs args (property, current_value, GetDefaultValue (property));
-
-		OnPropertyChanged (&args);
-
-		if (!listeners_notified)
-			g_warning ("setting property %s::%s on object of type %s didn't result in listeners being notified\n",
-				   Type::Find(property->GetOwnerType())->GetName (), property->GetName(), GetTypeName ());
+	bool equal = false;
+	
+	if (old_value != NULL && new_value != NULL) {
+		equal = !property->AlwaysChange() && (*old_value == *new_value);
+	} else {
+		equal = (old_value == NULL) && (new_value == NULL);
 	}
 
-	if (property && property->GetChangedCallback () != NULL) {
-		NativePropertyChangedHandler *callback = property->GetChangedCallback ();
-		callback (property, this, current_value, GetDefaultValue (property));
+	if (!equal) {
+		// we need to make this optional, as doing it for NameScope
+		// merging is killing performance (and noone should ever care
+		// about that property changing)
+		if (notify_listeners) {
+			listeners_notified = false;
+		
+			PropertyChangedEventArgs args (property, old_value, new_value);
+
+			OnPropertyChanged (&args);
+
+			if (!listeners_notified)
+				g_warning ("setting property %s::%s on object of type %s didn't result in listeners being notified\n",
+					   Type::Find(property->GetOwnerType())->GetName (), property->GetName(), GetTypeName ());
+		}
+
+		if (property && property->GetChangedCallback () != NULL) {
+			NativePropertyChangedHandler *callback = property->GetChangedCallback ();
+			callback (property, this, old_value, new_value);
+		}
 	}
 
-	delete current_value;
+	delete old_local_value;
 }
 
 static gboolean
@@ -1276,6 +1315,15 @@ free_value (gpointer key, gpointer value, gpointer data)
 
 DependencyObject::DependencyObject ()
 {
+	providers = new PropertyValueProvider*[PropertyPrecedence_Count];
+
+	providers[PropertyPrecedence_Animation] = new AnimationPropertyValueProvider (this);
+	providers[PropertyPrecedence_LocalValue] = new LocalPropertyValueProvider (this);
+	providers[PropertyPrecedence_DynamicValue] = NULL;  // subclasses will set this if they need it.
+	providers[PropertyPrecedence_Style] = new StylePropertyValueProvider (this);
+	providers[PropertyPrecedence_Inherited] = new InheritedPropertyValueProvider (this);
+	providers[PropertyPrecedence_DefaultValue] = new DefaultValuePropertyValueProvider (this);
+
 	current_values = g_hash_table_new (g_direct_hash, g_direct_equal);
 	listener_list = NULL;
 	logical_parent = NULL;
@@ -1304,6 +1352,10 @@ DependencyObject::~DependencyObject ()
 	RemoveAllListeners();
 	g_hash_table_foreach_remove (current_values, free_value, this);
 	g_hash_table_destroy (current_values);
+
+	for (int i = 0; i < PropertyPrecedence_Count; i ++)
+		delete providers[i];
+	delete[] providers;
 }
 
 DependencyProperty *

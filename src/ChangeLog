@@ -1,3 +1,80 @@
+2009-01-09  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (libmoon_include_headers): add provider.h
+	(libmoon_la_SOURCES): add provider.cpp
+
+	* provider.h, provider.cpp: clean up this some.  the only provider
+	really not being used right now is the Animation value provider,
+	since the animation code assumes it can just set local values.
+	
+	* shape.cpp (Shape::OnPropertyChanged): no need to look up the
+	default value - GetValue will return it now.
+
+	* textbox.h, textbox.cpp (class
+	TextBoxDynamicPropertyValueProvider): new custom provider class to
+	replace the ::GetValue override.  Install it in the ctor.
+
+	* text.h, text.cpp (class TextBlockDynamicPropertyValueProvider):
+	new custom provider class to replace the ::GetValue override.
+	Install it in the ctor.
+	(GetBoundingWidth, GetBoundingHeight): don't use
+	GetValueNoDefault.
+	(SetActualHeight, SetActualWidth): no longer needed.
+	(textblock_property): no longer needed.
+	(Inline::GetDefaultValue): no longer needed.  the inherited
+	property provider handles it.
+	(TextBlock::OnPropertyChanged): no need to deal with
+	Actual{Height,Width}Property here anymore.
+	
+	* frameworkelement.cpp (FrameworkElement::FrameworkElement):
+	remove styles initialization.
+	(FrameworkElement): remove styles destruction.
+	(FrameworkElement::ClearValue): this doesn't need any styles stuff
+	anymore - just clear the binding if we have one, and otherwise
+	chain up.
+	(FrameworkElement::GetLocalValue): I'm not sure why this was
+	looking things up via a style, as styles are a lower priority than
+	local values.  if there's a binding return that, otherwise chain
+	up.
+	(FrameworkElement::SetValueWithErrorImpl): remove the styles stuff
+	here.
+	(FrameworkElement::UpdateFromStyle): remove.  the style lookup is
+	done in the style provider.
+
+
+	* style.h, style.cpp (SetterBaseCollection::SetStyle): remove the
+	public Style* field and use SetStyle to set it.
+	(Style::GetPropertyValue): new method.  this should probably be a
+	hash lookup instead of the linear lookup, but for now this will
+	work.
+	(SetterBaseCollection::ValidateSetter): make this a static method
+	on the class instead of just a C function.
+
+	* dependencyobject.h: add a couple more GetValue overrides to deal
+	with precedence levels.  Remove GetDefaultValue, as it's no longer
+	needed - we can finally use DependencyProperty::GetDefaultValue as
+	it's meant to be used.
+
+	* dependencyobject.cpp (DependencyObject::GetLocalValue): change
+	this to just call the LocalValue provider.
+	(DependencyObject::GetValue (DependencyProperty* property)): call
+	the overload that lets us specify a starting precedence (start at
+	the highest precedence level).
+	(DependencyObject::GetValue (DependencyProperty *property,
+	PropertyPrecedence startingAtPrecedence)): new method.  loop over
+	the providers until one of them gives us a value.
+	(DependencyObject::GetValueSkippingPrecedence): we need this for
+	looking up the value of FrameworkElement::StyleProperty from
+	inside the style provider.
+	(DependencyObject::GetValueNoDefault): reimplement this for the
+	time being using the providers.
+	(DependencyObject::DependencyObject): register all the default
+	providers.  we leave a DynamicValue slot open for subclasses who
+	want to implement "computed" properties.
+	(DependencyObject): free all the providers.
+
+	* dependencyproperty.g.cpp: regen
+
 2009-01-09  Geoff Norton  <gnorton@novell.com>
 
 	* media.cpp: Remove a unnecessary synthesized PropertyChangedEvent

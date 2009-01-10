@@ -20,18 +20,20 @@ struct Value;
 enum PropertyPrecedence {
 	PropertyPrecedence_Animation,
 	PropertyPrecedence_LocalValue,
+	PropertyPrecedence_DynamicValue, // use this level for types that need to compute property values lazily
 	PropertyPrecedence_Style,
 	PropertyPrecedence_Inherited,
-	PropertyPrecedence_NaturalMediaSize,
 	PropertyPrecedence_DefaultValue,
 
 	PropertyPrecedence_Count,
+
+	PropertyPrecedence_Highest = PropertyPrecedence_Animation
 };
 
 class PropertyValueProvider {
 public:
-	PropertyValueProvider (DependencyObject *obj);
-	virtual ~PropertyValueProvider ();
+	PropertyValueProvider (DependencyObject *_obj) : obj(_obj) { }
+	virtual ~PropertyValueProvider () { }
 
 	virtual Value* GetPropertyValue (DependencyProperty *property) = 0;
 
@@ -42,8 +44,8 @@ protected:
 
 class AnimationPropertyValueProvider : public PropertyValueProvider {
 public:
-	AnimationPropertyValueProvider (DependencyObject *obj);
-	virtual ~AnimationPropertyValueProvider ();
+	AnimationPropertyValueProvider (DependencyObject *obj) : PropertyValueProvider (obj) { };
+	virtual ~AnimationPropertyValueProvider () { };
 
 	virtual Value* GetPropertyValue (DependencyProperty *property);
 };
@@ -66,24 +68,16 @@ public:
 
 class InheritedPropertyValueProvider : public PropertyValueProvider {
 public:
-	InheritedPropertyValueProvider (DependencyObject *obj);
-	virtual ~InheritedPropertyValueProvider ();
-
-	virtual Value* GetPropertyValue (DependencyProperty *property);
-};
-
-class NaturalMediaSizePropertyValueProvider : public PropertyValueProvider {
-public:
-	NaturalMediaSizePropertyValueProvider (DependencyObject *obj);
-	virtual ~NaturalMediaSizePropertyValueProvider ();
+	InheritedPropertyValueProvider (DependencyObject *obj) : PropertyValueProvider (obj) { };
+	virtual ~InheritedPropertyValueProvider () { };
 
 	virtual Value* GetPropertyValue (DependencyProperty *property);
 };
 
 class DefaultValuePropertyValueProvider : public PropertyValueProvider {
 public:
-	DefaultValuePropertyValueProvider (DependencyObject *obj);
-	virtual ~DefaultValuePropertyValueProvider ();
+	DefaultValuePropertyValueProvider (DependencyObject *obj) : PropertyValueProvider (obj) { };
+	virtual ~DefaultValuePropertyValueProvider () { };
 
 	virtual Value* GetPropertyValue (DependencyProperty *property);
 };

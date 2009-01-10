@@ -115,10 +115,14 @@ class TextBoxModelChangedEventArgs : public RoutedEventArgs {
 
 class TextBuffer;
 
+class TextBoxDynamicPropertyValueProvider;
+
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
 /* @CallInitialize */
 class TextBox : public Control {
+	friend class TextBoxDynamicPropertyValueProvider;
+
 	TextFontDescription *font;
 	TextSelection selection;
 	TextBuffer *buffer;
@@ -192,7 +196,6 @@ class TextBox : public Control {
 	//
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
-	virtual Value *GetValue (DependencyProperty *property);
 	virtual Size ArrangeOverride (Size size);
 	virtual void OnApplyTemplate ();
 	

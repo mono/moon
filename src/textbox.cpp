@@ -268,12 +268,45 @@ class TextBuffer {
 };
 
 
+class TextBoxDynamicPropertyValueProvider : public PropertyValueProvider {
+public:
+	TextBoxDynamicPropertyValueProvider (DependencyObject *obj) : PropertyValueProvider (obj) { selection = NULL; selection_value = NULL; }
+	virtual ~TextBoxDynamicPropertyValueProvider () { g_free (selection); delete selection_value; }
+
+	virtual Value* GetPropertyValue (DependencyProperty *property)
+	{
+		if (property != TextBox::SelectedTextProperty)
+			return NULL;
+
+		TextBox *tb = (TextBox*)obj;
+		if (tb->selection_changed) {
+			if (selection) {
+				g_free (selection);
+				delete selection_value;
+			}
+
+			selection = g_ucs4_to_utf8 (tb->buffer->text + tb->selection.start, tb->selection.length, NULL, NULL, NULL);
+			tb->selection_changed = false;
+
+			selection_value = new Value (selection);
+		}
+
+		return selection_value;
+	}
+private:
+	Value *selection_value;
+	char *selection;
+};
+
+
 //
 // TextBox
 //
 
 TextBox::TextBox ()
 {
+	providers[PropertyPrecedence_DynamicValue] = new TextBoxDynamicPropertyValueProvider (this);
+
 	AddHandler (UIElement::KeyDownEvent, TextBox::key_down, this);
 	AddHandler (UIElement::KeyUpEvent, TextBox::key_up, this);
 	
@@ -696,21 +729,6 @@ TextBox::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, 
 	
 	if (prop->GetOwnerType () != Type::TEXTBOX)
 		Control::OnSubPropertyChanged (prop, obj, subobj_args);
-}
-
-Value *
-TextBox::GetValue (DependencyProperty *property)
-{
-	if (selection_changed && property == TextBox::SelectedTextProperty) {
-		char *utf8 = g_ucs4_to_utf8 (buffer->text + selection.start, selection.length, NULL, NULL, NULL);
-		selection_changed = false;
-		setvalue = false;
-		SetValue (TextBox::SelectedTextProperty, Value (utf8));
-		setvalue = true;
-		g_free (utf8);
-	}
-	
-	return Control::GetValue (property);
 }
 
 Size

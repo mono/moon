@@ -51,8 +51,6 @@ text_shutdown (void)
 }
 
 
-
-
 //
 // Inline
 //
@@ -69,62 +67,6 @@ Inline::Inline ()
 Inline::~Inline ()
 {
 	delete font;
-}
-
-static DependencyProperty *
-textblock_property (DependencyProperty *prop)
-{
-	if (prop == Inline::FontFamilyProperty)
-		return TextBlock::FontFamilyProperty;
-	
-	if (prop == Inline::FontStretchProperty)
-		return TextBlock::FontStretchProperty;
-	
-	if (prop == Inline::FontWeightProperty)
-		return TextBlock::FontWeightProperty;
-	
-	if (prop == Inline::FontStyleProperty)
-		return TextBlock::FontStyleProperty;
-	
-	if (prop == Inline::FontSizeProperty)
-		return TextBlock::FontSizeProperty;
-	
-	if (prop == Inline::ForegroundProperty)
-		return TextBlock::ForegroundProperty;
-	
-	if (prop == Inline::TextDecorationsProperty)
-		return TextBlock::TextDecorationsProperty;
-	
-	return NULL;
-}
-
-Value *
-Inline::GetDefaultValue (DependencyProperty *prop)
-{
-	DependencyObject *parent = GetLogicalParent ();
-	
-	if (parent && parent->Is (Type::TEXTBLOCK)) {
-		DependencyProperty *text_prop = textblock_property (prop);
-		
-		if (text_prop)
-			return parent->GetValue (text_prop);
-		
-		return DependencyObject::GetDefaultValue (prop);
-	}
-	
-	// not yet attached to a textblock
-	
-	if (prop == Inline::ForegroundProperty) {
-		SolidColorBrush *brush = new SolidColorBrush ("black");
-		
-		SetValue (prop, Value (brush));
-		brush->unref ();
-		
-		return GetValue (prop);
-	}
-	
-	// all other properties have a default value
-	return DependencyObject::GetDefaultValue (prop);
 }
 
 void
@@ -195,8 +137,44 @@ Inline::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, P
 // TextBlock
 //
 
+class TextBlockDynamicPropertyValueProvider : public PropertyValueProvider {
+public:
+	TextBlockDynamicPropertyValueProvider (DependencyObject *obj) : PropertyValueProvider (obj) { actual_height_value = NULL; actual_width_value = NULL; }
+	virtual ~TextBlockDynamicPropertyValueProvider () { delete actual_height_value; delete actual_width_value; }
+
+	virtual Value* GetPropertyValue (DependencyProperty *property)
+	{
+		if (property != TextBlock::ActualHeightProperty && property != TextBlock::ActualWidthProperty)
+			return NULL;
+
+		TextBlock *tb = (TextBlock*)obj;
+		if (tb->dirty) {
+			delete actual_height_value; actual_height_value = NULL;
+			delete actual_width_value; actual_width_value = NULL;
+			tb->CalcActualWidthHeight (NULL);
+		}
+
+		if (property == TextBlock::ActualHeightProperty) {
+			if (!actual_height_value)
+				actual_height_value = new Value (tb->actual_height);
+			return actual_height_value;
+		}
+		else {
+			if (!actual_width_value)
+				actual_width_value = new Value (tb->actual_width);
+			return actual_width_value;
+		}
+	}
+
+private:
+	Value *actual_height_value;
+	Value *actual_width_value;
+};
+
 TextBlock::TextBlock ()
 {
+	providers[PropertyPrecedence_DynamicValue] = new TextBlockDynamicPropertyValueProvider (this);
+
 	downloader = NULL;
 	
 	dirty = true;
@@ -467,10 +445,7 @@ TextBlock::Layout (cairo_t *cr)
 	}
 	
  done:
-	
-	SetActualHeight (actual_height);
-	SetActualWidth (actual_width);
-	
+
 	dirty = false;
 }
 
@@ -725,10 +700,6 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 		dirty = layout->SetTextAlignment ((TextAlignment) args->new_value->AsInt32 ());
 	} else if (args->property == TextBlock::PaddingProperty) {
 		dirty = true;
-	} else if (args->property == TextBlock::ActualHeightProperty) {
-		invalidate = false;
-	} else if (args->property == TextBlock::ActualWidthProperty) {
-		invalidate = false;
 	}
 	
 	if (invalidate) {
@@ -830,15 +801,6 @@ TextBlock::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Prop
 	Invalidate ();
 }
 
-Value *
-TextBlock::GetValue (DependencyProperty *property)
-{
-	if (dirty && ((property == TextBlock::ActualHeightProperty) || (property == TextBlock::ActualWidthProperty)))
-		CalcActualWidthHeight (NULL);
-	
-	return DependencyObject::GetValue (property);
-}
-
 void
 TextBlock::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
@@ -923,18 +885,6 @@ TextBlock::DownloaderComplete ()
 	
 	UpdateBounds (true);
 	Invalidate ();
-}
-
-void
-TextBlock::SetActualHeight (double height)
-{
-	SetValue (TextBlock::ActualHeightProperty, Value (height));
-}
-
-void
-TextBlock::SetActualWidth (double width)
-{
-	SetValue (TextBlock::ActualWidthProperty, Value (width));
 }
 
 //

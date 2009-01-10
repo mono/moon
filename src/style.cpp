@@ -17,7 +17,7 @@
 #include "error.h"
 
 bool
-ValidateSetter (SetterBaseCollection *collection, Value *value, MoonError *error)
+SetterBaseCollection::ValidateSetter (Value *value, MoonError *error)
 {
 	if (value->Is(Type::SETTER)) {
 		Setter *s = value->AsSetter ();
@@ -39,7 +39,7 @@ ValidateSetter (SetterBaseCollection *collection, Value *value, MoonError *error
 		}
 	}
 
-	if (collection->GetIsSealed ()) {
+	if (GetIsSealed ()) {
 		MoonError::FillIn (error, MoonError::EXCEPTION, "Cannot add a setter to a sealed style");
 		return false;
 	}
@@ -50,7 +50,11 @@ ValidateSetter (SetterBaseCollection *collection, Value *value, MoonError *error
 Style::Style ()
 {
 	SetValue (Style::SettersProperty, Value::CreateUnref (new SetterBaseCollection()));
-	GetSetters ()->style = this;
+	GetSetters ()->SetStyle (this);
+}
+
+Style::~Style ()
+{
 }
 
 void
@@ -62,9 +66,53 @@ Style::Seal ()
 		c->Seal ();
 }
 
+Value *
+Style::GetPropertyValue (DependencyProperty *prop)
+{
+	// XXX replace this with a hash lookup.  create the hash table when the style is sealed?
+
+	DependencyProperty *property = NULL;
+	Value *value = NULL;
+	SetterBaseCollection *setters = GetSetters ();
+	if (!setters)
+		return NULL;
+
+	CollectionIterator *iter = setters->GetIterator ();
+	Value *setterBase;
+	int err;
+	
+	while (iter->Next () && (setterBase = iter->GetCurrent (&err))) {
+		if (err) {
+	 		// Something bad happened - what to do?
+			return NULL;
+	 	}
+
+		if (!setterBase->Is (Type::SETTER))
+			continue;
+		
+		Setter *setter = setterBase->AsSetter ();
+		if (!(value = setter->GetValue (Setter::PropertyProperty)))
+			continue;
+
+		if (!(property = value->AsDependencyProperty ()))
+			continue;
+
+		if (property == prop)
+			return setter->GetValue (Setter::ValueProperty);
+	}
+
+	return NULL;
+}
+
 SetterBaseCollection::SetterBaseCollection ()
 {
 	this->style = NULL;
+}
+
+void
+SetterBaseCollection::SetStyle (Style *style)
+{
+	this->style = style;
 }
 
 void
@@ -84,7 +132,7 @@ SetterBaseCollection::Seal ()
 bool
 SetterBaseCollection::AddedToCollection (Value *value, MoonError *error)
 { 
-	if (!value || !ValidateSetter (this, value, error))
+	if (!value || !ValidateSetter (value, error))
 		return false;
 
 	SetterBase *setter = value->AsSetterBase ();

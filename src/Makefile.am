@@ -69,6 +69,7 @@ libmoon_include_headers = 	\
 	pipeline-nocodec-ui.h	\
 	playlist.h		\
 	point.h			\
+	provider.h		\
 	rect.h			\
 	region.h		\
 	resources.h		\
@@ -147,6 +148,7 @@ libmoon_la_SOURCES = 		\
 	pipeline-logo.cpp	\
 	point.cpp		\
 	playlist.cpp		\
+	provider.cpp		\
 	rect.cpp		\
 	region.cpp		\
 	resources.cpp		\

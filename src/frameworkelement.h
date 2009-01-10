@@ -165,7 +165,6 @@ protected:
 private:
 	MeasureOverrideCallback measure_cb;
 	ArrangeOverrideCallback arrange_cb;
-	void UpdateFromStyle (Style *style);
 };
 
 #endif /* __FRAMEWORKELEMENT_H__ */
