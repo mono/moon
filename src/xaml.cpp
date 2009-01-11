@@ -1101,7 +1101,7 @@ start_element (void *data, const char *el, const char **attr)
 			}
 
 			if (!p->top_element) {
-				if (Type::Find (prop_info->GetKind ())->IsSubclassOf (Type::COLLECTION)) {
+				if (Type::IsSubclassOf (prop_info->GetKind (), Type::COLLECTION)) {
 					XamlElementInstance *wrap = prop_info->CreateElementInstance (p);
 					NameScope::SetNameScope (wrap->GetAsDependencyObject (), p->namescope);
 					p->top_element = wrap;
@@ -2747,10 +2747,9 @@ XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, XamlElementInstan
 	if (!dep)
 		return false;
 
-	Type *prop_type = Type::Find (dep->GetPropertyType());
-	bool is_collection = prop_type->IsSubclassOf (Type::DEPENDENCY_OBJECT_COLLECTION);
+	bool is_collection = Type::IsSubclassOf (dep->GetPropertyType(), Type::DEPENDENCY_OBJECT_COLLECTION);
 
-	if (!is_collection && Type::Find (value->info->GetKind ())->IsSubclassOf (dep->GetPropertyType())) {
+	if (!is_collection && Type::IsSubclassOf (value->info->GetKind (), dep->GetPropertyType())) {
 		MoonError err;
 		if (!item->SetValueWithError (NULL /* XXX */, dep, value->GetAsValue (), &err)) {
 		    parser_error (p, value->element_name, NULL, err.code, err.message);
@@ -2804,7 +2803,7 @@ XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, const char *value
 	if (content && (content->GetPropertyType ()) == Type::STRING && value) {
 		item->SetValue (content, Value (g_strstrip (p->cdata->str)));
 		return true;
-	} else if (Type::Find (info->GetKind ())->IsSubclassOf (Type::TEXTBLOCK)) {
+	} else if (Type::IsSubclassOf (info->GetKind (), Type::TEXTBLOCK)) {
 		TextBlock *textblock = (TextBlock *) item;
 		InlineCollection *inlines = textblock->GetInlines ();
 		Inline *last = NULL;
@@ -2961,7 +2960,7 @@ XamlElementInstanceNative::CreateItem ()
 					(char *) walk->info->GetContentProperty (parser_info));			
 		}
 
-		if (dep && Type::Find (dep->GetPropertyType())->IsSubclassOf (type->type)) {
+		if (dep && Type::IsSubclassOf (dep->GetPropertyType(), type->type)) {
 			Value *v = ((DependencyObject * ) walk->GetAsDependencyObject ())->GetValue (dep);
 			if (v) {
 				item = v->AsDependencyObject ();
@@ -3374,7 +3373,7 @@ XamlLoader::
 
 	}
 
-	if (Type::Find (parent->info->GetKind ())->IsSubclassOf (Type::DEPENDENCY_OBJECT_COLLECTION)) {
+	if (Type::IsSubclassOf (parent->info->GetKind (), Type::DEPENDENCY_OBJECT_COLLECTION)) {
 		Collection *col = (Collection *) parent->GetAsDependencyObject ();
 		MoonError err;
 		Value child_val ((DependencyObject*)child->GetAsDependencyObject ());
@@ -3383,7 +3382,7 @@ XamlLoader::
 			return parser_error (p, child->element_name, NULL, err.code, err.message);
 		return;
 	}
-	else if (Type::Find (parent->info->GetKind ())->IsSubclassOf (Type::RESOURCE_DICTIONARY)) {
+	else if (Type::IsSubclassOf (parent->info->GetKind (), Type::RESOURCE_DICTIONARY)) {
 		ResourceDictionary *dict = (ResourceDictionary *) parent->GetAsDependencyObject ();
 		MoonError err;
 		char *key = child->GetKey ();
@@ -3452,7 +3451,7 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 			parser_error (p, item->element_name, NULL, 2014,
 				      "The attribute %s is read only and cannot be set.", prop->GetName ());
 			res = false;
-		} else if (Type::Find (value->info->GetKind ())->IsSubclassOf (prop->GetPropertyType())) {
+		} else if (Type::IsSubclassOf (value->info->GetKind (), prop->GetPropertyType())) {
 			// an empty collection can be NULL and valid
 			if (value->GetAsDependencyObject ()) {
 				if (item->IsPropertySet (prop->GetName())) {
