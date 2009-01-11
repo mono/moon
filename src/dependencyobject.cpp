@@ -24,7 +24,7 @@
 #include "uielement.h"
 #include "animation.h"
 
-
+#include "text.h"
 
 struct EventList {
 	int current_token;
@@ -508,17 +508,9 @@ EventObject::Emit (char *event_name, EventArgs *calldata, bool only_unemitted)
 	return Emit (id, calldata, only_unemitted);
 }
 
-//#define DEBUG_EVENTS
-
 bool
 EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted)
 {
-#ifdef DEBUG_EVENTS
-	const char *event_name = GetType ()->LookupEventName (event_id);
-	if (GetObjectType () == Type::MEDIAELEMENT)
-	printf ("%s::Emit (%s (%i), %p, %i). Listeners: %i\n", GetTypeName (), event_name, event_id, calldata, only_unemitted, events == NULL ? 0 : events->lists [event_id].event_list->Length ());
-#endif
-
 	if (GetType()->GetEventCount() <= 0 || event_id >= GetType()->GetEventCount()) {
 		g_warning ("trying to emit event with id %d, which has not been registered\n", event_id);
 		if (calldata)
@@ -968,73 +960,23 @@ DependencyObject::SetValueWithError (Types *additional_types, DependencyProperty
 bool
 DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error)
 {
-	Value *current_value = GetValueNoDefault (property);// (Value*)g_hash_table_lookup (current_values, property);
+	Value *current_value = GetLocalValue (property);
 
 	bool equal = false;
 	
 	if (current_value != NULL && value != NULL) {
-		equal = !property->AlwaysChange() && (*current_value == *value);
+		equal = (*current_value == *value);
 	} else {
 		equal = (current_value == NULL) && (value == NULL);
 	}
 
 	if (!equal) {
-		DependencyObject *current_as_dep = NULL;
-		DependencyObject *new_as_dep = NULL;
-
-		if (current_value && current_value->Is (Type::DEPENDENCY_OBJECT))
-			current_as_dep = current_value->AsDependencyObject ();
-		if (value && value->Is (Type::DEPENDENCY_OBJECT))
-			new_as_dep = value->AsDependencyObject ();
-
-		if (current_as_dep) {
-			// unset its logical parent
-			current_as_dep->SetLogicalParent (NULL, NULL);
-			
-			// remove ourselves as a target
-			current_as_dep->RemoveTarget (this);
-			
-			// unregister from the existing value
-			current_as_dep->RemovePropertyChangeListener (this, property);
-			current_as_dep->SetSurface (NULL);
-		}
-
 		Value *new_value = value ? new Value (*value) : NULL;
-
-		if (new_as_dep) {
-			new_as_dep->SetSurface (GetSurface ());
-
-			// set its logical parent
-			if (new_as_dep->GetLogicalParent() != NULL && new_as_dep->GetLogicalParent() != this)
-				g_warning ("DependencyObject already has a logical parent");
-			new_as_dep->SetLogicalParent (this, error);
-			if (error->number)
-				return false;
-			
-			// listen for property changes on the new object
-			new_as_dep->AddPropertyChangeListener (this, property);
-			
-			// add ourselves as a target
-			new_as_dep->AddTarget (this);
-		}
 
 		// store the new value in the hash
 		g_hash_table_insert (current_values, property, new_value);
 
-		listeners_notified = false;
-
-		PropertyChangedEventArgs args (property, current_value, new_value);
-
-		OnPropertyChanged (&args);
-
-		if (!listeners_notified)
-			g_warning ("setting property %s::%s on object of type %s didn't result in listeners being notified\n",
-				   Type::Find(property->GetOwnerType())->GetName (), property->GetName(), GetTypeName ());
-
-		if (property && property->GetChangedCallback () != NULL) {
-			NativePropertyChangedHandler *callback = property->GetChangedCallback ();
-			callback (property, this, current_value, new_value);
-		}
+		ProviderValueChanged (PropertyPrecedence_LocalValue, property, current_value, new_value, true);
 
 		if (current_value)
 			delete current_value;
@@ -1225,9 +1167,124 @@ DependencyObject::GetValueNoDefaultWithError (Types *additional_types, Dependenc
 }
 
 void
+DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
+					DependencyProperty *property,
+					Value *old_provider_value, Value *new_provider_value,
+					bool notify_listeners)
+{
+	int p;
+
+	// if they're both NULL, get out of here.
+	if (!old_provider_value && !new_provider_value)
+		return;
+
+	// first we look for a value higher in precedence for this property
+	for (p = providerPrecedence - 1; p >= PropertyPrecedence_Highest; p --) {
+		if (providers[p]->GetPropertyValue (property)) {
+			// a provider higher in precedence already has
+			// a value for this property, so the one
+			// that's changing isn't visible anyway.
+			return;
+		}
+	}
+
+	Value *old_value;
+	Value *new_value;
+
+	if (!old_provider_value || !new_provider_value) {
+		Value *lower_priority_value = GetValue (property, (PropertyPrecedence)(providerPrecedence + 1));
+
+		if (old_provider_value == NULL) {
+			// we're changing from the old value (from a lower
+			// priority provider) to @new_provider_value.
+			old_value = lower_priority_value;
+			new_value = new_provider_value;
+		}
+		else if (new_provider_value == NULL) {
+			// we're changing from @old_provider_value to whatever the
+			// value lower on the priority list is.
+			old_value = old_provider_value;
+			new_value = lower_priority_value;
+		}
+	}
+	else {
+		old_value = old_provider_value;
+		new_value = new_provider_value;
+	}
+
+	bool equal = false;
+	
+	if (old_value != NULL && new_value != NULL) {
+		equal = !property->AlwaysChange() && (*old_value == *new_value);
+	} else {
+		equal = false;
+	}
+
+ 	if (!equal) {
+		DependencyObject *old_as_dep = NULL;
+		DependencyObject *new_as_dep = NULL;
+
+		if (old_value && old_value->Is (Type::DEPENDENCY_OBJECT))
+			old_as_dep = old_value->AsDependencyObject ();
+		if (new_value && new_value->Is (Type::DEPENDENCY_OBJECT))
+			new_as_dep = new_value->AsDependencyObject ();
+
+		if (old_as_dep) {
+			// unset its logical parent
+			old_as_dep->SetLogicalParent (NULL, NULL);
+			
+			// remove ourselves as a target
+			old_as_dep->RemoveTarget (this);
+			
+			// unregister from the existing value
+			old_as_dep->RemovePropertyChangeListener (this, property);
+			old_as_dep->SetSurface (NULL);
+		}
+
+		if (new_as_dep) {
+			new_as_dep->SetSurface (GetSurface ());
+
+			// set its logical parent
+			if (new_as_dep->GetLogicalParent() != NULL && new_as_dep->GetLogicalParent() != this)
+				g_warning ("DependencyObject already has a logical parent");
+			MoonError error;
+			new_as_dep->SetLogicalParent (this, &error);
+ 			if (error.number)
+ 				return /*XXX false*/;
+			
+			// listen for property changes on the new object
+			new_as_dep->AddPropertyChangeListener (this, property);
+			
+			// add ourselves as a target
+			new_as_dep->AddTarget (this);
+		}
+
+
+		// we need to make this optional, as doing it for NameScope
+		// merging is killing performance (and noone should ever care
+		// about that property changing)
+		if (notify_listeners) {
+			listeners_notified = false;
+		
+			PropertyChangedEventArgs args (property, old_value, new_value);
+
+			OnPropertyChanged (&args);
+
+			if (!listeners_notified)
+				g_warning ("setting property %s::%s on object of type %s didn't result in listeners being notified\n",
+					   Type::Find(property->GetOwnerType())->GetName (), property->GetName(), GetTypeName ());
+		}
+
+		if (property && property->GetChangedCallback () != NULL) {
+			NativePropertyChangedHandler *callback = property->GetChangedCallback ();
+			callback (property, this, old_value, new_value);
+		}
+ 	}
+}
+
+void
 DependencyObject::ClearValue (DependencyProperty *property, bool notify_listeners)
 {
-	Value *old_value = GetValue (property);
 	Value *old_local_value = providers[PropertyPrecedence_LocalValue]->GetPropertyValue (property);
 
 	if (old_local_value == NULL) {
@@ -1250,39 +1307,9 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 	}
 
 	g_hash_table_remove (current_values, property);
+
+	ProviderValueChanged (PropertyPrecedence_LocalValue, property, old_local_value, NULL, notify_listeners);
 	
-	Value* new_value = GetValue (property);
-
-	bool equal = false;
-	
-	if (old_value != NULL && new_value != NULL) {
-		equal = !property->AlwaysChange() && (*old_value == *new_value);
-	} else {
-		equal = (old_value == NULL) && (new_value == NULL);
-	}
-
-	if (!equal) {
-		// we need to make this optional, as doing it for NameScope
-		// merging is killing performance (and noone should ever care
-		// about that property changing)
-		if (notify_listeners) {
-			listeners_notified = false;
-		
-			PropertyChangedEventArgs args (property, old_value, new_value);
-
-			OnPropertyChanged (&args);
-
-			if (!listeners_notified)
-				g_warning ("setting property %s::%s on object of type %s didn't result in listeners being notified\n",
-					   Type::Find(property->GetOwnerType())->GetName (), property->GetName(), GetTypeName ());
-		}
-
-		if (property && property->GetChangedCallback () != NULL) {
-			NativePropertyChangedHandler *callback = property->GetChangedCallback ();
-			callback (property, this, old_value, new_value);
-		}
-	}
-
 	delete old_local_value;
 }
 

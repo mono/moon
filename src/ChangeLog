@@ -1,3 +1,27 @@
+2009-01-11  Chris Toshok  <toshok@ximian.com>
+
+	* text.h, text.cpp (class Inline): generate accessors for
+	FontFamily, FontSize, and TextDecoration.
+	(class Inline, class TextBlock): add an internal DP for the font
+	filename.
+	(Inline::OnPropertyChanged): the only case that's needed at the
+	moment is foreground, but that's slated for the axe as well.
+	
+	* dependencyproperty.g.cpp: regen.
+
+	* provider.cpp (InheritedPropertyValueProvider::GetPropertyValue):
+	make sure we inherit properly across the logical tree if the node
+	doesn't have a visual parent (this fixes inheritance for non
+	UIElement's, like Runs).  Also, add the FontFilename property to
+	the list of things that inherit.
+
+	* dependencyobject.h,
+	dependencyobject.cpp (DependencyObject::ProviderValueChanged): new
+	method.  Providers can call this whenever the value at their
+	precedence level has changed.  It contains all the smarts to
+	correctly generate OnPropertyChanged method calls in the face of
+	all the provider levels.
+
 2009-01-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBox::OnKeyDown): Changed a bit. We need to emit

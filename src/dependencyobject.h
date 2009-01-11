@@ -254,6 +254,7 @@ public:
 	Value *GetValueWithError (Types *additional_types, Type::Kind whatami, DependencyProperty *property, MoonError *error);
 	virtual Value *GetValue (DependencyProperty *property);
 
+	void ProviderValueChanged (PropertyPrecedence providerPrecedence, DependencyProperty *property, Value *old_value, Value *new_value, bool notify_listeners);
 	Value *GetValue (DependencyProperty *property, PropertyPrecedence startingAtPrecedence);
 	Value *GetValueSkippingPrecedence (DependencyProperty *property, PropertyPrecedence toSkip);
 

@@ -77,42 +77,7 @@ Inline::OnPropertyChanged (PropertyChangedEventArgs *args)
 		return;
 	}
 	
-	if (args->property == Inline::FontFamilyProperty) {
-		if (args->new_value) {
-			char *family = args->new_value->AsString ();
-			font->SetFamily (family);
-		} else {
-			font->UnsetFields (FontMaskFamily);
-		}
-	} else if (args->property == Inline::FontSizeProperty) {
-		if (args->new_value) {
-			double size = args->new_value->AsDouble ();
-			font->SetSize (size);
-		} else {
-			font->UnsetFields (FontMaskSize);
-		}
-	} else if (args->property == Inline::FontStretchProperty) {
-		if (args->new_value) {
-			FontStretches stretch = (FontStretches) args->new_value->AsInt32 ();
-			font->SetStretch (stretch);
-		} else {
-			font->UnsetFields (FontMaskStretch);
-		}
-	} else if (args->property == Inline::FontStyleProperty) {
-		if (args->new_value) {
-			FontStyles style = (FontStyles) args->new_value->AsInt32 ();
-			font->SetStyle (style);
-		} else {
-			font->UnsetFields (FontMaskStyle);
-		}
-	} else if (args->property == Inline::FontWeightProperty) {
-		if (args->new_value) {
-			FontWeights weight = (FontWeights) args->new_value->AsInt32 ();
-			font->SetWeight (weight);
-		} else {
-			font->UnsetFields (FontMaskWeight);
-		}
-	} else if (args->property == Inline::ForegroundProperty) {
+	if (args->property == Inline::ForegroundProperty) {
 		foreground = args->new_value ? args->new_value->AsBrush () : NULL;
 	}
 	
@@ -249,6 +214,8 @@ TextBlock::SetFontSource (Downloader *downloader)
 		}
 	} else {
 		font->SetFilename (NULL);
+		ClearValue (TextBlock::FontFilenameProperty);
+
 		dirty = true;
 		
 		UpdateBounds (true);
@@ -337,9 +304,7 @@ void
 TextBlock::Layout (cairo_t *cr)
 {
 	InlineCollection *inlines = GetInlines ();
-	TextDecorations decorations;
 	double width = GetWidth ();
-	guint8 font_mask;
 	const char *text;
 	List *runs;
 	
@@ -370,34 +335,24 @@ TextBlock::Layout (cairo_t *cr)
 		layout->SetMaxWidth (-1.0);
 	}
 	
-	decorations = GetTextDecorations ();
-	font_mask = font->GetFields ();
-	
 	if (inlines != NULL) {
-		guint8 run_mask, inherited_mask;
-		TextFontDescription *ifont;
 		TextDecorations deco;
-		Value *value;
 		Inline *item;
 		Run *run;
 		
 		for (int i = 0; i < inlines->GetCount (); i++) {
 			item = inlines->GetValueAt (i)->AsInline ();
-			
-			ifont = item->font;
-			
-			// Inlines inherit their parent TextBlock's font properties if
-			// they don't specify their own.
-			run_mask = ifont->GetFields ();
-			ifont->Merge (font, false);
-			
-			inherited_mask = (FontMask) (font_mask & ~run_mask);
-			
-			// Inherit the TextDecorations from the parent TextBlock if unset
-			if ((value = item->GetValue (Inline::TextDecorationsProperty)))
-				deco = (TextDecorations) value->AsInt32 ();
-			else
-				deco = decorations;
+
+			TextFontDescription *ifont = item->font;
+
+			ifont->SetFilename (item->GetFontFilename());
+			ifont->SetFamily (item->GetFontFamily ());
+			ifont->SetStyle (item->GetFontStyle ());
+			ifont->SetWeight (item->GetFontWeight ());
+			ifont->SetSize (item->GetFontSize ());
+			ifont->SetStretch (item->GetFontStretch ());
+
+			deco = item->GetTextDecorations ();
 			
  			switch (item->GetObjectType ()) {
 			case Type::RUN:
@@ -434,9 +389,6 @@ TextBlock::Layout (cairo_t *cr)
 			default:
 				break;
 			}
-			
-			if (inherited_mask != 0)
-				ifont->UnsetFields (inherited_mask);
 		}
 	}
 	
@@ -893,6 +845,7 @@ TextBlock::DownloaderComplete ()
 	}
 	
 	font->SetFilename (path);
+	SetValue (TextBlock::FontFilenameProperty, path);
 	dirty = true;
 	
 	UpdateBounds (true);

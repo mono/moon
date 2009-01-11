@@ -175,6 +175,7 @@ dependency_property_g_init (void)
 	ImageBrush::ImageSourceProperty = DependencyProperty::Register (Type::IMAGEBRUSH, "ImageSource", new Value (""));
 	InkPresenter::StrokesProperty = DependencyProperty::Register (Type::INKPRESENTER, "Strokes", Type::STROKE_COLLECTION);
 	Inline::FontFamilyProperty = DependencyProperty::Register (Type::INLINE, "FontFamily", new Value (TEXTBLOCK_FONT_FAMILY));
+	Inline::FontFilenameProperty = DependencyProperty::Register (Type::INLINE, "FontFilename", Type::STRING);
 	Inline::FontSizeProperty = DependencyProperty::Register (Type::INLINE, "FontSize", new Value (TEXTBLOCK_FONT_SIZE));
 	Inline::FontStretchProperty = DependencyProperty::Register (Type::INLINE, "FontStretch", new Value (TEXTBLOCK_FONT_STRETCH));
 	Inline::FontStyleProperty = DependencyProperty::Register (Type::INLINE, "FontStyle", new Value (TEXTBLOCK_FONT_STYLE));
@@ -327,6 +328,7 @@ dependency_property_g_init (void)
 	TextBlock::ActualHeightProperty = DependencyProperty::RegisterFull (Type::TEXTBLOCK, "ActualHeight", NULL, Type::DOUBLE, false, true, false, NULL, NULL);
 	TextBlock::ActualWidthProperty = DependencyProperty::RegisterFull (Type::TEXTBLOCK, "ActualWidth", NULL, Type::DOUBLE, false, true, false, NULL, NULL);
 	TextBlock::FontFamilyProperty = DependencyProperty::Register (Type::TEXTBLOCK, "FontFamily", new Value (TEXTBLOCK_FONT_FAMILY));
+	TextBlock::FontFilenameProperty = DependencyProperty::Register (Type::TEXTBLOCK, "FontFilename", Type::STRING);
 	TextBlock::FontSizeProperty = DependencyProperty::Register (Type::TEXTBLOCK, "FontSize", new Value (TEXTBLOCK_FONT_SIZE));
 	TextBlock::FontStretchProperty = DependencyProperty::Register (Type::TEXTBLOCK, "FontStretch", new Value (TEXTBLOCK_FONT_STRETCH));
 	TextBlock::FontStyleProperty = DependencyProperty::Register (Type::TEXTBLOCK, "FontStyle", new Value (TEXTBLOCK_FONT_STYLE));
@@ -510,6 +512,7 @@ DependencyProperty *ImageBrush::DownloadProgressProperty = NULL;
 DependencyProperty *ImageBrush::ImageSourceProperty = NULL;
 DependencyProperty *InkPresenter::StrokesProperty = NULL;
 DependencyProperty *Inline::FontFamilyProperty = NULL;
+DependencyProperty *Inline::FontFilenameProperty = NULL;
 DependencyProperty *Inline::FontSizeProperty = NULL;
 DependencyProperty *Inline::FontStretchProperty = NULL;
 DependencyProperty *Inline::FontStyleProperty = NULL;
@@ -662,6 +665,7 @@ DependencyProperty *StylusPoint::YProperty = NULL;
 DependencyProperty *TextBlock::ActualHeightProperty = NULL;
 DependencyProperty *TextBlock::ActualWidthProperty = NULL;
 DependencyProperty *TextBlock::FontFamilyProperty = NULL;
+DependencyProperty *TextBlock::FontFilenameProperty = NULL;
 DependencyProperty *TextBlock::FontSizeProperty = NULL;
 DependencyProperty *TextBlock::FontStretchProperty = NULL;
 DependencyProperty *TextBlock::FontStyleProperty = NULL;
@@ -2180,6 +2184,32 @@ InkPresenter::SetStrokes (StrokeCollection *value)
 	SetValue (InkPresenter::StrokesProperty, Value (value));
 }
 
+const char *
+Inline::GetFontFamily ()
+{
+	Value *value = GetValue (Inline::FontFamilyProperty);
+	return value ? value->AsString () : NULL;
+}
+
+void
+Inline::SetFontFamily (const char * value)
+{
+	SetValue (Inline::FontFamilyProperty, Value (value));
+}
+
+const char *
+Inline::GetFontFilename ()
+{
+	Value *value = GetValue (Inline::FontFilenameProperty);
+	return value ? value->AsString () : NULL;
+}
+
+void
+Inline::SetFontFilename (const char * value)
+{
+	SetValue (Inline::FontFilenameProperty, Value (value));
+}
+
 double
 Inline::GetFontSize ()
 {
@@ -2243,6 +2273,19 @@ void
 Inline::SetForeground (Brush *value)
 {
 	SetValue (Inline::ForegroundProperty, Value (value));
+}
+
+TextDecorations
+Inline::GetTextDecorations ()
+{
+	Value *value = GetValue (Inline::TextDecorationsProperty);
+	return (TextDecorations) value->AsInt32 ();
+}
+
+void
+Inline::SetTextDecorations (TextDecorations value)
+{
+	SetValue (Inline::TextDecorationsProperty, Value (value));
 }
 
 Point *
@@ -4105,6 +4148,19 @@ void
 TextBlock::SetFontFamily (const char *value)
 {
 	SetValue (TextBlock::FontFamilyProperty, Value (value));
+}
+
+const char *
+TextBlock::GetFontFilename ()
+{
+	Value *value = GetValue (TextBlock::FontFilenameProperty);
+	return value ? value->AsString () : NULL;
+}
+
+void
+TextBlock::SetFontFilename (const char * value)
+{
+	SetValue (TextBlock::FontFilenameProperty, Value (value));
 }
 
 double

@@ -43,7 +43,7 @@ class Inline : public DependencyObject {
 	virtual ~Inline ();
 	
  public:
- 	/* @PropertyType=string,DefaultValue=TEXTBLOCK_FONT_FAMILY,ManagedPropertyType=FontFamily */
+ 	/* @PropertyType=string,DefaultValue=TEXTBLOCK_FONT_FAMILY,ManagedPropertyType=FontFamily,GenerateAccessors */
 	static DependencyProperty *FontFamilyProperty;
  	/* @PropertyType=double,DefaultValue=TEXTBLOCK_FONT_SIZE,GenerateAccessors */
 	static DependencyProperty *FontSizeProperty;
@@ -55,10 +55,14 @@ class Inline : public DependencyObject {
 	static DependencyProperty *FontWeightProperty;
  	/* @PropertyType=Brush,DefaultValue=new SolidColorBrush("black"),GenerateAccessors */
 	static DependencyProperty *ForegroundProperty;
- 	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone,ManagedPropertyType=TextDecorationCollection */
+ 	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone,ManagedPropertyType=TextDecorationCollection,GenerateAccessors */
 	static DependencyProperty *TextDecorationsProperty;
 	/* @PropertyType=string,DefaultValue=\"en-US\",Version=2.0,ManagedPropertyType=XmlLanguage,Validator=NonNullStringValidator */
 	static DependencyProperty *LanguageProperty;
+
+	// internal property to inherit the font filename between inlines and textblocks
+ 	/* @PropertyType=string,GenerateManagedDP,GenerateAccessors */
+	static DependencyProperty *FontFilenameProperty;
 	
 	/* Member variables should be considered private, for use only with the parent TextBlock */
 	TextFontDescription *font;
@@ -74,6 +78,9 @@ class Inline : public DependencyObject {
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 
 	// property accessors
+	void SetFontFamily (const char *family);
+	const char *GetFontFamily ();
+
 	double GetFontSize ();
 	void SetFontSize (double value);
 
@@ -86,8 +93,14 @@ class Inline : public DependencyObject {
 	FontWeights GetFontWeight ();
 	void SetFontWeight (FontWeights value);
 
+	void SetTextDecorations (TextDecorations decorations);
+	TextDecorations GetTextDecorations ();
+
 	Brush* GetForeground ();
 	void SetForeground (Brush* value);
+
+	const char* GetFontFilename ();
+	void SetFontFilename (const char *value);
 };
 
 
@@ -218,6 +231,10 @@ class TextBlock : public FrameworkElement {
 	static DependencyProperty *TextDecorationsProperty;
  	/* @PropertyType=TextWrapping,DefaultValue=TextWrappingNoWrap,GenerateAccessors */
 	static DependencyProperty *TextWrappingProperty;
+
+	// internal property to inherit the font filename between inlines and textblocks
+ 	/* @PropertyType=string,GenerateManagedDP,GenerateAccessors */
+	static DependencyProperty *FontFilenameProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	TextBlock ();
@@ -297,6 +314,9 @@ class TextBlock : public FrameworkElement {
 	
 	void SetTextWrapping (TextWrapping wrapping);
 	TextWrapping GetTextWrapping ();
+
+	const char* GetFontFilename ();
+	void SetFontFilename (const char *value);
 };
 
 

@@ -67,15 +67,21 @@ StylePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 Value*
 InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 {
-	if (!obj->Is(Type::UIELEMENT))
+	DependencyObject *parent = NULL;
+
+	if (obj->Is (Type::UIELEMENT)) {
+		UIElement *ui = (UIElement*)obj;
+		if (ui->GetVisualParent() != NULL)
+			parent = ui->GetVisualParent();
+	}
+
+	if (!parent)
+		parent = obj->GetLogicalParent();
+
+	if (!parent)
 		return NULL;
 
-	UIElement *ui = (UIElement*)obj;
-
-	if (ui->GetVisualParent() == NULL)
-		return NULL;
-
-	Type::Kind parent_kind = ui->GetVisualParent()->GetObjectType();
+	Type::Kind parent_kind = parent->GetObjectType();
 
 	DependencyProperty *parent_property = NULL;
 
@@ -112,9 +118,10 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 	INHERIT1 (FontSizeProperty);
 
 	INHERIT2 (TextDecorationsProperty);
+	INHERIT2 (FontFilenameProperty);
 
 	if (parent_property)
-		return ui->GetVisualParent()->GetValue (parent_property);
+		return parent->GetValue (parent_property);
 
 	return NULL;
 }
