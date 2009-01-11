@@ -1,3 +1,11 @@
+2009-01-11  Andreia Gaita  <avidigal@novell.com>
+
+	* clock.h|cpp (DispatcherTimer): Don't destroy the clock on Stop(), 
+	it could be called in the middle of a tick. Instead, just reset and 
+	reuse the clock on every tick. Track if the timer is stopped during 
+	a tick so the clock is not relaunched. Set a default duration so 
+	it's never automatic.
+
 2009-01-11  Chris Toshok  <toshok@ximian.com>
 
 	* text.h, text.cpp (class Inline): generate accessors for

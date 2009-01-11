@@ -1409,7 +1409,7 @@ void
 ClockGroup::Completed ()
 {
 	emit_completed = true;
-	start_time = -1;
+	start_time = 0;
 }
 
 ClockGroup::~ClockGroup ()
@@ -1629,30 +1629,41 @@ ParallelTimeline::GetNaturalDurationCore (Clock *clock)
 DispatcherTimer::DispatcherTimer ()
 {
 	root_clock = NULL;
+	stopped = false;
 }
 
 void
 DispatcherTimer::Start ()
 {
-	if (root_clock)
+	if (root_clock) {
 		Stop ();
+		stopped = false;
+		root_clock->AddHandler (root_clock->CompletedEvent, OnTick, this);
+		root_clock->BeginOnTick ();
+	} else {
+	    GList *l = g_list_first (runtime_get_surface_list ());
+	    if (l == NULL)
+		    return; // do what if there's no surface?
 
-	GList *l = g_list_first (runtime_get_surface_list ());
-	if (l == NULL)
-		return; // do what if there's no surface?
+	    Surface *surface = static_cast<Surface*> (l->data);
 
-	Surface *surface = static_cast<Surface*> (l->data);
+	    root_clock = TimelineGroup::AllocateClock ();
+	    char *name = g_strdup_printf ("DispatcherTimer (%p)", this);
+	    root_clock->SetValue (DependencyObject::NameProperty, name);
+	    g_free (name);
+	    root_clock->AddHandler (root_clock->CompletedEvent, OnTick, this);
 
-	root_clock = TimelineGroup::AllocateClock ();
-	char *name = g_strdup_printf ("DispatcherTimer (%p)", this);
-	root_clock->SetValue (DependencyObject::NameProperty, name);
-	g_free (name);
-	root_clock->AddHandler (root_clock->CompletedEvent, OnTick, this);
+	    ClockGroup * group = surface->GetTimeManager()->GetRootClock();
 
-	ClockGroup * group = surface->GetTimeManager()->GetRootClock();
-	group->AddChild (root_clock);
+	    group->ComputeBeginTime ();
+	    group->AddChild (root_clock);
 
-	root_clock->BeginOnTick ();
+	    root_clock->BeginOnTick ();
+
+	    if (group->GetClockState() != Clock::Active)
+		    group->Begin ();
+	}
+
 }
 
 void
@@ -1660,24 +1671,37 @@ DispatcherTimer::Stop ()
 {
 	if (root_clock) {
 		root_clock->RemoveHandler (root_clock->CompletedEvent, OnTick, this);
+		root_clock->Reset ();
+	}
+	stopped = true;
+}
+
+void
+DispatcherTimer::OnTick (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	DispatcherTimer *obj = (DispatcherTimer *) closure;
+	obj->Emit (obj->TickEvent);
+
+	obj->root_clock->Reset ();
+
+	if (!obj->IsStopped ())
+		obj->root_clock->Begin ();
+}
+
+Duration
+DispatcherTimer::GetNaturalDurationCore (Clock *clock)
+{
+	return Duration::FromSeconds (0);
+}
+
+DispatcherTimer::~DispatcherTimer ()
+{
+	if (root_clock) {
+		Stop ();
 		ClockGroup *group = root_clock->GetParent();
 		if (group)
 			group->RemoveChild (root_clock);
 		root_clock->unref ();
 		root_clock = NULL;
 	}
-}
-void
-DispatcherTimer::OnTick (EventObject *sender, EventArgs *calldata, gpointer closure)
-{
-	DispatcherTimer *obj = (DispatcherTimer *) closure;
-	obj->Emit (obj->TickEvent);
-	obj->root_clock->Reset ();
-	obj->root_clock->Begin ();
-}
-
-DispatcherTimer::~DispatcherTimer ()
-{
-	if (root_clock)
-		Stop ();
 }
