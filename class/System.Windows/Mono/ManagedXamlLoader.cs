@@ -45,13 +45,10 @@ namespace Mono.Xaml
 		Assembly assembly;
 		XamlLoaderCallbacks callbacks;
 
-		static Dictionary<string,string> rename_type_map = new Dictionary<string,string> ();
+		static Dictionary<string,string> rename_type_map = new Dictionary<string,string> () {
+			{ "System.Windows.Application", "System.Windows.ApplicationInternal" }
+		};
 
-		static ManagedXamlLoader ()
-		{
-			rename_type_map.Add ("System.Windows.Application", "System.Windows.ApplicationInternal");
-		}
-		
 		public ManagedXamlLoader ()
 		{
 		}
@@ -190,11 +187,9 @@ namespace Mono.Xaml
 			if (top_level == IntPtr.Zero && xmlns == null)
 				return CreateComponentFromName (top_level, name, out value);
 			
-			AssemblyLoadResult load_result;
 			Assembly clientlib = null;
 			string assembly_name = AssemblyNameFromXmlns (xmlns);
 			string clr_namespace = ClrNamespaceFromXmlns (xmlns);
-			string full_name;
 
 			if (assembly_name == null && !TryGetDefaultAssemblyName (top_level, out assembly_name)) {
 				Console.Error.WriteLine ("Unable to find an assembly to load type from.");
@@ -202,8 +197,7 @@ namespace Mono.Xaml
 				return false;
 			}
 
-			load_result = LoadAssembly (assembly_name, out clientlib);
-			if (load_result != AssemblyLoadResult.Success) {
+			if (LoadAssembly (assembly_name, out clientlib) != AssemblyLoadResult.Success) {
 				Console.Error.WriteLine ("Unable to load assembly");
 				value = Value.Empty;
 				return false;
@@ -214,15 +208,12 @@ namespace Mono.Xaml
 				value = Value.Empty;
 				return false;
 			}
-			
-			if (clr_namespace == null || clr_namespace == string.Empty)
-				full_name = name;
-			else
-				full_name = String.Concat (clr_namespace, ".", name);
 
-			if (rename_type_map.ContainsKey (full_name)) {
-				full_name = rename_type_map [full_name];
-			}
+			string full_name = string.IsNullOrEmpty (clr_namespace) ? name : clr_namespace + "." + name;
+
+			string mapped_name;
+			if (rename_type_map.TryGetValue (full_name, out mapped_name))
+				full_name = mapped_name;
 
 			object res = null;
 			try {
@@ -256,7 +247,7 @@ namespace Mono.Xaml
 			return true;
 		}
 
-		private object LookupObject (IntPtr target_ptr)
+		private static object LookupObject (IntPtr target_ptr)
 		{
 			if (target_ptr == IntPtr.Zero)
 				return  null;
@@ -271,7 +262,7 @@ namespace Mono.Xaml
 			}
 		}
 
-		private bool IsAttachedProperty (string name)
+		private static bool IsAttachedProperty (string name)
 		{
 			return name.IndexOf ('.') > 0;
 		}
@@ -537,7 +528,7 @@ namespace Mono.Xaml
 			return true;
 		}
 
-		private object ConvertType (Type t, object value)
+		private static object ConvertType (Type t, object value)
 		{
 			if (value.GetType () == t)
 				return value;
@@ -555,7 +546,7 @@ namespace Mono.Xaml
 			return value;
 		}
 
-		public static TypeConverter GetConverterFor (Type type)
+		private static TypeConverter GetConverterFor (Type type)
 		{
 			Attribute[] attrs = (Attribute []) type.GetCustomAttributes (true);
 			TypeConverterAttribute at = null;
