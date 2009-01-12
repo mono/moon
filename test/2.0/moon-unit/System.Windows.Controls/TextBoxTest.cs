@@ -72,7 +72,7 @@ namespace Mono.Moonlight.UnitTesting
         }
 
         [TestMethod]
-        [MoonlightBug]
+        [MoonlightBug ("Different validation in managed and unmanaged code")]
         public void InvalidValues()
         {
             Assert.Throws<ArgumentOutOfRangeException>(delegate {
