@@ -1,3 +1,9 @@
+2009-01-12  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp|h: Create a xaml context object so we can save some
+	state information for buffered templates.
+	* template.h|cpp: Updated xaml methods.
+
 2009-01-12  Alan McGovern  <amcgovern@novell.com>
 
 	* animation.h:
