@@ -147,6 +147,15 @@ namespace Mono {
 				return;
 			}
 
+			if (pi.PropertyType.IsEnum) {
+				try {
+					pi.SetValue (target, Enum.Parse (pi.PropertyType, value), null);
+				} catch (Exception e) {
+					error = e.ToString ();
+				}
+				return;
+			}
+
 			// special case System.Type properties (like
 			// Style.TargetType and
 			// ControlTemplate.TargetType)

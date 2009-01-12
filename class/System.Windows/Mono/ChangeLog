@@ -1,5 +1,9 @@
 2009-01-12  Jackson Harper  <jackson@ximian.com>
 
+	* Helper.cs: Convert enums.
+
+2009-01-12  Jackson Harper  <jackson@ximian.com>
+
 	* ManagedXamlLoader.cs: Add the ability to rename types. So
 	CreateObject can lookup internal names. Right now this is only
 	used for ApplicationInternal.
