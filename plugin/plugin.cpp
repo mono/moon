@@ -374,7 +374,7 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, uint16_t mo
 	
 	// Property fields
 	source_location = NULL;
-	initParams = false;
+	initParams = NULL;
 	source = NULL;
 	source_idle = 0;
 	onLoad = NULL;

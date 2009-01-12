@@ -1,3 +1,8 @@
+2009-01-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp: Unconfuse a bit: initParams is a char*, so use a boolean
+	value to initialize it.
+
 2009-01-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin.cpp (moonlight_authors): Updated.
