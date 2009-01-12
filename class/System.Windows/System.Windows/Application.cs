@@ -190,18 +190,12 @@ namespace System.Windows {
 
 			Deployment deployment = (Deployment) result;
 
-			if (deployment.EntryPointAssembly == null){
-				Report.Error ("AppManifest.xaml: No EntryPointAssebly found");
+			if (deployment.EntryPointAssembly == null) {
+				Report.Error ("AppManifest.xaml: No EntryPointAssembly found");
 				return null;
 			}
 
-			AssemblyPart entry_point_assembly = (AssemblyPart) deployment.DepObjectFindName (deployment.EntryPointAssembly);
-			if (entry_point_assembly == null){
-				Report.Error ("AppManifest.xaml: Could not find the referenced entry point assembly");
-				return null;
-			}
-
-			if (deployment.EntryPointType == null){
+			if (deployment.EntryPointType == null) {
 				Report.Error ("No entrypoint defined in the AppManifest.xaml");
 				return null;
 			}
@@ -214,36 +208,32 @@ namespace System.Windows {
 			//
 			// Load the assemblies from the XAP file, and find the startup assembly
 			//
-			Assembly a;
+			Assembly entry_point = null;
 			assemblies = new Assembly [deployment.Parts.Count + 1];
 			assemblies [0] = typeof (Application).Assembly; // Add System.Windows.dll
 
-			int i = 1;
-			foreach (var part in deployment.Parts){
+			for (int i = 0; i < deployment.Parts.Count; i++) {
+				var part = deployment.Parts [i];
 				try {
-					a = Assembly.LoadFrom (Path.Combine (xap_dir, part.Source));
-					assemblies [i++] = a;
+					var assembly = Assembly.LoadFrom (Path.Combine (xap_dir, part.Source));
+
+					if (entry_point == null && assembly.GetName ().Name == deployment.EntryPointAssembly)
+						entry_point = assembly;
+
+					assemblies [i + 1] = assembly;
+					LoadXmlnsDefinitionMappings (assembly);
 				} catch (Exception e) {
 					Report.Error ("Error while loading the {0} assembly  {1}", part.Source, e);
 					return null;
 				}
-				LoadXmlnsDefinitionMappings (a);
 			}
 
-			try {
-				a = Assembly.LoadFrom (Path.Combine (xap_dir, entry_point_assembly.Source));
-				startup = a;
-			} catch (Exception e) {
-				Report.Error ("Errror while loading startup assembly {0}  {1}", entry_point_assembly.Source, e);
+			if (entry_point == null) {
+				Report.Error ("Could not find the entry point assembly");
 				return null;
 			}
 
-			if (startup == null){
-				Report.Error ("Could not find the startup assembly");
-				return null;
-			}
-
-			Type entry_type = startup.GetType (deployment.EntryPointType);
+			Type entry_type = entry_point.GetType (deployment.EntryPointType);
 			if (entry_type == null){
 				Report.Error ("Could not find the startup type {0} on the {1}",
 					      deployment.EntryPointType, deployment.EntryPointAssembly);
