@@ -290,37 +290,6 @@ class XamlElementInstance : public List::Node {
 		set_properties = NULL;
 #endif
 	}
-
-	bool LookupNamedResource (const char *name, Value **v)
-	{
-		if (!item) {
-			*v = NULL;
-			return false;
-		}
-
-		if (item->Is(Type::FRAMEWORKELEMENT)) {
-			ResourceDictionary *rd = item->GetValue(UIElement::ResourcesProperty)->AsResourceDictionary();
-
-			bool exists = false;
-			Value *resource_value = rd->Get (name, &exists);
-
-			if (exists) {
-				*v = new Value (*resource_value);
-				return true;
-			}
-		}
-
-		// XXX I'm guessing this parent lookup is the reason that we're failing for cases like the following xaml:
-		//
-		// <Rectangle><Rectangle.Stroke><SolidColorBrush Color="{StaticResource color}"/></Rectangle.Stroke></Rectangle>
-		//
-		// check ResourceDictionaryTest.TestStaticResourceParentElement_Property
-		//
-		if (parent)
-			return parent->LookupNamedResource (name, v);
-		
-		return false;
-	}
 };
 
 void 
@@ -486,6 +455,48 @@ class XamlParserInfo {
 			return NULL;
 
 		return context->internal->template_parent;
+	}
+
+	bool LookupNamedResource (const char *name, Value **v)
+	{
+		if (current_element)
+			return LookupNamedItemResource (current_element->GetAsDependencyObject (), name, v);
+
+		if (!loader)
+			return false;
+
+		XamlContext *context = loader->GetContext ();
+		if (context)
+			return LookupNamedItemResource (context->internal->template_parent, name, v);
+
+		return false;
+	}
+
+	
+	bool LookupNamedItemResource (DependencyObject *item, const char *name, Value **v)
+	{
+		if (!item) {
+			*v = NULL;
+			return false;
+		}
+
+		if (item->Is (Type::FRAMEWORKELEMENT)) {
+			ResourceDictionary *rd = item->GetValue (UIElement::ResourcesProperty)->AsResourceDictionary ();
+
+			bool exists = false;
+			Value *resource_value = rd->Get (name, &exists);
+
+			if (exists) {
+				*v = new Value (*resource_value);
+				return true;
+			}
+		}
+
+		DependencyObject *parent = item->GetLogicalParent ();
+		if (parent)
+			return LookupNamedItemResource (parent, name, v);
+
+		return false;
 	}
 
 	~XamlParserInfo ()
@@ -4023,7 +4034,7 @@ create_binding_expression_from_markup (XamlParserInfo *p, XamlElementInstance *i
 		switch (prop->type) {
 		case BindingExtensionPropertyConverter:
 			if (prop->markup == XamlMarkupExtensionStaticResource) {
-				if (!p->current_element || !p->current_element->LookupNamedResource (prop->value, &value)) {
+				if (!p->current_element || !p->LookupNamedResource (prop->value, &value)) {
 					parser_error (p, item->element_name, attr_name, 2024,
 						      "Could not locate StaticResource %s for Converter property %s.",
 						      prop->value, attr_name);
@@ -4044,7 +4055,7 @@ create_binding_expression_from_markup (XamlParserInfo *p, XamlElementInstance *i
 			break;
 		case BindingExtensionPropertyConverterParameter:
 			if (prop->markup == XamlMarkupExtensionStaticResource) {
-				if (!p->current_element || !p->current_element->LookupNamedResource (prop->value, &value)) {
+				if (!p->current_element || !p->LookupNamedResource (prop->value, &value)) {
 					parser_error (p, item->element_name, attr_name, 2024,
 						      "Could not locate StaticResource %s for ConverterParameter property %s.",
 						      prop->value, attr_name);
@@ -4070,7 +4081,7 @@ create_binding_expression_from_markup (XamlParserInfo *p, XamlElementInstance *i
 			break;
 		case BindingExtensionPropertySource:
 			if (prop->markup == XamlMarkupExtensionStaticResource && p->current_element) {
-				if (!p->current_element->LookupNamedResource (prop->value, &value)) {
+				if (!p->LookupNamedResource (prop->value, &value)) {
 					parser_error (p, item->element_name, attr_name, 2024,
 						      "Could not locate StaticResource %s for Source property %s.",
 						      prop->value, attr_name);
@@ -4148,7 +4159,7 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 			g_free (argument);
 			return true;
 		} else {
-			if (p->current_element && !p->current_element->LookupNamedResource (argument, value)) {
+			if (!p->LookupNamedResource (argument, value)) {
 				// XXX don't know the proper values here...
 				parser_error (p, item->element_name, attr_name, 2024,
 					      "Could not locate StaticResource %s for property %s.",

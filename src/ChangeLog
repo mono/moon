@@ -1,7 +1,13 @@
+2009-01-12  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Moved nameditem lookup into the parser info so we can
+	use the parser context data to lookup resources.  This allows
+	templates to reference StaticResources.
+
 2009-01-12  Alan McGovern  <amcgovern@novell.com>
 
 	* clock.cpp: Minimum FPS is clamped at 1.
-
+	
 2009-01-12  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp|h: Create a xaml context object so we can save some
