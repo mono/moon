@@ -7,11 +7,18 @@ respack \- Resource Packager
 respack is a tool that wraps the input files in MemoryStreams and
 saves them into the output.resource file.   This is used to package
 one or more XAML files as a managed resource that gets embedded into
-assemblies that are shipped inside a XAP file. 
+assemblies that are shipped inside a XAP file.
+respack can also be used to extract the resources from an assembly
+using the -d option
 .SH OPTIONS
 .TP
 .B -? | -help
 Display information about respack
+.B -d | -decompress
+Extract resources from an assembly
+.B -p= | -pattern=
+Set the pattern to match for resource extraction. By default -d only
+extracts .xaml resources.
 .PP
 .SH COPYRIGHT
 Copyright (C) 2008 Novell, Inc (http://www.novell.com)

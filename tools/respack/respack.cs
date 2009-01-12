@@ -6,7 +6,10 @@
 // Copyrigh 2008 Novell, Inc.
 //
 using System;
+using System.Reflection;
+using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Resources;
 using System.IO;
 using System.Linq;
@@ -25,9 +28,13 @@ class ResourcePacker {
 	public static int Main (string [] args)
 	{
 		bool help = false;
-		
+		bool decompress = false;
+		string pattern = @"^.+\.xaml?";
+
 		var p = new OptionSet () {
 			{ "h|?|help", v => help = v != null },
+			{ "d|decomress", "Decompress the supplied assembly.", v => decompress = v != null  },
+			{ "p|pattern=", "Only decompress the resources that match supplied pattern. By default only .xaml files will be decompressed.", v => pattern = v  }
 		};
 
 		List<string> files = null;
@@ -41,9 +48,17 @@ class ResourcePacker {
 		if (help)
 			ShowHelp (p);
 
+		if (decompress)
+			return Decompress (files [0], pattern);
+
 		if (files == null || files.Count == 0)
 			ShowHelp (p);
 
+		return Compress (files);
+	}
+	
+	public static int Compress (List<string> files)
+	{
 		ResourceWriter output = null;
 		try {
 			output = new ResourceWriter (files [0]);
@@ -78,6 +93,51 @@ class ResourcePacker {
 		}
 
 		output.Generate ();
+		return 0;
+	}
+
+	public static int Decompress (string assembly, string pattern)
+	{
+		Assembly asm = null;
+		try {
+			asm = Assembly.LoadFile (assembly);
+		} catch (Exception e) {
+			Console.Error.WriteLine ("Unable to load assembly: {0}.", assembly);
+			Console.Error.WriteLine (e);
+			return 1;
+		}
+
+		string [] resources = asm.GetManifestResourceNames ();
+	
+		foreach (string resource in resources) {
+			ResourceReader reader = null;
+
+			using (reader = new ResourceReader (asm.GetManifestResourceStream (resource))) {
+				
+				IDictionaryEnumerator id = reader.GetEnumerator (); 
+
+				while (id.MoveNext ()) {
+					string key = (string) id.Key;
+					if (!Regex.IsMatch (key, pattern))
+						continue;
+
+					MemoryStream stream = id.Value as MemoryStream;
+					if (stream == null) {
+						Console.Error.WriteLine ("Item not stored as a MemoryStream. {0}", key);
+						continue;
+					}
+
+					byte [] data = new byte [stream.Length];
+					stream.Read (data, 0, data.Length);
+
+					using (FileStream fs = File.OpenWrite (key)) {
+						fs.Write (data, 0, data.Length);
+					}
+									      
+				}
+			}
+		}
+
 		return 0;
 	}
 }

@@ -1,3 +1,10 @@
+2009-01-12  Jackson Harper  <jackson@ximian.com>
+
+	* tools/respack/respack.cs: Add support for unpacking resources
+	from assemblies.
+	* tools/respack/Makefile.am: Add an unrespack script.
+	* man/respack.1: Update man page to describe unpacking.
+
 2009-01-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* configure.ac: Enable System.Windows.Controls[.Data] here too.
