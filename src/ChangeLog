@@ -1,3 +1,10 @@
+2009-01-12  Alan McGovern  <amcgovern@novell.com>
+
+	* validators.h:
+	* validators.cpp:
+	* mediaelement.h:
+	* dependencyproperty.g.cpp: Add range validation to TimeSpan
+
 2009-01-12  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Moved nameditem lookup into the parser info so we can

@@ -26,6 +26,7 @@ public:
 	static ValueValidator default_validator;
 	static ValueValidator AudioStreamIndexValidator;
 	static ValueValidator BorderThicknessValidator;
+	static ValueValidator BufferingTimeValidator;
 	static ValueValidator CornerRadiusValidator;
 	static ValueValidator CursorValidator;
 	static ValueValidator PositiveIntValidator;

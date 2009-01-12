@@ -179,3 +179,13 @@ Validators::CornerRadiusValidator (DependencyObject* instance, DependencyPropert
 	return true;
 }
 
+bool
+Validators::BufferingTimeValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	if (value->AsTimeSpan () > 21427200000000000LL) {
+		MoonError::FillIn (error, MoonError::EXCEPTION, 1001, "Value is out of range");
+		return false;
+	}
+	
+	return true;
+}

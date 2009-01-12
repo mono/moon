@@ -173,7 +173,7 @@ class MediaElement : public MediaBase {
 	static DependencyProperty *BalanceProperty;
  	/* @PropertyType=double,DefaultValue=0.0,ReadOnly,GenerateAccessors */
 	static DependencyProperty *BufferingProgressProperty;
- 	/* @PropertyType=TimeSpan,DefaultValue="TimeSpan_FromSeconds (5)\,Type::TIMESPAN",GenerateAccessors */
+ 	/* @PropertyType=TimeSpan,DefaultValue="TimeSpan_FromSeconds (5)\,Type::TIMESPAN",GenerateAccessors,Validator=BufferingTimeValidator */
 	static DependencyProperty *BufferingTimeProperty;
  	/* @PropertyType=bool,DefaultValue=false,ReadOnly,GenerateAccessors */
 	static DependencyProperty *CanPauseProperty;

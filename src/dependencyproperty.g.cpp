@@ -211,7 +211,7 @@ dependency_property_g_init (void)
 	MediaElement::AutoPlayProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "AutoPlay", new Value (true));
 	MediaElement::BalanceProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "Balance", new Value (0.0));
 	MediaElement::BufferingProgressProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "BufferingProgress", new Value (0.0), Type::DOUBLE, false, true, false, NULL, NULL);
-	MediaElement::BufferingTimeProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "BufferingTime", new Value (TimeSpan_FromSeconds (5),Type::TIMESPAN));
+	MediaElement::BufferingTimeProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "BufferingTime", new Value (TimeSpan_FromSeconds (5),Type::TIMESPAN), Type::TIMESPAN, false, false, false, NULL, Validators::BufferingTimeValidator);
 	MediaElement::CanPauseProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "CanPause", new Value (false), Type::BOOL, false, true, false, NULL, NULL);
 	MediaElement::CanSeekProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "CanSeek", new Value (false), Type::BOOL, false, true, false, NULL, NULL);
 	MediaElement::CurrentStateProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "CurrentState", NULL, Type::STRING, false, true, false, NULL, NULL);
