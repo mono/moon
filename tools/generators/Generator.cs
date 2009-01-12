@@ -176,8 +176,8 @@ class Generator {
 			TypeInfo parent = field.Parent as TypeInfo;
 			List <FieldInfo> fields;
 			string managed_parent = field.Annotations.GetValue ("ManagedDeclaringType");
-		
-			if (field.Annotations.GetValue ("GenerateManagedDP") == "No")
+			
+			if (field.Annotations.GetValue ("GenerateManagedDP") == "false")
 				continue;
 			
 			if (managed_parent != null) {

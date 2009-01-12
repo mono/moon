@@ -98,6 +98,7 @@ class GlobalInfo : MemberInfo {
 				known_annotations.Add ("GenerateGetter", null);
 				known_annotations.Add ("GenerateSetter", null);
 				known_annotations.Add ("GenerateAccessors", null);
+				known_annotations.Add ("GenerateManagedDP", null);
 				known_annotations.Add ("Validator", null);
 				
 				dependency_properties = new List<FieldInfo>  ();
