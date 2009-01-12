@@ -1,3 +1,9 @@
+2009-01-12  Jackson Harper  <jackson@ximian.com>
+
+	* System.Windows.Controls/ControlTemplateTest.cs: Got one more
+	test working.
+	- Added a new test for looking up static resources in templates.
+
 2009-01-12  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Interop/SettingsTest.cs: Minimum FPS is clamped at 1.
