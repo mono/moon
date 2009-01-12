@@ -709,12 +709,9 @@ TextBlock::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Prop
 	if (args->property != Inline::ForegroundProperty) {
 		if (args->property == Run::TextProperty) {
 			// update our TextProperty
-			char *text = GetTextInternal ();
-			
 			setvalue = false;
-			SetValue (TextBlock::TextProperty, Value (text));
+			SetValue (TextBlock::TextProperty, Value (GetxTextInternal (), true));
 			setvalue = true;
-			g_free (text);
 		}
 		
 		// All non-Foreground property changes require
