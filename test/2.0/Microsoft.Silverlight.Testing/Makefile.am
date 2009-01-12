@@ -189,13 +189,17 @@ SOURCES = \
     $(srcdir)/UnitTestHarness/Harness/ReflectionUtility.cs\
     $(srcdir)/UnitTestHarness/UnitTesting/UI/TestPage.xaml.g.cs
 
+$(srcdir)/UnitTestHarness/UnitTesting/UI/TestPage.xaml.g.cs: $(srcdir)/UnitTestHarness/UnitTesting/UI/TestPage.xaml
+	xamlg UnitTestHarness/UnitTesting/UI/TestPage.xaml,UnitTestHarness/UnitTesting/UI/TestPage.xaml.g.cs -sl2app:Microsoft.Silverlight.Testing -root:UnitTestHarness
+
 EXTRA_DIST =			\
 	$(SOURCES)		\
 	$(srcdir)/UnitTestHarness/Properties/UnitTestMessage.resources	\
 	$(srcdir)/UnitTestHarness/Properties/UnitTestMessage.resx
 
 RESOURCES = \
-    -res:$(srcdir)/UnitTestHarness/Properties/UnitTestMessage.resources,Microsoft.Silverlight.Testing.Properties.UnitTestMessage.resources
+    -res:$(srcdir)/UnitTestHarness/Properties/UnitTestMessage.resources,Microsoft.Silverlight.Testing.Properties.UnitTestMessage.resources \
+	-res:$(srcdir)/Microsoft.Silverlight.Testing.g.resources,Microsoft.Silverlight.Testing.g.resources
 
 # System.Xml.Linq.dll requires full path, otherwise the compiler references the one in the gac 
 REFERENCES = \
@@ -219,8 +223,11 @@ CLEANFILES= 			\
 	Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll	\
 	Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll.mdb
 
-Microsoft.Silverlight.Testing.dll: ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll UnitTestHarness/Properties/UnitTestMessage.resources $(SOURCES) System.Xml.Linq.dll 
+Microsoft.Silverlight.Testing.dll: ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll UnitTestHarness/Properties/UnitTestMessage.resources $(SOURCES) System.Xml.Linq.dll Microsoft.Silverlight.Testing.g.resources
 	smcs $(SOURCES) $(RESOURCES) $(REFERENCES) $(BROWSER_ASSEMBLIES) -noconfig -define:SILVERLIGHT -target:library -out:Microsoft.Silverlight.Testing.dll -debug:full
+
+Microsoft.Silverlight.Testing.g.resources: UnitTestHarness/UnitTesting/UI/TestPage.xaml
+	respack Microsoft.Silverlight.Testing.g.resources UnitTestHarness/UnitTesting/UI/TestPage.xaml,unittesting/ui/testpage.xaml
 
 UnitTestHarness/Properties/UnitTestMessage.resources: $(srcdir)/UnitTestHarness/Properties/UnitTestMessage.resx
 	resgen2 $(srcdir)/UnitTestHarness/Properties/UnitTestMessage.resx

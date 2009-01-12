@@ -21,9 +21,16 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.UI {
     
     public partial class TestPage {
         
-        private Grid TestLayoutRoot;
+        private bool _contentLoaded;
+        
+        internal Grid TestLayoutRoot;
         
         private void InitializeComponent() {
+            if (_contentLoaded) {
+                return;
+            }
+            _contentLoaded = true;
+            System.Windows.Application.LoadComponent(this, new System.Uri("/Microsoft.Silverlight.Testing;component/UnitTesting/UI/TestPage.xaml", System.UriKind.Relative));
             TestLayoutRoot = ((Grid)(this.FindName("TestLayoutRoot")));
         }
     }
