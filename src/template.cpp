@@ -73,6 +73,8 @@ FrameworkTemplate::~FrameworkTemplate ()
 		g_free (xaml_buffer);
 		xaml_buffer = NULL;
 	}
+	delete xaml_context;
+	xaml_context = NULL;
 }
 
 void
@@ -83,10 +85,11 @@ FrameworkTemplate::SetVisualTree (FrameworkElement *value)
 }
 
 void
-FrameworkTemplate::SetXamlBuffer (const char *xaml_buffer)
+FrameworkTemplate::SetXamlBuffer (XamlContext *xaml_context, const char *xaml_buffer)
 {
 	printf ("%p setting xaml buffer to %s\n", this, xaml_buffer);
 	this->xaml_buffer = g_strdup (xaml_buffer);
+	this->xaml_context = xaml_context;
 }
 
 DependencyObject*
@@ -96,7 +99,7 @@ FrameworkTemplate::GetVisualTree ()
 		return visual_tree;
 
 	if (xaml_buffer) {
-		XamlLoader *loader = new XamlLoader (NULL, xaml_buffer, GetSurface());
+		XamlLoader *loader = new XamlLoader (NULL, xaml_buffer, GetSurface(), xaml_context);
 		Type::Kind dummy;
 
 		DependencyObject *result = loader->CreateFromString (xaml_buffer, false, &dummy);

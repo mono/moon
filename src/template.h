@@ -36,7 +36,7 @@ public:
 
 	void AddXamlBinding (XamlTemplateBinding *binding);
 
-	void SetXamlBuffer (const char *buffer);
+	void SetXamlBuffer (XamlContext *context, const char *buffer);
 
 protected:
 	virtual ~FrameworkTemplate ();
@@ -44,6 +44,7 @@ protected:
 	GHashTable *xaml_bindings;
 	FrameworkElement *visual_tree;
 	char *xaml_buffer;
+	XamlContext *xaml_context;
 };
 
 //

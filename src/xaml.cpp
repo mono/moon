@@ -104,6 +104,30 @@ static void parser_error (XamlParserInfo *p, const char *el, const char *attr, i
 static XamlElementInfo *create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *name);
 static void destroy_created_namespace (gpointer data, gpointer user_data);
 
+class XamlContextInternal {
+
+ public:
+	FrameworkTemplate *template_parent;
+
+	XamlContextInternal (FrameworkTemplate *template_parent)
+	{
+		this->template_parent = template_parent;
+	}
+	
+};
+
+
+XamlContext::XamlContext (XamlContextInternal *internal)
+{
+	this->internal = internal;
+}
+
+XamlContext::~XamlContext ()
+{
+	delete internal;
+}
+
+
 class XamlElementInfo {
  protected:
 	Type::Kind kind;
@@ -442,6 +466,26 @@ class XamlParserInfo {
 
 		this->xml_buffer = xml_buffer;
 		xml_buffer_start_index = 0;
+	}
+
+	FrameworkTemplate *GetTemplateParent (XamlElementInstance *item)
+	{
+		XamlElementInstance *parent = item->parent;
+
+		while (parent && !parent->IsTemplate ())
+			parent = parent->parent;
+		
+		if (parent)
+			return (FrameworkTemplate *) parent->GetManagedPointer ();
+
+		if (!loader)
+			return NULL;
+
+		XamlContext *context = loader->GetContext ();
+		if (!context)
+			return NULL;
+
+		return context->internal->template_parent;
 	}
 
 	~XamlParserInfo ()
@@ -899,12 +943,13 @@ xaml_loader_find_any (gpointer key, gpointer value, gpointer user_data)
 }
 
 
-XamlLoader::XamlLoader (const char* filename, const char* str, Surface* surface)
+XamlLoader::XamlLoader (const char* filename, const char* str, Surface* surface, XamlContext *context)
 {
 	this->filename = g_strdup (filename);
 	this->str = g_strdup (str);
 	this->surface = surface;
 	surface->ref ();
+	this->context = context;
 	this->vm_loaded = false;
 	this->error_args = NULL;
 	
@@ -1245,7 +1290,10 @@ end_element_handler (void *data, const char *el)
 				FrameworkTemplate* template_ = (FrameworkTemplate *) p->current_element->GetAsDependencyObject ();
 
                                 char* buffer = p->ClearBuffer ();
-                                template_->SetXamlBuffer(buffer);
+				XamlContextInternal *ic = new XamlContextInternal (template_);
+				XamlContext *context = new XamlContext (ic);
+
+                                template_->SetXamlBuffer (context, buffer);
 			}
 			p->current_element = p->current_element->parent;
 		}
@@ -4063,7 +4111,7 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 {
 	const char *inptr, *start = attr_value + 1; // skip the initial '{'
 	XamlMarkupExtensionType type = XamlMarkupExtensionNone;
-	XamlElementInstanceTemplate *template_parent;
+	FrameworkTemplate *template_parent;
 	XamlElementInstance *parent;
 	BindingExtension *binding;
 	XamlMarkupParseError err;
@@ -4114,17 +4162,7 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 		}
 		break;
 	case XamlMarkupExtensionTemplateBinding:
-		parent = item->parent;
-		while (parent && !parent->IsTemplate())
-			parent = parent->parent;
-		
-		if (!parent) {
-			parser_error (p, item->element_name, attr_name, 2024,
-				      "TemplateBinding expression found outside of a template");
-			return true;
-		}
-		
-		template_parent = (XamlElementInstanceTemplate *) parent;
+		template_parent = p->GetTemplateParent (item);
 		
 		if (!(argument = xaml_markup_parse_argument (&inptr, &err)) || *inptr != '\0') {
 			switch (err) {
@@ -4143,7 +4181,9 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 			g_free (argument);
 			return true;
 		} else {
-			template_parent->AddTemplateBinding (item, argument, attr_name);
+			XamlTemplateBinding *b = new XamlTemplateBinding ((FrameworkElement *) item->GetManagedPointer (), argument, attr_name);
+			template_parent->AddXamlBinding (b);
+			b->unref ();
 			return true;
 		}
 		break;

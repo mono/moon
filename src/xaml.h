@@ -41,6 +41,23 @@ struct XamlLoaderCallbacks {
 	}
 };
 
+
+//
+// Used by the templates
+//
+
+class XamlContextInternal;
+
+class XamlContext {
+
+ public:
+	XamlContextInternal *internal;
+
+	XamlContext (XamlContextInternal *internal);
+	~XamlContext ();
+};
+
+
 G_BEGIN_DECLS
 
 void        xaml_init (void);
@@ -96,6 +113,7 @@ class XamlLoader {
 	Surface *surface;
 	char *filename;
 	char *str;
+	XamlContext *context;
 
  public:
 	enum AssemblyLoadResult {
@@ -103,8 +121,8 @@ class XamlLoader {
 		MissingAssembly = 1,
 		LoadFailure = 2
 	};
-	
-	XamlLoader (const char *filename, const char *str, Surface *surface);
+
+	XamlLoader (const char *filename, const char *str, Surface *surface, XamlContext *context = NULL);
 	virtual ~XamlLoader ();
 	
 	virtual bool LoadVM ();
@@ -117,6 +135,7 @@ class XamlLoader {
 	char *GetFilename () { return filename; }
 	char *GetString () { return str; }
 	Surface *GetSurface () { return surface; }
+	XamlContext *GetContext () { return context; }
 
 	bool vm_loaded;
 
