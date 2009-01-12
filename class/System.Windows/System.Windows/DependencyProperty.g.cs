@@ -760,7 +760,6 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty ActualHeightProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "ActualHeight", typeof (double));
 		public static readonly DependencyProperty ActualWidthProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "ActualWidth", typeof (double));
 		public static readonly DependencyProperty FontFamilyProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontFamily", typeof (FontFamily));
-		public static readonly DependencyProperty FontFilenameProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontFilename", typeof (string));
 		public static readonly DependencyProperty FontSizeProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontSize", typeof (double));
 		public static readonly DependencyProperty FontStretchProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontStretch", typeof (FontStretch));
 		public static readonly DependencyProperty FontStyleProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontStyle", typeof (FontStyle));
@@ -786,11 +785,6 @@ namespace System.Windows.Controls {
 		public FontFamily FontFamily {
 			get { return (FontFamily) GetValue (FontFamilyProperty); }
 			set { SetValue (FontFamilyProperty, value); }
-		}
-
-		public string FontFilename {
-			get { return (string) GetValue (FontFilenameProperty); }
-			set { SetValue (FontFilenameProperty, value); }
 		}
 
 		public double FontSize {
@@ -1004,7 +998,6 @@ namespace System.Windows.Documents {
 
 	partial class Inline {
 		public static readonly DependencyProperty FontFamilyProperty = DependencyProperty.Lookup (Kind.INLINE, "FontFamily", typeof (FontFamily));
-		public static readonly DependencyProperty FontFilenameProperty = DependencyProperty.Lookup (Kind.INLINE, "FontFilename", typeof (string));
 		public static readonly DependencyProperty FontSizeProperty = DependencyProperty.Lookup (Kind.INLINE, "FontSize", typeof (double));
 		public static readonly DependencyProperty FontStretchProperty = DependencyProperty.Lookup (Kind.INLINE, "FontStretch", typeof (FontStretch));
 		public static readonly DependencyProperty FontStyleProperty = DependencyProperty.Lookup (Kind.INLINE, "FontStyle", typeof (FontStyle));
@@ -1016,11 +1009,6 @@ namespace System.Windows.Documents {
 		public FontFamily FontFamily {
 			get { return (FontFamily) GetValue (FontFamilyProperty); }
 			set { SetValue (FontFamilyProperty, value); }
-		}
-
-		public string FontFilename {
-			get { return (string) GetValue (FontFilenameProperty); }
-			set { SetValue (FontFilenameProperty, value); }
 		}
 
 		public double FontSize {
