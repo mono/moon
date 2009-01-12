@@ -50,7 +50,6 @@
 #include "runtime.h"
 #include "shape.h"
 #include "size.h"
-#include "stackpanel.h"
 #include "style.h"
 #include "stylus.h"
 #include "template.h"
@@ -296,7 +295,6 @@ Type type_infos [] = {
 	{ Type::SPLINECOLORKEYFRAME, Type::COLORKEYFRAME, false, "SplineColorKeyFrame", "SPLINECOLORKEYFRAME", 0, 1, NULL, (create_inst_func *) spline_color_key_frame_new, NULL, NULL, NULL }, 
 	{ Type::SPLINEDOUBLEKEYFRAME, Type::DOUBLEKEYFRAME, false, "SplineDoubleKeyFrame", "SPLINEDOUBLEKEYFRAME", 0, 1, NULL, (create_inst_func *) spline_double_key_frame_new, NULL, NULL, NULL }, 
 	{ Type::SPLINEPOINTKEYFRAME, Type::POINTKEYFRAME, false, "SplinePointKeyFrame", "SPLINEPOINTKEYFRAME", 0, 1, NULL, (create_inst_func *) spline_point_key_frame_new, NULL, NULL, NULL }, 
-	{ Type::STACKPANEL, Type::PANEL, false, "StackPanel", "STACKPANEL", 0, 16, NULL, (create_inst_func *) stack_panel_new, NULL, NULL, NULL }, 
 	{ Type::STORYBOARD, Type::PARALLELTIMELINE, false, "Storyboard", "STORYBOARD", 0, 2, NULL, (create_inst_func *) storyboard_new, "Children", NULL, NULL }, 
 	{ Type::STRING, Type::OBJECT, false, "char*", "STRING", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::STROKE, Type::DEPENDENCY_OBJECT, false, "Stroke", "STROKE", 0, 1, NULL, (create_inst_func *) stroke_new, NULL, NULL, NULL }, 

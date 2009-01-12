@@ -1,3 +1,8 @@
+2009-01-12  Andreia Gaita  <avidigal@novell.com>
+
+	* StackPanel.cs: New managed implementation (only vertical
+ 	  orientation)
+
 2009-01-09  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* ItemsControl.cs: Implemented a bit more

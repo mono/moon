@@ -33,7 +33,6 @@
 #include "namescope.h"
 #include "panel.h"
 #include "shape.h"
-#include "stackpanel.h"
 #include "style.h"
 #include "stylus.h"
 #include "template.h"
@@ -312,7 +311,6 @@ dependency_property_g_init (void)
 	SplineColorKeyFrame::KeySplineProperty = DependencyProperty::Register (Type::SPLINECOLORKEYFRAME, "KeySpline", Type::KEYSPLINE);
 	SplineDoubleKeyFrame::KeySplineProperty = DependencyProperty::Register (Type::SPLINEDOUBLEKEYFRAME, "KeySpline", Type::KEYSPLINE);
 	SplinePointKeyFrame::KeySplineProperty = DependencyProperty::Register (Type::SPLINEPOINTKEYFRAME, "KeySpline", Type::KEYSPLINE);
-	StackPanel::OrientationProperty = DependencyProperty::Register (Type::STACKPANEL, "Orientation", Type::INT32);
 	Storyboard::TargetNameProperty = DependencyProperty::RegisterFull (Type::STORYBOARD, "TargetName", NULL, Type::STRING, true, false, false, NULL, Validators::NonNullStringValidator);
 	Storyboard::TargetPropertyProperty = DependencyProperty::RegisterFull (Type::STORYBOARD, "TargetProperty", NULL, Type::STRING, true, false, false, NULL, Validators::NonNullStringValidator);
 	Stroke::DrawingAttributesProperty = DependencyProperty::Register (Type::STROKE, "DrawingAttributes", Type::DRAWINGATTRIBUTES);
@@ -649,7 +647,6 @@ DependencyProperty *SolidColorBrush::ColorProperty = NULL;
 DependencyProperty *SplineColorKeyFrame::KeySplineProperty = NULL;
 DependencyProperty *SplineDoubleKeyFrame::KeySplineProperty = NULL;
 DependencyProperty *SplinePointKeyFrame::KeySplineProperty = NULL;
-DependencyProperty *StackPanel::OrientationProperty = NULL;
 DependencyProperty *Storyboard::TargetNameProperty = NULL;
 DependencyProperty *Storyboard::TargetPropertyProperty = NULL;
 DependencyProperty *Stroke::DrawingAttributesProperty = NULL;
@@ -2192,7 +2189,7 @@ Inline::GetFontFamily ()
 }
 
 void
-Inline::SetFontFamily (const char * value)
+Inline::SetFontFamily (const char *value)
 {
 	SetValue (Inline::FontFamilyProperty, Value (value));
 }
@@ -2205,7 +2202,7 @@ Inline::GetFontFilename ()
 }
 
 void
-Inline::SetFontFilename (const char * value)
+Inline::SetFontFilename (const char *value)
 {
 	SetValue (Inline::FontFilenameProperty, Value (value));
 }
@@ -3977,19 +3974,6 @@ SplinePointKeyFrame::SetKeySpline (KeySpline *value)
 	DependencyObject::SetValue (SplinePointKeyFrame::KeySplineProperty, Value (value));
 }
 
-Orientation
-StackPanel::GetOrientation ()
-{
-	Value *value = GetValue (StackPanel::OrientationProperty);
-	return (Orientation) value->AsInt32 ();
-}
-
-void
-StackPanel::SetOrientation (Orientation value)
-{
-	SetValue (StackPanel::OrientationProperty, Value (value));
-}
-
 const char *
 Storyboard::GetTargetName (DependencyObject *obj)
 {
@@ -4158,7 +4142,7 @@ TextBlock::GetFontFilename ()
 }
 
 void
-TextBlock::SetFontFilename (const char * value)
+TextBlock::SetFontFilename (const char *value)
 {
 	SetValue (TextBlock::FontFilenameProperty, Value (value));
 }

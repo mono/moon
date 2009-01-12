@@ -76,7 +76,6 @@ libmoon_include_headers = 	\
 	runtime.h		\
 	shape.h			\
 	size.h			\
-	stackpanel.h		\
 	style.h			\
 	stylus.h		\
 	template.h		\
@@ -155,7 +154,6 @@ libmoon_la_SOURCES = 		\
 	runtime.cpp		\
 	shape.cpp		\
 	size.cpp		\
-	stackpanel.cpp		\
 	stylus.cpp		\
 	text.cpp		\
 	transform.cpp		\

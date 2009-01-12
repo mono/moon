@@ -186,7 +186,6 @@ class SolidColorBrush;
 class SplineColorKeyFrame;
 class SplineDoubleKeyFrame;
 class SplinePointKeyFrame;
-class StackPanel;
 class Storyboard;
 class Stroke;
 class StrokeCollection;
@@ -442,7 +441,6 @@ public:
 	SplineColorKeyFrame*           AsSplineColorKeyFrame () { checked_get_subclass (Type::SPLINECOLORKEYFRAME, SplineColorKeyFrame) }
 	SplineDoubleKeyFrame*          AsSplineDoubleKeyFrame () { checked_get_subclass (Type::SPLINEDOUBLEKEYFRAME, SplineDoubleKeyFrame) }
 	SplinePointKeyFrame*           AsSplinePointKeyFrame () { checked_get_subclass (Type::SPLINEPOINTKEYFRAME, SplinePointKeyFrame) }
-	StackPanel*                    AsStackPanel () { checked_get_subclass (Type::STACKPANEL, StackPanel) }
 	Storyboard*                    AsStoryboard () { checked_get_subclass (Type::STORYBOARD, Storyboard) }
 	Stroke*                        AsStroke () { checked_get_subclass (Type::STROKE, Stroke) }
 	StrokeCollection*              AsStrokeCollection () { checked_get_subclass (Type::STROKE_COLLECTION, StrokeCollection) }

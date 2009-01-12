@@ -2658,16 +2658,6 @@ spline_point_key_frame_new (void)
 
 
 /**
- * StackPanel
- **/
-StackPanel *
-stack_panel_new (void)
-{
-	return new StackPanel ();
-}
-
-
-/**
  * Storyboard
  **/
 bool

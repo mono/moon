@@ -228,7 +228,6 @@ namespace System.Windows {
 			case Kind.SPLINECOLORKEYFRAME: return new SplineColorKeyFrame (raw);
 			case Kind.SPLINEDOUBLEKEYFRAME: return new SplineDoubleKeyFrame (raw);
 			case Kind.SPLINEPOINTKEYFRAME: return new SplinePointKeyFrame (raw);
-			case Kind.STACKPANEL: return new StackPanel (raw);
 			case Kind.STORYBOARD: return new Storyboard (raw);
 			case Kind.STROKE_COLLECTION: return new StrokeCollection (raw);
 			case Kind.STYLE: return new Style (raw);

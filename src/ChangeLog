@@ -1,3 +1,14 @@
+2009-01-12  Andreia Gaita  <avidigal@novell.com>
+
+	* stackpanel.cpp|h: removed, stackpanel is now done in managed
+	  land
+
+	* cbinding.cpp|h, dependencyproperty.g.cpp,
+	  type-generated.cpp, type.h,
+	  value.h: regen
+    
+	* Makefile.am, src.mdp: update build
+
 2009-01-11  Chris Toshok  <toshok@ximian.com>
 
 	* layout.h, layout.cpp (RenderLine): default_fg is unnecessary

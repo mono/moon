@@ -1202,10 +1202,6 @@ namespace Mono {
 		public extern static IntPtr spline_point_key_frame_new ();
 
 		[DllImport ("moon")]
-		// StackPanel *stack_panel_new ();
-		public extern static IntPtr stack_panel_new ();
-
-		[DllImport ("moon")]
 		[return: MarshalAs (UnmanagedType.U1)]
 		// bool storyboard_begin (Storyboard *instance);
 		public extern static bool storyboard_begin (IntPtr instance);

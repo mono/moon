@@ -37,7 +37,6 @@
 #include "runtime.h"
 #include "shape.h"
 #include "size.h"
-#include "stackpanel.h"
 #include "style.h"
 #include "stylus.h"
 #include "template.h"
@@ -1231,12 +1230,6 @@ SplineDoubleKeyFrame *spline_double_key_frame_new (void);
  **/
 /* @GeneratePInvoke */
 SplinePointKeyFrame *spline_point_key_frame_new (void);
-
-/**
- * StackPanel
- **/
-/* @GeneratePInvoke */
-StackPanel *stack_panel_new (void);
 
 /**
  * Storyboard

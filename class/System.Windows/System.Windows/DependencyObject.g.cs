@@ -260,12 +260,6 @@ namespace System.Windows.Controls {
 		internal override Kind GetKind () { return Kind.ROWDEFINITION_COLLECTION; }
 	}
 
-	partial class StackPanel {
-		public StackPanel () : base (NativeMethods.stack_panel_new ()) {}
-		internal StackPanel (IntPtr raw) : base (raw) {}
-		internal override Kind GetKind () { return Kind.STACKPANEL; }
-	}
-
 	partial class TextBlock {
 		public TextBlock () : base (NativeMethods.text_block_new ()) {}
 		internal TextBlock (IntPtr raw) : base (raw) {}

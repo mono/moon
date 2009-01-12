@@ -33,12 +33,36 @@ using Mono;
 namespace System.Windows.Controls {
 	public partial class StackPanel : Panel {
 
-		protected override sealed Size ArrangeOverride(Size arrangeSize) {
-			return base.ArrangeOverride (arrangeSize);
+		public Orientation Orientation {
+			get { return (Orientation) GetValue (OrientationProperty); }
+			set { SetValue(OrientationProperty, value); }
 		}
-		
-		protected override sealed Size MeasureOverride(Size constraint) {
-			return base.MeasureOverride (constraint);
+
+		public static readonly DependencyProperty OrientationProperty = 
+		DependencyProperty.Register ("Orientation", typeof (Orientation), typeof (StackPanel), null);
+
+		protected override Size MeasureOverride (Size availableSize) {
+			Size result = new Size (0, 0);
+			foreach (UIElement child in this.Children) {
+				child.Measure (availableSize);
+				Size size = child.DesiredSize;
+				result.Height += size.Height;
+				result.Width = Math.Max (result.Width, size.Width);
+			}
+			return result;
+		}
+
+		protected override Size ArrangeOverride (Size finalSize) {
+			Size result = new Size (0, 0);
+			foreach (UIElement child in this.Children) {
+				child.Measure (finalSize);
+				Size size = child.DesiredSize;
+				size.Width = Math.Max (size.Width, finalSize.Width);
+				child.Arrange (new Rect (0, result.Height, size.Width, size.Height));
+				result.Height += size.Height;
+				result.Width = Math.Max (result.Width, size.Width);
+			}
+			return finalSize;
 		}
 	}
 }
