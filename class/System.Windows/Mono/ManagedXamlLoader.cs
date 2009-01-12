@@ -45,6 +45,13 @@ namespace Mono.Xaml
 		Assembly assembly;
 		XamlLoaderCallbacks callbacks;
 
+		static Dictionary<string,string> rename_type_map = new Dictionary<string,string> ();
+
+		static ManagedXamlLoader ()
+		{
+			rename_type_map.Add ("System.Windows.Application", "System.Windows.ApplicationInternal");
+		}
+		
 		public ManagedXamlLoader ()
 		{
 		}
@@ -177,8 +184,6 @@ namespace Mono.Xaml
 
 		private bool CreateObject (IntPtr top_level, string xmlns, string name, out Value value)
 		{
-			
-
 			if (name == null)
 				throw new ArgumentNullException ("type_name");
 
@@ -214,6 +219,10 @@ namespace Mono.Xaml
 				full_name = name;
 			else
 				full_name = String.Concat (clr_namespace, ".", name);
+
+			if (rename_type_map.ContainsKey (full_name)) {
+				full_name = rename_type_map [full_name];
+			}
 
 			object res = null;
 			try {
