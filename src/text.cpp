@@ -710,7 +710,7 @@ TextBlock::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Prop
 		if (args->property == Run::TextProperty) {
 			// update our TextProperty
 			setvalue = false;
-			SetValue (TextBlock::TextProperty, Value (GetxTextInternal (), true));
+			SetValue (TextBlock::TextProperty, Value (GetTextInternal (), true));
 			setvalue = true;
 		}
 		
