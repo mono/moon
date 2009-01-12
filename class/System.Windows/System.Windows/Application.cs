@@ -361,9 +361,7 @@ namespace System.Windows {
 				var stream = manager.GetStream (resource);
 				if (stream != null)
 					return new StreamResourceInfo (stream, string.Empty);
-			} catch {
-				return null;
-			}
+			} catch {}
 
 			string res_file = Path.Combine (Current.xap_dir, resource);
 			if (File.Exists (res_file))
