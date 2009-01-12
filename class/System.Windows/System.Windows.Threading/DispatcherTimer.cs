@@ -26,71 +26,68 @@
 using System;
 using System.Security;
 using Mono;
-using System.Runtime.InteropServices;
 using System.Windows.Interop;
 
 namespace System.Windows.Threading {
 
 	public class DispatcherTimer {
+		Mono.DispatcherTimer internalTimer;
+
 		private TimeSpan interval;
-		private GCHandle handle;
-		private uint source_id;
-		
-		static NativeMethods.GSourceFunc callback = new NativeMethods.GSourceFunc (timer_callback);
+		bool started;
+
+		public DispatcherTimer ()
+		{
+			internalTimer = new Mono.DispatcherTimer ();
+			internalTimer.managedTimer = this;
+		}
+
+		~DispatcherTimer ()
+		{
+			internalTimer = null;
+		}
 
 		[SecuritySafeCritical]
 		public void Start ()
 		{
-			if (source_id != 0)
-				return;
+			if (!started) {
+				started = true;
+				Mono.NativeMethods.dispatcher_timer_start (internalTimer.native);
+			}
 
-			handle = GCHandle.Alloc (this);
-			source_id = NativeMethods.time_manager_add_timeout (NativeMethods.surface_get_time_manager (Application.s_surface), (int) interval.TotalMilliseconds, callback, GCHandle.ToIntPtr (handle));
 		}
 
 		[SecuritySafeCritical]
 		public void Stop ()
 		{
-			if (source_id == 0)
-				return;
-
-			NativeMethods.time_manager_remove_timeout (NativeMethods.surface_get_time_manager (Application.s_surface), source_id);
-			source_id = 0;
-			handle.Free ();
+			if (started) {
+				started = false;
+				Mono.NativeMethods.dispatcher_timer_stop (internalTimer.native);
+			}
 		}
 
 		public TimeSpan Interval {
 			[SecuritySafeCritical]
-			get { return interval; }
+			get { return internalTimer.Duration.TimeSpan; }
 
 			[SecuritySafeCritical]
-			set { interval = value; }
-			
+			set {  internalTimer.Duration = new Duration (value); }
 		}
 
 		public bool IsEnabled {
-			get { return source_id != 0; }
+			get { return started; }
 		}
 
-		public event EventHandler Tick;
-
-		static bool timer_callback (IntPtr data)
-		{
-			GCHandle handle = GCHandle.FromIntPtr (data);
-			DispatcherTimer target = (DispatcherTimer) handle.Target;
-			uint s_id = target.source_id;
-			try {
-				target.Tick (target, EventArgs.Empty);
-				// If we are killed by Enabled or Stop, still return that value
-				return target.source_id != 0 && s_id == target.source_id;
-			} catch (Exception ex) {
-				Console.WriteLine (ex.ToString ());
-			} catch {
-				Console.WriteLine ("DispatcherTimer.timer_callback exception.");
+		static object TickEvent = new object ();
+		public event EventHandler Tick {
+			add {
+				internalTimer.Tick += value;
 			}
-
-			return false;
+			remove {
+				internalTimer.Tick -= value;
+			}
 		}
+
 	}
 
 }

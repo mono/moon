@@ -1,3 +1,7 @@
+2009-01-12  Andreia Gaita  <avidigal@novell.com>
+
+	* DispatcherTimer.cs: reenable new DispatcherTimer implementation
+
 2009-01-09  Geoff Norton  <gnorton@novell.com>
 
 	* DispatcherTimer.cs: Keep a GCHandle to the DispatcherTimer in case the
