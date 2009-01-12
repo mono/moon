@@ -834,9 +834,9 @@ class Storyboard : public ParallelTimeline {
 	virtual ~Storyboard ();
 
  public:
- 	/* @PropertyType=string,Attached,GenerateAccessors,Validator=NonNullStringValidator */
+ 	/* @PropertyType=string,Attached,GenerateAccessors,Validator=NotNullOrEmptyValidator */
 	static DependencyProperty *TargetNameProperty;
- 	/* @PropertyType=string,Attached,GenerateAccessors,Validator=NonNullStringValidator */
+ 	/* @PropertyType=string,Attached,GenerateAccessors,Validator=NotNullOrEmptyValidator */
 	static DependencyProperty *TargetPropertyProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */

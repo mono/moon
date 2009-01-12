@@ -1,3 +1,11 @@
+2009-01-12  Alan McGovern  <amcgovern@novell.com>
+
+	* animation.h:
+	* validators.h:
+	* validators.cpp:
+	* dependencyproperty.g.cpp: Add correct validator for
+	Storyboard.TargetName and Storyboard.TargetProperty
+
 2009-01-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* grid.h: Hide RowDefinitionCollection ctor from managed code

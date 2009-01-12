@@ -39,13 +39,15 @@ namespace MoonTest.System.Windows.Media.Animation {
 	public class StoryboardTest {
 
 		[TestMethod]
-		[MoonlightBug]
 		public void InvalidValues ()
 		{
 			Rectangle r = new Rectangle ();
 			Assert.Throws<Exception>(delegate {
 				r.SetValue(Storyboard.TargetNameProperty, null);
 			}, "#1");
+			Assert.Throws<Exception>(delegate {
+				r.SetValue(Storyboard.TargetNameProperty, "");
+			}, "#1b");
 			Assert.Throws<Exception>(delegate {
 				r.SetValue(Storyboard.TargetPropertyProperty, null);
 			}, "2");

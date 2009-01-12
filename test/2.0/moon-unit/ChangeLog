@@ -1,5 +1,10 @@
 2009-01-12  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Media.Animation/StoryboardTest.cs: Add correct
+	validator for Storyboard.TargetName and Storyboard.TargetProperty
+
+2009-01-12  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/TextBoxTest.cs: Explain why test is failing
 
 2009-01-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>

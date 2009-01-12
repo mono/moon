@@ -94,6 +94,17 @@ Validators::NonNullStringValidator (DependencyObject* instance, DependencyProper
 }
 
 bool
+Validators::NotNullOrEmptyValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	if (!value || value->GetIsNull () || strlen (value->AsString ()) == 0) {
+		MoonError::FillIn (error, MoonError::EXCEPTION, 1001, "Value cannot be null");
+		return false;
+	}
+	
+	return true;
+}
+
+bool
 Validators::PasswordValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
 	if (!value || value->GetIsNull ()) {
