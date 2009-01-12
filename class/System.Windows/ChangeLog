@@ -1,3 +1,8 @@
+2009-01-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Remove UriTypeConverter.cs (it's in System.dll now) and
+	RenderTargetBitmap.cs from build.
+
 2009-01-09  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingExpressionBase.cs: Fix the IValueConverter

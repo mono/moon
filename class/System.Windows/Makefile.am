@@ -378,7 +378,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media.Animation/Timeline.cs			\
 	$(srcdir)/System.Windows.Media.Imaging/BitmapImage.cs			\
 	$(srcdir)/System.Windows.Media.Imaging/DownloadProgressEventArgs.cs	\
-	$(srcdir)/System.Windows.Media.Imaging/RenderTargetBitmap.cs	\
 	$(srcdir)/System.Windows.Resources/StreamResourceInfo.cs		\
 	$(srcdir)/System.Windows.Shapes/Ellipse.cs				\
 	$(srcdir)/System.Windows.Shapes/Line.cs					\
@@ -429,7 +428,6 @@ system_windows_sources =							\
 	$(MSCONTROLS)/Src/Common/SelectionChangedEventArgs.cs			\
 	$(MSCONTROLS)/Src/Common/SelectionChangedEventHandler.cs		\
 	$(MSCONTROLS)/Src/Common/TypeConverters.cs				\
-	$(MSCONTROLS)/Src/Common/UriTypeConverter.cs				\
 	$(MSCONTROLS)/Src/ContentControl/ContentControl.cs			\
 	$(MSCONTROLS)/Src/ContentControl/ContentPresenter.cs			\
 	$(MSCONTROLS)/Src/GlobalSuppressions.cs					\
