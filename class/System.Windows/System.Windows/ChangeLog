@@ -1,5 +1,9 @@
 2009-01-12  Jb Evain  <jbevain@novell.com>
 
+	* Application.cs: fix storing of the entry point assembly.
+
+2009-01-12  Jb Evain  <jbevain@novell.com>
+
 	* Application.cs (CreateFromXap): EntryPointAssembly is the actual
 	name of the assembly, not the name of the AssemblyPart.
 	Triggered by Chiron.

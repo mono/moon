@@ -43,10 +43,11 @@ using System.Windows.Markup;
 namespace System.Windows {
 
 	public partial class Application {
+
 		static Application current;
 		static Assembly [] assemblies;
-		static Assembly startup;
-		
+		static Assembly entry_point_assembly;
+
 		//
 		// Controls access to the s_ static fields, which are used
 		// by the Application constructor to initialize these fields
@@ -208,7 +209,6 @@ namespace System.Windows {
 			//
 			// Load the assemblies from the XAP file, and find the startup assembly
 			//
-			Assembly entry_point = null;
 			assemblies = new Assembly [deployment.Parts.Count + 1];
 			assemblies [0] = typeof (Application).Assembly; // Add System.Windows.dll
 
@@ -217,8 +217,8 @@ namespace System.Windows {
 				try {
 					var assembly = Assembly.LoadFrom (Path.Combine (xap_dir, part.Source));
 
-					if (entry_point == null && assembly.GetName ().Name == deployment.EntryPointAssembly)
-						entry_point = assembly;
+					if (entry_point_assembly == null && assembly.GetName ().Name == deployment.EntryPointAssembly)
+						entry_point_assembly = assembly;
 
 					assemblies [i + 1] = assembly;
 					LoadXmlnsDefinitionMappings (assembly);
@@ -228,12 +228,12 @@ namespace System.Windows {
 				}
 			}
 
-			if (entry_point == null) {
+			if (entry_point_assembly == null) {
 				Report.Error ("Could not find the entry point assembly");
 				return null;
 			}
 
-			Type entry_type = entry_point.GetType (deployment.EntryPointType);
+			Type entry_type = entry_point_assembly.GetType (deployment.EntryPointType);
 			if (entry_type == null){
 				Report.Error ("Could not find the startup type {0} on the {1}",
 					      deployment.EntryPointType, deployment.EntryPointAssembly);
@@ -345,7 +345,7 @@ namespace System.Windows {
 				aname = loc.Substring (1, p-1);
 				res = loc.Substring (p+11);
 			} else {
-				aname = startup.GetName ().Name;
+				aname = entry_point_assembly.GetName ().Name;
 				res = loc [0] == '/' ? loc.Substring (1) : loc;	
 			}
 					
