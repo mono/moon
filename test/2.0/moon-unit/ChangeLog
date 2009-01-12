@@ -1,3 +1,8 @@
+2009-01-12  Andreia Gaita  <avidigal@novell.com>
+
+	* System.Windows.Interop/SettingsTest.cs (MaxFrameRate): Always reset the framerate back to its
+	  original value, otherwise the tests stop
+
 2009-01-09  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows/DependencyPropertyTest.cs: Add test case to 
