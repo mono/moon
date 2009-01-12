@@ -615,12 +615,9 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 	} else if (args->property == TextBlock::InlinesProperty) {
 		if (setvalue) {
 			// result of a change to the TextBlock.Inlines property
-			char *text = GetTextInternal ();
-			
 			setvalue = false;
-			SetValue (TextBlock::TextProperty, Value (text));
+			SetValue (TextBlock::TextProperty, Value (GetTextInternal (), true));
 			setvalue = true;
-			g_free (text);
 			dirty = true;
 		} else {
 			// result of a change to the TextBlock.Text property
