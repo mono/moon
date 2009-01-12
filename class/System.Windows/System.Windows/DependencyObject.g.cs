@@ -255,7 +255,7 @@ namespace System.Windows.Controls {
 	}
 
 	partial class RowDefinitionCollection {
-		public RowDefinitionCollection () : base (NativeMethods.row_definition_collection_new ()) {}
+		internal RowDefinitionCollection () : base (NativeMethods.row_definition_collection_new ()) {}
 		internal RowDefinitionCollection (IntPtr raw) : base (raw) {}
 		internal override Kind GetKind () { return Kind.ROWDEFINITION_COLLECTION; }
 	}

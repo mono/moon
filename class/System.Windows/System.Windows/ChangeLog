@@ -1,3 +1,8 @@
+2009-01-12  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* DependencyObject.g.cs: Regenerated
+	* DependencyProperty.cs: Hide custom delegate type
+
 2009-01-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* DependencyObject.cs: Corcompare issues.

@@ -33,7 +33,7 @@ using System.Collections.Generic;
 
 namespace System.Windows {
 
-	public delegate void ValueValidator (DependencyObject target, DependencyProperty property, object value);
+	internal delegate void ValueValidator (DependencyObject target, DependencyProperty property, object value);
 	
 	public class DependencyProperty {
 
