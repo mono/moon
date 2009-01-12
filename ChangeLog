@@ -1,3 +1,11 @@
+2009-01-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* configure.ac: Enable System.Windows.Controls[.Data] here too.
+
+2009-01-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* configure.ac: Enable System.Windows.Controls[.Data] here too.
+
 2009-01-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* tools/respack/respack.cs: Add support for specifying the name for each
