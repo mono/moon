@@ -23,21 +23,15 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System.Windows;
-using System.Windows.Media;
-using System.Security;
-using Mono;
-
 namespace System.Windows.Media.Imaging {
 
 	public class DownloadProgressEventArgs : EventArgs {
 
-		public DownloadProgressEventArgs ()
+		internal DownloadProgressEventArgs ()
 		{
 		}
 
 		public int Progress {
-			[SecuritySafeCritical]
 			get { throw new NotImplementedException (); }
 		}
 	}
