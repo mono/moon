@@ -967,7 +967,6 @@ TextBoxView::Layout (cairo_t *cr)
 {
 	TextBox *textbox = GetTextBox ();
 	double width = GetWidth ();
-	TextFontDescription *font;
 	TextBuffer *buffer;
 	List *runs;
 	
@@ -976,11 +975,10 @@ TextBoxView::Layout (cairo_t *cr)
 	else
 		layout->SetMaxWidth (-1.0);
 	
-	font = textbox->GetFontDescription ();
 	buffer = textbox->GetBuffer ();
 	
 	runs = new List ();
-	runs->Append (new TextRun (buffer->text, buffer->len, TextDecorationsNone, font, NULL));
+	runs->Append (new TextRun (buffer->text, buffer->len, (ITextSource *) textbox));
 	
 	layout->SetTextRuns (runs);
 	layout->Layout ();

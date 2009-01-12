@@ -1,3 +1,41 @@
+2009-01-12  Jeffrey Stedfast  <fejj@novell.com>
+
+	* collection.cpp (InlineCollection::Equals): New convenience
+	method to replace text.cpp's inlines_simple_text_equal().
+
+	* textbox.h (class TextBox): Now implements ITextSource.
+
+	* text.cpp (Inline::UpdateFontDescription): New convenience method
+	to populate the cached TextFontDescription since we can no longer
+	rely on doing so from within OnPropertyChanged().
+	(Inline::Equals): Base comparison method used by
+	InlineCollection::Equals().
+	(Run::Equals): Compare the Text property as well.
+	(TextBlock::Layout): Call UpdateFontDescription() on each Inline
+	as we iterate through them. Also updated for TextRun ctors.
+	(TextBlock::OnCollectionItemChanged): Simplified a bit. The basic
+	premise is that we do not want to force a layout calculation to be
+	redone, we just need to invalidate if all that changed was a
+	foreground brush.
+	(inlines_simple_text_equal): Removed, use
+	InlineCollection::Equals() instead.
+	(TextBlock::SetTextInternal): Updated to use
+	InlineCollection::Equals().
+
+	* text.h (class Inline): Now implements the ITextSource
+	interface. Moved the local TextFontDescription and autogen state
+	into the private section and added accessors for them.
+
+	* layout.cpp|h (class ITextSource): New interface sued by TextRuns
+	and the internal Layout logic to grab a run's foreground brush and
+	text decorations.
+	(TextRun::ctor): No longer take TextDecoration,
+	TextFontDescription, or Brush arguments, instead takes an
+	ITextSource that it can query for those properties when it needs
+	to.
+	(RenderLine): Updated to get the decorations and foreground brush
+	from the ITextSource.
+
 2009-01-12  Alan McGovern  <amcgovern@novell.com>
 
 	* validators.h:

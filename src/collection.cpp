@@ -18,8 +18,13 @@
 #include "transform.h"
 #include "frameworkelement.h"
 #include "namescope.h"
+#include "text.h"
 #include "utils.h"
 #include "error.h"
+
+//
+// Collection
+//
 
 Collection::Collection ()
 {
@@ -296,6 +301,11 @@ Collection::CanAdd (Value *value)
 	return value->Is (GetElementType ());
 }
 
+
+//
+// DependencyObjectCollection
+//
+
 bool
 DependencyObjectCollection::AddedToCollection (Value *value, MoonError *error)
 {
@@ -391,6 +401,34 @@ DependencyObjectCollection::CanAdd (Value *value)
 }
 
 
+//
+// InlineCollection
+//
+
+bool
+InlineCollection::Equals (InlineCollection *inlines)
+{
+	Inline *run0, *run1;
+	
+	if (inlines->array->len != array->len)
+		return false;
+	
+	for (guint i = 0; i < array->len; i++) {
+		run1 = (Inline *) inlines->array->pdata[i];
+		run0 = (Inline *) array->pdata[i];
+		
+		if (!run0->Equals (run1))
+			return false;
+	}
+	
+	return true;
+}
+
+
+//
+// UIElementCollection
+//
+
 UIElementCollection::UIElementCollection ()
 {
 	z_sorted = g_ptr_array_new ();
@@ -432,6 +470,11 @@ UIElementCollection::Clear ()
 	return DependencyObjectCollection::Clear ();
 }
 
+
+//
+// DoubleCollection
+//
+
 DoubleCollection *
 DoubleCollection::FromStr (const char *s)
 {
@@ -449,6 +492,11 @@ DoubleCollection::FromStr (const char *s)
 
 	return doubles;
 }
+
+
+//
+// Point Collection
+//
 
 PointCollection *
 PointCollection::FromStr (const char *s)
@@ -473,6 +521,11 @@ PointCollection::FromStr (const char *s)
 	g_array_free (values, true);
 	return points;
 }
+
+
+//
+// CollectionIterator
+//
 
 CollectionIterator::CollectionIterator (Collection *c)
 {
@@ -536,18 +589,10 @@ CollectionIterator::Destroy (CollectionIterator *iterator)
 	delete iterator;
 }
 
-Collection *
-collection_new (Type::Kind kind)
-{
-	Type *t = Type::Find (kind);
-	
-	if (!t->IsSubclassOf (Type::COLLECTION)) {
-		g_warning ("create_collection passed non-collection type");
-		return NULL;
-	}
-	
-	return (Collection *) t->CreateInstance();
-}
+
+//
+// VisualTreeWalker
+//
 
 VisualTreeWalker::VisualTreeWalker (UIElement *obj, VisualTreeWalkerDirection dir)
 {
@@ -629,4 +674,21 @@ VisualTreeWalker::~VisualTreeWalker()
 {
 	if (content)
 		content->unref ();
+}
+
+
+//
+// Manual C-Bindings
+//
+Collection *
+collection_new (Type::Kind kind)
+{
+	Type *t = Type::Find (kind);
+	
+	if (!t->IsSubclassOf (Type::COLLECTION)) {
+		g_warning ("create_collection passed non-collection type");
+		return NULL;
+	}
+	
+	return (Collection *) t->CreateInstance();
 }

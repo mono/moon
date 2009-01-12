@@ -35,19 +35,21 @@
  */
 #define APPLY_KERNING(uc)	((uc != 0x002E) && (uc != 0x06D4) && (uc != 3002))
 
-TextRun::TextRun (const gunichar *ucs4, int len, TextDecorations deco, TextFontDescription *font, Brush *fg)
+TextRun::TextRun (const gunichar *ucs4, int len, ITextSource *source)
 {
+	TextFontDescription *font = source->FontDescription ();
+	
 	text = (gunichar *) g_malloc (sizeof (gunichar) * (len + 1));
 	memcpy (text, ucs4, sizeof (gunichar) * len);
 	text[len] = 0;
 	
 	this->font = font->GetFont ();
-	this->deco = deco;
-	this->fg = fg;
+	this->source = source;
 }
 
-TextRun::TextRun (const char *utf8, int len, TextDecorations deco, TextFontDescription *font, Brush *fg)
+TextRun::TextRun (const char *utf8, int len, ITextSource *source)
 {
+	TextFontDescription *font = source->FontDescription ();
 	register gunichar *s, *d;
 	
 	d = this->text = g_utf8_to_ucs4_fast (utf8, len, NULL);
@@ -69,17 +71,17 @@ TextRun::TextRun (const char *utf8, int len, TextDecorations deco, TextFontDescr
 	*d = 0;
 	
 	this->font = font->GetFont ();
-	this->deco = deco;
-	this->fg = fg;
+	this->source = source;
 }
 
-TextRun::TextRun (TextFontDescription *font)
+TextRun::TextRun (ITextSource *source)
 {
 	// This TextRun will represent a LineBreak
-	this->deco = TextDecorationsNone;
+	TextFontDescription *font = source->FontDescription ();
+	
 	this->font = font->GetFont ();
+	this->source = source;
 	this->text = NULL;
-	this->fg = NULL;
 }
 
 TextRun::~TextRun ()
@@ -1223,6 +1225,7 @@ RenderLine (cairo_t *cr, const Point &origin, const Point &position, TextLine *l
 	GlyphInfo *glyph;
 	double x1, y1;
 	double x0, y0;
+	Brush *fg;
 	int size;
 	int i;
 	
@@ -1233,10 +1236,9 @@ RenderLine (cairo_t *cr, const Point &origin, const Point &position, TextLine *l
 	segment = (TextSegment *) line->segments->First ();
 	
 	while (segment) {
-		Brush *fg = segment->run->fg;
-
+		deco = segment->run->source->Decorations ();
+		fg = segment->run->source->Foreground ();
 		text = segment->run->text;
-		deco = segment->run->deco;
 		font = segment->run->font;
 		
 		cairo_save (cr);
@@ -1254,7 +1256,6 @@ RenderLine (cairo_t *cr, const Point &origin, const Point &position, TextLine *l
 			// it is an error to append a path with no data
 			if (segment->path->cairo.data)
 				cairo_append_path (cr, &segment->path->cairo);
-			
 		} else if (segment->start < segment->end) {
 			moon_path *path = NULL;
 			

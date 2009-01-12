@@ -36,10 +36,8 @@
 
 Inline::Inline ()
 {
-	autogen = false;
-	
-	/* initialize the font description */
 	font = new TextFontDescription ();
+	autogen = false;
 }
 
 Inline::~Inline ()
@@ -57,6 +55,81 @@ Inline::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, P
 	} else {
 		DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);
 	}
+}
+
+bool
+Inline::Equals (Inline *item)
+{
+	if (item->GetObjectType () != GetObjectType ())
+		return false;
+	
+	if (strcmp (item->GetFontFamily (), GetFontFamily ()) != 0)
+		return false;
+	
+	if (item->GetFontSize () != GetFontSize ())
+		return false;
+	
+	if (item->GetFontStyle () != GetFontStyle ())
+		return false;
+	
+	if (item->GetFontWeight () != GetFontWeight ())
+		return false;
+	
+	if (item->GetFontStretch () != GetFontStretch ())
+		return false;
+	
+	if (item->GetFontFilename () != GetFontFilename ())
+		return false;
+	
+	if (item->GetTextDecorations () != GetTextDecorations ())
+		return false;
+	
+	// this isn't really correct - we should be checking
+	// the innards of the foreground brushes, but we're
+	// guaranteed to never have a false positive here.
+	if (item->GetForeground () != GetForeground ())
+		return false;
+	
+	// OK, as best we can tell - they are equal
+	return true;
+}
+
+void
+Inline::UpdateFontDescription ()
+{
+	// FIXME: I hate having to do it this way, updating the font
+	// in OnPropertyChanged() was a much much better way to do
+	// things. *sigh*
+	font->SetFilename (GetFontFilename ());
+	font->SetFamily (GetFontFamily ());
+	font->SetStyle (GetFontStyle ());
+	font->SetWeight (GetFontWeight ());
+	font->SetSize (GetFontSize ());
+	font->SetStretch (GetFontStretch ());
+}
+
+
+//
+// Run
+//
+bool
+Run::Equals (Inline *item)
+{
+	const char *text, *itext;
+	
+	if (!Inline::Equals (item))
+		return false;
+	
+	itext = ((Run *) item)->GetText ();
+	text = GetText ();
+	
+	// compare the text
+	if (text && itext && strcmp (text, itext) != 0)
+		return false;
+	else if ((text && !itext) || (!text && itext))
+		return false;
+	
+	return true;
 }
 
 
@@ -175,9 +248,9 @@ TextBlock::SetFontSource (Downloader *downloader)
 			downloader->Send ();
 		}
 	} else {
-		font->SetFilename (NULL);
 		ClearValue (TextBlock::FontFilenameProperty);
-
+		font->SetFilename (NULL);
+		
 		dirty = true;
 		
 		UpdateBounds (true);
@@ -298,23 +371,12 @@ TextBlock::Layout (cairo_t *cr)
 	}
 	
 	if (inlines != NULL) {
-		TextDecorations deco;
 		Inline *item;
 		Run *run;
 		
 		for (int i = 0; i < inlines->GetCount (); i++) {
 			item = inlines->GetValueAt (i)->AsInline ();
-
-			TextFontDescription *ifont = item->font;
-
-			ifont->SetFilename (item->GetFontFilename());
-			ifont->SetFamily (item->GetFontFamily ());
-			ifont->SetStyle (item->GetFontStyle ());
-			ifont->SetWeight (item->GetFontWeight ());
-			ifont->SetSize (item->GetFontSize ());
-			ifont->SetStretch (item->GetFontStretch ());
-
-			deco = item->GetTextDecorations ();
+			item->UpdateFontDescription ();
 			
  			switch (item->GetObjectType ()) {
 			case Type::RUN:
@@ -333,20 +395,19 @@ TextBlock::Layout (cairo_t *cr)
 							inend++;
 						
 						if (inend > inptr)
-							runs->Append (new TextRun (inptr, inend - inptr, deco,
-										   ifont, item->GetForeground()));
+							runs->Append (new TextRun (inptr, inend - inptr, (ITextSource *) item));
 						
 						if (*inend == '\0')
 							break;
 						
-						runs->Append (new TextRun (ifont));
+						runs->Append (new TextRun ((ITextSource *) item));
 						inptr = inend + 1;
 					} while (*inptr);
 				}
 				
 				break;
 			case Type::LINEBREAK:
-				runs->Append (new TextRun (ifont));
+				runs->Append (new TextRun ((ITextSource *) item));
 				break;
 			default:
 				break;
@@ -371,7 +432,7 @@ TextBlock::Layout (cairo_t *cr)
 	}
 	
  done:
-
+	
 	dirty = false;
 }
 
@@ -429,57 +490,6 @@ TextBlock::GetTextInternal ()
 	return str;
 }
 
-static bool
-inlines_simple_text_equal (InlineCollection *curInlines, InlineCollection *newInlines)
-{
-	const char *text1, *text2;
-	Inline *run1, *run2;
-	
-	if (curInlines->GetCount () != newInlines->GetCount ())
-		return false;
-	
-	for (int i = 0; i < curInlines->GetCount () && i < newInlines->GetCount (); i++) {
-		run1 = curInlines->GetValueAt (i)->AsInline ();
-		run2 = newInlines->GetValueAt (i)->AsInline ();
-		
-		if (run1->GetObjectType () != run2->GetObjectType ())
-			return false;
-		
-		if (run1->GetObjectType () == Type::RUN) {
-			text1 = ((Run *) run1)->GetText ();
-			text2 = ((Run *) run2)->GetText ();
-			
-			if (text1 && text2 && strcmp (text1, text2) != 0)
-				return false;
-			else if ((text1 && !text2) || (!text1 && text2))
-				return false;
-		}
-
-		if (strcmp (run1->GetFontFamily(), run2->GetFontFamily()))
-			return false;
-		if (run1->GetFontSize() != run2->GetFontSize())
-			return false;
-		if (run1->GetFontStyle() != run2->GetFontStyle())
-			return false;
-		if (run1->GetFontWeight() != run2->GetFontWeight())
-			return false;
-		if (run1->GetFontStretch() != run2->GetFontStretch())
-			return false;
-		if (run1->GetFontFilename() != run2->GetFontFilename())
-			return false;
-		if (run1->GetTextDecorations() != run2->GetTextDecorations())
-			return false;
-
-		// this isn't really correct - we should be checking
-		// the innards of the foreground brushes, but we're
-		// guaranteed to never have a false positive here.
-		if (run1->GetForeground() != run2->GetForeground())
-			return false;
-	}
-	
-	return true;
-}
-
 bool
 TextBlock::SetTextInternal (const char *text)
 {
@@ -511,7 +521,7 @@ TextBlock::SetTextInternal (const char *text)
 			if (inptr > txt) {
 				*inptr = '\0';
 				run = new Run ();
-				run->autogen = true;
+				run->SetAutogenerated (true);
 				run->SetValue (Run::TextProperty, Value (txt));
 				inlines->Add (run);
 				run->unref ();
@@ -519,7 +529,7 @@ TextBlock::SetTextInternal (const char *text)
 			
 			if (inptr < d) {
 				run = new LineBreak ();
-				run->autogen = true;
+				run->SetAutogenerated (true);
 				inlines->Add (run);
 				run->unref ();
 				inptr++;
@@ -528,7 +538,7 @@ TextBlock::SetTextInternal (const char *text)
 		
 		g_free (buf);
 		
-		if (curInlines && inlines_simple_text_equal (curInlines, inlines)) {
+		if (curInlines && inlines->Equals (curInlines)) {
 			// old/new inlines are equal, don't set the new value
 			inlines->unref ();
 			return false;
@@ -566,27 +576,22 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 	if (args->property == TextBlock::FontFamilyProperty) {
 		char *family = args->new_value ? args->new_value->AsString () : NULL;
 		font->SetFamily (family);
-		
 		dirty = true;
 	} else if (args->property == TextBlock::FontSizeProperty) {
 		double size = args->new_value->AsDouble ();
 		font->SetSize (size);
-		
 		dirty = true;
 	} else if (args->property == TextBlock::FontStretchProperty) {
 		FontStretches stretch = (FontStretches) args->new_value->AsInt32 ();
 		font->SetStretch (stretch);
-		
 		dirty = true;
 	} else if (args->property == TextBlock::FontStyleProperty) {
 		FontStyles style = (FontStyles) args->new_value->AsInt32 ();
 		font->SetStyle (style);
-		
 		dirty = true;
 	} else if (args->property == TextBlock::FontWeightProperty) {
 		FontWeights weight = (FontWeights) args->new_value->AsInt32 ();
 		font->SetWeight (weight);
-		
 		dirty = true;
 	} else if (args->property == TextBlock::TextProperty) {
 		if (setvalue) {
@@ -699,33 +704,30 @@ TextBlock::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *arg
 void
 TextBlock::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
 {
-	bool update_bounds;
-	bool update_text;
-	
 	if (col != GetInlines ()) {
 		FrameworkElement::OnCollectionItemChanged (col, obj, args);
 		return;
 	}
 	
-	// only update bounds if a property other than the Foreground changed
-	update_bounds = args->property != Inline::ForegroundProperty;
-	
-	// only update our TextProperty if change was in a Run's Text property
-	update_text = args->property == Run::TextProperty;
-	
-	dirty = true;
-	
-	if (update_text) {
-		char *text = GetTextInternal ();
+	if (args->property != Inline::ForegroundProperty) {
+		if (args->property == Run::TextProperty) {
+			// update our TextProperty
+			char *text = GetTextInternal ();
+			
+			setvalue = false;
+			SetValue (TextBlock::TextProperty, Value (text));
+			setvalue = true;
+			g_free (text);
+		}
 		
-		setvalue = false;
-		SetValue (TextBlock::TextProperty, Value (text));
-		setvalue = true;
-		g_free (text);
-	}
-	
-	if (update_bounds)
+		// All non-Foreground property changes require
+		// recalculating layout which can change the bounds.
 		UpdateBounds (true);
+		dirty = true;
+	} else {
+		// A simple Foreground brush change does not require
+		// recalculating layout. Invalidate() and we're done.
+	}
 	
 	Invalidate ();
 }

@@ -235,6 +235,8 @@ class InlineCollection : public DependencyObjectCollection {
 	
 	virtual Type::Kind GetObjectType () { return Type::INLINE_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::INLINE; }
+	
+	bool Equals (InlineCollection *inlines);
 };
 
 /* @Namespace=System.Windows.Controls */

@@ -118,7 +118,7 @@ class TextBoxDynamicPropertyValueProvider;
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
 /* @CallInitialize */
-class TextBox : public Control {
+class TextBox : public Control, public ITextSource {
 	friend class TextBoxDynamicPropertyValueProvider;
 	
 	TextFontDescription *font;
@@ -207,9 +207,15 @@ class TextBox : public Control {
 	void Select (int start, int length);
 	
 	// Methods needed by TextBoxView
-	TextFontDescription *GetFontDescription () { return font; }
 	TextSelection *GetSelection () { return &selection; }
 	TextBuffer *GetBuffer () { return buffer; }
+	
+	//
+	// ITextSource Interface Methods
+	//
+	virtual TextDecorations Decorations () { return TextDecorationsNone; }
+	virtual TextFontDescription *FontDescription () { return font; }
+	virtual Brush *Foreground () { return GetForeground (); }
 	
 	//
 	// Property Accessors

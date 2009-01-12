@@ -23,19 +23,27 @@
 #include <list.h>
 
 
+class ITextSource {
+ public:
+	virtual TextFontDescription *FontDescription () = 0;
+	virtual TextDecorations Decorations () = 0;
+	virtual Brush *Foreground () = 0;
+};
+
 class TextRun : public List::Node {
  public:
+	ITextSource *source;
 	TextDecorations deco;
-	gunichar *text;
 	TextFont *font;
-	Brush *fg;
+	gunichar *text;
 	
-	TextRun (const gunichar *ucs4, int len, TextDecorations deco, TextFontDescription *font, Brush *fg);
-	TextRun (const char *utf8, int len, TextDecorations deco, TextFontDescription *font, Brush *fg);
-	TextRun (TextFontDescription *font);
+	TextRun (const gunichar *ucs4, int len, ITextSource *source);
+	TextRun (const char *utf8, int len, ITextSource *source);
+	TextRun (ITextSource *source);
+	
 	virtual ~TextRun ();
 	
-	bool IsUnderlined () { return (deco & TextDecorationsUnderline); }
+	bool IsUnderlined () { return (source->Decorations () & TextDecorationsUnderline); }
 };
 
 struct TextSelection {
