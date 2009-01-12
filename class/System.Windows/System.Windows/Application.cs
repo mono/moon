@@ -335,34 +335,38 @@ namespace System.Windows {
 			if (uriResource.IsAbsoluteUri)
 				throw new ArgumentException ("resourceUri");
 
+			Assembly assembly;
+			string assembly_name;
+			string resource;
 			string loc = uriResource.ToString ();
-			string aname;
-			string res;
 			int p = loc.IndexOf (';');
 
 			/* We have a resource of the format /assembly;component/resourcename */
 			if (p > 0) {
-				aname = loc.Substring (1, p-1);
-				res = loc.Substring (p+11);
+				assembly_name = loc.Substring (1, p - 1);
+				assembly = assemblies.FirstOrDefault (a => a.GetName ().Name == assembly_name);
+				if (assembly == null)
+					return null;
+
+				resource = loc.Substring (p + 11);
 			} else {
-				aname = entry_point_assembly.GetName ().Name;
-				res = loc [0] == '/' ? loc.Substring (1) : loc;	
+				assembly = entry_point_assembly;
+				assembly_name = assembly.GetName ().Name;
+				resource = loc [0] == '/' ? loc.Substring (1) : loc;	
 			}
-					
-			Assembly assembly = assemblies.FirstOrDefault (a => a.GetName ().Name == aname);
-			if (assembly == null)
+
+			try {
+				var manager = new ResourceManager (assembly_name + ".g", assembly) { IgnoreCase = true };
+				var stream = manager.GetStream (resource);
+				if (stream != null)
+					return new StreamResourceInfo (stream, string.Empty);
+			} catch {
 				return null;
+			}
 
-			ResourceManager rm = new ResourceManager (aname + ".g", assembly);
-
-			rm.IgnoreCase = true;
-			Stream s = rm.GetStream (res);
-
-			if (s != null)
-				return new StreamResourceInfo (s, "");
-
-			if (File.Exists (Path.Combine (Current.xap_dir, res)))
-				return StreamResourceInfo.FromFile (Path.Combine (Current.xap_dir, res));
+			string res_file = Path.Combine (Current.xap_dir, resource);
+			if (File.Exists (res_file))
+				return StreamResourceInfo.FromFile (res_file);
 
 			return null;
 		}
