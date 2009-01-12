@@ -45,6 +45,7 @@ namespace System.Windows {
 	public partial class Application {
 
 		static Application current;
+		static ResourceDictionary resources;
 		static Assembly [] assemblies;
 		static Assembly entry_point_assembly;
 
@@ -314,7 +315,7 @@ namespace System.Windows {
 				ApplicationInternal temp = new ApplicationInternal ();
 				loader.Hydrate (temp.native, xaml);
 
-				// TODO: Copy the important stuff such as Resourcesfrom the temp DO to the app
+				resources = temp.Resources ?? new ResourceDictionary ();
 			}
 		}
 
@@ -389,7 +390,7 @@ namespace System.Windows {
 
 		public ResourceDictionary Resources {
 			get {
-				throw new NotImplementedException ("Resources");
+				return resources;
 			}
 		}
 

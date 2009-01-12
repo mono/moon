@@ -28,6 +28,12 @@
 	* DependencyObject.g.cs: Regenerated
 	* DependencyProperty.cs: Hide custom delegate type
 
+2009-01-12  Geoff Noton  <gnorton@novell.com>
+
+	* Application.cs: Copy the ResourceDictionary from the temp DO to the
+	ApplicationClass.  Application.Resources also appears to never return
+	null.
+
 2009-01-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* DependencyObject.cs: Corcompare issues.
