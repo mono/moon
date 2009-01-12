@@ -414,8 +414,8 @@ InlineCollection::Equals (InlineCollection *inlines)
 		return false;
 	
 	for (guint i = 0; i < array->len; i++) {
-		run1 = (Inline *) inlines->array->pdata[i];
-		run0 = (Inline *) array->pdata[i];
+		run1 = ((Value *) inlines->array->pdata[i])->AsInline ();
+		run0 = ((Value *) array->pdata[i])->AsInline ();
 		
 		if (!run0->Equals (run1))
 			return false;
