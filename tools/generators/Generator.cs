@@ -746,8 +746,14 @@ class Generator {
 			
 			type.Base = ParseTypeReference (tokenizer);
 			
-			if (tokenizer.CurrentToken.value == ",")
-				throw new Exception (string.Format ("Multiple inheritance is not supported"));
+			// accept multiple inheritance the easy way
+			while (tokenizer.CurrentToken.value == ",") {
+				tokenizer.Accept (Token2Type.Punctuation, ",");
+				
+				while (tokenizer.CurrentToken.value != "," &&
+				       tokenizer.CurrentToken.value != "{")
+					tokenizer.GetIdentifier ();
+			}
 			
 			//Console.WriteLine ("ParseType: Found {0}'s base class: {1}", type.Name, type.Base);
 		}
