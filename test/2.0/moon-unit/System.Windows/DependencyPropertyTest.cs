@@ -742,6 +742,17 @@ namespace MoonTest.System.Windows
 		}
 #endregion
 
+#region DefaultValue tests
+		[TestMethod ()]
+		public void DefaultValue_Run_Foreground ()
+		{
+			Assert.Throws<UnauthorizedAccessException> (delegate {
+					Run r = new Run ();
+					((SolidColorBrush)r.Foreground).Color = Colors.Blue;
+				}, "modifying the default value of a property should throw an exception");
+		}
+#endregion
+
 #region Custom types, etc
 		public class CustomCanvasType : Canvas
 		{
