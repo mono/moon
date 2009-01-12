@@ -1,5 +1,13 @@
 2009-01-12  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Add MOON_NOFAIL_MISSING_PROPS, this is a temp hack so
+	we can load some sites and see which properties are missing, right
+	now it will only work for attributes. Intentionally not using the
+	debug flags stuff, because i don't want this hack to stay around
+	for very long.
+
+2009-01-12  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: Stop trying to set attributes once we hit the first
 	error.
 

@@ -3753,9 +3753,15 @@ start_parse:
 			if (!item->SetUnknownAttribute (p, attr [i], attr [i + 1])) {
 				if (atchname)
 					g_free (atchname);
+
+				if (getenv ("MOON_NOFAIL_MISSING_PROPS")) {
+					printf ("Missing property %s on %s is being set to %s\n", attr [i], item->element_name, attr [i + 1]);
+					continue;
+				}
+				
 				parser_error (p, item->element_name, attr [i], 2012,
-					      "Unknown attribute %s on element %s.",
-					      attr [i], item->element_name);
+						"Unknown attribute %s on element %s.",
+						attr [i], item->element_name);
 				return;
 			}
 		}
