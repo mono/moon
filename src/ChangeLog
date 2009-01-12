@@ -1,3 +1,10 @@
+2009-01-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* grid.h: Hide RowDefinitionCollection ctor from managed code
+	* frameworkelement.cpp, provider.cpp: Even is Is(Type::Style)
+	returns true the Style value can still be NULL (fix two new crash
+	in SDK control unit tests)
+
 2009-01-12  Andreia Gaita  <avidigal@novell.com>
 
 	* stackpanel.cpp|h: removed, stackpanel is now done in managed

@@ -61,7 +61,8 @@ StylePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 	if (!style)
 		return NULL;
 
-	return style->AsStyle()->GetPropertyValue (property);
+	Style *s = style->AsStyle ();
+	return s ? s->GetPropertyValue (property) : NULL;
 }
 
 Value*

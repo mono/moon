@@ -128,7 +128,7 @@ class RowDefinitionCollection : public DependencyObjectCollection {
 	virtual ~RowDefinitionCollection () {}
 	
  public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	RowDefinitionCollection () {}
 	
 	virtual Type::Kind GetObjectType ()  { return Type::ROWDEFINITION_COLLECTION; }
