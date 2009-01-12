@@ -34,9 +34,12 @@ namespace System.Windows {
 
 	public sealed partial class Deployment : DependencyObject {
 
+		static Deployment current;
+
 		public static Deployment Current {
 			[SecuritySafeCritical]
-			get { throw new NotImplementedException (); }
+			get { return current; }
+			internal set { current = value; }
 		}
 	
 		[SecurityCritical]

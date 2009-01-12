@@ -190,6 +190,7 @@ namespace System.Windows {
 			}
 
 			Deployment deployment = (Deployment) result;
+			Deployment.Current = deployment;
 
 			if (deployment.EntryPointAssembly == null) {
 				Report.Error ("AppManifest.xaml: No EntryPointAssembly found");

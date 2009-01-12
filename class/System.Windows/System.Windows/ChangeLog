@@ -1,5 +1,11 @@
 2009-01-12  Jb Evain  <jbevain@novell.com>
 
+	* Deployment.cs: add a current field.
+	* Application.cs: assign Deployment.Current when creating the application
+	from the Deployment manifest.
+
+2009-01-12  Jb Evain  <jbevain@novell.com>
+
 	* Application.cs (GetResourceStream): refactor a bit. Protect from
 	MissingResourceExceptions.
 
