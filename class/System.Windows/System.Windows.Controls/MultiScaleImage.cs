@@ -27,6 +27,7 @@
 //
 
 using Mono;
+using System.Collections.ObjectModel;
 using System.Security;
 
 namespace System.Windows.Controls {
@@ -42,6 +43,15 @@ namespace System.Windows.Controls {
 		public Point ElementToLogicalPoint (Point elementPoint)
 		{
 			return NativeMethods.multi_scale_image_element_to_logical_point (this.native, elementPoint);
+		}
+
+		public Point LogicalToElementPoint (Point logicalPoint)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public ReadOnlyCollection<MultiScaleSubImage> SubImages {
+			get { throw new NotImplementedException (); }
 		}
 
 		static object ImageFailedEvent = new object ();
@@ -69,7 +79,7 @@ namespace System.Windows.Controls {
 			}
 		}
 
-		public event ExceptionRoutedEventHandler ImageOpenFailed {
+		public event EventHandler<ExceptionRoutedEventArgs> ImageOpenFailed {
 			add {
 				if (events[ImageOpenFailedEvent] == null)
 					Events.AddHandler (this, "ImageOpenFailed", image_open_failed);

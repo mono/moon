@@ -1,3 +1,7 @@
+2009-01-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* DependencyObject.cs: Corcompare issues.
+
 2009-01-12  Andreia Gaita  <avidigal@novell.com>
 
 	* DependencyObject.cs: Remove unmanaged StackPanel usage

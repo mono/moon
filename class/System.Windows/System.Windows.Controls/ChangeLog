@@ -1,3 +1,8 @@
+2009-01-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* TextBlock.cs:
+	* MultiScaleImage.cs: Corcompare issues.
+
 2009-01-12  Andreia Gaita  <avidigal@novell.com>
 
 	* StackPanel.cs: New managed implementation (only vertical

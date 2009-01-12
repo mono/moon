@@ -33,6 +33,9 @@ using System.Windows.Documents;
 
 namespace System.Windows.Controls {
 	public sealed partial class TextBlock : FrameworkElement {
-
+		public FontSource FontSource {
+			get { throw new NotImplementedException (); }
+			set { throw new NotImplementedException (); }
+		}
 	}
 }
