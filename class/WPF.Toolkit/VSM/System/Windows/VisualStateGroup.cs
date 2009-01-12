@@ -27,7 +27,7 @@ namespace System.Windows
         public string Name
         {
             get;
-            set;
+            internal set;
         }
 
         /// <summary>

@@ -16,7 +16,11 @@ namespace System.Windows
     /// Defines a transition between VisualStates.
     /// </summary>
     [ContentProperty("Storyboard")]
+#if WPF
     public class VisualTransition : DependencyObject
+#else
+    public class VisualTransition
+#endif
     {
         public VisualTransition()
         {

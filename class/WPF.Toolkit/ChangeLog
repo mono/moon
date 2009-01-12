@@ -1,3 +1,8 @@
+2009-01-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* VSM/System/Windows/VisualStateGroup.cs,
+	* VSM/System/Windows/VisualTransition.cs: Fix API to match SL2
+
 2008-11-21  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* VSM/System/Windows/VisualStateChangedEventArgs.cs:
