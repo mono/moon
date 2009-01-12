@@ -687,12 +687,9 @@ TextBlock::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *arg
 	}
 	
 	if (update_text) {
-		char *text = GetTextInternal ();
-		
 		setvalue = false;
-		SetValue (TextBlock::TextProperty, Value (text));
+		SetValue (TextBlock::TextProperty, Value (GetTextInternal (), true));
 		setvalue = true;
-		g_free (text);
 	}
 	
 	if (update_bounds)
