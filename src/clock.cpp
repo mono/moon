@@ -314,6 +314,9 @@ TimeManager::~TimeManager ()
 void
 TimeManager::SetMaximumRefreshRate (int hz)
 {
+	if (hz == 0)
+		hz = 1;
+	
 	max_fps = hz;
 	current_timeout = FPS_TO_DELAY (hz);
 	source->SetTimerFrequency (current_timeout);

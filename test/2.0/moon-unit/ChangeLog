@@ -1,5 +1,9 @@
 2009-01-12  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Interop/SettingsTest.cs: Minimum FPS is clamped at 1.
+
+2009-01-12  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Media.Animation/StoryboardTest.cs: Add correct
 	validator for Storyboard.TargetName and Storyboard.TargetProperty
 

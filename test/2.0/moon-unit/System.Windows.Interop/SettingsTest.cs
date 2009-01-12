@@ -81,7 +81,6 @@ namespace MoonTest.System.Windows.Interop {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void MaxFrameRate ()
 		{
 			Settings settings = new Settings ();
