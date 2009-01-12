@@ -3756,7 +3756,7 @@ start_parse:
 				parser_error (p, item->element_name, attr [i], 2012,
 					      "Unknown attribute %s on element %s.",
 					      attr [i], item->element_name);
-				continue;
+				return;
 			}
 		}
 

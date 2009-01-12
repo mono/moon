@@ -1,3 +1,8 @@
+2009-01-12  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Stop trying to set attributes once we hit the first
+	error.
+
 2009-01-12  Jeffrey Stedfast  <fejj@novell.com>
 
 	* collection.cpp (InlineCollection::Equals): New convenience
