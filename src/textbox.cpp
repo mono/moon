@@ -992,14 +992,10 @@ void
 TextBoxView::Paint (cairo_t *cr)
 {
 	TextBox *textbox = GetTextBox ();
-	Brush *fg;
 	
 	printf ("TextBoxView::Paint()\n");
 	
-	if (!(fg = textbox->GetForeground ()))
-		fg = default_foreground ();
-	
-	layout->Render (cr, GetOriginPoint (), Point (), fg, textbox->GetSelection ());
+	layout->Render (cr, GetOriginPoint (), Point (), textbox->GetSelection ());
 }
 
 void

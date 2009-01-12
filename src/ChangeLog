@@ -1,3 +1,34 @@
+2009-01-11  Chris Toshok  <toshok@ximian.com>
+
+	* layout.h, layout.cpp (RenderLine): default_fg is unnecessary
+	now.  the run fg will always be initialized.
+	(TextRun::TextRun): the fg pointer is Brush*, not Brush**.
+	(TextLayout::Render): no need to pass in the default foreground.
+
+	* runtime.cpp (runtime_shutdown): text_shutdown is gone.
+
+	* text.h, text.cpp: stop caching the foreground.  and there's no
+	need to create the default foreground brush in code.  it's simply
+	the default value of the Foreground dependency property.
+	(inlines_simple_text_equal): this needed fixing up since the font
+	flags really aren't used for inheritance anymore - we need (and
+	really, always needed to) compare the actual values, not just if
+	they're set.
+	(text_shutdown): no need for this anymore.
+	
+	* textbox.cpp (TextBoxView::Paint): same.  no more default_fg
+	needed.
+
+2009-01-11  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.h, dependencyobject.cpp: make DO's freezable.
+	if a DO is frozen, any SetValue() call raises an
+	UnauthorizedAccessException.  We use this for default values of
+	DependencyProperties.
+
+	* dependencyproperty.cpp (DependencyProperty::DependencyProperty):
+	freeze the default value.
+
 2009-01-11  Andreia Gaita  <avidigal@novell.com>
 
 	* clock.h|cpp (DispatcherTimer): Don't destroy the clock on Stop(), 

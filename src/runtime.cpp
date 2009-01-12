@@ -2011,7 +2011,6 @@ runtime_shutdown (void)
 	Media::Shutdown ();
 	
 	animation_shutdown ();
-	text_shutdown ();
 	font_shutdown ();
 	
 	DependencyObject::Shutdown ();

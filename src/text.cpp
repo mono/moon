@@ -30,34 +30,12 @@
 #include "debug.h"
 
 
-static SolidColorBrush *default_foreground_brush = NULL;
-
-static Brush *
-default_foreground (void)
-{
-	if (!default_foreground_brush)
-		default_foreground_brush = new SolidColorBrush ("black");
-	
-	return (Brush *) default_foreground_brush;
-}
-
-void
-text_shutdown (void)
-{
-	if (default_foreground_brush) {
-		default_foreground_brush->unref ();
-		default_foreground_brush = NULL;
-	}
-}
-
-
 //
 // Inline
 //
 
 Inline::Inline ()
 {
-	foreground = NULL;
 	autogen = false;
 	
 	/* initialize the font description */
@@ -67,22 +45,6 @@ Inline::Inline ()
 Inline::~Inline ()
 {
 	delete font;
-}
-
-void
-Inline::OnPropertyChanged (PropertyChangedEventArgs *args)
-{
-	if (args->property->GetOwnerType() != Type::INLINE) {
-		DependencyObject::OnPropertyChanged (args);
-		return;
-	}
-	
-	if (args->property == Inline::ForegroundProperty) {
-		foreground = args->new_value ? args->new_value->AsBrush () : NULL;
-	}
-	
-	
-	NotifyListenersOfPropertyChange (args);
 }
 
 void
@@ -372,7 +334,7 @@ TextBlock::Layout (cairo_t *cr)
 						
 						if (inend > inptr)
 							runs->Append (new TextRun (inptr, inend - inptr, deco,
-										   ifont, &item->foreground));
+										   ifont, item->GetForeground()));
 						
 						if (*inend == '\0')
 							break;
@@ -416,15 +378,10 @@ TextBlock::Layout (cairo_t *cr)
 void
 TextBlock::Paint (cairo_t *cr)
 {
-	Brush *fg;
-	
-	if (!(fg = GetForeground ()))
-		fg = default_foreground ();
-
 	Thickness *padding = GetPadding ();
 	Point offset (padding->left, padding->top);
 	
-	layout->Render (cr, GetOriginPoint (), offset, fg);
+	layout->Render (cr, GetOriginPoint (), offset);
 	
 	if (moonlight_flags & RUNTIME_INIT_SHOW_TEXTBOXES) {
 		cairo_set_source_rgba (cr, 0.0, 1.0, 0.0, 1.0);
@@ -497,18 +454,26 @@ inlines_simple_text_equal (InlineCollection *curInlines, InlineCollection *newIn
 			else if ((text1 && !text2) || (!text1 && text2))
 				return false;
 		}
-		
-		// newInlines uses TextBlock font/brush properties, so
-		// if curInlines uses any non-default props then they
-		// are not equal.
-		
-		if (run1->font->GetFields () != 0)
+
+		if (strcmp (run1->GetFontFamily(), run2->GetFontFamily()))
 			return false;
-		
-		if (run1->GetValueNoDefault (Inline::TextDecorationsProperty) != NULL)
+		if (run1->GetFontSize() != run2->GetFontSize())
 			return false;
-		
-		if (run1->foreground != NULL)
+		if (run1->GetFontStyle() != run2->GetFontStyle())
+			return false;
+		if (run1->GetFontWeight() != run2->GetFontWeight())
+			return false;
+		if (run1->GetFontStretch() != run2->GetFontStretch())
+			return false;
+		if (run1->GetFontFilename() != run2->GetFontFilename())
+			return false;
+		if (run1->GetTextDecorations() != run2->GetTextDecorations())
+			return false;
+
+		// this isn't really correct - we should be checking
+		// the innards of the foreground brushes, but we're
+		// guaranteed to never have a false positive here.
+		if (run1->GetForeground() != run2->GetForeground())
 			return false;
 	}
 	

@@ -35,7 +35,7 @@
  */
 #define APPLY_KERNING(uc)	((uc != 0x002E) && (uc != 0x06D4) && (uc != 3002))
 
-TextRun::TextRun (const gunichar *ucs4, int len, TextDecorations deco, TextFontDescription *font, Brush **fg)
+TextRun::TextRun (const gunichar *ucs4, int len, TextDecorations deco, TextFontDescription *font, Brush *fg)
 {
 	text = (gunichar *) g_malloc (sizeof (gunichar) * (len + 1));
 	memcpy (text, ucs4, sizeof (gunichar) * len);
@@ -46,7 +46,7 @@ TextRun::TextRun (const gunichar *ucs4, int len, TextDecorations deco, TextFontD
 	this->fg = fg;
 }
 
-TextRun::TextRun (const char *utf8, int len, TextDecorations deco, TextFontDescription *font, Brush **fg)
+TextRun::TextRun (const char *utf8, int len, TextDecorations deco, TextFontDescription *font, Brush *fg)
 {
 	register gunichar *s, *d;
 	
@@ -1213,7 +1213,7 @@ TextLayout::Layout ()
 }
 
 static inline void
-RenderLine (cairo_t *cr, const Point &origin, const Point &position, TextLine *line, Brush *default_fg)
+RenderLine (cairo_t *cr, const Point &origin, const Point &position, TextLine *line)
 {
 	TextFont *font = NULL;
 	TextDecorations deco;
@@ -1223,7 +1223,6 @@ RenderLine (cairo_t *cr, const Point &origin, const Point &position, TextLine *l
 	GlyphInfo *glyph;
 	double x1, y1;
 	double x0, y0;
-	Brush *fg;
 	int size;
 	int i;
 	
@@ -1234,6 +1233,8 @@ RenderLine (cairo_t *cr, const Point &origin, const Point &position, TextLine *l
 	segment = (TextSegment *) line->segments->First ();
 	
 	while (segment) {
+		Brush *fg = segment->run->fg;
+
 		text = segment->run->text;
 		deco = segment->run->deco;
 		font = segment->run->font;
@@ -1244,11 +1245,6 @@ RenderLine (cairo_t *cr, const Point &origin, const Point &position, TextLine *l
 		// set y1 to the baseline relative to the translation matrix
 		y1 = font->Ascender ();
 		x1 = 0.0;
-		
-		if (segment->run->fg && *segment->run->fg)
-			fg = *segment->run->fg;
-		else
-			fg = default_fg;
 		
 		Rect area = Rect (origin.x, origin.y, segment->advance, font->Height ());
 		fg->SetupBrush (cr, area);
@@ -1318,7 +1314,7 @@ RenderLine (cairo_t *cr, const Point &origin, const Point &position, TextLine *l
 }
 
 void
-TextLayout::Render (cairo_t *cr, const Point &origin, const Point &offset, Brush *default_fg, TextSelection *selection, int cursor)
+TextLayout::Render (cairo_t *cr, const Point &origin, const Point &offset, TextSelection *selection, int cursor)
 {
 	TextLine *line;
 	Point position;
@@ -1350,7 +1346,7 @@ TextLayout::Render (cairo_t *cr, const Point &origin, const Point &offset, Brush
 		}
 		
 		position.x = offset.x + deltax;
-		RenderLine (cr, origin, position, line, default_fg);
+		RenderLine (cr, origin, position, line);
 		position.y += (double) line->height;
 		
 		line = (TextLine *) line->next;

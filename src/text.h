@@ -30,13 +30,6 @@
 #define TEXTBLOCK_FONT_STYLE   FontStylesNormal
 #define TEXTBLOCK_FONT_SIZE    14.666666984558105
 
-G_BEGIN_DECLS
-
-void text_shutdown (void);
-
-G_END_DECLS
-
-
 /* @Namespace=System.Windows.Documents */
 class Inline : public DependencyObject {
  protected:
@@ -66,7 +59,6 @@ class Inline : public DependencyObject {
 	
 	/* Member variables should be considered private, for use only with the parent TextBlock */
 	TextFontDescription *font;
-	Brush *foreground;
 	bool autogen;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
@@ -74,7 +66,6 @@ class Inline : public DependencyObject {
 	
 	virtual Type::Kind GetObjectType () { return Type::INLINE; }
 	
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 
 	// property accessors

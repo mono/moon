@@ -28,10 +28,10 @@ class TextRun : public List::Node {
 	TextDecorations deco;
 	gunichar *text;
 	TextFont *font;
-	Brush **fg;
+	Brush *fg;
 	
-	TextRun (const gunichar *ucs4, int len, TextDecorations deco, TextFontDescription *font, Brush **fg);
-	TextRun (const char *utf8, int len, TextDecorations deco, TextFontDescription *font, Brush **fg);
+	TextRun (const gunichar *ucs4, int len, TextDecorations deco, TextFontDescription *font, Brush *fg);
+	TextRun (const char *utf8, int len, TextDecorations deco, TextFontDescription *font, Brush *fg);
 	TextRun (TextFontDescription *font);
 	virtual ~TextRun ();
 	
@@ -104,7 +104,7 @@ class TextLayout {
 	// Methods
 	//
 	
-	void Render (cairo_t *cr, const Point &origin, const Point &offset, Brush *default_fg, TextSelection *selection = NULL, int cursor = -1);
+	void Render (cairo_t *cr, const Point &origin, const Point &offset, TextSelection *selection = NULL, int cursor = -1);
 	void Layout ();
 	
 	void GetActualExtents (double *width, double *height);
