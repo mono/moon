@@ -468,14 +468,17 @@ namespace System.Windows.Controls
                         break; 
                 } 
 
+		double max_new_value = Math.Max (newValue, 0);
                 // Update ScrollContentPresenter 
                 if (Orientation.Horizontal == orientation)
                 {
-                    ElementScrollContentPresenter.HorizontalOffset = Math.Max(newValue, 0); 
+//                    ElementScrollContentPresenter.HorizontalOffset = Math.Max(newValue, 0); 
+                    ElementScrollContentPresenter.SetVerticalOffset (max_new_value);
                 }
                 else
                 { 
-                    ElementScrollContentPresenter.VerticalOffset = Math.Max(newValue, 0); 
+//                    ElementScrollContentPresenter.VerticalOffset = Math.Max(newValue, 0); 
+                    ElementScrollContentPresenter.SetVerticalOffset (max_new_value);
                 }
  
 //                bool previousReadOnlyDependencyPropertyChangesAllowed = _readOnlyDependencyPropertyChangesAllowed;

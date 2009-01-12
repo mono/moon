@@ -24,17 +24,25 @@ namespace System.Windows.Controls
         /// <summary>
         /// Reference to the ScrollViewer parent control. 
         /// </summary> 
-        internal ScrollViewer ViewerParent { get; set; }
+        public ScrollViewer ViewerParent { get; set; }
  
+	public bool CanHorizontallyScroll { get; set; }
+
+	public bool CanVerticallyScroll { get; set; }
         /// <summary>
         /// Gets the horizontal offset of the scrolled content.
         /// </summary> 
         public double HorizontalOffset
         {
             get { return _horizontalOffset; } 
-            set { _horizontalOffset = value; InvalidateArrange(); } 
         }
         private double _horizontalOffset; 
+
+	public void SetHorizontalOffset (double offset)
+	{
+		_horizontalOffset = offset;
+		InvalidateArrange();
+	}
 
         /// <summary>
         /// Gets the vertical offset of the scrolled content. 
@@ -42,9 +50,14 @@ namespace System.Windows.Controls
         public double VerticalOffset
         { 
             get { return _verticalOffset; } 
-            set { _verticalOffset = value; InvalidateArrange(); }
         } 
         private double _verticalOffset;
+
+	public void SetVerticalOffset (double offset)
+	{
+		_verticalOffset = offset;
+		InvalidateArrange();
+	}
 
         /// <summary> 
         /// Gets the horizontal size of the extent.
@@ -100,8 +113,8 @@ namespace System.Windows.Controls
             ExtentHeight = ExtentSize.Height; 
             ViewportWidth = Math.Min(availableSize.Width, ExtentWidth);
             ViewportHeight = Math.Min(availableSize.Height, ExtentHeight);
-            HorizontalOffset = Math.Max(HorizontalOffset, 0); 
-            VerticalOffset = Math.Max(VerticalOffset, 0);
+            SetHorizontalOffset (Math.Max (HorizontalOffset, 0)); 
+            SetVerticalOffset (Math.Max (VerticalOffset, 0));
             ViewerParent.InvalidateMeasure();
             return new Size(ViewportWidth, ViewportHeight); 
         } 
