@@ -370,26 +370,83 @@ namespace Mono.Xaml
 		{
 			object subscriber = DependencyObject.Lookup (top_level);
 			EventInfo ie = publisher.GetType ().GetEvent (name);
+			string handler_name = Value.ToObject (null, value_ptr) as string;
+			
+			// Console.WriteLine ("TrySetEventReflection ({0}, {1}, {2}, {3}, {4}, {5}) handler_name: {6}", top_level, xmlns, publisher, type_name, name, value_ptr, handler_name);
 			
 			if (ie == null) {
 				error = "Event does not exist.";
 				return false;
 			}
 
-			string handler_name = Value.ToObject (null, value_ptr) as string;
 
 			if (handler_name == null) {
 				error = "No method name supplied for event handler.";
 				return false;
 			}
 
-			Delegate d = Delegate.CreateDelegate (ie.EventHandlerType, subscriber, handler_name);
+			Delegate d = null;
+			Type stype = subscriber.GetType ();
+			MethodInfo [] methods = stype.GetMethods (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+			MethodInfo candidate = null;
+			bool name_match = false;
+			
+			for (int i = 0; i < methods.Length; i++) {
+				MethodInfo m = methods [i];
+				ParameterInfo [] parameters;
+				
+				if (m.Name != handler_name)
+					continue;
+
+				if (name_match) {
+					error = "Multiple candidates with the same name found for event handler.";
+					// Console.WriteLine (error);
+					return false;
+				}
+
+				name_match = true;
+
+				if (m.ReturnType != typeof (void))
+					continue;
+
+				parameters = m.GetParameters ();
+				
+				if (parameters.Length != 2)
+					continue;
+
+				if (parameters [0].ParameterType != typeof (Object))
+					continue;
+
+				if (!typeof (EventArgs).IsSubclassOf (parameters [0].ParameterType))
+				    continue;
+
+				if (candidate != null) {
+					error = "Multiple candidates for event handler found.";
+					// Console.WriteLine (error);
+					return false;
+				}
+
+				candidate = m;
+			}
+
+			if (candidate == null) {
+				error = "Event handler not found.";
+				// Console.WriteLine (error);
+				return false;
+			}
+
+			Console.WriteLine ("Found event handler: {1}::{0}", candidate.Name, candidate.DeclaringType.FullName);
+			
+			d = Delegate.CreateDelegate (ie.EventHandlerType, subscriber, candidate, false);
+			
 			if (d == null) {
 				Console.Error.WriteLine ("ManagedXamlLoader::HookupEvent ({0}, {1}, {2}): unable to create delegate (src={3} target={4}).", top_level, name, value_ptr, ie.EventHandlerType, publisher);
 				error = "Can not create even delegate.";
 				return false;
 			}
 
+			// Console.Error.WriteLine ("ManagedXamlLoader::HookupEvent ({0}, {1}, {2}): Successfully created delegate (src={3} target={4}).", top_level, name, value_ptr, ie.EventHandlerType, publisher);
+				
 			error = null;
 			ie.AddEventHandler (publisher, d);
 			return true;

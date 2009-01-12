@@ -1,3 +1,34 @@
+2009-01-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Add new xaml files to assembly as resources.
+
+	* misc:
+	* misc/Events:
+	* misc/Events/Event_3.xaml:
+	* misc/Events/EventTest.cs:
+	* misc/Events/Event_0.xaml:
+	* misc/Events/Event_1.xaml:
+	* misc/Events/Event_DO.xaml:
+	* misc/Events/Event_Exact.xaml:
+	* misc/Events/Event_Basic.xaml:
+	* misc/Events/Event_NonVoid.xaml:
+	* misc/Events/Event_Private.xaml:
+	* misc/Events/Event_Internal.xaml:
+	* misc/Events/Event_MouseArgs.xaml:
+	* misc/Events/Event_Protected.xaml:
+	* misc/Events/Event_Ex_Derived.xaml:
+	* misc/Events/Event_Ex_Derived2.xaml:
+	* misc/Events/Event_Ex_Derived3.xaml:
+	* misc/Events/Event_CaseMismatch.xaml:
+	* misc/Events/Event_ObjectObject.xaml:
+	* misc/Events/Event_RoutedEventArgs.xaml:
+	* misc/Events/Event_OverloadedValid.xaml:
+	* misc/Events/Event_OverloadedInvalid.xaml:
+	* misc/Events/Event_InexistentResource.xaml: Added EventTest.
+
+	* moon-unit.mdp:
+	* moon-unit.csproj: Updated.
+
 2009-01-12  Andreia Gaita  <avidigal@novell.com>
 
 	* System.Windows.Interop/SettingsTest.cs (MaxFrameRate): Always reset the framerate back to its

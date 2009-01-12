@@ -1,0 +1,6 @@
+<Canvas x:Class="MoonTest.Misc.EventTestCanvas"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+        Loaded="Loaded_Derived2"
+    LoadedEx="LoadedEx_Derived2" Width="123" Height="123">
+</Canvas>

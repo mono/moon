@@ -1,3 +1,11 @@
+2009-01-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* ManagedXamlLoader.cs: TrySetEventReflection: we need to find the
+	method to bind to manually, Delegate.CreateDelegate (with a string
+	argument to find the method) only supports methods with the exact
+	same parameter types, however we have to bind to methods which
+	doesn't have the exact same parameter types.
+
 2009-01-12  Andreia Gaita  <avidigal@novell.com>
 
 	* Mono/GeneratedPInvokes.cs, 

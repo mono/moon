@@ -22,8 +22,32 @@ CLEANFILES=	$(xapname).xap 		\
 BROWSER_ASSEMBLIES=-r:$(top_builddir)/class/lib/2.1/System.Windows.dll \
 		   -r:$(top_builddir)/class/lib/2.1/System.Windows.Browser.dll
 
+XAML_RESOURCES= \
+	-res:misc/Events/Event_0.xaml,misc/Events/Event_0.xaml \
+	-res:misc/Events/Event_1.xaml,misc/Events/Event_1.xaml \
+	-res:misc/Events/Event_3.xaml,misc/Events/Event_3.xaml \
+	-res:misc/Events/Event_Basic.xaml,misc/Events/Event_Basic.xaml \
+	-res:misc/Events/Event_DO.xaml,misc/Events/Event_DO.xaml \
+	-res:misc/Events/Event_Exact.xaml,misc/Events/Event_Exact.xaml \
+	-res:misc/Events/Event_InexistentResource.xaml,misc/Events/Event_InexistentResource.xaml \
+	-res:misc/Events/Event_Internal.xaml,misc/Events/Event_Internal.xaml \
+	-res:misc/Events/Event_MouseArgs.xaml,misc/Events/Event_MouseArgs.xaml \
+	-res:misc/Events/Event_NonVoid.xaml,misc/Events/Event_NonVoid.xaml \
+	-res:misc/Events/Event_ObjectObject.xaml,misc/Events/Event_ObjectObject.xaml \
+	-res:misc/Events/Event_OverloadedInvalid.xaml,misc/Events/Event_OverloadedInvalid.xaml \
+	-res:misc/Events/Event_OverloadedValid.xaml,misc/Events/Event_OverloadedValid.xaml \
+	-res:misc/Events/Event_Private.xaml,misc/Events/Event_Private.xaml \
+	-res:misc/Events/Event_Protected.xaml,misc/Events/Event_Protected.xaml \
+	-res:misc/Events/Event_RoutedEventArgs.xaml,misc/Events/Event_RoutedEventArgs.xaml
+	
+SOURCES= \
+	$(wildcard $(srcdir)/*.xaml.cs)	\
+	$(wildcard $(srcdir)/*/*.cs)	\
+	$(wildcard $(srcdir)/*/*/*.cs) 
+
+
 moon-unit.xap: $(builddir)/moon-unit.sources Microsoft.Silverlight.Testing.dll Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll System.Xml.Linq.dll
-	$(MONO) --debug $(top_builddir)/tools/mxap/mxap.exe --generate-html- --entry-point-type=Mono.Moonlight.UnitTesting.App --cs-sources=$(builddir)/moon-unit.sources --builddirhack=$(top_builddir) $(BROWSER_ASSEMBLIES) -r:$(builddir)/Microsoft.Silverlight.Testing.dll -r:$(builddir)/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll  $(srcdir)/
+	$(MONO) --debug $(top_builddir)/tools/mxap/mxap.exe --generate-html- --entry-point-type=Mono.Moonlight.UnitTesting.App --cs-sources=$(builddir)/moon-unit.sources --builddirhack=$(top_builddir) $(BROWSER_ASSEMBLIES) -r:$(builddir)/Microsoft.Silverlight.Testing.dll -r:$(builddir)/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll  $(srcdir)/ $(XAML_RESOURCES)
 
 Microsoft.Silverlight.Testing.dll: ../Microsoft.Silverlight.Testing/Microsoft.Silverlight.Testing.dll
 	cp ../Microsoft.Silverlight.Testing/Microsoft.Silverlight.Testing.dll* .
@@ -41,8 +65,8 @@ Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll: ../Microsoft.Vi
 ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll:
 	$(MAKE) -C ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight
 
-moon-unit.sources: $(srcdir)/*.xaml.cs $(srcdir)/*/*.cs
-	ls $(srcdir)/*.cs $(srcdir)/*/*.cs | grep -v aspx > $@
+moon-unit.sources: $(SOURCES)
+	ls $(SOURCES) | grep -v aspx > $@
 
 EXTRA_DIST = 			\
 	$(srcdir)/*xaml.cs	\

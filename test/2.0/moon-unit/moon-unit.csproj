@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Mono.Moonlight</RootNamespace>
-    <AssemblyName>moon_unit</AssemblyName>
+    <AssemblyName>moon-unit</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <SilverlightApplication>true</SilverlightApplication>
     <SupportedCultures>
@@ -64,6 +64,7 @@
     <Compile Include="BindingXaml.xaml.cs">
       <DependentUpon>BindingXaml.xaml</DependentUpon>
     </Compile>
+    <Compile Include="misc\Events\EventTest.cs" />
     <Compile Include="Mono.Moonlight.UnitTesting\MoonlightBugAttribute.cs" />
     <Compile Include="Mono.Moonlight.UnitTesting\SilverlightBugAttribute.cs" />
     <Compile Include="Mono.Moonlight.UnitTesting\Tester.cs" />
@@ -157,6 +158,88 @@
       <Generator>MSBuild:MarkupCompilePass1</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Resource Include="misc\Events\Event_Ex_Derived3.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="misc\Events\Event_Ex_Derived2.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="misc\Events\Event_Ex_Derived.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="misc\Events\Event_CaseMismatch.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="misc\Events\Event_Internal.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="misc\Events\Event_Protected.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="misc\Events\Event_Private.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="misc\Events\Event_MouseArgs.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="misc\Events\Event_DO.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="misc\Events\Event_OverloadedInvalid.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="misc\Events\Event_OverloadedValid.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="misc\Events\Event_NonVoid.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="misc\Events\Event_3.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="misc\Events\Event_1.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="misc\Events\Event_0.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="misc\Events\Event_ObjectObject.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="misc\Events\Event_RoutedEventArgs.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="misc\Events\Event_Basic.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="misc\Events\Event_Exact.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="misc\Events\Event_InexistentResource.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Resource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="System.Windows.Documents\" />

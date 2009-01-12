@@ -90,7 +90,28 @@
     <File name="System.Windows.Controls.Primitives/ThumbTest.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Threading/CrossThreadAccessTest.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Animation/StoryboardTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="misc/Events/EventTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="misc/Events/Event_Exact.xaml" subtype="Code" buildaction="Nothing" />
+    <File name="misc/Events/Event_Basic.xaml" subtype="Code" buildaction="Nothing" />
     <File name="System.Windows.Input/CursorsTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="misc/Events/Event_0.xaml" subtype="Code" buildaction="Nothing" />
+    <File name="misc/Events/Event_1.xaml" subtype="Code" buildaction="Nothing" />
+    <File name="misc/Events/Event_3.xaml" subtype="Code" buildaction="Nothing" />
+    <File name="misc/Events/Event_CaseMismatch.xaml" subtype="Code" buildaction="Nothing" />
+    <File name="misc/Events/Event_DO.xaml" subtype="Code" buildaction="Nothing" />
+    <File name="misc/Events/Event_Ex_Derived.xaml" subtype="Code" buildaction="Nothing" />
+    <File name="misc/Events/Event_Ex_Derived2.xaml" subtype="Code" buildaction="Nothing" />
+    <File name="misc/Events/Event_Ex_Derived3.xaml" subtype="Code" buildaction="Nothing" />
+    <File name="misc/Events/Event_InexistentResource.xaml" subtype="Code" buildaction="Nothing" />
+    <File name="misc/Events/Event_Internal.xaml" subtype="Code" buildaction="Nothing" />
+    <File name="misc/Events/Event_MouseArgs.xaml" subtype="Code" buildaction="Nothing" />
+    <File name="misc/Events/Event_NonVoid.xaml" subtype="Code" buildaction="Nothing" />
+    <File name="misc/Events/Event_ObjectObject.xaml" subtype="Code" buildaction="Nothing" />
+    <File name="misc/Events/Event_OverloadedInvalid.xaml" subtype="Code" buildaction="Nothing" />
+    <File name="misc/Events/Event_OverloadedValid.xaml" subtype="Code" buildaction="Nothing" />
+    <File name="misc/Events/Event_Private.xaml" subtype="Code" buildaction="Nothing" />
+    <File name="misc/Events/Event_Protected.xaml" subtype="Code" buildaction="Nothing" />
+    <File name="misc/Events/Event_RoutedEventArgs.xaml" subtype="Code" buildaction="Nothing" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
