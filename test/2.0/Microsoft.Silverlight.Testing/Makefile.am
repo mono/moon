@@ -227,7 +227,7 @@ Microsoft.Silverlight.Testing.dll: ../Microsoft.VisualStudio.QualityTools.UnitTe
 	smcs $(SOURCES) $(RESOURCES) $(REFERENCES) $(BROWSER_ASSEMBLIES) -noconfig -define:SILVERLIGHT -target:library -out:Microsoft.Silverlight.Testing.dll -debug:full
 
 Microsoft.Silverlight.Testing.g.resources: UnitTestHarness/UnitTesting/UI/TestPage.xaml
-	$(MONO) --debug $(top_builddir)/respack Microsoft.Silverlight.Testing.g.resources UnitTestHarness/UnitTesting/UI/TestPage.xaml,unittesting/ui/testpage.xaml
+	$(MONO) --debug $(top_builddir)/tools/respack/respack.exe Microsoft.Silverlight.Testing.g.resources UnitTestHarness/UnitTesting/UI/TestPage.xaml,unittesting/ui/testpage.xaml
 
 UnitTestHarness/Properties/UnitTestMessage.resources: $(srcdir)/UnitTestHarness/Properties/UnitTestMessage.resx
 	resgen2 $(srcdir)/UnitTestHarness/Properties/UnitTestMessage.resx
