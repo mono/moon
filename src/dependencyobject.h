@@ -236,6 +236,8 @@ public:
  	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject ();
 
+	void Freeze ();
+
 	GHashTable* GetCurrentValues () { return current_values; }
 
 	// Gets the content property from this object's type, and
@@ -376,6 +378,8 @@ private:
 	GHashTable        *current_values;
 	GSList            *listener_list;
 	DependencyObject  *logical_parent;
+
+	bool is_frozen;
 };
 
 #endif /* __MONO_DEPOBJECT_H__ */

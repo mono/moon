@@ -960,6 +960,11 @@ DependencyObject::SetValueWithError (Types *additional_types, DependencyProperty
 bool
 DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error)
 {
+	if (is_frozen) {
+		MoonError::FillIn (error, MoonError::UNAUTHORIZED_ACCESS, "Cannot set value on frozen DependencyObject");
+		return false;
+	}
+
 	Value *current_value = GetLocalValue (property);
 
 	bool equal = false;
@@ -1354,12 +1359,19 @@ DependencyObject::DependencyObject ()
 	current_values = g_hash_table_new (g_direct_hash, g_direct_equal);
 	listener_list = NULL;
 	logical_parent = NULL;
+	is_frozen = false;
 }
 
 Type::Kind
 DependencyObject::GetObjectType ()
 {
 	return Type::DEPENDENCY_OBJECT; 
+}
+
+void
+DependencyObject::Freeze()
+{
+	is_frozen = true;
 }
 
 static void
