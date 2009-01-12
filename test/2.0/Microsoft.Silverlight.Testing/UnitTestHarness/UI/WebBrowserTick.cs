@@ -49,6 +49,8 @@ namespace Microsoft.Silverlight.Testing.UI
         {
             _timer = new DispatcherTimer();
             _timer.Interval = new TimeSpan(0, 0, 0, 0, millisecondInterval);
+            System.Windows.Interop.Settings settings = new System.Windows.Interop.Settings ();
+			settings.MaxFrameRate = 400;
         }
 
         /// <summary>
