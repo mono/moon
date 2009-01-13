@@ -1,5 +1,9 @@
 2009-01-13  Jackson Harper  <jackson@ximian.com>
 
+	* NativeMethods.cs: Add new method for looking up namespace uris.
+
+2009-01-13  Jackson Harper  <jackson@ximian.com>
+
 	* ManagedXamlLoader.cs:
 	* XamlLoaderCallbacks.cs: Update xaml callback sigs.
 

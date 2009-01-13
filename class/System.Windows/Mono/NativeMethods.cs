@@ -83,6 +83,10 @@ namespace Mono {
 		[DllImport("moon")]
 		public extern static IntPtr xaml_create_from_file (IntPtr native_loader, string filename, bool create_namescope,
 								  out Kind kind);
+
+		[DllImport ("moon")]
+		public extern static string xaml_uri_for_prefix (IntPtr parser, string prefix);
+
 		[DllImport("moon")]
 		public extern static void value_free_value (ref Value val);
 		
@@ -161,7 +165,7 @@ namespace Mono {
 #endregion
 
 		[DllImport ("moon")]
-		public extern static void xaml_loader_set_callbacks (IntPtr native_object, Xaml.XamlLoaderCallbacks callbacks);		
+		public extern static void xaml_loader_set_callbacks (IntPtr native_object, Xaml.XamlLoaderCallbacks callbacks);
 		
 		[DllImport ("moon")]
 		public extern static void xaml_loader_add_missing (IntPtr native_object, string file);
