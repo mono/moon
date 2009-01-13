@@ -346,7 +346,6 @@ namespace Mono.Xaml
 
 		private bool TrySetPropertyReflection (IntPtr top_level, string xmlns, object target, string type_name, string name, IntPtr value_ptr, out string error)
 		{
-			Console.WriteLine ("TRYING TO SET PROPERTY:  {0}::{1}", target.GetType (), name);
 			PropertyInfo pi = target.GetType ().GetProperty (name);
 
 			if (pi == null) {
