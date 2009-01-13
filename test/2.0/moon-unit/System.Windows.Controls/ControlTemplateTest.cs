@@ -23,7 +23,6 @@ namespace MoonTest.System.Windows.Controls
 		[TestMethod]
 		public void LoadTemplateOnlyUsingXamlReader ()
 		{
-			Console.WriteLine ("LoadTemplateOnlyUsingXamlReader");
 			UserControl c = new UserControl ();
 
 			ControlTemplate t = (ControlTemplate)XamlReader.Load (@"
@@ -43,16 +42,14 @@ namespace MoonTest.System.Windows.Controls
 		{
 			// "Invalid Property: UserControl.Template"
 			//
-			Console.WriteLine ("SetTemplateInXamlOnUserControl");
-			Assert.Throws ( delegate { XamlReader.Load (@"
+			Assert.Throws<XamlParseException> ( delegate { XamlReader.Load (@"
 <UserControl xmlns=""http://schemas.microsoft.com/client/2007"">
   <UserControl.Template>
     <ControlTemplate TargetType=""Button"">
       <TextBlock Text=""hi"" />
     </ControlTemplate>
   </UserControl.Template>
-</UserControl>"); },
-				typeof (XamlParseException));
+</UserControl>"); } );
 		}
 
 		[TestMethod]
@@ -61,10 +58,10 @@ namespace MoonTest.System.Windows.Controls
 			Button b;
 			try {
 			b = (Button)XamlReader.Load (@"
-<Button xmlns=""http://schemas.microsoft.com/client/2007"">
+<Button xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
   <Button.Template>
     <ControlTemplate TargetType=""Button"">
-      <TextBlock Text=""hi"" />
+      <TextBlock xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" x:Name=""text"" Text=""hi"" />
     </ControlTemplate>
   </Button.Template>
 </Button>");
@@ -84,9 +81,39 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		public void TemplatePropertyValuePrecedence ()
+		{
+			Button b;
+			try {
+			b = (Button)XamlReader.Load (@"
+<Button xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+  <Button.Template>
+    <ControlTemplate TargetType=""Button"">
+      <TextBlock xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" x:Name=""text"" Text=""hi"" Foreground=""Blue""/>
+    </ControlTemplate>
+  </Button.Template>
+</Button>");
+			} catch (Exception e) {
+				Tester.WriteLine (e.ToString());
+				throw e;
+			}
+
+			b.ApplyTemplate ();
+
+			TextBlock tb = (TextBlock)VisualTreeHelper.GetChild (b, 0);
+
+			Assert.IsTrue (tb.ReadLocalValue (TextBlock.ForegroundProperty) is SolidColorBrush, "1");
+			Assert.AreEqual (Colors.Blue, ((SolidColorBrush)tb.ReadLocalValue (TextBlock.ForegroundProperty)).Color, "1.1");
+
+			tb.ClearValue (TextBlock.ForegroundProperty);
+
+			Assert.AreEqual (DependencyProperty.UnsetValue, tb.ReadLocalValue (TextBlock.ForegroundProperty), "2");
+			Assert.AreEqual (Colors.Black, ((SolidColorBrush)tb.GetValue (TextBlock.ForegroundProperty)).Color, "2.1");
+		}
+
+		[TestMethod]
 		public void TemplateInStaticResource ()
 		{
-			Console.WriteLine ("TemplateInStaticResource");
 			Canvas c = (Canvas)XamlReader.Load (@"
 <Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 <Canvas.Resources>
@@ -114,7 +141,6 @@ namespace MoonTest.System.Windows.Controls
 		[TestMethod]
 		public void TemplateBindingTest ()
 		{
-			Console.WriteLine ("TemplateBindingTest");
 			Canvas c = (Canvas)XamlReader.Load (@"
 <Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 <Canvas.Resources>
@@ -142,7 +168,6 @@ namespace MoonTest.System.Windows.Controls
 		[TestMethod]
 		public void TemplateBindingWithStaticResourceTest ()
 		{
-			Console.WriteLine ("TemplateBindingWithStaticResourceTest");
 			Canvas c = (Canvas)XamlReader.Load (@"
 <Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
     <Canvas.Resources>
@@ -177,8 +202,6 @@ namespace MoonTest.System.Windows.Controls
 		[TestMethod]
 		public void TemplateBindingInsideTemplateTest ()
 		{
-			Console.WriteLine ("TemplateBindingInsideTemplateTest");
-
 			// For now just make sure it parses
 			Canvas c = (Canvas)XamlReader.Load (@"
 <Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
