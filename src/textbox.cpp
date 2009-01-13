@@ -350,32 +350,393 @@ TextBox::~TextBox ()
 #define CONTENT_CHANGED         (1 << 2)
 #define NOTHING_CHANGED         (0)
 
+#define MY_GDK_ALT_MASK         (GDK_MOD1_MASK | GDK_MOD2_MASK | GDK_MOD3_MASK | GDK_MOD4_MASK | GDK_MOD5_MASK)
+
+/**
+ * Supported Keybindings:
+ *
+ * Ctrl+Shift+[Left|Right] := grow/shrink selection by word
+ *
+ * Shift+[Left|Right|Up|Down] := grow/shrink selection by moving cursor in the specified direction
+ *
+ * Ctrl+Shift+Home := move selection.start to beginning of buffer
+ *
+ * Ctrl+Shift+End := move selection end to end of buffer
+ *
+ * Shift+Home := select from cursor to begin-of-line (cursor ends up at bol)
+ *
+ * Shift+End := Select from cursor to end-of-line (cursor ends up at eol)
+ *
+ * Ctrl+Home := move cursor to beginning of buffer
+ *
+ * Ctrl+End := move cursor to end of buffer
+ *
+ * PageUp/Down := move cursor up/down a page at a time
+ *
+ * Up/Down := move cursor up/down a line at a time
+ *
+ * Left/Right := move cursor left/right 1 char at a time
+ *
+ * Ctrl+[Left|Right] := move cursor left/right word at a time
+ *
+ * Home := move cursor to beinning of line
+ *
+ * End := move cursor to end of line
+ *
+ * Ctrl+a := select-all
+ *
+ * cut/copy/paste bindings as well??
+ **/
+
+static int
+move_down (TextBuffer *buffer, int cursor, int n_lines)
+{
+	int offset, cur, n;
+	
+	// first find out what our character offset is in the current line
+	cur = cursor;
+	while (cur > 0 && buffer->text[cur - 1] != '\n')
+		cur--;
+	
+	offset = cursor - cur;
+	
+	cur = cursor;
+	n = 0;
+	
+	// skip ahead one page worth of lines
+	while (n < n_lines) {
+		while (cur < buffer->len && buffer->text[cur] != '\n')
+			cur++;
+		
+		if (cur == buffer->len)
+			break;
+		
+		cur++;
+		n++;
+	}
+	
+	if (n == n_lines) {
+		// go forward until we're at the same character offset
+		if ((buffer->len - cur) < offset)
+			cur += buffer->len;
+		else
+			cur += offset;
+	}
+	
+	return cur;
+}
+
+static int
+move_up (TextBuffer *buffer, int cursor, int n_lines)
+{
+	int offset, cur, n;
+	
+	// first find out what our character offset is in the current line
+	cur = cursor;
+	while (cur > 0 && buffer->text[cur - 1] != '\n')
+		cur--;
+	
+	offset = cursor - cur;
+	n = 0;
+	
+	// go back one page worth of lines
+	while (n < n_lines) {
+		while (cur > 0 && buffer->text[cur - 1] != '\n')
+			cur--;
+		
+		if (cur == 0)
+			break;
+		
+		cur++;
+		n++;
+	}
+	
+	if (n == n_lines) {
+		// go forward until we're at the same character offset
+		if ((buffer->len - cur) < offset)
+			cur += buffer->len;
+		else
+			cur += offset;
+	}
+	
+	return cur;
+}
+
 int
 TextBox::CursorPageDown (GdkModifierType modifiers)
 {
-	// FIXME: implement me
-	return NOTHING_CHANGED;
+	int changed = NOTHING_CHANGED;
+	int length = selection.length;
+	int start = selection.start;
+	int pos;
+	
+	if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK)) != 0)
+		return NOTHING_CHANGED;
+	
+	if ((modifiers & GDK_SHIFT_MASK) != 0) {
+		// Shift+Page_Down: grow selection by one page in the downward direction
+		pos = move_down (buffer, cursor, 8);
+		
+		if (cursor < selection.start + selection.length) {
+			// new selection will start at the end of the current selection
+			start += selection.length;
+		} else {
+			// selection start will stay the same
+		}
+		
+		length = pos - start;
+		
+		if (cursor != pos) {
+			changed = CURSOR_POSITION_CHANGED;
+			cursor = pos;
+		}
+	} else {
+		// Page_Down: move cursor down one page and clear selection
+		pos = move_down (buffer, cursor, 8);
+		
+		if (cursor != pos) {
+			changed = CURSOR_POSITION_CHANGED;
+			cursor = pos;
+		}
+		
+		length = start = 0;
+	}
+	
+	// check to see if selection has changed
+	if (selection.start != start || selection.length != length) {
+		changed |= SELECTION_CHANGED;
+		
+		if (length > 0) {
+			SetSelectionLength (length);
+			SetSelectionStart (start);
+		} else {
+			ClearSelection ();
+		}
+	}
+	
+	return changed;
 }
 
 int
 TextBox::CursorPageUp (GdkModifierType modifiers)
 {
-	// FIXME: implement me
-	return NOTHING_CHANGED;
+	int changed = NOTHING_CHANGED;
+	int length = selection.length;
+	int start = selection.start;
+	int pos;
+	
+	if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK)) != 0)
+		return NOTHING_CHANGED;
+	
+	if ((modifiers & GDK_SHIFT_MASK) != 0) {
+		// Shift+Page_Up: grow selection by one page in the upward direction
+		pos = move_up (buffer, cursor, 8);
+		
+		if (cursor > selection.start) {
+			// new selection will end at the current selection.start
+			length = selection.start;
+			start = pos;
+		} else {
+			// selection end will stay the same
+			length += pos - cursor;
+			start = pos;
+		}
+		
+		if (cursor != pos) {
+			changed = CURSOR_POSITION_CHANGED;
+			cursor = pos;
+		}
+	} else {
+		// Page_Up: move cursor up one page and clear selection
+		pos = move_up (buffer, cursor, 8);
+		
+		if (cursor != pos) {
+			changed = CURSOR_POSITION_CHANGED;
+			cursor = pos;
+		}
+		
+		length = start = 0;
+	}
+	
+	// check to see if selection has changed
+	if (selection.start != start || selection.length != length) {
+		changed |= SELECTION_CHANGED;
+		
+		if (length > 0) {
+			SetSelectionLength (length);
+			SetSelectionStart (start);
+		} else {
+			ClearSelection ();
+		}
+	}
+	
+	return changed;
 }
 
 int
 TextBox::CursorHome (GdkModifierType modifiers)
 {
-	// FIXME: implement me
-	return NOTHING_CHANGED;
+	int changed = NOTHING_CHANGED;
+	int length = selection.length;
+	int start = selection.start;
+	int pos;
+	
+	if ((modifiers & MY_GDK_ALT_MASK) != 0)
+		return NOTHING_CHANGED;
+	
+	if ((modifiers & (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) == (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) {
+		// Ctrl+Shift+Home: update selection to start at the beginning of the buffer
+		if (cursor > selection.start) {
+			// new selection will end at the current selection.start
+			length = selection.start;
+			start = 0;
+		} else {
+			// selection end will stay the same
+			length += selection.start;
+			start = 0;
+		}
+		
+		if (cursor != 0) {
+			changed = CURSOR_POSITION_CHANGED;
+			cursor = 0;
+		}
+	} else if ((modifiers & GDK_CONTROL_MASK) != 0) {
+		// Ctrl+Home: move cursor to beginning of the buffer and clear selection
+		if (cursor != 0) {
+			changed = CURSOR_POSITION_CHANGED;
+			cursor = 0;
+		}
+		
+		length = start = 0;
+	} else if ((modifiers & GDK_SHIFT_MASK) != 0) {
+		// Shift+Home: update selection to start at beginning of line
+		pos = cursor;
+		while (pos > 0 && buffer->text[pos - 1] != '\n')
+			pos--;
+		
+		if (cursor > selection.start) {
+			// new selection will end at the current selection.start
+			length = selection.start;
+			start = pos;
+		} else {
+			// selection end will stay the same
+			length += pos - cursor;
+			start = pos;
+		}
+		
+		if (cursor != pos) {
+			changed = CURSOR_POSITION_CHANGED;
+			cursor = pos;
+		}
+	} else {
+		// Home: move cursor to beginning of line and clear selection
+		pos = cursor;
+		while (pos > 0 && buffer->text[pos - 1] != '\n')
+			pos--;
+		
+		if (cursor != pos) {
+			changed = CURSOR_POSITION_CHANGED;
+			cursor = pos;
+		}
+		
+		length = start = 0;
+	}
+	
+	// check to see if selection has changed
+	if (selection.start != start || selection.length != length) {
+		changed |= SELECTION_CHANGED;
+		
+		if (length > 0) {
+			SetSelectionLength (length);
+			SetSelectionStart (start);
+		} else {
+			ClearSelection ();
+		}
+	}
+	
+	return changed;
 }
 
 int
 TextBox::CursorEnd (GdkModifierType modifiers)
 {
-	// FIXME: implement me
-	return NOTHING_CHANGED;
+	int changed = NOTHING_CHANGED;
+	int length = selection.length;
+	int start = selection.start;
+	int pos;
+	
+	if ((modifiers & MY_GDK_ALT_MASK) != 0)
+		return NOTHING_CHANGED;
+	
+	if ((modifiers & (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) == (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) {
+		// Ctrl+Shift+End: update selection to end at the end of the buffer
+		if (cursor < selection.start + selection.length) {
+			// new selection will start at the end of the current selection
+			start += selection.length;
+		} else {
+			// selection start will stay the same
+		}
+		
+		length = buffer->len - start;
+		
+		if (cursor != buffer->len) {
+			changed = CURSOR_POSITION_CHANGED;
+			cursor = buffer->len;
+		}
+	} else if ((modifiers & GDK_CONTROL_MASK) != 0) {
+		// Ctrl+End: move cursor to end of the buffer and clear selection
+		if (cursor != buffer->len) {
+			changed = CURSOR_POSITION_CHANGED;
+			cursor = buffer->len;
+		}
+		
+		length = start = 0;
+	} else if ((modifiers & GDK_SHIFT_MASK) != 0) {
+		// Shift+End: update selection to end at the end of the current line
+		pos = cursor;
+		while (pos < buffer->len && buffer->text[pos] != '\n')
+			pos++;
+		
+		if (cursor < selection.start + selection.length) {
+			// new selection will start at the end of the current selection
+			start += selection.length;
+		} else {
+			// selection start will stay the same
+		}
+		
+		length = pos - start;
+		
+		if (cursor != pos) {
+			changed = CURSOR_POSITION_CHANGED;
+			cursor = pos;
+		}
+	} else {
+		// End: move cursor to end of line and clear selection
+		pos = cursor;
+		while (pos < buffer->len && buffer->text[pos] != '\n')
+			pos++;
+		
+		if (cursor != pos) {
+			changed = CURSOR_POSITION_CHANGED;
+			cursor = pos;
+		}
+		
+		length = start = 0;
+	}
+	
+	// check to see if selection has changed
+	if (selection.start != start || selection.length != length) {
+		changed |= SELECTION_CHANGED;
+		
+		if (length > 0) {
+			SetSelectionLength (length);
+			SetSelectionStart (start);
+		} else {
+			ClearSelection ();
+		}
+	}
+	
+	return changed;
 }
 
 int
@@ -580,6 +941,8 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 			// FIXME: what other keys do we need to handle?
 			break;
 		}
+		
+		// FIXME: some of these may also require updating scrollbars?
 	}
 	
 	if (changed & CONTENT_CHANGED)
