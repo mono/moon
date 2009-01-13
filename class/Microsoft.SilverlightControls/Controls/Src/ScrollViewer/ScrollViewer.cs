@@ -341,7 +341,7 @@ namespace System.Windows.Controls
             ElementScrollContentPresenter = GetTemplateChild(ElementScrollContentPresenterName) as ScrollContentPresenter;
             if (null != ElementScrollContentPresenter) 
             { 
-                ElementScrollContentPresenter.ViewerParent = this;
+                ElementScrollContentPresenter.ScrollOwner = this;
 #if !WPF && false
                 if (_templatedParentHandlesScrolling)
                 {

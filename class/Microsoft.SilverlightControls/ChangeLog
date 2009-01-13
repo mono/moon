@@ -1,3 +1,11 @@
+2009-01-13  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs: Implement
+	IScrollInfo (like WPF) to please gui-compare. Rename ViewerParent
+	property to ScrollOwner
+	* Controls/Src/ScrollViewer/ScrollViewer.cs: Use new ScrollOwner
+	property (instead of old ViewerParent).
+
 2009-01-13  Jackson Harper  <jackson@ximian.com>
 
 	* RuntimeControls/SilverlightControls/themes/generic.xaml: Fix

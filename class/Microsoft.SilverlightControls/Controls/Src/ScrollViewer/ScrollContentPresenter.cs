@@ -19,12 +19,12 @@ namespace System.Windows.Controls
     /// <summary> 
     /// Displays the content of a ScrollViewer control.
     /// </summary>
-    public sealed class ScrollContentPresenter : ContentPresenter 
+    public sealed class ScrollContentPresenter : ContentPresenter, IScrollInfo 
     {
         /// <summary>
         /// Reference to the ScrollViewer parent control. 
         /// </summary> 
-        public ScrollViewer ViewerParent { get; set; }
+        public ScrollViewer ScrollOwner { get; set; }
  
 	public bool CanHorizontallyScroll { get; set; }
 
@@ -100,14 +100,14 @@ namespace System.Windows.Controls
         /// <returns>The size of the control.</returns>
         protected override Size MeasureOverride(Size availableSize) 
         { 
-            if (null == ViewerParent)
+            if (null == ScrollOwner)
             { 
                 return base.MeasureOverride(availableSize);
             }
  
             Size ideal = new Size(
-                ScrollBarVisibility.Disabled != ViewerParent.HorizontalScrollBarVisibility ? double.PositiveInfinity : availableSize.Width,
-                ScrollBarVisibility.Disabled != ViewerParent.VerticalScrollBarVisibility ? double.PositiveInfinity : availableSize.Height); 
+                ScrollBarVisibility.Disabled != ScrollOwner.HorizontalScrollBarVisibility ? double.PositiveInfinity : availableSize.Width,
+                ScrollBarVisibility.Disabled != ScrollOwner.VerticalScrollBarVisibility ? double.PositiveInfinity : availableSize.Height); 
             Size ExtentSize = base.MeasureOverride(ideal); 
             ExtentWidth = ExtentSize.Width;
             ExtentHeight = ExtentSize.Height; 
@@ -115,7 +115,7 @@ namespace System.Windows.Controls
             ViewportHeight = Math.Min(availableSize.Height, ExtentHeight);
             SetHorizontalOffset (Math.Max (HorizontalOffset, 0)); 
             SetVerticalOffset (Math.Max (VerticalOffset, 0));
-            ViewerParent.InvalidateMeasure();
+            ScrollOwner.InvalidateMeasure();
             return new Size(ViewportWidth, ViewportHeight); 
         } 
 
@@ -126,7 +126,7 @@ namespace System.Windows.Controls
         /// <returns>The size of the control.</returns>
         protected override Size ArrangeOverride(Size finalSize)
         { 
-            if (null == ViewerParent) 
+            if (null == ScrollOwner) 
             {
                 return base.ArrangeOverride(finalSize); 
             }
