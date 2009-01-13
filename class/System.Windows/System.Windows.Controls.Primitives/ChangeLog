@@ -1,3 +1,8 @@
+2009-01-13  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* IScrollInfo.cs: Internal interface to mimic WPF. This is needed 
+	for API compatibility with ScrollContentPresenter (gui-compare)
+
 2009-01-09  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Selector.cs: Add internal ctor and GetIsSelectionActive
