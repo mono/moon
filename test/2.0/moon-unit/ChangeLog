@@ -1,5 +1,11 @@
 2009-01-13  Alan McGovern  <amcgovern@novell.com>
 
+	* moon-unit.mdp:
+	* System.Windows.Media/ImageBrushTest.cs: Add a test for
+	ImageBrush.ImageSource
+
+2009-01-13  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/StyleTest.cs: Mark test with MoonlightBug
 
 2009-01-13  Alan McGovern  <amcgovern@novell.com>

@@ -113,6 +113,7 @@
     <File name="misc/Events/Event_Protected.xaml" subtype="Code" buildaction="Nothing" />
     <File name="misc/Events/Event_RoutedEventArgs.xaml" subtype="Code" buildaction="Nothing" />
     <File name="System.Windows.Media/MatrixTransformTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/ImageBrushTest.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
