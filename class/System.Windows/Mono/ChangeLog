@@ -1,3 +1,8 @@
+2009-01-13  Jb Evain  <jbevain@novell.com>
+
+	* XamlLoaderCallbacks.cs (CreateManagedXamlLoader): remove
+	the use of reflection now that we're in System.Windows.
+
 2009-01-12  Jb Evain  <jbevain@novell.com>
 
 	* ApplicationLauncher.cs: new class specific to NET_2_1,
