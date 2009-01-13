@@ -16,18 +16,37 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows
 {
+	public class StyledControl : Control
+	{
+		public static readonly DependencyProperty PropProperty = DependencyProperty.Register("Prop", typeof(int), typeof(StyledControl), null);
+		public int Prop {
+			get { throw new InvalidOperationException(); }
+			set { throw new InvalidOperationException(); }
+		}
+	}
+
+	public class StyledPanel : Panel
+	{
+		public static readonly DependencyProperty AttachedPropProperty = DependencyProperty.RegisterAttached("AttachedProp", typeof(int), typeof(StyledPanel), null);
+		public int AttachedProp {
+			get { throw new InvalidOperationException(); }
+			set { throw new InvalidOperationException(); }
+		}
+
+		public static void SetAttachedProp (DependencyObject obj, int value)
+		{
+			obj.SetValue (AttachedPropProperty, value);
+		}
+
+		public static int GetAttachedProp (DependencyObject obj)
+		{
+			return (int)obj.GetValue (AttachedPropProperty);
+		}
+	}
+		
 	[TestClass]
 	public class StyleTest
 	{
-		public class T : Control
-		{
-			public static readonly DependencyProperty PropProperty = DependencyProperty.Register("Prop", typeof(int), typeof(T), null);
-			public int Prop {
-				get { throw new InvalidOperationException(); }
-				set { throw new InvalidOperationException(); }
-			}
-		}
-		
 		[TestMethod]
 		public void Sealed ()
 		{
@@ -47,11 +66,11 @@ namespace MoonTest.System.Windows
 		[TestMethod]
 		public void ApplyStyleToManagedDP()
 		{
-			T t = new T();
-			Style s = new Style(typeof(T));
-			s.Setters.Add(new Setter(T.PropProperty, 100));
+			StyledControl t = new StyledControl();
+			Style s = new Style(typeof(StyledControl));
+			s.Setters.Add(new Setter(StyledControl.PropProperty, 100));
 			t.Style = s;
-			Assert.AreEqual(100, t.GetValue(T.PropProperty));
+			Assert.AreEqual(100, t.GetValue(StyledControl.PropProperty));
 		}
 		
 		[TestMethod]
@@ -69,7 +88,7 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[MoonlightBug ("The XamlLoader should not call the managed properties when setting the value of 'Setter.Value'")]
-		public void AvailableBeforeLoaded ()
+		public void ManagedAccessAfterParsing ()
 		{
 			Style s = (Style)XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Button""><Setter Property=""Width"" Value=""10""/></Style>");
 			Button b = new Button ();
@@ -84,7 +103,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug ("This is caused by incorrect refreshing when the SetterCollection is modified")]
 		public void ModifyAfterBinding()
 		{
 			Button b = new Button();
@@ -126,18 +144,36 @@ namespace MoonTest.System.Windows
 			Assert.AreEqual(0, style.Setters.Count, "#k");
 			Assert.AreEqual(b.ClickMode, ClickMode.Press, "#l");
 
+			Button c = new Button ();
+			c.Style = style;
+
 			b.ClearValue(Button.ClickModeProperty);
 			Assert.AreEqual(b.ClickMode, ClickMode.Press, "#m");
+
+			style = new Style (typeof (Button));
+			b = new Button ();
+			b.Style = style;
+
+			style.Setters.Add(new Setter(Button.ClickModeProperty, ClickMode.Press));
+			Assert.AreEqual(1, style.Setters.Count, "#n");
+			Assert.AreEqual(ClickMode.Release, b.ClickMode, "#o");
 		}
 
 		[TestMethod]
-		public void InvalidValue()
+		public void InvalidValueProgrammatically()
 		{
 			Button b = new Button();
 			Style style = new Style(typeof(Button));
 			Setter setter = new Setter(Button.WidthProperty, "this is a string");
 			b.Style = style;
 			Assert.IsTrue(double.IsNaN(b.Width));
+		}
+
+		[TestMethod]
+		[MoonlightBug ("DP lookup isn't working")]
+		public void InvalidValueParsed ()
+		{
+			XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Button""><Setter Property=""Width"" Value=""this is a string""/></Style>");
 		}
 
 		[TestMethod]
@@ -158,16 +194,24 @@ namespace MoonTest.System.Windows
 		}
 		
 		[TestMethod]
-		[MoonlightBug ("The parser needs to turn the string 'Width' into the right DP")]
+		[MoonlightBug ("DP lookup isn't working")]
 		public void MismatchTargetType ()
 		{
 			Button b = new Button ();
 			Style s = new Style (typeof (CheckBox));
-			Assert.Throws (delegate { b.Style = s; }, typeof (XamlParseException), "#1");
+			Assert.Throws<XamlParseException> (delegate { b.Style = s; }, "#1");
 			
 			s = (Style)XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""CheckBox""><Setter Property=""Width"" Value=""10""/></Style>");
 			b = new Button ();
-			Assert.Throws (delegate { b.Style = s; }, typeof (XamlParseException), "#2");
+			Assert.Throws<XamlParseException> (delegate { b.Style = s; }, "#2");
+		}
+
+		[TestMethod]
+		public void InvalidPropertyNameInSetter ()
+		{
+			Assert.Throws<XamlParseException> (delegate { XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Button""><Setter Property=""WidthOrHeight"" Value=""10""/></Style>"); });
+
+			Assert.Throws<XamlParseException> (delegate { XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Button""><Setter Property=""TargetType"" Value=""10""/></Style>"); });
 		}
 
 		[TestMethod]
@@ -177,18 +221,7 @@ namespace MoonTest.System.Windows
 			Assert.Throws<ExecutionEngineException>(delegate {
 				XamlReader.Load(@"<Style xmlns=""http://schemas.microsoft.com/client/2007""><Setter Property=""Width"" Value=""10""/></Style>");
 			});
-		}
 
-		[TestMethod]
-		public void InvalidPropertyNameInSetter ()
-		{
-			Assert.Throws (delegate { XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Button""><Setter Property=""WidthOrHeight"" Value=""10""/></Style>"); }, typeof (XamlParseException));
-		}
-
-		[TestMethod]
-		[Ignore("On silverlight this seems to throw an uncatchable exception")]
-		public void InvalidPropertyNameInSetterMissingTargetType()
-		{
 			Assert.Throws<ExecutionEngineException>(delegate {
 				XamlReader.Load(@"<Style xmlns=""http://schemas.microsoft.com/client/2007""><Setter Property=""WidthOrHeight"" Value=""10""/></Style>");
 			});
@@ -223,7 +256,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug ("Tag as Text stopped working after r122794")]
+		[MoonlightBug ("DP lookup isn't working")]
 		public void StyleXaml ()
 		{
 			Thumb t = (Thumb) XamlReader.Load (@"
@@ -241,22 +274,93 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug ("Attached properties need to be resolved")]
+		[MoonlightBug ("DP lookup isn't working")]
+		public void StyleCustomProperty ()
+		{
+			// a valid value
+			XamlReader.Load(@"
+		<Style xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:T=""clr-namespace:MoonTest.System.Windows;assembly=moon-unit"" TargetType=""T:StyledControl"">
+			<Setter Property=""Prop"" Value=""5""/>
+		</Style>");
+
+			// an invalid value
+			XamlReader.Load(@"
+		<Style xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:T=""clr-namespace:MoonTest.System.Windows;assembly=moon-unit"" TargetType=""T:StyledControl"">
+			<Setter Property=""Prop"" Value=""this is a string""/>
+		</Style>");
+		}
+
+		[TestMethod]
+		[MoonlightBug ("Attached DP lookup isn't working")]
 		public void StyleAttachedProperty()
 		{
-			Rectangle t = (Rectangle)XamlReader.Load(@"
+			Assert.Throws<XamlParseException> (delegate { XamlReader.Load(@"
 <Rectangle xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 	<Rectangle.Style>
 		<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Rectangle"">
-			<Setter Property=""Width"" Value=""5""/>
+			<Setter Property=""Left"" Value=""5""/>
+		</Style>
+	</Rectangle.Style>
+</Rectangle>"); });
+
+			// try using the (property.path) syntax
+			Assert.Throws<XamlParseException> (delegate { XamlReader.Load(@"
+<Rectangle xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<Rectangle.Style>
+		<Style xmlns=""http://schemas.microsoft.com/client/2007"" x:Key=""Foo"" TargetType=""Rectangle"">
+			<Setter Property=""(Canvas.Left)"" Value=""5""/>
+		</Style>
+	</Rectangle.Style>
+</Rectangle>"); });
+
+			// try using the Type.Property syntax. this one works.
+			XamlReader.Load(@"
+<Rectangle xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<Rectangle.Style>
+		<Style xmlns=""http://schemas.microsoft.com/client/2007"" x:Key=""Foo"" TargetType=""Rectangle"">
+			<Setter Property=""Canvas.Left"" Value=""5""/>
 		</Style>
 	</Rectangle.Style>
 </Rectangle>");
-			Assert.IsNotNull(t, "Rectangle");
-			Assert.IsTrue (t.Style.IsSealed, "IsSealed");
-			Assert.AreEqual (1, t.Style.Setters.Count, "Setters");
-			Assert.AreEqual (typeof (Rectangle), t.Style.TargetType, "TargetType");
-			Assert.AreEqual(5.0, t.GetValue(Canvas.WidthProperty), "Width");
+
+
+			// add a couple of tests for custom attached properties which apparently can't be styled
+			Assert.Throws<XamlParseException> (delegate { XamlReader.Load(@"
+<Rectangle xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<Rectangle.Style>
+		<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Rectangle"">
+			<Setter Property=""AttachedProp"" Value=""5""/>
+		</Style>
+	</Rectangle.Style>
+</Rectangle>"); }, "Custom Attached Property #1");
+
+			Assert.Throws<XamlParseException> (delegate { XamlReader.Load(@"
+<Rectangle xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns:T=""clr-namespace:MoonTest.System.Windows;assembly=moon-unit"">
+	<Rectangle.Style>
+		<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Rectangle"">
+			<Setter Property=""(T:StyledPanel.AttachedProp)"" Value=""5""/>
+		</Style>
+	</Rectangle.Style>
+</Rectangle>"); }, "Custom Attached Property #2");
+
+			// this one works, though
+			XamlReader.Load(@"
+<Rectangle xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns:T=""clr-namespace:MoonTest.System.Windows;assembly=moon-unit"">
+	<Rectangle.Style>
+		<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Rectangle"">
+			<Setter Property=""T:StyledPanel.AttachedProp"" Value=""5""/>
+		</Style>
+	</Rectangle.Style>
+</Rectangle>");
+
+			Assert.Throws<XamlParseException> (delegate { XamlReader.Load(@"
+<Rectangle xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns:T=""clr-namespace:MoonTest.System.Windows;assembly=moon-unit"">
+	<Rectangle.Style>
+		<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Rectangle"">
+			<Setter Property=""T:AttachedProp"" Value=""5""/>
+		</Style>
+	</Rectangle.Style>
+</Rectangle>"); }, "Custom Attached Property #3");
 		}
 	}
 }
