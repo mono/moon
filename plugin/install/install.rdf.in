@@ -11,6 +11,25 @@
                   rjxQ1fXagEg2+6S4SlGVZnj8jXCybdz+giz53M5QeoaacuFwIDAQAB
     </em:updateKey>
 
+    <em:homepageURL>http://mono-project.com/Moonlight</em:homepageURL>
+    <em:creator>Mono Team</em:creator>
+    <em:contributor>Chris Toshok</em:contributor>
+    <em:contributor>Geoff Norton</em:contributor>
+    <em:contributor>Larry Ewing</em:contributor>
+    <em:contributor>Jeff Stedfast</em:contributor>
+    <em:contributor>Miguel de Icaza</em:contributor>
+    <em:contributor>Jackson Harper</em:contributor>
+    <em:contributor>Fernando Herrera</em:contributor>
+    <em:contributor>Sebastien Pouliot</em:contributor>
+    <em:contributor>JB Evain</em:contributor>
+    <em:contributor>Rolf Kvinge</em:contributor>
+    <em:contributor>Michael Kostrzewa</em:contributor>
+    <em:contributor>Alan McGovern</em:contributor>
+    <em:contributor>Andreia Gaita</em:contributor>
+    <em:contributor>Stephane Delcroix</em:contributor>
+    <em:contributor>Rusty Howell</em:contributor>
+    <em:contributor>Andrew Jorgensen</em:contributor>
+
     <em:targetPlatform>@TARGET_PLATFORM@</em:targetPlatform>
     <em:targetApplication>
       <Description>
