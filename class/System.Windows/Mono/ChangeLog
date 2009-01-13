@@ -1,3 +1,8 @@
+2009-01-13  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs:
+	* XamlLoaderCallbacks.cs: Update xaml callback sigs.
+
 2009-01-13  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* NativeMethods: add a P/Invoke to set the GetTileLayers callback

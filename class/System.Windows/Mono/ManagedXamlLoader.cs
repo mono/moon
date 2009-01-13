@@ -346,6 +346,7 @@ namespace Mono.Xaml
 
 		private bool TrySetPropertyReflection (IntPtr top_level, string xmlns, object target, string type_name, string name, IntPtr value_ptr, out string error)
 		{
+			Console.WriteLine ("TRYING TO SET PROPERTY:  {0}::{1}", target.GetType (), name);
 			PropertyInfo pi = target.GetType ().GetProperty (name);
 
 			if (pi == null) {
@@ -603,7 +604,7 @@ namespace Mono.Xaml
 		// Proxy so that we return IntPtr.Zero in case of any failures, instead of
 		// genereting an exception and unwinding the stack.
 		//
-		private bool cb_create_object (IntPtr top_level, string xmlns, string name, out Value value)
+		private bool cb_create_object (IntPtr parser, IntPtr top_level, string xmlns, string name, out Value value)
 		{
 			try {
 				return CreateObject (top_level, xmlns, name, out value);
@@ -618,7 +619,7 @@ namespace Mono.Xaml
 		// Proxy so that we return IntPtr.Zero in case of any failures, instead of
 		// generating an exception and unwinding the stack.
 		//
-		private bool cb_set_property (IntPtr top_level, string xmlns, IntPtr target, string name, IntPtr value_ptr)
+		private bool cb_set_property (IntPtr parser, IntPtr top_level, string xmlns, IntPtr target, string name, IntPtr value_ptr)
 		{
 			try {
 				return SetProperty (top_level, xmlns, target, name, value_ptr);
@@ -629,7 +630,7 @@ namespace Mono.Xaml
 			}
 		}
 
-		private void cb_import_xaml_xmlns (string xmlns)
+		private void cb_import_xaml_xmlns (IntPtr parser, string xmlns)
 		{
 			try {
 				Application.ImportXamlNamespace (xmlns);
@@ -639,7 +640,7 @@ namespace Mono.Xaml
 
 		}
 
-		private string cb_get_content_property_name (IntPtr dob_ptr)
+		private string cb_get_content_property_name (IntPtr parser, IntPtr dob_ptr)
 		{
 			DependencyObject dob = DependencyObject.Lookup (dob_ptr);
 			if (dob == null)

@@ -21,10 +21,10 @@
 
 class XamlLoader;
 
-typedef bool (*xaml_create_object_callback) (void *top_level, const char *xmlns, const char *name, Value *value);
-typedef bool (*xaml_set_property_callback) (void *top_level, const char* xmlns, void *target, const char *name, Value *value);
-typedef void (*xaml_import_xaml_xmlns_callback) (const char* xmlns);
-typedef const char* (*xaml_get_content_property_name_callback) (void *obj);
+typedef bool (*xaml_create_object_callback) (void *parser, void *top_level, const char *xmlns, const char *name, Value *value);
+typedef bool (*xaml_set_property_callback) (void *parser, void *top_level, const char* xmlns, void *target, const char *name, Value *value);
+typedef void (*xaml_import_xaml_xmlns_callback) (void *parser, const char* xmlns);
+typedef const char* (*xaml_get_content_property_name_callback) (void *parser, void *obj);
 
 struct XamlLoaderCallbacks {
 	xaml_create_object_callback create_object;
@@ -127,10 +127,10 @@ class XamlLoader {
 	
 	virtual bool LoadVM ();
 
-	virtual bool CreateObject (void *top_element, const char* xmlns, const char* name, Value *value);
-	virtual bool SetProperty (void *top_level, const char* xmlns, void *target, const char *name, Value *value);
+	virtual bool CreateObject (void *p, void *top_element, const char* xmlns, const char* name, Value *value);
+	virtual bool SetProperty (void *p, void *top_level, const char* xmlns, void *target, const char *name, Value *value);
 
-	virtual const char *GetContentPropertyName (void *dob);
+	virtual const char *GetContentPropertyName (void *p, void *dob);
 
 	char *GetFilename () { return filename; }
 	char *GetString () { return str; }

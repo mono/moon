@@ -1,3 +1,8 @@
+2009-01-13  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp|h: Pass the ParserInfo to every callback, this will
+	allow us to call back into unmanaged to do extra stuff.
+
 2009-01-13  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* tilesource.h|cpp: add a callback and a method to set the callback

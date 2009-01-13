@@ -777,7 +777,7 @@ class XNamespace : public XamlNamespace {
 				// The managed DependencyObject will unref itself
 				// once it's finalized, so don't unref anything here.
 				Value *v = new Value ();
-				if (p->loader->CreateObject (p->top_element ? p->top_element->GetAsDependencyObject () : NULL, NULL, value, v) && v->Is (Type::DEPENDENCY_OBJECT)) {
+				if (p->loader->CreateObject (p, p->top_element ? p->top_element->GetAsDependencyObject () : NULL, NULL, value, v) && v->Is (Type::DEPENDENCY_OBJECT)) {
 					dob = v->AsDependencyObject ();
 					dob->SetSurface (p->loader->GetSurface ());
 				} else
@@ -895,7 +895,7 @@ class ManagedNamespace : public XamlNamespace {
 			return NULL;
 
 		Value *value = new Value ();
-		if (!p->loader->CreateObject (p->top_element ? p->top_element->GetManagedPointer () : NULL, xmlns, el, value)) {
+		if (!p->loader->CreateObject (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, xmlns, el, value)) {
 			parser_error (p, el, NULL, -1, "Unable to resolve managed type %s.", el);
 			return  NULL;
 		}
@@ -910,19 +910,19 @@ class ManagedNamespace : public XamlNamespace {
 
 		if (p->loader) {
 			Value v = Value (value);
-			return p->loader->SetProperty (p->top_element ? p->top_element->GetManagedPointer () : NULL, xmlns, instance->GetManagedPointer (), attr, &v);
+			return p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, xmlns, instance->GetManagedPointer (), attr, &v);
 		}
 		return false;
 	}
 };
 
 bool
-XamlLoader::CreateObject (void *top_level, const char* xmlns, const char* type_name, Value *value)
+XamlLoader::CreateObject (void *p, void *top_level, const char* xmlns, const char* type_name, Value *value)
 {
 	if (callbacks.create_object) {
 		if (!vm_loaded && !LoadVM ())
 			return NULL;
-		bool res = callbacks.create_object (top_level, xmlns, type_name, value);
+		bool res = callbacks.create_object (p, top_level, xmlns, type_name, value);
 		return res;
 	}
 		
@@ -930,19 +930,19 @@ XamlLoader::CreateObject (void *top_level, const char* xmlns, const char* type_n
 }
 
 const char *
-XamlLoader::GetContentPropertyName (void *obj)
+XamlLoader::GetContentPropertyName (void *p, void *obj)
 {
 	if (callbacks.get_content_property_name) {
-		return callbacks.get_content_property_name (obj);
+		return callbacks.get_content_property_name (p, obj);
 	}
 	return NULL;
 }
 
 bool
-XamlLoader::SetProperty (void *top_level, const char* xmlns, void *target, const char *name, Value *value)
+XamlLoader::SetProperty (void *p, void *top_level, const char* xmlns, void *target, const char *name, Value *value)
 {
 	if (callbacks.set_property)
-		return callbacks.set_property (top_level, xmlns, target, name, value);
+		return callbacks.set_property (p, top_level, xmlns, target, name, value);
 
 	return false;
 }
@@ -1402,7 +1402,7 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 		return;
 
 	if (p->loader != NULL && p->loader->callbacks.import_xaml_xmlns != NULL)
-		p->loader->callbacks.import_xaml_xmlns (uri);
+		p->loader->callbacks.import_xaml_xmlns (p, uri);
 
 	for (int i = 0; default_namespace_names [i]; i++) {
 		if (!strcmp (default_namespace_names [i], uri)) {
@@ -2915,7 +2915,7 @@ XamlElementInstance::SetUnknownAttribute (XamlParserInfo *p, const char *name, c
 		return false;
 
 	Value v = Value (value);
-	if (!p->loader->SetProperty (p->top_element ? p->top_element->GetManagedPointer () : NULL, NULL, GetManagedPointer (), name, &v)) {
+	if (!p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, NULL, GetManagedPointer (), name, &v)) {
 		return false;
 	}
 	return true;
@@ -2928,7 +2928,7 @@ create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *n
 		return NULL;
 
 	Value *v = new Value ();
-	if (!p->loader->CreateObject (NULL, NULL, name, v) /*|| v->Is (Type::DEPENDENCY_OBJECT)*/) {
+	if (!p->loader->CreateObject (p, NULL, NULL, name, v) /*|| v->Is (Type::DEPENDENCY_OBJECT)*/) {
 		delete v;
 		return NULL;
 	}
@@ -3147,7 +3147,7 @@ XamlElementInfoManaged::GetContentProperty (XamlParserInfo *p)
 		return NULL;
 
 	// TODO: We could cache this, but for now lets keep things as simple as possible.
-	const char *res = p->loader->GetContentPropertyName (obj);
+	const char *res = p->loader->GetContentPropertyName (p, obj);
 	if (res)
 		return res;
 	return XamlElementInfo::GetContentProperty (p);
@@ -3222,14 +3222,14 @@ XamlElementInstanceManaged::SetProperty (XamlParserInfo *p, XamlElementInstance 
 {
 	if (GetAsDependencyObject () != NULL && dependency_object_set_property (p, this, property, value))
 		return true;
-	return p->loader->SetProperty (p->top_element ? p->top_element->GetManagedPointer () : NULL, ((XamlElementInfoManaged *) info)->xmlns, GetManagedPointer (), property->element_name, value->GetAsValue ());
+	return p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, ((XamlElementInfoManaged *) info)->xmlns, GetManagedPointer (), property->element_name, value->GetAsValue ());
 }
 
 bool
 XamlElementInstanceManaged::SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char *value)
 {
 	Value v = Value (value);
-	return p->loader->SetProperty (p->top_element ? p->top_element->GetManagedPointer () : NULL, ((XamlElementInfoManaged *) info)->xmlns, GetManagedPointer (), property->element_name, &v);
+	return p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, ((XamlElementInfoManaged *) info)->xmlns, GetManagedPointer (), property->element_name, &v);
 }
 
 void
@@ -3252,7 +3252,7 @@ XamlElementInstanceManaged::TrySetContentProperty (XamlParserInfo *p, const char
 		if (!p->cdata_content)
 			return false;
 		Value v = Value (value);
-		return p->loader->SetProperty (p->top_element ? p->top_element->GetManagedPointer () : NULL, ((XamlElementInfoManaged *) info)->xmlns, GetManagedPointer (), prop_name, &v);
+		return p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, ((XamlElementInfoManaged *) info)->xmlns, GetManagedPointer (), prop_name, &v);
 	}
 	return false;
 }
@@ -3265,7 +3265,7 @@ XamlElementInstanceManaged::SetAttachedProperty (XamlParserInfo *p, XamlElementI
 		return false;
 	}
 
-	return p->loader->SetProperty (p->top_element ? p->top_element->GetManagedPointer () : NULL, ((XamlElementInfoManaged *) info)->xmlns, target->GetManagedPointer (), element_name, value->GetAsValue ());
+	return p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, ((XamlElementInfoManaged *) info)->xmlns, target->GetManagedPointer (), element_name, value->GetAsValue ());
 }
 
 bool
@@ -3275,7 +3275,7 @@ XamlElementInstanceManaged::SetUnknownAttribute (XamlParserInfo *p, const char* 
 		return false;
 
 	Value v = Value (value);
-	if (!p->loader->SetProperty (p->top_element ? p->top_element->GetManagedPointer () : NULL, NULL, GetManagedPointer (), name, &v)) {
+	if (!p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, NULL, GetManagedPointer (), name, &v)) {
 		return false;
 	}
 	return true;
@@ -3301,7 +3301,7 @@ XamlElementInfoImportedManaged::GetContentProperty (XamlParserInfo *p)
 
 	
 	// TODO: We could cache this, but for now lets keep things as simple as possible.
-	const char *res = p->loader->GetContentPropertyName (obj->AsDependencyObject ());
+	const char *res = p->loader->GetContentPropertyName (p, obj->AsDependencyObject ());
 	if (res)
 		return res;
 	
@@ -3722,7 +3722,7 @@ start_parse:
 			if (!v && !value_from_str (prop->GetPropertyType(), prop->GetName(), attr [i + 1], &v, p->loader->GetSurface()->IsSilverlight2())) {
 				if (prop->GetPropertyType () == Type::MANAGED || prop->GetPropertyType() == Type::OBJECT) {
 					Value v = Value (g_strdup (attr [i + 1]));
-					if (p->loader->SetProperty (p->top_element ? p->top_element->GetManagedPointer () : NULL, NULL, item->GetManagedPointer (), g_strdup (prop->GetName ()), &v))
+					if (p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, NULL, item->GetManagedPointer (), g_strdup (prop->GetName ()), &v))
 						return;
 				}
 

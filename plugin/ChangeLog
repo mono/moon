@@ -1,3 +1,7 @@
+2009-01-13  Jackson Harper  <jackson@ximian.com>
+
+	* plugin.cpp|h: Updated xaml callback sig.
+
 2009-01-13  Jb Evain  <jbevain@novell.com>
 
 	* plugin.cpp: specify System.Windows's fullname when loading it,
