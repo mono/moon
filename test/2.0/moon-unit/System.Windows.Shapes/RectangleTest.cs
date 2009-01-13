@@ -3,6 +3,7 @@ using System.Net;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Media;
 using Mono.Moonlight.UnitTesting;
 using System.Windows.Shapes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -12,6 +13,15 @@ namespace MoonTest.System.Windows.Shapes
 	[TestClass]
 	public class RectangleTest
 	{
+		[TestMethod]
+		public void DefaultValues ()
+		{
+			Rectangle r = new Rectangle ();
+			Assert.AreEqual (0.0d, r.RadiusX, "RadiusX");
+			Assert.AreEqual (0.0d, r.RadiusY, "RadiusY");
+			ShapeTest.CheckDefaultValues (r, Stretch.Fill);
+		}
+
 		[TestMethod]
 		public void MeasureTest1 ()
 		{
