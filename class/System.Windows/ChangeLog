@@ -1,3 +1,7 @@
+2009-01-13  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Add IScrollInfo
+
 2009-01-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Remove UriTypeConverter.cs (it's in System.dll now) and
