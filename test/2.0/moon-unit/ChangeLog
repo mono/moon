@@ -1,5 +1,15 @@
 2009-01-13  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Media/MatrixTransformTest.cs: Add
+	MatrixTransformTest.cs to svn
+
+	* moon-unit.mdp: Add the matrix tests to the MD solution
+
+	* System.Windows.Controls/ControlTemplateTest.cs: Add test for
+	ControlTemplate failing to parse TargetType
+
+2009-01-13  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/StyleTest.cs: Fixed test to pass on silverlight.
 
 2009-01-12  Jackson Harper  <jackson@ximian.com>

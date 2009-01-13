@@ -19,7 +19,29 @@ namespace MoonTest.System.Windows.Controls
 	[TestClass]
 	public class ControlTemplateTest
 	{
+		[TestMethod]
+		[MoonlightBug ("Need to resolve xmlns for TargetType")]
+		public void TargetTypeWithNamespace ()
+		{
+			object o = XamlReader.Load (@"
+<ResourceDictionary
+	xmlns=""http://schemas.microsoft.com/client/2007""
+	xmlns:T=""clr-namespace:System.Windows.Shapes"">
+	<ControlTemplate Name=""Name"" TargetType=""T:Rectangle""> 
+		<Grid />
+	</ControlTemplate>
+</ResourceDictionary>");
 
+			Assert.IsNotNull (o, "#1");
+			Assert.IsTrue (o is ResourceDictionary, "#2");
+			ResourceDictionary d = (ResourceDictionary) o;
+			Assert.AreEqual(1, d.Count, "#3");
+
+			ControlTemplate template = (ControlTemplate) d["Name"];
+			Assert.IsNotNull (template, "#4");
+			Assert.AreEqual(typeof (global::System.Windows.Shapes.Rectangle), template.TargetType, "#5");
+		}
+		
 		[TestMethod]
 		public void LoadTemplateOnlyUsingXamlReader ()
 		{
