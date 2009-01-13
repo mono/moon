@@ -38,6 +38,16 @@ namespace System.Windows.Threading {
 		Queue<DispatcherOperation> queuedOperations;
 		uint source;
 
+		static Dispatcher main;
+		internal static Dispatcher Main {
+			get { return main; }
+		}
+
+		static Dispatcher ()
+		{
+			main = new Dispatcher ();
+		}
+
 		internal Dispatcher ()
 		{
 			queuedOperations = new Queue<DispatcherOperation>();
@@ -70,7 +80,7 @@ namespace System.Windows.Threading {
 			return op;
 		}
 
-		void Invoke (Delegate d, object[] args)
+		internal void Invoke (Delegate d, params object[] args)
 		{
 			if (CheckAccess ()) {
 				d.DynamicInvoke (args);

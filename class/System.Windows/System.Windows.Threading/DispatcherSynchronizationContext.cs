@@ -1,5 +1,5 @@
 //
-// DispatcherTimer.cs
+// DispatcherSynchronizationContext.cs
 //
 // Copyright 2008 Novell, Inc.
 //
@@ -10,10 +10,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -29,43 +29,37 @@ using System.Threading;
 
 namespace System.Windows.Threading {
 
-	public class DispatcherSynchronizationContext : System.Threading.SynchronizationContext
-#if notyet
-	: SynchronizationContext
-#endif
+	public class DispatcherSynchronizationContext : SynchronizationContext
 	{
+		Dispatcher dispatcher;
+
 		public DispatcherSynchronizationContext (Dispatcher dispatcher)
 		{
-			throw new NotImplementedException ();
+			if (dispatcher == null)
+				throw new ArgumentNullException ("dispatcher");
+
+			this.dispatcher = dispatcher;
 		}
 
 		[SecuritySafeCritical]
-		public DispatcherSynchronizationContext ()
+		public DispatcherSynchronizationContext () : this (Dispatcher.Main)
 		{
-			throw new NotImplementedException ();
 		}
-
-#if notyet
-		public SynchronizationContext CreateCopy ()
-		{
-			throw new NotImplementedException ();
-		}
-#endif
 
 		public override void Send (SendOrPostCallback d, object state)
 		{
-			throw new NotImplementedException ();
+			dispatcher.BeginInvoke (d, new object[] {state});
 		}
 
 		[SecuritySafeCritical]
 		public override void Post (SendOrPostCallback d, object state)
 		{
-			throw new NotImplementedException ();
+			dispatcher.Invoke (d, new object[] {state});
 		}
-		
+
 		public override SynchronizationContext CreateCopy ()
 		{
-			throw new NotImplementedException ();
+			return new DispatcherSynchronizationContext (dispatcher);
 		}
 	}
 }

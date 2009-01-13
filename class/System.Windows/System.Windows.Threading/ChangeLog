@@ -1,5 +1,13 @@
 2009-01-13  Andreia Gaita  <avidigal@novell.com>
 
+	* DispatcherSynchronizationContext.cs: Implemented
+
+	* Dispatcher.cs: Add static Dispatcher getter so the sync context
+	class can initialize itself with the main thread dispatcher in the
+	default	constructor
+
+2009-01-13  Andreia Gaita  <avidigal@novell.com>
+
 	* DispatcherTimer.cs: Remove unused event object
 
 2009-01-12  Andreia Gaita  <avidigal@novell.com>
