@@ -1,3 +1,7 @@
+2009-01-13  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/StyleTest.cs: Fixed test to pass on silverlight.
+
 2009-01-12  Jackson Harper  <jackson@ximian.com>
 
 	* System.Windows.Controls/ControlTemplateTest.cs: Got one more
