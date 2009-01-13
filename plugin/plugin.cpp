@@ -2015,24 +2015,9 @@ PluginInstance::CreatePluginAppDomain ()
 	if (plugin_domain != NULL)
 		return true;
 	
-	char *assembly;
-	MonoImage *corlib;
-	char *profile;
-	
-	corlib = mono_get_corlib ();
-	profile = g_path_get_dirname (mono_image_get_filename (corlib));
-	
-	assembly = g_build_filename (profile, "System.Windows.dll", NULL);
-	
-	g_free (profile);
-	
-	d(printf ("The file is %s\n", assembly));
-	
 	plugin_domain = mono_domain_create ();
 	
-	system_windows_assembly = mono_domain_assembly_open (plugin_domain, assembly);
-	
-	g_free (assembly);
+	system_windows_assembly = mono_assembly_load_with_partial_name ("System.Windows", NULL);
 	
 	if (system_windows_assembly) {
 		MonoImage *image;
