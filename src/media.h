@@ -116,6 +116,7 @@ class MediaBase : public FrameworkElement {
 	
 	Downloader *downloader;
 	char *part_name;
+	bool setting_source_from_downloader;
 	
 	int updating_size_from_media:1;
 	int allow_downloads:1;

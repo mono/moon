@@ -1,0 +1,204 @@
+<html>
+  <head>
+      <title>Moonlight Test Page</title>
+
+		<script type="text/xaml" id="xaml">
+			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
+			<MediaElement x:Name="mediaElement" Source="" AutoPlay="False" Width="200" Height="200"
+				MediaOpened="OnMediaOpened" 
+				MediaFailed="OnMediaFailed" 
+				MediaEnded="OnMediaEnded"
+				CurrentStateChanged="OnCurrentStateChanged" 
+				BufferingProgressChanged="OnBufferingProgressChanged"
+				DownloadProgressChanged="OnDownloadProgressChanged"
+				MarkerReached="OnMarkerReached"/>
+			
+			<Image x:Name="image" Canvas.Top="200"  />
+			</Canvas>
+		</script>
+
+		<script language="javascript" src="../../js/js/utils.js"></script>
+		<script language="javascript" src="../../js/js/testplugin.js"></script>
+		<script language="javascript">
+
+		var plugin = null;
+		var mediaElement = null;
+		var image = null;
+		// It doesn't make sense to test for invalid/inexistent uris, 
+		// since you can't use a downloader until the download has completed 
+		// (which will never happen for invalid uris)
+		var video_uri = "../video/timecode-short.wmv";
+		var image_uri = "../../xaml/mono.png";
+		var imageWaitForTime = 0;
+
+		function RunTests ()
+		{
+			verifySource ();
+			setInterval ("verifySource ();", 10);
+			Test1 ();
+		}
+
+		function MediaDownloaderComplete (sender, args)
+		{
+			TestLogger.LogDebug ("MediaDownloaderComplete");
+			verifySource ();
+			mediaElement.SetSource (sender, "");
+			verifySource ();
+		}
+
+		function MediaDownloaderFailed (sender, args)
+		{
+			TestLogger.LogError ("MediaDownloaderFailed: this source is supposed to download successfully");
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+		
+		function ImageDownloaderComplete (sender, args)
+		{
+			TestLogger.LogDebug ("ImageDownloaderComplete");
+			verifySource ();
+			imageWaitForTime = new Date ().getTime () + 500;
+			image.SetSource (sender, "");
+			verifySource ();
+		}
+
+		function verifySource ()
+		{
+			var done = 0;
+			
+			TestLogger.LogDebug ("MediaElement.Source: " + mediaElement.Source + " Image.Source: " + image.Source);
+
+			if (ShutdownRequested)
+				return;
+
+			if (image.Source != "") {
+				if (!ShutdownRequested) {
+					TestLogger.LogError ("Image.Source shouldn't change.");
+					TestLogger.LogResult (-1);
+					SignalShutdown ();
+				}
+			} else {
+				if (imageWaitForTime > 0 && imageWaitForTime < new Date ().getTime ()) {
+					done++;
+					TestLogger.LogDebug ("- Image verified");
+				}
+			}
+
+		
+			if (mediaElement.Source == video_uri) {
+				done++;
+				TestLogger.LogDebug ("- MediaElement verified.");
+			} else {
+				TestLogger.LogDebug ("- MediaElement NOT verified (yet).");
+			}
+
+			if (done == 2) {
+				TestLogger.LogDebug ("Successfully tested MediaElement and Image.");
+				TestLogger.LogResult (1);
+				SignalShutdown ();
+			}
+		}
+
+		function Test1 ()
+		{
+			TestLogger.LogDebug ("Test1");
+
+			verifySource ();
+			var pl = document.getElementById ("_MoonlightControl");
+			
+			var dlMedia = pl.createObject ("Downloader");
+			dlMedia.AddEventListener ("Completed", MediaDownloaderComplete);
+			dlMedia.AddEventListener ("DownloadFailed", MediaDownloaderFailed);
+			dlMedia.Open ("GET", video_uri);
+			dlMedia.Send ();
+			
+			var dlImage = pl.createObject ("Downloader");
+			dlImage.AddEventListener ("Completed", ImageDownloaderComplete);
+			dlImage.Open ("GET", image_uri);
+			dlImage.Send ();
+			
+			verifySource ();
+		}
+
+		function OnDownloadProgressChanged (sender, args)
+		{
+			TestLogger.LogDebug ("OnDownloadProgressChanged: current DownloadProgress: " + sender.DownloadProgress);
+		}
+		
+		function OnMarkerReached (sender, args)
+		{
+			TestLogger.LogDebug ("OnMarkerReached");
+		}
+
+		function OnBufferingProgressChanged (sender, args)
+		{
+			TestLogger.LogDebug ("OnBufferingProgressChanged: current BufferingProgress: " + sender.BufferingProgress);
+		}
+
+		function OnCurrentStateChanged (sender, args)
+		{
+			TestLogger.LogDebug ("OnCurrentStateChanged: current state: " + sender.CurrentState);
+		}
+
+		function OnMediaOpened (sender, args)
+		{
+			TestLogger.LogDebug ("OnMediaOpened");
+		}
+
+		function OnMediaFailed (sender, args)
+		{
+			TestLogger.LogError ("OnMediaFailed: " + ErrorEventArgsToOneLineString (args));
+		}
+
+		function OnMediaEnded (sender, args)
+		{
+			TestLogger.LogDebug ("OnMediaEnded");
+		}
+
+		function OnPluginLoad (sender, args)
+		{
+			TestLogger.LogDebug ("OnPluginLoad");
+			plugin = sender;
+			mediaElement = sender.findName ("mediaElement");
+			image = sender.findName ("image");
+			setTimeout ("RunTests ();", 1000);
+			setTimeout ("timeOut ();", 10000);
+		}
+
+		function OnPluginError (sender, args)
+		{
+			TestLogger.LogError ("Plugin failed to initialize: " + args.ErrorMessage);
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+		
+		function timeOut ()
+		{
+			TestLogger.LogError ("MediaElement.Source never changed, test timed out");
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+		</script>
+	</head>
+
+  <body>
+    <div>
+        <embed type="application/x-silverlight"
+             width="300"
+             height="300"
+             id="_MoonlightControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoad"
+             style="position:absolute; left:0px; top:0px"
+             background="green" >
+        </embed>
+    </div>
+<!--
+    <div>
+        <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
+        </embed>
+    </div>
+-->
+  </body>
+</html>
+
+

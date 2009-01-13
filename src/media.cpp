@@ -50,6 +50,7 @@ MediaBase::MediaBase ()
 	use_media_height = true;
 	use_media_width = true;
 	source_changed = false;
+	setting_source_from_downloader = false;
 }
 
 MediaBase::~MediaBase ()
@@ -165,8 +166,20 @@ MediaBase::SetSourceInternal (Downloader *downloader, char *PartName)
 	this->downloader = downloader;
 	part_name = PartName;
 	
-	if (downloader)
+	if (downloader) {
 		downloader->ref ();
+		// If SetSource (dl) was called, we need to set the Source property to the
+		// uri of the downloader. If we're playing a playlist we're not supposed
+		// to change the Source property to the uri of the downloader the playlist
+		// creates, so detect when Source isn't "" and don't change anything in that
+		// case.
+		const char *src = GetSource ();
+		if (GetObjectType () == Type::MEDIAELEMENT && (src == NULL || src [0] == 0)) {
+			setting_source_from_downloader = true;
+			SetValue (SourceProperty, downloader->GetUri ());
+			setting_source_from_downloader = false;
+		}
+	}
 }
 
 void
@@ -218,6 +231,11 @@ MediaBase::SetSource (const char *uri)
 void
 MediaBase::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
+	if (setting_source_from_downloader) {
+		NotifyListenersOfPropertyChange (args);
+		return;
+	}
+	
 	if (args->property == MediaBase::SourceProperty) {
 		const char *uri = args->new_value ? args->new_value->AsString () : NULL;
 		Surface *surface = GetSurface ();

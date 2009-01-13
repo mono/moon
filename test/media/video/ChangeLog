@@ -1,3 +1,10 @@
+2009-01-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* drtlist.xml:
+	* test-set-source-downloader.html: MediaElement/MediaBase: when
+	SetSource (dl) is called, we need to set the source to the dl's uri.
+	Fixes #464723
+
 2008-12-09  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* drtlist.xml, test-mms-with-markers.html: Added test for #456154.
