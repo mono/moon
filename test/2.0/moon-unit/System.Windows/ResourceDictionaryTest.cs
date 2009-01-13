@@ -43,9 +43,7 @@ namespace MoonTest.System.Windows
 			ResourceDictionary rd = b.Resources;
 
 			rd.Add ("hi", new object());
-			Assert.Throws (delegate { rd.Add ("hi", new object()); 
-				},
-				typeof (ArgumentException));
+			Assert.Throws<ArgumentException> (delegate { rd.Add ("hi", new object()); } );
 		}
 
 		[TestMethod]
@@ -73,8 +71,8 @@ namespace MoonTest.System.Windows
 		public void AddNull ()
 		{
 			ResourceDictionary rd = new ResourceDictionary ();
-			Assert.Throws (delegate { rd.Add (null, new object ()); }, typeof (ArgumentNullException), "Add(null,object)");
-			Assert.Throws (delegate { rd.Add ("s", null); }, typeof (NotSupportedException), "Add(string,null)");
+			Assert.Throws<ArgumentNullException>(delegate { rd.Add (null, new object ()); }, "Add(null,object)");
+			Assert.Throws<NotSupportedException>(delegate { rd.Add ("s", null); }, "Add(string,null)");
 			Assert.AreEqual (0, rd.Count, "Count");
 		}
 
@@ -94,19 +92,17 @@ namespace MoonTest.System.Windows
 		[TestMethod]
 		public void TestParseDouble ()
 		{
-			Assert.Throws (delegate {
+			Assert.Throws<XamlParseException> (delegate {
 					XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Double x:Key=""double"">5.0</Double></Canvas.Resources></Canvas>");
-				},
-				typeof (XamlParseException));
+				} );
 		}
 
 		[TestMethod]
 		public void Parse_MissingxKey ()
 		{
-			Assert.Throws (delegate { 
+			Assert.Throws<XamlParseException>(delegate { 
 					XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Color>#ffffffff</Color></Canvas.Resources></Canvas>");
-				},
-				typeof (XamlParseException));
+				});
 		}
 
 		[TestMethod]
@@ -124,9 +120,8 @@ namespace MoonTest.System.Windows
 		[TestMethod]
 		public void Parse_BothxKeyAndxName ()
 		{
-			Assert.Throws (delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Color x:Key=""keycolor"" x:Name=""color"">#ffffffff</Color></Canvas.Resources></Canvas>");
-				},
-				typeof (XamlParseException));
+			Assert.Throws<XamlParseException>(delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Color x:Key=""keycolor"" x:Name=""color"">#ffffffff</Color></Canvas.Resources></Canvas>");
+				});
 		}
 
 		[TestMethod]
@@ -144,8 +139,7 @@ namespace MoonTest.System.Windows
 			Canvas b = (Canvas)
 				XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Color x:Key=""color"">#ffffffff</Color></Canvas.Resources></Canvas>");
 
-			Assert.Throws (delegate { Color c = (Color)b.Resources[0]; },
-				       typeof (ArgumentException));
+			Assert.Throws<ArgumentException>(delegate { Color c = (Color)b.Resources[0]; });
 		}
 
 		[TestMethod]
@@ -219,10 +213,9 @@ namespace MoonTest.System.Windows
 		[TestMethod]
 		public void TestNameAndKey ()
 		{
-			Assert.Throws (delegate {
+			Assert.Throws<XamlParseException>(delegate {
 					XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Storyboard x:Name=""sb""/><Storyboard x:Key=""sb""/></Canvas.Resources></Canvas>");
-				},
-				typeof (XamlParseException));
+				});
 		}
 
 		[TestMethod]
@@ -249,9 +242,8 @@ namespace MoonTest.System.Windows
 		[TestMethod]
 		public void TestStaticResourceSameElement ()
 		{
-			Assert.Throws (delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" Background=""{StaticResource BackgroundBrush}""><Canvas.Resources><Color x:Key=""color"">#ffffffff</Color><SolidColorBrush x:Key=""BackgroundBrush"" Color=""Black""/></Canvas.Resources></Canvas>");
-				},
-				typeof (XamlParseException));
+			Assert.Throws<XamlParseException>(delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" Background=""{StaticResource BackgroundBrush}""><Canvas.Resources><Color x:Key=""color"">#ffffffff</Color><SolidColorBrush x:Key=""BackgroundBrush"" Color=""Black""/></Canvas.Resources></Canvas>");
+				} );
 		}
 
 		[TestMethod]
@@ -276,9 +268,8 @@ namespace MoonTest.System.Windows
 		[TestMethod]
 		public void TestStaticResourceMissingResource ()
 		{
-			Assert.Throws (delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><SolidColorBrush x:Key=""FillBrush"" Color=""Black""/></Canvas.Resources><Rectangle x:Name=""child"" Fill=""{StaticResource FillBrush}""><Rectangle.Stroke><SolidColorBrush Color=""{StaticResource color}""/></Rectangle.Stroke></Rectangle></Canvas>");
-				},
-				typeof (XamlParseException));
+			Assert.Throws<XamlParseException>(delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><SolidColorBrush x:Key=""FillBrush"" Color=""Black""/></Canvas.Resources><Rectangle x:Name=""child"" Fill=""{StaticResource FillBrush}""><Rectangle.Stroke><SolidColorBrush Color=""{StaticResource color}""/></Rectangle.Stroke></Rectangle></Canvas>");
+				});
 		}
 
 		// This was breaking airlines
@@ -296,18 +287,28 @@ namespace MoonTest.System.Windows
 		{
 			XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><SolidColorBrush x:Key=""FillBrush"" Color=""Black""/></Canvas.Resources><Rectangle x:Name=""child"" Fill=""{ StaticResource    FillBrush }""/></Canvas>");
 
-			Assert.Throws (delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><SolidColorBrush x:Key=""FillBrush"" Color=""Black""/></Canvas.Resources><Rectangle x:Name=""child"" Fill=""{StaticResource}""/></Canvas>"); },
-				       typeof (XamlParseException), "1");
+			Assert.Throws<XamlParseException>(delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><SolidColorBrush x:Key=""FillBrush"" Color=""Black""/></Canvas.Resources><Rectangle x:Name=""child"" Fill=""{StaticResource}""/></Canvas>"); }, "1");
 
-			Assert.Throws (delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><SolidColorBrush x:Key=""FillBrush"" Color=""Black""/></Canvas.Resources><Rectangle x:Name=""child"" Fill=""{StaticResource }""/></Canvas>"); },
-				       typeof (XamlParseException), "2");
+			Assert.Throws<XamlParseException>(delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><SolidColorBrush x:Key=""FillBrush"" Color=""Black""/></Canvas.Resources><Rectangle x:Name=""child"" Fill=""{StaticResource }""/></Canvas>"); }, "2");
 
-			Assert.Throws (delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><SolidColorBrush x:Key=""FillBrush"" Color=""Black""/></Canvas.Resources><Rectangle x:Name=""child"" Fill="" {StaticResource FillBrush}""/></Canvas>"); },
-				       typeof (XamlParseException), "3");
+			Assert.Throws<XamlParseException>(delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><SolidColorBrush x:Key=""FillBrush"" Color=""Black""/></Canvas.Resources><Rectangle x:Name=""child"" Fill="" {StaticResource FillBrush}""/></Canvas>"); }, "3");
 
-			Assert.Throws (delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><SolidColorBrush x:Key=""FillBrush"" Color=""Black""/></Canvas.Resources><Rectangle x:Name=""child"" Fill=""{StaticResource FillBrush} ""/></Canvas>"); },
-				       typeof (XamlParseException), "4");
+			Assert.Throws<XamlParseException>(delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><SolidColorBrush x:Key=""FillBrush"" Color=""Black""/></Canvas.Resources><Rectangle x:Name=""child"" Fill=""{StaticResource FillBrush} ""/></Canvas>"); }, "4");
 		}
 
+		[TestMethod]
+		public void TestResourceFrozenState ()
+		{
+			Canvas c = (Canvas)XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><SolidColorBrush x:Key=""FillBrush"" Color=""Black""/></Canvas.Resources><Rectangle x:Name=""child"" Fill=""{StaticResource FillBrush}""/></Canvas>");
+			Rectangle r = (Rectangle)c.FindName ("child");
+
+			SolidColorBrush scb = (SolidColorBrush)c.Resources["FillBrush"];
+
+			Assert.AreEqual (scb, r.Fill, "1");
+
+			scb.Color = Colors.Blue;
+
+			Assert.AreEqual (Colors.Blue, ((SolidColorBrush)r.Fill).Color, "2");
+		}
 	}
 }
