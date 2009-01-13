@@ -28,8 +28,7 @@ novell_moonlight_xpi_CONTENTS += $(avutil_libdir)/libavutil.so \
 endif INCLUDE_FFMPEG
 
 if INCLUDE_BROWSER_MANAGED_CODE
-novell_moonlight_xpi_CONTENTS += ../moonlight.exe \
-				$(srcdir)/../moon.config
+novell_moonlight_xpi_CONTENTS += $(srcdir)/../moon.config
 endif INCLUDE_BROWSER_MANAGED_CODE
 
 novell-moonlight.xpi: $(novell_moonlight_xpi_CONTENTS) Makefile
@@ -58,8 +57,8 @@ if INCLUDE_BROWSER_MANAGED_CODE
 	cp -L ../moonlight.exe .xpinstall/plugins/moonlight/
 	mkdir -p .xpinstall/plugins/moonlight/mono/2.1/
 	cp -L $(mono_dlldir)/mono/2.1/mscorlib.dll .xpinstall/plugins/moonlight/mono/2.1/
-	find $(mono_dlldir)/mono/2.1 -name \*.dll -and -not -name mscorlib.dll -exec gacutil -i '{}' -root .xpinstall/plugins/moonlight ';'
-	find $(top_builddir)/class/lib/2.1 -name \*.dll -exec gacutil -i '{}' -root .xpinstall/plugins/moonlight ';'
+	find $(mono_dlldir)/mono/2.1 -name \*.dll -and -not -name mscorlib.dll -exec gacutil -i '{}' -package 2.1 -root .xpinstall/plugins/moonlight ';'
+	find $(top_builddir)/class/lib/2.1 -name \*.dll -exec gacutil -i '{}' -package 2.1 -root .xpinstall/plugins/moonlight ';'
 	find .xpinstall -name \*.mdb -exec rm '{}' ';'
 	mkdir -p .xpinstall/plugins/moonlight/mono/2.0/
 	cp -L $(srcdir)/../moon.config .xpinstall/plugins/moonlight/mono/config

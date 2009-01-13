@@ -34,6 +34,7 @@ system_windows_sources =							\
 	$(srcdir)/Microsoft.Internal/IManagedFrameworkInternalHelper.cs		\
 	$(srcdir)/Microsoft.Internal/TextBoxView.cs				\
 	$(srcdir)/System.IO/SimpleUnmanagedMemoryStream.cs			\
+	$(srcdir)/Mono/ApplicationLauncher.cs					\
 	$(srcdir)/Mono/DispatcherTimer.cs					\
 	$(srcdir)/Mono/EventHandlerList.cs					\
 	$(srcdir)/Mono/Events.cs						\
@@ -54,7 +55,6 @@ system_windows_sources =							\
 	$(srcdir)/Mono/Types.g.cs						\
 	$(srcdir)/Mono/Value.cs							\
 	$(srcdir)/Mono/XamlLoaderCallbacks.cs					\
-	$(srcdir)/Mono/XapHack.cs						\
 	$(srcdir)/System.ComponentModel/DesignerProperties.cs			\
 	$(srcdir)/System.Collections.ObjectModel/ObservableCollection_T.cs	\
 	$(srcdir)/System.Collections.Specialized/INotifyCollectionChanged.cs	\
@@ -273,7 +273,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/VerticalAlignment.cs				\
 	$(srcdir)/System.Windows/Visibility.cs					\
 	$(srcdir)/System.Windows/VisualState.cs					\
-	$(srcdir)/System.Windows/XapHackProxyImpl.cs				\
 	$(srcdir)/System.Windows.Data/Binding.cs				\
 	$(srcdir)/System.Windows.Data/BindingExpression.cs			\
 	$(srcdir)/System.Windows.Data/BindingExpressionBase.cs			\

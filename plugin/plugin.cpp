@@ -398,8 +398,7 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, uint16_t mo
 	xap_loaded = false;
 
 	plugin_domain = NULL;
-	moon_boot_assembly = NULL;
-	boot_assembly = NULL;
+	system_windows_assembly = NULL;
 
 	moon_load_xaml =
 		moon_load_xap =
@@ -1954,18 +1953,14 @@ plugin_xaml_loader_from_str (const char *str, PluginInstance *plugin, Surface *s
 // the code in moonlight.cs for managing app domains.
 #if PLUGIN_SL_2_0
 MonoMethod *
-PluginInstance::MonoGetMethodFromName (const char *name)
+PluginInstance::MonoGetMethodFromName (MonoClass *klass, const char *name)
 {
 	MonoMethod *method;
-	MonoMethodDesc *desc;
+	method = mono_class_get_method_from_name (klass, name, -1);
 
-	desc = mono_method_desc_new (name, true);
-	method = mono_method_desc_search_in_image (desc, mono_assembly_get_image (moon_boot_assembly));
-	mono_method_desc_free (desc);
+	if (!method)
+		printf ("Warning could not find method %s\n", name);
 
-	if (method == NULL)
-		printf ("Warning: could not find method %s in the assembly", name);
-	
 	return method;
 }
 
@@ -2020,42 +2015,40 @@ PluginInstance::CreatePluginAppDomain ()
 	bool result = false;
 	if (plugin_domain != NULL)
 		return true;
-
-#if PLUGIN_INSTALL
-	Dl_info dlinfo;
-	char *dirname;
 	
-	if (dladdr ((void *) plugin_xaml_loader_from_str, &dlinfo) == 0) {
-		fprintf (stderr, "Unable to find the location of libmoonplugin %s\n", dlerror ());
-		return false;
-	}
+	char *assembly;
+	MonoImage *corlib;
+	char *profile;
 	
-	dirname = g_path_get_dirname (dlinfo.dli_fname);
-	boot_assembly = g_build_filename (dirname, "moonlight.exe", NULL);
-	g_free (dirname);
-#else
-	boot_assembly = g_build_filename (PLUGIN_DIR, "plugin", "moonlight.exe", NULL);
-#endif
+	corlib = mono_get_corlib ();
+	profile = g_path_get_dirname (mono_image_get_filename (corlib));
 	
-	d(printf ("The file is %s\n", boot_assembly));
+	assembly = g_build_filename (profile, "System.Windows.dll", NULL);
 	
-	char *domain_name = g_strdup_printf ("moonlight-%p", this);
+	g_free (profile);
+	
+	d(printf ("The file is %s\n", assembly));
+	
 	plugin_domain = mono_domain_create ();
-	g_free (domain_name);
-
-	moon_boot_assembly = mono_domain_assembly_open (plugin_domain, boot_assembly);
 	
-	if (moon_boot_assembly) {
-		char *argv [2];
+	system_windows_assembly = mono_domain_assembly_open (plugin_domain, assembly);
+	
+	g_free (assembly);
+	
+	if (system_windows_assembly) {
+		MonoImage *image;
+		MonoClass *app_launcher;
 		
-		argv [0] = boot_assembly;
-		argv [1] = NULL;
+		image = mono_assembly_get_image (system_windows_assembly);
+		app_launcher = mono_class_from_name (image, "Mono", "ApplicationLauncher");
+		if (!app_launcher) {
+			printf ("Warning: could not find ApplicationLauncher type\n");
+			return false;
+		}
 		
-		mono_jit_exec (plugin_domain, moon_boot_assembly, 1, argv);
-		
-		moon_load_xaml  = MonoGetMethodFromName ("Moonlight.ApplicationLauncher:CreateXamlLoader");
-		moon_load_xap   = MonoGetMethodFromName ("Moonlight.ApplicationLauncher:CreateApplication");
-		moon_destroy_application = MonoGetMethodFromName ("Moonlight.ApplicationLauncher:DestroyApplication");
+		moon_load_xaml  = MonoGetMethodFromName (app_launcher, "CreateXamlLoader");
+		moon_load_xap   = MonoGetMethodFromName (app_launcher, "CreateApplication");
+		moon_destroy_application = MonoGetMethodFromName (app_launcher, "DestroyApplication");
 
 		if (moon_load_xaml != NULL && moon_load_xap != NULL && moon_destroy_application != NULL)
 			result = true;

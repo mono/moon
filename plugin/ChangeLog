@@ -1,3 +1,11 @@
+2009-01-12  Jb Evain  <jbevain@novell.com>
+
+	* plugin.h, plugin.cpp: remove the need for a moonlight.exe
+	launcher by calling directly methods in System.Windows. We're
+	getting the System.Windows relative to the moonlight mscorlib.dll.
+	* Makefile.am: remove references to moonlight.cs and moonlight.exe.
+	* moonlight.cs: delete.
+
 2009-01-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.cpp: Unconfuse a bit: initParams is a char*, so use a boolean

@@ -1,3 +1,9 @@
+2009-01-12  Jb Evain  <jbevain@novell.com>
+
+	* ApplicationLauncher.cs: new class specific to NET_2_1,
+	used by the plugin to create and terminate applications.
+	* XapHack.cs: deleted.
+
 2009-01-12  Jackson Harper  <jackson@ximian.com>
 
 	* Helper.cs: Convert enums.

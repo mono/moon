@@ -1,3 +1,8 @@
+2009-01-12  Jb Evain  <jbevain@novell.com>
+
+	* Makefile.am: remove references to moonlight.cs and moonlight.exe.
+	Install the assemblies in the plugin gac for the 2.1 profile.
+
 2008-11-12  Rusty Howell  <rhowell@novell.com>
 
 	* install.rdf.in: Add macros for updateURL

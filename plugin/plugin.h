@@ -192,8 +192,7 @@ class PluginInstance
 	bool xap_loaded;
 
 	MonoDomain   *plugin_domain;
-	MonoAssembly *moon_boot_assembly;
-	char *boot_assembly;
+	MonoAssembly *system_windows_assembly;
 
 	static MonoDomain *root_domain;
 	static bool mono_is_loaded;
@@ -206,7 +205,7 @@ class PluginInstance
 	void LoadXAP  (const char *fname);
 	void DestroyApplication ();
 
-	MonoMethod *MonoGetMethodFromName (const char *name);
+	MonoMethod *MonoGetMethodFromName (MonoClass *klass, const char *name);
 
 	bool ManagedCreateApplication (const char *file);
 	void ManagedDestroyApplication ();

@@ -1,5 +1,9 @@
 2009-01-12  Jb Evain  <jbevain@novell.com>
 
+	* XapHackProxyImpl.cs: deleted.
+
+2009-01-12  Jb Evain  <jbevain@novell.com>
+
 	* Deployment.cs: add a current field.
 	* Application.cs: assign Deployment.Current when creating the application
 	from the Deployment manifest.

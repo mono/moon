@@ -6,16 +6,10 @@ endif
 
 CLEANFILES =
 
-SMCS = MONO_PATH="$(top_builddir)/class/lib/2.1:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack $(top_builddir)/class/lib/2.1/smcs.exe $(CSCFLAGS)
-
 pluginlibdir=$(pkglibdir)/plugin
 pluginlib_LTLIBRARIES = libmoonplugin.la libmoonloader.la
 
 pluginlib_DATA=README
-
-if INCLUDE_BROWSER_MANAGED_CODE
-pluginlib_DATA += moonlight.exe moonlight.exe.mdb
-endif
 
 INCLUDES = \
 	-I$(top_srcdir)/src \
@@ -65,16 +59,14 @@ libmoonplugin_la_SOURCES = \
 # custom install rule
 test-plugin: libmoonloader.la libmoonplugin.la
 	mkdir -p ~/.mozilla/plugins
-	-rm -f ~/.mozilla/plugins/libmoon.so ~/.mozilla/plugins/libmoonplugin.so ~/.mozilla/plugins/moonlight.exe ~/.mozilla/plugins/libmoonloader.so
+	-rm -f ~/.mozilla/plugins/libmoon.so ~/.mozilla/plugins/libmoonplugin.so ~/.mozilla/plugins/libmoonloader.so
 	cp .libs/libmoonloader.so ~/.mozilla/plugins
 
 untest-plugin:
 	-rm -rf ~/.mozilla/plugins/libmoonplugin.so
 	-rm -rf ~/.mozilla/plugins/libmoonloader.so
-	rm -rf ~/.mozilla/plugin/moonlight.exe
 
-EXTRA_DIST = moonlight.cs moon.config
-DISTCLEANFILES=moonlight.exe moonlight.exe.mdb
+EXTRA_DIST = moon.config
 
 dist-hook:
 	mkdir $(distdir)/moz-sdk
@@ -85,11 +77,3 @@ all-local:
 	@mkdir -p .libs
 	test -L .libs/libmoonplugin-ff2bridge.so || (cd .libs && ln -s ../firefox/ff2/.libs/libmoonplugin-ff2bridge.so)
 	test -L .libs/libmoonplugin-ff3bridge.so || (cd .libs && ln -s ../firefox/ff3/.libs/libmoonplugin-ff3bridge.so)
-
-moonlight_CS=  $(srcdir)/moonlight.cs
-
-if INCLUDE_BROWSER_MANAGED_CODE
-moonlight.exe moonlight.exe.mdb: $(moonlight_CS) $(top_builddir)/class/lib/2.1/System.Windows.dll
-	$(SMCS) -debug -out:moonlight.exe $(moonlight_CS) -r:$(top_builddir)/class/lib/2.1/System.Windows.dll
-CLEANFILES += moonlight.exe moonlight.exe.mdb
-endif
