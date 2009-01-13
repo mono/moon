@@ -261,9 +261,9 @@ dependency_property_g_init (void)
 	PointKeyFrame::ValueProperty = DependencyProperty::RegisterNullable (Type::POINTKEYFRAME, "Value", Type::POINT, NULL);
 	PolyBezierSegment::PointsProperty = DependencyProperty::Register (Type::POLYBEZIERSEGMENT, "Points", Type::POINT_COLLECTION);
 	Polygon::FillRuleProperty = DependencyProperty::Register (Type::POLYGON, "FillRule", new Value (FillRuleEvenOdd));
-	Polygon::PointsProperty = DependencyProperty::Register (Type::POLYGON, "Points", Type::POINT_COLLECTION);
+	Polygon::PointsProperty = DependencyProperty::Register (Type::POLYGON, "Points", new Value (new PointCollection ()));
 	Polyline::FillRuleProperty = DependencyProperty::Register (Type::POLYLINE, "FillRule", new Value (FillRuleEvenOdd));
-	Polyline::PointsProperty = DependencyProperty::Register (Type::POLYLINE, "Points", Type::POINT_COLLECTION);
+	Polyline::PointsProperty = DependencyProperty::Register (Type::POLYLINE, "Points", new Value (new PointCollection ()));
 	PolyLineSegment::PointsProperty = DependencyProperty::Register (Type::POLYLINESEGMENT, "Points", Type::POINT_COLLECTION);
 	PolyQuadraticBezierSegment::PointsProperty = DependencyProperty::Register (Type::POLYQUADRATICBEZIERSEGMENT, "Points", Type::POINT_COLLECTION);
 	QuadraticBezierSegment::Point1Property = DependencyProperty::Register (Type::QUADRATICBEZIERSEGMENT, "Point1", Type::POINT);
@@ -294,7 +294,7 @@ dependency_property_g_init (void)
 	SetterBaseCollection::IsSealedProperty = DependencyProperty::Register (Type::SETTERBASE_COLLECTION, "IsSealed", new Value (false));
 	Shape::FillProperty = DependencyProperty::Register (Type::SHAPE, "Fill", Type::BRUSH);
 	Shape::StretchProperty = DependencyProperty::Register (Type::SHAPE, "Stretch", new Value (StretchNone));
-	Shape::StrokeDashArrayProperty = DependencyProperty::Register (Type::SHAPE, "StrokeDashArray", Type::DOUBLE_COLLECTION);
+	Shape::StrokeDashArrayProperty = DependencyProperty::Register (Type::SHAPE, "StrokeDashArray", new Value (new DoubleCollection ()));
 	Shape::StrokeDashCapProperty = DependencyProperty::Register (Type::SHAPE, "StrokeDashCap", new Value (PenLineCapFlat));
 	Shape::StrokeDashOffsetProperty = DependencyProperty::Register (Type::SHAPE, "StrokeDashOffset", new Value (0.0));
 	Shape::StrokeEndLineCapProperty = DependencyProperty::Register (Type::SHAPE, "StrokeEndLineCap", new Value (PenLineCapFlat));

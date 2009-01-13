@@ -1,5 +1,5 @@
 /*
- * control.cpp:
+ * usercontrol.cpp:
  *
  * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *

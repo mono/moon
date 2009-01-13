@@ -1,3 +1,9 @@
+2009-01-13  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* dependencyproperty.g.cpp: Regenerated
+	* shape.h: Add DefaultValue for Poly[gon|line].Points and Shape
+	StrokeDashArray since they are not NULL in SL2
+
 2009-01-13  Alan McGovern  <amcgovern@novell.com>
 
 	* src.mdp: Add the provider stuff to the MD solution
