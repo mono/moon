@@ -2017,13 +2017,28 @@ PluginInstance::CreatePluginAppDomain ()
 	
 	plugin_domain = mono_domain_create ();
 	
-	system_windows_assembly = mono_assembly_load_with_partial_name ("System.Windows", NULL);
+	MonoAssemblyName *aname;
+	aname = g_new0 (MonoAssemblyName, 1);
+	aname->name = "System.Windows";
+	aname->culture = "";
+	aname->major = 2;
+	aname->minor = 0;
+	aname->build = 5;
+	aname->revision = 0;
+	g_strlcpy ((char*)aname->public_key_token, "7cEc85d7bea7798e", MONO_PUBLIC_KEY_TOKEN_LENGTH);
+	
+	system_windows_assembly = mono_assembly_load (aname, NULL, NULL);
+	
+	g_free (aname);
 	
 	if (system_windows_assembly) {
 		MonoImage *image;
 		MonoClass *app_launcher;
 		
 		image = mono_assembly_get_image (system_windows_assembly);
+		
+		d (printf ("Assembly: %s\n", mono_image_get_filename (image)));
+		
 		app_launcher = mono_class_from_name (image, "Mono", "ApplicationLauncher");
 		if (!app_launcher) {
 			printf ("Warning: could not find ApplicationLauncher type\n");
