@@ -1,8 +1,6 @@
 //
 // Helper.cs: Exposes some methods that require access to mscorlib or
-// System but are not exposed in the 2.1 profile.   This is necessary
-// to avoid making moonlight.exe a friend of the System and mscorlib
-// assemblies.
+// System but are not exposed in the 2.1 profile.
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -185,39 +183,9 @@ namespace Mono {
 				error = string.Format ("unable to convert to type {0} from a string", pi.PropertyType);
 		}
 
-		public static void SetPropertyFromValue (object target, PropertyInfo pi, object value, out string error)
-		{
-			error = null;
-			try {
-				pi.SetValue (target, value, null);
-			} catch (Exception e) {
-				error = e.ToString ();
-			}
-		}
-
-		public static object ChangeType (object obj, Type type)
-		{
-			return Convert.ChangeType (obj, type);
-		}
-
 		public static string GetStackTrace ()
 		{
 			return Environment.StackTrace;
-		}
-
-		public static object CreateInstance (Type type, bool nonPublic)
-		{
-			return Activator.CreateInstance (type, nonPublic);
-		}
-
-		public static Assembly LoadFile (string path)
-		{
-			return Assembly.LoadFile (path);
-		}
-
-		public static AssemblyName [] GetReferencedAssemblies (Assembly ass)
-		{
-			return ass.GetReferencedAssemblies ();
 		}
 
 		public static IntPtr AllocHGlobal (int cb)
@@ -243,11 +211,6 @@ namespace Mono {
 		public static string PtrToStringAuto (IntPtr ptr)
 		{
 			return Marshal.PtrToStringAuto (ptr);
-		}
-
-		public static void ThreadMemoryBarrier ()
-		{
-			Thread.MemoryBarrier ();
 		}
 
 		public static void DeleteDirectory (string path)
