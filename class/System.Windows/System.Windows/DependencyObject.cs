@@ -177,6 +177,7 @@ namespace System.Windows {
 			case Kind.DOUBLEANIMATION: return new DoubleAnimation (raw);
 			case Kind.DOUBLEANIMATIONUSINGKEYFRAMES: return new DoubleAnimationUsingKeyFrames (raw);
 			case Kind.DOUBLEKEYFRAME_COLLECTION: return new DoubleKeyFrameCollection (raw);
+			case Kind.DOUBLE_COLLECTION: return new DoubleCollection (raw);
 			case Kind.ELLIPSEGEOMETRY: return new EllipseGeometry (raw);
 			case Kind.ELLIPSE: return new Ellipse (raw);
 			case Kind.EVENTTRIGGER: return new EventTrigger (raw);
@@ -209,6 +210,7 @@ namespace System.Windows {
 			case Kind.PATHSEGMENT_COLLECTION: return new PathSegmentCollection (raw);
 			case Kind.POINTANIMATION: return new PointAnimation (raw);
 			case Kind.POINTKEYFRAME_COLLECTION: return new PointKeyFrameCollection (raw);
+			case Kind.POINT_COLLECTION: return new PointCollection (raw);
 			case Kind.POLYBEZIERSEGMENT: return new PolyBezierSegment (raw);
 			case Kind.POLYGON: return new Polygon (raw);
 			case Kind.POLYLINE: return new Polyline (raw);

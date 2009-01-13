@@ -1,3 +1,7 @@
+2009-01-13  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* DependencyObject.cs: Add missing case for [Double|Point]Collection
+
 2009-01-13  Alan McGovern  <amcgovern@novell.com>
 
 	* Setter.cs: Keep a list of types which have been used with the managed
