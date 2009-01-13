@@ -1034,6 +1034,39 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 		case GDK_Up:
 			changed = CursorUp (modifiers);
 			break;
+		case GDK_A:
+		case GDK_a:
+			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK | GDK_SHIFT_MASK)) == GDK_CONTROL_MASK) {
+				// select all and move cursor to end of buffer
+				if (cursor != buffer->len) {
+					changed = CURSOR_POSITION_CHANGED;
+					cursor = buffer->len;
+				}
+				
+				SelectAll ();
+			}
+			break;
+		case GDK_C:
+		case GDK_c:
+			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK | GDK_SHIFT_MASK)) == GDK_CONTROL_MASK) {
+				// copy selection to the clipboard
+				// FIXME: implement me
+			}
+			break;
+		case GDK_X:
+		case GDK_x:
+			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK | GDK_SHIFT_MASK)) == GDK_CONTROL_MASK) {
+				// copy selection to the clipboard and then cut
+				// FIXME: implement me
+			}
+			break;
+		case GDK_V:
+		case GDK_v:
+			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK | GDK_SHIFT_MASK)) == GDK_CONTROL_MASK) {
+				// paste clipboard contents to the buffer
+				// FIXME: implement me
+			}
+			break;
 		default:
 			// FIXME: what other keys do we need to handle?
 			break;

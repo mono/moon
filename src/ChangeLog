@@ -6,6 +6,8 @@
 	(TextBox::CursorEnd): Implemented.
 	(TextBox::CursorDown): Implemented.
 	(TextBox::CursorUp): Implemented.
+	(TextBox::OnKeyDown): Implemented Select-All keybinding and
+	stubbed out cut/copy/paste.
 
 2009-01-13  Sebastien Pouliot  <sebastien@ximian.com> 
 
