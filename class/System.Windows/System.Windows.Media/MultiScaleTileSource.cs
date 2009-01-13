@@ -71,7 +71,6 @@ namespace System.Windows.Media
 
 		protected internal string GetImageUri (int tileLevel, int tilePositionX, int tilePositionY)
 		{
-			Console.WriteLine ("GetImageUri");
 			List<object> list = new List<object> ();
 			GetTileLayers (tileLevel, tilePositionX, tilePositionY, list);
 			if (list.Count == 0)
