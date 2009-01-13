@@ -130,6 +130,14 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		public void Parse_StyleTargetTypeOnly ()
+		{
+			ResourceDictionary rd = (ResourceDictionary)XamlReader.Load (@"<ResourceDictionary xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""> <Style TargetType=""Button""> </Style> </ResourceDictionary>");
+
+			Assert.IsNotNull (rd["System.Windows.Controls.Button"], "1");
+		}
+
+		[TestMethod]
 		public void TestIntegerIndex ()
 		{
 			Canvas b = (Canvas)
