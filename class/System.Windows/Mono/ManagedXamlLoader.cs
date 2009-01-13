@@ -88,11 +88,8 @@ namespace Mono.Xaml
 		
 		// 
 		// Creates a managed dependency object from the xaml.
-		// Must always return a DependencyObject (the abstract declaration in agmono
-		// cannot be declared with a return value of type DependencyObject since agmono
-		// can't reference agclr, it would cause a circular dependency).
 		// 
-		public override object CreateDependencyObjectFromString (string xaml, bool createNamescope)
+		public override DependencyObject CreateDependencyObjectFromString (string xaml, bool createNamescope)
 		{
 			if (xaml == null)
 				throw new ArgumentNullException ("xaml");
@@ -120,11 +117,8 @@ namespace Mono.Xaml
 
 		// 
 		// Creates a managed dependency object from the xaml in the file
-		// Must always return a DependencyObject (the abstract declaration in agmono
-		// cannot be declared with a return value of type DependencyObject since agmono
-		// can't reference agclr, it would cause a circular dependency).
 		// 
-		public override object CreateDependencyObjectFromFile (string file, bool createNamescope)
+		public override DependencyObject CreateDependencyObjectFromFile (string file, bool createNamescope)
 		{
 			if (file == null)
 				throw new ArgumentNullException ("file");
@@ -659,8 +653,6 @@ namespace Mono.Xaml
 
 			return cpa.Name;
 		}
-
 #endregion
 	}
 }
-

@@ -29,6 +29,8 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Windows;
+
 using Mono;
 
 namespace Mono.Xaml
@@ -265,10 +267,8 @@ namespace Mono.Xaml
 
 		// 
 		// Creates a managed dependency object from the xaml.
-		// Must always return a DependencyObject (since we don't reference agclr, we can't 
-		// declare the return type as DependencyObject)
 		// 
-		public abstract object CreateDependencyObjectFromString (string xaml, bool createNamescope);
-		public abstract object CreateDependencyObjectFromFile (string path, bool createNamescope);
+		public abstract DependencyObject CreateDependencyObjectFromString (string xaml, bool createNamescope);
+		public abstract DependencyObject CreateDependencyObjectFromFile (string path, bool createNamescope);
 	}
 }

@@ -1,5 +1,12 @@
 2009-01-13  Jb Evain  <jbevain@novell.com>
 
+	* XamlLoaderCallbacks.cs
+	* ManagedXamlLoader.cs: fix the signature of
+	CreateDependencyObjectFromFile and CreateDependencyObjectFromString
+	to actually return a DependencyObject.
+
+2009-01-13  Jb Evain  <jbevain@novell.com>
+
 	* XamlLoaderCallbacks.cs (CreateManagedXamlLoader): remove
 	the use of reflection now that we're in System.Windows.
 
