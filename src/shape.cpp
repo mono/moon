@@ -97,6 +97,7 @@ Shape::Shape ()
 	cached_surface = NULL;
 	SetShapeFlags (UIElement::SHAPE_NORMAL);
 	cairo_matrix_init_identity (&stretch_transform);
+	SetStrokeDashArray (new DoubleCollection ());
 }
 
 Shape::~Shape ()
@@ -1435,6 +1436,10 @@ Line::OnPropertyChanged (PropertyChangedEventArgs *args)
 //	- Shape::StrokeThickness
 //
 
+Polygon::Polygon ()
+{
+	SetPoints (new PointCollection ());
+}
 
 // The Polygon shape can be drawn while ignoring properties:
 // * Shape::StrokeStartLineCap
@@ -1603,6 +1608,11 @@ Polygon::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Proper
 //	- Polyline::PointsProperty
 //	- Shape::StretchProperty
 //	- Shape::StrokeThickness
+
+Polyline::Polyline ()
+{
+	SetPoints (new PointCollection ());
+}
 
 // The Polyline shape can be drawn while ignoring NO properties
 bool

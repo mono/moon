@@ -84,7 +84,7 @@ class Shape : public FrameworkElement {
 	static DependencyProperty *StretchProperty;
  	/* @PropertyType=Brush,GenerateAccessors */
 	static DependencyProperty *StrokeProperty;
- 	/* @PropertyType=DoubleCollection,DefaultValue=new DoubleCollection (),GenerateAccessors */
+ 	/* @PropertyType=DoubleCollection,GenerateAccessors */
 	static DependencyProperty *StrokeDashArrayProperty;
  	/* @PropertyType=PenLineCap,DefaultValue=PenLineCapFlat,GenerateAccessors */
 	static DependencyProperty *StrokeDashCapProperty;
@@ -315,11 +315,11 @@ class Polygon : public Shape {
  public:
  	/* @PropertyType=FillRule,DefaultValue=FillRuleEvenOdd,GenerateAccessors */
 	static DependencyProperty *FillRuleProperty;
- 	/* @PropertyType=PointCollection,DefaultValue=new PointCollection (),GenerateAccessors */
+ 	/* @PropertyType=PointCollection,GenerateAccessors */
 	static DependencyProperty *PointsProperty;
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	Polygon () { }
+	Polygon ();
 	
 	virtual Type::Kind GetObjectType () { return Type::POLYGON; }
 	
@@ -358,11 +358,11 @@ class Polyline : public Shape {
  public:
  	/* @PropertyType=FillRule,DefaultValue=FillRuleEvenOdd,GenerateAccessors */
 	static DependencyProperty *FillRuleProperty;
- 	/* @PropertyType=PointCollection,DefaultValue=new PointCollection (),GenerateAccessors */
+ 	/* @PropertyType=PointCollection,GenerateAccessors */
 	static DependencyProperty *PointsProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	Polyline () { }
+	Polyline ();
 	
 	virtual Type::Kind GetObjectType () { return Type::POLYLINE; }
 	
