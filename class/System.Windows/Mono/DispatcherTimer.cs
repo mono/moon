@@ -44,7 +44,7 @@ namespace Mono
 		{
 			EventHandler h = (EventHandler)events[TickEvent];
 			if (h != null) {
-				h (this, EventArgs.Empty);
+				h (managedTimer, EventArgs.Empty);
 			}
 		}
 
