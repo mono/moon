@@ -25,11 +25,13 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+
 using System;
-using System.Windows;
-using System.Reflection;
 using System.Globalization;
+using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Windows;
+using System.Windows.Markup;
 
 namespace Mono {
 
@@ -306,9 +308,7 @@ namespace Mono {
 			case 5:
 				throw new InvalidOperationException (msg);
 			case 6: {
-				Type t = Helper.Agclr.GetType ("System.Windows.Markup.XamlParseException", true);
-				Exception e = (Exception)Activator.CreateInstance (t, BindingFlags.Instance | BindingFlags.NonPublic, null, new object[] { msg }, CultureInfo.CurrentCulture );
-				throw e;
+				throw new XamlParseException (msg);
 			}
 			case 7:
 				throw new UnauthorizedAccessException (msg);

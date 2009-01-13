@@ -42,8 +42,6 @@ namespace Mono {
 
 	internal static class Helper {
 
-		public static Assembly Agclr { get; set; }
-
 		private static TypeConverter GetConverterFor (MemberInfo info, Type target_type)
 		{
 			Attribute[] attrs = (Attribute[])info.GetCustomAttributes (true);
@@ -165,10 +163,8 @@ namespace Mono {
 			if (pi.PropertyType == typeof (Type)) {
 
 				// try to find the type based on the name
-				Type app = Agclr.GetType ("System.Windows.Application");
-				MethodInfo lookup = app.GetMethod ("GetComponentTypeFromName", BindingFlags.NonPublic | BindingFlags.Static, null, new Type [] {typeof (string)}, null);
-				Type t = (Type)lookup.Invoke (null, new object [] {value});
-				
+				Type t = Application.GetComponentTypeFromName (value);
+
 				if (t != null) {
 					try {
 						pi.SetValue (target, t, null);
@@ -252,27 +248,6 @@ namespace Mono {
 		public static void ThreadMemoryBarrier ()
 		{
 			Thread.MemoryBarrier ();
-		}
-
-		/// <summary>
-		/// Looks up a dependency object given the native pointer.
-		/// The calling code must free the native pointer when it's finished with it.
-		/// </summary>
-		public static object LookupDependencyObject (Kind k, IntPtr ptr)
-		{
-			Type depobj = Agclr.GetType ("System.Windows.DependencyObject");
-			MethodInfo lookup = depobj.GetMethod ("Lookup", BindingFlags.NonPublic | BindingFlags.Static, null, new Type [] {typeof (Kind), typeof (IntPtr)}, null);
-			return lookup.Invoke (null, new object [] {k, ptr});
-		}
-		
-		public static IntPtr GetNativeObject (object dependency_object)
-		{
-			if (dependency_object == null)
-				return IntPtr.Zero;
-			
-			Type depobj = Agclr.GetType ("System.Windows.DependencyObject");
-			FieldInfo field = depobj.GetField ("_native", BindingFlags.Instance | BindingFlags.NonPublic);
-			return (IntPtr) field.GetValue (dependency_object);
 		}
 
 		public static void DeleteDirectory (string path)

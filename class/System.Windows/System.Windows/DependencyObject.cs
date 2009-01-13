@@ -81,7 +81,6 @@ namespace System.Windows {
 		static DependencyObject ()
 		{
 			moonlight_thread = Thread.CurrentThread;
-			Helper.Agclr = typeof (DependencyObject).Assembly;
 		}
 
 		protected DependencyObject ()

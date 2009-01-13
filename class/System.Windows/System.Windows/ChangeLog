@@ -1,3 +1,7 @@
+2009-01-13  Jb Evain  <jbevain@novell.com>
+
+	* DependencyObject.cs: remove references to Helper.Agclr.
+
 2009-01-12  Jb Evain  <jbevain@novell.com>
 
 	* XapHackProxyImpl.cs: deleted.

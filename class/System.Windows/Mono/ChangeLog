@@ -1,5 +1,11 @@
 2009-01-13  Jb Evain  <jbevain@novell.com>
 
+	* Helper.cs: remove Aglcr.
+	* NativeMethods.cs: remove references to Helper.Agclr.
+	* Types.g.cs: regen, remove references to Helper.Agclr.
+
+2009-01-13  Jb Evain  <jbevain@novell.com>
+
 	* XamlLoaderCallbacks.cs
 	* ManagedXamlLoader.cs: fix the signature of
 	CreateDependencyObjectFromFile and CreateDependencyObjectFromString

@@ -1,3 +1,7 @@
+2009-01-13  Jb Evain  <jbevain@novell.com>
+
+	* Generator.cs: remove references to Helper.Agclr.
+
 2009-01-09  Chris Toshok  <toshok@ximian.com>
 
 	* Generator.cs: hack to ignore "friend class Foo".

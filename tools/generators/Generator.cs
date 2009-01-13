@@ -1138,14 +1138,8 @@ class Generator {
 		text.AppendLine ("\tstatic partial class Types {");
 		text.AppendLine ("\t\tprivate static void CreateNativeTypes ()");
 		text.AppendLine ("\t\t{");
-		text.AppendLine ("\t\t\tAssembly agclr = Helper.Agclr;");
 		text.AppendLine ("\t\t\tType t;");
 		text.AppendLine ("\t\t\ttry {");
-		
-		text.AppendLine ("\t\t\t\tif (agclr == null) {");
-		text.AppendLine ("\t\t\t\t\tConsole.Error.WriteLine (\"Types.CreateNativeTypes (): Helper.Agclr () has not been set yet.\");");
-		text.AppendLine ("\t\t\t\t\treturn;");
-		text.AppendLine ("\t\t\t\t}");
 		
 		types.Add ((TypeInfo) all.Children ["DependencyObject"]);
 		types.Sort (new Members.MembersSortedByManagedFullName <TypeInfo> ());
@@ -1157,18 +1151,17 @@ class Generator {
 			if (t.Namespace == "None")
 				continue;
 			
-			if (type == "PresentationFrameworkCollection")
-				type = "PresentationFrameworkCollection`1";
+			if (type == "PresentationFrameworkCollection`1")
+				type = "PresentationFrameworkCollection<>";
 				
 			//Log.WriteLine ("Found Kind.{0} in {1} which result in type: {2}.{3}", kind, file, ns, type);
 			
-			text.Append ("\t\t\t\tt = agclr.GetType (\"");
+			text.Append ("\t\t\t\tt = typeof (");
 			text.Append (t.Namespace);
 			text.Append (".");
 			text.Append (type);
-			text.AppendLine ("\", true); ");
-				
-				
+			text.AppendLine ("); ");
+			
 			text.Append ("\t\t\t\ttypes.Add (t, new ManagedType (t, Kind.");
 			text.Append (t.KindName);
 			text.AppendLine ("));");
