@@ -1305,8 +1305,8 @@ end_element_handler (void *data, const char *el)
 				XamlContext *context = new XamlContext (ic);
 
                                 template_->SetXamlBuffer (context, buffer);
+				p->current_element = p->current_element->parent;
 			}
-			p->current_element = p->current_element->parent;
 		}
 		
 		g_free (name);
