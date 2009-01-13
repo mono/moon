@@ -4,6 +4,8 @@
 	(TextBox::CursorPageUp): Implemented.
 	(TextBox::CursorHome): Implemented.
 	(TextBox::CursorEnd): Implemented.
+	(TextBox::CursorDown): Implemented.
+	(TextBox::CursorUp): Implemented.
 
 2009-01-13  Sebastien Pouliot  <sebastien@ximian.com> 
 

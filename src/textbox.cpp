@@ -833,15 +833,112 @@ TextBox::CursorLeft (GdkModifierType modifiers)
 int
 TextBox::CursorDown (GdkModifierType modifiers)
 {
-	// FIXME: implement me
-	return NOTHING_CHANGED;
+	int changed = NOTHING_CHANGED;
+	int length = selection.length;
+	int start = selection.start;
+	int pos;
+	
+	if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK)) != 0)
+		return NOTHING_CHANGED;
+	
+	if ((modifiers & GDK_SHIFT_MASK) != 0) {
+		// Shift+Down: grow selection by one line in the downward direction
+		pos = move_down (buffer, cursor, 1);
+		
+		if (cursor < selection.start + selection.length) {
+			// new selection will start at the end of the current selection
+			start += selection.length;
+		} else {
+			// selection start will stay the same
+		}
+		
+		length = pos - start;
+		
+		if (cursor != pos) {
+			changed = CURSOR_POSITION_CHANGED;
+			cursor = pos;
+		}
+	} else {
+		// Down: move cursor down one line and clear selection
+		pos = move_down (buffer, cursor, 1);
+		
+		if (cursor != pos) {
+			changed = CURSOR_POSITION_CHANGED;
+			cursor = pos;
+		}
+		
+		length = start = 0;
+	}
+	
+	// check to see if selection has changed
+	if (selection.start != start || selection.length != length) {
+		changed |= SELECTION_CHANGED;
+		
+		if (length > 0) {
+			SetSelectionLength (length);
+			SetSelectionStart (start);
+		} else {
+			ClearSelection ();
+		}
+	}
+	
+	return changed;
 }
 
 int
 TextBox::CursorUp (GdkModifierType modifiers)
 {
-	// FIXME: implement me
-	return NOTHING_CHANGED;
+	int changed = NOTHING_CHANGED;
+	int length = selection.length;
+	int start = selection.start;
+	int pos;
+	
+	if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK)) != 0)
+		return NOTHING_CHANGED;
+	
+	if ((modifiers & GDK_SHIFT_MASK) != 0) {
+		// Shift+Up: grow selection by one line in the upward direction
+		pos = move_up (buffer, cursor, 1);
+		
+		if (cursor > selection.start) {
+			// new selection will end at the current selection.start
+			length = selection.start;
+			start = pos;
+		} else {
+			// selection end will stay the same
+			length += pos - cursor;
+			start = pos;
+		}
+		
+		if (cursor != pos) {
+			changed = CURSOR_POSITION_CHANGED;
+			cursor = pos;
+		}
+	} else {
+		// Up: move cursor up one line and clear selection
+		pos = move_up (buffer, cursor, 1);
+		
+		if (cursor != pos) {
+			changed = CURSOR_POSITION_CHANGED;
+			cursor = pos;
+		}
+		
+		length = start = 0;
+	}
+	
+	// check to see if selection has changed
+	if (selection.start != start || selection.length != length) {
+		changed |= SELECTION_CHANGED;
+		
+		if (length > 0) {
+			SetSelectionLength (length);
+			SetSelectionStart (start);
+		} else {
+			ClearSelection ();
+		}
+	}
+	
+	return changed;
 }
 
 void
