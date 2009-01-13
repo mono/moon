@@ -4,6 +4,8 @@
 	* media.cpp: MediaElement/MediaBase: when SetSource (dl) is called, we
 	need to set the source to the dl's uri. Fixes #464723
 
+	r: kangaroo
+
 2009-01-07  Geoff Norton  <gnorton at novell.com>
 
 	* xaml.cpp, file-downloader.cpp: TextStream::Open has been renamed
