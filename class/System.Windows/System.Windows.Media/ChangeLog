@@ -1,3 +1,8 @@
+2009-01-13  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* MultiScaleTileSource.cs: set a native callback to get the results
+	of GetTileLayers.
+
 2008-12-11  Andreia Gaita  <shana@jitted.com>
 
 	* CompositionTarget.cs: Implemented

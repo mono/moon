@@ -53,6 +53,8 @@ namespace System.Windows.Media
 			TileWidth = tileWidth;
 			TileHeight = tileHeight;
 			TileOverlap = tileOverlap;
+
+			NativeMethods.multi_scale_tile_source_set_image_uri_func (native, GetImageUri);
 		}
 
 		public MultiScaleTileSource (long imageWidth, long imageHeight, int tileWidth, int tileHeight, int tileOverlap)
@@ -66,5 +68,15 @@ namespace System.Windows.Media
 		}
 		
 		protected abstract void GetTileLayers (int tileLevel, int tilePositionX, int tilePositionY, IList<object> tileImageLayerSources);
+
+		protected internal string GetImageUri (int tileLevel, int tilePositionX, int tilePositionY)
+		{
+			Console.WriteLine ("GetImageUri");
+			List<object> list = new List<object> ();
+			GetTileLayers (tileLevel, tilePositionX, tilePositionY, list);
+			if (list.Count == 0)
+				return null;
+			return (list[0] as Uri).ToString ();
+		}
 	}
 }
