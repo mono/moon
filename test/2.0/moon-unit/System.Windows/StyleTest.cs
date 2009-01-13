@@ -96,8 +96,8 @@ namespace MoonTest.System.Windows
 			b.Style = s;
 			Assert.AreEqual(typeof(Button), s.TargetType, "#0");
 			Setter setter = (Setter)s.Setters[0];
-			Assert.IsNotNull(setter.Property, "#1");
-			Assert.AreEqual(null, setter.Value, "#2");
+			Assert.IsNotNull (setter.Property, "#1");
+			Assert.IsNull (setter.Value, "#2");
 
 			Assert.AreEqual (10, b.Width);
 		}
@@ -164,7 +164,7 @@ namespace MoonTest.System.Windows
 		{
 			Button b = new Button();
 			Style style = new Style(typeof(Button));
-			Setter setter = new Setter(Button.WidthProperty, "this is a string");
+			style.Setters.Add (new Setter(Button.WidthProperty, "this is a string"));
 			b.Style = style;
 			Assert.IsTrue(double.IsNaN(b.Width));
 		}
