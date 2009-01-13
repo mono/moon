@@ -1974,8 +1974,7 @@ PluginInstance::MonoIsLoaded ()
 }
 
 extern "C" {
-extern gpointer mono_jit_trace_calls;
-extern gpointer mono_trace_parse_options (char *options);
+extern gboolean mono_jit_set_trace_options (const char *options);
 };
 
 bool
@@ -1990,7 +1989,7 @@ PluginInstance::MonoInit ()
 	trace_options = getenv ("MOON_TRACE");
 	if (trace_options != NULL){
 		printf ("Setting trace options to: %s\n", trace_options);
-		mono_jit_trace_calls = mono_trace_parse_options (trace_options);
+		mono_jit_set_trace_options (trace_options);
 	}
 	
 	mono_debug_init (MONO_DEBUG_FORMAT_MONO);

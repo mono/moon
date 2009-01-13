@@ -6,6 +6,10 @@
 	* Makefile.am: remove references to moonlight.cs and moonlight.exe.
 	* moonlight.cs: delete.
 
+2009-01-12  Geoff Norton  <gnorton@novell.com>
+
+	* plugin.cpp: Update to reflect changes in the mono embedding API.
+
 2009-01-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.cpp: Unconfuse a bit: initParams is a char*, so use a boolean
