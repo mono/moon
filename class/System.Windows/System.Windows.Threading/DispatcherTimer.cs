@@ -78,7 +78,6 @@ namespace System.Windows.Threading {
 			get { return started; }
 		}
 
-		static object TickEvent = new object ();
 		public event EventHandler Tick {
 			add {
 				internalTimer.Tick += value;
