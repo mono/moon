@@ -3,6 +3,7 @@
 	* System.Windows.Controls/ControlTemplateTest.cs: Got one more
 	test working.
 	- Added a new test for looking up static resources in templates.
+	- Added a new test for ControlTemplates inside of ControlTemplates.
 
 2009-01-12  Alan McGovern  <amcgovern@novell.com>
 

@@ -173,6 +173,25 @@ namespace MoonTest.System.Windows.Controls
 			SolidColorBrush scb = brush as SolidColorBrush;
 			Assert.AreEqual (Colors.Red, scb.Color, "6");
 		}
+
+		[TestMethod]
+		public void TemplateBindingInsideTemplateTest ()
+		{
+			Console.WriteLine ("TemplateBindingInsideTemplateTest");
+
+			// For now just make sure it parses
+			Canvas c = (Canvas)XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Canvas.Resources>
+  <ControlTemplate x:Key=""ControlTemplate"" TargetType=""Button"">
+      <ControlTemplate x:Key=""ButtonTemplate"" TargetType=""Button"">
+          <TextBlock Text=""hi"" Width=""{TemplateBinding Width}"" />
+      </ControlTemplate>
+  </ControlTemplate> 
+</Canvas.Resources>
+</Canvas>");
+
+		}
 	}
 
 }
