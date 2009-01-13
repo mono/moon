@@ -7,6 +7,12 @@
 	* plugin.cpp: specify System.Windows's fullname when loading it,
 	to avoid loading a different version, such as the desktop one.
 
+2009-01-13  Geoff Norton  <gnorton@novell.com>
+
+	* plugin.cpp: Update to build appdomains properly isolated for each 
+	PluginInstance.  Also change the location resolution of System.Windows
+	slightly.
+
 2009-01-13  Geoff Noton  <gnorton@novell.com>
 
 	* plugin.cpp: Find System.Windows.dll a slightly different way

@@ -2015,21 +2015,15 @@ PluginInstance::CreatePluginAppDomain ()
 	if (plugin_domain != NULL)
 		return true;
 	
-	plugin_domain = mono_domain_create ();
+	char *domain_name = g_strdup_printf ("moonlight-%p", this);
+
+	mono_domain_set (root_domain, FALSE);
+	plugin_domain = mono_domain_create_appdomain (domain_name, NULL);
+
+	g_free (domain_name);
 	
-	MonoAssemblyName *aname;
-	aname = g_new0 (MonoAssemblyName, 1);
-	aname->name = "System.Windows";
-	aname->culture = "";
-	aname->major = 2;
-	aname->minor = 0;
-	aname->build = 5;
-	aname->revision = 0;
-	g_strlcpy ((char*)aname->public_key_token, "7cEc85d7bea7798e", MONO_PUBLIC_KEY_TOKEN_LENGTH);
-	
-	system_windows_assembly = mono_assembly_load (aname, NULL, NULL);
-	
-	g_free (aname);
+	mono_domain_set (plugin_domain, FALSE);
+	system_windows_assembly = mono_assembly_load_with_partial_name ("System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e", NULL);
 	
 	if (system_windows_assembly) {
 		MonoImage *image;
