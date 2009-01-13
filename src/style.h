@@ -45,8 +45,6 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Seal ();
 
-	Value *GetPropertyValue (DependencyProperty *prop);
-
 protected:
 	virtual ~Style ();
 };

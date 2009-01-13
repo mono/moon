@@ -1,3 +1,26 @@
+2009-01-12  Chris Toshok  <toshok@ximian.com>
+
+	* style.cpp, style.h (Style::GetPropertyValue): remove this.  it's
+	been replaced by the hash lookup in the style provider.
+
+	* dependencyobject.cpp (DependencyObject::ClearValue): i hate this
+	change... apparently there's something that happens to lower
+	precedence providers after you call ClearValue, but *only if the
+	local value was actually cleared*.  yuck.
+
+	* frameworkelement.cpp (FrameworkElement::OnPropertyChanged):
+	remove the Style sealing from SetValueWithErrorImpl, and move it
+	here where it should have been all along.  Also, do the sealing
+	via the Style value provider, so it can make things a bit more
+	efficient.
+
+	* provider.cpp (StylePropertyValueProvider::SealStyle): new
+	method, called by FWE::OnPropertyChanged when the style is
+	initially set.  we cache the setters (keyed by DP) in a hashtable.
+	(StylePropertyValueProvider::RecomputePropertyValue): this is the
+	magic method that DependencyObject::ClearValue calls, which causes
+	the style provider to refresh its cache for the listed property.
+
 2009-01-12  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Fix typo, makes ControlTemplates inside of

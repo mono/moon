@@ -66,44 +66,6 @@ Style::Seal ()
 		c->Seal ();
 }
 
-Value *
-Style::GetPropertyValue (DependencyProperty *prop)
-{
-	// XXX replace this with a hash lookup.  create the hash table when the style is sealed?
-
-	DependencyProperty *property = NULL;
-	Value *value = NULL;
-	SetterBaseCollection *setters = GetSetters ();
-	if (!setters)
-		return NULL;
-
-	CollectionIterator *iter = setters->GetIterator ();
-	Value *setterBase;
-	int err;
-	
-	while (iter->Next () && (setterBase = iter->GetCurrent (&err))) {
-		if (err) {
-	 		// Something bad happened - what to do?
-			return NULL;
-	 	}
-
-		if (!setterBase->Is (Type::SETTER))
-			continue;
-		
-		Setter *setter = setterBase->AsSetter ();
-		if (!(value = setter->GetValue (Setter::PropertyProperty)))
-			continue;
-
-		if (!(property = value->AsDependencyProperty ()))
-			continue;
-
-		if (property == prop)
-			return setter->GetValue (Setter::ValueProperty);
-	}
-
-	return NULL;
-}
-
 SetterBaseCollection::SetterBaseCollection ()
 {
 	this->style = NULL;

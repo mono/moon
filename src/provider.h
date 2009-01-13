@@ -15,6 +15,7 @@
 
 class DependencyObject;
 class DependencyProperty;
+class Style;
 struct Value;
 
 enum PropertyPrecedence {
@@ -36,6 +37,8 @@ public:
 	virtual ~PropertyValueProvider () { }
 
 	virtual Value* GetPropertyValue (DependencyProperty *property) = 0;
+
+	virtual void RecomputePropertyValue (DependencyProperty *property) { }
 
 protected:
 	DependencyObject *obj;
@@ -64,6 +67,13 @@ public:
 	virtual ~StylePropertyValueProvider ();
 
 	virtual Value* GetPropertyValue (DependencyProperty *property);
+
+	virtual void RecomputePropertyValue (DependencyProperty *property);
+
+	void SealStyle (Style *style);
+
+private:
+	GHashTable *style_hash;
 };
 
 class InheritedPropertyValueProvider : public PropertyValueProvider {

@@ -10,6 +10,7 @@
 
 #include <config.h>
 
+#include "cbinding.h"
 #include "runtime.h"
 #include "provider.h"
 #include "control.h"
@@ -43,26 +44,107 @@ LocalPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 StylePropertyValueProvider::StylePropertyValueProvider (DependencyObject *obj)
 	: PropertyValueProvider (obj)
 {
-	// attach an handler for obj->StyleProperty changing
+	style_hash = g_hash_table_new_full (g_direct_hash, g_direct_equal,
+					    (GDestroyNotify)NULL,
+					    (GDestroyNotify)event_object_unref);
 }
 
 StylePropertyValueProvider::~StylePropertyValueProvider ()
 {
+	g_hash_table_destroy (style_hash);
 }
 
 Value*
 StylePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 {
-	if (!obj->Is(Type::FRAMEWORKELEMENT))
+	Setter *setter = (Setter*)g_hash_table_lookup (style_hash, property);
+
+	if (!setter)
 		return NULL;
+	else
+		return setter->GetValue (Setter::ValueProperty);
+}
 
-	Value *style = obj->GetValueSkippingPrecedence (FrameworkElement::StyleProperty, PropertyPrecedence_Style);
-
+void
+StylePropertyValueProvider::RecomputePropertyValue (DependencyProperty *prop)
+{
+	Style *style = ((FrameworkElement*)obj)->GetStyle();
 	if (!style)
-		return NULL;
+		return;
 
-	Style *s = style->AsStyle ();
-	return s ? s->GetPropertyValue (property) : NULL;
+	DependencyProperty *property = NULL;
+	Value *value = NULL;
+	SetterBaseCollection *setters = style->GetSetters ();
+	if (!setters)
+		return;
+
+	CollectionIterator *iter = setters->GetIterator ();
+	Value *setterBase;
+	int err;
+	
+	while (iter->Next () && (setterBase = iter->GetCurrent (&err))) {
+		if (err) {
+	 		// Something bad happened - what to do?
+			return;
+	 	}
+
+		if (!setterBase->Is (Type::SETTER))
+			continue;
+		
+		Setter *setter = setterBase->AsSetter ();
+		if (!(value = setter->GetValue (Setter::PropertyProperty)))
+			continue;
+
+		if (!(property = value->AsDependencyProperty ()))
+			continue;
+
+		if (prop == property) {
+			// the hash holds a ref
+			setter->ref ();
+			g_hash_table_insert (style_hash, property, setter);
+			return;
+		}
+	}
+	
+}
+
+void
+StylePropertyValueProvider::SealStyle (Style *style)
+{
+	style->Seal();
+
+	// XXX replace this with a hash lookup.  create the hash table when the style is sealed?
+
+	DependencyProperty *property = NULL;
+	Value *value = NULL;
+	SetterBaseCollection *setters = style->GetSetters ();
+	if (!setters)
+		return;
+
+	CollectionIterator *iter = setters->GetIterator ();
+	Value *setterBase;
+	int err;
+	
+	while (iter->Next () && (setterBase = iter->GetCurrent (&err))) {
+		if (err) {
+	 		// Something bad happened - what to do?
+			return;
+	 	}
+
+		if (!setterBase->Is (Type::SETTER))
+			continue;
+		
+		Setter *setter = setterBase->AsSetter ();
+		if (!(value = setter->GetValue (Setter::PropertyProperty)))
+			continue;
+
+		if (!(property = value->AsDependencyProperty ()))
+			continue;
+
+		// the hash holds a ref
+		setter->ref ();
+		g_hash_table_insert (style_hash, property, setter);
+	}
 }
 
 Value*

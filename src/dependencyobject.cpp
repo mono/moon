@@ -1185,7 +1185,7 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 
 	// first we look for a value higher in precedence for this property
 	for (p = providerPrecedence - 1; p >= PropertyPrecedence_Highest; p --) {
-		if (providers[p]->GetPropertyValue (property)) {
+		if (providers[p] && providers[p]->GetPropertyValue (property)) {
 			// a provider higher in precedence already has
 			// a value for this property, so the one
 			// that's changing isn't visible anyway.
@@ -1312,6 +1312,12 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 	}
 
 	g_hash_table_remove (current_values, property);
+
+	// this is... yeah, it's disgusting
+	for (int p = PropertyPrecedence_LocalValue + 1; p < PropertyPrecedence_Count; p ++) {
+		if (providers[p])
+			providers[p]->RecomputePropertyValue (property);
+	}
 
 	ProviderValueChanged (PropertyPrecedence_LocalValue, property, old_local_value, NULL, notify_listeners);
 	

@@ -193,12 +193,6 @@ FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 	else
 		result = UIElement::SetValueWithErrorImpl (property, value, error);
 
-	if (result && value && value->Is(Type::STYLE)) {
-		Style *s = value->AsStyle ();
-		if (s)
-			s->Seal();
-	}
-
 	return result;
 }
 
@@ -236,6 +230,14 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 		FullInvalidate (p->x != 0.0 || p->y != 0.0);
 
 		InvalidateMeasure ();
+	}
+
+	if (args->property == FrameworkElement::StyleProperty) {
+		if (args->new_value) {
+			Style *s = args->new_value->AsStyle ();
+			if (s)
+				((StylePropertyValueProvider*)providers[PropertyPrecedence_Style])->SealStyle (s);
+		}
 	}
 
 	NotifyListenersOfPropertyChange (args);
