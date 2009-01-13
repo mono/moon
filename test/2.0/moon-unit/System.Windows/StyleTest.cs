@@ -47,6 +47,21 @@ namespace MoonTest.System.Windows
 	[TestClass]
 	public class StyleTest
 	{
+		// NOTE: This test must be run first for it to work - do not remove the 'aaa' from the start of its name
+		[TestMethod]
+		public void aaaConstructStyleProgrammatically ()
+		{
+			Style s = (Style)XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Button""><Setter Property=""Width"" Value=""10""/></Style>");
+			Setter setter = (Setter) s.Setters [0];
+			Assert.IsNull (setter.Property, "#1");
+			
+			new Setter (Button.WidthProperty, 10);
+			
+			s = (Style)XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Button""><Setter Property=""Width"" Value=""10""/></Style>");
+			setter = (Setter) s.Setters [0];
+			Assert.IsNotNull (setter.Property);
+		}
+		
 		[TestMethod]
 		public void Sealed ()
 		{
