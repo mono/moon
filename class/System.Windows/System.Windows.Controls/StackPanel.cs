@@ -41,7 +41,7 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty OrientationProperty = 
 		DependencyProperty.Register ("Orientation", typeof (Orientation), typeof (StackPanel), null);
 
-		protected override Size MeasureOverride (Size availableSize) {
+		protected override sealed Size MeasureOverride (Size availableSize) {
 			Size result = new Size (0, 0);
 			foreach (UIElement child in this.Children) {
 				child.Measure (availableSize);
@@ -52,7 +52,7 @@ namespace System.Windows.Controls {
 			return result;
 		}
 
-		protected override Size ArrangeOverride (Size finalSize) {
+		protected override sealed Size ArrangeOverride (Size finalSize) {
 			Size result = new Size (0, 0);
 			foreach (UIElement child in this.Children) {
 				child.Measure (finalSize);

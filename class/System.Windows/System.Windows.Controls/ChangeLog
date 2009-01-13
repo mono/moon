@@ -1,3 +1,7 @@
+2009-01-13  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* StackPanel.cs: Seal overrides to please gui-compare
+
 2009-01-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* TextBlock.cs:

@@ -1,5 +1,5 @@
 //
-// System.Windows.Media.PathSegmentCollection class
+// System.Windows.Controls.RowDefinitionCollection class
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
