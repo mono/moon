@@ -188,6 +188,11 @@ namespace Mono {
 			return Environment.StackTrace;
 		}
 
+		public static void ThreadMemoryBarrier ()
+		{
+			Thread.MemoryBarrier ();
+		}
+
 		public static IntPtr AllocHGlobal (int cb)
 		{
 			return Marshal.AllocHGlobal (cb);
