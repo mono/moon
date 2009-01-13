@@ -13,9 +13,11 @@
 
 #include "tilesource.h"
 
+
 MultiScaleTileSource::MultiScaleTileSource ()
 {
 	imageWidth = -1;
+	get_tile_func = NULL;
 }
 
 int 
@@ -76,6 +78,15 @@ void
 MultiScaleTileSource::SetTileOverlap (int overlap)
 {
 	tileOverlap = overlap;
+}
+
+void 
+multi_scale_tile_source_set_image_uri_func (MultiScaleTileSource *instance, get_image_uri_func func)
+{
+	if (instance == NULL)
+		return;
+
+	instance->get_tile_func = func;
 }
 
 

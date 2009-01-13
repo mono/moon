@@ -1,3 +1,8 @@
+2009-01-13  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* tilesource.h|cpp: add a callback and a method to set the callback
+	so we can poke the managed GetTileLayers.
+
 2009-01-12  Chris Toshok  <toshok@ximian.com>
 
 	* style.cpp, style.h (Style::GetPropertyValue): remove this.  it's
