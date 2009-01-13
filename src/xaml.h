@@ -78,6 +78,8 @@ void	    xaml_loader_free (XamlLoader *loader);
 
 void        xaml_loader_set_callbacks (XamlLoader *loader, XamlLoaderCallbacks callbacks);
 
+char*       xaml_uri_for_prefix (void *parser, char* prefix);
+		
 G_END_DECLS
 
 /*

@@ -1,5 +1,11 @@
 2009-01-13  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp|h: Add the ability to lookup full uri's based on local
+	prefixes. This is so managed can convert something like
+	'local:' into 'clr-namespace=Foo;assembly=bar'
+
+2009-01-13  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp|h: Pass the ParserInfo to every callback, this will
 	allow us to call back into unmanaged to do extra stuff.
 

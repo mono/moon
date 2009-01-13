@@ -669,6 +669,9 @@ class XamlNamespace {
 	virtual ~XamlNamespace () { }
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el) = 0;
 	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse) = 0;
+
+	virtual const char* GetUri () = 0;
+	virtual const char* GetPrefix () = 0;
 };
 
 class DefaultNamespace : public XamlNamespace {
@@ -698,6 +701,9 @@ class DefaultNamespace : public XamlNamespace {
 	{
 		return false;
 	}
+
+	virtual const char* GetUri () { return "clr-namespace:System.Windows;assembly=System.Windows"; }
+	virtual const char* GetPrefix () { return ""; }
 };
 
 class XNamespace : public XamlNamespace {
@@ -803,6 +809,9 @@ class XNamespace : public XamlNamespace {
 
 		return false;
 	}
+
+	virtual const char* GetUri () { return "clr-namespace:System.Windows;assembly=System.Windows"; }
+	virtual const char* GetPrefix () { return "x"; }
 };
 
 
@@ -878,15 +887,18 @@ class XamlElementInfoImportedManaged : public XamlElementInfoManaged {
 class ManagedNamespace : public XamlNamespace {
  public:
 	char *xmlns;
+	char *prefix;
 
-	ManagedNamespace (char *xmlns)
+	ManagedNamespace (char *xmlns, char *prefix)
 	{
 		this->xmlns = xmlns;
+		this->prefix = prefix;
 	}
 
 	virtual ~ManagedNamespace ()
 	{
 		g_free (xmlns);
+		g_free (prefix);
 	}
 
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el)
@@ -914,6 +926,10 @@ class ManagedNamespace : public XamlNamespace {
 		}
 		return false;
 	}
+
+	
+	virtual const char* GetUri () { return xmlns; }
+	virtual const char* GetPrefix () { return prefix; }
 };
 
 bool
@@ -1012,6 +1028,28 @@ xaml_loader_set_callbacks (XamlLoader* loader, XamlLoaderCallbacks callbacks)
 	loader->vm_loaded = true;
 }
 
+gboolean
+namespace_for_prefix (gpointer key, gpointer value, gpointer user_data)
+{
+	XamlNamespace *ns = (XamlNamespace *) value;
+	const char *prefix = (const char *) user_data;
+
+	if (!strcmp (prefix, ns->GetPrefix ()))
+		return TRUE;
+	return FALSE;
+}
+
+char*
+xaml_uri_for_prefix (void *parser, char* prefix)
+{
+	XamlParserInfo *p = (XamlParserInfo *) parser;
+
+	XamlNamespace *ns = (XamlNamespace *) g_hash_table_find (p->namespace_map, namespace_for_prefix, prefix);
+	if (!ns)
+		return NULL;
+
+	return g_strdup (ns->GetUri ());
+}
 
 //
 // Called when we encounter an error.  Note that memory ownership is taken for everything
@@ -1425,7 +1463,7 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 			return;
 		}
 		
-		ManagedNamespace *c = new ManagedNamespace (g_strdup (uri));
+		ManagedNamespace *c = new ManagedNamespace (g_strdup (uri), g_strdup (prefix));
 		g_hash_table_insert (p->namespace_map, g_strdup (c->xmlns), c);
 		p->AddCreatedNamespace (c);
 	}
