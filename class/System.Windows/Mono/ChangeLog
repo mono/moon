@@ -1,3 +1,7 @@
+2009-01-13  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* NativeMethods: add a P/Invoke to set the GetTileLayers callback
+
 2009-01-13  Andreia Gaita  <avidigal@novell.com>
 
 	* DispatcherTimer.cs: Set correct sender object in event

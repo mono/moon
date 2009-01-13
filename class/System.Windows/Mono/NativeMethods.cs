@@ -129,6 +129,10 @@ namespace Mono {
 		[DllImport ("moon")]
 		public extern static void deep_zoom_image_tile_source_download_urisource (IntPtr instance, string uri, DownloadedHandler callback);
 
+		public delegate string ImageUriFunc (int level, int posx, int posy);
+		[DllImport("moon")]
+		public extern static void multi_scale_tile_source_set_image_uri_func (IntPtr instance, ImageUriFunc func);
+
 #endregion
 
 #region DownloaderRequest
@@ -196,6 +200,7 @@ namespace Mono {
 		[DllImport("moon")]
 		public extern static void size_changed_event_args_get_prev_size (IntPtr handle, ref Size size);
 #endregion
+
 
 #region plugin
 		[DllImport("moonplugin")]
