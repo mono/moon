@@ -1,3 +1,7 @@
+2009-01-13  Alan McGovern  <amcgovern@novell.com>
+
+	* src.mdp: Add the provider stuff to the MD solution
+
 2009-01-13  Chris Toshok  <toshok@ximian.com>
 
 	* provider.cpp (StylePropertyValueProvider::SealStyle): only

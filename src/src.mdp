@@ -226,6 +226,8 @@
     <File name="binding.h" subtype="Code" buildaction="Nothing" />
     <File name="expression.h" subtype="Code" buildaction="Nothing" />
     <File name="validators.cpp" subtype="Code" buildaction="Compile" />
+    <File name="provider.cpp" subtype="Code" buildaction="Compile" />
+    <File name="provider.h" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>
