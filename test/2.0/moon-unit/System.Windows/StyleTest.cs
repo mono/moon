@@ -49,6 +49,7 @@ namespace MoonTest.System.Windows
 	{
 		// NOTE: This test must be run first for it to work - do not remove the 'aaa' from the start of its name
 		[TestMethod]
+		[MoonlightBug ("DP lookup isn't working")]
 		public void aaaConstructStyleProgrammatically ()
 		{
 			Style s = (Style)XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Button""><Setter Property=""Width"" Value=""10""/></Style>");

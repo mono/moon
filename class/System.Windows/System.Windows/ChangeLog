@@ -1,3 +1,8 @@
+2009-01-13  Alan McGovern  <amcgovern@novell.com>
+
+	* Setter.cs: Keep a list of types which have been used with the managed
+	Setter class so we can fulfill it's bizarre caching behaviour.
+
 2009-09-01  Geoff Norton  <gnorton@novell.com>
 
 	* DurationConverter.cs:

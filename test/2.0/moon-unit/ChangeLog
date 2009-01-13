@@ -1,5 +1,9 @@
 2009-01-13  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows/StyleTest.cs: Mark test with MoonlightBug
+
+2009-01-13  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/StyleTest.cs: Added test for bizarre caching in Style
 	constructor.
 

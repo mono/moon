@@ -27,13 +27,15 @@
 //
 
 using Mono;
+using System.Collections.Generic;
 
 namespace System.Windows {
 
 	public sealed partial class Setter : SetterBase {
 		private static readonly DependencyProperty PropertyProperty = DependencyProperty.Lookup (Kind.SETTER, "Property", typeof (DependencyProperty));
 		private static readonly DependencyProperty ValueProperty = DependencyProperty.Lookup (Kind.SETTER, "Value", typeof (object));
-
+		static Dictionary<IntPtr, DependencyProperty> properties = new Dictionary<IntPtr, DependencyProperty> ();
+			
 		object value;
 		
 		public Setter (DependencyProperty property, object value)
@@ -46,8 +48,16 @@ namespace System.Windows {
 		}
 
 		public DependencyProperty Property {
-			get { return (DependencyProperty) GetValue (PropertyProperty); }
-			set { SetValue (PropertyProperty, value); }
+			get {
+				DependencyProperty dp = (DependencyProperty) GetValue (PropertyProperty);
+				return dp != null && properties.ContainsKey (dp.Native) ? dp : null;
+			}
+			set {
+				SetValue (PropertyProperty, value);
+				if (value != null) {
+					properties[value.Native] = value;
+				}
+			}
 		}
 
 		public object Value {
