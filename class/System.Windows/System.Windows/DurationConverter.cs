@@ -52,6 +52,20 @@ namespace System.Windows
 #endif
 		public object ConvertFrom (ITypeDescriptorContext context, CultureInfo culture, object value)
 		{
+			if (value is string) {
+				string text = (string) value;
+
+				if (string.IsNullOrEmpty(text))
+					return Duration.Automatic;
+
+				if (text.ToLower () == "automatic")
+					return Duration.Automatic;
+				else if (text.ToLower () == "forever")
+					return Duration.Forever;
+				else
+					return new Duration(TimeSpan.Parse (text));
+			}
+
 			return TypeConverters.ConvertFrom<Duration>(this, value);
 		}
 	}

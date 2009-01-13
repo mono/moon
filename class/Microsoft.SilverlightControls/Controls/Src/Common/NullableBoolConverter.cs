@@ -60,6 +60,14 @@ namespace System.Windows
             {
                 return (bool?) value;
             } 
+            if (value is string)
+            {
+                string text = (string) value;
+
+                return (!string.IsNullOrEmpty(text)) ?
+                    (bool?) bool.Parse(text) : 
+                    null; 
+            }
  
             return TypeConverters.ConvertFrom<bool?>(this, value);
         } 

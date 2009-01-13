@@ -1,3 +1,11 @@
+2009-09-01  Geoff Norton  <gnorton@novell.com>
+
+	* DurationConverter.cs:
+	* NullableBoolConverter.cs:
+	* PropertyPathConverter.cs: Removing ConvertFromString caused a
+	Stack Overflow when trying to parse strings.  We need to handle this
+	properly internally.
+
 2009-01-13  Jb Evain  <jbevain@novell.com>
 
 	* DependencyObject.cs: remove references to Helper.Agclr.
