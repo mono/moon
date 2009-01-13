@@ -115,8 +115,6 @@ StylePropertyValueProvider::SealStyle (Style *style)
 
 	// XXX replace this with a hash lookup.  create the hash table when the style is sealed?
 
-	DependencyProperty *property = NULL;
-	Value *value = NULL;
 	SetterBaseCollection *setters = style->GetSetters ();
 	if (!setters)
 		return;
@@ -135,15 +133,25 @@ StylePropertyValueProvider::SealStyle (Style *style)
 			continue;
 		
 		Setter *setter = setterBase->AsSetter ();
+		Value *value;
+
+		DependencyProperty *setter_property;
 		if (!(value = setter->GetValue (Setter::PropertyProperty)))
 			continue;
 
-		if (!(property = value->AsDependencyProperty ()))
+		if (!(setter_property = value->AsDependencyProperty ()))
+			continue;
+
+		Value *setter_value;
+		if (!(setter_value = setter->GetValue (Setter::ValueProperty)))
+			continue;
+
+		if (!setter_value->Is (setter_property->GetPropertyType()))
 			continue;
 
 		// the hash holds a ref
 		setter->ref ();
-		g_hash_table_insert (style_hash, property, setter);
+		g_hash_table_insert (style_hash, setter_property, setter);
 	}
 }
 

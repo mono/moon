@@ -1,3 +1,10 @@
+2009-01-13  Chris Toshok  <toshok@ximian.com>
+
+	* provider.cpp (StylePropertyValueProvider::SealStyle): only
+	insert the setter into the hash if the setter's value matches the
+	type of the setter's property.  Fixes
+	StyleTest.InvalidValueProgrammatically.
+
 2009-01-13  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp|h: Add the ability to lookup full uri's based on local
