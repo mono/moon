@@ -93,6 +93,14 @@ namespace MoonTest.System.Windows {
 			Assert.Throws<InvalidOperationException> (delegate {
 				ui.Arrange (Rect.Empty);
 			}, "Arrange(Empty)");
+			
+			Assert.Throws<InvalidOperationException> (delegate {
+					ui.Arrange (new Rect (10, 10, Double.PositiveInfinity, Double.PositiveInfinity));
+				}, "Arrange(Infinite)");
+
+			Assert.Throws<InvalidOperationException> (delegate {
+					ui.Arrange (new Rect (10, 10, Double.NaN, Double.NaN));
+				}, "Arrange(NaN)");
 
 			Assert.IsFalse (ui.CaptureMouse (), "CaptureMouse");
 
