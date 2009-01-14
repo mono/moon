@@ -1,3 +1,22 @@
+2009-01-14  Larry Ewing  <lewing@novell.com>
+
+	* misc/Events/EventTest.cs: MacOSX throw a different exception
+	here so let that pass.
+
+	* System.Windows/GridLengthTest.cs: flag the fact that
+	GridLength.ToString() != Double.ToString() as a MacOSX bug.
+
+	* System.Windows/PointTest.cs: Make the original tests pass and
+	add new tests flagged as MacOSX bugs for the Double.ToString() 
+	differences.
+
+	* System.Windows.Interop/SilverlightHostTest.cs: flag this as a
+	MacOSX bug.
+
+	* System.Windows.Interop/SettingsTest.cs: allow for platform
+	differences on MacOSX.
+	
+
 2009-01-14  Andreia Gaita  <avidigal@novell.com>
 
 	* System.Windows.Interop/SettingsTest.cs: Change the fps after checking for the

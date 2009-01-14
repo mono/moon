@@ -69,6 +69,7 @@ namespace MoonTest.System.Windows {
 
 		[TestMethod]
 		[MoonlightBug]
+		[SilverlightBug(PlatformID.MacOSX)]
 		public void IsVersionSupported ()
 		{
 			SilverlightHost host = new SilverlightHost ();

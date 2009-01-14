@@ -249,7 +249,10 @@ namespace MoonTest.Misc
 			EnqueueCompleteIfEtcIsNull (delegate ()
 			{
 				// Case doesn't matter. VS always embeds resources in lowercase
-				Assert.Throws (delegate () { etc = new EventTestCanvas (this, "event_exact.xaml"); }, typeof (XamlParseException));
+				if (Environment.OSVersion.Platform == PlatformID.MacOSX)
+					Assert.Throws<ObjectDisposedException>(delegate () { etc = new EventTestCanvas (this, "event_exact.xaml"); });
+				else
+					Assert.Throws<XamlParseException>(delegate () { etc = new EventTestCanvas (this, "event_exact.xaml"); });					
 			});
 		}
 

@@ -79,7 +79,8 @@ namespace MoonTest.System.Windows {
 			Point p = new Point (Double.NegativeInfinity, Double.NegativeInfinity);
 			Assert.IsTrue (Double.IsNegativeInfinity (p.X), "X");
 			Assert.IsTrue (Double.IsNegativeInfinity (p.Y), "Y");
-			Assert.AreEqual ("-Infinity,-Infinity", p.ToString (), "ToString");
+			Assert.AreEqual (String.Format ("{0},{0}",Double.NegativeInfinity,Double.NegativeInfinity), p.ToString ());
+			//Assert.AreEqual ("-Infinity,-Infinity", p.ToString (), "ToString");
 			Compare (p);
 		}
 
@@ -89,8 +90,27 @@ namespace MoonTest.System.Windows {
 			Point p = new Point (Double.PositiveInfinity, Double.PositiveInfinity);
 			Assert.IsTrue (Double.IsPositiveInfinity (p.X), "X");
 			Assert.IsTrue (Double.IsPositiveInfinity (p.Y), "Y");
-			Assert.AreEqual ("Infinity,Infinity", p.ToString (), "ToString");
+			Assert.AreEqual (String.Format ("{0},{0}",Double.PositiveInfinity,Double.PositiveInfinity), p.ToString ());
+
 			Compare (p);
+		}
+		
+		[TestMethod]
+		[SilverlightBug(PlatformID.MacOSX)]
+		public void PositiveInfinityToString ()
+		{
+			Point p = new Point (Double.PositiveInfinity, Double.PositiveInfinity);
+			Assert.AreEqual (String.Format ("{0},{0}",Double.PositiveInfinity,Double.PositiveInfinity), p.ToString (), "compare ToString to ToString");
+			Assert.AreEqual ("Infinity,Infinity", p.ToString (), "is ToString Infinity or \u221e");
+		}
+
+		[TestMethod]
+		[SilverlightBug(PlatformID.MacOSX)]
+		public void NegativeInfinityToString ()
+		{
+			Point p = new Point (Double.NegativeInfinity, Double.NegativeInfinity);
+			Assert.AreEqual (String.Format ("{0},{0}",Double.NegativeInfinity,Double.NegativeInfinity), p.ToString (), "compare ToString to ToString");
+			Assert.AreEqual ("-Infinity,-Infinity", p.ToString (), "is ToString Infinity or \u221e");
 		}
 	}
 }

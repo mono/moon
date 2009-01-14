@@ -102,6 +102,7 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
+		[SilverlightBug(PlatformID.MacOSX)]
 		public void CtorDouble_Max ()
 		{
 			GridLength gl = new GridLength (Double.MaxValue);
@@ -110,6 +111,7 @@ namespace MoonTest.System.Windows {
 			Assert.IsTrue (gl.IsAbsolute, "IsAbsolute");
 			Assert.IsFalse (gl.IsAuto, "IsAuto");
 			Assert.IsFalse (gl.IsStar, "IsStar");
+			// This fails on macos
 			Assert.AreEqual (Double.MaxValue.ToString (), gl.ToString (), "ToString");
 		}
 
