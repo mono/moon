@@ -185,6 +185,10 @@ dependency_property_g_init (void)
 	InputMethod::IsInputMethodEnabledProperty = DependencyProperty::RegisterFull (Type::INPUTMETHOD, "IsInputMethodEnabled", NULL, Type::BOOL, true, false, false, NULL, NULL);
 	KeySpline::ControlPoint1Property = DependencyProperty::Register (Type::KEYSPLINE, "ControlPoint1", new Value (Point (0,0)));
 	KeySpline::ControlPoint2Property = DependencyProperty::Register (Type::KEYSPLINE, "ControlPoint2", new Value (Point (1.0, 1.0)));
+	LayoutInformation::LastArrangeProperty = DependencyProperty::RegisterFull (Type::LAYOUTINFORMATION, "LastArrange", NULL, Type::SIZE, true, false, false, NULL, NULL);
+	LayoutInformation::LastMeasureProperty = DependencyProperty::RegisterFull (Type::LAYOUTINFORMATION, "LastMeasure", NULL, Type::SIZE, true, false, false, NULL, NULL);
+	LayoutInformation::LayoutClipProperty = DependencyProperty::RegisterFull (Type::LAYOUTINFORMATION, "LayoutClip", NULL, Type::GEOMETRY, true, false, false, NULL, NULL);
+	LayoutInformation::LayoutSlotProperty = DependencyProperty::RegisterFull (Type::LAYOUTINFORMATION, "LayoutSlot", NULL, Type::RECT, true, false, false, NULL, NULL);
 	Line::X1Property = DependencyProperty::Register (Type::LINE, "X1", new Value (0.0));
 	Line::X2Property = DependencyProperty::Register (Type::LINE, "X2", new Value (0.0));
 	Line::Y1Property = DependencyProperty::Register (Type::LINE, "Y1", new Value (0.0));
@@ -521,6 +525,10 @@ DependencyProperty *Inline::TextDecorationsProperty = NULL;
 DependencyProperty *InputMethod::IsInputMethodEnabledProperty = NULL;
 DependencyProperty *KeySpline::ControlPoint1Property = NULL;
 DependencyProperty *KeySpline::ControlPoint2Property = NULL;
+DependencyProperty *LayoutInformation::LastArrangeProperty = NULL;
+DependencyProperty *LayoutInformation::LastMeasureProperty = NULL;
+DependencyProperty *LayoutInformation::LayoutClipProperty = NULL;
+DependencyProperty *LayoutInformation::LayoutSlotProperty = NULL;
 DependencyProperty *Line::X1Property = NULL;
 DependencyProperty *Line::X2Property = NULL;
 DependencyProperty *Line::Y1Property = NULL;
@@ -2311,6 +2319,69 @@ KeySpline::SetControlPoint2 (Point *value)
 {
 	if (!value) return;
 	SetValue (KeySpline::ControlPoint2Property, Value (*value));
+}
+
+Size *
+LayoutInformation::GetLastArrange (DependencyObject *obj)
+{
+	Value *value = (!obj) ? NULL : obj->GetValue (LayoutInformation::LastArrangeProperty);
+	if (!value) value = LayoutInformation::LastArrangeProperty->GetDefaultValue();
+	return value ? value->AsSize () : NULL;
+}
+
+void
+LayoutInformation::SetLastArrange (DependencyObject *obj, Size *value)
+{
+	if (!obj) return;
+	if (!value) return;
+	obj->SetValue (LayoutInformation::LastArrangeProperty, Value (*value));
+}
+
+Size *
+LayoutInformation::GetLastMeasure (DependencyObject *obj)
+{
+	Value *value = (!obj) ? NULL : obj->GetValue (LayoutInformation::LastMeasureProperty);
+	if (!value) value = LayoutInformation::LastMeasureProperty->GetDefaultValue();
+	return value ? value->AsSize () : NULL;
+}
+
+void
+LayoutInformation::SetLastMeasure (DependencyObject *obj, Size *value)
+{
+	if (!obj) return;
+	if (!value) return;
+	obj->SetValue (LayoutInformation::LastMeasureProperty, Value (*value));
+}
+
+Geometry *
+LayoutInformation::GetLayoutClip (DependencyObject *obj)
+{
+	Value *value = (!obj) ? NULL : obj->GetValue (LayoutInformation::LayoutClipProperty);
+	if (!value) value = LayoutInformation::LayoutClipProperty->GetDefaultValue();
+	return value ? value->AsGeometry () : NULL;
+}
+
+void
+LayoutInformation::SetLayoutClip (DependencyObject *obj, Geometry *value)
+{
+	if (!obj) return;
+	obj->SetValue (LayoutInformation::LayoutClipProperty, Value (value));
+}
+
+Rect *
+LayoutInformation::GetLayoutSlot (DependencyObject *obj)
+{
+	Value *value = (!obj) ? NULL : obj->GetValue (LayoutInformation::LayoutSlotProperty);
+	if (!value) value = LayoutInformation::LayoutSlotProperty->GetDefaultValue();
+	return value ? value->AsRect () : NULL;
+}
+
+void
+LayoutInformation::SetLayoutSlot (DependencyObject *obj, Rect *value)
+{
+	if (!obj) return;
+	if (!value) return;
+	obj->SetValue (LayoutInformation::LayoutSlotProperty, Value (*value));
 }
 
 double

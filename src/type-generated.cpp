@@ -221,6 +221,7 @@ Type type_infos [] = {
 	{ Type::KEYFRAME_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "KeyFrameCollection", "KEYFRAME_COLLECTION", 0, 1, NULL, (create_inst_func *) key_frame_collection_new, NULL, NULL, NULL }, 
 	{ Type::KEYSPLINE, Type::DEPENDENCY_OBJECT, false, "KeySpline", "KEYSPLINE", 0, 1, NULL, (create_inst_func *) key_spline_new, NULL, NULL, NULL }, 
 	{ Type::KEYTIME, Type::OBJECT, true, "KeyTime", "KEYTIME", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
+	{ Type::LAYOUTINFORMATION, Type::OBJECT, false, "LayoutInformation", "LAYOUTINFORMATION", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::LINE, Type::SHAPE, false, "Line", "LINE", 0, 16, NULL, (create_inst_func *) line_new, NULL, NULL, NULL }, 
 	{ Type::LINEARCOLORKEYFRAME, Type::COLORKEYFRAME, false, "LinearColorKeyFrame", "LINEARCOLORKEYFRAME", 0, 1, NULL, (create_inst_func *) linear_color_key_frame_new, NULL, NULL, NULL }, 
 	{ Type::LINEARDOUBLEKEYFRAME, Type::DOUBLEKEYFRAME, false, "LinearDoubleKeyFrame", "LINEARDOUBLEKEYFRAME", 0, 1, NULL, (create_inst_func *) linear_double_key_frame_new, NULL, NULL, NULL }, 

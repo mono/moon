@@ -381,7 +381,71 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
+		public void InvalidateMeasureTest4 ()
+		{
+			Border b = new Border ();
+			LayoutPoker c = new LayoutPoker ();
+			Size s = new Size (10,10);
+			b.Child = c;
+
+			c.MeasureResult = s;
+
+			b.Measure (new Size (2, 2));
+			Assert.AreEqual (new Size (2,2), b.DesiredSize, "b desiredsize");
+			Assert.AreEqual (new Size (2,2), c.DesiredSize, "c desiredsize");
+
+			c.MeasureResult = new Size (20,20);
+			c.MeasureArg = new Size (99,99);
+
+			b.Measure (new Size (3, 3));
+			Assert.AreEqual (new Size (3,3), b.DesiredSize, "b desiredsize1");
+			Assert.AreEqual (new Size (3,3), c.DesiredSize, "c desiredsize1");
+			Assert.AreEqual (new Size (3,3), c.MeasureArg, "c measurearg");
+
+			c.MeasureArg = new Size (99,99);
+			b.Measure (new Size (3, 3));
+			Assert.AreEqual (new Size (3,3), b.DesiredSize, "b desiredsize1");
+			Assert.AreEqual (new Size (3,3), c.DesiredSize, "c desiredsize1");
+			Assert.AreEqual (new Size (99,99), c.MeasureArg, "c measurearg");
+
+			b.InvalidateMeasure ();
+			c.MeasureArg = new Size (99,99);
+			b.Measure (new Size (3, 3));
+			Assert.AreEqual (new Size (3,3), b.DesiredSize, "b desiredsize1");
+			Assert.AreEqual (new Size (3,3), c.DesiredSize, "c desiredsize1");
+			Assert.AreEqual (new Size (99,99), c.MeasureArg, "c measurearg");
+
+			c.InvalidateMeasure ();
+			b.Measure (new Size (3,3));
+			Assert.AreEqual (new Size (3,3), b.DesiredSize, "b desiredsize1");
+			Assert.AreEqual (new Size (3,3), c.DesiredSize, "c desiredsize1");
+			Assert.AreEqual (new Size (3,3), c.MeasureArg, "c measurearg");
+		}
+
+		[TestMethod]
+		public void InvalidateMeasureTest5 ()
+		{
+			Border b = new Border ();
+			LayoutPoker c = new LayoutPoker ();
+			Size s = new Size (10,10);
+			b.Child = c;
+
+			c.MeasureResult = s;
+
+			b.Measure (new Size (100,100));
+			Assert.AreEqual (new Size (10,10), b.DesiredSize, "b desiredsize");
+			Assert.AreEqual (new Size (10,10), c.DesiredSize, "c desiredsize");
+
+			c.MeasureResult = new Size (20,20);
+			c.MeasureArg = new Size (99,99);
+
+			b.Measure (new Size (110,110));
+			Assert.AreEqual (new Size (20,20), b.DesiredSize, "b desiredsize1");
+			Assert.AreEqual (new Size (20,20), c.DesiredSize, "c desiredsize1");
+			Assert.AreEqual (new Size (110,110), c.MeasureArg, "c measurearg");
+		}
+
+		[TestMethod]
 		public void InvalidateArrangeTest ()
 		{
 			Border b = new Border ();

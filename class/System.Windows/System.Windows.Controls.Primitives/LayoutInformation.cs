@@ -36,15 +36,18 @@ using System.Windows.Threading;
 namespace System.Windows.Controls.Primitives {
 
 	public static class LayoutInformation {
+		private static readonly DependencyProperty LayoutClipProperty = DependencyProperty.Lookup (Kind.LAYOUTINFORMATION, "LayoutClip", typeof (Geometry));
+		private static readonly DependencyProperty LayoutSlotProperty = DependencyProperty.Lookup (Kind.LAYOUTINFORMATION, "LayoutSlot", typeof (Rect));
+
 		public static Rect GetLayoutSlot (FrameworkElement element)
 		{
-			throw new NotImplementedException ();
+			return (Rect) element.GetValue (LayoutInformation.LayoutSlotProperty);
 		}
 
 		[SecuritySafeCritical]
 		public static Geometry GetLayoutClip (FrameworkElement element)
 		{
-			throw new NotImplementedException ();
+			return (Geometry) element.GetValue (LayoutInformation.LayoutClipProperty);
 		}
 
 		public static UIElement GetLayoutExceptionElement (Dispatcher dispatcher)

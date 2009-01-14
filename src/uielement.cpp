@@ -41,7 +41,7 @@ UIElement::UIElement ()
 	cairo_matrix_init_identity (&absolute_xform);
 
 	emitting_loaded = false;
-	dirty_flags = 0;
+	dirty_flags = DirtyMeasure;
 	up_dirty_node = down_dirty_node = NULL;
 	force_invalidate_of_new_bounds = false;
 	dirty_region = new Region ();
@@ -457,7 +457,7 @@ void
 UIElement::InvalidateMeasure ()
 {
 	if (GetVisualParent ())
-		GetVisualParent()->InvalidateMeasure ();
+		GetVisualParent ()->InvalidateMeasure ();
 
 	this->dirty_flags |= DirtyMeasure;
 }
@@ -466,7 +466,7 @@ void
 UIElement::InvalidateArrange ()
 {
 	if (GetVisualParent ())
-		GetVisualParent()->InvalidateArrange ();
+		GetVisualParent ()->InvalidateArrange ();
 
 	this->dirty_flags |= DirtyArrange;
 }

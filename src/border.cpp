@@ -61,13 +61,7 @@ Border::ArrangeOverride (Size finalSize)
 		desired = desired.Max (child->GetRenderSize ());
 	}
 
-	desired = desired.GrowBy (border);
-	desired = desired.Max (finalSize);
-
-	desired = desired.Max (specified);
-	desired = desired.Min (specified);
-
-	return desired;
+	return finalSize;
 }
 
 void 

@@ -493,4 +493,28 @@ private:
 	cairo_matrix_t local_xform;
 };
 
+/* @IncludeInKinds,Namespace=System.Windows.Controls.Primitives,ManagedDependencyProperties=Manual */
+class LayoutInformation {
+public:
+	/* @PropertyType=Geometry,Attached,GenerateAccessors */
+	static DependencyProperty *LayoutClipProperty;
+	/* @PropertyType=Rect,Attached,GenerateAccessors */
+	static DependencyProperty *LayoutSlotProperty;
+	/* @PropertyType=Size,Attached,GenerateAccessors */
+	static DependencyProperty *LastMeasureProperty;
+	/* @PropertyType=Size,Attached,GenerateAccessors */
+	static DependencyProperty *LastArrangeProperty;
+
+	static void SetLayoutClip (DependencyObject *item, Geometry *clip);
+	static Geometry* GetLayoutClip (DependencyObject *item);
+
+	static void SetLayoutSlot (DependencyObject *item, Rect *slot);
+	static Rect *GetLayoutSlot (DependencyObject *item);
+
+	static void SetLastMeasure (DependencyObject *item, Size *size);
+	static Size *GetLastMeasure (DependencyObject *item);
+
+	static void SetLastArrange (DependencyObject *item, Size *size);
+	static Size *GetLastArrange (DependencyObject *item);
+};
 #endif /* __MOON_UIELEMENT_H__ */

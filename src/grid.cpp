@@ -64,10 +64,11 @@ Grid::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 	if (col == GetColumnDefinitions () ||
 	    col == GetRowDefinitions ()) {
 
-		InvalidateMeasure ();
 	} else {
 		Panel::OnCollectionChanged (col, args);
 	}
+	
+	InvalidateMeasure ();
 }
 
 Size

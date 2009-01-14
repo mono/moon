@@ -287,8 +287,15 @@ FrameworkElement::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 void
 FrameworkElement::Measure (Size availableSize)
 {
-	if (!(this->dirty_flags & DirtyMeasure))
+	Size *last = LayoutInformation::GetLastMeasure (this);
+	bool domeasure = this->dirty_flags & DirtyMeasure;
+	
+	domeasure |= last ? ((*last).width != availableSize.width) && ((*last).height != availableSize.height) : true;
+
+	if (!domeasure)
 		return;
+	
+	LayoutInformation::SetLastMeasure (this, &availableSize);
 
 	InvalidateArrange ();
 
@@ -362,10 +369,15 @@ FrameworkElement::MeasureOverride (Size availableSize)
 void
 FrameworkElement::Arrange (Rect finalRect)
 {
-	if (!(this->dirty_flags & DirtyArrange))
+	Rect *slot = LayoutInformation::GetLayoutSlot (this);
+	bool doarrange = this->dirty_flags & DirtyArrange;
+	
+	doarrange |= slot ? *slot != finalRect : true;
+
+	if (!doarrange)
 		return;
 
-	// finalRect amount to our clipbox
+	LayoutInformation::SetLayoutSlot (this, &finalRect);
 
 	this->dirty_flags &= ~DirtyArrange;
 

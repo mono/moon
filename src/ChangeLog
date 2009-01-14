@@ -1,5 +1,16 @@
 2009-01-13  Larry Ewing  <lewing@novell.com>
 
+	* uielement.cpp, uielement.h (class LayoutInformation): add
+	LayoutInformation class to hold the layout related attached
+	properties. (will move it later).
+
+	* frameworkelement.cpp: use the new layout information and use it
+	for invalidation.
+
+	* border.cpp: fix the arrange logic.
+
+2009-01-13  Larry Ewing  <lewing@novell.com>
+	
 	* shape.cpp: switch over to using the computed values for stretch.
 
 	* frameworkelement.cpp:
