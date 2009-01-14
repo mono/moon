@@ -10,6 +10,11 @@
 
 2009-01-13  Larry Ewing  <lewing@novell.com>
 
+	* grid.cpp (Grid::MeasureOverride): make sure we stay inside the
+	collection while iterating.
+
+2009-01-13  Larry Ewing  <lewing@novell.com>
+
 	* src/canvas.cpp
 	* src/frameworkelement.cpp
 	* src/media.cpp

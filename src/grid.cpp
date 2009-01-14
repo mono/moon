@@ -119,7 +119,7 @@ Grid::MeasureOverride (Size availableSize)
 		Size min_size = Size (0,0);
 		Size max_size = Size (0,0); 
 		
-		for (int r = row; r < row + rowspan; r++) {
+		for (int r = row; (r < row + rowspan) && (r < row_count); r++) {
 			RowDefinition *rowdef = rows->GetValueAt (r)->AsRowDefinition ();
 			GridLength* height = rowdef->GetHeight();
 
@@ -132,7 +132,7 @@ Grid::MeasureOverride (Size availableSize)
 			max_size.height += rowdef->GetMaxHeight ();
 		}
 
-		for (int c = col; c < col + colspan; c++) {
+		for (int c = col; (c < col + colspan) && (c < col_count); c++) {
 			ColumnDefinition *coldef = columns->GetValueAt (c)->AsColumnDefinition ();
 			GridLength* width = coldef->GetWidth();
 
@@ -160,7 +160,7 @@ Grid::MeasureOverride (Size availableSize)
 
 			printf ("child_size.width = %g\n", child_size.width);
 
-			for (int c = col; c < col + colspan; c++){
+			for (int c = col; (c < col + colspan) && (c < col_count); c++){
 			  printf ("c = %d\n", c);
 				ColumnDefinition *coldef = columns->GetValueAt (c)->AsColumnDefinition ();
 				if (!coldef)
@@ -179,7 +179,7 @@ Grid::MeasureOverride (Size availableSize)
 		if (row_count) {
 			double remaining_height = child_size.height;
 
-			for (int r = row; r < row + rowspan; r++){
+			for (int r = row; (r < row + rowspan) && (r < row_count); r++){
 				RowDefinition *rowdef = rows->GetValueAt (r)->AsRowDefinition ();
 				if (!rowdef)
 					break; // XXX what to do if row + rowspan is more than the number of rows?
