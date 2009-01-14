@@ -1,5 +1,10 @@
 2009-01-13  Geoff Norton  <gnorton@novell.com>
 
+	* plugin.cpp: Don't free domain's until we fix the problems on the 
+	mono side associated with that.
+
+2009-01-13  Geoff Norton  <gnorton@novell.com>
+
 	* plugin.cpp: Ensure we finalize the domain before freeing it.
 
 2009-01-13  Jackson Harper  <jackson@ximian.com>
