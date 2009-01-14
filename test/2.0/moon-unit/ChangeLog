@@ -1,5 +1,9 @@
 2009-01-14  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows/StyleTest.cs: Add moonlight bug attr
+
+2009-01-14  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Media.Animation/StoryboardTest.cs: Can have x:Name and
 	x:Key on non-FrameworkElements.
 

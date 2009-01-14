@@ -176,6 +176,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		[MoonlightBug ("Exception should be thrown because Width needs a double, not string")]
 		public void InvalidValueProgrammatically()
 		{
 			Button b = new Button();
