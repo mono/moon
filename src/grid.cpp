@@ -93,7 +93,7 @@ Grid::MeasureOverride (Size availableSize)
 		GridLength* height = rowdef->GetHeight();
 		row_heights[i] = 0.0;
 
-		if (height->type == GridUnitTypePixel)
+		if (height && (height->type == GridUnitTypePixel))
 			row_heights[i] = height->val;
 	}
 
@@ -102,7 +102,7 @@ Grid::MeasureOverride (Size availableSize)
 		GridLength* width = coldef->GetWidth();
 		column_widths[i] = 0.0;
 
-		if (width->type == GridUnitTypePixel)
+		if (width && (width->type == GridUnitTypePixel))
 			column_widths[i] = width->val;
 
 	}
@@ -126,7 +126,7 @@ Grid::MeasureOverride (Size availableSize)
 			RowDefinition *rowdef = rows->GetValueAt (r)->AsRowDefinition ();
 			GridLength* height = rowdef->GetHeight();
 
-			if (height->type == GridUnitTypePixel)
+			if (height && (height->type == GridUnitTypePixel))
 			        child_size.height += row_heights [r];
 			else
 				child_size.height += INFINITY;
@@ -139,7 +139,7 @@ Grid::MeasureOverride (Size availableSize)
 			ColumnDefinition *coldef = columns->GetValueAt (c)->AsColumnDefinition ();
 			GridLength* width = coldef->GetWidth();
 
-			if (width->type == GridUnitTypePixel)
+			if (width && (width->type == GridUnitTypePixel))
 				child_size.width += column_widths [c];
 			else
 				child_size.width += INFINITY;
@@ -169,7 +169,7 @@ Grid::MeasureOverride (Size availableSize)
 				if (!coldef)
 					break; // XXX what to do if col + colspan is more than the number of columns?
 				GridLength* width = coldef->GetWidth();
-				if (width->type != GridUnitTypePixel) {
+				if (width && (width->type != GridUnitTypePixel)) {
 				  printf ("column_widths[%d] = %g before, %g after\n",
 					  col,
 					  column_widths[col],
@@ -187,7 +187,7 @@ Grid::MeasureOverride (Size availableSize)
 				if (!rowdef)
 					break; // XXX what to do if row + rowspan is more than the number of rows?
 				GridLength* height = rowdef->GetHeight();
-				if (height->type != GridUnitTypePixel) {
+				if (height && (height->type != GridUnitTypePixel)) {
 					row_heights[col] = MAX(row_heights[col], remaining_height);
 				}
 			}
