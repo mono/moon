@@ -32,7 +32,21 @@ namespace System.Windows.Media
 		
 		protected override void GetTileLayers (int tileLevel, int tilePositionX, int tilePositionY, IList<object> tileImageLayerSources)
 		{
-			throw new NotImplementedException ();
+			Console.WriteLine ("GetTileLayers {0}", tileLevel);
+			Level l;
+			if (!levels.TryGetValue (tileLevel, out l))
+				return;
+
+			//FIXME, check tile-presence
+			if (l.width < l.tile_width && l.height < l.tile_height) {
+				string uri = UriSource.ToString ();
+				uri = String.Format ("{0}/{1}/0_0.jpg", uri.Substring (0, uri.LastIndexOf ('/')), tileLevel);
+				tileImageLayerSources.Add (new Uri (uri, UriSource.IsAbsoluteUri ? UriKind.Absolute : UriKind.Relative));
+				return;
+			}
+
+			
+
 		}
 
 		void ParseDeepZoom (string path)
