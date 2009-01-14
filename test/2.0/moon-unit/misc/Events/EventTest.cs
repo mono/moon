@@ -147,7 +147,6 @@ namespace MoonTest.Misc
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void TestExDerived ()
 		{
 			EnqueueCompleteIfThrows (delegate ()
@@ -159,7 +158,6 @@ namespace MoonTest.Misc
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void TestExDerived2 ()
 		{
 			EnqueueCompleteIfEtcIsNull (delegate ()
@@ -170,7 +168,6 @@ namespace MoonTest.Misc
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void TestExDerived3 ()
 		{
 			EnqueueCompleteIfThrows (delegate ()
@@ -299,7 +296,6 @@ namespace MoonTest.Misc
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void TestCaseMismatch ()
 		{
 			EnqueueCompleteIfEtcIsNull (delegate ()

@@ -1,3 +1,12 @@
+2009-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* moon-unit.mdp:
+	* moon-unit.csproj: Updated.
+
+	* Makefile.am:
+	* misc/Events/EventTest.cs: Include more resources. This makes 4 more
+	tests pass.
+
 2009-01-13  Jackson Harper  <jackson@ximian.com>
 
 	* System.Windows.Controls/ControlTemplateTest.cs: Revert the patch

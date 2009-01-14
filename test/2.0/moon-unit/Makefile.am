@@ -27,8 +27,12 @@ XAML_RESOURCES= \
 	-res:misc/Events/Event_1.xaml,misc/Events/Event_1.xaml \
 	-res:misc/Events/Event_3.xaml,misc/Events/Event_3.xaml \
 	-res:misc/Events/Event_Basic.xaml,misc/Events/Event_Basic.xaml \
+	-res:misc/Events/Event_CaseMismatch.xaml,misc/Events/Event_CaseMismatch.xaml \
 	-res:misc/Events/Event_DO.xaml,misc/Events/Event_DO.xaml \
 	-res:misc/Events/Event_Exact.xaml,misc/Events/Event_Exact.xaml \
+	-res:misc/Events/Event_Ex_Derived2.xaml,misc/Events/Event_Ex_Derived2.xaml \
+	-res:misc/Events/Event_Ex_Derived3.xaml,misc/Events/Event_Ex_Derived3.xaml \
+	-res:misc/Events/Event_Ex_Derived.xaml,misc/Events/Event_Ex_Derived.xaml \
 	-res:misc/Events/Event_InexistentResource.xaml,misc/Events/Event_InexistentResource.xaml \
 	-res:misc/Events/Event_Internal.xaml,misc/Events/Event_Internal.xaml \
 	-res:misc/Events/Event_MouseArgs.xaml,misc/Events/Event_MouseArgs.xaml \

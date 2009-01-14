@@ -105,10 +105,15 @@
     <Compile Include="System.Windows.Media\ColorTest.cs" />
     <Compile Include="System.Windows.Media\LineGeometryTest.cs" />
     <Compile Include="System.Windows.Media\VisualTreeHelperTest.cs" />
+    <Compile Include="System.Windows.Shapes\EllipseTest.cs" />
+    <Compile Include="System.Windows.Shapes\LineTest.cs" />
     <Compile Include="System.Windows.Shapes\PathTest.cs" />
+    <Compile Include="System.Windows.Shapes\PolygonTest.cs" />
+    <Compile Include="System.Windows.Shapes\PolylineTest.cs" />
     <Compile Include="System.Windows.Shapes\RectangleTest.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="System.Windows.Shapes\ShapeTest.cs" />
     <Compile Include="System.Windows.Threading\CrossThreadAccessTest.cs" />
     <Compile Include="System.Windows\ApplicationTest.cs" />
     <Compile Include="System.Windows\CornerRadiusTest.cs" />
