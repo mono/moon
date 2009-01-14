@@ -1,3 +1,7 @@
+2009-01-14  Jb Evain  <jbevain@novell.com>
+
+	* System.Windows/AssemblyPartTest.cs: new tests.
+
 2009-01-14  Larry Ewing  <lewing@novell.com>
 
 	* misc/Events/EventTest.cs: MacOSX throw a different exception
