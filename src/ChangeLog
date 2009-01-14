@@ -1,3 +1,7 @@
+2009-01-14  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* grid.cpp (MeasureOverride): Free allocated arrays
+
 2009-01-14  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* grid.cpp: Add a bunch of NULL checks for width and height to avoid

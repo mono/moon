@@ -206,6 +206,9 @@ Grid::MeasureOverride (Size availableSize)
 
 	printf ("results = %g %g\n", results.width, results.height);
 
+	delete [] row_heights;
+	delete [] column_widths;
+
 	// now choose whichever is smaller, our chosen size or the availableSize.
 	return results;
 }
