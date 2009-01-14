@@ -181,8 +181,9 @@ namespace MoonTest.System.Windows
 			Button b = new Button();
 			Style style = new Style(typeof(Button));
 			style.Setters.Add (new Setter(Button.WidthProperty, "this is a string"));
-			b.Style = style;
-			Assert.IsTrue(double.IsNaN(b.Width));
+			Assert.Throws<Exception> (delegate {
+				b.Style = style;
+			});
 		}
 
 		[TestMethod]
