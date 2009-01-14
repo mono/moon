@@ -32,6 +32,8 @@ using System.Windows.Shapes;
 using System.Windows.Media.Animation;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Mono.Moonlight.UnitTesting;
+using System.Windows.Markup;
+using System.Windows;
 
 namespace MoonTest.System.Windows.Media.Animation {
 	
@@ -51,6 +53,36 @@ namespace MoonTest.System.Windows.Media.Animation {
 			Assert.Throws<Exception>(delegate {
 				r.SetValue(Storyboard.TargetPropertyProperty, null);
 			}, "2");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void NameAndKey()
+		{
+			Storyboard board = (Storyboard)XamlReader.Load(
+@"		
+<Storyboard xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+            xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+            x:Name=""Blah""
+            x:Key=""Blah"" />
+");
+			Assert.AreEqual("Blah", board.GetValue(FrameworkElement.NameProperty), "#1");
+			board = (Storyboard)XamlReader.Load(
+@"	
+<Storyboard xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+            xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+            x:Name=""Blah2""
+            x:Key=""Blah"" />
+");
+			Assert.AreEqual("Blah2", board.GetValue(FrameworkElement.NameProperty), "#1");
+			board = (Storyboard)XamlReader.Load(
+@"	
+<Storyboard xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+            xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+            x:Key=""Blah""
+            x:Name=""Blah2"" />
+");
+			Assert.AreEqual("Blah2", board.GetValue(FrameworkElement.NameProperty), "#1");
 		}
 	}
 }
