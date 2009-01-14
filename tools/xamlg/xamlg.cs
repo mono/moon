@@ -152,6 +152,7 @@ namespace Moonlight {
 			decl_ns.Imports.Add (new CodeNamespaceImport ("System"));
 			decl_ns.Imports.Add (new CodeNamespaceImport ("System.Windows"));
 			decl_ns.Imports.Add (new CodeNamespaceImport ("System.Windows.Controls"));
+			decl_ns.Imports.Add (new CodeNamespaceImport ("System.Windows.Controls.Primitives"));
 			decl_ns.Imports.Add (new CodeNamespaceImport ("System.Windows.Documents"));
 			decl_ns.Imports.Add (new CodeNamespaceImport ("System.Windows.Input"));
 			decl_ns.Imports.Add (new CodeNamespaceImport ("System.Windows.Media"));

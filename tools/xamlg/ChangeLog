@@ -1,3 +1,7 @@
+2009-01-13  Geoff Norton  <gnorton@novell.com>
+
+	* xamlg.cs:  Add System.Windows.Controls.Primitives namespace as well
+
 2008-12-11  Jackson Harper  <jackson@ximian.com>
 
 	* xamlg.cs:
