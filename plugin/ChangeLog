@@ -1,3 +1,7 @@
+2009-01-13  Geoff Norton  <gnorton@novell.com>
+
+	* plugin.cpp: Ensure we finalize the domain before freeing it.
+
 2009-01-13  Jackson Harper  <jackson@ximian.com>
 
 	* plugin.cpp|h: Updated xaml callback sig.

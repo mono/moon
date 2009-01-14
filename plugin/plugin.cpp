@@ -478,8 +478,10 @@ PluginInstance::~PluginInstance ()
 	bridge = NULL;
 
 #if PLUGIN_SL_2_0
-	if (plugin_domain)
+	if (plugin_domain) {
+		mono_domain_finalize (plugin_domain, -1);
 		mono_domain_free (plugin_domain, FALSE);
+	}
 #endif
 	
 #if DEBUG
