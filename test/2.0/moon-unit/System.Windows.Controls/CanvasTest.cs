@@ -259,7 +259,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void AttachedTest ()
 		{
 			Canvas c = new Canvas ();
