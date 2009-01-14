@@ -20,7 +20,6 @@ namespace MoonTest.System.Windows.Controls
 	public class ControlTemplateTest
 	{
 		[TestMethod]
-		[MoonlightBug ("Need to resolve xmlns for TargetType")]
 		public void TargetTypeWithNamespace ()
 		{
 			object o = XamlReader.Load (@"

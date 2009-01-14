@@ -1,3 +1,9 @@
+2009-01-14  Jackson Harper  <jackson@ximian.com>
+
+	* System.Windows/ResourceDictionaryTest.cs:
+	* System.Windows.Controls/ControlTemplateTest.cs: More passing
+	tests.
+
 2009-01-14  Jb Evain  <jbevain@novell.com>
 
 	* System.Windows/AssemblyPartTest.cs: new tests.
