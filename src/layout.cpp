@@ -1215,19 +1215,88 @@ TextLayout::Layout ()
 }
 
 static inline void
-RenderLine (cairo_t *cr, const Point &origin, const Point &position, TextLine *line)
+RenderSegment (cairo_t *cr, const Point &origin, double x0, double y0, TextSegment *segment)
 {
-	TextFont *font = NULL;
-	TextDecorations deco;
-	TextSegment *segment;
-	const gunichar *text;
-	guint32 prev = 0;
+	TextDecorations deco = segment->run->source->Decorations ();
+	Brush *fg = segment->run->source->Foreground ();
+	const gunichar *text = segment->run->text;
+	TextFont *font = segment->run->font;
 	GlyphInfo *glyph;
 	double x1, y1;
+	guint32 prev;
+	int size, i;
+	
+	cairo_translate (cr, x0, y0 - font->Ascender ());
+	
+	// set y1 to the baseline relative to the translation matrix
+	y1 = font->Ascender ();
+	x1 = 0.0;
+	
+	Rect area = Rect (origin.x, origin.y, segment->advance, font->Height ());
+	fg->SetupBrush (cr, area);
+	cairo_new_path (cr);
+	
+	if (segment->path) {
+		// it is an error to append a path with no data
+		if (segment->path->cairo.data)
+			cairo_append_path (cr, &segment->path->cairo);
+	} else if (segment->start < segment->end) {
+		moon_path *path = NULL;
+		
+		// count how many path data items we'll need to allocate
+		for (size = 0, i = segment->start; i < segment->end; i++) {
+			if (!(glyph = font->GetGlyphInfo (text[i])))
+				continue;
+			
+			size += glyph->path->cairo.num_data + 1;
+		}
+		
+		path = moon_path_new (size);
+		cairo_new_path (cr);
+		
+		for (i = segment->start, prev = 0; i < segment->end; i++) {
+			gunichar uc = text[i];
+			if (!(glyph = font->GetGlyphInfo (uc)))
+				continue;
+			
+			if ((prev != 0) && APPLY_KERNING (uc))
+				x1 += font->Kerning (prev, glyph->index);
+			else if (glyph->metrics.horiBearingX < 0)
+				x1 += glyph->metrics.horiBearingX;
+			
+			prev = glyph->index;
+			
+			font->AppendPath (path, glyph, x1, y1);
+			
+			x1 += glyph->metrics.horiAdvance;
+		}
+		
+		moon_close_path (path);
+		segment->path = path;
+		
+		if (segment->path->cairo.data)
+			cairo_append_path (cr, &segment->path->cairo);
+	}
+	
+	if ((deco & TextDecorationsUnderline) && segment->width > 0.0) {
+		double thickness = font->UnderlineThickness ();
+		double pos = y1 + font->UnderlinePosition ();
+		
+		cairo_set_line_width (cr, thickness);
+		x1 = segment->width;
+		
+		Rect underline = Rect (0.0, pos - thickness * 0.5, x1, thickness);
+		underline.Draw (cr);
+	}
+	
+	fg->Fill (cr);
+}
+
+static inline void
+RenderLine (cairo_t *cr, const Point &origin, const Point &position, TextLine *line)
+{
+	TextSegment *segment;
 	double x0, y0;
-	Brush *fg;
-	int size;
-	int i;
 	
 	// set y0 to the line's baseline (descend is a negative value)
 	y0 = position.y + line->height + line->descend;
@@ -1236,81 +1305,12 @@ RenderLine (cairo_t *cr, const Point &origin, const Point &position, TextLine *l
 	segment = (TextSegment *) line->segments->First ();
 	
 	while (segment) {
-		deco = segment->run->source->Decorations ();
-		fg = segment->run->source->Foreground ();
-		text = segment->run->text;
-		font = segment->run->font;
-		
 		cairo_save (cr);
-		cairo_translate (cr, x0, y0 - font->Ascender ());
-		
-		// set y1 to the baseline relative to the translation matrix
-		y1 = font->Ascender ();
-		x1 = 0.0;
-		
-		Rect area = Rect (origin.x, origin.y, segment->advance, font->Height ());
-		fg->SetupBrush (cr, area);
-		cairo_new_path (cr);
-		
-		if (segment->path) {
-			// it is an error to append a path with no data
-			if (segment->path->cairo.data)
-				cairo_append_path (cr, &segment->path->cairo);
-		} else if (segment->start < segment->end) {
-			moon_path *path = NULL;
-			
-			// count how many path data items we'll need to allocate
-			for (size = 0, i = segment->start; i < segment->end; i++) {
-				if (!(glyph = font->GetGlyphInfo (text[i])))
-					continue;
-				
-				size += glyph->path->cairo.num_data + 1;
-			}
-				
-			path = moon_path_new (size);
-			cairo_new_path (cr);
-			
-			for (i = segment->start, prev = 0; i < segment->end; i++) {
-				gunichar uc = text[i];
-				if (!(glyph = font->GetGlyphInfo (uc)))
-					continue;
-				
-				if ((prev != 0) && APPLY_KERNING (uc))
-					x1 += font->Kerning (prev, glyph->index);
-				else if (glyph->metrics.horiBearingX < 0)
-					x1 += glyph->metrics.horiBearingX;
-				
-				prev = glyph->index;
-				
-				font->AppendPath (path, glyph, x1, y1);
-				
-				x1 += glyph->metrics.horiAdvance;
-			}
-			
-			moon_close_path (path);
-			segment->path = path;
-			
-			if (segment->path->cairo.data)
-				cairo_append_path (cr, &segment->path->cairo);
-		}
-		
-		if ((deco & TextDecorationsUnderline) && segment->width > 0.0) {
-			double thickness = font->UnderlineThickness ();
-			double pos = y1 + font->UnderlinePosition ();
-			
-			cairo_set_line_width (cr, thickness);
-			x1 = segment->width;
-			
-			Rect underline = Rect (0.0, pos - thickness * 0.5, x1, thickness);
-			underline.Draw (cr);
-		}
-		
-		fg->Fill (cr);
-		
+		RenderSegment (cr, origin, x0, y0, segment);
 		x0 += segment->advance;
+		cairo_restore (cr);
 		
 		segment = (TextSegment *) segment->next;
-		cairo_restore (cr);
 	}
 }
 
