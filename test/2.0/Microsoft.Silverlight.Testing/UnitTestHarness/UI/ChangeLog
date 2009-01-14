@@ -1,3 +1,8 @@
+2009-01-14  Andreia Gaita <avidigal@novell.com>
+
+    * UI/WebBrowserTick.cs: Remove fps change
+
+
 2009-01-12  Andreia Gaita <avidigal@novell.com>
 
 	* WebBrowserTick.cs: Speed things up a bit

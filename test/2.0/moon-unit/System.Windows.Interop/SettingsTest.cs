@@ -35,8 +35,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows.Interop {
 
+	/* It's important this test runs first so it sets the fps to a higher value after checking
+	 * for the default values, so things don't run so slowly */
+	 
 	[TestClass]
-	public class SettingsTest {
+	public class _SettingsTest {
 
 		void Check (Settings settings)
 		{
@@ -99,5 +102,11 @@ namespace MoonTest.System.Windows.Interop {
 
 			// no validation
 		}
+		
+		[TestMethod]
+		public void ZeEnd () {
+			Application.Current.Host.Settings.MaxFrameRate = 400;
+		}
+		
 	}
 }

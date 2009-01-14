@@ -1,3 +1,9 @@
+2009-01-14  Andreia Gaita  <avidigal@novell.com>
+
+	* System.Windows.Interop/SettingsTest.cs: Change the fps after checking for the
+      default values, so the tests run faster and we can still check for regressions
+      here.
+
 2009-01-14  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows/StyleTest.cs: Add moonlight bug attr
