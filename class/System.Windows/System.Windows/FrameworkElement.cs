@@ -51,18 +51,12 @@ namespace System.Windows {
 		 */
 		internal MeasureOverrideCallback measure_cb;
 		internal ArrangeOverrideCallback arrange_cb;
-
-		System.Runtime.InteropServices.GCHandle h1;
-		System.Runtime.InteropServices.GCHandle h2;
-		
 		Dictionary<DependencyProperty, BindingExpressionBase> bindings = new Dictionary<DependencyProperty, BindingExpressionBase> ();
 
 		private void Initialize ()
 		{
 			measure_cb = new MeasureOverrideCallback (InvokeMeasureOverride);
 			arrange_cb = new ArrangeOverrideCallback (InvokeArrangeOverride);
-			h1 = System.Runtime.InteropServices.GCHandle.Alloc (measure_cb);
-			h2 = System.Runtime.InteropServices.GCHandle.Alloc (arrange_cb);
 			NativeMethods.framework_element_register_managed_overrides (native, measure_cb, arrange_cb);
 
 			// we always need to attach this event to allow for Controls to load their default style
