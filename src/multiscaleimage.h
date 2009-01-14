@@ -25,6 +25,7 @@
 /* @Namespace=System.Windows.Controls */
 class MultiScaleImage : public MediaBase {
 	void RenderLayer (cairo_t *cr, MultiScaleTileSource *source, int layer);
+	int layers;
 
  protected:
 	virtual ~MultiScaleImage ();
