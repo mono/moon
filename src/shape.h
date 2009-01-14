@@ -67,7 +67,6 @@ class Shape : public FrameworkElement {
 
 	virtual Rect ComputeShapeBounds (bool logical) { return ComputeShapeBounds (logical, NULL); }
 	virtual Rect ComputeShapeBounds (bool logical, cairo_matrix_t * matrix);
-	virtual Rect ComputeLargestRectangle ();
 
 	virtual void ShiftPosition (Point p);
 	virtual void TransformBounds (cairo_matrix_t *old, cairo_matrix_t *current);
@@ -115,8 +114,6 @@ class Shape : public FrameworkElement {
 	virtual void ComputeBounds ();
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	virtual Point GetOriginPoint () { return extents.GetTopLeft (); }
-	
-	Rect ComputeLargestRectangleBounds ();
 	
 	//
 	// new virtual methods for shapes
@@ -195,7 +192,6 @@ class Ellipse : public Shape {
  protected:
 	virtual ~Ellipse () {}
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
-	virtual Rect ComputeLargestRectangle ();
 	virtual Rect ComputeShapeBounds (bool logical);
 	virtual Rect ComputeStretchBounds ();
 	
@@ -239,8 +235,7 @@ class Rectangle : public Shape {
 	virtual bool CanFill () { return true; }
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
-	virtual Rect ComputeLargestRectangle ();
-	
+
 	//
 	// Property Accessors
 	//

@@ -237,6 +237,7 @@ public:
 
 	// bad, but these live in dirty.cpp, not runtime.cpp
 	void AddDirtyElement (UIElement *element, DirtyType dirt);
+	void UpdateLayout ();
 	void RemoveDirtyElement (UIElement *element);
 	void ProcessDirtyElements ();
 	void PropagateDirtyFlagToChildren (UIElement *element, DirtyType dirt);

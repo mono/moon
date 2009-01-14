@@ -444,8 +444,20 @@ Surface::ProcessUpDirtyElements ()
 }
 
 void
+Surface::UpdateLayout ()
+{
+	if (toplevel) {
+		toplevel->Measure (Size (active_window->GetWidth (),
+					 active_window->GetHeight ()));
+		Size desired = toplevel->GetDesiredSize ();
+		toplevel->Arrange (Rect (0, 0, desired.width, desired.height));
+	}
+}
+
+void
 Surface::ProcessDirtyElements ()
 {
+	UpdateLayout ();
 	ProcessDownDirtyElements ();
 	ProcessUpDirtyElements ();
 }

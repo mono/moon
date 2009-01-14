@@ -44,6 +44,11 @@ Border::ArrangeOverride (Size finalSize)
 	Size desired = Size (0,0);
 	Thickness border = *GetPadding () + *GetBorderThickness ();
 
+	Size specified = Size (GetWidth (), GetHeight ());
+
+	finalSize = finalSize.Max (specified);
+	finalSize = finalSize.Min (specified);
+
 	if (UIElement *child = GetChild ()) {
 		Rect childRect = Rect (0.0, 0.0, finalSize.width, finalSize.height);
 
@@ -54,7 +59,6 @@ Border::ArrangeOverride (Size finalSize)
 	desired = desired.GrowBy (border);
 	desired = desired.Max (finalSize);
 
-	Size specified = Size (GetWidth (), GetHeight ());
 	desired = desired.Max (specified);
 	desired = desired.Min (specified);
 

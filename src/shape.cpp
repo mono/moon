@@ -511,25 +511,52 @@ Shape::ShiftPosition (Point p)
 Size
 Shape::MeasureOverride (Size availableSize)
 {
-	Size size = FrameworkElement::MeasureOverride (availableSize);
+	Size size = Size (GetWidth (), GetHeight ());
+	Size desired;
 
-	if (GetStretch () != StretchNone)
-		size = size.Min (0,0);
+	if (!GetVisualParent () || GetVisualParent ()->Is (Type::CANVAS))
+		return Size (NAN,NAN);
+
+	if (GetStretch () != StretchNone) {
+		desired = availableSize;
+	} else {
+		//desired = availableSize;
+		//Rect shape_bounds = ComputeShapeBounds (false, NULL);
+		//desired = Size (shape_bounds.width, shape_bounds.height);
+	}
+
+	if (isnan (size.width))
+		size.width = desired.width;
+	
+	if (isnan (size.height))
+		size.height = desired.height;
 
 	return size;
 }
 
 Size
-Shape::ArrangeOverride (Size availableSize)
+Shape::ArrangeOverride (Size finalSize)
 {
-	Size size =  FrameworkElement::ArrangeOverride (availableSize);
-	
-	// XXX hack to handle rectangle and ellipse specially until more is understood
-	// at which point they can be their own overrides
-	/*
-	if (GetStretch () != StretchNone && !(Is (Type::RECTANGLE) || Is (Type::ELLIPSE)))
-		size = size.Min (0,0);
-	*/
+	Size size = Size (GetWidth (), GetHeight ());
+
+	if (!GetVisualParent () || GetVisualParent ()->Is (Type::CANVAS))
+		return Size (NAN,NAN);
+
+	if (GetStretch () == StretchNone) {
+		Rect shape_bounds = ComputeShapeBounds (false, NULL);
+		
+		if (isnan (size.width))
+			size.width = (shape_bounds.x + shape_bounds.width);
+		
+		if (isnan (size.height))
+			size.height = (shape_bounds.y + shape_bounds.height);
+	} else {
+		if (isnan (size.width))
+			size.width = finalSize.width;
+
+		if (isnan (size.height))
+			size.height = finalSize.height;
+	}
 
 	return size;
 }
@@ -596,23 +623,6 @@ Shape::ComputeShapeBounds (bool logical, cairo_matrix_t *matrix)
 	measuring_context_destroy (cr);
 
 	return bounds;
-}
-
-Rect
-Shape::ComputeLargestRectangleBounds ()
-{
-	Rect largest = ComputeLargestRectangle ();
-	if (largest.IsEmpty ())
-		return largest;
-
-	return IntersectBoundsWithClipPath (largest, false).Transform (&absolute_xform);
-}
-
-Rect
-Shape::ComputeLargestRectangle ()
-{
-	// by default the largest rectangle that fits into a shape is empty
-	return Rect ();
 }
 
 void
@@ -794,9 +804,10 @@ Ellipse::Ellipse ()
 Rect
 Ellipse::ComputeStretchBounds ()
 {
-	Rect shape_bounds = ComputeShapeBounds (false);
-	needs_clip = !IsDegenerate () && (GetStretch () == StretchUniformToFill);
-	return shape_bounds;
+       Rect shape_bounds = ComputeShapeBounds (false);
+       needs_clip = !IsDegenerate () && (GetStretch () == StretchUniformToFill)
+;
+       return shape_bounds;
 }
 
 Rect
@@ -891,15 +902,6 @@ Ellipse::BuildPath ()
 
 	path = moon_path_renew (path, MOON_PATH_ELLIPSE_LENGTH);
 	moon_ellipse (path, rect.x, rect.y, rect.width, rect.height);
-}
-
-Rect
-Ellipse::ComputeLargestRectangle ()
-{
-	double t = GetStrokeThickness ();
-	double x = (GetWidth () - t) * cos (M_PI_2);
-	double y = (GetHeight () - t) * sin (M_PI_2);
-	return ComputeShapeBounds (false).GrowBy (-x, -y).RoundIn ();
 }
 
 void
@@ -1120,18 +1122,6 @@ Rectangle::OnPropertyChanged (PropertyChangedEventArgs *args)
 
 	Invalidate ();
 	NotifyListenersOfPropertyChange (args);
-}
-
-Rect
-Rectangle::ComputeLargestRectangle ()
-{
-	double x = GetStrokeThickness ();
-	double y = x;
-	if (HasRadii ()) {
-		x += GetRadiusX ();
-		y += GetRadiusY ();
-	}
-	return ComputeShapeBounds (false).GrowBy (-x, -y).RoundIn ();
 }
 
 //

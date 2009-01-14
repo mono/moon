@@ -40,6 +40,7 @@ Canvas::ComputeBounds ()
 		extents = Rect (0, 0, 
 				isnan (GetWidth ()) ? 0.0 : GetWidth (), 
 				isnan (GetHeight ()) ? 0.0 : GetHeight ());
+
 		bounds = Rect (0, 0, surface->GetWindow()->GetWidth(), surface->GetWindow()->GetHeight());
 		bounds_with_children = Rect (0, 0, surface->GetWindow()->GetWidth(), surface->GetWindow()->GetHeight());
 	}
@@ -136,7 +137,7 @@ Canvas::MeasureOverride (Size availableSize)
 	Size result = FrameworkElement::MeasureOverride (availableSize);
 
 	// XXX ugly hack to maintain compat
-	if (!GetVisualParent ())
+	if (!GetSurface () && !GetVisualParent ())
 		return result;
 
 	VisualTreeWalker walker = VisualTreeWalker (this);
@@ -152,7 +153,7 @@ Canvas::ArrangeOverride (Size finalSize)
 	Size result = FrameworkElement::ArrangeOverride (finalSize);
 
 	// XXX ugly hack to maintain compat
-	if (!GetVisualParent ())
+	if (!GetSurface ())
 		return result;
 
 	VisualTreeWalker walker = VisualTreeWalker (this);

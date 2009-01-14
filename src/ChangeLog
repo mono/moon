@@ -1,3 +1,13 @@
+2009-01-13  Larry Ewing  <lewing@novell.com>
+
+	* shape.cpp, shape.h: start moving cleaning up references to width
+	and height and moving towards using the layout logic.  Remove
+	stale LargestRect stuff
+
+	* runtime.c, dirty.h: stub in an update layout function.
+
+	* border.cpp, canvas.cpp: try to match some more tests.
+
 2009-01-13  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBox::CursorPageDown): Implemented.

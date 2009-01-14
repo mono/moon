@@ -48,8 +48,8 @@ namespace MoonTest.System.Windows.Shapes
 
 			b.Measure (new Size (50, 50));
 
-			Assert.AreEqual (new Size (0, 0), b.DesiredSize);
-			Assert.AreEqual (new Size (0, 0), p.DesiredSize);
+			Assert.AreEqual (new Size (0, 0), b.DesiredSize, "b desired");
+			Assert.AreEqual (new Size (0, 0), p.DesiredSize, "p desired");
 		}
 
 		[TestMethod]
@@ -67,12 +67,11 @@ namespace MoonTest.System.Windows.Shapes
 
 			b.Measure (new Size (50, 50));
 
-			Assert.AreEqual (new Size (20, 20), b.DesiredSize);
-			Assert.AreEqual (new Size (20, 20), p.DesiredSize);
+			Assert.AreEqual (new Size (20, 20), b.DesiredSize, "b desiredsize");
+			Assert.AreEqual (new Size (20, 20), p.DesiredSize, "p desiredsize");
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void Measure_StretchFill_Test1 ()
 		{
 			Border b = new Border ();
