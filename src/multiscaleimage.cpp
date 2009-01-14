@@ -79,7 +79,7 @@ MultiScaleImage::RenderLayer (cairo_t *cr, MultiScaleTileSource *source, int lay
 
 	for (i = (int)((double)vp_ox / (double)v_tile_w); i * v_tile_w < vp_ox + vp_w; i++) {
 		for (j = (int)((double)vp_oy / (double)v_tile_h); j * v_tile_h < vp_oy + vp_h; j++) {
-			const char* ret = (const char*)source->get_tile_func (1, 2, 3);
+			const char* ret = (const char*)source->get_tile_func (layer, 2, 3);
 			printf ("rendering tile %d, %d, %d: %s\n", layer, i, j, ret);
 		}
 	}
