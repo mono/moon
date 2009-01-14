@@ -1,3 +1,20 @@
+2009-01-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxView::OnSelectionChanged): Force a
+	re-layout.
+	(TextBoxView::Layout): Build the text runs based on the selection.
+	(TextBoxView::Paint): Updated to no longer pass the selection
+	state to the layout engine.
+
+	* layout.h (class ITextSource): Added a Background() accessor and
+	changed the Foreground() accessor to take a bool selected
+	argument.
+
+	* layout.cpp (RenderSegment): Render the background if non-NULL.
+	(TextRun::TextRun): Now takes a 'selected' state.
+	(TextLayout::Render): No longer takes selection or cursor
+	arguments.
+
 2009-01-14  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Fix x:Null handling.

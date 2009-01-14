@@ -35,7 +35,7 @@
  */
 #define APPLY_KERNING(uc)	((uc != 0x002E) && (uc != 0x06D4) && (uc != 3002))
 
-TextRun::TextRun (const gunichar *ucs4, int len, ITextSource *source)
+TextRun::TextRun (const gunichar *ucs4, int len, ITextSource *source, bool selected)
 {
 	TextFontDescription *font = source->FontDescription ();
 	
@@ -44,10 +44,11 @@ TextRun::TextRun (const gunichar *ucs4, int len, ITextSource *source)
 	text[len] = 0;
 	
 	this->font = font->GetFont ();
+	this->selected = selected;
 	this->source = source;
 }
 
-TextRun::TextRun (const char *utf8, int len, ITextSource *source)
+TextRun::TextRun (const char *utf8, int len, ITextSource *source, bool selected)
 {
 	TextFontDescription *font = source->FontDescription ();
 	register gunichar *s, *d;
@@ -71,6 +72,7 @@ TextRun::TextRun (const char *utf8, int len, ITextSource *source)
 	*d = 0;
 	
 	this->font = font->GetFont ();
+	this->selected = selected;
 	this->source = source;
 }
 
@@ -80,6 +82,7 @@ TextRun::TextRun (ITextSource *source)
 	TextFontDescription *font = source->FontDescription ();
 	
 	this->font = font->GetFont ();
+	this->selected = false;
 	this->source = source;
 	this->text = NULL;
 }
@@ -103,6 +106,11 @@ class TextSegment : public List::Node {
 	
 	TextSegment (TextRun *run, int start);
 	~TextSegment ();
+	
+	Brush *Background () { return run->source->Background (run->selected); }
+	Brush *Foreground () { return run->source->Foreground (run->selected); }
+	TextDecorations Decorations () { return run->source->Decorations (); }
+	TextFont *Font () { return run->font; }
 };
 
 TextSegment::TextSegment (TextRun *run, int start)
@@ -1217,14 +1225,16 @@ TextLayout::Layout ()
 static inline void
 RenderSegment (cairo_t *cr, const Point &origin, double x0, double y0, TextSegment *segment)
 {
-	TextDecorations deco = segment->run->source->Decorations ();
-	Brush *fg = segment->run->source->Foreground ();
+	TextDecorations deco = segment->Decorations ();
 	const gunichar *text = segment->run->text;
-	TextFont *font = segment->run->font;
+	Brush *bg = segment->Background ();
+	Brush *fg = segment->Foreground ();
+	TextFont *font = segment->Font ();
 	GlyphInfo *glyph;
 	double x1, y1;
 	guint32 prev;
 	int size, i;
+	Rect area;
 	
 	cairo_translate (cr, x0, y0 - font->Ascender ());
 	
@@ -1232,7 +1242,16 @@ RenderSegment (cairo_t *cr, const Point &origin, double x0, double y0, TextSegme
 	y1 = font->Ascender ();
 	x1 = 0.0;
 	
-	Rect area = Rect (origin.x, origin.y, segment->advance, font->Height ());
+	area = Rect (origin.x, origin.y, segment->advance, font->Height ());
+	
+	if (bg != NULL) {
+		// render the selection background
+		bg->SetupBrush (cr, area);
+		cairo_new_path (cr);
+		cairo_rectangle (cr, area.x, area.y, area.width, area.height);
+		bg->Fill (cr);
+	}
+	
 	fg->SetupBrush (cr, area);
 	cairo_new_path (cr);
 	
@@ -1315,7 +1334,7 @@ RenderLine (cairo_t *cr, const Point &origin, const Point &position, TextLine *l
 }
 
 void
-TextLayout::Render (cairo_t *cr, const Point &origin, const Point &offset, TextSelection *selection, int cursor)
+TextLayout::Render (cairo_t *cr, const Point &origin, const Point &offset)
 {
 	TextLine *line;
 	Point position;

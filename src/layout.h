@@ -27,7 +27,8 @@ class ITextSource {
  public:
 	virtual TextFontDescription *FontDescription () = 0;
 	virtual TextDecorations Decorations () = 0;
-	virtual Brush *Foreground () = 0;
+	virtual Brush *Background (bool selected) = 0;
+	virtual Brush *Foreground (bool selected) = 0;
 };
 
 class TextRun : public List::Node {
@@ -36,9 +37,10 @@ class TextRun : public List::Node {
 	TextDecorations deco;
 	TextFont *font;
 	gunichar *text;
+	bool selected;
 	
-	TextRun (const gunichar *ucs4, int len, ITextSource *source);
-	TextRun (const char *utf8, int len, ITextSource *source);
+	TextRun (const gunichar *ucs4, int len, ITextSource *source, bool selected = false);
+	TextRun (const char *utf8, int len, ITextSource *source, bool selected = false);
 	TextRun (ITextSource *source);
 	
 	virtual ~TextRun ();
@@ -112,7 +114,7 @@ class TextLayout {
 	// Methods
 	//
 	
-	void Render (cairo_t *cr, const Point &origin, const Point &offset, TextSelection *selection = NULL, int cursor = -1);
+	void Render (cairo_t *cr, const Point &origin, const Point &offset);
 	void Layout ();
 	
 	void GetActualExtents (double *width, double *height);

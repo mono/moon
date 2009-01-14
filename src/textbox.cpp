@@ -1216,16 +1216,16 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 		
 		if (selection.length > 0) {
 			// replace the currently selected text
+			changed = CONTENT_CHANGED | CURSOR_POSITION_CHANGED | SELECTION_CHANGED;
 			buffer->Replace (selection.start, selection.length, &c, 1);
 			cursor = selection.start + 1;
 			ClearSelection ();
 		} else {
 			// insert the text at the cursor position
+			changed = CONTENT_CHANGED | CURSOR_POSITION_CHANGED;
 			buffer->Insert (cursor, c);
 			cursor++;
 		}
-		
-		changed = CONTENT_CHANGED | CURSOR_POSITION_CHANGED | SELECTION_CHANGED;
 	} else {
 		switch (key) {
 		case GDK_BackSpace:
@@ -1700,8 +1700,12 @@ TextBoxView::Layout (cairo_t *cr)
 {
 	TextBox *textbox = GetTextBox ();
 	double width = GetWidth ();
+	TextSelection *selection;
+	const gunichar *text;
 	TextBuffer *buffer;
+	TextRun *run;
 	List *runs;
+	int left;
 	
 	if (width > 0.0f)
 		layout->SetMaxWidth (width);
@@ -1709,9 +1713,36 @@ TextBoxView::Layout (cairo_t *cr)
 		layout->SetMaxWidth (-1.0);
 	
 	buffer = textbox->GetBuffer ();
+	text = buffer->text;
+	left = buffer->len;
 	
 	runs = new List ();
-	runs->Append (new TextRun (buffer->text, buffer->len, (ITextSource *) textbox));
+	
+	if ((selection = textbox->GetSelection ()) && selection->length > 0) {
+		if (selection->start > 0) {
+			// add run before the selected region
+			run = new TextRun (text, selection->start, (ITextSource *) textbox);
+			text += selection->start;
+			left -= selection->start;
+			runs->Append (run);
+		}
+		
+		// add the selected text run
+		run = new TextRun (text, selection->length, (ITextSource *) textbox, true);
+		text += selection->length;
+		left -= selection->length;
+		runs->Append (run);
+		
+		// add the run after the selected region
+		run = new TextRun (text, left, (ITextSource *) textbox, true);
+		text += selection->length;
+		left -= selection->length;
+		runs->Append (run);
+	} else {
+		// nothing selected
+		run = new TextRun (text, buffer->len, (ITextSource *) textbox);
+		runs->Append (run);
+	}
 	
 	layout->SetTextRuns (runs);
 	layout->Layout ();
@@ -1722,11 +1753,9 @@ TextBoxView::Layout (cairo_t *cr)
 void
 TextBoxView::Paint (cairo_t *cr)
 {
-	TextBox *textbox = GetTextBox ();
-	
 	printf ("TextBoxView::Paint()\n");
 	
-	layout->Render (cr, GetOriginPoint (), Point (), textbox->GetSelection ());
+	layout->Render (cr, GetOriginPoint (), Point ());
 }
 
 void
@@ -1742,6 +1771,9 @@ TextBoxView::OnSelectionChanged (SelectionChangedEventArgs *args)
 	if (focused)
 		BeginCursorBlink ();
 	
+	dirty = true;
+	
+	UpdateBounds (true);
 	Invalidate ();
 }
 

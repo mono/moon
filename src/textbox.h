@@ -217,7 +217,22 @@ class TextBox : public Control, public ITextSource {
 	//
 	virtual TextDecorations Decorations () { return TextDecorationsNone; }
 	virtual TextFontDescription *FontDescription () { return font; }
-	virtual Brush *Foreground () { return GetForeground (); }
+	
+	virtual Brush *Background (bool selected)
+	{
+		if (selected)
+			return GetSelectionBackground ();
+		else
+			return GetBackground ();
+	}
+	
+	virtual Brush *Foreground (bool selected)
+	{
+		if (selected)
+			return GetSelectionForeground ();
+		else
+			return GetForeground ();
+	}
 	
 	//
 	// Property Accessors

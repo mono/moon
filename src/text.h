@@ -105,7 +105,8 @@ class Inline : public DependencyObject, public ITextSource {
 	//
 	virtual TextDecorations Decorations () { return GetTextDecorations (); }
 	virtual TextFontDescription *FontDescription () { return font; }
-	virtual Brush *Foreground () { return GetForeground (); }
+	virtual Brush *Foreground (bool selected) { return GetForeground (); }
+	virtual Brush *Background (bool selected) { return NULL; }
 	
 	//
 	// Convenience Methods
