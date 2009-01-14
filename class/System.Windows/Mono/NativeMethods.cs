@@ -131,7 +131,7 @@ namespace Mono {
 
 		public delegate void DownloadedHandler (string path);
 		[DllImport ("moon")]
-		public extern static void deep_zoom_image_tile_source_download_urisource (IntPtr instance, string uri, DownloadedHandler callback);
+		public extern static void deep_zoom_image_tile_source_set_downloaded_cb (IntPtr instance, DownloadedHandler callback);
 
 		public delegate string ImageUriFunc (int level, int posx, int posy);
 		[DllImport("moon")]
