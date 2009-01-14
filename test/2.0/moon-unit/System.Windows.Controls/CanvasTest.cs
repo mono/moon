@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Ink;
 using System.Windows.Input;
@@ -255,6 +256,27 @@ namespace MoonTest.System.Windows.Controls
 			
 			Assert.IsNull (b.FindName ("foo"));
 			Assert.IsNotNull (c.FindName ("foo"));
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void AttachedTest ()
+		{
+			Canvas c = new Canvas ();
+			Border b = new Border ();
+			b.Width = 10;
+			b.Height = 33;
+			b.Background = new SolidColorBrush (Colors.Orange);
+			Canvas.SetTop (b, 88);
+			Canvas.SetLeft (b, 150);
+			c.Children.Add (b);
+
+			c.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			Assert.AreEqual (new Size (0,0), b.DesiredSize, "b desired");
+
+			c.Arrange (new Rect (0,0,400,400));
+			
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (b));
 		}
 	}
 
