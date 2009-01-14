@@ -846,8 +846,8 @@ Image::Render (cairo_t *cr, Region *region)
 	cairo_save (cr);
 
 	Stretch stretch = GetStretch ();
-	double h = isnan (GetHeight ()) ? 0.0 : GetHeight ();
-	double w = isnan (GetWidth ()) ? 0.0 : GetWidth ();
+	double w = GetActualWidth ();
+	double h = GetActualHeight ();
 	
 	if (!pattern)
 		pattern = cairo_pattern_create_for_surface (surface->cairo);
@@ -936,7 +936,7 @@ Image::GetCoverageBounds ()
 
 	cairo_matrix_t matrix;
 	Rect image = Rect (0, 0, surface->width, surface->height);
-	Rect paint = Rect (0, 0, GetWidth (), GetHeight ());
+	Rect paint = Rect (0, 0, GetActualWidth (), GetActualHeight ());
 
 	image_brush_compute_pattern_matrix (&matrix, 
 					    paint.width, paint.height,

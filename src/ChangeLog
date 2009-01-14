@@ -1,4 +1,15 @@
 2009-01-13  Larry Ewing  <lewing@novell.com>
+
+	* frameworkelement.cpp:
+	* control.cpp:
+	* canvas.cpp:
+	* media.cpp: 
+	* mediaelement.cpp: 
+	* panel.cpp: Use the layout values for values we used to compute
+	directly.
+
+2009-01-13  Larry Ewing  <lewing@novell.com>
+
 	* src/canvas.cpp
 	* src/frameworkelement.cpp
 	* src/media.cpp

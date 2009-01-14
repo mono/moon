@@ -49,7 +49,7 @@ Panel::ComputeBounds ()
 	printf ("Panel: Enter ComputeBounds (%s)\n", GetName());
 #endif
 
-	// Clear the previous 
+	// Clear the previous values
 	extents = bounds = bounds_with_children = Rect ();
 
 	VisualTreeWalker walker = VisualTreeWalker (this);
@@ -110,7 +110,7 @@ Panel::Render (cairo_t *cr, Region *region)
 	cairo_set_matrix (cr, &absolute_xform);
 	
 	if ((background = GetBackground ())) {
-		Rect area = Rect (0.0, 0.0, GetWidth (), GetHeight ());
+		Rect area = Rect (0.0, 0.0, GetActualWidth (), GetActualHeight ());
 		
 		if (area.width > 0 && area.height > 0) {
 			background->SetupBrush (cr, area);

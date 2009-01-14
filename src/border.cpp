@@ -89,36 +89,13 @@ Border::Render (cairo_t *cr, Region *region)
 void
 Border::ComputeBounds ()
 {
-	double width = GetWidth ();
-	double height = GetHeight ();
-	
-	Thickness border = *GetBorderThickness ();
-	Thickness padding = *GetPadding ();
-
-	extents = bounds_with_children = Rect ();
+	extents = Rect (0, 0, GetActualWidth (), GetActualHeight ());
+	bounds_with_children = bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 
 	UIElement *child = GetChild ();
-	if (child) {
-		bounds_with_children = child->GetSubtreeBounds ();
-		
-		//child->Measure (Size (GetWidth (), GetWidth ()));
-		//child_size = child->GetDesiredSize ();
-		child->ComputeBounds ();
-	      	extents = child->GetExtents ();
-		//GetTransformFor (child, &offset);
-		//extents = extents.Union (item->GetExtents ().Transform (&offset));
-	}
-	extents.height += border.bottom + padding.bottom;
-	extents.width += border.right + padding.right;
 
-	// if width or height == NAN  Auto layout
-	if (!isnan (width) && !isnan (height))
-		extents = Rect (0.0, 0.0, width, height);
-	else 
-		g_warning ("AutoWidth (%f, %f, %f, %f)", extents.x, extents.y, extents.width, extents.height);
-
-	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
-	bounds_with_children = bounds_with_children.Union (bounds);
+	if (child)
+		bounds_with_children = bounds_with_children.Union (child->GetSubtreeBounds ());
 }
 
 void

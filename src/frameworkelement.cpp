@@ -62,8 +62,8 @@ FrameworkElement::GetTransformOrigin ()
 {
 	Point *user_xform_origin = GetRenderTransformOrigin ();
 	
-	double width = isnan (GetWidth ()) ? 0.0 : GetWidth ();
-	double height = isnan (GetHeight ()) ? 0.0 : GetHeight ();
+	double width = GetActualWidth ();
+	double height = GetActualHeight ();
 
 	return Point (width * user_xform_origin->x, 
 		      height * user_xform_origin->y);
@@ -258,17 +258,15 @@ FrameworkElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObje
 void
 FrameworkElement::ComputeBounds ()
 {
-	extents = Rect (0.0, 0.0, 
-			isnan (GetWidth ()) ? 0.0 : GetWidth (), 
-			isnan (GetHeight ()) ? 0.0 : GetHeight ());
+	extents = Rect (0.0, 0.0, GetActualWidth (), GetActualHeight ());
 	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 }
 
 bool
 FrameworkElement::InsideObject (cairo_t *cr, double x, double y)
 {
-	double width = isnan (GetWidth ()) ? 0.0 : GetWidth ();
-	double height = isnan (GetHeight ()) ? 0.0 : GetHeight ();
+	double width = GetActualWidth ();
+	double height = GetActualHeight ();
 	double nx = x, ny = y;
 	
 	TransformPoint (&nx, &ny);
@@ -281,8 +279,8 @@ FrameworkElement::InsideObject (cairo_t *cr, double x, double y)
 void
 FrameworkElement::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 {
-	*width = isnan (GetWidth ()) ? 0.0 : GetWidth ();
-	*height = isnan (GetHeight ()) ? 0.0 : GetHeight ();
+	*width = GetActualWidth ();
+	*height = GetActualHeight ();
 }
 
 void

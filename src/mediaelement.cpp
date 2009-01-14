@@ -705,8 +705,8 @@ Point
 MediaElement::GetTransformOrigin ()
 {
 	Point *user_xform_origin = GetRenderTransformOrigin ();
-	double h = isnan (GetHeight ()) ? 0.0 : GetHeight ();
-	double w = isnan (GetWidth ()) ? 0.0 : GetWidth ();
+	double h = GetActualHeight();
+	double w = GetActualWidth ();
 	
 	if (w == 0.0 && h == 0.0) {
 		h = (double) mplayer->GetVideoHeight ();
@@ -762,13 +762,9 @@ MediaElement::Render (cairo_t *cr, Region *region)
 	//cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
 	cairo_new_path (cr);
 	
-	Rect paint = Rect (0, 0, GetWidth (), GetHeight ());
+	Rect paint = Rect (0, 0, GetActualWidth (), GetActualHeight ());
 	Rect video = Rect (0, 0, mplayer->GetVideoWidth (), mplayer->GetVideoHeight ());
 
-	/* FIXME NaN */
-	if (paint.width == 0.0 && paint.height == 0.0)
-		paint = video;
-	
 	/* snap paint rect to device space */
 	if (absolute_xform.xy == 0 && absolute_xform.yx == 0) {
 		//cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);

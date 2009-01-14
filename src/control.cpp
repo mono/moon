@@ -54,33 +54,12 @@ Control::Render (cairo_t *cr, Region *region)
 void
 Control::ComputeBounds ()
 {
-	double width = GetWidth ();
-	double height = GetHeight ();
-	
-	Thickness border = *GetBorderThickness ();
-	Thickness padding = *GetPadding ();
-
-	extents = Rect ();
-	bounds_with_children = Rect ();
+	extents = Rect (0, 0, GetActualWidth (), GetActualHeight ());
+	bounds_with_children = bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 	
 	if (template_root) {
-		cairo_matrix_t offset;
-		
-		GetTransformFor (template_root, &offset);
-		//extents = extents.Union (item->GetExtents ().Transform (&offset));
-		extents = bounds_with_children.Union (template_root->GetSubtreeBounds ());
+		bounds_with_children = bounds_with_children.Union (template_root->GetSubtreeBounds ());
 	}
-	extents.height += border.bottom + padding.bottom;
-	extents.width += border.right + padding.right;
-
-	// if width or height == NAN  Auto layout
-	if (!isnan (width) && !isnan (height))
-		extents = Rect (0.0, 0.0, width, height);
-	else 
-		g_warning ("AutoWidth (%f, %f, %f, %f)", extents.x, extents.y, extents.width, extents.height);
-
-	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
-	bounds_with_children = bounds.Union (bounds);
 }
 
 void
