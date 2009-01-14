@@ -190,7 +190,7 @@ SOURCES = \
     $(srcdir)/UnitTestHarness/UnitTesting/UI/TestPage.xaml.g.cs
 
 $(srcdir)/UnitTestHarness/UnitTesting/UI/TestPage.xaml.g.cs: $(srcdir)/UnitTestHarness/UnitTesting/UI/TestPage.xaml
-	xamlg UnitTestHarness/UnitTesting/UI/TestPage.xaml,UnitTestHarness/UnitTesting/UI/TestPage.xaml.g.cs -sl2app:Microsoft.Silverlight.Testing -root:UnitTestHarness
+	$(MONO) --debug $(top_builddir)/tools/xamlg/xamlg.exe UnitTestHarness/UnitTesting/UI/TestPage.xaml,UnitTestHarness/UnitTesting/UI/TestPage.xaml.g.cs -sl2app:Microsoft.Silverlight.Testing -root:UnitTestHarness
 
 EXTRA_DIST =			\
 	$(SOURCES)		\

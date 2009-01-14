@@ -1,3 +1,7 @@
+2009-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Find xamlg.
+
 2009-01-12  Jackson Harper  <jackson@ximian.com>
 
 	* Makefile.am: Find respack.
