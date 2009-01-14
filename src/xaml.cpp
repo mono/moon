@@ -4200,7 +4200,6 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 	const char *inptr, *start = attr_value + 1; // skip the initial '{'
 	XamlMarkupExtensionType type = XamlMarkupExtensionNone;
 	FrameworkTemplate *template_parent;
-	XamlElementInstance *parent;
 	BindingExtension *binding;
 	XamlMarkupParseError err;
 	BindingExpression *expr;
