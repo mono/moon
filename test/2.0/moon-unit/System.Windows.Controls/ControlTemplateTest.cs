@@ -58,7 +58,7 @@ namespace MoonTest.System.Windows.Controls
 			
 			Assert.IsFalse (c.ApplyTemplate (), "0");
 		}
-
+		
 		[TestMethod]
 		public void SetTemplateInXamlOnUserControl ()
 		{
@@ -83,7 +83,7 @@ namespace MoonTest.System.Windows.Controls
 <Button xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
   <Button.Template>
     <ControlTemplate TargetType=""Button"">
-      <TextBlock x:Name=""text"" Text=""hi"" />
+      <TextBlock xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" x:Name=""text"" Text=""hi"" />
     </ControlTemplate>
   </Button.Template>
 </Button>");
@@ -111,7 +111,7 @@ namespace MoonTest.System.Windows.Controls
 <Button xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
   <Button.Template>
     <ControlTemplate TargetType=""Button"">
-      <TextBlock x:Name=""text"" Text=""hi"" Foreground=""Blue""/>
+      <TextBlock xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" x:Name=""text"" Text=""hi"" Foreground=""Blue""/>
     </ControlTemplate>
   </Button.Template>
 </Button>");

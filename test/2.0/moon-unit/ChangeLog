@@ -1,3 +1,10 @@
+2009-01-13  Jackson Harper  <jackson@ximian.com>
+
+	* System.Windows.Controls/ControlTemplateTest.cs: Revert the patch
+	that removed xmlns:x decl on templates. This allows the tests to
+	pass. We can add a new test for xmlns:x in templates (which will
+	be difficult to implement with libexpat).
+
 2009-01-13  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Shapes/EllipseTest.cs: New.
