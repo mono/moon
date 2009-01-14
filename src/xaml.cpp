@@ -2582,7 +2582,7 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 	if (!strcmp ("{x:Null}", str)) {
 		Value *null = new Value ();
 		null->SetIsNull (true);
-		v = &null;
+		*v = null;
 		return true;
 	}
 	
@@ -3805,7 +3805,7 @@ start_parse:
 				return;
 			}
 
-			if (v) {
+			if (v && !v->GetIsNull ()) {
 				MoonError err;
 
 				if (!dep->SetValueWithError (NULL, prop, v, &err))

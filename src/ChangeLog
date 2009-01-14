@@ -1,4 +1,8 @@
-2009-01-14  Sebastien Pouliot  <sebastien@ximian.com> 
+2009-01-14  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Fix x:Null handling.
+
+2009-01-14 Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* brush.h: Add default values used by some brushes
 	* dependencyproperty.g.cpp: Regenerated
