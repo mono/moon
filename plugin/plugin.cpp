@@ -479,15 +479,9 @@ PluginInstance::~PluginInstance ()
 
 #if PLUGIN_SL_2_0
 	if (plugin_domain) {
-		mono_domain_finalize (plugin_domain, -1);
-		/* FIXME: We currently cannot free MonoDomains, as it causes
-		the vtable [domain->domain_id] to still be alive.  Mono reuses
-		the domain id, then tries to allocate objects in the old
-		domain causing problems when we generate our next domain
-		This means we're currently leaking a bit of information 
-		in the ML2 context
-		mono_domain_free (plugin_domain, FALSE);
-		*/
+		mono_domain_set (root_domain, FALSE);
+		mono_domain_unload (plugin_domain);
+		plugin_domain = NULL;
 	}
 #endif
 	
