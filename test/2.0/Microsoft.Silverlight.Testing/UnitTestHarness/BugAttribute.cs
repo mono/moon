@@ -1,4 +1,4 @@
-﻿// (c) Copyright Microsoft Corporation.
+// (c) Copyright Microsoft Corporation.
 // This source is subject to the Microsoft Public License (Ms-PL).
 // Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
 // All other rights reserved.
@@ -34,17 +34,32 @@ namespace Microsoft.Silverlight.Testing
         public bool Fixed { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating on which platforms this is 
+        /// a known issue.
+        /// </summary>
+        public PlatformID [] Platforms { get; set; }
+        
+        /// <summary>
         /// Construct a new BugAttribute with no bug description.
         /// </summary>
         public BugAttribute() { }
 
         /// <summary>
-        /// Construct a new BugAttribute with a bug description.
+        /// Construct a new BugAttribute with no bug description and optionally only applicable on certain platforms.
+        /// </summary>
+        public BugAttribute(params PlatformID [] platforms)
+        {
+            Platforms = platforms;
+        }
+
+        /// <summary>
+        /// Construct a new BugAttribute with a bug description and optionally only applicable on certain platforms.
         /// </summary>
         /// <param name="description">Known issue text.</param>
-        public BugAttribute(string description) 
+        public BugAttribute(string description, params PlatformID [] platforms) 
         {
             Description = description;
+            Platforms = platforms;
         }
 
         /// <summary>

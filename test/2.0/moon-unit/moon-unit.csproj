@@ -1,4 +1,4 @@
-﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -76,35 +76,56 @@
     <Compile Include="System.IO.IsolatedStorage\IsolatedStorageFileStreamTest.cs" />
     <Compile Include="System.IO.IsolatedStorage\IsolatedStorageFileTest.cs" />
     <Compile Include="System.IO.IsolatedStorage\IsolatedStorageSettingsTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\AutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\ButtonBaseAutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\FrameworkElementAutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\ItemAutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\ItemsControlAutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\RangeBaseAutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\RepeatButtonAutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\SliderAutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\ThumbAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Controls.Primitives\ButtonBaseTest.cs" />
     <Compile Include="System.Windows.Controls.Primitives\RangeBaseTest.cs" />
     <Compile Include="System.Windows.Controls.Primitives\RepeatButtonTest.cs" />
+    <Compile Include="System.Windows.Controls.Primitives\SelectorTest.cs" />
     <Compile Include="System.Windows.Controls.Primitives\ThumbTest.cs" />
     <Compile Include="System.Windows.Controls.Primitives\ToggleButtonTest.cs" />
     <Compile Include="System.Windows.Controls\BorderTest.cs" />
     <Compile Include="System.Windows.Controls\CanvasTest.cs" />
     <Compile Include="System.Windows.Controls\ContentControlTest.cs" />
+    <Compile Include="System.Windows.Controls\ContentPresenterTest.cs" />
     <Compile Include="System.Windows.Controls\ControlTemplateTest.cs" />
     <Compile Include="System.Windows.Controls\ControlTest.cs" />
     <Compile Include="System.Windows.Controls\GridTest.cs" />
+    <Compile Include="System.Windows.Controls\ItemsControlTest.cs" />
     <Compile Include="System.Windows.Controls\MediaElementTest.cs" />
     <Compile Include="System.Windows.Controls\MediaElementTest.SlowStream.cs" />
     <Compile Include="System.Windows.Controls\OpenFileDialogTest.cs" />
     <Compile Include="System.Windows.Controls\PanelTest.cs" />
     <Compile Include="System.Windows.Controls\PasswordBoxTest.cs" />
     <Compile Include="System.Windows.Controls\ProgressBarTest.cs" />
+    <Compile Include="System.Windows.Controls\ScrollViewerTest.cs" />
     <Compile Include="System.Windows.Controls\SliderTest.cs" />
+    <Compile Include="System.Windows.Controls\StackPanelTest.cs" />
     <Compile Include="System.Windows.Controls\TextBoxTest.cs" />
+    <Compile Include="System.Windows.Controls\UserControlTest.cs" />
     <Compile Include="System.Windows.Data\BindingTest.cs" />
     <Compile Include="System.Windows.Data\IValueConverterTest.cs" />
+    <Compile Include="System.Windows.Input\CursorsTest.cs" />
     <Compile Include="System.Windows.Input\StylusDeviceTest.cs" />
     <Compile Include="System.Windows.Interop\ContentTest.cs" />
     <Compile Include="System.Windows.Interop\SettingsTest.cs" />
     <Compile Include="System.Windows.Interop\SilverlightHostTest.cs" />
+    <Compile Include="System.Windows.Markup\XamlReaderTest.cs" />
+    <Compile Include="System.Windows.Media.Animation\StoryboardTest.cs" />
     <Compile Include="System.Windows.Media.Imaging\BitmapImageTest.cs" />
     <Compile Include="System.Windows.Media\ColorTest.cs" />
+    <Compile Include="System.Windows.Media\ImageBrushTest.cs" />
     <Compile Include="System.Windows.Media\LineGeometryTest.cs" />
+    <Compile Include="System.Windows.Media\MatrixTransformTest.cs" />
     <Compile Include="System.Windows.Media\VisualTreeHelperTest.cs" />
+    <Compile Include="System.Windows.Resources\StreamResourceInfoTest.cs" />
     <Compile Include="System.Windows.Shapes\EllipseTest.cs" />
     <Compile Include="System.Windows.Shapes\LineTest.cs" />
     <Compile Include="System.Windows.Shapes\PathTest.cs" />
@@ -126,7 +147,9 @@
     <Compile Include="System.Windows\FontWeigthsTest.cs" />
     <Compile Include="System.Windows\FrameworkElementTest.cs" />
     <Compile Include="System.Windows\GridLengthTest.cs" />
+    <Compile Include="System.Windows\PointTest.cs" />
     <Compile Include="System.Windows\PresentationFrameworkCollectionTest.cs" />
+    <Compile Include="System.Windows\RectTest.cs" />
     <Compile Include="System.Windows\ResourceDictionaryTest.cs" />
     <Compile Include="System.Windows\RoutedEventArgsTest.cs" />
     <Compile Include="System.Windows\SetterBaseCollectionTest.cs" />
@@ -249,9 +272,6 @@
   <ItemGroup>
     <Folder Include="System.Windows.Documents\" />
     <Folder Include="System.Windows.Ink\" />
-    <Folder Include="System.Windows.Markup\" />
-    <Folder Include="System.Windows.Media.Animation\" />
-    <Folder Include="System.Windows.Resources\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

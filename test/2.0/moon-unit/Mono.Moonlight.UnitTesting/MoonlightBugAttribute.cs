@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,11 +17,22 @@ namespace Mono.Moonlight.UnitTesting
 	public class MoonlightBugAttribute : BugAttribute
 	{
 		public MoonlightBugAttribute ()
+			: base (PlatformID.Unix)
+		{
+		}
+
+		public MoonlightBugAttribute (params PlatformID [] platforms)
+			: base (platforms)
 		{
 		}
 
 		public MoonlightBugAttribute (string description)
-			: base (description)
+			: base (description, new PlatformID [] { PlatformID.Unix })
+		{
+		}
+
+		public MoonlightBugAttribute (string description, params PlatformID [] platforms)
+			: base (description, platforms)
 		{
 		}
 	}

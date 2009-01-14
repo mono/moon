@@ -1,5 +1,15 @@
 2009-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* Mono.Moonlight.UnitTesting/MoonlightBugAttribute.cs:
+	* Mono.Moonlight.UnitTesting/SilverlightBugAttribute.cs: Add a Platforms
+	field to BugAttribute so that we can specify which platform the test
+	fails on. MoonlightBugAttribute sets this to Unix, and
+	SilverlightBugAttribute to Mac and Windows.
+
+	* moon-unit.csproj: Updated.
+
+2009-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* moon-unit.mdp:
 	* moon-unit.csproj: Updated.
 

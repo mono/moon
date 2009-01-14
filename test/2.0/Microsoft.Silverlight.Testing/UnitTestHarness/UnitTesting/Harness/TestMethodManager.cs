@@ -49,11 +49,10 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Harness
         /// <summary>
         /// A value indicating whether the bug attribute was present on this 
         /// method.  If it is, the result will be inverted at completion.
+        /// This is only set if Fixed = false and the platform of the BugAttribute
+        /// matches the executing platform.
         /// </summary>
         private bool _bugAttributePresent;
-
-		private bool _moonlightBug;
-		private bool _silverlightBug;
 
         /// <summary>
         /// Constructor for a test method manager, which handles executing a single test method 
@@ -112,16 +111,26 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Harness
             BugAttribute bug = ReflectionUtility.GetAttribute(_testMethod, typeof(BugAttribute)) as BugAttribute;
             if (bug != null)
             {
-                string name = bug.GetType ().Name;
-                _silverlightBug = name == "SilverlightBugAttribute";
-                _moonlightBug = name == "MoonlightBugAttribute";
                 if (!bug.Fixed)
                 {
-                    _bugAttributePresent = true;
-                    if (_moonlightBug && Environment.OSVersion.Platform == PlatformID.Unix)
-                        Enqueue(() => LogWriter.KnownIssue(bug.Description));
-                    else if (_silverlightBug && Environment.OSVersion.Platform != PlatformID.Unix)
-                        Enqueue(() => LogWriter.KnownIssue(bug.Description));
+                    if (bug.Platforms != null)
+                    {
+                        foreach (PlatformID id in bug.Platforms)
+                        {
+                            if (id == Environment.OSVersion.Platform)
+                            {
+                                _bugAttributePresent = true;
+                                break;
+                            }
+                        }
+                    } 
+                    else
+                    {
+                        _bugAttributePresent = true;
+                    }
+
+                    if (_bugAttributePresent)
+                        Enqueue (() => LogWriter.KnownIssue (bug.Description));
                 }
             }
 
@@ -187,9 +196,7 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Harness
             }
 
             // Invert the result when the bug attribute is present
-            if (_bugAttributePresent && 
-				((_moonlightBug && Environment.OSVersion.Platform == PlatformID.Unix) ||
-				(_silverlightBug && Environment.OSVersion.Platform != PlatformID.Unix)))
+            if (_bugAttributePresent)
             {
                 bool bugVerified = _result.Result == TestOutcome.Failed;
                 TestOutcome newOutcome = bugVerified ? TestOutcome.Passed : TestOutcome.Failed;

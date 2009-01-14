@@ -1,3 +1,9 @@
+2009-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* BugAttribute.cs: Add a Platforms field to BugAttribute so that we can
+	specify which platform the test fails on. MoonlightBugAttribute sets
+	this to Unix, and SilverlightBugAttribute to Mac and Windows.
+
 2008-12-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* BugAttribute.cs: Unseal this class so that we can have derived
