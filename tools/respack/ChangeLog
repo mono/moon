@@ -1,0 +1,5 @@
+2009-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* respack.cs: Always embed in lowercase. This fixes running mono-built
+	xap files on SL.
+

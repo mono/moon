@@ -88,7 +88,7 @@ class ResourcePacker {
 
 				MemoryStream value = new MemoryStream (buffer);
 
-				output.AddResource (key, value);
+				output.AddResource (key.ToLowerInvariant (), value);
 			}
 		}
 
