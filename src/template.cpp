@@ -62,6 +62,7 @@ FrameworkTemplate::FrameworkTemplate ()
 					       delete_list);
 	visual_tree = NULL;
 	xaml_buffer = NULL;
+	xaml_context = NULL;
 }
 
 FrameworkTemplate::~FrameworkTemplate ()

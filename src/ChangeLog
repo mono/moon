@@ -1,5 +1,9 @@
 2009-01-14  Jackson Harper  <jackson@ximian.com>
 
+	* template.cpp: initialize xaml_context. (fixes shutdown crash)
+
+2009-01-14  Jackson Harper  <jackson@ximian.com>
+
 	* type.h|h.in: typo. Don't ask me how, but somehow I accidently flipped
 	these before my last patch.
 
