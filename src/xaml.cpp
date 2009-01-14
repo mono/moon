@@ -996,6 +996,8 @@ XamlLoader::~XamlLoader ()
 	surface = NULL;
 	filename = NULL;
 	str = NULL;
+	if (error_args)
+		error_args->unref();
 }
 
 bool
@@ -1706,7 +1708,6 @@ XamlLoader::HydrateFromString (const char *xaml, DependencyObject *object, bool 
 		parser_info->hydrate_expecting = object;
 		parser_info->hydrating = true;
 		object->SetSurface (GetSurface());
-		object->ref ();
 	} else {
 		parser_info->hydrate_expecting = NULL;
 		parser_info->hydrating = false;
@@ -1776,7 +1777,7 @@ XamlLoader::CreateFromFileWithError (const char *xaml_file, bool create_namescop
 {
 	DependencyObject *res = CreateFromFile (xaml_file, create_namescope, element_type);
 	if (error_args && error_args->error_code != -1) {
-		MoonError::FillIn (error, MoonError::XAML_PARSE_EXCEPTION, error_args->error_message);
+		MoonError::FillIn (error, MoonError::XAML_PARSE_EXCEPTION, g_strdup (error_args->error_message));
 	}
 	return res;
 }
@@ -1786,7 +1787,7 @@ XamlLoader::CreateFromStringWithError  (const char *xaml, bool create_namescope,
 {
 	DependencyObject *res = CreateFromString (xaml, create_namescope, element_type);
 	if (error_args && error_args->error_code != -1) {
-		MoonError::FillIn (error, MoonError::XAML_PARSE_EXCEPTION, error_args->error_message);
+		MoonError::FillIn (error, MoonError::XAML_PARSE_EXCEPTION, g_strdup (error_args->error_message));
 	}
 	return res;
 }
@@ -1796,7 +1797,7 @@ XamlLoader::HydrateFromStringWithError (const char *xaml, DependencyObject *obje
 {
 	DependencyObject *res = HydrateFromString (xaml, object, create_namescope, element_type);
 	if (error_args && error_args->error_code != -1) {
-		MoonError::FillIn (error, MoonError::XAML_PARSE_EXCEPTION, error_args->error_message);
+		MoonError::FillIn (error, MoonError::XAML_PARSE_EXCEPTION, g_strdup (error_args->error_message));
 	}
 	return res;
 }

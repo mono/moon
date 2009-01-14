@@ -1,3 +1,13 @@
+2009-01-13  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (XamlLoader::CreateFromFileWithError): strdup the error
+	message
+	(XamlLoader::CreateFromStringWithError): same.
+	(XamlLoader::HydrateFromStringWithError): same.
+	(~XamlLoader): unref the error_args.
+	(XamlLoader::HydrateFromString): no need to ref the object again
+	here if it was passed in.
+
 2009-01-13  Larry Ewing  <lewing@novell.com>
 
 	* uielement.cpp, uielement.h (class LayoutInformation): add
