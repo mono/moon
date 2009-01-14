@@ -1,3 +1,8 @@
+2009-01-14  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* brush.h: Add default values used by some brushes
+	* dependencyproperty.g.cpp: Regenerated
+
 2009-01-14  Larry Ewing  <lewing@novell.com>
 
 	* panel.cpp (Panel::GetTransformFor): override gettransformfor for

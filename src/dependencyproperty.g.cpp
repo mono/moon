@@ -71,8 +71,8 @@ dependency_property_g_init (void)
 	Border::PaddingProperty = DependencyProperty::RegisterFull (Type::BORDER, "Padding", new Value (Thickness(0)), Type::THICKNESS, false, false, false, NULL, Validators::BorderThicknessValidator);
 	Brush::ChangedProperty = DependencyProperty::Register (Type::BRUSH, "Changed", Type::BOOL);
 	Brush::OpacityProperty = DependencyProperty::Register (Type::BRUSH, "Opacity", new Value (1.0));
-	Brush::RelativeTransformProperty = DependencyProperty::Register (Type::BRUSH, "RelativeTransform", Type::TRANSFORM);
-	Brush::TransformProperty = DependencyProperty::Register (Type::BRUSH, "Transform", Type::TRANSFORM);
+	Brush::RelativeTransformProperty = DependencyProperty::Register (Type::BRUSH, "RelativeTransform", new Value (new MatrixTransform ()));
+	Brush::TransformProperty = DependencyProperty::Register (Type::BRUSH, "Transform", new Value (new MatrixTransform ()));
 	Canvas::LeftProperty = DependencyProperty::RegisterFull (Type::CANVAS, "Left", new Value (0.0), Type::DOUBLE, true, false, false, NULL, NULL);
 	Canvas::TopProperty = DependencyProperty::RegisterFull (Type::CANVAS, "Top", new Value (0.0), Type::DOUBLE, true, false, false, NULL, NULL);
 	Canvas::ZIndexProperty = DependencyProperty::RegisterFull (Type::CANVAS, "ZIndex", new Value (0), Type::INT32, true, false, false, NULL, NULL);
@@ -194,7 +194,7 @@ dependency_property_g_init (void)
 	Line::X2Property = DependencyProperty::Register (Type::LINE, "X2", new Value (0.0));
 	Line::Y1Property = DependencyProperty::Register (Type::LINE, "Y1", new Value (0.0));
 	Line::Y2Property = DependencyProperty::Register (Type::LINE, "Y2", new Value (0.0));
-	LinearGradientBrush::EndPointProperty = DependencyProperty::Register (Type::LINEARGRADIENTBRUSH, "EndPoint", Type::POINT);
+	LinearGradientBrush::EndPointProperty = DependencyProperty::Register (Type::LINEARGRADIENTBRUSH, "EndPoint", new Value (Point(1,1)));
 	LinearGradientBrush::StartPointProperty = DependencyProperty::Register (Type::LINEARGRADIENTBRUSH, "StartPoint", Type::POINT);
 	LineGeometry::EndPointProperty = DependencyProperty::Register (Type::LINEGEOMETRY, "EndPoint", Type::POINT);
 	LineGeometry::StartPointProperty = DependencyProperty::Register (Type::LINEGEOMETRY, "StartPoint", Type::POINT);

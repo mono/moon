@@ -60,9 +60,9 @@ class Brush : public DependencyObject {
  public:
 	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
 	static DependencyProperty *OpacityProperty;
-	/* @PropertyType=Transform,GenerateAccessors */
+	/* @PropertyType=Transform,DefaultValue=new MatrixTransform (),GenerateAccessors */
 	static DependencyProperty *RelativeTransformProperty;
-	/* @PropertyType=Transform,GenerateAccessors */
+	/* @PropertyType=Transform,DefaultValue=new MatrixTransform (),GenerateAccessors */
 	static DependencyProperty *TransformProperty;
 	
 	// internal property - generic brush property change
@@ -223,7 +223,7 @@ class LinearGradientBrush : public GradientBrush {
 	virtual ~LinearGradientBrush () {}
 
  public:
-	/* @PropertyType=Point,GenerateAccessors */
+	/* @PropertyType=Point,DefaultValue=Point(1\,1),GenerateAccessors */
 	static DependencyProperty *EndPointProperty;
 	/* @PropertyType=Point,GenerateAccessors */
 	static DependencyProperty *StartPointProperty;
