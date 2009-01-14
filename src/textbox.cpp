@@ -426,6 +426,138 @@ move_up (TextBuffer *buffer, int cursor, int n_lines)
 	return cur;
 }
 
+static int
+next_word (TextBuffer *buffer, int cursor)
+{
+	// FIXME: obviously moving 8 chars is not what we mean by
+	// moving 1 word, but I'm too lazy atm to implement this
+	// properly so as a temporary "proof of concept" to make sure
+	// the code kinda-sorta does what we want, I'm cheating
+	if (cursor + 8 < buffer->len)
+		return cursor + 8;
+	
+	return buffer->len;
+}
+
+static int
+prev_word (TextBuffer *buffer, int cursor)
+{
+	// FIXME: obviously moving 8 chars is not what we mean by
+	// moving 1 word, but I'm too lazy atm to implement this
+	// properly so as a temporary "proof of concept" to make sure
+	// the code kinda-sorta does what we want, I'm cheating
+	if (cursor > 8)
+		return cursor - 8;
+	
+	return 0;
+}
+
+int
+TextBox::CursorBackSpace (GdkModifierType modifiers)
+{
+	int changed = NOTHING_CHANGED;
+	int length = selection.length;
+	int start = selection.start;
+	int pos;
+	
+	if ((modifiers & (MY_GDK_ALT_MASK | GDK_SHIFT_MASK)) != 0)
+		return NOTHING_CHANGED;
+	
+	if (selection.length > 0) {
+		// BackSpace w/ active selection: delete the selected text
+		buffer->Cut (selection.start, selection.length);
+		changed = CONTENT_CHANGED;
+		
+		if (cursor != selection.start) {
+			changed |= CURSOR_POSITION_CHANGED;
+			cursor = selection.start;
+		}
+	} else if ((modifiers & GDK_CONTROL_MASK) != 0) {
+		// Ctrl+BackSpace: delete the word ending at the cursor
+		pos = prev_word (buffer, cursor);
+		
+		if (pos < cursor) {
+			changed = CURSOR_POSITION_CHANGED | CONTENT_CHANGED;
+			buffer->Cut (pos, cursor - pos);
+			cursor = pos;
+		}
+	} else if (cursor > 0) {
+		// BackSpace: delete the char before the cursor position
+		changed = CURSOR_POSITION_CHANGED | CONTENT_CHANGED;
+		buffer->Cut (cursor - 1, 1);
+		cursor--;
+	}
+	
+	// clear the selection if there was any
+	length = start = 0;
+	
+	// check to see if selection has changed
+	if (selection.start != start || selection.length != length) {
+		changed |= SELECTION_CHANGED;
+		
+		if (length > 0) {
+			SetSelectionLength (length);
+			SetSelectionStart (start);
+		} else {
+			ClearSelection ();
+		}
+	}
+	
+	return changed;
+}
+
+int
+TextBox::CursorDelete (GdkModifierType modifiers)
+{
+	int changed = NOTHING_CHANGED;
+	int length = selection.length;
+	int start = selection.start;
+	int pos;
+	
+	if ((modifiers & (MY_GDK_ALT_MASK | GDK_SHIFT_MASK)) != 0)
+		return NOTHING_CHANGED;
+	
+	if (selection.length > 0) {
+		// Delete w/ active selection: delete the selected text
+		buffer->Cut (selection.start, selection.length);
+		changed = CONTENT_CHANGED;
+		
+		if (cursor != selection.start) {
+			changed |= CURSOR_POSITION_CHANGED;
+			cursor = selection.start;
+		}
+	} else if ((modifiers & GDK_CONTROL_MASK) != 0) {
+		// Ctrl+Delete: delete the word starting at the cursor
+		pos = next_word (buffer, cursor);
+		
+		if (pos > cursor) {
+			buffer->Cut (cursor, pos - cursor);
+			changed = CONTENT_CHANGED;
+		}
+	} else if (cursor < buffer->len) {
+		// Delete: delete the char after the cursor position
+		changed = CONTENT_CHANGED;
+		buffer->Cut (cursor, 1);
+	}
+	
+	// clear the selection if there was any
+	length = start = 0;
+	
+	// check to see if selection has changed
+	if (selection.start != start || selection.length != length) {
+		changed |= SELECTION_CHANGED;
+		
+		if (length > 0) {
+			SetSelectionLength (length);
+			SetSelectionStart (start);
+		} else {
+			ClearSelection ();
+		}
+	}
+	
+	return changed;
+}
+
 int
 TextBox::CursorPageDown (GdkModifierType modifiers)
 {
@@ -749,19 +881,6 @@ TextBox::CursorEnd (GdkModifierType modifiers)
 	return changed;
 }
 
-static int
-move_word_right (TextBuffer *buffer, int cursor)
-{
-	// FIXME: obviously moving 8 chars is not what we mean by
-	// moving 1 word, but I'm too lazy atm to implement this
-	// properly so as a temporary "proof of concept" to make sure
-	// the code kinda-sorta does what we want, I'm cheating
-	if (cursor + 8 < buffer->len)
-		return cursor + 8;
-	
-	return buffer->len;
-}
-
 int
 TextBox::CursorRight (GdkModifierType modifiers)
 {
@@ -775,7 +894,7 @@ TextBox::CursorRight (GdkModifierType modifiers)
 	
 	if ((modifiers & (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) == (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) {
 		// Ctrl+Shift+Right: grow selection to the right on word's worth of characters
-		pos = move_word_right (buffer, cursor);
+		pos = next_word (buffer, cursor);
 		
 		if (cursor == selection.start) {
 			// cursor was at the beginning of the selection
@@ -799,7 +918,7 @@ TextBox::CursorRight (GdkModifierType modifiers)
 		}
 	} else if ((modifiers & GDK_CONTROL_MASK) != 0) {
 		// Ctrl+Right: move cursor to right one word's worth of characters and clear selection
-		pos = move_word_right (buffer, cursor);
+		pos = next_word (buffer, cursor);
 		
 		length = start = 0;
 		
@@ -853,19 +972,6 @@ TextBox::CursorRight (GdkModifierType modifiers)
 	return changed;
 }
 
-static int
-move_word_left (TextBuffer *buffer, int cursor)
-{
-	// FIXME: obviously moving 8 chars is not what we mean by
-	// moving 1 word, but I'm too lazy atm to implement this
-	// properly so as a temporary "proof of concept" to make sure
-	// the code kinda-sorta does what we want, I'm cheating
-	if (cursor > 8)
-		return cursor - 8;
-	
-	return 0;
-}
-
 int
 TextBox::CursorLeft (GdkModifierType modifiers)
 {
@@ -879,7 +985,7 @@ TextBox::CursorLeft (GdkModifierType modifiers)
 	
 	if ((modifiers & (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) == (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) {
 		// Ctrl+Shift+Left: grow selection to the left one word's worth of characters
-		pos = move_word_left (buffer, cursor);
+		pos = prev_word (buffer, cursor);
 		
 		if (cursor > selection.start) {
 			// cursor was at the end of the selection
@@ -904,7 +1010,7 @@ TextBox::CursorLeft (GdkModifierType modifiers)
 		}
 	} else if ((modifiers & GDK_CONTROL_MASK) != 0) {
 		// Ctrl+Left: move cursor to left one word's worth of characters and clear selection
-		pos = move_word_left (buffer, cursor);
+		pos = prev_word (buffer, cursor);
 		
 		length = start = 0;
 		
@@ -1123,27 +1229,10 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 	} else {
 		switch (key) {
 		case GDK_BackSpace:
+			changed = CursorBackSpace (modifiers);
+			break;
 		case GDK_Delete:
-			if (selection.length > 0) {
-				// cut the currently selected text
-				changed = CONTENT_CHANGED | CURSOR_POSITION_CHANGED | SELECTION_CHANGED;
-				buffer->Cut (selection.start, selection.length);
-				cursor = selection.start;
-				ClearSelection ();
-			} else if (key == GDK_BackSpace) {
-				if (cursor > 0) {
-					// cut the char before the cursor position
-					changed = CONTENT_CHANGED | CURSOR_POSITION_CHANGED;
-					buffer->Cut (cursor - 1, 1);
-					cursor--;
-				}
-			} else {
-				if (buffer->len > cursor) {
-					// cut the char after the cursor position
-					changed = CONTENT_CHANGED;
-					buffer->Cut (cursor, 1);
-				}
-			}
+			changed = CursorDelete (modifiers);
 			break;
 		case GDK_KP_Page_Down:
 		case GDK_Page_Down:
@@ -1209,6 +1298,14 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 				// paste clipboard contents to the buffer
 				// FIXME: implement me
 			}
+			break;
+		case GDK_Y:
+		case GDK_y:
+			// Ctrl+Y := Redo
+			break;
+		case GDK_Z:
+		case GDK_z:
+			// Ctrl+Z := Undo
 			break;
 		default:
 			// FIXME: what other keys do we need to handle?

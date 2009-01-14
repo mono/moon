@@ -136,6 +136,8 @@ class TextBox : public Control, public ITextSource {
 	void OnKeyDown (KeyEventArgs *args);
 	void OnKeyUp (KeyEventArgs *args);
 	
+	int CursorBackSpace (GdkModifierType modifiers);
+	int CursorDelete (GdkModifierType modifiers);
 	int CursorPageDown (GdkModifierType modifiers);
 	int CursorPageUp (GdkModifierType modifiers);
 	int CursorHome (GdkModifierType modifiers);

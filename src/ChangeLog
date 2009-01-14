@@ -9,6 +9,9 @@
 
 2009-01-14  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.cpp (TextBox::CursorBackSpace): Implemented.
+	(TextBox::CursorDelete): Implemented.
+
 	* layout.cpp (RenderSegment): Split out from RenderLine().
 
 2009-01-14  Jackson Harper  <jackson@ximian.com>
