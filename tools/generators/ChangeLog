@@ -1,3 +1,8 @@
+2009-01-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Generator.cs: Make sure we're freeing all the unmanaged string
+	return values that we *copy* using Marshal.PtrToStringAnsi
+
 2009-01-13  Jb Evain  <jbevain@novell.com>
 
 	* Generator.cs: remove references to Helper.Agclr.

@@ -1810,7 +1810,15 @@ class Generator {
 			
 			if (marshal_string_returntype) {
 				text.Append (tabs);
-				text.AppendLine ("\treturn (result == IntPtr.Zero) ? null : Marshal.PtrToStringAnsi (result);");
+				text.AppendLine ("\tif (result == IntPtr.Zero)");
+				text.Append (tabs);
+				text.AppendLine ("\t\treturn null;");
+				text.Append (tabs);
+				text.AppendLine ("\tstring s = Marshal.PtrToStringAnsi (result);\t// *copy* unmanaged string");
+				text.Append (tabs);
+				text.AppendLine ("\tMarshal.FreeHGlobal (result);\t\t\t// g_free the unmanaged string");
+				text.Append (tabs);
+				text.AppendLine ("\treturn s;");
 			} else if (!is_void) {
 				text.Append (tabs);
 				text.AppendLine ("\treturn result;");
