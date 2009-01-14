@@ -40,9 +40,11 @@ namespace MoonTest.System.Windows {
 	public class FrameworkElementTest {
 
 		class ConcreteFrameworkElement : FrameworkElement {
+			public Size arrangeInput;
 
 			public Size ArrangeOverride_ (Size finalSize)
 			{
+				arrangeInput = finalSize;
 				return base.ArrangeOverride (finalSize);
 			}
 
@@ -172,6 +174,17 @@ namespace MoonTest.System.Windows {
 			Assert.AreEqual (new Size (0, 0), result, "0,0");
 			result = fe.MeasureOverride_ (Size.Empty);
 			Assert.AreEqual (new Size (0, 0), result, "Empty");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void ArrangeInfinite ()
+		{
+			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
+			var input = new Rect (0, 0, Double.PositiveInfinity, Double.PositiveInfinity);
+			Assert.Throws<InvalidOperationException>(delegate { 
+					fe.Arrange (input);
+				});
 		}
 
 		[TestMethod]

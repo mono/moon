@@ -258,7 +258,9 @@ class Image : public MediaBase {
 	int GetImageWidth  () { return surface ? surface->width : 0; };
 	
 	virtual Rect GetCoverageBounds ();
-	
+	virtual Size MeasureOverride (Size availableSize);
+	virtual Size ArrangeOverride (Size finalSize);
+
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 };
 

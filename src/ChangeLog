@@ -1,5 +1,12 @@
 2009-01-13  Larry Ewing  <lewing@novell.com>
 
+	* canvas.cpp (Canvas::ArrangeOverride): pass in the requested
+	size.
+
+	* media.cpp, media.h: add ArrangeOverride/MeasureOverride.
+
+2009-01-13  Larry Ewing  <lewing@novell.com>
+
 	* shape.cpp, shape.h: start moving cleaning up references to width
 	and height and moving towards using the layout logic.  Remove
 	stale LargestRect stuff

@@ -868,6 +868,61 @@ Image::Render (cairo_t *cr, Region *region)
 	cairo_restore (cr);
 }
 
+Size
+Image::MeasureOverride (Size availableSize)
+{
+	Size size = FrameworkElement::MeasureOverride (availableSize);
+
+	if (!surface || size.IsEmpty ())
+		return Size (-INFINITY, -INFINITY);
+
+	Size desired = Size (0,0);
+
+	if (GetStretch () == StretchNone) {
+		if (isinf (desired.width) > 0)
+			desired.width = surface->width;
+
+		if (isinf (desired.height) > 0)
+			desired.height = surface->width;
+	} else {
+		desired = availableSize;
+	}
+
+	if (isnan (size.width))
+		size.width = desired.width;
+
+	if (isnan (size.height))
+		size.height = desired.height;
+
+	return size;
+}
+
+Size
+Image::ArrangeOverride (Size finalSize)
+{
+	Size arranged = FrameworkElement::ArrangeOverride (finalSize);
+
+	if (!surface || arranged.IsEmpty ())
+		return Size (-INFINITY, -INFINITY);
+
+	if (GetStretch () == StretchNone || (isinf (finalSize.width) && isinf (finalSize.height))) {
+		if (isnan (arranged.width))
+			arranged.width = surface->width;
+		    
+		if (isnan (arranged.height))
+			arranged.height = surface->height;
+	} else {
+		if (isnan (arranged.width))
+			arranged.width = finalSize.width;
+		
+		if (isnan (arranged.height))
+			arranged.height = finalSize.height;
+
+	}
+	
+	return arranged;
+}
+
 Rect
 Image::GetCoverageBounds ()
 {
