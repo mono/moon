@@ -46,6 +46,12 @@ namespace System.Windows.Media
 			set { throw new NotImplementedException (); }
 		}
 		
+		void Initialize ()
+		{
+			NativeMethods.multi_scale_tile_source_set_image_uri_func (native, GetImageUri);
+			Console.WriteLine ("MSTS Initialized");
+		}
+
 		public MultiScaleTileSource (int imageWidth, int imageHeight, int tileWidth, int tileHeight, int tileOverlap)
 		{
 			ImageWidth = imageWidth;
@@ -53,8 +59,6 @@ namespace System.Windows.Media
 			TileWidth = tileWidth;
 			TileHeight = tileHeight;
 			TileOverlap = tileOverlap;
-
-			NativeMethods.multi_scale_tile_source_set_image_uri_func (native, GetImageUri);
 		}
 
 		public MultiScaleTileSource (long imageWidth, long imageHeight, int tileWidth, int tileHeight, int tileOverlap)

@@ -473,8 +473,14 @@ namespace System.Windows.Media {
 	}
 
 	partial class MultiScaleTileSource {
-		internal MultiScaleTileSource () : base (NativeMethods.multi_scale_tile_source_new ()) {}
-		internal MultiScaleTileSource (IntPtr raw) : base (raw) {}
+		internal MultiScaleTileSource () : base (NativeMethods.multi_scale_tile_source_new ())
+		{
+			Initialize ();
+		}
+		internal MultiScaleTileSource (IntPtr raw) : base (raw)
+		{
+			Initialize ();
+		}
 		internal override Kind GetKind () { return Kind.MULTISCALETILESOURCE; }
 	}
 

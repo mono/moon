@@ -1,5 +1,9 @@
 2009-01-14  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* MultiScaleTileSource.cs: set the callback on Initialize ()
+
+2009-01-14  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* DeepZoomImageTileSource.cs: set the downloadercb in Initialize ()
 
 2009-01-13  Stephane Delcroix  <sdelcroix@novell.com>
