@@ -1,3 +1,12 @@
+2009-01-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Media/BrushTest.cs: New.
+	* System.Windows.Media/GradientBrushTest.cs: New.
+	* System.Windows.Media/LinearGradientBrushTest.cs: New.
+	* System.Windows.Controls/ItemCollectionTest.cs: New. Test cases
+	that show that the implementation differs from other PFC<T> types -
+	at least wrt parameter validations
+
 2009-01-14  Larry Ewing  <lewing@novell.com>
 
 	* System.Windows/FrameworkElementTest.cs: remove bug attribute.
