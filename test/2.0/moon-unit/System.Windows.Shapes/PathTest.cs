@@ -424,6 +424,7 @@ namespace MoonTest.System.Windows.Shapes
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void ArrangeTest6()
 		{
 			Canvas c = new Canvas ();
@@ -450,6 +451,7 @@ namespace MoonTest.System.Windows.Shapes
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void ArrangeTest7()
 		{
 			Canvas c = new Canvas ();
