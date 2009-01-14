@@ -25,7 +25,7 @@ namespace MoonTest.System.Windows.Media
 		public void SetBitmapBrush ()
 		{
 			ImageBrush brush = new ImageBrush ();
-			brush.ImageSource = new BitmapImage (new Uri ("test.jpg"));
+			brush.ImageSource = new BitmapImage (new Uri ("http://www.example.com/test.jpg"));
 		}
 	}
 }

@@ -50,18 +50,15 @@ namespace MoonTest.System.Windows.Media
 @"<MatrixTransform xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" >
 	<MatrixTransform.Matrix >
-	
-	  <!-- OffsetX and OffsetY specify the position of the button,
-	  M11 stretches it, and M12 skews it. -->
-	  <Matrix OffsetX=""10"" OffsetY=""100"" M12=""2""/>
+	  <Matrix OffsetX=""10"" M11=""5"" OffsetY=""100"" M12=""2""/>
 	</MatrixTransform.Matrix>
 </MatrixTransform>");
 			Assert.AreEqual (10, m.Matrix.OffsetX, "#1");
 			Assert.AreEqual (100, m.Matrix.OffsetY, "#2");
-			Assert.AreEqual (0, m.Matrix.M11, "#3");
+			Assert.AreEqual (5, m.Matrix.M11, "#3");
 			Assert.AreEqual (2, m.Matrix.M12, "#4");
 			Assert.AreEqual (0, m.Matrix.M21, "#5");
-			Assert.AreEqual (0, m.Matrix.M22, "#6"); 
+			Assert.AreEqual (1, m.Matrix.M22, "#6"); 
 		}
 	}
 }
