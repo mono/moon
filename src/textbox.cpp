@@ -352,42 +352,6 @@ TextBox::~TextBox ()
 
 #define MY_GDK_ALT_MASK         (GDK_MOD1_MASK | GDK_MOD2_MASK | GDK_MOD3_MASK | GDK_MOD4_MASK | GDK_MOD5_MASK)
 
-/**
- * Supported Keybindings:
- *
- * Ctrl+Shift+[Left|Right] := grow/shrink selection by word
- *
- * Shift+[Left|Right|Up|Down] := grow/shrink selection by moving cursor in the specified direction
- *
- * Ctrl+Shift+Home := move selection.start to beginning of buffer
- *
- * Ctrl+Shift+End := move selection end to end of buffer
- *
- * Shift+Home := select from cursor to begin-of-line (cursor ends up at bol)
- *
- * Shift+End := Select from cursor to end-of-line (cursor ends up at eol)
- *
- * Ctrl+Home := move cursor to beginning of buffer
- *
- * Ctrl+End := move cursor to end of buffer
- *
- * PageUp/Down := move cursor up/down a page at a time
- *
- * Up/Down := move cursor up/down a line at a time
- *
- * Left/Right := move cursor left/right 1 char at a time
- *
- * Ctrl+[Left|Right] := move cursor left/right word at a time
- *
- * Home := move cursor to beinning of line
- *
- * End := move cursor to end of line
- *
- * Ctrl+a := select-all
- *
- * cut/copy/paste bindings as well??
- **/
-
 static int
 move_down (TextBuffer *buffer, int cursor, int n_lines)
 {
@@ -477,14 +441,21 @@ TextBox::CursorPageDown (GdkModifierType modifiers)
 		// Shift+Page_Down: grow selection by one page in the downward direction
 		pos = move_down (buffer, cursor, 8);
 		
-		if (cursor < selection.start + selection.length) {
-			// new selection will start at the end of the current selection
-			start += selection.length;
+		if (cursor == selection.start) {
+			// cursor was at the beginning of the selection
+			if (pos > selection.start + selection.length) {
+				// flip selection over the current selection endpoint
+				start += selection.length;
+				length = pos - start;
+			} else {
+				// shrink the selection from the start
+				length -= pos - start;
+				start = pos;
+			}
 		} else {
-			// selection start will stay the same
+			// grow the selection beyond the current endpoint
+			length = pos - start;
 		}
-		
-		length = pos - start;
 		
 		if (cursor != pos) {
 			changed = CURSOR_POSITION_CHANGED;
@@ -533,12 +504,19 @@ TextBox::CursorPageUp (GdkModifierType modifiers)
 		pos = move_up (buffer, cursor, 8);
 		
 		if (cursor > selection.start) {
-			// new selection will end at the current selection.start
-			length = selection.start;
-			start = pos;
+			// cursor was at the end of the selection
+			if (pos < selection.start) {
+				// flip selection over the current selection starting point
+				length = selection.start - pos;
+				start = pos;
+			} else {
+				// shrink the selection from the start
+				length += start - pos;
+				start = pos;
+			}
 		} else {
-			// selection end will stay the same
-			length += pos - cursor;
+			// grow the selection to the left
+			length += start - pos;
 			start = pos;
 		}
 		
@@ -586,19 +564,28 @@ TextBox::CursorHome (GdkModifierType modifiers)
 	
 	if ((modifiers & (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) == (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) {
 		// Ctrl+Shift+Home: update selection to start at the beginning of the buffer
+		pos = 0;
+		
 		if (cursor > selection.start) {
-			// new selection will end at the current selection.start
-			length = selection.start;
-			start = 0;
+			// cursor was at the end of the selection
+			if (pos < selection.start) {
+				// flip selection over the current selection starting point
+				length = selection.start - pos;
+				start = pos;
+			} else {
+				// shrink the selection from the start
+				length += start - pos;
+				start = pos;
+			}
 		} else {
-			// selection end will stay the same
-			length += selection.start;
-			start = 0;
+			// grow the selection to the left
+			length += start - pos;
+			start = pos;
 		}
 		
-		if (cursor != 0) {
+		if (cursor != pos) {
 			changed = CURSOR_POSITION_CHANGED;
-			cursor = 0;
+			cursor = pos;
 		}
 	} else if ((modifiers & GDK_CONTROL_MASK) != 0) {
 		// Ctrl+Home: move cursor to beginning of the buffer and clear selection
@@ -615,12 +602,19 @@ TextBox::CursorHome (GdkModifierType modifiers)
 			pos--;
 		
 		if (cursor > selection.start) {
-			// new selection will end at the current selection.start
-			length = selection.start;
-			start = pos;
+			// cursor was at the end of the selection
+			if (pos < selection.start) {
+				// flip selection over the current selection starting point
+				length = selection.start - pos;
+				start = pos;
+			} else {
+				// shrink the selection from the start
+				length += start - pos;
+				start = pos;
+			}
 		} else {
-			// selection end will stay the same
-			length += pos - cursor;
+			// grow the selection to the left
+			length += start - pos;
 			start = pos;
 		}
 		
@@ -670,14 +664,23 @@ TextBox::CursorEnd (GdkModifierType modifiers)
 	
 	if ((modifiers & (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) == (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) {
 		// Ctrl+Shift+End: update selection to end at the end of the buffer
-		if (cursor < selection.start + selection.length) {
-			// new selection will start at the end of the current selection
-			start += selection.length;
-		} else {
-			// selection start will stay the same
-		}
+		pos = buffer->len;
 		
-		length = buffer->len - start;
+		if (cursor == selection.start) {
+			// cursor was at the beginning of the selection
+			if (pos > selection.start + selection.length) {
+				// flip selection over the current selection endpoint
+				start += selection.length;
+				length = pos - start;
+			} else {
+				// shrink the selection from the start
+				length -= pos - start;
+				start = pos;
+			}
+		} else {
+			// grow the selection beyond the current endpoint
+			length = pos - start;
+		}
 		
 		if (cursor != buffer->len) {
 			changed = CURSOR_POSITION_CHANGED;
@@ -697,14 +700,21 @@ TextBox::CursorEnd (GdkModifierType modifiers)
 		while (pos < buffer->len && buffer->text[pos] != '\n')
 			pos++;
 		
-		if (cursor < selection.start + selection.length) {
-			// new selection will start at the end of the current selection
-			start += selection.length;
+		if (cursor == selection.start) {
+			// cursor was at the beginning of the selection
+			if (pos > selection.start + selection.length) {
+				// flip selection over the current selection endpoint
+				start += selection.length;
+				length = pos - start;
+			} else {
+				// shrink the selection from the start
+				length -= pos - start;
+				start = pos;
+			}
 		} else {
-			// selection start will stay the same
+			// grow the selection beyond the current endpoint
+			length = pos - start;
 		}
-		
-		length = pos - start;
 		
 		if (cursor != pos) {
 			changed = CURSOR_POSITION_CHANGED;
@@ -739,95 +749,214 @@ TextBox::CursorEnd (GdkModifierType modifiers)
 	return changed;
 }
 
+static int
+move_word_right (TextBuffer *buffer, int cursor)
+{
+	// FIXME: obviously moving 8 chars is not what we mean by
+	// moving 1 word, but I'm too lazy atm to implement this
+	// properly so as a temporary "proof of concept" to make sure
+	// the code kinda-sorta does what we want, I'm cheating
+	if (cursor + 8 < buffer->len)
+		return cursor + 8;
+	
+	return buffer->len;
+}
+
 int
 TextBox::CursorRight (GdkModifierType modifiers)
 {
-	if (modifiers & GDK_SHIFT_MASK) {
-		// FIXME: need to handle Ctrl+Shift (selects on word bounds afaict?)
-		// change the selection
+	int changed = NOTHING_CHANGED;
+	int length = selection.length;
+	int start = selection.start;
+	int pos;
+	
+	if ((modifiers & MY_GDK_ALT_MASK) != 0)
+		return NOTHING_CHANGED;
+	
+	if ((modifiers & (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) == (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) {
+		// Ctrl+Shift+Right: grow selection to the right on word's worth of characters
+		pos = move_word_right (buffer, cursor);
+		
+		if (cursor == selection.start) {
+			// cursor was at the beginning of the selection
+			if (pos > selection.start + selection.length) {
+				// flip selection over the current selection endpoint
+				start += selection.length;
+				length = pos - start;
+			} else {
+				// shrink the selection from the start
+				length -= pos - start;
+				start = pos;
+			}
+		} else {
+			// grow the selection beyond the current endpoint
+			length = pos - start;
+		}
+		
+		if (cursor != pos) {
+			changed = CURSOR_POSITION_CHANGED;
+			cursor = pos;
+		}
+	} else if ((modifiers & GDK_CONTROL_MASK) != 0) {
+		// Ctrl+Right: move cursor to right one word's worth of characters and clear selection
+		pos = move_word_right (buffer, cursor);
+		
+		length = start = 0;
+		
+		if (cursor != pos) {
+			changed = CURSOR_POSITION_CHANGED;
+			cursor = pos;
+		}
+	} else if ((modifiers & GDK_SHIFT_MASK) != 0) {
+		// Right: grow the selection to the right by one character
 		if (cursor < buffer->len) {
-			if (selection.length > 0) {
-				if (cursor > selection.start) {
-					// the cursor is at the end of the selection, just grow by 1 char
-					SetSelectionLength (selection.length + 1);
+			pos = cursor + 1;
+			
+			if (cursor == selection.start) {
+				// cursor was at the beginning of the selection
+				if (pos > selection.start + selection.length) {
+					// flip selection over the current selection endpoint
+					start += selection.length;
+					length = pos - start;
 				} else {
-					// the cursor is at the start of the selection, shrink by 1 char
-					if (selection.length > 1) {
-						SetSelectionLength (selection.length - 1);
-						SetSelectionStart (cursor + 1);
-					} else {
-						ClearSelection ();
-					}
+					// shrink the selection from the start
+					length -= pos - start;
+					start = pos;
 				}
 			} else {
-				// select the char to the right of the cursor
-				SetSelectionStart (cursor);
-				SetSelectionLength (1);
+				// grow the selection beyond the current endpoint
+				length = pos - start;
 			}
 			
-			cursor++;
-			
-			return CURSOR_POSITION_CHANGED | SELECTION_CHANGED;
+			changed = CURSOR_POSITION_CHANGED;
+			cursor = pos;
 		}
-	} else if (selection.length > 0) {
-		// clear the selection, place cursor at the end of the selection
-		cursor = selection.start + selection.length;
-		ClearSelection ();
-		
-		return CURSOR_POSITION_CHANGED | SELECTION_CHANGED;
 	} else if (cursor < buffer->len) {
-		// move the cursor one character to the right
+		// Right: move the cursor one character to the right and clear the selection
+		changed = CURSOR_POSITION_CHANGED;
+		length = start = 0;
 		cursor++;
-		
-		return CURSOR_POSITION_CHANGED;
 	}
 	
-	return NOTHING_CHANGED;
+	// check to see if selection has changed
+	if (selection.start != start || selection.length != length) {
+		changed |= SELECTION_CHANGED;
+		
+		if (length > 0) {
+			SetSelectionLength (length);
+			SetSelectionStart (start);
+		} else {
+			ClearSelection ();
+		}
+	}
+	
+	return changed;
+}
+
+static int
+move_word_left (TextBuffer *buffer, int cursor)
+{
+	// FIXME: obviously moving 8 chars is not what we mean by
+	// moving 1 word, but I'm too lazy atm to implement this
+	// properly so as a temporary "proof of concept" to make sure
+	// the code kinda-sorta does what we want, I'm cheating
+	if (cursor > 8)
+		return cursor - 8;
+	
+	return 0;
 }
 
 int
 TextBox::CursorLeft (GdkModifierType modifiers)
 {
-	if (modifiers & GDK_SHIFT_MASK) {
-		// FIXME: need to handle Ctrl+Shift (selects on word bounds afaict?)
-		// change the selection
-		if (cursor > 0) {
-			if (selection.length > 0) {
-				if (cursor > selection.start) {
-					// the cursor is at the end of the selection, shrink by 1 char
-					if (selection.length > 1)
-						SetSelectionLength (selection.length - 1);
-					else
-						ClearSelection ();
+	int changed = NOTHING_CHANGED;
+	int length = selection.length;
+	int start = selection.start;
+	int pos;
+	
+	if ((modifiers & MY_GDK_ALT_MASK) != 0)
+		return NOTHING_CHANGED;
+	
+	if ((modifiers & (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) == (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) {
+		// Ctrl+Shift+Left: grow selection to the left one word's worth of characters
+		pos = move_word_left (buffer, cursor);
+		
+		if (cursor > selection.start) {
+			// cursor was at the end of the selection
+			if (pos < selection.start) {
+				// flip selection over the current selection starting point
+				length = selection.start - pos;
+				start = pos;
+			} else {
+				// shrink the selection from the start
+				length += start - pos;
+				start = pos;
+			}
+		} else {
+			// grow the selection to the left
+			length += start - pos;
+			start = pos;
+		}
+		
+		if (cursor != pos) {
+			changed = CURSOR_POSITION_CHANGED;
+			cursor = pos;
+		}
+	} else if ((modifiers & GDK_CONTROL_MASK) != 0) {
+		// Ctrl+Left: move cursor to left one word's worth of characters and clear selection
+		pos = move_word_left (buffer, cursor);
+		
+		length = start = 0;
+		
+		if (cursor != pos) {
+			changed = CURSOR_POSITION_CHANGED;
+			cursor = pos;
+		}
+	} else if ((modifiers & GDK_SHIFT_MASK) != 0) {
+		// Shift+Left: grow the selection to the left by one character
+		if (cursor < buffer->len) {
+			pos = cursor + 1;
+			
+			if (cursor > selection.start) {
+				// cursor was at the end of the selection
+				if (pos < selection.start) {
+					// flip selection over the current selection starting point
+					length = selection.start - pos;
+					start = pos;
 				} else {
-					// the cursor is at the start of the selection, grow by 1 char
-					SetSelectionLength (selection.length + 1);
-					SetSelectionStart (cursor - 1);
+					// shrink the selection from the start
+					length += start - pos;
+					start = pos;
 				}
 			} else {
-				// select the char to the left of the cursor
-				SetSelectionStart (cursor - 1);
-				SetSelectionLength (1);
+				// grow the selection to the left
+				length += start - pos;
+				start = pos;
 			}
 			
-			cursor--;
-			
-			return CURSOR_POSITION_CHANGED | SELECTION_CHANGED;
+			changed = CURSOR_POSITION_CHANGED;
+			cursor = pos;
 		}
-	} else if (selection.length > 0) {
-		// clear the selection, place cursor at the end of the selection
-		cursor = selection.start + selection.length;
-		ClearSelection ();
-		
-		return CURSOR_POSITION_CHANGED | SELECTION_CHANGED;
 	} else if (cursor > 0) {
-		// move the cursor one character to the left
+		// Left: move the cursor one character to the right and clear the selection
+		changed = CURSOR_POSITION_CHANGED;
+		length = start = 0;
 		cursor--;
-		
-		return CURSOR_POSITION_CHANGED;
 	}
 	
-	return NOTHING_CHANGED;
+	// check to see if selection has changed
+	if (selection.start != start || selection.length != length) {
+		changed |= SELECTION_CHANGED;
+		
+		if (length > 0) {
+			SetSelectionLength (length);
+			SetSelectionStart (start);
+		} else {
+			ClearSelection ();
+		}
+	}
+	
+	return changed;
 }
 
 int
@@ -845,14 +974,21 @@ TextBox::CursorDown (GdkModifierType modifiers)
 		// Shift+Down: grow selection by one line in the downward direction
 		pos = move_down (buffer, cursor, 1);
 		
-		if (cursor < selection.start + selection.length) {
-			// new selection will start at the end of the current selection
-			start += selection.length;
+		if (cursor == selection.start) {
+			// cursor was at the beginning of the selection
+			if (pos > selection.start + selection.length) {
+				// flip selection over the current selection endpoint
+				start += selection.length;
+				length = pos - start;
+			} else {
+				// shrink the selection from the start
+				length -= pos - start;
+				start = pos;
+			}
 		} else {
-			// selection start will stay the same
+			// grow the selection beyond the current endpoint
+			length = pos - start;
 		}
-		
-		length = pos - start;
 		
 		if (cursor != pos) {
 			changed = CURSOR_POSITION_CHANGED;
@@ -901,12 +1037,19 @@ TextBox::CursorUp (GdkModifierType modifiers)
 		pos = move_up (buffer, cursor, 1);
 		
 		if (cursor > selection.start) {
-			// new selection will end at the current selection.start
-			length = selection.start;
-			start = pos;
+			// cursor was at the end of the selection
+			if (pos < selection.start) {
+				// flip selection over the current selection starting point
+				length = selection.start - pos;
+				start = pos;
+			} else {
+				// shrink the selection from the start
+				length += start - pos;
+				start = pos;
+			}
 		} else {
-			// selection end will stay the same
-			length += pos - cursor;
+			// grow the selection to the left
+			length += start - pos;
 			start = pos;
 		}
 		

@@ -1,3 +1,7 @@
+2009-01-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp: More fixes for cursor movement & keyboard selection.
+
 2009-01-14  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* grid.cpp (MeasureOverride): Free allocated arrays
