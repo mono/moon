@@ -377,8 +377,14 @@ namespace System.Windows.Media {
 	}
 
 	partial class DeepZoomImageTileSource {
-		public DeepZoomImageTileSource () : base (NativeMethods.deep_zoom_image_tile_source_new ()) {}
-		internal DeepZoomImageTileSource (IntPtr raw) : base (raw) {}
+		public DeepZoomImageTileSource () : base (NativeMethods.deep_zoom_image_tile_source_new ())
+		{
+			Initialize ();
+		}
+		internal DeepZoomImageTileSource (IntPtr raw) : base (raw)
+		{
+			Initialize ();
+		}
 		internal override Kind GetKind () { return Kind.DEEPZOOMIMAGETILESOURCE; }
 	}
 
