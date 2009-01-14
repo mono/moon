@@ -291,6 +291,96 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		public void InvalidateMeasureTest ()
+		{
+			Border b = new Border ();
+			LayoutPoker c = new LayoutPoker ();
+			Size s = new Size (10,10);
+			b.Child = c;
+
+			c.MeasureResult = s;
+
+			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			Assert.AreEqual (new Size (10,10), b.DesiredSize, "b desiredsize");
+			Assert.AreEqual (new Size (10,10), c.DesiredSize, "c desiredsize");
+
+			c.MeasureResult = new Size (20,20);
+			c.MeasureArg = new Size (99,99);
+
+			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			Assert.AreEqual (new Size (10,10), b.DesiredSize, "b desiredsize1");
+			Assert.AreEqual (new Size (10,10), c.DesiredSize, "c desiredsize1");
+			Assert.AreEqual (new Size (99,99), c.MeasureArg, "c measurearg");
+
+			c.InvalidateMeasure ();
+			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			Assert.AreEqual (new Size (20,20), b.DesiredSize, "b desiredsize1");
+			Assert.AreEqual (new Size (20,20), c.DesiredSize, "c desiredsize1");
+			Assert.AreEqual (new Size (Double.PositiveInfinity,Double.PositiveInfinity), c.MeasureArg, "c measurearg");
+		}
+
+		[TestMethod]
+		public void InvalidateMeasureTest2 ()
+		{
+			Border b = new Border ();
+			LayoutPoker c = new LayoutPoker ();
+			Size s = new Size (10,10);
+			b.Child = c;
+
+			c.MeasureResult = s;
+
+			c.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			Assert.AreEqual (new Size (10,10), c.DesiredSize, "c desiredsize");
+
+			c.MeasureResult = new Size (20,20);
+			c.MeasureArg = new Size (99,99);
+
+			c.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			Assert.AreEqual (new Size (10,10), c.DesiredSize, "c desiredsize1");
+			Assert.AreEqual (new Size (99,99), c.MeasureArg, "c measurearg");
+
+			c.InvalidateMeasure ();
+			c.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			Assert.AreEqual (new Size (20,20), c.DesiredSize, "c desiredsize1");
+			Assert.AreEqual (new Size (Double.PositiveInfinity,Double.PositiveInfinity), c.MeasureArg, "c measurearg");
+		}
+
+		[TestMethod]
+		public void InvalidateMeasureTest3 ()
+		{
+			Border b = new Border ();
+			LayoutPoker c = new LayoutPoker ();
+			Size s = new Size (10,10);
+			b.Child = c;
+
+			c.MeasureResult = s;
+
+			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			Assert.AreEqual (new Size (10,10), b.DesiredSize, "b desiredsize");
+			Assert.AreEqual (new Size (10,10), c.DesiredSize, "c desiredsize");
+
+			c.MeasureResult = new Size (20,20);
+			c.MeasureArg = new Size (99,99);
+
+			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			Assert.AreEqual (new Size (10,10), b.DesiredSize, "b desiredsize1");
+			Assert.AreEqual (new Size (10,10), c.DesiredSize, "c desiredsize1");
+			Assert.AreEqual (new Size (99,99), c.MeasureArg, "c measurearg");
+
+			b.InvalidateMeasure ();
+			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			Assert.AreEqual (new Size (10,10), b.DesiredSize, "b desiredsize1");
+			Assert.AreEqual (new Size (10,10), c.DesiredSize, "c desiredsize1");
+			Assert.AreEqual (new Size (99,99), c.MeasureArg, "c measurearg");
+
+			c.InvalidateMeasure ();
+			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			Assert.AreEqual (new Size (20,20), b.DesiredSize, "b desiredsize1");
+			Assert.AreEqual (new Size (20,20), c.DesiredSize, "c desiredsize1");
+			Assert.AreEqual (new Size (Double.PositiveInfinity,Double.PositiveInfinity), c.MeasureArg, "c measurearg");
+		}
+
+		[TestMethod]
 		[MoonlightBug]
 		public void InvalidateArrangeTest ()
 		{

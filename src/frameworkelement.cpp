@@ -219,7 +219,8 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 	    args->property == FrameworkElement::MinWidthProperty ||
 	    args->property == FrameworkElement::MaxHeightProperty ||
 	    args->property == FrameworkElement::MinHeightProperty ||
-	    args->property == FrameworkElement::HeightProperty) {
+	    args->property == FrameworkElement::HeightProperty ||
+	    args->property == FrameworkElement::MarginProperty) {
 
 		Point *p = GetRenderTransformOrigin ();
 
@@ -286,6 +287,11 @@ FrameworkElement::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 void
 FrameworkElement::Measure (Size availableSize)
 {
+	if (!(this->dirty_flags & DirtyMeasure))
+		return;
+
+	InvalidateArrange ();
+
 	this->dirty_flags &= ~DirtyMeasure;
 
 	Size specified = Size (GetWidth (), GetHeight ());
@@ -356,6 +362,9 @@ FrameworkElement::MeasureOverride (Size availableSize)
 void
 FrameworkElement::Arrange (Rect finalRect)
 {
+	if (!(this->dirty_flags & DirtyArrange))
+		return;
+
 	// finalRect amount to our clipbox
 
 	this->dirty_flags &= ~DirtyArrange;

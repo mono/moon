@@ -3,7 +3,7 @@
      <Path Stroke="Red" Stretch="Fill" Data="M100,200 C100,100 250,100 250,200 S400,300 400,200"/>
   </Border>
 
-  <Border Background="Green" Canvas.Top="200">
+  <Border Background="Green" Canvas.Top="50">
      <Path Stroke="Red" Width="50" Height="50" Stretch="Fill" Data="M100,200 C100,100 250,100 250,200 S400,300 400,200"/>
   </Border>
 </Canvas>

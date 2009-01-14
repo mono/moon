@@ -227,6 +227,8 @@ UIElement::DumpHierarchy (UIElement *obj)
 void
 UIElement::UpdateBounds (bool force_redraw)
 {
+	InvalidateMeasure ();
+
 	if (GetSurface ())
 		GetSurface ()->AddDirtyElement (this, DirtyBounds);
 
@@ -448,21 +450,25 @@ UIElement::ElementAdded (UIElement *item)
 		item->OnLoaded ();
 	
 	UpdateBounds (true);
-	InvalidateMeasure ();
+	item->InvalidateMeasure ();
 }
 
 void
 UIElement::InvalidateMeasure ()
 {
-	if (GetSurface())
-		GetSurface()->AddDirtyElement (this, DirtyMeasure);
+	if (GetVisualParent ())
+		GetVisualParent()->InvalidateMeasure ();
+
+	this->dirty_flags |= DirtyMeasure;
 }
 
 void
 UIElement::InvalidateArrange ()
 {
-	if (GetSurface())
-		GetSurface()->AddDirtyElement (this, DirtyArrange);
+	if (GetVisualParent ())
+		GetVisualParent()->InvalidateArrange ();
+
+	this->dirty_flags |= DirtyArrange;
 }
 
 void

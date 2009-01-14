@@ -503,7 +503,7 @@ namespace MoonTest.System.Windows.Shapes
 	
 		[TestMethod]
 		[MoonlightBug ("Missing exception")]
-		public void ReuseGeometry ()
+		public void ReuseGeometryTest ()
 		{
 			Path path1 = new Path ();
 			Path path2 = new Path ();
@@ -513,6 +513,29 @@ namespace MoonTest.System.Windows.Shapes
 			Assert.Throws<ArgumentException>(delegate {
 					path2.Data = geom;
 			}, "reuse");
+		}
+
+		[TestMethod]
+		public void UpdateLayoutTest ()
+		{
+			Border b = new Border ();
+			var path = new Path ();
+			var canvas = new Canvas ();
+			b.Child = path;
+			canvas.Children.Add (b);
+			RectangleGeometry r = new RectangleGeometry ();
+			r.Rect = new Rect (10, 10, 80, 90);
+			path.Data = r;
+			
+			path.Fill = new SolidColorBrush (Colors.Red);
+
+			b.UpdateLayout ();
+			path.UpdateLayout ();
+
+			Assert.AreEqual (new Size (0,0), path.DesiredSize, "desired");
+			Assert.AreEqual (new Size (0,0), path.RenderSize, "render");
+			Assert.AreEqual (0, path.ActualWidth);
+			Assert.AreEqual (0, path.ActualHeight);
 		}
 	}
 }

@@ -320,18 +320,6 @@ Surface::ProcessDownDirtyElements ()
 			    
 		}
 
-		if (el->dirty_flags & DirtyMeasure) {
-			el->dirty_flags &= ~DirtyMeasure;
-
-			el->DoMeasure ();
-		}
-
-		if (el->dirty_flags & DirtyArrange) {
-			el->dirty_flags &= ~DirtyArrange;
-
-			el->DoArrange();
-		}
-
 		if (!(el->dirty_flags & DownDirtyState)) {
 			down_dirty->RemoveDirtyNode (el->GetVisualLevel (), el->down_dirty_node);
 			el->down_dirty_node = NULL;

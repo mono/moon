@@ -96,8 +96,6 @@ enum DirtyType {
 				  DirtyHitTestVisibility |
 				  DirtyLocalClip |
 				  DirtyClip |
-				  DirtyMeasure |
-				  DirtyArrange |
 				  DirtyChildrenZIndices),
 
 	// DirtyBounds

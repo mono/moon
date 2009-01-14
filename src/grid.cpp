@@ -40,6 +40,8 @@ Grid::OnPropertyChanged (PropertyChangedEventArgs *args)
 		Invalidate ();
 	}
 
+	InvalidateMeasure ();
+
 	NotifyListenersOfPropertyChange (args);
 }
 

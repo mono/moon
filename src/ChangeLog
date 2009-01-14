@@ -1,5 +1,14 @@
 2009-01-13  Larry Ewing  <lewing@novell.com>
 
+	* shape.cpp: switch over to using the computed values for stretch.
+
+	* frameworkelement.cpp:
+	* uielement.cpp: 
+	* dirty.cpp, dirty.h:  Try to get invalidation logic close to
+	correct.
+
+2009-01-13  Larry Ewing  <lewing@novell.com>
+
 	* shape.cpp: treat rect and ellipse like normal framework elements.
 	
 2009-01-13  Larry Ewing  <lewing@novell.com>
