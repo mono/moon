@@ -514,15 +514,19 @@ Shape::MeasureOverride (Size availableSize)
 	Size size = Size (GetWidth (), GetHeight ());
 	Size desired;
 
-	if (!GetVisualParent () || GetVisualParent ()->Is (Type::CANVAS))
-		return Size (NAN,NAN);
+	if (!GetSurface () && (!GetVisualParent () || GetVisualParent ()->Is (Type::CANVAS)))
+		return Size (-INFINITY,-INFINITY);
 
-	if (GetStretch () != StretchNone) {
+	if (GetStretch () != StretchNone && !(Is (Type::RECTANGLE) || Is (Type::ELLIPSE))) {
 		desired = availableSize;
 	} else {
 		//desired = availableSize;
-		//Rect shape_bounds = ComputeShapeBounds (false, NULL);
-		//desired = Size (shape_bounds.width, shape_bounds.height);
+		Rect shape_bounds = ComputeShapeBounds (false, NULL);
+		if (isinf (availableSize.width) > 0)
+			desired.width = shape_bounds.x + shape_bounds.width;
+		
+		if (isinf (availableSize.height) > 0)
+			desired.height = shape_bounds.y + shape_bounds.height;
 	}
 
 	if (isnan (size.width))
@@ -540,14 +544,13 @@ Shape::ArrangeOverride (Size finalSize)
 	Size size = Size (GetWidth (), GetHeight ());
 
 	if (!GetVisualParent () || GetVisualParent ()->Is (Type::CANVAS))
-		return Size (NAN,NAN);
+		return Size (-INFINITY,-INFINITY);
 
 	if (GetStretch () == StretchNone) {
 		Rect shape_bounds = ComputeShapeBounds (false, NULL);
 		
 		if (isnan (size.width))
 			size.width = (shape_bounds.x + shape_bounds.width);
-		
 		if (isnan (size.height))
 			size.height = (shape_bounds.y + shape_bounds.height);
 	} else {

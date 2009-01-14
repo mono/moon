@@ -33,7 +33,7 @@ struct Size {
 
 	bool IsEmpty () const
 	{
-		return (width == -INFINITY && height == -INFINITY);
+		return (isinf (width) == -1 && isinf (height) == -1);
 	}
 
 	Size Max (double w, double h) const

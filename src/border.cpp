@@ -22,6 +22,11 @@ Size
 Border::MeasureOverride (Size availableSize)
 {
 	Size desired = Size (0,0);
+	Size specified = Size (GetWidth (), GetHeight ());
+
+	availableSize = availableSize.Max (specified);
+	availableSize = availableSize.Min (specified);
+
 	Thickness border = *GetPadding () + *GetBorderThickness ();
 
 	// Get the desired size of our child, and include any margins we set
@@ -29,9 +34,9 @@ Border::MeasureOverride (Size availableSize)
 		child->Measure (availableSize.GrowBy (-border));
 		desired = child->GetDesiredSize ();
 	}
+
 	desired = desired.GrowBy (border);
 
-	Size specified = Size (GetWidth (), GetHeight ());
 	desired = desired.Max (specified);
 	desired = desired.Min (specified);
 

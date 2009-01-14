@@ -524,17 +524,17 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (0, r.ActualHeight);
 			Assert.AreEqual (0, c.ActualWidth);
 			Assert.AreEqual (0, c.ActualHeight);
-			Assert.AreEqual (new Size (0, 0), r.DesiredSize);
-			Assert.AreEqual (new Size (0, 0), c.DesiredSize);
+			Assert.AreEqual (new Size (0, 0), r.DesiredSize, "r desired 0");
+			Assert.AreEqual (new Size (0, 0), c.DesiredSize, "c desired 0");
 
 			c.Arrange (new Rect (0, 0, 25, 25));
 
 			Assert.AreEqual (25, r.ActualWidth);
 			Assert.AreEqual (25, r.ActualHeight);
-			Assert.AreEqual (new Size (0, 0), r.DesiredSize);
-			Assert.AreEqual (new Size (25, 25), r.RenderSize);
-			Assert.AreEqual (new Size (0, 0), c.DesiredSize);
-			Assert.AreEqual (new Size (25, 25), c.RenderSize);
+			Assert.AreEqual (new Size (0, 0), r.DesiredSize, "r desired 1");
+			Assert.AreEqual (new Size (25, 25), r.RenderSize, "r render 1");
+			Assert.AreEqual (new Size (0, 0), c.DesiredSize, "c desired 1");
+			Assert.AreEqual (new Size (25, 25), c.RenderSize, "c render 1");
 		}
 
 		[TestMethod]

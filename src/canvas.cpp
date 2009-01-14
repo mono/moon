@@ -135,14 +135,18 @@ Size
 Canvas::MeasureOverride (Size availableSize)
 {
 	Size result = FrameworkElement::MeasureOverride (availableSize);
+	Size childSize = Size (INFINITY, INFINITY); 
 
 	// XXX ugly hack to maintain compat
-	if (!GetSurface () && !GetVisualParent ())
+	if (result.IsEmpty ())
 		return result;
+
+	//if (availableSize.width <= 0.0 && availableSize.height <= 0.0)
+	//	childSize = Size (0.0, 0.0);
 
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ())
-		child->Measure (Size (INFINITY, INFINITY));
+		child->Measure (childSize);
 	
 	return result;
 }
@@ -153,7 +157,7 @@ Canvas::ArrangeOverride (Size finalSize)
 	Size result = FrameworkElement::ArrangeOverride (finalSize);
 
 	// XXX ugly hack to maintain compat
-	if (!GetSurface ())
+	if (!GetVisualParent() && !GetSurface ())
 		return result;
 
 	VisualTreeWalker walker = VisualTreeWalker (this);

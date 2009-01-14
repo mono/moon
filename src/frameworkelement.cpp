@@ -312,7 +312,7 @@ FrameworkElement::Measure (Size availableSize)
 	SetActualHeight (isnan(d) ? 0.0 : d);
 
 	// XXX ugly hack to fake some sort of exception case
-	if (isnan (size.width) || isnan (size.height)) {
+	if (size.IsEmpty ()) {
                 SetDesiredSize (Size (0,0));
 		return;
         }
@@ -334,10 +334,21 @@ FrameworkElement::Measure (Size availableSize)
 Size
 FrameworkElement::MeasureOverride (Size availableSize)
 {
-	if (!GetVisualParent () || GetVisualParent ()->Is (Type::CANVAS))
-		return Size (NAN,NAN);
+	Size desired = Size (GetWidth (), GetHeight ());
 
-	return Size (0,0).GrowBy (GetWidth (), GetHeight ());
+	if (isnan (desired.width))
+		desired = availableSize.width;
+
+	if (isnan (desired.height))
+		desired.height = availableSize.height;
+
+	if (availableSize.width <= 0.0 || availableSize.height <= 0.0)
+		return desired;
+	
+	if (!GetSurface () && (!GetVisualParent () || GetVisualParent ()->Is (Type::CANVAS)))
+		return Size (-INFINITY,-INFINITY);
+
+	return desired;
 }
 
 
@@ -360,7 +371,7 @@ FrameworkElement::Arrange (Rect finalRect)
 		size = ArrangeOverride (size);
 
 	// XXX ugly hack to fake some sort of exception case
-	if (isnan (size.width) || isnan (size.height)) {
+	if (size.IsEmpty ()) {
                 SetRenderSize (Size (0,0));
 		return;
         }
@@ -384,16 +395,19 @@ FrameworkElement::Arrange (Rect finalRect)
 Size
 FrameworkElement::ArrangeOverride (Size finalSize)
 {
-	Size size = finalSize;
+	Size size = Size (GetWidth (), GetHeight ());
+	
+	if (isnan (size.width))
+		size.width = finalSize.width;
+	
+	if (isnan (size.height))
+		size.height = finalSize.height;
 
-	if (!GetVisualParent () || GetVisualParent ()->Is (Type::CANVAS))
-		return Size (NAN,NAN);
+	if (finalSize.width <= 0.0 && finalSize.height <= 0.0)
+		return size;
 
-	Size specified = Size (GetWidth (), GetHeight ());
-
-	// postcondition the results
-	size = size.Min (specified);
-	size = size.Max (specified);
+	if (!GetSurface () && (!GetVisualParent () || GetVisualParent ()->Is (Type::CANVAS)))
+		return Size (-INFINITY,-INFINITY);
 
 	return size;
 }

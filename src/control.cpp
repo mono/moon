@@ -228,15 +228,31 @@ Control::GetTemplateChild (const char *name)
 Size
 Control::MeasureOverride (Size availableSize)
 {
-	Size contents = Size (0.0, 0.0);
-	Thickness border = *GetBorderThickness () + *GetPadding ();
+	Size desired = Size (0,0);
+	Size specified = Size (GetWidth (), GetHeight ());
 
+	availableSize = availableSize.Max (specified);
+	availableSize = availableSize.Min (specified);
+
+	Thickness border = *GetPadding () + *GetBorderThickness ();
+
+	// Get the desired size of our child, and include any margins we set
 	if (UIElement *child = template_root) {
-		template_root->Measure (availableSize.GrowBy (-border));
-		contents = template_root->GetDesiredSize ();
+		Size childAvailable = availableSize.GrowBy (-border);
+		g_warning ("control ca (%f, %f)", childAvailable.width, childAvailable.height);
+		child->Measure (availableSize.GrowBy (-border));
+		desired = child->GetDesiredSize ();
+		childAvailable = desired;
+		g_warning ("control cd (%f, %f)", childAvailable.width, childAvailable.height);
+
 	}
 
-	return contents.GrowBy (border);
+	desired = desired.GrowBy (border);
+
+	desired = desired.Max (specified);
+	desired = desired.Min (specified);
+
+	return desired;
 }
 
 Size
@@ -245,12 +261,21 @@ Control::ArrangeOverride (Size finalSize)
 	Size desired = Size (0,0);
 	Thickness border = *GetPadding () + *GetBorderThickness ();
 
-	if (UIElement *child = template_root) {
-		Rect childRect = Rect (0.0, 0.0, finalSize.width, finalSize.height);
+	Size specified = Size (GetWidth (), GetHeight ());
 
+	finalSize = finalSize.Max (specified);
+	finalSize = finalSize.Min (specified);
+
+	if (UIElement *child = template_root) {
+		Rect childRect = Rect (0.0, 0.0, finalSize.width, finalSize.height).GrowBy (-border);
 		child->Arrange (childRect.GrowBy (-border));
-		desired = child->GetDesiredSize ();
+		desired = desired.Max (child->GetRenderSize ());
 	}
 
-	return desired.GrowBy (border);
+	desired = desired.GrowBy (border);
+
+	desired = desired.Max (specified);
+	desired = desired.Min (specified);
+
+	return desired;
 }

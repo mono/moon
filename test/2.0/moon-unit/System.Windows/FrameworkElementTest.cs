@@ -155,7 +155,6 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("mishandling Size.Empty")]
 		public void ArrangeOverride ()
 		{
 			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
@@ -166,7 +165,6 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("mishandling Size.Empty")]
 		public void MeasureOverride ()
 		{
 			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
