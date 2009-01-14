@@ -1,3 +1,8 @@
+2009-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* dependencyobject.cpp: Fix
+	media/video/test-reset-media-element-source.html.
+
 2009-01-14  Alan McGovern  <amcgovern@novell.com>
 
 	* enums.cpp: Control.HorizontalContentAlignment should map to the

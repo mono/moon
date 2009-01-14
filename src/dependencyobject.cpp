@@ -970,7 +970,7 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 	bool equal = false;
 	
 	if (current_value != NULL && value != NULL) {
-		equal = (*current_value == *value);
+		equal = !property->AlwaysChange() && (*current_value == *value);
 	} else {
 		equal = (current_value == NULL) && (value == NULL);
 	}
