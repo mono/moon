@@ -21,6 +21,7 @@
 typedef void (*downloaded_cb) (const char* path);
 
 /* @Version=2,Namespace=System.Windows.Media */
+/* @CallInitialize */
 class DeepZoomImageTileSource : public MultiScaleTileSource {
 
 	Downloader* downloader;
