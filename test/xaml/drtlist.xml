@@ -1008,4 +1008,8 @@
 	inputFile="test-empty-source.html"
 	masterFile10="None"
    />
+   <Test id="10216"
+	 inputFile="test-layout-shape.xaml"
+	 masterFile10="../harness/masters/test-layout-shapeMaster.png"
+   />
 </DRTList>
