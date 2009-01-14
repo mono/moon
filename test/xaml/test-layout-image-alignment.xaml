@@ -1,0 +1,23 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+  <Border Width="50" Height="50" Background="Blue">
+    <Image Source="mono.png" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+  </Border>
+  <Border Width="50" Height="50" Background="Red" Canvas.Top="50">
+    <Image Source="mono.png"/>
+  </Border>
+  <Border Width="50" Height="50" Background="Green" Canvas.Top="100">
+    <Image Source="mono.png" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+  </Border>
+  <Border Width="50" Height="50" Background="Orange" Canvas.Top="150">
+    <Image Source="mono.png" Stretch="None" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+  </Border>
+  <Border Width="50" Height="50" Background="Orange" Canvas.Left="50">
+    <Image Source="mono.png" Stretch="None" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+  </Border>
+  <Border Canvas.Left="50" Canvas.Top="50" Background="Green">
+  <Image Source="mono.png" Width="50" Height="50" Stretch="None" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+  </Border>
+  <Border Canvas.Left="50" Canvas.Top="100" Background="Blue">
+  <Image Source="mono.png" Width="50" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+  </Border>
+</Canvas>

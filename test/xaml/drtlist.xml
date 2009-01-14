@@ -1012,4 +1012,8 @@
 	 inputFile="test-layout-shape.xaml"
 	 masterFile10="../harness/masters/test-layout-shapeMaster.png"
    />
+   <Test id="10217"
+	 inputFile="test-layout-image-alignment.xaml"
+	 masterFile10="../harness/masters/test-layout-image-alignmentMaster.png"
+   />
 </DRTList>
