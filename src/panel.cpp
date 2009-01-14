@@ -115,7 +115,6 @@ Panel::Render (cairo_t *cr, Region *region)
 		if (area.width > 0 && area.height > 0) {
 			background->SetupBrush (cr, area);
 			
-			// FIXME - UIElement::Opacity may play a role here
 			cairo_new_path (cr);
 			area.Draw (cr);
 			background->Fill (cr);
@@ -152,6 +151,15 @@ Panel::InsideObject (cairo_t *cr, double x, double y)
 	UIElement *mouseover = FindMouseOver (cr, x, y);
 
 	return mouseover != NULL;
+}
+
+void
+Panel::GetTransformFor (UIElement *item, cairo_matrix_t *result)
+{
+	cairo_matrix_init_identity (result);
+
+	if (Rect *slot = LayoutInformation::GetLayoutSlot (item))
+		cairo_matrix_translate (result, slot->x, slot->y);
 }
 
 bool

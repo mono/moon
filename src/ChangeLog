@@ -1,3 +1,8 @@
+2009-01-14  Larry Ewing  <lewing@novell.com>
+
+	* panel.cpp (Panel::GetTransformFor): override gettransformfor for
+	now.
+
 2009-01-14  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Add the namespaces to the xaml context.
