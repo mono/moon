@@ -1,3 +1,8 @@
+2009-01-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* LinearGradientBrush.cs: Implement the special (non-default) ctor
+	needed to execute the SDK data controls unit tests
+
 2009-01-14  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* MultiScaleTileSource.cs: set the callback on Initialize ()

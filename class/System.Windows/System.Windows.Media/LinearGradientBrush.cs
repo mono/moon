@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2007,2009 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -29,9 +29,14 @@ using Mono;
 namespace System.Windows.Media {
 
 	public sealed partial class LinearGradientBrush : GradientBrush {
+
 		public LinearGradientBrush (GradientStopCollection gradientStops, double angle)
 		{
-			throw new System.NotImplementedException ();
+			if (gradientStops != null)
+				GradientStops = gradientStops;
+
+			double radian = angle * Math.PI / 180;
+			EndPoint = new Point (Math.Cos (radian), Math.Sin (radian));
 		}
 	}
 }
