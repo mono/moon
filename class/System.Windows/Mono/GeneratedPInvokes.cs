@@ -63,7 +63,11 @@ namespace Mono {
 		{
 			IntPtr result;
 			result = binding_get_property_path_ (instance);
-			return (result == IntPtr.Zero) ? null : Marshal.PtrToStringAnsi (result);
+			if (result == IntPtr.Zero)
+				return null;
+			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
+			Marshal.FreeHGlobal (result);			// g_free the unmanaged string
+			return s;
 		}
 
 		[DllImport ("moon")]
@@ -110,7 +114,11 @@ namespace Mono {
 		{
 			IntPtr result;
 			result = binding_expression_base_get_converter_culture_ (instance);
-			return (result == IntPtr.Zero) ? null : Marshal.PtrToStringAnsi (result);
+			if (result == IntPtr.Zero)
+				return null;
+			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
+			Marshal.FreeHGlobal (result);			// g_free the unmanaged string
+			return s;
 		}
 
 		[DllImport ("moon")]
@@ -441,7 +449,11 @@ namespace Mono {
 		{
 			IntPtr result;
 			result = dependency_object_get_name_ (instance);
-			return (result == IntPtr.Zero) ? null : Marshal.PtrToStringAnsi (result);
+			if (result == IntPtr.Zero)
+				return null;
+			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
+			Marshal.FreeHGlobal (result);			// g_free the unmanaged string
+			return s;
 		}
 
 		[DllImport ("moon")]
@@ -511,7 +523,11 @@ namespace Mono {
 		{
 			IntPtr result;
 			result = dependency_property_get_name_ (instance);
-			return (result == IntPtr.Zero) ? null : Marshal.PtrToStringAnsi (result);
+			if (result == IntPtr.Zero)
+				return null;
+			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
+			Marshal.FreeHGlobal (result);			// g_free the unmanaged string
+			return s;
 		}
 
 		[DllImport ("moon")]
@@ -620,7 +636,11 @@ namespace Mono {
 		{
 			IntPtr result;
 			result = downloader_response_get_response_status_text_ (instance);
-			return (result == IntPtr.Zero) ? null : Marshal.PtrToStringAnsi (result);
+			if (result == IntPtr.Zero)
+				return null;
+			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
+			Marshal.FreeHGlobal (result);			// g_free the unmanaged string
+			return s;
 		}
 
 		[DllImport ("moon")]
@@ -650,7 +670,11 @@ namespace Mono {
 		{
 			IntPtr result;
 			result = event_object_get_type_name_ (instance);
-			return (result == IntPtr.Zero) ? null : Marshal.PtrToStringAnsi (result);
+			if (result == IntPtr.Zero)
+				return null;
+			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
+			Marshal.FreeHGlobal (result);			// g_free the unmanaged string
+			return s;
 		}
 
 		[DllImport ("moon")]
@@ -1521,7 +1545,11 @@ namespace Mono {
 		{
 			IntPtr result;
 			result = xap_unpack_ (fname);
-			return (result == IntPtr.Zero) ? null : Marshal.PtrToStringAnsi (result);
+			if (result == IntPtr.Zero)
+				return null;
+			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
+			Marshal.FreeHGlobal (result);			// g_free the unmanaged string
+			return s;
 		}
 
 	}

@@ -1,3 +1,7 @@
+2009-01-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* GeneratedPInvokes.cs: Regenerated to free char* return values
+
 2009-01-13  Chris Toshok  <toshok@ximian.com>
 
 	* XamlLoaderCallbacks.cs: make sure we free the native loader in a
