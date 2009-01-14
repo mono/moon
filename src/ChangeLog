@@ -1,5 +1,10 @@
 2009-01-14  Jackson Harper  <jackson@ximian.com>
 
+	* type.h|h.in: typo. Don't ask me how, but somehow I accidently flipped
+	these before my last patch.
+
+2009-01-14  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: Styles use their TargetType as their
 	ResourceDictionary key.
 	- Handle the new type MANAGEDTYPEINFO by allowing the managed code

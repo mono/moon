@@ -326,8 +326,8 @@ bool type_is_dependency_object (Type::Kind type);
 
 /* @IncludeInKinds */
 struct ManagedTypeInfo {
-	char *full_name;
 	char *assembly_name;
+	char *full_name;
 };
 
 G_END_DECLS
