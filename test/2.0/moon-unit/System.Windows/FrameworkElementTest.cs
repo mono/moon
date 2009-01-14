@@ -177,7 +177,6 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void ArrangeInfinite ()
 		{
 			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();

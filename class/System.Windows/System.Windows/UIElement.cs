@@ -54,6 +54,11 @@ namespace System.Windows {
 			if (finalRect.IsEmpty)
 				throw new InvalidOperationException ("Empty Rect");
 
+			if (Double.IsInfinity (finalRect.Width) || Double.IsInfinity (finalRect.Height) || Double.IsInfinity (finalRect.X) || Double.IsInfinity (finalRect.Y))
+				throw new InvalidOperationException ("Infinite Rect");
+			if (Double.IsNaN (finalRect.Width) || Double.IsNaN (finalRect.Height) || Double.IsNaN (finalRect.X) || Double.IsNaN (finalRect.Y))
+				throw new InvalidOperationException ("NaN Rect");
+
 			NativeMethods.uielement_arrange(native, finalRect);
 		}
 
