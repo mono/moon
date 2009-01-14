@@ -1,3 +1,9 @@
+2009-01-13  Chris Toshok  <toshok@ximian.com>
+
+	* XamlLoaderCallbacks.cs: make sure we free the native loader in a
+	finally block so exceptions thrown from the native methods don't
+	keep them alive.
+
 2009-01-13  Jackson Harper  <jackson@ximian.com>
 
 	* NativeMethods.cs: Add new method for looking up namespace uris.

@@ -213,6 +213,8 @@ namespace Mono.Xaml
 		
 		public void FreeNativeLoader ()
 		{
+			if (native_loader == IntPtr.Zero)
+				return;
 			NativeMethods.xaml_loader_free (native_loader);
 			native_loader = IntPtr.Zero;
 		}
@@ -225,13 +227,13 @@ namespace Mono.Xaml
 			if (xaml == null)
 				throw new ArgumentNullException ("xaml");
 
-			IntPtr top;
-			
-			CreateNativeLoader (null, xaml);
-			top = NativeMethods.xaml_loader_create_from_string (NativeLoader, xaml, createNamescope, out kind);
-			FreeNativeLoader ();
-			
-			return top;
+			try {
+				CreateNativeLoader (null, xaml);
+				return NativeMethods.xaml_loader_create_from_string (NativeLoader, xaml, createNamescope, out kind);
+			}
+			finally {
+				FreeNativeLoader ();
+			}
 		}
 
 		//
@@ -239,13 +241,16 @@ namespace Mono.Xaml
 		//
 		public void Hydrate (IntPtr dependency_object, string xaml)
 		{
-			Kind k;
-			
-			CreateNativeLoader (null, xaml);
-			IntPtr ret = NativeMethods.xaml_loader_hydrate_from_string (NativeLoader, xaml, dependency_object, true, out k);
-			FreeNativeLoader ();
-			if (ret == IntPtr.Zero)
-				throw new Exception ("Invalid XAML file");
+			try {
+				Kind k;
+				CreateNativeLoader (null, xaml);
+				IntPtr ret = NativeMethods.xaml_loader_hydrate_from_string (NativeLoader, xaml, dependency_object, true, out k);
+				if (ret == IntPtr.Zero)
+					throw new Exception ("Invalid XAML file");
+			}
+			finally {
+				FreeNativeLoader ();
+			}
 		}
 		
 		//
@@ -256,13 +261,13 @@ namespace Mono.Xaml
 			if (path == null)
 				throw new ArgumentNullException ("path");
 
-			IntPtr top;
-			
-			CreateNativeLoader (null, path);
-			top = NativeMethods.xaml_loader_create_from_file (NativeLoader, path, createNamescope, out kind);
-			FreeNativeLoader ();
-			
-			return top;
+			try {
+				CreateNativeLoader (null, path);
+				return NativeMethods.xaml_loader_create_from_file (NativeLoader, path, createNamescope, out kind);
+			}
+			finally {
+				FreeNativeLoader ();
+			}
 		}
 
 		// 
