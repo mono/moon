@@ -20,6 +20,11 @@ namespace System.Windows.Media
 {	
 	public sealed partial class DeepZoomImageTileSource : MultiScaleTileSource
 	{
+		void Initialize ()
+		{
+			NativeMethods.deep_zoom_image_tile_source_set_downloaded_cb (native, ParseDeepZoom);
+		}
+
 		public DeepZoomImageTileSource (Uri sourceUri) : base ()
 		{
 			throw new NotImplementedException ("Set the source after attaching the TileSource to the MultiScaleImage control");
