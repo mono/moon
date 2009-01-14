@@ -1,5 +1,9 @@
 2009-01-13  Larry Ewing  <lewing@novell.com>
 
+	* shape.cpp: treat rect and ellipse like normal framework elements.
+	
+2009-01-13  Larry Ewing  <lewing@novell.com>
+
 	* frameworkelement.cpp:
 	* control.cpp:
 	* canvas.cpp:

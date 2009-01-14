@@ -513,20 +513,20 @@ Shape::MeasureOverride (Size availableSize)
 {
 	Size size = Size (GetWidth (), GetHeight ());
 	Size desired;
+	
+	if (Is (Type::RECTANGLE) || Is (Type::ELLIPSE))
+		return FrameworkElement::MeasureOverride (availableSize);
 
 	if (!GetSurface () && (!GetVisualParent () || GetVisualParent ()->Is (Type::CANVAS)))
 		return Size (-INFINITY,-INFINITY);
 
-	if (GetStretch () != StretchNone && !(Is (Type::RECTANGLE) || Is (Type::ELLIPSE))) {
-		desired = availableSize;
-	} else {
-		//desired = availableSize;
+	if (GetStretch () == StretchNone) {
 		Rect shape_bounds = ComputeShapeBounds (false, NULL);
-		if (isinf (availableSize.width) > 0)
-			desired.width = shape_bounds.x + shape_bounds.width;
-		
-		if (isinf (availableSize.height) > 0)
-			desired.height = shape_bounds.y + shape_bounds.height;
+
+		desired.width = shape_bounds.x + shape_bounds.width;
+		desired.height = shape_bounds.y + shape_bounds.height;
+	} else {
+		desired = availableSize;
 	}
 
 	if (isnan (size.width))
@@ -541,27 +541,28 @@ Shape::MeasureOverride (Size availableSize)
 Size
 Shape::ArrangeOverride (Size finalSize)
 {
-	Size size = Size (GetWidth (), GetHeight ());
+	Size arranged = Size (GetWidth (), GetHeight ());
+
+	if (Is (Type::RECTANGLE) || Is (Type::ELLIPSE))
+		return FrameworkElement::ArrangeOverride (finalSize);
 
 	if (!GetVisualParent () || GetVisualParent ()->Is (Type::CANVAS))
 		return Size (-INFINITY,-INFINITY);
 
-	if (GetStretch () == StretchNone) {
-		Rect shape_bounds = ComputeShapeBounds (false, NULL);
-		
-		if (isnan (size.width))
-			size.width = (shape_bounds.x + shape_bounds.width);
-		if (isnan (size.height))
-			size.height = (shape_bounds.y + shape_bounds.height);
-	} else {
-		if (isnan (size.width))
-			size.width = finalSize.width;
+	if (isnan (arranged.width))
+		arranged.width = finalSize.width;
+	
+	if (isnan (arranged.height))
+		arranged.height = finalSize.height;
 
-		if (isnan (size.height))
-			size.height = finalSize.height;
+	if (GetStretch () == StretchNone) {
+		    Rect shape_bounds = ComputeShapeBounds (false, NULL);
+
+		    arranged.width = MAX (shape_bounds.x + shape_bounds.width, arranged.width);
+		    arranged.height = MAX (shape_bounds.y + shape_bounds.height, arranged.height);
 	}
 
-	return size;
+	return arranged;
 }
 
 void
@@ -585,10 +586,13 @@ Shape::ComputeBounds ()
 Rect
 Shape::ComputeShapeBounds (bool logical, cairo_matrix_t *matrix)
 {
+	if (Is (Type::RECTANGLE) || Is (Type::ELLIPSE))
+		return Rect ();
+
 	if (!path || (path->cairo.num_data == 0))
 		BuildPath ();
 
-	if (IsEmpty () || (isnan (GetWidth ()) != isnan (GetHeight ())))
+	if (IsEmpty ())
 		return Rect ();
 
 	double thickness = (logical || !IsStroked ()) ? 0.0 : GetStrokeThickness ();
