@@ -1,3 +1,8 @@
+2009-01-14  Alan McGovern  <amcgovern@novell.com>
+
+	* enums.cpp: Control.HorizontalContentAlignment should map to the
+	HorizontalAlignment enum.
+
 2009-01-14  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* deepzoomtilesource.h|cpp: download the source on UriSourceProperty

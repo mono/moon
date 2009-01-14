@@ -306,6 +306,7 @@ initialize_enums (void)
 	g_hash_table_insert (enum_map, (char *) "VerticalScrollBarVisibility", scrollbar_visibility_map);
 	g_hash_table_insert (enum_map, (char *) "LineStackingStrategy", line_stacking_strategy_map);
 	g_hash_table_insert (enum_map, (char *) "HorizontalAlignment", horizontal_alignment_map);
+	g_hash_table_insert (enum_map, (char *) "HorizontalContentAlignment", horizontal_alignment_map);
 	g_hash_table_insert (enum_map, (char *) "VerticalAlignment", vertical_alignment_map);
 	g_hash_table_insert (enum_map, (char *) "TextAlignment", text_alignment_map);
 	g_hash_table_insert (enum_map, (char *) "Orientation", orientation_map);
