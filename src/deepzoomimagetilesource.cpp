@@ -40,34 +40,38 @@ void
 DeepZoomImageTileSource::set_downloaded_cb (downloaded_cb cb)
 {
 	callback = cb;
+}
 
-//	Uri *uri = new Uri ();
-//
-//	Surface* surface = GetSurface ();
-//	if (!surface)
-//		return;
-//	
-//	if (!(uri->Parse (url)))
-//		return;
-//	
-//	if (!downloader)
-//		downloader = surface->CreateDownloader ();
-//	
-//	if (!downloader)
-//		return;
-//
-//	downloader->Open ("GET", uri->ToString (), NoPolicy);
-//	
-//	downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
-//
-//	downloader->Send ();
-//
-//	if (downloader->Started () || downloader->Completed ()) {
-//		if (downloader->Completed ())
-//			DownloaderComplete ();
-//	} else 
-//		downloader->Send ();
-//	delete uri;
+void 
+DeepZoomImageTileSource::download_uri (const char* url)
+{
+	Uri *uri = new Uri ();
+
+	Surface* surface = GetSurface ();
+	if (!surface)
+		return;
+	
+	if (!(uri->Parse (url)))
+		return;
+	
+	if (!downloader)
+		downloader = surface->CreateDownloader ();
+	
+	if (!downloader)
+		return;
+
+	downloader->Open ("GET", uri->ToString (), NoPolicy);
+	
+	downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
+
+	downloader->Send ();
+
+	if (downloader->Started () || downloader->Completed ()) {
+		if (downloader->Completed ())
+			DownloaderComplete ();
+	} else 
+		downloader->Send ();
+	delete uri;
 }
 
 void
@@ -92,7 +96,7 @@ void
 DeepZoomImageTileSource::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
 	if (args->property == DeepZoomImageTileSource::UriSourceProperty) {
-		printf ("UriSourceProperty changed");
+		download_uri (GetValue (DeepZoomImageTileSource::UriSourceProperty)->AsString ());
 	}
 
 	if (args->property->GetOwnerType () != Type::DEEPZOOMIMAGETILESOURCE) {
