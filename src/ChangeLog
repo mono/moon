@@ -1,5 +1,10 @@
 2009-01-14  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Apparently there is a new NULL on the block.  Use
+	SetIsNull instead of a NULL Value* now.
+
+2009-01-14  Jackson Harper  <jackson@ximian.com>
+
 	* template.cpp: initialize xaml_context. (fixes shutdown crash)
 
 2009-01-14  Jackson Harper  <jackson@ximian.com>

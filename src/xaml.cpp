@@ -2562,7 +2562,9 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 	*v = NULL;
 	
 	if (!strcmp ("{x:Null}", str)) {
-		*v = NULL;
+		Value *null = new Value ();
+		null->SetIsNull (true);
+		v = &null;
 		return true;
 	}
 	
