@@ -98,6 +98,7 @@
     <Compile Include="System.Windows.Controls\ControlTemplateTest.cs" />
     <Compile Include="System.Windows.Controls\ControlTest.cs" />
     <Compile Include="System.Windows.Controls\GridTest.cs" />
+    <Compile Include="System.Windows.Controls\ItemCollectionTest.cs" />
     <Compile Include="System.Windows.Controls\ItemsControlTest.cs" />
     <Compile Include="System.Windows.Controls\MediaElementTest.cs" />
     <Compile Include="System.Windows.Controls\MediaElementTest.SlowStream.cs" />
@@ -120,8 +121,11 @@
     <Compile Include="System.Windows.Markup\XamlReaderTest.cs" />
     <Compile Include="System.Windows.Media.Animation\StoryboardTest.cs" />
     <Compile Include="System.Windows.Media.Imaging\BitmapImageTest.cs" />
+    <Compile Include="System.Windows.Media\BrushTest.cs" />
     <Compile Include="System.Windows.Media\ColorTest.cs" />
+    <Compile Include="System.Windows.Media\GradientBrushTest.cs" />
     <Compile Include="System.Windows.Media\ImageBrushTest.cs" />
+    <Compile Include="System.Windows.Media\LinearGradientBrushTest.cs" />
     <Compile Include="System.Windows.Media\LineGeometryTest.cs" />
     <Compile Include="System.Windows.Media\MatrixTransformTest.cs" />
     <Compile Include="System.Windows.Media\VisualTreeHelperTest.cs" />
