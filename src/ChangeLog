@@ -1,3 +1,10 @@
+2009-01-14  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* tilesource.h|cpp: autogenerate the cbinding
+
+	* deepzoomimagetilesource.h|cpp: define a downloaded cb to poke the
+	managed side for xml parsing.
+
 2009-01-13  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (XamlLoader::CreateFromFileWithError): strdup the error

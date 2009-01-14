@@ -40,12 +40,13 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	DeepZoomImageTileSource (const char *uri);
 
 	virtual Type::Kind GetObjectType () { return Type::DEEPZOOMIMAGETILESOURCE; }	
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 
 	//
 	// Methods
 	//
 	/* @GenerateCBinding */
-	void download_urisource (const char* uri, downloaded_cb callback);
+	void set_downloaded_cb (downloaded_cb callback);
 
 
 	//

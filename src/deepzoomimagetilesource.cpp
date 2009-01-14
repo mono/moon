@@ -37,37 +37,37 @@ DeepZoomImageTileSource::~DeepZoomImageTileSource ()
 }
 
 void
-DeepZoomImageTileSource::download_urisource (const char* url, downloaded_cb cb)
+DeepZoomImageTileSource::set_downloaded_cb (downloaded_cb cb)
 {
 	callback = cb;
 
-	Uri *uri = new Uri ();
-
-	Surface* surface = GetSurface ();
-	if (!surface)
-		return;
-	
-	if (!(uri->Parse (url)))
-		return;
-	
-	if (!downloader)
-		downloader = surface->CreateDownloader ();
-	
-	if (!downloader)
-		return;
-
-	downloader->Open ("GET", uri->ToString (), NoPolicy);
-	
-	downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
-
-	downloader->Send ();
-
-	if (downloader->Started () || downloader->Completed ()) {
-		if (downloader->Completed ())
-			DownloaderComplete ();
-	} else 
-		downloader->Send ();
-	delete uri;
+//	Uri *uri = new Uri ();
+//
+//	Surface* surface = GetSurface ();
+//	if (!surface)
+//		return;
+//	
+//	if (!(uri->Parse (url)))
+//		return;
+//	
+//	if (!downloader)
+//		downloader = surface->CreateDownloader ();
+//	
+//	if (!downloader)
+//		return;
+//
+//	downloader->Open ("GET", uri->ToString (), NoPolicy);
+//	
+//	downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
+//
+//	downloader->Send ();
+//
+//	if (downloader->Started () || downloader->Completed ()) {
+//		if (downloader->Completed ())
+//			DownloaderComplete ();
+//	} else 
+//		downloader->Send ();
+//	delete uri;
 }
 
 void
@@ -78,13 +78,29 @@ DeepZoomImageTileSource::DownloaderComplete ()
 	if (!(filename = downloader->getFileDownloader ()->GetDownloadedFile ()))
 		return;
 
-	callback (filename);
+	if (callback != NULL)
+		callback (filename);
 }
-
 
 void
 DeepZoomImageTileSource::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	((DeepZoomImageTileSource *) closure)->DownloaderComplete ();
 }
+
+void
+DeepZoomImageTileSource::OnPropertyChanged (PropertyChangedEventArgs *args)
+{
+	if (args->property == DeepZoomImageTileSource::UriSourceProperty) {
+		printf ("UriSourceProperty changed");
+	}
+
+	if (args->property->GetOwnerType () != Type::DEEPZOOMIMAGETILESOURCE) {
+		DependencyObject::OnPropertyChanged (args);
+		return;
+	}
+	
+	NotifyListenersOfPropertyChange (args);
+}
+
 

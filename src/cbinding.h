@@ -373,7 +373,7 @@ DependencyObject *data_template_load_content_with_error (DataTemplate *instance,
 /* @GeneratePInvoke */
 DeepZoomImageTileSource *deep_zoom_image_tile_source_new (void);
 
-void deep_zoom_image_tile_source_download_urisource (DeepZoomImageTileSource *instance, const char *uri, downloaded_cb callback);
+void deep_zoom_image_tile_source_set_downloaded_cb (DeepZoomImageTileSource *instance, downloaded_cb callback);
 
 /**
  * DependencyObject
@@ -904,6 +904,8 @@ int multi_scale_tile_source_get_tile_width (MultiScaleTileSource *instance);
 
 /* @GeneratePInvoke */
 MultiScaleTileSource *multi_scale_tile_source_new (void);
+
+void multi_scale_tile_source_set_image_uri_func (MultiScaleTileSource *instance, get_image_uri_func func);
 
 /* @GeneratePInvoke */
 void multi_scale_tile_source_set_image_height (MultiScaleTileSource *instance, int height);

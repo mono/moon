@@ -17,8 +17,6 @@
 #include <stdio.h>
 #include "dependencyobject.h"
 
-G_BEGIN_DECLS
-
 typedef gpointer (*get_image_uri_func) (int level, int posX, int posY);
 
 /* @Version=2,Namespace=System.Windows.Media */
@@ -63,11 +61,10 @@ class MultiScaleTileSource : public DependencyObject {
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	void SetTileOverlap (int overlap);
 
+	/* @GenerateCBinding */
+	void set_image_uri_func (get_image_uri_func func);
+
 	get_image_uri_func get_tile_func;
 };
-
-void multi_scale_tile_source_set_image_uri_func (MultiScaleTileSource *instance, get_image_uri_func func);
-
-G_END_DECLS
 
 #endif /* __TILESOURCE_H__ */

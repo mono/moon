@@ -828,12 +828,12 @@ deep_zoom_image_tile_source_new (void)
 
 
 void
-deep_zoom_image_tile_source_download_urisource (DeepZoomImageTileSource *instance, const char *uri, downloaded_cb callback)
+deep_zoom_image_tile_source_set_downloaded_cb (DeepZoomImageTileSource *instance, downloaded_cb callback)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->download_urisource (uri, callback);
+	instance->set_downloaded_cb (callback);
 }
 
 
@@ -2001,6 +2001,16 @@ MultiScaleTileSource *
 multi_scale_tile_source_new (void)
 {
 	return new MultiScaleTileSource ();
+}
+
+
+void
+multi_scale_tile_source_set_image_uri_func (MultiScaleTileSource *instance, get_image_uri_func func)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->set_image_uri_func (func);
 }
 
 
