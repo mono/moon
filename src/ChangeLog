@@ -1,3 +1,7 @@
+2009-01-14  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Add the namespaces to the xaml context.
+
 2009-01-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (RenderSegment): Split out from RenderLine().

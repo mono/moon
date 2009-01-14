@@ -105,16 +105,48 @@ static void parser_error (XamlParserInfo *p, const char *el, const char *attr, i
 static XamlElementInfo *create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *name);
 static void destroy_created_namespace (gpointer data, gpointer user_data);
 
+class XamlNamespace {
+ public:
+	const char *name;
+
+	XamlNamespace () : name (NULL) { }
+
+	virtual ~XamlNamespace () { }
+	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el) = 0;
+	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse) = 0;
+
+	virtual const char* GetUri () = 0;
+	virtual const char* GetPrefix () = 0;
+};
+
+void
+add_namespace_data (gpointer key, gpointer value, gpointer user_data)
+{
+	XamlNamespace *ns = (XamlNamespace *) value;
+	GHashTable *table = (GHashTable *) user_data;
+
+	g_hash_table_insert (table, g_strdup (ns->GetPrefix ()), g_strdup (ns->GetUri ()));
+}
+
 class XamlContextInternal {
 
  public:
 	FrameworkTemplate *template_parent;
+	GHashTable *imported_namespaces;
 
-	XamlContextInternal (FrameworkTemplate *template_parent)
+	XamlContextInternal (FrameworkTemplate *template_parent, GHashTable *namespaces)
 	{
 		this->template_parent = template_parent;
+
+		imported_namespaces = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+		g_hash_table_foreach (namespaces, add_namespace_data, imported_namespaces);
 	}
-	
+
+	~XamlContextInternal ()
+	{
+		if (imported_namespaces)
+			g_hash_table_destroy (imported_namespaces);
+	}
 };
 
 
@@ -669,20 +701,6 @@ private:
 	List* bindings;
 };
 
-
-class XamlNamespace {
- public:
-	const char *name;
-
-	XamlNamespace () : name (NULL) { }
-
-	virtual ~XamlNamespace () { }
-	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el) = 0;
-	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse) = 0;
-
-	virtual const char* GetUri () = 0;
-	virtual const char* GetPrefix () = 0;
-};
 
 class DefaultNamespace : public XamlNamespace {
  public:
@@ -1351,7 +1369,7 @@ end_element_handler (void *data, const char *el)
 				FrameworkTemplate* template_ = (FrameworkTemplate *) p->current_element->GetAsDependencyObject ();
 
                                 char* buffer = p->ClearBuffer ();
-				XamlContextInternal *ic = new XamlContextInternal (template_);
+				XamlContextInternal *ic = new XamlContextInternal (template_, p->namespace_map);
 				XamlContext *context = new XamlContext (ic);
 
                                 template_->SetXamlBuffer (context, buffer);
