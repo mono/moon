@@ -48,6 +48,7 @@
 #include "utils.h"
 #include "control.h"
 #include "template.h"
+#include "style.h"
 
 #include "binding.h"
 #include "thickness.h"
@@ -224,7 +225,16 @@ class XamlElementInstance : public List::Node {
 	virtual bool TrySetContentProperty (XamlParserInfo *p, const char *value);
 	
 	void SetKey (const char *key) { this->x_key = g_strdup (key); }
-	char *GetKey () { return x_key; }
+	char *GetKey () {
+
+		if (!x_key && Type::IsSubclassOf (Type::STYLE, info->GetKind ())) {
+			Value *v = item->GetValue (Style::TargetTypeProperty);
+			if (v && v->GetKind () == Type::MANAGEDTYPEINFO)
+				x_key = g_strdup (v->AsManagedTypeInfo ()->full_name);
+
+		}
+		return x_key;
+	}
 
 	virtual bool IsDependencyObject ()
 	{
@@ -3759,12 +3769,14 @@ start_parse:
 			}
 
 			if (!v && !value_from_str (prop->GetPropertyType(), prop->GetName(), attr [i + 1], &v, p->loader->GetSurface()->IsSilverlight2())) {
-				if (prop->GetPropertyType () == Type::MANAGED || prop->GetPropertyType() == Type::OBJECT) {
+				if (prop->GetPropertyType () == Type::MANAGED || prop->GetPropertyType() == Type::OBJECT || prop->GetPropertyType () == Type::MANAGEDTYPEINFO) {
 					Value v = Value (g_strdup (attr [i + 1]));
 					if (p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, NULL, item->GetManagedPointer (), g_strdup (prop->GetName ()), &v))
 						return;
 				}
+			}
 
+			if (!v) {
 				parser_error (p, item->element_name, attr [i], 2024,
 					      "Invalid attribute value %s for property %s.",
 					      attr [i + 1], attr [i]);

@@ -158,6 +158,8 @@ public:
 	static DependencyProperty *TemplateProperty;
  	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentCenter,GenerateAccessors */
 	static DependencyProperty *VerticalContentAlignmentProperty;
+	/* @PropertyType=ManagedTypeInfo,ManagedPropertyType=object,GenerateManagedDP=false */
+	static DependencyProperty *DefaultStyleKeyProperty;
 	
 protected:
 	virtual ~Control ();

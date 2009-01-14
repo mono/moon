@@ -1,3 +1,19 @@
+2009-01-14  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Styles use their TargetType as their
+	ResourceDictionary key.
+	- Handle the new type MANAGEDTYPEINFO by allowing the managed code
+	to parse it.
+	* value.cpp|h|.h.in:
+	* type.h|h.in: New type, ManagedTypeInfo. Contains info for
+	loading managed types.
+	* style.h:
+	* control.h:
+	* template.h: Use ManagedTypeInfo when we have a System.Type on
+	the managed side.
+	* dependencyproperty.g.cpp:
+	* typegenerated.cpp: Regen
+
 2009-01-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp: More fixes for cursor movement & keyboard selection.

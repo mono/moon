@@ -135,6 +135,10 @@ Value::Value (const Value& v)
 		u.corner = g_new (CornerRadius, 1);
 		*u.corner = *v.u.corner;
 		break;
+	case Type::MANAGEDTYPEINFO:
+		u.type_info = g_new (ManagedTypeInfo, 1);
+		*u.type_info = *v.u.type_info;
+		break;
 	default:
 		if (Is (Type::EVENTOBJECT) && u.dependency_object)
 			u.dependency_object->ref ();
@@ -290,6 +294,14 @@ Value::Value (CornerRadius corner)
 	*u.corner = CornerRadius (corner);
 }
 
+Value::Value (ManagedTypeInfo type_info)
+{
+	Init ();
+	k = Type::MANAGEDTYPEINFO;
+	u.type_info = g_new (ManagedTypeInfo, 1);
+	*u.type_info = ManagedTypeInfo (type_info);
+}
+
 void
 Value::FreeValue ()
 {
@@ -437,6 +449,8 @@ Value::operator== (const Value &v) const
 		return !memcmp (u.thickness, v.u.thickness, sizeof (Thickness));
 	case Type::CORNERRADIUS:
 		return !memcmp (u.corner, v.u.corner, sizeof (CornerRadius));
+	case Type::MANAGEDTYPEINFO:
+		return !memcmp (u.type_info, v.u.type_info, sizeof (ManagedTypeInfo));
 	default:
 		return !memcmp (&u, &v.u, sizeof (u));
 	}

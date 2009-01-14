@@ -1,3 +1,10 @@
+2009-01-14  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: Add special handling of System.Type
+	arguments specified as strings.
+	* Value.cs: Add the new ManagedTypeInfo.
+	* Kind.cs: Regen
+	
 2009-01-14  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* GeneratedPInvokes.cs: Regenerated to free char* return values

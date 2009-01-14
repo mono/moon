@@ -32,6 +32,7 @@ using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Runtime.InteropServices;
+using System.Reflection;
 
 namespace Mono {
 
@@ -42,6 +43,12 @@ namespace Mono {
 		public double a;
 	}
 
+	[StructLayout(LayoutKind.Sequential)]
+	internal struct ManagedTypeInfo {
+		public IntPtr assembly_name;
+		public IntPtr full_name;
+	}
+	
 	[StructLayout(LayoutKind.Explicit)]
 	internal struct ValUnion {
 		[FieldOffset(0)] public double d;
@@ -198,6 +205,22 @@ namespace Mono {
 				case Kind.REPEATBEHAVIOR: {
 					RepeatBehavior *repeat = (RepeatBehavior*)val->u.p;
 					return (repeat == null) ? new RepeatBehavior () : *repeat;
+				}
+
+				case Kind.MANAGEDTYPEINFO: {
+					ManagedTypeInfo *type_info = (ManagedTypeInfo *) val->u.p;
+
+					if (type_info == null)
+						return null;
+
+					string assembly_name = Helper.PtrToStringAuto (type_info->assembly_name);
+					string full_name = Helper.PtrToStringAuto (type_info->full_name);
+
+					Assembly asm = Application.GetAssembly (assembly_name);
+					if (asm != null)
+						return asm.GetType (full_name);
+
+					return null;
 				}
 				}
 
@@ -408,6 +431,17 @@ namespace Mono {
 					value.k = Kind.INT32;
 					value.u.i32 = v.GetHashCode (); // unit tested as such
 				}
+				else if (v is Type) {
+					Type t = v as Type;
+					ManagedTypeInfo mti = new ManagedTypeInfo ();
+
+					mti.assembly_name = StringToIntPtr (t.Assembly.GetName ().Name);
+					mti.full_name = StringToIntPtr (t.FullName);
+
+					value.k = Kind.MANAGEDTYPEINFO;
+					value.u.p = Helper.AllocHGlobal (sizeof (ManagedTypeInfo));
+					Marshal.StructureToPtr (mti, value.u.p, false);
+				}
 				else if (as_managed_object) {
 					// TODO: We probably need to marshal types that can animate as the 
 					// corresponding type (Point, Double, Color, etc).
@@ -425,6 +459,15 @@ namespace Mono {
 			return value;
 		}
 
+		private static IntPtr StringToIntPtr (string str)
+		{
+			byte [] bytes = System.Text.Encoding.UTF8.GetBytes (str);
+			IntPtr result = Helper.AllocHGlobal (bytes.Length + 1);
+			Marshal.Copy (bytes, 0, result, bytes.Length);
+			Marshal.WriteByte (result, bytes.Length, 0);
+
+			return result;
+		}
 
 	}
 }

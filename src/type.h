@@ -124,6 +124,7 @@ public:
 		LINEGEOMETRY,
 		LINESEGMENT,
 		MANAGED,// Silverlight 2.0 only
+		MANAGEDTYPEINFO,
 		MANUALTIMESOURCE,
 		MARKERREACHEDEVENTARGS,
 		MATRIX,
@@ -322,6 +323,12 @@ DependencyObject *type_create_instance_from_kind (Type::Kind kind);
 void types_init (void);
 const char *type_get_name (Type::Kind type);
 bool type_is_dependency_object (Type::Kind type);
+
+/* @IncludeInKinds */
+struct ManagedTypeInfo {
+	char *full_name;
+	char *assembly_name;
+};
 
 G_END_DECLS
 

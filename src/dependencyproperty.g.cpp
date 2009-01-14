@@ -91,6 +91,7 @@ dependency_property_g_init (void)
 	Control::BackgroundProperty = DependencyProperty::Register (Type::CONTROL, "Background", Type::BRUSH);
 	Control::BorderBrushProperty = DependencyProperty::Register (Type::CONTROL, "BorderBrush", Type::BRUSH);
 	Control::BorderThicknessProperty = DependencyProperty::Register (Type::CONTROL, "BorderThickness", new Value (Thickness(0.0)));
+	Control::DefaultStyleKeyProperty = DependencyProperty::Register (Type::CONTROL, "DefaultStyleKey", Type::MANAGEDTYPEINFO);
 	Control::FontFamilyProperty = DependencyProperty::Register (Type::CONTROL, "FontFamily", new Value (CONTROL_FONT_FAMILY));
 	Control::FontSizeProperty = DependencyProperty::Register (Type::CONTROL, "FontSize", new Value (CONTROL_FONT_SIZE));
 	Control::FontStretchProperty = DependencyProperty::Register (Type::CONTROL, "FontStretch", new Value (CONTROL_FONT_STRETCH));
@@ -104,7 +105,7 @@ dependency_property_g_init (void)
 	Control::TabNavigationProperty = DependencyProperty::Register (Type::CONTROL, "TabNavigation", new Value (KeyboardNavigationModeLocal));
 	Control::TemplateProperty = DependencyProperty::RegisterFull (Type::CONTROL, "Template", NULL, Type::CONTROLTEMPLATE, false, false, false, NULL, Validators::TemplateValidator);
 	Control::VerticalContentAlignmentProperty = DependencyProperty::Register (Type::CONTROL, "VerticalContentAlignment", new Value (VerticalAlignmentCenter));
-	ControlTemplate::TargetTypeProperty = DependencyProperty::Register (Type::CONTROLTEMPLATE, "TargetType", Type::MANAGED);
+	ControlTemplate::TargetTypeProperty = DependencyProperty::Register (Type::CONTROLTEMPLATE, "TargetType", Type::MANAGEDTYPEINFO);
 	DeepZoomImageTileSource::UriSourceProperty = DependencyProperty::Register (Type::DEEPZOOMIMAGETILESOURCE, "UriSource", Type::STRING);
 	DependencyObject::NameProperty = DependencyProperty::Register (Type::DEPENDENCY_OBJECT, "Name", new Value (""));
 	Deployment::EntryPointAssemblyProperty = DependencyProperty::Register (Type::DEPLOYMENT, "EntryPointAssembly", Type::STRING);
@@ -321,7 +322,7 @@ dependency_property_g_init (void)
 	Stroke::StylusPointsProperty = DependencyProperty::Register (Type::STROKE, "StylusPoints", Type::STYLUSPOINT_COLLECTION);
 	Style::IsSealedProperty = DependencyProperty::Register (Type::STYLE, "IsSealed", new Value (false));
 	Style::SettersProperty = DependencyProperty::Register (Type::STYLE, "Setters", Type::SETTERBASE_COLLECTION);
-	Style::TargetTypeProperty = DependencyProperty::Register (Type::STYLE, "TargetType", Type::MANAGED);
+	Style::TargetTypeProperty = DependencyProperty::Register (Type::STYLE, "TargetType", Type::MANAGEDTYPEINFO);
 	StylusInfo::DeviceTypeProperty = DependencyProperty::Register (Type::STYLUSINFO, "DeviceType", new Value (TabletDeviceTypeMouse));
 	StylusInfo::IsInvertedProperty = DependencyProperty::Register (Type::STYLUSINFO, "IsInverted", new Value (false));
 	StylusPoint::PressureFactorProperty = DependencyProperty::Register (Type::STYLUSPOINT, "PressureFactor", new Value (0.5));
@@ -431,6 +432,7 @@ DependencyProperty *ContentControl::ContentTemplateProperty = NULL;
 DependencyProperty *Control::BackgroundProperty = NULL;
 DependencyProperty *Control::BorderBrushProperty = NULL;
 DependencyProperty *Control::BorderThicknessProperty = NULL;
+DependencyProperty *Control::DefaultStyleKeyProperty = NULL;
 DependencyProperty *Control::FontFamilyProperty = NULL;
 DependencyProperty *Control::FontSizeProperty = NULL;
 DependencyProperty *Control::FontStretchProperty = NULL;

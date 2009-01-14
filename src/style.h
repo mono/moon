@@ -28,7 +28,7 @@ public:
 	static DependencyProperty *IsSealedProperty;
  	/* @PropertyType=SetterBaseCollection,Access=Internal,ManagedFieldAccess=Private,ManagedAccess=Public,ManagedSetterAccess=Private,GenerateAccessors */
 	static DependencyProperty *SettersProperty;
- 	/* @PropertyType=Managed,ManagedPropertyType=System.Type,Access=Internal,ManagedAccess=Public,ManagedFieldAccess=Internal */
+ 	/* @PropertyType=ManagedTypeInfo,ManagedPropertyType=System.Type,Access=Internal,ManagedAccess=Public,ManagedFieldAccess=Internal */
 	static DependencyProperty *TargetTypeProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */

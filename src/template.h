@@ -54,7 +54,7 @@ protected:
 /* @Namespace=System.Windows.Controls */
 class ControlTemplate : public FrameworkTemplate {
 public:
-	/* @PropertyType=Managed,ManagedPropertyType=System.Type,Access=Internal,ManagedAccessorAccess=Public,ManagedFieldAccess=Private */
+	/* @PropertyType=ManagedTypeInfo,ManagedPropertyType=System.Type,Access=Internal,ManagedAccessorAccess=Public,ManagedFieldAccess=Private */
 	static DependencyProperty *TargetTypeProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */

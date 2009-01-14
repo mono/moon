@@ -344,7 +344,7 @@ namespace Mono.Xaml
 			return true;
 		}
 
-		private bool TrySetPropertyReflection (IntPtr top_level, string xmlns, object target, string type_name, string name, IntPtr value_ptr, out string error)
+		private bool TrySetPropertyReflection (IntPtr parser, IntPtr top_level, string xmlns, object target, string type_name, string name, IntPtr value_ptr, out string error)
 		{
 			PropertyInfo pi = target.GetType ().GetProperty (name);
 
@@ -353,7 +353,7 @@ namespace Mono.Xaml
 				return false;
 			}
 
-			if (!SetPropertyFromValue (target, pi, value_ptr, out error))
+			if (!SetPropertyFromValue (parser, top_level, target, pi, value_ptr, out error))
 				return false;
 
 			error = null;
@@ -446,7 +446,7 @@ namespace Mono.Xaml
 			return true;
 		}
 
-		private bool SetProperty (IntPtr top_level, string xmlns, IntPtr target_ptr, string name, IntPtr value_ptr)
+		private bool SetProperty (IntPtr parser, IntPtr top_level, string xmlns, IntPtr target_ptr, string name, IntPtr value_ptr)
 		{
 			string error;
 			object target = LookupObject (target_ptr);
@@ -468,7 +468,7 @@ namespace Mono.Xaml
 				name = name.Substring (++dot, name.Length - dot);
 			}
 
-			if (TrySetPropertyReflection (top_level, xmlns, target, type_name, name, value_ptr, out error))
+			if (TrySetPropertyReflection (parser, top_level, xmlns, target, type_name, name, value_ptr, out error))
 				return true;
 
 			if (TrySetEventReflection (top_level, xmlns, target, type_name, name, value_ptr, out error))
@@ -480,7 +480,47 @@ namespace Mono.Xaml
 			return false;
 		}
 
-		private bool SetPropertyFromValue (object target, PropertyInfo pi, IntPtr value_ptr, out string error)
+		//
+		// TODO: Is it legal to jam the whole metadata right in the string ie: TargetType="clr-namespace:Mono;MyType"
+		//
+		private Type TypeFromString (IntPtr parser, IntPtr top_level, string str)
+		{
+			string assembly_name = null;
+			string full_name = str;
+			Type res = null;
+
+			int ps = str.IndexOf (':');
+			if (ps > 0) {
+				string xmlns = NativeMethods.xaml_uri_for_prefix (parser, str.Substring (0, ps));
+				string name = str.Substring (ps + 1, str.Length - ps -1);
+				string clr_namespace = ClrNamespaceFromXmlns (xmlns);
+				assembly_name = AssemblyNameFromXmlns (xmlns);
+
+				full_name = string.IsNullOrEmpty (clr_namespace) ? name : clr_namespace + "." + name;
+			}
+
+			do {
+				if (assembly_name == null && !TryGetDefaultAssemblyName (top_level, out assembly_name)) {
+					Console.Error.WriteLine ("unable to find the assembly name for the target type.");
+					break;
+				}
+
+				Assembly assembly = null;
+				if (LoadAssembly (assembly_name, out assembly) != AssemblyLoadResult.Success) {
+					Console.Error.WriteLine ("unable to load assembly for target type.");
+					break;
+				}
+
+				res = assembly.GetType (full_name);
+			} while (false);
+
+			if (res == null)
+				res = Application.GetComponentTypeFromName (full_name);
+
+			return res;
+		}
+
+		private bool SetPropertyFromValue (IntPtr parser, IntPtr top_level, object target, PropertyInfo pi, IntPtr value_ptr, out string error)
 		{
 			object obj_value = Value.ToObject (null, value_ptr);
 			string str_value = obj_value as string;
@@ -489,6 +529,19 @@ namespace Mono.Xaml
 
 			if (str_value != null) {
 				IntPtr unmanaged_value;
+
+
+				//
+				// HACK: This really shouldn't be here, but I don't want to bother putting it in Helper, because that
+				// code probably should be moved into this file
+				//
+				if (pi.PropertyType == typeof (Type)) {
+					Type t = TypeFromString (parser, top_level, str_value);
+					if (t != null) {
+						pi.SetValue (target, t, null);
+						return true;
+					}
+				}
 
 				Helper.SetPropertyFromString (target, pi, str_value, out error, out unmanaged_value);
 
@@ -621,7 +674,7 @@ namespace Mono.Xaml
 		private bool cb_set_property (IntPtr parser, IntPtr top_level, string xmlns, IntPtr target, string name, IntPtr value_ptr)
 		{
 			try {
-				return SetProperty (top_level, xmlns, target, name, value_ptr);
+				return SetProperty (parser, top_level, xmlns, target, name, value_ptr);
 			} catch (Exception ex) {
 				Console.Error.WriteLine ("ManagedXamlLoader::SetProperty ({0}, {1}, {2}, {3}, {4}) threw an exception: {5}.", top_level, xmlns, target, name, value_ptr, ex.Message);
 				Console.Error.WriteLine (ex);

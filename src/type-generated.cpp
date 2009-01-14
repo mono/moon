@@ -231,6 +231,7 @@ Type type_infos [] = {
 	{ Type::LINEGEOMETRY, Type::GEOMETRY, false, "LineGeometry", "LINEGEOMETRY", 0, 1, NULL, (create_inst_func *) line_geometry_new, NULL, NULL, NULL }, 
 	{ Type::LINESEGMENT, Type::PATHSEGMENT, false, "LineSegment", "LINESEGMENT", 0, 1, NULL, (create_inst_func *) line_segment_new, NULL, NULL, NULL }, 
 	{ Type::MANAGED, Type::OBJECT, false, "Managed", "MANAGED", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
+	{ Type::MANAGEDTYPEINFO, Type::OBJECT, true, "ManagedTypeInfo", "MANAGEDTYPEINFO", 0, 0, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::MANUALTIMESOURCE, Type::TIMESOURCE, false, "ManualTimeSource", "MANUALTIMESOURCE", 0, 2, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::MARKERREACHEDEVENTARGS, Type::EVENTARGS, false, "MarkerReachedEventArgs", "MARKERREACHEDEVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::MATRIX, Type::DEPENDENCY_OBJECT, false, "Matrix", "MATRIX", 0, 1, NULL, (create_inst_func *) matrix_new, NULL, NULL, NULL }, 
