@@ -44,12 +44,22 @@ namespace System.Windows {
 		[SecuritySafeCritical]
 		public Assembly Load (Stream assemblyStream)
 		{
-			//
-			// Eventually, we will be using temporary files for now to simplify debugging
-			// so this method does nothing, and Application does all the work
-			//
-			return null;
+			var buffer = new byte [assemblyStream.Length];
+
+			using (assemblyStream) {
+				int length = buffer.Length;
+				int offset = 0;
+				while (length > 0) {
+					int read = assemblyStream.Read (buffer, offset, length);
+					if (read == 0)
+						break;
+
+					length -= read;
+					offset += read;
+				}
+			}
+
+			return Assembly.Load (buffer);
 		}
-		
 	}
 }

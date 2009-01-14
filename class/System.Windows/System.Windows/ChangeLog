@@ -1,3 +1,7 @@
+2009-01-14  Jb Evain  <jbevain@novell.com>
+
+	* AssemblyPart.cs (Load): implement.
+
 2009-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* StartupEventArgs.cs: Prevent a NRE.
