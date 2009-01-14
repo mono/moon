@@ -24,11 +24,14 @@ namespace MoonTest.System.Windows.Controls
 			public Size MeasureArg = new Size (0,0);
 			public Size ArrangeResult = new Size (0,0);
 			public Size ArrangeArg = new Size (0,0);
+			public Size BaseArrangeResult = new Size (0,0);
+			public Size BaseMeasureResult = new Size (0,0);
 
 			protected override Size MeasureOverride (Size availableSize)
 			{
 				MeasureArg = availableSize;
 				Tester.WriteLine (string.Format ("Panel available size is {0}", availableSize));
+				BaseMeasureResult = base.MeasureOverride (availableSize);
 				return MeasureResult;
 			}
 
@@ -36,6 +39,7 @@ namespace MoonTest.System.Windows.Controls
 			{
 				ArrangeArg = finalSize;
 				Tester.WriteLine (string.Format ("Panel final size is {0}", finalSize));
+				BaseArrangeResult = base.ArrangeOverride (finalSize);
 				return ArrangeResult;
 			}
 

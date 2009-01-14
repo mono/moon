@@ -905,7 +905,7 @@ Image::ArrangeOverride (Size finalSize)
 	if (!surface || arranged.IsEmpty ())
 		return Size (-INFINITY, -INFINITY);
 
-	if (GetStretch () == StretchNone || (isinf (finalSize.width) && isinf (finalSize.height))) {
+	if (GetStretch () == StretchNone) {
 		if (isnan (arranged.width))
 			arranged.width = surface->width;
 		    

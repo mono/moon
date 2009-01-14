@@ -230,6 +230,18 @@ Panel::EmptyBackground ()
 	return GetBackground () == NULL;
 }
 
+Size
+Panel::MeasureOverride (Size availableSize)
+{
+	return Size (0,0);
+}
+
+Size
+Panel::ArrangeOverride (Size finalSize)
+{
+	return Size (0,0);
+}
+
 //
 // Intercept any changes to the children property and mirror that into our
 // own variable

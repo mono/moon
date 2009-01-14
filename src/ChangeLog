@@ -1,4 +1,10 @@
 2009-01-13  Larry Ewing  <lewing@novell.com>
+	* src/canvas.cpp
+	* src/frameworkelement.cpp
+	* src/media.cpp
+	* src/panel.cpp, src/panel.h: layout updates
+
+2009-01-13  Larry Ewing  <lewing@novell.com>
 
 	* canvas.cpp (Canvas::ArrangeOverride): pass in the requested
 	size.

@@ -162,7 +162,7 @@ Canvas::ArrangeOverride (Size finalSize)
 
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
-		Size arranged = finalSize.Max (child->GetDesiredSize ());
+		Size arranged = child->GetDesiredSize ();
 		Rect child_final = Rect (GetLeft (child), GetTop (child),
 					 arranged.width, arranged.height);
 		child->Arrange (child_final);

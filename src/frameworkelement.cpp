@@ -358,6 +358,8 @@ FrameworkElement::MeasureOverride (Size availableSize)
 void
 FrameworkElement::Arrange (Rect finalRect)
 {
+	// finalRect amount to our clipbox
+
 	this->dirty_flags &= ~DirtyArrange;
 
 	Thickness margin = *GetMargin ();
