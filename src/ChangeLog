@@ -70,6 +70,12 @@
 
 2009-01-15  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Storyboard are allowed to have an x:Name and an
+	x:Key. This is for backwards compatibility because SL1 didn't have
+	x:Key. It's also stupid.
+
+2009-01-15  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: Add a fake element to templates with all the imported
 	namespaces. This allows all the namespaces imported in the main
 	source to work in the template.
