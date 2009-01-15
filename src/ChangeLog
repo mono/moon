@@ -1,3 +1,11 @@
+2009-01-15  Larry Ewing  <lewing@novell.com>
+
+	* panel.cpp:
+	* border.cpp:
+	* control.cpp:
+	* frameworkelement.cpp: start taking layout slot into account when
+	computing bounds.
+
 2009-01-15  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Add a fake element to templates with all the imported

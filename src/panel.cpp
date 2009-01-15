@@ -158,7 +158,7 @@ Panel::GetTransformFor (UIElement *item, cairo_matrix_t *result)
 {
 	cairo_matrix_init_identity (result);
 
-	if (Rect *slot = LayoutInformation::GetLayoutSlot (item))
+	if (Rect *slot = LayoutInformation::GetLayoutSlot (this))
 		cairo_matrix_translate (result, slot->x, slot->y);
 }
 

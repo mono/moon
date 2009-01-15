@@ -259,7 +259,10 @@ FrameworkElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObje
 void
 FrameworkElement::ComputeBounds ()
 {
-	extents = Rect (0.0, 0.0, GetActualWidth (), GetActualHeight ());
+	Rect *slot = LayoutInformation::GetLayoutSlot (this);
+	extents = slot ? *slot : Rect ();
+	extents.width = MAX (GetActualWidth (), extents.width);
+	extents.height = MAX (GetActualHeight (), extents.height);
 	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 }
 

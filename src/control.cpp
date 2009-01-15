@@ -54,7 +54,10 @@ Control::Render (cairo_t *cr, Region *region)
 void
 Control::ComputeBounds ()
 {
-	extents = Rect (0, 0, GetActualWidth (), GetActualHeight ());
+	Rect *slot = LayoutInformation::GetLayoutSlot (this);
+	extents = slot ? *slot : Rect ();
+	extents.width = MAX (GetActualWidth (), extents.width);
+	extents.height = MAX (GetActualHeight (), extents.height);
 	bounds_with_children = bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 	
 	if (template_root) {
