@@ -1,3 +1,8 @@
+2009-01-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* xaml.cpp: Free Value on error inside ManagedNamespace.FindElement.
+	Add comment on value_from_str_with_typename to update NativeMethods.cs
+
 2009-01-15  Larry Ewing  <lewing@novell.com>
 
 	* panel.cpp:

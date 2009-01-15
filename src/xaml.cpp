@@ -968,6 +968,7 @@ class ManagedNamespace : public XamlNamespace {
 		Value *value = new Value ();
 		if (!p->loader->CreateObject (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, xmlns, el, value)) {
 			parser_error (p, el, NULL, -1, "Unable to resolve managed type %s.", el);
+			delete value;
 			return  NULL;
 		}
 
@@ -2620,6 +2621,7 @@ bad_pml:
 	return NULL;
 }
 
+// NOTE: Keep definition in sync with class/System.Windows/Mono/NativeMethods.cs
 bool
 value_from_str_with_typename (const char *type_name, const char *prop_name, const char *str, Value **v, bool sl2)
 {
