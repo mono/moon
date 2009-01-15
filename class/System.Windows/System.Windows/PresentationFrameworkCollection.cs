@@ -113,7 +113,7 @@ namespace System.Windows {
 
 		public bool Contains (T value)
 		{
-			return ContainsImpl (value);
+			return (IndexOfImpl (value) != -1);
 		}
 		
 		public int IndexOf (T value)
@@ -124,7 +124,7 @@ namespace System.Windows {
 
 		internal void AddImpl (T value)
 		{
-			if (value == null)
+			if (NullCheck (NotifyCollectionChangedAction.Add, value))
 				throw new ArgumentNullException ();
 
 			Value v = Value.FromObject (value, true);
@@ -136,7 +136,7 @@ namespace System.Windows {
 
 		internal void InsertImpl (int index, T value)
 		{
-			if (value == null)
+			if (NullCheck (NotifyCollectionChangedAction.Add, value))
 				throw new ArgumentNullException ();
 			if (index < 0)
 				throw new ArgumentOutOfRangeException ();
@@ -150,7 +150,7 @@ namespace System.Windows {
 
 		internal bool RemoveImpl (T value)
 		{
-			if (value == null)
+			if (NullCheck (NotifyCollectionChangedAction.Remove, value))
 				return false;
 
 			Value v = Value.FromObject (value, true);
@@ -192,13 +192,23 @@ namespace System.Windows {
 
 		internal int IndexOfImpl (T value)
 		{
-			if (value == null)
+			if (NullCheck ((NotifyCollectionChangedAction)(-1), value))
 				return -1;
 
 			Value v = Value.FromObject (value, true);
 			int rv = NativeMethods.collection_index_of (native, ref v);
 			NativeMethods.value_free_value (ref v);
 			return rv;
+		}
+
+		// most types that inherits from this throws ArgumentNullException when
+		// null value are used - except for ItemCollection
+		internal virtual bool NullCheck (NotifyCollectionChangedAction action, T value)
+		{
+			bool result = (value == null);
+			if (result && (action == NotifyCollectionChangedAction.Add))
+				throw new ArgumentNullException ();
+			return result;
 		}
 
 		internal event NotifyCollectionChangedEventHandler ItemsChanged;
@@ -405,15 +415,6 @@ namespace System.Windows {
 		IEnumerator IEnumerable.GetEnumerator ()
 		{
 			return new CollectionIterator (typeof (T), NativeMethods.collection_get_iterator (native));
-		}
-		
-		internal virtual bool ContainsImpl (object value)
-		{
-			if (value == null)
-				return false;
-
-			Value v = Value.FromObject (value, true);
-			return NativeMethods.collection_index_of (native, ref v) != -1;
 		}
 		
 		public bool IsFixedSize {

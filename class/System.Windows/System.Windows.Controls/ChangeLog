@@ -1,3 +1,9 @@
+2009-01-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ItemCollection.cs: Override NullCheck to throw ArgumentExpcetion
+	for all null values (instead of the default ArgumentNullException
+	on _some_ null values).
+
 2009-01-13  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* StackPanel.cs: Seal overrides to please gui-compare

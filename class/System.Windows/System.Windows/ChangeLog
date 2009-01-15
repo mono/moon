@@ -1,3 +1,10 @@
+2009-01-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* PresentationFrameworkCollection.cs: Add an internal virtual 
+	NullCheck method to let inheritors provide an alternative check
+	on values. Implement Contains on top of IndexOfImpl (i.e. remove
+	ContainsImpl and its lack of the free on the Value).
+
 2009-01-14  Larry Ewing  <lewing@novell.com>
 
 	* Rect.cs: Fix rect to follow match the new unit tests.

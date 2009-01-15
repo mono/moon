@@ -26,8 +26,19 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System.Collections.Specialized;
+
 namespace System.Windows.Controls {
 
 	public sealed partial class ItemCollection : PresentationFrameworkCollection<object> {
+
+		// Note: Parameter handling is different from other PresentationFrameworkCollection<T> types
+		// but it may not be limited to this
+		internal override bool NullCheck (NotifyCollectionChangedAction action, object value)
+		{
+			if (value == null)
+				throw new ArgumentException ();
+			return false;
+		}
 	}
 }
