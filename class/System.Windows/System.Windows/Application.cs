@@ -346,7 +346,7 @@ namespace System.Windows {
 			/* We have a resource of the format /assembly;component/resourcename */
 			if (p > 0) {
 				assembly_name = loc.Substring (1, p - 1);
-				assembly = assemblies.FirstOrDefault (a => a.GetName ().Name == assembly_name);
+				assembly = GetAssembly (assembly_name);
 				if (assembly == null)
 					return null;
 
@@ -367,6 +367,15 @@ namespace System.Windows {
 			string res_file = Path.Combine (Current.xap_dir, resource);
 			if (File.Exists (res_file))
 				return StreamResourceInfo.FromFile (res_file);
+
+			return null;
+		}
+
+		internal static Assembly GetAssembly (string name)
+		{
+			foreach (var assembly in assemblies)
+				if (assembly.GetName ().Name == name)
+					return assembly;
 
 			return null;
 		}
@@ -462,11 +471,6 @@ namespace System.Windows {
 			}
 
 			return Activator.CreateInstance (t);
-		}
-
-		internal static Assembly GetAssembly (string assembly_name)
-		{
-			return (from def in assemblies where def.GetName ().Name == assembly_name select def).FirstOrDefault ();
 		}
 	}
 }
