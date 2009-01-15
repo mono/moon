@@ -93,8 +93,8 @@ namespace System.Windows.Browser.Net
 		}
 
 		public override long ContentLength {
-			get { 
-				return long.Parse (headers ["Content-Length"], NumberStyles.Integer, CultureInfo.InvariantCulture);
+			get {
+				return response.Length;
 			}
 		}
 
