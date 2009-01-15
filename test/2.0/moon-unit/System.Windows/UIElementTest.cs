@@ -66,23 +66,14 @@ namespace MoonTest.System.Windows {
 			Assert.AreEqual (1.0d, ui.Opacity, "Opacity");
 			Assert.IsNull (ui.OpacityMask, "OpacityMask");
 			Assert.AreEqual (new Size (0, 0), ui.RenderSize, "RenderSize");
-//			Assert.IsTrue (ui.RenderTransform is MatrixTransform, "RenderTransform");
-//			Assert.IsTrue ((ui.RenderTransform as MatrixTransform).Matrix.IsIdentity, "RenderTransform/Identity");
+			Assert.IsTrue (ui.RenderTransform is MatrixTransform, "RenderTransform");
+			Assert.IsTrue ((ui.RenderTransform as MatrixTransform).Matrix.IsIdentity, "RenderTransform/Identity");
 			Assert.AreEqual (new Point (0, 0), ui.RenderTransformOrigin, "RenderTransformOrigin");
 			Assert.IsTrue (ui.UseLayoutRounding, "UseLayoutRounding");
 			Assert.AreEqual (Visibility.Visible, ui.Visibility, "Visibility");
 
 			// default properties on DependencyObject
 			DependencyObjectTest.CheckDefaultProperties (ui);
-		}
-
-		[TestMethod]
-		[MoonlightBug]
-		public void BadDefaultProperties ()
-		{
-			ConcreteUIElement ui = new ConcreteUIElement ();
-			Assert.IsTrue (ui.RenderTransform is MatrixTransform, "RenderTransform");
-			Assert.IsTrue ((ui.RenderTransform as MatrixTransform).Matrix.IsIdentity, "RenderTransform/Identity");
 		}
 
 		[TestMethod]

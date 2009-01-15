@@ -1,3 +1,8 @@
+2009-01-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows/UIElementTest.cs: Now check for RenderTransform 
+	for all types that inherits from UIElement.
+
 2009-01-15  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ComboBoxTest.cs: Added more tests for ComboBox
