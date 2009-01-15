@@ -1,3 +1,8 @@
+2009-01-15  Larry Ewing  <lewing@novell.com>
+
+	* System.Windows.Controls/StackPanelTest.cs: add a layout slot
+	test.
+
 2009-01-15  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ComboBoxTest.cs: Add missing using statement

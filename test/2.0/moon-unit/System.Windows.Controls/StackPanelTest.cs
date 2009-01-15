@@ -60,5 +60,29 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (new Size (50,55), stack.RenderSize, "stack render1");
 			Assert.AreEqual (new Rect (10,10,50,55), LayoutInformation.GetLayoutSlot (stack), "stack slot");
 		}
+
+		public FrameworkElement CreateSlotItem ()
+		{
+			Border border = new Border ();
+			border.Width = 25;
+			border.Height = 33;
+			return border;
+		}
+
+		[TestMethod]
+		public void LayoutSlotTest ()
+		{
+			var stack = new StackPanel ();
+			stack.Children.Add (CreateSlotItem ());
+			stack.Children.Add (CreateSlotItem ());
+			stack.Children.Add (CreateSlotItem ());
+			
+			stack.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			stack.Arrange (new Rect (0,0,stack.DesiredSize.Width,stack.DesiredSize.Height));
+			
+			Assert.AreEqual (new Rect (0,0,25,33), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[0]));
+			Assert.AreEqual (new Rect (0,33,25,33), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[1]));
+			Assert.AreEqual (new Rect (0,66,25,33), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[2]));
+		}
 	}
 }
