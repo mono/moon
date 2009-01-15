@@ -1,5 +1,9 @@
 2009-01-15  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ComboBoxTest.cs: Added more tests for ComboBox
+
+2009-01-15  Alan McGovern  <amcgovern@novell.com>
+
 	* moon-unit.mdp:
 	* System.Windows.Controls/ComboBoxTest.cs: Begin implementing ComboBox.
 	First 3 tests now pass.

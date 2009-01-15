@@ -1,5 +1,10 @@
 2009-01-15  Alan McGovern  <amcgovern@novell.com>
 
+	* Selector.cs: SelectionChanged is now fired when either the Index or
+	SelectedObject is changed
+
+2009-01-15  Alan McGovern  <amcgovern@novell.com>
+
 	* Selector.cs: Begin implementing ComboBox. First 3 tests now pass.
 
 2009-01-13  Sebastien Pouliot  <sebastien@ximian.com>

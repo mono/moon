@@ -58,7 +58,10 @@ namespace System.Windows.Controls.Primitives {
 
 		public object SelectedItem {
 			get { return GetValue (SelectedItemProperty); }
-			set { SetValue (SelectedItemProperty, value); }
+			set {
+				if (Items.IndexOf (value) != -1)
+					SetValue (SelectedItemProperty, value);
+			}
 		}
 
 		public event SelectionChangedEventHandler SelectionChanged;
@@ -68,18 +71,28 @@ namespace System.Windows.Controls.Primitives {
 			int newVal = (int) e.NewValue;
 			if (newVal != (int)e.OldValue && newVal < Items.Count)
 				SelectedItem = newVal >= 0 ? Items[SelectedIndex] : null;
+
+			RaiseSelectionChanged (o, new SelectionChangedEventArgs (new object[] { e.OldValue }, new object [] { e.NewValue }));
 		}
 		
 		void SelectedItemChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
 		{
 			if (e.NewValue == e.OldValue)
-			return;
-			
+				return;
+
 			int index = Items.IndexOf (e.NewValue);
 			if (index == -1)
 				SelectedItem = e.OldValue;
 			else
 				SelectedIndex = index;
+			RaiseSelectionChanged (o, new SelectionChangedEventArgs (new object[] { e.OldValue }, new object [] { e.NewValue }));
+		}
+
+		void RaiseSelectionChanged (object o, SelectionChangedEventArgs e)
+		{
+			SelectionChangedEventHandler h = SelectionChanged;
+			if (h != null)
+				h (o, e);
 		}
 		
 
