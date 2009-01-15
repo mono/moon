@@ -25,12 +25,6 @@
 #include "size.h"
 #include "font.h"
 
-G_BEGIN_DECLS
-
-void textbox_shutdown (void);
-
-G_END_DECLS
-
 
 /* @SilverlightVersion="2" */
 /* @Namespace=None */
