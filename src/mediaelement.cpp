@@ -1943,8 +1943,8 @@ MediaElementPropertyValueProvider::GetPropertyValue (DependencyProperty *propert
 	
 	if (use_mplayer && (TimeSpan_FromPts (position) == -1))
 		position = element->mplayer->GetPosition ();
-		
-	if (position != -1)
+	
+	if (TimeSpan_FromPts (position) != -1)
 		this->position = new Value (TimeSpan_FromPts (position), Type::TIMESPAN);
 		
 	return this->position;

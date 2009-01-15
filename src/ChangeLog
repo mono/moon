@@ -1,5 +1,9 @@
 2009-01-15  Jeffrey Stedfast  <fejj@novell.com>
 
+	* mediaelement.cpp (MediaElementPropertyValueProvider::GetPropertyValue):
+	Cannot compare a guint64 with -1, presuming the comparison was
+	meant to be against TimeSpan_FromPTS (position) instead.
+
 	* textbox.cpp: Emit SelectionChanged events with RoutedEventArgs
 	instead of SelectionChangedEventArgs.
 
