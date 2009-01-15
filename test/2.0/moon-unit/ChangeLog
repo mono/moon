@@ -9,6 +9,9 @@
 
 2009-01-14  Larry Ewing  <lewing@novell.com>
 
+	* System.Windows/RectTest.cs: Lock down the trivial rect methods
+	to match the sl implementations.
+
 	* System.Windows/FrameworkElementTest.cs: remove bug attribute.
 
 	* System.Windows/UIElementTest.cs: add some extra checks to

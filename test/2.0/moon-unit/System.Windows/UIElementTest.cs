@@ -30,7 +30,7 @@ using System;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Media;
-
+using System.Windows.Controls.Primitives;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -93,6 +93,8 @@ namespace MoonTest.System.Windows {
 			Assert.Throws<InvalidOperationException> (delegate {
 				ui.Arrange (Rect.Empty);
 			}, "Arrange(Empty)");
+
+			ui.Arrange (new Rect (0,0,0,0));
 			
 			Assert.Throws<InvalidOperationException> (delegate {
 					ui.Arrange (new Rect (10, 10, Double.PositiveInfinity, Double.PositiveInfinity));

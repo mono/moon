@@ -1,5 +1,7 @@
 2009-01-14  Larry Ewing  <lewing@novell.com>
 
+	* Rect.cs: Fix rect to follow match the new unit tests.
+
 	* UIElement.cs: add more input validation exceptions.
 
 2009-01-14  Jb Evain  <jbevain@novell.com>

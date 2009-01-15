@@ -34,10 +34,10 @@ namespace System.Windows {
 
 		public Rect (double x, double y, double width, double height)
 		{
-			this.x = x;
-			this.y = y;
-			w = width;
-			h = height;
+			X = x;
+			Y = y;
+			Width = width;
+			Height = height;
 		}
 
 		public Rect(Point point1, Point point2)
@@ -58,6 +58,9 @@ namespace System.Windows {
 		
 		public override string ToString ()
 		{
+			if (IsEmpty)
+				return "Empty";
+
 			return String.Format ("{0},{1},{2},{3}", x, y, w, h);
 		}
 
@@ -78,12 +81,22 @@ namespace System.Windows {
 
 		public double Width {
 			get { return w; }
-			set { w = value; } 
+			set { 
+				if (value < 0)
+					throw new ArgumentException ();
+
+				w = value; 
+			} 
 		}
 
 		public double Height {
 			get { return h; }
-			set { h = value; }
+			set { 
+				if (value < 0)
+					throw new ArgumentException ();
+
+				h = value; 
+			}
 		}
 
 		public bool Contains (Point point)
@@ -104,12 +117,19 @@ namespace System.Windows {
 		}
 		
 		public static Rect Empty { 
-			get { return new Rect (0, 0, 0, 0); } 
+			get { 
+				Rect empty = new Rect (0,0,0,0);
+
+				empty.y = empty.x = Double.PositiveInfinity;
+				empty.w = empty.h = Double.NegativeInfinity;
+
+				return empty;
+			} 
 		}
 		
 		public bool IsEmpty { 
 			get {
-				return w <= 0 || h <= 0;
+				return (w < 0 && h < 0);
 			}
 		}
 		
