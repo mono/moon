@@ -191,6 +191,82 @@
       <Generator>MSBuild:MarkupCompilePass1</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Resource Include="System.Windows\DependencyPropertyTest_ManagedTest_A1.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="System.Windows\DependencyPropertyTest_ManagedTest_A2.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="System.Windows\DependencyPropertyTest_ManagedTest_A3.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="System.Windows\DependencyPropertyTest_ManagedTest_B1.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="System.Windows\DependencyPropertyTest_ManagedTest_B2.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="System.Windows\DependencyPropertyTest_ManagedTest_B3.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="System.Windows\DependencyPropertyTest_ManagedTest_C1.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="System.Windows\DependencyPropertyTest_ManagedTest_C2.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="System.Windows\DependencyPropertyTest_ManagedTest_C3.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="System.Windows\DependencyPropertyTest_ManagedTest_D1.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="System.Windows\DependencyPropertyTest_ManagedTest_D2.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="System.Windows\DependencyPropertyTest_ManagedTest_D3.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="System.Windows\DependencyPropertyTest_ManagedTest_D4.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="System.Windows\DependencyPropertyTest_ManagedTest_E1.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="System.Windows\DependencyPropertyTest_ManagedTest_E2.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="System.Windows\DependencyPropertyTest_ManagedTest_F1.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="System.Windows\DependencyPropertyTest_ManagedTest_F2.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="System.Windows\DependencyPropertyTest_ManagedTest_F3.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="System.Windows\DependencyPropertyTest_ManagedTest_F4.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
     <Resource Include="misc\Events\Event_Ex_Derived3.xaml">
       <Generator>MSBuild:MarkupCompilePass1</Generator>
       <SubType>Designer</SubType>
