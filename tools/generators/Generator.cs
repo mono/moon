@@ -446,20 +446,19 @@ class Generator {
 						text.Append (")");
 					}
 				}
-				if (is_full || !has_default_value) {
-					if ((has_default_value || is_full))
-						text.Append (", ");
-					if (propertyType != null) {
-						if (propertyType.IsEnum) {
-							text.Append ("Type::INT32");
-						} else {
-							text.Append ("Type::");
-							text.Append (propertyType.KindName);
-						}
+
+				if ((has_default_value || is_full))
+					text.Append (", ");
+				if (propertyType != null) {
+					if (propertyType.IsEnum) {
+						text.Append ("Type::INT32");
 					} else {
-						text.Append ("Type::INVALID");
-						//Console.WriteLine ("{0} does not define its property type.", field.FullName);
+						text.Append ("Type::");
+						text.Append (propertyType.KindName);
 					}
+				} else if (!has_default_value) {
+					text.Append ("Type::INVALID");
+					//Console.WriteLine ("{0} does not define its property type.", field.FullName);
 				}
 				
 				if (is_full) {
