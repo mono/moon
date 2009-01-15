@@ -1,4 +1,4 @@
-﻿//
+//
 // ComboBox Unit Tests
 //
 // Contact:
@@ -109,9 +109,10 @@ namespace MoonTest.System.Windows.Controls
         }
     }
     [TestClass]
-    public class aaaaComboBoxTest
+    public class ComboBoxTest
     {
         [TestMethod]
+        [MoonlightBug]
         public void DefaultValues ()
         {
             ComboBox b = new ComboBox();
@@ -126,6 +127,7 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
+        [MoonlightBug]
         public void InvalidValues()
         {
             ComboBox b = new ComboBox();
@@ -153,6 +155,7 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
+        [MoonlightBug]
         public void TestOverrides()
         {
             FakeComboBox b = new FakeComboBox();

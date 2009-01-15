@@ -1,5 +1,9 @@
 2009-01-15  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ComboBoxTest.cs: Mark tests with MoonlightBug
+
+2009-01-15  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ComboBoxTest: Add tests.
 
 2009-01-15  Sebastien Pouliot  <sebastien@ximian.com>
