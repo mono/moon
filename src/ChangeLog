@@ -2,6 +2,8 @@
 
 	* dependencyproperty.cpp: Patch mostly by rolf. Allows property
 	lookup to work on custom types that subclass custom types.
+	* template.cpp: Now that templates work pretty well, lets reduce
+	the spam a bit.
 
 2009-01-15  Sebastien Pouliot  <sebastien@ximian.com>
 

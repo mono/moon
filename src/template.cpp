@@ -88,7 +88,7 @@ FrameworkTemplate::SetVisualTree (FrameworkElement *value)
 void
 FrameworkTemplate::SetXamlBuffer (XamlContext *xaml_context, const char *xaml_buffer)
 {
-	printf ("%p setting xaml buffer to %s\n", this, xaml_buffer);
+//	printf ("%p setting xaml buffer to %s\n", this, xaml_buffer);
 	this->xaml_buffer = g_strdup (xaml_buffer);
 	this->xaml_context = xaml_context;
 }
