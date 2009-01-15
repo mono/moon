@@ -221,6 +221,7 @@ dependency_property_g_init (void)
 	MediaElement::CanSeekProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "CanSeek", new Value (false), Type::BOOL, false, true, false, NULL, NULL);
 	MediaElement::CurrentStateProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "CurrentState", NULL, Type::STRING, false, true, false, NULL, NULL);
 	MediaElement::DownloadProgressOffsetProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "DownloadProgressOffset", new Value (0.0), Type::DOUBLE, false, true, false, NULL, NULL);
+	MediaElement::DownloadProgressProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "DownloadProgress", new Value (0.0));
 	MediaElement::DroppedFramesPerSecondProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "DroppedFramesPerSecond", new Value (0.0), Type::DOUBLE, false, true, false, NULL, NULL);
 	MediaElement::IsMutedProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "IsMuted", new Value (false));
 	MediaElement::MarkersProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "Markers", Type::TIMELINEMARKER_COLLECTION);
@@ -229,6 +230,8 @@ dependency_property_g_init (void)
 	MediaElement::NaturalVideoWidthProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "NaturalVideoWidth", new Value (0.0), Type::DOUBLE, false, true, false, NULL, Validators::DoubleGreaterThanZeroValidator);
 	MediaElement::PositionProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "Position", Type::TIMESPAN);
 	MediaElement::RenderedFramesPerSecondProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "RenderedFramesPerSecond", new Value (0.0), Type::DOUBLE, false, true, false, NULL, NULL);
+	MediaElement::SourceProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "Source", NULL, Type::STRING, false, false, true, NULL, NULL);
+	MediaElement::StretchProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "Stretch", new Value (StretchUniform));
 	MediaElement::VolumeProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "Volume", new Value (0.5));
 	MultiScaleImage::AspectRatioProperty = DependencyProperty::Register (Type::MULTISCALEIMAGE, "AspectRatio", new Value (1.0));
 	MultiScaleImage::SourceProperty = DependencyProperty::Register (Type::MULTISCALEIMAGE, "Source", Type::MULTISCALETILESOURCE);
@@ -562,6 +565,7 @@ DependencyProperty *MediaElement::CanPauseProperty = NULL;
 DependencyProperty *MediaElement::CanSeekProperty = NULL;
 DependencyProperty *MediaElement::CurrentStateProperty = NULL;
 DependencyProperty *MediaElement::DownloadProgressOffsetProperty = NULL;
+DependencyProperty *MediaElement::DownloadProgressProperty = NULL;
 DependencyProperty *MediaElement::DroppedFramesPerSecondProperty = NULL;
 DependencyProperty *MediaElement::IsMutedProperty = NULL;
 DependencyProperty *MediaElement::MarkersProperty = NULL;
@@ -570,6 +574,8 @@ DependencyProperty *MediaElement::NaturalVideoHeightProperty = NULL;
 DependencyProperty *MediaElement::NaturalVideoWidthProperty = NULL;
 DependencyProperty *MediaElement::PositionProperty = NULL;
 DependencyProperty *MediaElement::RenderedFramesPerSecondProperty = NULL;
+DependencyProperty *MediaElement::SourceProperty = NULL;
+DependencyProperty *MediaElement::StretchProperty = NULL;
 DependencyProperty *MediaElement::VolumeProperty = NULL;
 DependencyProperty *MultiScaleImage::AspectRatioProperty = NULL;
 DependencyProperty *MultiScaleImage::SourceProperty = NULL;
@@ -2791,6 +2797,19 @@ MediaElement::SetDownloadProgressOffset (double value)
 }
 
 double
+MediaElement::GetDownloadProgress ()
+{
+	Value *value = GetValue (MediaElement::DownloadProgressProperty);
+	return value->AsDouble ();
+}
+
+void
+MediaElement::SetDownloadProgress (double value)
+{
+	SetValue (MediaElement::DownloadProgressProperty, Value (value));
+}
+
+double
 MediaElement::GetDroppedFramesPerSecond ()
 {
 	Value *value = GetValue (MediaElement::DroppedFramesPerSecondProperty);
@@ -2886,6 +2905,32 @@ void
 MediaElement::SetRenderedFramesPerSecond (double value)
 {
 	SetValue (MediaElement::RenderedFramesPerSecondProperty, Value (value));
+}
+
+const char *
+MediaElement::GetSource ()
+{
+	Value *value = GetValue (MediaElement::SourceProperty);
+	return value ? value->AsString () : NULL;
+}
+
+void
+MediaElement::SetSource (const char *value)
+{
+	SetValue (MediaElement::SourceProperty, Value (value));
+}
+
+Stretch
+MediaElement::GetStretch ()
+{
+	Value *value = GetValue (MediaElement::StretchProperty);
+	return (Stretch) value->AsInt32 ();
+}
+
+void
+MediaElement::SetStretch (Stretch value)
+{
+	SetValue (MediaElement::StretchProperty, Value (value));
 }
 
 double

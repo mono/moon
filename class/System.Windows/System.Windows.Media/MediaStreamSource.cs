@@ -29,11 +29,16 @@
 
 using System;
 using System.Collections.Generic;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace System.Windows.Media
 {
 	public abstract class MediaStreamSource
 	{
+		private MediaElement media_element;
+		bool closed;
+		
 		protected MediaStreamSource ()
 		{
 		}
@@ -45,6 +50,23 @@ namespace System.Windows.Media
 		protected abstract void SeekAsync (long seekToTime);
 		protected abstract void SwitchMediaStreamAsync (MediaStreamDescription mediaStreamDescription);
 
+		internal void Close ()
+		{
+			if (!closed) {
+				closed = true;
+				CloseMedia ();
+			}
+		}
+
+		internal void OpenMediaAsyncInternal ()
+		{
+			OpenMediaAsync ();
+		}
+
+		internal bool Closed {
+			get { return closed; }
+		}
+		
 		protected void ErrorOccurred (string errorDescription)
 		{
 			throw new NotImplementedException ();
@@ -78,6 +100,11 @@ namespace System.Windows.Media
 		protected void ReportSwitchMediaStreamCompleted (MediaStreamDescription mediaStreamDescription)
 		{
 			throw new NotImplementedException ();
+		}
+
+		internal void SetMediaElement (MediaElement mediaElement)
+		{
+			media_element = mediaElement;
 		}
 		
 	}

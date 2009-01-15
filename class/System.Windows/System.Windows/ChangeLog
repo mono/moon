@@ -1,5 +1,9 @@
 2009-01-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* DependencyProperty.g.cs: Regenerated.
+
+2009-01-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* DependencyProperty.cs: Use GetPropertyFull to get custom properties
 	too.
 

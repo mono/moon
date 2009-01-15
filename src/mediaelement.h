@@ -40,7 +40,8 @@ class MediaErrorEventArgs : public ErrorEventArgs {
 };
 
 /* @Namespace=System.Windows.Controls */
-class MediaElement : public MediaBase {
+class MediaElement : public FrameworkElement {
+ friend class MediaElementPropertyValueProvider;	
  public:
 	enum MediaElementState {
 		Closed,
@@ -53,6 +54,28 @@ class MediaElement : public MediaBase {
 	};
 	
  private:
+	void SetSourceAsyncCallback ();
+	void DownloaderAbort ();
+
+	struct {
+		Downloader *downloader;
+		char *part_name;
+		bool queued;
+	} source;
+	
+	Downloader *downloader;
+	char *part_name;
+	
+	int updating_size_from_media:1;
+	int allow_downloads:1;
+	int use_media_height:1;
+	int use_media_width:1;
+	int source_changed:1;
+			
+	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void set_source_async (EventObject *user_data);
+	
 	static void data_write (void *data, gint32 offset, gint32 n, void *closure);
 	static void data_request_position (gint64 *pos, void *closure);
 	static void size_notify (gint64 size, gpointer data);
@@ -105,9 +128,13 @@ class MediaElement : public MediaBase {
 	
 	void DataWrite (void *data, gint32 offset, gint32 n);
 	void DataRequestPosition (gint64 *pos);
-	virtual void DownloaderComplete ();
-	virtual void DownloaderFailed (EventArgs *args);
+	void DownloaderComplete ();
+	void DownloaderFailed (EventArgs *args);
 	void BufferingComplete ();
+	
+	void SetAllowDownloads (bool allow);
+	bool AllowDownloads () { return allow_downloads; }
+	
 	double GetBufferedSize ();
 	double CalculateBufferingProgress ();
 	void UpdateProgress ();
@@ -156,10 +183,13 @@ class MediaElement : public MediaBase {
 	static void SeekNow (EventObject *value);
 	
  protected:
-	virtual DownloaderAccessPolicy GetDownloaderPolicy (const char *uri);
+	DownloaderAccessPolicy GetDownloaderPolicy (const char *uri);
 	virtual ~MediaElement ();
 	
  public:
+ 	/* @GenerateCBinding,GeneratePInvoke */
+	MediaElement ();
+	
 	// properties
  	/* @PropertyType=MediaAttributeCollection,ManagedPropertyType=Dictionary<string\,string>,ManagedSetterAccess=Internal,GenerateAccessors,Validator=MediaAttributeCollectionValidator */
 	static DependencyProperty *AttributesProperty;
@@ -179,6 +209,8 @@ class MediaElement : public MediaBase {
 	static DependencyProperty *CanPauseProperty;
  	/* @PropertyType=bool,DefaultValue=false,ReadOnly,GenerateAccessors */
 	static DependencyProperty *CanSeekProperty;
+ 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
+	static DependencyProperty *DownloadProgressProperty;
  	/* @PropertyType=string,ReadOnly,ManagedPropertyType=MediaElementState,GenerateAccessors */
 	static DependencyProperty *CurrentStateProperty;
  	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
@@ -193,6 +225,10 @@ class MediaElement : public MediaBase {
 	static DependencyProperty *NaturalVideoWidthProperty;
  	/* @PropertyType=TimeSpan,GenerateAccessors */
 	static DependencyProperty *PositionProperty;
+ 	/* @PropertyType=string,AlwaysChange,GenerateAccessors */
+	static DependencyProperty *SourceProperty;
+ 	/* @PropertyType=Stretch,DefaultValue=StretchUniform,GenerateAccessors */
+	static DependencyProperty *StretchProperty;
  	/* @PropertyType=double,DefaultValue=0.5,GenerateAccessors */
 	static DependencyProperty *VolumeProperty;
 
@@ -206,14 +242,13 @@ class MediaElement : public MediaBase {
 	// events
 	const static int BufferingProgressChangedEvent;
 	const static int CurrentStateChangedEvent;
+	const static int DownloadProgressChangedEvent;
 	const static int MarkerReachedEvent;
 	const static int MediaEndedEvent;
 	const static int MediaFailedEvent;
 	// MediaOpened is raised when media is ready to play (we've already started playing, or, if AutoPlay is false, paused).
 	const static int MediaOpenedEvent;
 	
- 	/* @GenerateCBinding,GeneratePInvoke */
-	MediaElement ();
 	virtual Type::Kind GetObjectType () { return Type::MEDIAELEMENT; }
 	
 	virtual void SetSurface (Surface *surface);
@@ -231,7 +266,6 @@ class MediaElement : public MediaBase {
 	virtual Point GetTransformOrigin ();
 	virtual Rect GetCoverageBounds ();
 	
-	virtual Value *GetValue (DependencyProperty *prop);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	
 	virtual void SetSourceInternal (Downloader *downloader, char *PartName);
@@ -342,6 +376,24 @@ class MediaElement : public MediaBase {
 
 	void SetDroppedFramesPerSecond (double value);
 	double GetDroppedFramesPerSecond ();
+	
+	double GetDownloadProgress ();
+	void SetDownloadProgress (double progress);
+	
+	void SetSource (const char *uri);
+	const char *GetSource ();
+	
+	void SetStretch (Stretch stretch);
+	Stretch GetStretch ();
+};
+
+class MediaElementPropertyValueProvider : public PropertyValueProvider {
+ private:
+ 	Value *position;
+ public:
+	MediaElementPropertyValueProvider (MediaElement *obj);
+	virtual ~MediaElementPropertyValueProvider ();
+	virtual Value *GetPropertyValue (DependencyProperty *property);
 };
 
 #endif /* __MEDIAELEMENT_H__ */

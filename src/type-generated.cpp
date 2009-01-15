@@ -80,8 +80,9 @@ const int Image::ImageFailedEvent = 17;
 const int ImageBrush::DownloadProgressChangedEvent = 1;
 const int ImageBrush::ImageFailedEvent = 2;
 const int MediaBase::DownloadProgressChangedEvent = 16;
-const int MediaElement::BufferingProgressChangedEvent = 17;
-const int MediaElement::CurrentStateChangedEvent = 18;
+const int MediaElement::BufferingProgressChangedEvent = 16;
+const int MediaElement::CurrentStateChangedEvent = 17;
+const int MediaElement::DownloadProgressChangedEvent = 18;
 const int MediaElement::MarkerReachedEvent = 19;
 const int MediaElement::MediaEndedEvent = 20;
 const int MediaElement::MediaFailedEvent = 21;
@@ -125,7 +126,7 @@ const char *FrameworkElement_Events [] = { "BindingValidationError", "LayoutUpda
 const char *Image_Events [] = { "ImageFailed", NULL };
 const char *ImageBrush_Events [] = { "DownloadProgressChanged", "ImageFailed", NULL };
 const char *MediaBase_Events [] = { "DownloadProgressChanged", NULL };
-const char *MediaElement_Events [] = { "BufferingProgressChanged", "CurrentStateChanged", "MarkerReached", "MediaEnded", "MediaFailed", "MediaOpened", NULL };
+const char *MediaElement_Events [] = { "BufferingProgressChanged", "CurrentStateChanged", "DownloadProgressChanged", "MarkerReached", "MediaEnded", "MediaFailed", "MediaOpened", NULL };
 const char *MultiScaleImage_Events [] = { "ImageFailed", "ImageOpenFailed", "ImageOpenSucceeded", "MotionFinished", "ViewportChanged", NULL };
 const char *PasswordBox_Events [] = { "PasswordChanged", NULL };
 const char *Surface_Events [] = { "Error", "FullScreenChange", "Load", "Resize", NULL };
@@ -239,7 +240,7 @@ Type type_infos [] = {
 	{ Type::MEDIAATTRIBUTE, Type::DEPENDENCY_OBJECT, false, "MediaAttribute", "MEDIAATTRIBUTE", 0, 1, NULL, (create_inst_func *) media_attribute_new, NULL, NULL, NULL, NULL }, 
 	{ Type::MEDIAATTRIBUTE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "MediaAttributeCollection", "MEDIAATTRIBUTE_COLLECTION", 0, 1, NULL, (create_inst_func *) media_attribute_collection_new, NULL, NULL, NULL, NULL }, 
 	{ Type::MEDIABASE, Type::FRAMEWORKELEMENT, false, "MediaBase", "MEDIABASE", 1, 17, MediaBase_Events, (create_inst_func *) media_base_new, NULL, NULL, NULL, NULL }, 
-	{ Type::MEDIAELEMENT, Type::MEDIABASE, false, "MediaElement", "MEDIAELEMENT", 6, 23, MediaElement_Events, (create_inst_func *) media_element_new, NULL, NULL, NULL, NULL }, 
+	{ Type::MEDIAELEMENT, Type::FRAMEWORKELEMENT, false, "MediaElement", "MEDIAELEMENT", 7, 23, MediaElement_Events, (create_inst_func *) media_element_new, NULL, NULL, NULL, NULL }, 
 	{ Type::MEDIAERROREVENTARGS, Type::ERROREVENTARGS, false, "MediaErrorEventArgs", "MEDIAERROREVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::MOUSEEVENTARGS, Type::ROUTEDEVENTARGS, false, "MouseEventArgs", "MOUSEEVENTARGS", 0, 1, NULL, (create_inst_func *) mouse_event_args_new, NULL, NULL, NULL, NULL }, 
 	{ Type::MULTISCALEIMAGE, Type::MEDIABASE, false, "MultiScaleImage", "MULTISCALEIMAGE", 5, 22, MultiScaleImage_Events, (create_inst_func *) multi_scale_image_new, NULL, NULL, NULL, NULL }, 

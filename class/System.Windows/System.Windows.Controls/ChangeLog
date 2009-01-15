@@ -1,3 +1,9 @@
+2009-01-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* MediaElement.cs: Tiny little beginning of MediaStreamSource and remove
+	a few members which can be generated now that the native MediaElement
+	doesn't inherit from MediaBase anymore.
+
 2009-01-15  Alan McGovern  <amcgovern@novell.com>
 
 	* ComboBox.cs:

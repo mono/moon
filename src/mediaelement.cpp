@@ -342,12 +342,25 @@ MediaElement::MediaElement ()
 	flags = 0;
 	pending_streamed_markers = new Queue ();
 	
+	source.downloader = NULL;
+	source.part_name = NULL;
+	source.queued = false;
+	downloader = NULL;
+	part_name = NULL;
+	updating_size_from_media = false;
+	allow_downloads = false;
+	use_media_height = true;
+	use_media_width = true;
+	source_changed = false;
+	
 	Reinitialize (false);
 	
 	mplayer = new MediaPlayer (this);
 	
 	SetValue (MediaElement::AttributesProperty, Value::CreateUnref (new MediaAttributeCollection ()));		
 	SetValue (MediaElement::MarkersProperty, Value::CreateUnref (new TimelineMarkerCollection ()));
+	
+	providers [PropertyPrecedence_DynamicValue] = new MediaElementPropertyValueProvider (this);
 }
 
 MediaElement::~MediaElement ()
@@ -366,6 +379,8 @@ MediaElement::~MediaElement ()
 	delete pending_streamed_markers;
 	
 	pthread_mutex_destroy (&open_mutex);
+	
+	DownloaderAbort ();
 }
 
 void
@@ -387,7 +402,7 @@ MediaElement::SetSurface (Surface *s)
 	
 	if (!SetSurfaceLock ())
 		return;
-	MediaBase::SetSurface (s);
+	FrameworkElement::SetSurface (s);
 	SetSurfaceUnlock ();
 }
 
@@ -1322,9 +1337,11 @@ MediaElement::SetSourceInternal (Downloader *downloader, char *PartName)
 	SetCanSeek (!is_streaming);
 	SetBufferingProgress (0.0);
 	
-	MediaBase::SetSourceInternal (downloader, PartName);
+	this->downloader = downloader;
+	part_name = PartName;
 	
 	if (downloader) {
+		downloader->ref ();
 		SetState (Opening);
 		
 		if (downloader->Started ()) {
@@ -1361,6 +1378,96 @@ MediaElement::SetSourceInternal (Downloader *downloader, char *PartName)
 		Invalidate ();
 	}
 }
+void
+MediaElement::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	MediaElement *media = (MediaElement *) closure;
+	
+	media->DownloaderComplete ();
+}
+
+void
+MediaElement::downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	MediaElement *media = (MediaElement *) closure;
+	
+	media->DownloaderFailed (calldata);
+}
+
+void
+MediaElement::DownloaderAbort ()
+{
+	if (downloader) {
+		downloader->RemoveHandler (Downloader::DownloadFailedEvent, downloader_failed, this);
+		downloader->RemoveHandler (Downloader::CompletedEvent, downloader_complete, this);
+		downloader->SetWriteFunc (NULL, NULL, NULL);
+		downloader->Abort ();
+		downloader->unref ();
+		g_free (part_name);
+		downloader = NULL;
+		part_name = NULL;
+	}
+}
+
+void
+MediaElement::SetAllowDownloads (bool allow)
+{
+	Surface *surface = GetSurface ();
+	const char *uri;
+	Downloader *dl;
+	
+	if (allow_downloads == allow)
+		return;
+	
+	if (allow && surface && source_changed) {
+		source_changed = false;
+		
+		if ((uri = GetSource ()) && *uri) {
+			if (!(dl = surface->CreateDownloader ())) {
+				// we're shutting down
+				return;
+			}
+			
+			dl->Open ("GET", uri, GetDownloaderPolicy (uri));
+			SetSource (dl, "");
+			dl->unref ();
+		}
+	}
+	
+	allow_downloads = allow;
+}
+
+void
+MediaElement::set_source_async (EventObject *user_data)
+{
+	MediaElement *media = (MediaElement *) user_data;
+	
+	media->SetSourceAsyncCallback ();
+}
+
+void
+MediaElement::SetSourceAsyncCallback ()
+{
+	Downloader *downloader;
+	char *part_name;
+
+	DownloaderAbort ();
+
+	downloader = source.downloader;
+	part_name = source.part_name;
+
+	source.queued = false;
+	source.downloader = NULL;
+	source.part_name = NULL;
+	
+	if (GetSurface () == NULL)
+		return;
+	
+	SetSourceInternal (downloader, part_name);
+	
+	if (downloader)
+		downloader->unref ();
+}
 
 void
 MediaElement::SetSource (Downloader *downloader, const char *PartName)
@@ -1377,7 +1484,30 @@ MediaElement::SetSource (Downloader *downloader, const char *PartName)
 	
 	Reinitialize (false);
 	
-	MediaBase::SetSource (downloader, PartName);
+	source_changed = false;
+	
+	if (source.queued) {
+		if (source.downloader)
+			source.downloader->unref ();
+
+		g_free (source.part_name);
+		source.downloader = NULL;
+		source.part_name = NULL;
+	}
+	
+	source.part_name = g_strdup (PartName);
+	source.downloader = downloader;
+	
+	if (downloader)
+		downloader->ref ();
+
+	if (source.downloader && source.downloader->Completed ()) {
+		SetSourceInternal (source.downloader, source.part_name);
+		source.downloader->unref ();
+	} else if (!source.queued) {
+		AddTickCall (MediaElement::set_source_async);
+		source.queued = true;
+	}
 }
 
 void
@@ -1583,45 +1713,6 @@ MediaElement::StopNow ()
 	}
 }
 
-Value *
-MediaElement::GetValue (DependencyProperty *prop)
-{
-	if (prop == MediaElement::PositionProperty) {
-		bool use_mplayer;
-		guint64 position = TimeSpan_ToPts (seek_to_position);
-		
-		switch (state) {
-		case Opening:
-		case Closed:
-		case Error:
-			use_mplayer = false;
-			break;
-		case Stopped:
-		case Buffering:
-		case Playing:
-		case Paused:
-		default:
-			use_mplayer = true;
-			break;
-		}
-		
-		// If a seek is pending, we need to return that position.
-		
-		if (use_mplayer && (TimeSpan_FromPts (position) == -1))
-			position = mplayer->GetPosition ();
-		
-		if (TimeSpan_FromPts (position) != -1) {
-			Value v (TimeSpan_FromPts (position), Type::TIMESPAN);
-			
-			flags |= UpdatingPosition;
-			SetValue (prop, &v);
-			flags &= ~UpdatingPosition;
-		}
-	}
-	
-	return MediaBase::GetValue (prop);
-}
-
 TimeSpan
 MediaElement::UpdatePlayerPosition (TimeSpan position)
 {
@@ -1658,7 +1749,8 @@ MediaElement::OnLoaded ()
 			TryOpen ();
 	}
 	
-	MediaBase::OnLoaded ();
+	SetAllowDownloads (true);
+	FrameworkElement::OnLoaded ();
 }
 
 void
@@ -1714,9 +1806,31 @@ MediaElement::SeekNow ()
 void
 MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property == MediaBase::SourceProperty) {
-		// MediaBase will handle the rest
+	if (args->property == MediaElement::SourceProperty) {
 		flags |= RecalculateMatrix;
+		
+		// TODO: This should really be passed on to Media, who should have the
+		// downloader and start the download
+		const char *uri = args->new_value ? args->new_value->AsString () : NULL;
+		Surface *surface = GetSurface ();
+					
+		if (surface && AllowDownloads ()) {
+			if (uri && *uri) {
+				Downloader *dl;
+				if ((dl = surface->CreateDownloader ())) {
+					dl->Open ("GET", uri, GetDownloaderPolicy (uri));
+					SetSource (dl, "");
+					dl->unref ();
+				} else {
+					// we're shutting down
+				}
+			} else {
+				SetSource (NULL, NULL);
+			}
+		} else {
+			source_changed = true;
+		}
+		
 	} else if (args->property == MediaElement::AudioStreamIndexProperty) {
 		mplayer->SetAudioStreamIndex (args->new_value->AsInt32 ());
 	} else if (args->property == MediaElement::AutoPlayProperty) {
@@ -1760,7 +1874,7 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 	
 	if (args->property->GetOwnerType() != Type::MEDIAELEMENT) {
 		// propagate to parent class
-		MediaBase::OnPropertyChanged (args);
+		FrameworkElement::OnPropertyChanged (args);
 		flags |= RecalculateMatrix;
 		return;
 	}
@@ -1780,4 +1894,58 @@ void
 MediaElement::SetNaturalDuration (TimeSpan duration)
 {
 	SetValue (MediaElement::NaturalDurationProperty, Value (Duration (duration)));
+}
+
+/*
+ * MediaElementPropertyValueProvider
+ */
+
+MediaElementPropertyValueProvider::MediaElementPropertyValueProvider (MediaElement *element)
+	: PropertyValueProvider (element)
+{
+	position = NULL;
+}
+
+MediaElementPropertyValueProvider::~MediaElementPropertyValueProvider ()
+{
+	delete position;
+}
+
+Value *
+MediaElementPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
+{
+	if (property != MediaElement::PositionProperty)
+		return NULL;
+	
+	bool use_mplayer;
+	MediaElement *element = (MediaElement *) obj;
+	guint64 position = TimeSpan_ToPts (element->seek_to_position);
+	
+	delete this->position;
+	this->position = NULL;
+	
+	switch (element->state) {
+	case MediaElement::Opening:
+	case MediaElement::Closed:
+	case MediaElement::Error:
+		use_mplayer = false;
+		break;
+	case MediaElement::Stopped:
+	case MediaElement::Buffering:
+	case MediaElement::Playing:
+	case MediaElement::Paused:
+	default:
+		use_mplayer = true;
+		break;
+	}
+	
+	// If a seek is pending, we need to return that position.
+	
+	if (use_mplayer && (TimeSpan_FromPts (position) == -1))
+		position = element->mplayer->GetPosition ();
+		
+	if (position != -1)
+		this->position = new Value (TimeSpan_FromPts (position), Type::TIMESPAN);
+		
+	return this->position;
 }

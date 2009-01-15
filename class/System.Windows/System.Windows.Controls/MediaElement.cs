@@ -39,18 +39,9 @@ namespace System.Windows.Controls {
 
 	public sealed partial class MediaElement : FrameworkElement {
 		private StreamWrapper wrapper;
-		
-		// These are defined on MediaBase for both Image and MediaElement.
-		// The generator can't expand one DP into two managed ones yet.
-		public static readonly DependencyProperty DownloadProgressProperty = 
-			DependencyProperty.Lookup (Kind.MEDIAELEMENT, "DownloadProgress", typeof (double));
-		
-		public static readonly DependencyProperty SourceProperty =
-			DependencyProperty.Lookup (Kind.MEDIABASE, "Source", typeof (Uri));
-		
-		public static readonly DependencyProperty StretchProperty =
-			DependencyProperty.Lookup (Kind.MEDIABASE, "Stretch", typeof (Stretch));
 
+		private MediaStreamSource media_stream_source;
+		
 		public LicenseAcquirer LicenseAcquirer {
 			get { throw new NotImplementedException (); }
 			set { throw new NotImplementedException (); }
@@ -82,32 +73,24 @@ namespace System.Windows.Controls {
 		
 		public void SetSource (MediaStreamSource mediaStreamSource)
 		{
+			/*
+			if (media_stream_source != null) {
+				media_stream_source.Close ();
+				media_stream_source = null;
+			}
+
+			if (mediaStreamSource.Closed)
+				throw new InvalidOperationException ();
+			
+			media_stream_source = mediaStreamSource;
+			media_stream_source.OpenMediaAsyncInternal ();
+			*/
 			Console.WriteLine ("WARNING: MediaElement.SetSource(MediaStreamSource) is unimplemented");
 		}
 		
 		public void Stop ()
 		{
 			NativeMethods.media_element_stop (native);
-		}
-		
-		public double DownloadProgress { 
-			get {
-				return (double) GetValue (DownloadProgressProperty);
-			}
-		}
-		
-		public Uri Source {
-			get {
-				return (Uri) GetValue (SourceProperty);
-			}
-			set {
-				SetValue (SourceProperty, value); 
-			}
-		}
-		
-		public Stretch Stretch {
-			get { return (Stretch) GetValue (StretchProperty); }
-			set { SetValue (StretchProperty, value); }
 		}
 		
 		static object BufferingProgressChangedEvent = new object ();

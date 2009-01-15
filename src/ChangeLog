@@ -1,5 +1,15 @@
 2009-01-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* type-generated.cpp:
+	* dependencyproperty.g.cpp: Regenerated.
+
+	* mediaelement.h:
+	* mediaelement.cpp: Inherit directly from FrameworkElement instead of
+	MediaBase. This requires copying some code from MediaBase into
+	MediaElement (which at some later stage would move into Media).
+
+2009-01-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* cbinding.h:
 	* cbinding.cpp: Regenerated.
 
