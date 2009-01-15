@@ -1,5 +1,9 @@
 2009-01-15  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ComboBoxTest.cs: Add missing using statement
+
+2009-01-15  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ComboBoxTest.cs: Mark tests with MoonlightBug
 
 2009-01-15  Alan McGovern  <amcgovern@novell.com>

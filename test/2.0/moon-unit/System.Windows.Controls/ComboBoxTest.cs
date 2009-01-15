@@ -33,7 +33,7 @@ using System.Linq;
 using System.Windows.Controls;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows.Shapes;
-
+using Mono.Moonlight.UnitTesting;
 
 namespace MoonTest.System.Windows.Controls
 {
