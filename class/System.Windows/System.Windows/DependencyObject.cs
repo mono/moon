@@ -50,7 +50,6 @@ namespace System.Windows {
 	public abstract partial class DependencyObject {
 		static Thread moonlight_thread;
 		static Dictionary<IntPtr, DependencyObject> objects = new Dictionary<IntPtr, DependencyObject> ();
-		static Dictionary<IntPtr, object> managedObjects = new Dictionary<IntPtr, object> ();
 		internal IntPtr _native;
 
 		internal EventHandlerList events;
