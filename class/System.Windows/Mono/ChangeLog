@@ -1,3 +1,10 @@
+2009-01-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Helper.cs: Update calls to value_from_str_with_typename
+	* NativeMethods.cs: Update value_from_str_with_typename pinvoke 
+	definition (3 different defects)
+	[Fix crasher on http://sildev.net/3DCubes/index.html]
+
 2009-01-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* GeneratedPInvokes.cs: Regenerated.

@@ -181,7 +181,8 @@ namespace Mono {
 #endif
 
 		[DllImport ("moon")]
-		public extern static IntPtr value_from_str_with_typename (string type_name, string prop_name, string str);
+		[return: MarshalAs (UnmanagedType.U1)]
+		public extern static bool value_from_str_with_typename (string type_name, string prop_name, string str, out IntPtr value, [MarshalAs (UnmanagedType.U1)] bool sl2);
 
 #region Time manager
 		public delegate bool GSourceFunc (IntPtr data);
