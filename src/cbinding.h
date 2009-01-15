@@ -424,6 +424,9 @@ Value *dependency_property_get_default_value (DependencyProperty *instance);
 DependencyProperty *dependency_property_get_dependency_property (Type::Kind type, const char *name);
 
 /* @GeneratePInvoke */
+DependencyProperty *dependency_property_get_dependency_property_full (Types *additional_types, Type::Kind type, const char *name, bool inherits);
+
+/* @GeneratePInvoke */
 const char *dependency_property_get_name (DependencyProperty *instance);
 
 /* @GeneratePInvoke */

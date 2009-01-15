@@ -276,16 +276,16 @@ public: // private:
 
 	const char *content_property;
 	GHashTable *properties; // Registered DependencyProperties for this type
+
 	// Custom DependencyProperties for this type
-	// The catch here is that SL allows us to register several DPs with the same name.
-	// If we keep them in a hash table an entry with the same name will overwrite any
-	// previous entries, and cause its destruction (we created the hash table with a 
-	// destructor method for every entry), but managed code will still have a pointer
-	// to the destroyed unmanaged DP, and we'll crash later on when that pointer is used.
-	// We could create the hash table without a destructor method, but in any case we'd 
-	// need a way to keep track of the DPs with same name to destroy them properly.
-	// Hopefully we won't need to look up custom properties by name (at least managed code
-	// doesn't allow it).
+	// The catch here is that SL allows us to register several DPs with the same name,
+	// and when looking up DP on name they seem to return the latest DP registered
+	// with that name.
+	// So we keep one list of all registed DPs (custom_properties) in order to track
+	// them all and free them upon shutdown, and a hash table to look up DP on name,
+	// and if an entry already exists for a DP in the hash table, we overwrite it 
+	// with the new DP.
+	GHashTable *custom_properties_hash;
 	GSList *custom_properties; 
 };
 

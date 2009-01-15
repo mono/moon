@@ -1,3 +1,16 @@
+2009-01-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* cbinding.h:
+	* cbinding.cpp: Regenerated.
+
+	* type.h:
+	* type.cpp:
+	* type.h.in:
+	* type-generated.cpp:
+	* dependencyproperty.h:
+	* dependencyproperty.cpp: Add support for looking up custom dependency
+	properties by name.
+
 2009-01-15  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* xaml.cpp: Free Value on error inside ManagedNamespace.FindElement.

@@ -975,6 +975,13 @@ dependency_property_get_dependency_property (Type::Kind type, const char *name)
 }
 
 
+DependencyProperty *
+dependency_property_get_dependency_property_full (Types *additional_types, Type::Kind type, const char *name, bool inherits)
+{
+	return DependencyProperty::GetDependencyPropertyFull (additional_types, type, name, inherits);
+}
+
+
 const char *
 dependency_property_get_name (DependencyProperty *instance)
 {

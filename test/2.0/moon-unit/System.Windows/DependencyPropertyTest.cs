@@ -1,10 +1,13 @@
 using System;
 using System.Net;
+using System.Reflection;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Ink;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
@@ -12,6 +15,8 @@ using System.Collections.Generic;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+#pragma warning disable 414
+#pragma warning disable 219
 
 namespace MoonTest.System.Windows
 {
@@ -754,6 +759,8 @@ namespace MoonTest.System.Windows
 #endregion
 
 #region Custom types, etc
+		
+
 		public class CustomCanvasType : Canvas
 		{
 		}
@@ -814,6 +821,429 @@ namespace MoonTest.System.Windows
 			private CustomClassCtorB () {}
 		}
 #endregion
+
+#region Managed Test
+		[TestMethod]
+		[MoonlightBug]
+		public void ManagedTest_A ()
+		{
+			ManagedTestClass mtc;
+			string format = "'{1}' => '{2}'";
+			string sep = " ; ";
+
+			// A
+
+			mtc = new ManagedTestClass ("DependencyPropertyTest_ManagedTest_A1.xaml");
+			Assert.AreEqual ("ok", mtc._A_, "A1-A");
+			Assert.AreEqual ("b", mtc._b_, "A1-b");
+			Assert.AreEqual ("c", mtc._c_, "A1-c");
+			Assert.AreEqual ("C", mtc._C_, "A1-C");
+			Assert.AreEqual ("D", mtc._D_1_, "A1-D1");
+			Assert.AreEqual ("d", mtc._d_2_, "A1-D2");
+			Assert.AreEqual ("d", mtc._d_3_, "A1-D3");
+			Assert.AreEqual ("'A' => 'ok'", ManagedTestClass.A.ChangesToString (format, sep), "A1-A-Changes");
+			Assert.AreEqual ("", ManagedTestClass.b.ChangesToString (format, sep), "A1-b-Changes");
+			Assert.AreEqual ("", ManagedTestClass.c.ChangesToString (format, sep), "A1-c-Changes");
+			Assert.AreEqual ("", ManagedTestClass.C.ChangesToString (format, sep), "A1-C-Changes");
+			Assert.AreEqual ("", ManagedTestClass.D_1.ChangesToString (format, sep), "A1-D1-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_2.ChangesToString (format, sep), "A1-d2-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_3.ChangesToString (format, sep), "A1-d3-Changes");
+
+			mtc = new ManagedTestClass ("DependencyPropertyTest_ManagedTest_A2.xaml");
+			Assert.AreEqual ("ok", mtc._A_, "A2-A");
+			Assert.AreEqual ("b", mtc._b_, "A2-b");
+			Assert.AreEqual ("c", mtc._c_, "A2-c");
+			Assert.AreEqual ("C", mtc._C_, "A2-C");
+			Assert.AreEqual ("D", mtc._D_1_, "A2-D1");
+			Assert.AreEqual ("d", mtc._d_2_, "A2-D2");
+			Assert.AreEqual ("d", mtc._d_3_, "A2-D3");
+			Assert.AreEqual ("'A' => 'ok'", ManagedTestClass.A.ChangesToString (format, sep), "A2-A-Changes");
+			Assert.AreEqual ("", ManagedTestClass.b.ChangesToString (format, sep), "A2-b-Changes");
+			Assert.AreEqual ("", ManagedTestClass.c.ChangesToString (format, sep), "A2-c-Changes");
+			Assert.AreEqual ("", ManagedTestClass.C.ChangesToString (format, sep), "A2-C-Changes");
+			Assert.AreEqual ("", ManagedTestClass.D_1.ChangesToString (format, sep), "A2-D1-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_2.ChangesToString (format, sep), "A2-d2-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_3.ChangesToString (format, sep), "A2-d3-Changes");
+
+
+			mtc = new ManagedTestClass ("DependencyPropertyTest_ManagedTest_A3.xaml");
+			Assert.AreEqual ("ok-2", mtc._A_, "A3-A");
+			Assert.AreEqual ("b", mtc._b_, "A3-b");
+			Assert.AreEqual ("c", mtc._c_, "A3-c");
+			Assert.AreEqual ("C", mtc._C_, "A3-C");
+			Assert.AreEqual ("D", mtc._D_1_, "A3-D1");
+			Assert.AreEqual ("d", mtc._d_2_, "A3-D2");
+			Assert.AreEqual ("d", mtc._d_3_, "A3-D3");
+			Assert.AreEqual ("'A' => 'ok-1' ; 'ok-1' => 'ok-2' ; 'ok-2' => 'ok-1' ; 'ok-1' => 'ok-2'", ManagedTestClass.A.ChangesToString (format, sep), "A3-A-Changes");
+			Assert.AreEqual ("", ManagedTestClass.b.ChangesToString (format, sep), "A3-b-Changes");
+			Assert.AreEqual ("", ManagedTestClass.c.ChangesToString (format, sep), "A3-c-Changes");
+			Assert.AreEqual ("", ManagedTestClass.C.ChangesToString (format, sep), "A3-C-Changes");
+			Assert.AreEqual ("", ManagedTestClass.D_1.ChangesToString (format, sep), "A3-D1-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_2.ChangesToString (format, sep), "A3-d2-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_3.ChangesToString (format, sep), "A3-d3-Changes");
+
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void ManagedTest_B ()
+		{
+			ManagedTestClass mtc;
+			string format = "'{1}' => '{2}'";
+			string sep = " ; ";
+
+			// B
+
+			Assert.Throws<XamlParseException> (delegate () { mtc = new ManagedTestClass ("DependencyPropertyTest_ManagedTest_B1.xaml"); });
+
+			mtc = new ManagedTestClass ("DependencyPropertyTest_ManagedTest_B2.xaml");
+			Assert.AreEqual ("A", mtc._A_, "B2-A");
+			Assert.AreEqual ("ok", mtc._b_, "B2-b");
+			Assert.AreEqual ("c", mtc._c_, "B2-c");
+			Assert.AreEqual ("C", mtc._C_, "B2-C");
+			Assert.AreEqual ("D", mtc._D_1_, "B2-D1");
+			Assert.AreEqual ("d", mtc._d_2_, "B2-D2");
+			Assert.AreEqual ("d", mtc._d_3_, "B2-D3");
+			Assert.AreEqual ("", ManagedTestClass.A.ChangesToString (format, sep), "B2-A-Changes");
+			Assert.AreEqual ("'b' => 'ok'", ManagedTestClass.b.ChangesToString (format, sep), "B2-b-Changes");
+			Assert.AreEqual ("", ManagedTestClass.c.ChangesToString (format, sep), "B2-c-Changes");
+			Assert.AreEqual ("", ManagedTestClass.C.ChangesToString (format, sep), "B2-C-Changes");
+			Assert.AreEqual ("", ManagedTestClass.D_1.ChangesToString (format, sep), "B2-D1-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_2.ChangesToString (format, sep), "B2-d2-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_3.ChangesToString (format, sep), "B2-d3-Changes");
+
+			mtc = new ManagedTestClass ("DependencyPropertyTest_ManagedTest_B3.xaml");
+			Assert.AreEqual ("A", mtc._A_, "B3-A");
+			Assert.AreEqual ("ok-2", mtc._b_, "B3-b");
+			Assert.AreEqual ("c", mtc._c_, "B3-c");
+			Assert.AreEqual ("C", mtc._C_, "B3-C");
+			Assert.AreEqual ("D", mtc._D_1_, "B3-D1");
+			Assert.AreEqual ("d", mtc._d_2_, "B3-D2");
+			Assert.AreEqual ("d", mtc._d_3_, "B3-D3");
+			Assert.AreEqual ("", ManagedTestClass.A.ChangesToString (format, sep), "B3-A-Changes");
+			Assert.AreEqual ("'b' => 'ok-1' ; 'ok-1' => 'ok-2' ; 'ok-2' => 'ok-1' ; 'ok-1' => 'ok-2'", ManagedTestClass.b.ChangesToString (format, sep), "B3-b-Changes");
+			Assert.AreEqual ("", ManagedTestClass.c.ChangesToString (format, sep), "B3-c-Changes");
+			Assert.AreEqual ("", ManagedTestClass.C.ChangesToString (format, sep), "B3-C-Changes");
+			Assert.AreEqual ("", ManagedTestClass.D_1.ChangesToString (format, sep), "B3-D1-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_2.ChangesToString (format, sep), "B3-d2-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_3.ChangesToString (format, sep), "B3-d3-Changes");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void ManagedTest_C ()
+		{
+			ManagedTestClass mtc;
+			string format = "'{1}' => '{2}'";
+			string sep = " ; ";
+			// C
+
+			mtc = new ManagedTestClass ("DependencyPropertyTest_ManagedTest_C1.xaml");
+			Assert.AreEqual ("A", mtc._A_, "C1-A");
+			Assert.AreEqual ("b", mtc._b_, "C1-b");
+			Assert.AreEqual ("c", mtc._c_, "C1-c");
+			Assert.AreEqual ("ok", mtc._C_, "C1-C");
+			Assert.AreEqual ("D", mtc._D_1_, "C1-D1");
+			Assert.AreEqual ("d", mtc._d_2_, "C1-D2");
+			Assert.AreEqual ("d", mtc._d_3_, "C1-D3");
+			Assert.AreEqual ("", ManagedTestClass.A.ChangesToString (format, sep), "C1-A-Changes");
+			Assert.AreEqual ("", ManagedTestClass.b.ChangesToString (format, sep), "C1-b-Changes");
+			Assert.AreEqual ("", ManagedTestClass.c.ChangesToString (format, sep), "C1-c-Changes");
+			Assert.AreEqual ("'C' => 'ok'", ManagedTestClass.C.ChangesToString (format, sep), "C1-C-Changes");
+			Assert.AreEqual ("", ManagedTestClass.D_1.ChangesToString (format, sep), "C1-D1-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_2.ChangesToString (format, sep), "C1-d2-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_3.ChangesToString (format, sep), "C1-d3-Changes");
+
+			mtc = new ManagedTestClass ("DependencyPropertyTest_ManagedTest_C2.xaml");
+			Assert.AreEqual ("A", mtc._A_, "C2-A");
+			Assert.AreEqual ("b", mtc._b_, "C2-b");
+			Assert.AreEqual ("c", mtc._c_, "C2-c");
+			Assert.AreEqual ("ok", mtc._C_, "C2-C");
+			Assert.AreEqual ("D", mtc._D_1_, "C2-D1");
+			Assert.AreEqual ("d", mtc._d_2_, "C2-D2");
+			Assert.AreEqual ("d", mtc._d_3_, "C2-D3");
+			Assert.AreEqual ("", ManagedTestClass.A.ChangesToString (format, sep), "C2-A-Changes");
+			Assert.AreEqual ("", ManagedTestClass.b.ChangesToString (format, sep), "C2-b-Changes");
+			Assert.AreEqual ("", ManagedTestClass.c.ChangesToString (format, sep), "C2-c-Changes");
+			Assert.AreEqual ("'C' => 'ok'", ManagedTestClass.C.ChangesToString (format, sep), "C2-C-Changes");
+			Assert.AreEqual ("", ManagedTestClass.D_1.ChangesToString (format, sep), "C2-D1-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_2.ChangesToString (format, sep), "C2-d2-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_3.ChangesToString (format, sep), "C2-d3-Changes");
+
+			mtc = new ManagedTestClass ("DependencyPropertyTest_ManagedTest_C3.xaml");
+			Assert.AreEqual ("A", mtc._A_, "C3-A");
+			Assert.AreEqual ("b", mtc._b_, "C3-b");
+			Assert.AreEqual ("c", mtc._c_, "C3-c");
+			Assert.AreEqual ("ok-2", mtc._C_, "C3-C");
+			Assert.AreEqual ("D", mtc._D_1_, "C3-D1");
+			Assert.AreEqual ("d", mtc._d_2_, "C3-D2");
+			Assert.AreEqual ("d", mtc._d_3_, "C3-D3");
+			Assert.AreEqual ("", ManagedTestClass.A.ChangesToString (format, sep), "C3-A-Changes");
+			Assert.AreEqual ("", ManagedTestClass.b.ChangesToString (format, sep), "C3-b-Changes");
+			Assert.AreEqual ("", ManagedTestClass.c.ChangesToString (format, sep), "C3-c-Changes");
+			Assert.AreEqual ("'C' => 'ok-1' ; 'ok-1' => 'ok-2' ; 'ok-2' => 'ok-1' ; 'ok-1' => 'ok-2'", ManagedTestClass.C.ChangesToString (format, sep), "C3-C-Changes");
+			Assert.AreEqual ("", ManagedTestClass.D_1.ChangesToString (format, sep), "C3-D1-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_2.ChangesToString (format, sep), "C3-d2-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_3.ChangesToString (format, sep), "C3-d3-Changes");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void ManagedTest_D ()
+		{
+			ManagedTestClass mtc;
+			string format = "'{1}' => '{2}'";
+			string sep = " ; ";
+
+			// D
+
+			mtc = new ManagedTestClass ("DependencyPropertyTest_ManagedTest_D1.xaml");
+			Assert.AreEqual ("A", mtc._A_, "D1-A");
+			Assert.AreEqual ("b", mtc._b_, "D1-b");
+			Assert.AreEqual ("c", mtc._c_, "D1-c");
+			Assert.AreEqual ("C", mtc._C_, "D1-C");
+			Assert.AreEqual ("ok", mtc._D_1_, "D1-D1");
+			Assert.AreEqual ("d", mtc._d_2_, "D1-D2");
+			Assert.AreEqual ("d", mtc._d_3_, "D1-D3");
+			Assert.AreEqual ("", ManagedTestClass.A.ChangesToString (format, sep), "D1-A-Changes");
+			Assert.AreEqual ("", ManagedTestClass.b.ChangesToString (format, sep), "D1-b-Changes");
+			Assert.AreEqual ("", ManagedTestClass.c.ChangesToString (format, sep), "D1-c-Changes");
+			Assert.AreEqual ("", ManagedTestClass.C.ChangesToString (format, sep), "D1-C-Changes");
+			Assert.AreEqual ("'D' => 'ok'", ManagedTestClass.D_1.ChangesToString (format, sep), "D1-D1-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_2.ChangesToString (format, sep), "D1-d2-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_3.ChangesToString (format, sep), "C3-d3-Changes");
+
+			mtc = new ManagedTestClass ("DependencyPropertyTest_ManagedTest_D2.xaml");
+			Assert.AreEqual ("A", mtc._A_, "D2-A");
+			Assert.AreEqual ("b", mtc._b_, "D2-b");
+			Assert.AreEqual ("c", mtc._c_, "D2-c");
+			Assert.AreEqual ("C", mtc._C_, "D2-C");
+			Assert.AreEqual ("ok", mtc._D_1_, "D2-D1");
+			Assert.AreEqual ("d", mtc._d_2_, "D2-D2");
+			Assert.AreEqual ("d", mtc._d_3_, "D2-D3");
+			Assert.AreEqual ("", ManagedTestClass.A.ChangesToString (format, sep), "D2-A-Changes");
+			Assert.AreEqual ("", ManagedTestClass.b.ChangesToString (format, sep), "D2-b-Changes");
+			Assert.AreEqual ("", ManagedTestClass.c.ChangesToString (format, sep), "D2-c-Changes");
+			Assert.AreEqual ("", ManagedTestClass.C.ChangesToString (format, sep), "D2-C-Changes");
+			Assert.AreEqual ("'D' => 'ok'", ManagedTestClass.D_1.ChangesToString (format, sep), "D2-D1-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_2.ChangesToString (format, sep), "D2-d2-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_3.ChangesToString (format, sep), "D2-d3-Changes");
+
+			mtc = new ManagedTestClass ("DependencyPropertyTest_ManagedTest_D3.xaml");
+			Assert.AreEqual ("A", mtc._A_, "D3-A");
+			Assert.AreEqual ("b", mtc._b_, "D3-b");
+			Assert.AreEqual ("c", mtc._c_, "D3-c");
+			Assert.AreEqual ("C", mtc._C_, "D3-C");
+			Assert.AreEqual ("ok-2", mtc._D_1_, "D3-D1");
+			Assert.AreEqual ("d", mtc._d_2_, "D3-D2");
+			Assert.AreEqual ("d", mtc._d_3_, "D3-D3");
+			Assert.AreEqual ("", ManagedTestClass.A.ChangesToString (format, sep), "D3-A-Changes");
+			Assert.AreEqual ("", ManagedTestClass.b.ChangesToString (format, sep), "D3-b-Changes");
+			Assert.AreEqual ("", ManagedTestClass.c.ChangesToString (format, sep), "D3-c-Changes");
+			Assert.AreEqual ("", ManagedTestClass.C.ChangesToString (format, sep), "D3-C-Changes");
+			Assert.AreEqual ("'D' => 'ok-1' ; 'ok-1' => 'ok-2' ; 'ok-2' => 'ok-1' ; 'ok-1' => 'ok-2'", ManagedTestClass.D_1.ChangesToString (format, sep), "D3-D1-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_2.ChangesToString (format, sep), "D3-d2-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_3.ChangesToString (format, sep), "D3-d3-Changes");
+
+			mtc = new ManagedTestClass ("DependencyPropertyTest_ManagedTest_D4.xaml");
+			Assert.AreEqual ("A", mtc._A_, "D4-A");
+			Assert.AreEqual ("b", mtc._b_, "D4-b");
+			Assert.AreEqual ("c", mtc._c_, "D4-c");
+			Assert.AreEqual ("C", mtc._C_, "D4-C");
+			Assert.AreEqual ("ok-2", mtc._D_1_, "D4-D1");
+			Assert.AreEqual ("d", mtc._d_2_, "D4-D2");
+			Assert.AreEqual ("d", mtc._d_3_, "D4-D3");
+			Assert.AreEqual ("", ManagedTestClass.A.ChangesToString (format, sep), "D4-A-Changes");
+			Assert.AreEqual ("", ManagedTestClass.b.ChangesToString (format, sep), "D4-b-Changes");
+			Assert.AreEqual ("", ManagedTestClass.c.ChangesToString (format, sep), "D4-c-Changes");
+			Assert.AreEqual ("", ManagedTestClass.C.ChangesToString (format, sep), "D4-C-Changes");
+			Assert.AreEqual ("'D' => 'ok-1' ; 'ok-1' => 'ok-2' ; 'ok-2' => 'ok-1' ; 'ok-1' => 'ok-2'", ManagedTestClass.D_1.ChangesToString (format, sep), "D4-D1-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_2.ChangesToString (format, sep), "D4-d2-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_3.ChangesToString (format, sep), "D4-d3-Changes");
+
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void ManagedTest_E ()
+		{
+			ManagedTestClass mtc;
+			string format = "'{1}' => '{2}'";
+			string sep = " ; ";
+			// E
+
+			mtc = new ManagedTestClass ("DependencyPropertyTest_ManagedTest_E1.xaml");
+			Assert.AreEqual ("A", mtc._A_, "E1-A");
+			Assert.AreEqual ("b", mtc._b_, "E1-b");
+			Assert.AreEqual ("c", mtc._c_, "E1-c");
+			Assert.AreEqual ("C", mtc._C_, "E1-C");
+			Assert.AreEqual ("D", mtc._D_1_, "E1-D1");
+			Assert.AreEqual ("d", mtc._d_2_, "E1-D2");
+			Assert.AreEqual ("d", mtc._d_3_, "E1-D3");
+			Assert.AreEqual ("E", mtc._E_1_, "E1-E1");
+			Assert.AreEqual ("E", mtc._E_2_, "E1-E2");
+			Assert.AreEqual ("ok", mtc._E_3_, "E1-E3");
+			Assert.AreEqual ("", ManagedTestClass.A.ChangesToString (format, sep), "E1-A-Changes");
+			Assert.AreEqual ("", ManagedTestClass.b.ChangesToString (format, sep), "E1-b-Changes");
+			Assert.AreEqual ("", ManagedTestClass.c.ChangesToString (format, sep), "E1-c-Changes");
+			Assert.AreEqual ("", ManagedTestClass.C.ChangesToString (format, sep), "E1-C-Changes");
+			Assert.AreEqual ("", ManagedTestClass.D_1.ChangesToString (format, sep), "E1-D1-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_2.ChangesToString (format, sep), "E1-d2-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_3.ChangesToString (format, sep), "E1-d3-Changes");
+			Assert.AreEqual ("", ManagedTestClass.E_1.ChangesToString (format, sep), "E1-E1-Changes");
+			Assert.AreEqual ("", ManagedTestClass.E_2.ChangesToString (format, sep), "E1-E2-Changes");
+			Assert.AreEqual ("'E' => 'ok'", ManagedTestClass.E_3.ChangesToString (format, sep), "E1-E3-Changes");
+
+			mtc = new ManagedTestClass ("DependencyPropertyTest_ManagedTest_E2.xaml");
+			Assert.AreEqual ("A", mtc._A_, "E2-A");
+			Assert.AreEqual ("b", mtc._b_, "E2-b");
+			Assert.AreEqual ("c", mtc._c_, "E2-c");
+			Assert.AreEqual ("C", mtc._C_, "E2-C");
+			Assert.AreEqual ("D", mtc._D_1_, "E2-D1");
+			Assert.AreEqual ("d", mtc._d_2_, "E2-D2");
+			Assert.AreEqual ("d", mtc._d_3_, "E2-D3");
+			Assert.AreEqual ("E", mtc._E_1_, "E2-E1");
+			Assert.AreEqual ("E", mtc._E_2_, "E2-E2");
+			Assert.AreEqual ("ok", mtc._E_3_, "E2-E3");
+			Assert.AreEqual ("", ManagedTestClass.A.ChangesToString (format, sep), "E2-A-Changes");
+			Assert.AreEqual ("", ManagedTestClass.b.ChangesToString (format, sep), "E2-b-Changes");
+			Assert.AreEqual ("", ManagedTestClass.c.ChangesToString (format, sep), "E2-c-Changes");
+			Assert.AreEqual ("", ManagedTestClass.C.ChangesToString (format, sep), "E2-C-Changes");
+			Assert.AreEqual ("", ManagedTestClass.D_1.ChangesToString (format, sep), "E2-D1-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_2.ChangesToString (format, sep), "E2-d2-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_3.ChangesToString (format, sep), "E2-d3-Changes");
+			Assert.AreEqual ("", ManagedTestClass.E_1.ChangesToString (format, sep), "E2-E1-Changes");
+			Assert.AreEqual ("", ManagedTestClass.E_2.ChangesToString (format, sep), "E2-E2-Changes");
+			Assert.AreEqual ("'E' => 'ok'", ManagedTestClass.E_3.ChangesToString (format, sep), "E2-E3-Changes");
+
+
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void ManagedTest_F ()
+		{
+			ManagedTestClass mtc;
+			string format = "'{1}' => '{2}'";
+			string sep = " ; ";
+
+			// F
+
+			mtc = new ManagedTestClass ("DependencyPropertyTest_ManagedTest_F1.xaml");
+			Assert.AreEqual ("A", mtc._A_, "F1-A");
+			Assert.AreEqual ("b", mtc._b_, "F1-b");
+			Assert.AreEqual ("c", mtc._c_, "F1-c");
+			Assert.AreEqual ("C", mtc._C_, "F1-C");
+			Assert.AreEqual ("D", mtc._D_1_, "F1-D1");
+			Assert.AreEqual ("d", mtc._d_2_, "F1-D2");
+			Assert.AreEqual ("d", mtc._d_3_, "F1-D3");
+			Assert.AreEqual ("E", mtc._E_1_, "F1-E1");
+			Assert.AreEqual ("E", mtc._E_2_, "F1-E2");
+			Assert.AreEqual ("E", mtc._E_3_, "F1-E3");
+			Assert.AreEqual ("F", mtc._F_1_, "F1-F1");
+			Assert.AreEqual ("ok", mtc._F_2_, "F1-F2");
+			Assert.AreEqual ("f", mtc._f_3_, "F1-F3");
+			Assert.AreEqual ("", ManagedTestClass.A.ChangesToString (format, sep), "F1-A-Changes");
+			Assert.AreEqual ("", ManagedTestClass.b.ChangesToString (format, sep), "F1-b-Changes");
+			Assert.AreEqual ("", ManagedTestClass.c.ChangesToString (format, sep), "F1-c-Changes");
+			Assert.AreEqual ("", ManagedTestClass.C.ChangesToString (format, sep), "F1-C-Changes");
+			Assert.AreEqual ("", ManagedTestClass.D_1.ChangesToString (format, sep), "F1-D1-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_2.ChangesToString (format, sep), "F1-d2-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_3.ChangesToString (format, sep), "F1-d3-Changes");
+			Assert.AreEqual ("", ManagedTestClass.E_1.ChangesToString (format, sep), "F1-E1-Changes");
+			Assert.AreEqual ("", ManagedTestClass.E_2.ChangesToString (format, sep), "F1-E2-Changes");
+			Assert.AreEqual ("", ManagedTestClass.E_3.ChangesToString (format, sep), "F1-E3-Changes");
+			Assert.AreEqual ("", ManagedTestClass.F_1.ChangesToString (format, sep), "F1-F1-Changes");
+			Assert.AreEqual ("'F' => 'ok'", ManagedTestClass.F_2.ChangesToString (format, sep), "F1-F2-Changes");
+			Assert.AreEqual ("", ManagedTestClass.f_3.ChangesToString (format, sep), "F1-F3-Changes");
+
+			mtc = new ManagedTestClass ("DependencyPropertyTest_ManagedTest_F2.xaml");
+			Assert.AreEqual ("A", mtc._A_, "F2-A");
+			Assert.AreEqual ("b", mtc._b_, "F2-b");
+			Assert.AreEqual ("c", mtc._c_, "F2-c");
+			Assert.AreEqual ("C", mtc._C_, "F2-C");
+			Assert.AreEqual ("D", mtc._D_1_, "F2-D1");
+			Assert.AreEqual ("d", mtc._d_2_, "F2-D2");
+			Assert.AreEqual ("d", mtc._d_3_, "F2-D3");
+			Assert.AreEqual ("E", mtc._E_1_, "F2-E1");
+			Assert.AreEqual ("E", mtc._E_2_, "F2-E2");
+			Assert.AreEqual ("E", mtc._E_3_, "F2-E3");
+			Assert.AreEqual ("F", mtc._F_1_, "F2-F1");
+			Assert.AreEqual ("ok", mtc._F_2_, "F2-F2");
+			Assert.AreEqual ("f", mtc._f_3_, "F2-F3");
+			Assert.AreEqual ("", ManagedTestClass.A.ChangesToString (format, sep), "F2-A-Changes");
+			Assert.AreEqual ("", ManagedTestClass.b.ChangesToString (format, sep), "F2-b-Changes");
+			Assert.AreEqual ("", ManagedTestClass.c.ChangesToString (format, sep), "F2-c-Changes");
+			Assert.AreEqual ("", ManagedTestClass.C.ChangesToString (format, sep), "F2-C-Changes");
+			Assert.AreEqual ("", ManagedTestClass.D_1.ChangesToString (format, sep), "F2-D1-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_2.ChangesToString (format, sep), "F2-d2-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_3.ChangesToString (format, sep), "F2-d3-Changes");
+			Assert.AreEqual ("", ManagedTestClass.E_1.ChangesToString (format, sep), "F2-E1-Changes");
+			Assert.AreEqual ("", ManagedTestClass.E_2.ChangesToString (format, sep), "F2-E2-Changes");
+			Assert.AreEqual ("", ManagedTestClass.E_3.ChangesToString (format, sep), "F2-E3-Changes");
+			Assert.AreEqual ("", ManagedTestClass.F_1.ChangesToString (format, sep), "F2-F1-Changes");
+			Assert.AreEqual ("'F' => 'ok'", ManagedTestClass.F_2.ChangesToString (format, sep), "F2-F2-Changes");
+			Assert.AreEqual ("", ManagedTestClass.f_3.ChangesToString (format, sep), "F2-F3-Changes");
+
+			mtc = new ManagedTestClass ("DependencyPropertyTest_ManagedTest_F3.xaml");
+			Assert.AreEqual ("A", mtc._A_, "F3-A");
+			Assert.AreEqual ("b", mtc._b_, "F3-b");
+			Assert.AreEqual ("c", mtc._c_, "F3-c");
+			Assert.AreEqual ("C", mtc._C_, "F3-C");
+			Assert.AreEqual ("D", mtc._D_1_, "F3-D1");
+			Assert.AreEqual ("d", mtc._d_2_, "F3-D2");
+			Assert.AreEqual ("d", mtc._d_3_, "F3-D3");
+			Assert.AreEqual ("E", mtc._E_1_, "F3-E1");
+			Assert.AreEqual ("E", mtc._E_2_, "F3-E2");
+			Assert.AreEqual ("E", mtc._E_3_, "F3-E3");
+			Assert.AreEqual ("F", mtc._F_1_, "F3-F1");
+			Assert.AreEqual ("ok-2", mtc._F_2_, "F3-F2");
+			Assert.AreEqual ("f", mtc._f_3_, "F3-F3");
+			Assert.AreEqual ("", ManagedTestClass.A.ChangesToString (format, sep), "F3-A-Changes");
+			Assert.AreEqual ("", ManagedTestClass.b.ChangesToString (format, sep), "F3-b-Changes");
+			Assert.AreEqual ("", ManagedTestClass.c.ChangesToString (format, sep), "F3-c-Changes");
+			Assert.AreEqual ("", ManagedTestClass.C.ChangesToString (format, sep), "F3-C-Changes");
+			Assert.AreEqual ("", ManagedTestClass.D_1.ChangesToString (format, sep), "F3-D1-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_2.ChangesToString (format, sep), "F3-d2-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_3.ChangesToString (format, sep), "F3-d3-Changes");
+			Assert.AreEqual ("", ManagedTestClass.E_1.ChangesToString (format, sep), "F3-E1-Changes");
+			Assert.AreEqual ("", ManagedTestClass.E_2.ChangesToString (format, sep), "F3-E2-Changes");
+			Assert.AreEqual ("", ManagedTestClass.E_3.ChangesToString (format, sep), "F3-E3-Changes");
+			Assert.AreEqual ("", ManagedTestClass.F_1.ChangesToString (format, sep), "F3-F1-Changes");
+			Assert.AreEqual ("'F' => 'ok-1' ; 'ok-1' => 'ok-2' ; 'ok-2' => 'ok-1' ; 'ok-1' => 'ok-2'", ManagedTestClass.F_2.ChangesToString (format, sep), "F3-F2-Changes");
+			Assert.AreEqual ("", ManagedTestClass.f_3.ChangesToString (format, sep), "F3-F3-Changes");
+
+			mtc = new ManagedTestClass ("DependencyPropertyTest_ManagedTest_F4.xaml");
+			Assert.AreEqual ("A", mtc._A_, "F4-A");
+			Assert.AreEqual ("b", mtc._b_, "F4-b");
+			Assert.AreEqual ("c", mtc._c_, "F4-c");
+			Assert.AreEqual ("C", mtc._C_, "F4-C");
+			Assert.AreEqual ("D", mtc._D_1_, "F4-D1");
+			Assert.AreEqual ("d", mtc._d_2_, "F4-D2");
+			Assert.AreEqual ("d", mtc._d_3_, "F4-D3");
+			Assert.AreEqual ("E", mtc._E_1_, "F4-E1");
+			Assert.AreEqual ("E", mtc._E_2_, "F4-E2");
+			Assert.AreEqual ("E", mtc._E_3_, "F4-E3");
+			Assert.AreEqual ("F", mtc._F_1_, "F4-F1");
+			Assert.AreEqual ("ok-2", mtc._F_2_, "F4-F2");
+			Assert.AreEqual ("f", mtc._f_3_, "F4-F3");
+			Assert.AreEqual ("", ManagedTestClass.A.ChangesToString (format, sep), "F4-A-Changes");
+			Assert.AreEqual ("", ManagedTestClass.b.ChangesToString (format, sep), "F4-b-Changes");
+			Assert.AreEqual ("", ManagedTestClass.c.ChangesToString (format, sep), "F4-c-Changes");
+			Assert.AreEqual ("", ManagedTestClass.C.ChangesToString (format, sep), "F4-C-Changes");
+			Assert.AreEqual ("", ManagedTestClass.D_1.ChangesToString (format, sep), "F4-D1-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_2.ChangesToString (format, sep), "F4-d2-Changes");
+			Assert.AreEqual ("", ManagedTestClass.d_3.ChangesToString (format, sep), "F4-d3-Changes");
+			Assert.AreEqual ("", ManagedTestClass.E_1.ChangesToString (format, sep), "F4-E1-Changes");
+			Assert.AreEqual ("", ManagedTestClass.E_2.ChangesToString (format, sep), "F4-E2-Changes");
+			Assert.AreEqual ("", ManagedTestClass.E_3.ChangesToString (format, sep), "F4-E3-Changes");
+			Assert.AreEqual ("", ManagedTestClass.F_1.ChangesToString (format, sep), "F4-F1-Changes");
+			Assert.AreEqual ("'F' => 'ok-1' ; 'ok-1' => 'ok-2' ; 'ok-2' => 'ok-1' ; 'ok-1' => 'ok-2'", ManagedTestClass.F_2.ChangesToString (format, sep), "F4-F2-Changes");
+			Assert.AreEqual ("", ManagedTestClass.f_3.ChangesToString (format, sep), "F4-F3-Changes");
+
+		}
+
+#endregion
 	}
 
 	public class DependencyPropertyInfo
@@ -827,12 +1257,43 @@ namespace MoonTest.System.Windows
 
 		public List<ChangedInfo> Changes = new List<ChangedInfo> ();
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="format">{0} = index, {1} = old value, {2} = new value</param>
+		/// <param name="separator"></param>
+		/// <returns></returns>
+		public string ChangesToString (string format, string separator)
+		{
+			StringBuilder result = new StringBuilder ();
+
+			for (int i = 0; i < Changes.Count; i++) {
+				ChangedInfo c = Changes [i];
+				if (i != 0)
+					result.Append (separator);
+				result.AppendFormat (format, i, c.args.OldValue, c.args.NewValue);
+			}
+
+			return result.ToString ();
+		}
+
 		public DependencyPropertyInfo (string name, Type declaring_type, Type property_type, bool attached)
 		{
 			this.Name = name;
 			this.DeclaringType = declaring_type;
 			this.PropertyType = property_type;
 			this.Metadata = new PropertyMetadata (PropertyChanged);
+			this.Attached = attached;
+
+			Create ();
+		}
+
+		public DependencyPropertyInfo (string name, Type declaring_type, Type property_type, bool attached, object default_value)
+		{
+			this.Name = name;
+			this.DeclaringType = declaring_type;
+			this.PropertyType = property_type;
+			this.Metadata = new PropertyMetadata (default_value, PropertyChanged);
 			this.Attached = attached;
 
 			Create ();
@@ -868,5 +1329,89 @@ namespace MoonTest.System.Windows
 			public DependencyObject obj;
 			public DependencyPropertyChangedEventArgs args;
 		}
+	}
+	// This class is accessed from xaml, and xaml can't access nested classes.
+	public class ManagedTestClass : Canvas
+	{
+		public static DependencyPropertyInfo A; // uppercase
+		public static DependencyPropertyInfo b; // lowercase
+		public static DependencyPropertyInfo C;
+		public static DependencyPropertyInfo c; // uppercase and lowercase
+		public static DependencyPropertyInfo D_1;
+		public static DependencyPropertyInfo d_2;
+		public static DependencyPropertyInfo d_3; // two with equal name + 1 with different case, accessed after D has been accessed
+		public static DependencyPropertyInfo E_1;
+		public static DependencyPropertyInfo E_2; // two with equal name
+		public static DependencyPropertyInfo E_3; // two with equal name
+		public static DependencyPropertyInfo F_1;
+		public static DependencyPropertyInfo F_2;
+		public static DependencyPropertyInfo f_3; // two with equal name + 1 with different name, accessed before f has been accessed
+
+		public static Dictionary<DependencyPropertyInfo, int> Counters = new Dictionary<DependencyPropertyInfo, int> ();
+		public static Dictionary<DependencyProperty, DependencyPropertyInfo> Hash = new Dictionary<DependencyProperty, DependencyPropertyInfo> ();
+
+		static ManagedTestClass ()
+		{
+			A = new DependencyPropertyInfo ("A", typeof (ManagedTestClass), typeof (string), false, "A");
+			b = new DependencyPropertyInfo ("b", typeof (ManagedTestClass), typeof (string), false, "b");
+			C = new DependencyPropertyInfo ("C", typeof (ManagedTestClass), typeof (string), false, "C");
+			c = new DependencyPropertyInfo ("c", typeof (ManagedTestClass), typeof (string), false, "c");
+			D_1 = new DependencyPropertyInfo ("D", typeof (ManagedTestClass), typeof (string), false, "D");
+			d_2 = new DependencyPropertyInfo ("d", typeof (ManagedTestClass), typeof (string), false, "d");
+			d_3 = new DependencyPropertyInfo ("d", typeof (ManagedTestClass), typeof (string), false, "d");
+			E_1 = new DependencyPropertyInfo ("E", typeof (ManagedTestClass), typeof (string), false, "E");
+			E_2 = new DependencyPropertyInfo ("E", typeof (ManagedTestClass), typeof (string), false, "E");
+			E_3 = new DependencyPropertyInfo ("E", typeof (ManagedTestClass), typeof (string), false, "E");
+			F_1 = new DependencyPropertyInfo ("F", typeof (ManagedTestClass), typeof (string), false, "F");
+			F_2 = new DependencyPropertyInfo ("F", typeof (ManagedTestClass), typeof (string), false, "F");
+			f_3 = new DependencyPropertyInfo ("f", typeof (ManagedTestClass), typeof (string), false, "f");
+		}
+
+		public ManagedTestClass ()
+		{
+			ClearCounters ();
+		}
+
+		public ManagedTestClass (string xaml_resource_file)
+			: this (new Uri ("/moon-unit;component/System.Windows/" + xaml_resource_file, UriKind.Relative))
+		{
+		}
+
+		public ManagedTestClass (Uri uri) : this ()
+		{
+			Application.LoadComponent (this, uri);
+		}
+
+		public static void ClearCounters ()
+		{
+			A.Changes.Clear ();
+			b.Changes.Clear ();
+			c.Changes.Clear ();
+			C.Changes.Clear ();
+			D_1.Changes.Clear ();
+			d_2.Changes.Clear ();
+			d_3.Changes.Clear ();
+			E_1.Changes.Clear ();
+			E_2.Changes.Clear ();
+			E_3.Changes.Clear ();
+			F_1.Changes.Clear ();
+			F_2.Changes.Clear ();
+			f_3.Changes.Clear ();
+		}
+
+		// Weird naming to not get into any reflection-hackery SL might do.
+		public string _A_ { get { return (string) GetValue (A.Property); } }
+		public string _b_ { get { return (string) GetValue (b.Property); } }
+		public string _C_ { get { return (string) GetValue (C.Property); } }
+		public string _c_ { get { return (string) GetValue (c.Property); } }
+		public string _D_1_ { get { return (string) GetValue (D_1.Property); } }
+		public string _d_2_ { get { return (string) GetValue (d_2.Property); } }
+		public string _d_3_ { get { return (string) GetValue (d_3.Property); } }
+		public string _E_1_ { get { return (string) GetValue (E_1.Property); } }
+		public string _E_2_ { get { return (string) GetValue (E_2.Property); } }
+		public string _E_3_ { get { return (string) GetValue (E_3.Property); } }
+		public string _F_1_ { get { return (string) GetValue (F_1.Property); } }
+		public string _F_2_ { get { return (string) GetValue (F_2.Property); } }
+		public string _f_3_ { get { return (string) GetValue (f_3.Property); } }
 	}
 }

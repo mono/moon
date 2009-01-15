@@ -13,6 +13,9 @@ using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
 
+#pragma warning disable 414
+#pragma warning disable 219
+
 namespace MoonTest.System.Windows
 {
 	[TestClass ()]

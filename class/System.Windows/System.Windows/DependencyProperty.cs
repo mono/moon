@@ -214,7 +214,7 @@ namespace System.Windows {
 			if (declaring_kind == Kind.INVALID)
 				throw new ArgumentOutOfRangeException ("declaring_kind");
 			
-			handle = NativeMethods.dependency_property_get_dependency_property (declaring_kind, name);
+			handle = NativeMethods.dependency_property_get_dependency_property_full (declaring_kind, name, true);
 			
 			if (handle == IntPtr.Zero)
 				throw new Exception (

@@ -1,3 +1,7 @@
+2009-01-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* GeneratedPInvokes.cs: Regenerated.
+
 2009-01-14  Jackson Harper  <jackson@ximian.com>
 
 	* ManagedXamlLoader.cs: Add special handling of System.Type

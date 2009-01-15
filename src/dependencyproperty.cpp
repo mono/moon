@@ -116,20 +116,18 @@ DependencyProperty::GetDependencyProperty (Type::Kind type, const char *name, bo
 	return GetDependencyProperty (Type::Find (type), name, inherits);
 }
 
-#if SL_2_0
 DependencyProperty *
-DependencyProperty::GetDependencyProperty (Types *additional_types, Type::Kind type, const char *name, bool inherits)
+DependencyProperty::GetDependencyPropertyFull (Types *additional_types, Type::Kind type, const char *name, bool inherits)
 {
 	DependencyProperty *property;
 	
 	property = GetDependencyProperty (type, name, inherits);
 	
-	if (property == NULL)
+	if (property == NULL && additional_types != NULL)
 		property = GetDependencyProperty (additional_types->Find (type), name, inherits);
 
 	return property;
 }
-#endif
 
 DependencyProperty *
 DependencyProperty::GetDependencyProperty (Type *type, const char *name, bool inherits)
@@ -144,6 +142,13 @@ DependencyProperty::GetDependencyProperty (Type *type, const char *name, bool in
 		property = (DependencyProperty*) g_hash_table_lookup (type->properties, key);
 		g_free (key);
 	
+		if (property != NULL)
+			return property;
+	}
+
+	if (type->custom_properties_hash != NULL) {
+		property = (DependencyProperty *) g_hash_table_lookup (type->properties, name);
+		
 		if (property != NULL)
 			return property;
 	}
@@ -249,6 +254,9 @@ DependencyProperty::RegisterFull (Types *additional_types, Type *type, const cha
 		// and they all get the callback called when the property value changes.
 		// See comment in type.h.
 		type->custom_properties = g_slist_prepend (type->custom_properties, property);
+		if (type->custom_properties_hash == NULL)
+			type->custom_properties_hash = g_hash_table_new (g_str_hash, g_str_equal);
+		g_hash_table_insert (type->custom_properties_hash, property->name, property);
 	} else {
 		DependencyProperty *existing;
 		if (type->properties == NULL)

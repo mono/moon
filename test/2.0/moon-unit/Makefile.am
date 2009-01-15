@@ -42,7 +42,26 @@ XAML_RESOURCES= \
 	-res:misc/Events/Event_OverloadedValid.xaml,misc/Events/Event_OverloadedValid.xaml \
 	-res:misc/Events/Event_Private.xaml,misc/Events/Event_Private.xaml \
 	-res:misc/Events/Event_Protected.xaml,misc/Events/Event_Protected.xaml \
-	-res:misc/Events/Event_RoutedEventArgs.xaml,misc/Events/Event_RoutedEventArgs.xaml
+	-res:misc/Events/Event_RoutedEventArgs.xaml,misc/Events/Event_RoutedEventArgs.xaml	\
+	-res:System.Windows/DependencyPropertyTest_ManagedTest_A1.xaml,System.Windows/DependencyPropertyTest_ManagedTest_A1.xaml	\
+	-res:System.Windows/DependencyPropertyTest_ManagedTest_A2.xaml,System.Windows/DependencyPropertyTest_ManagedTest_A2.xaml	\
+	-res:System.Windows/DependencyPropertyTest_ManagedTest_A3.xaml,System.Windows/DependencyPropertyTest_ManagedTest_A3.xaml	\
+	-res:System.Windows/DependencyPropertyTest_ManagedTest_B1.xaml,System.Windows/DependencyPropertyTest_ManagedTest_B1.xaml	\
+	-res:System.Windows/DependencyPropertyTest_ManagedTest_B2.xaml,System.Windows/DependencyPropertyTest_ManagedTest_B2.xaml	\
+	-res:System.Windows/DependencyPropertyTest_ManagedTest_B3.xaml,System.Windows/DependencyPropertyTest_ManagedTest_B3.xaml	\
+	-res:System.Windows/DependencyPropertyTest_ManagedTest_C1.xaml,System.Windows/DependencyPropertyTest_ManagedTest_C1.xaml	\
+	-res:System.Windows/DependencyPropertyTest_ManagedTest_C2.xaml,System.Windows/DependencyPropertyTest_ManagedTest_C2.xaml	\
+	-res:System.Windows/DependencyPropertyTest_ManagedTest_C3.xaml,System.Windows/DependencyPropertyTest_ManagedTest_C3.xaml	\
+	-res:System.Windows/DependencyPropertyTest_ManagedTest_D1.xaml,System.Windows/DependencyPropertyTest_ManagedTest_D1.xaml	\
+	-res:System.Windows/DependencyPropertyTest_ManagedTest_D2.xaml,System.Windows/DependencyPropertyTest_ManagedTest_D2.xaml	\
+	-res:System.Windows/DependencyPropertyTest_ManagedTest_D3.xaml,System.Windows/DependencyPropertyTest_ManagedTest_D3.xaml	\
+	-res:System.Windows/DependencyPropertyTest_ManagedTest_D4.xaml,System.Windows/DependencyPropertyTest_ManagedTest_D4.xaml	\
+	-res:System.Windows/DependencyPropertyTest_ManagedTest_E1.xaml,System.Windows/DependencyPropertyTest_ManagedTest_E1.xaml	\
+	-res:System.Windows/DependencyPropertyTest_ManagedTest_E2.xaml,System.Windows/DependencyPropertyTest_ManagedTest_E2.xaml	\
+	-res:System.Windows/DependencyPropertyTest_ManagedTest_D1.xaml,System.Windows/DependencyPropertyTest_ManagedTest_F1.xaml	\
+	-res:System.Windows/DependencyPropertyTest_ManagedTest_D2.xaml,System.Windows/DependencyPropertyTest_ManagedTest_F2.xaml	\
+	-res:System.Windows/DependencyPropertyTest_ManagedTest_D3.xaml,System.Windows/DependencyPropertyTest_ManagedTest_F3.xaml	\
+	-res:System.Windows/DependencyPropertyTest_ManagedTest_D4.xaml,System.Windows/DependencyPropertyTest_ManagedTest_F4.xaml
 	
 SOURCES= \
 	$(wildcard $(srcdir)/*.xaml.cs)	\

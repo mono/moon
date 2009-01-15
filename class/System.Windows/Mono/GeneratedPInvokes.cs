@@ -516,6 +516,16 @@ namespace Mono {
 		// DependencyProperty *dependency_property_get_dependency_property (Type::Kind type, const char *name);
 		public extern static IntPtr dependency_property_get_dependency_property (Kind type, string name);
 
+		[DllImport ("moon", EntryPoint="dependency_property_get_dependency_property_full")]
+		// DependencyProperty *dependency_property_get_dependency_property_full (Types *additional_types, Type::Kind type, const char *name, bool inherits);
+		private extern static IntPtr dependency_property_get_dependency_property_full_ (IntPtr additional_types, Kind type, string name, [MarshalAs (UnmanagedType.U1)] bool inherits);
+		public static IntPtr dependency_property_get_dependency_property_full (Kind type, string name, bool inherits)
+		{
+			IntPtr result;
+			result = dependency_property_get_dependency_property_full_ (Mono.Types.Native, type, name, inherits);
+			return result;
+		}
+
 		[DllImport ("moon", EntryPoint="dependency_property_get_name")]
 		// const char *dependency_property_get_name (DependencyProperty *instance);
 		private extern static IntPtr dependency_property_get_name_ (IntPtr instance);

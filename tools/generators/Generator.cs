@@ -1472,7 +1472,7 @@ class Generator {
 		// Create the array of type data
 		text.AppendLine ("");
 		text.AppendLine ("Type type_infos [] = {");
-		text.AppendLine ("\t{ Type::INVALID, Type::INVALID, false, \"INVALID\", NULL, 0, 0, NULL, NULL, NULL, NULL, NULL },");
+		text.AppendLine ("\t{ Type::INVALID, Type::INVALID, false, \"INVALID\", NULL, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL },");
 		foreach (TypeInfo type in all.Children.SortedTypesByKind) {
 			MemberInfo member;
 			TypeInfo parent = null;
@@ -1487,7 +1487,7 @@ class Generator {
 			if (type.Events != null && type.Events.Count != 0)
 				events = type.Name + "_Events";
 	
-			text.AppendLine (string.Format (@"	{{ {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, NULL, NULL }}, ",
+			text.AppendLine (string.Format (@"	{{ {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, NULL, NULL, NULL }}, ",
 							"Type::" + type.KindName, 
 							type.KindName == "OBJECT" ? "Type::INVALID" : ("Type::" + (parent != null ? parent.KindName : "OBJECT")),
 							type.IsValueType ? "true" : "false",
@@ -1502,7 +1502,7 @@ class Generator {
 					 );
 		}
 
-		text.AppendLine ("\t{ Type::LASTTYPE, Type::INVALID, false, NULL, NULL, 0, 0, NULL, NULL, NULL, NULL, NULL }");
+		text.AppendLine ("\t{ Type::LASTTYPE, Type::INVALID, false, NULL, NULL, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }");
 		text.AppendLine ("};");
 
 		text.AppendLine ();

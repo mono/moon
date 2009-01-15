@@ -27,7 +27,10 @@ Type::~Type ()
 		g_hash_table_destroy (properties);
 		properties = NULL;
 	}
-	
+
+	if (custom_properties_hash != NULL)
+		g_hash_table_destroy (custom_properties_hash);
+		
 	if (custom_properties != NULL) {
 		GSList *current = custom_properties;
 		while (current != NULL) {

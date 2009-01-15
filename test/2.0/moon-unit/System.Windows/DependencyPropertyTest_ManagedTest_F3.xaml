@@ -1,0 +1,11 @@
+<Canvas x:Class="MoonTest.System.Windows.ManagedTestClass"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:custom="clr-namespace:MoonTest.System.Windows">
+    <Canvas.Style>
+        <Style TargetType="custom:ManagedTestClass">
+            <Setter Property="F" Value="ok-1" /> <!-- This should work -->
+            <Setter Property="f" Value="ok-2" /> <!-- This should work -->
+        </Style>
+    </Canvas.Style>
+</Canvas>
