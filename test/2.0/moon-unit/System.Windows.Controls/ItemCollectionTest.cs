@@ -85,7 +85,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("other types inheriting from PresentationFrameworkCollection are throwing ArgumentNullException")]
 		public void AddNull ()
 		{
 			ItemCollection ic = GetCollection ();
@@ -95,7 +94,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("other types inheriting from PresentationFrameworkCollection are throwing ArgumentNullException")]
 		public void InsertNull ()
 		{
 			ItemCollection ic = GetCollection ();
@@ -105,7 +103,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("other types inheriting from PresentationFrameworkCollection do not throw")]
 		public void RemoveNull ()
 		{
 			ItemCollection ic = GetCollection ();
@@ -115,7 +112,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("other types inheriting from PresentationFrameworkCollection do not throw")]
 		public void IndexOfNull ()
 		{
 			ItemCollection ic = GetCollection ();
@@ -125,7 +121,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("other types inheriting from PresentationFrameworkCollection do not throw")]
 		public void ContainsNull ()
 		{
 			ItemCollection ic = GetCollection ();

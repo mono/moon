@@ -1,3 +1,8 @@
+2009-01-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Controls/ItemCollectionTest.cs: Remove [MoonlightBug]
+	for null check test cases.
+
 2009-01-15  Jackson Harper  <jackson@ximian.com>
 
 	* System.Windows.Media.Animation/Storyboard.cs: Dumb test passes.
