@@ -69,20 +69,15 @@ namespace Mono {
 		public extern static void runtime_shutdown ();
 
 		[DllImport("moon")]
+		[return: MarshalAs (UnmanagedType.U1)]
 		public extern static bool type_get_value_type (Kind type);
 
 		[DllImport("moon")]
-		public extern static bool type_create_instance_from_kind (Kind type);
-
-		[DllImport("moon")]
+		[return: MarshalAs (UnmanagedType.U1)]
 		public extern static bool type_is_dependency_object (Kind type);
 
 		[DllImport ("moon")]
 		public extern static void xaml_set_property_from_str (IntPtr obj, IntPtr prop, string value);
-
-		[DllImport("moon")]
-		public extern static IntPtr xaml_create_from_file (IntPtr native_loader, string filename, bool create_namescope,
-								  out Kind kind);
 
 		[DllImport ("moon")]
 		public extern static string xaml_uri_for_prefix (IntPtr parser, string prefix);
@@ -115,9 +110,6 @@ namespace Mono {
 		[DllImport("moon")]
 		public extern static IntPtr downloader_get_response_text (IntPtr handle, string partname, out long size);
 
-//		[DllImport("moon")]
-//		public extern static void downloader_open (IntPtr handle, string verb, string uri);
-
 		[DllImport("moon")]
 		public extern static void downloader_send (IntPtr handle);
 
@@ -142,16 +134,18 @@ namespace Mono {
 #region DownloaderRequest
 		public delegate uint DownloaderResponseStartedDelegate (IntPtr native, IntPtr context);
 		public delegate uint DownloaderResponseAvailableDelegate (IntPtr native, IntPtr context, IntPtr data, uint length);
-		public delegate uint DownloaderResponseFinishedDelegate (IntPtr native, IntPtr context, bool success, IntPtr data);
+		public delegate uint DownloaderResponseFinishedDelegate (IntPtr native, IntPtr context, [MarshalAs (UnmanagedType.U1)] bool success, IntPtr data);
 		public delegate void HeaderVisitor (IntPtr name, IntPtr val);
 
 		[DllImport("moon")]
 		public extern static void downloader_request_abort (IntPtr downloader_request);
 
 		[DllImport("moon")]
+		[return: MarshalAs (UnmanagedType.U1)]
 		public extern static bool downloader_request_get_response (IntPtr downloader_request, DownloaderResponseStartedDelegate started, DownloaderResponseAvailableDelegate available, DownloaderResponseFinishedDelegate finished, IntPtr context);
 
 		[DllImport("moon")]
+		[return: MarshalAs (UnmanagedType.U1)]
 		public extern static bool downloader_request_is_aborted (IntPtr downloader_request);
 
 		[DllImport("moon")]
@@ -185,6 +179,7 @@ namespace Mono {
 		public extern static bool value_from_str_with_typename (string type_name, string prop_name, string str, out IntPtr value, [MarshalAs (UnmanagedType.U1)] bool sl2);
 
 #region Time manager
+		[return: MarshalAs (UnmanagedType.Bool)] // glib gboolean is a gint (i.e. 4 bytes just like the FX bool)
 		public delegate bool GSourceFunc (IntPtr data);
 		
 		[DllImport("moon")]
@@ -246,42 +241,20 @@ namespace Mono {
 
 		[DllImport("moonplugin")]
 		public extern static IntPtr plugin_instance_evaluate  (IntPtr plugin_handle, string code);
-		
-		[DllImport("moonplugin")]
-		public extern static IntPtr browser_http_request_new (IntPtr plugin_handle, string method, string uri);
 
+// FIXME: should be removed since it does not exists in moonplugin but managed code still use it
 		[DllImport("moonplugin")]
 		public extern static void browser_http_request_destroy (IntPtr handle);
 
+// FIXME: should be removed since it does not exists in moonplugin but managed code still use it
 		[DllImport("moonplugin")]
 		public extern static void browser_http_request_abort (IntPtr handle);
 
-		[DllImport("moonplugin")]
-		public extern static void browser_http_request_set_header (IntPtr handle, string name, string value);
-
-		[DllImport("moonplugin")]
-		public extern static void browser_http_request_set_body (IntPtr handle, byte [] body, int size);
-
-		[DllImport("moonplugin")]
-		public extern static IntPtr browser_http_request_get_response (IntPtr handle);
-
-		[DllImport("moonplugin")]
-		public extern static bool browser_http_request_get_async_response (IntPtr handle, AsyncResponseAvailableHandler handler, IntPtr context);
-
-
-		[DllImport("moonplugin")]
-		public extern static IntPtr browser_http_response_read (IntPtr handler, out int size);
-
-		[DllImport("moonplugin")]
-		public extern static void browser_http_response_visit_headers (IntPtr handle, HttpHeaderHandler handler);
-
-		[DllImport("moonplugin")]
-		public extern static string browser_http_response_get_status (IntPtr handle, out int code);
-
-		[DllImport("moonplugin")]
-		public extern static void browser_http_response_destroy (IntPtr handle);
-
-		public delegate void DomEventCallback (IntPtr context, string name, int client_x, int client_y, int offset_x, int offset_y, bool alt_key, bool ctrl_key, bool shift_key, int /* System.Windows.Browser.MouseButtons */ mouse_button);
+		public delegate void DomEventCallback (IntPtr context, string name, int client_x, int client_y, int offset_x, int offset_y, 
+			[MarshalAs (UnmanagedType.Bool)] bool alt_key,	// glib gboolean is a gint (i.e. 4 bytes just like the FX bool)
+			[MarshalAs (UnmanagedType.Bool)] bool ctrl_key,
+			[MarshalAs (UnmanagedType.Bool)] bool shift_key, 
+			int /* System.Windows.Browser.MouseButtons */ mouse_button);
 
 		[DllImport ("moonplugin")]
 		public static extern void html_object_get_property (IntPtr plugin, IntPtr obj, string name, out Mono.Value result);

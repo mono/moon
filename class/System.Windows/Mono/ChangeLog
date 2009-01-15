@@ -1,3 +1,10 @@
+2009-01-15  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* NativeMethods.cs: Fix marshaling of booleans (C# is four bytes,
+	like glib gboolean, but C++ bool is one byte). Remove old pinvokes
+	that does not exists anymore (except two that are still called from
+	managed code)
+
 2009-01-15  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Helper.cs: Update calls to value_from_str_with_typename
