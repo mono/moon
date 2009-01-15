@@ -199,21 +199,31 @@ namespace System.Windows {
 		{
 			return properties [native];
 		}
-		
+
+		internal static DependencyProperty Lookup (Kind declaring_kind, string name)
+		{
+			return LookupInternal (declaring_kind, name, null, false);
+		}
+
 		internal static DependencyProperty Lookup (Kind declaring_kind, string name, Type property_type)
+		{
+			return LookupInternal (declaring_kind, name, property_type, true);
+		}
+
+		private static DependencyProperty LookupInternal (Kind declaring_kind, string name, Type property_type, bool create)
 		{
 			IntPtr handle;
 			DependencyProperty result;
 
 			if (name == null)
 				throw new ArgumentNullException ("name");
-			
-			if (property_type == null)
+
+			if (create && property_type == null)
 				throw new ArgumentNullException ("property_type");	
 			
 			if (declaring_kind == Kind.INVALID)
 				throw new ArgumentOutOfRangeException ("declaring_kind");
-			
+
 			handle = NativeMethods.dependency_property_get_dependency_property_full (declaring_kind, name, true);
 			
 			if (handle == IntPtr.Zero)
@@ -225,8 +235,10 @@ namespace System.Windows {
 			
 			if (properties.TryGetValue (handle, out result))
 				return result;
-			
-			return new DependencyProperty (handle, property_type, Types.KindToType (declaring_kind), name);
+
+			if (create)
+				return new DependencyProperty (handle, property_type, Types.KindToType (declaring_kind), name);
+			return null;
 		}
 		
 		internal string Name {

@@ -1,3 +1,8 @@
+2009-01-15  Jackson Harper  <jackson@ximian.com>
+
+	* DependencyProperty.cs: Add an overload to lookup dependency
+	properties without creating a new one of the prop doesn't exist.
+
 2009-01-15  Alan McGovern  <amcgovern@novell.com>
 
 	* DependencyObject.cs: Nuke the managedObjects dictionary as it is no
