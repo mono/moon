@@ -74,7 +74,7 @@ class XamlElementInstanceManaged;
 class XamlElementInfoImportedManaged;
 class XamlElementInstanceTemplate;
 
-		
+#define INTERNAL_IGNORABLE_ELEMENT "MoonlightInternalIgnorableElement"
 
 static DefaultNamespace *default_namespace = NULL;
 static XNamespace *x_namespace = NULL;
@@ -125,7 +125,18 @@ add_namespace_data (gpointer key, gpointer value, gpointer user_data)
 	XamlNamespace *ns = (XamlNamespace *) value;
 	GHashTable *table = (GHashTable *) user_data;
 
-	g_hash_table_insert (table, g_strdup (ns->GetPrefix ()), g_strdup (ns->GetUri ()));
+	if ((void *)ns != (void *)default_namespace)
+		g_hash_table_insert (table, g_strdup (ns->GetPrefix ()), g_strdup (ns->GetUri ()));
+}
+
+void
+add_namespace_to_ignorable (gpointer key, gpointer value, gpointer user_data)
+{
+	char *prefix = (char *) key;
+	char *uri = (char *) value;
+	GString *str = (GString *) user_data;
+
+	g_string_append_printf (str, "xmlns:%s=\"%s\" ", prefix, uri);
 }
 
 class XamlContextInternal {
@@ -142,11 +153,31 @@ class XamlContextInternal {
 		g_hash_table_foreach (namespaces, add_namespace_data, imported_namespaces);
 	}
 
+	
 	~XamlContextInternal ()
 	{
 		if (imported_namespaces)
 			g_hash_table_destroy (imported_namespaces);
 	}
+
+	char *CreateIngorableTagOpen ()
+	{
+		GString *str = g_string_new ("<" INTERNAL_IGNORABLE_ELEMENT " ");
+		g_hash_table_foreach (imported_namespaces, add_namespace_to_ignorable, str);
+
+		str = g_string_append (str, ">");
+
+		char *res = str->str;
+		g_string_free (str, false);
+
+		return res;
+	}
+
+	char *CreateIgnorableTagClose ()
+	{
+		return g_strdup ("</" INTERNAL_IGNORABLE_ELEMENT ">");
+	}
+	
 };
 
 
@@ -730,7 +761,7 @@ class DefaultNamespace : public XamlNamespace {
 		return false;
 	}
 
-	virtual const char* GetUri () { return "clr-namespace:System.Windows;assembly=System.Windows"; }
+	virtual const char* GetUri () { return "http://schemas.microsoft.com/winfx/2006/xaml/presentation"; }
 	virtual const char* GetPrefix () { return ""; }
 };
 
@@ -838,7 +869,7 @@ class XNamespace : public XamlNamespace {
 		return false;
 	}
 
-	virtual const char* GetUri () { return "clr-namespace:System.Windows;assembly=System.Windows"; }
+	virtual const char* GetUri () { return "http://schemas.microsoft.com/winfx/2006/xaml"; }
 	virtual const char* GetPrefix () { return "x"; }
 };
 
@@ -1146,6 +1177,9 @@ start_element (void *data, const char *el, const char **attr)
 	XamlElementInfo *elem = NULL;
 	XamlElementInstance *inst;
 
+	if (!strcmp (el, INTERNAL_IGNORABLE_ELEMENT))
+		return;
+
 	if (p->ShouldBeginBuffering ()) {
 		p->BeginBuffering ();
 		return;
@@ -1349,6 +1383,9 @@ static void
 end_element_handler (void *data, const char *el)
 {
 	XamlParserInfo *p = (XamlParserInfo *) data;
+
+	if (!strcmp (el, INTERNAL_IGNORABLE_ELEMENT))
+		return;
 
 	if (p->error_args)
 		return;
@@ -1703,6 +1740,11 @@ XamlLoader::HydrateFromString (const char *xaml, DependencyObject *object, bool 
 	XamlParserInfo *parser_info = NULL;
 	DependencyObject *res = NULL;
 	char *start = (char*)xaml;
+	char *prepend = NULL;
+	char *append = NULL;
+	char * inputs [4] = {NULL, NULL, NULL, NULL};
+
+	inputs [0] = start;
 
 	if (!p) {
 		LOG_XAML ("can not create parser\n");
@@ -1755,15 +1797,28 @@ XamlLoader::HydrateFromString (const char *xaml, DependencyObject *object, bool 
 	XML_SetProcessingInstructionHandler (p, proc_handler);
 	*/
 
-	// don't freak out if the <?xml ... ?> isn't on the first line (see #328907)
-	while (g_ascii_isspace (*start))
-		start++;
+	if (context) {
+		prepend = context->internal->CreateIngorableTagOpen ();
+		append = context->internal->CreateIgnorableTagClose ();
 
-	parser_info->SetXmlBuffer (start);
-	if (!XML_Parse (p, start, strlen (start), TRUE)) {
-		expat_parser_error (parser_info, XML_GetErrorCode (p));
-		LOG_XAML ("error parsing:  %s\n\n", xaml);
-		goto cleanup_and_return;
+		inputs [0] = prepend;
+		inputs [1] = start;
+		inputs [2] = append;
+	}
+
+	for (int i = 0; inputs [i]; i++) {
+		char *start = inputs [i];
+
+		// don't freak out if the <?xml ... ?> isn't on the first line (see #328907)
+		while (g_ascii_isspace (*start))
+			start++;
+
+		parser_info->SetXmlBuffer (start);
+		if (!XML_Parse (p, start, strlen (start), inputs [i + 1] == NULL)) {
+			expat_parser_error (parser_info, XML_GetErrorCode (p));
+			LOG_XAML ("error parsing:  %s\n\n", xaml);
+			goto cleanup_and_return;
+		}
 	}
 	
 	print_tree (parser_info->top_element, 0);
@@ -1797,6 +1852,10 @@ XamlLoader::HydrateFromString (const char *xaml, DependencyObject *object, bool 
 		XML_ParserFree (p);
 	if (parser_info)
 		delete parser_info;
+	if (prepend)
+		g_free (prepend);
+	if (append)
+		g_free (append);
 	return res;
 }
 
