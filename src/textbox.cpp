@@ -1319,7 +1319,7 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 		Emit (TextChangedEvent, new TextChangedEventArgs ());
 	
 	if (changed & SELECTION_CHANGED)
-		Emit (TextChangedEvent, new RoutedEventArgs (this));
+		Emit (TextChangedEvent, new RoutedEventArgs ());
 	
 	// only bother emitting this event if the cursor position is
 	// the only thing that changed. If either Text or Selection
@@ -1407,13 +1407,13 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		selection_changed = true;
 		
 		if (emit)
-			Emit (TextBox::SelectionChangedEvent, new RoutedEventArgs (this));
+			Emit (TextBox::SelectionChangedEvent, new RoutedEventArgs ());
 	} else if (args->property == TextBox::SelectionLengthProperty) {
 		selection.length = args->new_value->AsInt32 ();
 		selection_changed = true;
 		
 		if (emit)
-			Emit (TextBox::SelectionChangedEvent, new RoutedEventArgs (this));
+			Emit (TextBox::SelectionChangedEvent, new RoutedEventArgs ());
 	} else if (args->property == TextBox::SelectionBackgroundProperty) {
 		if (!(selection.background = args->new_value ? args->new_value->AsBrush () : NULL))
 			selection.background = default_selection_background ();
@@ -1518,7 +1518,7 @@ TextBox::ClearSelection ()
 	SetSelectionStart (0);
 	emit = true;
 	
-	Emit (TextBox::SelectionChangedEvent, new RoutedEventArgs (this));
+	Emit (TextBox::SelectionChangedEvent, new RoutedEventArgs ());
 }
 
 void
@@ -1532,7 +1532,7 @@ TextBox::Select (int start, int length)
 	SetSelectionStart (start);
 	emit = true;
 	
-	Emit (TextBox::SelectionChangedEvent, new RoutedEventArgs (this));
+	Emit (TextBox::SelectionChangedEvent, new RoutedEventArgs ());
 }
 
 void
