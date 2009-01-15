@@ -1,5 +1,9 @@
 2009-01-15  Jackson Harper  <jackson@ximian.com>
 
+	* System.Windows.Media.Animation/Storyboard.cs: Dumb test passes.
+
+2009-01-15  Jackson Harper  <jackson@ximian.com>
+
 	* System.Windows.Controls/ControlTemplateTest.cs: Remove the extra
 	x: definition. This isn't needed anymore (and is incorrect).
 

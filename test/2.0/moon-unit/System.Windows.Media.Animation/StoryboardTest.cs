@@ -56,7 +56,6 @@ namespace MoonTest.System.Windows.Media.Animation {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void NameAndKey()
 		{
 			Storyboard board = (Storyboard)XamlReader.Load(
@@ -86,3 +85,5 @@ namespace MoonTest.System.Windows.Media.Animation {
 		}
 	}
 }
+
+
