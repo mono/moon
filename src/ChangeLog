@@ -1,5 +1,12 @@
 2009-01-15  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp|h: We need to pass a pointer to the elements parent
+	object to managed code, this is so we can look up a Setter's
+	Style.
+	- Let managed handle Type::DEPEPENDENCYPROPERTY attributes.
+	
+2009-01-15  Jackson Harper  <jackson@ximian.com>
+
 	* dependencyproperty.cpp: Patch mostly by rolf. Allows property
 	lookup to work on custom types that subclass custom types.
 	* template.cpp: Now that templates work pretty well, lets reduce

@@ -344,7 +344,7 @@ namespace Mono.Xaml
 			return true;
 		}
 
-		private bool TrySetPropertyReflection (IntPtr parser, IntPtr top_level, string xmlns, object target, string type_name, string name, IntPtr value_ptr, out string error)
+		private bool TrySetPropertyReflection (IntPtr parser, IntPtr top_level, string xmlns, object target, IntPtr target_parent_ptr, string type_name, string name, IntPtr value_ptr, out string error)
 		{
 			PropertyInfo pi = target.GetType ().GetProperty (name);
 
@@ -353,7 +353,7 @@ namespace Mono.Xaml
 				return false;
 			}
 
-			if (!SetPropertyFromValue (parser, top_level, target, pi, value_ptr, out error))
+			if (!SetPropertyFromValue (parser, top_level, target, target_parent_ptr, pi, value_ptr, out error))
 				return false;
 
 			error = null;
@@ -446,7 +446,7 @@ namespace Mono.Xaml
 			return true;
 		}
 
-		private bool SetProperty (IntPtr parser, IntPtr top_level, string xmlns, IntPtr target_ptr, string name, IntPtr value_ptr)
+		private bool SetProperty (IntPtr parser, IntPtr top_level, string xmlns, IntPtr target_ptr, IntPtr target_parent_ptr, string name, IntPtr value_ptr)
 		{
 			string error;
 			object target = LookupObject (target_ptr);
@@ -468,7 +468,7 @@ namespace Mono.Xaml
 				name = name.Substring (++dot, name.Length - dot);
 			}
 
-			if (TrySetPropertyReflection (parser, top_level, xmlns, target, type_name, name, value_ptr, out error))
+			if (TrySetPropertyReflection (parser, top_level, xmlns, target, target_parent_ptr, type_name, name, value_ptr, out error))
 				return true;
 
 			if (TrySetEventReflection (top_level, xmlns, target, type_name, name, value_ptr, out error))
@@ -520,7 +520,45 @@ namespace Mono.Xaml
 			return res;
 		}
 
-		private bool SetPropertyFromValue (IntPtr parser, IntPtr top_level, object target, PropertyInfo pi, IntPtr value_ptr, out string error)
+		private DependencyProperty DependencyPropertyFromString (IntPtr parser, IntPtr top_level, object otarget, IntPtr target_parent_ptr, string str_value)
+		{
+			object o = LookupObject (target_parent_ptr);
+			Style parent = o as Style;
+
+			if (parent == null) {
+				Console.Error.WriteLine ("DependencyPropertyFromString Parent of target is not a Style. It's a {0}", o);
+				return null;
+			}
+
+			Type target_type = parent.TargetType;
+			if (target_type == null) {
+				Console.Error.WriteLine ("DependencyPropertyFromString TargetType is null.");
+				return null;
+			}
+
+			//
+			// Check to see if we have an attached property
+			//
+			int dot = str_value.IndexOf ('.');
+			if (dot >= 0) {
+				string type_name = str_value.Substring (0, dot);
+				str_value= str_value.Substring (++dot, str_value.Length - dot);
+
+				target_type = TypeFromString (parser, top_level, type_name);
+			}
+
+			//
+			// Yup, we have to call Initialize to make sure that the DPs get registered
+			//
+			System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor (target_type.TypeHandle);
+
+			ManagedType mt = Types.Find (target_type);
+			DependencyProperty dp = DependencyProperty.Lookup ((Kind) mt.native_handle, str_value);
+
+			return dp;
+		}
+		
+		private bool SetPropertyFromValue (IntPtr parser, IntPtr top_level, object target, IntPtr target_parent_ptr, PropertyInfo pi, IntPtr value_ptr, out string error)
 		{
 			object obj_value = Value.ToObject (null, value_ptr);
 			string str_value = obj_value as string;
@@ -543,14 +581,24 @@ namespace Mono.Xaml
 					}
 				}
 
+				if (pi.PropertyType == typeof (DependencyProperty)) {
+					DependencyProperty dp = DependencyPropertyFromString (parser, top_level, target, target_parent_ptr, str_value);
+					if (dp != null) {
+						Console.WriteLine ("Setting to dp:  {0}", dp);
+						pi.SetValue (target, dp, null);
+						return true;
+					}
+				}
+
 				Helper.SetPropertyFromString (target, pi, str_value, out error, out unmanaged_value);
 
 				if (error == null && unmanaged_value != IntPtr.Zero)
 					obj_value = Value.ToObject (null, unmanaged_value);
 				else
 					return error == null;
-			} else
+			} else {
 				obj_value = Value.ToObject (pi.PropertyType, value_ptr);
+			}
 
 			if (typeof (IList).IsAssignableFrom (pi.PropertyType) && !(obj_value is IList)) {
 				IList the_list = (IList) pi.GetValue (target, null);
@@ -671,10 +719,10 @@ namespace Mono.Xaml
 		// Proxy so that we return IntPtr.Zero in case of any failures, instead of
 		// generating an exception and unwinding the stack.
 		//
-		private bool cb_set_property (IntPtr parser, IntPtr top_level, string xmlns, IntPtr target, string name, IntPtr value_ptr)
+		private bool cb_set_property (IntPtr parser, IntPtr top_level, string xmlns, IntPtr target, IntPtr target_parent, string name, IntPtr value_ptr)
 		{
 			try {
-				return SetProperty (parser, top_level, xmlns, target, name, value_ptr);
+				return SetProperty (parser, top_level, xmlns, target, target_parent, name, value_ptr);
 			} catch (Exception ex) {
 				Console.Error.WriteLine ("ManagedXamlLoader::SetProperty ({0}, {1}, {2}, {3}, {4}) threw an exception: {5}.", top_level, xmlns, target, name, value_ptr, ex.Message);
 				Console.Error.WriteLine (ex);

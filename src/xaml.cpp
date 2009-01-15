@@ -328,6 +328,18 @@ class XamlElementInstance : public List::Node {
 		return item;
 	}
 
+	virtual void* GetParentPointer ()
+	{
+		XamlElementInstance *walk = parent;
+		while (walk && walk->element_type != XamlElementInstance::ELEMENT)
+			walk = walk->parent;
+
+		if (!walk)
+			return NULL;
+
+		return walk->GetManagedPointer ();
+	}
+
 	virtual bool IsTemplate ()
 	{
 		return false;
@@ -923,6 +935,7 @@ class XamlElementInstanceManaged : public XamlElementInstance {
 	virtual bool TrySetContentProperty (XamlParserInfo *p, const char *value);
 
 	virtual void* GetManagedPointer ();
+	virtual void* GetParentPointer ();
  private:
 	bool is_dependency_object;
 };
@@ -982,7 +995,7 @@ class ManagedNamespace : public XamlNamespace {
 
 		if (p->loader) {
 			Value v = Value (value);
-			return p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, xmlns, instance->GetManagedPointer (), attr, &v);
+			return p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, xmlns, instance->GetManagedPointer (), instance->GetAsDependencyObject ()->GetLogicalParent (), attr, &v);
 		}
 		return false;
 	}
@@ -1015,10 +1028,10 @@ XamlLoader::GetContentPropertyName (void *p, void *obj)
 }
 
 bool
-XamlLoader::SetProperty (void *p, void *top_level, const char* xmlns, void *target, const char *name, Value *value)
+XamlLoader::SetProperty (void *p, void *top_level, const char* xmlns, void *target, void *target_parent, const char *name, Value *value)
 {
 	if (callbacks.set_property)
-		return callbacks.set_property (p, top_level, xmlns, target, name, value);
+		return callbacks.set_property (p, top_level, xmlns, target, target_parent, name, value);
 
 	return false;
 }
@@ -3045,7 +3058,7 @@ XamlElementInstance::SetUnknownAttribute (XamlParserInfo *p, const char *name, c
 		return false;
 
 	Value v = Value (value);
-	if (!p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, NULL, GetManagedPointer (), name, &v)) {
+	if (!p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, NULL, GetManagedPointer (), GetParentPointer (), name, &v)) {
 		return false;
 	}
 	return true;
@@ -3347,19 +3360,34 @@ XamlElementInstanceManaged::GetManagedPointer ()
 	return value->AsManagedObject ();
 }
 
+void *
+XamlElementInstanceManaged::GetParentPointer ()
+{
+	XamlElementInstance *walk = parent;
+	while (walk && walk->element_type != XamlElementInstance::ELEMENT)
+		walk = walk->parent;
+
+	if (!walk) {
+		printf ("no parent for:  %s\n", element_name);
+		return NULL;
+	}
+
+	return walk->GetManagedPointer ();
+}
+
 bool
 XamlElementInstanceManaged::SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value)
 {
 	if (GetAsDependencyObject () != NULL && dependency_object_set_property (p, this, property, value))
 		return true;
-	return p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, ((XamlElementInfoManaged *) info)->xmlns, GetManagedPointer (), property->element_name, value->GetAsValue ());
+	return p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, ((XamlElementInfoManaged *) info)->xmlns, GetManagedPointer (), GetParentPointer (), property->element_name, value->GetAsValue ());
 }
 
 bool
 XamlElementInstanceManaged::SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char *value)
 {
 	Value v = Value (value);
-	return p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, ((XamlElementInfoManaged *) info)->xmlns, GetManagedPointer (), property->element_name, &v);
+	return p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, ((XamlElementInfoManaged *) info)->xmlns, GetManagedPointer (), GetParentPointer (), property->element_name, &v);
 }
 
 void
@@ -3382,7 +3410,7 @@ XamlElementInstanceManaged::TrySetContentProperty (XamlParserInfo *p, const char
 		if (!p->cdata_content)
 			return false;
 		Value v = Value (value);
-		return p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, ((XamlElementInfoManaged *) info)->xmlns, GetManagedPointer (), prop_name, &v);
+		return p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, ((XamlElementInfoManaged *) info)->xmlns, GetManagedPointer (), GetParentPointer (), prop_name, &v);
 	}
 	return false;
 }
@@ -3395,7 +3423,7 @@ XamlElementInstanceManaged::SetAttachedProperty (XamlParserInfo *p, XamlElementI
 		return false;
 	}
 
-	return p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, ((XamlElementInfoManaged *) info)->xmlns, target->GetManagedPointer (), element_name, value->GetAsValue ());
+	return p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, ((XamlElementInfoManaged *) info)->xmlns, target->GetManagedPointer (), target->GetParentPointer (), element_name, value->GetAsValue ());
 }
 
 bool
@@ -3405,7 +3433,7 @@ XamlElementInstanceManaged::SetUnknownAttribute (XamlParserInfo *p, const char* 
 		return false;
 
 	Value v = Value (value);
-	if (!p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, NULL, GetManagedPointer (), name, &v)) {
+	if (!p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, NULL, GetManagedPointer (), GetParentPointer (), name, &v)) {
 		return false;
 	}
 	return true;
@@ -3850,9 +3878,9 @@ start_parse:
 			}
 
 			if (!v && !value_from_str (prop->GetPropertyType(), prop->GetName(), attr [i + 1], &v, p->loader->GetSurface()->IsSilverlight2())) {
-				if (prop->GetPropertyType () == Type::MANAGED || prop->GetPropertyType() == Type::OBJECT || prop->GetPropertyType () == Type::MANAGEDTYPEINFO) {
+				if (prop->GetPropertyType () == Type::MANAGED || prop->GetPropertyType() == Type::OBJECT || prop->GetPropertyType () == Type::MANAGEDTYPEINFO || prop->GetPropertyType () == Type::DEPENDENCYPROPERTY) {
 					Value v = Value (g_strdup (attr [i + 1]));
-					if (p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, NULL, item->GetManagedPointer (), g_strdup (prop->GetName ()), &v))
+					if (p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, NULL, item->GetManagedPointer (), item->GetParentPointer (), g_strdup (prop->GetName ()), &v))
 						return;
 				}
 			}

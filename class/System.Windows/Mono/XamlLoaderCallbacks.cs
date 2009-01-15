@@ -36,7 +36,8 @@ using Mono;
 namespace Mono.Xaml
 {
 	internal delegate bool CreateObjectCallback (IntPtr parser, IntPtr top_level, string xmlns, string name, out Value value);
-	internal delegate bool SetPropertyCallback (IntPtr parser, IntPtr top_level, string xmlns, IntPtr target, string name, IntPtr value_ptr);
+
+	internal delegate bool SetPropertyCallback (IntPtr parser, IntPtr top_level, string xmlns, IntPtr target, IntPtr target_parent, string name, IntPtr value_ptr);
 	internal delegate void ImportXamlNamespaceCallback (IntPtr parser, string xmlns);
 	internal delegate string GetContentPropertyNameCallback (IntPtr parser, IntPtr dob);
 	

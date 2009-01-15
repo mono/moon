@@ -1,3 +1,7 @@
+2009-01-15  Jackson Harper  <jackson@ximian.com>
+
+	* plugin.cpp|h: Updated signature for the xaml callbacks.
+
 2009-01-13  Geoff Norton  <gnorton@novell.com>
 
 	* plugin.cpp: Fix our MonoDomain cleanup (hopefully) once and for all.

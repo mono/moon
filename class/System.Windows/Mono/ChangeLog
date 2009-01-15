@@ -1,3 +1,9 @@
+2009-01-15  Jackson Harper  <jackson@ximian.com>
+
+	* XamlLoaderCallbacks.cs: Updated signature for set property.
+	* ManagedXamlLoader.cs: Handle creating DependencyPropertys in
+	SetProperty.
+
 2009-01-15  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* NativeMethods.cs: Fix marshaling of booleans (C# is four bytes,
