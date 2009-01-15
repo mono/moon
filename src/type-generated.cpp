@@ -286,7 +286,6 @@ Type type_infos [] = {
 	{ Type::ROWDEFINITION_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "RowDefinitionCollection", "ROWDEFINITION_COLLECTION", 0, 1, NULL, (create_inst_func *) row_definition_collection_new, NULL, NULL, NULL, NULL }, 
 	{ Type::RUN, Type::INLINE, false, "Run", "RUN", 0, 1, NULL, (create_inst_func *) run_new, "Text", NULL, NULL, NULL }, 
 	{ Type::SCALETRANSFORM, Type::TRANSFORM, false, "ScaleTransform", "SCALETRANSFORM", 0, 1, NULL, (create_inst_func *) scale_transform_new, NULL, NULL, NULL, NULL }, 
-	{ Type::SELECTIONCHANGEDEVENTARGS, Type::ROUTEDEVENTARGS, false, "SelectionChangedEventArgs", "SELECTIONCHANGEDEVENTARGS", 0, 1, NULL, (create_inst_func *) selection_changed_event_args_new, NULL, NULL, NULL, NULL }, 
 	{ Type::SETTER, Type::SETTERBASE, false, "Setter", "SETTER", 0, 1, NULL, (create_inst_func *) setter_new, NULL, NULL, NULL, NULL }, 
 	{ Type::SETTERBASE, Type::DEPENDENCY_OBJECT, false, "SetterBase", "SETTERBASE", 0, 1, NULL, (create_inst_func *) setter_base_new, NULL, NULL, NULL, NULL }, 
 	{ Type::SETTERBASE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "SetterBaseCollection", "SETTERBASE_COLLECTION", 0, 1, NULL, (create_inst_func *) setter_base_collection_new, NULL, NULL, NULL, NULL }, 

@@ -2525,56 +2525,6 @@ scale_transform_new (void)
 
 
 /**
- * SelectionChangedEventArgs
- **/
-GPtrArray *
-selection_changed_event_args_get_added_items (SelectionChangedEventArgs *instance)
-{
-	if (instance == NULL)
-		return NULL;
-	
-	return instance->GetAddedItems ();
-}
-
-
-GPtrArray *
-selection_changed_event_args_get_removed_items (SelectionChangedEventArgs *instance)
-{
-	if (instance == NULL)
-		return NULL;
-	
-	return instance->GetRemovedItems ();
-}
-
-
-SelectionChangedEventArgs *
-selection_changed_event_args_new (void)
-{
-	return new SelectionChangedEventArgs ();
-}
-
-
-void
-selection_changed_event_args_set_added_items (SelectionChangedEventArgs *instance, GPtrArray *addedItems)
-{
-	if (instance == NULL)
-		return;
-	
-	instance->SetAddedItems (addedItems);
-}
-
-
-void
-selection_changed_event_args_set_removed_items (SelectionChangedEventArgs *instance, GPtrArray *removedItems)
-{
-	if (instance == NULL)
-		return;
-	
-	instance->SetRemovedItems (removedItems);
-}
-
-
-/**
  * Setter
  **/
 Setter *

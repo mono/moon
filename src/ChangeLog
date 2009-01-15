@@ -1,3 +1,16 @@
+2009-01-15  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp: Emit SelectionChanged events with RoutedEventArgs
+	instead of SelectionChangedEventArgs.
+
+	* eventargs.cpp (RoutedEventArgs::RoutedEventArgs): New helper
+	ctor that takes a source.
+
+	* textbox.h (class SelectionChangedEventArgs): Removed, this type
+	of EventArgs is not actually emitted by TextBox as I had
+	originally thought. TextBox's SelectionChanged event uses
+	RoutedEventArgs.
+
 2009-01-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* type-generated.cpp:

@@ -20,6 +20,16 @@
 #include "stylus.h"
 #include "runtime.h"
 
+
+RoutedEventArgs::RoutedEventArgs (DependencyObject *source)
+{
+	if (source)
+		source->ref ();
+	
+	this->source = source;
+	handled = false;
+}
+
 RoutedEventArgs::RoutedEventArgs ()
 {
 	source = NULL;

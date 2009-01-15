@@ -1159,24 +1159,6 @@ Run *run_new (void);
 ScaleTransform *scale_transform_new (void);
 
 /**
- * SelectionChangedEventArgs
- **/
-/* @GeneratePInvoke */
-GPtrArray *selection_changed_event_args_get_added_items (SelectionChangedEventArgs *instance);
-
-/* @GeneratePInvoke */
-GPtrArray *selection_changed_event_args_get_removed_items (SelectionChangedEventArgs *instance);
-
-/* @GeneratePInvoke */
-SelectionChangedEventArgs *selection_changed_event_args_new (void);
-
-/* @GeneratePInvoke */
-void selection_changed_event_args_set_added_items (SelectionChangedEventArgs *instance, GPtrArray *addedItems);
-
-/* @GeneratePInvoke */
-void selection_changed_event_args_set_removed_items (SelectionChangedEventArgs *instance, GPtrArray *removedItems);
-
-/**
  * Setter
  **/
 /* @GeneratePInvoke */

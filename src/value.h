@@ -176,7 +176,6 @@ class RowDefinition;
 class RowDefinitionCollection;
 class Run;
 class ScaleTransform;
-class SelectionChangedEventArgs;
 class Setter;
 class SetterBase;
 class SetterBaseCollection;
@@ -433,7 +432,6 @@ public:
 	RowDefinitionCollection*       AsRowDefinitionCollection () { checked_get_subclass (Type::ROWDEFINITION_COLLECTION, RowDefinitionCollection) }
 	Run*                           AsRun () { checked_get_subclass (Type::RUN, Run) }
 	ScaleTransform*                AsScaleTransform () { checked_get_subclass (Type::SCALETRANSFORM, ScaleTransform) }
-	SelectionChangedEventArgs*     AsSelectionChangedEventArgs () { checked_get_subclass (Type::SELECTIONCHANGEDEVENTARGS, SelectionChangedEventArgs) }
 	Setter*                        AsSetter () { checked_get_subclass (Type::SETTER, Setter) }
 	SetterBase*                    AsSetterBase () { checked_get_subclass (Type::SETTERBASE, SetterBase) }
 	SetterBaseCollection*          AsSetterBaseCollection () { checked_get_subclass (Type::SETTERBASE_COLLECTION, SetterBaseCollection) }

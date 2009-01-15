@@ -1318,10 +1318,8 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 	if (changed & CONTENT_CHANGED)
 		Emit (TextChangedEvent, new TextChangedEventArgs ());
 	
-	if (changed & SELECTION_CHANGED) {
-		// FIXME: need to set the added/remove items?
-		Emit (TextChangedEvent, new SelectionChangedEventArgs ());
-	}
+	if (changed & SELECTION_CHANGED)
+		Emit (TextChangedEvent, new RoutedEventArgs (this));
 	
 	// only bother emitting this event if the cursor position is
 	// the only thing that changed. If either Text or Selection
@@ -1409,13 +1407,13 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		selection_changed = true;
 		
 		if (emit)
-			Emit (TextBox::SelectionChangedEvent, new SelectionChangedEventArgs ());
+			Emit (TextBox::SelectionChangedEvent, new RoutedEventArgs (this));
 	} else if (args->property == TextBox::SelectionLengthProperty) {
 		selection.length = args->new_value->AsInt32 ();
 		selection_changed = true;
 		
 		if (emit)
-			Emit (TextBox::SelectionChangedEvent, new SelectionChangedEventArgs ());
+			Emit (TextBox::SelectionChangedEvent, new RoutedEventArgs (this));
 	} else if (args->property == TextBox::SelectionBackgroundProperty) {
 		if (!(selection.background = args->new_value ? args->new_value->AsBrush () : NULL))
 			selection.background = default_selection_background ();
@@ -1520,7 +1518,7 @@ TextBox::ClearSelection ()
 	SetSelectionStart (0);
 	emit = true;
 	
-	Emit (TextBox::SelectionChangedEvent, new SelectionChangedEventArgs ());
+	Emit (TextBox::SelectionChangedEvent, new RoutedEventArgs (this));
 }
 
 void
@@ -1534,7 +1532,7 @@ TextBox::Select (int start, int length)
 	SetSelectionStart (start);
 	emit = true;
 	
-	Emit (TextBox::SelectionChangedEvent, new SelectionChangedEventArgs ());
+	Emit (TextBox::SelectionChangedEvent, new RoutedEventArgs (this));
 }
 
 void
@@ -1761,11 +1759,11 @@ TextBoxView::Paint (cairo_t *cr)
 void
 TextBoxView::selection_changed (EventObject *sender, EventArgs *args, gpointer closure)
 {
-	((TextBoxView *) closure)->OnSelectionChanged ((SelectionChangedEventArgs *) args);
+	((TextBoxView *) closure)->OnSelectionChanged ((RoutedEventArgs *) args);
 }
 
 void
-TextBoxView::OnSelectionChanged (SelectionChangedEventArgs *args)
+TextBoxView::OnSelectionChanged (RoutedEventArgs *args)
 {
 	// the selected region has changed, need to recalculate layout
 	if (focused)

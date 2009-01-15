@@ -110,11 +110,13 @@ class RoutedEventArgs : public EventArgs {
  public:
  	/* @GenerateCBinding,GeneratePInvoke */
 	RoutedEventArgs ();
-
+	
+	RoutedEventArgs (DependencyObject *source);
+	
 	virtual Type::Kind GetObjectType () { return Type::ROUTEDEVENTARGS; }
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	DependencyObject* GetSource() { return source; }
+	DependencyObject *GetSource () { return source; }
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetSource(DependencyObject *el);

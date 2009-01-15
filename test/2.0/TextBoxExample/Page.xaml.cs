@@ -20,7 +20,9 @@ namespace TextBoxExample {
 		
 		void OnSelectionChanged (object sender, EventArgs args)
 		{
+			SelectionChangedEventArgs changed = args as SelectionChangedEventArgs;
 			string text = txtTextBox.SelectedText;
+			StringBuilder sb;
 			
 			if (text != "") {
 				txtSelection.Foreground = new SolidColorBrush (Colors.White);
@@ -34,6 +36,31 @@ namespace TextBoxExample {
 			
 			rectSelection.Height = txtSelection.ActualHeight;
 			rectSelection.Width = txtSelection.ActualWidth;
+			
+			sb = new StringBuilder ();
+			sb.Append ("Items added to the selection: ");
+			if (changed != null) {
+				foreach (object item in changed.AddedItems) {
+					sb.Append (item.ToString ());
+					sb.Append (", ");
+				}
+			} else if (args != null) {
+				sb.Append ("args was of type ");
+				sb.Append (args.GetType ().ToString ());
+			} else {
+				sb.Append ("args was null");
+			}
+			txtSelectionAdded.Text = sb.ToString ();
+			
+			sb = new StringBuilder ();
+			sb.Append ("Items removed from the selection: ");
+			if (changed != null) {
+				foreach (object item in changed.RemovedItems) {
+					sb.Append (item.ToString ());
+					sb.Append (", ");
+				}
+			}
+			txtSelectionRemoved.Text = sb.ToString ();
 		}
 		
 		void OnTextChanged (object sender, EventArgs args)

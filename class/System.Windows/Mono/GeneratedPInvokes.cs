@@ -1176,26 +1176,6 @@ namespace Mono {
 		public extern static IntPtr scale_transform_new ();
 
 		[DllImport ("moon")]
-		// GPtrArray *selection_changed_event_args_get_added_items (SelectionChangedEventArgs *instance);
-		public extern static IntPtr selection_changed_event_args_get_added_items (IntPtr instance);
-
-		[DllImport ("moon")]
-		// GPtrArray *selection_changed_event_args_get_removed_items (SelectionChangedEventArgs *instance);
-		public extern static IntPtr selection_changed_event_args_get_removed_items (IntPtr instance);
-
-		[DllImport ("moon")]
-		// SelectionChangedEventArgs *selection_changed_event_args_new ();
-		public extern static IntPtr selection_changed_event_args_new ();
-
-		[DllImport ("moon")]
-		// void selection_changed_event_args_set_added_items (SelectionChangedEventArgs *instance, GPtrArray *addedItems);
-		public extern static void selection_changed_event_args_set_added_items (IntPtr instance, IntPtr addedItems);
-
-		[DllImport ("moon")]
-		// void selection_changed_event_args_set_removed_items (SelectionChangedEventArgs *instance, GPtrArray *removedItems);
-		public extern static void selection_changed_event_args_set_removed_items (IntPtr instance, IntPtr removedItems);
-
-		[DllImport ("moon")]
 		// Setter *setter_new ();
 		public extern static IntPtr setter_new ();
 

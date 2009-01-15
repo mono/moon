@@ -34,40 +34,6 @@ G_END_DECLS
 
 /* @SilverlightVersion="2" */
 /* @Namespace=None */
-class SelectionChangedEventArgs : public RoutedEventArgs {
- protected:
-	virtual ~SelectionChangedEventArgs () { }
-	
- public:
-	GPtrArray *removed;
-	GPtrArray *added;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	SelectionChangedEventArgs () { removed = NULL; added = NULL; }
-	SelectionChangedEventArgs (GPtrArray *removedItems, GPtrArray *addedItems)
-	{
-		removed = removedItems;
-		added = addedItems;
-	}
-	
-	virtual Type::Kind GetObjectType () { return Type::SELECTIONCHANGEDEVENTARGS; }
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	void SetAddedItems (GPtrArray *addedItems) { added = addedItems; }
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	GPtrArray *GetAddedItems () { return added; }
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	void SetRemovedItems (GPtrArray *removedItems) { removed = removedItems; }
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	GPtrArray *GetRemovedItems () { return removed; }
-};
-
-
-/* @SilverlightVersion="2" */
-/* @Namespace=None */
 class TextChangedEventArgs : public RoutedEventArgs {
  protected:
 	virtual ~TextChangedEventArgs () { }
@@ -304,8 +270,8 @@ class TextBoxView : public FrameworkElement {
 	static void model_changed (EventObject *sender, EventArgs *args, gpointer closure);
 	static void text_changed (EventObject *sender, EventArgs *args, gpointer closure);
 	
-	void OnSelectionChanged (SelectionChangedEventArgs *args);
 	void OnModelChanged (TextBoxModelChangedEventArgs *args);
+	void OnSelectionChanged (RoutedEventArgs *args);
 	void OnTextChanged (TextChangedEventArgs *args);
 	
 	static gboolean blink (void *user_data);

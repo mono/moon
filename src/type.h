@@ -178,7 +178,6 @@ public:
 		ROWDEFINITION_COLLECTION,// Silverlight 2.0 only
 		RUN,
 		SCALETRANSFORM,
-		SELECTIONCHANGEDEVENTARGS,// Silverlight 2.0 only
 		SETTER,// Silverlight 2.0 only
 		SETTERBASE,// Silverlight 2.0 only
 		SETTERBASE_COLLECTION,// Silverlight 2.0 only

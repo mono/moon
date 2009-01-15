@@ -9,4 +9,6 @@
    TextWrapping="NoWrap" FontSize="11" Text="This is a TextBlock mirror of the TextBox"/>
   <Rectangle Canvas.Left="5" Canvas.Top="500" x:Name="rectSelection" Width="640" Height="480" Fill="white"/>
   <TextBlock Canvas.Left="5" Canvas.Top="500" x:Name="txtSelection" Text="This is the selected text"/>
+  <TextBlock Canvas.Left="650" Canvas.Top="500" x:Name="txtSelectionAdded" Text="Items added to the selection: "/>
+  <TextBlock Canvas.Left="650" Canvas.Top="525" x:Name="txtSelectionRemoved" Text="Items removed from the selection: "/>
 </Canvas>
