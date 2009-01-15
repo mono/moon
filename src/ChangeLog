@@ -7,6 +7,16 @@
 
 2009-01-15  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.cpp: Removed default_*[fore,back]ground() functions as
+	well as textbox_shutdown() since they are no longer needed.
+	(TextBox::TextBox): Initialize the default SelectionBackground and
+	SelectionForeground brushes.
+
+	* layout.h (struct TextSelection): Removed brushes from
+	TextSelection struct.
+
+2009-01-15  Jeffrey Stedfast  <fejj@novell.com>
+
 	* mediaelement.cpp (MediaElementPropertyValueProvider::GetPropertyValue):
 	Cannot compare a guint64 with -1, presuming the comparison was
 	meant to be against TimeSpan_FromPTS (position) instead.

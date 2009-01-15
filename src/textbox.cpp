@@ -29,71 +29,6 @@
 #include "utils.h"
 
 
-static SolidColorBrush *default_selection_background_brush = NULL;
-static SolidColorBrush *default_selection_foreground_brush = NULL;
-static SolidColorBrush *default_background_brush = NULL;
-static SolidColorBrush *default_foreground_brush = NULL;
-
-static Brush *
-default_selection_background (void)
-{
-	if (!default_selection_background_brush)
-		default_selection_background_brush = new SolidColorBrush ("black");
-	
-	return (Brush *) default_selection_background_brush;
-}
-
-static Brush *
-default_selection_foreground (void)
-{
-	if (!default_selection_foreground_brush)
-		default_selection_foreground_brush = new SolidColorBrush ("white");
-	
-	return (Brush *) default_selection_foreground_brush;
-}
-
-static Brush *
-default_background (void)
-{
-	if (!default_background_brush)
-		default_background_brush = new SolidColorBrush ("white");
-	
-	return (Brush *) default_background_brush;
-}
-
-static Brush *
-default_foreground (void)
-{
-	if (!default_foreground_brush)
-		default_foreground_brush = new SolidColorBrush ("black");
-	
-	return (Brush *) default_foreground_brush;
-}
-
-void
-textbox_shutdown (void)
-{
-	if (default_selection_background_brush) {
-		default_selection_background_brush->unref ();
-		default_selection_background_brush = NULL;
-	}
-	
-	if (default_selection_foreground_brush) {
-		default_selection_foreground_brush->unref ();
-		default_selection_foreground_brush = NULL;
-	}
-	
-	if (default_background_brush) {
-		default_background_brush->unref ();
-		default_background_brush = NULL;
-	}
-	
-	if (default_foreground_brush) {
-		default_foreground_brush->unref ();
-		default_foreground_brush = NULL;
-	}
-}
-
 
 //
 // TextBuffer
@@ -312,6 +247,8 @@ class TextBoxDynamicPropertyValueProvider : public PropertyValueProvider {
 
 TextBox::TextBox ()
 {
+	Brush *brush;
+	
 	providers[PropertyPrecedence_DynamicValue] = new TextBoxDynamicPropertyValueProvider (this);
 	
 	AddHandler (UIElement::KeyDownEvent, TextBox::key_down, this);
@@ -326,14 +263,20 @@ TextBox::TextBox ()
 	
 	buffer = new TextBuffer ();
 	
-	selection.background = default_selection_background ();
-	selection.foreground = default_selection_foreground ();
 	selection_changed = false;
 	selection.length = 0;
 	selection.start = 0;
 	emit = true;
 	maxlen = 0;
 	cursor = 0;
+	
+	brush = new SolidColorBrush ("#FF444444");
+	SetValue (TextBox::SelectionBackgroundProperty, Value (brush));
+	brush->unref ();
+	
+	brush = new SolidColorBrush ("#FFFFFFFF");
+	SetValue (TextBox::SelectionForegroundProperty, Value (brush));
+	brush->unref ();
 }
 
 TextBox::~TextBox ()
@@ -1415,12 +1358,8 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		if (emit)
 			Emit (TextBox::SelectionChangedEvent, new RoutedEventArgs ());
 	} else if (args->property == TextBox::SelectionBackgroundProperty) {
-		if (!(selection.background = args->new_value ? args->new_value->AsBrush () : NULL))
-			selection.background = default_selection_background ();
 		changed = TextBoxModelChangedBrush;
 	} else if (args->property == TextBox::SelectionForegroundProperty) {
-		if (!(selection.foreground = args->new_value ? args->new_value->AsBrush () : NULL))
-			selection.foreground = default_selection_foreground ();
 		changed = TextBoxModelChangedBrush;
 	} else if (args->property == TextBox::TextProperty) {
 		const char *str = args->new_value ? args->new_value->AsString () : "";

@@ -49,8 +49,6 @@ class TextRun : public List::Node {
 };
 
 struct TextSelection {
-	Brush *background;
-	Brush *foreground;
 	int start, length;
 };
 
