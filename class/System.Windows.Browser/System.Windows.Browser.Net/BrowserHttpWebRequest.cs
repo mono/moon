@@ -134,7 +134,7 @@ namespace System.Windows.Browser.Net
 			
 			try {
 				obj.bytes_read = 0;
-				obj.async_result.Response = new BrowserHttpWebResponse (obj, obj.native);
+				obj.async_result.Response = new BrowserHttpWebResponse (obj, native);
 			} catch (Exception e) {
 				obj.async_result.Exception = e;
 			}
