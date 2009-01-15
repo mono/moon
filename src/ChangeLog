@@ -1,3 +1,10 @@
+2009-01-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* dependencyproperty.g.cpp: Regenerated to include the specified 
+	type (and not the implied one from the default value)
+	* uielement.h: RenderTransformProperty defaults to a empty (identity)
+	MatrixTransform
+
 2009-01-15  Jeffrey Stedfast  <fejj@novell.com>
 
 	* mediaelement.cpp (MediaElementPropertyValueProvider::GetPropertyValue):
