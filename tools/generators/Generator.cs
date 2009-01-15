@@ -675,8 +675,15 @@ class Generator {
 	static GlobalInfo GetTypes2 ()
 	{
 		string srcdir = Path.Combine (Environment.CurrentDirectory, "src");
-		string[] files = Directory.GetFiles (srcdir, "*.h");
-		Tokenizer tokenizer = new Tokenizer (files);
+		string plugindir = Path.Combine (Environment.CurrentDirectory, "plugin");
+		List<string> all_files = new List<string> ();
+		string[] srcfiles = Directory.GetFiles (srcdir, "*.h");
+		string[] pluginfiles = Directory.GetFiles (plugindir, "*.h");
+
+		all_files.AddRange (srcfiles);
+		all_files.AddRange (pluginfiles);
+		
+		Tokenizer tokenizer = new Tokenizer (srcfiles);
 		GlobalInfo all = new GlobalInfo ();
 		
 		tokenizer.Advance (false);
@@ -701,6 +708,7 @@ class Generator {
 		all.Children.Add (new TypeInfo ("Managed", "MANAGED", "OBJECT", true, 2));
 		all.Children.Add (new TypeInfo ("TimeSpan", "TIMESPAN", "OBJECT", true));
 		all.Children.Add (new TypeInfo ("char", "CHAR", "OBJECT", true));
+
 		
 		return all;
 	}
@@ -910,6 +918,7 @@ class Generator {
 			if (tokenizer.Accept (Token2Type.Punctuation, "(")) {
 				// Method
 				MethodInfo method = new MethodInfo ();
+				method.Header = tokenizer.CurrentFile;
 				method.Parent = parent;
 				method.Annotations = properties;
 				method.Name = name;
@@ -1630,7 +1639,25 @@ class Generator {
 		NativeMethods_cs = File.ReadAllText (Path.Combine (base_dir, "class/System.Windows/Mono/NativeMethods.cs".Replace ('/', Path.DirectorySeparatorChar)));
 
 		methods = all.CPPMethodsToBind;		
-	
+
+		foreach (MemberInfo info in all.Children.Values) {
+			MethodInfo minfo = info as MethodInfo;
+			if (minfo == null)
+				continue;
+			if (!minfo.Annotations.ContainsKey ("GeneratePInvoke"))
+				continue;
+			foreach (MethodInfo mi in methods) {
+				if (mi.CMethod.Name == minfo.Name) {
+					minfo = null;
+					break;
+				}
+			}
+			if (minfo == null)
+				continue;
+			//Console.WriteLine ("Added: {0} IsSrc: {1} IsPlugin: {2} Header: {3}", minfo.Name, minfo.IsSrcMember, minfo.IsPluginMember, minfo.Header);
+			methods.Add (minfo);
+		}
+		
 		Helper.WriteWarningGenerated (text);
 		text.AppendLine ("using System;");
 		text.AppendLine ("using System.Windows;");

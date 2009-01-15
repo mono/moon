@@ -1,5 +1,10 @@
 2009-01-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* Generator.cs: Added support for adding GeneratePInvoke to normal C
+	methods.
+
+2009-01-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* Generator.cs: Updated since Type has a new field now.
 
 2009-01-14  Sebastien Pouliot  <sebastien@ximian.com>
