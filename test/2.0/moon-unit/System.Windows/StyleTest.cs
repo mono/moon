@@ -188,7 +188,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug ("DP lookup isn't working")]
 		public void InvalidValueParsed ()
 		{
 			XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Button""><Setter Property=""Width"" Value=""this is a string""/></Style>");
@@ -212,7 +211,6 @@ namespace MoonTest.System.Windows
 		}
 		
 		[TestMethod]
-		[MoonlightBug ("DP lookup isn't working")]
 		public void MismatchTargetType ()
 		{
 			Button b = new Button ();
@@ -274,7 +272,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug ("DP lookup isn't working")]
 		public void StyleXaml ()
 		{
 			Thumb t = (Thumb) XamlReader.Load (@"
@@ -292,7 +289,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug ("DP lookup isn't working")]
 		public void StyleCustomProperty ()
 		{
 			// a valid value
@@ -309,7 +305,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug ("Attached DP lookup isn't working")]
 		public void StyleAttachedProperty()
 		{
 			Assert.Throws<XamlParseException> (delegate { XamlReader.Load(@"
