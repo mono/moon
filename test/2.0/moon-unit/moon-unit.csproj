@@ -93,6 +93,7 @@
     <Compile Include="System.Windows.Controls.Primitives\ToggleButtonTest.cs" />
     <Compile Include="System.Windows.Controls\BorderTest.cs" />
     <Compile Include="System.Windows.Controls\CanvasTest.cs" />
+    <Compile Include="System.Windows.Controls\ComboBoxTest.cs" />
     <Compile Include="System.Windows.Controls\ContentControlTest.cs" />
     <Compile Include="System.Windows.Controls\ContentPresenterTest.cs" />
     <Compile Include="System.Windows.Controls\ControlTemplateTest.cs" />
