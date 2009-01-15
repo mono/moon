@@ -791,7 +791,7 @@ class XNamespace : public XamlNamespace {
 			// }
 			//
 
-			if (item->GetKey ()) {
+			if (item->GetKey () && !Type::IsSubclassOf (item->info->GetKind (), Type::STORYBOARD)) {
 				// XXX don't know the proper values here...
 				parser_error (p, item->element_name, NULL, 2007,
 					      "You can't specify x:Name along with x:Key, or x:Key twice.");
@@ -808,7 +808,7 @@ class XNamespace : public XamlNamespace {
 		}
 
 		if (!strcmp ("Key", attr)) {
-			if (item->GetKey ()) {
+			if (item->GetKey () && !Type::IsSubclassOf (item->info->GetKind (), Type::STORYBOARD)) {
 				// XXX don't know the proper values here...
 				parser_error (p, item->element_name, NULL, 2007,
 					      "You can't specify x:Name along with x:Key, or x:Key twice.");
