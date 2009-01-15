@@ -20,7 +20,7 @@ namespace TextBoxExample {
 		
 		void OnSelectionChanged (object sender, EventArgs args)
 		{
-			SelectionChangedEventArgs changed = args as SelectionChangedEventArgs;
+			RoutedEventArgs routed = args as RoutedEventArgs;
 			string text = txtTextBox.SelectedText;
 			StringBuilder sb;
 			
@@ -38,11 +38,19 @@ namespace TextBoxExample {
 			rectSelection.Width = txtSelection.ActualWidth;
 			
 			sb = new StringBuilder ();
-			sb.Append ("Items added to the selection: ");
-			if (changed != null) {
-				foreach (object item in changed.AddedItems) {
-					sb.Append (item.ToString ());
-					sb.Append (", ");
+			sb.Append ("SelectionChangedEvent source: ");
+			if (routed != null) {
+				if (routed.OriginalSource != null) {
+					//DependencyObject obj = routed.OriginalSource as DependencyObject;
+					
+					//if (obj != null && obj.Name != null && obj.Name != "") {
+					//	sb.Append (obj.Name);
+					//	sb.Append (", which is of type: ");
+					//}
+					
+					sb.Append (routed.OriginalSource.GetType ().ToString ());
+				} else {
+					sb.Append ("null");
 				}
 			} else if (args != null) {
 				sb.Append ("args was of type ");
@@ -50,17 +58,7 @@ namespace TextBoxExample {
 			} else {
 				sb.Append ("args was null");
 			}
-			txtSelectionAdded.Text = sb.ToString ();
-			
-			sb = new StringBuilder ();
-			sb.Append ("Items removed from the selection: ");
-			if (changed != null) {
-				foreach (object item in changed.RemovedItems) {
-					sb.Append (item.ToString ());
-					sb.Append (", ");
-				}
-			}
-			txtSelectionRemoved.Text = sb.ToString ();
+			txtSelectionSource.Text = sb.ToString ();
 		}
 		
 		void OnTextChanged (object sender, EventArgs args)
