@@ -58,6 +58,23 @@ namespace TextBoxExample {
 			} else {
 				sb.Append ("args was null");
 			}
+			
+			sb.Append ("\nDefault selection background brush is ");
+			if (txtTextBox.SelectionBackground is SolidColorBrush) {
+				SolidColorBrush brush = txtTextBox.SelectionBackground as SolidColorBrush;
+				sb.Append ("SolidColorBrush ('" + brush.Color.ToString () + "')");
+			} else {
+				sb.Append ("not a SolidColorBrush as expected.");
+			}
+			
+			sb.Append ("\nDefault selection foreground brush is ");
+			if (txtTextBox.SelectionForeground is SolidColorBrush) {
+				SolidColorBrush brush = txtTextBox.SelectionForeground as SolidColorBrush;
+				sb.Append ("SolidColorBrush ('" + brush.Color.ToString () + "')");
+			} else {
+				sb.Append ("not a SolidColorBrush as expected.");
+			}
+			
 			txtSelectionSource.Text = sb.ToString ();
 		}
 		
