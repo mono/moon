@@ -1,3 +1,7 @@
+2009-01-15  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs: Begin implementing ComboBox. First 3 tests now pass.
+
 2009-01-13  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* IScrollInfo.cs: Internal interface to mimic WPF. This is needed 

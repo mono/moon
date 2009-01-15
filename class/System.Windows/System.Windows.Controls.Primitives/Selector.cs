@@ -29,10 +29,22 @@
 
 namespace System.Windows.Controls.Primitives {
 	public abstract class Selector : ItemsControl {
-	        public static readonly DependencyProperty SelectedIndexProperty = 
-			DependencyProperty.Register ("SelectedIndex", typeof(int), typeof(Selector), null);
-	        public static readonly DependencyProperty SelectedItemProperty = 
-			DependencyProperty.Register ("SelectedItem", typeof(object), typeof(Selector), null);
+		
+		public static readonly DependencyProperty SelectedIndexProperty;
+		public static readonly DependencyProperty SelectedItemProperty;
+		
+		static Selector ()
+		{
+			PropertyMetadata metadata = new PropertyMetadata (-1, delegate (DependencyObject o, DependencyPropertyChangedEventArgs e) {
+				((Selector) o).SelectedIndexChanged (o, e);
+			});
+			SelectedIndexProperty = DependencyProperty.Register ("SelectedIndex", typeof(int), typeof(Selector), metadata);
+
+			metadata = new PropertyMetadata (null, delegate (DependencyObject o, DependencyPropertyChangedEventArgs e) {
+				((Selector) o).SelectedItemChanged (o, e);
+			});
+			SelectedItemProperty = DependencyProperty.Register ("SelectedItem", typeof(object), typeof(Selector), metadata);
+		}
 
 		// looks like a bad idea (if only to test it) but SL2 does not expose it
 		internal Selector ()
@@ -50,6 +62,26 @@ namespace System.Windows.Controls.Primitives {
 		}
 
 		public event SelectionChangedEventHandler SelectionChanged;
+
+		void SelectedIndexChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
+		{
+			int newVal = (int) e.NewValue;
+			if (newVal != (int)e.OldValue && newVal < Items.Count)
+				SelectedItem = newVal >= 0 ? Items[SelectedIndex] : null;
+		}
+		
+		void SelectedItemChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
+		{
+			if (e.NewValue == e.OldValue)
+			return;
+			
+			int index = Items.IndexOf (e.NewValue);
+			if (index == -1)
+				SelectedItem = e.OldValue;
+			else
+				SelectedIndex = index;
+		}
+		
 
 		[MonoTODO]
 		public static bool GetIsSelectionActive (DependencyObject element)

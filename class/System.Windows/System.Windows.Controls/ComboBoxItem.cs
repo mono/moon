@@ -20,13 +20,7 @@ namespace System.Windows.Controls
 	{
 		public ComboBoxItem ()
 		{
-			throw new NotImplementedException ();
+			
 		}
-		
-		protected override void OnMouseLeftButtonUp (MouseButtonEventArgs e)
-		{
-			throw new NotImplementedException ();
-		}
-}
-
+	}
 }

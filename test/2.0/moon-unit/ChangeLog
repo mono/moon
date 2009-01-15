@@ -1,3 +1,9 @@
+2009-01-15  Alan McGovern  <amcgovern@novell.com>
+
+	* moon-unit.mdp:
+	* System.Windows.Controls/ComboBoxTest.cs: Begin implementing ComboBox.
+	First 3 tests now pass.
+
 2009-01-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Added more xaml files.

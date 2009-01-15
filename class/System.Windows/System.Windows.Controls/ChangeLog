@@ -1,3 +1,8 @@
+2009-01-15  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs:
+	* ComboBoxItem.cs: Begin implementing ComboBox. First 3 tests now pass.
+
 2009-01-15  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* ItemCollection.cs: Override NullCheck to throw ArgumentExpcetion

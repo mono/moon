@@ -26,93 +26,165 @@ namespace System.Windows.Controls
 		public static readonly DependencyProperty ItemContainerStyleProperty;
 		public static readonly DependencyProperty MaxDropDownHeightProperty;
 		
+		static ComboBox ()
+		{
+			PropertyMetadata metadata;
+			metadata = new PropertyMetadata (null, delegate (DependencyObject sender, DependencyPropertyChangedEventArgs e) {
+				((ComboBox) sender).IsDropDownOpenChanged (sender, e);
+			});
+			IsDropDownOpenProperty = DependencyProperty.Register ("IsDropDownOpen", typeof (bool), typeof (ComboBox), metadata);
+			
+			IsSelectionActiveProperty = DependencyProperty.Register ("IsSelectionActive", typeof (bool), typeof (ComboBox), null);
+			
+			ItemContainerStyleProperty = DependencyProperty.Register ("ItemContainerStyle", typeof (Style), typeof (ComboBox), null);
+			
+			metadata = new PropertyMetadata (double.PositiveInfinity, null);
+			MaxDropDownHeightProperty = DependencyProperty.Register ("MaxDropDownHeight", typeof (double), typeof (ComboBox), metadata);
+		}
+
 		public event EventHandler DropDownClosed;
 		public event EventHandler DropDownOpened;
+
+		public bool IsDropDownOpen {
+			get { return (bool) GetValue (IsDropDownOpenProperty); }
+			set { SetValue (IsDropDownOpenProperty, value); }
+		}
+		
+		public bool IsEditable {
+			get; set;
+		}
+		
+		public bool IsSelectionBoxHighlighted {
+			get; private set;
+		}
+		
+		public Style ItemContainerStyle {
+			get { return (Style) GetValue (ItemContainerStyleProperty); }
+		}
+		
+		public double MaxDropDownHeight {
+			get { return (double) GetValue (MaxDropDownHeightProperty); }
+			set { SetValue (MaxDropDownHeightProperty, value); }
+		}
+		
+		public object SelectionBoxItem {
+			get; private set;
+		}
+		
+		public DataTemplate SelectionBoxItemTemplate {
+			get; private set;
+		}
 		
 		public ComboBox ()
 		{
-			throw new NotImplementedException ();
+			
 		}
+
+		#region Property Changed Handlers
 		
-		protected override Size ArrangeOverride (Size arrangeBounds)
+		void IsDropDownOpenChanged (DependencyObject sender, DependencyPropertyChangedEventArgs e)
 		{
-			throw new NotImplementedException ();
+			if ((bool) e.NewValue) {
+				OnDropDownOpened (EventArgs.Empty);
+				EventHandler h = DropDownOpened;
+				if (h != null)
+					h (sender, EventArgs.Empty);
+			}
+			else {
+				OnDropDownClosed (EventArgs.Empty);
+				EventHandler h = DropDownClosed;
+				if (h != null)
+					h (sender, EventArgs.Empty);
+			}
 		}
 		
-		protected override DependencyObject GetContainerForItemOverride ()
+		void IsSelectionActiveChanged (DependencyObject sender, DependencyPropertyChangedEventArgs e)
 		{
-			throw new NotImplementedException ();
+
 		}
 		
-		protected override bool IsItemItsOwnContainerOverride (object item)
+		void ItemContainerStyleChanged (DependencyObject sender, DependencyPropertyChangedEventArgs e)
 		{
-			throw new NotImplementedException ();
+
 		}
 		
-		public override void OnApplyTemplate ()
+		void MaxDropDownHeightChanged (DependencyObject sender, DependencyPropertyChangedEventArgs e)
 		{
-			throw new NotImplementedException ();
+
 		}
+
+		#endregion
 		
-		protected override AutomationPeer OnCreateAutomationPeer ()
-		{
-			throw new NotImplementedException ();
-		}
-		
+
 		protected virtual void OnDropDownClosed (EventArgs e)
 		{
-			throw new NotImplementedException ();
+			
 		}
 		
 		protected virtual void OnDropDownOpened (EventArgs e)
 		{
-			throw new NotImplementedException ();
+			
 		}
-		
-		protected override void OnGotFocus (RoutedEventArgs e)
-		{
-			throw new NotImplementedException ();
-		}
-		
-		protected override void OnKeyDown (KeyEventArgs e)
-		{
-			throw new NotImplementedException ();
-		}
-		
-		protected override void OnLostFocus (RoutedEventArgs e)
-		{
-			throw new NotImplementedException ();
-		}
-		
-		protected override void OnMouseEnter (MouseEventArgs e)
-		{
-			throw new NotImplementedException ();
-		}
-		
-		protected override void OnMouseLeave (MouseEventArgs e)
-		{
-			throw new NotImplementedException ();
-		}
-		
-		protected override void OnMouseLeftButtonDown (MouseButtonEventArgs e)
-		{
-			throw new NotImplementedException ();
-		}
-		
-		protected override void PrepareContainerForItemOverride (DependencyObject element, object item)
-		{
-			throw new NotImplementedException ();
-		}
-		
-		
-		// Properties
-		public bool IsDropDownOpen { get { throw new NotImplementedException (); } set { throw new NotImplementedException (); } }
-		public bool IsEditable { get { throw new NotImplementedException (); } }
-		public bool IsSelectionBoxHighlighted { get { throw new NotImplementedException (); } }
-		public Style ItemContainerStyle { get { throw new NotImplementedException (); } set { throw new NotImplementedException (); } }
-		public double MaxDropDownHeight { get { throw new NotImplementedException (); } set { throw new NotImplementedException (); } }
-		public object SelectionBoxItem { get { throw new NotImplementedException (); } }
-		public DataTemplate SelectionBoxItemTemplate { get { throw new NotImplementedException (); } }
 
+//
+//		protected override Size ArrangeOverride (Size arrangeBounds)
+//		{
+//			throw new NotImplementedException ();
+//		}
+//
+//		protected override DependencyObject GetContainerForItemOverride ()
+//		{
+//			throw new NotImplementedException ();
+//		}
+//		
+//		protected override bool IsItemItsOwnContainerOverride (object item)
+//		{
+//			throw new NotImplementedException ();
+//		}
+//		
+//		public override void OnApplyTemplate ()
+//		{
+//			throw new NotImplementedException ();
+//		}
+//		
+//		protected override AutomationPeer OnCreateAutomationPeer ()
+//		{
+//			throw new NotImplementedException ();
+//		}
+//		
+//		protected override void OnGotFocus (RoutedEventArgs e)
+//		{
+//			throw new NotImplementedException ();
+//		}
+//		
+//		protected override void OnKeyDown (KeyEventArgs e)
+//		{
+//			throw new NotImplementedException ();
+//		}
+//		
+//		protected override void OnLostFocus (RoutedEventArgs e)
+//		{
+//			throw new NotImplementedException ();
+//		}
+//		
+//		protected override void OnMouseEnter (MouseEventArgs e)
+//		{
+//			throw new NotImplementedException ();
+//		}
+//		
+//		protected override void OnMouseLeave (MouseEventArgs e)
+//		{
+//			throw new NotImplementedException ();
+//		}
+//		
+//		protected override void OnMouseLeftButtonDown (MouseButtonEventArgs e)
+//		{
+//			throw new NotImplementedException ();
+//		}
+//		
+//		protected override void PrepareContainerForItemOverride (DependencyObject element, object item)
+//		{
+//			throw new NotImplementedException ();
+//		}
 	}
 }
