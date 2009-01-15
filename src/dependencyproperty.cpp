@@ -123,8 +123,15 @@ DependencyProperty::GetDependencyPropertyFull (Types *additional_types, Type::Ki
 	
 	property = GetDependencyProperty (type, name, inherits);
 	
-	if (property == NULL && additional_types != NULL)
-		property = GetDependencyProperty (additional_types->Find (type), name, inherits);
+	if (property == NULL && additional_types != NULL) {
+              Type *t = additional_types->Find (type);
+              if (t == NULL)
+                     return NULL;
+
+              property = GetDependencyProperty (t, name, false);
+              if (property == NULL && t->GetParent () != Type::INVALID)
+                     return GetDependencyPropertyFull (additional_types, t->GetParent (), name, inherits);
+	}
 
 	return property;
 }
@@ -147,7 +154,7 @@ DependencyProperty::GetDependencyProperty (Type *type, const char *name, bool in
 	}
 
 	if (type->custom_properties_hash != NULL) {
-		property = (DependencyProperty *) g_hash_table_lookup (type->properties, name);
+		property = (DependencyProperty *) g_hash_table_lookup (type->custom_properties_hash, name);
 		
 		if (property != NULL)
 			return property;
