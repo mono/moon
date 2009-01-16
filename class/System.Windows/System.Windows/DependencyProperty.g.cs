@@ -531,7 +531,7 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty NaturalVideoWidthProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "NaturalVideoWidth", typeof (double));
 		public static readonly DependencyProperty PositionProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Position", typeof (TimeSpan));
 		public static readonly DependencyProperty RenderedFramesPerSecondProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "RenderedFramesPerSecond", typeof (double));
-		public static readonly DependencyProperty SourceProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Source", typeof (string));
+		public static readonly DependencyProperty SourceProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Source", typeof (Uri));
 		public static readonly DependencyProperty StretchProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Stretch", typeof (Stretch));
 		public static readonly DependencyProperty VolumeProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Volume", typeof (double));
 
@@ -624,8 +624,8 @@ namespace System.Windows.Controls {
 			get { return (double) GetValue (RenderedFramesPerSecondProperty); }
 		}
 
-		public string Source {
-			get { return (string) GetValue (SourceProperty); }
+		public Uri Source {
+			get { return (Uri) GetValue (SourceProperty); }
 			set { SetValue (SourceProperty, value); }
 		}
 
