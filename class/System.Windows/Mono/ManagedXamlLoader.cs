@@ -588,7 +588,6 @@ namespace Mono.Xaml
 				if (pi.PropertyType == typeof (DependencyProperty)) {
 					DependencyProperty dp = DependencyPropertyFromString (parser, top_level, target, target_parent_ptr, str_value);
 					if (dp != null) {
-						Console.WriteLine ("Setting to dp:  {0}", dp);
 						pi.SetValue (target, dp, null);
 						return true;
 					}
