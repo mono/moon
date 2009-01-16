@@ -384,7 +384,7 @@ dependency_property_g_init (void)
 	UIElement::OpacityMaskProperty = DependencyProperty::Register (Type::UIELEMENT, "OpacityMask", Type::BRUSH);
 	UIElement::OpacityProperty = DependencyProperty::Register (Type::UIELEMENT, "Opacity", new Value (1.0), Type::DOUBLE);
 	UIElement::RenderTransformOriginProperty = DependencyProperty::Register (Type::UIELEMENT, "RenderTransformOrigin", new Value (Point (0,0)), Type::POINT);
-	UIElement::RenderTransformProperty = DependencyProperty::Register (Type::UIELEMENT, "RenderTransform", new Value (new MatrixTransform ()), Type::TRANSFORM);
+	UIElement::RenderTransformProperty = DependencyProperty::Register (Type::UIELEMENT, "RenderTransform", Type::TRANSFORM);
 	UIElement::ResourcesProperty = DependencyProperty::Register (Type::UIELEMENT, "Resources", Type::RESOURCE_DICTIONARY);
 	UIElement::TagProperty = DependencyProperty::Register (Type::UIELEMENT, "Tag", Type::STRING);
 	UIElement::TriggersProperty = DependencyProperty::Register (Type::UIELEMENT, "Triggers", Type::TRIGGER_COLLECTION);

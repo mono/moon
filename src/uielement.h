@@ -392,7 +392,7 @@ public:
 	static DependencyProperty *OpacityProperty;
  	/* @PropertyType=Point,DefaultValue=Point (0\,0),GenerateAccessors */
 	static DependencyProperty *RenderTransformOriginProperty;
-	/* @PropertyType=Transform,DefaultValue=new MatrixTransform (),GenerateAccessors */
+	/* @PropertyType=Transform,GenerateAccessors */
 	static DependencyProperty *RenderTransformProperty;
  	/* @PropertyType=Visibility,DefaultValue=VisibilityVisible,GenerateAccessors */
 	static DependencyProperty *VisibilityProperty;

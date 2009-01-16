@@ -1,3 +1,10 @@
+2009-01-16  Larry Ewing  <lewing@novell.com>
+
+	* uielement.h (class UIElement): remove the default value from
+	RenderTransformProperty until the bugs it introduces are resolved.
+
+	* dependencyproperty.g.cpp:Regenerated.
+
 2009-01-15  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* dependencyproperty.g.cpp: Regenerated
