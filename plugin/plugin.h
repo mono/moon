@@ -221,7 +221,9 @@ class PluginInstance
 	void UpdateSourceByReference (const char *value);
 	void LoadXAML ();
 	void SetPageURL ();
-
+	
+	bool EvaluateToVariant (const char *code, NPVariant *output);
+	
 	void TryLoadBridge (const char *prefix);
 	
 	static gboolean IdleUpdateSourceByReference (gpointer data);
@@ -234,6 +236,9 @@ class PluginInstance
 extern GSList *plugin_instances;
 
 #define NPID(x) NPN_GetStringIdentifier (x)
+
+#define STRDUP_FROM_VARIANT(v) (g_strndup ((char *) NPVARIANT_TO_STRING (v).utf8characters, NPVARIANT_TO_STRING (v).utf8length))
+#define STRLEN_FROM_VARIANT(v) ((size_t) NPVARIANT_TO_STRING (v).utf8length)
 
 #define STREAM_NOTIFY(x) ((StreamNotify*) x)
 

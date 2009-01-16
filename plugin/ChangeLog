@@ -1,5 +1,13 @@
 2009-01-16  Jb Evain  <jbevain@novell.com>
 
+	* plugin-class.cpp: move STRDUP_FROM_VARIANT and
+	STRLEN_FROM_VARIANT to plugin.h
+	* plugin.h: also define PluginInstance::EvaluateToVariant
+	* plugin.cpp: implement PluginInstance::GetBrowserInformation
+	and PluginInstance::EvaluateToVariant.
+
+2009-01-16  Jb Evain  <jbevain@novell.com>
+
 	* plugin.cpp|h: remove PluginInstance::LoadUrl.
 
 2009-01-15  Jackson Harper  <jackson@ximian.com>

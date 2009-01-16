@@ -295,10 +295,6 @@ check_arg_list (const char *arglist, uint32_t argc, const NPVariant *argv)
 	return true;
 }
 
-
-#define STRDUP_FROM_VARIANT(v) (g_strndup ((char *) NPVARIANT_TO_STRING (v).utf8characters, NPVARIANT_TO_STRING (v).utf8length))
-#define STRLEN_FROM_VARIANT(v) ((size_t) NPVARIANT_TO_STRING (v).utf8length)
-
 #define DEPENDENCY_OBJECT_FROM_VARIANT(obj) (((MoonlightDependencyObjectObject*) NPVARIANT_TO_OBJECT (obj))->GetDependencyObject ())
 
 #define THROW_JS_EXCEPTION(meth)	\
