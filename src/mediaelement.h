@@ -225,7 +225,7 @@ class MediaElement : public FrameworkElement {
 	static DependencyProperty *NaturalVideoWidthProperty;
  	/* @PropertyType=TimeSpan,GenerateAccessors */
 	static DependencyProperty *PositionProperty;
- 	/* @PropertyType=string,AlwaysChange,GenerateAccessors */
+ 	/* @PropertyType=string,ManagedPropertyType=Uri,AlwaysChange,GenerateAccessors */
 	static DependencyProperty *SourceProperty;
  	/* @PropertyType=Stretch,DefaultValue=StretchUniform,GenerateAccessors */
 	static DependencyProperty *StretchProperty;

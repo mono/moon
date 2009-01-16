@@ -1,3 +1,8 @@
+2009-01-16  Geoff Norton  <gnorton@novell.com>
+
+	* mediaelement.h: The MediaElement.Source is a Uri on the managed
+	side.
+
 2009-01-16  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: FindTypeName type names dont' always have a
