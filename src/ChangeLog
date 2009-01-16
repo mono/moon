@@ -1,3 +1,7 @@
+2009-01-15  Geoff Norton  <gnorton@novell.com>
+
+	* downloader.cpp|h: Add downloader_response_abort.
+
 2009-01-15  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp|h: We need to pass a pointer to the elements parent

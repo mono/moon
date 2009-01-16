@@ -283,6 +283,7 @@ void downloader_init (void);
 void *downloader_create_webrequest (Downloader *dl, const char *method, const char *uri);
 
 void downloader_request_abort (DownloaderRequest *dr);
+void downloader_request_destroy (DownloaderRequest *dr);
 bool downloader_request_get_response (DownloaderRequest *dr, DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context);
 bool downloader_request_is_aborted (DownloaderRequest *dr);
 void downloader_request_set_http_header (DownloaderRequest *dr, const char *name, const char *value);

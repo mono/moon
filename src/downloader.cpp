@@ -826,6 +826,12 @@ void
 }
 
 void
+downloader_request_destroy (DownloaderRequest *dr)
+{
+	delete dr;
+}
+
+void
 downloader_request_abort (DownloaderRequest *dr)
 {
 	dr->Abort ();
