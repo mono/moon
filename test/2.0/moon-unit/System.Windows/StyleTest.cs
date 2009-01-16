@@ -296,7 +296,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug ("we don't throw the right exception")]
 		public void ProgramMissingTargetType ()
 		{
 			Style s = new Style ();
