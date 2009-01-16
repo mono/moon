@@ -550,7 +550,11 @@ namespace Mono.Xaml
 			//
 			// Yup, we have to call Initialize to make sure that the DPs get registered
 			//
-			System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor (target_type.TypeHandle);
+			Type walk = target_type;
+			while (walk != typeof (object)) {
+				System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor (walk.TypeHandle);
+				walk = walk.BaseType;
+			}
 
 			ManagedType mt = Types.Find (target_type);
 			DependencyProperty dp = DependencyProperty.Lookup ((Kind) mt.native_handle, str_value);

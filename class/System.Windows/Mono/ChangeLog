@@ -1,5 +1,10 @@
 2009-01-15  Jackson Harper  <jackson@ximian.com>
 
+	* ManagedXamlLoader.cs: We need to walk up the type's hierarchy
+	and make sure all it's DPs are registered.
+
+2009-01-15  Jackson Harper  <jackson@ximian.com>
+
 	* XamlLoaderCallbacks.cs: Updated signature for set property.
 	* ManagedXamlLoader.cs: Handle creating DependencyPropertys in
 	SetProperty.
