@@ -67,17 +67,20 @@ namespace System.Windows.Browser{
 
 		public static void UnregisterCreateableType (string scriptAlias)
 		{
-			throw new System.NotImplementedException ();
+			Console.Error.WriteLine ("MOONLIGHT-IMPLEMENT-ME: HtmlPage.UnregisterCreatableType needs to be implemented.");
+//			throw new System.NotImplementedException ();
 		}
 		
 		public static void RegisterScriptableObject (string scriptKey, object instance)
 		{
-			throw new System.NotImplementedException ();
+			Console.Error.WriteLine ("MOONLIGHT-IMPLEMENT-ME: HtmlPage.RegisterScriptableObject needs to be implemented.");
+//			throw new System.NotImplementedException ();
 		}
 		
 		public static void RegisterCreateableType (string scriptAlias, Type type)
 		{
-			throw new System.NotImplementedException ();
+			Console.Error.WriteLine ("MOONLIGHT-IMPLEMENT-ME: HtmlPage.RegisterCreatableType needs to be implemented.");
+//			throw new System.NotImplementedException ();
 		}
 
 		public static HtmlWindow Window {
