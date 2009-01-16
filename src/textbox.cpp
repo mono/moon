@@ -1434,8 +1434,6 @@ TextBox::OnApplyTemplate ()
 	ContentControl *control;
 	TextBoxView *view;
 	
-	printf ("TextBox::OnApplyTemplate ()\n");
-	
 	if (content->Is (Type::CONTENTCONTROL)) {
 		// Insert our TextBoxView
 		control = (ContentControl *) content;
