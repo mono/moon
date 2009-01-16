@@ -1,3 +1,7 @@
+2009-01-16  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: NULL is OK if it's being explicitly set.
+
 2009-01-16  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBoxView::OnModelChanged): Invalidate the old

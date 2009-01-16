@@ -2699,6 +2699,12 @@ bad_pml:
 	return NULL;
 }
 
+bool
+value_is_explicit_null (const char *str)
+{
+	return !strcmp ("{x:Null}", str);
+}
+
 // NOTE: Keep definition in sync with class/System.Windows/Mono/NativeMethods.cs
 bool
 value_from_str_with_typename (const char *type_name, const char *prop_name, const char *str, Value **v, bool sl2)
@@ -2716,7 +2722,7 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 	char *endptr;
 	*v = NULL;
 	
-	if (!strcmp ("{x:Null}", str)) {
+	if (value_is_explicit_null (str)) {
 		*v = NULL;
 		return true;
 	}
@@ -3944,6 +3950,11 @@ start_parse:
 					if (p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, NULL, item->GetManagedPointer (), item->GetParentPointer (), g_strdup (prop->GetName ()), &v))
 						return;
 				}
+			}
+
+			if (!v && !value_is_explicit_null (attr [i + 1])) {
+				parser_error (p, item->element_name, attr [i], 2024, "Invalid attribute value %s for property %s.", attr [i+1], attr [i]);
+				return;
 			}
 
 			MoonError err;
