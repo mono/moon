@@ -188,9 +188,61 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		[MoonlightBug ("styles need to use type converters")]
+		public void ProgrammaticTypeConverterFromStringTest()
+		{
+			Button b = new Button();
+			Style style = new Style(typeof(Button));
+			style.Setters.Add (new Setter(Button.WidthProperty, "10"));
+			b.Style = style;
+			Assert.AreEqual (10, b.Width, "1");
+		}
+
+		[TestMethod]
+		[MoonlightBug ("TypeConverter stuff only works in one direction: from string -> type")]
+		public void ProgrammaticTypeConverterToStringTest()
+		{
+			Button b = new Button();
+			Style style = new Style(typeof(Button));
+			style.Setters.Add (new Setter(FrameworkElement.TagProperty, 10));
+
+			Assert.Throws<ArgumentException>(delegate {
+				b.Style = style;
+			});
+
+			b = new Button ();
+			style = new Style (typeof (Button));
+			style.Setters.Add (new Setter(FrameworkElement.TagProperty, new Button()));
+
+			Assert.Throws<ArgumentException>(delegate {
+				b.Style = style;
+			});
+		}
+
+		[TestMethod]
+		[MoonlightBug ("we don't have type converter handling yet")]
+		public void ParsedTypeConverterToStringTest()
+		{
+			Style style = (Style)XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Button""><Setter Property=""Tag""><Setter.Value><Button /></Setter.Value></Setter></Style>");
+
+			Button b = new Button();
+
+			Assert.Throws<ArgumentException>(delegate {
+				b.Style = style;
+			});
+		}
+
+		[TestMethod]
+		[MoonlightBug ("DP lookup isn't working")]
 		public void InvalidValueParsed ()
 		{
-			XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Button""><Setter Property=""Width"" Value=""this is a string""/></Style>");
+			Style style = (Style)XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Button""><Setter Property=""Width"" Value=""this is a string""/></Style>");
+
+			Button b = new Button();
+
+			Assert.Throws<Exception>(delegate {
+				b.Style = style;
+			});
 		}
 
 		[TestMethod]
@@ -232,7 +284,7 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[Ignore("On silverlight this seems to throw an uncatchable exception")]
-		public void MissingTargetType ()
+		public void ParsedMissingTargetType ()
 		{
 			Assert.Throws<ExecutionEngineException>(delegate {
 				XamlReader.Load(@"<Style xmlns=""http://schemas.microsoft.com/client/2007""><Setter Property=""Width"" Value=""10""/></Style>");
@@ -240,6 +292,18 @@ namespace MoonTest.System.Windows
 
 			Assert.Throws<ExecutionEngineException>(delegate {
 				XamlReader.Load(@"<Style xmlns=""http://schemas.microsoft.com/client/2007""><Setter Property=""WidthOrHeight"" Value=""10""/></Style>");
+			});
+		}
+
+		[TestMethod]
+		[MoonlightBug ("we don't throw the right exception")]
+		public void ProgramMissingTargetType ()
+		{
+			Style s = new Style ();
+			Button b = new Button ();
+
+			Assert.Throws<NullReferenceException>(delegate {
+				b.Style = s;
 			});
 		}
 
