@@ -259,10 +259,7 @@ FrameworkElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObje
 void
 FrameworkElement::ComputeBounds ()
 {
-	Rect *slot = LayoutInformation::GetLayoutSlot (this);
-	extents = slot ? *slot : Rect ();
-	extents.width = MAX (GetActualWidth (), extents.width);
-	extents.height = MAX (GetActualHeight (), extents.height);
+	extents = Rect (0.0, 0.0, GetActualWidth (), GetActualHeight ());
 	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 }
 
@@ -387,7 +384,13 @@ FrameworkElement::Arrange (Rect finalRect)
 	Thickness margin = *GetMargin ();
 	finalRect = finalRect.GrowBy (-margin);
 
-	Size size = Size (finalRect.width, finalRect.height);
+	Size size = GetDesiredSize ();
+	
+	if (GetHorizontalAlignment () == HorizontalAlignmentStretch)
+		size.width = finalRect.width;
+
+	if (GetVerticalAlignment () == VerticalAlignmentStretch) 
+		size.height = finalRect.height;
 
 	if (arrange_cb)
 		size = (*arrange_cb)(size);
