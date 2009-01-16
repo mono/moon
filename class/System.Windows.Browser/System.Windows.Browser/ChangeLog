@@ -1,3 +1,7 @@
+2009-01-16  Jb Evain  <jbevain@novell.com>
+
+	* HtmlPage.cs: cache the window, the plugin and the document HtmlObjects.
+
 2008-12-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* HtmlObject.cs: Rework event attaching/detaching a bit:

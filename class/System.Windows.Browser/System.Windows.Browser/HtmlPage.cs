@@ -35,7 +35,11 @@ using Mono;
 namespace System.Windows.Browser{
 
 	public static class HtmlPage {
+
 		private static BrowserInformation browser_info = new BrowserInformation ();
+		private static HtmlWindow window;
+		private static HtmlDocument document;
+		private static HtmlElement plugin;
 
 		public static BrowserInformation BrowserInformation {
 			get {
@@ -45,17 +49,19 @@ namespace System.Windows.Browser{
 		
 		[MonoTODO ("This method should return false when we're not running in a browser.")]
 		public static bool IsEnabled {		
-		[SecuritySafeCritical ()]
+			[SecuritySafeCritical]
 			get {
 				return true;
 			}
 		}
 		
 		public static HtmlDocument Document {
-		[SecuritySafeCritical ()]
+			[SecuritySafeCritical]
 			get {
-				IntPtr handle = HtmlObject.GetPropertyInternal<IntPtr> (IntPtr.Zero, "document");
-				return new HtmlDocument (handle);
+				if (document == null)
+					document = new HtmlDocument (HtmlObject.GetPropertyInternal<IntPtr> (IntPtr.Zero, "document"));
+
+				return document;
 			}
 		}
 
@@ -76,17 +82,20 @@ namespace System.Windows.Browser{
 
 		public static HtmlWindow Window {
 			get {
-				IntPtr window = HtmlObject.GetPropertyInternal<IntPtr> (IntPtr.Zero, "window");
-				//Console.WriteLine ("HtmlPage.Window: {0}", window);
-				return new HtmlWindow (window);
+				if (window == null)
+					window = new HtmlWindow (HtmlObject.GetPropertyInternal<IntPtr> (IntPtr.Zero, "window"));
+
+				return window;
 			}
 		}
 
 		public static HtmlElement Plugin {
 			[SecuritySafeCritical]
 			get {
-				IntPtr obj = NativeMethods.plugin_instance_get_host (Mono.Xaml.XamlLoader.PluginInDomain);
-				return new HtmlElement (obj);
+				if (plugin == null)
+					plugin = new HtmlElement (NativeMethods.plugin_instance_get_host (Mono.Xaml.XamlLoader.PluginInDomain));
+
+				return plugin;
 			}
 		}
 
