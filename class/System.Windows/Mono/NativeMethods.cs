@@ -139,6 +139,9 @@ namespace Mono {
 
 		[DllImport("moon")]
 		public extern static void downloader_request_abort (IntPtr downloader_request);
+		
+		[DllImport("moon")]
+		public extern static void downloader_request_destroy (IntPtr downloader_request);
 
 		[DllImport("moon")]
 		[return: MarshalAs (UnmanagedType.U1)]
@@ -241,14 +244,6 @@ namespace Mono {
 
 		[DllImport("moonplugin")]
 		public extern static IntPtr plugin_instance_evaluate  (IntPtr plugin_handle, string code);
-
-// FIXME: should be removed since it does not exists in moonplugin but managed code still use it
-		[DllImport("moonplugin")]
-		public extern static void browser_http_request_destroy (IntPtr handle);
-
-// FIXME: should be removed since it does not exists in moonplugin but managed code still use it
-		[DllImport("moonplugin")]
-		public extern static void browser_http_request_abort (IntPtr handle);
 
 		public delegate void DomEventCallback (IntPtr context, string name, int client_x, int client_y, int offset_x, int offset_y, 
 			[MarshalAs (UnmanagedType.Bool)] bool alt_key,	// glib gboolean is a gint (i.e. 4 bytes just like the FX bool)
