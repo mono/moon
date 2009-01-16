@@ -64,28 +64,42 @@ namespace System.Windows.Controls.Primitives {
 			}
 		}
 
+		bool changing;
 		public event SelectionChangedEventHandler SelectionChanged;
 
 		void SelectedIndexChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
 		{
-			int newVal = (int) e.NewValue;
-			if (newVal != (int)e.OldValue && newVal < Items.Count)
-				SelectedItem = newVal >= 0 ? Items[SelectedIndex] : null;
+			if (changing)
+				return;
 
+			changing = true;
+			try {
+				int newVal = (int) e.NewValue;
+				if (newVal != (int)e.OldValue && newVal < Items.Count)
+					SelectedItem = newVal >= 0 ? Items[SelectedIndex] : null;
+			} finally {
+				changing = false;
+			}
 			RaiseSelectionChanged (o, new SelectionChangedEventArgs (new object[] { e.OldValue }, new object [] { e.NewValue }));
 		}
 		
 		void SelectedItemChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
 		{
-			if (e.NewValue == e.OldValue)
+			if (e.NewValue == e.OldValue || changing)
 				return;
-
-			int index = Items.IndexOf (e.NewValue);
-			if (index == -1)
-				SelectedItem = e.OldValue;
-			else
-				SelectedIndex = index;
-			RaiseSelectionChanged (o, new SelectionChangedEventArgs (new object[] { e.OldValue }, new object [] { e.NewValue }));
+			changing = true;
+			try {
+				int index = Items.IndexOf (e.NewValue);
+				if (index == -1) {
+					SelectedItem = e.OldValue;
+				}
+				else {
+					SelectedIndex = index;
+					RaiseSelectionChanged (o, new SelectionChangedEventArgs (new object[] { e.OldValue }, new object [] { e.NewValue }));
+				}
+			} finally {
+				changing = false;
+			}
 		}
 
 		void RaiseSelectionChanged (object o, SelectionChangedEventArgs e)
