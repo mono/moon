@@ -43,12 +43,6 @@ namespace System.Windows.Controls {
 			get; set;
 		}
 		
-		protected override Size ArrangeOverride (Size size)
-		{
-			// FIXME: implement me
-			return base.ArrangeOverride (size);
-		}
-		
 		public IEnumerable<UIElement> HitTest (Point point)
 		{
 			return null;

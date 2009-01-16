@@ -1,3 +1,7 @@
+2009-01-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* TextBox.cs (ArrangeOverride): Removed.
+
 2009-01-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* MediaElement.cs: Tiny little beginning of MediaStreamSource and remove
