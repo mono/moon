@@ -348,7 +348,7 @@ FrameworkElement::MeasureOverride (Size availableSize)
 	Size desired = Size (GetWidth (), GetHeight ());
 
 	if (isnan (desired.width))
-		desired = availableSize.width;
+		desired.width = availableSize.width;
 
 	if (isnan (desired.height))
 		desired.height = availableSize.height;

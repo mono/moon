@@ -45,7 +45,6 @@ class Panel : public FrameworkElement {
 	
 	virtual void ComputeBounds ();
 	virtual Size MeasureOverride (Size availableSize);
-	virtual Size ArrangeOverride (Size finalSize);
 
 	virtual Rect GetCoverageBounds ();
 	virtual void Render (cairo_t *cr, Region *region);

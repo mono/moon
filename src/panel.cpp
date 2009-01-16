@@ -232,43 +232,7 @@ Panel::EmptyBackground ()
 Size
 Panel::MeasureOverride (Size availableSize)
 {
-	//return Size (0,0);
 	Size result = Size (0,0);
-	Size childSize = Size (0,0); 
-
-	// XXX ugly hack to maintain compat
-	if (result.IsEmpty ())
-		return result;
-
-	//if (availableSize.width <= 0.0 && availableSize.height <= 0.0)
-	//	childSize = Size (0.0, 0.0);
-
-	VisualTreeWalker walker = VisualTreeWalker (this);
-	while (UIElement *child = walker.Step ())
-		child->Measure (childSize);
-	
-	return result;
-}
-
-Size
-Panel::ArrangeOverride (Size finalSize)
-{
-	//return Size (0,0);
-	Size result = FrameworkElement::ArrangeOverride (finalSize);
-
-	// XXX ugly hack to maintain compat
-	if (!GetVisualParent() && !GetSurface ())
-		return result;
-
-	VisualTreeWalker walker = VisualTreeWalker (this);
-	while (UIElement *child = walker.Step ()) {
-		Size arranged = child->GetDesiredSize ();
-		Rect child_final = Rect (0, 0,
-					 arranged.width, arranged.height);
-		child->Arrange (child_final);
-		// XXX fill layout slot?
-	}
-
 	return result;
 }
 
