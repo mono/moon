@@ -1,3 +1,7 @@
+2009-01-16  Jackson Harper  <jackson@ximian.com>
+
+	* System.Windows/ResourceDictionaryTest.cs: Unregressed this.
+
 2009-01-16  Larry Ewing  <lewing@novell.com>
 
 	* System.Windows.Controls/PanelTest.cs: remove MoonlightBug
