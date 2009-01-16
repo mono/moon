@@ -1,3 +1,11 @@
+2009-01-16  Larry Ewing  <lewing@novell.com>
+
+	* System.Windows.Controls/PanelTest.cs: remove MoonlightBug
+	attribute from AlignmentTest.
+
+	* System.Windows.Controls/StackPanelTest.cs: remove bug attr from
+	AlignmentTest AlignmentTest2 and LayoutSlotTest3.
+
 2009-01-16  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ComboBoxTest.cs: added test to ensure events

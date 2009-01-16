@@ -110,7 +110,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void LayoutSlotTest3 ()
 		{
 			Border b = new Border ();
@@ -136,7 +135,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void AlignmentTest ()
 		{
 			Border b = new Border ();
@@ -162,7 +160,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void AlignmentTest2 ()
 		{
 			Border b = new Border ();

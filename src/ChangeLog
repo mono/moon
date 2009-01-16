@@ -1,3 +1,8 @@
+2009-01-16  Larry Ewing  <lewing@novell.com>
+
+	* panel.cpp: Make ArrangeOverride and MeasureOverride do something
+	closer to the right thing.
+
 2009-01-16  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBox::ArrangeOverride): Removed.

@@ -27,12 +27,20 @@ namespace MoonTest.System.Windows.Controls
 			public Size ArrangeArg = new Size (0,0);
 			public Size BaseArrangeResult = new Size (0,0);
 			public Size BaseMeasureResult = new Size (0,0);
+			public event MeasureOverrideHandler Measured;
+			public event ArrangeOverrideHandler Arranged;
+			public delegate void ArrangeOverrideHandler (Size real);
+			public delegate void MeasureOverrideHandler (Size real);
 
 			protected override Size MeasureOverride (Size availableSize)
 			{
 				MeasureArg = availableSize;
 				Tester.WriteLine (string.Format ("Panel available size is {0}", availableSize));
 				BaseMeasureResult = base.MeasureOverride (availableSize);
+
+				if (Measured != null)
+					Measured (BaseMeasureResult);
+
 				return MeasureResult;
 			}
 
@@ -41,7 +49,12 @@ namespace MoonTest.System.Windows.Controls
 				ArrangeArg = finalSize;
 				Tester.WriteLine (string.Format ("Panel final size is {0}", finalSize));
 				BaseArrangeResult = base.ArrangeOverride (finalSize);
+				
+				if (Arranged != null)
+					Arranged (BaseArrangeResult);
+
 				return ArrangeResult;
+
 			}
 
 		}
@@ -138,9 +151,37 @@ namespace MoonTest.System.Windows.Controls
 			r.Width = 50;
 			r.Height = 50;
 			
+			c.Measured += (Size real) => { c.MeasureResult = real; };
 			c.Measure (new Size (100, 100));
 
+			Assert.AreEqual (new Size (0,0), c.BaseMeasureResult);
+		}
+
+		[TestMethod]
+		public void ChildMeasureTest3 ()
+		{
+			Border b = new Border ();
+			LayoutPoker c = new LayoutPoker ();
+			Rectangle r = new Rectangle();
+			b.Child = c;
+			c.Children.Add (r);
+			c.Background = new SolidColorBrush (Colors.Red);
+
+			r.Width = 50;
+			r.Height = 50;
+			
+			bool called = false;
+			c.Measured += (Size real) => { 
+				c.MeasureResult = real; 
+				called = true;
+			};
+			
+			b.Measure (new Size (100, 100));
+			Assert.IsTrue (called, "measure called");
+
 			Assert.AreEqual (new Size (0,0), c.DesiredSize);
+			Assert.AreEqual (new Size (0,0), r.DesiredSize);
+			Assert.AreEqual (new Size (0,0), b.DesiredSize);
 		}
 		
 		[TestMethod]
