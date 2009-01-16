@@ -295,7 +295,7 @@ class PluginXamlLoader : public XamlLoader
 	virtual ~PluginXamlLoader ();
 	const char *TryLoad (int *error);
 
-	bool SetProperty (void *parser, void *top_level, const char *xmlns, void *target, const char *name, Value* value);
+	bool SetProperty (void *parser, void *top_level, const char *xmlns, void *target, void *target_parent, const char *name, Value* value);
 
 	static PluginXamlLoader *FromFilename (const char *filename, PluginInstance *plugin, Surface *surface)
 	{
