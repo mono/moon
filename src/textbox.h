@@ -156,7 +156,6 @@ class TextBox : public Control, public ITextSource {
 	//
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
-	virtual Size ArrangeOverride (Size size);
 	virtual void OnApplyTemplate ();
 	
 	//
@@ -183,7 +182,7 @@ class TextBox : public Control, public ITextSource {
 		if (selected)
 			return GetSelectionBackground ();
 		else
-			return GetBackground ();
+			return NULL;
 	}
 	
 	virtual Brush *Foreground (bool selected)

@@ -1,3 +1,9 @@
+2009-01-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBox::ArrangeOverride): Removed.
+	(TextBox::Background) needs to return NULL if not selected mode -
+	we don't want to be redrawing the normal bg.
+
 2009-01-16  Geoff Norton  <gnorton@novell.com>
 
 	* xaml.cpp|h: Allocate a GCHandle to the ManagedXamlLoader if

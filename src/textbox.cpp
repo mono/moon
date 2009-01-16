@@ -1427,19 +1427,14 @@ TextBox::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, 
 		Control::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
-Size
-TextBox::ArrangeOverride (Size size)
-{
-	// FIXME: implement me
-	return Control::ArrangeOverride (size);
-}
-
 void
 TextBox::OnApplyTemplate ()
 {
 	DependencyObject *content = GetTemplateChild ("ContentElement");
 	ContentControl *control;
 	TextBoxView *view;
+	
+	printf ("TextBox::OnApplyTemplate ()\n");
 	
 	if (content->Is (Type::CONTENTCONTROL)) {
 		// Insert our TextBoxView
