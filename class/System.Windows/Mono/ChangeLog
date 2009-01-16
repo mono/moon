@@ -1,3 +1,7 @@
+2009-01-16  Jb Evain  <jbevain@novell.com>
+
+	* NativeMethods.cs: add plugin_instance_get_browser_information.
+
 2009-01-16  Geoff Norton  <gnorton@novell.com>
 
 	* ManagedXamlLoader.cs:
