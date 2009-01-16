@@ -440,7 +440,7 @@ system_windows_sources =							\
 	$(MSCONTROLS)/Src/ToolTip/ToolTipService.cs
 
 XAML_RESOURCES = $(MSRUNTIMECONTROLS)/themes/generic.xaml,themes/generic.xaml
-XAML_RESOURCE_DEPS = $(MSRUNTIMECONTROLS)/themes/generic.xaml
+XAML_RESOURCES_DEPS = $(MSRUNTIMECONTROLS)/themes/generic.xaml
 
 EXTRA_DIST = $(system_windows_sources) 	\
 	scripts/checks.cs 			\
