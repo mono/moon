@@ -146,9 +146,11 @@ class XamlContextInternal {
  public:
 	FrameworkTemplate *template_parent;
 	GHashTable *imported_namespaces;
+	XamlLoaderCallbacks callbacks;
 
-	XamlContextInternal (FrameworkTemplate *template_parent, GHashTable *namespaces)
+	XamlContextInternal (XamlLoaderCallbacks callbacks, FrameworkTemplate *template_parent, GHashTable *namespaces)
 	{
+		this->callbacks = callbacks;
 		this->template_parent = template_parent;
 
 		imported_namespaces = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
@@ -1054,7 +1056,10 @@ XamlLoader::XamlLoader (const char* filename, const char* str, Surface* surface,
 	this->context = context;
 	this->vm_loaded = false;
 	this->error_args = NULL;
-	
+
+	if (context) {
+		callbacks = context->internal->callbacks;		
+	}
 #if DEBUG
 	if (!surface && debug_flags & RUNTIME_DEBUG_XAML) {
 		printf ("XamlLoader::XamlLoader ('%s', '%s', %p): Initializing XamlLoader without a surface.\n",
@@ -1100,7 +1105,7 @@ xaml_loader_set_callbacks (XamlLoader* loader, XamlLoaderCallbacks callbacks)
 		LOG_XAML ("Trying to set callbacks for a null object\n");
 		return;
 	}
-	
+
 	loader->callbacks = callbacks;
 	loader->vm_loaded = true;
 }
@@ -1422,7 +1427,7 @@ end_element_handler (void *data, const char *el)
 				FrameworkTemplate* template_ = (FrameworkTemplate *) p->current_element->GetAsDependencyObject ();
 
                                 char* buffer = p->ClearBuffer ();
-				XamlContextInternal *ic = new XamlContextInternal (template_, p->namespace_map);
+				XamlContextInternal *ic = new XamlContextInternal (p->loader->callbacks, template_, p->namespace_map);
 				XamlContext *context = new XamlContext (ic);
 
                                 template_->SetXamlBuffer (context, buffer);

@@ -1,5 +1,10 @@
 2009-01-16  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: The xaml context needs to store the callbacks so that
+	we can properly invoke managed code in a template.
+
+2009-01-16  Jackson Harper  <jackson@ximian.com>
+
 	* dependencyproperty.cpp: This warning isn't really needed and now
 	with managed DP lookup's, this scenario happens about a trillion
 	times during parsing of generic.xaml.
