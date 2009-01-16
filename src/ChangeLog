@@ -5,6 +5,8 @@
 	(TextBoxView::Layout): Update the cursor after we finish laying
 	the text out.
 	(TextBoxView::OnModelChanged): Updated to use UpdateCursor().
+	(TextBox::OnKeyDown): Prevent character entry if buffer->len >=
+	maxlen.
 
 2009-01-16  Jackson Harper  <jackson@ximian.com>
 

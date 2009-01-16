@@ -1157,7 +1157,7 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 	
 	if ((c = args->GetUnicode ())) {
 		// normal character key
-		if ((c == '\n') && !GetAcceptsReturn ())
+		if ((maxlen > 0 && buffer->len >= maxlen) || ((c == '\n') && !GetAcceptsReturn ()))
 			return;
 		
 		if (selection.length > 0) {
@@ -1324,7 +1324,6 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 	} else if (args->property == TextBox::AcceptsReturnProperty) {
 		// no rendering changes required
 	} else if (args->property == TextBox::MaxLengthProperty) {
-		// FIXME: What happens if the current buffer length is > MaxLength?
 		maxlen = args->new_value->AsInt32 ();
 	} else if (args->property == TextBox::SelectedTextProperty) {
 		const char *str = args->new_value ? args->new_value->AsString () : "";
