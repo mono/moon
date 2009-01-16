@@ -290,6 +290,8 @@ namespace Mono {
 			}
 			case 7:
 				throw new UnauthorizedAccessException (msg);
+			case 8:
+				throw new ExecutionEngineException (msg);
 			}
 		}
 	}
