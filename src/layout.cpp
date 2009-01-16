@@ -1385,18 +1385,20 @@ TextLayout::GetIndexFromPoint (const Point &offset, double x, double y)
 Rect
 TextLayout::GetCursor (const Point &offset, int pos)
 {
+	double ascend, x0, y0, y1;
 	TextSegment *segment;
 	GlyphInfo *glyph;
 	TextLine *line;
 	TextFont *font;
 	double deltax;
 	guint32 prev;
-	Rect cursor;
 	int cur = 0;
 	gunichar c;
 	int i, n;
 	
-	cursor = Rect (offset.x, offset.y, 1.0, 0.0);
+	ascend = y1 = 0.0;
+	x0 = offset.x;
+	y0 = offset.y;
 	
 	line = (TextLine *) lines->First ();
 	
@@ -1419,14 +1421,18 @@ TextLayout::GetCursor (const Point &offset, int pos)
 			break;
 		}
 		
-		cursor.x = offset.x + deltax;
+		// adjust x0 for horizontal alignment
+		x0 = offset.x + deltax;
+		
+		// set y1 to the baseline (descend is a negative value)
+		y1 = y0 + line->height + line->descend;
 		
 		segment = (TextSegment *) line->segments->First ();
 		while (segment && cur < pos) {
 			n = segment->end - segment->start;
 			font = segment->Font ();
 			
-			cursor.height = font->Ascender ();
+			ascend = font->Ascender ();
 			
 			if (pos >= cur && pos < (cur + n)) {
 				for (i = segment->start, prev = 0; cur < pos; cur++, i++) {
@@ -1436,15 +1442,15 @@ TextLayout::GetCursor (const Point &offset, int pos)
 						continue;
 					
 					if ((prev != 0) && APPLY_KERNING (c))
-						cursor.x += font->Kerning (prev, glyph->index);
+						x0 += font->Kerning (prev, glyph->index);
 					else if (glyph->metrics.horiBearingX < 0)
-						cursor.x += glyph->metrics.horiBearingX;
+						x0 += glyph->metrics.horiBearingX;
 					
-					cursor.x += glyph->metrics.horiAdvance;
+					x0 += glyph->metrics.horiAdvance;
 					prev = glyph->index;
 				}
 			} else {
-				cursor.x += segment->advance;
+				x0 += segment->advance;
 				cur += n;
 			}
 			
@@ -1452,12 +1458,12 @@ TextLayout::GetCursor (const Point &offset, int pos)
 		}
 		
 		if (line->next) {
-			cursor.y += (double) line->height;
+			y0 += (double) line->height;
 			line = (TextLine *) line->next;
 		} else {
 			break;
 		}
 	}
 	
-	return cursor;
+	return Rect (x0, y1 - ascend, 1.0, ascend);
 }

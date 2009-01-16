@@ -1,5 +1,9 @@
 2009-01-16  Jeffrey Stedfast  <fejj@novell.com>
 
+	* layout.cpp (TextLayout::GetCursor): Fixed to support segments of
+	different font size (not that TextBox really needs that since all
+	runs will be the same exact font).
+
 	* textbox.cpp (TextBoxView::UpdateCursor): New convenience method
 	to update the cursor rect.
 	(TextBoxView::Layout): Update the cursor after we finish laying
