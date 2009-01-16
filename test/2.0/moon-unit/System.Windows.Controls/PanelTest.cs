@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Ink;
 using System.Windows.Input;
@@ -505,6 +506,42 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (10,b.ActualHeight);
 			Assert.AreEqual (9,c.ActualWidth);
 			Assert.AreEqual (9,c.ActualHeight);
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void AlignmentTest ()
+		{
+			Border b = new Border ();
+			Border b2 = new Border ();
+			LayoutPoker poker = new LayoutPoker ();
+			LayoutPoker pchild = new LayoutPoker ();
+
+			b.Child = b2;
+			b2.Child = poker;
+			b.Width = 50;
+			
+			b2.HorizontalAlignment = HorizontalAlignment.Right;
+			b2.VerticalAlignment = VerticalAlignment.Bottom;
+
+			poker.MeasureResult = new Size (20,20);
+			b.Measure (new Size (100,100));
+
+			Assert.AreEqual (new Size (50,100), poker.MeasureArg, "poker m arg");
+			Assert.AreEqual (new Size (20,20), poker.DesiredSize, "poker m result");
+			Assert.AreEqual (new Size (0,0), poker.BaseMeasureResult, "poker base result");
+			
+			Assert.AreEqual (new Size (50,20), b.DesiredSize, "b desiredsize");
+			Assert.AreEqual (new Size (20,20), b2.DesiredSize, "b2 desiredsize");
+			
+			poker.ArrangeResult = new Size (20,20);
+			b.Arrange (new Rect (0,0,b.DesiredSize.Width,b.DesiredSize.Height));
+
+			Assert.AreEqual (new Size (20,20),poker.ArrangeArg, "poker aa");
+			
+			Assert.AreEqual (new Rect (0,0,20,20), LayoutInformation.GetLayoutSlot (poker).ToString (), "poker slot");
+			Assert.AreEqual (new Rect (0,0,50,20), LayoutInformation.GetLayoutSlot (b2).ToString (), "b2 slot");
+			Assert.AreEqual (new Rect (0,0,50,20), LayoutInformation.GetLayoutSlot (b).ToString (), "b slot");
 		}
 	}
 }

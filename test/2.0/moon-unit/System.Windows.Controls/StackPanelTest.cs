@@ -84,5 +84,135 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (new Rect (0,33,25,33), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[1]));
 			Assert.AreEqual (new Rect (0,66,25,33), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[2]));
 		}
+
+		[TestMethod]
+		public void LayoutSlotTest2 ()
+		{
+			Border b = new Border ();
+			var stack = new StackPanel ();
+			stack.Children.Add (CreateSlotItem ());
+			stack.Children.Add (CreateSlotItem ());
+			stack.Children.Add (CreateSlotItem ());
+			b.Width = 50;
+			b.Height = 300;
+			b.Child = stack;
+
+			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			b.Arrange (new Rect (0,0,b.DesiredSize.Width,b.DesiredSize.Height));
+			
+			Assert.AreEqual (new Rect (0,0,50,33), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[0]));
+			Assert.AreEqual (new Rect (0,33,50,33), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[1]));
+			Assert.AreEqual (new Rect (0,66,50,33), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[2]));
+			
+			Assert.AreEqual (new Size (50,300),b.DesiredSize);
+			Assert.AreEqual (new Size (50,300),b.RenderSize);
+			
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void LayoutSlotTest3 ()
+		{
+			Border b = new Border ();
+			var stack = new StackPanel ();
+			stack.Children.Add (CreateSlotItem ());
+			stack.Children.Add (CreateSlotItem ());
+			stack.Children.Add (CreateSlotItem ());
+			stack.HorizontalAlignment = HorizontalAlignment.Right;
+			b.Width = 50;
+			b.Child = stack;
+
+			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			b.Arrange (new Rect (0,0,b.DesiredSize.Width,b.DesiredSize.Height));
+			
+			Assert.AreEqual (new Rect (0,0,25,33), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[0]));
+			Assert.AreEqual (new Rect (0,33,25,33), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[1]));
+			Assert.AreEqual (new Rect (0,66,25,33), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[2]));
+			Assert.AreEqual (new Rect (0,0,50,99), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack));
+			Assert.AreEqual (new Rect (0,0,50,99), LayoutInformation.GetLayoutSlot ((FrameworkElement)b));
+			
+			Assert.AreEqual (new Size (50,99),b.DesiredSize);
+			Assert.AreEqual (new Size (25,99),stack.DesiredSize);
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void AlignmentTest ()
+		{
+			Border b = new Border ();
+			var stack = new StackPanel ();
+			stack.Children.Add (CreateSlotItem ());
+			stack.Children.Add (CreateSlotItem ());
+			stack.Children.Add (CreateSlotItem ());
+			stack.HorizontalAlignment = HorizontalAlignment.Right;
+			b.Width = 50;
+			b.Child = stack;
+
+			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			b.Arrange (new Rect (0,0,b.DesiredSize.Width,b.DesiredSize.Height));
+			
+			Assert.AreEqual (new Rect (0,0,25,33), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[0]));
+			Assert.AreEqual (new Rect (0,33,25,33), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[1]));
+			Assert.AreEqual (new Rect (0,66,25,33), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[2]));
+			Assert.AreEqual (new Rect (0,0,50,99), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack));
+			Assert.AreEqual (new Rect (0,0,50,99), LayoutInformation.GetLayoutSlot ((FrameworkElement)b));
+			
+			Assert.AreEqual (new Size (50,99),b.DesiredSize);
+			Assert.AreEqual (new Size (25,99),stack.DesiredSize);
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void AlignmentTest2 ()
+		{
+			Border b = new Border ();
+			var stack = new StackPanel ();
+			stack.Children.Add (new Border ());
+			stack.Children.Add (new Border ());
+			stack.Children.Add (new Border ());
+			stack.HorizontalAlignment = HorizontalAlignment.Right;
+			b.Width = 50;
+			b.Child = stack;
+
+			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			b.Arrange (new Rect (0,0,b.DesiredSize.Width,b.DesiredSize.Height));
+			
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[0]).ToString (), "child 0");
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[1]).ToString (), "child 1");
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[2]).ToString (), "child 2");
+			Assert.AreEqual (new Rect (0,0,50,0), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack).ToString (), "stack slot");
+			Assert.AreEqual (new Rect (0,0,50,0), LayoutInformation.GetLayoutSlot ((FrameworkElement)b).ToString (), "b slot");
+			
+			Assert.AreEqual (new Size (50,0),b.DesiredSize, "b desired");
+			Assert.AreEqual (new Size (0,0),stack.DesiredSize, "stack desired");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void AlignmentTest3 ()
+		{
+			Border b = new Border ();
+			var stack = new StackPanel ();
+			stack.Children.Add (new Border ());
+			stack.Children.Add (new Border ());
+			stack.Children.Add (new Border ());
+			stack.HorizontalAlignment = HorizontalAlignment.Right;
+			b.Width = 50;
+			stack.Width = 50;
+			b.Child = stack;
+
+			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			b.Arrange (new Rect (0,0,b.DesiredSize.Width,b.DesiredSize.Height));
+			
+			Assert.AreEqual (new Rect (0,0,50,0), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[0]).ToString (), "child 0");
+			Assert.AreEqual (new Rect (0,0,50,0), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[1]).ToString (), "child 1");
+			Assert.AreEqual (new Rect (0,0,50,0), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[2]).ToString (), "child 2");
+			Assert.AreEqual (new Rect (0,0,50,0), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack).ToString (), "stack slot");
+			Assert.AreEqual (new Rect (0,0,50,0), LayoutInformation.GetLayoutSlot ((FrameworkElement)b).ToString (), "b slot");
+			
+			Assert.AreEqual (new Size (0,0), stack.Children[0].DesiredSize, "child 0 desired");
+			Assert.AreEqual (new Size (50,0),b.DesiredSize, "b desired");
+			Assert.AreEqual (new Size (50,0),stack.DesiredSize, "stack desired");
+		}
 	}
 }
