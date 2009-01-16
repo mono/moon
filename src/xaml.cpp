@@ -153,6 +153,8 @@ class XamlContextInternal {
 		this->callbacks = callbacks;
 		this->template_parent = template_parent;
 
+		if (this->callbacks.create_gchandle) 
+			this->callbacks.create_gchandle ();
 		imported_namespaces = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 		g_hash_table_foreach (namespaces, add_namespace_data, imported_namespaces);
 	}

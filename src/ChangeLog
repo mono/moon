@@ -1,5 +1,10 @@
 2009-01-16  Geoff Norton  <gnorton@novell.com>
 
+	* xaml.cpp|h: Allocate a GCHandle to the ManagedXamlLoader if
+	we're going to keep it alive to apply control templates.
+
+2009-01-16  Geoff Norton  <gnorton@novell.com>
+
 	* template.cpp: Add the namescope to the closure to avoid
 	referencing random memory.
 	* xaml.cpp: We create a new XamlLoader when applying control 

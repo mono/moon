@@ -22,12 +22,14 @@
 class XamlLoader;
 
 typedef bool (*xaml_create_object_callback) (void *parser, void *top_level, const char *xmlns, const char *name, Value *value);
+typedef void (*xaml_create_gchandle_callback) ();
 typedef bool (*xaml_set_property_callback) (void *parser, void *top_level, const char* xmlns, void *target, void *target_parent, const char *name, Value *value);
 typedef void (*xaml_import_xaml_xmlns_callback) (void *parser, const char* xmlns);
 typedef const char* (*xaml_get_content_property_name_callback) (void *parser, void *obj);
 
 struct XamlLoaderCallbacks {
 	xaml_create_object_callback create_object;
+	xaml_create_gchandle_callback create_gchandle;
 	xaml_set_property_callback set_property;
 	xaml_import_xaml_xmlns_callback import_xaml_xmlns;
 	xaml_get_content_property_name_callback get_content_property_name;
