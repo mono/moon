@@ -32,10 +32,11 @@ namespace System.Windows.Controls.Primitives {
 		
 		public static readonly DependencyProperty SelectedIndexProperty;
 		public static readonly DependencyProperty SelectedItemProperty;
+		static int DefaultSelectedIndex = -1;
 		
 		static Selector ()
 		{
-			PropertyMetadata metadata = new PropertyMetadata (-1, delegate (DependencyObject o, DependencyPropertyChangedEventArgs e) {
+			PropertyMetadata metadata = new PropertyMetadata (DefaultSelectedIndex, delegate (DependencyObject o, DependencyPropertyChangedEventArgs e) {
 				((Selector) o).SelectedIndexChanged (o, e);
 			});
 			SelectedIndexProperty = DependencyProperty.Register ("SelectedIndex", typeof(int), typeof(Selector), metadata);
@@ -51,17 +52,18 @@ namespace System.Windows.Controls.Primitives {
 		{
 		}
 
+		int selectedIndex = DefaultSelectedIndex;
+		object selectedItem;
+		
 		public int SelectedIndex {
-			get { return (int)GetValue (SelectedIndexProperty); }
+			get { return selectedIndex; }
 			set { SetValue (SelectedIndexProperty, value); }
 		}
 
+		
 		public object SelectedItem {
-			get { return GetValue (SelectedItemProperty); }
-			set {
-				if (Items.IndexOf (value) != -1)
-					SetValue (SelectedItemProperty, value);
-			}
+			get { return selectedItem; }
+			set { SetValue (SelectedItemProperty, value); }
 		}
 
 		bool changing;
@@ -69,14 +71,22 @@ namespace System.Windows.Controls.Primitives {
 
 		void SelectedIndexChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
 		{
-			if (changing)
+			int newVal = (int) e.NewValue;
+			if (newVal == (int) e.OldValue || changing)
 				return;
 
+			selectedIndex = newVal;
 			changing = true;
 			try {
-				int newVal = (int) e.NewValue;
-				if (newVal != (int)e.OldValue && newVal < Items.Count)
-					SelectedItem = newVal >= 0 ? Items[SelectedIndex] : null;
+				if (newVal < 0) {
+					ClearValue (SelectedItemProperty);
+					selectedItem = null;
+				}
+				else if (newVal < Items.Count) {
+					selectedItem = Items [newVal];
+					SelectedItem = selectedItem;
+				}
+
 			} finally {
 				changing = false;
 			}
@@ -87,13 +97,18 @@ namespace System.Windows.Controls.Primitives {
 		{
 			if (e.NewValue == e.OldValue || changing)
 				return;
+			
 			changing = true;
 			try {
 				int index = Items.IndexOf (e.NewValue);
 				if (index == -1) {
+					selectedIndex = e.OldValue == null ? -1 : Items.IndexOf (e.OldValue);
+					SelectedIndex = selectedIndex;
 					SelectedItem = e.OldValue;
 				}
 				else {
+					selectedItem = e.NewValue;
+					selectedIndex = index;
 					SelectedIndex = index;
 					RaiseSelectionChanged (o, new SelectionChangedEventArgs (new object[] { e.OldValue }, new object [] { e.NewValue }));
 				}

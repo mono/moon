@@ -49,6 +49,7 @@ namespace MoonTest.System.Windows.Controls
 
         public FakeComboBox()
         {
+            this.SelectionChanged += delegate { methods.Add (new Value { MethodName = "SelectionChangedEvent" }); };
             this.DropDownClosed += delegate { methods.Add(new Value { MethodName = "DropDownClosedEvent" }); };
             this.DropDownOpened += delegate { methods.Add(new Value { MethodName = "DropDownOpenedEvent" }); };
         }
@@ -153,11 +154,11 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void TestOverrides()
         {
             FakeComboBox b = new FakeComboBox();
-            b.Items.Add(new object());
+            object o = new object ();
+            b.Items.Add(o);
             Assert.AreEqual (0, b.Items.IndexOf (b.Items [0]), "#0");
             Assert.AreEqual(1, b.methods.Count, "#1");
             Assert.AreEqual("OnItemsChanged", b.methods[0].MethodName, "#2");
@@ -172,6 +173,17 @@ namespace MoonTest.System.Windows.Controls
             b.SelectedItem = b.Items[0];
             Assert.AreEqual(6, b.methods.Count, "#8");
             Assert.AreEqual("SelectionChangedEvent", b.methods[5].MethodName);
+            b.SelectedIndex = -1;
+            Assert.AreEqual(null, b.SelectedItem, "#9");
+            Assert.AreEqual(7, b.methods.Count, "#10");
+            Assert.AreEqual("SelectionChangedEvent", b.methods[6].MethodName, "#11");
+            b.SelectedItem = b.Items[0];
+            b.methods.Clear();
+            b.Items.RemoveAt(0);
+            Assert.AreEqual(1, b.methods.Count, "#10");
+            Assert.AreEqual("OnItemsChanged", b.methods[0].MethodName, "#11");
+            Assert.AreEqual(o, b.SelectedItem, "#12");
+            Assert.AreEqual(0, b.SelectedIndex, "#13");
         }
     }
 }
