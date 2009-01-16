@@ -240,9 +240,6 @@ namespace Mono {
 		public extern static void plugin_instance_report_exception (IntPtr plugin_handle, string msg, string details, string[] stack_trace, int num_frames);
 
 		[DllImport("moonplugin")]
-		public extern static IntPtr plugin_instance_load_url (IntPtr plugin_handle, string url, ref int length);
-
-		[DllImport("moonplugin")]
 		public extern static IntPtr plugin_instance_evaluate  (IntPtr plugin_handle, string code);
 
 		public delegate void DomEventCallback (IntPtr context, string name, int client_x, int client_y, int offset_x, int offset_y, 
