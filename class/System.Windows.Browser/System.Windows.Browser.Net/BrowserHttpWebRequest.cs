@@ -81,7 +81,7 @@ namespace System.Windows.Browser.Net
 			if (native == IntPtr.Zero)
 				return;
 
-			NativeMethods.browser_http_request_destroy (native);
+			NativeMethods.downloader_request_destroy (native);
 		}
 
 		public override void Abort ()
@@ -89,7 +89,7 @@ namespace System.Windows.Browser.Net
 			if (native == IntPtr.Zero)
 				return;
 
-			NativeMethods.browser_http_request_abort (native);
+			NativeMethods.downloader_request_abort (native);
 
 			managed.Free ();
 		}
