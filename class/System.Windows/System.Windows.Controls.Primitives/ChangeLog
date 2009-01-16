@@ -1,5 +1,9 @@
 2009-01-16  Alan McGovern  <amcgovern@novell.com>
 
+	* Selector.cs: Simplified the caching implementation.
+
+2009-01-16  Alan McGovern  <amcgovern@novell.com>
+
 	* Selector.cs: Attempt to match the MS caching mechanism for
 	SelectedItem and SelectedValue
 
