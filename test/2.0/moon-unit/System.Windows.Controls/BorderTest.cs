@@ -50,9 +50,11 @@ namespace MoonTest.System.Windows.Controls
 			}, "#3");
 
 			Assert.Throws<ArgumentException>(delegate {
+				// it's actually the CornerRadius ctor that is throwing this exception
 				c.CornerRadius = new CornerRadius(double.MinValue);
 			}, "#4");
 			Assert.Throws<ArgumentException>(delegate {
+				// it's actually the CornerRadius ctor that is throwing this exception
 				c.CornerRadius = new CornerRadius(-1);
 			}, "#5");
 			Assert.Throws<Exception>(delegate {

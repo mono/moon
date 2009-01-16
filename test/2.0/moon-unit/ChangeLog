@@ -1,3 +1,8 @@
+2009-01-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Controls/RowDefinitionTest.cs: New.
+	* System.Windows.Controls/ColumnDefinitionTest.cs: New.
+
 2009-01-15  Jackson Harper  <jackson@ximian.com>
 
 	* System.Windows/StyleTest.cs: More tests are passing.
