@@ -1,5 +1,11 @@
 2009-01-15  Jackson Harper  <jackson@ximian.com>
 
+	* ManagedXamlLoader.cs: Improve logic for event handler name
+	matching, needs less than two args, both are optional, first has
+	to be an object, second has to be an EventArgs.
+
+2009-01-15  Jackson Harper  <jackson@ximian.com>
+
 	* ManagedXamlLoader.cs: We need to walk up the type's hierarchy
 	and make sure all it's DPs are registered.
 

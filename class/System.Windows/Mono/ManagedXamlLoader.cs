@@ -404,15 +404,14 @@ namespace Mono.Xaml
 					continue;
 
 				parameters = m.GetParameters ();
-				
-				if (parameters.Length != 2)
+				if (parameters.Length > 2)
 					continue;
 
-				if (parameters [0].ParameterType != typeof (Object))
+				if (parameters.Length > 0 && parameters [0].ParameterType != typeof (Object))
 					continue;
 
-				if (!typeof (EventArgs).IsSubclassOf (parameters [0].ParameterType))
-				    continue;
+				if (parameters.Length > 1 && !parameters [1].ParameterType.IsSubclassOf (typeof (EventArgs)))
+					continue;
 
 				if (candidate != null) {
 					error = "Multiple candidates for event handler found.";
