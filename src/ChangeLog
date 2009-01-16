@@ -1,3 +1,9 @@
+2009-01-16  Jackson Harper  <jackson@ximian.com>
+
+	* dependencyproperty.cpp: This warning isn't really needed and now
+	with managed DP lookup's, this scenario happens about a trillion
+	times during parsing of generic.xaml.
+
 2009-01-16  Larry Ewing  <lewing@novell.com>
 
 	* uielement.h (class UIElement): remove the default value from

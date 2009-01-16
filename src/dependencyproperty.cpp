@@ -160,10 +160,8 @@ DependencyProperty::GetDependencyProperty (Type *type, const char *name, bool in
 			return property;
 	}
 
-	if (!inherits) {
-		fprintf (stderr, "DependencyProperty::GetDependencyProperty (%s, %s, %i): Property not found.\n", type->name, name, inherits);
+	if (!inherits)
 		return NULL;
-	}
 	
 	if (type->GetParent () == Type::INVALID)
 		return NULL;
