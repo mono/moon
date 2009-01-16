@@ -1,3 +1,11 @@
+2009-01-16  Geoff Norton  <gnorton@novell.com>
+
+	* template.cpp: Add the namescope to the closure to avoid
+	referencing random memory.
+	* xaml.cpp: We create a new XamlLoader when applying control 
+	templates, and inherit the callbacks.  Set vm_loaded to true in
+	this case.
+
 2009-01-16  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBox::TextBox): Don't init the selection

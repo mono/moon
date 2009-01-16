@@ -1063,12 +1063,12 @@ XamlLoader::CreateObject (void *p, void *top_level, const char* xmlns, const cha
 {
 	if (callbacks.create_object) {
 		if (!vm_loaded && !LoadVM ())
-			return NULL;
+			return false;
 		bool res = callbacks.create_object (p, top_level, xmlns, type_name, value);
 		return res;
 	}
 		
-	return NULL;
+	return false;
 }
 
 const char *
@@ -1108,6 +1108,7 @@ XamlLoader::XamlLoader (const char* filename, const char* str, Surface* surface,
 
 	if (context) {
 		callbacks = context->internal->callbacks;		
+		this->vm_loaded = true;
 	}
 #if DEBUG
 	if (!surface && debug_flags & RUNTIME_DEBUG_XAML) {

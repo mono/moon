@@ -174,6 +174,7 @@ ControlTemplate::DuplicateObject (Control *source, NameScope *template_namescope
 	closure.source = source;
 	closure.dob = new_dob;
 	closure.bindings = bindings;
+	closure.template_namescope = template_namescope;
 
 	g_hash_table_foreach (dob->GetCurrentValues(), (GHFunc)duplicate_value, &closure);
 
