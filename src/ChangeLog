@@ -1,5 +1,13 @@
 2009-01-16  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Before going to managed to create an element, scan the
+	xnamespace for the x:Class attribute and pass that in as the
+	element name if we have one, this allows you to use abstract names
+	for the elements as long as the x:Class is a complete type. Should
+	also allow us to optimize out a trip into managed.
+
+2009-01-16  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: The xaml context needs to store the callbacks so that
 	we can properly invoke managed code in a template.
 

@@ -114,7 +114,7 @@ class XamlNamespace {
 	XamlNamespace () : name (NULL) { }
 
 	virtual ~XamlNamespace () { }
-	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el) = 0;
+	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el, const char **attr) = 0;
 	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse) = 0;
 
 	virtual const char* GetUri () = 0;
@@ -755,7 +755,7 @@ class DefaultNamespace : public XamlNamespace {
 
 	virtual ~DefaultNamespace () { }
 
-	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el)
+	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el, const char **attr)
 	{
 		Type* t = Type::Find (el);
 		if (t)
@@ -787,8 +787,30 @@ class XNamespace : public XamlNamespace {
 
 	virtual ~XNamespace () { }
 
-	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el)
+	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el, const char **attr)
 	{
+		return NULL;
+	}
+
+	virtual char *FindTypeName (const char **attr, char **xmlns)
+	{
+		for (int i = 0; attr [i]; i += 2) {
+			char *ns = strchr (attr [i], '|');
+			if (!ns)
+				continue;
+					
+			if (strncmp (GetUri (), attr [i], ns - attr [i]) || strcmp ("Class", ns + 1))
+				continue;
+
+			ns = strchr (attr [i + 1], ';');
+
+			if (!ns)
+				*xmlns = g_strdup ("");
+			else
+				*xmlns = g_strdup (ns + 1);
+
+			return g_strndup (attr [i + 1], attr [i + 1] - ns);
+		}
 		return NULL;
 	}
 
@@ -977,19 +999,41 @@ class ManagedNamespace : public XamlNamespace {
 		g_free (prefix);
 	}
 
-	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el)
+	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el, const char **attr)
 	{
+		char* type_name = NULL;
+		char* type_xmlns = NULL;
+		const char* use_xmlns = xmlns;
+
 		if (!p->loader)
 			return NULL;
 
+		if (x_namespace) {
+			// We might have an x:Class attribute specified, so we need to use that for the
+			// type_name that we pass to CreateObject
+			type_name = x_namespace->FindTypeName (attr, &type_xmlns);
+			if (type_name) {
+				el = type_name;
+				use_xmlns = type_xmlns;
+			}
+		}
+
 		Value *value = new Value ();
-		if (!p->loader->CreateObject (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, xmlns, el, value)) {
+		if (!p->loader->CreateObject (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, use_xmlns, el, value)) {
 			parser_error (p, el, NULL, -1, "Unable to resolve managed type %s.", el);
 			delete value;
+			if (type_name)
+				g_free (type_name);
+			if (type_xmlns)
+				g_free (type_xmlns);
 			return  NULL;
 		}
 
 		XamlElementInfoManaged *info = new XamlElementInfoManaged (xmlns, g_strdup (el), NULL, value->GetKind (), value);
+		if (type_name)
+			g_free (type_name);
+		if (type_xmlns)
+			g_free (type_xmlns);
 		return info;
 	}
 
@@ -1214,7 +1258,7 @@ start_element (void *data, const char *el, const char **attr)
 
 	const char *dot = strchr (el, '.');
 	if (!dot)
-		elem = p->current_namespace->FindElement (p, el);
+		elem = p->current_namespace->FindElement (p, el, attr);
 
 	if (p->error_args)
 		return;
@@ -1265,7 +1309,7 @@ start_element (void *data, const char *el, const char **attr)
 
 		if (dot) {
 			gchar *prop_elem = g_strndup (el, dot - el);
-			prop_info = p->current_namespace->FindElement (p, prop_elem);
+			prop_info = p->current_namespace->FindElement (p, prop_elem, attr);
 			g_free (prop_elem);
 		}
 
