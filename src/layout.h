@@ -113,6 +113,8 @@ class TextLayout {
 	//
 	
 	void Render (cairo_t *cr, const Point &origin, const Point &offset);
+	int GetIndexFromPoint (const Point &offset, double x, double y);
+	Rect GetCursor (const Point &offset, int pos);
 	void Layout ();
 	
 	void GetActualExtents (double *width, double *height);

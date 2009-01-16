@@ -170,6 +170,7 @@ class TextBox : public Control, public ITextSource {
 	// Methods needed by TextBoxView
 	TextSelection *GetSelection () { return &selection; }
 	TextBuffer *GetBuffer () { return buffer; }
+	int GetCursor () { return cursor; }
 	
 	//
 	// ITextSource Interface Methods

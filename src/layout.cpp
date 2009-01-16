@@ -1274,11 +1274,12 @@ RenderSegment (cairo_t *cr, const Point &origin, double x0, double y0, TextSegme
 		cairo_new_path (cr);
 		
 		for (i = segment->start, prev = 0; i < segment->end; i++) {
-			gunichar uc = text[i];
-			if (!(glyph = font->GetGlyphInfo (uc)))
+			gunichar c = text[i];
+			
+			if (!(glyph = font->GetGlyphInfo (c)))
 				continue;
 			
-			if ((prev != 0) && APPLY_KERNING (uc))
+			if ((prev != 0) && APPLY_KERNING (c))
 				x1 += font->Kerning (prev, glyph->index);
 			else if (glyph->metrics.horiBearingX < 0)
 				x1 += glyph->metrics.horiBearingX;
@@ -1371,4 +1372,92 @@ TextLayout::Render (cairo_t *cr, const Point &origin, const Point &offset)
 		
 		line = (TextLine *) line->next;
 	}
+}
+
+
+int
+TextLayout::GetIndexFromPoint (const Point &offset, double x, double y)
+{
+	return -1;
+}
+
+
+Rect
+TextLayout::GetCursor (const Point &offset, int pos)
+{
+	TextSegment *segment;
+	GlyphInfo *glyph;
+	TextLine *line;
+	TextFont *font;
+	double deltax;
+	guint32 prev;
+	Rect cursor;
+	int cur = 0;
+	gunichar c;
+	int i, n;
+	
+	cursor = Rect (offset.x, offset.y, 1.0, 0.0);
+	
+	line = (TextLine *) lines->First ();
+	
+	while (line) {
+		switch (alignment) {
+		case TextAlignmentCenter:
+			if (line->width < max_width)
+				deltax = (max_width - line->width) / 2.0;
+			else
+				deltax = 0.0;
+			break;
+		case TextAlignmentRight:
+			if (line->width < max_width)
+				deltax = max_width - line->width;
+			else
+				deltax = 0.0;
+			break;
+		default:
+			deltax = 0.0;
+			break;
+		}
+		
+		cursor.x = offset.x + deltax;
+		
+		segment = (TextSegment *) line->segments->First ();
+		while (segment && cur < pos) {
+			n = segment->end - segment->start;
+			font = segment->Font ();
+			
+			cursor.height = font->Ascender ();
+			
+			if (pos >= cur && pos < (cur + n)) {
+				for (i = segment->start, prev = 0; cur < pos; cur++, i++) {
+					c = segment->run->text[i];
+					
+					if (!(glyph = font->GetGlyphInfo (c)))
+						continue;
+					
+					if ((prev != 0) && APPLY_KERNING (c))
+						cursor.x += font->Kerning (prev, glyph->index);
+					else if (glyph->metrics.horiBearingX < 0)
+						cursor.x += glyph->metrics.horiBearingX;
+					
+					cursor.x += glyph->metrics.horiAdvance;
+					prev = glyph->index;
+				}
+			} else {
+				cursor.x += segment->advance;
+				cur += n;
+			}
+			
+			segment = (TextSegment *) segment->next;
+		}
+		
+		if (line->next) {
+			cursor.y += (double) line->height;
+			line = (TextLine *) line->next;
+		} else {
+			break;
+		}
+	}
+	
+	return cursor;
 }

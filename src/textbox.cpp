@@ -1686,9 +1686,18 @@ TextBoxView::Layout (cairo_t *cr)
 void
 TextBoxView::Paint (cairo_t *cr)
 {
+	TextBox *textbox = GetTextBox ();
+	Brush *fg;
+	
 	printf ("TextBoxView::Paint()\n");
 	
 	layout->Render (cr, GetOriginPoint (), Point ());
+	
+	if (cursor_visible && (fg = textbox->GetForeground ())) {
+		fg->SetupBrush (cr, cursor);
+		cairo_rectangle (cr, cursor.x, cursor.y, cursor.width, cursor.height);
+		fg->Fill (cr);
+	}
 }
 
 void
@@ -1738,12 +1747,25 @@ TextBoxView::model_changed (EventObject *sender, EventArgs *args, gpointer closu
 void
 TextBoxView::OnModelChanged (TextBoxModelChangedEventArgs *args)
 {
+	TextBox *textbox = GetTextBox ();
+	
 	switch (args->changed) {
 	case TextBoxModelChangedCursorPosition:
 		// cursor position changed, just need to re-render
 		if (focused)
 			DelayCursorBlink ();
-		break;
+		
+		// invalidate current cursor rect
+		if (cursor_visible)
+			Invalidate (cursor);
+		
+		// calculate the new cursor rect
+		cursor = layout->GetCursor (Point (), textbox->GetCursor ());
+		
+		// invalidate the new cursor rect
+		if (cursor_visible)
+			Invalidate (cursor);
+		return;
 	case TextBoxModelChangedTextAlignment:
 		// text alignment changed, update our layout
 		dirty = layout->SetTextAlignment ((TextAlignment) args->property->new_value->AsInt32 ());
