@@ -679,7 +679,7 @@ namespace Mono.Xaml
 
 		private static string ClrNamespaceFromXmlns (string xmlns)
 		{
-			if (xmlns == null)
+			if (String.IsNullOrEmpty (xmlns))
 				return null;
 
 			int start = xmlns.IndexOf ("clr-namespace:") + "clr-namespace:".Length;
@@ -691,7 +691,7 @@ namespace Mono.Xaml
 
 		private static string AssemblyNameFromXmlns (string xmlns)
 		{
-			if (xmlns == null)
+			if (String.IsNullOrEmpty (xmlns))
 				return null;
 
 			int start = xmlns.IndexOf ("assembly=");

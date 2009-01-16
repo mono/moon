@@ -1,3 +1,7 @@
+2009-01-16  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: Don't crash when we get an empty xmlns.
+
 2009-01-16  Jb Evain  <jbevain@novell.com>
 
 	* NativeMethods.cs: remove plugin_instance_load_url.
