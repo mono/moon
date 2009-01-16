@@ -16,6 +16,7 @@
 
 #include <glib.h>
 
+#include "canvas.h"
 #include "uielement.h"
 #include "panel.h"
 #include "control.h"
@@ -438,7 +439,8 @@ Surface::UpdateLayout ()
 		toplevel->Measure (Size (active_window->GetWidth (),
 					 active_window->GetHeight ()));
 		Size desired = toplevel->GetDesiredSize ();
-		toplevel->Arrange (Rect (0, 0, desired.width, desired.height));
+		toplevel->Arrange (Rect (Canvas::GetLeft (toplevel), Canvas::GetTop (toplevel), 
+					 desired.width, desired.height));
 	}
 }
 

@@ -83,10 +83,45 @@ Border::Render (cairo_t *cr, Region *region)
 void
 Border::ComputeBounds ()
 {
-	Rect *slot = LayoutInformation::GetLayoutSlot (this);
-	extents = slot ? *slot : Rect ();
-	extents.width = MAX (GetActualWidth (), extents.width);
-	extents.height = MAX (GetActualHeight (), extents.height);
+	Rect *r = LayoutInformation::GetLayoutSlot (this);
+	Rect slot = r ? *r : Rect ();
+	
+	Size specified = Size (GetWidth (), GetHeight ());
+	HorizontalAlignment horiz = GetHorizontalAlignment ();
+	VerticalAlignment vert = GetVerticalAlignment ();
+	cairo_matrix_t layout_xform;
+	cairo_matrix_init_identity (&layout_xform);
+
+	if (!isnan (specified.width))
+		horiz = HorizontalAlignmentCenter;
+	if (!isnan (specified.height))
+		vert = VerticalAlignmentCenter;
+	
+	switch (horiz) {
+	case HorizontalAlignmentCenter:
+		cairo_matrix_translate (&layout_xform, (slot.width  - GetActualWidth ()) * .5, 0);
+		break;
+	case HorizontalAlignmentRight:
+		cairo_matrix_translate (&layout_xform, slot.width - GetActualWidth (), 0);
+		break;
+	default:
+		break;
+	}
+
+	switch (vert) {
+	case VerticalAlignmentCenter:
+		cairo_matrix_translate (&layout_xform, 0, (slot.height  - GetActualHeight ()) * .5);
+		break;
+	case VerticalAlignmentBottom:
+		cairo_matrix_translate (&layout_xform, 0, slot.height - GetActualHeight ());
+		break;
+	default:
+		break;
+	}
+	
+	extents = Rect (0, 0, GetActualWidth (), GetActualHeight ());
+	extents = extents.Transform (&layout_xform);
+
 	bounds_with_children = bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 
 	UIElement *child = GetChild ();
@@ -119,20 +154,6 @@ Border::OnPropertyChanged (PropertyChangedEventArgs *args)
 		InvalidateMeasure ();
 	}
 	NotifyListenersOfPropertyChange (args);
-}
-
-void
-Border::GetTransformFor (UIElement *item, cairo_matrix_t *result)
-{
-	cairo_matrix_init_identity (result);
-	
-	Thickness *border = GetBorderThickness ();
-	Thickness *padding = GetPadding ();
-	Thickness *margin = GetMargin ();
-	
-	cairo_matrix_translate (result, margin->left, margin->top);
-	cairo_matrix_translate (result, padding->left, padding->top);
-	cairo_matrix_translate (result, border->left, border->top);
 }
 
 bool 

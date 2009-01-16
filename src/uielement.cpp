@@ -306,6 +306,7 @@ UIElement::ComputeTotalHitTestVisibility ()
 void
 UIElement::UpdateTransform ()
 {
+	InvalidateMeasure ();
 	if (GetSurface()) {
 		GetSurface()->AddDirtyElement (this, DirtyLocalTransform);
 	}
@@ -361,15 +362,20 @@ void
 UIElement::ComputeTransform ()
 {
 	cairo_matrix_t old = absolute_xform;
+	cairo_matrix_init_identity (&absolute_xform);
+	cairo_matrix_t slot_transform;
+	cairo_matrix_init_identity (&slot_transform);
 
-	if (GetVisualParent () != NULL) {
-		cairo_matrix_t parent_transform;
-		GetVisualParent ()->GetTransformFor (this, &parent_transform);
+	Rect *slot = LayoutInformation::GetLayoutSlot (this);
+	if (slot)
+		cairo_matrix_translate (&slot_transform, slot->x, slot->y);
+	else 
+		g_warning ("EEEK. Computing transform before we've been arranged");
+
+	if (GetVisualParent () != NULL)
 		absolute_xform = GetVisualParent ()->absolute_xform;
-		cairo_matrix_multiply (&absolute_xform, &parent_transform, &absolute_xform);
-	} else 
-		GetTransformFor (this, &absolute_xform);
 
+	cairo_matrix_multiply (&absolute_xform, &slot_transform, &absolute_xform);
 	cairo_matrix_multiply (&absolute_xform, &local_xform, &absolute_xform);
 	
 	if (moonlight_flags & RUNTIME_INIT_USE_UPDATE_POSITION)
@@ -390,12 +396,6 @@ UIElement::ShiftPosition (Point p)
 {
 	bounds.x = p.x;
 	bounds.y = p.y;
-}
-
-void
-UIElement::GetTransformFor (UIElement *item, cairo_matrix_t *result)
-{
-	g_warning ("GetTransformFor called on a non-container of type %s, you must implement this in your container\n", GetTypeName());
 }
 
 void

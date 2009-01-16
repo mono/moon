@@ -153,15 +153,6 @@ Panel::InsideObject (cairo_t *cr, double x, double y)
 	return mouseover != NULL;
 }
 
-void
-Panel::GetTransformFor (UIElement *item, cairo_matrix_t *result)
-{
-	cairo_matrix_init_identity (result);
-
-	if (Rect *slot = LayoutInformation::GetLayoutSlot (this))
-		cairo_matrix_translate (result, slot->x, slot->y);
-}
-
 bool
 Panel::CheckOver (cairo_t *cr, UIElement *item, double x, double y)
 {

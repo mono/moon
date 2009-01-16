@@ -47,7 +47,6 @@ class Canvas : public Panel {
 	virtual bool ClipToExtents () { return false; }
 	virtual void ShiftPosition (Point p);
 	virtual void ComputeBounds ();
-	virtual void GetTransformFor (UIElement *item, cairo_matrix_t *result);
 	
 	virtual void ElementAdded (UIElement *item);
 	virtual void ElementRemoved (UIElement *item);

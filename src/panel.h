@@ -41,8 +41,6 @@ class Panel : public FrameworkElement {
  	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Panel ();
 
-	virtual void GetTransformFor (UIElement *item, cairo_matrix_t *result);
-
 	virtual Type::Kind GetObjectType () { return Type::PANEL; }
 	
 	virtual void ComputeBounds ();

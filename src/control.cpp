@@ -65,18 +65,6 @@ Control::ComputeBounds ()
 	}
 }
 
-void
-Control::GetTransformFor (UIElement *item, cairo_matrix_t *result)
-{
-	cairo_matrix_init_identity (result);
-	
-	Thickness border = *GetBorderThickness ();
-	Thickness padding = *GetPadding ();
-	
-	cairo_matrix_translate (result, padding.left, padding.top);
-	cairo_matrix_translate (result, border.left, border.top);
-}
-
 bool 
 Control::InsideObject (cairo_t *cr, double x, double y)
 {

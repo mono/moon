@@ -23,15 +23,6 @@ Canvas::Canvas ()
 }
 
 void
-Canvas::GetTransformFor (UIElement *item, cairo_matrix_t *result)
-{
-	double left = Canvas::GetLeft (item);
-	double top = Canvas::GetTop (item);
-	
-	cairo_matrix_init_translate (result, left, top);
-}
-
-void
 Canvas::ComputeBounds ()
 {
 	Surface *surface = GetSurface ();

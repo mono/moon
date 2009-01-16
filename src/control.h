@@ -48,8 +48,6 @@ public:
 	virtual void ComputeBounds ();
 	virtual Rect GetSubtreeBounds () { return bounds_with_children; }
 
-	virtual void GetTransformFor (UIElement *item, cairo_matrix_t *result);
-	
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	
 	virtual void HitTest (cairo_t *cr, Point p, List *uielement_list);

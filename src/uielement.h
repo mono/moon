@@ -232,14 +232,6 @@ public:
 	//
 	virtual Rect GetCoverageBounds () { return Rect (); }
 
-	//
-	// GetTransformFor
-	//   Obtains the affine transform for the given child, this is
-	//   implemented by containers
-
-	virtual void GetTransformFor (UIElement *item, cairo_matrix_t *result);
-
-
 	// HitTest
 
 	//   Accumulate a list of all elements that will contain the
