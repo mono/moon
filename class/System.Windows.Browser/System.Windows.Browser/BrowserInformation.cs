@@ -27,7 +27,8 @@
 //
 
 using System;
-using System.Runtime.InteropServices;
+
+using Mono;
 
 namespace System.Windows.Browser {
 
@@ -39,21 +40,15 @@ namespace System.Windows.Browser {
 		private string user_agent;
 		private bool cookie_enabled;
 
-		[DllImport ("moonplugin")]
-		static extern void plugin_instance_get_browser_information (IntPtr plugin_handle,
-			out IntPtr name, out IntPtr version, out IntPtr platform, out IntPtr userAgent,
-			[MarshalAs(UnmanagedType.I1)] ref bool cookieEnabled);
-
 		internal BrowserInformation ()
 		{
-			IntPtr name, version, platform, user_agent;
-			plugin_instance_get_browser_information (WebApplication.Current.PluginHandle,
-								 out name, out version, out platform, out user_agent,
-								 ref cookie_enabled);
-			this.name = Marshal.PtrToStringAnsi (name);
-			this.version = Marshal.PtrToStringAnsi (version);
-			this.platform = Marshal.PtrToStringAnsi (platform);
-			this.user_agent = Marshal.PtrToStringAnsi (user_agent);
+			NativeMethods.plugin_instance_get_browser_information (
+				WebApplication.Current.PluginHandle,
+				out name,
+				out version,
+				out platform,
+				out user_agent,
+				out cookie_enabled);
 		}
 
 		internal BrowserInformation (string name, string version, string platform, string userAgent, bool cookieEnabled)

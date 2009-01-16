@@ -1,5 +1,10 @@
 2009-01-16  Jb Evain  <jbevain@novell.com>
 
+	* BrowserInformation.cs: use the updated
+	plugin_instance_get_browser_information.
+
+2009-01-16  Jb Evain  <jbevain@novell.com>
+
 	* HtmlWindow.cs: implement Alert, Confirm and Prompt.
 
 2009-01-16  Jb Evain  <jbevain@novell.com>
