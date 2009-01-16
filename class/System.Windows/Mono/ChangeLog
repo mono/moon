@@ -1,3 +1,7 @@
+2009-01-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Value.cs: Handle Kind.GRIDLENGTH
+
 2009-01-15  Geoff Norton  <gnorton@novell.com>
 
 	* NativeMethods.cs: Drop a few unused pinvokes, and add one

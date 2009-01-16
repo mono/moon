@@ -201,6 +201,11 @@ namespace Mono {
 					KeyTime* keytime = (KeyTime*)val->u.p;
 					return (keytime == null) ? KeyTime.FromTimeSpan (TimeSpan.Zero) : *keytime;
 				}
+
+				case Kind.GRIDLENGTH: {
+					GridLength* gridlength = (GridLength*)val->u.p;
+					return (gridlength == null) ? new GridLength () : *gridlength;
+				}
 					
 				case Kind.REPEATBEHAVIOR: {
 					RepeatBehavior *repeat = (RepeatBehavior*)val->u.p;
