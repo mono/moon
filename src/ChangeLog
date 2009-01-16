@@ -1,3 +1,11 @@
+2009-01-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxView::UpdateCursor): New convenience method
+	to update the cursor rect.
+	(TextBoxView::Layout): Update the cursor after we finish laying
+	the text out.
+	(TextBoxView::OnModelChanged): Updated to use UpdateCursor().
+
 2009-01-16  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: NULL is OK if it's being explicitly set.

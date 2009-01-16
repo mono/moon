@@ -1596,7 +1596,6 @@ TextBoxView::EndCursorBlink ()
 void
 TextBoxView::ShowCursor ()
 {
-	// FIXME: we may need to verify that 'cursor' is properly initialized?
 	cursor_visible = true;
 	Invalidate (cursor);
 }
@@ -1604,9 +1603,35 @@ TextBoxView::ShowCursor ()
 void
 TextBoxView::HideCursor ()
 {
-	// FIXME: we may need to verify that 'cursor' is properly initialized?
 	cursor_visible = false;
 	Invalidate (cursor);
+}
+
+void
+TextBoxView::UpdateCursor (bool invalidate)
+{
+	TextBox *textbox = GetTextBox ();
+	int cur = textbox->GetCursor ();
+	
+	// invalidate current cursor rect
+	if (invalidate && cursor_visible)
+		Invalidate (cursor);
+	
+	// calculate the new cursor rect
+	if (cur == 0) {
+		// Manually set cursor rect if position is 0 because
+		// we might not have any text runs (which the layout
+		// code requires to get font metrics).
+		TextFont *font = textbox->FontDescription ()->GetFont ();
+		cursor = Rect (0.0, 0.0, 1.0, font->Ascender ());
+		font->unref ();
+	} else {
+		cursor = layout->GetCursor (Point (), cur);
+	}
+	
+	// invalidate the new cursor rect
+	if (invalidate && cursor_visible)
+		Invalidate (cursor);
 }
 
 void
@@ -1680,6 +1705,8 @@ TextBoxView::Layout (cairo_t *cr)
 	layout->SetTextRuns (runs);
 	layout->Layout ();
 	
+	UpdateCursor (false);
+	
 	dirty = false;
 }
 
@@ -1747,24 +1774,13 @@ TextBoxView::model_changed (EventObject *sender, EventArgs *args, gpointer closu
 void
 TextBoxView::OnModelChanged (TextBoxModelChangedEventArgs *args)
 {
-	TextBox *textbox = GetTextBox ();
-	
 	switch (args->changed) {
 	case TextBoxModelChangedCursorPosition:
 		// cursor position changed, just need to re-render
 		if (focused)
 			DelayCursorBlink ();
 		
-		// invalidate current cursor rect
-		if (cursor_visible)
-			Invalidate (cursor);
-		
-		// calculate the new cursor rect
-		cursor = layout->GetCursor (Point (), textbox->GetCursor ());
-		
-		// invalidate the new cursor rect
-		if (cursor_visible)
-			Invalidate (cursor);
+		UpdateCursor (true);
 		return;
 	case TextBoxModelChangedTextAlignment:
 		// text alignment changed, update our layout

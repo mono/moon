@@ -277,6 +277,8 @@ class TextBoxView : public FrameworkElement {
 	void HideCursor ();
 	bool Blink ();
 	
+	void UpdateCursor (bool invalidate);
+	
 	void Layout (cairo_t *cr);
 	void Paint (cairo_t *cr);
 	
