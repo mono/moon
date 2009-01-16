@@ -125,11 +125,11 @@ namespace MoonTest.System.Windows.Controls
 			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
 			b.Arrange (new Rect (0,0,b.DesiredSize.Width,b.DesiredSize.Height));
 			
-			Assert.AreEqual (new Rect (0,0,25,33), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[0]));
-			Assert.AreEqual (new Rect (0,33,25,33), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[1]));
-			Assert.AreEqual (new Rect (0,66,25,33), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[2]));
-			Assert.AreEqual (new Rect (0,0,50,99), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack));
-			Assert.AreEqual (new Rect (0,0,50,99), LayoutInformation.GetLayoutSlot ((FrameworkElement)b));
+			Assert.AreEqual (new Rect (0,0,25,33).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[0]).ToString ());
+			Assert.AreEqual (new Rect (0,33,25,33).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[1]).ToString ());
+			Assert.AreEqual (new Rect (0,66,25,33).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[2]).ToString ());
+			Assert.AreEqual (new Rect (0,0,50,99).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack).ToString ());
+			Assert.AreEqual (new Rect (0,0,50,99).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)b).ToString ());
 			
 			Assert.AreEqual (new Size (50,99),b.DesiredSize);
 			Assert.AreEqual (new Size (25,99),stack.DesiredSize);
@@ -151,11 +151,11 @@ namespace MoonTest.System.Windows.Controls
 			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
 			b.Arrange (new Rect (0,0,b.DesiredSize.Width,b.DesiredSize.Height));
 			
-			Assert.AreEqual (new Rect (0,0,25,33), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[0]));
-			Assert.AreEqual (new Rect (0,33,25,33), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[1]));
-			Assert.AreEqual (new Rect (0,66,25,33), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[2]));
-			Assert.AreEqual (new Rect (0,0,50,99), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack));
-			Assert.AreEqual (new Rect (0,0,50,99), LayoutInformation.GetLayoutSlot ((FrameworkElement)b));
+			Assert.AreEqual (new Rect (0,0,25,33).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[0]).ToString ());
+			Assert.AreEqual (new Rect (0,33,25,33).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[1]).ToString ());
+			Assert.AreEqual (new Rect (0,66,25,33).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[2]).ToString ());
+			Assert.AreEqual (new Rect (0,0,50,99).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack).ToString ());
+			Assert.AreEqual (new Rect (0,0,50,99).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)b).ToString ());
 			
 			Assert.AreEqual (new Size (50,99),b.DesiredSize);
 			Assert.AreEqual (new Size (25,99),stack.DesiredSize);
@@ -177,18 +177,17 @@ namespace MoonTest.System.Windows.Controls
 			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
 			b.Arrange (new Rect (0,0,b.DesiredSize.Width,b.DesiredSize.Height));
 			
-			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[0]).ToString (), "child 0");
-			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[1]).ToString (), "child 1");
-			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[2]).ToString (), "child 2");
-			Assert.AreEqual (new Rect (0,0,50,0), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack).ToString (), "stack slot");
-			Assert.AreEqual (new Rect (0,0,50,0), LayoutInformation.GetLayoutSlot ((FrameworkElement)b).ToString (), "b slot");
+			Assert.AreEqual (new Rect (0,0,0,0).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[0]).ToString (), "child 0");
+			Assert.AreEqual (new Rect (0,0,0,0).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[1]).ToString (), "child 1");
+			Assert.AreEqual (new Rect (0,0,0,0).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[2]).ToString (), "child 2");
+			Assert.AreEqual (new Rect (0,0,50,0).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack).ToString (), "stack slot");
+			Assert.AreEqual (new Rect (0,0,50,0).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)b).ToString (), "b slot");
 			
 			Assert.AreEqual (new Size (50,0),b.DesiredSize, "b desired");
 			Assert.AreEqual (new Size (0,0),stack.DesiredSize, "stack desired");
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void AlignmentTest3 ()
 		{
 			Border b = new Border ();
@@ -204,11 +203,11 @@ namespace MoonTest.System.Windows.Controls
 			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
 			b.Arrange (new Rect (0,0,b.DesiredSize.Width,b.DesiredSize.Height));
 			
-			Assert.AreEqual (new Rect (0,0,50,0), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[0]).ToString (), "child 0");
-			Assert.AreEqual (new Rect (0,0,50,0), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[1]).ToString (), "child 1");
-			Assert.AreEqual (new Rect (0,0,50,0), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[2]).ToString (), "child 2");
-			Assert.AreEqual (new Rect (0,0,50,0), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack).ToString (), "stack slot");
-			Assert.AreEqual (new Rect (0,0,50,0), LayoutInformation.GetLayoutSlot ((FrameworkElement)b).ToString (), "b slot");
+			Assert.AreEqual (new Rect (0,0,50,0).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[0]).ToString (), "child 0");
+			Assert.AreEqual (new Rect (0,0,50,0).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[1]).ToString (), "child 1");
+			Assert.AreEqual (new Rect (0,0,50,0).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[2]).ToString (), "child 2");
+			Assert.AreEqual (new Rect (0,0,50,0).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack).ToString (), "stack slot");
+			Assert.AreEqual (new Rect (0,0,50,0).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)b).ToString (), "b slot");
 			
 			Assert.AreEqual (new Size (0,0), stack.Children[0].DesiredSize, "child 0 desired");
 			Assert.AreEqual (new Size (50,0),b.DesiredSize, "b desired");

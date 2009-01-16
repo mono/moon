@@ -539,9 +539,9 @@ namespace MoonTest.System.Windows.Controls
 
 			Assert.AreEqual (new Size (20,20),poker.ArrangeArg, "poker aa");
 			
-			Assert.AreEqual (new Rect (0,0,20,20), LayoutInformation.GetLayoutSlot (poker).ToString (), "poker slot");
-			Assert.AreEqual (new Rect (0,0,50,20), LayoutInformation.GetLayoutSlot (b2).ToString (), "b2 slot");
-			Assert.AreEqual (new Rect (0,0,50,20), LayoutInformation.GetLayoutSlot (b).ToString (), "b slot");
+			Assert.AreEqual (new Rect (0,0,20,20).ToString (), LayoutInformation.GetLayoutSlot (poker).ToString (), "poker slot");
+			Assert.AreEqual (new Rect (0,0,50,20).ToString (), LayoutInformation.GetLayoutSlot (b2).ToString (), "b2 slot");
+			Assert.AreEqual (new Rect (0,0,50,20).ToString (), LayoutInformation.GetLayoutSlot (b).ToString (), "b slot");
 		}
 	}
 }
