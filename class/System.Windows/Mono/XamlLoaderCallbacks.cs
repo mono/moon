@@ -36,6 +36,7 @@ using Mono;
 namespace Mono.Xaml
 {
 	internal delegate bool CreateObjectCallback (IntPtr parser, IntPtr top_level, string xmlns, string name, out Value value);
+	internal delegate void CreateGCHandleCallback ();
 
 	internal delegate bool SetPropertyCallback (IntPtr parser, IntPtr top_level, string xmlns, IntPtr target, IntPtr target_parent, string name, IntPtr value_ptr);
 	internal delegate void ImportXamlNamespaceCallback (IntPtr parser, string xmlns);
@@ -43,6 +44,7 @@ namespace Mono.Xaml
 	
 	internal struct XamlLoaderCallbacks {
 		public CreateObjectCallback create_object;
+		public CreateGCHandleCallback create_gchandle;
 		public SetPropertyCallback set_property;
 		public ImportXamlNamespaceCallback import_xaml_xmlns;
 		public GetContentPropertyNameCallback get_content_property_name;

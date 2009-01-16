@@ -44,6 +44,7 @@ namespace Mono.Xaml
 
 		Assembly assembly;
 		XamlLoaderCallbacks callbacks;
+		GCHandle handle;
 
 		static Dictionary<string,string> rename_type_map = new Dictionary<string,string> () {
 			{ "System.Windows.Application", "System.Windows.ApplicationInternal" }
@@ -71,6 +72,7 @@ namespace Mono.Xaml
 			// unmanaged code. 
 			//
 			callbacks.create_object = new CreateObjectCallback (cb_create_object);
+			callbacks.create_gchandle = new CreateGCHandleCallback (cb_create_gchandle);
 			callbacks.set_property = new SetPropertyCallback (cb_set_property);
 			callbacks.import_xaml_xmlns = new ImportXamlNamespaceCallback (cb_import_xaml_xmlns);
 			callbacks.get_content_property_name = new GetContentPropertyNameCallback (cb_get_content_property_name);
@@ -725,6 +727,12 @@ namespace Mono.Xaml
 				value = Value.Empty;
 				return false;
 			}
+		}
+
+		private void cb_create_gchandle ()
+		{
+			if (!handle.IsAllocated)
+				handle = GCHandle.Alloc (this);
 		}
 		
 		//

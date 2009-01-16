@@ -1,3 +1,9 @@
+2009-01-16  Geoff Norton  <gnorton@novell.com>
+
+	* ManagedXamlLoader.cs:
+	* XamlLoaderCallbacks.cs: Add a GCHandle if this managed xaml 
+	loader is going to be used to apply control templates.
+
 2009-01-16  Jackson Harper  <jackson@ximian.com>
 
 	* ManagedXamlLoader.cs: Don't crash when we get an empty xmlns.
