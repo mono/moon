@@ -1,3 +1,7 @@
+2009-01-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* DependencyObject.cs: Add missing case for [Column|Row]Collection
+
 2009-01-15  Jackson Harper  <jackson@ximian.com>
 
 	* DependencyProperty.cs: Add an overload to lookup dependency

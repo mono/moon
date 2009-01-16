@@ -166,6 +166,7 @@ namespace System.Windows {
 			case Kind.CANVAS: return new Canvas (raw);
 			case Kind.COLORANIMATION: return new ColorAnimation (raw);
 			case Kind.COLORKEYFRAME_COLLECTION: return new ColorKeyFrameCollection (raw);
+			case Kind.COLUMNDEFINITION: return new ColumnDefinition (raw);
 			case Kind.COLUMNDEFINITION_COLLECTION: return new ColumnDefinitionCollection (raw);
 			case Kind.CONTROLTEMPLATE: return new ControlTemplate (raw);
 			case Kind.DATATEMPLATE: return new DataTemplate (raw);
@@ -221,6 +222,7 @@ namespace System.Windows {
 			case Kind.RECTANGLE: return new Rectangle (raw);
 			case Kind.RESOURCE_DICTIONARY: return new ResourceDictionary (raw);
 			case Kind.ROTATETRANSFORM: return new RotateTransform (raw);
+			case Kind.ROWDEFINITION: return new RowDefinition (raw);
 			case Kind.ROWDEFINITION_COLLECTION: return new RowDefinitionCollection (raw);
 			case Kind.RUN: return new Run (raw);
 			case Kind.SETTERBASE_COLLECTION: return new SetterBaseCollection (raw);
