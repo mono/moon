@@ -185,5 +185,49 @@ namespace MoonTest.System.Windows.Controls
             Assert.AreEqual(o, b.SelectedItem, "#12");
             Assert.AreEqual(0, b.SelectedIndex, "#13");
         }
+
+        [TestMethod]
+        public void SelectedItemTest()
+        {
+            FakeComboBox box = new FakeComboBox();
+            Assert.AreEqual(-1, box.SelectedIndex, "#1");
+            Assert.AreEqual(null, box.SelectedItem, "#2");
+
+            box.SelectedItem = new object();
+            Assert.AreEqual(-1, box.SelectedIndex, "#3");
+            Assert.AreEqual(null, box.SelectedItem, "#4");
+
+            object a = new object();
+            object b = new object();
+            object c=  new object();
+            box.Items.Add(a);
+            box.Items.Add(b);
+            box.Items.Add(c);
+            box.SelectedItem = new object();
+            Assert.AreEqual(-1, box.SelectedIndex, "#5");
+            Assert.AreEqual(null, box.SelectedItem, "#6");
+
+            box.SelectedItem = a;
+            Assert.AreEqual(0, box.SelectedIndex, "#7");
+            Assert.AreEqual(a, box.SelectedItem, "#8");
+
+            box.SelectedIndex = -1;
+            Assert.AreEqual(-1, box.SelectedIndex, "#9");
+            Assert.AreEqual(null, box.SelectedItem, "#10");
+
+            box.SelectedItem = a;
+            box.SelectedItem = b;
+            Assert.AreEqual(1, box.SelectedIndex, "#11");
+            Assert.AreEqual(b, box.SelectedItem, "#12");
+            Assert.AreEqual(7, box.methods.Count, "#13");
+            int i=0;
+            Assert.AreEqual("OnItemsChanged", box.methods[i++].MethodName, "#14." + i);
+            Assert.AreEqual("OnItemsChanged", box.methods[i++].MethodName, "#14." + i);
+            Assert.AreEqual("OnItemsChanged", box.methods[i++].MethodName, "#14." + i);
+            Assert.AreEqual("SelectionChangedEvent", box.methods[i++].MethodName, "#14." + i);
+            Assert.AreEqual("SelectionChangedEvent", box.methods[i++].MethodName, "#14." + i);
+            Assert.AreEqual("SelectionChangedEvent", box.methods[i++].MethodName, "#14." + i);
+            Assert.AreEqual("SelectionChangedEvent", box.methods[i++].MethodName, "#14." + i);
+        }
     }
 }

@@ -1,5 +1,10 @@
 2009-01-16  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ComboBoxTest.cs: added test to ensure events
+	and methods are fired correctly.
+
+2009-01-16  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ComboBoxTest.cs: Attempt to match the MS
 	caching mechanism for SelectedItem and SelectedValue
 
