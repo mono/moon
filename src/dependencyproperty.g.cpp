@@ -85,7 +85,7 @@ dependency_property_g_init (void)
 	ColorKeyFrame::ValueProperty = DependencyProperty::RegisterNullable (Type::COLORKEYFRAME, "Value", Type::COLOR, NULL);
 	ColumnDefinition::MaxWidthProperty = DependencyProperty::Register (Type::COLUMNDEFINITION, "MaxWidth", new Value (INFINITY), Type::DOUBLE);
 	ColumnDefinition::MinWidthProperty = DependencyProperty::Register (Type::COLUMNDEFINITION, "MinWidth", new Value (0.0), Type::DOUBLE);
-	ColumnDefinition::WidthProperty = DependencyProperty::Register (Type::COLUMNDEFINITION, "Width", Type::GRIDLENGTH);
+	ColumnDefinition::WidthProperty = DependencyProperty::Register (Type::COLUMNDEFINITION, "Width", new Value (GridLength (1.0, GridUnitTypeStar)), Type::GRIDLENGTH);
 	ContentControl::ContentProperty = DependencyProperty::Register (Type::CONTENTCONTROL, "Content", Type::DEPENDENCY_OBJECT);
 	ContentControl::ContentTemplateProperty = DependencyProperty::Register (Type::CONTENTCONTROL, "ContentTemplate", Type::DEPENDENCY_OBJECT);
 	Control::BackgroundProperty = DependencyProperty::Register (Type::CONTROL, "Background", Type::BRUSH);
@@ -288,7 +288,7 @@ dependency_property_g_init (void)
 	RotateTransform::AngleProperty = DependencyProperty::Register (Type::ROTATETRANSFORM, "Angle", new Value (0.0), Type::DOUBLE);
 	RotateTransform::CenterXProperty = DependencyProperty::Register (Type::ROTATETRANSFORM, "CenterX", new Value (0.0), Type::DOUBLE);
 	RotateTransform::CenterYProperty = DependencyProperty::Register (Type::ROTATETRANSFORM, "CenterY", new Value (0.0), Type::DOUBLE);
-	RowDefinition::HeightProperty = DependencyProperty::Register (Type::ROWDEFINITION, "Height", Type::GRIDLENGTH);
+	RowDefinition::HeightProperty = DependencyProperty::Register (Type::ROWDEFINITION, "Height", new Value (GridLength (1.0, GridUnitTypeStar)), Type::GRIDLENGTH);
 	RowDefinition::MaxHeightProperty = DependencyProperty::Register (Type::ROWDEFINITION, "MaxHeight", new Value (INFINITY), Type::DOUBLE);
 	RowDefinition::MinHeightProperty = DependencyProperty::Register (Type::ROWDEFINITION, "MinHeight", new Value (0.0), Type::DOUBLE);
 	Run::TextProperty = DependencyProperty::Register (Type::RUN, "Text", Type::STRING);

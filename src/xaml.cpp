@@ -76,6 +76,8 @@ class XamlElementInstanceTemplate;
 
 #define INTERNAL_IGNORABLE_ELEMENT "MoonlightInternalIgnorableElement"
 
+#define IS_NULL_OR_EMPTY(str)	(!str || (*str == 0))
+
 static DefaultNamespace *default_namespace = NULL;
 static XNamespace *x_namespace = NULL;
 
@@ -2163,12 +2165,18 @@ matrix_from_str (const char *str)
 bool
 grid_length_from_str (const char *str, GridLength *grid_length)
 {
-	if (str [0] == '*') {
-		*grid_length = GridLength (0, GridUnitTypeStar);
+	if (IS_NULL_OR_EMPTY (str)) {
+		*grid_length = GridLength (0.0, GridUnitTypePixel);
 		return true;
 	}
-		
-	if (!strcmp (str, "Auto")) {
+
+	if (str [0] == '*') {
+		*grid_length = GridLength (1.0, GridUnitTypeStar);
+		return true;
+	}
+
+	// unit tests shows that "Auto", "auto", "aUtO"... all works
+	if (!strcasecmp (str, "Auto")) {
 		*grid_length = GridLength ();
 		return true;
 	}
@@ -2180,7 +2188,7 @@ grid_length_from_str (const char *str, GridLength *grid_length)
 	if (errno || endptr == str)
 		return false;
 
-	*grid_length = GridLength (d, GridUnitTypePixel);
+	*grid_length = GridLength (d, *endptr == '*' ? GridUnitTypeStar : GridUnitTypePixel);
 	return true;
 }
 
@@ -2644,8 +2652,6 @@ value_from_str_with_typename (const char *type_name, const char *prop_name, cons
 
 	return value_from_str (t->type, prop_name, str, v, sl2);
 }
-
-#define IS_NULL_OR_EMPTY(str)	(!str || (*str == 0))
 
 bool
 value_from_str (Type::Kind type, const char *prop_name, const char *str, Value** v, bool sl2)

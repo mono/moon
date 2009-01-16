@@ -48,11 +48,11 @@ class ColumnDefinition : public DependencyObject {
 	static DependencyProperty *MaxWidthProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *MinWidthProperty;
- 	/* @PropertyType=GridLength,GenerateAccessors */
+ 	/* @PropertyType=GridLength,DefaultValue=GridLength (1.0\, GridUnitTypeStar),GenerateAccessors */
 	static DependencyProperty *WidthProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	ColumnDefinition () { actual = 0; }
+	ColumnDefinition () : actual (0.0) { }
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	double GetActualWidth () { return actual; }
@@ -80,7 +80,7 @@ class RowDefinition : public DependencyObject {
 	virtual ~RowDefinition () {}
 	
  public:
- 	/* @PropertyType=GridLength,GenerateAccessors */
+ 	/* @PropertyType=GridLength,DefaultValue=GridLength (1.0\, GridUnitTypeStar),GenerateAccessors */
 	static DependencyProperty *HeightProperty;
  	/* @PropertyType=double,DefaultValue=INFINITY,GenerateAccessors */
 	static DependencyProperty *MaxHeightProperty;
@@ -88,7 +88,7 @@ class RowDefinition : public DependencyObject {
 	static DependencyProperty *MinHeightProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	RowDefinition () { }
+	RowDefinition () : actual (0.0) { }
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	double GetActualHeight () { return actual; }
