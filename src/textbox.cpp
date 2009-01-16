@@ -247,8 +247,6 @@ class TextBoxDynamicPropertyValueProvider : public PropertyValueProvider {
 
 TextBox::TextBox ()
 {
-	Brush *brush;
-	
 	providers[PropertyPrecedence_DynamicValue] = new TextBoxDynamicPropertyValueProvider (this);
 	
 	AddHandler (UIElement::KeyDownEvent, TextBox::key_down, this);
@@ -270,13 +268,18 @@ TextBox::TextBox ()
 	maxlen = 0;
 	cursor = 0;
 	
-	brush = new SolidColorBrush ("#FF444444");
+#if 0
+	// Okay, so these values probably come from the theme because
+	// by default they are supposed to be null according to the
+	// unit tests.
+	Brush *brush = new SolidColorBrush ("#FF444444");
 	SetValue (TextBox::SelectionBackgroundProperty, Value (brush));
 	brush->unref ();
 	
 	brush = new SolidColorBrush ("#FFFFFFFF");
 	SetValue (TextBox::SelectionForegroundProperty, Value (brush));
 	brush->unref ();
+#endif
 }
 
 TextBox::~TextBox ()

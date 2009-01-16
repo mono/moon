@@ -1,3 +1,8 @@
+2009-01-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBox::TextBox): Don't init the selection
+	brushes, they must come from the style.
+
 2009-01-16  Larry Ewing  <lewing@novell.com>
 
 	* frameworkelement.cpp (FrameworkElement::Arrange): don't stretch
