@@ -1,3 +1,7 @@
+2009-01-16  Jb Evain  <jbevain@novell.com>
+
+	* plugin.cpp|h: remove PluginInstance::LoadUrl.
+
 2009-01-15  Jackson Harper  <jackson@ximian.com>
 
 	* plugin.cpp|h: Updated signature for the xaml callbacks.

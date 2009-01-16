@@ -60,7 +60,6 @@ class PluginInstance
 	void Print (NPPrint *platformPrint);
 	int16_t EventHandle (void *event);
 	void ReportException (char *msg, char *details, char **stack_trace, int num_frames);
-	void *LoadUrl (char *url, int32_t *length);
 	void *Evaluate (const char *code);
 	
 	NPObject *GetHost ();
