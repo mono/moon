@@ -1,5 +1,15 @@
 2009-01-16  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: FindTypeName type names dont' always have a
+	namespace/assembly.
+	- Special case Application and don't try to find it's name since
+	it is renamed in the managed code. (Need to figure out a better
+	solution here).
+	- Pass in NULL for setting propertys and let the underlying types
+	determine whether or not that is an error.
+
+2009-01-16  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: Before going to managed to create an element, scan the
 	xnamespace for the x:Class attribute and pass that in as the
 	element name if we have one, this allows you to use abstract names

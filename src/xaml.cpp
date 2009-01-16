@@ -794,6 +794,8 @@ class XNamespace : public XamlNamespace {
 
 	virtual char *FindTypeName (const char **attr, char **xmlns)
 	{
+		char *res = NULL;
+
 		for (int i = 0; attr [i]; i += 2) {
 			char *ns = strchr (attr [i], '|');
 			if (!ns)
@@ -803,13 +805,14 @@ class XNamespace : public XamlNamespace {
 				continue;
 
 			ns = strchr (attr [i + 1], ';');
-
-			if (!ns)
+			if (!ns) {
 				*xmlns = g_strdup ("");
-			else
+				res = g_strdup (attr [i + 1]);
+			} else {
 				*xmlns = g_strdup (ns + 1);
-
-			return g_strndup (attr [i + 1], attr [i + 1] - ns);
+				res = g_strndup (attr [i + 1], attr [i + 1] - ns);
+			}
+			return res;
 		}
 		return NULL;
 	}
@@ -1011,10 +1014,12 @@ class ManagedNamespace : public XamlNamespace {
 		if (x_namespace) {
 			// We might have an x:Class attribute specified, so we need to use that for the
 			// type_name that we pass to CreateObject
-			type_name = x_namespace->FindTypeName (attr, &type_xmlns);
-			if (type_name) {
-				el = type_name;
-				use_xmlns = type_xmlns;
+			if (strcmp ("Application", el)) {
+				type_name = x_namespace->FindTypeName (attr, &type_xmlns);
+				if (type_name) {
+					el = type_name;
+					use_xmlns = type_xmlns;
+				}
 			}
 		}
 
@@ -2709,9 +2714,7 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 	*v = NULL;
 	
 	if (!strcmp ("{x:Null}", str)) {
-		Value *null = new Value ();
-		null->SetIsNull (true);
-		*v = null;
+		*v = NULL;
 		return true;
 	}
 	
@@ -3940,30 +3943,12 @@ start_parse:
 				}
 			}
 
-			if (!v) {
-				parser_error (p, item->element_name, attr [i], 2024,
-					      "Invalid attribute value %s for property %s.",
-					      attr [i + 1], attr [i]);
-				if (atchname)
-					g_free (atchname);
-				return;
-			}
-
-			if (v && !v->GetIsNull ()) {
-				MoonError err;
-
-				if (!dep->SetValueWithError (NULL, prop, v, &err))
-					parser_error (p, item->element_name, attr [i], err.code, err.message);
-				else
-					item->MarkPropertyAsSet (prop->GetName());
-				
-				delete v;
-			} else {
-				if (!prop->IsNullable ())
-					parser_error (p, item->element_name, attr [i], 2017, "Null is not a legal value for attribute %s.", attr [i]);
-				else
-					dep->SetValue (prop, NULL);
-			}
+			MoonError err;
+			if (!dep->SetValueWithError (NULL, prop, v, &err))
+				parser_error (p, item->element_name, attr [i], err.code, err.message);
+			else
+				item->MarkPropertyAsSet (prop->GetName());				
+			delete v;
 		} else {
 			if (!item->SetUnknownAttribute (p, attr [i], attr [i + 1])) {
 				if (atchname)
