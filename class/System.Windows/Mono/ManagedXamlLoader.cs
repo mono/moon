@@ -379,6 +379,9 @@ namespace Mono.Xaml
 				return false;
 			}
 
+			MethodInfo invoker_info = ie.EventHandlerType.GetMethod ("Invoke");
+			ParameterInfo [] event_params = invoker_info.GetParameters ();
+
 			Delegate d = null;
 			Type stype = subscriber.GetType ();
 			MethodInfo [] methods = stype.GetMethods (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
@@ -404,13 +407,20 @@ namespace Mono.Xaml
 					continue;
 
 				parameters = m.GetParameters ();
-				if (parameters.Length > 2)
+
+				if (parameters.Length != event_params.Length)
 					continue;
 
-				if (parameters.Length > 0 && parameters [0].ParameterType != typeof (Object))
-					continue;
+				bool match = true;
+				for (int p = 0; p < parameters.Length; p++) {
+					if (!event_params [p].ParameterType.IsSubclassOf (parameters [p].ParameterType) && parameters [p].ParameterType != event_params [p].ParameterType) {
+						Console.WriteLine ("mismatch:  {0}  and {1}", parameters [p].ParameterType, event_params [p].ParameterType);
+						match = false;
+						break;
+					}
+				}
 
-				if (parameters.Length > 1 && !parameters [1].ParameterType.IsSubclassOf (typeof (EventArgs)))
+				if (!match)
 					continue;
 
 				if (candidate != null) {
