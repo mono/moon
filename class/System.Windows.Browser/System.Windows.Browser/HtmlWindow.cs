@@ -40,7 +40,7 @@ namespace System.Windows.Browser
 	
 		public string Prompt (string promptText)
 		{
-			throw new NotImplementedException ();
+			return InvokeInternal<string> (HtmlPage.Window.Handle, "prompt", promptText);
 		}
 		
 		[SecuritySafeCritical ()]
@@ -58,12 +58,12 @@ namespace System.Windows.Browser
 		
 		public bool Confirm (string confirmText)
 		{
-			throw new NotImplementedException ();
+			return InvokeInternal<bool> (HtmlPage.Window.Handle, "confirm", confirmText);
 		}
 		
 		public void Alert (string alertText)
 		{
-			throw new NotImplementedException ();
+			InvokeInternal<object> (HtmlPage.Window.Handle, "alert", alertText);
 		}
 		
 		public void Navigate (Uri navigateToUri)
