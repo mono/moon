@@ -1606,6 +1606,12 @@ DependencyObject::SetLogicalParent (DependencyObject *logical_parent, MoonError 
 						// namescope, we don't
 						// do anything
 					}
+				} else {
+					// A managed UserControl being added to a parent element will
+					// have a local namescope, but also needs to exist in its parent
+					// namescope so that this.FindName ("theName") works in its logical
+					// parent
+					parent_scope->RegisterName (this->GetName (), this);
 				}
 			}
 			else {
@@ -1639,8 +1645,14 @@ DependencyObject::SetLogicalParent (DependencyObject *logical_parent, MoonError 
 		// ask me, it's crazy.
 		if (this->logical_parent) {
 			NameScope *parent_scope = this->logical_parent->FindNameScope ();
-			if (parent_scope)
+			if (parent_scope) {
+				// A managed UserControl being added to a parent element will
+				// have a local namescope, but also needs to exist in its parent
+				// namescope as such we need to remove the registration from the
+				// old parent_scope here since we've been reparented.
+				parent_scope->UnregisterName (this->GetName ());
 				UnregisterAllNamesRootedAt (parent_scope);
+			}
 		}
 
 		if (!error || error->number == 0)

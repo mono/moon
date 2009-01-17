@@ -16,6 +16,11 @@
 	and prevents a circular dependency when elements load themself in
 	their LoadComponent xaml.
 
+2009-01-17  Geoff Norton  <gnorton@novell.com>
+
+	* dependencyobject.cpp:  A custom UserControl has a local namescope
+	but also needs to be locatable in its parent namescope.
+
 2009-01-16  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (TextLayout::GetCursor): Fixed to support segments of
