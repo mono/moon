@@ -1,5 +1,9 @@
 2009-01-17  Jackson Harper  <jackson@ximian.com>
 
+	* XamlLoaderCallbacks.cs: Marshall bool properly.
+
+2009-01-17  Jackson Harper  <jackson@ximian.com>
+
 	* Types.cs: Skip the INVALID kind when trying to find a native
 	kind.
 
