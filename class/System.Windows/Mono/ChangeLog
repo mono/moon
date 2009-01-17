@@ -1,5 +1,10 @@
 2009-01-17  Jackson Harper  <jackson@ximian.com>
 
+	* Types.cs: Skip the INVALID kind when trying to find a native
+	kind.
+
+2009-01-17  Jackson Harper  <jackson@ximian.com>
+
 	* XamlLoaderCallbacks.cs: Switch CreateObject to LookupObject (see
 	xaml.cpp for why).
 	* ManagedXamlLoader.cs: CreateObject now Looks objects up and
