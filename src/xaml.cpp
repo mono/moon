@@ -104,7 +104,7 @@ static bool handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance
 static bool element_begins_buffering (const char* element);
 static void parser_error (XamlParserInfo *p, const char *el, const char *attr, int error_code, const char *format, ...);
 
-static XamlElementInfo *create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *name);
+static XamlElementInfo *create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *name, bool create);
 static void destroy_created_namespace (gpointer data, gpointer user_data);
 
 class XamlNamespace {
@@ -772,7 +772,7 @@ class DefaultNamespace : public XamlNamespace {
 		if (enums_is_enum_name (el))
 			return new XamlElementInfoEnum (g_strdup (el));
 
-		XamlElementInfo* managed_element = create_element_info_from_imported_managed_type (p, el);
+		XamlElementInfo* managed_element = create_element_info_from_imported_managed_type (p, el, create);
 		if (managed_element)			
 			return managed_element;
 
@@ -1321,10 +1321,9 @@ start_element (void *data, const char *el, const char **attr)
 		// it's actually valid (from SL point of view) to have <Ellipse.Triggers> inside a <Rectangle>
 		// however we can't add properties to something bad, like a <Recta.gle> element
 		XamlElementInfo *prop_info = NULL;
-
 		if (dot) {
 			gchar *prop_elem = g_strndup (el, dot - el);
-			prop_info = p->current_namespace->FindElement (p, prop_elem, attr, true);
+			prop_info = p->current_namespace->FindElement (p, prop_elem, attr, false);
 			g_free (prop_elem);
 		}
 
@@ -3139,25 +3138,27 @@ XamlElementInstance::SetUnknownAttribute (XamlParserInfo *p, const char *name, c
 }
 
 static XamlElementInfo *
-create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *name)
+create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *name, bool create)
 {
 	if (!p->loader)
 		return NULL;
 
 	Value *v = new Value ();
-	if (!p->loader->LookupObject (p, NULL, NULL, name, true, v) /*|| v->Is (Type::DEPENDENCY_OBJECT)*/) {
+	if (!p->loader->LookupObject (p, NULL, NULL, name, create, v) /*|| v->Is (Type::DEPENDENCY_OBJECT)*/) {
 		delete v;
 		return NULL;
 	}
 
 	XamlElementInfoImportedManaged *info = new  XamlElementInfoImportedManaged (g_strdup (name), NULL, v);
 
-	if (v->Is (Type::DEPENDENCY_OBJECT)) {
-		DependencyObject *dob = v->AsDependencyObject ();
-		if (p->loader)
+	if (create) {
+		if (v->Is (Type::DEPENDENCY_OBJECT)) {
+			DependencyObject *dob = v->AsDependencyObject ();
+			if (p->loader)
+				dob->SetSurface (p->loader->GetSurface ());
+			p->AddCreatedElement (dob);
 			dob->SetSurface (p->loader->GetSurface ());
-		p->AddCreatedElement (dob);
-		dob->SetSurface (p->loader->GetSurface ());
+		}
 	}
 
 	return info;
@@ -3400,12 +3401,6 @@ XamlElementInstance *
 XamlElementInfoManaged::CreatePropertyElementInstance (XamlParserInfo *p, const char *name)
 {
 	XamlElementInstanceManaged *inst = new XamlElementInstanceManaged (this, name, XamlElementInstance::PROPERTY, obj);
-
-	if (obj->Is (Type::DEPENDENCY_OBJECT)) {
-		if (p->loader)
-			inst->GetAsDependencyObject ()->SetSurface (p->loader->GetSurface ());
-		p->AddCreatedElement (inst->GetAsDependencyObject ());
-	}
 
 	return inst;
 }
