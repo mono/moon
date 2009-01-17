@@ -1,3 +1,12 @@
+2009-01-16  Chris Toshok  <toshok@ximian.com>
+
+	* Value.cs (Value.FromObject):
+	s/DependencyObject.TrackNativeReference/NativeMethods.event_object_ref.
+
+	* Helper.cs (Helper.GetConverterFor): make public (we use it from
+	the style machinery), and also look up the type converter on
+	@target_type if the property lacks a TypeConverter attribute.
+
 2009-01-16  Jb Evain  <jbevain@novell.com>
 
 	* NativeMethods.cs: add plugin_instance_get_browser_information.

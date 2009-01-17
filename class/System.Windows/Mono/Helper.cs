@@ -40,16 +40,30 @@ namespace Mono {
 
 	internal static class Helper {
 
-		private static TypeConverter GetConverterFor (MemberInfo info, Type target_type)
+		public static TypeConverter GetConverterFor (MemberInfo info, Type target_type)
 		{
-			Attribute[] attrs = (Attribute[])info.GetCustomAttributes (true);
+			Attribute[] attrs;
 			TypeConverterAttribute at = null;
 			TypeConverter converter = null;
 
+			// first check for a TypeConverter attribute on the property
+			attrs = (Attribute[])info.GetCustomAttributes (true);
 			foreach (Attribute attr in attrs) {
 				if (attr is TypeConverterAttribute) {
 					at = (TypeConverterAttribute)attr;
 					break;
+				}
+			}
+
+			if (at == null) {
+				// we didn't find one on the property.
+				// check for one on the Type.
+				attrs = (Attribute[])target_type.GetCustomAttributes (true);
+				foreach (Attribute attr in attrs) {
+					if (attr is TypeConverterAttribute) {
+						at = (TypeConverterAttribute)attr;
+						break;
+					}
 				}
 			}
 

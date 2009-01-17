@@ -267,11 +267,7 @@ namespace Mono {
 						throw new Exception (String.Format (
 							"Object {0} has not set its native property", dov.GetType()));
 
-					//
-					// Keep track of this object, so we know how to map it
-					// if it comes back. 
-					//
-					DependencyObject.TrackNativeReference (dov);
+					NativeMethods.event_object_ref (dov.native);
 
 					value.k = dov.GetKind ();
 					value.u.p = dov.native;
