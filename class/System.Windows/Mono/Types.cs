@@ -126,5 +126,16 @@ namespace Mono
 			
 			return (Kind) mt.native_handle;
 		}
+
+		public static Kind TypeToNativeKind (Type type)
+		{
+			while (type != typeof (object)) {
+				Kind kind = TypeToKind (type);
+				if (Enum.IsDefined (typeof (Kind), kind))
+					return kind;
+				type = type.BaseType;
+			}
+			return Kind.INVALID;
+		}
 	}
 }
