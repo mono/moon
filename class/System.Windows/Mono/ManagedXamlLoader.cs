@@ -181,7 +181,7 @@ namespace Mono.Xaml
 				throw new ArgumentNullException ("type_name");
 
 			if (top_level == IntPtr.Zero && xmlns == null)
-				return CreateComponentFromName (top_level, name, out value);
+				return LookupComponentFromName (top_level, name, create, out value);
 			
 			Assembly clientlib = null;
 			string assembly_name = AssemblyNameFromXmlns (xmlns);
@@ -243,8 +243,19 @@ namespace Mono.Xaml
 			return true;
 		}
 
-		private bool CreateComponentFromName (IntPtr top_level, string name, out Value value)
+		private bool LookupComponentFromName (IntPtr top_level, string name, bool create, out Value value)
 		{
+			if (!create) {
+				Type type = Application.GetComponentTypeFromName (name);
+				if (type == null) {
+					value = Value.Empty;
+					return false;
+				}
+				value = Value.Empty;
+				value.k = Types.TypeToNativeKind (type);
+				return true;
+			}
+
 			object obj = Application.CreateComponentFromName (name);
 			if (obj == null) {
 				value = Value.Empty;

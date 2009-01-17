@@ -1,5 +1,10 @@
 2009-01-17  Jackson Harper  <jackson@ximian.com>
 
+	* ManagedXamlLoader.cs: Rework CreateComponentFromName into
+	LookupComponentFromName.
+
+2009-01-17  Jackson Harper  <jackson@ximian.com>
+
 	* XamlLoaderCallbacks.cs: Marshall bool properly.
 
 2009-01-17  Jackson Harper  <jackson@ximian.com>
