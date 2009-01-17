@@ -114,7 +114,7 @@ class XamlNamespace {
 	XamlNamespace () : name (NULL) { }
 
 	virtual ~XamlNamespace () { }
-	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el, const char **attr) = 0;
+	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el, const char **attr, bool create) = 0;
 	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse) = 0;
 
 	virtual const char* GetUri () = 0;
@@ -218,7 +218,13 @@ class XamlElementInfo {
 	}
 
 	virtual Type::Kind GetKind () { return kind; }
-	virtual const char *GetContentProperty (XamlParserInfo *p) { return Type::Find (kind)->GetContentPropertyName (); }
+	virtual const char *GetContentProperty (XamlParserInfo *p)
+	{
+		Type *t = Type::Find (kind);
+		if (t)
+			return t->GetContentPropertyName ();
+		return NULL;
+	}
 
 	virtual XamlElementInstance *CreateElementInstance (XamlParserInfo *p) = 0;
 	virtual XamlElementInstance *CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o) = 0;
@@ -757,7 +763,7 @@ class DefaultNamespace : public XamlNamespace {
 
 	virtual ~DefaultNamespace () { }
 
-	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el, const char **attr)
+	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el, const char **attr, bool create)
 	{
 		Type* t = Type::Find (el);
 		if (t)
@@ -789,7 +795,7 @@ class XNamespace : public XamlNamespace {
 
 	virtual ~XNamespace () { }
 
-	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el, const char **attr)
+	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el, const char **attr, bool create)
 	{
 		return NULL;
 	}
@@ -885,7 +891,7 @@ class XNamespace : public XamlNamespace {
 				// The managed DependencyObject will unref itself
 				// once it's finalized, so don't unref anything here.
 				Value *v = new Value ();
-				if (p->loader->CreateObject (p, p->top_element ? p->top_element->GetAsDependencyObject () : NULL, NULL, value, v) && v->Is (Type::DEPENDENCY_OBJECT)) {
+				if (p->loader->LookupObject (p, p->top_element ? p->top_element->GetAsDependencyObject () : NULL, NULL, value, true, v) && v->Is (Type::DEPENDENCY_OBJECT)) {
 					dob = v->AsDependencyObject ();
 					dob->SetSurface (p->loader->GetSurface ());
 				} else
@@ -1004,7 +1010,7 @@ class ManagedNamespace : public XamlNamespace {
 		g_free (prefix);
 	}
 
-	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el, const char **attr)
+	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el, const char **attr, bool create)
 	{
 		char* type_name = NULL;
 		char* type_xmlns = NULL;
@@ -1015,7 +1021,7 @@ class ManagedNamespace : public XamlNamespace {
 
 		if (x_namespace) {
 			// We might have an x:Class attribute specified, so we need to use that for the
-			// type_name that we pass to CreateObject
+			// type_name that we pass to LookupObject
 			if (strcmp ("Application", el)) {
 				type_name = x_namespace->FindTypeName (attr, &type_xmlns);
 				if (type_name) {
@@ -1026,7 +1032,7 @@ class ManagedNamespace : public XamlNamespace {
 		}
 
 		Value *value = new Value ();
-		if (!p->loader->CreateObject (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, use_xmlns, el, value)) {
+		if (!p->loader->LookupObject (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, use_xmlns, el, create, value)) {
 			parser_error (p, el, NULL, -1, "Unable to resolve managed type %s.", el);
 			delete value;
 			if (type_name)
@@ -1061,12 +1067,12 @@ class ManagedNamespace : public XamlNamespace {
 };
 
 bool
-XamlLoader::CreateObject (void *p, void *top_level, const char* xmlns, const char* type_name, Value *value)
+XamlLoader::LookupObject (void *p, void *top_level, const char* xmlns, const char* type_name, bool create, Value *value)
 {
-	if (callbacks.create_object) {
+	if (callbacks.lookup_object) {
 		if (!vm_loaded && !LoadVM ())
 			return false;
-		bool res = callbacks.create_object (p, top_level, xmlns, type_name, value);
+		bool res = callbacks.lookup_object (p, top_level, xmlns, type_name, create, value);
 		return res;
 	}
 		
@@ -1266,7 +1272,7 @@ start_element (void *data, const char *el, const char **attr)
 
 	const char *dot = strchr (el, '.');
 	if (!dot)
-		elem = p->current_namespace->FindElement (p, el, attr);
+		elem = p->current_namespace->FindElement (p, el, attr, p->hydrate_expecting == NULL);
 
 	if (p->error_args)
 		return;
@@ -1276,11 +1282,12 @@ start_element (void *data, const char *el, const char **attr)
 		if (p->hydrate_expecting){
 			Type::Kind expecting_type =  p->hydrate_expecting->GetObjectType ();
 
-			if (elem->GetKind () != expecting_type){
+			if (!Type::IsSubclassOf (elem->GetKind (), expecting_type)){
 				parser_error (p, el, NULL, -1, "Invalid top-level element found %s, expecting %s", el,
 					      Type::Find (expecting_type)->GetName ());
 				return;
 			}
+
 			inst = elem->CreateWrappedElementInstance (p, p->hydrate_expecting);
 			p->hydrate_expecting = NULL;
 		} else
@@ -1317,7 +1324,7 @@ start_element (void *data, const char *el, const char **attr)
 
 		if (dot) {
 			gchar *prop_elem = g_strndup (el, dot - el);
-			prop_info = p->current_namespace->FindElement (p, prop_elem, attr);
+			prop_info = p->current_namespace->FindElement (p, prop_elem, attr, true);
 			g_free (prop_elem);
 		}
 
@@ -1699,7 +1706,7 @@ XamlLoader::CreateFromFile (const char *xaml_file, bool create_namescope,
 	TextStream *stream;
 	char buffer[4096];
 	ssize_t nread, n;
-	
+
 	LOG_XAML ("attemtping to load xaml file: %s\n", xaml_file);
 	
 	stream = new TextStream ();
@@ -3138,7 +3145,7 @@ create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *n
 		return NULL;
 
 	Value *v = new Value ();
-	if (!p->loader->CreateObject (p, NULL, NULL, name, v) /*|| v->Is (Type::DEPENDENCY_OBJECT)*/) {
+	if (!p->loader->LookupObject (p, NULL, NULL, name, true, v) /*|| v->Is (Type::DEPENDENCY_OBJECT)*/) {
 		delete v;
 		return NULL;
 	}

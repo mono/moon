@@ -1,3 +1,11 @@
+2009-01-17  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp|h: Change CreateObject to LookupObject and give it a
+	flag for actually creating the object. This allows us to verify
+	the type on hydrated elements without creating another instance
+	and prevents a circular dependency when elements load themself in
+	their LoadComponent xaml.
+
 2009-01-16  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (TextLayout::GetCursor): Fixed to support segments of
