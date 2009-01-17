@@ -1,3 +1,10 @@
+2009-01-16  Chris Toshok  <toshok@ximian.com>
+
+	* DependencyObject.cs (DependencyObject.set_native): throw an
+	exception if _native was already set.
+	(DependencyObject.TrackNativeReference): nuke this.
+	(DependencyObject.SetValueImpl): remove spew.
+
 2009-01-15  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* DependencyObject.cs: Add missing case for [Column|Row]Collection

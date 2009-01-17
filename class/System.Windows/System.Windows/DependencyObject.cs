@@ -70,6 +70,10 @@ namespace System.Windows {
 			}
 
 			set {
+				if (_native != IntPtr.Zero) {
+					throw new InvalidOperationException ("DependencyObject.native is already set");
+				}
+
 				_native = value;
 				if (objects.ContainsKey (value))
 					return;
@@ -145,13 +149,6 @@ namespace System.Windows {
 			return obj;
 		}
 		
-		internal static void TrackNativeReference (DependencyObject obj)
-		{
-			IntPtr obj_native = obj.native;
-			objects [obj_native] = obj;
-			NativeMethods.event_object_ref (obj_native);
-		}
-
 		static object CreateObject (Kind k, IntPtr raw)
 		{
 			NativeMethods.event_object_ref (raw);
@@ -385,7 +382,6 @@ namespace System.Windows {
 				if (dp.PropertyType.IsValueType && !dp.IsNullable)
 					throw new System.ArgumentException (string.Format ("null is not a valid value for '{0}'.", dp.Name));
 
-				Console.WriteLine ("Kind: {0}", NativeMethods.dependency_property_get_property_type(dp.Native));
 				v = new Value { k = NativeMethods.dependency_property_get_property_type(dp.Native), IsNull = true };
 				NativeMethods.dependency_object_set_value (native, dp.Native, ref v);
 				return;
