@@ -3760,6 +3760,9 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 					res = true;
 				}
 			}
+		} else if (Type::IsSubclassOf (prop->GetPropertyType (), Type::COLLECTION) || Type::IsSubclassOf (prop->GetPropertyType (), Type::RESOURCE_DICTIONARY)) {
+			// The items were added in add_child
+			return true;
 		} else {
 			// TODO: Do some error checking in here, this is a valid place to be
 			// if we are adding a non collection to a collection, so the non collection
