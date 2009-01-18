@@ -41,8 +41,20 @@ namespace MoonTest.System.Windows.Media {
 		static public void CheckDefaults (Brush b)
 		{
 			Assert.AreEqual (1.0d, b.Opacity, "Opacity");
-			Assert.IsTrue ((b.RelativeTransform as MatrixTransform).Matrix.IsIdentity, "RelativeTransform");
-			Assert.IsTrue ((b.Transform as MatrixTransform).Matrix.IsIdentity, "Transform");
+			MatrixTest.CheckIdentity ((b.RelativeTransform as MatrixTransform).Matrix, "RelativeTransform");
+			MatrixTest.CheckIdentity ((b.Transform as MatrixTransform).Matrix, "Transform");
+		}
+
+		public class ConcreteBrush : Brush {
+		}
+
+		[TestMethod]
+		[MoonlightBug ("Looks like an SL2 limitation that we don't have")]
+		public void CannotInheritFromBrush ()
+		{
+			Assert.Throws<Exception> (delegate {
+				new ConcreteBrush ();
+			}, "we can't inherit from Brush");
 		}
 	}
 }

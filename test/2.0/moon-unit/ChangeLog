@@ -1,3 +1,12 @@
+2009-01-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Media/BrushTest.cs: Use MatrixTest.CheckIdentity 
+	inside tests. Add a test for an SL2 limitation when inheriting 
+	directly from Brush.
+	* System.Windows.Media/MatrixTest.cs: New.
+	* System.Windows.Media/MatrixTransformTest.cs: Add matrix setter
+	test case. Update existing tests to use MatrixTest.CheckMatrix
+
 2009-01-18  Alan McGovern  <alan.mcgovern@gmail.com>
 
 	* System.Windows.Controls/ComboBoxTest.cs: These tests are failing due

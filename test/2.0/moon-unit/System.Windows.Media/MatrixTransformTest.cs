@@ -1,5 +1,5 @@
 /*
- * MatrixTrasformTest.cs.
+ * MatrixTransform.cs.
  *
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
@@ -18,10 +18,34 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Media
 {
 	[TestClass]
-	public class MatrixTest
+	public class MatrixTransformTest
 	{
+
 		[TestMethod]
-		[MoonlightBug]
+		public void Defaults ()
+		{
+			MatrixTransform mt = new MatrixTransform ();
+			MatrixTest.CheckIdentity (mt.Matrix, "default");
+		}
+
+		[TestMethod]
+		public void Set ()
+		{
+			MatrixTransform mt = new MatrixTransform ();
+			mt.Matrix = new Matrix (1, 2, 3, 4, 5, 6);
+			MatrixTest.CheckMatrix (mt.Matrix, 1, 2, 3, 4, 5, 6, "custom");
+			Assert.IsFalse (mt.Matrix.IsIdentity, "IsNotIdentity");
+		}
+
+		[TestMethod]
+		public void Brush_Defaults ()
+		{
+			SolidColorBrush scb = new SolidColorBrush ();
+			MatrixTest.CheckIdentity ((scb.RelativeTransform as MatrixTransform).Matrix, "RelativeTransform");
+			MatrixTest.CheckIdentity ((scb.Transform as MatrixTransform).Matrix, "Transform");
+		}
+
+		[TestMethod]
 		public void LoadFromXamlTest ()
 		{
 			MatrixTransform m = (MatrixTransform) XamlReader.Load (
@@ -34,16 +58,10 @@ namespace MoonTest.System.Windows.Media
 	  <Matrix OffsetX=""10"" OffsetY=""100"" M11=""3"" M12=""2"" M22=""0""/>
 	</MatrixTransform.Matrix>
 </MatrixTransform>");
-			Assert.AreEqual (10, m.Matrix.OffsetX, "#1");
-			Assert.AreEqual (100, m.Matrix.OffsetY, "#2");
-			Assert.AreEqual (3, m.Matrix.M11, "#3");
-			Assert.AreEqual (2, m.Matrix.M12, "#4");
-			Assert.AreEqual (0, m.Matrix.M21, "#5");
-			Assert.AreEqual (0, m.Matrix.M22, "#6"); 
+			MatrixTest.CheckMatrix (m.Matrix, 3, 2, 0, 0, 10, 100, "xaml");
 		}
 
 		[TestMethod]
-		[MoonlightBug ("Matrix is instantiated as an Identity matrix, but all elements need to be set to zero if unspecified")]
 		public void PartialSetTest ()
 		{
 			MatrixTransform m = (MatrixTransform) XamlReader.Load (
@@ -53,12 +71,7 @@ namespace MoonTest.System.Windows.Media
 	  <Matrix OffsetX=""10"" M11=""5"" OffsetY=""100"" M12=""2""/>
 	</MatrixTransform.Matrix>
 </MatrixTransform>");
-			Assert.AreEqual (10, m.Matrix.OffsetX, "#1");
-			Assert.AreEqual (100, m.Matrix.OffsetY, "#2");
-			Assert.AreEqual (5, m.Matrix.M11, "#3");
-			Assert.AreEqual (2, m.Matrix.M12, "#4");
-			Assert.AreEqual (0, m.Matrix.M21, "#5");
-			Assert.AreEqual (1, m.Matrix.M22, "#6"); 
+			MatrixTest.CheckMatrix (m.Matrix, 5, 2, 0, 1, 10, 100, "xaml");
 		}
 	}
 }
