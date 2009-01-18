@@ -26,14 +26,11 @@ void
 Canvas::ComputeBounds ()
 {
 	Surface *surface = GetSurface ();
+	Panel::ComputeBounds ();
 	if (surface && surface->IsTopLevel (this)) {
 		// toplevel canvas don't subscribe to the same bounds computation as others
-		extents = Rect (0, 0, GetActualWidth (), GetActualHeight ());
 		bounds = Rect (0, 0, surface->GetWindow()->GetWidth(), surface->GetWindow()->GetHeight());
 		bounds_with_children = Rect (0, 0, surface->GetWindow()->GetWidth(), surface->GetWindow()->GetHeight());
-	}
-	else {
-		Panel::ComputeBounds ();
 	}
 }
 
@@ -122,21 +119,13 @@ Canvas::ElementRemoved (UIElement *item)
 Size
 Canvas::MeasureOverride (Size availableSize)
 {
-	Size result = FrameworkElement::MeasureOverride (availableSize);
 	Size childSize = Size (INFINITY, INFINITY); 
-
-	// XXX ugly hack to maintain compat
-	if (result.IsEmpty ())
-		return result;
-
-	//if (availableSize.width <= 0.0 && availableSize.height <= 0.0)
-	//	childSize = Size (0.0, 0.0);
 
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ())
 		child->Measure (childSize);
 	
-	return result;
+	return Size (0,0);
 }
 
 Size 

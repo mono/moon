@@ -345,21 +345,7 @@ FrameworkElement::Measure (Size availableSize)
 Size
 FrameworkElement::MeasureOverride (Size availableSize)
 {
-	Size desired = Size (GetWidth (), GetHeight ());
-
-	if (isnan (desired.width))
-		desired.width = availableSize.width;
-
-	if (isnan (desired.height))
-		desired.height = availableSize.height;
-
-	if (availableSize.width <= 0.0 || availableSize.height <= 0.0)
-		return desired;
-	
-	if (!GetSurface () && (!GetVisualParent () || GetVisualParent ()->Is (Type::CANVAS)))
-		return Size (-INFINITY,-INFINITY);
-
-	return desired;
+	return Size (0,0);
 }
 
 
