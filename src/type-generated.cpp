@@ -334,6 +334,7 @@ Type type_infos [] = {
 	{ Type::UIELEMENT_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "UIElementCollection", "UIELEMENT_COLLECTION", 0, 1, NULL, (create_inst_func *) uielement_collection_new, NULL, NULL, NULL, NULL }, 
 	{ Type::UINT32, Type::OBJECT, false, "guint32", "UINT32", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::UINT64, Type::OBJECT, false, "guint64", "UINT64", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
+	{ Type::UNMANAGEDMATRIX, Type::MATRIX, false, "UnmanagedMatrix", "UNMANAGEDMATRIX", 0, 1, NULL, (create_inst_func *) unmanaged_matrix_new, NULL, NULL, NULL, NULL }, 
 	{ Type::USERCONTROL, Type::CONTROL, false, "UserControl", "USERCONTROL", 0, 17, NULL, (create_inst_func *) user_control_new, "Content", NULL, NULL, NULL }, 
 	{ Type::VIDEOBRUSH, Type::TILEBRUSH, false, "VideoBrush", "VIDEOBRUSH", 0, 1, NULL, (create_inst_func *) video_brush_new, NULL, NULL, NULL, NULL }, 
 	{ Type::VISUALBRUSH, Type::TILEBRUSH, false, "VisualBrush", "VISUALBRUSH", 0, 1, NULL, (create_inst_func *) visual_brush_new, NULL, NULL, NULL, NULL }, 

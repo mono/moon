@@ -789,6 +789,9 @@ LineSegment *line_segment_new (void);
  * Matrix
  **/
 /* @GeneratePInvoke */
+cairo_matrix_t *matrix_get_matrix_values (Matrix *instance);
+
+/* @GeneratePInvoke */
 Matrix *matrix_new (void);
 
 /**
@@ -1503,6 +1506,12 @@ bool uielement_update_layout (UIElement *instance);
  **/
 /* @GeneratePInvoke */
 UIElementCollection *uielement_collection_new (void);
+
+/**
+ * UnmanagedMatrix
+ **/
+/* @GeneratePInvoke */
+UnmanagedMatrix *unmanaged_matrix_new (void);
 
 /**
  * UserControl

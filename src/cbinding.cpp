@@ -1716,6 +1716,16 @@ line_segment_new (void)
 /**
  * Matrix
  **/
+cairo_matrix_t *
+matrix_get_matrix_values (Matrix *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetMatrixValues ();
+}
+
+
 Matrix *
 matrix_new (void)
 {
@@ -3284,6 +3294,16 @@ UIElementCollection *
 uielement_collection_new (void)
 {
 	return new UIElementCollection ();
+}
+
+
+/**
+ * UnmanagedMatrix
+ **/
+UnmanagedMatrix *
+unmanaged_matrix_new (void)
+{
+	return new UnmanagedMatrix ();
 }
 
 

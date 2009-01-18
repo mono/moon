@@ -223,6 +223,9 @@ class Matrix : public DependencyObject {
 	virtual Type::Kind GetObjectType () { return Type::MATRIX; }
 	
 	cairo_matrix_t GetUnderlyingMatrix ();
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	cairo_matrix_t *GetMatrixValues () { return &matrix; }
 	
 	//
 	// Property Accessors
@@ -246,6 +249,21 @@ class Matrix : public DependencyObject {
 	double GetOffsetY ();
 };
 
+/* @SilverlightVersion="2" */
+/* @Namespace=System.Windows.Media */
+// this type does not really exists - its purpose is to let the unmanaged (1.x) matrix be a dependency object
+// and the later (2.x) managed code use a struct (non-DO) for the matrix
+class UnmanagedMatrix : public Matrix {
+
+ protected:
+	virtual ~UnmanagedMatrix () {}
+	
+ public:
+	virtual Type::Kind GetObjectType () { return Type::UNMANAGEDMATRIX; }
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	UnmanagedMatrix () {}
+};
 
 /* @Namespace=System.Windows.Media */
 class MatrixTransform : public Transform {

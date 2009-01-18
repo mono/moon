@@ -218,6 +218,7 @@ class TriggerActionCollection;
 class TriggerBase;
 class UIElement;
 class UIElementCollection;
+class UnmanagedMatrix;
 class UserControl;
 class VideoBrush;
 class VisualBrush;
@@ -474,6 +475,7 @@ public:
 	TriggerBase*                   AsTriggerBase () { checked_get_subclass (Type::TRIGGERBASE, TriggerBase) }
 	UIElement*                     AsUIElement () { checked_get_subclass (Type::UIELEMENT, UIElement) }
 	UIElementCollection*           AsUIElementCollection () { checked_get_subclass (Type::UIELEMENT_COLLECTION, UIElementCollection) }
+	UnmanagedMatrix*               AsUnmanagedMatrix () { checked_get_subclass (Type::UNMANAGEDMATRIX, UnmanagedMatrix) }
 	UserControl*                   AsUserControl () { checked_get_subclass (Type::USERCONTROL, UserControl) }
 	VideoBrush*                    AsVideoBrush () { checked_get_subclass (Type::VIDEOBRUSH, VideoBrush) }
 	VisualBrush*                   AsVisualBrush () { checked_get_subclass (Type::VISUALBRUSH, VisualBrush) }
