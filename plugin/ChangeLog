@@ -1,3 +1,8 @@
+2009-01-18  Larry Ewing  <lewing@novell.com>
+
+	* plugin-debug.cpp (reflect_foreach_current_value): don't crash if
+	we can't lookup the owning type.
+
 2009-01-16  Jb Evain  <jbevain@novell.com>
 
 	* plugin-class.cpp: move STRDUP_FROM_VARIANT and

@@ -185,7 +185,7 @@ reflect_foreach_current_value (gpointer key, gpointer val, gpointer user_data)
 
 	gtk_tree_store_append (data->store, &iter, data->parent);
 
-	char *markup = g_strdup_printf ("<i>%s.%s</i>", Type::Find(prop->GetOwnerType())->GetName(), prop->GetName());
+	char *markup = g_strdup_printf ("<i>%s.%s</i>", Type::Find(prop->GetOwnerType()) ? Type::Find(prop->GetOwnerType())->GetName() : "(unknown)", prop->GetName());
 
 	reflect_value (data->store, &iter, markup, value);
 
