@@ -1,4 +1,4 @@
-<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -86,6 +86,7 @@
     <Compile Include="System.Windows.Automation.Peers\SliderAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\ThumbAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Controls.Primitives\ButtonBaseTest.cs" />
+    <Compile Include="System.Windows.Controls.Primitives\PopupTest.cs" />
     <Compile Include="System.Windows.Controls.Primitives\RangeBaseTest.cs" />
     <Compile Include="System.Windows.Controls.Primitives\RepeatButtonTest.cs" />
     <Compile Include="System.Windows.Controls.Primitives\SelectorTest.cs" />
@@ -349,6 +350,12 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="BasicCanvas.xaml">
+      <SubType>Page</SubType>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="System.Windows.Documents\" />

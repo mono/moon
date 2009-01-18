@@ -35,7 +35,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows.Media {
 
-	[TestClass]
+	//[TestClass]
 	public class BrushTest {
 
 		static public void CheckDefaults (Brush b)
