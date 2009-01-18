@@ -54,15 +54,51 @@ Control::Render (cairo_t *cr, Region *region)
 void
 Control::ComputeBounds ()
 {
-	Rect *slot = LayoutInformation::GetLayoutSlot (this);
-	extents = slot ? *slot : Rect ();
-	extents.width = MAX (GetActualWidth (), extents.width);
-	extents.height = MAX (GetActualHeight (), extents.height);
-	bounds_with_children = bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
+	Rect *r = LayoutInformation::GetLayoutSlot (this);
+	Rect slot = r ? *r : Rect ();
 	
-	if (template_root) {
-		bounds_with_children = bounds_with_children.Union (template_root->GetSubtreeBounds ());
+	Size specified = Size (GetWidth (), GetHeight ());
+	HorizontalAlignment horiz = GetHorizontalAlignment ();
+	VerticalAlignment vert = GetVerticalAlignment ();
+	cairo_matrix_t layout_xform;
+	cairo_matrix_init_identity (&layout_xform);
+
+	if (!isnan (specified.width))
+		horiz = HorizontalAlignmentCenter;
+	if (!isnan (specified.height))
+		vert = VerticalAlignmentCenter;
+	
+	switch (horiz) {
+	case HorizontalAlignmentCenter:
+		cairo_matrix_translate (&layout_xform, (slot.width  - GetActualWidth ()) * .5, 0);
+		break;
+	case HorizontalAlignmentRight:
+		cairo_matrix_translate (&layout_xform, slot.width - GetActualWidth (), 0);
+		break;
+	default:
+		break;
 	}
+
+	switch (vert) {
+	case VerticalAlignmentCenter:
+		cairo_matrix_translate (&layout_xform, 0, (slot.height  - GetActualHeight ()) * .5);
+		break;
+	case VerticalAlignmentBottom:
+		cairo_matrix_translate (&layout_xform, 0, slot.height - GetActualHeight ());
+		break;
+	default:
+		break;
+	}
+	
+	extents = Rect (0, 0, GetActualWidth (), GetActualHeight ());
+	extents = extents.Transform (&layout_xform);
+
+	bounds_with_children = bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
+
+	UIElement *child = template_root;
+
+	if (child)
+		bounds_with_children = bounds_with_children.Union (child->GetSubtreeBounds ());
 }
 
 bool 
@@ -209,12 +245,8 @@ Control::MeasureOverride (Size availableSize)
 	// Get the desired size of our child, and include any margins we set
 	if (UIElement *child = template_root) {
 		Size childAvailable = availableSize.GrowBy (-border);
-		g_warning ("control ca (%f, %f)", childAvailable.width, childAvailable.height);
 		child->Measure (availableSize.GrowBy (-border));
 		desired = child->GetDesiredSize ();
-		childAvailable = desired;
-		g_warning ("control cd (%f, %f)", childAvailable.width, childAvailable.height);
-
 	}
 
 	desired = desired.GrowBy (border);
@@ -238,14 +270,10 @@ Control::ArrangeOverride (Size finalSize)
 
 	if (UIElement *child = template_root) {
 		Rect childRect = Rect (0.0, 0.0, finalSize.width, finalSize.height).GrowBy (-border);
+
 		child->Arrange (childRect.GrowBy (-border));
 		desired = desired.Max (child->GetRenderSize ());
 	}
 
-	desired = desired.GrowBy (border);
-
-	desired = desired.Max (specified);
-	desired = desired.Min (specified);
-
-	return desired;
+	return finalSize;
 }
