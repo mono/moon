@@ -59,9 +59,10 @@ namespace System.Windows {
 			return String.Format ("{0},{1}", x, y);
 		}
 
+		[MonoTODO ("simply returns ToString")]
 		public string ToString (IFormatProvider provider)
 		{
-			throw new NotImplementedException ();
+			return ToString ();
 		}
 
 		public static bool operator == (Point point1, Point point2)
@@ -84,10 +85,10 @@ namespace System.Windows {
 			set { y = value; } 
 		}
 
+		[MonoTODO ("simply returns ToString")]
 		string System.IFormattable.ToString (string format, IFormatProvider provider)
 		{
-			throw new NotImplementedException ();
+			return ToString ();
 		}
-		
 	}
 }
