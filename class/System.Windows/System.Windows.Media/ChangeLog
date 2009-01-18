@@ -1,3 +1,10 @@
+2009-01-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Matrix.cs: Implement Transform method. Rework == operator to deal
+	with uninitialized matrices. Return ToString() on overloads and add
+	a TODO on them.	This is needed for some unit tests (which calls the
+	overload to detect equality).
+
 2009-01-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* MediaStreamSource.cs: Tiny little beginning of MediaStreamSource and

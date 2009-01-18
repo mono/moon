@@ -163,7 +163,13 @@ namespace System.Windows.Media {
 		
 		public Point Transform (Point point)
 		{
-			throw new System.NotImplementedException ();
+			if (!init)
+				return point;
+
+			double x = (m_11 * point.X) + (m_21 * point.Y) + offset_x;
+			double y = (m_22 * point.Y) + (m_12 * point.X) + offset_y;
+
+			return new Point (x, y);
 		}
 		
 		public override string ToString ()
@@ -173,14 +179,16 @@ namespace System.Windows.Media {
 			return String.Format ("{0},{1},{2},{3},{4},{5}", m_11, m_12, m_21, m_22, offset_x, offset_y);
 		}
 
+		[MonoTODO ("simply returns ToString")]
 		public string ToString (IFormatProvider provider)
 		{
-			throw new System.NotImplementedException ();
+			return ToString ();
 		}
 
+		[MonoTODO ("simply returns ToString")]
 		string IFormattable.ToString (string value, IFormatProvider formatProvider)
 		{
-			throw new System.NotImplementedException ();
+			return ToString ();
 		}
 		
 		// TODO comparing double is problematic, review MS precision
@@ -199,6 +207,15 @@ namespace System.Windows.Media {
 
 		public static bool operator == (Matrix matrix1, Matrix matrix2)
 		{
+			if (!matrix1.init) {
+				if (!matrix2.init)
+					return true;
+				matrix1.SetIdentity ();
+			}
+			if (!matrix2.init) {
+				matrix2.SetIdentity ();
+			}
+
 			return ((matrix1.m_11 == matrix2.m_11) && (matrix1.m_12 == matrix2.m_12) &&
 				(matrix1.m_21 == matrix2.m_21) && (matrix1.m_22 == matrix2.m_22) &&
 				(matrix1.offset_x == matrix2.offset_x) && (matrix1.offset_y == matrix2.offset_y));
@@ -206,9 +223,7 @@ namespace System.Windows.Media {
 
 		public static bool operator != (Matrix matrix1, Matrix matrix2)
 		{
-			return ((matrix1.m_11 != matrix2.m_11) || (matrix1.m_12 != matrix2.m_12) ||
-				(matrix1.m_21 != matrix2.m_21) || (matrix1.m_22 != matrix2.m_22) ||
-				(matrix1.offset_x != matrix2.offset_x) || (matrix1.offset_y != matrix2.offset_y));
+			return !(matrix1 == matrix2);
 		}
 
 
