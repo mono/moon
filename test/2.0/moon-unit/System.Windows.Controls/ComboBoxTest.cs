@@ -154,6 +154,7 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
+        [MoonlightBug ("This won't pass until 'IndexOf' is fixed for the collections on the managed side")]
         public void TestOverrides()
         {
             FakeComboBox b = new FakeComboBox();
@@ -187,6 +188,7 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
+        [MoonlightBug ("This won't pass until 'IndexOf' is fixed for the collections on the managed side")]
         public void SelectedItemTest()
         {
             FakeComboBox box = new FakeComboBox();
