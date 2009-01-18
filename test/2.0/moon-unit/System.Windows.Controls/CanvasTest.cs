@@ -70,6 +70,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void ChildMeasureTest3 ()
 		{
 			Canvas c = new Canvas ();
@@ -85,8 +86,8 @@ namespace MoonTest.System.Windows.Controls
 
 			c.Measure (new Size (100, 100));
 
-			Assert.AreEqual (new Size (0,0), c.DesiredSize);
-			Assert.AreEqual (new Size (0,0), r.DesiredSize);
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c deisred");
+			Assert.AreEqual (new Size (0,0), r.DesiredSize, "r desired");
 		}
 
 		[TestMethod]
@@ -185,6 +186,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void WidthHeightMeasureTest1 ()
 		{
 			Canvas c = new Canvas ();
@@ -198,6 +200,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void WidthHeightMeasureTest2 ()
 		{
 			Canvas c = new Canvas ();
@@ -211,6 +214,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 	
 		[TestMethod]
+		[MoonlightBug]
 		public void WidthHeightBackgroundMeasureTest1 ()
 		{
 			Canvas c = new Canvas ();
@@ -226,6 +230,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void WidthHeightBackgroundMeasureTest2 ()
 		{
 			Canvas c = new Canvas ();
@@ -259,6 +264,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void AttachedTest ()
 		{
 			Canvas c = new Canvas ();

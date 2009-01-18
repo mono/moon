@@ -35,8 +35,35 @@ using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows.Shapes {
-
+	[TestClass]
 	public class ShapeTest {
+		public class ConcreteShape : Shape {
+			public Size _MeasureOveride (Size availableSize)
+			{
+				return MeasureOverride (availableSize);
+			}
+
+			public Size _ArrangeOverride (Size finalSize)
+			{
+				return ArrangeOverride (finalSize);
+			}
+
+			protected override Size MeasureOverride (Size availableSize)
+			{
+				Tester.WriteLine ("MeasureOverride input = " + availableSize.ToString ());
+				Size output = base.MeasureOverride (availableSize);
+				Tester.WriteLine ("MeasureOverride output = " + output.ToString ());
+				return output;
+			}
+
+			protected override Size ArrangeOverride (Size finalSize)
+			{
+				Tester.WriteLine ("ArrangeOverride input = " + finalSize.ToString ());
+				Size output = base.MeasureOverride (finalSize);
+				Tester.WriteLine ("ArrangeOverride output = " +  output.ToString ());
+				return output;
+			}
+		}
 
 		public static void CheckDefaultValues (Shape s, Stretch stretch)
 		{
@@ -51,6 +78,15 @@ namespace MoonTest.System.Windows.Shapes {
 			Assert.AreEqual (0.0d, s.StrokeDashOffset, "StrokeDashOffset");
 			Assert.AreEqual (10.0d, s.StrokeMiterLimit, "StrokeMiterLimit");
 			Assert.AreEqual (1.0d, s.StrokeThickness, "StrokeThickness");
+		}
+
+		[TestMethod]
+		public void MeasureTest ()
+		{
+			var shape = new ConcreteShape ();
+			shape.Width = 25;
+			shape.Height = 25;
+			shape.Measure (new Size (50,50));
 		}
 	}
 }

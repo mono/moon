@@ -183,6 +183,94 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (new Size (0,0), r.DesiredSize);
 			Assert.AreEqual (new Size (0,0), b.DesiredSize);
 		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void CanvasCallsLayoutTest ()
+		{
+			var parent = new Canvas ();
+			LayoutPoker c = new LayoutPoker ();
+			parent.Children.Add (c);
+
+			c.Width = 50;
+			c.Height = 50;
+			
+			int measure_called = 0;
+			int arrange_called = 0;
+			c.Measured += (Size real) => { 
+				c.MeasureResult = real; 
+				measure_called++;
+			};
+			c.Arranged += (Size real) => {
+				c.ArrangeResult = real;
+				arrange_called++;
+			};
+
+			parent.Measure (new Size (100, 100));
+			Assert.AreEqual (0, arrange_called, "arrange called 0");
+			Assert.AreEqual (1, measure_called, "measure called 0");
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize);
+			Assert.AreEqual (new Size (0,0), parent.DesiredSize);
+
+			parent.Arrange (new Rect (0, 0, 100, 100));
+
+			Assert.AreEqual (1, arrange_called, "arrange called 1");
+			Assert.AreEqual (1, measure_called, "measure called 1");
+
+			c.InvalidateMeasure ();
+			c.InvalidateArrange ();
+			parent.InvalidateMeasure ();
+			parent.InvalidateArrange ();
+			parent.Arrange (new Rect (0, 0, 100, 100));
+
+			Assert.AreEqual (2, arrange_called, "arrange called 2");
+			Assert.AreEqual (2, measure_called, "measure called 2");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void BorderCallsLayoutTest ()
+		{
+			var parent = new Border ();
+			LayoutPoker c = new LayoutPoker ();
+			parent.Child = c;
+
+			c.Width = 50;
+			c.Height = 50;
+			
+			int measure_called = 0;
+			int arrange_called = 0;
+			c.Measured += (Size real) => { 
+				c.MeasureResult = real; 
+				measure_called++;
+			};
+			c.Arranged += (Size real) => {
+				c.ArrangeResult = real;
+				arrange_called++;
+			};
+
+			parent.Measure (new Size (100, 100));
+			Assert.AreEqual (0, arrange_called, "arrange called 0");
+			Assert.AreEqual (1, measure_called, "measure called 0");
+
+			Assert.AreEqual (new Size (50,50), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (50,50), parent.DesiredSize, "parent desired");
+
+			parent.Arrange (new Rect (0, 0, 100, 100));
+
+			Assert.AreEqual (1, arrange_called, "arrange called 1");
+			Assert.AreEqual (1, measure_called, "measure called 1");
+
+			c.InvalidateMeasure ();
+			c.InvalidateArrange ();
+			parent.InvalidateArrange ();
+			parent.InvalidateMeasure ();
+			parent.Arrange (new Rect (0, 0, 100, 100));
+
+			Assert.AreEqual (2, arrange_called, "arrange called 2");
+			Assert.AreEqual (2, measure_called, "measure called 2");
+		}
 		
 		[TestMethod]
 		public void ChildlessArrangeTest1 ()

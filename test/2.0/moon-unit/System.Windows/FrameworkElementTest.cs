@@ -28,6 +28,7 @@
 
 using System;
 using System.Windows;
+using System.Windows.Controls;
 
 using Mono.Moonlight.UnitTesting;
 
@@ -169,11 +170,67 @@ namespace MoonTest.System.Windows {
 		[TestMethod]
 		public void MeasureOverride ()
 		{
+			Border b = new Border ();
 			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
+			b.Child = fe;
 			Size result = fe.MeasureOverride_ (new Size (0, 0));
 			Assert.AreEqual (new Size (0, 0), result, "0,0");
+			Assert.AreEqual (new Size (0, 0), b.DesiredSize);
 			result = fe.MeasureOverride_ (Size.Empty);
 			Assert.AreEqual (new Size (0, 0), result, "Empty");
+			Assert.AreEqual (new Size (0, 0), b.DesiredSize);
+			result = fe.MeasureOverride_ (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			Assert.AreEqual (new Size (0, 0), result, "Infinity");
+			result = fe.MeasureOverride_ (new Size (10, 10));
+			Assert.AreEqual (new Size (0, 0), b.DesiredSize);
+			Assert.AreEqual (new Size (0, 0), result, "(10,10)");
+			fe.Width = 10;
+			fe.Height = 10;
+			//result = fe.MeasureOverride_ (new Size (100, 100));
+			b.Measure (new Size (100, 100));
+			Assert.AreEqual (new Size (0, 0), result, "100 with 10");
+			Assert.AreEqual (new Size (10,10), b.DesiredSize, "b desired");
+			Assert.AreEqual (new Size (10,10), fe.DesiredSize, "fe desired");
+			result = fe.MeasureOverride_ (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			Assert.AreEqual (new Size (0, 0), result, "Infinity");
+		}
+
+		[TestMethod]
+		public void MeasureTest ()
+		{
+			Border b = new Border ();
+			var fe = new ConcreteFrameworkElement ();
+			b.Child = fe;
+
+			b.Measure (new Size (100,100));
+
+			Assert.AreEqual (new Size (0, 0), fe.DesiredSize, "deisred");
+
+			fe.Width = 10;
+			fe.Height = 10;
+			
+			b.Measure (new Size (100,100));
+			
+			Assert.AreEqual (new Size (10, 10), fe.DesiredSize, "deisred");
+		}
+		
+		[TestMethod]
+		[MoonlightBug]
+		public void ParentlessMeasureTest ()
+		{
+			var fe = new ConcreteFrameworkElement ();
+	
+			fe.Measure (new Size (100,100));
+
+			Assert.AreEqual (new Size (0, 0), fe.DesiredSize, "deisred");
+
+			fe.Width = 10;
+			fe.Height = 10;
+			
+			fe.InvalidateMeasure ();
+			fe.Measure (new Size (100,100));
+			
+			Assert.AreEqual (new Size (0, 0), fe.DesiredSize, "deisred");
 		}
 
 		[TestMethod]

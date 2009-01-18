@@ -310,6 +310,45 @@ namespace MoonTest.System.Windows.Shapes
 		}
 
 		[TestMethod]
+		public void Measure_StretchNone_Test3 ()
+		{
+			Canvas c = new Canvas ();
+			Path p = new Path ();
+			var r = new RectangleGeometry ();
+			r.Rect = new Rect (10,11,25,47);
+			p.Data = r;
+			c.Children.Add (p);
+			p.Stretch = Stretch.None;
+			
+			c.InvalidateMeasure ();
+			c.Measure (new Size (300, 300));
+
+			Assert.AreEqual (new Size (0,0), new Size (p.ActualWidth, p.ActualHeight), "p actual 3");
+			Assert.AreEqual (new Size (0,0), p.DesiredSize, "p desired");
+		}
+
+
+		[TestMethod]
+		public void Measure_StretchNone_Test4 ()
+		{
+			Canvas c = new Canvas ();
+			Path p = new Path ();
+			var r = new RectangleGeometry ();
+			r.Rect = new Rect (10,11,25,47);
+			p.Data = r;
+			c.Children.Add (p);
+			p.Stretch = Stretch.None;
+			p.Width = 30;
+			p.Height = 11;
+
+			c.InvalidateMeasure ();
+			c.Measure (new Size (300, 300));
+
+			Assert.AreEqual (new Size (30,11), new Size (p.ActualWidth, p.ActualHeight), "p actual 3");
+			Assert.AreEqual (new Size (0,0), p.DesiredSize, "p desired");
+		}
+
+		[TestMethod]
 		public void ArrangeTest1()
 		{
 			Border b = new Border ();
@@ -317,6 +356,8 @@ namespace MoonTest.System.Windows.Shapes
 			b.Child = path;
 			RectangleGeometry r = new RectangleGeometry ();
 			r.Rect = new Rect (10, 10, 80, 90);
+			
+			path.Stretch = Stretch.None;
 			path.Data = r;
 			
 			path.Fill = new SolidColorBrush (Colors.Red);
@@ -368,6 +409,8 @@ namespace MoonTest.System.Windows.Shapes
 			path.Fill = new SolidColorBrush (Colors.Red);
 
 			b.Measure (new Size (120, 120));
+			Assert.AreEqual (new Size (90,100), path.DesiredSize, "desired");
+
 			b.Arrange (new Rect (0, 0, 120, 120));
 
 			Assert.AreEqual (new Size (90,100), path.DesiredSize, "desired");

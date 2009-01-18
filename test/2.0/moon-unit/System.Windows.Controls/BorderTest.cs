@@ -176,6 +176,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void ChildMeasureTest3 ()
 		{
 			Border b = new Border ();
@@ -185,25 +186,25 @@ namespace MoonTest.System.Windows.Controls
 			c.Height = 30;
 			
 			c.Measure (new Size (40, 40));
-			Assert.AreEqual (new Size (0,0), c.DesiredSize);
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c deisred");
 
 			b.Child = c;
 
 			c.Measure (new Size (40, 40));
-			Assert.AreEqual (new Size (c.Width,c.Height), c.DesiredSize);
+			Assert.AreEqual (new Size (c.Width,c.Height), c.DesiredSize, "c desired 1");
 
 			b.Measure (new Size (40, 40));
 			
-			Assert.AreEqual (new Size (30,30), b.DesiredSize);
-			Assert.AreEqual (new Size (30,30), c.DesiredSize);
+			Assert.AreEqual (new Size (30,30), b.DesiredSize, "b desired 2");
+			Assert.AreEqual (new Size (30,30), c.DesiredSize, "c desired 2");
 
 			c.Measure (new Size (40, 40));
-			Assert.AreEqual (new Size (30,30), c.DesiredSize);
+			Assert.AreEqual (new Size (30,30), c.DesiredSize, "c desired 3");
 			
 			c.Width = 20;
 			c.Measure (new Size (40, 40));
 
-			Assert.AreEqual (new Size (20,30), c.DesiredSize);
+			Assert.AreEqual (new Size (20,30), c.DesiredSize, "c desired 4");
 		}
 
 		[TestMethod]
@@ -537,6 +538,53 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (new Size (25, 25), r.RenderSize, "r render 1");
 			Assert.AreEqual (new Size (0, 0), c.DesiredSize, "c desired 1");
 			Assert.AreEqual (new Size (25, 25), c.RenderSize, "c render 1");
+		}
+
+		[TestMethod]
+		public void ParentlessMeasureTest ()
+		{
+			Border b = new Border ();
+
+			b.Measure (new Size (100,100));
+
+			Assert.AreEqual (new Size (0, 0), b.DesiredSize, "deisred");
+
+			b.Width = 10;
+			b.Height = 10;
+			
+			b.InvalidateMeasure ();
+			b.Measure (new Size (100,100));
+			
+			Assert.AreEqual (new Size (10, 10), b.DesiredSize, "deisred");
+		}
+
+		[TestMethod]
+		public void AlignmentMeasureTest ()
+		{
+			Border b = new Border ();
+			Border bc = new Border ();
+			b.Child = bc;
+
+			b.Measure (new Size (100,100));
+
+			Assert.AreEqual (new Size (0, 0), b.DesiredSize, "deisred");
+
+			b.Width = 10;
+			b.Height = 10;
+
+			b.InvalidateMeasure ();
+			b.Measure (new Size (100,100));
+			
+			Assert.AreEqual (new Size (10, 10), b.DesiredSize, "b deisred0");
+			Assert.AreEqual (new Size (0, 0), bc.DesiredSize, "bc deisred0");
+
+			bc.HorizontalAlignment = HorizontalAlignment.Left;
+
+			b.InvalidateMeasure ();
+			b.Measure (new Size (100,100));
+			
+			Assert.AreEqual (new Size (10, 10), b.DesiredSize, "b deisred1");
+			Assert.AreEqual (new Size (0, 0), bc.DesiredSize, "bc deisred1");
 		}
 
 		[TestMethod]
