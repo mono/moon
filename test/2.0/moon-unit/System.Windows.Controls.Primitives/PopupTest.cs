@@ -15,7 +15,7 @@ using Mono.Moonlight.UnitTesting;
 
 namespace NS
 {
-    public partial class PopupTestClass
+    public partial class PopupTestClass : global::System.Windows.Controls.Canvas
     {
         public PopupTestClass()
             : this(new Uri("/moon-unit;component/System.Windows/BasicCanvas.xaml", UriKind.Relative))
