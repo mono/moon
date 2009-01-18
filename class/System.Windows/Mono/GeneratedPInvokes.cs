@@ -848,6 +848,10 @@ namespace Mono {
 		public extern static IntPtr line_segment_new ();
 
 		[DllImport ("moon")]
+		// cairo_matrix_t *matrix_get_matrix_values (Matrix *instance);
+		public extern static IntPtr matrix_get_matrix_values (IntPtr instance);
+
+		[DllImport ("moon")]
 		// Matrix *matrix_new ();
 		public extern static IntPtr matrix_new ();
 
@@ -1476,6 +1480,10 @@ namespace Mono {
 		[DllImport ("moon")]
 		// UIElementCollection *uielement_collection_new ();
 		public extern static IntPtr uielement_collection_new ();
+
+		[DllImport ("moon")]
+		// UnmanagedMatrix *unmanaged_matrix_new ();
+		public extern static IntPtr unmanaged_matrix_new ();
 
 		[DllImport ("moon")]
 		// UserControl *user_control_new ();

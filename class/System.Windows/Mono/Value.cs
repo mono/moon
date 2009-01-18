@@ -186,9 +186,9 @@ namespace Mono {
 					return Color.FromArgb ((byte)(255 * color->a), (byte)(255 * color->r), (byte)(255 * color->g), (byte)(255 * color->b));
 				}
 					
-				case Kind.MATRIX: {
-					double *dp = (double*)val->u.p;
-					
+				case Kind.MATRIX:
+				case Kind.UNMANAGEDMATRIX: {
+					double *dp = (double*) NativeMethods.matrix_get_matrix_values (val->u.p);
 					return new Matrix (dp [0], dp [1], dp [2], dp [3], dp [4], dp [5]);					
 				}
 					
@@ -356,10 +356,9 @@ namespace Mono {
 					color->a = c.A / 255.0f;
 				}
 				else if (v is Matrix) {
-					Matrix mat = (Matrix) v;
-					value.k = Kind.MATRIX;
-					value.u.p = Helper.AllocHGlobal (sizeof (double) * 6);
-					Marshal.StructureToPtr (mat, value.u.p, false); // Unmanaged and managed structure layout is equal.
+					// hack around the fact that managed Matrix is a struct while unmanaged Matrix is a DO
+					// i.e. the unmanaged and managed structure layouts ARE NOT equal
+					return FromObject (new UnmanagedMatrix ((Matrix) v), as_managed_object);
 				}
 				else if (v is Duration) {
 					Duration d = (Duration) v;

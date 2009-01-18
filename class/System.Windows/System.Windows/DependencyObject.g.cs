@@ -622,6 +622,12 @@ namespace System.Windows.Media {
 		internal override Kind GetKind () { return Kind.TRANSLATETRANSFORM; }
 	}
 
+	partial class UnmanagedMatrix {
+		public UnmanagedMatrix () : base (NativeMethods.unmanaged_matrix_new ()) {}
+		internal UnmanagedMatrix (IntPtr raw) : base (raw) {}
+		internal override Kind GetKind () { return Kind.UNMANAGEDMATRIX; }
+	}
+
 	partial class VideoBrush {
 		public VideoBrush () : base (NativeMethods.video_brush_new ()) {}
 		internal VideoBrush (IntPtr raw) : base (raw) {}

@@ -363,6 +363,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/Transform.cs				\
 	$(srcdir)/System.Windows.Media/TransformGroup.cs			\
 	$(srcdir)/System.Windows.Media/TranslateTransform.cs			\
+	$(srcdir)/System.Windows.Media/UnmanagedMatrix.cs			\
 	$(srcdir)/System.Windows.Media/VideoBrush.cs				\
 	$(srcdir)/System.Windows.Media/VisualTreeHelper.cs			\
 	$(srcdir)/System.Windows.Media.Animation/BeginStoryboard.cs		\

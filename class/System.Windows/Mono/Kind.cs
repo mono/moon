@@ -206,6 +206,7 @@ namespace Mono {
 		UIELEMENT_COLLECTION,
 		UINT32,
 		UINT64,
+		UNMANAGEDMATRIX,// Silverlight 2.0 only
 		USERCONTROL,// Silverlight 2.0 only
 		VIDEOBRUSH,
 		VISUALBRUSH,

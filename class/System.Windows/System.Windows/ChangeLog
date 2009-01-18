@@ -1,3 +1,8 @@
+2009-01-18  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows/DependencyObject.g.cs: Regenerated for 
+	UnmanagedMatrix
+
 2009-01-18  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Point.cs: Return ToString() on overloads and add a TODO on them.

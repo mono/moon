@@ -203,6 +203,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.TRANSFORMGROUP));
 				t = typeof (System.Windows.Media.TranslateTransform); 
 				types.Add (t, new ManagedType (t, Kind.TRANSLATETRANSFORM));
+				t = typeof (System.Windows.Media.UnmanagedMatrix); 
+				types.Add (t, new ManagedType (t, Kind.UNMANAGEDMATRIX));
 				t = typeof (System.Windows.Media.VideoBrush); 
 				types.Add (t, new ManagedType (t, Kind.VIDEOBRUSH));
 				t = typeof (System.Windows.Media.Animation.BeginStoryboard); 
