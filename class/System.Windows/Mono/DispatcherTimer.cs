@@ -33,7 +33,7 @@ namespace Mono
 	{
 		public System.Windows.Threading.DispatcherTimer managedTimer;
 
-		static UnmanagedEventHandler tick_proxy = new UnmanagedEventHandler (UnmanagedTick);
+		static UnmanagedEventHandler tick_proxy = Events.CreateSafeHandler (UnmanagedTick);
 
 		private static void UnmanagedTick (IntPtr target, IntPtr calldata, IntPtr closure)
 		{

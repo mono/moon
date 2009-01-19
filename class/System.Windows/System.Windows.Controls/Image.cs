@@ -71,7 +71,7 @@ namespace System.Windows.Controls {
 			}
 		}
 		
-		static UnmanagedEventHandler image_failed = new UnmanagedEventHandler (image_failed_cb);
+		static UnmanagedEventHandler image_failed = Events.CreateSafeHandler (image_failed_cb);
 		
 		private static void image_failed_cb (IntPtr target, IntPtr calldata, IntPtr closure) {
 			// XXX we need to marshal calldata to an ErrorEventArgs struct

@@ -1,3 +1,8 @@
+2009-01-19  Alan McGovern  <amcgovern@novell.com>
+
+	* Timeline.cs: Change all our native callbacks to use a wrapped handler
+	which traps managed exceptions.
+
 2008-11-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* KeyTime.cs, BeginStoryboard.cs, KeyTimeType.cs: Corcompare fixes.

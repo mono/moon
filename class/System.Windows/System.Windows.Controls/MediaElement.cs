@@ -195,13 +195,13 @@ namespace System.Windows.Controls {
 
 		// the nasty event hookup stuff
 
-		static UnmanagedEventHandler buffering_progress_changed = new UnmanagedEventHandler (buffering_progress_changed_cb);
-		static UnmanagedEventHandler current_state_changed = new UnmanagedEventHandler (current_state_changed_cb);
-		static UnmanagedEventHandler download_progress_changed = new UnmanagedEventHandler (download_progress_changed_cb);
-		static UnmanagedEventHandler marker_reached = new UnmanagedEventHandler (marker_reached_cb);
-		static UnmanagedEventHandler media_opened = new UnmanagedEventHandler (media_opened_cb);
-		static UnmanagedEventHandler media_ended = new UnmanagedEventHandler (media_ended_cb);
-		static UnmanagedEventHandler media_failed = new UnmanagedEventHandler (media_failed_cb);
+		static UnmanagedEventHandler buffering_progress_changed = Events.CreateSafeHandler (buffering_progress_changed_cb);
+		static UnmanagedEventHandler current_state_changed = Events.CreateSafeHandler (current_state_changed_cb);
+		static UnmanagedEventHandler download_progress_changed = Events.CreateSafeHandler (download_progress_changed_cb);
+		static UnmanagedEventHandler marker_reached = Events.CreateSafeHandler (marker_reached_cb);
+		static UnmanagedEventHandler media_opened = Events.CreateSafeHandler (media_opened_cb);
+		static UnmanagedEventHandler media_ended = Events.CreateSafeHandler (media_ended_cb);
+		static UnmanagedEventHandler media_failed = Events.CreateSafeHandler (media_failed_cb);
 
 		private static void buffering_progress_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
 		{

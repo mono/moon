@@ -18,7 +18,7 @@ namespace System.Windows.Media
 	public static class CompositionTarget
 	{
 		private static EventHandlerList events = new EventHandlerList ();
-		static UnmanagedEventHandler rendering_proxy = new UnmanagedEventHandler (UnmanagedRendering);
+		static UnmanagedEventHandler rendering_proxy = Events.CreateSafeHandler (UnmanagedRendering);
 
 		private static void UnmanagedRendering (IntPtr target, IntPtr calldata, IntPtr closure)
 		{

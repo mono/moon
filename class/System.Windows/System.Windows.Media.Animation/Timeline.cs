@@ -35,7 +35,7 @@ namespace System.Windows.Media.Animation {
 	public abstract partial class Timeline : DependencyObject {
 
 		
-		static UnmanagedEventHandler completed_proxy = new UnmanagedEventHandler (UnmanagedCompleted);
+		static UnmanagedEventHandler completed_proxy = Events.CreateSafeHandler (UnmanagedCompleted);
 
 		private static void UnmanagedCompleted (IntPtr target, IntPtr calldata, IntPtr closure)
 		{

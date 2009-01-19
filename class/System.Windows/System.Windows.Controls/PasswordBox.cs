@@ -43,7 +43,7 @@ namespace System.Windows.Controls
 	[TemplateVisualStateAttribute(Name = "Unfocused", GroupName = "FocusStates")]
 	public sealed partial class PasswordBox : Control
 	{
-		static readonly UnmanagedEventHandler password_changed = new UnmanagedEventHandler (password_changed_cb);
+		static readonly UnmanagedEventHandler password_changed = Events.CreateSafeHandler (password_changed_cb);
 		static readonly object PasswordChangedEvent = new object ();
 		
 		public PasswordBox (string s)

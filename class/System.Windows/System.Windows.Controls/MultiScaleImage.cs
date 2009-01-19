@@ -60,11 +60,11 @@ namespace System.Windows.Controls {
 		static object MotionFinishedEvent = new object ();
 		static object ViewportChangedEvent = new object ();
 
-		static UnmanagedEventHandler image_failed = new UnmanagedEventHandler (image_failed_cb);
-		static UnmanagedEventHandler image_open_failed = new UnmanagedEventHandler (image_open_failed_cb);
-		static UnmanagedEventHandler image_open_succeeded = new UnmanagedEventHandler (image_open_succeeded_cb);
-		static UnmanagedEventHandler motion_finished = new UnmanagedEventHandler (motion_finished_cb);
-		static UnmanagedEventHandler viewport_changed = new UnmanagedEventHandler (viewport_changed_cb);
+		static UnmanagedEventHandler image_failed = Events.CreateSafeHandler (image_failed_cb);
+		static UnmanagedEventHandler image_open_failed = Events.CreateSafeHandler (image_open_failed_cb);
+		static UnmanagedEventHandler image_open_succeeded = Events.CreateSafeHandler (image_open_succeeded_cb);
+		static UnmanagedEventHandler motion_finished = Events.CreateSafeHandler (motion_finished_cb);
+		static UnmanagedEventHandler viewport_changed = Events.CreateSafeHandler (viewport_changed_cb);
 
 		public event RoutedEventHandler ImageFailed {
 			add {

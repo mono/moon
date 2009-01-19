@@ -1,3 +1,8 @@
+2009-01-19  Alan McGovern  <amcgovern@novell.com>
+
+	* CompositionTarget.cs: Change all our native callbacks to use a wrapped
+	handler which traps managed exceptions.
+
 2009-01-18  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* UnmanagedMatrix.cs: New. This matrix type match the one provided

@@ -1,3 +1,12 @@
+2009-01-19  Alan McGovern  <amcgovern@novell.com>
+
+	* Image.cs:
+	* TextBox.cs:
+	* PasswordBox.cs:
+	* MediaElement.cs:
+	* MultiScaleImage.cs: Change all our native callbacks to use a wrapped
+	handler which traps managed exceptions.
+
 2009-01-18  Geoff Norton  <gnorton@novell.com>
 
 	* MediaElement.cs: These are RoutedEventHandlers, not EventHandlers.

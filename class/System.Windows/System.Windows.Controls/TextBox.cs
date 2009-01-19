@@ -73,8 +73,8 @@ namespace System.Windows.Controls {
 			NativeMethods.text_box_select_all (native);
 		}
 		
-		static UnmanagedEventHandler selection_changed = new UnmanagedEventHandler (selection_changed_cb);
-		static UnmanagedEventHandler text_changed = new UnmanagedEventHandler (text_changed_cb);
+		static UnmanagedEventHandler selection_changed = Events.CreateSafeHandler (selection_changed_cb);
+		static UnmanagedEventHandler text_changed = Events.CreateSafeHandler (text_changed_cb);
 		
 		static object SelectionChangedEvent = new object ();
 		static object TextChangedEvent = new object ();
