@@ -650,12 +650,9 @@ namespace Mono.Xaml
 						return false;
 					}
 					pi.SetValue (target, the_list, null);
-					the_list.Add (obj_value);
-					return true;
-				} else {
-					// I guess we need to wrap the current value in a collection, or does this error out?
-					return false;
 				}
+				the_list.Add (obj_value);
+				return true;
 			}
 
 			obj_value = ConvertType (pi.PropertyType, obj_value);
