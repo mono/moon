@@ -680,7 +680,7 @@ class Generator {
 
 		all_files.AddRange (Directory.GetFiles (srcdir, "*.h"));
 		all_files.AddRange (Directory.GetFiles (asfdir, "*.h"));
-		// all_files.AddRange (Directory.GetFiles (plugindir, "*.h"));
+		all_files.AddRange (Directory.GetFiles (plugindir, "*.h"));
 		
 		Tokenizer tokenizer = new Tokenizer (all_files.ToArray ());
 		GlobalInfo all = new GlobalInfo ();
@@ -748,7 +748,7 @@ class Generator {
 		}
 		
 		if (tokenizer.Accept (Token2Type.Punctuation, ":")) {
-			if (!tokenizer.Accept (Token2Type.Identifier, "public"))
+			if (!tokenizer.Accept (Token2Type.Identifier, "public") && type.IsClass)
 				throw new Exception (string.Format ("The base class of {0} is not public.", type.Name));
 			
 			type.Base = ParseTypeReference (tokenizer);
@@ -885,6 +885,11 @@ class Generator {
 				
 			    break;
 			} while (true);
+
+			if (is_extern && tokenizer.Accept (Token2Type.Literal, "C")) {
+				tokenizer.SyncWithEndBrace ();
+				continue;
+			}
 			
 			if (tokenizer.Accept (Token2Type.Punctuation, "~")) {
 				is_dtor = true;
@@ -1095,6 +1100,9 @@ class Generator {
 		if (tokenizer.Accept (Token2Type.Identifier, "unsigned"))
 			result.Append ("unsigned");
 		
+		if (tokenizer.Accept (Token2Type.Identifier, "const"))
+			tr.IsConst = true;
+		
 		result.Append (tokenizer.GetIdentifier ());
 		
 		if (tokenizer.Accept (Token2Type.Punctuation, ":")) {
@@ -1103,11 +1111,20 @@ class Generator {
 			result.Append (tokenizer.GetIdentifier ());
 		}
 		
+		if (tokenizer.Accept (Token2Type.Identifier, "const"))
+			tr.IsConst = true;
+		
 		while (tokenizer.Accept (Token2Type.Punctuation, "*"))
 			result.Append ("*");
 		
+		if (tokenizer.Accept (Token2Type.Identifier, "const"))
+			tr.IsConst = true;
+		
 		if (tokenizer.Accept (Token2Type.Punctuation, "&"))
 			result.Append ("&");
+		
+		if (tokenizer.Accept (Token2Type.Identifier, "const"))
+			tr.IsConst = true;
 		
 		//Console.WriteLine ("ParseTypeReference: parsed '{0}'", result.ToString ());
 		
@@ -1417,6 +1434,9 @@ class Generator {
 
 		headers.Add ("cbinding.h");
 		foreach (TypeInfo t in all.Children.SortedTypesByKind) {
+			if (t.IsPluginMember)
+				continue;
+			
 			if (t.C_Constructor == string.Empty || t.C_Constructor == null || !t.GenerateCBindingCtor) {
 				//Console.WriteLine ("{0} does not have a C ctor", t.FullName);
 				if (t.GetTotalEventCount () == 0)

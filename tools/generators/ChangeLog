@@ -1,5 +1,10 @@
 2009-01-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* Generator.cs: Scan source files in plugin/ too, and fix issues this
+	raised.
+
+2009-01-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* Generator.cs:
 	* Tokenizer.cs: When scanning headers in src/ scan src/asf/ too. Add
 	support for 'unsigned X' types (used in src/asf/).
