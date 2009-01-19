@@ -210,9 +210,9 @@ namespace System.Windows.Controls {
 		
 		private void InvokeBufferingProgressChanged ()
 		{
-			EventHandler h = (EventHandler) events[BufferingProgressChangedEvent];
+			RoutedEventHandler h = (RoutedEventHandler) events[BufferingProgressChangedEvent];
 			if (h != null)
-				h (this, EventArgs.Empty);
+				h (this, null);
 		}
 		
 		private static void current_state_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
@@ -222,9 +222,9 @@ namespace System.Windows.Controls {
 		
 		private void InvokeCurrentStateChanged ()
 		{
-			EventHandler h = (EventHandler) events[CurrentStateChangedEvent];
+			RoutedEventHandler h = (RoutedEventHandler) events[CurrentStateChangedEvent];
 			if (h != null)
-				h (this, EventArgs.Empty);
+				h (this, null);
 		}
 		
 		private static void download_progress_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
@@ -234,9 +234,9 @@ namespace System.Windows.Controls {
 		
 		private void InvokeDownloadProgressChanged ()
 		{
-			EventHandler h = (EventHandler) events[DownloadProgressChangedEvent];
+			RoutedEventHandler h = (RoutedEventHandler) events[DownloadProgressChangedEvent];
 			if (h != null)
-				h (this, EventArgs.Empty);
+				h (this, null);
 		}
 
 		private static void marker_reached_cb (IntPtr target, IntPtr calldata, IntPtr closure)

@@ -1,3 +1,8 @@
+2009-01-18  Geoff Norton  <gnorton@novell.com>
+
+	* MediaElement.cs: These are RoutedEventHandlers, not EventHandlers.
+	Fixes a InvalidCastException with PDC.
+
 2009-01-16  Jeffrey Stedfast  <fejj@novell.com>
 
 	* TextBox.cs (ArrangeOverride): Removed.
