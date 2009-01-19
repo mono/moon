@@ -9,6 +9,13 @@
 
 2009-01-18  Larry Ewing  <lewing@novell.com>
 
+	* dirty.cpp (Surface::UpdateLayout): pass the full size in always.
+
+	* grid.cpp, grid.h (Grid::ArrangeOverride): hook up and empty
+	arrange method for now.
+
+2009-01-18  Larry Ewing  <lewing@novell.com>
+
 	* control.cpp: update invaliate/measure to look more like border
 	(still wrong) and remove some debug spew.
 

@@ -168,6 +168,7 @@ class Grid : public Panel {
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 
 	virtual Size MeasureOverride (Size availableSize);
+	virtual Size ArrangeOverride (Size finalSize);
 
 	// property accessors
 	ColumnDefinitionCollection *GetColumnDefinitions ();

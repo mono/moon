@@ -440,7 +440,7 @@ Surface::UpdateLayout ()
 					 active_window->GetHeight ()));
 		Size desired = toplevel->GetDesiredSize ();
 		toplevel->Arrange (Rect (Canvas::GetLeft (toplevel), Canvas::GetTop (toplevel), 
-					 desired.width, desired.height));
+					 active_window->GetWidth (), active_window->GetHeight ()));
 	}
 }
 

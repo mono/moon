@@ -161,19 +161,21 @@ Grid::MeasureOverride (Size availableSize)
 		if (col_count) {
 			double remaining_width = child_size.width;
 
-			printf ("child_size.width = %g\n", child_size.width);
+			//printf ("child_size.width = %g\n", child_size.width);
 
 			for (int c = col; (c < col + colspan) && (c < col_count); c++){
-			  printf ("c = %d\n", c);
+				//printf ("c = %d\n", c);
 				ColumnDefinition *coldef = columns->GetValueAt (c)->AsColumnDefinition ();
 				if (!coldef)
 					break; // XXX what to do if col + colspan is more than the number of columns?
 				GridLength* width = coldef->GetWidth();
 				if (width && (width->type != GridUnitTypePixel)) {
-				  printf ("column_widths[%d] = %g before, %g after\n",
-					  col,
-					  column_widths[col],
-					  MAX(column_widths[col], remaining_width));
+					/*
+					printf ("column_widths[%d] = %g before, %g after\n",
+						col,
+						column_widths[col],
+						MAX(column_widths[col], remaining_width));
+					*/
 					column_widths[col] = MAX(column_widths[col], remaining_width);
 				}
 			}
@@ -204,11 +206,24 @@ Grid::MeasureOverride (Size availableSize)
 
 	results = results.Max (grid_size);
 
-	printf ("results = %g %g\n", results.width, results.height);
+	//printf ("results = %g %g\n", results.width, results.height);
 
 	delete [] row_heights;
 	delete [] column_widths;
 
 	// now choose whichever is smaller, our chosen size or the availableSize.
 	return results;
+}
+
+Size
+Grid::ArrangeOverride (Size finalSize)
+{
+	VisualTreeWalker walker = VisualTreeWalker (this);
+	while (UIElement *child = walker.Step ()) {
+		Size arranged = child->GetDesiredSize ();
+		Rect child_final = Rect (0, 0,
+					 finalSize.width, finalSize.height);
+		child->Arrange (child_final);
+		// XXX fill layout slot?
+	}
 }
