@@ -346,8 +346,10 @@ namespace System.Windows {
 			int p = loc.IndexOf (';');
 
 			/* We have a resource of the format /assembly;component/resourcename */
+			/* It looks like the / is options tho.  *SIGH* */
 			if (p > 0) {
-				assembly_name = loc.Substring (1, p - 1);
+				int l = loc [0] == '/' ? 1 : 0;
+				assembly_name = loc.Substring (l, p - l);
 				assembly = GetAssembly (assembly_name);
 				if (assembly == null)
 					return null;
