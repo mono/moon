@@ -79,6 +79,8 @@ namespace MoonTest.System.Windows {
 
 			Assert.IsNull (Application.GetResourceStream (new Uri ("/moon_unit;component/App-does-not-exists.xaml", UriKind.Relative)), "GetResourceStream(does-not-exists-uri)");
 
+			Assert.Throws<ArgumentException> (() => Application.GetResourceStream (new Uri ("http://mono-project.com/", UriKind.Absolute)), "GetResourceStream absolute uri");
+
 			StreamResourceInfo sri = new StreamResourceInfo (new MemoryStream (), String.Empty);
 
 			Assert.Throws<ArgumentNullException> (() => Application.GetResourceStream (sri, null), "GetResourceStream(sri,null)");

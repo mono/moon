@@ -1,3 +1,8 @@
+2009-01-19  Jb Evain  <jbevain@novell.com>
+
+	* System.Windows/ApplicationTest.cs: add a test for absolute uri
+	passed to GetResourceStream.
+
 2009-01-19  Alan McGovern  <alan.mcgovern@gmail.com>
 
 	* System.Windows.Data/BindingTest.cs: Add another test
