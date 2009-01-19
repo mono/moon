@@ -1,3 +1,7 @@
+2009-01-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* tools/tools.mdp: Updated.
+
 2009-01-12  Jackson Harper  <jackson@ximian.com>
 
 	* tools/respack/respack.cs: Add support for unpacking resources

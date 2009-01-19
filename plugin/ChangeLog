@@ -1,3 +1,7 @@
+2009-01-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.mdp: Updated.
+
 2009-01-18  Geoff Norton  <gnorton@novell.com>
 
 	* plugin-downloader.cpp: Avoid crashing when the bridge isn't available
