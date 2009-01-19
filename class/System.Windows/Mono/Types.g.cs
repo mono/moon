@@ -17,6 +17,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.TEXTBOXVIEW));
 				t = typeof (Mono.DispatcherTimer); 
 				types.Add (t, new ManagedType (t, Kind.DISPATCHERTIMER));
+				t = typeof (System.Uri); 
+				types.Add (t, new ManagedType (t, Kind.URI));
 				t = typeof (System.Windows.ApplicationInternal); 
 				types.Add (t, new ManagedType (t, Kind.APPLICATION));
 				t = typeof (System.Windows.AssemblyPart); 
@@ -31,10 +33,14 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.DEPLOYMENT));
 				t = typeof (System.Windows.EventTrigger); 
 				types.Add (t, new ManagedType (t, Kind.EVENTTRIGGER));
+				t = typeof (System.Windows.Expression); 
+				types.Add (t, new ManagedType (t, Kind.EXPRESSION));
 				t = typeof (System.Windows.FrameworkElement); 
 				types.Add (t, new ManagedType (t, Kind.FRAMEWORKELEMENT));
 				t = typeof (System.Windows.FrameworkTemplate); 
 				types.Add (t, new ManagedType (t, Kind.FRAMEWORKTEMPLATE));
+				t = typeof (System.Windows.GridLength); 
+				types.Add (t, new ManagedType (t, Kind.GRIDLENGTH));
 				t = typeof (System.Windows.PresentationFrameworkCollection<>); 
 				types.Add (t, new ManagedType (t, Kind.COLLECTION));
 				t = typeof (System.Windows.ResourceDictionary); 
@@ -99,8 +105,16 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.UIELEMENT_COLLECTION));
 				t = typeof (System.Windows.Controls.UserControl); 
 				types.Add (t, new ManagedType (t, Kind.USERCONTROL));
+				t = typeof (System.Windows.Controls.Primitives.LayoutInformation); 
+				types.Add (t, new ManagedType (t, Kind.LAYOUTINFORMATION));
 				t = typeof (System.Windows.Controls.Primitives.Popup); 
 				types.Add (t, new ManagedType (t, Kind.POPUP));
+				t = typeof (System.Windows.Data.Binding); 
+				types.Add (t, new ManagedType (t, Kind.BINDING));
+				t = typeof (System.Windows.Data.BindingExpression); 
+				types.Add (t, new ManagedType (t, Kind.BINDINGEXPRESSION));
+				t = typeof (System.Windows.Data.BindingExpressionBase); 
+				types.Add (t, new ManagedType (t, Kind.BINDINGEXPRESSIONBASE));
 				t = typeof (System.Windows.Documents.Glyphs); 
 				types.Add (t, new ManagedType (t, Kind.GLYPHS));
 				t = typeof (System.Windows.Documents.Inline); 
@@ -127,6 +141,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.BEZIERSEGMENT));
 				t = typeof (System.Windows.Media.Brush); 
 				types.Add (t, new ManagedType (t, Kind.BRUSH));
+				t = typeof (System.Windows.Media.Color); 
+				types.Add (t, new ManagedType (t, Kind.COLOR));
 				t = typeof (System.Windows.Media.DeepZoomImageTileSource); 
 				types.Add (t, new ManagedType (t, Kind.DEEPZOOMIMAGETILESOURCE));
 				t = typeof (System.Windows.Media.DoubleCollection); 
@@ -237,6 +253,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.DOUBLEKEYFRAME_COLLECTION));
 				t = typeof (System.Windows.Media.Animation.KeySpline); 
 				types.Add (t, new ManagedType (t, Kind.KEYSPLINE));
+				t = typeof (System.Windows.Media.Animation.KeyTime); 
+				types.Add (t, new ManagedType (t, Kind.KEYTIME));
 				t = typeof (System.Windows.Media.Animation.LinearColorKeyFrame); 
 				types.Add (t, new ManagedType (t, Kind.LINEARCOLORKEYFRAME));
 				t = typeof (System.Windows.Media.Animation.LinearDoubleKeyFrame); 
@@ -303,8 +321,6 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.INT32));
 				t = typeof (string);
 				types.Add (t, new ManagedType (t, Kind.STRING));
-				t = typeof (TimeSpan);
-				types.Add (t, new ManagedType (t, Kind.TIMESPAN));
 			} catch (Exception ex) {
 				Console.WriteLine ("There was an error while loading native types: " + ex.ToString ());
 			}

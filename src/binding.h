@@ -20,6 +20,7 @@
 typedef Value (*GetValueCallback)();
 typedef void  (*SetValueCallback)(void *value);
 
+/* @IncludeInKinds */
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Data */
 class Binding : public EventObject {

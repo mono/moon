@@ -1,3 +1,10 @@
+2009-01-19  Jackson Harper  <jackson@ximian.com>
+
+	* uri.h:
+	* binding.h: Get kinds generated for these guys.
+	* type.h:
+	* type-generated.cpp: updated
+	
 2009-01-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* src.mdp: Update.

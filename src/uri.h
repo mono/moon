@@ -19,6 +19,8 @@ enum UriToStringFlags {
 	UriHideFragment = 1 << 1,
 };
 
+/* @IncludeInKinds */
+/* @Namespace=System */
 class Uri {
 public:
 	char *protocol;

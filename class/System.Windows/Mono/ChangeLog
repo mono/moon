@@ -1,5 +1,10 @@
 2009-01-19  Jackson Harper  <jackson@ximian.com>
 
+	* Kind.cs:
+	* Types.g.cs: Updated
+
+2009-01-19  Jackson Harper  <jackson@ximian.com>
+
 	* ManagedXamlLoader.cs: Lookup named components when trying to set
 	attached properties.  TODO: Be nice to pull all the FindType stuff
 	into one method.
