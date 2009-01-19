@@ -314,8 +314,11 @@ namespace Mono.Xaml
 
 			Type attach_type = clientlib.GetType (type_name, false);
 			if (attach_type == null) {
-				Console.Error.WriteLine ("attach type is null  {0}", type_name);
-				return false;
+				attach_type = Application.GetComponentTypeFromName (type_name);
+				if (attach_type == null) {
+					Console.Error.WriteLine ("attach type is null  {0}", type_name);
+					return false;
+				}
 			}
 
 			MethodInfo set_method = attach_type.GetMethod (String.Concat ("Set", name), BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);

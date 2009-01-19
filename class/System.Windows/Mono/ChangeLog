@@ -1,3 +1,9 @@
+2009-01-19  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: Lookup named components when trying to set
+	attached properties.  TODO: Be nice to pull all the FindType stuff
+	into one method.
+
 2009-01-19  Alan McGovern  <amcgovern@novell.com>
 
 	* DispatcherTimer.cs: Change all our native callbacks to use a wrapped
