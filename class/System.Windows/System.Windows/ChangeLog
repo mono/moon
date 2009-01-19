@@ -1,5 +1,10 @@
 2009-01-18  Geoff Norton  <gnorton@novell.com>
 
+	* Application.cs: You can pass absolute URI's in here, and they're
+	just treated the same.
+
+2009-01-18  Geoff Norton  <gnorton@novell.com>
+
 	* ResourceDictionary.cs: Ensure that managed objects added to a
 	ResourceDictionary are not collected.
 

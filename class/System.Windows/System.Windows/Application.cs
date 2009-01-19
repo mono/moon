@@ -334,8 +334,6 @@ namespace System.Windows {
 			// - the application assembly (embedded resources)
 			// - an assembly part of the application package (embedded resources)
 			// - something included in the package
-			if (uriResource.IsAbsoluteUri)
-				throw new ArgumentException ("resourceUri");
 
 			Assembly assembly;
 			string assembly_name;
