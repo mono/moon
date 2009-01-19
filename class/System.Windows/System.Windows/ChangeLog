@@ -1,3 +1,7 @@
+2009-01-19  Geoff Norton  <gnorton@novell.com>
+
+	* ResourceDictionary.cs: Really fix RemoveInternal.
+
 2009-01-19  Jb Evain  <jbevain@novell.com>
 
 	* Application.cs: revert 123762.

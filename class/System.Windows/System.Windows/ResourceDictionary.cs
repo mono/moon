@@ -89,14 +89,23 @@ namespace System.Windows {
 
 		private bool RemoveInternal (string key)
 		{
+			if (key == null)
+				return false;
+
 			bool exists;
+
 			IntPtr val = NativeMethods.resource_dictionary_get (native, key, out exists);
 
 			if (!exists)
 				return exists;
 			
-			GCHandle handle = GCHandle.FromIntPtr (val);
-			handle.Free ();
+			object v = Value.ToObject (null, val);
+			try {
+				if (v.GetType () == typeof (IntPtr)) {
+					GCHandle handle = GCHandle.FromIntPtr ((IntPtr) v);
+					handle.Free ();
+				}
+			} catch {}
 
 			return NativeMethods.resource_dictionary_remove (native, key);
 		}
