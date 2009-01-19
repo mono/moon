@@ -40,6 +40,7 @@ public:
 		ASSEMBLYPART_COLLECTION,// Silverlight 2.0 only
 		BEGINSTORYBOARD,
 		BEZIERSEGMENT,
+		BINDING,// Silverlight 2.0 only
 		BINDINGEXPRESSION,// Silverlight 2.0 only
 		BINDINGEXPRESSIONBASE,// Silverlight 2.0 only
 		BITMAPIMAGE,
@@ -238,6 +239,7 @@ public:
 		UINT32,
 		UINT64,
 		UNMANAGEDMATRIX,// Silverlight 2.0 only
+		URI,
 		USERCONTROL,// Silverlight 2.0 only
 		VIDEOBRUSH,
 		VISUALBRUSH,
