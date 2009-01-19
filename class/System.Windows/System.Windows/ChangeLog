@@ -1,3 +1,9 @@
+2009-01-19  Andreia Gaita  <avidigal@novell.com>
+
+	* System.Windows/Application.cs: Added global exception handler
+	method that routes exceptions to the application unhandled exception
+	handler
+
 2009-01-19  Alan McGovern  <amcgovern@novell.com>
 
 	* ResourceDictionary.cs: Fix RemoveInternal - TryGetValue returns the

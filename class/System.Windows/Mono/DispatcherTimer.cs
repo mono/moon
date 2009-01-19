@@ -24,6 +24,7 @@
 //
 
 using System;
+using System.Windows;
 using System.Windows.Media.Animation;
 
 namespace Mono
@@ -44,7 +45,12 @@ namespace Mono
 		{
 			EventHandler h = (EventHandler)events[TickEvent];
 			if (h != null) {
-				h (managedTimer, EventArgs.Empty);
+				try {
+					h (managedTimer, EventArgs.Empty);
+				} catch (Exception ex) {
+					Application.OnUnhandledException (this, ex);
+					Mono.NativeMethods.dispatcher_timer_stop (native);
+				}
 			}
 		}
 

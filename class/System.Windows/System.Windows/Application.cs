@@ -470,5 +470,19 @@ namespace System.Windows {
 
 			return Activator.CreateInstance (t);
 		}
+
+		internal static void OnUnhandledException (object sender, Exception ex)
+		{
+			if (Application.Current != null && Application.Current.UnhandledException != null) {
+				ApplicationUnhandledExceptionEventArgs args = new ApplicationUnhandledExceptionEventArgs (ex, false);
+				try {
+					Application.Current.UnhandledException (Application.Current, args);
+				} catch (Exception ex2) {
+					Console.WriteLine ("Exception caught in Application UnhandledException handler: " + ex2);
+				}
+			} else {
+				Console.WriteLine ("Unhandled Exception: " + ex);
+			}
+		}
 	}
 }
