@@ -1,5 +1,9 @@
 2009-01-19  Jackson Harper  <jackson@ximian.com>
 
+	* grid.h: GridLength lives in System.Windows.
+
+2009-01-19  Jackson Harper  <jackson@ximian.com>
+
 	* color.h: Colours are in System.Windows.Media.
 
 2009-01-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>

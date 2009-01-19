@@ -16,7 +16,7 @@
 
 /* @IncludeInKinds */
 /* @SilverlightVersion="2" */
-/* @Namespace=System.Windows.Controls */
+/* @Namespace=System.Windows */
 struct GridLength {
  public:
 	double val;
