@@ -200,7 +200,9 @@ PluginDownloader::Open (const char *verb, const char *uri, bool streaming)
 	this->uri = g_strdup (uri);
 	
 	if (streaming) {
-		this->request = GetPlugin ()->GetBridge ()->CreateDownloaderRequest ("GET", this->uri);
+		BrowserBridge *bridge = GetPlugin ()->GetBridge ();
+		if (bridge)
+			this->request = bridge->CreateDownloaderRequest ("GET", this->uri);
 	} else {
 		this->request = new NPStreamRequest ("GET", this->uri, GetPlugin ());
 	}

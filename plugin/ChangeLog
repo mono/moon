@@ -1,3 +1,7 @@
+2009-01-18  Geoff Norton  <gnorton@novell.com>
+
+	* plugin-downloader.cpp: Avoid crashing when the bridge isn't available
+
 2009-01-18  Larry Ewing  <lewing@novell.com>
 
 	* plugin-debug.cpp (reflect_foreach_current_value): don't crash if
