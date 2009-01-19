@@ -329,7 +329,11 @@ namespace System.Windows {
 		public static StreamResourceInfo GetResourceStream (Uri uriResource)
 		{
 			if (uriResource == null)
-				throw new ArgumentNullException ("resourceUri");
+				throw new ArgumentNullException ("uriResource");
+
+			if (uriResource.IsAbsoluteUri)
+				throw new ArgumentException ("Absolute uriResource");
+
 			// FIXME: URI must point to
 			// - the application assembly (embedded resources)
 			// - an assembly part of the application package (embedded resources)
