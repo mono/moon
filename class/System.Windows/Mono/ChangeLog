@@ -1,5 +1,9 @@
 2009-01-19  Jackson Harper  <jackson@ximian.com>
 
+	* Value.cs: Break News! Uris are URIs.
+
+2009-01-19  Jackson Harper  <jackson@ximian.com>
+
 	* Kind.cs:
 	* Types.g.cs: Updated
 
