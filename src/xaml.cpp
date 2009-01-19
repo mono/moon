@@ -1131,7 +1131,8 @@ XamlLoader::~XamlLoader ()
 {
 	g_free (filename);
 	g_free (str);
-	surface->unref ();
+	if (surface)
+		surface->unref ();
 	surface = NULL;
 	filename = NULL;
 	str = NULL;
