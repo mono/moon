@@ -8,7 +8,6 @@
       <Entry build="True" name="harness" configuration="Debug" />
       <Entry build="True" name="test" configuration="Debug" />
       <Entry build="True" name="tools" configuration="Debug" />
-      <Entry build="True" name="Microsoft.SilverlightControls" configuration="Debug" />
       <Entry build="True" name="Moonlight Unit Tests" configuration="Debug" />
       <Entry build="False" name="Microsoft.Silverlight.Testing" configuration="Debug" />
       <Entry build="True" name="Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight" configuration="Debug" />
@@ -21,7 +20,6 @@
       <Entry build="True" name="harness" configuration="Release" />
       <Entry build="True" name="test" configuration="Release" />
       <Entry build="True" name="tools" configuration="Release" />
-      <Entry build="True" name="Microsoft.SilverlightControls" configuration="Release" />
       <Entry build="True" name="Moonlight Unit Tests" configuration="Release" />
       <Entry build="False" name="Microsoft.Silverlight.Testing" configuration="Release" />
       <Entry build="True" name="Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight" configuration="Release" />
@@ -35,7 +33,6 @@
     <Execute type="None" entry="harness" />
     <Execute type="None" entry="test" />
     <Execute type="None" entry="tools" />
-    <Execute type="None" entry="Microsoft.SilverlightControls" />
     <Execute type="None" entry="Moonlight Unit Tests" />
     <Execute type="None" entry="Microsoft.Silverlight.Testing" />
     <Execute type="None" entry="Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight" />
@@ -49,7 +46,6 @@
     <Entry filename="test/harness/harness.mdp" />
     <Entry filename="test/test.mdp" />
     <Entry filename="tools/tools.mdp" />
-    <Entry filename="class/Microsoft.SilverlightControls/Microsoft.SilverlightControls.mdp" />
     <Entry filename="test/2.0/moon-unit/moon-unit.mdp" />
     <Entry filename="test/2.0/Microsoft.Silverlight.Testing/UnitTestHarness/UnitTestHarness.mdp" />
     <Entry filename="test/2.0/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.mdp" />

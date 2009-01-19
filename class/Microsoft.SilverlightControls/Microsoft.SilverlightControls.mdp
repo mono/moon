@@ -1,4 +1,4 @@
-<Project name="Microsoft.SilverlightControls" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
+<Project name="Microsoft.SilverlightControls" fileversion="2.0" language="C#" clr-version="Net_2_0" targetFramework="2.0" ctype="DotNetProject">
   <Configurations active="Default">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="bin/Debug" assembly="Microsoft.SilverlightControls" />
@@ -14,7 +14,6 @@
     </Configuration>
   </Configurations>
   <Contents>
-    <File name="AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="Controls/Makefile.am" subtype="Code" buildaction="Nothing" />
     <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
     <File name="Controls/Src/ContentControl/ContentControl.cs" subtype="Code" buildaction="Compile" />
@@ -134,10 +133,10 @@
     <File name="Controls/Extended/Src/GlobalSuppressions.cs" subtype="Code" buildaction="Compile" />
     <File name="Controls/Extended/Src/Page.xaml" subtype="Code" buildaction="Nothing" />
     <File name="Controls/Extended/Src/Page.xaml.cs" subtype="Code" buildaction="Compile" />
-    <File name="Controls/Extended/Src/Resource.Designer.cs" subtype="Code" buildaction="Compile" />
-    <File name="Controls/Extended/Src/Resource.resx" subtype="Code" buildaction="Nothing" />
+    <File name="SDKControls/Extended/Src/Calendar/CalendarSelectionMode.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   </References>
+  <GtkDesignInfo />
 </Project>

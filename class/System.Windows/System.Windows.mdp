@@ -1,7 +1,7 @@
-<Project name="System.Windows" fileversion="2.0" language="C#" clr-version="Clr_2_1" ctype="DotNetProject">
+<Project name="System.Windows" fileversion="2.0" language="C#" clr-version="Clr_2_1" targetFramework="2.1" ctype="DotNetProject">
   <Configurations active="Default">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
-      <Output directory="bin/Debug" assembly="System.Windows" />
+      <Output directory="bin/Debug" signAssembly="True" assemblyKeyFile="/mono/main/src/moon-2.0/class/mono.snk" assembly="System.Windows" />
       <Build debugmode="True" target="Library" />
       <Execution runwithwarnings="True" consolepause="False" runtime="MsNet" clr-version="Clr_2_1" />
       <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="True" generateoverflowchecks="True" definesymbols="DEBUG" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
@@ -36,7 +36,6 @@
     <File name="System.Windows/Rect.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/ResourceDictionary.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/Size.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows/TextAlignment.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/TextDecorations.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/TextWrapping.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/TriggerActionCollection.cs" subtype="Code" buildaction="Compile" />
@@ -165,7 +164,6 @@
     <File name="System.Windows/DataTemplate.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/DependencyPropertyChangedEventArgs.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/Deployment.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows/XapHackProxyImpl.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/ChangeLog" subtype="Code" buildaction="Nothing" />
     <File name="System.Windows/FrameworkTemplate.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/GridLength.cs" subtype="Code" buildaction="Compile" />
@@ -206,8 +204,6 @@
     <File name="System.Windows.Input/ModifierKeys.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media/TimelineMarker.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media/TimelineMarkerCollection.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows.Controls/ClickMode.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows.Controls/Orientation.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/ValidationErrorEventAction.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Animation/ClockState.cs" subtype="Code" buildaction="Compile" />
     <File name="Microsoft.Internal" subtype="Directory" buildaction="Compile" />
@@ -256,9 +252,6 @@
     <File name="System.Windows/TemplateBindingExpression.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/TemplatePart.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/VisualState.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows/VisualStateGroup.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows/VisualStateManager.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows/VisualTransition.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/ControlTemplate.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/ItemCollection.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/ItemsControl.cs" subtype="Code" buildaction="Compile" />
@@ -304,9 +297,7 @@
     <File name="System.Windows/PropertyPathConverter.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/StyleTypedPropertyAttribute.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/SystemParameters.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows/TemplateVisualStateAttribute.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/TriggerAction.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows/VisualStateChangedEventArgs.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/DependencyPropertyChangedEventHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media/CompositionTarget.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media/RenderingEventArgs.cs" subtype="Code" buildaction="Compile" />
@@ -320,20 +311,6 @@
     <File name="System.Windows.Controls/MultiScaleSubImage.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/MultiScaleImage.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Automation.Peers/AutomationPeer.cs" subtype="Code" buildaction="Compile" />
-    <File name="../Mono.Moonlight/Mono/GeneratedPInvokes.cs" subtype="Code" buildaction="Compile" />
-    <File name="../Mono.Moonlight/Mono/Helper.cs" subtype="Code" buildaction="Compile" />
-    <File name="../Mono.Moonlight/Mono/Kind.cs" subtype="Code" buildaction="Compile" />
-    <File name="../Mono.Moonlight/Mono/ManagedType.cs" subtype="Code" buildaction="Compile" />
-    <File name="../Mono.Moonlight/Mono/MoonError.cs" subtype="Code" buildaction="Compile" />
-    <File name="../Mono.Moonlight/Mono/Moonlight.cs" subtype="Code" buildaction="Compile" />
-    <File name="../Mono.Moonlight/Mono/NativeMethods.cs" subtype="Code" buildaction="Compile" />
-    <File name="../Mono.Moonlight/Mono/StreamCallbacks.cs" subtype="Code" buildaction="Compile" />
-    <File name="../Mono.Moonlight/Mono/Surface.cs" subtype="Code" buildaction="Compile" />
-    <File name="../Mono.Moonlight/Mono/Types.cs" subtype="Code" buildaction="Compile" />
-    <File name="../Mono.Moonlight/Mono/Types.g.cs" subtype="Code" buildaction="Compile" />
-    <File name="../Mono.Moonlight/Mono/Value.cs" subtype="Code" buildaction="Compile" />
-    <File name="../Mono.Moonlight/Mono/XamlLoaderCallbacks.cs" subtype="Code" buildaction="Compile" />
-    <File name="../Mono.Moonlight/Mono/XapHack.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Data/BindingExpression.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Automation/AutomationProperty.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Automation/DockPosition.cs" subtype="Code" buildaction="Compile" />
@@ -369,11 +346,9 @@
     <File name="System.Windows.Automation.Provider/IWindowProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Markup/XmlnsPrefixAttribute.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls.Primitives/LayoutInformation.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows.Controls.Primitives/ScrollEventHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/ValidationError.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/ValidationErrorEventArgs.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/PasswordBox.cs" subtype="Code" buildaction="Compile" />
-    <File name="Mono/DLRHost.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono/GeneratedPInvokes.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono/Helper.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono/ManagedType.cs" subtype="Code" buildaction="Compile" />
@@ -387,7 +362,6 @@
     <File name="Mono/Types.g.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono/Value.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono/XamlLoaderCallbacks.cs" subtype="Code" buildaction="Compile" />
-    <File name="Mono/XapHack.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/ComboBox.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/ComboBoxItem.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls.Primitives/Selector.cs" subtype="Code" buildaction="Compile" />
@@ -400,13 +374,59 @@
     <File name="System.Windows.Automation.Peers/TextBoxAutomationPeer.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Automation/AutomationElementIdentifiers.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/ItemsPresenter.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/Controls/Src/ListBox/ListBoxItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="../WPF.Toolkit/VSM/System/Windows/TemplateVisualStateAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="../WPF.Toolkit/VSM/System/Windows/VisualStateChangedEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="../WPF.Toolkit/VSM/System/Windows/VisualStateGroup.cs" subtype="Code" buildaction="Compile" />
+    <File name="../WPF.Toolkit/VSM/System/Windows/VisualStateManager.cs" subtype="Code" buildaction="Compile" />
+    <File name="../WPF.Toolkit/VSM/System/Windows/VisualTransition.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/Controls/Src/Resource.Designer.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/Controls/Src/Common/DragStartedEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/Controls/Src/Common/KeyboardNavigation.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/Controls/Src/Common/NullableBoolConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/Controls/Src/Common/RoutedPropertyChangedEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/Controls/Src/Common/RoutedPropertyChangedEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/Controls/Src/Common/SelectionChangedEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/Controls/Src/Common/SelectionChangedEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/Controls/Src/Common/TypeConverters.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/Controls/Src/ContentControl/ContentControl.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/Controls/Src/ContentControl/ContentPresenter.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/Controls/Src/GlobalSuppressions.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/Controls/Src/ListBox/DisplayMemberValueConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/Controls/Src/ListBox/ListBox.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/Controls/Src/ScrollViewer/ScrollContentPresenter.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/Controls/Src/ScrollViewer/ScrollViewer.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/Controls/Src/ToolTip/ToolTip.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/Controls/Src/ToolTip/ToolTipService.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/Button.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/CheckBox.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/ClickMode.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/HyperlinkButton.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/Orientation.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/ProgressBar.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/RadioButton.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/ScrollBarVisibility.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/Slider.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/VisualStates.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/Primitives/ButtonBase.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/Primitives/DragCompletedEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/Primitives/DragDeltaEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/Primitives/IScrollInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/Primitives/RangeBase.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/Primitives/RepeatButton.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/Primitives/ScrollBar.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/Primitives/ScrollEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/Primitives/ScrollEventType.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/Primitives/Thumb.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/Primitives/ToggleButton.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/TextAlignment.cs" subtype="Code" buildaction="Compile" />
+    <File name="Microsoft.Internal/TextBoxView.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
-    <ProjectReference type="Project" localcopy="True" refto="Mono.Moonlight" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Core, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
-    <ProjectReference type="Project" localcopy="True" refto="Microsoft.SilverlightControls" />
+    <ProjectReference type="Assembly" localcopy="True" specificVersion="False" refto="../lib/2.1/System.Windows.Browser.dll" />
   </References>
   <GtkDesignInfo />
 </Project>

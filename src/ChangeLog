@@ -1,3 +1,7 @@
+2009-01-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* src.mdp: Update.
+
 2009-01-19  Jackson Harper  <jackson@ximian.com>
 
 	* grid.h: GridLength lives in System.Windows.
