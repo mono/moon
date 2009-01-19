@@ -86,7 +86,7 @@ public:
 	void SetSource (IMediaSource *source);
 	MediaResult Read ();
 	
-	virtual const char* GetTypeName () { return "ASFPacket"; }
+	virtual Type::Kind GetObjectType () { return Type::ASFPACKET; }
 };
 
 class ASFReader {
@@ -381,7 +381,7 @@ public:
 	int64_t packet_offset; // location of the beginning of the first packet
 	int64_t packet_offset_end; // location of the end of the last packet
 	
-	virtual const char *GetTypeName () { return "ASFParser"; }
+	virtual Type::Kind GetObjectType () { return Type::ASFPARSER; }
 };
 
 

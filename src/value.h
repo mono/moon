@@ -51,6 +51,8 @@ class Animation;
 class AnimationClock;
 class Application;
 class ArcSegment;
+class ASFPacket;
+class ASFParser;
 class AssemblyPart;
 class AssemblyPartCollection;
 class BeginStoryboard;
@@ -108,9 +110,15 @@ class GradientBrush;
 class GradientStop;
 class GradientStopCollection;
 class Grid;
+class IImageConverter;
 class Image;
 class ImageBrush;
 class ImageErrorEventArgs;
+class IMediaDecoder;
+class IMediaDemuxer;
+class IMediaObject;
+class IMediaSource;
+class IMediaStream;
 class InkPresenter;
 class Inline;
 class InlineCollection;
@@ -132,11 +140,13 @@ class ManualTimeSource;
 class MarkerReachedEventArgs;
 class Matrix;
 class MatrixTransform;
+class Media;
 class MediaAttribute;
 class MediaAttributeCollection;
 class MediaBase;
 class MediaElement;
 class MediaErrorEventArgs;
+class MediaMarker;
 class MouseEventArgs;
 class MultiScaleImage;
 class MultiScaleSubImage;
@@ -309,6 +319,8 @@ public:
 	AnimationClock*                AsAnimationClock () { checked_get_subclass (Type::ANIMATIONCLOCK, AnimationClock) }
 	Application*                   AsApplication () { checked_get_subclass (Type::APPLICATION, Application) }
 	ArcSegment*                    AsArcSegment () { checked_get_subclass (Type::ARCSEGMENT, ArcSegment) }
+	ASFPacket*                     AsASFPacket () { checked_get_subclass (Type::ASFPACKET, ASFPacket) }
+	ASFParser*                     AsASFParser () { checked_get_subclass (Type::ASFPARSER, ASFParser) }
 	AssemblyPart*                  AsAssemblyPart () { checked_get_subclass (Type::ASSEMBLYPART, AssemblyPart) }
 	AssemblyPartCollection*        AsAssemblyPartCollection () { checked_get_subclass (Type::ASSEMBLYPART_COLLECTION, AssemblyPartCollection) }
 	BeginStoryboard*               AsBeginStoryboard () { checked_get_subclass (Type::BEGINSTORYBOARD, BeginStoryboard) }
@@ -366,9 +378,15 @@ public:
 	GradientStop*                  AsGradientStop () { checked_get_subclass (Type::GRADIENTSTOP, GradientStop) }
 	GradientStopCollection*        AsGradientStopCollection () { checked_get_subclass (Type::GRADIENTSTOP_COLLECTION, GradientStopCollection) }
 	Grid*                          AsGrid () { checked_get_subclass (Type::GRID, Grid) }
+	IImageConverter*               AsIImageConverter () { checked_get_subclass (Type::IIMAGECONVERTER, IImageConverter) }
 	Image*                         AsImage () { checked_get_subclass (Type::IMAGE, Image) }
 	ImageBrush*                    AsImageBrush () { checked_get_subclass (Type::IMAGEBRUSH, ImageBrush) }
 	ImageErrorEventArgs*           AsImageErrorEventArgs () { checked_get_subclass (Type::IMAGEERROREVENTARGS, ImageErrorEventArgs) }
+	IMediaDecoder*                 AsIMediaDecoder () { checked_get_subclass (Type::IMEDIADECODER, IMediaDecoder) }
+	IMediaDemuxer*                 AsIMediaDemuxer () { checked_get_subclass (Type::IMEDIADEMUXER, IMediaDemuxer) }
+	IMediaObject*                  AsIMediaObject () { checked_get_subclass (Type::IMEDIAOBJECT, IMediaObject) }
+	IMediaSource*                  AsIMediaSource () { checked_get_subclass (Type::IMEDIASOURCE, IMediaSource) }
+	IMediaStream*                  AsIMediaStream () { checked_get_subclass (Type::IMEDIASTREAM, IMediaStream) }
 	InkPresenter*                  AsInkPresenter () { checked_get_subclass (Type::INKPRESENTER, InkPresenter) }
 	Inline*                        AsInline () { checked_get_subclass (Type::INLINE, Inline) }
 	InlineCollection*              AsInlineCollection () { checked_get_subclass (Type::INLINE_COLLECTION, InlineCollection) }
@@ -390,11 +408,13 @@ public:
 	MarkerReachedEventArgs*        AsMarkerReachedEventArgs () { checked_get_subclass (Type::MARKERREACHEDEVENTARGS, MarkerReachedEventArgs) }
 	Matrix*                        AsMatrix () { checked_get_subclass (Type::MATRIX, Matrix) }
 	MatrixTransform*               AsMatrixTransform () { checked_get_subclass (Type::MATRIXTRANSFORM, MatrixTransform) }
+	Media*                         AsMedia () { checked_get_subclass (Type::MEDIA, Media) }
 	MediaAttribute*                AsMediaAttribute () { checked_get_subclass (Type::MEDIAATTRIBUTE, MediaAttribute) }
 	MediaAttributeCollection*      AsMediaAttributeCollection () { checked_get_subclass (Type::MEDIAATTRIBUTE_COLLECTION, MediaAttributeCollection) }
 	MediaBase*                     AsMediaBase () { checked_get_subclass (Type::MEDIABASE, MediaBase) }
 	MediaElement*                  AsMediaElement () { checked_get_subclass (Type::MEDIAELEMENT, MediaElement) }
 	MediaErrorEventArgs*           AsMediaErrorEventArgs () { checked_get_subclass (Type::MEDIAERROREVENTARGS, MediaErrorEventArgs) }
+	MediaMarker*                   AsMediaMarker () { checked_get_subclass (Type::MEDIAMARKER, MediaMarker) }
 	MouseEventArgs*                AsMouseEventArgs () { checked_get_subclass (Type::MOUSEEVENTARGS, MouseEventArgs) }
 	MultiScaleImage*               AsMultiScaleImage () { checked_get_subclass (Type::MULTISCALEIMAGE, MultiScaleImage) }
 	MultiScaleSubImage*            AsMultiScaleSubImage () { checked_get_subclass (Type::MULTISCALESUBIMAGE, MultiScaleSubImage) }

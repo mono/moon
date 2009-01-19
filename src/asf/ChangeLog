@@ -1,3 +1,9 @@
+2009-01-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* asf.h: Instead of overriding GetTypeName for media clases override
+	GetObjectType so that the generator puts these classes into our type
+	system. This will fix a lot of the "event not registered" warnings.
+
 2008-11-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* asf.cs, asf-generated.cpp: Ignore a few more object types we don't

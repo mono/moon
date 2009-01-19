@@ -1,3 +1,14 @@
+2009-01-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.h: Instead of overriding GetTypeName for media clases
+	override GetObjectType so that the generator puts these classes into
+	our type system. This will fix a lot of the "event not registered"
+	warnings.
+
+	* type.h:
+	* value.h:
+	* type-generated.cpp: Regenerated.
+
 2009-01-19  Alan McGovern  <amcgovern@novell.com>
 
 	* type.h:

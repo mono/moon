@@ -202,6 +202,7 @@ typedef MediaResult MediaCallback (MediaClosure *closure);
 #include "dependencyobject.h"
 #include "playlist.h"
 #include "error.h"
+#include "type.h"
 
 class MediaClosure {
 private:
@@ -409,7 +410,7 @@ public:
 	static Queue* media_objects;
 	static int media_thread_count;
 	
-	virtual const char* GetTypeName () { return "Media"; }
+	virtual Type::Kind GetObjectType () { return Type::MEDIA; }
 	Downloader *GetDownloader () { return downloader; }
 };
  
@@ -477,6 +478,8 @@ public:
 	const char *Type () { return type; }
 	const char *Text () { return text; }
 	guint64 Pts () { return pts; }
+	
+	virtual Type::Kind GetObjectType () { return Type::MEDIAMARKER; }
 };
 
 // Interfaces
@@ -494,7 +497,7 @@ public:
 	Media *GetMedia () { return media; }
 	void SetMedia (Media *value);
 	
-	virtual const char* GetTypeName () { return "IMediaObject"; }
+	virtual Type::Kind GetObjectType () { return Type::IMEDIAOBJECT; }
 };
 
 class IMediaStream : public IMediaObject {
@@ -570,7 +573,7 @@ public:
 #if DEBUG
 	void PrintBufferInformation ();
 #endif
-	virtual const char* GetTypeName () { return "IMediaStream"; }
+	virtual Type::Kind GetObjectType () { return Type::IMEDIASTREAM; }
 };
 
 class IMediaDemuxer : public IMediaObject {
@@ -608,7 +611,7 @@ public:
 	virtual const char *GetName () = 0;
 	virtual void UpdateSelected (IMediaStream *stream) {};
 	
-	virtual const char* GetTypeName () { return GetName (); }
+	virtual Type::Kind GetObjectType () { return Type::IMEDIADEMUXER; }
 	guint64 GetLastAvailablePts ();
 	IMediaSource *GetSource () { return source; }
 };
@@ -630,7 +633,7 @@ public:
 	MoonPixelFormat pixel_format; // The pixel format this codec outputs. Open () should fill this in.
 	IMediaStream *stream;
 	
-	virtual const char* GetTypeName () { return "IMediaDecoder"; }
+	virtual Type::Kind GetObjectType () { return Type::IMEDIADECODER; }
 	virtual const char *GetName () { return GetTypeName (); }
 };
 
@@ -652,7 +655,7 @@ public:
 	virtual MediaResult Open () = 0;
 	virtual MediaResult Convert (guint8 *src[], int srcStride[], int srcSlideY, int srcSlideH, guint8 *dest[], int dstStride []) = 0;
 	
-	virtual const char* GetTypeName () { return "IImageConverter"; }
+	virtual Type::Kind GetObjectType () { return Type::IIMAGECONVERTER; }
 };
 
 /*
@@ -750,7 +753,7 @@ public:
 
 	virtual void Write (void *buf, gint64 offset, gint32 n) { return; }
 	
-	virtual const char* GetTypeName () { return "IMediaSource"; }
+	virtual Type::Kind GetObjectType () { return Type::IMEDIASOURCE; }
 };
 
 // Implementations
