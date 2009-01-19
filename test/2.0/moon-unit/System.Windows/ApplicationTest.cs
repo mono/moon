@@ -72,7 +72,7 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
-		public void Static ()
+		public void InvalidGetResourceStream ()
 		{
 			Assert.Throws<ArgumentNullException> (() => Application.GetResourceStream (null), "GetResourceStream(null)");
 			Assert.Throws<ArgumentNullException> (() => Application.GetResourceStream (null, uri), "GetResourceStream(null,uri)");
@@ -84,6 +84,13 @@ namespace MoonTest.System.Windows {
 			StreamResourceInfo sri = new StreamResourceInfo (new MemoryStream (), String.Empty);
 
 			Assert.Throws<ArgumentNullException> (() => Application.GetResourceStream (sri, null), "GetResourceStream(sri,null)");
+
+			Assert.Throws<IndexOutOfRangeException> (() => Application.GetResourceStream (new Uri ("", UriKind.Relative)));
+		}
+
+		[TestMethod]
+		public void InvalidLoadComponent ()
+		{
 			Assert.Throws<ArgumentNullException> (() => Application.LoadComponent (null, uri), "LoadComponent(null,uri)");
 		}
 
