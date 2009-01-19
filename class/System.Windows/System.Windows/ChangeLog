@@ -1,3 +1,8 @@
+2009-01-19  Alan McGovern  <amcgovern@novell.com>
+
+	* ResourceDictionary.cs: Fix RemoveInternal - TryGetValue returns the
+	actual object, not an IntPtr. 
+
 2009-01-19  Geoff Norton  <gnorton@novell.com>
 
 	* DependencyObject.cs: Handle Kind.VIDEOBRUSH
