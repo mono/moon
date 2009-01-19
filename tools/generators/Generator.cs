@@ -674,15 +674,15 @@ class Generator {
 	static GlobalInfo GetTypes2 ()
 	{
 		string srcdir = Path.Combine (Environment.CurrentDirectory, "src");
+		string asfdir = Path.Combine (srcdir, "asf");
 		string plugindir = Path.Combine (Environment.CurrentDirectory, "plugin");
 		List<string> all_files = new List<string> ();
-		string[] srcfiles = Directory.GetFiles (srcdir, "*.h");
-		string[] pluginfiles = Directory.GetFiles (plugindir, "*.h");
 
-		all_files.AddRange (srcfiles);
-		all_files.AddRange (pluginfiles);
+		all_files.AddRange (Directory.GetFiles (srcdir, "*.h"));
+		all_files.AddRange (Directory.GetFiles (asfdir, "*.h"));
+		// all_files.AddRange (Directory.GetFiles (plugindir, "*.h"));
 		
-		Tokenizer tokenizer = new Tokenizer (srcfiles);
+		Tokenizer tokenizer = new Tokenizer (all_files.ToArray ());
 		GlobalInfo all = new GlobalInfo ();
 		
 		tokenizer.Advance (false);
@@ -1087,9 +1087,13 @@ class Generator {
 	{
 		TypeReference tr = new TypeReference ();
 		StringBuilder result = new StringBuilder ();
-		
+		bool unsigned;
+
 		if (tokenizer.Accept (Token2Type.Identifier, "const"))
 			tr.IsConst = true;
+
+		if (tokenizer.Accept (Token2Type.Identifier, "unsigned"))
+			result.Append ("unsigned");
 		
 		result.Append (tokenizer.GetIdentifier ());
 		

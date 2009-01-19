@@ -1,3 +1,9 @@
+2009-01-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Generator.cs:
+	* Tokenizer.cs: When scanning headers in src/ scan src/asf/ too. Add
+	support for 'unsigned X' types (used in src/asf/).
+
 2009-01-15  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Generator.cs: Always specify the type when registring a DP. 

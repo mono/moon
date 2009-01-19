@@ -1,3 +1,8 @@
+2009-01-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* type-generated.cpp: When scanning headers in src/ scan src/asf/ too.
+	Add support for 'unsigned X' types (used in src/asf/).
+
 2009-01-18  Geoff Norton  <gnorton@novell.com>
 
 	* xaml.cpp: Only unref the surface if it exists.

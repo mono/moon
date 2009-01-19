@@ -271,6 +271,11 @@ public class Tokenizer {
 			current_token = new Token2 (Token2Type.Punctuation, current);
 			return true;
 		}
+
+		if (current == '\'') {
+			current_token = new Token2 (Token2Type.Punctuation, current);
+			return true;
+		}
 		
 		if (current == '"') {
 			do {
