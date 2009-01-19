@@ -122,7 +122,7 @@ namespace System.Windows {
 				value = Value.ToObject (null, val);
 
 			try {
-				if (value.GetType () == typeof (IntPtr)) {
+				if (value is IntPtr) {
 					GCHandle handle = GCHandle.FromIntPtr ((IntPtr) value);
 					value = handle.Target;
 				}
@@ -147,7 +147,7 @@ namespace System.Windows {
 					return null;
 				object v = Value.ToObject (null, val);
 				try {
-					if (v.GetType () == typeof (IntPtr)) {
+					if (v is IntPtr) {
 						GCHandle handle = GCHandle.FromIntPtr ((IntPtr) v);
 						v = handle.Target;
 					}
