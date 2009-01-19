@@ -1,3 +1,9 @@
+2009-01-19  Alan McGovern  <amcgovern@novell.com>
+
+	* Kind.cs:
+	* Types.g.cs:
+	* GeneratedPInvokes.cs: Create an unmanaged peer for the Popup class
+
 2009-01-19  Andreia Gaita  <avidigal@novell.com>
 
 	* DispatcherTimer.cs: catch any exception thrown on Tick and

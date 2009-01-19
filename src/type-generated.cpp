@@ -47,6 +47,7 @@
 #include "pipeline-ffmpeg.h"
 #include "pipeline-nocodec-ui.h"
 #include "playlist.h"
+#include "popup.h"
 #include "resources.h"
 #include "runtime.h"
 #include "shape.h"
@@ -274,6 +275,7 @@ Type type_infos [] = {
 	{ Type::POLYLINE, Type::SHAPE, false, "Polyline", "POLYLINE", 0, 16, NULL, (create_inst_func *) polyline_new, NULL, NULL, NULL, NULL }, 
 	{ Type::POLYLINESEGMENT, Type::PATHSEGMENT, false, "PolyLineSegment", "POLYLINESEGMENT", 0, 1, NULL, (create_inst_func *) poly_line_segment_new, NULL, NULL, NULL, NULL }, 
 	{ Type::POLYQUADRATICBEZIERSEGMENT, Type::PATHSEGMENT, false, "PolyQuadraticBezierSegment", "POLYQUADRATICBEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) poly_quadratic_bezier_segment_new, NULL, NULL, NULL, NULL }, 
+	{ Type::POPUP, Type::DEPENDENCY_OBJECT, false, "Popup", "POPUP", 0, 1, NULL, (create_inst_func *) popup_new, NULL, NULL, NULL, NULL }, 
 	{ Type::QUADRATICBEZIERSEGMENT, Type::PATHSEGMENT, false, "QuadraticBezierSegment", "QUADRATICBEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) quadratic_bezier_segment_new, NULL, NULL, NULL, NULL }, 
 	{ Type::RADIALGRADIENTBRUSH, Type::GRADIENTBRUSH, false, "RadialGradientBrush", "RADIALGRADIENTBRUSH", 0, 1, NULL, (create_inst_func *) radial_gradient_brush_new, NULL, NULL, NULL, NULL }, 
 	{ Type::RECT, Type::OBJECT, true, "Rect", "RECT", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 

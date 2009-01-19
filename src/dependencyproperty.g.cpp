@@ -32,6 +32,7 @@
 #include "multiscalesubimage.h"
 #include "namescope.h"
 #include "panel.h"
+#include "popup.h"
 #include "shape.h"
 #include "style.h"
 #include "stylus.h"
@@ -274,6 +275,10 @@ dependency_property_g_init (void)
 	Polyline::PointsProperty = DependencyProperty::Register (Type::POLYLINE, "Points", Type::POINT_COLLECTION);
 	PolyLineSegment::PointsProperty = DependencyProperty::Register (Type::POLYLINESEGMENT, "Points", Type::POINT_COLLECTION);
 	PolyQuadraticBezierSegment::PointsProperty = DependencyProperty::Register (Type::POLYQUADRATICBEZIERSEGMENT, "Points", Type::POINT_COLLECTION);
+	Popup::ChildProperty = DependencyProperty::Register (Type::POPUP, "Child", Type::UIELEMENT);
+	Popup::HorizontalOffsetProperty = DependencyProperty::Register (Type::POPUP, "HorizontalOffset", Type::DOUBLE);
+	Popup::IsOpenProperty = DependencyProperty::Register (Type::POPUP, "IsOpen", Type::BOOL);
+	Popup::VerticalOffsetProperty = DependencyProperty::Register (Type::POPUP, "VerticalOffset", Type::DOUBLE);
 	QuadraticBezierSegment::Point1Property = DependencyProperty::Register (Type::QUADRATICBEZIERSEGMENT, "Point1", Type::POINT);
 	QuadraticBezierSegment::Point2Property = DependencyProperty::Register (Type::QUADRATICBEZIERSEGMENT, "Point2", Type::POINT);
 	RadialGradientBrush::CenterProperty = DependencyProperty::Register (Type::RADIALGRADIENTBRUSH, "Center", Type::POINT);
@@ -618,6 +623,10 @@ DependencyProperty *Polyline::FillRuleProperty = NULL;
 DependencyProperty *Polyline::PointsProperty = NULL;
 DependencyProperty *PolyLineSegment::PointsProperty = NULL;
 DependencyProperty *PolyQuadraticBezierSegment::PointsProperty = NULL;
+DependencyProperty *Popup::ChildProperty = NULL;
+DependencyProperty *Popup::HorizontalOffsetProperty = NULL;
+DependencyProperty *Popup::IsOpenProperty = NULL;
+DependencyProperty *Popup::VerticalOffsetProperty = NULL;
 DependencyProperty *QuadraticBezierSegment::Point1Property = NULL;
 DependencyProperty *QuadraticBezierSegment::Point2Property = NULL;
 DependencyProperty *RadialGradientBrush::CenterProperty = NULL;
@@ -3524,6 +3533,58 @@ void
 PolyQuadraticBezierSegment::SetPoints (PointCollection *value)
 {
 	SetValue (PolyQuadraticBezierSegment::PointsProperty, Value (value));
+}
+
+UIElement *
+Popup::GetChild ()
+{
+	Value *value = GetValue (Popup::ChildProperty);
+	return value ? value->AsUIElement () : NULL;
+}
+
+void
+Popup::SetChild (UIElement *value)
+{
+	SetValue (Popup::ChildProperty, Value (value));
+}
+
+double
+Popup::GetHorizontalOffset ()
+{
+	Value *value = GetValue (Popup::HorizontalOffsetProperty);
+	return value->AsDouble ();
+}
+
+void
+Popup::SetHorizontalOffset (double value)
+{
+	SetValue (Popup::HorizontalOffsetProperty, Value (value));
+}
+
+bool
+Popup::GetIsOpen ()
+{
+	Value *value = GetValue (Popup::IsOpenProperty);
+	return value->AsBool ();
+}
+
+void
+Popup::SetIsOpen (bool value)
+{
+	SetValue (Popup::IsOpenProperty, Value (value));
+}
+
+double
+Popup::GetVerticalOffset ()
+{
+	Value *value = GetValue (Popup::VerticalOffsetProperty);
+	return value->AsDouble ();
+}
+
+void
+Popup::SetVerticalOffset (double value)
+{
+	SetValue (Popup::VerticalOffsetProperty, Value (value));
 }
 
 Point *

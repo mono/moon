@@ -962,6 +962,35 @@ namespace System.Windows.Controls {
 	}
 }
 
+namespace System.Windows.Controls.Primitives {
+	partial class Popup {
+		public static readonly DependencyProperty ChildProperty = DependencyProperty.Lookup (Kind.POPUP, "Child", typeof (UIElement));
+		public static readonly DependencyProperty HorizontalOffsetProperty = DependencyProperty.Lookup (Kind.POPUP, "HorizontalOffset", typeof (double));
+		public static readonly DependencyProperty IsOpenProperty = DependencyProperty.Lookup (Kind.POPUP, "IsOpen", typeof (bool));
+		public static readonly DependencyProperty VerticalOffsetProperty = DependencyProperty.Lookup (Kind.POPUP, "VerticalOffset", typeof (double));
+
+		public UIElement Child {
+			get { return (UIElement) GetValue (ChildProperty); }
+			set { SetValue (ChildProperty, value); }
+		}
+
+		public double HorizontalOffset {
+			get { return (double) GetValue (HorizontalOffsetProperty); }
+			set { SetValue (HorizontalOffsetProperty, value); }
+		}
+
+		public bool IsOpen {
+			get { return (bool) GetValue (IsOpenProperty); }
+			set { SetValue (IsOpenProperty, value); }
+		}
+
+		public double VerticalOffset {
+			get { return (double) GetValue (VerticalOffsetProperty); }
+			set { SetValue (VerticalOffsetProperty, value); }
+		}
+	}
+}
+
 namespace System.Windows.Documents {
 	partial class Glyphs {
 		public static readonly DependencyProperty FillProperty = DependencyProperty.Lookup (Kind.GLYPHS, "Fill", typeof (Brush));

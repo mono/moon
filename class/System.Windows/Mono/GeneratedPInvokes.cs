@@ -1077,6 +1077,10 @@ namespace Mono {
 		public extern static IntPtr poly_quadratic_bezier_segment_new ();
 
 		[DllImport ("moon")]
+		// Popup *popup_new ();
+		public extern static IntPtr popup_new ();
+
+		[DllImport ("moon")]
 		// QuadraticBezierSegment *quadratic_bezier_segment_new ();
 		public extern static IntPtr quadratic_bezier_segment_new ();
 

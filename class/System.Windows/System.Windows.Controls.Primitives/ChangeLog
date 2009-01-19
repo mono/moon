@@ -1,3 +1,7 @@
+2009-01-19  Alan McGovern  <amcgovern@novell.com>
+
+	* Popup.cs: Create an unmanaged peer for the Popup class
+
 2009-01-16  Alan McGovern  <amcgovern@novell.com>
 
 	* Selector.cs: Simplified the caching implementation.

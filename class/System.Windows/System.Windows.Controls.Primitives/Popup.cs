@@ -35,37 +35,8 @@ namespace System.Windows.Controls.Primitives {
 
 	[MonoTODO("likely need an unmanaged peer for this?")]
 	[ContentPropertyAttribute("Child", true)]
-	public sealed class Popup : FrameworkElement
+	public sealed partial class Popup : FrameworkElement
 	{
-		public static readonly DependencyProperty ChildProperty = null;
-		public static readonly DependencyProperty HorizontalOffsetProperty = null;
-		public static readonly DependencyProperty IsOpenProperty = null;
-		public static readonly DependencyProperty VerticalOffsetProperty = null;
-
-		public Popup ()
-		{
-		}
-
-		public UIElement Child {
-			get { return (UIElement)GetValue (ChildProperty); }
-			set { SetValue (ChildProperty, value); }
-		}
-
-		public double HorizontalOffset {
-			get { return (double)GetValue (HorizontalOffsetProperty); }
-			set { SetValue (HorizontalOffsetProperty, value); }
-		}
-
-		public bool IsOpen {
-			get { return (bool)GetValue (IsOpenProperty); }
-			set { SetValue (IsOpenProperty, value); }
-		}
-
-		public double VerticalOffset {
-			get { return (double)GetValue (VerticalOffsetProperty); }
-			set { SetValue (VerticalOffsetProperty, value); }
-		}
-
 		public event EventHandler Closed;
 		public event EventHandler Opened;
 	}

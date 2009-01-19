@@ -2312,6 +2312,16 @@ poly_quadratic_bezier_segment_new (void)
 
 
 /**
+ * Popup
+ **/
+Popup *
+popup_new (void)
+{
+	return new Popup ();
+}
+
+
+/**
  * QuadraticBezierSegment
  **/
 QuadraticBezierSegment *

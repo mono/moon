@@ -291,6 +291,14 @@ namespace System.Windows.Controls {
 	}
 }
 
+namespace System.Windows.Controls.Primitives {
+	partial class Popup {
+		public Popup () : base (NativeMethods.popup_new ()) {}
+		internal Popup (IntPtr raw) : base (raw) {}
+		internal override Kind GetKind () { return Kind.POPUP; }
+	}
+}
+
 namespace System.Windows.Documents {
 	partial class Glyphs {
 		public Glyphs () : base (NativeMethods.glyphs_new ()) {}

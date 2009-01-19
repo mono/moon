@@ -165,6 +165,7 @@ class Polygon;
 class Polyline;
 class PolyLineSegment;
 class PolyQuadraticBezierSegment;
+class Popup;
 class QuadraticBezierSegment;
 class RadialGradientBrush;
 class Rectangle;
@@ -422,6 +423,7 @@ public:
 	Polyline*                      AsPolyline () { checked_get_subclass (Type::POLYLINE, Polyline) }
 	PolyLineSegment*               AsPolyLineSegment () { checked_get_subclass (Type::POLYLINESEGMENT, PolyLineSegment) }
 	PolyQuadraticBezierSegment*    AsPolyQuadraticBezierSegment () { checked_get_subclass (Type::POLYQUADRATICBEZIERSEGMENT, PolyQuadraticBezierSegment) }
+	Popup*                         AsPopup () { checked_get_subclass (Type::POPUP, Popup) }
 	QuadraticBezierSegment*        AsQuadraticBezierSegment () { checked_get_subclass (Type::QUADRATICBEZIERSEGMENT, QuadraticBezierSegment) }
 	RadialGradientBrush*           AsRadialGradientBrush () { checked_get_subclass (Type::RADIALGRADIENTBRUSH, RadialGradientBrush) }
 	Rectangle*                     AsRectangle () { checked_get_subclass (Type::RECTANGLE, Rectangle) }

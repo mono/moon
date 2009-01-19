@@ -1,3 +1,8 @@
+2009-01-19  Alan McGovern  <amcgovern@novell.com>
+
+	* DependencyObject.g.cs:
+	* DependencyProperty.g.cs: Create an unmanaged peer for the Popup class
+
 2009-01-19  Andreia Gaita  <avidigal@novell.com>
 
 	* System.Windows/Application.cs: Added global exception handler

@@ -99,6 +99,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.UIELEMENT_COLLECTION));
 				t = typeof (System.Windows.Controls.UserControl); 
 				types.Add (t, new ManagedType (t, Kind.USERCONTROL));
+				t = typeof (System.Windows.Controls.Primitives.Popup); 
+				types.Add (t, new ManagedType (t, Kind.POPUP));
 				t = typeof (System.Windows.Documents.Glyphs); 
 				types.Add (t, new ManagedType (t, Kind.GLYPHS));
 				t = typeof (System.Windows.Documents.Inline); 

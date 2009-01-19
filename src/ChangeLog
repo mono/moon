@@ -1,3 +1,15 @@
+2009-01-19  Alan McGovern  <amcgovern@novell.com>
+
+	* type.h:
+	* src.mdp:
+	* popup.h:
+	* value.h:
+	* popup.cpp:
+	* cbinding.h:
+	* cbinding.cpp:
+	* type-generated.cpp:
+	* dependencyproperty.g.cpp: Create an unmanaged peer for the Popup class
+
 2009-01-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* type-generated.cpp: When scanning headers in src/ scan src/asf/ too.

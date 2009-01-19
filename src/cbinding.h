@@ -33,6 +33,7 @@
 #include "multiscaleimage.h"
 #include "multiscalesubimage.h"
 #include "panel.h"
+#include "popup.h"
 #include "resources.h"
 #include "runtime.h"
 #include "shape.h"
@@ -1061,6 +1062,12 @@ PolyLineSegment *poly_line_segment_new (void);
  **/
 /* @GeneratePInvoke */
 PolyQuadraticBezierSegment *poly_quadratic_bezier_segment_new (void);
+
+/**
+ * Popup
+ **/
+/* @GeneratePInvoke */
+Popup *popup_new (void);
 
 /**
  * QuadraticBezierSegment
