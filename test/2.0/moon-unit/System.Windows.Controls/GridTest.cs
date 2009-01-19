@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Ink;
 using System.Windows.Input;
@@ -816,6 +817,99 @@ namespace MoonTest.System.Windows.Controls
 
 			Assert.AreEqual (new Size (100, 100), c.MeasureArg, "c MeasureArg2");
 			Assert.AreEqual (new Size (210, 210), g.DesiredSize, "grid DesiredSize2");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void ArrangeTest ()
+		{
+			Grid g = new Grid ();
+
+			RowDefinition rdef;
+			ColumnDefinition cdef;
+
+			rdef = new RowDefinition ();
+			rdef.Height = new GridLength (50);
+			g.RowDefinitions.Add (rdef);
+
+			cdef = new ColumnDefinition ();
+			cdef.Width = new GridLength (100);
+			g.ColumnDefinitions.Add (cdef);
+
+			g.Margin = new Thickness (5);
+
+			var r = new Border ();
+
+			Grid.SetRow (r, 0);
+			Grid.SetColumn (r, 0);
+
+			g.Children.Add (r);
+
+			g.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+
+			Assert.AreEqual (new Size (0,0), new Size (r.ActualWidth, r.ActualHeight), "r actual after measure");
+			Assert.AreEqual (new Size (0,0), new Size (g.ActualWidth, g.ActualHeight), "g actual after measure");
+
+			g.Arrange (new Rect (0,0,g.DesiredSize.Width,g.DesiredSize.Height));
+
+			Assert.AreEqual (new Size (0,0), r.DesiredSize, "r desired 0");
+			Assert.AreEqual (new Size (110,60), g.DesiredSize, "g desired 1");
+
+			Assert.AreEqual (new Rect (0,0,100,50).ToString (), LayoutInformation.GetLayoutSlot (r).ToString(), "slot");
+			Assert.AreEqual (new Size (100,50), new Size (r.ActualWidth, r.ActualHeight), "r actual after arrange");
+			Assert.AreEqual (new Size (100,50), new Size (g.ActualWidth, g.ActualHeight), "g actual after arrange");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void ArrangeTest_TwoChildren ()
+		{
+			Grid g = new Grid ();
+
+			RowDefinition rdef;
+			ColumnDefinition cdef;
+
+			rdef = new RowDefinition ();
+			rdef.Height = new GridLength (50);
+			g.RowDefinitions.Add (rdef);
+
+			cdef = new ColumnDefinition ();
+			cdef.Width = new GridLength (100);
+			g.ColumnDefinitions.Add (cdef);
+
+			cdef = new ColumnDefinition ();
+			cdef.Width = new GridLength (20);
+			g.ColumnDefinitions.Add (cdef);
+
+			g.Margin = new Thickness (5);
+
+			var ra = new Border ();
+			var rb = new Border ();
+
+			Grid.SetRow (ra, 0);
+			Grid.SetColumn (ra, 0);
+
+			Grid.SetRow (rb, 0);
+			Grid.SetColumn (rb, 1);
+
+			g.Children.Add (ra);
+			g.Children.Add (rb);
+
+			g.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+
+			Assert.AreEqual (new Size (0,0), ra.DesiredSize, "ra actual after measure");
+			Assert.AreEqual (new Size (0,0), rb.DesiredSize, "rb actual after measure");
+			Assert.AreEqual (new Size (130,60), g.DesiredSize, "g desired 1");
+
+			g.Arrange (new Rect (0,0,g.DesiredSize.Width,g.DesiredSize.Height));
+
+			Assert.AreEqual (new Size (0,0), ra.DesiredSize, "ra desired 0");
+			Assert.AreEqual (new Size (130,60), g.DesiredSize, "g desired 1");
+
+			Assert.AreEqual (new Rect (0,0,100,50).ToString (), LayoutInformation.GetLayoutSlot (ra).ToString(), "slot");
+			Assert.AreEqual (new Size (100,50), new Size (ra.ActualWidth, ra.ActualHeight), "ra actual after arrange");
+			Assert.AreEqual (new Size (20,50), new Size (rb.ActualWidth, rb.ActualHeight), "rb actual after arrange");
+			Assert.AreEqual (new Size (120,50), new Size (g.ActualWidth, g.ActualHeight), "g actual after arrange");
 		}
 
 		[TestMethod]

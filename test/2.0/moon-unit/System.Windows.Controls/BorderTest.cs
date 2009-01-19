@@ -248,6 +248,7 @@ namespace MoonTest.System.Windows.Controls
 			c.Measure (new Size (10, 10));
 
 			Assert.AreEqual (new Size (10,10), c.DesiredSize);
+			Assert.AreEqual (new Size (0,0), r.DesiredSize);
 			Assert.AreEqual (0, c.ActualWidth);
 			Assert.AreEqual (0, c.ActualHeight);
 		}
@@ -320,6 +321,7 @@ namespace MoonTest.System.Windows.Controls
 			c.Measure (new Size (100, 100));
 
 			Assert.AreEqual (new Size (60,60), c.DesiredSize);
+			Assert.AreEqual (new Size (50,50), r.DesiredSize);
 		}
 
 		[TestMethod]
@@ -354,6 +356,7 @@ namespace MoonTest.System.Windows.Controls
 			c.Measure (new Size (100, 100));
 
 			Assert.AreEqual (new Size (60,60), c.DesiredSize);
+			Assert.AreEqual (new Size (50,50), r.DesiredSize);
 		}
 
 		[TestMethod]
@@ -373,6 +376,7 @@ namespace MoonTest.System.Windows.Controls
 			c.Measure (new Size (100, 100));
 
 			Assert.AreEqual (new Size (80,80), c.DesiredSize);
+			Assert.AreEqual (new Size (60,60), r.DesiredSize);
 		}
 
 		[TestMethod]

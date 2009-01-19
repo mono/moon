@@ -264,6 +264,44 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		public void BackgroundTest ()
+		{
+			Border b = new Border ();
+			Canvas c = new Canvas ();
+			c.Background = new SolidColorBrush (Colors.Orange);
+			b.Child = c;
+			b.Width = 50;
+			b.Height = 50;
+			
+			b.Measure (new Size (100,100));
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (50,50), b.DesiredSize, "b desired");
+
+			Assert.AreEqual (HorizontalAlignment.Stretch, c.HorizontalAlignment);
+			Assert.AreEqual (VerticalAlignment.Stretch, c.VerticalAlignment);
+		}
+
+		[TestMethod]
+		public void BackgroundTest2 ()
+		{
+			Border b = new Border ();
+			Canvas c = new Canvas ();
+			c.Background = new SolidColorBrush (Colors.Orange);
+			b.Child = c;
+			c.Width = 50;
+			c.Height = 50;
+			
+			b.Measure (new Size (100,100));
+
+			Assert.AreEqual (new Size (50,50), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (50,50), b.DesiredSize, "b desired");
+
+			Assert.AreEqual (HorizontalAlignment.Stretch, c.HorizontalAlignment);
+			Assert.AreEqual (VerticalAlignment.Stretch, c.VerticalAlignment);
+		}
+
+		[TestMethod]
 		[MoonlightBug]
 		public void AttachedTest ()
 		{
