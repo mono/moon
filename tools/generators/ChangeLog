@@ -1,3 +1,7 @@
+2009-01-19  Jackson Harper  <jackson@ximian.com>
+
+	* Generator.cs: Register ManagedTypes for non DO types also.
+
 2009-01-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Generator.cs: Scan source files in plugin/ too, and fix issues this

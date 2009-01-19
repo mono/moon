@@ -10,6 +10,7 @@
  * 
  */
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -734,13 +735,13 @@ class Generator {
 		} else {
 			throw new Exception (string.Format ("Expected 'class' or 'struct', not '{0}'", tokenizer.CurrentToken.value));
 		}
-		
+
 		if (tokenizer.CurrentToken.type == Token2Type.Identifier) {
 			type.Name = tokenizer.GetIdentifier ();
 		} else {
 			type.Name = "<anonymous>";
 		}
-		
+
 		if (tokenizer.Accept (Token2Type.Punctuation, ";")) {
 			// A forward declaration.
 			//Console.WriteLine ("ParseType: Found a forward declaration to {0}", type.Name);
@@ -1169,15 +1170,23 @@ class Generator {
 		text.AppendLine ("\t\t{");
 		text.AppendLine ("\t\t\tType t;");
 		text.AppendLine ("\t\t\ttry {");
-		
-		types.Add ((TypeInfo) all.Children ["DependencyObject"]);
+
+		foreach (MemberInfo m in all.Children.Values) {
+			TypeInfo t = m as TypeInfo;
+			if (t == null)
+				continue;
+			if (types.Contains (t))
+				continue;
+			types.Add (t);
+		}
+
 		types.Sort (new Members.MembersSortedByManagedFullName <TypeInfo> ());
 		
 		for (int i = 0; i < types.Count; i++) {
 			TypeInfo t = types [i];
 			string type = t.ManagedName;
 			
-			if (t.Namespace == "None")
+			if (String.IsNullOrEmpty (t.Namespace) || t.Namespace == "None" || t.Name.StartsWith ("MoonWindow"))
 				continue;
 			
 			if (type == "PresentationFrameworkCollection`1")
@@ -1217,8 +1226,7 @@ class Generator {
 		f ("uint", "UINT32");
 		f ("int", "INT32");
 		f ("string", "STRING");
-		f ("TimeSpan", "TIMESPAN");
-		
+
 		text.AppendLine ("\t\t\t} catch (Exception ex) {");
 		text.AppendLine ("\t\t\t\tConsole.WriteLine (\"There was an error while loading native types: \" + ex.ToString ());");
 		text.AppendLine ("\t\t\t}");
