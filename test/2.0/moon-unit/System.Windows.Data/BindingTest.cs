@@ -526,6 +526,24 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		}
 		
 		[TestMethod]
+		public void XamlCreateBinding2()
+		{
+			Assert.Throws<XamlParseException>(delegate { XamlReader.Load(@"	
+<Canvas
+Width=""100""
+Height=""100""
+xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+>
+	<TextBlock Foreground=""Green"">
+        <Foreground></Foreground>
+   </TextBlock>
+</Canvas>
+");
+            });
+		}
+		
+		[TestMethod]
 		[MoonlightBug]
 		public void XamlDataContext()
 		{
