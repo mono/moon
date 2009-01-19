@@ -1,5 +1,10 @@
 2009-01-18  Geoff Norton  <gnorton@novell.com>
 
+	* dependencyobject.cpp:  Ensure that the parent scope registration
+	behavior is only applied to UserControl's.
+
+2009-01-18  Geoff Norton  <gnorton@novell.com>
+
 	* xaml.cpp: Only ref the surface if it exists.
 
 2009-01-18  Larry Ewing  <lewing@novell.com>
