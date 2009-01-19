@@ -1109,7 +1109,8 @@ XamlLoader::XamlLoader (const char* filename, const char* str, Surface* surface,
 	this->filename = g_strdup (filename);
 	this->str = g_strdup (str);
 	this->surface = surface;
-	surface->ref ();
+	if (surface)
+		surface->ref ();
 	this->context = context;
 	this->vm_loaded = false;
 	this->error_args = NULL;

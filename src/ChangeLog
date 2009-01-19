@@ -1,3 +1,7 @@
+2009-01-18  Geoff Norton  <gnorton@novell.com>
+
+	* xaml.cpp: Only ref the surface if it exists.
+
 2009-01-18  Larry Ewing  <lewing@novell.com>
 
 	* control.cpp: update invaliate/measure to look more like border
