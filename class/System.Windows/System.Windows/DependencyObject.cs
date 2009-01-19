@@ -245,6 +245,7 @@ namespace System.Windows {
 			case Kind.TRIGGER_COLLECTION: return new TriggerCollection (raw);
 			case Kind.UIELEMENT_COLLECTION: return new UIElementCollection (raw);
 			case Kind.USERCONTROL: return new UserControl (raw);
+			case Kind.VIDEOBRUSH: return new VideoBrush (raw);
 							
 			case Kind.CLOCKGROUP:
 			case Kind.ANIMATIONCLOCK:

@@ -1,3 +1,7 @@
+2009-01-19  Geoff Norton  <gnorton@novell.com>
+
+	* DependencyObject.cs: Handle Kind.VIDEOBRUSH
+
 2009-01-18  Geoff Norton  <gnorton@novell.com>
 
 	* Application.cs: You can pass absolute URI's in here, and they're
