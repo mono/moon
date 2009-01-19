@@ -14,6 +14,7 @@
 #include <stdint.h>
 
 /* @IncludeInKinds */
+/* @Namespace=System.Windows.Media */
 struct Color {
 	double r, g, b, a;
 	

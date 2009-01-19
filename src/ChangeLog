@@ -1,3 +1,7 @@
+2009-01-19  Jackson Harper  <jackson@ximian.com>
+
+	* color.h: Colours are in System.Windows.Media.
+
 2009-01-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline.h: Instead of overriding GetTypeName for media clases
