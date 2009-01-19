@@ -43,37 +43,44 @@ namespace Mono {
 	}
 
 	internal class Events {
-		internal static UnmanagedEventHandler binding_validation_error = new UnmanagedEventHandler (binding_validation_error_callback);
-		internal static UnmanagedEventHandler current_state_changing = new UnmanagedEventHandler (current_state_changing_callback);
-		internal static UnmanagedEventHandler current_state_changed = new UnmanagedEventHandler (current_state_changed_callback);
-		internal static UnmanagedEventHandler mouse_motion = new UnmanagedEventHandler (mouse_motion_notify_callback);
-		internal static UnmanagedEventHandler mouse_button_down = new UnmanagedEventHandler (mouse_button_down_callback);
-		internal static UnmanagedEventHandler mouse_button_up = new UnmanagedEventHandler (mouse_button_up_callback);
-		internal static UnmanagedEventHandler mouse_enter = new UnmanagedEventHandler (mouse_enter_callback);
-		internal static UnmanagedEventHandler key_down = new UnmanagedEventHandler (key_down_callback);
-		internal static UnmanagedEventHandler key_up = new UnmanagedEventHandler (key_up_callback);
-		internal static UnmanagedEventHandler got_focus = new UnmanagedEventHandler (got_focus_callback);
-		internal static UnmanagedEventHandler lost_focus = new UnmanagedEventHandler (lost_focus_callback);
-		internal static UnmanagedEventHandler lost_mouse_capture = new UnmanagedEventHandler (lost_mouse_capture_callback);
-		internal static UnmanagedEventHandler layout_updated = new UnmanagedEventHandler (layout_updated_callback);
-		internal static UnmanagedEventHandler loaded = new UnmanagedEventHandler (loaded_callback);
-		internal static UnmanagedEventHandler mouse_leave = new UnmanagedEventHandler (mouse_leave_callback);
-		internal static UnmanagedEventHandler size_changed = new UnmanagedEventHandler (size_changed_callback);
-		internal static UnmanagedEventHandler surface_resized = new UnmanagedEventHandler (surface_resized_callback);
-		internal static UnmanagedEventHandler template_applied = new UnmanagedEventHandler (template_applied_callback);
+		
+		internal static UnmanagedEventHandler CreateSafeHandler (UnmanagedEventHandler handler)
+		{
+			return delegate (IntPtr a, IntPtr b, IntPtr c) {
+				try {
+					handler (a, b, c);
+				} catch (Exception ex) {
+					if (IsPlugin ())
+						ReportException (ex);
+					else
+						throw;
+				}
+			};
+		}
+		
+		internal static UnmanagedEventHandler binding_validation_error = CreateSafeHandler (binding_validation_error_callback);
+		internal static UnmanagedEventHandler current_state_changing = CreateSafeHandler (current_state_changing_callback);
+		internal static UnmanagedEventHandler current_state_changed = CreateSafeHandler (current_state_changed_callback);
+		internal static UnmanagedEventHandler mouse_motion = CreateSafeHandler (mouse_motion_notify_callback);
+		internal static UnmanagedEventHandler mouse_button_down = CreateSafeHandler (mouse_button_down_callback);
+		internal static UnmanagedEventHandler mouse_button_up = CreateSafeHandler (mouse_button_up_callback);
+		internal static UnmanagedEventHandler mouse_enter = CreateSafeHandler (mouse_enter_callback);
+		internal static UnmanagedEventHandler key_down = CreateSafeHandler (key_down_callback);
+		internal static UnmanagedEventHandler key_up = CreateSafeHandler (key_up_callback);
+		internal static UnmanagedEventHandler got_focus = CreateSafeHandler (got_focus_callback);
+		internal static UnmanagedEventHandler lost_focus = CreateSafeHandler (lost_focus_callback);
+		internal static UnmanagedEventHandler lost_mouse_capture = CreateSafeHandler (lost_mouse_capture_callback);
+		internal static UnmanagedEventHandler layout_updated = CreateSafeHandler (layout_updated_callback);
+		internal static UnmanagedEventHandler loaded = CreateSafeHandler (loaded_callback);
+		internal static UnmanagedEventHandler mouse_leave = CreateSafeHandler (mouse_leave_callback);
+		internal static UnmanagedEventHandler size_changed = CreateSafeHandler (size_changed_callback);
+		internal static UnmanagedEventHandler surface_resized = CreateSafeHandler (surface_resized_callback);
+		internal static UnmanagedEventHandler template_applied = CreateSafeHandler (template_applied_callback);
 
 		static void template_applied_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			try {
-				Control c = (Control) Helper.GCHandleFromIntPtr (closure).Target;
-				c.OnApplyTemplate ();
-			}
-			catch (Exception ex) {
-				if (IsPlugin ())
-					ReportException (ex);
-				else
-					throw;
-			}
+			Control c = (Control) Helper.GCHandleFromIntPtr (closure).Target;
+			c.OnApplyTemplate ();
 		}
 
 
@@ -85,231 +92,102 @@ namespace Mono {
 
 		static void current_state_changing_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			try {
-				VisualStateGroup e = (VisualStateGroup) Helper.GCHandleFromIntPtr (closure).Target;
-				e.RaiseCurrentStateChanging (new VisualStateChangedEventArgs (calldata));
-			}
-			catch (Exception ex) {
-				if (IsPlugin ())
-					ReportException (ex);
-				else
-					throw;
-			}
+			VisualStateGroup e = (VisualStateGroup) Helper.GCHandleFromIntPtr (closure).Target;
+			e.RaiseCurrentStateChanging (new VisualStateChangedEventArgs (calldata));
 		}
 		
 		static void current_state_changed_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			try {
-				VisualStateGroup e = (VisualStateGroup) Helper.GCHandleFromIntPtr (closure).Target;
-				e.RaiseCurrentStateChanged (new VisualStateChangedEventArgs (calldata));
-			}
-			catch (Exception ex) {
-				if (IsPlugin ())
-					ReportException (ex);
-				else
-					throw;
-			}
+			VisualStateGroup e = (VisualStateGroup) Helper.GCHandleFromIntPtr (closure).Target;
+			e.RaiseCurrentStateChanged (new VisualStateChangedEventArgs (calldata));
 		}
 		
 		static void got_focus_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			try {
-				UIElement e = (UIElement)Helper.GCHandleFromIntPtr (closure).Target;
-				e.InvokeGotFocus (new RoutedEventArgs (calldata));
-			}
-			catch (Exception ex) {
-				if (IsPlugin ())
-					ReportException (ex);
-				else
-					throw;
-			}
+			UIElement e = (UIElement)Helper.GCHandleFromIntPtr (closure).Target;
+			e.InvokeGotFocus (new RoutedEventArgs (calldata));
 		}
 
 		static void lost_focus_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			try {
-				UIElement e = (UIElement)Helper.GCHandleFromIntPtr (closure).Target;
-				e.InvokeLostFocus (new RoutedEventArgs (calldata));
-			}
-			catch (Exception ex) {
-				if (IsPlugin ())
-					ReportException (ex);
-				else
-					throw;
-			}
+			UIElement e = (UIElement)Helper.GCHandleFromIntPtr (closure).Target;
+			e.InvokeLostFocus (new RoutedEventArgs (calldata));
 		}
 
 		static void lost_mouse_capture_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			try {
-				UIElement e = (UIElement) Helper.GCHandleFromIntPtr (closure).Target;
-				e.InvokeLostMouseCapture (new MouseEventArgs (calldata));
-			}
-			catch (Exception ex) {
-				if (IsPlugin ())
-					ReportException (ex);
-				else
-					throw;
-			}
+			UIElement e = (UIElement) Helper.GCHandleFromIntPtr (closure).Target;
+			e.InvokeLostMouseCapture (new MouseEventArgs (calldata));
 		}
 		
 		static void layout_updated_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			try {
-				FrameworkElement e = (FrameworkElement)Helper.GCHandleFromIntPtr (closure).Target;
-
-				e.InvokeLayoutUpdated ();
-			}
-			catch (Exception ex) {
-				if (IsPlugin ())
-					ReportException (ex);
-				else
-					throw;
-			}
+			FrameworkElement e = (FrameworkElement)Helper.GCHandleFromIntPtr (closure).Target;
+			e.InvokeLayoutUpdated ();
 		}
 
 		static void loaded_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			try {
-				FrameworkElement e = (FrameworkElement)Helper.GCHandleFromIntPtr (closure).Target;
-				e.InvokeLoaded ();
+			FrameworkElement e = (FrameworkElement)Helper.GCHandleFromIntPtr (closure).Target;
+			e.InvokeLoaded ();
 				
-				//FIXME: BrowserHost is now replaced by SilverlightHost.Content
-				BrowserHost.InvokeResize ();
-			}
-			catch (Exception ex) {
-				if (IsPlugin ())
-					ReportException (ex);
-				else
-					throw;
-			}
+			//FIXME: BrowserHost is now replaced by SilverlightHost.Content
+			BrowserHost.InvokeResize ();
 		}
 
 		static void mouse_leave_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			try {
-				UIElement e = (UIElement)Helper.GCHandleFromIntPtr (closure).Target;
-				e.InvokeMouseLeave (new MouseEventArgs (calldata));
-			}
-			catch (Exception ex) {
-				if (IsPlugin ())
-					ReportException (ex);
-				else
-					throw;
-			}
+			UIElement e = (UIElement)Helper.GCHandleFromIntPtr (closure).Target;
+			e.InvokeMouseLeave (new MouseEventArgs (calldata));
 		}
 
 		static void key_up_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			try {
-				UIElement e = (UIElement) Helper.GCHandleFromIntPtr (closure).Target;
-				e.InvokeKeyUp (new KeyEventArgs (calldata));
-			}
-			catch (Exception ex) {
-				if (IsPlugin ())
-					ReportException (ex);
-				else
-					throw;
-			}
+			UIElement e = (UIElement) Helper.GCHandleFromIntPtr (closure).Target;
+			e.InvokeKeyUp (new KeyEventArgs (calldata));
 		}
 
 		static void key_down_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			try {
-				UIElement e = (UIElement) Helper.GCHandleFromIntPtr (closure).Target;
-				e.InvokeKeyDown (new KeyEventArgs (calldata));
-			}
-			catch (Exception ex) {
-				if (IsPlugin ())
-					ReportException (ex);
-				else
-					throw;
-			}
+			UIElement e = (UIElement) Helper.GCHandleFromIntPtr (closure).Target;
+			e.InvokeKeyDown (new KeyEventArgs (calldata));
 		}
 
 		static void mouse_motion_notify_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			try {
-				UIElement e = (UIElement) Helper.GCHandleFromIntPtr (closure).Target;
-				e.InvokeMouseMove (new MouseEventArgs (calldata));
-			}
-			catch (Exception ex) {
-				if (IsPlugin ())
-					ReportException (ex);
-				else
-					throw;
-			}
+			UIElement e = (UIElement) Helper.GCHandleFromIntPtr (closure).Target;
+			e.InvokeMouseMove (new MouseEventArgs (calldata));
 		}
 		
 		static void mouse_button_down_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			try {
-				UIElement e = (UIElement) Helper.GCHandleFromIntPtr (closure).Target;
-				e.InvokeMouseButtonDown (new MouseButtonEventArgs (calldata));
-			}
-			catch (Exception ex) {
-				if (IsPlugin ())
-					ReportException (ex);
-				else
-					throw;
-			}
+			UIElement e = (UIElement) Helper.GCHandleFromIntPtr (closure).Target;
+			e.InvokeMouseButtonDown (new MouseButtonEventArgs (calldata));
 		}
 		
 		static void mouse_button_up_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			try {
-				UIElement e = (UIElement) Helper.GCHandleFromIntPtr (closure).Target;
-				e.InvokeMouseButtonUp (new MouseButtonEventArgs (calldata));
-			}
-			catch (Exception ex) {
-				if (IsPlugin ())
-					ReportException (ex);
-				else
-					throw;
-			}
+			UIElement e = (UIElement) Helper.GCHandleFromIntPtr (closure).Target;
+			e.InvokeMouseButtonUp (new MouseButtonEventArgs (calldata));
 		}
 		
 		static void mouse_enter_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			try {
-				UIElement e = (UIElement) Helper.GCHandleFromIntPtr (closure).Target;
-				e.InvokeMouseEnter (new MouseEventArgs (calldata));
-			}
-			catch (Exception ex) {
-				if (IsPlugin ())
-					ReportException (ex);
-				else
-					throw;
-			}
+			UIElement e = (UIElement) Helper.GCHandleFromIntPtr (closure).Target;
+			e.InvokeMouseEnter (new MouseEventArgs (calldata));
 		}
 
 		static void size_changed_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			try {
-				FrameworkElement e = (FrameworkElement)Helper.GCHandleFromIntPtr (closure).Target;
-				e.InvokeSizeChanged (new SizeChangedEventArgs (calldata));
-			}
-			catch (Exception ex) {
-				if (IsPlugin ())
-					ReportException (ex);
-				else
-					throw;
-			}
+			FrameworkElement e = (FrameworkElement)Helper.GCHandleFromIntPtr (closure).Target;
+			e.InvokeSizeChanged (new SizeChangedEventArgs (calldata));
 		}
 
 		static void surface_resized_callback (IntPtr target, IntPtr calldata, IntPtr clozure)
 		{
-			try {
-				// Parameter ignored
-				//FIXME: BrowserHost is now replaced by SilverlightHost.Content
-				BrowserHost.InvokeResize ();
-			}
-			catch (Exception ex) {
-				if (IsPlugin ())
-					ReportException (ex);
-				else
-					throw;
-			}
+			// Parameter ignored
+			//FIXME: BrowserHost is now replaced by SilverlightHost.Content
+			BrowserHost.InvokeResize ();
 		}
 
 		internal static void InitSurface (IntPtr surface)
