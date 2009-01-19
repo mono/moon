@@ -33,6 +33,7 @@ using System.Windows.Media;
 using System.Windows.Input;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Mono;
 
 namespace System.Windows {
@@ -46,7 +47,7 @@ namespace System.Windows {
 			if (value == null)
 				throw new NotSupportedException ("value");
 
-			Value v = Value.FromObject (value, true);
+			Value v = Value.FromObject (GCHandle.ToIntPtr (GCHandle.Alloc (value)), true);
 			try {
 				NativeMethods.resource_dictionary_add (native, key, ref v);
 			} finally {
@@ -88,6 +89,13 @@ namespace System.Windows {
 
 		private bool RemoveInternal (string key)
 		{
+			object val;
+
+			if (TryGetValue (key, out val)) {
+				GCHandle handle = GCHandle.FromIntPtr ((IntPtr) val);
+				handle.Free ();
+			}
+
 			return NativeMethods.resource_dictionary_remove (native, key);
 		}
 
@@ -101,6 +109,13 @@ namespace System.Windows {
 
 			if (exists)
 				value = Value.ToObject (null, val);
+
+			try {
+				if (value.GetType () == typeof (IntPtr)) {
+					GCHandle handle = GCHandle.FromIntPtr ((IntPtr) value);
+					value = handle.Target;
+				}
+			} catch {}
 
 			return exists;
 		}
@@ -119,7 +134,14 @@ namespace System.Windows {
 				IntPtr val = NativeMethods.resource_dictionary_get (native, ToStringKey (key), out exists);
 				if (val == IntPtr.Zero)
 					return null;
-				return Value.ToObject (null, val);
+				object v = Value.ToObject (null, val);
+				try {
+					if (v.GetType () == typeof (IntPtr)) {
+						GCHandle handle = GCHandle.FromIntPtr ((IntPtr) v);
+						v = handle.Target;
+					}
+				} catch {}
+				return v;
 			}
 			set {
 				var str_key = ToStringKey (key);
