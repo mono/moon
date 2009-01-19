@@ -1,5 +1,10 @@
 2009-01-19  Jb Evain  <jbevain@novell.com>
 
+	* System.Windows.Media.Imaging/BitmapImageTest.cs: add test for empty
+	uri passed to BitmapImage.
+
+2009-01-19  Jb Evain  <jbevain@novell.com>
+
 	* System.Windows/ApplicationTest.cs: add a test for absolute uri
 	passed to GetResourceStream.
 

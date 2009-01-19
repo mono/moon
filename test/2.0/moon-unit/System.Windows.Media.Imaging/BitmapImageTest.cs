@@ -1,5 +1,6 @@
 using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -23,7 +24,16 @@ namespace MoonTest.System.Windows.Media.Imaging {
 		{
 			Assert.IsNotNull(new BitmapImage (badUri));
 		}
-		
+
+		[TestMethod]
+		[MoonlightBug]
+		public void EmptyUriInCtor ()
+		{
+			var bitmap = new BitmapImage (new Uri ("", UriKind.Relative));
+			var image = new Image ();
+			image.Source = bitmap;
+		}
+
 		[TestMethod]
 		public void BadUriSetUriSource ()
 		{
