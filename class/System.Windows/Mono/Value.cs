@@ -393,7 +393,7 @@ namespace Mono {
 				else if (v is Uri) {
 					Uri uri = (Uri) v;
 					
-					value.k = Kind.URI;
+					value.k = Kind.STRING;
 					
 					byte[] bytes = System.Text.Encoding.UTF8.GetBytes (uri.OriginalString);
 					IntPtr result = Helper.AllocHGlobal (bytes.Length + 1);
