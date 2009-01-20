@@ -1,5 +1,17 @@
 2009-01-20  Chris Toshok  <toshok@ximian.com>
 
+	* NativeMethods.cs: add the style delegates here, and a pinvoke
+	for value_from_str.
+	
+	* ManagedXamlLoader.cs: make parsing work on anything that
+	implements INativeDependencyObjectWrapper.
+
+	* Value.cs: s/DependencyObject/NativeDependencyObjectHelper.
+
+	* GeneratedPInvokes.cs, Types.g.cs: regen.
+	
+2009-01-20  Chris Toshok  <toshok@ximian.com>
+
 	* MoonlightTypeConverter.cs: a base level type converter for use
 	with styles.
 

@@ -19,8 +19,6 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.DISPATCHERTIMER));
 				t = typeof (System.Uri); 
 				types.Add (t, new ManagedType (t, Kind.URI));
-				t = typeof (System.Windows.ApplicationInternal); 
-				types.Add (t, new ManagedType (t, Kind.APPLICATION));
 				t = typeof (System.Windows.AssemblyPart); 
 				types.Add (t, new ManagedType (t, Kind.ASSEMBLYPART));
 				t = typeof (System.Windows.AssemblyPartCollection); 
@@ -327,6 +325,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.STRING));
 				t = typeof (TimeSpan);
 				types.Add (t, new ManagedType (t, Kind.TIMESPAN));
+				t = typeof (System.Windows.Application);
+				types.Add (t, new ManagedType (t, Kind.APPLICATION));
 			} catch (Exception ex) {
 				Console.WriteLine ("There was an error while loading native types: " + ex.ToString ());
 			}

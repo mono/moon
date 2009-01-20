@@ -38,6 +38,9 @@ namespace Mono {
 	internal delegate Size MeasureOverrideCallback (Size availableSize);
 	internal delegate Size ArrangeOverrideCallback (Size finalSize);
 
+	internal delegate void ApplyDefaultStyleCallback (IntPtr fwe_ptr, IntPtr type_info_ptr);
+	internal delegate void ApplyStyleCallback (IntPtr fwe_ptr, IntPtr style_ptr);
+
 	// Used in databinding to interact with managed objects
 	internal delegate Value GetValueCallback ();
 	internal delegate void SetValueCallback (IntPtr value);
@@ -180,6 +183,10 @@ namespace Mono {
 		[DllImport ("moon")]
 		[return: MarshalAs (UnmanagedType.U1)]
 		public extern static bool value_from_str_with_typename (string type_name, string prop_name, string str, out IntPtr value, [MarshalAs (UnmanagedType.U1)] bool sl2);
+
+		[DllImport ("moon")]
+		[return: MarshalAs (UnmanagedType.U1)]
+		public extern static bool value_from_str (Mono.Kind kind, string prop_name, string str, out IntPtr value, [MarshalAs (UnmanagedType.U1)] bool sl2);
 
 #region Time manager
 		[return: MarshalAs (UnmanagedType.Bool)] // glib gboolean is a gint (i.e. 4 bytes just like the FX bool)

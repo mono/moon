@@ -46,10 +46,6 @@ namespace Mono.Xaml
 		XamlLoaderCallbacks callbacks;
 		GCHandle handle;
 
-		static Dictionary<string,string> rename_type_map = new Dictionary<string,string> () {
-			{ "System.Windows.Application", "System.Windows.ApplicationInternal" }
-		};
-
 		public ManagedXamlLoader ()
 		{
 		}
@@ -107,7 +103,7 @@ namespace Mono.Xaml
 			if (top == IntPtr.Zero)
 				return null;
 
-			result = DependencyObject.Lookup (kind, top);
+			result = NativeDependencyObjectHelper.Lookup (kind, top) as DependencyObject;
 			
 			if (result != null) {
 				// Delete our reference, result already has one.
@@ -136,7 +132,7 @@ namespace Mono.Xaml
 			if (top == IntPtr.Zero)
 				return null;
 
-			result = DependencyObject.Lookup (kind, top);
+			result = NativeDependencyObjectHelper.Lookup (kind, top) as DependencyObject;
 			
 			if (result != null) {
 				// Delete our reference, result already has one.
@@ -207,10 +203,6 @@ namespace Mono.Xaml
 
 			string full_name = string.IsNullOrEmpty (clr_namespace) ? name : clr_namespace + "." + name;
 
-			string mapped_name;
-			if (rename_type_map.TryGetValue (full_name, out mapped_name))
-				full_name = mapped_name;
-
 			Type type = clientlib.GetType (full_name);
 			if (type == null) {
 				Console.Error.WriteLine ("ManagedXamlLoader::LoadObject: GetType ({0}) failed.", name);
@@ -223,6 +215,7 @@ namespace Mono.Xaml
 				try {
 					res = Activator.CreateInstance (type);
 				} catch (TargetInvocationException ex) {
+					Console.WriteLine (ex);
 					Console.Error.WriteLine ("ManagedXamlLoader::LoadObject: CreateInstance ({0}) failed: {1}", name, ex.InnerException);
 					value = Value.Empty;
 					return false;
@@ -277,7 +270,7 @@ namespace Mono.Xaml
 			}
 			catch {
 				Kind k = NativeMethods.dependency_object_get_object_type (target_ptr); 
-				return DependencyObject.Lookup (k, target_ptr);
+				return NativeDependencyObjectHelper.Lookup (k, target_ptr) as DependencyObject;
 			}
 		}
 
@@ -390,7 +383,7 @@ namespace Mono.Xaml
 
 		private bool TrySetEventReflection (IntPtr top_level, string xmlns, object publisher, string type_name, string name, IntPtr value_ptr, out string error)
 		{
-			object subscriber = DependencyObject.Lookup (top_level);
+			object subscriber = NativeDependencyObjectHelper.Lookup (top_level);
 			EventInfo ie = publisher.GetType ().GetEvent (name);
 			string handler_name = Value.ToObject (null, value_ptr) as string;
 			
@@ -785,7 +778,7 @@ namespace Mono.Xaml
 
 		private string cb_get_content_property_name (IntPtr parser, IntPtr dob_ptr)
 		{
-			DependencyObject dob = DependencyObject.Lookup (dob_ptr);
+			DependencyObject dob = NativeDependencyObjectHelper.Lookup (dob_ptr) as DependencyObject;
 			if (dob == null)
 				return null;
 
