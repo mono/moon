@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,6 +12,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows.Controls.Primitives;
 using NS;
 using Mono.Moonlight.UnitTesting;
+using Microsoft.Silverlight.Testing;
+using System.Threading;
 
 namespace NS
 {
@@ -33,7 +35,7 @@ namespace NS
 namespace MoonTest.System.Windows.Controls.Primitives
 {
     [TestClass]
-    public class PopupTest
+    public class PopupTest : Microsoft.Silverlight.Testing.SilverlightTest
     {
         public static readonly DependencyProperty ChildProperty;
         public static readonly DependencyProperty HorizontalOffsetProperty;
@@ -65,22 +67,47 @@ namespace MoonTest.System.Windows.Controls.Primitives
         }
 
         [TestMethod]
-        [MoonlightBug]
-        public void CreateVisiblePopup()
+        [Asynchronous]
+        public void OpenCloseEventTest ()
         {
-            Popup p = new Popup();
-            Border border = new Border { BorderBrush = new SolidColorBrush(Colors.Blue), BorderThickness = new Thickness(1) };
+            Button b = new Button { Content = "Close" };
+            Canvas canvas = new Canvas();
+            Border border = new Border { BorderBrush = new SolidColorBrush(Colors.Blue),
+                                         BorderThickness = new Thickness(1),
+                                         Child = canvas
+            };
+            Popup p = new Popup { Child = border };
 
-            Canvas c = new Canvas();
-
-            Button b = new Button();
-            b.Click += delegate { p.IsOpen = false; };
-            b.Content = "Close";
-            c.Children.Add(b);
-            border.Child = c;
-
-            p.Child = border;
-            p.IsOpen = true;
+            ManualResetEvent handle = new ManualResetEvent(false);
+            p.Opened += delegate
+            {
+                if (handle.WaitOne(10))
+                    throw new Exception("Already open");
+                handle.Set();
+            };
+            p.Closed += delegate
+            {
+                if (handle.WaitOne(10))
+                    throw new Exception("Not already open");
+                handle.Set();
+            };
+            global::System.Threading.ThreadPool.QueueUserWorkItem(delegate {
+                try
+                {
+                    p.Dispatcher.BeginInvoke(delegate { p.IsOpen = true; });
+                    if (!handle.WaitOne(500))
+					    throw new Exception ("Popup wasn't opened");
+                    handle.Reset();
+                    p.Dispatcher.BeginInvoke(delegate { p.IsOpen = false; });
+					if (!handle.WaitOne(500))
+						throw new Exception ("Popup wasn't closed");
+					handle.Reset ();
+                }
+                finally
+                {
+                    EnqueueTestComplete();
+                }
+            });
         }
     }
 }
