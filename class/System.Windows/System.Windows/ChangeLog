@@ -1,3 +1,7 @@
+2009-01-20  Alan McGovern  <amcgovern@novell.com>
+
+	* DependencyObject.cs: rename the eventList field to event_list.
+
 2009-03-15  Alan McGovern  <amcgovern@novell.com>
 
 	* UIElement.cs:

@@ -51,13 +51,13 @@ namespace System.Windows {
 		static Thread moonlight_thread;
 		static Dictionary<IntPtr, DependencyObject> objects = new Dictionary<IntPtr, DependencyObject> ();
 		internal IntPtr _native;
-		EventHandlerList eventList;
+		EventHandlerList event_list;
 		
 		internal EventHandlerList EventList {
 			get {
-				if (eventList == null)
-					eventList = new EventHandlerList ();
-				return eventList;
+				if (event_list == null)
+					event_list = new EventHandlerList ();
+				return event_list;
 			}
 		}
 
