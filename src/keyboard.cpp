@@ -37,7 +37,21 @@ Keyboard::OnKeyPress (Key key)
 {
 	if (!pressedKeys)
 		pressedKeys = g_hash_table_new (g_direct_hash, g_direct_equal);
+	
 	g_hash_table_insert (pressedKeys, GINT_TO_POINTER (key), GINT_TO_POINTER (1));
+	
+	switch (key) {
+	case KeyCTRL:
+		modifiers |= ModifierKeyControl;
+		break;
+	case KeyALT:
+		modifiers |= ModifierKeyAlt;
+		break;
+	case KeySHIFT:
+		modifiers |= ModifierKeyShift;
+		break;
+	default:
+	}
 }
 
 void
@@ -47,6 +61,19 @@ Keyboard::OnKeyRelease (Key key)
 		return;
 	
 	g_hash_table_remove (pressedKeys, GINT_TO_POINTER (key));
+	
+	switch (key) {
+	case KeyCTRL:
+		modifiers &= ~ModifierKeyControl;
+		break;
+	case KeyALT:
+		modifiers &= ~ModifierKeyAlt;
+		break;
+	case KeySHIFT:
+		modifiers &= ~ModifierKeyShift;
+		break;
+	default:
+	}
 }
 
 bool
