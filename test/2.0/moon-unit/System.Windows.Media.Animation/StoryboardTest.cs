@@ -1,11 +1,10 @@
-
 //
 // Unit tests for System.Windows.Media.Animation.Storyboard
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2008,2009 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -83,7 +82,70 @@ namespace MoonTest.System.Windows.Media.Animation {
 ");
 			Assert.AreEqual("Blah2", board.GetValue(FrameworkElement.NameProperty), "#1");
 		}
+
+		[TestMethod]
+		public void SetTarget ()
+		{
+			Rectangle r = new Rectangle ();
+			Assert.Throws<ArgumentNullException> (delegate {
+				Storyboard.SetTarget (null, r);
+			}, "null, do");
+
+			Timeline t = (Timeline) new ColorAnimation ();
+			Assert.Throws<ArgumentNullException> (delegate {
+				Storyboard.SetTarget (t, null);
+			}, "timeline, null");
+		}
+
+		[TestMethod]
+		public void SetTargetName ()
+		{
+			Assert.Throws<NullReferenceException> (delegate {
+				Storyboard.SetTargetName (null, "moon");
+			}, "null, string");
+		}
+
+		[TestMethod]
+		[MoonlightBug ("ML throws an exception when a null value is being set")]
+		public void SetTargetName_NullName ()
+		{
+			Timeline t = (Timeline) new ColorAnimation ();
+			Storyboard.SetTargetName (t, null);
+			// and the behavior is not specific to Storyboard.SetTargetName
+			t.SetValue (Storyboard.TargetNameProperty, (string)null);
+		}
+
+		[TestMethod]
+		public void SetTargetProperty ()
+		{
+			PropertyPath pp = new PropertyPath ("/moon");
+			Assert.Throws<ArgumentNullException> (delegate {
+				Storyboard.SetTargetProperty (null, pp);
+			}, "null, PropertyPath");
+
+			Timeline t = (Timeline) new ColorAnimation ();
+			Assert.Throws<ArgumentNullException> (delegate {
+				Storyboard.SetTargetProperty (t, null);
+			}, "timeline, null");
+		}
+
+		[TestMethod]
+		public void GetTargetName ()
+		{
+			Assert.Throws<NullReferenceException> (delegate {
+				Storyboard.GetTargetName (null);
+			}, "null");
+
+			Timeline t = (Timeline) new ColorAnimation ();
+			Assert.IsNull (Storyboard.GetTargetName (t), "GetTargetName(ColorAnimation)");
+		}
+
+		[TestMethod]
+		public void GetTargetProperty ()
+		{
+			Assert.Throws<ArgumentNullException> (delegate {
+				Storyboard.GetTargetProperty (null);
+			}, "null");
+		}
 	}
 }
-
-
