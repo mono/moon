@@ -1,3 +1,8 @@
+2009-01-20  Alan McGovern  <amcgovern@novell.com>
+
+	* Popup.cs: When IsOpen is changed, we need to fire either Opened or
+	Closed.
+
 2009-01-19  Alan McGovern  <amcgovern@novell.com>
 
 	* Popup.cs: Create an unmanaged peer for the Popup class

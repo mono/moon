@@ -37,8 +37,48 @@ namespace System.Windows.Controls.Primitives {
 	[ContentPropertyAttribute("Child", true)]
 	public sealed partial class Popup : FrameworkElement
 	{
-		public event EventHandler Closed;
-		public event EventHandler Opened;
+		static UnmanagedEventHandler DoNothing = delegate { };
+		static UnmanagedEventHandler isopen_changed = Events.CreateSafeHandler (delegate (IntPtr a, IntPtr b, IntPtr closure) {
+			((Popup) Helper.GCHandleFromIntPtr (closure).Target).InvokeIsOpenChanged ();
+		});
+		
+		EventHandler closed_event;
+		EventHandler opened_event;
+
+		public event EventHandler Closed {
+			add {
+				if (EventList [IsOpenChangedEvent] == null)
+					RegisterEvent (IsOpenChangedEvent, "IsOpenChanged", isopen_changed, DoNothing);
+				closed_event += value;
+			}
+			remove {
+				closed_event -= value;
+				if (ClosedEvent == null && OpenedEvent == null)
+					UnregisterEvent (IsOpenChangedEvent, "IsOpenChanged", isopen_changed, DoNothing);
+			}
+		}
+		
+		public event EventHandler Opened {
+			add {
+				if (EventList [IsOpenChangedEvent] == null)
+					RegisterEvent (IsOpenChangedEvent, "IsOpenChanged", isopen_changed, DoNothing);
+				opened_event += value;
+			}
+			remove  {
+				opened_event -= value;
+				if (ClosedEvent == null && OpenedEvent == null)
+					UnregisterEvent (IsOpenChangedEvent, "IsOpenChanged", isopen_changed, DoNothing);
+			}
+		}
+		
+		static object IsOpenChangedEvent = new object ();
+		
+		void InvokeIsOpenChanged ()
+		{
+			EventHandler h = IsOpen ? opened_event : closed_event;
+			if (h != null)
+				h (this, EventArgs.Empty);
+		}
 	}
 }
 
