@@ -2693,7 +2693,6 @@ MoonlightDependencyObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 	DependencyProperty *prop;
 	const char *event_name;
 	int event_id;
-	Value *value;
 
 	if (!strname)
 		return false;
@@ -2702,7 +2701,11 @@ MoonlightDependencyObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 	NPN_MemFree (strname);
 	
 	if (prop) {
-		if (!(value = dob->GetValue (prop))) {
+		// don't get the SL2 defined default values for DO by calling GetLocalValue
+		Value *value = Type::IsSubclassOf (prop->GetPropertyType (), Type::DEPENDENCY_OBJECT) ? 
+			dob->GetLocalValue (prop) : dob->GetValue (prop);
+
+		if (!value) {
 			// strings aren't null, they seem to just be empty strings
 			if (prop->GetPropertyType() == Type::STRING) {
 				string_to_npvariant ("", result);

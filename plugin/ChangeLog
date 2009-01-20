@@ -1,3 +1,10 @@
+2009-01-20  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* plugin-class.cpp: Call GetLocalValue on DO so we don't provide the
+	default values used in SL2 to SL1 applications. This fix Fox
+	http://www.silverlight.net/fox/ while allowing to use the (non-null)
+	default value for UIElement::RenderTransformProperty
+
 2009-01-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.mdp: Updated.
