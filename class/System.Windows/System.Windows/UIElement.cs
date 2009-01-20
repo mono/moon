@@ -89,7 +89,7 @@ namespace System.Windows {
 
 			IntPtr t = NativeMethods.uielement_get_transform_to_uielement (native, visual.native);
 
-			return (GeneralTransform)DependencyObject.Lookup (Kind.GENERALTRANSFORM, t);
+			return (GeneralTransform)NativeDependencyObjectHelper.Lookup (Kind.GENERALTRANSFORM, t);
 		}
 
 		protected virtual AutomationPeer OnCreateAutomationPeer ()

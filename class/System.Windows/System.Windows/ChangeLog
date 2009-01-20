@@ -1,3 +1,35 @@
+2009-01-20  Chris Toshok  <toshok@ximian.com>
+
+	* DependencyProperty.g.cs, DependencyObject.g.cs: regen.
+
+	* FrameworkElement.cs:
+	DependencyObject/NativeDependencyObjectHelper, and a little
+	refactoring.
+
+	* Setter.cs: add ConvertedValue, and make the DP's internal so we
+	can get their values without using the accessors (which have that
+	bizarre behavior in SL).
+
+	* Application.cs: implement the INativeDependencyObjectWrapper
+	interface so we can be parsed, and also hook up the style
+	delegates so unmanaged land can tell us when to do stuff.
+
+	* DependencyProperty.cs, RoutedEventArgs.cs, UIElement.cs:
+	DependencyObject/NativeDependencyObjectHelper.
+
+	* DependencyObject.cs: remove much of this class, moving it to
+	Mono/NativeDependencyObjectHelper.cs Also implement the
+	INativeDependencyObjectWrapper interface.
+
+	* DataTemplate.cs: need to case from
+	INativeDependencyObjectWrapper when we're returning a
+	DependencyObject.
+
+	* Style.cs: add code to do the type conversions (and caching of
+	converted values) in setters when a style is applied to an object.
+
+	* ApplicationInternal.cs: nuke.
+
 2009-01-20  Alan McGovern  <amcgovern@novell.com>
 
 	* DependencyObject.cs: rename the eventList field to event_list.

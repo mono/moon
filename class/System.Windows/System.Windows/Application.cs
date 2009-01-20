@@ -25,6 +25,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+
 using Mono;
 using Mono.Xaml;
 using System;
@@ -38,13 +39,13 @@ using System.Windows.Interop;
 using System.Collections;
 using System.Collections.Generic;
 using System.Resources;
+using System.Runtime.InteropServices;
 using System.Windows.Markup;
 
 namespace System.Windows {
 
-	public partial class Application {
+	public partial class Application : INativeDependencyObjectWrapper {
 
-		static Application current;
 		static ResourceDictionary resources;
 		static Assembly [] assemblies;
 		static Assembly entry_point_assembly;
@@ -67,19 +68,29 @@ namespace System.Windows {
 		UIElement root_visual;
 		SilverlightHost host;
 
+		ApplyDefaultStyleCallback apply_default_style;
+		ApplyStyleCallback apply_style;
+
 		static Application ()
 		{
 			ImportXamlNamespace ("clr-namespace:System.Windows;assembly:System.Windows.dll");
 			ImportXamlNamespace ("clr-namespace:System.Windows.Controls;assembly:System.Windows.dll");
 		}
 
-		public Application ()
+		internal Application (IntPtr raw)
 		{
+			NativeHandle = raw;
+
+			apply_default_style = new ApplyDefaultStyleCallback (apply_default_style_cb);
+			apply_style = new ApplyStyleCallback (apply_style_cb);
+
+			NativeMethods.application_register_style_callbacks (NativeHandle, apply_default_style, apply_style);
+
 			xap_dir = s_xap_dir;
 			surface = s_surface;
 
-			if (current == null) {
-				current = this;
+			if (Current == null) {
+				Current = this;
 
 				if (Host.Source != null) {
 					// IsolatedStorage (inside mscorlib.dll) needs some information about the XAP file
@@ -89,8 +100,12 @@ namespace System.Windows {
 					ad.SetData ("xap_host", Host.Source.Host);
 				}
 			} else {
-				root_visual = current.root_visual;
+				root_visual = Current.root_visual;
 			}
+		}
+
+		public Application () : this (NativeMethods.application_new ())
+		{
 		}
 
 		internal void Terminate ()
@@ -106,10 +121,62 @@ namespace System.Windows {
 				xap_dir = null;
 			} catch {
 			}
+
+			root_visual = null;
+			Application.Current = null;
+
+			// XXX free the application?
 		}				
 
 
 		Dictionary<Assembly, ResourceDictionary> assemblyToGenericXaml = new Dictionary<Assembly, ResourceDictionary>();
+
+		void apply_default_style_cb (IntPtr fwe_ptr, IntPtr type_info_ptr)
+		{
+			ManagedTypeInfo type_info = (ManagedTypeInfo)Marshal.PtrToStructure (type_info_ptr, typeof (ManagedTypeInfo));
+			Type type = null;
+
+			string assembly_name = Helper.PtrToStringAuto (type_info.assembly_name);
+			string full_name = Helper.PtrToStringAuto (type_info.full_name);
+
+			Assembly asm = Application.GetAssembly (assembly_name);
+			if (asm == null) {
+				Console.Error.WriteLine ("failed to lookup assembly_name {0} while applying style", assembly_name);
+				return;
+			}
+
+			type = asm.GetType (full_name);
+
+			if (type == null) {
+				Console.Error.WriteLine ("failed to lookup type {0} in assembly {1} while applying style", full_name, assembly_name);
+				return;
+			}
+
+			Style s = GetGenericXamlStyleFor (type);
+			if (s == null)
+				return;
+
+			FrameworkElement fwe = NativeDependencyObjectHelper.Lookup(fwe_ptr) as FrameworkElement;
+			if (fwe == null)
+				return;
+
+			fwe.Style = s;
+		}
+
+		void apply_style_cb (IntPtr fwe_ptr, IntPtr style_ptr)
+		{
+#if not_needed
+			FrameworkElement fwe = NativeDependencyObjectHelper.Lookup(fwe_ptr) as FrameworkElement;
+			if (fwe == null)
+				return;
+#endif
+
+			Style style = NativeDependencyObjectHelper.Lookup(style_ptr) as Style;
+			if (style == null)
+				return;
+
+			style.ConvertSetterValues ();
+		}
 
 		internal Style GetGenericXamlStyleFor (Type type)
 		{
@@ -157,7 +224,7 @@ namespace System.Windows {
 		/// </remarks>
 		internal static bool LaunchFromXap (IntPtr plugin, IntPtr surface, string xapPath)
 		{
-			if (current != null)
+			if (Current != null)
 				throw new Exception ("Should only be called once per AppDomain");
 
 			return CreateFromXap (plugin, surface, xapPath) != null;
@@ -287,10 +354,12 @@ namespace System.Windows {
 		[SecuritySafeCritical]
 		public static void LoadComponent (object component, Uri resourceLocator)
 		{
-			Application app = component as Application;
-			DependencyObject cdo = component as DependencyObject;
+			INativeDependencyObjectWrapper wrapper = component as INativeDependencyObjectWrapper;
+
+			// XXX still needed for the app.surface reference when creating the ManagedXamlLoader
+			Application app = wrapper as Application;
 			
-			if (cdo == null && app == null)
+			if (wrapper == null)
 				throw new ArgumentNullException ("component");
 
 			if (resourceLocator == null)
@@ -305,18 +374,8 @@ namespace System.Windows {
 			string xaml = new StreamReader (sr.Stream).ReadToEnd ();
 			Assembly loading_asm = component.GetType ().Assembly;
 			ManagedXamlLoader loader = new ManagedXamlLoader (loading_asm, app != null ? app.surface : Application.s_surface, PluginHost.Handle);
-			
 
-			if (cdo != null) {
-				// This can throw a System.Exception if the XAML file is invalid.
-				
-				loader.Hydrate (cdo.native, xaml);
-			} else {
-				ApplicationInternal temp = new ApplicationInternal ();
-				loader.Hydrate (temp.native, xaml);
-
-				resources = temp.Resources ?? new ResourceDictionary ();
-			}
+			loader.Hydrate (wrapper.NativeHandle, xaml);
 		}
 
 		/*
@@ -397,13 +456,19 @@ namespace System.Windows {
 		public static Application Current {
 			[SecuritySafeCritical]
 			get {
-				return current;
+				IntPtr app = NativeMethods.application_get_current ();
+				return NativeDependencyObjectHelper.Lookup (Kind.APPLICATION, app) as Application;
+			}
+
+			[SecuritySafeCritical]
+			private set {
+				NativeMethods.application_set_current (value == null ? IntPtr.Zero : value.NativeHandle);
 			}
 		}
 
 		public ResourceDictionary Resources {
 			get {
-				return resources;
+				return (ResourceDictionary) ((INativeDependencyObjectWrapper)this).GetValue (ResourcesProperty);
 			}
 		}
 
@@ -490,5 +555,60 @@ namespace System.Windows {
 				Console.WriteLine ("Unhandled Exception: " + ex);
 			}
 		}
+
+		private static readonly DependencyProperty ResourcesProperty =
+			DependencyProperty.Lookup (Kind.APPLICATION, "Resources", typeof (ResourceDictionary));
+
+#region "INativeDependencyObjectWrapper interface"
+		IntPtr _native;
+
+		internal IntPtr NativeHandle {
+			get { return _native; }
+			set {
+				if (_native != IntPtr.Zero) {
+					throw new InvalidOperationException ("Application.native is already set");
+				}
+
+				NativeDependencyObjectHelper.AddNativeMapping (value, this);
+
+				_native = value;
+			}
+		}
+
+		IntPtr INativeDependencyObjectWrapper.NativeHandle {
+			get { return NativeHandle; }
+			set { NativeHandle = value; }
+		}
+
+		object INativeDependencyObjectWrapper.GetValue (DependencyProperty dp)
+		{
+			return NativeDependencyObjectHelper.GetValue (this, dp);
+		}
+
+		void INativeDependencyObjectWrapper.SetValue (DependencyProperty dp, object value)
+		{
+			NativeDependencyObjectHelper.SetValue (this, dp, value);
+		}
+
+		object INativeDependencyObjectWrapper.GetAnimationBaseValue (DependencyProperty dp)
+		{
+			return NativeDependencyObjectHelper.GetAnimationBaseValue (this, dp);
+		}
+
+		object INativeDependencyObjectWrapper.ReadLocalValue (DependencyProperty dp)
+		{
+			return NativeDependencyObjectHelper.ReadLocalValue (this, dp);
+		}
+
+		void INativeDependencyObjectWrapper.ClearValue (DependencyProperty dp)
+		{
+			NativeDependencyObjectHelper.ClearValue (this, dp);
+		}
+
+		Kind INativeDependencyObjectWrapper.GetKind ()
+		{
+			return Kind.APPLICATION;
+		}
+#endregion
 	}
 }

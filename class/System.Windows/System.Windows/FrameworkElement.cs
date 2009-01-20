@@ -99,14 +99,14 @@ namespace System.Windows {
 
 		public DependencyObject Parent {
 			get {
-				return DependencyObject.FromIntPtr (NativeMethods.uielement_get_visual_parent (native));
+				return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.uielement_get_visual_parent (native)) as DependencyObject;
 			}
 		}
 
 		internal DependencyObject SubtreeObject {
 			[SecuritySafeCritical]
 			get {
-				return DependencyObject.FromIntPtr (NativeMethods.uielement_get_subtree_object (native));
+				return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.uielement_get_subtree_object (native)) as DependencyObject;
 			}
 		}		
 
@@ -150,7 +150,7 @@ namespace System.Windows {
 			}
 		}
 
-		internal virtual void InvokeLoaded ()
+		internal void InvokeLoaded ()
 		{
 			// this event is special, in that it is a
 			// RoutedEvent that doesn't bubble, so we
@@ -215,18 +215,15 @@ namespace System.Windows {
 					bindings.Remove (dp);
 				bindings.Add (dp, expression);
 
-				object val = expression.GetValue (dp);
-				base.SetValueImpl (dp, val);
+				value = expression.GetValue (dp);
 			} else if (existing != null) {
 				if (existing.Binding.Mode == BindingMode.TwoWay)
 					existing.SetValue (value);
 				else
 					bindings.Remove (dp);
-				
-				base.SetValueImpl (dp, value);
-			} else {
-				base.SetValueImpl (dp, value);
 			}
+
+			base.SetValueImpl (dp, value);
 			
 			if (dp == FrameworkElement.DataContextProperty && bindings.Count > 0) {
 				Dictionary<DependencyProperty, BindingExpressionBase> old = bindings;

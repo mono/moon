@@ -27,15 +27,6 @@ namespace Microsoft.Internal {
 }
 
 namespace System.Windows {
-	partial class ApplicationInternal {
-		public static readonly DependencyProperty ResourcesProperty = DependencyProperty.Lookup (Kind.APPLICATION, "Resources", typeof (ResourceDictionary));
-
-		public ResourceDictionary Resources {
-			get { return (ResourceDictionary) GetValue (ResourcesProperty); }
-			set { SetValue (ResourcesProperty, value); }
-		}
-	}
-
 	partial class AssemblyPart {
 		public static readonly DependencyProperty SourceProperty = DependencyProperty.Lookup (Kind.ASSEMBLYPART, "Source", typeof (string));
 

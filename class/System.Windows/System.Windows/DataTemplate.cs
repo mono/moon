@@ -35,7 +35,7 @@ namespace System.Windows {
 
 		public DependencyObject LoadContent ()
 		{
-			return DependencyObject.FromIntPtr (NativeMethods.data_template_load_content (native));
+			return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.data_template_load_content (native)) as DependencyObject;
 		}
 	}
 }

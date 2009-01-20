@@ -168,7 +168,7 @@ namespace System.Windows {
 			if (custom_property.Metadata == null || custom_property.Metadata.property_changed_callback == null)
 				return;				
 			
-			obj = DependencyObject.Lookup (dependency_object);
+			obj = NativeDependencyObjectHelper.Lookup (dependency_object) as DependencyObject;
 			
 			if (obj == null)
 				return;

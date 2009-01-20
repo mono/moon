@@ -32,8 +32,10 @@ using System.Collections.Generic;
 namespace System.Windows {
 
 	public sealed partial class Setter : SetterBase {
-		private static readonly DependencyProperty PropertyProperty = DependencyProperty.Lookup (Kind.SETTER, "Property", typeof (DependencyProperty));
-		private static readonly DependencyProperty ValueProperty = DependencyProperty.Lookup (Kind.SETTER, "Value", typeof (object));
+		internal static readonly DependencyProperty PropertyProperty = DependencyProperty.Lookup (Kind.SETTER, "Property", typeof (DependencyProperty));
+		internal static readonly DependencyProperty ValueProperty = DependencyProperty.Lookup (Kind.SETTER, "Value", typeof (object));
+		internal static readonly DependencyProperty ConvertedValueProperty = DependencyProperty.Lookup (Kind.SETTER, "ConvertedValue", typeof (object));
+
 		static Dictionary<IntPtr, DependencyProperty> properties = new Dictionary<IntPtr, DependencyProperty> ();
 			
 		object value;
@@ -63,6 +65,11 @@ namespace System.Windows {
 		public object Value {
 			get { return this.value; }
 			set { SetValue (ValueProperty, value); this.value = value; }
+		}
+
+		public object ConvertedValue {
+			get { return GetValue (ConvertedValueProperty); }
+			set { SetValue (ConvertedValueProperty, value); }
 		}
 	}
 }

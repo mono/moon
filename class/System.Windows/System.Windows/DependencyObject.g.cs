@@ -32,12 +32,6 @@ namespace Mono {
 }
 
 namespace System.Windows {
-	partial class ApplicationInternal {
-		public ApplicationInternal () : base (NativeMethods.application_new ()) {}
-		internal ApplicationInternal (IntPtr raw) : base (raw) {}
-		internal override Kind GetKind () { return Kind.APPLICATION; }
-	}
-
 	partial class AssemblyPart {
 		public AssemblyPart () : base (NativeMethods.assembly_part_new ()) {}
 		internal AssemblyPart (IntPtr raw) : base (raw) {}
