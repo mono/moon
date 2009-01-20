@@ -148,14 +148,14 @@ namespace System.Windows
 
 		internal void RaiseCurrentStateChanging (VisualStateChangedEventArgs e)
 		{
-			EventHandler<VisualStateChangedEventArgs> h = (EventHandler<VisualStateChangedEventArgs>) events[CurrentStateChangingEvent];
+			EventHandler<VisualStateChangedEventArgs> h = (EventHandler<VisualStateChangedEventArgs>) EventList [CurrentStateChangingEvent];
 			if (h != null)
 				h (this, e);
 		}
 
 		internal void RaiseCurrentStateChanged (VisualStateChangedEventArgs e)
 		{
-			EventHandler<VisualStateChangedEventArgs> h = (EventHandler<VisualStateChangedEventArgs>) events[CurrentStateChangedEvent];
+			EventHandler<VisualStateChangedEventArgs> h = (EventHandler<VisualStateChangedEventArgs>) EventList [CurrentStateChangedEvent];
 			if (h != null)
 				h (this, e);
 		}
@@ -168,14 +168,10 @@ namespace System.Windows
         /// </summary>
 		public event EventHandler<VisualStateChangedEventArgs> CurrentStateChanging {
 			add {
-				if (events[CurrentStateChangingEvent] == null)
-					Events.AddHandler (this, "CurrentStateChanging", Events.current_state_changing);
-				events.AddHandler (CurrentStateChangingEvent, value);
+				RegisterEvent (CurrentStateChangingEvent, "CurrentStateChanging", Events.current_state_changing, value);
 			}
 			remove {
-				events.RemoveHandler (CurrentStateChangingEvent, value);
-				if (events[CurrentStateChangingEvent] == null)
-					Events.RemoveHandler (this, "CurrentStateChanging", Events.current_state_changing);
+				UnregisterEvent (CurrentStateChangingEvent, "CurrentStateChanging", Events.current_state_changing, value);
 			}
 		}
 
@@ -184,14 +180,10 @@ namespace System.Windows
         /// </summary>
 		public event EventHandler<VisualStateChangedEventArgs> CurrentStateChanged {
 			add {
-				if (events[CurrentStateChangedEvent] == null)
-					Events.AddHandler (this, "CurrentStateChanged", Events.current_state_changed);
-				events.AddHandler (CurrentStateChangedEvent, value);
+				RegisterEvent (CurrentStateChangingEvent, "CurrentStateChanging", Events.current_state_changing, value);
 			}
 			remove {
-				events.RemoveHandler (CurrentStateChangedEvent, value);
-				if (events[CurrentStateChangedEvent] == null)
-					Events.RemoveHandler (this, "CurrentStateChanged", Events.current_state_changed);
+				UnregisterEvent (CurrentStateChangingEvent, "CurrentStateChanging", Events.current_state_changing, value);
 			}
 		}
 

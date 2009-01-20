@@ -68,66 +68,46 @@ namespace System.Windows.Controls {
 
 		public event RoutedEventHandler ImageFailed {
 			add {
-				if (events[ImageFailedEvent] == null)
-					Events.AddHandler (this, "ImageFailed", image_failed);
-				events.AddHandler (ImageFailedEvent, value);
+				RegisterEvent (ImageFailedEvent, "ImageFailed", image_failed, value);
 			}
 			remove {
-				events.RemoveHandler (ImageFailedEvent, value);
-				if (events[ImageFailedEvent] == null)
-					Events.RemoveHandler (this, "ImageFailed", image_failed);
+				UnregisterEvent (ImageFailedEvent, "ImageFailed", image_failed, value);
 			}
 		}
 
 		public event EventHandler<ExceptionRoutedEventArgs> ImageOpenFailed {
 			add {
-				if (events[ImageOpenFailedEvent] == null)
-					Events.AddHandler (this, "ImageOpenFailed", image_open_failed);
-				events.AddHandler (ImageOpenFailedEvent, value);
+				RegisterEvent (ImageOpenFailedEvent, "ImageOpenFailed", image_open_failed, value);
 			}
 			remove {
-				if (events[ImageOpenFailedEvent] == null)
-					Events.AddHandler (this, "ImageOpenFailed", image_open_failed);
-				events.AddHandler (ImageOpenFailedEvent, value);
+				UnregisterEvent (ImageOpenFailedEvent, "ImageOpenFailed", image_open_failed, value);
 			}
 		}
 
 		public event RoutedEventHandler ImageOpenSucceeded {
 			add {
-				if (events[ImageOpenSucceededEvent] == null)
-					Events.AddHandler (this, "ImageOpenSucceeded", image_open_succeeded);
-				events.AddHandler (ImageOpenSucceededEvent, value);
+				RegisterEvent (ImageOpenSucceededEvent, "ImageOpenSucceeded", image_open_succeeded, value);
 			}
 			remove {
-				events.RemoveHandler (ImageOpenSucceededEvent, value);
-				if (events[ImageOpenSucceededEvent] == null)
-					Events.RemoveHandler (this, "ImageOpenSucceeded", image_open_succeeded);
+				UnregisterEvent (ImageOpenSucceededEvent, "ImageOpenSucceeded", image_open_succeeded, value);
 			}
 		}
 
 		public event RoutedEventHandler MotionFinished {
 			add {
-				if (events[MotionFinishedEvent] == null)
-					Events.AddHandler (this, "MotionFinished", motion_finished);
-				events.AddHandler (MotionFinishedEvent, value);
+				RegisterEvent (MotionFinishedEvent, "MotionFinished", motion_finished, value);
 			}
 			remove {
-				events.RemoveHandler (MotionFinishedEvent, value);
-				if (events[MotionFinishedEvent] == null)
-					Events.RemoveHandler (this, "MotionFinished", motion_finished);
+				UnregisterEvent (MotionFinishedEvent, "MotionFinished", motion_finished, value);
 			}
 		}
 
 		public event RoutedEventHandler ViewportChanged {
 			add {
-				if (events[ViewportChangedEvent] == null)
-					Events.AddHandler (this, "ViewportChanged", viewport_changed);
-				events.AddHandler (ViewportChangedEvent, value);
+				RegisterEvent (ViewportChangedEvent, "ViewportChanged", viewport_changed, value);
 			}
 			remove {
-				events.RemoveHandler (ViewportChangedEvent, value);
-				if (events[ViewportChangedEvent] == null)
-					Events.RemoveHandler (this, "ViewportChanged", viewport_changed);
+				UnregisterEvent (ViewportChangedEvent, "ViewportChanged", viewport_changed, value);
 			}
 		}
 
@@ -158,35 +138,35 @@ namespace System.Windows.Controls {
 
 		void InvokeImageFailed ()
 		{
-			EventHandler h = (EventHandler) events[ImageFailedEvent];
+			EventHandler h = (EventHandler) EventList [ImageFailedEvent];
 			if (h != null)
 				h (this, EventArgs.Empty);
 		}
 
 		private void InvokeImageOpenFailed ()
 		{
-			EventHandler<ExceptionRoutedEventArgs> h = (EventHandler<ExceptionRoutedEventArgs>) events[ImageOpenFailedEvent];
+			EventHandler<ExceptionRoutedEventArgs> h = (EventHandler<ExceptionRoutedEventArgs>) EventList [ImageOpenFailedEvent];
 			if (h != null)
 				h (this, null);
 		}
 
 		void InvokeImageOpenSucceeded ()
 		{
-			EventHandler h = (EventHandler) events[ImageOpenSucceededEvent];
+			EventHandler h = (EventHandler) EventList [ImageOpenSucceededEvent];
 			if (h != null)
 				h (this, EventArgs.Empty);
 		}
 
 		void InvokeMotionFinished ()
 		{
-			EventHandler h = (EventHandler) events[MotionFinishedEvent];
+			EventHandler h = (EventHandler) EventList [MotionFinishedEvent];
 			if (h != null)
 				h (this, EventArgs.Empty);
 		}
 
 		void InvokeViewportChanged ()
 		{
-			EventHandler h = (EventHandler) events[ViewportChangedEvent];
+			EventHandler h = (EventHandler) EventList [ViewportChangedEvent];
 			if (h != null)
 				h (this, EventArgs.Empty);
 		}

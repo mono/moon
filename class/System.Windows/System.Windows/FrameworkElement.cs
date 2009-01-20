@@ -120,45 +120,33 @@ namespace System.Windows {
 		
 		public event EventHandler<ValidationErrorEventArgs> BindingValidationError {
 			add {
-				if (events[BindingValidationErrorEvent] == null)
-					Events.AddHandler (this, "BindingValidationError", Events.binding_validation_error);
-				events.AddHandler (BindingValidationErrorEvent, value);
+				RegisterEvent (BindingValidationErrorEvent, "BindingValidationError", Events.binding_validation_error, value);
 			}
 			remove {
-				events.RemoveHandler (BindingValidationErrorEvent, value);
-				if (events[BindingValidationErrorEvent] == null)
-					Events.RemoveHandler (this, "BindingValidationError", Events.binding_validation_error);
+				UnregisterEvent (BindingValidationErrorEvent, "BindingValidationError", Events.binding_validation_error, value);
 			}
 		}
 
 		public event EventHandler LayoutUpdated {
 			add {
-				if (events[LayoutUpdatedEvent] == null)
-					Events.AddHandler (this, "LayoutUpdated", Events.layout_updated);
-				events.AddHandler (LayoutUpdatedEvent, value);
+				RegisterEvent (LayoutUpdatedEvent, "LayoutUpdated", Events.layout_updated, value);
 			}
 			remove {
-				events.RemoveHandler (LayoutUpdatedEvent, value);
-				if (events[LayoutUpdatedEvent] == null)
-					Events.RemoveHandler (this, "LayoutUpdated", Events.layout_updated);
+				UnregisterEvent (LayoutUpdatedEvent, "LayoutUpdated", Events.layout_updated, value);
 			}
 		}
 
 		public event RoutedEventHandler Loaded {
-			add { events.AddHandler (LoadedEvent_, value); }
-			remove { events.RemoveHandler (LoadedEvent_, value); }
+			add { EventList.AddHandler (LoadedEvent_, value); }
+			remove { EventList.RemoveHandler (LoadedEvent_, value); }
 		}
 
 		public event SizeChangedEventHandler SizeChanged {
 			add {
-				if (events[SizeChangedEvent] == null)
-					Events.AddHandler (this, "SizeChanged", Events.size_changed);
-				events.AddHandler (SizeChangedEvent, value);
+				RegisterEvent (SizeChangedEvent, "SizeChanged", Events.size_changed, value);
 			}
 			remove {
-				events.RemoveHandler (SizeChangedEvent, value);
-				if (events[SizeChangedEvent] == null)
-					Events.RemoveHandler (this, "SizeChanged", Events.size_changed);
+				UnregisterEvent (SizeChangedEvent, "SizeChanged", Events.size_changed, value);
 			}
 		}
 
@@ -169,7 +157,7 @@ namespace System.Windows {
 			// don't need to worry about doing anything
 			// special here.  Create a new RoutedEventArgs
 			// here and invoke it as normal.
-			RoutedEventHandler reh = (RoutedEventHandler)events[LoadedEvent_];
+			RoutedEventHandler reh = (RoutedEventHandler) EventList [LoadedEvent_];
 			if (reh != null) {
 				RoutedEventArgs args = new RoutedEventArgs();
 				args.OriginalSource = this;
@@ -179,7 +167,7 @@ namespace System.Windows {
 
 		internal void InvokeLayoutUpdated ()
 		{
-			EventHandler h = (EventHandler)events[LayoutUpdatedEvent];
+			EventHandler h = (EventHandler) EventList [LayoutUpdatedEvent];
 			if (h != null)
 				h (this, EventArgs.Empty);
 		}
@@ -187,7 +175,7 @@ namespace System.Windows {
 		internal void InvokeSizeChanged (SizeChangedEventArgs args)
 		{
 			// RoutedEvent subclass, but doesn't bubble.
-			SizeChangedEventHandler h = (SizeChangedEventHandler)events[SizeChangedEvent];
+			SizeChangedEventHandler h = (SizeChangedEventHandler) EventList [SizeChangedEvent];
 			if (h != null)
 				h (this, args);
 		}

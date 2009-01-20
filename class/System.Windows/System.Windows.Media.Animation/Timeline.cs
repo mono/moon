@@ -45,7 +45,7 @@ namespace System.Windows.Media.Animation {
 
 		private void InvokeCompleted ()
 		{
-			EventHandler h = (EventHandler)events[CompletedEvent];
+			EventHandler h = (EventHandler) EventList [CompletedEvent];
 			if (h != null)
 				h (this, EventArgs.Empty);
 		}
@@ -53,14 +53,10 @@ namespace System.Windows.Media.Animation {
 		static object CompletedEvent = new object ();
 		public event EventHandler Completed {
 			add {
-				if (events[CompletedEvent] == null)
-					Events.AddHandler (this, "Completed", completed_proxy);
-				events.AddHandler (CompletedEvent, value);
+				RegisterEvent (CompletedEvent, "Completed", completed_proxy, value);
 			}
 			remove {
-				events.RemoveHandler (CompletedEvent, value);
-				if (events[CompletedEvent] == null)
-					Events.RemoveHandler (this, "Completed", completed_proxy);
+				UnregisterEvent (CompletedEvent, "Completed", completed_proxy, value);
 			}
 		}
 

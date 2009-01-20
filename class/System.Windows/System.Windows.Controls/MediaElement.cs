@@ -103,92 +103,64 @@ namespace System.Windows.Controls {
 		
 		public event RoutedEventHandler BufferingProgressChanged {
 			add {
-				if (events[BufferingProgressChangedEvent] == null)
-					Events.AddHandler (this, "BufferingProgressChanged", buffering_progress_changed);
-				events.AddHandler (BufferingProgressChangedEvent, value);
+				RegisterEvent (BufferingProgressChangedEvent, "BufferingProgressChanged", buffering_progress_changed, value);
 			}
 			remove {
-				events.RemoveHandler (BufferingProgressChangedEvent, value);
-				if (events[BufferingProgressChangedEvent] == null)
-					Events.RemoveHandler (this, "BufferingProgressChanged", buffering_progress_changed);
+				UnregisterEvent (BufferingProgressChangedEvent, "BufferingProgressChanged", buffering_progress_changed, value);
 			}
 		}
 
 		public event RoutedEventHandler CurrentStateChanged {
 			add {
-				if (events[CurrentStateChangedEvent] == null)
-					Events.AddHandler (this, "CurrentStateChanged", current_state_changed);
-				events.AddHandler (CurrentStateChangedEvent, value);
+				RegisterEvent (CurrentStateChangedEvent, "CurrentStateChanged", current_state_changed, value);
 			}
 			remove {
-				events.RemoveHandler (CurrentStateChangedEvent, value);
-				if (events[CurrentStateChangedEvent] == null)
-					Events.RemoveHandler (this, "CurrentStateChanged", current_state_changed);
+				UnregisterEvent (CurrentStateChangedEvent, "CurrentStateChanged", current_state_changed, value);
 			}
 		}
 		
 		public event RoutedEventHandler DownloadProgressChanged {
 			add {
-				if (events[DownloadProgressChangedEvent] == null)
-					Events.AddHandler (this, "DownloadProgressChanged", download_progress_changed);
-				events.AddHandler (DownloadProgressChangedEvent, value);
+				RegisterEvent (DownloadProgressChangedEvent, "DownloadProgressChanged", download_progress_changed, value);
 			}
 			remove {
-				events.RemoveHandler (DownloadProgressChangedEvent, value);
-				if (events[DownloadProgressChangedEvent] == null)
-					Events.RemoveHandler (this, "DownloadProgressChanged", download_progress_changed);
+				UnregisterEvent (DownloadProgressChangedEvent, "DownloadProgressChanged", download_progress_changed, value);;
 			}
 		}
 		
 		public event TimelineMarkerRoutedEventHandler MarkerReached {
 			add {
-				if (events[MarkerReachedEvent] == null)
-					Events.AddHandler (this, "MarkerReached", marker_reached);
-				events.AddHandler (MarkerReachedEvent, value);
+				RegisterEvent (MarkerReachedEvent, "MarkerReached", marker_reached, value);
 			}
 			remove {
-				events.RemoveHandler (MarkerReachedEvent, value);
-				if (events[MarkerReachedEvent] == null)
-					Events.RemoveHandler (this, "MarkerReached", marker_reached);
+				UnregisterEvent (MarkerReachedEvent, "MarkerReached", marker_reached, value);
 			}
 		}
 
 		public event RoutedEventHandler MediaOpened {
 			add {
-				if (events[MediaOpenedEvent] == null)
-					Events.AddHandler (this, "MediaOpened", media_opened);
-				events.AddHandler (MediaOpenedEvent, value);
+				RegisterEvent (MediaOpenedEvent, "MediaOpened", media_opened, value);
 			}
 			remove {
-				events.RemoveHandler (MediaOpenedEvent, value);
-				if (events[MediaOpenedEvent] == null)
-					Events.RemoveHandler (this, "MediaOpened", media_opened);
+				UnregisterEvent (MediaOpenedEvent, "MediaOpened", media_opened, value);
 			}
 		}
 
 		public event RoutedEventHandler MediaEnded {
 			add {
-				if (events[MediaEndedEvent] == null)
-					Events.AddHandler (this, "MediaEnded", media_ended);
-				events.AddHandler (MediaEndedEvent, value);
+				RegisterEvent (MediaEndedEvent, "MediaEnded", media_ended, value);
 			}
 			remove {
-				events.RemoveHandler (MediaEndedEvent, value);
-				if (events[MediaEndedEvent] == null)
-					Events.RemoveHandler (this, "MediaEnded", media_ended);
+				UnregisterEvent (MediaEndedEvent, "MediaEnded", media_ended, value);
 			}
 		}
 
 		public event EventHandler <ExceptionRoutedEventArgs> MediaFailed {
 			add {
-				if (events[MediaFailedEvent] == null)
-					Events.AddHandler (this, "MediaFailed", media_failed);
-				events.AddHandler (MediaFailedEvent, value);
+				RegisterEvent (MediaFailedEvent, "MediaFailed", media_failed, value);
 			}
 			remove {
-				events.RemoveHandler (MediaFailedEvent, value);
-				if (events[MediaFailedEvent] == null)
-					Events.RemoveHandler (this, "MediaFailed", media_failed);
+				UnregisterEvent (MediaFailedEvent, "MediaFailed", media_failed, value);
 			}
 		}
 
@@ -210,7 +182,7 @@ namespace System.Windows.Controls {
 		
 		private void InvokeBufferingProgressChanged ()
 		{
-			RoutedEventHandler h = (RoutedEventHandler) events[BufferingProgressChangedEvent];
+			RoutedEventHandler h = (RoutedEventHandler) EventList [BufferingProgressChangedEvent];
 			if (h != null)
 				h (this, null);
 		}
@@ -222,7 +194,7 @@ namespace System.Windows.Controls {
 		
 		private void InvokeCurrentStateChanged ()
 		{
-			RoutedEventHandler h = (RoutedEventHandler) events[CurrentStateChangedEvent];
+			RoutedEventHandler h = (RoutedEventHandler) EventList [CurrentStateChangedEvent];
 			if (h != null)
 				h (this, null);
 		}
@@ -234,7 +206,7 @@ namespace System.Windows.Controls {
 		
 		private void InvokeDownloadProgressChanged ()
 		{
-			RoutedEventHandler h = (RoutedEventHandler) events[DownloadProgressChangedEvent];
+			RoutedEventHandler h = (RoutedEventHandler) EventList [DownloadProgressChangedEvent];
 			if (h != null)
 				h (this, null);
 		}
@@ -246,7 +218,7 @@ namespace System.Windows.Controls {
 		
 		private void InvokeMarkerReached (IntPtr calldata)
 		{
-			TimelineMarkerRoutedEventHandler h = (TimelineMarkerRoutedEventHandler) events[MarkerReachedEvent];
+			TimelineMarkerRoutedEventHandler h = (TimelineMarkerRoutedEventHandler) EventList [MarkerReachedEvent];
 			
 			if (h == null)
 				return;
@@ -263,7 +235,7 @@ namespace System.Windows.Controls {
 		
 		private void InvokeMediaOpened ()
 		{
-			RoutedEventHandler h = (RoutedEventHandler) events[MediaOpenedEvent];
+			RoutedEventHandler h = (RoutedEventHandler) EventList [MediaOpenedEvent];
 			if (h != null)
 				h (this, null);
 		}
@@ -275,7 +247,7 @@ namespace System.Windows.Controls {
 		
 		private void InvokeMediaEnded ()
 		{
-			RoutedEventHandler h = (RoutedEventHandler) events[MediaEndedEvent];
+			RoutedEventHandler h = (RoutedEventHandler) EventList [MediaEndedEvent];
 			if (h != null)
 				h (this, null);
 		}
@@ -287,7 +259,7 @@ namespace System.Windows.Controls {
 		
 		private void InvokeMediaFailed ()
 		{
-			EventHandler h = (EventHandler) events[MediaFailedEvent];
+			EventHandler h = (EventHandler) EventList [MediaFailedEvent];
 			if (h != null)
 				h (this, null);
 		}

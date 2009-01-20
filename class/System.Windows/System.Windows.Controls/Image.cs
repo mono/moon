@@ -60,14 +60,10 @@ namespace System.Windows.Controls {
 		
 		public event EventHandler<ExceptionRoutedEventArgs> ImageFailed {
 			add {
-				if (events[ImageFailedEvent] == null)
-					Events.AddHandler (this, "ImageFailed", image_failed);
-				events.AddHandler (ImageFailedEvent, value);
+				RegisterEvent (ImageFailedEvent, "ImageFailed", image_failed, value);
 			}
 			remove {
-				if (events[ImageFailedEvent] == null)
-					Events.AddHandler (this, "ImageFailed", image_failed);
-				events.AddHandler (ImageFailedEvent, value);
+				UnregisterEvent (ImageFailedEvent, "ImageFailed", image_failed, value);
 			}
 		}
 		
@@ -80,7 +76,7 @@ namespace System.Windows.Controls {
 		
 		private void InvokeImageFailed (/* XXX ErrorEventArgs args */)
 		{
-			EventHandler<ExceptionRoutedEventArgs> h = (EventHandler<ExceptionRoutedEventArgs>) events[ImageFailedEvent];
+			EventHandler<ExceptionRoutedEventArgs> h = (EventHandler<ExceptionRoutedEventArgs>) EventList [ImageFailedEvent];
 			if (h != null)
 				h (this, null); // XXX pass args here
 		}

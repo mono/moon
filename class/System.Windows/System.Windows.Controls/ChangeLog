@@ -1,3 +1,15 @@
+2009-03-15  Alan McGovern  <amcgovern@novell.com>
+
+	* Image.cs:
+	* TextBox.cs:
+	* Control.cs:
+	* PasswordBox.cs:
+	* MediaElement.cs:
+	* MultiScaleImage.cs: Simplify how native events are connected to in
+	managed code. The managed add/remove event methods just call
+	RegisterEvent/UnregisterEvent defined in DO.cs instead of each event
+	managing the event list itself.
+
 2009-01-19  Alan McGovern  <amcgovern@novell.com>
 
 	* Image.cs:

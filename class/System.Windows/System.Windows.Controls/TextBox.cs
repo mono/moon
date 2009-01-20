@@ -81,7 +81,7 @@ namespace System.Windows.Controls {
 		
 		void InvokeSelectionChanged ()
 		{
-			EventHandler h = (EventHandler) events[SelectionChangedEvent];
+			EventHandler h = (EventHandler) EventList [SelectionChangedEvent];
 			if (h != null)
 				h (this, EventArgs.Empty);
 		}
@@ -93,20 +93,16 @@ namespace System.Windows.Controls {
 		
 		public event RoutedEventHandler SelectionChanged {
 			add {
-				if (events[SelectionChangedEvent] == null)
-					Events.AddHandler (this, "SelectionChanged", selection_changed);
-				events.AddHandler (SelectionChangedEvent, value);
+				RegisterEvent (SelectionChangedEvent, "SelectionChanged", selection_changed, value);
 			}
 			remove {
-				events.RemoveHandler (SelectionChangedEvent, value);
-				if (events[SelectionChangedEvent] == null)
-					Events.RemoveHandler (this, "SelectionChanged", selection_changed);
+				UnregisterEvent (SelectionChangedEvent, "SelectionChanged", selection_changed, value);           				
 			}
 		}
 		
 		void InvokeTextChanged ()
 		{
-			EventHandler h = (EventHandler) events[TextChangedEvent];
+			EventHandler h = (EventHandler) EventList [TextChangedEvent];
 			if (h != null)
 				h (this, EventArgs.Empty);
 		}
@@ -118,14 +114,10 @@ namespace System.Windows.Controls {
 		
 		public event TextChangedEventHandler TextChanged {
 			add {
-				if (events[TextChangedEvent] == null)
-					Events.AddHandler (this, "TextChanged", text_changed);
-				events.AddHandler (TextChangedEvent, value);
+				RegisterEvent (TextChangedEvent, "TextChanged", text_changed, value);
 			}
 			remove {
-				events.RemoveHandler (TextChangedEvent, value);
-				if (events[TextChangedEvent] == null)
-					Events.RemoveHandler (this, "TextChanged", text_changed);
+				UnregisterEvent (TextChangedEvent, "TextChanged", text_changed, value);
 			}
 		}
 	}

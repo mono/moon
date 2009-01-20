@@ -90,7 +90,7 @@ namespace System.Windows.Controls {
 		{
 			Control c = (d as Control);
 
-			DependencyPropertyChangedEventHandler handler = (DependencyPropertyChangedEventHandler) c.events [IsEnabledEvent];
+			DependencyPropertyChangedEventHandler handler = (DependencyPropertyChangedEventHandler) c.EventList [IsEnabledEvent];
 			if (handler != null)
 				handler (d, e);
 		}
@@ -98,8 +98,8 @@ namespace System.Windows.Controls {
 		static object IsEnabledEvent = new object ();
 
 		public event DependencyPropertyChangedEventHandler IsEnabledChanged {
-			add { events.AddHandler (IsEnabledEvent, value); }
-			remove { events.RemoveHandler (IsEnabledEvent, value); }
+			add { EventList.AddHandler (IsEnabledEvent, value); }
+			remove { EventList.RemoveHandler (IsEnabledEvent, value); }
 		}
 
 		public bool ApplyTemplate()

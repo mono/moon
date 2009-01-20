@@ -51,8 +51,15 @@ namespace System.Windows {
 		static Thread moonlight_thread;
 		static Dictionary<IntPtr, DependencyObject> objects = new Dictionary<IntPtr, DependencyObject> ();
 		internal IntPtr _native;
-
-		internal EventHandlerList events;
+		EventHandlerList eventList;
+		
+		internal EventHandlerList EventList {
+			get {
+				if (eventList == null)
+					eventList = new EventHandlerList ();
+				return eventList;
+			}
+		}
 
 		[ThreadStatic] static private Dispatcher dispatcher;
 		private GCHandle _handle;
@@ -89,13 +96,11 @@ namespace System.Windows {
 		protected DependencyObject ()
 		{
 			native = NativeMethods.dependency_object_new ();
-			events = new EventHandlerList ();
 		}
 
 		internal DependencyObject (IntPtr raw)
 		{
 			native = raw;
-			events = new EventHandlerList ();
 		}
 		
 		//
@@ -320,6 +325,20 @@ namespace System.Windows {
 		public object ReadLocalValue (DependencyProperty dp)
 		{
 			return ReadLocalValueImpl (dp);
+		}
+
+		internal void RegisterEvent (object eventObject, string eventName, UnmanagedEventHandler nativeHandler, Delegate managedHandler)
+		{
+			if (EventList[eventObject] == null)
+				Events.AddHandler (this, eventName, nativeHandler);
+			EventList.AddHandler (eventObject, managedHandler);
+		}
+
+		internal void UnregisterEvent (object eventObject, string eventName, UnmanagedEventHandler nativeHandler, Delegate managedHandler)
+		{
+			EventList.RemoveHandler (eventObject, managedHandler);
+			if (EventList[eventObject] == null)
+				Events.RemoveHandler (this, eventName, nativeHandler);
 		}
 
 		internal virtual object ReadLocalValueImpl (DependencyProperty dp)

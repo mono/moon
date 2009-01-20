@@ -43,7 +43,7 @@ namespace Mono
 
 		private void OnTick ()
 		{
-			EventHandler h = (EventHandler)events[TickEvent];
+			EventHandler h = (EventHandler) EventList [TickEvent];
 			if (h != null) {
 				try {
 					h (managedTimer, EventArgs.Empty);
@@ -57,14 +57,10 @@ namespace Mono
 		static object TickEvent = new object ();
 		public event EventHandler Tick {
 			add {
-				if (events[TickEvent] == null)
-					Events.AddHandler (this, "Tick", tick_proxy);
-				events.AddHandler (TickEvent, value);
+				RegisterEvent (TickEvent, "Tick", tick_proxy, value);
 			}
 			remove {
-				events.RemoveHandler (TickEvent, value);
-				if (events[TickEvent] == null)
-					Events.RemoveHandler (this, "Tick", tick_proxy);
+				UnregisterEvent (TickEvent, "Tick", tick_proxy, value);;
 			}
 		}
 	}

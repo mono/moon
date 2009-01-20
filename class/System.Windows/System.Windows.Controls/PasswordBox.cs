@@ -49,19 +49,15 @@ namespace System.Windows.Controls
 		public PasswordBox (string s)
 			: base (NativeMethods.password_box_new ())
 		{
-
+			
 		}
 
 		public event RoutedEventHandler PasswordChanged {
 			add {
-				if (events[PasswordChangedEvent] == null)
-					Events.AddHandler (this, "PasswordChanged", password_changed);
-				events.AddHandler (PasswordChangedEvent, value);
+				RegisterEvent (PasswordChangedEvent, "PasswordChanged", password_changed, value);
 			}
 			remove {
-				events.RemoveHandler (PasswordChangedEvent, value);
-				if (events[PasswordChangedEvent] == null)
-					Events.RemoveHandler (this, "PasswordChanged", password_changed);
+				UnregisterEvent (PasswordChangedEvent, "PasswordChanged", password_changed, value);
 			}
 		}
 		
@@ -73,7 +69,7 @@ namespace System.Windows.Controls
 
 		void InvokePasswordChanged ()
 		{
-			RoutedEventHandler h = (RoutedEventHandler) events[PasswordChangedEvent];
+			RoutedEventHandler h = (RoutedEventHandler) EventList [PasswordChangedEvent];
 			if (h != null)
 				h (this, new RoutedEventArgs (native));
 		}

@@ -131,201 +131,161 @@ namespace System.Windows {
 		
 		public event RoutedEventHandler GotFocus {
 			add {
-				if (events[GotFocusEvent] == null)
-					Events.AddHandler (this, "GotFocus", Events.got_focus);
-				events.AddHandler (GotFocusEvent, value);
+				RegisterEvent (GotFocusEvent, "GotFocus", Events.got_focus, value);
 			}
 			remove {
-				events.RemoveHandler (GotFocusEvent, value);
-				if (events[GotFocusEvent] == null)
-					Events.RemoveHandler (this, "GotFocus", Events.got_focus);
+				UnregisterEvent (GotFocusEvent, "GotFocus", Events.got_focus, value);
 			}
 		}
 		
 		public event RoutedEventHandler LostFocus {
 			add {
-				if (events[LostFocusEvent] == null)
-					Events.AddHandler (this, "LostFocus", Events.lost_focus);
-				events.AddHandler (LostFocusEvent, value);
+				RegisterEvent (LostFocusEvent, "LostFocus", Events.lost_focus, value);
 			}
 			remove {
-				events.RemoveHandler (LostFocusEvent, value);
-				if (events[LostFocusEvent] == null)
-					Events.RemoveHandler (this, "LostFocus", Events.lost_focus);
+				UnregisterEvent (LostFocusEvent, "LostFocus", Events.lost_focus, value);
 			}
 		}
 
 		public event MouseEventHandler LostMouseCapture {
 			add {
-				if (events[LostMouseCaptureEvent] == null)
-					Events.AddHandler (this, "LostMouseCapture", Events.lost_mouse_capture);
-				events.AddHandler (LostMouseCaptureEvent, value);
+				RegisterEvent (LostMouseCaptureEvent, "LostMouseCapture", Events.lost_mouse_capture, value);
 			}
 			remove {
-				events.RemoveHandler (LostMouseCaptureEvent, value);
-				if (events[LostMouseCaptureEvent] == null)
-					Events.RemoveHandler (this, "LostMouseCapture", Events.lost_mouse_capture);
+				UnregisterEvent (LostMouseCaptureEvent, "LostMouseCapture", Events.lost_mouse_capture, value);
 			}
 		}
 
 		public event KeyEventHandler KeyDown {
 			add {
-				if (events[KeyDownEvent] == null)
-					Events.AddHandler (this, "KeyDown", Events.key_down);
-				events.AddHandler (KeyDownEvent, value);
+				RegisterEvent (KeyDownEvent, "KeyDown", Events.key_down, value);
 			}
 			remove {
-				events.RemoveHandler (KeyDownEvent, value);
-				if (events[KeyDownEvent] == null)
-					Events.RemoveHandler (this, "KeyDown", Events.key_down);
+				UnregisterEvent (KeyDownEvent, "KeyDown", Events.key_down, value);
 			}
 		}
 
 		public event KeyEventHandler KeyUp {
 			add {
-				if (events[KeyUpEvent] == null)
-					Events.AddHandler (this, "KeyUp", Events.key_up);
-				events.AddHandler (KeyUpEvent, value);
+				RegisterEvent (KeyUpEvent, "KeyUp", Events.key_up, value);
 			}
 			remove {
-				events.RemoveHandler (KeyUpEvent, value);
-				if (events[KeyUpEvent] == null)
-					Events.RemoveHandler (this, "KeyUp", Events.key_up);
+				UnregisterEvent (KeyUpEvent, "KeyUp", Events.key_up, value);
 			}
 		}
 
 		public event MouseEventHandler MouseEnter {
 			add {
-				if (events[MouseEnterEvent] == null)
-					Events.AddHandler (this, "MouseEnter", Events.mouse_enter);
-				events.AddHandler (MouseEnterEvent, value);
+				RegisterEvent (MouseEnterEvent, "MouseEnter", Events.mouse_enter, value);
 			}
 			remove {
-				events.RemoveHandler (MouseEnterEvent, value);
-				if (events[MouseEnterEvent] == null)
-					Events.RemoveHandler (this, "MouseEnter", Events.mouse_enter);
+				UnregisterEvent (MouseEnterEvent, "MouseEnter", Events.mouse_enter, value);
 			}
 		}
 
 		public event MouseEventHandler MouseLeave {
 			add {
-				if (events[MouseLeaveEvent] == null)
-					Events.AddHandler (this, "MouseLeave", Events.mouse_leave);
-				events.AddHandler (MouseLeaveEvent, value);
+				RegisterEvent (MouseLeaveEvent, "MouseLeave", Events.mouse_leave, value);
 			}
 			remove {
-				events.RemoveHandler (MouseLeaveEvent, value);
-				if (events[MouseLeaveEvent] == null)
-					Events.RemoveHandler (this, "MouseLeave", Events.mouse_leave);
+				UnregisterEvent (MouseLeaveEvent, "MouseLeave", Events.mouse_leave, value);
 			}
 		}
 
 		public event MouseButtonEventHandler MouseLeftButtonDown {
 			add {
-				if (events[MouseLeftButtonDownEvent] == null)
-					Events.AddHandler (this, "MouseLeftButtonDown", Events.mouse_button_down);
-				events.AddHandler (MouseLeftButtonDownEvent, value);
+				RegisterEvent (MouseLeftButtonDownEvent, "MouseLeftButtonDown", Events.mouse_button_down, value);
 			}
 			remove {
-				events.RemoveHandler (MouseLeftButtonDownEvent, value);
-				if (events[MouseLeftButtonDownEvent] == null)
-					Events.RemoveHandler (this, "MouseLeftButtonDown", Events.mouse_button_down);
+				UnregisterEvent (MouseLeftButtonDownEvent, "MouseLeftButtonDown", Events.mouse_button_down, value);
 			}
 		}
 
 		public event MouseButtonEventHandler MouseLeftButtonUp {
 			add {
-				if (events[MouseLeftButtonUpEvent] == null)
-					Events.AddHandler (this, "MouseLeftButtonUp", Events.mouse_button_up);
-				events.AddHandler (MouseLeftButtonUpEvent, value);
+				RegisterEvent (MouseLeftButtonUpEvent, "MouseLeftButtonUp", Events.mouse_button_up, value);
 			}
 			remove {
-				events.RemoveHandler (MouseLeftButtonUpEvent, value);
-				if (events[MouseLeftButtonUpEvent] == null)
-					Events.RemoveHandler (this, "MouseLeftButtonUp", Events.mouse_button_up);
+				UnregisterEvent (MouseLeftButtonUpEvent, "MouseLeftButtonUp", Events.mouse_button_up, value);
 			}
 		}
 
 		public event MouseEventHandler MouseMove {
 			add {
-				if (events[MouseMoveEvent] == null)
-					Events.AddHandler (this, "MouseMove", Events.mouse_motion);
-				events.AddHandler (MouseMoveEvent, value);
+				RegisterEvent (MouseMoveEvent, "MouseMove", Events.mouse_motion, value);
 			}
 			remove {
-				events.RemoveHandler (MouseMoveEvent, value);
-				if (events[MouseMoveEvent] == null)
-					Events.RemoveHandler (this, "MouseMove", Events.mouse_motion);
+				UnregisterEvent (MouseMoveEvent, "MouseMove", Events.mouse_motion, value);
 			}
 		}
 
 
 		internal virtual void InvokeGotFocus (RoutedEventArgs r)
 		{
-			RoutedEventHandler h = (RoutedEventHandler)events[GotFocusEvent];
+			RoutedEventHandler h = (RoutedEventHandler) EventList [GotFocusEvent];
 			if (h != null)
 				h (this, r);
 		}
 
 		internal virtual void InvokeLostFocus (RoutedEventArgs r)
 		{
-			RoutedEventHandler h = (RoutedEventHandler)events[LostFocusEvent];
+			RoutedEventHandler h = (RoutedEventHandler) EventList [LostFocusEvent];
 			if (h != null)
 				h (this, r);
 		}
 
 		internal virtual void InvokeLostMouseCapture (MouseEventArgs m)
 		{
-			MouseEventHandler h = (MouseEventHandler) events [LostMouseCaptureEvent];
+			MouseEventHandler h = (MouseEventHandler) EventList [LostMouseCaptureEvent];
 			if (h != null)
 				h (this, m);
 		}
 		
 		internal virtual void InvokeMouseMove (MouseEventArgs m)
 		{
-			MouseEventHandler h = (MouseEventHandler)events[MouseMoveEvent];
+			MouseEventHandler h = (MouseEventHandler) EventList [MouseMoveEvent];
 			if (h != null)
 				h (this, m);
 		}
 
 		internal virtual void InvokeMouseButtonDown (MouseButtonEventArgs e)
 		{
-			MouseButtonEventHandler h = (MouseButtonEventHandler)events[MouseLeftButtonDownEvent];
+			MouseButtonEventHandler h = (MouseButtonEventHandler) EventList [MouseLeftButtonDownEvent];
 			if (h != null)
 				h (this, e);
 		}
 
 		internal virtual void InvokeMouseButtonUp (MouseButtonEventArgs e)
 		{
-			MouseButtonEventHandler h = (MouseButtonEventHandler)events[MouseLeftButtonUpEvent];
+			MouseButtonEventHandler h = (MouseButtonEventHandler) EventList [MouseLeftButtonUpEvent];
 			if (h != null)
 				h (this, e);
 		}
 
 		internal virtual void InvokeKeyDown (KeyEventArgs k)
 		{
-			KeyEventHandler h = (KeyEventHandler)events[KeyDownEvent];
+			KeyEventHandler h = (KeyEventHandler) EventList [KeyDownEvent];
 			if (h != null)
 				h (this, k);
 		}
 
 		internal virtual void InvokeKeyUp (KeyEventArgs k)
 		{
-			KeyEventHandler h = (KeyEventHandler)events[KeyUpEvent];
+			KeyEventHandler h = (KeyEventHandler) EventList [KeyUpEvent];
 			if (h != null)
 				h (this, k);
 		}
 
 		internal virtual void InvokeMouseLeave (MouseEventArgs e)
 		{
-			MouseEventHandler h = (MouseEventHandler)events[MouseLeaveEvent];
+			MouseEventHandler h = (MouseEventHandler) EventList [MouseLeaveEvent];
 			if (h != null)
 				h (this, e);
 		}
 
 		internal virtual void InvokeMouseEnter (MouseEventArgs m)
 		{
-			MouseEventHandler h = (MouseEventHandler)events[MouseEnterEvent];
+			MouseEventHandler h = (MouseEventHandler) EventList [MouseEnterEvent];
 			if (h != null)
 				h (this, m);
 		}
