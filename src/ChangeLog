@@ -1,5 +1,10 @@
 2009-01-19  Larry Ewing  <lewing@novell.com>
 
+	* window-gtk.cpp (MoonWindowGtk::InitializeCommon): clear the
+	window to white by default.
+
+2009-01-19  Larry Ewing  <lewing@novell.com>
+	
 	* grid.cpp (Grid::ArrangeOverride): clean up debug spew start
 	implementing arrangeoverride.
 
