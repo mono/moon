@@ -1,3 +1,8 @@
+2009-01-20  Larry Ewing  <lewing@novell.com>
+
+	* Storyboard.cs: add a private dp for Children and access it
+	rather than throwing a NIE.
+
 2009-01-20  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Storyboard.cs: Add missing validations on static methods

@@ -38,6 +38,7 @@ namespace System.Windows.Media.Animation {
 		// FIXME For TargetName and TargetProperty
 		// FIXME Exception if setting on running
 		// This check needs to go in native co
+		private static readonly DependencyProperty ChildrenProperty = DependencyProperty.Lookup (Kind.TIMELINEGROUP, "Children", typeof (TimelineCollection));
 
 		[SecuritySafeCritical ()]
 		public void Begin ()
@@ -63,6 +64,12 @@ namespace System.Windows.Media.Animation {
 			NativeMethods.storyboard_seek (native, timespan.Ticks);
 		}
 
+		public TimelineCollection Children {
+			get {
+				return (TimelineCollection) GetValue (ChildrenProperty);
+			}
+		}
+
 		public void SeekAlignedToLastTick (TimeSpan seekTime)
 		{
 			throw new NotImplementedException ();
@@ -77,10 +84,6 @@ namespace System.Windows.Media.Animation {
 		public void Stop ()
 		{
 			NativeMethods.storyboard_stop (native);
-		}
-
-		public TimelineCollection Children {
-			get { throw new NotImplementedException (); }
 		}
 		
 		public static void SetTarget (Timeline timeline, DependencyObject target)
