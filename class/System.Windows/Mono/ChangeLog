@@ -1,3 +1,7 @@
+2009-01-20  Jackson Harper  <jackson@ximian.com>
+
+	* Types.g.cs: Regen.
+
 2009-03-15  Alan McGovern  <amcgovern@novell.com>
 
 	* DispatcherTimer.cs: Simplify how native events are connected to in

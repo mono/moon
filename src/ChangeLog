@@ -1,3 +1,7 @@
+2009-01-20  Jackson Harper  <jackson@ximian.com>
+
+	* clock.h: Set namespace for Duration and RepeatBehavior
+
 2009-01-20  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* dependencyproperty.g.cpp: Regenerated

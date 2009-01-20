@@ -55,6 +55,7 @@ enum FillBehavior {
 };
 
 /* @IncludeInKinds */
+/* @Namespace=System.Windows */
 struct Duration {
 	enum DurationKind {
 		TIMESPAN,
@@ -116,6 +117,7 @@ struct Duration {
 
 
 /* @IncludeInKinds */
+/* @Namespace=System.Windows.Media.Animation */
 struct RepeatBehavior {
 	enum RepeatKind {
 		COUNT,

@@ -31,6 +31,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.DEPENDENCY_OBJECT));
 				t = typeof (System.Windows.Deployment); 
 				types.Add (t, new ManagedType (t, Kind.DEPLOYMENT));
+				t = typeof (System.Windows.Duration); 
+				types.Add (t, new ManagedType (t, Kind.DURATION));
 				t = typeof (System.Windows.EventTrigger); 
 				types.Add (t, new ManagedType (t, Kind.EVENTTRIGGER));
 				t = typeof (System.Windows.Expression); 
@@ -275,6 +277,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.POINTKEYFRAME));
 				t = typeof (System.Windows.Media.Animation.PointKeyFrameCollection); 
 				types.Add (t, new ManagedType (t, Kind.POINTKEYFRAME_COLLECTION));
+				t = typeof (System.Windows.Media.Animation.RepeatBehavior); 
+				types.Add (t, new ManagedType (t, Kind.REPEATBEHAVIOR));
 				t = typeof (System.Windows.Media.Animation.SplineColorKeyFrame); 
 				types.Add (t, new ManagedType (t, Kind.SPLINECOLORKEYFRAME));
 				t = typeof (System.Windows.Media.Animation.SplineDoubleKeyFrame); 
@@ -321,6 +325,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.INT32));
 				t = typeof (string);
 				types.Add (t, new ManagedType (t, Kind.STRING));
+				t = typeof (TimeSpan);
+				types.Add (t, new ManagedType (t, Kind.TIMESPAN));
 			} catch (Exception ex) {
 				Console.WriteLine ("There was an error while loading native types: " + ex.ToString ());
 			}
