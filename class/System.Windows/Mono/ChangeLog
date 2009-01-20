@@ -1,3 +1,19 @@
+2009-01-20  Chris Toshok  <toshok@ximian.com>
+
+	* MoonlightTypeConverter.cs: a base level type converter for use
+	with styles.
+
+	* NativeDependencyObjectHelper.cs: move all the guts of the native
+	stuff from DependencyObject here, including all the lookup
+	methods.
+
+	* INativeDependencyObjectWrapper.cs: interface that separates out
+	the central features of a native DependencyObject (a handle, and
+	the ability to set/get DependencyProperties on it) from the
+	managed class DependencyObject.  This allows us to have managed
+	objects that are not DO-subclasses that are backed by unmanaged
+	DO-subclasses (as in Application).
+
 2009-01-20  Jackson Harper  <jackson@ximian.com>
 
 	* Types.g.cs: Regen.
