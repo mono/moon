@@ -41,11 +41,14 @@ system_windows_sources =							\
 	$(srcdir)/Mono/GeneratedPInvokes.cs					\
 	$(srcdir)/Mono/Helper.cs						\
 	$(srcdir)/Mono/Hosting.cs						\
+	$(srcdir)/Mono/INativeDependencyObjectWrapper.cs			\
 	$(srcdir)/Mono/Kind.cs							\
 	$(srcdir)/Mono/ManagedType.cs						\
 	$(srcdir)/Mono/ManagedXamlLoader.cs					\
 	$(srcdir)/Mono/MoonError.cs						\
 	$(srcdir)/Mono/Moonlight.cs						\
+	$(srcdir)/Mono/MoonlightTypeConverter.cs				\
+	$(srcdir)/Mono/NativeDependencyObjectHelper.cs				\
 	$(srcdir)/Mono/NativeMethods.cs						\
 	$(srcdir)/Mono/Report.cs						\
 	$(srcdir)/Mono/StreamCallbacks.cs					\
@@ -197,7 +200,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media.Animation/SplinePointKeyFrame.cs		\
 	$(srcdir)/System.Windows.Media.Animation/TimelineCollection.cs		\
 	$(srcdir)/System.Windows/Application.cs					\
-	$(srcdir)/System.Windows/ApplicationInternal.cs				\
 	$(srcdir)/System.Windows/ApplicationUnhandledExceptionEventArgs.cs	\
 	$(srcdir)/System.Windows/AssemblyPart.cs				\
 	$(srcdir)/System.Windows/AssemblyPartCollection.cs			\

@@ -1,3 +1,8 @@
+2009-01-20  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (system_windows_sources): add the new Mono/ classes,
+	and remove ApplicationInternal.cs.
+
 2009-01-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.mdp: Update.
