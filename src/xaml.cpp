@@ -146,12 +146,14 @@ class XamlContextInternal {
  public:
 	FrameworkTemplate *template_parent;
 	GHashTable *imported_namespaces;
+	Surface *surface;
 	XamlLoaderCallbacks callbacks;
 
 	XamlContextInternal (XamlLoaderCallbacks callbacks, FrameworkTemplate *template_parent, GHashTable *namespaces)
 	{
 		this->callbacks = callbacks;
 		this->template_parent = template_parent;
+		this->surface = template_parent->GetSurface ();
 
 		if (this->callbacks.create_gchandle) 
 			this->callbacks.create_gchandle ();
@@ -1118,6 +1120,11 @@ XamlLoader::XamlLoader (const char* filename, const char* str, Surface* surface,
 	if (context) {
 		callbacks = context->internal->callbacks;		
 		this->vm_loaded = true;
+
+		if (!surface && context->internal->surface) {
+			this->surface = context->internal->surface;
+			this->surface->ref ();
+		}
 	}
 #if DEBUG
 	if (!surface && debug_flags & RUNTIME_DEBUG_XAML) {

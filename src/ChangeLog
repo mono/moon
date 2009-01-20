@@ -1,3 +1,9 @@
+2009-01-20  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: When we create templates make sure we track the
+	template ourself, we can't rely on the ControlTemplate still
+	having a surface when it is applied.
+
 2009-01-20  Jeffrey Stedfast  <fejj@novell.com>
 
 	* keyboard.cpp (Keyboard::OnKeyPress): Update modifiers.
