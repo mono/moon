@@ -1226,6 +1226,7 @@ class Generator {
 		f ("uint", "UINT32");
 		f ("int", "INT32");
 		f ("string", "STRING");
+		f ("TimeSpan", "TIMESPAN");
 
 		text.AppendLine ("\t\t\t} catch (Exception ex) {");
 		text.AppendLine ("\t\t\t\tConsole.WriteLine (\"There was an error while loading native types: \" + ex.ToString ());");

@@ -1,3 +1,8 @@
+2009-01-20  Jackson Harper  <jackson@ximian.com>
+
+	* Generator.cs: TimeSpan isn't a struct, so it still needs to be
+	registered manually.
+
 2009-01-19  Jackson Harper  <jackson@ximian.com>
 
 	* Generator.cs: Register ManagedTypes for non DO types also.
