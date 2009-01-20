@@ -108,6 +108,12 @@ class TypeReference {
 					managed_type = "Value";
 				}
 				break;
+			case "ApplyDefaultStyleCallback":
+				managed_type = "Mono.ApplyDefaultStyleCallback";
+				break;
+			case "ApplyStyleCallback":
+				managed_type = "Mono.ApplyStyleCallback";
+				break;
 			case "NativePropertyChangedHandler*":
 				managed_type = "Mono.NativePropertyChangedHandler";
 				break;

@@ -1,3 +1,10 @@
+2009-01-20  Chris Toshok  <toshok@ximian.com>
+
+	* Generator.cs (GenerateTypes_G): explicitly output the mapping
+	between System.Windows.Application and Kind.APPLICATION.
+
+	* TypeReference.cs: add the new application style delegate types.
+
 2009-01-20  Jackson Harper  <jackson@ximian.com>
 
 	* Generator.cs: TimeSpan isn't a struct, so it still needs to be
