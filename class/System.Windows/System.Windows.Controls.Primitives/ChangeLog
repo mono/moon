@@ -1,3 +1,7 @@
+2009-01-20  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Popup.cs: Fix build
+
 2009-01-20  Alan McGovern  <amcgovern@novell.com>
 
 	* Popup.cs: When IsOpen is changed, we need to fire either Opened or

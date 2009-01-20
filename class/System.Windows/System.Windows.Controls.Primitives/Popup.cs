@@ -53,7 +53,7 @@ namespace System.Windows.Controls.Primitives {
 			}
 			remove {
 				closed_event -= value;
-				if (ClosedEvent == null && OpenedEvent == null)
+				if (closed_event == null && opened_event == null)
 					UnregisterEvent (IsOpenChangedEvent, "IsOpenChanged", isopen_changed, DoNothing);
 			}
 		}
@@ -66,7 +66,7 @@ namespace System.Windows.Controls.Primitives {
 			}
 			remove  {
 				opened_event -= value;
-				if (ClosedEvent == null && OpenedEvent == null)
+				if (closed_event == null && opened_event == null)
 					UnregisterEvent (IsOpenChangedEvent, "IsOpenChanged", isopen_changed, DoNothing);
 			}
 		}
