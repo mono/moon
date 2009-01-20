@@ -50,9 +50,11 @@ namespace System.Windows.Controls {
 		protected object DefaultStyleKey {
 			get { return (object) GetValue (DefaultStyleKeyProperty); }
 			set {
+				Type t = value as Type;
 				// feels weird but that's unit tested as such
-				if (value == null)
+				if (t == null || (t == ControlType) || !t.IsSubclassOf (ControlType))
 					throw new ArgumentException ("DefaultStyleKey");
+
 				SetValue (DefaultStyleKeyProperty, value);
 			}
 		}
@@ -62,18 +64,8 @@ namespace System.Windows.Controls {
 				"DefaultStyleKey",
 				typeof (object),
 				typeof (Control),
-				new PropertyMetadata (OnDefaultStyleKeyPropertyChanged)
+				null
 			);
-
-		private static void OnDefaultStyleKeyPropertyChanged (DependencyObject d, DependencyPropertyChangedEventArgs e) 
-		{
-			if (e.NewValue == null)
-				return;
-			// expected to be a Type
-			Type nv = (e.NewValue as Type);
-			if ((nv == null) || (nv == ControlType) || !nv.IsSubclassOf (ControlType))
-				throw new ArgumentException ("DefaultStyleKey");
-		}
 
 		public bool IsEnabled {
 			get { return (bool) GetValue (IsEnabledProperty); }
@@ -117,19 +109,7 @@ namespace System.Windows.Controls {
 			if (childName == null)
 				throw new ArgumentException ("childName");
 
-			return DependencyObject.FromIntPtr (NativeMethods.control_get_template_child (native, childName));
-		}
-
-		[MonoTODO]
-		internal override void InvokeLoaded ()
-		{
-			if (DefaultStyleKey != null) {
-				Style s = Application.Current.GetGenericXamlStyleFor ((Type)DefaultStyleKey);
-
-				// XXX do something with the Style here.
-			}
-
-			base.InvokeLoaded ();
+			return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.control_get_template_child (native, childName)) as DependencyObject;
 		}
 
 		internal override void InvokeGotFocus (RoutedEventArgs e)

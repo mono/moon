@@ -1,3 +1,13 @@
+2009-01-20  Chris Toshok  <toshok@ximian.com>
+
+	* Control.cs: we no longer need to override InvokeLoaded - the
+	style process is driven in unmanaged code.  Also clean up the
+	handling of DefaultStyleKey - we can't throw an exception in the
+	changed handler.  it has to be thrown before the value is changed.
+	Get rid of the change handler.
+
+	* TextBox.cs: get rid of the Initialize method.
+	
 2009-03-15  Alan McGovern  <amcgovern@novell.com>
 
 	* Image.cs:
