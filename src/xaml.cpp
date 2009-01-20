@@ -49,7 +49,7 @@
 #include "control.h"
 #include "template.h"
 #include "style.h"
-
+#include "application.h"
 #include "binding.h"
 #include "thickness.h"
 #include "cornerradius.h"
@@ -558,16 +558,29 @@ class XamlParserInfo {
 
 	bool LookupNamedResource (const char *name, Value **v)
 	{
-		if (current_element)
-			return LookupNamedItemResource (current_element->GetAsDependencyObject (), name, v);
+		if (current_element && LookupNamedItemResource (current_element->GetAsDependencyObject (), name, v)) {
+			return true;
+		}
 
-		if (!loader)
-			return false;
+		if (loader) {
+			XamlContext *context = loader->GetContext ();
+			if (context && LookupNamedItemResource (context->internal->template_parent, name, v))
+				return true;
+		}
 
-		XamlContext *context = loader->GetContext ();
-		if (context)
-			return LookupNamedItemResource (context->internal->template_parent, name, v);
+		Application *app = Application::GetCurrent ();
+		if (app) {
+			ResourceDictionary *rd = app->GetResources ();
 
+			bool exists = false;
+			Value *resource_value = rd->Get (name, &exists);
+
+			if (exists) {
+				*v = new Value (*resource_value);
+				return true;
+			}
+		}
+		
 		return false;
 	}
 
