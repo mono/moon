@@ -35,7 +35,7 @@ namespace System.Windows.Input
 			if (col == IntPtr.Zero)
 				return null;
 
-			return (StylusPointCollection) DependencyObject.Lookup (Kind.STYLUSPOINT_COLLECTION, col);
+			return (StylusPointCollection) NativeDependencyObjectHelper.Lookup (Kind.STYLUSPOINT_COLLECTION, col);
 		}
 	}
 }
