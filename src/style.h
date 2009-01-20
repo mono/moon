@@ -128,7 +128,10 @@ class Setter : public SetterBase {
 	static DependencyProperty *PropertyProperty;
 	/* @PropertyType=object */
 	static DependencyProperty *ValueProperty;
-	
+
+	/* @PropertyType=object */
+	static DependencyProperty *ConvertedValueProperty;
+
 	/* @GenerateCBinding,GeneratePInvoke */
 	Setter ();
 

@@ -9,6 +9,7 @@
 
 #include "animation.h"
 #include "animation2.h"
+#include "application.h"
 #include "bitmapimage.h"
 #include "border.h"
 #include "brush.h"
@@ -301,6 +302,7 @@ dependency_property_g_init (void)
 	ScaleTransform::CenterYProperty = DependencyProperty::Register (Type::SCALETRANSFORM, "CenterY", new Value (0.0), Type::DOUBLE);
 	ScaleTransform::ScaleXProperty = DependencyProperty::Register (Type::SCALETRANSFORM, "ScaleX", new Value (1.0), Type::DOUBLE);
 	ScaleTransform::ScaleYProperty = DependencyProperty::Register (Type::SCALETRANSFORM, "ScaleY", new Value (1.0), Type::DOUBLE);
+	Setter::ConvertedValueProperty = DependencyProperty::Register (Type::SETTER, "ConvertedValue", Type::OBJECT);
 	Setter::PropertyProperty = DependencyProperty::Register (Type::SETTER, "Property", Type::DEPENDENCYPROPERTY);
 	Setter::ValueProperty = DependencyProperty::Register (Type::SETTER, "Value", Type::OBJECT);
 	SetterBase::IsSealedProperty = DependencyProperty::Register (Type::SETTERBASE, "IsSealed", new Value (false), Type::BOOL);
@@ -649,6 +651,7 @@ DependencyProperty *ScaleTransform::CenterXProperty = NULL;
 DependencyProperty *ScaleTransform::CenterYProperty = NULL;
 DependencyProperty *ScaleTransform::ScaleXProperty = NULL;
 DependencyProperty *ScaleTransform::ScaleYProperty = NULL;
+DependencyProperty *Setter::ConvertedValueProperty = NULL;
 DependencyProperty *Setter::PropertyProperty = NULL;
 DependencyProperty *Setter::ValueProperty = NULL;
 DependencyProperty *SetterBase::IsSealedProperty = NULL;
@@ -746,6 +749,19 @@ DependencyProperty *UIElement::VisibilityProperty = NULL;
 DependencyProperty *UserControl::ContentProperty = NULL;
 DependencyProperty *VideoBrush::SourceNameProperty = NULL;
 DependencyProperty *VisualBrush::VisualProperty = NULL;
+
+ResourceDictionary *
+Application::GetResources ()
+{
+	Value *value = GetValue (Application::ResourcesProperty);
+	return value ? value->AsResourceDictionary () : NULL;
+}
+
+void
+Application::SetResources (ResourceDictionary *value)
+{
+	SetValue (Application::ResourcesProperty, Value (value));
+}
 
 bool
 ArcSegment::GetIsLargeArc ()
@@ -1248,6 +1264,20 @@ Control::SetBorderThickness (Thickness *value)
 {
 	if (!value) return;
 	SetValue (Control::BorderThicknessProperty, Value (*value));
+}
+
+ManagedTypeInfo *
+Control::GetDefaultStyleKey ()
+{
+	Value *value = GetValue (Control::DefaultStyleKeyProperty);
+	return value ? value->AsManagedTypeInfo () : NULL;
+}
+
+void
+Control::SetDefaultStyleKey (ManagedTypeInfo *value)
+{
+	if (!value) return;
+	SetValue (Control::DefaultStyleKeyProperty, Value (*value));
 }
 
 const char *

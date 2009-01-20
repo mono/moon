@@ -1,3 +1,46 @@
+2009-01-20  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyproperty.g.cpp, type-generated.cpp, cbinding.h,
+	cbinding.cpp: regen.
+
+	* Makefile.am (libmoon_include_headers): add application.h
+	(libmoon_la_SOURCES): add application.cpp
+
+	* frameworkelement.cpp (FrameworkElement::SetValueWithErrorImpl):
+	if the style was set, call Application::ApplyStyle -- doesn't
+	actually *apply* the style, it just converts the values.
+
+	* style.cpp (SetterBase::SetValueWithErrorImpl): we allow setting
+	the ConvertedValueProperty after the setter is sealed.
+
+	* style.h (class Setter): add ConvertedValueProperty.
+
+	* textbox.h (class TextBox): remove @CallInitialize.
+
+	* textbox.cpp (TextBox::TextBox): i hate the way this is
+	expressed (we need a ManagedTypeInfo ctor/dtor), but set
+	DefaultStyleKey here instead of in managed land.
+
+	* provider.cpp (StylePropertyValueProvider::GetPropertyValue):
+	return the converted property value, not the original (which may
+	have been a string.)
+	(StylePropertyValueProvider::SealStyle): only put setters in the
+	hash if their converted value is non-null.
+
+	* control.h (class Control): generate accessors for
+	DefaultStyleKey.
+
+	* control.cpp (Control::OnLoaded): do the default style
+	application here.
+	(Control::ApplyTemplate): output a little spew so we
+	can tell if we're applying a template.
+
+	* application.h, application.cpp: move Application here, and make
+	it a full DO subclass.  It no longer maps to the managed
+	ApplicationInternal.
+
+	* deployment.h: remove Application from here.
+
 2009-01-20  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: When we create templates make sure we track the

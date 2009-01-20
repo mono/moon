@@ -71,22 +71,4 @@ class Deployment : public DependencyObject {
 	virtual Type::Kind GetObjectType () { return Type::DEPLOYMENT; } 
 };
 
-
-/* @SilverlightVersion="2" */
-/* @Namespace=System.Windows */
-/* @ManagedName=ApplicationInternal */
-class Application : public DependencyObject {
- protected:
-	virtual ~Application () {}
-	
- public:
-	/* @PropertyType=ResourceDictionary */
-	static DependencyProperty *ResourcesProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	Application () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::APPLICATION; }
-};
-
 #endif /* __DEPLOYMENT_H__ */

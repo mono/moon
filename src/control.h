@@ -124,6 +124,9 @@ public:
 	void SetVerticalContentAlignment (VerticalAlignment alignment);
 	VerticalAlignment GetVerticalContentAlignment ();
 
+	void SetDefaultStyleKey (ManagedTypeInfo *value);
+	ManagedTypeInfo* GetDefaultStyleKey ();
+
  	/* @PropertyType=Brush,GenerateAccessors */
 	static DependencyProperty *BackgroundProperty;
  	/* @PropertyType=Brush,GenerateAccessors */
@@ -156,7 +159,7 @@ public:
 	static DependencyProperty *TemplateProperty;
  	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentCenter,GenerateAccessors */
 	static DependencyProperty *VerticalContentAlignmentProperty;
-	/* @PropertyType=ManagedTypeInfo,ManagedPropertyType=object,GenerateManagedDP=false */
+	/* @PropertyType=ManagedTypeInfo,ManagedPropertyType=object,GenerateManagedDP=false,GenerateAccessors */
 	static DependencyProperty *DefaultStyleKeyProperty;
 	
 protected:

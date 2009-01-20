@@ -16,37 +16,6 @@
 #include "style.h"
 #include "error.h"
 
-bool
-SetterBaseCollection::ValidateSetter (Value *value, MoonError *error)
-{
-	if (value->Is(Type::SETTER)) {
-		Setter *s = value->AsSetter ();
-		if (!s->GetValue (Setter::PropertyProperty)) {
-			MoonError::FillIn (error, MoonError::EXCEPTION, "Cannot have a null target property");
-			return false;	
-		}
-	}
-	
-	if (value->Is (Type::SETTERBASE)) {
-		SetterBase *s = value->AsSetterBase ();
-		if (s->GetAttached ()) {
-			MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Setter is currently attached to another style");
-			return false;
-		}
-		if (s->GetIsSealed ()) {
-			MoonError::FillIn (error, MoonError::EXCEPTION, "Cannot reuse a setter after it has been sealed");
-			return false;
-		}
-	}
-
-	if (GetIsSealed ()) {
-		MoonError::FillIn (error, MoonError::EXCEPTION, "Cannot add a setter to a sealed style");
-		return false;
-	}
-
-	return true;
-}
-
 Style::Style ()
 {
 	SetValue (Style::SettersProperty, Value::CreateUnref (new SetterBaseCollection()));
@@ -112,6 +81,37 @@ SetterBaseCollection::RemovedFromCollection (Value *value)
 	value->AsSetterBase ()->SetAttached (false);
 }
 
+bool
+SetterBaseCollection::ValidateSetter (Value *value, MoonError *error)
+{
+	if (value->Is(Type::SETTER)) {
+		Setter *s = value->AsSetter ();
+		if (!s->GetValue (Setter::PropertyProperty)) {
+			MoonError::FillIn (error, MoonError::EXCEPTION, "Cannot have a null target property");
+			return false;	
+		}
+	}
+	
+	if (value->Is (Type::SETTERBASE)) {
+		SetterBase *s = value->AsSetterBase ();
+		if (s->GetAttached ()) {
+			MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Setter is currently attached to another style");
+			return false;
+		}
+		if (s->GetIsSealed ()) {
+			MoonError::FillIn (error, MoonError::EXCEPTION, "Cannot reuse a setter after it has been sealed");
+			return false;
+		}
+	}
+
+	if (GetIsSealed ()) {
+		MoonError::FillIn (error, MoonError::EXCEPTION, "Cannot add a setter to a sealed style");
+		return false;
+	}
+
+	return true;
+}
+
 bool 
 SetterBase::GetAttached ()
 {
@@ -139,7 +139,7 @@ SetterBase::Seal ()
 bool
 SetterBase::SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error)
 {
-	if (GetIsSealed ()) {
+	if (GetIsSealed () && property != Setter::ConvertedValueProperty) {
 		MoonError::FillIn (error, MoonError::UNAUTHORIZED_ACCESS, "Cannot modify a setter after it is used");
 		return false;
 	}

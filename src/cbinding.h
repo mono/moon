@@ -9,6 +9,7 @@
 // This should probably be changed to somehow not include c++ headers.
 #include "animation.h"
 #include "animation2.h"
+#include "application.h"
 #include "binding.h"
 #include "bitmapimage.h"
 #include "border.h"
@@ -61,6 +62,15 @@ G_BEGIN_DECLS
  **/
 /* @GeneratePInvoke */
 Application *application_new (void);
+
+/* @GeneratePInvoke */
+Application *application_get_current (void);
+
+/* @GeneratePInvoke */
+void application_register_style_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb);
+
+/* @GeneratePInvoke */
+void application_set_current (Application *current);
 
 /**
  * ArcSegment

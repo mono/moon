@@ -10,6 +10,7 @@
 
 #include "animation.h"
 #include "animation2.h"
+#include "application.h"
 #include "asf.h"
 #include "audio.h"
 #include "audio-alsa.h"

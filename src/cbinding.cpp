@@ -21,6 +21,30 @@ application_new (void)
 }
 
 
+Application *
+application_get_current (void)
+{
+	return Application::GetCurrent ();
+}
+
+
+void
+application_register_style_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->RegisterStyleCallbacks (apply_default_style_cb, apply_style_cb);
+}
+
+
+void
+application_set_current (Application *current)
+{
+	Application::SetCurrent (current);
+}
+
+
 /**
  * ArcSegment
  **/

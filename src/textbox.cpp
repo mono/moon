@@ -247,6 +247,12 @@ class TextBoxDynamicPropertyValueProvider : public PropertyValueProvider {
 
 TextBox::TextBox ()
 {
+	ManagedTypeInfo *type_info = new ManagedTypeInfo ();
+	type_info->assembly_name = g_strdup ("System.Windows");
+	type_info->full_name = g_strdup ("System.Windows.Controls.TextBox");
+
+	SetDefaultStyleKey (type_info);
+
 	providers[PropertyPrecedence_DynamicValue] = new TextBoxDynamicPropertyValueProvider (this);
 	
 	AddHandler (UIElement::KeyDownEvent, TextBox::key_down, this);

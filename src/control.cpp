@@ -17,6 +17,7 @@
 #include "control.h"
 #include "canvas.h"
 #include "namescope.h"
+#include "application.h"
 
 Control::Control ()
 {
@@ -147,9 +148,12 @@ Control::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 Control::OnLoaded ()
 {
+	ManagedTypeInfo *key = GetDefaultStyleKey ();
+	if (key && !GetStyle())
+		Application::GetCurrent()->ApplyDefaultStyle (this, key);
+
 	FrameworkElement::OnLoaded ();
 
-	// XXX we need some ordering work here
 	ApplyTemplate ();
 }
 
@@ -171,6 +175,8 @@ Control::ApplyTemplate ()
 
 	if (!GetTemplate())
 		return false;
+
+	printf ("APPLYING TEMPLATE TO %s\n", GetTypeName());
 
 	applied_template = GetTemplate ();
 	applied_template->ref();

@@ -13,6 +13,7 @@
 
 #include <math.h>
 
+#include "application.h"
 #include "runtime.h"
 #include "namescope.h"
 #include "frameworkelement.h"
@@ -187,11 +188,19 @@ FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 		}
 	}
 	
+	if (value && value->Is (Type::STYLE) && !GetStyle()) {
+		printf ("STYLE WAS SET, this = %s\n", GetTypeName());
+		Style *s = value->AsStyle ();
+		if (s)
+			Application::GetCurrent()->ApplyStyle (this, s);
+	}
+
 	bool result = true;
 	if (value == NULL && activeBinding)
 		UIElement::ClearValue (property);
 	else
 		result = UIElement::SetValueWithErrorImpl (property, value, error);
+
 
 	return result;
 }
@@ -232,8 +241,7 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 
 		InvalidateMeasure ();
 	}
-
-	if (args->property == FrameworkElement::StyleProperty) {
+	else if (args->property == FrameworkElement::StyleProperty) {
 		if (args->new_value) {
 			Style *s = args->new_value->AsStyle ();
 			if (s)

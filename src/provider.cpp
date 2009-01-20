@@ -62,7 +62,7 @@ StylePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 	if (!setter)
 		return NULL;
 	else
-		return setter->GetValue (Setter::ValueProperty);
+		return setter->GetValue (Setter::ConvertedValueProperty);
 }
 
 void
@@ -113,8 +113,6 @@ StylePropertyValueProvider::SealStyle (Style *style)
 {
 	style->Seal();
 
-	// XXX replace this with a hash lookup.  create the hash table when the style is sealed?
-
 	SetterBaseCollection *setters = style->GetSetters ();
 	if (!setters)
 		return;
@@ -143,10 +141,7 @@ StylePropertyValueProvider::SealStyle (Style *style)
 			continue;
 
 		Value *setter_value;
-		if (!(setter_value = setter->GetValue (Setter::ValueProperty)))
-			continue;
-
-		if (!setter_value->Is (setter_property->GetPropertyType()))
+		if (!(setter_value = setter->GetValue (Setter::ConvertedValueProperty)))
 			continue;
 
 		// the hash holds a ref

@@ -77,7 +77,6 @@ class TextBoxDynamicPropertyValueProvider;
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
-/* @CallInitialize */
 class TextBox : public Control, public ITextSource {
 	friend class TextBoxDynamicPropertyValueProvider;
 	
