@@ -73,7 +73,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug ("style lookups on custom DP's fail")]
 		public void TestWithValue ()
 		{
 			HappyButton b = new HappyButton ();
@@ -87,7 +86,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug ("style lookups on custom DP's fail")]
 		public void TestWithString ()
 		{
 			HappyButton b = new HappyButton ();
