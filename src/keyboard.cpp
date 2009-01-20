@@ -42,15 +42,16 @@ Keyboard::OnKeyPress (Key key)
 	
 	switch (key) {
 	case KeyCTRL:
-		modifiers |= ModifierKeyControl;
+		modifiers = (ModifierKeys) (modifiers | ModifierKeyControl);
 		break;
 	case KeyALT:
-		modifiers |= ModifierKeyAlt;
+		modifiers = (ModifierKeys) (modifiers | ModifierKeyAlt);
 		break;
 	case KeySHIFT:
-		modifiers |= ModifierKeyShift;
+		modifiers = (ModifierKeys) (modifiers | ModifierKeyShift);
 		break;
 	default:
+		break;
 	}
 }
 
@@ -64,15 +65,16 @@ Keyboard::OnKeyRelease (Key key)
 	
 	switch (key) {
 	case KeyCTRL:
-		modifiers &= ~ModifierKeyControl;
+		modifiers = (ModifierKeys) (modifiers & ~ModifierKeyControl);
 		break;
 	case KeyALT:
-		modifiers &= ~ModifierKeyAlt;
+		modifiers = (ModifierKeys) (modifiers & ~ModifierKeyAlt);
 		break;
 	case KeySHIFT:
-		modifiers &= ~ModifierKeyShift;
+		modifiers = (ModifierKeys) (modifiers & ~ModifierKeyShift);
 		break;
 	default:
+		break;
 	}
 }
 
