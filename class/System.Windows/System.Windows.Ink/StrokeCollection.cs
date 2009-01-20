@@ -47,7 +47,7 @@ namespace System.Windows.Ink
 			if (col == IntPtr.Zero)
 				return null;
 
-			return (StrokeCollection)DependencyObject.Lookup (Kind.STROKE_COLLECTION, col);
+			return (StrokeCollection)NativeDependencyObjectHelper.Lookup (Kind.STROKE_COLLECTION, col);
 		}
 	}
 }
