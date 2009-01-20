@@ -1857,6 +1857,7 @@ Surface::SetBackgroundColor (Color *color)
 		
 	background_color = new Color (*color);
 
+	active_window->SetBackgroundColor (color);
 	active_window->Invalidate ();
 }
 

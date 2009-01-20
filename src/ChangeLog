@@ -1,5 +1,12 @@
 2009-01-19  Larry Ewing  <lewing@novell.com>
 
+	* runtime.cpp:
+	* window.h:
+	* window-gtk.cpp, window-gtk.h: clean up the set background
+	clearing logic and make it general.
+
+2009-01-19  Larry Ewing  <lewing@novell.com>
+
 	* window-gtk.cpp (MoonWindowGtk::InitializeCommon): clear the
 	window to white by default.
 

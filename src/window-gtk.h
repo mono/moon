@@ -33,6 +33,7 @@ public:
 
 	virtual void Resize (int width, int height);
 	virtual void SetCursor (MouseCursor cursor);
+	virtual void SetBackgroundColor (Color *color);
 	virtual void Invalidate (Rect r);
 	virtual void ProcessUpdates ();
 	virtual gboolean HandleEvent (XEvent *event);

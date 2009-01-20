@@ -85,13 +85,6 @@ MoonWindowGtk::InitializeNormal ()
 void
 MoonWindowGtk::InitializeCommon ()
 {
-	GdkColor c;
-	c.red = 0xffff; // * background_color->r;
-	c.blue = 0xffff; // * background_color->b;
-	c.green = 0xffff; // * background_color->g;
-	
-	gtk_widget_modify_bg (widget, GTK_STATE_NORMAL, &c);
-
 	// don't let gtk clear the window we'll do all the drawing.
 	//gtk_widget_set_app_paintable (widget, true);
 	gtk_widget_set_double_buffered (widget, false);
@@ -219,6 +212,19 @@ static const char *eraser[] = {
 	"    ............    ",
 	"                    "
 };
+
+void
+MoonWindowGtk::SetBackgroundColor (Color *color)
+{
+	GdkColor gdk_color;
+	gdk_color.red = color->r * 0xffff;
+	gdk_color.green = color->g * 0xffff;
+	gdk_color.blue = color->b * 0xffff;
+	
+	gtk_widget_modify_bg (widget, GTK_STATE_NORMAL, &gdk_color);
+
+	MoonWindow::SetBackgroundColor (color);
+}
 
 void
 MoonWindowGtk::SetCursor (MouseCursor cursor)

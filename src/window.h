@@ -24,6 +24,7 @@
 
 #include "rect.h"
 #include "enums.h"
+#include "color.h"
 
 class Surface;
 
@@ -60,6 +61,8 @@ class MoonWindow {
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetTransparent (bool flag) { if (transparent != flag) Invalidate (); transparent = flag; }
+	
+	virtual void SetBackgroundColor (Color *color) { Invalidate (); };
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool GetTransparent () { return transparent; }
