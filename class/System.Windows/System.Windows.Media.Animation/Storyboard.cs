@@ -85,18 +85,28 @@ namespace System.Windows.Media.Animation {
 		
 		public static void SetTarget (Timeline timeline, DependencyObject target)
 		{
+			if (timeline == null)
+				throw new ArgumentNullException ("timeline");
+			if (target == null)
+				throw new ArgumentNullException ("target");
 			// FIXME Exception if setting on running
 			NativeMethods.timeline_set_manual_target (timeline.native, target.native);
 		}
 
 		public static void SetTargetName (Timeline element, string name)
 		{
+			// NOTE: this throws a NRE if element is null, while name == null is a valid value
+
 			// FIXME Exception if setting on running
 			element.SetValue (TargetNameProperty, name);
 		}
 
 		public static void SetTargetProperty (Timeline element, PropertyPath path)
 		{
+			if (element == null)
+				throw new ArgumentNullException ("element");
+			if (path == null)
+				throw new ArgumentNullException ("path");
 			// FIXME Exception if setting on running
 			element.SetValue (TargetPropertyProperty, path.Path);
 		}
@@ -108,6 +118,9 @@ namespace System.Windows.Media.Animation {
 
 		public static PropertyPath GetTargetProperty (Timeline element)
 		{
+			if (element == null)
+				throw new ArgumentNullException ("element");
+
 			string path = (string) element.GetValue (TargetPropertyProperty);
 			return new PropertyPath (path);
 		}

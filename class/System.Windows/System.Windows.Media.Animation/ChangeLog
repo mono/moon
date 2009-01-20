@@ -1,3 +1,7 @@
+2009-01-20  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Storyboard.cs: Add missing validations on static methods
+
 2009-03-15  Alan McGovern  <amcgovern@novell.com>
 
 	* Timeline.cs: Simplify how native events are connected to in managed
