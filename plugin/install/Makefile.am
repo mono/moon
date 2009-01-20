@@ -54,7 +54,6 @@ if INCLUDE_FFMPEG
 endif INCLUDE_FFMPEG
 if INCLUDE_BROWSER_MANAGED_CODE
 	cp -L $(mono_libdir)/libmono.so .xpinstall/plugins/moonlight/
-	cp -L ../moonlight.exe .xpinstall/plugins/moonlight/
 	mkdir -p .xpinstall/plugins/moonlight/mono/2.1/
 	cp -L $(mono_dlldir)/mono/2.1/mscorlib.dll .xpinstall/plugins/moonlight/mono/2.1/
 	find $(mono_dlldir)/mono/2.1 -name \*.dll -and -not -name mscorlib.dll -exec gacutil -i '{}' -package 2.1 -root .xpinstall/plugins/moonlight ';'

@@ -1,3 +1,8 @@
+2009-01-20  Marek Habersack  <mhabersack@novell.com>
+
+	* Makefile.am (novell-moonlight.xpi): moonlight.exe no longer
+	exists
+
 2009-01-12  Jb Evain  <jbevain@novell.com>
 
 	* Makefile.am: remove references to moonlight.cs and moonlight.exe.
