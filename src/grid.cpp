@@ -93,7 +93,7 @@ Grid::MeasureOverride (Size availableSize)
 		GridLength* height = rowdef->GetHeight();
 		row_heights[i] = 0.0;
 
-		if (height && (height->type == GridUnitTypePixel))
+		if (height->type == GridUnitTypePixel)
 			row_heights[i] = height->val;
 	}
 
@@ -102,7 +102,7 @@ Grid::MeasureOverride (Size availableSize)
 		GridLength* width = coldef->GetWidth();
 		column_widths[i] = 0.0;
 
-		if (width && (width->type == GridUnitTypePixel))
+		if (width->type == GridUnitTypePixel)
 			column_widths[i] = width->val;
 
 	}
@@ -124,9 +124,8 @@ Grid::MeasureOverride (Size availableSize)
 		
 		for (int r = row; (r < row + rowspan) && (r < row_count); r++) {
 			RowDefinition *rowdef = rows->GetValueAt (r)->AsRowDefinition ();
-			GridLength* height = rowdef->GetHeight();
 
-			if (height && (height->type == GridUnitTypePixel))
+			if (rowdef->GetHeight ()->type == GridUnitTypePixel)
 			        child_size.height += row_heights [r];
 			else
 				child_size.height += INFINITY;
@@ -137,9 +136,8 @@ Grid::MeasureOverride (Size availableSize)
 
 		for (int c = col; (c < col + colspan) && (c < col_count); c++) {
 			ColumnDefinition *coldef = columns->GetValueAt (c)->AsColumnDefinition ();
-			GridLength* width = coldef->GetWidth();
 
-			if (width && (width->type == GridUnitTypePixel))
+			if (coldef->GetWidth ()->type == GridUnitTypePixel)
 				child_size.width += column_widths [c];
 			else
 				child_size.width += INFINITY;
@@ -161,23 +159,13 @@ Grid::MeasureOverride (Size availableSize)
 		if (col_count) {
 			double remaining_width = child_size.width;
 
-			//printf ("child_size.width = %g\n", child_size.width);
-
 			for (int c = col; (c < col + colspan) && (c < col_count); c++){
-				//printf ("c = %d\n", c);
 				ColumnDefinition *coldef = columns->GetValueAt (c)->AsColumnDefinition ();
 				if (!coldef)
 					break; // XXX what to do if col + colspan is more than the number of columns?
-				GridLength* width = coldef->GetWidth();
-				if (width && (width->type != GridUnitTypePixel)) {
-					/*
-					printf ("column_widths[%d] = %g before, %g after\n",
-						col,
-						column_widths[col],
-						MAX(column_widths[col], remaining_width));
-					*/
+
+				if (coldef->GetWidth ()->type != GridUnitTypePixel)
 					column_widths[col] = MAX(column_widths[col], remaining_width);
-				}
 			}
 		}
 
@@ -188,10 +176,9 @@ Grid::MeasureOverride (Size availableSize)
 				RowDefinition *rowdef = rows->GetValueAt (r)->AsRowDefinition ();
 				if (!rowdef)
 					break; // XXX what to do if row + rowspan is more than the number of rows?
-				GridLength* height = rowdef->GetHeight();
-				if (height && (height->type != GridUnitTypePixel)) {
+
+				if (rowdef->GetHeight ()->type != GridUnitTypePixel)
 					row_heights[col] = MAX(row_heights[col], remaining_height);
-				}
 			}
 		}
 	}
@@ -200,6 +187,7 @@ Grid::MeasureOverride (Size availableSize)
 	for (int r = 0; r < row_count; r ++) {
 		grid_size.height += row_heights[r];
 	}
+
 	for (int c = 0; c < col_count; c ++) {
 		grid_size.width += column_widths[c];
 	}
@@ -218,12 +206,139 @@ Grid::MeasureOverride (Size availableSize)
 Size
 Grid::ArrangeOverride (Size finalSize)
 {
+	ColumnDefinitionCollection *columns = GetColumnDefinitions ();
+	RowDefinitionCollection *rows = GetRowDefinitions ();
+
+	int col_count = columns->GetCount ();
+	int row_count = rows->GetCount ();
+
+	double* row_heights = new double[row_count == 0 ? 1 : row_count];
+	double* column_widths = new double[col_count == 0 ? 1 : col_count];
+
+	Size remaining = finalSize;
+
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
-		Size arranged = child->GetDesiredSize ();
-		Rect child_final = Rect (0, 0,
-					 finalSize.width, finalSize.height);
-		child->Arrange (child_final);
-		// XXX fill layout slot?
+		gint32 col = Grid::GetColumn (child);
+		gint32 row = Grid::GetRow (child);
+		//gint32 colspan = Grid::GetColumnSpan (child);
+		//gint32 rowspan = Grid::GetRowSpan (child);
+		
+		Size desired = child->GetDesiredSize ();
+		if (col < col_count) {
+			ColumnDefinition *coldef = columns->GetValueAt (col)->AsColumnDefinition ();
+			GridLength *width = coldef->GetWidth ();
+
+			if (width->type == GridUnitTypeAuto)
+				column_widths[col] = MAX (column_widths[col], desired.width);
+			if (width->type == GridUnitTypeStar)
+				g_warning ("a star is a star");
+
+		}
+
+		if (row < row_count) {
+			RowDefinition *rowdef = rows->GetValueAt (row)->AsRowDefinition ();
+			GridLength *height = rowdef->GetHeight ();
+			
+			if (height->type == GridUnitTypeAuto)
+				row_heights[row] = MAX (row_heights[row], desired.height);
+			if (height->type == GridUnitTypeStar)
+				g_warning ("a star is a star");
+		}
 	}
+
+	double row_stars = 0.0;
+	for (int i = 0; i < row_count; i ++) {
+		RowDefinition *rowdef = rows->GetValueAt (i)->AsRowDefinition ();
+		GridLength* height = rowdef->GetHeight();
+		row_heights[i] = 0.0;
+
+		if (height->type != GridUnitTypeStar) {
+			row_heights[i] = height->val;
+			remaining.height -= height->val;
+		} else {
+			row_stars += height->val;
+		}
+	}
+
+	double col_stars = 0.0;
+	for (int i = 0; i < col_count; i ++) {
+		ColumnDefinition *coldef = columns->GetValueAt (i)->AsColumnDefinition ();
+		GridLength* width = coldef->GetWidth();
+		column_widths[i] = 0.0;
+
+		if (width->type != GridUnitTypeStar) {
+			column_widths[i] = width->val;
+			remaining.width -= width->val;
+		} else {
+			col_stars += width->val;
+		}
+	}
+
+	for (int i = 0; i < row_count; i ++) {
+		RowDefinition *rowdef = rows->GetValueAt (i)->AsRowDefinition ();
+		GridLength* height = rowdef->GetHeight();
+		row_heights[i] = 0.0;
+
+		if (height->type == GridUnitTypeStar) {
+			row_heights[i] = remaining.height * height->val / row_stars;
+		}
+	}
+
+	for (int i = 0; i < col_count; i ++) {
+		ColumnDefinition *coldef = columns->GetValueAt (i)->AsColumnDefinition ();
+		GridLength* width = coldef->GetWidth();
+		column_widths[i] = 0.0;
+
+		if (width->type == GridUnitTypeStar) {
+			column_widths[i] = remaining.width * width->val / col_stars;
+		} 
+	}
+
+	walker = VisualTreeWalker (this);
+	while (UIElement *child = walker.Step ()) {
+		gint32 col = Grid::GetColumn (child);
+		gint32 row = Grid::GetRow (child);
+		gint32 colspan = Grid::GetColumnSpan (child);
+		gint32 rowspan = Grid::GetRowSpan (child);
+
+		Rect child_final = Rect (0, 0, finalSize.width, finalSize.height);
+		Size min_size;
+		Size max_size;
+
+		for (int r = 0; r < row && r < row_count; r++)
+			child_final.y += row_heights [r];
+
+		for (int r = row; (r < row + rowspan) && (r < row_count); r++) {
+			RowDefinition *rowdef = rows->GetValueAt (r)->AsRowDefinition ();
+
+			child_final.height += row_heights [r];
+			
+			min_size.height += rowdef->GetMinHeight ();
+			max_size.height += rowdef->GetMaxHeight ();
+		}
+
+
+		for (int c = 0; c < col && c < col_count; c++)
+			child_final.x += column_widths[c];
+
+		for (int c = col; (c < col + colspan) && (c < col_count); c++) {
+			ColumnDefinition *coldef = columns->GetValueAt (c)->AsColumnDefinition ();
+
+			child_final.width += column_widths [c];
+
+			min_size.width += coldef->GetMinWidth ();
+			max_size.width += coldef->GetMaxWidth ();
+		}
+
+		child->Arrange (child_final);
+		
+		/*
+		  Size arranged = child.GetRenderSize ();
+		arranged = arranged.Max (min_size);
+		arranged = arranged.Min (max_size);
+		*/
+	}
+
+	return finalSize;
 }
