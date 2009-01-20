@@ -438,8 +438,14 @@ Surface::UpdateLayout ()
 	if (toplevel) {
 		toplevel->Measure (Size (active_window->GetWidth (),
 					 active_window->GetHeight ()));
-		Size desired = toplevel->GetDesiredSize ();
 		toplevel->Arrange (Rect (Canvas::GetLeft (toplevel), Canvas::GetTop (toplevel), 
+					 active_window->GetWidth (), active_window->GetHeight ()));
+	}
+
+	if (full_screen_message) {
+		full_screen_message->Measure (Size (active_window->GetWidth (),
+					 active_window->GetHeight ()));
+		full_screen_message->Arrange (Rect (Canvas::GetLeft (toplevel), Canvas::GetTop (toplevel), 
 					 active_window->GetWidth (), active_window->GetHeight ()));
 	}
 }
