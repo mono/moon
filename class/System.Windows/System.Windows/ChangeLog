@@ -1,3 +1,9 @@
+2009-01-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* TextDecorations.cs: Make sure we always return the same Underline
+	TextDecorationCollection instance every time.
+	* TextDecorationCollection.cs: Associate with TextDecorationKind
+
 2009-01-21  Alan McGovern  <amcgovern@novell.com>
 
 	* DependencyObject.g.cs: regenerated

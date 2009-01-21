@@ -28,8 +28,12 @@ using System;
 
 namespace System.Windows {
 	public sealed class TextDecorationCollection {
-		internal TextDecorationCollection ()
+
+		internal TextDecorationCollection (TextDecorationKind kind)
 		{
+			Kind = kind;
 		}
+
+		internal TextDecorationKind Kind { get; private set; }
 	}
 }

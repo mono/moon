@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2007 Novell, Inc.
+// Copyright 2007,2009 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -29,8 +29,11 @@
 namespace System.Windows {
 
 	public static class TextDecorations {
-    	public static TextDecorationCollection Underline { 
-			get { throw new System.NotImplementedException (); }
+
+		static TextDecorationCollection underline = new TextDecorationCollection (TextDecorationKind.Underline);
+
+	    	public static TextDecorationCollection Underline { 
+			get { return underline; }
 		}
 	}
 }

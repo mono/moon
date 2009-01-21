@@ -1,3 +1,8 @@
+2009-01-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Value.cs: Correctly handle unmanaged-managed transitions of 
+	TextDecorationCollection
+
 2009-01-21  Jackson Harper  <jackson@ximian.com>
 
 	* Value.cs: Types have their correct KIND now.

@@ -126,6 +126,8 @@ namespace Mono {
 						return new FontStyle ((FontStyleKind) i32);
 					else if (type == typeof (FontWeight))
 						return new FontWeight ((FontWeightKind) i32);
+					else if (type == typeof (TextDecorationCollection))
+						return (i32 == (int) TextDecorationKind.Underline) ? TextDecorations.Underline : null;
 					else if (type != null && type.IsEnum)
 						return Enum.ToObject (type, i32);
 					else if (type == typeof (char))
@@ -445,6 +447,10 @@ namespace Mono {
 				else if ((v is FontStretch) || (v is FontStyle) || (v is FontWeight)) {
 					value.k = Kind.INT32;
 					value.u.i32 = v.GetHashCode (); // unit tested as such
+				}
+				else if (v is TextDecorationCollection) {
+					value.k = Kind.INT32;
+					value.u.i32 = (int) (v as TextDecorationCollection).Kind;
 				}
 				else if (v is Type) {
 					Type t = v as Type;
