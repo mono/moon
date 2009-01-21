@@ -8,8 +8,8 @@
  * 
  */
 
-#ifndef __MOON_CONTENT_CONTROL_H__
-#define __MOON_CONTENT_CONTROL_H__
+#ifndef __CONTENT_CONTROL_H__
+#define __CONTENT_CONTROL_H__
 
 #include <glib.h>
 #include "control.h"
@@ -19,23 +19,23 @@
 //
 /* @ContentProperty="Content" */
 /* @SilverlightVersion="2" */
-/* @Namespace=None  */
-/* @ManagedDependencyProperties=Manual */  // This class is from MS sources, so the DP is registered there.
+/* @Namespace=System.Windows.Controls */
 class ContentControl : public Control {
  protected:
-	virtual ~ContentControl () {}
+	virtual ~ContentControl () { }
 	
  public:
- 	/* @PropertyType=DependencyObject */
+ 	/* @PropertyType=DependencyObject,ManagedPropertyType=object,GenerateAccessors */
 	static DependencyProperty *ContentProperty;
-	
- 	/* @PropertyType=DependencyObject */
+ 	/* @PropertyType=DataTemplate,GenerateAccessors */
 	static DependencyProperty *ContentTemplateProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	ContentControl () {}
+	ContentControl () { }
 	
 	virtual Type::Kind GetObjectType () { return Type::CONTENTCONTROL; }
+	
+	//virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	
 	//
 	// Property Accessors
@@ -43,8 +43,8 @@ class ContentControl : public Control {
 	void SetContent (DependencyObject *content);
 	DependencyObject *GetContent ();
 	
-	//void SetContentTemplate (DataTemplate *t);
-	//DataTemplate *GetContentTemplate ();
+	void SetContentTemplate (DataTemplate *t);
+	DataTemplate *GetContentTemplate ();
 };
 
-#endif /* __MOON_CONTENT_CONTROL_H__ */
+#endif /* __CONTENT_CONTROL_H__ */

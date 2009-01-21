@@ -1439,12 +1439,17 @@ TextBox::OnApplyTemplate ()
 	ContentControl *control;
 	TextBoxView *view;
 	
+	printf ("TextBox::OnApplyTemplate ()\n");
+	
 	if (content->Is (Type::CONTENTCONTROL)) {
+		printf ("\tInserting TextBoxView!\n");
 		// Insert our TextBoxView
 		control = (ContentControl *) content;
 		view = new TextBoxView ();
 		view->SetTextBox (this);
 		control->SetContent (view);
+	} else {
+		printf ("\tUnable to insert TextBoxView because the content container is of type: %s\n", content->GetType ()->GetName ());
 	}
 	
 	Control::OnApplyTemplate ();

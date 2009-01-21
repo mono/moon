@@ -89,7 +89,7 @@ dependency_property_g_init (void)
 	ColumnDefinition::MinWidthProperty = DependencyProperty::Register (Type::COLUMNDEFINITION, "MinWidth", new Value (0.0), Type::DOUBLE);
 	ColumnDefinition::WidthProperty = DependencyProperty::Register (Type::COLUMNDEFINITION, "Width", new Value (GridLength (1.0, GridUnitTypeStar)), Type::GRIDLENGTH);
 	ContentControl::ContentProperty = DependencyProperty::Register (Type::CONTENTCONTROL, "Content", Type::DEPENDENCY_OBJECT);
-	ContentControl::ContentTemplateProperty = DependencyProperty::Register (Type::CONTENTCONTROL, "ContentTemplate", Type::DEPENDENCY_OBJECT);
+	ContentControl::ContentTemplateProperty = DependencyProperty::Register (Type::CONTENTCONTROL, "ContentTemplate", Type::DATATEMPLATE);
 	Control::BackgroundProperty = DependencyProperty::Register (Type::CONTROL, "Background", Type::BRUSH);
 	Control::BorderBrushProperty = DependencyProperty::Register (Type::CONTROL, "BorderBrush", Type::BRUSH);
 	Control::BorderThicknessProperty = DependencyProperty::Register (Type::CONTROL, "BorderThickness", new Value (Thickness(0.0)), Type::THICKNESS);
@@ -1224,6 +1224,32 @@ ColumnDefinition::SetWidth (GridLength *value)
 {
 	if (!value) return;
 	SetValue (ColumnDefinition::WidthProperty, Value (*value));
+}
+
+DependencyObject *
+ContentControl::GetContent ()
+{
+	Value *value = GetValue (ContentControl::ContentProperty);
+	return value ? value->AsDependencyObject () : NULL;
+}
+
+void
+ContentControl::SetContent (DependencyObject *value)
+{
+	SetValue (ContentControl::ContentProperty, Value (value));
+}
+
+DataTemplate *
+ContentControl::GetContentTemplate ()
+{
+	Value *value = GetValue (ContentControl::ContentTemplateProperty);
+	return value ? value->AsDataTemplate () : NULL;
+}
+
+void
+ContentControl::SetContentTemplate (DataTemplate *value)
+{
+	SetValue (ContentControl::ContentTemplateProperty, Value (value));
 }
 
 Brush *
