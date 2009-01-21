@@ -44,6 +44,7 @@ namespace MoonTest.System.Windows.Controls.Primitives
 
         [TestMethod]
         [MoonlightBug]
+        [Ignore]
         public void Defaults()
         {
             Popup p = new Popup();
@@ -55,6 +56,7 @@ namespace MoonTest.System.Windows.Controls.Primitives
 
         [TestMethod]
         [MoonlightBug]
+        [Ignore]
         public void NotInVisualTree()
         {
             PopupTestClass c = new PopupTestClass();
