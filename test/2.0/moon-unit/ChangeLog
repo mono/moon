@@ -1,3 +1,8 @@
+2009-01-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Documents/InlineTest.cs: New.
+	* System.Windows.Documents/RunTest.cs: New.
+
 2009-01-21  Alan McGovern  <amcgovern@novell.com>
 
 	* moon-unit.mdp:
