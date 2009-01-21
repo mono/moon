@@ -1,3 +1,7 @@
+2009-01-21  Jackson Harper  <jackson@ximian.com>
+
+	* Generator.cs: Add some managed types.
+
 2009-01-20  Chris Toshok  <toshok@ximian.com>
 
 	* Generator.cs (GenerateTypes_G): explicitly output the mapping

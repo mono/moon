@@ -708,7 +708,10 @@ class Generator {
 		all.Children.Add (new TypeInfo ("Managed", "MANAGED", "OBJECT", true, 2));
 		all.Children.Add (new TypeInfo ("TimeSpan", "TIMESPAN", "OBJECT", true));
 		all.Children.Add (new TypeInfo ("char", "CHAR", "OBJECT", true));
-
+		all.Children.Add (new TypeInfo ("System.Windows.FontStretch", "FONTSTRETCH", "OBJECT", true));
+		all.Children.Add (new TypeInfo ("System.Windows.Media.FontFamily", "FONTFAMILY", "OBJECT", true));
+		all.Children.Add (new TypeInfo ("System.Windows.Markup.XmlLanguage", "XMLLANGUAGE", "OBJECT", true));
+	
 		
 		return all;
 	}
@@ -1228,6 +1231,9 @@ class Generator {
 		f ("string", "STRING");
 		f ("TimeSpan", "TIMESPAN");
 		f ("System.Windows.Application", "APPLICATION");
+		f ("System.Windows.FontStretch", "FONTSTRETCH");
+		f ("System.Windows.Media.FontFamily", "FONTFAMILY");
+		f ("System.Windows.Markup.XmlLanguage", "XMLLANGUAGE");
 
 		text.AppendLine ("\t\t\t} catch (Exception ex) {");
 		text.AppendLine ("\t\t\t\tConsole.WriteLine (\"There was an error while loading native types: \" + ex.ToString ());");
