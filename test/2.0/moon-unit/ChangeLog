@@ -1,3 +1,9 @@
+2009-01-21  Alan McGovern  <amcgovern@novell.com>
+
+	* moon-unit.mdp:
+	* System.Windows.Controls.Primitives/PopupTest.cs: Add a Popup test
+	which causes mono to crash, currently marked with Ignore
+
 2009-01-20  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows/UIElementTest.cs: Re-enable tests for RenderTransform

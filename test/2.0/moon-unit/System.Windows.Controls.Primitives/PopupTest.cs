@@ -68,45 +68,46 @@ namespace MoonTest.System.Windows.Controls.Primitives
 
         [TestMethod]
         [Asynchronous]
-        public void OpenCloseEventTest ()
+        [Ignore ("This causes mono to crash horribly")]
+        public void OpenCloseEventTest()
         {
             Button b = new Button { Content = "Close" };
-            Canvas canvas = new Canvas();
-            Border border = new Border { BorderBrush = new SolidColorBrush(Colors.Blue),
-                                         BorderThickness = new Thickness(1),
-                                         Child = canvas
+            Canvas canvas = new Canvas { Width = 100, Height = 100 };
+            canvas.Children.Add(b);
+            Border border = new Border
+            {
+                BorderBrush = new SolidColorBrush(Colors.Blue),
+                BorderThickness = new Thickness(1),
+                Child = canvas
             };
             Popup p = new Popup { Child = border };
 
             ManualResetEvent handle = new ManualResetEvent(false);
-            p.Opened += delegate
-            {
+            p.Opened += delegate {
                 if (handle.WaitOne(10))
                     throw new Exception("Already open");
                 handle.Set();
             };
-            p.Closed += delegate
-            {
+            p.Closed += delegate {
                 if (handle.WaitOne(10))
                     throw new Exception("Not already open");
                 handle.Set();
             };
             global::System.Threading.ThreadPool.QueueUserWorkItem(delegate {
-                try
-                {
-                    p.Dispatcher.BeginInvoke(delegate { p.IsOpen = true; });
-                    if (!handle.WaitOne(500))
-					    throw new Exception ("Popup wasn't opened");
-                    handle.Reset();
-                    p.Dispatcher.BeginInvoke(delegate { p.IsOpen = false; });
-					if (!handle.WaitOne(500))
-						throw new Exception ("Popup wasn't closed");
-					handle.Reset ();
-                }
-                finally
-                {
-                    EnqueueTestComplete();
-                }
+                p.Dispatcher.BeginInvoke(delegate {
+                    p.IsOpen = true;
+                    object o = p.Parent;
+                    o = null;
+                });
+                if (!handle.WaitOne(500))
+                    throw new Exception("Popup wasn't opened");
+                handle.Reset();
+                global::System.Threading.Thread.Sleep(10000);
+                p.Dispatcher.BeginInvoke(delegate { p.IsOpen = false; });
+                if (!handle.WaitOne(500))
+                    throw new Exception("Popup wasn't closed");
+                handle.Reset();
+                EnqueueTestComplete();
             });
         }
     }
