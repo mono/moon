@@ -1,3 +1,7 @@
+2009-01-20  Larry Ewing  <lewing@novell.com>
+
+	* Rect.cs: make Intersect behave a little better.
+
 2009-01-20  Chris Toshok  <toshok@ximian.com>
 
 	* Application.cs: permit absolute uris that are file:// uris.

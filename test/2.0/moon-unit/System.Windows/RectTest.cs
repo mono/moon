@@ -83,5 +83,50 @@ namespace MoonTest.System.Windows
 			e.X = e.Y = e.Width = e.Height = Double.NaN;
 			Assert.IsFalse (e.IsEmpty, "(NaN,NaN,NaN,NaN).IsEmpty");
 		}
+
+		[TestMethod]
+		public void EmptyIntersectTest ()
+		{
+			var r1 = new Rect (0,0,10,10);
+			var r2 = new Rect (20,20,10,10);
+			
+			r1.Intersect (r2);
+			
+			Assert.IsTrue (r1.IsEmpty);
+
+		}
+
+		[TestMethod]
+		public void TouchingIntersectTest ()
+		{
+			var r1 = new Rect (0,0,10,10);
+			var r2 = new Rect (10,10,10,10);
+			
+			r1.Intersect (r2);
+			
+			Assert.AreEqual (new Rect (10,10,0,0), r1, "zero w.h");
+		}
+
+		[TestMethod]
+		public void EdgeIntersectTest ()
+		{
+			var r1 = new Rect (0,0,10,10);
+			var r2 = new Rect (0,10,10,10);
+			
+			r1.Intersect (r2);
+			
+			Assert.AreEqual (new Rect (0,10,10,0), r1);
+		}
+
+		[TestMethod]
+		public void EmptyIntersectEmptyTest ()
+		{
+			var r1 = new Rect (0,0,10,10);
+			
+			r1.Intersect (Rect.Empty);
+			
+			Assert.IsTrue (r1.IsEmpty);
+
+		}
 	}
 }

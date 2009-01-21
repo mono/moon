@@ -151,6 +151,11 @@ namespace System.Windows {
 		
 		public void Intersect(Rect rect)
 		{
+			if (IsEmpty || rect.IsEmpty) {
+				this = Rect.Empty;
+				return;
+			}
+
 			double new_x = Math.Max (x, rect.x);
 			double new_y = Math.Max (y, rect.y);
 			double new_w = Math.Min (Right, rect.Right) - new_x;
@@ -161,9 +166,8 @@ namespace System.Windows {
 			w = new_w;
 			h = new_h;
 
-			if (w < 0 || h < 0) {
-				x = y = w = h = 0;
-			}
+			if (w < 0 || h < 0)
+				this = Rect.Empty;
 		}
 
 		public void Union(Rect rect)
