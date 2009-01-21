@@ -1,3 +1,8 @@
+2009-01-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* XmlLanguage.cs: Null is an invalid value. All strings needs to 
+	be converted to lower case. Removed SecuritySafeCritical
+
 2008-12-22  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* XamlReader.cs: Match SL2 when null or String.Empty is used as 

@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2008, 2009 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -28,32 +28,26 @@
 
 using Mono;
 using System;
-using System.Security;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
 
 namespace System.Windows.Markup {
 	public sealed class XmlLanguage {
 		string lang;
-		
+
 		internal XmlLanguage (string ietfLanguageTag)
 		{
-			lang = ietfLanguageTag;
+			lang = ietfLanguageTag.ToLower (CultureInfo.InvariantCulture);
 		}
 		
-		[SecuritySafeCritical ()]
 		public static XmlLanguage GetLanguage (string ietfLanguageTag)
 		{
 			return new XmlLanguage (ietfLanguageTag);
 		}
 		
 		public string IetfLanguageTag {
-			get {
-				if (lang == null)
-					return "en-US";
-				
-				return lang;
-			}
+			get { return lang; }
 		}
 		
 		public override bool Equals (object obj)
