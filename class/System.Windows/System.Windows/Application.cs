@@ -391,8 +391,9 @@ namespace System.Windows {
 			if (uriResource == null)
 				throw new ArgumentNullException ("uriResource");
 
-			if (uriResource.IsAbsoluteUri)
+			if (uriResource.IsAbsoluteUri && uriResource.Scheme != Uri.UriSchemeFile) {
 				throw new ArgumentException ("Absolute uriResource");
+			}
 
 			// FIXME: URI must point to
 			// - the application assembly (embedded resources)

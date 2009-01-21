@@ -1,5 +1,10 @@
 2009-01-20  Chris Toshok  <toshok@ximian.com>
 
+	* Application.cs: permit absolute uris that are file:// uris.
+	fixes photosynth.net.
+
+2009-01-20  Chris Toshok  <toshok@ximian.com>
+
 	* DependencyObject.cs: remove CheckNativeAndThread (it's in
 	NativeDependencyObjectHelper), and make moonlight_thread internal,
 	so we can reuse it from Application.
