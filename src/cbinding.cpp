@@ -770,6 +770,29 @@ column_definition_collection_new (void)
 
 
 /**
+ * ContentChangedEventArgs
+ **/
+Value *
+content_changed_event_args_get_new_content (ContentChangedEventArgs *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetNewContent ();
+}
+
+
+Value *
+content_changed_event_args_get_old_content (ContentChangedEventArgs *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetOldContent ();
+}
+
+
+/**
  * ContentControl
  **/
 ContentControl *

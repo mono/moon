@@ -31,9 +31,90 @@ using Mono;
 
 namespace System.Windows.Controls {
 	public partial class ContentControl : Control {
+		void Initialize ()
+		{
+			ContentChanged += InvokeOnContentChanged;
+		}
+		
 		protected virtual void OnContentChanged (object oldContent, object newContent)
 		{
 			// no-op
+		}
+		
+		internal class ContentChangedEventArgs : EventArgs {
+			internal IntPtr native;
+			
+			internal ContentChangedEventArgs (IntPtr raw)
+			{
+				native = raw;
+				NativeMethods.event_object_ref (native);
+			}
+			
+			~ContentChangedEventArgs ()
+			{
+				if (native != IntPtr.Zero) {
+					NativeMethods.event_object_unref (native);
+					native = IntPtr.Zero;
+				}
+			}
+			
+			public object OldContent {
+				get {
+					IntPtr result = NativeMethods.content_changed_event_args_get_old_content (native);
+					
+					if (result == IntPtr.Zero)
+						return null;
+					
+					return Value.ToObject (typeof (object), result);
+				}
+			}
+			
+			public object NewContent {
+				get {
+					IntPtr result = NativeMethods.content_changed_event_args_get_new_content (native);
+					
+					if (result == IntPtr.Zero)
+						return null;
+					
+					return Value.ToObject (typeof (object), result);
+				}
+			}
+		}
+		
+		static UnmanagedEventHandler content_changed = Events.CreateSafeHandler (content_changed_cb);
+		
+		static object ContentChangedEvent = new object ();
+		
+		void InvokeOnContentChanged (object sender, ContentChangedEventArgs args)
+		{
+			OnContentChanged (args.OldContent, args.NewContent);
+		}
+		
+		void InvokeContentChanged (ContentChangedEventArgs args)
+		{
+			ContentChangedEventHandler h = (ContentChangedEventHandler) EventList [ContentChangedEvent];
+			
+			if (h != null)
+				h (this, args);
+		}
+		
+		static void content_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
+		{
+			ContentChangedEventArgs args = (ContentChangedEventArgs) Helper.GCHandleFromIntPtr (calldata).Target;
+			ContentControl control = (ContentControl) Helper.GCHandleFromIntPtr (closure).Target;
+			
+			control.InvokeContentChanged (args);
+		}
+		
+		internal delegate void ContentChangedEventHandler (object sender, ContentChangedEventArgs args);
+		
+		internal event ContentChangedEventHandler ContentChanged {
+			add {
+				RegisterEvent (ContentChangedEvent, "ContentChanged", content_changed, value);
+			}
+			remove {
+				UnregisterEvent (ContentChangedEvent, "ContentChanged", content_changed, value);
+			}
 		}
 	}
 }

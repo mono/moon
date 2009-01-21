@@ -72,6 +72,7 @@ class ColorKeyFrame;
 class ColorKeyFrameCollection;
 class ColumnDefinition;
 class ColumnDefinitionCollection;
+class ContentChangedEventArgs;
 class ContentControl;
 class Control;
 class ControlTemplate;
@@ -340,6 +341,7 @@ public:
 	ColorKeyFrameCollection*       AsColorKeyFrameCollection () { checked_get_subclass (Type::COLORKEYFRAME_COLLECTION, ColorKeyFrameCollection) }
 	ColumnDefinition*              AsColumnDefinition () { checked_get_subclass (Type::COLUMNDEFINITION, ColumnDefinition) }
 	ColumnDefinitionCollection*    AsColumnDefinitionCollection () { checked_get_subclass (Type::COLUMNDEFINITION_COLLECTION, ColumnDefinitionCollection) }
+	ContentChangedEventArgs*       AsContentChangedEventArgs () { checked_get_subclass (Type::CONTENTCHANGEDEVENTARGS, ContentChangedEventArgs) }
 	ContentControl*                AsContentControl () { checked_get_subclass (Type::CONTENTCONTROL, ContentControl) }
 	Control*                       AsControl () { checked_get_subclass (Type::CONTROL, Control) }
 	ControlTemplate*               AsControlTemplate () { checked_get_subclass (Type::CONTROLTEMPLATE, ControlTemplate) }

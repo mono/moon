@@ -14,9 +14,33 @@
 #include <glib.h>
 #include "control.h"
 
-//
-// ContentControl Class
-//
+
+/* @SilverlightVersion="2" */
+/* @Namespace=None */
+class ContentChangedEventArgs : public EventArgs {
+	Value *old_content;
+	Value *new_content;
+	
+ protected:
+	virtual ~ContentChangedEventArgs () { }
+	
+ public:
+	ContentChangedEventArgs (Value *old_content, Value *new_content)
+	{
+		this->old_content = old_content;
+		this->new_content = new_content;
+	}
+	
+	virtual Type::Kind GetObjectType () { return Type::CONTENTCHANGEDEVENTARGS; }
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	Value *GetOldContent () { return old_content; }
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	Value *GetNewContent () { return new_content; }
+};
+
+
 /* @ContentProperty="Content" */
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
@@ -42,6 +66,11 @@ class ContentControl : public Control {
 	//
 	void SetContentTemplate (DataTemplate *t);
 	DataTemplate *GetContentTemplate ();
+	
+	//
+	// Events
+	//
+	const static int ContentChangedEvent;
 };
 
 #endif /* __CONTENT_CONTROL_H__ */

@@ -21,10 +21,14 @@ ContentControl::OnPropertyChanged (PropertyChangedEventArgs *args)
 		return;
 	}
 	
-	if (args->property == ContentControl::ContentTemplateProperty ||
-	    args->property == ContentControl::ContentProperty) {
+	if (args->property == ContentControl::ContentTemplateProperty) {
 		if (IsLoaded ())
 			ApplyTemplate ();
+	} else if (args->property == ContentControl::ContentProperty) {
+		if (IsLoaded ())
+			ApplyTemplate ();
+		
+		Emit (ContentControl::ContentChangedEvent, new ContentChangedEventArgs (args->old_value, args->new_value));
 	}
 	
 	NotifyListenersOfPropertyChange (args);

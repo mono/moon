@@ -8,6 +8,8 @@
 	* contentcontrol.cpp (ContentControl::OnPropertyChanged):
 	Implemented by calling ApplyTemplate() when ContentTemplate or
 	Content properties change.
+	(ContentControl::OnPropertyChanged): Emit a ContentChangedEvent
+	when the content changes.
 
 2009-01-21  Larry Ewing  <lewing@novell.com>
 

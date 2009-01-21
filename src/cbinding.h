@@ -346,6 +346,15 @@ double column_definition_get_actual_width (ColumnDefinition *instance);
 ColumnDefinitionCollection *column_definition_collection_new (void);
 
 /**
+ * ContentChangedEventArgs
+ **/
+/* @GeneratePInvoke */
+Value *content_changed_event_args_get_new_content (ContentChangedEventArgs *instance);
+
+/* @GeneratePInvoke */
+Value *content_changed_event_args_get_old_content (ContentChangedEventArgs *instance);
+
+/**
  * ContentControl
  **/
 /* @GeneratePInvoke */

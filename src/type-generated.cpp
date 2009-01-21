@@ -70,6 +70,7 @@ const int Clock::CompletedEvent = 1;
 const int Clock::CurrentGlobalSpeedInvalidatedEvent = 2;
 const int Clock::CurrentStateInvalidatedEvent = 3;
 const int Clock::CurrentTimeInvalidatedEvent = 4;
+const int ContentControl::ContentChangedEvent = 17;
 const int Control::TemplateAppliedEvent = 16;
 const int DispatcherTimer::TickEvent = 2;
 const int Downloader::CompletedEvent = 1;
@@ -122,6 +123,7 @@ const int UIElement::MouseMoveEvent = 11;
 const int UIElement::UnloadedEvent = 12;
 
 const char *Clock_Events [] = { "Completed", "CurrentGlobalSpeedInvalidated", "CurrentStateInvalidated", "CurrentTimeInvalidated", NULL };
+const char *ContentControl_Events [] = { "ContentChanged", NULL };
 const char *Control_Events [] = { "TemplateApplied", NULL };
 const char *DispatcherTimer_Events [] = { "Tick", NULL };
 const char *Downloader_Events [] = { "Completed", "DownloadFailed", "DownloadProgressChanged", NULL };
@@ -172,7 +174,8 @@ Type type_infos [] = {
 	{ Type::COLORKEYFRAME_COLLECTION, Type::KEYFRAME_COLLECTION, false, "ColorKeyFrameCollection", "COLORKEYFRAME_COLLECTION", 0, 1, NULL, (create_inst_func *) color_key_frame_collection_new, NULL, NULL, NULL, NULL }, 
 	{ Type::COLUMNDEFINITION, Type::DEPENDENCY_OBJECT, false, "ColumnDefinition", "COLUMNDEFINITION", 0, 1, NULL, (create_inst_func *) column_definition_new, NULL, NULL, NULL, NULL }, 
 	{ Type::COLUMNDEFINITION_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "ColumnDefinitionCollection", "COLUMNDEFINITION_COLLECTION", 0, 1, NULL, (create_inst_func *) column_definition_collection_new, NULL, NULL, NULL, NULL }, 
-	{ Type::CONTENTCONTROL, Type::CONTROL, false, "ContentControl", "CONTENTCONTROL", 0, 17, NULL, (create_inst_func *) content_control_new, "Content", NULL, NULL, NULL }, 
+	{ Type::CONTENTCHANGEDEVENTARGS, Type::EVENTARGS, false, "ContentChangedEventArgs", "CONTENTCHANGEDEVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
+	{ Type::CONTENTCONTROL, Type::CONTROL, false, "ContentControl", "CONTENTCONTROL", 1, 18, ContentControl_Events, (create_inst_func *) content_control_new, "Content", NULL, NULL, NULL }, 
 	{ Type::CONTROL, Type::FRAMEWORKELEMENT, false, "Control", "CONTROL", 1, 17, Control_Events, (create_inst_func *) control_new, NULL, NULL, NULL, NULL }, 
 	{ Type::CONTROLTEMPLATE, Type::FRAMEWORKTEMPLATE, false, "ControlTemplate", "CONTROLTEMPLATE", 0, 1, NULL, (create_inst_func *) control_template_new, NULL, NULL, NULL, NULL }, 
 	{ Type::CORNERRADIUS, Type::OBJECT, true, "CornerRadius", "CORNERRADIUS", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 

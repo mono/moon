@@ -388,6 +388,14 @@ namespace Mono {
 		public extern static IntPtr column_definition_collection_new ();
 
 		[DllImport ("moon")]
+		// Value *content_changed_event_args_get_new_content (ContentChangedEventArgs *instance);
+		public extern static IntPtr content_changed_event_args_get_new_content (IntPtr instance);
+
+		[DllImport ("moon")]
+		// Value *content_changed_event_args_get_old_content (ContentChangedEventArgs *instance);
+		public extern static IntPtr content_changed_event_args_get_old_content (IntPtr instance);
+
+		[DllImport ("moon")]
 		// ContentControl *content_control_new ();
 		public extern static IntPtr content_control_new ();
 
