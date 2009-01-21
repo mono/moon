@@ -215,6 +215,13 @@ Grid::ArrangeOverride (Size finalSize)
 	double* row_heights = new double[row_count == 0 ? 1 : row_count];
 	double* column_widths = new double[col_count == 0 ? 1 : col_count];
 
+	for (int i = 0; i < col_count; i++)
+		column_widths[i] = 0.0;
+
+	for (int i = 0; i < row_count; i++)
+		row_heights[i] = 0.0;
+
+
 	Size remaining = finalSize;
 
 	VisualTreeWalker walker = VisualTreeWalker (this);
@@ -253,11 +260,17 @@ Grid::ArrangeOverride (Size finalSize)
 		GridLength* height = rowdef->GetHeight();
 		row_heights[i] = 0.0;
 
-		if (height->type != GridUnitTypeStar) {
+		switch (height->type) {
+		case GridUnitTypeStar:
+			row_stars += height->val;
+			break;
+		case GridUnitTypePixel:
 			row_heights[i] = height->val;
 			remaining.height -= height->val;
-		} else {
-			row_stars += height->val;
+			break;
+		case GridUnitTypeAuto:
+			remaining.height -= height->val;
+			break;
 		}
 	}
 
@@ -267,18 +280,23 @@ Grid::ArrangeOverride (Size finalSize)
 		GridLength* width = coldef->GetWidth();
 		column_widths[i] = 0.0;
 
-		if (width->type != GridUnitTypeStar) {
+		switch (width->type) {
+		case GridUnitTypeStar:
+			col_stars += width->val;
+			break;
+		case GridUnitTypePixel:
 			column_widths[i] = width->val;
 			remaining.width -= width->val;
-		} else {
-			col_stars += width->val;
+			break;
+		case GridUnitTypeAuto:
+			remaining.width -= width->val;
+			break;
 		}
 	}
 
 	for (int i = 0; i < row_count; i ++) {
 		RowDefinition *rowdef = rows->GetValueAt (i)->AsRowDefinition ();
 		GridLength* height = rowdef->GetHeight();
-		row_heights[i] = 0.0;
 
 		if (height->type == GridUnitTypeStar) {
 			row_heights[i] = remaining.height * height->val / row_stars;
@@ -288,7 +306,6 @@ Grid::ArrangeOverride (Size finalSize)
 	for (int i = 0; i < col_count; i ++) {
 		ColumnDefinition *coldef = columns->GetValueAt (i)->AsColumnDefinition ();
 		GridLength* width = coldef->GetWidth();
-		column_widths[i] = 0.0;
 
 		if (width->type == GridUnitTypeStar) {
 			column_widths[i] = remaining.width * width->val / col_stars;
@@ -302,14 +319,14 @@ Grid::ArrangeOverride (Size finalSize)
 		gint32 colspan = Grid::GetColumnSpan (child);
 		gint32 rowspan = Grid::GetRowSpan (child);
 
-		Rect child_final = Rect (0, 0, finalSize.width, finalSize.height);
+		Rect child_final = Rect (0, 0, 0, 0);
 		Size min_size;
 		Size max_size;
 
-		for (int r = 0; r < row && r < row_count; r++)
+		for (int r = 0; r < MIN (row, row_count); r++)
 			child_final.y += row_heights [r];
 
-		for (int r = row; (r < row + rowspan) && (r < row_count); r++) {
+		for (int r = row; r < MIN (row + rowspan, row_count); r++) {
 			RowDefinition *rowdef = rows->GetValueAt (r)->AsRowDefinition ();
 
 			child_final.height += row_heights [r];
@@ -319,10 +336,10 @@ Grid::ArrangeOverride (Size finalSize)
 		}
 
 
-		for (int c = 0; c < col && c < col_count; c++)
+		for (int c = 0; c < MIN (col, col_count); c++)
 			child_final.x += column_widths[c];
 
-		for (int c = col; (c < col + colspan) && (c < col_count); c++) {
+		for (int c = col; c < MIN (col + colspan, col_count); c++) {
 			ColumnDefinition *coldef = columns->GetValueAt (c)->AsColumnDefinition ();
 
 			child_final.width += column_widths [c];

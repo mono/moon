@@ -1,3 +1,8 @@
+2009-01-21  Larry Ewing  <lewing@novell.com>
+
+	* System.Windows.Controls/GridTest.cs: remove bug attributes from
+	the current grid tests.
+
 2009-01-21  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls.Primitives/PopupTest.cs: Disable Popup tests

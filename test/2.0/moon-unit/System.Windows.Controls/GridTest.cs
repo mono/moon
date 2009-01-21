@@ -860,7 +860,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void ArrangeTest_TwoChildren ()
 		{
 			Grid g = new Grid ();
