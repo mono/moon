@@ -1,3 +1,9 @@
+2009-01-21  Jeffrey Stedfast  <fejj@novell.com>
+
+	* contentcontrol.cpp (ContentControl::OnPropertyChanged):
+	Implemented by calling ApplyTemplate() when ContentTemplate or
+	Content properties change.
+
 2009-01-21  Larry Ewing  <lewing@novell.com>
 
 	* grid.cpp, grid.h:  Hack things to handle missing row

@@ -21,15 +21,10 @@ ContentControl::OnPropertyChanged (PropertyChangedEventArgs *args)
 		return;
 	}
 	
-	// basically when either Content or ContentTemplate changes
-	// you need to reapply the template, get the new root, and
-	// then call ElementRemoved on the old visual tree root and
-	// ElementAdded on the new root.
-	
-	if (args->property == ContentControl::ContentTemplateProperty) {
-		
-	} else if (args->property == ContentControl::ContentProperty) {
-		
+	if (args->property == ContentControl::ContentTemplateProperty ||
+	    args->property == ContentControl::ContentProperty) {
+		if (IsLoaded ())
+			ApplyTemplate ();
 	}
 	
 	NotifyListenersOfPropertyChange (args);
