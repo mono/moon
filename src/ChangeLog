@@ -6,6 +6,11 @@
 
 2009-01-21  Larry Ewing  <lewing@novell.com>
 
+	* grid.cpp: store measurement info in the row and column
+	definitions and don't allocate the arrays.
+
+2009-01-21  Larry Ewing  <lewing@novell.com>
+
 	* grid.cpp, grid.h:  Hack things to handle missing row
 	definitions and clean up some old errors.
 

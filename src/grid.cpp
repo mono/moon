@@ -94,29 +94,24 @@ Grid::MeasureOverride (Size availableSize)
 		row_count = 1;
 	}
 
-	double* row_heights = new double[row_count];
-	double* column_widths = new double[col_count];
-
-	row_heights[0] = 0.0;
-	column_widths[0] = 0.0;
-
 	for (int i = 0; i < row_count; i ++) {
 		RowDefinition *rowdef = rows->GetValueAt (i)->AsRowDefinition ();
 		GridLength* height = rowdef->GetHeight();
-		row_heights[i] = 0.0;
+		
+		rowdef->SetActualHeight (0.0);
 
 		if (height->type == GridUnitTypePixel)
-			row_heights[i] = height->val;
+			rowdef->SetActualHeight (height->val);
 	}
 
 	for (int i = 0; i < col_count; i ++) {
 		ColumnDefinition *coldef = columns->GetValueAt (i)->AsColumnDefinition ();
 		GridLength* width = coldef->GetWidth();
-		column_widths[i] = 0.0;
+
+		coldef->SetActualWidth (0.0);
 
 		if (width->type == GridUnitTypePixel)
-			column_widths[i] = width->val;
-
+			coldef->SetActualWidth (width->val);
 	}
 
 	UIElementCollection *children = GetChildren ();
@@ -138,7 +133,7 @@ Grid::MeasureOverride (Size availableSize)
 			RowDefinition *rowdef = rows->GetValueAt (r)->AsRowDefinition ();
 
 			if (rowdef->GetHeight ()->type == GridUnitTypePixel)
-			        child_size.height += row_heights [r];
+			        child_size.height += rowdef->GetActualHeight ();
 			else
 				child_size.height += INFINITY;
 
@@ -150,7 +145,7 @@ Grid::MeasureOverride (Size availableSize)
 			ColumnDefinition *coldef = columns->GetValueAt (c)->AsColumnDefinition ();
 
 			if (coldef->GetWidth ()->type == GridUnitTypePixel)
-				child_size.width += column_widths [c];
+				child_size.width += coldef->GetActualWidth ();
 			else
 				child_size.width += INFINITY;
 
@@ -174,8 +169,12 @@ Grid::MeasureOverride (Size availableSize)
 			if (!coldef)
 				break; // XXX what to do if col + colspan is more than the number of columns?
 			
-			if (coldef->GetWidth ()->type != GridUnitTypePixel)
-				column_widths[c] = MAX(column_widths[c], remaining_width);
+			if (coldef->GetWidth ()->type != GridUnitTypePixel) {
+				coldef->SetActualWidth (MAX(coldef->GetActualWidth (), remaining_width));
+				break;
+			} else {
+				remaining_width -= coldef->GetActualWidth ();
+			}
 		}
 
 		double remaining_height = child_size.height;
@@ -184,25 +183,25 @@ Grid::MeasureOverride (Size availableSize)
 			if (!rowdef)
 				break; // XXX what to do if row + rowspan is more than the number of rows?
 			
-			if (rowdef->GetHeight ()->type != GridUnitTypePixel)
-				row_heights[r] = MAX(row_heights[r], remaining_height);
+			if (rowdef->GetHeight ()->type != GridUnitTypePixel) {
+				rowdef->SetActualHeight (MAX (rowdef->GetActualHeight (), remaining_height));
+				break;
+			} else  {
+				remaining_height -= rowdef->GetActualHeight ();
+			}
 		}
 	}
 
 	Size grid_size;
 	for (int r = 0; r < row_count; r ++) {
-		grid_size.height += row_heights[r];
+		grid_size.height += rows->GetValueAt (r)->AsRowDefinition ()->GetActualHeight ();
 	}
 
 	for (int c = 0; c < col_count; c ++) {
-		grid_size.width += column_widths[c];
+		grid_size.width += columns->GetValueAt (c)->AsColumnDefinition ()->GetActualWidth ();
 	}
 
 	results = results.Max (grid_size);
-
-	//printf ("results = %g %g\n", results.width, results.height);
-	delete [] row_heights;
-	delete [] column_widths;
 
 	// now choose whichever is smaller, our chosen size or the availableSize.
 	return results;
@@ -229,14 +228,11 @@ Grid::ArrangeOverride (Size finalSize)
 		row_count = 1;
 	}
 
-	double* row_heights = new double[row_count];
-	double* column_widths = new double[col_count];
-
 	for (int i = 0; i < col_count; i++)
-		column_widths[i] = 0.0;
+		columns->GetValueAt (i)->AsColumnDefinition ()->SetActualWidth (0.0);
 
 	for (int i = 0; i < row_count; i++)
-		row_heights[i] = 0.0;
+		rows->GetValueAt (i)->AsRowDefinition ()->SetActualHeight (0.0);
 
 	Size remaining = finalSize;
 
@@ -250,19 +246,17 @@ Grid::ArrangeOverride (Size finalSize)
 		Size desired = child->GetDesiredSize ();
 		if (col < col_count) {
 			ColumnDefinition *coldef = columns->GetValueAt (col)->AsColumnDefinition ();
-			GridLength *width = coldef->GetWidth ();
 
-			if (width->type == GridUnitTypeAuto)
-				column_widths[col] = MAX (column_widths[col], desired.width);
+			if (coldef->GetWidth ()->type == GridUnitTypeAuto)
+				coldef->SetActualWidth (MAX (coldef->GetActualWidth (), desired.width));
 
 		}
 
 		if (row < row_count) {
 			RowDefinition *rowdef = rows->GetValueAt (row)->AsRowDefinition ();
-			GridLength *height = rowdef->GetHeight ();
 			
-			if (height->type == GridUnitTypeAuto)
-				row_heights[row] = MAX (row_heights[row], desired.height);
+			if (rowdef->GetHeight ()->type == GridUnitTypeAuto)
+				rowdef->SetActualHeight (MAX (rowdef->GetActualHeight (), desired.height));
 		}
 	}
 
@@ -270,18 +264,17 @@ Grid::ArrangeOverride (Size finalSize)
 	for (int i = 0; i < row_count; i ++) {
 		RowDefinition *rowdef = rows->GetValueAt (i)->AsRowDefinition ();
 		GridLength* height = rowdef->GetHeight();
-		row_heights[i] = 0.0;
 
 		switch (height->type) {
 		case GridUnitTypeStar:
 			row_stars += height->val;
 			break;
 		case GridUnitTypePixel:
-			row_heights[i] = height->val;
+			rowdef->SetActualHeight (height->val);
 			remaining.height -= height->val;
 			break;
 		case GridUnitTypeAuto:
-			remaining.height -= height->val;
+			remaining.height -= rowdef->GetActualHeight ();
 			break;
 		}
 	}
@@ -290,18 +283,17 @@ Grid::ArrangeOverride (Size finalSize)
 	for (int i = 0; i < col_count; i ++) {
 		ColumnDefinition *coldef = columns->GetValueAt (i)->AsColumnDefinition ();
 		GridLength* width = coldef->GetWidth();
-		column_widths[i] = 0.0;
 
 		switch (width->type) {
 		case GridUnitTypeStar:
 			col_stars += width->val;
 			break;
 		case GridUnitTypePixel:
-			column_widths[i] = width->val;
+			coldef->SetActualWidth (width->val);
 			remaining.width -= width->val;
 			break;
 		case GridUnitTypeAuto:
-			remaining.width -= width->val;
+			remaining.width -= coldef->GetActualWidth ();
 			break;
 		}
 	}
@@ -310,18 +302,16 @@ Grid::ArrangeOverride (Size finalSize)
 		RowDefinition *rowdef = rows->GetValueAt (i)->AsRowDefinition ();
 		GridLength* height = rowdef->GetHeight();
 
-		if (height->type == GridUnitTypeStar) {
-			row_heights[i] = remaining.height * height->val / row_stars;
-		}
+		if (height->type == GridUnitTypeStar)
+			rowdef->SetActualHeight (remaining.height * height->val / row_stars);
 	}
 
 	for (int i = 0; i < col_count; i ++) {
 		ColumnDefinition *coldef = columns->GetValueAt (i)->AsColumnDefinition ();
 		GridLength* width = coldef->GetWidth();
 
-		if (width->type == GridUnitTypeStar) {
-			column_widths[i] = remaining.width * width->val / col_stars;
-		} 
+		if (width->type == GridUnitTypeStar)
+			coldef->SetActualWidth (remaining.width * width->val / col_stars);
 	}
 
 	walker = VisualTreeWalker (this);
@@ -335,29 +325,32 @@ Grid::ArrangeOverride (Size finalSize)
 		Size min_size;
 		Size max_size;
 
-		for (int r = 0; r < MIN (row, row_count); r++)
-			child_final.y += row_heights [r];
-
-		for (int r = row; r < MIN (row + rowspan, row_count); r++) {
+		for (int r = 0; r < MIN (row + rowspan, row_count); r++) {
 			RowDefinition *rowdef = rows->GetValueAt (r)->AsRowDefinition ();
 
-			child_final.height += row_heights [r];
-			
-			min_size.height += rowdef->GetMinHeight ();
-			max_size.height += rowdef->GetMaxHeight ();
+			if (r < row) {
+				child_final.y += rowdef->GetActualHeight ();
+			} else {
+				child_final.height += rowdef->GetActualHeight ();
+				
+				min_size.height += rowdef->GetMinHeight ();
+				max_size.height += rowdef->GetMaxHeight ();
+			}
 		}
 
 
-		for (int c = 0; c < MIN (col, col_count); c++)
-			child_final.x += column_widths[c];
 
 		for (int c = col; c < MIN (col + colspan, col_count); c++) {
 			ColumnDefinition *coldef = columns->GetValueAt (c)->AsColumnDefinition ();
 
-			child_final.width += column_widths [c];
+			if (c < col) {
+				child_final.y += coldef->GetActualWidth ();
+			} else {
+				child_final.width += coldef->GetActualWidth ();
 
-			min_size.width += coldef->GetMinWidth ();
-			max_size.width += coldef->GetMaxWidth ();
+				min_size.width += coldef->GetMinWidth ();
+				max_size.width += coldef->GetMaxWidth ();
+			}
 		}
 
 		child->Arrange (child_final);
