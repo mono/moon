@@ -31,7 +31,7 @@ class Popup : public DependencyObject {
 	static DependencyProperty *VerticalOffsetProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	Popup () { }
+	Popup ();
 
 	virtual Type::Kind GetObjectType () { return Type::POPUP; }
 	
@@ -49,6 +49,15 @@ class Popup : public DependencyObject {
 	
 	void SetVerticalOffset (double offset);
 	double GetVerticalOffset ();
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetActiveSurface (Surface *surface);
+
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+
+	const static int IsOpenChangedEvent;
+ private:
+	Surface *surface;
 };
 
 

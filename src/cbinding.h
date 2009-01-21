@@ -1079,6 +1079,9 @@ PolyQuadraticBezierSegment *poly_quadratic_bezier_segment_new (void);
 /* @GeneratePInvoke */
 Popup *popup_new (void);
 
+/* @GeneratePInvoke */
+void popup_set_active_surface (Popup *instance, Surface *surface);
+
 /**
  * QuadraticBezierSegment
  **/

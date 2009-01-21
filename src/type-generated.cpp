@@ -96,6 +96,7 @@ const int MultiScaleImage::ImageOpenSucceededEvent = 19;
 const int MultiScaleImage::MotionFinishedEvent = 20;
 const int MultiScaleImage::ViewportChangedEvent = 21;
 const int PasswordBox::PasswordChangedEvent = 20;
+const int Popup::IsOpenChangedEvent = 1;
 const int Surface::ErrorEvent = 1;
 const int Surface::FullScreenChangeEvent = 2;
 const int Surface::LoadEvent = 3;
@@ -132,6 +133,7 @@ const char *MediaBase_Events [] = { "DownloadProgressChanged", NULL };
 const char *MediaElement_Events [] = { "BufferingProgressChanged", "CurrentStateChanged", "DownloadProgressChanged", "MarkerReached", "MediaEnded", "MediaFailed", "MediaOpened", NULL };
 const char *MultiScaleImage_Events [] = { "ImageFailed", "ImageOpenFailed", "ImageOpenSucceeded", "MotionFinished", "ViewportChanged", NULL };
 const char *PasswordBox_Events [] = { "PasswordChanged", NULL };
+const char *Popup_Events [] = { "IsOpenChanged", NULL };
 const char *Surface_Events [] = { "Error", "FullScreenChange", "Load", "Resize", NULL };
 const char *TextBox_Events [] = { "ModelChanged", "SelectionChanged", "TextChanged", NULL };
 const char *Timeline_Events [] = { "Completed", NULL };
@@ -287,7 +289,7 @@ Type type_infos [] = {
 	{ Type::POLYLINE, Type::SHAPE, false, "Polyline", "POLYLINE", 0, 16, NULL, (create_inst_func *) polyline_new, NULL, NULL, NULL, NULL }, 
 	{ Type::POLYLINESEGMENT, Type::PATHSEGMENT, false, "PolyLineSegment", "POLYLINESEGMENT", 0, 1, NULL, (create_inst_func *) poly_line_segment_new, NULL, NULL, NULL, NULL }, 
 	{ Type::POLYQUADRATICBEZIERSEGMENT, Type::PATHSEGMENT, false, "PolyQuadraticBezierSegment", "POLYQUADRATICBEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) poly_quadratic_bezier_segment_new, NULL, NULL, NULL, NULL }, 
-	{ Type::POPUP, Type::DEPENDENCY_OBJECT, false, "Popup", "POPUP", 0, 1, NULL, (create_inst_func *) popup_new, NULL, NULL, NULL, NULL }, 
+	{ Type::POPUP, Type::DEPENDENCY_OBJECT, false, "Popup", "POPUP", 1, 2, Popup_Events, (create_inst_func *) popup_new, NULL, NULL, NULL, NULL }, 
 	{ Type::QUADRATICBEZIERSEGMENT, Type::PATHSEGMENT, false, "QuadraticBezierSegment", "QUADRATICBEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) quadratic_bezier_segment_new, NULL, NULL, NULL, NULL }, 
 	{ Type::RADIALGRADIENTBRUSH, Type::GRADIENTBRUSH, false, "RadialGradientBrush", "RADIALGRADIENTBRUSH", 0, 1, NULL, (create_inst_func *) radial_gradient_brush_new, NULL, NULL, NULL, NULL }, 
 	{ Type::RECT, Type::OBJECT, true, "Rect", "RECT", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 

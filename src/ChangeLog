@@ -1,3 +1,13 @@
+2009-01-21  Alan McGovern  <amcgovern@novell.com>
+
+	* popup.h:
+	* popup.cpp:
+	* cbinding.h:
+	* Makefile.am:
+	* cbinding.cpp:
+	* type-generated.cpp: Initial attempt at trying to get Popup.Child
+	rendering.
+
 2009-01-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* dependencyproperty.g.cpp: Regenerated

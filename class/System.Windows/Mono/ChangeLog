@@ -1,3 +1,8 @@
+2009-01-21  Alan McGovern  <amcgovern@novell.com>
+
+	* GeneratedPInvokes.cs: Initial attempt at trying to get Popup.Child
+	rendering.
+
 2009-01-20  Chris Toshok  <toshok@ximian.com>
 
 	* NativeDependencyObjectHelper.cs: re-enable the

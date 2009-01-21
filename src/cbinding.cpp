@@ -2345,6 +2345,16 @@ popup_new (void)
 }
 
 
+void
+popup_set_active_surface (Popup *instance, Surface *surface)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetActiveSurface (surface);
+}
+
+
 /**
  * QuadraticBezierSegment
  **/

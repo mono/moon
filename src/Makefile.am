@@ -70,6 +70,7 @@ libmoon_include_headers = 	\
 	pipeline-nocodec-ui.h	\
 	playlist.h		\
 	point.h			\
+	popup.h			\
 	provider.h		\
 	rect.h			\
 	region.h		\
@@ -186,6 +187,7 @@ libmoon_la_sources_2 =		\
 	deployment.cpp		\
 	grid.cpp		\
 	multiscaleimage.cpp	\
+	popup.cpp		\
 	style.cpp		\
 	template.cpp		\
 	textbox.cpp		\

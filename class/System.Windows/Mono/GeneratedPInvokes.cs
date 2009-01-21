@@ -1092,6 +1092,14 @@ namespace Mono {
 		// Popup *popup_new ();
 		public extern static IntPtr popup_new ();
 
+		[DllImport ("moon", EntryPoint="popup_set_active_surface")]
+		// void popup_set_active_surface (Popup *instance, Surface *surface);
+		private extern static void popup_set_active_surface_ (IntPtr instance, IntPtr surface);
+		public static void popup_set_active_surface (IntPtr instance)
+		{
+					popup_set_active_surface_ (instance, Mono.Xaml.XamlLoader.SurfaceInDomain);
+		}
+
 		[DllImport ("moon")]
 		// QuadraticBezierSegment *quadratic_bezier_segment_new ();
 		public extern static IntPtr quadratic_bezier_segment_new ();
