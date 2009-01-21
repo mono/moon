@@ -1,3 +1,12 @@
+2009-01-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* dependencyproperty.g.cpp: Regenerated
+	* text.cpp|h: Move ForegroundProperty from a DefaultValue to a
+	ctor initialized value. This means that GetLocalValue won't return
+	null for this property, which makes it behave correctly for SL1/JS
+	applications.
+	[Fix DRT#47 failing since r123884]
+
 2009-01-20  Chris Toshok  <toshok@ximian.com>
 
 	* application.h, application.cpp: switch from using a static

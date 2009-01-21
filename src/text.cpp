@@ -36,6 +36,8 @@
 
 Inline::Inline ()
 {
+	// having it as a default value would not return it correctly to 1.0/javascript applications (see DRT #47)
+	SetValue (Inline::ForegroundProperty, new SolidColorBrush ("black"));
 	font = new TextFontDescription ();
 	autogen = false;
 }
