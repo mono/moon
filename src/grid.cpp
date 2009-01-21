@@ -97,21 +97,22 @@ Grid::MeasureOverride (Size availableSize)
 	for (int i = 0; i < row_count; i ++) {
 		RowDefinition *rowdef = rows->GetValueAt (i)->AsRowDefinition ();
 		GridLength* height = rowdef->GetHeight();
-		
+
 		rowdef->SetActualHeight (0.0);
 
 		if (height->type == GridUnitTypePixel)
-			rowdef->SetActualHeight (height->val);
+                       rowdef->SetActualHeight (height->val);
 	}
 
 	for (int i = 0; i < col_count; i ++) {
 		ColumnDefinition *coldef = columns->GetValueAt (i)->AsColumnDefinition ();
-		GridLength* width = coldef->GetWidth();
+		GridLength *width = coldef->GetWidth ();
 
 		coldef->SetActualWidth (0.0);
 
 		if (width->type == GridUnitTypePixel)
 			coldef->SetActualWidth (width->val);
+
 	}
 
 	UIElementCollection *children = GetChildren ();
@@ -131,23 +132,25 @@ Grid::MeasureOverride (Size availableSize)
 		
 		for (int r = row; r < MIN (row + rowspan, row_count); r++) {
 			RowDefinition *rowdef = rows->GetValueAt (r)->AsRowDefinition ();
+			GridLength* height = rowdef->GetHeight();
 
-			if (rowdef->GetHeight ()->type == GridUnitTypePixel)
-			        child_size.height += rowdef->GetActualHeight ();
+			if (height->type == GridUnitTypePixel)
+				child_size.height += height->val;
 			else
-				child_size.height += INFINITY;
-
+				child_size.height += rowdef->GetMaxHeight ();
+			
 			min_size.height += rowdef->GetMinHeight ();
 			max_size.height += rowdef->GetMaxHeight ();
 		}
 
 		for (int c = col; c < MIN (col + colspan, col_count); c++) {
 			ColumnDefinition *coldef = columns->GetValueAt (c)->AsColumnDefinition ();
+			GridLength* width = coldef->GetWidth();
 
-			if (coldef->GetWidth ()->type == GridUnitTypePixel)
-				child_size.width += coldef->GetActualWidth ();
+			if (width->type == GridUnitTypePixel)
+				child_size.width += width->val;
 			else
-				child_size.width += INFINITY;
+				child_size.width += coldef->GetMaxWidth ();
 
 			min_size.width += coldef->GetMinWidth ();
 			max_size.width += coldef->GetMaxWidth ();
@@ -164,31 +167,32 @@ Grid::MeasureOverride (Size availableSize)
 		child_size = child_size.Max (min_size);
 
 		double remaining_width = child_size.width;
+
 		for (int c = col; c < MIN (col + colspan, col_count); c++){
 			ColumnDefinition *coldef = columns->GetValueAt (c)->AsColumnDefinition ();
-			if (!coldef)
-				break; // XXX what to do if col + colspan is more than the number of columns?
+			GridLength *width = coldef->GetWidth ();
+
+			double contribution = width->type != GridUnitTypePixel ? remaining_width : width->val;
 			
-			if (coldef->GetWidth ()->type != GridUnitTypePixel) {
-				coldef->SetActualWidth (MAX(coldef->GetActualWidth (), remaining_width));
-				break;
-			} else {
-				remaining_width -= coldef->GetActualWidth ();
-			}
+			contribution = MAX (contribution, coldef->GetMinWidth ());
+			contribution = MIN (contribution, coldef->GetMaxWidth ());
+			
+			coldef->SetActualWidth (MAX(coldef->GetActualWidth (), contribution));
+			remaining_width -= contribution;
 		}
 
 		double remaining_height = child_size.height;
 		for (int r = row; r < MIN (row + rowspan, row_count); r++){
 			RowDefinition *rowdef = rows->GetValueAt (r)->AsRowDefinition ();
-			if (!rowdef)
-				break; // XXX what to do if row + rowspan is more than the number of rows?
+			GridLength *height = rowdef->GetHeight ();
+
+			double contribution = height->type != GridUnitTypePixel ? remaining_height : height->val;
+				
+			contribution = MAX (contribution, rowdef->GetMinHeight ());
+			contribution = MIN (contribution, rowdef->GetMaxHeight ());
 			
-			if (rowdef->GetHeight ()->type != GridUnitTypePixel) {
-				rowdef->SetActualHeight (MAX (rowdef->GetActualHeight (), remaining_height));
-				break;
-			} else  {
-				remaining_height -= rowdef->GetActualHeight ();
-			}
+			rowdef->SetActualHeight (MAX (rowdef->GetActualHeight (), contribution));
+			remaining_height -= contribution;
 		}
 	}
 
