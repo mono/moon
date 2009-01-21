@@ -1,5 +1,5 @@
 //
-// Unit tests for Inline
+// Unit tests for TextDecorations
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -29,31 +29,32 @@
 using System;
 using System.Windows;
 using System.Windows.Documents;
-using System.Windows.Media;
 
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace MoonTest.System.Windows.Documents {
+namespace MoonTest.System.Windows {
 
 	[TestClass]
-	public class InlineTest {
+	public class TextDecorationsTest {
 
-		static public void CheckDefaults (Inline i)
+		[TestMethod]
+		public void Underline ()
 		{
-			Assert.AreEqual ("Portable User Interface", i.FontFamily.Source, "FontFamily");
-// FIXME
-//			Assert.AreEqual (11, i.FontSize, "FontSize");
+			Assert.IsNotNull (TextDecorations.Underline, "Underline");
+		}
 
-			Assert.AreEqual (FontStretches.Normal, i.FontStretch, "FontStretch");
-			Assert.AreEqual (FontStyles.Normal, i.FontStyle, "FontStyle");
-			Assert.AreEqual (FontWeights.Normal, i.FontWeight, "FontWeight");
+		[TestMethod]
+		public void RunTextDecorations ()
+		{
+			Run r = new Run ();
+			Assert.IsNull (r.TextDecorations, "default/null");
 
-			Assert.IsNotNull (i.Foreground, "Foreground");
-// FIXME (ToString related)
-//			Assert.AreEqual (Colors.Black, (i.Foreground as SolidColorBrush).Color, "Foreground.Color");
-			Assert.AreEqual ("en-us", i.Language.IetfLanguageTag, "Language");
-			Assert.IsNull (i.TextDecorations, "TextDecorations");
+			r.TextDecorations = TextDecorations.Underline;
+			Assert.IsTrue (Object.ReferenceEquals (TextDecorations.Underline, r.TextDecorations), "same");
+
+			r.TextDecorations = null;
+			Assert.IsNull (r.TextDecorations, "set/null");
 		}
 	}
 }
