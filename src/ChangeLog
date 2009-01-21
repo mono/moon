@@ -2,6 +2,8 @@
 
 	* contentcontrol.h (class ContentControl): Updated a bit, we're
 	going to actually use this unmanaged class now.
+	(class ContentControl): Set PropertyType for ContentProperty to
+	'object' and get rid of the generated accessors.
 
 2009-01-21  Jackson Harper  <jackson@ximian.com>
 

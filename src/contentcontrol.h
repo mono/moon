@@ -25,7 +25,7 @@ class ContentControl : public Control {
 	virtual ~ContentControl () { }
 	
  public:
- 	/* @PropertyType=DependencyObject,ManagedPropertyType=object,GenerateAccessors */
+ 	/* @PropertyType=object */
 	static DependencyProperty *ContentProperty;
  	/* @PropertyType=DataTemplate,GenerateAccessors */
 	static DependencyProperty *ContentTemplateProperty;
@@ -35,14 +35,11 @@ class ContentControl : public Control {
 	
 	virtual Type::Kind GetObjectType () { return Type::CONTENTCONTROL; }
 	
-	//virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	
 	//
 	// Property Accessors
 	//
-	void SetContent (DependencyObject *content);
-	DependencyObject *GetContent ();
-	
 	void SetContentTemplate (DataTemplate *t);
 	DataTemplate *GetContentTemplate ();
 };
