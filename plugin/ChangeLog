@@ -1,3 +1,10 @@
+2009-01-20  Geoff Norton  <gnorton@novell.com>
+
+	* plugin-class.cpp: Ensure that we convert doubles in the ASCII
+	locale, as we attempt to parse in this locale.
+
+	r: toshok
+
 2009-01-20  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* plugin-class.cpp: Call GetLocalValue on DO so we don't provide the

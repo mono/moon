@@ -2624,7 +2624,7 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *prop,
 			
 			strval = strbuf;
 		} else if (NPVARIANT_IS_DOUBLE (*value)) {
-			g_snprintf (strbuf, sizeof (strbuf), "%g", NPVARIANT_TO_DOUBLE (*value));
+			g_ascii_dtostr (strbuf, sizeof (strbuf), NPVARIANT_TO_DOUBLE (*value));
 			
 			strval = strbuf;
 		} else if (NPVARIANT_IS_STRING (*value)) {
