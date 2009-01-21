@@ -82,8 +82,20 @@ Grid::MeasureOverride (Size availableSize)
 	int col_count = columns->GetCount ();
 	int row_count = rows->GetCount ();
 
-	double* row_heights = new double[row_count == 0 ? 1 : row_count];
-	double* column_widths = new double[col_count == 0 ? 1 : col_count];
+	if (col_count == 0) {
+		columns = new ColumnDefinitionCollection ();
+		columns->Add (new ColumnDefinition ());
+		col_count = 1;
+	}
+
+	if (row_count == 0) {
+		rows = new RowDefinitionCollection ();
+		rows->Add (new RowDefinition ());
+		row_count = 1;
+	}
+
+	double* row_heights = new double[row_count];
+	double* column_widths = new double[col_count];
 
 	row_heights[0] = 0.0;
 	column_widths[0] = 0.0;
@@ -122,7 +134,7 @@ Grid::MeasureOverride (Size availableSize)
 		Size min_size = Size (0,0);
 		Size max_size = Size (0,0); 
 		
-		for (int r = row; (r < row + rowspan) && (r < row_count); r++) {
+		for (int r = row; r < MIN (row + rowspan, row_count); r++) {
 			RowDefinition *rowdef = rows->GetValueAt (r)->AsRowDefinition ();
 
 			if (rowdef->GetHeight ()->type == GridUnitTypePixel)
@@ -134,7 +146,7 @@ Grid::MeasureOverride (Size availableSize)
 			max_size.height += rowdef->GetMaxHeight ();
 		}
 
-		for (int c = col; (c < col + colspan) && (c < col_count); c++) {
+		for (int c = col; c < MIN (col + colspan, col_count); c++) {
 			ColumnDefinition *coldef = columns->GetValueAt (c)->AsColumnDefinition ();
 
 			if (coldef->GetWidth ()->type == GridUnitTypePixel)
@@ -156,30 +168,24 @@ Grid::MeasureOverride (Size availableSize)
 		child_size = child_size.Min (max_size);
 		child_size = child_size.Max (min_size);
 
-		if (col_count) {
-			double remaining_width = child_size.width;
-
-			for (int c = col; (c < col + colspan) && (c < col_count); c++){
-				ColumnDefinition *coldef = columns->GetValueAt (c)->AsColumnDefinition ();
-				if (!coldef)
-					break; // XXX what to do if col + colspan is more than the number of columns?
-
-				if (coldef->GetWidth ()->type != GridUnitTypePixel)
-					column_widths[col] = MAX(column_widths[col], remaining_width);
-			}
+		double remaining_width = child_size.width;
+		for (int c = col; c < MIN (col + colspan, col_count); c++){
+			ColumnDefinition *coldef = columns->GetValueAt (c)->AsColumnDefinition ();
+			if (!coldef)
+				break; // XXX what to do if col + colspan is more than the number of columns?
+			
+			if (coldef->GetWidth ()->type != GridUnitTypePixel)
+				column_widths[c] = MAX(column_widths[c], remaining_width);
 		}
 
-		if (row_count) {
-			double remaining_height = child_size.height;
-
-			for (int r = row; (r < row + rowspan) && (r < row_count); r++){
-				RowDefinition *rowdef = rows->GetValueAt (r)->AsRowDefinition ();
-				if (!rowdef)
-					break; // XXX what to do if row + rowspan is more than the number of rows?
-
-				if (rowdef->GetHeight ()->type != GridUnitTypePixel)
-					row_heights[col] = MAX(row_heights[col], remaining_height);
-			}
+		double remaining_height = child_size.height;
+		for (int r = row; r < MIN (row + rowspan, row_count); r++){
+			RowDefinition *rowdef = rows->GetValueAt (r)->AsRowDefinition ();
+			if (!rowdef)
+				break; // XXX what to do if row + rowspan is more than the number of rows?
+			
+			if (rowdef->GetHeight ()->type != GridUnitTypePixel)
+				row_heights[r] = MAX(row_heights[r], remaining_height);
 		}
 	}
 
@@ -195,7 +201,6 @@ Grid::MeasureOverride (Size availableSize)
 	results = results.Max (grid_size);
 
 	//printf ("results = %g %g\n", results.width, results.height);
-
 	delete [] row_heights;
 	delete [] column_widths;
 
@@ -212,15 +217,26 @@ Grid::ArrangeOverride (Size finalSize)
 	int col_count = columns->GetCount ();
 	int row_count = rows->GetCount ();
 
-	double* row_heights = new double[row_count == 0 ? 1 : row_count];
-	double* column_widths = new double[col_count == 0 ? 1 : col_count];
+	if (col_count == 0) {
+		columns = new ColumnDefinitionCollection ();
+		columns->Add (new ColumnDefinition ());
+		col_count = 1;
+	}
+
+	if (row_count == 0) {
+		rows = new RowDefinitionCollection ();
+		rows->Add (new RowDefinition ());
+		row_count = 1;
+	}
+
+	double* row_heights = new double[row_count];
+	double* column_widths = new double[col_count];
 
 	for (int i = 0; i < col_count; i++)
 		column_widths[i] = 0.0;
 
 	for (int i = 0; i < row_count; i++)
 		row_heights[i] = 0.0;
-
 
 	Size remaining = finalSize;
 
@@ -238,8 +254,6 @@ Grid::ArrangeOverride (Size finalSize)
 
 			if (width->type == GridUnitTypeAuto)
 				column_widths[col] = MAX (column_widths[col], desired.width);
-			if (width->type == GridUnitTypeStar)
-				g_warning ("a star is a star");
 
 		}
 
@@ -249,8 +263,6 @@ Grid::ArrangeOverride (Size finalSize)
 			
 			if (height->type == GridUnitTypeAuto)
 				row_heights[row] = MAX (row_heights[row], desired.height);
-			if (height->type == GridUnitTypeStar)
-				g_warning ("a star is a star");
 		}
 	}
 

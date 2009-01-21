@@ -56,6 +56,7 @@ class ColumnDefinition : public DependencyObject {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	double GetActualWidth () { return actual; }
+	void SetActualWidth (double value) { actual = value; }
 	
 	virtual Type::Kind GetObjectType () { return Type::COLUMNDEFINITION; }
 
@@ -92,6 +93,7 @@ class RowDefinition : public DependencyObject {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	double GetActualHeight () { return actual; }
+	void SetActualHeight (double value) { actual = value; }
 	
 	virtual Type::Kind GetObjectType () { return Type::ROWDEFINITION; }
 

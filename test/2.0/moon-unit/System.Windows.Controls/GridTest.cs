@@ -911,6 +911,32 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		public void ArrangeDefaultDefinitions ()
+		{
+			Grid grid = new Grid ();
+
+			Border b = new Border ();
+			b.Background = new SolidColorBrush (Colors.Red);
+			
+			Border b2 = new Border ();
+			b2.Background = new SolidColorBrush (Colors.Green);
+			b2.Width = b2.Height = 50;
+
+			grid.Children.Add (b);
+			grid.Children.Add (b2);
+			
+			grid.Width = 100;
+			grid.Height = 100;
+			
+			grid.Measure (new Size (400,300));
+			grid.Arrange (new Rect (0,0,grid.DesiredSize.Width,grid.DesiredSize.Height));
+			
+			Assert.AreEqual (new Size (100,100), grid.RenderSize,"grid render");
+			Assert.AreEqual (new Size (100,100), b.RenderSize, "b render");
+			Assert.AreEqual (new Size (50,50), b2.RenderSize, "b2 render");
+		}
+
+		[TestMethod]
 		public void StaticMethods_Null ()
 		{
 			Assert.Throws<NullReferenceException> (delegate {
