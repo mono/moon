@@ -8,4 +8,32 @@ url:http://photosynth.net/silverlight/photosynth.aspx?cid=d7d78324-ad5e-41ea-94d
 rating:0
  * not working
 
+site:Silverlight Stocks
+url:http://www.vadimv.com/
+rating:0
+ * not working
 
+site:Calculator
+url:http://silver.calcsharp.net/
+rating:0
+ * not working
+
+site:Zoom Mosaic
+url:http://xaml.me/zoommosaic/
+rating:0
+ * not working
+
+site: Rad Media Player
+url:http://demos.telerik.com/silverlight/#MediaPlayer/Fullscreen
+rating:0
+ * not working
+
+site:Power Arrow
+url:http://demos.telerik.com/silverlight/#MediaPlayer/Fullscreen
+rating:0
+ * not working
+
+site:Database Schema Editor
+url:http://www.dbschemaeditor.com/OnlineDB.aspx
+rating:0
+ * not working
