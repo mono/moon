@@ -327,6 +327,12 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.TIMESPAN));
 				t = typeof (System.Windows.Application);
 				types.Add (t, new ManagedType (t, Kind.APPLICATION));
+				t = typeof (System.Windows.FontStretch);
+				types.Add (t, new ManagedType (t, Kind.FONTSTRETCH));
+				t = typeof (System.Windows.Media.FontFamily);
+				types.Add (t, new ManagedType (t, Kind.FONTFAMILY));
+				t = typeof (System.Windows.Markup.XmlLanguage);
+				types.Add (t, new ManagedType (t, Kind.XMLLANGUAGE));
 			} catch (Exception ex) {
 				Console.WriteLine ("There was an error while loading native types: " + ex.ToString ());
 			}
