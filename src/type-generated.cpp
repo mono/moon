@@ -203,6 +203,8 @@ Type type_infos [] = {
 	{ Type::EVENTOBJECT, Type::OBJECT, false, "EventObject", "EVENTOBJECT", 1, 1, EventObject_Events, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::EVENTTRIGGER, Type::TRIGGERBASE, false, "EventTrigger", "EVENTTRIGGER", 0, 1, NULL, (create_inst_func *) event_trigger_new, "Actions", NULL, NULL, NULL }, 
 	{ Type::EXPRESSION, Type::EVENTOBJECT, false, "Expression", "EXPRESSION", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
+	{ Type::FONTFAMILY, Type::OBJECT, false, "System.Windows.Media.FontFamily", "FONTFAMILY", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
+	{ Type::FONTSTRETCH, Type::OBJECT, false, "System.Windows.FontStretch", "FONTSTRETCH", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::FRAMEWORKELEMENT, Type::UIELEMENT, false, "FrameworkElement", "FRAMEWORKELEMENT", 3, 16, FrameworkElement_Events, (create_inst_func *) framework_element_new, NULL, NULL, NULL, NULL }, 
 	{ Type::FRAMEWORKTEMPLATE, Type::DEPENDENCY_OBJECT, false, "FrameworkTemplate", "FRAMEWORKTEMPLATE", 0, 1, NULL, (create_inst_func *) framework_template_new, NULL, NULL, NULL, NULL }, 
 	{ Type::GENERALTRANSFORM, Type::DEPENDENCY_OBJECT, false, "GeneralTransform", "GENERALTRANSFORM", 0, 1, NULL, (create_inst_func *) general_transform_new, NULL, NULL, NULL, NULL }, 
@@ -356,6 +358,7 @@ Type type_infos [] = {
 	{ Type::USERCONTROL, Type::CONTROL, false, "UserControl", "USERCONTROL", 0, 17, NULL, (create_inst_func *) user_control_new, "Content", NULL, NULL, NULL }, 
 	{ Type::VIDEOBRUSH, Type::TILEBRUSH, false, "VideoBrush", "VIDEOBRUSH", 0, 1, NULL, (create_inst_func *) video_brush_new, NULL, NULL, NULL, NULL }, 
 	{ Type::VISUALBRUSH, Type::TILEBRUSH, false, "VisualBrush", "VISUALBRUSH", 0, 1, NULL, (create_inst_func *) visual_brush_new, NULL, NULL, NULL, NULL }, 
+	{ Type::XMLLANGUAGE, Type::OBJECT, false, "System.Windows.Markup.XmlLanguage", "XMLLANGUAGE", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::LASTTYPE, Type::INVALID, false, NULL, NULL, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }
 };
 

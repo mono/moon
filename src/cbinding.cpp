@@ -947,6 +947,18 @@ dependency_object_get_value_with_error (DependencyObject *instance, Types *addit
 }
 
 
+bool
+dependency_object_set_marshalled_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, Value *value, MoonError *error)
+{
+	if (instance == NULL)
+		return false;
+	
+	if (error == NULL)
+		g_warning ("Moonlight: Called dependency_object_set_marshalled_value_with_error () with error == NULL.");
+	return instance->SetMarshalledValueWithError (additional_types, property, value, error);
+}
+
+
 void
 dependency_object_set_name (DependencyObject *instance, const char *name)
 {
@@ -954,18 +966,6 @@ dependency_object_set_name (DependencyObject *instance, const char *name)
 		return;
 	
 	instance->SetName (name);
-}
-
-
-bool
-dependency_object_set_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, Value *value, MoonError *error)
-{
-	if (instance == NULL)
-		return false;
-	
-	if (error == NULL)
-		g_warning ("Moonlight: Called dependency_object_set_value_with_error () with error == NULL.");
-	return instance->SetValueWithError (additional_types, property, value, error);
 }
 
 

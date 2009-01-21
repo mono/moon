@@ -70,6 +70,8 @@ namespace Mono {
 		EVENTOBJECT,
 		EVENTTRIGGER,
 		EXPRESSION,// Silverlight 2.0 only
+		FONTFAMILY,
+		FONTSTRETCH,
 		FRAMEWORKELEMENT,
 		FRAMEWORKTEMPLATE,// Silverlight 2.0 only
 		GENERALTRANSFORM,
@@ -223,6 +225,7 @@ namespace Mono {
 		USERCONTROL,// Silverlight 2.0 only
 		VIDEOBRUSH,
 		VISUALBRUSH,
+		XMLLANGUAGE,
 
 		LASTTYPE,
 		

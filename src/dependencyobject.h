@@ -248,7 +248,9 @@ public:
 	
 	bool SetValue (DependencyProperty *property, Value *value);
 	bool SetValue (DependencyProperty *property, Value value);
+
 	/* @GenerateCBinding,GeneratePInvoke */
+	bool SetMarshalledValueWithError (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error);
 	bool SetValueWithError (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error);
 	bool SetValueWithError (Types *additional_types, DependencyProperty *property, Value value, MoonError *error);
 

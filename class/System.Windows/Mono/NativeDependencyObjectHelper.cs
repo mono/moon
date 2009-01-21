@@ -86,7 +86,7 @@ namespace Mono {
 					throw new System.ArgumentException (string.Format ("null is not a valid value for '{0}'.", dp.Name));
 
 				v = new Value { k = NativeMethods.dependency_property_get_property_type(dp.Native), IsNull = true };
-				NativeMethods.dependency_object_set_value (wrapper.NativeHandle, dp.Native, ref v);
+				NativeMethods.dependency_object_set_marshalled_value (wrapper.NativeHandle, dp.Native, ref v);
 				return;
 			}
 
@@ -104,7 +104,7 @@ namespace Mono {
 				                     
 			v = Value.FromObject (value, (dp is CustomDependencyProperty) || (dp.PropertyType == typeof (object) || dp.PropertyType == typeof (Type)));
 			try {
-				NativeMethods.dependency_object_set_value (wrapper.NativeHandle, dp.Native, ref v);
+				NativeMethods.dependency_object_set_marshalled_value (wrapper.NativeHandle, dp.Native, ref v);
 			} finally {
 				NativeMethods.value_free_value (ref v);
 			}

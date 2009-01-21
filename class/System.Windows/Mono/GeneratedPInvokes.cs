@@ -498,23 +498,23 @@ namespace Mono {
 			return result;
 		}
 
-		[DllImport ("moon")]
-		// void dependency_object_set_name (DependencyObject *instance, const char *name);
-		public extern static void dependency_object_set_name (IntPtr instance, string name);
-
-		[DllImport ("moon", EntryPoint="dependency_object_set_value_with_error")]
+		[DllImport ("moon", EntryPoint="dependency_object_set_marshalled_value_with_error")]
 		[return: MarshalAs (UnmanagedType.U1)]
-		// bool dependency_object_set_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, Value *value, MoonError *error);
-		private extern static bool dependency_object_set_value_with_error_ (IntPtr instance, IntPtr additional_types, IntPtr property, ref Value value, out MoonError error);
-		public static bool dependency_object_set_value (IntPtr instance, IntPtr property, ref Value value)
+		// bool dependency_object_set_marshalled_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, Value *value, MoonError *error);
+		private extern static bool dependency_object_set_marshalled_value_with_error_ (IntPtr instance, IntPtr additional_types, IntPtr property, ref Value value, out MoonError error);
+		public static bool dependency_object_set_marshalled_value (IntPtr instance, IntPtr property, ref Value value)
 		{
 			bool result;
 			MoonError error;
-			result = dependency_object_set_value_with_error_ (instance, Mono.Types.Native, property, ref value, out error);
+			result = dependency_object_set_marshalled_value_with_error_ (instance, Mono.Types.Native, property, ref value, out error);
 			if (error.Number != 0)
 				throw CreateManagedException (error);
 			return result;
 		}
+
+		[DllImport ("moon")]
+		// void dependency_object_set_name (DependencyObject *instance, const char *name);
+		public extern static void dependency_object_set_name (IntPtr instance, string name);
 
 		[DllImport ("moon")]
 		// DependencyObjectCollection *dependency_object_collection_new ();

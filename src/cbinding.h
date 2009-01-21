@@ -414,10 +414,10 @@ Value *dependency_object_get_value_no_default_with_error (DependencyObject *inst
 Value *dependency_object_get_value_with_error (DependencyObject *instance, Types *additional_types, Type::Kind whatami, DependencyProperty *property, MoonError *error);
 
 /* @GeneratePInvoke */
-void dependency_object_set_name (DependencyObject *instance, const char *name);
+bool dependency_object_set_marshalled_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, Value *value, MoonError *error);
 
 /* @GeneratePInvoke */
-bool dependency_object_set_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, Value *value, MoonError *error);
+void dependency_object_set_name (DependencyObject *instance, const char *name);
 
 /**
  * DependencyObjectCollection

@@ -1,3 +1,11 @@
+2009-01-21  Jackson Harper  <jackson@ximian.com>
+
+	* Kind.cs:
+	* GeneratedPInvokes.cs: Regen
+	* NativeDependencyObjectHelper.cs: Update method signature, we
+	call into a special set_marshalled_value function now.
+	* Value.cs: Value kinds get their real kind now.
+
 2009-01-21  Alan McGovern  <amcgovern@novell.com>
 
 	* GeneratedPInvokes.cs: Initial attempt at trying to get Popup.Child

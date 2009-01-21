@@ -508,6 +508,7 @@ public:
   	Type::Kind GetKind ();
 	
 	void FreeValue ();
+	void Unmarshal (Types *additional_types, Type::Kind desired);
 	
   private:
 	Type::Kind k;

@@ -991,8 +991,19 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 }
 
 bool
+DependencyObject::SetMarshalledValueWithError (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error)
+{
+	if (value && property)
+		value->Unmarshal (additional_types, property->GetPropertyType ());
+	return SetValueWithError (additional_types, property, value, error);
+}
+
+bool
 DependencyObject::SetValueWithError (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error)
 {
+	if (value && property)
+		value->Unmarshal (additional_types, property->GetPropertyType ());
+
 	if (!IsValueValid (additional_types, property, value, error))
 		return false;
 	if (!property->Validate (this, value, error))

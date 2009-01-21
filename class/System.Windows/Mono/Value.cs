@@ -381,7 +381,7 @@ namespace Mono {
 				else if (v is FontFamily) {
 					FontFamily family = (FontFamily) v;
 					
-					value.k = Kind.STRING;
+					value.k = Kind.FONTFAMILY;
 					
 					byte[] bytes = System.Text.Encoding.UTF8.GetBytes (family.Source);
 					IntPtr result = Helper.AllocHGlobal (bytes.Length + 1);
@@ -393,7 +393,7 @@ namespace Mono {
 				else if (v is Uri) {
 					Uri uri = (Uri) v;
 					
-					value.k = Kind.STRING;
+					value.k = Kind.URI;
 					
 					byte[] bytes = System.Text.Encoding.UTF8.GetBytes (uri.OriginalString);
 					IntPtr result = Helper.AllocHGlobal (bytes.Length + 1);
@@ -405,7 +405,7 @@ namespace Mono {
 				else if (v is XmlLanguage) {
 					XmlLanguage lang = (XmlLanguage) v;
 					
-					value.k = Kind.STRING;
+					value.k = Kind.XMLLANGUAGE;
 					
 					byte[] bytes = System.Text.Encoding.UTF8.GetBytes (lang.IetfLanguageTag);
 					IntPtr result = Helper.AllocHGlobal (bytes.Length + 1);

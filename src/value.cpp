@@ -458,6 +458,23 @@ Value::operator== (const Value &v) const
 	return true;
 }
 
+void
+Value::Unmarshal (Types *additional_types, Type::Kind desired)
+{
+	if (desired == k)
+		return;
+
+	if (desired == Type::STRING) {
+		switch (k) {
+		case Type::URI:
+			k = desired;
+			break;
+		default:
+			break;
+		}
+	}
+}
+
 //
 // This is invoked by managed code to free the contents of the value
 //
