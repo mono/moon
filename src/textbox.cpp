@@ -1447,7 +1447,7 @@ TextBox::OnApplyTemplate ()
 		control = (ContentControl *) content;
 		view = new TextBoxView ();
 		view->SetTextBox (this);
-		control->SetContent (view);
+		control->SetValue (ContentControl::ContentProperty, Value (view));
 	} else {
 		printf ("\tUnable to insert TextBoxView because the content container is of type: %s\n", content->GetType ()->GetName ());
 	}

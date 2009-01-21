@@ -1,5 +1,8 @@
 2009-01-21  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.cpp (TextBox::OnApplyTemplate): Use SetValue() directly
+	rather than SetContent() since SetContent() has been removed.
+
 	* contentcontrol.h (class ContentControl): Updated a bit, we're
 	going to actually use this unmanaged class now.
 	(class ContentControl): Set PropertyType for ContentProperty to
