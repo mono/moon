@@ -1,3 +1,10 @@
+2009-01-21  Andreia Gaita  <avidigal@novell.com>
+
+	* System.Windows.Browser/ScriptableTest.cs: New, tests for scriptable 
+	objects
+
+	* moon-unit.mdp: update
+
 2009-01-21  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows/TextDecorationsTest.cs: New.
