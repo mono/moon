@@ -1,3 +1,8 @@
+2009-01-21  Alan McGovern  <amcgovern@novell.com>
+
+	* Popup.cs: Should be sending the native handle, the surface is
+	automagically taken care of.
+
 2009-01-20  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Popup.cs: Fix build

@@ -75,9 +75,11 @@ namespace System.Windows.Controls.Primitives {
 		
 		void InvokeIsOpenChanged ()
 		{
+			Console.WriteLine ("\nIs Open? {0}", IsOpen);
 			EventHandler h = IsOpen ? opened_event : closed_event;
 			if (h != null)
 				h (this, EventArgs.Empty);
+			Mono.NativeMethods.popup_set_active_surface (native);
 		}
 	}
 }
