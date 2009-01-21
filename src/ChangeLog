@@ -1,3 +1,9 @@
+2009-01-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* dependencyproperty.g.cpp: Regenerated
+	* text.cpp|h: Revert earlier change as it "turns black" too many
+	things. DRT #47 will fail until I find the right fix :(
+
 2009-01-21  Larry Ewing  <lewing@novell.com>
 
 	* grid.cpp (Grid::ArrangeOverride): make the basic cases work

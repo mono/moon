@@ -49,7 +49,7 @@ class Inline : public DependencyObject, public ITextSource {
 	static DependencyProperty *FontStyleProperty;
  	/* @PropertyType=FontWeight,DefaultValue=TEXTBLOCK_FONT_WEIGHT,GenerateAccessors */
 	static DependencyProperty *FontWeightProperty;
- 	/* @PropertyType=Brush,GenerateAccessors */
+ 	/* @PropertyType=Brush,DefaultValue=new SolidColorBrush("black"),GenerateAccessors */
 	static DependencyProperty *ForegroundProperty;
  	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone,ManagedPropertyType=TextDecorationCollection,GenerateAccessors */
 	static DependencyProperty *TextDecorationsProperty;
