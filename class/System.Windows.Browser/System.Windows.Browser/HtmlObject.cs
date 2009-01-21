@@ -178,9 +178,8 @@ namespace System.Windows.Browser {
 		{
 			Mono.Value res;
 			NativeMethods.html_object_get_property (WebApplication.Current.PluginHandle, handle, name, out res);
-
 			if (res.k != Mono.Kind.INVALID) {
-				object o = ScriptableObjectWrapper.ObjectFromValue (res);
+				var o = ScriptableObjectWrapper.ObjectFromValue<T> (res);
 				return (T) o;
 			}
 
@@ -205,7 +204,7 @@ namespace System.Windows.Browser {
 			NativeMethods.html_object_invoke (WebApplication.Current.PluginHandle, handle, name, vargs, args.Length, out res);
 
 			if (res.k != Mono.Kind.INVALID) {
-				object o = ScriptableObjectWrapper.ObjectFromValue (res);
+				object o = ScriptableObjectWrapper.ObjectFromValue<T> (res);
 				return (T) o;
 			}
 

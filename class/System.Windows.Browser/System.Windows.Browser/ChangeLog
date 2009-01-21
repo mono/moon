@@ -1,3 +1,14 @@
+2009-01-21  Andreia Gaita  <avidigal@novell.com>
+
+	* HtmlObject.cs, HtmlDocument.cs, HtmlPage.cs: Implement 
+	RegisterScriptableObject, add support for scriptable objects with complex 
+	types. Also implement some missing properties.
+
+	* ScriptObject.cs: Now keeps a list of registered objects by 
+	handle - NPObject*, not MoonlightObject* (this distinction is significant
+      due to the fact that the lookups are done in calls that get NPObjects* as
+      arguments (and NPObject* doesn't have a vtable)).
+
 2009-01-16  Jb Evain  <jbevain@novell.com>
 
 	* BrowserInformation.cs: use the updated

@@ -29,21 +29,35 @@
 using System.ComponentModel;
 using System.Security;
 using System.Windows.Threading;
-
+using System.Collections.Generic;
 
 namespace System.Windows.Browser {
 	public class ScriptObject {
-		IntPtr handle;
+		protected IntPtr handle;
 		string script_key;
+		object managed;
+
+		static Dictionary<IntPtr, WeakReference> scriptableObjects;
+		static internal Dictionary<IntPtr, WeakReference> ScriptableObjects { get {return scriptableObjects;} }
+
+		static ScriptObject ()
+		{
+			scriptableObjects = new Dictionary<IntPtr, WeakReference>();
+		}
 
 		internal ScriptObject ()
 		{
 		}
-		
+
 		internal ScriptObject (IntPtr handle)
 		{
 			// FIXME: do we need to do registration or whatever?
 			this.handle = handle;
+		}
+
+		internal ScriptObject (object obj)
+		{
+			managed = obj;
 		}
 
 		internal IntPtr Handle {
@@ -65,27 +79,29 @@ namespace System.Windows.Browser {
 		{
 			throw new System.NotImplementedException ();
 		}
-		
+
 		[SecuritySafeCritical ()]
 		public virtual object GetProperty (string name)
 		{
 			object result;
-			
+
 			result = HtmlObject.GetPropertyInternal <object> (handle, name);
 
-			if (result != null && result is int) {
-				// When the target type is object, SL converts ints to doubles to wash out
-				// browser differences. (Safari apparently always returns doubles, FF
-				// ints and doubles, depending on the value).
-				// See: http://msdn.microsoft.com/en-us/library/cc645079(VS.95).aspx
-				result = (double) (int) result;
+			if (result != null) {
+				if (result is int) {
+					// When the target type is object, SL converts ints to doubles to wash out
+					// browser differences. (Safari apparently always returns doubles, FF
+					// ints and doubles, depending on the value).
+					// See: http://msdn.microsoft.com/en-us/library/cc645079(VS.95).aspx
+					result = (double) (int) result;
+				} else if (result is IntPtr) {
+					result = new ScriptObject ((IntPtr)result);
+				}
 			}
-			
-			//Console.WriteLine ("ScriptObject.GetProperty ({0}) returned: {1} ({2})", name, result, result != null ? result.GetType () : null);
-			
+
 			return result;
 		}
-		
+
 		public object GetProperty (int index)
 		{
 			throw new System.NotImplementedException ();
@@ -100,13 +116,13 @@ namespace System.Windows.Browser {
 		{
 			throw new System.NotImplementedException ();
 		}
-		
+
 		[SecuritySafeCritical ()]
 		public virtual object Invoke (string name, params object [] args)
 		{
 			throw new System.NotImplementedException ();
 		}
-		
+
 		[SecuritySafeCritical ()]
 		public virtual object InvokeSelf (params object [] args)
 		{
@@ -127,20 +143,20 @@ namespace System.Windows.Browser {
 		{
 			return WebApplication.InvokeMethod<T> (handle, name, args);
 		}
-		
+
 		[EditorBrowsable (EditorBrowsableState.Never)]
 		public bool CheckAccess ()
 		{
-			throw new System.NotImplementedException ();
+			return Dispatcher.Main.CheckAccess ();
 		}
-		
+
 		public object ManagedObject {
-			get { throw new System.NotImplementedException (); }
+			get { return managed; }
 		}
-		
+
 		[EditorBrowsable (EditorBrowsableState.Advanced)]
 		public Dispatcher Dispatcher {
-			get { throw new System.NotImplementedException (); }
+			get { return Dispatcher.Main; }
 		}
 	}
 }

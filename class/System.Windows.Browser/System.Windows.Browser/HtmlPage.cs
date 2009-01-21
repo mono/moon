@@ -40,6 +40,12 @@ namespace System.Windows.Browser{
 		private static HtmlWindow window;
 		private static HtmlDocument document;
 		private static HtmlElement plugin;
+		static List<string> scriptableObjects;
+
+		static HtmlPage ()
+		{
+			scriptableObjects = new List<string>();
+		}
 
 		public static BrowserInformation BrowserInformation {
 			get {
@@ -59,7 +65,7 @@ namespace System.Windows.Browser{
 			[SecuritySafeCritical]
 			get {
 				if (document == null)
-					document = new HtmlDocument (HtmlObject.GetPropertyInternal<IntPtr> (IntPtr.Zero, "document"));
+					document = HtmlObject.GetPropertyInternal<HtmlDocument> (IntPtr.Zero, "document");
 
 				return document;
 			}
@@ -73,8 +79,7 @@ namespace System.Windows.Browser{
 		
 		public static void RegisterScriptableObject (string scriptKey, object instance)
 		{
-			Console.Error.WriteLine ("MOONLIGHT-IMPLEMENT-ME: HtmlPage.RegisterScriptableObject needs to be implemented.");
-//			throw new System.NotImplementedException ();
+			WebApplication.Current.RegisterScriptableObject (scriptKey, instance);
 		}
 		
 		public static void RegisterCreateableType (string scriptAlias, Type type)
@@ -86,7 +91,7 @@ namespace System.Windows.Browser{
 		public static HtmlWindow Window {
 			get {
 				if (window == null)
-					window = new HtmlWindow (HtmlObject.GetPropertyInternal<IntPtr> (IntPtr.Zero, "window"));
+					window = HtmlObject.GetPropertyInternal<HtmlWindow> (IntPtr.Zero, "window");
 
 				return window;
 			}

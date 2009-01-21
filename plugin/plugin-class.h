@@ -26,7 +26,6 @@ void plugin_destroy_classes (void);
 void event_object_add_xaml_listener (EventObject *obj, PluginInstance *instance, const char *event_name, const char *cb_name);
 
 void string_to_npvariant (const char *value, NPVariant *result);
-
 G_END_DECLS
 
 #define MAPPING_FLAG_SL1 0x01
@@ -728,8 +727,17 @@ struct MoonlightScriptableObjectObject : MoonlightObject {
 G_BEGIN_DECLS
 
 // These are meant to be called by System.Silverlight.dll
+NPObject * moonlight_object_to_npobject (MoonlightObject *obj);
+MoonlightObject * npobject_to_moonlight_object (NPObject *npobj);
 
-MoonlightScriptableObjectObject *moonlight_scriptable_object_wrapper_create (PluginInstance *plugin, gpointer scriptable,
+MoonlightScriptableObjectObject *moonlight_scriptable_object_wrapper_create_root (PluginInstance *plugin, gpointer scriptable,
+									     InvokeDelegate invoke,
+									     SetPropertyDelegate setprop,
+									     GetPropertyDelegate getprop,
+									     EventHandlerDelegate addevent,
+									     EventHandlerDelegate removeevent);
+
+MoonlightScriptableObjectObject *moonlight_scriptable_object_wrapper_create (NPObject *parent, gpointer scriptable,
 									     InvokeDelegate invoke,
 									     SetPropertyDelegate setprop,
 									     GetPropertyDelegate getprop,
@@ -787,6 +795,8 @@ void html_object_release (PluginInstance *plugin, NPObject *npobj);
 
 /*** Browser interaction utility classes ***/
 void browser_do_alert (PluginInstance *plugin, char *msg);
+
+
 G_END_DECLS
 
 #endif /* PLUGIN_CLASS */

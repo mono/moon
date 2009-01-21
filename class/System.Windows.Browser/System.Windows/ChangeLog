@@ -1,3 +1,16 @@
+2009-01-21  Andreia Gaita  <avidigal@novell.com>
+
+	* WebApplication.cs: Implement RegisterScriptableObject, add
+        support for scriptable objects with complex types.
+
+	* ScriptableObjectGenerator.cs:
+        - ScriptableObjectGenerator: This is now static, and mainly
+        does type validation (optional) when asked to wrap an object instance.
+
+        - ScriptableObjectWrapper: This class inherits ScriptObject and extends it
+        to support managed lookups of properties, methods, etc. All managed objects
+        are wrapped with it.
+
 2008-12-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* WebApplication.cs: Remove pinvokes from here, they should all go into

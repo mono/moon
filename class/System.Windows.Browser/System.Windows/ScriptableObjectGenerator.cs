@@ -126,9 +126,17 @@ namespace System.Windows
 	}
 
 
-	internal class ScriptableNativeMethods {
+	class ScriptableNativeMethods {
+		[DllImport ("moonplugin", EntryPoint = "moonlight_scriptable_object_wrapper_create_root")]
+		public static extern IntPtr wrapper_create_root (IntPtr plugin, IntPtr obj_handle,
+							    InvokeDelegate invoke,
+							    SetPropertyDelegate set_prop,
+							    GetPropertyDelegate get_prop,
+							    EventHandlerDelegate add_event,
+							    EventHandlerDelegate remove_event);
+
 		[DllImport ("moonplugin", EntryPoint = "moonlight_scriptable_object_wrapper_create")]
-		public static extern IntPtr wrapper_create (IntPtr plugin_handle, IntPtr obj_handle,
+		public static extern IntPtr wrapper_create (IntPtr parent_handle, IntPtr obj_handle,
 							    InvokeDelegate invoke,
 							    SetPropertyDelegate set_prop,
 							    GetPropertyDelegate get_prop,
@@ -170,36 +178,64 @@ namespace System.Windows
 						    string name,
 						    IntPtr wrapper);
 
+		[DllImport ("moonplugin", EntryPoint = "moonlight_object_to_npobject")]
+		public static extern IntPtr moonlight_object_to_npobject (IntPtr obj);
+
+		[DllImport ("moonplugin", EntryPoint = "npobject_to_moonlight_object")]
+		public static extern IntPtr npobject_to_moonlight_object (IntPtr obj);
 		
 	}
 
-	internal class ScriptableObjectWrapper {
-
-		IntPtr scriptable_wrapper;
-		object obj;
+	internal class ScriptableObjectWrapper : ScriptObject {
 
 		List<GCHandle> handles; /* for methods, events, properties, as well as the object itself */
+		IntPtr moon_handle;
+		public IntPtr MoonHandle {
+			get { return moon_handle; }
+		}
 
-		public ScriptableObjectWrapper (object obj)
+		public ScriptableObjectWrapper (object obj) : base(obj)
 		{
 			this.handles = new List<GCHandle>();
-			this.obj = obj;
 
 			GCHandle obj_handle = GCHandle.Alloc (obj);
 
 			handles.Add (obj_handle);
-			
-			scriptable_wrapper = ScriptableNativeMethods.wrapper_create (WebApplication.Current.PluginHandle,
+
+			moon_handle = ScriptableNativeMethods.wrapper_create_root (
+									WebApplication.Current.PluginHandle,
+									(IntPtr)obj_handle,
+									invoke,
+									set_prop,
+									get_prop,
+									add_event,
+									remove_event);
+
+			handle = ScriptableNativeMethods.moonlight_object_to_npobject (moon_handle);
+		}
+
+		public ScriptableObjectWrapper (object obj, IntPtr parent) : base (obj)
+		{
+			this.handles = new List<GCHandle>();
+
+			GCHandle obj_handle = GCHandle.Alloc (obj);
+
+			handles.Add (obj_handle);
+
+			moon_handle = ScriptableNativeMethods.wrapper_create (parent,
 										     (IntPtr)obj_handle,
 										     invoke,
 										     set_prop,
 										     get_prop,
 										     add_event,
 										     remove_event);
+
+			handle = ScriptableNativeMethods.moonlight_object_to_npobject (moon_handle);
 		}
 
-		public IntPtr UnmanagedWrapper {
-			get { return scriptable_wrapper; }
+		public void Register (string scriptKey)
+		{
+			ScriptableNativeMethods.register (WebApplication.Current.PluginHandle, scriptKey, moon_handle);
 		}
 
 		public void AddProperty (PropertyInfo pi)
@@ -211,7 +247,7 @@ namespace System.Windows
 			TypeCode tc = Type.GetTypeCode (pi.PropertyType);
 
 			ScriptableNativeMethods.add_property (WebApplication.Current.PluginHandle,
-							      scriptable_wrapper,
+							      moon_handle,
 							      (IntPtr)prop_handle,
 							      pi.Name,
 							      tc,
@@ -226,7 +262,7 @@ namespace System.Windows
 			handles.Add (event_handle);
 
  			ScriptableNativeMethods.add_event (WebApplication.Current.PluginHandle,
- 						           scriptable_wrapper,
+						           moon_handle,
  							   (IntPtr)event_handle,
 							   ei.Name);
 		}
@@ -246,7 +282,7 @@ namespace System.Windows
 			handles.Add (method_handle);
 
 			ScriptableNativeMethods.add_method (WebApplication.Current.PluginHandle,
-							    scriptable_wrapper,
+							    moon_handle,
 							    (IntPtr)method_handle,
 							    mi.Name,
 							    Type.GetTypeCode (mi.ReturnType),
@@ -274,18 +310,16 @@ namespace System.Windows
 
 			public void del (object sender, object args)
 			{
-				ScriptableObjectGenerator event_gen = new ScriptableObjectGenerator (args);
-
 				// don't need to validate the type
 				// again, this was done when the class
 				// containing the event was validated.
-				ScriptableObjectWrapper event_wrapper = event_gen.Generate (false);
+				ScriptableObjectWrapper event_wrapper = ScriptableObjectGenerator.Generate (args, false);
 
 				//Console.WriteLine ("emitting scriptable event!");
 
 				ScriptableNativeMethods.emit_event (WebApplication.Current.PluginHandle,
 								    scriptable_handle,
-								    event_wrapper.UnmanagedWrapper,
+								    event_wrapper.MoonHandle,
 								    closure);
 			}
 		}
@@ -297,7 +331,7 @@ namespace System.Windows
 		static EventHandlerDelegate add_event = new EventHandlerDelegate (AddEventFromUnmanaged);
 		static EventHandlerDelegate remove_event = new EventHandlerDelegate (RemoveEventFromUnmanaged);
 
-		internal static object ObjectFromValue (Value v)
+		internal static object ObjectFromValue<T> (Value v)
 		{
 			switch (v.k) {
 			case Kind.BOOL:
@@ -313,7 +347,16 @@ namespace System.Windows
 			case Kind.STRING:
 				return Marshal.PtrToStringAnsi (v.u.p);
 			case Kind.NPOBJ:
-				return v.u.p;
+				// FIXME: Move all of this one caller up
+				Type type = typeof (T);
+				WeakReference reference;
+				if (ScriptObject.ScriptableObjects.TryGetValue (v.u.p, out reference)) {
+					return (T) reference.Target;
+				} else if (!type.Equals (typeof(object)) && typeof (ScriptObject).IsAssignableFrom (type)) {
+					System.Reflection.ConstructorInfo info = type.GetConstructor (BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[]{typeof(IntPtr)}, null);
+					return (T) info.Invoke (new object[]{v.u.p});
+				} else
+					return v.u.p;
 			default:
 				Console.WriteLine ("unsupported Kind.{0}", v.k);
 				throw new NotSupportedException ();
@@ -360,7 +403,7 @@ namespace System.Windows
 			case TypeCode.Object:
 				//Console.Write ("Trying to marshal managed object {0}...", o.GetType ().FullName);
 				ScriptObject so = o as ScriptObject;
-				if (o != null) {
+				if (so != null) {
 					v.u.p = so.Handle;
 					v.k = Kind.NPOBJ;
 				} else {
@@ -389,7 +432,7 @@ namespace System.Windows
 			for (int i = 0; i < arg_count; i ++) {
 				Value v = (Value)Marshal.PtrToStructure (uargs[i], typeof (Value));
 
-				object o = ObjectFromValue (v);
+				object o = ObjectFromValue<object> (v);
 				//Console.WriteLine ("margs[{1}] = {2} ({0})", o.GetType(), i, o);
 
 				margs[i] = o; //Convert.ChangeType (o, pis[i].ParameterType);
@@ -406,7 +449,7 @@ namespace System.Windows
 			object obj = ((GCHandle)obj_handle).Target;
 			PropertyInfo pi = (PropertyInfo)((GCHandle)property_handle).Target;
 
-			object v = ObjectFromValue (value);
+			object v = ObjectFromValue<object> (value);
 
 			pi.SetValue (obj, v, null);
 
@@ -418,6 +461,10 @@ namespace System.Windows
 			PropertyInfo pi = (PropertyInfo)((GCHandle)property_handle).Target;
 
 			object v = pi.GetValue (obj, null);
+
+			if (Type.GetTypeCode (pi.PropertyType) == TypeCode.Object) {
+				v = ScriptableObjectGenerator.Generate (v, false); // the type has already been validated
+			}
 
 			ValueFromObject (ref value, v);
 		}
@@ -441,112 +488,115 @@ namespace System.Windows
 		}
 	}
 
-	internal class ScriptableObjectGenerator
+	internal static class ScriptableObjectGenerator
 	{
-		string name;
-		object obj;
-		Type type;
-
-		public ScriptableObjectGenerator (object obj)
+		static bool ValidateType (Type t)
 		{
-			this.obj = obj;
-			type = obj.GetType ();
+			if (!t.IsDefined (typeof(ScriptableTypeAttribute), true)) {
+				if (ValidateProperties (t) | ValidateMethods (t) | ValidateEvents (t))
+					return true;
+			} else
+				return true;
+			return false;
 		}
 
-		public void ValidateType (Type t)
-		{
-			bool hasItem = false;
+		static bool ValidateProperties (Type t) {
+			bool ret = false;
 
-			if (t.GetCustomAttributes (typeof (ScriptableTypeAttribute), false).Length == 0)
-				throw new NotSupportedException (
-						 String.Format ("Class {0} must have [ScriptableAttribute] to be used as a scriptable object type", type));
-
-			foreach (PropertyInfo pi in type.GetProperties ()) {
-				if (pi.GetCustomAttributes (typeof (ScriptableMemberAttribute), false).Length == 0)
+			foreach (PropertyInfo pi in t.GetProperties ()) {
+				if (!pi.IsDefined (typeof(ScriptableMemberAttribute), true))
 					continue;
 
-				TypeCode tc = Type.GetTypeCode (pi.PropertyType);
-				if (!IsSupportedType (tc))
+				if (!IsSupportedType (pi.PropertyType)) {
 					throw new NotSupportedException (
 						 String.Format ("The scriptable object type {0} has a property {1} whose type {2} is not supported",
-								type, pi, pi.PropertyType));
-				
-				hasItem = true;
+								t, pi, pi.PropertyType));
+				}
+				ret = true;
+			}
+			return ret;
+		}
+
+		static bool ValidateMethods (Type t) {
+			bool ret = false;
+
+			foreach (MethodInfo mi in t.GetMethods ()) {
+				if (!mi.IsDefined (typeof(ScriptableMemberAttribute), true))
+					continue;
+
+				if (mi.ReturnType != typeof (void) && !IsSupportedType (mi.ReturnType))
+					throw new NotSupportedException (
+						 String.Format ("The scriptable object type {0} has a method {1} whose return type {2} is not supported",
+								t, mi, mi.ReturnType));
+
+				ParameterInfo[] ps = mi.GetParameters();
+				foreach (ParameterInfo p in ps) {
+					if (p.IsOut || !IsSupportedType (p.ParameterType))
+						throw new NotSupportedException (
+						 String.Format ("The scriptable object type {0} has a method {1} whose parameter {2} is of not supported type",
+								t, mi, p));
+				}
+
+				ret = true;
 			}
 
-			foreach (EventInfo ei in type.GetEvents ()) {
-				if (ei.GetCustomAttributes (typeof (ScriptableMemberAttribute), false).Length == 0)
+			return ret;
+		}
+
+		static bool ValidateEvents (Type t) {
+			bool ret = false;
+
+			foreach (EventInfo ei in t.GetEvents ()) {
+				if (!ei.IsDefined (typeof(ScriptableMemberAttribute), true))
 					continue;
 
 // 				Console.WriteLine ("event handler type = {0}", ei.EventHandlerType);
 // 				Console.WriteLine ("typeof (EventHandler<>) == {0}", typeof (EventHandler<>));
 
-				if (ei.EventHandlerType != typeof (EventHandler)
-				    && typeof (EventHandler<>).IsAssignableFrom (ei.EventHandlerType)) {
-					try {
-						ValidateType (ei.EventHandlerType);
-					}
-					catch (Exception e) {
+				if (ei.EventHandlerType != typeof (EventHandler) && 
+				    typeof (EventHandler<>).IsAssignableFrom (ei.EventHandlerType)) {
+					if (!ValidateType (ei.EventHandlerType)) {
 						throw new NotSupportedException (
-							 String.Format ("The scriptable object type {0} has a event {1} whose type {2} is not supported",
-									type, ei, ei.EventHandlerType), e);
+							String.Format ("The scriptable object type {0} has a event {1} whose type {2} is not supported",
+							t, ei, ei.EventHandlerType));
 					}
 				}
 
-				hasItem = true;
+				ret = true;
 			}
-
-			foreach (MethodInfo mi in type.GetMethods ()) {
-				if (mi.GetCustomAttributes (typeof (ScriptableMemberAttribute), false).Length == 0)
-					continue;
-
-				TypeCode rc = Type.GetTypeCode (mi.ReturnType);
-				if (mi.ReturnType != typeof (void) && !IsSupportedType (rc))
-					throw new NotSupportedException (
-						 String.Format ("The scriptable object type {0} has a method {1} whose return type {2} is not supported",
-								type, mi, mi.ReturnType));
-
-				ParameterInfo[] ps = mi.GetParameters();
-				foreach (ParameterInfo p in ps) {
-					TypeCode pc = Type.GetTypeCode (p.ParameterType);
-					if (p.IsOut || !IsSupportedType (pc))
-						throw new NotSupportedException (
-						 String.Format ("The scriptable object type {0} has an event {1} whose parameter {2} is of not supported type",
-								type, mi, p));
-				}
-
-				hasItem = true;
-			}
-
-			if (!hasItem)
-				throw new ArgumentException (String.Format ("The scriptable type {0} does not have scriptable members", type));
+			return ret;
 		}
 
-		public ScriptableObjectWrapper Generate (bool validate)
+		public static ScriptableObjectWrapper Generate (object instance, bool validate)
 		{
-			if (validate)
-				ValidateType (type);
+			Type type = instance.GetType ();
 
-			ScriptableObjectWrapper scriptable = new ScriptableObjectWrapper (obj);
+			if (validate && !ValidateType (type))
+				throw new ArgumentException (String.Format ("The scriptable type {0} does not have scriptable members", type));
+
+			ScriptableObjectWrapper scriptable = new ScriptableObjectWrapper (instance);
+			ScriptObject.ScriptableObjects.Add (scriptable.Handle, new WeakReference(scriptable));
+
+			bool isScriptable = type.IsDefined (typeof(ScriptableTypeAttribute), true);
 
 			// add properties
 
 			foreach (PropertyInfo pi in type.GetProperties ()) {
-				if (pi.GetCustomAttributes (typeof (ScriptableMemberAttribute), false).Length == 0)
+				if (!isScriptable && !pi.IsDefined (typeof(ScriptableMemberAttribute), true))
 					continue;
 				scriptable.AddProperty (pi);
 			}
 
 			// add events
 			foreach (EventInfo ei in type.GetEvents ()) {
-				if (ei.GetCustomAttributes (typeof (ScriptableMemberAttribute), false).Length == 0)
+				if (!isScriptable && !ei.IsDefined (typeof(ScriptableMemberAttribute), true))
 					continue;
 				scriptable.AddEvent (ei);
 			}
 
 			// add functions
 			foreach (MethodInfo mi in type.GetMethods ()) {
-				if (mi.GetCustomAttributes (typeof (ScriptableMemberAttribute), false).Length == 0)
+				if (!isScriptable && !mi.IsDefined (typeof(ScriptableMemberAttribute), true))
 					continue;
 				scriptable.AddMethod (mi);
 			}
@@ -554,8 +604,13 @@ namespace System.Windows
 			return scriptable;
 		}
 
-		bool IsSupportedType (TypeCode tc)
+		static bool IsSupportedType (Type t)
 		{
+			TypeCode tc = Type.GetTypeCode (t);
+			if (tc == TypeCode.Object) {
+				return ValidateType (t);
+			}
+
 			switch (tc) {
 			// string
 			case TypeCode.Char:
@@ -576,6 +631,7 @@ namespace System.Windows
 			// case TypeCode.Decimal: // decimal is unsupported(!)
 				return true;
 			}
+
 			return false;
 		}
 	}

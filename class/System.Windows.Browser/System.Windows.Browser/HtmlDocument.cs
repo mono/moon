@@ -132,9 +132,8 @@ namespace System.Windows.Browser
 		
 		public HtmlElement Body {
 			get {
-				IntPtr body = GetPropertyInternal<IntPtr> (Handle, "body");
+				return GetPropertyInternal<HtmlElement> (Handle, "body");
 				//Console.WriteLine ("HtmlDocument.Body: {0} Handle: {1}", body, Handle);
-				return new HtmlElement (body);
 			}
 		}
 		

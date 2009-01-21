@@ -78,7 +78,6 @@ namespace System.Windows
 			get { return plugin_handle; }
 		}
 
-		[MonoTODO]
 		public void RegisterScriptableObject (string scriptKey, object instance)
 		{
 			if (scriptKey == null)
@@ -89,28 +88,15 @@ namespace System.Windows
 			if (scriptKey.Length == 0)
 				throw new ArgumentException ("scriptKey");
 
-			ScriptableObjectGenerator gen = new ScriptableObjectGenerator (instance);
+			//ScriptableObjectGenerator gen = new ScriptableObjectGenerator (instance);
 
-			ScriptableObjectWrapper wrapper = gen.Generate (true);
-
-			ScriptableNativeMethods.register (plugin_handle, scriptKey, wrapper.UnmanagedWrapper);
+			ScriptableObjectWrapper wrapper = ScriptableObjectGenerator.Generate (instance, true);
+			wrapper.Register (scriptKey);
 		}
 
 		[MonoTODO]
 		public IDictionary<string, string> StartupArguments {
 			get { return startup_args; }
-		}
-
-		//public event EventHandler<System.Windows.ApplicationUnhandledExceptionEventArgs> ApplicationUnhandledException;
-
-		internal static object GetProperty (IntPtr obj, string name)
-		{
-			throw new System.NotImplementedException (); // return GetPropertyInternal (Current.plugin_handle, obj, name);
-		}
-
-		internal static void SetProperty (IntPtr obj, string name, object value)
-		{
-			throw new System.NotImplementedException (); //SetPropertyInternal (Current.plugin_handle, obj, name, value);
 		}
 
 		internal static void InvokeMethod (IntPtr obj, string name, params object [] args)
