@@ -38,7 +38,7 @@ using System.Threading;
 
 namespace System.Windows {
 	public abstract partial class DependencyObject : INativeDependencyObjectWrapper {
-		static Thread moonlight_thread;
+		internal static Thread moonlight_thread;
 		internal IntPtr _native;
 		EventHandlerList event_list;
 		
@@ -207,17 +207,6 @@ namespace System.Windows {
 			return Thread.CurrentThread == moonlight_thread;
 		}
 		
-		private void CheckNativeAndThread ()
-		{
-			if (native == IntPtr.Zero) {
-				throw new Exception (
-					string.Format ("Uninitialized object: this object ({0}) has not set its native handle set", GetType ().FullName));
-			}
-
-			if (!CheckAccess ())
-				throw new UnauthorizedAccessException ("Invalid access of Moonlight from an external thread");
-		}
-
 #if NET_2_1
 		internal
 #else

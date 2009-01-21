@@ -1,5 +1,13 @@
 2009-01-20  Chris Toshok  <toshok@ximian.com>
 
+	* DependencyObject.cs: remove CheckNativeAndThread (it's in
+	NativeDependencyObjectHelper), and make moonlight_thread internal,
+	so we can reuse it from Application.
+
+	* Application.cs: add implementation of CheckAccess.
+
+2009-01-20  Chris Toshok  <toshok@ximian.com>
+
 	* DependencyProperty.g.cs, DependencyObject.g.cs: regen.
 
 	* FrameworkElement.cs:

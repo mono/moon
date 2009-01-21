@@ -54,7 +54,7 @@ namespace Mono {
 			if (dp == null)
 				throw new ArgumentNullException ("property");
 			
-			//CheckNativeAndThread ();
+			CheckNativeAndThread (wrapper);
 
 			IntPtr val = NativeMethods.dependency_object_get_value (wrapper.NativeHandle, Types.TypeToKind (wrapper.GetType ()), dp.Native);
 			if (val != IntPtr.Zero)
@@ -74,7 +74,7 @@ namespace Mono {
 			if (dp == null)
 				throw new ArgumentNullException ("property");
 
-			//CheckNativeAndThread ();
+			CheckNativeAndThread (wrapper);
 			
 			if (dp.DeclaringType != null && !dp.IsAttached) {
 				if (!dp.DeclaringType.IsAssignableFrom (wrapper.GetType ()))
@@ -329,6 +329,17 @@ namespace Mono {
 				throw new Exception (
 					String.Format ("DependencyObject::CreateObject(): Kind missing from switch: {0}", k));
 			}
+		}
+
+		private static void CheckNativeAndThread (INativeDependencyObjectWrapper wrapper)
+		{
+			if (wrapper.NativeHandle == IntPtr.Zero) {
+				throw new Exception (
+					string.Format ("Uninitialized object: this object ({0}) has not set its native handle set", wrapper.GetType ().FullName));
+			}
+
+			if (!wrapper.CheckAccess ())
+				throw new UnauthorizedAccessException ("Invalid access of Moonlight from an external thread");
 		}
 
 	}

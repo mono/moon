@@ -40,6 +40,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Resources;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Markup;
 
 namespace System.Windows {
@@ -608,6 +609,11 @@ namespace System.Windows {
 		Kind INativeDependencyObjectWrapper.GetKind ()
 		{
 			return Kind.APPLICATION;
+		}
+
+		bool INativeDependencyObjectWrapper.CheckAccess ()
+		{
+			return Thread.CurrentThread == DependencyObject.moonlight_thread;
 		}
 #endregion
 	}

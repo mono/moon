@@ -1,5 +1,12 @@
 2009-01-20  Chris Toshok  <toshok@ximian.com>
 
+	* NativeDependencyObjectHelper.cs: re-enable the
+	CheckNativeAndThread checks.
+
+	* INativeDependencyObjectWrapper.cs: add CheckAccess.
+
+2009-01-20  Chris Toshok  <toshok@ximian.com>
+
 	* NativeMethods.cs: add the style delegates here, and a pinvoke
 	for value_from_str.
 	

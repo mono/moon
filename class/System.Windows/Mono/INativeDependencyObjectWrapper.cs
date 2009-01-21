@@ -42,6 +42,8 @@ namespace Mono {
 		void ClearValue (DependencyProperty dp);
 
 		Kind GetKind ();
+
+		bool CheckAccess ();
 	}
 
 }
