@@ -71,6 +71,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.COLUMNDEFINITION));
 				t = typeof (System.Windows.Controls.ColumnDefinitionCollection); 
 				types.Add (t, new ManagedType (t, Kind.COLUMNDEFINITION_COLLECTION));
+				t = typeof (System.Windows.Controls.ContentControl); 
+				types.Add (t, new ManagedType (t, Kind.CONTENTCONTROL));
 				t = typeof (System.Windows.Controls.Control); 
 				types.Add (t, new ManagedType (t, Kind.CONTROL));
 				t = typeof (System.Windows.Controls.ControlTemplate); 

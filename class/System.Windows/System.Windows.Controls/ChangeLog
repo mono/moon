@@ -1,3 +1,7 @@
+2009-01-21  Jeffrey Stedfast  <fejj@novell.com>
+
+	* ContentControl.cs: Added.
+
 2009-01-20  Chris Toshok  <toshok@ximian.com>
 
 	* Control.cs: we no longer need to override InvokeLoaded - the

@@ -44,6 +44,7 @@
     <File name="System.Windows/VerticalAlignment.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows/Visibility.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/Canvas.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/ContentControl.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/Control.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/Image.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/InkPresenter.cs" subtype="Code" buildaction="Compile" />
@@ -389,7 +390,6 @@
     <File name="../Microsoft.SilverlightControls/Controls/Src/Common/SelectionChangedEventArgs.cs" subtype="Code" buildaction="Compile" />
     <File name="../Microsoft.SilverlightControls/Controls/Src/Common/SelectionChangedEventHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="../Microsoft.SilverlightControls/Controls/Src/Common/TypeConverters.cs" subtype="Code" buildaction="Compile" />
-    <File name="../Microsoft.SilverlightControls/Controls/Src/ContentControl/ContentControl.cs" subtype="Code" buildaction="Compile" />
     <File name="../Microsoft.SilverlightControls/Controls/Src/ContentControl/ContentPresenter.cs" subtype="Code" buildaction="Compile" />
     <File name="../Microsoft.SilverlightControls/Controls/Src/GlobalSuppressions.cs" subtype="Code" buildaction="Compile" />
     <File name="../Microsoft.SilverlightControls/Controls/Src/ListBox/DisplayMemberValueConverter.cs" subtype="Code" buildaction="Compile" />

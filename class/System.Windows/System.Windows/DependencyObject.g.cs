@@ -170,6 +170,12 @@ namespace System.Windows.Controls {
 		internal override Kind GetKind () { return Kind.COLUMNDEFINITION_COLLECTION; }
 	}
 
+	partial class ContentControl {
+		public ContentControl () : base (NativeMethods.content_control_new ()) {}
+		internal ContentControl (IntPtr raw) : base (raw) {}
+		internal override Kind GetKind () { return Kind.CONTENTCONTROL; }
+	}
+
 	partial class Control {
 		protected Control () : base (NativeMethods.control_new ())
 		{

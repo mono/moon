@@ -113,7 +113,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Automation.Provider/IWindowProvider.cs		\
 	$(srcdir)/System.Windows.Controls/Border.cs				\
 	$(srcdir)/System.Windows.Controls/ComboBox.cs				\
-	$(srcdir)/System.Windows.Controls/ComboBoxItem.cs				\
+	$(srcdir)/System.Windows.Controls/ComboBoxItem.cs			\
+	$(srcdir)/System.Windows.Controls/ContentControl.cs			\
 	$(srcdir)/System.Windows.Controls/InkPresenter.cs			\
 	$(srcdir)/System.Windows.Controls/MediaElement.cs			\
 	$(srcdir)/System.Windows.Controls/ValidationErrorEventAction.cs		\
@@ -431,7 +432,6 @@ system_windows_sources =							\
 	$(MSCONTROLS)/Src/Common/SelectionChangedEventArgs.cs			\
 	$(MSCONTROLS)/Src/Common/SelectionChangedEventHandler.cs		\
 	$(MSCONTROLS)/Src/Common/TypeConverters.cs				\
-	$(MSCONTROLS)/Src/ContentControl/ContentControl.cs			\
 	$(MSCONTROLS)/Src/ContentControl/ContentPresenter.cs			\
 	$(MSCONTROLS)/Src/GlobalSuppressions.cs					\
 	$(MSCONTROLS)/Src/ListBox/DisplayMemberValueConverter.cs		\
