@@ -153,7 +153,22 @@ namespace Mono {
 					else
 						return str;
 				}
-				
+
+				case Kind.URI: {
+					string str = Helper.PtrToStringAuto (val->u.p);
+					return new Uri (str, UriKind.RelativeOrAbsolute);
+				}
+
+				case Kind.XMLLANGUAGE: {
+					string str = Helper.PtrToStringAuto (val->u.p);
+					return XmlLanguage.GetLanguage (str);
+				}
+
+				case Kind.FONTFAMILY: {
+					string str = Helper.PtrToStringAuto (val->u.p);
+					return new FontFamily (str);
+				}
+
 				case Kind.POINT: {
 					Point *point = (Point*)val->u.p;
 					return (point == null) ? new Point (0,0) : *point;

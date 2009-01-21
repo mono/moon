@@ -1,5 +1,9 @@
 2009-01-21  Jackson Harper  <jackson@ximian.com>
 
+	* Value.cs: Types have their correct KIND now.
+
+2009-01-21  Jackson Harper  <jackson@ximian.com>
+
 	* Kind.cs:
 	* GeneratedPInvokes.cs: Regen
 	* NativeDependencyObjectHelper.cs: Update method signature, we
