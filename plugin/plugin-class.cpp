@@ -2701,9 +2701,21 @@ MoonlightDependencyObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 	NPN_MemFree (strname);
 	
 	if (prop) {
-		// don't get the SL2 defined default values for DO by calling GetLocalValue
-		Value *value = Type::IsSubclassOf (prop->GetPropertyType (), Type::DEPENDENCY_OBJECT) ? 
-			dob->GetLocalValue (prop) : dob->GetValue (prop);
+		Value *value;
+		// some default values are different between SL1 and SL2 (even if the SL1 apps runs under SL2)
+		if (prop == UIElement::RenderTransformProperty) {
+			// e.g. the default RenderTransform is NULL for Javascript, unless it was setted by application code
+			value = dob->GetLocalValue (prop);
+		} else if ((prop == FrameworkElement::HeightProperty) || (prop == FrameworkElement::WidthProperty)) {
+			// e.g. the Width and Height are NaN in SL2 and 0 in Javascript (unless set to NaN in managed code)
+			value = dob->GetLocalValue (prop);
+			if (!value) {
+				DOUBLE_TO_NPVARIANT (0.0, *result);
+				return true;
+			}
+		} else {
+			value = dob->GetValue (prop);
+		}
 
 		if (!value) {
 			// strings aren't null, they seem to just be empty strings

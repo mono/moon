@@ -1,3 +1,10 @@
+2009-01-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* plugin-class.cpp: Process the difference between SL1/2 default
+	values on a case-by-case basis. Right now this (re-fix) UIElement::
+	RenderTransformProperty (wrt null) and FrameworkElement::[Height|
+	Width]Property (wrt NaN).
+
 2009-01-20  Geoff Norton  <gnorton@novell.com>
 
 	* plugin-class.cpp: Ensure that we convert doubles in the ASCII
