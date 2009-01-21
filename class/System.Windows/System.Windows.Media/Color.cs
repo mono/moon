@@ -90,15 +90,17 @@ namespace System.Windows.Media {
 		{
 			return String.Format ("#{0,8:X}", argb);
 		}
-		
+
+		[MonoTODO ("simply calling ToString for now")]
 		public string ToString (IFormatProvider provider)
 		{
-			throw new System.NotImplementedException ();
+			return ToString ();
 		}
 
+		[MonoTODO ("simply calling ToString for now")]
 		string IFormattable.ToString (string value, IFormatProvider formatProvider)
 		{
-			throw new System.NotImplementedException ();
+			return ToString ();
 		}
 
 		public static bool operator == (Color color1, Color color2)
