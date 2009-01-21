@@ -1,5 +1,9 @@
 2009-01-21  Alan McGovern  <amcgovern@novell.com>
 
+	* popup.cpp: Remove debug code from svn.
+
+2009-01-21  Alan McGovern  <amcgovern@novell.com>
+
 	* popup.h:
 	* popup.cpp:
 	* cbinding.h:

@@ -51,6 +51,5 @@ Popup::SetActiveSurface (Surface *surface)
 
 		topLevel->ElementAdded (child);
 	}
-	getchar ();
 	SetSurface (surface);
 }
