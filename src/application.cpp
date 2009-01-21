@@ -14,7 +14,9 @@
 #include <config.h>
 #include "application.h"
 
-Application* Application::_current = NULL;
+#include <mono/metadata/appdomain.h>
+
+GHashTable* Application::current_hash = NULL;
 
 Application::Application ()
 {
@@ -31,13 +33,27 @@ Application::~Application ()
 Application*
 Application::GetCurrent ()
 {
-	return _current;
+	if (!current_hash)
+		current_hash = g_hash_table_new (g_direct_hash, g_direct_equal);
+
+	MonoDomain *domain;
+	if (!(domain = mono_domain_get ()))
+		return NULL;
+
+	return (Application*)g_hash_table_lookup (current_hash, domain);
 }
 
 void
 Application::SetCurrent (Application *application)
 {
-	_current = application;
+	if (!current_hash)
+		current_hash = g_hash_table_new (g_direct_hash, g_direct_equal);
+
+	MonoDomain *domain;
+	if (!(domain = mono_domain_get ()))
+		return;
+
+	return g_hash_table_insert (current_hash, domain, application);
 }
 
 void

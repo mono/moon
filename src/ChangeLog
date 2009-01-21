@@ -1,3 +1,9 @@
+2009-01-20  Chris Toshok  <toshok@ximian.com>
+
+	* application.h, application.cpp: switch from using a static
+	Application* for "Current" to a hashtable mapping MonoDomain* to
+	Application*.
+
 2009-01-20  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Lookup resources in Application.Resources if we don't

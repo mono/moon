@@ -50,7 +50,7 @@ protected:
 	virtual ~Application ();
 
 private:
-	static Application *_current;
+	static GHashTable *current_hash;
 	ApplyDefaultStyleCallback apply_default_style_cb;
 	ApplyStyleCallback apply_style_cb;
 };
