@@ -94,7 +94,7 @@ namespace System.Windows.Browser.Net
 
 		public override long ContentLength {
 			get {
-				return response.Length;
+				return long.Parse (headers ["Content-Length"]);
 			}
 		}
 

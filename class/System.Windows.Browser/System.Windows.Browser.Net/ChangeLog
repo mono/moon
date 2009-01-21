@@ -3,10 +3,6 @@
 	* BrowserHttpWebRequest.cs: Fix the dtor and abort code to call the 
 	right pinvokes.
 
-2009-01-15  Jb Evain  <jbevain@novell.com>
-
-	* BrowserHttpWebResponse.cs: fix ContentLength.
-
 2009-01-14  Geoff Norton  <gnorton@novell.com>
 
 	* BrowserHttpWebRequest.cs: Ensure we pass the correct handle to the
