@@ -338,7 +338,7 @@ class ImageBrush : public TileBrush {
  public:
 	/* @PropertyType=double,DefaultValue=0.0,ManagedAccess=Private,GenerateAccessors */
 	static DependencyProperty *DownloadProgressProperty;
- 	/* @PropertyType=string,DefaultValue=\"\",ManagedPropertyType=ImageSource,GenerateAccessors */
+ 	/* @PropertyType=BitmapImage,ManagedPropertyType=ImageSource,GenerateAccessors */
 	static DependencyProperty *ImageSourceProperty;
 	
 	const static int DownloadProgressChangedEvent;
@@ -364,8 +364,8 @@ class ImageBrush : public TileBrush {
 	void SetDownloadProgress (double progress);
 	double GetDownloadProgress ();
 	
-	void SetImageSource (const char *source);
-	const char *GetImageSource ();
+	void SetImageSource (BitmapImage *source);
+	BitmapImage *GetImageSource ();
 };
 
 cairo_surface_t *image_brush_create_similar     (cairo_t *cr, int width, int height);

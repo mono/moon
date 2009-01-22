@@ -18,6 +18,7 @@
 
 typedef void (*ApplyDefaultStyleCallback)(FrameworkElement *fwe, ManagedTypeInfo *key);
 typedef void (*ApplyStyleCallback)(FrameworkElement *fwe, Style *style);
+typedef void *(*GetResourceCallback)(const char *name, int *size);
 
 /* @SilverlightVersion="2" */
 /* @ManagedDependencyProperties=Manual */
@@ -41,10 +42,11 @@ public:
 	static void SetCurrent (Application *current);
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	void RegisterStyleCallbacks (ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb);
+	void RegisterCallbacks (ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb);
 
 	void ApplyDefaultStyle (FrameworkElement *fwe, ManagedTypeInfo *key);
 	void ApplyStyle (FrameworkElement *fwe, Style *style);
+	gpointer GetResource (const char *name, int *size);
 	
 protected:
 	virtual ~Application ();
@@ -53,6 +55,7 @@ private:
 	static GHashTable *current_hash;
 	ApplyDefaultStyleCallback apply_default_style_cb;
 	ApplyStyleCallback apply_style_cb;
+	GetResourceCallback get_resource_cb;
 };
 
 #endif /* __APPLICATION_H__ */

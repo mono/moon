@@ -1,6 +1,6 @@
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * tilesource.h
+ * bitmapimage.h
  *
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
@@ -16,19 +16,32 @@
 
 #include "dependencyobject.h"
 
-/* @Version=2,Namespace=System.Windows.Media.Imaging */
+/* @Namespace=System.Windows.Media.Imaging */
 class BitmapImage : public DependencyObject {
  protected:
-	virtual ~BitmapImage () {}
+	virtual ~BitmapImage ();
 
  public:
-	/* @PropertyType=string,ManagedPropertyType=Uri */
+	gpointer buffer;
+	gint32 size;
+
+	/* @PropertyType=string,ManagedPropertyType=Uri,GenerateAccessors */
 	static DependencyProperty *UriSourceProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	BitmapImage () {}
+	BitmapImage ();
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetBuffer (gpointer buffer, int size);
+
+	void CleanUp ();
 
 	virtual Type::Kind GetObjectType () { return Type::BITMAPIMAGE; }	
+	
+	void        SetUriSource (const char *value);
+	const char* GetUriSource ();
+	
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 };
 
 #endif /* __BITMAPIMAGE_H__ */

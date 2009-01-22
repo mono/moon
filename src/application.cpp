@@ -57,11 +57,13 @@ Application::SetCurrent (Application *application)
 }
 
 void
-Application::RegisterStyleCallbacks (ApplyDefaultStyleCallback apply_default_style_cb,
-				     ApplyStyleCallback apply_style_cb)
+Application::RegisterCallbacks (ApplyDefaultStyleCallback apply_default_style_cb,
+				ApplyStyleCallback apply_style_cb,
+				GetResourceCallback get_resource_cb)
 {
 	this->apply_default_style_cb = apply_default_style_cb;
 	this->apply_style_cb = apply_style_cb;
+	this->get_resource_cb = get_resource_cb;
 }
 
 void
@@ -76,4 +78,14 @@ Application::ApplyStyle (FrameworkElement *fwe, Style *style)
 {
 	if (apply_style_cb)
 		apply_style_cb (fwe, style);
+}
+
+gpointer
+Application::GetResource (const char *name, int *size)
+{
+	if (get_resource_cb)
+		return get_resource_cb (name, size);
+
+	*size = 0;
+	return NULL;
 }

@@ -148,7 +148,7 @@ class MediaBase : public FrameworkElement {
 	virtual DownloaderAccessPolicy GetDownloaderPolicy (const char *uri) { return MediaPolicy; }
 
  public:
- 	/* @PropertyType=string,AlwaysChange */
+ 	/* @PropertyType=string,AlwaysChange,GenerateAccessors */
 	static DependencyProperty *SourceProperty;
  	/* @PropertyType=Stretch,DefaultValue=StretchUniform,GenerateAccessors */
 	static DependencyProperty *StretchProperty;
@@ -200,6 +200,7 @@ class Image : public MediaBase {
 	virtual void DownloaderFailed (EventArgs *args);
 	virtual void DownloaderComplete ();
 	void UpdateProgress ();
+	void UpdateSize ();
 	
 	static void pixbuf_write (void *buf, gint32 offset, gint32 n, gpointer data);
 	static void size_notify (gint64 size, gpointer data);
@@ -217,6 +218,9 @@ class Image : public MediaBase {
 	virtual void OnEmptySource () { CleanupSurface (); }
 	
  public:
+ 	/* @PropertyType=BitmapImage,ManagedPropertyType=ImageSource,GenerateAccessors */
+	static DependencyProperty *SourceProperty;
+
 	static GHashTable *surface_cache;
 	
 	const static int ImageFailedEvent;
@@ -249,8 +253,6 @@ class Image : public MediaBase {
 	
 	virtual void SetSourceInternal (Downloader *downloader, char *PartName);
 	virtual void SetSource (Downloader *downloader, const char *PartName);
-	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
-	void SetStreamSource (ManagedStreamCallbacks *stream);
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	
@@ -262,6 +264,10 @@ class Image : public MediaBase {
 	virtual Size ArrangeOverride (Size finalSize);
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetSource (BitmapImage *source);
+	BitmapImage *GetSource ();
 };
 
 #endif /* __MEDIA_H__ */

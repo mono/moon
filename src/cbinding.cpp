@@ -29,12 +29,12 @@ application_get_current (void)
 
 
 void
-application_register_style_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb)
+application_register_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->RegisterStyleCallbacks (apply_default_style_cb, apply_style_cb);
+	instance->RegisterCallbacks (apply_default_style_cb, apply_style_cb, get_resource_cb);
 }
 
 
@@ -396,6 +396,16 @@ BitmapImage *
 bitmap_image_new (void)
 {
 	return new BitmapImage ();
+}
+
+
+void
+bitmap_image_set_buffer (BitmapImage *instance, gpointer buffer, int size)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetBuffer (buffer, size);
 }
 
 
@@ -1549,12 +1559,12 @@ image_new (void)
 
 
 void
-image_set_stream_source (Image *instance, ManagedStreamCallbacks *stream)
+image_set_source (Image *instance, BitmapImage *source)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->SetStreamSource (stream);
+	instance->SetSource (source);
 }
 
 

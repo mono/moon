@@ -67,7 +67,7 @@ Application *application_new (void);
 Application *application_get_current (void);
 
 /* @GeneratePInvoke */
-void application_register_style_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb);
+void application_register_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb);
 
 /* @GeneratePInvoke */
 void application_set_current (Application *current);
@@ -203,6 +203,9 @@ void binding_expression_base_update_source (BindingExpressionBase *instance, Val
  **/
 /* @GeneratePInvoke */
 BitmapImage *bitmap_image_new (void);
+
+/* @GeneratePInvoke */
+void bitmap_image_set_buffer (BitmapImage *instance, gpointer buffer, int size);
 
 /**
  * Border
@@ -689,7 +692,7 @@ Grid *grid_new (void);
 Image *image_new (void);
 
 /* @GeneratePInvoke */
-void image_set_stream_source (Image *instance, ManagedStreamCallbacks *stream);
+void image_set_source (Image *instance, BitmapImage *source);
 
 /**
  * ImageBrush

@@ -34,6 +34,7 @@
 #include "error.h"
 #include "shape.h"
 #include "animation.h"
+#include "bitmapimage.h"
 #include "geometry.h"
 #include "text.h"
 #include "media.h"
@@ -3008,6 +3009,15 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 			return false;
 
 		*v = new Value (grid_length);
+		break;
+	}
+	case Type::BITMAPIMAGE: {
+		BitmapImage *bi = new BitmapImage ();
+
+		bi->SetUriSource (str);
+
+		*v = new Value (bi); 
+
 		break;
 	}
 	case Type::MULTISCALETILESOURCE:

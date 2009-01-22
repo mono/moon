@@ -173,8 +173,9 @@ dependency_property_g_init (void)
 	Grid::RowProperty = DependencyProperty::RegisterFull (Type::GRID, "Row", new Value (0), Type::INT32, true, false, false, NULL, Validators::PositiveIntValidator);
 	Grid::RowSpanProperty = DependencyProperty::RegisterFull (Type::GRID, "RowSpan", new Value (1), Type::INT32, true, false, false, NULL, Validators::IntGreaterThanZeroValidator);
 	Grid::ShowGridLinesProperty = DependencyProperty::Register (Type::GRID, "ShowGridLines", new Value (true), Type::BOOL);
+	Image::SourceProperty = DependencyProperty::Register (Type::IMAGE, "Source", Type::BITMAPIMAGE);
 	ImageBrush::DownloadProgressProperty = DependencyProperty::Register (Type::IMAGEBRUSH, "DownloadProgress", new Value (0.0), Type::DOUBLE);
-	ImageBrush::ImageSourceProperty = DependencyProperty::Register (Type::IMAGEBRUSH, "ImageSource", new Value (""), Type::STRING);
+	ImageBrush::ImageSourceProperty = DependencyProperty::Register (Type::IMAGEBRUSH, "ImageSource", Type::BITMAPIMAGE);
 	InkPresenter::StrokesProperty = DependencyProperty::Register (Type::INKPRESENTER, "Strokes", Type::STROKE_COLLECTION);
 	Inline::FontFamilyProperty = DependencyProperty::Register (Type::INLINE, "FontFamily", new Value (TEXTBLOCK_FONT_FAMILY), Type::STRING);
 	Inline::FontFilenameProperty = DependencyProperty::Register (Type::INLINE, "FontFilename", Type::STRING);
@@ -522,6 +523,7 @@ DependencyProperty *Grid::RowDefinitionsProperty = NULL;
 DependencyProperty *Grid::RowProperty = NULL;
 DependencyProperty *Grid::RowSpanProperty = NULL;
 DependencyProperty *Grid::ShowGridLinesProperty = NULL;
+DependencyProperty *Image::SourceProperty = NULL;
 DependencyProperty *ImageBrush::DownloadProgressProperty = NULL;
 DependencyProperty *ImageBrush::ImageSourceProperty = NULL;
 DependencyProperty *InkPresenter::StrokesProperty = NULL;
@@ -883,6 +885,19 @@ BezierSegment::SetPoint3 (Point *value)
 {
 	if (!value) return;
 	SetValue (BezierSegment::Point3Property, Value (*value));
+}
+
+const char *
+BitmapImage::GetUriSource ()
+{
+	Value *value = GetValue (BitmapImage::UriSourceProperty);
+	return value ? value->AsString () : NULL;
+}
+
+void
+BitmapImage::SetUriSource (const char *value)
+{
+	SetValue (BitmapImage::UriSourceProperty, Value (value));
 }
 
 Brush *
@@ -2210,6 +2225,19 @@ Grid::SetShowGridLines (bool value)
 	SetValue (Grid::ShowGridLinesProperty, Value (value));
 }
 
+BitmapImage *
+Image::GetSource ()
+{
+	Value *value = GetValue (Image::SourceProperty);
+	return value ? value->AsBitmapImage () : NULL;
+}
+
+void
+Image::SetSource (BitmapImage *value)
+{
+	SetValue (Image::SourceProperty, Value (value));
+}
+
 double
 ImageBrush::GetDownloadProgress ()
 {
@@ -2223,15 +2251,15 @@ ImageBrush::SetDownloadProgress (double value)
 	SetValue (ImageBrush::DownloadProgressProperty, Value (value));
 }
 
-const char *
+BitmapImage *
 ImageBrush::GetImageSource ()
 {
 	Value *value = GetValue (ImageBrush::ImageSourceProperty);
-	return value ? value->AsString () : NULL;
+	return value ? value->AsBitmapImage () : NULL;
 }
 
 void
-ImageBrush::SetImageSource (const char *value)
+ImageBrush::SetImageSource (BitmapImage *value)
 {
 	SetValue (ImageBrush::ImageSourceProperty, Value (value));
 }
@@ -2681,6 +2709,19 @@ void
 MediaBase::SetDownloadProgress (double value)
 {
 	SetValue (MediaBase::DownloadProgressProperty, Value (value));
+}
+
+const char *
+MediaBase::GetSource ()
+{
+	Value *value = GetValue (MediaBase::SourceProperty);
+	return value ? value->AsString () : NULL;
+}
+
+void
+MediaBase::SetSource (const char *value)
+{
+	SetValue (MediaBase::SourceProperty, Value (value));
 }
 
 Stretch

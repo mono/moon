@@ -109,6 +109,7 @@ libmoon_la_SOURCES = 		\
 	asf/asf-structures.cpp	\
 	asf/asf-debug.cpp	\
 	audio.cpp		\
+	bitmapimage.cpp		\
 	brush.cpp		\
 	canvas.cpp		\
 	cbinding.cpp		\

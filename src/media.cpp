@@ -20,6 +20,7 @@
 #include <unistd.h>
 #include <errno.h>
 
+#include "bitmapimage.h"
 #include "runtime.h"
 #include "media.h"
 #include "error.h"
@@ -207,14 +208,6 @@ MediaBase::SetSource (Downloader *downloader, const char *PartName)
 }
 
 void
-MediaBase::SetSource (const char *uri)
-{
-	Value v(uri);
-	SetValue (MediaBase::SourceProperty, &v);
-}
-
-
-void
 MediaBase::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
 	if (args->property == MediaBase::SourceProperty) {
@@ -245,14 +238,6 @@ MediaBase::OnPropertyChanged (PropertyChangedEventArgs *args)
 	}
 	
 	NotifyListenersOfPropertyChange (args);
-}
-
-const char *
-MediaBase::GetSource ()
-{
-	Value *value = GetValue (MediaBase::SourceProperty);
-	
-	return value ? value->AsString () : NULL;
 }
 
 //
@@ -331,59 +316,6 @@ Image::UpdateProgress ()
 		Emit (DownloadProgressChangedEvent);
 }
 
-
-void
-Image::SetStreamSource (ManagedStreamCallbacks *callbacks)
-{
-	void *buf;
-	guint64 length = callbacks->Length (callbacks->handle);
-
-	buf = (void *)g_malloc (length);
-
-	callbacks->Read (callbacks->handle, buf, 0, length);
-
-	PixbufWrite (buf, 0, (gint32) length);
-
-	CleanupSurface ();
-	
-	if (!CreateSurface (NULL)) {
-		Invalidate ();
-		return;
-	}
-	
-	updating_size_from_media = true;
-	
-	if (use_media_width) {
-		Value *height = GetValueNoDefault (FrameworkElement::HeightProperty);
-
-		if (!use_media_height)
-			SetWidth ((double) surface->width * height->AsDouble () / (double) surface->height);
-		else
-			SetWidth ((double) surface->width);
-	}
-	
-	if (use_media_height) {
-		Value *width = GetValueNoDefault (FrameworkElement::WidthProperty);
-
-		if (!use_media_width)
-			SetHeight ((double) surface->height * width->AsDouble () / (double) surface->width);
-		else
-			SetHeight ((double) surface->height);
-	}
-	
-	updating_size_from_media = false;
-	
-	if (brush) {
-		// FIXME: this is wrong, we probably need to set the
-		// property, or use some other mechanism, but this is
-		// gross.
-		PropertyChangedEventArgs args (ImageBrush::DownloadProgressProperty, NULL, 
-					       brush->GetValue (ImageBrush::DownloadProgressProperty));
-		
-		brush->OnPropertyChanged (&args);
-	} else
-		Invalidate ();
-}
 
 bool 
 Image::IsSurfaceCached ()
@@ -475,6 +407,7 @@ Image::DownloaderComplete ()
 {
 	char *uri;
 
+
 	downloader->RemoveHandler (Downloader::DownloadFailedEvent, downloader_failed, this);
 	downloader->RemoveHandler (Downloader::CompletedEvent, downloader_complete, this);
 
@@ -495,6 +428,13 @@ Image::DownloaderComplete ()
 	}
 
 	g_free (uri);
+
+	UpdateSize ();
+}
+
+void
+Image::UpdateSize ()
+{
 	
 	updating_size_from_media = true;
 	
@@ -967,8 +907,28 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args)
 	} else if (args->property == FrameworkElement::WidthProperty) {
 		if (!updating_size_from_media)
 			use_media_width = args->new_value == NULL;
+	} else if (args->property == Image::SourceProperty) {
+		BitmapImage *source = args->new_value ? args->new_value->AsBitmapImage () : NULL;
+
+		if (source == NULL) {
+			MediaBase::SetSource (NULL);
+		} else {
+			if (source->buffer) {
+				PixbufWrite (source->buffer, 0, source->size);
+				CleanupSurface ();
+
+		                if (!CreateSurface (NULL)) {
+		                        printf ("failed to create surface %s\n", source->GetUriSource ());
+		                        Invalidate ();
+		                } else {
+					UpdateSize ();
+				}
+			} else {
+				MediaBase::SetSource (source->GetUriSource ());
+			}
+		}
 	}
-	
+
 	if (args->property->GetOwnerType() != Type::IMAGE) {
 		MediaBase::OnPropertyChanged (args);
 		return;

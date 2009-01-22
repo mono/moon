@@ -556,7 +556,7 @@ ImageBrush::OnPropertyChanged (PropertyChangedEventArgs *args)
 		image->SetValue (Image::DownloadProgressProperty, args->new_value);
 	}
 	else if (args->property == ImageBrush::ImageSourceProperty) {
-		image->SetValue (MediaBase::SourceProperty, args->new_value);
+		image->SetValue (Image::SourceProperty, args->new_value);
 	}
 
 	NotifyListenersOfPropertyChange (args);
