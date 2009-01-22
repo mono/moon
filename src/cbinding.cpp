@@ -28,6 +28,16 @@ application_get_current (void)
 }
 
 
+Surface *
+application_get_surface (Application *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetSurface ();
+}
+
+
 void
 application_register_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb)
 {
@@ -42,6 +52,16 @@ void
 application_set_current (Application *current)
 {
 	Application::SetCurrent (current);
+}
+
+
+void
+application_set_surface (Application *instance, Surface *value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetSurface (value);
 }
 
 

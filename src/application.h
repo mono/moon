@@ -20,6 +20,8 @@ typedef void (*ApplyDefaultStyleCallback)(FrameworkElement *fwe, ManagedTypeInfo
 typedef void (*ApplyStyleCallback)(FrameworkElement *fwe, Style *style);
 typedef void *(*GetResourceCallback)(const char *name, int *size);
 
+class Surface;
+
 /* @SilverlightVersion="2" */
 /* @ManagedDependencyProperties=Manual */
 /* @Namespace=None */
@@ -37,6 +39,11 @@ public:
 	void SetResources (ResourceDictionary* value);
 
 	/* @GenerateCBinding,GeneratePInvoke */
+	Surface* GetSurface ();
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetSurface (Surface* value);
+
+	/* @GenerateCBinding,GeneratePInvoke */
 	static Application* GetCurrent ();
 	/* @GenerateCBinding,GeneratePInvoke */
 	static void SetCurrent (Application *current);
@@ -52,6 +59,7 @@ protected:
 	virtual ~Application ();
 
 private:
+	Surface *surface;
 	static GHashTable *current_hash;
 	ApplyDefaultStyleCallback apply_default_style_cb;
 	ApplyStyleCallback apply_style_cb;

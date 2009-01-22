@@ -13,6 +13,7 @@
 
 #include <config.h>
 #include "application.h"
+#include "runtime.h"
 
 #include <mono/metadata/appdomain.h>
 
@@ -22,6 +23,9 @@ Application::Application ()
 {
 	apply_default_style_cb = NULL;
 	apply_style_cb = NULL;
+	get_resource_cb = NULL;
+
+	surface = NULL;
 
 	SetValue (Application::ResourcesProperty, Value::CreateUnref (new ResourceDictionary ()));
 }
@@ -60,6 +64,26 @@ Application::SetCurrent (Application *application)
 	}
 
 	return g_hash_table_insert (current_hash, domain, application);
+}
+
+Surface*
+Application::GetSurface ()
+{
+	return surface;
+}
+
+void
+Application::SetSurface (Surface* value)
+{
+	if (surface) {
+		surface->unref ();
+		surface = NULL;
+	}
+
+	surface = value;
+
+	if (surface)
+		surface->ref ();
 }
 
 void
