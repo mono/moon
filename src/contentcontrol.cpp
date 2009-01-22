@@ -13,6 +13,15 @@
 #include "contentcontrol.h"
 
 
+ContentControl::ContentControl ()
+{
+	ManagedTypeInfo *type_info = new ManagedTypeInfo ();
+	type_info->assembly_name = g_strdup ("System.Windows");
+	type_info->full_name = g_strdup ("System.Windows.Controls.ContentControl");
+	
+	SetDefaultStyleKey (type_info);
+}
+
 void
 ContentControl::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
@@ -27,6 +36,8 @@ ContentControl::OnPropertyChanged (PropertyChangedEventArgs *args)
 	} else if (args->property == ContentControl::ContentProperty) {
 		if (IsLoaded ())
 			ApplyTemplate ();
+		
+		
 		
 		Emit (ContentControl::ContentChangedEvent, new ContentChangedEventArgs (args->old_value, args->new_value));
 	}

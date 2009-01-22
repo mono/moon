@@ -55,7 +55,7 @@ class ContentControl : public Control {
 	static DependencyProperty *ContentTemplateProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	ContentControl () { }
+	ContentControl ();
 	
 	virtual Type::Kind GetObjectType () { return Type::CONTENTCONTROL; }
 	

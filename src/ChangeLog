@@ -1,5 +1,8 @@
 2009-01-22  Jeffrey Stedfast  <fejj@novell.com>
 
+	* contentcontrol.cpp (ContentControl::ContentControl): I'm
+	guessing this needs to call SetDefaultStyleKey as well.
+
 	* textbox.cpp (TextBoxView): Get rid of the TextBoxProperty
 	because that causes problems (the TextBox already has a logical
 	parent). Instead, we'll just keep track of it internally
