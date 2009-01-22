@@ -1,5 +1,12 @@
 2009-01-22  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.cpp (TextBoxView): Get rid of the TextBoxProperty
+	because that causes problems (the TextBox already has a logical
+	parent). Instead, we'll just keep track of it internally
+	ourselves.
+	(TextBoxView::SetTextBox): Do what OnPropertyChanged() used to do
+	when the TextBox property changed.
+
 	* contentpresenter.cpp (ContentPresenter::ContentPresenter): Set
 	the default style key.
 	(ContentPresenter::OnLoaded): Load the default template.

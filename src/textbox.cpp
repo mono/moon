@@ -1500,16 +1500,18 @@ TextBoxView::TextBoxView ()
 	layout = new TextLayout ();
 	cursor_visible = false;
 	blink_timeout = 0;
+	textbox = NULL;
 	focused = false;
 	dirty = false;
 }
 
 TextBoxView::~TextBoxView ()
 {
-	TextBox *textbox = GetTextBox ();
-	
-	if (textbox)
+	if (textbox) {
+		textbox->RemoveHandler (TextBox::SelectionChangedEvent, TextBoxView::selection_changed, this);
 		textbox->RemoveHandler (TextBox::ModelChangedEvent, TextBoxView::model_changed, this);
+		textbox->RemoveHandler (TextBox::TextChangedEvent, TextBoxView::text_changed, this);
+	}
 	
 	RemoveHandler (UIElement::LostFocusEvent, TextBoxView::focus_out, this);
 	RemoveHandler (UIElement::GotFocusEvent, TextBoxView::focus_in, this);
@@ -1840,48 +1842,33 @@ TextBoxView::OnFocusIn (EventArgs *args)
 }
 
 void
-TextBoxView::OnPropertyChanged (PropertyChangedEventArgs *args)
+TextBoxView::SetTextBox (TextBox *textbox)
 {
-	TextBox *textbox;
-	
-	if (args->property == TextBoxView::TextBoxProperty) {
-		// remove the event handler from the old textbox
-		if ((textbox = args->old_value ? args->old_value->AsTextBox () : NULL)) {
-			textbox->RemoveHandler (TextBox::SelectionChangedEvent, TextBoxView::selection_changed, this);
-			textbox->RemoveHandler (TextBox::ModelChangedEvent, TextBoxView::model_changed, this);
-			textbox->RemoveHandler (TextBox::TextChangedEvent, TextBoxView::text_changed, this);
-		}
-		
-		// add the event handler to the new textbox
-		if ((textbox = args->new_value ? args->new_value->AsTextBox () : NULL)) {
-			textbox->AddHandler (TextBox::SelectionChangedEvent, TextBoxView::selection_changed, this);
-			textbox->AddHandler (TextBox::ModelChangedEvent, TextBoxView::model_changed, this);
-			textbox->AddHandler (TextBox::TextChangedEvent, TextBoxView::text_changed, this);
-			
-			// sync our layout hints state
-			layout->SetTextAlignment (textbox->GetTextAlignment ());
-			layout->SetTextWrapping (textbox->GetTextWrapping ());
-		}
-		
-		UpdateBounds (true);
-		Invalidate ();
-		dirty = true;
-	}
-	
-	if (args->property->GetOwnerType () != Type::TEXTBOXVIEW) {
-		FrameworkElement::OnPropertyChanged (args);
-		
-		if (args->property == FrameworkElement::WidthProperty) {
-			if (layout->GetTextWrapping () != TextWrappingNoWrap)
-				dirty = true;
-			
-			UpdateBounds (true);
-		}
-		
+	if (this->textbox == textbox)
 		return;
+	
+	if (this->textbox) {
+		// remove the event handlers from the old textbox
+		this->textbox->RemoveHandler (TextBox::SelectionChangedEvent, TextBoxView::selection_changed, this);
+		this->textbox->RemoveHandler (TextBox::ModelChangedEvent, TextBoxView::model_changed, this);
+		this->textbox->RemoveHandler (TextBox::TextChangedEvent, TextBoxView::text_changed, this);
 	}
 	
-	NotifyListenersOfPropertyChange (args);
+	if (textbox) {
+		textbox->AddHandler (TextBox::SelectionChangedEvent, TextBoxView::selection_changed, this);
+		textbox->AddHandler (TextBox::ModelChangedEvent, TextBoxView::model_changed, this);
+		textbox->AddHandler (TextBox::TextChangedEvent, TextBoxView::text_changed, this);
+		
+		// sync our layout hints state
+		layout->SetTextAlignment (textbox->GetTextAlignment ());
+		layout->SetTextWrapping (textbox->GetTextWrapping ());
+	}
+	
+	this->textbox = textbox;
+	
+	UpdateBounds (true);
+	Invalidate ();
+	dirty = true;
 }
 
 Size

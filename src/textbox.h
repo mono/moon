@@ -248,6 +248,7 @@ class TextBox : public Control, public ITextSource {
 class TextBoxView : public FrameworkElement {
 	glong blink_timeout;
 	TextLayout *layout;
+	TextBox *textbox;
 	Rect cursor;
 	
 	int cursor_visible:1;
@@ -285,9 +286,6 @@ class TextBoxView : public FrameworkElement {
 	virtual ~TextBoxView ();
 	
  public:
-	/* @PropertyType=TextBox,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
-	static DependencyProperty *TextBoxProperty;
-	
 	/* @GenerateCBinding,GeneratePInvoke */
 	TextBoxView ();
 	
@@ -298,14 +296,13 @@ class TextBoxView : public FrameworkElement {
 	//
 	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual Size ArrangeOverride (Size size);
 	
 	//
 	// Property Accessors
 	//
+	TextBox *GetTextBox () { return textbox; }
 	void SetTextBox (TextBox *textbox);
-	TextBox *GetTextBox ();
 };
 
 
