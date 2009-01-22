@@ -55,7 +55,8 @@ ContentPresenter::OnLoaded ()
 		delete loader;
 		
 		SetTemplate ((ControlTemplate *) t);
-		t->unref ();
+		if (t != NULL)
+			t->unref ();
 	}
 	
 	Control::OnLoaded ();

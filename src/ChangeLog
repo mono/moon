@@ -2,6 +2,8 @@
 
 	* contentpresenter.cpp (ContentPresenter::PrepareContentPresenter):
 	Clean up the goto.
+	(ContentPresenter::OnLoaded): Only unref the template if it isn't
+	null.
 
 	* contentpresenter.h (ContentPresenter::GetElementRoot):
 	Implemented temporary binding hack.
