@@ -507,6 +507,15 @@ namespace System.Windows.Controls {
 		}
 	}
 
+	partial class Image {
+		public static readonly DependencyProperty SourceProperty = DependencyProperty.Lookup (Kind.IMAGE, "Source", typeof (ImageSource));
+
+		public ImageSource Source {
+			get { return (ImageSource) GetValue (SourceProperty); }
+			set { SetValue (SourceProperty, value); }
+		}
+	}
+
 	partial class InkPresenter {
 		public static readonly DependencyProperty StrokesProperty = DependencyProperty.Lookup (Kind.INKPRESENTER, "Strokes", typeof (StrokeCollection));
 
