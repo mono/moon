@@ -1,3 +1,9 @@
+2009-01-21  Geoff Norton  <gnorton@novell.com>
+
+	* GeneratedPInvokes.cs: Regenerate
+	* NativeMethods.cs: Add the Application.GetResrouceCallback
+	* Helper.cs: A helper method to copy a stream to unmanaged memory
+
 2009-01-21  Jb Evain  <jbevain@novell.com>
 
 	* NativeMethods.cs: remove plugin_instance_get_browser_information.

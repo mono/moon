@@ -23,8 +23,8 @@ namespace Mono {
 		public extern static IntPtr application_get_current ();
 
 		[DllImport ("moon")]
-		// void application_register_style_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb);
-		public extern static void application_register_style_callbacks (IntPtr instance, Mono.ApplyDefaultStyleCallback apply_default_style_cb, Mono.ApplyStyleCallback apply_style_cb);
+		// void application_register_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb);
+		public extern static void application_register_callbacks (IntPtr instance, Mono.ApplyDefaultStyleCallback apply_default_style_cb, Mono.ApplyStyleCallback apply_style_cb, Mono.GetResourceCallback get_resource_cb);
 
 		[DllImport ("moon")]
 		// void application_set_current (Application *current);
@@ -192,6 +192,10 @@ namespace Mono {
 		[DllImport ("moon")]
 		// BitmapImage *bitmap_image_new ();
 		public extern static IntPtr bitmap_image_new ();
+
+		[DllImport ("moon")]
+		// void bitmap_image_set_buffer (BitmapImage *instance, gpointer buffer, int size);
+		public extern static void bitmap_image_set_buffer (IntPtr instance, IntPtr buffer, int size);
 
 		[DllImport ("moon")]
 		// Border *border_new ();
@@ -784,8 +788,8 @@ namespace Mono {
 		public extern static IntPtr image_new ();
 
 		[DllImport ("moon")]
-		// void image_set_stream_source (Image *instance, ManagedStreamCallbacks *stream);
-		public extern static void image_set_stream_source (IntPtr instance, ref ManagedStreamCallbacks stream);
+		// void image_set_source (Image *instance, BitmapImage *source);
+		public extern static void image_set_source (IntPtr instance, IntPtr source);
 
 		[DllImport ("moon")]
 		// ImageBrush *image_brush_new ();

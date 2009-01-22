@@ -237,6 +237,22 @@ namespace Mono {
 			Directory.Delete (path, true);
 		}
 
+		public static IntPtr StreamToIntPtr (Stream stream)
+		{
+			byte[] buffer = new byte[1024];
+			IntPtr buf = Marshal.AllocHGlobal ((int) stream.Length);
+			int ofs = 0;
+			int nread = 0;
+
+			do {
+				nread = stream.Read (buffer, 0, 1024);
+				Marshal.Copy (buffer, 0, (IntPtr) (((long)buf)+ofs), nread);
+				ofs += nread;
+			} while (nread != 0);
+
+			return buf;
+		}
+
 		private static object ValueFromConvertible (Type type, string value)
 		{
 			if (type == typeof (string))
