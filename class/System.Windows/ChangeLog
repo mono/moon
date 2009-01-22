@@ -1,3 +1,7 @@
+2009-01-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.mdp: Remove dead file.
+
 2009-01-21  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.mdp: Add a Popup test which causes mono to crash,

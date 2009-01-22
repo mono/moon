@@ -275,7 +275,6 @@
     <File name="System.Windows.Media.Imaging/BitmapImage.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Imaging/DownloadProgressEventArgs.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/StackPanel.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows/ApplicationInternal.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Collections.ObjectModel/ObservableCollection_T.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Imaging/RenderTargetBitmap.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media.Animation/ObjectKeyFrame.cs" subtype="Code" buildaction="Compile" />
