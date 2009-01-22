@@ -1,3 +1,8 @@
+2009-01-21  Geoff Norton  <gnorton@novell.com>
+
+	* Image.cs: Clean up stuff that should (and now is) have been 
+	generated.
+
 2009-01-21  Jeffrey Stedfast  <fejj@novell.com>
 
 	* ContentControl.cs: Connect to the internal ContentChanged event

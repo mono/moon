@@ -33,24 +33,9 @@ using Mono;
 
 namespace System.Windows.Controls {
 	public sealed partial class Image : FrameworkElement {
-		// XXX this should be an ImageSource
-		public static readonly DependencyProperty SourceProperty =
-			DependencyProperty.Lookup (Kind.MEDIABASE, "Source", typeof (string));
-		
 		public static readonly DependencyProperty StretchProperty =
 			DependencyProperty.Lookup (Kind.MEDIABASE, "Stretch", typeof (Stretch));
 				
-		public ImageSource Source {
-			get { throw new NotImplementedException (); }
-			set {
-				if (value == null) {
-					NativeMethods.media_base_set_source (this.native, null);
-				} else {
-					value.SetElement (this);
-				}
-			}
-		}
-		
 		public Stretch Stretch {
 			get { return (Stretch) GetValue (StretchProperty); }
 			set { SetValue (StretchProperty, value); }
