@@ -254,6 +254,7 @@ GECKO_SYM(DownloaderRequest)::GetResponse (DownloaderResponseStartedHandler star
 	GECKO_SYM(DownloaderResponse) *response;
 
 	response = new GECKO_SYM(DownloaderResponse) (channel, started, available, finished, context);
+	response->SetDownloaderRequest (this);
 	rs = channel->AsyncOpen (response, (GECKO_SYM(DownloaderResponse)*)response);
 	
 	this->response = response;

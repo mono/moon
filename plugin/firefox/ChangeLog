@@ -1,3 +1,7 @@
+2009-01-21  Geoff Norton  <gnorton@novell.com>
+
+	* browser-http.inc: Ensure the DownloaderResponse is aware of the DownloaderRequest
+
 2008-11-25  Geoff Norton  <gnorton@novell.com>
 
 	* browser-http.inc: Expose the status code and status text to the
