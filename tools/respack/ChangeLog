@@ -1,3 +1,8 @@
+2009-01-21  Jackson Harper  <jackson@ximian.com>
+
+	* respack.cs: Create directories for resources if needed when
+	decompressing.
+
 2009-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* respack.cs: Always embed in lowercase. This fixes running mono-built

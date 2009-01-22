@@ -130,6 +130,10 @@ class ResourcePacker {
 					byte [] data = new byte [stream.Length];
 					stream.Read (data, 0, data.Length);
 
+					string dir = Path.GetDirectoryName (key);
+					if (!String.IsNullOrEmpty (dir))
+						Directory.CreateDirectory (dir);
+
 					using (FileStream fs = File.OpenWrite (key)) {
 						fs.Write (data, 0, data.Length);
 					}
