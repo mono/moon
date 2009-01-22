@@ -51,8 +51,8 @@ namespace System.Windows {
 		}
 
 		public object Value {
-			get { return GetValue (ManagedValueProperty); }
-			set { SetValue (ManagedValueProperty, value); }
+			get { return GetValue (ValueProperty); }
+			set { SetValue (ValueProperty, value); }
 		}
 
 		public object ConvertedValue {
