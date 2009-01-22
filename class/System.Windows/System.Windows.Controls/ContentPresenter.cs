@@ -31,37 +31,16 @@ using Mono;
 
 namespace System.Windows.Controls {
 	public partial class ContentPresenter : FrameworkElement {
-		internal const string ElementTextContentName = "TextElement";
-		internal const string RootElementName = "RootElement";
-		internal UIElement _elementContent;
-		internal TextBlock _elementText;
-		internal Grid _elementRoot;
-		bool template_applied;
-		
-		void Initialize ()
-		{
-			// hook up the TemplateApplied callback so we
-			// can notify controls when their template has
-			// been instantiated as a visual tree.
-			Events.AddHandler (this, "TemplateApplied", Events.template_applied);
-		}
-		
-		// Since we don't inherit from Control on the managed side, we need to bind to this ourselves.
-		DependencyObject GetTemplateChild (string childName)
-		{
-			return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.control_get_template_child (native, childName)) as DependencyObject;
+		// FIXME: temporary hack for ScrollContentPresenter
+		internal Grid _elementRoot {
+			get {
+				return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.content_presenter_get_element_root (native)) as Grid;
+			}
 		}
 		
 		public override void OnApplyTemplate ()
 		{
-			if (template_applied)
-				throw new InvalidOperationException (Resource.ContentPresenter_OnApplyTemplate_WriteOnce);
 			
-			template_applied = true;
-			
-			// Get the content root and the text content visual
-			_elementText = GetTemplateChild (ElementTextContentName) as TextBlock;
-			_elementRoot = GetTemplateChild (RootElementName) as Grid;
 		}
 	}
 }

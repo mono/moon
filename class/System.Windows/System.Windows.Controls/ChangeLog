@@ -1,5 +1,8 @@
 2009-01-22  Jeffrey Stedfast  <fejj@novell.com>
 
+	* ContentPresenter.cs: Simplified by ripping out most of the code
+	that was moved to c++.
+
 	* ContentControl.cs: Simplified a lot by re-using the Events class
 	helper functions.
 
