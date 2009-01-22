@@ -63,6 +63,9 @@ public:
 /*
  *
  */
+#if OBJECT_TRACKING
+static pthread_mutex_t objects_alive_mutex = PTHREAD_MUTEX_INITIALIZER;
+#endif
 
 EventObject::EventObject ()
 {
@@ -72,10 +75,11 @@ EventObject::EventObject ()
 	
 #if OBJECT_TRACKING
 	id = g_atomic_int_exchange_and_add (&objects_created, 1);
+	pthread_mutex_lock (&objects_alive_mutex);
 	if (objects_alive == NULL)
 		objects_alive = g_hash_table_new (g_direct_hash, g_direct_equal);
-	// Helgrind correctly reports a race here. Given this is for debugging, ignore it.
 	g_hash_table_insert (objects_alive, this, GINT_TO_POINTER (1));
+	pthread_mutex_unlock (&objects_alive_mutex);
 
 	Track ("Created", "");
 #elif DEBUG
@@ -87,7 +91,9 @@ EventObject::~EventObject()
 {
 #if OBJECT_TRACKING
 	g_atomic_int_inc (&objects_destroyed);
+	pthread_mutex_lock (&objects_alive_mutex);
 	g_hash_table_remove (objects_alive, this);
+	pthread_mutex_unlock (&objects_alive_mutex);
 
 	if (refcount != 0) {
 		printf ("Object #%i was deleted before its refcount reached 0 (current refcount: %i)\n", id, refcount);

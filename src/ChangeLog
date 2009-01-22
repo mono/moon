@@ -1,5 +1,9 @@
 2009-01-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* dependencyobject.cpp: Protect objects_alive with a mutex.
+
+2009-01-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* dependencyobject.h:
 	* dependencyobject.cpp: Remove the weak ref stuff, it's never been of
 	any use.
