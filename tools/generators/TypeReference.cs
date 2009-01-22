@@ -123,6 +123,9 @@ class TypeReference {
 			case "ArrangeOverrideCallback":
 				managed_type = "Mono.ArrangeOverrideCallback";
 				break;
+			case "GetResourceCallback":
+				managed_type = "Mono.GetResourceCallback";
+				break;
 			case "GetValueCallback":
 				managed_type = "Mono.GetValueCallback";
 				break;
