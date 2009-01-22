@@ -1,3 +1,8 @@
+2009-01-21  Geoff Norton  <gnorton@novell.com>
+
+	* ImageSource.cs: Drop a bunch of old hacky code now that we do things
+	the right way.
+
 2009-01-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Color.cs: Call ToString in it's (otherwise unimplemented) overloads

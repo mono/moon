@@ -32,30 +32,8 @@ using Mono;
 namespace System.Windows.Media {
 
 	public abstract class ImageSource : DependencyObject {
-		private StreamWrapper wrapper;
-		private ManagedStreamCallbacks callbacks;
-
-		internal ImageSource ()
-		{
-			// Can this ctor be deleted?
-		}
-
 		internal ImageSource (IntPtr native) : base (native)
 		{
-		}
-
-		internal abstract Stream Stream { get; }
-		internal abstract Uri Uri { get; }
-
-		internal void SetElement (FrameworkElement element) {
-			if (Stream != null) {
-				wrapper = new StreamWrapper (Stream);
-				callbacks = wrapper.GetCallbacks ();
-				NativeMethods.image_set_stream_source (element.native, ref callbacks);
-			}
-			if (Uri != null) {
-				NativeMethods.media_base_set_source (element.native, new Uri (PluginHost.RootUri, Uri).ToString ());
-			}
 		}
 	}
 }
