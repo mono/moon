@@ -36,8 +36,6 @@ namespace System.Windows.Media.Imaging
 {
 	public sealed partial class BitmapImage : ImageSource
 	{
-		internal Stream stream;
-
 		public BitmapImage (Uri uriSource) : base (NativeMethods.bitmap_image_new ())
 		{
 			UriSource = uriSource;
@@ -46,28 +44,10 @@ namespace System.Windows.Media.Imaging
 		[SecuritySafeCritical]
 		public void SetSource (Stream streamSource)
 		{
-			this.stream = streamSource;
-		}
-
-		internal override Stream Stream
-		{
-			get
-		 	{
-				if (UriSource != null) {
-					StreamResourceInfo sri = Application.GetResourceStream (UriSource);
-					if (sri != null)
-						return sri.Stream;
-				}
-				return stream;
-			}
-		}
-
-		internal override Uri Uri
-		{
-			get
-			{
-				return UriSource;
-			}
+			if (streamSource == null)
+				NativeMethods.bitmap_image_set_buffer (native, IntPtr.Zero, 0);
+			else
+				NativeMethods.bitmap_image_set_buffer (native, Helper.StreamToIntPtr (streamSource), (int) streamSource.Length);
 		}
 
 		public event EventHandler<DownloadProgressEventArgs> DownloadProgress;

@@ -1,3 +1,7 @@
+2009-01-21  Geoff Norton  <gnorton@novell.com>
+
+	* BitmapImage.cs: Clean up and handle all this in native now.
+
 2009-01-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* DownloadProgressEventArgs.cs: Fix API to match SL2
