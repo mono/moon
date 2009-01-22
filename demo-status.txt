@@ -7,6 +7,7 @@ site:Photosynth
 url:http://photosynth.net/silverlight/photosynth.aspx?cid=d7d78324-ad5e-41ea-94dd-512580ed4393
 rating:0
  * not working
+ * loads up to 81% - Method not found: 'System.Net.WebClient.CancelAsync'
 
 site:Silverlight Stocks
 url:http://www.vadimv.com/
