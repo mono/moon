@@ -18,6 +18,7 @@
 #include "clock.h"
 #include "collection.h"
 #include "contentcontrol.h"
+#include "contentpresenter.h"
 #include "control.h"
 #include "deepzoomimagetilesource.h"
 #include "dependencyobject.h"
@@ -362,6 +363,12 @@ Value *content_changed_event_args_get_old_content (ContentChangedEventArgs *inst
  **/
 /* @GeneratePInvoke */
 ContentControl *content_control_new (void);
+
+/**
+ * ContentPresenter
+ **/
+/* @GeneratePInvoke */
+ContentPresenter *content_presenter_new (void);
 
 /**
  * Control

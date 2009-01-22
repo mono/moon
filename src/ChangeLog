@@ -1,3 +1,10 @@
+2009-01-22  Jeffrey Stedfast  <fejj@novell.com>
+
+	* contentpresenter.cpp|h: New source files. Subclass Control even
+	though in managed-land, we technically subclass
+	FrameworkElement. This way we can take advantage of Control's
+	template logic.
+
 2009-01-22  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (dependency_object_set_attributes): commit jackson's

@@ -813,6 +813,16 @@ content_control_new (void)
 
 
 /**
+ * ContentPresenter
+ **/
+ContentPresenter *
+content_presenter_new (void)
+{
+	return new ContentPresenter ();
+}
+
+
+/**
  * Control
  **/
 bool

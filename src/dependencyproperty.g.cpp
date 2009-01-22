@@ -18,6 +18,7 @@
 #include "collection.h"
 #include "color.h"
 #include "contentcontrol.h"
+#include "contentpresenter.h"
 #include "control.h"
 #include "deepzoomimagetilesource.h"
 #include "dependencyobject.h"
@@ -90,6 +91,8 @@ dependency_property_g_init (void)
 	ColumnDefinition::WidthProperty = DependencyProperty::Register (Type::COLUMNDEFINITION, "Width", new Value (GridLength (1.0, GridUnitTypeStar)), Type::GRIDLENGTH);
 	ContentControl::ContentProperty = DependencyProperty::Register (Type::CONTENTCONTROL, "Content", Type::OBJECT);
 	ContentControl::ContentTemplateProperty = DependencyProperty::Register (Type::CONTENTCONTROL, "ContentTemplate", Type::DATATEMPLATE);
+	ContentPresenter::ContentProperty = DependencyProperty::Register (Type::CONTENTPRESENTER, "Content", Type::OBJECT);
+	ContentPresenter::ContentTemplateProperty = DependencyProperty::Register (Type::CONTENTPRESENTER, "ContentTemplate", Type::DATATEMPLATE);
 	Control::BackgroundProperty = DependencyProperty::Register (Type::CONTROL, "Background", Type::BRUSH);
 	Control::BorderBrushProperty = DependencyProperty::Register (Type::CONTROL, "BorderBrush", Type::BRUSH);
 	Control::BorderThicknessProperty = DependencyProperty::Register (Type::CONTROL, "BorderThickness", new Value (Thickness(0.0)), Type::THICKNESS);
@@ -440,6 +443,8 @@ DependencyProperty *ColumnDefinition::MinWidthProperty = NULL;
 DependencyProperty *ColumnDefinition::WidthProperty = NULL;
 DependencyProperty *ContentControl::ContentProperty = NULL;
 DependencyProperty *ContentControl::ContentTemplateProperty = NULL;
+DependencyProperty *ContentPresenter::ContentProperty = NULL;
+DependencyProperty *ContentPresenter::ContentTemplateProperty = NULL;
 DependencyProperty *Control::BackgroundProperty = NULL;
 DependencyProperty *Control::BorderBrushProperty = NULL;
 DependencyProperty *Control::BorderThicknessProperty = NULL;
@@ -1252,6 +1257,19 @@ void
 ContentControl::SetContentTemplate (DataTemplate *value)
 {
 	SetValue (ContentControl::ContentTemplateProperty, Value (value));
+}
+
+DataTemplate *
+ContentPresenter::GetContentTemplate ()
+{
+	Value *value = GetValue (ContentPresenter::ContentTemplateProperty);
+	return value ? value->AsDataTemplate () : NULL;
+}
+
+void
+ContentPresenter::SetContentTemplate (DataTemplate *value)
+{
+	SetValue (ContentPresenter::ContentTemplateProperty, Value (value));
 }
 
 Brush *

@@ -1,6 +1,6 @@
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * contentcontrol.cpp:
+ * contentpresenter.cpp:
  *
  * Copyright 2007-2009 Novell, Inc. (http://www.novell.com)
  *
@@ -8,27 +8,27 @@
  * 
  */
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
 
-#include "contentcontrol.h"
+#include "contentpresenter.h"
 
 
 void
-ContentControl::OnPropertyChanged (PropertyChangedEventArgs *args)
+ContentPresenter::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->GetOwnerType () != Type::CONTENTCONTROL) {
+	if (args->property->GetOwnerType () != Type::CONTENTPRESENTER) {
 		Control::OnPropertyChanged (args);
 		return;
 	}
 	
-	if (args->property == ContentControl::ContentTemplateProperty) {
+	if (args->property == ContentPresenter::ContentTemplateProperty) {
 		if (IsLoaded ())
 			ApplyTemplate ();
-	} else if (args->property == ContentControl::ContentProperty) {
+	} else if (args->property == ContentPresenter::ContentProperty) {
 		if (IsLoaded ())
 			ApplyTemplate ();
-		
-		Emit (ContentControl::ContentChangedEvent, new ContentChangedEventArgs (args->old_value, args->new_value));
 	}
 	
 	NotifyListenersOfPropertyChange (args);

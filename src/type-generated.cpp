@@ -24,6 +24,7 @@
 #include "clock.h"
 #include "collection.h"
 #include "contentcontrol.h"
+#include "contentpresenter.h"
 #include "control.h"
 #include "deepzoomimagetilesource.h"
 #include "dependencyobject.h"
@@ -176,6 +177,7 @@ Type type_infos [] = {
 	{ Type::COLUMNDEFINITION_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "ColumnDefinitionCollection", "COLUMNDEFINITION_COLLECTION", 0, 1, NULL, (create_inst_func *) column_definition_collection_new, NULL, NULL, NULL, NULL }, 
 	{ Type::CONTENTCHANGEDEVENTARGS, Type::EVENTARGS, false, "ContentChangedEventArgs", "CONTENTCHANGEDEVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::CONTENTCONTROL, Type::CONTROL, false, "ContentControl", "CONTENTCONTROL", 1, 18, ContentControl_Events, (create_inst_func *) content_control_new, "Content", NULL, NULL, NULL }, 
+	{ Type::CONTENTPRESENTER, Type::CONTROL, false, "ContentPresenter", "CONTENTPRESENTER", 0, 17, NULL, (create_inst_func *) content_presenter_new, NULL, NULL, NULL, NULL }, 
 	{ Type::CONTROL, Type::FRAMEWORKELEMENT, false, "Control", "CONTROL", 1, 17, Control_Events, (create_inst_func *) control_new, NULL, NULL, NULL, NULL }, 
 	{ Type::CONTROLTEMPLATE, Type::FRAMEWORKTEMPLATE, false, "ControlTemplate", "CONTROLTEMPLATE", 0, 1, NULL, (create_inst_func *) control_template_new, NULL, NULL, NULL, NULL }, 
 	{ Type::CORNERRADIUS, Type::OBJECT, true, "CornerRadius", "CORNERRADIUS", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 

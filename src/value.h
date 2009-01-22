@@ -74,6 +74,7 @@ class ColumnDefinition;
 class ColumnDefinitionCollection;
 class ContentChangedEventArgs;
 class ContentControl;
+class ContentPresenter;
 class Control;
 class ControlTemplate;
 class DataTemplate;
@@ -343,6 +344,7 @@ public:
 	ColumnDefinitionCollection*    AsColumnDefinitionCollection () { checked_get_subclass (Type::COLUMNDEFINITION_COLLECTION, ColumnDefinitionCollection) }
 	ContentChangedEventArgs*       AsContentChangedEventArgs () { checked_get_subclass (Type::CONTENTCHANGEDEVENTARGS, ContentChangedEventArgs) }
 	ContentControl*                AsContentControl () { checked_get_subclass (Type::CONTENTCONTROL, ContentControl) }
+	ContentPresenter*              AsContentPresenter () { checked_get_subclass (Type::CONTENTPRESENTER, ContentPresenter) }
 	Control*                       AsControl () { checked_get_subclass (Type::CONTROL, Control) }
 	ControlTemplate*               AsControlTemplate () { checked_get_subclass (Type::CONTROLTEMPLATE, ControlTemplate) }
 	DataTemplate*                  AsDataTemplate () { checked_get_subclass (Type::DATATEMPLATE, DataTemplate) }
