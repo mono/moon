@@ -94,6 +94,7 @@
     <Compile Include="System.Windows.Controls.Primitives\ToggleButtonTest.cs" />
     <Compile Include="System.Windows.Controls\BorderTest.cs" />
     <Compile Include="System.Windows.Controls\CanvasTest.cs" />
+    <Compile Include="System.Windows.Controls\ColumnDefinitionTest.cs" />
     <Compile Include="System.Windows.Controls\ComboBoxTest.cs" />
     <Compile Include="System.Windows.Controls\ContentControlTest.cs" />
     <Compile Include="System.Windows.Controls\ContentPresenterTest.cs" />
@@ -108,6 +109,7 @@
     <Compile Include="System.Windows.Controls\PanelTest.cs" />
     <Compile Include="System.Windows.Controls\PasswordBoxTest.cs" />
     <Compile Include="System.Windows.Controls\ProgressBarTest.cs" />
+    <Compile Include="System.Windows.Controls\RowDefinitionTest.cs" />
     <Compile Include="System.Windows.Controls\ScrollViewerTest.cs" />
     <Compile Include="System.Windows.Controls\SliderTest.cs" />
     <Compile Include="System.Windows.Controls\StackPanelTest.cs" />
@@ -115,12 +117,15 @@
     <Compile Include="System.Windows.Controls\UserControlTest.cs" />
     <Compile Include="System.Windows.Data\BindingTest.cs" />
     <Compile Include="System.Windows.Data\IValueConverterTest.cs" />
+    <Compile Include="System.Windows.Documents\InlineTest.cs" />
+    <Compile Include="System.Windows.Documents\RunTest.cs" />
     <Compile Include="System.Windows.Input\CursorsTest.cs" />
     <Compile Include="System.Windows.Input\StylusDeviceTest.cs" />
     <Compile Include="System.Windows.Interop\ContentTest.cs" />
     <Compile Include="System.Windows.Interop\SettingsTest.cs" />
     <Compile Include="System.Windows.Interop\SilverlightHostTest.cs" />
     <Compile Include="System.Windows.Markup\XamlReaderTest.cs" />
+    <Compile Include="System.Windows.Markup\XmlLanguageTest.cs" />
     <Compile Include="System.Windows.Media.Animation\StoryboardTest.cs" />
     <Compile Include="System.Windows.Media.Imaging\BitmapImageTest.cs" />
     <Compile Include="System.Windows.Media\BrushTest.cs" />
@@ -129,6 +134,7 @@
     <Compile Include="System.Windows.Media\ImageBrushTest.cs" />
     <Compile Include="System.Windows.Media\LinearGradientBrushTest.cs" />
     <Compile Include="System.Windows.Media\LineGeometryTest.cs" />
+    <Compile Include="System.Windows.Media\MatrixTest.cs" />
     <Compile Include="System.Windows.Media\MatrixTransformTest.cs" />
     <Compile Include="System.Windows.Media\VisualTreeHelperTest.cs" />
     <Compile Include="System.Windows.Resources\StreamResourceInfoTest.cs" />
@@ -163,6 +169,7 @@
     <Compile Include="System.Windows\SizeTest.cs" />
     <Compile Include="System.Windows\StyleTest.cs" />
     <Compile Include="System.Windows\TemplatePartAttributeTest.cs" />
+    <Compile Include="System.Windows\TextDecorationsTest.cs" />
     <Compile Include="System.Windows\ThicknessTest.cs" />
     <Compile Include="System.Windows\UIElementTest.cs" />
     <Compile Include="System.Windows\VisualStateManagerTest.cs" />
@@ -358,7 +365,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="System.Windows.Documents\" />
     <Folder Include="System.Windows.Ink\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets" />
