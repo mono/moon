@@ -31,15 +31,7 @@ using Mono;
 
 namespace System.Windows.Controls {
 	public partial class ContentControl : Control {
-		void Initialize ()
-		{
-			ContentChanged += InvokeOnContentChanged;
-		}
-		
-		protected virtual void OnContentChanged (object oldContent, object newContent)
-		{
-			// no-op
-		}
+		static UnmanagedEventHandler content_changed = Events.CreateSafeHandler (content_changed_callback);
 		
 		internal class ContentChangedEventArgs : EventArgs {
 			internal IntPtr native;
@@ -81,40 +73,22 @@ namespace System.Windows.Controls {
 			}
 		}
 		
-		static UnmanagedEventHandler content_changed = Events.CreateSafeHandler (content_changed_cb);
-		
-		static object ContentChangedEvent = new object ();
-		
-		void InvokeOnContentChanged (object sender, ContentChangedEventArgs args)
-		{
-			OnContentChanged (args.OldContent, args.NewContent);
-		}
-		
-		void InvokeContentChanged (ContentChangedEventArgs args)
-		{
-			ContentChangedEventHandler h = (ContentChangedEventHandler) EventList [ContentChangedEvent];
-			
-			if (h != null)
-				h (this, args);
-		}
-		
-		static void content_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
+		static void content_changed_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
 			ContentChangedEventArgs args = (ContentChangedEventArgs) Helper.GCHandleFromIntPtr (calldata).Target;
-			ContentControl control = (ContentControl) Helper.GCHandleFromIntPtr (closure).Target;
+			ContentControl cc = (ContentControl) Helper.GCHandleFromIntPtr (closure).Target;
 			
-			control.InvokeContentChanged (args);
+			cc.OnContentChanged (args.OldContent, args.NewContent);
 		}
 		
-		internal delegate void ContentChangedEventHandler (object sender, ContentChangedEventArgs args);
+		void Initialize ()
+		{
+			Events.AddHandler (this, "ContentChanged", content_changed);
+		}
 		
-		internal event ContentChangedEventHandler ContentChanged {
-			add {
-				RegisterEvent (ContentChangedEvent, "ContentChanged", content_changed, value);
-			}
-			remove {
-				UnregisterEvent (ContentChangedEvent, "ContentChanged", content_changed, value);
-			}
+		protected virtual void OnContentChanged (object oldContent, object newContent)
+		{
+			// no-op
 		}
 	}
 }

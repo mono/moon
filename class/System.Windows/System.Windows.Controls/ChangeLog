@@ -1,5 +1,8 @@
 2009-01-22  Jeffrey Stedfast  <fejj@novell.com>
 
+	* ContentControl.cs: Simplified a lot by re-using the Events class
+	helper functions.
+
 	* ContentPresenter.cs: New binding to unmanaged ContentPresenter
 	class. Replaces the old ContentPresenetr class from the Microsoft
 	Silverlight b1 sources.
