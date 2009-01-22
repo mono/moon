@@ -71,6 +71,7 @@ namespace System.Windows {
 
 		ApplyDefaultStyleCallback apply_default_style;
 		ApplyStyleCallback apply_style;
+		GetResourceCallback get_resource;
 
 		static Application ()
 		{
@@ -84,8 +85,9 @@ namespace System.Windows {
 
 			apply_default_style = new ApplyDefaultStyleCallback (apply_default_style_cb);
 			apply_style = new ApplyStyleCallback (apply_style_cb);
+			get_resource = new GetResourceCallback (get_resource_cb);
 
-			NativeMethods.application_register_style_callbacks (NativeHandle, apply_default_style, apply_style);
+			NativeMethods.application_register_callbacks (NativeHandle, apply_default_style, apply_style, get_resource);
 
 			xap_dir = s_xap_dir;
 			surface = s_surface;
@@ -434,6 +436,19 @@ namespace System.Windows {
 				return StreamResourceInfo.FromFile (res_file);
 
 			return null;
+		}
+
+		internal static IntPtr get_resource_cb (string name, out int size)
+		{
+			try {
+				StreamResourceInfo info = GetResourceStream (new Uri (name, UriKind.Relative));
+
+				size = (int) info.Stream.Length;
+				return Helper.StreamToIntPtr (info.Stream);
+			} catch {
+				size = 0;
+				return IntPtr.Zero;
+			}
 		}
 
 		internal static Assembly GetAssembly (string name)

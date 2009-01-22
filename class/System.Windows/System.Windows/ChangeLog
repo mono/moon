@@ -1,3 +1,8 @@
+2009-01-21  Geoff Norton  <gnorton@novell.com>
+
+	* Application.cs: Add a new callback so that we can get resources
+	in unmanaged code.
+
 2009-01-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* TextDecorations.cs: Make sure we always return the same Underline
