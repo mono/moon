@@ -35,7 +35,6 @@ Src/Common/SelectionChangedEventHandler.cs \
 Src/Common/TextDecorationCollectionConverter.cs \
 Src/Common/TypeConverters.cs \
 Src/Common/UriTypeConverter.cs \
-Src/ContentControl/ContentPresenter.cs \
 Src/GlobalSuppressions.cs \
 Src/Properties/AssemblyInfo.cs \
 Src/RadioButton/RadioButton.cs \

@@ -176,6 +176,12 @@ namespace System.Windows.Controls {
 		internal override Kind GetKind () { return Kind.CONTENTCONTROL; }
 	}
 
+	partial class ContentPresenter {
+		public ContentPresenter () : base (NativeMethods.content_presenter_new ()) {}
+		internal ContentPresenter (IntPtr raw) : base (raw) {}
+		internal override Kind GetKind () { return Kind.CONTENTPRESENTER; }
+	}
+
 	partial class Control {
 		protected Control () : base (NativeMethods.control_new ())
 		{

@@ -404,6 +404,10 @@ namespace Mono {
 		public extern static IntPtr content_control_new ();
 
 		[DllImport ("moon")]
+		// ContentPresenter *content_presenter_new ();
+		public extern static IntPtr content_presenter_new ();
+
+		[DllImport ("moon")]
 		[return: MarshalAs (UnmanagedType.U1)]
 		// bool control_apply_template (Control *instance);
 		public extern static bool control_apply_template (IntPtr instance);
