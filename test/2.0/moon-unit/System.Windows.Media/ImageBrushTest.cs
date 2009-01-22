@@ -21,7 +21,6 @@ namespace MoonTest.System.Windows.Media
 	public class ImageBrushTest
 	{
 		[TestMethod]
-		[MoonlightBug ("Shouldn't treat ImageSource as a string in native code")]
 		public void SetBitmapBrush ()
 		{
 			ImageBrush brush = new ImageBrush ();
