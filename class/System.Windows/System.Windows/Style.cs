@@ -50,18 +50,17 @@ namespace System.Windows {
 
 		internal void ConvertSetterValue (Setter s)
 		{
-			// can't use s.Value and s.Property here due to wonky behavior with their accessors
-			DependencyProperty dp = s.GetValue (Setter.PropertyProperty) as DependencyProperty;
-			object val = s.GetValue (Setter.ValueProperty);
+			DependencyProperty dp = s.Property as DependencyProperty;
+			object val = s.Value;
 
-			Console.WriteLine ("Converting setter ({0}, {1}/{2})", dp.Name, val, val == null ? "<null>" : val.GetType().ToString());
+			//			Console.WriteLine ("Converting setter ({0}, {1}/{2})", dp.Name, val, val == null ? "<null>" : val.GetType().ToString());
 
 			if (val != null && dp.PropertyType.IsAssignableFrom (val.GetType())) {
-				Console.WriteLine ("+ property type is assignable.  we're golden");
+				//				Console.WriteLine ("+ property type is assignable.  we're golden");
 				s.ConvertedValue = val;
 			}
 			else if (dp.PropertyType == typeof (string)) {
-				Console.WriteLine ("+ property type is string");
+				//				Console.WriteLine ("+ property type is string");
 				if (val == null) 
 					throw new ArgumentException ("foo1");
 				else if (val.GetType () != typeof (string))
@@ -70,7 +69,7 @@ namespace System.Windows {
 				s.ConvertedValue = val;
 			}
 			else if (val != null) {
-				Console.WriteLine ("+ property type is more complex");
+				//				Console.WriteLine ("+ property type is more complex");
 
 				PropertyInfo pi = TargetType.GetProperty (dp.Name);
 				if (pi == null) {
@@ -83,27 +82,25 @@ namespace System.Windows {
 					tc = new MoonlightTypeConverter (pi.PropertyType);
 
 				if (!tc.CanConvertFrom (val.GetType())) {
-					Console.WriteLine ("+ type converter can't convert from type {0}", val.GetType());
+					//					Console.WriteLine ("+ type converter can't convert from type {0}", val.GetType());
 					throw new XamlParseException ("foo5");
 				}
 
 				try {
 					s.ConvertedValue = tc.ConvertFrom (val);
-					Console.WriteLine ("s.ConvertedValue == {0}", s.ConvertedValue);
+					//					Console.WriteLine ("s.ConvertedValue == {0}", s.ConvertedValue);
 				} catch (Exception e) {
-					Console.WriteLine ("Exception raised in ConvertFrom():\n{0}", e);
+					//					Console.WriteLine ("Exception raised in ConvertFrom():\n{0}", e);
 					throw new XamlParseException ("foo6");
 				}
 			}
 			else {
-				Console.WriteLine ("how did we make it here?");
+				throw new XamlParseException ("null value in setter.  how did we make it here?");
 			}
 		}
 
 		internal void ConvertSetterValues ()
 		{
-			Console.WriteLine ("Inside ConvertSetterValues (TargetType = {0})", TargetType);
-
 			foreach (Setter s in Setters)
 				ConvertSetterValue (s);
 		}

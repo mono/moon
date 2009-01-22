@@ -36,10 +36,6 @@ namespace System.Windows {
 		internal static readonly DependencyProperty ValueProperty = DependencyProperty.Lookup (Kind.SETTER, "Value", typeof (object));
 		internal static readonly DependencyProperty ConvertedValueProperty = DependencyProperty.Lookup (Kind.SETTER, "ConvertedValue", typeof (object));
 
-		static Dictionary<IntPtr, DependencyProperty> properties = new Dictionary<IntPtr, DependencyProperty> ();
-			
-		object value;
-		
 		public Setter (DependencyProperty property, object value)
 		{
 			if (property == null)
@@ -50,21 +46,13 @@ namespace System.Windows {
 		}
 
 		public DependencyProperty Property {
-			get {
-				DependencyProperty dp = (DependencyProperty) GetValue (PropertyProperty);
-				return dp != null && properties.ContainsKey (dp.Native) ? dp : null;
-			}
-			set {
-				SetValue (PropertyProperty, value);
-				if (value != null) {
-					properties[value.Native] = value;
-				}
-			}
+			get { return (DependencyProperty) GetValue (PropertyProperty); }
+			set { SetValue (PropertyProperty, value); }
 		}
 
 		public object Value {
-			get { return this.value; }
-			set { SetValue (ValueProperty, value); this.value = value; }
+			get { return GetValue (ManagedValueProperty); }
+			set { SetValue (ManagedValueProperty, value); }
 		}
 
 		public object ConvertedValue {

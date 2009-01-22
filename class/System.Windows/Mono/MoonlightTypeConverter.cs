@@ -50,7 +50,7 @@ namespace Mono {
 			return sourceType == typeof(string);
 		}
 
-		public virtual object ConvertFrom (ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+		public override object ConvertFrom (ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
 		{
 			IntPtr unmanaged_value;
 
