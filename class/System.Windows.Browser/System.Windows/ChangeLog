@@ -1,5 +1,9 @@
 2009-01-21  Andreia Gaita  <avidigal@novell.com>
 
+      * WebApplication.cs: Initial support for creatable types.
+
+2009-01-21  Andreia Gaita  <avidigal@novell.com>
+
 	* WebApplication.cs: Implement RegisterScriptableObject, add
         support for scriptable objects with complex types.
 

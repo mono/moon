@@ -1,5 +1,5 @@
 //
-// System.Windows.Browser.ScriptableObject class
+// System.Windows.Browser.ScriptObject class
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -38,11 +38,19 @@ namespace System.Windows.Browser {
 		object managed;
 
 		static Dictionary<IntPtr, WeakReference> scriptableObjects;
-		static internal Dictionary<IntPtr, WeakReference> ScriptableObjects { get {return scriptableObjects;} }
+		static internal Dictionary<IntPtr, WeakReference> ScriptableObjects {
+			get { return scriptableObjects;}
+		}
+
+		static Dictionary<string, Type> scriptableTypes;
+		static internal Dictionary<string, Type> ScriptableTypes {
+			get { return scriptableTypes;}
+		}
 
 		static ScriptObject ()
 		{
 			scriptableObjects = new Dictionary<IntPtr, WeakReference>();
+			scriptableTypes = new Dictionary<string, Type>();
 		}
 
 		internal ScriptObject ()
@@ -109,12 +117,15 @@ namespace System.Windows.Browser {
 
 		protected virtual object ConvertTo (Type targetType, bool allowSerialization)
 		{
-			throw new System.NotImplementedException ();
+			if (targetType.IsAssignableFrom (GetType()))
+				return this;
+
+			return null;
 		}
 		
 		public T ConvertTo<T> ()
 		{
-			throw new System.NotImplementedException ();
+			return (T) ConvertTo (typeof(T), true);
 		}
 
 		[SecuritySafeCritical ()]
@@ -136,12 +147,14 @@ namespace System.Windows.Browser {
 
 		internal void InvokeMethod (string name, params object [] args)
 		{
-			WebApplication.InvokeMethod (handle, name, args);
+			throw new System.NotImplementedException ();
+			//WebApplication.InvokeMethod (handle, name, args);
 		}
 
 		internal T InvokeMethod<T> (string name, params object [] args)
 		{
-			return WebApplication.InvokeMethod<T> (handle, name, args);
+			throw new System.NotImplementedException ();
+			//return WebApplication.InvokeMethod<T> (handle, name, args);
 		}
 
 		[EditorBrowsable (EditorBrowsableState.Never)]

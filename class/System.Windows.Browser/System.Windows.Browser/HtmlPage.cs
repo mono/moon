@@ -71,12 +71,6 @@ namespace System.Windows.Browser{
 			}
 		}
 
-		public static void UnregisterCreateableType (string scriptAlias)
-		{
-			Console.Error.WriteLine ("MOONLIGHT-IMPLEMENT-ME: HtmlPage.UnregisterCreatableType needs to be implemented.");
-//			throw new System.NotImplementedException ();
-		}
-		
 		public static void RegisterScriptableObject (string scriptKey, object instance)
 		{
 			WebApplication.Current.RegisterScriptableObject (scriptKey, instance);
@@ -84,8 +78,12 @@ namespace System.Windows.Browser{
 		
 		public static void RegisterCreateableType (string scriptAlias, Type type)
 		{
-			Console.Error.WriteLine ("MOONLIGHT-IMPLEMENT-ME: HtmlPage.RegisterCreatableType needs to be implemented.");
-//			throw new System.NotImplementedException ();
+			WebApplication.Current.RegisterCreateableType (scriptAlias, type);
+		}
+
+		public static void UnregisterCreateableType (string scriptAlias)
+		{
+			WebApplication.Current.UnregisterCreateableType (scriptAlias);
 		}
 
 		public static HtmlWindow Window {

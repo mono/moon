@@ -88,25 +88,25 @@ namespace System.Windows
 			if (scriptKey.Length == 0)
 				throw new ArgumentException ("scriptKey");
 
-			//ScriptableObjectGenerator gen = new ScriptableObjectGenerator (instance);
-
 			ScriptableObjectWrapper wrapper = ScriptableObjectGenerator.Generate (instance, true);
 			wrapper.Register (scriptKey);
 		}
+		
+		public void RegisterCreateableType (string scriptAlias, Type type)
+		{
+			ScriptObject.ScriptableTypes.Add (scriptAlias, type);
+		}
+
+		public void UnregisterCreateableType (string scriptAlias)
+		{
+			if (ScriptObject.ScriptableTypes.ContainsKey (scriptAlias))
+				ScriptObject.ScriptableTypes.Remove (scriptAlias);
+		}	
+		
 
 		[MonoTODO]
 		public IDictionary<string, string> StartupArguments {
 			get { return startup_args; }
-		}
-
-		internal static void InvokeMethod (IntPtr obj, string name, params object [] args)
-		{
-			throw new System.NotImplementedException (); //InvokeMethodInternal (Current.plugin_handle, obj, name, args);
-		}
-
-		internal static T InvokeMethod<T> (IntPtr obj, string name, params object [] args)
-		{
-			throw new System.NotImplementedException (); //return (T) InvokeMethodInternal (Current.plugin_handle, obj, name, args);
 		}
 	}
 }

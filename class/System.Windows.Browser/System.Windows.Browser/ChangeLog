@@ -1,5 +1,10 @@
 2009-01-21  Andreia Gaita  <avidigal@novell.com>
 
+	* HtmlPage.cs, ScriptObject.cs: Initial support for creatable types.
+	Implement converters (ScriptObject).
+
+2009-01-21  Andreia Gaita  <avidigal@novell.com>
+
 	* HtmlObject.cs, HtmlDocument.cs, HtmlPage.cs: Implement 
 	RegisterScriptableObject, add support for scriptable objects with complex 
 	types. Also implement some missing properties.
