@@ -25,9 +25,9 @@ namespace System.Windows.Media
 			NativeMethods.deep_zoom_image_tile_source_set_downloaded_cb (native, ParseDeepZoom);
 		}
 
-		public DeepZoomImageTileSource (Uri sourceUri) : base ()
+		public DeepZoomImageTileSource (Uri sourceUri) : this ()
 		{
-			throw new NotImplementedException ("Set the source after attaching the TileSource to the MultiScaleImage control");
+			UriSource = sourceUri;
 		}
 		
 		protected override void GetTileLayers (int tileLevel, int tilePositionX, int tilePositionY, IList<object> tileImageLayerSources)
