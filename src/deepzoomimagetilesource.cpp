@@ -21,10 +21,13 @@
 DeepZoomImageTileSource::DeepZoomImageTileSource ()
 {
 	downloader = NULL;
+	downloaded = false;
 }
 
 DeepZoomImageTileSource::DeepZoomImageTileSource (const char *uri)
 {
+	downloader = NULL;
+	downloaded = false;
 	SetValue (DeepZoomImageTileSource::UriSourceProperty, Value (uri));
 }
 
@@ -40,6 +43,18 @@ void
 DeepZoomImageTileSource::set_downloaded_cb (downloaded_cb cb)
 {
 	callback = cb;
+}
+
+void
+DeepZoomImageTileSource::Download ()
+{
+	if (downloaded)
+		return;
+	char *stringuri;
+	if (stringuri = GetValue (DeepZoomImageTileSource::UriSourceProperty)->AsString ()) {
+		downloaded = true;
+		download_uri (GetValue (DeepZoomImageTileSource::UriSourceProperty)->AsString ());
+	}
 }
 
 void 
@@ -96,7 +111,7 @@ void
 DeepZoomImageTileSource::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
 	if (args->property == DeepZoomImageTileSource::UriSourceProperty) {
-		download_uri (GetValue (DeepZoomImageTileSource::UriSourceProperty)->AsString ());
+		downloaded = false;
 	}
 
 	if (args->property->GetOwnerType () != Type::DEEPZOOMIMAGETILESOURCE) {

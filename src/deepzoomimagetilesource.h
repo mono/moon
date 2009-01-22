@@ -31,6 +31,7 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	void DownloaderComplete ();	
 	void download_uri (const char* url);
+	bool downloaded;
 
  protected:
 	virtual ~DeepZoomImageTileSource ();
@@ -50,6 +51,7 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	/* @GenerateCBinding */
 	void set_downloaded_cb (downloaded_cb callback);
 
+	virtual void Download ();
 
 	//
 	// Properties
