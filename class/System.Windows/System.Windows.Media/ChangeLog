@@ -1,3 +1,8 @@
+2009-01-22  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* DeepZoomImageTileSource.cs: no longer throws  a NIE. Fixes a stupid
+	typo.
+
 2009-01-21  Geoff Norton  <gnorton@novell.com>
 
 	* ImageSource.cs: Drop a bunch of old hacky code now that we do things
