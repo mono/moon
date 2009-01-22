@@ -50,17 +50,8 @@ class EventLists;
 // define OBJECT_TRACK_ID to that object's in dependencyobject.cpp.
 // (this will require that you first run the program once to print
 // the id of the object you're interested in).
-// 
-// To ensure that an object is destroyed before another object,
-// you can use weak_ref/unref. For instance to ensure that child
-// objects are always destroyed before their parent, make the
-// child call weak_ref/unref on their parent. This won't prevent
-// the parent from being destructed, but if the parent has any 
-// weak refs upon destruction, a printf will be shown to the console
-// (as long as OBJECT_TRACKING is defined). After that, you'll
-// most likely crash when the child tries to call weak_unref on 
-// its destructed parent.
 //
+
 #if OBJECT_TRACKING
 #define OBJECT_TRACK(x,y) Track((x),(y))
 #else
@@ -71,10 +62,8 @@ class EventObject {
 public:
 	EventObject ();
 	
-#if DEBUG
 	static gint objects_created;
 	static gint objects_destroyed;
-#endif
 	
 #if OBJECT_TRACKING
 	static GHashTable *objects_alive;

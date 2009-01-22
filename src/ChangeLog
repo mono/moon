@@ -1,5 +1,12 @@
 2009-01-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* dependencyobject.h:
+	* dependencyobject.cpp: Remove comment about weak refs, and #if DEBUG
+	around object counters (we define DEBUG always anyways, and the
+	counters are always useful).
+
+2009-01-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* dependencyobject.cpp: Protect objects_alive with a mutex.
 
 2009-01-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>

@@ -82,7 +82,7 @@ EventObject::EventObject ()
 	pthread_mutex_unlock (&objects_alive_mutex);
 
 	Track ("Created", "");
-#elif DEBUG
+#else
 	g_atomic_int_inc (&objects_created);
 #endif
 }
@@ -101,7 +101,7 @@ EventObject::~EventObject()
 	}
 
 	Track ("Destroyed", "");
-#elif DEBUG
+#else
 	g_atomic_int_inc (&objects_destroyed);
 #endif
 
