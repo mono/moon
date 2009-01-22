@@ -1,5 +1,10 @@
 2009-01-21  Geoff Norton  <gnorton@novell.com>
 
+	* application.cpp: If we're set to NULL remove the application 
+	from the hash table.
+
+2009-01-21  Geoff Norton  <gnorton@novell.com>
+
 	* Makefile.am: Add bitmapimage.cpp to the build
 	* application.cpp|h: Add a new callback into Application to
 	return a resource stream.

@@ -50,8 +50,14 @@ Application::SetCurrent (Application *application)
 		current_hash = g_hash_table_new (g_direct_hash, g_direct_equal);
 
 	MonoDomain *domain;
+
 	if (!(domain = mono_domain_get ()))
 		return;
+	
+	if (application == NULL) {
+		g_hash_table_remove (current_hash, domain);
+		return;
+	}
 
 	return g_hash_table_insert (current_hash, domain, application);
 }
