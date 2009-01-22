@@ -188,7 +188,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug ("styles need to use type converters")]
 		public void ProgrammaticTypeConverterFromStringTest()
 		{
 			Button b = new Button();

@@ -26,7 +26,6 @@ namespace MoonTest.System.Windows.Media.Imaging {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void EmptyUriInCtor ()
 		{
 			var bitmap = new BitmapImage (new Uri ("", UriKind.Relative));
