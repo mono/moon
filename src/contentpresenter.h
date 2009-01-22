@@ -20,6 +20,12 @@
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
 class ContentPresenter : public Control {
+	UIElement *content;
+	TextBlock *text;
+	Grid *root;
+	
+	void PrepareContentPresenter ();
+	
  protected:
 	virtual ~ContentPresenter () { }
 	

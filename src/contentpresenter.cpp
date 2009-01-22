@@ -49,6 +49,10 @@ ContentPresenter::ContentPresenter ()
 	type_info->full_name = g_strdup ("System.Windows.Controls.ContentPresenter");
 	
 	SetDefaultStyleKey (type_info);
+	
+	content = NULL;
+	text = NULL;
+	root = NULL;
 }
 
 void
@@ -67,6 +71,8 @@ ContentPresenter::OnLoaded ()
 	}
 	
 	Control::OnLoaded ();
+	
+	PrepareContentPresenter ();
 }
 
 void
@@ -79,11 +85,62 @@ ContentPresenter::OnPropertyChanged (PropertyChangedEventArgs *args)
 	
 	if (args->property == ContentPresenter::ContentTemplateProperty) {
 		if (IsLoaded ())
-			ApplyTemplate ();
+			PrepareContentPresenter ();
 	} else if (args->property == ContentPresenter::ContentProperty) {
 		if (IsLoaded ())
-			ApplyTemplate ();
+			PrepareContentPresenter ();
 	}
 	
 	NotifyListenersOfPropertyChange (args);
+}
+
+void
+ContentPresenter::PrepareContentPresenter ()
+{
+	UIElementCollection *children = root->GetChildren ();
+	DataTemplate *t;
+	Value *value;
+	
+	// Remove the old content 
+	if (content != text) {
+		children->Remove (content); 
+		content = NULL; 
+	} else {
+		text->SetText (NULL);
+	}
+	
+	// Expand the ContentTemplate if it exists
+	if ((t = GetContentTemplate ())) {
+		if ((content = (UIElement *) t->LoadContentWithError (NULL)))
+			goto uicontent;
+		
+		value = NULL;
+	} else
+		value = GetValue (ContentPresenter::ContentProperty);
+	
+	if (value && value->Is (Type::UIELEMENT)) {
+		// display the uielement content
+		content = value->AsUIElement ();
+		
+	uicontent:
+		children->Add (content);
+		
+		// collapse the text element
+		text->SetVisibility (VisibilityCollapsed);
+	} else if (value != NULL) {
+		// display the text element and set the content to the stringified content
+		text->SetVisibility (VisibilityVisible);
+		switch (value->GetKind ()) {
+		case Type::STRING:
+			text->SetText (value->AsString ());
+			break;
+		default:
+			// FIXME: implement me properly
+			text->SetText (NULL);
+			break;
+		}
+	} else {
+		// no content
+		text->SetVisibility (VisibilityCollapsed);
+	}
 }
