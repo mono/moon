@@ -19,24 +19,12 @@
 	"<ControlTemplate"						\
 	" xmlns=\"http://schemas.microsoft.com/client/2007\""		\
 	" xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\""	\
-	" xmlns:controls=\"clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls\"" \
 	" xmlns:controls=\"clr-namespace:System.Windows.Controls;assembly=System.Windows\"" \
 	" TargetType=\"controls:ContentPresenter\">"			\
 	"    <Grid x:Name=\"RootElement\""				\
-	"     Background=\"{TemplateBinding Background}\""		\
 	"     Cursor=\"{TemplateBinding Cursor}\">"			\
 	"        <TextBlock x:Name=\"TextElement\""			\
-	"         FontFamily=\"{TemplateBinding FontFamily}\""		\
-	"         FontSize=\"{TemplateBinding FontSize}\""		\
-	"         FontStretch=\"{TemplateBinding FontStretch}\""	\
-	"         FontStyle=\"{TemplateBinding FontStyle}\""		\
-	"         FontWeight=\"{TemplateBinding FontWeight}\""		\
-	"         Foreground=\"{TemplateBinding Foreground}\""		\
 	"         HorizontalAlignment=\"{TemplateBinding HorizontalContentAlignment}\"" \
-	"         Padding=\"{TemplateBinding Padding}\""		\
-	"         TextAlignment=\"{TemplateBinding TextAlignment}\""	\
-	"         TextDecorations=\"{TemplateBinding TextDecorations}\"" \
-	"         TextWrapping=\"{TemplateBinding TextWrapping}\""		\
 	"         VerticalAlignment=\"{TemplateBinding VerticalContentAlignment}\"" \
 	"         Visibility=\"Collapsed\"/>"				\
 	"     </Grid>"							\
