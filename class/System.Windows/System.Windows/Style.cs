@@ -79,7 +79,7 @@ namespace System.Windows {
 
 				TypeConverter tc = Helper.GetConverterFor (pi, pi.PropertyType);
 				if (tc == null)
-					tc = new MoonlightTypeConverter (pi.PropertyType);
+					tc = new MoonlightTypeConverter (pi.Name, pi.PropertyType);
 
 				if (!tc.CanConvertFrom (val.GetType())) {
 					//					Console.WriteLine ("+ type converter can't convert from type {0}", val.GetType());

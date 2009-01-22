@@ -1,5 +1,9 @@
 2009-01-21  Chris Toshok  <toshok@ximian.com>
 
+	* Style.cs: pass the property name to the type converter.
+
+2009-01-21  Chris Toshok  <toshok@ximian.com>
+
 	* Style.cs: comment out a lot of the spew here, and stop using the
 	gross hacks for Setter.Property and Setter.Value.  we willfully
 	break with tradition (and SL behavior) on those properties.

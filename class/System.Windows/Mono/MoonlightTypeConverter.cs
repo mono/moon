@@ -30,19 +30,26 @@ using Mono;
 using System;
 using System.ComponentModel;
 using System.Globalization;
+using System.Windows.Input;
 
 namespace Mono {
 
 	internal class MoonlightTypeConverter : TypeConverter {
 		Kind destinationKind;
 		Type destinationType;
+		string propertyName;
 
-		public MoonlightTypeConverter (Type destinationType)
+		public MoonlightTypeConverter (string propertyName, Type destinationType)
 		{
+			this.propertyName = propertyName;
 			this.destinationType = destinationType;
+
+			if (destinationType == typeof (Cursor))
+				destinationType = typeof (Int32);
+
 			destinationKind = Types.TypeToKind (destinationType);
 			if (destinationKind == Kind.INVALID)
-				throw new InvalidOperationException (string.Format ("Cannot convert to type {0}", destinationType));
+				throw new InvalidOperationException (string.Format ("Cannot convert to type {0} (property {1})", destinationType, propertyName));
 		}
 
 		public override bool CanConvertFrom (ITypeDescriptorContext context, Type sourceType)
@@ -55,7 +62,7 @@ namespace Mono {
 			IntPtr unmanaged_value;
 
 			if (!NativeMethods.value_from_str (destinationKind,
-							   "" /* XXX */,
+							   propertyName,
 							   (string)value,
 							   out unmanaged_value,
 							   true)) {
