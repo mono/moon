@@ -77,12 +77,8 @@ public:
 #endif
 	
 #if OBJECT_TRACKING
-	void weak_ref (EventObject *base);
-	void weak_unref (EventObject *base);
-	
 	static GHashTable *objects_alive;
 	
-	GHashTable *weak_refs;
 	int id;
 	
 	char *GetStackTrace (const char *prefix);

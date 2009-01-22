@@ -76,7 +76,6 @@ EventObject::EventObject ()
 		objects_alive = g_hash_table_new (g_direct_hash, g_direct_equal);
 	// Helgrind correctly reports a race here. Given this is for debugging, ignore it.
 	g_hash_table_insert (objects_alive, this, GINT_TO_POINTER (1));
-	weak_refs = NULL;
 
 	Track ("Created", "");
 #elif DEBUG
@@ -89,22 +88,6 @@ EventObject::~EventObject()
 #if OBJECT_TRACKING
 	g_atomic_int_inc (&objects_destroyed);
 	g_hash_table_remove (objects_alive, this);
-	if (weak_refs) {
-		int length = g_hash_table_size (weak_refs);
-		if (length > 0) {
-			printf ("Destroying id=%i with %i weak refs.\n", id, length);
-			GList* list = g_hash_table_get_values (weak_refs);
-			GList* first = list;
-			while (list != NULL) {
-				EventObject* eo = (EventObject*) list->data;
-				printf ("\t%s %i.\n", eo->GetTypeName (), eo->id);
-				list = list->next;
-			}
-			g_list_free (first);
-		}
-		g_hash_table_destroy (weak_refs);
-		weak_refs = NULL;
-	}
 
 	if (refcount != 0) {
 		printf ("Object #%i was deleted before its refcount reached 0 (current refcount: %i)\n", id, refcount);
@@ -286,22 +269,6 @@ EventObject::Track (const char* done, const char* typname)
 		printf ("%s tracked object of type '%s': %i, current refcount: %i\n%s", done, typname, id, refcount, st);
 		g_free (st);
 	}
-}
-
-void
-EventObject::weak_ref (EventObject* base)
-{
-	if (weak_refs == NULL)
-		weak_refs = g_hash_table_new (g_direct_hash, g_direct_equal);
-	g_hash_table_insert (weak_refs, base, base);
-}
-
-void
-EventObject::weak_unref (EventObject* base)
-{
-	// if you get a glib assertion here, you're most likely accessing an already 
-	// destroyed object (or you have mismatched ref/unrefs).
-	g_hash_table_remove (weak_refs, base);
 }
 
 char *
