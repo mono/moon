@@ -44,7 +44,8 @@ namespace Mono {
 			this.propertyName = propertyName;
 			this.destinationType = destinationType;
 
-			if (destinationType == typeof (Cursor))
+			if (typeof (Enum).IsAssignableFrom (destinationType)
+			    || destinationType == typeof (Cursor))
 				destinationType = typeof (Int32);
 
 			destinationKind = Types.TypeToKind (destinationType);

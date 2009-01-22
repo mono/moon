@@ -1,5 +1,10 @@
 2009-01-21  Chris Toshok  <toshok@ximian.com>
 
+	* MoonlightTypeConverter.cs: punt all conversion of enums to
+	unmanaged code.
+
+2009-01-21  Chris Toshok  <toshok@ximian.com>
+
 	* MoonlightTypeConverter.cs: take the property name as well as
 	value_from_str does specific handling based on that for enum
 	marshaled types.
