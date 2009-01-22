@@ -65,7 +65,6 @@ namespace System.Windows {
 		// Application instance fields
 		//
 		string xap_dir;
-		IntPtr surface;
 		UIElement root_visual;
 		SilverlightHost host;
 
@@ -90,7 +89,7 @@ namespace System.Windows {
 			NativeMethods.application_register_callbacks (NativeHandle, apply_default_style, apply_style, get_resource);
 
 			xap_dir = s_xap_dir;
-			surface = s_surface;
+			Surface = s_surface;
 
 			if (Current == null) {
 				Current = this;
@@ -197,7 +196,7 @@ namespace System.Windows {
 					using (StreamReader sr = new StreamReader (info.Stream)) {
 						string generic_xaml = sr.ReadToEnd();
 
-						ManagedXamlLoader loader = new ManagedXamlLoader (surface, PluginHost.Handle);
+						ManagedXamlLoader loader = new ManagedXamlLoader (Surface, PluginHost.Handle);
 
 						try {
 							rd = loader.CreateDependencyObjectFromString (generic_xaml, false) as ResourceDictionary;
@@ -314,6 +313,20 @@ namespace System.Windows {
 
 			if (!entry_type.IsSubclassOf (typeof (Application))){
 				Report.Error ("Startup type does not derive from System.Windows.Application");
+#if SANITY
+				Type t = entry_type;
+				int spacing = 0;
+				while (t != null) {
+					if (spacing > 0) {
+						for (int i = 0; i < spacing; i ++)
+							Console.Write (" ");
+						Console.Write ("+ ");
+					}
+					Console.WriteLine ("{0}", t);
+					spacing += 2;
+					t = t.BaseType;
+				}
+#endif
 				return null;
 			}
 
@@ -338,7 +351,7 @@ namespace System.Windows {
 			}
 			
 			if (instance.root_visual != null) {
-				NativeMethods.surface_attach (instance.surface, instance.root_visual.native);
+				NativeMethods.surface_attach (instance.Surface, instance.root_visual.native);
 			}
 
 			return instance;
@@ -376,7 +389,7 @@ namespace System.Windows {
 
 			string xaml = new StreamReader (sr.Stream).ReadToEnd ();
 			Assembly loading_asm = component.GetType ().Assembly;
-			ManagedXamlLoader loader = new ManagedXamlLoader (loading_asm, app != null ? app.surface : Application.s_surface, PluginHost.Handle);
+			ManagedXamlLoader loader = new ManagedXamlLoader (loading_asm, app != null ? app.Surface : Application.s_surface, PluginHost.Handle);
 
 			loader.Hydrate (wrapper.NativeHandle, xaml);
 		}
@@ -490,6 +503,14 @@ namespace System.Windows {
 			get {
 				return (ResourceDictionary) ((INativeDependencyObjectWrapper)this).GetValue (ResourcesProperty);
 			}
+		}
+
+		internal IntPtr Surface {
+			[SecuritySafeCritical]
+			get { return NativeMethods.application_get_surface (NativeHandle); }
+
+			[SecuritySafeCritical]
+			set { NativeMethods.application_set_surface (NativeHandle, value); }
 		}
 
 		public UIElement RootVisual {

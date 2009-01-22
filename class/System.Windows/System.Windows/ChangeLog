@@ -1,3 +1,9 @@
+2009-01-22  Chris Toshok  <toshok@ximian.com>
+
+	* Application.cs: use the native methods to get/set the surface.
+	also add some sanity debug spew in the case where the startup type
+	does not derive from System.Windows.Application.
+
 2009-01-21  Chris Toshok  <toshok@ximian.com>
 
 	* Style.cs: pass the property name to the type converter.
