@@ -24,8 +24,17 @@
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
 class MultiScaleImage : public MediaBase {
-	void RenderLayer (cairo_t *cr, MultiScaleTileSource *source, int layer);
+	void DownloaderAbort ();
+	void DownloadUri (const char* url);
+	int layer_to_render;
+	MultiScaleTileSource *source;
+	char *filename;
+
+	void DownloaderComplete ();
+	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
+
 	int layers;
+	Downloader *downloader;
 
  protected:
 	virtual ~MultiScaleImage ();

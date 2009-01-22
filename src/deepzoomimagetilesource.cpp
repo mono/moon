@@ -22,6 +22,7 @@ DeepZoomImageTileSource::DeepZoomImageTileSource ()
 {
 	downloader = NULL;
 	downloaded = false;
+	get_tile_func = NULL;
 }
 
 DeepZoomImageTileSource::DeepZoomImageTileSource (const char *uri)
@@ -29,6 +30,7 @@ DeepZoomImageTileSource::DeepZoomImageTileSource (const char *uri)
 	downloader = NULL;
 	downloaded = false;
 	SetValue (DeepZoomImageTileSource::UriSourceProperty, Value (uri));
+	get_tile_func = NULL;
 }
 
 DeepZoomImageTileSource::~DeepZoomImageTileSource ()
