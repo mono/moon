@@ -1,3 +1,10 @@
+2009-01-21  Jb Evain  <jbevain@novell.com>
+
+	* plugin.cpp|h: remove PluginInstance::GetBrowserInformation
+	and ::EvaluateToVariant as well as
+	plugin_instance_get_browser_information which is now implemented
+	in the managed code.
+
 2009-01-21  Andreia Gaita  <avidigal@novell.com>
 
 	* plugin-class.[h|cpp]: Add support for registering objects as a

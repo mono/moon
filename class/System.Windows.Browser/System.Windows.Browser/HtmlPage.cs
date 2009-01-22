@@ -36,7 +36,7 @@ namespace System.Windows.Browser{
 
 	public static class HtmlPage {
 
-		private static BrowserInformation browser_info = new BrowserInformation ();
+		private static BrowserInformation browser_info;
 		private static HtmlWindow window;
 		private static HtmlDocument document;
 		private static HtmlElement plugin;
@@ -49,6 +49,9 @@ namespace System.Windows.Browser{
 
 		public static BrowserInformation BrowserInformation {
 			get {
+				if (browser_info == null)
+					browser_info = new BrowserInformation (Window);
+
 				return browser_info;
 			}
 		}

@@ -106,9 +106,6 @@ class PluginInstance
 	int32_t GetActualHeight ();
 	int32_t GetActualWidth ();
 	
-	void GetBrowserInformation (char **name, char **version,
-				    char **platform, char **userAgent,
-				    bool *cookieEnabled);
 	bool IsSilverlight2 () { return silverlight2; } 
 	
 	static gboolean plugin_button_press_callback (GtkWidget *widget, GdkEventButton *event, gpointer user_data);
@@ -222,8 +219,6 @@ class PluginInstance
 	void LoadXAML ();
 	void SetPageURL ();
 	
-	bool EvaluateToVariant (const char *code, NPVariant *output);
-	
 	void TryLoadBridge (const char *prefix);
 	
 	static gboolean IdleUpdateSourceByReference (gpointer data);
@@ -327,11 +322,6 @@ char *plugin_instance_get_source  (PluginInstance *instance);
 char *plugin_instance_get_source_location  (PluginInstance *instance);
 char *plugin_instance_get_id (PluginInstance *instance);
 NPObject *plugin_instance_get_host (PluginInstance *instance);
-
-void plugin_instance_get_browser_information (PluginInstance *instance,
-					      char **name, char **version,
-					      char **platform, char **userAgent,
-					      bool *cookieEnabled);
 
 void plugin_instance_get_browser_runtime_settings (bool *debug, bool *html_access,
 						   bool *httpnet_access, bool *script_access);

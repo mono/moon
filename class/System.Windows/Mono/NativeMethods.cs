@@ -256,16 +256,6 @@ namespace Mono {
 			int /* System.Windows.Browser.MouseButtons */ mouse_button);
 
 		[DllImport ("moonplugin")]
-		public extern static void plugin_instance_get_browser_information (
-			IntPtr plugin_handle,
-			out string name,
-			out string version,
-			out string platform,
-			out string userAgent,
-			[MarshalAs(UnmanagedType.I1)]
-			out bool cookieEnabled);
-
-		[DllImport ("moonplugin")]
 		public static extern void html_object_get_property (IntPtr plugin, IntPtr obj, string name, out Mono.Value result);
 
 		[DllImport ("moonplugin")]

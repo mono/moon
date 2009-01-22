@@ -1556,53 +1556,6 @@ PluginInstance::GetActualWidth ()
 	return surface ? surface->GetWindow()->GetWidth() : 0;
 }
 
-bool
-PluginInstance::EvaluateToVariant (const char * code, NPVariant *output)
-{
-	NPObject *object = GetHost ();
-	if (object == NULL)
-		return false;
-
-	NPString string;
-	string.utf8characters = (char *) code;
-	string.utf8length = strlen (code);
-
-	return NPN_Evaluate (instance, object, &string, output);
-}
-
-void
-PluginInstance::GetBrowserInformation (char **name, char **version, char **platform, char **userAgent, bool *cookieEnabled)
-{
-	const char *ua = NPN_UserAgent (instance);
-	*userAgent = g_strndup (ua, strlen (ua));
-	
-	NPVariant output;
-	
-	if (EvaluateToVariant ("window.navigator.appName", &output)) {
-		*name = STRDUP_FROM_VARIANT (output);
-		NPN_ReleaseVariantValue (&output);
-	} else
-		*name = NULL;
-	
-	if (EvaluateToVariant ("window.navigator.appVersion", &output)) {
-		*version = STRDUP_FROM_VARIANT (output);
-		NPN_ReleaseVariantValue (&output);
-	} else
-		*version = NULL;
-	
-	if (EvaluateToVariant ("window.navigator.platform", &output)) {
-		*platform = STRDUP_FROM_VARIANT (output);
-		NPN_ReleaseVariantValue (&output);
-	} else
-		*platform = NULL;
-	
-	if (EvaluateToVariant ("window.navigator.cookieEnabled", &output)) {
-		*cookieEnabled = NPVARIANT_TO_BOOLEAN (output);
-		NPN_ReleaseVariantValue (&output);
-	} else
-		*cookieEnabled = false;
-}
-
 MoonlightScriptControlObject *
 PluginInstance::GetRootObject ()
 {
@@ -1698,15 +1651,6 @@ char*
 plugin_instance_get_source_location  (PluginInstance *instance)
 {
 	return instance->GetSourceLocation();
-}
-
-void
-plugin_instance_get_browser_information (PluginInstance *instance,
-					 char **name, char **version,
-					 char **platform, char **userAgent,
-					 bool *cookieEnabled)
-{
-	instance->GetBrowserInformation (name, version, platform, userAgent, cookieEnabled);
 }
 
 void

@@ -34,50 +34,46 @@ namespace System.Windows.Browser {
 
 	public sealed class BrowserInformation {
 
-		private string name;
-		private string version;
-		private string platform;
-		private string user_agent;
-		private bool cookie_enabled;
-
-		internal BrowserInformation ()
-		{
-			NativeMethods.plugin_instance_get_browser_information (
-				WebApplication.Current.PluginHandle,
-				out name,
-				out version,
-				out platform,
-				out user_agent,
-				out cookie_enabled);
-		}
-
-		internal BrowserInformation (string name, string version, string platform, string userAgent, bool cookieEnabled)
-		{
-			this.name = name;
-			this.version = version;
-			this.platform = platform;
-			this.user_agent = userAgent;
-			this.cookie_enabled = cookieEnabled;
-		}
+		HtmlElement navigator;
 
 		public Version BrowserVersion {
-			get { return new Version (version); }
+			get { return new Version (GetVersion ()); }
 		}
 
 		public bool CookiesEnabled {
-			get { return cookie_enabled; }
+			get { return GetNavigatorProperty<bool> ("cookieEnabled"); }
 		}
 
 		public string Name {
-			get { return name; }
+			get { return GetNavigatorProperty<string> ("appName"); }
 		}
 
 		public string Platform {
-			get { return platform; }
+			get { return GetNavigatorProperty<string> ("platform"); }
 		}
 
 		public string UserAgent {
-			get { return user_agent; }
+			get { return GetNavigatorProperty<string> ("userAgent"); }
+		}
+
+		internal BrowserInformation (HtmlWindow window)
+		{
+			navigator = HtmlObject.GetPropertyInternal<HtmlElement> (window.Handle, "navigator");
+		}
+
+		string GetVersion ()
+		{
+			var appVersion = GetNavigatorProperty<string> ("appVersion");
+			int position = appVersion.IndexOf (" ");
+			if (position == -1)
+				return appVersion;
+
+			return appVersion.Substring (0, position);
+		}
+
+		T GetNavigatorProperty<T> (string name)
+		{
+			return HtmlObject.GetPropertyInternal<T> (navigator.Handle, name);
 		}
 	}
 }

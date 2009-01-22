@@ -1,3 +1,7 @@
+2009-01-21  Jb Evain  <jbevain@novell.com>
+
+	* NativeMethods.cs: remove plugin_instance_get_browser_information.
+
 2009-01-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Value.cs: Correctly handle unmanaged-managed transitions of 

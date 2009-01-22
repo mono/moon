@@ -1,3 +1,10 @@
+2009-01-21  Jb Evain  <jbevain@novell.com>
+
+	* HtmlPage.cs: delay creation of the BrowserInformation object
+	until it is demanded.
+	* BrowserInformation.cs: implement retrieval of browser information
+	by getting them on the navigator object through HtmlObject methods.
+
 2009-01-21  Andreia Gaita  <avidigal@novell.com>
 
 	* HtmlPage.cs, ScriptObject.cs: Initial support for creatable types.
