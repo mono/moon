@@ -1,5 +1,9 @@
 2009-01-21  Geoff Norton  <gnorton@novell.com>
 
+	* Application.cs: Avoid throwing a NRE if the stream isn't found.
+
+2009-01-21  Geoff Norton  <gnorton@novell.com>
+
 	* Application.cs: Add a new callback so that we can get resources
 	in unmanaged code.
 

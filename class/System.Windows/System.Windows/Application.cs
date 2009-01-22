@@ -440,13 +440,16 @@ namespace System.Windows {
 
 		internal static IntPtr get_resource_cb (string name, out int size)
 		{
+			size = 0;
 			try {
 				StreamResourceInfo info = GetResourceStream (new Uri (name, UriKind.Relative));
 
+				if (info == null)
+					return IntPtr.Zero;
+				
 				size = (int) info.Stream.Length;
 				return Helper.StreamToIntPtr (info.Stream);
 			} catch {
-				size = 0;
 				return IntPtr.Zero;
 			}
 		}
