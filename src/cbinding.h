@@ -376,6 +376,9 @@ ContentControl *content_control_new (void);
 /* @GeneratePInvoke */
 ContentPresenter *content_presenter_new (void);
 
+/* @GeneratePInvoke */
+Grid *content_presenter_get_element_root (ContentPresenter *instance);
+
 /**
  * Control
  **/

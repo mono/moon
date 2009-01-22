@@ -842,6 +842,16 @@ content_presenter_new (void)
 }
 
 
+Grid *
+content_presenter_get_element_root (ContentPresenter *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetElementRoot ();
+}
+
+
 /**
  * Control
  **/

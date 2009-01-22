@@ -41,7 +41,12 @@ class ContentPresenter : public Control {
 	virtual Type::Kind GetObjectType () { return Type::CONTENTPRESENTER; }
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnApplyTemplate ();
 	virtual void OnLoaded ();
+	
+	// FIXME: this method is a temporary hack for ScrollContentPresenter
+	/* @GenerateCBinding,GeneratePInvoke */
+	Grid *GetElementRoot () { return root; }
 	
 	//
 	// Property Accessors

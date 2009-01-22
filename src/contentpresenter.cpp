@@ -76,6 +76,13 @@ ContentPresenter::OnLoaded ()
 }
 
 void
+ContentPresenter::OnApplyTemplate ()
+{
+	text = (TextBlock *) GetTemplateChild ("TextElement");
+	root = (Grid *) GetTemplateChild ("RootElement");
+}
+
+void
 ContentPresenter::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
 	if (args->property->GetOwnerType () != Type::CONTENTPRESENTER) {
