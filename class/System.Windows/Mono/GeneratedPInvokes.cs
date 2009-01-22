@@ -23,12 +23,20 @@ namespace Mono {
 		public extern static IntPtr application_get_current ();
 
 		[DllImport ("moon")]
+		// Surface *application_get_surface (Application *instance);
+		public extern static IntPtr application_get_surface (IntPtr instance);
+
+		[DllImport ("moon")]
 		// void application_register_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb);
 		public extern static void application_register_callbacks (IntPtr instance, Mono.ApplyDefaultStyleCallback apply_default_style_cb, Mono.ApplyStyleCallback apply_style_cb, Mono.GetResourceCallback get_resource_cb);
 
 		[DllImport ("moon")]
 		// void application_set_current (Application *current);
 		public extern static void application_set_current (IntPtr current);
+
+		[DllImport ("moon")]
+		// void application_set_surface (Application *instance, Surface *value);
+		public extern static void application_set_surface (IntPtr instance, IntPtr value);
 
 		[DllImport ("moon")]
 		// ArcSegment *arc_segment_new ();
