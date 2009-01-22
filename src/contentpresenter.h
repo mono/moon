@@ -30,11 +30,12 @@ class ContentPresenter : public Control {
 	static DependencyProperty *ContentTemplateProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	ContentPresenter () { }
+	ContentPresenter ();
 	
 	virtual Type::Kind GetObjectType () { return Type::CONTENTPRESENTER; }
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnLoaded ();
 	
 	//
 	// Property Accessors

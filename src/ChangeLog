@@ -1,5 +1,9 @@
 2009-01-22  Jeffrey Stedfast  <fejj@novell.com>
 
+	* contentpresenter.cpp (ContentPresenter::ContentPresenter): Set
+	the default style key.
+	(ContentPresenter::OnLoaded): Load the default template.
+
 	* contentpresenter.cpp|h: New source files. Subclass Control even
 	though in managed-land, we technically subclass
 	FrameworkElement. This way we can take advantage of Control's
