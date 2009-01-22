@@ -15,17 +15,6 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
-namespace Microsoft.Internal {
-	partial class TextBoxView {
-		internal static readonly DependencyProperty TextBoxProperty = DependencyProperty.Lookup (Kind.TEXTBOXVIEW, "TextBox", typeof (TextBox));
-
-		public TextBox TextBox {
-			get { return (TextBox) GetValue (TextBoxProperty); }
-			set { SetValue (TextBoxProperty, value); }
-		}
-	}
-}
-
 namespace System.Windows {
 	partial class AssemblyPart {
 		public static readonly DependencyProperty SourceProperty = DependencyProperty.Lookup (Kind.ASSEMBLYPART, "Source", typeof (string));
