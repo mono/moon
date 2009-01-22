@@ -49,9 +49,6 @@ namespace System.Windows.Controls {
 		// Since we don't inherit from Control on the managed side, we need to bind to this ourselves.
 		DependencyObject GetTemplateChild (string childName)
 		{
-			if (childName == null)
-				throw new ArgumentException ("childName");
-			
 			return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.control_get_template_child (native, childName)) as DependencyObject;
 		}
 		
