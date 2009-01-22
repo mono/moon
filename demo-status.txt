@@ -1,13 +1,14 @@
 site:Presidential Inauguration
 url:http://www.cnn.com/SPECIALS/2009/44.president/inauguration/themoment/
 rating:0
- * not working
+ * loads to 86%
+ * throws exception: Missing method System.Net.WebClient::CancelAsync()
 
 site:Photosynth
 url:http://photosynth.net/silverlight/photosynth.aspx?cid=d7d78324-ad5e-41ea-94dd-512580ed4393
 rating:0
- * not working
  * loads up to 81%
+ * throws exception: Missing method System.Net.WebClient::CancelAsync()
 
 site:Silverlight Stocks
 url:http://www.vadimv.com/
@@ -22,7 +23,7 @@ rating:0
 site:Zoom Mosaic
 url:http://xaml.me/zoommosaic/
 rating:0
- * not working
+ * Could not parse element ImageButton, attribute Source, error: Unknown attribute Source on element ImageButton
 
 site: Rad Media Player
 url:http://demos.telerik.com/silverlight/#MediaPlayer/Fullscreen
@@ -38,3 +39,18 @@ site:Database Schema Editor
 url:http://www.dbschemaeditor.com/OnlineDB.aspx
 rating:0
  * not working
+
+site:Dr. Popper
+url:http://www.bluerosegames.com/brg/free-web-games/bubble-breaker.aspx
+rating:2
+ * works, but crashes when game is over
+
+site:3D Image Rotation
+url:http://www.shinedraw.com/3d-illusion/flash-and-silverlight-3d-image-rotation/
+rating:4
+ * works!
+
+site:Grid Transition Rotator
+url:http://www.shinedraw.com/image-manipulation/flash-vs-silverlight-grid-transition-rotator/
+rating:0
+ * not loading, error while launching app from xap
