@@ -1,5 +1,8 @@
 2009-01-22  Jeffrey Stedfast  <fejj@novell.com>
 
+	* contentpresenter.cpp (ContentPresenter::PrepareContentPresenter):
+	Clean up the goto.
+
 	* contentpresenter.h (ContentPresenter::GetElementRoot):
 	Implemented temporary binding hack.
 

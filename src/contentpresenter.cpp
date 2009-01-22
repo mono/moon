@@ -105,36 +105,38 @@ void
 ContentPresenter::PrepareContentPresenter ()
 {
 	UIElementCollection *children = root->GetChildren ();
+	DependencyObject *obj;
 	DataTemplate *t;
 	Value *value;
 	
 	// Remove the old content 
-	if (content != text) {
+	if (content != text)
 		children->Remove (content); 
-		content = NULL; 
-	} else {
+	else
 		text->SetText (NULL);
-	}
+	
+	content = NULL;
 	
 	// Expand the ContentTemplate if it exists
 	if ((t = GetContentTemplate ())) {
-		if ((content = (UIElement *) t->LoadContentWithError (NULL)))
-			goto uicontent;
+		obj = t->LoadContentWithError (NULL);
+		if (obj && obj->Is (Type::UIELEMENT))
+			content = (UIElement *) obj;
 		
 		value = NULL;
-	} else
+	} else {
 		value = GetValue (ContentPresenter::ContentProperty);
+		if (value && value->Is (Type::UIELEMENT))
+			content = value->AsUIElement ();
+	}
 	
-	if (value && value->Is (Type::UIELEMENT)) {
+	if (content) {
 		// display the uielement content
-		content = value->AsUIElement ();
-		
-	uicontent:
 		children->Add (content);
 		
 		// collapse the text element
 		text->SetVisibility (VisibilityCollapsed);
-	} else if (value != NULL) {
+	} else if (value) {
 		// display the text element and set the content to the stringified content
 		text->SetVisibility (VisibilityVisible);
 		switch (value->GetKind ()) {
