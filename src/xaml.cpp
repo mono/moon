@@ -3981,12 +3981,21 @@ start_parse:
 					return;
 			}
 
-			if (!v && !value_from_str (prop->GetPropertyType(), prop->GetName(), attr [i + 1], &v, p->loader->GetSurface()->IsSilverlight2())) {
-				if (prop->GetPropertyType () == Type::MANAGED || prop->GetPropertyType() == Type::OBJECT || prop->GetPropertyType () == Type::MANAGEDTYPEINFO || prop->GetPropertyType () == Type::DEPENDENCYPROPERTY) {
-					Value v = Value (g_strdup (attr [i + 1]));
-					if (p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, NULL, item->GetManagedPointer (), item->GetParentPointer (), g_strdup (prop->GetName ()), &v))
-						return;
-				}
+			if (!v)
+				value_from_str (prop->GetPropertyType(), prop->GetName(), attr [i + 1], &v, p->loader->GetSurface()->IsSilverlight2());
+
+			switch (prop->GetPropertyType ()) {
+			case Type::MANAGED:
+			case Type::OBJECT:
+			case Type::MANAGEDTYPEINFO:
+			case Type::DEPENDENCYPROPERTY: {
+				Value v = Value (g_strdup (attr [i + 1]));
+				if (p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, NULL, item->GetManagedPointer (), item->GetParentPointer (), g_strdup (prop->GetName ()), &v))
+					continue;
+				break;
+			}
+			default:
+				break;
 			}
 
 			if (!v && !value_is_explicit_null (attr [i + 1])) {
