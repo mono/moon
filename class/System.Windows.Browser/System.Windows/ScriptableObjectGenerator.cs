@@ -384,6 +384,10 @@ namespace System.Windows
 				v.k = Kind.INT32;
 				v.u.i32 = (int)o;
 				break;
+			case TypeCode.UInt32:
+				v.k = Kind.UINT32;
+				v.u.i32 = (int)o;
+				break;
 			case TypeCode.Int64:
 				v.k = Kind.INT64;
 				v.u.i64 = (long)o;
