@@ -21,6 +21,7 @@ namespace Mono
 	internal delegate long Stream_Length (IntPtr handle);
 	internal delegate long Stream_Position (IntPtr handle);
 	internal delegate int Stream_Read (IntPtr handle, [In (), Out (), MarshalAs (UnmanagedType.LPArray, SizeParamIndex=3)] byte [] buffer, int offset, int count);
+	internal delegate void Stream_Write (IntPtr handle, [In (), Out (), MarshalAs (UnmanagedType.LPArray, SizeParamIndex=3)] byte [] buffer, int offset, int count);
 	internal delegate void Stream_Seek (IntPtr handle, long offset, SeekOrigin origin);
 	
 	internal struct ManagedStreamCallbacks
@@ -31,6 +32,7 @@ namespace Mono
 		public Stream_Length Length;
 		public Stream_Position Position;
 		public Stream_Read Read;
+		public Stream_Write Write;
 		public Stream_Seek Seek;
 	}
 }

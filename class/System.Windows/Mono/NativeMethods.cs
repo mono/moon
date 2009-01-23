@@ -212,6 +212,8 @@ namespace Mono {
 		public extern static void size_changed_event_args_get_prev_size (IntPtr handle, ref Size size);
 #endregion
 
+		[DllImport("moon")]
+		public extern static bool managed_unzip_stream_to_stream (ref ManagedStreamCallbacks source, ref ManagedStreamCallbacks dest, string partname);
 
 #region plugin
 		[DllImport("moonplugin")]

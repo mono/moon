@@ -245,6 +245,9 @@ namespace Mono {
 			IntPtr buf = Marshal.AllocHGlobal ((int) stream.Length);
 			int ofs = 0;
 			int nread = 0;
+			
+			if (stream.CanSeek && stream.Position != 0)
+				stream.Seek (0, SeekOrigin.Begin);
 
 			do {
 				nread = stream.Read (buffer, 0, 1024);

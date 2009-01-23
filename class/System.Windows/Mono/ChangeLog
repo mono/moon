@@ -1,3 +1,10 @@
+2009-01-23  Geoff Norton  <gnorton@novell.com>
+
+	* Helper.cs: Ensure we rewind the stream before blitting it
+	* NativeMethods.cs: Add the call for the managed_unzip methods
+	* StreamCallbacks.cs: Add a Write method
+	* StreamWrapper.cs: Add a Write method
+
 2009-01-22  Chris Toshok  <toshok@ximian.com>
 
 	* MoonlightTypeConverter.cs (ConvertFrom): short circuit the

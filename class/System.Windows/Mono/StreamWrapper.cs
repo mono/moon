@@ -46,6 +46,7 @@ namespace Mono
 				callbacks.Length = Length;
 				callbacks.Position = Position;
 				callbacks.Read = Read;
+				callbacks.Write = Write;
 				callbacks.Seek = Seek;
 				this.callbacks = callbacks;
 			}
@@ -81,6 +82,12 @@ namespace Mono
 			StreamWrapper wrapper = (StreamWrapper) Helper.GCHandleFromIntPtr (handle).Target;
 			int result = wrapper.stream.Read (buffer, offset, count);
 			return result;
+		}
+		
+		public static void Write (IntPtr handle, [In (), Out (), MarshalAs (UnmanagedType.LPArray, SizeParamIndex=3)] byte [] buffer, int offset, int count)
+		{
+			StreamWrapper wrapper = (StreamWrapper) Helper.GCHandleFromIntPtr (handle).Target;
+			wrapper.stream.Write (buffer, offset, count);
 		}
 		
 		public static void Seek (IntPtr handle, long offset, SeekOrigin origin)
