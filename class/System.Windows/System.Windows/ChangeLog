@@ -1,5 +1,10 @@
 2009-01-22  Chris Toshok  <toshok@ximian.com>
 
+	* Style.cs: if the setter is for an attached property, just look
+	up the type converter on the PropertyType.
+
+2009-01-22  Chris Toshok  <toshok@ximian.com>
+
 	* FrameworkElement.cs: styles are applicable to subclasses too.
 
 2009-01-22  Chris Toshok  <toshok@ximian.com>

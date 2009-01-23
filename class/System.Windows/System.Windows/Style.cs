@@ -71,15 +71,26 @@ namespace System.Windows {
 			else if (val != null) {
 				//				Console.WriteLine ("+ property type is more complex");
 
-				PropertyInfo pi = TargetType.GetProperty (dp.Name);
-				if (pi == null) {
-					Console.WriteLine ("+ failed to look up CLR property wrapper");
-					throw new XamlParseException ("foo3");
-				}
+				TypeConverter tc = null;
 
-				TypeConverter tc = Helper.GetConverterFor (pi, pi.PropertyType);
-				if (tc == null)
-					tc = new MoonlightTypeConverter (pi.Name, pi.PropertyType);
+				if (dp.IsAttached) {
+					tc = Helper.GetConverterFor (null, dp.PropertyType);
+					if (tc == null)
+						tc = new MoonlightTypeConverter (dp.Name, dp.PropertyType);
+				}
+				else {
+					PropertyInfo pi = TargetType.GetProperty (dp.Name);
+					if (pi == null) {
+						Console.WriteLine ("+ failed to look up CLR property wrapper");
+						Console.WriteLine ("+ TargetType = {0}, property = {1}.{2}", TargetType, dp.DeclaringType, dp.Name);
+						throw new XamlParseException ("foo3");
+					}
+
+					tc = Helper.GetConverterFor (pi, pi.PropertyType);
+					if (tc == null)
+						tc = new MoonlightTypeConverter (pi.Name, pi.PropertyType);
+
+				}
 
 				if (!tc.CanConvertFrom (val.GetType())) {
 					//					Console.WriteLine ("+ type converter can't convert from type {0}", val.GetType());
