@@ -1,3 +1,7 @@
+2009-01-23  Geoff Norton  <gnorton@novell.com>
+
+	* Application.cs: Implement GetResourceStream from zip packages.
+
 2009-01-23  Andreia Gaita  <avidigal@novell.com>
 
 	* Application.cs: Set the current SynchronizationContext to the

@@ -485,8 +485,25 @@ namespace System.Windows {
 				throw new ArgumentNullException ("zipPackageStreamResourceInfo");
 			if (uriResource == null)
 				throw new ArgumentNullException ("resourceUri");
+			
+			MemoryStream ms = new MemoryStream ();
+			ManagedStreamCallbacks source;
+			ManagedStreamCallbacks dest;
+			StreamWrapper source_wrapper;
+			StreamWrapper dest_wrapper;
 
-			throw new NotImplementedException ("GetResourceStream-2");
+			source_wrapper = new StreamWrapper (zipPackageStreamResourceInfo.Stream);
+			dest_wrapper = new StreamWrapper (ms);
+
+			source = source_wrapper.GetCallbacks ();
+			dest = dest_wrapper.GetCallbacks ();
+
+			if (NativeMethods.managed_unzip_stream_to_stream (ref source, ref dest, uriResource.ToString ())) {
+				ms.Seek (0, SeekOrigin.Begin);
+				return new StreamResourceInfo (ms, null);
+			}
+
+			return null;
 		}
 
 		public static Application Current {
