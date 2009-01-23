@@ -9,6 +9,13 @@
 	invalidated locally or not, and should keep rendering the upper
 	layers or restart from the bottom.
 
+2009-01-23  Geoff Norton  <gnorton@novell.com>
+
+	* pipeline.h: Move ManagedStreamCallbacks to utils so other things
+	can use them
+	* utils.cpp|h: Implement a minizip io-style wrapper around
+	ManagedStreamCallbacks so that we can unzip from / to managed Stream's. 
+
 2009-01-23  Stephane delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.cpp: no longer crash on null uri
