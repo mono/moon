@@ -60,6 +60,9 @@ namespace Mono {
 
 		public override object ConvertFrom (ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
 		{
+			if (destinationType == typeof (object))
+				return value;
+
 			IntPtr unmanaged_value;
 
 			if (!NativeMethods.value_from_str (destinationKind,
