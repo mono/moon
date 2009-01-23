@@ -31,6 +31,7 @@ namespace System.Windows.Media {
 	public sealed partial class LinearGradientBrush : GradientBrush {
 
 		public LinearGradientBrush (GradientStopCollection gradientStops, double angle)
+			: this ()
 		{
 			if (gradientStops != null)
 				GradientStops = gradientStops;
