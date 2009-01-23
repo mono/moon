@@ -467,6 +467,19 @@ static void clicked_callback (GtkWidget *widget, gpointer data)
 	}
 }
 
+static void unxap_callback (GtkWidget *widget, gpointer data)
+{
+	if (selected_source == NULL) {
+		printf ("Select a source first.\n");
+	} else {
+		gchar* argv [3];
+		argv [0] = (gchar*) "munxap";
+		argv [1] = (gchar*) selected_source->filename;
+		argv [2] = NULL;
+		g_spawn_async (NULL, argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL); 
+	}
+}
+
 
 static size_t
 get_common_prefix_len (GtkTreeModel *model)
@@ -621,6 +634,10 @@ plugin_sources (PluginInstance *plugin)
 	GtkWidget *button;
 	button = gtk_button_new_with_label ("Open file");
 	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (clicked_callback), NULL);
+	gtk_box_pack_start (vbox, button, FALSE, FALSE, 0);
+	
+	button = gtk_button_new_with_label ("Unxap");
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (unxap_callback), tree_store);
 	gtk_box_pack_start (vbox, button, FALSE, FALSE, 0);
 	
 	button = gtk_button_new_with_label ("Save (to /tmp/moon-dump/)");

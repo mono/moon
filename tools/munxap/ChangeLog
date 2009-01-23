@@ -1,0 +1,8 @@
+2009-01-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Zip.cs:
+	* View.cs:
+	* ChangeLog:
+	* munxap.cs:
+	* Makefile.am: Initial munxap.
+

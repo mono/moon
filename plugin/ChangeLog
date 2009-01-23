@@ -1,3 +1,7 @@
+2009-01-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-debug.cpp: Integrate munxap into our debugging experience.
+
 2009-01-21  Jb Evain  <jbevain@novell.com>
 
 	* plugin.cpp|h: remove PluginInstance::GetBrowserInformation

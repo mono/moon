@@ -672,6 +672,7 @@ tools/Makefile
 tools/generators/Makefile
 tools/mopen/Makefile
 tools/mxap/Makefile
+tools/munxap/Makefile
 tools/unsign/Makefile
 tools/xamlg/Makefile
 tools/xaml2html/Makefile
