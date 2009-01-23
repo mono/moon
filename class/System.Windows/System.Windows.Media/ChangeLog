@@ -1,3 +1,7 @@
+2009-01-23  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Color.cs: Fix ToString format
+
 2009-01-22  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* DeepZoomImageTileSource.cs: no longer throws  a NIE. Fixes a stupid

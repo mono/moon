@@ -88,7 +88,7 @@ namespace System.Windows.Media {
 
 		public override string ToString ()
 		{
-			return String.Format ("#{0,8:X}", argb);
+			return String.Format ("#{0:X8}", argb);
 		}
 
 		[MonoTODO ("simply calling ToString for now")]
