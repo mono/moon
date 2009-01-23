@@ -1,3 +1,8 @@
+2009-01-23  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (next_word): Implemented.
+	(prev_word): Implemented.
+
 2009-01-23  Andreia Gaita  <avidigal@novell.com>
 
 	* clock.[h|cpp]: Add RemoveTickCall() to remove callbacks from the

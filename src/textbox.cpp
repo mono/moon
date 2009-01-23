@@ -378,30 +378,89 @@ move_up (TextBuffer *buffer, int cursor, int n_lines)
 	return cur;
 }
 
+enum CharClass {
+	CharClassUnknown,
+	CharClassWhitespace,
+	CharClassAlphaNumeric
+};
+
+static inline CharClass
+char_class (gunichar c)
+{
+	if (g_unichar_isspace (c))
+		return CharClassWhitespace;
+	
+	if (g_unichar_isalnum (c))
+		return CharClassAlphaNumeric;
+	
+	return CharClassUnknown;
+}
+
 static int
 next_word (TextBuffer *buffer, int cursor)
 {
-	// FIXME: obviously moving 8 chars is not what we mean by
-	// moving 1 word, but I'm too lazy atm to implement this
-	// properly so as a temporary "proof of concept" to make sure
-	// the code kinda-sorta does what we want, I'm cheating
-	if (cursor + 8 < buffer->len)
-		return cursor + 8;
+	int i, eoln = cursor;
+	CharClass cc;
 	
-	return buffer->len;
+	// find the end of the line
+	while (eoln < buffer->len && buffer->text[eoln] != '\n')
+		eoln++;
+	
+	// if the cursor is at the end of the line, return the starting offset of the next line
+	if (cursor == eoln) {
+		if (eoln < buffer->len)
+			return eoln + 1;
+		
+		return cursor;
+	}
+	
+	cc = char_class (buffer->text[cursor]);
+	i = cursor;
+	
+	// skip over the word, punctuation, or run of whitespace
+	while (i < eoln && char_class (buffer->text[i]) == cc)
+		i++;
+	
+	// skip any whitespace after the word/punct
+	while (i < eoln && char_class (buffer->text[i]) == CharClassWhitespace)
+		i++;
+	
+	return i;
 }
 
 static int
 prev_word (TextBuffer *buffer, int cursor)
 {
-	// FIXME: obviously moving 8 chars is not what we mean by
-	// moving 1 word, but I'm too lazy atm to implement this
-	// properly so as a temporary "proof of concept" to make sure
-	// the code kinda-sorta does what we want, I'm cheating
-	if (cursor > 8)
-		return cursor - 8;
+	int i, boln = cursor;
+	CharClass cc;
 	
-	return 0;
+	// find the end of the line
+	while (boln > 0 && buffer->text[boln - 1] != '\n')
+		boln--;
+	
+	// if the cursor is at the beginning of the line, return the end of the prev line
+	if (cursor == boln) {
+		if (boln > 0)
+			return boln - 1;
+		
+		return 0;
+	}
+	
+	cc = char_class (buffer->text[cursor - 1]);
+	i = cursor;
+	
+	// skip over the word, punctuation, or run of whitespace
+	while (i > boln && char_class (buffer->text[i - 1]) == cc)
+		i--;
+	
+	// if the cursor was at whitespace, skip back a word too
+	if (cc == CharClassWhitespace && i > boln) {
+		cc = char_class (buffer->text[i - 1]);
+		while (i > boln && char_class (buffer->text[i - 1]) == cc)
+			i--;
+	}
+	
+	return i;
 }
 
 int
@@ -1646,6 +1705,8 @@ TextBoxView::Render (cairo_t *cr, int x, int y, int width, int height)
 {
 	if (dirty)
 		Layout (cr);
+	
+	printf ("TextBoxView::Render()\n");
 	
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
