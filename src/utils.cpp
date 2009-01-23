@@ -66,8 +66,8 @@ managed_stream_write_func (gpointer context, gpointer stream, const void *buf, u
 	
 	do {
 		n = MIN (left, G_MAXINT32);
-		s->Write (s->handle, buf + written, 0, n);
-		written += n;
+		s->Write (s->handle, buf + nwritten, 0, n);
+		nwritten += n;
 		left -= n;
 	} while (nwritten < size);
 	
