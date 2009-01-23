@@ -232,6 +232,14 @@
     <File name="keyboard.cpp" subtype="Code" buildaction="Compile" />
     <File name="popup.cpp" subtype="Code" buildaction="Compile" />
     <File name="popup.h" subtype="Code" buildaction="Nothing" />
+    <File name="application.cpp" subtype="Code" buildaction="Compile" />
+    <File name="application.h" subtype="Code" buildaction="Nothing" />
+    <File name="bitmapimage.cpp" subtype="Code" buildaction="Compile" />
+    <File name="pipeline-nocodec-ui.h" subtype="Code" buildaction="Nothing" />
+    <File name="pipeline-nocodec-ui.cpp" subtype="Code" buildaction="Compile" />
+    <File name="contentpresenter.cpp" subtype="Code" buildaction="Compile" />
+    <File name="contentpresenter.h" subtype="Code" buildaction="Nothing" />
+    <File name="codec-url.h" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>
