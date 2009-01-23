@@ -1,5 +1,10 @@
 2009-01-22  Chris Toshok  <toshok@ximian.com>
 
+	* textbox.h, textbox.cpp (class PasswordBox): move the ctor to
+	.cpp, and call SetDefaultStyleKey to get that working.
+
+2009-01-22  Chris Toshok  <toshok@ximian.com>
+
 	[ fixes to get http://www.life-silverlight.com/ to come up with
 	exceptions ]
 

@@ -1883,6 +1883,15 @@ TextBoxView::ArrangeOverride (Size size)
 // PasswordBox
 //
 
+PasswordBox::PasswordBox ()
+{
+	ManagedTypeInfo *type_info = new ManagedTypeInfo ();
+	type_info->assembly_name = g_strdup ("System.Windows");
+	type_info->full_name = g_strdup ("System.Windows.Controls.PasswordBox");
+
+	SetDefaultStyleKey (type_info);
+}
+
 void
 PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 {

@@ -322,7 +322,7 @@ class PasswordBox : public TextBox {
 	static DependencyProperty *SelectionForegroundProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	PasswordBox () { }
+	PasswordBox ();
 	
 	virtual Type::Kind GetObjectType () { return Type::PASSWORDBOX; }
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
