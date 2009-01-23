@@ -1,3 +1,8 @@
+2009-01-22  Chris Toshok  <toshok@ximian.com>
+
+	* NativeDependencyObjectHelper.cs (CreateObject): fix exception
+	text, and add a case for CONTENTPRESENTER.
+
 2009-01-21  Chris Toshok  <toshok@ximian.com>
 
 	* MoonlightTypeConverter.cs: punt all conversion of enums to
