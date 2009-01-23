@@ -1,3 +1,8 @@
+2009-01-23  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Media/ColorTest.cs: Add test case for defaults 
+	including ToString. Re-enable parsing Color from XAML (crasher fixed)
+
 2009-01-21  Andreia Gaita  <avidigal@novell.com>
 
 	* System.Windows.Browser/ScriptableTest.cs: New, tests for scriptable 
