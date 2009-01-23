@@ -29,7 +29,102 @@
 
 #include "utils.h"
 
+gpointer managed_stream_open_func (gpointer context, const char *filename, int mode) {
+	// minizip expects to get a FILE* here, we'll just shuffle our context around.
 
+	return context;
+}
+
+unsigned long managed_stream_read_func (gpointer context, gpointer stream, gpointer buf, unsigned long size) {
+	ManagedStreamCallbacks *s = (ManagedStreamCallbacks *) context;
+
+	if (size > G_MAXINT32)
+		g_error ("managed_stream_write_func cannot handle reading large values yet");
+
+	return (unsigned long) s->Read (s->handle, buf, 0, (gint32) size);
+}
+
+unsigned long managed_stream_write_func (gpointer context, gpointer stream, const void *buf, unsigned long size) {
+	ManagedStreamCallbacks *s = (ManagedStreamCallbacks *) context;
+
+	if (size > G_MAXINT32)
+		g_error ("managed_stream_write_func cannot handle writing large values yet");
+
+	s->Write (s->handle, (gpointer) buf, 0, (gint32) size);
+
+	return (unsigned long) size;
+}
+
+long managed_stream_tell_func (gpointer context, gpointer stream) {
+	ManagedStreamCallbacks *s = (ManagedStreamCallbacks *) context;
+
+	return s->Position (s->handle);
+}
+
+long managed_stream_seek_func (gpointer context, gpointer stream, unsigned long offset, int origin) {
+	ManagedStreamCallbacks *s = (ManagedStreamCallbacks *) context;
+
+	s->Seek (s->handle, offset, origin);
+
+	return 0;
+}
+
+int managed_stream_close_func (gpointer context, gpointer stream) {
+	return 0;
+}
+
+int managed_stream_error_func (gpointer context, gpointer stream) {
+	g_error ("managed_stream_error_func should not be called");
+}
+
+gboolean managed_unzip_stream_to_stream (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest, const char *partname) {
+	zlib_filefunc_def funcs;
+	unzFile zipFile;
+	gboolean ret;
+
+	ret = FALSE;
+
+	funcs.zopen_file = managed_stream_open_func;
+	funcs.zread_file = managed_stream_read_func;
+	funcs.zwrite_file = managed_stream_write_func;
+	funcs.ztell_file = managed_stream_tell_func;
+	funcs.zseek_file = managed_stream_seek_func;
+	funcs.zclose_file = managed_stream_close_func;
+	funcs.zerror_file = managed_stream_error_func;
+	funcs.opaque = source;
+
+	zipFile = unzOpen2 (NULL, &funcs);
+
+	if (!zipFile)
+		return FALSE;
+
+	if (unzLocateFile (zipFile, partname, 2) != UNZ_OK)
+		goto cleanup;	
+
+	if (unzOpenCurrentFile (zipFile) != UNZ_OK)
+		goto cleanup;
+
+	ret = managed_unzip_extract_to_stream (zipFile, dest);
+
+cleanup:
+	unzCloseCurrentFile (zipFile);
+	unzClose (zipFile);
+
+	return ret;
+}
+
+gboolean managed_unzip_extract_to_stream (unzFile zipFile, ManagedStreamCallbacks *dest) {
+	char buf[4096];
+	int nread;
+
+	do {
+		if ((nread = unzReadCurrentFile (zipFile, buf, sizeof (buf))) > 0) {
+			dest->Write (dest->handle, buf, 0, nread);
+		}
+	} while (nread > 0);
+
+	return TRUE;
+}
 
 /**
  * MID:

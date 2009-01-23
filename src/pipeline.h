@@ -17,6 +17,7 @@
 #include <glib.h>
 #include <stdio.h>
 #include <pthread.h>
+#include "utils.h"
 
 #define MAKE_CODEC_ID(a, b, c, d) (a | (b << 8) | (c << 16) | (d << 24))
 
@@ -108,7 +109,6 @@ class MarkerStream;
 class IImageConverter;
 class MediaMarker;
 class ProgressiveSource;
-struct ManagedStreamCallbacks;
 
 typedef gint32 MediaResult;
 
@@ -756,25 +756,6 @@ public:
 	virtual Type::Kind GetObjectType () { return Type::IMEDIASOURCE; }
 };
 
-// Implementations
-
-typedef bool   Stream_CanSeek  (void *handle);
-typedef bool   Stream_CanRead  (void *handle);
-typedef gint64 Stream_Length   (void *handle);
-typedef gint64 Stream_Position (void *handle);
-typedef gint32 Stream_Read     (void *handle,  void *buffer, gint32 offset, gint32 count);
-typedef void   Stream_Seek     (void *handle, gint64 offset, gint32 origin);
-
-struct ManagedStreamCallbacks {
-	void *handle;
-	Stream_CanSeek *CanSeek;
-	Stream_CanRead *CanRead;
-	Stream_Length *Length;
-	Stream_Position *Position;
-	Stream_Read *Read;
-	Stream_Seek *Seek;
-};
- 
 class ManagedStreamSource : public IMediaSource {
 private:
 	ManagedStreamCallbacks stream;

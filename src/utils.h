@@ -21,6 +21,43 @@
 
 G_BEGIN_DECLS
 
+typedef gboolean (*Stream_CanSeek)  (void *handle);
+typedef gboolean (*Stream_CanRead)  (void *handle);
+typedef gint64   (*Stream_Length)   (void *handle);
+typedef gint64   (*Stream_Position) (void *handle);
+typedef gint32   (*Stream_Read)     (void *handle,  void *buffer, gint32 offset, gint32 count);
+typedef void     (*Stream_Write)    (void *handle,  void *buffer, gint32 offset, gint32 count);
+typedef void     (*Stream_Seek)     (void *handle, gint64 offset, gint32 origin);
+
+typedef struct {
+        void *handle;
+        Stream_CanSeek CanSeek;
+        Stream_CanRead CanRead;
+        Stream_Length Length;
+        Stream_Position Position;
+        Stream_Read Read;
+        Stream_Write Write;
+        Stream_Seek Seek;
+} ManagedStreamCallbacks;
+
+gpointer managed_stream_open_func (gpointer context, const char *filename, int mode);
+
+unsigned long managed_stream_read_func (gpointer context, gpointer stream, gpointer buf, unsigned long size);
+
+unsigned long managed_stream_write_func (gpointer context, gpointer stream, const void *buf, unsigned long size);
+
+long managed_stream_tell_func (gpointer context, gpointer stream);
+
+long managed_stream_seek_func (gpointer context, gpointer stream, unsigned long offset, int origin);
+
+int managed_stream_close_func (gpointer context, gpointer stream);
+
+int managed_stream_error_func (gpointer context, gpointer stream);
+
+gboolean managed_unzip_stream_to_stream (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest, const char *partname);
+
+gboolean managed_unzip_extract_to_stream (unzFile zipFile, ManagedStreamCallbacks *dest);
+
 void g_ptr_array_insert (GPtrArray *array, guint index, void *item);
 
 void g_ptr_array_insert_sorted (GPtrArray *array, GCompareFunc cmp, void *item);
