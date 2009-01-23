@@ -1,3 +1,7 @@
+2009-01-23  Stephane delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: no longer crash on null uri
+
 2009-01-23  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* xaml.cpp: Fix SIGSEGV when we're parsing something that turns out

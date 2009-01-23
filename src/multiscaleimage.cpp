@@ -278,6 +278,8 @@ printf ("MSI::Render\n");
 	for (i = (int)((double)vp_ox / (double)v_tile_w); i * v_tile_w < vp_ox + vp_w; i++) {
 		for (j = (int)((double)vp_oy / (double)v_tile_h); j * v_tile_h < vp_oy + vp_h; j++) {
 			const char* ret = g_strdup ((const char*)source->get_tile_func (layer_to_render, 2, 3));
+			if (!ret)
+				return;
 			DownloadUri (ret);
 		}
 	}
