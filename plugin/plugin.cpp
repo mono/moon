@@ -1877,6 +1877,10 @@ PluginInstance::MonoInit ()
 	if (mono_is_loaded)
 		return true;
 
+#if DEBUG
+	g_setenv ("MONO_DEBUG", "keep-delegates", false);
+#endif
+
 	mono_config_parse (NULL);
 	trace_options = getenv ("MOON_TRACE");
 	if (trace_options != NULL){

@@ -1,3 +1,8 @@
+2009-01-23  Geoff Norton  <gnorton@novell.com>
+
+	* plugin.cpp: Force keep-delegates on in SVN (only if a custom
+	MONO_DEBUG doesn't already exist in the environment)
+
 2009-01-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin-debug.cpp: Integrate munxap into our debugging experience.
