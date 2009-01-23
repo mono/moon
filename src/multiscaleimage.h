@@ -29,6 +29,7 @@ class MultiScaleImage : public MediaBase {
 	int layer_to_render;
 	MultiScaleTileSource *source;
 	char *filename;
+	bool continue_rendering;
 
 	void DownloaderComplete ();
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);

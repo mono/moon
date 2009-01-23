@@ -1,3 +1,9 @@
+2009-01-23  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: add a bool so render knows if it was
+	invalidated locally or not, and should keep rendering the upper
+	layers or restart from the bottom.
+
 2009-01-23  Stephane delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.cpp: no longer crash on null uri

@@ -36,6 +36,7 @@ MultiScaleImage::MultiScaleImage ()
 	downloader = NULL;
 	layer_to_render = -1;
 	filename = NULL;
+	continue_rendering = false;
 }
 
 MultiScaleImage::~MultiScaleImage ()
@@ -185,6 +186,10 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 {
 printf ("MSI::Render\n");
 
+	if (!continue_rendering)
+		layer_to_render = -1;
+	continue_rendering = false;
+
 //	if (!surface)
 //		return;
 
@@ -296,6 +301,7 @@ MultiScaleImage::DownloaderComplete ()
 
 	printf ("dl completed %s\n", filename);
 
+	continue_rendering = true;
 	Invalidate ();
 }
 
