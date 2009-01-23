@@ -1,5 +1,10 @@
 2009-01-22  Chris Toshok  <toshok@ximian.com>
 
+	* Helper.cs (GetConverterFor): permit a null @info parameter,
+	which causes us to just look up the converter by type.
+
+2009-01-22  Chris Toshok  <toshok@ximian.com>
+
 	* ManagedXamlLoader.cs (ConvertType): we need to parse enum values
 	here too.
 

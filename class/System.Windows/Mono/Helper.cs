@@ -47,11 +47,13 @@ namespace Mono {
 			TypeConverter converter = null;
 
 			// first check for a TypeConverter attribute on the property
-			attrs = (Attribute[])info.GetCustomAttributes (true);
-			foreach (Attribute attr in attrs) {
-				if (attr is TypeConverterAttribute) {
-					at = (TypeConverterAttribute)attr;
-					break;
+			if (info != null) {
+				attrs = (Attribute[])info.GetCustomAttributes (true);
+				foreach (Attribute attr in attrs) {
+					if (attr is TypeConverterAttribute) {
+						at = (TypeConverterAttribute)attr;
+						break;
+					}
 				}
 			}
 
