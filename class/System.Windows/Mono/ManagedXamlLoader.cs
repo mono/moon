@@ -659,8 +659,15 @@ namespace Mono.Xaml
 				return value;
 
 			TypeConverter converter = GetConverterFor (t);
+
 			if (converter != null && converter.CanConvertFrom (value.GetType ()))
 				return converter.ConvertFrom (value);
+
+			try {
+				if (typeof (Enum).IsAssignableFrom (t) && value is string)
+					return Enum.Parse (t, (string)value);
+			} catch {
+			}
 
 			try {
 				value = Convert.ChangeType (value, t, System.Globalization.CultureInfo.CurrentCulture);

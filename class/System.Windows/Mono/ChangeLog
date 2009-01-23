@@ -1,5 +1,10 @@
 2009-01-22  Chris Toshok  <toshok@ximian.com>
 
+	* ManagedXamlLoader.cs (ConvertType): we need to parse enum values
+	here too.
+
+2009-01-22  Chris Toshok  <toshok@ximian.com>
+
 	* NativeDependencyObjectHelper.cs (CreateObject): fix exception
 	text, and add a case for CONTENTPRESENTER.
 
