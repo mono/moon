@@ -51,8 +51,26 @@ namespace System.Windows.Threading {
 		internal Dispatcher ()
 		{
 			queuedOperations = new Queue<DispatcherOperation>();
-			callback = new NativeMethods.TickCallHandler (dispatcher_callback);
 			source = 0;
+		}
+
+		~Dispatcher () {
+			Dispose ();
+		}
+
+		void Dispose () {
+			lock (queuedOperations) {
+				if (callback != null)
+					NativeMethods.time_manager_remove_tick_call (NativeMethods.surface_get_time_manager (Application.s_surface), callback);
+				source = 0;
+				if (queuedOperations.Count > 0) {
+					Console.WriteLine ("Dispatcher was destroyed with " + queuedOperations.Count + " call to be processed");
+					foreach (DispatcherOperation op in queuedOperations) {
+						Console.WriteLine (op.ToString ());
+					}
+				}
+				queuedOperations.Clear ();
+			}
 		}
 
 		[EditorBrowsable (EditorBrowsableState.Never)]
@@ -73,10 +91,12 @@ namespace System.Windows.Threading {
 			lock (queuedOperations) {
 				op = new DispatcherOperation (d, args);
 				queuedOperations.Enqueue (op);
-				if (source == 0)
+				if (source == 0) {
+					if (callback == null)
+						callback = new NativeMethods.TickCallHandler (dispatcher_callback);
 					source = NativeMethods.time_manager_add_tick_call (NativeMethods.surface_get_time_manager (Application.s_surface), callback, IntPtr.Zero);
+				}
 			}
-
 			return op;
 		}
 

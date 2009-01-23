@@ -1,3 +1,7 @@
+2009-01-23  Andreia Gaita  <avidigal@novell.com>
+
+	* NativeMethods.cs: Add time_manager_remove_tick_call
+
 2009-01-23  Geoff Norton  <gnorton@novell.com>
 
 	* Helper.cs: Ensure we rewind the stream before blitting it

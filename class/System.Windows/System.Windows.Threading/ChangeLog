@@ -1,3 +1,12 @@
+2009-01-23  Andreia Gaita  <avidigal@novell.com>
+
+	* Dispatcher.cs: Add destructor to remove callback handler. 
+	Dispose() output a list of calls that haven't been processed when
+	the dispatcher was destroyed (they are thrown away, for now). Only
+	add the callback on the native side when a call is actually made
+
+	* DispatcherOperation.cs: Add ToString()
+
 2009-01-13  Andreia Gaita  <avidigal@novell.com>
 
 	* DispatcherSynchronizationContext.cs: Implemented

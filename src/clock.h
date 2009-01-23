@@ -441,6 +441,8 @@ class TimeManager : public EventObject {
 	TimeSpan GetCurrentTimeUsec () { return current_global_time_usec - start_time_usec; }
 
 	void AddTickCall (TickCallHandler handler, EventObject *tick_data);
+	void RemoveTickCall (TickCallHandler handler);
+
 	void NeedRedraw ();
 	void NeedClockTick ();
 
@@ -508,6 +510,8 @@ class TimeManager : public EventObject {
 };
 
 void time_manager_add_tick_call (TimeManager *manager, TickCallHandler handler, EventObject *obj);
+void time_manager_remove_tick_call (TimeManager *manager, TickCallHandler handler);
+bool find_tick_call (List::Node *node, void *data);
 guint time_manager_add_timeout (TimeManager *manager, guint32 interval, GSourceFunc handler, gpointer obj);
 void time_manager_remove_timeout (TimeManager *manager, guint32 source_id);
 

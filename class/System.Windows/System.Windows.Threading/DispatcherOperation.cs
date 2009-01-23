@@ -43,5 +43,10 @@ namespace System.Windows.Threading {
 		{
 			d.DynamicInvoke (args);
 		}
+
+		internal string ToString ()
+		{
+			return (d != null && d.Method != null ? d.Method.ToString () : "null") + " (" + (args != null ? args.ToString () : "null") + ")";
+		}
 	}
 }

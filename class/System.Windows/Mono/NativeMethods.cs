@@ -202,6 +202,9 @@ namespace Mono {
 
 		[DllImport("moon")]
 		public extern static uint time_manager_add_tick_call (IntPtr manager, TickCallHandler callback, IntPtr data);
+
+		[DllImport("moon")]
+		public extern static uint time_manager_remove_tick_call (IntPtr manager, TickCallHandler callback);
 #endregion
 
 #region SizeChangedEventArgs
