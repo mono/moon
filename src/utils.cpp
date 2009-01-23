@@ -38,7 +38,7 @@ managed_stream_open_func (gpointer context, const char *filename, int mode)
 }
 
 unsigned long
-managed_stream_read_func (gpointer context, gpointer stream, char *buf, unsigned long size)
+managed_stream_read_func (gpointer context, gpointer stream, void *buf, unsigned long size)
 {
 	ManagedStreamCallbacks *s = (ManagedStreamCallbacks *) context;
 	unsigned long left = size;
@@ -46,7 +46,7 @@ managed_stream_read_func (gpointer context, gpointer stream, char *buf, unsigned
 	int n;
 	
 	do {
-		if ((n = s->Read (s->handle, buf + nread, 0, MIN (left, G_MAXINT32))) <= 0)
+		if ((n = s->Read (s->handle, (char *) buf + nread, 0, MIN (left, G_MAXINT32))) <= 0)
 			break;
 		
 		nread += n;
@@ -66,7 +66,7 @@ managed_stream_write_func (gpointer context, gpointer stream, const void *buf, u
 	
 	do {
 		n = MIN (left, G_MAXINT32);
-		s->Write (s->handle, buf + nwritten, 0, n);
+		s->Write (s->handle, (char *) buf + nwritten, 0, n);
 		nwritten += n;
 		left -= n;
 	} while (nwritten < size);
