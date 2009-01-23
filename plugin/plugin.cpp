@@ -1878,6 +1878,7 @@ PluginInstance::MonoInit ()
 		return true;
 
 #if DEBUG
+	g_warning ("Enabling MONO_DEBUG=keep-delegates.");
 	g_setenv ("MONO_DEBUG", "keep-delegates", false);
 #endif
 
