@@ -46,9 +46,12 @@ namespace System.Windows.Media
 			set { throw new NotImplementedException (); }
 		}
 		
+		System.Runtime.InteropServices.GCHandle handle;
 		void Initialize ()
 		{
-			NativeMethods.multi_scale_tile_source_set_image_uri_func (native, GetImageUri);
+			NativeMethods.ImageUriFunc func = new NativeMethods.ImageUriFunc (GetImageUri);
+			handle = System.Runtime.InteropServices.GCHandle.Alloc (func);
+			NativeMethods.multi_scale_tile_source_set_image_uri_func (native, func);
 		}
 
 		public MultiScaleTileSource (int imageWidth, int imageHeight, int tileWidth, int tileHeight, int tileOverlap)
@@ -63,6 +66,11 @@ namespace System.Windows.Media
 		public MultiScaleTileSource (long imageWidth, long imageHeight, int tileWidth, int tileHeight, int tileOverlap)
 		{
 			throw new NotImplementedException ();
+		}
+
+		~MultiScaleTileSource ()
+		{
+			handle.Free ();
 		}
 		
 		protected void InvalidateTileLayer (int level, int tilePositionX, int tilePositionY, int tileLayer)

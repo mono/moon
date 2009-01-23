@@ -1,3 +1,7 @@
+2009-01-23  Stephane Delcroix  <sdelcroixnovell.com>
+
+	* MultiScaleTileSource.cs: keep a GCHandle on the delegate.
+
 2009-01-23  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Color.cs: Fix ToString format
