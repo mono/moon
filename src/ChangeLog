@@ -8,6 +8,11 @@
 	* clock.[h|cpp]: Add RemoveTickCall() to remove callbacks from the
 	list in case the dispatcher gets destroyed before they are processed.
 
+2009-01-23  Geoff Norton  <gnorton@novell.com>
+
+	* utils.cpp: Remove some g_error and handle ridiculously large
+	zip files to appease glib.
+
 2009-01-23  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* dependencyproperty.g.cpp: regenerated

@@ -37,22 +37,28 @@ gpointer managed_stream_open_func (gpointer context, const char *filename, int m
 
 unsigned long managed_stream_read_func (gpointer context, gpointer stream, gpointer buf, unsigned long size) {
 	ManagedStreamCallbacks *s = (ManagedStreamCallbacks *) context;
+	unsigned long read = 0;
 
-	if (size > G_MAXINT32)
-		g_error ("managed_stream_write_func cannot handle reading large values yet");
+	do {
+		int nread = size > G_MAXINT32 ? G_MAXINT32 : size;	
+		read += s->Read (s->handle, (char *)buf + read, 0, nread);
+	} while (read != size);
 
-	return (unsigned long) s->Read (s->handle, buf, 0, (gint32) size);
+	return read;
 }
 
 unsigned long managed_stream_write_func (gpointer context, gpointer stream, const void *buf, unsigned long size) {
 	ManagedStreamCallbacks *s = (ManagedStreamCallbacks *) context;
+	unsigned long written = 0;
 
-	if (size > G_MAXINT32)
-		g_error ("managed_stream_write_func cannot handle writing large values yet");
+	do {
+		int nwritten = size > G_MAXINT32 ? G_MAXINT32 : size;	
+		s->Write (s->handle, (char *)buf + written, 0, nwritten);
 
-	s->Write (s->handle, (gpointer) buf, 0, (gint32) size);
+		written += nwritten;
+	} while (written != size);
 
-	return (unsigned long) size;
+	return written;
 }
 
 long managed_stream_tell_func (gpointer context, gpointer stream) {
@@ -74,7 +80,7 @@ int managed_stream_close_func (gpointer context, gpointer stream) {
 }
 
 int managed_stream_error_func (gpointer context, gpointer stream) {
-	g_error ("managed_stream_error_func should not be called");
+	return 0;
 }
 
 gboolean managed_unzip_stream_to_stream (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest, const char *partname) {
