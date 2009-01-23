@@ -103,8 +103,8 @@ namespace System.Windows.Browser.Net
 		public override IAsyncResult BeginGetRequestStream (AsyncCallback callback, object state)
 		{
 			Console.WriteLine ("BrowserHttpWebRequest.BeginGetRequestStream: Should be async, doing it sync for now.");
-			IAsyncResult result = new BrowserHttpWebAsyncResult (callback, state);
-			callback (result);
+			BrowserHttpWebAsyncResult result = new BrowserHttpWebAsyncResult (callback, state);
+			result.SetComplete ();
 			return result;
 		}
 

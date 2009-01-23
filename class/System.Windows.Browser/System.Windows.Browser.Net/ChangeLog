@@ -1,3 +1,8 @@
+2009-01-23  Alan McGovern  <amcgovern@novell.com>
+
+	* BrowserHttpWebRequest.cs: The callback object may be null and the
+	result should be marked as Complete before the callback is invoked.
+
 2009-01-015  Geoff Norton  <gnorton@novell.com>
 
 	* BrowserHttpWebRequest.cs: Fix the dtor and abort code to call the 
