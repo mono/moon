@@ -101,6 +101,9 @@ namespace System.Windows {
 					ad.SetData ("xap_uri", Host.Source.AbsoluteUri);
 					ad.SetData ("xap_host", Host.Source.Host);
 				}
+
+				SynchronizationContext context = new System.Windows.Threading.DispatcherSynchronizationContext ();
+				SynchronizationContext.SetSynchronizationContext (context);
 			} else {
 				root_visual = Current.root_visual;
 			}
