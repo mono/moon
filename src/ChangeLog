@@ -1,5 +1,8 @@
 2009-01-23  Jeffrey Stedfast  <fejj@novell.com>
 
+	* utils.cpp (managed_stream_read_func): Fixed to do as intended.
+	(managed_stream_write_func): Same.
+
 	* textbox.cpp (next_word): Implemented.
 	(prev_word): Implemented.
 

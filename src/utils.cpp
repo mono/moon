@@ -29,45 +29,62 @@
 
 #include "utils.h"
 
-gpointer managed_stream_open_func (gpointer context, const char *filename, int mode) {
+gpointer
+managed_stream_open_func (gpointer context, const char *filename, int mode)
+{
 	// minizip expects to get a FILE* here, we'll just shuffle our context around.
 
 	return context;
 }
 
-unsigned long managed_stream_read_func (gpointer context, gpointer stream, gpointer buf, unsigned long size) {
+unsigned long
+managed_stream_read_func (gpointer context, gpointer stream, char *buf, unsigned long size)
+{
 	ManagedStreamCallbacks *s = (ManagedStreamCallbacks *) context;
-	unsigned long read = 0;
-
+	unsigned long left = size;
+	unsigned long nread = 0;
+	int n;
+	
 	do {
-		int nread = size > G_MAXINT32 ? G_MAXINT32 : size;	
-		read += s->Read (s->handle, (char *)buf + read, 0, nread);
-	} while (read != size);
-
-	return read;
+		if ((n = s->Read (s->handle, buf + nread, 0, MIN (left, G_MAXINT32))) <= 0)
+			break;
+		
+		nread += n;
+		left -= n;
+	} while (nread < size);
+	
+	return nread;
 }
 
-unsigned long managed_stream_write_func (gpointer context, gpointer stream, const void *buf, unsigned long size) {
+unsigned long
+managed_stream_write_func (gpointer context, gpointer stream, const void *buf, unsigned long size)
+{
 	ManagedStreamCallbacks *s = (ManagedStreamCallbacks *) context;
-	unsigned long written = 0;
-
+	unsigned long nwritten = 0;
+	unsigned long left = size;
+	int n;
+	
 	do {
-		int nwritten = size > G_MAXINT32 ? G_MAXINT32 : size;	
-		s->Write (s->handle, (char *)buf + written, 0, nwritten);
-
-		written += nwritten;
-	} while (written != size);
-
-	return written;
+		n = MIN (left, G_MAXINT32);
+		s->Write (s->handle, buf + written, 0, n);
+		written += n;
+		left -= n;
+	} while (nwritten < size);
+	
+	return nwritten;
 }
 
-long managed_stream_tell_func (gpointer context, gpointer stream) {
+long
+managed_stream_tell_func (gpointer context, gpointer stream)
+{
 	ManagedStreamCallbacks *s = (ManagedStreamCallbacks *) context;
 
 	return s->Position (s->handle);
 }
 
-long managed_stream_seek_func (gpointer context, gpointer stream, unsigned long offset, int origin) {
+long
+managed_stream_seek_func (gpointer context, gpointer stream, unsigned long offset, int origin)
+{
 	ManagedStreamCallbacks *s = (ManagedStreamCallbacks *) context;
 
 	s->Seek (s->handle, offset, origin);
@@ -83,7 +100,9 @@ int managed_stream_error_func (gpointer context, gpointer stream) {
 	return 0;
 }
 
-gboolean managed_unzip_stream_to_stream (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest, const char *partname) {
+gboolean
+managed_unzip_stream_to_stream (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest, const char *partname)
+{
 	zlib_filefunc_def funcs;
 	unzFile zipFile;
 	gboolean ret;
@@ -119,7 +138,9 @@ cleanup:
 	return ret;
 }
 
-gboolean managed_unzip_extract_to_stream (unzFile zipFile, ManagedStreamCallbacks *dest) {
+gboolean
+managed_unzip_extract_to_stream (unzFile zipFile, ManagedStreamCallbacks *dest)
+{
 	char buf[4096];
 	int nread;
 
