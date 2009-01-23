@@ -286,8 +286,8 @@ dependency_property_g_init (void)
 	Popup::VerticalOffsetProperty = DependencyProperty::Register (Type::POPUP, "VerticalOffset", Type::DOUBLE);
 	QuadraticBezierSegment::Point1Property = DependencyProperty::Register (Type::QUADRATICBEZIERSEGMENT, "Point1", Type::POINT);
 	QuadraticBezierSegment::Point2Property = DependencyProperty::Register (Type::QUADRATICBEZIERSEGMENT, "Point2", Type::POINT);
-	RadialGradientBrush::CenterProperty = DependencyProperty::Register (Type::RADIALGRADIENTBRUSH, "Center", Type::POINT);
-	RadialGradientBrush::GradientOriginProperty = DependencyProperty::Register (Type::RADIALGRADIENTBRUSH, "GradientOrigin", Type::POINT);
+	RadialGradientBrush::CenterProperty = DependencyProperty::Register (Type::RADIALGRADIENTBRUSH, "Center", new Value (Point (0.5, 0.5)), Type::POINT);
+	RadialGradientBrush::GradientOriginProperty = DependencyProperty::Register (Type::RADIALGRADIENTBRUSH, "GradientOrigin", new Value (Point (0.5, 0.5)), Type::POINT);
 	RadialGradientBrush::RadiusXProperty = DependencyProperty::Register (Type::RADIALGRADIENTBRUSH, "RadiusX", new Value (0.5), Type::DOUBLE);
 	RadialGradientBrush::RadiusYProperty = DependencyProperty::Register (Type::RADIALGRADIENTBRUSH, "RadiusY", new Value (0.5), Type::DOUBLE);
 	Rectangle::RadiusXProperty = DependencyProperty::Register (Type::RECTANGLE, "RadiusX", new Value (0.0), Type::DOUBLE);

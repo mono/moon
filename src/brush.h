@@ -252,9 +252,9 @@ class RadialGradientBrush : public GradientBrush {
 	virtual ~RadialGradientBrush () {}
 
  public:
-	/* @PropertyType=Point,GenerateAccessors */
+	/* @PropertyType=Point,DefaultValue=Point (0.5\, 0.5),GenerateAccessors */
 	static DependencyProperty *CenterProperty;
-	/* @PropertyType=Point,GenerateAccessors */
+	/* @PropertyType=Point,DefaultValue=Point (0.5\, 0.5),GenerateAccessors */
 	static DependencyProperty *GradientOriginProperty;
 	/* @PropertyType=double,DefaultValue=0.5,GenerateAccessors */
 	static DependencyProperty *RadiusXProperty;
