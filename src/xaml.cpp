@@ -1930,6 +1930,9 @@ XamlLoader::HydrateFromString (const char *xaml, DependencyObject *object, bool 
 		if (element_type)
 			*element_type = parser_info->top_element->info->GetKind ();
 
+		if (!res && !parser_info->error_args)
+			parser_info->error_args = new ParserErrorEventArgs ("No DependencyObject found", "", 0, 0, 1, "", "");
+
 		if (parser_info->error_args) {
 			res = NULL;
 			if (element_type)

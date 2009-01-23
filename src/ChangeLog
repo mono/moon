@@ -1,3 +1,8 @@
+2009-01-23  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* xaml.cpp: Fix SIGSEGV when we're parsing something that turns out
+	to be valid (xml-wise) but not a DO (e.g. a Color).
+
 2009-01-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* src.mdp: Added new files.
