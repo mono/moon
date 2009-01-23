@@ -35,14 +35,23 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows.Media {
 
-	//[TestClass]
+	[TestClass]
 	public class BrushTest {
 
-		static public void CheckDefaults (Brush b)
+		static public void CheckDefaults (Brush b, bool nullTransforms)
 		{
 			Assert.AreEqual (1.0d, b.Opacity, "Opacity");
-			MatrixTest.CheckIdentity ((b.RelativeTransform as MatrixTransform).Matrix, "RelativeTransform");
-			MatrixTest.CheckIdentity ((b.Transform as MatrixTransform).Matrix, "Transform");
+			// In general default values don't changes in inherited types
+			// but it does in this case
+			if (nullTransforms) {
+				// e.g. ImageBrush
+				Assert.IsNull (b.RelativeTransform, "RelativeTransform");
+				Assert.IsNull (b.Transform, "Transform");
+			} else {
+				// SolidColorBrush, GradientBrush (i.e. LinearGradientBrush and RadialGradiantBrush), VideoBrush
+				MatrixTest.CheckIdentity ((b.RelativeTransform as MatrixTransform).Matrix, "RelativeTransform");
+				MatrixTest.CheckIdentity ((b.Transform as MatrixTransform).Matrix, "Transform");
+			}
 		}
 
 		public class ConcreteBrush : Brush {
@@ -55,6 +64,105 @@ namespace MoonTest.System.Windows.Media {
 			Assert.Throws<Exception> (delegate {
 				new ConcreteBrush ();
 			}, "we can't inherit from Brush");
+		}
+
+		static public void DestructiveRelativeTransform (Brush b)
+		{
+			SolidColorBrush old_scb = new SolidColorBrush ();
+
+			try {
+				MatrixTransform mt = (b.RelativeTransform as MatrixTransform);
+				Assert.IsTrue (mt.Matrix.IsIdentity, "Original/Identity");
+
+				// note: this is DESTRUCTIVE (hence the finally clause)
+				mt.Matrix = new Matrix (1, 2, 3, 4, 5, 6);
+				Assert.IsFalse (mt.Matrix.IsIdentity, "New/NonIdentity");
+
+				// *ALL* new brushes will have this new Matrix by default
+				Assert.IsTrue (CompareMatrix (mt.Matrix, new SolidColorBrush ().RelativeTransform), "SolidColorBrush");
+				Assert.IsTrue (CompareMatrix (mt.Matrix, new LinearGradientBrush ().RelativeTransform), "LinearGradientBrush");
+				Assert.IsTrue (CompareMatrix (mt.Matrix, new RadialGradientBrush ().RelativeTransform), "RadialGradientBrush");
+				Assert.IsTrue (CompareMatrix (mt.Matrix, new VideoBrush ().RelativeTransform), "VideoBrush");
+				// Note: ImageBrush is a special case where RelativeTransform is, by default, null
+
+				// even existing brush use it (very like shared)
+				Assert.IsTrue (CompareMatrix (mt.Matrix, old_scb.RelativeTransform), "Old/SolidColorBrush");
+			}
+			finally {
+				(b.RelativeTransform as MatrixTransform).Matrix = Matrix.Identity;
+
+				// everything gets back to normal after we revert the change
+				Assert.IsTrue ((old_scb.RelativeTransform as MatrixTransform).Matrix.IsIdentity, "Revert/Identity");
+			}
+		}
+
+		static public void DestructiveTransform (Brush b)
+		{
+			SolidColorBrush old_scb = new SolidColorBrush ();
+
+			try {
+				MatrixTransform mt = (b.Transform as MatrixTransform);
+				Assert.IsTrue (mt.Matrix.IsIdentity, "Original/Identity");
+
+				// note: this is DESTRUCTIVE (hence the finally clause)
+				mt.Matrix = new Matrix (1, 2, 3, 4, 5, 6);
+				Assert.IsFalse (mt.Matrix.IsIdentity, "New/NonIdentity");
+
+				// *ALL* new brushes will have this new Matrix by default
+				Assert.IsTrue (CompareMatrix (mt.Matrix, new SolidColorBrush ().Transform), "SolidColorBrush");
+				Assert.IsTrue (CompareMatrix (mt.Matrix, new LinearGradientBrush ().Transform), "LinearGradientBrush");
+				Assert.IsTrue (CompareMatrix (mt.Matrix, new RadialGradientBrush ().Transform), "RadialGradientBrush");
+				Assert.IsTrue (CompareMatrix (mt.Matrix, new VideoBrush ().Transform), "VideoBrush");
+				// Note: ImageBrush is a special case where Transform is, by default, null
+
+				// even existing brush use it (very like shared)
+				Assert.IsTrue (CompareMatrix (mt.Matrix, old_scb.RelativeTransform), "Old/SolidColorBrush");
+			}
+			finally {
+				(b.Transform as MatrixTransform).Matrix = Matrix.Identity;
+
+				// everything gets back to normal after we revert the change
+				Assert.IsTrue ((old_scb.RelativeTransform as MatrixTransform).Matrix.IsIdentity, "Revert/Identity");
+			}
+		}
+
+		static bool CompareMatrix (Matrix expected, Transform actual)
+		{
+			return (actual as MatrixTransform).Matrix.Equals (expected);
+		}
+
+		static public void RelativeTransform (Brush b)
+		{
+			Assert.IsNotNull (b.RelativeTransform, "RelativeTransform");
+
+			MatrixTransform mt = (b.RelativeTransform as MatrixTransform);
+			Matrix m = mt.Matrix;
+			m.M11 = 2.0;
+			Assert.IsTrue (mt.Matrix.IsIdentity, "OldCopy/Identity");
+
+			b.RelativeTransform = null;
+			Assert.IsNotNull (b.RelativeTransform, "RelativeTransform/NeverNull");
+			Assert.IsTrue ((b.RelativeTransform as MatrixTransform).Matrix.IsIdentity, "RelativeTransform/Null/Identity");
+
+			b.SetValue (Brush.RelativeTransformProperty, null);
+			Assert.IsNotNull (b.RelativeTransform, "RelativeTransform/NeverNullDP");
+		}
+
+		static public void Transform (Brush b)
+		{
+			Assert.IsNotNull (b.Transform, "Transform");
+
+			MatrixTransform mt = (b.Transform as MatrixTransform);
+			Matrix m = mt.Matrix;
+			m.M11 = 2.0;
+			Assert.IsTrue (mt.Matrix.IsIdentity, "OldCopy/Identity");
+
+			b.Transform = null;
+			Assert.IsNotNull (b.Transform, "Transform/NeverNull");
+			Assert.IsTrue ((b.Transform as MatrixTransform).Matrix.IsIdentity, "Transform/Null/Identity");
+
+			b.SetValue (Brush.TransformProperty, null);
+			Assert.IsNotNull (b.Transform, "Transform/NeverNullDP");
 		}
 	}
 }

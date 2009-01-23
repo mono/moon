@@ -1,5 +1,5 @@
 //
-// Unit tests for GradientBrush
+// Unit tests for TileBrush
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -35,17 +35,14 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows.Media {
 
-	[TestClass]
-	public class GradientBrushTest {
+	public class TileBrushTest {
 
-		static public void CheckDefaults (GradientBrush gb, int count)
+		static public void CheckDefaults (TileBrush tb, bool nullTransforms)
 		{
-			Assert.AreEqual (ColorInterpolationMode.SRgbLinearInterpolation, gb.ColorInterpolationMode, "ColorInterpolationMode");
-			Assert.AreEqual (count, gb.GradientStops.Count, "GradientStops");
-			Assert.AreEqual (BrushMappingMode.RelativeToBoundingBox, gb.MappingMode, "MappingMode");
-			Assert.AreEqual (GradientSpreadMethod.Pad, gb.SpreadMethod, "SpreadMethod");
-			// GradientBrush's Transforms are non-null by default (false)
-			BrushTest.CheckDefaults (gb, false);
+			Assert.AreEqual (AlignmentX.Center, tb.AlignmentX, "AlignmentX");
+			Assert.AreEqual (AlignmentY.Center, tb.AlignmentY, "AlignmentY");
+			Assert.AreEqual (Stretch.Fill, tb.Stretch, "Stretch");
+			BrushTest.CheckDefaults (tb, nullTransforms);
 		}
 	}
 }

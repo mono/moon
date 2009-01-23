@@ -73,5 +73,24 @@ namespace MoonTest.System.Windows.Media
 </MatrixTransform>");
 			MatrixTest.CheckMatrix (m.Matrix, 5, 2, 0, 1, 10, 100, "xaml");
 		}
+
+		// Check for a Moonlight issue which freeze the Matrix (throwing an UnautorizedException)
+		public static bool CheckFreezer (MatrixTransform mt)
+		{
+			bool result = false;
+			Matrix m = mt.Matrix;
+			try {
+				// NOTE: ML DO is frozen and can't be updated
+				mt.Matrix = m;
+				result = true;
+			}
+			catch (UnauthorizedAccessException) {
+				// Moonlight known issue
+			}
+			finally {
+				mt.Matrix = Matrix.Identity;
+			}
+			return result;
+		}
 	}
 }

@@ -125,5 +125,45 @@ namespace MoonTest.System.Windows {
 			}, "TransformToVisual(new)");
 			// an UIElement is probably not complete enough to complete the call
 		}
+
+		[TestMethod]
+		[MoonlightBug ("we don't fallback to a MatrixTransform when property is set to null")]
+		public void RenderTransform_SemiNonNullable ()
+		{
+			ConcreteUIElement ui = new ConcreteUIElement ();
+			Assert.IsNotNull (ui.RenderTransform, "RenderTransform");
+
+			ui.RenderTransform = new ScaleTransform ();
+			Assert.IsTrue ((ui.RenderTransform is ScaleTransform), "RenderTransform/ScaleTransform");
+
+			// when set to null *using the property* it reverts to the default value
+			ui.RenderTransform = null;
+			Assert.IsNotNull (ui.RenderTransform, "RenderTransform/NeverNull");
+			Assert.IsTrue ((ui.RenderTransform as MatrixTransform).Matrix.IsIdentity, "RenderTransform/Null/Identity");
+
+			// but when set to null *using the DP* it really becomes null
+			ui.SetValue (UIElement.RenderTransformProperty, null);
+			Assert.IsNotNull (ui.RenderTransform, "RenderTransform/NeverNullDP");
+		}
+
+		[TestMethod]
+		[MoonlightBug ("DO is frozen and cannot be updated like SL2")]
+		public void RenderTransform_Unfrozen ()
+		{
+			ConcreteUIElement ui = new ConcreteUIElement ();
+
+			MatrixTransform mt = (ui.RenderTransform as MatrixTransform);
+			Matrix m = mt.Matrix;
+			m.M11 = 2.0;
+			Assert.IsTrue (mt.Matrix.IsIdentity, "OldCopy/Identity");
+
+			// NOTE: ML DO is frozen and can't be updated
+			mt.Matrix = m;
+			Assert.IsFalse (mt.Matrix.IsIdentity, "NewMatrix/Identity");
+
+			Assert.IsTrue ((ui.RenderTransform as MatrixTransform).Matrix.IsIdentity, "RenderTransform/OldCopy/Identity");
+			ui.RenderTransform = mt;
+			Assert.IsFalse ((ui.RenderTransform as MatrixTransform).Matrix.IsIdentity, "RenderTransform/NewMatrix/Identity");
+		}
 	}
 }

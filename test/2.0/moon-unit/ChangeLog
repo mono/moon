@@ -1,3 +1,18 @@
+2009-01-23  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows/UIElementTest.cs
+	* System.Windows.Media/BrushTest.cs
+	* System.Windows.Media/GradientBrushTest.cs
+	* System.Windows.Media/ImageBrushTest.cs
+	* System.Windows.Media/LinearGradientBrushTest.cs
+	* System.Windows.Media/MatrixTransformTest.cs
+	* System.Windows.Media/RadialGradientBrushTest.cs
+	* System.Windows.Media/SolidColorBrushTest.cs
+	* System.Windows.Media/TileBrushTest.cs
+	* System.Windows.Media/VideoBrushTest.cs: Add tests for default
+	values (where missing) and around the weird/buggy SL2 transforms 
+	properties 
+
 2009-01-23  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Media/ColorTest.cs: Add test case for defaults 

@@ -1,5 +1,5 @@
 //
-// Unit tests for LinearGradientBrush
+// Unit tests for SolidColorBrush
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -36,68 +36,34 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Media {
 
 	[TestClass]
-	public class LinearGradientBrushTest {
+	public class SolidColorBrushTest {
 
 		[TestMethod]
 		public void DefaultCtor ()
 		{
-			LinearGradientBrush lgb = new LinearGradientBrush ();
-
-			Assert.AreEqual (1.0d, lgb.EndPoint.X, "EndPoint.X");
-			Assert.AreEqual (1.0d, lgb.EndPoint.Y, "EndPoint.Y");
-
-			CheckDefaults (lgb, 0);
-		}
-
-		[TestMethod]
-		public void AngleCtor ()
-		{
-			for (int i=0; i <= 360; i++) {
-				LinearGradientBrush lgb = new LinearGradientBrush (null, i);
-				Assert.IsTrue (Math.Abs (Math.Cos (i * Math.PI / 180) - lgb.EndPoint.X) < 0.0001, i.ToString () + "-EndPoint.X");
-				Assert.IsTrue (Math.Abs (Math.Sin (i * Math.PI / 180) - lgb.EndPoint.Y) < 0.0001, i.ToString () + "-EndPoint.Y");
-				CheckDefaults (lgb, 0);
-			}
-		}
-
-		[TestMethod]
-		public void CollectionCtorSingle ()
-		{
-			GradientStopCollection gsc = new GradientStopCollection ();
-			gsc.Add (new GradientStop ());
-			LinearGradientBrush rgb = new LinearGradientBrush (gsc, 0.0d);
-			CheckDefaults (rgb, 1);
-			Assert.IsTrue (Object.ReferenceEquals (gsc, rgb.GradientStops), "Same GradientStops");
-
-			GradientStop gs1 = rgb.GradientStops [0];
-			Assert.AreEqual ("#00000000", gs1.Color.ToString (), "1.Color");
-			Assert.AreEqual (0.0, gs1.Offset, "1.Offset");
-		}
-
-		static public void CheckDefaults (LinearGradientBrush lgb, int count)
-		{
-			Assert.AreEqual (0.0d, lgb.StartPoint.X, "Start.X");
-			Assert.AreEqual (0.0d, lgb.StartPoint.Y, "Start.Y");
-			GradientBrushTest.CheckDefaults (lgb, count);
+			SolidColorBrush scb = new SolidColorBrush ();
+			Assert.AreEqual ("#00000000", scb.Color.ToString (), "Color");
+			// SolidColorBrush's Transforms are non-null by default (false)
+			BrushTest.CheckDefaults (scb, false);
 		}
 
 		[TestMethod]
 		[MoonlightBug ("ML has the property Matrix frozen")]
 		public void EnsureNotFrozen ()
 		{
-			LinearGradientBrush lgb = new LinearGradientBrush ();
-			Assert.IsTrue (MatrixTransformTest.CheckFreezer (lgb.RelativeTransform as MatrixTransform), "RelativeTransform");
-			Assert.IsTrue (MatrixTransformTest.CheckFreezer (lgb.Transform as MatrixTransform), "Transform");
+			SolidColorBrush scb = new SolidColorBrush ();
+			Assert.IsTrue (MatrixTransformTest.CheckFreezer (scb.RelativeTransform as MatrixTransform), "RelativeTransform");
+			Assert.IsTrue (MatrixTransformTest.CheckFreezer (scb.Transform as MatrixTransform), "Transform");
 		}
 
 		[TestMethod]
 		[MoonlightBug ("Looks like a bad SL2 bug")]
 		public void Destructive ()
 		{
-			LinearGradientBrush lgb = new LinearGradientBrush ();
+			SolidColorBrush scb = new SolidColorBrush ();
 			// from this instance we can change all default values
-			BrushTest.DestructiveRelativeTransform (lgb);
-			BrushTest.DestructiveTransform (lgb);
+			BrushTest.DestructiveRelativeTransform (scb);
+			BrushTest.DestructiveTransform (scb);
 			// but it's safe to execute since we revert the changes
 		}
 
@@ -105,16 +71,16 @@ namespace MoonTest.System.Windows.Media {
 		[MoonlightBug ("the transform should not be nullable, but returned to the default value")]
 		public void RelativeTransform ()
 		{
-			LinearGradientBrush lgb = new LinearGradientBrush ();
-			BrushTest.RelativeTransform (lgb);
+			SolidColorBrush scb = new SolidColorBrush ();
+			BrushTest.RelativeTransform (scb);
 		}
 
 		[TestMethod]
 		[MoonlightBug ("the transform should not be nullable, but returned to the default value")]
 		public void Transform ()
 		{
-			LinearGradientBrush lgb = new LinearGradientBrush ();
-			BrushTest.Transform (lgb);
+			SolidColorBrush scb = new SolidColorBrush ();
+			BrushTest.Transform (scb);
 		}
 	}
 }
