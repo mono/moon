@@ -1,3 +1,24 @@
+2009-01-22  Chris Toshok  <toshok@ximian.com>
+
+	[ fixes to get http://www.life-silverlight.com/ to come up with
+	exceptions ]
+
+	* enums.cpp (initialize_enums): add a mapping for the property
+	VerticaalContentAlignment using the vertical_alignment_map.
+
+	* uielement.h, uielement.cpp: move SetVisualParent to the .cpp
+	file.  Also, call SetSurface in SetVisualParent, so things like
+	controls templates get the right surface assigned to them (they
+	have no logical parent, only a visual one.)
+
+	* contentpresenter.cpp (ContentPresenter::OnLoaded): follow the
+	other template stuff - create a temp namescope here.  it won't be
+	merged, so nothing to worry about.  Also, don't call
+	PrepareContentPresenter here.  do it after we look up text and
+	root in OnApplyTemplate.
+	(ContentPresenter::OnApplyTemplate): prepare the content
+	presenter.
+
 2009-01-22  Jeffrey Stedfast  <fejj@novell.com>
 
 	* contentpresenter.cpp (ContentPresenter::PrepareContentPresenter):

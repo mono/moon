@@ -51,7 +51,7 @@ ContentPresenter::OnLoaded ()
 	
 	if (!(t = GetTemplate ())) {
 		loader = new XamlLoader (NULL, DEFAULT_TEMPLATE, GetSurface ());
-		t = loader->CreateFromString (DEFAULT_TEMPLATE, true, NULL);
+		t = loader->CreateFromString (DEFAULT_TEMPLATE, false, NULL);
 		delete loader;
 		
 		SetTemplate ((ControlTemplate *) t);
@@ -60,8 +60,6 @@ ContentPresenter::OnLoaded ()
 	}
 	
 	Control::OnLoaded ();
-	
-	PrepareContentPresenter ();
 }
 
 void
@@ -69,6 +67,8 @@ ContentPresenter::OnApplyTemplate ()
 {
 	text = (TextBlock *) GetTemplateChild ("TextElement");
 	root = (Grid *) GetTemplateChild ("RootElement");
+	
+	PrepareContentPresenter ();
 }
 
 void

@@ -426,6 +426,15 @@ UIElement::CacheInvalidateHint ()
 }
 
 void
+UIElement::SetVisualParent (UIElement *visual_parent)
+{
+	this->visual_parent = visual_parent;
+
+	if (visual_parent && visual_parent->GetSurface () != GetSurface())
+		SetSurface (visual_parent->GetSurface());
+}
+
+void
 UIElement::ElementRemoved (UIElement *item)
 {
 	Invalidate (item->GetSubtreeBounds());
