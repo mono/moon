@@ -90,6 +90,7 @@ public class Munxap
 
 		// Main window
 		window = new Window ("munxap: " + File);
+		window.Resize (600, 600);
 		window.DeleteEvent += delegate (object obj, DeleteEventArgs args)
 		{
 			Close ();
@@ -101,7 +102,7 @@ public class Munxap
 
 		// label with the filename of the xap file on top
 		file_label = new Label (File);
-		main.PackStart (file_label, false, false, 0);
+		main.PackStart (file_label, false, true, 0);
 
 		// the middle consists of a hbox, leftmost column a list of files in the zip file
 		xap = new HBox (false, 10);
@@ -117,7 +118,7 @@ public class Munxap
 		xap_file_view.CursorChanged += HandleCursorChanged;
 		xap_file_scrollable = new ScrolledWindow ();
 		xap_file_scrollable.Add (xap_file_view);
-		xap.PackStart (xap_file_scrollable, false, true, 0);
+		xap.PackStart (xap_file_scrollable, true, true, 0);
 		
 		// close button at the bottom
 		close_button = new Button ("Close");
@@ -125,7 +126,7 @@ public class Munxap
 		{
 			Close ();
 		};
-		main.PackEnd (close_button, false, false, 0);
+		main.PackEnd (close_button, false, true, 0);
 
 		// Load zip contents
 		foreach (ZipContent f in zip.Files) {
