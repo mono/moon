@@ -1,3 +1,10 @@
+2009-01-24  Geoff Norton  <gnorton@novell.com>
+
+	* AssemblyPart.cs: Let the Application know when we've added an
+	assembly to it so that resources in it can be resolved.
+	* Assembly.cs: Change assemblies to a mutable List<T> since
+	AssemblyPart.Load can add assemblies.
+
 2009-01-23  Geoff Norton  <gnorton@novell.com>
 
 	* Application.cs: Implement GetResourceStream from zip packages.

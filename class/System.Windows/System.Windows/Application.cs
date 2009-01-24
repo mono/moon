@@ -48,7 +48,7 @@ namespace System.Windows {
 	public partial class Application : INativeDependencyObjectWrapper {
 
 		static ResourceDictionary resources;
-		static Assembly [] assemblies;
+		static List<Assembly> assemblies;
 		static Assembly entry_point_assembly;
 
 		//
@@ -283,8 +283,8 @@ namespace System.Windows {
 			//
 			// Load the assemblies from the XAP file, and find the startup assembly
 			//
-			assemblies = new Assembly [deployment.Parts.Count + 1];
-			assemblies [0] = typeof (Application).Assembly; // Add System.Windows.dll
+			assemblies = new List <Assembly> ();
+			assemblies.Add (typeof (Application).Assembly); // Add System.Windows.dll
 
 			for (int i = 0; i < deployment.Parts.Count; i++) {
 				var part = deployment.Parts [i];
@@ -294,7 +294,7 @@ namespace System.Windows {
 					if (entry_point_assembly == null && assembly.GetName ().Name == deployment.EntryPointAssembly)
 						entry_point_assembly = assembly;
 
-					assemblies [i + 1] = assembly;
+					assemblies.Add (assembly);
 					LoadXmlnsDefinitionMappings (assembly);
 				} catch (Exception e) {
 					Report.Error ("Error while loading the {0} assembly  {1}", part.Source, e);
@@ -477,6 +477,11 @@ namespace System.Windows {
 					return assembly;
 
 			return null;
+		}
+		
+		internal static void AddAssembly (Assembly assembly)
+		{
+			assemblies.Add (assembly);
 		}
 
 		public static StreamResourceInfo GetResourceStream (StreamResourceInfo zipPackageStreamResourceInfo, Uri uriResource)

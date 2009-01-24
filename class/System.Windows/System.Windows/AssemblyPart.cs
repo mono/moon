@@ -59,7 +59,12 @@ namespace System.Windows {
 				}
 			}
 
-			return Assembly.Load (buffer);
+			Assembly assembly = Assembly.Load (buffer);
+
+			if (assembly != null)
+				Application.AddAssembly (assembly);
+
+			return assembly;
 		}
 	}
 }
