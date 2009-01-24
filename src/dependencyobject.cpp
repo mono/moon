@@ -1595,7 +1595,7 @@ DependencyObject::SetLogicalParent (DependencyObject *logical_parent, MoonError 
 					// have a local namescope, but also needs to exist in its parent
 					// namescope so that this.FindName ("theName") works in its logical
 					// parent
-					if (Is(Type::USERCONTROL))
+					if (Is(Type::USERCONTROL) && parent_scope)
 						parent_scope->RegisterName (this->GetName (), this);
 				}
 			}
@@ -1635,7 +1635,7 @@ DependencyObject::SetLogicalParent (DependencyObject *logical_parent, MoonError 
 				// have a local namescope, but also needs to exist in its parent
 				// namescope as such we need to remove the registration from the
 				// old parent_scope here since we've been reparented.
-				if (Is(Type::USERCONTROL))
+				if (Is(Type::USERCONTROL) && parent_scope)
 					parent_scope->UnregisterName (this->GetName ());
 				UnregisterAllNamesRootedAt (parent_scope);
 			}

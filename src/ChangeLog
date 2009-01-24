@@ -1,3 +1,7 @@
+2009-01-23  Geoff Norton  <gnorton@novell.com>
+
+	* dependencyobject.cpp:  Avoid a SIGSEGV if the parent_scope is null.
+
 2009-01-23  Jeffrey Stedfast  <fejj@novell.com>
 
 	* utils.cpp (managed_stream_read_func): Fixed to do as intended.
