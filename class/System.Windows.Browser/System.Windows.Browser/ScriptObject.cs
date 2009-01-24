@@ -131,7 +131,7 @@ namespace System.Windows.Browser {
 		[SecuritySafeCritical ()]
 		public virtual object Invoke (string name, params object [] args)
 		{
-			throw new System.NotImplementedException ();
+			return HtmlObject.InvokeInternal <object> (handle, name, args);
 		}
 
 		[SecuritySafeCritical ()]

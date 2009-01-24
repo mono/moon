@@ -1,3 +1,7 @@
+2009-01-21  Geoff Norton  <gnorton@novell.com>
+
+	* ScriptObject.cs: Hook up Invoke
+
 2009-01-21  Jb Evain  <jbevain@novell.com>
 
 	* HtmlPage.cs: delay creation of the BrowserInformation object
