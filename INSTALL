@@ -14,11 +14,11 @@ Moonlight: Core Support
 
 		svn co -r 10885 svn://svn.mplayerhq.hu/ffmpeg/trunk ffmpeg
 
-	Then configure:
+	Then configure ffmpeg:
 
 		./configure --enable-shared
 
-	Build and install:
+	Build and install ffmpeg:
 
 			make && make install
 
@@ -85,18 +85,42 @@ Configuration Options
 		To enable audio using the Pulse Audio stack, this can
 		be mixed with --with-alsa=yes
 
+
 Moonlight: Silverlight 2.0 API support
 ======================================
 
 	If you want to support the Silverlight 2.0 API (managed
 	support, this includes the Mono runtime and .NET APIs to run
-	apps) you will need in addition to:
+	apps) you will need to:
 
 		* Install Mono from SVN (you need both the mono and
 	  	  mcs modules).
 
 		  Use the --with-moonlight=yes option to configure
 
-	The current public API reflects the API as it was published in
-	Mix 07.  The 1.1 API.
 
+
+Installing Moonlight
+====================
+
+	(Note: if you are building Moonlight from an svn checkout,
+	you'll need to run ./autogen.sh first.)
+
+	Configure the build system by running ./configure with any
+	configuration options you might want (see the "Configuration
+	Options" section). For example, a typical command might be:
+
+		./configure --with-managed=yes
+
+	Once ./configure has finished, you'll need to actually compile
+	and install Moonlight using the following command:
+
+		make && make install
+
+	After Moonlight has finished building and installing, you'll
+	need to install the plugin so that Firefox will be able to
+	load it when it encounters a Silverlight-enabled website:
+
+		make test-plugin
+
+	Moonlight should now be properly installed and ready to be used.
