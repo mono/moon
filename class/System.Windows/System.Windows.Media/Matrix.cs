@@ -149,6 +149,7 @@ namespace System.Windows.Media {
 			m_22 = 1.0;
 			offset_x = 0.0;
 			offset_y = 0.0;
+			init = true;
 		}
 
 

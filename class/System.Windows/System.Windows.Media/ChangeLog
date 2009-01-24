@@ -1,3 +1,8 @@
+2009-01-23  Geoff Norton  <gnorton@novell.com>
+
+	* Matrix.cs: Not nuking any values we put into matrix every time we touch
+	it is a nice thing for the world.
+
 2009-01-23  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* LinearGradientBrush.cs: call default ctor
