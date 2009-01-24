@@ -2799,7 +2799,7 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 		
 		if (errno || endptr == str || *endptr) {
 			if ((!strcmp (prop_name, "Width") || !strcmp (prop_name, "Height"))
-			    && !strcmp (str, "Auto"))
+			    && !strcasecmp (str, "Auto"))
 				d = NAN;
 			else 
 				return false;

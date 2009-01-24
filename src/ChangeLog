@@ -1,5 +1,9 @@
 2009-01-23  Geoff Norton  <gnorton@novell.com>
 
+	* xaml.cpp:  This is case-insensitive here too.
+
+2009-01-23  Geoff Norton  <gnorton@novell.com>
+
 	* dependencyobject.cpp:  Avoid a SIGSEGV if the parent_scope is null.
 
 2009-01-23  Jeffrey Stedfast  <fejj@novell.com>
