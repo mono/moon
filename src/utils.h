@@ -16,6 +16,7 @@
 
 #include <glib.h>
 #include <cairo.h>
+#include <sys/types.h>
 
 #include "zip/unzip.h"
 
