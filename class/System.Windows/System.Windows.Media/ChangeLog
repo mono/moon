@@ -1,3 +1,10 @@
+2009-01-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* GradientBrush.cs: Add missing [ContentProperty]
+	* GradientStop.cs: Add missing [ContentProperty]
+	* SolidColorBrush.cs: Add missing [ContentProperty]
+	* StyleSimulations.cs: Add missing [Flags]
+
 2009-01-23  Geoff Norton  <gnorton@novell.com>
 
 	* Matrix.cs: Not nuking any values we put into matrix every time we touch

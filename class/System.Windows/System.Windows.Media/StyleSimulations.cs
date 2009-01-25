@@ -27,6 +27,8 @@
 //
 
 namespace System.Windows.Media {
+
+	[Flags]
 	public enum StyleSimulations {
 		None                 = 0x00,
 		BoldSimulation       = 0x01,
