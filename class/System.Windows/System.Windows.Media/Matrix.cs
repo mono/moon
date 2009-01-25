@@ -26,9 +26,11 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using Mono;
+
 namespace System.Windows.Media {
 
-	public struct Matrix : IFormattable {
+	public unsafe struct Matrix : IFormattable {
 
 		private double m_11;
 		private double m_12;
@@ -39,6 +41,22 @@ namespace System.Windows.Media {
 		// we can't have an empty ctor for a struct (CS0568) but the default matrix is identity
 		private bool init;
 
+
+		internal unsafe Matrix (IntPtr native)
+		{
+			if (native == IntPtr.Zero) {
+				SetIdentity ();
+			} else {
+				double *dp = (double*) NativeMethods.matrix_get_matrix_values (native);
+				m_11 = dp [0];
+				m_12 = dp [1];
+				m_21 = dp [2];
+				m_22 = dp [3];
+				offset_x = dp [4];
+				offset_y = dp [5];
+				init = true;
+			}
+		}
 
 		public Matrix (double m11, double m12, double m21, double m22, double offsetX, double offsetY)
 		{

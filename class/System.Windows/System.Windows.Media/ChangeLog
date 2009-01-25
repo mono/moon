@@ -1,3 +1,9 @@
+2009-01-25  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Matrix.cs: Add new unsafe ctor (to reduce duplication)
+	* TransformGroup.cs: Add missing [ContentProperty]. Implement Value
+	property. 
+
 2009-01-25  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* GradientBrush.cs: Add missing [ContentProperty]

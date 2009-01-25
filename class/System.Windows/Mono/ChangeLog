@@ -1,3 +1,8 @@
+2009-01-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* GeneratedPInvokes.cs: Regenerated
+	* Value.cs: Use new Matrix unsafe ctor
+
 2009-01-23  Andreia Gaita  <avidigal@novell.com>
 
 	* NativeMethods.cs: Add time_manager_remove_tick_call

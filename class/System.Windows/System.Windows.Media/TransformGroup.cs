@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2007 Novell, Inc.
+// Copyright 2007, 2009 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -25,11 +25,20 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+
+using System.Windows.Markup;
 using Mono;
+
 namespace System.Windows.Media {
+
+	[ContentProperty ("Children")]
 	public sealed partial class TransformGroup : Transform {
+
 		public Matrix Value {
-			get { throw new System.NotImplementedException (); }
+			get {
+				IntPtr matrix = NativeMethods.general_transform_get_matrix (native);
+				return new Matrix (matrix);
+			}
 		}
 	}
 }

@@ -768,6 +768,10 @@ namespace Mono {
 		public extern static IntPtr general_transform_new ();
 
 		[DllImport ("moon")]
+		// Matrix *general_transform_get_matrix (GeneralTransform *instance);
+		public extern static IntPtr general_transform_get_matrix (IntPtr instance);
+
+		[DllImport ("moon")]
 		// Geometry *geometry_new ();
 		public extern static IntPtr geometry_new ();
 

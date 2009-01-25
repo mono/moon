@@ -205,8 +205,7 @@ namespace Mono {
 					
 				case Kind.MATRIX:
 				case Kind.UNMANAGEDMATRIX: {
-					double *dp = (double*) NativeMethods.matrix_get_matrix_values (val->u.p);
-					return new Matrix (dp [0], dp [1], dp [2], dp [3], dp [4], dp [5]);					
+					return new Matrix (val->u.p);
 				}
 					
 				case Kind.DURATION: {
