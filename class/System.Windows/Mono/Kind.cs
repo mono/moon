@@ -41,7 +41,6 @@ namespace Mono {
 		COLUMNDEFINITION_COLLECTION,// Silverlight 2.0 only
 		CONTENTCHANGEDEVENTARGS,// Silverlight 2.0 only
 		CONTENTCONTROL,// Silverlight 2.0 only
-		CONTENTPRESENTER,// Silverlight 2.0 only
 		CONTROL,// Silverlight 2.0 only
 		CONTROLTEMPLATE,// Silverlight 2.0 only
 		CORNERRADIUS,// Silverlight 2.0 only

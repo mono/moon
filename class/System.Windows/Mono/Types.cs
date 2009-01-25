@@ -39,15 +39,15 @@ namespace Mono
 	 *  TODO:
 	 *  - Find out when to call Free.
 	 */
-	internal static partial class Types
+	internal partial class Types
 	{
-		private static IntPtr native;
-		private static Dictionary<Type,ManagedType> types = new Dictionary<Type,ManagedType> ();
-		private static object sync_object = new object ();
+		private IntPtr native;
+		private Dictionary<Type,ManagedType> types = new Dictionary<Type,ManagedType> ();
+		private object sync_object = new object ();
 		
-		static Types()
+		public Types(IntPtr raw)
 		{
-			native = NativeMethods.types_new ();
+			native = raw;
 			CreateNativeTypes ();
 #if SANITY
 			foreach (Kind k in Enum.GetValues (typeof (Kind))) {
@@ -65,22 +65,21 @@ namespace Mono
 		}
 		
 #if notyet
-		private static void Free ()
+		private void Free ()
 		{
 			// TODO: How do we free the per-domain types? There's no static dtor...
 			foreach (ManagedType ti in types.Values) {
 				ti.gc_handle.Free ();
 			}
-			NativeMethods.types_free (native);
 			native = IntPtr.Zero;
 		}
 #endif
 		
-		public static IntPtr Native {
+		public IntPtr Native {
 			get { return native; }
 		}
 		
-		public static ManagedType Find (Type type)
+		public ManagedType Find (Type type)
 		{
 			ManagedType info;
 			ManagedType parent;
@@ -98,7 +97,7 @@ namespace Mono
 		}
 		
 
-		private static ManagedType RegisterType (Type type, ManagedType parent)
+		private ManagedType RegisterType (Type type, ManagedType parent)
 		{
 			ManagedType info;
 		
@@ -121,7 +120,7 @@ namespace Mono
 			return info;
 		}
 		
-		public static Type KindToType (Kind kind)
+		public Type KindToType (Kind kind)
 		{
 			foreach (ManagedType type in types.Values) {
 				if (type.native_handle == kind)
@@ -130,7 +129,7 @@ namespace Mono
 			return null;
 		}
 		
-		public static Kind TypeToKind (Type type)
+		public Kind TypeToKind (Type type)
 		{
 			ManagedType mt;
 			
@@ -140,7 +139,7 @@ namespace Mono
 			return (Kind) mt.native_handle;
 		}
 
-		public static Kind TypeToNativeKind (Type type)
+		public Kind TypeToNativeKind (Type type)
 		{
 			while (type != typeof (object)) {
 				Kind kind = TypeToKind (type);

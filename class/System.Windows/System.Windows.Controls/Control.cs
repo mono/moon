@@ -60,12 +60,9 @@ namespace System.Windows.Controls {
 		}
 
 		protected static readonly System.Windows.DependencyProperty DefaultStyleKeyProperty = 
-			DependencyProperty.Register (
-				"DefaultStyleKey",
-				typeof (object),
-				typeof (Control),
-				null
-			);
+			DependencyProperty.Lookup (Kind.CONTROL,
+						   "DefaultStyleKey",
+						   typeof (object));
 
 		public bool IsEnabled {
 			get { return (bool) GetValue (IsEnabledProperty); }

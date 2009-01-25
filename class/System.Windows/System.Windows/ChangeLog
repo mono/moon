@@ -1,3 +1,26 @@
+2009-01-25  Chris Toshok  <toshok@ximian.com>
+
+	* FrameworkElement.cs (InvokeLoaded): make this virtual again so
+	ContentPresenter can override it to build its visual tree before
+	emitting the event.
+
+	* Application.cs (CreateFromXap): this needs to move to
+	deployment, but in the meantime, at least don't create the
+	deployment here.  we assume Deployment.Current is valid and set to
+	the right value (the plugin does this before creating the
+	application).  Use loader.Hydrate to fill it in.
+
+	* DependencyObject.cs: change GetKind() to always do a type lookup
+	and a return of the native_handle, instead of relying on the
+	virtual method and overriding it (which doesn't work on custom
+	types, since they don't override it)
+
+	* DependencyProperty.cs: s/Types/Deployment.Current.Types/
+	
+	* Deployment.cs: implement this in terms of the new generated
+	pinvokes for the unmanaged Deployment class.  add the Types
+	instance property.
+
 2009-01-24  Geoff Norton  <gnorton@novell.com>
 
 	* AssemblyPart.cs: Let the Application know when we've added an

@@ -1,3 +1,10 @@
+2009-01-25  Chris Toshok  <toshok@ximian.com>
+
+	* ContentPresenter.cs: move the 90% implementation back here.
+
+	* Control.cs: don't register the DefaultStyleKey property - the
+	unmanaged code already does it.  Just look it up here.
+
 2009-01-22  Jeffrey Stedfast  <fejj@novell.com>
 
 	* ContentPresenter.cs: Simplified by ripping out most of the code

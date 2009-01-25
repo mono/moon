@@ -255,15 +255,21 @@ namespace System.Windows {
 				Report.Error ("No AppManifest.xaml found on the XAP package");
 				return null;
 			}
-			
-			object result = loader.CreateDependencyObjectFromFile (app_manifest, true);
-			if (result == null){
-				Report.Error ("Invalid AppManifest.xaml file");
+
+			string app_manifest_contents;
+
+			using (StreamReader r = new StreamReader (app_manifest))
+				app_manifest_contents = r.ReadToEnd();
+
+			Deployment deployment = Deployment.Current;
+
+			try {
+				loader.Hydrate (deployment.native, app_manifest_contents);
+			}
+			catch (Exception e) {
+				Report.Error (e.ToString());
 				return null;
 			}
-
-			Deployment deployment = (Deployment) result;
-			Deployment.Current = deployment;
 
 			if (deployment.EntryPointAssembly == null) {
 				Report.Error ("AppManifest.xaml: No EntryPointAssembly found");

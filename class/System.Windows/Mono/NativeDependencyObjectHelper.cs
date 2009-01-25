@@ -56,7 +56,7 @@ namespace Mono {
 			
 			CheckNativeAndThread (wrapper);
 
-			IntPtr val = NativeMethods.dependency_object_get_value (wrapper.NativeHandle, Types.TypeToKind (wrapper.GetType ()), dp.Native);
+			IntPtr val = NativeMethods.dependency_object_get_value (wrapper.NativeHandle, Deployment.Current.Types.TypeToKind (wrapper.GetType ()), dp.Native);
 			if (val != IntPtr.Zero)
 				result = Value.ToObject (dp.PropertyType, val);
 			
@@ -212,6 +212,7 @@ namespace Mono {
 			case Kind.ASSEMBLYPART_COLLECTION: return new AssemblyPartCollection (raw);
 			case Kind.BEGINSTORYBOARD: return new BeginStoryboard (raw);
 			case Kind.BEZIERSEGMENT: return new BezierSegment (raw);
+				//			case Kind.BINDINGEXPRESSION: return new BindingExpression (raw);
 			case Kind.BITMAPIMAGE: return new BitmapImage (raw);
 			case Kind.BORDER: return new Border (raw);
 			case Kind.CANVAS: return new Canvas (raw);
@@ -219,7 +220,6 @@ namespace Mono {
 			case Kind.COLORKEYFRAME_COLLECTION: return new ColorKeyFrameCollection (raw);
 			case Kind.COLUMNDEFINITION: return new ColumnDefinition (raw);
 			case Kind.COLUMNDEFINITION_COLLECTION: return new ColumnDefinitionCollection (raw);
-			case Kind.CONTENTPRESENTER: return new ContentPresenter (raw);
 			case Kind.CONTROLTEMPLATE: return new ControlTemplate (raw);
 			case Kind.DATATEMPLATE: return new DataTemplate (raw);
 			case Kind.DEPLOYMENT: return new Deployment (raw);

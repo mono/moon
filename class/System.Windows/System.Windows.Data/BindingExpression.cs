@@ -31,7 +31,7 @@ using Mono;
 
 namespace System.Windows.Data
 {
-	class BindingExpression : BindingExpressionBase
+	internal class BindingExpression : BindingExpressionBase
 	{
 //		GetValueCallback gv_callback;
 //		SetValueCallback sv_callback;

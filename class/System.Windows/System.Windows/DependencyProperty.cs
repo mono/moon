@@ -110,8 +110,8 @@ namespace System.Windows {
 				propertyType = propertyType.GetGenericArguments () [0];
 			}
 			
-			property_type = Types.Find (propertyType);
-			owner_type = Types.Find (ownerType);
+			property_type = Deployment.Current.Types.Find (propertyType);
+			owner_type = Deployment.Current.Types.Find (ownerType);
 
 			if (metadata != null) {
 				handler = NativePropertyChangedCallback;
@@ -237,7 +237,7 @@ namespace System.Windows {
 				return result;
 
 			if (create)
-				return new DependencyProperty (handle, property_type, Types.KindToType (declaring_kind), name);
+				return new DependencyProperty (handle, property_type, Deployment.Current.Types.KindToType (declaring_kind), name);
 			return null;
 		}
 		
@@ -258,7 +258,7 @@ namespace System.Windows {
 		}
 				
 		internal bool IsValueType {
-			get { return NativeMethods.type_get_value_type (Types.TypeToKind (PropertyType)); }
+			get { return NativeMethods.type_get_value_type (Deployment.Current.Types.TypeToKind (PropertyType)); }
 		}
 		
 		internal Type DeclaringType {

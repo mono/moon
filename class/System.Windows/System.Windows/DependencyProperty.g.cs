@@ -363,21 +363,6 @@ namespace System.Windows.Controls {
 		}
 	}
 
-	partial class ContentPresenter {
-		public static readonly DependencyProperty ContentProperty = DependencyProperty.Lookup (Kind.CONTENTPRESENTER, "Content", typeof (object));
-		public static readonly DependencyProperty ContentTemplateProperty = DependencyProperty.Lookup (Kind.CONTENTPRESENTER, "ContentTemplate", typeof (DataTemplate));
-
-		public object Content {
-			get { return (object) GetValue (ContentProperty); }
-			set { SetValue (ContentProperty, value); }
-		}
-
-		public DataTemplate ContentTemplate {
-			get { return (DataTemplate) GetValue (ContentTemplateProperty); }
-			set { SetValue (ContentTemplateProperty, value); }
-		}
-	}
-
 	partial class Control {
 		public static readonly DependencyProperty BackgroundProperty = DependencyProperty.Lookup (Kind.CONTROL, "Background", typeof (Brush));
 		public static readonly DependencyProperty BorderBrushProperty = DependencyProperty.Lookup (Kind.CONTROL, "BorderBrush", typeof (Brush));

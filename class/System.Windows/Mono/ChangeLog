@@ -1,3 +1,17 @@
+2009-01-25  Chris Toshok  <toshok@ximian.com>
+
+	* Types.cs: this is no longer a static class, but a private
+	instance field of Deployment.Current.
+
+	* ManagedXamlLoader.cs, MoonlightTypeConverter.cs: s/Types/Deployment.Current.Types/
+
+	* NativeDependencyObjectHelper.cs:
+	s/Types/Deployment.Current.Types/, and remove
+	CONTENTPRESENTER (and add a commented out BINDINGEXPRESSION) case
+	to the switch.
+	
+	* Kind.cs, Types.g.cs, GeneratedPInvokes: regen.
+
 2009-01-25  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* GeneratedPInvokes.cs: Regenerated

@@ -8,8 +8,8 @@ using System.Reflection;
 using System.Collections.Generic;
 
 namespace Mono {
-	static partial class Types {
-		private static void CreateNativeTypes ()
+	partial class Types {
+		private void CreateNativeTypes ()
 		{
 			Type t;
 			try {
@@ -73,8 +73,6 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.COLUMNDEFINITION_COLLECTION));
 				t = typeof (System.Windows.Controls.ContentControl); 
 				types.Add (t, new ManagedType (t, Kind.CONTENTCONTROL));
-				t = typeof (System.Windows.Controls.ContentPresenter); 
-				types.Add (t, new ManagedType (t, Kind.CONTENTPRESENTER));
 				t = typeof (System.Windows.Controls.Control); 
 				types.Add (t, new ManagedType (t, Kind.CONTROL));
 				t = typeof (System.Windows.Controls.ControlTemplate); 

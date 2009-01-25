@@ -230,7 +230,7 @@ namespace Mono.Xaml
 				value = Value.FromObject (res, true);
 			} else {
 				value = Value.Empty;
-				value.k = Types.TypeToNativeKind (type);
+				value.k = Deployment.Current.Types.TypeToNativeKind (type);
 			}
 
 			return true;
@@ -245,7 +245,7 @@ namespace Mono.Xaml
 					return false;
 				}
 				value = Value.Empty;
-				value.k = Types.TypeToNativeKind (type);
+				value.k = Deployment.Current.Types.TypeToNativeKind (type);
 				return true;
 			}
 
@@ -586,7 +586,7 @@ namespace Mono.Xaml
 				walk = walk.BaseType;
 			}
 
-			ManagedType mt = Types.Find (target_type);
+			ManagedType mt = Deployment.Current.Types.Find (target_type);
 			DependencyProperty dp = DependencyProperty.Lookup ((Kind) mt.native_handle, str_value);
 
 			return dp;

@@ -30,6 +30,7 @@ using Mono;
 using System;
 using System.ComponentModel;
 using System.Globalization;
+using System.Windows;
 using System.Windows.Input;
 
 namespace Mono {
@@ -48,7 +49,7 @@ namespace Mono {
 			    || destinationType == typeof (Cursor))
 				destinationType = typeof (Int32);
 
-			destinationKind = Types.TypeToKind (destinationType);
+			destinationKind = Deployment.Current.Types.TypeToKind (destinationType);
 			if (destinationKind == Kind.INVALID)
 				throw new InvalidOperationException (string.Format ("Cannot convert to type {0} (property {1})", destinationType, propertyName));
 		}

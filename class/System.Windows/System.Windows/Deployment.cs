@@ -34,12 +34,17 @@ namespace System.Windows {
 
 	public sealed partial class Deployment : DependencyObject {
 
-		static Deployment current;
-
 		public static Deployment Current {
 			[SecuritySafeCritical]
-			get { return current; }
-			internal set { current = value; }
+			get {
+				IntPtr dep = NativeMethods.deployment_get_current ();
+				return NativeDependencyObjectHelper.Lookup (Kind.DEPLOYMENT, dep) as Deployment;
+			}
+
+			[SecuritySafeCritical]
+			internal set {
+				NativeMethods.deployment_set_current (value == null ? IntPtr.Zero : value.native);
+			}
 		}
 	
 		[SecurityCritical]
@@ -51,7 +56,17 @@ namespace System.Windows {
 		[SecurityCritical]
 		public static void SetCurrentApplication (Application application)
 		{
+			NativeMethods.deployment_set_current_application (Current.native, application.NativeHandle);
 			throw new System.NotImplementedException ();
+		}
+
+		Types types;
+		internal Types Types {
+			get {
+				if (types == null)
+					types = new Types (NativeMethods.deployment_get_types (native));
+				return types;
+			}
 		}
 	}
 }

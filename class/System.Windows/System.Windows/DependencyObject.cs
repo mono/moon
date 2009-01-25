@@ -196,9 +196,9 @@ namespace System.Windows {
 			return GetKind ();
 		}
 
-		internal virtual Kind GetKind ()
+		internal Kind GetKind ()
 		{
-			return Kind.DEPENDENCY_OBJECT;
+			return Deployment.Current.Types.Find (GetType()).native_handle;
 		}
 
 		[System.ComponentModel.EditorBrowsable (System.ComponentModel.EditorBrowsableState.Never)]

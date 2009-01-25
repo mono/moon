@@ -150,7 +150,7 @@ namespace System.Windows {
 			}
 		}
 
-		internal void InvokeLoaded ()
+		internal virtual void InvokeLoaded ()
 		{
 			// this event is special, in that it is a
 			// RoutedEvent that doesn't bubble, so we
