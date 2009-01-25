@@ -150,11 +150,6 @@ class Generator {
 				text.AppendLine (" {}");
 			}
 
-			// GetKind
-			text.Append ("\t\tinternal override Kind GetKind () { return Kind.");
-			text.Append (type.KindName);
-			text.AppendLine ("; }");
-			
 			text.AppendLine ("\t}");
 		}
 		text.AppendLine ("}");		
@@ -1168,8 +1163,8 @@ class Generator {
 		text.AppendLine ("using System.Collections.Generic;");
 		text.AppendLine ("");
 		text.AppendLine ("namespace Mono {");
-		text.AppendLine ("\tstatic partial class Types {");
-		text.AppendLine ("\t\tprivate static void CreateNativeTypes ()");
+		text.AppendLine ("\tpartial class Types {");
+		text.AppendLine ("\t\tprivate void CreateNativeTypes ()");
 		text.AppendLine ("\t\t{");
 		text.AppendLine ("\t\t\tType t;");
 		text.AppendLine ("\t\t\ttry {");
@@ -1760,9 +1755,6 @@ class Generator {
 		foreach (ParameterInfo parameter in cmethod.Parameters) {
 			if (parameter.Name == "surface" && parameter.ParameterType.Value == "Surface*") {
 				parameter.ManagedWrapperCode = "Mono.Xaml.XamlLoader.SurfaceInDomain";
-				generate_wrapper = true;
-			} else if (parameter.Name == "additional_types" && parameter.ParameterType.Value == "Types*") {
-				parameter.ManagedWrapperCode = "Mono.Types.Native";
 				generate_wrapper = true;
 			} else if (parameter.Name == "error" && parameter.ParameterType.Value == "MoonError*") {
 				marshal_moonerror = true;

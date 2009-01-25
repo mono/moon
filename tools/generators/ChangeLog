@@ -1,3 +1,10 @@
+2009-01-25  Chris Toshok  <toshok@ximian.com>
+
+	* Generator.cs: don't output the GetKind methods in
+	DependencyObject.g.cs, and also make Types.g.cs not static.  Also,
+	remove the additional_types handling, since we don't need to pass
+	that anymore.
+
 2009-01-21  Jackson Harper  <jackson@ximian.com>
 
 	* Generator.cs: Add some managed types.
