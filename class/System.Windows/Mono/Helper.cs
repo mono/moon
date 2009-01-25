@@ -119,24 +119,19 @@ namespace Mono {
 
 		public static void SetPropertyFromString (object target, PropertyInfo pi, string value, out string error, out IntPtr unmanaged_value)
 		{
-			Console.WriteLine ("a");
 			unmanaged_value = IntPtr.Zero;
 			error = null;
 
 			// if the property has a TypeConverter
 			// associated with it (or the property's type
 			// does), try to use that first
-			Console.WriteLine ("b");
 			TypeConverter converter = GetConverterFor (pi, pi.PropertyType);
 			if (converter != null && converter.CanConvertFrom (typeof (string))) {
-			Console.WriteLine ("c");
 				try {
 					pi.SetValue (target, converter.ConvertFrom (value), null);
 				} catch (Exception e) {
-			Console.WriteLine ("d");
 					error = e.ToString ();
 				}
-			Console.WriteLine ("e");
 				return;
 			}
 
@@ -145,45 +140,31 @@ namespace Mono {
 			// be able to just convert it in managed code.
 			//
 			if (IsAssignableToIConvertible (pi.PropertyType)) {
-			Console.WriteLine ("f");
 				object res = ValueFromConvertible (pi.PropertyType, value);
 				if (res != null) {
-			Console.WriteLine ("g");
 					try {
-			Console.WriteLine ("h");
 						pi.SetValue (target, res, null);
 					} catch (Exception e) {
-			Console.WriteLine ("i");
-			Console.WriteLine (e);
 						error = e.ToString ();
 					}
-			Console.WriteLine ("j");
 					return;
 				}
 			}
 			else if (pi.PropertyType == typeof (object)) {
-			Console.WriteLine ("k");
 				try {
-			Console.WriteLine ("l");
 					pi.SetValue (target, (object)value, null);
 				} catch (Exception e) {
-			Console.WriteLine ("m");
 					error = e.ToString ();
 				}
-			Console.WriteLine ("n");
 				return;
 			}
 
 			if (pi.PropertyType.IsEnum) {
-			Console.WriteLine ("o");
 				try {
-			Console.WriteLine ("p");
 					pi.SetValue (target, Enum.Parse (pi.PropertyType, value), null);
 				} catch (Exception e) {
-			Console.WriteLine ("q");
 					error = e.ToString ();
 				}
-			Console.WriteLine ("r");
 				return;
 			}
 
@@ -213,10 +194,8 @@ namespace Mono {
 			// parser will create a managed wrapper for the object and call SetPropertyFromValue with
 			// the managed object
 			//
-			Console.WriteLine ("s");
 			bool result = NativeMethods.value_from_str_with_typename (TypeToMoonType (pi.PropertyType), pi.Name, value, out unmanaged_value, true);
 			if (!result) {
-			Console.WriteLine ("s");
 				error = string.Format ("unable to convert to type {0} from a string", pi.PropertyType);
 			}
 		}
