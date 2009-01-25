@@ -1,3 +1,8 @@
+2009-01-25  Geoff Norton  <gnorton@novell.com>
+
+	* plugin.cpp: We initialize a Deployment for every plugin regardless
+	of wether its 1.0 or 2.0 context now.
+
 2009-01-25  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.cpp (PluginInstance::CreatePluginAppDomain): create/set

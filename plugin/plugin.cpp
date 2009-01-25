@@ -1106,10 +1106,8 @@ PluginInstance::LoadXAML ()
 void
 PluginInstance::LoadXAP (const char *fname)
 {
-	if (MonoInit () && CreatePluginAppDomain ()) {
-		ManagedCreateApplication (fname);
-		xap_loaded = true;
-	}
+	ManagedCreateApplication (fname);
+	xap_loaded = true;
 }
 
 void
@@ -1259,9 +1257,12 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 	AddSource (stream->url, fname);
 #endif
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
-		if (xaml_loader != NULL)
-			delete xaml_loader;
+		delete xaml_loader;
 		
+		if (!MonoInit () || !CreatePluginAppDomain ()) {
+			g_warning ("Couldn't initialize Mono or create the plugin AppDomain");
+			return;
+		}
 #if PLUGIN_SL_2_0
 		// FIXME horrible hack to test sl2 sites that use the sl1
 		// mimetype.
