@@ -44,18 +44,17 @@ namespace System.Windows.Media {
 
 		internal unsafe Matrix (IntPtr native)
 		{
-			if (native == IntPtr.Zero) {
-				SetIdentity ();
-			} else {
-				double *dp = (double*) NativeMethods.matrix_get_matrix_values (native);
-				m_11 = dp [0];
-				m_12 = dp [1];
-				m_21 = dp [2];
-				m_22 = dp [3];
-				offset_x = dp [4];
-				offset_y = dp [5];
-				init = true;
-			}
+			if (native == IntPtr.Zero)
+				throw new ArgumentNullException ("native");
+
+			double *dp = (double*) NativeMethods.matrix_get_matrix_values (native);
+			m_11 = dp [0];
+			m_12 = dp [1];
+			m_21 = dp [2];
+			m_22 = dp [3];
+			offset_x = dp [4];
+			offset_y = dp [5];
+			init = true;
 		}
 
 		public Matrix (double m11, double m12, double m21, double m22, double offsetX, double offsetY)
