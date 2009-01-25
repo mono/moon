@@ -31,6 +31,7 @@
 #include "windowless.h"
 #include "window-gtk.h"
 #include "unzip.h"
+#include "deployment.h"
 
 #define Visual _XxVisual
 #define Region _XxRegion
@@ -1945,6 +1946,10 @@ PluginInstance::CreatePluginAppDomain ()
 	}
 
 	printf ("Plugin AppDomain Creation: %s\n", result ? "OK" : "Failed");
+
+	Deployment *deployment = new Deployment ();
+	// assigns this deployment to this app domain.
+	Deployment::SetCurrent (deployment);
 
 	return result;
 }

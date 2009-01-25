@@ -1,3 +1,9 @@
+2009-01-25  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (PluginInstance::CreatePluginAppDomain): create/set
+	the deployment for this plugin before we return, so it's set
+	before Application.CreateFromXap is called.
+
 2009-01-23  Geoff Norton  <gnorton@novell.com>
 
 	* plugin.cpp: Force keep-delegates on in SVN (only if a custom
