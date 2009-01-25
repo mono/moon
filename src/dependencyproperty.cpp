@@ -117,20 +117,20 @@ DependencyProperty::GetDependencyProperty (Type::Kind type, const char *name, bo
 }
 
 DependencyProperty *
-DependencyProperty::GetDependencyPropertyFull (Types *additional_types, Type::Kind type, const char *name, bool inherits)
+DependencyProperty::GetDependencyPropertyFull (Type::Kind type, const char *name, bool inherits)
 {
 	DependencyProperty *property;
 	
 	property = GetDependencyProperty (type, name, inherits);
 	
-	if (property == NULL && additional_types != NULL) {
-              Type *t = additional_types->Find (type);
-              if (t == NULL)
-                     return NULL;
+	if (property == NULL) {
+		Type *t = Type::Find (type);
+		if (t == NULL)
+			return NULL;
 
-              property = GetDependencyProperty (t, name, false);
-              if (property == NULL && t->GetParent () != Type::INVALID)
-                     return GetDependencyPropertyFull (additional_types, t->GetParent (), name, inherits);
+		property = GetDependencyProperty (t, name, false);
+		if (property == NULL && t->GetParent () != Type::INVALID)
+			return GetDependencyPropertyFull (t->GetParent (), name, inherits);
 	}
 
 	return property;
@@ -220,23 +220,23 @@ DependencyProperty::RegisterNullable (Type::Kind type, const char *name, Type::K
 DependencyProperty *
 DependencyProperty::RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator)
 {
-	return RegisterFull (NULL, Type::Find (type), name, default_value, vtype, attached, readonly, always_change, changed_callback, validator, false);
+	return RegisterFull (Type::Find (type), name, default_value, vtype, attached, readonly, always_change, changed_callback, validator, false);
 }
 
 DependencyProperty *
-DependencyProperty::RegisterFull (Types *additional_types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback)
+DependencyProperty::RegisterCustom (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback)
 {
-	return RegisterFull (additional_types, additional_types->Find (type), name, default_value, vtype, attached, readonly, always_change, changed_callback, NULL, true);
+	return RegisterFull (Type::Find (type), name, default_value, vtype, attached, readonly, always_change, changed_callback, NULL, true);
 }
 
 DependencyProperty *
-DependencyProperty::RegisterManagedProperty (Types *additional_types, const char *name, Type::Kind property_type, Type::Kind owner_type, Value *default_value, bool attached, bool readonly, NativePropertyChangedHandler *callback)
+DependencyProperty::RegisterManagedProperty (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *default_value, bool attached, bool readonly, NativePropertyChangedHandler *callback)
 {
 	if (default_value && default_value->GetKind () == Type::INVALID)
 		default_value = NULL;
 	else
 		default_value = new Value (*default_value);
-	return DependencyProperty::RegisterFull (additional_types, owner_type, name, default_value, property_type, attached, readonly, false, callback);
+	return DependencyProperty::RegisterFull (owner_type, name, default_value, property_type, attached, readonly, false, callback);
 }
 
 //
@@ -245,7 +245,7 @@ DependencyProperty::RegisterManagedProperty (Types *additional_types, const char
 // stored in the dependency property is of type @vtype
 //
 DependencyProperty *
-DependencyProperty::RegisterFull (Types *additional_types, Type *type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator, bool is_custom)
+DependencyProperty::RegisterFull (Type *type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator, bool is_custom)
 {
 	DependencyProperty *property;
 	

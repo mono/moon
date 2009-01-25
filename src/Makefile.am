@@ -26,7 +26,6 @@ libmoon_include_headers = 	\
 	collection.h		\
 	color.h			\
 	contentcontrol.h	\
-	contentpresenter.h	\
 	control.h		\
 	cornerradius.h		\
 	debug.h			\
@@ -183,7 +182,6 @@ libmoon_la_sources_2 =		\
 	binding.cpp		\
 	border.cpp		\
 	contentcontrol.cpp	\
-	contentpresenter.cpp	\
 	control.cpp		\
 	cornerradius.cpp	\
 	deepzoomimagetilesource.cpp \

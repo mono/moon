@@ -1,3 +1,53 @@
+2009-01-25  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp: mostly just remove the NULL's we were passing to the
+	various DependencyObject methods that used to require an
+	additional_types arg.
+	(dependency_object_set_attributes): one important fix here - force
+	the loader to do the SetValue if the type is URI, or if the type
+	of the object itself is a custom type.  Also, if we've converted
+	the string to a valid value already, don't pass a string to the
+	loader - this keeps us from passing "{Binding foo...}" to the
+	loader to setvalue on a databound property.  This does uncover a
+	failing in our managed code, though, that there's no way to deal
+	with the unmanaged BindingExpression from managed code.
+
+	* application.cpp, application.h: instead of having a
+	MonoDomain->Application mapping, we now have a
+	MonoDomain->Deployment mapping, so Application::GetCurrent maps to
+	Deployment::GetCurrent()->GetCurrentApplication().
+	
+	* deployment.cpp, deployment.h: flesh out Deployment, along with
+	the MonoDomain->Deployment mapping.  Also add a per-deployment
+	Types* object, so we can look them up anywhere in the engine
+	without having to rely on the managed layer passing
+	additional_types.
+	
+	* type.h.in, type.cpp: remove additional_types from all the apis.
+	the currently registered custom types are always available from
+	the Current deployment, which Type::Find uses.  Also, add
+	IsCustomType which lets us check if a type is one of our special
+	built-in types, or if it's one that's been registered dynamically.
+
+	* value.h.in, value.cpp: remove additional_types.
+
+	* dependencyproperty.h, dependencyproperty.cpp: remove
+	additional_types.
+
+	* dependencyobject.h, dependencyobject.cpp: remove
+	additional_types.
+
+	* uielement.h: add cbindings/pinvokes for ElementAdded and
+	ElementRemoved.
+
+	* contentpresenter.h, contentpresenter.cpp: remove - this is 100%
+	managed now.
+	
+	* Makefile.am: remove contentpresenter.{h,cpp}
+
+	* type.h, type-generated.cpp, value.h, cbinding.cpp, cbinding.h:
+	regen.
+
 2009-01-25  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* cbinding.cpp|h: Regenerated

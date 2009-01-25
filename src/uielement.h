@@ -85,7 +85,9 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	virtual DependencyObject *GetSubtreeObject () { return NULL; }
 
+	/* @GenerateCBinding,GeneratePInvoke */
 	virtual void ElementAdded (UIElement *obj);
+	/* @GenerateCBinding,GeneratePInvoke */
 	virtual void ElementRemoved (UIElement *obj);
 	
 	virtual bool EnableAntiAlias() { return true; }

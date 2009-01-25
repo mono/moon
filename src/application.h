@@ -60,7 +60,6 @@ protected:
 
 private:
 	Surface *surface;
-	static GHashTable *current_hash;
 	ApplyDefaultStyleCallback apply_default_style_cb;
 	ApplyStyleCallback apply_style_cb;
 	GetResourceCallback get_resource_cb;

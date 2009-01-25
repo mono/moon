@@ -110,35 +110,20 @@ public:
 	//    Similar to C#'s is: it checks if this object is of this kind or 
 	//    a derived class.
 	
-	bool Is (Types *additional_types, Type::Kind k)
-	{
-		return GetType ()->IsSubclassOf (additional_types, k);
-	}
-	
-	Type *GetType (Types *additional_types)
-	{
-		return Type::Find (additional_types, GetObjectType ());
-	}
-
 	bool Is (Type::Kind k)
 	{
-		return Is (NULL,k);
+		return GetType ()->IsSubclassOf (k);
 	}
 	
 	Type *GetType ()
 	{
-		return GetType (NULL);
+		return Type::Find (GetObjectType ());
 	}
-	
+
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual const char *GetTypeName ()
 	{
-		return GetTypeName(NULL);
-	}	
-
-	const char *GetTypeName (Types *additional_types)
-	{
-		return Type::Find (additional_types, GetObjectType ())->GetName ();
+		return Type::Find (GetObjectType ())->GetName ();
 	}	
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -235,12 +220,12 @@ public:
 	bool SetValue (DependencyProperty *property, Value value);
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	bool SetMarshalledValueWithError (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error);
-	bool SetValueWithError (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error);
-	bool SetValueWithError (Types *additional_types, DependencyProperty *property, Value value, MoonError *error);
+	bool SetMarshalledValueWithError (DependencyProperty *property, Value *value, MoonError *error);
+	bool SetValueWithError (DependencyProperty *property, Value *value, MoonError *error);
+	bool SetValueWithError (DependencyProperty *property, Value value, MoonError *error);
 
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
-	Value *GetValueWithError (Types *additional_types, Type::Kind whatami, DependencyProperty *property, MoonError *error);
+	Value *GetValueWithError (Type::Kind whatami, DependencyProperty *property, MoonError *error);
 	virtual Value *GetValue (DependencyProperty *property);
 
 	void ProviderValueChanged (PropertyPrecedence providerPrecedence, DependencyProperty *property, Value *old_value, Value *new_value, bool notify_listeners);
@@ -248,17 +233,17 @@ public:
 	Value *GetValueSkippingPrecedence (DependencyProperty *property, PropertyPrecedence toSkip);
 
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
-	Value *GetLocalValueWithError  (Types *additional_types, DependencyProperty *property, MoonError *error);
+	Value *GetLocalValueWithError  (DependencyProperty *property, MoonError *error);
 	virtual Value *GetLocalValue (DependencyProperty *property);
 	
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
-	Value *GetValueNoDefaultWithError (Types *additional_types, DependencyProperty *property, MoonError *error);
+	Value *GetValueNoDefaultWithError (DependencyProperty *property, MoonError *error);
 	Value *GetValueNoDefault (DependencyProperty *property);
 
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	virtual void ClearValue (DependencyProperty *property, bool notify_listeners = true);
 	bool HasProperty (const char *name, bool inherits);
-	bool HasProperty (Types *additional_types, Type::Kind whatami, DependencyProperty *property, bool inherits);
+	bool HasProperty (Type::Kind whatami, DependencyProperty *property, bool inherits);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual Type::Kind GetObjectType ();
@@ -348,7 +333,7 @@ protected:
 	// If error is non NULL and the value is not valid, error will be given an error code and error message that should be
 	// propogated to OnError
 	//
-	bool IsValueValid (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error);
+	bool IsValueValid (DependencyProperty *property, Value *value, MoonError *error);
 	
 	virtual bool SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error);
 	

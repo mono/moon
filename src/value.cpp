@@ -459,7 +459,7 @@ Value::operator== (const Value &v) const
 }
 
 void
-Value::Unmarshal (Types *additional_types, Type::Kind desired)
+Value::Unmarshal (Type::Kind desired)
 {
 	if (desired == k)
 		return;

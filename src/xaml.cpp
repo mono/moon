@@ -3061,7 +3061,7 @@ XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, XamlElementInstan
 
 	if (!is_collection && Type::IsSubclassOf (value->info->GetKind (), dep->GetPropertyType())) {
 		MoonError err;
-		if (!item->SetValueWithError (NULL /* XXX */, dep, value->GetAsValue (), &err)) {
+		if (!item->SetValueWithError (dep, value->GetAsValue (), &err)) {
 		    parser_error (p, value->element_name, NULL, err.code, err.message);
 		    return false;
 		}
@@ -3293,7 +3293,7 @@ XamlElementInstanceNative::CreateItem ()
 			if (dep && dep->GetPropertyType() == type->type) {
 				MoonError err;
 				Value item_value (item);
-				if (!((DependencyObject * ) walk->GetAsDependencyObject ())->SetValueWithError (NULL/* XXX */, dep, &item_value, &err))
+				if (!((DependencyObject * ) walk->GetAsDependencyObject ())->SetValueWithError (dep, &item_value, &err))
 					parser_error (parser_info, element_name, NULL, err.code, err.message);
 			}
 			
@@ -3783,7 +3783,7 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 				} else {
 					MoonError err;
 
-					if (!dep->SetValueWithError (NULL, prop, value->GetAsValue (), &err))
+					if (!dep->SetValueWithError (prop, value->GetAsValue (), &err))
 						parser_error (p, item->element_name, NULL, err.code, err.message);
 					
 					item->MarkPropertyAsSet (prop->GetName());
@@ -3987,18 +3987,23 @@ start_parse:
 			if (!v)
 				value_from_str (prop->GetPropertyType(), prop->GetName(), attr [i + 1], &v, p->loader->GetSurface()->IsSilverlight2());
 
-			switch (prop->GetPropertyType ()) {
-			case Type::MANAGED:
-			case Type::OBJECT:
-			case Type::MANAGEDTYPEINFO:
-			case Type::DEPENDENCYPROPERTY: {
-				Value v = Value (g_strdup (attr [i + 1]));
-				if (p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, NULL, item->GetManagedPointer (), item->GetParentPointer (), g_strdup (prop->GetName ()), &v))
+			Type::Kind propKind = prop->GetPropertyType ();
+			Type::Kind itemKind = item->info->GetKind();
+
+			if (propKind == Type::MANAGED ||
+			    propKind == Type::OBJECT ||
+			    propKind == Type::URI ||
+			    propKind == Type::MANAGEDTYPEINFO ||
+			    propKind == Type::DEPENDENCYPROPERTY ||
+
+			    Type::Find(itemKind)->IsCustomType()) {
+
+				if (!v)
+					v = new Value (g_strdup (attr [i + 1]));
+				if (p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, NULL, item->GetManagedPointer (), item->GetParentPointer (), g_strdup (prop->GetName ()), v)) {
+					delete v;
 					continue;
-				break;
-			}
-			default:
-				break;
+				}
 			}
 
 			if (!v && !value_is_explicit_null (attr [i + 1])) {
@@ -4007,7 +4012,7 @@ start_parse:
 			}
 
 			MoonError err;
-			if (!dep->SetValueWithError (NULL, prop, v, &err))
+			if (!dep->SetValueWithError (prop, v, &err))
 				parser_error (p, item->element_name, attr [i], err.code, err.message);
 			else
 				item->MarkPropertyAsSet (prop->GetName());				

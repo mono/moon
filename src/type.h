@@ -61,7 +61,6 @@ public:
 		COLUMNDEFINITION_COLLECTION,// Silverlight 2.0 only
 		CONTENTCHANGEDEVENTARGS,// Silverlight 2.0 only
 		CONTENTCONTROL,// Silverlight 2.0 only
-		CONTENTPRESENTER,// Silverlight 2.0 only
 		CONTROL,// Silverlight 2.0 only
 		CONTROLTEMPLATE,// Silverlight 2.0 only
 		CORNERRADIUS,// Silverlight 2.0 only
@@ -255,14 +254,10 @@ public:
 	
 	static Type *Find (const char *name);
 	static Type *Find (Type::Kind type);
-	static Type *Find (Types *additional_types, Type::Kind type);
 	
 	bool IsSubclassOf (Type::Kind super);
 	static bool IsSubclassOf (Type::Kind type, Type::Kind super);
 
-	bool IsSubclassOf (Types *additional_types, Type::Kind super);
-	static bool IsSubclassOf (Types *additional_types, Type::Kind type, Type::Kind super);
-	
 	int LookupEvent (const char *event_name);
 	const char *LookupEventName (int id);
 	DependencyObject *CreateInstance ();
@@ -271,6 +266,7 @@ public:
 	Type::Kind GetKind () { return type; }
 	Type::Kind GetParent () { return parent; }
 	bool IsValueType () { return value_type; }
+	bool IsCustomType () { return type > LASTTYPE; }
 	const char *GetName () { return name; }
 	int GetEventCount () { return total_event_count; }
 	

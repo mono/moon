@@ -93,8 +93,7 @@ public:
 	bool operator!= (const Value &v) const;
 	bool operator== (const Value &v) const;
 	
-	bool		Is (Types* additional_types, Type::Kind type) { return Type::IsSubclassOf (additional_types, k, type); }
-	bool		Is (Type::Kind type) { return Is (NULL, type); }
+	bool		Is (Type::Kind type) { return Type::IsSubclassOf (k, type); }
 
 	bool		AsBool ()	{ checked_get_exact (Type::BOOL, false, (bool)u.i32); }
 	double 		AsDouble ()	{ checked_get_exact (Type::DOUBLE, 0.0, u.d); }
@@ -132,7 +131,7 @@ public:
   	Type::Kind GetKind ();
 	
 	void FreeValue ();
-	void Unmarshal (Types *additional_types, Type::Kind desired);
+	void Unmarshal (Type::Kind desired);
 	
   private:
 	Type::Kind k;

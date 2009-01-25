@@ -847,7 +847,7 @@ DependencyObject::NotifyListenersOfPropertyChange (DependencyProperty *subproper
 }
 
 bool
-DependencyObject::IsValueValid (Types *additional_types, DependencyProperty* property, Value* value, MoonError *error)
+DependencyObject::IsValueValid (DependencyProperty* property, Value* value, MoonError *error)
 {
 	if (property == NULL) {
 		MoonError::FillIn (error, MoonError::ARGUMENT_NULL, 1001,
@@ -856,24 +856,24 @@ DependencyObject::IsValueValid (Types *additional_types, DependencyProperty* pro
 	}
 
 	if (value != NULL) {
-		if (value->Is (additional_types, Type::EVENTOBJECT) && !value->AsEventObject ()) {
+		if (value->Is (Type::EVENTOBJECT) && !value->AsEventObject ()) {
 			// if it's a null DependencyObject, it doesn't matter what type it is
 			return true;
 		}
 		
-		if (value->Is (additional_types, Type::MANAGED)) {
+		if (value->Is (Type::MANAGED)) {
 			// This is a big hack, we do no type-checking if we try to set a managed type.
 			// Given that for the moment we might not have the surface available, we can't
 			// do any type checks since we can't access types registered on the surface.
 			return true;
 		}
 		
-		if (!value->Is (additional_types, property->GetPropertyType())) {
+		if (!value->Is (property->GetPropertyType())) {
 			MoonError::FillIn (error, MoonError::ARGUMENT, 1001,
 					   g_strdup_printf ("DependencyObject::SetValue, value cannot be assigned to the "
 							    "property %s::%s (property has type '%s', value has type '%s')",
-							    GetTypeName (), property->GetName(), Type::Find (additional_types, property->GetPropertyType())->name,
-							    Type::Find (additional_types, value->GetKind ())->name));
+							    GetTypeName (), property->GetName(), Type::Find (property->GetPropertyType())->name,
+							    Type::Find (value->GetKind ())->name));
 			return false;
 		}
 	} else {
@@ -914,20 +914,20 @@ bool
 DependencyObject::SetValue (DependencyProperty *property, Value *value)
 {
 	MoonError err;
-	return SetValueWithError ((Types*)NULL, property, value, &err);
+	return SetValueWithError (property, value, &err);
 }
 
 bool
 DependencyObject::SetValue (DependencyProperty *property, Value value)
 {
 	MoonError err;
-	return SetValueWithError ((Types*)NULL, property, &value, &err);
+	return SetValueWithError (property, &value, &err);
 }
 
 bool
-DependencyObject::SetValueWithError (Types *additional_types, DependencyProperty* property, Value value, MoonError *error)
+DependencyObject::SetValueWithError (DependencyProperty* property, Value value, MoonError *error)
 {
-	return SetValueWithError (additional_types, property, &value, error);
+	return SetValueWithError (property, &value, error);
 }
 
 bool
@@ -964,20 +964,20 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 }
 
 bool
-DependencyObject::SetMarshalledValueWithError (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error)
+DependencyObject::SetMarshalledValueWithError (DependencyProperty *property, Value *value, MoonError *error)
 {
 	if (value && property)
-		value->Unmarshal (additional_types, property->GetPropertyType ());
-	return SetValueWithError (additional_types, property, value, error);
+		value->Unmarshal (property->GetPropertyType ());
+	return SetValueWithError (property, value, error);
 }
 
 bool
-DependencyObject::SetValueWithError (Types *additional_types, DependencyProperty *property, Value *value, MoonError *error)
+DependencyObject::SetValueWithError (DependencyProperty *property, Value *value, MoonError *error)
 {
 	if (value && property)
-		value->Unmarshal (additional_types, property->GetPropertyType ());
+		value->Unmarshal (property->GetPropertyType ());
 
-	if (!IsValueValid (additional_types, property, value, error))
+	if (!IsValueValid (property, value, error))
 		return false;
 	if (!property->Validate (this, value, error))
 		return false;
@@ -1077,10 +1077,10 @@ DependencyObject::GetLocalValue (DependencyProperty *property)
 }
 
 Value *
-DependencyObject::GetLocalValueWithError (Types *additional_types, DependencyProperty *property, MoonError *error)
+DependencyObject::GetLocalValueWithError (DependencyProperty *property, MoonError *error)
 {
-	if (!HasProperty (additional_types, Type::INVALID, property, true)) {
-		Type *pt = Type::Find (additional_types, property->GetOwnerType ());
+	if (!HasProperty (Type::INVALID, property, true)) {
+		Type *pt = Type::Find (property->GetOwnerType ());
 		MoonError::FillIn (error, MoonError::EXCEPTION, g_strdup_printf ("Cannot get the DependencyProperty %s.%s on an object of type %s", pt ? pt->name : "<unknown>", property->GetName (), GetTypeName ()));
 		return NULL;
 	}
@@ -1088,10 +1088,10 @@ DependencyObject::GetLocalValueWithError (Types *additional_types, DependencyPro
 }
 
 Value *
-DependencyObject::GetValueWithError (Types *additional_types, Type::Kind whatami, DependencyProperty *property, MoonError *error)
+DependencyObject::GetValueWithError (Type::Kind whatami, DependencyProperty *property, MoonError *error)
 {
-	if (!HasProperty (additional_types, whatami, property, true)) {
-		Type *pt = Type::Find (additional_types, property->GetOwnerType ());
+	if (!HasProperty (whatami, property, true)) {
+		Type *pt = Type::Find (property->GetOwnerType ());
 		MoonError::FillIn (error, MoonError::EXCEPTION, g_strdup_printf ("Cannot get the DependencyProperty %s.%s on an object of type %s", pt ? pt->name : "<unknown>", property->GetName (), GetTypeName ()));
 		return NULL;
 	}
@@ -1145,10 +1145,10 @@ DependencyObject::GetValueNoDefault (DependencyProperty *property)
 }
 
 Value *
-DependencyObject::GetValueNoDefaultWithError (Types *additional_types, DependencyProperty *property, MoonError *error)
+DependencyObject::GetValueNoDefaultWithError (DependencyProperty *property, MoonError *error)
 {
-	if (!HasProperty (additional_types, Type::INVALID, property, true)) {
-		Type *pt = Type::Find (additional_types, property->GetOwnerType ());
+	if (!HasProperty (Type::INVALID, property, true)) {
+		Type *pt = Type::Find (property->GetOwnerType ());
 		MoonError::FillIn (error, MoonError::EXCEPTION, g_strdup_printf ("Cannot get the DependencyProperty %s.%s on an object of type %s", pt ? pt->name : "<unknown>", property->GetName (), GetTypeName ()));
 		return NULL;
 	}
@@ -1400,7 +1400,7 @@ DependencyObject::HasProperty (const char *name, bool inherits)
 }
 
 bool
-DependencyObject::HasProperty (Types *additional_types, Type::Kind whatami, DependencyProperty *property, bool inherits)
+DependencyObject::HasProperty (Type::Kind whatami, DependencyProperty *property, bool inherits)
 {
 	Type::Kind this_type = whatami == Type::INVALID ? GetObjectType () : whatami;
 	
@@ -1411,9 +1411,9 @@ DependencyObject::HasProperty (Types *additional_types, Type::Kind whatami, Depe
 	
 	/*
 	printf ("DependencyObject::HasProperty (%p, %i (%s), %p (%i %s.%s), %i)..\n", 
-		additional_types, 
-		whatami, Type::Find (additional_types, whatami)->name,
-		property, property->GetOwnerType (), Type::Find (additional_types, property->GetOwnerType ())->name, property->GetName (), 
+		
+		whatami, Type::Find (whatami)->name,
+		property, property->GetOwnerType (), Type::Find (property->GetOwnerType ())->name, property->GetName (), 
 		inherits);
 	*/
 	
@@ -1426,7 +1426,7 @@ DependencyObject::HasProperty (Types *additional_types, Type::Kind whatami, Depe
 	if (!inherits)
 		return false;
 
-	if (!Type::Find (additional_types, this_type)->IsSubclassOf (additional_types, property->GetOwnerType ())) {
+	if (!Type::Find (this_type)->IsSubclassOf (property->GetOwnerType ())) {
 		bool is_prop_custom = property->IsCustom ();
 		bool is_owner_custom = property->GetOwnerType () > Type::LASTTYPE;
 		bool is_this_custom = this_type > Type::LASTTYPE;

@@ -833,26 +833,6 @@ content_control_new (void)
 
 
 /**
- * ContentPresenter
- **/
-ContentPresenter *
-content_presenter_new (void)
-{
-	return new ContentPresenter ();
-}
-
-
-Grid *
-content_presenter_get_element_root (ContentPresenter *instance)
-{
-	if (instance == NULL)
-		return NULL;
-	
-	return instance->GetElementRoot ();
-}
-
-
-/**
  * Control
  **/
 bool
@@ -965,14 +945,14 @@ dependency_object_find_name (DependencyObject *instance, const char *name, Type:
 
 
 Value *
-dependency_object_get_local_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, MoonError *error)
+dependency_object_get_local_value_with_error (DependencyObject *instance, DependencyProperty *property, MoonError *error)
 {
 	if (instance == NULL)
 		return NULL;
 	
 	if (error == NULL)
 		g_warning ("Moonlight: Called dependency_object_get_local_value_with_error () with error == NULL.");
-	return instance->GetLocalValueWithError (additional_types, property, error);
+	return instance->GetLocalValueWithError (property, error);
 }
 
 
@@ -997,38 +977,38 @@ dependency_object_get_object_type (DependencyObject *instance)
 
 
 Value *
-dependency_object_get_value_no_default_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, MoonError *error)
+dependency_object_get_value_no_default_with_error (DependencyObject *instance, DependencyProperty *property, MoonError *error)
 {
 	if (instance == NULL)
 		return NULL;
 	
 	if (error == NULL)
 		g_warning ("Moonlight: Called dependency_object_get_value_no_default_with_error () with error == NULL.");
-	return instance->GetValueNoDefaultWithError (additional_types, property, error);
+	return instance->GetValueNoDefaultWithError (property, error);
 }
 
 
 Value *
-dependency_object_get_value_with_error (DependencyObject *instance, Types *additional_types, Type::Kind whatami, DependencyProperty *property, MoonError *error)
+dependency_object_get_value_with_error (DependencyObject *instance, Type::Kind whatami, DependencyProperty *property, MoonError *error)
 {
 	if (instance == NULL)
 		return NULL;
 	
 	if (error == NULL)
 		g_warning ("Moonlight: Called dependency_object_get_value_with_error () with error == NULL.");
-	return instance->GetValueWithError (additional_types, whatami, property, error);
+	return instance->GetValueWithError (whatami, property, error);
 }
 
 
 bool
-dependency_object_set_marshalled_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, Value *value, MoonError *error)
+dependency_object_set_marshalled_value_with_error (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error)
 {
 	if (instance == NULL)
 		return false;
 	
 	if (error == NULL)
 		g_warning ("Moonlight: Called dependency_object_set_marshalled_value_with_error () with error == NULL.");
-	return instance->SetMarshalledValueWithError (additional_types, property, value, error);
+	return instance->SetMarshalledValueWithError (property, value, error);
 }
 
 
@@ -1073,9 +1053,9 @@ dependency_property_get_dependency_property (Type::Kind type, const char *name)
 
 
 DependencyProperty *
-dependency_property_get_dependency_property_full (Types *additional_types, Type::Kind type, const char *name, bool inherits)
+dependency_property_get_dependency_property_full (Type::Kind type, const char *name, bool inherits)
 {
-	return DependencyProperty::GetDependencyPropertyFull (additional_types, type, name, inherits);
+	return DependencyProperty::GetDependencyPropertyFull (type, name, inherits);
 }
 
 
@@ -1137,16 +1117,16 @@ dependency_property_register (Type::Kind type, const char *name, Value *default_
 
 
 DependencyProperty *
-dependency_property_register_full (Types *additional_types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler *changed_callback)
+dependency_property_register_custom (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler *changed_callback)
 {
-	return DependencyProperty::RegisterFull (additional_types, type, name, default_value, vtype, attached, read_only, always_change, changed_callback);
+	return DependencyProperty::RegisterCustom (type, name, default_value, vtype, attached, read_only, always_change, changed_callback);
 }
 
 
 DependencyProperty *
-dependency_property_register_managed_property (Types *additional_types, const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, NativePropertyChangedHandler *callback)
+dependency_property_register_managed_property (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, NativePropertyChangedHandler *callback)
 {
-	return DependencyProperty::RegisterManagedProperty (additional_types, name, property_type, owner_type, defaultValue, attached, read_only, callback);
+	return DependencyProperty::RegisterManagedProperty (name, property_type, owner_type, defaultValue, attached, read_only, callback);
 }
 
 
@@ -1167,6 +1147,40 @@ Deployment *
 deployment_new (void)
 {
 	return new Deployment ();
+}
+
+
+Deployment *
+deployment_get_current (void)
+{
+	return Deployment::GetCurrent ();
+}
+
+
+Types *
+deployment_get_types (Deployment *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetTypes ();
+}
+
+
+void
+deployment_set_current (Deployment *value)
+{
+	Deployment::SetCurrent (value);
+}
+
+
+void
+deployment_set_current_application (Deployment *instance, Application *value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetCurrentApplication (value);
 }
 
 
@@ -3309,6 +3323,26 @@ uielement_capture_mouse (UIElement *instance)
 		return false;
 	
 	return instance->CaptureMouse ();
+}
+
+
+void
+uielement_element_added (UIElement *instance, UIElement *obj)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->ElementAdded (obj);
+}
+
+
+void
+uielement_element_removed (UIElement *instance, UIElement *obj)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->ElementRemoved (obj);
 }
 
 

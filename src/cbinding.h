@@ -18,7 +18,6 @@
 #include "clock.h"
 #include "collection.h"
 #include "contentcontrol.h"
-#include "contentpresenter.h"
 #include "control.h"
 #include "deepzoomimagetilesource.h"
 #include "dependencyobject.h"
@@ -371,15 +370,6 @@ Value *content_changed_event_args_get_old_content (ContentChangedEventArgs *inst
 ContentControl *content_control_new (void);
 
 /**
- * ContentPresenter
- **/
-/* @GeneratePInvoke */
-ContentPresenter *content_presenter_new (void);
-
-/* @GeneratePInvoke */
-Grid *content_presenter_get_element_root (ContentPresenter *instance);
-
-/**
  * Control
  **/
 /* @GeneratePInvoke */
@@ -427,7 +417,7 @@ DependencyObject *dependency_object_new (void);
 DependencyObject *dependency_object_find_name (DependencyObject *instance, const char *name, Type::Kind *element_kind);
 
 /* @GeneratePInvoke */
-Value *dependency_object_get_local_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, MoonError *error);
+Value *dependency_object_get_local_value_with_error (DependencyObject *instance, DependencyProperty *property, MoonError *error);
 
 /* @GeneratePInvoke */
 const char *dependency_object_get_name (DependencyObject *instance);
@@ -436,13 +426,13 @@ const char *dependency_object_get_name (DependencyObject *instance);
 Type::Kind dependency_object_get_object_type (DependencyObject *instance);
 
 /* @GeneratePInvoke */
-Value *dependency_object_get_value_no_default_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, MoonError *error);
+Value *dependency_object_get_value_no_default_with_error (DependencyObject *instance, DependencyProperty *property, MoonError *error);
 
 /* @GeneratePInvoke */
-Value *dependency_object_get_value_with_error (DependencyObject *instance, Types *additional_types, Type::Kind whatami, DependencyProperty *property, MoonError *error);
+Value *dependency_object_get_value_with_error (DependencyObject *instance, Type::Kind whatami, DependencyProperty *property, MoonError *error);
 
 /* @GeneratePInvoke */
-bool dependency_object_set_marshalled_value_with_error (DependencyObject *instance, Types *additional_types, DependencyProperty *property, Value *value, MoonError *error);
+bool dependency_object_set_marshalled_value_with_error (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error);
 
 /* @GeneratePInvoke */
 void dependency_object_set_name (DependencyObject *instance, const char *name);
@@ -463,7 +453,7 @@ Value *dependency_property_get_default_value (DependencyProperty *instance);
 DependencyProperty *dependency_property_get_dependency_property (Type::Kind type, const char *name);
 
 /* @GeneratePInvoke */
-DependencyProperty *dependency_property_get_dependency_property_full (Types *additional_types, Type::Kind type, const char *name, bool inherits);
+DependencyProperty *dependency_property_get_dependency_property_full (Type::Kind type, const char *name, bool inherits);
 
 /* @GeneratePInvoke */
 const char *dependency_property_get_name (DependencyProperty *instance);
@@ -483,10 +473,10 @@ bool dependency_property_is_read_only (DependencyProperty *instance);
 DependencyProperty *dependency_property_register (Type::Kind type, const char *name, Value *default_value);
 
 /* @GeneratePInvoke */
-DependencyProperty *dependency_property_register_full (Types *additional_types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler *changed_callback);
+DependencyProperty *dependency_property_register_custom (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler *changed_callback);
 
 /* @GeneratePInvoke */
-DependencyProperty *dependency_property_register_managed_property (Types *additional_types, const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, NativePropertyChangedHandler *callback);
+DependencyProperty *dependency_property_register_managed_property (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, NativePropertyChangedHandler *callback);
 
 /* @GeneratePInvoke */
 void dependency_property_set_is_nullable (DependencyProperty *instance, bool value);
@@ -496,6 +486,18 @@ void dependency_property_set_is_nullable (DependencyProperty *instance, bool val
  **/
 /* @GeneratePInvoke */
 Deployment *deployment_new (void);
+
+/* @GeneratePInvoke */
+Deployment *deployment_get_current (void);
+
+/* @GeneratePInvoke */
+Types *deployment_get_types (Deployment *instance);
+
+/* @GeneratePInvoke */
+void deployment_set_current (Deployment *value);
+
+/* @GeneratePInvoke */
+void deployment_set_current_application (Deployment *instance, Application *value);
 
 /**
  * DiscreteColorKeyFrame
@@ -1521,6 +1523,12 @@ void uielement_arrange (UIElement *instance, Rect finalRect);
 
 /* @GeneratePInvoke */
 bool uielement_capture_mouse (UIElement *instance);
+
+/* @GeneratePInvoke */
+void uielement_element_added (UIElement *instance, UIElement *obj);
+
+/* @GeneratePInvoke */
+void uielement_element_removed (UIElement *instance, UIElement *obj);
 
 /* @GeneratePInvoke */
 Size uielement_get_desired_size (UIElement *instance);

@@ -14,10 +14,7 @@
 #include <config.h>
 #include "application.h"
 #include "runtime.h"
-
-#include <mono/metadata/appdomain.h>
-
-GHashTable* Application::current_hash = NULL;
+#include "deployment.h"
 
 Application::Application ()
 {
@@ -37,33 +34,13 @@ Application::~Application ()
 Application*
 Application::GetCurrent ()
 {
-	if (!current_hash)
-		current_hash = g_hash_table_new (g_direct_hash, g_direct_equal);
-
-	MonoDomain *domain;
-	if (!(domain = mono_domain_get ()))
-		return NULL;
-
-	return (Application*)g_hash_table_lookup (current_hash, domain);
+	return Deployment::GetCurrent()->GetCurrentApplication();
 }
 
 void
 Application::SetCurrent (Application *application)
 {
-	if (!current_hash)
-		current_hash = g_hash_table_new (g_direct_hash, g_direct_equal);
-
-	MonoDomain *domain;
-
-	if (!(domain = mono_domain_get ()))
-		return;
-	
-	if (application == NULL) {
-		g_hash_table_remove (current_hash, domain);
-		return;
-	}
-
-	return g_hash_table_insert (current_hash, domain, application);
+	Deployment::GetCurrent()->SetCurrentApplication (application);
 }
 
 Surface*

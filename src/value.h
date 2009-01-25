@@ -74,7 +74,6 @@ class ColumnDefinition;
 class ColumnDefinitionCollection;
 class ContentChangedEventArgs;
 class ContentControl;
-class ContentPresenter;
 class Control;
 class ControlTemplate;
 class DataTemplate;
@@ -285,8 +284,7 @@ public:
 	bool operator!= (const Value &v) const;
 	bool operator== (const Value &v) const;
 	
-	bool		Is (Types* additional_types, Type::Kind type) { return Type::IsSubclassOf (additional_types, k, type); }
-	bool		Is (Type::Kind type) { return Is (NULL, type); }
+	bool		Is (Type::Kind type) { return Type::IsSubclassOf (k, type); }
 
 	bool		AsBool ()	{ checked_get_exact (Type::BOOL, false, (bool)u.i32); }
 	double 		AsDouble ()	{ checked_get_exact (Type::DOUBLE, 0.0, u.d); }
@@ -344,7 +342,6 @@ public:
 	ColumnDefinitionCollection*    AsColumnDefinitionCollection () { checked_get_subclass (Type::COLUMNDEFINITION_COLLECTION, ColumnDefinitionCollection) }
 	ContentChangedEventArgs*       AsContentChangedEventArgs () { checked_get_subclass (Type::CONTENTCHANGEDEVENTARGS, ContentChangedEventArgs) }
 	ContentControl*                AsContentControl () { checked_get_subclass (Type::CONTENTCONTROL, ContentControl) }
-	ContentPresenter*              AsContentPresenter () { checked_get_subclass (Type::CONTENTPRESENTER, ContentPresenter) }
 	Control*                       AsControl () { checked_get_subclass (Type::CONTROL, Control) }
 	ControlTemplate*               AsControlTemplate () { checked_get_subclass (Type::CONTROLTEMPLATE, ControlTemplate) }
 	DataTemplate*                  AsDataTemplate () { checked_get_subclass (Type::DATATEMPLATE, DataTemplate) }
@@ -512,7 +509,7 @@ public:
   	Type::Kind GetKind ();
 	
 	void FreeValue ();
-	void Unmarshal (Types *additional_types, Type::Kind desired);
+	void Unmarshal (Type::Kind desired);
 	
   private:
 	Type::Kind k;

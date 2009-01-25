@@ -14,6 +14,7 @@
 
 #include "enums.h"
 #include "dependencyobject.h"
+#include "application.h"
 #include "collection.h"
 
 /* @SilverlightVersion="2" */
@@ -51,7 +52,7 @@ class AssemblyPartCollection : public DependencyObjectCollection {
 /* @Namespace=System.Windows */
 class Deployment : public DependencyObject {
  protected:
-	virtual ~Deployment () {}
+	virtual ~Deployment ();
 	
  public:
  	/* @PropertyType=CrossDomainAccess,DefaultValue=CrossDomainAccessNoAccess,ManagedSetterAccess=Internal */
@@ -66,9 +67,26 @@ class Deployment : public DependencyObject {
 	static DependencyProperty *RuntimeVersionProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	Deployment () { }
-	
+	Deployment ();
+
 	virtual Type::Kind GetObjectType () { return Type::DEPLOYMENT; } 
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	Types* GetTypes();
+
+	Application* GetCurrentApplication ();
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetCurrentApplication (Application* value);
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	static Deployment* GetCurrent ();
+	/* @GenerateCBinding,GeneratePInvoke */
+	static void SetCurrent (Deployment* value);
+
+private:
+	Types* types;
+	Application* current_app;
+	static GHashTable *current_hash;
 };
 
 #endif /* __DEPLOYMENT_H__ */

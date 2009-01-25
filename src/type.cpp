@@ -16,6 +16,7 @@
 
 #include "type.h"
 #include "runtime.h"
+#include "deployment.h"
 
 /*
  * Type implementation
@@ -151,37 +152,6 @@ Type::IsSubclassOf (Type::Kind super)
 	return parent_type->IsSubclassOf (super);
 }
 
-bool
-Type::IsSubclassOf (Types *additional_types, Type::Kind type, Type::Kind super)
-{
-	Type *t = Find (additional_types, type);
-	if (t == NULL)
-		return false;
-	return t->IsSubclassOf (super);
-}
-
-bool 
-Type::IsSubclassOf (Types *additional_types, Type::Kind super)
-{
-	Type *parent_type;
-
-	if (type == super)
-		return true;
-
-	if (parent == super)
-		return true;
-
-	if (parent == Type::INVALID || type == Type::INVALID)
-		return false;
-
-	parent_type = Type::Find (additional_types, parent);
-	
-	if (parent_type == NULL)
-		return false;
-	
-	return parent_type->IsSubclassOf (additional_types, super);
-}
-
 Type *
 Type::Find (const char *name)
 {
@@ -202,23 +172,13 @@ Type::Find (const char *name)
 Type *
 Type::Find (Type::Kind type)
 {
-	return Find (NULL, type);
-}
-
-
-Type *
-Type::Find (Types *additional_types, Type::Kind type)
-{
 	if (type < Type::INVALID || type == Type::LASTTYPE)
 		return NULL;
 		
 	if (type < Type::LASTTYPE)
 		return &type_infos [type];
 
-	if (additional_types == NULL)
-		return NULL;
-	
-	return additional_types->Find (type);
+	return Deployment::GetCurrent()->GetTypes()->Find (type);
 }
 
 DependencyObject *
