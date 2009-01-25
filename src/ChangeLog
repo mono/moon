@@ -1,3 +1,8 @@
+2009-01-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* cbinding.cpp|h: Regenerated
+	* transform.cpp|h: Add GetMatrix (w/bindings).
+
 2009-01-23  Geoff Norton  <gnorton@novell.com>
 
 	* xaml.cpp:  This is case-insensitive here too.

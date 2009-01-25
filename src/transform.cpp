@@ -65,6 +65,13 @@ GeneralTransform::GetTransform (cairo_matrix_t *value)
 	*value = _matrix;
 }
 
+Matrix*
+GeneralTransform::GetMatrix ()
+{
+	MaybeUpdateTransform ();
+	return new Matrix (&_matrix);
+}
+
 Point
 GeneralTransform::Transform (Point point)
 {
@@ -262,10 +269,6 @@ MatrixTransform::UpdateTransform ()
 TransformGroup::TransformGroup ()
 {
 	SetValue (TransformGroup::ChildrenProperty, Value::CreateUnref (new TransformCollection ()));
-}
-
-TransformGroup::~TransformGroup ()
-{
 }
 
 void

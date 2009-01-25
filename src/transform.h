@@ -38,6 +38,9 @@ class GeneralTransform : public DependencyObject {
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	
 	virtual void GetTransform (cairo_matrix_t *value);
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	Matrix* GetMatrix ();
 	
 	Point Transform (Point point);
 };
@@ -309,7 +312,7 @@ class TransformCollection : public DependencyObjectCollection {
 /* @Namespace=System.Windows.Media */
 class TransformGroup : public Transform {
  protected:
-	virtual ~TransformGroup ();
+	virtual ~TransformGroup () {}
 	
 	virtual void UpdateTransform ();
 	

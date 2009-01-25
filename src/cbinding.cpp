@@ -1508,6 +1508,16 @@ general_transform_new (void)
 }
 
 
+Matrix *
+general_transform_get_matrix (GeneralTransform *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetMatrix ();
+}
+
+
 /**
  * Geometry
  **/

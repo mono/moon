@@ -653,6 +653,9 @@ FrameworkTemplate *framework_template_new (void);
 /* @GeneratePInvoke */
 GeneralTransform *general_transform_new (void);
 
+/* @GeneratePInvoke */
+Matrix *general_transform_get_matrix (GeneralTransform *instance);
+
 /**
  * Geometry
  **/
