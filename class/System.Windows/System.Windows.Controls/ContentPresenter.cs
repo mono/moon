@@ -200,9 +200,7 @@ namespace System.Windows.Controls
 				_elementRoot.Children.Add (_elementText);
 
 				NativeMethods.uielement_element_added (native, _elementRoot.native);
-
-				// XXX uncomment this soon, since it will get things rendering.
-				//				NativeMethods.uielement_set_subtree_object (native, _elementRoot.native);
+				NativeMethods.uielement_set_subtree_object (native, _elementRoot.native);
 			}
 
 			// Remove the old content 

@@ -488,10 +488,6 @@ namespace Mono {
 			return s;
 		}
 
-		[DllImport ("moon")]
-		// Type::Kind dependency_object_get_object_type (DependencyObject *instance);
-		public extern static Kind dependency_object_get_object_type (IntPtr instance);
-
 		[DllImport ("moon", EntryPoint="dependency_object_get_value_no_default_with_error")]
 		// Value *dependency_object_get_value_no_default_with_error (DependencyObject *instance, DependencyProperty *property, MoonError *error);
 		private extern static IntPtr dependency_object_get_value_no_default_with_error_ (IntPtr instance, IntPtr property, out MoonError error);
@@ -703,6 +699,10 @@ namespace Mono {
 		// int event_object_add_xaml_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor);
 		public extern static int event_object_add_xaml_handler (IntPtr instance, string event_name, UnmanagedEventHandler handler, IntPtr data, IntPtr data_dtor);
 
+		[DllImport ("moon")]
+		// Type::Kind event_object_get_object_type (EventObject *instance);
+		public extern static Kind event_object_get_object_type (IntPtr instance);
+
 		[DllImport ("moon", EntryPoint="event_object_get_type_name")]
 		// const char *event_object_get_type_name (EventObject *instance);
 		private extern static IntPtr event_object_get_type_name_ (IntPtr instance);
@@ -724,6 +724,10 @@ namespace Mono {
 		[DllImport ("moon")]
 		// void event_object_remove_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data);
 		public extern static void event_object_remove_handler (IntPtr instance, string event_name, UnmanagedEventHandler handler, IntPtr data);
+
+		[DllImport ("moon")]
+		// void event_object_set_object_type (EventObject *instance, Type::Kind value);
+		public extern static void event_object_set_object_type (IntPtr instance, Kind value);
 
 		[DllImport ("moon")]
 		// void event_object_unref (EventObject *instance);
@@ -1525,6 +1529,10 @@ namespace Mono {
 		[DllImport ("moon")]
 		// void uielement_release_mouse_capture (UIElement *instance);
 		public extern static void uielement_release_mouse_capture (IntPtr instance);
+
+		[DllImport ("moon")]
+		// void uielement_set_subtree_object (UIElement *instance, DependencyObject *value);
+		public extern static void uielement_set_subtree_object (IntPtr instance, IntPtr value);
 
 		[DllImport ("moon")]
 		[return: MarshalAs (UnmanagedType.U1)]

@@ -1,3 +1,15 @@
+2009-01-26  Chris Toshok  <toshok@ximian.com>
+
+	* NativeDependencyObjectHelper.cs: add a case for TEXTBOXVIEW, and
+	track change from NativeMethods.dependency_object_get_object_type
+	to NativeMethods.event_object_get_object_type.
+
+	* ManagedXamlLoader.cs: track change from
+	NativeMethods.dependency_object_get_object_type to
+	NativeMethods.event_object_get_object_type
+	
+	* GeneratedPInvokes.cs, Kind.cs: regen.
+
 2009-01-25  Chris Toshok  <toshok@ximian.com>
 
 	* Types.cs: this is no longer a static class, but a private

@@ -89,11 +89,13 @@ namespace System.Windows {
 		protected DependencyObject ()
 		{
 			native = NativeMethods.dependency_object_new ();
+			NativeMethods.event_object_set_object_type (native, GetKind ());
 		}
 
 		internal DependencyObject (IntPtr raw)
 		{
 			native = raw;
+			NativeMethods.event_object_set_object_type (native, GetKind ());
 		}
 		
 		internal void Free ()

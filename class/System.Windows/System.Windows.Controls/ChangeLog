@@ -1,3 +1,9 @@
+2009-01-26  Chris Toshok  <toshok@ximian.com>
+
+	* ContentPresenter.cs (PrepareContentPresenter): call
+	uielement_set_subtree_object here to hook the _elementRoot into
+	the visual tree.
+	
 2009-01-25  Chris Toshok  <toshok@ximian.com>
 
 	* ContentPresenter.cs: move the 90% implementation back here.

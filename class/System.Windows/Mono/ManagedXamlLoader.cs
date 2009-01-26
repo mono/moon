@@ -269,7 +269,7 @@ namespace Mono.Xaml
 				return handle.Target;
 			}
 			catch {
-				Kind k = NativeMethods.dependency_object_get_object_type (target_ptr); 
+				Kind k = NativeMethods.event_object_get_object_type (target_ptr); 
 				return NativeDependencyObjectHelper.Lookup (k, target_ptr) as DependencyObject;
 			}
 		}

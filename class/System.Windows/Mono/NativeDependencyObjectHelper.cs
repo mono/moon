@@ -27,6 +27,7 @@
 //
 
 using System;
+using Microsoft.Internal;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -181,7 +182,7 @@ namespace Mono {
 			if (ptr == IntPtr.Zero)
 				return null;
 
-			Kind k = NativeMethods.dependency_object_get_object_type (ptr);
+			Kind k = NativeMethods.event_object_get_object_type (ptr);
 
 			return Lookup (k, ptr);
 		}
@@ -292,6 +293,7 @@ namespace Mono {
 			case Kind.STYLUSPOINT: return new StylusPoint (raw);
 			case Kind.TEXTBLOCK: return new TextBlock (raw);
 			case Kind.TEXTBOX: return new TextBox (raw);
+			case Kind.TEXTBOXVIEW: return new TextBoxView (raw);
 			case Kind.TIMELINE_COLLECTION: return new TimelineCollection (raw);
 			case Kind.TIMELINEMARKER_COLLECTION: return new TimelineMarkerCollection (raw);
 			case Kind.TRANSFORM_COLLECTION: return new TransformCollection (raw);
