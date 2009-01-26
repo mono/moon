@@ -1,5 +1,10 @@
 2009-01-25  Chris Toshok  <toshok@ximian.com>
 
+	* dependencyproperty.cpp (DependencyProperty::RegisterManagedProperty):
+	this registers a custom property.  Fixes moon-unit failures.
+
+2009-01-25  Chris Toshok  <toshok@ximian.com>
+
 	* value.cpp (Value::Value): allow ManagedTypeInfo of NULL - fixes
 	moon-unit crash.
 

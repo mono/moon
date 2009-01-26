@@ -236,7 +236,7 @@ DependencyProperty::RegisterManagedProperty (const char *name, Type::Kind proper
 		default_value = NULL;
 	else
 		default_value = new Value (*default_value);
-	return DependencyProperty::RegisterFull (owner_type, name, default_value, property_type, attached, readonly, false, callback);
+	return DependencyProperty::RegisterFull (Type::Find(owner_type), name, default_value, property_type, attached, readonly, false, callback, NULL, true);
 }
 
 //
@@ -268,8 +268,8 @@ DependencyProperty::RegisterFull (Type *type, const char *name, Value *default_v
 			type->properties = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, free_property);
 
 		if ((existing = (DependencyProperty *)g_hash_table_lookup (type->properties, property->hash_key)) != NULL) {
-			g_warning ("DependencyProperty::RegisterFull (): Trying to register the property '%s' in the type '%s', and there already is a property registered on that type with the same name.",
-				property->GetName (), type->name);
+			g_warning ("DependencyProperty::RegisterFull (): Trying to register the property '%s' (of type %s) in the owner type '%s', and there already is a property registered on that type with the same name.",
+				   property->GetName (), Type::Find(vtype)->GetName(), type->GetName());
 			delete property;
 			return existing;
 		} else {
