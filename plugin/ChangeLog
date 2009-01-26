@@ -1,3 +1,7 @@
+2009-01-26  Geoff Norton  <gnorton@novell.com>
+
+	* plugin.cpp|h: We now go thru Deployment to warm up the application.
+
 2009-01-25  Geoff Norton  <gnorton@novell.com>
 
 	* plugin.cpp: We initialize a Deployment for every plugin regardless

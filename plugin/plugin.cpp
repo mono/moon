@@ -1106,7 +1106,7 @@ PluginInstance::LoadXAML ()
 void
 PluginInstance::LoadXAP (const char *fname)
 {
-	ManagedCreateApplication (fname);
+	ManagedInitializeDeployment (fname);
 	xap_loaded = true;
 }
 
@@ -1939,7 +1939,7 @@ PluginInstance::CreatePluginAppDomain ()
 		}
 		
 		moon_load_xaml  = MonoGetMethodFromName (app_launcher, "CreateXamlLoader");
-		moon_load_xap   = MonoGetMethodFromName (app_launcher, "CreateApplication");
+		moon_load_xap   = MonoGetMethodFromName (app_launcher, "InitializeDeployment");
 		moon_destroy_application = MonoGetMethodFromName (app_launcher, "DestroyApplication");
 
 		if (moon_load_xaml != NULL && moon_load_xap != NULL && moon_destroy_application != NULL)
@@ -1994,7 +1994,7 @@ PluginInstance::ManagedLoaderDestroy (gpointer loader_object)
 }
 
 bool
-PluginInstance::ManagedCreateApplication (const char *file)
+PluginInstance::ManagedInitializeDeployment (const char *file)
 {
 	if (moon_load_xap == NULL)
 		return NULL;

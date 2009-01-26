@@ -203,7 +203,7 @@ class PluginInstance
 
 	MonoMethod *MonoGetMethodFromName (MonoClass *klass, const char *name);
 
-	bool ManagedCreateApplication (const char *file);
+	bool ManagedInitializeDeployment (const char *file);
 	void ManagedDestroyApplication ();
 
 	gpointer ManagedCreateXamlLoader (XamlLoader* native_loader, const char *file, const char *str);
