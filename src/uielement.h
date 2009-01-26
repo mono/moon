@@ -147,7 +147,6 @@ public:
 	//   exposed is delimited by x, y, width, height
 	//
 	virtual void Render (cairo_t *cr, Region *region);
-	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
 
 	// a non virtual method for use when we want to wrap render
 	// with debugging and/or timing info

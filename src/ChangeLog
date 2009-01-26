@@ -1,3 +1,12 @@
+2009-01-26  Chris Toshok  <toshok@ximian.com>
+
+	* brush.cpp (VisualBrush::SetupBrush): comment out the call to
+	UIElement::Render(int,int,int,int).
+
+	* uielement.cpp, uielement.h (UIElement::Render): get rid of the
+	int,int,int,int override, and call the region override on
+	subtree_object if we need to.
+
 2009-01-26  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* src.mdp: Update.

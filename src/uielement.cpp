@@ -962,15 +962,8 @@ UIElement::CallPostRender (cairo_t *cr, UIElement *element, Region *region, bool
 void
 UIElement::Render (cairo_t *cr, Region *region)
 {
-        Rect rect = region->ClipBox ();
-	Render (cr, (int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
-}
-
-void
-UIElement::Render (cairo_t *cr, int x, int y, int width, int height)
-{
 	if (subtree_object && subtree_object->Is(Type::UIELEMENT)) {
-		((UIElement*)subtree_object)->Render(cr, x, y, width, height);
+		((UIElement*)subtree_object)->Render(cr, region);
 	}
 	else {
 		g_warning ("UIElement:Render has been called. The derived class %s should have overridden it.",
