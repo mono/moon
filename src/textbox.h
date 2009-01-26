@@ -78,16 +78,13 @@ class TextBoxDynamicPropertyValueProvider;
 /* @Namespace=System.Windows.Controls */
 /* @IncludeInKinds */
 class TextBox : public Control, public ITextSource {
-	friend class TextBoxDynamicPropertyValueProvider;
-	
 	TextFontDescription *font;
 	TextSelection selection;
 	TextBuffer *buffer;
 	int maxlen;
 	int cursor;
 	
-	int selection_changed:1;
-	int text_changed:1;
+	int setvalue:1;
 	int emit:1;
 	
 	static void key_down (EventObject *sender, EventArgs *args, void *closure);
@@ -109,8 +106,8 @@ class TextBox : public Control, public ITextSource {
 	
 	void ClearSelection ();
 	
-	void EmitSelectionChanged ();
-	void EmitTextChanged ();
+	void EmitSelectionChanged (bool sync = true);
+	void EmitTextChanged (bool sync = true);
 	
 	//
 	// Private Property Accessors

@@ -1,4 +1,15 @@
 2009-01-26  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (class TextBoxDynamicPropertyValueProvider):
+	Removed.
+	(TextBox::OnPropertyChanged): Guard SelectedTextProperty and
+	TextProperty from reentrancy.
+	(TextBox::EmitSelectionChanged): Update the value before emitting
+	the event, this way we don't need the dynamic provider.
+	(TextBox::EmitTextChanged): Same.
+	(TextBox::OnKeyDown): Handle key == GDK_Return.
+
+2009-01-26  Jeffrey Stedfast  <fejj@novell.com>
 	
 	* textbox.cpp (class TextBoxDynamicPropertyValueProvider): We need
 	to handle the TextProperty as well.

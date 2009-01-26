@@ -204,57 +204,6 @@ class TextBuffer {
 
 
 //
-// TextBoxDynamicPropertyValueProvider
-//
-
-class TextBoxDynamicPropertyValueProvider : public PropertyValueProvider {
-	Value *selection_value;
-	Value *text_value;
-	
- public:
-	TextBoxDynamicPropertyValueProvider (DependencyObject *obj) : PropertyValueProvider (obj)
-	{
-		selection_value = NULL;
-		text_value = NULL;
-	}
-	
-	virtual ~TextBoxDynamicPropertyValueProvider ()
-	{
-		delete selection_value;
-		delete text_value;
-	}
-	
-	virtual Value *GetPropertyValue (DependencyProperty *property)
-	{
-		TextBox *tb = (TextBox *) obj;
-		char *text;
-		
-		if (property == TextBox::SelectedTextProperty) {
-			if (tb->selection_changed) {
-				delete selection_value;
-				text = g_ucs4_to_utf8 (tb->buffer->text + tb->selection.start, tb->selection.length, NULL, NULL, NULL);
-				selection_value = new Value (text, true);
-				tb->selection_changed = false;
-			}
-			
-			return selection_value;
-		} else if (property == TextBox::TextProperty) {
-			if (tb->text_changed) {
-				delete text_value;
-				text = g_ucs4_to_utf8 (tb->buffer->text, tb->buffer->len, NULL, NULL, NULL);
-				text_value = new Value (text, true);
-				tb->text_changed = false;
-			}
-			
-			return text_value;
-		}
-		
-		return NULL;
-	}
-};
-
-
-//
 // TextBox
 //
 
@@ -266,8 +215,6 @@ TextBox::TextBox ()
 	type_info->full_name = g_strdup ("System.Windows.Controls.TextBox");
 
 	SetDefaultStyleKey (type_info);
-
-	providers[PropertyPrecedence_DynamicValue] = new TextBoxDynamicPropertyValueProvider (this);
 	
 	AddHandler (UIElement::KeyDownEvent, TextBox::key_down, this);
 	AddHandler (UIElement::KeyUpEvent, TextBox::key_up, this);
@@ -281,10 +228,9 @@ TextBox::TextBox ()
 	
 	buffer = new TextBuffer ();
 	
-	selection_changed = false;
-	text_changed = false;
 	selection.length = 0;
 	selection.start = 0;
+	setvalue = true;
 	emit = true;
 	maxlen = 0;
 	cursor = 0;
@@ -1235,8 +1181,11 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 	// Probably a good idea to lift a lot of the logic from jackson's MWF code.
 	printf ("TextBox::OnKeyDown()\n");
 	
-	if ((c = args->GetUnicode ())) {
+	if ((c = args->GetUnicode ()) || key == GDK_Return) {
 		// normal character key
+		if (key == GDK_Return)
+			c = '\n';
+		
 		if ((maxlen > 0 && buffer->len >= maxlen) || ((c == '\n') && !GetAcceptsReturn ()))
 			return;
 		
@@ -1378,17 +1327,29 @@ TextBox::key_up (EventObject *sender, EventArgs *args, void *closure)
 }
 
 void
-TextBox::EmitSelectionChanged ()
+TextBox::EmitSelectionChanged (bool sync)
 {
-	selection_changed = true;
+	if (sync) {
+		char *text = g_ucs4_to_utf8 (buffer->text + selection.start, selection.length, NULL, NULL, NULL);
+		
+		setvalue = false;
+		SetValue (TextBox::SelectedTextProperty, Value (text, true));
+		setvalue = true;
+	}
 	
 	Emit (TextBox::SelectionChangedEvent, new RoutedEventArgs ());
 }
 
 void
-TextBox::EmitTextChanged ()
+TextBox::EmitTextChanged (bool sync)
 {
-	text_changed = true;
+	if (sync) {
+		char *text = g_ucs4_to_utf8 (buffer->text, buffer->len, NULL, NULL, NULL);
+		
+		setvalue = false;
+		SetValue (TextBox::TextProperty, Value (text, true));
+		setvalue = true;
+	}
 	
 	Emit (TextChangedEvent, new TextChangedEventArgs ());
 }
@@ -1424,27 +1385,29 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 	} else if (args->property == TextBox::MaxLengthProperty) {
 		maxlen = args->new_value->AsInt32 ();
 	} else if (args->property == TextBox::SelectedTextProperty) {
-		const char *str = args->new_value ? args->new_value->AsString () : "";
-		gunichar *text;
-		glong textlen;
-		
-		// FIXME: is the cursor/selection updating logic correct?
-		
-		text = g_utf8_to_ucs4_fast (str, -1, &textlen);
-		if (selection.length > 0) {
-			// replace the currently selected text
-			buffer->Replace (selection.start, selection.length, text, textlen);
-			cursor = selection.start + textlen;
-			ClearSelection ();
-		} else {
-			// insert the text at the cursor position
-			buffer->Insert (cursor, text, textlen);
-			cursor += textlen;
+		if (setvalue) {
+			const char *str = args->new_value ? args->new_value->AsString () : "";
+			gunichar *text;
+			glong textlen;
+			
+			// FIXME: is the cursor/selection updating logic correct?
+			
+			text = g_utf8_to_ucs4_fast (str, -1, &textlen);
+			if (selection.length > 0) {
+				// replace the currently selected text
+				buffer->Replace (selection.start, selection.length, text, textlen);
+				cursor = selection.start + textlen;
+				ClearSelection ();
+			} else {
+				// insert the text at the cursor position
+				buffer->Insert (cursor, text, textlen);
+				cursor += textlen;
+			}
+			
+			g_free (text);
+			
+			EmitTextChanged ();
 		}
-		
-		g_free (text);
-		
-		EmitTextChanged ();
 	} else if (args->property == TextBox::SelectionStartProperty) {
 		selection.start = args->new_value->AsInt32 ();
 		
@@ -1460,19 +1423,24 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 	} else if (args->property == TextBox::SelectionForegroundProperty) {
 		changed = TextBoxModelChangedBrush;
 	} else if (args->property == TextBox::TextProperty) {
-		const char *str = args->new_value ? args->new_value->AsString () : "";
-		gunichar *text;
-		glong textlen;
-		
-		// FIXME: is the cursor/selection updating logic correct?
-		
-		text = g_utf8_to_ucs4_fast (str, -1, &textlen);
-		buffer->Replace (0, buffer->len, text, textlen);
-		ClearSelection ();
-		cursor = textlen;
-		g_free (text);
-		
-		EmitTextChanged ();
+		if (setvalue) {
+			const char *str = args->new_value ? args->new_value->AsString () : "";
+			gunichar *text;
+			glong textlen;
+			
+			// FIXME: is the cursor/selection updating logic correct?
+			
+			text = g_utf8_to_ucs4_fast (str, -1, &textlen);
+			buffer->Replace (0, buffer->len, text, textlen);
+			ClearSelection ();
+			cursor = textlen;
+			g_free (text);
+			
+			// Emit the event, but don't bother
+			// regenerating the Text value since it was
+			// just set
+			EmitTextChanged (false);
+		}
 	} else if (args->property == TextBox::TextAlignmentProperty) {
 		changed = TextBoxModelChangedTextAlignment;
 	} else if (args->property == TextBox::TextWrappingProperty) {
