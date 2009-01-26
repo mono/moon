@@ -1,3 +1,33 @@
+2009-01-26  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* cm:
+	* cm/m.gif:
+	* cm/s.gif:
+	* cm/i.gif:
+	* cm/r.gif:
+	* cm/p.gif:
+	* cm/n.gif:
+	* cm/f.gif:
+	* cm/w.gif:
+	* cm/c.gif:
+	* cm/y.gif:
+	* cm/d.gif:
+	* cm/e.gif:
+	* cm/tb.gif:
+	* cm/se.gif:
+	* cm/sc.gif:
+	* cm/en.gif:
+	* cm/tp.gif:
+	* cm/tm.gif:
+	* cm/sm.gif:
+	* cm/sx.gif:
+	* cm/mn.png:
+	* cm/st.gif: Add some icons.
+
+	* View.cs:
+	* munxap.cs:
+	* Makefile.am: Use Cecil instead of monodis, use icons.
+
 2009-01-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Zip.cs:

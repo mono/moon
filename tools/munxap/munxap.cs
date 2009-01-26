@@ -26,6 +26,7 @@ public class Munxap
 {
 	Window window;
 	VBox main;
+	VBox left;
 	HBox xap;
 	Button close_button;
 	Label file_label;
@@ -108,6 +109,9 @@ public class Munxap
 		xap = new HBox (false, 10);
 		main.PackStart (xap, true, true, 0);
 
+		left = new VBox (false, 10);
+		xap.PackStart (left, true, true, 0);
+		
 		// a list of files in the zip file
 		xap_file_store = new ListStore (typeof (String), typeof (String), typeof (ZipContent));		
 		xap_file_view = new TreeView ();
@@ -118,7 +122,7 @@ public class Munxap
 		xap_file_view.CursorChanged += HandleCursorChanged;
 		xap_file_scrollable = new ScrolledWindow ();
 		xap_file_scrollable.Add (xap_file_view);
-		xap.PackStart (xap_file_scrollable, true, true, 0);
+		left.PackStart (xap_file_scrollable, true, true, 0);
 		
 		// close button at the bottom
 		close_button = new Button ("Close");
@@ -184,13 +188,13 @@ public class Munxap
 		}
 
 		// Remove any previous views
-		while (xap.Children.Length > 1)
-			xap.Remove (xap.Children [1]);
+		while (left.Children.Length > 1)
+			left.Remove (left.Children [1]);
 
 		// Add the current one, if any
 		if (view != null) {
-			xap.PackStart (view.GetView (), true, true, 0);
-			xap.ShowAll ();
+			left.PackStart (view.GetView (), true, true, 0);
+			left.ShowAll ();
 		}
 	}
 }

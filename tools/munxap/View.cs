@@ -12,6 +12,7 @@
 
 using GLib;
 using Gtk;
+using Mono.Cecil;
 
 using System;
 using System.Collections;
@@ -84,8 +85,59 @@ class ViewXaml : ViewText {
 	public ViewXaml (ZipContent content) : base (content) {}
 }
 
-class ViewCode : ViewText {
-	public ViewCode (string code) : base (code)	{ }
+class ViewCode : View {
+	ListStore store;
+	TreeView tree;
+	ScrolledWindow scrolled_tree;
+	MethodDefinition method;
+	public ViewCode (MethodDefinition method)
+	{
+		this.method = method;
+	}
+
+	public override Widget GetView ()
+	{
+		if (scrolled_tree != null)
+			return scrolled_tree;
+
+		// Create ui
+		store = new ListStore (typeof (string), typeof (string), typeof (string));
+		tree = new TreeView ();
+		tree.Model = store;
+		tree.AppendColumn ("Offset", new CellRendererText (), "text", 0);
+		tree.AppendColumn ("Instruction", new CellRendererText (), "text", 1);
+		tree.AppendColumn ("Operand", new CellRendererText (), "text", 2);
+		tree.HeadersVisible = true;
+		scrolled_tree = new ScrolledWindow ();
+		scrolled_tree.Add (tree);
+
+		Mono.Cecil.Cil.MethodBody body = method.Body;
+		Mono.Cecil.Cil.Instruction instr;
+		if (body != null) {
+			for (int i = 0; i < body.Instructions.Count; i++) {
+				instr = body.Instructions [i];
+				
+				store.AppendValues ("IL_" + instr.Offset.ToString ("0000"), instr.OpCode.ToString (), FormatOperand (instr.Operand));
+			}
+		}
+		return scrolled_tree;
+	}
+
+	string FormatOperand (object operand)
+	{
+		Mono.Cecil.Cil.Instruction instr;
+
+		if (operand == null)
+			return string.Empty;
+		
+		instr = operand as Mono.Cecil.Cil.Instruction;
+		if (instr != null)
+			return "IL_" + instr.Offset.ToString ("0000");
+
+		return operand.ToString ();
+	}
+	
+	
 }
 
 class ViewResource : View {
@@ -94,11 +146,11 @@ class ViewResource : View {
 	TreeView tree;
 	ScrolledWindow scrolled_tree;
 	
-	string filename;
+	Resource resource;
 	
-	public ViewResource (string filename) : base (null)
+	public ViewResource (Resource resource) : base ()
 	{
-		this.filename = filename;
+		this.resource = resource;
 	}
 
 	public override Widget GetView ()
@@ -107,7 +159,7 @@ class ViewResource : View {
 			return box;
 
 		// Create ui
-		box = new VBox ();
+		box = new VBox (false, 10);
 		store = new ListStore (typeof (string), typeof (string), typeof (object));
 		tree = new TreeView ();
 		tree.Model = store;
@@ -120,10 +172,17 @@ class ViewResource : View {
 		box.PackStart (scrolled_tree, true, true, 0);
 
 		// Load resources
-		using (ResourceReader reader = new ResourceReader (filename)) {
-			foreach (DictionaryEntry obj in reader) {
-				store.AppendValues (obj.Key.ToString (), obj.Value.GetType ().FullName, obj.Value);
+		EmbeddedResource embed = resource as EmbeddedResource;
+		if (embed != null) {
+			using (MemoryStream stream = new MemoryStream (embed.Data)) {
+				using (ResourceReader reader = new ResourceReader (stream)) {
+					foreach (DictionaryEntry obj in reader) {
+						store.AppendValues (obj.Key.ToString (), obj.Value.GetType ().FullName, obj.Value);
+					}
+				}
 			}
+		} else {
+			Console.WriteLine ("Don't know how to handle a resource whose type is {0}", resource.GetType ().FullName);
 		}
 
 		return box;
@@ -191,14 +250,38 @@ class ViewResource : View {
 
 class ViewAssembly : View {
 	HBox box;
-	ListStore store;
+	TreeStore store;
 	TreeView tree;
 	ScrolledWindow scrolled_tree;
+	AssemblyDefinition assembly;
+	
+	static Gdk.Pixbuf classPixbuf, delegatePixbuf, enumPixbuf;
+	static Gdk.Pixbuf eventPixbuf, fieldPixbuf, interfacePixbuf;
+	static Gdk.Pixbuf methodPixbuf, namespacePixbuf, propertyPixbuf;
+	static Gdk.Pixbuf attributePixbuf, structPixbuf, assemblyPixbuf;
+
+	static ViewAssembly ()
+	{
+		System.Reflection.Assembly ta = typeof (ViewAssembly).Assembly;
+		classPixbuf = new Gdk.Pixbuf (ta, "c.gif");
+		delegatePixbuf = new Gdk.Pixbuf (ta, "d.gif");
+		enumPixbuf = new Gdk.Pixbuf (ta, "en.gif");
+		eventPixbuf = new Gdk.Pixbuf (ta, "e.gif");
+		fieldPixbuf = new Gdk.Pixbuf (ta, "f.gif");
+		interfacePixbuf = new Gdk.Pixbuf (ta, "i.gif");
+		methodPixbuf = new Gdk.Pixbuf (ta, "m.gif");
+		namespacePixbuf = new Gdk.Pixbuf (ta, "n.gif");
+		propertyPixbuf = new Gdk.Pixbuf (ta, "p.gif");
+		attributePixbuf = new Gdk.Pixbuf (ta, "r.gif");
+		structPixbuf = new Gdk.Pixbuf (ta, "s.gif");
+		assemblyPixbuf = new Gdk.Pixbuf (ta, "y.gif");
+	}
 	
 	public ViewAssembly (ZipContent content) : base (content) {}
 
 	public override Widget GetView ()
 	{
+		Gtk.TreeIter iter;
 		string line;
 		
 		if (box != null)
@@ -206,9 +289,10 @@ class ViewAssembly : View {
 
 		// Create ui
 		box = new HBox ();
-		store = new ListStore (typeof (string), typeof (string), typeof (string));
+		store = new TreeStore (typeof (string), typeof (string), typeof (string), typeof (object), typeof (Gdk.Pixbuf));
 		tree = new TreeView ();
 		tree.Model = store;
+		tree.AppendColumn ("Icon", new CellRendererPixbuf (), "pixbuf", 4);
 		tree.AppendColumn ("Name", new CellRendererText (), "text", 0);
 		tree.AppendColumn ("Type", new CellRendererText (), "text", 1);
 		tree.AppendColumn ("Info", new CellRendererText (), "text", 2);
@@ -218,53 +302,81 @@ class ViewAssembly : View {
 		scrolled_tree.Add (tree);
 		box.PackStart (scrolled_tree, true, true, 0);
 
+		if (assembly == null)
+			assembly = AssemblyFactory.GetAssembly (Content.UnzippedFilename);
+				
 		// Load resources
 		// first get a list of resources in the assembly
-		List<string> resources = new List<string> ();
-		using (System.Diagnostics.Process p = new System.Diagnostics.Process ()) {
-		 	p.StartInfo.FileName = "monodis";
-			p.StartInfo.Arguments = Content.UnzippedFilename;
-			p.StartInfo.RedirectStandardOutput = true;
-			p.StartInfo.UseShellExecute = false;
-			p.Start ();
-			while ((line = p.StandardOutput.ReadLine ()) != null) {
-				if (!line.StartsWith (".mresource"))
-					continue;
-				line = line.Replace (".mresource ", "").Replace ("public ", "");
-				line = line.Trim (new char [] {' ', '\''});
-				resources.Add (line);
-			}
+		iter = store.AppendValues ("Resources");
+		foreach (Mono.Cecil.Resource res in assembly.MainModule.Resources) {
+			store.AppendValues (iter, res.Name, "Resource", "", res);
 		}
-		// write those resources to disk
-		using (System.Diagnostics.Process p = new System.Diagnostics.Process ()) {
-		 	p.StartInfo.FileName = "monodis";
-			p.StartInfo.Arguments = "--mresources " + Content.UnzippedFilename;
-			p.StartInfo.WorkingDirectory = Path.GetDirectoryName (Content.UnzippedFilename);
-			p.Start ();
-			p.WaitForExit ();
-		}
-		// add to treeview
-		foreach (string res in resources) {
-			string path = Path.Combine (Path.GetDirectoryName (Content.UnzippedFilename), res);
-			Console.WriteLine ("Added: '{0}' '{1}' '{2}'", res, "Resource", path);
-			store.AppendValues (res, "Resource", path);
-		}
-		
+
 		// Load types
-		using (System.Diagnostics.Process p = new System.Diagnostics.Process ()) {
-		 	p.StartInfo.FileName = "monodis";
-			p.StartInfo.Arguments = "--typedef " + Content.UnzippedFilename;
-			p.StartInfo.RedirectStandardOutput = true;
-			p.StartInfo.UseShellExecute = false;
-			p.Start ();
-			while ((line = p.StandardOutput.ReadLine ()) != null) {
-				if (line.Trim () == string.Empty)
+		Gtk.TreeIter classes = store.AppendValues ("Classes");
+		foreach (TypeDefinition type in assembly.MainModule.Types) {
+			Gtk.TreeIter cl = store.AppendValues (classes, type.FullName, "Type", "", type, classPixbuf);
+			List<MethodDefinition> shown_methods = new List<MethodDefinition> ();
+			foreach (PropertyDefinition property in type.Properties) {
+				Gtk.TreeIter prop = store.AppendValues (cl, property.Name, "Property", "", property, propertyPixbuf);
+				if (property.GetMethod != null) {
+					store.AppendValues (prop, FormatMethod (property.GetMethod), "Getter", "", property.GetMethod, methodPixbuf);
+					shown_methods.Add (property.GetMethod);
+				}
+				if (property.SetMethod != null) {
+					store.AppendValues (prop, FormatMethod (property.SetMethod), "Setter", "", property.SetMethod, methodPixbuf);
+					shown_methods.Add (property.SetMethod);
+				}
+			}
+			foreach (EventDefinition ev in type.Events) {
+				Gtk.TreeIter evIter = store.AppendValues (cl, ev.Name, "Event", "", ev, eventPixbuf);
+				if (ev.AddMethod != null) {
+					store.AppendValues (evIter, FormatMethod (ev.AddMethod), "Adder", "", ev.AddMethod, methodPixbuf);
+					shown_methods.Add (ev.AddMethod);
+				}
+				if (ev.RemoveMethod != null) {
+					store.AppendValues (evIter, FormatMethod (ev.RemoveMethod), "Remover", "", ev.RemoveMethod, methodPixbuf);
+					shown_methods.Add (ev.RemoveMethod);
+				}
+				if (ev.InvokeMethod != null) {
+					store.AppendValues (evIter, FormatMethod (ev.InvokeMethod), "Invoker", "", ev.InvokeMethod, methodPixbuf);
+					shown_methods.Add (ev.InvokeMethod);
+				}
+			}
+			foreach (MethodDefinition method in type.Methods) {
+				if (shown_methods.Contains (method))
 					continue;
-				store.AppendValues (line, "Class", "");
+				store.AppendValues (cl, FormatMethod (method), "Method", "", method, methodPixbuf);
+			}
+			foreach (MethodDefinition method in type.Constructors) {
+				store.AppendValues (cl, FormatMethod (method), "Constructor", "", method, methodPixbuf);
+			}
+			foreach (FieldDefinition field in type.Fields) {
+				store.AppendValues (cl, field.FieldType.Name + " " + field.Name, "Field", "", field, fieldPixbuf);
 			}
 		}
-		
 		return box;
+	}
+
+	string FormatMethod (MethodDefinition method)
+	{
+		StringBuilder result = new StringBuilder ();
+
+		result.Append (method.ReturnType.ReturnType.Name);
+		result.Append (" ");
+		result.Append (method.Name);
+		result.Append ("(");
+
+		for (int i = 0; i < method.Parameters.Count - 1; i++) {
+			if (i > 0)
+				result.Append (", ");
+			result.Append (method.Parameters [i].ParameterType.Name);
+			result.Append (" ");
+			result.Append (method.Parameters [i].Name);
+		}
+		result.Append (")");
+
+		return result.ToString ();
 	}
 	
 	void HandleCursorChanged (object sender, EventArgs e)
@@ -293,7 +405,32 @@ class ViewAssembly : View {
 			Console.WriteLine ("JB, We need your decompiler.");
 			break;
 		case "Resource":
-			view = new ViewResource (info);
+			Resource res;
+			v = new Value ();
+			store.GetValue (iter, 3, ref v);
+			res = v.Val as Resource;
+			if (res != null) {
+				view = new ViewResource (res);
+			} else {
+				Console.WriteLine ("{0} didn't have a Resource, it had a {1}.", type, v.Val == null ? "null" : v.Val.GetType ().ToString ());
+			}
+			break;
+		case "Method":
+		case "Getter":
+		case "Setter":
+		case "Remover":
+		case "Adder":
+		case "Invoker":
+		case "Constructor":
+			MethodDefinition def;
+			v = new Value ();
+			store.GetValue (iter, 3, ref v);
+			def = v.Val as MethodDefinition;
+			if (def != null) {
+				view = new ViewCode (def);
+			} else {
+				Console.WriteLine ("{0} didn't have a MethodDefinition.", type);
+			}
 			break;
 		default:
 			Console.WriteLine ("Unhandled case: {0}", type);
