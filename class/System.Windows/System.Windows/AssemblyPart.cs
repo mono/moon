@@ -62,7 +62,7 @@ namespace System.Windows {
 			Assembly assembly = Assembly.Load (buffer);
 
 			if (assembly != null)
-				Application.AddAssembly (assembly);
+				Deployment.Current.Assemblies.Add (assembly);
 
 			return assembly;
 		}

@@ -46,25 +46,9 @@ using System.Windows.Markup;
 namespace System.Windows {
 
 	public partial class Application : INativeDependencyObjectWrapper {
-
-		static ResourceDictionary resources;
-		static List<Assembly> assemblies;
-		static Assembly entry_point_assembly;
-
-		//
-		// Controls access to the s_ static fields, which are used
-		// by the Application constructor to initialize these fields
-		// and any other fields that require initialization by passing
-		// data before the derived class executes.
-		//
-		static object creation = new object ();
-		static string s_xap_dir;
-		internal static IntPtr s_surface;
-		
 		//
 		// Application instance fields
 		//
-		string xap_dir;
 		UIElement root_visual;
 		SilverlightHost host;
 
@@ -87,9 +71,6 @@ namespace System.Windows {
 			get_resource = new GetResourceCallback (get_resource_cb);
 
 			NativeMethods.application_register_callbacks (NativeHandle, apply_default_style, apply_style, get_resource);
-
-			xap_dir = s_xap_dir;
-			Surface = s_surface;
 
 			if (Current == null) {
 				Current = this;
@@ -115,15 +96,15 @@ namespace System.Windows {
 
 		internal void Terminate ()
 		{
-			if (xap_dir == null)
+			if (Deployment.Current.XapDir == null)
 				return;
 
 			if (Exit != null)
 				Exit (this, EventArgs.Empty);
 			
 			try {
-				Helper.DeleteDirectory (xap_dir);
-				xap_dir = null;
+				Helper.DeleteDirectory (Deployment.Current.XapDir);
+				Deployment.Current.XapDir = null;
 			} catch {
 			}
 
@@ -199,7 +180,7 @@ namespace System.Windows {
 					using (StreamReader sr = new StreamReader (info.Stream)) {
 						string generic_xaml = sr.ReadToEnd();
 
-						ManagedXamlLoader loader = new ManagedXamlLoader (Surface, PluginHost.Handle);
+						ManagedXamlLoader loader = new ManagedXamlLoader (Deployment.Current.Surface, PluginHost.Handle);
 
 						try {
 							rd = loader.CreateDependencyObjectFromString (generic_xaml, false) as ResourceDictionary;
@@ -221,161 +202,6 @@ namespace System.Windows {
 			return rd[type.FullName] as Style;
 		}
 
-		/// <summary>
-		///    Initializes the Application singleton by creating the Application from the XAP file
-		/// </summary>
-		/// <remarks>
-		///   This is consumed by the plugin, should not be used by user code.
-		/// </remarks>
-		internal static bool LaunchFromXap (IntPtr plugin, IntPtr surface, string xapPath)
-		{
-			if (Current != null)
-				throw new Exception ("Should only be called once per AppDomain");
-
-			return CreateFromXap (plugin, surface, xapPath) != null;
-		}
-		
-		internal static Application CreateFromXap (IntPtr plugin, IntPtr surface, string xapPath)
-		{			
-			if (plugin != IntPtr.Zero)
-				PluginHost.SetPluginHandle (plugin);
-			
-			string xap_dir = NativeMethods.xap_unpack (xapPath);
-			if (xap_dir == null){
-				Report.Error ("Failure to unpack {0}", xapPath);
-				return null;
-			}
-
-			//
-			// Load AppManifest.xaml, validate a bunch of properties
-			//
-			ManagedXamlLoader loader = new ManagedXamlLoader (surface, PluginHost.Handle);
-			string app_manifest = Path.Combine (xap_dir, "AppManifest.xaml");
-			if (!File.Exists (app_manifest)){
-				Report.Error ("No AppManifest.xaml found on the XAP package");
-				return null;
-			}
-
-			string app_manifest_contents;
-
-			using (StreamReader r = new StreamReader (app_manifest))
-				app_manifest_contents = r.ReadToEnd();
-
-			Deployment deployment = Deployment.Current;
-
-			try {
-				loader.Hydrate (deployment.native, app_manifest_contents);
-			}
-			catch (Exception e) {
-				Report.Error (e.ToString());
-				return null;
-			}
-
-			if (deployment.EntryPointAssembly == null) {
-				Report.Error ("AppManifest.xaml: No EntryPointAssembly found");
-				return null;
-			}
-
-			if (deployment.EntryPointType == null) {
-				Report.Error ("No entrypoint defined in the AppManifest.xaml");
-				return null;
-			}
-
-			//
-			// Load the XAML to CLR object mappings from this assembly.
-			//
-			LoadXmlnsDefinitionMappings (typeof (Application).Assembly);
-			
-			//
-			// Load the assemblies from the XAP file, and find the startup assembly
-			//
-			assemblies = new List <Assembly> ();
-			assemblies.Add (typeof (Application).Assembly); // Add System.Windows.dll
-
-			for (int i = 0; i < deployment.Parts.Count; i++) {
-				var part = deployment.Parts [i];
-				try {
-					var assembly = Assembly.LoadFrom (Path.Combine (xap_dir, part.Source));
-
-					if (entry_point_assembly == null && assembly.GetName ().Name == deployment.EntryPointAssembly)
-						entry_point_assembly = assembly;
-
-					assemblies.Add (assembly);
-					LoadXmlnsDefinitionMappings (assembly);
-				} catch (Exception e) {
-					Report.Error ("Error while loading the {0} assembly  {1}", part.Source, e);
-					return null;
-				}
-			}
-
-			if (entry_point_assembly == null) {
-				Report.Error ("Could not find the entry point assembly");
-				return null;
-			}
-
-			Type entry_type = entry_point_assembly.GetType (deployment.EntryPointType);
-			if (entry_type == null){
-				Report.Error ("Could not find the startup type {0} on the {1}",
-					      deployment.EntryPointType, deployment.EntryPointAssembly);
-				return null;
-			}
-
-			if (!entry_type.IsSubclassOf (typeof (Application))){
-				Report.Error ("Startup type does not derive from System.Windows.Application");
-#if SANITY
-				Type t = entry_type;
-				int spacing = 0;
-				while (t != null) {
-					if (spacing > 0) {
-						for (int i = 0; i < spacing; i ++)
-							Console.Write (" ");
-						Console.Write ("+ ");
-					}
-					Console.WriteLine ("{0}", t);
-					spacing += 2;
-					t = t.BaseType;
-				}
-#endif
-				return null;
-			}
-
-			Application instance;
-
-			lock (creation){
-				s_xap_dir = xap_dir;
-				s_surface = surface;
-				
-				try {
-					instance = (Application) Activator.CreateInstance (entry_type);
-				} catch (Exception e){
-					Report.Error ("Error while creating the instance: {0}", e);
-					return null;
-				}
-			}
-
-			// TODO:
-			// Get the event args to pass to startup
-			if (instance.Startup != null){
-				instance.Startup (instance, new StartupEventArgs ());
-			}
-			
-			if (instance.root_visual != null) {
-				NativeMethods.surface_attach (instance.Surface, instance.root_visual.native);
-			}
-
-			return instance;
-		}
-		
-		internal static Application CreateFromXap (string xapPath)
-		{
-			return CreateFromXap (IntPtr.Zero, IntPtr.Zero, xapPath);
-		}
-		
-		//
-		// component is used as the target type of the object
-		// we are loading, makes no sense to me, sounds like a
-		// hack.
-		//
 		[SecuritySafeCritical]
 		public static void LoadComponent (object component, Uri resourceLocator)
 		{
@@ -398,7 +224,7 @@ namespace System.Windows {
 
 			string xaml = new StreamReader (sr.Stream).ReadToEnd ();
 			Assembly loading_asm = component.GetType ().Assembly;
-			ManagedXamlLoader loader = new ManagedXamlLoader (loading_asm, app != null ? app.Surface : Application.s_surface, PluginHost.Handle);
+			ManagedXamlLoader loader = new ManagedXamlLoader (loading_asm, Deployment.Current.Surface, PluginHost.Handle);
 
 			loader.Hydrate (wrapper.NativeHandle, xaml);
 		}
@@ -441,8 +267,8 @@ namespace System.Windows {
 
 				resource = loc.Substring (p + 11);
 			} else {
-				assembly = entry_point_assembly;
-				assembly_name = assembly.GetName ().Name;
+				assembly = Deployment.Current.EntryAssembly;
+				assembly_name = Deployment.Current.EntryPointAssembly;
 				resource = loc [0] == '/' ? loc.Substring (1) : loc;	
 			}
 
@@ -453,7 +279,7 @@ namespace System.Windows {
 					return new StreamResourceInfo (stream, string.Empty);
 			} catch {}
 
-			string res_file = Path.Combine (Current.xap_dir, resource);
+			string res_file = Path.Combine (Deployment.Current.XapDir, resource);
 			if (File.Exists (res_file))
 				return StreamResourceInfo.FromFile (res_file);
 
@@ -478,16 +304,11 @@ namespace System.Windows {
 
 		internal static Assembly GetAssembly (string name)
 		{
-			foreach (var assembly in assemblies)
+			foreach (var assembly in Deployment.Current.Assemblies)
 				if (assembly.GetName ().Name == name)
 					return assembly;
 
 			return null;
-		}
-		
-		internal static void AddAssembly (Assembly assembly)
-		{
-			assemblies.Add (assembly);
 		}
 
 		public static StreamResourceInfo GetResourceStream (StreamResourceInfo zipPackageStreamResourceInfo, Uri uriResource)
@@ -536,14 +357,6 @@ namespace System.Windows {
 			}
 		}
 
-		internal IntPtr Surface {
-			[SecuritySafeCritical]
-			get { return NativeMethods.application_get_surface (NativeHandle); }
-
-			[SecuritySafeCritical]
-			set { NativeMethods.application_set_surface (NativeHandle, value); }
-		}
-
 		public UIElement RootVisual {
 			get {
 				return root_visual;
@@ -569,6 +382,11 @@ namespace System.Windows {
 		public event StartupEventHandler Startup;
 		public event EventHandler<ApplicationUnhandledExceptionEventArgs> UnhandledException;
 
+		internal void OnStartup () {
+			if (Startup != null){
+				Startup (this, new StartupEventArgs ());
+			}	
+		}
 
 		internal static Dictionary<XmlnsDefinitionAttribute,Assembly> xmlns_definitions = new Dictionary<XmlnsDefinitionAttribute, Assembly> ();
 		internal static List<string> imported_namespaces = new List<string> ();

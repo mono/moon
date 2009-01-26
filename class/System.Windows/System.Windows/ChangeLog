@@ -1,3 +1,12 @@
+2009-01-26  Geoff Norton  <gnorton@novell.com>
+
+	* Application.cs: Deployment processing and parsing lives in Deployment
+	now, as well as Surface and XapDir.
+	* Deployment.cs: Move and clean up a bunch of stuff from Application
+	additionally support loading assemblies from the web host.
+	* AssemblyPart.cs: We add assemblies to the deployment now where they
+	should be instead of the Application.
+
 2009-01-26  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* StartupEventArgs.cs: Parse initParams correctly.
