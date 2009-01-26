@@ -17,6 +17,8 @@
 #include "application.h"
 #include "collection.h"
 
+#include <mono/metadata/appdomain.h>
+
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
 /* @IncludeInKinds */	
@@ -53,7 +55,7 @@ class AssemblyPartCollection : public DependencyObjectCollection {
 class Deployment : public DependencyObject {
  protected:
 	virtual ~Deployment ();
-	
+
  public:
  	/* @PropertyType=CrossDomainAccess,DefaultValue=CrossDomainAccessNoAccess,ManagedSetterAccess=Internal */
 	static DependencyProperty *ExternalCallersFromCrossDomainProperty;
@@ -75,16 +77,24 @@ class Deployment : public DependencyObject {
 	Application* GetCurrentApplication ();
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetCurrentApplication (Application* value);
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetCurrent ();
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	static Deployment* GetCurrent ();
 	/* @GenerateCBinding,GeneratePInvoke */
 	static void SetCurrent (Deployment* value);
+	/* @GenerateCBinding,GeneratePInvoke */
+	static bool Initialize ();
 
 private:
 	Types* types;
 	Application* current_app;
+	MonoDomain *domain;
 	static GHashTable *current_hash;
+	static gboolean initialized;
+	static pthread_key_t tls_key;
+	static MonoDomain *root_domain;
 };
 
 #endif /* __DEPLOYMENT_H__ */

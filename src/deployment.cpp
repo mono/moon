@@ -13,23 +13,74 @@
 #include <glib.h>
 
 #include "deployment.h"
-
+#include <stdlib.h>
+#include <mono/jit/jit.h>
 #include <mono/metadata/appdomain.h>
+#include <mono/metadata/assembly.h>
+#include <mono/metadata/debug-helpers.h>
+G_BEGIN_DECLS
+/* because this header sucks */
+#include <mono/metadata/mono-debug.h>
+G_END_DECLS
+#include <mono/metadata/mono-config.h>
 
 
+gboolean Deployment::initialized = FALSE;
+pthread_key_t Deployment::tls_key = 0;
 GHashTable* Deployment::current_hash = NULL;
+MonoDomain* Deployment::root_domain = NULL;
+ 
+bool
+Deployment::Initialize()
+{
+	char *trace_options;
+
+	if (initialized)
+		return true;
+#if DEBUG
+	g_warning ("Enabling MONO_DEBUG=keep-delegates.");
+	g_setenv ("MONO_DEBUG", "keep-delegates", false);
+#endif
+
+	mono_config_parse (NULL);
+	trace_options = getenv ("MOON_TRACE");
+	if (trace_options != NULL){
+		printf ("Setting trace options to: %s\n", trace_options);
+		mono_jit_set_trace_options (trace_options);
+	}
+       
+	mono_debug_init (MONO_DEBUG_FORMAT_MONO);
+	root_domain = mono_jit_init_version ("Moonlight Root Domain", "moonlight");
+
+	initialized = true;
+	current_hash = g_hash_table_new (g_direct_hash, g_direct_equal);
+	pthread_key_create (&tls_key, NULL);
+
+	return true;
+}
+
 
 Deployment*
 Deployment::GetCurrent()
 {
-	if (!current_hash)
-		current_hash = g_hash_table_new (g_direct_hash, g_direct_equal);
+	Deployment *deployment = (Deployment *) pthread_getspecific (tls_key);
+	MonoDomain *current_domain = mono_domain_get ();
 
-	MonoDomain *domain;
-	if (!(domain = mono_domain_get ()))
-		return NULL;
+	/*
+	 * If we dont have a Deployment* in the TLS slot then we are in a thread created
+	 * by mono.  In this case we look up in the hsah table the deployment against 
+	 * the current appdomain
+	 */ 
+	if (deployment == NULL)
+		deployment = (Deployment *) g_hash_table_lookup (current_hash, current_domain);
 
-	return (Deployment*)g_hash_table_lookup (current_hash, domain);
+	/*
+	 * If we have a domain mismatch, fix that before we continue
+	 */
+	if (deployment && deployment->domain != current_domain)
+		mono_domain_set (deployment->domain, FALSE);
+
+	return deployment;
 }
 
 void
@@ -38,28 +89,36 @@ Deployment::SetCurrent (Deployment* deployment)
 	if (!current_hash)
 		current_hash = g_hash_table_new (g_direct_hash, g_direct_equal);
 
-	MonoDomain *domain;
+	mono_domain_set (deployment->domain, FALSE);
+	pthread_setspecific (tls_key, deployment);
 
-	if (!(domain = mono_domain_get ()))
-		return;
-	
-	if (deployment == NULL) {
-		g_hash_table_remove (current_hash, domain);
-		return;
-	}
-
-	return g_hash_table_insert (current_hash, domain, deployment);
+	if (!g_hash_table_lookup (current_hash, deployment->domain))
+		g_hash_table_insert (current_hash, deployment->domain, deployment);
 }
 
 Deployment::Deployment()
 {
+        char *domain_name = g_strdup_printf ("moonlight-%p", this);
+
 	SetObjectType (Type::DEPLOYMENT);
 	types = new Types ();
 	current_app = NULL;
+	mono_domain_set (root_domain, FALSE);
+        domain = mono_domain_create_appdomain (domain_name, NULL);
+        g_free (domain_name);
+
+        mono_domain_set (domain, FALSE);
 }
 
 Deployment::~Deployment()
 {
+	if (g_hash_table_lookup (current_hash, this->domain))
+		g_hash_table_remove (current_hash, this->domain);
+
+	pthread_setspecific (tls_key, NULL);
+	mono_domain_set (root_domain, FALSE);
+	mono_domain_unload (domain);
+
 	delete types;
 }
 
@@ -88,6 +147,12 @@ Deployment::SetCurrentApplication (Application* value)
 
 	if (current_app)
 	  current_app->ref ();
+}
+
+void
+Deployment::SetCurrent ()
+{
+	Deployment::SetCurrent (this);
 }
 
 AssemblyPart::AssemblyPart ()
