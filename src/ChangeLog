@@ -1,3 +1,8 @@
+2009-01-26  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Move this check into a function since it will be used
+	in a few places.
+
 2009-01-26  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* type.cpp: Type::Find: Check for NULL deployment to avoid crashes.

@@ -103,6 +103,7 @@ static void dependency_object_set_attributes (XamlParserInfo *p, XamlElementInst
 static void value_type_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
 static bool handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, const char* attr_name, const char* attr_value, Value **value);
 static bool element_begins_buffering (const char* element);
+static bool is_managed_kind (Type::Kind kind);
 static void parser_error (XamlParserInfo *p, const char *el, const char *attr, int error_code, const char *format, ...);
 
 static XamlElementInfo *create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *name, bool create);
@@ -2731,10 +2732,24 @@ bad_pml:
 	return NULL;
 }
 
-bool
+static bool
 value_is_explicit_null (const char *str)
 {
 	return !strcmp ("{x:Null}", str);
+}
+
+static
+bool is_managed_kind (Type::Kind kind)
+{
+	
+	if (kind == Type::MANAGED ||
+	    kind == Type::OBJECT ||
+	    kind == Type::URI ||
+	    kind == Type::MANAGEDTYPEINFO ||
+	    kind == Type::DEPENDENCYPROPERTY)
+		return true;
+
+	return false;
 }
 
 // NOTE: Keep definition in sync with class/System.Windows/Mono/NativeMethods.cs
@@ -3990,14 +4005,7 @@ start_parse:
 			Type::Kind propKind = prop->GetPropertyType ();
 			Type::Kind itemKind = item->info->GetKind();
 
-			if (propKind == Type::MANAGED ||
-			    propKind == Type::OBJECT ||
-			    propKind == Type::URI ||
-			    propKind == Type::MANAGEDTYPEINFO ||
-			    propKind == Type::DEPENDENCYPROPERTY ||
-
-			    Type::Find(itemKind)->IsCustomType()) {
-
+			if (is_managed_kind (propKind) || Type::Find (itemKind)->IsCustomType () || (v && is_managed_kind (v->GetKind ()))) {
 				if (!v)
 					v = new Value (g_strdup (attr [i + 1]));
 				if (p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, NULL, item->GetManagedPointer (), item->GetParentPointer (), g_strdup (prop->GetName ()), v)) {
