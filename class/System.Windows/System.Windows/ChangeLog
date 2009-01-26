@@ -1,3 +1,9 @@
+2009-01-26  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* UIElement.cs (TransformToVisual): Lookup for a MatrixTransform,
+	what libmoon is computing, instead of a GeneralTransform, which is
+	abstract and cannot be created (i.e. throwing).
+
 2009-01-26  Chris Toshok  <toshok@ximian.com>
 
 	* DependencyObject.cs (ctor): call event_object_set_object_type
