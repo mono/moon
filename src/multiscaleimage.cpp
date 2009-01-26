@@ -202,6 +202,7 @@ printf ("MSI::Render\n");
 	if (source->GetImageWidth () < 0) {
 		printf ("nothing to render so far...\n");
 		//FIXME: need to add a callback so we can invalidate the MSI and render again.
+		//Note: source->Download is only used for DeepZoomImageTileSource
 		source->Download ();
 		return;
 	}
@@ -242,7 +243,6 @@ printf ("MSI::Render\n");
 		int stride;
 
 		GError *error = NULL;
-//		GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file ("/home/sde/Desktop/img_2897.jpg", &error);
 		GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (filename, &error);
 		if (error) {
 			printf (error->message);
@@ -260,8 +260,12 @@ printf ("MSI::Render\n");
 										stride);
 
 		cairo_save (cr);
+
 		cairo_rectangle (cr, 0, 0, w, h);
-		cairo_scale (cr, w / gdk_pixbuf_get_width (pixbuf), h / gdk_pixbuf_get_height (pixbuf));
+		cairo_scale (cr, vp_w / w, vp_h / h);
+		cairo_translate (cr, -vp_ox, -vp_oy);
+		cairo_rectangle (cr, vp_ox, vp_oy, vp_w, vp_h);
+		cairo_scale (cr, (double)source->GetImageWidth() / gdk_pixbuf_get_width (pixbuf), (double)source->GetImageHeight () / gdk_pixbuf_get_height (pixbuf)); 
 		cairo_set_source_surface (cr, image, 0, 0);
 
 		cairo_fill (cr);
