@@ -397,6 +397,8 @@ FrameworkElement::Arrange (Rect finalRect)
 		response = ArrangeOverride (offer);
 
 	Size old (GetActualWidth (), GetActualHeight ());
+	SetActualWidth (response.width);
+	SetActualHeight (response.height);
 
 	HorizontalAlignment horiz = GetHorizontalAlignment ();
 	VerticalAlignment vert = GetVerticalAlignment ();
@@ -437,9 +439,6 @@ FrameworkElement::Arrange (Rect finalRect)
 	}
 
 	SetRenderSize (response);
-
-	SetActualWidth (response.width);
-	SetActualHeight (response.height);
 
 	if (old != response) {
 		SizeChangedEventArgs *args = new SizeChangedEventArgs (old, response);

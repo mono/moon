@@ -1,5 +1,16 @@
 2009-01-26  Larry Ewing  <lewing@novell.com>
 
+	* control.cpp: 
+	* border.cpp: Try to get alignment working visually.
+
+	* frameworkelement.cpp: hack the needed behavior in until I
+	understand the problem better.
+
+	* mediaelement.cpp, mediaelement.h:
+	* media.cpp: use the layout values in stretching
+
+2009-01-26  Larry Ewing  <lewing@novell.com>
+
 	* frameworkelement.cpp:
 	* shape.cpp:
 	* media.cpp:
