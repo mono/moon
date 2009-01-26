@@ -733,6 +733,37 @@ MediaElement::GetTransformOrigin ()
 	return Point (user_xform_origin->x * w, user_xform_origin->y * h);
 }
 
+void 
+MediaElement::ComputeBounds ()
+{
+	FrameworkElement::ComputeBounds ();
+
+	if (!mplayer)
+		return;
+
+	Stretch stretch = GetStretch ();
+	cairo_matrix_t matrix;
+	Rect image = Rect (0, 0, mplayer->GetVideoWidth (), mplayer->GetVideoHeight ());
+	Rect paint = Rect (0, 0, GetActualWidth (), GetActualHeight ());
+
+
+	if (paint.width == 0.0)
+		paint.width = image.width;
+
+	if (paint.height == 0.0)
+		paint.height = image.height;
+
+	image_brush_compute_pattern_matrix (&matrix, 
+					    paint.width, paint.height,
+					    image.width, image.height, stretch, 
+					    AlignmentXCenter, AlignmentYCenter, NULL, NULL);
+
+	cairo_matrix_invert (&matrix);
+
+	extents = paint.Transform (&matrix);
+	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
+}
+
 Rect
 MediaElement::GetCoverageBounds ()
 {

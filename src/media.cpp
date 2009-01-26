@@ -852,9 +852,8 @@ Image::ComputeBounds ()
 {
 	MediaBase::ComputeBounds ();
 
-	if (!surface) {
+	if (!surface)
 		return;
-	}
 
 	Stretch stretch = GetStretch ();
 	cairo_matrix_t matrix;

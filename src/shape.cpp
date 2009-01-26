@@ -1751,18 +1751,6 @@ Rect
 Path::ComputeShapeBounds (bool logical, cairo_matrix_t *matrix)
 {
 	Rect shape_bounds = Rect ();
-	
-	double width = GetWidth ();
-	double height = GetHeight ();
-	
-	if (isnan (width) != isnan (height))
-		return shape_bounds;
-
-	if (height <= 0.0 || width <= 0.0) {
-		SetShapeFlags (UIElement::SHAPE_EMPTY);
-		return shape_bounds;
-	}
-
 	Geometry *geometry;
 	
 	if (!(geometry = GetData ())) {

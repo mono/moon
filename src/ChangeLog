@@ -1,5 +1,13 @@
 2009-01-26  Larry Ewing  <lewing@novell.com>
 
+	* frameworkelement.cpp:
+	* shape.cpp:
+	* media.cpp:
+	* mediaelement.cpp, mediaelement.h: fix up the bounds to use the
+	new methods.
+
+2009-01-26  Larry Ewing  <lewing@novell.com>
+
 	* media.h:
 	* media.cpp: add bounds logic.
 

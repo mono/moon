@@ -259,6 +259,7 @@ class MediaElement : public FrameworkElement {
 	// overrides
 	virtual void Render (cairo_t *cr, Region *region);
 	virtual Point GetTransformOrigin ();
+	virtual void ComputeBounds ();
 	virtual Rect GetCoverageBounds ();
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
