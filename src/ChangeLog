@@ -1,3 +1,8 @@
+2009-01-26  Jeffrey Stedfast  <fejj@novell.com>
+
+	* type.cpp (Type::Find): Protect against dereferencing null
+	pointers.
+
 2009-01-26  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* src.mdp: Update.

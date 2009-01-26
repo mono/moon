@@ -1236,8 +1236,12 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 			new_as_dep->SetSurface (GetSurface ());
 
 			// set its logical parent
-			if (new_as_dep->GetLogicalParent() != NULL && new_as_dep->GetLogicalParent() != this)
-				g_warning ("DependencyObject already has a logical parent");
+			if (new_as_dep->GetLogicalParent() != NULL && new_as_dep->GetLogicalParent() != this) {
+				g_warning ("DependencyObject (%s) already has a logical parent of type %s",
+					   new_as_dep->GetType ()->GetName (),
+					   new_as_dep->GetLogicalParent ()->GetType ()->GetName ());
+			}
+			
 			MoonError error;
 			new_as_dep->SetLogicalParent (this, &error);
  			if (error.number)
