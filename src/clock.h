@@ -181,6 +181,7 @@ struct RepeatBehavior {
 	TimeSpan duration;
 };
 
+/* @IncludeInKinds */	
 class TimeSource : public EventObject {
  protected:
 	virtual ~TimeSource ();
@@ -195,10 +196,9 @@ class TimeSource : public EventObject {
 	virtual TimeSpan GetNow ();
 
 	const static int TickEvent;
-
-	virtual Type::Kind GetObjectType () { return Type::TIMESOURCE; };
 };
 
+/* @IncludeInKinds */	
 class SystemTimeSource : public TimeSource {
  protected:
 	virtual ~SystemTimeSource ();
@@ -212,14 +212,13 @@ class SystemTimeSource : public TimeSource {
 	
 	virtual TimeSpan GetNow ();
 	
-	virtual Type::Kind GetObjectType () { return Type::SYSTEMTIMESOURCE; };
-
  private:
 	guint timeout_id;
 	int frequency;
 	static gboolean tick_timeout (gpointer data);
 };
 
+/* @IncludeInKinds */	
 class ManualTimeSource : public TimeSource {
  protected:
 	virtual ~ManualTimeSource ();
@@ -230,8 +229,6 @@ class ManualTimeSource : public TimeSource {
 	virtual TimeSpan GetNow ();
 
 	void SetCurrentTime (TimeSpan current_time);
-
-	virtual Type::Kind GetObjectType () { return Type::MANUALTIMESOURCE; };
 
  private:
 	TimeSpan current_time;
@@ -249,15 +246,14 @@ class Applier;
 /* our clock is a mixture of the WPF Clock and ClockController
    classes.  as such, all clocks are controllable */
 /* @Namespace=None,ManagedDependencyProperties=None */
+/* @IncludeInKinds */	
 class Clock : public DependencyObject {
  protected:
-	virtual ~Clock () {};
+	virtual ~Clock ();
 
  public:
 	Clock (Timeline *timeline);
 	
-	virtual Type::Kind GetObjectType () { return Type::CLOCK; };
-
 	ClockGroup* GetParent ()          { return parent_clock; }
 	double      GetCurrentProgress () { return progress; }
 	virtual TimeSpan    GetCurrentTime ()     { return current_time; }
@@ -378,13 +374,13 @@ class Clock : public DependencyObject {
 
 
 /* @Namespace=None,ManagedDependencyProperties=None */
+/* @IncludeInKinds */	
 class ClockGroup : public Clock {
  protected:
 	virtual ~ClockGroup ();
 
  public:
 	ClockGroup (TimelineGroup *timeline, bool never_fill = false);
-	virtual Type::Kind GetObjectType () { return Type::CLOCKGROUP; };
 
 	void AddChild (Clock *clock);
 	void RemoveChild (Clock *clock);
@@ -424,6 +420,7 @@ class ClockGroup : public Clock {
 
 // our root level time manager (basically the object that registers
 // the gtk_timeout and drives all Clock objects
+/* @IncludeInKinds */	
 class TimeManager : public EventObject {
  public:
 	TimeManager ();
@@ -457,8 +454,6 @@ class TimeManager : public EventObject {
 	// Events you can AddHandler to
 	const static int UpdateInputEvent;
 	const static int RenderEvent;
-
-	virtual Type::Kind GetObjectType () { return Type::TIMEMANAGER; };
 
 	void ListClocks ();
 	Applier* GetApplier () { return applier; }
@@ -516,11 +511,12 @@ guint time_manager_add_timeout (TimeManager *manager, guint32 interval, GSourceF
 void time_manager_remove_timeout (TimeManager *manager, guint32 source_id);
 
 /* @Namespace=System.Windows.Media.Animation */
+/* @IncludeInKinds */	
 class Timeline : public DependencyObject {
 	DependencyObject *manual_target;
 	
  protected:
-	virtual ~Timeline () {}
+	virtual ~Timeline ();
 
  public:
 	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
@@ -538,8 +534,6 @@ class Timeline : public DependencyObject {
 	
  	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Timeline ();
-	
-	virtual Type::Kind GetObjectType () { return Type::TIMELINE; }
 	
 	void SetAutoReverse (bool autoreverse);
 	bool GetAutoReverse ();
@@ -589,20 +583,21 @@ class Timeline : public DependencyObject {
 
 
 /* @Namespace=System.Windows.Media.Animation */
+/* @IncludeInKinds */	
 class TimelineCollection : public DependencyObjectCollection {
  protected:
-	virtual ~TimelineCollection () {}
+	virtual ~TimelineCollection ();
 
  public:
  	/* @GenerateCBinding,GeneratePInvoke */
-	TimelineCollection () { }
+	TimelineCollection ();
 	
-	virtual Type::Kind GetObjectType() { return Type::TIMELINE_COLLECTION; }
 	virtual Type::Kind GetElementType() { return Type::TIMELINE; }
 };
 
 
 /* @Namespace=None,ManagedDependencyProperties=None */
+/* @IncludeInKinds */	
 class TimelineGroup : public Timeline {
  protected:
 	virtual ~TimelineGroup ();
@@ -613,8 +608,6 @@ class TimelineGroup : public Timeline {
 	
  	/* @GenerateCBinding,GeneratePInvoke */
 	TimelineGroup ();
-	
-	virtual Type::Kind GetObjectType () { return Type::TIMELINEGROUP; }
 	
 	virtual Clock *AllocateClock ();
 	virtual bool Validate ();
@@ -629,24 +622,24 @@ class TimelineGroup : public Timeline {
 
 
 /* @Namespace=None */
+/* @IncludeInKinds */	
 class ParallelTimeline : public TimelineGroup {
  protected:
-	virtual ~ParallelTimeline () {}
+	virtual ~ParallelTimeline ();
 
  public:
  	/* @GenerateCBinding,GeneratePInvoke */
-	ParallelTimeline () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::PARALLELTIMELINE; }
+	ParallelTimeline ();
 
 	virtual Duration GetNaturalDurationCore (Clock *clock);
 };
 
 
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */	
 class TimelineMarker : public DependencyObject {
  protected:
-	virtual ~TimelineMarker () {}
+	virtual ~TimelineMarker ();
 
  public:
  	/* @PropertyType=string,GenerateAccessors */
@@ -657,9 +650,7 @@ class TimelineMarker : public DependencyObject {
 	static DependencyProperty *TypeProperty;
 	
  	/* @GenerateCBinding,GeneratePInvoke */
-	TimelineMarker () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::TIMELINEMARKER; }
+	TimelineMarker ();
 	
 	//
 	// Property Accessors
@@ -679,6 +670,7 @@ class TimelineMarker : public DependencyObject {
 TimeSpan get_now (void);
 
 /* @Namespace=Mono,Version=2 */
+/* @IncludeInKinds */	
 class DispatcherTimer : public TimelineGroup {
 	Clock *root_clock;
 	static void OnTick (EventObject *sender, EventArgs *calldata, gpointer data);
@@ -691,8 +683,6 @@ class DispatcherTimer : public TimelineGroup {
  public:
 	/* @GenerateCBinding,GeneratePInvoke,MainThread,Version=2 */
 	DispatcherTimer ();
-
-	virtual Type::Kind GetObjectType () { return Type::DISPATCHERTIMER; }
 
 	/* @GenerateCBinding,GeneratePInvoke,Version=2 */
 	void Start ();

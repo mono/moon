@@ -61,6 +61,7 @@ struct ASFContext {
 	IMediaSource *source;
 };
 
+/* @IncludeInKinds */
 class ASFPacket : public EventObject {
 private:
 	int64_t position; // The position of this packet. -1 if not known.
@@ -85,8 +86,6 @@ public:
 	IMediaSource *GetSource () { return source; }
 	void SetSource (IMediaSource *source);
 	MediaResult Read ();
-	
-	virtual Type::Kind GetObjectType () { return Type::ASFPACKET; }
 };
 
 class ASFReader {
@@ -263,6 +262,7 @@ public:
 	IMediaStream *GetStream () { return stream; }
 };
 
+/* @IncludeInKinds */
 class ASFParser : public EventObject {
 private:
 	MediaErrorEventArgs *error;
@@ -380,8 +380,6 @@ public:
 	int64_t data_offset; // location of data object
 	int64_t packet_offset; // location of the beginning of the first packet
 	int64_t packet_offset_end; // location of the end of the last packet
-	
-	virtual Type::Kind GetObjectType () { return Type::ASFPARSER; }
 };
 
 

@@ -47,42 +47,22 @@ private:
 };
 
 
-
-static void
-delete_list (gpointer p)
-{
-	delete ((List*)p);
-}
-
 FrameworkTemplate::FrameworkTemplate ()
 {
-	xaml_bindings = g_hash_table_new_full (g_direct_hash,
-					       g_direct_equal,
-					       NULL,
-					       delete_list);
-	visual_tree = NULL;
+	SetObjectType (Type::FRAMEWORKTEMPLATE);
+
 	xaml_buffer = NULL;
 	xaml_context = NULL;
 }
 
 FrameworkTemplate::~FrameworkTemplate ()
 {
-	g_hash_table_destroy (xaml_bindings);
-	if (visual_tree)
-		visual_tree->unref();
 	if (xaml_buffer) {
 		g_free (xaml_buffer);
 		xaml_buffer = NULL;
 	}
 	delete xaml_context;
 	xaml_context = NULL;
-}
-
-void
-FrameworkTemplate::SetVisualTree (FrameworkElement *value)
-{
-	visual_tree = value;
-	visual_tree->ref ();
 }
 
 void
@@ -94,16 +74,22 @@ FrameworkTemplate::SetXamlBuffer (XamlContext *xaml_context, const char *xaml_bu
 }
 
 DependencyObject*
-FrameworkTemplate::GetVisualTree ()
+FrameworkTemplate::GetVisualTree (FrameworkElement *templateBindingSource, List *templateBindings)
 {
-	if (visual_tree)
-		return visual_tree;
-
 	if (xaml_buffer) {
 		XamlLoader *loader = new XamlLoader (NULL, xaml_buffer, GetSurface(), xaml_context);
 		Type::Kind dummy;
 
+		this->templateBindingSource = templateBindingSource;
+		if (templateBindingSource)
+			templateBindingSource->ref ();
+		this->templateBindings = templateBindings;
 		DependencyObject *result = loader->CreateFromString (xaml_buffer, false, &dummy);
+
+		if (templateBindingSource)
+			templateBindingSource->unref ();
+		this->templateBindingSource = NULL;
+		this->templateBindings = NULL;
 
 		delete loader;
 
@@ -116,132 +102,32 @@ FrameworkTemplate::GetVisualTree ()
 void
 FrameworkTemplate::AddXamlBinding (XamlTemplateBinding *binding)
 {
-	if (binding == NULL) {
-		g_warning("AddXamlBinding passed NULL binding");
-		return;
+	printf ("FrameworkTemplate::AddXamlBinding!\n");
+
+	if (templateBindingSource && templateBindings) {
+		TemplateBinding *b = binding->Attach (templateBindingSource);
+		if (b) {
+			templateBindings->Append (new TemplateBindingNode (b));
+			b->unref();
+		}
 	}
-		
-	List *l = (List*)g_hash_table_lookup (xaml_bindings, binding->GetTarget());
-	if (!l) {
-		l = new List();
-		g_hash_table_insert (xaml_bindings, binding->GetTarget(), l);
-	}
-	XamlTemplateBindingNode *node = new XamlTemplateBindingNode (binding);
-	l->Append (node);
 }
 
 
 ControlTemplate::ControlTemplate ()
 {
-}
-
-struct duplicate_value_closure {
-	ControlTemplate *t;
-	Control *source;
-	DependencyObject *dob;
-	NameScope *template_namescope;
-	List *bindings;
-};
-
-void
-ControlTemplate::duplicate_value (DependencyProperty *key,
-				  Value *value,
-				  gpointer data)
-{
-	duplicate_value_closure *closure = (duplicate_value_closure*)data;
-	ControlTemplate *t = closure->t;
-	Control *source = closure->source;
-	DependencyObject *dob = closure->dob;
-	NameScope *template_namescope = closure->template_namescope;
-	List *bindings = closure->bindings;
-
-	if (value->Is (Type::DEPENDENCY_OBJECT))
-		dob->SetValue (key, Value (t->DuplicateObject (source, template_namescope, value->AsDependencyObject(), bindings)));
-	else
-		dob->SetValue (key, new Value (*value));
-}
-
-
-DependencyObject*
-ControlTemplate::DuplicateObject (Control *source, NameScope *template_namescope, DependencyObject *dob, List* bindings)
-{
-	DependencyObject *new_dob = dob->GetType()->CreateInstance ();
-
-	/* iterate over all of dob's values, and copy them over */
-	duplicate_value_closure closure;
-
-	closure.t = this;
-	closure.source = source;
-	closure.dob = new_dob;
-	closure.bindings = bindings;
-	closure.template_namescope = template_namescope;
-
-	g_hash_table_foreach (dob->GetCurrentValues(), (GHFunc)duplicate_value, &closure);
-
-	if (dob->Is (Type::COLLECTION)) {
-		Collection *c = (Collection*)dob;
-		Collection *new_c = (Collection*)new_dob;
-
-		if (Type::Find(c->GetElementType())->IsSubclassOf(Type::DEPENDENCY_OBJECT)) {
-			for (int i = 0; i < c->GetCount(); i ++)
-				new_c->Add(Value (DuplicateObject(source, template_namescope, c->GetValueAt(i)->AsDependencyObject(), bindings)));
-		}
-		else {
-			for (int i = 0; i < c->GetCount(); i ++)
-				new_c->Add(c->GetValueAt(i));
-		}
-	}
-	else if (dob->Is (Type::FRAMEWORKTEMPLATE)) {
-		FrameworkTemplate *t = (FrameworkTemplate*)dob;
-		FrameworkTemplate *new_t = (FrameworkTemplate*)new_dob;
-		new_t->SetVisualTree ((FrameworkElement*)DuplicateObject (source, template_namescope, t->GetVisualTree(), bindings));
-	}
-
-	/* check if dob exists in the xaml binding hash. */
-	List *l = (List*)g_hash_table_lookup (xaml_bindings, dob);
-	if (l) {
-		/* and if it does, iterate over the list of
-		   XamlTemplateBindings, creating TemplateBindings and
-		   adding them to the bindings list above */
-		List::Node *node;
-		for (node = l->First(); node; node = node->next) {
-			XamlTemplateBindingNode *x = (XamlTemplateBindingNode*)node;
-			TemplateBinding *b = x->GetBinding()->Attach (source, (FrameworkElement*)new_dob);
-			if (b) {
-				bindings->Append (new TemplateBindingNode (b));
-				b->unref();
-			}
-		}
-	}
-
-	/* check if the dob has an Name, and if so, register it in the returned namescope */
-	const char* name = new_dob->GetName ();
-	if (name && strlen (name) > 0)
-		template_namescope->RegisterName (new_dob->GetName(), new_dob);
-
-	return new_dob;
+	SetObjectType (Type::CONTROLTEMPLATE);
 }
 
 FrameworkElement *
 ControlTemplate::Apply (Control *control, List *bindings)
 {
-	DependencyObject* tree = GetVisualTree ();
-	if (!tree)
-		return NULL;
-
-	tree->ClearValue (NameScope::NameScopeProperty);
-
-	NameScope *template_namescope = new NameScope ();
-
-	DependencyObject *instantiated_tree = DuplicateObject (control, template_namescope, tree, bindings);
-
-	NameScope::SetNameScope (instantiated_tree, template_namescope);
-
-	return (FrameworkElement *)instantiated_tree;
+	return (FrameworkElement*)GetVisualTree (control, bindings);
 }
 
 DataTemplate::DataTemplate ()
 {
+	SetObjectType (Type::DATATEMPLATE);
 }
 
 DependencyObject*
@@ -249,6 +135,7 @@ DataTemplate::LoadContentWithError (MoonError *error)
 {
 	printf ("%p: LoadContentWithError (buffer = %s)\n", this, xaml_buffer);
 
+#if 0
 	// this isn't the best way to do this, perhaps...
 	if (g_hash_table_size (xaml_bindings) > 0) {
 		// there are TemplateBinding elements inside this
@@ -258,11 +145,12 @@ DataTemplate::LoadContentWithError (MoonError *error)
 		MoonError::FillIn (error, MoonError::XAML_PARSE_EXCEPTION, 4004, "Invalid use of {TemplateBinding} markup extension in DataTemplate");
 		return NULL;
 	}
+#endif
 
-	return GetVisualTree ();
+	return GetVisualTree (NULL, NULL);
 }
 
-XamlTemplateBinding::XamlTemplateBinding (FrameworkElement *target,
+XamlTemplateBinding::XamlTemplateBinding (DependencyObject *target,
 					  const char *targetPropertyName,
 					  const char *sourcePropertyName)
 {
@@ -278,7 +166,7 @@ XamlTemplateBinding::~XamlTemplateBinding ()
 }
 
 TemplateBinding*
-XamlTemplateBinding::Attach (Control *source, FrameworkElement *target)
+XamlTemplateBinding::Attach (DependencyObject *source)
 {
 	if (source == NULL) {
 		g_warning ("Attaching templatebinding to null control");
@@ -303,9 +191,9 @@ XamlTemplateBinding::Attach (Control *source, FrameworkElement *target)
 				    target, targetProperty);
 }
 
-TemplateBinding::TemplateBinding (Control *source,
+TemplateBinding::TemplateBinding (DependencyObject *source,
 				  DependencyProperty *sourceProperty,
-				  FrameworkElement *target,
+				  DependencyObject *target,
 				  DependencyProperty *targetProperty)
 {
 	this->source = source;

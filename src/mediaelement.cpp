@@ -329,6 +329,8 @@ MediaElement::AdvanceFrame ()
 
 MediaElement::MediaElement ()
 {
+	SetObjectType (Type::MEDIAELEMENT);
+
 	pthread_mutex_init (&open_mutex, NULL);
 	
 	advance_frame_timeout_id = 0;
@@ -1894,6 +1896,20 @@ void
 MediaElement::SetNaturalDuration (TimeSpan duration)
 {
 	SetValue (MediaElement::NaturalDurationProperty, Value (Duration (duration)));
+}
+
+//
+// MediaErrorEventArgs
+//
+
+MediaErrorEventArgs::MediaErrorEventArgs (MediaResult result, const char *msg)
+		: ErrorEventArgs (MediaError, (int) result, msg)
+{
+	SetObjectType (Type::MEDIAERROREVENTARGS);
+}
+
+MediaErrorEventArgs::~MediaErrorEventArgs ()
+{
 }
 
 /*

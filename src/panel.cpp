@@ -20,7 +20,9 @@
 
 Panel::Panel ()
 {
+	SetObjectType (Type::PANEL);
 	SetValue (Panel::ChildrenProperty, Value::CreateUnref (new UIElementCollection ()));
+	SetSubtreeObject (GetChildren());
 	mouse_over = NULL;
 }
 
@@ -265,6 +267,8 @@ Panel::OnPropertyChanged (PropertyChangedEventArgs *args)
 			for (int i = 0; i < collection->GetCount (); i++)
 				ElementAdded (collection->GetValueAt (i)->AsUIElement ());
 		}
+
+		SetSubtreeObject (args->new_value ? args->new_value->AsCollection() : NULL);
 
 		UpdateBounds();
 	}

@@ -21,6 +21,7 @@ typedef Size (*ArrangeOverrideCallback)(Size finalSize);
 
 /* @Namespace=System.Windows */
 /* @CallInitialize */
+/* @IncludeInKinds */
 class FrameworkElement : public UIElement {
 public:
 	/* @PropertyType=double,DefaultValue=NAN,GenerateAccessors */
@@ -56,8 +57,6 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	FrameworkElement ();
 	
-	virtual Type::Kind GetObjectType () { return Type::FRAMEWORKELEMENT; }
-
 	virtual void ComputeBounds ();
 	
 	//virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);

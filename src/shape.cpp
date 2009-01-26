@@ -91,6 +91,8 @@ convert_fill_rule (FillRule fill_rule)
 
 Shape::Shape ()
 {
+	SetObjectType (Type::SHAPE);
+
 	stroke = NULL;
 	fill = NULL;
 	path = NULL;
@@ -801,6 +803,7 @@ Shape::InvalidateSurfaceCache (void)
 
 Ellipse::Ellipse ()
 {
+	SetObjectType (Type::ELLIPSE);
 	SetStretch (StretchFill);
 }
 
@@ -924,6 +927,7 @@ Ellipse::OnPropertyChanged (PropertyChangedEventArgs *args)
 
 Rectangle::Rectangle ()
 {
+	SetObjectType (Type::RECTANGLE);
 	SetStretch (StretchFill);
 }
 
@@ -1415,6 +1419,8 @@ Line::OnPropertyChanged (PropertyChangedEventArgs *args)
 
 Polygon::Polygon ()
 {
+	SetObjectType (Type::POLYGON);
+
 	SetPoints (new PointCollection ());
 }
 
@@ -1588,6 +1594,7 @@ Polygon::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Proper
 
 Polyline::Polyline ()
 {
+	SetObjectType (Type::POLYLINE);
 	SetPoints (new PointCollection ());
 }
 

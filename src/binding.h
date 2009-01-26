@@ -20,9 +20,9 @@
 typedef Value (*GetValueCallback)();
 typedef void  (*SetValueCallback)(void *value);
 
-/* @IncludeInKinds */
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Data */
+/* @IncludeInKinds */
 class Binding : public EventObject {
 	bool notify_on_validation_error;
 	bool validates_on_exceptions;
@@ -66,6 +66,7 @@ class Binding : public EventObject {
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Data */
+/* @IncludeInKinds */	
 class BindingExpressionBase : public Expression {
  protected:
 	DependencyProperty *target_property;
@@ -80,8 +81,6 @@ class BindingExpressionBase : public Expression {
 	BindingExpressionBase ();
 	
  public:
-	virtual Type::Kind GetObjectType () { return Type::BINDINGEXPRESSIONBASE; }
-	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Binding *GetBinding () { return binding; }
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -142,15 +141,14 @@ private:
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Data */
+/* @IncludeInKinds */	
 class BindingExpression : public BindingExpressionBase {
  protected:
-	virtual ~BindingExpression () { }
+	virtual ~BindingExpression ();
 	
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	BindingExpression () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::BINDINGEXPRESSION; }
+	BindingExpression ();
 };
 
 #endif /* __BINDING_H__ */

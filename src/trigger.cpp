@@ -18,6 +18,7 @@
 
 EventTrigger::EventTrigger ()
 {
+	SetObjectType (Type::EVENTTRIGGER);
 	SetValue (EventTrigger::ActionsProperty, Value::CreateUnref (new TriggerActionCollection ()));
 	registered_event_id = -1;
 }

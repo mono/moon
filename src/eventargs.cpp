@@ -20,9 +20,94 @@
 #include "stylus.h"
 #include "runtime.h"
 
+EventArgs::EventArgs ()
+{
+	SetObjectType(Type::EVENTARGS);
+}
+
+EventArgs::~EventArgs ()
+{
+}
+
+
+CollectionChangedEventArgs::CollectionChangedEventArgs ()
+{
+	SetObjectType (Type::COLLECTIONCHANGEDEVENTARGS);
+
+	action = CollectionChangedActionAdd;
+	old_value = NULL;
+	new_value = NULL;
+	index = -1;
+}
+
+CollectionChangedEventArgs::CollectionChangedEventArgs (CollectionChangedAction action, Value *new_value, Value *old_value, int index)
+{
+	SetObjectType (Type::COLLECTIONCHANGEDEVENTARGS);
+
+	this->action = action;
+	this->new_value = new_value;
+	this->old_value = old_value;
+	this->index = index;
+}
+
+CollectionChangedEventArgs::~CollectionChangedEventArgs ()
+{
+}
+
+void
+CollectionChangedEventArgs::SetChangedAction (CollectionChangedAction action)
+{
+	this->action = action;
+}
+	
+CollectionChangedAction
+CollectionChangedEventArgs::GetChangedAction ()
+{
+	return action;
+}
+	
+void
+CollectionChangedEventArgs::SetNewItem (Value *item)
+{
+	new_value = item;
+}
+	
+Value *
+CollectionChangedEventArgs::GetNewItem ()
+{
+	return new_value;
+}
+	
+void
+CollectionChangedEventArgs::SetOldItem (Value *item)
+{
+	old_value = item;
+}
+	
+Value *
+CollectionChangedEventArgs::GetOldItem ()
+{
+	return old_value;
+}
+	
+void
+CollectionChangedEventArgs::SetIndex (int index)
+{
+	this->index = index;
+}
+	
+int
+CollectionChangedEventArgs::GetIndex ()
+{
+	return index;
+}
+
+
 
 RoutedEventArgs::RoutedEventArgs (DependencyObject *source)
 {
+	SetObjectType (Type::ROUTEDEVENTARGS);
+
 	if (source)
 		source->ref ();
 	
@@ -32,6 +117,8 @@ RoutedEventArgs::RoutedEventArgs (DependencyObject *source)
 
 RoutedEventArgs::RoutedEventArgs ()
 {
+	SetObjectType (Type::ROUTEDEVENTARGS);
+
 	source = NULL;
 	handled = false;
 }
@@ -40,6 +127,24 @@ RoutedEventArgs::~RoutedEventArgs ()
 {
 	if (source)
 		source->unref ();
+}
+
+void
+RoutedEventArgs::SetHandled (bool handled)
+{
+	this->handled = handled;
+}
+	
+bool
+RoutedEventArgs::GetHandled ()
+{
+	return handled;
+}
+
+DependencyObject *
+RoutedEventArgs::GetSource ()
+{
+	return source;
 }
 
 void
@@ -54,11 +159,13 @@ RoutedEventArgs::SetSource (DependencyObject *el)
 
 MouseEventArgs::MouseEventArgs (GdkEvent *event)
 {
+	SetObjectType (Type::MOUSEEVENTARGS);
 	this->event = gdk_event_copy (event);
 }
 
 MouseEventArgs::MouseEventArgs ()
 {
+	SetObjectType (Type::MOUSEEVENTARGS);
 	event = gdk_event_new (GDK_MOTION_NOTIFY);
 }
 
@@ -166,11 +273,13 @@ MouseEventArgs::GetStylusPoints (UIElement *ink_presenter)
 
 KeyEventArgs::KeyEventArgs (GdkEventKey *event)
 {
+	SetObjectType (Type::KEYEVENTARGS);
 	this->event = (GdkEventKey *) gdk_event_copy ((GdkEvent *)event);
 }
 
 KeyEventArgs::KeyEventArgs ()
 {
+	SetObjectType (Type::KEYEVENTARGS);
 	event = (GdkEventKey *) gdk_event_new (GDK_KEY_PRESS);
 }
 

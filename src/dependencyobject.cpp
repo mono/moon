@@ -69,6 +69,8 @@ static pthread_mutex_t objects_alive_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 EventObject::EventObject ()
 {
+	SetObjectType (Type::EVENTOBJECT);
+
 	surface = NULL;
 	refcount = 1;
 	events = NULL;
@@ -1337,6 +1339,8 @@ free_value (gpointer key, gpointer value, gpointer data)
 
 DependencyObject::DependencyObject ()
 {
+	SetObjectType (Type::DEPENDENCY_OBJECT);
+
 	providers = new PropertyValueProvider*[PropertyPrecedence_Count];
 
 	providers[PropertyPrecedence_Animation] = new AnimationPropertyValueProvider (this);
@@ -1350,12 +1354,6 @@ DependencyObject::DependencyObject ()
 	listener_list = NULL;
 	logical_parent = NULL;
 	is_frozen = false;
-}
-
-Type::Kind
-DependencyObject::GetObjectType ()
-{
-	return Type::DEPENDENCY_OBJECT; 
 }
 
 void

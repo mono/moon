@@ -62,6 +62,8 @@ StylusPointCollection::GetBounds ()
 
 Stroke::Stroke ()
 {
+	SetObjectType (Type::STROKE);
+
 	SetValue (Stroke::StylusPointsProperty, Value::CreateUnref (new StylusPointCollection ()));
 	SetValue (Stroke::DrawingAttributesProperty, Value::CreateUnref (new DrawingAttributes ()));
 	
@@ -807,6 +809,8 @@ DrawingAttributes::RenderWithoutDrawingAttributes (cairo_t *cr, StylusPointColle
 
 InkPresenter::InkPresenter ()
 {
+	SetObjectType (Type::INKPRESENTER);
+
 	SetValue (InkPresenter::StrokesProperty, Value::CreateUnref (new StrokeCollection ()));
 }
 

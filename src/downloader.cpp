@@ -68,6 +68,8 @@ Downloader::Downloader ()
 {
 	LOG_DOWNLOADER ("Downloader::Downloader ()\n");
 	
+	SetObjectType (Type::DOWNLOADER);
+
 	downloader_state = Downloader::create_state (this);
 	consumer_closure = NULL;
 	context = NULL;

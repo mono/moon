@@ -20,6 +20,7 @@ enum UriToStringFlags {
 };
 
 /* @IncludeInKinds */
+/* @SkipValue */
 /* @Namespace=System */
 class Uri {
 public:

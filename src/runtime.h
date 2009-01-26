@@ -124,6 +124,7 @@ typedef void (* MoonlightCacheReportFunc) (Surface *surface, long size, void *us
 typedef bool (* MoonlightEventEmitFunc) (UIElement *element, GdkEvent *event);
 typedef void (* MoonlightExposeHandoffFunc) (Surface *surface, TimeSpan time, void *user_data);
 
+/* @IncludeInKinds */
 class Surface : public EventObject {
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -186,8 +187,6 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	TimeManager *GetTimeManager () { return time_manager; }
 
-	virtual Type::Kind GetObjectType () { return Type::SURFACE; };
-	
 	void SetDownloaderContext (gpointer context) { downloader_context = context; }
 	gpointer GetDownloaderContext () { return downloader_context; }
 	

@@ -22,6 +22,7 @@
 /* @SilverlightVersion="2" */
 /* @ContentProperty="Child" */
 /* @Namespace=System.Windows.Controls */
+/* @IncludeInKinds */
 class Border : public FrameworkElement {
 protected:
 	Rect bounds_with_children;
@@ -44,7 +45,6 @@ public:
  	/* @GenerateCBinding,GeneratePInvoke */
 	Border ();
 	
-	virtual Type::Kind GetObjectType () { return Type::BORDER; }
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 
 	virtual Size MeasureOverride (Size availableSize);
@@ -53,8 +53,6 @@ public:
 	virtual void ComputeBounds ();
 	virtual void Render (cairo_t *cr, Region *region);
 	virtual Rect GetSubtreeBounds () { return bounds_with_children; }
-
-	virtual DependencyObject *GetSubtreeObject () { return GetChild (); }
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	virtual void HitTest (cairo_t *cr, Point p, List *uielement_list);

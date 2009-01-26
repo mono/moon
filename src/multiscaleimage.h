@@ -23,6 +23,7 @@
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
+/* @IncludeInKinds */
 class MultiScaleImage : public MediaBase {
 	void DownloaderAbort ();
 	void DownloadUri (const char* url);
@@ -57,8 +58,6 @@ class MultiScaleImage : public MediaBase {
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	MultiScaleImage ();
-
-	virtual Type::Kind GetObjectType () { return Type::MULTISCALEIMAGE; }
 
 	//
 	// Overrides

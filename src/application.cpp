@@ -18,6 +18,8 @@
 
 Application::Application ()
 {
+	SetObjectType (Type::APPLICATION);
+
 	apply_default_style_cb = NULL;
 	apply_style_cb = NULL;
 	get_resource_cb = NULL;

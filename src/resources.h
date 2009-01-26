@@ -17,12 +17,11 @@
 #include "value.h"
 
 /* @Namespace=System.Windows */
+/* @IncludeInKinds */
 class ResourceDictionary : public Collection {
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	ResourceDictionary ();
-
-	virtual Type::Kind GetObjectType () { return Type::RESOURCE_DICTIONARY; }
 
 	/* just to provide an implementation.  our CanAdd always returns true. */
 	virtual Type::Kind GetElementType () { return Type::INVALID;}

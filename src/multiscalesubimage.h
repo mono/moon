@@ -17,6 +17,7 @@
 #include "dependencyobject.h"
 
 /* @Version=2,Namespace=System.Windows.Controls */
+/* @IncludeInKinds */
 class MultiScaleSubImage : public DependencyObject {
  protected:
 	virtual ~MultiScaleSubImage () {}
@@ -35,9 +36,7 @@ class MultiScaleSubImage : public DependencyObject {
 
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	MultiScaleSubImage () {}
-
-	virtual Type::Kind GetObjectType () { return Type::MULTISCALESUBIMAGE; }
+	MultiScaleSubImage () { SetObjectType (Type::MULTISCALESUBIMAGE); }
 
 	double GetAspectRatio ();
 	void SetAspectRatio (double ratio);

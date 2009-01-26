@@ -22,6 +22,7 @@ typedef void (*downloaded_cb) (const char* path);
 
 /* @Version=2,Namespace=System.Windows.Media */
 /* @CallInitialize */
+/* @IncludeInKinds */
 class DeepZoomImageTileSource : public MultiScaleTileSource {
 
 	Downloader* downloader;
@@ -42,7 +43,6 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 
 	DeepZoomImageTileSource (const char *uri);
 
-	virtual Type::Kind GetObjectType () { return Type::DEEPZOOMIMAGETILESOURCE; }	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 
 	//

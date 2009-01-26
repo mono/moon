@@ -53,6 +53,7 @@ Deployment::SetCurrent (Deployment* deployment)
 
 Deployment::Deployment()
 {
+	SetObjectType (Type::DEPLOYMENT);
 	types = new Types ();
 	current_app = NULL;
 }
@@ -87,4 +88,22 @@ Deployment::SetCurrentApplication (Application* value)
 
 	if (current_app)
 	  current_app->ref ();
+}
+
+AssemblyPart::AssemblyPart ()
+{
+	SetObjectType (Type::ASSEMBLYPART);
+}
+
+AssemblyPart::~AssemblyPart ()
+{
+}
+
+AssemblyPartCollection::AssemblyPartCollection ()
+{
+	SetObjectType (Type::ASSEMBLYPART_COLLECTION);
+}
+
+AssemblyPartCollection::~AssemblyPartCollection ()
+{
 }

@@ -19,6 +19,7 @@
 #include "collection.h"
 
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */
 class GeneralTransform : public DependencyObject {
  protected:
 	cairo_matrix_t _matrix;
@@ -31,9 +32,7 @@ class GeneralTransform : public DependencyObject {
 	
  public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
-	GeneralTransform () : need_update (true) { }
-	
-	virtual Type::Kind GetObjectType () { return Type::GENERALTRANSFORM; }
+	GeneralTransform () : need_update (true) { SetObjectType (Type::GENERALTRANSFORM); }
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	
@@ -47,19 +46,19 @@ class GeneralTransform : public DependencyObject {
 
 
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */
 class Transform : public GeneralTransform {
 protected:
 	virtual ~Transform () {}
 
 public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
-	Transform () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::TRANSFORM; }
+	Transform () { SetObjectType (Type::TRANSFORM); }
 };
 
 
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */
 class RotateTransform : public Transform {
  protected:
 	virtual ~RotateTransform () {}
@@ -74,9 +73,7 @@ class RotateTransform : public Transform {
 	static DependencyProperty *CenterYProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	RotateTransform () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::ROTATETRANSFORM; }
+	RotateTransform () { SetObjectType (Type::ROTATETRANSFORM); }
 	
 	//
 	// Property Accessors
@@ -93,6 +90,7 @@ class RotateTransform : public Transform {
 
 
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */
 class TranslateTransform : public Transform {
  protected:
 	virtual ~TranslateTransform () { }
@@ -105,9 +103,7 @@ class TranslateTransform : public Transform {
 	static DependencyProperty *YProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	TranslateTransform () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::TRANSLATETRANSFORM; }
+	TranslateTransform () { SetObjectType (Type::TRANSLATETRANSFORM); }
 	
 	//
 	// Property Accessors
@@ -121,6 +117,7 @@ class TranslateTransform : public Transform {
 
 
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */
 class ScaleTransform : public Transform {
  protected:
 	virtual ~ScaleTransform () {}
@@ -137,8 +134,7 @@ class ScaleTransform : public Transform {
 	static DependencyProperty *ScaleYProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	ScaleTransform () { }
-	virtual Type::Kind GetObjectType () { return Type::SCALETRANSFORM; }
+	ScaleTransform () { SetObjectType (Type::SCALETRANSFORM); }
 	
 	//
 	// Property Accessors
@@ -158,6 +154,7 @@ class ScaleTransform : public Transform {
 
 
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */
 class SkewTransform : public Transform {
  protected:
 	virtual ~SkewTransform () {}
@@ -174,9 +171,7 @@ class SkewTransform : public Transform {
 	static DependencyProperty *CenterYProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	SkewTransform () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::SKEWTRANSFORM; }
+	SkewTransform () { SetObjectType (Type::SKEWTRANSFORM); }
 	
 	//
 	// Property Accessors
@@ -197,6 +192,7 @@ class SkewTransform : public Transform {
 
 /* @Namespace=None */ // The managed Matrix is a struct
 /* @ManagedDependencyProperties=Manual */
+/* @IncludeInKinds */
 class Matrix : public DependencyObject {
 	cairo_matrix_t matrix;
 	
@@ -222,8 +218,6 @@ class Matrix : public DependencyObject {
 	Matrix (cairo_matrix_t *m);
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
-	
-	virtual Type::Kind GetObjectType () { return Type::MATRIX; }
 	
 	cairo_matrix_t GetUnderlyingMatrix ();
 
@@ -254,6 +248,7 @@ class Matrix : public DependencyObject {
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */
 // this type does not really exists - its purpose is to let the unmanaged (1.x) matrix be a dependency object
 // and the later (2.x) managed code use a struct (non-DO) for the matrix
 class UnmanagedMatrix : public Matrix {
@@ -262,13 +257,12 @@ class UnmanagedMatrix : public Matrix {
 	virtual ~UnmanagedMatrix () {}
 	
  public:
-	virtual Type::Kind GetObjectType () { return Type::UNMANAGEDMATRIX; }
-
 	/* @GenerateCBinding,GeneratePInvoke */
-	UnmanagedMatrix () {}
+	UnmanagedMatrix () {  SetObjectType (Type::UNMANAGEDMATRIX); }
 };
 
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */
 class MatrixTransform : public Transform {
  protected:
 	virtual ~MatrixTransform () {}
@@ -280,9 +274,7 @@ class MatrixTransform : public Transform {
 	static DependencyProperty *MatrixProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	MatrixTransform () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::MATRIXTRANSFORM; }
+	MatrixTransform () { SetObjectType (Type::MATRIXTRANSFORM); }
 	
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	
@@ -295,21 +287,22 @@ class MatrixTransform : public Transform {
 
 
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */
 class TransformCollection : public DependencyObjectCollection {
  protected:
 	virtual ~TransformCollection () {}
 	
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	TransformCollection () { }
+	TransformCollection () { SetObjectType (Type::TRANSFORM_COLLECTION); }
 	
-	virtual Type::Kind GetObjectType () { return Type::TRANSFORM_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::TRANSFORM; }
 };
 
 
 /* @ContentProperty="Children" */
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */
 class TransformGroup : public Transform {
  protected:
 	virtual ~TransformGroup () {}
@@ -322,7 +315,6 @@ class TransformGroup : public Transform {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	TransformGroup ();
-	virtual Type::Kind GetObjectType() { return Type::TRANSFORMGROUP; }
 	
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);

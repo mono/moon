@@ -19,6 +19,7 @@
 #include "value.h"
 
 /*@Namespace=System.Windows.Controls.Primitives*/
+/* @IncludeInKinds */
 class Popup : public DependencyObject {
  public:
 	/* @PropertyType=UIElement,GenerateAccessors */
@@ -33,8 +34,6 @@ class Popup : public DependencyObject {
 	/* @GenerateCBinding,GeneratePInvoke */
 	Popup ();
 
-	virtual Type::Kind GetObjectType () { return Type::POPUP; }
-	
 	//
 	// Property Accessors
 	//

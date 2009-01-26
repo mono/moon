@@ -41,6 +41,8 @@ void image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, d
 
 MediaBase::MediaBase ()
 {
+	SetObjectType (Type::MEDIABASE);
+
 	source.downloader = NULL;
 	source.part_name = NULL;
 	source.queued = false;
@@ -247,6 +249,8 @@ GHashTable *Image::surface_cache = NULL;
 
 Image::Image ()
 {
+	SetObjectType (Type::IMAGE);
+
 	create_xlib_surface = true;
 	
 	pattern = NULL;
@@ -1006,6 +1010,7 @@ TimelineMarkerCollection::InsertWithError (int index, Value *value, MoonError *e
 
 MarkerReachedEventArgs::MarkerReachedEventArgs (TimelineMarker *marker)
 {
+	SetObjectType (Type::MARKERREACHEDEVENTARGS);
 	this->marker = marker;
 	marker->ref ();
 }

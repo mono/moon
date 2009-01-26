@@ -1,8 +1,51 @@
+2009-01-26  Chris Toshok  <toshok@ximian.com>
+
+	* animation2.h, animation.[cpp,h], application.[cpp,h], asf/asf.h,
+	binding.[cpp,h], bitmapimage.[cpp,h], brush.[cpp,h],
+	canvas.[cpp,h], clock.[cpp,h], collection.[cpp,h],
+	contentcontrol.[cpp,h], deepzoomimagetilesource.[cpp,h],
+	dependencyobject.[cpp,h], dependencyproperty.h,
+	deployment.[cpp,h], downloader.[cpp,h], error.[cpp,h],
+	eventargs.[cpp,h], expression.[cpp,h], frameworkelement.[cpp,h],
+	geometry.[cpp,h], grid.[cpp,h], media.[cpp,h],
+	mediaelement.[cpp,h], multiscaleimage.[cpp,h],
+	multiscalesubimage.h, namescope.[cpp,h], pipeline.h,
+	popup.[cpp,h], resources.[cpp,h], runtime.[cpp,h], shape.[cpp,h],
+	size.[cpp,h], style.[cpp,h], stylus.[cpp,h], textbox.[cpp,h],
+	text.[cpp,h], tilesource.[cpp,h], transform.[cpp,h],
+	trigger.[cpp,h], uielement.[cpp,h], uri.h, usercontrol.cpp,
+	usercontrol.h: move some methods (mostly ctor/dtor) to the .cpp
+	files, and remove GetObjectType - call SetObjectType instead.  Add
+	@IncludeInKinds everywhere on types we want in the Kinds array -
+	nothing is implicit now.  Also, add @SkipValue on types that
+	shouldn't automatically appear in the Value struct (As* method,
+	etc).
+
+	* border.[cpp,h], control.[cpp,h], panel.[cpp,h]: same as above,
+	but also call SetSubtreeObject at the right times (basically
+	whenever our subtree object changes).
+
+	* template.[cpp,h]: do the GetObjectType/SetObjectType switch here
+	too.  also, rework the control template application step - don't
+	cache the tree and duplicate it.  just reparse.  hook up template
+	bindings properly as well.  with this change buttons are starting
+	to look right.
+
+	* type.cpp: total_event_count = my_events +
+	parent->total_event_count, so if my_events == 0...
+	
+	* xaml.cpp (start_element): reverse the subclass check.
+
+	* cbinding.cpp, cbinding.h, type-generated.cpp, type.h, value.h: regen
+
+	* Makefile.am: add expression.cpp, and there's no need for
+	separate file lists anymore.
+
 2009-01-25  Chris Toshok  <toshok@ximian.com>
 
 	* dependencyproperty.cpp (DependencyProperty::RegisterManagedProperty):
 	this registers a custom property.  Fixes moon-unit failures.
-
+	
 2009-01-25  Chris Toshok  <toshok@ximian.com>
 
 	* value.cpp (Value::Value): allow ManagedTypeInfo of NULL - fixes

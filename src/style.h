@@ -22,6 +22,7 @@
 /* @SilverlightVersion="2" */
 /* @ContentProperty="Setters" */
 /* @Namespace=System.Windows */
+/* @IncludeInKinds */
 class Style : public DependencyObject {
 public:
   	/* @PropertyType=bool,DefaultValue=false,ManagedSetterAccess=Private,GenerateAccessors */
@@ -34,8 +35,6 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	Style ();
 	
-	virtual Type::Kind GetObjectType () { return Type::STYLE; }
-
 	SetterBaseCollection* GetSetters();
 	void SetSetters (SetterBaseCollection* value);
 
@@ -54,6 +53,7 @@ protected:
 //
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
+/* @IncludeInKinds */
 class SetterBaseCollection : public DependencyObjectCollection {
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -65,7 +65,6 @@ public:
 	virtual bool AddedToCollection (Value *value, MoonError *error);
 	virtual void RemovedFromCollection (Value *value);
 	
-	virtual Type::Kind GetObjectType () { return Type::SETTERBASE_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::SETTERBASE; }
 
 	bool GetIsSealed();
@@ -88,6 +87,7 @@ private:
 //
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
+/* @IncludeInKinds */
 class SetterBase : public DependencyObject {
  protected:
 	virtual ~SetterBase () { }
@@ -100,7 +100,6 @@ class SetterBase : public DependencyObject {
 	SetterBase ();
 
 	virtual bool SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error);
-	virtual Type::Kind GetObjectType () { return Type::SETTERBASE; }
 	
 	bool GetAttached ();
 	void SetAttached (bool value);
@@ -119,9 +118,10 @@ class SetterBase : public DependencyObject {
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
 /* @ManagedDependencyProperties=Manual */
+/* @IncludeInKinds */
 class Setter : public SetterBase {
  protected:
-	virtual ~Setter () { }
+	virtual ~Setter ();
 	
  public:
 	/* @PropertyType=DependencyProperty */
@@ -134,8 +134,6 @@ class Setter : public SetterBase {
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	Setter ();
-
-	virtual Type::Kind GetObjectType () { return Type::SETTER; }
 };
 
 #endif /* __MOON_STYLE_H__ */

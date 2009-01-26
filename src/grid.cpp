@@ -24,8 +24,14 @@
 
 Grid::Grid ()
 {
+	SetObjectType (Type::GRID);
+
 	SetValue (Grid::ColumnDefinitionsProperty, Value::CreateUnref (new ColumnDefinitionCollection ()));
 	SetValue (Grid::RowDefinitionsProperty, Value::CreateUnref (new RowDefinitionCollection ()));
+}
+
+Grid::~Grid ()
+{
 }
 
 void
@@ -367,4 +373,59 @@ Grid::ArrangeOverride (Size finalSize)
 	}
 
 	return finalSize;
+}
+
+//
+// ColumnDefinitionCollection
+//
+
+ColumnDefinitionCollection::ColumnDefinitionCollection ()
+{
+	SetObjectType (Type::COLUMNDEFINITION_COLLECTION);
+}
+
+ColumnDefinitionCollection::~ColumnDefinitionCollection ()
+{
+}
+
+
+//
+// ColumnDefinition
+//
+
+ColumnDefinition::ColumnDefinition ()
+  : actual (0.0)
+{
+	SetObjectType (Type::COLUMNDEFINITION);
+}
+
+ColumnDefinition::~ColumnDefinition ()
+{
+}
+
+//
+// RowDefinitionCollection
+//
+
+RowDefinitionCollection::RowDefinitionCollection ()
+{
+	SetObjectType (Type::ROWDEFINITION_COLLECTION);
+}
+
+RowDefinitionCollection::~RowDefinitionCollection ()
+{
+}
+
+//
+// RowDefinition
+//
+
+RowDefinition::RowDefinition ()
+  : actual (0.0)
+{
+	SetObjectType (Type::ROWDEFINITION);
+}
+
+RowDefinition::~RowDefinition ()
+{
 }

@@ -25,6 +25,7 @@ class Surface;
 /* @SilverlightVersion="2" */
 /* @ManagedDependencyProperties=Manual */
 /* @Namespace=None */
+/* @IncludeInKinds */
 class Application : public DependencyObject {
 public:
 	/* @PropertyType=ResourceDictionary,GenerateAccessors */
@@ -33,8 +34,6 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	Application ();
 	
-	virtual Type::Kind GetObjectType () { return Type::APPLICATION; }
-
 	ResourceDictionary* GetResources();
 	void SetResources (ResourceDictionary* value);
 

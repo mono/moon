@@ -966,16 +966,6 @@ dependency_object_get_name (DependencyObject *instance)
 }
 
 
-Type::Kind
-dependency_object_get_object_type (DependencyObject *instance)
-{
-	if (instance == NULL)
-		return Type::INVALID;
-	
-	return instance->GetObjectType ();
-}
-
-
 Value *
 dependency_object_get_value_no_default_with_error (DependencyObject *instance, DependencyProperty *property, MoonError *error)
 {
@@ -1400,6 +1390,16 @@ event_object_drain_unrefs (void)
 }
 
 
+Type::Kind
+event_object_get_object_type (EventObject *instance)
+{
+	if (instance == NULL)
+		return Type::INVALID;
+	
+	return instance->GetObjectType ();
+}
+
+
 Surface *
 event_object_get_surface (EventObject *instance)
 {
@@ -1437,6 +1437,16 @@ event_object_remove_handler (EventObject *instance, const char *event_name, Even
 		return;
 	
 	instance->RemoveHandler (event_name, handler, data);
+}
+
+
+void
+event_object_set_object_type (EventObject *instance, Type::Kind value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetObjectType (value);
 }
 
 
@@ -3435,6 +3445,16 @@ uielement_release_mouse_capture (UIElement *instance)
 		return;
 	
 	instance->ReleaseMouseCapture ();
+}
+
+
+void
+uielement_set_subtree_object (UIElement *instance, DependencyObject *value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetSubtreeObject (value);
 }
 
 

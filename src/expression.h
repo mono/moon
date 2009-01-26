@@ -17,12 +17,13 @@
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
+/* @IncludeInKinds */
 class Expression : public EventObject {
  protected:
-	virtual ~Expression () { }
-	
- public:
-	virtual Type::Kind GetObjectType () { return Type::EXPRESSION; }
+	virtual ~Expression ();
+
+public:
+	Expression ();
 };
 
 #endif /* __EXPRESSION_H__ */

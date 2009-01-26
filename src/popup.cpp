@@ -15,6 +15,7 @@
 
 Popup::Popup ()
 {
+	SetObjectType (Type::POPUP);
 	surface = NULL;
 }
 

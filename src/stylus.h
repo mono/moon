@@ -26,6 +26,7 @@ enum TabletDeviceType {
 
 
 /* @Namespace=None,ManagedDependencyProperties=None */
+/* @IncludeInKinds */
 class StylusInfo : public DependencyObject {
  protected:
 	virtual ~StylusInfo () {}
@@ -37,9 +38,7 @@ class StylusInfo : public DependencyObject {
 	static DependencyProperty *IsInvertedProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	StylusInfo () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::STYLUSINFO; }
+	StylusInfo () { SetObjectType (Type::STYLUSINFO); }
 	
 	//
 	// Property Accessors
@@ -54,6 +53,7 @@ class StylusInfo : public DependencyObject {
 
 /* @Namespace=None */
 /* @ManagedDependencyProperties=Manual */ // It's a managed struct
+/* @IncludeInKinds */
 class StylusPoint : public DependencyObject {
  protected:
 	virtual ~StylusPoint () {}
@@ -67,9 +67,7 @@ class StylusPoint : public DependencyObject {
 	static DependencyProperty *YProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	StylusPoint () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::STYLUSPOINT; }
+	StylusPoint () { SetObjectType (Type::STYLUSPOINT); }
 	
 	//
 	// Property Accessors
@@ -86,6 +84,7 @@ class StylusPoint : public DependencyObject {
 
 
 /* @Namespace=System.Windows.Input */
+/* @IncludeInKinds */
 class StylusPointCollection : public DependencyObjectCollection {
  protected:
 	virtual bool CanAdd (Value *value);
@@ -94,9 +93,8 @@ class StylusPointCollection : public DependencyObjectCollection {
 	
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	StylusPointCollection () {}
-	
-	virtual Type::Kind GetObjectType () { return Type::STYLUSPOINT_COLLECTION; }
+	StylusPointCollection () { SetObjectType (Type::STYLUSPOINT_COLLECTION); }
+
 	virtual Type::Kind GetElementType () { return Type::STYLUSPOINT; }
 	
 	double AddStylusPoints (StylusPointCollection *stylusPointCollection);
@@ -106,6 +104,7 @@ class StylusPointCollection : public DependencyObjectCollection {
 
 
 /* @Namespace=System.Windows.Ink */
+/* @IncludeInKinds */
 class DrawingAttributes : public DependencyObject {
  protected:
 	virtual ~DrawingAttributes () {}
@@ -121,9 +120,7 @@ class DrawingAttributes : public DependencyObject {
 	static DependencyProperty *WidthProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	DrawingAttributes () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::DRAWINGATTRIBUTES; }
+	DrawingAttributes () { SetObjectType (Type::DRAWINGATTRIBUTES); }
 	
 	void Render (cairo_t *cr, StylusPointCollection *collection);
 	static void RenderWithoutDrawingAttributes (cairo_t *cr, StylusPointCollection *collection);
@@ -146,6 +143,7 @@ class DrawingAttributes : public DependencyObject {
 
 
 /* @Namespace=System.Windows.Ink */
+/* @IncludeInKinds */
 class Stroke : public DependencyObject {
 	Rect old_bounds;
 	Rect bounds;
@@ -174,8 +172,6 @@ class Stroke : public DependencyObject {
 	/* @GenerateCBinding,GeneratePInvoke */
 	Stroke ();
 
-	virtual Type::Kind GetObjectType () { return Type::STROKE; }
-	
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool HitTest (StylusPointCollection *stylusPoints);
 	
@@ -202,6 +198,7 @@ class Stroke : public DependencyObject {
 
 
 /* @Namespace=System.Windows.Ink */
+/* @IncludeInKinds */
 class StrokeCollection : public DependencyObjectCollection {
  protected:
 	virtual bool CanAdd (Value *value);
@@ -210,9 +207,8 @@ class StrokeCollection : public DependencyObjectCollection {
 	
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	StrokeCollection () {}
+	StrokeCollection () { SetObjectType (Type::STROKE_COLLECTION); }
 	
-	virtual Type::Kind GetObjectType () { return Type::STROKE_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::STROKE; }
 	
 	virtual bool AddedToCollection (Value *value, MoonError *error);
@@ -225,6 +221,7 @@ class StrokeCollection : public DependencyObjectCollection {
 
 
 /* @Namespace=System.Windows.Controls */
+/* @IncludeInKinds */
 class InkPresenter : public Canvas {
 	Rect render_bounds;
 	
@@ -237,8 +234,6 @@ class InkPresenter : public Canvas {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	InkPresenter ();
-	
-	virtual Type::Kind GetObjectType () { return Type::INKPRESENTER; }
 	
 	virtual void PostRender (cairo_t *cr, Region *region, bool front_to_back);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);

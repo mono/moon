@@ -28,15 +28,14 @@
 
 /* @SilverlightVersion="2" */
 /* @Namespace=None */
+/* @IncludeInKinds */
 class TextChangedEventArgs : public RoutedEventArgs {
  protected:
 	virtual ~TextChangedEventArgs () { }
 	
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	TextChangedEventArgs () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::TEXTCHANGEDEVENTARGS; }
+	TextChangedEventArgs () { SetObjectType (Type::TEXTCHANGEDEVENTARGS); }
 };
 
 
@@ -52,6 +51,7 @@ enum TextBoxModelChangeType {
 
 /* @SilverlightVersion="2" */
 /* @Namespace=None */
+/* @IncludeInKinds */
 class TextBoxModelChangedEventArgs : public RoutedEventArgs {
  protected:
 	virtual ~TextBoxModelChangedEventArgs () { }
@@ -62,11 +62,10 @@ class TextBoxModelChangedEventArgs : public RoutedEventArgs {
 	
 	TextBoxModelChangedEventArgs (TextBoxModelChangeType changed, PropertyChangedEventArgs *property = NULL)
 	{
+		SetObjectType (Type::TEXTBOXMODELCHANGEDEVENTARGS);
 		this->property = property;
 		this->changed = changed;
 	}
-	
-	virtual Type::Kind GetObjectType () { return Type::TEXTBOXMODELCHANGEDEVENTARGS; }
 };
 
 
@@ -77,6 +76,7 @@ class TextBoxDynamicPropertyValueProvider;
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
+/* @IncludeInKinds */
 class TextBox : public Control, public ITextSource {
 	friend class TextBoxDynamicPropertyValueProvider;
 	
@@ -147,8 +147,6 @@ class TextBox : public Control, public ITextSource {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	TextBox ();
-	
-	virtual Type::Kind GetObjectType () { return Type::TEXTBOX; }
 	
 	//
 	// Overrides
@@ -245,6 +243,7 @@ class TextBox : public Control, public ITextSource {
 
 /* @SilverlightVersion="2" */
 /* @Namespace=Microsoft.Internal */
+/* @IncludeInKinds */
 class TextBoxView : public FrameworkElement {
 	glong blink_timeout;
 	TextLayout *layout;
@@ -289,8 +288,6 @@ class TextBoxView : public FrameworkElement {
 	/* @GenerateCBinding,GeneratePInvoke */
 	TextBoxView ();
 	
-	virtual Type::Kind GetObjectType () { return Type::TEXTBOXVIEW; }
-	
 	//
 	// Overrides
 	//
@@ -308,6 +305,7 @@ class TextBoxView : public FrameworkElement {
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
+/* @IncludeInKinds */
 class PasswordBox : public TextBox {
  public:
 	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors,Validator=IntGreaterThanZeroValidator */
@@ -324,7 +322,6 @@ class PasswordBox : public TextBox {
 	/* @GenerateCBinding,GeneratePInvoke */
 	PasswordBox ();
 	
-	virtual Type::Kind GetObjectType () { return Type::PASSWORDBOX; }
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	
 	//

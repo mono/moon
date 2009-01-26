@@ -27,6 +27,7 @@ typedef	bool ValueValidator (DependencyObject *instance, DependencyProperty *pro
 // DependencyProperty
 //
 /* @IncludeInKinds */
+/* @SkipValue */
 class DependencyProperty {
  public:
 	DependencyProperty () {};

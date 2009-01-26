@@ -27,6 +27,7 @@
 // Geometry
 //
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */
 class Geometry : public DependencyObject {
  protected:
 #if 0
@@ -56,9 +57,7 @@ class Geometry : public DependencyObject {
 	static DependencyProperty *TransformProperty;
 
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
-	Geometry () : path (NULL) { local_bounds = Rect (0,0, -INFINITY, -INFINITY); }
-	
-	virtual Type::Kind GetObjectType () { return Type::GEOMETRY; }
+	Geometry ();
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subprop_args);
@@ -89,15 +88,15 @@ class Geometry : public DependencyObject {
 // GeometryCollection
 //
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */
 class GeometryCollection : public DependencyObjectCollection {
  protected:
-	virtual ~GeometryCollection () {}
+	virtual ~GeometryCollection ();
 
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	GeometryCollection () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::GEOMETRY_COLLECTION; }
+	GeometryCollection ();
+
 	virtual Type::Kind GetElementType () { return Type::GEOMETRY; }
 };
 
@@ -107,9 +106,10 @@ class GeometryCollection : public DependencyObjectCollection {
 //
 /* @ContentProperty="Children" */
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */
 class GeometryGroup : public Geometry {
  protected:
-	virtual ~GeometryGroup () {}
+	virtual ~GeometryGroup ();
 	virtual Rect ComputePathBounds ();
 
  public:
@@ -120,8 +120,6 @@ class GeometryGroup : public Geometry {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	GeometryGroup ();
-	
-	virtual Type::Kind GetObjectType () { return Type::GEOMETRYGROUP; }
 	
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
@@ -143,11 +141,12 @@ class GeometryGroup : public Geometry {
 // EllipseGeometry
 //
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */
 class EllipseGeometry : public Geometry {
  protected:
 	virtual void Build ();
 	
-	virtual ~EllipseGeometry () {}
+	virtual ~EllipseGeometry ();
 	virtual Rect ComputePathBounds ();
 	
  public:
@@ -159,9 +158,7 @@ class EllipseGeometry : public Geometry {
 	static DependencyProperty *RadiusYProperty;
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	EllipseGeometry () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::ELLIPSEGEOMETRY; }
+	EllipseGeometry ();
 	
 	//
 	// Property Accessors
@@ -181,11 +178,12 @@ class EllipseGeometry : public Geometry {
 // LineGeometry
 //
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */
 class LineGeometry : public Geometry {
  protected:
 	virtual void Build ();
 	
-	virtual ~LineGeometry () {}
+	virtual ~LineGeometry ();
 	virtual Rect ComputePathBounds ();
 	
  public:
@@ -195,9 +193,7 @@ class LineGeometry : public Geometry {
 	static DependencyProperty *StartPointProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	LineGeometry () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::LINEGEOMETRY; }
+	LineGeometry ();
 	
 	//
 	// Property Accessors
@@ -214,15 +210,15 @@ class LineGeometry : public Geometry {
 // PathFigureCollection
 //
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */
 class PathFigureCollection : public DependencyObjectCollection {
  protected:
-	virtual ~PathFigureCollection () {}
+	virtual ~PathFigureCollection ();
 
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	PathFigureCollection () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::PATHFIGURE_COLLECTION; }
+	PathFigureCollection ();
+
 	virtual Type::Kind GetElementType () { return Type::PATHFIGURE; }
 };
 
@@ -232,11 +228,12 @@ class PathFigureCollection : public DependencyObjectCollection {
 //
 /* @ContentProperty="Figures" */
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */
 class PathGeometry : public Geometry {
  protected:
 	virtual void Build ();
 	
-	virtual ~PathGeometry () {}
+	virtual ~PathGeometry ();
 	virtual Rect ComputePathBounds ();
 	
  public:
@@ -249,8 +246,6 @@ class PathGeometry : public Geometry {
 	PathGeometry ();
 	PathGeometry (moon_path *pml_path);
 
-	virtual Type::Kind GetObjectType () { return Type::PATHGEOMETRY; }
-	
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	
@@ -272,11 +267,12 @@ class PathGeometry : public Geometry {
 // RectangleGeometry
 //
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */
 class RectangleGeometry : public Geometry {
  protected:
 	virtual void Build ();
 	
-	virtual ~RectangleGeometry () {}
+	virtual ~RectangleGeometry ();
 	virtual Rect ComputePathBounds ();
 	
  public:
@@ -288,9 +284,7 @@ class RectangleGeometry : public Geometry {
 	static DependencyProperty *RectProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	RectangleGeometry () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::RECTANGLEGEOMETRY; }
+	RectangleGeometry ();
 	
 	//
 	// Property Accesors
@@ -310,15 +304,15 @@ class RectangleGeometry : public Geometry {
 // PathSegmentCollection
 //
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */
 class PathSegmentCollection : public DependencyObjectCollection {
  protected:
-	virtual ~PathSegmentCollection () {}
+	virtual ~PathSegmentCollection ();
 
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	PathSegmentCollection () {}
+	PathSegmentCollection ();
 	
-	virtual Type::Kind GetObjectType () { return Type::PATHSEGMENT_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::PATHSEGMENT; }
 };
 
@@ -328,6 +322,7 @@ class PathSegmentCollection : public DependencyObjectCollection {
 //
 /* @ContentProperty="Segments" */
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */
 class PathFigure : public DependencyObject {
  protected:
 	virtual ~PathFigure ();
@@ -346,8 +341,6 @@ class PathFigure : public DependencyObject {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	PathFigure ();
-	
-	virtual Type::Kind GetObjectType () { return Type::PATHFIGURE; }
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
@@ -378,19 +371,18 @@ class PathFigure : public DependencyObject {
 // PathSegment
 //
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */
 class PathSegment : public DependencyObject {
  protected:
-	virtual void Build () {}
+	virtual void Build ();
 	
-	virtual ~PathSegment () {}
+	virtual ~PathSegment ();
 	
  public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
-	PathSegment () {}
+	PathSegment ();
 	
-	virtual Type::Kind GetObjectType () { return Type::PATHSEGMENT; }
-	
-	virtual void Append (moon_path *path) {}
+	virtual void Append (moon_path *path);
 	virtual int GetPathSize () { return 0; }
 };
 
@@ -399,9 +391,10 @@ class PathSegment : public DependencyObject {
 // ArcSegment
 //
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */
 class ArcSegment : public PathSegment {
  protected:
-	virtual ~ArcSegment () {}
+	virtual ~ArcSegment ();
 
  public:
  	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
@@ -416,9 +409,8 @@ class ArcSegment : public PathSegment {
 	static DependencyProperty *SweepDirectionProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	ArcSegment () { }
+	ArcSegment ();
 	
-	virtual Type::Kind GetObjectType () { return Type::ARCSEGMENT; }
 	virtual int GetPathSize () { return 4 * MOON_PATH_CURVE_TO_LENGTH; } // non-optimal size, depends on angle
 	
 	virtual void Append (moon_path *path);
@@ -447,9 +439,10 @@ class ArcSegment : public PathSegment {
 // BezierSegment
 //
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */
 class BezierSegment : public PathSegment {
  protected:
-	virtual ~BezierSegment () {}
+	virtual ~BezierSegment ();
 
  public:
  	/* @PropertyType=Point,GenerateAccessors */
@@ -460,9 +453,8 @@ class BezierSegment : public PathSegment {
 	static DependencyProperty *Point3Property;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	BezierSegment () { }
+	BezierSegment ();
 	
-	virtual Type::Kind GetObjectType () { return Type::BEZIERSEGMENT; }
 	virtual int GetPathSize () { return MOON_PATH_CURVE_TO_LENGTH; }
 	
 	virtual void Append (moon_path *path);
@@ -485,18 +477,18 @@ class BezierSegment : public PathSegment {
 // LineSegment
 //
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */
 class LineSegment : public PathSegment {
  protected:
-	virtual ~LineSegment () {}
+	virtual ~LineSegment ();
 
  public:
  	/* @PropertyType=Point,GenerateAccessors */
 	static DependencyProperty *PointProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	LineSegment () { }
+	LineSegment ();
 	
-	virtual Type::Kind GetObjectType () { return Type::LINESEGMENT; }
 	virtual int GetPathSize () { return MOON_PATH_LINE_TO_LENGTH; }
 	
 	virtual void Append (moon_path *path);
@@ -513,9 +505,10 @@ class LineSegment : public PathSegment {
 // PolyBezierSegment
 //
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */
 class PolyBezierSegment : public PathSegment {
  protected:
-	virtual ~PolyBezierSegment () {}
+	virtual ~PolyBezierSegment ();
 	
 	PointCollection *GetPoints ();
 	
@@ -524,9 +517,8 @@ class PolyBezierSegment : public PathSegment {
 	static DependencyProperty *PointsProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	PolyBezierSegment () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::POLYBEZIERSEGMENT; }
+	PolyBezierSegment ();
+
 	virtual int GetPathSize ();
 	
 	virtual void Append (moon_path *path);
@@ -543,9 +535,10 @@ class PolyBezierSegment : public PathSegment {
 // PolyLineSegment
 //
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */
 class PolyLineSegment : public PathSegment {
  protected:
-	virtual ~PolyLineSegment () {}
+	virtual ~PolyLineSegment ();
 	
 	PointCollection *GetPoints ();
 	
@@ -554,9 +547,8 @@ class PolyLineSegment : public PathSegment {
 	static DependencyProperty *PointsProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	PolyLineSegment () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::POLYLINESEGMENT; }
+	PolyLineSegment ();
+
 	virtual int GetPathSize ();
 	
 	virtual void Append (moon_path *path);
@@ -572,9 +564,10 @@ class PolyLineSegment : public PathSegment {
 // PolyQuadraticBezierSegment
 //
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */
 class PolyQuadraticBezierSegment : public PathSegment {
  protected:
-	virtual ~PolyQuadraticBezierSegment () {}
+	virtual ~PolyQuadraticBezierSegment ();
 	
 	PointCollection *GetPoints ();
 	
@@ -583,9 +576,8 @@ class PolyQuadraticBezierSegment : public PathSegment {
 	static DependencyProperty *PointsProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	PolyQuadraticBezierSegment () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::POLYQUADRATICBEZIERSEGMENT; }
+	PolyQuadraticBezierSegment ();
+
 	virtual int GetPathSize ();
 
 	virtual void Append (moon_path *path);
@@ -601,9 +593,10 @@ class PolyQuadraticBezierSegment : public PathSegment {
 // QuadraticBezierSegment
 //
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */
 class QuadraticBezierSegment : public PathSegment {
  protected:
-	virtual ~QuadraticBezierSegment () {}
+	virtual ~QuadraticBezierSegment ();
 
  public:
  	/* @PropertyType=Point,GenerateAccessors */
@@ -612,9 +605,8 @@ class QuadraticBezierSegment : public PathSegment {
 	static DependencyProperty *Point2Property;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	QuadraticBezierSegment () { }
+	QuadraticBezierSegment ();
 	
-	virtual Type::Kind GetObjectType () { return Type::QUADRATICBEZIERSEGMENT; }
 	virtual int GetPathSize () { return MOON_PATH_CURVE_TO_LENGTH; }
 	
 	virtual void Append (moon_path *path);

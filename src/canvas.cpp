@@ -20,6 +20,7 @@
 
 Canvas::Canvas ()
 {
+	SetObjectType (Type::CANVAS);
 }
 
 void

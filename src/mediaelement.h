@@ -24,22 +24,19 @@
 #include "pipeline.h"
 
 /* @Namespace=None */
+/* @IncludeInKinds */
 class MediaErrorEventArgs : public ErrorEventArgs {
  protected:
-	virtual ~MediaErrorEventArgs () {}
+	virtual ~MediaErrorEventArgs ();
 
  public:
-	MediaErrorEventArgs (MediaResult result, const char *msg)
-		: ErrorEventArgs (MediaError, (int) result, msg)
-	{		
-	}
-	
-	virtual Type::Kind GetObjectType () { return Type::MEDIAERROREVENTARGS; }
+	MediaErrorEventArgs (MediaResult result, const char *msg);
 
 	MediaResult GetMediaResult () { return (MediaResult) error_code; }
 };
 
 /* @Namespace=System.Windows.Controls */
+/* @IncludeInKinds */
 class MediaElement : public FrameworkElement {
  friend class MediaElementPropertyValueProvider;	
  public:
@@ -248,8 +245,6 @@ class MediaElement : public FrameworkElement {
 	const static int MediaFailedEvent;
 	// MediaOpened is raised when media is ready to play (we've already started playing, or, if AutoPlay is false, paused).
 	const static int MediaOpenedEvent;
-	
-	virtual Type::Kind GetObjectType () { return Type::MEDIAELEMENT; }
 	
 	virtual void SetSurface (Surface *surface);
 	

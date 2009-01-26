@@ -15,6 +15,7 @@
 
 NameScope::NameScope ()
 {
+	SetObjectType (Type::NAMESCOPE);
 	names = NULL;
 	temporary = false;
 }

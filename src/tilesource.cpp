@@ -16,6 +16,7 @@
 
 MultiScaleTileSource::MultiScaleTileSource ()
 {
+	SetObjectType (Type::MULTISCALETILESOURCE); 
 	imageWidth = -1;
 	get_tile_func = NULL;
 }

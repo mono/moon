@@ -1305,7 +1305,7 @@ start_element (void *data, const char *el, const char **attr)
 		if (p->hydrate_expecting){
 			Type::Kind expecting_type =  p->hydrate_expecting->GetObjectType ();
 
-			if (!Type::IsSubclassOf (elem->GetKind (), expecting_type)){
+			if (!Type::IsSubclassOf (expecting_type, elem->GetKind ())) {
 				parser_error (p, el, NULL, -1, "Invalid top-level element found %s, expecting %s", el,
 					      Type::Find (expecting_type)->GetName ());
 				return;

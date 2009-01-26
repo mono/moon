@@ -21,23 +21,13 @@ class ErrorEventArgs;
 #include "eventargs.h"
 
 /* @Namespace=None,ManagedDependencyProperties=None */
+/* @IncludeInKinds */	
 class ErrorEventArgs : public EventArgs  {
 protected:
-	virtual ~ErrorEventArgs ()
-	{
-		g_free (error_message);
-	}
-
+	virtual ~ErrorEventArgs ();
 
 public:
-	ErrorEventArgs (ErrorType type, int code, const char *msg)
-	{
-		error_type = type;
-		error_code = code;
-		error_message = g_strdup (msg);
-	}
-	
-	virtual Type::Kind GetObjectType () { return Type::ERROREVENTARGS; };
+	ErrorEventArgs (ErrorType type, int code, const char *msg);
 
 	int error_code;
 	char *error_message;
@@ -45,43 +35,25 @@ public:
 };
 
 /* @Namespace=None,ManagedDependencyProperties=None */
+/* @IncludeInKinds */	
 class ImageErrorEventArgs : public ErrorEventArgs {
 protected:
-	virtual ~ImageErrorEventArgs () {}
+	virtual ~ImageErrorEventArgs ();
 
 public:
-	ImageErrorEventArgs (const char *msg)
-		: ErrorEventArgs (ImageError, 0, msg)
-	{
-	}
-	virtual Type::Kind GetObjectType () { return Type::IMAGEERROREVENTARGS; };
+	ImageErrorEventArgs (const char *msg);
 };
 
 /* @Namespace=None,ManagedDependencyProperties=None */
+/* @IncludeInKinds */	
 class ParserErrorEventArgs : public ErrorEventArgs {
 protected:
-	virtual ~ParserErrorEventArgs ()
-	{
-		g_free (xaml_file);
-		g_free (xml_element);
-		g_free (xml_attribute);
-	}
-
+	virtual ~ParserErrorEventArgs ();
 
 public:
 	ParserErrorEventArgs (const char *msg, const char *file,
 			      int line, int column, int error_code, 
-			      const char *element, const char *attribute)
-		: ErrorEventArgs (ParserError, error_code, msg)
-	{
-		xml_attribute = g_strdup (attribute);
-		xml_element = g_strdup (element);
-		xaml_file = g_strdup (file);
-		char_position = column;
-		line_number = line;
-	}
-	
-	virtual Type::Kind GetObjectType () { return Type::PARSERERROREVENTARGS; };
+			      const char *element, const char *attribute);
 	
 	int char_position;
 	int line_number;
@@ -114,10 +86,10 @@ public:
 	// (only necessary if there were any errors)
 	char *message;
 	
-	MoonError () : number ((ErrorType)0), code (0), message (0) {}
+	MoonError ();
 	~MoonError ();
 	
-	void Clear () { number = NO_ERROR; code = 0; g_free (message); message = NULL; }
+	void Clear ();
 	
 	static void FillIn (MoonError *error, ErrorType type, int code, char *message /* this message must be allocated using glib methods */);
   	static void FillIn (MoonError *error, ErrorType type, int code, const char *message);

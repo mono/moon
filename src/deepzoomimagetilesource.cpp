@@ -20,6 +20,8 @@
 
 DeepZoomImageTileSource::DeepZoomImageTileSource ()
 {
+	SetObjectType (Type::DEEPZOOMIMAGETILESOURCE);
+
 	downloader = NULL;
 	downloaded = false;
 	get_tile_func = NULL;

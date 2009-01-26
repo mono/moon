@@ -34,6 +34,7 @@
 
 /* @Namespace=None */
 /* @ManagedDependencyProperties=None */
+/* @IncludeInKinds */
 class MediaAttribute : public DependencyObject {
  protected:
 	virtual ~MediaAttribute () {}
@@ -43,10 +44,8 @@ class MediaAttribute : public DependencyObject {
 	static DependencyProperty *ValueProperty;
 	
  	/* @GenerateCBinding,GeneratePInvoke */
-	MediaAttribute () { }
+	MediaAttribute () { SetObjectType (Type::MEDIAATTRIBUTE); }
 	
-	virtual Type::Kind GetObjectType () { return Type::MEDIAATTRIBUTE; }
-
 	// property accessors
 
 	const char *GetValue();
@@ -55,15 +54,15 @@ class MediaAttribute : public DependencyObject {
 
 
 /* @Namespace=None */
+/* @IncludeInKinds */
 class MediaAttributeCollection : public DependencyObjectCollection {
  protected:
 	virtual ~MediaAttributeCollection () {}
 
  public:
  	/* @GenerateCBinding,GeneratePInvoke */
-	MediaAttributeCollection () {}
+	MediaAttributeCollection () { SetObjectType (Type::MEDIAATTRIBUTE_COLLECTION); }
 	
-	virtual Type::Kind GetObjectType () { return Type::MEDIAATTRIBUTE_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::MEDIAATTRIBUTE; }
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -78,15 +77,15 @@ class MediaAttributeCollection : public DependencyObjectCollection {
  * We also override Insert to ignore the index and behave just like Add.
  */
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */
 class TimelineMarkerCollection : public DependencyObjectCollection {
  protected:
 	virtual ~TimelineMarkerCollection () {}
 	
  public:
  	/* @GenerateCBinding,GeneratePInvoke */
-	TimelineMarkerCollection () {}
+	TimelineMarkerCollection () { SetObjectType (Type::TIMELINEMARKER_COLLECTION); }
 	
-	virtual Type::Kind GetObjectType () { return Type::TIMELINEMARKER_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::TIMELINEMARKER; }
 	
 	virtual int AddWithError (Value *value, MoonError *error);
@@ -95,6 +94,7 @@ class TimelineMarkerCollection : public DependencyObjectCollection {
 
 
 /* @Namespace=None */
+/* @IncludeInKinds */
 class MarkerReachedEventArgs : public EventArgs {
 	TimelineMarker *marker;
 	
@@ -103,7 +103,6 @@ class MarkerReachedEventArgs : public EventArgs {
 	
  public:
 	MarkerReachedEventArgs (TimelineMarker *marker);
-	virtual Type::Kind GetObjectType () { return Type::MARKERREACHEDEVENTARGS; }
 
 	TimelineMarker *GetMarker () { return marker; }
 };
@@ -111,6 +110,7 @@ class MarkerReachedEventArgs : public EventArgs {
 
 /* @Namespace=None */
 /* @ManagedDependencyProperties=None */
+/* @IncludeInKinds */
 class MediaBase : public FrameworkElement {
  private:
 	static void set_source_async (EventObject *user_data);
@@ -160,8 +160,6 @@ class MediaBase : public FrameworkElement {
 	/* @GenerateCBinding,GeneratePInvoke */
 	MediaBase ();
 
-	virtual Type::Kind GetObjectType () { return Type::MEDIABASE; }
-	
 	virtual void SetSourceInternal (Downloader *downloader, char *PartName);
 	virtual void SetSource (Downloader *downloader, const char *PartName);
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -187,6 +185,7 @@ class MediaBase : public FrameworkElement {
 
 
 /* @Namespace=System.Windows.Controls */
+/* @IncludeInKinds */
 class Image : public MediaBase {
 	int create_xlib_surface:1;
 
@@ -244,8 +243,6 @@ class Image : public MediaBase {
 	
  	/* @GenerateCBinding,GeneratePInvoke */
 	Image ();
-	
-	virtual Type::Kind GetObjectType () { return Type::IMAGE; };
 	
 	virtual void Render (cairo_t *cr, Region *region);
 	

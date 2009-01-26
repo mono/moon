@@ -262,6 +262,8 @@ runtime_flags_set_show_fps (gboolean flag)
 
 Surface::Surface (MoonWindow *window, bool silverlight2)
 {
+	SetObjectType (Type::SURFACE);
+
 	main_thread = pthread_self ();
 
 	this->silverlight2 = silverlight2;

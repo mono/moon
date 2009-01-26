@@ -53,6 +53,7 @@ enum GradientSpreadMethod {
 
 
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */	
 class Brush : public DependencyObject {
  protected:
 	virtual ~Brush () {}
@@ -71,9 +72,7 @@ class Brush : public DependencyObject {
 	static DependencyProperty *ChangedProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
-	Brush () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::BRUSH; };
+	Brush ();
 	
 	virtual void SetupBrush (cairo_t *cr, const Rect &area);
 
@@ -105,6 +104,7 @@ class Brush : public DependencyObject {
 
 
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */
 class SolidColorBrush : public Brush {
  protected:
 	virtual ~SolidColorBrush () {}
@@ -114,11 +114,9 @@ class SolidColorBrush : public Brush {
 	static DependencyProperty *ColorProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	SolidColorBrush () { }
+	SolidColorBrush ();
 	SolidColorBrush (const char *color);
 	
-	virtual Type::Kind GetObjectType () { return Type::SOLIDCOLORBRUSH; };
-
 	virtual void SetupBrush (cairo_t *cr, const Rect &area);
 	
 	virtual bool IsOpaque ();
@@ -132,23 +130,24 @@ class SolidColorBrush : public Brush {
 
 
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */	
 class GradientStopCollection : public DependencyObjectCollection {
  protected:
-	virtual ~GradientStopCollection () {}
+	virtual ~GradientStopCollection ();
 
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	GradientStopCollection () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::GRADIENTSTOP_COLLECTION; }
+	GradientStopCollection ();
+
 	virtual Type::Kind GetElementType() { return Type::GRADIENTSTOP; }
 };
 
 
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */	
 class GradientStop : public DependencyObject {
  protected:
-	virtual ~GradientStop () {}
+	virtual ~GradientStop ();
 	
  public:
 	/* @PropertyType=Color,DefaultValue=Color (0x00000000),GenerateAccessors */
@@ -157,9 +156,7 @@ class GradientStop : public DependencyObject {
 	static DependencyProperty *OffsetProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	GradientStop () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::GRADIENTSTOP; }
+	GradientStop ();
 	
 	//
 	// Property Accessors
@@ -175,9 +172,10 @@ class GradientStop : public DependencyObject {
 // note: abstract in C#
 /* @Namespace=System.Windows.Media */
 /* @ContentProperty="GradientStops" */
+/* @IncludeInKinds */	
 class GradientBrush : public Brush {
  protected:
-	virtual ~GradientBrush () {}
+	virtual ~GradientBrush ();
 
  public:
 	/* @PropertyType=ColorInterpolationMode,DefaultValue=ColorInterpolationModeSRgbLinearInterpolation,GenerateAccessors */
@@ -191,8 +189,6 @@ class GradientBrush : public Brush {
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	GradientBrush ();
-	
-	virtual Type::Kind GetObjectType () { return Type::GRADIENTBRUSH; }
 	
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
@@ -218,9 +214,10 @@ class GradientBrush : public Brush {
 
 
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */	
 class LinearGradientBrush : public GradientBrush {
  protected:
-	virtual ~LinearGradientBrush () {}
+	virtual ~LinearGradientBrush ();
 
  public:
 	/* @PropertyType=Point,DefaultValue=Point(1\,1),GenerateAccessors */
@@ -229,9 +226,7 @@ class LinearGradientBrush : public GradientBrush {
 	static DependencyProperty *StartPointProperty;
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	LinearGradientBrush () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::LINEARGRADIENTBRUSH; }
+	LinearGradientBrush ();
 
 	virtual void SetupBrush (cairo_t *cr, const Rect &area);
 	
@@ -247,9 +242,10 @@ class LinearGradientBrush : public GradientBrush {
 
 
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */	
 class RadialGradientBrush : public GradientBrush {
  protected:
-	virtual ~RadialGradientBrush () {}
+	virtual ~RadialGradientBrush ();
 
  public:
 	/* @PropertyType=Point,DefaultValue=Point (0.5\, 0.5),GenerateAccessors */
@@ -262,9 +258,7 @@ class RadialGradientBrush : public GradientBrush {
 	static DependencyProperty *RadiusYProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	RadialGradientBrush () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::RADIALGRADIENTBRUSH; }
+	RadialGradientBrush ();
 	
 	virtual void SetupBrush (cairo_t *cr, const Rect &area);
 	
@@ -286,9 +280,10 @@ class RadialGradientBrush : public GradientBrush {
 
 
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */	
 class TileBrush : public Brush {
  protected:
-	virtual ~TileBrush () {}
+	virtual ~TileBrush ();
 
  public:
 	/* @PropertyType=AlignmentX,DefaultValue=AlignmentXCenter,GenerateAccessors */
@@ -299,12 +294,10 @@ class TileBrush : public Brush {
 	static DependencyProperty *StretchProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
-	TileBrush () { }
+	TileBrush ();
 	virtual void Fill (cairo_t *cr, bool preserve);
 	virtual void Stroke (cairo_t *cr, bool preserve);
 	
-	virtual Type::Kind GetObjectType () { return Type::TILEBRUSH; }
-
 	//
 	// Property Accessors
 	//
@@ -320,6 +313,7 @@ class TileBrush : public Brush {
 
 
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */	
 class ImageBrush : public TileBrush {
 	static void image_progress_changed (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void image_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
@@ -347,8 +341,6 @@ class ImageBrush : public TileBrush {
 	/* @GenerateCBinding,GeneratePInvoke */
 	ImageBrush ();
 	
-	virtual Type::Kind GetObjectType () { return Type::IMAGEBRUSH; }
-	
 	void SetSource (Downloader *downloader, const char *PartName);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void SetupBrush (cairo_t *cr, const Rect &area);
@@ -372,6 +364,7 @@ cairo_surface_t *image_brush_create_similar     (cairo_t *cr, int width, int hei
 
 
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */	
 class VideoBrush : public TileBrush {
 	MediaElement *media;
 	
@@ -384,8 +377,6 @@ class VideoBrush : public TileBrush {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	VideoBrush ();
-	
-	virtual Type::Kind GetObjectType () { return Type::VIDEOBRUSH; }
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
@@ -404,23 +395,22 @@ class VideoBrush : public TileBrush {
 
 /* @Namespace=None */
 /* @ManagedDependencyProperties=None */
+/* @IncludeInKinds */	
 class VisualBrush : public TileBrush {
 	cairo_surface_t *surface;
 
 	static void update_brush (EventObject *, EventArgs *, gpointer closure);
 
  protected:
-	virtual ~VisualBrush () {}
+	virtual ~VisualBrush ();
 
  public:
 	/* @PropertyType=UIElement,GenerateAccessors */
 	static DependencyProperty *VisualProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	VisualBrush () { }
+	VisualBrush ();
 	
-	virtual Type::Kind GetObjectType () { return Type::VISUALBRUSH; };
-
 	virtual void SetupBrush (cairo_t *cr, const Rect &area);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 

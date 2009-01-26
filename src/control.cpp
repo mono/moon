@@ -21,6 +21,8 @@
 
 Control::Control ()
 {
+	SetObjectType (Type::CONTROL);
+
 	applied_template = NULL;
 	template_root = NULL;
 	bindings = NULL;
@@ -214,6 +216,8 @@ Control::ElementAdded (UIElement *item)
 		template_root->ref ();
 		FrameworkElement::ElementAdded (template_root);
 	}
+
+	SetSubtreeObject (template_root);
 }
 
 void
@@ -222,6 +226,7 @@ Control::ElementRemoved (UIElement *item)
 	if (template_root && item == template_root) {
 		template_root->unref ();
 		template_root = NULL;
+		SetSubtreeObject (NULL);
 	}
 
 	if (item)

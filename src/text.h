@@ -31,6 +31,7 @@
 #define TEXTBLOCK_FONT_SIZE    14.666666984558105
 
 /* @Namespace=System.Windows.Documents */
+/* @IncludeInKinds */
 class Inline : public DependencyObject, public ITextSource {
 	TextFontDescription *font;
 	bool autogen;
@@ -62,8 +63,6 @@ class Inline : public DependencyObject, public ITextSource {
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Inline ();
-	
-	virtual Type::Kind GetObjectType () { return Type::INLINE; }
 	
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	
@@ -118,20 +117,20 @@ class Inline : public DependencyObject, public ITextSource {
 
 
 /* @Namespace=System.Windows.Documents */
+/* @IncludeInKinds */
 class LineBreak : public Inline {
  protected:
 	virtual ~LineBreak () {}
 	
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	LineBreak () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::LINEBREAK; }
+	LineBreak () { SetObjectType (Type::LINEBREAK); }
 };
 
 
 /* @ContentProperty="Text" */
 /* @Namespace=System.Windows.Documents */
+/* @IncludeInKinds */
 class Run : public Inline {
  protected:
 	virtual ~Run () {}
@@ -141,9 +140,7 @@ class Run : public Inline {
 	static DependencyProperty *TextProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	Run () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::RUN; }
+	Run () { SetObjectType (Type::RUN); }
 	
 	virtual bool Equals (Inline *item);
 	
@@ -159,6 +156,7 @@ class TextBlockDynamicPropertyValueProvider;
 
 /* @ContentProperty="Inlines" */
 /* @Namespace=System.Windows.Controls */
+/* @IncludeInKinds */
 class TextBlock : public FrameworkElement {
 	friend class TextBlockDynamicPropertyValueProvider;
 	
@@ -254,8 +252,6 @@ class TextBlock : public FrameworkElement {
 	/* @GenerateCBinding,GeneratePInvoke */
 	TextBlock ();
 	
-	virtual Type::Kind GetObjectType () { return Type::TEXTBLOCK; }
-	
 	void SetFontSource (Downloader *downloader);
 	
 	//
@@ -336,6 +332,7 @@ class TextBlock : public FrameworkElement {
 
 
 /* @Namespace=System.Windows.Documents */
+/* @IncludeInKinds */
 class Glyphs : public FrameworkElement {
 	TextFontDescription *desc;
 	Downloader *downloader;
@@ -392,8 +389,6 @@ class Glyphs : public FrameworkElement {
 	/* @GenerateCBinding,GeneratePInvoke */
 	Glyphs ();
 	
-	virtual Type::Kind GetObjectType () { return Type::GLYPHS; }
-	
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
 	virtual void ComputeBounds ();
@@ -433,6 +428,7 @@ class Glyphs : public FrameworkElement {
 };
 
 /* @Namespace=System.Windows.Input */
+/* @IncludeInKinds */
 class InputMethod : public DependencyObject {
 	
  protected:
@@ -443,9 +439,7 @@ class InputMethod : public DependencyObject {
 	static DependencyProperty *IsInputMethodEnabledProperty;
 	
  	/* @ManagedAccess=Internal,GeneratePInvoke,GenerateCBinding */
-	InputMethod () {}
-	
-	virtual Type::Kind GetObjectType () { return Type::INPUTMETHOD; }
+	InputMethod () { SetObjectType (Type::INPUTMETHOD); }
 };
 
 #endif /* __TEXT_H__ */

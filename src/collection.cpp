@@ -28,6 +28,7 @@
 
 Collection::Collection ()
 {
+	SetObjectType (Type::COLLECTION);
 	array = g_ptr_array_new ();
 	generation = 0;
 }
@@ -306,6 +307,15 @@ Collection::CanAdd (Value *value)
 // DependencyObjectCollection
 //
 
+DependencyObjectCollection::DependencyObjectCollection ()
+{
+	SetObjectType (Type::DEPENDENCY_OBJECT_COLLECTION);
+}
+
+DependencyObjectCollection::~DependencyObjectCollection ()
+{
+}
+
 bool
 DependencyObjectCollection::AddedToCollection (Value *value, MoonError *error)
 {
@@ -405,6 +415,15 @@ DependencyObjectCollection::CanAdd (Value *value)
 // InlineCollection
 //
 
+InlineCollection::InlineCollection ()
+{
+	SetObjectType (Type::INLINE_COLLECTION);
+}
+
+InlineCollection::~InlineCollection ()
+{
+}
+
 bool
 InlineCollection::Equals (InlineCollection *inlines)
 {
@@ -431,6 +450,7 @@ InlineCollection::Equals (InlineCollection *inlines)
 
 UIElementCollection::UIElementCollection ()
 {
+	SetObjectType (Type::UIELEMENT_COLLECTION);
 	z_sorted = g_ptr_array_new ();
 }
 
@@ -475,6 +495,15 @@ UIElementCollection::Clear ()
 // DoubleCollection
 //
 
+DoubleCollection::DoubleCollection ()
+{
+	SetObjectType (Type::DOUBLE_COLLECTION);
+}
+
+DoubleCollection::~DoubleCollection ()
+{
+}
+
 DoubleCollection *
 DoubleCollection::FromStr (const char *s)
 {
@@ -493,10 +522,18 @@ DoubleCollection::FromStr (const char *s)
 	return doubles;
 }
 
-
 //
 // Point Collection
 //
+
+PointCollection::PointCollection ()
+{
+	SetObjectType (Type::POINT_COLLECTION);
+}
+
+PointCollection::~PointCollection ()
+{
+}
 
 PointCollection *
 PointCollection::FromStr (const char *s)
@@ -522,6 +559,44 @@ PointCollection::FromStr (const char *s)
 	return points;
 }
 
+//
+// Item Collection
+//
+
+ItemCollection::ItemCollection ()
+{
+	SetObjectType (Type::ITEM_COLLECTION);
+}
+
+ItemCollection::~ItemCollection ()
+{
+}
+
+//
+// Trigger Collection
+//
+
+TriggerCollection::TriggerCollection ()
+{
+	SetObjectType (Type::TRIGGER_COLLECTION);
+}
+
+TriggerCollection::~TriggerCollection ()
+{
+}
+
+//
+// TriggerAction Collection
+//
+
+TriggerActionCollection::TriggerActionCollection ()
+{
+	SetObjectType (Type::TRIGGERACTION_COLLECTION);
+}
+
+TriggerActionCollection::~TriggerActionCollection ()
+{
+}
 
 //
 // CollectionIterator

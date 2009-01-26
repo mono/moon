@@ -29,13 +29,13 @@ class UIElement;
  */
 
 /* @Namespace=None */
+/* @IncludeInKinds */
 class EventArgs : public DependencyObject {
  protected:
-	virtual ~EventArgs () {}
+	virtual ~EventArgs ();
 	
  public:
-	EventArgs () {}
-	virtual Type::Kind GetObjectType () { return Type::EVENTARGS; }
+	EventArgs ();
 };
 
 enum CollectionChangedAction {
@@ -47,59 +47,49 @@ enum CollectionChangedAction {
 };
 
 /* @Namespace=None */
+/* @IncludeInKinds */
 class CollectionChangedEventArgs : public EventArgs {
- protected:
-	virtual ~CollectionChangedEventArgs () {}
-	
- public:
+protected:
+	virtual ~CollectionChangedEventArgs ();
+
+public:
 	CollectionChangedAction action;
 	Value *old_value;
 	Value *new_value;
 	int index;
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	CollectionChangedEventArgs ();
+
+	CollectionChangedEventArgs (CollectionChangedAction action, Value *new_value, Value *old_value, int index);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	CollectionChangedEventArgs ()
-	{
-		action = CollectionChangedActionAdd;
-		old_value = NULL;
-		new_value = NULL;
-		index = -1;
-	}
-	
-	CollectionChangedEventArgs (CollectionChangedAction action, Value *new_value, Value *old_value, int index)
-	{
-		this->action = action;
-		this->new_value = new_value;
-		this->old_value = old_value;
-		this->index = index;
-	}
+	void SetChangedAction (CollectionChangedAction action);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	void SetChangedAction (CollectionChangedAction action) { this->action = action; }
+	CollectionChangedAction GetChangedAction ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	CollectionChangedAction GetChangedAction () { return action; }
+	void SetNewItem (Value *item);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	void SetNewItem (Value *item) { new_value = item; }
+	Value *GetNewItem ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	Value *GetNewItem () { return new_value; }
+	void SetOldItem (Value *item);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	void SetOldItem (Value *item) { old_value = item; }
+	Value *GetOldItem ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	Value *GetOldItem () { return old_value; }
+	void SetIndex (int index);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	void SetIndex (int index) { this->index = index; }
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	int GetIndex () { return index; }
+	int GetIndex ();
 };
 
 /* @Namespace=None */
+/* @IncludeInKinds */
 class RoutedEventArgs : public EventArgs {
 	DependencyObject *source;
 	bool handled;
@@ -113,22 +103,21 @@ class RoutedEventArgs : public EventArgs {
 	
 	RoutedEventArgs (DependencyObject *source);
 	
-	virtual Type::Kind GetObjectType () { return Type::ROUTEDEVENTARGS; }
-	
 	/* @GenerateCBinding,GeneratePInvoke */
-	DependencyObject *GetSource () { return source; }
+	DependencyObject *GetSource ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetSource(DependencyObject *el);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	void SetHandled (bool handled) { this->handled = handled; }
+	void SetHandled (bool handled);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	bool GetHandled () { return handled; }
+	bool GetHandled ();
 };
 
 /* @Namespace=None */
+/* @IncludeInKinds */
 class KeyEventArgs : public RoutedEventArgs {
 	GdkEventKey *event;
 	
@@ -139,7 +128,6 @@ class KeyEventArgs : public RoutedEventArgs {
  	/* @GenerateCBinding,GeneratePInvoke */
 	KeyEventArgs ();
 	KeyEventArgs (GdkEventKey *event);
-	virtual Type::Kind GetObjectType () { return Type::KEYEVENTARGS; };
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	int GetKey ();
@@ -155,6 +143,7 @@ class KeyEventArgs : public RoutedEventArgs {
 };
 
 /* @Namespace=None */
+/* @IncludeInKinds */
 class MouseEventArgs : public RoutedEventArgs {
 	GdkEvent *event;
 	
@@ -165,7 +154,6 @@ class MouseEventArgs : public RoutedEventArgs {
  	/* @GenerateCBinding,GeneratePInvoke */
 	MouseEventArgs ();
 	MouseEventArgs (GdkEvent *event);
-	virtual Type::Kind GetObjectType () { return Type::MOUSEEVENTARGS; };
 	
 	int GetState ();
 	

@@ -341,7 +341,7 @@ Types::RegisterType (const char *name, void *gc_handle, Type::Kind parent)
 	type->name = g_strdup (name);
 	type->kindname = NULL;
 	type->event_count = 0;
-	type->total_event_count = 0;
+	type->total_event_count = Type::Find(parent)->GetEventCount();
 	type->events = NULL;
 	type->create_inst = NULL;
 	type->content_property = NULL;

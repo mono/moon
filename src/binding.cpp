@@ -19,6 +19,8 @@
 
 Binding::Binding ()
 {
+	SetObjectType (Type::BINDING);
+
  	property_path = g_strdup ("");
  	binding_mode = BindingModeOneWay;
 	notify_on_validation_error = false;
@@ -59,6 +61,8 @@ Binding::SetBindingMode (BindingMode mode)
 
 BindingExpressionBase::BindingExpressionBase ()
 {
+	SetObjectType (Type::BINDINGEXPRESSIONBASE);
+
 	binding = NULL;
 	got_value = false;
 	gv_callback = NULL;
@@ -199,4 +203,13 @@ BindingExpressionBase::UpdateSource (Value *value)
 		if ((property = DependencyProperty::GetDependencyProperty (source->GetType ()->GetKind (), binding->GetPropertyPath ())))
 			source->SetValue (property, value);
 	}
+}
+
+BindingExpression::BindingExpression ()
+{
+	SetObjectType (Type::BINDINGEXPRESSION);
+}
+
+BindingExpression::~BindingExpression ()
+{
 }

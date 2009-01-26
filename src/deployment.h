@@ -19,37 +19,37 @@
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
+/* @IncludeInKinds */	
 class AssemblyPart : public DependencyObject {
  protected:
-	virtual ~AssemblyPart () {}
+	virtual ~AssemblyPart ();
 	
  public:
  	/* @PropertyType=string */
 	static DependencyProperty *SourceProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	AssemblyPart () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::ASSEMBLYPART; }
+	AssemblyPart ();
 };
 
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
+/* @IncludeInKinds */	
 class AssemblyPartCollection : public DependencyObjectCollection {
  protected:
-	virtual ~AssemblyPartCollection () {}
+	virtual ~AssemblyPartCollection ();
 	
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	AssemblyPartCollection () { }
-	
-	virtual Type::Kind GetObjectType ()  { return Type::ASSEMBLYPART_COLLECTION; }
+	AssemblyPartCollection ();
+
 	virtual Type::Kind GetElementType () { return Type::ASSEMBLYPART; }
 };
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
+/* @IncludeInKinds */	
 class Deployment : public DependencyObject {
  protected:
 	virtual ~Deployment ();
@@ -68,8 +68,6 @@ class Deployment : public DependencyObject {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Deployment ();
-
-	virtual Type::Kind GetObjectType () { return Type::DEPLOYMENT; } 
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	Types* GetTypes();

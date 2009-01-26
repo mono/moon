@@ -16,6 +16,7 @@
 
 Border::Border()
 {
+	SetObjectType (Type::BORDER);
 }
 
 Size
@@ -145,6 +146,8 @@ Border::OnPropertyChanged (PropertyChangedEventArgs *args)
 		if (args->new_value) {
 			ElementAdded (args->new_value->AsUIElement ());
 		}
+
+		SetSubtreeObject (args->new_value ? args->new_value->AsUIElement() : NULL);
 
 		UpdateBounds ();
 		InvalidateMeasure ();

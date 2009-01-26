@@ -247,6 +247,7 @@ class TextBoxDynamicPropertyValueProvider : public PropertyValueProvider {
 
 TextBox::TextBox ()
 {
+	SetObjectType (Type::TEXTBOX);
 	ManagedTypeInfo *type_info = new ManagedTypeInfo ();
 	type_info->assembly_name = g_strdup ("System.Windows");
 	type_info->full_name = g_strdup ("System.Windows.Controls.TextBox");
@@ -1552,6 +1553,8 @@ TextBox::SelectAll ()
 
 TextBoxView::TextBoxView ()
 {
+	SetObjectType (Type::TEXTBOXVIEW);
+
 	AddHandler (UIElement::LostFocusEvent, TextBoxView::focus_out, this);
 	AddHandler (UIElement::GotFocusEvent, TextBoxView::focus_in, this);
 	
@@ -1946,6 +1949,7 @@ TextBoxView::ArrangeOverride (Size size)
 
 PasswordBox::PasswordBox ()
 {
+	SetObjectType (Type::PASSWORDBOX);
 	ManagedTypeInfo *type_info = new ManagedTypeInfo ();
 	type_info->assembly_name = g_strdup ("System.Windows");
 	type_info->full_name = g_strdup ("System.Windows.Controls.PasswordBox");

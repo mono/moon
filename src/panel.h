@@ -16,6 +16,7 @@
 
 /* @ContentProperty="Children" */
 /* @Namespace=System.Windows.Controls */
+/* @IncludeInKinds */
 class Panel : public FrameworkElement {
  private:
 	//
@@ -41,8 +42,6 @@ class Panel : public FrameworkElement {
  	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Panel ();
 
-	virtual Type::Kind GetObjectType () { return Type::PANEL; }
-	
 	virtual void ComputeBounds ();
 	virtual Size MeasureOverride (Size availableSize);
 
@@ -66,8 +65,6 @@ class Panel : public FrameworkElement {
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
-
-	virtual DependencyObject *GetSubtreeObject () { return GetChildren (); }
 
 	//
 	// Property Accessors

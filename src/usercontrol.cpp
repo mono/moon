@@ -10,6 +10,16 @@
 #include <config.h>
 #include "usercontrol.h"
 
+UserControl::UserControl ()
+{
+	SetObjectType (Type::USERCONTROL);
+	SetIsTabStop (false);
+}
+
+UserControl::~UserControl ()
+{
+}
+
 UIElement *
 user_control_get_content (UserControl *user_control)
 {
@@ -38,13 +48,4 @@ UserControl::OnPropertyChanged (PropertyChangedEventArgs *args)
 		UpdateBounds ();
 	}
 	NotifyListenersOfPropertyChange (args);
-}
-
-UserControl::UserControl ()
-{
-	SetIsTabStop (false);
-}
-
-UserControl::~UserControl ()
-{
 }

@@ -17,36 +17,32 @@
 
 /* @SilverlightVersion="2" */
 /* @Namespace=None */
+/* @IncludeInKinds */	
 class ContentChangedEventArgs : public EventArgs {
 	Value *old_content;
 	Value *new_content;
 	
  protected:
-	virtual ~ContentChangedEventArgs () { }
+	virtual ~ContentChangedEventArgs ();
 	
  public:
-	ContentChangedEventArgs (Value *old_content, Value *new_content)
-	{
-		this->old_content = old_content;
-		this->new_content = new_content;
-	}
-	
-	virtual Type::Kind GetObjectType () { return Type::CONTENTCHANGEDEVENTARGS; }
+	ContentChangedEventArgs (Value *old_content, Value *new_content);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	Value *GetOldContent () { return old_content; }
+	Value *GetOldContent ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	Value *GetNewContent () { return new_content; }
+	Value *GetNewContent ();
 };
 
 
 /* @ContentProperty="Content" */
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
+/* @IncludeInKinds */	
 class ContentControl : public Control {
  protected:
-	virtual ~ContentControl () { }
+	virtual ~ContentControl ();
 	
  public:
  	/* @PropertyType=object */
@@ -56,8 +52,6 @@ class ContentControl : public Control {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	ContentControl ();
-	
-	virtual Type::Kind GetObjectType () { return Type::CONTENTCONTROL; }
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	

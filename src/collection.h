@@ -28,12 +28,11 @@ class CollectionIterator;
 /* @Namespace=System.Windows */
 /* @ManagedName=PresentationFrameworkCollection`1 */
 /* @ManagedDependencyProperties=Manual */
+/* @IncludeInKinds */	
 class Collection : public DependencyObject {
 public:
  	/* @PropertyType=gint32,DefaultValue=0,GenerateAccessors */
 	static DependencyProperty *CountProperty;
-	
-	virtual Type::Kind GetObjectType () = 0;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual Type::Kind GetElementType () = 0;
@@ -100,12 +99,12 @@ protected:
 };
 
 /* @Namespace=None */
+/* @IncludeInKinds */	
 class DependencyObjectCollection : public Collection {
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	DependencyObjectCollection () {}
+	DependencyObjectCollection ();
 	
-	virtual Type::Kind GetObjectType () { return Type::DEPENDENCY_OBJECT_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::DEPENDENCY_OBJECT; }
 	
 	virtual void SetSurface (Surface *surface);
@@ -119,37 +118,37 @@ protected:
 	virtual bool AddedToCollection (Value *value, MoonError *error);
 	virtual void RemovedFromCollection (Value *value);
 	
-	virtual ~DependencyObjectCollection () {}
+	virtual ~DependencyObjectCollection ();
 };
 
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */	
 class DoubleCollection : public Collection {
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	DoubleCollection () {}
+	DoubleCollection ();
 	
-	virtual Type::Kind GetObjectType () { return Type::DOUBLE_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::DOUBLE; }
 
 	static DoubleCollection* FromStr (const char *str);
 
 protected:
-	virtual ~DoubleCollection () {}
+	virtual ~DoubleCollection ();
 };
 
 /* @Namespace=System.Windows.Media */
+/* @IncludeInKinds */	
 class PointCollection : public Collection {
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	PointCollection () {}
+	PointCollection ();
 	
-	virtual Type::Kind GetObjectType () { return Type::POINT_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::POINT; }
 
 	static PointCollection* FromStr (const char *str);
 
 protected:
-	virtual ~PointCollection () {}
+	virtual ~PointCollection ();
 };
 
 class CollectionIterator {
@@ -198,48 +197,49 @@ protected:
 };
 
 /* @Namespace=System.Windows */
+/* @IncludeInKinds */	
 class TriggerCollection : public DependencyObjectCollection {
  protected:
-	virtual ~TriggerCollection () {}
+	virtual ~TriggerCollection ();
 	
  public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
-	TriggerCollection () {}
+	TriggerCollection ();
 	
-	virtual Type::Kind GetObjectType () { return Type::TRIGGER_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::EVENTTRIGGER; }
 };
 
 /* @Namespace=System.Windows */
+/* @IncludeInKinds */	
 class TriggerActionCollection : public DependencyObjectCollection {
  protected:
-	virtual ~TriggerActionCollection () {}
+	virtual ~TriggerActionCollection ();
 
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	TriggerActionCollection () {}
+	TriggerActionCollection ();
 	
-	virtual Type::Kind GetObjectType () { return Type::TRIGGERACTION_COLLECTION; }
 	/* this may seem wrong, but it's what the TriggerActionCollection mandates */
 	virtual Type::Kind GetElementType () { return Type::BEGINSTORYBOARD; }
 };
 
 /* @Namespace=System.Windows.Documents */
+/* @IncludeInKinds */	
 class InlineCollection : public DependencyObjectCollection {
  protected:
-	virtual ~InlineCollection () {}
+	virtual ~InlineCollection ();
 	
  public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
-	InlineCollection () {}
+	InlineCollection ();
 	
-	virtual Type::Kind GetObjectType () { return Type::INLINE_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::INLINE; }
 	
 	bool Equals (InlineCollection *inlines);
 };
 
 /* @Namespace=System.Windows.Controls */
+/* @IncludeInKinds */	
 class UIElementCollection : public DependencyObjectCollection {
  protected:
 	virtual ~UIElementCollection ();
@@ -250,7 +250,6 @@ class UIElementCollection : public DependencyObjectCollection {
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	UIElementCollection ();
 	
-	virtual Type::Kind GetObjectType () { return Type::UIELEMENT_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::UIELEMENT; }
 	
 	virtual bool Clear ();
@@ -259,15 +258,15 @@ class UIElementCollection : public DependencyObjectCollection {
 };
 
 /* @Namespace=System.Windows.Controls */
+/* @IncludeInKinds */	
 class ItemCollection : public Collection {
  protected:
-	virtual ~ItemCollection () {}
+	virtual ~ItemCollection ();
 	
  public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
-	ItemCollection () {}
+	ItemCollection ();
 	
-	virtual Type::Kind GetObjectType () { return Type::ITEM_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::OBJECT; }
 };
 

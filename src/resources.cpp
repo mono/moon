@@ -23,6 +23,7 @@ free_value (Value *value)
 
 ResourceDictionary::ResourceDictionary ()
 {
+	SetObjectType (Type::RESOURCE_DICTIONARY);
 	hash = g_hash_table_new_full (g_str_hash,
 				      g_str_equal,
 				      (GDestroyNotify)g_free,

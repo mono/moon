@@ -17,6 +17,7 @@
 #include "dependencyobject.h"
 
 /* @Namespace=System.Windows.Media.Imaging */
+/* @IncludeInKinds */
 class BitmapImage : public DependencyObject {
  protected:
 	virtual ~BitmapImage ();
@@ -36,8 +37,6 @@ class BitmapImage : public DependencyObject {
 
 	void CleanUp ();
 
-	virtual Type::Kind GetObjectType () { return Type::BITMAPIMAGE; }	
-	
 	void        SetUriSource (const char *value);
 	const char* GetUriSource ();
 	

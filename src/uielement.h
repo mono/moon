@@ -37,11 +37,10 @@
 class Surface;
 
 /* @Namespace=System.Windows */
+/* @IncludeInKinds */
 class UIElement : public DependencyObject {
 public:
 	UIElement ();
-	
-	virtual Type::Kind GetObjectType () { return Type::UIELEMENT; }
 	
 	int dirty_flags;
 	List::Node *up_dirty_node;
@@ -83,7 +82,10 @@ public:
 	void SetVisualLevel (int level) { visual_level = level; }
 
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
-	virtual DependencyObject *GetSubtreeObject () { return NULL; }
+	virtual void SetSubtreeObject (DependencyObject *value);
+
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	DependencyObject *GetSubtreeObject () { return subtree_object; }
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual void ElementAdded (UIElement *obj);
@@ -478,6 +480,7 @@ protected:
 private:
 	int visual_level;
 	UIElement *visual_parent;
+	DependencyObject *subtree_object;
 	double total_opacity;
 	Brush *opacityMask;
 	Size desired_size;

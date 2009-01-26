@@ -45,6 +45,11 @@ convert_gradient_spread_method (GradientSpreadMethod method)
 //
 
 
+Brush::Brush()
+{
+	SetObjectType (Type::BRUSH);
+}
+
 void
 Brush::SetupBrush (cairo_t *cr, const Rect &area)
 {
@@ -108,8 +113,14 @@ transform_get_absolute_transform (Transform *relative_transform, double width, d
 // SolidColorBrush
 //
 
+SolidColorBrush::SolidColorBrush ()
+{
+	SetObjectType (Type::SOLIDCOLORBRUSH);
+}
+
 SolidColorBrush::SolidColorBrush (const char *color)
 {
+	SetObjectType (Type::SOLIDCOLORBRUSH);
 	Color *c = color_from_str (color);
 	SetColor (c);
 	delete c;
@@ -137,7 +148,13 @@ SolidColorBrush::IsOpaque ()
 
 GradientBrush::GradientBrush ()
 {
+	SetObjectType (Type::GRADIENTBRUSH);
+
 	SetValue (GradientBrush::GradientStopsProperty, Value::CreateUnref (new GradientStopCollection ()));
+}
+
+GradientBrush::~GradientBrush ()
+{
 }
 
 void
@@ -297,8 +314,44 @@ GradientBrush::IsOpaque ()
 }
 
 //
+// GradientStopCollection
+//
+
+GradientStopCollection::GradientStopCollection ()
+{
+	SetObjectType (Type::GRADIENTSTOP_COLLECTION);
+}
+
+GradientStopCollection::~GradientStopCollection ()
+{
+}
+
+
+//
+// GradientStop
+//
+
+GradientStop::GradientStop()
+{
+	SetObjectType (Type::GRADIENTSTOP);
+}
+
+GradientStop::~GradientStop()
+{
+}
+
+//
 // LinearGradientBrush
 //
+
+LinearGradientBrush::LinearGradientBrush ()
+{
+	SetObjectType (Type::LINEARGRADIENTBRUSH);
+}
+
+LinearGradientBrush::~LinearGradientBrush ()
+{
+}
 
 void
 LinearGradientBrush::SetupBrush (cairo_t *cr, const Rect &area)
@@ -366,6 +419,15 @@ LinearGradientBrush::SetupBrush (cairo_t *cr, const Rect &area)
 //
 // RadialGradientBrush
 //
+
+RadialGradientBrush::RadialGradientBrush ()
+{
+	SetObjectType (Type::RADIALGRADIENTBRUSH);
+}
+
+RadialGradientBrush::~RadialGradientBrush()
+{
+}
 
 void
 RadialGradientBrush::SetupBrush (cairo_t *cr, const Rect &area)
@@ -459,6 +521,8 @@ ImageBrush::image_failed (EventObject *sender, EventArgs *calldata, gpointer clo
 
 ImageBrush::ImageBrush ()
 {
+	SetObjectType (Type::IMAGEBRUSH);
+
 	image = new Image ();
 
 	image->AddHandler (MediaBase::DownloadProgressChangedEvent, image_progress_changed, this);
@@ -719,6 +783,16 @@ ImageBrush::SetupBrush (cairo_t *cr, const Rect &area)
 //
 // TileBrush
 //
+
+TileBrush::TileBrush ()
+{
+	SetObjectType (Type::TILEBRUSH);
+}
+
+TileBrush::~TileBrush ()
+{
+}
+
 void
 TileBrush::Fill (cairo_t *cr, bool preserve)
 {
@@ -780,6 +854,7 @@ TileBrush::Stroke (cairo_t *cr, bool preserve)
 
 VideoBrush::VideoBrush ()
 {
+	SetObjectType (Type::VIDEOBRUSH);
 	media = NULL;
 }
 
@@ -919,6 +994,15 @@ VideoBrush::IsAnimating ()
 //
 // VisualBrush
 //
+
+VisualBrush::VisualBrush ()
+{
+	SetObjectType (Type::VISUALBRUSH);
+}
+
+VisualBrush::~VisualBrush ()
+{
+}
 
 void
 VisualBrush::SetupBrush (cairo_t *cr, const Rect &area)

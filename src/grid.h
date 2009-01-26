@@ -36,12 +36,13 @@ struct GridLength {
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
+/* @IncludeInKinds */
 class ColumnDefinition : public DependencyObject {
 	// Actual width computed
 	double actual;
 	
  protected:
-	virtual ~ColumnDefinition () {}
+	virtual ~ColumnDefinition ();
 	
  public:
  	/* @PropertyType=double,DefaultValue=INFINITY,GenerateAccessors */
@@ -52,13 +53,11 @@ class ColumnDefinition : public DependencyObject {
 	static DependencyProperty *WidthProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	ColumnDefinition () : actual (0.0) { }
+	ColumnDefinition ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	double GetActualWidth () { return actual; }
 	void SetActualWidth (double value) { actual = value; }
-	
-	virtual Type::Kind GetObjectType () { return Type::COLUMNDEFINITION; }
 
 	// property accessors
 	double GetMaxWidth();
@@ -73,12 +72,13 @@ class ColumnDefinition : public DependencyObject {
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
+/* @IncludeInKinds */
 class RowDefinition : public DependencyObject {
 	// Actual height computed
 	double actual;
 	
  protected:
-	virtual ~RowDefinition () {}
+	virtual ~RowDefinition ();
 	
  public:
  	/* @PropertyType=GridLength,DefaultValue=GridLength (1.0\, GridUnitTypeStar),GenerateAccessors */
@@ -89,13 +89,11 @@ class RowDefinition : public DependencyObject {
 	static DependencyProperty *MinHeightProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	RowDefinition () : actual (0.0) { }
+	RowDefinition ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	double GetActualHeight () { return actual; }
 	void SetActualHeight (double value) { actual = value; }
-	
-	virtual Type::Kind GetObjectType () { return Type::ROWDEFINITION; }
 
 	// property accessors
 	double GetMaxHeight();
@@ -110,39 +108,40 @@ class RowDefinition : public DependencyObject {
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
+/* @IncludeInKinds */
 class ColumnDefinitionCollection : public DependencyObjectCollection {
  protected:
-	virtual ~ColumnDefinitionCollection () {}
+	virtual ~ColumnDefinitionCollection ();
 	
  public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
-	ColumnDefinitionCollection () {}
+	ColumnDefinitionCollection ();
 	
-	virtual Type::Kind GetObjectType ()  { return Type::COLUMNDEFINITION_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::COLUMNDEFINITION; }
 };
 
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
+/* @IncludeInKinds */
 class RowDefinitionCollection : public DependencyObjectCollection {
  protected:
-	virtual ~RowDefinitionCollection () {}
+	virtual ~RowDefinitionCollection ();
 	
  public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
-	RowDefinitionCollection () {}
+	RowDefinitionCollection ();
 	
-	virtual Type::Kind GetObjectType ()  { return Type::ROWDEFINITION_COLLECTION; }
 	virtual Type::Kind GetElementType () { return Type::ROWDEFINITION; }
 };
 
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
+/* @IncludeInKinds */
 class Grid : public Panel {
  protected:
-	virtual ~Grid () {}
+	virtual ~Grid ();
 
  public:
  	/* @PropertyType=gint32,DefaultValue=0,Attached,GenerateAccessors,Validator=PositiveIntValidator */
@@ -162,8 +161,6 @@ class Grid : public Panel {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Grid ();
-	
-	virtual Type::Kind GetObjectType () { return Type::GRID; }
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);

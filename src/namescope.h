@@ -18,6 +18,7 @@
 
 /* @Namespace=None */
 /* @ManagedDependencyProperties=None */
+/* @IncludeInKinds */
 class NameScope : public DependencyObject {
 	GHashTable *names;
 	bool temporary;
@@ -34,8 +35,6 @@ class NameScope : public DependencyObject {
 	static DependencyProperty *NameScopeProperty;
 	
 	NameScope ();
-	
-	virtual Type::Kind GetObjectType () { return Type::NAMESCOPE; }
 	
 	void RegisterName (const char *name, DependencyObject *object);
 	void UnregisterName (const char *name);

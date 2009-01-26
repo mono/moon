@@ -135,6 +135,7 @@ get_now (void)
 
 TimeSource::TimeSource ()
 {
+	SetObjectType (Type::TIMESOURCE);
 }
 
 TimeSource::~TimeSource ()
@@ -164,6 +165,7 @@ TimeSource::GetNow ()
 
 SystemTimeSource::SystemTimeSource ()
 {
+	SetObjectType (Type::SYSTEMTIMESOURCE);
 	timeout_id = 0;
 	frequency = -1;
 }
@@ -223,6 +225,7 @@ SystemTimeSource::tick_timeout (gpointer data)
 
 ManualTimeSource::ManualTimeSource ()
 {
+	SetObjectType (Type::MANUALTIMESOURCE);
 	current_time = 0;
 }
 
@@ -266,6 +269,8 @@ class TickCall : public List::Node {
 
 TimeManager::TimeManager ()
 {
+	SetObjectType (Type::TIMEMANAGER);
+
 	if (moonlight_flags & RUNTIME_INIT_MANUAL_TIMESOURCE)
 		source = new ManualTimeSource();
 	else
@@ -697,6 +702,8 @@ TimeManager::ListClocks()
 Clock::Clock (Timeline *tl)
   : natural_duration (Duration::Automatic)
 {
+	SetObjectType (Type::CLOCK);
+
 	calculated_natural_duration = false;
 	state = Clock::Stopped;
 	progress = 0.0;
@@ -722,6 +729,10 @@ Clock::Clock (Timeline *tl)
 	if (timeline->HasBeginTime ())
 		begintime = timeline->GetBeginTime ();
 	/* otherwise it's filled in when we Begin the clock */
+}
+
+Clock::~Clock ()
+{
 }
 
 TimeSpan
@@ -1196,6 +1207,8 @@ Clock::Completed ()
 ClockGroup::ClockGroup (TimelineGroup *timeline, bool never_f)
   : Clock (timeline)
 {
+	SetObjectType (Type::CLOCKGROUP);
+
 	child_clocks = NULL;
 	this->timeline = timeline;
 	emit_completed = false;
@@ -1459,8 +1472,14 @@ ClockGroup::~ClockGroup ()
 
 Timeline::Timeline ()
 {
+	SetObjectType (Type::TIMELINE);
+
 	manual_target = NULL;
 	timeline_status = TIMELINE_STATUS_OK;
+}
+
+Timeline::~Timeline ()
+{
 }
 
 bool
@@ -1550,6 +1569,8 @@ Timeline::GetBeginTime ()
 
 TimelineGroup::TimelineGroup ()
 {
+	SetObjectType (Type::TIMELINEGROUP);
+
 	SetValue (TimelineGroup::ChildrenProperty, Value::CreateUnref (new TimelineCollection ()));
 }
 
@@ -1599,6 +1620,24 @@ void
 TimelineGroup::RemoveChild (Timeline *child)
 {
 	GetValue (TimelineGroup::ChildrenProperty)->AsTimelineCollection()->Remove (child);
+}
+
+TimelineCollection::TimelineCollection ()
+{
+	SetObjectType (Type::TIMELINE_COLLECTION);
+}
+
+TimelineCollection::~TimelineCollection ()
+{
+}
+
+ParallelTimeline::ParallelTimeline ()
+{
+	SetObjectType (Type::PARALLELTIMELINE);
+}
+
+ParallelTimeline::~ParallelTimeline ()
+{
 }
 
 Duration
@@ -1653,8 +1692,19 @@ ParallelTimeline::GetNaturalDurationCore (Clock *clock)
 	return d;
 }
 
+TimelineMarker::TimelineMarker ()
+{
+	SetObjectType (Type::TIMELINEMARKER);
+}
+
+TimelineMarker::~TimelineMarker ()
+{
+}
+
 DispatcherTimer::DispatcherTimer ()
 {
+	SetObjectType (Type::DISPATCHERTIMER);
+
 	root_clock = NULL;
 	stopped = false;
 }

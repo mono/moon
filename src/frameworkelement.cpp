@@ -50,6 +50,8 @@ datacontext_changed (DependencyObject *sender, PropertyChangedEventArgs *args, g
 
 FrameworkElement::FrameworkElement ()
 {
+	SetObjectType (Type::FRAMEWORKELEMENT);
+
 	bindings = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, binding_destroy);
 
 	AddPropertyChangeHandler (FrameworkElement::DataContextProperty, datacontext_changed, this);

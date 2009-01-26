@@ -36,6 +36,7 @@
 
 Inline::Inline ()
 {
+	SetObjectType (Type::INLINE);
 	font = new TextFontDescription ();
 	autogen = false;
 }
@@ -187,8 +188,10 @@ class TextBlockDynamicPropertyValueProvider : public PropertyValueProvider {
 
 TextBlock::TextBlock ()
 {
+	SetObjectType (Type::TEXTBLOCK);
+
 	providers[PropertyPrecedence_DynamicValue] = new TextBlockDynamicPropertyValueProvider (this);
-	
+
 	downloader = NULL;
 	
 	layout = new TextLayout ();
@@ -844,6 +847,8 @@ GlyphAttr::GlyphAttr ()
 
 Glyphs::Glyphs ()
 {
+	SetObjectType (Type::GLYPHS);
+
 	desc = new TextFontDescription ();
 	desc->SetSize (0.0);
 	downloader = NULL;

@@ -14,8 +14,15 @@
 
 #include "size.h"
 
+SizeChangedEventArgs::SizeChangedEventArgs()
+{
+	SetObjectType(Type::SIZECHANGEDEVENTARGS);
+	prev_size = Size (); new_size = Size ();
+}
+
 SizeChangedEventArgs::SizeChangedEventArgs (Size prev_size, Size new_size)
 {
+	SetObjectType(Type::SIZECHANGEDEVENTARGS);
 	this->prev_size = prev_size;
 	this->new_size = new_size;
 }

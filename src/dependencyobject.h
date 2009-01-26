@@ -58,6 +58,7 @@ class EventLists;
 #define OBJECT_TRACK(x,y)
 #endif
 
+/* @IncludeInKinds */	
 class EventObject {
 public:
 	EventObject ();
@@ -158,9 +159,13 @@ public:
 	//  the call to the base type's SetSurface with SetSurfaceLock/Unlock.
 	void AddTickCall (TickCallHandler handler);
 	void AddTickCallSafe (TickCallHandler handler);
-	
-	virtual Type::Kind GetObjectType () { return Type::EVENTOBJECT; }
-	
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetObjectType (Type::Kind value) { object_type = value; }
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	virtual Type::Kind GetObjectType () { return object_type; }
+
 	const static int DestroyedEvent;
 	
 	void unref_delayed ();
@@ -187,6 +192,8 @@ private:
 	EventLists *events;
 	Surface *surface;
 	gint32 refcount;
+
+	Type::Kind object_type;
 };
 
 
@@ -201,6 +208,7 @@ struct PropertyChangedEventArgs {
 typedef void (* PropertyChangeHandler) (DependencyObject *sender, PropertyChangedEventArgs *args, gpointer closure);
 
 /* @Namespace=System.Windows */
+/* @IncludeInKinds */	
 class DependencyObject : public EventObject {
 public:
  	/* @GenerateCBinding,GeneratePInvoke */
@@ -244,9 +252,6 @@ public:
 	virtual void ClearValue (DependencyProperty *property, bool notify_listeners = true);
 	bool HasProperty (const char *name, bool inherits);
 	bool HasProperty (Type::Kind whatami, DependencyProperty *property, bool inherits);
-
-	/* @GenerateCBinding,GeneratePInvoke */
-	virtual Type::Kind GetObjectType ();
 
 	DependencyObject *FindName (const char *name);
 	/* @GenerateCBinding,GeneratePInvoke */

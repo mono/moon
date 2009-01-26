@@ -24,15 +24,13 @@ class XamlTemplateBinding;
 //
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
+/* @IncludeInKinds */
 class FrameworkTemplate : public DependencyObject {
 public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	FrameworkTemplate ();
 
-	virtual Type::Kind GetObjectType () { return Type::FRAMEWORKTEMPLATE; }
-
-	DependencyObject *GetVisualTree ();
-	void SetVisualTree (FrameworkElement* value);
+	DependencyObject *GetVisualTree (FrameworkElement *templateBindingSource, List *templateBindings);
 
 	void AddXamlBinding (XamlTemplateBinding *binding);
 
@@ -41,8 +39,9 @@ public:
 protected:
 	virtual ~FrameworkTemplate ();
 
-	GHashTable *xaml_bindings;
-	FrameworkElement *visual_tree;
+	FrameworkElement *templateBindingSource; // only valid when loading the xaml buffer
+	List *templateBindings; // only valid when loading the xaml buffer
+
 	char *xaml_buffer;
 	XamlContext *xaml_context;
 };
@@ -52,6 +51,7 @@ protected:
 //
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
+/* @IncludeInKinds */
 class ControlTemplate : public FrameworkTemplate {
 public:
 	/* @PropertyType=ManagedTypeInfo,ManagedPropertyType=System.Type,Access=Internal,ManagedAccessorAccess=Public,ManagedFieldAccess=Private */
@@ -60,16 +60,16 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	ControlTemplate ();
 
-	virtual Type::Kind GetObjectType () { return Type::CONTROLTEMPLATE; }
-
 	FrameworkElement * Apply (Control *toControl, List *bindings);
 
 protected:
 	virtual ~ControlTemplate () {}
 
+#if false
 	DependencyObject* DuplicateObject (Control *source, NameScope *template_namescope, DependencyObject *dob, List* bindings);
 
 	static void duplicate_value (DependencyProperty *key, Value *value, gpointer closure);
+#endif
 };
 
 //
@@ -77,12 +77,11 @@ protected:
 //
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
+/* @IncludeInKinds */
 class DataTemplate : public FrameworkTemplate {
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	DataTemplate ();
-
-	virtual Type::Kind GetObjectType () { return Type::DATATEMPLATE; }
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject* LoadContentWithError (MoonError *error);
@@ -94,20 +93,19 @@ protected:
 /* @SilverlightVersion="2" */
 class XamlTemplateBinding : public EventObject {
 public:
-	XamlTemplateBinding (FrameworkElement *target,
+	XamlTemplateBinding (DependencyObject *target,
 			     const char *targetPropertyName,
 			     const char *sourcePropertyName);
 
-	TemplateBinding *Attach (Control *source, FrameworkElement *target);
+	TemplateBinding *Attach (DependencyObject *source);
 
-	FrameworkElement* GetTarget() { return target; }
+	DependencyObject* GetTarget() { return target; }
 
 protected:
 	virtual ~XamlTemplateBinding ();
 
 private:
-	// this refers to the FWE in the template tree
-	FrameworkElement *target;
+	DependencyObject *target;
 	char *targetPropertyName;
 	char *sourcePropertyName;
 };
@@ -115,18 +113,18 @@ private:
 /* @SilverlightVersion="2" */
 class TemplateBinding : public EventObject {
 public:
-	TemplateBinding (Control *source,
+	TemplateBinding (DependencyObject *source,
 			 DependencyProperty *sourceProperty,
-			 FrameworkElement *target,
+			 DependencyObject *target,
 			 DependencyProperty *targetProperty);
 protected:
 	virtual ~TemplateBinding ();
 
 private:
-	Control *source;
+	DependencyObject *source;
 	DependencyProperty *sourceProperty;
 
-	FrameworkElement *target;
+	DependencyObject *target;
 	DependencyProperty *targetProperty;
 
 	void OnSourcePropertyChanged (DependencyObject *sender, PropertyChangedEventArgs *args);

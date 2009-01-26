@@ -25,6 +25,14 @@
 // Geometry
 //
 
+Geometry::Geometry ()
+{
+	SetObjectType (Type::GEOMETRY);
+
+	path = NULL;
+	local_bounds = Rect (0,0, -INFINITY, -INFINITY);
+}
+
 Geometry::~Geometry ()
 {
 	if (path)
@@ -142,12 +150,30 @@ Geometry::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj,
 }
 
 //
+// GeometryCollection
+//
+
+GeometryCollection::GeometryCollection ()
+{
+	SetObjectType (Type::GEOMETRY_COLLECTION);
+}
+
+GeometryCollection::~GeometryCollection ()
+{
+}
+
+//
 // GeometryGroup
 //
 
 GeometryGroup::GeometryGroup ()
 {
+	SetObjectType (Type::GEOMETRYGROUP);
 	SetValue (GeometryGroup::ChildrenProperty, Value::CreateUnref (new GeometryCollection ()));
+}
+
+GeometryGroup::~GeometryGroup ()
+{
 }
 
 void
@@ -240,6 +266,15 @@ Geometry::GetOriginPoint ()
 // EllipseGeometry
 //
 
+EllipseGeometry::EllipseGeometry ()
+{
+	SetObjectType (Type::ELLIPSEGEOMETRY);
+}
+
+EllipseGeometry::~EllipseGeometry ()
+{
+}
+
 void
 EllipseGeometry::Build ()
 {
@@ -274,6 +309,15 @@ EllipseGeometry::ComputePathBounds ()
 //
 // LineGeometry
 //
+
+LineGeometry::LineGeometry ()
+{
+	SetObjectType (Type::LINEGEOMETRY);
+}
+
+LineGeometry::~LineGeometry ()
+{
+}
 
 void
 LineGeometry::Build ()
@@ -311,16 +355,35 @@ LineGeometry::ComputePathBounds ()
 }
 
 //
+// PathFigureCollection
+//
+
+PathFigureCollection::PathFigureCollection ()
+{
+	SetObjectType (Type::PATHFIGURE_COLLECTION);
+}
+
+PathFigureCollection::~PathFigureCollection ()
+{
+}
+
+//
 // PathGeometry
 //
 
 PathGeometry::PathGeometry ()
+{
+	SetObjectType (Type::PATHGEOMETRY);
+}
+
+PathGeometry::~PathGeometry ()
 {
 }
 
 // special case for the XAML parser when Path Markup Language (PML) is being used
 PathGeometry::PathGeometry (moon_path *pml)
 {
+	SetObjectType (Type::PATHGEOMETRY);
 	path = pml;
 }
 
@@ -400,6 +463,15 @@ PathGeometry::ComputePathBounds ()
 // RectangleGeometry
 //
 
+RectangleGeometry::RectangleGeometry ()
+{
+	SetObjectType (Type::RECTANGLEGEOMETRY);
+}
+
+RectangleGeometry::~RectangleGeometry ()
+{
+}
+
 void
 RectangleGeometry::Build ()
 {
@@ -428,11 +500,26 @@ RectangleGeometry::ComputePathBounds ()
 }
 
 //
+// PathSegmentCollection
+//
+
+PathSegmentCollection::PathSegmentCollection ()
+{
+	SetObjectType (Type::PATHSEGMENT_COLLECTION);
+}
+
+PathSegmentCollection::~PathSegmentCollection ()
+{
+}
+
+//
 // PathFigure
 //
 
 PathFigure::PathFigure ()
 {
+	SetObjectType (Type::PATHFIGURE);
+
 	path = NULL;
 	SetValue (PathFigure::SegmentsProperty, Value::CreateUnref (new PathSegmentCollection ()));
 }
@@ -510,8 +597,40 @@ PathFigure::Build ()
 }
 
 //
+// PathSegment
+//
+
+PathSegment::PathSegment ()
+{
+	SetObjectType (Type::PATHSEGMENT);
+}
+
+PathSegment::~PathSegment ()
+{
+}
+
+void
+PathSegment::Build ()
+{
+}
+
+void
+PathSegment::Append (moon_path *path)
+{
+}
+
+//
 // ArcSegment
 //
+
+ArcSegment::ArcSegment ()
+{
+	SetObjectType (Type::ARCSEGMENT);
+}
+
+ArcSegment::~ArcSegment ()
+{
+}
 
 void
 ArcSegment::Append (moon_path *path)
@@ -530,6 +649,15 @@ ArcSegment::Append (moon_path *path)
 //
 // BezierSegment
 //
+
+BezierSegment::BezierSegment ()
+{
+	SetObjectType (Type::BEZIERSEGMENT);
+}
+
+BezierSegment::~BezierSegment ()
+{
+}
 
 void
 BezierSegment::Append (moon_path *path)
@@ -552,6 +680,15 @@ BezierSegment::Append (moon_path *path)
 // LineSegment
 //
 
+LineSegment::LineSegment ()
+{
+	SetObjectType (Type::LINESEGMENT);
+}
+
+LineSegment::~LineSegment ()
+{
+}
+
 void
 LineSegment::Append (moon_path *path)
 {
@@ -566,6 +703,15 @@ LineSegment::Append (moon_path *path)
 //
 // PolyBezierSegment
 //
+
+PolyBezierSegment::PolyBezierSegment ()
+{
+	SetObjectType (Type::POLYBEZIERSEGMENT);
+}
+
+PolyBezierSegment::~PolyBezierSegment ()
+{
+}
 
 void
 PolyBezierSegment::Append (moon_path *path)
@@ -607,6 +753,15 @@ PolyBezierSegment::GetPathSize ()
 // PolyLineSegment
 //
 
+PolyLineSegment::PolyLineSegment ()
+{
+	SetObjectType (Type::POLYLINESEGMENT);
+}
+
+PolyLineSegment::~PolyLineSegment ()
+{
+}
+
 void
 PolyLineSegment::Append (moon_path *path)
 {
@@ -644,6 +799,16 @@ PolyLineSegment::GetPathSize ()
 //
 // note: we dont call moon_quad_curve_to to avoid calling moon_get_current_point 
 // on each curve (since all but the first one is known)
+
+PolyQuadraticBezierSegment::PolyQuadraticBezierSegment ()
+{
+	SetObjectType (Type::POLYQUADRATICBEZIERSEGMENT);
+}
+
+PolyQuadraticBezierSegment::~PolyQuadraticBezierSegment ()
+{
+}
+
 void
 PolyQuadraticBezierSegment::Append (moon_path *path)
 {
@@ -697,6 +862,15 @@ PolyQuadraticBezierSegment::GetPathSize ()
 //
 // QuadraticBezierSegment
 //
+
+QuadraticBezierSegment::QuadraticBezierSegment ()
+{
+	SetObjectType (Type::QUADRATICBEZIERSEGMENT);
+}
+
+QuadraticBezierSegment::~QuadraticBezierSegment ()
+{
+}
 
 void
 QuadraticBezierSegment::Append (moon_path *path)

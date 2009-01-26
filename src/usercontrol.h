@@ -23,6 +23,7 @@ G_BEGIN_DECLS
 /* @SilverlightVersion="2" */
 /* @ContentProperty="Content" */
 /* @Namespace=System.Windows.Controls */
+/* @IncludeInKinds */
 class UserControl : public Control {
 protected:
 	virtual ~UserControl ();
@@ -33,8 +34,6 @@ public:
 	
  	/* @GenerateCBinding,GeneratePInvoke */
 	UserControl ();
-	
-	virtual Type::Kind GetObjectType () { return Type::USERCONTROL; }
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 };

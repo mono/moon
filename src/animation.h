@@ -26,6 +26,7 @@
 
 // misc types
 /* @Namespace=System.Windows.Media.Animation */
+/* @IncludeInKinds */
 class KeySpline : public DependencyObject {
 	moon_quadratic *quadraticsArray;
 	
@@ -39,7 +40,6 @@ class KeySpline : public DependencyObject {
 	KeySpline (Point controlPoint1, Point controlPoint2);
 	KeySpline (double x1, double y1, double x2, double y2);
 
-	virtual Type::Kind GetObjectType () { return Type::KEYSPLINE; }
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	
 	void RegenerateQuadratics ();
@@ -57,8 +57,8 @@ class KeySpline : public DependencyObject {
 	void SetControlPoint2 (Point *controlPoint2);
 };
 
-/* @IncludeInKinds */
 /* @Namespace=System.Windows.Media.Animation */
+/* @IncludeInKinds */
 struct KeyTime {
  public:
 	enum KeyTimeType {
@@ -174,13 +174,13 @@ class AnimationStorage {
 class Animation/*Timeline*/;
 
 /* @Namespace=None,ManagedDependencyProperties=None */
+/* @IncludeInKinds */
 class AnimationClock : public Clock {
  protected:
 	virtual ~AnimationClock ();
 
  public:
 	AnimationClock (Animation/*Timeline*/ *timeline);
-	virtual Type::Kind GetObjectType () { return Type::ANIMATIONCLOCK; };
 	virtual void ExtraRepeatAction ();
 	virtual void OnSurfaceDetach ();
 	virtual void OnSurfaceReAttach ();
@@ -203,6 +203,7 @@ class AnimationClock : public Clock {
 
 /* this is called AnimationTimeline in wpf */
 /* @Namespace=None */
+/* @IncludeInKinds */
 class Animation/*Timeline*/ : public Timeline {
  protected:
 	virtual ~Animation () {}
@@ -210,7 +211,6 @@ class Animation/*Timeline*/ : public Timeline {
  public:
 
 	Animation/*Timeline*/ () { };
-	virtual Type::Kind GetObjectType () { return Type::ANIMATION; };
 	
 	virtual Clock *AllocateClock ();
 
@@ -228,6 +228,7 @@ class Animation/*Timeline*/ : public Timeline {
 };
 
 /* @Namespace=System.Windows.Media.Animation */
+/* @IncludeInKinds */
 class DoubleAnimation : public Animation/*Timeline*/ {
  protected:
 	virtual ~DoubleAnimation () {}
@@ -251,7 +252,6 @@ class DoubleAnimation : public Animation/*Timeline*/ {
 	/* @GenerateCBinding,GeneratePInvoke */
 	DoubleAnimation ();
 	
-	virtual Type::Kind GetObjectType () { return Type::DOUBLEANIMATION; };
 	virtual Type::Kind GetValueKind () { return Type::DOUBLE; };
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
@@ -278,6 +278,7 @@ class DoubleAnimation : public Animation/*Timeline*/ {
 
 
 /* @Namespace=System.Windows.Media.Animation */
+/* @IncludeInKinds */
 class ColorAnimation : public Animation/*Timeline*/ {
  protected:
 	virtual ~ColorAnimation () {}
@@ -301,7 +302,6 @@ class ColorAnimation : public Animation/*Timeline*/ {
 	/* @GenerateCBinding,GeneratePInvoke */
 	ColorAnimation ();
 	
-	virtual Type::Kind GetObjectType () { return Type::COLORANIMATION; };
 	virtual Type::Kind GetValueKind () { return Type::COLOR; };
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
@@ -328,9 +328,10 @@ class ColorAnimation : public Animation/*Timeline*/ {
 
 
 /* @Namespace=System.Windows.Media.Animation */
+/* @IncludeInKinds */
 class PointAnimation : public Animation/*Timeline*/ {
  protected:
-	virtual ~PointAnimation () {}
+	virtual ~PointAnimation ();
 
  private:
 	Point *pointToCached;
@@ -351,7 +352,6 @@ class PointAnimation : public Animation/*Timeline*/ {
  	/* @GenerateCBinding,GeneratePInvoke */
  	PointAnimation ();
  	
-	virtual Type::Kind GetObjectType () { return Type::POINTANIMATION; };
 	virtual Type::Kind GetValueKind () { return Type::POINT; };
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
@@ -378,16 +378,15 @@ class PointAnimation : public Animation/*Timeline*/ {
 
 
 /* @Namespace=None,ManagedDependencyProperties=None */
+/* @IncludeInKinds */
 class KeyFrame : public DependencyObject {
  protected:
-	virtual ~KeyFrame () {}
+	virtual ~KeyFrame ();
 	KeyFrame ();
 
  public:
 	TimeSpan resolved_keytime;
 	bool resolved;
-	
-	virtual Type::Kind GetObjectType () { return Type::KEYFRAME; };
 	
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 	
@@ -400,6 +399,7 @@ class KeyFrame : public DependencyObject {
 };
 
 /* @Namespace=None */
+/* @IncludeInKinds */
 class KeyFrameCollection : public DependencyObjectCollection {
  protected:
 	virtual bool AddedToCollection (Value *value, MoonError *error);
@@ -414,7 +414,6 @@ class KeyFrameCollection : public DependencyObjectCollection {
 	/* @GenerateCBinding,GeneratePInvoke */
 	KeyFrameCollection ();
 	
-	virtual Type::Kind GetObjectType() { return Type::KEYFRAME_COLLECTION; }
 	virtual Type::Kind GetElementType() { return Type::KEYFRAME; }
 	
 	virtual bool Clear ();
@@ -425,48 +424,49 @@ class KeyFrameCollection : public DependencyObjectCollection {
 };
 
 /* @Namespace=System.Windows.Media.Animation */
+/* @IncludeInKinds */
 class ColorKeyFrameCollection : public KeyFrameCollection {
  protected:
-	virtual ~ColorKeyFrameCollection () {}
+	virtual ~ColorKeyFrameCollection ();
 
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	ColorKeyFrameCollection () { }
+	ColorKeyFrameCollection ();
 	
-	virtual Type::Kind GetObjectType() { return Type::COLORKEYFRAME_COLLECTION; }
 	virtual Type::Kind GetElementType() { return Type::COLORKEYFRAME; }
 };
 
 /* @Namespace=System.Windows.Media.Animation */
+/* @IncludeInKinds */
 class DoubleKeyFrameCollection : public KeyFrameCollection {
  protected:
-	virtual ~DoubleKeyFrameCollection () {}
+	virtual ~DoubleKeyFrameCollection ();
 
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	DoubleKeyFrameCollection () { }
+	DoubleKeyFrameCollection ();
 	
-	virtual Type::Kind GetObjectType() { return Type::DOUBLEKEYFRAME_COLLECTION; }
 	virtual Type::Kind GetElementType() { return Type::DOUBLEKEYFRAME; }
 };
 
 /* @Namespace=System.Windows.Media.Animation */
+/* @IncludeInKinds */
 class PointKeyFrameCollection : public KeyFrameCollection {
  protected:
-	virtual ~PointKeyFrameCollection () {}
+	virtual ~PointKeyFrameCollection ();
 
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	PointKeyFrameCollection () { }
+	PointKeyFrameCollection ();
 	
-	virtual Type::Kind GetObjectType() { return Type::POINTKEYFRAME_COLLECTION; }
 	virtual Type::Kind GetElementType() { return Type::POINTKEYFRAME; }
 };
 
 /* @Namespace=System.Windows.Media.Animation */
+/* @IncludeInKinds */
 class DoubleKeyFrame : public KeyFrame {
  protected:
-	virtual ~DoubleKeyFrame () {}
+	virtual ~DoubleKeyFrame ();
 
  public:
  	/* @PropertyType=double,Nullable,ManagedPropertyType=double,GenerateAccessors */
@@ -476,7 +476,6 @@ class DoubleKeyFrame : public KeyFrame {
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	DoubleKeyFrame ();
-	virtual Type::Kind GetObjectType() { return Type::DOUBLEKEYFRAME; };
 	
 	//
 	// Property Accessors
@@ -491,9 +490,10 @@ class DoubleKeyFrame : public KeyFrame {
 };
 
 /* @Namespace=System.Windows.Media.Animation */
+/* @IncludeInKinds */
 class ColorKeyFrame : public KeyFrame {
  protected:
-	virtual ~ColorKeyFrame () {}
+	virtual ~ColorKeyFrame ();
 
  public:
  	/* @PropertyType=Color,Nullable,ManagedPropertyType=Color,GenerateAccessors */
@@ -503,7 +503,6 @@ class ColorKeyFrame : public KeyFrame {
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	ColorKeyFrame ();
-	virtual Type::Kind GetObjectType () { return Type::COLORKEYFRAME; };
 	
 	//
 	// Property Accessors
@@ -518,9 +517,10 @@ class ColorKeyFrame : public KeyFrame {
 };
 
 /* @Namespace=System.Windows.Media.Animation */
+/* @IncludeInKinds */
 class PointKeyFrame : public KeyFrame {
  protected:
-	virtual ~PointKeyFrame () {}
+	virtual ~PointKeyFrame ();
 	
  public:
  	/* @PropertyType=Point,Nullable,ManagedPropertyType=Point,GenerateAccessors */
@@ -530,8 +530,6 @@ class PointKeyFrame : public KeyFrame {
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	PointKeyFrame ();
-	
-	virtual Type::Kind GetObjectType () { return Type::POINTKEYFRAME; };
 	
 	//
 	// Property Accessors
@@ -548,16 +546,15 @@ class PointKeyFrame : public KeyFrame {
 
 
 /* @Namespace=System.Windows.Media.Animation */
+/* @IncludeInKinds */
 class DiscreteDoubleKeyFrame : public DoubleKeyFrame {
  protected:
-	virtual ~DiscreteDoubleKeyFrame () {}
+	virtual ~DiscreteDoubleKeyFrame ();
 
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	DiscreteDoubleKeyFrame () { }
+	DiscreteDoubleKeyFrame ();
 	
-	virtual Type::Kind GetObjectType () { return Type::DISCRETEDOUBLEKEYFRAME; };
-
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 };
 
@@ -565,15 +562,14 @@ class DiscreteDoubleKeyFrame : public DoubleKeyFrame {
 
 
 /* @Namespace=System.Windows.Media.Animation */
+/* @IncludeInKinds */
 class DiscreteColorKeyFrame : public ColorKeyFrame {
  protected:
-	virtual ~DiscreteColorKeyFrame () {}
+	virtual ~DiscreteColorKeyFrame ();
 	
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	DiscreteColorKeyFrame () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::DISCRETECOLORKEYFRAME; };
+	DiscreteColorKeyFrame ();
 	
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 };
@@ -581,30 +577,28 @@ class DiscreteColorKeyFrame : public ColorKeyFrame {
 
 
 /* @Namespace=System.Windows.Media.Animation */
+/* @IncludeInKinds */
 class DiscretePointKeyFrame : public PointKeyFrame {
  protected:
-	virtual ~DiscretePointKeyFrame () {}
+	virtual ~DiscretePointKeyFrame ();
 	
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	DiscretePointKeyFrame () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::DISCRETEPOINTKEYFRAME; };
+	DiscretePointKeyFrame ();
 	
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 };
 
 
 /* @Namespace=System.Windows.Media.Animation */
+/* @IncludeInKinds */
 class LinearDoubleKeyFrame : public DoubleKeyFrame {
  protected:
-	virtual ~LinearDoubleKeyFrame () {}
+	virtual ~LinearDoubleKeyFrame ();
 	
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	LinearDoubleKeyFrame () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::LINEARDOUBLEKEYFRAME; };
+	LinearDoubleKeyFrame ();
 	
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 };
@@ -612,15 +606,14 @@ class LinearDoubleKeyFrame : public DoubleKeyFrame {
 
 
 /* @Namespace=System.Windows.Media.Animation */
+/* @IncludeInKinds */
 class LinearColorKeyFrame : public ColorKeyFrame {
  protected:
-	virtual ~LinearColorKeyFrame () {}
+	virtual ~LinearColorKeyFrame ();
 	
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	LinearColorKeyFrame () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::LINEARCOLORKEYFRAME; };
+	LinearColorKeyFrame ();
 	
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 };
@@ -628,15 +621,14 @@ class LinearColorKeyFrame : public ColorKeyFrame {
 
 
 /* @Namespace=System.Windows.Media.Animation */
+/* @IncludeInKinds */
 class LinearPointKeyFrame : public PointKeyFrame {
  protected:
-	virtual ~LinearPointKeyFrame () {}
+	virtual ~LinearPointKeyFrame ();
 	
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	LinearPointKeyFrame () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::LINEARPOINTKEYFRAME; };
+	LinearPointKeyFrame ();
 	
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 };
@@ -644,9 +636,10 @@ class LinearPointKeyFrame : public PointKeyFrame {
 
 
 /* @Namespace=System.Windows.Media.Animation */
+/* @IncludeInKinds */
 class SplineDoubleKeyFrame : public DoubleKeyFrame {
  protected:
-	virtual ~SplineDoubleKeyFrame () {}
+	virtual ~SplineDoubleKeyFrame ();
 
  public:
  	/* @PropertyType=KeySpline,GenerateAccessors */
@@ -655,8 +648,6 @@ class SplineDoubleKeyFrame : public DoubleKeyFrame {
 	/* @GenerateCBinding,GeneratePInvoke */
 	SplineDoubleKeyFrame ();
 	
-	virtual Type::Kind GetObjectType () { return Type::SPLINEDOUBLEKEYFRAME; };
-	
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 	
 	//
@@ -669,9 +660,10 @@ class SplineDoubleKeyFrame : public DoubleKeyFrame {
 
 
 /* @Namespace=System.Windows.Media.Animation */
+/* @IncludeInKinds */
 class SplineColorKeyFrame : public ColorKeyFrame {
  protected:
-	virtual ~SplineColorKeyFrame () {}
+	virtual ~SplineColorKeyFrame ();
 
  public:
  	/* @PropertyType=KeySpline,GenerateAccessors */
@@ -680,8 +672,6 @@ class SplineColorKeyFrame : public ColorKeyFrame {
 	/* @GenerateCBinding,GeneratePInvoke */
 	SplineColorKeyFrame ();
 	
-	virtual Type::Kind GetObjectType () { return Type::SPLINECOLORKEYFRAME; };
-	
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 	
 	//
@@ -694,9 +684,10 @@ class SplineColorKeyFrame : public ColorKeyFrame {
 
 
 /* @Namespace=System.Windows.Media.Animation */
+/* @IncludeInKinds */
 class SplinePointKeyFrame : public PointKeyFrame {
  protected:
-	virtual ~SplinePointKeyFrame () {}
+	virtual ~SplinePointKeyFrame ();
 	
  public:
  	/* @PropertyType=KeySpline,GenerateAccessors */
@@ -704,8 +695,7 @@ class SplinePointKeyFrame : public PointKeyFrame {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	SplinePointKeyFrame ();
-	virtual Type::Kind GetObjectType () { return Type::SPLINEPOINTKEYFRAME; };
-	
+
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 	
 	//
@@ -718,6 +708,7 @@ class SplinePointKeyFrame : public PointKeyFrame {
 
 /* @Namespace=System.Windows.Media.Animation */
 /* @ContentProperty="KeyFrames" */
+/* @IncludeInKinds */
 class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
  protected:
 	virtual ~DoubleAnimationUsingKeyFrames ();
@@ -728,8 +719,6 @@ class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	DoubleAnimationUsingKeyFrames ();
-	
-	virtual Type::Kind GetObjectType () { return Type::DOUBLEANIMATIONUSINGKEYFRAMES; };
 	
 	void AddKeyFrame (DoubleKeyFrame *frame);
 	void RemoveKeyFrame (DoubleKeyFrame *frame);
@@ -752,6 +741,7 @@ class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
 
 /* @Namespace=System.Windows.Media.Animation */
 /* @ContentProperty="KeyFrames" */
+/* @IncludeInKinds */
 class ColorAnimationUsingKeyFrames : public ColorAnimation {
  protected:
 	virtual ~ColorAnimationUsingKeyFrames ();
@@ -762,8 +752,6 @@ class ColorAnimationUsingKeyFrames : public ColorAnimation {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	ColorAnimationUsingKeyFrames ();
-	
-	virtual Type::Kind GetObjectType () { return Type::COLORANIMATIONUSINGKEYFRAMES; }
 	
 	void AddKeyFrame (ColorKeyFrame *frame);
 	void RemoveKeyFrame (ColorKeyFrame *frame);
@@ -786,6 +774,7 @@ class ColorAnimationUsingKeyFrames : public ColorAnimation {
 
 /* @Namespace=System.Windows.Media.Animation */
 /* @ContentProperty="KeyFrames" */
+/* @IncludeInKinds */
 class PointAnimationUsingKeyFrames : public PointAnimation {
  protected:
 	virtual ~PointAnimationUsingKeyFrames ();
@@ -797,8 +786,6 @@ class PointAnimationUsingKeyFrames : public PointAnimation {
 	/* @GenerateCBinding,GeneratePInvoke */
 	PointAnimationUsingKeyFrames ();
 	
-	virtual Type::Kind GetObjectType () { return Type::POINTANIMATIONUSINGKEYFRAMES; };
-
 	void AddKeyFrame (PointKeyFrame *frame);
 	void RemoveKeyFrame (PointKeyFrame *frame);
 	
@@ -820,6 +807,7 @@ class PointAnimationUsingKeyFrames : public PointAnimation {
 
 /* @Namespace=System.Windows.Media.Animation */
 /* @ContentProperty="Children" */
+/* @IncludeInKinds */
 class Storyboard : public ParallelTimeline {
 	static void storyboard_completed (EventObject *sender, EventArgs *calldata, gpointer data);
 	static gboolean storyboard_tick (gpointer data);
@@ -829,6 +817,7 @@ class Storyboard : public ParallelTimeline {
 	gboolean Tick ();
 	
 	Clock *root_clock;
+	bool pending_begin;
 	
  protected:
 	virtual ~Storyboard ();
@@ -841,8 +830,6 @@ class Storyboard : public ParallelTimeline {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Storyboard ();
-	
-	virtual Type::Kind GetObjectType () { return Type::STORYBOARD; };
 	
 	virtual void SetSurface (Surface *surface);
 	
@@ -869,6 +856,7 @@ class Storyboard : public ParallelTimeline {
 
 /* @Namespace=System.Windows.Media.Animation */
 /* @ContentProperty="Storyboard" */
+/* @IncludeInKinds */
 class BeginStoryboard : public TriggerAction {
  protected:
 	virtual ~BeginStoryboard ();
@@ -878,9 +866,7 @@ class BeginStoryboard : public TriggerAction {
 	static DependencyProperty *StoryboardProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	BeginStoryboard () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::BEGINSTORYBOARD; };
+	BeginStoryboard ();
 	
 	virtual void Fire ();
 	

@@ -23,6 +23,7 @@
 // children can use
 //
 /* @Namespace=System.Windows.Controls */
+/* @IncludeInKinds */
 class Canvas : public Panel {
  protected:
 	virtual ~Canvas () {}
@@ -38,8 +39,6 @@ class Canvas : public Panel {
 	/* @GenerateCBinding,GeneratePInvoke */
 	Canvas ();
 	
-	virtual Type::Kind GetObjectType () { return Type::CANVAS; }
-
 	virtual void OnLoaded ();
 
 	virtual Size MeasureOverride (Size availableSize);

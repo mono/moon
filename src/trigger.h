@@ -16,21 +16,19 @@
 #include "dependencyobject.h"
 
 /* @Namespace=System.Windows */
+/* @IncludeInKinds */
 class TriggerBase : public DependencyObject {
 public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
-	TriggerBase () {}
-	
-	virtual Type::Kind GetObjectType () { return Type::TRIGGERBASE; }
+	TriggerBase () { SetObjectType (Type::TRIGGERBASE); }
 };
 
 /* @Namespace=System.Windows */
+/* @IncludeInKinds */
 class TriggerAction : public DependencyObject {
  public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
-	TriggerAction () {}
-	
-	virtual Type::Kind GetObjectType () { return Type::TRIGGERACTION; }
+	TriggerAction () { SetObjectType (Type::TRIGGERACTION); }
 	
 	/* @GenerateCBinding */
 	virtual void Fire () {}
@@ -42,6 +40,7 @@ class TriggerAction : public DependencyObject {
 
 /* @ContentProperty="Actions" */
 /* @Namespace=System.Windows */
+/* @IncludeInKinds */
 class EventTrigger : public TriggerBase {
 	int registered_event_id;
 	
@@ -59,8 +58,6 @@ class EventTrigger : public TriggerBase {
 	/* @GenerateCBinding,GeneratePInvoke */
 	EventTrigger ();
 	
-	virtual Type::Kind GetObjectType () { return Type::EVENTTRIGGER; }
-
 	void SetTarget (DependencyObject *target);
 	void RemoveTarget (DependencyObject *target);
 

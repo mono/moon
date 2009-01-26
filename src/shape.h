@@ -39,6 +39,7 @@ G_END_DECLS
 // Shape class 
 // 
 /* @Namespace=System.Windows.Shapes */
+/* @IncludeInKinds */
 class Shape : public FrameworkElement {
  protected:
 	virtual ~Shape ();
@@ -102,7 +103,6 @@ class Shape : public FrameworkElement {
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Shape ();
-	virtual Type::Kind GetObjectType () { return Type::SHAPE; }
 	
 	//
 	// Overrides from UIElement.
@@ -188,6 +188,7 @@ class Shape : public FrameworkElement {
 // Ellipse
 //
 /* @Namespace=System.Windows.Shapes */
+/* @IncludeInKinds */
 class Ellipse : public Shape {
  protected:
 	virtual ~Ellipse () {}
@@ -198,8 +199,6 @@ class Ellipse : public Shape {
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	Ellipse ();
-	
-	virtual Type::Kind GetObjectType () { return Type::ELLIPSE; }
 	
 	virtual void BuildPath ();
 	virtual bool CanFill () { return true; }
@@ -212,6 +211,7 @@ class Ellipse : public Shape {
 // Rectangle class 
 // 
 /* @Namespace=System.Windows.Shapes */
+/* @IncludeInKinds */
 class Rectangle : public Shape {
  protected:
 	virtual ~Rectangle () {}
@@ -228,8 +228,6 @@ class Rectangle : public Shape {
 	/* @GenerateCBinding,GeneratePInvoke */
 	Rectangle ();
 	
-	virtual Type::Kind GetObjectType () { return Type::RECTANGLE; }
-
 	virtual Rect GetCoverageBounds ();
 	virtual void BuildPath ();
 	virtual bool CanFill () { return true; }
@@ -251,6 +249,7 @@ class Rectangle : public Shape {
 // Line class 
 // 
 /* @Namespace=System.Windows.Shapes */
+/* @IncludeInKinds */
 class Line : public Shape {
  protected:
 	virtual ~Line () {}
@@ -268,9 +267,7 @@ class Line : public Shape {
 	static DependencyProperty *Y2Property;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	Line () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::LINE; }
+	Line () { SetObjectType (Type::LINE); }
 	
 	virtual void BuildPath ();
 	
@@ -300,6 +297,7 @@ class Line : public Shape {
 // Polygon
 //
 /* @Namespace=System.Windows.Shapes */
+/* @IncludeInKinds */
 class Polygon : public Shape {
  protected:
 	virtual ~Polygon () {}
@@ -315,8 +313,6 @@ class Polygon : public Shape {
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	Polygon ();
-	
-	virtual Type::Kind GetObjectType () { return Type::POLYGON; }
 	
 	// Polygon has no center to compute, it's always 0,0 because it provides it's own start and end
 	// virtual Point GetTransformOrigin ();
@@ -343,6 +339,7 @@ class Polygon : public Shape {
 // Polyline
 //
 /* @Namespace=System.Windows.Shapes */
+/* @IncludeInKinds */
 class Polyline : public Shape {
  protected:
 	virtual ~Polyline () {}
@@ -358,8 +355,6 @@ class Polyline : public Shape {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Polyline ();
-	
-	virtual Type::Kind GetObjectType () { return Type::POLYLINE; }
 	
 	// Polyline has no center to compute, it's always 0,0 because it provides it's own start and end
 	// virtual Point GetTransformOrigin ();
@@ -386,6 +381,7 @@ class Polyline : public Shape {
 // Path
 //
 /* @Namespace=System.Windows.Shapes */
+/* @IncludeInKinds */
 class Path : public Shape {
  protected:
 	virtual ~Path () {}
@@ -398,9 +394,7 @@ class Path : public Shape {
 	static DependencyProperty *DataProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	Path () { }
-	
-	virtual Type::Kind GetObjectType () { return Type::PATH; }
+	Path () { SetObjectType (Type::PATH); }
 	
 	// Path has no center to compute, it's always 0,0 because it provides it's own start and end
 	// virtual Point GetTransformOrigin ();

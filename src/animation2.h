@@ -15,16 +15,15 @@
 #define MOON_ANIMATION2_H
 
 /* @Version=2,Namespace=System.Windows.Media.Animation */
+/* @IncludeInKinds */
 class ObjectKeyFrame : public KeyFrame /* The managed class derives directly from DependencyObject */ {
  protected:
-	virtual ~ObjectKeyFrame () {}
+	virtual ~ObjectKeyFrame ();
 	
  public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
-	ObjectKeyFrame () {}
+	ObjectKeyFrame ();
 	
-	virtual Type::Kind GetObjectType () { return Type::OBJECTKEYFRAME; }
-
 	/* BROKEN BROKEN BROKEN! */
 	/* @PropertyType=DependencyObject,ManagedPropertyType=object,GenerateAccessors */
 	static DependencyProperty *ValueProperty;
@@ -43,29 +42,29 @@ class ObjectKeyFrame : public KeyFrame /* The managed class derives directly fro
 
 
 /* @Version=2,Namespace=System.Windows.Media.Animation */
+/* @IncludeInKinds */
 class DiscreteObjectKeyFrame : public ObjectKeyFrame {
  protected:
-	virtual ~DiscreteObjectKeyFrame () {}
+	virtual ~DiscreteObjectKeyFrame ();
 	
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	DiscreteObjectKeyFrame () {}
+	DiscreteObjectKeyFrame ();
 	
-	virtual Type::Kind GetObjectType () { return Type::DISCRETEOBJECTKEYFRAME; }
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
 };
 
 
 /* @Version=2,Namespace=System.Windows.Media.Animation */
+/* @IncludeInKinds */
 class ObjectKeyFrameCollection : public KeyFrameCollection {
  protected:
-	virtual ~ObjectKeyFrameCollection () {}
+	virtual ~ObjectKeyFrameCollection ();
 
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	ObjectKeyFrameCollection () { }
+	ObjectKeyFrameCollection ();
 
-	virtual Type::Kind GetObjectType() { return Type::OBJECTKEYFRAME_COLLECTION; }
 	virtual Type::Kind GetElementType() { return Type::OBJECTKEYFRAME; }
 };
 
@@ -73,17 +72,17 @@ class ObjectKeyFrameCollection : public KeyFrameCollection {
 /* @Version=2 */
 /* @Namespace=System.Windows.Media.Animation */
 /* @ContentProperty="KeyFrames" */
+/* @IncludeInKinds */
 class ObjectAnimationUsingKeyFrames : public /*Object*/Animation {
  protected:
-	virtual ~ObjectAnimationUsingKeyFrames () {}
+	virtual ~ObjectAnimationUsingKeyFrames ();
 
  public:
  	/* @PropertyType=ObjectKeyFrameCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *KeyFramesProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	ObjectAnimationUsingKeyFrames () {}
-	virtual Type::Kind GetObjectType () { return Type::OBJECTANIMATIONUSINGKEYFRAMES; };
+	ObjectAnimationUsingKeyFrames ();
 
 	void AddKeyFrame (ObjectKeyFrame *frame);
 	void RemoveKeyFrame (ObjectKeyFrame *frame);

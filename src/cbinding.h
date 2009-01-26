@@ -423,9 +423,6 @@ Value *dependency_object_get_local_value_with_error (DependencyObject *instance,
 const char *dependency_object_get_name (DependencyObject *instance);
 
 /* @GeneratePInvoke */
-Type::Kind dependency_object_get_object_type (DependencyObject *instance);
-
-/* @GeneratePInvoke */
 Value *dependency_object_get_value_no_default_with_error (DependencyObject *instance, DependencyProperty *property, MoonError *error);
 
 /* @GeneratePInvoke */
@@ -608,6 +605,9 @@ int event_object_add_xaml_handler (EventObject *instance, const char *event_name
 
 void event_object_drain_unrefs (void);
 
+/* @GeneratePInvoke */
+Type::Kind event_object_get_object_type (EventObject *instance);
+
 Surface *event_object_get_surface (EventObject *instance);
 
 /* @GeneratePInvoke */
@@ -618,6 +618,9 @@ void event_object_ref (EventObject *instance);
 
 /* @GeneratePInvoke */
 void event_object_remove_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data);
+
+/* @GeneratePInvoke */
+void event_object_set_object_type (EventObject *instance, Type::Kind value);
 
 /* @GeneratePInvoke */
 void event_object_unref (EventObject *instance);
@@ -1556,6 +1559,9 @@ void uielement_measure (UIElement *instance, Size availableSize);
 
 /* @GeneratePInvoke */
 void uielement_release_mouse_capture (UIElement *instance);
+
+/* @GeneratePInvoke */
+void uielement_set_subtree_object (UIElement *instance, DependencyObject *value);
 
 /* @GeneratePInvoke */
 bool uielement_update_layout (UIElement *instance);

@@ -31,8 +31,11 @@
 
 UIElement::UIElement ()
 {
+	SetObjectType (Type::UIELEMENT);
+
 	visual_level = 0;
 	visual_parent = NULL;
+	subtree_object = NULL;
 	opacityMask = NULL;
 	
 	flags = UIElement::RENDER_VISIBLE | UIElement::HIT_TEST_VISIBLE;
@@ -432,6 +435,21 @@ UIElement::SetVisualParent (UIElement *visual_parent)
 
 	if (visual_parent && visual_parent->GetSurface () != GetSurface())
 		SetSurface (visual_parent->GetSurface());
+}
+
+void
+UIElement::SetSubtreeObject (DependencyObject *value)
+{
+	if (subtree_object == value)
+	  return;
+
+	if (subtree_object)
+	  subtree_object->unref ();
+
+	subtree_object = value;
+
+	if (subtree_object)
+	  subtree_object->ref ();
 }
 
 void
@@ -951,8 +969,13 @@ UIElement::Render (cairo_t *cr, Region *region)
 void
 UIElement::Render (cairo_t *cr, int x, int y, int width, int height)
 {
-	g_warning ("UIElement:Render has been called. The derived class %s should have overridden it.",
-		   GetTypeName ());
+	if (subtree_object && subtree_object->Is(Type::UIELEMENT)) {
+		((UIElement*)subtree_object)->Render(cr, x, y, width, height);
+	}
+	else {
+		g_warning ("UIElement:Render has been called. The derived class %s should have overridden it.",
+			   GetTypeName ());
+	}
 }
 
 void

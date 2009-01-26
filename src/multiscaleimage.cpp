@@ -31,6 +31,7 @@ MultiScaleImage::MultiScaleImage ()
 //		init = false;
 //		MultiScaleImage::SubImagesProperty->SetValueValidator (MultiScaleSubImageCollectionValidator);	
 //	}
+	SetObjectType (Type::MULTISCALEIMAGE); 
 	source = NULL;
 	layers = -1;
 	downloader = NULL;

@@ -200,11 +200,13 @@ SkewTransform::UpdateTransform ()
 
 Matrix::Matrix ()
 {
+	SetObjectType (Type::MATRIX);
 	cairo_matrix_init_identity (&matrix);
 }
 
 Matrix::Matrix(cairo_matrix_t *m)
 {
+	SetObjectType (Type::MATRIX);
 	matrix = *m;
 }
 
@@ -268,6 +270,7 @@ MatrixTransform::UpdateTransform ()
 
 TransformGroup::TransformGroup ()
 {
+	SetObjectType (Type::TRANSFORMGROUP);
 	SetValue (TransformGroup::ChildrenProperty, Value::CreateUnref (new TransformCollection ()));
 }
 

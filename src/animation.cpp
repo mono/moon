@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include "application.h"
 #include "animation.h"
 #include "animation2.h"
 
@@ -252,6 +253,8 @@ AnimationClock::OnSurfaceReAttach ()
 AnimationClock::AnimationClock (Animation/*Timeline*/ *timeline)
   : Clock (timeline)
 {
+	SetObjectType (Type::ANIMATIONCLOCK);
+
 	this->timeline = timeline;
 	storage = NULL;
 }
@@ -378,7 +381,19 @@ Animation/*Timeline*/::GetNaturalDurationCore (Clock* clock)
 
 Storyboard::Storyboard ()
 {
+	SetObjectType (Type::STORYBOARD);
+
 	root_clock = NULL;
+	pending_begin = false;
+}
+
+Storyboard::~Storyboard ()
+{
+	if (root_clock) {
+		//printf ("Clock %p (ref=%d)\n", root_clock, root_clock->refcount);
+		Stop ();
+		TeardownClockGroup ();
+	}
 }
 
 void
@@ -513,10 +528,15 @@ Storyboard::Begin ()
 
 	if (!group) {
 		if (GetSurface() == NULL) {
-			g_warning ("unable to find surface to add storyboard clock to.");
-			return false;
+			if (!Application::GetCurrent()->GetSurface()) {
+				pending_begin = true;
+				return false;
+			}
+
+			group = Application::GetCurrent()->GetSurface()->GetTimeManager()->GetRootClock();
 		}
-		group = GetSurface()->GetTimeManager()->GetRootClock();
+		else
+			group = GetSurface()->GetTimeManager()->GetRootClock();
 	}
 
 	// This creates the clock tree for the hierarchy.  if a
@@ -595,22 +615,30 @@ Storyboard::SetSurface (Surface *surface)
 		root_clock->OnSurfaceDetach ();
 	}
  	else if (!GetSurface() && surface) {
-		/* we're being (re-)attached to a surface, so resume clock */
-		if (root_clock && root_clock->GetIsPaused() && GetLogicalParent()) {
-			Resume ();
-			root_clock->OnSurfaceReAttach ();
+		/* we're being (re-)attached to a surface, so
+		   1. resume clock if we were paused.
+		   2. start clock if we had Begin called before being attached 
+		*/
+		if (root_clock) {
+			if (root_clock->GetIsPaused() && GetLogicalParent()) {
+				Resume ();
+				root_clock->OnSurfaceReAttach ();
+			}
+		}
+		else if (pending_begin && GetLogicalParent ()) {
+			Begin ();
 		}
  	}
 	DependencyObject::SetSurface (surface);
 }
 
-Storyboard::~Storyboard ()
+BeginStoryboard::BeginStoryboard ()
 {
-	if (root_clock) {
-		//printf ("Clock %p (ref=%d)\n", root_clock, root_clock->refcount);
-		Stop ();
-		TeardownClockGroup ();
-	}
+	SetObjectType (Type::BEGINSTORYBOARD);
+}
+
+BeginStoryboard::~BeginStoryboard ()
+{
 }
 
 void
@@ -621,12 +649,11 @@ BeginStoryboard::Fire ()
 		sb->Begin ();
 }
 
-BeginStoryboard::~BeginStoryboard ()
-{
-}
 
 DoubleAnimation::DoubleAnimation ()
 {
+	SetObjectType (Type::DOUBLEANIMATION);
+
 	doubleToCached = NULL;
 	doubleFromCached = NULL;
 	doubleByCached = NULL;
@@ -701,6 +728,8 @@ DoubleAnimation::OnPropertyChanged (PropertyChangedEventArgs *args)
 
 ColorAnimation::ColorAnimation ()
 {
+	SetObjectType (Type::COLORANIMATION);
+
 	colorToCached = NULL;
 	colorFromCached = NULL;
 	colorByCached = NULL;
@@ -773,20 +802,26 @@ ColorAnimation::OnPropertyChanged (PropertyChangedEventArgs *args)
 	NotifyListenersOfPropertyChange (args);
 }
 
+PointAnimation::PointAnimation ()
+{
+	SetObjectType (Type::POINTANIMATION);
+
+	pointToCached = NULL;
+	pointFromCached = NULL;
+	pointByCached = NULL;
+	hasCached = FALSE;
+}
+
+PointAnimation::~PointAnimation ()
+{
+}
+
 void PointAnimation::EnsureCache (void)
 {
 	pointFromCached = GetFrom ();
 	pointToCached = GetTo ();
 	pointByCached = GetBy ();
 	hasCached = TRUE;
-}
-
-PointAnimation::PointAnimation ()
-{
-	pointToCached = NULL;
-	pointFromCached = NULL;
-	pointByCached = NULL;
-	hasCached = FALSE;
 }
 
 Value*
@@ -847,6 +882,43 @@ PointAnimation::OnPropertyChanged (PropertyChangedEventArgs *args)
 	NotifyListenersOfPropertyChange (args);
 }
 
+KeySpline::KeySpline ()
+{
+	SetObjectType (Type::KEYSPLINE);
+
+	quadraticsArray = NULL;
+}
+
+KeySpline::KeySpline (Point controlPoint1, Point controlPoint2)
+{
+	SetObjectType (Type::KEYSPLINE);
+
+	quadraticsArray = NULL;
+	SetControlPoint1 (&controlPoint1);
+	SetControlPoint2 (&controlPoint2);
+}
+
+KeySpline::KeySpline (double x1, double y1,
+		      double x2, double y2)
+{
+	SetObjectType (Type::KEYSPLINE);
+
+	quadraticsArray = NULL;
+
+	Point p1 = Point (x1, y1);
+	Point p2 = Point (x2, y2);
+
+	SetControlPoint1 (&p1);
+	SetControlPoint2 (&p2);
+}
+
+KeySpline::~KeySpline ()
+{
+	g_free (quadraticsArray);
+	quadraticsArray = NULL;
+}
+
+
 void
 KeySpline::RegenerateQuadratics ()
 {
@@ -865,30 +937,6 @@ KeySpline::RegenerateQuadratics ()
 	
 	moon_subdivide_cubic_at_level (carr, KEYSPLINE_PRECISION_LEVEL, &src);
 	moon_convert_cubics_to_quadratics (quadraticsArray, carr, KEYSPLINE_TOTAL_COUNT);
-}
-
-KeySpline::KeySpline ()
-{
-	quadraticsArray = NULL;
-}
-
-KeySpline::KeySpline (Point controlPoint1, Point controlPoint2)
-{
-	quadraticsArray = NULL;
-	SetControlPoint1 (&controlPoint1);
-	SetControlPoint2 (&controlPoint2);
-}
-
-KeySpline::KeySpline (double x1, double y1,
-		      double x2, double y2)
-{
-	quadraticsArray = NULL;
-
-	Point p1 = Point (x1, y1);
-	Point p2 = Point (x2, y2);
-
-	SetControlPoint1 (&p1);
-	SetControlPoint2 (&p2);
 }
 
 void
@@ -920,13 +968,12 @@ KeySpline::GetSplineProgress (double linearProgress)
 	return moon_quadratic_array_y_for_x (quadraticsArray, linearProgress, KEYSPLINE_TOTAL_COUNT);
 }
 
-KeySpline::~KeySpline ()
+KeyFrame::KeyFrame ()
 {
-	g_free (quadraticsArray);
-	quadraticsArray = NULL;
+	SetObjectType (Type::KEYFRAME);
 }
 
-KeyFrame::KeyFrame ()
+KeyFrame::~KeyFrame ()
 {
 }
 
@@ -956,6 +1003,8 @@ KeyFrameComparer (gconstpointer kf1, gconstpointer kf2)
 
 KeyFrameCollection::KeyFrameCollection ()
 {
+	SetObjectType (Type::KEYFRAME_COLLECTION);
+
 	sorted_list = g_ptr_array_new ();
 	resolved = false;
 }
@@ -1052,24 +1101,71 @@ KeyFrameCollection::OnSubPropertyChanged (DependencyProperty *prop, DependencyOb
 	Collection::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
+ColorKeyFrameCollection::ColorKeyFrameCollection ()
+{
+	SetObjectType (Type::COLORKEYFRAME_COLLECTION);
+}
+
+ColorKeyFrameCollection::~ColorKeyFrameCollection ()
+{
+}
+
+DoubleKeyFrameCollection::DoubleKeyFrameCollection ()
+{
+	SetObjectType (Type::DOUBLEKEYFRAME_COLLECTION);
+}
+
+DoubleKeyFrameCollection::~DoubleKeyFrameCollection ()
+{
+}
+
+PointKeyFrameCollection::PointKeyFrameCollection ()
+{
+	SetObjectType (Type::POINTKEYFRAME_COLLECTION);
+}
+
+PointKeyFrameCollection::~PointKeyFrameCollection ()
+{
+}
 
 DoubleKeyFrame::DoubleKeyFrame ()
 {
+	SetObjectType (Type::DOUBLEKEYFRAME);
 	SetValue (0.0);
 }
 
+DoubleKeyFrame::~DoubleKeyFrame ()
+{
+}
 
 ColorKeyFrame::ColorKeyFrame ()
 {
+	SetObjectType (Type::COLORKEYFRAME);
 	static Color c = Color (0, 0, 0, 1);
 	SetValue (c);
 }
 
+ColorKeyFrame::~ColorKeyFrame ()
+{
+}
 
 PointKeyFrame::PointKeyFrame ()
 {
-	static Point p = Point (0, 0);
-	SetValue (p);
+	SetObjectType (Type::POINTKEYFRAME);
+	SetValue (Point (0,0));
+}
+
+PointKeyFrame::~PointKeyFrame ()
+{
+}
+
+DiscreteDoubleKeyFrame::DiscreteDoubleKeyFrame ()
+{
+	SetObjectType(Type::DISCRETEDOUBLEKEYFRAME);
+}
+
+DiscreteDoubleKeyFrame::~DiscreteDoubleKeyFrame ()
+{
 }
 
 Value*
@@ -1083,6 +1179,15 @@ DiscreteDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgr
 		return new Value (baseValue->AsDouble());
 }
 
+DiscreteColorKeyFrame::DiscreteColorKeyFrame ()
+{
+	SetObjectType(Type::DISCRETECOLORKEYFRAME);
+}
+
+DiscreteColorKeyFrame::~DiscreteColorKeyFrame ()
+{
+}
+
 Value*
 DiscreteColorKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
@@ -1094,6 +1199,15 @@ DiscreteColorKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgre
 		return new Value (*baseValue->AsColor());
 }
 
+DiscretePointKeyFrame::DiscretePointKeyFrame ()
+{
+	SetObjectType(Type::DISCRETEPOINTKEYFRAME);
+}
+
+DiscretePointKeyFrame::~DiscretePointKeyFrame ()
+{
+}
+
 Value*
 DiscretePointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
@@ -1103,6 +1217,16 @@ DiscretePointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgre
 		return new Value(*to);
 	else
 		return new Value (*baseValue->AsPoint());
+}
+
+
+LinearDoubleKeyFrame::LinearDoubleKeyFrame ()
+{
+	SetObjectType(Type::LINEARDOUBLEKEYFRAME);
+}
+
+LinearDoubleKeyFrame::~LinearDoubleKeyFrame ()
+{
 }
 
 Value*
@@ -1121,6 +1245,15 @@ LinearDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgres
 	return new Value (LERP (start, end, keyFrameProgress));
 }
 
+LinearColorKeyFrame::LinearColorKeyFrame ()
+{
+	SetObjectType(Type::LINEARCOLORKEYFRAME);
+}
+
+LinearColorKeyFrame::~LinearColorKeyFrame ()
+{
+}
+
 Value*
 LinearColorKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
@@ -1135,6 +1268,15 @@ LinearColorKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress
 	end = *to;
 
 	return new Value (LERP (start, end, keyFrameProgress));
+}
+
+LinearPointKeyFrame::LinearPointKeyFrame ()
+{
+	SetObjectType(Type::LINEARPOINTKEYFRAME);
+}
+
+LinearPointKeyFrame::~LinearPointKeyFrame ()
+{
 }
 
 Value*
@@ -1155,7 +1297,12 @@ LinearPointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress
 
 SplineDoubleKeyFrame::SplineDoubleKeyFrame ()
 {
+	SetObjectType (Type::SPLINEDOUBLEKEYFRAME);
 	this->DependencyObject::SetValue (SplineDoubleKeyFrame::KeySplineProperty, Value::CreateUnref (new KeySpline (0, 0, 1, 1)));
+}
+
+SplineDoubleKeyFrame::~SplineDoubleKeyFrame ()
+{
 }
 
 Value*
@@ -1181,8 +1328,14 @@ SplineDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgres
 
 SplineColorKeyFrame::SplineColorKeyFrame ()
 {
+	SetObjectType (Type::SPLINECOLORKEYFRAME);
 	this->DependencyObject::SetValue (SplineColorKeyFrame::KeySplineProperty, Value::CreateUnref (new KeySpline (0, 0, 1, 1)));
 }
+
+SplineColorKeyFrame::~SplineColorKeyFrame ()
+{
+}
+
 
 Value*
 SplineColorKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
@@ -1207,7 +1360,12 @@ SplineColorKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress
 
 SplinePointKeyFrame::SplinePointKeyFrame ()
 {
+	SetObjectType (Type::SPLINEPOINTKEYFRAME);
 	this->DependencyObject::SetValue (SplinePointKeyFrame::KeySplineProperty, Value::CreateUnref (new KeySpline (0, 0, 1, 1)));
+}
+
+SplinePointKeyFrame::~SplinePointKeyFrame ()
+{
 }
 
 Value*
@@ -1374,6 +1532,8 @@ generic_keyframe_validator (KeyFrameCollection *col)
 
 DoubleAnimationUsingKeyFrames::DoubleAnimationUsingKeyFrames ()
 {
+	SetObjectType (Type::DOUBLEANIMATIONUSINGKEYFRAMES);
+
 	SetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty, Value::CreateUnref (new DoubleKeyFrameCollection ()));
 }
 
@@ -1481,6 +1641,8 @@ DoubleAnimationUsingKeyFrames::Validate ()
 
 ColorAnimationUsingKeyFrames::ColorAnimationUsingKeyFrames()
 {
+	SetObjectType (Type::COLORANIMATIONUSINGKEYFRAMES);
+
 	SetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty, Value::CreateUnref (new ColorKeyFrameCollection ()));
 }
 
@@ -1585,6 +1747,8 @@ ColorAnimationUsingKeyFrames::Validate ()
 
 PointAnimationUsingKeyFrames::PointAnimationUsingKeyFrames()
 {
+	SetObjectType (Type::POINTANIMATIONUSINGKEYFRAMES);
+
 	SetValue (PointAnimationUsingKeyFrames::KeyFramesProperty, Value::CreateUnref (new PointKeyFrameCollection ()));
 }
 
@@ -1693,6 +1857,33 @@ Duration Duration::Forever (Duration::FOREVER);
 KeyTime KeyTime::Paced (KeyTime::PACED);
 KeyTime KeyTime::Uniform (KeyTime::UNIFORM);
 
+ObjectKeyFrameCollection::ObjectKeyFrameCollection ()
+{
+	SetObjectType (Type::OBJECTKEYFRAME_COLLECTION);
+}
+
+ObjectKeyFrameCollection::~ObjectKeyFrameCollection ()
+{
+}
+
+ObjectKeyFrame::ObjectKeyFrame ()
+{
+	SetObjectType (Type::OBJECTKEYFRAME);
+}
+
+ObjectKeyFrame::~ObjectKeyFrame ()
+{
+}
+
+DiscreteObjectKeyFrame::DiscreteObjectKeyFrame ()
+{
+	SetObjectType (Type::DISCRETEOBJECTKEYFRAME);
+}
+
+DiscreteObjectKeyFrame::~DiscreteObjectKeyFrame ()
+{
+}
+
 Value*
 DiscreteObjectKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
@@ -1702,6 +1893,15 @@ DiscreteObjectKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgr
 		return new Value(to);
 	else
 		return new Value (baseValue->AsDependencyObject());
+}
+
+ObjectAnimationUsingKeyFrames::ObjectAnimationUsingKeyFrames ()
+{
+	SetObjectType (Type::OBJECTANIMATIONUSINGKEYFRAMES);
+}
+
+ObjectAnimationUsingKeyFrames::~ObjectAnimationUsingKeyFrames ()
+{
 }
 
 void

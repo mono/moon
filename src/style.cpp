@@ -18,6 +18,7 @@
 
 Style::Style ()
 {
+	SetObjectType (Type::STYLE);
 	SetValue (Style::SettersProperty, Value::CreateUnref (new SetterBaseCollection()));
 	GetSetters ()->SetStyle (this);
 }
@@ -37,6 +38,7 @@ Style::Seal ()
 
 SetterBaseCollection::SetterBaseCollection ()
 {
+	SetObjectType (Type::SETTERBASE_COLLECTION);
 	this->style = NULL;
 }
 
@@ -125,6 +127,7 @@ SetterBase::SetAttached (bool value)
 
 SetterBase::SetterBase ()
 {
+	SetObjectType (Type::SETTERBASE);
 	this->attached = false;
 }
 
@@ -148,5 +151,10 @@ SetterBase::SetValueWithErrorImpl (DependencyProperty *property, Value *value, M
 }
 
 Setter::Setter ()
+{
+	SetObjectType (Type::SETTER);
+}
+
+Setter::~Setter ()
 {
 }

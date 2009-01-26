@@ -32,14 +32,13 @@
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
 /* @CallInitialize */
+/* @IncludeInKinds */
 class Control : public FrameworkElement {
 public:
 	Rect bounds_with_children;
 
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Control ();
-	
-	virtual Type::Kind GetObjectType () { return Type::CONTROL; }
 	
 	virtual void Render (cairo_t *cr, Region *region);
 	
@@ -55,8 +54,6 @@ public:
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	
-	virtual DependencyObject *GetSubtreeObject () { return template_root; }
-
 	virtual void ElementAdded (UIElement *item);
 	virtual void ElementRemoved (UIElement *item);
 	
