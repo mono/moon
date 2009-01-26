@@ -328,11 +328,7 @@ FrameworkElement::Measure (Size availableSize)
 	else
 		size = MeasureOverride (size);
 
-	// XXX ugly hack to fake some sort of exception case
-	if (size.IsEmpty ()) {
-                SetDesiredSize (Size (0,0));
-		return;
-        }
+	SetDesiredSize (size);
 
 	// postcondition the results
 	size = size.Min (specified);
@@ -345,7 +341,6 @@ FrameworkElement::Measure (Size availableSize)
 
 	size = size.Min (availableSize);
 
-	SetDesiredSize (size);
 }
 
 Size

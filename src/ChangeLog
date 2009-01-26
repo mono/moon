@@ -1,4 +1,11 @@
 2009-01-26  Larry Ewing  <lewing@novell.com>
+
+	* frameworkelement.cpp (FrameworkElement::Measure): remove the
+	short circuit.
+
+	* media.cpp: fix rendering.
+
+2009-01-26  Larry Ewing  <lewing@novell.com>
 	
 	* control.cpp: 
 	* border.cpp: Try to get alignment working visually.

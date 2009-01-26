@@ -790,16 +790,27 @@ Image::Render (cairo_t *cr, Region *region)
 
 	cairo_save (cr);
 
-	Stretch stretch = GetStretch ();
-	double w = GetActualWidth ();
-	double h = GetActualHeight ();
+	Rect image = Rect (0, 0, surface->width, surface->height);
+	Rect paint = Rect (0, 0, GetActualWidth (), GetActualHeight ());
+
+	if (paint.width == 0.0)
+		paint.width = image.width;
+
+	if (paint.height == 0.0)
+		paint.height = image.height;
+
+	if (isnan (GetWidth ()))
+		paint.width = GetWidth ();
+
+	if (isnan (GetHeight ()))
+		paint.height = GetHeight ();
 	
 	if (!pattern)
 		pattern = cairo_pattern_create_for_surface (surface->cairo);
 	
 	cairo_matrix_t matrix;
 	
-	image_brush_compute_pattern_matrix (&matrix, w, h, surface->width, surface->height, stretch, 
+	image_brush_compute_pattern_matrix (&matrix, paint.width, paint.height, image.width, image.height, GetStretch (), 
 					    AlignmentXCenter, AlignmentYCenter, NULL, NULL);
 	
 	cairo_pattern_set_matrix (pattern, &matrix);
@@ -807,7 +818,7 @@ Image::Render (cairo_t *cr, Region *region)
 
 	cairo_set_matrix (cr, &absolute_xform);
 	
-	cairo_rectangle (cr, 0, 0, w, h);
+	paint.Draw (cr);
 	cairo_fill (cr);
 
 	cairo_restore (cr);
