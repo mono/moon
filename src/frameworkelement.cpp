@@ -270,6 +270,8 @@ void
 FrameworkElement::ComputeBounds ()
 {
 	extents = Rect (0.0, 0.0, GetActualWidth (), GetActualHeight ());
+	extents.width = MIN (extents.width, GetWidth ());
+	extents.height = MIN (extents.height, GetHeight ());
 	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 }
 
@@ -315,7 +317,6 @@ FrameworkElement::Measure (Size availableSize)
 	Thickness margin = *GetMargin ();
 	Size size = availableSize.GrowBy (-margin);
 
-
 	size = size.Min (specified);
 	size = size.Max (specified);
 
@@ -326,11 +327,6 @@ FrameworkElement::Measure (Size availableSize)
 		size = (*measure_cb)(size);
 	else
 		size = MeasureOverride (size);
-
-	double d = GetWidth ();
-	SetActualWidth (isnan(d) ? 0.0 : d);
-	d = GetHeight ();
-	SetActualHeight (isnan(d) ? 0.0 : d);
 
 	// XXX ugly hack to fake some sort of exception case
 	if (size.IsEmpty ()) {
@@ -380,34 +376,73 @@ FrameworkElement::Arrange (Rect finalRect)
 	Thickness margin = *GetMargin ();
 	finalRect = finalRect.GrowBy (-margin);
 
-	Size size = GetDesiredSize ();
+	Size offer (finalRect.width, finalRect.height);
+	Size response;
+
+	if (!isnan (GetWidth ()))
+		offer.width = GetWidth ();
+	    
+	if (!isnan (GetHeight ()))
+		offer.height = GetHeight ();
 	
-	if (GetHorizontalAlignment () == HorizontalAlignmentStretch)
-		size.width = finalRect.width;
-
-	if (GetVerticalAlignment () == VerticalAlignmentStretch) 
-		size.height = finalRect.height;
-
+	if (offer.width == 0)
+		offer.width = GetDesiredSize ().width;
+	
+	if (offer.height == 0)
+		offer.height = GetDesiredSize ().height;
+	
 	if (arrange_cb)
-		size = (*arrange_cb)(size);
+		response = (*arrange_cb)(offer);
 	else
-		size = ArrangeOverride (size);
+		response = ArrangeOverride (offer);
 
-	// XXX ugly hack to fake some sort of exception case
-	if (size.IsEmpty ()) {
-                SetRenderSize (Size (0,0));
-		return;
-        }
+	Size old (GetActualWidth (), GetActualHeight ());
 
-	SetRenderSize (size);
+	HorizontalAlignment horiz = GetHorizontalAlignment ();
+	VerticalAlignment vert = GetVerticalAlignment ();
 
-	double old_width = GetActualWidth ();
-	double old_height = GetActualHeight ();
+	if (!Is(Type::CANVAS) && offer.height != finalRect.width)
+		horiz = HorizontalAlignmentCenter;
+	if (!Is(Type::CANVAS) && offer.height != finalRect.height)
+		vert = VerticalAlignmentCenter;
 
-	SetActualWidth (size.width);
-	SetActualHeight (size.height);
-	if (old_width != size.width || old_height != size.height) {
-		SizeChangedEventArgs *args = new SizeChangedEventArgs (Size (old_width, old_height), size);
+	cairo_matrix_init_identity (&layout_xform);
+
+	switch (horiz) {
+	case HorizontalAlignmentCenter:
+		cairo_matrix_translate (&layout_xform, MAX ((finalRect.width  - response.width) * .5, 0), 0);
+		break;
+	case HorizontalAlignmentLeft:
+		break;
+	case HorizontalAlignmentRight:
+		cairo_matrix_translate (&layout_xform, MAX (finalRect.width - response.width, 0), 0);
+		break;
+	case HorizontalAlignmentStretch:
+		response.width = offer.width;
+		break;
+	}
+
+	switch (vert) {
+	case VerticalAlignmentCenter:
+		cairo_matrix_translate (&layout_xform, 0, MAX ((finalRect.height  - response.height) * .5, 0));
+		break;
+	case VerticalAlignmentTop:
+		break;
+	case VerticalAlignmentBottom:
+		cairo_matrix_translate (&layout_xform, 0, MAX (finalRect.height - response.height, 0));
+		break;
+	case VerticalAlignmentStretch:
+		response.height = offer.height;
+		break;
+	}
+
+	SetRenderSize (response);
+
+	SetActualWidth (response.width);
+	SetActualHeight (response.height);
+
+	if (old != response) {
+		SizeChangedEventArgs *args = new SizeChangedEventArgs (old, response);
 
 		Emit(SizeChangedEvent, args);
 	}
@@ -418,21 +453,7 @@ FrameworkElement::Arrange (Rect finalRect)
 Size
 FrameworkElement::ArrangeOverride (Size finalSize)
 {
-	Size size = Size (GetWidth (), GetHeight ());
-	
-	if (isnan (size.width))
-		size.width = finalSize.width;
-	
-	if (isnan (size.height))
-		size.height = finalSize.height;
-
-	if (finalSize.width <= 0.0 && finalSize.height <= 0.0)
-		return size;
-
-	if (!GetSurface () && (!GetVisualParent () || GetVisualParent ()->Is (Type::CANVAS)))
-		return Size (-INFINITY,-INFINITY);
-
-	return size;
+	return finalSize;
 }
 
 bool

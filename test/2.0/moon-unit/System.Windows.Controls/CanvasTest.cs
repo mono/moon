@@ -159,6 +159,8 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual(0, Canvas.GetLeft(r), "#1");
 			Assert.AreEqual(0, Canvas.GetTop(r), "#2");
 			Assert.AreEqual(0, Canvas.GetZIndex(r), "#3");
+
+			Canvas c = new Canvas ();
 		}
 
 		[TestMethod]

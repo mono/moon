@@ -602,10 +602,8 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (new Size (9,9), c.ArrangeArg, "c measure args");
 			Assert.AreEqual (new Size (1,1), b.DesiredSize, "b DesiredSize");
 			Assert.AreEqual (new Size (10,10), b.RenderSize, "b render size");
-			Assert.AreEqual (10,b.ActualWidth);
-			Assert.AreEqual (10,b.ActualHeight);
-			Assert.AreEqual (20,c.ActualWidth);
-			Assert.AreEqual (20,c.ActualHeight);
+			Assert.AreEqual (new Size (10,10), new Size (b.ActualWidth, b.ActualHeight),"b actual");
+			Assert.AreEqual (new Size (20,20), new Size (c.ActualWidth, c.ActualHeight), "c actual");
 
 			c.ArrangeResult = new Size (9,9);
 			b.Arrange (new Rect (0,0,10,10));
@@ -618,10 +616,8 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (new Size (9,9), c.ArrangeArg, "c measure args");
 			Assert.AreEqual (new Size (1,1), b.DesiredSize, "b DesiredSize");
 			Assert.AreEqual (new Size (10,10), b.RenderSize, "b render size");
-			Assert.AreEqual (10,b.ActualWidth);
-			Assert.AreEqual (10,b.ActualHeight);
-			Assert.AreEqual (20,c.ActualWidth);
-			Assert.AreEqual (20,c.ActualHeight);
+			Assert.AreEqual (new Size (10,10), new Size (b.ActualWidth, b.ActualHeight),"b actual1");
+			Assert.AreEqual (new Size (20,20), new Size (c.ActualWidth, c.ActualHeight), "c actual1");
 
 			c.InvalidateArrange ();
 			b.Arrange (new Rect (0,0,10,10));
@@ -631,10 +627,8 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (new Size (9,9), c.ArrangeArg, "c measure args");
 			Assert.AreEqual (new Size (1,1), b.DesiredSize, "b DesiredSize");
 			Assert.AreEqual (new Size (10,10), b.RenderSize, "b render size");
-			Assert.AreEqual (10,b.ActualWidth);
-			Assert.AreEqual (10,b.ActualHeight);
-			Assert.AreEqual (9,c.ActualWidth);
-			Assert.AreEqual (9,c.ActualHeight);
+			Assert.AreEqual (new Size (10,10), new Size (b.ActualWidth, b.ActualHeight),"b actual2");
+			Assert.AreEqual (new Size (9,9), new Size (c.ActualWidth, c.ActualHeight), "c actual2");
 		}
 
 		[TestMethod]

@@ -475,6 +475,7 @@ protected:
 
 	// Absolute affine transform, precomputed with all of its data
 	cairo_matrix_t absolute_xform;
+	cairo_matrix_t layout_xform;
 	
 private:
 	int visual_level;

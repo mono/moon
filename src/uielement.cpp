@@ -379,6 +379,7 @@ UIElement::ComputeTransform ()
 		absolute_xform = GetVisualParent ()->absolute_xform;
 
 	cairo_matrix_multiply (&absolute_xform, &slot_transform, &absolute_xform);
+	cairo_matrix_multiply (&absolute_xform, &layout_xform, &absolute_xform);
 	cairo_matrix_multiply (&absolute_xform, &local_xform, &absolute_xform);
 	
 	if (moonlight_flags & RUNTIME_INIT_USE_UPDATE_POSITION)

@@ -438,15 +438,17 @@ Surface::UpdateLayout ()
 	if (toplevel) {
 		toplevel->Measure (Size (active_window->GetWidth (),
 					 active_window->GetHeight ()));
+		Size desired = toplevel->GetDesiredSize ();
 		toplevel->Arrange (Rect (Canvas::GetLeft (toplevel), Canvas::GetTop (toplevel), 
-					 active_window->GetWidth (), active_window->GetHeight ()));
+					 desired.width, desired.height));
 	}
 
 	if (full_screen_message) {
 		full_screen_message->Measure (Size (active_window->GetWidth (),
-					 active_window->GetHeight ()));
+						    active_window->GetHeight ()));
+		Size desired = full_screen_message->GetDesiredSize ();
 		full_screen_message->Arrange (Rect (Canvas::GetLeft (toplevel), Canvas::GetTop (toplevel), 
-					 active_window->GetWidth (), active_window->GetHeight ()));
+						    desired.width, desired.height));
 	}
 }
 

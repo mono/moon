@@ -1,3 +1,22 @@
+2009-01-26  Larry Ewing  <lewing@novell.com>
+
+	* media.h:
+	* media.cpp: add bounds logic.
+
+	* dirty.cpp:
+	* control.cpp:
+	* canvas.cpp:
+	* border.cpp: start trying to deal with
+	alignment.
+
+	* frameworkelement.cpp: compute the layout_xform.
+	
+	* uielement.cpp, uielement.h: add layout_xform and use it.
+	
+	* shape.cpp: try something else in measure.
+
+	* size.h: add == and != overrides.
+	
 2009-01-26  Jeffrey Stedfast  <fejj@novell.com>
 
 	* brush.cpp (VisualBrush::SetupBrush): Updated.

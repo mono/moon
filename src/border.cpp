@@ -56,10 +56,19 @@ Border::ArrangeOverride (Size finalSize)
 	finalSize = finalSize.Min (specified);
 
 	if (UIElement *child = GetChild ()) {
-		Rect childRect = Rect (0.0, 0.0, finalSize.width, finalSize.height);
+		Size desired = child->GetDesiredSize ();
+		Rect childRect (0,0,finalSize.width,finalSize.height);
 
-		child->Arrange (childRect.GrowBy (-border));
-		desired = desired.Max (child->GetRenderSize ());
+		childRect = childRect.GrowBy (-border);
+
+		if (GetHorizontalAlignment () != HorizontalAlignmentStretch)
+			childRect.width = MIN (desired.width, childRect.width);
+
+		if (GetVerticalAlignment () != VerticalAlignmentStretch)
+			childRect.height = MIN (desired.height, childRect.height);
+		
+		child->Arrange (childRect);
+		finalSize = finalSize.Max (child->GetRenderSize ());
 	}
 
 	return finalSize;
@@ -84,45 +93,9 @@ Border::Render (cairo_t *cr, Region *region)
 void
 Border::ComputeBounds ()
 {
-	Rect *r = LayoutInformation::GetLayoutSlot (this);
-	Rect slot = r ? *r : Rect ();
-	
-	Size specified = Size (GetWidth (), GetHeight ());
-	HorizontalAlignment horiz = GetHorizontalAlignment ();
-	VerticalAlignment vert = GetVerticalAlignment ();
-	cairo_matrix_t layout_xform;
-	cairo_matrix_init_identity (&layout_xform);
-
-	if (!isnan (specified.width))
-		horiz = HorizontalAlignmentCenter;
-	if (!isnan (specified.height))
-		vert = VerticalAlignmentCenter;
-	
-	switch (horiz) {
-	case HorizontalAlignmentCenter:
-		cairo_matrix_translate (&layout_xform, (slot.width  - GetActualWidth ()) * .5, 0);
-		break;
-	case HorizontalAlignmentRight:
-		cairo_matrix_translate (&layout_xform, slot.width - GetActualWidth (), 0);
-		break;
-	default:
-		break;
-	}
-
-	switch (vert) {
-	case VerticalAlignmentCenter:
-		cairo_matrix_translate (&layout_xform, 0, (slot.height  - GetActualHeight ()) * .5);
-		break;
-	case VerticalAlignmentBottom:
-		cairo_matrix_translate (&layout_xform, 0, slot.height - GetActualHeight ());
-		break;
-	default:
-		break;
-	}
-	
-	extents = Rect (0, 0, GetActualWidth (), GetActualHeight ());
-	extents = extents.Transform (&layout_xform);
-
+	Size specified = Size (GetActualWidth (), GetActualHeight ());
+	specified = specified.Max (GetWidth (), GetHeight ());
+	extents = Rect (0, 0, specified.width, specified.height);
 	bounds_with_children = bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 
 	UIElement *child = GetChild ();

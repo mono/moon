@@ -140,11 +140,8 @@ Canvas::ArrangeOverride (Size finalSize)
 
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
-		Size arranged = child->GetDesiredSize ();
-		Rect child_final = Rect (GetLeft (child), GetTop (child),
-					 arranged.width, arranged.height);
+		Rect child_final = Rect (GetLeft (child), GetTop (child), 0.0, 0.0);
 		child->Arrange (child_final);
-		// XXX fill layout slot?
 	}
 
 	return result;

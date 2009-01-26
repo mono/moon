@@ -513,57 +513,37 @@ Shape::ShiftPosition (Point p)
 Size
 Shape::MeasureOverride (Size availableSize)
 {
-	Size size = Size (GetWidth (), GetHeight ());
-	Size desired;
-	
-	if (Is (Type::RECTANGLE) || Is (Type::ELLIPSE))
-		return FrameworkElement::MeasureOverride (availableSize);
-
-	if (!GetSurface () && (!GetVisualParent () || GetVisualParent ()->Is (Type::CANVAS)))
-		return Size (-INFINITY,-INFINITY);
+	Size desired = availableSize;
 
 	if (GetStretch () == StretchNone) {
 		Rect shape_bounds = ComputeShapeBounds (false, NULL);
 
-		desired.width = shape_bounds.x + shape_bounds.width;
-		desired.height = shape_bounds.y + shape_bounds.height;
-	} else {
-		desired = availableSize;
+		desired = Size (shape_bounds.x + shape_bounds.width, 
+				shape_bounds.y + shape_bounds.height);
 	}
-
-	if (isnan (size.width))
-		size.width = desired.width;
 	
-	if (isnan (size.height))
-		size.height = desired.height;
+	if (isinf (desired.width))
+		desired.width = 0.0;
+		
+	if (isinf (desired.height))
+		desired.height = 0.0;
 
-	return size;
+	return desired;
 }
 
 Size
 Shape::ArrangeOverride (Size finalSize)
 {
-	Size arranged = Size (GetWidth (), GetHeight ());
-
-	if (Is (Type::RECTANGLE) || Is (Type::ELLIPSE))
-		return FrameworkElement::ArrangeOverride (finalSize);
-
-	if (!GetVisualParent () || GetVisualParent ()->Is (Type::CANVAS))
-		return Size (-INFINITY,-INFINITY);
-
-	if (isnan (arranged.width))
-		arranged.width = finalSize.width;
-	
-	if (isnan (arranged.height))
-		arranged.height = finalSize.height;
+	Size arranged = finalSize;
+	Size specified (GetWidth (), GetHeight ());
 
 	if (GetStretch () == StretchNone) {
 		    Rect shape_bounds = ComputeShapeBounds (false, NULL);
 
-		    arranged.width = MAX (shape_bounds.x + shape_bounds.width, arranged.width);
-		    arranged.height = MAX (shape_bounds.y + shape_bounds.height, arranged.height);
+		    arranged = arranged.Max (shape_bounds.x + shape_bounds.width, 
+					     shape_bounds.y + shape_bounds.height);
 	}
-
+	
 	return arranged;
 }
 

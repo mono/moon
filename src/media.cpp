@@ -439,6 +439,7 @@ Image::DownloaderComplete ()
 void
 Image::UpdateSize ()
 {
+	InvalidateMeasure ();
 	
 	updating_size_from_media = true;
 	
@@ -815,56 +816,66 @@ Image::Render (cairo_t *cr, Region *region)
 Size
 Image::MeasureOverride (Size availableSize)
 {
-	Size size = FrameworkElement::MeasureOverride (availableSize);
+	Size desired (0,0);
 
-	if (!surface || size.IsEmpty ())
+	if (!surface)
 		return Size (-INFINITY, -INFINITY);
 
-	Size desired = Size (0,0);
+	if (GetStretch () == StretchNone && surface)
+		desired = Size (surface->width, surface->height);
 
-	if (GetStretch () == StretchNone) {
-		if (isinf (desired.width) > 0)
-			desired.width = surface->width;
+	desired = desired.Min (availableSize);
 
-		if (isinf (desired.height) > 0)
-			desired.height = surface->width;
-	} else {
-		desired = availableSize;
-	}
-
-	if (isnan (size.width))
-		size.width = desired.width;
-
-	if (isnan (size.height))
-		size.height = desired.height;
-
-	return size;
+	return desired;
 }
 
 Size
 Image::ArrangeOverride (Size finalSize)
 {
-	Size arranged = FrameworkElement::ArrangeOverride (finalSize);
+	if (!surface)
+		return FrameworkElement::ArrangeOverride (finalSize);
 
-	if (!surface || arranged.IsEmpty ())
-		return Size (-INFINITY, -INFINITY);
-
-	if (GetStretch () == StretchNone) {
-		if (isnan (arranged.width))
-			arranged.width = surface->width;
-		    
-		if (isnan (arranged.height))
-			arranged.height = surface->height;
-	} else {
-		if (isnan (arranged.width))
-			arranged.width = finalSize.width;
-		
-		if (isnan (arranged.height))
-			arranged.height = finalSize.height;
-
-	}
+	Size arranged (surface->width, surface->height);
+	Size specified (GetWidth (), GetHeight ());
 	
+	finalSize = finalSize.Min (specified);
+	finalSize = finalSize.Max (specified);
+	
+	if (GetStretch () != StretchNone)
+		arranged = finalSize;
+		
 	return arranged;
+}
+
+void
+Image::ComputeBounds ()
+{
+	MediaBase::ComputeBounds ();
+
+	if (!surface) {
+		return;
+	}
+
+	Stretch stretch = GetStretch ();
+	cairo_matrix_t matrix;
+	Rect image = Rect (0, 0, surface->width, surface->height);
+	Rect paint = Rect (0, 0, GetActualWidth (), GetActualHeight ());
+
+	if (paint.width == 0.0)
+		paint.width = image.width;
+
+	if (paint.height == 0.0)
+		paint.height = image.height;
+
+	image_brush_compute_pattern_matrix (&matrix, 
+					    paint.width, paint.height,
+					    image.width, image.height, stretch, 
+					    AlignmentXCenter, AlignmentYCenter, NULL, NULL);
+
+	cairo_matrix_invert (&matrix);
+
+	extents = paint.Transform (&matrix);
+	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 }
 
 Rect

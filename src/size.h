@@ -67,6 +67,16 @@ struct Size {
 		const double h = height + t.top + t.bottom;
 		return Size (w > 0 ? w : 0, h > 0 ? h : 0); 
 	}
+
+	bool operator == (const Size &size)
+	{
+		return size.width == height && size.height == height;
+	}
+
+	bool operator != (const Size &size)
+	{
+		return !(*this == size);
+	}
 };
 
 /* @SilverlightVersion="2" */
