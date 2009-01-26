@@ -227,6 +227,7 @@ namespace Mono {
 			case Kind.DISCRETECOLORKEYFRAME: return new DiscreteColorKeyFrame (raw);
 			case Kind.DISCRETEDOUBLEKEYFRAME: return new DiscreteDoubleKeyFrame (raw);
 			case Kind.DISCRETEPOINTKEYFRAME: return new DiscretePointKeyFrame (raw);
+			case Kind.DISCRETEOBJECTKEYFRAME: return new DiscreteObjectKeyFrame (raw);
 			case Kind.DOUBLEANIMATION: return new DoubleAnimation (raw);
 			case Kind.DOUBLEANIMATIONUSINGKEYFRAMES: return new DoubleAnimationUsingKeyFrames (raw);
 			case Kind.DOUBLEKEYFRAME_COLLECTION: return new DoubleKeyFrameCollection (raw);
