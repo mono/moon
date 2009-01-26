@@ -1,3 +1,15 @@
+2009-01-26  Jeffrey Stedfast  <fejj@novell.com>
+	
+	* textbox.cpp (class TextBoxDynamicPropertyValueProvider): We need
+	to handle the TextProperty as well.
+	(TextBox::TextBox): Init text_changed to false.
+	(TextBox::EmitSelectionChanged): New helper method to set
+	selection_changed to true and then emit the event.
+	(TextBox::EmitTextChanged): Same idea.
+	(TextBox::OnPropertyChanged): Use the new Emit helper methods.
+	(TextBox::ClearSelection): Same.
+	(TextBox::Select): Same.
+
 2009-01-26  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* animation.h: Change validators for TargetNameProperty and
@@ -75,9 +87,9 @@
 	* shape.cpp: try something else in measure.
 
 	* size.h: add == and != overrides.
-	
+
 2009-01-26  Jeffrey Stedfast  <fejj@novell.com>
-	
+
 	* brush.cpp (VisualBrush::SetupBrush): Updated.
 
 	* uielement.cpp (UIElement::Render): Render our subtree in the

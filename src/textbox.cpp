@@ -209,34 +209,47 @@ class TextBuffer {
 
 class TextBoxDynamicPropertyValueProvider : public PropertyValueProvider {
 	Value *selection_value;
+	Value *text_value;
 	
  public:
 	TextBoxDynamicPropertyValueProvider (DependencyObject *obj) : PropertyValueProvider (obj)
 	{
 		selection_value = NULL;
+		text_value = NULL;
 	}
 	
 	virtual ~TextBoxDynamicPropertyValueProvider ()
 	{
 		delete selection_value;
+		delete text_value;
 	}
 	
 	virtual Value *GetPropertyValue (DependencyProperty *property)
 	{
-		if (property != TextBox::SelectedTextProperty)
-			return NULL;
-		
 		TextBox *tb = (TextBox *) obj;
-		char *selection;
+		char *text;
 		
-		if (tb->selection_changed) {
-			delete selection_value;
-			selection = g_ucs4_to_utf8 (tb->buffer->text + tb->selection.start, tb->selection.length, NULL, NULL, NULL);
-			selection_value = new Value (selection, true);
-			tb->selection_changed = false;
+		if (property == TextBox::SelectedTextProperty) {
+			if (tb->selection_changed) {
+				delete selection_value;
+				text = g_ucs4_to_utf8 (tb->buffer->text + tb->selection.start, tb->selection.length, NULL, NULL, NULL);
+				selection_value = new Value (text, true);
+				tb->selection_changed = false;
+			}
+			
+			return selection_value;
+		} else if (property == TextBox::TextProperty) {
+			if (tb->text_changed) {
+				delete text_value;
+				text = g_ucs4_to_utf8 (tb->buffer->text, tb->buffer->len, NULL, NULL, NULL);
+				text_value = new Value (text, true);
+				tb->text_changed = false;
+			}
+			
+			return text_value;
 		}
 		
-		return selection_value;
+		return NULL;
 	}
 };
 
@@ -269,6 +282,7 @@ TextBox::TextBox ()
 	buffer = new TextBuffer ();
 	
 	selection_changed = false;
+	text_changed = false;
 	selection.length = 0;
 	selection.start = 0;
 	emit = true;
@@ -1228,12 +1242,14 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 		
 		if (selection.length > 0) {
 			// replace the currently selected text
+			printf ("relacing selection with '%c'\n", (char) c);
 			changed = CONTENT_CHANGED | CURSOR_POSITION_CHANGED | SELECTION_CHANGED;
 			buffer->Replace (selection.start, selection.length, &c, 1);
 			cursor = selection.start + 1;
 			ClearSelection ();
 		} else {
 			// insert the text at the cursor position
+			printf ("inserting '%c' @ %d\n", (char) c, cursor);
 			changed = CONTENT_CHANGED | CURSOR_POSITION_CHANGED;
 			buffer->Insert (cursor, c);
 			cursor++;
@@ -1328,10 +1344,10 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 	}
 	
 	if (changed & CONTENT_CHANGED)
-		Emit (TextChangedEvent, new TextChangedEventArgs ());
+		EmitTextChanged ();
 	
 	if (changed & SELECTION_CHANGED)
-		Emit (TextChangedEvent, new RoutedEventArgs ());
+		EmitSelectionChanged ();
 	
 	// only bother emitting this event if the cursor position is
 	// the only thing that changed. If either Text or Selection
@@ -1359,6 +1375,22 @@ void
 TextBox::key_up (EventObject *sender, EventArgs *args, void *closure)
 {
 	((TextBox *) closure)->OnKeyUp ((KeyEventArgs *) args);
+}
+
+void
+TextBox::EmitSelectionChanged ()
+{
+	selection_changed = true;
+	
+	Emit (TextBox::SelectionChangedEvent, new RoutedEventArgs ());
+}
+
+void
+TextBox::EmitTextChanged ()
+{
+	text_changed = true;
+	
+	Emit (TextChangedEvent, new TextChangedEventArgs ());
 }
 
 void
@@ -1410,21 +1442,19 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 			cursor += textlen;
 		}
 		
-		Emit (TextBox::TextChangedEvent, new TextChangedEventArgs ());
-		
 		g_free (text);
+		
+		EmitTextChanged ();
 	} else if (args->property == TextBox::SelectionStartProperty) {
 		selection.start = args->new_value->AsInt32 ();
-		selection_changed = true;
 		
 		if (emit)
-			Emit (TextBox::SelectionChangedEvent, new RoutedEventArgs ());
+			EmitSelectionChanged ();
 	} else if (args->property == TextBox::SelectionLengthProperty) {
 		selection.length = args->new_value->AsInt32 ();
-		selection_changed = true;
 		
 		if (emit)
-			Emit (TextBox::SelectionChangedEvent, new RoutedEventArgs ());
+			EmitSelectionChanged ();
 	} else if (args->property == TextBox::SelectionBackgroundProperty) {
 		changed = TextBoxModelChangedBrush;
 	} else if (args->property == TextBox::SelectionForegroundProperty) {
@@ -1442,7 +1472,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		cursor = textlen;
 		g_free (text);
 		
-		Emit (TextBox::TextChangedEvent, new TextChangedEventArgs ());
+		EmitTextChanged ();
 	} else if (args->property == TextBox::TextAlignmentProperty) {
 		changed = TextBoxModelChangedTextAlignment;
 	} else if (args->property == TextBox::TextWrappingProperty) {
@@ -1518,7 +1548,7 @@ TextBox::ClearSelection ()
 	SetSelectionStart (0);
 	emit = true;
 	
-	Emit (TextBox::SelectionChangedEvent, new RoutedEventArgs ());
+	EmitSelectionChanged ();
 }
 
 void
@@ -1532,7 +1562,7 @@ TextBox::Select (int start, int length)
 	SetSelectionStart (start);
 	emit = true;
 	
-	Emit (TextBox::SelectionChangedEvent, new RoutedEventArgs ());
+	EmitSelectionChanged ();
 }
 
 void

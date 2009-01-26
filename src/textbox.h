@@ -87,6 +87,7 @@ class TextBox : public Control, public ITextSource {
 	int cursor;
 	
 	int selection_changed:1;
+	int text_changed:1;
 	int emit:1;
 	
 	static void key_down (EventObject *sender, EventArgs *args, void *closure);
@@ -107,6 +108,9 @@ class TextBox : public Control, public ITextSource {
 	int CursorUp (GdkModifierType modifiers);
 	
 	void ClearSelection ();
+	
+	void EmitSelectionChanged ();
+	void EmitTextChanged ();
 	
 	//
 	// Private Property Accessors
