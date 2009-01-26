@@ -1,3 +1,11 @@
+2009-01-26  Jeffrey Stedfast  <fejj@novell.com>
+
+	* ContentControl.cs (content_changed_callback): Fixed cast
+	exception for the event args.
+
+	* TextBox.cs (text_changed_cb): Fixed some cast exceptions and
+	also pass our EventArgs to InvokeTextChanged().
+
 2009-01-26  Geoff Norton  <gnorton@novell.com>
 
 	* Control.cs: Surface lives in Deployment now.

@@ -75,8 +75,8 @@ namespace System.Windows.Controls {
 		
 		static void content_changed_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			ContentChangedEventArgs args = (ContentChangedEventArgs) Helper.GCHandleFromIntPtr (calldata).Target;
 			ContentControl cc = (ContentControl) Helper.GCHandleFromIntPtr (closure).Target;
+			ContentChangedEventArgs args = new ContentChangedEventArgs (calldata);
 			
 			cc.OnContentChanged (args.OldContent, args.NewContent);
 		}

@@ -95,16 +95,20 @@ namespace System.Windows.Controls {
 			}
 		}
 		
-		void InvokeTextChanged ()
+		void InvokeTextChanged (TextChangedEventArgs args)
 		{
-			EventHandler h = (EventHandler) EventList [TextChangedEvent];
+			TextChangedEventHandler h = (TextChangedEventHandler) EventList [TextChangedEvent];
+			
 			if (h != null)
-				h (this, EventArgs.Empty);
+				h (this, args);
 		}
 		
 		static void text_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			((TextBox) Helper.GCHandleFromIntPtr (closure).Target).InvokeTextChanged ();
+			TextBox textbox = (TextBox) Helper.GCHandleFromIntPtr (closure).Target;
+			TextChangedEventArgs args = new TextChangedEventArgs (calldata);
+			
+			textbox.InvokeTextChanged (args);
 		}
 		
 		public event TextChangedEventHandler TextChanged {
