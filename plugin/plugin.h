@@ -198,7 +198,7 @@ class PluginInstance
 	MonoMethod   *moon_load_xap;
 	MonoMethod   *moon_destroy_application;
 
-	void LoadXAP  (const char *fname);
+	void LoadXAP  (const char*url, const char *fname);
 	void DestroyApplication ();
 
 	MonoMethod *MonoGetMethodFromName (MonoClass *klass, const char *name);

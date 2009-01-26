@@ -1104,8 +1104,12 @@ PluginInstance::LoadXAML ()
 // Loads a XAP file
 //
 void
-PluginInstance::LoadXAP (const char *fname)
+PluginInstance::LoadXAP (const char *url, const char *fname)
 {
+	if (source_location)
+		g_free (source_location);
+	source_location = g_strdup (url);
+
 	ManagedInitializeDeployment (fname);
 	xap_loaded = true;
 }
@@ -1267,11 +1271,11 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 		// FIXME horrible hack to test sl2 sites that use the sl1
 		// mimetype.
 		if (IsSilverlight2 ()) {
-			LoadXAP (fname);
+			LoadXAP (stream->url, fname);
 		} else if (strstr (stream->url, ".xap")) {
 			g_warning ("HACK to use sl2 on uris containing .xap engaged");
 			this->silverlight2 = TRUE;
-			LoadXAP (fname);
+			LoadXAP (stream->url, fname);
 		} else {
 #else
 			unzFile zf = unzOpen (fname);

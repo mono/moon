@@ -1,3 +1,7 @@
+2009-01-26  Jackson Harper  <jackson@ximian.com>
+
+	* plugin.cpp|h: SourceLocation for Sl2 xaps is the .xap url.
+
 2009-01-26  Geoff Norton  <gnorton@novell.com>
 
 	* plugin.cpp|h: We now go thru Deployment to warm up the application.
