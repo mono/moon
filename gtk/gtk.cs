@@ -244,7 +244,11 @@ public class GtkSilver : EventBox {
 		if (xap == null)
 			throw new ArgumentNullException ("xaml");
 
-		application = System.Windows.Application.CreateFromXap (IntPtr.Zero, surface, xap);
+		Deployment deployment = Deployment.Current;
+
+		deployment.InitializeDeployment (IntPtr.Zero, surface, xap);
+
+		application = System.Windows.Application.Current;
 
 		Console.WriteLine ("application = {0}", application);
 		Console.WriteLine ("application.RootVisual = {0}", application.RootVisual);

@@ -1,3 +1,7 @@
+2009-01-26  Geoff Norton  <gnorton@novell.com>
+
+	* gtk.cs: Update to the new deployment launcher api
+
 2008-12-17  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am: remove references to Mono.Moonlight.dll
