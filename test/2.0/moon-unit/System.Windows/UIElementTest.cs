@@ -28,11 +28,14 @@
 
 using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Automation.Peers;
 using System.Windows.Media;
 using System.Windows.Controls.Primitives;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+using MoonTest.System.Windows.Media;
 
 namespace MoonTest.System.Windows {
 
@@ -127,7 +130,7 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("we don't fallback to a MatrixTransform when property is set to null")]
+		[MoonlightBug ("ML does not fallback to a MatrixTransform when property is set to null")]
 		public void RenderTransform_SemiNonNullable ()
 		{
 			ConcreteUIElement ui = new ConcreteUIElement ();
@@ -147,23 +150,29 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("DO is frozen and cannot be updated like SL2")]
+		[MoonlightBug ("ML has the property Matrix frozen")]
 		public void RenderTransform_Unfrozen ()
 		{
 			ConcreteUIElement ui = new ConcreteUIElement ();
+			Assert.IsTrue (MatrixTransformTest.CheckFreezer (ui.RenderTransform as MatrixTransform), "RelativeTransform");
+		}
+
+		[TestMethod]
+		[MoonlightBug ("ML has the property Matrix frozen")]
+		public void NotDestructive ()
+		{
+			ConcreteUIElement ui = new ConcreteUIElement ();
+			// unlike the Brush transforms this one cannot be used to change the (shared) default value
 
 			MatrixTransform mt = (ui.RenderTransform as MatrixTransform);
-			Matrix m = mt.Matrix;
-			m.M11 = 2.0;
-			Assert.IsTrue (mt.Matrix.IsIdentity, "OldCopy/Identity");
+			Assert.IsTrue (mt.Matrix.IsIdentity, "Original/Identity");
 
-			// NOTE: ML DO is frozen and can't be updated
-			mt.Matrix = m;
-			Assert.IsFalse (mt.Matrix.IsIdentity, "NewMatrix/Identity");
+			mt.Matrix = new Matrix (1, 2, 3, 4, 5, 6);
+			Assert.IsFalse (mt.Matrix.IsIdentity, "New/NonIdentity");
 
-			Assert.IsTrue ((ui.RenderTransform as MatrixTransform).Matrix.IsIdentity, "RenderTransform/OldCopy/Identity");
-			ui.RenderTransform = mt;
-			Assert.IsFalse ((ui.RenderTransform as MatrixTransform).Matrix.IsIdentity, "RenderTransform/NewMatrix/Identity");
+			Assert.IsTrue ((new ConcreteUIElement ().RenderTransform as MatrixTransform).Matrix.IsIdentity, "ConcreteUIElement");
+			Assert.IsTrue ((new Canvas ().RenderTransform as MatrixTransform).Matrix.IsIdentity, "Canvas");
+			Assert.IsTrue ((new Slider ().RenderTransform as MatrixTransform).Matrix.IsIdentity, "Slider");
 		}
 	}
 }

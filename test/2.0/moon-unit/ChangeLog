@@ -1,3 +1,13 @@
+2009-01-26  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows/UIElementTest.cs: Add test case to show that we can
+	NOT use RenderTransform to change the default value of the transform
+	* System.Windows.Browser/ScriptableTest.cs: Remove [MoonlightBug]
+	from Invoke test case.
+	* System.Windows.Controls.Primitives/RepeatButtonTest.cs: Remove
+	MoonlightBug from CheckReadOnlyXaml test case.
+	* System.Windows.Documents/InlineTest.cs: Update comments.
+
 2009-01-26  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows.Media/TransformGroupTest.cs: New.

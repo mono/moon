@@ -42,7 +42,7 @@ namespace MoonTest.System.Windows.Documents {
 		static public void CheckDefaults (Inline i)
 		{
 			Assert.AreEqual ("Portable User Interface", i.FontFamily.Source, "FontFamily");
-// FIXME
+// FIXME - wrong value / units
 //			Assert.AreEqual (11, i.FontSize, "FontSize");
 
 			Assert.AreEqual (FontStretches.Normal, i.FontStretch, "FontStretch");
@@ -50,7 +50,7 @@ namespace MoonTest.System.Windows.Documents {
 			Assert.AreEqual (FontWeights.Normal, i.FontWeight, "FontWeight");
 
 			Assert.IsNotNull (i.Foreground, "Foreground");
-// FIXME (ToString related)
+// FIXME - wrong default
 //			Assert.AreEqual (Colors.Black, (i.Foreground as SolidColorBrush).Color, "Foreground.Color");
 			Assert.AreEqual ("en-us", i.Language.IetfLanguageTag, "Language");
 			Assert.IsNull (i.TextDecorations, "TextDecorations");

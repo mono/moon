@@ -69,7 +69,6 @@ namespace MoonTest.System.Windows.Browser
 		}
 
 		[TestMethod]
-		[MoonlightBug("not working yet from the managed side")]
 		public void Invoke () {
 			var calc = content.GetProperty ("calc") as ScriptObject;
 			var a = calc.Invoke ("Add", 5, 1);

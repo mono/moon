@@ -142,7 +142,6 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void CheckReadOnlyXaml ()
 		{
 			Assert.Throws<XamlParseException> (delegate {
