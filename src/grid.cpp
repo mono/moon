@@ -127,16 +127,16 @@ Grid::MeasureOverride (Size availableSize)
 		gint32 col, row;
 		gint32 colspan, rowspan;
 
-		col = Grid::GetColumn (child);
-		row = Grid::GetRow (child);
-		colspan = Grid::GetColumnSpan (child);
-		rowspan = Grid::GetRowSpan (child);
+		col = MIN (Grid::GetColumn (child), col_count - 1);
+		row = MIN (Grid::GetRow (child), row_count - 1);
+		colspan = MIN (Grid::GetColumnSpan (child), col_count - col);
+		rowspan = MIN (Grid::GetRowSpan (child), row_count - row);
 
 		Size child_size = Size (0,0);
 		Size min_size = Size (0,0);
 		Size max_size = Size (0,0); 
 		
-		for (int r = row; r < MIN (row + rowspan, row_count); r++) {
+		for (int r = row; r < row + rowspan; r++) {
 			RowDefinition *rowdef = rows->GetValueAt (r)->AsRowDefinition ();
 			GridLength* height = rowdef->GetHeight();
 
@@ -149,7 +149,7 @@ Grid::MeasureOverride (Size availableSize)
 			max_size.height += rowdef->GetMaxHeight ();
 		}
 
-		for (int c = col; c < MIN (col + colspan, col_count); c++) {
+		for (int c = col; c < col + colspan; c++) {
 			ColumnDefinition *coldef = columns->GetValueAt (c)->AsColumnDefinition ();
 			GridLength* width = coldef->GetWidth();
 
@@ -167,38 +167,38 @@ Grid::MeasureOverride (Size availableSize)
 		child_size = child_size.Max (min_size);
 
 		child->Measure (child_size);
-		child_size = child->GetDesiredSize();
+		Size desired = child->GetDesiredSize();
 		
-		child_size = child_size.Min (max_size);
-		child_size = child_size.Max (min_size);
+		desired = desired.Min (max_size);
+		desired = desired.Max (min_size);
+		
+		/* XXX should we do a SetDesiredSize (desired) here? or is there a layout method we are missing */
 
-		double remaining_width = child_size.width;
-
-		for (int c = col; c < MIN (col + colspan, col_count); c++){
+		Size remaining = desired;
+		for (int c = col; c < col + colspan; c++){
 			ColumnDefinition *coldef = columns->GetValueAt (c)->AsColumnDefinition ();
 			GridLength *width = coldef->GetWidth ();
 
-			double contribution = width->type != GridUnitTypePixel ? remaining_width : width->val;
+			double contribution = width->type != GridUnitTypePixel ? remaining.width : width->val;
 			
 			contribution = MAX (contribution, coldef->GetMinWidth ());
 			contribution = MIN (contribution, coldef->GetMaxWidth ());
 			
 			coldef->SetActualWidth (MAX(coldef->GetActualWidth (), contribution));
-			remaining_width -= contribution;
+			remaining.width -= contribution;
 		}
 
-		double remaining_height = child_size.height;
-		for (int r = row; r < MIN (row + rowspan, row_count); r++){
+		for (int r = row; r < row + rowspan; r++){
 			RowDefinition *rowdef = rows->GetValueAt (r)->AsRowDefinition ();
 			GridLength *height = rowdef->GetHeight ();
 
-			double contribution = height->type != GridUnitTypePixel ? remaining_height : height->val;
+			double contribution = height->type != GridUnitTypePixel ? remaining.height : height->val;
 				
 			contribution = MAX (contribution, rowdef->GetMinHeight ());
 			contribution = MIN (contribution, rowdef->GetMaxHeight ());
 			
 			rowdef->SetActualHeight (MAX (rowdef->GetActualHeight (), contribution));
-			remaining_height -= contribution;
+			remaining.height -= contribution;
 		}
 	}
 
@@ -248,8 +248,8 @@ Grid::ArrangeOverride (Size finalSize)
 
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
-		gint32 col = Grid::GetColumn (child);
-		gint32 row = Grid::GetRow (child);
+		gint32 col = MIN (Grid::GetColumn (child), col_count - 1);
+		gint32 row = MIN (Grid::GetRow (child), row_count - 1);
 		//gint32 colspan = Grid::GetColumnSpan (child);
 		//gint32 rowspan = Grid::GetRowSpan (child);
 		
@@ -326,16 +326,16 @@ Grid::ArrangeOverride (Size finalSize)
 
 	walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
-		gint32 col = Grid::GetColumn (child);
-		gint32 row = Grid::GetRow (child);
-		gint32 colspan = Grid::GetColumnSpan (child);
-		gint32 rowspan = Grid::GetRowSpan (child);
+		gint32 col = MIN (Grid::GetColumn (child), col_count - 1);
+		gint32 row = MIN (Grid::GetRow (child), row_count - 1);
+		gint32 colspan = MIN (Grid::GetColumnSpan (child), col_count - col);
+		gint32 rowspan = MIN (Grid::GetRowSpan (child), row_count - col);
 
 		Rect child_final = Rect (0, 0, 0, 0);
 		Size min_size;
 		Size max_size;
 
-		for (int r = 0; r < MIN (row + rowspan, row_count); r++) {
+		for (int r = 0; r < row + rowspan; r++) {
 			RowDefinition *rowdef = rows->GetValueAt (r)->AsRowDefinition ();
 
 			if (r < row) {
@@ -348,9 +348,7 @@ Grid::ArrangeOverride (Size finalSize)
 			}
 		}
 
-
-
-		for (int c = col; c < MIN (col + colspan, col_count); c++) {
+		for (int c = col; c < col + colspan; c++) {
 			ColumnDefinition *coldef = columns->GetValueAt (c)->AsColumnDefinition ();
 
 			if (c < col) {

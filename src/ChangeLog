@@ -1,5 +1,10 @@
 2009-01-26  Larry Ewing  <lewing@novell.com>
 
+	* grid.cpp (Grid::MeasureOverride): handle out of bounds
+	rows/columns the way the tests indicate.
+
+2009-01-24  Larry Ewing  <lewing@novell.com>
+
 	* border.cpp (Border::MeasureOverride): Fix a width/height mixup.
 
 2009-01-24  Larry Ewing  <lewing@novell.com>
