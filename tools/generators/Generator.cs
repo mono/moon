@@ -691,21 +691,21 @@ class Generator {
 		}
 		
 		// Add all the manual types
-		all.Children.Add (new TypeInfo ("object", "OBJECT", "INVALID", true));
-		all.Children.Add (new TypeInfo ("bool", "BOOL", "OBJECT", true));
-		all.Children.Add (new TypeInfo ("double", "DOUBLE", "OBJECT", true));
-		all.Children.Add (new TypeInfo ("guint64", "UINT64", "OBJECT", true));
-		all.Children.Add (new TypeInfo ("gint64", "INT64", "OBJECT", true));
-		all.Children.Add (new TypeInfo ("guint32", "UINT32", "OBJECT", true));
-		all.Children.Add (new TypeInfo ("gint32", "INT32", "OBJECT", true));
-		all.Children.Add (new TypeInfo ("char*", "STRING", "OBJECT", true));
-		all.Children.Add (new TypeInfo ("NPObj", "NPOBJ", "OBJECT", true));
-		all.Children.Add (new TypeInfo ("Managed", "MANAGED", "OBJECT", true, 2));
-		all.Children.Add (new TypeInfo ("TimeSpan", "TIMESPAN", "OBJECT", true));
-		all.Children.Add (new TypeInfo ("char", "CHAR", "OBJECT", true));
-		all.Children.Add (new TypeInfo ("System.Windows.FontStretch", "FONTSTRETCH", "OBJECT", true));
-		all.Children.Add (new TypeInfo ("System.Windows.Media.FontFamily", "FONTFAMILY", "OBJECT", true));
-		all.Children.Add (new TypeInfo ("System.Windows.Markup.XmlLanguage", "XMLLANGUAGE", "OBJECT", true));
+		all.Children.Add (new TypeInfo ("object", "OBJECT", "INVALID", true, true));
+		all.Children.Add (new TypeInfo ("bool", "BOOL", "OBJECT", true, true));
+		all.Children.Add (new TypeInfo ("double", "DOUBLE", "OBJECT", true, true));
+		all.Children.Add (new TypeInfo ("guint64", "UINT64", "OBJECT", true, true));
+		all.Children.Add (new TypeInfo ("gint64", "INT64", "OBJECT", true, true));
+		all.Children.Add (new TypeInfo ("guint32", "UINT32", "OBJECT", true, true));
+		all.Children.Add (new TypeInfo ("gint32", "INT32", "OBJECT", true, true));
+		all.Children.Add (new TypeInfo ("char*", "STRING", "OBJECT", true, true));
+		all.Children.Add (new TypeInfo ("NPObj", "NPOBJ", "OBJECT", true, true));
+		all.Children.Add (new TypeInfo ("Managed", "MANAGED", "OBJECT", true, 2, true));
+		all.Children.Add (new TypeInfo ("TimeSpan", "TIMESPAN", "OBJECT", true, true));
+		all.Children.Add (new TypeInfo ("char", "CHAR", "OBJECT", true, true));
+		all.Children.Add (new TypeInfo ("System.Windows.FontStretch", "FONTSTRETCH", "OBJECT", true, true));
+		all.Children.Add (new TypeInfo ("System.Windows.Media.FontFamily", "FONTFAMILY", "OBJECT", true, true));
+		all.Children.Add (new TypeInfo ("System.Windows.Markup.XmlLanguage", "XMLLANGUAGE", "OBJECT", true, true));
 	
 		
 		return all;
@@ -1139,7 +1139,7 @@ class Generator {
 
 		v = v.ToUpper ();
 		v = v.Replace ("DEPENDENCYOBJECT", "DEPENDENCY_OBJECT");
-		if (v.Length > "COLLECTION".Length)
+		if (v.Length > "COLLECTION".Length && !v.StartsWith ("COLLECTION"))
 			v = v.Replace ("COLLECTION", "_COLLECTION");
 		if (v.Length > "DICTIONARY".Length)
 			v = v.Replace ("DICTIONARY", "_DICTIONARY");
@@ -1522,7 +1522,7 @@ class Generator {
 			TypeInfo parent = null;
 			string events = "NULL";
 				
-			if (!type.ImplementsGetObjectType && !type.Annotations.ContainsKey ("IncludeInKinds"))
+			if (!type.Annotations.ContainsKey("ObjectType") && !type.Annotations.ContainsKey ("IncludeInKinds"))
 				continue;
 				
 			if (type.Base != null && type.Base.Value != null && all.Children.TryGetValue (type.Base.Value, out member))
@@ -1609,9 +1609,12 @@ class Generator {
 			while (line != null) {
 				if (line.Contains ("/*DO_FWD_DECLS*/")) {
 					foreach (TypeInfo type in all.Children.SortedTypesByKind) {
-						if (!type.ImplementsGetObjectType || type.IsNested)
+						if (!type.Annotations.ContainsKey("IncludeInKinds") ||
+						    type.Annotations.ContainsKey("SkipValue") ||
+						    type.IsNested ||
+						    type.IsStruct)
 							continue;
-						
+
 						if (type.IsStruct) {
 							result.Append ("struct ");
 						} else {
@@ -1623,7 +1626,10 @@ class Generator {
 					result.AppendLine ();
 				} else if (line.Contains ("/*DO_AS*/")) {
 					foreach (TypeInfo type in all.Children.SortedTypesByKind) {
-						if (!type.ImplementsGetObjectType || type.IsNested)
+						if (!type.Annotations.ContainsKey("IncludeInKinds") ||
+						    type.Annotations.ContainsKey("SkipValue") ||
+						    type.IsNested ||
+						    type.IsStruct)
 							continue;
 			
 						//do_as.AppendLine (string.Format ("	{1,-30} As{0} () {{ checked_get_subclass (Type::{2}, {0}) }}", type.Name, type.Name + "*", type.KindName));

@@ -28,6 +28,7 @@ class TypeInfo : MemberInfo {
 
 	public bool Include; // Force inclusion of this type into the type system (for manual types, char, point[], etc)
 	public bool IsValueType;
+	public bool SkipValue;
 	
 	public bool IsAbstract {
 		get {
@@ -50,7 +51,7 @@ class TypeInfo : MemberInfo {
 			return is_abstract.Value;
 		}
 	}
-	
+
 	public List<FieldInfo> Events {
 		get {
 			if (events == null) {
@@ -128,16 +129,6 @@ class TypeInfo : MemberInfo {
 		return false;
 	}
 
-	public bool ImplementsGetObjectType {
-		get {
-			foreach (MemberInfo child in Children.Values) {
-				if (child is MethodInfo && child.Name == "GetObjectType")
-					return true;
-			}
-			return false;
-		}
-	}
-	
 	public bool IsNested {
 		get {
 			return Name.Contains ("::");
@@ -224,6 +215,20 @@ class TypeInfo : MemberInfo {
 		if (Include)
 			Annotations.Add (new Annotation ("IncludeInKinds"));
 	}
+
+	public TypeInfo (string Name, string KindName, string Base, bool Include, bool SkipValue)
+	{
+		this.Name = Name;
+		this.KindName = KindName;
+		this.Base = new TypeReference (Base);
+		this.Include = Include;
+		if (Include)
+			Annotations.Add (new Annotation ("IncludeInKinds"));
+		this.SkipValue = SkipValue;
+		if (SkipValue)
+			Annotations.Add (new Annotation ("SkipValue"));
+	}
+
 	public TypeInfo (string Name, string KindName, string Base, bool Include, int SLVersion)
 	{
 		this.Name = Name;
@@ -233,6 +238,20 @@ class TypeInfo : MemberInfo {
 		if (Include)
 			Annotations.Add (new Annotation ("IncludeInKinds"));
 		Annotations.Add (new Annotation ("SilverlightVersion", "\"" + SLVersion.ToString () + "\""));
+	}
+
+	public TypeInfo (string Name, string KindName, string Base, bool Include, int SLVersion, bool SkipValue)
+	{
+		this.Name = Name;
+		this.KindName = KindName;
+		this.Base = new TypeReference (Base);
+		this.Include = Include;
+		if (Include)
+			Annotations.Add (new Annotation ("IncludeInKinds"));
+		Annotations.Add (new Annotation ("SilverlightVersion", "\"" + SLVersion.ToString () + "\""));
+		this.SkipValue = SkipValue;
+		if (SkipValue)
+			Annotations.Add (new Annotation ("SkipValue"));
 	}
 	
 }

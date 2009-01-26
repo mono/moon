@@ -323,7 +323,7 @@ class Members : Dictionary <string, MemberInfo>{
 					continue;
 				
 				if (!type.Annotations.ContainsKey ("IncludeInKinds")) {
-					if (!type.ImplementsGetObjectType) {
+					if (!type.Annotations.ContainsKey ("ObjectType")) {
 						continue;
 					}
 				}
