@@ -1,3 +1,7 @@
+2009-01-26  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* type.cpp: Type::Find: Check for NULL deployment to avoid crashes.
+
 2009-01-26  Chris Toshok  <toshok@ximian.com>
 
 	* animation2.h, animation.[cpp,h], application.[cpp,h], asf/asf.h,
