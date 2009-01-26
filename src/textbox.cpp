@@ -1704,7 +1704,7 @@ TextBoxView::UpdateCursor (bool invalidate)
 }
 
 void
-TextBoxView::Render (cairo_t *cr, int x, int y, int width, int height)
+TextBoxView::Render (cairo_t *cr, Region *region)
 {
 	if (dirty)
 		Layout (cr);

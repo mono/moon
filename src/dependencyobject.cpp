@@ -1237,9 +1237,10 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 
 			// set its logical parent
 			if (new_as_dep->GetLogicalParent() != NULL && new_as_dep->GetLogicalParent() != this) {
-				g_warning ("DependencyObject (%s) already has a logical parent of type %s",
+				g_warning ("DependencyObject (%s) already has a logical parent of type %s. Setting logical parent to a %s.",
 					   new_as_dep->GetType ()->GetName (),
-					   new_as_dep->GetLogicalParent ()->GetType ()->GetName ());
+					   new_as_dep->GetLogicalParent ()->GetType ()->GetName (),
+					   GetType ()->GetName ());
 			}
 			
 			MoonError error;

@@ -1,11 +1,18 @@
-2009-01-26  Chris Toshok  <toshok@ximian.com>
+2009-01-26  Jeffrey Stedfast  <fejj@novell.com>
 
-	* brush.cpp (VisualBrush::SetupBrush): comment out the call to
-	UIElement::Render(int,int,int,int).
+	* brush.cpp (VisualBrush::SetupBrush): Updated.
 
-	* uielement.cpp, uielement.h (UIElement::Render): get rid of the
-	int,int,int,int override, and call the region override on
-	subtree_object if we need to.
+	* uielement.cpp (UIElement::Render): Render our subtree in the
+	Region* version of this method and get rid of the old x,y,w,h
+	version.
+
+	* text.cpp (TextBlock::Render): Override the Render() that takes a
+	Region.
+	(Glyphs::Render): Same.
+
+	* textbox.cpp (TextBoxView::Render): Same.
+
+	* shape.cpp (Shape::Render): Here too.
 
 2009-01-26  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 

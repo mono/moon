@@ -291,7 +291,7 @@ class TextBoxView : public FrameworkElement {
 	//
 	// Overrides
 	//
-	virtual void Render (cairo_t *cr, int x, int y, int width, int height);
+	virtual void Render (cairo_t *cr, Region *region);
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual Size ArrangeOverride (Size size);
 	

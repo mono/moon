@@ -962,10 +962,9 @@ UIElement::CallPostRender (cairo_t *cr, UIElement *element, Region *region, bool
 void
 UIElement::Render (cairo_t *cr, Region *region)
 {
-	if (subtree_object && subtree_object->Is(Type::UIELEMENT)) {
-		((UIElement*)subtree_object)->Render(cr, region);
-	}
-	else {
+	if (subtree_object && subtree_object->Is (Type::UIELEMENT)) {
+		((UIElement *) subtree_object)->Render (cr, region);
+	} else {
 		g_warning ("UIElement:Render has been called. The derived class %s should have overridden it.",
 			   GetTypeName ());
 	}

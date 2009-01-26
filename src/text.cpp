@@ -262,7 +262,7 @@ TextBlock::SetFontSource (Downloader *downloader)
 }
 
 void
-TextBlock::Render (cairo_t *cr, int x, int y, int width, int height)
+TextBlock::Render (cairo_t *cr, Region *region)
 {
 	if (dirty)
 		Layout (cr);
@@ -1171,9 +1171,9 @@ Glyphs::GetOriginPoint ()
 }
 
 void
-Glyphs::Render (cairo_t *cr, int x, int y, int width, int height)
+Glyphs::Render (cairo_t *cr, Region *region)
 {
-	if (this->width == 0.0 && this->height == 0.0)
+	if (width == 0.0 && height == 0.0)
 		return;
 	
 	if (invalid) {

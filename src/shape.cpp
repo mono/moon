@@ -485,7 +485,7 @@ cleanpath:
 }
 
 void
-Shape::Render (cairo_t *cr, int x, int y, int width, int height)
+Shape::Render (cairo_t *cr, Region *region)
 {
 	cairo_save (cr);
 	DoDraw (cr, true);

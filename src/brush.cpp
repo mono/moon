@@ -1021,9 +1021,8 @@ VisualBrush::SetupBrush (cairo_t *cr, const Rect &area)
 	surface = image_brush_create_similar (cr, (int) bounds.width, (int) bounds.height);
 	
 	cairo_t *surface_cr = cairo_create (surface);
-	// XXX reinstante this call (using a region) when we're ready
-	// to get this brush up and running again
-	//	ui->Render (surface_cr, 0, 0, (int) bounds.width , (int) bounds.height);
+	Region region = Region (0, 0, bounds.width, bounds.height);
+	ui->Render (surface_cr, &region);
 	cairo_destroy (surface_cr);
 	
 	Stretch stretch = GetStretch ();
