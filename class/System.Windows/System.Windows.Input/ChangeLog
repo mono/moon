@@ -1,3 +1,7 @@
+2009-01-26  Geoff Norton  <gnorton@novell.com>
+
+	* FocusManager.cs: Surface lives in Deployment now.
+
 2009-01-07  Alan McGovern  <amcgovern@novell.com>
 
 	* Cursors.cs: Added new test for cursors and fixed the implementation to
