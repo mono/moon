@@ -98,7 +98,7 @@ namespace System.Windows.Controls {
 		
 		public bool Focus()
 		{
-			return NativeMethods.surface_focus_element (Application.s_surface, native);
+			return NativeMethods.surface_focus_element (Deployment.Current.Surface, native);
 		}
 
 		protected DependencyObject GetTemplateChild (string childName)
