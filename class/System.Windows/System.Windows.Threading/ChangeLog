@@ -1,3 +1,7 @@
+2009-01-26  Geoff Norton  <gnorton@novell.com>
+
+	* Dispatcher.cs: Surface lives in Deployment now.
+
 2009-01-23  Andreia Gaita  <avidigal@novell.com>
 
 	* Dispatcher.cs: Add destructor to remove callback handler. 
