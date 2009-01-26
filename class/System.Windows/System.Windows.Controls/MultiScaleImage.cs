@@ -51,7 +51,8 @@ namespace System.Windows.Controls {
 		}
 
 		public ReadOnlyCollection<MultiScaleSubImage> SubImages {
-			get { throw new NotImplementedException (); }
+			get { return new ReadOnlyCollection<MultiScaleSubImage> (new System.Collections.Generic.List<MultiScaleSubImage> ()); }
+//			get { throw new NotImplementedException (); }
 		}
 
 		static object ImageFailedEvent = new object ();
