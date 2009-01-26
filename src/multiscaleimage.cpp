@@ -48,14 +48,18 @@ MultiScaleImage::~MultiScaleImage ()
 void
 MultiScaleImage::ZoomAboutLogicalPoint (double zoomIncrementFactor, double zoomCenterLogicalX, double zoomCenterLogicalY)
 {
-
+	double width = GetViewportWidth () * zoomIncrementFactor;
+	double height = width * GetAspectRatio ();
+//	SetViewportOrigin (new Point (zoomCenterLogicalX - width/2.0, zoomCenterLogicalY - height/2.0));
+	SetViewportWidth (width);
+	Invalidate ();
 }
 
 Point
 MultiScaleImage::ElementToLogicalPoint (Point elementPoint)
 {
-	//FIXME
-	return Point (0, 0);
+	return Point (GetViewportOrigin()->x + elementPoint.x * GetViewportWidth () / GetWidth(),
+		      GetViewportOrigin()->y + elementPoint.y * GetViewportWidth () * GetAspectRatio () / GetHeight ());
 }
 
 void
