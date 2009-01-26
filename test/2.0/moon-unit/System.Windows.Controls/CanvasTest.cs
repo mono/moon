@@ -248,6 +248,13 @@ namespace MoonTest.System.Windows.Controls
 
 			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
 			Assert.AreEqual (new Size (25,33), new Size (c.ActualWidth,c.ActualHeight), "c actual2");
+			Assert.AreEqual (new Size (0,0), c.RenderSize, "c render");
+
+			c.Arrange (new Rect (0,0,c.DesiredSize.Width,c.DesiredSize.Height));
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (25,33), new Size (c.ActualWidth,c.ActualHeight), "c actual2");
+			Assert.AreEqual (new Size (0,0), c.RenderSize, "c render");
 		}
 
 		[TestMethod]
@@ -271,6 +278,34 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (c), "c slot");
 
 			c.Measure (new Size (100, 100));
+
+			Assert.AreEqual (new Size (25,33), c.DesiredSize, "c desired3");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual3");
+
+			Assert.IsTrue (c.UseLayoutRounding, "use rounding");
+		}
+
+		[TestMethod]
+		public void ComputeActualWidthBorderMeasure ()
+		{
+			Border b = new Border ();
+			Canvas c = new Canvas ();
+
+			b.Child = c;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired1");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual1");
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (c), "c slot");
+
+			c.MaxWidth = 25;
+			c.Width = 50;
+			c.MinHeight = 33;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired2");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual2");
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (c), "c slot");
+
+			b.Measure (new Size (100, 100));
 
 			Assert.AreEqual (new Size (25,33), c.DesiredSize, "c desired3");
 			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual3");

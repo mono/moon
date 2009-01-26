@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Markup;
 using System.Windows.Media;
@@ -76,6 +77,488 @@ namespace MoonTest.System.Windows.Shapes
 			Assert.AreEqual (new Size (30,30), p.DesiredSize, "p desired");
 			Assert.AreEqual (new Size (50,50), b.RenderSize, "b RenderSize");
 			Assert.AreEqual (new Size (50,50), p.RenderSize, "p RenderSize");
+		}
+
+		[TestMethod]
+		public void ComputeActualWidth ()
+		{
+			var c = new Path ();
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual1");
+
+			c.MaxWidth = 25;
+			c.Width = 50;
+			c.MinHeight = 33;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (25,33), new Size (c.ActualWidth,c.ActualHeight), "c actual1");
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (c), "c slot");
+
+			c.Measure (new Size (100, 100));
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (25,33), new Size (c.ActualWidth,c.ActualHeight), "c actual2");
+			Assert.AreEqual (new Size (0,0), c.RenderSize, "c render");
+
+			c.Arrange (new Rect (0,0,c.DesiredSize.Width,c.DesiredSize.Height));
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (25,33), new Size (c.ActualWidth,c.ActualHeight), "c actual2");
+			Assert.AreEqual (new Size (0,0), c.RenderSize, "c render");
+		}
+
+		[TestMethod]
+		public void ComputeActualSizeIntrinsic ()
+		{
+			var c = new Path ();
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual1");
+
+			var data = new RectangleGeometry ();
+			data.Rect = new Rect (0,10,25,23);
+			c.Data = data;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual1");
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (c), "c slot");
+
+			c.Measure (new Size (100, 100));
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual2");
+			Assert.AreEqual (new Size (0,0), c.RenderSize, "c render");
+
+			c.Arrange (new Rect (0,0,c.DesiredSize.Width,c.DesiredSize.Height));
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual3");
+			Assert.AreEqual (new Size (0,0), c.RenderSize, "c render");
+		}
+
+		[TestMethod]
+		public void ComputeActualSizeIntrinsicBorder ()
+		{
+			Border b = new Border ();
+			var c = new Path ();
+			b.Child = c;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired0");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual0");
+
+			var data = new RectangleGeometry ();
+			data.Rect = new Rect (0,10,25,23);
+			c.Data = data;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired1");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual1");
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (c), "c slot");
+
+			c.Measure (new Size (100, 100));
+
+			Assert.AreEqual (new Size (25,33), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual2");
+			Assert.AreEqual (new Size (0,0), c.RenderSize, "c render");
+
+			c.Arrange (new Rect (0,0,c.DesiredSize.Width,c.DesiredSize.Height));
+
+			Assert.AreEqual (new Size (25,33), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (25,33), new Size (c.ActualWidth,c.ActualHeight), "c actual3");
+			Assert.AreEqual (new Size (25,33), c.RenderSize, "c render");
+		}
+
+		[TestMethod]
+		public void ComputeRestrainedSizeIntrinsicBorder ()
+		{
+			Border b = new Border ();
+			var c = new Path ();
+			b.Child = c;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired0");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual0");
+
+			var data = new RectangleGeometry ();
+			data.Rect = new Rect (0,10,25,23);
+			c.Data = data;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired1");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual1");
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (c), "c slot");
+
+			c.Measure (new Size (10, 10));
+
+			Assert.AreEqual (new Size (10,10), c.DesiredSize, "c desired2");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual2");
+			Assert.AreEqual (new Size (0,0), c.RenderSize, "c render2");
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (c), "c slot2");
+
+			c.Arrange (new Rect (10,10,c.DesiredSize.Width,c.DesiredSize.Height));
+
+			Assert.AreEqual (new Size (10,10), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (25,33), new Size (c.ActualWidth,c.ActualHeight), "c actual3");
+			Assert.AreEqual (new Size (25,33), c.RenderSize, "c render");
+			Assert.AreEqual (new Rect (10,10,10,10), LayoutInformation.GetLayoutSlot (c), "c slot2");
+
+		}
+
+		[TestMethod]
+		public void ComputeReducedSizeIntrinsicBorder ()
+		{
+			Border b = new Border ();
+			var c = new Path ();
+			b.Child = c;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired0");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual0");
+
+			var data = new RectangleGeometry ();
+			data.Rect = new Rect (0,10,25,23);
+			c.Data = data;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired1");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual1");
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (c), "c slot");
+
+			c.Measure (new Size (10, 10));
+
+			Assert.AreEqual (new Size (10,10), c.DesiredSize, "c desired2");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual2");
+			Assert.AreEqual (new Size (0,0), c.RenderSize, "c render2");
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (c), "c slot2");
+
+			c.Arrange (new Rect (10,10,c.DesiredSize.Width,c.DesiredSize.Height));
+
+			Assert.AreEqual (new Size (10,10), c.DesiredSize, "c desired3");
+			Assert.AreEqual (new Size (25,33), new Size (c.ActualWidth,c.ActualHeight), "c actual3");
+			Assert.AreEqual (new Size (25,33), c.RenderSize, "c render3");
+			Assert.AreEqual (new Rect (10,10,10,10), LayoutInformation.GetLayoutSlot (c), "c slot3");
+
+		}
+
+		[TestMethod]
+		public void ComputeLargerSize_StretchFill_IntrinsicBorder ()
+		{
+			Border b = new Border ();
+			var c = new Path ();
+			b.Child = c;
+			c.Stretch = Stretch.Fill;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired0");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual0");
+
+			var data = new RectangleGeometry ();
+			data.Rect = new Rect (0,10,25,23);
+			c.Data = data;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired1");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual1");
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (c), "c slot");
+
+			c.Measure (new Size (100, 100));
+
+			Assert.AreEqual (new Size (100,100), c.DesiredSize, "c desired2");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual2");
+			Assert.AreEqual (new Size (0,0), c.RenderSize, "c render2");
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (c), "c slot2");
+
+			c.Arrange (new Rect (8,6,c.DesiredSize.Width,c.DesiredSize.Height));
+
+			Assert.AreEqual (new Size (100,100), c.DesiredSize, "c desired3");
+			Assert.AreEqual (new Size (100,100), new Size (c.ActualWidth,c.ActualHeight), "c actual3");
+			Assert.AreEqual (new Size (100,100), c.RenderSize, "c render3");
+			Assert.AreEqual (new Rect (8,6,100,100), LayoutInformation.GetLayoutSlot (c), "c slot3");
+
+		}
+
+		[TestMethod]
+		public void ComputeLargerSize_StretchUniform_IntrinsicBorder ()
+		{
+			Border b = new Border ();
+			var c = new Path ();
+			b.Child = c;
+			c.Stretch = Stretch.Uniform;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired0");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual0");
+
+			var data = new RectangleGeometry ();
+			data.Rect = new Rect (0,10,25,23);
+			c.Data = data;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired1");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual1");
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (c), "c slot");
+
+			c.Measure (new Size (100, 100));
+
+			Assert.AreEqual (new Size (100,92), c.DesiredSize, "c desired2");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual2");
+			Assert.AreEqual (new Size (0,0), c.RenderSize, "c render2");
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (c), "c slot2");
+
+			c.Arrange (new Rect (8,6,c.DesiredSize.Width,c.DesiredSize.Height));
+
+			Assert.AreEqual (new Size (100,92), c.DesiredSize, "c desired3");
+			Assert.AreEqual (new Size (100,92), new Size (c.ActualWidth,c.ActualHeight), "c actual3");
+			Assert.AreEqual (new Size (100,92), c.RenderSize, "c render3");
+			Assert.AreEqual (new Rect (8,6,100,92), LayoutInformation.GetLayoutSlot (c), "c slot3");
+
+		}
+
+		[TestMethod]
+		public void BorderComputeLargerSize_StretchUniform_IntrinsicBorder ()
+		{
+			Border b = new Border ();
+			var c = new Path ();
+			b.Child = c;
+			c.Stretch = Stretch.Uniform;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired0");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual0");
+
+			var data = new RectangleGeometry ();
+			data.Rect = new Rect (0,10,25,23);
+			c.Data = data;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired1");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual1");
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (c), "c slot");
+
+			b.Measure (new Size (100, 100));
+
+			Assert.AreEqual (new Size (100,92), c.DesiredSize, "c desired2");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual2");
+			Assert.AreEqual (new Size (0,0), c.RenderSize, "c render2");
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (c), "c slot2");
+
+			b.Arrange (new Rect (8,6,b.DesiredSize.Width,b.DesiredSize.Height));
+
+			Assert.AreEqual (new Size (100,92), c.DesiredSize, "c desired3");
+			Assert.AreEqual (new Size (100,92), new Size (c.ActualWidth,c.ActualHeight), "c actual3");
+			Assert.AreEqual (new Size (100,92), c.RenderSize, "c render3");
+			Assert.AreEqual (new Rect (0,0,100,92), LayoutInformation.GetLayoutSlot (c), "c slot3");
+
+		}
+
+		[TestMethod]
+		public void BorderComputeLargerSize_StretchUniform_IntrinsicBorderSized ()
+		{
+			Border b = new Border ();
+			var c = new Path ();
+			b.Child = c;
+			c.Stretch = Stretch.Uniform;
+			b.Width = 75;
+			b.Height = 50;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired0");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual0");
+
+			var data = new RectangleGeometry ();
+			data.Rect = new Rect (0,10,25,23);
+			c.Data = data;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired1");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual1");
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (c), "c slot");
+
+			b.Measure (new Size (100, 100));
+
+			Assert.AreEqual (new Size (54,50), c.DesiredSize, "c desired2");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual2");
+			Assert.AreEqual (new Size (0,0), c.RenderSize, "c render2");
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (c), "c slot2");
+
+			b.Arrange (new Rect (8,6,b.DesiredSize.Width,b.DesiredSize.Height));
+
+			Assert.AreEqual (new Size (54,50), c.DesiredSize, "c desired3");
+			Assert.IsTrue (c.ActualWidth < 54.4 && c.ActualWidth > 54.3, "c actual.width");
+			Assert.AreEqual (50, c.ActualHeight, "c actual.height");
+			Assert.IsTrue (c.RenderSize.Width < 54.4 && c.RenderSize.Width > 54.3, "c render.width");
+			Assert.AreEqual (50, c.RenderSize.Height, "c render.height");
+			Assert.AreEqual (new Rect (0,0,75,50), LayoutInformation.GetLayoutSlot (c), "c slot2");
+		}
+		
+		[TestMethod]
+		public void BorderComputeLargerSize_StretchUniformToFill_IntrinsicBorderSized ()
+		{
+			Border b = new Border ();
+			var c = new Path ();
+			b.Child = c;
+			c.Stretch = Stretch.UniformToFill;
+			b.Width = 75;
+			b.Height = 66;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired0");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual0");
+
+			var data = new RectangleGeometry ();
+			data.Rect = new Rect (0,10,25,23);
+			c.Data = data;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired1");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual1");
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (c), "c slot");
+
+			b.Measure (new Size (100, 100));
+
+			Assert.AreEqual (new Size (75,66), c.DesiredSize, "c desired2");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual2");
+			Assert.AreEqual (new Size (0,0), c.RenderSize, "c render2");
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (c), "c slot2");
+
+			b.Arrange (new Rect (8,6,b.DesiredSize.Width,b.DesiredSize.Height));
+
+			Assert.AreEqual (new Size (75,66), c.DesiredSize, "c desired3");
+			Assert.AreEqual (new Size (75,69), new Size (c.ActualWidth,c.ActualHeight), "c actual3");
+			Assert.AreEqual (new Size (75,69), c.RenderSize, "c render3");
+			Assert.AreEqual (new Rect (0,0,75,66), LayoutInformation.GetLayoutSlot (c), "c slot3");
+		}
+
+		[TestMethod]
+		public void BorderComputeLargerSize_StretchUniformToFill_AlignCenter_IntrinsicBorderSized ()
+		{
+			Border b = new Border ();
+			var c = new Path ();
+			b.Child = c;
+			c.Stretch = Stretch.UniformToFill;
+			b.Width = 75;
+			c.VerticalAlignment = VerticalAlignment.Center;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired0");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual0");
+
+			var data = new RectangleGeometry ();
+			data.Rect = new Rect (0,10,25,23);
+			c.Data = data;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired1");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual1");
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (c), "c slot");
+
+			b.Measure (new Size (100, 100));
+
+			Assert.AreEqual (new Size (75,100), c.DesiredSize, "c desired2");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual2");
+			Assert.AreEqual (new Size (0,0), c.RenderSize, "c render2");
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (c), "c slot2");
+
+			b.Arrange (new Rect (8,6,b.DesiredSize.Width,b.DesiredSize.Height));
+
+			Assert.AreEqual (new Size (75,100), c.DesiredSize, "c desired3");
+			Assert.AreEqual (109, c.ActualWidth, "c.ActualWidth");
+			Assert.IsTrue (c.RenderSize.Height < 100.3 && c.RenderSize.Height > 100.2, "c.renderSize.Height = "+ c.RenderSize.Height.ToString ());
+			Assert.IsTrue (c.ActualHeight < 100.3 && c.ActualHeight > 100.2, "c.ActualHeight = "+ c.ActualHeight.ToString ());
+
+			Assert.AreEqual (109, c.RenderSize.Width, "c.RenderSize.Width");
+			Assert.AreEqual (new Rect (0,0,75,100), LayoutInformation.GetLayoutSlot (c), "c slot3");
+		}
+
+		[TestMethod]
+		public void ComputeReducedSize_StretchUniform_InstrinsicBorder ()
+		{
+			Border b = new Border ();
+			var c = new Path ();
+			b.Child = c;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired0");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual0");
+
+			var data = new RectangleGeometry ();
+			data.Rect = new Rect (0,10,25,23);
+			c.Data = data;
+			c.Stretch = Stretch.Uniform;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired1");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual1");
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (c), "c slot");
+
+			c.Measure (new Size (10, 10));
+
+			Assert.AreEqual (new Size (10,9), c.DesiredSize, "c desired2");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual2");
+			Assert.AreEqual (new Size (0,0), c.RenderSize, "c render2");
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (c), "c slot2");
+
+			c.Arrange (new Rect (10,10,c.DesiredSize.Width,c.DesiredSize.Height));
+
+			Assert.AreEqual (new Size (10,9), c.DesiredSize, "c desired");
+			Assert.IsTrue (c.ActualWidth < 9.8 && c.ActualWidth > 9.7, "c actual.width");
+			Assert.AreEqual (9, c.ActualHeight, "c actual.height");
+			Assert.IsTrue (c.RenderSize.Width < 9.8 && c.RenderSize.Width > 9.7, "c render.width");
+			Assert.AreEqual (9, c.RenderSize.Height, "c render.height");
+			Assert.AreEqual (new Rect (10,10,10,9), LayoutInformation.GetLayoutSlot (c), "c slot2");
+
+		}
+
+		[TestMethod]
+		public void ComputeSizeInfinite_StretchFill_InstrinsicBorder ()
+		{
+			Border b = new Border ();
+			var c = new Path ();
+			b.Child = c;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired0");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual0");
+
+			var data = new RectangleGeometry ();
+			data.Rect = new Rect (0,10,25,23);
+			c.Data = data;
+			c.Stretch = Stretch.Fill;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired1");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual1");
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (c), "c slot");
+
+			c.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+
+			Assert.AreEqual (new Size (25,23), c.DesiredSize, "c desired2");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual2");
+			Assert.AreEqual (new Size (0,0), c.RenderSize, "c render2");
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (c), "c slot2");
+
+			c.Arrange (new Rect (10,10,c.DesiredSize.Width,c.DesiredSize.Height));
+
+			Assert.AreEqual (new Size (25,23), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (25,23), new Size (c.ActualWidth,c.ActualHeight), "c actual3");
+			Assert.AreEqual (new Size (25,23), c.RenderSize, "c render");
+			Assert.AreEqual (new Rect (10,10,25,23), LayoutInformation.GetLayoutSlot (c), "c slot2");
+
+		}
+
+		[TestMethod]
+		public void ComputeSizeInfinite_StretchUniform_InstrinsicBorder ()
+		{
+			Border b = new Border ();
+			var c = new Path ();
+			b.Child = c;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired0");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual0");
+
+			var data = new RectangleGeometry ();
+			data.Rect = new Rect (0,10,25,23);
+			c.Data = data;
+			c.Stretch = Stretch.Uniform;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired1");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual1");
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (c), "c slot");
+
+			c.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+
+			Assert.AreEqual (new Size (25,23), c.DesiredSize, "c desired2");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual2");
+			Assert.AreEqual (new Size (0,0), c.RenderSize, "c render2");
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (c), "c slot2");
+
+			c.Arrange (new Rect (10,10,c.DesiredSize.Width,c.DesiredSize.Height));
+
+			Assert.AreEqual (new Size (25,23), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (25,23), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (25,23), new Size (c.ActualWidth,c.ActualHeight), "c actual3");
+			Assert.AreEqual (new Size (25,23), c.RenderSize, "c render");
+			Assert.AreEqual (new Rect (10,10,25,23), LayoutInformation.GetLayoutSlot (c), "c slot2");
 		}
 
 		[TestMethod]
