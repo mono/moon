@@ -260,8 +260,8 @@ printf ("MSI::Render\n");
 										stride);
 
 		cairo_save (cr);
-		cairo_rectangle (cr, 0, 0, 400, 300);
-		cairo_scale (cr, 400.0 / gdk_pixbuf_get_width (pixbuf), 300.0 / gdk_pixbuf_get_height (pixbuf));
+		cairo_rectangle (cr, 0, 0, w, h);
+		cairo_scale (cr, w / gdk_pixbuf_get_width (pixbuf), h / gdk_pixbuf_get_height (pixbuf));
 		cairo_set_source_surface (cr, image, 0, 0);
 
 		cairo_fill (cr);
