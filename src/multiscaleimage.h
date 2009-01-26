@@ -63,6 +63,7 @@ class MultiScaleImage : public MediaBase {
 	// Overrides
 	//
 	virtual void Render (cairo_t *cr, Region *region);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 
 	//
 	// Methods

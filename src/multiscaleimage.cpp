@@ -235,7 +235,7 @@ printf ("MSI::Render\n");
 	int tile_height = source->GetTileHeight ();
 	int vp_ox = GetViewportOrigin()->x;
 	int vp_oy = GetViewportOrigin()->y;
-
+printf ("vpo %d %d\n", vp_ox, vp_oy);
 
 	//render here
 	if (layer_to_render >= 0) {
@@ -333,3 +333,20 @@ MultiScaleImage::DownloaderAbort ()
 		part_name = NULL;
 	}
 }
+
+void
+MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args)
+{
+	if (args->property == MultiScaleImage::ViewportOriginProperty) {
+		Invalidate ();
+	}
+
+	if (args->property->GetOwnerType () != Type::MULTISCALEIMAGE) {
+		DependencyObject::OnPropertyChanged (args);
+		return;
+	}
+	
+	NotifyListenersOfPropertyChange (args);
+}
+
+
