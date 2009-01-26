@@ -241,6 +241,12 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 		   transform needs to be updated as well. */
 		FullInvalidate (p->x != 0.0 || p->y != 0.0);
 
+		Size actual (GetMinWidth (), GetMinHeight ());
+		actual = actual.Max (GetWidth (), GetHeight ());
+		actual = actual.Min (GetMaxWidth (), GetHeight ());
+		SetActualWidth (actual.width);
+		SetActualHeight (actual.height);
+
 		InvalidateMeasure ();
 	}
 	else if (args->property == FrameworkElement::StyleProperty) {
@@ -328,8 +334,12 @@ FrameworkElement::Measure (Size availableSize)
 	else
 		size = MeasureOverride (size);
 
-	SetDesiredSize (size);
+	if (size.IsEmpty ()) {
+                SetDesiredSize (Size (0,0));
+		return;
+        }
 
+	SetDesiredSize (size);
 	// postcondition the results
 	size = size.Min (specified);
 	size = size.Max (specified);
@@ -392,6 +402,7 @@ FrameworkElement::Arrange (Rect finalRect)
 		response = ArrangeOverride (offer);
 
 	Size old (GetActualWidth (), GetActualHeight ());
+
 	SetActualWidth (response.width);
 	SetActualHeight (response.height);
 

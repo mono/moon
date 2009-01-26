@@ -188,7 +188,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void WidthHeightMeasureTest1 ()
 		{
 			Canvas c = new Canvas ();
@@ -202,7 +201,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void WidthHeightMeasureTest2 ()
 		{
 			Canvas c = new Canvas ();
@@ -216,7 +214,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 	
 		[TestMethod]
-		[MoonlightBug]
 		public void WidthHeightBackgroundMeasureTest1 ()
 		{
 			Canvas c = new Canvas ();
@@ -232,19 +229,46 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
+		public void ComputeActualWidth ()
+		{
+			Canvas c = new Canvas ();
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual1");
+
+			c.MaxWidth = 25;
+			c.Width = 50;
+			c.MinHeight = 33;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (25,33), new Size (c.ActualWidth,c.ActualHeight), "c actual1");
+
+			c.Measure (new Size (100, 100));
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (25,33), new Size (c.ActualWidth,c.ActualHeight), "c actual2");
+		}
+
+		[TestMethod]
 		public void WidthHeightBackgroundMeasureTest2 ()
 		{
 			Canvas c = new Canvas ();
 
 			c.Background = new SolidColorBrush (Colors.Black);
 
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual1");
+
 			c.Width = 50;
 			c.Height = 60;
 
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (50,60), new Size (c.ActualWidth,c.ActualHeight), "c actual1");
+
 			c.Measure (new Size (100, 100));
 
-			Assert.AreEqual (new Size (0,0), c.DesiredSize);
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (50,60), new Size (c.ActualWidth,c.ActualHeight), "c actual2");
 		}
 
 		[TestMethod]

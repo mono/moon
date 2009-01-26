@@ -1,5 +1,10 @@
 2009-01-26  Larry Ewing  <lewing@novell.com>
 
+	* frameworkelement.cpp: tests show some really crazy behavior in
+	the short circuit case, try to emulate that.
+
+2009-01-26  Larry Ewing  <lewing@novell.com>	
+
 	* frameworkelement.cpp (FrameworkElement::Measure): remove the
 	short circuit.
 

@@ -215,7 +215,6 @@ namespace MoonTest.System.Windows {
 		}
 		
 		[TestMethod]
-		[MoonlightBug]
 		public void ParentlessMeasureTest ()
 		{
 			var fe = new ConcreteFrameworkElement ();
@@ -227,6 +226,8 @@ namespace MoonTest.System.Windows {
 			fe.Width = 10;
 			fe.Height = 10;
 			
+			Assert.AreEqual (new Size (10,10), new Size (fe.ActualWidth, fe.ActualHeight), "fe actual");
+
 			fe.InvalidateMeasure ();
 			fe.Measure (new Size (100,100));
 			

@@ -1,3 +1,9 @@
+2009-01-26  Larry Ewing  <lewing@novell.com>
+
+	* System.Windows/FrameworkElementTest.cs:
+	* System.Windows.Controls/CanvasTest.cs: test for strange property
+	setting logic.
+
 2009-01-26  Andreia Gaita  <avidigal@novell.com>
 
 	* System.Windows.Threading/DispatcherTest.cs: Added
