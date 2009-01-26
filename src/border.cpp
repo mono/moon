@@ -41,7 +41,7 @@ Border::MeasureOverride (Size availableSize)
 	if (GetHorizontalAlignment () == HorizontalAlignmentStretch && !isinf (availableSize.width))
 		desired.width = availableSize.width;
 
-	if (GetVerticalAlignment () == VerticalAlignmentStretch && !isinf (availableSize.width))
+	if (GetVerticalAlignment () == VerticalAlignmentStretch && !isinf (availableSize.height))
 		desired.height = availableSize.height;
 
 	desired = desired.Max (specified);

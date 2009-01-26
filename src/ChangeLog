@@ -1,5 +1,9 @@
 2009-01-26  Larry Ewing  <lewing@novell.com>
 
+	* border.cpp (Border::MeasureOverride): Fix a width/height mixup.
+
+2009-01-24  Larry Ewing  <lewing@novell.com>
+
 	* uielement.h (class UIElement): add IsLayoutContainer () to test
 	if a given element wants to do the layout dance.  Hopefully this
 	can be removed once the logic is more clear.
@@ -60,7 +64,7 @@
 	* size.h: add == and != overrides.
 	
 2009-01-26  Jeffrey Stedfast  <fejj@novell.com>
-
+	
 	* brush.cpp (VisualBrush::SetupBrush): Updated.
 
 	* uielement.cpp (UIElement::Render): Render our subtree in the
