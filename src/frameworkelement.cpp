@@ -241,11 +241,17 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 		   transform needs to be updated as well. */
 		FullInvalidate (p->x != 0.0 || p->y != 0.0);
 
-		Size actual (GetMinWidth (), GetMinHeight ());
-		actual = actual.Max (GetWidth (), GetHeight ());
-		actual = actual.Min (GetMaxWidth (), GetHeight ());
-		SetActualWidth (actual.width);
-		SetActualHeight (actual.height);
+		if (IsLayoutContainer () || (GetVisualParent () && GetVisualParent ()->IsLayoutContainer ())) {
+
+			SetActualWidth (0);
+			SetActualHeight (0);
+		} else {
+			Size actual (GetMinWidth (), GetMinHeight ());
+			actual = actual.Max (GetWidth (), GetHeight ());
+			actual = actual.Min (GetMaxWidth (), GetHeight ());
+			SetActualWidth (actual.width);
+			SetActualHeight (actual.height);
+		}
 
 		InvalidateMeasure ();
 	}

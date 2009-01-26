@@ -235,6 +235,27 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
+		public void ComputeActualWidth ()
+		{
+			var c = new ConcreteFrameworkElement ();
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual1");
+
+			c.MaxWidth = 25;
+			c.Width = 50;
+			c.MinHeight = 33;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (25,33), new Size (c.ActualWidth,c.ActualHeight), "c actual1");
+
+			c.Measure (new Size (100, 100));
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (25,33), new Size (c.ActualWidth,c.ActualHeight), "c actual2");
+		}
+
+		[TestMethod]
 		public void ArrangeInfinite ()
 		{
 			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();

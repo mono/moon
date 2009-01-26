@@ -439,13 +439,110 @@ namespace MoonTest.System.Windows.Controls
 			r.Width = 50;
 			r.Height = 50;
 
+			Assert.AreEqual (new Size (0,0), new Size (r.ActualWidth, r.ActualHeight),"r actual-1");
+			Assert.AreEqual (new Size (0,0), r.RenderSize, "r render-1");
+
 			// we intentionally give border less room to
 			// work with than the configured width/height
 			// of the child
 			c.Measure (new Size (25, 25));
+
+			Assert.AreEqual (new Size (25,25), r.DesiredSize, "r desired0");
+			Assert.AreEqual (new Size (25,25), c.DesiredSize, "c desired0");
+			Assert.AreEqual (new Size (0,0), new Size (r.ActualWidth, r.ActualHeight),"r actual0");
+			Assert.AreEqual (new Size (0,0), r.RenderSize, "r render");
+
 			c.Arrange (new Rect (0, 0, 25, 25));
 
-			Assert.AreEqual (new Size (25, 25), r.DesiredSize);
+			Assert.AreEqual (new Size (25, 25), r.DesiredSize, "r desired1");
+			Assert.AreEqual (new Size (25, 25), c.DesiredSize, "c desired1");
+			Assert.AreEqual (new Size (50,50), new Size (r.ActualWidth, r.ActualHeight),"r actual0");
+			Assert.AreEqual (new Size (50,50), r.RenderSize, "r render");
+		}
+
+		[TestMethod]
+		public void ComputeActualWidth ()
+		{
+			var c = new Border ();
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual1");
+
+			c.MaxWidth = 25;
+			c.Width = 50;
+			c.MinHeight = 33;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual1");
+
+			c.Measure (new Size (100, 100));
+
+			Assert.AreEqual (new Size (25,33), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual2");
+		}
+
+		[TestMethod]
+		public void ArrangeTest_ChildLargerThanFinalRect2 ()
+		{
+			Border c = new Border ();
+			Border r = new Border ();
+
+			c.Child = r;
+
+			r.Width = 50;
+			r.Height = 50;
+
+			Assert.AreEqual (new Size (0,0), new Size (r.ActualWidth, r.ActualHeight),"r actual-1");
+			Assert.AreEqual (new Size (0,0), r.RenderSize, "r render-1");
+
+			// we intentionally give border less room to
+			// work with than the configured width/height
+			// of the child
+			c.Measure (new Size (25, 25));
+
+			Assert.AreEqual (new Size (25,25), r.DesiredSize, "r desired0");
+			Assert.AreEqual (new Size (25,25), c.DesiredSize, "c desired0");
+			Assert.AreEqual (new Size (0,0), new Size (r.ActualWidth, r.ActualHeight),"r actual0");
+			Assert.AreEqual (new Size (0,0), r.RenderSize, "r render");
+
+			c.Arrange (new Rect (0, 0, 25, 25));
+
+			Assert.AreEqual (new Size (25, 25), r.DesiredSize, "r desired1");
+			Assert.AreEqual (new Size (25, 25), c.DesiredSize, "c desired1");
+			Assert.AreEqual (new Size (50,50), new Size (r.ActualWidth, r.ActualHeight),"r actual0");
+			Assert.AreEqual (new Size (50,50), r.RenderSize, "r render");
+		}
+
+		[TestMethod]
+		public void ArrangeTest_ChildLargerThanFinalRect3 ()
+		{
+			Border c = new Border ();
+		        Canvas r = new Canvas ();
+
+			c.Child = r;
+
+			r.Width = 50;
+			r.Height = 50;
+
+			Assert.AreEqual (new Size (0,0), new Size (r.ActualWidth, r.ActualHeight),"r actual-1");
+			Assert.AreEqual (new Size (0,0), r.RenderSize, "r render-1");
+
+			// we intentionally give border less room to
+			// work with than the configured width/height
+			// of the child
+			c.Measure (new Size (25, 25));
+
+			Assert.AreEqual (new Size (25,25), r.DesiredSize, "r desired0");
+			Assert.AreEqual (new Size (25,25), c.DesiredSize, "c desired0");
+			Assert.AreEqual (new Size (0,0), new Size (r.ActualWidth, r.ActualHeight),"r actual0");
+			Assert.AreEqual (new Size (0,0), r.RenderSize, "r render");
+
+			c.Arrange (new Rect (0, 0, 25, 25));
+
+			Assert.AreEqual (new Size (25, 25), r.DesiredSize, "r desired1");
+			Assert.AreEqual (new Size (25, 25), c.DesiredSize, "c desired1");
+			Assert.AreEqual (new Size (50,50), new Size (r.ActualWidth, r.ActualHeight),"r actual0");
+			Assert.AreEqual (new Size (50,50), r.RenderSize, "r render");
 		}
 
 		[TestMethod]

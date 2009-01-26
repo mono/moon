@@ -185,6 +185,52 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		public void ComputeWidthCallsLayout ()
+		{
+			Border b = new Border ();
+			LayoutPoker c = new LayoutPoker ();
+			b.Child = c;
+
+			int called = 0;
+			c.Measured += (Size real) => { 
+				c.MeasureResult = real; 
+				called++;
+			};
+
+			c.Width = 50;
+			c.Height = 50;
+			
+			Assert.AreEqual (0, called);
+
+			b.Measure (new Size (100, 100));
+			
+			Assert.AreEqual (1, called);
+		}
+
+		[TestMethod]
+		public void ComputeWidthCallsLayoutParent ()
+		{
+			Border b = new Border ();
+			LayoutPoker c = new LayoutPoker ();
+			b.Child = c;
+
+			int called = 0;
+			c.Measured += (Size real) => { 
+				c.MeasureResult = real; 
+				called++;
+			};
+
+			b.Width = 50;
+			b.Height = 50;
+			
+			Assert.AreEqual (0, called);
+
+			b.Measure (new Size (100, 100));
+			
+			Assert.AreEqual (1, called);
+		}
+
+		[TestMethod]
 		[MoonlightBug]
 		public void CanvasCallsLayoutTest ()
 		{

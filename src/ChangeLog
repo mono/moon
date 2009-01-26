@@ -1,5 +1,16 @@
 2009-01-26  Larry Ewing  <lewing@novell.com>
 
+	* uielement.h (class UIElement): add IsLayoutContainer () to test
+	if a given element wants to do the layout dance.  Hopefully this
+	can be removed once the logic is more clear.
+
+	* panel.h:
+	* canvas.h:
+	* border.h:
+	* usercontrol.h: add IsLayoutContainer values.
+	
+2009-01-26  Larry Ewing  <lewing@novell.com>
+
 	* frameworkelement.cpp: tests show some really crazy behavior in
 	the short circuit case, try to emulate that.
 

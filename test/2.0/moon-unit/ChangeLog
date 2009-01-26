@@ -1,5 +1,14 @@
 2009-01-26  Larry Ewing  <lewing@novell.com>
 
+	* System.Windows.Controls/BorderTest.cs:
+	* System.Windows.Controls/CanvasTest.cs:
+	* System.Windows.Controls/GridTest.cs:
+	* System.Windows.Controls/PanelTest.cs:
+	* System.Windows/FrameworkElementTest.cs: add tests for the
+	layouy/nonlayout behavior.
+
+2009-01-26  Larry Ewing  <lewing@novell.com>
+
 	* System.Windows/FrameworkElementTest.cs:
 	* System.Windows.Controls/CanvasTest.cs: test for strange property
 	setting logic.

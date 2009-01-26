@@ -207,7 +207,8 @@ public:
 	// 
 	Rect GetExtents () { return extents.Transform (&local_xform); }
 	virtual bool ClipToExtents () { return false; };
-
+	virtual bool IsLayoutContainer () { return false; }
+	
 	// 
 	// GetBounds:
 	//   returns the current bounding box for the given item in surface 

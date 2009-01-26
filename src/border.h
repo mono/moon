@@ -45,6 +45,7 @@ public:
  	/* @GenerateCBinding,GeneratePInvoke */
 	Border ();
 	
+	virtual bool IsLayoutContainer () { return true; }
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 
 	virtual Size MeasureOverride (Size availableSize);

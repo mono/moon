@@ -44,6 +44,7 @@ class Canvas : public Panel {
 	virtual Size MeasureOverride (Size availableSize);
 	virtual Size ArrangeOverride (Size availableSize);
 	virtual bool ClipToExtents () { return false; }
+	virtual bool IsLayoutContainer () { return false; }
 	virtual void ShiftPosition (Point p);
 	virtual void ComputeBounds ();
 	
