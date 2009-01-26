@@ -136,8 +136,10 @@ Value::Value (const Value& v)
 		*u.corner = *v.u.corner;
 		break;
 	case Type::MANAGEDTYPEINFO:
-		u.type_info = g_new (ManagedTypeInfo, 1);
-		*u.type_info = *v.u.type_info;
+		if (u.type_info) {
+			u.type_info = g_new (ManagedTypeInfo, 1);
+			*u.type_info = *v.u.type_info;
+		}
 		break;
 	default:
 		if (Is (Type::EVENTOBJECT) && u.dependency_object)
