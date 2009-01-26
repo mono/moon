@@ -32,7 +32,7 @@ namespace System.Windows.Media
 		public static event EventHandler Rendering {
 			add {
 				if (events[RenderingEvent] == null) {
-					IntPtr t = NativeMethods.surface_get_time_manager (Application.s_surface);
+					IntPtr t = NativeMethods.surface_get_time_manager (Deployment.Current.Surface);
 					NativeMethods.event_object_add_handler (t, "Render", rendering_proxy, t, IntPtr.Zero);
 				}
 				events.AddHandler (RenderingEvent, value);
@@ -40,7 +40,7 @@ namespace System.Windows.Media
 			remove {
 				events.RemoveHandler (RenderingEvent, value);
 				if (events[RenderingEvent] == null) {
-					IntPtr t = NativeMethods.surface_get_time_manager (Application.s_surface);
+					IntPtr t = NativeMethods.surface_get_time_manager (Deployment.Current.Surface);
 					NativeMethods.event_object_remove_handler (t, "Render", rendering_proxy, (IntPtr) Helper.GCHandleFromIntPtr (t));
 				}
 			}
