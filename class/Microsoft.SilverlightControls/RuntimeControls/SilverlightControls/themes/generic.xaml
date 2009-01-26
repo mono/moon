@@ -1360,6 +1360,7 @@
                             <ScrollContentPresenter x:Name="ScrollContentPresenter"
                                                     Cursor="{TemplateBinding Cursor}"
                                                     Margin="{TemplateBinding Padding}"
+						    Content="{TemplateBinding Content}"
                                                     ContentTemplate="{TemplateBinding ContentTemplate}"/>
 
                             <Rectangle Grid.Column="1" Grid.Row="1" Fill="#FFE9EEF4"/>
