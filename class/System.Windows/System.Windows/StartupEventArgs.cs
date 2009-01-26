@@ -46,12 +46,12 @@ namespace System.Windows {
 					string param_string = Marshal.PtrToStringAnsi (raw);
 					init_params = new Dictionary<string,string> ();
 					
-					//Console.WriteLine ("params = {0}", param_string);
+					// Console.WriteLine ("params = {0}", param_string);
 					if (param_string != null) {
 						foreach (string val in param_string.Split (param_separator)) {
-							string [] kv = val.Split (value_separator);
-							if (kv.Length >= 2)
-								init_params.Add (kv[0], kv[1]);
+							int split = val.IndexOf ('=');
+							if (split >= 0)
+								init_params.Add (val.Substring (0, split), val.Substring (split + 1));
 						}
 					}
 				}

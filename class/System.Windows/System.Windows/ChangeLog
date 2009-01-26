@@ -1,3 +1,7 @@
+2009-01-26  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* StartupEventArgs.cs: Parse initParams correctly.
+
 2009-01-26  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* UIElement.cs (TransformToVisual): Lookup for a MatrixTransform,
