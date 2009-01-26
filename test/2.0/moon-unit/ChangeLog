@@ -1,3 +1,8 @@
+2009-01-26  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.Media/ColorTest.cs,
+	* System.Windows.Media/MatrixTest.cs: Add IFormattable test cases
+
 2009-01-26  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows/UIElementTest.cs: Add test case to show that we can

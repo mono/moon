@@ -113,5 +113,104 @@ namespace MoonTest.System.Windows.Media {
 			result = m.Transform (new Point (-2, 3));
 			Assert.AreEqual (new Point (47, 30), result, "Transform/-2,3");
 		}
+
+		class MatrixFormatter : IFormatProvider, ICustomFormatter {
+
+			public object GetFormat (Type formatType)
+			{
+				return (formatType == typeof (ICustomFormatter)) ? this : null;
+			}
+
+			public string Format (string format, object arg, IFormatProvider formatProvider)
+			{
+				CallCount++;
+				Assert.AreEqual (this, formatProvider, "formatProvider");
+				if (arg.Equals (','))
+					return "#";
+
+				Assert.IsTrue (arg is double, "arg");
+				int n = (int) (double) arg;
+				switch (n) {
+				case 1:
+				case 2:
+				case 3:
+				case 4:
+				case 5:
+				case 6:
+				case 10:
+				case 11:
+				case 12:
+				case 13:
+				case 14:
+				case 15:
+					if (format == null)
+						return String.Format ("[{0}]", n);
+					if (format.Length == 0)
+						return "@";
+					Assert.Fail (n.ToString ());
+					return null;
+				default:
+					Assert.Fail (n.ToString ());
+					return null;
+				}
+			}
+
+			static public int CallCount = 0;
+		}
+
+		[TestMethod]
+		public void ToStringIFormatProvider ()
+		{
+			Matrix m = new Matrix (1, 2, 3, 4, 5, 6);
+			MatrixFormatter.CallCount = 0;
+			Assert.AreEqual ("1,2,3,4,5,6", m.ToString (null), "null");
+			Assert.AreEqual (0, MatrixFormatter.CallCount, "CallCount-a");
+			Assert.AreEqual ("[1]#[2]#[3]#[4]#[5]#[6]", m.ToString (new MatrixFormatter ()), "MatrixFormatter");
+			// 11 times: one per double (6) and 5 for ','
+			Assert.AreEqual (11, MatrixFormatter.CallCount, "CallCount");
+		}
+
+		[TestMethod]
+		public void ToStringIFormatProvider_Identity ()
+		{
+			Matrix m = new Matrix ();
+			MatrixFormatter.CallCount = 0;
+			Assert.AreEqual ("Identity", m.ToString (null), "null");
+			Assert.AreEqual (0, MatrixFormatter.CallCount, "CallCount-a");
+			Assert.AreEqual ("Identity", m.ToString (new MatrixFormatter ()), "MatrixFormatter");
+			Assert.AreEqual (0, MatrixFormatter.CallCount, "CallCount");
+		}
+
+		[TestMethod]
+		public void ToStringIFormattable ()
+		{
+			Matrix m = new Matrix (15, 14, 13, 12, 11, 10);
+			MatrixFormatter.CallCount = 0;
+			IFormattable f = (m as IFormattable);
+			Assert.AreEqual ("15,14,13,12,11,10", f.ToString (null, null), "null,null");
+			Assert.AreEqual (0, MatrixFormatter.CallCount, "CallCount-a");
+			Assert.AreEqual ("[15]#[14]#[13]#[12]#[11]#[10]", f.ToString (null, new MatrixFormatter ()), "null,MatrixFormatter");
+			Assert.AreEqual (11, MatrixFormatter.CallCount, "CallCount-b");
+			Assert.AreEqual ("1.500000e+001,1.400000e+001,1.300000e+001,1.200000e+001,1.100000e+001,1.000000e+001", f.ToString ("e", null), "e,null");
+			Assert.AreEqual (11, MatrixFormatter.CallCount, "CallCount-c");
+			Assert.AreEqual ("[15]#[14]#[13]#[12]#[11]#[10]", f.ToString (String.Empty, new MatrixFormatter ()), "Empty,MatrixFormatter");
+			Assert.AreEqual (22, MatrixFormatter.CallCount, "CallCount-d");
+		}
+
+		[TestMethod]
+		public void ToStringIFormattable_Identity ()
+		{
+			Matrix m = new Matrix ();
+			MatrixFormatter.CallCount = 0;
+			IFormattable f = (m as IFormattable);
+			Assert.AreEqual ("Identity", f.ToString (null, null), "null,null");
+			Assert.AreEqual (0, MatrixFormatter.CallCount, "CallCount-a");
+			Assert.AreEqual ("Identity", f.ToString (null, new MatrixFormatter ()), "null,MatrixFormatter");
+			Assert.AreEqual (0, MatrixFormatter.CallCount, "CallCount-b");
+			Assert.AreEqual ("Identity", f.ToString ("e", null), "e,null");
+			Assert.AreEqual (0, MatrixFormatter.CallCount, "CallCount-c");
+			Assert.AreEqual ("Identity", f.ToString (String.Empty, new MatrixFormatter ()), "Empty,MatrixFormatter");
+			Assert.AreEqual (0, MatrixFormatter.CallCount, "CallCount-d");
+		}
 	}
 }
