@@ -88,6 +88,7 @@ namespace MoonTest.System.Windows.Controls
 
 			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c deisred");
 			Assert.AreEqual (new Size (0,0), r.DesiredSize, "r desired");
+			Assert.AreEqual (new Size (0,0), new Size (r.ActualWidth, r.ActualHeight));
 		}
 
 		[TestMethod]

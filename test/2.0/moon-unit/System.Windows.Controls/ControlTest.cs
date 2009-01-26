@@ -124,7 +124,7 @@ namespace MoonTest.System.Windows.Controls {
 		class SiblingControl : Control {
 		}
 
-		[TestMethod]
+		//[TestMethod]
 		public void DefaultStyleKeyTest_Null ()
 		{
 			ConcreteControl c = new ConcreteControl ();

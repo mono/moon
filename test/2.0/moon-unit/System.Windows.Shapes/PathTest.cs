@@ -84,28 +84,28 @@ namespace MoonTest.System.Windows.Shapes
 		{
 			var c = new Path ();
 
-			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
-			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual1");
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired0");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual0");
 
 			c.MaxWidth = 25;
 			c.Width = 50;
 			c.MinHeight = 33;
 
-			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired1");
 			Assert.AreEqual (new Size (25,33), new Size (c.ActualWidth,c.ActualHeight), "c actual1");
-			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (c), "c slot");
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (c), "c slot1");
 
 			c.Measure (new Size (100, 100));
 
-			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired2");
 			Assert.AreEqual (new Size (25,33), new Size (c.ActualWidth,c.ActualHeight), "c actual2");
-			Assert.AreEqual (new Size (0,0), c.RenderSize, "c render");
+			Assert.AreEqual (new Size (0,0), c.RenderSize, "c render2");
 
 			c.Arrange (new Rect (0,0,c.DesiredSize.Width,c.DesiredSize.Height));
 
-			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
-			Assert.AreEqual (new Size (25,33), new Size (c.ActualWidth,c.ActualHeight), "c actual2");
-			Assert.AreEqual (new Size (0,0), c.RenderSize, "c render");
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired3");
+			Assert.AreEqual (new Size (25,33), new Size (c.ActualWidth,c.ActualHeight), "c actual3");
+			Assert.AreEqual (new Size (0,0), c.RenderSize, "c render3");
 		}
 
 		[TestMethod]
@@ -342,7 +342,8 @@ namespace MoonTest.System.Windows.Shapes
 		}
 
 		[TestMethod]
-		public void BorderComputeLargerSize_StretchUniform_IntrinsicBorderSized ()
+		[MoonlightBug]
+		public void BorderComputeLargerSize_StretchUniform_SizedIntrinsicBorder ()
 		{
 			Border b = new Border ();
 			var c = new Path ();
@@ -372,9 +373,9 @@ namespace MoonTest.System.Windows.Shapes
 			b.Arrange (new Rect (8,6,b.DesiredSize.Width,b.DesiredSize.Height));
 
 			Assert.AreEqual (new Size (54,50), c.DesiredSize, "c desired3");
-			Assert.IsTrue (c.ActualWidth < 54.4 && c.ActualWidth > 54.3, "c actual.width");
+			Assert.IsTrue (c.ActualWidth < 54.4 && c.ActualWidth > 54.3, "c.ActualWidth == " + c.ActualWidth.ToString ());
 			Assert.AreEqual (50, c.ActualHeight, "c actual.height");
-			Assert.IsTrue (c.RenderSize.Width < 54.4 && c.RenderSize.Width > 54.3, "c render.width");
+			Assert.IsTrue (c.RenderSize.Width < 54.4 && c.RenderSize.Width > 54.3, "c.RenderSize.Width = " + c.RenderSize.Width.ToString ());
 			Assert.AreEqual (50, c.RenderSize.Height, "c render.height");
 			Assert.AreEqual (new Rect (0,0,75,50), LayoutInformation.GetLayoutSlot (c), "c slot2");
 		}
@@ -416,6 +417,7 @@ namespace MoonTest.System.Windows.Shapes
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void BorderComputeLargerSize_StretchUniformToFill_AlignCenter_IntrinsicBorderSized ()
 		{
 			Border b = new Border ();
@@ -455,6 +457,7 @@ namespace MoonTest.System.Windows.Shapes
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void ComputeReducedSize_StretchUniform_InstrinsicBorder ()
 		{
 			Border b = new Border ();
@@ -483,9 +486,9 @@ namespace MoonTest.System.Windows.Shapes
 			c.Arrange (new Rect (10,10,c.DesiredSize.Width,c.DesiredSize.Height));
 
 			Assert.AreEqual (new Size (10,9), c.DesiredSize, "c desired");
-			Assert.IsTrue (c.ActualWidth < 9.8 && c.ActualWidth > 9.7, "c actual.width");
+			Assert.IsTrue (c.ActualWidth < 9.8 && c.ActualWidth > 9.7, "c.ActualWidth == " + c.ActualWidth.ToString ());
 			Assert.AreEqual (9, c.ActualHeight, "c actual.height");
-			Assert.IsTrue (c.RenderSize.Width < 9.8 && c.RenderSize.Width > 9.7, "c render.width");
+			Assert.IsTrue (c.RenderSize.Width < 9.8 && c.RenderSize.Width > 9.7, "c.RenderSize.Width == " + c.RenderSize.Width);
 			Assert.AreEqual (9, c.RenderSize.Height, "c render.height");
 			Assert.AreEqual (new Rect (10,10,10,9), LayoutInformation.GetLayoutSlot (c), "c slot2");
 
@@ -941,6 +944,11 @@ namespace MoonTest.System.Windows.Shapes
 			path.Fill = new SolidColorBrush (Colors.Red);
 
 			b.Measure (new Size (120, 120));
+			Assert.AreEqual (new Size (20,20), path.DesiredSize, "desired");
+			Assert.AreEqual (new Size (0,0), path.RenderSize, "render");
+			Assert.AreEqual (0, path.ActualWidth);
+			Assert.AreEqual (0, path.ActualHeight);
+
 			b.Arrange (new Rect (0, 0, 120, 120));
 
 			Assert.AreEqual (new Size (20,20), path.DesiredSize, "desired");

@@ -23,7 +23,6 @@ namespace MoonTest.System.Windows.Shapes
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void MeasureTest1 ()
 		{
 			Rectangle r = new Rectangle ();
@@ -36,7 +35,6 @@ namespace MoonTest.System.Windows.Shapes
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void MeasureTest2 ()
 		{
 			Canvas c = new Canvas ();
@@ -59,7 +57,6 @@ namespace MoonTest.System.Windows.Shapes
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void MeasureTest2_1 ()
 		{
 			Border b = new Border ();
@@ -83,7 +80,6 @@ namespace MoonTest.System.Windows.Shapes
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void MeasureTest3 ()
 		{
 			Border c = new Border ();
@@ -103,7 +99,6 @@ namespace MoonTest.System.Windows.Shapes
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void MeasureTest4 ()
 		{
 			Border c = new Border ();

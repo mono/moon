@@ -176,7 +176,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void ChildMeasureTest3 ()
 		{
 			Border b = new Border ();
