@@ -27,31 +27,51 @@
 //
 
 using System;
-using System.Windows.Shapes;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Markup;
 using System.Windows.Media.Animation;
+using System.Windows.Shapes;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Mono.Moonlight.UnitTesting;
-using System.Windows.Markup;
-using System.Windows;
 
 namespace MoonTest.System.Windows.Media.Animation {
+
+	public class Test : UserControl {
+
+		public Storyboard Blah;
+	}
 	
 	[TestClass]
 	public class StoryboardTest {
 
 		[TestMethod]
-		public void InvalidValues ()
+		public void InvalidValues_NonTimeline ()
 		{
 			Rectangle r = new Rectangle ();
-			Assert.Throws<Exception>(delegate {
-				r.SetValue(Storyboard.TargetNameProperty, null);
+			Assert.Throws<Exception> (delegate {
+				r.SetValue (Storyboard.TargetNameProperty, null);
 			}, "#1");
-			Assert.Throws<Exception>(delegate {
-				r.SetValue(Storyboard.TargetNameProperty, "");
+			Assert.Throws<Exception> (delegate {
+				r.SetValue (Storyboard.TargetNameProperty, "");
 			}, "#1b");
-			Assert.Throws<Exception>(delegate {
-				r.SetValue(Storyboard.TargetPropertyProperty, null);
+			Assert.Throws<Exception> (delegate {
+				r.SetValue (Storyboard.TargetNameProperty, "X");
+			}, "#1c");
+			Assert.Throws<Exception> (delegate {
+				r.SetValue (Storyboard.TargetPropertyProperty, null);
 			}, "2");
+		}
+
+		[TestMethod]
+		public void ValidValues_Timeline ()
+		{
+			Timeline t = (Timeline) new ColorAnimation ();
+			t.SetValue (Storyboard.TargetNameProperty, null);
+			t.SetValue (Storyboard.TargetNameProperty, String.Empty);
+			t.SetValue (Storyboard.TargetNameProperty, "X");
+			t.SetValue (Storyboard.TargetPropertyProperty, null);
 		}
 
 		[TestMethod]
@@ -84,6 +104,41 @@ namespace MoonTest.System.Windows.Media.Animation {
 		}
 
 		[TestMethod]
+		public void NameAndKey_Resource ()
+		{
+			Canvas c = (Canvas) XamlReader.Load (
+@"<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<Canvas.Resources>
+		<Storyboard x:Name=""Blah"" x:Key=""Blah"" />
+	</Canvas.Resources>
+</Canvas>");
+			Assert.IsTrue (c.FindName ("Blah") is Storyboard, "FindName");
+
+			c = (Canvas) XamlReader.Load (
+@"<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<Canvas.Resources>
+		<Storyboard x:Name=""Blah1"" x:Key=""Blah2"" />
+	</Canvas.Resources>
+</Canvas>");
+			Assert.IsTrue (c.FindName ("Blah1") is Storyboard, "FindName-Name");
+			Assert.IsNull (c.FindName ("Blah2"), "FindName-Key");
+		}
+
+		[TestMethod]
+		public void NameAndKey_Resource_Namespace ()
+		{
+			Canvas c = (Canvas) XamlReader.Load (
+@"<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:sl=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
+	<sl:Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
+		<sl:Canvas.Resources xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+			<sl:Storyboard x:Name=""Blah"" x:Key=""Blah"" />
+		</sl:Canvas.Resources>
+	</sl:Canvas>
+</Canvas>");
+			Assert.IsTrue (c.FindName ("Blah") is Storyboard, "FindName");
+		}
+
+		[TestMethod]
 		public void SetTarget ()
 		{
 			Rectangle r = new Rectangle ();
@@ -106,13 +161,19 @@ namespace MoonTest.System.Windows.Media.Animation {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("ML throws an exception when a null value is being set")]
 		public void SetTargetName_NullName ()
 		{
 			Timeline t = (Timeline) new ColorAnimation ();
+			Assert.IsNull (t.GetValue (Storyboard.TargetNameProperty), "GetValue(TargetNameProperty)");
 			Storyboard.SetTargetName (t, null);
 			// and the behavior is not specific to Storyboard.SetTargetName
 			t.SetValue (Storyboard.TargetNameProperty, (string)null);
+
+			// it's even reset-able to null after a value is assigned
+			Storyboard.SetTargetName (t, "uho");
+			Storyboard.SetTargetName (t, null);
+			Assert.IsNull (Storyboard.GetTargetName (t), "GetTargetName-final");
+			Assert.IsNull (t.GetValue (Storyboard.TargetNameProperty), "GetValue(TargetNameProperty)-final");
 		}
 
 		[TestMethod]

@@ -1,3 +1,9 @@
+2009-01-26  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.Media.Animation/StoryboardTest.cs: Add 
+	validation test cases for Timeline (versus non-Timeline). Remove
+	MoonlightBug from SetTargetName_NullName. Add more XAML test cases.
+
 2009-01-26  Larry Ewing  <lewing@novell.com>
 
 	* System.Windows.Controls/BorderTest.cs:
