@@ -161,10 +161,7 @@ namespace System.Windows {
 		[System.ComponentModel.EditorBrowsable (System.ComponentModel.EditorBrowsableState.Advanced)]
 		public Dispatcher Dispatcher {
 			get {
-				if (dispatcher == null)
-					dispatcher = new Dispatcher ();
-
-				return dispatcher;
+				return Dispatcher.Main;
 			}
 		}
 		

@@ -1,3 +1,9 @@
+2009-01-26  Andreia Gaita  <avidigal@novell.com>
+
+	* DependencyObject.cs: DOs always dispatch to the main
+	thread, and can't be created on any other thread, so use the static
+	main dispatcher instead of creating a new one every time
+
 2009-01-26  Geoff Norton  <gnorton@novell.com>
 
 	* Application.cs: Deployment processing and parsing lives in Deployment
