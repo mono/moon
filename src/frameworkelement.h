@@ -158,6 +158,8 @@ protected:
 	static void bound_property_changed (DependencyObject *sender, PropertyChangedEventArgs *args, gpointer user_data);
 	
 	virtual bool SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error);
+
+	virtual void ElementAdded (UIElement *item);
 	
 	virtual ~FrameworkElement ();
 	

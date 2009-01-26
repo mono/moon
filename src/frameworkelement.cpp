@@ -80,6 +80,21 @@ FrameworkElement::~FrameworkElement ()
 }
 
 void
+FrameworkElement::ElementAdded (UIElement *item)
+{
+	UIElement::ElementAdded (item);
+
+		//item->UpdateLayout ();
+	/*
+	if (IsLayoutContainer () && item->Is (Type::FRAMEWORKELEMENT)) {
+		FrameworkElement *fe = (FrameworkElement *)item;
+		fe->SetActualWidth (0.0);
+		fe->SetActualHeight (0.0);
+	} 
+	*/
+}
+
+void
 FrameworkElement::BoundPropertyChanged (DependencyObject *sender, PropertyChangedEventArgs *args, BindingExpressionBase *expr)
 {
 	DependencyProperty *property = expr->GetTargetProperty ();
@@ -242,13 +257,12 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 		FullInvalidate (p->x != 0.0 || p->y != 0.0);
 
 		if (IsLayoutContainer () || (GetVisualParent () && GetVisualParent ()->IsLayoutContainer ())) {
-
 			SetActualWidth (0);
 			SetActualHeight (0);
 		} else {
 			Size actual (GetMinWidth (), GetMinHeight ());
 			actual = actual.Max (GetWidth (), GetHeight ());
-			actual = actual.Min (GetMaxWidth (), GetHeight ());
+			actual = actual.Min (GetMaxWidth (), GetMaxHeight ());
 			SetActualWidth (actual.width);
 			SetActualHeight (actual.height);
 		}
@@ -281,10 +295,10 @@ FrameworkElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObje
 void
 FrameworkElement::ComputeBounds ()
 {
-	Size specified = Size (GetActualWidth (), GetActualHeight ());
-	specified = specified.Max (GetWidth (), GetHeight ());
-	extents = Rect (0, 0, specified.width, specified.height);
+	extents = Rect (0, 0, GetActualWidth (), GetActualHeight ());
 	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
+	//printf ("bounds = (%f,%f,%f,%f)", bounds.x, bounds.y, bounds.width, bounds.height);
+	//printf ("extents = (%f,%f,%f,%f)", extents.x, extents.y, extents.width, extents.height);
 }
 
 bool
@@ -314,11 +328,12 @@ FrameworkElement::Measure (Size availableSize)
 	Size *last = LayoutInformation::GetLastMeasure (this);
 	bool domeasure = this->dirty_flags & DirtyMeasure;
 	
+
 	domeasure |= last ? ((*last).width != availableSize.width) && ((*last).height != availableSize.height) : true;
 
 	if (!domeasure)
 		return;
-	
+
 	LayoutInformation::SetLastMeasure (this, &availableSize);
 
 	InvalidateArrange ();
@@ -340,12 +355,12 @@ FrameworkElement::Measure (Size availableSize)
 	else
 		size = MeasureOverride (size);
 
-	if (size.IsEmpty ()) {
-                SetDesiredSize (Size (0,0));
+	/* XXX FIXME horrible hack */
+	if (!(IsLayoutContainer () || (GetVisualParent () && GetVisualParent ()->IsLayoutContainer ()))) {
+		SetDesiredSize (Size (0,0));
 		return;
-        }
+	}
 
-	SetDesiredSize (size);
 	// postcondition the results
 	size = size.Min (specified);
 	size = size.Max (specified);
@@ -354,9 +369,14 @@ FrameworkElement::Measure (Size availableSize)
 	size = size.Max (GetMinWidth (), GetMinHeight ());
 
 	size = size.GrowBy (margin);
-
 	size = size.Min (availableSize);
 
+	if (GetUseLayoutRounding ()) {
+		size.width = round (size.width);
+		size.height = round (size.height);
+	}
+
+	SetDesiredSize (size);
 }
 
 Size
@@ -381,6 +401,7 @@ FrameworkElement::Arrange (Rect finalRect)
 		return;
 
 	LayoutInformation::SetLayoutSlot (this, &finalRect);
+	cairo_matrix_init_identity (&layout_xform);
 
 	this->dirty_flags &= ~DirtyArrange;
 
@@ -389,19 +410,12 @@ FrameworkElement::Arrange (Rect finalRect)
 
 	Size offer (finalRect.width, finalRect.height);
 	Size response;
-
+	
 	if (!isnan (GetWidth ()))
 		offer.width = GetWidth ();
-	    
 	if (!isnan (GetHeight ()))
 		offer.height = GetHeight ();
-	
-	// XXX Horrible hack until we separate slot from arrange args
-	if (offer.width == 0)
-		offer.width = GetDesiredSize ().width;
-	if (offer.height == 0)
-		offer.height = GetDesiredSize ().height;
-	
+
 	if (arrange_cb)
 		response = (*arrange_cb)(offer);
 	else
@@ -409,44 +423,49 @@ FrameworkElement::Arrange (Rect finalRect)
 
 	Size old (GetActualWidth (), GetActualHeight ());
 
+	/* XXX FIXME horrible hack */
+	if (!(IsLayoutContainer () || (GetVisualParent () && GetVisualParent ()->IsLayoutContainer ()))) {
+		Size actual (GetMinWidth (), GetMinHeight ());
+		actual = actual.Max (GetWidth (), GetHeight ());
+		actual = actual.Min (GetMaxWidth (), GetMaxHeight ());
+		SetActualWidth (actual.width);
+		SetActualHeight (actual.height);
+		SetRenderSize (Size (0,0));
+		return;
+	}
+
+	if (IsLayoutContainer () && GetUseLayoutRounding ()) {
+		response.width = round (response.width);
+		response.height = round (response.height);
+	}
+
 	SetActualWidth (response.width);
 	SetActualHeight (response.height);
 
 	HorizontalAlignment horiz = GetHorizontalAlignment ();
 	VerticalAlignment vert = GetVerticalAlignment ();
 
-	if (!Is(Type::CANVAS) && offer.height != finalRect.width)
-		horiz = HorizontalAlignmentCenter;
-	if (!Is(Type::CANVAS) && offer.height != finalRect.height)
-		vert = VerticalAlignmentCenter;
-
-	cairo_matrix_init_identity (&layout_xform);
-
 	switch (horiz) {
-	case HorizontalAlignmentCenter:
-		cairo_matrix_translate (&layout_xform, MAX ((finalRect.width  - response.width) * .5, 0), 0);
-		break;
 	case HorizontalAlignmentLeft:
 		break;
 	case HorizontalAlignmentRight:
-		cairo_matrix_translate (&layout_xform, MAX (finalRect.width - response.width, 0), 0);
+		cairo_matrix_translate (&layout_xform, finalRect.width - response.width, 0);
 		break;
-	case HorizontalAlignmentStretch:
-		response.width = offer.width;
+	case HorizontalAlignmentCenter:
+	default:
+		cairo_matrix_translate (&layout_xform, (finalRect.width  - response.width) * .5, 0);
 		break;
 	}
 
 	switch (vert) {
-	case VerticalAlignmentCenter:
-		cairo_matrix_translate (&layout_xform, 0, MAX ((finalRect.height  - response.height) * .5, 0));
-		break;
 	case VerticalAlignmentTop:
 		break;
 	case VerticalAlignmentBottom:
-		cairo_matrix_translate (&layout_xform, 0, MAX (finalRect.height - response.height, 0));
+		cairo_matrix_translate (&layout_xform, 0, finalRect.height - response.height);
 		break;
-	case VerticalAlignmentStretch:
-		response.height = offer.height;
+	case VerticalAlignmentCenter:
+	default:
+		cairo_matrix_translate (&layout_xform, 0, (finalRect.height  - response.height) * .5);
 		break;
 	}
 
@@ -464,8 +483,7 @@ FrameworkElement::Arrange (Rect finalRect)
 Size
 FrameworkElement::ArrangeOverride (Size finalSize)
 {
-	//finalSize = finalSize.Max (GetWidth (), GetHeight ());
-	return finalSize;
+	return finalSize.Max (GetWidth (), GetHeight ());
 }
 
 bool

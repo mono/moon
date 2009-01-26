@@ -739,7 +739,7 @@ MediaElement::MeasureOverride (Size availableSize)
 	Size desired (0,0);
 
 	if (!mplayer)
-		return Size (-INFINITY, -INFINITY);
+		return desired;
 
 	if (GetStretch () == StretchNone)
 		desired = Size (mplayer->GetVideoHeight (), mplayer->GetVideoWidth ());

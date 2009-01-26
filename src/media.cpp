@@ -830,7 +830,7 @@ Image::MeasureOverride (Size availableSize)
 	Size desired (0,0);
 
 	if (!surface)
-		return Size (-INFINITY, -INFINITY);
+		return desired;
 
 	if (GetStretch () == StretchNone)
 		desired = Size (surface->width, surface->height);

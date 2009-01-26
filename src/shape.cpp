@@ -335,7 +335,7 @@ Shape::ComputeStretchBounds ()
 	shape_bounds = shape_bounds.Transform (&stretch_transform);
 	
 	if (!autodim) {
-		Rect reduced_bounds = shape_bounds.Intersection (Rect (0, 0, GetWidth (), GetHeight ()));
+		Rect reduced_bounds = shape_bounds.Intersection (Rect (0,0,GetWidth (), GetHeight ()));
 		needs_clip = reduced_bounds != shape_bounds;
 		needs_clip = needs_clip && stretch != StretchFill;
 		needs_clip = needs_clip && stretch != StretchUniform;
@@ -358,16 +358,17 @@ Shape::Clip (cairo_t *cr)
 {
 	// some shapes, like Line, Polyline, Polygon and Path, are clipped if both Height and Width properties are present
 	if (needs_clip) {
-		double width = GetWidth ();
-		double height = GetHeight ();
+		Rect layout_clip = *LayoutInformation::GetLayoutSlot (this);
 
-		if (isnan (width) || isnan (height))
+		if (layout_clip.width <= 0 && layout_clip.height <= 0)
 			return;
-#if EXACT_CLIP
-		cairo_rectangle (cr, 0, 0, width, height);
-#else
-		cairo_rectangle (cr, 0, 0, width > 1 ? width : 1, height > 1 ? height : 1);
+
+#if !EXACT_CLIP
+		layout_clip.width = MAX (layout_clip.width, 1);
+		layout_clip.height = MAX (layout_clip.height, 1);
 #endif
+		layout_clip.Draw (cr);
+
 		cairo_clip (cr);
 		cairo_new_path (cr);
 	}
@@ -514,19 +515,41 @@ Size
 Shape::MeasureOverride (Size availableSize)
 {
 	Size desired = availableSize;
+	Rect shape_bounds = ComputeShapeBounds (false, NULL);
+	double sx = 0.0;
+	double sy = 0.0;
 
-	if (GetStretch () == StretchNone) {
-		Rect shape_bounds = ComputeShapeBounds (false, NULL);
+	/* XXX this should probably be handled in canvas */
+	if (!GetVisualParent () || !GetVisualParent ()->IsLayoutContainer ())
+		return FrameworkElement::MeasureOverride (availableSize);
 
-		desired = Size (shape_bounds.x + shape_bounds.width, 
-				shape_bounds.y + shape_bounds.height);
-	}
-	
+	if (GetStretch () == StretchNone)
+		return desired.Min (shape_bounds.x + shape_bounds.width, shape_bounds.y + shape_bounds.height);
+
+	/* don't stretch to infinite size */
 	if (isinf (desired.width))
-		desired.width = 0.0;
-		
+		desired.width = shape_bounds.width;
 	if (isinf (desired.height))
-		desired.height = 0.0;
+		desired.height = shape_bounds.height;
+	
+	/* compute the scaling */
+	if (shape_bounds.width > 0)
+		sx = desired.width / shape_bounds.width;
+	if (shape_bounds.height > 0)
+		sy = desired.height / shape_bounds.height;
+
+	switch (GetStretch ()) {
+	case StretchUniform:
+		sx = sy = MIN (sx, sy);
+		break;
+	case StretchUniformToFill:
+		sx = sy = MAX (sx, sy);
+		break;
+	default:
+		break;
+	}
+
+	desired = desired.Min (shape_bounds.width * sx, shape_bounds.height * sy);
 
 	return desired;
 }
@@ -535,15 +558,37 @@ Size
 Shape::ArrangeOverride (Size finalSize)
 {
 	Size arranged = finalSize;
-	Size specified (GetWidth (), GetHeight ());
+	Rect shape_bounds = ComputeShapeBounds (false, NULL);
+	double sx = 1.0;
+	double sy = 1.0;
 
-	if (GetStretch () == StretchNone) {
-		    Rect shape_bounds = ComputeShapeBounds (false, NULL);
+	if (GetStretch () == StretchNone)
+		return arranged.Max (shape_bounds.x + shape_bounds.width, shape_bounds.y + shape_bounds.height);
 
-		    arranged = arranged.Max (shape_bounds.x + shape_bounds.width, 
-					     shape_bounds.y + shape_bounds.height);
+	/* compute the scaling */
+	if (shape_bounds.width == 0)
+		shape_bounds.width = arranged.width;
+	if (shape_bounds.height == 0)
+		shape_bounds.height = arranged.height;
+
+	if (shape_bounds.width != arranged.width)
+		sx = arranged.width / shape_bounds.width;
+	if (shape_bounds.height != arranged.height)
+		sy = arranged.height / shape_bounds.height;
+
+	switch (GetStretch ()) {
+	case StretchUniform:
+		sx = sy = MIN (sx, sy);
+		break;
+	case StretchUniformToFill:
+		sx = sy = MAX (sx, sy);
+		break;
+	default:
+		break;
 	}
-	
+
+	arranged = Size (shape_bounds.width * sx, shape_bounds.height * sy);
+
 	return arranged;
 }
 
@@ -561,7 +606,16 @@ Shape::ComputeBounds ()
 	InvalidateSurfaceCache ();
 	
 	extents = ComputeStretchBounds ();
-	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
+	Rect slot = extents;
+	if (LayoutInformation::GetLayoutSlot (this)) {
+		slot = *LayoutInformation::GetLayoutSlot (this);
+		if (slot.width > 0 && slot.height > 0) {
+			slot = slot.Intersection (extents);
+		} else {
+			slot = extents;
+		}
+	}
+	bounds = IntersectBoundsWithClipPath (slot, false).Transform (&absolute_xform);
 	//printf ("%f,%f,%f,%f\n", bounds.x, bounds.y, bounds.width, bounds.height);
 }
 

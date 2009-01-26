@@ -1,3 +1,7 @@
+2009-01-26  Larry Ewing  <lewing@novell.com>
+
+	* StackPanel.cs: improve the logic and add horizontal support.
+
 2009-01-26  Jeffrey Stedfast  <fejj@novell.com>
 
 	* ContentControl.cs (content_changed_callback): Fixed cast

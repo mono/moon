@@ -329,7 +329,7 @@ Grid::ArrangeOverride (Size finalSize)
 		gint32 col = MIN (Grid::GetColumn (child), col_count - 1);
 		gint32 row = MIN (Grid::GetRow (child), row_count - 1);
 		gint32 colspan = MIN (Grid::GetColumnSpan (child), col_count - col);
-		gint32 rowspan = MIN (Grid::GetRowSpan (child), row_count - col);
+		gint32 rowspan = MIN (Grid::GetRowSpan (child), row_count - row);
 
 		Rect child_final = Rect (0, 0, 0, 0);
 		Size min_size;

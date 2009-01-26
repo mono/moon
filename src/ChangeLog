@@ -19,6 +19,25 @@
 	the instance is derived from Timeline.
 
 2009-01-26  Larry Ewing  <lewing@novell.com>
+	
+	* border.cpp:
+	* canvas.cpp:
+	* dirty.cpp:
+	* control.cpp, control.h:
+	* frameworkelement.cpp, frameworkelement.h:
+	* src/grid.cpp:
+	* src/media.cpp:
+	* src/mediaelement.cpp:
+	* src/shape.cpp:
+	* src/uielement.cpp:
+	* src/usercontrol.h: Fix things to match the test results.  Still
+	a few regressions in shapes.
+	
+2009-01-26  Larry Ewing  <lewing@novell.com>
+
+	* border.cpp (Border::MeasureOverride): 
+
+2009-01-26  Larry Ewing  <lewing@novell.com>
 
 	* grid.cpp (Grid::MeasureOverride): handle out of bounds
 	rows/columns the way the tests indicate.

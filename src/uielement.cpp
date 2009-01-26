@@ -435,7 +435,7 @@ UIElement::SetVisualParent (UIElement *visual_parent)
 	this->visual_parent = visual_parent;
 
 	if (visual_parent && visual_parent->GetSurface () != GetSurface())
-		SetSurface (visual_parent->GetSurface());
+			SetSurface (visual_parent->GetSurface());
 }
 
 void
@@ -476,7 +476,7 @@ UIElement::ElementAdded (UIElement *item)
 	
 	if (IsLoaded ())
 		item->OnLoaded ();
-	
+
 	UpdateBounds (true);
 	item->InvalidateMeasure ();
 }
@@ -515,6 +515,7 @@ bool
 UIElement::UpdateLayout ()
 {
 	bool rv = false;
+	UIElement *root = this;
 
 	if (dirty_flags & DirtyMeasure)
 		DoMeasure ();

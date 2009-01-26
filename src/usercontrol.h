@@ -36,6 +36,7 @@ public:
 	UserControl ();
 	
 	virtual bool IsLayoutContainer () { return true; }
+
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 };
 

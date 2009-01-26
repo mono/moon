@@ -38,12 +38,6 @@ Border::MeasureOverride (Size availableSize)
 
 	desired = desired.GrowBy (border);
 
-	if (GetHorizontalAlignment () == HorizontalAlignmentStretch && !isinf (availableSize.width))
-		desired.width = availableSize.width;
-
-	if (GetVerticalAlignment () == VerticalAlignmentStretch && !isinf (availableSize.height))
-		desired.height = availableSize.height;
-
 	desired = desired.Max (specified);
 	desired = desired.Min (specified);
 
@@ -71,7 +65,7 @@ Border::ArrangeOverride (Size finalSize)
 
 		if (GetVerticalAlignment () != VerticalAlignmentStretch)
 			childRect.height = MIN (desired.height, childRect.height);
-		
+
 		child->Arrange (childRect);
 		finalSize = finalSize.Max (child->GetRenderSize ());
 	}
