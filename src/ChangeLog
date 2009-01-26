@@ -1,3 +1,9 @@
+2009-01-26  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* transform.cpp: Add comment about a difference between SL2/ML 
+	in caching/computing the resulting matrix value (exposed in SL2) 
+	of a TransformGroup
+
 2009-01-26  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Move this check into a function since it will be used

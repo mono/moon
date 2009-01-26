@@ -309,6 +309,9 @@ TransformGroup::OnCollectionItemChanged (Collection *col, DependencyObject *obj,
 		return;
 	}
 	
+	// Unit tests shows that the "cache" matrix value (exposed in SL2) is not updated when child items are changed.
+	// However SL2 does re-compute this value (if dirty) before drawing anything that depends on it.
+	// Currently Moonlight behave differently by always returning the "up to date" matrix
 	need_update = true;
 	NotifyListenersOfPropertyChange (TransformGroup::ChildrenProperty);
 }
