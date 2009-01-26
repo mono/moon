@@ -189,3 +189,14 @@ Validators::BufferingTimeValidator (DependencyObject* instance, DependencyProper
 	
 	return true;
 }
+
+bool
+Validators::IsTimelineValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	if (!instance->Is (Type::TIMELINE)) {
+		MoonError::FillIn (error, MoonError::EXCEPTION, 1001, "Instance is not a Timeline");
+		return false;
+	}
+	
+	return true;
+}

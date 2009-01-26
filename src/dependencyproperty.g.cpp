@@ -327,8 +327,8 @@ dependency_property_g_init (void)
 	SplineColorKeyFrame::KeySplineProperty = DependencyProperty::Register (Type::SPLINECOLORKEYFRAME, "KeySpline", Type::KEYSPLINE);
 	SplineDoubleKeyFrame::KeySplineProperty = DependencyProperty::Register (Type::SPLINEDOUBLEKEYFRAME, "KeySpline", Type::KEYSPLINE);
 	SplinePointKeyFrame::KeySplineProperty = DependencyProperty::Register (Type::SPLINEPOINTKEYFRAME, "KeySpline", Type::KEYSPLINE);
-	Storyboard::TargetNameProperty = DependencyProperty::RegisterFull (Type::STORYBOARD, "TargetName", NULL, Type::STRING, true, false, false, NULL, Validators::NotNullOrEmptyValidator);
-	Storyboard::TargetPropertyProperty = DependencyProperty::RegisterFull (Type::STORYBOARD, "TargetProperty", NULL, Type::STRING, true, false, false, NULL, Validators::NotNullOrEmptyValidator);
+	Storyboard::TargetNameProperty = DependencyProperty::RegisterFull (Type::STORYBOARD, "TargetName", NULL, Type::STRING, true, false, false, NULL, Validators::IsTimelineValidator);
+	Storyboard::TargetPropertyProperty = DependencyProperty::RegisterFull (Type::STORYBOARD, "TargetProperty", NULL, Type::STRING, true, false, false, NULL, Validators::IsTimelineValidator);
 	Stroke::DrawingAttributesProperty = DependencyProperty::Register (Type::STROKE, "DrawingAttributes", Type::DRAWINGATTRIBUTES);
 	Stroke::StylusPointsProperty = DependencyProperty::Register (Type::STROKE, "StylusPoints", Type::STYLUSPOINT_COLLECTION);
 	Style::IsSealedProperty = DependencyProperty::Register (Type::STYLE, "IsSealed", new Value (false), Type::BOOL);

@@ -1,3 +1,11 @@
+2009-01-26  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* animation.h: Change validators for TargetNameProperty and
+	TargetNameProperty
+	* dependencyproperty.g.cpp: Regenerated
+	* validators.cpp|h: Add new IsTimelineValidator that check that
+	the instance is derived from Timeline.
+
 2009-01-26  Larry Ewing  <lewing@novell.com>
 
 	* grid.cpp (Grid::MeasureOverride): handle out of bounds

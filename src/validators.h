@@ -38,6 +38,7 @@ public:
 	static ValueValidator PasswordValidator;
 	static ValueValidator StyleValidator;
 	static ValueValidator TemplateValidator;
+	static ValueValidator IsTimelineValidator;
 };
 
 #endif /* __VALIDATORS_H__ */
