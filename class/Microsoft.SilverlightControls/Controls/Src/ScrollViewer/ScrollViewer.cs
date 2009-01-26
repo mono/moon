@@ -229,19 +229,19 @@ namespace System.Windows.Controls
         /// Reference to the ScrollContentPresenter child.
         /// </summary>
         internal ScrollContentPresenter ElementScrollContentPresenter { get; set; } 
-        private const string ElementScrollContentPresenterName = "ScrollContentPresenterElement";
+        private const string ElementScrollContentPresenterName = "ScrollContentPresenter";
 
         /// <summary> 
         /// Reference to the horizontal ScrollBar child. 
         /// </summary>
         private ScrollBar ElementHorizontalScrollBar { get; set; } 
-        private const string ElementHorizontalScrollBarName = "HorizontalScrollBarElement";
+        private const string ElementHorizontalScrollBarName = "HorizontalScrollBar";
 
         /// <summary> 
         /// Reference to the vertical ScrollBar child.
         /// </summary>
         private ScrollBar ElementVerticalScrollBar { get; set; } 
-        private const string ElementVerticalScrollBarName = "VerticalScrollBarElement"; 
+        private const string ElementVerticalScrollBarName = "VerticalScrollBar"; 
 
         /// <summary> 
         /// Tracks whether changes to read-only DependencyProperties are allowed
