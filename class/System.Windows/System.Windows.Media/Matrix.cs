@@ -197,16 +197,36 @@ namespace System.Windows.Media {
 			return String.Format ("{0},{1},{2},{3},{4},{5}", m_11, m_12, m_21, m_22, offset_x, offset_y);
 		}
 
-		[MonoTODO ("simply returns ToString")]
 		public string ToString (IFormatProvider provider)
 		{
-			return ToString ();
+			return (this as IFormattable).ToString (null, provider);
 		}
 
-		[MonoTODO ("simply returns ToString")]
 		string IFormattable.ToString (string value, IFormatProvider formatProvider)
 		{
-			return ToString ();
+			if (IsIdentity)
+				return "Identity";
+
+			if (String.IsNullOrEmpty (value))
+				value = null;
+
+			if (formatProvider != null) {
+				ICustomFormatter cp = (ICustomFormatter) formatProvider.GetFormat (typeof (ICustomFormatter));
+				if (cp != null) {
+					return String.Format ("{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}{10}", 
+						cp.Format (value, m_11, formatProvider), cp.Format (null, ',', formatProvider),
+						cp.Format (value, m_12, formatProvider), cp.Format (null, ',', formatProvider),
+						cp.Format (value, m_21, formatProvider), cp.Format (null, ',', formatProvider),
+						cp.Format (value, m_22, formatProvider), cp.Format (null, ',', formatProvider),
+						cp.Format (value, offset_x, formatProvider), cp.Format (null, ',', formatProvider),
+						cp.Format (value, offset_y, formatProvider));
+				}
+			}
+
+			return String.Format ("{0},{1},{2},{3},{4},{5}", 
+				m_11.ToString (value, formatProvider), m_12.ToString (value, formatProvider),
+				m_21.ToString (value, formatProvider), m_22.ToString (value, formatProvider),
+				offset_x.ToString (value, formatProvider), offset_y.ToString (value, formatProvider));
 		}
 		
 		// TODO comparing double is problematic, review MS precision

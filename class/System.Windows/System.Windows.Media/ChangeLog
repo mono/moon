@@ -1,3 +1,8 @@
+2009-01-26  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Color.cs: Complete IFormatProvider/IFormattable support
+	* Matrix.cs: Complete IFormatProvider/IFormattable support
+
 2009-01-26  Geoff Norton  <gnorton@novell.com>
 
 	* CompositionTarget.cs: Surface lives in Deployment now.

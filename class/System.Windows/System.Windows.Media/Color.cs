@@ -91,16 +91,45 @@ namespace System.Windows.Media {
 			return String.Format ("#{0:X8}", argb);
 		}
 
-		[MonoTODO ("simply calling ToString for now")]
 		public string ToString (IFormatProvider provider)
 		{
-			return ToString ();
+			if (provider == null)
+				return ToString ();
+
+			if (provider != null) {
+				ICustomFormatter cp = (ICustomFormatter) provider.GetFormat (typeof (ICustomFormatter));
+				if (cp != null) {
+					return String.Format ("#{0}{1}{2}{3}", 	cp.Format ("X2", A, provider),
+						cp.Format ("X2", R, provider), cp.Format ("X2", G, provider),
+						cp.Format ("X2", B, provider));
+				}
+			}
+
+			return String.Format ("#{0}{1}{2}{3}", 	A.ToString ("X2", provider), R.ToString ("X2", provider), 
+				G.ToString ("X2", provider), B.ToString ("X2", provider));
 		}
 
-		[MonoTODO ("simply calling ToString for now")]
 		string IFormattable.ToString (string value, IFormatProvider formatProvider)
 		{
-			return ToString ();
+			if (value == null)
+				return ToString (formatProvider);
+
+			if (formatProvider != null) {
+				ICustomFormatter cp = (ICustomFormatter) formatProvider.GetFormat (typeof (ICustomFormatter));
+				if (cp != null) {
+					return String.Format ("sc#{0}{1} {2}{3} {4}{5} {6}", 
+						cp.Format (value, A, formatProvider), cp.Format (value, ',', formatProvider),
+						cp.Format (value, R, formatProvider), cp.Format (value, ',', formatProvider),
+						cp.Format (value, G, formatProvider), cp.Format (value, ',', formatProvider),
+						cp.Format (value, B, formatProvider));
+				}
+			}
+
+			return String.Format ("sc#{0}{1} {2}{3} {4}{5} {6}", 
+				A.ToString (value, formatProvider), ','.ToString (formatProvider),
+				R.ToString (value, formatProvider), ','.ToString (formatProvider),
+				G.ToString (value, formatProvider), ','.ToString (formatProvider),
+				B.ToString (value, formatProvider));
 		}
 
 		public static bool operator == (Color color1, Color color2)
