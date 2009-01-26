@@ -172,20 +172,13 @@ Type::Find (const char *name)
 Type *
 Type::Find (Type::Kind type)
 {
-	Deployment *deployment;
-	
 	if (type < Type::INVALID || type == Type::LASTTYPE)
 		return NULL;
 		
 	if (type < Type::LASTTYPE)
 		return &type_infos [type];
 
-	deployment = Deployment::GetCurrent ();
-	
-	if (deployment != NULL)
-		return deployment->GetTypes ()->Find (type);
-		
-	return NULL;
+	return Deployment::GetCurrent ()->GetTypes ()->Find (type);
 }
 
 DependencyObject *
