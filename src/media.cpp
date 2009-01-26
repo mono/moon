@@ -821,7 +821,7 @@ Image::MeasureOverride (Size availableSize)
 	if (!surface)
 		return Size (-INFINITY, -INFINITY);
 
-	if (GetStretch () == StretchNone && surface)
+	if (GetStretch () == StretchNone)
 		desired = Size (surface->width, surface->height);
 
 	desired = desired.Min (availableSize);
@@ -855,8 +855,6 @@ Image::ComputeBounds ()
 	if (!surface)
 		return;
 
-	Stretch stretch = GetStretch ();
-	cairo_matrix_t matrix;
 	Rect image = Rect (0, 0, surface->width, surface->height);
 	Rect paint = Rect (0, 0, GetActualWidth (), GetActualHeight ());
 
@@ -866,14 +864,13 @@ Image::ComputeBounds ()
 	if (paint.height == 0.0)
 		paint.height = image.height;
 
-	image_brush_compute_pattern_matrix (&matrix, 
-					    paint.width, paint.height,
-					    image.width, image.height, stretch, 
-					    AlignmentXCenter, AlignmentYCenter, NULL, NULL);
+	if (isnan (GetWidth ()))
+		paint.width = GetWidth ();
 
-	cairo_matrix_invert (&matrix);
-
-	extents = paint.Transform (&matrix);
+	if (isnan (GetHeight ()))
+		paint.height = GetHeight ();
+	
+	extents = paint;
 	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 }
 

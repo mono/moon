@@ -1,5 +1,5 @@
 2009-01-26  Larry Ewing  <lewing@novell.com>
-
+	
 	* control.cpp: 
 	* border.cpp: Try to get alignment working visually.
 

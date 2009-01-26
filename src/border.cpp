@@ -38,6 +38,12 @@ Border::MeasureOverride (Size availableSize)
 
 	desired = desired.GrowBy (border);
 
+	if (GetHorizontalAlignment () == HorizontalAlignmentStretch && !isinf (availableSize.width))
+		desired.width = availableSize.width;
+
+	if (GetVerticalAlignment () == VerticalAlignmentStretch && !isinf (availableSize.width))
+		desired.height = availableSize.height;
+
 	desired = desired.Max (specified);
 	desired = desired.Min (specified);
 
@@ -47,7 +53,6 @@ Border::MeasureOverride (Size availableSize)
 Size
 Border::ArrangeOverride (Size finalSize)
 {
-	Size desired = Size (0,0);
 	Thickness border = *GetPadding () + *GetBorderThickness ();
 
 	Size specified = Size (GetWidth (), GetHeight ());

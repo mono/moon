@@ -385,9 +385,9 @@ FrameworkElement::Arrange (Rect finalRect)
 	if (!isnan (GetHeight ()))
 		offer.height = GetHeight ();
 	
+	// XXX Horrible hack until we separate slot from arrange args
 	if (offer.width == 0)
 		offer.width = GetDesiredSize ().width;
-	
 	if (offer.height == 0)
 		offer.height = GetDesiredSize ().height;
 	
@@ -452,6 +452,7 @@ FrameworkElement::Arrange (Rect finalRect)
 Size
 FrameworkElement::ArrangeOverride (Size finalSize)
 {
+	//finalSize = finalSize.Max (GetWidth (), GetHeight ());
 	return finalSize;
 }
 

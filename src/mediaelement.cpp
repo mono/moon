@@ -733,6 +733,38 @@ MediaElement::GetTransformOrigin ()
 	return Point (user_xform_origin->x * w, user_xform_origin->y * h);
 }
 
+Size
+MediaElement::MeasureOverride (Size availableSize)
+{
+	Size desired (0,0);
+
+	if (!mplayer)
+		return Size (-INFINITY, -INFINITY);
+
+	if (GetStretch () == StretchNone)
+		desired = Size (mplayer->GetVideoHeight (), mplayer->GetVideoWidth ());
+
+	return desired;
+}
+
+Size
+MediaElement::ArrangeOverride (Size finalSize)
+{
+	if (!mplayer)
+		return FrameworkElement::ArrangeOverride (finalSize);
+
+	Size arranged (mplayer->GetVideoWidth (), mplayer->GetVideoHeight ());
+	Size specified (GetWidth (), GetHeight ());
+	
+	finalSize = finalSize.Min (specified);
+	finalSize = finalSize.Max (specified);
+	
+	if (GetStretch () != StretchNone)
+		arranged = finalSize;
+		
+	return arranged;
+}
+
 void 
 MediaElement::ComputeBounds ()
 {
@@ -741,11 +773,8 @@ MediaElement::ComputeBounds ()
 	if (!mplayer)
 		return;
 
-	Stretch stretch = GetStretch ();
-	cairo_matrix_t matrix;
 	Rect image = Rect (0, 0, mplayer->GetVideoWidth (), mplayer->GetVideoHeight ());
 	Rect paint = Rect (0, 0, GetActualWidth (), GetActualHeight ());
-
 
 	if (paint.width == 0.0)
 		paint.width = image.width;
@@ -753,14 +782,13 @@ MediaElement::ComputeBounds ()
 	if (paint.height == 0.0)
 		paint.height = image.height;
 
-	image_brush_compute_pattern_matrix (&matrix, 
-					    paint.width, paint.height,
-					    image.width, image.height, stretch, 
-					    AlignmentXCenter, AlignmentYCenter, NULL, NULL);
+	if (isnan (GetWidth ()))
+		paint.width = GetWidth ();
 
-	cairo_matrix_invert (&matrix);
+	if (isnan (GetHeight ()))
+		paint.height = GetHeight ();
 
-	extents = paint.Transform (&matrix);
+	extents = paint;
 	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 }
 
@@ -1310,6 +1338,8 @@ MediaElement::DownloaderComplete ()
 	LOG_MEDIAELEMENT ("MediaElement::DownloaderComplete (), downloader: %d, state: %s, previous state: %s\n",
 			  GET_OBJ_ID (downloader), GetStateName (state), GetStateName (prev_state));
 	
+	InvalidateMeasure ();
+
 	flags |= DownloadComplete;
 	
 	if (GetSurface ()) {
