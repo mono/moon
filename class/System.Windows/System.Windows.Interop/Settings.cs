@@ -63,11 +63,11 @@ namespace System.Windows.Interop {
 		public int MaxFrameRate {
 			[SecuritySafeCritical]
 			get {
-				return NativeMethods.time_manager_get_maximum_refresh_rate (NativeMethods.surface_get_time_manager (Application.s_surface));
+				return NativeMethods.time_manager_get_maximum_refresh_rate (NativeMethods.surface_get_time_manager (Deployment.Current.Surface));
 			}
 			[SecuritySafeCritical]
 			set {
-				NativeMethods.time_manager_set_maximum_refresh_rate (NativeMethods.surface_get_time_manager (Application.s_surface), value);
+				NativeMethods.time_manager_set_maximum_refresh_rate (NativeMethods.surface_get_time_manager (Deployment.Current.Surface), value);
 			}
 		}
 

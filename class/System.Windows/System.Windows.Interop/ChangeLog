@@ -1,3 +1,7 @@
+2009-01-26  Geoff Norton  <gnorton@novell.com>
+
+	* Settings.cs: Surface lives in Deployment now.
+
 2008-12-11  Andreia Gaita  <shana@jitted.com>
 
 	* Settings, SilverlightHost.cs: Settings getter implementation, for
