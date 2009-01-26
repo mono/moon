@@ -20,6 +20,7 @@
 #include "plugin-class.h"
 #include "browser-bridge.h"
 #include "plugin.h"
+#include "deployment.h"
 
 #ifdef DEBUG
 #define DEBUG_WARN_NOTIMPLEMENTED(x) printf ("not implemented: (%s)\n" G_STRLOC, x)
@@ -1712,10 +1713,20 @@ MoonlightObject::ClearEventProxy (EventListenerProxy *proxy)
 	g_hash_table_remove (event_listener_proxies, GINT_TO_POINTER (proxy->GetEventId()));
 }
 
+static void
+_set_deployment (NPObject *npobj)
+{
+	MoonlightObject *obj = (MoonlightObject *) npobj;
+	PluginInstance *instance = (PluginInstance *)obj->instance->pdata;
+
+	if (instance)
+		Deployment::SetCurrent (instance->GetDeployment ());
+}
 
 static void
 _invalidate (NPObject *npobj)
 {
+	_set_deployment (npobj);
 	MoonlightObject *obj = (MoonlightObject *) npobj;
 	
 	obj->Invalidate ();
@@ -1724,6 +1735,7 @@ _invalidate (NPObject *npobj)
 static bool
 _has_method (NPObject *npobj, NPIdentifier name)
 {
+	_set_deployment (npobj);
 	MoonlightObject *obj = (MoonlightObject *) npobj;
 	return obj->HasMethod (name);
 }
@@ -1731,6 +1743,7 @@ _has_method (NPObject *npobj, NPIdentifier name)
 static bool
 _has_property (NPObject *npobj, NPIdentifier name)
 {
+	_set_deployment (npobj);
 	MoonlightObject *obj = (MoonlightObject *) npobj;
 	return obj->HasProperty (name);
 }
@@ -1738,6 +1751,7 @@ _has_property (NPObject *npobj, NPIdentifier name)
 static bool
 _get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
+	_set_deployment (npobj);
 #if ds(!)0
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
 	printf ("getting object property %s\n", strname);
@@ -1756,6 +1770,7 @@ _get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
 static bool
 _set_property (NPObject *npobj, NPIdentifier name, const NPVariant *value)
 {
+	_set_deployment (npobj);
 	MoonlightObject *obj = (MoonlightObject *) npobj;
 	int id = obj->LookupName (name);
 	return obj->SetProperty (id, name, value);
@@ -1764,6 +1779,7 @@ _set_property (NPObject *npobj, NPIdentifier name, const NPVariant *value)
 static bool
 _remove_property (NPObject *npobj, NPIdentifier name)
 {
+	_set_deployment (npobj);
 	g_warning ("moonlight_object_remove_property reached");
 	return false;
 }
@@ -1771,6 +1787,7 @@ _remove_property (NPObject *npobj, NPIdentifier name)
 static bool
 _enumerate (NPObject *npobj, NPIdentifier **value, uint32_t *count)
 {
+	_set_deployment (npobj);
 	return ((MoonlightObjectType*)npobj->_class)->Enumerate (value, count);
 }
 
@@ -1779,6 +1796,7 @@ _invoke (NPObject *npobj, NPIdentifier name,
 	 const NPVariant *args, uint32_t argCount,
 	 NPVariant *result)
 {
+	_set_deployment (npobj);
 	MoonlightObject *obj = (MoonlightObject *) npobj;
 	int id = obj->LookupName (name);
 	return obj->Invoke (id, name, args, argCount, result);
@@ -1789,6 +1807,7 @@ _invoke_default (NPObject *npobj,
 		 const NPVariant *args, uint32_t argCount,
 		 NPVariant *result)
 {
+	_set_deployment (npobj);
 	g_warning ("moonlight_object_invoke_default reached");
 	return false;
 }

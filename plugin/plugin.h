@@ -95,6 +95,7 @@ class PluginInstance
 	bool GetWindowless ();
 	void SetMaxFrameRate (int value);
 	int  GetMaxFrameRate ();
+	Deployment *GetDeployment ();
 	
 	BrowserBridge *GetBridge () { return bridge; }
 	
@@ -128,9 +129,10 @@ class PluginInstance
 
 #if PLUGIN_SL_2_0
 	static bool MonoIsLoaded ();
-	static bool MonoInit ();
+	static bool DeploymentInit ();
 
-	bool CreatePluginAppDomain ();
+	bool InitializePluginAppDomain ();
+	bool CreatePluginDeployment ();
 
 	gpointer ManagedCreateXamlLoaderForFile (XamlLoader* loader, const char *file);
 	gpointer ManagedCreateXamlLoaderForString (XamlLoader* loader, const char *str);
@@ -184,13 +186,12 @@ class PluginInstance
 	// The XAML loader, contains a handle to a MonoObject *
 	//
 	PluginXamlLoader *xaml_loader;
+	Deployment   *deployment;
 #if PLUGIN_SL_2_0
 	bool xap_loaded;
 
-	MonoDomain   *plugin_domain;
 	MonoAssembly *system_windows_assembly;
 
-	static MonoDomain *root_domain;
 	static bool mono_is_loaded;
 
 	// Methods

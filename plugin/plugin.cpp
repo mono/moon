@@ -398,7 +398,6 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, uint16_t mo
 #if PLUGIN_SL_2_0
 	xap_loaded = false;
 
-	plugin_domain = NULL;
 	system_windows_assembly = NULL;
 
 	moon_load_xaml =
@@ -478,14 +477,7 @@ PluginInstance::~PluginInstance ()
 		delete bridge;
 	bridge = NULL;
 
-#if PLUGIN_SL_2_0
-	if (plugin_domain) {
-		mono_domain_set (root_domain, FALSE);
-		mono_domain_unload (plugin_domain);
-		plugin_domain = NULL;
-	}
-#endif
-	
+	deployment->unref_delayed();
 #if DEBUG
 	delete moon_sources;
 #endif
@@ -634,6 +626,10 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
         if (!bridge) {
 		g_warning ("probing for browser type failed, user agent = `%s'",
 			   useragent);
+	}
+
+	if (!DeploymentInit () || !CreatePluginDeployment ()) { 
+		g_warning ("Couldn't initialize Mono or create the plugin Deployment");
 	}
 }
 
@@ -1106,6 +1102,11 @@ PluginInstance::LoadXAML ()
 void
 PluginInstance::LoadXAP (const char *url, const char *fname)
 {
+	if (!InitializePluginAppDomain ()) {
+		g_warning ("Couldn't initialize the plugin AppDomain");
+		return;
+	}
+
 	if (source_location)
 		g_free (source_location);
 	source_location = g_strdup (url);
@@ -1263,10 +1264,6 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
 		delete xaml_loader;
 		
-		if (!MonoInit () || !CreatePluginAppDomain ()) {
-			g_warning ("Couldn't initialize Mono or create the plugin AppDomain");
-			return;
-		}
 #if PLUGIN_SL_2_0
 		// FIXME horrible hack to test sl2 sites that use the sl1
 		// mimetype.
@@ -1542,6 +1539,12 @@ PluginInstance::GetMaxFrameRate ()
 	return maxFrameRate;
 }
 
+Deployment*
+PluginInstance::GetDeployment ()
+{
+	return deployment;
+}
+
 void
 PluginInstance::SetMaxFrameRate (int value)
 {
@@ -1686,7 +1689,7 @@ bool
 PluginXamlLoader::LoadVM ()
 {
 #if PLUGIN_SL_2_0
-	if (plugin->MonoInit () && plugin->CreatePluginAppDomain())
+	if (plugin->DeploymentInit () && plugin->CreatePluginDeployment ())
 		return InitializeLoader ();
 #endif
 	return false;
@@ -1863,7 +1866,6 @@ PluginInstance::MonoGetMethodFromName (MonoClass *klass, const char *name)
 }
 
 bool PluginInstance::mono_is_loaded = false;
-MonoDomain* PluginInstance::root_domain = NULL;
 
 bool
 PluginInstance::MonoIsLoaded ()
@@ -1876,56 +1878,27 @@ extern gboolean mono_jit_set_trace_options (const char *options);
 };
 
 bool
-PluginInstance::MonoInit ()
+PluginInstance::DeploymentInit ()
 {
-	char *trace_options;
-	
-	if (mono_is_loaded)
-		return true;
+	return mono_is_loaded = Deployment::Initialize ();
 
-#if DEBUG
-	g_warning ("Enabling MONO_DEBUG=keep-delegates.");
-	g_setenv ("MONO_DEBUG", "keep-delegates", false);
-#endif
-
-	mono_config_parse (NULL);
-	trace_options = getenv ("MOON_TRACE");
-	if (trace_options != NULL){
-		printf ("Setting trace options to: %s\n", trace_options);
-		mono_jit_set_trace_options (trace_options);
-	}
-	
-	mono_debug_init (MONO_DEBUG_FORMAT_MONO);
-	root_domain = mono_jit_init_version ("Moonlight Root Domain", "moonlight");
-
-	mono_is_loaded = true;
-
-
-	printf ("Mono Runtime Initialized\n");
-	
-#if DEBUG
-	d(enable_vm_stack_trace ());
-#endif
-
-	return true;
 }
 
 
 bool
-PluginInstance::CreatePluginAppDomain ()
+PluginInstance::CreatePluginDeployment ()
+{
+	deployment = new Deployment ();
+	deployment->SetCurrent ();
+
+	return true;
+}
+
+bool
+PluginInstance::InitializePluginAppDomain ()
 {
 	bool result = false;
-	if (plugin_domain != NULL)
-		return true;
-	
-	char *domain_name = g_strdup_printf ("moonlight-%p", this);
 
-	mono_domain_set (root_domain, FALSE);
-	plugin_domain = mono_domain_create_appdomain (domain_name, NULL);
-
-	g_free (domain_name);
-	
-	mono_domain_set (plugin_domain, FALSE);
 	system_windows_assembly = mono_assembly_load_with_partial_name ("System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e", NULL);
 	
 	if (system_windows_assembly) {
@@ -1952,10 +1925,6 @@ PluginInstance::CreatePluginAppDomain ()
 
 	printf ("Plugin AppDomain Creation: %s\n", result ? "OK" : "Failed");
 
-	Deployment *deployment = new Deployment ();
-	// assigns this deployment to this app domain.
-	Deployment::SetCurrent (deployment);
-
 	return result;
 }
 
@@ -1971,8 +1940,8 @@ PluginInstance::ManagedCreateXamlLoader (XamlLoader* native_loader, const char *
 	params [0] = &native_loader;
 	params [1] = &this_obj;
 	params [2] = &surface;
-	params [3] = file ? mono_string_new (plugin_domain, file) : NULL;
-	params [4] = str ? mono_string_new (plugin_domain, str) : NULL;
+	params [3] = file ? mono_string_new (mono_domain_get (), file) : NULL;
+	params [4] = str ? mono_string_new (mono_domain_get (), str) : NULL;
 	loader = mono_runtime_invoke (moon_load_xaml, NULL, params, NULL);
 	return GUINT_TO_POINTER (mono_gchandle_new (loader, false));
 }
@@ -2007,7 +1976,7 @@ PluginInstance::ManagedInitializeDeployment (const char *file)
 	void *params [3];
 	params [0] = &this_obj;
 	params [1] = &surface;
-	params [2] = mono_string_new (plugin_domain, file);
+	params [2] = mono_string_new (mono_domain_get (), file);
 	MonoObject *ret = mono_runtime_invoke (moon_load_xap, NULL, params, NULL);
 	
 	return (bool) (*(MonoBoolean *) mono_object_unbox(ret));
