@@ -136,6 +136,11 @@
     <Compile Include="System.Windows.Media\LineGeometryTest.cs" />
     <Compile Include="System.Windows.Media\MatrixTest.cs" />
     <Compile Include="System.Windows.Media\MatrixTransformTest.cs" />
+    <Compile Include="System.Windows.Media\RadialGradientBrushTest.cs" />
+    <Compile Include="System.Windows.Media\SolidColorBrushTest.cs" />
+    <Compile Include="System.Windows.Media\TileBrushTest.cs" />
+    <Compile Include="System.Windows.Media\TransformGroupTest.cs" />
+    <Compile Include="System.Windows.Media\VideoBrushTest.cs" />
     <Compile Include="System.Windows.Media\VisualTreeHelperTest.cs" />
     <Compile Include="System.Windows.Resources\StreamResourceInfoTest.cs" />
     <Compile Include="System.Windows.Shapes\EllipseTest.cs" />
