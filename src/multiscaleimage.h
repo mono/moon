@@ -26,16 +26,15 @@
 class MultiScaleImage : public MediaBase {
 	void DownloaderAbort ();
 	void DownloadUri (const char* url);
-	int layer_to_render;
 	MultiScaleTileSource *source;
-	char *filename;
-	bool continue_rendering;
+	GHashTable *cache;
+	bool cache_contains (int layer, int x, int y);
+	char* context;
 
 	void DownloaderComplete ();
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	double GetViewportHeight ();
 
-	int layers;
 	Downloader *downloader;
 
  protected:

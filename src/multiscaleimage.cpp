@@ -33,11 +33,8 @@ MultiScaleImage::MultiScaleImage ()
 //	}
 	SetObjectType (Type::MULTISCALEIMAGE); 
 	source = NULL;
-	layers = -1;
 	downloader = NULL;
-	layer_to_render = -1;
-	filename = NULL;
-	continue_rendering = false;
+	cache = g_hash_table_new (g_str_hash, g_str_equal);
 }
 
 MultiScaleImage::~MultiScaleImage ()
@@ -66,7 +63,6 @@ MultiScaleImage::ElementToLogicalPoint (Point elementPoint)
 void
 MultiScaleImage::DownloadUri (const char* url)
 {
-//printf ("MSI::DownloadUri\n");
 	Uri *uri = new Uri ();
 
 	Surface* surface = GetSurface ();
@@ -84,7 +80,11 @@ MultiScaleImage::DownloadUri (const char* url)
 	if (!downloader)
 		return;
 
-//	printf ("downloading %s\n", url);
+	printf ("MSI::DownloadUri %s\n", url);
+//	gpointer context = g_strdup ("blah");;
+//	downloader->SetContext (context);
+
+
 
 	downloader->Open ("GET", uri->ToString (), NoPolicy);
 
@@ -187,14 +187,24 @@ expand_rgb_to_argb (GdkPixbuf *pixbuf, int *stride)
 	return data;
 }
 
+char *
+to_key (int layer, int x, int y)
+{
+	char key[16];
+	sprintf (key, "%dx%dx%d", layer, x, y);
+	return g_strdup (key);
+}
+
+bool
+MultiScaleImage::cache_contains (int layer, int x, int y)
+{
+	return g_hash_table_lookup (cache, to_key (layer, x, y)) != NULL;
+}
+
 void
 MultiScaleImage::Render (cairo_t *cr, Region *region)
 {
-//printf ("MSI::Render\n");
-
-	if (!continue_rendering)
-		layer_to_render = -1;
-	continue_rendering = false;
+printf ("MSI::Render\n");
 
 //	if (!surface)
 //		return;
@@ -218,29 +228,35 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 	}
 
 
-	if (layers < 0)
-		frexp (MAX (source->GetImageHeight(), source->GetImageWidth()), &layers);
-
-//	printf ("number of layers: %d\n", layers);
-
-	//FIXME: this is wrong. the viewport size counts too
-	int to_layer;
-	frexp (MAX (GetWidth(), GetHeight()), &to_layer);
-
-	if (layer_to_render >= to_layer) {
-		printf ("done rendering all the layers\n");
-		return;
-	}
-
 	double w = GetWidth ();
 	double h = GetHeight ();
 	double vp_w = GetViewportWidth ();
 	double vp_h = GetViewportHeight ();
+	double im_w = (double) source->GetImageWidth ();
+	double im_h = (double) source->GetImageHeight ();
 	int tile_width = source->GetTileWidth ();
 	int tile_height = source->GetTileHeight ();
 	double vp_ox = GetViewportOrigin()->x;
 	double vp_oy = GetViewportOrigin()->y;
 //printf ("vp %f %f %f %f\n", vp_ox, vp_oy, vp_w, vp_h);
+//printf ("image %d %d\n", source->GetImageWidth (), source->GetImageHeight ());
+
+	int layers;
+	frexp (MAX (im_w, im_h), &layers);
+
+	//optimal layer for this...
+	//FIXME: need to count AspectRatio too
+	int to_layer = MAX (0, layers + 1 - ceil (GetViewportWidth () / GetWidth()));
+	printf ("number of layers: %d\toptimal layer for this: %d\n", layers, to_layer);
+
+	//figuring what layer is ready to be rendered
+	int layer_to_render = to_layer;
+	while (layer_to_render >= 0) {
+		if (cache_contains (layer_to_render, 0, 0))
+			break;
+		printf ("no layer %d in cache\n", layer_to_render);
+		layer_to_render --;
+	}
 
 	//render here
 	if (layer_to_render >= 0) {
@@ -248,6 +264,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 		int stride;
 
 		GError *error = NULL;
+		char* filename = (char*)g_hash_table_lookup (cache, to_key (layer_to_render, 0, 0));
 		GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (filename, &error);
 		if (error) {
 			printf (error->message);
@@ -259,7 +276,6 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 		data = expand_rgb_to_argb (pixbuf, &stride);
 
 //printf ("pb %d %d\n", gdk_pixbuf_get_width (pixbuf), gdk_pixbuf_get_height(pixbuf));
-//printf ("image %d %d\n", source->GetImageWidth (), source->GetImageHeight ());
 
 		cairo_surface_t *image = cairo_image_surface_create_for_data (data,
 										MOON_FORMAT_RGB,
@@ -284,22 +300,26 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 		cairo_surface_destroy (image);
 	}
 
-	//Get the next tiles...
-	layer_to_render ++;
+	if (layer_to_render < to_layer) {
+		//Get the next tiles...
+		layer_to_render ++;
 
-	double v_tile_w = tile_width * ldexp (1.0, layers - layer_to_render);
-	double v_tile_h = tile_height * ldexp (1.0, layers - layer_to_render);
-	double zoom = w / (double)vp_w;
+		double v_tile_w = tile_width * ldexp (1.0, layers - layer_to_render);
+		double v_tile_h = tile_height * ldexp (1.0, layers - layer_to_render);
+//		double zoom = w / (double)vp_w;
 
 
-	int i, j;
+		int i, j;
 
-	for (i = (int)((double)vp_ox / (double)v_tile_w); i * v_tile_w < vp_ox + vp_w; i++) {
-		for (j = (int)((double)vp_oy / (double)v_tile_h); j * v_tile_h < vp_oy + vp_h; j++) {
-			const char* ret = g_strdup ((const char*)source->get_tile_func (layer_to_render, 2, 3));
-			if (!ret)
-				return;
-			DownloadUri (ret);
+		context = to_key (layer_to_render, 0, 0);
+
+		for (i = (int)((double)vp_ox / (double)v_tile_w); i * v_tile_w < vp_ox + vp_w; i++) {
+			for (j = (int)((double)vp_oy / (double)v_tile_h); j * v_tile_h < vp_oy + vp_h; j++) {
+				const char* ret = g_strdup ((const char*)source->get_tile_func (layer_to_render, 2, 3));
+				if (!ret)
+					return;
+				DownloadUri (ret);
+			}
 		}
 	}
 }
@@ -307,15 +327,17 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 void
 MultiScaleImage::DownloaderComplete ()
 {
-	if (filename)
-		g_free (filename);
+	char *filename;
 
 	if (!(filename = g_strdup(downloader->getFileDownloader ()->GetDownloadedFile ())))
 		return;
 
-//	printf ("dl completed %s\n", filename);
+//	char* context = (char*)downloader->GetContext ();
+	printf ("dl completed %s\n", filename);
 
-	continue_rendering = true;
+	//adding to cache. the key should be passed through context, but it's crashing :/
+	g_hash_table_insert (cache, g_strdup(context), filename);
+
 	Invalidate ();
 }
 
