@@ -50,7 +50,7 @@ namespace Mono {
 		public static ManagedXamlLoader CreateXamlLoader (IntPtr native_loader, IntPtr plugin, IntPtr surface, string filename, string contents)
 		{
 			try {
-				var loader = new ManagedXamlLoader ();
+				var loader = XamlLoader.CreateManagedXamlLoader (surface, plugin) as ManagedXamlLoader;
 				loader.Setup (native_loader, plugin, surface, filename, contents);
 				return loader;
 			} catch (Exception e) {

@@ -50,15 +50,11 @@ namespace Mono.Xaml
 		{
 		}
 
-		public ManagedXamlLoader (IntPtr surface, IntPtr plugin) : this (null, surface, plugin)
-		{
-		}
-
 		public ManagedXamlLoader (Assembly assembly, IntPtr surface, IntPtr plugin) : base (surface, plugin)
 		{
 			this.assembly = assembly;
 		}
-		
+				
 		public override void Setup (IntPtr native_loader, IntPtr plugin, IntPtr surface, string filename, string contents)
 		{
 			base.Setup (native_loader, plugin, surface, filename, contents);
@@ -155,16 +151,16 @@ namespace Mono.Xaml
 
 		private bool TryGetDefaultAssemblyName (IntPtr top_level, out string assembly_name)
 		{
+			if (assembly != null) {
+				assembly_name = assembly.GetName ().Name;
+				return true;
+			}
+
 			object obj = LookupObject (top_level);
 
 			if (obj == null) {
-				if (assembly == null) {
-					assembly_name = null;
-					return false;
-				}
-
-				assembly_name = assembly.GetName ().Name;
-				return true;
+				assembly_name = null;
+				return false;
 			}
 
 			assembly_name = obj.GetType ().Assembly.GetName ().Name;
@@ -601,7 +597,6 @@ namespace Mono.Xaml
 
 			if (str_value != null) {
 				IntPtr unmanaged_value;
-
 
 				//
 				// HACK: This really shouldn't be here, but I don't want to bother putting it in Helper, because that

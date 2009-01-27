@@ -1,3 +1,11 @@
+2009-01-27  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: Make the assembly arg mandatory, give the
+	specified assembly precedence when looking up types.
+	* XamlLoaderCallbacks.cs: ManagedXamlLoader needs an assembly now,
+	if one isn't supplied use System.Windows.
+	* ApplicationLauncher.cs: Use the CreateManagedXamlLoader factory method.
+
 2009-01-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Kind.cs: Include all types derived from EventObject in the type system

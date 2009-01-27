@@ -180,7 +180,7 @@ namespace System.Windows {
 					using (StreamReader sr = new StreamReader (info.Stream)) {
 						string generic_xaml = sr.ReadToEnd();
 
-						ManagedXamlLoader loader = new ManagedXamlLoader (Deployment.Current.Surface, PluginHost.Handle);
+						ManagedXamlLoader loader = new ManagedXamlLoader (type.Assembly, Deployment.Current.Surface, PluginHost.Handle);
 
 						try {
 							rd = loader.CreateDependencyObjectFromString (generic_xaml, false) as ResourceDictionary;

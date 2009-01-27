@@ -129,7 +129,7 @@ namespace System.Windows {
 		}
 
 		internal bool ReadManifest () {
-			ManagedXamlLoader loader = new ManagedXamlLoader (Surface, PluginHost.Handle);
+			XamlLoader loader = XamlLoader.CreateManagedXamlLoader (Surface, PluginHost.Handle);
 			string app_manifest = Path.Combine (XapDir, "AppManifest.xaml");
 
 			if (!File.Exists (app_manifest)){

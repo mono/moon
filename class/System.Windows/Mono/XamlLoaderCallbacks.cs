@@ -78,10 +78,15 @@ namespace Mono.Xaml
 		// since we have to support multiple surfaces for the non-browser case.
 		protected IntPtr surface;
 		protected IntPtr plugin;
-		
+
 		public static XamlLoader CreateManagedXamlLoader (IntPtr surface, IntPtr plugin)
 		{
-			return new ManagedXamlLoader (surface, plugin);
+			return CreateManagedXamlLoader (typeof (DependencyObject).Assembly, surface, plugin);
+		}
+
+		public static XamlLoader CreateManagedXamlLoader (Assembly assembly, IntPtr surface, IntPtr plugin)
+		{
+			return new ManagedXamlLoader (assembly, surface, plugin);
 		}
 		
 		public XamlLoader ()
@@ -193,7 +198,7 @@ namespace Mono.Xaml
 				}
 			}			 
 		}
-		
+
 		public void CreateNativeLoader (string filename, string contents)
 		{
 			if (!AllowMultipleSurfacesPerDomain) {
