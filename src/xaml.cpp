@@ -1013,6 +1013,7 @@ class XamlElementInstanceManaged : public XamlElementInstance {
 	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child);
 	virtual void SetAttributes (XamlParserInfo *p, const char **attr);
 
+	virtual bool TrySetContentProperty (XamlParserInfo *p, XamlElementInstance *value);
 	virtual bool TrySetContentProperty (XamlParserInfo *p, const char *value);
 
 	virtual void* GetManagedPointer ();
@@ -3442,7 +3443,7 @@ XamlElementInfoManaged::GetContentProperty (XamlParserInfo *p)
 		return NULL;
 
 	// TODO: We could cache this, but for now lets keep things as simple as possible.
-	const char *res = p->loader->GetContentPropertyName (p, obj);
+	const char *res = p->loader->GetContentPropertyName (p, obj->AsDependencyObject());
 	if (res)
 		return res;
 	return XamlElementInfo::GetContentProperty (p);
@@ -3546,6 +3547,14 @@ void
 XamlElementInstanceManaged::SetAttributes (XamlParserInfo *p, const char **attr)
 {
 	dependency_object_set_attributes (p, this, attr);
+}
+
+bool
+XamlElementInstanceManaged::TrySetContentProperty (XamlParserInfo *p, XamlElementInstance *value)
+{
+	Value *v = value->GetAsValue ();
+	const char* prop_name = info->GetContentProperty (p);
+	return p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, ((XamlElementInfoManaged *) info)->xmlns, GetManagedPointer (), GetParentPointer (), prop_name, v);
 }
 
 bool

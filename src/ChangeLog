@@ -1,3 +1,12 @@
+2009-01-27  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (XamlElementInstanceManaged::TrySetContentProperty):
+	add the "XamlElementInstance* value" overload.  part of axelerate
+	fix.
+	(XamlElementInfoManaged::GetContentProperty): pass
+	obj->AsDependencyObject() to GetContentPropertyName, instead of
+	obj (which is a Value*).
+
 2009-01-26  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (XNamespace::IsParentResourceDictionary, SetAttribute):
