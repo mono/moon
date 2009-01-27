@@ -469,6 +469,7 @@ Value::Unmarshal (Type::Kind desired)
 	if (desired == Type::STRING) {
 		switch (k) {
 		case Type::URI:
+		case Type::FONTFAMILY:
 			k = desired;
 			break;
 		default:
