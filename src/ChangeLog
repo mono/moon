@@ -1,5 +1,12 @@
 2009-01-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* dependencyobject.h:
+	* dependencyobject.cpp: Add EventObject and DependencyObject ctors which
+	take a Deployment*, and an Initialize method which is called by both
+	ctors of each type.
+
+2009-01-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* deployment.h: Initialize doesn't need cbinding/pinvoke.
 
 2009-01-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>

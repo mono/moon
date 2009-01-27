@@ -64,9 +64,7 @@ private:
 		Attached = 1,
 		Disposed = 2,
 	};
-public:
-	EventObject ();
-	
+public:	
 	static gint objects_created;
 	static gint objects_destroyed;
 	
@@ -170,6 +168,8 @@ public:
 	
 protected:
 	virtual ~EventObject ();
+	EventObject ();
+	EventObject (Deployment *deployment);
 	
 	// To enable scenarios like Emit ("Event", new EventArgs ())
 	// Emit will call unref on the calldata.
@@ -178,6 +178,7 @@ protected:
 
 private:
 	void AddTickCallInternal (TickCallHandler handler);
+	void Initialize ();
 
 	EventLists *events;
 	Surface *surface; // TODO: Remove this (along with SetSurface)
@@ -323,6 +324,7 @@ public:
 
 protected:
 	virtual ~DependencyObject ();
+	DependencyObject (Deployment *deployment);
 	
 	//
 	// Returns true if a value is valid.  If the value is invalid return false.
@@ -342,6 +344,7 @@ protected:
 
 private:
 	void RemoveListener (gpointer listener, DependencyProperty *child_property);
+	void Initialize ();
 
 	GHashTable        *current_values;
 	GSList            *listener_list;

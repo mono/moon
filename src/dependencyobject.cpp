@@ -69,10 +69,22 @@ static pthread_mutex_t objects_alive_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 EventObject::EventObject ()
 {
+	deployment = Deployment::GetCurrent ();
+	Initialize ();
+}
+
+EventObject::EventObject (Deployment *deployment)
+{
+	this->deployment = deployment;
+	Initialize ();
+}
+
+void
+EventObject::Initialize ()
+{
 	SetObjectType (Type::EVENTOBJECT);
 
 	surface = NULL;
-	deployment = 0;
 	flags = (Flags) 0;
 	refcount = 1;
 	events = NULL;
@@ -219,14 +231,18 @@ EventObject::GetDeployment ()
 Surface *
 EventObject::GetSurface ()
 {
-#if DEBUG
+#if 0
 	Deployment *current_deployment = Deployment::GetCurrent ();
 	Application *current_application;
 	current_application = deployment != NULL ? deployment->GetCurrentApplication () : (current_deployment != NULL ? current_deployment->GetCurrentApplication () : NULL);
 
-	g_warn_if_fail (deployment == NULL || current_deployment == deployment);
+	if (deployment != NULL && deployment != current_deployment) {
+		printf ("EventObject::GetSurface (): WARNING deployment: %p, Deployment::GetCurrent (): %p type: %s, id: %i\n", deployment, current_deployment, GetTypeName (), GET_OBJ_ID (this));
+		print_stack_trace ();
+	}
 	// current_application is null in the Surface ctor
-	g_warn_if_fail (current_application == NULL || surface == NULL || current_application->GetSurface () == surface);
+	if (!(current_application == NULL || surface == NULL || current_application->GetSurface () == surface))
+		printf ("EventObject::GetSurface (): assert failed: current application: %p, surface: %p, current application's surface: %p\n", current_application, surface, current_application->GetSurface ());
 #endif
 	
 	return surface; // When surface have been removed, return the Surface stored on the Deployment.
@@ -247,7 +263,9 @@ EventObject::ref ()
 		
 #if DEBUG
 	if (GetObjectType () != object_type)
-		printf ("EventObject::unref (): the type '%s' did not call SetObjectType, object_type is '%s'\n", Type::Find (GetObjectType ())->GetName (), Type::Find (object_type)->GetName ());
+		printf ("EventObject::ref (): the type '%s' did not call SetObjectType, object_type is '%s'\n", Type::Find (GetObjectType ())->GetName (), Type::Find (object_type)->GetName ());
+	if (deployment != Deployment::GetCurrent ())
+		printf ("EventObject::ref (): the type '%s' whose id is %i was created on a deployment (%p) different from the current deployment (%p).\n", GetTypeName (), GET_OBJ_ID (this), deployment, Deployment::GetCurrent ());
 #endif
 
 	if (v == 0) {
@@ -321,7 +339,7 @@ gint EventObject::objects_destroyed = 0;
 // are logged to the console, with a stacktrace.
 static bool object_id_fetched = false;
 static int object_id = -1;
-static const char *object_type = NULL;
+static const char *track_object_type = NULL;
 
 #define OBJECT_TRACK_ID (0)
 
@@ -335,9 +353,9 @@ EventObject::Track (const char* done, const char* typname)
 		char *sval = getenv ("MOONLIGHT_OBJECT_TRACK_ID");
 		if (sval)
 			object_id = atoi (sval);
-		object_type = getenv ("MOONLIGHT_OBJECT_TRACK_TYPE");
+		track_object_type = getenv ("MOONLIGHT_OBJECT_TRACK_TYPE");
 	}
-	if (id == object_id || (object_type != NULL && typname != NULL && strcmp (typname, object_type) == 0)) {
+	if (id == object_id || (track_object_type != NULL && typname != NULL && strcmp (typname, track_object_type) == 0)) {
 		char *st = get_stack_trace ();
 		printf ("%s tracked object of type '%s': %i, current refcount: %i\n%s", done, typname, id, refcount, st);
 		g_free (st);
@@ -1302,10 +1320,10 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 
 			// set its logical parent
 			if (new_as_dep->GetLogicalParent() != NULL && new_as_dep->GetLogicalParent() != this) {
-				g_warning ("DependencyObject (%s) already has a logical parent of type %s. Setting logical parent to a %s.",
+				/*g_warning ("DependencyObject (%s) already has a logical parent of type %s. Setting logical parent to a %s.",
 					   new_as_dep->GetType ()->GetName (),
 					   new_as_dep->GetLogicalParent ()->GetType ()->GetName (),
-					   GetType ()->GetName ());
+					   GetType ()->GetName ());*/
 			}
 			
 			MoonError error;
@@ -1408,6 +1426,18 @@ free_value (gpointer key, gpointer value, gpointer data)
 }
 
 DependencyObject::DependencyObject ()
+{
+	Initialize ();
+}
+
+DependencyObject::DependencyObject (Deployment *deployment)
+	: EventObject (deployment)
+{
+	Initialize ();
+}
+
+void
+DependencyObject::Initialize ()
 {
 	SetObjectType (Type::DEPENDENCY_OBJECT);
 
