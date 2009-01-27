@@ -59,6 +59,11 @@ class EventLists;
 #endif
 
 class EventObject {
+private:
+	enum Flags {
+		Attached = 1,
+		Disposed = 2,
+	};
 public:
 	EventObject ();
 	
@@ -140,7 +145,7 @@ public:
 	void RemoveMatchingHandlers (int event_id, EventHandlerPredicate predicate, gpointer closure);
 	
 	/* @GenerateCBinding */
-	Surface *GetSurface () { return surface; }
+	Surface *GetSurface ();
 	virtual void SetSurface (Surface *surface);
 	// SetSurfaceLock/Unlock
 	//  If AddTickCallSafe is called on a type, that type must override SetSurface and surround the call to its base SetSurface implementation
@@ -175,10 +180,14 @@ public:
 	
 	virtual void Dispose ();
 	
+	bool IsAttached ();
+	void SetIsAttached (bool value);
+	bool IsDisposed ();
+	
+	Deployment *GetDeployment ();
+	
 protected:
 	virtual ~EventObject ();
-	
-	bool IsDisposed () { return refcount == 0; }
 	
 	// To enable scenarios like Emit ("Event", new EventArgs ())
 	// Emit will call unref on the calldata.
@@ -189,8 +198,10 @@ private:
 	void AddTickCallInternal (TickCallHandler handler);
 
 	EventLists *events;
-	Surface *surface;
+	Surface *surface; // TODO: Remove this (along with SetSurface)
+	Deployment *deployment;
 	gint32 refcount;
+	Flags flags;
 
 	Type::Kind object_type;
 };

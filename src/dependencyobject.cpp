@@ -23,7 +23,7 @@
 #include "runtime.h"
 #include "uielement.h"
 #include "animation.h"
-
+#include "deployment.h"
 #include "text.h"
 
 struct EventList {
@@ -72,6 +72,8 @@ EventObject::EventObject ()
 	SetObjectType (Type::EVENTOBJECT);
 
 	surface = NULL;
+	deployment = 0;
+	flags = (Flags) 0;
 	refcount = 1;
 	events = NULL;
 	
@@ -206,10 +208,36 @@ EventObject::AddTickCallInternal (TickCallHandler handler)
 	timemanager->AddTickCall (handler, this);
 }
 
+Deployment *
+EventObject::GetDeployment ()
+{
+	g_warn_if_fail (deployment == NULL || Deployment::GetCurrent () == deployment);
+	
+	return deployment;
+}
+
+Surface *
+EventObject::GetSurface ()
+{
+#if DEBUG
+	Deployment *current_deployment = Deployment::GetCurrent ();
+	Application *current_application;
+	current_application = deployment != NULL ? deployment->GetCurrentApplication () : (current_deployment != NULL ? current_deployment->GetCurrentApplication () : NULL);
+
+	g_warn_if_fail (deployment == NULL || current_deployment == deployment);
+	// current_application is null in the Surface ctor
+	g_warn_if_fail (current_application == NULL || surface == NULL || current_application->GetSurface () == surface);
+#endif
+	
+	return surface; // When surface have been removed, return the Surface stored on the Deployment.
+}
+
 void
 EventObject::Dispose ()
 {
 	SetSurface (NULL);
+	// Remove attached flag and set the disposed flag.
+	flags = Disposed;
 }
 
 void 
@@ -234,8 +262,14 @@ EventObject::unref ()
 
 	OBJECT_TRACK ("Unref", GetTypeName ());
 
-	if (delete_me)
+	if (delete_me) {
 		Dispose ();
+		
+#if DEBUG
+		if (flags != Disposed)
+			printf ("EventObject::unref (): the type '%s' (or any of its parent types) forgot to call its base class' Dispose method.\n", GetTypeName ());
+#endif
+	}
 	
 	// We need to check again the the refcount really is zero,
 	// the object might have resurrected in the Dispose. Should
