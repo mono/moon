@@ -216,9 +216,6 @@ TextBox::TextBox ()
 
 	SetDefaultStyleKey (type_info);
 	
-	AddHandler (UIElement::KeyDownEvent, TextBox::key_down, this);
-	AddHandler (UIElement::KeyUpEvent, TextBox::key_up, this);
-	
 	font = new TextFontDescription ();
 	font->SetFamily (CONTROL_FONT_FAMILY);
 	font->SetStretch (CONTROL_FONT_STRETCH);
@@ -231,7 +228,7 @@ TextBox::TextBox ()
 	selection.length = 0;
 	selection.start = 0;
 	setvalue = true;
-	emit = true;
+	frozen = 0;
 	maxlen = 0;
 	cursor = 0;
 	
@@ -251,9 +248,6 @@ TextBox::TextBox ()
 
 TextBox::~TextBox ()
 {
-	RemoveHandler (UIElement::KeyDownEvent, TextBox::key_down, this);
-	RemoveHandler (UIElement::KeyUpEvent, TextBox::key_up, this);
-	
 	delete buffer;
 	delete font;
 }
@@ -425,7 +419,7 @@ prev_word (TextBuffer *buffer, int cursor)
 }
 
 int
-TextBox::CursorBackSpace (GdkModifierType modifiers)
+TextBox::KeyPressBackSpace (GdkModifierType modifiers)
 {
 	int changed = NOTHING_CHANGED;
 	int length = selection.length;
@@ -479,7 +473,7 @@ TextBox::CursorBackSpace (GdkModifierType modifiers)
 }
 
 int
-TextBox::CursorDelete (GdkModifierType modifiers)
+TextBox::KeyPressDelete (GdkModifierType modifiers)
 {
 	int changed = NOTHING_CHANGED;
 	int length = selection.length;
@@ -531,7 +525,7 @@ TextBox::CursorDelete (GdkModifierType modifiers)
 }
 
 int
-TextBox::CursorPageDown (GdkModifierType modifiers)
+TextBox::KeyPressPageDown (GdkModifierType modifiers)
 {
 	int changed = NOTHING_CHANGED;
 	int length = selection.length;
@@ -593,7 +587,7 @@ TextBox::CursorPageDown (GdkModifierType modifiers)
 }
 
 int
-TextBox::CursorPageUp (GdkModifierType modifiers)
+TextBox::KeyPressPageUp (GdkModifierType modifiers)
 {
 	int changed = NOTHING_CHANGED;
 	int length = selection.length;
@@ -656,7 +650,7 @@ TextBox::CursorPageUp (GdkModifierType modifiers)
 }
 
 int
-TextBox::CursorHome (GdkModifierType modifiers)
+TextBox::KeyPressHome (GdkModifierType modifiers)
 {
 	int changed = NOTHING_CHANGED;
 	int length = selection.length;
@@ -756,7 +750,7 @@ TextBox::CursorHome (GdkModifierType modifiers)
 }
 
 int
-TextBox::CursorEnd (GdkModifierType modifiers)
+TextBox::KeyPressEnd (GdkModifierType modifiers)
 {
 	int changed = NOTHING_CHANGED;
 	int length = selection.length;
@@ -854,7 +848,7 @@ TextBox::CursorEnd (GdkModifierType modifiers)
 }
 
 int
-TextBox::CursorRight (GdkModifierType modifiers)
+TextBox::KeyPressRight (GdkModifierType modifiers)
 {
 	int changed = NOTHING_CHANGED;
 	int length = selection.length;
@@ -945,7 +939,7 @@ TextBox::CursorRight (GdkModifierType modifiers)
 }
 
 int
-TextBox::CursorLeft (GdkModifierType modifiers)
+TextBox::KeyPressLeft (GdkModifierType modifiers)
 {
 	int changed = NOTHING_CHANGED;
 	int length = selection.length;
@@ -1038,7 +1032,7 @@ TextBox::CursorLeft (GdkModifierType modifiers)
 }
 
 int
-TextBox::CursorDown (GdkModifierType modifiers)
+TextBox::KeyPressDown (GdkModifierType modifiers)
 {
 	int changed = NOTHING_CHANGED;
 	int length = selection.length;
@@ -1100,7 +1094,7 @@ TextBox::CursorDown (GdkModifierType modifiers)
 }
 
 int
-TextBox::CursorUp (GdkModifierType modifiers)
+TextBox::KeyPressUp (GdkModifierType modifiers)
 {
 	int changed = NOTHING_CHANGED;
 	int length = selection.length;
@@ -1162,135 +1156,44 @@ TextBox::CursorUp (GdkModifierType modifiers)
 	return changed;
 }
 
-void
-TextBox::OnKeyDown (KeyEventArgs *args)
+int
+TextBox::KeyPressUnichar (gunichar c)
 {
-	GdkModifierType modifiers = (GdkModifierType) args->GetModifiers ();
-	guint key = args->GetKeyVal ();
 	int changed = NOTHING_CHANGED;
-	gunichar c;
 	
-	if (args->IsModifier ())
-		return;
+	if ((maxlen > 0 && buffer->len >= maxlen) || ((c == '\n') && !GetAcceptsReturn ()))
+		return NOTHING_CHANGED;
 	
-	// FIXME: so... we'll need to do a few things here:
-	// 1. interpret the key (insert a char or move the cursor, etc)
-	// 2. update state being mindful of the current state (cursor, selection, etc)
-	// 3. register some sort of repeat timeout that expires when OnKeyUp() is called
-	//
-	// Probably a good idea to lift a lot of the logic from jackson's MWF code.
-	printf ("TextBox::OnKeyDown()\n");
-	
-	if ((c = args->GetUnicode ()) || key == GDK_Return) {
-		// normal character key
-		if (key == GDK_Return)
-			c = '\n';
-		
-		if ((maxlen > 0 && buffer->len >= maxlen) || ((c == '\n') && !GetAcceptsReturn ()))
-			return;
-		
-		if (selection.length > 0) {
-			// replace the currently selected text
-			printf ("relacing selection with '%c'\n", (char) c);
-			changed = CONTENT_CHANGED | CURSOR_POSITION_CHANGED | SELECTION_CHANGED;
-			buffer->Replace (selection.start, selection.length, &c, 1);
-			cursor = selection.start + 1;
-			ClearSelection ();
-		} else {
-			// insert the text at the cursor position
-			printf ("inserting '%c' @ %d\n", (char) c, cursor);
-			changed = CONTENT_CHANGED | CURSOR_POSITION_CHANGED;
-			buffer->Insert (cursor, c);
-			cursor++;
-		}
+	if (selection.length > 0) {
+		// replace the currently selected text
+		printf ("TextBox::KeyPressUnichar(): relacing selection with '%c'\n", (char) c);
+		changed = CONTENT_CHANGED | CURSOR_POSITION_CHANGED | SELECTION_CHANGED;
+		buffer->Replace (selection.start, selection.length, &c, 1);
+		cursor = selection.start + 1;
+		ClearSelection ();
 	} else {
-		switch (key) {
-		case GDK_BackSpace:
-			changed = CursorBackSpace (modifiers);
-			break;
-		case GDK_Delete:
-			changed = CursorDelete (modifiers);
-			break;
-		case GDK_KP_Page_Down:
-		case GDK_Page_Down:
-			changed = CursorPageDown (modifiers);
-			break;
-		case GDK_KP_Page_Up:
-		case GDK_Page_Up:
-			changed = CursorPageUp (modifiers);
-			break;
-		case GDK_KP_Home:
-		case GDK_Home:
-			changed = CursorHome (modifiers);
-			break;
-		case GDK_KP_End:
-		case GDK_End:
-			changed = CursorEnd (modifiers);
-			break;
-		case GDK_KP_Right:
-		case GDK_Right:
-			changed = CursorRight (modifiers);
-			break;
-		case GDK_KP_Left:
-		case GDK_Left:
-			changed = CursorLeft (modifiers);
-			break;
-		case GDK_KP_Down:
-		case GDK_Down:
-			changed = CursorDown (modifiers);
-			break;
-		case GDK_KP_Up:
-		case GDK_Up:
-			changed = CursorUp (modifiers);
-			break;
-		case GDK_A:
-		case GDK_a:
-			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK | GDK_SHIFT_MASK)) == GDK_CONTROL_MASK) {
-				// select all and move cursor to end of buffer
-				if (cursor != buffer->len) {
-					changed = CURSOR_POSITION_CHANGED;
-					cursor = buffer->len;
-				}
-				
-				SelectAll ();
-			}
-			break;
-		case GDK_C:
-		case GDK_c:
-			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK | GDK_SHIFT_MASK)) == GDK_CONTROL_MASK) {
-				// copy selection to the clipboard
-				// FIXME: implement me
-			}
-			break;
-		case GDK_X:
-		case GDK_x:
-			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK | GDK_SHIFT_MASK)) == GDK_CONTROL_MASK) {
-				// copy selection to the clipboard and then cut
-				// FIXME: implement me
-			}
-			break;
-		case GDK_V:
-		case GDK_v:
-			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK | GDK_SHIFT_MASK)) == GDK_CONTROL_MASK) {
-				// paste clipboard contents to the buffer
-				// FIXME: implement me
-			}
-			break;
-		case GDK_Y:
-		case GDK_y:
-			// Ctrl+Y := Redo
-			break;
-		case GDK_Z:
-		case GDK_z:
-			// Ctrl+Z := Undo
-			break;
-		default:
-			// FIXME: what other keys do we need to handle?
-			break;
-		}
-		
-		// FIXME: some of these may also require updating scrollbars?
+		// insert the text at the cursor position
+		printf ("TextBox::KeyPressUnichar(): inserting '%c' @ %d\n", (char) c, cursor);
+		changed = CONTENT_CHANGED | CURSOR_POSITION_CHANGED;
+		buffer->Insert (cursor, c);
+		cursor++;
 	}
+	
+	return changed;
+}
+
+void
+TextBox::PreKeyPress ()
+{
+	// freeze event emission
+	frozen++;
+}
+
+void
+TextBox::PostKeyPress (int changed)
+{
+	// unfreeze event emission
+	frozen--;
 	
 	if (changed & CONTENT_CHANGED)
 		EmitTextChanged ();
@@ -1304,26 +1207,6 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 	// needs to invalidate.
 	if (changed == CURSOR_POSITION_CHANGED)
 		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (TextBoxModelChangedCursorPosition));
-	
-	// FIXME: register a key repeat timeout?
-}
-
-void
-TextBox::OnKeyUp (KeyEventArgs *args)
-{
-	// FIXME: unregister the key repeat timeout?
-}
-
-void
-TextBox::key_down (EventObject *sender, EventArgs *args, void *closure)
-{
-	((TextBox *) closure)->OnKeyDown ((KeyEventArgs *) args);
-}
-
-void
-TextBox::key_up (EventObject *sender, EventArgs *args, void *closure)
-{
-	((TextBox *) closure)->OnKeyUp ((KeyEventArgs *) args);
 }
 
 void
@@ -1411,12 +1294,12 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 	} else if (args->property == TextBox::SelectionStartProperty) {
 		selection.start = args->new_value->AsInt32 ();
 		
-		if (emit)
+		if (!frozen)
 			EmitSelectionChanged ();
 	} else if (args->property == TextBox::SelectionLengthProperty) {
 		selection.length = args->new_value->AsInt32 ();
 		
-		if (emit)
+		if (!frozen)
 			EmitSelectionChanged ();
 	} else if (args->property == TextBox::SelectionBackgroundProperty) {
 		changed = TextBoxModelChangedBrush;
@@ -1511,12 +1394,13 @@ TextBox::OnApplyTemplate ()
 void
 TextBox::ClearSelection ()
 {
-	emit = false;
+	frozen++;
 	SetSelectionLength (0);
 	SetSelectionStart (0);
-	emit = true;
+	frozen--;
 	
-	EmitSelectionChanged ();
+	if (!frozen)
+		EmitSelectionChanged ();
 }
 
 void
@@ -1525,18 +1409,24 @@ TextBox::Select (int start, int length)
 	if (start < 0 || start > buffer->len || start + length > buffer->len)
 		return;
 	
-	emit = false;
+	frozen++;
 	SetSelectionLength (length);
 	SetSelectionStart (start);
-	emit = true;
+	frozen--;
 	
-	EmitSelectionChanged ();
+	if (!frozen)
+		EmitSelectionChanged ();
 }
 
-void
+bool
 TextBox::SelectAll ()
 {
+	if (selection.start == 0 && selection.length == buffer->len)
+		return false;
+	
 	Select (0, buffer->len);
+	
+	return true;
 }
 
 
@@ -1552,9 +1442,11 @@ TextBox::SelectAll ()
 TextBoxView::TextBoxView ()
 {
 	SetObjectType (Type::TEXTBOXVIEW);
-
+	
 	AddHandler (UIElement::LostFocusEvent, TextBoxView::focus_out, this);
 	AddHandler (UIElement::GotFocusEvent, TextBoxView::focus_in, this);
+	AddHandler (UIElement::KeyDownEvent, TextBoxView::key_down, this);
+	AddHandler (UIElement::KeyUpEvent, TextBoxView::key_up, this);
 	
 	cursor = Rect (0, 0, 0, 0);
 	layout = new TextLayout ();
@@ -1575,11 +1467,159 @@ TextBoxView::~TextBoxView ()
 	
 	RemoveHandler (UIElement::LostFocusEvent, TextBoxView::focus_out, this);
 	RemoveHandler (UIElement::GotFocusEvent, TextBoxView::focus_in, this);
+	RemoveHandler (UIElement::KeyDownEvent, TextBoxView::key_down, this);
+	RemoveHandler (UIElement::KeyUpEvent, TextBoxView::key_up, this);
 	
 	if (blink_timeout != 0)
 		g_source_remove (blink_timeout);
 	
 	delete layout;
+}
+
+void
+TextBoxView::OnKeyDown (KeyEventArgs *args)
+{
+	GdkModifierType modifiers = (GdkModifierType) args->GetModifiers ();
+	guint key = args->GetKeyVal ();
+	int changed = NOTHING_CHANGED;
+	gunichar c;
+	
+	if (args->IsModifier ())
+		return;
+	
+	printf ("TextBoxView::OnKeyDown()\n");
+	
+	// let textbox know we'll be making state changes due to a keypress event
+	textbox->PreKeyPress ();
+	
+	if ((c = args->GetUnicode ()) || key == GDK_Return) {
+		// normal character key
+		if (key == GDK_Return)
+			c = '\n';
+		
+		changed = textbox->KeyPressUnichar (c);
+		args->SetHandled (true);
+	} else {
+		// special key
+		switch (key) {
+		case GDK_BackSpace:
+			changed = textbox->KeyPressBackSpace (modifiers);
+			args->SetHandled (true);
+			break;
+		case GDK_Delete:
+			changed = textbox->KeyPressDelete (modifiers);
+			args->SetHandled (true);
+			break;
+		case GDK_KP_Page_Down:
+		case GDK_Page_Down:
+			changed = textbox->KeyPressPageDown (modifiers);
+			break;
+		case GDK_KP_Page_Up:
+		case GDK_Page_Up:
+			changed = textbox->KeyPressPageUp (modifiers);
+			break;
+		case GDK_KP_Home:
+		case GDK_Home:
+			changed = textbox->KeyPressHome (modifiers);
+			break;
+		case GDK_KP_End:
+		case GDK_End:
+			changed = textbox->KeyPressEnd (modifiers);
+			break;
+		case GDK_KP_Right:
+		case GDK_Right:
+			changed = textbox->KeyPressRight (modifiers);
+			break;
+		case GDK_KP_Left:
+		case GDK_Left:
+			changed = textbox->KeyPressLeft (modifiers);
+			break;
+		case GDK_KP_Down:
+		case GDK_Down:
+			changed = textbox->KeyPressDown (modifiers);
+			break;
+		case GDK_KP_Up:
+		case GDK_Up:
+			changed = textbox->KeyPressUp (modifiers);
+			break;
+		case GDK_A:
+		case GDK_a:
+			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK | GDK_SHIFT_MASK)) == GDK_CONTROL_MASK) {
+				// select all
+				if (textbox->SelectAll ())
+					changed = SELECTION_CHANGED;
+				
+				args->SetHandled (true);
+			}
+			break;
+		case GDK_C:
+		case GDK_c:
+			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK | GDK_SHIFT_MASK)) == GDK_CONTROL_MASK) {
+				// copy selection to the clipboard
+				// FIXME: implement me
+				args->SetHandled (true);
+			}
+			break;
+		case GDK_X:
+		case GDK_x:
+			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK | GDK_SHIFT_MASK)) == GDK_CONTROL_MASK) {
+				// copy selection to the clipboard and then cut
+				// FIXME: implement me
+				args->SetHandled (true);
+			}
+			break;
+		case GDK_V:
+		case GDK_v:
+			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK | GDK_SHIFT_MASK)) == GDK_CONTROL_MASK) {
+				// paste clipboard contents to the buffer
+				// FIXME: implement me
+				args->SetHandled (true);
+			}
+			break;
+		case GDK_Y:
+		case GDK_y:
+			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK)) == GDK_CONTROL_MASK) {
+				// Ctrl+Y := Redo
+				args->SetHandled (true);
+			}
+			break;
+		case GDK_Z:
+		case GDK_z:
+			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK)) == GDK_CONTROL_MASK) {
+				// Ctrl+Z := Undo
+				args->SetHandled (true);
+			}
+			break;
+		default:
+			// FIXME: what other keys do we need to handle?
+			break;
+		}
+		
+		// FIXME: some of these may also require updating scrollbars?
+	}
+	
+	// process state changes, emit events, etc
+	textbox->PostKeyPress (changed);
+	
+	// FIXME: register a key repeat timeout?
+}
+
+void
+TextBoxView::OnKeyUp (KeyEventArgs *args)
+{
+	// FIXME: unregister the key repeat timeout?
+}
+
+void
+TextBoxView::key_down (EventObject *sender, EventArgs *args, void *closure)
+{
+	((TextBoxView *) closure)->OnKeyDown ((KeyEventArgs *) args);
+}
+
+void
+TextBoxView::key_up (EventObject *sender, EventArgs *args, void *closure)
+{
+	((TextBoxView *) closure)->OnKeyUp ((KeyEventArgs *) args);
 }
 
 gboolean
@@ -1615,8 +1655,6 @@ TextBoxView::Blink ()
 void
 TextBoxView::DelayCursorBlink ()
 {
-	TextBox *textbox = GetTextBox ();
-	
 	if (textbox->GetSelection ()->length == 0) {
 		if (blink_timeout != 0)
 			g_source_remove (blink_timeout);
@@ -1629,8 +1667,6 @@ TextBoxView::DelayCursorBlink ()
 void
 TextBoxView::BeginCursorBlink ()
 {
-	TextBox *textbox = GetTextBox ();
-	
 	if (textbox->GetSelection ()->length == 0) {
 		// no selection, proceed with blinking
 		if (blink_timeout == 0) {
@@ -1677,7 +1713,6 @@ TextBoxView::HideCursor ()
 void
 TextBoxView::UpdateCursor (bool invalidate)
 {
-	TextBox *textbox = GetTextBox ();
 	int cur = textbox->GetCursor ();
 	
 	// invalidate current cursor rect
@@ -1725,7 +1760,6 @@ TextBoxView::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 void
 TextBoxView::Layout (cairo_t *cr)
 {
-	TextBox *textbox = GetTextBox ();
 	double width = GetWidth ();
 	TextSelection *selection;
 	const gunichar *text;
@@ -1782,7 +1816,6 @@ TextBoxView::Layout (cairo_t *cr)
 void
 TextBoxView::Paint (cairo_t *cr)
 {
-	TextBox *textbox = GetTextBox ();
 	Brush *fg;
 	
 	printf ("TextBoxView::Paint()\n");

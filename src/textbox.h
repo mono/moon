@@ -67,14 +67,14 @@ class TextBoxModelChangedEventArgs : public RoutedEventArgs {
 };
 
 
-
 class TextBuffer;
 
-class TextBoxDynamicPropertyValueProvider;
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
 class TextBox : public Control, public ITextSource {
+	friend class TextBoxView;
+	
 	TextFontDescription *font;
 	TextSelection selection;
 	TextBuffer *buffer;
@@ -82,24 +82,23 @@ class TextBox : public Control, public ITextSource {
 	int cursor;
 	
 	int setvalue:1;
-	int emit:1;
+	int frozen:3;
 	
-	static void key_down (EventObject *sender, EventArgs *args, void *closure);
-	static void key_up (EventObject *sender, EventArgs *args, void *closure);
+	int KeyPressUnichar (gunichar c);
 	
-	void OnKeyDown (KeyEventArgs *args);
-	void OnKeyUp (KeyEventArgs *args);
+	int KeyPressBackSpace (GdkModifierType modifiers);
+	int KeyPressDelete (GdkModifierType modifiers);
+	int KeyPressPageDown (GdkModifierType modifiers);
+	int KeyPressPageUp (GdkModifierType modifiers);
+	int KeyPressHome (GdkModifierType modifiers);
+	int KeyPressEnd (GdkModifierType modifiers);
+	int KeyPressRight (GdkModifierType modifiers);
+	int KeyPressLeft (GdkModifierType modifiers);
+	int KeyPressDown (GdkModifierType modifiers);
+	int KeyPressUp (GdkModifierType modifiers);
 	
-	int CursorBackSpace (GdkModifierType modifiers);
-	int CursorDelete (GdkModifierType modifiers);
-	int CursorPageDown (GdkModifierType modifiers);
-	int CursorPageUp (GdkModifierType modifiers);
-	int CursorHome (GdkModifierType modifiers);
-	int CursorEnd (GdkModifierType modifiers);
-	int CursorRight (GdkModifierType modifiers);
-	int CursorLeft (GdkModifierType modifiers);
-	int CursorDown (GdkModifierType modifiers);
-	int CursorUp (GdkModifierType modifiers);
+	void PreKeyPress ();
+	void PostKeyPress (int changed);
 	
 	void ClearSelection ();
 	
@@ -158,7 +157,7 @@ class TextBox : public Control, public ITextSource {
 	//
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	void SelectAll ();
+	bool SelectAll ();
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Select (int start, int length);
 	
@@ -251,11 +250,19 @@ class TextBoxView : public FrameworkElement {
 	int focused:1;
 	int dirty:1;
 	
+	// focus in/out events
 	static void focus_out (EventObject *sender, EventArgs *args, gpointer closure);
 	static void focus_in (EventObject *sender, EventArgs *args, gpointer closure);
 	void OnFocusOut (EventArgs *args);
 	void OnFocusIn (EventArgs *args);
 	
+	// keypress events
+	static void key_down (EventObject *sender, EventArgs *args, void *closure);
+	static void key_up (EventObject *sender, EventArgs *args, void *closure);
+	void OnKeyDown (KeyEventArgs *args);
+	void OnKeyUp (KeyEventArgs *args);
+	
+	// TextBox events
 	static void selection_changed (EventObject *sender, EventArgs *args, gpointer closure);
 	static void model_changed (EventObject *sender, EventArgs *args, gpointer closure);
 	static void text_changed (EventObject *sender, EventArgs *args, gpointer closure);
@@ -264,6 +271,7 @@ class TextBoxView : public FrameworkElement {
 	void OnSelectionChanged (RoutedEventArgs *args);
 	void OnTextChanged (TextChangedEventArgs *args);
 	
+	// cursor blink
 	static gboolean blink (void *user_data);
 	void ConnectBlinkTimeout (guint multiplier);
 	void DelayCursorBlink ();
