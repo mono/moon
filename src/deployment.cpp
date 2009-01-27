@@ -86,9 +86,6 @@ Deployment::GetCurrent()
 void
 Deployment::SetCurrent (Deployment* deployment)
 {
-	if (!current_hash)
-		current_hash = g_hash_table_new (g_direct_hash, g_direct_equal);
-
 	mono_domain_set (deployment->domain, FALSE);
 	pthread_setspecific (tls_key, deployment);
 
@@ -115,7 +112,6 @@ Deployment::~Deployment()
 	if (g_hash_table_lookup (current_hash, this->domain))
 		g_hash_table_remove (current_hash, this->domain);
 
-	pthread_setspecific (tls_key, NULL);
 	mono_domain_set (root_domain, FALSE);
 	mono_domain_unload (domain);
 

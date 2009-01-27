@@ -5,6 +5,12 @@
 
 2009-01-26  Geoff Norton  <gnorton@novell.com>
 
+	* deployment.cpp: Remove a useless null guard now that we have
+	Deployment::Initialize.  Don't rudely nuke the TLS slot we might not
+	own.
+
+2009-01-26  Geoff Norton  <gnorton@novell.com>
+
 	* deployment.cpp|h:  Deployment now does all the domain book keeping
 	for us, so that calls to GetCurrent will return the Deployment for 
 	the appropriate context, it will also set the MonoDomain* appropriately
