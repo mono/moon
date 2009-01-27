@@ -1,6 +1,4 @@
 //
-// ContentPresenter.cs
-//
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //

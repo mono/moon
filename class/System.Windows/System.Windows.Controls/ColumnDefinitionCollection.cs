@@ -1,6 +1,4 @@
 //
-// System.Windows.Media.PathSegmentCollection class
-//
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
