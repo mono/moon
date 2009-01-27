@@ -309,7 +309,7 @@ UIElement::ComputeTotalHitTestVisibility ()
 void
 UIElement::UpdateTransform ()
 {
-	InvalidateMeasure ();
+	InvalidateArrange ();
 	if (GetSurface()) {
 		GetSurface()->AddDirtyElement (this, DirtyLocalTransform);
 	}
@@ -366,19 +366,10 @@ UIElement::ComputeTransform ()
 {
 	cairo_matrix_t old = absolute_xform;
 	cairo_matrix_init_identity (&absolute_xform);
-	cairo_matrix_t slot_transform;
-	cairo_matrix_init_identity (&slot_transform);
-
-	Rect *slot = LayoutInformation::GetLayoutSlot (this);
-	if (slot)
-		cairo_matrix_translate (&slot_transform, slot->x, slot->y);
-	else 
-		g_warning ("EEEK. Computing transform before we've been arranged");
 
 	if (GetVisualParent () != NULL)
 		absolute_xform = GetVisualParent ()->absolute_xform;
 
-	cairo_matrix_multiply (&absolute_xform, &slot_transform, &absolute_xform);
 	cairo_matrix_multiply (&absolute_xform, &layout_xform, &absolute_xform);
 	cairo_matrix_multiply (&absolute_xform, &local_xform, &absolute_xform);
 	

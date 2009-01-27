@@ -169,11 +169,6 @@ Grid::MeasureOverride (Size availableSize)
 		child->Measure (child_size);
 		Size desired = child->GetDesiredSize();
 		
-		desired = desired.Min (max_size);
-		desired = desired.Max (min_size);
-		
-		/* XXX should we do a SetDesiredSize (desired) here? or is there a layout method we are missing */
-
 		Size remaining = desired;
 		for (int c = col; c < col + colspan; c++){
 			ColumnDefinition *coldef = columns->GetValueAt (c)->AsColumnDefinition ();
@@ -185,7 +180,7 @@ Grid::MeasureOverride (Size availableSize)
 			contribution = MIN (contribution, coldef->GetMaxWidth ());
 			
 			coldef->SetActualWidth (MAX(coldef->GetActualWidth (), contribution));
-			remaining.width -= contribution;
+			remaining.width -= contribution; 
 		}
 
 		for (int r = row; r < row + rowspan; r++){
@@ -254,20 +249,11 @@ Grid::ArrangeOverride (Size finalSize)
 		//gint32 rowspan = Grid::GetRowSpan (child);
 		
 		Size desired = child->GetDesiredSize ();
-		if (col < col_count) {
-			ColumnDefinition *coldef = columns->GetValueAt (col)->AsColumnDefinition ();
+		ColumnDefinition *coldef = columns->GetValueAt (col)->AsColumnDefinition ();
+		coldef->SetActualWidth (MAX (coldef->GetActualWidth (), desired.width));
 
-			if (coldef->GetWidth ()->type == GridUnitTypeAuto)
-				coldef->SetActualWidth (MAX (coldef->GetActualWidth (), desired.width));
-
-		}
-
-		if (row < row_count) {
-			RowDefinition *rowdef = rows->GetValueAt (row)->AsRowDefinition ();
-			
-			if (rowdef->GetHeight ()->type == GridUnitTypeAuto)
-				rowdef->SetActualHeight (MAX (rowdef->GetActualHeight (), desired.height));
-		}
+		RowDefinition *rowdef = rows->GetValueAt (row)->AsRowDefinition ();
+		rowdef->SetActualHeight (MAX (rowdef->GetActualHeight (), desired.height));
 	}
 
 	double row_stars = 0.0;
@@ -277,6 +263,7 @@ Grid::ArrangeOverride (Size finalSize)
 
 		switch (height->type) {
 		case GridUnitTypeStar:
+			remaining.height -= rowdef->GetActualHeight ();
 			row_stars += height->val;
 			break;
 		case GridUnitTypePixel:
@@ -296,6 +283,7 @@ Grid::ArrangeOverride (Size finalSize)
 
 		switch (width->type) {
 		case GridUnitTypeStar:
+			remaining.width -= coldef->GetActualWidth ();
 			col_stars += width->val;
 			break;
 		case GridUnitTypePixel:
@@ -313,7 +301,7 @@ Grid::ArrangeOverride (Size finalSize)
 		GridLength* height = rowdef->GetHeight();
 
 		if (height->type == GridUnitTypeStar)
-			rowdef->SetActualHeight (remaining.height * height->val / row_stars);
+			rowdef->SetActualHeight (rowdef->GetActualHeight () + (remaining.height * height->val / row_stars));
 	}
 
 	for (int i = 0; i < col_count; i ++) {
@@ -321,7 +309,7 @@ Grid::ArrangeOverride (Size finalSize)
 		GridLength* width = coldef->GetWidth();
 
 		if (width->type == GridUnitTypeStar)
-			coldef->SetActualWidth (remaining.width * width->val / col_stars);
+			coldef->SetActualWidth (coldef->GetActualWidth () + (remaining.width * width->val / col_stars));
 	}
 
 	walker = VisualTreeWalker (this);
@@ -352,7 +340,7 @@ Grid::ArrangeOverride (Size finalSize)
 			ColumnDefinition *coldef = columns->GetValueAt (c)->AsColumnDefinition ();
 
 			if (c < col) {
-				child_final.y += coldef->GetActualWidth ();
+				child_final.x += coldef->GetActualWidth ();
 			} else {
 				child_final.width += coldef->GetActualWidth ();
 

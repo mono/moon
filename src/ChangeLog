@@ -6,6 +6,13 @@
 
 2009-01-26  Larry Ewing  <lewing@novell.com>
 
+	* grid.cpp: rework proportional contribution of auto columns.
+
+	* uielement.cpp: remove the slot logic from the transform here we
+	will compute it in arrange.
+
+2009-01-26  Larry Ewing  <lewing@novell.com>
+
 	* grid.cpp (Grid::ArrangeOverride): fix a an error in the loop
 	bounds.
 
