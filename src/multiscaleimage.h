@@ -33,6 +33,7 @@ class MultiScaleImage : public MediaBase {
 
 	void DownloaderComplete ();
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
+	double GetViewportHeight ();
 
 	int layers;
 	Downloader *downloader;

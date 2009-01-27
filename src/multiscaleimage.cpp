@@ -49,7 +49,7 @@ void
 MultiScaleImage::ZoomAboutLogicalPoint (double zoomIncrementFactor, double zoomCenterLogicalX, double zoomCenterLogicalY)
 {
 	double width = GetViewportWidth () * zoomIncrementFactor;
-	double height = width * GetAspectRatio ();
+	double height = GetViewportHeight () * zoomIncrementFactor;
 //	SetViewportOrigin (new Point (zoomCenterLogicalX - width/2.0, zoomCenterLogicalY - height/2.0));
 	SetViewportWidth (width);
 	Invalidate ();
@@ -59,7 +59,7 @@ Point
 MultiScaleImage::ElementToLogicalPoint (Point elementPoint)
 {
 	return Point (GetViewportOrigin()->x + elementPoint.x * GetViewportWidth () / GetWidth(),
-		      GetViewportOrigin()->y + elementPoint.y * GetViewportWidth () * GetAspectRatio () / GetHeight ());
+		      GetViewportOrigin()->y + elementPoint.y * GetViewportHeight () / GetHeight ());
 }
 
 void
@@ -234,7 +234,7 @@ printf ("MSI::Render\n");
 	double w = GetWidth ();
 	double h = GetHeight ();
 	int vp_w = GetViewportWidth ();
-	int vp_h = (int)vp_w * GetAspectRatio ();
+	int vp_h = GetViewportHeight ();
 	int tile_width = source->GetTileWidth ();
 	int tile_height = source->GetTileHeight ();
 	int vp_ox = GetViewportOrigin()->x;
@@ -353,4 +353,9 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args)
 	NotifyListenersOfPropertyChange (args);
 }
 
+double
+MultiScaleImage::GetViewportHeight ()
+{
+	return GetAspectRatio () * GetHeight() * GetViewportWidth () / GetWidth (); 
+}
 
