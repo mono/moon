@@ -88,9 +88,6 @@ Deployment::SetCurrent (Deployment* deployment)
 {
 	mono_domain_set (deployment->domain, FALSE);
 	pthread_setspecific (tls_key, deployment);
-
-	if (!g_hash_table_lookup (current_hash, deployment->domain))
-		g_hash_table_insert (current_hash, deployment->domain, deployment);
 }
 
 Deployment::Deployment()
@@ -105,12 +102,13 @@ Deployment::Deployment()
         g_free (domain_name);
 
         mono_domain_set (domain, FALSE);
+
+	g_hash_table_insert (current_hash, domain, this);
 }
 
 Deployment::~Deployment()
 {
-	if (g_hash_table_lookup (current_hash, this->domain))
-		g_hash_table_remove (current_hash, this->domain);
+	g_hash_table_remove (current_hash, domain);
 
 	mono_domain_set (root_domain, FALSE);
 	mono_domain_unload (domain);
