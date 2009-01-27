@@ -118,10 +118,25 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		public void Parse_xKeyOutsideResourceDictionary ()
+		{
+			// no exception
+			XamlReader.Load (@"<Storyboard xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" x:Key=""keysb"" x:Name=""sb"" />");
+		}
+
+		[TestMethod]
 		public void Parse_BothxKeyAndxName ()
 		{
 			Assert.Throws<XamlParseException>(delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Color x:Key=""keycolor"" x:Name=""color"">#ffffffff</Color></Canvas.Resources></Canvas>");
-				});
+				}, "1");
+
+			Assert.Throws<XamlParseException>(delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Storyboard x:Key=""keysb"" x:Name=""sb""/></Canvas.Resources></Canvas>");
+				}, "2");
+
+			Assert.Throws<XamlParseException>(delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><LineGeometry x:Key=""keygeom"" x:Name=""keygeom""/></Canvas.Resources></Canvas>");
+				}, "3");
+
+			XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Storyboard x:Key=""keysb""><DoubleAnimation x:Key=""keyanim"" x:Name=""anim""/></Storyboard></Canvas.Resources></Canvas>");
 		}
 
 		[TestMethod]
