@@ -43,6 +43,8 @@ Collection::Dispose ()
 {
 	Value *value;
 	
+	DependencyObject::Dispose ();
+	
 	for (guint i = 0; i < array->len; i++) {
 		value = (Value *) array->pdata[i];
 		RemovedFromCollection (value);

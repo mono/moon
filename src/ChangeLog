@@ -1,5 +1,9 @@
 2009-01-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* collection.cpp: Collection::Dispose: Call base class Dispose too.
+
+2009-01-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* grid.h:
 	* type.h:
 	* text.h:
