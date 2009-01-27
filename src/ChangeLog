@@ -1,3 +1,9 @@
+2009-01-26  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (XNamespace::IsParentResourceDictionary, SetAttribute):
+	some behavior with x:Key/x:Name only happens when the element is a
+	child of a ResourceDictionary.
+
 2009-01-26  Larry Ewing  <lewing@novell.com>
 
 	* grid.cpp (Grid::ArrangeOverride): fix a an error in the loop

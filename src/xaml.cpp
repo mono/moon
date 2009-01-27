@@ -842,6 +842,31 @@ class XNamespace : public XamlNamespace {
 		return NULL;
 	}
 
+	bool IsParentResourceDictionary (XamlElementInstance *parent)
+	{
+		if (parent == NULL)
+			return false;
+
+		bool rv = false;
+
+		if (parent->element_type == XamlElementInstance::PROPERTY) {
+			char **prop_name = g_strsplit (parent->element_name, ".", -1);
+			Type *owner = Type::Find (prop_name [0]);
+
+			if (owner) {
+				DependencyProperty *dep = DependencyProperty::GetDependencyProperty (owner->type, prop_name [1]);
+				rv = Type::IsSubclassOf (dep->GetPropertyType(), Type::RESOURCE_DICTIONARY);
+			}
+
+			g_strfreev (prop_name);
+		}
+		else {
+			rv = Type::IsSubclassOf (parent->info->GetKind (), Type::RESOURCE_DICTIONARY);
+		}
+
+		return rv;
+	}
+
 	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse)
 	{
 		*reparse = false;
@@ -857,13 +882,15 @@ class XNamespace : public XamlNamespace {
 			// }
 			//
 
-			if (item->GetKey () && !Type::IsSubclassOf (item->info->GetKind (), Type::STORYBOARD)) {
-				// XXX don't know the proper values here...
-				parser_error (p, item->element_name, NULL, 2007,
-					      "You can't specify x:Name along with x:Key, or x:Key twice.");
-				return false;
+			if (IsParentResourceDictionary (p->current_element)) {
+				if (item->GetKey ()) {
+					// XXX don't know the proper values here...
+					parser_error (p, item->element_name, NULL, 2007,
+						      "You can't specify x:Name along with x:Key, or x:Key twice.");
+					return false;
+				}
+				item->SetKey (value);
 			}
-			item->SetKey (value);
 
 			if (item->IsDependencyObject ()) {
 				item->GetAsDependencyObject ()->SetValue (DependencyObject::NameProperty, Value (value));
@@ -874,7 +901,7 @@ class XNamespace : public XamlNamespace {
 		}
 
 		if (!strcmp ("Key", attr)) {
-			if (item->GetKey () && !Type::IsSubclassOf (item->info->GetKind (), Type::STORYBOARD)) {
+			if (item->GetKey () && IsParentResourceDictionary (p->current_element)) {
 				// XXX don't know the proper values here...
 				parser_error (p, item->element_name, NULL, 2007,
 					      "You can't specify x:Name along with x:Key, or x:Key twice.");
