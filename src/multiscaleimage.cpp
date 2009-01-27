@@ -48,24 +48,25 @@ MultiScaleImage::~MultiScaleImage ()
 void
 MultiScaleImage::ZoomAboutLogicalPoint (double zoomIncrementFactor, double zoomCenterLogicalX, double zoomCenterLogicalY)
 {
-	double width = GetViewportWidth () * zoomIncrementFactor;
-	double height = GetViewportHeight () * zoomIncrementFactor;
-//	SetViewportOrigin (new Point (zoomCenterLogicalX - width/2.0, zoomCenterLogicalY - height/2.0));
+
+//	printf ("zoomabout logical %f  (%f, %f)\n", zoomIncrementFactor, zoomCenterLogicalX, zoomCenterLogicalY);
+	double width = GetViewportWidth () / zoomIncrementFactor;
+	double height = GetViewportHeight () / zoomIncrementFactor;
 	SetViewportWidth (width);
-	Invalidate ();
+	SetViewportOrigin (new Point (zoomCenterLogicalX - width/2.0, zoomCenterLogicalY - height/2.0));
 }
 
 Point
 MultiScaleImage::ElementToLogicalPoint (Point elementPoint)
 {
-	return Point (GetViewportOrigin()->x + elementPoint.x * GetViewportWidth () / GetWidth(),
-		      GetViewportOrigin()->y + elementPoint.y * GetViewportHeight () / GetHeight ());
+	return Point (GetViewportOrigin()->x + (double)elementPoint.x * (double)GetViewportWidth () / GetWidth(),
+		      GetViewportOrigin()->y + (double)elementPoint.y * (double)GetViewportHeight () / GetHeight ());
 }
 
 void
 MultiScaleImage::DownloadUri (const char* url)
 {
-printf ("MSI::DownloadUri\n");
+//printf ("MSI::DownloadUri\n");
 	Uri *uri = new Uri ();
 
 	Surface* surface = GetSurface ();
@@ -83,7 +84,7 @@ printf ("MSI::DownloadUri\n");
 	if (!downloader)
 		return;
 
-	printf ("downloading %s\n", url);
+//	printf ("downloading %s\n", url);
 
 	downloader->Open ("GET", uri->ToString (), NoPolicy);
 
@@ -189,7 +190,7 @@ expand_rgb_to_argb (GdkPixbuf *pixbuf, int *stride)
 void
 MultiScaleImage::Render (cairo_t *cr, Region *region)
 {
-printf ("MSI::Render\n");
+//printf ("MSI::Render\n");
 
 	if (!continue_rendering)
 		layer_to_render = -1;
@@ -220,7 +221,7 @@ printf ("MSI::Render\n");
 	if (layers < 0)
 		frexp (MAX (source->GetImageHeight(), source->GetImageWidth()), &layers);
 
-	printf ("number of layers: %d\n", layers);
+//	printf ("number of layers: %d\n", layers);
 
 	//FIXME: this is wrong. the viewport size counts too
 	int to_layer;
@@ -233,13 +234,13 @@ printf ("MSI::Render\n");
 
 	double w = GetWidth ();
 	double h = GetHeight ();
-	int vp_w = GetViewportWidth ();
-	int vp_h = GetViewportHeight ();
+	double vp_w = GetViewportWidth ();
+	double vp_h = GetViewportHeight ();
 	int tile_width = source->GetTileWidth ();
 	int tile_height = source->GetTileHeight ();
-	int vp_ox = GetViewportOrigin()->x;
-	int vp_oy = GetViewportOrigin()->y;
-printf ("vpo %d %d\n", vp_ox, vp_oy);
+	double vp_ox = GetViewportOrigin()->x;
+	double vp_oy = GetViewportOrigin()->y;
+//printf ("vp %f %f %f %f\n", vp_ox, vp_oy, vp_w, vp_h);
 
 	//render here
 	if (layer_to_render >= 0) {
@@ -257,6 +258,9 @@ printf ("vpo %d %d\n", vp_ox, vp_oy);
 		stride = gdk_pixbuf_get_rowstride (pixbuf);
 		data = expand_rgb_to_argb (pixbuf, &stride);
 
+//printf ("pb %d %d\n", gdk_pixbuf_get_width (pixbuf), gdk_pixbuf_get_height(pixbuf));
+//printf ("image %d %d\n", source->GetImageWidth (), source->GetImageHeight ());
+
 		cairo_surface_t *image = cairo_image_surface_create_for_data (data,
 										MOON_FORMAT_RGB,
 										gdk_pixbuf_get_width (pixbuf),
@@ -266,9 +270,10 @@ printf ("vpo %d %d\n", vp_ox, vp_oy);
 		cairo_save (cr);
 
 		cairo_rectangle (cr, 0, 0, w, h);
-		cairo_scale (cr, vp_w / w, vp_h / h);
+		cairo_scale (cr, w / vp_w, h / vp_h);
+//		cairo_scale (cr, vp_w / w, vp_h / h);
 		cairo_translate (cr, -vp_ox, -vp_oy);
-		cairo_rectangle (cr, vp_ox, vp_oy, vp_w, vp_h);
+//		cairo_rectangle (cr, vp_ox, vp_oy, vp_w, vp_h);
 		cairo_scale (cr, (double)source->GetImageWidth() / gdk_pixbuf_get_width (pixbuf), (double)source->GetImageHeight () / gdk_pixbuf_get_height (pixbuf)); 
 		cairo_set_source_surface (cr, image, 0, 0);
 
@@ -308,7 +313,7 @@ MultiScaleImage::DownloaderComplete ()
 	if (!(filename = g_strdup(downloader->getFileDownloader ()->GetDownloadedFile ())))
 		return;
 
-	printf ("dl completed %s\n", filename);
+//	printf ("dl completed %s\n", filename);
 
 	continue_rendering = true;
 	Invalidate ();
