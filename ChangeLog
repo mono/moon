@@ -1,3 +1,7 @@
+2009-01-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* tools/tools.mdp: Yay code-completion in MD.
+
 2009-01-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* configure.ac: Add munxap.
