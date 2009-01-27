@@ -73,6 +73,7 @@ Deployment::Initialize()
 void
 Deployment::RegisterThread (Deployment *deployment)
 {
+	LOG_DEPLOYMENT ("Deployment::RegisterThread (): Deployment: %p Domain: %p\n", deployment, deployment->domain);
 	mono_thread_attach (deployment->domain);
 }
 

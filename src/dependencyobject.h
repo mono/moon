@@ -165,6 +165,7 @@ public:
 	bool IsDisposed ();
 	
 	Deployment *GetDeployment ();
+	void SetDeployment (Deployment *deployment);
 	
 protected:
 	virtual ~EventObject ();

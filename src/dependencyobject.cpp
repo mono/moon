@@ -228,6 +228,12 @@ EventObject::GetDeployment ()
 	return deployment;
 }
 
+void
+EventObject::SetDeployment (Deployment *deployment)
+{
+	this->deployment = deployment;
+}
+
 Surface *
 EventObject::GetSurface ()
 {
