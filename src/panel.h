@@ -16,7 +16,6 @@
 
 /* @ContentProperty="Children" */
 /* @Namespace=System.Windows.Controls */
-/* @IncludeInKinds */
 class Panel : public FrameworkElement {
  private:
 	//

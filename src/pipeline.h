@@ -296,7 +296,6 @@ public:
 	virtual ~MediaWork ();
 };
 
-/* @IncludeInKinds */
 class Media : public EventObject {
 private:	
 	static ConverterInfo *registered_converters;
@@ -448,7 +447,6 @@ public:
 	int srcStride[4]; // Set by the decoder
 };
 
-/* @IncludeInKinds */
 class MediaMarker : public EventObject {
 	guint64 pts; // 100-nanosecond units (pts)
 	char *type;
@@ -483,7 +481,6 @@ public:
 
 // Interfaces
 
-/* @IncludeInKinds */
 class IMediaObject : public EventObject {
 protected:
 	Media *media;
@@ -498,7 +495,6 @@ public:
 	void SetMedia (Media *value);
 };
 
-/* @IncludeInKinds */
 class IMediaStream : public IMediaObject {
 private:
 	void *context;
@@ -574,7 +570,6 @@ public:
 #endif
 };
 
-/* @IncludeInKinds */
 class IMediaDemuxer : public IMediaObject {
 private:
 	IMediaStream **streams;
@@ -614,7 +609,6 @@ public:
 	IMediaSource *GetSource () { return source; }
 };
 
-/* @IncludeInKinds */
 class IMediaDecoder : public IMediaObject {
 protected:
 	virtual ~IMediaDecoder () {}
@@ -639,7 +633,6 @@ public:
 /*
  * Inherit from this class to provide image converters (yuv->rgb for instance) 
  */
-/* @IncludeInKinds */
 class IImageConverter : public IMediaObject {
 protected:
 	virtual ~IImageConverter () {}
@@ -658,7 +651,6 @@ public:
 /*
  * IMediaSource
  */
-/* @IncludeInKinds */
 class IMediaSource : public IMediaObject {
 private:
 	// General locking behaviour:
@@ -752,7 +744,6 @@ public:
 	virtual void Write (void *buf, gint64 offset, gint32 n) { return; }
 };
 
-/* @IncludeInKinds */
 class ManagedStreamSource : public IMediaSource {
 private:
 	ManagedStreamCallbacks stream;
@@ -779,7 +770,6 @@ public:
 	virtual const char* GetTypeName () { return "ManagedStreamSource"; }
 };
  
-/* @IncludeInKinds */
 class FileSource : public IMediaSource {
 public: // private:
 	gint64 size;
@@ -814,7 +804,6 @@ public:
 	virtual const char* GetTypeName () { return "FileSource"; }
 };
 
-/* @IncludeInKinds */
 class ProgressiveSource : public FileSource {
 private:
 	gint64 write_pos;
@@ -846,7 +835,6 @@ public:
 	virtual const char* GetTypeName () { return "ProgressiveSource"; }
 };
 
-/* @IncludeInKinds */
 class MemorySource : public IMediaSource {
 private:
 	void *memory;
@@ -891,7 +879,6 @@ public:
 // read data to calculate bufferingprogress (on main thread), while
 // the same data might get read on the worker thread. Using the same 
 // MemorySource would corrupt the current position.
-/* @IncludeInKinds */
 class MemoryNestedSource : public MemorySource {
 private:
 	MemorySource *src;
@@ -903,7 +890,6 @@ public:
 	MemoryNestedSource (MemorySource *src);
 };
 
-/* @IncludeInKinds */
 class VideoStream : public IMediaStream {
 protected:
 	virtual ~VideoStream ();
@@ -927,7 +913,6 @@ public:
 	virtual const char* GetTypeName () { return "VideoStream"; }
 };
  
-/* @IncludeInKinds */
 class AudioStream : public IMediaStream {
 protected:
 	virtual ~AudioStream () {}
@@ -950,7 +935,6 @@ public:
 /*
  * ASX demuxer
  */ 
-/* @IncludeInKinds */
 class ASXDemuxer : public IMediaDemuxer {
 private:
 	Playlist *playlist;
@@ -977,7 +961,6 @@ public:
 	virtual const char *GetName () { return "ASXDemuxer"; }
 };
 
-/* @IncludeInKinds */
 class MarkerStream : public IMediaStream {
 private:
 	MediaClosure *closure;
@@ -1005,7 +988,6 @@ public:
 	void MarkerFound (MediaFrame *frame);
 };
 
-/* @IncludeInKinds */
 class NullDecoder : public IMediaDecoder {
 private:
 	// Video data

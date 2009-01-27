@@ -26,7 +26,6 @@ enum TabletDeviceType {
 
 
 /* @Namespace=None,ManagedDependencyProperties=None */
-/* @IncludeInKinds */
 class StylusInfo : public DependencyObject {
  protected:
 	virtual ~StylusInfo () {}
@@ -53,7 +52,6 @@ class StylusInfo : public DependencyObject {
 
 /* @Namespace=None */
 /* @ManagedDependencyProperties=Manual */ // It's a managed struct
-/* @IncludeInKinds */
 class StylusPoint : public DependencyObject {
  protected:
 	virtual ~StylusPoint () {}
@@ -84,7 +82,6 @@ class StylusPoint : public DependencyObject {
 
 
 /* @Namespace=System.Windows.Input */
-/* @IncludeInKinds */
 class StylusPointCollection : public DependencyObjectCollection {
  protected:
 	virtual bool CanAdd (Value *value);
@@ -104,7 +101,6 @@ class StylusPointCollection : public DependencyObjectCollection {
 
 
 /* @Namespace=System.Windows.Ink */
-/* @IncludeInKinds */
 class DrawingAttributes : public DependencyObject {
  protected:
 	virtual ~DrawingAttributes () {}
@@ -143,7 +139,6 @@ class DrawingAttributes : public DependencyObject {
 
 
 /* @Namespace=System.Windows.Ink */
-/* @IncludeInKinds */
 class Stroke : public DependencyObject {
 	Rect old_bounds;
 	Rect bounds;
@@ -198,7 +193,6 @@ class Stroke : public DependencyObject {
 
 
 /* @Namespace=System.Windows.Ink */
-/* @IncludeInKinds */
 class StrokeCollection : public DependencyObjectCollection {
  protected:
 	virtual bool CanAdd (Value *value);
@@ -221,7 +215,6 @@ class StrokeCollection : public DependencyObjectCollection {
 
 
 /* @Namespace=System.Windows.Controls */
-/* @IncludeInKinds */
 class InkPresenter : public Canvas {
 	Rect render_bounds;
 	

@@ -37,7 +37,6 @@
 class Surface;
 
 /* @Namespace=System.Windows */
-/* @IncludeInKinds */
 class UIElement : public DependencyObject {
 public:
 	UIElement ();

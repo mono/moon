@@ -32,7 +32,6 @@
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
 /* @CallInitialize */
-/* @IncludeInKinds */
 class Control : public FrameworkElement {
 public:
 	Rect bounds_with_children;

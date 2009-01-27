@@ -17,7 +17,6 @@
 #include "dependencyobject.h"
 
 /* @Version=2,Namespace=System.Windows.Controls */
-/* @IncludeInKinds */
 class MultiScaleSubImage : public DependencyObject {
  protected:
 	virtual ~MultiScaleSubImage () {}

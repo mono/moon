@@ -53,7 +53,6 @@ enum GradientSpreadMethod {
 
 
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */	
 class Brush : public DependencyObject {
  protected:
 	virtual ~Brush () {}
@@ -104,7 +103,6 @@ class Brush : public DependencyObject {
 
 
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */
 class SolidColorBrush : public Brush {
  protected:
 	virtual ~SolidColorBrush () {}
@@ -130,7 +128,6 @@ class SolidColorBrush : public Brush {
 
 
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */	
 class GradientStopCollection : public DependencyObjectCollection {
  protected:
 	virtual ~GradientStopCollection ();
@@ -144,7 +141,6 @@ class GradientStopCollection : public DependencyObjectCollection {
 
 
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */	
 class GradientStop : public DependencyObject {
  protected:
 	virtual ~GradientStop ();
@@ -172,7 +168,6 @@ class GradientStop : public DependencyObject {
 // note: abstract in C#
 /* @Namespace=System.Windows.Media */
 /* @ContentProperty="GradientStops" */
-/* @IncludeInKinds */	
 class GradientBrush : public Brush {
  protected:
 	virtual ~GradientBrush ();
@@ -214,7 +209,6 @@ class GradientBrush : public Brush {
 
 
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */	
 class LinearGradientBrush : public GradientBrush {
  protected:
 	virtual ~LinearGradientBrush ();
@@ -242,7 +236,6 @@ class LinearGradientBrush : public GradientBrush {
 
 
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */	
 class RadialGradientBrush : public GradientBrush {
  protected:
 	virtual ~RadialGradientBrush ();
@@ -280,7 +273,6 @@ class RadialGradientBrush : public GradientBrush {
 
 
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */	
 class TileBrush : public Brush {
  protected:
 	virtual ~TileBrush ();
@@ -313,7 +305,6 @@ class TileBrush : public Brush {
 
 
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */	
 class ImageBrush : public TileBrush {
 	static void image_progress_changed (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void image_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
@@ -364,7 +355,6 @@ cairo_surface_t *image_brush_create_similar     (cairo_t *cr, int width, int hei
 
 
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */	
 class VideoBrush : public TileBrush {
 	MediaElement *media;
 	
@@ -395,7 +385,6 @@ class VideoBrush : public TileBrush {
 
 /* @Namespace=None */
 /* @ManagedDependencyProperties=None */
-/* @IncludeInKinds */	
 class VisualBrush : public TileBrush {
 	cairo_surface_t *surface;
 

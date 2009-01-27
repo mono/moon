@@ -17,7 +17,6 @@
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
-/* @IncludeInKinds */
 class Expression : public EventObject {
  protected:
 	virtual ~Expression ();

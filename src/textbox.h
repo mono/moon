@@ -28,7 +28,6 @@
 
 /* @SilverlightVersion="2" */
 /* @Namespace=None */
-/* @IncludeInKinds */
 class TextChangedEventArgs : public RoutedEventArgs {
  protected:
 	virtual ~TextChangedEventArgs () { }
@@ -51,7 +50,6 @@ enum TextBoxModelChangeType {
 
 /* @SilverlightVersion="2" */
 /* @Namespace=None */
-/* @IncludeInKinds */
 class TextBoxModelChangedEventArgs : public RoutedEventArgs {
  protected:
 	virtual ~TextBoxModelChangedEventArgs () { }
@@ -76,7 +74,6 @@ class TextBoxDynamicPropertyValueProvider;
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
-/* @IncludeInKinds */
 class TextBox : public Control, public ITextSource {
 	TextFontDescription *font;
 	TextSelection selection;
@@ -244,7 +241,6 @@ class TextBox : public Control, public ITextSource {
 
 /* @SilverlightVersion="2" */
 /* @Namespace=Microsoft.Internal */
-/* @IncludeInKinds */
 class TextBoxView : public FrameworkElement {
 	glong blink_timeout;
 	TextLayout *layout;
@@ -306,7 +302,6 @@ class TextBoxView : public FrameworkElement {
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
-/* @IncludeInKinds */
 class PasswordBox : public TextBox {
  public:
 	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors,Validator=IntGreaterThanZeroValidator */

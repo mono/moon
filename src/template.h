@@ -24,7 +24,6 @@ class XamlTemplateBinding;
 //
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
-/* @IncludeInKinds */
 class FrameworkTemplate : public DependencyObject {
 public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
@@ -51,7 +50,6 @@ protected:
 //
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
-/* @IncludeInKinds */
 class ControlTemplate : public FrameworkTemplate {
 public:
 	/* @PropertyType=ManagedTypeInfo,ManagedPropertyType=System.Type,Access=Internal,ManagedAccessorAccess=Public,ManagedFieldAccess=Private */
@@ -77,7 +75,6 @@ protected:
 //
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
-/* @IncludeInKinds */
 class DataTemplate : public FrameworkTemplate {
 public:
 	/* @GenerateCBinding,GeneratePInvoke */

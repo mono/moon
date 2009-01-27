@@ -18,7 +18,6 @@
 
 /* @Namespace=None */
 /* @ManagedDependencyProperties=None */
-/* @IncludeInKinds */
 class NameScope : public DependencyObject {
 	GHashTable *names;
 	bool temporary;

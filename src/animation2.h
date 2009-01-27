@@ -15,7 +15,6 @@
 #define MOON_ANIMATION2_H
 
 /* @Version=2,Namespace=System.Windows.Media.Animation */
-/* @IncludeInKinds */
 class ObjectKeyFrame : public KeyFrame /* The managed class derives directly from DependencyObject */ {
  protected:
 	virtual ~ObjectKeyFrame ();
@@ -42,7 +41,6 @@ class ObjectKeyFrame : public KeyFrame /* The managed class derives directly fro
 
 
 /* @Version=2,Namespace=System.Windows.Media.Animation */
-/* @IncludeInKinds */
 class DiscreteObjectKeyFrame : public ObjectKeyFrame {
  protected:
 	virtual ~DiscreteObjectKeyFrame ();
@@ -56,7 +54,6 @@ class DiscreteObjectKeyFrame : public ObjectKeyFrame {
 
 
 /* @Version=2,Namespace=System.Windows.Media.Animation */
-/* @IncludeInKinds */
 class ObjectKeyFrameCollection : public KeyFrameCollection {
  protected:
 	virtual ~ObjectKeyFrameCollection ();
@@ -72,7 +69,6 @@ class ObjectKeyFrameCollection : public KeyFrameCollection {
 /* @Version=2 */
 /* @Namespace=System.Windows.Media.Animation */
 /* @ContentProperty="KeyFrames" */
-/* @IncludeInKinds */
 class ObjectAnimationUsingKeyFrames : public /*Object*/Animation {
  protected:
 	virtual ~ObjectAnimationUsingKeyFrames ();

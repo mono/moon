@@ -24,7 +24,6 @@
 #include "pipeline.h"
 
 /* @Namespace=None */
-/* @IncludeInKinds */
 class MediaErrorEventArgs : public ErrorEventArgs {
  protected:
 	virtual ~MediaErrorEventArgs ();
@@ -36,7 +35,6 @@ class MediaErrorEventArgs : public ErrorEventArgs {
 };
 
 /* @Namespace=System.Windows.Controls */
-/* @IncludeInKinds */
 class MediaElement : public FrameworkElement {
  friend class MediaElementPropertyValueProvider;	
  public:

@@ -323,9 +323,7 @@ class Members : Dictionary <string, MemberInfo>{
 					continue;
 				
 				if (!type.Annotations.ContainsKey ("IncludeInKinds")) {
-					if (!type.Annotations.ContainsKey ("ObjectType")) {
-						continue;
-					}
+					continue;
 				}
 	
 			 	kinds_for_enum.Append ("\t\t");

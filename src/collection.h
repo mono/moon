@@ -28,7 +28,6 @@ class CollectionIterator;
 /* @Namespace=System.Windows */
 /* @ManagedName=PresentationFrameworkCollection`1 */
 /* @ManagedDependencyProperties=Manual */
-/* @IncludeInKinds */	
 class Collection : public DependencyObject {
 public:
  	/* @PropertyType=gint32,DefaultValue=0,GenerateAccessors */
@@ -99,7 +98,6 @@ protected:
 };
 
 /* @Namespace=None */
-/* @IncludeInKinds */	
 class DependencyObjectCollection : public Collection {
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -122,7 +120,6 @@ protected:
 };
 
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */	
 class DoubleCollection : public Collection {
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -137,7 +134,6 @@ protected:
 };
 
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */	
 class PointCollection : public Collection {
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -197,7 +193,6 @@ protected:
 };
 
 /* @Namespace=System.Windows */
-/* @IncludeInKinds */	
 class TriggerCollection : public DependencyObjectCollection {
  protected:
 	virtual ~TriggerCollection ();
@@ -210,7 +205,6 @@ class TriggerCollection : public DependencyObjectCollection {
 };
 
 /* @Namespace=System.Windows */
-/* @IncludeInKinds */	
 class TriggerActionCollection : public DependencyObjectCollection {
  protected:
 	virtual ~TriggerActionCollection ();
@@ -224,7 +218,6 @@ class TriggerActionCollection : public DependencyObjectCollection {
 };
 
 /* @Namespace=System.Windows.Documents */
-/* @IncludeInKinds */	
 class InlineCollection : public DependencyObjectCollection {
  protected:
 	virtual ~InlineCollection ();
@@ -239,7 +232,6 @@ class InlineCollection : public DependencyObjectCollection {
 };
 
 /* @Namespace=System.Windows.Controls */
-/* @IncludeInKinds */	
 class UIElementCollection : public DependencyObjectCollection {
  protected:
 	virtual ~UIElementCollection ();
@@ -258,7 +250,6 @@ class UIElementCollection : public DependencyObjectCollection {
 };
 
 /* @Namespace=System.Windows.Controls */
-/* @IncludeInKinds */	
 class ItemCollection : public Collection {
  protected:
 	virtual ~ItemCollection ();

@@ -21,7 +21,6 @@ typedef gpointer (*get_image_uri_func) (int level, int posX, int posY);
 
 /* @Version=2,Namespace=System.Windows.Media */
 /* @CallInitialize */
-/* @IncludeInKinds */
 class MultiScaleTileSource : public DependencyObject {
  protected:
 	int imageWidth; //width of the DeepZoom Image

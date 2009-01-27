@@ -21,7 +21,6 @@
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
-/* @IncludeInKinds */	
 class AssemblyPart : public DependencyObject {
  protected:
 	virtual ~AssemblyPart ();
@@ -37,7 +36,6 @@ class AssemblyPart : public DependencyObject {
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
-/* @IncludeInKinds */	
 class AssemblyPartCollection : public DependencyObjectCollection {
  protected:
 	virtual ~AssemblyPartCollection ();
@@ -51,7 +49,6 @@ class AssemblyPartCollection : public DependencyObjectCollection {
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
-/* @IncludeInKinds */	
 class Deployment : public DependencyObject {
  protected:
 	virtual ~Deployment ();

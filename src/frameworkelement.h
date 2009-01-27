@@ -21,7 +21,6 @@ typedef Size (*ArrangeOverrideCallback)(Size finalSize);
 
 /* @Namespace=System.Windows */
 /* @CallInitialize */
-/* @IncludeInKinds */
 class FrameworkElement : public UIElement {
 public:
 	/* @PropertyType=double,DefaultValue=NAN,GenerateAccessors */

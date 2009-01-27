@@ -22,7 +22,6 @@
 /* @SilverlightVersion="2" */
 /* @ContentProperty="Child" */
 /* @Namespace=System.Windows.Controls */
-/* @IncludeInKinds */
 class Border : public FrameworkElement {
 protected:
 	Rect bounds_with_children;

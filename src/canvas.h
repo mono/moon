@@ -23,7 +23,6 @@
 // children can use
 //
 /* @Namespace=System.Windows.Controls */
-/* @IncludeInKinds */
 class Canvas : public Panel {
  protected:
 	virtual ~Canvas () {}

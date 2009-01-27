@@ -31,7 +31,6 @@
 #define TEXTBLOCK_FONT_SIZE    14.666666984558105
 
 /* @Namespace=System.Windows.Documents */
-/* @IncludeInKinds */
 class Inline : public DependencyObject, public ITextSource {
 	TextFontDescription *font;
 	bool autogen;
@@ -117,7 +116,6 @@ class Inline : public DependencyObject, public ITextSource {
 
 
 /* @Namespace=System.Windows.Documents */
-/* @IncludeInKinds */
 class LineBreak : public Inline {
  protected:
 	virtual ~LineBreak () {}
@@ -130,7 +128,6 @@ class LineBreak : public Inline {
 
 /* @ContentProperty="Text" */
 /* @Namespace=System.Windows.Documents */
-/* @IncludeInKinds */
 class Run : public Inline {
  protected:
 	virtual ~Run () {}
@@ -156,7 +153,6 @@ class TextBlockDynamicPropertyValueProvider;
 
 /* @ContentProperty="Inlines" */
 /* @Namespace=System.Windows.Controls */
-/* @IncludeInKinds */
 class TextBlock : public FrameworkElement {
 	friend class TextBlockDynamicPropertyValueProvider;
 	
@@ -332,7 +328,6 @@ class TextBlock : public FrameworkElement {
 
 
 /* @Namespace=System.Windows.Documents */
-/* @IncludeInKinds */
 class Glyphs : public FrameworkElement {
 	TextFontDescription *desc;
 	Downloader *downloader;
@@ -428,7 +423,6 @@ class Glyphs : public FrameworkElement {
 };
 
 /* @Namespace=System.Windows.Input */
-/* @IncludeInKinds */
 class InputMethod : public DependencyObject {
 	
  protected:

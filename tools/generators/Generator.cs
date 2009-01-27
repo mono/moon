@@ -532,6 +532,11 @@ class Generator {
 				value_str = "Int32";
 				prop_default = "0";
 				break;
+			case "object":
+				prop_type_str = "Value *";
+				prop_default = "NULL";
+				value_str = null;
+				break;
 			default:
 				prop_type_str = prop_type.Name; 
 				value_str = prop_type.Name;
@@ -552,8 +557,11 @@ class Generator {
 				else
 					text.AppendLine (" ()");
 				text.AppendLine ("{");
-				
-				if (is_attached) {
+
+
+				if (value_str == null) {
+					text.Append ("\treturn ");
+				} else if (is_attached) {
 					text.Append ("\tValue *value = (!obj) ? NULL : ");
 				} else {
 					text.Append ("\tValue *value = ");
@@ -569,7 +577,9 @@ class Generator {
 							   field.ParentType.Name, field.Name);
 				}
 
-				if (field.IsDPNullable || (prop_type.IsClass || prop_type.IsStruct || prop_type.Name == "char*")) {
+				if (value_str == null) {
+					// Skip this
+				} else if (field.IsDPNullable || (prop_type.IsClass || prop_type.IsStruct || prop_type.Name == "char*")) {
 					text.Append ("\treturn value ? ");
 					if (prop_type.IsEnum) {
 						text.AppendFormat ("({0}) value->AsInt32() : ({0}) 0", prop_type.Name);
@@ -594,8 +604,9 @@ class Generator {
 						text.AppendFormat ("value->As{0} ()", value_str);
 					}
 				}
-				
-				text.AppendLine (";");
+
+				if (value_str != null)
+					text.AppendLine (";");
 				text.AppendLine ("}");
 				text.AppendLine ();
 			}
@@ -643,7 +654,7 @@ class Generator {
 						text.AppendFormat ("Value (value, Type::{0}));\n",
 								   prop_type.KindName);
 					}
-					else if (!nullable_setter && prop_type.IsStruct) {
+					else if ((value_str == null) || (!nullable_setter && prop_type.IsStruct)) {
 						text.AppendLine ("Value (*value));");
 					}
 					else {
@@ -706,7 +717,34 @@ class Generator {
 		all.Children.Add (new TypeInfo ("System.Windows.FontStretch", "FONTSTRETCH", "OBJECT", true, true));
 		all.Children.Add (new TypeInfo ("System.Windows.Media.FontFamily", "FONTFAMILY", "OBJECT", true, true));
 		all.Children.Add (new TypeInfo ("System.Windows.Markup.XmlLanguage", "XMLLANGUAGE", "OBJECT", true, true));
-	
+
+		// Set IncludeInKinds for all types which inherit from EventObject
+		foreach (MemberInfo member in all.Children.Values) {
+			TypeInfo type = member as TypeInfo;
+			if (type == null)
+				continue;
+			if (type.Name == "EventObject")
+				type.Annotations ["IncludeInKinds"] = null;
+			
+			TypeReference bR = type.Base;
+			MemberInfo m;
+			TypeInfo b;
+			while (bR != null) {
+				if (bR.Value == "EventObject") {
+					member.Annotations ["IncludeInKinds"] = null;
+					Console.WriteLine ("Added: {0}", type.Name);
+				}
+
+				if (!all.Children.TryGetValue (bR.Value, out m))
+					break;
+				
+				b = m as TypeInfo;
+				if (b != null)
+					bR = b.Base;
+				else
+					bR = null;
+			}
+		}
 		
 		return all;
 	}
@@ -1522,7 +1560,7 @@ class Generator {
 			TypeInfo parent = null;
 			string events = "NULL";
 				
-			if (!type.Annotations.ContainsKey("ObjectType") && !type.Annotations.ContainsKey ("IncludeInKinds"))
+			if (!type.Annotations.ContainsKey ("IncludeInKinds"))
 				continue;
 				
 			if (type.Base != null && type.Base.Value != null && all.Children.TryGetValue (type.Base.Value, out member))

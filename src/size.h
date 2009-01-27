@@ -81,7 +81,6 @@ struct Size {
 
 /* @SilverlightVersion="2" */
 /* @Namespace=None */
-/* @IncludeInKinds */
 class SizeChangedEventArgs : public RoutedEventArgs {
 	Size prev_size;
 	Size new_size;

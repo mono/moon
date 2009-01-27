@@ -39,7 +39,6 @@ G_END_DECLS
 // Shape class 
 // 
 /* @Namespace=System.Windows.Shapes */
-/* @IncludeInKinds */
 class Shape : public FrameworkElement {
  protected:
 	virtual ~Shape ();
@@ -188,7 +187,6 @@ class Shape : public FrameworkElement {
 // Ellipse
 //
 /* @Namespace=System.Windows.Shapes */
-/* @IncludeInKinds */
 class Ellipse : public Shape {
  protected:
 	virtual ~Ellipse () {}
@@ -211,7 +209,6 @@ class Ellipse : public Shape {
 // Rectangle class 
 // 
 /* @Namespace=System.Windows.Shapes */
-/* @IncludeInKinds */
 class Rectangle : public Shape {
  protected:
 	virtual ~Rectangle () {}
@@ -249,7 +246,6 @@ class Rectangle : public Shape {
 // Line class 
 // 
 /* @Namespace=System.Windows.Shapes */
-/* @IncludeInKinds */
 class Line : public Shape {
  protected:
 	virtual ~Line () {}
@@ -297,7 +293,6 @@ class Line : public Shape {
 // Polygon
 //
 /* @Namespace=System.Windows.Shapes */
-/* @IncludeInKinds */
 class Polygon : public Shape {
  protected:
 	virtual ~Polygon () {}
@@ -339,7 +334,6 @@ class Polygon : public Shape {
 // Polyline
 //
 /* @Namespace=System.Windows.Shapes */
-/* @IncludeInKinds */
 class Polyline : public Shape {
  protected:
 	virtual ~Polyline () {}
@@ -381,7 +375,6 @@ class Polyline : public Shape {
 // Path
 //
 /* @Namespace=System.Windows.Shapes */
-/* @IncludeInKinds */
 class Path : public Shape {
  protected:
 	virtual ~Path () {}

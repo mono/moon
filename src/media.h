@@ -34,7 +34,6 @@
 
 /* @Namespace=None */
 /* @ManagedDependencyProperties=None */
-/* @IncludeInKinds */
 class MediaAttribute : public DependencyObject {
  protected:
 	virtual ~MediaAttribute () {}
@@ -54,7 +53,6 @@ class MediaAttribute : public DependencyObject {
 
 
 /* @Namespace=None */
-/* @IncludeInKinds */
 class MediaAttributeCollection : public DependencyObjectCollection {
  protected:
 	virtual ~MediaAttributeCollection () {}
@@ -77,7 +75,6 @@ class MediaAttributeCollection : public DependencyObjectCollection {
  * We also override Insert to ignore the index and behave just like Add.
  */
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */
 class TimelineMarkerCollection : public DependencyObjectCollection {
  protected:
 	virtual ~TimelineMarkerCollection () {}
@@ -94,7 +91,6 @@ class TimelineMarkerCollection : public DependencyObjectCollection {
 
 
 /* @Namespace=None */
-/* @IncludeInKinds */
 class MarkerReachedEventArgs : public EventArgs {
 	TimelineMarker *marker;
 	
@@ -110,7 +106,6 @@ class MarkerReachedEventArgs : public EventArgs {
 
 /* @Namespace=None */
 /* @ManagedDependencyProperties=None */
-/* @IncludeInKinds */
 class MediaBase : public FrameworkElement {
  private:
 	static void set_source_async (EventObject *user_data);
@@ -185,7 +180,6 @@ class MediaBase : public FrameworkElement {
 
 
 /* @Namespace=System.Windows.Controls */
-/* @IncludeInKinds */
 class Image : public MediaBase {
 	int create_xlib_surface:1;
 

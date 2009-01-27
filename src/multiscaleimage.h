@@ -23,7 +23,6 @@
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
-/* @IncludeInKinds */
 class MultiScaleImage : public MediaBase {
 	void DownloaderAbort ();
 	void DownloadUri (const char* url);

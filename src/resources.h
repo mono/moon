@@ -17,7 +17,6 @@
 #include "value.h"
 
 /* @Namespace=System.Windows */
-/* @IncludeInKinds */
 class ResourceDictionary : public Collection {
 public:
 	/* @GenerateCBinding,GeneratePInvoke */

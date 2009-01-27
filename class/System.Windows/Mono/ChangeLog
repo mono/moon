@@ -1,3 +1,8 @@
+2009-01-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Kind.cs: Include all types derived from EventObject in the type system
+	and remove the IncludeInKinds annotations from those classes.
+
 2009-01-26  Geoff Norton  <gnorton@novell.com>
 
 	* ApplicationLauncher.cs: This is now InitializeDeployment since we 

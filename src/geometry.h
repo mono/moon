@@ -27,7 +27,6 @@
 // Geometry
 //
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */
 class Geometry : public DependencyObject {
  protected:
 #if 0
@@ -88,7 +87,6 @@ class Geometry : public DependencyObject {
 // GeometryCollection
 //
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */
 class GeometryCollection : public DependencyObjectCollection {
  protected:
 	virtual ~GeometryCollection ();
@@ -106,7 +104,6 @@ class GeometryCollection : public DependencyObjectCollection {
 //
 /* @ContentProperty="Children" */
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */
 class GeometryGroup : public Geometry {
  protected:
 	virtual ~GeometryGroup ();
@@ -141,7 +138,6 @@ class GeometryGroup : public Geometry {
 // EllipseGeometry
 //
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */
 class EllipseGeometry : public Geometry {
  protected:
 	virtual void Build ();
@@ -178,7 +174,6 @@ class EllipseGeometry : public Geometry {
 // LineGeometry
 //
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */
 class LineGeometry : public Geometry {
  protected:
 	virtual void Build ();
@@ -210,7 +205,6 @@ class LineGeometry : public Geometry {
 // PathFigureCollection
 //
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */
 class PathFigureCollection : public DependencyObjectCollection {
  protected:
 	virtual ~PathFigureCollection ();
@@ -228,7 +222,6 @@ class PathFigureCollection : public DependencyObjectCollection {
 //
 /* @ContentProperty="Figures" */
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */
 class PathGeometry : public Geometry {
  protected:
 	virtual void Build ();
@@ -267,7 +260,6 @@ class PathGeometry : public Geometry {
 // RectangleGeometry
 //
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */
 class RectangleGeometry : public Geometry {
  protected:
 	virtual void Build ();
@@ -304,7 +296,6 @@ class RectangleGeometry : public Geometry {
 // PathSegmentCollection
 //
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */
 class PathSegmentCollection : public DependencyObjectCollection {
  protected:
 	virtual ~PathSegmentCollection ();
@@ -322,7 +313,6 @@ class PathSegmentCollection : public DependencyObjectCollection {
 //
 /* @ContentProperty="Segments" */
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */
 class PathFigure : public DependencyObject {
  protected:
 	virtual ~PathFigure ();
@@ -371,7 +361,6 @@ class PathFigure : public DependencyObject {
 // PathSegment
 //
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */
 class PathSegment : public DependencyObject {
  protected:
 	virtual void Build ();
@@ -391,7 +380,6 @@ class PathSegment : public DependencyObject {
 // ArcSegment
 //
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */
 class ArcSegment : public PathSegment {
  protected:
 	virtual ~ArcSegment ();
@@ -439,7 +427,6 @@ class ArcSegment : public PathSegment {
 // BezierSegment
 //
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */
 class BezierSegment : public PathSegment {
  protected:
 	virtual ~BezierSegment ();
@@ -477,7 +464,6 @@ class BezierSegment : public PathSegment {
 // LineSegment
 //
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */
 class LineSegment : public PathSegment {
  protected:
 	virtual ~LineSegment ();
@@ -505,7 +491,6 @@ class LineSegment : public PathSegment {
 // PolyBezierSegment
 //
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */
 class PolyBezierSegment : public PathSegment {
  protected:
 	virtual ~PolyBezierSegment ();
@@ -535,7 +520,6 @@ class PolyBezierSegment : public PathSegment {
 // PolyLineSegment
 //
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */
 class PolyLineSegment : public PathSegment {
  protected:
 	virtual ~PolyLineSegment ();
@@ -564,7 +548,6 @@ class PolyLineSegment : public PathSegment {
 // PolyQuadraticBezierSegment
 //
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */
 class PolyQuadraticBezierSegment : public PathSegment {
  protected:
 	virtual ~PolyQuadraticBezierSegment ();
@@ -593,7 +576,6 @@ class PolyQuadraticBezierSegment : public PathSegment {
 // QuadraticBezierSegment
 //
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */
 class QuadraticBezierSegment : public PathSegment {
  protected:
 	virtual ~QuadraticBezierSegment ();

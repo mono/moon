@@ -19,7 +19,6 @@
 #include "collection.h"
 
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */
 class GeneralTransform : public DependencyObject {
  protected:
 	cairo_matrix_t _matrix;
@@ -46,7 +45,6 @@ class GeneralTransform : public DependencyObject {
 
 
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */
 class Transform : public GeneralTransform {
 protected:
 	virtual ~Transform () {}
@@ -58,7 +56,6 @@ public:
 
 
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */
 class RotateTransform : public Transform {
  protected:
 	virtual ~RotateTransform () {}
@@ -90,7 +87,6 @@ class RotateTransform : public Transform {
 
 
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */
 class TranslateTransform : public Transform {
  protected:
 	virtual ~TranslateTransform () { }
@@ -117,7 +113,6 @@ class TranslateTransform : public Transform {
 
 
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */
 class ScaleTransform : public Transform {
  protected:
 	virtual ~ScaleTransform () {}
@@ -154,7 +149,6 @@ class ScaleTransform : public Transform {
 
 
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */
 class SkewTransform : public Transform {
  protected:
 	virtual ~SkewTransform () {}
@@ -192,7 +186,6 @@ class SkewTransform : public Transform {
 
 /* @Namespace=None */ // The managed Matrix is a struct
 /* @ManagedDependencyProperties=Manual */
-/* @IncludeInKinds */
 class Matrix : public DependencyObject {
 	cairo_matrix_t matrix;
 	
@@ -248,7 +241,6 @@ class Matrix : public DependencyObject {
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */
 // this type does not really exists - its purpose is to let the unmanaged (1.x) matrix be a dependency object
 // and the later (2.x) managed code use a struct (non-DO) for the matrix
 class UnmanagedMatrix : public Matrix {
@@ -262,7 +254,6 @@ class UnmanagedMatrix : public Matrix {
 };
 
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */
 class MatrixTransform : public Transform {
  protected:
 	virtual ~MatrixTransform () {}
@@ -287,7 +278,6 @@ class MatrixTransform : public Transform {
 
 
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */
 class TransformCollection : public DependencyObjectCollection {
  protected:
 	virtual ~TransformCollection () {}
@@ -302,7 +292,6 @@ class TransformCollection : public DependencyObjectCollection {
 
 /* @ContentProperty="Children" */
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */
 class TransformGroup : public Transform {
  protected:
 	virtual ~TransformGroup () {}

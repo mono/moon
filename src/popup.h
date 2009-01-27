@@ -19,7 +19,6 @@
 #include "value.h"
 
 /*@Namespace=System.Windows.Controls.Primitives*/
-/* @IncludeInKinds */
 class Popup : public DependencyObject {
  public:
 	/* @PropertyType=UIElement,GenerateAccessors */

@@ -58,7 +58,6 @@ class EventLists;
 #define OBJECT_TRACK(x,y)
 #endif
 
-/* @IncludeInKinds */	
 class EventObject {
 public:
 	EventObject ();
@@ -208,7 +207,6 @@ struct PropertyChangedEventArgs {
 typedef void (* PropertyChangeHandler) (DependencyObject *sender, PropertyChangedEventArgs *args, gpointer closure);
 
 /* @Namespace=System.Windows */
-/* @IncludeInKinds */	
 class DependencyObject : public EventObject {
 public:
  	/* @GenerateCBinding,GeneratePInvoke */

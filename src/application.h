@@ -25,7 +25,6 @@ class Surface;
 /* @SilverlightVersion="2" */
 /* @ManagedDependencyProperties=Manual */
 /* @Namespace=None */
-/* @IncludeInKinds */
 class Application : public DependencyObject {
 public:
 	/* @PropertyType=ResourceDictionary,GenerateAccessors */

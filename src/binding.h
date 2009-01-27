@@ -22,7 +22,6 @@ typedef void  (*SetValueCallback)(void *value);
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Data */
-/* @IncludeInKinds */
 class Binding : public EventObject {
 	bool notify_on_validation_error;
 	bool validates_on_exceptions;
@@ -66,7 +65,6 @@ class Binding : public EventObject {
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Data */
-/* @IncludeInKinds */	
 class BindingExpressionBase : public Expression {
  protected:
 	DependencyProperty *target_property;
@@ -141,7 +139,6 @@ private:
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Data */
-/* @IncludeInKinds */	
 class BindingExpression : public BindingExpressionBase {
  protected:
 	virtual ~BindingExpression ();

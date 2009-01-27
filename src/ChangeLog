@@ -1,3 +1,55 @@
+2009-01-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* grid.h:
+	* type.h:
+	* text.h:
+	* size.h:
+	* popup.h:
+	* shape.h:
+	* value.h:
+	* media.h:
+	* error.h:
+	* panel.h:
+	* brush.h:
+	* clock.h:
+	* style.h:
+	* stylus.h:
+	* border.h:
+	* canvas.h:
+	* binding.h:
+	* runtime.h:
+	* trigger.h:
+	* control.h:
+	* textbox.h:
+	* pipeline.h:
+	* geometry.h:
+	* template.h:
+	* namescope.h:
+	* uielement.h:
+	* animation.h:
+	* eventargs.h:
+	* resources.h:
+	* transform.h:
+	* collection.h:
+	* animation2.h:
+	* downloader.h:
+	* expression.h:
+	* deployment.h:
+	* tilesource.h:
+	* bitmapimage.h:
+	* usercontrol.h:
+	* application.h:
+	* mediaelement.h:
+	* contentcontrol.h:
+	* multiscaleimage.h:
+	* dependencyobject.h:
+	* type-generated.cpp:
+	* frameworkelement.h:
+	* multiscalesubimage.h:
+	* deepzoomimagetilesource.h: Include all types derived from EventObject
+	in the type system and remove the IncludeInKinds annotations from
+	those classes.
+
 2009-01-27  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (XamlElementInstanceManaged::TrySetContentProperty):

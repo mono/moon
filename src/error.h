@@ -21,7 +21,6 @@ class ErrorEventArgs;
 #include "eventargs.h"
 
 /* @Namespace=None,ManagedDependencyProperties=None */
-/* @IncludeInKinds */	
 class ErrorEventArgs : public EventArgs  {
 protected:
 	virtual ~ErrorEventArgs ();
@@ -35,7 +34,6 @@ public:
 };
 
 /* @Namespace=None,ManagedDependencyProperties=None */
-/* @IncludeInKinds */	
 class ImageErrorEventArgs : public ErrorEventArgs {
 protected:
 	virtual ~ImageErrorEventArgs ();
@@ -45,7 +43,6 @@ public:
 };
 
 /* @Namespace=None,ManagedDependencyProperties=None */
-/* @IncludeInKinds */	
 class ParserErrorEventArgs : public ErrorEventArgs {
 protected:
 	virtual ~ParserErrorEventArgs ();

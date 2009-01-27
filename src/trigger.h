@@ -16,7 +16,6 @@
 #include "dependencyobject.h"
 
 /* @Namespace=System.Windows */
-/* @IncludeInKinds */
 class TriggerBase : public DependencyObject {
 public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
@@ -24,7 +23,6 @@ public:
 };
 
 /* @Namespace=System.Windows */
-/* @IncludeInKinds */
 class TriggerAction : public DependencyObject {
  public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
@@ -40,7 +38,6 @@ class TriggerAction : public DependencyObject {
 
 /* @ContentProperty="Actions" */
 /* @Namespace=System.Windows */
-/* @IncludeInKinds */
 class EventTrigger : public TriggerBase {
 	int registered_event_id;
 	

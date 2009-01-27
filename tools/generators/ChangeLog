@@ -1,3 +1,9 @@
+2009-01-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Generator.cs:
+	* MemberInfo.cs: Include all types derived from EventObject in the type
+	system and remove the IncludeInKinds annotations from those classes.
+
 2009-01-25  Chris Toshok  <toshok@ximian.com>
 
 	* Generator.cs: don't output the GetKind methods in

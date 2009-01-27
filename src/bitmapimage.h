@@ -17,7 +17,6 @@
 #include "dependencyobject.h"
 
 /* @Namespace=System.Windows.Media.Imaging */
-/* @IncludeInKinds */
 class BitmapImage : public DependencyObject {
  protected:
 	virtual ~BitmapImage ();

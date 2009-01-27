@@ -29,7 +29,6 @@ class UIElement;
  */
 
 /* @Namespace=None */
-/* @IncludeInKinds */
 class EventArgs : public DependencyObject {
  protected:
 	virtual ~EventArgs ();
@@ -47,7 +46,6 @@ enum CollectionChangedAction {
 };
 
 /* @Namespace=None */
-/* @IncludeInKinds */
 class CollectionChangedEventArgs : public EventArgs {
 protected:
 	virtual ~CollectionChangedEventArgs ();
@@ -89,7 +87,6 @@ public:
 };
 
 /* @Namespace=None */
-/* @IncludeInKinds */
 class RoutedEventArgs : public EventArgs {
 	DependencyObject *source;
 	bool handled;
@@ -117,7 +114,6 @@ class RoutedEventArgs : public EventArgs {
 };
 
 /* @Namespace=None */
-/* @IncludeInKinds */
 class KeyEventArgs : public RoutedEventArgs {
 	GdkEventKey *event;
 	
@@ -143,7 +139,6 @@ class KeyEventArgs : public RoutedEventArgs {
 };
 
 /* @Namespace=None */
-/* @IncludeInKinds */
 class MouseEventArgs : public RoutedEventArgs {
 	GdkEvent *event;
 	

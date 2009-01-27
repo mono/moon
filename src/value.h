@@ -47,15 +47,19 @@ class DependencyProperty;
 class Surface;
 class AnimationStorage;
 
+class AlsaSource;
 class Animation;
 class AnimationClock;
 class Application;
 class ArcSegment;
+class ASFDemuxer;
+class ASFMarkerDecoder;
 class ASFPacket;
 class ASFParser;
 class AssemblyPart;
 class AssemblyPartCollection;
 class ASXDemuxer;
+class AudioSource;
 class AudioStream;
 class BeginStoryboard;
 class BezierSegment;
@@ -68,6 +72,7 @@ class Brush;
 class Canvas;
 class Clock;
 class ClockGroup;
+class CodecDownloader;
 class Collection;
 class CollectionChangedEventArgs;
 class ColorAnimation;
@@ -101,9 +106,12 @@ class Ellipse;
 class EllipseGeometry;
 class ErrorEventArgs;
 class EventArgs;
+class EventListenerProxy;
 class EventObject;
 class EventTrigger;
 class Expression;
+class FfmpegDecoder;
+class FfmpegDemuxer;
 class FileSource;
 class FrameworkElement;
 class FrameworkTemplate;
@@ -156,9 +164,12 @@ class MediaBase;
 class MediaElement;
 class MediaErrorEventArgs;
 class MediaMarker;
+class MediaPlayer;
 class MemoryNestedSource;
+class MemoryQueueSource;
 class MemorySource;
 class MouseEventArgs;
+class Mp3Demuxer;
 class MultiScaleImage;
 class MultiScaleSubImage;
 class MultiScaleTileSource;
@@ -177,6 +188,8 @@ class PathFigureCollection;
 class PathGeometry;
 class PathSegment;
 class PathSegmentCollection;
+class Playlist;
+class PlaylistEntry;
 class PointCollection;
 class PointAnimation;
 class PointAnimationUsingKeyFrames;
@@ -189,6 +202,7 @@ class PolyLineSegment;
 class PolyQuadraticBezierSegment;
 class Popup;
 class ProgressiveSource;
+class PulseSource;
 class QuadraticBezierSegment;
 class RadialGradientBrush;
 class Rectangle;
@@ -219,6 +233,7 @@ class StylusPoint;
 class StylusPointCollection;
 class Surface;
 class SystemTimeSource;
+class TemplateBinding;
 class TextBlock;
 class TextBox;
 class TextBoxModelChangedEventArgs;
@@ -247,6 +262,8 @@ class UserControl;
 class VideoBrush;
 class VideoStream;
 class VisualBrush;
+class XamlTemplateBinding;
+class YUVConverter;
 
 
 #define checked_get_exact(kind, errval, mem)  g_return_val_if_fail (k == (kind), errval); return mem;
@@ -328,15 +345,19 @@ public:
 	gint64* 	AsNullableInt64 ()	{ checked_get_exact (Type::INT64, NULL, &u.i64); }
 	gint32* 	AsNullableInt32 ()	{ checked_get_exact (Type::INT32, NULL, &u.i32); }
 	
+	AlsaSource*                    AsAlsaSource () { checked_get_subclass (Type::ALSASOURCE, AlsaSource) }
 	Animation*                     AsAnimation () { checked_get_subclass (Type::ANIMATION, Animation) }
 	AnimationClock*                AsAnimationClock () { checked_get_subclass (Type::ANIMATIONCLOCK, AnimationClock) }
 	Application*                   AsApplication () { checked_get_subclass (Type::APPLICATION, Application) }
 	ArcSegment*                    AsArcSegment () { checked_get_subclass (Type::ARCSEGMENT, ArcSegment) }
+	ASFDemuxer*                    AsASFDemuxer () { checked_get_subclass (Type::ASFDEMUXER, ASFDemuxer) }
+	ASFMarkerDecoder*              AsASFMarkerDecoder () { checked_get_subclass (Type::ASFMARKERDECODER, ASFMarkerDecoder) }
 	ASFPacket*                     AsASFPacket () { checked_get_subclass (Type::ASFPACKET, ASFPacket) }
 	ASFParser*                     AsASFParser () { checked_get_subclass (Type::ASFPARSER, ASFParser) }
 	AssemblyPart*                  AsAssemblyPart () { checked_get_subclass (Type::ASSEMBLYPART, AssemblyPart) }
 	AssemblyPartCollection*        AsAssemblyPartCollection () { checked_get_subclass (Type::ASSEMBLYPART_COLLECTION, AssemblyPartCollection) }
 	ASXDemuxer*                    AsASXDemuxer () { checked_get_subclass (Type::ASXDEMUXER, ASXDemuxer) }
+	AudioSource*                   AsAudioSource () { checked_get_subclass (Type::AUDIOSOURCE, AudioSource) }
 	AudioStream*                   AsAudioStream () { checked_get_subclass (Type::AUDIOSTREAM, AudioStream) }
 	BeginStoryboard*               AsBeginStoryboard () { checked_get_subclass (Type::BEGINSTORYBOARD, BeginStoryboard) }
 	BezierSegment*                 AsBezierSegment () { checked_get_subclass (Type::BEZIERSEGMENT, BezierSegment) }
@@ -349,6 +370,7 @@ public:
 	Canvas*                        AsCanvas () { checked_get_subclass (Type::CANVAS, Canvas) }
 	Clock*                         AsClock () { checked_get_subclass (Type::CLOCK, Clock) }
 	ClockGroup*                    AsClockGroup () { checked_get_subclass (Type::CLOCKGROUP, ClockGroup) }
+	CodecDownloader*               AsCodecDownloader () { checked_get_subclass (Type::CODECDOWNLOADER, CodecDownloader) }
 	Collection*                    AsCollection () { checked_get_subclass (Type::COLLECTION, Collection) }
 	CollectionChangedEventArgs*    AsCollectionChangedEventArgs () { checked_get_subclass (Type::COLLECTIONCHANGEDEVENTARGS, CollectionChangedEventArgs) }
 	ColorAnimation*                AsColorAnimation () { checked_get_subclass (Type::COLORANIMATION, ColorAnimation) }
@@ -382,9 +404,12 @@ public:
 	EllipseGeometry*               AsEllipseGeometry () { checked_get_subclass (Type::ELLIPSEGEOMETRY, EllipseGeometry) }
 	ErrorEventArgs*                AsErrorEventArgs () { checked_get_subclass (Type::ERROREVENTARGS, ErrorEventArgs) }
 	EventArgs*                     AsEventArgs () { checked_get_subclass (Type::EVENTARGS, EventArgs) }
+	EventListenerProxy*            AsEventListenerProxy () { checked_get_subclass (Type::EVENTLISTENERPROXY, EventListenerProxy) }
 	EventObject*                   AsEventObject () { checked_get_subclass (Type::EVENTOBJECT, EventObject) }
 	EventTrigger*                  AsEventTrigger () { checked_get_subclass (Type::EVENTTRIGGER, EventTrigger) }
 	Expression*                    AsExpression () { checked_get_subclass (Type::EXPRESSION, Expression) }
+	FfmpegDecoder*                 AsFfmpegDecoder () { checked_get_subclass (Type::FFMPEGDECODER, FfmpegDecoder) }
+	FfmpegDemuxer*                 AsFfmpegDemuxer () { checked_get_subclass (Type::FFMPEGDEMUXER, FfmpegDemuxer) }
 	FileSource*                    AsFileSource () { checked_get_subclass (Type::FILESOURCE, FileSource) }
 	FrameworkElement*              AsFrameworkElement () { checked_get_subclass (Type::FRAMEWORKELEMENT, FrameworkElement) }
 	FrameworkTemplate*             AsFrameworkTemplate () { checked_get_subclass (Type::FRAMEWORKTEMPLATE, FrameworkTemplate) }
@@ -437,9 +462,12 @@ public:
 	MediaElement*                  AsMediaElement () { checked_get_subclass (Type::MEDIAELEMENT, MediaElement) }
 	MediaErrorEventArgs*           AsMediaErrorEventArgs () { checked_get_subclass (Type::MEDIAERROREVENTARGS, MediaErrorEventArgs) }
 	MediaMarker*                   AsMediaMarker () { checked_get_subclass (Type::MEDIAMARKER, MediaMarker) }
+	MediaPlayer*                   AsMediaPlayer () { checked_get_subclass (Type::MEDIAPLAYER, MediaPlayer) }
 	MemoryNestedSource*            AsMemoryNestedSource () { checked_get_subclass (Type::MEMORYNESTEDSOURCE, MemoryNestedSource) }
+	MemoryQueueSource*             AsMemoryQueueSource () { checked_get_subclass (Type::MEMORYQUEUESOURCE, MemoryQueueSource) }
 	MemorySource*                  AsMemorySource () { checked_get_subclass (Type::MEMORYSOURCE, MemorySource) }
 	MouseEventArgs*                AsMouseEventArgs () { checked_get_subclass (Type::MOUSEEVENTARGS, MouseEventArgs) }
+	Mp3Demuxer*                    AsMp3Demuxer () { checked_get_subclass (Type::MP3DEMUXER, Mp3Demuxer) }
 	MultiScaleImage*               AsMultiScaleImage () { checked_get_subclass (Type::MULTISCALEIMAGE, MultiScaleImage) }
 	MultiScaleSubImage*            AsMultiScaleSubImage () { checked_get_subclass (Type::MULTISCALESUBIMAGE, MultiScaleSubImage) }
 	MultiScaleTileSource*          AsMultiScaleTileSource () { checked_get_subclass (Type::MULTISCALETILESOURCE, MultiScaleTileSource) }
@@ -458,6 +486,8 @@ public:
 	PathGeometry*                  AsPathGeometry () { checked_get_subclass (Type::PATHGEOMETRY, PathGeometry) }
 	PathSegment*                   AsPathSegment () { checked_get_subclass (Type::PATHSEGMENT, PathSegment) }
 	PathSegmentCollection*         AsPathSegmentCollection () { checked_get_subclass (Type::PATHSEGMENT_COLLECTION, PathSegmentCollection) }
+	Playlist*                      AsPlaylist () { checked_get_subclass (Type::PLAYLIST, Playlist) }
+	PlaylistEntry*                 AsPlaylistEntry () { checked_get_subclass (Type::PLAYLISTENTRY, PlaylistEntry) }
 	PointCollection*               AsPointCollection () { checked_get_subclass (Type::POINT_COLLECTION, PointCollection) }
 	PointAnimation*                AsPointAnimation () { checked_get_subclass (Type::POINTANIMATION, PointAnimation) }
 	PointAnimationUsingKeyFrames*  AsPointAnimationUsingKeyFrames () { checked_get_subclass (Type::POINTANIMATIONUSINGKEYFRAMES, PointAnimationUsingKeyFrames) }
@@ -470,6 +500,7 @@ public:
 	PolyQuadraticBezierSegment*    AsPolyQuadraticBezierSegment () { checked_get_subclass (Type::POLYQUADRATICBEZIERSEGMENT, PolyQuadraticBezierSegment) }
 	Popup*                         AsPopup () { checked_get_subclass (Type::POPUP, Popup) }
 	ProgressiveSource*             AsProgressiveSource () { checked_get_subclass (Type::PROGRESSIVESOURCE, ProgressiveSource) }
+	PulseSource*                   AsPulseSource () { checked_get_subclass (Type::PULSESOURCE, PulseSource) }
 	QuadraticBezierSegment*        AsQuadraticBezierSegment () { checked_get_subclass (Type::QUADRATICBEZIERSEGMENT, QuadraticBezierSegment) }
 	RadialGradientBrush*           AsRadialGradientBrush () { checked_get_subclass (Type::RADIALGRADIENTBRUSH, RadialGradientBrush) }
 	Rectangle*                     AsRectangle () { checked_get_subclass (Type::RECTANGLE, Rectangle) }
@@ -500,6 +531,7 @@ public:
 	StylusPointCollection*         AsStylusPointCollection () { checked_get_subclass (Type::STYLUSPOINT_COLLECTION, StylusPointCollection) }
 	Surface*                       AsSurface () { checked_get_subclass (Type::SURFACE, Surface) }
 	SystemTimeSource*              AsSystemTimeSource () { checked_get_subclass (Type::SYSTEMTIMESOURCE, SystemTimeSource) }
+	TemplateBinding*               AsTemplateBinding () { checked_get_subclass (Type::TEMPLATEBINDING, TemplateBinding) }
 	TextBlock*                     AsTextBlock () { checked_get_subclass (Type::TEXTBLOCK, TextBlock) }
 	TextBox*                       AsTextBox () { checked_get_subclass (Type::TEXTBOX, TextBox) }
 	TextBoxModelChangedEventArgs*  AsTextBoxModelChangedEventArgs () { checked_get_subclass (Type::TEXTBOXMODELCHANGEDEVENTARGS, TextBoxModelChangedEventArgs) }
@@ -528,6 +560,8 @@ public:
 	VideoBrush*                    AsVideoBrush () { checked_get_subclass (Type::VIDEOBRUSH, VideoBrush) }
 	VideoStream*                   AsVideoStream () { checked_get_subclass (Type::VIDEOSTREAM, VideoStream) }
 	VisualBrush*                   AsVisualBrush () { checked_get_subclass (Type::VISUALBRUSH, VisualBrush) }
+	XamlTemplateBinding*           AsXamlTemplateBinding () { checked_get_subclass (Type::XAMLTEMPLATEBINDING, XamlTemplateBinding) }
+	YUVConverter*                  AsYUVConverter () { checked_get_subclass (Type::YUVCONVERTER, YUVConverter) }
 
 	
 	char *ToString ();

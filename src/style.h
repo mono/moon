@@ -22,7 +22,6 @@
 /* @SilverlightVersion="2" */
 /* @ContentProperty="Setters" */
 /* @Namespace=System.Windows */
-/* @IncludeInKinds */
 class Style : public DependencyObject {
 public:
   	/* @PropertyType=bool,DefaultValue=false,ManagedSetterAccess=Private,GenerateAccessors */
@@ -53,7 +52,6 @@ protected:
 //
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
-/* @IncludeInKinds */
 class SetterBaseCollection : public DependencyObjectCollection {
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -87,7 +85,6 @@ private:
 //
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
-/* @IncludeInKinds */
 class SetterBase : public DependencyObject {
  protected:
 	virtual ~SetterBase () { }
@@ -118,7 +115,6 @@ class SetterBase : public DependencyObject {
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
 /* @ManagedDependencyProperties=Manual */
-/* @IncludeInKinds */
 class Setter : public SetterBase {
  protected:
 	virtual ~Setter ();

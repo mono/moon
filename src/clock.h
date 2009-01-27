@@ -181,7 +181,6 @@ struct RepeatBehavior {
 	TimeSpan duration;
 };
 
-/* @IncludeInKinds */	
 class TimeSource : public EventObject {
  protected:
 	virtual ~TimeSource ();
@@ -198,7 +197,6 @@ class TimeSource : public EventObject {
 	const static int TickEvent;
 };
 
-/* @IncludeInKinds */	
 class SystemTimeSource : public TimeSource {
  protected:
 	virtual ~SystemTimeSource ();
@@ -218,7 +216,6 @@ class SystemTimeSource : public TimeSource {
 	static gboolean tick_timeout (gpointer data);
 };
 
-/* @IncludeInKinds */	
 class ManualTimeSource : public TimeSource {
  protected:
 	virtual ~ManualTimeSource ();
@@ -246,7 +243,6 @@ class Applier;
 /* our clock is a mixture of the WPF Clock and ClockController
    classes.  as such, all clocks are controllable */
 /* @Namespace=None,ManagedDependencyProperties=None */
-/* @IncludeInKinds */	
 class Clock : public DependencyObject {
  protected:
 	virtual ~Clock ();
@@ -374,7 +370,6 @@ class Clock : public DependencyObject {
 
 
 /* @Namespace=None,ManagedDependencyProperties=None */
-/* @IncludeInKinds */	
 class ClockGroup : public Clock {
  protected:
 	virtual ~ClockGroup ();
@@ -420,7 +415,6 @@ class ClockGroup : public Clock {
 
 // our root level time manager (basically the object that registers
 // the gtk_timeout and drives all Clock objects
-/* @IncludeInKinds */	
 class TimeManager : public EventObject {
  public:
 	TimeManager ();
@@ -511,7 +505,6 @@ guint time_manager_add_timeout (TimeManager *manager, guint32 interval, GSourceF
 void time_manager_remove_timeout (TimeManager *manager, guint32 source_id);
 
 /* @Namespace=System.Windows.Media.Animation */
-/* @IncludeInKinds */	
 class Timeline : public DependencyObject {
 	DependencyObject *manual_target;
 	
@@ -583,7 +576,6 @@ class Timeline : public DependencyObject {
 
 
 /* @Namespace=System.Windows.Media.Animation */
-/* @IncludeInKinds */	
 class TimelineCollection : public DependencyObjectCollection {
  protected:
 	virtual ~TimelineCollection ();
@@ -597,7 +589,6 @@ class TimelineCollection : public DependencyObjectCollection {
 
 
 /* @Namespace=None,ManagedDependencyProperties=None */
-/* @IncludeInKinds */	
 class TimelineGroup : public Timeline {
  protected:
 	virtual ~TimelineGroup ();
@@ -622,7 +613,6 @@ class TimelineGroup : public Timeline {
 
 
 /* @Namespace=None */
-/* @IncludeInKinds */	
 class ParallelTimeline : public TimelineGroup {
  protected:
 	virtual ~ParallelTimeline ();
@@ -636,7 +626,6 @@ class ParallelTimeline : public TimelineGroup {
 
 
 /* @Namespace=System.Windows.Media */
-/* @IncludeInKinds */	
 class TimelineMarker : public DependencyObject {
  protected:
 	virtual ~TimelineMarker ();
@@ -670,7 +659,6 @@ class TimelineMarker : public DependencyObject {
 TimeSpan get_now (void);
 
 /* @Namespace=Mono,Version=2 */
-/* @IncludeInKinds */	
 class DispatcherTimer : public TimelineGroup {
 	Clock *root_clock;
 	static void OnTick (EventObject *sender, EventArgs *calldata, gpointer data);

@@ -17,7 +17,6 @@
 
 /* @SilverlightVersion="2" */
 /* @Namespace=None */
-/* @IncludeInKinds */	
 class ContentChangedEventArgs : public EventArgs {
 	Value *old_content;
 	Value *new_content;
@@ -39,7 +38,6 @@ class ContentChangedEventArgs : public EventArgs {
 /* @ContentProperty="Content" */
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
-/* @IncludeInKinds */	
 class ContentControl : public Control {
  protected:
 	virtual ~ContentControl ();

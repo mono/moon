@@ -36,7 +36,6 @@ struct GridLength {
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
-/* @IncludeInKinds */
 class ColumnDefinition : public DependencyObject {
 	// Actual width computed
 	double actual;
@@ -72,7 +71,6 @@ class ColumnDefinition : public DependencyObject {
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
-/* @IncludeInKinds */
 class RowDefinition : public DependencyObject {
 	// Actual height computed
 	double actual;
@@ -108,7 +106,6 @@ class RowDefinition : public DependencyObject {
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
-/* @IncludeInKinds */
 class ColumnDefinitionCollection : public DependencyObjectCollection {
  protected:
 	virtual ~ColumnDefinitionCollection ();
@@ -123,7 +120,6 @@ class ColumnDefinitionCollection : public DependencyObjectCollection {
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
-/* @IncludeInKinds */
 class RowDefinitionCollection : public DependencyObjectCollection {
  protected:
 	virtual ~RowDefinitionCollection ();
@@ -138,7 +134,6 @@ class RowDefinitionCollection : public DependencyObjectCollection {
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
-/* @IncludeInKinds */
 class Grid : public Panel {
  protected:
 	virtual ~Grid ();
