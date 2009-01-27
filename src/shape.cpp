@@ -357,16 +357,23 @@ void
 Shape::Clip (cairo_t *cr)
 {
 	// some shapes, like Line, Polyline, Polygon and Path, are clipped if both Height and Width properties are present
-	if (needs_clip) {
+
+	if (true) {
 		Rect layout_clip = *LayoutInformation::GetLayoutSlot (this);
+		Rect specified = Rect ();
 
-		if (layout_clip.width <= 0 && layout_clip.height <= 0)
-			return;
+		if (layout_clip.width <= 0 && layout_clip.height <= 0) {
+			if (!isnan (GetWidth ()))
+				layout_clip.width = GetWidth ();
+			else
+				return;
 
-#if !EXACT_CLIP
-		layout_clip.width = MAX (layout_clip.width, 1);
-		layout_clip.height = MAX (layout_clip.height, 1);
-#endif
+			if (!isnan (GetHeight ()))
+				layout_clip.height = GetHeight ();
+			else
+				return;
+		}
+
 		layout_clip.Draw (cr);
 
 		cairo_clip (cr);
