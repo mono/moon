@@ -19,7 +19,6 @@ namespace MoonTest.System.Windows
 	public class VisualStateTest
 	{
 		[TestMethod]
-		[MoonlightBug]
 		public void TestParse ()
 		{
 			VisualState vs = (VisualState)XamlReader.Load (@"<vsm:VisualState xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns:vsm=""clr-namespace:System.Windows;assembly=System.Windows"" x:Name=""foo""><Storyboard /></vsm:VisualState>");

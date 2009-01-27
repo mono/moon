@@ -1,3 +1,11 @@
+2009-01-27  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows/VisualStateTest.cs: Remove [MoonlightBug] from
+	TestParse
+	* System.Windows.Shapes/PathTest.cs: Remove [MoonlightBug] from
+	BorderComputeLargerSize_StretchUniform_SizedIntrinsicBorder and
+	ComputeReducedSize_StretchUniform_InstrinsicBorder
+
 2009-01-26  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows.Media.Animation/StoryboardTest.cs: Add 
