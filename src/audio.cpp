@@ -22,6 +22,7 @@
 #include "clock.h"
 #include "debug.h"
 #include "mediaplayer.h"
+#include "deployment.h"
 
 /*
  * AudioFrameNode
@@ -830,7 +831,7 @@ AudioPlayer::Add (MediaPlayer *mplayer, AudioStream *stream)
 	if (instance == NULL)
 		instance = CreatePlayer ();
 	if (instance != NULL)
-		instance->SetDeployment (mplayer->GetDeployment ());
+		instance->SetDeployment (Deployment::GetCurrent ());
 	if (instance != NULL)
 		result = instance->AddImpl (mplayer, stream);
 	pthread_mutex_unlock (&instance_mutex);

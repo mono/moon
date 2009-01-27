@@ -564,9 +564,6 @@ MediaPlayer::Initialize ()
 	frames_update_timestamp = 0;
 	rendered_frames = 0;
 	dropped_frames = 0;
-
-	if (element != NULL)
-		SetDeployment (element->GetDeployment ());
 }
 
 void

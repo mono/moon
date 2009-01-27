@@ -1,5 +1,12 @@
 2009-01-27  Geoff Norton  <gnorton@novell.com>
 
+	* dependencyobject.cpp|h:
+	* mediaplayer.cpp: Remove the stupidity from my last commit.
+	* audio.cpp: We're in the right thread and Deployment here, use
+	Deployment::GetCurrent().
+
+2009-01-27  Geoff Norton  <gnorton@novell.com>
+
 	* dependencyobject.cpp|h: Add a SetDeployment() call to lazy set
 	the deployment on a EO.
 	* deployment.cpp: Add some more logging.
