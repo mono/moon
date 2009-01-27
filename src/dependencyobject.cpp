@@ -240,10 +240,41 @@ EventObject::Dispose ()
 	flags = Disposed;
 }
 
+void
+EventObject::ref ()
+{
+	int v = g_atomic_int_exchange_and_add (&refcount, 1);
+		
+#if DEBUG
+	if (GetObjectType () != object_type)
+		printf ("EventObject::unref (): the type '%s' did not call SetObjectType, object_type is '%s'\n", Type::Find (GetObjectType ())->GetName (), Type::Find (object_type)->GetName ());
+#endif
+
+	if (v == 0) {
+		// Here something really bad happened, this object is probably being reffed again because
+		// of some action in the destructor. There is no way to recover from this now, no matter what 
+		// we do the code that called ref now will be accessing a deleted object later on, which may or 
+		// may not crash. It might very well be an exploitable security problem. Anyways when unref is called, we 
+		// have a second delete on the same object, which *will* crash. To make things easier and safer
+		// lets just abort right away.
+#if OBJECT_TRACKING
+		PrintStackTrace ();
+#endif
+		g_error ("Ref was called on an object with a refcount of 0.\n"); // g_error valid, see comment above.
+	}
+	
+	OBJECT_TRACK ("Ref", GetTypeName ());
+}
+
 void 
 EventObject::unref ()
 {
 	bool delete_me;
+
+#if DEBUG
+	if (GetObjectType () != object_type)
+		printf ("EventObject::unref (): the type '%s' did not call SetObjectType, object_type is '%s'\n", Type::Find (GetObjectType ())->GetName (), Type::Find (object_type)->GetName ());
+#endif
 
 	if (!Surface::InMainThread ()) {
 		unref_delayed ();

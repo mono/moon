@@ -1,6 +1,11 @@
 2009-01-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* dependencyobject.h:
+	* dependencyobject.cpp: Move ref to cpp file and add some sanity checks.
+
+2009-01-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* dependencyobject.h:
 	* dependencyobject.cpp: Add Deployment* and flags fields on EventObject.
 
 2009-01-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
