@@ -33,7 +33,7 @@
 #define MAX_VIDEO_HEIGHT	2048
 #define MAX_VIDEO_WIDTH		2048
 
-#define MOONLIGHT_CODEC_ABI_VERSION 5
+#define MOONLIGHT_CODEC_ABI_VERSION 6
 typedef void (*register_codec) (int abi_version);
 
 /*
