@@ -81,7 +81,7 @@ class Deployment : public DependencyObject {
 	static void SetCurrent (Deployment* value);
 
 	static bool Initialize ();
-
+	static void RegisterThread (Deployment *deployment);
 private:
 	Types* types;
 	Application* current_app;

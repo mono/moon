@@ -1,5 +1,13 @@
 2009-01-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: WorkerLoop: set the current deployment for every work
+	item.
+
+	* deployment.h:
+	* deployment.cpp: Add RegisterThread.
+
+2009-01-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* deployment.cpp: Deployment: Add some logging, fix indentation and call
 	the DependencyObject ctor which takes a Deployment instead of the
 	default ctor.

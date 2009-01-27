@@ -38,6 +38,7 @@
 #include "mms-downloader.h"
 #include "pipeline-ui.h"
 #include "pipeline-asf.h"
+#include "deployment.h"
 
 /*
  * MediaNode
@@ -766,6 +767,7 @@ void
 Media::WorkerLoop ()
 {
 	MediaResult result = MEDIA_SUCCESS;
+	bool registered = false;
 	
 	LOG_PIPELINE ("Media::WorkerLoop ().\n");
 
@@ -803,6 +805,18 @@ Media::WorkerLoop ()
 			continue; // Found nothing, continue waiting.
 		
 		LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): processing node %p with type %i.\n", node, node->type);
+		
+		if (node->closure != NULL && node->closure->GetMedia () != NULL) {
+			Deployment *deployment = node->closure->GetMedia ()->GetDeployment (); 
+			printf ("Media::WorkerLoop (): deployment: %p\n", deployment);
+			if (deployment != NULL) {
+				if (!registered) {
+					Deployment::RegisterThread (deployment);
+					registered = true;
+				}
+				Deployment::SetCurrent (deployment);
+			}
+		}
 		
 		switch (node->type) {
 		case WorkTypeSeek:

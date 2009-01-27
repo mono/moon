@@ -25,6 +25,7 @@ G_BEGIN_DECLS
 #include <mono/metadata/mono-debug.h>
 G_END_DECLS
 #include <mono/metadata/mono-config.h>
+#include <mono/metadata/threads.h>
 
 /*
  * Deployment
@@ -69,6 +70,11 @@ Deployment::Initialize()
 	return true;
 }
 
+void
+Deployment::RegisterThread (Deployment *deployment)
+{
+	mono_thread_attach (deployment->domain);
+}
 
 Deployment*
 Deployment::GetCurrent()
