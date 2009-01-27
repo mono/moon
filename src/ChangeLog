@@ -1,5 +1,9 @@
 2009-01-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* deployment.h: Initialize doesn't need cbinding/pinvoke.
+
+2009-01-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* debug.h: Add LOG_DEPLOYMENT.
 
 	* runtime.h:

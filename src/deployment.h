@@ -79,7 +79,7 @@ class Deployment : public DependencyObject {
 	static Deployment* GetCurrent ();
 	/* @GenerateCBinding,GeneratePInvoke */
 	static void SetCurrent (Deployment* value);
-	/* @GenerateCBinding,GeneratePInvoke */
+
 	static bool Initialize ();
 
 private:
