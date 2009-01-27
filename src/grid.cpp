@@ -348,7 +348,7 @@ Grid::ArrangeOverride (Size finalSize)
 			}
 		}
 
-		for (int c = col; c < col + colspan; c++) {
+		for (int c = 0; c < col + colspan; c++) {
 			ColumnDefinition *coldef = columns->GetValueAt (c)->AsColumnDefinition ();
 
 			if (c < col) {

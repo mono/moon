@@ -1,3 +1,8 @@
+2009-01-26  Larry Ewing  <lewing@novell.com>
+
+	* grid.cpp (Grid::ArrangeOverride): fix a an error in the loop
+	bounds.
+
 2009-01-26  Geoff Norton  <gnorton@novell.com>
 
 	* deployment.cpp: Cleanup our usage of hash a bit to avoid some
