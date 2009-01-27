@@ -1,3 +1,8 @@
+2009-01-26  Geoff Norton  <gnorton@novell.com>
+
+	* plugin.cpp: Ensure we're in the right deployment/domain before we
+	start poking around in managed land.
+
 2009-01-26 Geoff Norton  <gnorton@novell.com>
 
 	* plugin.cpp|h: Clean this stuff up now that our book-keeper is
