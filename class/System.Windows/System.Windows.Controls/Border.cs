@@ -1,6 +1,4 @@
 //
-// System.Windows.Controls.Control
-//
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //

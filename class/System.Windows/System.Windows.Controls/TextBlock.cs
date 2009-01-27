@@ -1,6 +1,4 @@
 //
-// System.Windows.Controls.TextBlock.cs
-//
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //

@@ -1,6 +1,4 @@
 //
-// System.Windows.Controls.TextChangedEventArgs.cs
-//
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
