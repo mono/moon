@@ -66,6 +66,7 @@ G_END_DECLS
 #define LOG_PLAYLIST_WARN(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_PLAYLIST_WARN)) printf (__VA_ARGS__);
 #define LOG_TEXT(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_TEXT)) fprintf (__VA_ARGS__);
 #define LOG_XAML(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_XAML)) printf (__VA_ARGS__);
+#define LOG_DEPLOYMENT(...)		if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_DEPLOYMENT)) printf (__VA_ARGS__);
 
 #else
 
@@ -101,6 +102,7 @@ G_END_DECLS
 #define LOG_PLAYLIST_WARN(...)
 #define LOG_TEXT(...)
 #define LOG_XAML(...)
+#define LOG_DEPLOYMENT(...)
 
 
 

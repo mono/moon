@@ -628,7 +628,7 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 			   useragent);
 	}
 
-	if (!DeploymentInit () || !CreatePluginDeployment ()) { 
+	if (!CreatePluginDeployment ()) { 
 		g_warning ("Couldn't initialize Mono or create the plugin Deployment");
 	}
 }
@@ -1880,8 +1880,7 @@ extern gboolean mono_jit_set_trace_options (const char *options);
 bool
 PluginInstance::DeploymentInit ()
 {
-	return mono_is_loaded = Deployment::Initialize ();
-
+	return mono_is_loaded = true; // We load mono in runtime_init.
 }
 
 

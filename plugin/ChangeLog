@@ -1,3 +1,7 @@
+2009-01-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp: Call Deployment::Initialize in runtime_init.
+
 2009-01-27  Geoff Norton  <gnorton@novell.com>
 
 	* plugin.cpp: Use the static overload here.

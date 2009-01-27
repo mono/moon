@@ -1,3 +1,11 @@
+2009-01-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* debug.h: Add LOG_DEPLOYMENT.
+
+	* runtime.h:
+	* runtime.cpp: Add LOG_DEPLOYMENT. Call Deployment::Initialize in
+	runtime_init.
+
 2009-01-27  Geoff Norton  <gnorton@novell.com>
 
 	* deployment.cpp|h: Lock our access to the hash.  Remove a SetCurrent()

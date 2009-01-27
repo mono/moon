@@ -158,6 +158,7 @@ static struct env_options debugs[] = {
 	{ "playlist-warn",     RUNTIME_DEBUG_PLAYLIST_WARN,    true },
 	{ "text",              RUNTIME_DEBUG_TEXT,             true },
 	{ "xaml",              RUNTIME_DEBUG_XAML,             true },
+	{ "deployment",        RUNTIME_DEBUG_DEPLOYMENT,       true },
 	{ NULL, 0, false }
 };
 #endif
@@ -1968,6 +1969,7 @@ runtime_init (guint32 flags)
 	moonlight_flags = flags;
 	
 	types_init ();
+	Deployment::Initialize ();
 	dependency_property_g_init ();
 	xaml_init ();
 	font_init ();
