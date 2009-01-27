@@ -1889,7 +1889,7 @@ bool
 PluginInstance::CreatePluginDeployment ()
 {
 	deployment = new Deployment ();
-	deployment->SetCurrent ();
+	Deployment::SetCurrent (deployment);
 
 	return true;
 }
@@ -1938,7 +1938,7 @@ PluginInstance::ManagedCreateXamlLoader (XamlLoader* native_loader, const char *
 	PluginInstance *this_obj = this;
 	void *params [5];
 
-	deployment->SetCurrent ();
+	Deployment::SetCurrent (deployment);
 
 	params [0] = &native_loader;
 	params [1] = &this_obj;
@@ -1978,7 +1978,7 @@ PluginInstance::ManagedInitializeDeployment (const char *file)
 	PluginInstance *this_obj = this;
 	void *params [3];
 
-	deployment->SetCurrent ();
+	Deployment::SetCurrent (deployment);
 
 	params [0] = &this_obj;
 	params [1] = &surface;
@@ -1995,7 +1995,7 @@ PluginInstance::ManagedDestroyApplication ()
 	void *params [1];
 	params [0] = &this_obj;
 
-	deployment->SetCurrent ();
+	Deployment::SetCurrent (deployment);
 
 	mono_runtime_invoke (moon_destroy_application, NULL, params, NULL);
 }
