@@ -13,6 +13,8 @@
 #include <glib.h>
 
 #include "deployment.h"
+#include "debug.h"
+
 #include <stdlib.h>
 #include <mono/jit/jit.h>
 #include <mono/metadata/appdomain.h>
@@ -24,6 +26,9 @@ G_BEGIN_DECLS
 G_END_DECLS
 #include <mono/metadata/mono-config.h>
 
+/*
+ * Deployment
+ */
 
 gboolean Deployment::initialized = FALSE;
 pthread_key_t Deployment::tls_key = 0;
@@ -59,6 +64,8 @@ Deployment::Initialize()
 	pthread_key_create (&tls_key, NULL);
 	pthread_mutex_init (&hash_mutex, NULL);
 
+	LOG_DEPLOYMENT ("Deployment::Initialize (): Created root domain: %p\n", root_domain);
+	
 	return true;
 }
 
@@ -75,16 +82,29 @@ Deployment::GetCurrent()
 	 * the current appdomain
 	 */ 
 	if (deployment == NULL) {
-		pthread_mutex_lock (&hash_mutex);
-		deployment = (Deployment *) g_hash_table_lookup (current_hash, current_domain);
-		pthread_mutex_unlock (&hash_mutex);
+		if (current_domain == root_domain) {
+			LOG_DEPLOYMENT ("Deployment::GetCurrent (): Couldn't find deployment in our tls, and the current domain is the root domain.\n");
+		} else {
+			pthread_mutex_lock (&hash_mutex);
+			deployment = (Deployment *) g_hash_table_lookup (current_hash, current_domain);
+			pthread_mutex_unlock (&hash_mutex);
+			LOG_DEPLOYMENT ("Deployment::GetCurrent (): Couldn't find deployment in our tls, searched current domain %p and found: %p\n", current_domain, deployment);
+		}
 	}
 
 	/*
 	 * If we have a domain mismatch, fix that before we continue
 	 */
-	if (deployment && deployment->domain != current_domain)
+	if (deployment && deployment->domain != current_domain) {
+		LOG_DEPLOYMENT ("Deployment::GetCurrent (): Domain mismatch, current deployment's domain is %p, current domain is: %p\n", deployment->domain, current_domain);
 		mono_domain_set (deployment->domain, FALSE);
+	}
+
+	if (deployment == NULL) {
+		// Currently this happens because we end up here during libmoon initialization.
+		// The fix is to not create objects as default values for our static dependency properties.
+		LOG_DEPLOYMENT ("Deployment::GetCurrent (): Didn't find a deployment. This should never happen.\n");
+	}
 
 	return deployment;
 }
@@ -92,22 +112,33 @@ Deployment::GetCurrent()
 void
 Deployment::SetCurrent (Deployment* deployment)
 {
+#if DEBUG
+	if (mono_domain_get () != deployment->domain) {
+		LOG_DEPLOYMENT ("Deployment::SetCurrent (%p), thread: %i domain mismatch, is: %p\n", deployment, (int) pthread_self (), mono_domain_get ());
+	} else if (pthread_getspecific (tls_key) != deployment) {
+		LOG_DEPLOYMENT ("Deployment::SetCurrent (%p), thread: %i deployment mismatch, is: %p\n", deployment, (int) pthread_self (), pthread_getspecific (tls_key));
+	}
+#endif
+
 	mono_domain_set (deployment->domain, FALSE);
 	pthread_setspecific (tls_key, deployment);
 }
 
 Deployment::Deployment()
+	: DependencyObject (this)
 {
-        char *domain_name = g_strdup_printf ("moonlight-%p", this);
+	char *domain_name = g_strdup_printf ("moonlight-%p", this);
 
 	SetObjectType (Type::DEPLOYMENT);
 	types = new Types ();
 	current_app = NULL;
 	mono_domain_set (root_domain, FALSE);
-        domain = mono_domain_create_appdomain (domain_name, NULL);
-        g_free (domain_name);
+	domain = mono_domain_create_appdomain (domain_name, NULL);
+	g_free (domain_name);
 
-        mono_domain_set (domain, FALSE);
+	LOG_DEPLOYMENT ("Deployment::Deployment (): Created domain %p for deployment %p\n", domain, this);
+
+	mono_domain_set (domain, FALSE);
 
 	pthread_mutex_lock (&hash_mutex);
 	g_hash_table_insert (current_hash, domain, this);
@@ -122,6 +153,8 @@ Deployment::~Deployment()
 
 	mono_domain_set (root_domain, FALSE);
 	mono_domain_unload (domain);
+
+	LOG_DEPLOYMENT ("Deployment::~Deployment (): %p\n", this);
 
 	delete types;
 }
@@ -152,6 +185,10 @@ Deployment::SetCurrentApplication (Application* value)
 	if (current_app)
 	  current_app->ref ();
 }
+
+/*
+ * AssemblyPart
+ */
 
 AssemblyPart::AssemblyPart ()
 {
