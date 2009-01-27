@@ -74,8 +74,6 @@ class Deployment : public DependencyObject {
 	Application* GetCurrentApplication ();
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetCurrentApplication (Application* value);
-	/* @GenerateCBinding,GeneratePInvoke */
-	void SetCurrent ();
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	static Deployment* GetCurrent ();
@@ -91,6 +89,7 @@ private:
 	static GHashTable *current_hash;
 	static gboolean initialized;
 	static pthread_key_t tls_key;
+	static pthread_mutex_t hash_mutex;
 	static MonoDomain *root_domain;
 };
 

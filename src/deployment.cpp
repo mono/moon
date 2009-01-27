@@ -55,6 +55,7 @@ Deployment::Initialize()
 	initialized = true;
 	current_hash = g_hash_table_new (g_direct_hash, g_direct_equal);
 	pthread_key_create (&tls_key, NULL);
+	pthread_mutex_init (&hash_mutex, NULL);
 
 	return true;
 }
@@ -71,8 +72,11 @@ Deployment::GetCurrent()
 	 * by mono.  In this case we look up in the hsah table the deployment against 
 	 * the current appdomain
 	 */ 
-	if (deployment == NULL)
+	if (deployment == NULL) {
+		pthread_mutex_lock (&hash_mutex);
 		deployment = (Deployment *) g_hash_table_lookup (current_hash, current_domain);
+		pthread_mutex_unlock (&hash_mutex);
+	}
 
 	/*
 	 * If we have a domain mismatch, fix that before we continue
@@ -103,12 +107,16 @@ Deployment::Deployment()
 
         mono_domain_set (domain, FALSE);
 
+	pthread_mutex_lock (&hash_mutex);
 	g_hash_table_insert (current_hash, domain, this);
+	pthread_mutex_unlock (&hash_mutex);
 }
 
 Deployment::~Deployment()
 {
+	pthread_mutex_lock (&hash_mutex);
 	g_hash_table_remove (current_hash, domain);
+	pthread_mutex_unlock (&hash_mutex);
 
 	mono_domain_set (root_domain, FALSE);
 	mono_domain_unload (domain);
@@ -141,12 +149,6 @@ Deployment::SetCurrentApplication (Application* value)
 
 	if (current_app)
 	  current_app->ref ();
-}
-
-void
-Deployment::SetCurrent ()
-{
-	Deployment::SetCurrent (this);
 }
 
 AssemblyPart::AssemblyPart ()
