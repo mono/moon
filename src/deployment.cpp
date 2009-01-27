@@ -27,8 +27,10 @@ G_END_DECLS
 
 gboolean Deployment::initialized = FALSE;
 pthread_key_t Deployment::tls_key = 0;
+pthread_mutex_t Deployment::hash_mutex;
 GHashTable* Deployment::current_hash = NULL;
 MonoDomain* Deployment::root_domain = NULL;
+
  
 bool
 Deployment::Initialize()
