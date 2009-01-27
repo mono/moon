@@ -18,6 +18,7 @@
 #include "runtime.h"
 #include "clock.h"
 #include "debug.h"
+#include "deployment.h"
 
 // stream.h
 typedef pa_stream*            (dyn_pa_stream_new)                    (pa_context *c, const char *name, const pa_sample_spec *ss, const pa_channel_map *map);
@@ -327,6 +328,8 @@ PulseSource::OnStateChanged (pa_stream *pulse_stream)
 	
 	switch (state) {
 	case PA_STREAM_READY:
+		Deployment::RegisterThread (GetDeployment ());
+		Deployment::SetCurrent (GetDeployment ());
 		is_ready = true;
 		break;
 	case PA_STREAM_CREATING:

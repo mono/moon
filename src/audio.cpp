@@ -830,6 +830,8 @@ AudioPlayer::Add (MediaPlayer *mplayer, AudioStream *stream)
 	if (instance == NULL)
 		instance = CreatePlayer ();
 	if (instance != NULL)
+		instance->SetDeployment (mplayer->GetDeployment ());
+	if (instance != NULL)
 		result = instance->AddImpl (mplayer, stream);
 	pthread_mutex_unlock (&instance_mutex);
 	

@@ -1,3 +1,11 @@
+2009-01-27  Geoff Norton  <gnorton@novell.com>
+
+	* audio-alsa.cpp:
+	* audio-pulse.cpp: Register the worker-thread's with mono and set our
+	deployment correctly.
+	* audio.cpp|h: Inherit the deployment from the MediaPlayer and keep it
+	around so that our audio-players can register the thread with mono.
+
 2009-01-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline.cpp: WorkerLoop: set the current deployment for every work
