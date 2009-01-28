@@ -1,5 +1,12 @@
 2009-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* dependencyobject.h:
+	* dependencyobject.cpp: Add an EventObject ctor overload which takes a
+	Type::Kind. In EventObject::ref don't warn about inexistent
+	deployments for audio objects.
+
+2009-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* dependencyobject.cpp: EventObject::GetDeployment: Fix warning.
 
 2009-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>

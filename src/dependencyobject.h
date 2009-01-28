@@ -170,6 +170,7 @@ protected:
 	virtual ~EventObject ();
 	EventObject ();
 	EventObject (Deployment *deployment);
+	EventObject (Type::Kind type);
 	
 	// To enable scenarios like Emit ("Event", new EventArgs ())
 	// Emit will call unref on the calldata.
@@ -178,7 +179,7 @@ protected:
 
 private:
 	void AddTickCallInternal (TickCallHandler handler);
-	void Initialize ();
+	void Initialize (Deployment *deployment, Type::Kind type);
 
 	EventLists *events;
 	Surface *surface; // TODO: Remove this (along with SetSurface)

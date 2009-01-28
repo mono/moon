@@ -69,21 +69,27 @@ static pthread_mutex_t objects_alive_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 EventObject::EventObject ()
 {
-	deployment = Deployment::GetCurrent ();
-	Initialize ();
+	Initialize (NULL, Type::EVENTOBJECT);
 }
 
 EventObject::EventObject (Deployment *deployment)
 {
-	this->deployment = deployment;
-	Initialize ();
+	Initialize (deployment, Type::EVENTOBJECT);
+}
+
+EventObject::EventObject (Type::Kind type)
+{
+	Initialize (NULL, type);
 }
 
 void
-EventObject::Initialize ()
+EventObject::Initialize (Deployment *depl, Type::Kind type)
 {
-	SetObjectType (Type::EVENTOBJECT);
-
+	if (depl == NULL)
+		depl = Deployment::GetCurrent ();
+	
+	object_type = type;
+	deployment = depl;
 	surface = NULL;
 	flags = (Flags) 0;
 	refcount = 1;
@@ -268,8 +274,11 @@ EventObject::ref ()
 #if DEBUG
 	if (GetObjectType () != object_type)
 		printf ("EventObject::ref (): the type '%s' did not call SetObjectType, object_type is '%s'\n", Type::Find (GetObjectType ())->GetName (), Type::Find (object_type)->GetName ());
-	if (deployment != Deployment::GetCurrent ())
+		
+	if (deployment != Deployment::GetCurrent () && !Type::Find (object_type)->IsSubclassOf (Type::AUDIOSTREAM) && !Type::Find (object_type)->IsSubclassOf (Type::AUDIOSOURCE)) {
+		// ref is an operation which doesn't depend on deployment, and since audio threads can't register itself with the deployment, don't warn for audio objects here.
 		printf ("EventObject::ref (): the type '%s' whose id is %i was created on a deployment (%p) different from the current deployment (%p).\n", GetTypeName (), GET_OBJ_ID (this), deployment, Deployment::GetCurrent ());
+	}
 #endif
 
 	if (v == 0) {
