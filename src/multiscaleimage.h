@@ -28,7 +28,7 @@ class MultiScaleImage : public MediaBase {
 	void DownloadUri (const char* url);
 	MultiScaleTileSource *source;
 	GHashTable *cache;
-	bool cache_contains (int layer, int x, int y);
+	bool cache_contains (int layer, int x, int y, bool check_empty_tile);
 	char* context;
 	char* filename;
 

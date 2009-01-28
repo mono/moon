@@ -193,8 +193,9 @@ to_key (int layer, int x, int y)
 }
 
 bool
-MultiScaleImage::cache_contains (int layer, int x, int y)
+MultiScaleImage::cache_contains (int layer, int x, int y, bool empty_tiles)
 {
+	//empty_tiles = TRUE means that this will return true if a tile is present, but NULL
 	return g_hash_table_lookup (cache, to_key (layer, x, y)) != NULL;
 }
 
@@ -222,36 +223,6 @@ printf ("MSI::Render\n");
 	if (!source->get_tile_func) {
 		g_warning ("no get_tile_func set\n");
 		return;
-	}
-
-	double w = GetWidth ();
-	double h = GetHeight ();
-	double vp_w = GetViewportWidth ();
-	double vp_h = GetViewportHeight ();
-	double im_w = (double) source->GetImageWidth ();
-	double im_h = (double) source->GetImageHeight ();
-	int tile_width = source->GetTileWidth ();
-	int tile_height = source->GetTileHeight ();
-	double vp_ox = GetViewportOrigin()->x;
-	double vp_oy = GetViewportOrigin()->y;
-//printf ("vp %f %f %f %f\n", vp_ox, vp_oy, vp_w, vp_h);
-//printf ("image %d %d\n", source->GetImageWidth (), source->GetImageHeight ());
-
-	int layers;
-	frexp (MAX (im_w, im_h), &layers);
-
-	//optimal layer for this...
-	//FIXME: need to count AspectRatio too
-	int to_layer = MAX (0, layers + 1 - ceil (GetViewportWidth () / GetWidth()));
-	printf ("number of layers: %d\toptimal layer for this: %d\n", layers, to_layer);
-
-	//figuring what layer is ready to be rendered
-	int layer_to_render = to_layer;
-	while (layer_to_render >= 0) {
-		if (cache_contains (layer_to_render, 0, 0))
-			break;
-		printf ("no layer %d in cache\n", layer_to_render);
-		layer_to_render --;
 	}
 
 	//if there's a downloaded file pending, cache it
@@ -286,8 +257,61 @@ printf ("MSI::Render\n");
 		g_hash_table_insert (cache, g_strdup(context), image);
 	}
 
+
+	double w = GetWidth ();
+	double h = GetHeight ();
+	double vp_w = GetViewportWidth ();
+	double vp_h = GetViewportHeight ();
+	double im_w = (double) source->GetImageWidth ();
+	double im_h = (double) source->GetImageHeight ();
+	int tile_width = source->GetTileWidth ();
+	int tile_height = source->GetTileHeight ();
+	double vp_ox = GetViewportOrigin()->x;
+	double vp_oy = GetViewportOrigin()->y;
+//printf ("vp %f %f %f %f\n", vp_ox, vp_oy, vp_w, vp_h);
+//printf ("image %d %d\n", source->GetImageWidth (), source->GetImageHeight ());
+
+	int layers;
+	frexp (MAX (im_w, im_h), &layers);
+
+	//optimal layer for this... aka "best viewed at"
+	//FIXME: need to count AspectRatio too
+	int optimal_layer = MAX (0, layers + 1 - ceil (GetViewportWidth () / GetWidth()));
+	printf ("number of layers: %d\toptimal layer for this: %d\n", layers, optimal_layer);
+
+	//We have to figure all the layers that we'll have to render:
+	//- from_layer is the highest COMPLETE layer that we can display
+	//- to_layer is the highest PARTIAL layer that we can display
+
+	int to_layer = -1;
+	int from_layer = optimal_layer;
+
+	while (from_layer >= 0) {
+		int count = 0;
+		int found = 0;
+		double v_tile_w = tile_width * ldexp (1.0, layers - from_layer);
+		double v_tile_h = tile_height * ldexp (1.0, layers - from_layer);
+		int i, j;
+
+		for (i = (int)((double)vp_ox / (double)v_tile_w); i * v_tile_w < vp_ox + vp_w; i++) {
+			for (j = (int)((double)vp_oy / (double)v_tile_h); j * v_tile_h < vp_oy + vp_h; j++) {
+				count++;
+				//FIXME
+				if (cache_contains (from_layer, i, j, true))
+					found ++;
+			}
+		}
+		if (found > 0 && to_layer < from_layer)
+			to_layer = from_layer;
+		if (found == count)
+			break;
+		from_layer --;
+	}
+
 	//render here
-	if (layer_to_render >= 0) {
+	printf ("rendering layers from %d to %d\n", from_layer, to_layer);
+	int layer_to_render = from_layer;
+	while (from_layer > 0 && layer_to_render <= to_layer) {
 		cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, to_key (layer_to_render, 0, 0));
 	//FIXME check for NULL image here
 		int *p_w = (int*)(cairo_surface_get_user_data (image, &width_key));
@@ -304,27 +328,30 @@ printf ("MSI::Render\n");
 		cairo_restore (cr);
 
 		//cairo_surface_destroy (image);
+		layer_to_render++;
 	}
 
-	if (layer_to_render < to_layer) {
-		//Get the next tiles...
-		layer_to_render ++;
+	//Get the next tile...
+	while (from_layer < optimal_layer) {
+		from_layer ++;
 
-		double v_tile_w = tile_width * ldexp (1.0, layers - layer_to_render);
-		double v_tile_h = tile_height * ldexp (1.0, layers - layer_to_render);
-//		double zoom = w / (double)vp_w;
-
+		double v_tile_w = tile_width * ldexp (1.0, layers - from_layer);
+		double v_tile_h = tile_height * ldexp (1.0, layers - from_layer);
 
 		int i, j;
 
-		context = to_key (layer_to_render, 0, 0);
 
 		for (i = (int)((double)vp_ox / (double)v_tile_w); i * v_tile_w < vp_ox + vp_w; i++) {
 			for (j = (int)((double)vp_oy / (double)v_tile_h); j * v_tile_h < vp_oy + vp_h; j++) {
-				const char* ret = g_strdup ((const char*)source->get_tile_func (layer_to_render, 2, 3));
-				if (!ret)
+				if (!cache_contains (from_layer, i, j, true)) {
+					context = to_key (from_layer, i, j);
+				
+					const char* ret = g_strdup ((const char*)source->get_tile_func (from_layer, i, j));
+					if (!ret)
+						return; //FIXME, should cache a NULL surface
+					DownloadUri (ret);
 					return;
-				DownloadUri (ret);
+				}
 			}
 		}
 	}
