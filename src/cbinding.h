@@ -1388,7 +1388,7 @@ TextBlock *text_block_new (void);
 void text_box_select (TextBox *instance, int start, int length);
 
 /* @GeneratePInvoke */
-void text_box_select_all (TextBox *instance);
+bool text_box_select_all (TextBox *instance);
 
 /* @GeneratePInvoke */
 TextBox *text_box_new (void);

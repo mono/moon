@@ -104,6 +104,7 @@ public:
 		FFMPEGDEMUXER,
 		FILESOURCE,
 		FONTFAMILY,
+		FONTFAMILY,
 		FONTSTRETCH,
 		FRAMEWORKELEMENT,
 		FRAMEWORKTEMPLATE,// Silverlight 2.0 only
@@ -334,6 +335,7 @@ public: // private:
 extern Type type_infos [Type::LASTTYPE + 1];
 
 class Types {
+friend class Type;
 private:
 	Type **types;
 	int size; // The allocated size of the array

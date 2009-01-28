@@ -1,3 +1,8 @@
+2009-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Kind.cs:
+	* GeneratedPInvokes.cs: Regenerated.
+
 2009-01-27  Chris Toshok  <toshok@ximian.com>
 
 	* Value.cs: add FontFamily and uint32 cases.

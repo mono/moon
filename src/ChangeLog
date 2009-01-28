@@ -1,5 +1,13 @@
 2009-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* type.h:
+	* type.h.in:
+	* cbinding.h:
+	* cbinding.cpp:
+	* type-generated.cpp: Regenerated.
+
+2009-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* audio.h:
 	* audio.cpp:
 	* audio-pulse.h:
