@@ -14,6 +14,7 @@
 #include <config.h>
 #endif
 
+#include "geometry.h"
 #include "runtime.h"
 #include "media.h"
 #include "downloader.h"
@@ -588,27 +589,31 @@ MediaElement::SetMedia (Media *media)
 	
 	UpdatePlayerPosition (GetPosition ());
 
-	updating_size_from_media = true;
-
-	if (use_media_width) {
-		Value *height = GetValueNoDefault (FrameworkElement::HeightProperty);
-
-		if (!use_media_height)
-			SetWidth ((double) mplayer->GetVideoWidth() * height->AsDouble () / (double) mplayer->GetVideoHeight());
-		else
-			SetWidth ((double) mplayer->GetVideoWidth());
-	}
 	
-	if (use_media_height) {
-		Value *width = GetValueNoDefault (FrameworkElement::WidthProperty);
+	if (!(IsLayoutContainer () || (GetVisualParent () && GetVisualParent ()->IsLayoutContainer ()))) {
+		updating_size_from_media = true;
 
-		if (!use_media_width)
-			SetHeight ((double) mplayer->GetVideoHeight() * width->AsDouble () / (double) mplayer->GetVideoWidth());
-		else
-			SetHeight ((double) mplayer->GetVideoHeight());
+		if (use_media_width) {
+			Value *height = GetValueNoDefault (FrameworkElement::HeightProperty);
+			
+			if (!use_media_height)
+				SetWidth ((double) mplayer->GetVideoWidth() * height->AsDouble () / (double) mplayer->GetVideoHeight());
+			else
+				SetWidth ((double) mplayer->GetVideoWidth());
+		}
+		
+		if (use_media_height) {
+			Value *width = GetValueNoDefault (FrameworkElement::WidthProperty);
+			
+			if (!use_media_width)
+				SetHeight ((double) mplayer->GetVideoHeight() * width->AsDouble () / (double) mplayer->GetVideoWidth());
+			else
+				SetHeight ((double) mplayer->GetVideoHeight());
+		}
+		
+		updating_size_from_media = false;
 	}
-	
-	updating_size_from_media = false;
+	InvalidateMeasure ();
 }
 
 bool
@@ -736,13 +741,43 @@ MediaElement::GetTransformOrigin ()
 Size
 MediaElement::MeasureOverride (Size availableSize)
 {
-	Size desired (0,0);
+	Size desired = availableSize;
+	Rect shape_bounds = Rect ();
+	double sx = 0.0;
+	double sy = 0.0;
 
-	if (!mplayer)
-		return desired;
+	if (mplayer)
+		shape_bounds = Rect (0,0,
+				     mplayer->GetVideoHeight (),
+				     mplayer->GetVideoWidth ());
 
 	if (GetStretch () == StretchNone)
-		desired = Size (mplayer->GetVideoHeight (), mplayer->GetVideoWidth ());
+		return desired.Min (shape_bounds.width, shape_bounds.height);
+
+	/* don't stretch to infinite size */
+	if (isinf (desired.width))
+		desired.width = shape_bounds.width;
+	if (isinf (desired.height))
+		desired.height = shape_bounds.height;
+	
+	/* compute the scaling */
+	if (shape_bounds.width > 0)
+		sx = desired.width / shape_bounds.width;
+	if (shape_bounds.height > 0)
+		sy = desired.height / shape_bounds.height;
+
+	switch (GetStretch ()) {
+	case StretchUniform:
+		sx = sy = MIN (sx, sy);
+		break;
+	case StretchUniformToFill:
+		sx = sy = MAX (sx, sy);
+		break;
+	default:
+		break;
+	}
+
+	desired = desired.Min (shape_bounds.width * sx, shape_bounds.height * sy);
 
 	return desired;
 }
@@ -750,46 +785,46 @@ MediaElement::MeasureOverride (Size availableSize)
 Size
 MediaElement::ArrangeOverride (Size finalSize)
 {
-	if (!mplayer)
-		return FrameworkElement::ArrangeOverride (finalSize);
+	Size arranged = finalSize;
+	Rect shape_bounds = Rect ();
+	double sx = 1.0;
+	double sy = 1.0;
 
-	Size arranged (mplayer->GetVideoWidth (), mplayer->GetVideoHeight ());
-	Size specified (GetWidth (), GetHeight ());
-	
-	finalSize = finalSize.Min (specified);
-	finalSize = finalSize.Max (specified);
-	
-	if (GetStretch () != StretchNone)
-		arranged = finalSize;
-		
+
+	if (mplayer)
+		shape_bounds = Rect (0, 0, 
+				     mplayer->GetVideoWidth (), 
+				     mplayer->GetVideoHeight ());
+
+	if (GetStretch () == StretchNone)
+		return arranged.Max (shape_bounds.x + shape_bounds.width, 
+				     shape_bounds.y + shape_bounds.height);
+
+	/* compute the scaling */
+	if (shape_bounds.width == 0)
+		shape_bounds.width = arranged.width;
+	if (shape_bounds.height == 0)
+		shape_bounds.height = arranged.height;
+
+	if (shape_bounds.width != arranged.width)
+		sx = arranged.width / shape_bounds.width;
+	if (shape_bounds.height != arranged.height)
+		sy = arranged.height / shape_bounds.height;
+
+	switch (GetStretch ()) {
+	case StretchUniform:
+		sx = sy = MIN (sx, sy);
+		break;
+	case StretchUniformToFill:
+		sx = sy = MAX (sx, sy);
+		break;
+	default:
+		break;
+	}
+
+	arranged = Size (shape_bounds.width * sx, shape_bounds.height * sy);
+
 	return arranged;
-}
-
-void 
-MediaElement::ComputeBounds ()
-{
-	FrameworkElement::ComputeBounds ();
-
-	if (!mplayer)
-		return;
-
-	Rect image = Rect (0, 0, mplayer->GetVideoWidth (), mplayer->GetVideoHeight ());
-	Rect paint = Rect (0, 0, GetActualWidth (), GetActualHeight ());
-
-	if (paint.width == 0.0)
-		paint.width = image.width;
-
-	if (paint.height == 0.0)
-		paint.height = image.height;
-
-	if (isnan (GetWidth ()))
-		paint.width = GetWidth ();
-
-	if (isnan (GetHeight ()))
-		paint.height = GetHeight ();
-
-	extents = paint;
-	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 }
 
 Rect
@@ -870,7 +905,13 @@ MediaElement::Render (cairo_t *cr, Region *region)
 	
 	if (IsPlaying ())
 		cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_FAST);
-	
+
+	Geometry *clip = LayoutInformation::GetLayoutClip (this);
+	if (clip) {
+		clip->Draw (cr);
+		cairo_clip (cr);
+	}	
+
 	paint.Draw (cr);
 	cairo_fill (cr);
 	

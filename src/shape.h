@@ -75,7 +75,7 @@ class Shape : public FrameworkElement {
 	virtual Rect ComputeStretchBounds ();
 	
 	DoubleCollection *GetStrokeDashArray ();
-	
+	Rect natural_bounds;
  public: 
  	/* @PropertyType=Brush,GenerateAccessors */
 	static DependencyProperty *FillProperty;

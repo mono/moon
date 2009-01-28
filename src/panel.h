@@ -36,8 +36,6 @@ class Panel : public FrameworkElement {
  	/* @PropertyType=UIElementCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *ChildrenProperty;
 	
-	Rect bounds_with_children;
-	
  	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Panel ();
 
@@ -56,7 +54,6 @@ class Panel : public FrameworkElement {
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 
-	virtual Rect GetSubtreeBounds () { return bounds_with_children; }
 	virtual bool IsLayoutContainer () { return true; }
 
 	virtual void ShiftPosition (Point p);

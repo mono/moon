@@ -98,11 +98,20 @@ UIElement::SetSurface (Surface *s)
 Rect
 UIElement::IntersectBoundsWithClipPath (Rect unclipped, bool transform)
 {
-	Geometry *geometry = GetClip ();
-	if (!geometry)
+	Geometry *clip = GetClip ();
+	Geometry *layout_clip = LayoutInformation::GetLayoutClip (this);
+	Rect box;
+
+	if (!clip && !layout_clip)
 		return unclipped;
 
-	Rect box = geometry->GetBounds ();
+	if (clip)
+		box = clip->GetBounds ();
+	else
+		box = layout_clip->GetBounds ();
+
+	if (layout_clip)
+		box = box.Intersection (layout_clip->GetBounds());
 
 	if (!GetRenderVisible())
 		box = Rect (0,0,0,0);
@@ -309,7 +318,6 @@ UIElement::ComputeTotalHitTestVisibility ()
 void
 UIElement::UpdateTransform ()
 {
-	InvalidateArrange ();
 	if (GetSurface()) {
 		GetSurface()->AddDirtyElement (this, DirtyLocalTransform);
 	}
@@ -460,7 +468,6 @@ UIElement::ElementAdded (UIElement *item)
 {
 	item->SetVisualLevel (GetVisualLevel() + 1);
 	item->SetVisualParent (this);
-	item->UpdateTransform ();
 	item->UpdateTotalRenderVisibility ();
 	item->UpdateTotalHitTestVisibility ();
 	item->Invalidate ();
@@ -955,12 +962,7 @@ UIElement::CallPostRender (cairo_t *cr, UIElement *element, Region *region, bool
 void
 UIElement::Render (cairo_t *cr, Region *region)
 {
-	if (subtree_object && subtree_object->Is (Type::UIELEMENT)) {
-		((UIElement *) subtree_object)->Render (cr, region);
-	} else {
-		g_warning ("UIElement:Render has been called. The derived class %s should have overridden it.",
-			   GetTypeName ());
-	}
+	/* do nothing by default */
 }
 
 void

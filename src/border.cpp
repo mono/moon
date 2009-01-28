@@ -9,6 +9,7 @@
  */
 
 #include <config.h>
+#include "geometry.h"
 #include "runtime.h"
 #include "brush.h"
 #include "border.h"
@@ -79,7 +80,13 @@ Border::Render (cairo_t *cr, Region *region)
 	Brush *background = GetBackground ();
 
 	cairo_set_matrix (cr, &absolute_xform);
-	
+
+	Geometry *clip = LayoutInformation::GetLayoutClip (this);
+	if (clip) {
+		clip->Draw (cr);
+		cairo_clip (cr);
+	}	
+
 	if (background) {
 		background->SetupBrush (cr, extents);
 
@@ -87,20 +94,6 @@ Border::Render (cairo_t *cr, Region *region)
 		extents.Draw (cr);
 		background->Fill (cr);
 	}
-}
-
-void
-Border::ComputeBounds ()
-{
-	Size specified = Size (GetActualWidth (), GetActualHeight ());
-	specified = specified.Max (GetWidth (), GetHeight ());
-	extents = Rect (0, 0, specified.width, specified.height);
-	bounds_with_children = bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
-
-	UIElement *child = GetChild ();
-
-	if (child)
-		bounds_with_children = bounds_with_children.Union (child->GetSubtreeBounds ());
 }
 
 void

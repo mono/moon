@@ -24,7 +24,6 @@
 /* @Namespace=System.Windows.Controls */
 class Border : public FrameworkElement {
 protected:
-	Rect bounds_with_children;
 	virtual ~Border () { };
 	
 public:
@@ -50,9 +49,7 @@ public:
 	virtual Size MeasureOverride (Size availableSize);
 	virtual Size ArrangeOverride (Size finalSize);
 
-	virtual void ComputeBounds ();
 	virtual void Render (cairo_t *cr, Region *region);
-	virtual Rect GetSubtreeBounds () { return bounds_with_children; }
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	virtual void HitTest (cairo_t *cr, Point p, List *uielement_list);

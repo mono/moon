@@ -1,3 +1,33 @@
+2009-01-27  Larry Ewing  <lewing@novell.com>
+
+	* frameworkelement.cpp, frameworkelement.h: move generic
+	bounds_with_children computation here for now.  Make
+	GetSubtreeBounds return bounds or bounds_with_children based on
+	having children. Start setting the layout clip in arrange (it will
+	probably move later).  Rework the layout_xform logic slightly.
+
+	* uielement.cpp: remove the generic render warning, it is ok not
+	to override here if there is nothing local you need to draw.  When
+	intersecting bounds with the clip path take the layout clip into
+	account too.
+	
+	* text.cpp: update for bounds changes.  Don't recompute the
+	natural bounds every pass.
+
+	* mediaelement.cpp, mediaelement.h:
+	* media.cpp, media.h: rework arrange and measure to match shape.
+	Remove overridden bounds logic since it is no longer needed. Only
+	use the odd width/height setting logic when we aren're part of a
+	layout tree. Use the layout clip when drawing.
+
+	* shape.cpp: clean up the bounds logic. Use the layout clip when
+	drawing.
+
+	* control.cpp, control.h:
+	* border.cpp, border.h: use the layout clip when rendering, remove
+	overrides for bounds now that fe handles them.
+
+	
 2009-01-27  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am (libmoon_include_headers): add fontfamily.h

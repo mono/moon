@@ -57,6 +57,7 @@ public:
 	FrameworkElement ();
 	
 	virtual void ComputeBounds ();
+	virtual Rect GetSubtreeBounds ();
 	
 	//virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
@@ -146,6 +147,7 @@ public:
 	void InvalidateBinding (DependencyProperty *property, BindingExpressionBase *binding);
 	GHashTable *bindings;
 protected:
+	Rect bounds_with_children;
 	GHashTable *styles;
 	
 	// Methods for accessing a binding expression on a property

@@ -277,7 +277,7 @@ void
 TextBlock::ComputeBounds ()
 {
 	extents = Rect (0, 0, GetBoundingWidth (), GetBoundingHeight ());
-	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
+	bounds_with_children = bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 }
 
 bool

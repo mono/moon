@@ -230,7 +230,7 @@ Shape::ComputeStretchBounds ()
 	}
 
 	Stretch stretch = GetStretch ();
-	Rect shape_bounds = ComputeShapeBounds (false, NULL);
+	Rect shape_bounds = natural_bounds;
 
 	if (shape_bounds.width <= 0.0 || shape_bounds.height <= 0.0) {
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
@@ -525,7 +525,7 @@ Size
 Shape::MeasureOverride (Size availableSize)
 {
 	Size desired = availableSize;
-	Rect shape_bounds = ComputeShapeBounds (false, NULL);
+	Rect shape_bounds = natural_bounds = ComputeShapeBounds (false, NULL);
 	double sx = 0.0;
 	double sy = 0.0;
 
@@ -568,7 +568,7 @@ Size
 Shape::ArrangeOverride (Size finalSize)
 {
 	Size arranged = finalSize;
-	Rect shape_bounds = ComputeShapeBounds (false, NULL);
+	Rect shape_bounds = natural_bounds;
 	double sx = 1.0;
 	double sy = 1.0;
 
@@ -616,16 +616,7 @@ Shape::ComputeBounds ()
 	InvalidateSurfaceCache ();
 	
 	extents = ComputeStretchBounds ();
-	Rect slot = extents;
-	if (LayoutInformation::GetLayoutSlot (this)) {
-		slot = *LayoutInformation::GetLayoutSlot (this);
-		if (slot.width > 0 && slot.height > 0) {
-			slot = slot.Intersection (extents);
-		} else {
-			slot = extents;
-		}
-	}
-	bounds = IntersectBoundsWithClipPath (slot, false).Transform (&absolute_xform);
+	bounds_with_children = bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 	//printf ("%f,%f,%f,%f\n", bounds.x, bounds.y, bounds.width, bounds.height);
 }
 

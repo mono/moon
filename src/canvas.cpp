@@ -78,7 +78,7 @@ Canvas::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, P
 		UIElement *ui = (UIElement *) obj;
 
 		ui->UpdateTransform ();
-		ui->InvalidateMeasure ();
+		ui->InvalidateArrange ();
 	}
 	else
 		Panel::OnSubPropertyChanged (prop, obj, subobj_args);

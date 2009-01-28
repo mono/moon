@@ -18,6 +18,7 @@
 #include "canvas.h"
 #include "namescope.h"
 #include "application.h"
+#include "geometry.h"
 
 Control::Control ()
 {
@@ -44,7 +45,13 @@ Control::Render (cairo_t *cr, Region *region)
 	Brush *background = GetBackground ();
 
 	cairo_set_matrix (cr, &absolute_xform);
-	
+
+	Geometry *layout_clip = LayoutInformation::GetLayoutClip (this);
+	if (layout_clip) {
+		layout_clip->Draw (cr);
+		cairo_clip (cr);
+	}
+
 	if (background) {
 		background->SetupBrush (cr, extents);
 
@@ -52,20 +59,6 @@ Control::Render (cairo_t *cr, Region *region)
 		extents.Draw (cr);
 		background->Fill (cr);
 	}
-}
-
-void
-Control::ComputeBounds ()
-{
-	Size specified = Size (GetActualWidth (), GetActualHeight ());
-	specified = specified.Max (GetWidth (), GetHeight ());
-	extents = Rect (0, 0, specified.width, specified.height);
-	bounds_with_children = bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
-
-	UIElement *child = template_root;
-
-	if (child)
-		bounds_with_children = bounds_with_children.Union (child->GetSubtreeBounds ());
 }
 
 bool 
@@ -252,7 +245,7 @@ Control::ArrangeOverride (Size finalSize)
 
 		if (GetVerticalAlignment () != VerticalAlignmentStretch)
 			childRect.height = MIN (desired.height, childRect.height);
-		
+
 		child->Arrange (childRect);
 		finalSize = finalSize.Max (child->GetRenderSize ());
 	}

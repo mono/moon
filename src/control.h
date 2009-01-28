@@ -35,8 +35,6 @@
 /* @CallInitialize */
 class Control : public FrameworkElement {
 public:
-	Rect bounds_with_children;
-
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Control ();
 
@@ -45,8 +43,6 @@ public:
 	
 	virtual Size MeasureOverride (Size availableSize);
 	virtual Size ArrangeOverride (Size finalSize);
-	virtual void ComputeBounds ();
-	virtual Rect GetSubtreeBounds () { return bounds_with_children; }
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	

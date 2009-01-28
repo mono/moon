@@ -250,7 +250,6 @@ class Image : public MediaBase {
 	int GetImageHeight () { return surface ? surface->height : 0; };
 	int GetImageWidth  () { return surface ? surface->width : 0; };
 	
-	virtual void ComputeBounds ();
 	virtual Rect GetCoverageBounds ();
 	
 	virtual Size MeasureOverride (Size availableSize);
