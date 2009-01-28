@@ -5,7 +5,7 @@ AC_CANONICAL_SYSTEM
 AM_CONFIG_HEADER(config.h)
 AM_INIT_AUTOMAKE([tar-ustar])
 AM_MAINTAINER_MODE
-n
+
 AC_PROG_CXX
 AC_HEADER_STDC
 AC_DISABLE_STATIC
@@ -544,40 +544,36 @@ fi
 dnl *************************************
 dnl ***       Codec settings          ***
 dnl *************************************
-MOONLIGHT_CODEC_AVI_VERSION=`grep MOONLIGHT_CODEC_ABI_VERSION $srcdir/src/pipeline.h | awk -F" " '{print $3}'`
-OSTYPE="unknown"
-ARCH="unknown"
+MOONLIGHT_CODEC_OSTYPE="unknown"
+MOONLIGHT_CODEC_ARCH="unknown"
 # Do we know of a way to detect when the GCC ABI breaks? will it ever again? we'll hardcode this for now
-GCC_ABI_VERSION="1"
+MOONLIGHT_CODEC_GCC_ABI_VERSION="1"
 CODECS_SUPPORTED="no"
 CODECS_ARCH_SUPPORTED="no"
 CODECS_OS_SUPPORTED="no"
 
 case "$host" in
         i*86-*-*)
-                ARCH=x86
+                MOONLIGHT_CODEC_ARCH=x86
 		CODECS_ARCH_SUPPORTED="yes"
                 ;;
         x86_64-*-* | amd64-*-*)
-                ARCH=x64
+                MOONLIGHT_CODEC_ARCH=x64
 		CODECS_ARCH_SUPPORTED="yes"
                 ;;
 esac
 case "$host" in
     *-*-*linux*)
-                OSTYPE=linux
+                MOONLIGHT_CODEC_OSTYPE=linux
 		CODECS_OS_SUPPORTED="yes"
                 ;;
 esac
 
-if test ${ARCH} = unknown; then
+if test ${MOONLIGHT_CODEC_ARCH} = unknown; then
         AC_ERROR(The codecs have not been configured to build on this architecture yet)
 fi
-if test ${OSTYPE} = unknown; then
+if test ${MOONLIGHT_CODEC_OSTYPE} = unknown; then
         AC_ERROR(The codecs have not been configured to build on this operating system yet)
-fi
-if test -z ${MOONLIGHT_CODEC_AVI_VERSION}; then
-        AC_ERROR(The Moonlight Pipeline ABI could not be determined)
 fi
 
 if test x$CODECS_ARCH_SUPPORTED = xyes; then
@@ -587,8 +583,10 @@ if test x$CODECS_ARCH_SUPPORTED = xyes; then
 fi
 
 AM_CONDITIONAL(CODECS_SUPPORTED,test x$CODECS_SUPPORTED = xyes)
-AC_DEFINE_UNQUOTED([CODEC_LIBRARY_NAME],["silverlight-media-pack-$OSTYPE-$ARCH-$MOONLIGHT_CODEC_AVI_VERSION-$GCC_ABI_VERSION.so"],[The encoded codec libname for this build])
 
+AC_SUBST(MOONLIGHT_CODEC_OSTYPE)
+AC_SUBST(MOONLIGHT_CODEC_ARCH)
+AC_SUBST(MOONLIGHT_CODEC_GCC_ABI_VERSION)
 
 AGVIEWER_CFLAGS="$GTK_CFLAGS $DBUS_GLIB_CFLAGS $XULRUNNER_CFLAGS"
 AGVIEWER_LIBS="$GTK_LIBS $DBUS_GLIB_LIBS $XULRUNNER_LIBS"
@@ -646,6 +644,7 @@ AC_OUTPUT([
 moon.pc
 Makefile
 src/Makefile
+src/codec-version.h
 class/Makefile
 class/System.Windows/Makefile
 class/System.Windows.Browser/Makefile
