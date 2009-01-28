@@ -196,7 +196,10 @@ bool
 MultiScaleImage::cache_contains (int layer, int x, int y, bool empty_tiles)
 {
 	//empty_tiles = TRUE means that this will return true if a tile is present, but NULL
-	return g_hash_table_lookup (cache, to_key (layer, x, y)) != NULL;
+	if (empty_tiles)
+		return g_hash_table_lookup_extended (cache, to_key (layer, x, y), NULL, NULL);
+	else
+		return g_hash_table_lookup (cache, to_key (layer, x, y)) != NULL;
 }
 
 void
@@ -293,8 +296,8 @@ printf ("MSI::Render\n");
 		double v_tile_h = tile_height * ldexp (1.0, layers - from_layer);
 		int i, j;
 
-		for (i = (int)((double)vp_ox / (double)v_tile_w); i * v_tile_w < vp_ox + vp_w; i++) {
-			for (j = (int)((double)vp_oy / (double)v_tile_h); j * v_tile_h < vp_oy + vp_h; j++) {
+		for (i = MAX(0, (int)((double)vp_ox / (double)v_tile_w)); i * v_tile_w < vp_ox + vp_w && i * v_tile_w < im_w; i++) {
+			for (j = MAX(0, (int)((double)vp_oy / (double)v_tile_h)); j * v_tile_h < vp_oy + vp_h && j * v_tile_h < im_h; j++) {
 				count++;
 				//FIXME
 				if (cache_contains (from_layer, i, j, true))
@@ -321,7 +324,7 @@ printf ("MSI::Render\n");
 		cairo_rectangle (cr, 0, 0, w, h);
 		cairo_scale (cr, w / vp_w, h / vp_h);
 		cairo_translate (cr, -vp_ox, -vp_oy);
-		cairo_scale (cr, (double)source->GetImageWidth() / (double)*p_w, (double)source->GetImageHeight () / (double)*p_h); 
+		cairo_scale (cr, im_w / (double)*p_w, im_h / (double)*p_h);
 		cairo_set_source_surface (cr, image, 0, 0);
 
 		cairo_fill (cr);
@@ -337,20 +340,23 @@ printf ("MSI::Render\n");
 
 		double v_tile_w = tile_width * ldexp (1.0, layers - from_layer);
 		double v_tile_h = tile_height * ldexp (1.0, layers - from_layer);
-
+printf ("tile_width %f, v_tile_w %f\n", tile_width, v_tile_w);
 		int i, j;
 
 
-		for (i = (int)((double)vp_ox / (double)v_tile_w); i * v_tile_w < vp_ox + vp_w; i++) {
-			for (j = (int)((double)vp_oy / (double)v_tile_h); j * v_tile_h < vp_oy + vp_h; j++) {
+		for (i = MAX(0, (int)((double)vp_ox / (double)v_tile_w)); i * v_tile_w < vp_ox + vp_w && i * v_tile_w < im_w; i++) {
+			for (j = MAX(0, (int)((double)vp_oy / (double)v_tile_h)); j * v_tile_h < vp_oy + vp_h && j * v_tile_h < im_h; j++) {
 				if (!cache_contains (from_layer, i, j, true)) {
 					context = to_key (from_layer, i, j);
 				
 					const char* ret = g_strdup ((const char*)source->get_tile_func (from_layer, i, j));
-					if (!ret)
-						return; //FIXME, should cache a NULL surface
-					DownloadUri (ret);
-					return;
+					if (ret) {
+						DownloadUri (ret);
+						return;
+					} else {
+						printf ("caching a NULL %s\n", context);
+						g_hash_table_insert (cache, g_strdup(context), NULL);
+					}
 				}
 			}
 		}
