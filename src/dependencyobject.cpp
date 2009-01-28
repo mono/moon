@@ -263,7 +263,8 @@ EventObject::Dispose ()
 {
 	SetSurface (NULL);
 	// Remove attached flag and set the disposed flag.
-	flags = Disposed;
+	flags = (Flags) (flags & ~Attached);
+	flags = (Flags) (flags | Disposed);
 }
 
 void
@@ -328,7 +329,7 @@ EventObject::unref ()
 		Dispose ();
 		
 #if DEBUG
-		if (flags != Disposed)
+		if ((flags & Disposed) == 0)
 			printf ("EventObject::unref (): the type '%s' (or any of its parent types) forgot to call its base class' Dispose method.\n", GetTypeName ());
 #endif
 	}

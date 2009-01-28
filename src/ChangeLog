@@ -1,3 +1,7 @@
+2009-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* dependencyobject.cpp: Use bitfields correctly.
+
 2009-01-28  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* text.cpp: FontFamily can be NULL so we can't just access its
