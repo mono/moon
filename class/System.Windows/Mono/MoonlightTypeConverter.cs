@@ -32,6 +32,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace Mono {
 
@@ -71,7 +72,7 @@ namespace Mono {
 							   (string)value,
 							   out unmanaged_value,
 							   true)) {
-				Console.Error.WriteLine ("XXX not sure what should go here...");
+				Console.WriteLine ("could not convert value {0} to type {1} (property {1})", value, destinationType, propertyName);
 				return null;
 			}
 			
