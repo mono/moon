@@ -25,7 +25,7 @@
 #include "plugin-debug.h"
 #include "utils.h"
 #include "uri.h"
-
+#include "grid.h"
 
 enum TreeColumns {
 	COL_NAME,
@@ -154,10 +154,28 @@ reflect_value (GtkTreeStore *store, GtkTreeIter *node, const char *name, Value *
 			val_string = g_strdup_printf ("<b>r=%g, g=%g, b=%g, a=%g</b>", color->r, color->g, color->b, color->a);
 			break;
 		}
-		case Type::KEYTIME:
-		case Type::GRIDLENGTH:
-		case Type::THICKNESS:
+		case Type::BOOL: {
+			bool result = value->AsBool ();
+			val_string = g_strdup_printf ("<b>%s</b>", result ? "True" : "False");
+			break;
+		}
+		case Type::GRIDLENGTH: {
+			GridLength *length = value->AsGridLength ();
+			val_string = g_strdup_printf ("<b>%g (%s)", length->val,
+						      length->type == GridUnitTypeAuto ? "Auto" : length->type == GridUnitTypeStar ? "*" : "Pixel");
+			break;
+		}
+		case Type::THICKNESS: {
+			Thickness *thickness = value->AsThickness ();
+			val_string = g_strdup_printf ("<b>%g, %g, %g, %g</b>", 
+						      thickness->left, 
+						      thickness->top, 
+						      thickness->right, 
+						      thickness->bottom);
+			break;
+		}
 		case Type::CORNERRADIUS:
+		case Type::KEYTIME:
 		default:
 			val_string = g_strdup ("<i>(unknown)</i>");
 			break;
