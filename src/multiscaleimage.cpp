@@ -315,22 +315,31 @@ printf ("MSI::Render\n");
 	printf ("rendering layers from %d to %d\n", from_layer, to_layer);
 	int layer_to_render = from_layer;
 	while (from_layer > 0 && layer_to_render <= to_layer) {
-		cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, to_key (layer_to_render, 0, 0));
-	//FIXME check for NULL image here
-		int *p_w = (int*)(cairo_surface_get_user_data (image, &width_key));
-		int *p_h = (int*)(cairo_surface_get_user_data (image, &height_key));
-		cairo_save (cr);
+		int i, j;
+		double v_tile_w = tile_width * ldexp (1.0, layers - layer_to_render);
+		double v_tile_h = tile_height * ldexp (1.0, layers - layer_to_render);
+		for (i = MAX(0, (int)((double)vp_ox / (double)v_tile_w)); i * v_tile_w < vp_ox + vp_w && i * v_tile_w < im_w; i++) {
+			for (j = MAX(0, (int)((double)vp_oy / (double)v_tile_h)); j * v_tile_h < vp_oy + vp_h && j * v_tile_h < im_h; j++) {
+				printf ("rendering %d %d %d\n", layer_to_render, i, j);
+				cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, to_key (layer_to_render, i, j));
+				if (!image)
+					continue;
+				int *p_w = (int*)(cairo_surface_get_user_data (image, &width_key));
+				int *p_h = (int*)(cairo_surface_get_user_data (image, &height_key));
+				cairo_save (cr);
 
-		cairo_rectangle (cr, 0, 0, w, h);
-		cairo_scale (cr, w / vp_w, h / vp_h);
-		cairo_translate (cr, -vp_ox, -vp_oy);
-		cairo_scale (cr, im_w / (double)*p_w, im_h / (double)*p_h);
-		cairo_set_source_surface (cr, image, 0, 0);
+				cairo_rectangle (cr, 0, 0, w, h);
+				cairo_scale (cr, w / vp_w, h / vp_h); //scale to viewport
+				cairo_translate (cr, -vp_ox + i * v_tile_w, -vp_oy + j * v_tile_h);
+				//cairo_scale (cr, im_w / (double)*p_w, im_h / (double)*p_h); //scale to image size
+				cairo_scale (cr, ldexp (1.0, layers - layer_to_render), ldexp (1.0, layers - layer_to_render)); //scale to image size
+				cairo_set_source_surface (cr, image, 0, 0);
 
-		cairo_fill (cr);
-		cairo_restore (cr);
+				cairo_fill (cr);
+				cairo_restore (cr);
 
-		//cairo_surface_destroy (image);
+			}
+		}
 		layer_to_render++;
 	}
 
