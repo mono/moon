@@ -1,3 +1,26 @@
+2009-01-28  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (move_down): Fixed to handle any line-ending.
+	(move_up): Same.
+	(next_word): Same.
+	(prev_word): Same.
+	(TextBox::KeyPressBackSpace): Handle backspacing over any eoln
+	sequence.
+	(TextBox::KeyPressDelete): Same.
+	(TextBox::KeyPressHome): Same.
+	(TextBox::KeyPressEnd): Same.
+	(TextBox::KeyPressRight): Same.
+	(TextBox::KeyPressLeft): Same.
+	(TextBoxView::OnKeyDown): Hitting Enter in a Silverlight TextBox
+	inserts a \r character, not a \n, nor a \r\n.
+
+	* text.cpp (TextBlock::Layout): Handle \r and \r\n as line-ending
+	formats too.
+	(TextBlock::SetTextInternal): Canonicalize line endings in our
+	temp buffer.
+
+	* layout.cpp (TextRun::TextRun): Don't worry about line endings...
+
 2009-01-28  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Fix logic for setting name and key on

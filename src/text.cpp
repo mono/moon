@@ -395,7 +395,7 @@ TextBlock::Layout (cairo_t *cr)
 					
 					do {
 						inend = inptr;
-						while (*inend && *inend != '\n')
+						while (*inend && *inend != '\r' && *inend != '\n')
 							inend++;
 						
 						if (inend > inptr)
@@ -405,7 +405,11 @@ TextBlock::Layout (cairo_t *cr)
 							break;
 						
 						runs->Append (new TextRun ((ITextSource *) item));
-						inptr = inend + 1;
+						
+						if (inend[0] == '\r' && inend[1] == '\n')
+							inptr = inend + 2;
+						else
+							inptr = inend + 1;
 					} while (*inptr);
 				}
 				
@@ -509,9 +513,16 @@ TextBlock::SetTextInternal (const char *text)
 		d = buf = (char *) g_malloc (strlen (text) + 1);
 		txt = text;
 		
+		// canonicalize line endings
 		while (*txt) {
-			if (*txt != '\r')
+			if (*txt == '\r') {
+				if (txt[1] == '\n')
+					txt++;
+				*d++ = '\n';
+			} else {
 				*d++ = *txt;
+			}
+			
 			txt++;
 		}
 		*d = '\n';

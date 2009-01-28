@@ -55,12 +55,10 @@ TextRun::TextRun (const char *utf8, int len, ITextSource *source, bool selected)
 	
 	d = this->text = g_utf8_to_ucs4_fast (utf8, len, NULL);
 	
-	// convert all ascii lwsp into a SPACE, conserving only \n's
+	// convert all ascii lwsp into a SPACE
 	for (s = this->text; *s; s++) {
 		if (g_unichar_isspace (*s)) {
-			if (*s == '\n')
-				*d++ = *s;
-			else if (*s < 128)
+			if (*s < 128)
 				*d++ = ' ';
 			else
 				*d++ = *s;

@@ -259,6 +259,8 @@ TextBox::~TextBox ()
 
 #define MY_GDK_ALT_MASK         (GDK_MOD1_MASK | GDK_MOD2_MASK | GDK_MOD3_MASK | GDK_MOD4_MASK | GDK_MOD5_MASK)
 
+#define IsEOL(c) ((c) == '\r' || (c) == '\n')
+
 static int
 move_down (TextBuffer *buffer, int cursor, int n_lines)
 {
@@ -266,7 +268,7 @@ move_down (TextBuffer *buffer, int cursor, int n_lines)
 	
 	// first find out what our character offset is in the current line
 	cur = cursor;
-	while (cur > 0 && buffer->text[cur - 1] != '\n')
+	while (cur > 0 && !IsEOL (buffer->text[cur - 1]))
 		cur--;
 	
 	offset = cursor - cur;
@@ -276,11 +278,14 @@ move_down (TextBuffer *buffer, int cursor, int n_lines)
 	
 	// skip ahead one page worth of lines
 	while (n < n_lines) {
-		while (cur < buffer->len && buffer->text[cur] != '\n')
+		while (cur < buffer->len && !IsEOL (buffer->text[cur]))
 			cur++;
 		
 		if (cur == buffer->len)
 			break;
+		
+		if (buffer->text[cur] == '\r' && buffer->text[cur + 1] == '\n')
+			cur++;
 		
 		cur++;
 		n++;
@@ -304,7 +309,7 @@ move_up (TextBuffer *buffer, int cursor, int n_lines)
 	
 	// first find out what our character offset is in the current line
 	cur = cursor;
-	while (cur > 0 && buffer->text[cur - 1] != '\n')
+	while (cur > 0 && !IsEOL (buffer->text[cur - 1]))
 		cur--;
 	
 	offset = cursor - cur;
@@ -312,13 +317,16 @@ move_up (TextBuffer *buffer, int cursor, int n_lines)
 	
 	// go back one page worth of lines
 	while (n < n_lines) {
-		while (cur > 0 && buffer->text[cur - 1] != '\n')
+		while (cur > 0 && !IsEOL (buffer->text[cur - 1]))
 			cur--;
 		
 		if (cur == 0)
 			break;
 		
-		cur++;
+		if (cur >= 2 && buffer->text[cur - 2] == '\r' && buffer->text[cur - 1] == '\n')
+			cur--;
+		
+		cur--;
 		n++;
 	}
 	
@@ -354,17 +362,22 @@ char_class (gunichar c)
 static int
 next_word (TextBuffer *buffer, int cursor)
 {
-	int i, eoln = cursor;
+	int i, lf, cr = cursor;
 	CharClass cc;
 	
-	// find the end of the line
-	while (eoln < buffer->len && buffer->text[eoln] != '\n')
-		eoln++;
+	// find the end of the current line
+	while (cr < buffer->len && !IsEOL (buffer->text[cr]))
+		cr++;
+	
+	if (buffer->text[cr] == '\r' && buffer->text[cr + 1] == '\n')
+		lf = cr + 1;
+	else
+		lf = cr;
 	
 	// if the cursor is at the end of the line, return the starting offset of the next line
-	if (cursor == eoln) {
-		if (eoln < buffer->len)
-			return eoln + 1;
+	if (cursor == cr || cursor == lf) {
+		if (lf < buffer->len)
+			return lf + 1;
 		
 		return cursor;
 	}
@@ -373,11 +386,11 @@ next_word (TextBuffer *buffer, int cursor)
 	i = cursor;
 	
 	// skip over the word, punctuation, or run of whitespace
-	while (i < eoln && char_class (buffer->text[i]) == cc)
+	while (i < cr && char_class (buffer->text[i]) == cc)
 		i++;
 	
 	// skip any whitespace after the word/punct
-	while (i < eoln && char_class (buffer->text[i]) == CharClassWhitespace)
+	while (i < cr && char_class (buffer->text[i]) == CharClassWhitespace)
 		i++;
 	
 	return i;
@@ -386,17 +399,22 @@ next_word (TextBuffer *buffer, int cursor)
 static int
 prev_word (TextBuffer *buffer, int cursor)
 {
-	int i, boln = cursor;
+	int i, cr, lf = cursor;
 	CharClass cc;
 	
-	// find the end of the line
-	while (boln > 0 && buffer->text[boln - 1] != '\n')
-		boln--;
+	// find the beginning of the current line
+	while (lf > 0 && !IsEOL (buffer->text[lf - 1]))
+		lf--;
+	
+	if (lf > 0 && buffer->text[lf] == '\n' && buffer->text[lf - 1] == '\r')
+		cr = lf - 1;
+	else
+		cr = lf;
 	
 	// if the cursor is at the beginning of the line, return the end of the prev line
-	if (cursor == boln) {
-		if (boln > 0)
-			return boln - 1;
+	if (cursor - 1 == lf) {
+		if (cr > 0)
+			return cr - 1;
 		
 		return 0;
 	}
@@ -405,13 +423,13 @@ prev_word (TextBuffer *buffer, int cursor)
 	i = cursor;
 	
 	// skip over the word, punctuation, or run of whitespace
-	while (i > boln && char_class (buffer->text[i - 1]) == cc)
+	while (i > lf && char_class (buffer->text[i - 1]) == cc)
 		i--;
 	
 	// if the cursor was at whitespace, skip back a word too
-	if (cc == CharClassWhitespace && i > boln) {
+	if (cc == CharClassWhitespace && i > lf) {
 		cc = char_class (buffer->text[i - 1]);
-		while (i > boln && char_class (buffer->text[i - 1]) == cc)
+		while (i > lf && char_class (buffer->text[i - 1]) == cc)
 			i--;
 	}
 	
@@ -450,8 +468,13 @@ TextBox::KeyPressBackSpace (GdkModifierType modifiers)
 	} else if (cursor > 0) {
 		// BackSpace: delete the char before the cursor position
 		changed = CURSOR_POSITION_CHANGED | CONTENT_CHANGED;
-		buffer->Cut (cursor - 1, 1);
-		cursor--;
+		if (cursor >= 2 && buffer->text[cursor - 1] == '\n' && buffer->text[cursor - 2] == '\r') {
+			buffer->Cut (cursor - 2, 2);
+			cursor -= 2;
+		} else {
+			buffer->Cut (cursor - 1, 1);
+			cursor--;
+		}
 	}
 	
 	// clear the selection if there was any
@@ -503,7 +526,10 @@ TextBox::KeyPressDelete (GdkModifierType modifiers)
 	} else if (cursor < buffer->len) {
 		// Delete: delete the char after the cursor position
 		changed = CONTENT_CHANGED;
-		buffer->Cut (cursor, 1);
+		if (buffer->text[cursor] == '\r' && buffer->text[cursor + 1] == '\n')
+			buffer->Cut (cursor, 2);
+		else
+			buffer->Cut (cursor, 1);
 	}
 	
 	// clear the selection if there was any
@@ -696,7 +722,7 @@ TextBox::KeyPressHome (GdkModifierType modifiers)
 	} else if ((modifiers & GDK_SHIFT_MASK) != 0) {
 		// Shift+Home: update selection to start at beginning of line
 		pos = cursor;
-		while (pos > 0 && buffer->text[pos - 1] != '\n')
+		while (pos > 0 && !IsEOL (buffer->text[pos - 1]))
 			pos--;
 		
 		if (cursor > selection.start) {
@@ -723,7 +749,7 @@ TextBox::KeyPressHome (GdkModifierType modifiers)
 	} else {
 		// Home: move cursor to beginning of line and clear selection
 		pos = cursor;
-		while (pos > 0 && buffer->text[pos - 1] != '\n')
+		while (pos > 0 && !IsEOL (buffer->text[pos - 1]))
 			pos--;
 		
 		if (cursor != pos) {
@@ -795,7 +821,7 @@ TextBox::KeyPressEnd (GdkModifierType modifiers)
 	} else if ((modifiers & GDK_SHIFT_MASK) != 0) {
 		// Shift+End: update selection to end at the end of the current line
 		pos = cursor;
-		while (pos < buffer->len && buffer->text[pos] != '\n')
+		while (pos < buffer->len && !IsEOL (buffer->text[pos]))
 			pos++;
 		
 		if (cursor == selection.start) {
@@ -821,7 +847,7 @@ TextBox::KeyPressEnd (GdkModifierType modifiers)
 	} else {
 		// End: move cursor to end of line and clear selection
 		pos = cursor;
-		while (pos < buffer->len && buffer->text[pos] != '\n')
+		while (pos < buffer->len && !IsEOL (buffer->text[pos]))
 			pos++;
 		
 		if (cursor != pos) {
@@ -895,7 +921,10 @@ TextBox::KeyPressRight (GdkModifierType modifiers)
 	} else if ((modifiers & GDK_SHIFT_MASK) != 0) {
 		// Right: grow the selection to the right by one character
 		if (cursor < buffer->len) {
-			pos = cursor + 1;
+			if (buffer->text[cursor] == '\r' && buffer->text[cursor + 1] == '\n') 
+				pos = cursor + 2;
+			else
+				pos = cursor + 1;
 			
 			if (cursor == selection.start) {
 				// cursor was at the beginning of the selection
@@ -918,9 +947,14 @@ TextBox::KeyPressRight (GdkModifierType modifiers)
 		}
 	} else if (cursor < buffer->len) {
 		// Right: move the cursor one character to the right and clear the selection
+		if (buffer->text[cursor] == '\r' && buffer->text[cursor + 1] == '\n') 
+			pos = cursor + 2;
+		else
+			pos = cursor + 1;
+		
 		changed = CURSOR_POSITION_CHANGED;
 		length = start = 0;
-		cursor++;
+		cursor = pos;
 	}
 	
 	// check to see if selection has changed
@@ -986,8 +1020,11 @@ TextBox::KeyPressLeft (GdkModifierType modifiers)
 		}
 	} else if ((modifiers & GDK_SHIFT_MASK) != 0) {
 		// Shift+Left: grow the selection to the left by one character
-		if (cursor < buffer->len) {
-			pos = cursor + 1;
+		if (cursor > 0) {
+			if (cursor >= 2 && buffer->text[cursor - 2] == '\r' && buffer->text[cursor - 1] == '\n')
+				pos = cursor - 2;
+			else
+				pos = cursor - 1;
 			
 			if (cursor > selection.start) {
 				// cursor was at the end of the selection
@@ -1011,9 +1048,14 @@ TextBox::KeyPressLeft (GdkModifierType modifiers)
 		}
 	} else if (cursor > 0) {
 		// Left: move the cursor one character to the right and clear the selection
+		if (cursor >= 2 && buffer->text[cursor - 2] == '\r' && buffer->text[cursor - 1] == '\n')
+			pos = cursor - 2;
+		else
+			pos = cursor - 1;
+		
 		changed = CURSOR_POSITION_CHANGED;
 		length = start = 0;
-		cursor--;
+		cursor = pos;
 	}
 	
 	// check to see if selection has changed
@@ -1161,7 +1203,7 @@ TextBox::KeyPressUnichar (gunichar c)
 {
 	int changed = NOTHING_CHANGED;
 	
-	if ((maxlen > 0 && buffer->len >= maxlen) || ((c == '\n') && !GetAcceptsReturn ()))
+	if ((maxlen > 0 && buffer->len >= maxlen) || ((c == '\r') && !GetAcceptsReturn ()))
 		return NOTHING_CHANGED;
 	
 	if (selection.length > 0) {
@@ -1493,16 +1535,16 @@ TextBoxView::OnKeyDown (KeyEventArgs *args)
 	// let textbox know we'll be making state changes due to a keypress event
 	textbox->PreKeyPress ();
 	
-	if ((c = args->GetUnicode ()) || key == GDK_Return) {
-		// normal character key
-		if (key == GDK_Return)
-			c = '\n';
-		
+	if ((c = args->GetUnicode ())) {
 		changed = textbox->KeyPressUnichar (c);
 		args->SetHandled (true);
 	} else {
 		// special key
 		switch (key) {
+		case GDK_Return:
+			changed = textbox->KeyPressUnichar ('\r');
+			args->SetHandled (true);
+			break;
 		case GDK_BackSpace:
 			changed = textbox->KeyPressBackSpace (modifiers);
 			args->SetHandled (true);
