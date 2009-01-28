@@ -1,5 +1,10 @@
 2009-01-28  Jackson Harper  <jackson@ximian.com>
 
+	* ResourceDictionaryTest.cs: You can also set the name before the
+	key if the values are equal.
+
+2009-01-28  Jackson Harper  <jackson@ximian.com>
+
 	* ResourceDictionaryTest.cs: Add to the key and name test.  This
 	only works if you set the name before the key.
 

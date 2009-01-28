@@ -140,6 +140,9 @@ namespace MoonTest.System.Windows
 
 			// Yeah, if we set x:Name before x:Key this works
 			XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Storyboard  x:Name=""sb"" x:Key=""keysb"" /></Canvas.Resources></Canvas>");
+
+			// We can also set x:Key before x:Name if the values are equal
+			XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Storyboard  x:Key=""sb"" x:Name=""sb"" /></Canvas.Resources></Canvas>");
 		}
 
 		[TestMethod]
