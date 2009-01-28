@@ -329,8 +329,46 @@ FrameworkElement::InsideObject (cairo_t *cr, double x, double y)
 	TransformPoint (&nx, &ny);
 	if (nx < 0 || ny < 0 || nx > width || ny > height)
 		return false;
-	
+
+	Geometry *layout_clip = LayoutInformation::GetLayoutClip (this);
+	if (layout_clip && !layout_clip->GetBounds ().PointInside (nx, ny))
+		return false;
+
 	return UIElement::InsideObject (cr, x, y);
+}
+
+void
+FrameworkElement::HitTest (cairo_t *cr, Point p, List *uielement_list)
+{
+	if (!GetRenderVisible ())
+		return;
+
+	if (!GetHitTestVisible ())
+		return;
+	
+	// first a quick bounds check
+	if (!GetSubtreeBounds().PointInside (p.x, p.y))
+		return;
+
+	if (!InsideClip (cr, p.x, p.y))
+		return;
+
+	/* create our node and stick it on front */
+	List::Node *us = uielement_list->Prepend (new UIElementNode (this));
+	bool hit = false;
+
+	VisualTreeWalker walker = VisualTreeWalker (this, ZReverse);
+	while (UIElement *child = walker.Step ()) {
+		child->HitTest (cr, p, uielement_list);
+
+		if (us != uielement_list->First ()) {
+			hit = true;
+			break;
+		}
+	}	
+
+	if (!hit && !InsideObject (cr, p.x, p.y))
+		uielement_list->Remove (us);
 }
 
 void

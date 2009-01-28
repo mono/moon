@@ -1,12 +1,28 @@
 2009-01-28  Larry Ewing  <lewing@novell.com>
 
+	* frameworkelement.cpp (FrameworkElement::HitTest): move the
+	majority of the hit test logic here.  Now we only walk the
+	children once and we only call InsideObject when we must.
+	InsideObject now only checks the local object subtree is handled
+	in HitTest.
+
+	* panel.cpp, panel.h:
+	* control.cpp, control.h:
+	* border.cpp, border.h:
+	* text.cpp, text.h: remove the old HitTest and rework InsideObject
+	for the new rule.
+
+	* uielement.cpp: make InsideClip potentially a little faster.
+
+2009-01-28  Larry Ewing  <lewing@novell.com>
+	
 	* uielement.cpp (UIElement::OnPropertyChanged): invalidate measure
 	on visibility.
 
 	* control.cpp:
 	* border.cpp:
 	* canvas.cpp: skip invisible elements.
-	
+
 2009-01-28  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBoxView::Layout): We need to break the text

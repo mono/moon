@@ -52,7 +52,6 @@ public:
 	virtual void Render (cairo_t *cr, Region *region);
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
-	virtual void HitTest (cairo_t *cr, Point p, List *uielement_list);
 	virtual void HitTest (cairo_t *cr, Rect r, List *uielement_list);
 
 	// property accessors

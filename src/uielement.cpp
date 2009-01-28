@@ -540,18 +540,18 @@ UIElement::InsideClip (cairo_t *cr, double x, double y)
 	if (clip == NULL) {
 		return true;
 	}
-	
-	cairo_save (cr);
-
-	clip->Draw (cr);
 
 	TransformPoint (&nx, &ny);
+	if (!clip->GetBounds ().PointInside (nx, ny))
+		return false;
+	
+	cairo_save (cr);
+	clip->Draw (cr);
 
 	if (cairo_in_stroke (cr, nx, ny) || (clip->IsFilled () && cairo_in_fill (cr, nx, ny)))
 		ret = true;
 	
 	cairo_new_path (cr);
-
 	cairo_restore (cr);
 
 	return ret;

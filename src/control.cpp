@@ -64,19 +64,10 @@ Control::Render (cairo_t *cr, Region *region)
 bool 
 Control::InsideObject (cairo_t *cr, double x, double y)
 {
-	if (template_root)
-		return template_root->InsideObject (cr, x, y);
+	if (GetBackground ())
+		return FrameworkElement::InsideObject (cr, x, y);
 	
 	return false;
-}
-
-void
-Control::HitTest (cairo_t *cr, Point p, List *uielement_list)
-{
-	if (InsideObject (cr, p.x, p.y)) {
-		uielement_list->Prepend (new UIElementNode (this));
-		template_root->HitTest (cr, p, uielement_list);
-	}
 }
 
 void

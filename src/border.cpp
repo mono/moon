@@ -135,23 +135,10 @@ Border::OnPropertyChanged (PropertyChangedEventArgs *args)
 bool 
 Border::InsideObject (cairo_t *cr, double x, double y)
 {
-	UIElement *child = GetChild ();
+	if (GetBackground ())
+		return FrameworkElement::InsideObject (cr, x, y);
 
-	if (child)
-		return child->InsideObject (cr, x, y);
-	else
-		return false;
-}
-
-void
-Border::HitTest (cairo_t *cr, Point p, List *uielement_list)
-{
-	UIElement *child = GetChild ();
-
-	if (InsideObject (cr, p.x, p.y)) {
-		uielement_list->Prepend (new UIElementNode (this));
-		child->HitTest (cr, p, uielement_list);
-	}
+	return false;
 }
 
 void

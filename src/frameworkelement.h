@@ -58,7 +58,9 @@ public:
 	
 	virtual void ComputeBounds ();
 	virtual Rect GetSubtreeBounds ();
-	
+
+	virtual void HitTest (cairo_t *cr, Point p, List *uielement_list);
+
 	//virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 

@@ -139,86 +139,10 @@ Panel::GetCoverageBounds ()
 bool
 Panel::InsideObject (cairo_t *cr, double x, double y)
 {
-	bool is_inside_clip = InsideClip (cr, x, y);
-	if (!is_inside_clip)
-		return false;
-	
-	/* if we have explicitly set width/height, we check them */
-	if (FrameworkElement::InsideObject (cr, x, y)) {
-		/* we're inside, check if we're actually painting any background,
-		   or, we're just transparent due to no painting. */
-		if (GetBackground ())
-			return true;
-	}
-	
-	UIElement *mouseover = FindMouseOver (cr, x, y);
+	if (GetBackground ())
+		return FrameworkElement::InsideObject (cr, x, y);
 
-	return mouseover != NULL;
-}
-
-bool
-Panel::CheckOver (cairo_t *cr, UIElement *item, double x, double y)
-{
-	// if the item isn't visible, it's really easy
-	if (!item->GetRenderVisible ())
-		return false;
-
-	// if the item doesn't take part in hit testing, it's also easy
-	if (!item->GetHitTestVisible ())
-		return false;
-
-	// first a quick bounds check
-	if (!item->GetSubtreeBounds().PointInside (x, y))
-		return false;
-
-	// then, if that passes, a more tailored shape check
-	return item->InsideObject (cr, x, y);
-}
-
-UIElement *
-Panel::FindMouseOver (cairo_t *cr, double x, double y)
-{
-	UIElementCollection *children = GetChildren ();
-	
-	// Walk the list in reverse order, since it's sorted in ascending z-index order
-	//
-	for (guint i = children->z_sorted->len; i > 0; i--) {
-		UIElement *item = (UIElement *) children->z_sorted->pdata[i - 1];
-
-		if (CheckOver (cr, item, x, y)) {
-			return item;
-		}
-	}
-
-	return NULL;
-}
-
-void
-Panel::HitTest (cairo_t *cr, Point p, List *uielement_list)
-{
-	/* in the interests of not calling FindMouseOver twice, this method
-	   cut & pastes from the bodies of both Panel::InsideObject and
-	   Panel::FindMouseOver */
-
-	UIElement *mouseover = FindMouseOver (cr, p.x, p.y);
-
-	if (mouseover) {
-		uielement_list->Prepend (new UIElementNode (this));
-		mouseover->HitTest (cr, p, uielement_list);
-	}
-	else {
-		bool is_inside_clip = InsideClip (cr, p.x, p.y);
-		if (!is_inside_clip)
-			return;
-	
-		/* if we have explicitly set width/height, we check them */
-		if (FrameworkElement::InsideObject (cr, p.x, p.y)) {
-			/* we're inside, check if we're actually painting any background,
-			   or, we're just transparent due to no painting. */
-			if (GetBackground ())
-				uielement_list->Prepend (new UIElementNode (this));
-		}
-	}
+	return false;
 }
 
 void

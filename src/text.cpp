@@ -281,25 +281,6 @@ TextBlock::ComputeBounds ()
 	bounds_with_children = bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 }
 
-bool
-TextBlock::InsideObject (cairo_t *cr, double x, double y)
-{
-	bool ret = false;
-	
-	cairo_save (cr);
-	
-	double nx = x;
-	double ny = y;
-		
-	TransformPoint (&nx, &ny);
-	
-	if (nx >= 0.0 && ny >= 0.0 && nx < GetActualWidth () && ny < GetActualHeight ())
-		ret = true;
-	
-	cairo_restore (cr);
-	return ret;
-}
-
 Point
 TextBlock::GetTransformOrigin ()
 {
