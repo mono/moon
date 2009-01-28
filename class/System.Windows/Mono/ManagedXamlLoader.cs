@@ -219,7 +219,7 @@ namespace Mono.Xaml
 
 				if (res == null) {
 					Console.Error.WriteLine ("ManagedXamlLoader::LoadObject ({0}, {1}, {2}): unable to create object instance: '{3}', the object was of type '{4}'",
-							assembly_name, xmlns, name, full_name, res.GetType ().FullName);
+								 assembly_name, xmlns, name, full_name, type.FullName);
 					value = Value.Empty;
 					return false;
 				}
