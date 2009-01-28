@@ -113,7 +113,6 @@ EventObject::Initialize (Deployment *depl, Type::Kind type)
 EventObject::~EventObject()
 {
 #if OBJECT_TRACKING
-	g_atomic_int_inc (&objects_destroyed);
 	pthread_mutex_lock (&objects_alive_mutex);
 	g_hash_table_remove (objects_alive, this);
 	pthread_mutex_unlock (&objects_alive_mutex);
