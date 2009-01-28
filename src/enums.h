@@ -62,6 +62,18 @@ enum LineStackingStrategy {
 	LineStackingStrategyBlockLineHeight
 };
 
+enum MediaElementState {
+	MediaElementStateClosed,
+	MediaElementStateOpening,
+	MediaElementStateBuffering,
+	MediaElementStatePlaying,
+	MediaElementStatePaused,
+	MediaElementStateStopped,
+	MediaElementStateIndividualizing,
+	MediaElementStateAcquiringLicense,
+	MediaElementStateError,
+};
+
 enum StyleSimulations {
 	StyleSimulationsNone
 };

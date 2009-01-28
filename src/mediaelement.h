@@ -22,6 +22,7 @@
 #include "frameworkelement.h"
 #include "error.h"
 #include "pipeline.h"
+#include "enums.h"
 
 /* @Namespace=None */
 class MediaErrorEventArgs : public ErrorEventArgs {
@@ -37,17 +38,6 @@ class MediaErrorEventArgs : public ErrorEventArgs {
 /* @Namespace=System.Windows.Controls */
 class MediaElement : public FrameworkElement {
  friend class MediaElementPropertyValueProvider;	
- public:
-	enum MediaElementState {
-		Closed,
-		Opening,
-		Buffering,
-		Playing,
-		Paused,
-		Stopped,
-		Error,
-	};
-	
  private:
 	void SetSourceAsyncCallback ();
 	void DownloaderAbort ();
@@ -206,7 +196,7 @@ class MediaElement : public FrameworkElement {
 	static DependencyProperty *CanSeekProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	static DependencyProperty *DownloadProgressProperty;
- 	/* @PropertyType=string,ReadOnly,ManagedPropertyType=MediaElementState,GenerateAccessors */
+ 	/* @PropertyType=MediaElementState,ReadOnly,GenerateAccessors */
 	static DependencyProperty *CurrentStateProperty;
  	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	static DependencyProperty *IsMutedProperty;
@@ -285,12 +275,12 @@ class MediaElement : public FrameworkElement {
 	//void StopInternal ();
 	
 	// State methods
-	bool IsClosed () { return state == Closed; }
-	bool IsOpening () { return state == Opening; }
-	bool IsBuffering () { return state == Buffering; }
-	bool IsPlaying () { return state == Playing; }
-	bool IsPaused () { return state == Paused; }
-	bool IsStopped () { return state == Stopped; }
+	bool IsClosed () { return state == MediaElementStateClosed; }
+	bool IsOpening () { return state == MediaElementStateOpening; }
+	bool IsBuffering () { return state == MediaElementStateBuffering; }
+	bool IsPlaying () { return state == MediaElementStatePlaying; }
+	bool IsPaused () { return state == MediaElementStatePaused; }
+	bool IsStopped () { return state == MediaElementStateStopped; }
 	
 	bool IsLive ();
 	bool IsMissingCodecs ();
@@ -345,8 +335,8 @@ class MediaElement : public FrameworkElement {
 	bool GetCanPause ();
 	bool GetCanSeek ();
 	
-	void SetCurrentState (const char *state);
-	const char *GetCurrentState ();
+	void SetCurrentState (MediaElementState state);
+	MediaElementState GetCurrentState ();
 	
 	void SetIsMuted (bool set);
 	bool GetIsMuted ();

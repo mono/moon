@@ -537,7 +537,7 @@ PlaylistEntry::SetMedia (Media *media, bool try_to_play)
 	this->media = media;
 	this->media->ref ();
 
-	if (try_to_play && play_when_available && element->GetState () != MediaElement::Buffering)
+	if (try_to_play && play_when_available && element->GetState () != MediaElementStateBuffering)
 		Play ();
 }
 

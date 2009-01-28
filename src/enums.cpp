@@ -173,6 +173,18 @@ static enum_map_t gradient_spread_method_map [] = {
 	END_MAPPING
 };
 
+static enum_map_t media_element_state_map [] = {
+	MAP_ENUM (MediaElementState, Closed),
+	MAP_ENUM (MediaElementState, Opening),
+	MAP_ENUM (MediaElementState, Buffering),
+	MAP_ENUM (MediaElementState, Playing),
+	MAP_ENUM (MediaElementState, Stopped),
+	MAP_ENUM (MediaElementState, Individualizing),
+	MAP_ENUM (MediaElementState, AcquiringLicense),
+	MAP_ENUM (MediaElementState, Error),
+	END_MAPPING
+};
+
 static enum_map_t pen_line_cap_map [] = {
 	MAP_ENUM (PenLineCap, Flat),
 	MAP_ENUM (PenLineCap, Square),
@@ -311,6 +323,8 @@ initialize_enums (void)
 	g_hash_table_insert (enum_map, (char *) "VerticalContentAlignment", vertical_alignment_map);
 	g_hash_table_insert (enum_map, (char *) "TextAlignment", text_alignment_map);
 	g_hash_table_insert (enum_map, (char *) "Orientation", orientation_map);
+
+	g_hash_table_insert (enum_map, (char *) "MediaElementState", media_element_state_map);
 }
 
 static int

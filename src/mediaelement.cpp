@@ -274,7 +274,7 @@ MediaElement::MediaFinished ()
 {
 	LOG_MEDIAELEMENT ("MediaElement::MediaFinished ()\n");
 	
-	SetState (Paused);
+	SetState (MediaElementStatePaused);
 	EmitMediaEnded ();
 }
 
@@ -457,10 +457,10 @@ MediaElement::Reinitialize (bool dtor)
 	
 	flags = (flags & (Loaded | PlayRequested)) | RecalculateMatrix;
 	if (!dtor)
-		SetCurrentState ("Closed");
+		SetCurrentState (MediaElementStateClosed);
 	
-	prev_state = Closed;
-	state = Closed;
+	prev_state = MediaElementStateClosed;
+	state = MediaElementStateClosed;
 	
 	DownloaderAbort ();
 	
@@ -659,7 +659,7 @@ MediaElement::MediaOpened (Media *media)
 		SetMedia (media);
 		
 		if (flags & DownloadComplete) {
-			SetState (Buffering);
+			SetState (MediaElementStateBuffering);
 			PlayOrStopNow ();
 			Invalidate ();
 			EmitMediaOpened ();
@@ -702,7 +702,7 @@ MediaElement::MediaFailed (ErrorEventArgs *args)
 {
 	LOG_MEDIAELEMENT ("MediaElement::MediaFailed (%p)\n", args);
 	
-	if (state == MediaElement::Error)
+	if (state == MediaElementStateError)
 		return;
 	
 	SetAudioStreamCount (0);
@@ -713,7 +713,7 @@ MediaElement::MediaFailed (ErrorEventArgs *args)
 	SetCanSeek (false);
 	SetDownloadProgress (0);
 	
-	SetState (MediaElement::Error);
+	SetState (MediaElementStateError);
 	
 	DownloaderAbort ();
 	
@@ -1044,7 +1044,7 @@ MediaElement::UpdateProgress ()
 		flags |= PlayRequested;
 		SetBufferingProgress (0.0);
 		Emit (BufferingProgressChangedEvent);
-		SetState (Buffering);
+		SetState (MediaElementStateBuffering);
 		mplayer->Pause ();
 		emit = true;
 	}
@@ -1104,7 +1104,7 @@ MediaElement::SetState (MediaElementState state)
 	prev_state = this->state;
 	this->state = state;
 	
-	SetCurrentState (name);
+	SetCurrentState (state);
 }
 
 void 
@@ -1148,26 +1148,26 @@ MediaElement::BufferingComplete ()
 {
 	buffering_mode = 0;
 
-	if (state != Buffering) {
+	if (state != MediaElementStateBuffering) {
 		LOG_MEDIAELEMENT ("MediaElement::BufferingComplete (): current state is invalid ('%s'), should only be 'Buffering'\n",
 				  GetStateName (state));
 		return;
 	}
 	
 	switch (prev_state) {
-	case Opening: // Start playback
+	case MediaElementStateOpening: // Start playback
 		PlayOrStopNow ();
 		return;
-	case Playing: // Restart playback
+	case MediaElementStatePlaying: // Restart playback
 		PlayNow ();
 		return;
-	case Paused: // Do nothing
+	case MediaElementStatePaused: // Do nothing
 		// TODO: Should we show the first (new) frame here?
 		return;
-	case Error:
-	case Buffering:
-	case Closed:
-	case Stopped: // This should not happen.
+	case MediaElementStateError:
+	case MediaElementStateBuffering:
+	case MediaElementStateClosed:
+	case MediaElementStateStopped: // This should not happen.
 		LOG_MEDIAELEMENT ("MediaElement::BufferingComplete (): previous state is invalid ('%s').\n",
 				  GetStateName (prev_state));
 		return;
@@ -1212,7 +1212,7 @@ MediaElement::TryOpenFinished (EventObject *user_data)
 		LOG_MEDIAELEMENT ("MediaElement::TryOpen (): download is not complete, but media was "
 				  "opened successfully and we'll now start buffering.\n");
 		element->last_played_pts = 0;
-		element->SetState (Buffering);
+		element->SetState (MediaElementStateBuffering);
 		element->MediaOpened (closure->GetMedia ());
 	} else if (closure->result == MEDIA_NOT_ENOUGH_DATA) {
 		if (element->flags & DownloadComplete) {
@@ -1240,23 +1240,23 @@ MediaElement::TryOpen ()
 	LOG_MEDIAELEMENT ("MediaElement::TryOpen (), state: %s, flags: %i, Loaded: %i, WaitingForOpen: %i, DownloadComplete: %i\n", GetStateName (state), flags, flags & Loaded, flags & WaitingForOpen, flags & DownloadComplete);
 	
 	switch (state) {
-	case Closed:
-	case Error:
+	case MediaElementStateClosed:
+	case MediaElementStateError:
 		LOG_MEDIAELEMENT ("MediaElement::TryOpen (): Current state (%s) is invalid.\n", GetStateName (state)); 
 		// Should not happen
 		return;
-	case Playing:
-	case Paused:
-	case Buffering:
+	case MediaElementStatePlaying:
+	case MediaElementStatePaused:
+	case MediaElementStateBuffering:
 		// I don't think this should happen either
 		LOG_MEDIAELEMENT ("MediaElement::TryOpen (): Current state (%s) was unexpected.\n", GetStateName (state));
 		// Media is already open.
 		// There's nothing to do here.
 		return;
-	case Stopped:
+	case MediaElementStateStopped:
 		// This may happen if we stop a playlist (and we're not playing the first item in the list).
 		// We must reload the first item, but the current state remains as stopped. 
-	case Opening:
+	case MediaElementStateOpening:
 		// Try to open it now
 		break;
 	default:
@@ -1390,29 +1390,29 @@ MediaElement::DownloaderComplete ()
 	UpdateProgress ();
 	
 	switch (state) {
-	case Closed:
-	case Error:
+	case MediaElementStateClosed:
+	case MediaElementStateError:
 		// Should not happen
 		LOG_MEDIAELEMENT ("MediaElement::DownloaderComplete (): Current state (%d) is invalid.\n", state);
 		return;
-	case Playing:
-	case Paused:
+	case MediaElementStatePlaying:
+	case MediaElementStatePaused:
 		// Media was opened, buffered, and then played/paused
 		// There's nothing to do here
 		return;
-	case Stopped:
+	case MediaElementStateStopped:
 		if (!(flags & MediaOpenedEmitted)) {
 			// We're a stopped playlist, and we're now reloading the first media
 			TryOpen ();
 		}
 		return;
-	case Buffering:
+	case MediaElementStateBuffering:
 	 	// Media finished downloading before the buffering time was reached.
 		// Play it.
 		PlayOrStopNow ();
 		EmitMediaOpened ();
 		break;
-	case Opening:
+	case MediaElementStateOpening:
 		// The media couldn't be buffered for some reason
 		// Try to open it now
 		TryOpen ();
@@ -1442,7 +1442,7 @@ MediaElement::SetSourceInternal (Downloader *downloader, char *PartName)
 	
 	if (downloader) {
 		downloader->ref ();
-		SetState (Opening);
+		SetState (MediaElementStateOpening);
 		
 		if (downloader->Started ()) {
 			flags |= DisableBuffering;
@@ -1615,7 +1615,7 @@ MediaElement::SetStreamSource (ManagedStreamCallbacks *callbacks)
 {
 	// This is a big hack just to get things working
 	downloaded_file = new ManagedStreamSource (media, callbacks);
-	SetState (Opening);
+	SetState (MediaElementStateOpening);
 	flags |= Loaded;
 	TryOpen ();
 }
@@ -1644,8 +1644,8 @@ MediaElement::PlayOrStopNow ()
 		playlist->SetAutoPlayed (true);
 		PlayNow ();
 	} else {
-		SetState (Playing);
-		SetState (Stopped);
+		SetState (MediaElementStatePlaying);
+		SetState (MediaElementStateStopped);
 	}
 }
 
@@ -1672,19 +1672,19 @@ MediaElement::PauseNow ()
 		return;
 	
 	switch (state) {
-	case Opening:// docs: No specified behaviour
+	case MediaElementStateOpening:// docs: No specified behaviour
 		flags &= ~PlayRequested;
 		return;
-	case Closed: // docs: No specified behaviour
-	case Error:  // docs: ? (says nothing)
-	case Paused:// docs: no-op
+	case MediaElementStateClosed: // docs: No specified behaviour
+	case MediaElementStateError:  // docs: ? (says nothing)
+	case MediaElementStatePaused:// docs: no-op
 		return;
-	case Buffering:
-	case Playing:
-	case Stopped: // docs: pause
+	case MediaElementStateBuffering:
+	case MediaElementStatePlaying:
+	case MediaElementStateStopped: // docs: pause
 		if (mplayer->GetCanPause ()) {
 			if (playlist && playlist->Pause ())
-				SetState (Paused);
+				SetState (MediaElementStatePaused);
 		}
 		EmitMediaOpened ();	
 		break;
@@ -1697,11 +1697,11 @@ MediaElement::Play ()
 	LOG_MEDIAELEMENT ("MediaElement::Play (): current state: %s\n", GetStateName (state));
 	
 	switch (state) {
-	case Opening:
-	case Buffering:
-	case Paused:
-	case Playing:
-	case Stopped:
+	case MediaElementStateOpening:
+	case MediaElementStateBuffering:
+	case MediaElementStatePaused:
+	case MediaElementStatePlaying:
+	case MediaElementStateStopped:
 		AddTickCall (MediaElement::PlayNow);
 		break;
 	default:
@@ -1725,16 +1725,16 @@ MediaElement::PlayNow ()
 		return;
 		
 	switch (state) {
-	case Closed: // docs: No specified behaviour
-	case Opening:// docs: No specified behaviour
+	case MediaElementStateClosed: // docs: No specified behaviour
+	case MediaElementStateOpening:// docs: No specified behaviour
 		flags |= PlayRequested;
 		return;
-	case Error:  // docs: ? (says nothing)
-	case Playing:// docs: no-op
+	case MediaElementStateError:  // docs: ? (says nothing)
+	case MediaElementStatePlaying:// docs: no-op
 		return;
-	case Buffering:
-	case Paused:
-	case Stopped: // docs: start playing
+	case MediaElementStateBuffering:
+	case MediaElementStatePaused:
+	case MediaElementStateStopped: // docs: start playing
 		flags |= PlayRequested;
 		playlist->Play ();
 		break;
@@ -1754,7 +1754,7 @@ MediaElement::PlayInternal ()
 			  GetStateName (state), advance_frame_timeout_id);
 	
 	flags &= ~PlayRequested;
-	SetState (Playing);
+	SetState (MediaElementStatePlaying);
 	mplayer->Play ();
 	
 	// Reinitialize our AdvanceFrame timeout
@@ -1796,18 +1796,18 @@ MediaElement::StopNow ()
 		return;
 
 	switch (state) {
-	case Opening:// docs: No specified behaviour
+	case MediaElementStateOpening:// docs: No specified behaviour
 		flags &= ~PlayRequested;
 		return;
-	case Closed: // docs: No specified behaviour
-	case Error:  // docs: ? (says nothing)
-	case Stopped:// docs: no-op
+	case MediaElementStateClosed: // docs: No specified behaviour
+	case MediaElementStateError:  // docs: ? (says nothing)
+	case MediaElementStateStopped:// docs: no-op
 		return;
-	case Buffering:
-	case Playing:
-	case Paused: // docs: stop
+	case MediaElementStateBuffering:
+	case MediaElementStatePlaying:
+	case MediaElementStatePaused: // docs: stop
 		playlist->Stop ();
-		SetState (Stopped);
+		SetState (MediaElementStateStopped);
 		Invalidate ();
 		break;
 	}
@@ -1880,15 +1880,15 @@ MediaElement::SeekNow ()
 		TimeSpan position;
 		
 		switch (state) {
-		case Opening:
-		case Closed:
-		case Error:
+		case MediaElementStateOpening:
+		case MediaElementStateClosed:
+		case MediaElementStateError:
 		default:
 			break;
-		case Buffering:
-		case Playing:
-		case Paused:
-		case Stopped:
+		case MediaElementStateBuffering:
+		case MediaElementStatePlaying:
+		case MediaElementStatePaused:
+		case MediaElementStateStopped:
 			position = UpdatePlayerPosition (seek_to_position);
 			seek_to_position = -1;
 			
@@ -2039,15 +2039,15 @@ MediaElementPropertyValueProvider::GetPropertyValue (DependencyProperty *propert
 	this->position = NULL;
 	
 	switch (element->state) {
-	case MediaElement::Opening:
-	case MediaElement::Closed:
-	case MediaElement::Error:
+	case MediaElementStateOpening:
+	case MediaElementStateClosed:
+	case MediaElementStateError:
 		use_mplayer = false;
 		break;
-	case MediaElement::Stopped:
-	case MediaElement::Buffering:
-	case MediaElement::Playing:
-	case MediaElement::Paused:
+	case MediaElementStateStopped:
+	case MediaElementStateBuffering:
+	case MediaElementStatePlaying:
+	case MediaElementStatePaused:
 	default:
 		use_mplayer = true;
 		break;

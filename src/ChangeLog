@@ -1,3 +1,10 @@
+2009-01-28  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* dependencyproperty.g.cpp: Regenerated
+	* enums.cpp|h: Add MediaElementState
+	* playlist.cpp: Use new MediaElementState enum
+	* mediaelement.cpp|h: Use new MediaElementState enum
+
 2009-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* dependencyobject.cpp: ~EventObject: only inc objects_destroyed once.

@@ -222,7 +222,7 @@ dependency_property_g_init (void)
 	MediaElement::BufferingTimeProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "BufferingTime", new Value (TimeSpan_FromSeconds (5),Type::TIMESPAN), Type::TIMESPAN, false, false, false, NULL, Validators::BufferingTimeValidator);
 	MediaElement::CanPauseProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "CanPause", new Value (false), Type::BOOL, false, true, false, NULL, NULL);
 	MediaElement::CanSeekProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "CanSeek", new Value (false), Type::BOOL, false, true, false, NULL, NULL);
-	MediaElement::CurrentStateProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "CurrentState", NULL, Type::STRING, false, true, false, NULL, NULL);
+	MediaElement::CurrentStateProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "CurrentState", NULL, Type::INT32, false, true, false, NULL, NULL);
 	MediaElement::DownloadProgressOffsetProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "DownloadProgressOffset", new Value (0.0), Type::DOUBLE, false, true, false, NULL, NULL);
 	MediaElement::DownloadProgressProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "DownloadProgress", new Value (0.0), Type::DOUBLE);
 	MediaElement::DroppedFramesPerSecondProperty = DependencyProperty::RegisterFull (Type::MEDIAELEMENT, "DroppedFramesPerSecond", new Value (0.0), Type::DOUBLE, false, true, false, NULL, NULL);
@@ -2863,15 +2863,15 @@ MediaElement::SetCanSeek (bool value)
 	SetValue (MediaElement::CanSeekProperty, Value (value));
 }
 
-const char *
+MediaElementState
 MediaElement::GetCurrentState ()
 {
 	Value *value = GetValue (MediaElement::CurrentStateProperty);
-	return value ? value->AsString () : NULL;
+	return (MediaElementState) value->AsInt32 ();
 }
 
 void
-MediaElement::SetCurrentState (const char *value)
+MediaElement::SetCurrentState (MediaElementState value)
 {
 	SetValue (MediaElement::CurrentStateProperty, Value (value));
 }
