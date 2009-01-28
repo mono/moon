@@ -155,6 +155,7 @@ PulseSource::PulseSource (PulsePlayer *player, MediaPlayer *mplayer, AudioStream
 	is_ready = false;
 	play_pending = false;
 	closed = false;
+	registered = false;
 }
 
 PulseSource::~PulseSource ()
@@ -328,8 +329,11 @@ PulseSource::OnStateChanged (pa_stream *pulse_stream)
 	
 	switch (state) {
 	case PA_STREAM_READY:
-		Deployment::RegisterThread (GetDeployment ());
-		Deployment::SetCurrent (GetDeployment ());
+		if (!registered) {
+			Deployment::RegisterThread (player->GetDeployment ());
+			Deployment::SetCurrent (player->GetDeployment ());
+			registered = true;
+		}
 		is_ready = true;
 		break;
 	case PA_STREAM_CREATING:

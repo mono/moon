@@ -95,6 +95,7 @@ Deployment::GetCurrent()
 			pthread_mutex_lock (&hash_mutex);
 			deployment = (Deployment *) g_hash_table_lookup (current_hash, current_domain);
 			pthread_mutex_unlock (&hash_mutex);
+			pthread_setspecific (tls_key, deployment);
 			LOG_DEPLOYMENT ("Deployment::GetCurrent (): Couldn't find deployment in our tls, searched current domain %p and found: %p\n", current_domain, deployment);
 		}
 	}

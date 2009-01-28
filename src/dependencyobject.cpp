@@ -223,7 +223,8 @@ EventObject::AddTickCallInternal (TickCallHandler handler)
 Deployment *
 EventObject::GetDeployment ()
 {
-	g_warn_if_fail (deployment == NULL || Deployment::GetCurrent () == deployment);
+	if (deployment == NULL || Deployment::GetCurrent () == deployment)
+		g_warning ("EventObject::GetDeployment () should not be reached with a null deployment");
 	
 	return deployment;
 }

@@ -1,3 +1,11 @@
+2009-01-27  Geoff Norton  <gnorton@novell.com>
+
+	* audio-pulse.cpp|h: Use the Deployment sourced from the player
+	* dependencyobject.cpp: Fix the warning to not use triple not
+	negative logic
+	* deployment.cpp: If we find the deployment from the domain,
+	put it in the tls slot to make future lookups use the fast-path.
+
 2009-01-27  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBox::TextBox): Don't connect to KeyDown/Up
