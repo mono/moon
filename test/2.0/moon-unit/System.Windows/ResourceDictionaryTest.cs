@@ -137,6 +137,9 @@ namespace MoonTest.System.Windows
 				}, "3");
 
 			XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Storyboard x:Key=""keysb""><DoubleAnimation x:Key=""keyanim"" x:Name=""anim""/></Storyboard></Canvas.Resources></Canvas>");
+
+			// Yeah, if we set x:Name before x:Key this works
+			XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Storyboard  x:Name=""sb"" x:Key=""keysb"" /></Canvas.Resources></Canvas>");
 		}
 
 		[TestMethod]
