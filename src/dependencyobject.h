@@ -21,11 +21,7 @@
 
 //#define OBJECT_TRACKING 1
 
-#if OBJECT_TRACKING
-#define GET_OBJ_ID(x) (x ? x->id : 0)
-#else
-#define GET_OBJ_ID(x) (-1)
-#endif
+#define GET_OBJ_ID(x) (x ? x->GetId () : 0)
 
 class CollectionChangedEventArgs;
 class EventObject;
@@ -61,8 +57,9 @@ class EventLists;
 class EventObject {
 private:
 	enum Flags {
-		Attached = 1,
-		Disposed = 2,
+		Attached = 1 << 30,
+		Disposed = 1 << 31,
+		IdMask = ~(Attached | Disposed),
 	};
 public:	
 	static gint objects_created;
@@ -70,9 +67,6 @@ public:
 	
 #if OBJECT_TRACKING
 	static GHashTable *objects_alive;
-	
-	int id;
-	
 	char *GetStackTrace (const char *prefix);
 	char *GetStackTrace () { return GetStackTrace (""); }
 	void PrintStackTrace ();
@@ -89,6 +83,7 @@ public:
 	static void DrainUnrefs ();
 
 	int GetRefCount () { return refcount; }
+	int GetId () { return flags & IdMask; }
 	
 	//
 	// Is:
@@ -185,7 +180,7 @@ private:
 	Surface *surface; // TODO: Remove this (along with SetSurface)
 	Deployment *deployment;
 	gint32 refcount;
-	Flags flags;
+	gint32 flags; // Don't define as Flags, we need to keep this reliably at 32 bits.
 
 	Type::Kind object_type;
 };

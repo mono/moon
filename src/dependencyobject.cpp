@@ -91,12 +91,11 @@ EventObject::Initialize (Deployment *depl, Type::Kind type)
 	object_type = type;
 	deployment = depl;
 	surface = NULL;
-	flags = (Flags) 0;
+	flags = g_atomic_int_exchange_and_add (&objects_created, 1);
 	refcount = 1;
 	events = NULL;
 	
 #if OBJECT_TRACKING
-	id = g_atomic_int_exchange_and_add (&objects_created, 1);
 	pthread_mutex_lock (&objects_alive_mutex);
 	if (objects_alive == NULL)
 		objects_alive = g_hash_table_new (g_direct_hash, g_direct_equal);
@@ -104,8 +103,6 @@ EventObject::Initialize (Deployment *depl, Type::Kind type)
 	pthread_mutex_unlock (&objects_alive_mutex);
 
 	Track ("Created", "");
-#else
-	g_atomic_int_inc (&objects_created);
 #endif
 }
 
@@ -123,10 +120,9 @@ EventObject::~EventObject()
 	}
 
 	Track ("Destroyed", "");
-#else
-	g_atomic_int_inc (&objects_destroyed);
 #endif
 
+	g_atomic_int_inc (&objects_destroyed);
 	delete events;
 }
 
@@ -362,6 +358,7 @@ GHashTable* EventObject::objects_alive = NULL;
 void
 EventObject::Track (const char* done, const char* typname)
 {
+	int id = GetId ();
 	if (!object_id_fetched) {
 		object_id_fetched = true;
 		char *sval = getenv ("MOONLIGHT_OBJECT_TRACK_ID");

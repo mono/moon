@@ -1,5 +1,14 @@
 2009-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* codec-version.h.in:
+	* dependencyobject.h:
+	* dependencyobject.cpp: EventObject: Make the flags field an gint32
+	field (to keep size consistent), put the flags at the upper bits and
+	use the remaining lower bits for the object id. This requires a codec
+	abi bump.
+
+2009-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* dependencyobject.cpp: Use bitfields correctly.
 
 2009-01-28  Sebastien Pouliot  <sebastien@ximian.com>
