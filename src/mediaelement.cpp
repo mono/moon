@@ -748,8 +748,8 @@ MediaElement::MeasureOverride (Size availableSize)
 
 	if (mplayer)
 		shape_bounds = Rect (0,0,
-				     mplayer->GetVideoHeight (),
-				     mplayer->GetVideoWidth ());
+				     mplayer->GetVideoWidth (),
+				     mplayer->GetVideoHeight ());
 
 	if (GetStretch () == StretchNone)
 		return desired.Min (shape_bounds.width, shape_bounds.height);
@@ -876,7 +876,6 @@ MediaElement::Render (cairo_t *cr, Region *region)
 	Rect paint = Rect (0, 0, GetActualWidth (), GetActualHeight ());
 	Rect video = Rect (0, 0, mplayer->GetVideoWidth (), mplayer->GetVideoHeight ());
 
-	/* snap paint rect to device space */
 	if (absolute_xform.xy == 0 && absolute_xform.yx == 0) {
 		//cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
 		cairo_matrix_t inv = absolute_xform;
@@ -886,14 +885,11 @@ MediaElement::Render (cairo_t *cr, Region *region)
 		paint = paint.Transform (&inv);
 	}
 	
-	if (flags & RecalculateMatrix) {
-		image_brush_compute_pattern_matrix (&matrix, 
-						    paint.width, paint.height, 
-						    video.width, video.height,
-						    stretch, AlignmentXCenter, AlignmentYCenter, NULL, NULL);
-
-		flags &= ~RecalculateMatrix;
-	}
+	image_brush_compute_pattern_matrix (&matrix, 
+					    paint.width, paint.height, 
+					    video.width, video.height,
+					    stretch, AlignmentXCenter, AlignmentYCenter, NULL, NULL);
+	
 	
 	pattern = cairo_pattern_create_for_surface (surface);	
 	

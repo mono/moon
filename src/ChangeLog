@@ -1,5 +1,10 @@
 2009-01-27  Larry Ewing  <lewing@novell.com>
 
+	* mediaelement.cpp (MediaElement::MeasureOverride): correct
+	argument order.
+
+2009-01-27  Larry Ewing  <lewing@novell.com>
+
 	* frameworkelement.cpp, frameworkelement.h: move generic
 	bounds_with_children computation here for now.  Make
 	GetSubtreeBounds return bounds or bounds_with_children based on
