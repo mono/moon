@@ -74,13 +74,14 @@ SetterBaseCollection::AddedToCollection (Value *value, MoonError *error)
 	if (style->GetIsSealed ())
 		setter->Seal ();
 
-	return true;
+	return DependencyObjectCollection::AddedToCollection (value, error);
 }
 
 void
 SetterBaseCollection::RemovedFromCollection (Value *value)
 {
 	value->AsSetterBase ()->SetAttached (false);
+	DependencyObjectCollection::RemovedFromCollection (value);
 }
 
 bool

@@ -1,3 +1,10 @@
+2009-01-28  Chris Toshok  <toshok@ximian.com>
+
+	* style.cpp (SetterBaseCollection::AddedToCollection): chain up to
+	DependencyObjectCollection::AddedToCollection.
+	(SetterBaseCollection::RemovedFromCollection): chain up to
+	DependencyObjectCollection::RemovedFromCollection.
+
 2009-01-28  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* dependencyproperty.g.cpp: Regenerated
