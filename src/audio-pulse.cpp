@@ -18,7 +18,6 @@
 #include "runtime.h"
 #include "clock.h"
 #include "debug.h"
-#include "deployment.h"
 
 // stream.h
 typedef pa_stream*            (dyn_pa_stream_new)                    (pa_context *c, const char *name, const pa_sample_spec *ss, const pa_channel_map *map);
@@ -155,7 +154,6 @@ PulseSource::PulseSource (PulsePlayer *player, MediaPlayer *mplayer, AudioStream
 	is_ready = false;
 	play_pending = false;
 	closed = false;
-	registered = false;
 }
 
 PulseSource::~PulseSource ()
@@ -329,11 +327,6 @@ PulseSource::OnStateChanged (pa_stream *pulse_stream)
 	
 	switch (state) {
 	case PA_STREAM_READY:
-		if (!registered) {
-			Deployment::RegisterThread (player->GetDeployment ());
-			Deployment::SetCurrent (player->GetDeployment ());
-			registered = true;
-		}
 		is_ready = true;
 		break;
 	case PA_STREAM_CREATING:

@@ -18,7 +18,6 @@
 #include "runtime.h"
 #include "clock.h"
 #include "debug.h"
-#include "deployment.h"
 
 typedef int               (dyn_snd_pcm_open)                           (snd_pcm_t **pcm, const char *name, snd_pcm_stream_t stream, int mode);
 typedef int               (dyn_snd_pcm_close)                          (snd_pcm_t *pcm);
@@ -846,9 +845,6 @@ AlsaPlayer::Loop ()
 	int buffer;
 	int current;
 	
-	Deployment::RegisterThread (GetDeployment ());
-	Deployment::SetCurrent (GetDeployment ());
-
 	LOG_ALSA ("AlsaPlayer: entering audio loop.\n");
 
 	while (!shutdown) {

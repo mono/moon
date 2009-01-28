@@ -1,5 +1,15 @@
 2009-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* audio.h:
+	* audio.cpp:
+	* audio-pulse.h:
+	* audio-alsa.cpp:
+	* audio-pulse.cpp: Don't register any audio threads, they may interact
+	badly with the gc and deadlock. Audio threads shouldn't be doing
+	anything which requires the current deployment to be set anyway.
+
+2009-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.h:
 	* pipeline.cpp: AudioStream: call SetObjectType.
 

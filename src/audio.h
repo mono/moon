@@ -217,7 +217,6 @@ class AudioPlayer {
 	
 	static AudioPlayer *CreatePlayer ();
 		
-	Deployment *deployment;
 
 	AudioSource *AddImpl (MediaPlayer *mplayer, AudioStream *stream);
 	void RemoveImpl (AudioSource *node);
@@ -259,9 +258,6 @@ class AudioPlayer {
 	static void Remove (AudioSource *source);
 	// Shuts down the audio engine
 	static void Shutdown ();
-
-	Deployment *GetDeployment () { return deployment; }
-	void SetDeployment (Deployment *deployment) { this->deployment = deployment; }
 };
 
 #endif /* __AUDIO_H__ */
