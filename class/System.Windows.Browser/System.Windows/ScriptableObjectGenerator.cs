@@ -386,7 +386,7 @@ namespace System.Windows
 				break;
 			case TypeCode.UInt32:
 				v.k = Kind.UINT32;
-				v.u.i32 = (int)o;
+				v.u.ui32 = (uint)o;
 				break;
 			case TypeCode.Int64:
 				v.k = Kind.INT64;
