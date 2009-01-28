@@ -118,12 +118,13 @@ EventObject::~EventObject()
 	g_hash_table_remove (objects_alive, this);
 	pthread_mutex_unlock (&objects_alive_mutex);
 
-	if (refcount != 0) {
-		printf ("Object #%i was deleted before its refcount reached 0 (current refcount: %i)\n", id, refcount);
-		//print_stack_trace ();
-	}
-
 	Track ("Destroyed", "");
+#endif
+
+#if SANITY
+	if (refcount != 0) {
+		g_warning ("EventObject::~EventObject () #%i was deleted before its refcount reached 0 (current refcount: %i)\n", GetId (), refcount);
+	}
 #endif
 
 	g_atomic_int_inc (&objects_destroyed);

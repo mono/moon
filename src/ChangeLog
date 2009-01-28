@@ -1,5 +1,10 @@
 2009-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* runtime.cpp:
+	* dependencyobject.cpp: Fix building with object tracking.
+
+2009-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* debug.h: Surround logging macros with #if LOGGING instead of #if
 	DEBUG.
 

@@ -1981,8 +1981,8 @@ runtime_init (guint32 flags)
 static int
 IdComparer (gconstpointer base1, gconstpointer base2)
 {
-	int id1 = (*(EventObject **) base1)->id;
-	int id2 = (*(EventObject **) base2)->id;
+	int id1 = (*(EventObject **) base1)->GetId ();
+	int id2 = (*(EventObject **) base2)->GetId ();
 
 	int iddiff = id1 - id2;
 	
@@ -2040,7 +2040,7 @@ runtime_shutdown (void)
 			printf ("\tOldest %d objects alive:\n", counter);
 			for (uint i = 0; i < MIN (counter, last_n->len); i ++) {
 				EventObject* obj = (EventObject *) last_n->pdata[i];
-				printf ("\t\t%i = %s, refcount: %i\n", obj->id, obj->GetTypeName (), obj->GetRefCount ());
+				printf ("\t\t%i = %s, refcount: %i\n", obj->GetId (), obj->GetTypeName (), obj->GetRefCount ());
 			}
 		}
 
