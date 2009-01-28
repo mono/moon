@@ -19,10 +19,6 @@
 #include "enums.h"
 #include "list.h"
 
-//#define OBJECT_TRACKING 1
-
-#define GET_OBJ_ID(x) (x ? x->GetId () : 0)
-
 class CollectionChangedEventArgs;
 class EventObject;
 class EventArgs;
@@ -48,11 +44,7 @@ class EventLists;
 // the id of the object you're interested in).
 //
 
-#if OBJECT_TRACKING
-#define OBJECT_TRACK(x,y) Track((x),(y))
-#else
-#define OBJECT_TRACK(x,y)
-#endif
+#define GET_OBJ_ID(x) (x ? x->GetId () : 0)
 
 class EventObject {
 private:

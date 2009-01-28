@@ -61,10 +61,14 @@ public:
 };
 
 /*
- *
+ * EventObject
  */
+
 #if OBJECT_TRACKING
+#define OBJECT_TRACK(x,y) Track((x),(y))
 static pthread_mutex_t objects_alive_mutex = PTHREAD_MUTEX_INITIALIZER;
+#else
+#define OBJECT_TRACK(x,y)
 #endif
 
 EventObject::EventObject ()

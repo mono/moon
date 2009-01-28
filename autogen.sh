@@ -142,7 +142,7 @@ if test -d $srcdir/cairo; then
   echo Done running cairo/autogen.sh ...
 fi
 
-conf_flags="--enable-maintainer-mode --enable-compile-warnings" #--enable-iso-c
+conf_flags="--enable-maintainer-mode --enable-compile-warnings --with-sanity-checks" #--enable-iso-c
 
 if test x$NOCONFIGURE = x; then
   echo Running $srcdir/configure $conf_flags "$@" ...

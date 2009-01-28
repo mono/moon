@@ -1,3 +1,11 @@
+2009-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* dependencyobject.cpp: Move the OBJECT_TRACK macro here from the
+	header, it's not used anywhere but in this file.
+
+	* dependencyobject.h: Remove OBJECT_TRACKING from here, it's done at
+	configure time now.
+
 2009-01-28  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBoxView::OnModelChanged): Handle updates to

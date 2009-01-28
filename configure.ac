@@ -429,6 +429,30 @@ if test x$with_debug = xyes; then
 fi
 
 dnl
+dnl sanity checks
+dnl
+AC_ARG_WITH(sanity-checks,[  --with-sanity-checks=yes,no.   If you want to enable sanity checks (default=no)],[],[with_sanity_checks=no])
+if test x$with_sanity_checks = xyes; then
+  AC_DEFINE([SANITY],[1],[Include sanity checks])
+fi
+
+dnl 
+dnl object tracking
+dnl
+AC_ARG_WITH(object-tracking,[  --with-object-tracking=yes,no.   If you want to enable object tracking (default=no)],[],[with_object_tracking=no])
+if test x$with_object_tracking = xyes; then
+  AC_DEFINE([OBJECT_TRACKING],[1],[Include object tracking])
+fi
+
+dnl
+dnl logging
+dnl
+AC_ARG_WITH(logging,[  --with-logging=yes,no. If you want to enable support for logging with MOONLIGHT_DEBUG (default=yes)],[],[with_logging=yes])
+if test x$with_logging = xyes; then
+  AC_DEFINE([LOGGING],[1],[Include support for logging with MOONLIGHT_DEBUG])
+fi
+
+dnl
 dnl compatibility checks
 dnl
 AC_ARG_WITH(compatibility-bugs,[  --with-compatibility-bugs=yes,no.   If you want to build including Silverlight 1.0-compatible bugs (default=yes)],[],[with_compatibility_bugs=yes])
@@ -706,6 +730,15 @@ Moonlight configuration
 	Using cairo: $with_cairo
 	Test Harness: $with_testing $testing_reason
 	Performance Suite: $with_performance $performance_reason
+EOF
+
+dnl debug info
+cat <<EOF
+
+  Debug configuration:
+	Sanity checks: $with_sanity_checks
+	Object tracking: $with_object_tracking
+	Logging support with MOONLIGHT_DEBUG: $with_logging
 EOF
 
 # media info

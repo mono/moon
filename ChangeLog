@@ -1,3 +1,10 @@
+2009-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* autogen.sh: Make --with-sanity default.
+
+	* configure.ac: Add --with-sanity-checks, --with-object-tracking and
+	--with-logging.
+
 2009-01-27  Chris Toshok  <toshok@ximian.com>
 
 	* configure.ac: don't grep/awk to find the codec version to build
