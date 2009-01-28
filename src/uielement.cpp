@@ -155,6 +155,7 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 			flags |= UIElement::RENDER_VISIBLE;
 		else
 			flags &= ~UIElement::RENDER_VISIBLE;
+		InvalidateMeasure ();
 		UpdateTotalRenderVisibility();
 		Invalidate (GetSubtreeBounds ());
 	} else if (args->property == UIElement::IsHitTestVisibleProperty) {

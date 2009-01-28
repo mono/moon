@@ -1755,7 +1755,6 @@ Polyline::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Prope
 //
 // Path
 //
-
 bool
 Path::SetupLine (cairo_t* cr)
 {

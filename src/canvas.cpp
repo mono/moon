@@ -124,6 +124,9 @@ Canvas::MeasureOverride (Size availableSize)
 
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
+		if (child->GetVisibility () != VisibilityVisible)
+			continue;
+		
 		child->Measure (childSize);
 	}
 
@@ -141,6 +144,9 @@ Canvas::ArrangeOverride (Size finalSize)
 
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
+		if (child->GetVisibility () != VisibilityVisible)
+			continue;
+
 		Size desired = child->GetDesiredSize ();
 		Rect child_final = Rect (GetLeft (child), GetTop (child), desired.width, desired.height);
 

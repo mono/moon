@@ -32,7 +32,11 @@ Border::MeasureOverride (Size availableSize)
 	Thickness border = *GetPadding () + *GetBorderThickness ();
 
 	// Get the desired size of our child, and include any margins we set
-	if (UIElement *child = GetChild ()) {
+	VisualTreeWalker walker = VisualTreeWalker (this);
+	while (UIElement *child = walker.Step ()) {
+		if (child->GetVisibility () != VisibilityVisible)
+			continue;
+		
 		child->Measure (availableSize.GrowBy (-border));
 		desired = child->GetDesiredSize ();
 	}
@@ -55,7 +59,11 @@ Border::ArrangeOverride (Size finalSize)
 	finalSize = finalSize.Max (specified);
 	finalSize = finalSize.Min (specified);
 
-	if (UIElement *child = GetChild ()) {
+	VisualTreeWalker walker = VisualTreeWalker (this);
+	while (UIElement *child = walker.Step ()) {
+		if (child->GetVisibility () != VisibilityVisible)
+			continue;
+
 		Size desired = child->GetDesiredSize ();
 		Rect childRect (0,0,finalSize.width,finalSize.height);
 
