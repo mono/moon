@@ -30,8 +30,6 @@ namespace MoonTest.System.Windows.Controls
 			MediaElement m = new MediaElement ();
 			// Should never get an abstract class from unmanaged code MEDIAATTRIBUTE_COLLECTION
 			Assert.IsNotNull (m.Attributes, "Attributes");
-			// InvalidCastException
-			Assert.AreEqual(MediaElementState.Closed, m.CurrentState, "CurrentState");
 			// NotImplementedException
 			Assert.IsNotNull (m.LicenseAcquirer, "LicenseAcquirer");
 		}
@@ -48,7 +46,7 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (0, m.BufferingProgress, "BufferingProgress");
 			Assert.IsFalse (m.CanPause, "CanPause");
 			Assert.IsFalse (m.CanSeek, "CanSeek");
-//			Assert.AreEqual(MediaElementState.Closed, m.CurrentState, "CurrentState");
+			Assert.AreEqual(MediaElementState.Closed, m.CurrentState, "CurrentState");
 			Assert.AreEqual (0, m.DownloadProgress, "DownloadProgress");
 			Assert.AreEqual (0, m.DownloadProgressOffset, "DownloadProgressOffset");
 			Assert.AreEqual (0, m.DroppedFramesPerSecond, "DroppedFramesPerSecond");
