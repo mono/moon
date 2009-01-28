@@ -102,7 +102,8 @@ Inline::UpdateFontDescription ()
 	// in OnPropertyChanged() was a much much better way to do
 	// things. *sigh*
 	font->SetFilename (GetFontFilename ());
-	font->SetFamily (GetFontFamily ()->source);
+	FontFamily *family = GetFontFamily ();
+	font->SetFamily (family ? family->source : NULL);
 	font->SetStyle (GetFontStyle ());
 	font->SetWeight (GetFontWeight ());
 	font->SetSize (GetFontSize ());
@@ -578,7 +579,7 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 	
 	if (args->property == TextBlock::FontFamilyProperty) {
 		FontFamily *family = args->new_value ? args->new_value->AsFontFamily () : NULL;
-		font->SetFamily (family->source);
+		font->SetFamily (family ? family->source : NULL);
 		dirty = true;
 	} else if (args->property == TextBlock::FontSizeProperty) {
 		double size = args->new_value->AsDouble ();

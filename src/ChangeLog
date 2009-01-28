@@ -1,3 +1,11 @@
+2009-01-28  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* text.cpp: FontFamily can be NULL so we can't just access its
+	source field without a check. Fix SIGSEGV when running moon-unit.
+	* value.cpp: FontFamily is not a (managed) struct so it can have
+	a NULL value. Fix SIGSEGV when creating a Value out of a NULL
+	FontFamily in moon-unit.
+
 2009-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* type.h:

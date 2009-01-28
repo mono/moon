@@ -96,8 +96,10 @@ Value::Value (const Value& v)
 		u.s = g_strdup (v.u.s);
 		break;
 	case Type::FONTFAMILY:
-		u.fontfamily = g_new (FontFamily, 1);
-		u.fontfamily->source = g_strdup (v.u.fontfamily->source);
+		if (v.u.fontfamily) {
+			u.fontfamily = g_new (FontFamily, 1);
+			u.fontfamily->source = g_strdup (v.u.fontfamily->source);
+		}
 		break;
 	case Type::COLOR:
 		u.color = g_new (Color, 1);
