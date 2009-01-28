@@ -36,6 +36,10 @@ using System.Reflection;
 
 namespace Mono {
 
+	internal struct UnmanagedFontFamily {
+		public IntPtr source;
+	}
+
 	internal struct UnmanagedColor {
 		public double r;
 		public double g;
@@ -55,6 +59,7 @@ namespace Mono {
 		[FieldOffset(0)] public long i64;
 		[FieldOffset(0)] public ulong ui64;
 		[FieldOffset(0)] public int i32;
+		[FieldOffset(0)] public uint ui32;
 		[FieldOffset(0)] public IntPtr p;
 	}
 
@@ -148,8 +153,6 @@ namespace Mono {
 					// marshall back to the .NET type that we simply serialised as 'string' for unmanaged usage
 					if (type == typeof (System.Windows.Markup.XmlLanguage))
 						return XmlLanguage.GetLanguage (str);
-					else if (type == typeof (System.Windows.Media.FontFamily))
-						return new FontFamily (str);
 					else if (type == typeof (System.Uri))
 						return new Uri (str, UriKind.RelativeOrAbsolute);
 					else
@@ -167,8 +170,8 @@ namespace Mono {
 				}
 
 				case Kind.FONTFAMILY: {
-					string str = Helper.PtrToStringAuto (val->u.p);
-					return new FontFamily (str);
+					UnmanagedFontFamily *family = (UnmanagedFontFamily*)val->u.p;
+					return new FontFamily (family == null ? null : Helper.PtrToStringAuto (family->source));
 				}
 
 				case Kind.POINT: {
@@ -317,6 +320,10 @@ namespace Mono {
 					value.k = Kind.UINT64;
 					value.u.ui64 = (ulong) v;
 				}
+				else if (v is uint) {
+					value.k = Kind.UINT32;
+					value.u.ui32 = (uint) v;
+				}
 				else if (v is char) {
 					value.k = Kind.CHAR;
 					value.u.i32 = (int) (char)v;
@@ -396,15 +403,9 @@ namespace Mono {
 				}
 				else if (v is FontFamily) {
 					FontFamily family = (FontFamily) v;
-					
 					value.k = Kind.FONTFAMILY;
-					
-					byte[] bytes = System.Text.Encoding.UTF8.GetBytes (family.Source);
-					IntPtr result = Helper.AllocHGlobal (bytes.Length + 1);
-					Marshal.Copy (bytes, 0, result, bytes.Length);
-					Marshal.WriteByte (result, bytes.Length, 0);
-					
-					value.u.p = result;
+					value.u.p = Helper.AllocHGlobal (sizeof (UnmanagedFontFamily));
+					Marshal.StructureToPtr (family, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
 				else if (v is Uri) {
 					Uri uri = (Uri) v;
