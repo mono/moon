@@ -10,7 +10,7 @@
 #ifndef __MOONLIGHT_DEBUG_H__
 #define __MOONLIGHT_DEBUG_H__
 
-#if DEBUG
+#if DEBUG || LOGGING
 
 #include <glib.h>
 #include <unistd.h>
@@ -20,6 +20,14 @@
 #include <string.h>
 
 #include "runtime.h"
+
+#endif /* DEBUG || LOGGING */
+
+/*
+ * Stacktrace (debug) stuff
+ */
+
+#if DEBUG
 
 #define MAX_STACK_FRAMES 30
 
@@ -32,7 +40,22 @@ char* get_stack_trace ();
 void print_stack_trace ();
 void enable_vm_stack_trace ();
 void print_gdb_trace ();
+
 G_END_DECLS
+
+#else
+
+#define print_stack_trace()
+#define print_gdb_trace()
+#define enable_vm_stack_trace()
+
+#endif /* DEBUG */
+
+/*
+ * Logging stuff
+ */
+
+#if LOGGING
 
 #define LOG_ALSA(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_ALSA)) printf (__VA_ARGS__);
 #define LOG_ALSA_EX(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_ALSA_EX)) printf (__VA_ARGS__);
@@ -104,14 +127,7 @@ G_END_DECLS
 #define LOG_XAML(...)
 #define LOG_DEPLOYMENT(...)
 
-
-
-
-#define print_stack_trace()
-#define print_gdb_trace()
-#define enable_vm_stack_trace()
-
-#endif /* DEBUG */
+#endif /* LOGGING */
 
 #endif /* __MOONLIGHT_DEBUG_H */
 

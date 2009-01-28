@@ -1,5 +1,10 @@
 2009-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* debug.h: Surround logging macros with #if LOGGING instead of #if
+	DEBUG.
+
+2009-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* dependencyobject.cpp: Move the OBJECT_TRACK macro here from the
 	header, it's not used anywhere but in this file.
 
