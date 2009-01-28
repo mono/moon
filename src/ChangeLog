@@ -1,3 +1,10 @@
+2009-01-28  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Fix logic for setting name and key on
+	storyboards. Rules are:
+	    1. You can set both if you set the name before the key
+	    2. You can set both if both values are equal
+	
 2009-01-28  Chris Toshok  <toshok@ximian.com>
 
 	* style.cpp (SetterBaseCollection::AddedToCollection): chain up to
