@@ -27,8 +27,11 @@
 //
 
 using System;
+using System.Runtime.InteropServices;
 
 namespace System.Windows.Media {
+
+	[StructLayout(LayoutKind.Sequential)]
 	public class FontFamily {
 		string family;
 		

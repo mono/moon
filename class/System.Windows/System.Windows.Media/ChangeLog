@@ -1,3 +1,7 @@
+2009-01-27  Chris Toshok  <toshok@ximian.com>
+
+	* FontFamily.cs: add StructLayout.
+
 2009-01-26  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Color.cs: Complete IFormatProvider/IFormattable support
