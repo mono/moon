@@ -268,6 +268,16 @@ reflect_dependency_object_in_tree (DependencyObject *obj, GtkTreeStore *store, G
 			}
 		}
 	}
+
+	if (obj->Is(Type::CONTROL)) {
+		GtkTreeIter subobject_iter;
+
+		gtk_tree_store_append (store, &subobject_iter, node);
+
+		Value v(((Control*)obj)->GetSubtreeObject());
+
+		reflect_value (store, &subobject_iter, "Visual Child", &v);
+	}
 }
 
 static void
@@ -275,7 +285,7 @@ selection_changed (GtkTreeSelection *selection, PluginInstance *plugin)
 {
 	GtkTreeModel *model;
 	GtkTreeIter iter;
-	UIElement *el;
+	DependencyObject *el;
 
 	if (plugin->GetSurface()->debug_selected_element) {
 		UIElement *el = plugin->GetSurface()->debug_selected_element;
@@ -294,10 +304,11 @@ selection_changed (GtkTreeSelection *selection, PluginInstance *plugin)
 			    COL_ELEMENT_PTR, &el,
 			    -1);
 
-	if (el) {
-		el->Invalidate (el->GetSubtreeBounds().GrowBy(1).RoundOut());
-		el->ref ();
-		plugin->GetSurface()->debug_selected_element = el;
+	if (el && el->Is(Type::UIELEMENT)) {
+		UIElement *ui = (UIElement*)el;
+		ui->Invalidate (ui->GetSubtreeBounds().GrowBy(1).RoundOut());
+		ui->ref ();
+		plugin->GetSurface()->debug_selected_element = ui;
 	}
 }
 

@@ -1,3 +1,12 @@
+2009-01-28  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-debug.cpp (selection_changed): fix crash.
+	(reflect_dependency_object_in_tree): add Control handling - put a
+	"Visual Child" under it that gives the subtree.
+
+	* plugin-class.cpp (value_to_variant): not sure what to do here
+	for UINT32's, since NPVariants only have INT32...
+
 2009-01-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.cpp: Call Deployment::Initialize in runtime_init.
