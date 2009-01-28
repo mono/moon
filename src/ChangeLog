@@ -1,3 +1,15 @@
+2009-01-27  Chris Toshok  <toshok@ximian.com>
+
+	* pipeline.cpp: include codec-version.h
+
+	* pipeline-ui.cpp: same.
+
+	* pipeline.h: remove the MOONLIGHT_CODEC_ABI_VERSION #define from
+	here.
+
+	* codec-version.h.in: new file.  update the
+	MOONLIGHT_CODEC_ABI_VERSION #define here when things change.
+
 2009-01-27  Larry Ewing  <lewing@novell.com>
 
 	* mediaelement.cpp (MediaElement::MeasureOverride): correct

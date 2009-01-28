@@ -26,6 +26,7 @@
 #include <dlfcn.h>
 
 #include "pipeline.h"
+#include "codec-version.h"
 #include "pipeline-ffmpeg.h"
 #include "mp3.h"
 #include "uri.h"

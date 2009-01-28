@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
+#include "codec-version.h"
 #include "pipeline-ui.h"
 #include "downloader.h"
 #include "utils.h"
