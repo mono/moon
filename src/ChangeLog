@@ -1,5 +1,18 @@
 2009-01-28  Jeffrey Stedfast  <fejj@novell.com>
 
+	* layout.cpp (TextLayout::LayoutWrapWithOverflow): Copy run->crlf
+	over to line->crlf for each LineBreak.
+	(TextLayout::GetCursor): Need to keep track of the line-ending
+	character sequences as well.
+
+	* layout.h (TextRun::IsLineBreak): New method to check if the run
+	represents a LineBreak, cleaner than manually checking for text ==
+	NULL.
+	(TextRun::ctor): LineBreak version now takes a crlf argument to
+	specify which line ending sequence it is.
+
+2009-01-28  Jeffrey Stedfast  <fejj@novell.com>
+
 	* textbox.cpp (move_down): Fixed to handle any line-ending.
 	(move_up): Same.
 	(next_word): Same.

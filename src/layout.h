@@ -37,15 +37,24 @@ class TextRun : public List::Node {
 	TextDecorations deco;
 	TextFont *font;
 	gunichar *text;
-	bool selected;
+	int selected:1;
+	int crlf:2;
 	
 	TextRun (const gunichar *ucs4, int len, ITextSource *source, bool selected = false);
 	TextRun (const char *utf8, int len, ITextSource *source, bool selected = false);
-	TextRun (ITextSource *source);
+	TextRun (ITextSource *source, int crlf);
 	
 	virtual ~TextRun ();
 	
-	bool IsUnderlined () { return (source->Decorations () & TextDecorationsUnderline); }
+	bool IsUnderlined ()
+	{
+		return (source->Decorations () & TextDecorationsUnderline);
+	}
+	
+	bool IsLineBreak ()
+	{
+		return !text;
+	}
 };
 
 struct TextSelection {

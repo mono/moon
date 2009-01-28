@@ -46,6 +46,7 @@ TextRun::TextRun (const gunichar *ucs4, int len, ITextSource *source, bool selec
 	this->font = font->GetFont ();
 	this->selected = selected;
 	this->source = source;
+	this->crlf = 0;
 }
 
 TextRun::TextRun (const char *utf8, int len, ITextSource *source, bool selected)
@@ -72,9 +73,10 @@ TextRun::TextRun (const char *utf8, int len, ITextSource *source, bool selected)
 	this->font = font->GetFont ();
 	this->selected = selected;
 	this->source = source;
+	this->crlf = 0;
 }
 
-TextRun::TextRun (ITextSource *source)
+TextRun::TextRun (ITextSource *source, int crlf)
 {
 	// This TextRun will represent a LineBreak
 	TextFontDescription *font = source->FontDescription ();
@@ -83,6 +85,7 @@ TextRun::TextRun (ITextSource *source)
 	this->selected = false;
 	this->source = source;
 	this->text = NULL;
+	this->crlf = crlf;
 }
 
 TextRun::~TextRun ()
@@ -136,6 +139,7 @@ class TextLine : public List::Node {
 	double descend;
 	double height;
 	double width;
+	int crlf;
 	
 	TextLine ();
 	~TextLine ();
@@ -147,6 +151,7 @@ TextLine::TextLine ()
 	descend = 0.0;
 	height = -1.0;
 	width = 0.0;
+	crlf = 0;
 }
 
 TextLine::~TextLine ()
@@ -423,7 +428,7 @@ TextLayout::LayoutWrapWithOverflow ()
 	
 	line = new TextLine ();
 	for (run = (TextRun *) runs->First (); run; run = (TextRun *) run->next) {
-		if (run->text == NULL) {
+		if (run->IsLineBreak ()) {
 			// LineBreak
 			if (blank && !OverrideLineHeight ()) {
 				descend = run->font->Descender ();
@@ -434,6 +439,8 @@ TextLayout::LayoutWrapWithOverflow ()
 			line->height = height;
 			line->width = width;
 			dy += height;
+			
+			line->crlf = run->crlf;
 			
 			lines->Append (line);
 			
@@ -616,7 +623,7 @@ TextLayout::LayoutNoWrap ()
 	
 	line = new TextLine ();
 	for (run = (TextRun *) runs->First (); run; run = (TextRun *) run->next) {
-		if (run->text == NULL) {
+		if (run->IsLineBreak ()) {
 			// LineBreak
 			if (blank && !OverrideLineHeight ()) {
 				descend = run->font->Descender ();
@@ -627,6 +634,8 @@ TextLayout::LayoutNoWrap ()
 			line->height = height;
 			line->width = width;
 			dy += height;
+			
+			line->crlf = run->crlf;
 			
 			lines->Append (line);
 			
@@ -838,7 +847,7 @@ TextLayout::LayoutWrap ()
 	
 	line = new TextLine ();
 	for (run = (TextRun *) runs->First (); run; run = (TextRun *) run->next) {
-		if (run->text == NULL) {
+		if (run->IsLineBreak ()) {
 			// LineBreak
 			if (blank && !OverrideLineHeight ()) {
 				descend = run->font->Descender ();
@@ -849,6 +858,8 @@ TextLayout::LayoutWrap ()
 			line->height = height;
 			line->width = width;
 			dy += height;
+			
+			line->crlf = run->crlf;
 			
 			lines->Append (line);
 			
@@ -1425,6 +1436,9 @@ TextLayout::GetCursor (const Point &offset, int pos)
 		// set y1 to the baseline (descend is a negative value)
 		y1 = y0 + line->height + line->descend;
 		
+		if (cur >= pos)
+			break;
+		
 		segment = (TextSegment *) line->segments->First ();
 		while (segment && cur < pos) {
 			n = segment->end - segment->start;
@@ -1432,7 +1446,7 @@ TextLayout::GetCursor (const Point &offset, int pos)
 			
 			ascend = font->Ascender ();
 			
-			if (pos >= cur && pos < (cur + n)) {
+			if (pos < (cur + n)) {
 				for (i = segment->start, prev = 0; cur < pos; cur++, i++) {
 					c = segment->run->text[i];
 					
@@ -1454,6 +1468,8 @@ TextLayout::GetCursor (const Point &offset, int pos)
 			
 			segment = (TextSegment *) segment->next;
 		}
+		
+		cur += line->crlf;
 		
 		if (line->next) {
 			y0 += (double) line->height;
