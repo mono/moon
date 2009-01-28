@@ -1,3 +1,11 @@
+2009-01-28  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.Controls/ControlTest.cs: Remove commented 
+	[TestMethod] on DefaultStyleKeyTest_Null
+	* System.Windows.Controls/TextBlockTest.cs: New.
+	* System.Windows.Documents/LineBreakTest.cs: New.
+	* System.Windows.Documents/RunTest.cs: Add test case that crash SL2
+
 2009-01-27  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows/VisualStateTest.cs: Remove [MoonlightBug] from

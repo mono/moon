@@ -1,5 +1,5 @@
 //
-// Unit tests for Run
+// Unit tests for TextBlock
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -28,32 +28,29 @@
 
 using System;
 using System.Windows;
-using System.Windows.Documents;
-using System.Windows.Media;
+using System.Windows.Controls;
 
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace MoonTest.System.Windows.Documents {
+namespace MoonTest.System.Windows.Controls {
 
 	[TestClass]
-	public class _RunTest {
+	public class TextBlockTest {
 
 		[TestMethod]
 		public void Defaults ()
 		{
-			Run r = new Run ();
-			Assert.IsNull (r.Text, "Text");
-
-			InlineTest.CheckDefaults (r);
+			TextBlock tb = new TextBlock ();
+			// TODO
+			FrameworkElementTest.CheckDefaultProperties (tb);
 		}
 
 		[TestMethod]
-		[Ignore ("sl2 crasher")]
 		public void NullifyFontFamily ()
 		{
-			Run r = new Run ();
-			r.FontFamily = null;
+			TextBlock tb = new TextBlock ();
+			tb.FontFamily = null;
 		}
 	}
 }

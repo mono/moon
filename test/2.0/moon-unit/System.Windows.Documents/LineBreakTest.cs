@@ -1,5 +1,5 @@
 //
-// Unit tests for Run
+// Unit tests for LineBreak
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -37,23 +37,20 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Documents {
 
 	[TestClass]
-	public class _RunTest {
+	public class LineBreakTest {
 
 		[TestMethod]
 		public void Defaults ()
 		{
-			Run r = new Run ();
-			Assert.IsNull (r.Text, "Text");
-
-			InlineTest.CheckDefaults (r);
+			LineBreak lb = new LineBreak ();
+			InlineTest.CheckDefaults (lb);
 		}
 
 		[TestMethod]
-		[Ignore ("sl2 crasher")]
 		public void NullifyFontFamily ()
 		{
-			Run r = new Run ();
-			r.FontFamily = null;
+			LineBreak lb = new LineBreak ();
+			lb.FontFamily = null;
 		}
 	}
 }
