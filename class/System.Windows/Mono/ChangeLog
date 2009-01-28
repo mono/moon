@@ -1,3 +1,8 @@
+2009-01-28  Chris Toshok  <toshok@ximian.com>
+
+	* NativeDependencyObjectHelper.cs (CreateObject): add case for
+	Kind.CONTENTCONTROL.
+
 2009-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Kind.cs: Regenerated.

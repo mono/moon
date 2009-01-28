@@ -221,6 +221,7 @@ namespace Mono {
 			case Kind.COLORKEYFRAME_COLLECTION: return new ColorKeyFrameCollection (raw);
 			case Kind.COLUMNDEFINITION: return new ColumnDefinition (raw);
 			case Kind.COLUMNDEFINITION_COLLECTION: return new ColumnDefinitionCollection (raw);
+			case Kind.CONTENTCONTROL: return new ContentControl (raw);
 			case Kind.CONTROLTEMPLATE: return new ControlTemplate (raw);
 			case Kind.DATATEMPLATE: return new DataTemplate (raw);
 			case Kind.DEPLOYMENT: return new Deployment (raw);
