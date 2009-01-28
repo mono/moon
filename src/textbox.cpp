@@ -1800,6 +1800,50 @@ TextBoxView::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 	*width = GetActualWidth ();
 }
 
+static void
+append_runs (ITextSource *textbox, List *runs, const gunichar **text, int *length, bool selected)
+{
+	register const gunichar *inptr = *text;
+	const gunichar *inend = inptr + *length;
+	const gunichar *start = inptr;
+	TextRun *run;
+	int n;
+	
+	while (inptr < inend) {
+		start = inptr;
+		n = 0;
+		
+		while (inptr < inend && *inptr != '\r' && *inptr != '\n') {
+			inptr++;
+			n++;
+		}
+		
+		// append the Run
+		run = new TextRun (start, n, textbox, selected);
+		runs->Append (run);
+		
+		if (inptr == inend) {
+			(*length) -= n;
+			break;
+		}
+		
+		// append the LineBreak
+		if (inptr[0] == '\r' && inptr[1] == '\n') {
+			run = new TextRun (textbox, 2);
+			inptr += 2;
+			n += 2;
+		} else {
+			run = new TextRun (textbox, 1);
+			inptr++;
+			n++;
+		}
+		
+		(*length) -= n;
+	}
+	
+	*text = inptr;
+}
+
 void
 TextBoxView::Layout (cairo_t *cr)
 {
@@ -1807,7 +1851,6 @@ TextBoxView::Layout (cairo_t *cr)
 	TextSelection *selection;
 	const gunichar *text;
 	TextBuffer *buffer;
-	TextRun *run;
 	List *runs;
 	int left;
 	
@@ -1816,37 +1859,31 @@ TextBoxView::Layout (cairo_t *cr)
 	else
 		layout->SetMaxWidth (-1.0);
 	
+	selection = textbox->GetSelection ();
 	buffer = textbox->GetBuffer ();
 	text = buffer->text;
-	left = buffer->len;
 	
 	runs = new List ();
 	
-	if ((selection = textbox->GetSelection ()) && selection->length > 0) {
-		if (selection->start > 0) {
-			// add run before the selected region
-			run = new TextRun (text, selection->start, (ITextSource *) textbox);
-			text += selection->start;
-			left -= selection->start;
-			runs->Append (run);
+	if (selection->length > 0) {
+		left = selection->start;
+		
+		if (left > 0) {
+			// add text before the selected region
+			append_runs ((ITextSource *) textbox, runs, &text, &left, false);
 		}
 		
-		// add the selected text run
-		run = new TextRun (text, selection->length, (ITextSource *) textbox, true);
-		text += selection->length;
-		left -= selection->length;
-		runs->Append (run);
+		// add the selected region of text
+		left += selection->length;
+		append_runs ((ITextSource *) textbox, runs, &text, &left, true);
 		
-		// add the run after the selected region
-		run = new TextRun (text, left, (ITextSource *) textbox, true);
-		text += selection->length;
-		left -= selection->length;
-		runs->Append (run);
+		left += buffer->len - (text - buffer->text);
 	} else {
-		// nothing selected
-		run = new TextRun (text, buffer->len, (ITextSource *) textbox);
-		runs->Append (run);
+		left = buffer->len;
 	}
+	
+	// add the text after the selected region
+	append_runs ((ITextSource *) textbox, runs, &text, &left, false);
 	
 	layout->SetTextRuns (runs);
 	layout->Layout ();

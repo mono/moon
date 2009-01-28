@@ -1,5 +1,9 @@
 2009-01-28  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.cpp (TextBoxView::Layout): We need to break the text
+	apart by lines so that the TextLayout engine can handle them
+	properly.
+
 	* layout.cpp (TextLayout::LayoutWrapWithOverflow): Copy run->crlf
 	over to line->crlf for each LineBreak.
 	(TextLayout::GetCursor): Need to keep track of the line-ending
