@@ -715,7 +715,6 @@ class Generator {
 		all.Children.Add (new TypeInfo ("TimeSpan", "TIMESPAN", "OBJECT", true, true));
 		all.Children.Add (new TypeInfo ("char", "CHAR", "OBJECT", true, true));
 		all.Children.Add (new TypeInfo ("System.Windows.FontStretch", "FONTSTRETCH", "OBJECT", true, true));
-		all.Children.Add (new TypeInfo ("System.Windows.Media.FontFamily", "FONTFAMILY", "OBJECT", true, true));
 		all.Children.Add (new TypeInfo ("System.Windows.Markup.XmlLanguage", "XMLLANGUAGE", "OBJECT", true, true));
 
 		// Set IncludeInKinds for all types which inherit from EventObject
@@ -732,7 +731,6 @@ class Generator {
 			while (bR != null) {
 				if (bR.Value == "EventObject") {
 					member.Annotations ["IncludeInKinds"] = null;
-					Console.WriteLine ("Added: {0}", type.Name);
 				}
 
 				if (!all.Children.TryGetValue (bR.Value, out m))

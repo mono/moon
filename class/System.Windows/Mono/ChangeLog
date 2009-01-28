@@ -1,5 +1,9 @@
 2009-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* Kind.cs: Regenerated.
+
+2009-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* Kind.cs:
 	* GeneratedPInvokes.cs: Regenerated.
 
