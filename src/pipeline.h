@@ -923,7 +923,7 @@ public:
 	int channels;
 	int bit_rate;
 	
-	AudioStream (Media *media) : IMediaStream (media) {}
+	AudioStream (Media *media);
 	
 	virtual MoonMediaType GetType () { return MediaTypeAudio; }
 	guint32 GetBitRate () { return (guint32) bit_rate; }

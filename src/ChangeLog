@@ -1,5 +1,10 @@
 2009-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.h:
+	* pipeline.cpp: AudioStream: call SetObjectType.
+
+2009-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* dependencyobject.h:
 	* dependencyobject.cpp: Add an EventObject ctor overload which takes a
 	Type::Kind. In EventObject::ref don't warn about inexistent

@@ -2541,3 +2541,13 @@ NullDecoder::OpenVideo ()
 	
 	return MEDIA_SUCCESS;
 }
+
+/*
+ * AudioStream
+ */
+
+AudioStream::AudioStream (Media *media)
+	: IMediaStream (media)
+{
+	SetObjectType (Type::AUDIOSTREAM);
+}
