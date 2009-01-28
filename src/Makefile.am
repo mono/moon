@@ -41,6 +41,7 @@ libmoon_include_headers = 	\
 	expression.h		\
 	file-downloader.h	\
 	font.h			\
+	fontfamily.h		\
 	frameworkelement.h 	\
 	fullscreen.h		\
 	geometry.h		\

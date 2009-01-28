@@ -95,6 +95,10 @@ Value::Value (const Value& v)
 	case Type::STRING:
 		u.s = g_strdup (v.u.s);
 		break;
+	case Type::FONTFAMILY:
+		u.fontfamily = g_new (FontFamily, 1);
+		u.fontfamily->source = g_strdup (v.u.fontfamily->source);
+		break;
 	case Type::COLOR:
 		u.color = g_new (Color, 1);
 		*u.color = *v.u.color;
@@ -182,6 +186,14 @@ Value::Value (gint32 i)
 	u.i32 = i;
 }
 
+
+Value::Value (guint32 i)
+{
+	Init ();
+	k = Type::UINT32;
+	u.ui32 = i;
+}
+
 Value::Value (Color c)
 {
 	Init ();
@@ -207,6 +219,16 @@ Value::Value (EventObject* obj)
 		obj->ref ();
 	}
 	u.dependency_object = obj;
+}
+
+Value::Value (FontFamily family)
+{
+	Init ();
+	k = Type::FONTFAMILY;
+	u.fontfamily = g_new (FontFamily, 1);
+	u.fontfamily->source = g_strdup (family.source);
+	printf ("family->source == %s\n", family.source);
+	printf ("fontfamily->source == %s\n", u.fontfamily->source);
 }
 
 Value::Value (Type::Kind kind, void *npobj)
@@ -313,6 +335,10 @@ Value::FreeValue ()
 		break;
 	case Type::COLOR:
 		g_free (u.color);
+		break;
+	case Type::FONTFAMILY:
+		g_free (u.fontfamily->source);
+		g_free (u.fontfamily);
 		break;
 	case Type::POINT:
 		g_free (u.point);
@@ -428,6 +454,8 @@ Value::operator== (const Value &v) const
 			return FALSE;
 
 		return !strcmp (u.s, v.u.s);
+	case Type::FONTFAMILY:
+		return *u.fontfamily == *v.u.fontfamily;
 	case Type::COLOR:
 		return !memcmp (u.color, v.u.color, sizeof (Color));
 	case Type::POINT:
@@ -469,7 +497,6 @@ Value::Unmarshal (Type::Kind desired)
 	if (desired == Type::STRING) {
 		switch (k) {
 		case Type::URI:
-		case Type::FONTFAMILY:
 			k = desired;
 			break;
 		default:

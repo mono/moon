@@ -94,7 +94,7 @@ dependency_property_g_init (void)
 	Control::BorderBrushProperty = DependencyProperty::Register (Type::CONTROL, "BorderBrush", Type::BRUSH);
 	Control::BorderThicknessProperty = DependencyProperty::Register (Type::CONTROL, "BorderThickness", new Value (Thickness(0.0)), Type::THICKNESS);
 	Control::DefaultStyleKeyProperty = DependencyProperty::Register (Type::CONTROL, "DefaultStyleKey", Type::MANAGEDTYPEINFO);
-	Control::FontFamilyProperty = DependencyProperty::Register (Type::CONTROL, "FontFamily", new Value (CONTROL_FONT_FAMILY), Type::STRING);
+	Control::FontFamilyProperty = DependencyProperty::Register (Type::CONTROL, "FontFamily", new Value (FontFamily(CONTROL_FONT_FAMILY)), Type::FONTFAMILY);
 	Control::FontSizeProperty = DependencyProperty::Register (Type::CONTROL, "FontSize", new Value (CONTROL_FONT_SIZE), Type::DOUBLE);
 	Control::FontStretchProperty = DependencyProperty::Register (Type::CONTROL, "FontStretch", new Value (CONTROL_FONT_STRETCH), Type::INT32);
 	Control::FontStyleProperty = DependencyProperty::Register (Type::CONTROL, "FontStyle", new Value (CONTROL_FONT_STYLE), Type::INT32);
@@ -177,7 +177,7 @@ dependency_property_g_init (void)
 	ImageBrush::DownloadProgressProperty = DependencyProperty::Register (Type::IMAGEBRUSH, "DownloadProgress", new Value (0.0), Type::DOUBLE);
 	ImageBrush::ImageSourceProperty = DependencyProperty::Register (Type::IMAGEBRUSH, "ImageSource", Type::BITMAPIMAGE);
 	InkPresenter::StrokesProperty = DependencyProperty::Register (Type::INKPRESENTER, "Strokes", Type::STROKE_COLLECTION);
-	Inline::FontFamilyProperty = DependencyProperty::Register (Type::INLINE, "FontFamily", new Value (TEXTBLOCK_FONT_FAMILY), Type::STRING);
+	Inline::FontFamilyProperty = DependencyProperty::Register (Type::INLINE, "FontFamily", new Value (FontFamily(TEXTBLOCK_FONT_FAMILY)), Type::FONTFAMILY);
 	Inline::FontFilenameProperty = DependencyProperty::Register (Type::INLINE, "FontFilename", Type::STRING);
 	Inline::FontSizeProperty = DependencyProperty::Register (Type::INLINE, "FontSize", new Value (TEXTBLOCK_FONT_SIZE), Type::DOUBLE);
 	Inline::FontStretchProperty = DependencyProperty::Register (Type::INLINE, "FontStretch", new Value (TEXTBLOCK_FONT_STRETCH), Type::INT32);
@@ -341,7 +341,7 @@ dependency_property_g_init (void)
 	StylusPoint::YProperty = DependencyProperty::Register (Type::STYLUSPOINT, "Y", new Value (0.0), Type::DOUBLE);
 	TextBlock::ActualHeightProperty = DependencyProperty::RegisterFull (Type::TEXTBLOCK, "ActualHeight", NULL, Type::DOUBLE, false, true, false, NULL, NULL);
 	TextBlock::ActualWidthProperty = DependencyProperty::RegisterFull (Type::TEXTBLOCK, "ActualWidth", NULL, Type::DOUBLE, false, true, false, NULL, NULL);
-	TextBlock::FontFamilyProperty = DependencyProperty::Register (Type::TEXTBLOCK, "FontFamily", new Value (TEXTBLOCK_FONT_FAMILY), Type::STRING);
+	TextBlock::FontFamilyProperty = DependencyProperty::Register (Type::TEXTBLOCK, "FontFamily", new Value (FontFamily(TEXTBLOCK_FONT_FAMILY)), Type::FONTFAMILY);
 	TextBlock::FontFilenameProperty = DependencyProperty::Register (Type::TEXTBLOCK, "FontFilename", Type::STRING);
 	TextBlock::FontSizeProperty = DependencyProperty::Register (Type::TEXTBLOCK, "FontSize", new Value (TEXTBLOCK_FONT_SIZE), Type::DOUBLE);
 	TextBlock::FontStretchProperty = DependencyProperty::Register (Type::TEXTBLOCK, "FontStretch", new Value (TEXTBLOCK_FONT_STRETCH), Type::INT32);
@@ -1306,17 +1306,18 @@ Control::SetDefaultStyleKey (ManagedTypeInfo *value)
 	SetValue (Control::DefaultStyleKeyProperty, Value (*value));
 }
 
-const char *
+FontFamily *
 Control::GetFontFamily ()
 {
 	Value *value = GetValue (Control::FontFamilyProperty);
-	return value ? value->AsString () : NULL;
+	return value ? value->AsFontFamily () : NULL;
 }
 
 void
-Control::SetFontFamily (const char *value)
+Control::SetFontFamily (FontFamily *value)
 {
-	SetValue (Control::FontFamilyProperty, Value (value));
+	if (!value) return;
+	SetValue (Control::FontFamilyProperty, Value (*value));
 }
 
 double
@@ -2275,17 +2276,18 @@ InkPresenter::SetStrokes (StrokeCollection *value)
 	SetValue (InkPresenter::StrokesProperty, Value (value));
 }
 
-const char *
+FontFamily *
 Inline::GetFontFamily ()
 {
 	Value *value = GetValue (Inline::FontFamilyProperty);
-	return value ? value->AsString () : NULL;
+	return value ? value->AsFontFamily () : NULL;
 }
 
 void
-Inline::SetFontFamily (const char *value)
+Inline::SetFontFamily (FontFamily *value)
 {
-	SetValue (Inline::FontFamilyProperty, Value (value));
+	if (!value) return;
+	SetValue (Inline::FontFamilyProperty, Value (*value));
 }
 
 const char *
@@ -4382,17 +4384,18 @@ StylusPoint::SetY (double value)
 	SetValue (StylusPoint::YProperty, Value (value));
 }
 
-const char *
+FontFamily *
 TextBlock::GetFontFamily ()
 {
 	Value *value = GetValue (TextBlock::FontFamilyProperty);
-	return value ? value->AsString () : NULL;
+	return value ? value->AsFontFamily () : NULL;
 }
 
 void
-TextBlock::SetFontFamily (const char *value)
+TextBlock::SetFontFamily (FontFamily *value)
 {
-	SetValue (TextBlock::FontFamilyProperty, Value (value));
+	if (!value) return;
+	SetValue (TextBlock::FontFamilyProperty, Value (*value));
 }
 
 const char *

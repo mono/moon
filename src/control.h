@@ -19,6 +19,7 @@
 #include "enums.h"
 #include "xaml.h"
 #include "template.h"
+#include "fontfamily.h"
 
 #define CONTROL_FONT_FAMILY  "Portable User Interface"
 #define CONTROL_FONT_STRETCH FontStretchesNormal
@@ -82,8 +83,8 @@ public:
 	void SetBorderThickness (Thickness *thickness);
 	Thickness *GetBorderThickness ();
 	
-	void SetFontFamily (const char *family);
-	const char *GetFontFamily ();
+	void SetFontFamily (FontFamily *family);
+	FontFamily *GetFontFamily ();
 	
 	void SetFontSize (double size);
 	double GetFontSize ();
@@ -130,7 +131,7 @@ public:
 	static DependencyProperty *BorderBrushProperty;
  	/* @PropertyType=Thickness,DefaultValue=Thickness(0.0),GenerateAccessors */
 	static DependencyProperty *BorderThicknessProperty;
- 	/* @PropertyType=string,DefaultValue=CONTROL_FONT_FAMILY,ManagedPropertyType=FontFamily,GenerateAccessors */
+ 	/* @PropertyType=FontFamily,DefaultValue=FontFamily(CONTROL_FONT_FAMILY),GenerateAccessors */
 	static DependencyProperty *FontFamilyProperty;
  	/* @PropertyType=double,DefaultValue=CONTROL_FONT_SIZE,GenerateAccessors */
 	static DependencyProperty *FontSizeProperty;

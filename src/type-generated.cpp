@@ -218,7 +218,7 @@ Type type_infos [] = {
 	{ Type::FFMPEGDECODER, Type::IMEDIADECODER, false, "FfmpegDecoder", "FFMPEGDECODER", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::FFMPEGDEMUXER, Type::IMEDIADEMUXER, false, "FfmpegDemuxer", "FFMPEGDEMUXER", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::FILESOURCE, Type::IMEDIASOURCE, false, "FileSource", "FILESOURCE", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::FONTFAMILY, Type::OBJECT, false, "System.Windows.Media.FontFamily", "FONTFAMILY", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
+	{ Type::FONTFAMILY, Type::OBJECT, true, "FontFamily", "FONTFAMILY", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::FONTSTRETCH, Type::OBJECT, false, "System.Windows.FontStretch", "FONTSTRETCH", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::FRAMEWORKELEMENT, Type::UIELEMENT, false, "FrameworkElement", "FRAMEWORKELEMENT", 3, 16, FrameworkElement_Events, (create_inst_func *) framework_element_new, NULL, NULL, NULL, NULL }, 
 	{ Type::FRAMEWORKTEMPLATE, Type::DEPENDENCY_OBJECT, false, "FrameworkTemplate", "FRAMEWORKTEMPLATE", 0, 1, NULL, (create_inst_func *) framework_template_new, NULL, NULL, NULL, NULL }, 

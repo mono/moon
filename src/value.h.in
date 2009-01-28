@@ -24,6 +24,7 @@
  * ugly file containing the catchall value type we use.
  */
 
+struct FontFamily;
 struct Color;
 struct Duration;
 struct KeyTime;
@@ -58,9 +59,11 @@ public:
 	explicit Value (bool z);
 	explicit Value (double d);
 	explicit Value (gint32 i);
+	explicit Value (guint32 i);
 	Value (gint64 i, Type::Kind as); // Use for TimeSpan and int64 values.
 	Value (Color c);
 	Value (EventObject *obj);
+	Value (FontFamily family);
 	Value (Point pt);
 	Value (Rect rect);
 	Value (Size size);
@@ -100,11 +103,13 @@ public:
 	guint64		AsUint64 ()	{ checked_get_exact (Type::UINT64, 0, u.ui64); }
 	gint64		AsInt64 ()	{ checked_get_exact (Type::INT64, 0, u.i64); }
 	TimeSpan	AsTimeSpan ()	{ checked_get_exact (Type::TIMESPAN, 0, (TimeSpan)u.i64); }
+	guint32		AsUInt32 ()	{ checked_get_exact (Type::UINT32, 0, u.ui32); }
 	gint32		AsInt32 ()	{ checked_get_exact (Type::INT32, 0, u.i32); }
 	Color*		AsColor ()	{ checked_get_exact (Type::COLOR, NULL, u.color); }
 	Point*		AsPoint ()	{ checked_get_exact (Type::POINT, NULL, u.point); }
 	Rect*		AsRect ()	{ checked_get_exact (Type::RECT, NULL, u.rect); }
 	Size*		AsSize ()	{ checked_get_exact (Type::SIZE, NULL, u.size); }
+	FontFamily*	AsFontFamily ()	{ checked_get_exact (Type::FONTFAMILY, NULL, u.fontfamily); }
 	char*		AsString ()	{ checked_get_exact (Type::STRING, NULL, u.s); }
 	DependencyProperty*		AsDependencyProperty ()	{ checked_get_exact (Type::DEPENDENCYPROPERTY, NULL, u.dp); }
 	
@@ -142,6 +147,7 @@ public:
 		double d;
 		guint64 ui64;
 		gint64 i64;
+		guint32 ui32;
 		gint32 i32;
 		char *s;
 		EventObject *dependency_object;
@@ -150,6 +156,7 @@ public:
 		Point *point;
 		Rect *rect;
 		Size *size;
+		FontFamily *fontfamily;
 		RepeatBehavior *repeat;
 		Duration *duration;
 		KeyTime *keytime;

@@ -23,6 +23,7 @@
 #include <layout.h>
 #include <brush.h>
 #include <font.h>
+#include <fontfamily.h>
 
 #define TEXTBLOCK_FONT_FAMILY  "Portable User Interface"
 #define TEXTBLOCK_FONT_STRETCH FontStretchesNormal
@@ -39,7 +40,7 @@ class Inline : public DependencyObject, public ITextSource {
 	virtual ~Inline ();
 	
  public:
- 	/* @PropertyType=string,DefaultValue=TEXTBLOCK_FONT_FAMILY,ManagedPropertyType=FontFamily,GenerateAccessors */
+ 	/* @PropertyType=FontFamily,DefaultValue=FontFamily(TEXTBLOCK_FONT_FAMILY),GenerateAccessors */
 	static DependencyProperty *FontFamilyProperty;
  	/* @PropertyType=double,DefaultValue=TEXTBLOCK_FONT_SIZE,GenerateAccessors */
 	static DependencyProperty *FontSizeProperty;
@@ -68,8 +69,8 @@ class Inline : public DependencyObject, public ITextSource {
 	//
 	// Property Accessors
 	//
-	void SetFontFamily (const char *family);
-	const char *GetFontFamily ();
+	void SetFontFamily (FontFamily *value);
+	FontFamily *GetFontFamily ();
 	
 	void SetFontFilename (const char *value);
 	const char *GetFontFilename ();
@@ -212,7 +213,7 @@ class TextBlock : public FrameworkElement {
 	static DependencyProperty *ActualHeightProperty;
  	/* @PropertyType=double,ReadOnly */
 	static DependencyProperty *ActualWidthProperty;
- 	/* @PropertyType=string,DefaultValue=TEXTBLOCK_FONT_FAMILY,ManagedPropertyType=FontFamily,GenerateAccessors */
+ 	/* @PropertyType=FontFamily,DefaultValue=FontFamily(TEXTBLOCK_FONT_FAMILY),GenerateAccessors */
 	static DependencyProperty *FontFamilyProperty;
  	/* @PropertyType=double,DefaultValue=TEXTBLOCK_FONT_SIZE,GenerateAccessors */
 	static DependencyProperty *FontSizeProperty;
@@ -280,8 +281,8 @@ class TextBlock : public FrameworkElement {
 		return actual_height;
 	}
 	
-	void SetFontFamily (const char *family);
-	const char *GetFontFamily ();
+	void SetFontFamily (FontFamily *family);
+	FontFamily *GetFontFamily ();
 	
 	void SetFontSize (double size);
 	double GetFontSize ();

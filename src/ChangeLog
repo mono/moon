@@ -1,3 +1,23 @@
+2009-01-27  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (libmoon_include_headers): add fontfamily.h
+
+	* fontfamily.h: add struct.
+	
+	* control.h, text.h: FontFamilyProperty is of type FontFamily now.
+
+	* text.cpp: FontFamilyProperty is a FontFamily struct now, not a
+	string.
+
+	* value.cpp: add FontFamily logic, and remove FONTFAMILY from the
+	unmarshaled bits.
+
+	* value.h.in (struct Value): add FontFamily and guint32 cases.
+
+	* xaml.cpp (value_from_str): add case for FONTFAMILY.
+
+	* value.h, type-generated.cpp, dependencyproperty.g.cpp: regen.
+
 2009-01-27  Geoff Norton  <gnorton@novell.com>
 
 	* audio-pulse.cpp|h: Use the Deployment sourced from the player
