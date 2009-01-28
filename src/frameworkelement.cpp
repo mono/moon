@@ -439,7 +439,27 @@ FrameworkElement::Measure (Size availableSize)
 Size
 FrameworkElement::MeasureOverride (Size availableSize)
 {
-	return Size (0,0);
+	Size desired = Size (0,0);
+	Size specified = Size (GetWidth (), GetHeight ());
+
+	if (!IsLayoutContainer ())
+		return desired;
+	
+	availableSize = availableSize.Max (specified);
+	availableSize = availableSize.Min (specified);
+
+	VisualTreeWalker walker = VisualTreeWalker (this);
+	while (UIElement *child = walker.Step ()) {
+		if (child->GetVisibility () != VisibilityVisible)
+			continue;
+		
+		desired = child->GetDesiredSize ();
+	}
+
+	desired = desired.Max (specified);
+	desired = desired.Min (specified);
+
+	return desired;
 }
 
 
@@ -572,7 +592,33 @@ FrameworkElement::Arrange (Rect finalRect)
 Size
 FrameworkElement::ArrangeOverride (Size finalSize)
 {
-	return finalSize.Max (GetWidth (), GetHeight ());
+	if (!IsLayoutContainer ())
+		return finalSize.Max (GetWidth (), GetHeight ());
+
+	Size specified = Size (GetWidth (), GetHeight ());
+
+	finalSize = finalSize.Max (specified);
+	finalSize = finalSize.Min (specified);
+
+	VisualTreeWalker walker = VisualTreeWalker (this);
+	while (UIElement *child = walker.Step ()) {
+		if (child->GetVisibility () != VisibilityVisible)
+			continue;
+
+		Size desired = child->GetDesiredSize ();
+		Rect childRect (0,0,finalSize.width,finalSize.height);
+
+		if (GetHorizontalAlignment () != HorizontalAlignmentStretch)
+			childRect.width = MIN (desired.width, childRect.width);
+
+		if (GetVerticalAlignment () != VerticalAlignmentStretch)
+			childRect.height = MIN (desired.height, childRect.height);
+
+		child->Arrange (childRect);
+		finalSize = finalSize.Max (child->GetRenderSize ());
+	}
+
+	return finalSize;
 }
 
 bool

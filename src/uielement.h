@@ -207,7 +207,7 @@ public:
 	// 
 	Rect GetExtents () { return extents.Transform (&local_xform); }
 	virtual bool ClipToExtents () { return false; };
-	virtual bool IsLayoutContainer () { return false; }
+	virtual bool IsLayoutContainer () { return GetSubtreeObject () != NULL; }
 	
 	// 
 	// GetBounds:

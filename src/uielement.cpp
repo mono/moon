@@ -462,6 +462,7 @@ UIElement::ElementRemoved (UIElement *item)
 	item->CacheInvalidateHint ();
 	item->SetVisualParent (NULL);
 	item->ClearLoaded ();
+	InvalidateMeasure ();
 }
 
 void
@@ -477,6 +478,7 @@ UIElement::ElementAdded (UIElement *item)
 		item->OnLoaded ();
 
 	UpdateBounds (true);
+	InvalidateMeasure ();
 	item->InvalidateMeasure ();
 }
 
