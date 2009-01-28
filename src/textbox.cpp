@@ -1265,6 +1265,8 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		font->SetWeight (weight);
 	} else if (args->property == TextBox::AcceptsReturnProperty) {
 		// no rendering changes required
+	} else if (args->property == TextBox::IsReadOnlyProperty) {
+		changed = TextBoxModelChangedReadOnly;
 	} else if (args->property == TextBox::MaxLengthProperty) {
 		maxlen = args->new_value->AsInt32 ();
 	} else if (args->property == TextBox::SelectedTextProperty) {
@@ -1470,8 +1472,7 @@ TextBoxView::~TextBoxView ()
 	RemoveHandler (UIElement::KeyDownEvent, TextBoxView::key_down, this);
 	RemoveHandler (UIElement::KeyUpEvent, TextBoxView::key_up, this);
 	
-	if (blink_timeout != 0)
-		g_source_remove (blink_timeout);
+	DisconnectBlinkTimeout ();
 	
 	delete layout;
 }
@@ -1634,6 +1635,15 @@ TextBoxView::ConnectBlinkTimeout (guint multiplier)
 	blink_timeout = g_timeout_add (1000 * multiplier / CURSOR_DIVIDER, TextBoxView::blink, this);
 }
 
+void
+TextBoxView::DisconnectBlinkTimeout ()
+{
+	if (blink_timeout != 0) {
+		g_source_remove (blink_timeout);
+		blink_timeout = 0;
+	}
+}
+
 bool
 TextBoxView::Blink ()
 {
@@ -1656,9 +1666,7 @@ void
 TextBoxView::DelayCursorBlink ()
 {
 	if (textbox->GetSelection ()->length == 0) {
-		if (blink_timeout != 0)
-			g_source_remove (blink_timeout);
-		
+		DisconnectBlinkTimeout ();
 		ConnectBlinkTimeout (CURSOR_DELAY_MULTIPLIER);
 		ShowCursor ();
 	}
@@ -1675,11 +1683,7 @@ TextBoxView::BeginCursorBlink ()
 		}
 	} else {
 		// temporarily disable blinking during selection
-		if (blink_timeout != 0) {
-			g_source_remove (blink_timeout);
-			blink_timeout = 0;
-		}
-		
+		DisconnectBlinkTimeout ();
 		cursor_visible = true;
 	}
 }
@@ -1687,10 +1691,7 @@ TextBoxView::BeginCursorBlink ()
 void
 TextBoxView::EndCursorBlink ()
 {
-	if (blink_timeout != 0) {
-		g_source_remove (blink_timeout);
-		blink_timeout = 0;
-	}
+	DisconnectBlinkTimeout ();
 	
 	if (cursor_visible)
 		HideCursor ();
@@ -1891,6 +1892,14 @@ TextBoxView::OnModelChanged (TextBoxModelChangedEventArgs *args)
 	case TextBoxModelChangedTextWrapping:
 		// text wrapping changed, update our layout
 		dirty = layout->SetTextWrapping ((TextWrapping) args->property->new_value->AsInt32 ());
+		break;
+	case TextBoxModelChangedReadOnly:
+		if (focused) {
+			if (args->property->new_value->AsBool ())
+				BeginCursorBlink ();
+			else
+				EndCursorBlink ();
+		}
 		break;
 	case TextBoxModelChangedBrush:
 		// a brush has changed, no layout updates needed, we just need to re-render

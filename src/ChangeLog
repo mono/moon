@@ -1,3 +1,9 @@
+2009-01-28  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxView::OnModelChanged): Handle updates to
+	ReadOnly status.
+	(TextBox::OnPropertyChanged): Emit ReadOnly model-changed event.
+
 2009-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* uielement.h: Make Dispose public.

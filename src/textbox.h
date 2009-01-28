@@ -43,6 +43,7 @@ enum TextBoxModelChangeType {
 	TextBoxModelChangedCursorPosition,
 	TextBoxModelChangedTextAlignment,
 	TextBoxModelChangedTextWrapping,
+	TextBoxModelChangedReadOnly,
 	TextBoxModelChangedBrush,
 	TextBoxModelChangedFont
 };
@@ -84,6 +85,7 @@ class TextBox : public Control, public ITextSource {
 	int setvalue:1;
 	int frozen:3;
 	
+ protected:
 	int KeyPressUnichar (gunichar c);
 	
 	int KeyPressBackSpace (GdkModifierType modifiers);
@@ -106,12 +108,11 @@ class TextBox : public Control, public ITextSource {
 	void EmitTextChanged (bool sync = true);
 	
 	//
-	// Private Property Accessors
+	// Protected Property Accessors
 	//
 	void SetSelectionStart (int start);
 	void SetSelectionLength (int length);
 	
- protected:
  	virtual ~TextBox ();
 	
  public:
@@ -266,7 +267,6 @@ class TextBoxView : public FrameworkElement {
 	static void selection_changed (EventObject *sender, EventArgs *args, gpointer closure);
 	static void model_changed (EventObject *sender, EventArgs *args, gpointer closure);
 	static void text_changed (EventObject *sender, EventArgs *args, gpointer closure);
-	
 	void OnModelChanged (TextBoxModelChangedEventArgs *args);
 	void OnSelectionChanged (RoutedEventArgs *args);
 	void OnTextChanged (TextChangedEventArgs *args);
@@ -274,6 +274,7 @@ class TextBoxView : public FrameworkElement {
 	// cursor blink
 	static gboolean blink (void *user_data);
 	void ConnectBlinkTimeout (guint multiplier);
+	void DisconnectBlinkTimeout ();
 	void DelayCursorBlink ();
 	void BeginCursorBlink ();
 	void EndCursorBlink ();
