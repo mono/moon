@@ -1,5 +1,19 @@
 2009-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* dependencyobject.cpp: EventObject::GetDeployment: Fix warning.
+
+2009-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* audio.h:
+	* audio.cpp:
+	* audio-pulse.h:
+	* audio-alsa.cpp:
+	* audio-pulse.cpp: Every AudioSource already has deployment set (since
+	they inherit from EventObject), use that to set the current
+	deployment.
+
+2009-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* src.mdp: Updated.
 
 2009-01-27  Chris Toshok  <toshok@ximian.com>
