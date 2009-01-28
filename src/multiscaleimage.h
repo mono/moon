@@ -30,6 +30,10 @@ class MultiScaleImage : public MediaBase {
 	GHashTable *cache;
 	bool cache_contains (int layer, int x, int y);
 	char* context;
+	char* filename;
+
+	cairo_user_data_key_t width_key;
+	cairo_user_data_key_t height_key;
 
 	void DownloaderComplete ();
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);

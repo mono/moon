@@ -34,6 +34,7 @@ MultiScaleImage::MultiScaleImage ()
 	SetObjectType (Type::MULTISCALEIMAGE); 
 	source = NULL;
 	downloader = NULL;
+	filename = NULL;
 	cache = g_hash_table_new (g_str_hash, g_str_equal);
 }
 
@@ -80,11 +81,7 @@ MultiScaleImage::DownloadUri (const char* url)
 	if (!downloader)
 		return;
 
-	printf ("MSI::DownloadUri %s\n", url);
-//	gpointer context = g_strdup ("blah");;
-//	downloader->SetContext (context);
-
-
+//	printf ("MSI::DownloadUri %s\n", url);
 
 	downloader->Open ("GET", uri->ToString (), NoPolicy);
 
@@ -223,10 +220,9 @@ printf ("MSI::Render\n");
 	}
 
 	if (!source->get_tile_func) {
-		printf ("no get_tile_func set\n");
+		g_warning ("no get_tile_func set\n");
 		return;
 	}
-
 
 	double w = GetWidth ();
 	double h = GetHeight ();
@@ -258,46 +254,56 @@ printf ("MSI::Render\n");
 		layer_to_render --;
 	}
 
-	//render here
-	if (layer_to_render >= 0) {
+	//if there's a downloaded file pending, cache it
+	if (filename) {
 		guchar *data;
 		int stride;
-
 		GError *error = NULL;
-		char* filename = (char*)g_hash_table_lookup (cache, to_key (layer_to_render, 0, 0));
+		cairo_surface_t *image = NULL;
+
 		GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (filename, &error);
+		filename = NULL;
 		if (error) {
 			printf (error->message);
-			return;
+		} else {
+			stride = gdk_pixbuf_get_rowstride (pixbuf);
+			data = expand_rgb_to_argb (pixbuf, &stride);
+			int *p_width = new int (gdk_pixbuf_get_width (pixbuf));
+			int *p_height = new int (gdk_pixbuf_get_height (pixbuf));
+
+			//printf ("pb %d %d\n", *p_width, *p_height);
+
+			image = cairo_image_surface_create_for_data (data,
+								     MOON_FORMAT_RGB,
+								     *p_width,
+								     *p_height, 
+								     stride);
+			cairo_surface_set_user_data (image, &width_key, p_width, g_free);
+			cairo_surface_set_user_data (image, &height_key, p_height, g_free);
+			g_object_unref (pixbuf);
 		}
+		printf ("caching %s\n", context);
+		g_hash_table_insert (cache, g_strdup(context), image);
+	}
 
-
-		stride = gdk_pixbuf_get_rowstride (pixbuf);
-		data = expand_rgb_to_argb (pixbuf, &stride);
-
-//printf ("pb %d %d\n", gdk_pixbuf_get_width (pixbuf), gdk_pixbuf_get_height(pixbuf));
-
-		cairo_surface_t *image = cairo_image_surface_create_for_data (data,
-										MOON_FORMAT_RGB,
-										gdk_pixbuf_get_width (pixbuf),
-										gdk_pixbuf_get_height (pixbuf),
-										stride);
-
+	//render here
+	if (layer_to_render >= 0) {
+		cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, to_key (layer_to_render, 0, 0));
+	//FIXME check for NULL image here
+		int *p_w = (int*)(cairo_surface_get_user_data (image, &width_key));
+		int *p_h = (int*)(cairo_surface_get_user_data (image, &height_key));
 		cairo_save (cr);
 
 		cairo_rectangle (cr, 0, 0, w, h);
 		cairo_scale (cr, w / vp_w, h / vp_h);
-//		cairo_scale (cr, vp_w / w, vp_h / h);
 		cairo_translate (cr, -vp_ox, -vp_oy);
-//		cairo_rectangle (cr, vp_ox, vp_oy, vp_w, vp_h);
-		cairo_scale (cr, (double)source->GetImageWidth() / gdk_pixbuf_get_width (pixbuf), (double)source->GetImageHeight () / gdk_pixbuf_get_height (pixbuf)); 
+		cairo_scale (cr, (double)source->GetImageWidth() / (double)*p_w, (double)source->GetImageHeight () / (double)*p_h); 
 		cairo_set_source_surface (cr, image, 0, 0);
 
 		cairo_fill (cr);
 		cairo_restore (cr);
 
-		g_object_unref (pixbuf);
-		cairo_surface_destroy (image);
+		//cairo_surface_destroy (image);
 	}
 
 	if (layer_to_render < to_layer) {
@@ -327,16 +333,13 @@ printf ("MSI::Render\n");
 void
 MultiScaleImage::DownloaderComplete ()
 {
-	char *filename;
+	if (filename)
+		g_free (filename);
 
 	if (!(filename = g_strdup(downloader->getFileDownloader ()->GetDownloadedFile ())))
 		return;
 
-//	char* context = (char*)downloader->GetContext ();
 	printf ("dl completed %s\n", filename);
-
-	//adding to cache. the key should be passed through context, but it's crashing :/
-	g_hash_table_insert (cache, g_strdup(context), filename);
 
 	Invalidate ();
 }
