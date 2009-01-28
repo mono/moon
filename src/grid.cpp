@@ -123,7 +123,7 @@ Grid::MeasureOverride (Size availableSize)
 	
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
-		if (!child->GetRenderVisible ())
+		if (child->GetVisibility () != VisibilityVisible)
 			continue;
 
 		gint32 col, row;
@@ -245,7 +245,7 @@ Grid::ArrangeOverride (Size finalSize)
 
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
-		if (!child->GetRenderVisible ())
+		if (child->GetVisibility () != VisibilityVisible)
 			continue;
 
 		gint32 col = MIN (Grid::GetColumn (child), col_count - 1);
@@ -306,7 +306,7 @@ Grid::ArrangeOverride (Size finalSize)
 		GridLength* height = rowdef->GetHeight();
 
 		if (height->type == GridUnitTypeStar)
-			rowdef->SetActualHeight (rowdef->GetActualHeight () + (remaining.height * height->val / row_stars));
+			rowdef->SetActualHeight (MAX (rowdef->GetActualHeight () + (remaining.height * height->val / row_stars), 0));
 	}
 
 	for (int i = 0; i < col_count; i ++) {
@@ -314,12 +314,12 @@ Grid::ArrangeOverride (Size finalSize)
 		GridLength* width = coldef->GetWidth();
 
 		if (width->type == GridUnitTypeStar)
-			coldef->SetActualWidth (coldef->GetActualWidth () + (remaining.width * width->val / col_stars));
+			coldef->SetActualWidth (MAX (coldef->GetActualWidth () + (remaining.width * width->val / col_stars), 0));
 	}
 
 	walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
-		if (!child->GetRenderVisible ())
+		if (child->GetVisibility () != VisibilityVisible)
 			continue;
 
 		gint32 col = MIN (Grid::GetColumn (child), col_count - 1);
