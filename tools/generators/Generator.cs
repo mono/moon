@@ -1263,6 +1263,7 @@ class Generator {
 		f ("TimeSpan", "TIMESPAN");
 		f ("System.Windows.Application", "APPLICATION");
 		f ("System.Windows.Thickness", "THICKNESS");
+		f ("System.Windows.CornerRadius", "CORNERRADIUS");
 		f ("System.Windows.FontStretch", "FONTSTRETCH");
 		f ("System.Windows.Media.FontFamily", "FONTFAMILY");
 		f ("System.Windows.Markup.XmlLanguage", "XMLLANGUAGE");
