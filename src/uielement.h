@@ -40,6 +40,7 @@ class Surface;
 class UIElement : public DependencyObject {
 public:
 	UIElement ();
+	virtual void Dispose ();
 	
 	int dirty_flags;
 	List::Node *up_dirty_node;
@@ -460,7 +461,6 @@ public:
 
 protected:
 	virtual ~UIElement ();
-	virtual void Dispose ();
 	Rect IntersectBoundsWithClipPath (Rect bounds, bool transform);
 	void RenderClipPath (cairo_t *cr);
 

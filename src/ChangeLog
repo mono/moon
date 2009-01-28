@@ -1,5 +1,9 @@
 2009-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* uielement.h: Make Dispose public.
+
+2009-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* codec-version.h.in:
 	* dependencyobject.h:
 	* dependencyobject.cpp: EventObject: Make the flags field an gint32
