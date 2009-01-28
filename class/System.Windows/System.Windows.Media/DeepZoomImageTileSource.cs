@@ -32,15 +32,15 @@ namespace System.Windows.Media
 		
 		protected override void GetTileLayers (int tileLevel, int tilePositionX, int tilePositionY, IList<object> tileImageLayerSources)
 		{
-			Console.WriteLine ("GetTileLayers {0}", tileLevel);
+			Console.WriteLine ("GetTileLayers {0} {1} {2}", tileLevel, tilePositionX, tilePositionY);
 			Level l;
 			if (!levels.TryGetValue (tileLevel, out l))
 				return;
 
 			//FIXME, check tile-presence
-			if (l.width < l.tile_width && l.height < l.tile_height) {
+			if (l.tile_width * tilePositionX <= l.width && l.tile_height * tilePositionY <= l.height) {
 				string uri = UriSource.ToString ();
-				uri = String.Format ("{0}/{1}/0_0.jpg", uri.Substring (0, uri.LastIndexOf ('/')), tileLevel);
+				uri = String.Format ("{0}/{1}/{2}_{3}.jpg", uri.Substring (0, uri.LastIndexOf ('/')), tileLevel, tilePositionX, tilePositionY);
 				tileImageLayerSources.Add (new Uri (uri, UriSource.IsAbsoluteUri ? UriKind.Absolute : UriKind.Relative));
 				return;
 			}
