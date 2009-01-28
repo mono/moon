@@ -120,10 +120,12 @@ Grid::MeasureOverride (Size availableSize)
 			coldef->SetActualWidth (width->val);
 
 	}
+	
+	VisualTreeWalker walker = VisualTreeWalker (this);
+	while (UIElement *child = walker.Step ()) {
+		if (!child->GetRenderVisible ())
+			continue;
 
-	UIElementCollection *children = GetChildren ();
-	for (int i = 0; i < children->GetCount(); i ++) {
-		UIElement *child = children->GetValueAt(i)->AsUIElement ();
 		gint32 col, row;
 		gint32 colspan, rowspan;
 
@@ -243,6 +245,9 @@ Grid::ArrangeOverride (Size finalSize)
 
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
+		if (!child->GetRenderVisible ())
+			continue;
+
 		gint32 col = MIN (Grid::GetColumn (child), col_count - 1);
 		gint32 row = MIN (Grid::GetRow (child), row_count - 1);
 		//gint32 colspan = Grid::GetColumnSpan (child);
@@ -314,6 +319,9 @@ Grid::ArrangeOverride (Size finalSize)
 
 	walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
+		if (!child->GetRenderVisible ())
+			continue;
+
 		gint32 col = MIN (Grid::GetColumn (child), col_count - 1);
 		gint32 row = MIN (Grid::GetRow (child), row_count - 1);
 		gint32 colspan = MIN (Grid::GetColumnSpan (child), col_count - col);

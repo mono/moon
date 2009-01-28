@@ -416,6 +416,14 @@ FrameworkElement::Arrange (Rect finalRect)
 	
 	doarrange |= slot ? *slot != finalRect : true;
 
+
+	if (finalRect.width < 0 || finalRect.height < 0 
+	    || isinf (finalRect.width) || isinf (finalRect.height)
+	    || isnan (finalRect.width) || isnan (finalRect.height)) {
+		g_warning ("invalid arguments to Arrange ()");
+		return;
+	}
+
 	if (!doarrange)
 		return;
 	
