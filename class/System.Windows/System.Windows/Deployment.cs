@@ -271,6 +271,7 @@ namespace System.Windows {
 			}
 
 			SetCurrentApplication (instance);
+			NativeMethods.event_object_unref (instance.NativeHandle);
 
 			return true;
 		}

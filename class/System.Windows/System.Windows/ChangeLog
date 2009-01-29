@@ -1,3 +1,7 @@
+2009-01-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Deployment.cs: Unref the application when we're done with it.
+
 2009-01-29  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* PresentationFrameworkCollection.cs: Fix Count DP to be a double.
