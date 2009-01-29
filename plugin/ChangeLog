@@ -1,5 +1,10 @@
 2009-01-28  Larry Ewing  <lewing@novell.com>
 
+	* plugin-debug.cpp: show VisualChild on all FEs so that we can
+	navigate into ContentPresenter.
+
+2009-01-28  Larry Ewing  <lewing@novell.com>
+
 	* plugin-debug.cpp (reflect_value): add more value types.
 
 2009-01-28  Sebastien Pouliot  <sebastien@ximian.com>

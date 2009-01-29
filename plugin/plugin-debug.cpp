@@ -287,7 +287,7 @@ reflect_dependency_object_in_tree (DependencyObject *obj, GtkTreeStore *store, G
 		}
 	}
 
-	if (obj->Is(Type::CONTROL)) {
+	if (obj->Is(Type::FRAMEWORKELEMENT)) {
 		GtkTreeIter subobject_iter;
 
 		gtk_tree_store_append (store, &subobject_iter, node);
