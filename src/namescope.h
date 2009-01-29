@@ -34,6 +34,7 @@ class NameScope : public DependencyObject {
 	static DependencyProperty *NameScopeProperty;
 	
 	NameScope ();
+	virtual void Dispose ();
 	
 	void RegisterName (const char *name, DependencyObject *object);
 	void UnregisterName (const char *name);

@@ -37,6 +37,15 @@ NameScope::~NameScope ()
 }
 
 void
+NameScope::Dispose ()
+{
+	if (names)
+		g_hash_table_foreach_remove (names, remove_handler, this);
+		
+	DependencyObject::Dispose ();
+}
+
+void
 NameScope::ObjectDestroyedEvent (EventObject *sender, EventArgs *args, gpointer closure)
 {
 	NameScope *ns = (NameScope*)closure;

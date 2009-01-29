@@ -1,5 +1,11 @@
 2009-01-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* namescope.h:
+	* namescope.cpp: Namespace: Implement Dispose and remove all entries
+	from our names hash table there.
+
+2009-01-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* xaml.cpp: XamlLoader::CreateFromFile: Add a ref to avoid a crash later
 	on upon destruction.
 
