@@ -1,5 +1,10 @@
 2009-01-29  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* DeepZoomImageTileSource.cs: parse the 2.0 final 
+	format for images. drop most of the current code
+
+2009-01-29  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* MultiScaleTileSource.cs: image size is in long
 
 2009-01-29  Stephane Delcroix  <sdelcroix@novell.com>
