@@ -158,7 +158,7 @@ class TextBlockDynamicPropertyValueProvider : public PropertyValueProvider {
 	
 	virtual Value *GetPropertyValue (DependencyProperty *property)
 	{
-		if (property != TextBlock::ActualHeightProperty && property != TextBlock::ActualWidthProperty)
+		if (property != FrameworkElement::ActualHeightProperty && property != FrameworkElement::ActualWidthProperty)
 			return NULL;
 		
 		TextBlock *tb = (TextBlock *) obj;
@@ -170,7 +170,7 @@ class TextBlockDynamicPropertyValueProvider : public PropertyValueProvider {
 			tb->CalcActualWidthHeight (NULL);
 		}
 		
-		if (property == TextBlock::ActualHeightProperty) {
+		if (property == FrameworkElement::ActualHeightProperty) {
 			if (!actual_height_value)
 				actual_height_value = new Value (tb->actual_height);
 			return actual_height_value;
@@ -196,6 +196,8 @@ TextBlock::TextBlock ()
 	downloader = NULL;
 	
 	layout = new TextLayout ();
+	
+	constraint = Size (INFINITY, INFINITY);
 	actual_height = 0.0;
 	actual_width = 0.0;
 	dirty = true;
@@ -274,28 +276,6 @@ TextBlock::Render (cairo_t *cr, Region *region)
 	cairo_restore (cr);
 }
 
-void 
-TextBlock::ComputeBounds ()
-{
-	extents = Rect (0, 0, GetBoundingWidth (), GetBoundingHeight ());
-	bounds_with_children = bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
-}
-
-Point
-TextBlock::GetTransformOrigin ()
-{
-	Point *user_xform_origin = GetRenderTransformOrigin ();
-	
-	return Point (user_xform_origin->x * GetBoundingWidth (), user_xform_origin->y * GetBoundingHeight ());
-}
-
-void
-TextBlock::GetSizeForBrush (cairo_t *cr, double *width, double *height)
-{
-	*height = GetActualHeight ();
-	*width = GetActualWidth ();
-}
-
 void
 TextBlock::CalcActualWidthHeight (cairo_t *cr)
 {
@@ -321,13 +301,82 @@ TextBlock::CalcActualWidthHeight (cairo_t *cr)
 }
 
 void
+TextBlock::GetSizeForBrush (cairo_t *cr, double *width, double *height)
+{
+	*width = actual_width;
+	*height = actual_height;
+}
+
+void
+TextBlock::ComputeBounds ()
+{
+	extents = Rect (0, 0, actual_width, actual_height);
+	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
+	bounds_with_children = bounds;
+}
+
+Point
+TextBlock::GetTransformOrigin ()
+{
+	Point *user_xform_origin = GetRenderTransformOrigin ();
+
+	return Point (actual_width * user_xform_origin->x, 
+		      actual_height * user_xform_origin->y);
+}
+
+Size
+TextBlock::MeasureOverride (Size availableSize)
+{
+	dirty = true;
+
+	constraint = availableSize;
+
+	if (constraint.width == 0 && constraint.height == 0)
+		constraint = Size (INFINITY, INFINITY);
+
+	CalcActualWidthHeight (NULL);
+	
+	//printf ("measure actual = %g, %g\n", actual_width, actual_height);
+
+	return availableSize.Min (actual_width, actual_height);
+}
+
+Size
+TextBlock::ArrangeOverride (Size finalSize)
+{
+	dirty = true;
+
+	constraint = finalSize;
+	
+	// Hack around the funky canvas logic in layout //
+	if (constraint.width <= 0 || constraint.height <= 0)
+		constraint = Size (INFINITY, INFINITY);
+
+	CalcActualWidthHeight (NULL);
+	
+	//printf ("arrange actual = %g, %g\n", actual_width, actual_height);
+
+	return finalSize.Max (actual_width, actual_height);
+}
+
+void
 TextBlock::Layout (cairo_t *cr)
 {
 	InlineCollection *inlines = GetInlines ();
-	double width = GetWidth ();
+	double width = constraint.width;
 	const char *text;
 	List *runs;
-	
+
+	/* 
+	 *  in the layout case this should already be handled
+	 *  but we do it anyway to help
+	 */
+	if (!isnan (width))
+		width = GetWidth ();
+
+	if (width == 0)
+		width == INFINITY;
+
 	if (!(text = GetText ())) {
 		// If the TextBlock's Text property is not set,
 		// then don't modify ActualHeight.
@@ -336,10 +385,10 @@ TextBlock::Layout (cairo_t *cr)
 		actual_width = 0.0;
 		goto done;
 	}
-	
+
 	runs = new List ();
 	
-	if (!isnan (width)) {
+	if (!isinf (width)) {
 		Thickness *padding = GetPadding ();
 		double pad = padding->left + padding->right;
 		

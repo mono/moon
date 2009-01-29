@@ -5,8 +5,8 @@
 
 	<ScrollViewer Canvas.Top="100" Canvas.Left="100" Width="100" Height="200" >
 		<ScrollViewer.Content>
-			<Button Content="THIS IS INSIDE A SCROLLVIEWER, BITCHES" />
+		  <Button Content="THIS IS INSIDE A SCROLLVIEWER, BITCHES" />
 		</ScrollViewer.Content>
 	</ScrollViewer>
-
+	<Button Content="THIS IS OUTSIDE A SCROLLVIEWER, BITCHES" />
 </Canvas>

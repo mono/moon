@@ -161,6 +161,7 @@ class TextBlock : public FrameworkElement {
 	Downloader *downloader;
 	TextLayout *layout;
 	
+	Size constraint;
 	double actual_height;
 	double actual_width;
 	bool setvalue;
@@ -173,34 +174,6 @@ class TextBlock : public FrameworkElement {
 	char *GetTextInternal ();
 	bool SetTextInternal (const char *text);
 	
-	double GetBoundingWidth ()
-	{
-		double actual = GetActualWidth ();
-		double width = GetWidth ();
-		
-		if (isnan (width))
-			return actual;
-		
-		if (width> actual)
-			return width;
-		
-		return actual;
-	}
-	
-	double GetBoundingHeight ()
-	{
-		double actual = GetActualHeight ();
-		double height = GetHeight();
-		
-		if (isnan (height))
-			return actual;
-		
-		if (height > actual)
-			return height;
-		
-		return actual;
-	}
-	
 	void DownloaderComplete ();
 	
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
@@ -209,10 +182,6 @@ class TextBlock : public FrameworkElement {
 	virtual ~TextBlock ();
 	
  public:
- 	/* @PropertyType=double,ReadOnly */
-	static DependencyProperty *ActualHeightProperty;
- 	/* @PropertyType=double,ReadOnly */
-	static DependencyProperty *ActualWidthProperty;
  	/* @PropertyType=FontFamily,DefaultValue=FontFamily(TEXTBLOCK_FONT_FAMILY),GenerateAccessors */
 	static DependencyProperty *FontFamilyProperty;
  	/* @PropertyType=double,DefaultValue=TEXTBLOCK_FONT_SIZE,GenerateAccessors */
@@ -255,30 +224,15 @@ class TextBlock : public FrameworkElement {
 	// Overrides
 	//
 	virtual void Render (cairo_t *cr, Region *region);
-	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
+	virtual Size MeasureOverride (Size availableSize);
+	virtual Size ArrangeOverride (Size finalSize);
 	virtual void ComputeBounds ();
 	virtual Point GetTransformOrigin ();
+	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
-	
-	//
-	// Property Accessors
-	//
-	double GetActualWidth ()
-	{
-		if (dirty)
-			CalcActualWidthHeight (NULL);
-		return actual_width;
-	}
-	
-	double GetActualHeight ()
-	{
-		if (dirty)
-			CalcActualWidthHeight (NULL);
-		return actual_height;
-	}
 	
 	void SetFontFamily (FontFamily *family);
 	FontFamily *GetFontFamily ();

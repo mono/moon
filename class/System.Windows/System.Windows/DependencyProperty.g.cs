@@ -779,8 +779,6 @@ namespace System.Windows.Controls {
 	}
 
 	partial class TextBlock {
-		public static readonly DependencyProperty ActualHeightProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "ActualHeight", typeof (double));
-		public static readonly DependencyProperty ActualWidthProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "ActualWidth", typeof (double));
 		public static readonly DependencyProperty FontFamilyProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontFamily", typeof (FontFamily));
 		public static readonly DependencyProperty FontSizeProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontSize", typeof (double));
 		public static readonly DependencyProperty FontStretchProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontStretch", typeof (FontStretch));
@@ -795,14 +793,6 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty TextDecorationsProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "TextDecorations", typeof (TextDecorationCollection));
 		public static readonly DependencyProperty TextProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "Text", typeof (string));
 		public static readonly DependencyProperty TextWrappingProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "TextWrapping", typeof (TextWrapping));
-
-		public double ActualHeight {
-			get { return (double) GetValue (ActualHeightProperty); }
-		}
-
-		public double ActualWidth {
-			get { return (double) GetValue (ActualWidthProperty); }
-		}
 
 		public FontFamily FontFamily {
 			get { return (FontFamily) GetValue (FontFamilyProperty); }

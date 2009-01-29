@@ -1,3 +1,10 @@
+2009-01-29  Larry Ewing  <lewing@novell.com>
+
+	* text.cpp, text.h: implement basic layout size rules and strip
+	the custom actual* properties.  Still a hack but passable for now.
+
+	regenerate.
+
 2009-01-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* runtime.h:

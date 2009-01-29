@@ -339,8 +339,6 @@ dependency_property_g_init (void)
 	StylusPoint::PressureFactorProperty = DependencyProperty::Register (Type::STYLUSPOINT, "PressureFactor", new Value (0.5), Type::DOUBLE);
 	StylusPoint::XProperty = DependencyProperty::Register (Type::STYLUSPOINT, "X", new Value (0.0), Type::DOUBLE);
 	StylusPoint::YProperty = DependencyProperty::Register (Type::STYLUSPOINT, "Y", new Value (0.0), Type::DOUBLE);
-	TextBlock::ActualHeightProperty = DependencyProperty::RegisterFull (Type::TEXTBLOCK, "ActualHeight", NULL, Type::DOUBLE, false, true, false, NULL, NULL);
-	TextBlock::ActualWidthProperty = DependencyProperty::RegisterFull (Type::TEXTBLOCK, "ActualWidth", NULL, Type::DOUBLE, false, true, false, NULL, NULL);
 	TextBlock::FontFamilyProperty = DependencyProperty::Register (Type::TEXTBLOCK, "FontFamily", new Value (FontFamily(TEXTBLOCK_FONT_FAMILY)), Type::FONTFAMILY);
 	TextBlock::FontFilenameProperty = DependencyProperty::Register (Type::TEXTBLOCK, "FontFilename", Type::STRING);
 	TextBlock::FontSizeProperty = DependencyProperty::Register (Type::TEXTBLOCK, "FontSize", new Value (TEXTBLOCK_FONT_SIZE), Type::DOUBLE);
@@ -688,8 +686,6 @@ DependencyProperty *StylusInfo::IsInvertedProperty = NULL;
 DependencyProperty *StylusPoint::PressureFactorProperty = NULL;
 DependencyProperty *StylusPoint::XProperty = NULL;
 DependencyProperty *StylusPoint::YProperty = NULL;
-DependencyProperty *TextBlock::ActualHeightProperty = NULL;
-DependencyProperty *TextBlock::ActualWidthProperty = NULL;
 DependencyProperty *TextBlock::FontFamilyProperty = NULL;
 DependencyProperty *TextBlock::FontFilenameProperty = NULL;
 DependencyProperty *TextBlock::FontSizeProperty = NULL;
