@@ -377,6 +377,15 @@ Surface::~Surface ()
 }
 
 void
+Surface::Dispose ()
+{
+	if (toplevel)
+		toplevel->Dispose ();
+	
+	EventObject::Dispose ();
+}
+
+void
 Surface::Zombify ()
 {
 	time_manager->Shutdown ();
@@ -882,6 +891,8 @@ Surface::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpo
 	
 	if (event->area.x > (off_x + active_window->GetWidth()) || event->area.y > (off_y + active_window->GetHeight()))
 		return;
+
+	SetCurrentDeployment ();
 
 #if TIME_REDRAW
 	STARTTIMER (expose, "redraw");

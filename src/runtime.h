@@ -129,6 +129,7 @@ class Surface : public EventObject {
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	Surface (MoonWindow *window, bool silverlight2);
+	virtual void Dispose ();
 	
 	/* @GenerateCBinding */
 	MoonWindow *GetWindow () { return active_window; }

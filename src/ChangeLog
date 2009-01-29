@@ -1,5 +1,11 @@
 2009-01-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* runtime.h:
+	* runtime.cpp: Surface: Implement Dispose and call Dispose on the
+	toplevel object. PaintToDrawable: Update current deployment.
+
+2009-01-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* uielement.cpp: Dispose: add a null-check, and only walk the visual
 	tree if we haven't been disposed already.
 

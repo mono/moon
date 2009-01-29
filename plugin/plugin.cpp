@@ -468,6 +468,7 @@ PluginInstance::~PluginInstance ()
 	if (surface != NULL) {
 		//gdk_error_trap_push ();
 		surface->Zombify();
+		surface->Dispose ();
 		surface->unref_delayed();
 		//gdk_display_sync (display);
 		//gdk_error_trap_pop ();
@@ -477,6 +478,7 @@ PluginInstance::~PluginInstance ()
 		delete bridge;
 	bridge = NULL;
 
+	deployment->Dispose ();
 	deployment->unref_delayed();
 #if DEBUG
 	delete moon_sources;
@@ -1753,6 +1755,7 @@ PluginXamlLoader::TryLoad (int *error)
 			d(printf ("PluginXamlLoader::TryLoad: Could not load xaml %s: %s (error: %s attr=%s)\n",
 				  GetFilename () ? "file" : "string", GetFilename () ? GetFilename () : GetString (),
 				  error_args->xml_element, error_args->xml_attribute));
+			error_args->ref ();
 			GetSurface ()->EmitError (error_args);
 			return NULL;
 		} else {
