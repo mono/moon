@@ -152,6 +152,7 @@ public:
 	bool IsDisposed ();
 	
 	Deployment *GetDeployment ();
+	void SetCurrentDeployment ();
 	
 protected:
 	virtual ~EventObject ();
@@ -193,6 +194,7 @@ class DependencyObject : public EventObject {
 public:
  	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject ();
+	virtual void Dispose ();
 
 	void Freeze ();
 

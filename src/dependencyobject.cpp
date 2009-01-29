@@ -232,10 +232,23 @@ EventObject::GetDeployment ()
 	if (deployment == NULL)
 		g_warning ("EventObject::GetDeployment () should not be reached with a null deployment");
 	
-	if (deployment != Deployment::GetCurrent () && Deployment::GetCurrent () != NULL)
+	if (deployment != Deployment::GetCurrent () && Deployment::GetCurrent () != NULL) {
 		g_warning ("EventObject::GetDeployment () our deployment %p doesn't match Deployment::GetCurrent () %p", deployment, Deployment::GetCurrent ());
+		// print_stack_trace ();
+	}
 	
 	return deployment;
+}
+
+void
+EventObject::SetCurrentDeployment ()
+{
+	if (deployment == NULL)
+		g_warning ("EventObject::SetCurrentDeployment (): should not be reached with a null deployment.");
+
+	// Sanity: maybe check if Deployment::GetCurrent is null at some later stage (when we actually do set current deployment to null)
+	
+	Deployment::SetCurrent (deployment);
 }
 
 Surface *
@@ -261,10 +274,22 @@ EventObject::GetSurface ()
 void
 EventObject::Dispose ()
 {
+	if (!IsDisposed ()) {
+		// Dispose can be called multiple times, but Emit only once. When DestroyedEvent was in the dtor, 
+		// it could only ever be emitted once, don't change that behaviour.
+		Emit (DestroyedEvent); // TODO: Rename to DisposedEvent
+	}
+		
 	SetSurface (NULL);
 	// Remove attached flag and set the disposed flag.
 	flags = (Flags) (flags & ~Attached);
 	flags = (Flags) (flags | Disposed);
+}
+
+bool
+EventObject::IsDisposed ()
+{
+	return (flags & Disposed) != 0;
 }
 
 void
@@ -317,9 +342,6 @@ EventObject::unref ()
 		unref_delayed ();
 		return;
 	}
-
-	if (refcount == 1)
-		Emit (DestroyedEvent);
 
 	delete_me = g_atomic_int_dec_and_test (&refcount);
 
@@ -1414,7 +1436,7 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 }
 
 static gboolean
-free_value (gpointer key, gpointer value, gpointer data)
+dispose_value (gpointer key, gpointer value, gpointer data)
 {
 	Value *v = (Value *) value;
 	
@@ -1426,6 +1448,9 @@ free_value (gpointer key, gpointer value, gpointer data)
 		DependencyObject *dob = v->AsDependencyObject();
 		
 		if (dob != NULL) {
+			dob->Dispose (); 
+			// TODO: Confirm that the three next lines are not required (they should be done in the Dispose)
+		
 			// unset its logical parent
 			dob->SetLogicalParent (NULL, NULL);
 
@@ -1486,18 +1511,30 @@ free_listener (gpointer data, gpointer user_data)
 
 DependencyObject::~DependencyObject ()
 {
+	g_hash_table_destroy (current_values);
+	current_values = NULL;
+	delete[] providers;
+	providers = NULL;
+}
+
+void
+DependencyObject::Dispose ()
+{	
 	if (listener_list != NULL) {
 		g_slist_foreach (listener_list, free_listener, NULL);
 		g_slist_free (listener_list);
+		listener_list = NULL;
 	}
 
 	RemoveAllListeners();
-	g_hash_table_foreach_remove (current_values, free_value, this);
-	g_hash_table_destroy (current_values);
-
-	for (int i = 0; i < PropertyPrecedence_Count; i ++)
+	g_hash_table_foreach_remove (current_values, dispose_value, this);
+	
+	for (int i = 0; i < PropertyPrecedence_Count; i ++) {
 		delete providers[i];
-	delete[] providers;
+		providers [i] = NULL;
+	}
+	
+	EventObject::Dispose ();
 }
 
 DependencyProperty *

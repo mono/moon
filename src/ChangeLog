@@ -1,5 +1,12 @@
 2009-01-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* dependencyobject.h:
+	* dependencyobject.cpp: EventObject: Added SetCurrentDeployment: updates
+	Deployment::Current. Emit DestroyedEvent in Dispose instead of the
+	dtor.
+
+2009-01-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaelement.h:
 	* mediaelement.cpp: Implement Dispose and put most of the cleanup there
 	instead of in the dtor. media_element_advance_frame: we need to set
