@@ -1839,8 +1839,10 @@ XamlLoader::CreateFromFile (const char *xaml_file, bool create_namescope,
 	
 	if (!parser_info)
 		error_args = new ParserErrorEventArgs ("Error opening xaml file", xaml_file, 0, 0, 1, "", "");
-	else if (parser_info->error_args)
+	else if (parser_info->error_args) {
 		error_args = parser_info->error_args;
+		error_args->ref ();
+	}
 	
 	delete stream;
 	

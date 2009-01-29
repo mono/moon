@@ -1,5 +1,10 @@
 2009-01-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* xaml.cpp: XamlLoader::CreateFromFile: Add a ref to avoid a crash later
+	on upon destruction.
+
+2009-01-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* dependencyobject.h:
 	* dependencyobject.cpp: EventObject: Added SetCurrentDeployment: updates
 	Deployment::Current. Emit DestroyedEvent in Dispose instead of the
