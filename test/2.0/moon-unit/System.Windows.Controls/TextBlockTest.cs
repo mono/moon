@@ -97,6 +97,22 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		public void MeasureTooLongLineWrapTest ()
+		{
+			Border b = new Border ();
+			TextBlock tb = new TextBlock ();
+			tb.Text = "Hello and don't you forget Who I am";
+			tb.TextWrapping = TextWrapping.Wrap;
+
+			b.Child = tb;
+			b.Width = 44;
+
+			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			
+			Assert.AreEqual (new Size (33,112), tb.DesiredSize, "tb.DesiredSize 0");
+		}
+
+		[TestMethod]
 		public void ArrangeTooLongLineTest ()
 		{
 			Border b = new Border ();
@@ -110,6 +126,8 @@ namespace MoonTest.System.Windows.Controls {
 			
 			Assert.AreEqual (new Size (44,16), tb.DesiredSize, "tb.DesiredSize 0");
 			Assert.AreEqual (new Size (44,16), b.DesiredSize, "1b.DesiredSize 0");
+			Assert.IsTrue (tb.ActualWidth < 202.4 && tb.ActualWidth > 202.3, "tb.ActualWidth is " + tb.ActualWidth.ToString ());
+			Assert.AreEqual (16, tb.ActualHeight, "tb.ActualHeight");
 
 			b.Arrange (new Rect (0,0, b.DesiredSize.Width, b.DesiredSize.Height));
 
@@ -118,6 +136,35 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsTrue (tb.ActualWidth > 202.3 && tb.ActualWidth < 202.4,"tb.ActualWidth is " + tb.ActualWidth.ToString ());
 			Assert.AreEqual (16, tb.ActualHeight, "tb.ActualHeight");
 			Assert.AreEqual (new Size (44,16), new Size (b.ActualWidth, b.ActualHeight), "b.Actual*");
+		}
+
+		[TestMethod]
+		public void ComputeActualWidth ()
+		{
+			var c = new TextBlock ();
+			
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c.DesiredSize 0");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c.Actual 0");
+			
+			c.Text = "Hello";
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
+			Assert.IsTrue (c.ActualWidth < 27.6 && c.ActualWidth > 27.5, "c.ActualWidth is " + c.ActualWidth.ToString ());
+			Assert.AreEqual (16, c.ActualHeight, "c.ActualHeight");
+
+			c.MaxWidth = 25;
+			c.Width = 50;
+			c.MinHeight = 33;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired1");
+			Assert.IsTrue (c.ActualWidth < 27.6 && c.ActualWidth > 27.5, "c.ActualWidth1 is " + c.ActualWidth.ToString ());
+			Assert.AreEqual (16, c.ActualHeight, "c.ActualHeight1");
+
+			c.Measure (new Size (100, 100));
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired2");
+			Assert.IsTrue (c.ActualWidth < 27.6 && c.ActualWidth > 27.5, "c.ActualWidth2 is " + c.ActualWidth.ToString ());
+			Assert.AreEqual (16, c.ActualHeight, "c.ActualHeight2");
 		}
 	}
 }
