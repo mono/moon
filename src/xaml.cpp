@@ -65,6 +65,7 @@ class XamlParserInfo;
 class XamlNamespace;
 class DefaultNamespace;
 class XNamespace;
+class PrimitiveNamespace;
 class XamlElementInfoNative;
 class XamlElementInstanceNative;
 class XamlElementInstanceValueType;
@@ -89,6 +90,10 @@ static const char* default_namespace_names [] = {
 	"http://schemas.microsoft.com/client/2007/deployment",
 	NULL
 };
+
+#define X_NAMESPACE_URI "http://schemas.microsoft.com/winfx/2006/xaml"
+#define PRIMITIVE_NAMESPACE_URI "clr-namespace:System;assembly=mscorlib"
+
 
 static const char* begin_buffering_element_names [] = {
 	"DataTemplate",
@@ -962,10 +967,53 @@ class XNamespace : public XamlNamespace {
 		return false;
 	}
 
-	virtual const char* GetUri () { return "http://schemas.microsoft.com/winfx/2006/xaml"; }
+	virtual const char* GetUri () { return X_NAMESPACE_URI; }
 	virtual const char* GetPrefix () { return "x"; }
 };
 
+
+class PrimitiveNamespace : public XamlNamespace {
+
+ private:
+	char *prefix;
+
+
+ public:
+	PrimitiveNamespace (char *prefix)
+	{
+		this->prefix = prefix;
+	}
+
+	virtual ~PrimitiveNamespace ()
+	{
+		if (prefix)
+			g_free (prefix);
+	}
+
+	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el, const char **attr, bool create)
+	{
+		if (!strcmp ("String", el)) {
+			Type* t = Type::Find ("string");
+			return new XamlElementInfoNative (t);
+		} else if (!strcmp ("Int32", el)) {
+			Type* t = Type::Find ("int32");
+			return new XamlElementInfoNative (t);
+		} else if (!strcmp ("Double", el)) {
+			Type* t = Type::Find ("double");
+			return new XamlElementInfoNative (t);
+		}
+
+		return NULL;
+	}
+
+	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse)
+	{
+		return false;
+	}
+
+	virtual const char* GetUri () { return PRIMITIVE_NAMESPACE_URI; }
+	virtual const char* GetPrefix () { return prefix; }
+};
 
 static void
 destroy_created_namespace (gpointer data, gpointer user_data)
@@ -1464,7 +1512,7 @@ start_element_handler (void *data, const char *el, const char **attr)
 	char **name = g_strsplit (el, "|",  -1);
 	XamlNamespace *next_namespace = NULL;
 	char *element = NULL;
-	
+
 	if (g_strv_length (name) == 2) {
 		// Find the proper namespace for our next element
 		next_namespace = (XamlNamespace *) g_hash_table_lookup (p->namespace_map, name [0]);
@@ -1647,8 +1695,12 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 		}
 	}
 		
-	if (!strcmp ("http://schemas.microsoft.com/winfx/2006/xaml", uri)){
+	if (!strcmp (X_NAMESPACE_URI, uri)){
 		g_hash_table_insert (p->namespace_map, g_strdup (uri), x_namespace);
+	} else if (!strcmp (PRIMITIVE_NAMESPACE_URI, uri)) {
+		PrimitiveNamespace *pn = new PrimitiveNamespace (g_strdup (prefix));
+		g_hash_table_insert (p->namespace_map, g_strdup (uri), pn);
+		p->AddCreatedNamespace (pn);
 	} else {
 		if (!p->loader) {
 			return parser_error (p, (p->current_element ? p->current_element->element_name : NULL), prefix, -1,

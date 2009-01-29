@@ -1,5 +1,12 @@
 2009-01-29  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Add support for the primitive types in mscorlib.  This
+	will get properly formed strings, doubles, and int32s working for
+	now, we don't handle the oddities of the SL parsing properly yet
+	though.
+
+2009-01-29  Jackson Harper  <jackson@ximian.com>
+
 	* type-generated.cpp: regen
 
 2009-01-29  Larry Ewing  <lewing@novell.com>
