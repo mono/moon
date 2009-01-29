@@ -38,5 +38,19 @@ namespace System.Windows.Controls {
 				throw new ArgumentException ();
 			return false;
 		}
+
+		// current code cannot compare System.Object in unmanaged code (as it compare pointers and we
+		// supply GC handles) so we do the comparison in managed code (FIXME: slow but working)
+		internal override int IndexOfImpl (object value)
+		{
+			if (value == null)
+				throw new ArgumentException ();
+
+			for (int i=0; i < Count; i++) {
+				if (this [i].Equals (value))
+					return i;
+			}
+			return -1;			
+		}
 	}
 }
