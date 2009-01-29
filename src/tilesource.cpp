@@ -21,26 +21,26 @@ MultiScaleTileSource::MultiScaleTileSource ()
 	get_tile_func = NULL;
 }
 
-int 
+long 
 MultiScaleTileSource::GetImageWidth ()
 {
 	return imageWidth;
 }
 
 void
-MultiScaleTileSource::SetImageWidth (int width)
+MultiScaleTileSource::SetImageWidth (long width)
 {
 	imageWidth = width;
 }
 
-int 
+long 
 MultiScaleTileSource::GetImageHeight ()
 {
 	return imageHeight;
 }
 
 void
-MultiScaleTileSource::SetImageHeight (int height)
+MultiScaleTileSource::SetImageHeight (long height)
 {
 	imageHeight = height;
 }

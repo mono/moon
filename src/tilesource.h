@@ -23,8 +23,8 @@ typedef gpointer (*get_image_uri_func) (int level, int posX, int posY);
 /* @CallInitialize */
 class MultiScaleTileSource : public DependencyObject {
  protected:
-	int imageWidth; //width of the DeepZoom Image
-	int imageHeight;
+	long imageWidth; //width of the DeepZoom Image
+	long imageHeight;
 	int tileWidth;	//width of the tiles
 	int tileHeight;
 	int tileOverlap; //how much the tiles overlap
@@ -36,14 +36,14 @@ class MultiScaleTileSource : public DependencyObject {
 	MultiScaleTileSource ();
 
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
-	int GetImageWidth ();
+	long GetImageWidth ();
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
-	void SetImageWidth (int width);
+	void SetImageWidth (long width);
 
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
-	int GetImageHeight ();
+	long GetImageHeight ();
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
-	void SetImageHeight (int height);
+	void SetImageHeight (long height);
 
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	int GetTileWidth ();

@@ -1,5 +1,9 @@
 2009-01-29  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* tilesource.h|cpp: image size is long
+
+2009-01-29  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* deepzoomimagetilesource.cpp: set the callback to NULL in ctor
 
 2009-01-29  Stephane Delcroix  <sdelcroix@novell.com>
