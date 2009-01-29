@@ -703,17 +703,17 @@ class Generator {
 		
 		// Add all the manual types
 		all.Children.Add (new TypeInfo ("object", "OBJECT", "INVALID", true, true));
-		all.Children.Add (new TypeInfo ("bool", "BOOL", "OBJECT", true, true));
-		all.Children.Add (new TypeInfo ("double", "DOUBLE", "OBJECT", true, true));
-		all.Children.Add (new TypeInfo ("guint64", "UINT64", "OBJECT", true, true));
-		all.Children.Add (new TypeInfo ("gint64", "INT64", "OBJECT", true, true));
-		all.Children.Add (new TypeInfo ("guint32", "UINT32", "OBJECT", true, true));
-		all.Children.Add (new TypeInfo ("gint32", "INT32", "OBJECT", true, true));
-		all.Children.Add (new TypeInfo ("char*", "STRING", "OBJECT", true, true));
-		all.Children.Add (new TypeInfo ("NPObj", "NPOBJ", "OBJECT", true, true));
+		all.Children.Add (new TypeInfo ("bool", "BOOL", "OBJECT", true, true, true));
+		all.Children.Add (new TypeInfo ("double", "DOUBLE", "OBJECT", true, true, true));
+		all.Children.Add (new TypeInfo ("guint64", "UINT64", "OBJECT", true, true, true));
+		all.Children.Add (new TypeInfo ("gint64", "INT64", "OBJECT", true, true, true));
+		all.Children.Add (new TypeInfo ("guint32", "UINT32", "OBJECT", true, true, true));
+		all.Children.Add (new TypeInfo ("gint32", "INT32", "OBJECT", true, true, true));
+		all.Children.Add (new TypeInfo ("char*", "STRING", "OBJECT", true, true, true));
+		all.Children.Add (new TypeInfo ("NPObj", "NPOBJ", "OBJECT", true, true, true));
 		all.Children.Add (new TypeInfo ("Managed", "MANAGED", "OBJECT", true, 2, true));
-		all.Children.Add (new TypeInfo ("TimeSpan", "TIMESPAN", "OBJECT", true, true));
-		all.Children.Add (new TypeInfo ("char", "CHAR", "OBJECT", true, true));
+		all.Children.Add (new TypeInfo ("TimeSpan", "TIMESPAN", "OBJECT", true, true, true));
+		all.Children.Add (new TypeInfo ("char", "CHAR", "OBJECT", true, true, true));
 		all.Children.Add (new TypeInfo ("System.Windows.FontStretch", "FONTSTRETCH", "OBJECT", true, true));
 		all.Children.Add (new TypeInfo ("System.Windows.Markup.XmlLanguage", "XMLLANGUAGE", "OBJECT", true, true));
 

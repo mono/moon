@@ -229,6 +229,11 @@ class TypeInfo : MemberInfo {
 			Annotations.Add (new Annotation ("SkipValue"));
 	}
 
+	public TypeInfo (string Name, string KindName, string Base, bool Include, bool SkipValue, bool is_value_type) : this (Name, KindName, Base, Include, SkipValue)
+	{
+		this.IsValueType = is_value_type;
+	}
+
 	public TypeInfo (string Name, string KindName, string Base, bool Include, int SLVersion)
 	{
 		this.Name = Name;

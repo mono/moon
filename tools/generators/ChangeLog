@@ -1,3 +1,8 @@
+2009-01-29  Jackson Harper  <jackson@ximian.com>
+
+	* TypeInfo.cs: Add a new ctor that takes an IsValueType flag
+	* Generator.cs: The primitive types are value types.
+
 2009-01-29  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* TypeReference.cs: add "long" as known type.
