@@ -1,3 +1,10 @@
+2009-01-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* deployment.h:
+	* deployment.cpp: Deployment: Enable support managed stackframes after
+	initializing mono. Implement Dispose, and upon destruction set
+	current application to NULL.
+
 2009-01-29  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* tilesource.h|cpp: image size is long

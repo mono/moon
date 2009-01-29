@@ -65,6 +65,8 @@ Deployment::Initialize()
 	pthread_key_create (&tls_key, NULL);
 	pthread_mutex_init (&hash_mutex, NULL);
 
+	enable_vm_stack_trace ();
+
 	LOG_DEPLOYMENT ("Deployment::Initialize (): Created root domain: %p\n", root_domain);
 	
 	return true;
@@ -164,7 +166,19 @@ Deployment::~Deployment()
 
 	LOG_DEPLOYMENT ("Deployment::~Deployment (): %p\n", this);
 
+	SetCurrentApplication (NULL);
 	delete types;
+}
+
+void
+Deployment::Dispose ()
+{
+	LOG_DEPLOYMENT ("Deployment::Dispose (): %p\n", this);
+	
+	if (current_app != NULL)
+		current_app->Dispose ();
+		
+	EventObject::Dispose ();
 }
 
 Types*

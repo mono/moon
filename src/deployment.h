@@ -67,6 +67,8 @@ class Deployment : public DependencyObject {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Deployment ();
+	
+	virtual void Dispose ();
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	Types* GetTypes();
@@ -82,6 +84,7 @@ class Deployment : public DependencyObject {
 
 	static bool Initialize ();
 	static void RegisterThread (Deployment *deployment);
+	
 private:
 	Types* types;
 	Application* current_app;
