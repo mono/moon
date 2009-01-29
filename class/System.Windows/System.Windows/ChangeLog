@@ -1,3 +1,8 @@
+2009-01-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* PresentationFrameworkCollection.cs: Fix Count DP to be a double.
+	Change IndexOfImpl to virtual and use it inside Remove.
+
 2009-01-27  Jackson Harper  <jackson@ximian.com>
 
 	* Application.cs: Use the correct assembly when loading

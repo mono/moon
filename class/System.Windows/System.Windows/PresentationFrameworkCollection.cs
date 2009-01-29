@@ -38,7 +38,7 @@ namespace System.Windows {
 	public abstract partial class PresentationFrameworkCollection<T> : DependencyObject, IList<T>, IList {
 
 		public static readonly System.Windows.DependencyProperty CountProperty =
-			DependencyProperty.Lookup (Kind.COLLECTION, "Count", typeof (int));
+			DependencyProperty.Lookup (Kind.COLLECTION, "Count", typeof (double)); // <- double is not a typo
 		
 		int IList.Add (object value)
 		{
@@ -153,10 +153,7 @@ namespace System.Windows {
 			if (NullCheck (NotifyCollectionChangedAction.Remove, value))
 				return false;
 
-			Value v = Value.FromObject (value, true);
-			int index = NativeMethods.collection_index_of (native, ref v);
-			NativeMethods.value_free_value (ref v);
-
+			int index = IndexOfImpl (value);
 			if (index == -1)
 				return false;
 
@@ -190,9 +187,9 @@ namespace System.Windows {
 			Notify (NotifyCollectionChangedAction.Replace, value, old, index);
 		}
 
-		internal int IndexOfImpl (T value)
+		internal virtual int IndexOfImpl (T value)
 		{
-			if (NullCheck ((NotifyCollectionChangedAction)(-1), value))
+			if (value == null)
 				return -1;
 
 			Value v = Value.FromObject (value, true);
