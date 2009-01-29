@@ -24,6 +24,7 @@
 #include "pipeline-ui.h"
 #include "mediaelement.h"
 #include "debug.h"
+#include "deployment.h"
 
 
 // still too ugly to be exposed in the header files ;-)
@@ -368,10 +369,19 @@ MediaElement::MediaElement ()
 
 MediaElement::~MediaElement ()
 {
+	pthread_mutex_destroy (&open_mutex);
+}
+
+void
+MediaElement::Dispose ()
+{
 	Reinitialize (true);
 	
-	if (mplayer)
+	if (mplayer) {
+		mplayer->Dispose ();
 		mplayer->unref ();
+		mplayer = NULL;
+	}
 	
 	if (playlist) {
 		playlist->Dispose ();
@@ -380,10 +390,11 @@ MediaElement::~MediaElement ()
 	}
 	
 	delete pending_streamed_markers;
-	
-	pthread_mutex_destroy (&open_mutex);
+	pending_streamed_markers = NULL;
 	
 	DownloaderAbort ();
+	
+	FrameworkElement::Dispose ();
 }
 
 void
@@ -1744,7 +1755,9 @@ MediaElement::PlayNow ()
 static gboolean
 media_element_advance_frame (void *user_data)
 {
-	return (gboolean) ((MediaElement *) user_data)->AdvanceFrame ();
+	MediaElement *element = (MediaElement *) user_data;
+	element->SetCurrentDeployment ();
+	return (gboolean) element->AdvanceFrame ();
 }
 
 void

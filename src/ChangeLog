@@ -1,5 +1,12 @@
 2009-01-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaelement.h:
+	* mediaelement.cpp: Implement Dispose and put most of the cleanup there
+	instead of in the dtor. media_element_advance_frame: we need to set
+	the current deployment here.
+
+2009-01-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* collection.cpp: Collection::Dispose: Post-chain Dispose instead of
 	pre-chain. Set array's size to 0 after deleting all the values.
 

@@ -174,6 +174,7 @@ class MediaElement : public FrameworkElement {
  public:
  	/* @GenerateCBinding,GeneratePInvoke */
 	MediaElement ();
+	virtual void Dispose ();
 	
 	// properties
  	/* @PropertyType=MediaAttributeCollection,ManagedPropertyType=Dictionary<string\,string>,ManagedSetterAccess=Internal,GenerateAccessors,Validator=MediaAttributeCollectionValidator */
