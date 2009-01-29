@@ -52,5 +52,72 @@ namespace MoonTest.System.Windows.Controls {
 			TextBlock tb = new TextBlock ();
 			tb.FontFamily = null;
 		}
+
+		[TestMethod]
+		public void MeasureTest ()
+		{
+			Border b = new Border ();
+			TextBlock tb = new TextBlock ();
+			tb.Text = "Hello";
+			
+			b.Child = tb;
+			
+			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			
+			Assert.AreEqual (new Size (28,16), tb.DesiredSize, "tb.DesiredSize 0");
+		}
+
+		[TestMethod]
+		public void MeasureNewlineTest ()
+		{
+			Border b = new Border ();
+			TextBlock tb = new TextBlock ();
+			tb.Text = "Hello and don't you\nforget Who I am";
+			
+			b.Child = tb;
+			
+			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			
+			Assert.AreEqual (new Size (107,32), tb.DesiredSize, "tb.DesiredSize 0");
+		}
+
+		[TestMethod]
+		public void MeasureTooLongLineTest ()
+		{
+			Border b = new Border ();
+			TextBlock tb = new TextBlock ();
+			tb.Text = "Hello and don't you forget Who I am";
+			
+			b.Child = tb;
+			b.Width = 44;
+
+			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			
+			Assert.AreEqual (new Size (44,16), tb.DesiredSize, "tb.DesiredSize 0");
+		}
+
+		[TestMethod]
+		public void ArrangeTooLongLineTest ()
+		{
+			Border b = new Border ();
+			TextBlock tb = new TextBlock ();
+			tb.Text = "Hello and don't you forget Who I am";
+			
+			b.Child = tb;
+			b.Width = 44;
+
+			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			
+			Assert.AreEqual (new Size (44,16), tb.DesiredSize, "tb.DesiredSize 0");
+			Assert.AreEqual (new Size (44,16), b.DesiredSize, "1b.DesiredSize 0");
+
+			b.Arrange (new Rect (0,0, b.DesiredSize.Width, b.DesiredSize.Height));
+
+			Assert.AreEqual (new Size (44,16), tb.DesiredSize, "tb.DesiredSize 1");
+			Assert.AreEqual (new Size (44,16), b.DesiredSize, "b.DesiredSize 1");
+			Assert.IsTrue (tb.ActualWidth > 202.3 && tb.ActualWidth < 202.4,"tb.ActualWidth is " + tb.ActualWidth.ToString ());
+			Assert.AreEqual (16, tb.ActualHeight, "tb.ActualHeight");
+			Assert.AreEqual (new Size (44,16), new Size (b.ActualWidth, b.ActualHeight), "b.Actual*");
+		}
 	}
 }
