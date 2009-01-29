@@ -51,7 +51,7 @@ namespace System.Windows.Media
 
 		void ParseDeepZoom (string path)
 		{
-			Console.WriteLine ("Downloaded {0}", path);
+			Console.WriteLine ("ParseDeepZoom {0}", path);
 			XmlReader reader = XmlReader.Create ("file://" + path);
 			while (reader.Read ())
 				switch (reader.Name) {
