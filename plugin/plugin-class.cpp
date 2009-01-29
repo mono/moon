@@ -697,8 +697,10 @@ EventListenerProxy::RemoveHandler ()
 {
 	if (target_object && event_id != -1) {
 		target_object->RemoveHandler (event_id, token);
-		if (callback != NULL)
+		if (is_func && callback) {
 			NPN_ReleaseObject ((NPObject *) callback);
+			callback = NULL;
+		}
 	}
 	else {
 		on_handler_removed (this);

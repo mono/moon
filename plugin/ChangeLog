@@ -1,3 +1,9 @@
+2009-01-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* plugin-class.cpp: Only call NPN_ReleaseObject on callback
+	if the object is *not* a string.
+	re: toshok
+
 2009-01-20  Geoff Norton  <gnorton@novell.com>
 
 	* plugin-class.cpp: Ensure that we convert doubles in the ASCII
