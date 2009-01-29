@@ -1,3 +1,7 @@
+2009-01-29  Jackson Harper  <jackson@ximian.com>
+
+	* type-generated.cpp: regen
+
 2009-01-29  Larry Ewing  <lewing@novell.com>
 
 	* frameworkelement.cpp (FrameworkElement::Arrange): unref the clip
