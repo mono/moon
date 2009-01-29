@@ -373,10 +373,10 @@ TextBlock::Layout (cairo_t *cr)
 	 */
 	if (!isnan (width))
 		width = GetWidth ();
-
+	
 	if (width == 0)
-		width == INFINITY;
-
+		width = INFINITY;
+	
 	if (!(text = GetText ())) {
 		// If the TextBlock's Text property is not set,
 		// then don't modify ActualHeight.
@@ -385,7 +385,7 @@ TextBlock::Layout (cairo_t *cr)
 		actual_width = 0.0;
 		goto done;
 	}
-
+	
 	runs = new List ();
 	
 	if (!isinf (width)) {
