@@ -320,12 +320,12 @@ printf ("MSI::Render\n");
 		double v_tile_h = tile_height * ldexp (1.0, layers - layer_to_render);
 		for (i = MAX(0, (int)((double)vp_ox / (double)v_tile_w)); i * v_tile_w < vp_ox + vp_w && i * v_tile_w < im_w; i++) {
 			for (j = MAX(0, (int)((double)vp_oy / (double)v_tile_h)); j * v_tile_h < vp_oy + vp_h && j * v_tile_h < im_h; j++) {
-				printf ("rendering %d %d %d\n", layer_to_render, i, j);
 				cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, to_key (layer_to_render, i, j));
 				if (!image)
 					continue;
-				int *p_w = (int*)(cairo_surface_get_user_data (image, &width_key));
-				int *p_h = (int*)(cairo_surface_get_user_data (image, &height_key));
+				printf ("rendering %d %d %d\n", layer_to_render, i, j);
+//				int *p_w = (int*)(cairo_surface_get_user_data (image, &width_key));
+//				int *p_h = (int*)(cairo_surface_get_user_data (image, &height_key));
 				cairo_save (cr);
 
 				cairo_rectangle (cr, 0, 0, w, h);
@@ -349,7 +349,6 @@ printf ("MSI::Render\n");
 
 		double v_tile_w = tile_width * ldexp (1.0, layers - from_layer);
 		double v_tile_h = tile_height * ldexp (1.0, layers - from_layer);
-printf ("tile_width %f, v_tile_w %f\n", tile_width, v_tile_w);
 		int i, j;
 
 
