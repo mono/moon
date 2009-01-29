@@ -1,3 +1,9 @@
+2009-01-29  Larry Ewing  <lewing@novell.com>
+
+	* plugin-debug.cpp (reflect_dependency_object_in_tree): restrict
+	the VisualChild expansion away from Panel and border to keep from
+	slowing down the tree that Badly.
+
 2009-01-29  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* plugin-class.cpp: Only call NPN_ReleaseObject on callback

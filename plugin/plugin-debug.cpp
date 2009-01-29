@@ -287,7 +287,7 @@ reflect_dependency_object_in_tree (DependencyObject *obj, GtkTreeStore *store, G
 		}
 	}
 
-	if (obj->Is(Type::FRAMEWORKELEMENT)) {
+	if (obj->Is(Type::FRAMEWORKELEMENT) && !obj->Is(Type::PANEL) && !obj->Is (Type::BORDER)) {
 		GtkTreeIter subobject_iter;
 
 		gtk_tree_store_append (store, &subobject_iter, node);
