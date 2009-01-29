@@ -30,6 +30,7 @@ DeepZoomImageTileSource::DeepZoomImageTileSource ()
 
 DeepZoomImageTileSource::DeepZoomImageTileSource (const char *uri)
 {
+	callback = NULL;
 	downloader = NULL;
 	downloaded = false;
 	SetValue (DeepZoomImageTileSource::UriSourceProperty, Value (uri));
