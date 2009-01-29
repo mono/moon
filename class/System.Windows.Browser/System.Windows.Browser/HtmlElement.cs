@@ -114,7 +114,7 @@ namespace System.Windows.Browser
 
 		public ScriptObjectCollection Children {
 			[SecuritySafeCritical]
-			get { return new ScriptObjectCollection ((IntPtr) GetProperty ("childNodes")); }
+			get { return new ScriptObjectCollection (GetPropertyInternal<IntPtr> (Handle, "childNodes")); }
 		}
 
 		public string CssClass {

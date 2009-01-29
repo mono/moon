@@ -1,3 +1,7 @@
+2009-01-29  Jb Evain  <jbevain@novell.com>
+
+	* HtmlElement.cs: fix retrieval of Children collection.
+
 2009-01-21  Geoff Norton  <gnorton@novell.com>
 
 	* ScriptObject.cs: Hook up Invoke
