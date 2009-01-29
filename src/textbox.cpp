@@ -2054,13 +2054,6 @@ TextBoxView::SetTextBox (TextBox *textbox)
 	dirty = true;
 }
 
-Size
-TextBoxView::ArrangeOverride (Size size)
-{
-	// FIXME: do we want to override this method? We probably do...
-	return FrameworkElement::ArrangeOverride (size);
-}
-
 
 //
 // PasswordBox

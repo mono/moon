@@ -1,5 +1,7 @@
 2009-01-29  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.cpp (TextBoxView::ArrangeOverride): Removed.
+
 	* textbox.h: Shuffle some internal accessors/events around.
 
 2009-01-29  Larry Ewing  <lewing@novell.com>
