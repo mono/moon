@@ -72,10 +72,17 @@ namespace System.Windows
 			if (value.GetType() == type)
 				return value;
 
+			if (typeof(Enum).IsAssignableFrom (type.BaseType)) {
+				try {
+					return Enum.Parse (type, value.ToString(), true);
+				} catch {
+					throw new NotSupportedException ();
+				}
+			}
+
 			/* the set of source types for JS functions is
 			 * very, very small, so we switch over the
 			 * parameter type first */
-
 			try {
 				return Convert.ChangeType (value, type, culture);
 			}
