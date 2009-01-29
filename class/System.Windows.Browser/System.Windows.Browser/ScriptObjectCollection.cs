@@ -37,7 +37,7 @@ namespace System.Windows.Browser
 			// is this approach (creating HtmlElement every time) bogus?
 			[SecuritySafeCritical]
 			get {
-				return new ScriptObject (HtmlObject.InvokeInternal<IntPtr> (node_list, "item", i));
+				return new HtmlElement (HtmlObject.InvokeInternal<IntPtr> (node_list, "item", i));
 			}
 		}
 

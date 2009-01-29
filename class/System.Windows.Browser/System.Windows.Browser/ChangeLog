@@ -1,5 +1,10 @@
 2009-01-29  Jb Evain  <jbevain@novell.com>
 
+	* ScriptObjectCollection.cs: the indexer seems to always return
+	HtmlElement, and not a ScriptObject.
+
+2009-01-29  Jb Evain  <jbevain@novell.com>
+
 	* HtmlElement.cs: fix retrieval of Children collection.
 
 2009-01-21  Geoff Norton  <gnorton@novell.com>
