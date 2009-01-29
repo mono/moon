@@ -37,7 +37,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Documents {
 
 	[TestClass]
-	public class _RunTest {
+	public class RunTest {
 
 		[TestMethod]
 		public void Defaults ()
