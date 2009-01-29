@@ -84,19 +84,27 @@ Grid::MeasureOverride (Size availableSize)
 
 	ColumnDefinitionCollection *columns = GetColumnDefinitions ();
 	RowDefinitionCollection *rows = GetRowDefinitions ();
+	bool free_col = false;
+	bool free_row = false;
 
 	int col_count = columns->GetCount ();
 	int row_count = rows->GetCount ();
 
 	if (col_count == 0) {
 		columns = new ColumnDefinitionCollection ();
-		columns->Add (new ColumnDefinition ());
+		ColumnDefinition *coldef = new ColumnDefinition ();
+		columns->Add (coldef);
+		coldef->unref ();
+		free_col = true;
 		col_count = 1;
 	}
 
 	if (row_count == 0) {
 		rows = new RowDefinitionCollection ();
-		rows->Add (new RowDefinition ());
+		RowDefinition *rowdef = new RowDefinition ();
+		rows->Add (rowdef);
+		rowdef->unref ();
+		free_row = true;
 		row_count = 1;
 	}
 
@@ -210,6 +218,12 @@ Grid::MeasureOverride (Size availableSize)
 
 	results = results.Max (grid_size);
 
+	if (free_col)
+		columns->unref ();
+
+	if (free_row)
+		rows->unref ();
+
 	// now choose whichever is smaller, our chosen size or the availableSize.
 	return results;
 }
@@ -219,19 +233,27 @@ Grid::ArrangeOverride (Size finalSize)
 {
 	ColumnDefinitionCollection *columns = GetColumnDefinitions ();
 	RowDefinitionCollection *rows = GetRowDefinitions ();
+	bool free_col = false;
+	bool free_row = false;
 
 	int col_count = columns->GetCount ();
 	int row_count = rows->GetCount ();
 
 	if (col_count == 0) {
 		columns = new ColumnDefinitionCollection ();
-		columns->Add (new ColumnDefinition ());
+		ColumnDefinition *coldef = new ColumnDefinition ();
+		columns->Add (coldef);
+		coldef->unref ();
+		free_col = true;
 		col_count = 1;
 	}
 
 	if (row_count == 0) {
 		rows = new RowDefinitionCollection ();
-		rows->Add (new RowDefinition ());
+		RowDefinition *rowdef = new RowDefinition ();
+		rows->Add (rowdef);
+		rowdef->unref ();
+		free_row = true;
 		row_count = 1;
 	}
 
@@ -365,6 +387,12 @@ Grid::ArrangeOverride (Size finalSize)
 		arranged = arranged.Min (max_size);
 		*/
 	}
+
+	if (free_col)
+		columns->unref ();
+
+	if (free_row)
+		rows->unref ();
 
 	return finalSize;
 }

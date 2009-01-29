@@ -580,6 +580,7 @@ FrameworkElement::Arrange (Rect finalRect)
 	RectangleGeometry *rectangle = new RectangleGeometry ();
 	rectangle->SetRect (&layout_clip);
 	LayoutInformation::SetLayoutClip (this, rectangle);
+	rectangle->unref ();
 
 	if (old != response) {
 		SizeChangedEventArgs *args = new SizeChangedEventArgs (old, response);
