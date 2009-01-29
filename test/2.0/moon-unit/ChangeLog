@@ -1,3 +1,12 @@
+2009-01-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Controls/ComboBoxTest.cs: Remove [MoonlightBug] 
+	from two test cases.
+	* System.Windows.Controls/ItemCollectionTest.cs: Add test cases
+	for dealing with System.Object
+	* System.Windows.Controls/MediaElementTest.cs: Add test case
+	for read-only properties.
+
 2009-01-28  Jackson Harper  <jackson@ximian.com>
 
 	* ResourceDictionaryTest.cs: You can also set the name before the

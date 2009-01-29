@@ -131,5 +131,78 @@ namespace MoonTest.System.Windows.Controls
 				Console.WriteLine (ex.Message);
 			}
 		}
+
+		[TestMethod]
+		[MoonlightBug ("other readonly properties are throwing InvalidOperationException instead of ArgumentException")]
+		public void CheckReadOnlyProperties ()
+		{
+			MediaElement m = new MediaElement ();
+
+			Assert.AreEqual (0, (int) m.GetValue (MediaElement.AudioStreamCountProperty), "Get/AudioStreamCountProperty");
+			Assert.Throws<ArgumentException> (delegate {
+				m.SetValue (MediaElement.AudioStreamCountProperty, 1);
+			});
+			Assert.AreEqual (0, m.AudioStreamCount, "AudioStreamCount");
+
+			Assert.AreEqual (0.0, (double) m.GetValue (MediaElement.BufferingProgressProperty), "Get/BufferingProgressProperty");
+			Assert.Throws<ArgumentException> (delegate {
+				m.SetValue (MediaElement.BufferingProgressProperty, 1.0);
+			});
+			Assert.AreEqual (0.0, m.BufferingProgress, "BufferingProgress");
+
+			Assert.IsFalse ((bool) m.GetValue (MediaElement.CanPauseProperty), "Get/CanPauseProperty");
+			Assert.Throws<ArgumentException> (delegate {
+				m.SetValue (MediaElement.CanPauseProperty, true);
+			});
+			Assert.IsFalse (m.CanPause, "CanPause");
+
+			Assert.IsFalse ((bool) m.GetValue (MediaElement.CanSeekProperty), "Get/CanSeekProperty");
+			Assert.Throws<ArgumentException> (delegate {
+				m.SetValue (MediaElement.CanSeekProperty, true);
+			});
+			Assert.IsFalse (m.CanSeek, "CanSeek");
+
+			Assert.AreEqual (MediaElementState.Closed, (MediaElementState) m.GetValue (MediaElement.CurrentStateProperty), "Get/CurrentState");
+			Assert.Throws<ArgumentException> (delegate {
+				m.SetValue (MediaElement.CurrentStateProperty, MediaElementState.Stopped);
+			});
+			Assert.AreEqual (MediaElementState.Closed, m.CurrentState, "CurrentState");
+
+			Assert.AreEqual (0.0, (double) m.GetValue (MediaElement.DownloadProgressOffsetProperty), "Get/DownloadProgressOffsetProperty");
+			Assert.Throws<ArgumentException> (delegate {
+				m.SetValue (MediaElement.DownloadProgressOffsetProperty, 1.0);
+			});
+			Assert.AreEqual (0.0, m.DownloadProgressOffset, "DownloadProgressOffset");
+
+			Assert.AreEqual (0.0, (double) m.GetValue (MediaElement.DroppedFramesPerSecondProperty), "Get/DroppedFramesPerSecondProperty");
+			Assert.Throws<ArgumentException> (delegate {
+				m.SetValue (MediaElement.DroppedFramesPerSecondProperty, 1.0);
+			});
+			Assert.AreEqual (0.0, m.DroppedFramesPerSecond, "DroppedFramesPerSecond");
+
+			Assert.AreEqual (0, ((Duration) m.GetValue (MediaElement.NaturalDurationProperty)).TimeSpan.Ticks, "Get/NaturalDurationProperty");
+			Assert.Throws<ArgumentException> (delegate {
+				m.SetValue (MediaElement.NaturalDurationProperty, Duration.Forever);
+			});
+			Assert.AreEqual (0.0, m.NaturalDuration.TimeSpan.Ticks, "NaturalDuration");
+
+			Assert.AreEqual (0, (int) m.GetValue (MediaElement.NaturalVideoHeightProperty), "Get/NaturalVideoHeightProperty");
+			Assert.Throws<ArgumentException> (delegate {
+				m.SetValue (MediaElement.NaturalVideoHeightProperty, 1);
+			});
+			Assert.AreEqual (0, m.NaturalVideoHeight, "NaturalVideoHeight");
+
+			Assert.AreEqual (0, (int) m.GetValue (MediaElement.NaturalVideoWidthProperty), "Get/NaturalVideoWidthProperty");
+			Assert.Throws<ArgumentException> (delegate {
+				m.SetValue (MediaElement.NaturalVideoWidthProperty, 1);
+			});
+			Assert.AreEqual (0, m.NaturalVideoWidth, "NaturalVideoWidth");
+
+			Assert.AreEqual (0.0, (double) m.GetValue (MediaElement.RenderedFramesPerSecondProperty), "Get/RenderedFramesPerSecondProperty");
+			Assert.Throws<ArgumentException> (delegate {
+				m.SetValue (MediaElement.RenderedFramesPerSecondProperty, 1.0);
+			});
+			Assert.AreEqual (0.0, m.RenderedFramesPerSecond, "RenderedFramesPerSecond");
+		}
 	}
 }
