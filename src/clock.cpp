@@ -28,6 +28,7 @@
 
 #include "uielement.h"
 #include "runtime.h"
+#include "deployment.h"
 
 #ifdef _MSC_VER
 #include "Winsock2.h"
@@ -132,6 +133,10 @@ get_now (void)
 	return 0;
 }
 
+TimeSource::TimeSource (Deployment *deployment) : EventObject (deployment)
+{
+	SetObjectType (Type::TIMESOURCE);
+}
 
 TimeSource::TimeSource ()
 {
@@ -161,6 +166,13 @@ TimeSpan
 TimeSource::GetNow ()
 {
 	return 0;
+}
+
+SystemTimeSource::SystemTimeSource (Deployment *deployment) : TimeSource (deployment)
+{
+	SetObjectType (Type::SYSTEMTIMESOURCE);
+	timeout_id = 0;
+	frequency = -1;
 }
 
 SystemTimeSource::SystemTimeSource ()
@@ -219,7 +231,10 @@ SystemTimeSource::GetNow ()
 gboolean
 SystemTimeSource::tick_timeout (gpointer data)
 {
-	((SystemTimeSource*)data)->Emit (TimeSource::TickEvent);
+	SystemTimeSource *source = (SystemTimeSource *)data;
+
+	source->SetCurrentDeployment ();
+	source->Emit (TimeSource::TickEvent);
 	return TRUE;
 }
 
@@ -274,7 +289,7 @@ TimeManager::TimeManager ()
 	if (moonlight_flags & RUNTIME_INIT_MANUAL_TIMESOURCE)
 		source = new ManualTimeSource();
 	else
-		source = new SystemTimeSource();
+		source = new SystemTimeSource(Deployment::GetCurrent ());
 
 	current_timeout = FPS_TO_DELAY (DEFAULT_FPS);  /* something suitably small */
 	max_fps = MAXIMUM_FPS;

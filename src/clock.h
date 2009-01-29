@@ -187,6 +187,7 @@ class TimeSource : public EventObject {
 
  public:
 	TimeSource ();
+	TimeSource (Deployment *deployment);
 
 	virtual void Start ();
 	virtual void Stop ();
@@ -203,6 +204,7 @@ class SystemTimeSource : public TimeSource {
 
  public:
 	SystemTimeSource ();
+	SystemTimeSource (Deployment *deployment);
 
 	virtual void Start ();
 	virtual void Stop ();

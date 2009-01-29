@@ -1,3 +1,8 @@
+2009-01-29  Geoff Norton  <gnorton@novell.com>
+
+	* clock.cpp|h: Ensure that we set the correct deployment from the 
+	clock ticks before traversing back into our heirarchy.
+
 2009-01-29  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Add support for the primitive types in mscorlib.  This
