@@ -14,6 +14,7 @@ using Microsoft.Silverlight.Testing;
 namespace MoonTest.Misc
 {
 	[TestClass]
+	[Ignore]
 	public class PrimitiveTest : SilverlightTest
 	{
 
