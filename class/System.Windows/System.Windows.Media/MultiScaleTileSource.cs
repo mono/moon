@@ -20,11 +20,11 @@ namespace System.Windows.Media
 {	
 	public abstract partial class MultiScaleTileSource : DependencyObject
 	{
-		internal int ImageWidth {
+		internal long ImageWidth {
 			get { return NativeMethods.multi_scale_tile_source_get_image_width (this.native); }
 			set { NativeMethods.multi_scale_tile_source_set_image_width (this.native, value); }
 		}
-		internal int ImageHeight {
+		internal long ImageHeight {
 			get { return NativeMethods.multi_scale_tile_source_get_image_height (this.native); }
 			set { NativeMethods.multi_scale_tile_source_set_image_height (this.native, value); }
 		}
@@ -65,7 +65,11 @@ namespace System.Windows.Media
 
 		public MultiScaleTileSource (long imageWidth, long imageHeight, int tileWidth, int tileHeight, int tileOverlap)
 		{
-			throw new NotImplementedException ();
+			ImageWidth = imageWidth;
+			ImageHeight = imageHeight;
+			TileWidth = tileWidth;
+			TileHeight = tileHeight;
+			TileOverlap = tileOverlap;
 		}
 
 		~MultiScaleTileSource ()
