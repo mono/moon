@@ -595,7 +595,6 @@ MemoryQueueSource::~MemoryQueueSource ()
 void
 MemoryQueueSource::Dispose ()
 {
-	IMediaSource::Dispose ();
 	if (parser) {
 		parser->unref ();
 		parser = NULL;
@@ -604,6 +603,7 @@ MemoryQueueSource::Dispose ()
 		delete queue;
 		queue = NULL;
 	}
+	IMediaSource::Dispose ();
 }
 
 ASFParser *

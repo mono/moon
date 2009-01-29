@@ -120,8 +120,6 @@ Media::Dispose ()
 
 	LOG_PIPELINE ("Media::~Dispose (), id: %i\n", GET_OBJ_ID (this));
 
-	EventObject::Dispose ();
-
 	pthread_mutex_lock (&queue_mutex);
 	if (queued_requests != NULL) {
 		queued_requests->Clear (true);
@@ -168,6 +166,8 @@ Media::Dispose ()
 		}
 		media_objects->Unlock ();
 	}
+	
+	EventObject::Dispose ();
 }
 
 bool
@@ -768,10 +768,16 @@ void
 Media::WorkerLoop ()
 {
 	MediaResult result = MEDIA_SUCCESS;
-	bool registered = false;
 	
 	LOG_PIPELINE ("Media::WorkerLoop ().\n");
 
+	// This works since we have 1 thread per Media.
+	// When each thread may process work for > 1 Media, 
+	// we need to set the deployment before processing
+	// each each work item.
+	Deployment::RegisterThread (GetDeployment ());
+	Deployment::SetCurrent (GetDeployment ());
+	
 	while (queued_requests != NULL && !stopping) {
 		MediaWork *node = NULL;
 		
@@ -806,18 +812,6 @@ Media::WorkerLoop ()
 			continue; // Found nothing, continue waiting.
 		
 		LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): processing node %p with type %i.\n", node, node->type);
-		
-		if (node->closure != NULL && node->closure->GetMedia () != NULL) {
-			Deployment *deployment = node->closure->GetMedia ()->GetDeployment (); 
-			printf ("Media::WorkerLoop (): deployment: %p\n", deployment);
-			if (deployment != NULL) {
-				if (!registered) {
-					Deployment::RegisterThread (deployment);
-					registered = true;
-				}
-				Deployment::SetCurrent (deployment);
-			}
-		}
 		
 		switch (node->type) {
 		case WorkTypeSeek:
@@ -1020,11 +1014,11 @@ ASXDemuxer::~ASXDemuxer ()
 void
 ASXDemuxer::Dispose ()
 {
-	IMediaDemuxer::Dispose ();
 	if (playlist) {
 		playlist->unref ();
 		playlist = NULL;
 	}
+	IMediaDemuxer::Dispose ();
 }
 
 MediaResult
@@ -1517,7 +1511,7 @@ MediaClosure::SetContext (EventObject *context)
 	if (this->context && context_refcounted)
 		this->context->unref ();
 	this->context = context;
-	if (this->context)
+	if (this->context && context_refcounted)
 		this->context->ref ();
 	context_refcounted = true;
 }
@@ -1575,7 +1569,6 @@ IMediaStream::~IMediaStream ()
 void
 IMediaStream::Dispose ()
 {
-	IMediaObject::Dispose ();
 	if (decoder) {
 		decoder->unref ();
 		decoder = NULL;
@@ -1589,6 +1582,7 @@ IMediaStream::Dispose ()
 		delete queue;
 		queue = NULL;
 	}
+	IMediaObject::Dispose ();
 }
 
 const char *
@@ -1755,7 +1749,6 @@ IMediaDemuxer::~IMediaDemuxer ()
 void
 IMediaDemuxer::Dispose ()
 {
-	IMediaObject::Dispose ();
 	if (streams != NULL) {
 		for (int i = 0; i < stream_count; i++) {
 			streams [i]->Dispose ();
@@ -1768,6 +1761,7 @@ IMediaDemuxer::Dispose ()
 		source->unref ();
 		source = NULL;
 	}
+	IMediaObject::Dispose ();
 }
 
 void
@@ -1953,11 +1947,11 @@ IMediaObject::IMediaObject (Media *media)
 void
 IMediaObject::Dispose ()
 {
-	EventObject::Dispose ();
 	if (media) {
 		media->unref ();
 		media = NULL;
 	}
+	EventObject::Dispose ();
 }
 
 void
@@ -2219,12 +2213,12 @@ VideoStream::~VideoStream ()
 void
 VideoStream::Dispose ()
 {
-	IMediaStream::Dispose ();
 	if (converter) {
 		converter->Dispose ();
 		converter->unref ();
 		converter = NULL;
 	}
+	IMediaStream::Dispose ();
 }
 
 /*

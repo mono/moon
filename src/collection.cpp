@@ -43,13 +43,14 @@ Collection::Dispose ()
 {
 	Value *value;
 	
-	DependencyObject::Dispose ();
-	
 	for (guint i = 0; i < array->len; i++) {
 		value = (Value *) array->pdata[i];
 		RemovedFromCollection (value);
 		delete value;
 	}
+	g_ptr_array_set_size (array, 0);
+	
+	DependencyObject::Dispose ();
 }
 
 CollectionIterator *
