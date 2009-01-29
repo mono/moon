@@ -1,3 +1,8 @@
+2009-01-29  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: ElementToLogicalPoint, ZoomAboutLogicalPoint:
+	logical is [0,1],[0,1]
+
 2009-01-28  Larry Ewing  <lewing@novell.com>
 
 	* shape.cpp (Shape::ComputeStretchBounds): remove the old

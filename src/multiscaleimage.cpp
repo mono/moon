@@ -47,18 +47,18 @@ void
 MultiScaleImage::ZoomAboutLogicalPoint (double zoomIncrementFactor, double zoomCenterLogicalX, double zoomCenterLogicalY)
 {
 
-//	printf ("zoomabout logical %f  (%f, %f)\n", zoomIncrementFactor, zoomCenterLogicalX, zoomCenterLogicalY);
+	printf ("zoomabout logical %f  (%f, %f)\n", zoomIncrementFactor, zoomCenterLogicalX, zoomCenterLogicalY);
 	double width = GetViewportWidth () / zoomIncrementFactor;
 	double height = GetViewportHeight () / zoomIncrementFactor;
 	SetViewportWidth (width);
-	SetViewportOrigin (new Point (zoomCenterLogicalX - width/2.0, zoomCenterLogicalY - height/2.0));
+	SetViewportOrigin (new Point (zoomCenterLogicalX * (double) source->GetImageWidth () - width/2.0, zoomCenterLogicalY * (double) source->GetImageHeight ()- height/2.0));
 }
 
 Point
 MultiScaleImage::ElementToLogicalPoint (Point elementPoint)
 {
-	return Point (GetViewportOrigin()->x + (double)elementPoint.x * (double)GetViewportWidth () / GetWidth(),
-		      GetViewportOrigin()->y + (double)elementPoint.y * (double)GetViewportHeight () / GetHeight ());
+	return Point ((GetViewportOrigin()->x + (double)elementPoint.x * (double)GetViewportWidth () / GetWidth()) / (double) source->GetImageWidth (),
+		      (GetViewportOrigin()->y + (double)elementPoint.y * (double)GetViewportHeight () / GetHeight ()) / (double) source->GetImageHeight ());
 }
 
 void
