@@ -71,13 +71,17 @@ UIElement::Dispose()
 {
 	TriggerCollection *triggers = GetTriggers ();
 	
-	for (int i = 0; i < triggers->GetCount (); i++)
-		triggers->GetValueAt (i)->AsEventTrigger ()->RemoveTarget (this);
+	if (triggers != NULL) {
+		for (int i = 0; i < triggers->GetCount (); i++)
+			triggers->GetValueAt (i)->AsEventTrigger ()->RemoveTarget (this);
+	}
 	
-	VisualTreeWalker walker (this);
-	while (UIElement *child = walker.Step ())
-		child->SetVisualParent (NULL);
-
+	if (!IsDisposed ()) {
+		VisualTreeWalker walker (this);
+		while (UIElement *child = walker.Step ())
+			child->SetVisualParent (NULL);
+	}
+	
 	DependencyObject::Dispose();
 }
 
