@@ -13,6 +13,11 @@
 
 2009-01-28  Larry Ewing  <lewing@novell.com>
 
+	* frameworkelement.cpp (FrameworkElement::MeasureOverride): 
+	it might help to actually measure things, so do that... *sigh*
+
+2009-01-28  Larry Ewing  <lewing@novell.com>
+
 	* shape.cpp (Shape::ComputeStretchBounds): remove the old
 	width/height short circuiting when one or the other of
 	width/height was not set simply use the lyaout clip when it is

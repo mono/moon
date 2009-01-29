@@ -453,6 +453,7 @@ FrameworkElement::MeasureOverride (Size availableSize)
 		if (child->GetVisibility () != VisibilityVisible)
 			continue;
 		
+		child->Measure (availableSize);
 		desired = child->GetDesiredSize ();
 	}
 
