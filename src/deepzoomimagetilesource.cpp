@@ -30,6 +30,8 @@ DeepZoomImageTileSource::DeepZoomImageTileSource ()
 
 DeepZoomImageTileSource::DeepZoomImageTileSource (const char *uri)
 {
+	SetObjectType (Type::DEEPZOOMIMAGETILESOURCE);
+
 	callback = NULL;
 	downloader = NULL;
 	downloaded = false;
