@@ -113,11 +113,13 @@
     <Compile Include="System.Windows.Controls\ScrollViewerTest.cs" />
     <Compile Include="System.Windows.Controls\SliderTest.cs" />
     <Compile Include="System.Windows.Controls\StackPanelTest.cs" />
+    <Compile Include="System.Windows.Controls\TextBlockTest.cs" />
     <Compile Include="System.Windows.Controls\TextBoxTest.cs" />
     <Compile Include="System.Windows.Controls\UserControlTest.cs" />
     <Compile Include="System.Windows.Data\BindingTest.cs" />
     <Compile Include="System.Windows.Data\IValueConverterTest.cs" />
     <Compile Include="System.Windows.Documents\InlineTest.cs" />
+    <Compile Include="System.Windows.Documents\LineBreakTest.cs" />
     <Compile Include="System.Windows.Documents\RunTest.cs" />
     <Compile Include="System.Windows.Input\CursorsTest.cs" />
     <Compile Include="System.Windows.Input\StylusDeviceTest.cs" />
