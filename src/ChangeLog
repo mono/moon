@@ -1,3 +1,7 @@
+2009-01-29  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.h: Shuffle some internal accessors/events around.
+
 2009-01-29  Larry Ewing  <lewing@novell.com>
 
 	* text.cpp, text.h: implement basic layout size rules and strip

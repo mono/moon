@@ -110,8 +110,17 @@ class TextBox : public Control, public ITextSource {
 	//
 	// Protected Property Accessors
 	//
+	TextSelection *GetSelection () { return &selection; }
+	TextBuffer *GetBuffer () { return buffer; }
+	int GetCursor () { return cursor; }
+	
 	void SetSelectionStart (int start);
 	void SetSelectionLength (int length);
+	
+	//
+	// Protected Events
+	//
+	const static int ModelChangedEvent;
 	
  	virtual ~TextBox ();
 	
@@ -161,11 +170,6 @@ class TextBox : public Control, public ITextSource {
 	bool SelectAll ();
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Select (int start, int length);
-	
-	// Methods needed by TextBoxView
-	TextSelection *GetSelection () { return &selection; }
-	TextBuffer *GetBuffer () { return buffer; }
-	int GetCursor () { return cursor; }
 	
 	//
 	// ITextSource Interface Methods
@@ -233,9 +237,6 @@ class TextBox : public Control, public ITextSource {
 	//
 	const static int SelectionChangedEvent;
 	const static int TextChangedEvent;
-	
-	// Internal Events
-	const static int ModelChangedEvent;
 };
 
 
