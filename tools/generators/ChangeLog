@@ -1,3 +1,7 @@
+2009-01-29  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* TypeReference.cs: add "long" as known type.
+
 2009-01-28  Chris Toshok  <toshok@ximian.com>
 
 	* Generator.cs: generate a mapping from
