@@ -20,14 +20,23 @@ namespace System.Windows.Media
 {	
 	public sealed partial class DeepZoomImageTileSource : MultiScaleTileSource
 	{
+		System.Runtime.InteropServices.GCHandle handle;
 		void Initialize ()
 		{
-			NativeMethods.deep_zoom_image_tile_source_set_downloaded_cb (native, ParseDeepZoom);
+			NativeMethods.DownloadedHandler func = new NativeMethods.DownloadedHandler (ParseDeepZoom);
+			handle = System.Runtime.InteropServices.GCHandle.Alloc (func);
+			NativeMethods.deep_zoom_image_tile_source_set_downloaded_cb (native, func);
 		}
 
 		public DeepZoomImageTileSource (Uri sourceUri) : this ()
 		{
+			Console.WriteLine ("new DZITS");
 			UriSource = sourceUri;
+		}
+
+		~DeepZoomImageTileSource ()
+		{
+			handle.Free ();
 		}
 		
 		protected override void GetTileLayers (int tileLevel, int tilePositionX, int tilePositionY, IList<object> tileImageLayerSources)
@@ -51,6 +60,7 @@ namespace System.Windows.Media
 
 		void ParseDeepZoom (string path)
 		{
+			Console.WriteLine ("Downloaded {0}", path);
 			Console.WriteLine ("ParseDeepZoom {0}", path);
 			XmlReader reader = XmlReader.Create ("file://" + path);
 			while (reader.Read ())

@@ -1,3 +1,7 @@
+2009-01-29  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* DeepZoomImageTileSource.cs: keep the delegate
+
 2009-01-27  Chris Toshok  <toshok@ximian.com>
 
 	* FontFamily.cs: add StructLayout.
