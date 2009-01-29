@@ -212,22 +212,12 @@ Shape::Fill (cairo_t *cr, bool do_op)
 Rect
 Shape::ComputeStretchBounds ()
 {
-	needs_clip = true;
-
 	/*
 	 * NOTE: this code is extremely fragile don't make a change here without
 	 * checking the results of the test harness on with MOON_DRT_CATEGORIES=stretch
 	 */
 
 	bool autodim = isnan (GetWidth ());
-
-	if (isnan (GetWidth ()) != isnan (GetHeight ()))
-		return Rect ();
-
-	if (GetWidth () <= 0.0 || GetHeight () <= 0.0) { 
-		SetShapeFlags (UIElement::SHAPE_EMPTY);
-		return Rect ();
-	}
 
 	Stretch stretch = GetStretch ();
 	Rect shape_bounds = natural_bounds;
@@ -257,11 +247,9 @@ Shape::ComputeStretchBounds ()
 
 		switch (stretch) {
 		case StretchFill:
-			needs_clip = false;
 			center = true;
 			break;
 		case StretchUniform:
-			needs_clip = false;
 			sw = sh = (sw < sh) ? sw : sh;
 			center = true;
 			break;
@@ -334,13 +322,6 @@ Shape::ComputeStretchBounds ()
 	
 	shape_bounds = shape_bounds.Transform (&stretch_transform);
 	
-	if (!autodim) {
-		Rect reduced_bounds = shape_bounds.Intersection (Rect (0,0,GetWidth (), GetHeight ()));
-		needs_clip = reduced_bounds != shape_bounds;
-		needs_clip = needs_clip && stretch != StretchFill;
-		needs_clip = needs_clip && stretch != StretchUniform;
-	}
-	
 	return shape_bounds;
 }
 
@@ -356,32 +337,12 @@ Shape::Stroke (cairo_t *cr, bool do_op)
 void
 Shape::Clip (cairo_t *cr)
 {
-	// some shapes, like Line, Polyline, Polygon and Path, are clipped if both Height and Width properties are present
+	Geometry *layout_clip = LayoutInformation::GetLayoutClip (this);
+	if (!layout_clip)
+		return;
 
-	if (needs_clip) {
-		Rect layout_clip = *LayoutInformation::GetLayoutSlot (this);
-		Rect specified = Rect ();
-
-		if (layout_clip.width <= 0 && layout_clip.height <= 0) {
-#if 1
-			if (!isnan (GetWidth ()))
-				layout_clip.width = GetWidth ();
-			else
-				return;
-			if (!isnan (GetHeight ()))
-				layout_clip.height = GetHeight ();
-			else
-				return;
-#else
-			return;
-#endif			
-		}
-
-		layout_clip.Draw (cr);
-
-		cairo_clip (cr);
-		cairo_new_path (cr);
-	}
+	layout_clip->Draw (cr);
+	cairo_clip (cr);
 }
 
 //
@@ -687,25 +648,6 @@ Shape::InsideObject (cairo_t *cr, double x, double y)
 
 
 	cairo_save (cr);
-	
-	// cairo_in_* functions which we're using to check if point inside
-	// the path don't take the clipping into account. Therefore, we need 
-	// to do this in two steps: first check if the point is within 
-	// the clipping bounds and later check if within the path itself.
-
-	Geometry *clip = GetClip ();
-	if (clip) {
-		clip->Draw (cr);
-		ret = cairo_in_fill (cr, x, y);
-		cairo_new_path (cr);
-
-		if (!ret) {
-			cairo_restore (cr);
-			return false;
-		}
-	}
-
-	// don't do the operation but do consider filling
 	DoDraw (cr, false);
 
 	// don't check in_stroke without a stroke or in_fill without a fill (even if it can be filled)
@@ -850,8 +792,6 @@ Rect
 Ellipse::ComputeStretchBounds ()
 {
        Rect shape_bounds = ComputeShapeBounds (false);
-       needs_clip = !IsDegenerate () && (GetStretch () == StretchUniformToFill)
-;
        return shape_bounds;
 }
 
@@ -860,11 +800,6 @@ Ellipse::ComputeShapeBounds (bool logical)
 {
 	double w = GetWidth ();
 	double h = GetHeight ();
-
-	if (isnan (w) != isnan (h)) {
-		SetShapeFlags (UIElement::SHAPE_EMPTY);
-		return Rect ();
-	}
 
 	if (h <= 0.0 || w <= 0.0) { 
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
@@ -974,24 +909,15 @@ Rect
 Rectangle::ComputeStretchBounds ()
 {
 	Rect shape_bounds = ComputeShapeBounds (false);
-	needs_clip = !IsDegenerate () && (GetStretch () == StretchUniformToFill);
 	return shape_bounds;
 }
 
 Rect
 Rectangle::ComputeShapeBounds (bool logical)
 {
-	if (isnan (GetWidth ()) != isnan (GetHeight ())) {
-		SetShapeFlags (UIElement::SHAPE_EMPTY);
-		return Rect ();
-	}
-
-	/* we can do a single check here because of the check above */
-	bool autodim = isnan (GetWidth ());
-
 	Rect rect = Rect (0, 0, GetActualWidth (), GetActualHeight ());
 
-	if (!autodim && (rect.width <= 0.0 || rect.height <= 0.0)) { 
+	if (rect.width <= 0.0 || rect.height <= 0.0) { 
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return Rect ();
 	}
@@ -1369,9 +1295,6 @@ calc_line_bounds (double x1, double x2, double y1, double y2, double thickness, 
 void
 Line::BuildPath ()
 {
-	if (isnan (GetWidth ()) != isnan (GetHeight ()))
-		return;
-
 	SetShapeFlags (UIElement::SHAPE_NORMAL);
 
 	path = moon_path_renew (path, MOON_PATH_MOVE_TO_LENGTH + MOON_PATH_LINE_TO_LENGTH);
@@ -1389,11 +1312,8 @@ Rect
 Line::ComputeShapeBounds (bool logical)
 {
 	Rect shape_bounds = Rect ();
-
-	if (isnan (GetWidth ()) != isnan (GetHeight ()))
-		return shape_bounds;
-
 	double thickness;
+
 	if (!logical)
 		thickness = GetStrokeThickness ();
 	else
@@ -1532,9 +1452,6 @@ polygon_extend_line (double *x1, double *x2, double *y1, double *y2, double thic
 void
 Polygon::BuildPath ()
 {
-	if (isnan (GetWidth ()) != isnan (GetHeight ()))
-		return;
-
 	PointCollection *col = GetPoints ();
 	
 	// the first point is a move to, resulting in an empty shape
@@ -1684,9 +1601,6 @@ Polyline::DrawShape (cairo_t *cr, bool do_op)
 void
 Polyline::BuildPath ()
 {
-	if (isnan (GetWidth ()) != isnan (GetHeight ()))
-		return;
-
 	PointCollection *col = GetPoints ();
 	
 	// the first point is a move to, resulting in an empty shape

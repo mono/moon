@@ -1,5 +1,13 @@
 2009-01-28  Larry Ewing  <lewing@novell.com>
 
+	* shape.cpp (Shape::ComputeStretchBounds): remove the old
+	width/height short circuiting when one or the other of
+	width/height was not set simply use the lyaout clip when it is
+	around.  Might need a little more work but it is definitely
+	needed.
+
+2009-01-28  Larry Ewing  <lewing@novell.com>
+
 	* frameworkelement.cpp, frameworkelement.h: layout and arrange
 	children if there are any.  set IsLayoutContainer to true if we
 	have kids.
