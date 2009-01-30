@@ -1,3 +1,8 @@
+2009-01-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Rect.cs: Use ToString() inside the overloads (rather than throwing)
+	since this affects unit tests assertions. Fix GetHashCode wrt Equals
+
 2009-01-30  Jb Evain  <jbevain@novell.com>
 
 	* DependencyProperty.g.cs: regenerated.

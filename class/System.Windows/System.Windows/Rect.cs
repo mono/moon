@@ -64,9 +64,10 @@ namespace System.Windows {
 			return String.Format ("{0},{1},{2},{3}", x, y, w, h);
 		}
 
+		[MonoTODO ("only calls ToString right now")]
 		public string ToString (IFormatProvider provider)
 		{
-			throw new NotImplementedException ();
+			return ToString ();
 		}
 		
 		public double X {
@@ -118,11 +119,8 @@ namespace System.Windows {
 		
 		public static Rect Empty { 
 			get { 
-				Rect empty = new Rect (0,0,0,0);
-
-				empty.y = empty.x = Double.PositiveInfinity;
+				Rect empty = new Rect (Double.PositiveInfinity, Double.PositiveInfinity, 0, 0);
 				empty.w = empty.h = Double.NegativeInfinity;
-
 				return empty;
 			} 
 		}
@@ -212,14 +210,15 @@ namespace System.Windows {
 			return this == value;
 		}
 		
-		public override int GetHashCode()
+		public override int GetHashCode ()
 		{
-			return base.GetHashCode ();
+			return x.GetHashCode () ^ y.GetHashCode () ^ w.GetHashCode () ^ h.GetHashCode ();
 		}
 		
+		[MonoTODO ("only calls ToString right now")]
 		string System.IFormattable.ToString (string format, IFormatProvider provider)
 		{
-			throw new NotImplementedException ();
+			return ToString ();
 		}
 	}
 }
