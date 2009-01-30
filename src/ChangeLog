@@ -1,3 +1,10 @@
+2009-01-30  Geoff Norton  <gnorton@novell.com>
+
+	* debug.cpp: Use the proper headers here, we need them anyways.
+	* window.h: Store the deployment we were created in.
+	* window-gtk.cpp: Ensure we set our deployment before starting
+	to call into our heirarchy.
+
 2009-01-30  Jb Evain  <jbevain@novell.com>
 
 	* deployment.h: make Deployment::Surface DP internal.
