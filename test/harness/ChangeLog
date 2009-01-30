@@ -1,3 +1,8 @@
+2009-01-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* shocker/image-capture.cpp: capture_multiple_images: don't crash if
+	imagemagick throws an exception.
+
 2008-12-16  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* test-runner/ExternalProcess.cs: Thread reading stdout: catch and exit

@@ -145,14 +145,17 @@ capture_multiple_images (void* data)
 		
 		usleep (next * 1000);
 	}
-	
-	for (int i = 0; i < cmid->count; i++) {
-		Magick::Image image;
-		image.read (image_paths [i]);
-		image_list.push_front (image);
+	try {
+		for (int i = 0; i < cmid->count; i++) {
+			Magick::Image image;
+			image.read (image_paths [i]);
+			image_list.push_front (image);
+		}
+		Magick::writeImages (image_list.begin (), image_list.end (), cmid->image_path);
+	} catch (Magick::Exception & error) {
+		// Don't crash if imagemagick freaks out
+		printf ("Moonlight harness: ImageMagick threw an exception: %s\n", error.what ());
 	}
-	Magick::writeImages (image_list.begin (), image_list.end (), cmid->image_path);
-	
 	// Cleanup after us
 	for (int i = 0; i < cmid->count; i++) {
 		unlink (image_paths [i]);
