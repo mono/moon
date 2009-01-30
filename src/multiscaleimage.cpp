@@ -262,6 +262,9 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 		return;
 	}
 
+	//FIXME: only need to set this once
+	SetValue (MultiScaleImage::AspectRatioProperty, Value ((double)source->GetImageWidth () / (double)source->GetImageHeight ()));
+
 	if (!source->get_tile_func) {
 		g_warning ("no get_tile_func set\n");
 		return;
