@@ -80,7 +80,7 @@ Grid::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 Size
 Grid::MeasureOverride (Size availableSize)
 {
-	Size results (0, 0);
+	Size results = availableSize;
 
 	ColumnDefinitionCollection *columns = GetColumnDefinitions ();
 	RowDefinitionCollection *rows = GetRowDefinitions ();
@@ -215,8 +215,9 @@ Grid::MeasureOverride (Size availableSize)
 	for (int c = 0; c < col_count; c ++) {
 		grid_size.width += columns->GetValueAt (c)->AsColumnDefinition ()->GetActualWidth ();
 	}
-
-	results = results.Max (grid_size);
+	
+	grid_size = grid_size.Max (GetWidth (), GetHeight ());
+	results = results.Min (grid_size);
 
 	if (free_col)
 		columns->unref ();
