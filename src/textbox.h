@@ -70,6 +70,9 @@ class TextBoxModelChangedEventArgs : public RoutedEventArgs {
 
 class TextBuffer;
 
+struct TextSelection {
+	int start, length;
+};
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
@@ -80,37 +83,35 @@ class TextBox : public Control, public ITextSource {
 	TextSelection selection;
 	TextBuffer *buffer;
 	int maxlen;
-	int cursor;
 	
 	int setvalue:1;
-	int frozen:3;
+	int cursor:1;
 	int emit:3;
 	
  protected:
-	int KeyPressUnichar (gunichar c);
+	void KeyPressUnichar (gunichar c);
 	
-	int KeyPressBackSpace (GdkModifierType modifiers);
-	int KeyPressDelete (GdkModifierType modifiers);
-	int KeyPressPageDown (GdkModifierType modifiers);
-	int KeyPressPageUp (GdkModifierType modifiers);
-	int KeyPressHome (GdkModifierType modifiers);
-	int KeyPressEnd (GdkModifierType modifiers);
-	int KeyPressRight (GdkModifierType modifiers);
-	int KeyPressLeft (GdkModifierType modifiers);
-	int KeyPressDown (GdkModifierType modifiers);
-	int KeyPressUp (GdkModifierType modifiers);
+	void KeyPressBackSpace (GdkModifierType modifiers);
+	void KeyPressDelete (GdkModifierType modifiers);
+	void KeyPressPageDown (GdkModifierType modifiers);
+	void KeyPressPageUp (GdkModifierType modifiers);
+	void KeyPressHome (GdkModifierType modifiers);
+	void KeyPressEnd (GdkModifierType modifiers);
+	void KeyPressRight (GdkModifierType modifiers);
+	void KeyPressLeft (GdkModifierType modifiers);
+	void KeyPressDown (GdkModifierType modifiers);
+	void KeyPressUp (GdkModifierType modifiers);
 	
-	void SyncCursorPosition ();
 	void SyncSelectedText ();
 	void SyncText ();
 	
-	void ClearSelection ();
+	void ClearSelection (int start);
 	
 	void EmitSelectionChanged ();
 	void EmitTextChanged ();
 	
-	void Freeze ();
-	void Thaw ();
+	void KeyPressFreeze ();
+	void KeyPressThaw ();
 	
 	//
 	// Protected Property Accessors

@@ -1,3 +1,19 @@
+2009-01-30  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBox::KeyPress<key>): Update an internal 'emit'
+	state rather than returning a changed mask. Also modified to treat
+	selection.start as the cursor position when selection.length is
+	0. Otherwise refer to the cursor state to figure out which end of
+	the selection the cursor is at (for growing/shrinking).
+	(TextBox::KeyPressFreeze): Reset 'emit' state.
+	(TextBox::KeyPressThaw): Sync and then emit our changed events.
+	(TextBox::OnPropertyChanged): Updated for ClearSelection() API
+	change.
+	(TextBox::ClearSelection): Now takes a 'start' argument to set
+	SelectionStart to (e.g. cursor position).
+	(TextBox::Select): Now longer needs to do a freeze/thaw.
+	(TextBoxView::OnKeyDown): Updated.
+
 2009-01-30  Chris Toshok  <toshok@ximian.com>
 
 	* control.h, control.cpp: same story with InsideObject.

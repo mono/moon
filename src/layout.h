@@ -57,10 +57,6 @@ class TextRun : public List::Node {
 	}
 };
 
-struct TextSelection {
-	int start, length;
-};
-
 class TextLayout {
 	// User-set data
 	LineStackingStrategy strategy;
