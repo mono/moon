@@ -323,14 +323,8 @@ namespace System.Windows.Media {
 	}
 
 	partial class DeepZoomImageTileSource {
-		public DeepZoomImageTileSource () : base (NativeMethods.deep_zoom_image_tile_source_new ())
-		{
-			Initialize ();
-		}
-		internal DeepZoomImageTileSource (IntPtr raw) : base (raw)
-		{
-			Initialize ();
-		}
+		public DeepZoomImageTileSource () : base (NativeMethods.deep_zoom_image_tile_source_new ()) {}
+		internal DeepZoomImageTileSource (IntPtr raw) : base (raw) {}
 	}
 
 	partial class DoubleCollection {

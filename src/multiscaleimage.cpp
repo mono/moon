@@ -284,6 +284,7 @@ printf ("widget %f %f\n", w, h);
 //	int optimal_layer = MAX (0, layers + 1 - ceil (vp_w * im_w / GetWidth()));
 	int optimal_layer;
 	frexp (w * vp_w, &optimal_layer);
+	optimal_layer = MIN (optimal_layer, layers);
 	printf ("number of layers: %d\toptimal layer for this: %d\n", layers, optimal_layer);
 
 	//We have to figure all the layers that we'll have to render:
