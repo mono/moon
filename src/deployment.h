@@ -64,7 +64,7 @@ class Deployment : public DependencyObject {
 	static DependencyProperty *PartsProperty;
  	/* @PropertyType=string,ManagedSetterAccess=Internal */
 	static DependencyProperty *RuntimeVersionProperty;
- 	/* @PropertyType=Surface,ManagedSetterAccess=Internal,GenerateAccessors */
+ 	/* @PropertyType=Surface,ManagedAccess=Internal,GenerateAccessors */
 	static DependencyProperty *SurfaceProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */

@@ -1,3 +1,7 @@
+2009-01-30  Jb Evain  <jbevain@novell.com>
+
+	* deployment.h: make Deployment::Surface DP internal.
+
 2009-01-29  Geoff Norton  <gnorton@novell.com>
 
 	* deployment.h: Surface is now a DP on the deployment so we 
