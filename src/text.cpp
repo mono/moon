@@ -300,36 +300,51 @@ TextBlock::CalcActualWidthHeight (cairo_t *cr)
 	}
 }
 
+#define USE_FE 0
 void
 TextBlock::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 {
+#if USE_FE
+	FrameworkElement::GetSizeForBrush (cr, width, height);
+#else
 	*width = actual_width;
 	*height = actual_height;
+#endif	
 }
 
 void
 TextBlock::ComputeBounds ()
 {
-	extents = Rect (0, 0, actual_width, actual_height);
+#if USE_FE
+	FrameworkElement::ComputeBounds ();
+#else
+	Size total = Size (actual_width, actual_height);
+	total.GrowBy (*GetPadding ());
+	extents = Rect (0,0,total.width, total.height);
 	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 	bounds_with_children = bounds;
+#endif
 }
 
 Point
 TextBlock::GetTransformOrigin ()
 {
+#if USE_FE
+	return FrameworkElement::GetTransformOrigin ();
+#else
 	Point *user_xform_origin = GetRenderTransformOrigin ();
-
 	return Point (actual_width * user_xform_origin->x, 
 		      actual_height * user_xform_origin->y);
+#endif
 }
 
 Size
 TextBlock::MeasureOverride (Size availableSize)
 {
+	Thickness padding = *GetPadding ();
 	dirty = true;
-
-	constraint = availableSize;
+	
+	constraint = availableSize.GrowBy (-padding);
 
 	if (constraint.width == 0 && constraint.height == 0)
 		constraint = Size (INFINITY, INFINITY);
@@ -337,6 +352,7 @@ TextBlock::MeasureOverride (Size availableSize)
 	CalcActualWidthHeight (NULL);
 	
 	//printf ("measure actual = %g, %g\n", actual_width, actual_height);
+	Size desired = Size (actual_width, actual_height).GrowBy (padding);
 
 	return availableSize.Min (actual_width, actual_height);
 }
@@ -344,9 +360,10 @@ TextBlock::MeasureOverride (Size availableSize)
 Size
 TextBlock::ArrangeOverride (Size finalSize)
 {
+	Thickness padding = *GetPadding ();
 	dirty = true;
-
-	constraint = finalSize;
+	
+	constraint = finalSize.GrowBy (-padding);
 	
 	// Hack around the funky canvas logic in layout //
 	if (constraint.width <= 0 || constraint.height <= 0)
@@ -356,7 +373,7 @@ TextBlock::ArrangeOverride (Size finalSize)
 	
 	//printf ("arrange actual = %g, %g\n", actual_width, actual_height);
 
-	return finalSize.Max (actual_width, actual_height);
+	return Size (actual_width, actual_height).GrowBy (padding);
 }
 
 void
@@ -399,7 +416,7 @@ TextBlock::Layout (cairo_t *cr)
 			goto done;
 		}
 		
-		layout->SetMaxWidth (width - pad);
+		layout->SetMaxWidth (width);
 	} else {
 		layout->SetMaxWidth (-1.0);
 	}
