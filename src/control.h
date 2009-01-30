@@ -43,8 +43,6 @@ public:
 	virtual Size MeasureOverride (Size availableSize);
 	virtual Size ArrangeOverride (Size finalSize);
 
-	virtual bool InsideObject (cairo_t *cr, double x, double y);
-	
 	virtual void HitTest (cairo_t *cr, Rect r, List *uielement_list);
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);

@@ -1,5 +1,9 @@
 2009-01-30  Chris Toshok  <toshok@ximian.com>
 
+	* control.h, control.cpp: same story with InsideObject.
+
+2009-01-30  Chris Toshok  <toshok@ximian.com>
+
 	* control.h, control.cpp: remove Control::Render.  handling of the
 	background property is left to a templatebinding in the visual
 	tree of the applied template.

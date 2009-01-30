@@ -39,15 +39,6 @@ Control::~Control ()
 		delete bindings;
 }
 
-bool 
-Control::InsideObject (cairo_t *cr, double x, double y)
-{
-	if (GetBackground ())
-		return FrameworkElement::InsideObject (cr, x, y);
-	
-	return false;
-}
-
 void
 Control::HitTest (cairo_t *cr, Rect r, List *uielement_list)
 {
