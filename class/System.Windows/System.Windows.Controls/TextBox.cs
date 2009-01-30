@@ -72,16 +72,20 @@ namespace System.Windows.Controls {
 		static object SelectionChangedEvent = new object ();
 		static object TextChangedEvent = new object ();
 		
-		void InvokeSelectionChanged ()
+		void InvokeSelectionChanged (RoutedEventArgs args)
 		{
-			EventHandler h = (EventHandler) EventList [SelectionChangedEvent];
+			RoutedEventHandler h = (RoutedEventHandler) EventList [SelectionChangedEvent];
+			
 			if (h != null)
-				h (this, EventArgs.Empty);
+				h (this, args);
 		}
 		
 		static void selection_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			((TextBox) Helper.GCHandleFromIntPtr (closure).Target).InvokeSelectionChanged ();
+			TextBox textbox = (TextBox) Helper.GCHandleFromIntPtr (closure).Target;
+			RoutedEventArgs args = new RoutedEventArgs (calldata);
+			
+			textbox.InvokeSelectionChanged (args);
 		}
 		
 		public event RoutedEventHandler SelectionChanged {
