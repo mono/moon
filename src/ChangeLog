@@ -1,5 +1,9 @@
 2009-01-30  Andreia Gaita  <avidigal@novell.com>
 
+	* clock.cpp: no use stopping if it's already stopped
+
+2009-01-30  Andreia Gaita  <avidigal@novell.com>
+
 	* clock.cpp: reset the state flags as well
 
 2009-01-30  Larry Ewing  <lewing@novell.com>

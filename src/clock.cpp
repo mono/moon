@@ -1731,7 +1731,8 @@ void
 DispatcherTimer::Start ()
 {
 	if (root_clock) {
-		Stop ();
+		if (!stopped)
+			Stop ();
 		stopped = false;
 		root_clock->AddHandler (root_clock->CompletedEvent, OnTick, this);
 		root_clock->BeginOnTick ();
