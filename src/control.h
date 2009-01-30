@@ -39,8 +39,7 @@ public:
 	Control ();
 
 	virtual bool IsLayoutContainer () { return true; }
-	virtual void Render (cairo_t *cr, Region *region);
-	
+
 	virtual Size MeasureOverride (Size availableSize);
 	virtual Size ArrangeOverride (Size finalSize);
 

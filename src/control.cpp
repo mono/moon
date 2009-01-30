@@ -39,28 +39,6 @@ Control::~Control ()
 		delete bindings;
 }
 
-void 
-Control::Render (cairo_t *cr, Region *region)
-{
-	Brush *background = GetBackground ();
-
-	cairo_set_matrix (cr, &absolute_xform);
-
-	Geometry *layout_clip = LayoutInformation::GetLayoutClip (this);
-	if (layout_clip) {
-		layout_clip->Draw (cr);
-		cairo_clip (cr);
-	}
-
-	if (background) {
-		background->SetupBrush (cr, extents);
-
-		cairo_new_path (cr);
-		extents.Draw (cr);
-		background->Fill (cr);
-	}
-}
-
 bool 
 Control::InsideObject (cairo_t *cr, double x, double y)
 {
