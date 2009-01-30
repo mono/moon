@@ -770,6 +770,10 @@ namespace Mono {
 		public extern static IntPtr geometry_new ();
 
 		[DllImport ("moon")]
+		// Rect geometry_get_bounds (Geometry *instance);
+		public extern static Rect geometry_get_bounds (IntPtr instance);
+
+		[DllImport ("moon")]
 		// GeometryCollection *geometry_collection_new ();
 		public extern static IntPtr geometry_collection_new ();
 

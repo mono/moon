@@ -1,3 +1,7 @@
+2009-01-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* GeneratedPInvokes.cs: Regenerated
+
 2009-01-29  Geoff Norton  <gnorton@novell.com>
 
 	* Value.cs: Learn how to make our managed surface counterpart.
