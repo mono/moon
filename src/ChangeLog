@@ -1,3 +1,8 @@
+2009-01-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp: Handle MediaElementStateIndividualizing and
+	AcquiringLicense in all switch statements to fix gcc warnings.
+
 2009-01-30  Geoff Norton  <gnorton@novell.com>
 
 	* debug.cpp: Use the proper headers here, we need them anyways.

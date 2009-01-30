@@ -1182,6 +1182,10 @@ MediaElement::BufferingComplete ()
 		LOG_MEDIAELEMENT ("MediaElement::BufferingComplete (): previous state is invalid ('%s').\n",
 				  GetStateName (prev_state));
 		return;
+	case MediaElementStateIndividualizing:
+	case MediaElementStateAcquiringLicense:
+		g_warning ("MediaElement: Invalid state.");
+		return;
 	}
 }
 
@@ -1270,8 +1274,9 @@ MediaElement::TryOpen ()
 	case MediaElementStateOpening:
 		// Try to open it now
 		break;
-	default:
-		LOG_MEDIAELEMENT ("MediaElement::TryOpen (): Unknown state: %d\n", state);
+	case MediaElementStateIndividualizing:
+	case MediaElementStateAcquiringLicense:
+		g_warning ("MediaElement: Invalid state.");
 		return;
 	}
 	
@@ -1428,8 +1433,9 @@ MediaElement::DownloaderComplete ()
 		// Try to open it now
 		TryOpen ();
 		break;
-	default:
-		LOG_MEDIAELEMENT ("MediaElement::DownloaderComplete (): Unknown state: %d\n", state);
+	case MediaElementStateIndividualizing:
+	case MediaElementStateAcquiringLicense:
+		g_warning ("MediaElement: Invalid state.");
 		return;
 	}
 }
@@ -1699,6 +1705,10 @@ MediaElement::PauseNow ()
 		}
 		EmitMediaOpened ();	
 		break;
+	case MediaElementStateIndividualizing:
+	case MediaElementStateAcquiringLicense:
+		g_warning ("MediaElement: Invalid state.");
+		return;
 	}
 }
 
@@ -1749,6 +1759,10 @@ MediaElement::PlayNow ()
 		flags |= PlayRequested;
 		playlist->Play ();
 		break;
+	case MediaElementStateIndividualizing:
+	case MediaElementStateAcquiringLicense:
+		g_warning ("MediaElement: Invalid state.");
+		return;
 	}
 }
 
@@ -1823,6 +1837,10 @@ MediaElement::StopNow ()
 		SetState (MediaElementStateStopped);
 		Invalidate ();
 		break;
+	case MediaElementStateIndividualizing:
+	case MediaElementStateAcquiringLicense:
+		g_warning ("MediaElement: Invalid state.");
+		return;
 	}
 }
 
@@ -1912,6 +1930,10 @@ MediaElement::SeekNow ()
 			}
 
 			break;
+		case MediaElementStateIndividualizing:
+		case MediaElementStateAcquiringLicense:
+			g_warning ("MediaElement: Invalid state.");
+			return;
 		}
 	}
 }
@@ -2052,6 +2074,10 @@ MediaElementPropertyValueProvider::GetPropertyValue (DependencyProperty *propert
 	this->position = NULL;
 	
 	switch (element->state) {
+	case MediaElementStateIndividualizing:
+	case MediaElementStateAcquiringLicense:
+		g_warning ("MediaElement: Invalid state.");
+		// Fall through
 	case MediaElementStateOpening:
 	case MediaElementStateClosed:
 	case MediaElementStateError:
