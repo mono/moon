@@ -59,6 +59,7 @@ FrameworkElement::FrameworkElement ()
 
 	measure_cb = NULL;
 	arrange_cb = NULL;
+	bounds_with_children = Rect ();
 }
 
 Point

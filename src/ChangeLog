@@ -1,3 +1,8 @@
+2009-01-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* frameworkelement.cpp: Make sure bounds_with_children is always
+	initialized before being used.
+
 2009-01-30  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Fixup logic for setting both Key and Name, I was wrong
