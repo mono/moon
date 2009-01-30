@@ -5,6 +5,8 @@
 	* control.cpp (Control::ArrangeOverride): use alignment properly
 	in these places as well
 
+2009-01-30  Larry Ewing  <lewing@novell.com>
+
 	* frameworkelement.cpp (FrameworkElement::Arrange): don't modify
 	the alignment here.
 
