@@ -103,11 +103,14 @@ Deployment::GetCurrent()
 	}
 
 	/*
-	 * If we have a domain mismatch, fix that before we continue
+	 * If we have a domain mismatch, we likely got here from managed land and need
+	 * to get the deployment tied to this domain
 	 */
 	if (deployment && deployment->domain != current_domain) {
-		LOG_DEPLOYMENT ("Deployment::GetCurrent (): Domain mismatch, current deployment's domain is %p, current domain is: %p\n", deployment->domain, current_domain);
-		mono_domain_set (deployment->domain, FALSE);
+		LOG_DEPLOYMENT ("Deployment::GetCurrent (): Domain mismatch, thread %i, current deployment's domain is %p, current domain is: %p\n", (int) pthread_self (), deployment->domain, current_domain);
+		pthread_mutex_lock (&hash_mutex);
+		deployment = (Deployment *) g_hash_table_lookup (current_hash, current_domain);
+		pthread_mutex_unlock (&hash_mutex);
 	}
 
 	if (deployment == NULL) {
