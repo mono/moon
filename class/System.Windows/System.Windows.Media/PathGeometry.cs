@@ -25,9 +25,13 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+
+using System.Windows.Markup;
 using Mono;
+
 namespace System.Windows.Media {
 
+	[ContentProperty ("Figures")]
 	public sealed partial class PathGeometry : Geometry {
 
 	}

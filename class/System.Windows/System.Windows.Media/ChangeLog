@@ -1,3 +1,10 @@
+2009-01-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Geometry.cs: Implement NIE properties.
+	* GeometryGroup.cs, PathFigure.cs, PathGeometry.cs, 
+	PolyBezierSegment.cs, PolyLineSegment.cs, 
+	PolyQuadraticBezierSegment.cs: Add missing [ContentProperty]
+
 2009-01-29  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* DeepZoomImageTileSource.cs: parse the 2.0 final 

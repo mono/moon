@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2007 Novell, Inc.
+// Copyright 2007, 2009 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -32,15 +32,15 @@ namespace System.Windows.Media {
 	public abstract partial class Geometry : DependencyObject {
 
 		public static double StandardFlatteningTolerance {
-			get { throw new System.NotImplementedException (); }
+			get { return 0.25; }
 		}
 		
 		public static Geometry Empty {
-			get { throw new System.NotImplementedException (); }
+			get { return new PathGeometry (); }
 		}
 		
 		public Rect Bounds {
-			get { throw new System.NotImplementedException (); }
+			get { return NativeMethods.geometry_get_bounds (native); }
 		}
 	}	
 }
