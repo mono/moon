@@ -1263,6 +1263,7 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 {
 	nps (printf ("PluginInstance::StreamAsFile (%p, %s)\n", stream, fname));
 	
+	Deployment::SetCurrent (deployment);
 #if DEBUG
 	AddSource (stream->url, fname);
 #endif
