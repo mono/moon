@@ -57,6 +57,7 @@ MultiScaleImage::ZoomAboutLogicalPoint (double zoomIncrementFactor, double zoomC
 Point
 MultiScaleImage::ElementToLogicalPoint (Point elementPoint)
 {
+	printf ("ELEMENT TO LOGICAL:FIXME\n");
 	return Point ((GetViewportOrigin()->x + (double)elementPoint.x * (double)GetViewportWidth () / GetWidth()) / (double) source->GetImageWidth (),
 		      (GetViewportOrigin()->y + (double)elementPoint.y * (double)GetViewportHeight () / GetHeight ()) / (double) source->GetImageHeight ());
 }
@@ -272,14 +273,17 @@ printf ("MSI::Render\n");
 	double vp_ox = GetViewportOrigin()->x;
 	double vp_oy = GetViewportOrigin()->y;
 printf ("vp %f %f %f %f\n", vp_ox, vp_oy, vp_w, vp_h);
-printf ("image %d %d\n", source->GetImageWidth (), source->GetImageHeight ());
+printf ("image %f %f\n", im_w, im_h);
+printf ("widget %f %f\n", w, h);
 
 	int layers;
 	frexp (MAX (im_w, im_h), &layers);
 
 	//optimal layer for this... aka "best viewed at"
 	//FIXME: need to count AspectRatio too
-	int optimal_layer = MAX (0, layers + 1 - ceil (GetViewportWidth () / GetWidth()));
+//	int optimal_layer = MAX (0, layers + 1 - ceil (vp_w * im_w / GetWidth()));
+	int optimal_layer;
+	frexp (w * vp_w, &optimal_layer);
 	printf ("number of layers: %d\toptimal layer for this: %d\n", layers, optimal_layer);
 
 	//We have to figure all the layers that we'll have to render:
@@ -296,8 +300,8 @@ printf ("image %d %d\n", source->GetImageWidth (), source->GetImageHeight ());
 		double v_tile_h = tile_height * ldexp (1.0, layers - from_layer);
 		int i, j;
 
-		for (i = MAX(0, (int)((double)vp_ox / (double)v_tile_w)); i * v_tile_w < vp_ox + vp_w && i * v_tile_w < im_w; i++) {
-			for (j = MAX(0, (int)((double)vp_oy / (double)v_tile_h)); j * v_tile_h < vp_oy + vp_h && j * v_tile_h < im_h; j++) {
+		for (i = MAX(0, (int)((double)vp_ox / (double)v_tile_w)); i * v_tile_w < vp_ox + vp_w * im_w && i * v_tile_w < im_w; i++) {
+			for (j = MAX(0, (int)((double)vp_oy / (double)v_tile_h)); j * v_tile_h < vp_oy + vp_h * im_h && j * v_tile_h < im_h; j++) {
 				count++;
 				//FIXME
 				if (cache_contains (from_layer, i, j, true))
@@ -318,8 +322,8 @@ printf ("image %d %d\n", source->GetImageWidth (), source->GetImageHeight ());
 		int i, j;
 		double v_tile_w = tile_width * ldexp (1.0, layers - layer_to_render);
 		double v_tile_h = tile_height * ldexp (1.0, layers - layer_to_render);
-		for (i = MAX(0, (int)((double)vp_ox / (double)v_tile_w)); i * v_tile_w < vp_ox + vp_w && i * v_tile_w < im_w; i++) {
-			for (j = MAX(0, (int)((double)vp_oy / (double)v_tile_h)); j * v_tile_h < vp_oy + vp_h && j * v_tile_h < im_h; j++) {
+		for (i = MAX(0, (int)((double)vp_ox / (double)v_tile_w)); i * v_tile_w < vp_ox + vp_w * im_w && i * v_tile_w < im_w; i++) {
+			for (j = MAX(0, (int)((double)vp_oy / (double)v_tile_h)); j * v_tile_h < vp_oy + vp_h * im_h && j * v_tile_h < im_h; j++) {
 				cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, to_key (layer_to_render, i, j));
 				if (!image)
 					continue;
@@ -329,7 +333,7 @@ printf ("image %d %d\n", source->GetImageWidth (), source->GetImageHeight ());
 				cairo_save (cr);
 
 				cairo_rectangle (cr, 0, 0, w, h);
-				cairo_scale (cr, w / vp_w, h / vp_h); //scale to viewport
+				cairo_scale (cr, w / (vp_w * im_w), h / (vp_h * im_h)); //scale to viewport
 				cairo_translate (cr, -vp_ox + i * v_tile_w, -vp_oy + j * v_tile_h);
 				//cairo_scale (cr, im_w / (double)*p_w, im_h / (double)*p_h); //scale to image size
 				cairo_scale (cr, ldexp (1.0, layers - layer_to_render), ldexp (1.0, layers - layer_to_render)); //scale to image size
@@ -352,8 +356,8 @@ printf ("image %d %d\n", source->GetImageWidth (), source->GetImageHeight ());
 		int i, j;
 
 
-		for (i = MAX(0, (int)((double)vp_ox / (double)v_tile_w)); i * v_tile_w < vp_ox + vp_w && i * v_tile_w < im_w; i++) {
-			for (j = MAX(0, (int)((double)vp_oy / (double)v_tile_h)); j * v_tile_h < vp_oy + vp_h && j * v_tile_h < im_h; j++) {
+		for (i = MAX(0, (int)((double)vp_ox / (double)v_tile_w)); i * v_tile_w < vp_ox + vp_w * im_w && i * v_tile_w < im_w; i++) {
+			for (j = MAX(0, (int)((double)vp_oy / (double)v_tile_h)); j * v_tile_h < vp_oy + vp_h * im_h && j * v_tile_h < im_h; j++) {
 				if (!cache_contains (from_layer, i, j, true)) {
 					context = to_key (from_layer, i, j);
 				
