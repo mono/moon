@@ -3862,8 +3862,7 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 		return false;
 	}
 
-	if (!property->IsDependencyObject ()) {
-		// Kinda an ugly assumption: It's not a DO and it's not a ValueType so it must be Managed.
+	if (Type::Find(property->info->GetKind())->IsCustomType()) {
 		XamlElementInstanceManaged *mp = (XamlElementInstanceManaged *) property;
 		g_strfreev (prop_name);
 

@@ -1,3 +1,8 @@
+2009-01-30  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (dependency_object_set_property): remove the ugly
+	assumption - we know if the property type is managed now.
+
 2009-01-30  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBox::KeyPress<key>): Update an internal 'emit'
