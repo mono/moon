@@ -41,6 +41,21 @@ namespace System.Windows.Controls {
 			// can notify controls when their template has
 			// been instantiated as a visual tree.
 			Events.AddHandler (this, "TemplateApplied", Events.template_applied);
+
+			// regiser handlers so our Invoke methods will get hit
+			GotFocus += delegate {};
+			LostFocus += delegate {};
+
+			KeyDown += delegate {};
+			KeyUp += delegate {};
+
+			MouseEnter += delegate {};
+			MouseLeave += delegate {};
+
+			MouseLeftButtonDown += delegate {};
+			MouseLeftButtonUp += delegate {};
+
+			MouseMove += delegate {};
 		}
 
 		private static Type ControlType = typeof (Control);
