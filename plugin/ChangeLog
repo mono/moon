@@ -1,3 +1,8 @@
+2009-01-29  Geoff Norton  <gnorton@novell.com>
+
+	* plugin.cpp: Ensure that we create our Surface and SystemTimeSource
+	in the correct deployment.
+
 2009-01-29  Larry Ewing  <lewing@novell.com>
 
 	* plugin-debug.cpp (reflect_dependency_object_in_tree): restrict

@@ -704,6 +704,8 @@ PluginInstance::SetValue (NPNVariable variable, void *value)
 NPError
 PluginInstance::SetWindow (NPWindow *window)
 {
+	Deployment::SetCurrent (deployment);
+
  	if (moon_window) {
 		// XXX opera Window lifetime hack needs this
 		this->window = window;
