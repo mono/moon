@@ -1,5 +1,10 @@
 2009-01-30  Larry Ewing  <lewing@novell.com>
 
+	* grid.cpp (Grid::ArrangeOverride): hack around spans in
+	rebuilding the table until we understand them better.
+
+2009-01-30  Larry Ewing  <lewing@novell.com>
+
 	* frameworkelement.cpp:
 	* border.cpp:
 	* control.cpp (Control::ArrangeOverride): use alignment properly

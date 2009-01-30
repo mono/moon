@@ -272,15 +272,21 @@ Grid::ArrangeOverride (Size finalSize)
 
 		gint32 col = MIN (Grid::GetColumn (child), col_count - 1);
 		gint32 row = MIN (Grid::GetRow (child), row_count - 1);
-		//gint32 colspan = Grid::GetColumnSpan (child);
-		//gint32 rowspan = Grid::GetRowSpan (child);
+		gint32 colspan = MIN (Grid::GetColumnSpan (child), col_count - col);
+		gint32 rowspan = MIN (Grid::GetRowSpan (child), row_count - row);
 		
 		Size desired = child->GetDesiredSize ();
-		ColumnDefinition *coldef = columns->GetValueAt (col)->AsColumnDefinition ();
-		coldef->SetActualWidth (MAX (coldef->GetActualWidth (), desired.width));
+		/* XXX Fixme this is a hack to avoid spans until we know the proper behavior here */
+		if (colspan == 1) {
+			ColumnDefinition *coldef = columns->GetValueAt (col)->AsColumnDefinition ();
+			coldef->SetActualWidth (MAX (coldef->GetActualWidth (), desired.width));
+		}
 
-		RowDefinition *rowdef = rows->GetValueAt (row)->AsRowDefinition ();
-		rowdef->SetActualHeight (MAX (rowdef->GetActualHeight (), desired.height));
+		/* XXX Fixme this is a hack to avoid spans until we know the proper behavior here */
+		if (rowspan == 1) {
+			RowDefinition *rowdef = rows->GetValueAt (row)->AsRowDefinition ();
+			rowdef->SetActualHeight (MAX (rowdef->GetActualHeight (), desired.height));
+		}
 	}
 
 	double row_stars = 0.0;
