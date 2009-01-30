@@ -1,3 +1,7 @@
+2009-01-30  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: change the vporigin to relative coords
+
 2009-01-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* dependencyobject.cpp: EventObject::unref: don't try to get the

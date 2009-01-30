@@ -47,19 +47,19 @@ void
 MultiScaleImage::ZoomAboutLogicalPoint (double zoomIncrementFactor, double zoomCenterLogicalX, double zoomCenterLogicalY)
 {
 
-	printf ("zoomabout logical %f  (%f, %f)\n", zoomIncrementFactor, zoomCenterLogicalX, zoomCenterLogicalY);
+//	printf ("zoomabout logical %f  (%f, %f)\n", zoomIncrementFactor, zoomCenterLogicalX, zoomCenterLogicalY);
 	double width = GetViewportWidth () / zoomIncrementFactor;
 	double height = GetViewportHeight () / zoomIncrementFactor;
+//FIXME: do not use the setters, use SetValue then Invalidate once
 	SetViewportWidth (width);
-	SetViewportOrigin (new Point (zoomCenterLogicalX * (double) source->GetImageWidth () - width/2.0, zoomCenterLogicalY * (double) source->GetImageHeight ()- height/2.0));
+	SetViewportOrigin (new Point (zoomCenterLogicalX - width/2.0, zoomCenterLogicalY - height/2.0));
 }
 
 Point
 MultiScaleImage::ElementToLogicalPoint (Point elementPoint)
 {
-	printf ("ELEMENT TO LOGICAL:FIXME\n");
-	return Point ((GetViewportOrigin()->x + (double)elementPoint.x * (double)GetViewportWidth () / GetWidth()) / (double) source->GetImageWidth (),
-		      (GetViewportOrigin()->y + (double)elementPoint.y * (double)GetViewportHeight () / GetHeight ()) / (double) source->GetImageHeight ());
+	return Point (GetViewportOrigin()->x + (double)elementPoint.x * GetViewportWidth () / GetWidth (),
+		      GetViewportOrigin()->y + (double)elementPoint.y * GetViewportHeight () / GetHeight ());
 }
 
 void
@@ -139,6 +139,44 @@ MultiScaleImage::DownloadUri (const char* url)
 		g = ((color & 0x0000ff00) >> 8); \
 		b = (color & 0x000000ff); \
 	} G_STMT_END
+#include "alpha-premul-table.inc"
+
+//
+// Converts RGBA unmultiplied alpha to ARGB pre-multiplied alpha.
+//
+static void
+unmultiply_rgba_in_place (GdkPixbuf *pixbuf)
+{
+	guchar *pb_pixels = gdk_pixbuf_get_pixels (pixbuf);
+	guchar *p;
+	int w = gdk_pixbuf_get_width (pixbuf);
+	int h = gdk_pixbuf_get_height (pixbuf);
+
+	for (int y = 0; y < h; y ++) {
+		p = pb_pixels + y * gdk_pixbuf_get_rowstride (pixbuf);
+		for (int x = 0; x < w; x ++) {
+			guint32 color = *(guint32*)p;
+			guchar r, g, b, a;
+
+			get_pixel_bgra (color, b, g, r, a);
+
+			/* pre-multipled alpha */
+			if (a == 0) {
+				r = g = b = 0;
+			}
+			else if (a < 255) {
+				r = pre_multiplied_table [r][a];
+				g = pre_multiplied_table [g][a];
+				b = pre_multiplied_table [b][a];
+			}
+
+			/* store it back, swapping red and blue */
+			set_pixel_bgra (p, 0, r, g, b, a);
+
+			p += 4;
+		}
+	}
+}
 
 //
 // Expands RGB to ARGB allocating new buffer for it.
@@ -206,7 +244,7 @@ MultiScaleImage::cache_contains (int layer, int x, int y, bool empty_tiles)
 void
 MultiScaleImage::Render (cairo_t *cr, Region *region)
 {
-printf ("MSI::Render\n");
+//printf ("MSI::Render\n");
 
 //	if (!surface)
 //		return;
@@ -241,15 +279,21 @@ printf ("MSI::Render\n");
 		if (error) {
 			printf (error->message);
 		} else {
-			stride = gdk_pixbuf_get_rowstride (pixbuf);
-			data = expand_rgb_to_argb (pixbuf, &stride);
+			bool has_alpha = gdk_pixbuf_get_n_channels (pixbuf) == 4;
+			if (has_alpha) {
+				unmultiply_rgba_in_place (pixbuf);
+				stride = gdk_pixbuf_get_rowstride (pixbuf);
+				data = gdk_pixbuf_get_pixels (pixbuf);
+			} else {
+				data = expand_rgb_to_argb (pixbuf, &stride);
+			}
 			int *p_width = new int (gdk_pixbuf_get_width (pixbuf));
 			int *p_height = new int (gdk_pixbuf_get_height (pixbuf));
 
 			//printf ("pb %d %d\n", *p_width, *p_height);
 
 			image = cairo_image_surface_create_for_data (data,
-								     MOON_FORMAT_RGB,
+								     has_alpha ? MOON_FORMAT_ARGB : MOON_FORMAT_RGB,
 								     *p_width,
 								     *p_height, 
 								     stride);
@@ -272,9 +316,9 @@ printf ("MSI::Render\n");
 	int tile_height = source->GetTileHeight ();
 	double vp_ox = GetViewportOrigin()->x;
 	double vp_oy = GetViewportOrigin()->y;
-printf ("vp %f %f %f %f\n", vp_ox, vp_oy, vp_w, vp_h);
-printf ("image %f %f\n", im_w, im_h);
-printf ("widget %f %f\n", w, h);
+//printf ("vp %f %f %f %f\n", vp_ox, vp_oy, vp_w, vp_h);
+//printf ("image %f %f\n", im_w, im_h);
+//printf ("widget %f %f\n", w, h);
 
 	int layers;
 	frexp (MAX (im_w, im_h), &layers);
@@ -283,7 +327,7 @@ printf ("widget %f %f\n", w, h);
 	//FIXME: need to count AspectRatio too
 //	int optimal_layer = MAX (0, layers + 1 - ceil (vp_w * im_w / GetWidth()));
 	int optimal_layer;
-	frexp (w * vp_w, &optimal_layer);
+	frexp (w / vp_w, &optimal_layer);
 	optimal_layer = MIN (optimal_layer, layers);
 	printf ("number of layers: %d\toptimal layer for this: %d\n", layers, optimal_layer);
 
@@ -301,8 +345,8 @@ printf ("widget %f %f\n", w, h);
 		double v_tile_h = tile_height * ldexp (1.0, layers - from_layer);
 		int i, j;
 
-		for (i = MAX(0, (int)((double)vp_ox / (double)v_tile_w)); i * v_tile_w < vp_ox + vp_w * im_w && i * v_tile_w < im_w; i++) {
-			for (j = MAX(0, (int)((double)vp_oy / (double)v_tile_h)); j * v_tile_h < vp_oy + vp_h * im_h && j * v_tile_h < im_h; j++) {
+		for (i = MAX(0, (int)((double)vp_ox * im_w / (double)v_tile_w)); i * v_tile_w < vp_ox * im_w + vp_w * im_w && i * v_tile_w < im_w; i++) {
+			for (j = MAX(0, (int)((double)vp_oy * im_h / (double)v_tile_h)); j * v_tile_h < vp_oy * im_h + vp_h * im_h && j * v_tile_h < im_h; j++) {
 				count++;
 				//FIXME
 				if (cache_contains (from_layer, i, j, true))
@@ -323,8 +367,8 @@ printf ("widget %f %f\n", w, h);
 		int i, j;
 		double v_tile_w = tile_width * ldexp (1.0, layers - layer_to_render);
 		double v_tile_h = tile_height * ldexp (1.0, layers - layer_to_render);
-		for (i = MAX(0, (int)((double)vp_ox / (double)v_tile_w)); i * v_tile_w < vp_ox + vp_w * im_w && i * v_tile_w < im_w; i++) {
-			for (j = MAX(0, (int)((double)vp_oy / (double)v_tile_h)); j * v_tile_h < vp_oy + vp_h * im_h && j * v_tile_h < im_h; j++) {
+		for (i = MAX(0, (int)((double)vp_ox * im_w / (double)v_tile_w)); i * v_tile_w < vp_ox * im_w + vp_w * im_w && i * v_tile_w < im_w; i++) {
+			for (j = MAX(0, (int)((double)vp_oy * im_h / (double)v_tile_h)); j * v_tile_h < vp_oy * im_h + vp_h * im_h && j * v_tile_h < im_h; j++) {
 				cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, to_key (layer_to_render, i, j));
 				if (!image)
 					continue;
@@ -335,7 +379,7 @@ printf ("widget %f %f\n", w, h);
 
 				cairo_rectangle (cr, 0, 0, w, h);
 				cairo_scale (cr, w / (vp_w * im_w), h / (vp_h * im_h)); //scale to viewport
-				cairo_translate (cr, -vp_ox + i * v_tile_w, -vp_oy + j * v_tile_h);
+				cairo_translate (cr, -vp_ox * im_w + i * v_tile_w, -vp_oy * im_h+ j * v_tile_h);
 				//cairo_scale (cr, im_w / (double)*p_w, im_h / (double)*p_h); //scale to image size
 				cairo_scale (cr, ldexp (1.0, layers - layer_to_render), ldexp (1.0, layers - layer_to_render)); //scale to image size
 				cairo_set_source_surface (cr, image, 0, 0);
@@ -357,8 +401,8 @@ printf ("widget %f %f\n", w, h);
 		int i, j;
 
 
-		for (i = MAX(0, (int)((double)vp_ox / (double)v_tile_w)); i * v_tile_w < vp_ox + vp_w * im_w && i * v_tile_w < im_w; i++) {
-			for (j = MAX(0, (int)((double)vp_oy / (double)v_tile_h)); j * v_tile_h < vp_oy + vp_h * im_h && j * v_tile_h < im_h; j++) {
+		for (i = MAX(0, (int)((double)vp_ox * im_w / (double)v_tile_w)); i * v_tile_w < vp_ox * im_w + vp_w * im_w && i * v_tile_w < im_w; i++) {
+			for (j = MAX(0, (int)((double)vp_oy * im_h / (double)v_tile_h)); j * v_tile_h < vp_oy * im_h + vp_h * im_h && j * v_tile_h < im_h; j++) {
 				if (!cache_contains (from_layer, i, j, true)) {
 					context = to_key (from_layer, i, j);
 				
@@ -418,6 +462,10 @@ void
 MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
 	if (args->property == MultiScaleImage::ViewportOriginProperty) {
+		Invalidate ();
+	}
+
+	if (args->property == MultiScaleImage::ViewportWidthProperty) {
 		Invalidate ();
 	}
 
