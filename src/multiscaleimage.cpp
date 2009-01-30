@@ -279,6 +279,8 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 		if (error) {
 			printf (error->message);
 		} else {
+			int *p_width = new int (gdk_pixbuf_get_width (pixbuf));
+			int *p_height = new int (gdk_pixbuf_get_height (pixbuf));
 			bool has_alpha = gdk_pixbuf_get_n_channels (pixbuf) == 4;
 			if (has_alpha) {
 				unmultiply_rgba_in_place (pixbuf);
@@ -286,9 +288,8 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 				data = gdk_pixbuf_get_pixels (pixbuf);
 			} else {
 				data = expand_rgb_to_argb (pixbuf, &stride);
+				g_object_unref (pixbuf);
 			}
-			int *p_width = new int (gdk_pixbuf_get_width (pixbuf));
-			int *p_height = new int (gdk_pixbuf_get_height (pixbuf));
 
 			//printf ("pb %d %d\n", *p_width, *p_height);
 
@@ -299,7 +300,6 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 								     stride);
 			cairo_surface_set_user_data (image, &width_key, p_width, g_free);
 			cairo_surface_set_user_data (image, &height_key, p_height, g_free);
-			g_object_unref (pixbuf);
 		}
 		printf ("caching %s\n", context);
 		g_hash_table_insert (cache, g_strdup(context), image);
