@@ -126,14 +126,20 @@ void
 Deployment::SetCurrent (Deployment* deployment)
 {
 #if DEBUG
-	if (mono_domain_get () != deployment->domain) {
+	if (deployment && mono_domain_get () != deployment->domain) {
 		LOG_DEPLOYMENT ("Deployment::SetCurrent (%p), thread: %i domain mismatch, is: %p\n", deployment, (int) pthread_self (), mono_domain_get ());
 	} else if (pthread_getspecific (tls_key) != deployment) {
 		LOG_DEPLOYMENT ("Deployment::SetCurrent (%p), thread: %i deployment mismatch, is: %p\n", deployment, (int) pthread_self (), pthread_getspecific (tls_key));
+	} else {
+		LOG_DEPLOYMENT ("Deployment::SetCurrent (%p), thread: %i, current domain: %p, current deployment: %p\n", deployment, (int) pthread_self (), mono_domain_get (), pthread_getspecific (tls_key));
 	}
 #endif
-
-	mono_domain_set (deployment->domain, FALSE);
+	
+	if (deployment != NULL) {
+		mono_domain_set (deployment->domain, FALSE);
+	} else {
+		mono_domain_set (root_domain, FALSE);
+	}
 	pthread_setspecific (tls_key, deployment);
 }
 

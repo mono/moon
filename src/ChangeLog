@@ -1,5 +1,9 @@
 2009-01-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* deployment.cpp: Allow setting the current deployment to NULL.
+
+2009-01-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaelement.cpp: Handle MediaElementStateIndividualizing and
 	AcquiringLicense in all switch statements to fix gcc warnings.
 
