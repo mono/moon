@@ -33,6 +33,25 @@ namespace MoonTest.System.Windows.Media
 	public class LineGeometryTest
 	{
 		[TestMethod]
+		public void Defaults ()
+		{
+			LineGeometry lg = new LineGeometry ();
+			Assert.AreEqual (new Point (0, 0), lg.StartPoint, "StartPoint");
+			Assert.AreEqual (new Point (0, 0), lg.EndPoint, "EndPoint");
+			GeometryTest.CheckDefaults (lg);
+		}
+
+		[TestMethod]
+		public void CustomPoints ()
+		{
+			LineGeometry lg = new LineGeometry ();
+			lg.StartPoint = new Point (1, 2);
+			lg.EndPoint = new Point (3, 4);
+			Assert.AreEqual (new Rect (1, 2, 2, 2), lg.Bounds, "Bounds");
+			Assert.IsNull (lg.Transform, "Transform");
+		}
+
+		[TestMethod]
 		public void FillRuleTest ()
 		{
 			string xaml =

@@ -1,3 +1,12 @@
+2009-01-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows/RectTest.cs: Remove [MoonlightBug]
+	* System.Windows/SizeTest.cs: Add FP precision test case.
+	* System.Windows.Media/GeometryTest.cs: New.
+	* System.Windows.Media/LineGeometryTest.cs: Add default and
+	basic test cases.
+	* System.Windows.Media/RectangleGeometryTest.cs: New.
+
 2009-01-29  Jackson Harper  <jackson@ximian.com>
 
 	* misc/Parsing/PrimitiveTest.cs: New test for parsing primitive

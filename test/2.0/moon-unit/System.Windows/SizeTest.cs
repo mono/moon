@@ -68,5 +68,18 @@ namespace MoonTest.System.Windows
 			s.Width = Double.NaN;
 			Assert.AreEqual (Concat (Double.NaN, Double.NegativeInfinity), s.ToString ());
 		}
+
+		[TestMethod]
+		public void QuasiEquality ()
+		{
+			Size expected = new Size (25, 25);
+			Size actual = new Size (25.000000000000001, 25.000000000000001);
+			Assert.IsTrue (expected.Equals (actual), "Equals(Size)");
+			Assert.IsTrue (actual.Equals ((object)expected), "Equals(object)");
+
+			actual = new Size (25.00000000000001, 25.00000000000001);
+			Assert.IsFalse (expected.Equals (actual), "not-Equals(Size)");
+			Assert.IsFalse (actual.Equals ((object) expected), "not-Equals(object)");
+		}
 	}
 }

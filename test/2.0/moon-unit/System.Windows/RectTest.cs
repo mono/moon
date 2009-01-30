@@ -16,7 +16,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug]
+		// in need of a better test case
 		public void TestIFormatProvider ()
 		{
 			Rect rect = new Rect (10, 20, 30, 40);
