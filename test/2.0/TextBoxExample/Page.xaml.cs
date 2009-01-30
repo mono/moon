@@ -10,6 +10,8 @@ namespace TextBoxExample {
 		{
 			InitializeComponent ();
 			
+			txtTextBox.Text = "hello\rworld\nand\r\nstuff";
+			
 			txtTextBox.SelectionChanged += OnSelectionChanged;
 			txtTextBox.TextChanged += OnTextChanged;
 			
@@ -20,9 +22,7 @@ namespace TextBoxExample {
 		
 		void OnSelectionChanged (object sender, EventArgs args)
 		{
-			RoutedEventArgs routed = args as RoutedEventArgs;
 			string text = txtTextBox.SelectedText;
-			StringBuilder sb;
 			
 			if (text != "") {
 				txtSelection.Foreground = new SolidColorBrush (Colors.White);
@@ -37,50 +37,16 @@ namespace TextBoxExample {
 			rectSelection.Height = txtSelection.ActualHeight;
 			rectSelection.Width = txtSelection.ActualWidth;
 			
-			sb = new StringBuilder ();
-			sb.Append ("SelectionChangedEvent source: ");
-			if (routed != null) {
-				if (routed.OriginalSource != null) {
-					//DependencyObject obj = routed.OriginalSource as DependencyObject;
-					
-					//if (obj != null && obj.Name != null && obj.Name != "") {
-					//	sb.Append (obj.Name);
-					//	sb.Append (", which is of type: ");
-					//}
-					
-					sb.Append (routed.OriginalSource.GetType ().ToString ());
-				} else {
-					sb.Append ("null");
-				}
-			} else if (args != null) {
-				sb.Append ("args was of type ");
-				sb.Append (args.GetType ().ToString ());
-			} else {
-				sb.Append ("args was null");
-			}
-			
-			sb.Append ("\nDefault selection background brush is ");
-			if (txtTextBox.SelectionBackground is SolidColorBrush) {
-				SolidColorBrush brush = txtTextBox.SelectionBackground as SolidColorBrush;
-				sb.Append ("SolidColorBrush ('" + brush.Color.ToString () + "')");
-			} else {
-				sb.Append ("not a SolidColorBrush as expected.");
-			}
-			
-			sb.Append ("\nDefault selection foreground brush is ");
-			if (txtTextBox.SelectionForeground is SolidColorBrush) {
-				SolidColorBrush brush = txtTextBox.SelectionForeground as SolidColorBrush;
-				sb.Append ("SolidColorBrush ('" + brush.Color.ToString () + "')");
-			} else {
-				sb.Append ("not a SolidColorBrush as expected.");
-			}
-			
-			txtSelectionSource.Text = sb.ToString ();
+			txtSelectionState.Text = "OnSelectionChanged(): SelectionStart = " + txtTextBox.SelectionStart +
+				"; SelectionLength = " + txtTextBox.SelectionLength;
 		}
 		
 		void OnTextChanged (object sender, EventArgs args)
 		{
-			txtTextBlock.Text = txtTextBox.Text;
+			txtTextBlock.Text = txtTextBox.Text.Replace ("\n", "\\n").Replace ("\r", "\\r");
+			
+			txtSelectionState.Text = "OnTextChanged(): SelectionStart = " + txtTextBox.SelectionStart +
+				"; SelectionLength = " + txtTextBox.SelectionLength;
 		}
 		
 		//void OnUnchecked (object sender, EventArgs args)
