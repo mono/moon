@@ -1,3 +1,8 @@
+2009-01-29  Geoff Norton  <gnorton@novell.com>
+
+	* Deployment.cs:
+	* DependencyProperty.g.cs: Surface is now a DP and generated
+
 2009-01-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Deployment.cs: Unref the application when we're done with it.

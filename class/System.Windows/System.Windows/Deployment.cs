@@ -46,7 +46,6 @@ namespace System.Windows {
 		List<Assembly> delay_assemblies;
 		Assembly entry_point_assembly;
 		string xap_dir;
-		IntPtr surface;
 
 		public static Deployment Current {
 			[SecuritySafeCritical]
@@ -96,15 +95,6 @@ namespace System.Windows {
 			}
 		}
 		
-		internal IntPtr Surface {
-			get {
-				return surface;
-			}
-			set {
-				surface = value;
-			}
-		}
-		
 		internal Assembly EntryAssembly {
 			get {
 				return entry_point_assembly;
@@ -129,7 +119,7 @@ namespace System.Windows {
 		}
 
 		internal bool ReadManifest () {
-			XamlLoader loader = XamlLoader.CreateManagedXamlLoader (Surface, PluginHost.Handle);
+			XamlLoader loader = XamlLoader.CreateManagedXamlLoader (Surface.Native, PluginHost.Handle);
 			string app_manifest = Path.Combine (XapDir, "AppManifest.xaml");
 
 			if (!File.Exists (app_manifest)){
@@ -162,9 +152,7 @@ namespace System.Windows {
 			return true;
 		}
 			
-		internal bool InitializeDeployment (IntPtr plugin, IntPtr surface, string xapPath) {
-			Surface = surface;
-
+		internal bool InitializeDeployment (IntPtr plugin, string xapPath) {
 			InitializePluginHost (plugin);
 			if (!ExtractXap (xapPath))
 				return false;
@@ -267,7 +255,7 @@ namespace System.Windows {
 			instance.OnStartup ();
 			
 			if (instance.RootVisual != null) {
-				NativeMethods.surface_attach (Surface, instance.RootVisual.native);
+				NativeMethods.surface_attach (Surface.Native, instance.RootVisual.native);
 			}
 
 			SetCurrentApplication (instance);
