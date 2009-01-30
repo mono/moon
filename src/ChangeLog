@@ -1,5 +1,9 @@
 2009-01-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* deployment.cpp: Remove dead code.
+
+2009-01-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* downloader.cpp: Downloader::Write: update current deployment.
 
 2009-01-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
