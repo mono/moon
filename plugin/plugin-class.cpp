@@ -796,6 +796,12 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 		}
 	}
 
+	if (proxy->instance) {
+		PluginInstance *pi = (PluginInstance *)proxy->instance->pdata;
+		if (pi)
+			Deployment::SetCurrent (pi->GetDeployment ());
+	}
+	
 	if (depobj) {
 		plugin->RemoveCleanupPointer (&depobj);
 		NPN_ReleaseObject (depobj);

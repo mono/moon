@@ -1,3 +1,8 @@
+2009-01-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-class.cpp: proxy_listener_to_javascript: we need to set the
+	current deployment after emitting an event to javascript.
+
 2009-01-29  Geoff Norton  <gnorton@novell.com>
 
 	* plugin.cpp:
