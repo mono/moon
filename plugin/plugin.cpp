@@ -781,6 +781,7 @@ PluginInstance::CreateWindow ()
 	}
 
 	surface = new Surface (moon_window, silverlight2);
+	deployment->SetSurface (surface);
 
 	if (onError != NULL) {
 		char *retval = NPN_strdup (onError);
@@ -1980,13 +1981,12 @@ PluginInstance::ManagedInitializeDeployment (const char *file)
 		return NULL;
 
 	PluginInstance *this_obj = this;
-	void *params [3];
+	void *params [2];
 
 	Deployment::SetCurrent (deployment);
 
 	params [0] = &this_obj;
-	params [1] = &surface;
-	params [2] = mono_string_new (mono_domain_get (), file);
+	params [1] = mono_string_new (mono_domain_get (), file);
 	MonoObject *ret = mono_runtime_invoke (moon_load_xap, NULL, params, NULL);
 	
 	return (bool) (*(MonoBoolean *) mono_object_unbox(ret));

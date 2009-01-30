@@ -1,5 +1,10 @@
 2009-01-29  Geoff Norton  <gnorton@novell.com>
 
+	* plugin.cpp: Register the surface with the Deployment.  Start cleaning
+	up all the places we pass this around too.  (More to come)
+
+2009-01-29  Geoff Norton  <gnorton@novell.com>
+
 	* plugin.cpp: Ensure that we create our Surface and SystemTimeSource
 	in the correct deployment.
 
