@@ -1733,11 +1733,7 @@ DispatcherTimer::Start ()
 		root_clock->AddHandler (root_clock->CompletedEvent, OnTick, this);
 		root_clock->BeginOnTick ();
 	} else {
-	    GList *l = g_list_first (runtime_get_surface_list ());
-	    if (l == NULL)
-		    return; // do what if there's no surface?
-
-	    Surface *surface = static_cast<Surface*> (l->data);
+	    Surface *surface = Deployment::GetCurrent ()->GetSurface ();
 
 	    root_clock = TimelineGroup::AllocateClock ();
 	    char *name = g_strdup_printf ("DispatcherTimer (%p)", this);

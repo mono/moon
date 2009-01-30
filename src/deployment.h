@@ -64,6 +64,8 @@ class Deployment : public DependencyObject {
 	static DependencyProperty *PartsProperty;
  	/* @PropertyType=string,ManagedSetterAccess=Internal */
 	static DependencyProperty *RuntimeVersionProperty;
+ 	/* @PropertyType=Surface,ManagedSetterAccess=Internal,GenerateAccessors */
+	static DependencyProperty *SurfaceProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Deployment ();
@@ -72,6 +74,9 @@ class Deployment : public DependencyObject {
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	Types* GetTypes();
+	
+	Surface *GetSurface ();
+	void SetSurface (Surface *surface);
 
 	Application* GetCurrentApplication ();
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -84,7 +89,7 @@ class Deployment : public DependencyObject {
 
 	static bool Initialize ();
 	static void RegisterThread (Deployment *deployment);
-	
+
 private:
 	Types* types;
 	Application* current_app;

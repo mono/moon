@@ -115,6 +115,7 @@ dependency_property_g_init (void)
 	Deployment::ExternalCallersFromCrossDomainProperty = DependencyProperty::Register (Type::DEPLOYMENT, "ExternalCallersFromCrossDomain", new Value (CrossDomainAccessNoAccess), Type::INT32);
 	Deployment::PartsProperty = DependencyProperty::Register (Type::DEPLOYMENT, "Parts", Type::ASSEMBLYPART_COLLECTION);
 	Deployment::RuntimeVersionProperty = DependencyProperty::Register (Type::DEPLOYMENT, "RuntimeVersion", Type::STRING);
+	Deployment::SurfaceProperty = DependencyProperty::Register (Type::DEPLOYMENT, "Surface", Type::SURFACE);
 	DoubleAnimation::ByProperty = DependencyProperty::RegisterNullable (Type::DOUBLEANIMATION, "By", Type::DOUBLE, NULL);
 	DoubleAnimation::FromProperty = DependencyProperty::RegisterNullable (Type::DOUBLEANIMATION, "From", Type::DOUBLE, NULL);
 	DoubleAnimation::ToProperty = DependencyProperty::RegisterNullable (Type::DOUBLEANIMATION, "To", Type::DOUBLE, NULL);
@@ -462,6 +463,7 @@ DependencyProperty *Deployment::EntryPointTypeProperty = NULL;
 DependencyProperty *Deployment::ExternalCallersFromCrossDomainProperty = NULL;
 DependencyProperty *Deployment::PartsProperty = NULL;
 DependencyProperty *Deployment::RuntimeVersionProperty = NULL;
+DependencyProperty *Deployment::SurfaceProperty = NULL;
 DependencyProperty *DoubleAnimation::ByProperty = NULL;
 DependencyProperty *DoubleAnimation::FromProperty = NULL;
 DependencyProperty *DoubleAnimation::ToProperty = NULL;
@@ -1497,6 +1499,19 @@ void
 DependencyObject::SetName (const char *value)
 {
 	SetValue (DependencyObject::NameProperty, Value (value));
+}
+
+Surface *
+Deployment::GetSurface ()
+{
+	Value *value = GetValue (Deployment::SurfaceProperty);
+	return value ? value->AsSurface () : NULL;
+}
+
+void
+Deployment::SetSurface (Surface *value)
+{
+	SetValue (Deployment::SurfaceProperty, Value (value));
 }
 
 double *

@@ -1,5 +1,13 @@
 2009-01-29  Geoff Norton  <gnorton@novell.com>
 
+	* deployment.h: Surface is now a DP on the deployment so we 
+	can share it with managed.
+	* dependencyproperty.g.cpp: Regen
+	* clock.cpp: Get the surface of the Deployment we're in so that
+	clocks from Dispatcher timer end up on the right surface.
+
+2009-01-29  Geoff Norton  <gnorton@novell.com>
+
 	* deployment.cpp: Trust the domain over the TLS slot since mono
 	will switch that on us on any thread really.
 
