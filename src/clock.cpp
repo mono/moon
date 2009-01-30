@@ -1212,6 +1212,9 @@ Clock::Reset ()
 	begin_on_tick = false;
 	forward = true;
 	start_time = 0;
+	is_paused = false;
+	has_started = false;
+	was_stopped = false;
 }
 
 void

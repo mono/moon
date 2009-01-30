@@ -1,3 +1,7 @@
+2009-01-30  Andreia Gaita  <avidigal@novell.com>
+
+	* clock.cpp: reset the state flags as well
+
 2009-01-30  Larry Ewing  <lewing@novell.com>
 
 	* text.cpp (TextBlock::Render): Start taking padding into account
