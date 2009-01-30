@@ -66,6 +66,7 @@ Video::Video ()
  */
 
 MediaPlayer::MediaPlayer (MediaElement *el)
+	: EventObject (Type::MEDIAPLAYER)
 {
 	LOG_MEDIAPLAYER ("MediaPlayer::MediaPlayer (%p, id=%i), id=%i\n", el, GET_OBJ_ID (el), GET_OBJ_ID (this));
 

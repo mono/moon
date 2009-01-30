@@ -1,5 +1,9 @@
 2009-01-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaplayer.cpp: MediaPlayer: Set object type correctly.
+
+2009-01-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* deployment.cpp: Allow setting the current deployment to NULL.
 
 2009-01-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
