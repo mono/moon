@@ -44,12 +44,15 @@ namespace Mono.Moonlight.UnitTesting
     [TestClass]
     public class TextBoxTest
     {
+        int selection_changed;
         TextBox box;
 
         [TestInitialize]
         public void Setup()
         {
             box = new TextBox();
+            
+            box.SelectionChanged += OnSelectionChanged;
         }
 
         [TestMethod]
@@ -114,6 +117,117 @@ namespace Mono.Moonlight.UnitTesting
 	<TextBox MaxLength=""-1"" />
 </Canvas>");
             }, "#9");
+        }
+
+        [TestMethod]
+        public void Selection()
+        {
+            box.Text = "STARTING VALUE";
+            box.Select(0, 5);
+
+            // Test that setting new Text resets the selection
+            box.Text = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            // make sure selected text is reset back to ""
+            Assert.AreEqual("", box.SelectedText, "#10a");
+            // make sure that SelectionStart is 0
+            Assert.AreEqual(0, box.SelectionStart, "#10b");
+            // make sure that SelectionStart is 0
+            Assert.AreEqual(0, box.SelectionLength, "#10c");
+
+            // Test setting SelectionStart/Length result in 0 SelectionChanged events
+            selection_changed = 0;
+            box.SelectionStart = 3;
+            box.SelectionLength = 3;
+            // make sure that manual selection result matches expectations
+            Assert.AreEqual("DEF", box.SelectedText, "#11a");
+            // make sure that manual selection does not emit SelectionChanged event
+            Assert.AreEqual(0, selection_changed, "#11b");
+
+            // Test that calling Select() with SelectionStart/Length does not emit an event
+            box.Select(box.SelectionStart, box.SelectionLength);
+            // make sure it emitted
+            Assert.AreEqual(0, selection_changed, "#12");
+
+            // Test that Select() does not emit a SelectionChanged event
+            box.Text = "ABCdefghijklmnopqrstuvwxyz";
+            selection_changed = 0;
+            box.Select(0, 3);
+            // make sure that the Select() result matches expectations
+            Assert.AreEqual("ABC", box.SelectedText, "#13a");
+            // make sure that Select() only emits a single SelectionChanged event
+            Assert.AreEqual(0, selection_changed, "#13b");
+
+            // Test setting SelectedText
+            selection_changed = 0;
+            box.SelectedText = "abc";
+            // make sure Text property matches expectations
+            Assert.AreEqual("abcdefghijklmnopqrstuvwxyz", box.Text, "#14a");
+            // make sure that SelectedText is an empty string after setting it
+            Assert.AreEqual("", box.SelectedText, "#14b");
+            // make sure that SelectionStart is set to Start + Length
+            Assert.AreEqual(3, box.SelectionStart, "#14c");
+            // make sure that SelectionLength is reset to 0
+            Assert.AreEqual(0, box.SelectionLength, "#14d");
+            // make sure that SelectionChanged event was not emitted
+            Assert.AreEqual(0, selection_changed, "#14e");
+
+#if false
+            // FIXME: this doesn't work because OnPropertyChanged()
+            // only gets called if value of SelectedText changes,
+            // which means we don't get notification like we need.
+
+            // Test setting SelectedText to the same value
+            box.Select(3, 3);
+            selection_changed = 0;
+            box.SelectedText = "def";
+            // make sure Text property matches expectations
+            Assert.AreEqual("abcdefghijklmnopqrstuvwxyz", box.Text, "#15a");
+            // make sure that SelectedText is an empty string after setting it
+            Assert.AreEqual("", box.SelectedText, "#15b");
+            // make sure that SelectionStart is set to Start + Length
+            Assert.AreEqual(6, box.SelectionStart, "#15c");
+            // make sure that SelectionLength is reset to 0
+            Assert.AreEqual(0, box.SelectionLength, "#15d");
+            // make sure that SelectionChanged event was not emitted
+            Assert.AreEqual(0, selection_changed, "#15e");
+#endif
+
+            // Test SelectionChanged event if Text property is changed
+            box.Select(5, 5);
+            selection_changed = 0;
+            box.Text = "this should clear the selection";
+            // make sure that SelectionStart is reset to 0
+            Assert.AreEqual(0, box.SelectionStart, "#16a");
+            // make sure that SelectionLength is reset to 0
+            Assert.AreEqual(0, box.SelectionLength, "#16b");
+            // make sure that SelectionChanged event was not emitted
+            Assert.AreEqual(0, selection_changed, "#16c");
+
+            // Test setting SelectedText after setting fresh Text
+            box.Text = "this is a cursor test...";
+            box.SelectedText = "|";
+            // make sure that "|" was inserted at 0
+            Assert.AreEqual("|this is a cursor test...", box.Text, "#17");
+
+            // Test inserting text into the middle of the buffer using Selection/SelectedText
+            box.Text = "This is a test string";
+            box.Select(8, 0);
+            box.SelectedText = "not ";
+            // make sure that Text property matches expectations
+            Assert.AreEqual("This is not a test string", box.Text, "#18");
+
+            // Test inserting text into the middle of the buffer using SelectionStart/SelectedText
+            box.Text = "This is a test string";
+            box.SelectionStart = 8;
+            box.SelectionLength = 0;
+            box.SelectedText = "not ";
+            // make sure that Text property matches expectations
+            Assert.AreEqual("This is not a test string", box.Text, "#19");
+        }
+
+        void OnSelectionChanged(object sender, RoutedEventArgs args)
+        {
+            selection_changed++;
         }
     }
 }

@@ -1,7 +1,12 @@
+2009-01-30  Jeffrey Stedfast  <fejj@novell.com>
+
+	* System.Windows.Controls/TextBoxTest.cs: Added a bunch of unit
+	tests related to selection state.
+
 2009-01-30  Andreia Gaita  <avidigal@novell.com>
 
-	* System.Threading/DispatcherTest.cs: Disable SyncContextCheck test,
-    it hangs intermittently on SL
+	* System.Threading/DispatcherTest.cs: Disable SyncContextCheck
+	test, it hangs intermittently on SL
 
 2009-01-30  Sebastien Pouliot  <sebastien@ximian.com>
 
