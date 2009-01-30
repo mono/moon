@@ -1,3 +1,12 @@
+2009-01-30  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp: when parsing multiple buffers (as we do when hydrating
+	from a template), we need to keep track of the total offset from
+	the start of all buffers, since XML_GetCurrentByteIndex returns a
+	value with that range, it's not the byte index into the current
+	buffer (unless there's only 1).  Fixes templates stored inside of
+	other templates.
+
 2009-01-30  Andreia Gaita  <avidigal@novell.com>
 
 	* clock.cpp: no use stopping if it's already stopped

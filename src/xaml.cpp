@@ -444,6 +444,7 @@ class XamlParserInfo {
 	GList *created_elements;
 	GList *created_namespaces;
 	const char* xml_buffer;
+	int multi_buffer_offset;
 	int xml_buffer_start_index;
 
  public:
@@ -470,6 +471,7 @@ class XamlParserInfo {
 		buffer_depth = -1;
 		buffer = NULL;
 		xml_buffer = NULL;
+		multi_buffer_offset = 0;
 
 		namespace_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 	}
@@ -494,7 +496,7 @@ class XamlParserInfo {
 
 	void BeginBuffering ()
 	{
-		xml_buffer_start_index = XML_GetCurrentByteIndex (parser);
+		xml_buffer_start_index = XML_GetCurrentByteIndex (parser) - multi_buffer_offset;
 		buffer = g_string_new (NULL);
 	}
 
@@ -502,6 +504,7 @@ class XamlParserInfo {
 	{
 		g_free (buffer_until_element);
 		buffer_until_element = NULL;
+		multi_buffer_offset = 0;
 	}
 
 	bool ShouldBeginBuffering ()
@@ -518,7 +521,7 @@ class XamlParserInfo {
 	{
 		if (!buffer)
 			return;
-		int pos = XML_GetCurrentByteIndex (parser);
+		int pos = XML_GetCurrentByteIndex (parser) - multi_buffer_offset;
 		g_string_append_len (buffer, xml_buffer + xml_buffer_start_index, pos - xml_buffer_start_index);
 	}
 	
@@ -538,6 +541,9 @@ class XamlParserInfo {
 	{
 		if (InBufferingMode ())
 			AppendCurrentXml ();
+
+		if (this->xml_buffer)
+			multi_buffer_offset += strlen (this->xml_buffer);
 
 		this->xml_buffer = xml_buffer;
 		xml_buffer_start_index = 0;
