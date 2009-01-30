@@ -62,10 +62,10 @@ namespace Mono {
 		/// <summary>
 		///   Loads the Application contained in the XAP file into the current AppDomain
 		/// </summary>
-		public static bool InitializeDeployment (IntPtr plugin, IntPtr surface, string xapFile)
+		public static bool InitializeDeployment (IntPtr plugin, string xapFile)
 		{
 			try {
-				return Deployment.Current.InitializeDeployment (plugin, surface, xapFile);
+				return Deployment.Current.InitializeDeployment (plugin, xapFile);
 			} catch (Exception e) {
 				Console.WriteLine ("Error while Launching an Application from a xap file: {0}", e);
 			}

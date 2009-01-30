@@ -140,6 +140,9 @@ namespace Mono {
 					else
 						return i32;
 
+				case Kind.SURFACE:
+					return new Surface (val->u.p);
+
 				case Kind.MANAGED:
 					IntPtr managed_object = val->u.p;
 					GCHandle handle = Helper.GCHandleFromIntPtr (managed_object);

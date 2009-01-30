@@ -1,3 +1,8 @@
+2009-01-29  Geoff Norton  <gnorton@novell.com>
+
+	* Value.cs: Learn how to make our managed surface counterpart.
+	* ApplicationLauncher.cs: API update, don't need the surface anymore
+
 2009-01-28  Chris Toshok  <toshok@ximian.com>
 
 	* NativeDependencyObjectHelper.cs (CreateObject): add case for
