@@ -229,8 +229,6 @@ Value::Value (FontFamily family)
 	k = Type::FONTFAMILY;
 	u.fontfamily = g_new (FontFamily, 1);
 	u.fontfamily->source = g_strdup (family.source);
-	printf ("family->source == %s\n", family.source);
-	printf ("fontfamily->source == %s\n", u.fontfamily->source);
 }
 
 Value::Value (Type::Kind kind, void *npobj)
