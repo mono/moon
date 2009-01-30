@@ -362,7 +362,7 @@ EventObject::unref ()
 
 	delete_me = g_atomic_int_dec_and_test (&refcount);
 
-	OBJECT_TRACK ("Unref", GetTypeName ());
+	OBJECT_TRACK ("Unref", (deployment == NULL && Deployment::GetCurrent () == NULL) ? "<unknown>" : GetTypeName ());
 
 	if (delete_me) {
 		Dispose ();

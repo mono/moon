@@ -1,5 +1,13 @@
 2009-01-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* dependencyobject.cpp: EventObject::unref: don't try to get the
+	typename if there's no deployment around.
+
+	* pipeline.cpp: Media::Shutdown: set the current deployment before
+	looping over each media.
+
+2009-01-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* deployment.cpp: Remove dead code.
 
 2009-01-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>

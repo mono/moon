@@ -411,9 +411,11 @@ Media::Shutdown ()
 	media_objects->Lock ();
 	node = (MediaNode *) media_objects->LinkedList ()->First ();
 	while (node != NULL) {
+		node->media->SetCurrentDeployment ();
 		node->media->ref ();
 		node->media->StopThread ();
 		node->media->unref ();
+		Deployment::SetCurrent (NULL);
 		node = (MediaNode *) node->next;
 	}
 	
