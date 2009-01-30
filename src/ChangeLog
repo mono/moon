@@ -1,3 +1,8 @@
+2009-01-30  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Fixup logic for setting both Key and Name, I was wrong
+	about them being legal if they are equal.
+
 2009-01-30  Larry Ewing  <lewing@novell.com>
 
 	* grid.cpp (Grid::ArrangeOverride): hack around spans in
