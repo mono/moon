@@ -425,6 +425,9 @@ PluginInstance::~PluginInstance ()
 {
 	// Kill timers
 	GSList *p;
+
+	Deployment::SetCurrent (deployment);
+
 	for (p = timers; p != NULL; p = p->next){
 		uint32_t source_id = GPOINTER_TO_INT (p->data);
 

@@ -1,5 +1,11 @@
 2009-01-29  Geoff Norton  <gnorton@novell.com>
 
+	* plugin.cpp:
+	* plugin-class.cpp: Ensure that we set the correct context when dtoring our
+	plugin and its js-object instances.
+
+2009-01-29  Geoff Norton  <gnorton@novell.com>
+
 	* plugin.cpp: When there are 2 plugins on a page, StreamAsFile can be called
 	after the deployment has been changed away from this instance.  Ensure we
 	set our deployment properly in this case.

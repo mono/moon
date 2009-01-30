@@ -1585,12 +1585,28 @@ MoonlightKeyEventArgsType *MoonlightKeyEventArgsClass;
 NPObject *
 _allocate (NPP instance, NPClass *klass)
 {
+	PluginInstance *plugin = (PluginInstance *)instance->pdata;
+
+	if (plugin)
+		Deployment::SetCurrent (plugin->GetDeployment ());
+
 	return new MoonlightObject (instance);
+}
+
+static void
+_set_deployment (NPObject *npobj)
+{
+	MoonlightObject *obj = (MoonlightObject *) npobj;
+	PluginInstance *instance = (PluginInstance *)obj->instance->pdata;
+
+	if (instance)
+		Deployment::SetCurrent (instance->GetDeployment ());
 }
 
 static void
 _deallocate (NPObject *npobj)
 {
+	_set_deployment (npobj);
 	MoonlightObject *obj = (MoonlightObject *) npobj;
 	
 	delete obj;
@@ -1719,15 +1735,6 @@ MoonlightObject::ClearEventProxy (EventListenerProxy *proxy)
 	g_hash_table_remove (event_listener_proxies, GINT_TO_POINTER (proxy->GetEventId()));
 }
 
-static void
-_set_deployment (NPObject *npobj)
-{
-	MoonlightObject *obj = (MoonlightObject *) npobj;
-	PluginInstance *instance = (PluginInstance *)obj->instance->pdata;
-
-	if (instance)
-		Deployment::SetCurrent (instance->GetDeployment ());
-}
 
 static void
 _invalidate (NPObject *npobj)
