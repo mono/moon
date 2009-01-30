@@ -94,6 +94,8 @@ EventObject::Initialize (Deployment *depl, Type::Kind type)
 	
 	object_type = type;
 	deployment = depl;
+	if (deployment != NULL && this != deployment)
+		deployment->ref ();
 	surface = NULL;
 	flags = g_atomic_int_exchange_and_add (&objects_created, 1);
 	refcount = 1;
@@ -243,12 +245,17 @@ EventObject::GetDeployment ()
 void
 EventObject::SetCurrentDeployment ()
 {
-	if (deployment == NULL)
-		g_warning ("EventObject::SetCurrentDeployment (): should not be reached with a null deployment.");
-
+#if SANITY
+	if ((deployment == NULL) != (IsDisposed ()) && (object_type != Type::DEPLOYMENT)) {
+		// Deployment should be null after Dispose has been called (and only then)
+		g_warning ("EventObject::SetCurrentDeployment (): deployment: %p, disposed: %i %s\n", deployment, IsDisposed (), GetTypeName ());
+		// print_stack_trace ();
+	}
 	// Sanity: maybe check if Deployment::GetCurrent is null at some later stage (when we actually do set current deployment to null)
+#endif
 	
-	Deployment::SetCurrent (deployment);
+	if (deployment != NULL)
+		Deployment::SetCurrent (deployment);
 }
 
 Surface *
@@ -284,6 +291,11 @@ EventObject::Dispose ()
 	// Remove attached flag and set the disposed flag.
 	flags = (Flags) (flags & ~Attached);
 	flags = (Flags) (flags | Disposed);
+	
+	if (deployment && this != deployment) {
+		deployment->unref ();
+		deployment = NULL;
+	}
 }
 
 bool
@@ -301,9 +313,14 @@ EventObject::ref ()
 	if (GetObjectType () != object_type)
 		printf ("EventObject::ref (): the type '%s' did not call SetObjectType, object_type is '%s'\n", Type::Find (GetObjectType ())->GetName (), Type::Find (object_type)->GetName ());
 		
-	if (deployment != Deployment::GetCurrent () && !Type::Find (object_type)->IsSubclassOf (Type::AUDIOSTREAM) && !Type::Find (object_type)->IsSubclassOf (Type::AUDIOSOURCE)) {
-		// ref is an operation which doesn't depend on deployment, and since audio threads can't register itself with the deployment, don't warn for audio objects here.
+	if (deployment != Deployment::GetCurrent () && 
+		deployment != NULL && // Don't warn about our three static dependency properties created upon initialization.
+		!Type::Find (object_type)->IsSubclassOf (Type::AUDIOSTREAM) && // Don't warn for audio objects, since audio threads
+		!Type::Find (object_type)->IsSubclassOf (Type::AUDIOSOURCE) && // can't register themselves with the deployment
+		object_type != Type::MEDIAPLAYER) { // Marshalling callbacks from audio objects to main thread ends up taking a ref on MediaPlayer, ignore that one too
+
 		printf ("EventObject::ref (): the type '%s' whose id is %i was created on a deployment (%p) different from the current deployment (%p).\n", GetTypeName (), GET_OBJ_ID (this), deployment, Deployment::GetCurrent ());
+		// print_stack_trace ();
 	}
 #endif
 
@@ -394,7 +411,7 @@ EventObject::Track (const char* done, const char* typname)
 	}
 	if (id == object_id || (track_object_type != NULL && typname != NULL && strcmp (typname, track_object_type) == 0)) {
 		char *st = get_stack_trace ();
-		printf ("%s tracked object of type '%s': %i, current refcount: %i\n%s", done, typname, id, refcount, st);
+		printf ("%s tracked object of type '%s': %i, current refcount: %i deployment: %p\n%s", done, typname, id, refcount, deployment, st);
 		g_free (st);
 	}
 }
@@ -738,7 +755,9 @@ drain_unrefs_idle_call (gpointer data)
 static void
 unref_object (EventObject *obj, gpointer unused)
 {
+	obj->SetCurrentDeployment ();
 	obj->unref ();
+	Deployment::SetCurrent (NULL);
 }
 
 void

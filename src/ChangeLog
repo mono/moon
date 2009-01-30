@@ -1,3 +1,11 @@
+2009-01-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* deployment.cpp: Comment out log spammer.
+
+	* runtime.cpp: Add some sanity checks.
+
+	* dependencyobject.cpp: Set current deployment for delayed unrefs too.
+
 2009-01-30  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* deepzoomimagetilesource.cpp: normalize ViewportWidth

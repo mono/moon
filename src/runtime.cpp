@@ -419,6 +419,13 @@ Surface::Attach (UIElement *element)
 		g_warning ("Surface::Attach (NULL) should be called to clear out the old canvas before adding a new canvas.");
 #endif
 
+#if SANITY
+	if (element != NULL && element->GetDeployment () != GetDeployment ()) 
+		g_warning ("Surface::Attach (%p): trying to attach an object created on the deployment %p on a surface whose deployment is %p\n", element, element->GetDeployment (), GetDeployment ());
+	if (GetDeployment () != Deployment::GetCurrent ())
+		g_warning ("Surface::Attach (%p): current deployment is %p, surface deployment is %p\n", element, GetDeployment (), Deployment::GetCurrent ());
+#endif
+
 				
 	if (toplevel) {
 		toplevel->SetSurface (NULL);
