@@ -246,7 +246,7 @@ public class GtkSilver : EventBox {
 
 		Deployment deployment = Deployment.Current;
 
-		deployment.InitializeDeployment (IntPtr.Zero, surface, xap);
+		deployment.InitializeDeployment (IntPtr.Zero, xap);
 
 		application = System.Windows.Application.Current;
 

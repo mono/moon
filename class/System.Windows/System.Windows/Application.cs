@@ -180,7 +180,7 @@ namespace System.Windows {
 					using (StreamReader sr = new StreamReader (info.Stream)) {
 						string generic_xaml = sr.ReadToEnd();
 
-						ManagedXamlLoader loader = new ManagedXamlLoader (type.Assembly, Deployment.Current.Surface, PluginHost.Handle);
+						ManagedXamlLoader loader = new ManagedXamlLoader (type.Assembly, Deployment.Current.Surface.Native, PluginHost.Handle);
 
 						try {
 							rd = loader.CreateDependencyObjectFromString (generic_xaml, false) as ResourceDictionary;
@@ -224,7 +224,7 @@ namespace System.Windows {
 
 			string xaml = new StreamReader (sr.Stream).ReadToEnd ();
 			Assembly loading_asm = component.GetType ().Assembly;
-			ManagedXamlLoader loader = new ManagedXamlLoader (loading_asm, Deployment.Current.Surface, PluginHost.Handle);
+			ManagedXamlLoader loader = new ManagedXamlLoader (loading_asm, Deployment.Current.Surface.Native, PluginHost.Handle);
 
 			loader.Hydrate (wrapper.NativeHandle, xaml);
 		}

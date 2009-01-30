@@ -43,7 +43,7 @@ namespace System.Windows.Markup
 			if (xaml.Length == 0)
 				return null;
 
-			XamlLoader loader = XamlLoader.CreateManagedXamlLoader (Deployment.Current.Surface, PluginHost.Handle);
+			XamlLoader loader = XamlLoader.CreateManagedXamlLoader (Deployment.Current.Surface.Native, PluginHost.Handle);
 			
 			return loader.CreateDependencyObjectFromString (xaml, false);
 		}
