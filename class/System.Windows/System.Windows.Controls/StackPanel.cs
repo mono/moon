@@ -67,7 +67,7 @@ namespace System.Windows.Controls {
 			foreach (UIElement child in this.Children) {
 				Size size = child.DesiredSize;
 				if (Orientation == Orientation.Vertical) {
-					if (HorizontalAlignment == HorizontalAlignment.Stretch)
+					if (HorizontalAlignment == HorizontalAlignment.Stretch || !Double.IsNaN (this.Width))
 						size.Width = Math.Max (size.Width, finalSize.Width);
 
 					//if (child.VerticalAlignment == VerticalAlignment.Stretch)
@@ -79,7 +79,7 @@ namespace System.Windows.Controls {
 					//if (child.HorizontalAlignment == HorizontalAlignment.Stretch)
 					//	size.Width = Math.Max (size.Width, finalSize.Width);
 					
-					if (VerticalAlignment == VerticalAlignment.Stretch)
+					if (VerticalAlignment == VerticalAlignment.Stretch || !Double.IsNaN (this.Height))
 						size.Height = Math.Max (size.Height, finalSize.Height);
 					
 					child.Arrange (new Rect (result.Width, 0, size.Width, size.Height));

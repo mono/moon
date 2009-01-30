@@ -1,3 +1,8 @@
+2009-01-30  Larry Ewing  <lewing@novell.com>
+
+	* StackPanel.cs: only use the alignment logic if the dimentions
+	aren't specified.
+
 2009-01-29  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* ItemCollection.cs: Override IndexOfImpl so we can compare
