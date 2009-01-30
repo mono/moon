@@ -147,6 +147,9 @@ StylePropertyValueProvider::SealStyle (Style *style)
 		// the hash holds a ref
 		setter->ref ();
 		g_hash_table_insert (style_hash, setter_property, setter);
+
+		// let the DO know the property might have changed
+ 		obj->ProviderValueChanged (PropertyPrecedence_Style, setter_property, NULL, setter_value, true);
 	}
 }
 

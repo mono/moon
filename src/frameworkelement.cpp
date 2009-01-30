@@ -274,8 +274,14 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 	else if (args->property == FrameworkElement::StyleProperty) {
 		if (args->new_value) {
 			Style *s = args->new_value->AsStyle ();
-			if (s)
+			if (s) {
+				// this has a side effect of calling
+				// ProviderValueChanged on all values
+				// in the style, so we might end up
+				// with lots of property notifications
+				// here (reentrancy ok?)
 				((StylePropertyValueProvider*)providers[PropertyPrecedence_Style])->SealStyle (s);
+			}
 		}
 	}
 

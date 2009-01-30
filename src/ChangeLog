@@ -1,5 +1,14 @@
 2009-01-30  Chris Toshok  <toshok@ximian.com>
 
+	* provider.cpp (StylePropertyValueProvider::SealStyle): call
+	ProviderValueChanged on all values in the style so the object can
+	do things with them.
+
+	* frameworkelement.cpp (FrameworkElement::OnPropertyChanged): add
+	a comment about SealStyle calling ProviderValueChanged.
+
+2009-01-30  Chris Toshok  <toshok@ximian.com>
+
 	* xaml.cpp: when parsing multiple buffers (as we do when hydrating
 	from a template), we need to keep track of the total offset from
 	the start of all buffers, since XML_GetCurrentByteIndex returns a
