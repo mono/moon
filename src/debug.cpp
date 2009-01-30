@@ -10,42 +10,23 @@
 #include "config.h"
 #include "runtime.h"
 #include "debug.h"
+
+#include <mono/jit/jit.h>
+#include <mono/metadata/appdomain.h>
+#include <mono/metadata/assembly.h>
+#include <mono/metadata/debug-helpers.h>
+G_BEGIN_DECLS
+/* because this header sucks */
+#include <mono/metadata/mono-debug.h>
+G_END_DECLS
+#include <mono/metadata/mono-config.h>
+#include <mono/metadata/threads.h>
  
 #if DEBUG
 
 #if SL_2_0
 // Define to enable stack traces for managed frames.
 #define MONO_STACK_ENABLED 1
-#endif
-
-// Type safety at it's best.
-#if MONO_STACK_ENABLED
-#define MonoMethod void
-#define MonoJitInfo void
-#define MonoDomain void
-typedef struct _MonoDebugSourceLocation	MonoDebugSourceLocation;
-
-// Very very hackish, but it seems to work.
-extern "C" {
-	extern char* mono_pmip (void *ip);
-	extern MonoMethod* mono_jit_info_get_method (MonoJitInfo* ji);
-	extern MonoDomain* mono_domain_get ();
-	extern MonoJitInfo* mono_jit_info_table_find (MonoDomain* domain, void* ip);
-	extern char* mono_method_full_name (MonoMethod *method, gboolean signature);
-
-	extern MonoDebugSourceLocation * mono_debug_lookup_source_location (MonoMethod *method, guint32 address, MonoDomain *domain);
-	extern void mono_debug_free_source_location (MonoDebugSourceLocation *location);
-
-	extern gpointer mono_jit_info_get_code_start (MonoJitInfo* ji);
-
-	extern int mono_jit_info_get_code_size (MonoJitInfo* ji);
-};
-
-struct _MonoDebugSourceLocation {
-	gchar *source_file;
-	guint32 row, column;
-	guint32 il_offset;
-};
 #endif
 
 static bool vm_stack_trace_enabled = false;
