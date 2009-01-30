@@ -1,3 +1,7 @@
+2009-01-30  Jb Evain  <jbevain@novell.com>
+
+	* DependencyProperty.g.cs: regenerated.
+
 2009-01-29  Geoff Norton  <gnorton@novell.com>
 
 	* Deployment.cs:

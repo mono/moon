@@ -31,7 +31,7 @@ namespace System.Windows {
 		public static readonly DependencyProperty ExternalCallersFromCrossDomainProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "ExternalCallersFromCrossDomain", typeof (CrossDomainAccess));
 		public static readonly DependencyProperty PartsProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "Parts", typeof (AssemblyPartCollection));
 		public static readonly DependencyProperty RuntimeVersionProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "RuntimeVersion", typeof (string));
-		public static readonly DependencyProperty SurfaceProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "Surface", typeof (Surface));
+		internal static readonly DependencyProperty SurfaceProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "Surface", typeof (Surface));
 
 		public string EntryPointAssembly {
 			get { return (string) GetValue (EntryPointAssemblyProperty); }
@@ -58,9 +58,9 @@ namespace System.Windows {
 			internal set { SetValue (RuntimeVersionProperty, value); }
 		}
 
-		public Surface Surface {
+		internal Surface Surface {
 			get { return (Surface) GetValue (SurfaceProperty); }
-			internal set { SetValue (SurfaceProperty, value); }
+			set { SetValue (SurfaceProperty, value); }
 		}
 	}
 
