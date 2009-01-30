@@ -308,7 +308,7 @@ AudioSource::ClearFrames ()
 void
 AudioSource::AppendFrame (MediaFrame *frame)
 {
-	LOG_AUDIO ("AudioSource::AppendFrame (%p): now got %i frames, this frame's EOF: %i, buflen: %i, pts: %llu\n", frame, frames.Length () + 1, frame->event == FrameEventEOF, frame->buflen, MilliSeconds_FromPts (frame->pts));
+	LOG_AUDIO ("AudioSource::AppendFrame (%p): now got %i frames, this frame's EOF: %i, buflen: %i, pts: %" G_GUINT64_FORMAT "\n", frame, frames.Length () + 1, frame->event == FrameEventEOF, frame->buflen, MilliSeconds_FromPts (frame->pts));
 		
 	if (frame == NULL)
 		return;
@@ -357,7 +357,7 @@ AudioSource::GetCurrentPts ()
 
 	last_current_pts = result;
 	
-	LOG_AUDIO_EX ("AudioSource::GetCurrentPts (): %llu ms, delay: %llu, last_write_pts: %llu\n", 
+	LOG_AUDIO_EX ("AudioSource::GetCurrentPts (): %" G_GUINT64_FORMAT " ms, delay: %" G_GUINT64_FORMAT ", last_write_pts: %llu\n", 
 		MilliSeconds_FromPts (result), MilliSeconds_FromPts (delay), MilliSeconds_FromPts (last_write_pts));
 		
 	return result;
@@ -637,7 +637,7 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 	}
 	
 cleanup:
-	LOG_AUDIO_EX ("AudioSource::Write (%p, %u): Wrote %u samples, current pts: %llu\n", channel_data, samples, result, MilliSeconds_FromPts (GetCurrentPts ()));
+	LOG_AUDIO_EX ("AudioSource::Write (%p, %u): Wrote %u samples, current pts: %" G_GUINT64_FORMAT "\n", channel_data, samples, result, MilliSeconds_FromPts (GetCurrentPts ()));
 	
 	if (result > 0) {
 		last_write_pts = last_frame_pts + MilliSeconds_ToPts (last_frame_samples * 1000 / GetSampleRate ());

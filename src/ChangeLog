@@ -1,5 +1,17 @@
 2009-01-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mp3.cpp:
+	* audio.cpp:
+	* pipeline.cpp:
+	* mediaplayer.cpp:
+	* audio-pulse.cpp:
+	* mediaelement.cpp:
+	* pipeline-asf.cpp:
+	* mms-downloader.cpp:
+	* pipeline-ffmpeg.cpp: %llu => G_UINT64_FORMAT.
+
+2009-01-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* deployment.cpp: Comment out log spammer.
 
 	* runtime.cpp: Add some sanity checks.

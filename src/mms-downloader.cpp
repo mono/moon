@@ -78,7 +78,7 @@ MmsDownloader::~MmsDownloader ()
 void
 MmsDownloader::SetRequestedPts (guint64 value)
 {
-	LOG_MMS ("MmsDownloader::SetRequestedPts (%llu)\n", value);
+	LOG_MMS ("MmsDownloader::SetRequestedPts (%" G_GUINT64_FORMAT ")\n", value);
 	pthread_mutex_lock (&request_mutex);
 	requested_pts = value;
 	pthread_mutex_unlock (&request_mutex);
@@ -91,7 +91,7 @@ MmsDownloader::GetRequestedPts ()
 	pthread_mutex_lock (&request_mutex);
 	result = requested_pts;
 	pthread_mutex_unlock (&request_mutex);
-	LOG_MMS ("MmsDownloader::GetRequestedPts (): %llu\n", result);
+	LOG_MMS ("MmsDownloader::GetRequestedPts (): %" G_GUINT64_FORMAT "\n", result);
 	return result;
 }
 
@@ -130,7 +130,7 @@ MmsDownloader::Write (void *buf, gint32 off, gint32 n)
 	memcpy (buffer + size, buf, n);
 	size += n;
 
-	LOG_MMS ("MmsDownloader::Write (%p, %i, %i) requested_position: %llu\n", buf, off, n, requested_position);
+	LOG_MMS ("MmsDownloader::Write (%p, %i, %i) requested_position: %" G_GUINT64_FORMAT "\n", buf, off, n, requested_position);
 	
 	if (requested_position != G_MAXUINT64) {
 		seeked = true;
@@ -202,7 +202,7 @@ MmsDownloader::GetResponseText (const char *partname, guint64 *size)
 void
 MmsDownloader::RestartAtPts (guint64 pts)
 {
-	LOG_MMS ("MmsDownloader::RestartAtPts (%llu)\n", pts);
+	LOG_MMS ("MmsDownloader::RestartAtPts (%" G_GUINT64_FORMAT ")\n", pts);
 	dl->InternalAbort ();
 
 	dl->InternalOpen ("GET", uri, true);

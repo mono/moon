@@ -369,7 +369,7 @@ PulseSource::OnWrite (size_t length)
 	
 	frames = Write (buffer, length / GetBytesPerFrame ());
 	
-	LOG_PULSE ("PulseSource::OnWrite (%lld): Wrote %llu frames\n", (gint64) length, (gint64) frames);	
+	LOG_PULSE ("PulseSource::OnWrite (%lld): Wrote %" G_GUINT64_FORMAT " frames\n", (gint64) length, (gint64) frames);	
 	
 	if (frames > 0) {
 		// There is no need to lock here, if in a callback, the caller will have locked
@@ -494,7 +494,7 @@ PulseSource::GetDelayInternal ()
 	player->UnlockLoop ();
 	
 	
-	LOG_PULSE ("PulseSource::GetDelay (), result: %llu ms, latency: %llu, err: %i, negative: %i, is_ready: %i, pulse_stream: %p\n", 
+	LOG_PULSE ("PulseSource::GetDelay (), result: %" G_GUINT64_FORMAT " ms, latency: %" G_GUINT64_FORMAT ", err: %i, negative: %i, is_ready: %i, pulse_stream: %p\n", 
 		MilliSeconds_FromPts (result), latency, err, negative, is_ready, pulse_stream);
 	
 	return result;

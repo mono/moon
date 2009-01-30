@@ -166,7 +166,7 @@ MediaPlayer::FrameCallback (MediaClosure *closure)
 	IMediaStream *stream = frame ? frame->stream : NULL;
 	AudioSource *audio;
 	
-	LOG_MEDIAPLAYER_EX ("MediaPlayer::FrameCallback (closure=%p) state: %d, frame: %p, pts: %llu ms, type: %s, video packets: %d, eof: %i\n",
+	LOG_MEDIAPLAYER_EX ("MediaPlayer::FrameCallback (closure=%p) state: %d, frame: %p, pts: %" G_GUINT64_FORMAT " ms, type: %s, video packets: %d, eof: %i\n",
 			    closure, player->state, closure->frame, frame ? MilliSeconds_FromPts (frame->pts) : 0, 
 			    stream ? stream->GetStreamTypeName () : "None", player->video.queue.Length (), frame ? frame->event == FrameEventEOF : -1);
 
@@ -189,7 +189,7 @@ MediaPlayer::FrameCallback (MediaClosure *closure)
 		if (player->first_live_pts == G_MAXULONG) {
 			player->first_live_pts = frame->pts;
 		} else if (player->first_live_pts > frame->pts) {
-			//printf ("\tMediaPlayer::FrameCallback (): Found a frame with lower pts (%llu) than a previous frame (%llu).\n", frame->pts, player->first_live_pts);
+			//printf ("\tMediaPlayer::FrameCallback (): Found a frame with lower pts (%" G_GUINT64_FORMAT ") than a previous frame (%" G_GUINT64_FORMAT ").\n", frame->pts, player->first_live_pts);
 			player->first_live_pts = frame->pts;
 		}
 	}
@@ -460,7 +460,7 @@ MediaPlayer::Open (Media *media)
 					 "\tblock_align: %d\n"
 					 "\tbits_per_sample: %d\n"
 					 "\tcodec_id: 0x%x\n"
-					 "\tduration: %llu\n"
+					 "\tduration: %" G_GUINT64_FORMAT "\n"
 					 "\textra data size: %d\n",
 					 astream->index, astream->channels, astream->sample_rate, astream->bit_rate,
 					 astream->block_align, astream->bits_per_sample, astream->codec_id,
@@ -484,8 +484,8 @@ MediaPlayer::Open (Media *media)
 					  "\tbits_per_sample: %d\n"
 					  "\tbit_rate: %d\n"
 					  "\tcodec_id: 0x%x\n"
-					  "\tpts_per_frame: %llu\n"
-					  "\tduration: %llu\n"
+					  "\tpts_per_frame: %" G_GUINT64_FORMAT "\n"
+					  "\tduration: %" G_GUINT64_FORMAT "\n"
 					  "\textra data size: %d\n",
 					  video.stream->index, video.stream->width, video.stream->height, video.stream->bits_per_sample,
 					  video.stream->bit_rate, video.stream->codec_id, video.stream->pts_per_frame,
@@ -505,7 +505,7 @@ MediaPlayer::Open (Media *media)
 	PlaylistEntry *entry = element->GetPlaylist ()->GetCurrentPlaylistEntry ();
 	if (entry != NULL) {
 		start_pts =  TimeSpan_ToPts (entry->GetStartTime ());
-		LOG_MEDIAPLAYER ("MediaPlayer::Open (), setting start_pts to: %llu (%llu ms).\n", start_pts, MilliSeconds_FromPts (start_pts));
+		LOG_MEDIAPLAYER ("MediaPlayer::Open (), setting start_pts to: %" G_GUINT64_FORMAT " (%" G_GUINT64_FORMAT " ms).\n", start_pts, MilliSeconds_FromPts (start_pts));
 		if (start_pts > 0) {
 			SeekInternal (start_pts);
 		}
@@ -619,7 +619,7 @@ MediaPlayer::RenderFrame (MediaFrame *frame)
 {
 	VideoStream *stream = (VideoStream *) frame->stream;
 
-	LOG_MEDIAPLAYER_EX ("MediaPlayer::RenderFrame (%p), pts: %llu ms, buflen: %i, buffer: %p, IsPlanar: %i\n", frame, MilliSeconds_FromPts (frame->pts), frame->buflen, frame->buffer, frame->IsPlanar ());
+	LOG_MEDIAPLAYER_EX ("MediaPlayer::RenderFrame (%p), pts: %" G_GUINT64_FORMAT " ms, buflen: %i, buffer: %p, IsPlanar: %i\n", frame, MilliSeconds_FromPts (frame->pts), frame->buflen, frame->buffer, frame->IsPlanar ());
 	VERIFY_MAIN_THREAD;
 	
 	if (!frame->IsDecoded ()) {
@@ -678,7 +678,7 @@ MediaPlayer::AdvanceFrame ()
 	
 	guint64 now = 0;
 	
-	LOG_MEDIAPLAYER_EX ("MediaPlayer::AdvanceFrame () state: %i, current_pts = %llu, IsPaused: %i, IsSeeking: %i, VideoEnded: %i, AudioEnded: %i, HasVideo: %i, HasAudio: %i\n", 
+	LOG_MEDIAPLAYER_EX ("MediaPlayer::AdvanceFrame () state: %i, current_pts = %" G_GUINT64_FORMAT ", IsPaused: %i, IsSeeking: %i, VideoEnded: %i, AudioEnded: %i, HasVideo: %i, HasAudio: %i\n", 
 		state, current_pts, IsPaused (), IsSeeking (), GetBit (VideoEnded), GetBit (AudioEnded), HasVideo (), HasAudio ());
 	VERIFY_MAIN_THREAD;
 
@@ -716,7 +716,7 @@ MediaPlayer::AdvanceFrame ()
 		target_pts = elapsed_pts;
 		
 		/*
-		printf ("MediaPlayer::AdvanceFrame (): determined target_pts to be: %llu = %llu ms, elapsed_pts: %llu = %llu ms, start_time: %llu = %llu ms\n",
+		printf ("MediaPlayer::AdvanceFrame (): determined target_pts to be: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, elapsed_pts: %llu = %llu ms, start_time: %llu = %llu ms\n",
 			target_pts, MilliSeconds_FromPts (target_pts), elapsed_pts, MilliSeconds_FromPts (elapsed_pts), start_time, MilliSeconds_FromPts (start_time));
 		*/
 	}
@@ -732,14 +732,14 @@ MediaPlayer::AdvanceFrame ()
 	
 	if (current_pts >= target_pts_end && GetBit (SeekSynched) && !(HasAudio () && GetBit (AudioEnded))) {
 #if DEBUG_ADVANCEFRAME
-		printf ("MediaPlayer::AdvanceFrame (): video is running too fast, wait a bit (current_pts: %llu ms, target_pts: %llu ms, delta: %llu ms, diff: %lld (%lld ms)).\n",
+		printf ("MediaPlayer::AdvanceFrame (): video is running too fast, wait a bit (current_pts: %" G_GUINT64_FORMAT " ms, target_pts: %" G_GUINT64_FORMAT " ms, delta: %llu ms, diff: %lld (%lld ms)).\n",
 			MilliSeconds_FromPts (current_pts), MilliSeconds_FromPts (target_pts), MilliSeconds_FromPts (target_pts_delta), current_pts - target_pts, MilliSeconds_FromPts (current_pts - target_pts));
 #endif
 		return false;
 	}
 
 #if DEBUG_ADVANCEFRAME
-	printf ("MediaPlayer::AdvanceFrame (): target pts: %llu = %llu ms\n", target_pts, MilliSeconds_FromPts (target_pts));
+	printf ("MediaPlayer::AdvanceFrame (): target pts: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms\n", target_pts, MilliSeconds_FromPts (target_pts));
 #endif
 
 	while (true) {
@@ -767,13 +767,13 @@ MediaPlayer::AdvanceFrame ()
 		update = true;
 		result = true;
 		
-		//printf ("MediaPlayer::AdvanceFrame (): current_pts: %llu = %llu ms, duration: %llu = %llu ms\n",
+		//printf ("MediaPlayer::AdvanceFrame (): current_pts: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, duration: %llu = %llu ms\n",
 		//		current_pts, MilliSeconds_FromPts (current_pts),
 		//		duration, MilliSeconds_FromPts (duration));
 		
 		if (GetBit (FixedDuration)) {
 /*
-			printf ("MediaPlayer::AdvanceFrame (): (fixed duration, live: %i) current_pts: %llu = %llu ms, duration: %llu = %llu ms, first_live_pts: %llu = %llu ms\n",
+			printf ("MediaPlayer::AdvanceFrame (): (fixed duration, live: %i) current_pts: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, duration: %llu = %llu ms, first_live_pts: %llu = %llu ms\n",
 				element->IsLive (),
 				current_pts, MilliSeconds_FromPts (current_pts),
 				duration, MilliSeconds_FromPts (duration),
@@ -808,7 +808,7 @@ MediaPlayer::AdvanceFrame ()
 		if (update && current_pts >= target_pts_start) {
 			if (!GetBit (SeekSynched)) {
 				SetBit (SeekSynched);
-				LOG_MEDIAPLAYER ("MediaPlayer::AdvanceFrame (): We have now successfully synched with the audio after the seek, current_pts: %llu, target_pts_start: %llu\n", MilliSeconds_FromPts (current_pts), MilliSeconds_FromPts (target_pts_start));
+				LOG_MEDIAPLAYER ("MediaPlayer::AdvanceFrame (): We have now successfully synched with the audio after the seek, current_pts: %" G_GUINT64_FORMAT ", target_pts_start: %" G_GUINT64_FORMAT "\n", MilliSeconds_FromPts (current_pts), MilliSeconds_FromPts (target_pts_start));
 			}
 			// we are in sync (or ahead) of audio playback
 			break;
@@ -887,7 +887,7 @@ MediaPlayer::LoadVideoFrame ()
 	if (target_pts == G_MAXUINT64)
 		target_pts = 0;
 
-	LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (), packet pts: %llu, target pts: %llu, pts_per_frame: %llu, buflen: %i\n", packet->frame->pts, GetTargetPts (), video.stream->pts_per_frame, packet->frame->buflen);
+	LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (), packet pts: %" G_GUINT64_FORMAT ", target pts: %" G_GUINT64_FORMAT ", pts_per_frame: %llu, buflen: %i\n", packet->frame->pts, GetTargetPts (), video.stream->pts_per_frame, packet->frame->buflen);
 
 	if (packet->frame->pts + video.stream->pts_per_frame >= target_pts) {
 		RemoveBit (LoadFramePending);
@@ -954,7 +954,7 @@ MediaPlayer::GetTimeoutInterval ()
 		result = 33;
 	}
 
-	LOG_MEDIAPLAYER ("MediaPlayer::GetTimeoutInterval (): %i ms between frames gives fps: %.1f, pts_per_frame: %llu, exact fps: %f\n", result, 1000.0 / result, pts_per_frame, TIMESPANTICKS_IN_SECOND / (double) pts_per_frame);
+	LOG_MEDIAPLAYER ("MediaPlayer::GetTimeoutInterval (): %i ms between frames gives fps: %.1f, pts_per_frame: %" G_GUINT64_FORMAT ", exact fps: %f\n", result, 1000.0 / result, pts_per_frame, TIMESPANTICKS_IN_SECOND / (double) pts_per_frame);
 
 	return result;
 }
@@ -1068,7 +1068,7 @@ MediaPlayer::GetTargetPts ()
 	
 	audio = GetAudio ();
 
-	LOG_MEDIAPLAYER_EX ("MediaPlayer::GetTargetPts (): target_pts: %llu, HasAudio (): %i, audio->GetCurrentPts (): %llu\n", target_pts, audio != NULL, audio != NULL ? audio->GetCurrentPts () : 0);
+	LOG_MEDIAPLAYER_EX ("MediaPlayer::GetTargetPts (): target_pts: %" G_GUINT64_FORMAT ", HasAudio (): %i, audio->GetCurrentPts (): %" G_GUINT64_FORMAT "\n", target_pts, audio != NULL, audio != NULL ? audio->GetCurrentPts () : 0);
 
 	if (audio != NULL && audio->GetState () == AudioPlaying)
 		result = audio->GetCurrentPts ();
@@ -1126,7 +1126,7 @@ MediaPlayer::SeekCallback (MediaClosure *closure)
 void
 MediaPlayer::SeekInternal (guint64 pts)
 {
-	LOG_MEDIAPLAYER ("MediaPlayer::SeekInternal (%llu = %llu ms), media: %p, state: %i, Position (): %llu\n", pts, MilliSeconds_FromPts (pts), media, state, GetPosition ());
+	LOG_MEDIAPLAYER ("MediaPlayer::SeekInternal (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms), media: %p, state: %i, Position (): %llu\n", pts, MilliSeconds_FromPts (pts), media, state, GetPosition ());
 	VERIFY_MAIN_THREAD;
 
 	if (media == NULL)
@@ -1144,7 +1144,7 @@ MediaPlayer::SeekInternal (guint64 pts)
 void
 MediaPlayer::Seek (guint64 pts)
 {
-	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%llu = %llu ms), media: %p, state: %i, current_pts: %llu, IsPlaying (): %i\n", pts, MilliSeconds_FromPts (pts), media, state, current_pts, IsPlaying ());
+	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms), media: %p, state: %i, current_pts: %llu, IsPlaying (): %i\n", pts, MilliSeconds_FromPts (pts), media, state, current_pts, IsPlaying ());
 	VERIFY_MAIN_THREAD;
 
 	AudioSource *audio;
@@ -1189,7 +1189,7 @@ MediaPlayer::Seek (guint64 pts)
 	if (resume)
 		Play ();
 
-	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%llu = %llu ms), media: %p, state: %i, current_pts: %llu, resume: %i [END]\n", pts, MilliSeconds_FromPts (pts), media, state, current_pts, resume);
+	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms), media: %p, state: %i, current_pts: %llu, resume: %i [END]\n", pts, MilliSeconds_FromPts (pts), media, state, current_pts, resume);
 }
 
 bool

@@ -271,7 +271,7 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 	int got_picture = 0;
 	int length = 0;
 	
-	LOG_FFMPEG ("FfmpegDecoder::DecodeFrame (%p). pts: %llu ms, context: %p\n", mf, MilliSeconds_FromPts (mf->pts), context);
+	LOG_FFMPEG ("FfmpegDecoder::DecodeFrame (%p). pts: %" G_GUINT64_FORMAT " ms, context: %p\n", mf, MilliSeconds_FromPts (mf->pts), context);
 	
 	if (context == NULL)
 		return MEDIA_FAIL;
@@ -303,7 +303,7 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 		if (prev_pts != G_MAXUINT64 && has_delayed_frame)
 			mf->pts = prev_pts;
 
-		LOG_FFMPEG ("FfmpegDecoder::DecodeFrame (%p): got picture, actual pts: %llu, has delayed frame: %i, prev_pts: %llu ms\n", 
+		LOG_FFMPEG ("FfmpegDecoder::DecodeFrame (%p): got picture, actual pts: %" G_GUINT64_FORMAT ", has delayed frame: %i, prev_pts: %" G_GUINT64_FORMAT " ms\n", 
 			mf, MilliSeconds_FromPts (mf->pts), has_delayed_frame, MilliSeconds_FromPts (prev_pts));
 
 		mf->AddState (FRAME_PLANAR);

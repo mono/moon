@@ -51,7 +51,7 @@ ASFDemuxer::UpdateSelected (IMediaStream *stream)
 MediaResult
 ASFDemuxer::SeekInternal (guint64 pts)
 {
-	//printf ("ASFDemuxer::Seek (%llu)\n", pts);
+	//printf ("ASFDemuxer::Seek (%" G_GUINT64_FORMAT ")\n", pts);
 	
 	if (reader == NULL)
 		return MEDIA_FAIL;
@@ -115,7 +115,7 @@ ASFDemuxer::ReadMarkers ()
 			markers->Append (new MediaMarker::Node (marker));
 			marker->unref ();
 			
-			//printf ("MediaElement::ReadMarkers () Added script command at %llu (text: %s, type: %s)\n", pts, text, type);
+			//printf ("MediaElement::ReadMarkers () Added script command at %" G_GUINT64_FORMAT " (text: %s, type: %s)\n", pts, text, type);
 			
 			g_free (text);
 		}
@@ -137,7 +137,7 @@ ASFDemuxer::ReadMarkers ()
 			markers->Append (new MediaMarker::Node (marker));
 			marker->unref ();
 			
-			//printf ("MediaElement::ReadMarkers () Added marker at %llu (text: %s, type: %s)\n", pts, text, "Name");
+			//printf ("MediaElement::ReadMarkers () Added marker at %" G_GUINT64_FORMAT " (text: %s, type: %s)\n", pts, text, "Name");
 		
 			g_free (text);
 		}
@@ -491,7 +491,7 @@ ASFMarkerDecoder::DecodeFrame (MediaFrame *frame)
 		text = wchar_to_utf8 (uni_text, text_length);
 		type = wchar_to_utf8 (uni_type, type_length);
 		
-		LOG_PIPELINE_ASF ("ASFMarkerDecoder::DecodeFrame (): sending script command type: '%s', text: '%s', pts: '%llu'.\n", type, text, frame->pts);
+		LOG_PIPELINE_ASF ("ASFMarkerDecoder::DecodeFrame (): sending script command type: '%s', text: '%s', pts: '%" G_GUINT64_FORMAT "'.\n", type, text, frame->pts);
 
 		frame->marker = new MediaMarker (type, text, frame->pts);
 		
@@ -795,7 +795,7 @@ MemoryQueueSource::SeekToPts (guint64 pts)
 {
 	MediaResult result = true;
 
-	LOG_PIPELINE_ASF ("MemoryQueueSource::SeekToPts (%llu)\n", pts);
+	LOG_PIPELINE_ASF ("MemoryQueueSource::SeekToPts (%" G_GUINT64_FORMAT ")\n", pts);
 
 	if (queue) {
 		queue->Clear (true);

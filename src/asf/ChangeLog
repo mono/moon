@@ -1,3 +1,9 @@
+2009-01-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* asf.cpp:
+	* asf-generated.cpp:
+	* asf-structures.cpp: %llu => G_UINT64_FORMAT.
+
 2009-01-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* asf.h: Instead of overriding GetTypeName for media clases override

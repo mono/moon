@@ -97,7 +97,7 @@ class MarkerNode : public List::Node {
 void
 MediaElement::AddStreamedMarker (TimelineMarker *marker)
 {	
-	LOG_MEDIAELEMENT ("MediaElement::AddStreamedMarker (): got marker %s, %s, %llu = %llu ms\n",
+	LOG_MEDIAELEMENT ("MediaElement::AddStreamedMarker (): got marker %s, %s, %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms\n",
 			  marker->GetText (), marker->GetType (), marker->GetTime (),
 			  MilliSeconds_FromPts (marker->GetTime ()));
 	
@@ -190,21 +190,21 @@ MediaElement::CheckMarkers (guint64 from, guint64 to)
 {
 	TimelineMarkerCollection *markers;
 	
-	LOG_MARKERS_EX ("MediaElement::CheckMarkers (%llu, %llu)\n", from, to);
+	LOG_MARKERS_EX ("MediaElement::CheckMarkers (%" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ")\n", from, to);
 	
 	if (from == to) {
-		LOG_MARKERS ("MediaElement::CheckMarkers (%llu, %llu). from == to\n", from, to);
+		LOG_MARKERS ("MediaElement::CheckMarkers (%" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT "). from == to\n", from, to);
 		return;
 	}
 	
 	if (!(markers = GetMarkers ())) {
-		LOG_MARKERS ("MediaElement::CheckMarkers (%llu, %llu). No markers\n", from, to);
+		LOG_MARKERS ("MediaElement::CheckMarkers (%" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT "). No markers\n", from, to);
 		return;
 	}
 	
 	if (from > to) {
 		// if from > to we've seeked backwards (last played position is after this one)
-		LOG_MARKERS ("MediaElement::CheckMarkers (%llu, %llu). from > to (diff: %llu = %llu ms).\n", from, to, from - to, MilliSeconds_FromPts (from - to));
+		LOG_MARKERS ("MediaElement::CheckMarkers (%" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT "). from > to (diff: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms).\n", from, to, from - to, MilliSeconds_FromPts (from - to));
 		return;
 	}
 	
@@ -220,7 +220,7 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 	guint64 pts;
 	bool emit;
 	
-	LOG_MARKERS ("MediaElement::CheckMarkers (%llu, %llu, %p, %i). count: %i\n", from, to, markers, remove, markers ? markers->GetCount () : -1);
+	LOG_MARKERS ("MediaElement::CheckMarkers (%" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %p, %i). count: %i\n", from, to, markers, remove, markers ? markers->GetCount () : -1);
 	
 	if (markers == NULL)
 		return;
@@ -236,7 +236,7 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 		
 		pts = (guint64) val->AsTimeSpan ();
 		
-		LOG_MARKERS_EX ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu\n", from, to, pts);
+		LOG_MARKERS_EX ("MediaElement::CheckMarkers (%" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT "): Checking pts: %" G_GUINT64_FORMAT "\n", from, to, pts);
 		
 		emit = false;
 		if (remove) {
@@ -247,17 +247,17 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 				emit = pts >= (from - MilliSeconds_ToPts (1000)) && pts <= to;
 			}
 			
-			LOG_MARKERS_EX ("MediaElement::CheckMarkers (%llu, %llu): emit: %i, Checking pts: %llu in marker with Text = %s, Type = %s (removed from from)\n",
+			LOG_MARKERS_EX ("MediaElement::CheckMarkers (%" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT "): emit: %i, Checking pts: %" G_GUINT64_FORMAT " in marker with Text = %s, Type = %s (removed from from)\n",
 					from <= MilliSeconds_ToPts (1000) ? 0 : from - MilliSeconds_ToPts (1000), to, emit, pts, marker->GetText (), marker->GetType ());
 		} else {
 			// Normal markers.
 			emit = pts >= from && pts <= to;
-			LOG_MARKERS_EX ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu in marker with Text = %s, Type = %s\n",
+			LOG_MARKERS_EX ("MediaElement::CheckMarkers (%" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT "): Checking pts: %" G_GUINT64_FORMAT " in marker with Text = %s, Type = %s\n",
 					from, to, pts, marker->GetText (), marker->GetType ());
 		}
 		
 		if (emit) {
-			LOG_MARKERS ("MediaElement::CheckMarkers (%llu, %llu): Emitting: Text = %s, Type = %s, Time = %llu = %llu ms\n",
+			LOG_MARKERS ("MediaElement::CheckMarkers (%" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT "): Emitting: Text = %s, Type = %s, Time = %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms\n",
 				     from, to, marker->GetText (), marker->GetType (), marker->GetTime (), MilliSeconds_FromPts (marker->GetTime ()));
 			Emit (MarkerReachedEvent, new MarkerReachedEventArgs (marker));
 		}
@@ -298,7 +298,7 @@ MediaElement::AdvanceFrame ()
 	position = mplayer->GetPosition ();
 	
 	if (advanced && position != G_MAXUINT64) {
-		LOG_MEDIAELEMENT ("MediaElement::AdvanceFrame (): advanced, setting position to: %llu = %llu ms\n", position, MilliSeconds_FromPts (position));
+		LOG_MEDIAELEMENT ("MediaElement::AdvanceFrame (): advanced, setting position to: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms\n", position, MilliSeconds_FromPts (position));
 		flags |= UpdatingPosition;
 		SetPosition (TimeSpan_FromPts (position));
 		flags &= ~UpdatingPosition;
@@ -309,8 +309,8 @@ MediaElement::AdvanceFrame ()
 	}
 	
 	if (advanced || !mplayer->IsSeeking ()) {
-		LOG_MEDIAELEMENT_EX ("MediaElement::AdvanceFrame () previous_position: %llu = %llu ms, "
-				     "position: %llu = %llu ms, advanced: %i\n", 
+		LOG_MEDIAELEMENT_EX ("MediaElement::AdvanceFrame () previous_position: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, "
+				     "position: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, advanced: %i\n", 
 				     previous_position, MilliSeconds_FromPts (previous_position), position,
 				     MilliSeconds_FromPts (position), advanced);
 			
@@ -1026,7 +1026,7 @@ MediaElement::CalculateBufferingProgress ()
 		break;
 	}
 
-	LOG_MEDIAELEMENT_EX ("MediaElement::CalculateBufferingProgress () buffering mode: %i, result: %.2f, buffering time: %llu ms, position: %llu ms, last available pts: %llu ms\n",
+	LOG_MEDIAELEMENT_EX ("MediaElement::CalculateBufferingProgress () buffering mode: %i, result: %.2f, buffering time: %" G_GUINT64_FORMAT " ms, position: %" G_GUINT64_FORMAT " ms, last available pts: %" G_GUINT64_FORMAT " ms\n",
 			     buffering_mode, result, MilliSeconds_FromPts (buffering_time), MilliSeconds_FromPts (position_pts), MilliSeconds_FromPts (last_available_pts));
 
 	return result;
@@ -1046,7 +1046,7 @@ MediaElement::UpdateProgress ()
 	if (downloaded_file != NULL && IsPlaying () && mplayer->IsBufferUnderflow () && GetBufferedSize () == 0.0) {
 		// We're waiting for more data, switch to the 'Buffering' state.
 		LOG_MEDIAELEMENT ("MediaElement::UpdateProgress (): Switching to 'Buffering', previous_position: "
-				  "%llu = %llu ms, mplayer->GetPosition (): %llu = %llu ms, buffered size: %llu, "
+				  "%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, mplayer->GetPosition (): %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, buffered size: %" G_GUINT64_FORMAT ", "
 				  "buffering progress: %.2f\n", 
 				  previous_position, MilliSeconds_FromPts (previous_position), mplayer->GetPosition (),
 				  MilliSeconds_FromPts (mplayer->GetPosition ()),
@@ -1121,7 +1121,7 @@ MediaElement::SetState (MediaElementState state)
 void 
 MediaElement::DataWrite (void *buf, gint32 offset, gint32 n)
 {
-	//printf ("MediaElement::DataWrite (%p, %d, %d), size: %llu, source: %s\n", buf, offset, n, downloaded_file ? downloaded_file->GetSize () : 0, downloader ? downloader->GetUri () : NULL);
+	//printf ("MediaElement::DataWrite (%p, %d, %d), size: %" G_GUINT64_FORMAT ", source: %s\n", buf, offset, n, downloaded_file ? downloaded_file->GetSize () : 0, downloader ? downloader->GetUri () : NULL);
 	
 	if (downloaded_file != NULL) {
 		downloaded_file->Write (buf, (gint64) offset, n);
@@ -1861,8 +1861,8 @@ MediaElement::UpdatePlayerPosition (TimeSpan position)
 	mplayer->Seek (TimeSpan_ToPts (position));
 	Invalidate ();
 	
-	LOG_MEDIAELEMENT ("MediaElement::UpdatePlayerPosition (%llu = %llu ms, "
-			  "mplayer->GetPosition (): %llu = %llu ms\n", position, MilliSeconds_FromPts (position),
+	LOG_MEDIAELEMENT ("MediaElement::UpdatePlayerPosition (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, "
+			  "mplayer->GetPosition (): %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms\n", position, MilliSeconds_FromPts (position),
 			  mplayer->GetPosition (), MilliSeconds_FromPts (mplayer->GetPosition ()));
 	
 	previous_position = position;
@@ -1893,7 +1893,7 @@ MediaElement::SeekNow (EventObject *data)
 void
 MediaElement::SeekNow ()
 {
-	LOG_MEDIAELEMENT ("MediaElement::SeekNow (), position: %llu = %llu ms\n", seek_to_position, MilliSeconds_FromPts (seek_to_position));
+	LOG_MEDIAELEMENT ("MediaElement::SeekNow (), position: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms\n", seek_to_position, MilliSeconds_FromPts (seek_to_position));
 
 	if (GetSurface () == NULL)
 		return;
