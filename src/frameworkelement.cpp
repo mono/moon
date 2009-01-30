@@ -507,13 +507,16 @@ FrameworkElement::Arrange (Rect finalRect)
 	/*
 	 * If width and height are specified we adjust the our
 	 * both out size and our transform logic to match
+	 *
+	 * Note: the stretch hack appears to be wrong disabling for
+	 * now --Larry
 	 */
 	if (!isnan (GetWidth ())) {
-		horiz = HorizontalAlignmentStretch;
+		//horiz = HorizontalAlignmentStretch;
 		offer.width = GetWidth ();
 	}
 	if (!isnan (GetHeight ())) {
-		vert = VerticalAlignmentStretch;
+		//vert = VerticalAlignmentStretch;
 		offer.height = GetHeight ();
 	}
 
