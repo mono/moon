@@ -68,6 +68,7 @@ namespace MoonTest.System.Windows.Threading
 		}
 
 		[TestMethod]
+		[SilverlightBug]
 		public void SyncContextCheck ()
 		{
 			int mainui = Thread.CurrentThread.ManagedThreadId;

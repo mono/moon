@@ -1,3 +1,8 @@
+2009-01-30  Andreia Gaita  <avidigal@novell.com>
+
+	* System.Threading/DispatcherTest.cs: Disable SyncContextCheck test,
+    it hangs intermittently on SL
+
 2009-01-30  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows/RectTest.cs: Remove [MoonlightBug]
