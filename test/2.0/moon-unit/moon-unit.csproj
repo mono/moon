@@ -132,6 +132,7 @@
     <Compile Include="System.Windows.Media.Imaging\BitmapImageTest.cs" />
     <Compile Include="System.Windows.Media\BrushTest.cs" />
     <Compile Include="System.Windows.Media\ColorTest.cs" />
+    <Compile Include="System.Windows.Media\GeometryTest.cs" />
     <Compile Include="System.Windows.Media\GradientBrushTest.cs" />
     <Compile Include="System.Windows.Media\ImageBrushTest.cs" />
     <Compile Include="System.Windows.Media\LinearGradientBrushTest.cs" />
@@ -139,6 +140,7 @@
     <Compile Include="System.Windows.Media\MatrixTest.cs" />
     <Compile Include="System.Windows.Media\MatrixTransformTest.cs" />
     <Compile Include="System.Windows.Media\RadialGradientBrushTest.cs" />
+    <Compile Include="System.Windows.Media\RectangleGeometryTest.cs" />
     <Compile Include="System.Windows.Media\SolidColorBrushTest.cs" />
     <Compile Include="System.Windows.Media\TileBrushTest.cs" />
     <Compile Include="System.Windows.Media\TransformGroupTest.cs" />
