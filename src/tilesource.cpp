@@ -84,7 +84,10 @@ MultiScaleTileSource::SetTileOverlap (int overlap)
 void 
 MultiScaleTileSource::set_image_uri_func (get_image_uri_func func)
 {
-	get_tile_func = func;
+	if (!get_tile_func)
+		get_tile_func = func;
+	else
+		g_warning ("get_tile_func already set\n");
 }
 
 

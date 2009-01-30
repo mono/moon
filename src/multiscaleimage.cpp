@@ -271,8 +271,8 @@ printf ("MSI::Render\n");
 	int tile_height = source->GetTileHeight ();
 	double vp_ox = GetViewportOrigin()->x;
 	double vp_oy = GetViewportOrigin()->y;
-//printf ("vp %f %f %f %f\n", vp_ox, vp_oy, vp_w, vp_h);
-//printf ("image %d %d\n", source->GetImageWidth (), source->GetImageHeight ());
+printf ("vp %f %f %f %f\n", vp_ox, vp_oy, vp_w, vp_h);
+printf ("image %d %d\n", source->GetImageWidth (), source->GetImageHeight ());
 
 	int layers;
 	frexp (MAX (im_w, im_h), &layers);
@@ -357,7 +357,7 @@ printf ("MSI::Render\n");
 				if (!cache_contains (from_layer, i, j, true)) {
 					context = to_key (from_layer, i, j);
 				
-					const char* ret = g_strdup ((const char*)source->get_tile_func (from_layer, i, j));
+					const char* ret = g_strdup ((const char*)source->get_tile_func (from_layer, i, j, source));
 					if (ret) {
 						DownloadUri (ret);
 						return;

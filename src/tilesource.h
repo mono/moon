@@ -17,7 +17,7 @@
 #include <stdio.h>
 #include "dependencyobject.h"
 
-typedef gpointer (*get_image_uri_func) (int level, int posX, int posY);
+typedef gpointer (*get_image_uri_func) (int level, int posX, int posY, void* user_data);
 
 /* @Version=2,Namespace=System.Windows.Media */
 /* @CallInitialize */

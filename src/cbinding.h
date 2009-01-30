@@ -402,8 +402,6 @@ DependencyObject *data_template_load_content_with_error (DataTemplate *instance,
 /* @GeneratePInvoke */
 DeepZoomImageTileSource *deep_zoom_image_tile_source_new (void);
 
-void deep_zoom_image_tile_source_set_downloaded_cb (DeepZoomImageTileSource *instance, downloaded_cb callback);
-
 /**
  * DependencyObject
  **/
