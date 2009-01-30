@@ -613,11 +613,11 @@ FrameworkElement::ArrangeOverride (Size finalSize)
 		Size desired = child->GetDesiredSize ();
 		Rect childRect (0,0,finalSize.width,finalSize.height);
 
-		if (GetHorizontalAlignment () != HorizontalAlignmentStretch)
+		if (GetHorizontalAlignment () != HorizontalAlignmentStretch && isnan (GetWidth ()))
 			childRect.width = MIN (desired.width, childRect.width);
 
 		if (GetVerticalAlignment () != VerticalAlignmentStretch)
-			childRect.height = MIN (desired.height, childRect.height);
+			childRect.height = MIN (desired.height, childRect.height && isnan (GetHeight ()));
 
 		child->Arrange (childRect);
 		finalSize = finalSize.Max (child->GetRenderSize ());

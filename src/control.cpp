@@ -239,10 +239,10 @@ Control::ArrangeOverride (Size finalSize)
 
 		childRect = childRect.GrowBy (-border);
 
-		if (GetHorizontalAlignment () != HorizontalAlignmentStretch)
+		if (GetHorizontalAlignment () != HorizontalAlignmentStretch && isnan (GetWidth ()))
 			childRect.width = MIN (desired.width, childRect.width);
 
-		if (GetVerticalAlignment () != VerticalAlignmentStretch)
+		if (GetVerticalAlignment () != VerticalAlignmentStretch && isnan (GetHeight ()))
 			childRect.height = MIN (desired.height, childRect.height);
 
 		child->Arrange (childRect);
