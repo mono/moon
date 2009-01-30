@@ -665,6 +665,9 @@ Matrix *general_transform_get_matrix (GeneralTransform *instance);
 /* @GeneratePInvoke */
 Geometry *geometry_new (void);
 
+/* @GeneratePInvoke */
+Rect geometry_get_bounds (Geometry *instance);
+
 /**
  * GeometryCollection
  **/

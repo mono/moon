@@ -62,6 +62,8 @@ class Geometry : public DependencyObject {
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subprop_args);
 
 	virtual void Draw (cairo_t *cr);
+
+	/* @GenerateCBinding,GeneratePInvoke */
 	Rect GetBounds ();
 	void InvalidateCache ();
 

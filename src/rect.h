@@ -26,6 +26,10 @@ struct Rect {
 	double x, y, width, height;
 
 	Rect () : x (0), y (0), width (0), height (0) {}
+
+	// to please the current generator when used for a return value
+	Rect (int zero) : x (0), y (0), width (0), height (0) {}
+
 	Rect (double x, double y, double width, double height)
 	{
 		this->x = x;

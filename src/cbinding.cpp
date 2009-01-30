@@ -1542,6 +1542,17 @@ geometry_new (void)
 }
 
 
+Rect
+geometry_get_bounds (Geometry *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (Rect) 0;
+	
+	return instance->GetBounds ();
+}
+
+
 /**
  * GeometryCollection
  **/
