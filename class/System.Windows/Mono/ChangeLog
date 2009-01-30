@@ -1,3 +1,10 @@
+2009-01-30  Chris Toshok  <toshok@ximian.com>
+
+	* Types.cs (TypeToNativeKind): this is a bad name, these days -
+	this is what TypeToKind should be doing, as all the types the
+	unmanaged code can make use of have a kind now.  Remove the Enum
+	check.
+
 2009-01-30  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* GeneratedPInvokes.cs: Regenerated

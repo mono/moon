@@ -143,7 +143,7 @@ namespace Mono
 		{
 			while (type != typeof (object)) {
 				Kind kind = TypeToKind (type);
-				if (kind != Kind.INVALID && Enum.IsDefined (typeof (Kind), kind))
+				if (kind != Kind.INVALID)
 					return kind;
 				type = type.BaseType;
 			}
