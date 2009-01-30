@@ -1,6 +1,19 @@
+2009-01-30  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBox::Freeze): Renamed from PreKeyPress().
+	(TextBox::Thaw): Decrement freeze count and emit events when we
+	reach 0.
+	(TextBox::OnPropertyChanged): When SelectionStartProperty or
+	SelectionLengthProperty change, call SyncSelectedText(). Fixed the
+	selection.start/cursor positioning logic when TextProperty or
+	SelectedTextProperty changes.
+	(TextBoxView::OnKeyDown): Updated to sue the new Freeze()/Thaw()
+	methods.
+
 2009-01-30  Larry Ewing  <lewing@novell.com>
 
-	* grid.cpp (Grid::ArrangeOverride): fix the minimum measure size computation.
+	* grid.cpp (Grid::ArrangeOverride): fix the minimum measure size
+	computation.
 
 2009-01-30  Sebastien Pouliot  <sebastien@ximian.com>
 
@@ -42,6 +55,7 @@
 
 	* multiscaleimage.cpp: change the vporigin to relative coords
 
+>>>>>>> .r125137
 2009-01-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* dependencyobject.cpp: EventObject::unref: don't try to get the

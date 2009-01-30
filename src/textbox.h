@@ -84,6 +84,7 @@ class TextBox : public Control, public ITextSource {
 	
 	int setvalue:1;
 	int frozen:3;
+	int emit:3;
 	
  protected:
 	int KeyPressUnichar (gunichar c);
@@ -99,13 +100,17 @@ class TextBox : public Control, public ITextSource {
 	int KeyPressDown (GdkModifierType modifiers);
 	int KeyPressUp (GdkModifierType modifiers);
 	
-	void PreKeyPress ();
-	void PostKeyPress (int changed);
+	void SyncCursorPosition ();
+	void SyncSelectedText ();
+	void SyncText ();
 	
 	void ClearSelection ();
 	
-	void EmitSelectionChanged (bool sync = true);
-	void EmitTextChanged (bool sync = true);
+	void EmitSelectionChanged ();
+	void EmitTextChanged ();
+	
+	void Freeze ();
+	void Thaw ();
 	
 	//
 	// Protected Property Accessors

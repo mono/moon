@@ -207,13 +207,18 @@ class TextBuffer {
 // TextBox
 //
 
+#define NOTHING_CHANGED         (0)
+#define CURSOR_POSITION_CHANGED (1 << 0)
+#define SELECTION_CHANGED       (1 << 1)
+#define TEXT_CHANGED            (1 << 2)
+
 TextBox::TextBox ()
 {
 	SetObjectType (Type::TEXTBOX);
 	ManagedTypeInfo *type_info = new ManagedTypeInfo ();
 	type_info->assembly_name = g_strdup ("System.Windows");
 	type_info->full_name = g_strdup ("System.Windows.Controls.TextBox");
-
+	
 	SetDefaultStyleKey (type_info);
 	
 	font = new TextFontDescription ();
@@ -225,6 +230,7 @@ TextBox::TextBox ()
 	
 	buffer = new TextBuffer ();
 	
+	emit = NOTHING_CHANGED;
 	selection.length = 0;
 	selection.start = 0;
 	setvalue = true;
@@ -251,11 +257,6 @@ TextBox::~TextBox ()
 	delete buffer;
 	delete font;
 }
-
-#define CURSOR_POSITION_CHANGED (1 << 0)
-#define SELECTION_CHANGED       (1 << 1)
-#define CONTENT_CHANGED         (1 << 2)
-#define NOTHING_CHANGED         (0)
 
 #define MY_GDK_ALT_MASK         (GDK_MOD1_MASK | GDK_MOD2_MASK | GDK_MOD3_MASK | GDK_MOD4_MASK | GDK_MOD5_MASK)
 
@@ -450,7 +451,7 @@ TextBox::KeyPressBackSpace (GdkModifierType modifiers)
 	if (selection.length > 0) {
 		// BackSpace w/ active selection: delete the selected text
 		buffer->Cut (selection.start, selection.length);
-		changed = CONTENT_CHANGED;
+		changed = TEXT_CHANGED;
 		
 		if (cursor != selection.start) {
 			changed |= CURSOR_POSITION_CHANGED;
@@ -461,13 +462,13 @@ TextBox::KeyPressBackSpace (GdkModifierType modifiers)
 		pos = prev_word (buffer, cursor);
 		
 		if (pos < cursor) {
-			changed = CURSOR_POSITION_CHANGED | CONTENT_CHANGED;
+			changed = CURSOR_POSITION_CHANGED | TEXT_CHANGED;
 			buffer->Cut (pos, cursor - pos);
 			cursor = pos;
 		}
 	} else if (cursor > 0) {
 		// BackSpace: delete the char before the cursor position
-		changed = CURSOR_POSITION_CHANGED | CONTENT_CHANGED;
+		changed = CURSOR_POSITION_CHANGED | TEXT_CHANGED;
 		if (cursor >= 2 && buffer->text[cursor - 1] == '\n' && buffer->text[cursor - 2] == '\r') {
 			buffer->Cut (cursor - 2, 2);
 			cursor -= 2;
@@ -509,7 +510,7 @@ TextBox::KeyPressDelete (GdkModifierType modifiers)
 	if (selection.length > 0) {
 		// Delete w/ active selection: delete the selected text
 		buffer->Cut (selection.start, selection.length);
-		changed = CONTENT_CHANGED;
+		changed = TEXT_CHANGED;
 		
 		if (cursor != selection.start) {
 			changed |= CURSOR_POSITION_CHANGED;
@@ -521,11 +522,11 @@ TextBox::KeyPressDelete (GdkModifierType modifiers)
 		
 		if (pos > cursor) {
 			buffer->Cut (cursor, pos - cursor);
-			changed = CONTENT_CHANGED;
+			changed = TEXT_CHANGED;
 		}
 	} else if (cursor < buffer->len) {
 		// Delete: delete the char after the cursor position
-		changed = CONTENT_CHANGED;
+		changed = TEXT_CHANGED;
 		if (buffer->text[cursor] == '\r' && buffer->text[cursor + 1] == '\n')
 			buffer->Cut (cursor, 2);
 		else
@@ -1209,14 +1210,14 @@ TextBox::KeyPressUnichar (gunichar c)
 	if (selection.length > 0) {
 		// replace the currently selected text
 		printf ("TextBox::KeyPressUnichar(): relacing selection with '%c'\n", (char) c);
-		changed = CONTENT_CHANGED | CURSOR_POSITION_CHANGED | SELECTION_CHANGED;
+		changed = TEXT_CHANGED | CURSOR_POSITION_CHANGED | SELECTION_CHANGED;
 		buffer->Replace (selection.start, selection.length, &c, 1);
 		cursor = selection.start + 1;
 		ClearSelection ();
 	} else {
 		// insert the text at the cursor position
 		printf ("TextBox::KeyPressUnichar(): inserting '%c' @ %d\n", (char) c, cursor);
-		changed = CONTENT_CHANGED | CURSOR_POSITION_CHANGED;
+		changed = TEXT_CHANGED | CURSOR_POSITION_CHANGED;
 		buffer->Insert (cursor, c);
 		cursor++;
 	}
@@ -1225,58 +1226,72 @@ TextBox::KeyPressUnichar (gunichar c)
 }
 
 void
-TextBox::PreKeyPress ()
+TextBox::Freeze ()
 {
 	// freeze event emission
 	frozen++;
 }
 
 void
-TextBox::PostKeyPress (int changed)
+TextBox::Thaw ()
 {
-	// unfreeze event emission
 	frozen--;
 	
-	if (changed & CONTENT_CHANGED)
+	if (frozen)
+		return;
+	
+	if (emit & TEXT_CHANGED)
 		EmitTextChanged ();
 	
-	if (changed & SELECTION_CHANGED)
+	if (emit & SELECTION_CHANGED)
 		EmitSelectionChanged ();
 	
 	// only bother emitting this event if the cursor position is
 	// the only thing that changed. If either Text or Selection
 	// changed, then TextBoxView has already been notified that it
 	// needs to invalidate.
-	if (changed == CURSOR_POSITION_CHANGED)
+	if (emit == CURSOR_POSITION_CHANGED)
 		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (TextBoxModelChangedCursorPosition));
+	
+	emit = NOTHING_CHANGED;
 }
 
 void
-TextBox::EmitSelectionChanged (bool sync)
+TextBox::EmitSelectionChanged ()
 {
-	if (sync) {
-		char *text = g_ucs4_to_utf8 (buffer->text + selection.start, selection.length, NULL, NULL, NULL);
-		
-		setvalue = false;
-		SetValue (TextBox::SelectedTextProperty, Value (text, true));
-		setvalue = true;
-	}
-	
 	Emit (TextBox::SelectionChangedEvent, new RoutedEventArgs ());
 }
 
 void
-TextBox::EmitTextChanged (bool sync)
+TextBox::EmitTextChanged ()
 {
-	if (sync) {
-		char *text = g_ucs4_to_utf8 (buffer->text, buffer->len, NULL, NULL, NULL);
-		
-		setvalue = false;
-		SetValue (TextBox::TextProperty, Value (text, true));
-		setvalue = true;
-	}
-	
 	Emit (TextChangedEvent, new TextChangedEventArgs ());
+}
+
+void
+TextBox::SyncCursorPosition ()
+{
+	emit |= CURSOR_POSITION_CHANGED;
+}
+
+void
+TextBox::SyncSelectedText ()
+{
+	char *text = g_ucs4_to_utf8 (buffer->text + selection.start, selection.length, NULL, NULL, NULL);
+	
+	setvalue = false;
+	SetValue (TextBox::SelectedTextProperty, Value (text, true));
+	setvalue = true;
+}
+
+void
+TextBox::SyncText ()
+{
+	char *text = g_ucs4_to_utf8 (buffer->text, buffer->len, NULL, NULL, NULL);
+	
+	setvalue = false;
+	SetValue (TextBox::TextProperty, Value (text, true));
+	setvalue = true;
 }
 
 void
@@ -1317,34 +1332,28 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 			gunichar *text;
 			glong textlen;
 			
-			// FIXME: is the cursor/selection updating logic correct?
-			
+			// replace the currently selected text
 			text = g_utf8_to_ucs4_fast (str, -1, &textlen);
-			if (selection.length > 0) {
-				// replace the currently selected text
-				buffer->Replace (selection.start, selection.length, text, textlen);
-				cursor = selection.start + textlen;
-				ClearSelection ();
-			} else {
-				// insert the text at the cursor position
-				buffer->Insert (cursor, text, textlen);
-				cursor += textlen;
-			}
-			
+			buffer->Replace (selection.start, selection.length, text, textlen);
 			g_free (text);
 			
-			EmitTextChanged ();
+			cursor = selection.start + textlen;
+			ClearSelection ();
+			SyncText ();
 		}
+		
+		if (frozen)
+			emit |= SELECTION_CHANGED;
 	} else if (args->property == TextBox::SelectionStartProperty) {
 		selection.start = args->new_value->AsInt32 ();
 		
-		if (!frozen)
-			EmitSelectionChanged ();
+		// update SelectedText
+		SyncSelectedText ();
 	} else if (args->property == TextBox::SelectionLengthProperty) {
 		selection.length = args->new_value->AsInt32 ();
 		
-		if (!frozen)
-			EmitSelectionChanged ();
+		// update SelectedText
+		SyncSelectedText ();
 	} else if (args->property == TextBox::SelectionBackgroundProperty) {
 		changed = TextBoxModelChangedBrush;
 	} else if (args->property == TextBox::SelectionForegroundProperty) {
@@ -1355,36 +1364,23 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 			gunichar *text;
 			glong textlen;
 			
-			// FIXME: is the cursor/selection updating logic correct?
-			
 			text = g_utf8_to_ucs4_fast (str, -1, &textlen);
 			buffer->Replace (0, buffer->len, text, textlen);
-			ClearSelection ();
-			cursor = textlen;
 			g_free (text);
 			
-			// Emit the event, but don't bother
-			// regenerating the Text value since it was
-			// just set
-			EmitTextChanged (false);
+			cursor = 0;
+			ClearSelection ();
 		}
+		
+		if (frozen)
+			emit |= TEXT_CHANGED;
 	} else if (args->property == TextBox::TextAlignmentProperty) {
 		changed = TextBoxModelChangedTextAlignment;
 	} else if (args->property == TextBox::TextWrappingProperty) {
 		changed = TextBoxModelChangedTextWrapping;
 	} else if (args->property == TextBox::HorizontalScrollBarVisibilityProperty) {
-		/* FIXME: need to figure out:
-		 *
-		 * 1. whether the scrollbar should be shown or not
-		 * 2. whether the layout needs to be recalculated if the visibility changes
-		 */
 		invalidate = true;
 	} else if (args->property == TextBox::VerticalScrollBarVisibilityProperty) {
-		/* FIXME: need to figure out:
-		 *
-		 * 1. whether the scrollbar should be shown or not
-		 * 2. whether the layout needs to be recalculated if the visibility changes
-		 */
 		invalidate = true;
 	}
 	
@@ -1438,28 +1434,30 @@ TextBox::OnApplyTemplate ()
 void
 TextBox::ClearSelection ()
 {
-	frozen++;
-	SetSelectionLength (0);
-	SetSelectionStart (0);
-	frozen--;
-	
-	if (!frozen)
-		EmitSelectionChanged ();
+	Select (cursor, 0);
 }
 
 void
 TextBox::Select (int start, int length)
 {
-	if (start < 0 || start > buffer->len || start + length > buffer->len)
+	int mask;
+	
+	if ((start < 0) || (length < 0))
 		return;
 	
-	frozen++;
-	SetSelectionLength (length);
-	SetSelectionStart (start);
-	frozen--;
+	if (start > buffer->len)
+		start = buffer->len;
 	
-	if (!frozen)
-		EmitSelectionChanged ();
+	if (length > (buffer->len - start))
+		length = (buffer->len - start);
+	
+	Freeze ();
+	mask = emit;
+	SetSelectionStart (start);
+	SetSelectionLength (length);
+	SyncSelectedText ();
+	emit = mask;
+	Thaw ();
 }
 
 bool
@@ -1532,8 +1530,8 @@ TextBoxView::OnKeyDown (KeyEventArgs *args)
 	
 	printf ("TextBoxView::OnKeyDown()\n");
 	
-	// let textbox know we'll be making state changes due to a keypress event
-	textbox->PreKeyPress ();
+	// freeze TextBox event emission
+	textbox->Freeze ();
 	
 	if ((c = args->GetUnicode ())) {
 		changed = textbox->KeyPressUnichar (c);
@@ -1641,8 +1639,18 @@ TextBoxView::OnKeyDown (KeyEventArgs *args)
 		// FIXME: some of these may also require updating scrollbars?
 	}
 	
-	// process state changes, emit events, etc
-	textbox->PostKeyPress (changed);
+	// process state changes...
+	if (changed & TEXT_CHANGED)
+		textbox->SyncText ();
+	
+	if (changed & SELECTION_CHANGED)
+		textbox->SyncSelectedText ();
+	
+	if (changed & CURSOR_POSITION_CHANGED)
+		textbox->SyncCursorPosition ();
+	
+	// thaw textbox event emission, causing events to be emitted
+	textbox->Thaw ();
 	
 	// FIXME: register a key repeat timeout?
 }
