@@ -117,7 +117,7 @@ class TextBox : public Control, public ITextSource {
 	//
 	TextSelection *GetSelection () { return &selection; }
 	TextBuffer *GetBuffer () { return buffer; }
-	int GetCursor () { return cursor; }
+	int GetCursor () { return selection.start; }
 	
 	void SetSelectionStart (int start);
 	void SetSelectionLength (int length);

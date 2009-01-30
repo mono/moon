@@ -1,5 +1,8 @@
 2009-01-30  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.h (TextBox::GetCursor): Cursor position is aka
+	selection.start.
+
 	* textbox.cpp (TextBox::Freeze): Renamed from PreKeyPress().
 	(TextBox::Thaw): Decrement freeze count and emit events when we
 	reach 0.
