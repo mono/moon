@@ -3,6 +3,11 @@
 	* frameworkelement.cpp: Make sure bounds_with_children is always
 	initialized before being used.
 
+2009-01-30  Geoff Norton  <gnorton@novell.com>
+
+	* mediaelement.cpp: Emit MediaOpenedEvent as soon as we've opened the
+	media.  Fixes the thumber moving on PDC player.
+
 2009-01-30  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Fixup logic for setting both Key and Name, I was wrong

@@ -673,8 +673,8 @@ MediaElement::MediaOpened (Media *media)
 			SetState (MediaElementStateBuffering);
 			PlayOrStopNow ();
 			Invalidate ();
-			EmitMediaOpened ();
 		}
+		EmitMediaOpened ();
 		
 		return true;
 	}
