@@ -448,6 +448,8 @@ Downloader::Write (void *buf, gint32 offset, gint32 n)
 {
 	LOG_DOWNLOADER ("Downloader::Write (%p, %i, %i). Uri: %s\n", buf, offset, n, GetUri ());
 	
+	SetCurrentDeployment ();
+	
 	if (aborted)
 		return;
 		
