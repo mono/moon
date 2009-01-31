@@ -953,9 +953,9 @@ namespace System.Windows.Controls {
 	}
 
 	partial class UserControl {
-		protected static readonly DependencyProperty ContentProperty = DependencyProperty.Lookup (Kind.USERCONTROL, "Content", typeof (UIElement));
+		protected internal static readonly DependencyProperty ContentProperty = DependencyProperty.Lookup (Kind.USERCONTROL, "Content", typeof (UIElement));
 
-		protected UIElement Content {
+		protected internal UIElement Content {
 			get { return (UIElement) GetValue (ContentProperty); }
 			set { SetValue (ContentProperty, value); }
 		}
