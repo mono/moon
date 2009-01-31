@@ -218,6 +218,7 @@ namespace Mono {
 			case Kind.BORDER: return new Border (raw);
 			case Kind.CANVAS: return new Canvas (raw);
 			case Kind.COLORANIMATION: return new ColorAnimation (raw);
+			case Kind.COLORANIMATIONUSINGKEYFRAMES: return new ColorAnimationUsingKeyFrames (raw);
 			case Kind.COLORKEYFRAME_COLLECTION: return new ColorKeyFrameCollection (raw);
 			case Kind.COLUMNDEFINITION: return new ColumnDefinition (raw);
 			case Kind.COLUMNDEFINITION_COLLECTION: return new ColumnDefinitionCollection (raw);
@@ -266,6 +267,7 @@ namespace Mono {
 			case Kind.PATH: return new Path (raw);
 			case Kind.PATHSEGMENT_COLLECTION: return new PathSegmentCollection (raw);
 			case Kind.POINTANIMATION: return new PointAnimation (raw);
+			case Kind.POINTANIMATIONUSINGKEYFRAMES: return new PointAnimationUsingKeyFrames (raw);
 			case Kind.POINTKEYFRAME_COLLECTION: return new PointKeyFrameCollection (raw);
 			case Kind.POINT_COLLECTION: return new PointCollection (raw);
 			case Kind.POLYBEZIERSEGMENT: return new PolyBezierSegment (raw);
