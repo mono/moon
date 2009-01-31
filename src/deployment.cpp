@@ -250,10 +250,8 @@ Deployment::AbortAllIDownloaders ()
 	IDownloaderNode *node;
 
 	while ((node = (IDownloaderNode *) idownloaders->First ()) != NULL) {
-		if (!node->idl->IsAborted ()) {
-			printf ("Someone set us up the bomb: %p\n", node->idl);
+		if (!node->idl->IsAborted ())
 			node->idl->Abort ();
-		}
 		idownloaders->Remove (node);
 	}
 }
