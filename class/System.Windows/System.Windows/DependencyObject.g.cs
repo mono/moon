@@ -147,8 +147,14 @@ namespace System.Windows.Controls {
 	}
 
 	partial class ContentControl {
-		public ContentControl () : base (NativeMethods.content_control_new ()) {}
-		internal ContentControl (IntPtr raw) : base (raw) {}
+		public ContentControl () : base (NativeMethods.content_control_new ())
+		{
+			Initialize ();
+		}
+		internal ContentControl (IntPtr raw) : base (raw)
+		{
+			Initialize ();
+		}
 	}
 
 	partial class Control {

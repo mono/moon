@@ -1,3 +1,7 @@
+2009-01-31  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows/DependencyObject.g.cs: Regenerated
+
 2009-01-30  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Rect.cs: Use ToString() inside the overloads (rather than throwing)
