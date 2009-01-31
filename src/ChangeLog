@@ -1,5 +1,13 @@
 2009-01-31  Larry Ewing  <lewing@novell.com>
 
+	* rect.cpp, rect.h: move the rounded drawing here for now until
+	there is a better place.
+
+	* border.cpp: start drawing the borderbrush and using border
+	thickness.
+	
+2009-01-31  Larry Ewing  <lewing@novell.com>
+
 	* border.cpp (Border::Render): add corner radius rendering logic
 	here for now.
 

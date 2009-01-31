@@ -86,6 +86,7 @@ void
 Border::Render (cairo_t *cr, Region *region)
 {
 	Brush *background = GetBackground ();
+	Brush *border_brush = GetBorderBrush ();
 
 	cairo_set_matrix (cr, &absolute_xform);
 
@@ -96,58 +97,30 @@ Border::Render (cairo_t *cr, Region *region)
 	}	
 
 	Rect paint = extents.GrowBy (-*GetMargin ());
+	CornerRadius *round = GetCornerRadius ();
+	if (border_brush) {
+		border_brush->SetupBrush (cr, paint);
+
+		cairo_new_path (cr);
+		paint.Draw (cr, round);
+		
+		border_brush->Fill (cr);
+	}
+
 	if (background) {
-		CornerRadius *round = GetCornerRadius ();
+		Thickness bthick = *GetBorderThickness ();
+		
+		paint = paint.GrowBy (-bthick);
+
 		background->SetupBrush (cr, paint);
 
 		cairo_new_path (cr);
-		
-		if (round) {
-			double top_adj = MAX (round->topLeft + round->topRight - paint.width, 0) / 2;
-			double bottom_adj = MAX (round->bottomLeft + round->bottomRight - paint.width, 0) / 2;
-			double left_adj = MAX (round->topLeft + round->bottomLeft - paint.height, 0) / 2;
-			double right_adj = MAX (round->topRight + round->bottomRight - paint.height, 0) / 2;
-
-			double tlt = round->topLeft - top_adj;
-			cairo_move_to (cr, paint.x + tlt, paint.y);
-
-			double trt = round->topRight - top_adj;
-			double trr = round->topRight - right_adj;
-			cairo_line_to (cr, paint.x + paint.width - trt, paint.y);
-			cairo_curve_to (cr, 
-					paint.x + paint.width - trt +  trt * ARC_TO_BEZIER, paint.y,
-					paint.x + paint.width, paint.y + trr * ARC_TO_BEZIER,
-					paint.x + paint.width, paint.y + trr);
-
-			double brr = round->bottomRight - right_adj;
-			double brb = round->bottomRight - bottom_adj;
-			cairo_line_to (cr, paint.x + paint.width, paint.y + paint.height - brr);
-			cairo_curve_to (cr,
-					paint.x + paint.width, paint.x + paint.height - brr + brr * ARC_TO_BEZIER, 
-					paint.x + paint.width + brb * ARC_TO_BEZIER - brb,  paint.y + paint.height,
-					paint.x + paint.width - brb, paint.y + paint.height);
-
-			double blb = round->bottomLeft - bottom_adj;
-			double bll = round->bottomLeft - left_adj;
-			cairo_line_to (cr, paint.x + blb, paint.y + paint.height);
-			cairo_curve_to (cr,
-					paint.x + blb - blb * ARC_TO_BEZIER, paint.y + paint.height,
-					paint.x, paint.y + paint.height - bll * ARC_TO_BEZIER,
-					paint.x, paint.y + paint.height - bll);
-
-			double tll = round->topLeft - left_adj;
-			cairo_line_to (cr, paint.x, paint.y + tll);
-			cairo_curve_to (cr,
-					paint.x, paint.y + tll - tll * ARC_TO_BEZIER,
-					paint.x + tlt - tlt * ARC_TO_BEZIER, paint.y,
-					paint.x + tlt, paint.y);
-		}				
-
-		else
-			paint.Draw (cr);
+		/* XXX FIXME this is not quite the right rounding */
+		paint.Draw (cr, round);
 
 		background->Fill (cr);
 	}
+	
 }
 
 void

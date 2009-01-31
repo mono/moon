@@ -18,6 +18,7 @@
 
 #include "point.h"
 #include "thickness.h"
+#include "cornerradius.h"
 
 // map to System.Windows.Rect
 /* @IncludeInKinds */
@@ -90,7 +91,6 @@ struct Rect {
 	{
 		return Union (rect, false);
 	}
-
 
 	// Note about the logical bool: there's now an override for both Rect::Union and
 	// Rect::IsEmpty that takes a bool. That bool allows union of rectangle with one
@@ -197,6 +197,9 @@ struct Rect {
 	{
 		cairo_rectangle (cr, x, y, width, height);
 	}
+	
+	
+	void Draw (cairo_t *cr, CornerRadius *round) const;
 
 	Point GetTopLeft () const
 	{
