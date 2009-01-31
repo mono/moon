@@ -1182,9 +1182,9 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 	bool invalidate = false;
 	
 	if (args->property == Control::FontFamilyProperty) {
-		char *family = args->new_value ? args->new_value->AsString () : NULL;
+		FontFamily *family = args->new_value ? args->new_value->AsFontFamily () : NULL;
 		changed = TextBoxModelChangedFont;
-		font->SetFamily (family);
+		font->SetFamily (family ? family->source : NULL);
 	} else if (args->property == Control::FontSizeProperty) {
 		double size = args->new_value->AsDouble ();
 		changed = TextBoxModelChangedFont;

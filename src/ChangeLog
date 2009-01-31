@@ -1,3 +1,7 @@
+2009-01-30  Geoff Norton  <gnorton@novell.com>
+
+	* textbox.cpp: FontFamily is now a FontFamily not a string.
+
 2009-01-30  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp: fix ResourceDictionary once and for all.
