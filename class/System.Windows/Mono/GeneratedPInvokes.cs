@@ -514,6 +514,17 @@ namespace Mono {
 			return result;
 		}
 
+		[DllImport ("moon", EntryPoint="dependency_object_set_logical_parent")]
+		// void dependency_object_set_logical_parent (DependencyObject *instance, DependencyObject *logical_parent, MoonError *error);
+		private extern static void dependency_object_set_logical_parent_ (IntPtr instance, IntPtr logical_parent, out MoonError error);
+		public static void dependency_object_set_logical_parent (IntPtr instance, IntPtr logical_parent)
+		{
+					MoonError error;
+			dependency_object_set_logical_parent_ (instance, logical_parent, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+		}
+
 		[DllImport ("moon", EntryPoint="dependency_object_set_marshalled_value_with_error")]
 		[return: MarshalAs (UnmanagedType.U1)]
 		// bool dependency_object_set_marshalled_value_with_error (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error);
