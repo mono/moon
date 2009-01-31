@@ -114,7 +114,7 @@ Panel::Render (cairo_t *cr, Region *region)
 	
 	if ((background = GetBackground ())) {
 		Rect area = Rect (0.0, 0.0, GetActualWidth (), GetActualHeight ());
-		area = area->GrowBy (-GetMargin ());
+		area = area.GrowBy (-*GetMargin ());
 		if (area.width > 0 && area.height > 0) {
 			background->SetupBrush (cr, area);
 			
