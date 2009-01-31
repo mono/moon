@@ -258,6 +258,7 @@ namespace Mono {
 			case Kind.MATRIXTRANSFORM: return new MatrixTransform (raw);
 			case Kind.MEDIAELEMENT: return new MediaElement (raw);
 			case Kind.MULTISCALEIMAGE: return new MultiScaleImage (raw);
+			case Kind.OBJECTANIMATIONUSINGKEYFRAMES: return new ObjectAnimationUsingKeyFrames (raw);
 			case Kind.PASSWORDBOX: return new PasswordBox (raw);
 			case Kind.PATHFIGURE_COLLECTION: return new PathFigureCollection (raw);
 			case Kind.PATHFIGURE: return new PathFigure (raw);
