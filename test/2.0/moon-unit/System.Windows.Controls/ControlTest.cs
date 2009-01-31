@@ -218,7 +218,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("SetValue should not call DO.ClearValue when value is null")]
 		public void InvalidValues()
 		{
 			ConcreteControl c = new ConcreteControl();
@@ -227,6 +226,14 @@ namespace MoonTest.System.Windows.Controls {
 			c.FontSize = 1000000;
 
 			c.Foreground = null;
+			c.FontFamily = null;
+		}
+
+		[TestMethod]
+		[MoonlightBug ("SetValue should not call DO.ClearValue when value is null")]
+		public void NullifyFontFamily()
+		{
+			ConcreteControl c = new ConcreteControl();
 			c.FontFamily = null;
 			Assert.Throws<NullReferenceException>(delegate {
 				object o = c.FontFamily;

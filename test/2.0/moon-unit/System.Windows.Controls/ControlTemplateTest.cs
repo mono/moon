@@ -129,7 +129,9 @@ namespace MoonTest.System.Windows.Controls
 			tb.ClearValue (TextBlock.ForegroundProperty);
 
 			Assert.AreEqual (DependencyProperty.UnsetValue, tb.ReadLocalValue (TextBlock.ForegroundProperty), "2");
-			Assert.AreEqual (Colors.Black, ((SolidColorBrush)tb.GetValue (TextBlock.ForegroundProperty)).Color, "2.1");
+			Assert.IsNotNull (tb.GetValue (TextBlock.ForegroundProperty), "2.1");
+			Assert.IsTrue (tb.GetValue (TextBlock.ForegroundProperty) is SolidColorBrush, "2.2");
+			Assert.AreEqual (Colors.Black, ((SolidColorBrush)tb.GetValue (TextBlock.ForegroundProperty)).Color, "2.3");
 		}
 
 		[TestMethod]

@@ -93,7 +93,8 @@ namespace MoonTest.System.Windows.Controls {
 		{
 			ContentControlPoker cc = new ContentControlPoker ();
 			cc.Content = cc;
-			Assert.IsNull (cc.OldContent, "OldContent/OldContent");
+			Assert.IsNull (cc.OldContent, "OldContent");
+			Assert.IsNotNull (cc.NewContent, "NewContent");
 			Assert.AreSame (cc, cc.NewContent, "OldContent/NewContent");
 		}
 

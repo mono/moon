@@ -126,7 +126,14 @@ namespace MoonTest.System.Windows
 			r1.Intersect (Rect.Empty);
 			
 			Assert.IsTrue (r1.IsEmpty);
+		}
 
+		[TestMethod]
+		public void EqualsNaN ()
+		{
+			Rect r = new Rect (Double.NaN, Double.NaN, Double.NaN, Double.NaN);
+			Assert.IsFalse (r.Equals (r), "Equals(Rect)");
+			Assert.IsFalse (r.Equals ((object)r), "Equals(object)");
 		}
 	}
 }

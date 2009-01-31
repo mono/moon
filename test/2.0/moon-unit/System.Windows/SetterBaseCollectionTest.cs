@@ -80,15 +80,20 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		public void SetEmptyStyle ()
+		{
+			Style s = new Style ();
+			Rectangle r = new Rectangle ();
+			Assert.Throws<NullReferenceException>(delegate {
+				r.Style = s;
+			}, "Empty Style");
+		}
+
+		[TestMethod]
 		public void SetStyleToElement()
 		{
-			Style s = new Style();
 			Rectangle r = new Rectangle();
-			// FIXME: this should pass
-			//Assert.Throws<NullReferenceException>(delegate { r.Style = s; }, "#1");
-
-			s = new Style(typeof(Rectangle));
-			r = new Rectangle();
+			Style s = new Style(typeof(Rectangle));
 			s.Seal();
 			r.Style = s;
 
@@ -115,14 +120,19 @@ namespace MoonTest.System.Windows
 			s.Seal();
 			Assert.IsTrue(setter.IsSealed, "#9");
 			Assert.IsTrue(s.Setters.IsSealed, "#10");
+		}
 
-			s = new Style(typeof(Rectangle));
-			r = new Rectangle();
-			setter = new Setter(Rectangle.HeightProperty, 50);
+		[TestMethod]
+		[MoonlightBug ("this case is not working, throwing a Windows.Markup.XamlParseException")]
+		public void SetStyleToElement_NotWorking ()
+		{
+			Style s = new Style (typeof (Rectangle));
+			Rectangle r = new Rectangle ();
+			Setter setter = new Setter (Rectangle.HeightProperty, 50);
 
-			s.Setters.Add(setter);
+			s.Setters.Add (setter);
 			r.Style = s;
-			Assert.IsTrue(s.IsSealed, "#11");
+			Assert.IsTrue (s.IsSealed, "#11");
 		}
 	}
 }

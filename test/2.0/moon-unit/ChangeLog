@@ -1,3 +1,15 @@
+2009-01-31  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows/RectTest.cs: Add NaN test case
+	* System.Windows/SetterBaseCollectionTest.cs: Split test case to 
+	isolate the non-working part (and not regress existing stuff)
+	* System.Windows.Controls/ButtonTest.cs: New.
+	* System.Windows.Controls/ContentControlTest.cs: Add one assert
+	* System.Windows.Controls/ControlTemplateTest.cs: Add a failing
+	assertion instead of "failing somewhere" with an exception.
+	* System.Windows.Controls/ControlTest.cs: Split test case to 
+	isolate the non-working part (and not regress existing stuff)
+
 2009-01-30  Jeffrey Stedfast  <fejj@novell.com>
 
 	* System.Windows.Controls/TextBoxTest.cs: Added a bunch of unit
