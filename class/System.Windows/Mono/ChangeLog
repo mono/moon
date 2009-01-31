@@ -1,5 +1,12 @@
 2009-01-30  Chris Toshok  <toshok@ximian.com>
 
+	* ManagedXamlLoader.cs: this is kinda gross, but if we're adding a
+	DO to a managed collection which is a property of another DO, set
+	the logical parent of the child to that of the parent, bypassing
+	the managed collection altogether.
+
+2009-01-30  Chris Toshok  <toshok@ximian.com>
+
 	* Types.cs (TypeToNativeKind): this is a bad name, these days -
 	this is what TypeToKind should be doing, as all the types the
 	unmanaged code can make use of have a kind now.  Remove the Enum

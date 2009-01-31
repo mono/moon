@@ -348,9 +348,15 @@ namespace Mono.Xaml
 					}
 
 					the_list.Add (o_value);
+
+					if (o_value is DependencyObject && target is DependencyObject && !(the_list is DependencyObject)) {
+						NativeMethods.dependency_object_set_logical_parent (((DependencyObject)o_value).native, ((DependencyObject)target).native);
+					}
+
 					return true;
 				} else {
 					// I guess we need to wrap the current value in a collection, or does this error out?
+					Console.WriteLine ("ow god my eye!");
 					return false;
 				}
 			}
@@ -640,6 +646,11 @@ namespace Mono.Xaml
 					pi.SetValue (target, the_list, null);
 				}
 				the_list.Add (obj_value);
+
+				if (obj_value is DependencyObject && target is DependencyObject && !(the_list is DependencyObject)) {
+					NativeMethods.dependency_object_set_logical_parent (((DependencyObject)obj_value).native, ((DependencyObject)target).native);
+				}
+
 				return true;
 			}
 
