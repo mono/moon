@@ -31,12 +31,15 @@ class MultiScaleImage : public MediaBase {
 	bool cache_contains (int layer, int x, int y, bool check_empty_tile);
 	char* context;
 	char* filename;
+	bool downloading;
 
 	cairo_user_data_key_t width_key;
 	cairo_user_data_key_t height_key;
 
 	void DownloaderComplete ();
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
+	void DownloaderFailed ();
+	static void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
 	double GetViewportHeight ();
 
 	Downloader *downloader;

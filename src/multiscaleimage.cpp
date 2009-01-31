@@ -36,6 +36,7 @@ MultiScaleImage::MultiScaleImage ()
 	downloader = NULL;
 	filename = NULL;
 	cache = g_hash_table_new (g_str_hash, g_str_equal);
+	downloading = false;
 }
 
 MultiScaleImage::~MultiScaleImage ()
@@ -77,6 +78,7 @@ MultiScaleImage::DownloadUri (const char* url)
 	if (!downloader) {
 		downloader = surface->CreateDownloader ();
 		downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
+		downloader->AddHandler (downloader->DownloadFailedEvent, downloader_failed, this);
 	}
 
 	if (!downloader)
@@ -395,6 +397,9 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 		layer_to_render++;
 	}
 
+	if (downloading)
+		return;
+
 	//Get the next tile...
 	while (from_layer < optimal_layer) {
 		from_layer ++;
@@ -411,6 +416,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 				
 					const char* ret = g_strdup ((const char*)source->get_tile_func (from_layer, i, j, source));
 					if (ret) {
+						downloading = true;
 						DownloadUri (ret);
 						return;
 					} else {
@@ -433,16 +439,28 @@ MultiScaleImage::DownloaderComplete ()
 		return;
 
 	printf ("dl completed %s\n", filename);
+	downloading = false;
 
 	Invalidate ();
 }
 
-
+void
+MultiScaleImage::DownloaderFailed ()
+{
+	printf ("dl failed\n");
+	downloading = false;
+}
 
 void
 MultiScaleImage::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	((MultiScaleImage *) closure)->DownloaderComplete ();
+}
+
+void
+MultiScaleImage::downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	((MultiScaleImage *) closure)->DownloaderFailed ();
 }
 
 

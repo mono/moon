@@ -1,3 +1,8 @@
+2009-01-31  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.h|cpp: ensure there's only one downloader running,
+	fixes the issue where wrong images were cached.
+
 2009-01-31  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* contentcontrol.h: Add @CallInitialize so the event gets
