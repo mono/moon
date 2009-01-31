@@ -427,6 +427,9 @@ Value *dependency_object_get_value_no_default_with_error (DependencyObject *inst
 Value *dependency_object_get_value_with_error (DependencyObject *instance, Type::Kind whatami, DependencyProperty *property, MoonError *error);
 
 /* @GeneratePInvoke */
+void dependency_object_set_logical_parent (DependencyObject *instance, DependencyObject *logical_parent, MoonError *error);
+
+/* @GeneratePInvoke */
 bool dependency_object_set_marshalled_value_with_error (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error);
 
 /* @GeneratePInvoke */

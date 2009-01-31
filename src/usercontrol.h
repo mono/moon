@@ -28,7 +28,7 @@ protected:
 	virtual ~UserControl ();
 	
 public:
-	/* @PropertyType=UIElement,ManagedAccess=Protected */
+	/* @PropertyType=UIElement,ManagedAccess=ProtectedInternal */
 	static DependencyProperty *ContentProperty;
 	
  	/* @GenerateCBinding,GeneratePInvoke */

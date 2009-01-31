@@ -980,6 +980,18 @@ dependency_object_get_value_with_error (DependencyObject *instance, Type::Kind w
 }
 
 
+void
+dependency_object_set_logical_parent (DependencyObject *instance, DependencyObject *logical_parent, MoonError *error)
+{
+	if (instance == NULL)
+		return;
+	
+	if (error == NULL)
+		g_warning ("Moonlight: Called dependency_object_set_logical_parent () with error == NULL.");
+	instance->SetLogicalParent (logical_parent, error);
+}
+
+
 bool
 dependency_object_set_marshalled_value_with_error (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error)
 {

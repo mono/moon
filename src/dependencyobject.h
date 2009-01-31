@@ -247,6 +247,7 @@ public:
 
 	virtual void SetSurface (Surface *surface);
 
+	/* @GenerateCBinding,GeneratePInvoke */
 	void SetLogicalParent (DependencyObject *logical_parent, MoonError *error);
 	DependencyObject *GetLogicalParent ();
 	
