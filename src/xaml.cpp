@@ -98,6 +98,7 @@ static const char* default_namespace_names [] = {
 static const char* begin_buffering_element_names [] = {
 	"DataTemplate",
 	"ItemTemplate",
+	"ItemsPanelTemplate",
 	"ControlTemplate",
 	NULL
 };
@@ -263,6 +264,7 @@ class XamlElementInstance : public List::Node {
 
 	int element_type;
 	char *x_key;
+	char *x_name;
 
 	GHashTable *set_properties;
 
@@ -276,6 +278,7 @@ class XamlElementInstance : public List::Node {
 		this->item = NULL;
 		this->value = NULL;
 		this->x_key = NULL;
+		this->x_name = NULL;
 		this->cleanup_value = true;
 		
 		children = new List ();
@@ -288,6 +291,7 @@ class XamlElementInstance : public List::Node {
 		delete info;
 
 		g_free (x_key);
+		g_free (x_name);
 
 		if (cleanup_value)
 			delete value;
@@ -309,16 +313,10 @@ class XamlElementInstance : public List::Node {
 	virtual bool TrySetContentProperty (XamlParserInfo *p, const char *value);
 	
 	void SetKey (const char *key) { this->x_key = g_strdup (key); }
-	char *GetKey () {
+	char *GetKey () { return x_key; }
 
-		if (!x_key && Type::IsSubclassOf (Type::STYLE, info->GetKind ())) {
-			Value *v = item->GetValue (Style::TargetTypeProperty);
-			if (v && v->GetKind () == Type::MANAGEDTYPEINFO)
-				x_key = g_strdup (v->AsManagedTypeInfo ()->full_name);
-
-		}
-		return x_key;
-	}
+	void SetName (const char *name) { this->x_name = g_strdup (name); }
+	char *GetName () { return x_name; }
 
 	virtual bool IsDependencyObject ()
 	{
@@ -900,8 +898,9 @@ class XNamespace : public XamlNamespace {
 						      "You can't specify x:Name along with x:Key, or x:Key twice.");
 					return false;
 				}
-				item->SetKey (value);
 			}
+
+			item->SetName (value);
 
 			if (item->IsDependencyObject ()) {
 				item->GetAsDependencyObject ()->SetValue (DependencyObject::NameProperty, Value (value));
@@ -3507,7 +3506,7 @@ XamlElementInfoManaged::GetContentProperty (XamlParserInfo *p)
 		return NULL;
 
 	// TODO: We could cache this, but for now lets keep things as simple as possible.
-	const char *res = p->loader->GetContentPropertyName (p, obj->AsDependencyObject());
+	const char *res = p->loader->GetContentPropertyName (p, obj->Is(Type::DEPENDENCY_OBJECT) ? obj->AsDependencyObject() : obj->AsManagedObject());
 	if (res)
 		return res;
 	return XamlElementInfo::GetContentProperty (p);
@@ -3618,6 +3617,9 @@ XamlElementInstanceManaged::TrySetContentProperty (XamlParserInfo *p, XamlElemen
 {
 	Value *v = value->GetAsValue ();
 	const char* prop_name = info->GetContentProperty (p);
+	if (prop_name == NULL)
+		return false;
+
 	return p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, ((XamlElementInfoManaged *) info)->xmlns, GetManagedPointer (), GetParentPointer (), prop_name, v);
 }
 
@@ -3706,6 +3708,33 @@ XamlElementInfoImportedManaged::CreatePropertyElementInstance (XamlParserInfo *p
 /// Add Child funcs
 ///
 
+static const char*
+get_key_from_child (XamlElementInstance *child)
+{
+	const char *key = child->GetKey ();
+	if (key)
+		return key;
+
+	key = child->GetName ();
+	if (key)
+		return key;
+
+	if (child->IsDependencyObject ()) {
+		DependencyObject *c = child->GetAsDependencyObject();
+
+		if (Type::IsSubclassOf (Type::STYLE, child->info->GetKind ())) {
+			Value *v = c->GetValue (Style::TargetTypeProperty);
+			if (v && v->GetKind () == Type::MANAGEDTYPEINFO)
+				key = v->AsManagedTypeInfo ()->full_name;
+
+			if (key)
+				return key;
+		}
+	}
+
+	return NULL;
+}
+
 static void
 dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
 {
@@ -3766,14 +3795,13 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 					dict = (ResourceDictionary*) col_v->AsResourceDictionary ();
 				}
 
-				char *key = child->GetKey ();
+				const char *key = get_key_from_child (child);
 
 				if (key == NULL) {
 					// XXX don't know the proper values here...
 					return parser_error (p, child->element_name, NULL, 2007,
 							     "You must specify an x:Key or x:Name for elements in a ResourceDictionary");
 				}
-
 
 				Value *child_as_value = child->GetAsValue ();
 
@@ -3821,7 +3849,14 @@ XamlLoader::
 	else if (Type::IsSubclassOf (parent->info->GetKind (), Type::RESOURCE_DICTIONARY)) {
 		ResourceDictionary *dict = (ResourceDictionary *) parent->GetAsDependencyObject ();
 		MoonError err;
-		char *key = child->GetKey ();
+
+		const char *key = get_key_from_child (child);
+
+		if (key == NULL) {
+			// XXX don't know the proper values here...
+			return parser_error (p, child->element_name, NULL, 2007,
+					     "You must specify an x:Key or x:Name for elements in a ResourceDictionary");
+		}
 
 		Value *child_as_value = child->GetAsValue ();
 		bool added = dict->AddWithError (key, child_as_value, &err);

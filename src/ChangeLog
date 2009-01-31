@@ -1,3 +1,7 @@
+2009-01-30  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp: fix ResourceDictionary once and for all.
+
 2009-01-30  Geoff Norton  <gnorton@novell.com>
 
 	* deployment.cpp|h: Ensure that any downloaders that might
