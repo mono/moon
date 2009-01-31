@@ -38,6 +38,7 @@ class ContentChangedEventArgs : public EventArgs {
 /* @ContentProperty="Content" */
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
+/* @CallInitialize */
 class ContentControl : public Control {
  protected:
 	virtual ~ContentControl ();
