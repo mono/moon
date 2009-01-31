@@ -215,7 +215,7 @@ Control::ArrangeOverride (Size finalSize)
 			childRect.height = MIN (desired.height, childRect.height);
 
 		child->Arrange (childRect);
-		finalSize = finalSize.Max (child->GetRenderSize ());
+		finalSize = finalSize.Max (child->GetRenderSize ().GrowBy (border));
 	}
 
 	return finalSize;

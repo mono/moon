@@ -76,7 +76,7 @@ Border::ArrangeOverride (Size finalSize)
 			childRect.height = MIN (desired.height, childRect.height);
 
 		child->Arrange (childRect);
-		finalSize = finalSize.Max (child->GetRenderSize ());
+		finalSize = finalSize.Max (child->GetRenderSize ().GrowBy (border));
 	}
 
 	return finalSize;
@@ -95,55 +95,56 @@ Border::Render (cairo_t *cr, Region *region)
 		cairo_clip (cr);
 	}	
 
+	Rect paint = extents.GrowBy (-*GetMargin ());
 	if (background) {
 		CornerRadius *round = GetCornerRadius ();
-		background->SetupBrush (cr, extents);
+		background->SetupBrush (cr, paint);
 
 		cairo_new_path (cr);
 		
 		if (round) {
-			double top_adj = MAX (round->topLeft + round->topRight - extents.width, 0) / 2;
-			double bottom_adj = MAX (round->bottomLeft + round->bottomRight - extents.width, 0) / 2;
-			double left_adj = MAX (round->topLeft + round->bottomLeft - extents.height, 0) / 2;
-			double right_adj = MAX (round->topRight + round->bottomRight - extents.height, 0) / 2;
+			double top_adj = MAX (round->topLeft + round->topRight - paint.width, 0) / 2;
+			double bottom_adj = MAX (round->bottomLeft + round->bottomRight - paint.width, 0) / 2;
+			double left_adj = MAX (round->topLeft + round->bottomLeft - paint.height, 0) / 2;
+			double right_adj = MAX (round->topRight + round->bottomRight - paint.height, 0) / 2;
 
 			double tlt = round->topLeft - top_adj;
-			cairo_move_to (cr, extents.x + tlt, extents.y);
+			cairo_move_to (cr, paint.x + tlt, paint.y);
 
 			double trt = round->topRight - top_adj;
 			double trr = round->topRight - right_adj;
-			cairo_line_to (cr, extents.x + extents.width - trt, extents.y);
+			cairo_line_to (cr, paint.x + paint.width - trt, paint.y);
 			cairo_curve_to (cr, 
-					extents.x + extents.width - trt +  trt * ARC_TO_BEZIER, extents.y,
-					extents.x + extents.width, extents.y + trr * ARC_TO_BEZIER,
-					extents.x + extents.width, extents.y + trr);
+					paint.x + paint.width - trt +  trt * ARC_TO_BEZIER, paint.y,
+					paint.x + paint.width, paint.y + trr * ARC_TO_BEZIER,
+					paint.x + paint.width, paint.y + trr);
 
 			double brr = round->bottomRight - right_adj;
 			double brb = round->bottomRight - bottom_adj;
-			cairo_line_to (cr, extents.x + extents.width, extents.y + extents.height - brr);
+			cairo_line_to (cr, paint.x + paint.width, paint.y + paint.height - brr);
 			cairo_curve_to (cr,
-					extents.x + extents.width, extents.x + extents.height - brr + brr * ARC_TO_BEZIER, 
-					extents.x + extents.width + brb * ARC_TO_BEZIER - brb,  extents.y + extents.height,
-					extents.x + extents.width - brb, extents.y + extents.height);
+					paint.x + paint.width, paint.x + paint.height - brr + brr * ARC_TO_BEZIER, 
+					paint.x + paint.width + brb * ARC_TO_BEZIER - brb,  paint.y + paint.height,
+					paint.x + paint.width - brb, paint.y + paint.height);
 
 			double blb = round->bottomLeft - bottom_adj;
 			double bll = round->bottomLeft - left_adj;
-			cairo_line_to (cr, extents.x + blb, extents.y + extents.height);
+			cairo_line_to (cr, paint.x + blb, paint.y + paint.height);
 			cairo_curve_to (cr,
-					extents.x + blb - blb * ARC_TO_BEZIER, extents.y + extents.height,
-					extents.x, extents.y + extents.height - bll * ARC_TO_BEZIER,
-					extents.x, extents.y + extents.height - bll);
+					paint.x + blb - blb * ARC_TO_BEZIER, paint.y + paint.height,
+					paint.x, paint.y + paint.height - bll * ARC_TO_BEZIER,
+					paint.x, paint.y + paint.height - bll);
 
 			double tll = round->topLeft - left_adj;
-			cairo_line_to (cr, extents.x, extents.y + tll);
+			cairo_line_to (cr, paint.x, paint.y + tll);
 			cairo_curve_to (cr,
-					extents.x, extents.y + tll - tll * ARC_TO_BEZIER,
-					extents.x + tlt - tlt * ARC_TO_BEZIER, extents.y,
-					extents.x + tlt, extents.y);
+					paint.x, paint.y + tll - tll * ARC_TO_BEZIER,
+					paint.x + tlt - tlt * ARC_TO_BEZIER, paint.y,
+					paint.x + tlt, paint.y);
 		}				
 
 		else
-			extents.Draw (cr);
+			paint.Draw (cr);
 
 		background->Fill (cr);
 	}
