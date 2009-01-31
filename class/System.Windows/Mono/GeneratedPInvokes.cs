@@ -1353,6 +1353,11 @@ namespace Mono {
 		public extern static IntPtr surface_get_focused_element (IntPtr instance);
 
 		[DllImport ("moon")]
+		[return: MarshalAs (UnmanagedType.U1)]
+		// bool surface_get_full_screen (Surface *instance);
+		public extern static bool surface_get_full_screen (IntPtr instance);
+
+		[DllImport ("moon")]
 		// TimeManager *surface_get_time_manager (Surface *instance);
 		public extern static IntPtr surface_get_time_manager (IntPtr instance);
 
@@ -1368,6 +1373,10 @@ namespace Mono {
 		[DllImport ("moon")]
 		// void surface_resize (Surface *instance, int width, int height);
 		public extern static void surface_resize (IntPtr instance, int width, int height);
+
+		[DllImport ("moon")]
+		// void surface_set_full_screen (Surface *instance, bool value);
+		public extern static void surface_set_full_screen (IntPtr instance, [MarshalAs (UnmanagedType.U1)] bool value);
 
 		[DllImport ("moon")]
 		// Surface *surface_new (MoonWindow *window, bool silverlight2);
