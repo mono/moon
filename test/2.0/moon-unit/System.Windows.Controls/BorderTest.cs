@@ -730,5 +730,34 @@ namespace MoonTest.System.Windows.Controls
 			Assert.IsNull (b.FindName ("foo"),"b after");
 			Assert.IsNotNull (c.FindName ("foo"),"c after");
 		}
+
+		[TestMethod]
+		public void CornerRadiusTest ()
+		{
+			Border b = new Border ();
+			b.CornerRadius = new CornerRadius (20);
+			
+			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			b.Arrange (new Rect (0,0,b.DesiredSize.Width,b.DesiredSize.Height));
+			Assert.AreEqual (new Size (0,0), b.DesiredSize, "b desired0");
+			
+
+		}
+		[TestMethod]
+		public void CornerRadiusTest2 ()
+		{
+			Border b = new Border ();
+			Border b2 = new Border ();
+			b2.Width = 1;
+			b2.Height = 5;
+			b.Child = b2;
+			b.CornerRadius = new CornerRadius (20);
+			
+			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			b.Arrange (new Rect (0,0,b.DesiredSize.Width,b.DesiredSize.Height));
+			Assert.AreEqual (new Size (40,40), b.DesiredSize, "b desired0");
+			
+
+		}
 	}
 }
