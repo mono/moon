@@ -789,13 +789,13 @@ namespace Mono.Xaml
 
 		}
 
-		private string cb_get_content_property_name (IntPtr parser, IntPtr dob_ptr)
+		private string cb_get_content_property_name (IntPtr parser, IntPtr target_ptr)
 		{
-			DependencyObject dob = NativeDependencyObjectHelper.Lookup (dob_ptr) as DependencyObject;
-			if (dob == null)
+			object target = LookupObject (target_ptr);
+			if (target == null)
 				return null;
 
-			Type t = dob.GetType ();
+			Type t = target.GetType ();
 			object [] o = t.GetCustomAttributes (typeof (ContentPropertyAttribute), true);
 			if (o.Length == 0)
 				return null;
