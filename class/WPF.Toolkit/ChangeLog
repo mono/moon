@@ -1,3 +1,11 @@
+2009-01-30  Chris Toshok  <toshok@ximian.com>
+
+	* VSM/System/Windows/VisualStateManager.cs: dubious change - the
+	type Collection<VisualStateGroup> is *mostly* hidden, and is
+	reflected as IList to managed code.  so let's take advantage of
+	this fact to make things MUCH easier on us, and make it a subclass
+	of PresentationFrameworkCollection<VisualStateGroup>.
+
 2009-03-15  Alan McGovern  <amcgovern@novell.com>
 
 	* VSM/System/Windows/VisualStateGroup.cs: Simplify how native events are

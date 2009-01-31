@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All Rights Reserved.
 // -------------------------------------------------------------------
 
+using Mono;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,6 +14,12 @@ using System.Windows.Media.Animation;
 
 namespace System.Windows
 {
+	class VisualStateGroupCollection : PresentationFrameworkCollection<VisualStateGroup>
+	{
+		public VisualStateGroupCollection () : base (NativeMethods.dependency_object_collection_new ()) {}
+
+	}
+
     /// <summary>
     ///     Manages visual states and their transitions on a control.
     /// </summary>
@@ -111,20 +118,21 @@ namespace System.Windows
 
         #region VisualStateGroups
 		private static DependencyProperty VisualStateGroupsProperty = DependencyProperty.RegisterAttached ("VisualStateGroups",
-														   typeof (Collection<VisualStateGroup>),
-														   typeof (VisualStateManager), null);
+														   typeof (VisualStateGroupCollection),
+														   typeof (VisualStateManager),
+														   null);
 
-        internal static Collection<VisualStateGroup> GetVisualStateGroupsInternal(FrameworkElement obj)
+        internal static VisualStateGroupCollection GetVisualStateGroupsInternal(FrameworkElement obj)
         {
             if (obj == null)
             {
                 throw new ArgumentNullException("obj");
             }
 
-            Collection<VisualStateGroup> groups = obj.GetValue(VisualStateManager.VisualStateGroupsProperty) as Collection<VisualStateGroup>;
+            VisualStateGroupCollection groups = obj.GetValue(VisualStateManager.VisualStateGroupsProperty) as VisualStateGroupCollection;
             if (groups == null)
             {
-                groups = new Collection<VisualStateGroup>();
+                groups = new VisualStateGroupCollection();
                 SetVisualStateGroups(obj, groups);
             }
 
@@ -136,7 +144,7 @@ namespace System.Windows
             return VisualStateManager.GetVisualStateGroupsInternal(obj);
         }
 
-        internal static void SetVisualStateGroups(FrameworkElement obj, Collection<VisualStateGroup> value)
+        internal static void SetVisualStateGroups(FrameworkElement obj, VisualStateGroupCollection value)
         {
             if (obj == null)
             {
@@ -738,20 +746,20 @@ namespace System.Windows
         /// </summary>
         private static FrameworkElement GetTemplateRoot(Control control)
         {
-//            UserControl userControl = control as UserControl;
-//            if (userControl != null)
-//            {
-//                // If using a UserControl, the states will be specified on the
-//                // root of the content instead of the root of the template.
-//                return userControl.Content as FrameworkElement;
-//            }
-//            else
-//            {
+           UserControl userControl = control as UserControl;
+           if (userControl != null)
+           {
+               // If using a UserControl, the states will be specified on the
+               // root of the content instead of the root of the template.
+               return userControl.Content as FrameworkElement;
+           }
+           else
+           {
                 if (VisualTreeHelper.GetChildrenCount(control) > 0)
                 {
                     return VisualTreeHelper.GetChild(control, 0) as FrameworkElement;
                 }
-//            }
+           }
 
             return null;
         }
