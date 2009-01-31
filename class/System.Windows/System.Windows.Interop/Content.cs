@@ -62,17 +62,13 @@ namespace System.Windows.Interop {
 		public bool IsFullScreen {
 			[SecuritySafeCritical ()]
 			get {
-				if (PluginHost.Handle != IntPtr.Zero) {
-					return false;
-				} else
-					return false;
+				return NativeMethods.surface_get_full_screen (Deployment.Current.Surface.Native);
 			}
 			[MonoTODO ()]
 			[SecuritySafeCritical ()]
 			set {
-				// Note: we can change the value only if this is called from a user keyboard or mouse event.
-				// Otherside the value won't change (at least won't change to true)
-				// not yet implemented
+				// FIXME: Stack walk here to ensure this is in response to a user generated event
+				NativeMethods.surface_set_full_screen (Deployment.Current.Surface.Native, value);
 			}
 		}
 
