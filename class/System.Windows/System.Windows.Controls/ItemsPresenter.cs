@@ -32,7 +32,6 @@ namespace System.Windows.Controls
 	{
 		public ItemsPresenter ()
 		{
-			throw new NotImplementedException ();
 		}
 	}
 }
