@@ -1083,23 +1083,33 @@ TextBox::KeyPressUp (GdkModifierType modifiers)
 void
 TextBox::KeyPressUnichar (gunichar c)
 {
+	int length = selection.length;
+	int start = selection.start;
+	
 	if ((maxlen > 0 && buffer->len >= maxlen) || ((c == '\r') && !GetAcceptsReturn ()))
 		return;
 	
-	if (selection.length > 0) {
+	if (length > 0) {
 		// replace the currently selected text
 		printf ("TextBox::KeyPressUnichar(): relacing selection with '%c'\n", (char) c);
-		buffer->Replace (selection.start, selection.length, &c, 1);
-		selection.length = 0;
+		buffer->Replace (start, length, &c, 1);
 	} else {
 		// insert the text at the cursor position
-		printf ("TextBox::KeyPressUnichar(): inserting '%c' @ %d\n", (char) c, selection.start);
-		buffer->Insert (selection.start, c);
+		printf ("TextBox::KeyPressUnichar(): inserting '%c' @ %d\n", (char) c, start);
+		buffer->Insert (start, c);
 	}
 	
-	emit |= (TEXT_CHANGED | SELECTION_CHANGED);
 	cursor = SELECTION_BEGIN;
-	selection.start++;
+	emit |= TEXT_CHANGED;
+	length = 0;
+	start++;
+	
+	// check to see if selection has changed
+	if (selection.start != start || selection.length != length) {
+		SetSelectionLength (length);
+		SetSelectionStart (start);
+		emit |= SELECTION_CHANGED;
+	}
 }
 
 void

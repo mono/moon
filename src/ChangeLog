@@ -1,3 +1,8 @@
+2009-01-30  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBox::KeyPressUnichar): Fixed to update
+	SelectionStart/Length.
+
 2009-01-30  Geoff Norton  <gnorton@novell.com>
 
 	* runtime.cpp: Let managed code change the fullscreen state.
