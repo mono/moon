@@ -136,13 +136,13 @@ namespace MoonTest.System.Windows
 			Assert.Throws<XamlParseException>(delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><LineGeometry x:Key=""keygeom"" x:Name=""keygeom""/></Canvas.Resources></Canvas>");
 				}, "3");
 
+			Assert.Throws<XamlParseException>(delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Storyboard  x:Key=""sb"" x:Name=""sb"" /></Canvas.Resources></Canvas>");
+				}, "4");
+
+			// no exception if the key/name are specified together but not on a direct child of a RD.
 			XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Storyboard x:Key=""keysb""><DoubleAnimation x:Key=""keyanim"" x:Name=""anim""/></Storyboard></Canvas.Resources></Canvas>");
-
-			// Yeah, if we set x:Name before x:Key this works
-			XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Storyboard  x:Name=""sb"" x:Key=""keysb"" /></Canvas.Resources></Canvas>");
-
-			// We can also set x:Key before x:Name if the values are equal
-			XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Storyboard  x:Key=""sb"" x:Name=""sb"" /></Canvas.Resources></Canvas>");
+			
+			XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><LineGeometry x:Name=""sb"" x:Key=""keysb"" /></Canvas.Resources></Canvas>");
 		}
 
 		[TestMethod]
@@ -151,6 +151,42 @@ namespace MoonTest.System.Windows
 			ResourceDictionary rd = (ResourceDictionary)XamlReader.Load (@"<ResourceDictionary xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""> <Style TargetType=""Button""> </Style> </ResourceDictionary>");
 
 			Assert.IsNotNull (rd["System.Windows.Controls.Button"], "1");
+		}
+
+		[TestMethod]
+		public void Parse_StyleTargetTypeAndKey1 ()
+		{
+			ResourceDictionary rd = (ResourceDictionary)XamlReader.Load (@"<ResourceDictionary xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""> <Style TargetType=""Button"" x:Key=""buttonstyle""> </Style> </ResourceDictionary>");
+
+			Assert.IsNull (rd["System.Windows.Controls.Button"], "1");
+			Assert.IsNotNull (rd["buttonstyle"], "2");
+		}
+
+		[TestMethod]
+		public void Parse_StyleTargetTypeAndKey2 ()
+		{
+			ResourceDictionary rd = (ResourceDictionary)XamlReader.Load (@"<ResourceDictionary xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""> <Style x:Key=""buttonstyle"" TargetType=""Button""> </Style> </ResourceDictionary>");
+
+			Assert.IsNull (rd["System.Windows.Controls.Button"], "1");
+			Assert.IsNotNull (rd["buttonstyle"], "2");
+		}
+
+		[TestMethod]
+		public void Parse_StyleTargetTypeAndName1 ()
+		{
+			ResourceDictionary rd = (ResourceDictionary)XamlReader.Load (@"<ResourceDictionary xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""> <Style TargetType=""Button"" x:Name=""buttonstyle""> </Style> </ResourceDictionary>");
+
+			Assert.IsNull (rd["System.Windows.Controls.Button"], "1");
+			Assert.IsNotNull (rd["buttonstyle"], "2");
+		}
+
+		[TestMethod]
+		public void Parse_StyleTargetTypeAndName2 ()
+		{
+			ResourceDictionary rd = (ResourceDictionary)XamlReader.Load (@"<ResourceDictionary xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""> <Style x:Name=""buttonstyle"" TargetType=""Button""> </Style> </ResourceDictionary>");
+
+			Assert.IsNull (rd["System.Windows.Controls.Button"], "1");
+			Assert.IsNotNull (rd["buttonstyle"], "2");
 		}
 
 		[TestMethod]
