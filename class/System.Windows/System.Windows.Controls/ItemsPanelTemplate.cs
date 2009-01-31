@@ -29,7 +29,6 @@ namespace System.Windows.Controls {
 	public sealed class ItemsPanelTemplate : FrameworkTemplate {
 
 		public ItemsPanelTemplate() {
-			throw new NotImplementedException ();
 		}
 
 	}
