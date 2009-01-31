@@ -178,7 +178,9 @@ public:
 	const static int ErrorEvent;
 	const static int LoadEvent;
 
+	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	bool GetFullScreen () { return full_screen; }
+	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	void SetFullScreen (bool value);
 	void SetCanFullScreen (bool value) { can_full_screen = value; }
 	const char* GetSourceLocation ();

@@ -1,3 +1,8 @@
+2009-01-30  Geoff Norton  <gnorton@novell.com>
+
+	* runtime.cpp: Let managed code change the fullscreen state.
+	* cbinding.cpp|h: Regenerate
+
 2009-01-30  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (dependency_object_set_property): remove the ugly

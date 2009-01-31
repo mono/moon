@@ -2979,6 +2979,16 @@ surface_get_focused_element (Surface *instance)
 }
 
 
+bool
+surface_get_full_screen (Surface *instance)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->GetFullScreen ();
+}
+
+
 TimeManager *
 surface_get_time_manager (Surface *instance)
 {
@@ -3023,6 +3033,16 @@ surface_resize (Surface *instance, int width, int height)
 		return;
 	
 	instance->Resize (width, height);
+}
+
+
+void
+surface_set_full_screen (Surface *instance, bool value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetFullScreen (value);
 }
 
 

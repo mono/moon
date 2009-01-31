@@ -1360,6 +1360,9 @@ bool surface_focus_element (Surface *instance, UIElement *element);
 UIElement *surface_get_focused_element (Surface *instance);
 
 /* @GeneratePInvoke */
+bool surface_get_full_screen (Surface *instance);
+
+/* @GeneratePInvoke */
 TimeManager *surface_get_time_manager (Surface *instance);
 
 MoonWindow *surface_get_window (Surface *instance);
@@ -1372,6 +1375,9 @@ void surface_paint (Surface *instance, cairo_t *ctx, int x, int y, int width, in
 
 /* @GeneratePInvoke */
 void surface_resize (Surface *instance, int width, int height);
+
+/* @GeneratePInvoke */
+void surface_set_full_screen (Surface *instance, bool value);
 
 /* @GeneratePInvoke */
 Surface *surface_new (MoonWindow *window, bool silverlight2);
