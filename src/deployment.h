@@ -16,6 +16,7 @@
 #include "dependencyobject.h"
 #include "application.h"
 #include "collection.h"
+#include "downloader.h"
 
 #include <mono/metadata/appdomain.h>
 
@@ -82,6 +83,9 @@ class Deployment : public DependencyObject {
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetCurrentApplication (Application* value);
 
+	void RegisterIDownloader (IDownloader *idl);
+	void UnregisterIDownloader (IDownloader *idl);
+
 	/* @GenerateCBinding,GeneratePInvoke */
 	static Deployment* GetCurrent ();
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -91,9 +95,12 @@ class Deployment : public DependencyObject {
 	static void RegisterThread (Deployment *deployment);
 
 private:
+	void AbortAllIDownloaders ();
+
 	Types* types;
 	Application* current_app;
 	MonoDomain *domain;
+	List *idownloaders;
 	static GHashTable *current_hash;
 	static gboolean initialized;
 	static pthread_key_t tls_key;

@@ -12,6 +12,7 @@
 
 #include <glib.h>
 
+#include "downloader.h"
 #include "deployment.h"
 #include "debug.h"
 
@@ -37,6 +38,11 @@ pthread_mutex_t Deployment::hash_mutex;
 GHashTable* Deployment::current_hash = NULL;
 MonoDomain* Deployment::root_domain = NULL;
 
+class IDownloaderNode : public List::Node {
+public:
+	IDownloader *idl;
+	IDownloaderNode (IDownloader *dl) { idl = dl; }
+};
  
 bool
 Deployment::Initialize()
@@ -160,6 +166,8 @@ Deployment::Deployment()
 	pthread_mutex_lock (&hash_mutex);
 	g_hash_table_insert (current_hash, domain, this);
 	pthread_mutex_unlock (&hash_mutex);
+
+	idownloaders = new List ();
 }
 
 Deployment::~Deployment()
@@ -182,6 +190,8 @@ Deployment::Dispose ()
 {
 	LOG_DEPLOYMENT ("Deployment::Dispose (): %p\n", this);
 	
+	AbortAllIDownloaders ();
+
 	if (current_app != NULL)
 		current_app->Dispose ();
 		
@@ -213,6 +223,39 @@ Deployment::SetCurrentApplication (Application* value)
 
 	if (current_app)
 	  current_app->ref ();
+}
+
+void
+Deployment::RegisterIDownloader (IDownloader *idl)
+{
+	idownloaders->Append (new IDownloaderNode (idl));
+}
+
+void
+Deployment::UnregisterIDownloader (IDownloader *idl)
+{
+	IDownloaderNode *node = (IDownloaderNode *) idownloaders->First ();
+	while (node != NULL) {
+		if (node->idl == idl) {
+			idownloaders->Remove (node);
+			return;
+		}
+		node = (IDownloaderNode *) node->next;
+	}
+}
+
+void
+Deployment::AbortAllIDownloaders ()
+{
+	IDownloaderNode *node;
+
+	while ((node = (IDownloaderNode *) idownloaders->First ()) != NULL) {
+		if (!node->idl->IsAborted ()) {
+			printf ("Someone set us up the bomb: %p\n", node->idl);
+			node->idl->Abort ();
+		}
+		idownloaders->Remove (node);
+	}
 }
 
 /*

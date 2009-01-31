@@ -786,6 +786,7 @@ DownloaderResponse::~DownloaderResponse ()
 {
 	if (request != NULL && request->GetDownloaderResponse () == this)
 		request->SetDownloaderResponse (NULL);
+	Deployment::GetCurrent ()->UnregisterIDownloader ((IDownloader *)this);
 }
 
 DownloaderResponse::DownloaderResponse ()
@@ -796,6 +797,7 @@ DownloaderResponse::DownloaderResponse ()
 	finished = NULL;
 	context = NULL;
 	request = NULL;
+	Deployment::GetCurrent ()->RegisterIDownloader ((IDownloader *)this);
 }
 
 DownloaderResponse::DownloaderResponse (DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context)
@@ -806,6 +808,7 @@ DownloaderResponse::DownloaderResponse (DownloaderResponseStartedHandler started
 	this->finished = finished;
 	this->context = context;
 	this->request = NULL;
+	Deployment::GetCurrent ()->RegisterIDownloader ((IDownloader *)this);
 }
 
 DownloaderRequest::DownloaderRequest (const char *method, const char *uri)
@@ -813,6 +816,7 @@ DownloaderRequest::DownloaderRequest (const char *method, const char *uri)
 	this->method = g_strdup (method);
 	this->uri = g_strdup (uri);
 	this->response = NULL;
+	Deployment::GetCurrent ()->RegisterIDownloader ((IDownloader *)this);
 }
 
 DownloaderRequest::~DownloaderRequest ()
@@ -821,6 +825,7 @@ DownloaderRequest::~DownloaderRequest ()
 	g_free (uri);
 	if (response != NULL && response->GetDownloaderRequest () == this)
 		response->SetDownloaderRequest (NULL);
+	Deployment::GetCurrent ()->UnregisterIDownloader ((IDownloader *)this);
 }
 
 void

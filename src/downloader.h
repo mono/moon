@@ -192,7 +192,13 @@ typedef uint32_t (* DownloaderResponseDataAvailableHandler) (DownloaderResponse 
 typedef uint32_t (* DownloaderResponseFinishedHandler) (DownloaderResponse *response, gpointer context, bool success, gpointer data, const char *uri);
 typedef void (*DownloaderResponseHeaderVisitorCallback) (const char *header, const char *value);
 
-class DownloaderResponse {
+class IDownloader {
+ public:
+	virtual void Abort () = 0;
+	virtual const bool IsAborted () = 0;
+};
+
+class DownloaderResponse : public IDownloader {
  protected:
 	DownloaderResponseStartedHandler started;
 	DownloaderResponseDataAvailableHandler available;
@@ -217,7 +223,7 @@ class DownloaderResponse {
 	void SetDownloaderRequest (DownloaderRequest *value) { request = value; }
 };
 
-class DownloaderRequest {
+class DownloaderRequest : public IDownloader {
  protected:
  	DownloaderResponse *response;
 	char *uri;

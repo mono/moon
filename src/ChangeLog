@@ -1,5 +1,13 @@
 2009-01-30  Geoff Norton  <gnorton@novell.com>
 
+	* deployment.cpp|h: Ensure that any downloaders that might
+	call back into managed land are aborted before we throw out the
+	domain.
+	* downloader.cpp|h: Add a nice interface to DownloaderRequest
+	and DownloaderResponse to save some code duplication in deployment
+
+2009-01-30  Geoff Norton  <gnorton@novell.com>
+
 	* mediaelement.cpp:  If we finish downloading before we can
 	fill the buffer, we still need to emit this event.
 
