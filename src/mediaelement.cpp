@@ -1425,6 +1425,7 @@ MediaElement::DownloaderComplete ()
 	case MediaElementStateBuffering:
 	 	// Media finished downloading before the buffering time was reached.
 		// Play it.
+		SetBufferingProgress (1.0);
 		PlayOrStopNow ();
 		EmitMediaOpened ();
 		break;

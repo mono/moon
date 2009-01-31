@@ -1,3 +1,8 @@
+2009-01-30  Geoff Norton  <gnorton@novell.com>
+
+	* mediaelement.cpp:  If we finish downloading before we can
+	fill the buffer, we still need to emit this event.
+
 2009-01-30  Chris Toshok  <toshok@ximian.com>
 
 	* usercontrol.h (class UserControl): make managed access to
