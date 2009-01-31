@@ -260,7 +260,7 @@ namespace System.Windows.Controls {
 		
 		private void InvokeMediaFailed ()
 		{
-			EventHandler h = (EventHandler) EventList [MediaFailedEvent];
+			RoutedEventHandler h = (RoutedEventHandler) EventList [MediaFailedEvent];
 			if (h != null)
 				h (this, null);
 		}
