@@ -1,3 +1,11 @@
+2009-01-31  Chris Toshok  <toshok@ximian.com>
+
+	* Application.cs: use NativeDependencyObject.FromIntPtr instead of
+	.Lookup, as the latter will return null if the object hasn't been
+	wrapped before.  the former will get the object type and wrap it
+	with the appropriate managed peer.  Fixes style lookups for
+	unmanaged controls (like textbox.)
+
 2009-01-31  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows/DependencyObject.g.cs: Regenerated

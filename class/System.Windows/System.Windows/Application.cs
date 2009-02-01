@@ -142,7 +142,7 @@ namespace System.Windows {
 			if (s == null)
 				return;
 
-			FrameworkElement fwe = NativeDependencyObjectHelper.Lookup(fwe_ptr) as FrameworkElement;
+			FrameworkElement fwe = NativeDependencyObjectHelper.FromIntPtr(fwe_ptr) as FrameworkElement;
 			if (fwe == null)
 				return;
 
@@ -152,12 +152,12 @@ namespace System.Windows {
 		void apply_style_cb (IntPtr fwe_ptr, IntPtr style_ptr)
 		{
 #if not_needed
-			FrameworkElement fwe = NativeDependencyObjectHelper.Lookup(fwe_ptr) as FrameworkElement;
+			FrameworkElement fwe = NativeDependencyObjectHelper.FromIntPtr(fwe_ptr) as FrameworkElement;
 			if (fwe == null)
 				return;
 #endif
 
-			Style style = NativeDependencyObjectHelper.Lookup(style_ptr) as Style;
+			Style style = NativeDependencyObjectHelper.FromIntPtr(style_ptr) as Style;
 			if (style == null)
 				return;
 
@@ -174,8 +174,17 @@ namespace System.Windows {
 			else {
 				Console.WriteLine ("trying to load: /{0};component/themes/generic.xaml",
 						   type.Assembly.GetName().Name);
-				StreamResourceInfo info = GetResourceStream (new Uri (string.Format ("/{0};component/themes/generic.xaml",
-												     type.Assembly.GetName().Name), UriKind.Relative));
+
+				StreamResourceInfo info = null;
+
+				try {
+					info = GetResourceStream (new Uri (string.Format ("/{0};component/themes/generic.xaml",
+											  type.Assembly.GetName().Name), UriKind.Relative));
+				}
+				catch (Exception e) {
+					Console.WriteLine ("no generic.xaml for assembly {0}", type.Assembly.GetName().Name);
+				}
+				
 				if (info != null) {
 					using (StreamReader sr = new StreamReader (info.Stream)) {
 						string generic_xaml = sr.ReadToEnd();
