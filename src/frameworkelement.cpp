@@ -493,8 +493,6 @@ FrameworkElement::Arrange (Rect finalRect)
 	if (!doarrange)
 		return;
 	
-	cairo_matrix_init_translate (&layout_xform, finalRect.x, finalRect.y);
-	UpdateTransform ();
 
 	LayoutInformation::SetLayoutSlot (this, &finalRect);
 	LayoutInformation::SetLayoutClip (this, NULL);
@@ -504,6 +502,9 @@ FrameworkElement::Arrange (Rect finalRect)
 
 	Thickness margin = *GetMargin ();
 	finalRect = finalRect.GrowBy (-margin);
+
+	cairo_matrix_init_translate (&layout_xform, finalRect.x, finalRect.y);
+	UpdateTransform ();
 
 	Size offer (finalRect.width, finalRect.height);
 	Size response;
