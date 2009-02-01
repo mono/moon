@@ -110,14 +110,23 @@ Border::Render (cairo_t *cr, Region *region)
 
 	if (background) {
 		Thickness bthick = *GetBorderThickness ();
+		CornerRadius adjusted;
 		
 		paint = paint.GrowBy (-bthick);
+		
+		if (round) {
+			adjusted = *round;
+			adjusted.topLeft = MAX (round->topLeft - MAX (bthick.left, bthick.top), 0);
+			adjusted.topRight = MAX (round->topRight - MAX (bthick.right, bthick.top), 0);
+			adjusted.bottomRight = MAX (round->bottomRight - MAX (bthick.right, bthick.bottom), 0);
+			adjusted.bottomLeft = MAX (round->bottomLeft - MAX (bthick.left, bthick.bottom), 0);
+		}
 
 		background->SetupBrush (cr, paint);
 
 		cairo_new_path (cr);
 		/* XXX FIXME this is not quite the right rounding */
-		paint.Draw (cr, round);
+		paint.Draw (cr, round ? &adjusted : NULL);
 
 		background->Fill (cr);
 	}
