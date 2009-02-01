@@ -426,20 +426,15 @@ Storyboard::HookupAnimationsRecurse (Clock *clock)
 
 			if (tl->HasManualTarget ()) 
 				o = tl->GetManualTarget ();
-			else 
+			else {
 				targetName = Storyboard::GetTargetName (tl);
+				if (targetName)
+					o = FindName (targetName);
+			}
 
-			if (targetName || o)
+			if (o)
 				break;
 		}
-
-		if (!targetName && !o) {
-			g_warning ("No target name!");
-			return;
-		}
-
-		if (!o)
-			o = FindName (targetName);
 
 		if (!o) {
 			g_warning ("No object named %s!", targetName);
