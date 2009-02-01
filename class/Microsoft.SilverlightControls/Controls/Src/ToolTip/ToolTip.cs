@@ -196,6 +196,7 @@ namespace System.Windows.Controls
         /// </summary>
         public ToolTip() : base() 
         { 
+	    DefaultStyleKey = typeof (ToolTip);
             this.SizeChanged += new SizeChangedEventHandler(OnToolTipSizeChanged);
         } 
 

@@ -152,6 +152,7 @@ namespace System.Windows.Controls
         /// </summary> 
         public ListBoxItem()
         { 
+	    DefaultStyleKey = typeof (ListBoxItem);
 #if WPF
             KeyboardNavigation.SetDirectionalNavigation(this, KeyboardNavigationMode.Once);
             KeyboardNavigation.SetTabNavigation(this, KeyboardNavigationMode.Local); 

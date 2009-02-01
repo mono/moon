@@ -1,5 +1,13 @@
 2009-01-31  Chris Toshok  <toshok@ximian.com>
 
+	* Controls/Src/ListBox/ListBox.cs: Set DefaultStyleKey.
+
+	* Controls/Src/ListBox/ListBoxItem.cs: same.
+
+	* Controls/Src/ToolTip/ToolTip.cs: same.
+
+2009-01-31  Chris Toshok  <toshok@ximian.com>
+
 	* Controls/Src/ScrollViewer/ScrollViewer.cs: we need to set
 	DefaultStyleKey so that the right template is picked up.
 
