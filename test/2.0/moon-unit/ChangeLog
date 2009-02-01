@@ -1,3 +1,11 @@
+2009-02-01  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows/SetterBaseCollectionTest.cs: Add checks for 
+	IsSealed when adding/removing setters from the collection.
+	* System.Windows/SetterTest.cs: Decorate SL2 crashers with [Ignore].
+	Add new tests for near-identical cases. Add test case for reusing a
+	setter always assigned to a collection.
+
 2009-01-31  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows/RectTest.cs: Add NaN test case

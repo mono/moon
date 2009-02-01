@@ -1,17 +1,9 @@
 using System;
-using System.Net;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Shapes;
-using System.Collections.Generic;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 
 namespace MoonTest.System.Windows
 {
@@ -133,6 +125,53 @@ namespace MoonTest.System.Windows
 			s.Setters.Add (setter);
 			r.Style = s;
 			Assert.IsTrue (s.IsSealed, "#11");
+		}
+
+		[TestMethod]
+		public void Add ()
+		{
+			SetterBaseCollection sbc = new SetterBaseCollection ();
+			Assert.Throws<ArgumentNullException> (delegate {
+				sbc.Add (null);
+			}, "Add(null)");
+			Assert.Throws<Exception> (delegate {
+				sbc.Add (new Setter ());
+			}, "Add(Empty)");
+		}
+
+		[TestMethod]
+		public void SetterSealedOnAdd ()
+		{
+			Setter s = new Setter (UIElement.OpacityProperty, 2.0);
+			SetterBaseCollection sbc = new SetterBaseCollection ();
+			Assert.IsFalse (sbc.IsSealed, "SetterBaseCollection.IsSealed-1");
+			Assert.IsFalse (s.IsSealed, "Setter.IsSealed-1");
+			sbc.Add (s);
+			Assert.IsFalse (sbc.IsSealed, "SetterBaseCollection.IsSealed-2");
+			Assert.IsTrue (s.IsSealed, "Setter.IsSealed-2");
+		}
+
+		[TestMethod]
+		public void Remove ()
+		{
+			SetterBaseCollection sbc = new SetterBaseCollection ();
+			Assert.IsFalse (sbc.Remove (null), "null");
+			Assert.IsFalse (sbc.Remove (new Setter ()), "Empty");
+		}
+
+		[TestMethod]
+		public void SetterStillSealedAfterRemove ()
+		{
+			Setter s = new Setter (UIElement.OpacityProperty, 2.0);
+			SetterBaseCollection sbc = new SetterBaseCollection ();
+			Assert.IsFalse (sbc.IsSealed, "SetterBaseCollection.IsSealed-1");
+			Assert.IsFalse (s.IsSealed, "Setter.IsSealed-1");
+			sbc.Add (s);
+			Assert.IsFalse (sbc.IsSealed, "SetterBaseCollection.IsSealed-2");
+			Assert.IsTrue (s.IsSealed, "Setter.IsSealed-2");
+			sbc.Remove (s);
+			Assert.IsFalse (sbc.IsSealed, "SetterBaseCollection.IsSealed-3");
+			Assert.IsTrue (s.IsSealed, "Setter.IsSealed-3");
 		}
 	}
 }
