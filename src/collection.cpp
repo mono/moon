@@ -493,6 +493,11 @@ UIElementCollection::Clear ()
 	return DependencyObjectCollection::Clear ();
 }
 
+bool
+UIElementCollection::CanAdd (Value *value)
+{
+	return Collection::CanAdd (value) && value->AsUIElement ()->GetVisualParent () == NULL;
+}
 
 //
 // DoubleCollection

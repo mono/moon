@@ -1,3 +1,9 @@
+2009-01-31  Chris Toshok  <toshok@ximian.com>
+
+	* collection.h, collection.cpp (class UIElementCollection):
+	UIElements can be reparented logical parent-wise, but can't have
+	more than one *visual* parent.
+
 2009-01-31  Larry Ewing  <lewing@novell.com>
 
 	* border.cpp (Border::Render): try to match the interior

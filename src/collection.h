@@ -234,6 +234,8 @@ class InlineCollection : public DependencyObjectCollection {
 /* @Namespace=System.Windows.Controls */
 class UIElementCollection : public DependencyObjectCollection {
  protected:
+	virtual bool CanAdd (Value *value);
+
 	virtual ~UIElementCollection ();
 	
  public:
