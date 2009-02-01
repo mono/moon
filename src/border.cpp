@@ -92,6 +92,7 @@ Border::Render (cairo_t *cr, Region *region)
 
 	Geometry *clip = LayoutInformation::GetLayoutClip (this);
 	if (clip) {
+		cairo_save (cr);
 		clip->Draw (cr);
 		cairo_clip (cr);
 	}	
@@ -121,6 +122,8 @@ Border::Render (cairo_t *cr, Region *region)
 		background->Fill (cr);
 	}
 	
+	if (clip)
+		cairo_restore (cr);
 }
 
 void

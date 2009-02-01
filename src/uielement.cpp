@@ -103,7 +103,7 @@ Rect
 UIElement::IntersectBoundsWithClipPath (Rect unclipped, bool transform)
 {
 	Geometry *clip = GetClip ();
-	Geometry *layout_clip = LayoutInformation::GetLayoutClip (this);
+	Geometry *layout_clip = transform ? NULL : LayoutInformation::GetLayoutClip (this);
 	Rect box;
 
 	if (!clip && !layout_clip)

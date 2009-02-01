@@ -38,6 +38,16 @@ struct CornerRadius {
 	{
 	}
 
+	bool operator == (const CornerRadius &corner)
+	{
+		return topLeft == corner.topLeft && bottomLeft == corner.bottomLeft && topRight == corner.topRight && bottomRight == corner.bottomRight;
+	}
+
+	bool operator != (const CornerRadius &corner)
+	{
+		return !(*this == corner);
+	}
+
 	//
 	// FromStr
 	//   Parses @s and return a new CornerRadius in @p.  Returns

@@ -1,11 +1,30 @@
 2009-01-31  Larry Ewing  <lewing@novell.com>
 
+	* cornerradius.h: add == and != overloads.
+
+	* uielement.cpp: don't include the layout clip if we are
+	tranforming the bounds.  The layout clip only applies to local
+	space.
+
+	* border.cpp: restore the graphics context after clipping.
+
+2009-01-31  Larry Ewing  <lewing@novell.com>
+
 	* rect.cpp, rect.h: move the rounded drawing here for now until
 	there is a better place.
-
+	
 	* border.cpp: start drawing the borderbrush and using border
 	thickness.
 	
+2009-01-31  Larry Ewing  <lewing@novell.com>
+
+	control.cpp: fix arranged size with border thickness or padding.
+
+	border.cpp: fix arranged size with border thickness or
+	padding. fix rendering with margins.
+
+	panel.cpp: fix rendering with a margin.
+
 2009-01-31  Larry Ewing  <lewing@novell.com>
 
 	* border.cpp (Border::Render): add corner radius rendering logic
