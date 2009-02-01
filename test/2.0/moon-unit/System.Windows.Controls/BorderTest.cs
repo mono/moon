@@ -755,9 +755,7 @@ namespace MoonTest.System.Windows.Controls
 			
 			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
 			b.Arrange (new Rect (0,0,b.DesiredSize.Width,b.DesiredSize.Height));
-			Assert.AreEqual (new Size (40,40), b.DesiredSize, "b desired0");
-			
-
+			Assert.AreEqual (new Size (1,5), b.DesiredSize, "b desired0");
 		}
 	}
 }
