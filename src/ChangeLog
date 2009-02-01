@@ -1,5 +1,9 @@
 2009-01-31  Larry Ewing  <lewing@novell.com>
 
+	* rect.cpp (Rect::Draw): fix typo in rect drawing.
+
+2009-01-31  Larry Ewing  <lewing@novell.com>
+
 	* cornerradius.h: add == and != overloads.
 
 	* uielement.cpp: don't include the layout clip if we are

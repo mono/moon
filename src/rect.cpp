@@ -90,7 +90,7 @@ void Rect::Draw (cairo_t *cr, CornerRadius *round) const
 		double brb = round->bottomRight - bottom_adj;
 		cairo_line_to (cr, paint.x + paint.width, paint.y + paint.height - brr);
 		cairo_curve_to (cr,
-				paint.x + paint.width, paint.x + paint.height - brr + brr * ARC_TO_BEZIER, 
+				paint.x + paint.width, paint.y + paint.height - brr + brr * ARC_TO_BEZIER, 
 				paint.x + paint.width + brb * ARC_TO_BEZIER - brb,  paint.y + paint.height,
 				paint.x + paint.width - brb, paint.y + paint.height);
 		
