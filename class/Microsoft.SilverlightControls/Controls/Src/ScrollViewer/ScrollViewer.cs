@@ -309,6 +309,8 @@ namespace System.Windows.Controls
         /// </summary> 
         public ScrollViewer()
         {
+		DefaultStyleKey = typeof (ScrollViewer);
+
 #if WPF 
             KeyboardNavigation.SetDirectionalNavigation(this, KeyboardNavigationMode.Local);
             VerticalScrollBarVisibility = ScrollBarVisibility.Visible;
