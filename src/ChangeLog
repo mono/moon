@@ -6,6 +6,13 @@
 
 2009-01-31  Larry Ewing  <lewing@novell.com>
 
+	* border.cpp:
+	* control.cpp:
+	* frameworkelement.cpp: rather than trying to fix the rendering
+	fix the layout_xform to handle margins automatically.
+
+2009-01-31  Larry Ewing  <lewing@novell.com>
+
 	* border.cpp (Border::Render): try to match the interior
 	CornerRound behavior a littler closer.
 

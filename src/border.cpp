@@ -97,7 +97,7 @@ Border::Render (cairo_t *cr, Region *region)
 		cairo_clip (cr);
 	}	
 
-	Rect paint = extents.GrowBy (-*GetMargin ());
+	Rect paint = extents;
 	CornerRadius *round = GetCornerRadius ();
 	if (border_brush) {
 		border_brush->SetupBrush (cr, paint);
