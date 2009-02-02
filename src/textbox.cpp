@@ -35,7 +35,7 @@
 //
 
 #define UNICODE_LEN(size) (sizeof (gunichar) * (size))
-#define UNICODE_OFFSET(buf,offset) (((char *) buf) + sizeof (gunichar) * (offset))
+#define UNICODE_OFFSET(buf,offset) (((char *) buf) + UNICODE_LEN (offset))
 
 class TextBuffer {
 	int allocated;
@@ -76,6 +76,33 @@ class TextBuffer {
 		len = 0;
 	}
 	
+	void Print ()
+	{
+		printf ("TextBuffer::text = \"");
+		
+		for (int i = 0; i < len; i++) {
+			switch (text[i]) {
+			case '\r':
+				fputs ("\\r", stdout);
+				break;
+			case '\n':
+				fputs ("\\n", stdout);
+				break;
+			case '\0':
+				fputs ("\\0", stdout);
+				break;
+			case '\\':
+				fputc ('\\', stdout);
+				// fall thru
+			default:
+				fputc ((char) text[i], stdout);
+				break;
+			}
+		}
+		
+		printf ("\";\n");
+	}
+	
 	void Append (gunichar c)
 	{
 		Resize (len + 2);
@@ -95,14 +122,18 @@ class TextBuffer {
 	
 	void Cut (int start, int length)
 	{
-		int offset;
+		char *dest, *src;
+		int left;
 		
-		if (length == 0 || start >= len)
+		if (length == 0 || start >= len || (start + length) > len)
 			return;
 		
-		offset = MAX (len, start + length);
+		src = UNICODE_OFFSET (text, start + length);
+		dest = UNICODE_OFFSET (text, start);
+		left = len - length;
 		
-		memmove (UNICODE_OFFSET (text, start), UNICODE_OFFSET (text, offset), UNICODE_LEN ((len - offset) + 1));
+		memmove (dest, src, UNICODE_LEN (left + 1));
+		len = left;
 	}
 	
 	void Insert (int index, gunichar c)
@@ -1275,6 +1306,8 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 		
 		// FIXME: some of these may also require updating scrollbars?
 	}
+	
+	buffer->Print ();
 	
 	// thaw textbox keypress, causes Text and SelectedText to be
 	// sync'd and events to be emitted

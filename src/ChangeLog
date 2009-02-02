@@ -1,5 +1,10 @@
 2009-02-02  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.cpp (TextBuffer::Cut): Fixed, this was totally broken
+	before.
+
+2009-02-02  Jeffrey Stedfast  <fejj@novell.com>
+
 	* textbox.cpp: Moved all event handling back to TextBox since
 	that's the focusable element.
 
