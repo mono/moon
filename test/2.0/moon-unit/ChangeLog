@@ -1,3 +1,8 @@
+2009-02-01  Larry Ewing  <lewing@novell.com>
+
+	* System.Windows.Controls/StackPanelTest.cs: add new test method
+	for margins and lyout slots.
+
 2009-02-01  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows/SetterBaseCollectionTest.cs: Add checks for 

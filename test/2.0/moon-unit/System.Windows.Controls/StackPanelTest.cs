@@ -210,5 +210,31 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (new Size (50,0),b.DesiredSize, "b desired");
 			Assert.AreEqual (new Size (50,0),stack.DesiredSize, "stack desired");
 		}
+
+		[TestMethod]
+		public void LayoutMarginTest ()
+		{
+			Border b = new Border ();
+			var stack = new StackPanel ();
+			stack.Children.Add (CreateSlotItem ());
+			stack.Children.Add (CreateSlotItem ());
+			stack.Children.Add (CreateSlotItem ());
+			stack.HorizontalAlignment = HorizontalAlignment.Right;
+			b.Width = 50;
+			b.Child = stack;
+			stack.Margin = new Thickness (10,20,0,0);
+			
+			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			b.Arrange (new Rect (0,0,b.DesiredSize.Width,b.DesiredSize.Height));
+			
+			Assert.AreEqual (new Rect (0,0,25,33).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[0]).ToString ());
+			Assert.AreEqual (new Rect (0,33,25,33).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[1]).ToString ());
+			Assert.AreEqual (new Rect (0,66,25,33).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[2]).ToString ());
+			Assert.AreEqual (new Rect (0,0,50,119).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack).ToString (), "stack");
+			Assert.AreEqual (new Rect (0,0,50,119).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)b).ToString (), "border");
+			
+			Assert.AreEqual (new Size (50,119),b.DesiredSize);
+			Assert.AreEqual (new Size (35,119),stack.DesiredSize);
+		}
 	}
 }
