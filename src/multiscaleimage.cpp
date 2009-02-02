@@ -52,9 +52,9 @@ MultiScaleImage::ZoomAboutLogicalPoint (double zoomIncrementFactor, double zoomC
 //	printf ("zoomabout logical %f  (%f, %f)\n", zoomIncrementFactor, zoomCenterLogicalX, zoomCenterLogicalY);
 	double width = GetViewportWidth () / zoomIncrementFactor;
 	double height = GetViewportHeight () / zoomIncrementFactor;
-//FIXME: do not use the setters, use SetValue then Invalidate once
-	SetViewportWidth (width);
-	SetViewportOrigin (new Point (zoomCenterLogicalX - width/2.0, zoomCenterLogicalY - height/2.0));
+	SetValue (MultiScaleImage::ViewportWidthProperty, Value (width));
+	SetValue (MultiScaleImage::ViewportOriginProperty, Value (Point (zoomCenterLogicalX - width/2.0, zoomCenterLogicalY - height/2.0)));
+	Invalidate ();
 }
 
 Point
@@ -336,8 +336,6 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 	frexp (MAX (im_w, im_h), &layers);
 
 	//optimal layer for this... aka "best viewed at"
-	//FIXME: need to count AspectRatio too
-//	int optimal_layer = MAX (0, layers + 1 - ceil (vp_w * im_w / GetWidth()));
 	int optimal_layer;
 	frexp (w / vp_w, &optimal_layer);
 	optimal_layer = MIN (optimal_layer, layers);
@@ -360,7 +358,6 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 		for (i = MAX(0, (int)((double)vp_ox * im_w / (double)v_tile_w)); i * v_tile_w < vp_ox * im_w + vp_w * im_w && i * v_tile_w < im_w; i++) {
 			for (j = MAX(0, (int)((double)vp_oy * im_h / (double)v_tile_h)); j * v_tile_h < vp_oy * im_h + vp_h * im_h && j * v_tile_h < im_h; j++) {
 				count++;
-				//FIXME
 				if (cache_contains (from_layer, i, j, false))
 					found ++;
 			}
