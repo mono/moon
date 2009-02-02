@@ -457,11 +457,11 @@ next_word (TextBuffer *buffer, int cursor)
 static int
 prev_word (TextBuffer *buffer, int cursor)
 {
-	int i, cr, lf = cursor;
+	int i, cr, lf = cursor - 1;
 	CharClass cc;
 	
 	// find the beginning of the current line
-	while (lf > 0 && !IsEOL (buffer->text[lf - 1]))
+	while (lf > 0 && !IsEOL (buffer->text[lf]))
 		lf--;
 	
 	if (lf > 0 && buffer->text[lf] == '\n' && buffer->text[lf - 1] == '\r')
@@ -472,7 +472,7 @@ prev_word (TextBuffer *buffer, int cursor)
 	// if the cursor is at the beginning of the line, return the end of the prev line
 	if (cursor - 1 == lf) {
 		if (cr > 0)
-			return cr - 1;
+			return cr;
 		
 		return 0;
 	}
