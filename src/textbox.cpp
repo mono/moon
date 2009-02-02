@@ -1683,8 +1683,8 @@ TextBoxView::UpdateCursor (bool invalidate)
 void
 TextBoxView::Render (cairo_t *cr, Region *region)
 {
-	if (dirty)
-		Layout (cr);
+	if (dirty)	       
+		g_warning ("TextBoxView::Render in dirty state"); //Layout (cr);
 	
 	printf ("TextBoxView::Render()\n");
 	
@@ -1747,19 +1747,51 @@ append_runs (ITextSource *textbox, List *runs, const gunichar **text, int *lengt
 	*text = inptr;
 }
 
-void
-TextBoxView::Layout (cairo_t *cr)
+Size
+TextBoxView::MeasureOverride (Size availableSize)
 {
-	double width = GetWidth ();
+	Thickness padding = Thickness (0); //*GetPadding ();
+	Size constraint = availableSize.GrowBy (-padding);
+	
+	cairo_t *cr = measuring_context_create ();
+	Layout (cr, constraint);
+	measuring_context_destroy (cr);
+
+	Size desired = Size ();
+	layout->GetActualExtents (&desired.width, &desired.height);
+	
+	return desired.Min (availableSize);
+}
+
+Size
+TextBoxView::ArrangeOverride (Size finalSize)
+{
+        Thickness padding = Thickness (0); //*GetPadding ();
+	Size constraint = finalSize.GrowBy (-padding);
+
+	cairo_t *cr = measuring_context_create ();
+	Layout (cr, constraint);
+	measuring_context_destroy (cr);
+
+	Size arranged = Size ();
+	layout->GetActualExtents (&arranged.width, &arranged.height);
+	
+	arranged = arranged.GrowBy (padding);
+
+	return arranged.Max (finalSize);
+}
+
+void
+TextBoxView::Layout (cairo_t *cr, Size constraint)
+{
+	double width = constraint.width;
 	TextSelection *selection;
 	const gunichar *text;
 	TextBuffer *buffer;
 	List *runs;
 	int left;
 	
-	if (width > 0.0f)
-		layout->SetMaxWidth (width);
-	else
+	if (isinf (width))
 		layout->SetMaxWidth (-1.0);
 	
 	selection = textbox->GetSelection ();

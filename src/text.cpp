@@ -354,7 +354,7 @@ TextBlock::MeasureOverride (Size availableSize)
 	//printf ("measure actual = %g, %g\n", actual_width, actual_height);
 	Size desired = Size (actual_width, actual_height).GrowBy (padding);
 
-	return availableSize.Min (actual_width, actual_height);
+	return availableSize.Min (desired);
 }
 
 Size
