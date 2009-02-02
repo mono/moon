@@ -102,8 +102,6 @@ FrameworkTemplate::GetVisualTree (FrameworkElement *templateBindingSource, List 
 void
 FrameworkTemplate::AddXamlBinding (XamlTemplateBinding *binding)
 {
-	printf ("FrameworkTemplate::AddXamlBinding!\n");
-
 	if (templateBindingSource && templateBindings) {
 		TemplateBinding *b = binding->Attach (templateBindingSource);
 		if (b) {
@@ -186,6 +184,10 @@ XamlTemplateBinding::Attach (DependencyObject *source)
 		g_warning ("non-existant target property '%s'", targetPropertyName);
 		return NULL;
 	}
+
+	printf ("TemplateBinding attaching %s.%s -> %s.%s\n",
+		source->GetTypeName(), sourceProperty->GetName(),
+		target->GetTypeName(), targetProperty->GetName());
 
 	return new TemplateBinding (source, sourceProperty,
 				    target, targetProperty);
