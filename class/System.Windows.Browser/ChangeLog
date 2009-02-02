@@ -1,3 +1,8 @@
+2009-02-02  Andreia Gaita  <avidigal@novell.com>
+
+	* System.Windows.Browser.mdp: update
+	* Makefile.am: Add ScriptableObjectWrapper to the build
+
 2009-01-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.Browser.mdp: Update.

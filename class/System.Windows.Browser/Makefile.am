@@ -39,6 +39,7 @@ system_windows_browser_sources =					\
 	$(srcdir)/System.Windows.Browser/HttpUtility.cs				\
 	$(srcdir)/System.Windows.Browser/MouseButtons.cs				\
 	$(srcdir)/System.Windows.Browser/ScriptableMemberAttribute.cs			\
+	$(srcdir)/System.Windows.Browser/ScriptableObjectWrapper.cs			\
 	$(srcdir)/System.Windows.Browser/ScriptableTypeAttribute.cs			\
 	$(srcdir)/System.Windows.Browser/ScriptEventHandler.cs			\
 	$(srcdir)/System.Windows.Browser/ScriptObject.cs			\

@@ -1,3 +1,9 @@
+2009-02-02  Andreia Gaita  <avidigal@novell.com>
+
+	* ScriptableObjectWrapper.cs: Split out the wrapper
+	class and move it to the S.W.Browser side. It inherits from ScriptObject
+	and has it's own pinvokes, so it deserves it's own little place on the tree.
+
 2009-01-29  Jb Evain  <jbevain@novell.com>
 
 	* ScriptObjectCollection.cs: the indexer seems to always return

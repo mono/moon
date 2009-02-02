@@ -1,5 +1,11 @@
 2009-02-02  Andreia Gaita  <avidigal@novell.com>
 
+	* ScriptableObjectGenerator.cs: Split out the wrapper
+	class and move it to the S.W.Browser side. It inherits from ScriptObject
+	and has it's own pinvokes, so it deserves it's own little place on the tree.
+	
+2009-02-02  Andreia Gaita  <avidigal@novell.com>
+
 	* ScriptableObjectGenerator.cs (SetPropertyFromUnmanaged): Catch any setter
     exceptions and return instead of throwing, for now.
 
