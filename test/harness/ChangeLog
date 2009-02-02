@@ -1,3 +1,8 @@
+2009-02-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* harness.mdp: Updated to use new MD features (ChangeLog and
+	  log message policy).
+
 2009-01-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* shocker/image-capture.cpp: capture_multiple_images: don't crash if

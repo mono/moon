@@ -128,5 +128,4 @@
     <ProjectReference type="Project" localcopy="True" refto="Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight" />
     <ProjectReference type="Project" localcopy="True" refto="UnitTestHarness" />
   </References>
-  <GtkDesignInfo />
 </Project>

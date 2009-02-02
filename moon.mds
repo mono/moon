@@ -1,4 +1,11 @@
 <Combine name="moon" fileversion="2.0">
+  <Policies>
+    <ChangeLogPolicy UpdateMode="Nearest" VcsIntegration="RequireEntry" inheritsSet="Mono" />
+    <DotNetNamingPolicy DirectoryNamespaceAssociation="None" VSStyleResourceNames="False" />
+    <VersionControlPolicy inheritsSet="Mono">
+      <CommitMessageStyle Header="${Date:yyyy-MM-dd}  ${AuthorName}  &lt;${AuthorEmail}&gt;&#xA;&#xA;" Indent="	" />
+    </VersionControlPolicy>
+  </Policies>
   <Configurations active="Default">
     <Configuration name="Debug" ctype="CombineConfiguration">
       <Entry build="True" name="src" configuration="Debug" />

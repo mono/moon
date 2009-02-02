@@ -1,4 +1,7 @@
 <Project name="src" fileversion="2.0" language="CPP" Target="Bin" ctype="CProject">
+  <Policies>
+    <StandardHeader Text="/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */&#xA;/*&#xA; * ${FileName}&#xA; *&#xA; * Contact:&#xA; *   Moonlight List (moonlight-list@lists.ximian.com)&#xA; *&#xA; * Copyright ${Year} Novell, Inc. (http://www.novell.com)&#xA; *&#xA; * See the LICENSE file included with the distribution for details.&#xA; */&#xA;" inheritsSet="MITX11License" />
+  </Policies>
   <Configurations active="Default">
     <Configuration name="Debug" SourceDirectory="." ctype="CProjectConfiguration">
       <Output directory="bin/Debug" output="src" />
@@ -236,11 +239,9 @@
     <File name="application.h" subtype="Code" buildaction="Nothing" />
     <File name="bitmapimage.cpp" subtype="Code" buildaction="Compile" />
     <File name="pipeline-nocodec-ui.h" subtype="Code" buildaction="Nothing" />
-    <File name="pipeline-nocodec-ui.cpp" subtype="Code" buildaction="Compile" />
+    <File name="pipeline-nocodec-ui.cpp" subtype="Code" buildaction="Nothing" />
     <File name="codec-url.h" subtype="Code" buildaction="Nothing" />
     <File name="expression.cpp" subtype="Code" buildaction="Compile" />
-    <File name="generated" subtype="Directory" buildaction="Nothing" />
-    <File name="eventobject.generated.cpp" subtype="Code" buildaction="Compile" />
     <File name="codec-version.h.in" subtype="Code" buildaction="Nothing" />
     <File name="fontfamily.h" subtype="Code" buildaction="Nothing" />
     <File name="mkcolor.cs" subtype="Code" buildaction="Nothing" />

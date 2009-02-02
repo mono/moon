@@ -1,4 +1,4 @@
-<Project releaseversion="0.1" name="Microsoft.Silverlight.Testing" fileversion="2.0" language="C#" DefaultNamespace="Microsoft.Silverlight.Testing" clr-version="Clr_2_1" Configuration="Debug" Platform="AnyCPU" AssemblyName="Microsoft.Silverlight.Testing" TargetFrameworkVersion="v2.0" ctype="DotNetProject">
+<Project releaseversion="0.1" name="Microsoft.Silverlight.Testing" fileversion="2.0" language="C#" DefaultNamespace="Microsoft.Silverlight.Testing" clr-version="Clr_2_1" Configuration="Debug" Platform="AnyCPU" AssemblyName="Microsoft.Silverlight.Testing" TargetFrameworkVersion="v2.0" targetFramework="2.0" ctype="DotNetProject">
   <Configurations active="Default">
     <Configuration name="Debug" Optimize="false" DefineConstants="DEBUG;TRACE;SILVERLIGHT" NoStdLib="true" NoConfig="true" WarningLevel="4" RunCodeAnalysis="true" DocumentationFile="" ctype="DotNetProjectConfiguration">
       <Output directory="../bin/" assembly="Microsoft.Silverlight.Testing" />
@@ -213,5 +213,4 @@
     <ProjectReference type="Gac" localcopy="True" refto="System.Xml.Linq, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   </References>
-  <GtkDesignInfo />
 </Project>

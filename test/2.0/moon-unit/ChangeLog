@@ -1,3 +1,8 @@
+2009-02-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* moon-unit.mdp: Updated to use new MD features (ChangeLog
+	  and log message policy).
+
 2009-02-01  Larry Ewing  <lewing@novell.com>
 
 	* System.Windows.Controls/StackPanelTest.cs: add new test method

@@ -1,3 +1,8 @@
+2009-02-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* UnitTestHarness.mdp: Updated to use new MD features
+	  (ChangeLog and log message policy).
+
 2009-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* BugAttribute.cs: Add a Platforms field to BugAttribute so that we can

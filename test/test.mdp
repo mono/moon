@@ -1,4 +1,4 @@
-<Project name="test" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
+<Project name="test" fileversion="2.0" language="C#" clr-version="Net_2_0" targetFramework="2.0" ctype="DotNetProject">
   <Configurations active="Default">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="bin/Debug" assembly="test" />
@@ -76,5 +76,4 @@
     <File name="media/video/test-playlist-autoplayed-stop.asx" subtype="Code" buildaction="Nothing" />
     <File name="2.0" subtype="Directory" buildaction="Compile" />
   </Contents>
-  <GtkDesignInfo />
 </Project>

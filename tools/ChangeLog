@@ -1,0 +1,7 @@
+2009-02-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* tools.mdp: Updated to use new MD features (ChangeLog and
+	  log message policy).
+
+	* ChangeLog: Added.
+
