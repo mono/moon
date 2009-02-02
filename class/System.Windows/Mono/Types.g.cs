@@ -333,6 +333,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.THICKNESS));
 				t = typeof (System.Windows.CornerRadius);
 				types.Add (t, new ManagedType (t, Kind.CORNERRADIUS));
+				t = typeof (System.Windows.Point);
+				types.Add (t, new ManagedType (t, Kind.POINT));
 				t = typeof (System.Windows.FontStretch);
 				types.Add (t, new ManagedType (t, Kind.FONTSTRETCH));
 				t = typeof (System.Windows.Media.FontFamily);
