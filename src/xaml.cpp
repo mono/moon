@@ -4128,10 +4128,17 @@ start_parse:
 			}
 
 			Value *v = NULL;
+			bool need_setvalue = true;
+
 			if (attr[i+1][0] == '{' && attr[i+1][strlen(attr[i+1]) - 1] == '}') {
-				if (handle_xaml_markup_extension (p, item, attr [i], attr [i+1], &v))
+				need_setvalue = handle_xaml_markup_extension (p, item, attr [i], attr [i+1], &v);
+
+				if (p->error_args)
 					return;
 			}
+			
+			if (!need_setvalue)
+				continue;
 
 			if (!v)
 				value_from_str (prop->GetPropertyType(), prop->GetName(), attr [i + 1], &v, p->loader->GetSurface()->IsSilverlight2());
@@ -4533,6 +4540,9 @@ create_binding_expression_from_markup (XamlParserInfo *p, XamlElementInstance *i
 	return expr;
 }
 
+
+// return value = do we need to SetValue with the [Out] Value* ?
+//
 static bool
 handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, const char *attr_name, const char *attr_value, Value **value)
 {
@@ -4572,7 +4582,7 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 			}
 			
 			g_free (argument);
-			return true;
+			return false;
 		} else {
 			if (!p->LookupNamedResource (argument, value)) {
 				// XXX don't know the proper values here...
@@ -4580,11 +4590,11 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 					      "Could not locate StaticResource %s for property %s.",
 					      argument, attr_name);
 				g_free (argument);
-				return true;
+				return false;
 			}
 			
 			g_free (argument);
-			return false;
+			return true;
 		}
 		break;
 	case XamlMarkupExtensionTemplateBinding:
@@ -4605,12 +4615,12 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 			}
 			
 			g_free (argument);
-			return true;
+			return false;
 		} else {
-			XamlTemplateBinding *b = new XamlTemplateBinding ((FrameworkElement *) item->GetManagedPointer (), argument, attr_name);
+			XamlTemplateBinding *b = new XamlTemplateBinding ((FrameworkElement *) item->GetManagedPointer (), attr_name, argument);
 			template_parent->AddXamlBinding (b);
 			b->unref ();
-			return true;
+			return false;
 		}
 		break;
 	case XamlMarkupExtensionBinding:
@@ -4620,7 +4630,7 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 				      attr_name);
 			
 			delete binding;
-			return true;
+			return false;
 		}
 		
 		expr = create_binding_expression_from_markup (p, item, attr_name, binding);
@@ -4629,15 +4639,15 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 		if (expr) {
 			*value = new Value (expr);
 			expr->unref ();
-			return false;
+			return true;
 		}
-		
-		return true;
-	default:
+
+		// if create_binding_expression_from_markup returns NULL, it's already called parser_error
 		return false;
+
+	default:
+		return true;
 	}
-		
-	return false;
 }
 
 void

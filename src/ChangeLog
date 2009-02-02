@@ -1,3 +1,28 @@
+2009-02-01  Chris Toshok  <toshok@ximian.com>
+
+	* contentcontrol.cpp (ContentControl::OnPropertyChanged): remove
+	the ApplyTemplate gunk here, as the template doesn't change when
+	our content does - the ContentPresenter in our control template
+	will changed based on our content.
+
+	* xaml.cpp (dependency_object_set_attributes):
+	handle_xaml_markup_extension has three possible return states.
+	"Need SetValue", "Don't SetValue", and "Error".  the bool return
+	value is the first two (true == need_setvalue), and p->error_args
+	determines the last one.
+	(handle_xaml_markup_extension): add a comment detailing the
+	need_setvalue return value, and make the return values consistent.
+	TemplateBindings are weird in that they don't (for now) set a
+	value, but require that we don't continue on with the set value
+	machinery in dependency_object_set_attributes.
+
+	Also, the TemplateBinding handling in the case of
+	Property1={TemplateBinding Property2} was attaching things such
+	that updates to source.Property1 would update target.Property2.
+	This is exactly backward - it should have been source.Property2 =>
+	target.Property1.  We got lucky in a vast number of instances
+	because the property names were the same.
+
 2009-02-01  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* style.cpp: Revert first part (always seal) of last patch due to
