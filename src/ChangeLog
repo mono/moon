@@ -1,3 +1,11 @@
+2009-02-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp: Moved all event handling back to TextBox since
+	that's the focusable element.
+
+	* runtime.cpp (Surface::HandleMouseEvent): Loop until we find the
+	first Control subclass that we can focus.
+
 2009-02-02  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* dependencyproperty.g.cpp:Regenerated

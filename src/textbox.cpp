@@ -225,6 +225,16 @@ TextBox::TextBox ()
 	
 	SetDefaultStyleKey (type_info);
 	
+	AddHandler (UIElement::MouseLeftButtonDownEvent, TextBox::mouse_left_button_down, this);
+	AddHandler (UIElement::MouseLeftButtonUpEvent, TextBox::mouse_left_button_up, this);
+	AddHandler (UIElement::MouseEnterEvent, TextBox::mouse_enter, this);
+	AddHandler (UIElement::MouseLeaveEvent, TextBox::mouse_leave, this);
+	AddHandler (UIElement::MouseMoveEvent, TextBox::mouse_move, this);
+	AddHandler (UIElement::LostFocusEvent, TextBox::focus_out, this);
+	AddHandler (UIElement::GotFocusEvent, TextBox::focus_in, this);
+	AddHandler (UIElement::KeyDownEvent, TextBox::key_down, this);
+	AddHandler (UIElement::KeyUpEvent, TextBox::key_up, this);
+	
 	font = new TextFontDescription ();
 	font->SetFamily (CONTROL_FONT_FAMILY);
 	font->SetStretch (CONTROL_FONT_STRETCH);
@@ -241,6 +251,8 @@ TextBox::TextBox ()
 	selection.length = 0;
 	selection.start = 0;
 	setvalue = true;
+	focused = false;
+	view = NULL;
 	maxlen = 0;
 	cursor = 0;
 	
@@ -260,6 +272,16 @@ TextBox::TextBox ()
 
 TextBox::~TextBox ()
 {
+	RemoveHandler (UIElement::MouseLeftButtonDownEvent, TextBox::mouse_left_button_down, this);
+	RemoveHandler (UIElement::MouseLeftButtonUpEvent, TextBox::mouse_left_button_up, this);
+	RemoveHandler (UIElement::MouseEnterEvent, TextBox::mouse_enter, this);
+	RemoveHandler (UIElement::MouseLeaveEvent, TextBox::mouse_leave, this);
+	RemoveHandler (UIElement::MouseMoveEvent, TextBox::mouse_move, this);
+	RemoveHandler (UIElement::LostFocusEvent, TextBox::focus_out, this);
+	RemoveHandler (UIElement::GotFocusEvent, TextBox::focus_in, this);
+	RemoveHandler (UIElement::KeyDownEvent, TextBox::key_down, this);
+	RemoveHandler (UIElement::KeyUpEvent, TextBox::key_up, this);
+	
 	delete buffer;
 	delete font;
 }
@@ -1136,6 +1158,242 @@ TextBox::KeyPressThaw ()
 }
 
 void
+TextBox::OnKeyDown (KeyEventArgs *args)
+{
+	GdkModifierType modifiers = (GdkModifierType) args->GetModifiers ();
+	guint key = args->GetKeyVal ();
+	gunichar c;
+	
+	if (args->IsModifier ())
+		return;
+	
+	printf ("TextBox::OnKeyDown()\n");
+	
+	// freeze TextBox event emission
+	KeyPressFreeze ();
+	
+	if ((c = args->GetUnicode ())) {
+		KeyPressUnichar (c);
+		args->SetHandled (true);
+	} else {
+		// special key
+		switch (key) {
+		case GDK_Return:
+			KeyPressUnichar ('\r');
+			args->SetHandled (true);
+			break;
+		case GDK_BackSpace:
+			KeyPressBackSpace (modifiers);
+			args->SetHandled (true);
+			break;
+		case GDK_Delete:
+			KeyPressDelete (modifiers);
+			args->SetHandled (true);
+			break;
+		case GDK_KP_Page_Down:
+		case GDK_Page_Down:
+			KeyPressPageDown (modifiers);
+			break;
+		case GDK_KP_Page_Up:
+		case GDK_Page_Up:
+			KeyPressPageUp (modifiers);
+			break;
+		case GDK_KP_Home:
+		case GDK_Home:
+			KeyPressHome (modifiers);
+			break;
+		case GDK_KP_End:
+		case GDK_End:
+			KeyPressEnd (modifiers);
+			break;
+		case GDK_KP_Right:
+		case GDK_Right:
+			KeyPressRight (modifiers);
+			break;
+		case GDK_KP_Left:
+		case GDK_Left:
+			KeyPressLeft (modifiers);
+			break;
+		case GDK_KP_Down:
+		case GDK_Down:
+			KeyPressDown (modifiers);
+			break;
+		case GDK_KP_Up:
+		case GDK_Up:
+			KeyPressUp (modifiers);
+			break;
+		case GDK_A:
+		case GDK_a:
+			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK | GDK_SHIFT_MASK)) == GDK_CONTROL_MASK) {
+				// select all
+				args->SetHandled (true);
+				SelectAll ();
+			}
+			break;
+		case GDK_C:
+		case GDK_c:
+			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK | GDK_SHIFT_MASK)) == GDK_CONTROL_MASK) {
+				// copy selection to the clipboard
+				// FIXME: implement me
+				args->SetHandled (true);
+			}
+			break;
+		case GDK_X:
+		case GDK_x:
+			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK | GDK_SHIFT_MASK)) == GDK_CONTROL_MASK) {
+				// copy selection to the clipboard and then cut
+				// FIXME: implement me
+				args->SetHandled (true);
+			}
+			break;
+		case GDK_V:
+		case GDK_v:
+			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK | GDK_SHIFT_MASK)) == GDK_CONTROL_MASK) {
+				// paste clipboard contents to the buffer
+				// FIXME: implement me
+				args->SetHandled (true);
+			}
+			break;
+		case GDK_Y:
+		case GDK_y:
+			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK)) == GDK_CONTROL_MASK) {
+				// Ctrl+Y := Redo
+				args->SetHandled (true);
+			}
+			break;
+		case GDK_Z:
+		case GDK_z:
+			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK)) == GDK_CONTROL_MASK) {
+				// Ctrl+Z := Undo
+				args->SetHandled (true);
+			}
+			break;
+		default:
+			// FIXME: what other keys do we need to handle?
+			break;
+		}
+		
+		// FIXME: some of these may also require updating scrollbars?
+	}
+	
+	// thaw textbox keypress, causes Text and SelectedText to be
+	// sync'd and events to be emitted
+	KeyPressThaw ();
+	
+	// FIXME: register a key repeat timeout?
+}
+
+void
+TextBox::key_down (EventObject *sender, EventArgs *args, void *closure)
+{
+	((TextBox *) closure)->OnKeyDown ((KeyEventArgs *) args);
+}
+
+void
+TextBox::OnKeyUp (KeyEventArgs *args)
+{
+	// FIXME: unregister the key repeat timeout?
+}
+
+void
+TextBox::key_up (EventObject *sender, EventArgs *args, void *closure)
+{
+	((TextBox *) closure)->OnKeyUp ((KeyEventArgs *) args);
+}
+
+void
+TextBox::OnMouseLeftButtonDown (MouseEventArgs *args)
+{
+	printf ("TextBox::OnMouseLeftButtonDown()\n");
+}
+
+void
+TextBox::mouse_left_button_down (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	((TextBox *) closure)->OnMouseLeftButtonDown ((MouseEventArgs *) args);
+}
+
+void
+TextBox::OnMouseLeftButtonUp (MouseEventArgs *args)
+{
+	printf ("TextBox::OnMouseLeftButtonUp()\n");
+}
+
+void
+TextBox::mouse_left_button_up (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	((TextBox *) closure)->OnMouseLeftButtonUp ((MouseEventArgs *) args);
+}
+
+void
+TextBox::OnMouseEnter (MouseEventArgs *args)
+{
+	printf ("TextBox::OnMouseEnter()\n");
+}
+
+void
+TextBox::mouse_enter (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	((TextBox *) closure)->OnMouseEnter ((MouseEventArgs *) args);
+}
+
+void
+TextBox::OnMouseLeave (EventArgs *args)
+{
+	printf ("TextBox::OnMouseLeave()\n");
+}
+
+void
+TextBox::mouse_leave (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	((TextBox *) closure)->OnMouseLeave (args);
+}
+
+void
+TextBox::OnMouseMove (MouseEventArgs *args)
+{
+	//printf ("TextBox::OnMouseMove()\n");
+}
+
+void
+TextBox::mouse_move (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	((TextBox *) closure)->OnMouseMove ((MouseEventArgs *) args);
+}
+
+void
+TextBox::OnFocusOut (EventArgs *args)
+{
+	printf ("TextBox::OnFocusOut()\n");
+	focused = false;
+	
+	if (view)
+		view->OnFocusOut ();
+}
+
+void
+TextBox::focus_out (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	((TextBox *) closure)->OnFocusOut (args);
+}
+
+void
+TextBox::OnFocusIn (EventArgs *args)
+{
+	printf ("TextBox::OnFocusIn()\n");
+	focused = true;
+	
+	if (view)
+		view->OnFocusIn ();
+}
+
+void
+TextBox::focus_in (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	((TextBox *) closure)->OnFocusIn (args);
+}
+
+void
 TextBox::EmitSelectionChanged ()
 {
 	Emit (TextBox::SelectionChangedEvent, new RoutedEventArgs ());
@@ -1306,9 +1564,10 @@ TextBox::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, 
 void
 TextBox::OnApplyTemplate ()
 {
-	contentElement = GetTemplateChild ("ContentElement");
+	DependencyProperty *prop;
 	ContentControl *control;
-	TextBoxView *view;
+	
+	contentElement = GetTemplateChild ("ContentElement");
 	
 	if (contentElement->Is (Type::CONTENTCONTROL)) {
 		// Insert our TextBoxView
@@ -1317,17 +1576,13 @@ TextBox::OnApplyTemplate ()
 		view->SetTextBox (this);
 		control->SetValue (ContentControl::ContentProperty, Value (view));
 	}
-
-	DependencyProperty *p;
-
+	
 	// XXX LAME these should be template bindings in the textbox template.
-	p = contentElement->GetDependencyProperty ("VerticalScrollBarVisibility");
-	if (p)
-		contentElement->SetValue (p, GetValue (TextBox::VerticalScrollBarVisibilityProperty));
-
-	p = contentElement->GetDependencyProperty ("HorizontalScrollBarVisibility");
-	if (p)
-		contentElement->SetValue (p, GetValue (TextBox::HorizontalScrollBarVisibilityProperty));
+	if ((prop = contentElement->GetDependencyProperty ("VerticalScrollBarVisibility")))
+		contentElement->SetValue (prop, GetValue (TextBox::VerticalScrollBarVisibilityProperty));
+	
+	if ((prop = contentElement->GetDependencyProperty ("HorizontalScrollBarVisibility")))
+		contentElement->SetValue (prop, GetValue (TextBox::HorizontalScrollBarVisibilityProperty));
 	
 	Control::OnApplyTemplate ();
 }
@@ -1384,179 +1639,25 @@ TextBoxView::TextBoxView ()
 {
 	SetObjectType (Type::TEXTBOXVIEW);
 	
-	AddHandler (UIElement::LostFocusEvent, TextBoxView::focus_out, this);
-	AddHandler (UIElement::GotFocusEvent, TextBoxView::focus_in, this);
-	AddHandler (UIElement::KeyDownEvent, TextBoxView::key_down, this);
-	AddHandler (UIElement::KeyUpEvent, TextBoxView::key_up, this);
-	
 	cursor = Rect (0, 0, 0, 0);
 	layout = new TextLayout ();
+	had_selected_text = false;
 	cursor_visible = false;
-	selected_text = false;
 	blink_timeout = 0;
 	textbox = NULL;
-	readonly = false;
-	focused = false;
 	dirty = false;
 }
 
 TextBoxView::~TextBoxView ()
 {
-	if (textbox)
+	if (textbox) {
 		textbox->RemoveHandler (TextBox::ModelChangedEvent, TextBoxView::model_changed, this);
-	
-	RemoveHandler (UIElement::LostFocusEvent, TextBoxView::focus_out, this);
-	RemoveHandler (UIElement::GotFocusEvent, TextBoxView::focus_in, this);
-	RemoveHandler (UIElement::KeyDownEvent, TextBoxView::key_down, this);
-	RemoveHandler (UIElement::KeyUpEvent, TextBoxView::key_up, this);
+		textbox->view = NULL;
+	}
 	
 	DisconnectBlinkTimeout ();
 	
 	delete layout;
-}
-
-void
-TextBoxView::OnKeyDown (KeyEventArgs *args)
-{
-	GdkModifierType modifiers = (GdkModifierType) args->GetModifiers ();
-	guint key = args->GetKeyVal ();
-	gunichar c;
-	
-	if (args->IsModifier ())
-		return;
-	
-	printf ("TextBoxView::OnKeyDown()\n");
-	
-	// freeze TextBox event emission
-	textbox->KeyPressFreeze ();
-	
-	if ((c = args->GetUnicode ())) {
-		textbox->KeyPressUnichar (c);
-		args->SetHandled (true);
-	} else {
-		// special key
-		switch (key) {
-		case GDK_Return:
-			textbox->KeyPressUnichar ('\r');
-			args->SetHandled (true);
-			break;
-		case GDK_BackSpace:
-			textbox->KeyPressBackSpace (modifiers);
-			args->SetHandled (true);
-			break;
-		case GDK_Delete:
-			textbox->KeyPressDelete (modifiers);
-			args->SetHandled (true);
-			break;
-		case GDK_KP_Page_Down:
-		case GDK_Page_Down:
-			textbox->KeyPressPageDown (modifiers);
-			break;
-		case GDK_KP_Page_Up:
-		case GDK_Page_Up:
-			textbox->KeyPressPageUp (modifiers);
-			break;
-		case GDK_KP_Home:
-		case GDK_Home:
-			textbox->KeyPressHome (modifiers);
-			break;
-		case GDK_KP_End:
-		case GDK_End:
-			textbox->KeyPressEnd (modifiers);
-			break;
-		case GDK_KP_Right:
-		case GDK_Right:
-			textbox->KeyPressRight (modifiers);
-			break;
-		case GDK_KP_Left:
-		case GDK_Left:
-			textbox->KeyPressLeft (modifiers);
-			break;
-		case GDK_KP_Down:
-		case GDK_Down:
-			textbox->KeyPressDown (modifiers);
-			break;
-		case GDK_KP_Up:
-		case GDK_Up:
-			textbox->KeyPressUp (modifiers);
-			break;
-		case GDK_A:
-		case GDK_a:
-			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK | GDK_SHIFT_MASK)) == GDK_CONTROL_MASK) {
-				// select all
-				args->SetHandled (true);
-				textbox->SelectAll ();
-			}
-			break;
-		case GDK_C:
-		case GDK_c:
-			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK | GDK_SHIFT_MASK)) == GDK_CONTROL_MASK) {
-				// copy selection to the clipboard
-				// FIXME: implement me
-				args->SetHandled (true);
-			}
-			break;
-		case GDK_X:
-		case GDK_x:
-			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK | GDK_SHIFT_MASK)) == GDK_CONTROL_MASK) {
-				// copy selection to the clipboard and then cut
-				// FIXME: implement me
-				args->SetHandled (true);
-			}
-			break;
-		case GDK_V:
-		case GDK_v:
-			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK | GDK_SHIFT_MASK)) == GDK_CONTROL_MASK) {
-				// paste clipboard contents to the buffer
-				// FIXME: implement me
-				args->SetHandled (true);
-			}
-			break;
-		case GDK_Y:
-		case GDK_y:
-			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK)) == GDK_CONTROL_MASK) {
-				// Ctrl+Y := Redo
-				args->SetHandled (true);
-			}
-			break;
-		case GDK_Z:
-		case GDK_z:
-			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK)) == GDK_CONTROL_MASK) {
-				// Ctrl+Z := Undo
-				args->SetHandled (true);
-			}
-			break;
-		default:
-			// FIXME: what other keys do we need to handle?
-			break;
-		}
-		
-		// FIXME: some of these may also require updating scrollbars?
-	}
-	
-	// thaw textbox keypress, causes Text and SelectedText to be
-	// sync'd and events to be emitted
-	textbox->KeyPressThaw ();
-	
-	// FIXME: register a key repeat timeout?
-}
-
-void
-TextBoxView::OnKeyUp (KeyEventArgs *args)
-{
-	// FIXME: unregister the key repeat timeout?
-}
-
-void
-TextBoxView::key_down (EventObject *sender, EventArgs *args, void *closure)
-{
-	((TextBoxView *) closure)->OnKeyDown ((KeyEventArgs *) args);
-}
-
-void
-TextBoxView::key_up (EventObject *sender, EventArgs *args, void *closure)
-{
-	((TextBoxView *) closure)->OnKeyUp ((KeyEventArgs *) args);
 }
 
 gboolean
@@ -1628,7 +1729,7 @@ TextBoxView::EndCursorBlink ()
 void
 TextBoxView::ResetCursorBlink (bool delay)
 {
-	if (focused && !selected_text && !readonly) {
+	if (textbox->IsFocused () && !textbox->GetIsReadOnly () && !textbox->HasSelectedText ()) {
 		// cursor is blinkable... proceed with blinkage
 		if (delay)
 			DelayCursorBlink ();
@@ -1685,8 +1786,6 @@ TextBoxView::Render (cairo_t *cr, Region *region)
 {
 	if (dirty)	       
 		g_warning ("TextBoxView::Render in dirty state"); //Layout (cr);
-	
-	printf ("TextBoxView::Render()\n");
 	
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
@@ -1793,6 +1892,8 @@ TextBoxView::Layout (cairo_t *cr, Size constraint)
 	
 	if (isinf (width))
 		layout->SetMaxWidth (-1.0);
+	else
+		layout->SetMaxWidth (width);
 	
 	selection = textbox->GetSelection ();
 	buffer = textbox->GetBuffer ();
@@ -1833,8 +1934,6 @@ TextBoxView::Paint (cairo_t *cr)
 {
 	Brush *fg;
 	
-	printf ("TextBoxView::Paint()\n");
-	
 	layout->Render (cr, GetOriginPoint (), Point ());
 	
 	if (cursor_visible && (fg = textbox->GetForeground ())) {
@@ -1857,9 +1956,9 @@ TextBoxView::OnModelChanged (TextBoxModelChangedEventArgs *args)
 		dirty = layout->SetTextWrapping ((TextWrapping) args->property->new_value->AsInt32 ());
 		break;
 	case TextBoxModelChangedSelection:
-		if (selected_text || textbox->GetSelection ()->length > 0) {
+		if (had_selected_text || textbox->HasSelectedText ()) {
 			// the selection has changed, need to recalculate layout
-			selected_text = textbox->GetSelection ()->length > 0;
+			had_selected_text = textbox->HasSelectedText ();
 			ResetCursorBlink (false);
 			dirty = true;
 		} else {
@@ -1869,7 +1968,6 @@ TextBoxView::OnModelChanged (TextBoxModelChangedEventArgs *args)
 		}
 		break;
 	case TextBoxModelChangedReadOnly:
-		readonly = args->property->new_value->AsBool ();
 		ResetCursorBlink (false);
 		return;
 	case TextBoxModelChangedBrush:
@@ -1901,30 +1999,14 @@ TextBoxView::model_changed (EventObject *sender, EventArgs *args, gpointer closu
 }
 
 void
-TextBoxView::focus_out (EventObject *sender, EventArgs *args, gpointer closure)
+TextBoxView::OnFocusOut ()
 {
-	((TextBoxView *) closure)->OnFocusOut (args);
-}
-
-void
-TextBoxView::OnFocusOut (EventArgs *args)
-{
-	printf ("TextBoxView::OnFocusOut()\n");
 	EndCursorBlink ();
-	focused = false;
 }
 
 void
-TextBoxView::focus_in (EventObject *sender, EventArgs *args, gpointer closure)
+TextBoxView::OnFocusIn ()
 {
-	((TextBoxView *) closure)->OnFocusIn (args);
-}
-
-void
-TextBoxView::OnFocusIn (EventArgs *args)
-{
-	printf ("TextBoxView::OnFocusIn()\n");
-	focused = true;
 	ResetCursorBlink (false);
 }
 
@@ -1945,8 +2027,7 @@ TextBoxView::SetTextBox (TextBox *textbox)
 		// sync our state with the textbox
 		layout->SetTextAlignment (textbox->GetTextAlignment ());
 		layout->SetTextWrapping (textbox->GetTextWrapping ());
-		selected_text = textbox->GetSelection ()->length > 0;
-		readonly = textbox->GetIsReadOnly ();
+		had_selected_text = textbox->HasSelectedText ();
 	}
 	
 	this->textbox = textbox;

@@ -1339,13 +1339,19 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 			handled = EmitEventOnList (event_id, new_input_list, event, -1) || handled;
 
 			if (silverlight2 && event_id == UIElement::MouseLeftButtonDownEvent) {
-				UIElement *el = new_input_list->First() ? ((UIElementNode*)new_input_list->First())->uielement : NULL;
-
-				if (el != focused_element)
-					FocusElement (el);
+				UIElementNode *node = (UIElementNode *) new_input_list->First ();
+				UIElement *element;
+				
+				while (node) {
+					element = node->uielement;
+					if (FocusElement (element))
+						break;
+					
+					node = (UIElementNode *) node->next;
+				}
 			}
 		}
-
+		
 		// We need to remove from the new_input_list the events which have just 
 		// became invisible/unhittable as the result of the event. 
 		// (ie. element visibility was changed in the mouse enter).

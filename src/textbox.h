@@ -85,11 +85,37 @@ class TextBox : public Control, public ITextSource {
 	TextFontDescription *font;
 	TextSelection selection;
 	TextBuffer *buffer;
+	TextBoxView *view;
 	int maxlen;
 	
 	int setvalue:1;
+	int focused:1;
 	int cursor:1;
 	int emit:2;
+	
+	// focus in/out events
+	static void focus_out (EventObject *sender, EventArgs *args, gpointer closure);
+	static void focus_in (EventObject *sender, EventArgs *args, gpointer closure);
+	void OnFocusOut (EventArgs *args);
+	void OnFocusIn (EventArgs *args);
+	
+	// mouse events
+	static void mouse_left_button_down (EventObject *sender, EventArgs *args, gpointer closure);
+	static void mouse_left_button_up (EventObject *sender, EventArgs *args, gpointer closure);
+	static void mouse_enter (EventObject *sender, EventArgs *args, gpointer closure);
+	static void mouse_leave (EventObject *sender, EventArgs *args, gpointer closure);
+	static void mouse_move (EventObject *sender, EventArgs *args, gpointer closure);
+	void OnMouseLeftButtonDown (MouseEventArgs *args);
+	void OnMouseLeftButtonUp (MouseEventArgs *args);
+	void OnMouseEnter (MouseEventArgs *args);
+	void OnMouseLeave (EventArgs *args);
+	void OnMouseMove (MouseEventArgs *args);
+	
+	// keypress events
+	static void key_down (EventObject *sender, EventArgs *args, void *closure);
+	static void key_up (EventObject *sender, EventArgs *args, void *closure);
+	void OnKeyDown (KeyEventArgs *args);
+	void OnKeyUp (KeyEventArgs *args);
 	
  protected:
 	void KeyPressUnichar (gunichar c);
@@ -119,9 +145,11 @@ class TextBox : public Control, public ITextSource {
 	//
 	// Protected Property Accessors
 	//
+	bool HasSelectedText () { return selection.length > 0; }
 	TextSelection *GetSelection () { return &selection; }
 	TextBuffer *GetBuffer () { return buffer; }
 	int GetCursor () { return selection.start; }
+	bool IsFocused () { return focused; }
 	
 	void SetSelectionStart (int start);
 	void SetSelectionLength (int length);
@@ -257,21 +285,22 @@ class TextBoxView : public FrameworkElement {
 	TextBox *textbox;
 	Rect cursor;
 	
+	int had_selected_text:1;
 	int cursor_visible:1;
-	int selected_text:1;
-	int readonly:1;
-	int focused:1;
 	int dirty:1;
 	
 	// focus in/out events
-	static void focus_out (EventObject *sender, EventArgs *args, gpointer closure);
-	static void focus_in (EventObject *sender, EventArgs *args, gpointer closure);
 	void OnFocusOut (EventArgs *args);
 	void OnFocusIn (EventArgs *args);
 	
+	// mouse events
+	void OnMouseLeftButtonDown (MouseEventArgs *args);
+	void OnMouseLeftButtonUp (MouseEventArgs *args);
+	void OnMouseEnter (MouseEventArgs *args);
+	void OnMouseLeave (EventArgs *args);
+	void OnMouseMove (MouseEventArgs *args);
+	
 	// keypress events
-	static void key_down (EventObject *sender, EventArgs *args, void *closure);
-	static void key_up (EventObject *sender, EventArgs *args, void *closure);
 	void OnKeyDown (KeyEventArgs *args);
 	void OnKeyUp (KeyEventArgs *args);
 	
@@ -311,6 +340,12 @@ class TextBoxView : public FrameworkElement {
 	virtual Size MeasureOverride (Size availableSize);
 	virtual Size ArrangeOverride (Size finalSize);
 
+	//
+	// Methods
+	//
+	void OnFocusOut ();
+	void OnFocusIn ();
+	
 	//
 	// Property Accessors
 	//
