@@ -134,6 +134,12 @@ struct Rect {
 		result.width += left + right;
 		result.height += top + bottom;
 
+		if (result.width < 0)
+			result.width = 0;
+
+		if (result.height < 0)
+			result.height = 0;
+
 		return result;
 	}
 

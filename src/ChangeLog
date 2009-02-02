@@ -1,3 +1,9 @@
+2009-02-02  Chris Toshok  <toshok@ximian.com>
+
+	* rect.h (struct Rect): we can be Grown by a negative amount. make
+	sure we don't drop below 0 on width/height, since everything blows
+	up when we do.
+
 2009-02-02  Alan McGovern  <amcgovern@novell.com>
 
 	* bitmapimage.h:
