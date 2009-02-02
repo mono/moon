@@ -60,8 +60,8 @@ MultiScaleImage::ZoomAboutLogicalPoint (double zoomIncrementFactor, double zoomC
 Point
 MultiScaleImage::ElementToLogicalPoint (Point elementPoint)
 {
-	return Point (GetViewportOrigin()->x + (double)elementPoint.x * GetViewportWidth () / GetWidth (),
-		      GetViewportOrigin()->y + (double)elementPoint.y * GetViewportHeight () / GetHeight ());
+	return Point (GetViewportOrigin()->x + (double)elementPoint.x * GetViewportWidth () / GetActualWidth (),
+		      GetViewportOrigin()->y + (double)elementPoint.y * GetViewportHeight () / GetActualHeight ());
 }
 
 void
@@ -318,8 +318,8 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 	}
 
 
-	double w = GetWidth ();
-	double h = GetHeight ();
+	double w = GetActualWidth ();
+	double h = GetActualHeight ();
 	double vp_w = GetViewportWidth ();
 	double vp_h = GetViewportHeight ();
 	double im_w = (double) source->GetImageWidth ();
@@ -505,6 +505,6 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args)
 double
 MultiScaleImage::GetViewportHeight ()
 {
-	return GetAspectRatio () * GetHeight() * GetViewportWidth () / GetWidth (); 
+	return GetAspectRatio () * GetActualHeight() * GetViewportWidth () / GetActualWidth (); 
 }
 
