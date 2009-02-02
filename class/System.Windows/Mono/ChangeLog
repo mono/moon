@@ -1,3 +1,8 @@
+2009-02-02  Andreia Gaita  <avidigal@novell.com>
+
+	* DispatcherTimer.cs: Don't stop the timer when an exception is
+	thrown
+
 2009-01-30  Chris Toshok  <toshok@ximian.com>
 
 	* ManagedXamlLoader.cs: this is kinda gross, but if we're adding a

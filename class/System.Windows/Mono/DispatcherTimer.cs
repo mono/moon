@@ -49,7 +49,6 @@ namespace Mono
 					h (managedTimer, EventArgs.Empty);
 				} catch (Exception ex) {
 					Application.OnUnhandledException (this, ex);
-					Mono.NativeMethods.dispatcher_timer_stop (native);
 				}
 			}
 		}
