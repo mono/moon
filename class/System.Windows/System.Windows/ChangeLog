@@ -1,3 +1,9 @@
+2009-02-02  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Setter.cs: Move check/exception from ctor to Property property
+	(since the same thing happens in that case). Change ConvertedValue
+	to internal to please gui-compare.
+
 2009-01-31  Chris Toshok  <toshok@ximian.com>
 
 	* Application.cs: use NativeDependencyObject.FromIntPtr instead of

@@ -27,7 +27,6 @@
 //
 
 using Mono;
-using System.Collections.Generic;
 
 namespace System.Windows {
 
@@ -38,16 +37,18 @@ namespace System.Windows {
 
 		public Setter (DependencyProperty property, object value)
 		{
-			if (property == null)
-				throw new NullReferenceException ();
-			
 			Property = property;
 			Value = value;
 		}
 
 		public DependencyProperty Property {
 			get { return (DependencyProperty) GetValue (PropertyProperty); }
-			set { SetValue (PropertyProperty, value); }
+			set {
+				// this exception likely means the property is being used before the SetValue call
+				if (value == null)
+					throw new NullReferenceException ();
+				SetValue (PropertyProperty, value);
+			}
 		}
 
 		public object Value {
@@ -55,7 +56,7 @@ namespace System.Windows {
 			set { SetValue (ValueProperty, value); }
 		}
 
-		public object ConvertedValue {
+		internal object ConvertedValue {
 			get { return GetValue (ConvertedValueProperty); }
 			set { SetValue (ConvertedValueProperty, value); }
 		}
