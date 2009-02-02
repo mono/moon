@@ -1838,6 +1838,12 @@ TextBoxView::OnModelChanged (TextBoxModelChangedEventArgs *args)
 }
 
 void
+TextBoxView::model_changed (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	((TextBoxView *) closure)->OnModelChanged ((TextBoxModelChangedEventArgs *) args);
+}
+
+void
 TextBoxView::focus_out (EventObject *sender, EventArgs *args, gpointer closure)
 {
 	((TextBoxView *) closure)->OnFocusOut (args);

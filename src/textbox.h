@@ -274,12 +274,8 @@ class TextBoxView : public FrameworkElement {
 	void OnKeyUp (KeyEventArgs *args);
 	
 	// TextBox events
-	static void selection_changed (EventObject *sender, EventArgs *args, gpointer closure);
 	static void model_changed (EventObject *sender, EventArgs *args, gpointer closure);
-	static void text_changed (EventObject *sender, EventArgs *args, gpointer closure);
 	void OnModelChanged (TextBoxModelChangedEventArgs *args);
-	void OnSelectionChanged (RoutedEventArgs *args);
-	void OnTextChanged (TextChangedEventArgs *args);
 	
 	// cursor blink
 	static gboolean blink (void *user_data);
