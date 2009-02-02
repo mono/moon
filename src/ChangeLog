@@ -1,3 +1,8 @@
+2009-02-01  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* style.cpp: Revert first part (always seal) of last patch due to
+	regressions.
+
 2009-02-01  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* style.cpp: Always seal setters when added to collection (unit 
