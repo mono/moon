@@ -26,6 +26,14 @@ namespace MoonTest.System.Windows.Media.Imaging {
 		}
 
 		[TestMethod]
+		public void Defaults ()
+		{
+			BitmapImage image = new BitmapImage ();
+			Assert.IsFalse (image.UriSource.IsAbsoluteUri, "#1");
+			Assert.AreEqual (string.Empty, image.UriSource.ToString (), "#2");
+		}
+		
+		[TestMethod]
 		public void EmptyUriInCtor ()
 		{
 			var bitmap = new BitmapImage (new Uri ("", UriKind.Relative));

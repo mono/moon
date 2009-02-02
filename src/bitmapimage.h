@@ -25,7 +25,7 @@ class BitmapImage : public DependencyObject {
 	gpointer buffer;
 	gint32 size;
 
-	/* @PropertyType=string,ManagedPropertyType=Uri,GenerateAccessors */
+	/* @PropertyType=string,ManagedPropertyType=Uri,GenerateAccessors,DefaultValue=\"\" */
 	static DependencyProperty *UriSourceProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */

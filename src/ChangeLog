@@ -1,3 +1,9 @@
+2009-02-02  Alan McGovern  <amcgovern@novell.com>
+
+	* bitmapimage.h:
+	* dependencyproperty.g.cpp: The default value for
+	  Bitmap.ImageSource is an empty string.
+
 2009-02-02  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBox::OnPropertyChanged): Emit ModelChanged

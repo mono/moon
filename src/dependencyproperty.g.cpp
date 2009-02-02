@@ -64,7 +64,7 @@ dependency_property_g_init (void)
 	BezierSegment::Point1Property = DependencyProperty::Register (Type::BEZIERSEGMENT, "Point1", Type::POINT);
 	BezierSegment::Point2Property = DependencyProperty::Register (Type::BEZIERSEGMENT, "Point2", Type::POINT);
 	BezierSegment::Point3Property = DependencyProperty::Register (Type::BEZIERSEGMENT, "Point3", Type::POINT);
-	BitmapImage::UriSourceProperty = DependencyProperty::Register (Type::BITMAPIMAGE, "UriSource", Type::STRING);
+	BitmapImage::UriSourceProperty = DependencyProperty::Register (Type::BITMAPIMAGE, "UriSource", new Value (""), Type::STRING);
 	Border::BackgroundProperty = DependencyProperty::Register (Type::BORDER, "Background", Type::BRUSH);
 	Border::BorderBrushProperty = DependencyProperty::Register (Type::BORDER, "BorderBrush", Type::BRUSH);
 	Border::BorderThicknessProperty = DependencyProperty::RegisterFull (Type::BORDER, "BorderThickness", new Value (Thickness(0)), Type::THICKNESS, false, false, false, NULL, Validators::BorderThicknessValidator);

@@ -1,3 +1,8 @@
+2009-02-02  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Media.Imaging/BitmapImageTest.cs: The
+	  default value for Bitmap.ImageSource is an empty string.
+
 2009-02-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* moon-unit.mdp: Updated to use new MD features (ChangeLog
