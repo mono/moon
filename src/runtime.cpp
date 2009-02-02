@@ -658,7 +658,7 @@ void
 Surface::ShowFullScreenMessage ()
 {
 	g_return_if_fail (full_screen_message == NULL);
-	g_return_if_fail (toplevel && toplevel->Is (Type::PANEL));
+	//g_return_if_fail (toplevel && toplevel->Is (Type::PANEL));
 	
 	Type::Kind dummy;
 	XamlLoader *loader = new XamlLoader (NULL, FULLSCREEN_MESSAGE, this);
