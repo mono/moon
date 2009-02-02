@@ -247,7 +247,6 @@ MultiScaleImage::cache_contains (int layer, int x, int y, bool empty_tiles)
 void
 multi_scale_image_handle_parsed (void *userdata)
 {
-	printf ("PARSED CALLBACK\n");
 	MultiScaleImage *msi = (MultiScaleImage*)userdata;
 	msi->Invalidate ();
 }
