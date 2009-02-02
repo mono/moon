@@ -1165,7 +1165,7 @@ DependencyObject::RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error)
 
 	const char *n = GetName();
 		
-	if (n && strlen (n) > 0) {
+	if (n && *n) {
 		if (to_ns->FindName (n)) {
 			MoonError::FillIn (error, MoonError::ARGUMENT, 2028,
 					   g_strdup_printf ("The name already exists in the tree: %s.",
