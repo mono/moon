@@ -218,6 +218,8 @@ namespace System.Windows
 				if (!isScriptable && !pi.IsDefined (typeof(ScriptableMemberAttribute), true))
 					continue;
 				scriptable.AddProperty (pi);
+				if (AddTypes (pi))
+					scriptable.HasTypes = true;
 			}
 
 			// add events
@@ -232,25 +234,39 @@ namespace System.Windows
 				if (!isScriptable && !mi.IsDefined (typeof(ScriptableMemberAttribute), true))
 					continue;
 				scriptable.AddMethod (mi);
-				AddTypes (mi);
+				if (AddTypes (mi))
+					scriptable.HasTypes = true;
 			}
+
 			return scriptable;
 		}
 
-		static void AddTypes (PropertyInfo pi)
+		static bool AddTypes (PropertyInfo pi)
 		{
-			if (IsCreateable (pi.PropertyType))
+			bool ret = false;
+			if (IsCreateable (pi.PropertyType)) {
+				ret = true;
 				AddType (pi.PropertyType);
+			}
+			return ret;
 		}
 
-		static void AddTypes (MethodInfo mi)
+		static bool AddTypes (MethodInfo mi)
 		{
-			if (IsCreateable (mi.ReturnType))
+			bool ret = false;
+			if (IsCreateable (mi.ReturnType)) {
+				ret = true;
 				AddType (mi.ReturnType);
+			}
 
 			ParameterInfo[] ps = mi.GetParameters();
-			foreach (ParameterInfo p in ps)
-				AddType (p.ParameterType);
+			foreach (ParameterInfo p in ps) {
+				if (IsCreateable (p.ParameterType)) {
+					ret = true;
+					AddType (p.ParameterType);
+				}
+			}
+			return ret;
 		}
 
 		static void AddType (Type type)

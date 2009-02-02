@@ -55,6 +55,8 @@ namespace System.Windows.Browser
 			get { return moon_handle; }
 		}
 
+		public bool HasTypes { get; set; }
+
 		public ScriptableObjectWrapper (object obj) : base(obj)
 		{
 			this.handles = new List<GCHandle>();

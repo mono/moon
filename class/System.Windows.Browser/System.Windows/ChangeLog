@@ -1,5 +1,10 @@
 2009-02-02  Andreia Gaita  <avidigal@novell.com>
 
+	* System.Windows/ScriptableObjectGenerator.cs: Set HasTypes property
+	if the object referencs any types that can be created.
+
+2009-02-02  Andreia Gaita  <avidigal@novell.com>
+
 	* WebApplication.cs: Move ScriptableTypes from ScriptObject to
 	WebApplication. Validate duplicate type names.
 

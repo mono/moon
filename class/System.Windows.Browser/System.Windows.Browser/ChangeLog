@@ -1,5 +1,10 @@
 2009-02-02  Andreia Gaita  <avidigal@novell.com>
 
+	* ScriptableObjectWrapper.cs: add HasTypes property, to flag if the managed
+	object references any types that can be created.
+
+2009-02-02  Andreia Gaita  <avidigal@novell.com>
+
 	* ScriptObject.cs: Move ScriptableTypes from ScriptObject to
 	WebApplication.
 
