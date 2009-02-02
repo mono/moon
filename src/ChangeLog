@@ -1,5 +1,10 @@
 2009-02-02  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* deepzoomimagetilesource.h|cpp: parse DisplayRects, returns NULL
+	in GetTileLayer for missing tiles.
+
+2009-02-02  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* multiscaleimage.cpp: render lower layer if the current layer
 	contains NULL tiles.
 

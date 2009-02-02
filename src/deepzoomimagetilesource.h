@@ -32,6 +32,7 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	void download_uri (const char* url);
 	bool downloaded;
 	char *format;
+	GList *display_rects;
 
 	void Parse (const char* filename);
 
