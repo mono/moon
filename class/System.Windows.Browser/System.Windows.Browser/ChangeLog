@@ -1,5 +1,10 @@
 2009-02-02  Andreia Gaita  <avidigal@novell.com>
 
+	* ScriptableObjectWrapper.cs: Add a missing constructor call (that's what I
+	get for splitting patches... sorry!)
+
+2009-02-02  Andreia Gaita  <avidigal@novell.com>
+
 	* ScriptableObjectWrapper.cs: add HasTypes property, to flag if the managed
 	object references any types that can be created.
 

@@ -75,6 +75,7 @@ namespace System.Windows.Browser
 									remove_event);
 
 			handle = ScriptableNativeMethods.moonlight_object_to_npobject (moon_handle);
+			scriptableObjects = new Dictionary<IntPtr,WeakReference> ();
 			scriptableObjects [handle] = new WeakReference(this);
 		}
 
