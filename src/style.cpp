@@ -140,17 +140,6 @@ SetterBase::Seal ()
 	SetIsSealed (true);	
 }
 
-bool
-SetterBase::SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error)
-{
-	if (GetIsSealed () && property != Setter::ConvertedValueProperty) {
-		MoonError::FillIn (error, MoonError::UNAUTHORIZED_ACCESS, "Cannot modify a setter after it is used");
-		return false;
-	}
-	
-	return DependencyObject::SetValueWithErrorImpl (property, value, error);
-}
-
 Setter::Setter ()
 {
 	SetObjectType (Type::SETTER);

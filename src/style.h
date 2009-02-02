@@ -96,8 +96,6 @@ class SetterBase : public DependencyObject {
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	SetterBase ();
 
-	virtual bool SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error);
-	
 	bool GetAttached ();
 	void SetAttached (bool value);
 	
@@ -120,9 +118,9 @@ class Setter : public SetterBase {
 	virtual ~Setter ();
 	
  public:
-	/* @PropertyType=DependencyProperty */
+	/* @PropertyType=DependencyProperty,Validator=IsSetterSealedValidator */
 	static DependencyProperty *PropertyProperty;
-	/* @PropertyType=object */
+	/* @PropertyType=object,Validator=IsSetterSealedValidator */
 	static DependencyProperty *ValueProperty;
 
 	/* @PropertyType=object */

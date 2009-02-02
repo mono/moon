@@ -305,8 +305,8 @@ dependency_property_g_init (void)
 	ScaleTransform::ScaleXProperty = DependencyProperty::Register (Type::SCALETRANSFORM, "ScaleX", new Value (1.0), Type::DOUBLE);
 	ScaleTransform::ScaleYProperty = DependencyProperty::Register (Type::SCALETRANSFORM, "ScaleY", new Value (1.0), Type::DOUBLE);
 	Setter::ConvertedValueProperty = DependencyProperty::Register (Type::SETTER, "ConvertedValue", Type::OBJECT);
-	Setter::PropertyProperty = DependencyProperty::Register (Type::SETTER, "Property", Type::DEPENDENCYPROPERTY);
-	Setter::ValueProperty = DependencyProperty::Register (Type::SETTER, "Value", Type::OBJECT);
+	Setter::PropertyProperty = DependencyProperty::RegisterFull (Type::SETTER, "Property", NULL, Type::DEPENDENCYPROPERTY, false, false, false, NULL, Validators::IsSetterSealedValidator);
+	Setter::ValueProperty = DependencyProperty::RegisterFull (Type::SETTER, "Value", NULL, Type::OBJECT, false, false, false, NULL, Validators::IsSetterSealedValidator);
 	SetterBase::IsSealedProperty = DependencyProperty::Register (Type::SETTERBASE, "IsSealed", new Value (false), Type::BOOL);
 	SetterBaseCollection::IsSealedProperty = DependencyProperty::Register (Type::SETTERBASE_COLLECTION, "IsSealed", new Value (false), Type::BOOL);
 	Shape::FillProperty = DependencyProperty::Register (Type::SHAPE, "Fill", Type::BRUSH);

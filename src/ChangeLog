@@ -1,3 +1,10 @@
+2009-02-02  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* dependencyproperty.g.cpp:Regenerated
+	* style.cpp|h: Use validators on Setter instead of overriding
+	SetValueWithErrorImpl on SetterBase
+	* validators.cpp|h: Addvalidator for checking sealed Setter
+
 2009-02-02  Larry Ewing  <lewing@novell.com>
 
 	* textbox.cpp, textbox.h: first pass at implementing arrange and

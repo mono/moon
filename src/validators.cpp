@@ -200,3 +200,17 @@ Validators::IsTimelineValidator (DependencyObject* instance, DependencyProperty 
 	
 	return true;
 }
+
+bool
+Validators::IsSetterSealedValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	if (instance->Is (Type::SETTERBASE)) {
+		if (((SetterBase*) instance)->GetIsSealed ()) {
+			MoonError::FillIn (error, MoonError::UNAUTHORIZED_ACCESS, "Cannot modify a setter after it is used");
+			return false;
+		}
+	}
+	
+	return true;
+}
+
