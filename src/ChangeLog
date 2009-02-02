@@ -1,3 +1,23 @@
+2009-02-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBox::OnPropertyChanged): Emit ModelChanged
+	events when the selection or text changes. TextBoxView cannot
+	depend on getting those events if things are changed
+	programatically.
+	(TextBox::KeyPressThaw): Don't ever bother with emitting
+	ModelChanged events here, they'll be emitted in
+	OnPropertyChanged(), now.
+	(TextBoxView): We no longer listen to TextChanged or
+	SelectionChanged events.
+	(TextBoxView::ResetCursorBlink): New method to do all of the
+	proper state checking to see if the cursor should be rendered
+	which calls the appropriate Begin/Delay/EndCursorBlink() method.
+	(TextBoxView::OnModelChanged): Updated to handle Text and
+	Selection changes. Dropped CursorPosition because it is no longer
+	necessary.
+	(TextBoxView::OnFocusIn): Set focused to true before calling
+	ResetCursorBlink().
+
 2009-02-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* runtime.cpp: ~Surface: don't call DrainUnrefs, we might

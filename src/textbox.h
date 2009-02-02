@@ -40,12 +40,13 @@ class TextChangedEventArgs : public RoutedEventArgs {
 
 enum TextBoxModelChangeType {
 	TextBoxModelChangedNothing,
-	TextBoxModelChangedCursorPosition,
 	TextBoxModelChangedTextAlignment,
 	TextBoxModelChangedTextWrapping,
+	TextBoxModelChangedSelection,
 	TextBoxModelChangedReadOnly,
 	TextBoxModelChangedBrush,
-	TextBoxModelChangedFont
+	TextBoxModelChangedFont,
+	TextBoxModelChangedText
 };
 
 
@@ -86,7 +87,7 @@ class TextBox : public Control, public ITextSource {
 	
 	int setvalue:1;
 	int cursor:1;
-	int emit:3;
+	int emit:2;
 	
  protected:
 	void KeyPressUnichar (gunichar c);
@@ -255,6 +256,8 @@ class TextBoxView : public FrameworkElement {
 	Rect cursor;
 	
 	int cursor_visible:1;
+	int selected_text:1;
+	int readonly:1;
 	int focused:1;
 	int dirty:1;
 	
@@ -282,6 +285,7 @@ class TextBoxView : public FrameworkElement {
 	static gboolean blink (void *user_data);
 	void ConnectBlinkTimeout (guint multiplier);
 	void DisconnectBlinkTimeout ();
+	void ResetCursorBlink (bool delay);
 	void DelayCursorBlink ();
 	void BeginCursorBlink ();
 	void EndCursorBlink ();

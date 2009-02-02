@@ -209,9 +209,8 @@ class TextBuffer {
 
 // emit state
 #define NOTHING_CHANGED         (0)
-#define CURSOR_POSITION_CHANGED (1 << 0)
-#define SELECTION_CHANGED       (1 << 1)
-#define TEXT_CHANGED            (1 << 2)
+#define SELECTION_CHANGED       (1 << 0)
+#define TEXT_CHANGED            (1 << 1)
 
 // cursor state
 #define SELECTION_BEGIN 0
@@ -1132,9 +1131,6 @@ TextBox::KeyPressThaw ()
 	
 	if (emit & SELECTION_CHANGED)
 		EmitSelectionChanged ();
-	
-	if (emit & CURSOR_POSITION_CHANGED)
-		Emit (TextBox::ModelChangedEvent, new TextBoxModelChangedEventArgs (TextBoxModelChangedCursorPosition));
 }
 
 void
@@ -1225,12 +1221,13 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		emit |= SELECTION_CHANGED;
 	} else if (args->property == TextBox::SelectionStartProperty) {
 		selection.start = args->new_value->AsInt32 ();
-		emit |= CURSOR_POSITION_CHANGED;
+		changed = TextBoxModelChangedSelection;
 		
 		// update SelectedText
 		SyncSelectedText ();
 	} else if (args->property == TextBox::SelectionLengthProperty) {
 		selection.length = args->new_value->AsInt32 ();
+		changed = TextBoxModelChangedSelection;
 		
 		// update SelectedText
 		SyncSelectedText ();
@@ -1251,6 +1248,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 			ClearSelection (0);
 		}
 		
+		changed = TextBoxModelChangedText;
 		emit |= TEXT_CHANGED;
 	} else if (args->property == TextBox::TextAlignmentProperty) {
 		changed = TextBoxModelChangedTextAlignment;
@@ -1369,19 +1367,18 @@ TextBoxView::TextBoxView ()
 	cursor = Rect (0, 0, 0, 0);
 	layout = new TextLayout ();
 	cursor_visible = false;
+	selected_text = false;
 	blink_timeout = 0;
 	textbox = NULL;
+	readonly = false;
 	focused = false;
 	dirty = false;
 }
 
 TextBoxView::~TextBoxView ()
 {
-	if (textbox) {
-		textbox->RemoveHandler (TextBox::SelectionChangedEvent, TextBoxView::selection_changed, this);
+	if (textbox)
 		textbox->RemoveHandler (TextBox::ModelChangedEvent, TextBoxView::model_changed, this);
-		textbox->RemoveHandler (TextBox::TextChangedEvent, TextBoxView::text_changed, this);
-	}
 	
 	RemoveHandler (UIElement::LostFocusEvent, TextBoxView::focus_out, this);
 	RemoveHandler (UIElement::GotFocusEvent, TextBoxView::focus_in, this);
@@ -1579,30 +1576,18 @@ TextBoxView::Blink ()
 void
 TextBoxView::DelayCursorBlink ()
 {
-	if (textbox->GetSelection ()->length == 0) {
-		DisconnectBlinkTimeout ();
-		ConnectBlinkTimeout (CURSOR_DELAY_MULTIPLIER);
-		ShowCursor ();
-	} else {
-		// temporarily disable blinking during selection
-		DisconnectBlinkTimeout ();
-		cursor_visible = true;
-	}
+	DisconnectBlinkTimeout ();
+	ConnectBlinkTimeout (CURSOR_DELAY_MULTIPLIER);
+	UpdateCursor (true);
+	ShowCursor ();
 }
 
 void
 TextBoxView::BeginCursorBlink ()
 {
-	if (textbox->GetSelection ()->length == 0) {
-		// no selection, proceed with blinking
-		if (blink_timeout == 0) {
-			ConnectBlinkTimeout (CURSOR_ON_MULTIPLIER);
-			ShowCursor ();
-		}
-	} else {
-		// temporarily disable blinking during selection
-		DisconnectBlinkTimeout ();
-		cursor_visible = true;
+	if (blink_timeout == 0) {
+		ConnectBlinkTimeout (CURSOR_ON_MULTIPLIER);
+		ShowCursor ();
 	}
 }
 
@@ -1613,6 +1598,23 @@ TextBoxView::EndCursorBlink ()
 	
 	if (cursor_visible)
 		HideCursor ();
+	
+	cursor_visible = true;
+}
+
+void
+TextBoxView::ResetCursorBlink (bool delay)
+{
+	if (focused && !selected_text && !readonly) {
+		// cursor is blinkable... proceed with blinkage
+		if (delay)
+			DelayCursorBlink ();
+		else
+			BeginCursorBlink ();
+	} else {
+		// cursor not blinkable... stop all blinkage
+		EndCursorBlink ();
+	}
 }
 
 void
@@ -1786,52 +1788,9 @@ TextBoxView::Paint (cairo_t *cr)
 }
 
 void
-TextBoxView::selection_changed (EventObject *sender, EventArgs *args, gpointer closure)
-{
-	((TextBoxView *) closure)->OnSelectionChanged ((RoutedEventArgs *) args);
-}
-
-void
-TextBoxView::OnSelectionChanged (RoutedEventArgs *args)
-{
-	// the selection has changed, need to recalculate layout
-	UpdateBounds (true);
-	Invalidate ();
-	dirty = true;
-}
-
-void
-TextBoxView::text_changed (EventObject *sender, EventArgs *args, gpointer closure)
-{
-	((TextBoxView *) closure)->OnTextChanged ((TextChangedEventArgs *) args);
-}
-
-void
-TextBoxView::OnTextChanged (TextChangedEventArgs *args)
-{
-	// text has changed, need to recalculate layout
-	UpdateBounds (true);
-	Invalidate ();
-	dirty = true;
-}
-
-void
-TextBoxView::model_changed (EventObject *sender, EventArgs *args, gpointer closure)
-{
-	((TextBoxView *) closure)->OnModelChanged ((TextBoxModelChangedEventArgs *) args);
-}
-
-void
 TextBoxView::OnModelChanged (TextBoxModelChangedEventArgs *args)
 {
 	switch (args->changed) {
-	case TextBoxModelChangedCursorPosition:
-		// cursor position changed, just need to re-render
-		if (focused)
-			DelayCursorBlink ();
-		
-		UpdateCursor (true);
-		return;
 	case TextBoxModelChangedTextAlignment:
 		// text alignment changed, update our layout
 		dirty = layout->SetTextAlignment ((TextAlignment) args->property->new_value->AsInt32 ());
@@ -1840,19 +1799,31 @@ TextBoxView::OnModelChanged (TextBoxModelChangedEventArgs *args)
 		// text wrapping changed, update our layout
 		dirty = layout->SetTextWrapping ((TextWrapping) args->property->new_value->AsInt32 ());
 		break;
-	case TextBoxModelChangedReadOnly:
-		if (focused) {
-			if (args->property->new_value->AsBool ())
-				BeginCursorBlink ();
-			else
-				EndCursorBlink ();
+	case TextBoxModelChangedSelection:
+		if (selected_text || textbox->GetSelection ()->length > 0) {
+			// the selection has changed, need to recalculate layout
+			selected_text = textbox->GetSelection ()->length > 0;
+			ResetCursorBlink (false);
+			dirty = true;
+		} else {
+			// cursor position changed
+			ResetCursorBlink (true);
+			return;
 		}
 		break;
+	case TextBoxModelChangedReadOnly:
+		readonly = args->property->new_value->AsBool ();
+		ResetCursorBlink (false);
+		return;
 	case TextBoxModelChangedBrush:
 		// a brush has changed, no layout updates needed, we just need to re-render
 		break;
 	case TextBoxModelChangedFont:
 		// font changed, need to recalculate layout
+		dirty = true;
+		break;
+	case TextBoxModelChangedText:
+		// the text has changed, need to recalculate layout
 		dirty = true;
 		break;
 	default:
@@ -1888,8 +1859,8 @@ TextBoxView::focus_in (EventObject *sender, EventArgs *args, gpointer closure)
 void
 TextBoxView::OnFocusIn (EventArgs *args)
 {
-	BeginCursorBlink ();
 	focused = true;
+	ResetCursorBlink (false);
 }
 
 void
@@ -1900,15 +1871,11 @@ TextBoxView::SetTextBox (TextBox *textbox)
 	
 	if (this->textbox) {
 		// remove the event handlers from the old textbox
-		this->textbox->RemoveHandler (TextBox::SelectionChangedEvent, TextBoxView::selection_changed, this);
 		this->textbox->RemoveHandler (TextBox::ModelChangedEvent, TextBoxView::model_changed, this);
-		this->textbox->RemoveHandler (TextBox::TextChangedEvent, TextBoxView::text_changed, this);
 	}
 	
 	if (textbox) {
-		textbox->AddHandler (TextBox::SelectionChangedEvent, TextBoxView::selection_changed, this);
 		textbox->AddHandler (TextBox::ModelChangedEvent, TextBoxView::model_changed, this);
-		textbox->AddHandler (TextBox::TextChangedEvent, TextBoxView::text_changed, this);
 		
 		// sync our layout hints state
 		layout->SetTextAlignment (textbox->GetTextAlignment ());
