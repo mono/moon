@@ -169,6 +169,39 @@ namespace MoonTest.System.Windows.Shapes
 		}
 
 		[TestMethod]
+		public void ComputeActualSizeIntrinsicBorder_Margin ()
+		{
+			Border b = new Border ();
+			var c = new Path ();
+			b.Child = c;
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired0");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual0");
+
+			var data = new RectangleGeometry ();
+			data.Rect = new Rect (0,10,25,23);
+			c.Data = data;
+			c.Margin = new Thickness (2,4,5,6);
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired1");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual1");
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (c), "c slot");
+
+			c.Measure (new Size (100, 100));
+
+			Assert.AreEqual (new Size (32,43), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual2");
+			Assert.AreEqual (new Size (0,0), c.RenderSize, "c render");
+
+			c.Arrange (new Rect (0,0,c.DesiredSize.Width,c.DesiredSize.Height));
+
+			Assert.AreEqual (new Rect (0,0,32,43), LayoutInformation.GetLayoutSlot (c), "c slot3");
+			Assert.AreEqual (new Size (32,43), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (25,33), new Size (c.ActualWidth,c.ActualHeight), "c actual3");
+			Assert.AreEqual (new Size (25,33), c.RenderSize, "c render");
+		}
+
+		[TestMethod]
 		public void ComputeRestrainedSizeIntrinsicBorder ()
 		{
 			Border b = new Border ();
