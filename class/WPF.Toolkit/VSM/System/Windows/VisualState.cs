@@ -15,13 +15,15 @@ namespace System.Windows
     [RuntimeNameProperty("Name")]
     public class VisualState : DependencyObject
     {
+	    internal static DependencyProperty NameProperty = DependencyProperty.Lookup (Kind.DEPENDENCY_OBJECT, "Name", typeof (string));
+
         /// <summary>
         ///     The name of the VisualState.
         /// </summary>
         public string Name
         {
-            get;
-            set;
+		get { return (string) GetValue (NameProperty); }
+		set { SetValue (NameProperty, value); }
         }
 
         private static readonly DependencyProperty StoryboardProperty =
