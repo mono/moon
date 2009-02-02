@@ -1,5 +1,10 @@
 2009-02-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* runtime.cpp: ~Surface: don't call DrainUnrefs, we might
+	  already be in one, and DrainUnrefs isn't recursive anymore.
+
+2009-02-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* src.mdp: Updated to use new MD features (ChangeLog and log
 	  message policy).
 

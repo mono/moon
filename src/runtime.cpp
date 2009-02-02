@@ -366,8 +366,6 @@ Surface::~Surface ()
 	
 	time_manager->unref ();
 	
-	EventObject::DrainUnrefs ();
-	
 	delete up_dirty;
 	delete down_dirty;
 	
