@@ -70,8 +70,7 @@ SetterBaseCollection::AddedToCollection (Value *value, MoonError *error)
 
 	SetterBase *setter = value->AsSetterBase ();
 	setter->SetAttached (true);
-	if (style && style->GetIsSealed ())
-		setter->Seal ();
+	setter->Seal ();
 
 	return DependencyObjectCollection::AddedToCollection (value, error);
 }
