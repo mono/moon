@@ -1,5 +1,10 @@
 2009-02-02  Andreia Gaita  <avidigal@novell.com>
 
+	* ScriptObject.cs: Move ScriptableTypes from ScriptObject to
+	WebApplication.
+
+2009-02-02  Andreia Gaita  <avidigal@novell.com>
+
 	* ScriptObject.cs, ScriptableObjectWrapper.cs: Move scriptableObjects
 	property to ScriptableObjectWrapper and make it a field, it's only used here
 	to look up objects from handles coming from native.

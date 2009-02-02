@@ -53,6 +53,11 @@ namespace System.Windows
 		readonly IntPtr plugin_handle;
 		IDictionary<string, string> startup_args;
 
+		static Dictionary<string, Type> scriptableTypes;
+		static internal Dictionary<string, Type> ScriptableTypes {
+			get { return scriptableTypes;}
+		}
+
 		private WebApplication ()
 		{
 			plugin_handle = PluginHost.Handle;
@@ -72,6 +77,8 @@ namespace System.Windows
 						startup_args[stuff[0]] = String.Empty;
 				}
 			}
+
+			scriptableTypes = new Dictionary<string, Type>();
 		}
 
 		internal IntPtr PluginHandle {
@@ -91,18 +98,19 @@ namespace System.Windows
 			ScriptableObjectWrapper wrapper = ScriptableObjectGenerator.Generate (instance, true);
 			wrapper.Register (scriptKey);
 		}
-		
+
 		public void RegisterCreateableType (string scriptAlias, Type type)
 		{
-			ScriptObject.ScriptableTypes.Add (scriptAlias, type);
+			if (ScriptableTypes.ContainsKey (scriptAlias))
+				throw new ArgumentException ("scriptAlias");
+			ScriptableTypes[scriptAlias] = type;
 		}
 
 		public void UnregisterCreateableType (string scriptAlias)
 		{
-			if (ScriptObject.ScriptableTypes.ContainsKey (scriptAlias))
-				ScriptObject.ScriptableTypes.Remove (scriptAlias);
+			if (ScriptableTypes.ContainsKey (scriptAlias))
+				ScriptableTypes.Remove (scriptAlias);
 		}	
-		
 
 		[MonoTODO]
 		public IDictionary<string, string> StartupArguments {

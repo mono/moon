@@ -37,16 +37,6 @@ namespace System.Windows.Browser {
 		string script_key;
 		object managed;
 
-		static Dictionary<string, Type> scriptableTypes;
-		static internal Dictionary<string, Type> ScriptableTypes {
-			get { return scriptableTypes;}
-		}
-
-		static ScriptObject ()
-		{
-			scriptableTypes = new Dictionary<string, Type>();
-		}
-
 		internal ScriptObject ()
 		{
 		}

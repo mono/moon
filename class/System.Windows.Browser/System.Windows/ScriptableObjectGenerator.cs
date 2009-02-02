@@ -122,7 +122,6 @@ namespace System.Windows
 	}
 
 
-
 	internal static class ScriptableObjectGenerator
 	{
 		static bool ValidateType (Type t)
@@ -233,9 +232,31 @@ namespace System.Windows
 				if (!isScriptable && !mi.IsDefined (typeof(ScriptableMemberAttribute), true))
 					continue;
 				scriptable.AddMethod (mi);
+				AddTypes (mi);
 			}
-
 			return scriptable;
+		}
+
+		static void AddTypes (PropertyInfo pi)
+		{
+			if (IsCreateable (pi.PropertyType))
+				AddType (pi.PropertyType);
+		}
+
+		static void AddTypes (MethodInfo mi)
+		{
+			if (IsCreateable (mi.ReturnType))
+				AddType (mi.ReturnType);
+
+			ParameterInfo[] ps = mi.GetParameters();
+			foreach (ParameterInfo p in ps)
+				AddType (p.ParameterType);
+		}
+
+		static void AddType (Type type)
+		{
+			if (!WebApplication.ScriptableTypes.ContainsKey (type.Name))
+				WebApplication.ScriptableTypes[type.Name] = type;
 		}
 
 		static bool IsSupportedType (Type t)
@@ -267,6 +288,26 @@ namespace System.Windows
 			}
 
 			return false;
+		}
+
+		static bool IsCreateable (Type type)
+		{
+			if (type != null && type != typeof (object))
+				return false;
+
+			if (!type.IsVisible || type.IsAbstract ||
+			    type.IsInterface || type.IsPrimitive ||
+				type.IsGenericTypeDefinition)
+				return false;
+
+			if (!type.IsValueType)
+				return false;
+
+			// default constructor
+			if (type.GetConstructor (BindingFlags.Public | BindingFlags.Instance, null, new Type[0], null) == null)
+				return false;
+
+			return true;
 		}
 	}
 }
