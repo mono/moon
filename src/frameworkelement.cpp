@@ -486,7 +486,8 @@ FrameworkElement::Arrange (Rect finalRect)
 	if (finalRect.width < 0 || finalRect.height < 0 
 	    || isinf (finalRect.width) || isinf (finalRect.height)
 	    || isnan (finalRect.width) || isnan (finalRect.height)) {
-		g_warning ("invalid arguments to Arrange ()");
+		Size desired = GetDesiredSize ();
+		g_warning ("invalid arguments to Arrange (%g,%g,%g,%g) Desired = (%g,%g)", finalRect.x, finalRect.y, finalRect.width, finalRect.height, desired.width, desired.height);
 		return;
 	}
 
@@ -496,37 +497,26 @@ FrameworkElement::Arrange (Rect finalRect)
 
 	LayoutInformation::SetLayoutSlot (this, &finalRect);
 	LayoutInformation::SetLayoutClip (this, NULL);
-	//cairo_matrix_init_identity (&layout_xform);
 
 	this->dirty_flags &= ~DirtyArrange;
 
 	Thickness margin = *GetMargin ();
-	finalRect = finalRect.GrowBy (-margin);
+	Rect child_rect = finalRect.GrowBy (-margin);
 
-	cairo_matrix_init_translate (&layout_xform, finalRect.x, finalRect.y);
+	cairo_matrix_init_translate (&layout_xform, child_rect.x, child_rect.y);
 	UpdateTransform ();
 
-	Size offer (finalRect.width, finalRect.height);
+	Size offer (child_rect.width, child_rect.height);
 	Size response;
 	
 	HorizontalAlignment horiz = GetHorizontalAlignment ();
 	VerticalAlignment vert = GetVerticalAlignment ();
 
-	/*
-	 * If width and height are specified we adjust the our
-	 * both out size and our transform logic to match
-	 *
-	 * Note: the stretch hack appears to be wrong disabling for
-	 * now --Larry
-	 */
-	if (!isnan (GetWidth ())) {
-		//horiz = HorizontalAlignmentStretch;
+	if (!isnan (GetWidth ()))
 		offer.width = GetWidth ();
-	}
-	if (!isnan (GetHeight ())) {
-		//vert = VerticalAlignmentStretch;
+
+	if (!isnan (GetHeight ()))
 		offer.height = GetHeight ();
-	}
 
 	if (arrange_cb)
 		response = (*arrange_cb)(offer);
@@ -558,14 +548,13 @@ FrameworkElement::Arrange (Rect finalRect)
 	case HorizontalAlignmentLeft:
 		break;
 	case HorizontalAlignmentRight:
-		cairo_matrix_translate (&layout_xform, finalRect.width - response.width, 0);
+		cairo_matrix_translate (&layout_xform, child_rect.width - response.width, 0);
 		break;
 	case HorizontalAlignmentCenter:
-		cairo_matrix_translate (&layout_xform, (finalRect.width  - response.width) * .5, 0);
+		cairo_matrix_translate (&layout_xform, (child_rect.width  - response.width) * .5, 0);
 		break;
 	default:
-		cairo_matrix_translate (&layout_xform, MAX ((finalRect.width  - response.width) * .5, 0), 0);
-
+		cairo_matrix_translate (&layout_xform, MAX ((child_rect.width  - response.width) * .5, 0), 0);
 		break;
 	}
 
@@ -573,13 +562,13 @@ FrameworkElement::Arrange (Rect finalRect)
 	case VerticalAlignmentTop:
 		break;
 	case VerticalAlignmentBottom:
-		cairo_matrix_translate (&layout_xform, 0, finalRect.height - response.height);
+		cairo_matrix_translate (&layout_xform, 0, child_rect.height - response.height);
 		break;
 	case VerticalAlignmentCenter:
-		cairo_matrix_translate (&layout_xform, 0, (finalRect.height - response.height) * .5);
+		cairo_matrix_translate (&layout_xform, 0, (child_rect.height - response.height) * .5);
 		break;
 	default:
-		cairo_matrix_translate (&layout_xform, 0, MAX ((finalRect.height - response.height) * .5, 0));
+		cairo_matrix_translate (&layout_xform, 0, MAX ((child_rect.height - response.height) * .5, 0));
 		break;
 	}
 
@@ -587,6 +576,7 @@ FrameworkElement::Arrange (Rect finalRect)
 	
 	cairo_matrix_t inverse_layout = layout_xform;
 	cairo_matrix_invert (&inverse_layout);
+	
 	Rect layout_clip = finalRect.Transform (&inverse_layout);
 	RectangleGeometry *rectangle = new RectangleGeometry ();
 	rectangle->SetRect (&layout_clip);

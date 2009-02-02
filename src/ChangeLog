@@ -1,3 +1,12 @@
+2009-02-01  Larry Ewing  <lewing@novell.com>
+
+	* thickness.cpp (Thickness::FromStr): 
+	* cornerradius.cpp (CornerRadius::FromStr): don't pass a max value
+	that will cause the rest to be filled with 0.  Fixes parsing of
+	single value entries.
+
+	* frameworkelement.cpp: arrange based on the adjusted rect.
+
 2009-02-01  Chris Toshok  <toshok@ximian.com>
 
 	* contentcontrol.cpp (ContentControl::OnPropertyChanged): remove

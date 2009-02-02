@@ -21,7 +21,7 @@
 bool
 Thickness::FromStr (const char *str, Thickness *thickness)
 {
-	GArray *values = double_garray_from_str (str, 4);
+	GArray *values = double_garray_from_str (str, 0);
 	bool rv = true;
 
 	switch (values->len) {
@@ -32,15 +32,15 @@ Thickness::FromStr (const char *str, Thickness *thickness)
 		*thickness = Thickness (g_array_index (values, double, 0),
 					g_array_index (values, double, 1));
 		break;
-	case 3:
-		g_warning ("Thickness specified with 3 values, '%s'.", str);
-		rv = false;
-		break;
 	case 4:
 		*thickness = Thickness (g_array_index (values, double, 0),
 					g_array_index (values, double, 1),
 					g_array_index (values, double, 2),
 					g_array_index (values, double, 3));
+		break;
+	default:
+		g_warning ("Thickness specified with %d values, '%s'.", values->len, str);
+		rv = false;
 		break;
 	}
 
