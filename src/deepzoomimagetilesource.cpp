@@ -75,6 +75,9 @@ DeepZoomImageTileSource::DeepZoomImageTileSource ()
 	format = NULL;
 	get_tile_func = get_tile_layer;
 	display_rects = NULL;
+	printf ("Done parsing...\n");
+	printf ("Done parsing...\n");
+	parsed_callback = NULL;
 }
 
 DeepZoomImageTileSource::DeepZoomImageTileSource (const char *uri)
@@ -86,6 +89,7 @@ DeepZoomImageTileSource::DeepZoomImageTileSource (const char *uri)
 	SetValue (DeepZoomImageTileSource::UriSourceProperty, new Value (uri, true));
 	format = NULL;
 	get_tile_func = get_tile_layer;
+	parsed_callback = NULL;
 }
 
 DeepZoomImageTileSource::~DeepZoomImageTileSource ()
@@ -181,7 +185,6 @@ DeepZoomImageTileSource::Parse (const char* filename)
 	}
 	fclose (f);
 
-	printf ("Done parsing...\n");
 	imageWidth = info->image_width;
 	imageHeight = info->image_height;
 	tileWidth = tileHeight = info->tile_size;
@@ -189,6 +192,9 @@ DeepZoomImageTileSource::Parse (const char* filename)
 	format = g_strdup (info->format);
 	display_rects = info->display_rects;
 
+	printf ("Done parsing...\n");
+	if (parsed_callback)
+		parsed_callback (cb_userdata);
 }
 
 gpointer

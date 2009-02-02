@@ -22,6 +22,7 @@
 
 #include "multiscaleimage.h"
 #include "tilesource.h"
+#include "deepzoomimagetilesource.h"
 #include "file-downloader.h"
 
 MultiScaleImage::MultiScaleImage ()
@@ -244,6 +245,14 @@ MultiScaleImage::cache_contains (int layer, int x, int y, bool empty_tiles)
 }
 
 void
+multi_scale_image_handle_parsed (void *userdata)
+{
+	printf ("PARSED CALLBACK\n");
+	MultiScaleImage *msi = (MultiScaleImage*)userdata;
+	msi->Invalidate ();
+}
+
+void
 MultiScaleImage::Render (cairo_t *cr, Region *region)
 {
 //printf ("MSI::Render\n");
@@ -258,8 +267,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 
 	if (source->GetImageWidth () < 0) {
 		printf ("nothing to render so far...\n");
-		//FIXME: need to add a callback so we can invalidate the MSI and render again.
-		//Note: source->Download is only used for DeepZoomImageTileSource
+		((DeepZoomImageTileSource*)source)->set_parsed_cb (multi_scale_image_handle_parsed, this);
 		source->Download ();
 		return;
 	}

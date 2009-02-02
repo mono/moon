@@ -18,14 +18,15 @@
 #include "downloader.h"
 #include "uri.h"
 
-typedef void (*downloaded_cb) (const char* path);
+typedef void (*parsed_cb) (void *userdata);
 
 /* @Version=2,Namespace=System.Windows.Media */
 class DeepZoomImageTileSource : public MultiScaleTileSource {
 
 	Downloader* downloader;
 
-//	downloaded_cb callback;
+	parsed_cb parsed_callback;
+	void *cb_userdata;
 
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	void DownloaderComplete ();	
@@ -50,8 +51,11 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	//
 	// Methods
 	//
-//	/* @GenerateCBinding */
-//	void set_downloaded_cb (downloaded_cb callback);
+	void set_parsed_cb (parsed_cb callback, void *userdata)
+	{
+		parsed_callback = callback;
+		cb_userdata = userdata;
+	}
 
 	virtual void Download ();
 	gpointer GetTileLayer (int level, int x, int y);
