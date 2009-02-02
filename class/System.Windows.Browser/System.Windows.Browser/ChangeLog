@@ -1,5 +1,10 @@
 2009-02-02  Andreia Gaita  <avidigal@novell.com>
 
+	* ScriptableObjectWrapper.cs: ... fix the previous commit and put the 
+	initializer in the proper place. (*sigh*)
+
+2009-02-02  Andreia Gaita  <avidigal@novell.com>
+
 	* ScriptableObjectWrapper.cs: Add a missing constructor call (that's what I
 	get for splitting patches... sorry!)
 

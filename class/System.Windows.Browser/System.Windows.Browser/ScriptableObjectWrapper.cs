@@ -57,6 +57,11 @@ namespace System.Windows.Browser
 
 		public bool HasTypes { get; set; }
 
+		static ScriptableObjectWrapper ()
+		{
+			scriptableObjects = new Dictionary<IntPtr,WeakReference> ();
+		}
+
 		public ScriptableObjectWrapper (object obj) : base(obj)
 		{
 			this.handles = new List<GCHandle>();
@@ -75,7 +80,6 @@ namespace System.Windows.Browser
 									remove_event);
 
 			handle = ScriptableNativeMethods.moonlight_object_to_npobject (moon_handle);
-			scriptableObjects = new Dictionary<IntPtr,WeakReference> ();
 			scriptableObjects [handle] = new WeakReference(this);
 		}
 
@@ -96,6 +100,7 @@ namespace System.Windows.Browser
 										     remove_event);
 
 			handle = ScriptableNativeMethods.moonlight_object_to_npobject (moon_handle);
+			scriptableObjects [handle] = new WeakReference(this);
 		}
 
 		public void Register (string scriptKey)
