@@ -1343,12 +1343,37 @@ RenderLine (cairo_t *cr, const Point &origin, const Point &position, TextLine *l
 	}
 }
 
+double
+TextLayout::HorizontalAlignment (double line_width)
+{
+	double deltax;
+	
+	switch (alignment) {
+	case TextAlignmentCenter:
+		if (line_width < max_width)
+			deltax = (max_width - line_width) / 2.0;
+		else
+			deltax = 0.0;
+		break;
+	case TextAlignmentRight:
+		if (line_width < max_width)
+			deltax = max_width - line_width;
+		else
+			deltax = 0.0;
+		break;
+	default:
+		deltax = 0.0;
+		break;
+	}
+	
+	return deltax;
+}
+
 void
 TextLayout::Render (cairo_t *cr, const Point &origin, const Point &offset)
 {
 	TextLine *line;
 	Point position;
-	double deltax;
 	
 	position.y = offset.y;
 	
@@ -1357,25 +1382,7 @@ TextLayout::Render (cairo_t *cr, const Point &origin, const Point &offset)
 	line = (TextLine *) lines->First ();
 	
 	while (line) {
-		switch (alignment) {
-		case TextAlignmentCenter:
-			if (line->width < max_width)
-				deltax = (max_width - line->width) / 2.0;
-			else
-				deltax = 0.0;
-			break;
-		case TextAlignmentRight:
-			if (line->width < max_width)
-				deltax = max_width - line->width;
-			else
-				deltax = 0.0;
-			break;
-		default:
-			deltax = 0.0;
-			break;
-		}
-		
-		position.x = offset.x + deltax;
+		position.x = offset.x + HorizontalAlignment (line->width);
 		RenderLine (cr, origin, position, line);
 		position.y += (double) line->height;
 		
@@ -1390,7 +1397,6 @@ TextLayout::GetIndexFromPoint (const Point &offset, double x, double y)
 	return -1;
 }
 
-
 Rect
 TextLayout::GetCursor (const Point &offset, int pos)
 {
@@ -1399,7 +1405,6 @@ TextLayout::GetCursor (const Point &offset, int pos)
 	GlyphInfo *glyph;
 	TextLine *line;
 	TextFont *font;
-	double deltax;
 	guint32 prev;
 	int cur = 0;
 	gunichar c;
@@ -1407,33 +1412,16 @@ TextLayout::GetCursor (const Point &offset, int pos)
 	
 	//printf ("TextLayout::GetCursor (%d)\n", pos);
 	
-	ascend = y1 = 0.0;
 	x0 = offset.x;
 	y0 = offset.y;
+	ascend = 0.0;
+	y1 = 0.0;
 	
 	line = (TextLine *) lines->First ();
 	
 	while (line) {
-		switch (alignment) {
-		case TextAlignmentCenter:
-			if (line->width < max_width)
-				deltax = (max_width - line->width) / 2.0;
-			else
-				deltax = 0.0;
-			break;
-		case TextAlignmentRight:
-			if (line->width < max_width)
-				deltax = max_width - line->width;
-			else
-				deltax = 0.0;
-			break;
-		default:
-			deltax = 0.0;
-			break;
-		}
-		
 		// adjust x0 for horizontal alignment
-		x0 = offset.x + deltax;
+		x0 = offset.x + HorizontalAlignment (line->width);
 		
 		// set y1 to the baseline (descend is a negative value)
 		y1 = y0 + line->height + line->descend;
@@ -1482,16 +1470,16 @@ TextLayout::GetCursor (const Point &offset, int pos)
 		if (cur == pos)
 			break;
 		
-		//printf ("\tskipping over %d chars for EOL sequence\n", line->crlf);
+		y0 += line->height;
 		cur += line->crlf;
 		
-		if (line->next) {
-			y0 += (double) line->height;
-			line = (TextLine *) line->next;
-		} else {
+		line = (TextLine *) line->next;
+		
+		if (cur >= pos) {
+			x0 = HorizontalAlignment (line ? line->width : 0.0);
 			break;
 		}
 	}
 	
-	return Rect (x0, y1 - ascend, 1.0, ascend);
+	return Rect (x0, y0, 1.0, ascend);
 }

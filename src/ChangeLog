@@ -3,6 +3,8 @@
 	* layout.cpp (TextRun): 'crlf' is now a short rather than a 2-bit
 	int because, duh, the range is -2 to 1, not 0 to 3 and so
 	TextLine::crlf was being set to -2 instead of 2.
+	(TextLayout::GetCursor): A minor tweak to get things to work if
+	the cursor is right after the last char which is a \r.
 
 	* textbox.cpp (TextBuffer::Cut): Fixed, this was totally broken
 	before.

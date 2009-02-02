@@ -76,6 +76,8 @@ class TextLayout {
 	
 	bool OverrideLineHeight () { return (strategy == LineStackingStrategyBlockLineHeight && !isnan (line_height)); }
 	
+	double HorizontalAlignment (double line_width);
+	
 	void LayoutWrapWithOverflow ();
 	void LayoutNoWrap ();
 	void LayoutWrap ();
