@@ -49,3 +49,65 @@ UserControl::OnPropertyChanged (PropertyChangedEventArgs *args)
 	}
 	NotifyListenersOfPropertyChange (args);
 }
+
+Size
+UserControl::MeasureOverride (Size availableSize)
+{
+	Size desired = Size (0,0);
+	Size specified = Size (GetWidth (), GetHeight ());
+
+	availableSize = availableSize.Max (specified);
+	availableSize = availableSize.Min (specified);
+
+	Thickness border = *GetPadding () + *GetBorderThickness ();
+
+	// Get the desired size of our child, and include any margins we set
+	VisualTreeWalker walker = VisualTreeWalker (this);
+	while (UIElement *child = walker.Step ()) {
+		if (child->GetVisibility () != VisibilityVisible)
+			continue;
+
+		child->Measure (availableSize.GrowBy (-border));
+		desired = child->GetDesiredSize ();
+	}
+
+	desired = desired.GrowBy (border);
+
+	desired = desired.Max (specified);
+	desired = desired.Min (specified);
+
+	return desired;
+}
+
+Size
+UserControl::ArrangeOverride (Size finalSize)
+{
+	Thickness border = *GetPadding () + *GetBorderThickness ();
+
+	Size specified = Size (GetWidth (), GetHeight ());
+
+	finalSize = finalSize.Max (specified);
+	finalSize = finalSize.Min (specified);
+
+	VisualTreeWalker walker = VisualTreeWalker (this);
+	while (UIElement *child = walker.Step ()) {
+		if (child->GetVisibility () != VisibilityVisible)
+			continue;
+
+		Size desired = child->GetDesiredSize ();
+		Rect childRect (0,0,finalSize.width,finalSize.height);
+
+		childRect = childRect.GrowBy (-border);
+
+		if (GetHorizontalAlignment () != HorizontalAlignmentStretch && isnan (GetWidth ()))
+			childRect.width = MIN (desired.width, childRect.width);
+
+		if (GetVerticalAlignment () != VerticalAlignmentStretch && isnan (GetHeight ()))
+			childRect.height = MIN (desired.height, childRect.height);
+
+		child->Arrange (childRect);
+		finalSize = finalSize.Max (child->GetRenderSize ().GrowBy (border));
+	}
+
+	return finalSize;
+}

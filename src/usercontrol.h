@@ -37,6 +37,9 @@ public:
 	virtual bool IsLayoutContainer () { return true; }
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+
+	virtual Size MeasureOverride (Size availableSize);
+	virtual Size ArrangeOverride (Size finalSize);
 };
 
 UIElement *user_control_get_content (UserControl *user_control);

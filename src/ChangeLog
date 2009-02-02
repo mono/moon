@@ -1,5 +1,12 @@
 2009-02-01  Larry Ewing  <lewing@novell.com>
 
+	* control.cpp, control.h:
+	* usercontrol.cpp, usercontrol.h: move ArrangeOverride and
+	MeasureOverride here from control where they are only used for
+	binding.
+
+2009-02-01  Larry Ewing  <lewing@novell.com>
+
 	* thickness.cpp (Thickness::FromStr): 
 	* cornerradius.cpp (CornerRadius::FromStr): don't pass a max value
 	that will cause the rest to be filled with 0.  Fixes parsing of
