@@ -1,5 +1,11 @@
 2009-02-02  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Media.Imaging/BitmapImageTest.cs:
+	  Image.Source defaults to a BitmapImage with a uri of
+	  string.empty.
+
+2009-02-02  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Media.Imaging/BitmapImageTest.cs: The
 	  default value for Bitmap.ImageSource is an empty string.
 

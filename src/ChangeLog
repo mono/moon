@@ -1,3 +1,9 @@
+2009-02-02  Alan McGovern  <amcgovern@novell.com>
+
+	* media.cpp:
+	* bitmapimage.cpp: Image.Source defaults to a BitmapImage
+	  with a uri of string.empty.
+
 2009-02-02  Chris Toshok  <toshok@ximian.com>
 
 	* rect.h (struct Rect): we can be Grown by a negative amount. make
