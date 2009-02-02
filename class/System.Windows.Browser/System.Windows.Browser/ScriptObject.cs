@@ -37,11 +37,6 @@ namespace System.Windows.Browser {
 		string script_key;
 		object managed;
 
-		static Dictionary<IntPtr, WeakReference> scriptableObjects;
-		static internal Dictionary<IntPtr, WeakReference> ScriptableObjects {
-			get { return scriptableObjects;}
-		}
-
 		static Dictionary<string, Type> scriptableTypes;
 		static internal Dictionary<string, Type> ScriptableTypes {
 			get { return scriptableTypes;}
@@ -49,7 +44,6 @@ namespace System.Windows.Browser {
 
 		static ScriptObject ()
 		{
-			scriptableObjects = new Dictionary<IntPtr, WeakReference>();
 			scriptableTypes = new Dictionary<string, Type>();
 		}
 

@@ -1,5 +1,11 @@
 2009-02-02  Andreia Gaita  <avidigal@novell.com>
 
+	* ScriptObject.cs, ScriptableObjectWrapper.cs: Move scriptableObjects
+	property to ScriptableObjectWrapper and make it a field, it's only used here
+	to look up objects from handles coming from native.
+
+2009-02-02  Andreia Gaita  <avidigal@novell.com>
+
 	* ScriptableObjectWrapper.cs: Split out the wrapper
 	class and move it to the S.W.Browser side. It inherits from ScriptObject
 	and has it's own pinvokes, so it deserves it's own little place on the tree.

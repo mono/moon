@@ -47,6 +47,8 @@ namespace System.Windows.Browser
 	
 	internal class ScriptableObjectWrapper : ScriptObject {
 
+		static Dictionary<IntPtr, WeakReference> scriptableObjects;
+
 		List<GCHandle> handles; /* for methods, events, properties, as well as the object itself */
 		IntPtr moon_handle;
 		public IntPtr MoonHandle {
@@ -71,6 +73,7 @@ namespace System.Windows.Browser
 									remove_event);
 
 			handle = ScriptableNativeMethods.moonlight_object_to_npobject (moon_handle);
+			scriptableObjects [handle] = new WeakReference(this);
 		}
 
 		public ScriptableObjectWrapper (object obj, IntPtr parent) : base (obj)
@@ -209,7 +212,7 @@ namespace System.Windows.Browser
 				// FIXME: Move all of this one caller up
 				Type type = typeof (T);
 				WeakReference reference;
-				if (ScriptObject.ScriptableObjects.TryGetValue (v.u.p, out reference)) {
+				if (scriptableObjects.TryGetValue (v.u.p, out reference)) {
 					return (T) reference.Target;
 				} else if (!type.Equals (typeof(object)) && typeof (ScriptObject).IsAssignableFrom (type)) {
 					System.Reflection.ConstructorInfo info = type.GetConstructor (BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[]{typeof(IntPtr)}, null);

@@ -210,7 +210,6 @@ namespace System.Windows
 				throw new ArgumentException (String.Format ("The scriptable type {0} does not have scriptable members", type));
 
 			ScriptableObjectWrapper scriptable = new ScriptableObjectWrapper (instance);
-			ScriptObject.ScriptableObjects.Add (scriptable.Handle, new WeakReference(scriptable));
 
 			bool isScriptable = type.IsDefined (typeof(ScriptableTypeAttribute), true);
 
