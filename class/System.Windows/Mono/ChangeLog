@@ -1,3 +1,10 @@
+2009-02-02  Chris Toshok  <toshok@ximian.com>
+
+	* ManagedXamlLoader.cs (Lookup): use
+	Types.Find(type).native_handle instead of
+	Types.TypeToNativeHandle(type).
+	(LookupComponentFromName): same.
+
 2009-02-02  Andreia Gaita  <avidigal@novell.com>
 
 	* DispatcherTimer.cs: Don't stop the timer when an exception is

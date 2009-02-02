@@ -226,7 +226,7 @@ namespace Mono.Xaml
 				value = Value.FromObject (res, true);
 			} else {
 				value = Value.Empty;
-				value.k = Deployment.Current.Types.TypeToNativeKind (type);
+				value.k = Deployment.Current.Types.Find (type).native_handle;
 			}
 
 			return true;
@@ -241,7 +241,7 @@ namespace Mono.Xaml
 					return false;
 				}
 				value = Value.Empty;
-				value.k = Deployment.Current.Types.TypeToNativeKind (type);
+				value.k = Deployment.Current.Types.Find (type).native_handle;
 				return true;
 			}
 
