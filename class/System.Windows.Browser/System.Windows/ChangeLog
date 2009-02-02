@@ -1,3 +1,8 @@
+2009-02-02  Andreia Gaita  <avidigal@novell.com>
+
+	* ScriptableObjectGenerator.cs (SetPropertyFromUnmanaged): Catch any setter
+    exceptions and return instead of throwing, for now.
+
 2009-01-29  Andreia Gaita  <avidigal@novell.com>
 
 	* ScriptableObjectGenerator.cs (ChangeType): Add support for js value->c# enum 

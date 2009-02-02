@@ -462,8 +462,11 @@ namespace System.Windows
 
 			object v = ObjectFromValue<object> (value);
 
-			pi.SetValue (obj, v, null);
-
+			try {
+				pi.SetValue (obj, v, null);
+			} catch (Exception ex) {
+				Console.WriteLine (ex);
+			}
 		}
 
 		static void GetPropertyFromUnmanaged (IntPtr obj_handle, IntPtr property_handle, ref Value value)
