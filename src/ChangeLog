@@ -1,3 +1,18 @@
+2009-02-02  Chris Toshok  <toshok@ximian.com>
+
+	* textbox.h (class TextBox): store the contentElement as an
+	instance field so we can update it in OnPropertyChanged.
+
+	* textbox.cpp (TextBox::OnApplyTemplate): this is seriously
+	disgusting, and *SHOULD* be handled in the textbox template, but
+	we can't handle it in ours in case people replace it.  if the
+	ContentElement template child has DP's named
+	VerticalScrollBarVisibility and HorizontalScrollBarVisibility, set
+	them based on the value of ours.
+	(TextBox::OnPropertyChanged): handle property changes on our
+	VerticalScrollBarVisibility/HorizontalScrollBarVisibility
+	properties by proxying them to our contentElement.
+
 2009-02-02  Alan McGovern  <amcgovern@novell.com>
 
 	* media.cpp:

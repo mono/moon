@@ -79,7 +79,9 @@ struct TextSelection {
 /* @Namespace=System.Windows.Controls */
 class TextBox : public Control, public ITextSource {
 	friend class TextBoxView;
-	
+
+	DependencyObject *contentElement;
+
 	TextFontDescription *font;
 	TextSelection selection;
 	TextBuffer *buffer;

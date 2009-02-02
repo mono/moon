@@ -232,6 +232,8 @@ TextBox::TextBox ()
 	font->SetStyle (CONTROL_FONT_STYLE);
 	font->SetSize (CONTROL_FONT_SIZE);
 	
+	contentElement = NULL;
+
 	buffer = new TextBuffer ();
 	
 	cursor = SELECTION_BEGIN;
@@ -1256,8 +1258,20 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		changed = TextBoxModelChangedTextWrapping;
 	} else if (args->property == TextBox::HorizontalScrollBarVisibilityProperty) {
 		invalidate = true;
+		// XXX more crap because these aren't templatebound.
+		if (contentElement) {
+			DependencyProperty* p = contentElement->GetDependencyProperty ("VerticalScrollBarVisibility");
+			if (p)
+				contentElement->SetValue (p, GetValue (TextBox::VerticalScrollBarVisibilityProperty));
+		}
 	} else if (args->property == TextBox::VerticalScrollBarVisibilityProperty) {
 		invalidate = true;
+
+		if (contentElement) {
+			DependencyProperty* p = contentElement->GetDependencyProperty ("HorizontalScrollBarVisibility");
+			if (p)
+				contentElement->SetValue (p, GetValue (TextBox::HorizontalScrollBarVisibilityProperty));
+		}
 	}
 	
 	if (invalidate)
@@ -1292,17 +1306,28 @@ TextBox::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, 
 void
 TextBox::OnApplyTemplate ()
 {
-	DependencyObject *content = GetTemplateChild ("ContentElement");
+	contentElement = GetTemplateChild ("ContentElement");
 	ContentControl *control;
 	TextBoxView *view;
 	
-	if (content->Is (Type::CONTENTCONTROL)) {
+	if (contentElement->Is (Type::CONTENTCONTROL)) {
 		// Insert our TextBoxView
-		control = (ContentControl *) content;
+		control = (ContentControl *) contentElement;
 		view = new TextBoxView ();
 		view->SetTextBox (this);
 		control->SetValue (ContentControl::ContentProperty, Value (view));
 	}
+
+	DependencyProperty *p;
+
+	// XXX LAME these should be template bindings in the textbox template.
+	p = contentElement->GetDependencyProperty ("VerticalScrollBarVisibility");
+	if (p)
+		contentElement->SetValue (p, GetValue (TextBox::VerticalScrollBarVisibilityProperty));
+
+	p = contentElement->GetDependencyProperty ("HorizontalScrollBarVisibility");
+	if (p)
+		contentElement->SetValue (p, GetValue (TextBox::HorizontalScrollBarVisibilityProperty));
 	
 	Control::OnApplyTemplate ();
 }
