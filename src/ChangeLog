@@ -15,6 +15,11 @@
 
 2009-02-02  Larry Ewing  <lewing@novell.com>
 
+	* border.cpp (Border::Render): don't fill the whole are with the
+	border brush only fill the BorderThickness.  
+
+2009-02-02  Larry Ewing  <lewing@novell.com>
+
 	* textbox.cpp, textbox.h: first pass at implementing arrange and
 	measure.
 

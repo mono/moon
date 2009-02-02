@@ -97,36 +97,45 @@ Border::Render (cairo_t *cr, Region *region)
 		cairo_clip (cr);
 	}	
 
-	Rect paint = extents;
 	CornerRadius *round = GetCornerRadius ();
-	if (border_brush) {
-		border_brush->SetupBrush (cr, paint);
+	CornerRadius adjusted = CornerRadius (0);
+	Thickness thickness = *GetBorderThickness ();
+	Rect paint_border = extents;
+	Rect paint_background = paint_border.GrowBy (-thickness);
+
+	if (round) {
+		adjusted = *round;
+		adjusted.topLeft = MAX (round->topLeft - MAX (thickness.left, thickness.top), 0);
+		adjusted.topRight = MAX (round->topRight - MAX (thickness.right, thickness.top), 0);
+		adjusted.bottomRight = MAX (round->bottomRight - MAX (thickness.right, thickness.bottom), 0);
+		adjusted.bottomLeft = MAX (round->bottomLeft - MAX (thickness.left, thickness.bottom), 0);
+	}
+
+	/* 
+	 * NOTE filling this way can leave alpha artifacts between the border fill and bg fill
+	 * but some simple inspection of the ms results make me think that is what happens there
+	 * too.
+	 */
+	if (border_brush && paint_border != paint_background) {
+		border_brush->SetupBrush (cr, paint_border);
 
 		cairo_new_path (cr);
-		paint.Draw (cr, round);
-		
+
+		cairo_fill_rule_t old = cairo_get_fill_rule (cr);
+		cairo_set_fill_rule (cr, CAIRO_FILL_RULE_EVEN_ODD);
+
+		paint_border.Draw (cr, round);
+		paint_background.Draw (cr, round ? &adjusted : NULL);
 		border_brush->Fill (cr);
+
+		cairo_set_fill_rule (cr, old);
 	}
 
 	if (background) {
-		Thickness bthick = *GetBorderThickness ();
-		CornerRadius adjusted;
-		
-		paint = paint.GrowBy (-bthick);
-		
-		if (round) {
-			adjusted = *round;
-			adjusted.topLeft = MAX (round->topLeft - MAX (bthick.left, bthick.top), 0);
-			adjusted.topRight = MAX (round->topRight - MAX (bthick.right, bthick.top), 0);
-			adjusted.bottomRight = MAX (round->bottomRight - MAX (bthick.right, bthick.bottom), 0);
-			adjusted.bottomLeft = MAX (round->bottomLeft - MAX (bthick.left, bthick.bottom), 0);
-		}
-
-		background->SetupBrush (cr, paint);
+		background->SetupBrush (cr, paint_background);
 
 		cairo_new_path (cr);
-		/* XXX FIXME this is not quite the right rounding */
-		paint.Draw (cr, round ? &adjusted : NULL);
+		paint_background.Draw (cr, round ? &adjusted : NULL);
 
 		background->Fill (cr);
 	}
