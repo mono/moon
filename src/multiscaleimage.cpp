@@ -354,7 +354,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 			for (j = MAX(0, (int)((double)vp_oy * im_h / (double)v_tile_h)); j * v_tile_h < vp_oy * im_h + vp_h * im_h && j * v_tile_h < im_h; j++) {
 				count++;
 				//FIXME
-				if (cache_contains (from_layer, i, j, true))
+				if (cache_contains (from_layer, i, j, false))
 					found ++;
 			}
 		}

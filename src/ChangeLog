@@ -1,3 +1,8 @@
+2009-02-02  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: render lower layer if the current layer
+	contains NULL tiles.
+
 2009-02-02  Chris Toshok  <toshok@ximian.com>
 
 	* frameworkelement.cpp (FrameworkElement::ArrangeOverride):
