@@ -37,12 +37,12 @@ class TextRun : public List::Node {
 	TextDecorations deco;
 	TextFont *font;
 	gunichar *text;
-	int selected:1;
-	int crlf:2;
+	bool selected;
+	short crlf;
 	
 	TextRun (const gunichar *ucs4, int len, ITextSource *source, bool selected = false);
 	TextRun (const char *utf8, int len, ITextSource *source, bool selected = false);
-	TextRun (ITextSource *source, int crlf);
+	TextRun (ITextSource *source, short crlf);
 	
 	virtual ~TextRun ();
 	

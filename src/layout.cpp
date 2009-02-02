@@ -76,7 +76,7 @@ TextRun::TextRun (const char *utf8, int len, ITextSource *source, bool selected)
 	this->crlf = 0;
 }
 
-TextRun::TextRun (ITextSource *source, int crlf)
+TextRun::TextRun (ITextSource *source, short crlf)
 {
 	// This TextRun will represent a LineBreak
 	TextFontDescription *font = source->FontDescription ();
@@ -139,7 +139,7 @@ class TextLine : public List::Node {
 	double descend;
 	double height;
 	double width;
-	int crlf;
+	short crlf;
 	
 	TextLine ();
 	~TextLine ();
@@ -1405,6 +1405,8 @@ TextLayout::GetCursor (const Point &offset, int pos)
 	gunichar c;
 	int i, n;
 	
+	//printf ("TextLayout::GetCursor (%d)\n", pos);
+	
 	ascend = y1 = 0.0;
 	x0 = offset.x;
 	y0 = offset.y;
@@ -1436,6 +1438,8 @@ TextLayout::GetCursor (const Point &offset, int pos)
 		// set y1 to the baseline (descend is a negative value)
 		y1 = y0 + line->height + line->descend;
 		
+		//printf ("\tline: left=%.2g, top=%.2g, baseline=%.2g, start index=%d\n", x0, y0, y1, cur);
+		
 		if (cur >= pos)
 			break;
 		
@@ -1446,7 +1450,10 @@ TextLayout::GetCursor (const Point &offset, int pos)
 			
 			ascend = font->Ascender ();
 			
+			//printf ("\t\tsegment: n=%d, ascend=%.2g, cur=%d\n", n, ascend, cur);
+			
 			if (pos < (cur + n)) {
+				//printf ("\t\t\tscanning segment...\n");
 				for (i = segment->start, prev = 0; cur < pos; cur++, i++) {
 					c = segment->run->text[i];
 					
@@ -1461,7 +1468,10 @@ TextLayout::GetCursor (const Point &offset, int pos)
 					x0 += glyph->metrics.horiAdvance;
 					prev = glyph->index;
 				}
+				
+				break;
 			} else {
+				//printf ("\t\t\tadvancing over entire segment...\n");
 				x0 += segment->advance;
 				cur += n;
 			}
@@ -1469,6 +1479,10 @@ TextLayout::GetCursor (const Point &offset, int pos)
 			segment = (TextSegment *) segment->next;
 		}
 		
+		if (cur == pos)
+			break;
+		
+		//printf ("\tskipping over %d chars for EOL sequence\n", line->crlf);
 		cur += line->crlf;
 		
 		if (line->next) {

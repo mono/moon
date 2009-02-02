@@ -324,19 +324,17 @@ TextBox::~TextBox ()
 static int
 move_down (TextBuffer *buffer, int cursor, int n_lines)
 {
-	int offset, cur, n;
+	int column, cur, n = 0;
 	
 	// first find out what our character offset is in the current line
 	cur = cursor;
 	while (cur > 0 && !IsEOL (buffer->text[cur - 1]))
 		cur--;
 	
-	offset = cursor - cur;
-	
+	column = cursor - cur;
 	cur = cursor;
-	n = 0;
 	
-	// skip ahead one page worth of lines
+	// skip ahead the number of requested lines
 	while (n < n_lines) {
 		while (cur < buffer->len && !IsEOL (buffer->text[cur]))
 			cur++;
@@ -353,10 +351,11 @@ move_down (TextBuffer *buffer, int cursor, int n_lines)
 	
 	if (n == n_lines) {
 		// go forward until we're at the same character offset
-		if ((buffer->len - cur) < offset)
-			cur += buffer->len;
-		else
-			cur += offset;
+		for (n = 0; n < column && cur < buffer->len; n++) {
+			if (IsEOL (buffer->text[cur]))
+				break;
+			cur++;
+		}
 	}
 	
 	return cur;
@@ -365,37 +364,36 @@ move_down (TextBuffer *buffer, int cursor, int n_lines)
 static int
 move_up (TextBuffer *buffer, int cursor, int n_lines)
 {
-	int offset, cur, n;
+	int column, cur, n = 0;
 	
 	// first find out what our character offset is in the current line
 	cur = cursor;
 	while (cur > 0 && !IsEOL (buffer->text[cur - 1]))
 		cur--;
 	
-	offset = cursor - cur;
-	n = 0;
+	column = cursor - cur;
 	
-	// go back one page worth of lines
-	while (n < n_lines) {
-		while (cur > 0 && !IsEOL (buffer->text[cur - 1]))
-			cur--;
-		
+	// go back the number of requested lines
+	do {
 		if (cur == 0)
 			break;
 		
 		if (cur >= 2 && buffer->text[cur - 2] == '\r' && buffer->text[cur - 1] == '\n')
 			cur--;
-		
 		cur--;
 		n++;
-	}
+		
+		while (cur > 0 && !IsEOL (buffer->text[cur - 1]))
+			cur--;
+	} while (n < n_lines);
 	
 	if (n == n_lines) {
-		// go forward until we're at the same character offset
-		if ((buffer->len - cur) < offset)
-			cur += buffer->len;
-		else
-			cur += offset;
+		// go forward until we're at the same character column
+		for (n = 0; n < column && cur < buffer->len; n++) {
+			if (IsEOL (buffer->text[cur]))
+				break;
+			cur++;
+		}
 	}
 	
 	return cur;
@@ -662,7 +660,7 @@ TextBox::KeyPressPageUp (GdkModifierType modifiers)
 			}
 		} else {
 			// cursor is at the beginning of the selection
-			pos = move_down (buffer, start, 8);
+			pos = move_up (buffer, start, 8);
 			
 			// grow the selection to the left
 			length += start - pos;
@@ -1072,7 +1070,7 @@ TextBox::KeyPressDown (GdkModifierType modifiers)
 		}
 	} else {
 		// Down: move cursor down one line and clear selection
-		start = move_down (buffer, start, 8);
+		start = move_down (buffer, start, 1);
 		cursor = SELECTION_BEGIN;
 		length = 0;
 	}
@@ -1113,7 +1111,7 @@ TextBox::KeyPressUp (GdkModifierType modifiers)
 			}
 		} else {
 			// cursor is at the beginning of the selection
-			pos = move_down (buffer, start, 8);
+			pos = move_up (buffer, start, 1);
 			
 			// grow the selection to the left
 			length += start - pos;
@@ -1307,7 +1305,8 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 		// FIXME: some of these may also require updating scrollbars?
 	}
 	
-	buffer->Print ();
+	if (emit & TEXT_CHANGED)
+		buffer->Print ();
 	
 	// thaw textbox keypress, causes Text and SelectedText to be
 	// sync'd and events to be emitted
@@ -1361,7 +1360,7 @@ TextBox::mouse_left_button_up (EventObject *sender, EventArgs *args, gpointer cl
 void
 TextBox::OnMouseEnter (MouseEventArgs *args)
 {
-	printf ("TextBox::OnMouseEnter()\n");
+	//printf ("TextBox::OnMouseEnter()\n");
 }
 
 void
@@ -1373,7 +1372,7 @@ TextBox::mouse_enter (EventObject *sender, EventArgs *args, gpointer closure)
 void
 TextBox::OnMouseLeave (EventArgs *args)
 {
-	printf ("TextBox::OnMouseLeave()\n");
+	//printf ("TextBox::OnMouseLeave()\n");
 }
 
 void
@@ -1397,7 +1396,6 @@ TextBox::mouse_move (EventObject *sender, EventArgs *args, gpointer closure)
 void
 TextBox::OnFocusOut (EventArgs *args)
 {
-	printf ("TextBox::OnFocusOut()\n");
 	focused = false;
 	
 	if (view)
@@ -1413,7 +1411,6 @@ TextBox::focus_out (EventObject *sender, EventArgs *args, gpointer closure)
 void
 TextBox::OnFocusIn (EventArgs *args)
 {
-	printf ("TextBox::OnFocusIn()\n");
 	focused = true;
 	
 	if (view)
@@ -1817,8 +1814,8 @@ TextBoxView::UpdateCursor (bool invalidate)
 void
 TextBoxView::Render (cairo_t *cr, Region *region)
 {
-	if (dirty)	       
-		g_warning ("TextBoxView::Render in dirty state"); //Layout (cr);
+	if (dirty)
+		Layout (cr, GetRenderSize ());
 	
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
@@ -1956,10 +1953,9 @@ TextBoxView::Layout (cairo_t *cr, Size constraint)
 	
 	layout->SetTextRuns (runs);
 	layout->Layout ();
+	dirty = false;
 	
 	UpdateCursor (false);
-	
-	dirty = false;
 }
 
 void

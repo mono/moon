@@ -1,7 +1,14 @@
 2009-02-02  Jeffrey Stedfast  <fejj@novell.com>
 
+	* layout.cpp (TextRun): 'crlf' is now a short rather than a 2-bit
+	int because, duh, the range is -2 to 1, not 0 to 3 and so
+	TextLine::crlf was being set to -2 instead of 2.
+
 	* textbox.cpp (TextBuffer::Cut): Fixed, this was totally broken
 	before.
+	(move_down): Need to use a loop when advancing back to the
+	previous column so we don't go beyond EOL.
+	(move_up): Same, but more fixes as well.
 
 2009-02-02  Jeffrey Stedfast  <fejj@novell.com>
 
