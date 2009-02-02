@@ -1,3 +1,8 @@
+2009-02-02  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* Generator.cs: generate a mapping from
+	System.Windows.Point to POINT
+
 2009-01-29  Jackson Harper  <jackson@ximian.com>
 
 	* TypeInfo.cs: Add a new ctor that takes an IsValueType flag
