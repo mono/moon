@@ -17,6 +17,9 @@
 	necessary.
 	(TextBoxView::OnFocusIn): Set focused to true before calling
 	ResetCursorBlink().
+	(append_runs): Don't forget to append the LineBreak to the Runs
+	list.
+	(TextBoxView::SetTextBox): Need to sync some additional state.
 
 2009-02-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 

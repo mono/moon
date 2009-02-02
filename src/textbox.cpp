@@ -1598,8 +1598,6 @@ TextBoxView::EndCursorBlink ()
 	
 	if (cursor_visible)
 		HideCursor ();
-	
-	cursor_visible = true;
 }
 
 void
@@ -1715,6 +1713,8 @@ append_runs (ITextSource *textbox, List *runs, const gunichar **text, int *lengt
 			inptr++;
 			n++;
 		}
+		
+		runs->Append (run);
 		
 		(*length) -= n;
 	}
@@ -1852,6 +1852,7 @@ TextBoxView::focus_out (EventObject *sender, EventArgs *args, gpointer closure)
 void
 TextBoxView::OnFocusOut (EventArgs *args)
 {
+	printf ("TextBoxView::OnFocusOut()\n");
 	EndCursorBlink ();
 	focused = false;
 }
@@ -1865,6 +1866,7 @@ TextBoxView::focus_in (EventObject *sender, EventArgs *args, gpointer closure)
 void
 TextBoxView::OnFocusIn (EventArgs *args)
 {
+	printf ("TextBoxView::OnFocusIn()\n");
 	focused = true;
 	ResetCursorBlink (false);
 }
@@ -1883,9 +1885,11 @@ TextBoxView::SetTextBox (TextBox *textbox)
 	if (textbox) {
 		textbox->AddHandler (TextBox::ModelChangedEvent, TextBoxView::model_changed, this);
 		
-		// sync our layout hints state
+		// sync our state with the textbox
 		layout->SetTextAlignment (textbox->GetTextAlignment ());
 		layout->SetTextWrapping (textbox->GetTextWrapping ());
+		selected_text = textbox->GetSelection ()->length > 0;
+		readonly = textbox->GetIsReadOnly ();
 	}
 	
 	this->textbox = textbox;
