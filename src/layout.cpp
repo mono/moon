@@ -149,6 +149,7 @@ class TextLine : public List::Node {
 TextLine::TextLine ()
 {
 	segments = new List ();
+	crlf_selected = false;
 	descend = 0.0;
 	height = -1.0;
 	width = 0.0;
