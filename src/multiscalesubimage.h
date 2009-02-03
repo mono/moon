@@ -18,6 +18,11 @@
 
 /* @Version=2,Namespace=System.Windows.Controls */
 class MultiScaleSubImage : public DependencyObject {
+	friend class MultiScaleImage;
+
+	MultiScaleTileSource *source;
+	MultiScaleSubImage (MultiScaleTileSource *source);
+
  protected:
 	virtual ~MultiScaleSubImage () {}
 
@@ -35,7 +40,7 @@ class MultiScaleSubImage : public DependencyObject {
 
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	MultiScaleSubImage () { SetObjectType (Type::MULTISCALESUBIMAGE); }
+	MultiScaleSubImage ();
 
 	double GetAspectRatio ();
 	void SetAspectRatio (double ratio);

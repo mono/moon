@@ -254,6 +254,8 @@ multi_scale_image_handle_parsed (void *userdata)
 void
 MultiScaleImage::Render (cairo_t *cr, Region *region)
 {
+//FIXME: only render region
+
 //printf ("MSI::Render\n");
 
 //	if (!surface)

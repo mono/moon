@@ -154,6 +154,7 @@ libmoon_la_SOURCES = 		\
 	moon-path.c		\
 	mp3.cpp			\
 	multiscaleimage.cpp	\
+	multiscalesubimage.cpp	\
 	namescope.cpp		\
 	openfile.cpp		\
 	panel.cpp		\
