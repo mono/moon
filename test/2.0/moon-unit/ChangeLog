@@ -1,3 +1,16 @@
+2009-02-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows/SetterBaseCollectionTest.cs:
+	* System.Windows/SetterTest.cs:
+	* System.Windows/StyleTest.cs: Add new test cases and rework 
+	existing test cases not to trigger a bug in SL2 - where the 
+	behavior of the Setter can be wrong if the (managed) IsSealed 
+	property has not been checked before (likely a caching issue).
+	The new test always works on SL2, i.e. when run normally or
+	stepped line by line in the debugger. Some tests are not yet
+	working because of the way the XAML parser is adding Setters
+	to the SetterBaseCollection.
+
 2009-02-02  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Media.Imaging/BitmapImageTest.cs:

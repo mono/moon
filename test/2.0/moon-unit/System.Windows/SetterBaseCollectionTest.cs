@@ -56,8 +56,7 @@ namespace MoonTest.System.Windows
 			Assert.Throws (delegate { c[0] = new Setter (Canvas.TopProperty, 0); }, typeof (Exception));
 		}
 
-		[TestMethod]
-		public void SealedChildren ()
+		private void SealedChildren (bool seal)
 		{
 			Style style = new Style (typeof (UIElement));
 			SetterBaseCollection c = style.Setters;
@@ -65,10 +64,25 @@ namespace MoonTest.System.Windows
 
 			c.Add (s);
 
-			style.Seal ();
+			if (seal)
+				style.Seal ();
 
+			// the setter IsSealed status has nothing to do with sealing the style
 			Assert.Throws (delegate { s.Property = Canvas.TopProperty; }, typeof (UnauthorizedAccessException));
 			Assert.Throws (delegate { s.Value = 10; }, typeof (UnauthorizedAccessException));
+		}
+
+		[TestMethod]
+		public void SealedChildren_SealedStyle ()
+		{
+			SealedChildren (true);
+		}
+
+		[TestMethod]
+		[MoonlightBug ("known issue, fix requires xaml parser fix + patch to style.cpp")]
+		public void SealedChildren_UnsealedStyle ()
+		{
+			SealedChildren (false);
 		}
 
 		[TestMethod]
@@ -82,49 +96,99 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		public void SetStyleToElement()
+		public void SetSealedStyleWithoutSetterToElement ()
 		{
-			Rectangle r = new Rectangle();
-			Style s = new Style(typeof(Rectangle));
-			s.Seal();
+			Style s = new Style (typeof (Rectangle));
+			Assert.IsFalse (s.IsSealed, "IsSealed-1");
+			Assert.IsFalse (s.Setters.IsSealed, "Setters.IsSealed-1");
+
+			s.Seal ();
+			Assert.IsTrue (s.IsSealed, "IsSealed-2");
+			Assert.IsTrue (s.Setters.IsSealed, "Setters.IsSealed-2");
+
+			Rectangle r = new Rectangle ();
 			r.Style = s;
-
-			s = new Style(typeof(Rectangle));
-			r = new Rectangle();
-			Setter setter = new Setter(Rectangle.HeightProperty, 50);
-			Assert.IsFalse(setter.IsSealed, "#2");
-
-			s.Seal();
-			Assert.IsTrue(s.IsSealed, "#3");
-			Assert.IsFalse(s.Setters.IsSealed, "#4");
-			s.Setters.Add(setter);
-			Assert.IsTrue(s.IsSealed, "#5");
-			Assert.IsTrue(setter.IsSealed, "#6");
-			Assert.IsFalse(s.Setters.IsSealed, "#7");
-			s.Seal();
-			Assert.IsTrue(s.Setters.IsSealed, "#8");
-
-			s = new Style(typeof(Rectangle));
-			r = new Rectangle();
-			setter = new Setter(Rectangle.HeightProperty, 50);
-
-			s.Setters.Add(setter);
-			s.Seal();
-			Assert.IsTrue(setter.IsSealed, "#9");
-			Assert.IsTrue(s.Setters.IsSealed, "#10");
+			Assert.IsTrue (s.IsSealed, "IsSealed-3");
+			Assert.IsTrue (s.Setters.IsSealed, "Setters.IsSealed-3");
 		}
 
 		[TestMethod]
-		[MoonlightBug ("this case is not working, throwing a Windows.Markup.XamlParseException")]
-		public void SetStyleToElement_NotWorking ()
+		[MoonlightBug ("SL2 gives different results if we check IsSealed before sealing a style")]
+		public void SetSealedStyleWithoutSetterToElement_CacheIssue ()
 		{
 			Style s = new Style (typeof (Rectangle));
+			// since we don't check IsSealed before sealing the result is different!
+
+			s.Seal ();
+			Assert.IsTrue (s.IsSealed, "IsSealed-2");
+			Assert.IsFalse (s.Setters.IsSealed, "Setters.IsSealed-2");
+
 			Rectangle r = new Rectangle ();
-			Setter setter = new Setter (Rectangle.HeightProperty, 50);
+			r.Style = s;
+			Assert.IsTrue (s.IsSealed, "IsSealed-3");
+			Assert.IsTrue (s.Setters.IsSealed, "Setters.IsSealed-3");
+		}
+
+		[TestMethod]
+		[MoonlightBug ("known issue, fix requires xaml parser fix + patch to style.cpp")]
+		public void SetSealedStyleWithSetterToElement ()
+		{
+			Setter setter = new Setter (Rectangle.HeightProperty, "50");
+			Assert.IsFalse (setter.IsSealed, "Setter.IsSealed-1");
+
+			Style s = new Style (typeof (Rectangle));
+			Assert.IsFalse (s.IsSealed, "IsSealed-1");
+			Assert.IsFalse (s.Setters.IsSealed, "Setters.IsSealed-1");
 
 			s.Setters.Add (setter);
+			Assert.IsTrue (setter.IsSealed, "Setter.IsSealed-2");
+			Assert.IsFalse (s.IsSealed, "IsSealed-2");
+			Assert.IsFalse (s.Setters.IsSealed, "Setters.IsSealed-2");
+
+			s.Seal ();
+			Assert.IsTrue (s.IsSealed, "IsSealed-3");
+			Assert.IsTrue (s.Setters.IsSealed, "Setters.IsSealed-3");
+
+			Rectangle r = new Rectangle ();
 			r.Style = s;
-			Assert.IsTrue (s.IsSealed, "#11");
+			Assert.IsTrue (s.IsSealed, "IsSealed-4");
+			Assert.IsTrue (s.Setters.IsSealed, "Setters.IsSealed-4");
+		}
+
+		[TestMethod]
+		public void SetUnsealedStyleWithoutSetterToElement ()
+		{
+			Style s = new Style (typeof (Rectangle));
+			Assert.IsFalse (s.IsSealed, "IsSealed-1");
+			Assert.IsFalse (s.Setters.IsSealed, "Setters.IsSealed-1");
+
+			Rectangle r = new Rectangle ();
+			r.Style = s;
+			Assert.IsTrue (s.IsSealed, "IsSealed-2");
+			Assert.IsTrue (s.Setters.IsSealed, "Setters.IsSealed-2");
+		}
+
+		[TestMethod]
+		[MoonlightBug ("known issue, fix requires xaml parser fix + patch to style.cpp")]
+		public void SetUnsealedStyleWithSetterToElement ()
+		{
+			Setter setter = new Setter (Rectangle.HeightProperty, "50");
+			Assert.IsFalse (setter.IsSealed, "Setter.IsSealed-1");
+
+			Style s = new Style (typeof (Rectangle));
+			Assert.IsFalse (s.IsSealed, "IsSealed-1");
+			Assert.IsFalse (s.Setters.IsSealed, "Setters.IsSealed-1");
+
+			s.Setters.Add (setter);
+			Assert.IsTrue (setter.IsSealed, "Setter.IsSealed-2");
+			Assert.IsFalse (s.IsSealed, "IsSealed-2");
+			Assert.IsFalse (s.Setters.IsSealed, "Setters.IsSealed-2");
+
+			Rectangle r = new Rectangle ();
+			r.Style = s;
+			Assert.IsTrue (s.IsSealed, "IsSealed-3");
+			Assert.IsTrue (s.Setters.IsSealed, "Setters.IsSealed-3");
+			Assert.IsTrue (setter.IsSealed, "Setter.IsSealed-3");
 		}
 
 		[TestMethod]

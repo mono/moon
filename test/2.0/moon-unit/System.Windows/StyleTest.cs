@@ -45,7 +45,7 @@ namespace MoonTest.System.Windows
 	}
 		
 	[TestClass]
-	public class StyleTest
+	public class _StyleTest
 	{
 		// NOTE: This test must be run first for it to work - do not remove the 'aaa' from the start of its name
 		[TestMethod]
@@ -67,17 +67,49 @@ namespace MoonTest.System.Windows
 		public void Sealed ()
 		{
 			Style style = new Style (typeof (UIElement));
+			Assert.IsFalse (style.IsSealed, "Style.IsSealed-1");
+			Assert.IsFalse (style.Setters.IsSealed, "Style.Setters.IsSealed-1");
 
 			style.Seal ();
-			
-			// This should throw, no?
-			/*Assert.Throws (delegate {*/ style.TargetType = typeof (FrameworkElement);/* }, typeof (Exception));*/
+			Assert.IsTrue (style.IsSealed, "Style.IsSealed-2");
+			Assert.IsTrue (style.Setters.IsSealed, "Style.Setters.IsSealed-2");
 
-			// This too?
-			/*Assert.Throws (delegate {*/ style.TargetType = typeof (SolidColorBrush);/* }, typeof (Exception));*/
+			// TargetType is not "sealed" and can be modified
+			style.TargetType = typeof (FrameworkElement);
+			style.TargetType = typeof (SolidColorBrush);
+
+			Setter setter = new Setter (Rectangle.HeightProperty, "50");
+			Assert.IsFalse (setter.IsSealed, "Setter.IsSealed-2");
+
+			Assert.Throws<Exception> (delegate {
+				style.Setters.Add (setter);
+			}, "can't add to sealed style");
 		}
 
+		[TestMethod]
+		[MoonlightBug ("SL2 gives different results if we check IsSealed before sealing a style")]
+		public void Sealed_CacheIssue ()
+		{
+			Style style = new Style (typeof (UIElement));
 
+			style.Seal ();
+
+			// TargetType is not "sealed" and can be modified
+			style.TargetType = typeof (FrameworkElement);
+			style.TargetType = typeof (SolidColorBrush);
+
+			Assert.IsTrue (style.IsSealed, "Style.IsSealed-1");
+			Assert.AreEqual (0, style.Setters.Count, "Setters.Count-1");
+
+			Setter setter = new Setter (Rectangle.HeightProperty, "50");
+			Assert.IsFalse (setter.IsSealed, "Setter.IsSealed-1");
+
+			// Since we *never* checked that Setters.IsSealed is true then it's not !?!
+			// and we can add a new setter to the sealed style
+			style.Setters.Add (setter);
+			Assert.AreEqual (1, style.Setters.Count, "Setters.Count-2");
+			Assert.IsTrue (setter.IsSealed, "Setter.IsSealed-2");
+		}
 
 		[TestMethod]
 		public void ApplyStyleToManagedDP()
@@ -96,7 +128,7 @@ namespace MoonTest.System.Windows
 			Rectangle r = new Rectangle ();
 
 			// FIXME: This should pass, but commenting it out so i can test the setting an element twice
-			//Assert.IsTrue (double.IsNaN (r.Width));
+			Assert.IsTrue (double.IsNaN (r.Width));
 
 			r.Style = style;
 			Assert.Throws (delegate { r.Style = style; }, typeof (Exception));
@@ -126,53 +158,26 @@ namespace MoonTest.System.Windows
 
 			Style style = new Style(typeof(Button));
 
+			Assert.IsFalse (style.IsSealed, "Style-IsSealed-1");
+			Assert.IsFalse (style.Setters.IsSealed, "Setters-IsSealed-1");
 			b.Style = style;
-			Assert.Throws<Exception>(delegate {
+			Assert.IsTrue (style.IsSealed, "Style-IsSealed-2");
+			Assert.IsTrue (style.Setters.IsSealed, "Setters-IsSealed-2");
+
+			Assert.Throws<Exception> (delegate {
 				style.Setters.Add(new Setter());
 			}, "#b");
 
 			Assert.AreEqual(0, style.Setters.Count, "#c");
 			Assert.AreEqual(ClickMode.Release, b.ClickMode, "#d");
 
-			style.Setters.Add(new Setter(Button.ClickModeProperty, ClickMode.Press));
-			Assert.AreEqual(1, style.Setters.Count, "#e");
-			Assert.AreEqual(ClickMode.Release, b.ClickMode, "#f");
-
-			b.ClearValue(Button.ClickModeProperty);
-			Assert.AreEqual(ClickMode.Release, b.ClickMode, "#f2");
-
-			b.ClickMode = ClickMode.Hover;
-			b.ClearValue(Button.ClickModeProperty);
-			Assert.AreEqual(ClickMode.Press, b.ClickMode, "#g");
-
-			style.Setters.Clear();
-			Assert.AreEqual(0, style.Setters.Count, "#h");
-			Assert.AreEqual(ClickMode.Press, b.ClickMode, "#i");
-
-			style = new Style(typeof(Button));
-			style.Setters.Add(new Setter(Button.ClickModeProperty, ClickMode.Press));
-			b = new Button();
-			b.Style = style;
-			b.ClearValue(Button.ClickModeProperty);
-			Assert.AreEqual(b.ClickMode, ClickMode.Press, "#j");
-
-			style.Setters.Clear();
-			Assert.AreEqual(0, style.Setters.Count, "#k");
-			Assert.AreEqual(b.ClickMode, ClickMode.Press, "#l");
-
-			Button c = new Button ();
-			c.Style = style;
-
-			b.ClearValue(Button.ClickModeProperty);
-			Assert.AreEqual(b.ClickMode, ClickMode.Press, "#m");
-
-			style = new Style (typeof (Button));
-			b = new Button ();
-			b.Style = style;
-
-			style.Setters.Add(new Setter(Button.ClickModeProperty, ClickMode.Press));
-			Assert.AreEqual(1, style.Setters.Count, "#n");
-			Assert.AreEqual(ClickMode.Release, b.ClickMode, "#o");
+			// This always fails on SL2 ***because*** we checked the IsSealed properties
+			// before getting here - otherwise it would execute fine. There's likely a
+			// caching issue inside SL2 code
+			Assert.Throws<Exception> (delegate {
+				style.Setters.Add (new Setter (Button.ClickModeProperty, ClickMode.Press));
+			}, "caching issue");
+			Assert.AreEqual (0, style.Setters.Count, "#e");
 		}
 
 		[TestMethod]
@@ -306,6 +311,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		[MoonlightBug ("known issue, fix requires xaml parser fix + patch to style.cpp")]
 		public void UseSetterTwice()
 		{
 			Style s1 = new Style(typeof(Rectangle));
@@ -315,8 +321,14 @@ namespace MoonTest.System.Windows
 			Assert.Throws<InvalidOperationException>(delegate {
 				s2.Setters.Add(setter);
 			});
+
+			Assert.IsFalse (s1.Setters.IsSealed, "Setters.IsSealed-before-clear");
+			Assert.IsTrue (setter.IsSealed, "Setter.IsSealed-before-clear");
 			s1.Setters.Clear();
-			s2.Setters.Add(setter);
+			Assert.IsFalse (s1.Setters.IsSealed, "Setters.IsSealed-after-clear");
+			Assert.IsTrue (setter.IsSealed, "Setter.IsSealed-after-clear");
+			// i.e. a Setter can be reused even if sealed
+			s2.Setters.Add (setter);
 		}
 
 		public void LoadFromXaml ()
@@ -436,6 +448,47 @@ namespace MoonTest.System.Windows
 		</Style>
 	</Rectangle.Style>
 </Rectangle>"); }, "Custom Attached Property #3");
+		}
+
+		[TestMethod]
+		[MoonlightBug ("known issue, fix requires xaml parser fix + patch to style.cpp")]
+		public void Seal ()
+		{
+			Setter setter = new Setter (UIElement.OpacityProperty, 2.0);
+			Style s = new Style ();
+			Assert.IsFalse (s.IsSealed, "Style.IsSealed-1");
+			Assert.IsFalse (s.Setters.IsSealed, "Setters.IsSealed-1");
+			Assert.IsFalse (setter.IsSealed, "Setter.IsSealed-1");
+			s.Setters.Add (setter);
+			Assert.IsFalse (s.IsSealed, "Style.IsSealed-2");
+			Assert.IsFalse (s.Setters.IsSealed, "Setters.IsSealed-2");
+			Assert.IsTrue (setter.IsSealed, "Setter.IsSealed-2");
+			s.Seal ();
+			Assert.IsTrue (s.IsSealed, "Style.IsSealed-3");
+			Assert.IsTrue (s.Setters.IsSealed, "Setters.IsSealed-3");
+			Assert.IsTrue (setter.IsSealed, "Setter.IsSealed-3");
+		}
+
+		void SealEmptySetters (Style s)
+		{
+			Assert.IsFalse (s.IsSealed, "Style.IsSealed-1");
+			Assert.IsFalse (s.Setters.IsSealed, "Setters.IsSealed-1");
+			Assert.AreEqual (0, s.Setters.Count, "Setters.Count");
+			s.Seal ();
+			Assert.IsTrue (s.IsSealed, "Style.IsSealed-2");
+			Assert.IsTrue (s.Setters.IsSealed, "Setters.IsSealed-2");
+		}
+
+		[TestMethod]
+		public void SealEmptySetters_NoType ()
+		{
+			SealEmptySetters (new Style ());
+		}
+
+		[TestMethod]
+		public void SealEmptySetters_WithType ()
+		{
+			SealEmptySetters (new Style (typeof (Rectangle)));
 		}
 	}
 }
