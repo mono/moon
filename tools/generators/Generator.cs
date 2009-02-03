@@ -98,6 +98,9 @@ class Generator {
 			} else {
 				text.AppendLine ();
 			}
+
+			if (type.ContentProperty != null)
+				text.AppendFormat ("\t[ContentProperty (\"{0}\")]\n", type.ContentProperty);
 			text.Append ("\tpartial class ");
 			text.Append (type.ManagedName.Replace ("`1", "<T>"));
 			text.AppendLine (" {");
