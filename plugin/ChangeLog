@@ -1,3 +1,7 @@
+2009-02-03  Fernando Herrera  <fherrera@novell.com>
+
+	* plugin.cpp: moonlight_flags is 64bits now.
+
 2009-01-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin-class.cpp: proxy_listener_to_javascript: we need to set the

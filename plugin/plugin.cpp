@@ -49,7 +49,7 @@
 // Debug NPStreams
 #define nps(x)//x
 
-extern guint32 moonlight_flags;
+extern guint64 moonlight_flags;
 
 /* gleaned from svn log of the moon module, as well as olive/class/{agclr,agmono,System.Silverlight} */
 static const char *moonlight_authors[] = {

@@ -73,7 +73,7 @@ enum RuntimeInitFlags {
 	RUNTIME_INIT_DISABLE_FFMPEG_CODECS = 1 << 23,
 };
 
-extern guint32 moonlight_flags;
+extern guint64 moonlight_flags;
 
 
 #if DEBUG
@@ -110,9 +110,10 @@ enum RuntimeDebugFlags {
 	RUNTIME_DEBUG_TEXT              = 1 << 29,
 	RUNTIME_DEBUG_XAML              = 1 << 30,
 	RUNTIME_DEBUG_DEPLOYMENT        = 1 << 31,
+	/* Add more as RUNTIME_DEBUG_XXX = 1ULL << 32, */
 };
 
-extern guint32 debug_flags;
+extern guint64 debug_flags;
 #endif
 
 
@@ -393,7 +394,7 @@ private:
 };
 
 
-void     runtime_init (guint32 flags);
+void     runtime_init (guint64 flags);
 
 void     runtime_init_browser ();
 void     runtime_init_desktop ();

@@ -69,15 +69,15 @@ pthread_t Surface::main_thread = 0;
 static bool inited = false;
 static bool g_type_inited = false;
 static GList* surface_list = NULL;
-guint32 moonlight_flags = 0;
+guint64 moonlight_flags = 0;
 #if DEBUG
-guint32 debug_flags = 0;
+guint64 debug_flags = 0;
 #endif
 
 
 struct env_options {
 	const char *name;
-	guint32 flag;
+	guint64 flag;
 	bool set;
 };
 
@@ -1898,10 +1898,10 @@ runtime_init_desktop ()
 	runtime_init (RUNTIME_INIT_DESKTOP);
 }
 
-static gint32
-get_flags (gint32 def, const char *envname, struct env_options options[])
+static gint64
+get_flags (gint64 def, const char *envname, struct env_options options[])
 {
-	gint32 flags = def;
+	gint64 flags = def;
 	const char *env;
 	
 	if (envname && (env = g_getenv (envname))) {
@@ -1945,7 +1945,7 @@ get_flags (gint32 def, const char *envname, struct env_options options[])
 }
 
 void
-runtime_init (guint32 flags)
+runtime_init (guint64 flags)
 {
 
 	if (inited)
@@ -1969,7 +1969,7 @@ runtime_init (guint32 flags)
 	debug_flags = get_flags (0, "MOONLIGHT_DEBUG", debugs);
 #endif
 
-	
+
 #if OBJECT_TRACKING
 	if (EventObject::objects_created == EventObject::objects_destroyed) {
 		printf ("Runtime created (no leaked objects so far).\n");
