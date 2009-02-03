@@ -845,11 +845,9 @@ TextBox::KeyPressUnichar (gunichar c)
 	
 	if (length > 0) {
 		// replace the currently selected text
-		printf ("TextBox::KeyPressUnichar(): relacing selection with '%c'\n", (char) c);
 		buffer->Replace (start, length, &c, 1);
 	} else {
 		// insert the text at the cursor position
-		printf ("TextBox::KeyPressUnichar(): inserting '%c' @ %d\n", (char) c, start);
 		buffer->Insert (start, c);
 	}
 	
@@ -898,8 +896,6 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 	
 	if (args->IsModifier ())
 		return;
-	
-	printf ("TextBox::OnKeyDown()\n");
 	
 	// freeze TextBox event emission
 	KeyPressFreeze ();
@@ -1039,7 +1035,7 @@ TextBox::key_up (EventObject *sender, EventArgs *args, void *closure)
 void
 TextBox::OnMouseLeftButtonDown (MouseEventArgs *args)
 {
-	printf ("TextBox::OnMouseLeftButtonDown()\n");
+	//printf ("TextBox::OnMouseLeftButtonDown()\n");
 }
 
 void
@@ -1051,7 +1047,7 @@ TextBox::mouse_left_button_down (EventObject *sender, EventArgs *args, gpointer 
 void
 TextBox::OnMouseLeftButtonUp (MouseEventArgs *args)
 {
-	printf ("TextBox::OnMouseLeftButtonUp()\n");
+	//printf ("TextBox::OnMouseLeftButtonUp()\n");
 }
 
 void
