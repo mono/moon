@@ -360,6 +360,7 @@ Image::SetSourceInternal (Downloader *downloader, char *PartName)
 		MediaBase::SetSourceInternal (NULL, PartName);
 		downloader->Abort ();
 		downloader->unref ();
+		InvalidateMeasure ();
 		return;
 	} else if (!downloader) {
 		CleanupSurface ();
@@ -412,7 +413,6 @@ Image::DownloaderComplete ()
 {
 	char *uri;
 
-
 	downloader->RemoveHandler (Downloader::DownloadFailedEvent, downloader_failed, this);
 	downloader->RemoveHandler (Downloader::CompletedEvent, downloader_complete, this);
 
@@ -440,7 +440,8 @@ Image::DownloaderComplete ()
 void
 Image::UpdateSize ()
 {
-	if (!(IsLayoutContainer () || (GetVisualParent () && GetVisualParent ()->IsLayoutContainer ()))) {
+	/* XXX FIXME horrible hack to keep old world charm until canvas logic is updated */
+	if (GetVisualParent () && GetVisualParent ()->Is (Type::CANVAS)) {
 		updating_size_from_media = true;
 		
 		if (use_media_width) {

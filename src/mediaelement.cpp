@@ -600,8 +600,8 @@ MediaElement::SetMedia (Media *media)
 	
 	UpdatePlayerPosition (GetPosition ());
 
-	
-	if (!(IsLayoutContainer () || (GetVisualParent () && GetVisualParent ()->IsLayoutContainer ()))) {
+	/* XXX FIXME horrible hack to keep old world charm until canvas logic is updated */
+	if (GetVisualParent () && GetVisualParent ()->Is (Type::CANVAS)) {
 		updating_size_from_media = true;
 
 		if (use_media_width) {

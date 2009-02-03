@@ -1,4 +1,13 @@
-2009-02-02  Chris Toshok  <toshok@ximian.com>
+2009-02-02  Larry Ewing  <lewing@novell.com>
+
+	* mediaelement.cpp:
+	* media.cpp (Image::UpdateSize): update horrible hacks that are
+	used when we are part of canvas until they can be removed
+	completely
+
+2009-02-02  Larry Ewing  <lewing@novell.com>
+
+	2009-02-02  Chris Toshok  <toshok@ximian.com>
 
 	* enums.cpp (keyboard_navigation_mode_map): add
 	(initialize_enums): add TabNavigation property handling, mapping
