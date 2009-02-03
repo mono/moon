@@ -35,6 +35,11 @@
  */
 #define APPLY_KERNING(uc)	((uc != 0x002E) && (uc != 0x06D4) && (uc != 3002))
 
+
+//
+// TextRun
+//
+
 TextRun::TextRun (const gunichar *ucs4, int len, ITextSource *source, bool selected)
 {
 	TextFontDescription *font = source->FontDescription ();
@@ -95,6 +100,9 @@ TextRun::~TextRun ()
 }
 
 
+//
+// TextSegment
+//
 
 class TextSegment : public List::Node {
  public:
@@ -131,7 +139,9 @@ TextSegment::~TextSegment ()
 }
 
 
-
+//
+// TextLine
+//
 
 class TextLine : public List::Node {
  public:
@@ -163,7 +173,9 @@ TextLine::~TextLine ()
 }
 
 
-
+//
+// TextLayout
+//
 
 TextLayout::TextLayout ()
 {
