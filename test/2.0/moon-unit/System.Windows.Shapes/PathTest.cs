@@ -113,8 +113,8 @@ namespace MoonTest.System.Windows.Shapes
 		{
 			var c = new Path ();
 
-			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
-			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual1");
+			//Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
+			//Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual1");
 
 			var data = new RectangleGeometry ();
 			data.Rect = new Rect (0,10,25,23);
@@ -131,6 +131,37 @@ namespace MoonTest.System.Windows.Shapes
 			Assert.AreEqual (new Size (0,0), c.RenderSize, "c render");
 
 			c.Arrange (new Rect (0,0,c.DesiredSize.Width,c.DesiredSize.Height));
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual3");
+			Assert.AreEqual (new Size (0,0), c.RenderSize, "c render");
+		}
+
+		[TestMethod]
+		public void ComputeActualSizeIntrinsicCanvas ()
+		{
+			Canvas canvas = new Canvas ();
+			var c = new Path ();
+
+			//Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
+			//Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual1");
+
+			var data = new RectangleGeometry ();
+			data.Rect = new Rect (0,10,25,23);
+			c.Data = data;
+			canvas.Children.Add (c);
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual1");
+			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (c), "c slot");
+
+			canvas.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
+			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual2");
+			Assert.AreEqual (new Size (0,0), c.RenderSize, "c render");
+
+			canvas.Arrange (new Rect (0,0,c.DesiredSize.Width,c.DesiredSize.Height));
 
 			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
 			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c actual3");

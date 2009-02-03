@@ -1,3 +1,10 @@
+2009-02-03  Larry Ewing  <lewing@novell.com>
+
+	* System.Windows.Controls/TextBlockTest.cs: add a test that shows
+	that the instantly applied actual values do not consider wrapping.
+
+	* System.Windows.Shapes/PathTest.cs: add an intrinsic canvas test.
+	
 2009-02-03  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Controls/SliderTest.cs: Check XAML-parsed 

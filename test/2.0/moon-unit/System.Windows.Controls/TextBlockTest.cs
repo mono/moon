@@ -162,6 +162,26 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		public void ArrangeTooLongLineWrapMeasureReverseTest ()
+		{
+			Border b = new Border ();
+			TextBlock tb = new TextBlock ();
+			tb.TextWrapping = TextWrapping.Wrap;
+			
+			b.Child = tb;
+			b.Width = 44;
+			tb.Text = "Hello and don't you forget Who I am";
+
+			Assert.IsTrue (tb.ActualWidth < 202.4 && tb.ActualWidth > 202.3, "tb.ActualWidth is " + tb.ActualWidth.ToString ());
+			Assert.AreEqual (16, tb.ActualHeight, "tb.ActualHeight");
+
+			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+
+			Assert.IsTrue (tb.ActualWidth < 10.9 && tb.ActualWidth > 10.8, "tb.ActualWidth1 is " + tb.ActualWidth.ToString ());
+			Assert.AreEqual (560, tb.ActualHeight, "tb.ActualHeight1");
+		}
+
+		[TestMethod]
 		public void ComputeActualWidth ()
 		{
 			var c = new TextBlock ();
