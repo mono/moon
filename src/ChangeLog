@@ -1,3 +1,9 @@
+2009-02-03  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* deepzoomimagetilesource.h|cpp:
+	* multiscaleimage.h|cpp:
+	* multiscalesubimage.h|cpp: fill the subimages on MSI
+
 2009-02-03  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* deployment.h: Don't use 'volatile' before glib 2.10 (e.g. sled10)

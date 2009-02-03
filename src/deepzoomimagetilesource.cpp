@@ -16,6 +16,7 @@
 #include <expat.h>
 
 #include "deepzoomimagetilesource.h"
+#include "multiscalesubimage.h"
 #include "uri.h"
 #include "runtime.h"
 #include "file-downloader.h"
@@ -106,6 +107,7 @@ DeepZoomImageTileSource::Init ()
 	display_rects = NULL;
 	parsed_callback = NULL;	
 	isCollection = false;
+	subimages = NULL;
 }
 
 DeepZoomImageTileSource::DeepZoomImageTileSource ()
@@ -222,7 +224,7 @@ printf ("Parsing DeepZoom %s\n", filename);
 		tileOverlap = info->overlap;
 		display_rects = info->display_rects;
 	} else {
-		//do something with the info->subimages
+		subimages = info->sub_images;
 		isCollection = info->isCollection;
 		maxLevel = info->max_level;
 	}
@@ -485,7 +487,8 @@ end_element (void *data, const char *el)
 		case 2:
 			if (info->isCollection)
 				if (!strcmp ("I", el)) {
-					info->sub_images = g_list_append (info->sub_images, info->current_subimage);
+					MultiScaleSubImage *subi = new MultiScaleSubImage (new DeepZoomImageTileSource (info->current_subimage->source));
+					info->sub_images = g_list_append (info->sub_images, subi);
 					info->current_subimage = NULL;
 				}
 			break;

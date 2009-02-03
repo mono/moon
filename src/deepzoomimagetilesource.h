@@ -20,11 +20,13 @@
 
 typedef void (*parsed_cb) (void *userdata);
 gpointer get_tile_layer (int level, int x, int y, void *user_data);
+void multi_scale_image_handle_parsed (void *userdata);
 
 /* @Version=2,Namespace=System.Windows.Media */
 class DeepZoomImageTileSource : public MultiScaleTileSource {
 	friend class MultiScaleImage;
 	friend gpointer get_tile_layer (int level, int x, int y, void *user_data);
+	friend void multi_scale_image_handle_parsed (void *userdata);
 
 	virtual void Download ();
 	gpointer GetTileLayer (int level, int x, int y);
@@ -40,6 +42,7 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	bool downloaded;
 	char *format;
 	GList *display_rects;
+	GList *subimages;
 
 	void Init ();
 

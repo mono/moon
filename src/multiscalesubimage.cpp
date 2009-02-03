@@ -11,6 +11,12 @@
  * 
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#include "debug.h"
+#include "runtime.h"
 #include "multiscalesubimage.h"
 
 MultiScaleSubImage::MultiScaleSubImage ()
@@ -21,6 +27,7 @@ MultiScaleSubImage::MultiScaleSubImage ()
 
 MultiScaleSubImage::MultiScaleSubImage (MultiScaleTileSource *tsource)
 {
+	LOG_MSI ("new MultiScaleSubImage ()\n");
 	SetObjectType (Type::MULTISCALESUBIMAGE);
 	source = tsource;
 }

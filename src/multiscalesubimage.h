@@ -16,9 +16,12 @@
 
 #include "dependencyobject.h"
 
+void end_element (void *data, const char *el);
+
 /* @Version=2,Namespace=System.Windows.Controls */
 class MultiScaleSubImage : public DependencyObject {
 	friend class MultiScaleImage;
+	friend void end_element (void *data, const char *el);
 
 	MultiScaleTileSource *source;
 	MultiScaleSubImage (MultiScaleTileSource *source);

@@ -38,6 +38,7 @@ MultiScaleImage::MultiScaleImage ()
 	filename = NULL;
 	cache = g_hash_table_new (g_str_hash, g_str_equal);
 	downloading = false;
+	subimages = NULL;
 }
 
 MultiScaleImage::~MultiScaleImage ()
@@ -248,6 +249,11 @@ void
 multi_scale_image_handle_parsed (void *userdata)
 {
 	MultiScaleImage *msi = (MultiScaleImage*)userdata;
+	//if the source is a collection, fill the subimages list
+	DeepZoomImageTileSource *source = (DeepZoomImageTileSource *)msi->source;
+	if (source) {
+		msi->subimages = source->subimages;
+	}
 	msi->Invalidate ();
 }
 

@@ -21,9 +21,13 @@
 #include "control.h"
 #include "media.h"
 
+void multi_scale_image_handle_parsed (void *userdata);
+
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
 class MultiScaleImage : public MediaBase {
+	friend void multi_scale_image_handle_parsed (void *userdata);
+
 	void DownloaderAbort ();
 	void DownloadUri (const char* url);
 	MultiScaleTileSource *source;
@@ -32,6 +36,7 @@ class MultiScaleImage : public MediaBase {
 	char* context;
 	char* filename;
 	bool downloading;
+	GList *subimages;
 
 	cairo_user_data_key_t width_key;
 	cairo_user_data_key_t height_key;
