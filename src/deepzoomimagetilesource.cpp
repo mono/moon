@@ -64,7 +64,6 @@ class DZParserinfo
 
 void start_element (void *data, const char *el, const char **attr);
 void end_element (void *data, const char *el);
-gpointer get_tile_layer (int level, int x, int y, void *user_data);
 
 DeepZoomImageTileSource::DeepZoomImageTileSource ()
 {
@@ -106,7 +105,7 @@ DeepZoomImageTileSource::Download ()
 	if (downloaded)
 		return;
 	char *stringuri;
-	if (stringuri = GetValue (DeepZoomImageTileSource::UriSourceProperty)->AsString ()) {
+	if ((stringuri = GetValue (DeepZoomImageTileSource::UriSourceProperty)->AsString ())) {
 		downloaded = true;
 		download_uri (stringuri);
 	}
@@ -179,7 +178,7 @@ DeepZoomImageTileSource::Parse (const char* filename)
 		}
 		done = feof (f);
 		if (!XML_Parse (p, buffer, len, done)) {
-			printf ("Parser error at line %d:\n%s\n", XML_GetCurrentLineNumber (p), XML_ErrorString(XML_GetErrorCode(p)));
+			printf ("Parser error at line %d:\n%s\n", (int)XML_GetCurrentLineNumber (p), XML_ErrorString(XML_GetErrorCode(p)));
 			done = 1;
 		}
 	}
@@ -214,7 +213,7 @@ DeepZoomImageTileSource::GetTileLayer (int level, int x, int y)
 		int layers;
 		frexp (MAX (imageWidth, imageHeight), &layers);
 
-		while (cur = (DisplayRect*)g_list_nth_data (display_rects, i)) {
+		while ((cur = (DisplayRect*)g_list_nth_data (display_rects, i))) {
 			i++;
 
 			if (!(cur->min_level <= level && level <= cur->max_level))
@@ -236,9 +235,9 @@ DeepZoomImageTileSource::GetTileLayer (int level, int x, int y)
 	char* p = g_stpcpy (buffer, sourceuri);
 	sprintf (p-4, "_files/%d/%d_%d.%s", level, x, y, format);
 	if (g_str_has_prefix (buffer, "/"))
-		return buffer +1;
+		return g_strdup(buffer +1);
 	else
-		return buffer;
+		return g_strdup(buffer);
 }
 
 void

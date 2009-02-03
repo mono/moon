@@ -19,9 +19,15 @@
 #include "uri.h"
 
 typedef void (*parsed_cb) (void *userdata);
+gpointer get_tile_layer (int level, int x, int y, void *user_data);
 
 /* @Version=2,Namespace=System.Windows.Media */
 class DeepZoomImageTileSource : public MultiScaleTileSource {
+	friend class MultiScaleImage;
+	friend gpointer get_tile_layer (int level, int x, int y, void *user_data);
+
+	virtual void Download ();
+	gpointer GetTileLayer (int level, int x, int y);
 
 	Downloader* downloader;
 
@@ -37,6 +43,13 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 
 	void Parse (const char* filename);
 
+	void set_parsed_cb (parsed_cb callback, void *userdata)
+	{
+		parsed_callback = callback;
+		cb_userdata = userdata;
+	}
+
+
  protected:
 	virtual ~DeepZoomImageTileSource ();
 
@@ -49,21 +62,8 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 
 	//
-	// Methods
-	//
-	void set_parsed_cb (parsed_cb callback, void *userdata)
-	{
-		parsed_callback = callback;
-		cb_userdata = userdata;
-	}
-
-	virtual void Download ();
-	gpointer GetTileLayer (int level, int x, int y);
-
-	//
 	// Properties
 	//
-
 	/* @PropertyType=string,ManagedPropertyType=Uri,GenerateAccessors */
 	static DependencyProperty *UriSourceProperty;
 
