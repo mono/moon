@@ -258,38 +258,7 @@ Grid::ArrangeOverride (Size finalSize)
 		row_count = 1;
 	}
 
-	for (int i = 0; i < col_count; i++)
-		columns->GetValueAt (i)->AsColumnDefinition ()->SetActualWidth (0.0);
-
-	for (int i = 0; i < row_count; i++)
-		rows->GetValueAt (i)->AsRowDefinition ()->SetActualHeight (0.0);
-
-	Size remaining = finalSize;
-
-	VisualTreeWalker walker = VisualTreeWalker (this);
-	while (UIElement *child = walker.Step ()) {
-		if (child->GetVisibility () != VisibilityVisible)
-			continue;
-
-		gint32 col = MIN (Grid::GetColumn (child), col_count - 1);
-		gint32 row = MIN (Grid::GetRow (child), row_count - 1);
-		gint32 colspan = MIN (Grid::GetColumnSpan (child), col_count - col);
-		gint32 rowspan = MIN (Grid::GetRowSpan (child), row_count - row);
-		
-		Size desired = child->GetDesiredSize ();
-		/* XXX Fixme this is a hack to avoid spans until we know the proper behavior here */
-		if (colspan == 1) {
-			ColumnDefinition *coldef = columns->GetValueAt (col)->AsColumnDefinition ();
-			coldef->SetActualWidth (MAX (coldef->GetActualWidth (), desired.width));
-		}
-
-		/* XXX Fixme this is a hack to avoid spans until we know the proper behavior here */
-		if (rowspan == 1) {
-			RowDefinition *rowdef = rows->GetValueAt (row)->AsRowDefinition ();
-			rowdef->SetActualHeight (MAX (rowdef->GetActualHeight (), desired.height));
-		}
-	}
-
+	Size requested = Size ();
 	double row_stars = 0.0;
 	for (int i = 0; i < row_count; i ++) {
 		RowDefinition *rowdef = rows->GetValueAt (i)->AsRowDefinition ();
@@ -297,15 +266,14 @@ Grid::ArrangeOverride (Size finalSize)
 
 		switch (height->type) {
 		case GridUnitTypeStar:
-			remaining.height -= rowdef->GetActualHeight ();
+			requested.height += rowdef->GetActualHeight ();
 			row_stars += height->val;
 			break;
 		case GridUnitTypePixel:
-			rowdef->SetActualHeight (height->val);
-			remaining.height -= height->val;
+			requested.height += rowdef->GetActualHeight ();
 			break;
 		case GridUnitTypeAuto:
-			remaining.height -= rowdef->GetActualHeight ();
+			requested.height += rowdef->GetActualHeight ();
 			break;
 		}
 	}
@@ -317,18 +285,25 @@ Grid::ArrangeOverride (Size finalSize)
 
 		switch (width->type) {
 		case GridUnitTypeStar:
-			remaining.width -= coldef->GetActualWidth ();
+			requested.width += coldef->GetActualWidth ();
 			col_stars += width->val;
 			break;
 		case GridUnitTypePixel:
-			coldef->SetActualWidth (width->val);
-			remaining.width -= width->val;
+			requested.width += coldef->GetActualWidth ();
 			break;
 		case GridUnitTypeAuto:
-			remaining.width -= coldef->GetActualWidth ();
+			requested.width += coldef->GetActualWidth ();
 			break;
 		}
 	}
+
+	Size remaining = Size (finalSize.width - requested.width, finalSize.height - requested.height);
+
+	if (!free_col && GetHorizontalAlignment () != HorizontalAlignmentStretch && isnan (GetWidth ()))
+		remaining.width = MIN (remaining.width, 0);
+	
+	if (!free_row && GetVerticalAlignment () != VerticalAlignmentStretch && isnan (GetHeight ()))
+		remaining.height = MIN (remaining.height, 0);
 
 	for (int i = 0; i < row_count; i ++) {
 		RowDefinition *rowdef = rows->GetValueAt (i)->AsRowDefinition ();
@@ -346,7 +321,10 @@ Grid::ArrangeOverride (Size finalSize)
 			coldef->SetActualWidth (MAX (coldef->GetActualWidth () + (remaining.width * width->val / col_stars), 0));
 	}
 
-	walker = VisualTreeWalker (this);
+	bool first = true;
+	Size arranged = finalSize;
+	
+	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
 		if (child->GetVisibility () != VisibilityVisible)
 			continue;
@@ -359,6 +337,11 @@ Grid::ArrangeOverride (Size finalSize)
 		Rect child_final = Rect (0, 0, 0, 0);
 		Size min_size;
 		Size max_size;
+
+		if (first) {
+			arranged = Size ();
+			first = false;
+		}
 
 		for (int r = 0; r < row + rowspan; r++) {
 			RowDefinition *rowdef = rows->GetValueAt (r)->AsRowDefinition ();
@@ -387,12 +370,13 @@ Grid::ArrangeOverride (Size finalSize)
 		}
 
 		child->Arrange (child_final);
-		
-		/*
-		  Size arranged = child.GetRenderSize ();
-		arranged = arranged.Max (min_size);
-		arranged = arranged.Min (max_size);
-		*/
+		Size child_arranged = child->GetRenderSize ();
+
+		if (free_col || GetHorizontalAlignment () == HorizontalAlignmentStretch || !isnan (GetWidth ()))
+			arranged.width = MAX (child_final.x + child_final.width, finalSize.width);
+		    
+		if (free_row || GetVerticalAlignment () == VerticalAlignmentStretch || !isnan (GetHeight()))
+			arranged.height = MAX (child_final.y + child_final.height, finalSize.height);
 	}
 
 	if (free_col)
@@ -401,7 +385,7 @@ Grid::ArrangeOverride (Size finalSize)
 	if (free_row)
 		rows->unref ();
 
-	return finalSize;
+	return arranged;
 }
 
 //

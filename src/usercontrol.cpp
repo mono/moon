@@ -53,7 +53,6 @@ UserControl::OnPropertyChanged (PropertyChangedEventArgs *args)
 Size
 UserControl::MeasureOverride (Size availableSize)
 {
-	return FrameworkElement::MeasureOverride (availableSize);
 	Size desired = Size (0,0);
 	Size specified = Size (GetWidth (), GetHeight ());
 
@@ -83,8 +82,6 @@ UserControl::MeasureOverride (Size availableSize)
 Size
 UserControl::ArrangeOverride (Size finalSize)
 {
-	return FrameworkElement::ArrangeOverride (finalSize);
-	
 	Thickness border = *GetPadding () + *GetBorderThickness ();
 
 	Size specified = Size (GetWidth (), GetHeight ());

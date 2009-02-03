@@ -1,3 +1,11 @@
+2009-02-03  Larry Ewing  <lewing@novell.com>
+
+	* grid.cpp (Grid::ArrangeOverride): remove a bunch of the old code
+	and apply the finalsize adjustments to the existing values.
+	Handle the empty row/col case specially.
+
+	* usercontrol.cpp: revert accicdental diabling (for now).
+	
 2009-02-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBuffer::Replace): Do the right thing if length
