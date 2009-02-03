@@ -1,10 +1,10 @@
-2009-02-02  Stephane Delcroix  <sdelcroix@novell.com>
+2009-02-03  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* tilesource.h:
 	* deepzoomimagetilesource.h|cpp: fix some compilation warning, move
 	some methods and fields to the private section.
 
-2009-02-02  Stephane Delcroix  <sdelcroix@novell.com>
+2009-02-03  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscalesubimage.h|cpp: re-use the tilesource to parse subimages
 
