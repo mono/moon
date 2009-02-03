@@ -31,6 +31,7 @@ using Microsoft.Internal;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Ink;
 using System.Windows.Input;
@@ -275,6 +276,7 @@ namespace Mono {
 			case Kind.POLYLINE: return new Polyline (raw);
 			case Kind.POLYLINESEGMENT: return new PolyLineSegment (raw);
 			case Kind.POLYQUADRATICBEZIERSEGMENT: return new PolyQuadraticBezierSegment (raw);
+			case Kind.POPUP: return new Popup (raw);
 			case Kind.QUADRATICBEZIERSEGMENT: return new QuadraticBezierSegment (raw);
 			case Kind.RADIALGRADIENTBRUSH: return new RadialGradientBrush (raw);
 			case Kind.RECTANGLEGEOMETRY: return new RectangleGeometry (raw);
