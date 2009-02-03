@@ -69,6 +69,7 @@ class DZParserinfo
 
 	//Collection attributes
 	int max_level;
+	SubImage *current_subimage;
 	GList *sub_images;
 
 	//Common attributes
@@ -86,6 +87,7 @@ class DZParserinfo
 		current_rect = NULL;
 		display_rects = NULL;
 		sub_images = NULL;
+		current_subimage = NULL;
 	}
 };
 
@@ -103,6 +105,7 @@ DeepZoomImageTileSource::Init ()
 	get_tile_func = get_tile_layer;
 	display_rects = NULL;
 	parsed_callback = NULL;	
+	isCollection = false;
 }
 
 DeepZoomImageTileSource::DeepZoomImageTileSource ()
@@ -156,6 +159,9 @@ DeepZoomImageTileSource::download_uri (const char* url)
 	
 	if (!downloader)
 		return;
+
+printf ("DZITS: download_uri (%s)\n", uri->ToString ());
+
 	downloader->Open ("GET", uri->ToString (), NoPolicy);
 	
 	downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
@@ -184,7 +190,9 @@ DeepZoomImageTileSource::DownloaderComplete ()
 void
 DeepZoomImageTileSource::Parse (const char* filename)
 {
-	printf ("Parsing DeepZoom %s\n", filename);
+#define BUFFSIZE	1024
+
+printf ("Parsing DeepZoom %s\n", filename);
 	XML_Parser p = XML_ParserCreate (NULL);
 	XML_SetElementHandler (p, start_element, end_element);
 	DZParserinfo *info = new DZParserinfo ();
@@ -192,7 +200,6 @@ DeepZoomImageTileSource::Parse (const char* filename)
 	XML_SetUserData (p, info);
 
 	FILE *f = fopen (filename, "r");
-#define BUFFSIZE	1024
 	int done = 0;
 	char buffer[BUFFSIZE];
 	while (!done && !info->error) {
@@ -209,14 +216,21 @@ DeepZoomImageTileSource::Parse (const char* filename)
 	}
 	fclose (f);
 
-	imageWidth = info->image_width;
-	imageHeight = info->image_height;
-	tileWidth = tileHeight = info->tile_size;
-	tileOverlap = info->overlap;
-	format = g_strdup (info->format);
-	display_rects = info->display_rects;
+	if (!info->isCollection) {
+		imageWidth = info->image_width;
+		imageHeight = info->image_height;
+		tileOverlap = info->overlap;
+		display_rects = info->display_rects;
+	} else {
+		//do something with the info->subimages
+		isCollection = info->isCollection;
+		maxLevel = info->max_level;
+	}
 
-	printf ("Done parsing...\n");
+	tileWidth = tileHeight = info->tile_size;
+	format = g_strdup (info->format);
+
+printf ("Done parsing...\n");
 	if (parsed_callback)
 		parsed_callback (cb_userdata);
 }
@@ -310,10 +324,19 @@ start_element (void *data, const char *el, const char **attr)
 				else if (!strcmp ("Overlap", attr[i]))
 					info->overlap = atoi (attr[i+1]);
 				else
-					printf ("\tunparsed arg %s: %s\n", attr[i], attr[i+1]);
+					printf ("\tunparsed attr %s: %s\n", attr[i], attr[i+1]);
 		} else if (!strcmp ("Collection", el)) {
 			info->isCollection = true;
-			info->skip = info->depth;
+			int i;
+			for (i = 0; attr[i]; i+=2)
+				if (!strcmp ("Format", attr[i]))
+					info->format = g_strdup (attr[i+1]);
+				else if (!strcmp ("TileSize", attr[i]))
+					info->tile_size = atoi (attr[i+1]);
+				else if (!strcmp ("MaxLevel", attr[i]))
+					info->max_level = atoi (attr[i+1]);
+				else
+					printf ("\tunparsed attr %s: %s\n", attr[i], attr[i+1]);
 		} else {
 			printf ("Unexpected element %s\n", el);
 			info->error = true;
@@ -330,11 +353,18 @@ start_element (void *data, const char *el, const char **attr)
 					else if (!strcmp ("Height", attr[i]))
 						info->image_height = atol (attr[i+1]);
 					else
-						printf ("\t\tunparsed arg %s: %s\n", attr[i], attr[i+1]);
+						printf ("\tunparsed attr %s: %s\n", attr[i], attr[i+1]);
 			} else if (!strcmp ("DisplayRects", el)) {
 				//no attributes, only contains DisplayRect element
 			} else {
 				printf ("Unexpected element %s\n", el);
+				info->error = true;
+			}
+		} else {
+			if (!strcmp ("Items", el)) {
+				//no attributes, only contains <I> elements
+			} else {
+				printf ("Unexpected element %d %s\n", info->depth, el);
 				info->error = true;
 			}
 		}
@@ -351,10 +381,28 @@ start_element (void *data, const char *el, const char **attr)
 					else if (!strcmp ("MaxLevel", attr[i]))
 						max_level = atol (attr[i+1]);
 					else
-						printf ("\t\t\tunparsed arg %s: %s\n", attr[i], attr[i+1]);
+						printf ("\tunparsed arg %s: %s\n", attr[i], attr[i+1]);
 				info->current_rect = new DisplayRect (min_level, max_level);
 			} else {
 				printf ("Unexpected element %s\n", el);
+				info->error = true;
+			}
+		} else {
+			if (!strcmp ("I", el)) {
+				info->current_subimage = new SubImage ();
+				int i;
+				for (i = 0; attr[i]; i+=2)
+					if (!strcmp ("N", attr[i]))
+						info->current_subimage->n = atoi (attr[i+1]);
+					else if (!strcmp ("Id", attr[i]))
+						info->current_subimage->id = atoi (attr[i+1]);
+					else if (!strcmp ("Source", attr[i]))
+						info->current_subimage->source = g_strdup (attr[i+1]);
+					else
+						printf ("\tunparsed arg %s: %s\n", attr[i], attr[i+1]);
+
+			} else {
+				printf ("Unexpected element %d %s\n", info->depth, el);
 				info->error = true;
 			}
 		}
@@ -365,7 +413,7 @@ start_element (void *data, const char *el, const char **attr)
 			if (!strcmp ("Rect", el)) {
 				if (!info->current_rect) {
 					info->error = true;
-					return;
+					break;
 				}
 				int i;
 				for (i = 0; attr[i]; i+=2)
@@ -378,9 +426,42 @@ start_element (void *data, const char *el, const char **attr)
 					else if (!strcmp ("Height", attr[i]))
 						info->current_rect->rect.height = (double)atol (attr[i+1]);
 					else
-						printf ("\t\t\tunparsed arg %s: %s\n", attr[i], attr[i+1]);
+						printf ("\tunparsed attr %s: %s\n", attr[i], attr[i+1]);
 				info->display_rects = g_list_append (info->display_rects, info->current_rect);
 				info->current_rect = NULL;
+			} else {
+				printf ("Unexpected element %s\n", el);
+				info->error = true;
+			}
+		} else {
+			if (!strcmp ("Size", el)) {
+				if (!info->current_subimage) {
+					info->error = true;
+					break;
+				}
+				int i;
+				for (i = 0; attr [i]; i+=2)
+					if (!strcmp ("Width", attr[i]))
+						info->current_subimage->width = atol (attr[i+1]);
+					else if (!strcmp ("Height", attr[i]))
+						info->current_subimage->height = atol (attr[i+1]);
+					else
+						printf ("\tunparsed attr %s.%s: %s\n", el, attr[i], attr[i+1]);
+			} else if (!strcmp ("Viewport", el)) {
+				if (!info->current_subimage) {
+					info->error = true;
+					break;
+				}
+				int i;
+				for (i = 0; attr [i]; i+=2)
+					if (!strcmp ("X", attr[i]))
+						info->current_subimage->vp_x = atol (attr[i+1]);
+					else if (!strcmp ("Y", attr[i]))
+						info->current_subimage->vp_y = atol (attr[i+1]);
+					else if (!strcmp ("Width", attr[i]))
+						info->current_subimage->vp_w = atol (attr[i+1]);
+					else
+						printf ("\tunparsed attr %s: %s\n", attr[i], attr[i+1]);
 			} else {
 				printf ("Unexpected element %s\n", el);
 				info->error = true;
@@ -400,7 +481,15 @@ end_element (void *data, const char *el)
 	(info->depth)--;
 
 	if (info->skip < 0) {
-		//blah
+		switch (info->depth) {
+		case 2:
+			if (info->isCollection)
+				if (!strcmp ("I", el)) {
+					info->sub_images = g_list_append (info->sub_images, info->current_subimage);
+					info->current_subimage = NULL;
+				}
+			break;
+		}
 	}
 
 	if (info->skip == info->depth)

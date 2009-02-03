@@ -51,6 +51,8 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 		cb_userdata = userdata;
 	}
 
+	bool isCollection;
+	int maxLevel;
 
  protected:
 	virtual ~DeepZoomImageTileSource ();
