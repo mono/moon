@@ -34,21 +34,47 @@ class DisplayRect
 	}
 };
 
+class SubImage
+{
+ public:
+ 	int id;
+	int n;
+	char *source;
+	long width;
+	long height;
+	double vp_x;
+	double vp_y;
+	double vp_w;
+
+	SubImage ()
+	{
+		source = NULL;
+	}
+};
+
 class DZParserinfo
 {
  public:
 	int depth;
 	int skip;
-	bool isCollection;
 	bool error;
 
-	//Image attributes
-	char *format;
-	int tile_size, overlap;
-	long image_width, image_height;
+	bool isCollection;
 
+	//Image attributes
+	int overlap;
+	long image_width, image_height;
 	DisplayRect *current_rect;
 	GList *display_rects;
+
+	//Collection attributes
+	int max_level;
+	GList *sub_images;
+
+	//Common attributes
+	char *format;
+	int tile_size;
+
 
 	DZParserinfo ()
 	{
@@ -59,13 +85,15 @@ class DZParserinfo
 		image_width = image_height = tile_size = overlap = 0;
 		current_rect = NULL;
 		display_rects = NULL;
+		sub_images = NULL;
 	}
 };
 
 void start_element (void *data, const char *el, const char **attr);
 void end_element (void *data, const char *el);
 
-DeepZoomImageTileSource::DeepZoomImageTileSource ()
+void
+DeepZoomImageTileSource::Init ()
 {
 	SetObjectType (Type::DEEPZOOMIMAGETILESOURCE);
 
@@ -74,21 +102,18 @@ DeepZoomImageTileSource::DeepZoomImageTileSource ()
 	format = NULL;
 	get_tile_func = get_tile_layer;
 	display_rects = NULL;
-	printf ("Done parsing...\n");
-	printf ("Done parsing...\n");
-	parsed_callback = NULL;
+	parsed_callback = NULL;	
+}
+
+DeepZoomImageTileSource::DeepZoomImageTileSource ()
+{
+	Init ();
 }
 
 DeepZoomImageTileSource::DeepZoomImageTileSource (const char *uri)
 {
-	SetObjectType (Type::DEEPZOOMIMAGETILESOURCE);
-
-	downloader = NULL;
-	downloaded = false;
+	Init ();
 	SetValue (DeepZoomImageTileSource::UriSourceProperty, new Value (uri, true));
-	format = NULL;
-	get_tile_func = get_tile_layer;
-	parsed_callback = NULL;
 }
 
 DeepZoomImageTileSource::~DeepZoomImageTileSource ()

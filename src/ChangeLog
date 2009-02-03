@@ -1,5 +1,11 @@
 2009-02-03  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* deepzoomimagetilesource.h|cpp: data structures to parse
+	DZ images with subimages. Move the common parts of both ctors
+	in Init ()
+
+2009-02-03  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* tilesource.h:
 	* deepzoomimagetilesource.h|cpp: fix some compilation warning, move
 	some methods and fields to the private section.
