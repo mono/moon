@@ -49,7 +49,7 @@ void
 MultiScaleImage::ZoomAboutLogicalPoint (double zoomIncrementFactor, double zoomCenterLogicalX, double zoomCenterLogicalY)
 {
 
-//	printf ("zoomabout logical %f  (%f, %f)\n", zoomIncrementFactor, zoomCenterLogicalX, zoomCenterLogicalY);
+	LOG_MSI ("zoomabout logical %f  (%f, %f)\n", zoomIncrementFactor, zoomCenterLogicalX, zoomCenterLogicalY);
 	double width = GetViewportWidth () / zoomIncrementFactor;
 	double height = GetViewportHeight () / zoomIncrementFactor;
 	SetValue (MultiScaleImage::ViewportWidthProperty, Value (width));
@@ -85,7 +85,7 @@ MultiScaleImage::DownloadUri (const char* url)
 	if (!downloader)
 		return;
 
-//	printf ("MSI::DownloadUri %s\n", url);
+	LOG_MSI ("MSI::DownloadUri %s\n", url);
 
 	downloader->Open ("GET", uri->ToString (), NoPolicy);
 
@@ -256,18 +256,18 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 {
 //FIXME: only render region
 
-//printf ("MSI::Render\n");
+	LOG_MSI ("MSI::Render\n");
 
 //	if (!surface)
 //		return;
 
 	if (!(source = GetSource ())) {
-		printf ("no sources set, nothing to render\n");
+		LOG_MSI ("no sources set, nothing to render\n");
 		return;
 	}
 
 	if (source->GetImageWidth () < 0) {
-		printf ("nothing to render so far...\n");
+		LOG_MSI ("nothing to render so far...\n");
 		((DeepZoomImageTileSource*)source)->set_parsed_cb (multi_scale_image_handle_parsed, this);
 		source->Download ();
 		return;
@@ -315,7 +315,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 			cairo_surface_set_user_data (image, &width_key, p_width, g_free);
 			cairo_surface_set_user_data (image, &height_key, p_height, g_free);
 		}
-		printf ("caching %s\n", context);
+		LOG_MSI ("caching %s\n", context);
 		g_hash_table_insert (cache, g_strdup(context), image);
 	}
 
@@ -341,7 +341,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 	int optimal_layer;
 	frexp (w / vp_w, &optimal_layer);
 	optimal_layer = MIN (optimal_layer, layers);
-	printf ("number of layers: %d\toptimal layer for this: %d\n", layers, optimal_layer);
+	LOG_MSI ("number of layers: %d\toptimal layer for this: %d\n", layers, optimal_layer);
 
 	//We have to figure all the layers that we'll have to render:
 	//- from_layer is the highest COMPLETE layer that we can display
@@ -372,7 +372,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 	}
 
 	//render here
-	printf ("rendering layers from %d to %d\n", from_layer, to_layer);
+	LOG_MSI ("rendering layers from %d to %d\n", from_layer, to_layer);
 	int layer_to_render = from_layer;
 	while (from_layer > 0 && layer_to_render <= to_layer) {
 		int i, j;
@@ -383,7 +383,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 				cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, to_key (layer_to_render, i, j));
 				if (!image)
 					continue;
-				printf ("rendering %d %d %d\n", layer_to_render, i, j);
+				LOG_MSI ("rendering %d %d %d\n", layer_to_render, i, j);
 //				int *p_w = (int*)(cairo_surface_get_user_data (image, &width_key));
 //				int *p_h = (int*)(cairo_surface_get_user_data (image, &height_key));
 				cairo_save (cr);
@@ -426,7 +426,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 						DownloadUri (ret);
 						return;
 					} else {
-						printf ("caching a NULL %s\n", context);
+						LOG_MSI ("caching a NULL %s\n", context);
 						g_hash_table_insert (cache, g_strdup(context), NULL);
 					}
 				}
@@ -444,7 +444,7 @@ MultiScaleImage::DownloaderComplete ()
 	if (!(filename = g_strdup(downloader->getFileDownloader ()->GetDownloadedFile ())))
 		return;
 
-	printf ("dl completed %s\n", filename);
+	LOG_MSI ("dl completed %s\n", filename);
 	downloading = false;
 
 	Invalidate ();
@@ -453,7 +453,7 @@ MultiScaleImage::DownloaderComplete ()
 void
 MultiScaleImage::DownloaderFailed ()
 {
-	printf ("dl failed\n");
+	LOG_MSI ("dl failed\n");
 	downloading = false;
 }
 
