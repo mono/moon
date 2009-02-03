@@ -89,6 +89,8 @@ UserControl::ArrangeOverride (Size finalSize)
 	finalSize = finalSize.Max (specified);
 	finalSize = finalSize.Min (specified);
 
+	Size arranged = finalSize;
+
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
 		if (child->GetVisibility () != VisibilityVisible)
@@ -106,7 +108,13 @@ UserControl::ArrangeOverride (Size finalSize)
 			childRect.height = MIN (desired.height, childRect.height);
 
 		child->Arrange (childRect);
-		finalSize = finalSize.Max (child->GetRenderSize ().GrowBy (border));
+		arranged = child->GetRenderSize ();
+
+		if (GetHorizontalAlignment () == HorizontalAlignmentStretch)
+			arranged.width = MAX (arranged.width, finalSize.width);
+
+		if (GetVerticalAlignment () == VerticalAlignmentStretch)
+			arranged.height = MAX (arranged.height, finalSize.height);
 	}
 
 	return finalSize;
