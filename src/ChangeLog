@@ -1,5 +1,9 @@
 2009-02-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* window-gtk.cpp: Add missing Deployment::SetCurrent calls.
+
+2009-02-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* namescope.cpp: NamScope::ObjectDestroyedEvent: upon object
 	  destruction the name might not be available anymore, so
 	  loop over the entire hash tables looking for the object to

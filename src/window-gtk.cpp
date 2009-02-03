@@ -565,10 +565,16 @@ MoonWindowGtk::realized (GtkWidget *widget, gpointer user_data)
 #endif
 #endif
 
+	Deployment::SetCurrent (window->GetDeployment ());
+	
 	if (window->surface) {
 		window->surface->HandleUIWindowUnavailable ();
 		window->surface->HandleUIWindowAvailable ();
 	}
+
+#if SANITY
+	Deployment::SetCurrent (NULL);
+#endif
 
 	return true;
 }
@@ -578,8 +584,14 @@ MoonWindowGtk::unrealized (GtkWidget *widget, gpointer user_data)
 {
 	MoonWindowGtk* window = (MoonWindowGtk*)user_data;
 
+	Deployment::SetCurrent (window->GetDeployment ());
+	
 	if (window->surface)
 		window->surface->HandleUIWindowUnavailable ();
+
+#if SANITY
+	Deployment::SetCurrent (NULL);
+#endif
 
 	return true;
 }
