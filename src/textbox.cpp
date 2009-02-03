@@ -597,12 +597,11 @@ TextBox::KeyPressPageDown (GdkModifierType modifiers)
 	if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK)) != 0)
 		return;
 	
-	if ((modifiers & GDK_SHIFT_MASK) != 0) {
-		// Shift+Page_Down: grow selection by one page in the downward direction
-		cursor = move_down (buffer, cursor, 8);
-	} else {
-		// Page_Down: move cursor down one page and clear selection
-		cursor = move_down (buffer, cursor, 8);
+	// move the cursor down one page from its current position
+	cursor = move_down (buffer, cursor, 8);
+	
+	if ((modifiers & GDK_SHIFT_MASK) == 0) {
+		// clobber the selection
 		anchor = cursor;
 	}
 	
@@ -625,12 +624,11 @@ TextBox::KeyPressPageUp (GdkModifierType modifiers)
 	if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK)) != 0)
 		return;
 	
-	if ((modifiers & GDK_SHIFT_MASK) != 0) {
-		// Shift+Page_Up: grow selection by one page in the upward direction
-		cursor = move_up (buffer, cursor, 8);
-	} else {
-		// Page_Up: move cursor up one page and clear selection
-		cursor = move_up (buffer, cursor, 8);
+	// move the cursor up one page from its current position
+	cursor = move_up (buffer, cursor, 8);
+	
+	if ((modifiers & GDK_SHIFT_MASK) == 0) {
+		// clobber the selection
 		anchor = cursor;
 	}
 	
@@ -653,22 +651,17 @@ TextBox::KeyPressHome (GdkModifierType modifiers)
 	if ((modifiers & MY_GDK_ALT_MASK) != 0)
 		return;
 	
-	if ((modifiers & (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) == (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) {
-		// Ctrl+Shift+Home: update selection to start at the beginning of the buffer
+	if ((modifiers & GDK_CONTROL_MASK) != 0) {
+		// move the cursor to the beginning of the buffer
 		cursor = 0;
-	} else if ((modifiers & GDK_CONTROL_MASK) != 0) {
-		// Ctrl+Home: move cursor to beginning of the buffer and clear selection
-		cursor = 0;
-		anchor = cursor;
-	} else if ((modifiers & GDK_SHIFT_MASK) != 0) {
-		// Shift+Home: update selection to start at beginning of line
-		while (cursor > 0 && !IsEOL (buffer->text[cursor - 1]))
-			cursor--;
 	} else {
-		// Home: move cursor to beginning of line and clear selection
+		// move the cursor to the beginning of the line
 		while (cursor > 0 && !IsEOL (buffer->text[cursor - 1]))
 			cursor--;
-		
+	}
+	
+	if ((modifiers & GDK_SHIFT_MASK) == 0) {
+		// clobber the selection
 		anchor = cursor;
 	}
 	
@@ -691,22 +684,17 @@ TextBox::KeyPressEnd (GdkModifierType modifiers)
 	if ((modifiers & MY_GDK_ALT_MASK) != 0)
 		return;
 	
-	if ((modifiers & (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) == (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) {
-		// Ctrl+Shift+End: update selection to end at the end of the buffer
+	if ((modifiers & GDK_CONTROL_MASK) != 0) {
+		// move the cursor to the end of the buffer
 		cursor = buffer->len;
-	} else if ((modifiers & GDK_CONTROL_MASK) != 0) {
-		// Ctrl+End: move cursor to end of the buffer and clear selection
-		cursor = buffer->len;
-		anchor = cursor;
-	} else if ((modifiers & GDK_SHIFT_MASK) != 0) {
-		// Shift+End: update selection to end at the end of the current line
-		while (cursor < buffer->len && !IsEOL (buffer->text[cursor]))
-			cursor++;
 	} else {
-		// End: move cursor to end of line and clear selection
+		// move the cursor to the end of the line
 		while (cursor < buffer->len && !IsEOL (buffer->text[cursor]))
 			cursor++;
-		
+	}
+	
+	if ((modifiers & GDK_SHIFT_MASK) == 0) {
+		// clobber the selection
 		anchor = cursor;
 	}
 	
@@ -729,26 +717,19 @@ TextBox::KeyPressRight (GdkModifierType modifiers)
 	if ((modifiers & MY_GDK_ALT_MASK) != 0)
 		return;
 	
-	if ((modifiers & (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) == (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) {
-		// Ctrl+Shift+Right: grow selection to the right on word's worth of characters
+	if ((modifiers & GDK_CONTROL_MASK) != 0) {
+		// move the cursor to beginning of the next word
 		cursor = next_word (buffer, cursor);
-	} else if ((modifiers & GDK_CONTROL_MASK) != 0) {
-		// Ctrl+Right: move cursor to right one word's worth of characters and clear selection
-		cursor = next_word (buffer, cursor);
-		anchor = cursor;
-	} else if ((modifiers & GDK_SHIFT_MASK) != 0) {
-		// Right: grow the selection to the right by one character
-		if (buffer->text[cursor] == '\r' && buffer->text[cursor + 1] == '\n') 
-			cursor += 2;
-		else if (cursor < buffer->len)
-			cursor++;
 	} else {
-		// Right: grow the selection to the right by one character and clear the selection
+		// move the cursor forward one character
 		if (buffer->text[cursor] == '\r' && buffer->text[cursor + 1] == '\n') 
 			cursor += 2;
 		else if (cursor < buffer->len)
 			cursor++;
-		
+	}
+	
+	if ((modifiers & GDK_SHIFT_MASK) == 0) {
+		// clobber the selection
 		anchor = cursor;
 	}
 	
@@ -771,26 +752,19 @@ TextBox::KeyPressLeft (GdkModifierType modifiers)
 	if ((modifiers & MY_GDK_ALT_MASK) != 0)
 		return;
 	
-	if ((modifiers & (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) == (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) {
-		// Ctrl+Shift+Left: grow selection to the left one word's worth of characters
+	if ((modifiers & GDK_CONTROL_MASK) != 0) {
+		// move the cursor to the beginning of the previous word
 		cursor = prev_word (buffer, cursor);
-	} else if ((modifiers & GDK_CONTROL_MASK) != 0) {
-		// Ctrl+Left: move cursor to left one word's worth of characters and clear selection
-		cursor = prev_word (buffer, cursor);
-		anchor = cursor;
-	} else if ((modifiers & GDK_SHIFT_MASK) != 0) {
-		// Shift+Left: grow the selection to the left by one character
-		if (cursor >= 2 && buffer->text[cursor - 2] == '\r' && buffer->text[cursor - 1] == '\n')
-			cursor -= 2;
-		else if (cursor > 0)
-			cursor--;
 	} else {
-		// Left: move the cursor one character to the right and clear the selection
+		// move the cursor backward one character
 		if (cursor >= 2 && buffer->text[cursor - 2] == '\r' && buffer->text[cursor - 1] == '\n')
 			cursor -= 2;
 		else if (cursor > 0)
 			cursor--;
-		
+	}
+	
+	if ((modifiers & GDK_SHIFT_MASK) == 0) {
+		// clobber the selection
 		anchor = cursor;
 	}
 	
@@ -813,12 +787,11 @@ TextBox::KeyPressDown (GdkModifierType modifiers)
 	if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK)) != 0)
 		return;
 	
-	if ((modifiers & GDK_SHIFT_MASK) != 0) {
-		// Shift+Down: grow selection by one line in the downward direction
-		cursor = move_down (buffer, cursor, 1);
-	} else {
-		// Down: move cursor down one line and clear selection
-		cursor = move_down (buffer, cursor, 1);
+	// move the cursor down by one line from its current position
+	cursor = move_down (buffer, cursor, 1);
+	
+	if ((modifiers & GDK_SHIFT_MASK) == 0) {
+		// clobber the selection
 		anchor = cursor;
 	}
 	
@@ -841,12 +814,11 @@ TextBox::KeyPressUp (GdkModifierType modifiers)
 	if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK)) != 0)
 		return;
 	
-	if ((modifiers & GDK_SHIFT_MASK) != 0) {
-		// Shift+Page_Up: grow selection by one line in the upward direction
-		cursor = move_up (buffer, cursor, 1);
-	} else {
-		// Page_Up: move cursor up one line and clear selection
-		cursor = move_up (buffer, cursor, 1);
+	// move the cursor up by one line from its current position
+	cursor = move_up (buffer, cursor, 1);
+	
+	if ((modifiers & GDK_SHIFT_MASK) == 0) {
+		// clobber the selection
 		anchor = cursor;
 	}
 	
