@@ -109,8 +109,13 @@ private:
 	Application* current_app;
 	MonoDomain *domain;
 	List *idownloaders;
+
+#if GLIB_CHECK_VERSION(2,10,0)
 	volatile gpointer pending_unrefs;
-	
+#else
+	gpointer pending_unrefs;
+#endif	
+
 	gint objects_created;
 	gint objects_destroyed;
 	
