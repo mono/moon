@@ -167,6 +167,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.GRADIENTSTOP_COLLECTION));
 				t = typeof (System.Windows.Media.ImageBrush); 
 				types.Add (t, new ManagedType (t, Kind.IMAGEBRUSH));
+				t = typeof (System.Windows.Media.ImageSource); 
+				types.Add (t, new ManagedType (t, Kind.IMAGESOURCE));
 				t = typeof (System.Windows.Media.LinearGradientBrush); 
 				types.Add (t, new ManagedType (t, Kind.LINEARGRADIENTBRUSH));
 				t = typeof (System.Windows.Media.LineGeometry); 

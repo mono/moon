@@ -383,6 +383,10 @@ namespace System.Windows.Media {
 		internal ImageBrush (IntPtr raw) : base (raw) {}
 	}
 
+	partial class ImageSource {
+		internal ImageSource (IntPtr raw) : base (raw) {}
+	}
+
 	partial class LinearGradientBrush {
 		public LinearGradientBrush () : base (NativeMethods.linear_gradient_brush_new ()) {}
 		internal LinearGradientBrush (IntPtr raw) : base (raw) {}

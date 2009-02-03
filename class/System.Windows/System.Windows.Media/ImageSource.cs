@@ -31,9 +31,6 @@ using Mono;
 
 namespace System.Windows.Media {
 
-	public abstract class ImageSource : DependencyObject {
-		internal ImageSource (IntPtr native) : base (native)
-		{
-		}
+	public abstract partial class ImageSource : DependencyObject {
 	}
 }
