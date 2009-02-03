@@ -1,3 +1,12 @@
+2009-02-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* type.h:
+	* type.cpp:
+	* type.h.in:
+	* dependencyproperty.h:
+	* dependencyproperty.cpp: Remove the need for
+	  DependencyProperty to be a friend class of Type.
+
 2009-02-03  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscalesubimage.h: DefaultValues for DPs.

@@ -19,6 +19,7 @@
 #include <glib.h>
 
 class DependencyObject;
+class DependencyProperty;
 class Surface;
 class Types;
 
@@ -26,7 +27,6 @@ typedef gint64 TimeSpan;
 typedef DependencyObject *create_inst_func (void);
 
 class Type {
-friend class DependencyProperty; // TODO: emove this and fix the code calling into our private members.
 public:
 	enum Kind {
 		// START_MANAGED_MAPPING
@@ -292,6 +292,9 @@ public:
 	const char *LookupEventName (int id);
 	DependencyObject *CreateInstance ();
 	const char *GetContentPropertyName ();
+	
+	DependencyProperty *LookupProperty (const char *name);
+	void AddProperty (DependencyProperty *property);
 	
 	Type::Kind GetKind () { return type; }
 	Type::Kind GetParent () { return parent; }

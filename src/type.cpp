@@ -17,6 +17,7 @@
 #include "type.h"
 #include "runtime.h"
 #include "deployment.h"
+#include "dependencyproperty.h"
 
 /*
  * Type implementation
@@ -213,6 +214,65 @@ Type::GetContentPropertyName ()
 		return NULL;
 
 	return parent_type->GetContentPropertyName ();
+}
+
+DependencyProperty *
+Type::LookupProperty (const char *name)
+{
+	DependencyProperty *property = NULL;
+	
+	g_return_val_if_fail (name != NULL, NULL);
+	
+	if (properties != NULL) {
+		char *key = g_ascii_strdown (name, -1);
+		property = (DependencyProperty*) g_hash_table_lookup (properties, key);
+		g_free (key);
+		
+		if (property)
+			return property;
+	}
+	
+	if (custom_properties_hash != NULL) {
+		property = (DependencyProperty *) g_hash_table_lookup (custom_properties_hash, name);
+		
+		if (property != NULL)
+			return property;
+	}
+	
+	return NULL;
+}
+
+static void
+free_property (gpointer v)
+{
+	delete (DependencyProperty *) v;
+}
+
+void
+Type::AddProperty (DependencyProperty *property)
+{
+	g_return_if_fail (property != NULL);
+	
+	if (property->IsCustom ()) {
+		// Managed code is allowed to register several properties with the same name
+		// and they all get the callback called when the property value changes.
+		// See comment in type.h.
+		custom_properties = g_slist_prepend (custom_properties, property);
+		if (custom_properties_hash == NULL)
+			custom_properties_hash = g_hash_table_new (g_str_hash, g_str_equal);
+		g_hash_table_insert (custom_properties_hash, (gpointer) property->GetName (), property);
+	} else {
+		DependencyProperty *existing;
+		if (properties == NULL)
+			properties = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, free_property);
+
+		if ((existing = (DependencyProperty *) g_hash_table_lookup (properties, property->GetHashKey ())) != NULL) {
+			g_warning ("Type::AddProperty (): Trying to register the property '%s' (of type %s) in the owner type '%s', and there already is a property registered on that type with the same name.",
+				   property->GetName (), Type::Find (property->GetPropertyType ())->GetName(), GetName());
+		} else {
+			g_hash_table_insert (properties, (gpointer) property->GetHashKey (), property);
+		}
+	}
 }
 
 bool

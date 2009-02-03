@@ -25,7 +25,7 @@
 DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator, bool is_custom)
 {
 	this->owner_type = owner_type;
-	this->hash_key = g_ascii_strdown (name, -1);
+	this->hash_key = NULL;
 	this->name = g_strdup (name);
 	this->default_value = default_value;
 	this->property_type = property_type;
@@ -84,12 +84,6 @@ detach_target_func (DependencyObject *obj, AnimationStorage *storage, gpointer u
 	}
 }
 
-static void
-free_property (gpointer v)
-{
-	delete (DependencyProperty*)v;
-}
-
 DependencyProperty::~DependencyProperty ()
 {
 	g_free (name);
@@ -102,6 +96,15 @@ DependencyProperty::~DependencyProperty ()
 		storage_hash = NULL;
 	}
 	g_free (hash_key);
+}
+
+const char *
+DependencyProperty::GetHashKey ()
+{
+	if (hash_key == NULL) 
+		hash_key = g_ascii_strdown (name, -1);
+		
+	return hash_key;
 }
 
 DependencyProperty *
@@ -144,21 +147,10 @@ DependencyProperty::GetDependencyProperty (Type *type, const char *name, bool in
 	if (type == NULL)
 		return NULL;
 
-	if (type->properties != NULL) {
-		char *key = g_ascii_strdown (name, -1);
-		property = (DependencyProperty*) g_hash_table_lookup (type->properties, key);
-		g_free (key);
-	
-		if (property != NULL)
-			return property;
-	}
-
-	if (type->custom_properties_hash != NULL) {
-		property = (DependencyProperty *) g_hash_table_lookup (type->custom_properties_hash, name);
-		
-		if (property != NULL)
-			return property;
-	}
+	property = type->LookupProperty (name);
+			
+	if (property)
+		return property;
 
 	if (!inherits)
 		return NULL;
@@ -252,31 +244,10 @@ DependencyProperty::RegisterFull (Type *type, const char *name, Value *default_v
 	if (type == NULL)
 		return NULL;
 	
-	property = new DependencyProperty (type->type, name, default_value, vtype, attached, readonly, always_change, changed_callback, validator, is_custom);
+	property = new DependencyProperty (type->GetKind (), name, default_value, vtype, attached, readonly, always_change, changed_callback, validator, is_custom);
 	
-	if (is_custom) {
-		// Managed code is allowed to register several properties with the same name
-		// and they all get the callback called when the property value changes.
-		// See comment in type.h.
-		type->custom_properties = g_slist_prepend (type->custom_properties, property);
-		if (type->custom_properties_hash == NULL)
-			type->custom_properties_hash = g_hash_table_new (g_str_hash, g_str_equal);
-		g_hash_table_insert (type->custom_properties_hash, property->name, property);
-	} else {
-		DependencyProperty *existing;
-		if (type->properties == NULL)
-			type->properties = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, free_property);
-
-		if ((existing = (DependencyProperty *)g_hash_table_lookup (type->properties, property->hash_key)) != NULL) {
-			g_warning ("DependencyProperty::RegisterFull (): Trying to register the property '%s' (of type %s) in the owner type '%s', and there already is a property registered on that type with the same name.",
-				   property->GetName (), Type::Find(vtype)->GetName(), type->GetName());
-			delete property;
-			return existing;
-		} else {
-			g_hash_table_insert (type->properties, property->hash_key, property);
-		}
-	}
-
+	type->AddProperty (property);
+	
 	return property;
 }
 

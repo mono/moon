@@ -36,6 +36,7 @@ class DependencyProperty {
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	const char *GetName() { return name; }
+	const char *GetHashKey ();
 	Type::Kind GetOwnerType() { return owner_type; }
 	/* @GenerateCBinding,GeneratePInvoke */
 	Type::Kind GetPropertyType() { return property_type; }
