@@ -1,5 +1,12 @@
 2009-02-02  Chris Toshok  <toshok@ximian.com>
 
+	* UserControl.cs: remove the ContentProperty attribute - we
+	autogenerate it now
+
+	* Border.cs: same.
+
+2009-02-02  Chris Toshok  <toshok@ximian.com>
+
 	* ComboBox.cs: set DefaultStyleKey in the ctor to pick up the
 	right template.
 

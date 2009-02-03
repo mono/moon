@@ -31,7 +31,6 @@ using Mono;
 
 namespace System.Windows.Media {
 
-	[ContentProperty ("GradientStops")]
 	public abstract partial class GradientBrush : Brush {
 
 	}

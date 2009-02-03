@@ -29,7 +29,6 @@ using Mono;
 
 namespace System.Windows.Controls {
 
-	[ContentProperty ("Content", true)]
 	public partial class UserControl : Control {
 
 		// Note: IsTabStop is set to false (Control defaults to true) in unmanaged code

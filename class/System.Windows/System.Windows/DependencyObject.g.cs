@@ -50,6 +50,7 @@ namespace System.Windows {
 		internal Deployment (IntPtr raw) : base (raw) {}
 	}
 
+	[ContentProperty ("Actions")]
 	partial class EventTrigger {
 		public EventTrigger () : base (NativeMethods.event_trigger_new ()) {}
 		internal EventTrigger (IntPtr raw) : base (raw) {}
@@ -95,6 +96,7 @@ namespace System.Windows {
 		internal SetterBaseCollection (IntPtr raw) : base (raw) {}
 	}
 
+	[ContentProperty ("Setters")]
 	partial class Style {
 		public Style () : base (NativeMethods.style_new ()) {}
 		internal Style (IntPtr raw) : base (raw) {}
@@ -126,6 +128,7 @@ namespace System.Windows {
 }
 
 namespace System.Windows.Controls {
+	[ContentProperty ("Child")]
 	partial class Border {
 		public Border () : base (NativeMethods.border_new ()) {}
 		internal Border (IntPtr raw) : base (raw) {}
@@ -146,6 +149,7 @@ namespace System.Windows.Controls {
 		internal ColumnDefinitionCollection (IntPtr raw) : base (raw) {}
 	}
 
+	[ContentProperty ("Content")]
 	partial class ContentControl {
 		public ContentControl () : base (NativeMethods.content_control_new ())
 		{
@@ -208,6 +212,7 @@ namespace System.Windows.Controls {
 		internal MultiScaleSubImage (IntPtr raw) : base (raw) {}
 	}
 
+	[ContentProperty ("Children")]
 	partial class Panel {
 		protected Panel () : base (NativeMethods.panel_new ()) {}
 		internal Panel (IntPtr raw) : base (raw) {}
@@ -228,6 +233,7 @@ namespace System.Windows.Controls {
 		internal RowDefinitionCollection (IntPtr raw) : base (raw) {}
 	}
 
+	[ContentProperty ("Inlines")]
 	partial class TextBlock {
 		public TextBlock () : base (NativeMethods.text_block_new ()) {}
 		internal TextBlock (IntPtr raw) : base (raw) {}
@@ -243,6 +249,7 @@ namespace System.Windows.Controls {
 		internal UIElementCollection (IntPtr raw) : base (raw) {}
 	}
 
+	[ContentProperty ("Content")]
 	partial class UserControl {
 		public UserControl () : base (NativeMethods.user_control_new ()) {}
 		internal UserControl (IntPtr raw) : base (raw) {}
@@ -277,6 +284,7 @@ namespace System.Windows.Documents {
 		internal LineBreak (IntPtr raw) : base (raw) {}
 	}
 
+	[ContentProperty ("Text")]
 	partial class Run {
 		public Run () : base (NativeMethods.run_new ()) {}
 		internal Run (IntPtr raw) : base (raw) {}
@@ -358,11 +366,13 @@ namespace System.Windows.Media {
 		internal GeometryCollection (IntPtr raw) : base (raw) {}
 	}
 
+	[ContentProperty ("Children")]
 	partial class GeometryGroup {
 		public GeometryGroup () : base (NativeMethods.geometry_group_new ()) {}
 		internal GeometryGroup (IntPtr raw) : base (raw) {}
 	}
 
+	[ContentProperty ("GradientStops")]
 	partial class GradientBrush {
 		protected GradientBrush () : base (NativeMethods.gradient_brush_new ()) {}
 		internal GradientBrush (IntPtr raw) : base (raw) {}
@@ -418,6 +428,7 @@ namespace System.Windows.Media {
 		}
 	}
 
+	[ContentProperty ("Segments")]
 	partial class PathFigure {
 		public PathFigure () : base (NativeMethods.path_figure_new ()) {}
 		internal PathFigure (IntPtr raw) : base (raw) {}
@@ -428,6 +439,7 @@ namespace System.Windows.Media {
 		internal PathFigureCollection (IntPtr raw) : base (raw) {}
 	}
 
+	[ContentProperty ("Figures")]
 	partial class PathGeometry {
 		public PathGeometry () : base (NativeMethods.path_geometry_new ()) {}
 		internal PathGeometry (IntPtr raw) : base (raw) {}
@@ -523,6 +535,7 @@ namespace System.Windows.Media {
 		internal TransformCollection (IntPtr raw) : base (raw) {}
 	}
 
+	[ContentProperty ("Children")]
 	partial class TransformGroup {
 		public TransformGroup () : base (NativeMethods.transform_group_new ()) {}
 		internal TransformGroup (IntPtr raw) : base (raw) {}
@@ -545,6 +558,7 @@ namespace System.Windows.Media {
 }
 
 namespace System.Windows.Media.Animation {
+	[ContentProperty ("Storyboard")]
 	partial class BeginStoryboard {
 		public BeginStoryboard () : base (NativeMethods.begin_storyboard_new ()) {}
 		internal BeginStoryboard (IntPtr raw) : base (raw) {}
@@ -555,6 +569,7 @@ namespace System.Windows.Media.Animation {
 		internal ColorAnimation (IntPtr raw) : base (raw) {}
 	}
 
+	[ContentProperty ("KeyFrames")]
 	partial class ColorAnimationUsingKeyFrames {
 		public ColorAnimationUsingKeyFrames () : base (NativeMethods.color_animation_using_key_frames_new ()) {}
 		internal ColorAnimationUsingKeyFrames (IntPtr raw) : base (raw) {}
@@ -595,6 +610,7 @@ namespace System.Windows.Media.Animation {
 		internal DoubleAnimation (IntPtr raw) : base (raw) {}
 	}
 
+	[ContentProperty ("KeyFrames")]
 	partial class DoubleAnimationUsingKeyFrames {
 		public DoubleAnimationUsingKeyFrames () : base (NativeMethods.double_animation_using_key_frames_new ()) {}
 		internal DoubleAnimationUsingKeyFrames (IntPtr raw) : base (raw) {}
@@ -630,6 +646,7 @@ namespace System.Windows.Media.Animation {
 		internal LinearPointKeyFrame (IntPtr raw) : base (raw) {}
 	}
 
+	[ContentProperty ("KeyFrames")]
 	partial class ObjectAnimationUsingKeyFrames {
 		public ObjectAnimationUsingKeyFrames () : base (NativeMethods.object_animation_using_key_frames_new ()) {}
 		internal ObjectAnimationUsingKeyFrames (IntPtr raw) : base (raw) {}
@@ -650,6 +667,7 @@ namespace System.Windows.Media.Animation {
 		internal PointAnimation (IntPtr raw) : base (raw) {}
 	}
 
+	[ContentProperty ("KeyFrames")]
 	partial class PointAnimationUsingKeyFrames {
 		public PointAnimationUsingKeyFrames () : base (NativeMethods.point_animation_using_key_frames_new ()) {}
 		internal PointAnimationUsingKeyFrames (IntPtr raw) : base (raw) {}
@@ -680,6 +698,7 @@ namespace System.Windows.Media.Animation {
 		internal SplinePointKeyFrame (IntPtr raw) : base (raw) {}
 	}
 
+	[ContentProperty ("Children")]
 	partial class Storyboard {
 		public Storyboard () : base (NativeMethods.storyboard_new ()) {}
 		internal Storyboard (IntPtr raw) : base (raw) {}

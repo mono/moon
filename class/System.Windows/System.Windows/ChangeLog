@@ -1,3 +1,10 @@
+2009-02-02  Chris Toshok  <toshok@ximian.com>
+
+	* Style.cs: remove the ContentProperty attribute - we autogenerate
+	it now
+
+	* DependencyObject.g.cs: regen, with ContentProperty attributes.
+
 2009-02-02  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Setter.cs: Move check/exception from ctor to Property property

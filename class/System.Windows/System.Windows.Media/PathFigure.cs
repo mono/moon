@@ -31,7 +31,6 @@ using Mono;
 
 namespace System.Windows.Media {
 
-	[ContentProperty ("Segments")]
 	public sealed partial class PathFigure : DependencyObject {
 
 	}

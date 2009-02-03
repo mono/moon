@@ -35,7 +35,6 @@ using Mono;
 
 namespace System.Windows {
 
-	[ContentPropertyAttribute("Setters", true)]
 	public sealed partial class Style : DependencyObject {
 
 		public Style (Type targetType) : this ()

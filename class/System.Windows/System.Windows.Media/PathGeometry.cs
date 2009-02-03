@@ -31,7 +31,6 @@ using Mono;
 
 namespace System.Windows.Media {
 
-	[ContentProperty ("Figures")]
 	public sealed partial class PathGeometry : Geometry {
 
 	}

@@ -35,7 +35,6 @@ using System.Windows.Markup;
 
 namespace System.Windows.Controls {
 
-	[ContentPropertyAttribute("Child", true)]
 	public sealed partial class Border : FrameworkElement {
 	}
 }

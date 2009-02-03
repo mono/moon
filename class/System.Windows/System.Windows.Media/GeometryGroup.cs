@@ -31,7 +31,6 @@ using Mono;
 
 namespace System.Windows.Media {
 
-	[ContentProperty ("Children")]
 	public sealed partial class GeometryGroup : Geometry {
 
 	}
