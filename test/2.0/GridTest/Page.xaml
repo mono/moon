@@ -37,8 +37,18 @@
         <ColumnDefinition />
         <ColumnDefinition />
     </Grid.ColumnDefinitions>
-    <Border Grid.Column="0" Background="Yellow" x:Name="lolly3" Height="20"/>
-    <Border Grid.Column="1" Background="Blue" x:Name="coco3" Width="20"/>
+    <Border Grid.Column="0" BorderBrush="Red" BorderThickness="2" Background="Yellow" x:Name="lolly3" Height="20"/>
+    <Border Grid.Column="1" BorderBrush="Green" BorderThickness="2" Background="Blue" x:Name="coco3" Width="50"/>
+  </Grid>
+  </Border>
+  <Border Canvas.Top="100" Canvas.Left="110" Width="200">
+  <Grid HorizontalAlignment="Left">
+    <Grid.ColumnDefinitions>
+        <ColumnDefinition />
+        <ColumnDefinition />
+    </Grid.ColumnDefinitions>
+    <Border Grid.Column="0" BorderBrush="Red" BorderThickness="2" Background="Yellow" x:Name="lolly4" Height="20" Width="200"/>
+    <Border Grid.Column="1" BorderBrush="Green" BorderThickness="2" Background="Blue" x:Name="coco4" Width="200"/>
   </Grid>
   </Border>
 <Border Canvas.Top="100" Canvas.Left="300" Background="DarkGray" BorderBrush="Gray" Width="300" BorderThickness="10,2,2,2" CornerRadius="50,5,5,5" Margin="5,5,5,5"  Height="190" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" /></Canvas>
