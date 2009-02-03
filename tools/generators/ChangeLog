@@ -1,3 +1,8 @@
+2009-02-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Generator.cs: Change static type and dp generation to be
+	  per-deployment.
+
 2009-02-02  Chris Toshok  <toshok@ximian.com>
 
 	* Generator.cs: generate the [ContentProperty] attribute in

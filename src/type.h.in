@@ -22,6 +22,8 @@ typedef gint64 TimeSpan;
 typedef DependencyObject *create_inst_func (void);
 
 class Type {
+friend class DependencyProperty; // TODO: emove this and fix the code calling into our private members.
+friend class Types; // TODO: Remove this too.
 public:
 	enum Kind {
 		// START_MANAGED_MAPPING
@@ -53,7 +55,12 @@ public:
 	
 	Type *Clone ();
 	
-public: // private:
+private:
+	Type () {}
+	Type (Type::Kind type, Type::Kind parent, bool value_type, const char *name, 
+		const char *kindname, int event_count, int total_event_count, const char **events, 
+		create_inst_func *create_inst, const char *content_property);
+	
 	Type::Kind type; // this type
 	Type::Kind parent; // parent type, INVALID if no parent
 	bool value_type; // if this type is a value type
@@ -82,8 +89,6 @@ public: // private:
 	GSList *custom_properties; 
 };
 
-extern Type type_infos [Type::LASTTYPE + 1];
-
 class Types {
 friend class Type;
 private:
@@ -94,7 +99,8 @@ private:
 	void EnsureSize (int size);
 	// Note that we need to clone native types here too, since user code can 
 	// register properties with native types.
-	void CloneStaticTypes ();
+	void RegisterStaticTypes ();
+	void RegisterStaticDependencyProperties ();
 	
 public:
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
@@ -106,6 +112,11 @@ public:
 	Type::Kind RegisterType (const char *name, void *gc_handle, Type::Kind parent);
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Type *Find (Type::Kind type);
+	Type *Find (const char *name);
+	
+	// This method must be called right after creating the Types instance
+	// and the Types instance must be available from Deployment::GetCurrent ()
+	void Initialize ();
 };
 
 G_BEGIN_DECLS

@@ -15,6 +15,7 @@
 #include "downloader.h"
 #include "deployment.h"
 #include "debug.h"
+#include "utils.h"
 
 #include <stdlib.h>
 #include <mono/jit/jit.h>
@@ -96,10 +97,10 @@ Deployment::GetCurrent()
 	 * by mono.  In this case we look up in the hsah table the deployment against 
 	 * the current appdomain
 	 */ 
-	if (deployment == NULL) {
+	if (deployment == NULL && current_domain != NULL) {
 		if (current_domain == root_domain) {
 			LOG_DEPLOYMENT ("Deployment::GetCurrent (): Couldn't find deployment in our tls, and the current domain is the root domain.\n");
-		} else {
+		} else if (current_domain != NULL) {
 			pthread_mutex_lock (&hash_mutex);
 			deployment = (Deployment *) g_hash_table_lookup (current_hash, current_domain);
 			pthread_mutex_unlock (&hash_mutex);
@@ -112,7 +113,7 @@ Deployment::GetCurrent()
 	 * If we have a domain mismatch, we likely got here from managed land and need
 	 * to get the deployment tied to this domain
 	 */
-	if (deployment && deployment->domain != current_domain) {
+	if (deployment && deployment->domain != current_domain && current_domain != NULL) {
 		LOG_DEPLOYMENT ("Deployment::GetCurrent (): Domain mismatch, thread %i, current deployment's domain is %p, current domain is: %p\n", (int) pthread_self (), deployment->domain, current_domain);
 		pthread_mutex_lock (&hash_mutex);
 		deployment = (Deployment *) g_hash_table_lookup (current_hash, current_domain);
@@ -131,6 +132,12 @@ Deployment::GetCurrent()
 void
 Deployment::SetCurrent (Deployment* deployment)
 {
+	SetCurrent (deployment, true);
+}
+
+void
+Deployment::SetCurrent (Deployment* deployment, bool domain)
+{
 #if DEBUG
 	if (deployment && mono_domain_get () != deployment->domain) {
 		LOG_DEPLOYMENT ("Deployment::SetCurrent (%p), thread: %i domain mismatch, is: %p\n", deployment, (int) pthread_self (), mono_domain_get ());
@@ -139,25 +146,39 @@ Deployment::SetCurrent (Deployment* deployment)
 	}
 #endif
 	
-	if (deployment != NULL) {
-		mono_domain_set (deployment->domain, FALSE);
-	} else {
-		mono_domain_set (root_domain, FALSE);
+	if (domain) {
+		if (deployment != NULL) {
+			mono_domain_set (deployment->domain, FALSE);
+		} else {
+			mono_domain_set (root_domain, FALSE);
+		}
 	}
 	pthread_setspecific (tls_key, deployment);
 }
 
 Deployment::Deployment()
-	: DependencyObject (this)
+	: DependencyObject (this, Type::DEPLOYMENT)
 {
 	char *domain_name = g_strdup_printf ("moonlight-%p", this);
 
 	SetObjectType (Type::DEPLOYMENT);
-	types = new Types ();
 	current_app = NULL;
+	types = NULL;
+	idownloaders = NULL;
+	pending_unrefs = NULL;
+	objects_created = 0;
+	objects_destroyed = 0;
+	
+#if OBJECT_TRACKING
+	objects_alive = NULL;
+	pthread_mutex_init (&objects_alive_mutex, NULL);
+#endif
+	
 	mono_domain_set (root_domain, FALSE);
 	domain = mono_domain_create_appdomain (domain_name, NULL);
 	g_free (domain_name);
+
+	pthread_setspecific (tls_key, this);
 
 	LOG_DEPLOYMENT ("Deployment::Deployment (): Created domain %p for deployment %p\n", domain, this);
 
@@ -167,8 +188,38 @@ Deployment::Deployment()
 	g_hash_table_insert (current_hash, domain, this);
 	pthread_mutex_unlock (&hash_mutex);
 
+	types = new Types ();
+	types->Initialize ();
 	idownloaders = new List ();
 }
+
+#if OBJECT_TRACKING
+static int
+IdComparer (gconstpointer base1, gconstpointer base2)
+{
+	int id1 = (*(EventObject **) base1)->GetId ();
+	int id2 = (*(EventObject **) base2)->GetId ();
+
+	int iddiff = id1 - id2;
+	
+	if (iddiff == 0)
+		return 0;
+	else if (iddiff < 0)
+		return -1;
+	else
+		return 1;
+}
+
+static void
+accumulate_last_n (gpointer key,
+		   gpointer value,
+		   gpointer user_data)
+{
+	GPtrArray *last_n = (GPtrArray*)user_data;
+
+	g_ptr_array_insert_sorted (last_n, IdComparer, key);
+}
+#endif
 
 Deployment::~Deployment()
 {
@@ -181,9 +232,59 @@ Deployment::~Deployment()
 
 	LOG_DEPLOYMENT ("Deployment::~Deployment (): %p\n", this);
 
-	SetCurrentApplication (NULL);
+#if SANITY
+	if (pending_unrefs != NULL)
+		g_warning ("Deployment::~Deployment (): There are still pending unrefs.\n");
+#endif
+
+#if OBJECT_TRACKING
+	printf ("Deployment destroyed, with %i leaked EventObjects.\n", objects_created - objects_destroyed);
+	if (objects_created != objects_destroyed)
+		ReportLeaks ();
+#elif DEBUG
+	if (objects_created != objects_destroyed) {
+		printf ("Deployment destroyed, with %i leaked EventObjects.\n", objects_created - objects_destroyed);
+	}
+#endif
+
+#if OBJECT_TRACKING
+	pthread_mutex_destroy (&objects_alive_mutex);
+	g_hash_table_destroy (EventObject::objects_alive);
+#endif
+
 	delete types;
 }
+
+#if OBJECT_TRACKING
+void 
+Deployment::ReportLeaks ()
+{
+	printf ("Deployment leak report:\n");
+	if (objects_created == objects_destroyed) {
+		printf ("\tno leaked objects.\n");
+	} else {
+		printf ("\tObjects created: %i\n", objects_created);
+		printf ("\tObjects destroyed: %i\n", objects_destroyed);
+		printf ("\tDifference: %i (%.1f%%)\n", objects_created - objects_destroyed, (100.0 * objects_destroyed) / objects_created);
+
+		GPtrArray* last_n = g_ptr_array_new ();
+
+		g_hash_table_foreach (objects_alive, accumulate_last_n, last_n);
+
+	 	uint counter = 10;
+		counter = MIN(counter, last_n->len);
+		if (counter) {
+			printf ("\tOldest %d objects alive:\n", counter);
+			for (uint i = 0; i < MIN (counter, last_n->len); i ++) {
+				EventObject* obj = (EventObject *) last_n->pdata [i];
+				printf ("\t\t%i = %s, refcount: %i\n", obj->GetId (), obj->GetTypeName (), obj->GetRefCount ());
+			}
+		}
+
+		g_ptr_array_free (last_n, true);
+	}
+}
+#endif
 
 void
 Deployment::Dispose ()
@@ -254,6 +355,111 @@ Deployment::AbortAllIDownloaders ()
 			node->idl->Abort ();
 		idownloaders->Remove (node);
 	}
+}
+
+struct UnrefData {	
+	EventObject *obj;
+	UnrefData *next;
+};
+
+gboolean
+Deployment::DrainUnrefs (gpointer context)
+{
+	Deployment *deployment = (Deployment *) context;
+	Deployment::SetCurrent (deployment);
+	deployment->DrainUnrefs ();
+	deployment->unref ();
+	Deployment::SetCurrent (NULL);
+	return false;
+}
+
+void
+Deployment::DrainUnrefs ()
+{
+	UnrefData *list;
+	UnrefData *next;
+	
+	// Get the list of objects to unref.
+	do {
+		list = (UnrefData *) g_atomic_pointer_get (&pending_unrefs);
+		
+		if (list == NULL)
+			return;
+		
+	} while (!g_atomic_pointer_compare_and_exchange (&pending_unrefs, list, NULL));
+	
+	// Loop over all the objects in the list and unref them.
+	while (list != NULL) {
+		list->obj->unref ();
+		next = list->next;
+		g_free (list);
+		list = next;
+	}
+	
+#if OBJECT_TRACKING
+	if (IsDisposed () && list == NULL && objects_destroyed != objects_created) {
+		printf ("Moonlight: the current deployment (%p) has detect that probably no more objects will get freed on this deployment.\n", this);
+		ReportLeaks ();
+	}
+#endif
+}
+
+void
+Deployment::UnrefDelayed (EventObject *obj)
+{
+	UnrefData *list;
+	UnrefData *item;
+		
+#if SANITY
+	if (Deployment::GetCurrent () != this)
+		g_warning ("Deployment::UnrefDelayed (%p): The current deployment (%p) should be %p.\n", obj, Deployment::GetCurrent (), this);
+	if (obj->GetObjectType () != Type::DEPLOYMENT &&  obj->GetUnsafeDeployment () != this && obj->GetUnsafeDeployment () != NULL)
+		g_warning ("Deployment::UnrefDelayed (%p): obj's deployment %p should be %p. type: %s\n", obj, obj->GetUnsafeDeployment (), this, obj->GetTypeName ());
+#endif
+
+	// Create the new list item
+	item = (UnrefData *) g_malloc (sizeof (UnrefData));
+	item->obj = obj;
+	
+	// Prepend the list item into the list
+	do {
+		list = (UnrefData *) g_atomic_pointer_get (&pending_unrefs);
+		item->next = list;
+	} while (!g_atomic_pointer_compare_and_exchange (&pending_unrefs, list, item));
+	
+	// If we created a new list instead of prepending to an existing one, add a idle tick call.
+	if (list == NULL) { // don't look at item->next, item might have gotten freed already.
+		g_idle_add (DrainUnrefs, this);
+		ref (); // keep us alive until we've processed the unrefs.
+	}
+}
+
+void
+Deployment::TrackObjectCreated (EventObject *obj)
+{
+	g_atomic_int_inc (&objects_created);
+
+#if OBJECT_TRACKING
+	pthread_mutex_lock (&objects_alive_mutex);
+	if (objects_alive == NULL)
+		objects_alive = g_hash_table_new (g_direct_hash, g_direct_equal);
+	g_hash_table_insert (objects_alive, obj, GINT_TO_POINTER (1));
+	pthread_mutex_unlock (&objects_alive_mutex);
+#endif
+}
+
+void
+Deployment::TrackObjectDestroyed (EventObject *obj)
+{
+	g_atomic_int_inc (&objects_destroyed);
+	
+#if OBJECT_TRACKING
+	pthread_mutex_lock (&objects_alive_mutex);
+	g_hash_table_remove (objects_alive, obj);
+	pthread_mutex_unlock (&objects_alive_mutex);
+
+	Track ("Destroyed", "");
+#endif
 }
 
 /*

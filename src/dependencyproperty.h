@@ -82,8 +82,6 @@ class DependencyProperty {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	static DependencyProperty *GetDependencyPropertyFull (Type::Kind type, const char *name, bool inherits);
-	
-	static void Shutdown () {}
 
 private:
 	GHashTable *storage_hash; // keys: objects, values: animation storage's

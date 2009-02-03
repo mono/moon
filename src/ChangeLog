@@ -1,3 +1,41 @@
+2009-02-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* animation.h:
+	* animation.cpp: Remove animation_init, it's empty.
+
+	* audio.cpp: We need to set the current deployment on the
+	  audio thread (but without touching mono at all).
+
+	* cbinding.h:
+	* cbinding.cpp:
+	* type-generated.cpp:
+	* dependencyproperty.g.cpp: Regenerated.
+
+	* dependencyobject.h:
+	* dependencyobject.cpp: Move object accounting and delayed
+	  unref handling to Deployment.
+
+	* dependencyproperty.h: Remove DependencyProperty::Shutdown,
+	  it's empty.
+
+	* deployment.cpp: Add a SetCurrent overload which allows us
+	  to specify whether the current appdomain should be updated
+	  too. GetCurrent: Never access mono if the current domain is
+	  NULL. Move object tracking and delayed unrefs here.
+
+	* deployment.h: Add a SetCurrent overload which allows us to
+	  specify whether the current appdomain should be updated
+	  too. Move object tracking and delayed unrefs here.
+
+	* runtime.cpp: Move object tracking reports to Deployment.
+	  Remove unnecessary static init and shutdown methods.
+
+	* type.h:
+	* type.cpp:
+	* type.h.in: Completely remove all static Type
+	  initialization, we now rely on the Types* on the current
+	  Deployment.
+
 2009-02-03  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* style.cpp: Remove extra logic and comment the main "bad" hack

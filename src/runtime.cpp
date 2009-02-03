@@ -1970,18 +1970,6 @@ runtime_init (guint64 flags)
 	debug_flags = get_flags (0, "MOONLIGHT_DEBUG", debugs);
 #endif
 
-
-#if OBJECT_TRACKING
-	if (EventObject::objects_created == EventObject::objects_destroyed) {
-		printf ("Runtime created (no leaked objects so far).\n");
-	} else {
-		printf ("Runtime created. Object tracking summary:\n");
-		printf ("\tObjects created: %i\n", EventObject::objects_created);
-		printf ("\tObjects destroyed: %i\n", EventObject::objects_destroyed);
-		printf ("\tDifference: %i\n", EventObject::objects_created - EventObject::objects_destroyed);
-	}
-#endif
-
 	inited = true;
 	
 	if (!g_type_inited) {
@@ -1991,42 +1979,12 @@ runtime_init (guint64 flags)
 	
 	moonlight_flags = flags;
 	
-	types_init ();
 	Deployment::Initialize ();
-	dependency_property_g_init ();
 	xaml_init ();
 	font_init ();
 	downloader_init ();
 	Media::Initialize ();
 }
-
-#if OBJECT_TRACKING
-static int
-IdComparer (gconstpointer base1, gconstpointer base2)
-{
-	int id1 = (*(EventObject **) base1)->GetId ();
-	int id2 = (*(EventObject **) base2)->GetId ();
-
-	int iddiff = id1 - id2;
-	
-	if (iddiff == 0)
-		return 0;
-	else if (iddiff < 0)
-		return -1;
-	else
-		return 1;
-}
-
-static void
-accumulate_last_n (gpointer key,
-		   gpointer value,
-		   gpointer user_data)
-{
-	GPtrArray *last_n = (GPtrArray*)user_data;
-
-	g_ptr_array_insert_sorted (last_n, IdComparer, key);
-}
-#endif
 
 void
 runtime_shutdown (void)
@@ -2034,50 +1992,9 @@ runtime_shutdown (void)
 	if (!inited)
 		return;
 
-	EventObject::DrainUnrefs ();
-	
 	Media::Shutdown ();
 	
-	animation_shutdown ();
 	font_shutdown ();
 	
-	DependencyObject::Shutdown ();
-	DependencyProperty::Shutdown ();
-
-#if OBJECT_TRACKING
-	if (EventObject::objects_created == EventObject::objects_destroyed) {
-		printf ("Runtime destroyed, no leaked objects.\n");
-	} else {
-		printf ("Runtime destroyed, with leaked EventObjects:\n");
-		printf ("\tObjects created: %i\n", EventObject::objects_created);
-		printf ("\tObjects destroyed: %i\n", EventObject::objects_destroyed);
-		printf ("\tDifference: %i (%.1f%%)\n", EventObject::objects_created - EventObject::objects_destroyed, (100.0 * EventObject::objects_destroyed) / EventObject::objects_created);
-
-		GPtrArray* last_n = g_ptr_array_new ();
-
-		g_hash_table_foreach (EventObject::objects_alive, accumulate_last_n, last_n);
-
-	 	uint counter = 10;
-		counter = MIN(counter, last_n->len);
-		if (counter) {
-			printf ("\tOldest %d objects alive:\n", counter);
-			for (uint i = 0; i < MIN (counter, last_n->len); i ++) {
-				EventObject* obj = (EventObject *) last_n->pdata[i];
-				printf ("\t\t%i = %s, refcount: %i\n", obj->GetId (), obj->GetTypeName (), obj->GetRefCount ());
-			}
-		}
-
-		g_ptr_array_free (last_n, true);
-	}
-	g_hash_table_destroy (EventObject::objects_alive);
-	EventObject::objects_alive = NULL;
-#elif DEBUG
-	if (EventObject::objects_created != EventObject::objects_destroyed) {
-		printf ("Runtime destroyed, with %i leaked EventObjects.\n", EventObject::objects_created - EventObject::objects_destroyed);
-	}
-#endif
-
 	inited = false;
-	
-
 }

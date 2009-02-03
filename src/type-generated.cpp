@@ -143,254 +143,256 @@ const char *TimeManager_Events [] = { "Render", "UpdateInput", NULL };
 const char *TimeSource_Events [] = { "Tick", NULL };
 const char *UIElement_Events [] = { "GotFocus", "Invalidated", "KeyDown", "KeyUp", "Loaded", "LostFocus", "MouseEnter", "MouseLeave", "MouseLeftButtonDown", "MouseLeftButtonUp", "MouseMove", "Unloaded", NULL };
 
-Type type_infos [] = {
-	{ Type::INVALID, Type::INVALID, false, "INVALID", NULL, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL },
-	{ Type::ALSASOURCE, Type::AUDIOSOURCE, false, "AlsaSource", "ALSASOURCE", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::ANIMATION, Type::TIMELINE, false, "Animation", "ANIMATION", 0, 2, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::ANIMATIONCLOCK, Type::CLOCK, false, "AnimationClock", "ANIMATIONCLOCK", 0, 5, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::APPLICATION, Type::DEPENDENCY_OBJECT, false, "Application", "APPLICATION", 0, 1, NULL, (create_inst_func *) application_new, NULL, NULL, NULL, NULL }, 
-	{ Type::ARCSEGMENT, Type::PATHSEGMENT, false, "ArcSegment", "ARCSEGMENT", 0, 1, NULL, (create_inst_func *) arc_segment_new, NULL, NULL, NULL, NULL }, 
-	{ Type::ASFDEMUXER, Type::IMEDIADEMUXER, false, "ASFDemuxer", "ASFDEMUXER", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::ASFMARKERDECODER, Type::IMEDIADECODER, false, "ASFMarkerDecoder", "ASFMARKERDECODER", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::ASFPACKET, Type::EVENTOBJECT, false, "ASFPacket", "ASFPACKET", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::ASFPARSER, Type::EVENTOBJECT, false, "ASFParser", "ASFPARSER", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::ASSEMBLYPART, Type::DEPENDENCY_OBJECT, false, "AssemblyPart", "ASSEMBLYPART", 0, 1, NULL, (create_inst_func *) assembly_part_new, NULL, NULL, NULL, NULL }, 
-	{ Type::ASSEMBLYPART_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "AssemblyPartCollection", "ASSEMBLYPART_COLLECTION", 0, 1, NULL, (create_inst_func *) assembly_part_collection_new, NULL, NULL, NULL, NULL }, 
-	{ Type::ASXDEMUXER, Type::IMEDIADEMUXER, false, "ASXDemuxer", "ASXDEMUXER", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::AUDIOSOURCE, Type::EVENTOBJECT, false, "AudioSource", "AUDIOSOURCE", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::AUDIOSTREAM, Type::IMEDIASTREAM, false, "AudioStream", "AUDIOSTREAM", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::BEGINSTORYBOARD, Type::TRIGGERACTION, false, "BeginStoryboard", "BEGINSTORYBOARD", 0, 1, NULL, (create_inst_func *) begin_storyboard_new, "Storyboard", NULL, NULL, NULL }, 
-	{ Type::BEZIERSEGMENT, Type::PATHSEGMENT, false, "BezierSegment", "BEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) bezier_segment_new, NULL, NULL, NULL, NULL }, 
-	{ Type::BINDING, Type::EVENTOBJECT, false, "Binding", "BINDING", 0, 1, NULL, (create_inst_func *) binding_new, NULL, NULL, NULL, NULL }, 
-	{ Type::BINDINGEXPRESSION, Type::BINDINGEXPRESSIONBASE, false, "BindingExpression", "BINDINGEXPRESSION", 0, 1, NULL, (create_inst_func *) binding_expression_new, NULL, NULL, NULL, NULL }, 
-	{ Type::BINDINGEXPRESSIONBASE, Type::EXPRESSION, false, "BindingExpressionBase", "BINDINGEXPRESSIONBASE", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::BITMAPIMAGE, Type::IMAGESOURCE, false, "BitmapImage", "BITMAPIMAGE", 0, 1, NULL, (create_inst_func *) bitmap_image_new, NULL, NULL, NULL, NULL }, 
-	{ Type::BOOL, Type::OBJECT, true, "bool", "BOOL", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::BORDER, Type::FRAMEWORKELEMENT, false, "Border", "BORDER", 0, 16, NULL, (create_inst_func *) border_new, "Child", NULL, NULL, NULL }, 
-	{ Type::BRUSH, Type::DEPENDENCY_OBJECT, false, "Brush", "BRUSH", 0, 1, NULL, (create_inst_func *) brush_new, NULL, NULL, NULL, NULL }, 
-	{ Type::CANVAS, Type::PANEL, false, "Canvas", "CANVAS", 0, 16, NULL, (create_inst_func *) canvas_new, NULL, NULL, NULL, NULL }, 
-	{ Type::CHAR, Type::OBJECT, true, "char", "CHAR", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::CLOCK, Type::DEPENDENCY_OBJECT, false, "Clock", "CLOCK", 4, 5, Clock_Events, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::CLOCKGROUP, Type::CLOCK, false, "ClockGroup", "CLOCKGROUP", 0, 5, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::CODECDOWNLOADER, Type::EVENTOBJECT, false, "CodecDownloader", "CODECDOWNLOADER", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::COLLECTION, Type::DEPENDENCY_OBJECT, false, "Collection", "COLLECTION", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::COLLECTIONCHANGEDEVENTARGS, Type::EVENTARGS, false, "CollectionChangedEventArgs", "COLLECTIONCHANGEDEVENTARGS", 0, 1, NULL, (create_inst_func *) collection_changed_event_args_new, NULL, NULL, NULL, NULL }, 
-	{ Type::COLOR, Type::OBJECT, true, "Color", "COLOR", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::COLORANIMATION, Type::ANIMATION, false, "ColorAnimation", "COLORANIMATION", 0, 2, NULL, (create_inst_func *) color_animation_new, NULL, NULL, NULL, NULL }, 
-	{ Type::COLORANIMATIONUSINGKEYFRAMES, Type::COLORANIMATION, false, "ColorAnimationUsingKeyFrames", "COLORANIMATIONUSINGKEYFRAMES", 0, 2, NULL, (create_inst_func *) color_animation_using_key_frames_new, "KeyFrames", NULL, NULL, NULL }, 
-	{ Type::COLORKEYFRAME, Type::KEYFRAME, false, "ColorKeyFrame", "COLORKEYFRAME", 0, 1, NULL, (create_inst_func *) color_key_frame_new, NULL, NULL, NULL, NULL }, 
-	{ Type::COLORKEYFRAME_COLLECTION, Type::KEYFRAME_COLLECTION, false, "ColorKeyFrameCollection", "COLORKEYFRAME_COLLECTION", 0, 1, NULL, (create_inst_func *) color_key_frame_collection_new, NULL, NULL, NULL, NULL }, 
-	{ Type::COLUMNDEFINITION, Type::DEPENDENCY_OBJECT, false, "ColumnDefinition", "COLUMNDEFINITION", 0, 1, NULL, (create_inst_func *) column_definition_new, NULL, NULL, NULL, NULL }, 
-	{ Type::COLUMNDEFINITION_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "ColumnDefinitionCollection", "COLUMNDEFINITION_COLLECTION", 0, 1, NULL, (create_inst_func *) column_definition_collection_new, NULL, NULL, NULL, NULL }, 
-	{ Type::CONTENTCHANGEDEVENTARGS, Type::EVENTARGS, false, "ContentChangedEventArgs", "CONTENTCHANGEDEVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::CONTENTCONTROL, Type::CONTROL, false, "ContentControl", "CONTENTCONTROL", 1, 18, ContentControl_Events, (create_inst_func *) content_control_new, "Content", NULL, NULL, NULL }, 
-	{ Type::CONTROL, Type::FRAMEWORKELEMENT, false, "Control", "CONTROL", 1, 17, Control_Events, (create_inst_func *) control_new, NULL, NULL, NULL, NULL }, 
-	{ Type::CONTROLTEMPLATE, Type::FRAMEWORKTEMPLATE, false, "ControlTemplate", "CONTROLTEMPLATE", 0, 1, NULL, (create_inst_func *) control_template_new, NULL, NULL, NULL, NULL }, 
-	{ Type::CORNERRADIUS, Type::OBJECT, true, "CornerRadius", "CORNERRADIUS", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::DATATEMPLATE, Type::FRAMEWORKTEMPLATE, false, "DataTemplate", "DATATEMPLATE", 0, 1, NULL, (create_inst_func *) data_template_new, NULL, NULL, NULL, NULL }, 
-	{ Type::DEEPZOOMIMAGETILESOURCE, Type::MULTISCALETILESOURCE, false, "DeepZoomImageTileSource", "DEEPZOOMIMAGETILESOURCE", 0, 1, NULL, (create_inst_func *) deep_zoom_image_tile_source_new, NULL, NULL, NULL, NULL }, 
-	{ Type::DEPENDENCY_OBJECT, Type::EVENTOBJECT, false, "DependencyObject", "DEPENDENCY_OBJECT", 0, 1, NULL, (create_inst_func *) dependency_object_new, NULL, NULL, NULL, NULL }, 
-	{ Type::DEPENDENCY_OBJECT_COLLECTION, Type::COLLECTION, false, "DependencyObjectCollection", "DEPENDENCY_OBJECT_COLLECTION", 0, 1, NULL, (create_inst_func *) dependency_object_collection_new, NULL, NULL, NULL, NULL }, 
-	{ Type::DEPENDENCYPROPERTY, Type::OBJECT, false, "DependencyProperty", "DEPENDENCYPROPERTY", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::DEPLOYMENT, Type::DEPENDENCY_OBJECT, false, "Deployment", "DEPLOYMENT", 0, 1, NULL, (create_inst_func *) deployment_new, NULL, NULL, NULL, NULL }, 
-	{ Type::DISCRETECOLORKEYFRAME, Type::COLORKEYFRAME, false, "DiscreteColorKeyFrame", "DISCRETECOLORKEYFRAME", 0, 1, NULL, (create_inst_func *) discrete_color_key_frame_new, NULL, NULL, NULL, NULL }, 
-	{ Type::DISCRETEDOUBLEKEYFRAME, Type::DOUBLEKEYFRAME, false, "DiscreteDoubleKeyFrame", "DISCRETEDOUBLEKEYFRAME", 0, 1, NULL, (create_inst_func *) discrete_double_key_frame_new, NULL, NULL, NULL, NULL }, 
-	{ Type::DISCRETEOBJECTKEYFRAME, Type::OBJECTKEYFRAME, false, "DiscreteObjectKeyFrame", "DISCRETEOBJECTKEYFRAME", 0, 1, NULL, (create_inst_func *) discrete_object_key_frame_new, NULL, NULL, NULL, NULL }, 
-	{ Type::DISCRETEPOINTKEYFRAME, Type::POINTKEYFRAME, false, "DiscretePointKeyFrame", "DISCRETEPOINTKEYFRAME", 0, 1, NULL, (create_inst_func *) discrete_point_key_frame_new, NULL, NULL, NULL, NULL }, 
-	{ Type::DISPATCHERTIMER, Type::TIMELINEGROUP, false, "DispatcherTimer", "DISPATCHERTIMER", 1, 3, DispatcherTimer_Events, (create_inst_func *) dispatcher_timer_new, NULL, NULL, NULL, NULL }, 
-	{ Type::DOUBLE, Type::OBJECT, true, "double", "DOUBLE", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::DOUBLE_COLLECTION, Type::COLLECTION, false, "DoubleCollection", "DOUBLE_COLLECTION", 0, 1, NULL, (create_inst_func *) double_collection_new, NULL, NULL, NULL, NULL }, 
-	{ Type::DOUBLEANIMATION, Type::ANIMATION, false, "DoubleAnimation", "DOUBLEANIMATION", 0, 2, NULL, (create_inst_func *) double_animation_new, NULL, NULL, NULL, NULL }, 
-	{ Type::DOUBLEANIMATIONUSINGKEYFRAMES, Type::DOUBLEANIMATION, false, "DoubleAnimationUsingKeyFrames", "DOUBLEANIMATIONUSINGKEYFRAMES", 0, 2, NULL, (create_inst_func *) double_animation_using_key_frames_new, "KeyFrames", NULL, NULL, NULL }, 
-	{ Type::DOUBLEKEYFRAME, Type::KEYFRAME, false, "DoubleKeyFrame", "DOUBLEKEYFRAME", 0, 1, NULL, (create_inst_func *) double_key_frame_new, NULL, NULL, NULL, NULL }, 
-	{ Type::DOUBLEKEYFRAME_COLLECTION, Type::KEYFRAME_COLLECTION, false, "DoubleKeyFrameCollection", "DOUBLEKEYFRAME_COLLECTION", 0, 1, NULL, (create_inst_func *) double_key_frame_collection_new, NULL, NULL, NULL, NULL }, 
-	{ Type::DOWNLOADER, Type::DEPENDENCY_OBJECT, false, "Downloader", "DOWNLOADER", 3, 4, Downloader_Events, (create_inst_func *) downloader_new, NULL, NULL, NULL, NULL }, 
-	{ Type::DRAWINGATTRIBUTES, Type::DEPENDENCY_OBJECT, false, "DrawingAttributes", "DRAWINGATTRIBUTES", 0, 1, NULL, (create_inst_func *) drawing_attributes_new, NULL, NULL, NULL, NULL }, 
-	{ Type::DURATION, Type::OBJECT, true, "Duration", "DURATION", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::ELLIPSE, Type::SHAPE, false, "Ellipse", "ELLIPSE", 0, 16, NULL, (create_inst_func *) ellipse_new, NULL, NULL, NULL, NULL }, 
-	{ Type::ELLIPSEGEOMETRY, Type::GEOMETRY, false, "EllipseGeometry", "ELLIPSEGEOMETRY", 0, 1, NULL, (create_inst_func *) ellipse_geometry_new, NULL, NULL, NULL, NULL }, 
-	{ Type::ERROREVENTARGS, Type::EVENTARGS, false, "ErrorEventArgs", "ERROREVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::EVENTARGS, Type::DEPENDENCY_OBJECT, false, "EventArgs", "EVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::EVENTLISTENERPROXY, Type::EVENTOBJECT, false, "EventListenerProxy", "EVENTLISTENERPROXY", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::EVENTOBJECT, Type::OBJECT, false, "EventObject", "EVENTOBJECT", 1, 1, EventObject_Events, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::EVENTTRIGGER, Type::TRIGGERBASE, false, "EventTrigger", "EVENTTRIGGER", 0, 1, NULL, (create_inst_func *) event_trigger_new, "Actions", NULL, NULL, NULL }, 
-	{ Type::EXPRESSION, Type::EVENTOBJECT, false, "Expression", "EXPRESSION", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::FFMPEGDECODER, Type::IMEDIADECODER, false, "FfmpegDecoder", "FFMPEGDECODER", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::FFMPEGDEMUXER, Type::IMEDIADEMUXER, false, "FfmpegDemuxer", "FFMPEGDEMUXER", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::FILESOURCE, Type::IMEDIASOURCE, false, "FileSource", "FILESOURCE", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::FONTFAMILY, Type::OBJECT, true, "FontFamily", "FONTFAMILY", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::FONTSTRETCH, Type::OBJECT, false, "System.Windows.FontStretch", "FONTSTRETCH", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::FRAMEWORKELEMENT, Type::UIELEMENT, false, "FrameworkElement", "FRAMEWORKELEMENT", 3, 16, FrameworkElement_Events, (create_inst_func *) framework_element_new, NULL, NULL, NULL, NULL }, 
-	{ Type::FRAMEWORKTEMPLATE, Type::DEPENDENCY_OBJECT, false, "FrameworkTemplate", "FRAMEWORKTEMPLATE", 0, 1, NULL, (create_inst_func *) framework_template_new, NULL, NULL, NULL, NULL }, 
-	{ Type::GENERALTRANSFORM, Type::DEPENDENCY_OBJECT, false, "GeneralTransform", "GENERALTRANSFORM", 0, 1, NULL, (create_inst_func *) general_transform_new, NULL, NULL, NULL, NULL }, 
-	{ Type::GEOMETRY, Type::DEPENDENCY_OBJECT, false, "Geometry", "GEOMETRY", 0, 1, NULL, (create_inst_func *) geometry_new, NULL, NULL, NULL, NULL }, 
-	{ Type::GEOMETRY_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "GeometryCollection", "GEOMETRY_COLLECTION", 0, 1, NULL, (create_inst_func *) geometry_collection_new, NULL, NULL, NULL, NULL }, 
-	{ Type::GEOMETRYGROUP, Type::GEOMETRY, false, "GeometryGroup", "GEOMETRYGROUP", 0, 1, NULL, (create_inst_func *) geometry_group_new, "Children", NULL, NULL, NULL }, 
-	{ Type::GLYPHS, Type::FRAMEWORKELEMENT, false, "Glyphs", "GLYPHS", 0, 16, NULL, (create_inst_func *) glyphs_new, NULL, NULL, NULL, NULL }, 
-	{ Type::GRADIENTBRUSH, Type::BRUSH, false, "GradientBrush", "GRADIENTBRUSH", 0, 1, NULL, (create_inst_func *) gradient_brush_new, "GradientStops", NULL, NULL, NULL }, 
-	{ Type::GRADIENTSTOP, Type::DEPENDENCY_OBJECT, false, "GradientStop", "GRADIENTSTOP", 0, 1, NULL, (create_inst_func *) gradient_stop_new, NULL, NULL, NULL, NULL }, 
-	{ Type::GRADIENTSTOP_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "GradientStopCollection", "GRADIENTSTOP_COLLECTION", 0, 1, NULL, (create_inst_func *) gradient_stop_collection_new, NULL, NULL, NULL, NULL }, 
-	{ Type::GRID, Type::PANEL, false, "Grid", "GRID", 0, 16, NULL, (create_inst_func *) grid_new, NULL, NULL, NULL, NULL }, 
-	{ Type::GRIDLENGTH, Type::OBJECT, true, "GridLength", "GRIDLENGTH", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::IIMAGECONVERTER, Type::IMEDIAOBJECT, false, "IImageConverter", "IIMAGECONVERTER", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::IMAGE, Type::MEDIABASE, false, "Image", "IMAGE", 1, 18, Image_Events, (create_inst_func *) image_new, NULL, NULL, NULL, NULL }, 
-	{ Type::IMAGEBRUSH, Type::TILEBRUSH, false, "ImageBrush", "IMAGEBRUSH", 2, 3, ImageBrush_Events, (create_inst_func *) image_brush_new, NULL, NULL, NULL, NULL }, 
-	{ Type::IMAGEERROREVENTARGS, Type::ERROREVENTARGS, false, "ImageErrorEventArgs", "IMAGEERROREVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::IMAGESOURCE, Type::DEPENDENCY_OBJECT, false, "ImageSource", "IMAGESOURCE", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::IMEDIADECODER, Type::IMEDIAOBJECT, false, "IMediaDecoder", "IMEDIADECODER", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::IMEDIADEMUXER, Type::IMEDIAOBJECT, false, "IMediaDemuxer", "IMEDIADEMUXER", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::IMEDIAOBJECT, Type::EVENTOBJECT, false, "IMediaObject", "IMEDIAOBJECT", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::IMEDIASOURCE, Type::IMEDIAOBJECT, false, "IMediaSource", "IMEDIASOURCE", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::IMEDIASTREAM, Type::IMEDIAOBJECT, false, "IMediaStream", "IMEDIASTREAM", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::INKPRESENTER, Type::CANVAS, false, "InkPresenter", "INKPRESENTER", 0, 16, NULL, (create_inst_func *) ink_presenter_new, NULL, NULL, NULL, NULL }, 
-	{ Type::INLINE, Type::DEPENDENCY_OBJECT, false, "Inline", "INLINE", 0, 1, NULL, (create_inst_func *) inline_new, NULL, NULL, NULL, NULL }, 
-	{ Type::INLINE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "InlineCollection", "INLINE_COLLECTION", 0, 1, NULL, (create_inst_func *) inline_collection_new, NULL, NULL, NULL, NULL }, 
-	{ Type::INPUTMETHOD, Type::DEPENDENCY_OBJECT, false, "InputMethod", "INPUTMETHOD", 0, 1, NULL, (create_inst_func *) input_method_new, NULL, NULL, NULL, NULL }, 
-	{ Type::INT32, Type::OBJECT, true, "gint32", "INT32", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::INT64, Type::OBJECT, true, "gint64", "INT64", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::ITEM_COLLECTION, Type::COLLECTION, false, "ItemCollection", "ITEM_COLLECTION", 0, 1, NULL, (create_inst_func *) item_collection_new, NULL, NULL, NULL, NULL }, 
-	{ Type::KEYEVENTARGS, Type::ROUTEDEVENTARGS, false, "KeyEventArgs", "KEYEVENTARGS", 0, 1, NULL, (create_inst_func *) key_event_args_new, NULL, NULL, NULL, NULL }, 
-	{ Type::KEYFRAME, Type::DEPENDENCY_OBJECT, false, "KeyFrame", "KEYFRAME", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::KEYFRAME_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "KeyFrameCollection", "KEYFRAME_COLLECTION", 0, 1, NULL, (create_inst_func *) key_frame_collection_new, NULL, NULL, NULL, NULL }, 
-	{ Type::KEYSPLINE, Type::DEPENDENCY_OBJECT, false, "KeySpline", "KEYSPLINE", 0, 1, NULL, (create_inst_func *) key_spline_new, NULL, NULL, NULL, NULL }, 
-	{ Type::KEYTIME, Type::OBJECT, true, "KeyTime", "KEYTIME", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::LAYOUTINFORMATION, Type::OBJECT, false, "LayoutInformation", "LAYOUTINFORMATION", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::LINE, Type::SHAPE, false, "Line", "LINE", 0, 16, NULL, (create_inst_func *) line_new, NULL, NULL, NULL, NULL }, 
-	{ Type::LINEARCOLORKEYFRAME, Type::COLORKEYFRAME, false, "LinearColorKeyFrame", "LINEARCOLORKEYFRAME", 0, 1, NULL, (create_inst_func *) linear_color_key_frame_new, NULL, NULL, NULL, NULL }, 
-	{ Type::LINEARDOUBLEKEYFRAME, Type::DOUBLEKEYFRAME, false, "LinearDoubleKeyFrame", "LINEARDOUBLEKEYFRAME", 0, 1, NULL, (create_inst_func *) linear_double_key_frame_new, NULL, NULL, NULL, NULL }, 
-	{ Type::LINEARGRADIENTBRUSH, Type::GRADIENTBRUSH, false, "LinearGradientBrush", "LINEARGRADIENTBRUSH", 0, 1, NULL, (create_inst_func *) linear_gradient_brush_new, NULL, NULL, NULL, NULL }, 
-	{ Type::LINEARPOINTKEYFRAME, Type::POINTKEYFRAME, false, "LinearPointKeyFrame", "LINEARPOINTKEYFRAME", 0, 1, NULL, (create_inst_func *) linear_point_key_frame_new, NULL, NULL, NULL, NULL }, 
-	{ Type::LINEBREAK, Type::INLINE, false, "LineBreak", "LINEBREAK", 0, 1, NULL, (create_inst_func *) line_break_new, NULL, NULL, NULL, NULL }, 
-	{ Type::LINEGEOMETRY, Type::GEOMETRY, false, "LineGeometry", "LINEGEOMETRY", 0, 1, NULL, (create_inst_func *) line_geometry_new, NULL, NULL, NULL, NULL }, 
-	{ Type::LINESEGMENT, Type::PATHSEGMENT, false, "LineSegment", "LINESEGMENT", 0, 1, NULL, (create_inst_func *) line_segment_new, NULL, NULL, NULL, NULL }, 
-	{ Type::MANAGED, Type::OBJECT, false, "Managed", "MANAGED", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::MANAGEDSTREAMSOURCE, Type::IMEDIASOURCE, false, "ManagedStreamSource", "MANAGEDSTREAMSOURCE", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::MANAGEDTYPEINFO, Type::OBJECT, true, "ManagedTypeInfo", "MANAGEDTYPEINFO", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::MANUALTIMESOURCE, Type::TIMESOURCE, false, "ManualTimeSource", "MANUALTIMESOURCE", 0, 2, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::MARKERREACHEDEVENTARGS, Type::EVENTARGS, false, "MarkerReachedEventArgs", "MARKERREACHEDEVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::MARKERSTREAM, Type::IMEDIASTREAM, false, "MarkerStream", "MARKERSTREAM", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::MATRIX, Type::DEPENDENCY_OBJECT, false, "Matrix", "MATRIX", 0, 1, NULL, (create_inst_func *) matrix_new, NULL, NULL, NULL, NULL }, 
-	{ Type::MATRIXTRANSFORM, Type::TRANSFORM, false, "MatrixTransform", "MATRIXTRANSFORM", 0, 1, NULL, (create_inst_func *) matrix_transform_new, NULL, NULL, NULL, NULL }, 
-	{ Type::MEDIA, Type::EVENTOBJECT, false, "Media", "MEDIA", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::MEDIAATTRIBUTE, Type::DEPENDENCY_OBJECT, false, "MediaAttribute", "MEDIAATTRIBUTE", 0, 1, NULL, (create_inst_func *) media_attribute_new, NULL, NULL, NULL, NULL }, 
-	{ Type::MEDIAATTRIBUTE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "MediaAttributeCollection", "MEDIAATTRIBUTE_COLLECTION", 0, 1, NULL, (create_inst_func *) media_attribute_collection_new, NULL, NULL, NULL, NULL }, 
-	{ Type::MEDIABASE, Type::FRAMEWORKELEMENT, false, "MediaBase", "MEDIABASE", 1, 17, MediaBase_Events, (create_inst_func *) media_base_new, NULL, NULL, NULL, NULL }, 
-	{ Type::MEDIAELEMENT, Type::FRAMEWORKELEMENT, false, "MediaElement", "MEDIAELEMENT", 7, 23, MediaElement_Events, (create_inst_func *) media_element_new, NULL, NULL, NULL, NULL }, 
-	{ Type::MEDIAERROREVENTARGS, Type::ERROREVENTARGS, false, "MediaErrorEventArgs", "MEDIAERROREVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::MEDIAMARKER, Type::EVENTOBJECT, false, "MediaMarker", "MEDIAMARKER", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::MEDIAPLAYER, Type::EVENTOBJECT, false, "MediaPlayer", "MEDIAPLAYER", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::MEMORYNESTEDSOURCE, Type::MEMORYSOURCE, false, "MemoryNestedSource", "MEMORYNESTEDSOURCE", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::MEMORYQUEUESOURCE, Type::IMEDIASOURCE, false, "MemoryQueueSource", "MEMORYQUEUESOURCE", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::MEMORYSOURCE, Type::IMEDIASOURCE, false, "MemorySource", "MEMORYSOURCE", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::MOUSEEVENTARGS, Type::ROUTEDEVENTARGS, false, "MouseEventArgs", "MOUSEEVENTARGS", 0, 1, NULL, (create_inst_func *) mouse_event_args_new, NULL, NULL, NULL, NULL }, 
-	{ Type::MP3DEMUXER, Type::IMEDIADEMUXER, false, "Mp3Demuxer", "MP3DEMUXER", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::MULTISCALEIMAGE, Type::MEDIABASE, false, "MultiScaleImage", "MULTISCALEIMAGE", 5, 22, MultiScaleImage_Events, (create_inst_func *) multi_scale_image_new, NULL, NULL, NULL, NULL }, 
-	{ Type::MULTISCALESUBIMAGE, Type::DEPENDENCY_OBJECT, false, "MultiScaleSubImage", "MULTISCALESUBIMAGE", 0, 1, NULL, (create_inst_func *) multi_scale_sub_image_new, NULL, NULL, NULL, NULL }, 
-	{ Type::MULTISCALETILESOURCE, Type::DEPENDENCY_OBJECT, false, "MultiScaleTileSource", "MULTISCALETILESOURCE", 0, 1, NULL, (create_inst_func *) multi_scale_tile_source_new, NULL, NULL, NULL, NULL }, 
-	{ Type::NAMESCOPE, Type::DEPENDENCY_OBJECT, false, "NameScope", "NAMESCOPE", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::NPOBJ, Type::OBJECT, true, "NPObj", "NPOBJ", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::NULLDECODER, Type::IMEDIADECODER, false, "NullDecoder", "NULLDECODER", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::OBJECT, Type::INVALID, false, "object", "OBJECT", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::OBJECTANIMATIONUSINGKEYFRAMES, Type::ANIMATION, false, "ObjectAnimationUsingKeyFrames", "OBJECTANIMATIONUSINGKEYFRAMES", 0, 2, NULL, (create_inst_func *) object_animation_using_key_frames_new, "KeyFrames", NULL, NULL, NULL }, 
-	{ Type::OBJECTKEYFRAME, Type::KEYFRAME, false, "ObjectKeyFrame", "OBJECTKEYFRAME", 0, 1, NULL, (create_inst_func *) object_key_frame_new, NULL, NULL, NULL, NULL }, 
-	{ Type::OBJECTKEYFRAME_COLLECTION, Type::KEYFRAME_COLLECTION, false, "ObjectKeyFrameCollection", "OBJECTKEYFRAME_COLLECTION", 0, 1, NULL, (create_inst_func *) object_key_frame_collection_new, NULL, NULL, NULL, NULL }, 
-	{ Type::PANEL, Type::FRAMEWORKELEMENT, false, "Panel", "PANEL", 0, 16, NULL, (create_inst_func *) panel_new, "Children", NULL, NULL, NULL }, 
-	{ Type::PARALLELTIMELINE, Type::TIMELINEGROUP, false, "ParallelTimeline", "PARALLELTIMELINE", 0, 2, NULL, (create_inst_func *) parallel_timeline_new, NULL, NULL, NULL, NULL }, 
-	{ Type::PARSERERROREVENTARGS, Type::ERROREVENTARGS, false, "ParserErrorEventArgs", "PARSERERROREVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::PASSWORDBOX, Type::TEXTBOX, false, "PasswordBox", "PASSWORDBOX", 1, 21, PasswordBox_Events, (create_inst_func *) password_box_new, NULL, NULL, NULL, NULL }, 
-	{ Type::PATH, Type::SHAPE, false, "Path", "PATH", 0, 16, NULL, (create_inst_func *) path_new, NULL, NULL, NULL, NULL }, 
-	{ Type::PATHFIGURE, Type::DEPENDENCY_OBJECT, false, "PathFigure", "PATHFIGURE", 0, 1, NULL, (create_inst_func *) path_figure_new, "Segments", NULL, NULL, NULL }, 
-	{ Type::PATHFIGURE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "PathFigureCollection", "PATHFIGURE_COLLECTION", 0, 1, NULL, (create_inst_func *) path_figure_collection_new, NULL, NULL, NULL, NULL }, 
-	{ Type::PATHGEOMETRY, Type::GEOMETRY, false, "PathGeometry", "PATHGEOMETRY", 0, 1, NULL, (create_inst_func *) path_geometry_new, "Figures", NULL, NULL, NULL }, 
-	{ Type::PATHSEGMENT, Type::DEPENDENCY_OBJECT, false, "PathSegment", "PATHSEGMENT", 0, 1, NULL, (create_inst_func *) path_segment_new, NULL, NULL, NULL, NULL }, 
-	{ Type::PATHSEGMENT_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "PathSegmentCollection", "PATHSEGMENT_COLLECTION", 0, 1, NULL, (create_inst_func *) path_segment_collection_new, NULL, NULL, NULL, NULL }, 
-	{ Type::PLAYLIST, Type::PLAYLISTENTRY, false, "Playlist", "PLAYLIST", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::PLAYLISTENTRY, Type::EVENTOBJECT, false, "PlaylistEntry", "PLAYLISTENTRY", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::POINT, Type::OBJECT, true, "Point", "POINT", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::POINT_COLLECTION, Type::COLLECTION, false, "PointCollection", "POINT_COLLECTION", 0, 1, NULL, (create_inst_func *) point_collection_new, NULL, NULL, NULL, NULL }, 
-	{ Type::POINTANIMATION, Type::ANIMATION, false, "PointAnimation", "POINTANIMATION", 0, 2, NULL, (create_inst_func *) point_animation_new, NULL, NULL, NULL, NULL }, 
-	{ Type::POINTANIMATIONUSINGKEYFRAMES, Type::POINTANIMATION, false, "PointAnimationUsingKeyFrames", "POINTANIMATIONUSINGKEYFRAMES", 0, 2, NULL, (create_inst_func *) point_animation_using_key_frames_new, "KeyFrames", NULL, NULL, NULL }, 
-	{ Type::POINTKEYFRAME, Type::KEYFRAME, false, "PointKeyFrame", "POINTKEYFRAME", 0, 1, NULL, (create_inst_func *) point_key_frame_new, NULL, NULL, NULL, NULL }, 
-	{ Type::POINTKEYFRAME_COLLECTION, Type::KEYFRAME_COLLECTION, false, "PointKeyFrameCollection", "POINTKEYFRAME_COLLECTION", 0, 1, NULL, (create_inst_func *) point_key_frame_collection_new, NULL, NULL, NULL, NULL }, 
-	{ Type::POLYBEZIERSEGMENT, Type::PATHSEGMENT, false, "PolyBezierSegment", "POLYBEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) poly_bezier_segment_new, NULL, NULL, NULL, NULL }, 
-	{ Type::POLYGON, Type::SHAPE, false, "Polygon", "POLYGON", 0, 16, NULL, (create_inst_func *) polygon_new, NULL, NULL, NULL, NULL }, 
-	{ Type::POLYLINE, Type::SHAPE, false, "Polyline", "POLYLINE", 0, 16, NULL, (create_inst_func *) polyline_new, NULL, NULL, NULL, NULL }, 
-	{ Type::POLYLINESEGMENT, Type::PATHSEGMENT, false, "PolyLineSegment", "POLYLINESEGMENT", 0, 1, NULL, (create_inst_func *) poly_line_segment_new, NULL, NULL, NULL, NULL }, 
-	{ Type::POLYQUADRATICBEZIERSEGMENT, Type::PATHSEGMENT, false, "PolyQuadraticBezierSegment", "POLYQUADRATICBEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) poly_quadratic_bezier_segment_new, NULL, NULL, NULL, NULL }, 
-	{ Type::POPUP, Type::FRAMEWORKELEMENT, false, "Popup", "POPUP", 1, 17, Popup_Events, (create_inst_func *) popup_new, NULL, NULL, NULL, NULL }, 
-	{ Type::PROGRESSIVESOURCE, Type::FILESOURCE, false, "ProgressiveSource", "PROGRESSIVESOURCE", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::PULSESOURCE, Type::AUDIOSOURCE, false, "PulseSource", "PULSESOURCE", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::QUADRATICBEZIERSEGMENT, Type::PATHSEGMENT, false, "QuadraticBezierSegment", "QUADRATICBEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) quadratic_bezier_segment_new, NULL, NULL, NULL, NULL }, 
-	{ Type::RADIALGRADIENTBRUSH, Type::GRADIENTBRUSH, false, "RadialGradientBrush", "RADIALGRADIENTBRUSH", 0, 1, NULL, (create_inst_func *) radial_gradient_brush_new, NULL, NULL, NULL, NULL }, 
-	{ Type::RECT, Type::OBJECT, true, "Rect", "RECT", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::RECTANGLE, Type::SHAPE, false, "Rectangle", "RECTANGLE", 0, 16, NULL, (create_inst_func *) rectangle_new, NULL, NULL, NULL, NULL }, 
-	{ Type::RECTANGLEGEOMETRY, Type::GEOMETRY, false, "RectangleGeometry", "RECTANGLEGEOMETRY", 0, 1, NULL, (create_inst_func *) rectangle_geometry_new, NULL, NULL, NULL, NULL }, 
-	{ Type::REPEATBEHAVIOR, Type::OBJECT, true, "RepeatBehavior", "REPEATBEHAVIOR", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::RESOURCE_DICTIONARY, Type::COLLECTION, false, "ResourceDictionary", "RESOURCE_DICTIONARY", 0, 1, NULL, (create_inst_func *) resource_dictionary_new, NULL, NULL, NULL, NULL }, 
-	{ Type::ROTATETRANSFORM, Type::TRANSFORM, false, "RotateTransform", "ROTATETRANSFORM", 0, 1, NULL, (create_inst_func *) rotate_transform_new, NULL, NULL, NULL, NULL }, 
-	{ Type::ROUTEDEVENTARGS, Type::EVENTARGS, false, "RoutedEventArgs", "ROUTEDEVENTARGS", 0, 1, NULL, (create_inst_func *) routed_event_args_new, NULL, NULL, NULL, NULL }, 
-	{ Type::ROWDEFINITION, Type::DEPENDENCY_OBJECT, false, "RowDefinition", "ROWDEFINITION", 0, 1, NULL, (create_inst_func *) row_definition_new, NULL, NULL, NULL, NULL }, 
-	{ Type::ROWDEFINITION_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "RowDefinitionCollection", "ROWDEFINITION_COLLECTION", 0, 1, NULL, (create_inst_func *) row_definition_collection_new, NULL, NULL, NULL, NULL }, 
-	{ Type::RUN, Type::INLINE, false, "Run", "RUN", 0, 1, NULL, (create_inst_func *) run_new, "Text", NULL, NULL, NULL }, 
-	{ Type::SCALETRANSFORM, Type::TRANSFORM, false, "ScaleTransform", "SCALETRANSFORM", 0, 1, NULL, (create_inst_func *) scale_transform_new, NULL, NULL, NULL, NULL }, 
-	{ Type::SETTER, Type::SETTERBASE, false, "Setter", "SETTER", 0, 1, NULL, (create_inst_func *) setter_new, NULL, NULL, NULL, NULL }, 
-	{ Type::SETTERBASE, Type::DEPENDENCY_OBJECT, false, "SetterBase", "SETTERBASE", 0, 1, NULL, (create_inst_func *) setter_base_new, NULL, NULL, NULL, NULL }, 
-	{ Type::SETTERBASE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "SetterBaseCollection", "SETTERBASE_COLLECTION", 0, 1, NULL, (create_inst_func *) setter_base_collection_new, NULL, NULL, NULL, NULL }, 
-	{ Type::SHAPE, Type::FRAMEWORKELEMENT, false, "Shape", "SHAPE", 0, 16, NULL, (create_inst_func *) shape_new, NULL, NULL, NULL, NULL }, 
-	{ Type::SIZE, Type::OBJECT, true, "Size", "SIZE", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::SIZECHANGEDEVENTARGS, Type::ROUTEDEVENTARGS, false, "SizeChangedEventArgs", "SIZECHANGEDEVENTARGS", 0, 1, NULL, (create_inst_func *) size_changed_event_args_new, NULL, NULL, NULL, NULL }, 
-	{ Type::SKEWTRANSFORM, Type::TRANSFORM, false, "SkewTransform", "SKEWTRANSFORM", 0, 1, NULL, (create_inst_func *) skew_transform_new, NULL, NULL, NULL, NULL }, 
-	{ Type::SOLIDCOLORBRUSH, Type::BRUSH, false, "SolidColorBrush", "SOLIDCOLORBRUSH", 0, 1, NULL, (create_inst_func *) solid_color_brush_new, NULL, NULL, NULL, NULL }, 
-	{ Type::SPLINECOLORKEYFRAME, Type::COLORKEYFRAME, false, "SplineColorKeyFrame", "SPLINECOLORKEYFRAME", 0, 1, NULL, (create_inst_func *) spline_color_key_frame_new, NULL, NULL, NULL, NULL }, 
-	{ Type::SPLINEDOUBLEKEYFRAME, Type::DOUBLEKEYFRAME, false, "SplineDoubleKeyFrame", "SPLINEDOUBLEKEYFRAME", 0, 1, NULL, (create_inst_func *) spline_double_key_frame_new, NULL, NULL, NULL, NULL }, 
-	{ Type::SPLINEPOINTKEYFRAME, Type::POINTKEYFRAME, false, "SplinePointKeyFrame", "SPLINEPOINTKEYFRAME", 0, 1, NULL, (create_inst_func *) spline_point_key_frame_new, NULL, NULL, NULL, NULL }, 
-	{ Type::STORYBOARD, Type::PARALLELTIMELINE, false, "Storyboard", "STORYBOARD", 0, 2, NULL, (create_inst_func *) storyboard_new, "Children", NULL, NULL, NULL }, 
-	{ Type::STRING, Type::OBJECT, true, "char*", "STRING", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::STROKE, Type::DEPENDENCY_OBJECT, false, "Stroke", "STROKE", 0, 1, NULL, (create_inst_func *) stroke_new, NULL, NULL, NULL, NULL }, 
-	{ Type::STROKE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "StrokeCollection", "STROKE_COLLECTION", 0, 1, NULL, (create_inst_func *) stroke_collection_new, NULL, NULL, NULL, NULL }, 
-	{ Type::STYLE, Type::DEPENDENCY_OBJECT, false, "Style", "STYLE", 0, 1, NULL, (create_inst_func *) style_new, "Setters", NULL, NULL, NULL }, 
-	{ Type::STYLUSINFO, Type::DEPENDENCY_OBJECT, false, "StylusInfo", "STYLUSINFO", 0, 1, NULL, (create_inst_func *) stylus_info_new, NULL, NULL, NULL, NULL }, 
-	{ Type::STYLUSPOINT, Type::DEPENDENCY_OBJECT, false, "StylusPoint", "STYLUSPOINT", 0, 1, NULL, (create_inst_func *) stylus_point_new, NULL, NULL, NULL, NULL }, 
-	{ Type::STYLUSPOINT_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "StylusPointCollection", "STYLUSPOINT_COLLECTION", 0, 1, NULL, (create_inst_func *) stylus_point_collection_new, NULL, NULL, NULL, NULL }, 
-	{ Type::SURFACE, Type::EVENTOBJECT, false, "Surface", "SURFACE", 4, 5, Surface_Events, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::SYSTEMTIMESOURCE, Type::TIMESOURCE, false, "SystemTimeSource", "SYSTEMTIMESOURCE", 0, 2, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::TEMPLATEBINDING, Type::EVENTOBJECT, false, "TemplateBinding", "TEMPLATEBINDING", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::TEXTBLOCK, Type::FRAMEWORKELEMENT, false, "TextBlock", "TEXTBLOCK", 0, 16, NULL, (create_inst_func *) text_block_new, "Inlines", NULL, NULL, NULL }, 
-	{ Type::TEXTBOX, Type::CONTROL, false, "TextBox", "TEXTBOX", 3, 20, TextBox_Events, (create_inst_func *) text_box_new, NULL, NULL, NULL, NULL }, 
-	{ Type::TEXTBOXMODELCHANGEDEVENTARGS, Type::ROUTEDEVENTARGS, false, "TextBoxModelChangedEventArgs", "TEXTBOXMODELCHANGEDEVENTARGS", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::TEXTBOXVIEW, Type::FRAMEWORKELEMENT, false, "TextBoxView", "TEXTBOXVIEW", 0, 16, NULL, (create_inst_func *) text_box_view_new, NULL, NULL, NULL, NULL }, 
-	{ Type::TEXTCHANGEDEVENTARGS, Type::ROUTEDEVENTARGS, false, "TextChangedEventArgs", "TEXTCHANGEDEVENTARGS", 0, 1, NULL, (create_inst_func *) text_changed_event_args_new, NULL, NULL, NULL, NULL }, 
-	{ Type::THICKNESS, Type::OBJECT, true, "Thickness", "THICKNESS", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::TILEBRUSH, Type::BRUSH, false, "TileBrush", "TILEBRUSH", 0, 1, NULL, (create_inst_func *) tile_brush_new, NULL, NULL, NULL, NULL }, 
-	{ Type::TIMELINE, Type::DEPENDENCY_OBJECT, false, "Timeline", "TIMELINE", 1, 2, Timeline_Events, (create_inst_func *) timeline_new, NULL, NULL, NULL, NULL }, 
-	{ Type::TIMELINE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "TimelineCollection", "TIMELINE_COLLECTION", 0, 1, NULL, (create_inst_func *) timeline_collection_new, NULL, NULL, NULL, NULL }, 
-	{ Type::TIMELINEGROUP, Type::TIMELINE, false, "TimelineGroup", "TIMELINEGROUP", 0, 2, NULL, (create_inst_func *) timeline_group_new, NULL, NULL, NULL, NULL }, 
-	{ Type::TIMELINEMARKER, Type::DEPENDENCY_OBJECT, false, "TimelineMarker", "TIMELINEMARKER", 0, 1, NULL, (create_inst_func *) timeline_marker_new, NULL, NULL, NULL, NULL }, 
-	{ Type::TIMELINEMARKER_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "TimelineMarkerCollection", "TIMELINEMARKER_COLLECTION", 0, 1, NULL, (create_inst_func *) timeline_marker_collection_new, NULL, NULL, NULL, NULL }, 
-	{ Type::TIMEMANAGER, Type::EVENTOBJECT, false, "TimeManager", "TIMEMANAGER", 2, 3, TimeManager_Events, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::TIMESOURCE, Type::EVENTOBJECT, false, "TimeSource", "TIMESOURCE", 1, 2, TimeSource_Events, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::TIMESPAN, Type::OBJECT, true, "TimeSpan", "TIMESPAN", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::TRANSFORM, Type::GENERALTRANSFORM, false, "Transform", "TRANSFORM", 0, 1, NULL, (create_inst_func *) transform_new, NULL, NULL, NULL, NULL }, 
-	{ Type::TRANSFORM_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "TransformCollection", "TRANSFORM_COLLECTION", 0, 1, NULL, (create_inst_func *) transform_collection_new, NULL, NULL, NULL, NULL }, 
-	{ Type::TRANSFORMGROUP, Type::TRANSFORM, false, "TransformGroup", "TRANSFORMGROUP", 0, 1, NULL, (create_inst_func *) transform_group_new, "Children", NULL, NULL, NULL }, 
-	{ Type::TRANSLATETRANSFORM, Type::TRANSFORM, false, "TranslateTransform", "TRANSLATETRANSFORM", 0, 1, NULL, (create_inst_func *) translate_transform_new, NULL, NULL, NULL, NULL }, 
-	{ Type::TRIGGER_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "TriggerCollection", "TRIGGER_COLLECTION", 0, 1, NULL, (create_inst_func *) trigger_collection_new, NULL, NULL, NULL, NULL }, 
-	{ Type::TRIGGERACTION, Type::DEPENDENCY_OBJECT, false, "TriggerAction", "TRIGGERACTION", 0, 1, NULL, (create_inst_func *) trigger_action_new, NULL, NULL, NULL, NULL }, 
-	{ Type::TRIGGERACTION_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "TriggerActionCollection", "TRIGGERACTION_COLLECTION", 0, 1, NULL, (create_inst_func *) trigger_action_collection_new, NULL, NULL, NULL, NULL }, 
-	{ Type::TRIGGERBASE, Type::DEPENDENCY_OBJECT, false, "TriggerBase", "TRIGGERBASE", 0, 1, NULL, (create_inst_func *) trigger_base_new, NULL, NULL, NULL, NULL }, 
-	{ Type::UIELEMENT, Type::DEPENDENCY_OBJECT, false, "UIElement", "UIELEMENT", 12, 13, UIElement_Events, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::UIELEMENT_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "UIElementCollection", "UIELEMENT_COLLECTION", 0, 1, NULL, (create_inst_func *) uielement_collection_new, NULL, NULL, NULL, NULL }, 
-	{ Type::UINT32, Type::OBJECT, true, "guint32", "UINT32", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::UINT64, Type::OBJECT, true, "guint64", "UINT64", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::UNMANAGEDMATRIX, Type::MATRIX, false, "UnmanagedMatrix", "UNMANAGEDMATRIX", 0, 1, NULL, (create_inst_func *) unmanaged_matrix_new, NULL, NULL, NULL, NULL }, 
-	{ Type::URI, Type::OBJECT, false, "Uri", "URI", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::USERCONTROL, Type::CONTROL, false, "UserControl", "USERCONTROL", 0, 17, NULL, (create_inst_func *) user_control_new, "Content", NULL, NULL, NULL }, 
-	{ Type::VIDEOBRUSH, Type::TILEBRUSH, false, "VideoBrush", "VIDEOBRUSH", 0, 1, NULL, (create_inst_func *) video_brush_new, NULL, NULL, NULL, NULL }, 
-	{ Type::VIDEOSTREAM, Type::IMEDIASTREAM, false, "VideoStream", "VIDEOSTREAM", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::VISUALBRUSH, Type::TILEBRUSH, false, "VisualBrush", "VISUALBRUSH", 0, 1, NULL, (create_inst_func *) visual_brush_new, NULL, NULL, NULL, NULL }, 
-	{ Type::XAMLTEMPLATEBINDING, Type::EVENTOBJECT, false, "XamlTemplateBinding", "XAMLTEMPLATEBINDING", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::XMLLANGUAGE, Type::OBJECT, false, "System.Windows.Markup.XmlLanguage", "XMLLANGUAGE", 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::YUVCONVERTER, Type::IIMAGECONVERTER, false, "YUVConverter", "YUVCONVERTER", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
-	{ Type::LASTTYPE, Type::INVALID, false, NULL, NULL, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }
-};
+void
+Types::RegisterStaticTypes ()
+{
+	types [(int) Type::INVALID] = new Type (Type::INVALID, Type::INVALID, false, "INVALID", NULL, 0, 0, NULL, NULL, NULL );
+	types [(int) Type::ALSASOURCE] = new Type (Type::ALSASOURCE, Type::AUDIOSOURCE, false, "AlsaSource", "ALSASOURCE", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::ANIMATION] = new Type (Type::ANIMATION, Type::TIMELINE, false, "Animation", "ANIMATION", 0, 2, NULL, NULL, NULL);
+	types [(int) Type::ANIMATIONCLOCK] = new Type (Type::ANIMATIONCLOCK, Type::CLOCK, false, "AnimationClock", "ANIMATIONCLOCK", 0, 5, NULL, NULL, NULL);
+	types [(int) Type::APPLICATION] = new Type (Type::APPLICATION, Type::DEPENDENCY_OBJECT, false, "Application", "APPLICATION", 0, 1, NULL, (create_inst_func *) application_new, NULL);
+	types [(int) Type::ARCSEGMENT] = new Type (Type::ARCSEGMENT, Type::PATHSEGMENT, false, "ArcSegment", "ARCSEGMENT", 0, 1, NULL, (create_inst_func *) arc_segment_new, NULL);
+	types [(int) Type::ASFDEMUXER] = new Type (Type::ASFDEMUXER, Type::IMEDIADEMUXER, false, "ASFDemuxer", "ASFDEMUXER", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::ASFMARKERDECODER] = new Type (Type::ASFMARKERDECODER, Type::IMEDIADECODER, false, "ASFMarkerDecoder", "ASFMARKERDECODER", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::ASFPACKET] = new Type (Type::ASFPACKET, Type::EVENTOBJECT, false, "ASFPacket", "ASFPACKET", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::ASFPARSER] = new Type (Type::ASFPARSER, Type::EVENTOBJECT, false, "ASFParser", "ASFPARSER", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::ASSEMBLYPART] = new Type (Type::ASSEMBLYPART, Type::DEPENDENCY_OBJECT, false, "AssemblyPart", "ASSEMBLYPART", 0, 1, NULL, (create_inst_func *) assembly_part_new, NULL);
+	types [(int) Type::ASSEMBLYPART_COLLECTION] = new Type (Type::ASSEMBLYPART_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "AssemblyPartCollection", "ASSEMBLYPART_COLLECTION", 0, 1, NULL, (create_inst_func *) assembly_part_collection_new, NULL);
+	types [(int) Type::ASXDEMUXER] = new Type (Type::ASXDEMUXER, Type::IMEDIADEMUXER, false, "ASXDemuxer", "ASXDEMUXER", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::AUDIOSOURCE] = new Type (Type::AUDIOSOURCE, Type::EVENTOBJECT, false, "AudioSource", "AUDIOSOURCE", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::AUDIOSTREAM] = new Type (Type::AUDIOSTREAM, Type::IMEDIASTREAM, false, "AudioStream", "AUDIOSTREAM", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::BEGINSTORYBOARD] = new Type (Type::BEGINSTORYBOARD, Type::TRIGGERACTION, false, "BeginStoryboard", "BEGINSTORYBOARD", 0, 1, NULL, (create_inst_func *) begin_storyboard_new, "Storyboard");
+	types [(int) Type::BEZIERSEGMENT] = new Type (Type::BEZIERSEGMENT, Type::PATHSEGMENT, false, "BezierSegment", "BEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) bezier_segment_new, NULL);
+	types [(int) Type::BINDING] = new Type (Type::BINDING, Type::EVENTOBJECT, false, "Binding", "BINDING", 0, 1, NULL, (create_inst_func *) binding_new, NULL);
+	types [(int) Type::BINDINGEXPRESSION] = new Type (Type::BINDINGEXPRESSION, Type::BINDINGEXPRESSIONBASE, false, "BindingExpression", "BINDINGEXPRESSION", 0, 1, NULL, (create_inst_func *) binding_expression_new, NULL);
+	types [(int) Type::BINDINGEXPRESSIONBASE] = new Type (Type::BINDINGEXPRESSIONBASE, Type::EXPRESSION, false, "BindingExpressionBase", "BINDINGEXPRESSIONBASE", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::BITMAPIMAGE] = new Type (Type::BITMAPIMAGE, Type::IMAGESOURCE, false, "BitmapImage", "BITMAPIMAGE", 0, 1, NULL, (create_inst_func *) bitmap_image_new, NULL);
+	types [(int) Type::BOOL] = new Type (Type::BOOL, Type::OBJECT, true, "bool", "BOOL", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::BORDER] = new Type (Type::BORDER, Type::FRAMEWORKELEMENT, false, "Border", "BORDER", 0, 16, NULL, (create_inst_func *) border_new, "Child");
+	types [(int) Type::BRUSH] = new Type (Type::BRUSH, Type::DEPENDENCY_OBJECT, false, "Brush", "BRUSH", 0, 1, NULL, (create_inst_func *) brush_new, NULL);
+	types [(int) Type::CANVAS] = new Type (Type::CANVAS, Type::PANEL, false, "Canvas", "CANVAS", 0, 16, NULL, (create_inst_func *) canvas_new, NULL);
+	types [(int) Type::CHAR] = new Type (Type::CHAR, Type::OBJECT, true, "char", "CHAR", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::CLOCK] = new Type (Type::CLOCK, Type::DEPENDENCY_OBJECT, false, "Clock", "CLOCK", 4, 5, Clock_Events, NULL, NULL);
+	types [(int) Type::CLOCKGROUP] = new Type (Type::CLOCKGROUP, Type::CLOCK, false, "ClockGroup", "CLOCKGROUP", 0, 5, NULL, NULL, NULL);
+	types [(int) Type::CODECDOWNLOADER] = new Type (Type::CODECDOWNLOADER, Type::EVENTOBJECT, false, "CodecDownloader", "CODECDOWNLOADER", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::COLLECTION] = new Type (Type::COLLECTION, Type::DEPENDENCY_OBJECT, false, "Collection", "COLLECTION", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::COLLECTIONCHANGEDEVENTARGS] = new Type (Type::COLLECTIONCHANGEDEVENTARGS, Type::EVENTARGS, false, "CollectionChangedEventArgs", "COLLECTIONCHANGEDEVENTARGS", 0, 1, NULL, (create_inst_func *) collection_changed_event_args_new, NULL);
+	types [(int) Type::COLOR] = new Type (Type::COLOR, Type::OBJECT, true, "Color", "COLOR", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::COLORANIMATION] = new Type (Type::COLORANIMATION, Type::ANIMATION, false, "ColorAnimation", "COLORANIMATION", 0, 2, NULL, (create_inst_func *) color_animation_new, NULL);
+	types [(int) Type::COLORANIMATIONUSINGKEYFRAMES] = new Type (Type::COLORANIMATIONUSINGKEYFRAMES, Type::COLORANIMATION, false, "ColorAnimationUsingKeyFrames", "COLORANIMATIONUSINGKEYFRAMES", 0, 2, NULL, (create_inst_func *) color_animation_using_key_frames_new, "KeyFrames");
+	types [(int) Type::COLORKEYFRAME] = new Type (Type::COLORKEYFRAME, Type::KEYFRAME, false, "ColorKeyFrame", "COLORKEYFRAME", 0, 1, NULL, (create_inst_func *) color_key_frame_new, NULL);
+	types [(int) Type::COLORKEYFRAME_COLLECTION] = new Type (Type::COLORKEYFRAME_COLLECTION, Type::KEYFRAME_COLLECTION, false, "ColorKeyFrameCollection", "COLORKEYFRAME_COLLECTION", 0, 1, NULL, (create_inst_func *) color_key_frame_collection_new, NULL);
+	types [(int) Type::COLUMNDEFINITION] = new Type (Type::COLUMNDEFINITION, Type::DEPENDENCY_OBJECT, false, "ColumnDefinition", "COLUMNDEFINITION", 0, 1, NULL, (create_inst_func *) column_definition_new, NULL);
+	types [(int) Type::COLUMNDEFINITION_COLLECTION] = new Type (Type::COLUMNDEFINITION_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "ColumnDefinitionCollection", "COLUMNDEFINITION_COLLECTION", 0, 1, NULL, (create_inst_func *) column_definition_collection_new, NULL);
+	types [(int) Type::CONTENTCHANGEDEVENTARGS] = new Type (Type::CONTENTCHANGEDEVENTARGS, Type::EVENTARGS, false, "ContentChangedEventArgs", "CONTENTCHANGEDEVENTARGS", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::CONTENTCONTROL] = new Type (Type::CONTENTCONTROL, Type::CONTROL, false, "ContentControl", "CONTENTCONTROL", 1, 18, ContentControl_Events, (create_inst_func *) content_control_new, "Content");
+	types [(int) Type::CONTROL] = new Type (Type::CONTROL, Type::FRAMEWORKELEMENT, false, "Control", "CONTROL", 1, 17, Control_Events, (create_inst_func *) control_new, NULL);
+	types [(int) Type::CONTROLTEMPLATE] = new Type (Type::CONTROLTEMPLATE, Type::FRAMEWORKTEMPLATE, false, "ControlTemplate", "CONTROLTEMPLATE", 0, 1, NULL, (create_inst_func *) control_template_new, NULL);
+	types [(int) Type::CORNERRADIUS] = new Type (Type::CORNERRADIUS, Type::OBJECT, true, "CornerRadius", "CORNERRADIUS", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::DATATEMPLATE] = new Type (Type::DATATEMPLATE, Type::FRAMEWORKTEMPLATE, false, "DataTemplate", "DATATEMPLATE", 0, 1, NULL, (create_inst_func *) data_template_new, NULL);
+	types [(int) Type::DEEPZOOMIMAGETILESOURCE] = new Type (Type::DEEPZOOMIMAGETILESOURCE, Type::MULTISCALETILESOURCE, false, "DeepZoomImageTileSource", "DEEPZOOMIMAGETILESOURCE", 0, 1, NULL, (create_inst_func *) deep_zoom_image_tile_source_new, NULL);
+	types [(int) Type::DEPENDENCY_OBJECT] = new Type (Type::DEPENDENCY_OBJECT, Type::EVENTOBJECT, false, "DependencyObject", "DEPENDENCY_OBJECT", 0, 1, NULL, (create_inst_func *) dependency_object_new, NULL);
+	types [(int) Type::DEPENDENCY_OBJECT_COLLECTION] = new Type (Type::DEPENDENCY_OBJECT_COLLECTION, Type::COLLECTION, false, "DependencyObjectCollection", "DEPENDENCY_OBJECT_COLLECTION", 0, 1, NULL, (create_inst_func *) dependency_object_collection_new, NULL);
+	types [(int) Type::DEPENDENCYPROPERTY] = new Type (Type::DEPENDENCYPROPERTY, Type::OBJECT, false, "DependencyProperty", "DEPENDENCYPROPERTY", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::DEPLOYMENT] = new Type (Type::DEPLOYMENT, Type::DEPENDENCY_OBJECT, false, "Deployment", "DEPLOYMENT", 0, 1, NULL, (create_inst_func *) deployment_new, NULL);
+	types [(int) Type::DISCRETECOLORKEYFRAME] = new Type (Type::DISCRETECOLORKEYFRAME, Type::COLORKEYFRAME, false, "DiscreteColorKeyFrame", "DISCRETECOLORKEYFRAME", 0, 1, NULL, (create_inst_func *) discrete_color_key_frame_new, NULL);
+	types [(int) Type::DISCRETEDOUBLEKEYFRAME] = new Type (Type::DISCRETEDOUBLEKEYFRAME, Type::DOUBLEKEYFRAME, false, "DiscreteDoubleKeyFrame", "DISCRETEDOUBLEKEYFRAME", 0, 1, NULL, (create_inst_func *) discrete_double_key_frame_new, NULL);
+	types [(int) Type::DISCRETEOBJECTKEYFRAME] = new Type (Type::DISCRETEOBJECTKEYFRAME, Type::OBJECTKEYFRAME, false, "DiscreteObjectKeyFrame", "DISCRETEOBJECTKEYFRAME", 0, 1, NULL, (create_inst_func *) discrete_object_key_frame_new, NULL);
+	types [(int) Type::DISCRETEPOINTKEYFRAME] = new Type (Type::DISCRETEPOINTKEYFRAME, Type::POINTKEYFRAME, false, "DiscretePointKeyFrame", "DISCRETEPOINTKEYFRAME", 0, 1, NULL, (create_inst_func *) discrete_point_key_frame_new, NULL);
+	types [(int) Type::DISPATCHERTIMER] = new Type (Type::DISPATCHERTIMER, Type::TIMELINEGROUP, false, "DispatcherTimer", "DISPATCHERTIMER", 1, 3, DispatcherTimer_Events, (create_inst_func *) dispatcher_timer_new, NULL);
+	types [(int) Type::DOUBLE] = new Type (Type::DOUBLE, Type::OBJECT, true, "double", "DOUBLE", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::DOUBLE_COLLECTION] = new Type (Type::DOUBLE_COLLECTION, Type::COLLECTION, false, "DoubleCollection", "DOUBLE_COLLECTION", 0, 1, NULL, (create_inst_func *) double_collection_new, NULL);
+	types [(int) Type::DOUBLEANIMATION] = new Type (Type::DOUBLEANIMATION, Type::ANIMATION, false, "DoubleAnimation", "DOUBLEANIMATION", 0, 2, NULL, (create_inst_func *) double_animation_new, NULL);
+	types [(int) Type::DOUBLEANIMATIONUSINGKEYFRAMES] = new Type (Type::DOUBLEANIMATIONUSINGKEYFRAMES, Type::DOUBLEANIMATION, false, "DoubleAnimationUsingKeyFrames", "DOUBLEANIMATIONUSINGKEYFRAMES", 0, 2, NULL, (create_inst_func *) double_animation_using_key_frames_new, "KeyFrames");
+	types [(int) Type::DOUBLEKEYFRAME] = new Type (Type::DOUBLEKEYFRAME, Type::KEYFRAME, false, "DoubleKeyFrame", "DOUBLEKEYFRAME", 0, 1, NULL, (create_inst_func *) double_key_frame_new, NULL);
+	types [(int) Type::DOUBLEKEYFRAME_COLLECTION] = new Type (Type::DOUBLEKEYFRAME_COLLECTION, Type::KEYFRAME_COLLECTION, false, "DoubleKeyFrameCollection", "DOUBLEKEYFRAME_COLLECTION", 0, 1, NULL, (create_inst_func *) double_key_frame_collection_new, NULL);
+	types [(int) Type::DOWNLOADER] = new Type (Type::DOWNLOADER, Type::DEPENDENCY_OBJECT, false, "Downloader", "DOWNLOADER", 3, 4, Downloader_Events, (create_inst_func *) downloader_new, NULL);
+	types [(int) Type::DRAWINGATTRIBUTES] = new Type (Type::DRAWINGATTRIBUTES, Type::DEPENDENCY_OBJECT, false, "DrawingAttributes", "DRAWINGATTRIBUTES", 0, 1, NULL, (create_inst_func *) drawing_attributes_new, NULL);
+	types [(int) Type::DURATION] = new Type (Type::DURATION, Type::OBJECT, true, "Duration", "DURATION", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::ELLIPSE] = new Type (Type::ELLIPSE, Type::SHAPE, false, "Ellipse", "ELLIPSE", 0, 16, NULL, (create_inst_func *) ellipse_new, NULL);
+	types [(int) Type::ELLIPSEGEOMETRY] = new Type (Type::ELLIPSEGEOMETRY, Type::GEOMETRY, false, "EllipseGeometry", "ELLIPSEGEOMETRY", 0, 1, NULL, (create_inst_func *) ellipse_geometry_new, NULL);
+	types [(int) Type::ERROREVENTARGS] = new Type (Type::ERROREVENTARGS, Type::EVENTARGS, false, "ErrorEventArgs", "ERROREVENTARGS", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::EVENTARGS] = new Type (Type::EVENTARGS, Type::DEPENDENCY_OBJECT, false, "EventArgs", "EVENTARGS", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::EVENTLISTENERPROXY] = new Type (Type::EVENTLISTENERPROXY, Type::EVENTOBJECT, false, "EventListenerProxy", "EVENTLISTENERPROXY", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::EVENTOBJECT] = new Type (Type::EVENTOBJECT, Type::OBJECT, false, "EventObject", "EVENTOBJECT", 1, 1, EventObject_Events, NULL, NULL);
+	types [(int) Type::EVENTTRIGGER] = new Type (Type::EVENTTRIGGER, Type::TRIGGERBASE, false, "EventTrigger", "EVENTTRIGGER", 0, 1, NULL, (create_inst_func *) event_trigger_new, "Actions");
+	types [(int) Type::EXPRESSION] = new Type (Type::EXPRESSION, Type::EVENTOBJECT, false, "Expression", "EXPRESSION", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::FFMPEGDECODER] = new Type (Type::FFMPEGDECODER, Type::IMEDIADECODER, false, "FfmpegDecoder", "FFMPEGDECODER", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::FFMPEGDEMUXER] = new Type (Type::FFMPEGDEMUXER, Type::IMEDIADEMUXER, false, "FfmpegDemuxer", "FFMPEGDEMUXER", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::FILESOURCE] = new Type (Type::FILESOURCE, Type::IMEDIASOURCE, false, "FileSource", "FILESOURCE", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::FONTFAMILY] = new Type (Type::FONTFAMILY, Type::OBJECT, true, "FontFamily", "FONTFAMILY", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::FONTSTRETCH] = new Type (Type::FONTSTRETCH, Type::OBJECT, false, "System.Windows.FontStretch", "FONTSTRETCH", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::FRAMEWORKELEMENT] = new Type (Type::FRAMEWORKELEMENT, Type::UIELEMENT, false, "FrameworkElement", "FRAMEWORKELEMENT", 3, 16, FrameworkElement_Events, (create_inst_func *) framework_element_new, NULL);
+	types [(int) Type::FRAMEWORKTEMPLATE] = new Type (Type::FRAMEWORKTEMPLATE, Type::DEPENDENCY_OBJECT, false, "FrameworkTemplate", "FRAMEWORKTEMPLATE", 0, 1, NULL, (create_inst_func *) framework_template_new, NULL);
+	types [(int) Type::GENERALTRANSFORM] = new Type (Type::GENERALTRANSFORM, Type::DEPENDENCY_OBJECT, false, "GeneralTransform", "GENERALTRANSFORM", 0, 1, NULL, (create_inst_func *) general_transform_new, NULL);
+	types [(int) Type::GEOMETRY] = new Type (Type::GEOMETRY, Type::DEPENDENCY_OBJECT, false, "Geometry", "GEOMETRY", 0, 1, NULL, (create_inst_func *) geometry_new, NULL);
+	types [(int) Type::GEOMETRY_COLLECTION] = new Type (Type::GEOMETRY_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "GeometryCollection", "GEOMETRY_COLLECTION", 0, 1, NULL, (create_inst_func *) geometry_collection_new, NULL);
+	types [(int) Type::GEOMETRYGROUP] = new Type (Type::GEOMETRYGROUP, Type::GEOMETRY, false, "GeometryGroup", "GEOMETRYGROUP", 0, 1, NULL, (create_inst_func *) geometry_group_new, "Children");
+	types [(int) Type::GLYPHS] = new Type (Type::GLYPHS, Type::FRAMEWORKELEMENT, false, "Glyphs", "GLYPHS", 0, 16, NULL, (create_inst_func *) glyphs_new, NULL);
+	types [(int) Type::GRADIENTBRUSH] = new Type (Type::GRADIENTBRUSH, Type::BRUSH, false, "GradientBrush", "GRADIENTBRUSH", 0, 1, NULL, (create_inst_func *) gradient_brush_new, "GradientStops");
+	types [(int) Type::GRADIENTSTOP] = new Type (Type::GRADIENTSTOP, Type::DEPENDENCY_OBJECT, false, "GradientStop", "GRADIENTSTOP", 0, 1, NULL, (create_inst_func *) gradient_stop_new, NULL);
+	types [(int) Type::GRADIENTSTOP_COLLECTION] = new Type (Type::GRADIENTSTOP_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "GradientStopCollection", "GRADIENTSTOP_COLLECTION", 0, 1, NULL, (create_inst_func *) gradient_stop_collection_new, NULL);
+	types [(int) Type::GRID] = new Type (Type::GRID, Type::PANEL, false, "Grid", "GRID", 0, 16, NULL, (create_inst_func *) grid_new, NULL);
+	types [(int) Type::GRIDLENGTH] = new Type (Type::GRIDLENGTH, Type::OBJECT, true, "GridLength", "GRIDLENGTH", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::IIMAGECONVERTER] = new Type (Type::IIMAGECONVERTER, Type::IMEDIAOBJECT, false, "IImageConverter", "IIMAGECONVERTER", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::IMAGE] = new Type (Type::IMAGE, Type::MEDIABASE, false, "Image", "IMAGE", 1, 18, Image_Events, (create_inst_func *) image_new, NULL);
+	types [(int) Type::IMAGEBRUSH] = new Type (Type::IMAGEBRUSH, Type::TILEBRUSH, false, "ImageBrush", "IMAGEBRUSH", 2, 3, ImageBrush_Events, (create_inst_func *) image_brush_new, NULL);
+	types [(int) Type::IMAGEERROREVENTARGS] = new Type (Type::IMAGEERROREVENTARGS, Type::ERROREVENTARGS, false, "ImageErrorEventArgs", "IMAGEERROREVENTARGS", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::IMAGESOURCE] = new Type (Type::IMAGESOURCE, Type::DEPENDENCY_OBJECT, false, "ImageSource", "IMAGESOURCE", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::IMEDIADECODER] = new Type (Type::IMEDIADECODER, Type::IMEDIAOBJECT, false, "IMediaDecoder", "IMEDIADECODER", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::IMEDIADEMUXER] = new Type (Type::IMEDIADEMUXER, Type::IMEDIAOBJECT, false, "IMediaDemuxer", "IMEDIADEMUXER", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::IMEDIAOBJECT] = new Type (Type::IMEDIAOBJECT, Type::EVENTOBJECT, false, "IMediaObject", "IMEDIAOBJECT", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::IMEDIASOURCE] = new Type (Type::IMEDIASOURCE, Type::IMEDIAOBJECT, false, "IMediaSource", "IMEDIASOURCE", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::IMEDIASTREAM] = new Type (Type::IMEDIASTREAM, Type::IMEDIAOBJECT, false, "IMediaStream", "IMEDIASTREAM", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::INKPRESENTER] = new Type (Type::INKPRESENTER, Type::CANVAS, false, "InkPresenter", "INKPRESENTER", 0, 16, NULL, (create_inst_func *) ink_presenter_new, NULL);
+	types [(int) Type::INLINE] = new Type (Type::INLINE, Type::DEPENDENCY_OBJECT, false, "Inline", "INLINE", 0, 1, NULL, (create_inst_func *) inline_new, NULL);
+	types [(int) Type::INLINE_COLLECTION] = new Type (Type::INLINE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "InlineCollection", "INLINE_COLLECTION", 0, 1, NULL, (create_inst_func *) inline_collection_new, NULL);
+	types [(int) Type::INPUTMETHOD] = new Type (Type::INPUTMETHOD, Type::DEPENDENCY_OBJECT, false, "InputMethod", "INPUTMETHOD", 0, 1, NULL, (create_inst_func *) input_method_new, NULL);
+	types [(int) Type::INT32] = new Type (Type::INT32, Type::OBJECT, true, "gint32", "INT32", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::INT64] = new Type (Type::INT64, Type::OBJECT, true, "gint64", "INT64", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::ITEM_COLLECTION] = new Type (Type::ITEM_COLLECTION, Type::COLLECTION, false, "ItemCollection", "ITEM_COLLECTION", 0, 1, NULL, (create_inst_func *) item_collection_new, NULL);
+	types [(int) Type::KEYEVENTARGS] = new Type (Type::KEYEVENTARGS, Type::ROUTEDEVENTARGS, false, "KeyEventArgs", "KEYEVENTARGS", 0, 1, NULL, (create_inst_func *) key_event_args_new, NULL);
+	types [(int) Type::KEYFRAME] = new Type (Type::KEYFRAME, Type::DEPENDENCY_OBJECT, false, "KeyFrame", "KEYFRAME", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::KEYFRAME_COLLECTION] = new Type (Type::KEYFRAME_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "KeyFrameCollection", "KEYFRAME_COLLECTION", 0, 1, NULL, (create_inst_func *) key_frame_collection_new, NULL);
+	types [(int) Type::KEYSPLINE] = new Type (Type::KEYSPLINE, Type::DEPENDENCY_OBJECT, false, "KeySpline", "KEYSPLINE", 0, 1, NULL, (create_inst_func *) key_spline_new, NULL);
+	types [(int) Type::KEYTIME] = new Type (Type::KEYTIME, Type::OBJECT, true, "KeyTime", "KEYTIME", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::LAYOUTINFORMATION] = new Type (Type::LAYOUTINFORMATION, Type::OBJECT, false, "LayoutInformation", "LAYOUTINFORMATION", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::LINE] = new Type (Type::LINE, Type::SHAPE, false, "Line", "LINE", 0, 16, NULL, (create_inst_func *) line_new, NULL);
+	types [(int) Type::LINEARCOLORKEYFRAME] = new Type (Type::LINEARCOLORKEYFRAME, Type::COLORKEYFRAME, false, "LinearColorKeyFrame", "LINEARCOLORKEYFRAME", 0, 1, NULL, (create_inst_func *) linear_color_key_frame_new, NULL);
+	types [(int) Type::LINEARDOUBLEKEYFRAME] = new Type (Type::LINEARDOUBLEKEYFRAME, Type::DOUBLEKEYFRAME, false, "LinearDoubleKeyFrame", "LINEARDOUBLEKEYFRAME", 0, 1, NULL, (create_inst_func *) linear_double_key_frame_new, NULL);
+	types [(int) Type::LINEARGRADIENTBRUSH] = new Type (Type::LINEARGRADIENTBRUSH, Type::GRADIENTBRUSH, false, "LinearGradientBrush", "LINEARGRADIENTBRUSH", 0, 1, NULL, (create_inst_func *) linear_gradient_brush_new, NULL);
+	types [(int) Type::LINEARPOINTKEYFRAME] = new Type (Type::LINEARPOINTKEYFRAME, Type::POINTKEYFRAME, false, "LinearPointKeyFrame", "LINEARPOINTKEYFRAME", 0, 1, NULL, (create_inst_func *) linear_point_key_frame_new, NULL);
+	types [(int) Type::LINEBREAK] = new Type (Type::LINEBREAK, Type::INLINE, false, "LineBreak", "LINEBREAK", 0, 1, NULL, (create_inst_func *) line_break_new, NULL);
+	types [(int) Type::LINEGEOMETRY] = new Type (Type::LINEGEOMETRY, Type::GEOMETRY, false, "LineGeometry", "LINEGEOMETRY", 0, 1, NULL, (create_inst_func *) line_geometry_new, NULL);
+	types [(int) Type::LINESEGMENT] = new Type (Type::LINESEGMENT, Type::PATHSEGMENT, false, "LineSegment", "LINESEGMENT", 0, 1, NULL, (create_inst_func *) line_segment_new, NULL);
+	types [(int) Type::MANAGED] = new Type (Type::MANAGED, Type::OBJECT, false, "Managed", "MANAGED", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::MANAGEDSTREAMSOURCE] = new Type (Type::MANAGEDSTREAMSOURCE, Type::IMEDIASOURCE, false, "ManagedStreamSource", "MANAGEDSTREAMSOURCE", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::MANAGEDTYPEINFO] = new Type (Type::MANAGEDTYPEINFO, Type::OBJECT, true, "ManagedTypeInfo", "MANAGEDTYPEINFO", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::MANUALTIMESOURCE] = new Type (Type::MANUALTIMESOURCE, Type::TIMESOURCE, false, "ManualTimeSource", "MANUALTIMESOURCE", 0, 2, NULL, NULL, NULL);
+	types [(int) Type::MARKERREACHEDEVENTARGS] = new Type (Type::MARKERREACHEDEVENTARGS, Type::EVENTARGS, false, "MarkerReachedEventArgs", "MARKERREACHEDEVENTARGS", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::MARKERSTREAM] = new Type (Type::MARKERSTREAM, Type::IMEDIASTREAM, false, "MarkerStream", "MARKERSTREAM", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::MATRIX] = new Type (Type::MATRIX, Type::DEPENDENCY_OBJECT, false, "Matrix", "MATRIX", 0, 1, NULL, (create_inst_func *) matrix_new, NULL);
+	types [(int) Type::MATRIXTRANSFORM] = new Type (Type::MATRIXTRANSFORM, Type::TRANSFORM, false, "MatrixTransform", "MATRIXTRANSFORM", 0, 1, NULL, (create_inst_func *) matrix_transform_new, NULL);
+	types [(int) Type::MEDIA] = new Type (Type::MEDIA, Type::EVENTOBJECT, false, "Media", "MEDIA", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::MEDIAATTRIBUTE] = new Type (Type::MEDIAATTRIBUTE, Type::DEPENDENCY_OBJECT, false, "MediaAttribute", "MEDIAATTRIBUTE", 0, 1, NULL, (create_inst_func *) media_attribute_new, NULL);
+	types [(int) Type::MEDIAATTRIBUTE_COLLECTION] = new Type (Type::MEDIAATTRIBUTE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "MediaAttributeCollection", "MEDIAATTRIBUTE_COLLECTION", 0, 1, NULL, (create_inst_func *) media_attribute_collection_new, NULL);
+	types [(int) Type::MEDIABASE] = new Type (Type::MEDIABASE, Type::FRAMEWORKELEMENT, false, "MediaBase", "MEDIABASE", 1, 17, MediaBase_Events, (create_inst_func *) media_base_new, NULL);
+	types [(int) Type::MEDIAELEMENT] = new Type (Type::MEDIAELEMENT, Type::FRAMEWORKELEMENT, false, "MediaElement", "MEDIAELEMENT", 7, 23, MediaElement_Events, (create_inst_func *) media_element_new, NULL);
+	types [(int) Type::MEDIAERROREVENTARGS] = new Type (Type::MEDIAERROREVENTARGS, Type::ERROREVENTARGS, false, "MediaErrorEventArgs", "MEDIAERROREVENTARGS", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::MEDIAMARKER] = new Type (Type::MEDIAMARKER, Type::EVENTOBJECT, false, "MediaMarker", "MEDIAMARKER", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::MEDIAPLAYER] = new Type (Type::MEDIAPLAYER, Type::EVENTOBJECT, false, "MediaPlayer", "MEDIAPLAYER", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::MEMORYNESTEDSOURCE] = new Type (Type::MEMORYNESTEDSOURCE, Type::MEMORYSOURCE, false, "MemoryNestedSource", "MEMORYNESTEDSOURCE", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::MEMORYQUEUESOURCE] = new Type (Type::MEMORYQUEUESOURCE, Type::IMEDIASOURCE, false, "MemoryQueueSource", "MEMORYQUEUESOURCE", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::MEMORYSOURCE] = new Type (Type::MEMORYSOURCE, Type::IMEDIASOURCE, false, "MemorySource", "MEMORYSOURCE", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::MOUSEEVENTARGS] = new Type (Type::MOUSEEVENTARGS, Type::ROUTEDEVENTARGS, false, "MouseEventArgs", "MOUSEEVENTARGS", 0, 1, NULL, (create_inst_func *) mouse_event_args_new, NULL);
+	types [(int) Type::MP3DEMUXER] = new Type (Type::MP3DEMUXER, Type::IMEDIADEMUXER, false, "Mp3Demuxer", "MP3DEMUXER", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::MULTISCALEIMAGE] = new Type (Type::MULTISCALEIMAGE, Type::MEDIABASE, false, "MultiScaleImage", "MULTISCALEIMAGE", 5, 22, MultiScaleImage_Events, (create_inst_func *) multi_scale_image_new, NULL);
+	types [(int) Type::MULTISCALESUBIMAGE] = new Type (Type::MULTISCALESUBIMAGE, Type::DEPENDENCY_OBJECT, false, "MultiScaleSubImage", "MULTISCALESUBIMAGE", 0, 1, NULL, (create_inst_func *) multi_scale_sub_image_new, NULL);
+	types [(int) Type::MULTISCALETILESOURCE] = new Type (Type::MULTISCALETILESOURCE, Type::DEPENDENCY_OBJECT, false, "MultiScaleTileSource", "MULTISCALETILESOURCE", 0, 1, NULL, (create_inst_func *) multi_scale_tile_source_new, NULL);
+	types [(int) Type::NAMESCOPE] = new Type (Type::NAMESCOPE, Type::DEPENDENCY_OBJECT, false, "NameScope", "NAMESCOPE", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::NPOBJ] = new Type (Type::NPOBJ, Type::OBJECT, true, "NPObj", "NPOBJ", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::NULLDECODER] = new Type (Type::NULLDECODER, Type::IMEDIADECODER, false, "NullDecoder", "NULLDECODER", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::OBJECT] = new Type (Type::OBJECT, Type::INVALID, false, "object", "OBJECT", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::OBJECTANIMATIONUSINGKEYFRAMES] = new Type (Type::OBJECTANIMATIONUSINGKEYFRAMES, Type::ANIMATION, false, "ObjectAnimationUsingKeyFrames", "OBJECTANIMATIONUSINGKEYFRAMES", 0, 2, NULL, (create_inst_func *) object_animation_using_key_frames_new, "KeyFrames");
+	types [(int) Type::OBJECTKEYFRAME] = new Type (Type::OBJECTKEYFRAME, Type::KEYFRAME, false, "ObjectKeyFrame", "OBJECTKEYFRAME", 0, 1, NULL, (create_inst_func *) object_key_frame_new, NULL);
+	types [(int) Type::OBJECTKEYFRAME_COLLECTION] = new Type (Type::OBJECTKEYFRAME_COLLECTION, Type::KEYFRAME_COLLECTION, false, "ObjectKeyFrameCollection", "OBJECTKEYFRAME_COLLECTION", 0, 1, NULL, (create_inst_func *) object_key_frame_collection_new, NULL);
+	types [(int) Type::PANEL] = new Type (Type::PANEL, Type::FRAMEWORKELEMENT, false, "Panel", "PANEL", 0, 16, NULL, (create_inst_func *) panel_new, "Children");
+	types [(int) Type::PARALLELTIMELINE] = new Type (Type::PARALLELTIMELINE, Type::TIMELINEGROUP, false, "ParallelTimeline", "PARALLELTIMELINE", 0, 2, NULL, (create_inst_func *) parallel_timeline_new, NULL);
+	types [(int) Type::PARSERERROREVENTARGS] = new Type (Type::PARSERERROREVENTARGS, Type::ERROREVENTARGS, false, "ParserErrorEventArgs", "PARSERERROREVENTARGS", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::PASSWORDBOX] = new Type (Type::PASSWORDBOX, Type::TEXTBOX, false, "PasswordBox", "PASSWORDBOX", 1, 21, PasswordBox_Events, (create_inst_func *) password_box_new, NULL);
+	types [(int) Type::PATH] = new Type (Type::PATH, Type::SHAPE, false, "Path", "PATH", 0, 16, NULL, (create_inst_func *) path_new, NULL);
+	types [(int) Type::PATHFIGURE] = new Type (Type::PATHFIGURE, Type::DEPENDENCY_OBJECT, false, "PathFigure", "PATHFIGURE", 0, 1, NULL, (create_inst_func *) path_figure_new, "Segments");
+	types [(int) Type::PATHFIGURE_COLLECTION] = new Type (Type::PATHFIGURE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "PathFigureCollection", "PATHFIGURE_COLLECTION", 0, 1, NULL, (create_inst_func *) path_figure_collection_new, NULL);
+	types [(int) Type::PATHGEOMETRY] = new Type (Type::PATHGEOMETRY, Type::GEOMETRY, false, "PathGeometry", "PATHGEOMETRY", 0, 1, NULL, (create_inst_func *) path_geometry_new, "Figures");
+	types [(int) Type::PATHSEGMENT] = new Type (Type::PATHSEGMENT, Type::DEPENDENCY_OBJECT, false, "PathSegment", "PATHSEGMENT", 0, 1, NULL, (create_inst_func *) path_segment_new, NULL);
+	types [(int) Type::PATHSEGMENT_COLLECTION] = new Type (Type::PATHSEGMENT_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "PathSegmentCollection", "PATHSEGMENT_COLLECTION", 0, 1, NULL, (create_inst_func *) path_segment_collection_new, NULL);
+	types [(int) Type::PLAYLIST] = new Type (Type::PLAYLIST, Type::PLAYLISTENTRY, false, "Playlist", "PLAYLIST", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::PLAYLISTENTRY] = new Type (Type::PLAYLISTENTRY, Type::EVENTOBJECT, false, "PlaylistEntry", "PLAYLISTENTRY", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::POINT] = new Type (Type::POINT, Type::OBJECT, true, "Point", "POINT", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::POINT_COLLECTION] = new Type (Type::POINT_COLLECTION, Type::COLLECTION, false, "PointCollection", "POINT_COLLECTION", 0, 1, NULL, (create_inst_func *) point_collection_new, NULL);
+	types [(int) Type::POINTANIMATION] = new Type (Type::POINTANIMATION, Type::ANIMATION, false, "PointAnimation", "POINTANIMATION", 0, 2, NULL, (create_inst_func *) point_animation_new, NULL);
+	types [(int) Type::POINTANIMATIONUSINGKEYFRAMES] = new Type (Type::POINTANIMATIONUSINGKEYFRAMES, Type::POINTANIMATION, false, "PointAnimationUsingKeyFrames", "POINTANIMATIONUSINGKEYFRAMES", 0, 2, NULL, (create_inst_func *) point_animation_using_key_frames_new, "KeyFrames");
+	types [(int) Type::POINTKEYFRAME] = new Type (Type::POINTKEYFRAME, Type::KEYFRAME, false, "PointKeyFrame", "POINTKEYFRAME", 0, 1, NULL, (create_inst_func *) point_key_frame_new, NULL);
+	types [(int) Type::POINTKEYFRAME_COLLECTION] = new Type (Type::POINTKEYFRAME_COLLECTION, Type::KEYFRAME_COLLECTION, false, "PointKeyFrameCollection", "POINTKEYFRAME_COLLECTION", 0, 1, NULL, (create_inst_func *) point_key_frame_collection_new, NULL);
+	types [(int) Type::POLYBEZIERSEGMENT] = new Type (Type::POLYBEZIERSEGMENT, Type::PATHSEGMENT, false, "PolyBezierSegment", "POLYBEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) poly_bezier_segment_new, NULL);
+	types [(int) Type::POLYGON] = new Type (Type::POLYGON, Type::SHAPE, false, "Polygon", "POLYGON", 0, 16, NULL, (create_inst_func *) polygon_new, NULL);
+	types [(int) Type::POLYLINE] = new Type (Type::POLYLINE, Type::SHAPE, false, "Polyline", "POLYLINE", 0, 16, NULL, (create_inst_func *) polyline_new, NULL);
+	types [(int) Type::POLYLINESEGMENT] = new Type (Type::POLYLINESEGMENT, Type::PATHSEGMENT, false, "PolyLineSegment", "POLYLINESEGMENT", 0, 1, NULL, (create_inst_func *) poly_line_segment_new, NULL);
+	types [(int) Type::POLYQUADRATICBEZIERSEGMENT] = new Type (Type::POLYQUADRATICBEZIERSEGMENT, Type::PATHSEGMENT, false, "PolyQuadraticBezierSegment", "POLYQUADRATICBEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) poly_quadratic_bezier_segment_new, NULL);
+	types [(int) Type::POPUP] = new Type (Type::POPUP, Type::FRAMEWORKELEMENT, false, "Popup", "POPUP", 1, 17, Popup_Events, (create_inst_func *) popup_new, NULL);
+	types [(int) Type::PROGRESSIVESOURCE] = new Type (Type::PROGRESSIVESOURCE, Type::FILESOURCE, false, "ProgressiveSource", "PROGRESSIVESOURCE", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::PULSESOURCE] = new Type (Type::PULSESOURCE, Type::AUDIOSOURCE, false, "PulseSource", "PULSESOURCE", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::QUADRATICBEZIERSEGMENT] = new Type (Type::QUADRATICBEZIERSEGMENT, Type::PATHSEGMENT, false, "QuadraticBezierSegment", "QUADRATICBEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) quadratic_bezier_segment_new, NULL);
+	types [(int) Type::RADIALGRADIENTBRUSH] = new Type (Type::RADIALGRADIENTBRUSH, Type::GRADIENTBRUSH, false, "RadialGradientBrush", "RADIALGRADIENTBRUSH", 0, 1, NULL, (create_inst_func *) radial_gradient_brush_new, NULL);
+	types [(int) Type::RECT] = new Type (Type::RECT, Type::OBJECT, true, "Rect", "RECT", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::RECTANGLE] = new Type (Type::RECTANGLE, Type::SHAPE, false, "Rectangle", "RECTANGLE", 0, 16, NULL, (create_inst_func *) rectangle_new, NULL);
+	types [(int) Type::RECTANGLEGEOMETRY] = new Type (Type::RECTANGLEGEOMETRY, Type::GEOMETRY, false, "RectangleGeometry", "RECTANGLEGEOMETRY", 0, 1, NULL, (create_inst_func *) rectangle_geometry_new, NULL);
+	types [(int) Type::REPEATBEHAVIOR] = new Type (Type::REPEATBEHAVIOR, Type::OBJECT, true, "RepeatBehavior", "REPEATBEHAVIOR", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::RESOURCE_DICTIONARY] = new Type (Type::RESOURCE_DICTIONARY, Type::COLLECTION, false, "ResourceDictionary", "RESOURCE_DICTIONARY", 0, 1, NULL, (create_inst_func *) resource_dictionary_new, NULL);
+	types [(int) Type::ROTATETRANSFORM] = new Type (Type::ROTATETRANSFORM, Type::TRANSFORM, false, "RotateTransform", "ROTATETRANSFORM", 0, 1, NULL, (create_inst_func *) rotate_transform_new, NULL);
+	types [(int) Type::ROUTEDEVENTARGS] = new Type (Type::ROUTEDEVENTARGS, Type::EVENTARGS, false, "RoutedEventArgs", "ROUTEDEVENTARGS", 0, 1, NULL, (create_inst_func *) routed_event_args_new, NULL);
+	types [(int) Type::ROWDEFINITION] = new Type (Type::ROWDEFINITION, Type::DEPENDENCY_OBJECT, false, "RowDefinition", "ROWDEFINITION", 0, 1, NULL, (create_inst_func *) row_definition_new, NULL);
+	types [(int) Type::ROWDEFINITION_COLLECTION] = new Type (Type::ROWDEFINITION_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "RowDefinitionCollection", "ROWDEFINITION_COLLECTION", 0, 1, NULL, (create_inst_func *) row_definition_collection_new, NULL);
+	types [(int) Type::RUN] = new Type (Type::RUN, Type::INLINE, false, "Run", "RUN", 0, 1, NULL, (create_inst_func *) run_new, "Text");
+	types [(int) Type::SCALETRANSFORM] = new Type (Type::SCALETRANSFORM, Type::TRANSFORM, false, "ScaleTransform", "SCALETRANSFORM", 0, 1, NULL, (create_inst_func *) scale_transform_new, NULL);
+	types [(int) Type::SETTER] = new Type (Type::SETTER, Type::SETTERBASE, false, "Setter", "SETTER", 0, 1, NULL, (create_inst_func *) setter_new, NULL);
+	types [(int) Type::SETTERBASE] = new Type (Type::SETTERBASE, Type::DEPENDENCY_OBJECT, false, "SetterBase", "SETTERBASE", 0, 1, NULL, (create_inst_func *) setter_base_new, NULL);
+	types [(int) Type::SETTERBASE_COLLECTION] = new Type (Type::SETTERBASE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "SetterBaseCollection", "SETTERBASE_COLLECTION", 0, 1, NULL, (create_inst_func *) setter_base_collection_new, NULL);
+	types [(int) Type::SHAPE] = new Type (Type::SHAPE, Type::FRAMEWORKELEMENT, false, "Shape", "SHAPE", 0, 16, NULL, (create_inst_func *) shape_new, NULL);
+	types [(int) Type::SIZE] = new Type (Type::SIZE, Type::OBJECT, true, "Size", "SIZE", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::SIZECHANGEDEVENTARGS] = new Type (Type::SIZECHANGEDEVENTARGS, Type::ROUTEDEVENTARGS, false, "SizeChangedEventArgs", "SIZECHANGEDEVENTARGS", 0, 1, NULL, (create_inst_func *) size_changed_event_args_new, NULL);
+	types [(int) Type::SKEWTRANSFORM] = new Type (Type::SKEWTRANSFORM, Type::TRANSFORM, false, "SkewTransform", "SKEWTRANSFORM", 0, 1, NULL, (create_inst_func *) skew_transform_new, NULL);
+	types [(int) Type::SOLIDCOLORBRUSH] = new Type (Type::SOLIDCOLORBRUSH, Type::BRUSH, false, "SolidColorBrush", "SOLIDCOLORBRUSH", 0, 1, NULL, (create_inst_func *) solid_color_brush_new, NULL);
+	types [(int) Type::SPLINECOLORKEYFRAME] = new Type (Type::SPLINECOLORKEYFRAME, Type::COLORKEYFRAME, false, "SplineColorKeyFrame", "SPLINECOLORKEYFRAME", 0, 1, NULL, (create_inst_func *) spline_color_key_frame_new, NULL);
+	types [(int) Type::SPLINEDOUBLEKEYFRAME] = new Type (Type::SPLINEDOUBLEKEYFRAME, Type::DOUBLEKEYFRAME, false, "SplineDoubleKeyFrame", "SPLINEDOUBLEKEYFRAME", 0, 1, NULL, (create_inst_func *) spline_double_key_frame_new, NULL);
+	types [(int) Type::SPLINEPOINTKEYFRAME] = new Type (Type::SPLINEPOINTKEYFRAME, Type::POINTKEYFRAME, false, "SplinePointKeyFrame", "SPLINEPOINTKEYFRAME", 0, 1, NULL, (create_inst_func *) spline_point_key_frame_new, NULL);
+	types [(int) Type::STORYBOARD] = new Type (Type::STORYBOARD, Type::PARALLELTIMELINE, false, "Storyboard", "STORYBOARD", 0, 2, NULL, (create_inst_func *) storyboard_new, "Children");
+	types [(int) Type::STRING] = new Type (Type::STRING, Type::OBJECT, true, "char*", "STRING", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::STROKE] = new Type (Type::STROKE, Type::DEPENDENCY_OBJECT, false, "Stroke", "STROKE", 0, 1, NULL, (create_inst_func *) stroke_new, NULL);
+	types [(int) Type::STROKE_COLLECTION] = new Type (Type::STROKE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "StrokeCollection", "STROKE_COLLECTION", 0, 1, NULL, (create_inst_func *) stroke_collection_new, NULL);
+	types [(int) Type::STYLE] = new Type (Type::STYLE, Type::DEPENDENCY_OBJECT, false, "Style", "STYLE", 0, 1, NULL, (create_inst_func *) style_new, "Setters");
+	types [(int) Type::STYLUSINFO] = new Type (Type::STYLUSINFO, Type::DEPENDENCY_OBJECT, false, "StylusInfo", "STYLUSINFO", 0, 1, NULL, (create_inst_func *) stylus_info_new, NULL);
+	types [(int) Type::STYLUSPOINT] = new Type (Type::STYLUSPOINT, Type::DEPENDENCY_OBJECT, false, "StylusPoint", "STYLUSPOINT", 0, 1, NULL, (create_inst_func *) stylus_point_new, NULL);
+	types [(int) Type::STYLUSPOINT_COLLECTION] = new Type (Type::STYLUSPOINT_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "StylusPointCollection", "STYLUSPOINT_COLLECTION", 0, 1, NULL, (create_inst_func *) stylus_point_collection_new, NULL);
+	types [(int) Type::SURFACE] = new Type (Type::SURFACE, Type::EVENTOBJECT, false, "Surface", "SURFACE", 4, 5, Surface_Events, NULL, NULL);
+	types [(int) Type::SYSTEMTIMESOURCE] = new Type (Type::SYSTEMTIMESOURCE, Type::TIMESOURCE, false, "SystemTimeSource", "SYSTEMTIMESOURCE", 0, 2, NULL, NULL, NULL);
+	types [(int) Type::TEMPLATEBINDING] = new Type (Type::TEMPLATEBINDING, Type::EVENTOBJECT, false, "TemplateBinding", "TEMPLATEBINDING", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::TEXTBLOCK] = new Type (Type::TEXTBLOCK, Type::FRAMEWORKELEMENT, false, "TextBlock", "TEXTBLOCK", 0, 16, NULL, (create_inst_func *) text_block_new, "Inlines");
+	types [(int) Type::TEXTBOX] = new Type (Type::TEXTBOX, Type::CONTROL, false, "TextBox", "TEXTBOX", 3, 20, TextBox_Events, (create_inst_func *) text_box_new, NULL);
+	types [(int) Type::TEXTBOXMODELCHANGEDEVENTARGS] = new Type (Type::TEXTBOXMODELCHANGEDEVENTARGS, Type::ROUTEDEVENTARGS, false, "TextBoxModelChangedEventArgs", "TEXTBOXMODELCHANGEDEVENTARGS", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::TEXTBOXVIEW] = new Type (Type::TEXTBOXVIEW, Type::FRAMEWORKELEMENT, false, "TextBoxView", "TEXTBOXVIEW", 0, 16, NULL, (create_inst_func *) text_box_view_new, NULL);
+	types [(int) Type::TEXTCHANGEDEVENTARGS] = new Type (Type::TEXTCHANGEDEVENTARGS, Type::ROUTEDEVENTARGS, false, "TextChangedEventArgs", "TEXTCHANGEDEVENTARGS", 0, 1, NULL, (create_inst_func *) text_changed_event_args_new, NULL);
+	types [(int) Type::THICKNESS] = new Type (Type::THICKNESS, Type::OBJECT, true, "Thickness", "THICKNESS", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::TILEBRUSH] = new Type (Type::TILEBRUSH, Type::BRUSH, false, "TileBrush", "TILEBRUSH", 0, 1, NULL, (create_inst_func *) tile_brush_new, NULL);
+	types [(int) Type::TIMELINE] = new Type (Type::TIMELINE, Type::DEPENDENCY_OBJECT, false, "Timeline", "TIMELINE", 1, 2, Timeline_Events, (create_inst_func *) timeline_new, NULL);
+	types [(int) Type::TIMELINE_COLLECTION] = new Type (Type::TIMELINE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "TimelineCollection", "TIMELINE_COLLECTION", 0, 1, NULL, (create_inst_func *) timeline_collection_new, NULL);
+	types [(int) Type::TIMELINEGROUP] = new Type (Type::TIMELINEGROUP, Type::TIMELINE, false, "TimelineGroup", "TIMELINEGROUP", 0, 2, NULL, (create_inst_func *) timeline_group_new, NULL);
+	types [(int) Type::TIMELINEMARKER] = new Type (Type::TIMELINEMARKER, Type::DEPENDENCY_OBJECT, false, "TimelineMarker", "TIMELINEMARKER", 0, 1, NULL, (create_inst_func *) timeline_marker_new, NULL);
+	types [(int) Type::TIMELINEMARKER_COLLECTION] = new Type (Type::TIMELINEMARKER_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "TimelineMarkerCollection", "TIMELINEMARKER_COLLECTION", 0, 1, NULL, (create_inst_func *) timeline_marker_collection_new, NULL);
+	types [(int) Type::TIMEMANAGER] = new Type (Type::TIMEMANAGER, Type::EVENTOBJECT, false, "TimeManager", "TIMEMANAGER", 2, 3, TimeManager_Events, NULL, NULL);
+	types [(int) Type::TIMESOURCE] = new Type (Type::TIMESOURCE, Type::EVENTOBJECT, false, "TimeSource", "TIMESOURCE", 1, 2, TimeSource_Events, NULL, NULL);
+	types [(int) Type::TIMESPAN] = new Type (Type::TIMESPAN, Type::OBJECT, true, "TimeSpan", "TIMESPAN", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::TRANSFORM] = new Type (Type::TRANSFORM, Type::GENERALTRANSFORM, false, "Transform", "TRANSFORM", 0, 1, NULL, (create_inst_func *) transform_new, NULL);
+	types [(int) Type::TRANSFORM_COLLECTION] = new Type (Type::TRANSFORM_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "TransformCollection", "TRANSFORM_COLLECTION", 0, 1, NULL, (create_inst_func *) transform_collection_new, NULL);
+	types [(int) Type::TRANSFORMGROUP] = new Type (Type::TRANSFORMGROUP, Type::TRANSFORM, false, "TransformGroup", "TRANSFORMGROUP", 0, 1, NULL, (create_inst_func *) transform_group_new, "Children");
+	types [(int) Type::TRANSLATETRANSFORM] = new Type (Type::TRANSLATETRANSFORM, Type::TRANSFORM, false, "TranslateTransform", "TRANSLATETRANSFORM", 0, 1, NULL, (create_inst_func *) translate_transform_new, NULL);
+	types [(int) Type::TRIGGER_COLLECTION] = new Type (Type::TRIGGER_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "TriggerCollection", "TRIGGER_COLLECTION", 0, 1, NULL, (create_inst_func *) trigger_collection_new, NULL);
+	types [(int) Type::TRIGGERACTION] = new Type (Type::TRIGGERACTION, Type::DEPENDENCY_OBJECT, false, "TriggerAction", "TRIGGERACTION", 0, 1, NULL, (create_inst_func *) trigger_action_new, NULL);
+	types [(int) Type::TRIGGERACTION_COLLECTION] = new Type (Type::TRIGGERACTION_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "TriggerActionCollection", "TRIGGERACTION_COLLECTION", 0, 1, NULL, (create_inst_func *) trigger_action_collection_new, NULL);
+	types [(int) Type::TRIGGERBASE] = new Type (Type::TRIGGERBASE, Type::DEPENDENCY_OBJECT, false, "TriggerBase", "TRIGGERBASE", 0, 1, NULL, (create_inst_func *) trigger_base_new, NULL);
+	types [(int) Type::UIELEMENT] = new Type (Type::UIELEMENT, Type::DEPENDENCY_OBJECT, false, "UIElement", "UIELEMENT", 12, 13, UIElement_Events, NULL, NULL);
+	types [(int) Type::UIELEMENT_COLLECTION] = new Type (Type::UIELEMENT_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "UIElementCollection", "UIELEMENT_COLLECTION", 0, 1, NULL, (create_inst_func *) uielement_collection_new, NULL);
+	types [(int) Type::UINT32] = new Type (Type::UINT32, Type::OBJECT, true, "guint32", "UINT32", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::UINT64] = new Type (Type::UINT64, Type::OBJECT, true, "guint64", "UINT64", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::UNMANAGEDMATRIX] = new Type (Type::UNMANAGEDMATRIX, Type::MATRIX, false, "UnmanagedMatrix", "UNMANAGEDMATRIX", 0, 1, NULL, (create_inst_func *) unmanaged_matrix_new, NULL);
+	types [(int) Type::URI] = new Type (Type::URI, Type::OBJECT, false, "Uri", "URI", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::USERCONTROL] = new Type (Type::USERCONTROL, Type::CONTROL, false, "UserControl", "USERCONTROL", 0, 17, NULL, (create_inst_func *) user_control_new, "Content");
+	types [(int) Type::VIDEOBRUSH] = new Type (Type::VIDEOBRUSH, Type::TILEBRUSH, false, "VideoBrush", "VIDEOBRUSH", 0, 1, NULL, (create_inst_func *) video_brush_new, NULL);
+	types [(int) Type::VIDEOSTREAM] = new Type (Type::VIDEOSTREAM, Type::IMEDIASTREAM, false, "VideoStream", "VIDEOSTREAM", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::VISUALBRUSH] = new Type (Type::VISUALBRUSH, Type::TILEBRUSH, false, "VisualBrush", "VISUALBRUSH", 0, 1, NULL, (create_inst_func *) visual_brush_new, NULL);
+	types [(int) Type::XAMLTEMPLATEBINDING] = new Type (Type::XAMLTEMPLATEBINDING, Type::EVENTOBJECT, false, "XamlTemplateBinding", "XAMLTEMPLATEBINDING", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::XMLLANGUAGE] = new Type (Type::XMLLANGUAGE, Type::OBJECT, false, "System.Windows.Markup.XmlLanguage", "XMLLANGUAGE", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::YUVCONVERTER] = new Type (Type::YUVCONVERTER, Type::IIMAGECONVERTER, false, "YUVConverter", "YUVCONVERTER", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::LASTTYPE] = new Type (Type::LASTTYPE, Type::INVALID, false, NULL, NULL, 0, 0, NULL, NULL, NULL);
+}
 

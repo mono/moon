@@ -21,7 +21,25 @@
 /*
  * Type implementation
  */
-
+Type::Type (Type::Kind type, Type::Kind parent, bool value_type, const char *name, 
+		const char *kindname, int event_count, int total_event_count, const char **events, 
+		create_inst_func *create_inst, const char *content_property)
+{
+	this->type = type;
+	this->parent = parent;
+	this->value_type = value_type;
+	this->name = name;
+	this->kindname = kindname;
+	this->event_count = event_count;
+	this->total_event_count = total_event_count;
+	this->events = events;
+	this->create_inst = create_inst;
+	this->content_property = content_property;
+	this->properties = NULL;
+	this->custom_properties_hash = NULL;
+	this->custom_properties = NULL;
+}
+		
 Type::~Type ()
 {
 	if (properties) {
@@ -155,18 +173,7 @@ Type::IsSubclassOf (Type::Kind super)
 Type *
 Type::Find (const char *name)
 {
-	// Types are ordered alphabetically according to kindname
-	// so an optimization here would be to do a binary search.
-
-	for (int i = 1; i < Type::LASTTYPE; i++) {
-		if (!g_strcasecmp (type_infos [i].name, name))
-			return &type_infos [i];
-		
-		if (!g_strcasecmp (type_infos [i].kindname, name))
-			return &type_infos [i];
-	}
-
-	return NULL;
+	return Deployment::GetCurrent ()->GetTypes ()->Find (name);
 }
 
 Type *
@@ -174,10 +181,7 @@ Type::Find (Type::Kind type)
 {
 	if (type < Type::INVALID || type == Type::LASTTYPE)
 		return NULL;
-		
-	if (type < Type::LASTTYPE)
-		return &type_infos [type];
-
+	
 	return Deployment::GetCurrent ()->GetTypes ()->Find (type);
 }
 
@@ -265,7 +269,9 @@ Types::Types ()
 	types = NULL;
 	size = 0;
 	count = 0;
-	CloneStaticTypes ();
+	EnsureSize ((int) Type::LASTTYPE + 1); // expand immediately to the builtin types we know we'll put into the array
+	RegisterStaticTypes ();
+	count = 1 + (int) Type::LASTTYPE;
 }
 
 Types::~Types ()
@@ -284,13 +290,9 @@ Types::~Types ()
 }
 
 void
-Types::CloneStaticTypes ()
+Types::Initialize ()
 {
-	count = (int) Type::LASTTYPE + 1;
-	EnsureSize (count);
-	for (int i = Type::INVALID; i < Type::LASTTYPE; i++) {
-		types [i] = Type::Find ((Type::Kind) i)->Clone ();
-	}
+	RegisterStaticDependencyProperties ();
 }
 
 void
@@ -323,6 +325,20 @@ Types::Find (Type::Kind type)
 	return types [(int) type];
 }
 
+Type *
+Types::Find (const char *name)
+{
+	for (int i = 1; i < count; i++) { // 0 = INVALID, shouldn't compare against that
+		if (i == Type::LASTTYPE)
+			continue;
+			
+		if (!g_strcasecmp (types [i]->name, name))
+			return types [i];
+	}
+
+	return NULL;
+}
+
 Type::Kind
 Types::RegisterType (const char *name, void *gc_handle, Type::Kind parent)
 {
@@ -345,20 +361,10 @@ Types::RegisterType (const char *name, void *gc_handle, Type::Kind parent)
 	type->events = NULL;
 	type->create_inst = NULL;
 	type->content_property = NULL;
-	
+	type->properties = NULL;
+	type->custom_properties_hash = NULL;
+	type->custom_properties = NULL;
 	types [type_id] = type;
 	
 	return type_id;
-}
-
-void
-types_init ()
-{
-#if DEBUG
-	for (int i = 0; i <= Type::LASTTYPE; i++) {
-		if (type_infos [i].type != i) {
-			fprintf (stderr, "Type verification: type #%i is stored with Kind %i, name %s\n", i, type_infos [i].type, type_infos [i].name);
-		}
-	}
-#endif
 }

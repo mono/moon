@@ -516,6 +516,8 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 	guint64 last_frame_samples = 0; // Samples written from the last frame
 	AudioFrameNode *node;
 	
+	SetCurrentDeployment (false);
+	
 	// Validate input
 	if (channel_data == NULL) {
 		SetState (AudioError);
@@ -767,7 +769,10 @@ cleanup:
 		node->generation = current_generation;
 		last_node = node;
 		result = node->source;
+		result->SetCurrentDeployment (false);
 		result->ref ();
+	} else {
+		Deployment::SetCurrent (NULL, false);
 	}
 				
 	Unlock ();

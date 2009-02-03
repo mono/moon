@@ -46,13 +46,9 @@
 #include "usercontrol.h"
 #include "validators.h"
 
-bool dependency_properties_initialized = false;
 void
-dependency_property_g_init (void)
+Types::RegisterStaticDependencyProperties ()
 {
-	if (dependency_properties_initialized)
-		return;
-	dependency_properties_initialized = true;
 	Application::ResourcesProperty = DependencyProperty::Register (Type::APPLICATION, "Resources", Type::RESOURCE_DICTIONARY);
 	ArcSegment::IsLargeArcProperty = DependencyProperty::Register (Type::ARCSEGMENT, "IsLargeArc", new Value (false), Type::BOOL);
 	ArcSegment::PointProperty = DependencyProperty::Register (Type::ARCSEGMENT, "Point", Type::POINT);

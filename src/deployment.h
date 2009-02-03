@@ -90,17 +90,36 @@ class Deployment : public DependencyObject {
 	static Deployment* GetCurrent ();
 	/* @GenerateCBinding,GeneratePInvoke */
 	static void SetCurrent (Deployment* value);
+	static void SetCurrent (Deployment* value, bool domain);
 
 	static bool Initialize ();
 	static void RegisterThread (Deployment *deployment);
 
-private:
+	void UnrefDelayed (EventObject *obj);
+
+	void TrackObjectCreated (EventObject *obj);
+	void TrackObjectDestroyed (EventObject *obj);
+
+private:	
 	void AbortAllIDownloaders ();
+	void DrainUnrefs ();
+	static gboolean DrainUnrefs (gpointer ptr);
 
 	Types* types;
 	Application* current_app;
 	MonoDomain *domain;
 	List *idownloaders;
+	volatile gpointer pending_unrefs;
+	
+	gint objects_created;
+	gint objects_destroyed;
+	
+#if OBJECT_TRACKING
+	GHashTable *objects_alive;
+	pthread_mutex_t objects_alive_mutex;
+	void ReportLeaks ();
+#endif
+
 	static GHashTable *current_hash;
 	static gboolean initialized;
 	static pthread_key_t tls_key;

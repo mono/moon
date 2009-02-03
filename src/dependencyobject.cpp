@@ -66,7 +66,6 @@ public:
 
 #if OBJECT_TRACKING
 #define OBJECT_TRACK(x,y) Track((x),(y))
-static pthread_mutex_t objects_alive_mutex = PTHREAD_MUTEX_INITIALIZER;
 #else
 #define OBJECT_TRACK(x,y)
 #endif
@@ -76,15 +75,22 @@ EventObject::EventObject ()
 	Initialize (NULL, Type::EVENTOBJECT);
 }
 
+EventObject::EventObject (Type::Kind type)
+{
+	Initialize (NULL, type);
+}
+
 EventObject::EventObject (Deployment *deployment)
 {
 	Initialize (deployment, Type::EVENTOBJECT);
 }
 
-EventObject::EventObject (Type::Kind type)
+EventObject::EventObject (Deployment *deployment, Type::Kind type)
 {
-	Initialize (NULL, type);
+	Initialize (deployment, type);
 }
+
+static gint current_id = 0;
 
 void
 EventObject::Initialize (Deployment *depl, Type::Kind type)
@@ -97,28 +103,29 @@ EventObject::Initialize (Deployment *depl, Type::Kind type)
 	if (deployment != NULL && this != deployment)
 		deployment->ref ();
 	surface = NULL;
-	flags = g_atomic_int_exchange_and_add (&objects_created, 1);
+	flags = g_atomic_int_exchange_and_add (&current_id, 1);
 	refcount = 1;
 	events = NULL;
 	
 #if OBJECT_TRACKING
-	pthread_mutex_lock (&objects_alive_mutex);
-	if (objects_alive == NULL)
-		objects_alive = g_hash_table_new (g_direct_hash, g_direct_equal);
-	g_hash_table_insert (objects_alive, this, GINT_TO_POINTER (1));
-	pthread_mutex_unlock (&objects_alive_mutex);
-
 	Track ("Created", "");
+	if (object_type != Type::DEPLOYMENT)
+		Deployment::GetCurrent ()->TrackObjectCreated (this);
+#endif
+
+#if SANITY
+	if (object_type == Type::INVALID)
+		g_warning ("EventObject::EventObject (): created object with type: INVALID.\n");
+	if (deployment == NULL)
+		g_warning ("EventObject::EventObject (): created object with a null deployment.\n");
 #endif
 }
 
 EventObject::~EventObject()
 {
 #if OBJECT_TRACKING
-	pthread_mutex_lock (&objects_alive_mutex);
-	g_hash_table_remove (objects_alive, this);
-	pthread_mutex_unlock (&objects_alive_mutex);
-
+	if (object_type != Type::DEPLOYMENT)
+		Deployment::GetCurrent ()->TrackObjectDestroyed (this);
 	Track ("Destroyed", "");
 #endif
 
@@ -128,7 +135,6 @@ EventObject::~EventObject()
 	}
 #endif
 
-	g_atomic_int_inc (&objects_destroyed);
 	delete events;
 }
 
@@ -243,7 +249,7 @@ EventObject::GetDeployment ()
 }
 
 void
-EventObject::SetCurrentDeployment ()
+EventObject::SetCurrentDeployment (bool domain)
 {
 #if SANITY
 	if ((deployment == NULL) != (IsDisposed ()) && (object_type != Type::DEPLOYMENT)) {
@@ -255,7 +261,7 @@ EventObject::SetCurrentDeployment ()
 #endif
 	
 	if (deployment != NULL)
-		Deployment::SetCurrent (deployment);
+		Deployment::SetCurrent (deployment, domain);
 }
 
 Surface *
@@ -313,12 +319,7 @@ EventObject::ref ()
 	if (GetObjectType () != object_type)
 		printf ("EventObject::ref (): the type '%s' did not call SetObjectType, object_type is '%s'\n", Type::Find (GetObjectType ())->GetName (), Type::Find (object_type)->GetName ());
 		
-	if (deployment != Deployment::GetCurrent () && 
-		deployment != NULL && // Don't warn about our three static dependency properties created upon initialization.
-		!Type::Find (object_type)->IsSubclassOf (Type::AUDIOSTREAM) && // Don't warn for audio objects, since audio threads
-		!Type::Find (object_type)->IsSubclassOf (Type::AUDIOSOURCE) && // can't register themselves with the deployment
-		object_type != Type::MEDIAPLAYER) { // Marshalling callbacks from audio objects to main thread ends up taking a ref on MediaPlayer, ignore that one too
-
+	if (deployment != Deployment::GetCurrent ()) {
 		printf ("EventObject::ref (): the type '%s' whose id is %i was created on a deployment (%p) different from the current deployment (%p).\n", GetTypeName (), GET_OBJ_ID (this), deployment, Deployment::GetCurrent ());
 		// print_stack_trace ();
 	}
@@ -380,11 +381,6 @@ EventObject::unref ()
 		delete this;
 	
 }
-
-#if DEBUG
-gint EventObject::objects_created = 0;
-gint EventObject::objects_destroyed = 0;
-#endif
 
 #if OBJECT_TRACKING
 // Define the ID of the object you want to track
@@ -741,63 +737,17 @@ EventObject::FinishEmit (int event_id, EmitContext *ctx)
 	delete ctx;
 }
 
-static pthread_mutex_t delayed_unref_mutex = PTHREAD_MUTEX_INITIALIZER;
-static bool drain_tick_call_added = false;
-static GSList *pending_unrefs = NULL;
-
-static gboolean
-drain_unrefs_idle_call (gpointer data)
-{
-	EventObject::DrainUnrefs ();
-	return false;
-}
-
-static void
-unref_object (EventObject *obj, gpointer unused)
-{
-	obj->SetCurrentDeployment ();
-	obj->unref ();
-	Deployment::SetCurrent (NULL);
-}
-
-void
-EventObject::DrainUnrefs ()
-{
-	GSList *list;
-
-	// TODO: make pending_unrefs a lock free structure (or just make the
-	// access to the variable lock free, the structure itself doesn't need
-	// to be lock free given that we get exclusive access to it here
-	// by nulling out the global variable before using it).
-	do {
-		// We need to unlock our mutex before unreffing the objects,
-		// since unreffing any object might cause unref_delayed to be
-		// called (on the same thread), which will then try to lock the
-		// mutex again, causing a dead-lock.
-		pthread_mutex_lock (&delayed_unref_mutex);
-		list = pending_unrefs;
-		pending_unrefs = NULL;
-		drain_tick_call_added = false;
-		pthread_mutex_unlock (&delayed_unref_mutex);
-	
-		g_slist_foreach (list, (GFunc) unref_object, NULL);
-		g_slist_free (list);
-	} while (pending_unrefs != NULL);
-}
-
 void
 EventObject::unref_delayed ()
 {
+	Deployment *depl;
+	
 	OBJECT_TRACK ("DelayedUnref", GetTypeName ());
 
-	pthread_mutex_lock (&delayed_unref_mutex);
-	pending_unrefs = g_slist_prepend (pending_unrefs, this);
-
-	if (!drain_tick_call_added) {
-		g_idle_add (drain_unrefs_idle_call, NULL);
-		drain_tick_call_added = true;
-	}
-	pthread_mutex_unlock (&delayed_unref_mutex);
+	// access deployment as long as we have it (until Dispose has been called),
+	// after that access the static deployment.
+	depl = deployment ? deployment : Deployment::GetCurrent ();
+	depl->UnrefDelayed (this);
 }
 
 class Listener {
@@ -1013,8 +963,8 @@ DependencyObject::IsValueValid (DependencyProperty* property, Value* value, Moon
 			MoonError::FillIn (error, MoonError::ARGUMENT, 1001,
 					   g_strdup_printf ("DependencyObject::SetValue, value cannot be assigned to the "
 							    "property %s::%s (property has type '%s', value has type '%s')",
-							    GetTypeName (), property->GetName(), Type::Find (property->GetPropertyType())->name,
-							    Type::Find (value->GetKind ())->name));
+							    GetTypeName (), property->GetName(), Type::Find (property->GetPropertyType())->GetName (),
+							    Type::Find (value->GetKind ())->GetName ()));
 			return false;
 		}
 	} else {
@@ -1222,7 +1172,7 @@ DependencyObject::GetLocalValueWithError (DependencyProperty *property, MoonErro
 {
 	if (!HasProperty (Type::INVALID, property, true)) {
 		Type *pt = Type::Find (property->GetOwnerType ());
-		MoonError::FillIn (error, MoonError::EXCEPTION, g_strdup_printf ("Cannot get the DependencyProperty %s.%s on an object of type %s", pt ? pt->name : "<unknown>", property->GetName (), GetTypeName ()));
+		MoonError::FillIn (error, MoonError::EXCEPTION, g_strdup_printf ("Cannot get the DependencyProperty %s.%s on an object of type %s", pt ? pt->GetName () : "<unknown>", property->GetName (), GetTypeName ()));
 		return NULL;
 	}
 	return GetLocalValue (property);
@@ -1233,7 +1183,7 @@ DependencyObject::GetValueWithError (Type::Kind whatami, DependencyProperty *pro
 {
 	if (!HasProperty (whatami, property, true)) {
 		Type *pt = Type::Find (property->GetOwnerType ());
-		MoonError::FillIn (error, MoonError::EXCEPTION, g_strdup_printf ("Cannot get the DependencyProperty %s.%s on an object of type %s", pt ? pt->name : "<unknown>", property->GetName (), GetTypeName ()));
+		MoonError::FillIn (error, MoonError::EXCEPTION, g_strdup_printf ("Cannot get the DependencyProperty %s.%s on an object of type %s", pt ? pt->GetName () : "<unknown>", property->GetName (), GetTypeName ()));
 		return NULL;
 	}
 	return GetValue (property);
@@ -1290,7 +1240,7 @@ DependencyObject::GetValueNoDefaultWithError (DependencyProperty *property, Moon
 {
 	if (!HasProperty (Type::INVALID, property, true)) {
 		Type *pt = Type::Find (property->GetOwnerType ());
-		MoonError::FillIn (error, MoonError::EXCEPTION, g_strdup_printf ("Cannot get the DependencyProperty %s.%s on an object of type %s", pt ? pt->name : "<unknown>", property->GetName (), GetTypeName ()));
+		MoonError::FillIn (error, MoonError::EXCEPTION, g_strdup_printf ("Cannot get the DependencyProperty %s.%s on an object of type %s", pt ? pt->GetName () : "<unknown>", property->GetName (), GetTypeName ()));
 		return NULL;
 	}
 	return GetValueNoDefault (property);	
@@ -1486,11 +1436,19 @@ dispose_value (gpointer key, gpointer value, gpointer data)
 
 DependencyObject::DependencyObject ()
 {
+	SetObjectType (Type::DEPENDENCY_OBJECT);
 	Initialize ();
 }
-
+/*
 DependencyObject::DependencyObject (Deployment *deployment)
 	: EventObject (deployment)
+{
+	SetObjectType (Type::DEPENDENCY_OBJECT);
+	Initialize ();
+}
+*/
+DependencyObject::DependencyObject (Deployment *deployment, Type::Kind object_type)
+	: EventObject (deployment, object_type)
 {
 	Initialize ();
 }
@@ -1498,8 +1456,6 @@ DependencyObject::DependencyObject (Deployment *deployment)
 void
 DependencyObject::Initialize ()
 {
-	SetObjectType (Type::DEPENDENCY_OBJECT);
-
 	providers = new PropertyValueProvider*[PropertyPrecedence_Count];
 
 	providers[PropertyPrecedence_Animation] = new AnimationPropertyValueProvider (this);
@@ -1696,12 +1652,6 @@ void
 dependency_object_set_name (DependencyObject *obj, const char *name)
 {
 	obj->SetValue (DependencyObject::NameProperty, Value (name));
-}
-
-void
-DependencyObject::Shutdown ()
-{
-	EventObject::DrainUnrefs ();
 }
 
 static void

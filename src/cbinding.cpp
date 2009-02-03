@@ -1385,13 +1385,6 @@ event_object_add_xaml_handler (EventObject *instance, const char *event_name, Ev
 }
 
 
-void
-event_object_drain_unrefs (void)
-{
-	EventObject::DrainUnrefs ();
-}
-
-
 Type::Kind
 event_object_get_object_type (EventObject *instance)
 {

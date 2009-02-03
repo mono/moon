@@ -53,10 +53,7 @@ private:
 		Disposed = 1 << 31,
 		IdMask = ~(Attached | Disposed),
 	};
-public:	
-	static gint objects_created;
-	static gint objects_destroyed;
-	
+public:
 #if OBJECT_TRACKING
 	static GHashTable *objects_alive;
 	char *GetStackTrace (const char *prefix);
@@ -71,9 +68,6 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	void unref ();
 	
-	/* @GenerateCBinding */
-	static void DrainUnrefs ();
-
 	int GetRefCount () { return refcount; }
 	int GetId () { return flags & IdMask; }
 	
@@ -152,13 +146,18 @@ public:
 	bool IsDisposed ();
 	
 	Deployment *GetDeployment ();
-	void SetCurrentDeployment ();
-	
+	void SetCurrentDeployment (bool domain = true);
+
+#if SANITY
+	Deployment *GetUnsafeDeployment () { return deployment; } // a public deployment getter for sanity checking without the warnings in GetDeployment.
+#endif
+
 protected:
 	virtual ~EventObject ();
 	EventObject ();
-	EventObject (Deployment *deployment);
 	EventObject (Type::Kind type);
+	EventObject (Deployment *deployment);
+	EventObject (Deployment *deployment, Type::Kind type);
 	
 	// To enable scenarios like Emit ("Event", new EventArgs ())
 	// Emit will call unref on the calldata.
@@ -310,12 +309,10 @@ public:
 
 	/* @PropertyType=string,GenerateAccessors,ManagedDeclaringType=FrameworkElement,DefaultValue=\"\" */
 	static DependencyProperty *NameProperty;
-
-	static void Shutdown ();
-
+	
 protected:
 	virtual ~DependencyObject ();
-	DependencyObject (Deployment *deployment);
+	DependencyObject (Deployment *deployment, Type::Kind object_type = Type::DEPENDENCY_OBJECT);
 	
 	//
 	// Returns true if a value is valid.  If the value is invalid return false.

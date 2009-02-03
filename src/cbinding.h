@@ -604,8 +604,6 @@ int event_object_add_handler (EventObject *instance, const char *event_name, Eve
 /* @GeneratePInvoke */
 int event_object_add_xaml_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor);
 
-void event_object_drain_unrefs (void);
-
 /* @GeneratePInvoke */
 Type::Kind event_object_get_object_type (EventObject *instance);
 

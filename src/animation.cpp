@@ -1996,9 +1996,3 @@ ObjectAnimationUsingKeyFrames::Validate ()
 	return generic_keyframe_validator (GetKeyFrames ());
 }
 
-
-void
-animation_shutdown (void)
-{
-	// no-op
-}

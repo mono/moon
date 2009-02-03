@@ -368,13 +368,9 @@ class Generator {
 			text.AppendLine ("\"");
 		}
 		text.AppendLine ();
-		text.AppendLine ("bool dependency_properties_initialized = false;");
 		text.AppendLine ("void");
-		text.AppendLine ("dependency_property_g_init (void)");
+		text.AppendLine ("Types::RegisterStaticDependencyProperties ()");
 		text.AppendLine ("{");
-		text.AppendLine ("\tif (dependency_properties_initialized)");
-		text.AppendLine ("\t\treturn;");
-		text.AppendLine ("\tdependency_properties_initialized = true;");
 		
 		for (int i = 0; i < fields.Count; i++) {
 			FieldInfo field = fields [i];
@@ -1557,8 +1553,10 @@ class Generator {
 	
 		// Create the array of type data
 		text.AppendLine ("");
-		text.AppendLine ("Type type_infos [] = {");
-		text.AppendLine ("\t{ Type::INVALID, Type::INVALID, false, \"INVALID\", NULL, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL },");
+		text.AppendLine ("void");
+		text.AppendLine ("Types::RegisterStaticTypes ()");
+		text.AppendLine ("{");
+		text.AppendLine ("\ttypes [(int) Type::INVALID] = new Type (Type::INVALID, Type::INVALID, false, \"INVALID\", NULL, 0, 0, NULL, NULL, NULL );");
 		foreach (TypeInfo type in all.Children.SortedTypesByKind) {
 			MemberInfo member;
 			TypeInfo parent = null;
@@ -1573,7 +1571,7 @@ class Generator {
 			if (type.Events != null && type.Events.Count != 0)
 				events = type.Name + "_Events";
 	
-			text.AppendLine (string.Format (@"	{{ {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, NULL, NULL, NULL }}, ",
+			text.AppendLine (string.Format (@"	types [(int) {0}] = new Type ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9});",
 							"Type::" + type.KindName, 
 							type.KindName == "OBJECT" ? "Type::INVALID" : ("Type::" + (parent != null ? parent.KindName : "OBJECT")),
 							type.IsValueType ? "true" : "false",
@@ -1588,8 +1586,9 @@ class Generator {
 					 );
 		}
 
-		text.AppendLine ("\t{ Type::LASTTYPE, Type::INVALID, false, NULL, NULL, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL }");
-		text.AppendLine ("};");
+		text.AppendLine ("\ttypes [(int) Type::LASTTYPE] = new Type (Type::LASTTYPE, Type::INVALID, false, NULL, NULL, 0, 0, NULL, NULL, NULL);");
+		
+		text.AppendLine ("}");
 
 		text.AppendLine ();
 				
