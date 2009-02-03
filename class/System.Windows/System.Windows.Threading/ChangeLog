@@ -1,3 +1,8 @@
+2009-02-03  Andreia Gaita  <avidigal@novell.com>
+
+	* Dispatcher.cs, DispatcherOperation.cs: Route all exceptions
+	from delegate invocation to the global exception handler
+
 2009-01-26  Geoff Norton  <gnorton@novell.com>
 
 	* Dispatcher.cs: Surface lives in Deployment now.

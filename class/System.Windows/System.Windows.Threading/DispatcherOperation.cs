@@ -41,7 +41,11 @@ namespace System.Windows.Threading {
 
 		internal void Invoke ()
 		{
-			d.DynamicInvoke (args);
+			try {
+				d.DynamicInvoke (args);
+			} catch (Exception ex) {
+				Application.OnUnhandledException (this, ex);
+			}
 		}
 
 		internal string ToString ()

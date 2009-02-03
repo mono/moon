@@ -103,12 +103,18 @@ namespace System.Windows.Threading {
 		internal void Invoke (Delegate d, params object[] args)
 		{
 			if (CheckAccess ()) {
-				d.DynamicInvoke (args);
+				try {
+					d.DynamicInvoke (args);
+				} catch (Exception ex) {
+					Application.OnUnhandledException (this, ex);
+				}
 			} else {
 				ManualResetEvent wait = new ManualResetEvent (false);
 				BeginInvoke (delegate {
 					try {
 						d.DynamicInvoke (args);
+					} catch (Exception ex) {
+						Application.OnUnhandledException (this, ex);
 					} finally {
 						wait.Set ();
 					}
