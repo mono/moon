@@ -137,6 +137,7 @@ DeepZoomImageTileSource::~DeepZoomImageTileSource ()
 void
 DeepZoomImageTileSource::Download ()
 {
+	LOG_MSI ("DZITS::Download ()\n");
 	if (downloaded)
 		return;
 	char *stringuri;
@@ -151,7 +152,11 @@ DeepZoomImageTileSource::download_uri (const char* url)
 {
 	Uri *uri = new Uri ();
 
-	Surface* surface = GetSurface ();
+	Surface *surface = GetSurface ();
+
+	if (!surface)
+		surface = this->GetDeployment()->GetSurface ();
+
 	if (!surface)
 		return;
 	
@@ -172,6 +177,7 @@ LOG_MSI ("DZITS: download_uri (%s)\n", uri->ToString ());
 	downloader->Open ("GET", uri->ToString (), NoPolicy);
 	
 	downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
+	downloader->AddHandler (downloader->DownloadFailedEvent, downloader_failed, this);
 
 	downloader->Send ();
 
@@ -287,8 +293,15 @@ DeepZoomImageTileSource::GetTileLayer (int level, int x, int y)
 }
 
 void
+DeepZoomImageTileSource::downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	LOG_MSI ("DL failed\n");
+}
+
+void
 DeepZoomImageTileSource::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
+	LOG_MSI ("DZITS::dl_complete");
 	((DeepZoomImageTileSource *) closure)->DownloaderComplete ();
 }
 

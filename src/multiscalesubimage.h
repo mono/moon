@@ -26,6 +26,8 @@ class MultiScaleSubImage : public DependencyObject {
 	MultiScaleTileSource *source;
 	MultiScaleSubImage (MultiScaleTileSource *source);
 
+	int id, n;
+
  protected:
 	virtual ~MultiScaleSubImage () {}
 

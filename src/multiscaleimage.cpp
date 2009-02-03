@@ -24,6 +24,7 @@
 #include "tilesource.h"
 #include "deepzoomimagetilesource.h"
 #include "file-downloader.h"
+#include "multiscalesubimage.h"
 
 MultiScaleImage::MultiScaleImage ()
 {
@@ -258,10 +259,39 @@ multi_scale_image_handle_parsed (void *userdata)
 }
 
 void
+MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
+{
+	LOG_MSI ("MSI::RenderCollection\n");
+
+	int i;
+	MultiScaleSubImage *sub_image;
+	//FIXME: sort the subimages by ZIndex first
+	for (i = 0; (sub_image = (MultiScaleSubImage*)g_list_nth_data (subimages, i)); i++) {
+		//render if the subimage viewport intersects with this viewport
+		if (sub_image->source->GetImageWidth () < 0) {
+			LOG_MSI ("skip\n");
+			((DeepZoomImageTileSource*)sub_image->source)->set_parsed_cb (multi_scale_image_handle_parsed, this);
+			((DeepZoomImageTileSource*)sub_image->source)->Download ();
+			continue;
+		}
+		LOG_MSI ("subimage #%d (%d, %d), vpo(%f %f) vpw %f\n", sub_image->id, sub_image->source->GetImageWidth (), sub_image->source->GetImageHeight (), 
+			sub_image->GetViewportOrigin ()->x, sub_image->GetViewportOrigin()->y, sub_image->GetViewportWidth ());
+	}
+	
+}
+
+void
 MultiScaleImage::Render (cairo_t *cr, Region *region)
 {
 //FIXME: only render region
 
+
+	DeepZoomImageTileSource *dzits = (DeepZoomImageTileSource*) source;
+	if (dzits && dzits->isCollection && subimages) {
+		//Let's render collection in a different method to not break this one right now
+		RenderCollection (cr, region);
+		return;
+	}
 	LOG_MSI ("MSI::Render\n");
 
 //	if (!surface)
@@ -274,8 +304,9 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 
 	if (source->GetImageWidth () < 0) {
 		LOG_MSI ("nothing to render so far...\n");
+		//FIXME: check for null cast
 		((DeepZoomImageTileSource*)source)->set_parsed_cb (multi_scale_image_handle_parsed, this);
-		source->Download ();
+		((DeepZoomImageTileSource*)source)->Download ();
 		return;
 	}
 

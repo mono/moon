@@ -66,10 +66,6 @@ class MultiScaleTileSource : public DependencyObject {
 
 	/* @GenerateCBinding */
 	void set_image_uri_func (get_image_uri_func func);
-
-	//FIXME only used to trigger download on DZITS
-	virtual void Download () { }
-
 };
 
 #endif /* __TILESOURCE_H__ */

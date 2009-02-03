@@ -28,7 +28,7 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	friend gpointer get_tile_layer (int level, int x, int y, void *user_data);
 	friend void multi_scale_image_handle_parsed (void *userdata);
 
-	virtual void Download ();
+	void Download ();
 	gpointer GetTileLayer (int level, int x, int y);
 
 	Downloader* downloader;
@@ -37,6 +37,7 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	void *cb_userdata;
 
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
 	void DownloaderComplete ();	
 	void download_uri (const char* url);
 	bool downloaded;

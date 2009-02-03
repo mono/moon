@@ -48,6 +48,7 @@ class MultiScaleImage : public MediaBase {
 	double GetViewportHeight ();
 
 	Downloader *downloader;
+	void RenderCollection (cairo_t *cr, Region *region);
 
  protected:
 	virtual ~MultiScaleImage ();
