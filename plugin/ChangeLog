@@ -1,3 +1,8 @@
+2009-02-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-class.cpp: Use Type::GetName () instead of accessing
+	  the field directly.
+
 2009-02-03  Fernando Herrera  <fherrera@novell.com>
 
 	* plugin.cpp: moonlight_flags is 64bits now.

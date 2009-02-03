@@ -1692,14 +1692,14 @@ MoonlightObject::Invoke (int id, NPIdentifier name, const NPVariant *args, uint3
 
 		if (moonlight_type != Type::INVALID) {
 			if (plugin->IsSilverlight2 ()) {
-				string_to_npvariant (Type::Find (moonlight_type)->name, result);
+				string_to_npvariant (Type::Find (moonlight_type)->GetName (), result);
 			} else {
 				switch (moonlight_type) {
 					case Type::KEYEVENTARGS:
 						string_to_npvariant ("KeyboardEventArgs", result);
 						break;
 					default:
-						string_to_npvariant (Type::Find (moonlight_type)->name, result);
+						string_to_npvariant (Type::Find (moonlight_type)->GetName (), result);
 						break;
 				}
 			}
@@ -2631,7 +2631,7 @@ _get_dependency_property (DependencyObject *obj, char *attrname)
 		Type *type = Type::Find (type_name);
 
 		if (type != NULL)
-			p = DependencyProperty::GetDependencyProperty (type->type, attrname);
+			p = DependencyProperty::GetDependencyProperty (type->GetKind (), attrname);
 
 		g_free (type_name);
 	}
@@ -2675,7 +2675,7 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *prop,
 			break;
 		default:
 			d(printf ("unhandled object type %d - %s in do.set_property\n",
-				  obj->moonlight_type, Type::Find (obj->moonlight_type)->name));
+				  obj->moonlight_type, Type::Find (obj->moonlight_type)->GetName ()));
 			w(printf ("unhandled object type in do.set_property\n"));
 			return true;
 		}
