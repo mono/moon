@@ -125,8 +125,11 @@ class TextBuffer {
 		char *dest, *src;
 		int left;
 		
-		if (length == 0 || start >= len || (start + length) > len)
+		if (length == 0 || start >= len)
 			return;
+		
+		if (start + length > len)
+			length = len - start;
 		
 		src = UNICODE_OFFSET (text, start + length);
 		dest = UNICODE_OFFSET (text, start);
@@ -194,17 +197,14 @@ class TextBuffer {
 	
 	void Replace (int start, int length, const gunichar *str, int count)
 	{
+		char *dest, *src;
 		int beyond;
 		
-		if (start > len) {
-			g_warning ("TextBuffer::Replace() start out of range");
+		if (start > len)
 			return;
-		}
 		
-		if (start + length > len) {
-			g_warning ("TextBuffer::Replace() length out of range");
-			return;
-		}
+		if (start + length > len)
+			length = len - start;
 		
 		// Check for the easy cases first...
 		if (length == 0) {
@@ -224,7 +224,9 @@ class TextBuffer {
 		beyond = len - (start + length);
 		
 		// shift all chars beyond position (@start + length) into position...
-		memmove (UNICODE_OFFSET (text, start + count), UNICODE_OFFSET (text, start + length), UNICODE_LEN (beyond + 1));
+		dest = UNICODE_OFFSET (text, start + count);
+		src = UNICODE_OFFSET (text, start + length);
+		memmove (dest, src, UNICODE_LEN (beyond + 1));
 		
 		// copy @count chars of @str into our buffer at position @start
 		memcpy (UNICODE_OFFSET (text, start), str, UNICODE_LEN (count));
