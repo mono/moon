@@ -1391,6 +1391,8 @@ PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 	//		  (reason == NPRES_NETWORK_ERR ? "network error" : "other error")));
 	//}
 	
+	Deployment::SetCurrent (deployment);
+	
 	if (notify && notify->pdata && IS_NOTIFY_DOWNLOADER (notify)) {
 		Downloader *dl = (Downloader *) notify->pdata;
 
@@ -1414,6 +1416,10 @@ PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 	
 	if (notify)
 		delete notify;
+		
+#if SANITY
+	Deployment::SetCurrent (NULL);
+#endif
 }
 
 void

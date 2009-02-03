@@ -1,5 +1,13 @@
 2009-02-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* plugin.cpp: PluginInstance::UrlNotify: We need to set the
+	  current deployment here.
+
+	* plugin-glue.cpp: NPP_Destroy: We need to set the current
+	  deployment here.
+
+2009-02-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* plugin-class.cpp: Use Type::GetName () instead of accessing
 	  the field directly.
 
