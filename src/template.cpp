@@ -185,9 +185,9 @@ XamlTemplateBinding::Attach (DependencyObject *source)
 		return NULL;
 	}
 
-	printf ("TemplateBinding attaching %s.%s -> %s.%s\n",
-		source->GetTypeName(), sourceProperty->GetName(),
-		target->GetTypeName(), targetProperty->GetName());
+// 	printf ("TemplateBinding attaching %s.%s -> %s.%s\n",
+// 		source->GetTypeName(), sourceProperty->GetName(),
+// 		target->GetTypeName(), targetProperty->GetName());
 
 	return new TemplateBinding (source, sourceProperty,
 				    target, targetProperty);
