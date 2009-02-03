@@ -1,3 +1,24 @@
+2009-02-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBox::OnPropertyChanged): Set the default
+	SelectionBackground and SelectionForeground brushes if
+	SelectionLength gets to be >0.
+	(TextBox::TextBox): Don't set them here. Initialize a new state
+	variable, cursor_column to 0.
+	(TextBox::CursorDown): Update cursor_column and fix some
+	inconsistencies with Microsoft's logic. Renamed and c++'ified from
+	move_down().
+	(TextBox::CursorUp): Same idea here.
+	(TextBox::CursorNextWord): Renamed/c++'ified from next_word().
+	(TextBox::CursorPrevWord): Same idea.
+	(TextBox::KeyPress*Down): Save/Restore cursor_column state after
+	updating SelectionStart/Length properties.
+	(TextBox::KeyPress*Up): Same.
+	(TextBox::KeyPressHome): We can set cursor_column to 0 here.
+	(TextBox::OnPropertyChanged): If Text, SelectedText,
+	SelectionStart or SelectionLength chanegs, we need to reset
+	cursor_column to -1 (aka "unknown").
+
 2009-02-03  Larry Ewing  <lewing@novell.com>
 
 	* grid.cpp (Grid::ArrangeOverride): remove a bunch of the old code
@@ -5,7 +26,7 @@
 	Handle the empty row/col case specially.
 
 	* usercontrol.cpp: revert accicdental diabling (for now).
-	
+
 2009-02-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBuffer::Replace): Do the right thing if length

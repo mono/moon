@@ -278,23 +278,11 @@ TextBox::TextBox ()
 	emit = NOTHING_CHANGED;
 	selection_anchor = 0;
 	selection_cursor = 0;
+	cursor_column = 0;
 	setvalue = true;
 	focused = false;
 	view = NULL;
 	maxlen = 0;
-	
-#if 1
-	// Okay, so these values probably come from the theme because
-	// by default they are supposed to be null according to the
-	// unit tests.
-	Brush *brush = new SolidColorBrush ("#FF444444");
-	SetValue (TextBox::SelectionBackgroundProperty, Value (brush));
-	brush->unref ();
-	
-	brush = new SolidColorBrush ("#FFFFFFFF");
-	SetValue (TextBox::SelectionForegroundProperty, Value (brush));
-	brush->unref ();
-#endif
 }
 
 TextBox::~TextBox ()
@@ -318,16 +306,26 @@ TextBox::~TextBox ()
 #define IsEOL(c) ((c) == '\r' || (c) == '\n')
 
 static int
-move_down (TextBuffer *buffer, int cursor, int n_lines)
+begin_line (TextBuffer *buffer, int cursor)
 {
-	int column, cur, n = 0;
+	int cur = cursor;
 	
-	// first find out what our character offset is in the current line
-	cur = cursor;
 	while (cur > 0 && !IsEOL (buffer->text[cur - 1]))
 		cur--;
 	
-	column = cursor - cur;
+	return cur;
+}
+
+int
+TextBox::CursorDown (int cursor, int n_lines)
+{
+	int line_start = begin_line (buffer, cursor);
+	int cur, n = 0;
+	
+	// first find out what our character offset is in the current line
+	if (cursor_column == -1)
+		cursor_column = cursor - line_start;
+	
 	cur = cursor;
 	
 	// skip ahead the number of requested lines
@@ -339,35 +337,44 @@ move_down (TextBuffer *buffer, int cursor, int n_lines)
 			break;
 		
 		if (buffer->text[cur] == '\r' && buffer->text[cur + 1] == '\n')
+			cur += 2;
+		else
 			cur++;
 		
-		cur++;
+		line_start = cur;
 		n++;
 	}
 	
-	if (n == n_lines) {
-		// go forward until we're at the same character offset
-		for (n = 0; n < column && cur < buffer->len; n++) {
-			if (IsEOL (buffer->text[cur]))
-				break;
-			cur++;
-		}
+	// if we are doing a PageDown and didn't manage to go down any
+	// lines, go to the end of the buffer and update our
+	// cursor_column as well.
+	if (n == 0 && n_lines > 1) {
+		cursor_column = cur - line_start;
+		return cur;
+	}
+	
+	// go forward until we're at the same character offset
+	cur = line_start;
+	for (n = 0; n < cursor_column && cur < buffer->len; n++) {
+		if (IsEOL (buffer->text[cur]))
+			break;
+		cur++;
 	}
 	
 	return cur;
 }
 
-static int
-move_up (TextBuffer *buffer, int cursor, int n_lines)
+int
+TextBox::CursorUp (int cursor, int n_lines)
 {
-	int column, cur, n = 0;
+	int line_start = begin_line (buffer, cursor);
+	int cur, n = 0;
 	
 	// first find out what our character offset is in the current line
-	cur = cursor;
-	while (cur > 0 && !IsEOL (buffer->text[cur - 1]))
-		cur--;
+	if (cursor_column == -1)
+		cursor_column = cursor - line_start;
 	
-	column = cursor - cur;
+	cur = line_start;
 	
 	// go back the number of requested lines
 	do {
@@ -375,21 +382,32 @@ move_up (TextBuffer *buffer, int cursor, int n_lines)
 			break;
 		
 		if (cur >= 2 && buffer->text[cur - 2] == '\r' && buffer->text[cur - 1] == '\n')
+			cur -= 2;
+		else
 			cur--;
-		cur--;
+		
 		n++;
 		
 		while (cur > 0 && !IsEOL (buffer->text[cur - 1]))
 			cur--;
+		
+		line_start = cur;
 	} while (n < n_lines);
 	
-	if (n == n_lines) {
-		// go forward until we're at the same character column
-		for (n = 0; n < column && cur < buffer->len; n++) {
-			if (IsEOL (buffer->text[cur]))
-				break;
-			cur++;
-		}
+	// if we are doing a PageUp and didn't manage to go up any
+	// lines, go to position 0 and update our cursor_column as
+	// well.
+	if (n == 0 && n_lines > 1) {
+		cursor_column = 0;
+		return 0;
+	}
+	
+	// go forward until we're at the same character column
+	cur = line_start;
+	for (n = 0; n < cursor_column && cur < buffer->len; n++) {
+		if (IsEOL (buffer->text[cur]))
+			break;
+		cur++;
 	}
 	
 	return cur;
@@ -413,8 +431,8 @@ char_class (gunichar c)
 	return CharClassUnknown;
 }
 
-static int
-next_word (TextBuffer *buffer, int cursor)
+int
+TextBox::CursorNextWord (int cursor)
 {
 	int i, lf, cr = cursor;
 	CharClass cc;
@@ -450,8 +468,8 @@ next_word (TextBuffer *buffer, int cursor)
 	return i;
 }
 
-static int
-prev_word (TextBuffer *buffer, int cursor)
+int
+TextBox::CursorPrevWord (int cursor)
 {
 	int i, cr, lf = cursor - 1;
 	CharClass cc;
@@ -511,7 +529,7 @@ TextBox::KeyPressBackSpace (GdkModifierType modifiers)
 		cursor = start;
 	} else if ((modifiers & GDK_CONTROL_MASK) != 0) {
 		// Ctrl+BackSpace: delete the word ending at the cursor
-		cur = prev_word (buffer, cursor);
+		cur = CursorPrevWord (cursor);
 		
 		if (cur < cursor) {
 			buffer->Cut (cur, cursor - cur);
@@ -564,7 +582,7 @@ TextBox::KeyPressDelete (GdkModifierType modifiers)
 		cursor = start;
 	} else if ((modifiers & GDK_CONTROL_MASK) != 0) {
 		// Ctrl+Delete: delete the word starting at the cursor
-		cur = next_word (buffer, cursor);
+		cur = CursorNextWord (cursor);
 		
 		if (cur > cursor) {
 			buffer->Cut (cursor, cur - cursor);
@@ -595,12 +613,14 @@ TextBox::KeyPressPageDown (GdkModifierType modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
+	int column;
 	
 	if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK)) != 0)
 		return;
 	
 	// move the cursor down one page from its current position
-	cursor = move_down (buffer, cursor, 8);
+	cursor = CursorDown (cursor, 8);
+	column = cursor_column;
 	
 	if ((modifiers & GDK_SHIFT_MASK) == 0) {
 		// clobber the selection
@@ -614,6 +634,7 @@ TextBox::KeyPressPageDown (GdkModifierType modifiers)
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
+		cursor_column = column;
 	}
 }
 
@@ -622,12 +643,14 @@ TextBox::KeyPressPageUp (GdkModifierType modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
+	int column;
 	
 	if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK)) != 0)
 		return;
 	
 	// move the cursor up one page from its current position
-	cursor = move_up (buffer, cursor, 8);
+	cursor = CursorUp (cursor, 8);
+	column = cursor_column;
 	
 	if ((modifiers & GDK_SHIFT_MASK) == 0) {
 		// clobber the selection
@@ -641,6 +664,67 @@ TextBox::KeyPressPageUp (GdkModifierType modifiers)
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
+		cursor_column = column;
+	}
+}
+
+void
+TextBox::KeyPressDown (GdkModifierType modifiers)
+{
+	int anchor = selection_anchor;
+	int cursor = selection_cursor;
+	int column;
+	
+	if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK)) != 0)
+		return;
+	
+	// move the cursor down by one line from its current position
+	cursor = CursorDown (cursor, 1);
+	column = cursor_column;
+	
+	if ((modifiers & GDK_SHIFT_MASK) == 0) {
+		// clobber the selection
+		anchor = cursor;
+	}
+	
+	// check to see if selection has changed
+	if (selection_anchor != anchor || selection_cursor != cursor) {
+		SetSelectionLength (abs (cursor - anchor));
+		SetSelectionStart (MIN (anchor, cursor));
+		selection_anchor = anchor;
+		selection_cursor = cursor;
+		emit |= SELECTION_CHANGED;
+		cursor_column = column;
+	}
+}
+
+void
+TextBox::KeyPressUp (GdkModifierType modifiers)
+{
+	int anchor = selection_anchor;
+	int cursor = selection_cursor;
+	int column;
+	
+	if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK)) != 0)
+		return;
+	
+	// move the cursor up by one line from its current position
+	cursor = CursorUp (cursor, 1);
+	column = cursor_column;
+	
+	if ((modifiers & GDK_SHIFT_MASK) == 0) {
+		// clobber the selection
+		anchor = cursor;
+	}
+	
+	// check to see if selection has changed
+	if (selection_anchor != anchor || selection_cursor != cursor) {
+		SetSelectionLength (abs (cursor - anchor));
+		SetSelectionStart (MIN (anchor, cursor));
+		selection_anchor = anchor;
+		selection_cursor = cursor;
+		emit |= SELECTION_CHANGED;
+		cursor_column = column;
 	}
 }
 
@@ -674,6 +758,7 @@ TextBox::KeyPressHome (GdkModifierType modifiers)
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
+		cursor_column = 0;
 	}
 }
 
@@ -721,7 +806,7 @@ TextBox::KeyPressRight (GdkModifierType modifiers)
 	
 	if ((modifiers & GDK_CONTROL_MASK) != 0) {
 		// move the cursor to beginning of the next word
-		cursor = next_word (buffer, cursor);
+		cursor = CursorNextWord (cursor);
 	} else {
 		// move the cursor forward one character
 		if (buffer->text[cursor] == '\r' && buffer->text[cursor + 1] == '\n') 
@@ -756,7 +841,7 @@ TextBox::KeyPressLeft (GdkModifierType modifiers)
 	
 	if ((modifiers & GDK_CONTROL_MASK) != 0) {
 		// move the cursor to the beginning of the previous word
-		cursor = prev_word (buffer, cursor);
+		cursor = CursorPrevWord (cursor);
 	} else {
 		// move the cursor backward one character
 		if (cursor >= 2 && buffer->text[cursor - 2] == '\r' && buffer->text[cursor - 1] == '\n')
@@ -764,60 +849,6 @@ TextBox::KeyPressLeft (GdkModifierType modifiers)
 		else if (cursor > 0)
 			cursor--;
 	}
-	
-	if ((modifiers & GDK_SHIFT_MASK) == 0) {
-		// clobber the selection
-		anchor = cursor;
-	}
-	
-	// check to see if selection has changed
-	if (selection_anchor != anchor || selection_cursor != cursor) {
-		SetSelectionLength (abs (cursor - anchor));
-		SetSelectionStart (MIN (anchor, cursor));
-		selection_anchor = anchor;
-		selection_cursor = cursor;
-		emit |= SELECTION_CHANGED;
-	}
-}
-
-void
-TextBox::KeyPressDown (GdkModifierType modifiers)
-{
-	int anchor = selection_anchor;
-	int cursor = selection_cursor;
-	
-	if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK)) != 0)
-		return;
-	
-	// move the cursor down by one line from its current position
-	cursor = move_down (buffer, cursor, 1);
-	
-	if ((modifiers & GDK_SHIFT_MASK) == 0) {
-		// clobber the selection
-		anchor = cursor;
-	}
-	
-	// check to see if selection has changed
-	if (selection_anchor != anchor || selection_cursor != cursor) {
-		SetSelectionLength (abs (cursor - anchor));
-		SetSelectionStart (MIN (anchor, cursor));
-		selection_anchor = anchor;
-		selection_cursor = cursor;
-		emit |= SELECTION_CHANGED;
-	}
-}
-
-void
-TextBox::KeyPressUp (GdkModifierType modifiers)
-{
-	int anchor = selection_anchor;
-	int cursor = selection_cursor;
-	
-	if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK)) != 0)
-		return;
-	
-	// move the cursor up by one line from its current position
-	cursor = move_up (buffer, cursor, 1);
 	
 	if ((modifiers & GDK_SHIFT_MASK) == 0) {
 		// clobber the selection
@@ -1170,6 +1201,7 @@ void
 TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
 	TextBoxModelChangeType changed = TextBoxModelChangedNothing;
+	DependencyProperty *prop;
 	bool invalidate = false;
 	
 	if (args->property == Control::FontFamilyProperty) {
@@ -1225,12 +1257,31 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		}
 		
 		changed = TextBoxModelChangedSelection;
+		cursor_column = -1;
 		
 		// update SelectedText
 		SyncSelectedText ();
 	} else if (args->property == TextBox::SelectionLengthProperty) {
 		selection_cursor = selection_anchor + args->new_value->AsInt32 ();
 		changed = TextBoxModelChangedSelection;
+		cursor_column = -1;
+		
+		// set some default selection brushes if unset
+		if (selection_cursor != selection_anchor) {
+			Brush *brush;
+			
+			if (!GetSelectionBackground ()) {
+				brush = new SolidColorBrush ("#FF444444");
+				SetSelectionBackground (brush);
+				brush->unref ();
+			}
+			
+			if (!GetSelectionForeground ()) {
+				brush = new SolidColorBrush ("#FFFFFFFF");
+				SetSelectionForeground (brush);
+				brush->unref ();
+			}
+		}
 		
 		// update SelectedText
 		SyncSelectedText ();
@@ -1259,19 +1310,19 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		changed = TextBoxModelChangedTextWrapping;
 	} else if (args->property == TextBox::HorizontalScrollBarVisibilityProperty) {
 		invalidate = true;
+		
 		// XXX more crap because these aren't templatebound.
 		if (contentElement) {
-			DependencyProperty* p = contentElement->GetDependencyProperty ("VerticalScrollBarVisibility");
-			if (p)
-				contentElement->SetValue (p, GetValue (TextBox::VerticalScrollBarVisibilityProperty));
+			if ((prop = contentElement->GetDependencyProperty ("VerticalScrollBarVisibility")))
+				contentElement->SetValue (prop, GetValue (TextBox::VerticalScrollBarVisibilityProperty));
 		}
 	} else if (args->property == TextBox::VerticalScrollBarVisibilityProperty) {
 		invalidate = true;
-
+		
+		// XXX more crap because these aren't templatebound.
 		if (contentElement) {
-			DependencyProperty* p = contentElement->GetDependencyProperty ("HorizontalScrollBarVisibility");
-			if (p)
-				contentElement->SetValue (p, GetValue (TextBox::HorizontalScrollBarVisibilityProperty));
+			if ((prop = contentElement->GetDependencyProperty ("HorizontalScrollBarVisibility")))
+				contentElement->SetValue (prop, GetValue (TextBox::HorizontalScrollBarVisibilityProperty));
 		}
 	}
 	
@@ -1366,10 +1417,11 @@ TextBox::SelectAll ()
 // TextBoxView
 //
 
-#define CURSOR_ON_MULTIPLIER 2
-#define CURSOR_OFF_MULTIPLIER 1
-#define CURSOR_DELAY_MULTIPLIER 3
-#define CURSOR_DIVIDER 3
+#define CURSOR_BLINK_TIMEOUT_BASE     900
+#define CURSOR_BLINK_ON_MULTIPLIER    2
+#define CURSOR_BLINK_OFF_MULTIPLIER   1
+#define CURSOR_BLINK_DELAY_MULTIPLIER 3
+#define CURSOR_BLINK_DIVIDER          3
 
 TextBoxView::TextBoxView ()
 {
@@ -1405,7 +1457,7 @@ TextBoxView::blink (void *user_data)
 void
 TextBoxView::ConnectBlinkTimeout (guint multiplier)
 {
-	blink_timeout = g_timeout_add (1000 * multiplier / CURSOR_DIVIDER, TextBoxView::blink, this);
+	blink_timeout = g_timeout_add (CURSOR_BLINK_TIMEOUT_BASE * multiplier / CURSOR_BLINK_DIVIDER, TextBoxView::blink, this);
 }
 
 void
@@ -1423,10 +1475,10 @@ TextBoxView::Blink ()
 	guint multiplier;
 	
 	if (cursor_visible) {
-		multiplier = CURSOR_OFF_MULTIPLIER;
+		multiplier = CURSOR_BLINK_OFF_MULTIPLIER;
 		HideCursor ();
 	} else {
-		multiplier = CURSOR_ON_MULTIPLIER;
+		multiplier = CURSOR_BLINK_ON_MULTIPLIER;
 		ShowCursor ();
 	}
 	
@@ -1439,7 +1491,7 @@ void
 TextBoxView::DelayCursorBlink ()
 {
 	DisconnectBlinkTimeout ();
-	ConnectBlinkTimeout (CURSOR_DELAY_MULTIPLIER);
+	ConnectBlinkTimeout (CURSOR_BLINK_DELAY_MULTIPLIER);
 	UpdateCursor (true);
 	ShowCursor ();
 }
@@ -1448,7 +1500,7 @@ void
 TextBoxView::BeginCursorBlink ()
 {
 	if (blink_timeout == 0) {
-		ConnectBlinkTimeout (CURSOR_ON_MULTIPLIER);
+		ConnectBlinkTimeout (CURSOR_BLINK_ON_MULTIPLIER);
 		ShowCursor ();
 	}
 }

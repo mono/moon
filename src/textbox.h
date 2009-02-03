@@ -85,6 +85,7 @@ class TextBox : public Control, public ITextSource {
 	TextFontDescription *font;
 	int selection_anchor;
 	int selection_cursor;
+	int cursor_column;
 	TextBuffer *buffer;
 	TextBoxView *view;
 	int maxlen;
@@ -116,6 +117,11 @@ class TextBox : public Control, public ITextSource {
 	static void key_up (EventObject *sender, EventArgs *args, void *closure);
 	void OnKeyDown (KeyEventArgs *args);
 	void OnKeyUp (KeyEventArgs *args);
+	
+	int CursorDown (int cursor, int n_lines);
+	int CursorUp (int cursor, int n_lines);
+	int CursorNextWord (int cursor);
+	int CursorPrevWord (int cursor);
 	
  protected:
 	void KeyPressUnichar (gunichar c);
@@ -338,7 +344,7 @@ class TextBoxView : public FrameworkElement {
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual Size MeasureOverride (Size availableSize);
 	virtual Size ArrangeOverride (Size finalSize);
-
+	
 	//
 	// Methods
 	//
