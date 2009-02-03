@@ -27,7 +27,6 @@ typedef DependencyObject *create_inst_func (void);
 
 class Type {
 friend class DependencyProperty; // TODO: emove this and fix the code calling into our private members.
-friend class Types; // TODO: Remove this too.
 public:
 	enum Kind {
 		// START_MANAGED_MAPPING
@@ -302,14 +301,15 @@ public:
 	int GetEventCount () { return total_event_count; }
 	
 	~Type ();
+	Type (Type::Kind type, Type::Kind parent, bool value_type, const char *name, 
+		const char *kindname, int event_count, int total_event_count, const char **events, 
+		create_inst_func *create_inst, const char *content_property);
+	
 	
 	Type *Clone ();
 	
 private:
 	Type () {}
-	Type (Type::Kind type, Type::Kind parent, bool value_type, const char *name, 
-		const char *kindname, int event_count, int total_event_count, const char **events, 
-		create_inst_func *create_inst, const char *content_property);
 	
 	Type::Kind type; // this type
 	Type::Kind parent; // parent type, INVALID if no parent

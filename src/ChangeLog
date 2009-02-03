@@ -1,5 +1,11 @@
 2009-02-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* type.h:
+	* type.cpp:
+	* type.h.in: Type: don't make Types a friend class of Type.
+
+2009-02-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* animation.h:
 	* animation.cpp: Remove animation_init, it's empty.
 

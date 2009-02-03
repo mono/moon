@@ -332,7 +332,7 @@ Types::Find (const char *name)
 		if (i == Type::LASTTYPE)
 			continue;
 			
-		if (!g_strcasecmp (types [i]->name, name))
+		if (!g_strcasecmp (types [i]->GetName (), name))
 			return types [i];
 	}
 
@@ -342,28 +342,15 @@ Types::Find (const char *name)
 Type::Kind
 Types::RegisterType (const char *name, void *gc_handle, Type::Kind parent)
 {
-	Type *type = new Type ();
 	Type::Kind type_id = (Type::Kind) count;
+	Type *type = new Type (type_id, parent, false, g_strdup (name), NULL, 0, Find (parent)->GetEventCount (), NULL, NULL, NULL);
 	
-	//printf ("Types::RegisterType (%s, %p, %i (%s)). this: %p, size: %i, count: %i\n", name, gc_handle, parent, Type::Find (this, parent) ? Type::Find (this, parent)->name : NULL, this, size, count);
+	// printf ("Types::RegisterType (%s, %p, %i (%s)). this: %p, size: %i, count: %i\n", name, gc_handle, parent, Type::Find (this, parent) ? Type::Find (this, parent)->name : NULL, this, size, count);
 	
 	EnsureSize (type_id + 1);
 
 	count++;
 	
-	type->type = type_id;
-	type->parent = parent;
-	type->value_type = false;
-	type->name = g_strdup (name);
-	type->kindname = NULL;
-	type->event_count = 0;
-	type->total_event_count = Type::Find(parent)->GetEventCount();
-	type->events = NULL;
-	type->create_inst = NULL;
-	type->content_property = NULL;
-	type->properties = NULL;
-	type->custom_properties_hash = NULL;
-	type->custom_properties = NULL;
 	types [type_id] = type;
 	
 	return type_id;
