@@ -152,6 +152,7 @@ static struct env_options debugs[] = {
 	{ "media",             RUNTIME_DEBUG_MEDIA,            true },
 	{ "mediaelement",      RUNTIME_DEBUG_MEDIAELEMENT,     true },
 	{ "mediaelement-ex",   RUNTIME_DEBUG_MEDIAELEMENT_EX,  true },
+	{ "msi",	       RUNTIME_DEBUG_MSI,	       true },
 	{ "buffering",         RUNTIME_DEBUG_BUFFERING,        true },
 	{ "asf",               RUNTIME_DEBUG_ASF,              true },
 	{ "playlist",          RUNTIME_DEBUG_PLAYLIST,         true },

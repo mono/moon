@@ -109,8 +109,9 @@ enum RuntimeDebugFlags {
 	RUNTIME_DEBUG_PLAYLIST_WARN     = 1 << 28,
 	RUNTIME_DEBUG_TEXT              = 1 << 29,
 	RUNTIME_DEBUG_XAML              = 1 << 30,
-	RUNTIME_DEBUG_DEPLOYMENT        = 1 << 31,
+	RUNTIME_DEBUG_DEPLOYMENT        = 1ULL << 31,
 	/* Add more as RUNTIME_DEBUG_XXX = 1ULL << 32, */
+	RUNTIME_DEBUG_MSI		= 1ULL << 32,
 };
 
 extern guint64 debug_flags;

@@ -1,3 +1,8 @@
+2009-02-03  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* debug.h:
+	* runtime.h|runtime.cpp: new LOG_MSI macro.
+
 2009-02-03  Fernando Herrera  <fherrera@novell.com>
 
 	* runtime.cpp:
