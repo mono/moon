@@ -90,7 +90,7 @@ namespace System.Windows.Controls
 		
 		public ComboBox ()
 		{
-			
+			DefaultStyleKey = typeof (ComboBox);
 		}
 
 		#region Property Changed Handlers
