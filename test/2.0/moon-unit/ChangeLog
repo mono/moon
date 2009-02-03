@@ -1,3 +1,8 @@
+2009-02-03  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Media/VisualTreeHelperTest.cs: Add tests for
+	  hittesting. Currently ignored.
+
 2009-02-03  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows/SetterBaseCollectionTest.cs:
