@@ -1,3 +1,11 @@
+2009-02-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* style.cpp: Remove extra logic and comment the main "bad" hack
+	still required not to cause regressions. Affected test cases
+	will marked as known issues until the XAML parser issue (which
+	is adding elements to collections before setting their properties)
+	is fixed.
+
 2009-02-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* window-gtk.cpp: Add missing Deployment::SetCurrent calls.

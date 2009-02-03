@@ -31,9 +31,7 @@ void
 Style::Seal ()
 {
 	SetIsSealed (true);
-	SetterBaseCollection *c = GetSetters ();
-	if (c->GetCount () > 0)
-		c->Seal ();
+	GetSetters ()->Seal ();
 }
 
 SetterBaseCollection::SetterBaseCollection ()
@@ -70,8 +68,11 @@ SetterBaseCollection::AddedToCollection (Value *value, MoonError *error)
 
 	SetterBase *setter = value->AsSetterBase ();
 	setter->SetAttached (true);
-	
-	if (style && style->GetIsSealed ())
+
+	// FIXME: the next (non-comment) line is an ugly HACK which often works since it avoid
+	// sealing the collection when it's called by the XAML parser (which is settings 
+	// properties after adding the element to collection, which seals it)
+	if (!style || style->GetIsSealed ())
 		setter->Seal ();
 
 	return DependencyObjectCollection::AddedToCollection (value, error);
@@ -99,10 +100,6 @@ SetterBaseCollection::ValidateSetter (Value *value, MoonError *error)
 		SetterBase *s = value->AsSetterBase ();
 		if (s->GetAttached ()) {
 			MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Setter is currently attached to another style");
-			return false;
-		}
-		if (s->GetIsSealed ()) {
-			MoonError::FillIn (error, MoonError::EXCEPTION, "Cannot reuse a setter after it has been sealed");
 			return false;
 		}
 	}
