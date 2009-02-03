@@ -622,10 +622,10 @@ FrameworkElement::ArrangeOverride (Size finalSize)
 		child->Arrange (childRect);
 		arranged = child->GetRenderSize ();
 
-		if (GetHorizontalAlignment () == HorizontalAlignmentStretch)
+		if (GetHorizontalAlignment () == HorizontalAlignmentStretch || !isnan (GetWidth ()))
 			arranged.width = MAX (arranged.width, finalSize.width);
-
-		if (GetVerticalAlignment () == VerticalAlignmentStretch)
+		    
+		if (GetVerticalAlignment () == VerticalAlignmentStretch || !isnan (GetHeight()))
 			arranged.height = MAX (arranged.height, finalSize.height);
 	}
 

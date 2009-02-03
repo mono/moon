@@ -53,6 +53,7 @@ UserControl::OnPropertyChanged (PropertyChangedEventArgs *args)
 Size
 UserControl::MeasureOverride (Size availableSize)
 {
+	return FrameworkElement::MeasureOverride (availableSize);
 	Size desired = Size (0,0);
 	Size specified = Size (GetWidth (), GetHeight ());
 
@@ -82,6 +83,8 @@ UserControl::MeasureOverride (Size availableSize)
 Size
 UserControl::ArrangeOverride (Size finalSize)
 {
+	return FrameworkElement::ArrangeOverride (finalSize);
+	
 	Thickness border = *GetPadding () + *GetBorderThickness ();
 
 	Size specified = Size (GetWidth (), GetHeight ());
@@ -110,10 +113,10 @@ UserControl::ArrangeOverride (Size finalSize)
 		child->Arrange (childRect);
 		arranged = child->GetRenderSize ();
 
-		if (GetHorizontalAlignment () == HorizontalAlignmentStretch)
+		if (GetHorizontalAlignment () == HorizontalAlignmentStretch || !isnan (GetWidth ()))
 			arranged.width = MAX (arranged.width, finalSize.width);
-
-		if (GetVerticalAlignment () == VerticalAlignmentStretch)
+		    
+		if (GetVerticalAlignment () == VerticalAlignmentStretch || !isnan (GetHeight()))
 			arranged.height = MAX (arranged.height, finalSize.height);
 	}
 

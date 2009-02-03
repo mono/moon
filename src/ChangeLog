@@ -1,3 +1,9 @@
+2009-02-03  Larry Ewing  <lewing@novell.com>
+
+	* border.cpp:
+	* usercontrol.cpp:
+	* frameworkelement.cpp: handle the specified size case as well.
+
 2009-02-03  Jb Evain  <jbevain@novell.com>
 
 	* xaml.cpp (PrimitiveNamespace::FindElement): correctly retrieve
