@@ -1,3 +1,12 @@
+2009-02-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Controls/SliderTest.cs: Check XAML-parsed 
+	properties directly, because RangeBaseTest.CheckDefaultProperties
+	needs to call it's base class.
+	* System.Windows.Controls.Primitives/RangeBaseTest.cs: Call 
+	base class to chain the default values checks. Remove #if false
+	on some (weird but SL2 final confirmed) behaviors.
+
 2009-02-03  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Media/VisualTreeHelperTest.cs: Add tests for

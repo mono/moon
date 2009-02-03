@@ -201,7 +201,9 @@ namespace MoonTest.System.Windows.Controls {
        <Slider/>
 </Canvas>");
 			Slider s = c.Children [0] as Slider;
-			CheckDefaultProperties (s, 10);
+			Assert.IsFalse (s.IsDirectionReversed, "IsDirectionReversed");
+			Assert.IsFalse (s.IsFocused, "IsFocused");
+			Assert.AreEqual (Orientation.Horizontal, s.Orientation, "Orientation");
 
 			// default properties on Control
 			Assert.IsNull (s.Background, "Background");

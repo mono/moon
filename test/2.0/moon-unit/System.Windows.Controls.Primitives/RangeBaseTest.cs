@@ -74,14 +74,11 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 		{
 			ConcreteRange rb = new ConcreteRange ();
 			CheckDefaultProperties (rb);
-			// default properties on Control...
-			ControlTest.CheckDefaultProperties (rb);
 		}
 
 		static public void CheckDefaultProperties (RangeBase rb)
 		{
 			CheckDefaultProperties (rb, 1.0);
-			ControlTest.CheckDefaultProperties (rb, true, null);
 		}
 
 		static public void CheckDefaultProperties (RangeBase rb, double maximum)
@@ -92,6 +89,7 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 			Assert.AreEqual (maximum, rb.Maximum, "Maximum");
 			Assert.AreEqual (0.0, rb.Minimum, "Minimum");
 			Assert.AreEqual (0.0, rb.Value, "Value");
+			ControlTest.CheckDefaultProperties (rb, true, null);
 		}
 
 		[TestMethod]
@@ -214,11 +212,10 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 
 			Assert.AreEqual (1.0d, rb.Maximum, "Maximum==1");
 			rb.Minimum = -1000;
-// waiting for 2.0 final controls to see if it's a bug or not
-#if false
+
 			// doing the above changes Maximum from 1.0 to 0.0 ?!?
 			Assert.AreEqual (0.0d, rb.Maximum, "Maximum==0");
-#endif
+
 			rb.Value = Double.MinValue;
 			Assert.AreEqual (rb.Minimum, rb.Value, "MinValue/-1000");
 
@@ -228,10 +225,10 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 
 			rb.Value = 0.0d;
 			Assert.AreEqual (0.0d, rb.Value, "0.0");
-#if false
+
 			rb.Value = Double.MaxValue;
 			Assert.AreEqual (0.0d, rb.Value, "MaxValue/0");
-#endif
+
 			rb.Maximum = 1000;
 			rb.Value = Double.MaxValue;
 			Assert.AreEqual (rb.Maximum, rb.Value, "MaxValue/1000");
