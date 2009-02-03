@@ -8,9 +8,7 @@
  * 
  */
 
-#include "dependencyobject.h"
 #include "popup.h"
-#include "dirty.h"
 #include "runtime.h"
 
 Popup::Popup ()

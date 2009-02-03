@@ -1,3 +1,15 @@
+2009-02-02  Chris Toshok  <toshok@ximian.com>
+
+	* popup.h, popup.cpp: this inherits from FrameworkElement, not
+	DependencyObject.
+
+	* dependencyobject.cpp (dispose_value): this method is doing *way*
+	too much.  we can't just blindly dispose of our values.  they
+	could be shared across multiple elements.  don't even unref them
+	here, as deleting the value does that.
+
+	* type-generated.cpp: regen.
+
 2009-02-02  Larry Ewing  <lewing@novell.com>
 
 	* mediaelement.cpp:

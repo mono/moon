@@ -97,7 +97,7 @@ const int MultiScaleImage::ImageOpenSucceededEvent = 19;
 const int MultiScaleImage::MotionFinishedEvent = 20;
 const int MultiScaleImage::ViewportChangedEvent = 21;
 const int PasswordBox::PasswordChangedEvent = 20;
-const int Popup::IsOpenChangedEvent = 1;
+const int Popup::IsOpenChangedEvent = 16;
 const int Surface::ErrorEvent = 1;
 const int Surface::FullScreenChangeEvent = 2;
 const int Surface::LoadEvent = 3;
@@ -316,7 +316,7 @@ Type type_infos [] = {
 	{ Type::POLYLINE, Type::SHAPE, false, "Polyline", "POLYLINE", 0, 16, NULL, (create_inst_func *) polyline_new, NULL, NULL, NULL, NULL }, 
 	{ Type::POLYLINESEGMENT, Type::PATHSEGMENT, false, "PolyLineSegment", "POLYLINESEGMENT", 0, 1, NULL, (create_inst_func *) poly_line_segment_new, NULL, NULL, NULL, NULL }, 
 	{ Type::POLYQUADRATICBEZIERSEGMENT, Type::PATHSEGMENT, false, "PolyQuadraticBezierSegment", "POLYQUADRATICBEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) poly_quadratic_bezier_segment_new, NULL, NULL, NULL, NULL }, 
-	{ Type::POPUP, Type::DEPENDENCY_OBJECT, false, "Popup", "POPUP", 1, 2, Popup_Events, (create_inst_func *) popup_new, NULL, NULL, NULL, NULL }, 
+	{ Type::POPUP, Type::FRAMEWORKELEMENT, false, "Popup", "POPUP", 1, 17, Popup_Events, (create_inst_func *) popup_new, NULL, NULL, NULL, NULL }, 
 	{ Type::PROGRESSIVESOURCE, Type::FILESOURCE, false, "ProgressiveSource", "PROGRESSIVESOURCE", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::PULSESOURCE, Type::AUDIOSOURCE, false, "PulseSource", "PULSESOURCE", 0, 1, NULL, NULL, NULL, NULL, NULL, NULL }, 
 	{ Type::QUADRATICBEZIERSEGMENT, Type::PATHSEGMENT, false, "QuadraticBezierSegment", "QUADRATICBEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) quadratic_bezier_segment_new, NULL, NULL, NULL, NULL }, 

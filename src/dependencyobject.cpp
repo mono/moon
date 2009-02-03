@@ -1457,6 +1457,8 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 static gboolean
 dispose_value (gpointer key, gpointer value, gpointer data)
 {
+	DependencyObject *_this = (DependencyObject*)data;
+
 	Value *v = (Value *) value;
 	
 	if (!value)
@@ -1467,15 +1469,13 @@ dispose_value (gpointer key, gpointer value, gpointer data)
 		DependencyObject *dob = v->AsDependencyObject();
 		
 		if (dob != NULL) {
-			dob->Dispose (); 
-			// TODO: Confirm that the three next lines are not required (they should be done in the Dispose)
-		
-			// unset its logical parent
-			dob->SetLogicalParent (NULL, NULL);
+			if (_this == dob->GetLogicalParent()) {
+				// unset its logical parent
+				dob->SetLogicalParent (NULL, NULL);
+			}
 
 			// unregister from the existing value
 			dob->RemovePropertyChangeListener ((DependencyObject*)data, NULL);
-			dob->SetSurface (NULL);
 		}
 	}
 	

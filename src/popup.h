@@ -13,13 +13,10 @@
 
 #include <glib.h>
 
-#include "provider.h"
-#include "dependencyproperty.h"
-#include "dependencyobject.h"
-#include "value.h"
+#include "frameworkelement.h"
 
 /*@Namespace=System.Windows.Controls.Primitives*/
-class Popup : public DependencyObject {
+class Popup : public FrameworkElement {
  public:
 	/* @PropertyType=UIElement,GenerateAccessors */
 	static DependencyProperty *ChildProperty;
