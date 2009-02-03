@@ -239,9 +239,9 @@ Types::RegisterStaticDependencyProperties ()
 	MultiScaleImage::ViewportOriginProperty = DependencyProperty::Register (Type::MULTISCALEIMAGE, "ViewportOrigin", new Value (Point(0,0)), Type::POINT);
 	MultiScaleImage::ViewportWidthProperty = DependencyProperty::Register (Type::MULTISCALEIMAGE, "ViewportWidth", new Value (1.0), Type::DOUBLE);
 	MultiScaleSubImage::AspectRatioProperty = DependencyProperty::RegisterFull (Type::MULTISCALESUBIMAGE, "AspectRatio", new Value (1.0), Type::DOUBLE, false, true, false, NULL, NULL);
-	MultiScaleSubImage::OpacityProperty = DependencyProperty::Register (Type::MULTISCALESUBIMAGE, "Opacity", Type::DOUBLE);
-	MultiScaleSubImage::ViewportOriginProperty = DependencyProperty::Register (Type::MULTISCALESUBIMAGE, "ViewportOrigin", Type::POINT);
-	MultiScaleSubImage::ViewportWidthProperty = DependencyProperty::Register (Type::MULTISCALESUBIMAGE, "ViewportWidth", Type::DOUBLE);
+	MultiScaleSubImage::OpacityProperty = DependencyProperty::Register (Type::MULTISCALESUBIMAGE, "Opacity", new Value (1.0), Type::DOUBLE);
+	MultiScaleSubImage::ViewportOriginProperty = DependencyProperty::Register (Type::MULTISCALESUBIMAGE, "ViewportOrigin", new Value (Point(0,0)), Type::POINT);
+	MultiScaleSubImage::ViewportWidthProperty = DependencyProperty::Register (Type::MULTISCALESUBIMAGE, "ViewportWidth", new Value (1.0), Type::DOUBLE);
 	MultiScaleSubImage::ZIndexProperty = DependencyProperty::Register (Type::MULTISCALESUBIMAGE, "ZIndex", Type::INT32);
 	NameScope::NameScopeProperty = DependencyProperty::RegisterFull (Type::NAMESCOPE, "NameScope", NULL, Type::NAMESCOPE, true, false, false, NULL, NULL);
 	ObjectAnimationUsingKeyFrames::KeyFramesProperty = DependencyProperty::Register (Type::OBJECTANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::OBJECTKEYFRAME_COLLECTION);
