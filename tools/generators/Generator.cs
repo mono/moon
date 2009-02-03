@@ -1265,6 +1265,7 @@ class Generator {
 		f ("System.Windows.Thickness", "THICKNESS");
 		f ("System.Windows.CornerRadius", "CORNERRADIUS");
 		f ("System.Windows.Point", "POINT");
+		f ("System.Windows.Size", "SIZE");
 		f ("System.Windows.FontStretch", "FONTSTRETCH");
 		f ("System.Windows.Media.FontFamily", "FONTFAMILY");
 		f ("System.Windows.Markup.XmlLanguage", "XMLLANGUAGE");
