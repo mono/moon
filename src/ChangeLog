@@ -1,5 +1,13 @@
 2009-02-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* namescope.cpp: NamScope::ObjectDestroyedEvent: upon object
+	  destruction the name might not be available anymore, so
+	  loop over the entire hash tables looking for the object to
+	  remove instead of trying to lookup with a null key. Fixes a
+	  crash while running moon-unit.
+
+2009-02-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* xaml.cpp: Use property accessors on Type instead of
 	  accessing the fields.
 

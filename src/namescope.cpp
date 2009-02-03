@@ -45,13 +45,24 @@ NameScope::Dispose ()
 	DependencyObject::Dispose ();
 }
 
+static gboolean
+remove_object_from_namescope (gpointer key, gpointer value, gpointer user_data)
+{
+	return value == user_data;
+}
+
 void
 NameScope::ObjectDestroyedEvent (EventObject *sender, EventArgs *args, gpointer closure)
 {
 	NameScope *ns = (NameScope*)closure;
 	// XXX this method worries me.. using GetName like this.
 	DependencyObject *depobj = (DependencyObject*)sender;
-	g_hash_table_remove (ns->names, depobj->GetName());
+	const char *name = depobj->GetName ();
+	if (name != NULL) {
+		g_hash_table_remove (ns->names, name);
+	} else {
+		g_hash_table_foreach_remove (ns->names, remove_object_from_namescope, depobj);
+	}
 }
 
 void
