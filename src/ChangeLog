@@ -1,5 +1,9 @@
 2009-02-03  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* multiscalesubimage.h: DefaultValues for DPs.
+
+2009-02-03  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* deepzoomimagetilesource.h|cpp:
 	* multiscaleimage.h|cpp:
 	* multiscalesubimage.h|cpp: fill the subimages on MSI

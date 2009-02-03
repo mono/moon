@@ -32,11 +32,11 @@ class MultiScaleSubImage : public DependencyObject {
  public:
 	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,ReadOnly,GenerateGetter */
 	static DependencyProperty *AspectRatioProperty;
- 	/* @PropertyType=double,Version=2.0,GenerateAccessors */
+ 	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateAccessors */
 	static DependencyProperty *OpacityProperty;
-	/* @PropertyType=Point,Version=2.0,GenerateAccessors */
+	/* @PropertyType=Point,DefaultValue=Point(0\,0),Version=2.0,GenerateAccessors */
 	static DependencyProperty *ViewportOriginProperty;
-	/* @PropertyType=double,Version=2.0,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateAccessors */
 	static DependencyProperty *ViewportWidthProperty;
 	/* @PropertyType=gint32,Version=2.0,GenerateAccessors */
 	static DependencyProperty *ZIndexProperty;
