@@ -1,3 +1,9 @@
+2009-02-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (RenderSegment): Extend the selection line
+	Silverlight's TextBox does if the selection crosses over the CRLF
+	sequence at the end of a line.
+
 2009-02-03  Larry Ewing  <lewing@novell.com>
 
 	* border.cpp:

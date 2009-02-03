@@ -76,13 +76,13 @@ TextRun::TextRun (const char *utf8, int len, ITextSource *source, bool selected)
 	this->crlf = 0;
 }
 
-TextRun::TextRun (ITextSource *source, short crlf)
+TextRun::TextRun (ITextSource *source, short crlf, bool selected)
 {
 	// This TextRun will represent a LineBreak
 	TextFontDescription *font = source->FontDescription ();
 	
 	this->font = font->GetFont ();
-	this->selected = false;
+	this->selected = selected;
 	this->source = source;
 	this->text = NULL;
 	this->crlf = crlf;
@@ -139,6 +139,7 @@ class TextLine : public List::Node {
 	double descend;
 	double height;
 	double width;
+	short crlf_selected;
 	short crlf;
 	
 	TextLine ();
@@ -440,6 +441,7 @@ TextLayout::LayoutWrapWithOverflow ()
 			line->width = width;
 			dy += height;
 			
+			line->crlf_selected = run->selected;
 			line->crlf = run->crlf;
 			
 			lines->Append (line);
@@ -635,6 +637,7 @@ TextLayout::LayoutNoWrap ()
 			line->width = width;
 			dy += height;
 			
+			line->crlf_selected = run->selected;
 			line->crlf = run->crlf;
 			
 			lines->Append (line);
@@ -859,6 +862,7 @@ TextLayout::LayoutWrap ()
 			line->width = width;
 			dy += height;
 			
+			line->crlf_selected = run->selected;
 			line->crlf = run->crlf;
 			
 			lines->Append (line);
@@ -1232,7 +1236,7 @@ TextLayout::Layout ()
 }
 
 static inline void
-RenderSegment (cairo_t *cr, const Point &origin, double x0, double y0, TextSegment *segment)
+RenderSegment (cairo_t *cr, const Point &origin, double x0, double y0, TextSegment *segment, bool extend_selection)
 {
 	TextDecorations deco = segment->Decorations ();
 	const gunichar *text = segment->run->text;
@@ -1255,10 +1259,18 @@ RenderSegment (cairo_t *cr, const Point &origin, double x0, double y0, TextSegme
 	
 	if (bg != NULL) {
 		// render the selection background
+		if (extend_selection) {
+			glyph = font->GetGlyphInfo (' ');
+			area.width += glyph->metrics.horiAdvance;
+		}
+		
 		bg->SetupBrush (cr, area);
 		cairo_new_path (cr);
 		cairo_rectangle (cr, area.x, area.y, area.width, area.height);
 		bg->Fill (cr);
+		
+		if (extend_selection)
+			area.width -= glyph->metrics.horiAdvance;
 	}
 	
 	fg->SetupBrush (cr, area);
@@ -1324,6 +1336,7 @@ RenderSegment (cairo_t *cr, const Point &origin, double x0, double y0, TextSegme
 static inline void
 RenderLine (cairo_t *cr, const Point &origin, const Point &position, TextLine *line)
 {
+	bool crlf_selected = line->crlf && line->crlf_selected;
 	TextSegment *segment;
 	double x0, y0;
 	
@@ -1335,7 +1348,7 @@ RenderLine (cairo_t *cr, const Point &origin, const Point &position, TextLine *l
 	
 	while (segment) {
 		cairo_save (cr);
-		RenderSegment (cr, origin, x0, y0, segment);
+		RenderSegment (cr, origin, x0, y0, segment, !segment->next && crlf_selected);
 		x0 += segment->advance;
 		cairo_restore (cr);
 		

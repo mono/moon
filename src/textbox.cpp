@@ -1567,11 +1567,11 @@ append_runs (ITextSource *textbox, List *runs, const gunichar **text, int *lengt
 		
 		// append the LineBreak
 		if (inptr[0] == '\r' && inptr[1] == '\n') {
-			run = new TextRun (textbox, 2);
+			run = new TextRun (textbox, 2, selected);
 			inptr += 2;
 			n += 2;
 		} else {
-			run = new TextRun (textbox, 1);
+			run = new TextRun (textbox, 1, selected);
 			inptr++;
 			n++;
 		}

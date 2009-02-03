@@ -42,7 +42,7 @@ class TextRun : public List::Node {
 	
 	TextRun (const gunichar *ucs4, int len, ITextSource *source, bool selected = false);
 	TextRun (const char *utf8, int len, ITextSource *source, bool selected = false);
-	TextRun (ITextSource *source, short crlf);
+	TextRun (ITextSource *source, short crlf, bool selected = false);
 	
 	virtual ~TextRun ();
 	
