@@ -1402,9 +1402,8 @@ namespace Mono {
 		public extern static void text_box_select (IntPtr instance, int start, int length);
 
 		[DllImport ("moon")]
-		[return: MarshalAs (UnmanagedType.U1)]
-		// bool text_box_select_all (TextBox *instance);
-		public extern static bool text_box_select_all (IntPtr instance);
+		// void text_box_select_all (TextBox *instance);
+		public extern static void text_box_select_all (IntPtr instance);
 
 		[DllImport ("moon")]
 		// TextBox *text_box_new ();
