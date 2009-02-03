@@ -1,3 +1,8 @@
+2009-02-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* xaml.cpp: Use property accessors on Type instead of
+	  accessing the fields.
+
 2009-02-03  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* debug.h:

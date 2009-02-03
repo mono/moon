@@ -648,7 +648,7 @@ class XamlElementInfoNative : public XamlElementInfo {
 	Type *type;
 	
  public:
-	XamlElementInfoNative (Type *t) : XamlElementInfo (t->name, t->type)
+	XamlElementInfoNative (Type *t) : XamlElementInfo (t->GetName (), t->GetKind ())
 	{
 		type = t;
 	}
@@ -660,7 +660,7 @@ class XamlElementInfoNative : public XamlElementInfo {
 
 	const char* GetName ()
 	{
-		return type->name;
+		return type->GetName ();
 	}
 
 	const char* GetContentProperty (XamlParserInfo *p);
@@ -863,7 +863,7 @@ class XNamespace : public XamlNamespace {
 			Type *owner = Type::Find (prop_name [0]);
 
 			if (owner) {
-				DependencyProperty *dep = DependencyProperty::GetDependencyProperty (owner->type, prop_name [1]);
+				DependencyProperty *dep = DependencyProperty::GetDependencyProperty (owner->GetKind (), prop_name [1]);
 				rv = Type::IsSubclassOf (dep->GetPropertyType(), Type::RESOURCE_DICTIONARY);
 			}
 
@@ -2847,7 +2847,7 @@ value_from_str_with_typename (const char *type_name, const char *prop_name, cons
 	if (!t)
 		return false;
 
-	return value_from_str (t->type, prop_name, str, v, sl2);
+	return value_from_str (t->GetKind (), prop_name, str, v, sl2);
 }
 
 bool
@@ -3379,7 +3379,7 @@ XamlElementInstanceNative::CreateItem ()
 					(char *) walk->info->GetContentProperty (parser_info));			
 		}
 
-		if (dep && Type::IsSubclassOf (dep->GetPropertyType(), type->type)) {
+		if (dep && Type::IsSubclassOf (dep->GetPropertyType(), type->GetKind ())) {
 			Value *v = ((DependencyObject * ) walk->GetAsDependencyObject ())->GetValue (dep);
 			if (v) {
 				item = v->AsDependencyObject ();
@@ -3397,7 +3397,7 @@ XamlElementInstanceNative::CreateItem ()
 				item->SetSurface (parser_info->loader->GetSurface ());
 			
 			// in case we must store the collection into the parent
-			if (dep && dep->GetPropertyType() == type->type) {
+			if (dep && dep->GetPropertyType() == type->GetKind ()) {
 				MoonError err;
 				Value item_value (item);
 				if (!((DependencyObject * ) walk->GetAsDependencyObject ())->SetValueWithError (dep, &item_value, &err))
@@ -3744,7 +3744,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 		Type *owner = Type::Find (prop_name [0]);
 
 		if (owner) {
-			DependencyProperty *dep = DependencyProperty::GetDependencyProperty (owner->type, prop_name [1]);
+			DependencyProperty *dep = DependencyProperty::GetDependencyProperty (owner->GetKind (), prop_name [1]);
 
 			g_strfreev (prop_name);
 
@@ -4101,7 +4101,7 @@ start_parse:
 		if (atchname) {
 			Type *attached_type = Type::Find (atchname);
 			if (attached_type)
-				prop = DependencyProperty::GetDependencyProperty (attached_type->type, pname);
+				prop = DependencyProperty::GetDependencyProperty (attached_type->GetKind (), pname);
 		} else {
 			prop = DependencyProperty::GetDependencyProperty (item->info->GetKind (), pname);
 		}
