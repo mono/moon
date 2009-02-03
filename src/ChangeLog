@@ -1,3 +1,8 @@
+2009-02-03  Jb Evain  <jbevain@novell.com>
+
+	* xaml.cpp (PrimitiveNamespace::FindElement): correctly retrieve
+	primitive types.
+
 2009-02-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp: Rewrote selection logic and vastly simplified

@@ -998,13 +998,13 @@ class PrimitiveNamespace : public XamlNamespace {
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el, const char **attr, bool create)
 	{
 		if (!strcmp ("String", el)) {
-			Type* t = Type::Find ("string");
+			Type* t = Type::Find (Type::STRING);
 			return new XamlElementInfoNative (t);
 		} else if (!strcmp ("Int32", el)) {
-			Type* t = Type::Find ("int32");
+			Type* t = Type::Find (Type::INT32);
 			return new XamlElementInfoNative (t);
 		} else if (!strcmp ("Double", el)) {
-			Type* t = Type::Find ("double");
+			Type* t = Type::Find (Type::DOUBLE);
 			return new XamlElementInfoNative (t);
 		}
 
