@@ -1,3 +1,9 @@
+2009-02-02  Chris Toshok  <toshok@ximian.com>
+
+	* enums.cpp (keyboard_navigation_mode_map): add
+	(initialize_enums): add TabNavigation property handling, mapping
+	to keyboard_navigation_mode_map.
+
 2009-02-02  Larry Ewing  <lewing@novell.com>
 
 	* border.cpp:
