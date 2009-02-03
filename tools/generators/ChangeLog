@@ -1,5 +1,9 @@
 2009-02-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* Generator.cs: Fix generator to handle more code.
+
+2009-02-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* Generator.cs: Change static type and dp generation to be
 	  per-deployment.
 

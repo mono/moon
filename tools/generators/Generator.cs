@@ -871,9 +871,9 @@ class Generator {
 					ParseEnum (parent, tokenizer);
 					continue;
 				case "friend":
-					tokenizer.Advance (true);
-					tokenizer.Advance (true);
-					tokenizer.Advance (true);
+					while (!tokenizer.Accept (Token2Type.Punctuation, ";")) {
+						tokenizer.Advance (true);
+					}
 					continue;
 				case "struct":
 				case "class":
@@ -990,6 +990,10 @@ class Generator {
 								if (tokenizer.Accept (Token2Type.Punctuation, "-"))
 									param_value = "-";
 								param_value += tokenizer.GetIdentifier ();
+								if (tokenizer.Accept (Token2Type.Punctuation, ":")) {
+									tokenizer.AcceptOrThrow (Token2Type.Punctuation, ":");
+									param_value += "::" + tokenizer.GetIdentifier ();
+								}
 							}
 						}
 						method.Parameters.Add (parameter);
