@@ -3116,6 +3116,7 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 		*v = new Value (grid_length);
 		break;
 	}
+	case Type::IMAGESOURCE:
 	case Type::BITMAPIMAGE: {
 		BitmapImage *bi = new BitmapImage ();
 

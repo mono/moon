@@ -25,6 +25,16 @@
 	(initialize_enums): add TabNavigation property handling, mapping
 	to keyboard_navigation_mode_map.
 
+2009-02-02  Geoff Norton  <gnorton@novell.com>
+
+	* bitmapimage.h: 
+	* xaml.cpp: Inject ImageSource underneath BitmapImage so that
+	custom xaml that attaches a ImageSource can work.  Every
+	ImageSource is a BitmapImage in SL2
+	* type-generated.cpp:
+	* type.h:
+	* value.h: Regen
+
 2009-02-02  Larry Ewing  <lewing@novell.com>
 
 	* border.cpp:

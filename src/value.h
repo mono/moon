@@ -129,6 +129,7 @@ class IImageConverter;
 class Image;
 class ImageBrush;
 class ImageErrorEventArgs;
+class ImageSource;
 class IMediaDecoder;
 class IMediaDemuxer;
 class IMediaObject;
@@ -431,6 +432,7 @@ public:
 	Image*                         AsImage () { checked_get_subclass (Type::IMAGE, Image) }
 	ImageBrush*                    AsImageBrush () { checked_get_subclass (Type::IMAGEBRUSH, ImageBrush) }
 	ImageErrorEventArgs*           AsImageErrorEventArgs () { checked_get_subclass (Type::IMAGEERROREVENTARGS, ImageErrorEventArgs) }
+	ImageSource*                   AsImageSource () { checked_get_subclass (Type::IMAGESOURCE, ImageSource) }
 	IMediaDecoder*                 AsIMediaDecoder () { checked_get_subclass (Type::IMEDIADECODER, IMediaDecoder) }
 	IMediaDemuxer*                 AsIMediaDemuxer () { checked_get_subclass (Type::IMEDIADEMUXER, IMediaDemuxer) }
 	IMediaObject*                  AsIMediaObject () { checked_get_subclass (Type::IMEDIAOBJECT, IMediaObject) }

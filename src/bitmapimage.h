@@ -16,8 +16,15 @@
 
 #include "dependencyobject.h"
 
+/* @Namespace=System.Windows.Media */
+class ImageSource : public DependencyObject {
+ public:
+	virtual void        SetUriSource (const char *value) = 0;
+	virtual const char* GetUriSource () = 0;
+};
+
 /* @Namespace=System.Windows.Media.Imaging */
-class BitmapImage : public DependencyObject {
+class BitmapImage : public ImageSource {
  protected:
 	virtual ~BitmapImage ();
 
