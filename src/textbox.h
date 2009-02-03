@@ -79,18 +79,18 @@ struct TextSelection {
 /* @Namespace=System.Windows.Controls */
 class TextBox : public Control, public ITextSource {
 	friend class TextBoxView;
-
+	
 	DependencyObject *contentElement;
-
+	
 	TextFontDescription *font;
-	TextSelection selection;
+	int selection_anchor;
+	int selection_cursor;
 	TextBuffer *buffer;
 	TextBoxView *view;
 	int maxlen;
 	
 	int setvalue:1;
 	int focused:1;
-	int cursor:1;
 	int emit:2;
 	
 	// focus in/out events
@@ -145,10 +145,9 @@ class TextBox : public Control, public ITextSource {
 	//
 	// Protected Property Accessors
 	//
-	bool HasSelectedText () { return selection.length > 0; }
-	TextSelection *GetSelection () { return &selection; }
+	bool HasSelectedText () { return selection_cursor != selection_anchor; }
 	TextBuffer *GetBuffer () { return buffer; }
-	int GetCursor () { return selection.start; }
+	int GetCursor () { return selection_cursor; }
 	bool IsFocused () { return focused; }
 	
 	void SetSelectionStart (int start);
@@ -204,9 +203,9 @@ class TextBox : public Control, public ITextSource {
 	//
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	bool SelectAll ();
-	/* @GenerateCBinding,GeneratePInvoke */
 	void Select (int start, int length);
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SelectAll ();
 	
 	//
 	// ITextSource Interface Methods

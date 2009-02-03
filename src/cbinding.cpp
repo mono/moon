@@ -3081,13 +3081,13 @@ text_box_select (TextBox *instance, int start, int length)
 }
 
 
-bool
+void
 text_box_select_all (TextBox *instance)
 {
 	if (instance == NULL)
-		return false;
+		return;
 	
-	return instance->SelectAll ();
+	instance->SelectAll ();
 }
 
 

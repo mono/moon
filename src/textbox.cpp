@@ -243,10 +243,6 @@ class TextBuffer {
 #define SELECTION_CHANGED       (1 << 0)
 #define TEXT_CHANGED            (1 << 1)
 
-// cursor state
-#define SELECTION_BEGIN 0
-#define SELECTION_END   1
-
 TextBox::TextBox ()
 {
 	SetObjectType (Type::TEXTBOX);
@@ -274,20 +270,18 @@ TextBox::TextBox ()
 	font->SetSize (CONTROL_FONT_SIZE);
 	
 	contentElement = NULL;
-
+	
 	buffer = new TextBuffer ();
 	
-	cursor = SELECTION_BEGIN;
 	emit = NOTHING_CHANGED;
-	selection.length = 0;
-	selection.start = 0;
+	selection_anchor = 0;
+	selection_cursor = 0;
 	setvalue = true;
 	focused = false;
 	view = NULL;
 	maxlen = 0;
-	cursor = 0;
 	
-#if 0
+#if 1
 	// Okay, so these values probably come from the theme because
 	// by default they are supposed to be null according to the
 	// unit tests.
@@ -317,7 +311,7 @@ TextBox::~TextBox ()
 	delete font;
 }
 
-#define MY_GDK_ALT_MASK         (GDK_MOD1_MASK | GDK_MOD2_MASK | GDK_MOD3_MASK | GDK_MOD4_MASK | GDK_MOD5_MASK)
+#define MY_GDK_ALT_MASK (GDK_MOD1_MASK | GDK_MOD2_MASK | GDK_MOD3_MASK | GDK_MOD4_MASK | GDK_MOD5_MASK)
 
 #define IsEOL(c) ((c) == '\r' || (c) == '\n')
 
@@ -497,46 +491,52 @@ prev_word (TextBuffer *buffer, int cursor)
 void
 TextBox::KeyPressBackSpace (GdkModifierType modifiers)
 {
-	int length = selection.length;
-	int start = selection.start;
-	int pos;
+	int anchor = selection_anchor;
+	int cursor = selection_cursor;
+	int cur;
 	
 	if ((modifiers & (MY_GDK_ALT_MASK | GDK_SHIFT_MASK)) != 0)
 		return;
 	
-	if (selection.length > 0) {
+	if (cursor != anchor) {
 		// BackSpace w/ active selection: delete the selected text
+		int length = abs (cursor - anchor);
+		int start = MIN (anchor, cursor);
+		
 		buffer->Cut (start, length);
 		emit |= TEXT_CHANGED;
-		length = 0;
+		anchor = start;
+		cursor = start;
 	} else if ((modifiers & GDK_CONTROL_MASK) != 0) {
 		// Ctrl+BackSpace: delete the word ending at the cursor
-		pos = prev_word (buffer, start);
+		cur = prev_word (buffer, cursor);
 		
-		if (pos < start) {
-			buffer->Cut (pos, start - pos);
+		if (cur < cursor) {
+			buffer->Cut (cur, cursor - cur);
 			emit |= TEXT_CHANGED;
-		        start = pos;
+		        anchor = cur;
+			cursor = cur;
 		}
-	} else if (start > 0) {
+	} else if (cursor > 0) {
 		// BackSpace: delete the char before the cursor position
-		if (start >= 2 && buffer->text[start - 1] == '\n' && buffer->text[start - 2] == '\r') {
-			buffer->Cut (start - 2, 2);
-			start -= 2;
+		if (cursor >= 2 && buffer->text[cursor - 1] == '\n' && buffer->text[cursor - 2] == '\r') {
+			buffer->Cut (cursor - 2, 2);
+			cursor -= 2;
 		} else {
-			buffer->Cut (start - 1, 1);
-			start--;
+			buffer->Cut (cursor - 1, 1);
+			cursor--;
 		}
 		
 		emit |= TEXT_CHANGED;
+		anchor = cursor;
 	}
 	
-	cursor = SELECTION_BEGIN;
-	
 	// check to see if selection has changed
-	if (selection.start != start || selection.length != length) {
-		SetSelectionLength (length);
-		SetSelectionStart (start);
+	if (selection_anchor != anchor || selection_cursor != cursor) {
+		SetSelectionLength (abs (cursor - anchor));
+		SetSelectionStart (MIN (anchor, cursor));
+		selection_anchor = anchor;
+		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
 	}
 }
@@ -544,42 +544,46 @@ TextBox::KeyPressBackSpace (GdkModifierType modifiers)
 void
 TextBox::KeyPressDelete (GdkModifierType modifiers)
 {
-	int length = selection.length;
-	int start = selection.start;
-	int pos;
+	int anchor = selection_anchor;
+	int cursor = selection_cursor;
+	int cur;
 	
 	if ((modifiers & (MY_GDK_ALT_MASK | GDK_SHIFT_MASK)) != 0)
 		return;
 	
-	if (selection.length > 0) {
+	if (cursor != anchor) {
 		// Delete w/ active selection: delete the selected text
+		int length = abs (cursor - anchor);
+		int start = MIN (anchor, cursor);
+		
 		buffer->Cut (start, length);
 		emit |= TEXT_CHANGED;
-		length = 0;
+		anchor = start;
+		cursor = start;
 	} else if ((modifiers & GDK_CONTROL_MASK) != 0) {
 		// Ctrl+Delete: delete the word starting at the cursor
-		pos = next_word (buffer, start);
+		cur = next_word (buffer, cursor);
 		
-		if (pos > start) {
-			buffer->Cut (cursor, pos - start);
+		if (cur > cursor) {
+			buffer->Cut (cursor, cur - cursor);
 			emit |= TEXT_CHANGED;
 		}
-	} else if (start < buffer->len) {
+	} else if (cursor < buffer->len) {
 		// Delete: delete the char after the cursor position
-		if (buffer->text[start] == '\r' && buffer->text[start + 1] == '\n')
-			buffer->Cut (start, 2);
+		if (buffer->text[cursor] == '\r' && buffer->text[cursor + 1] == '\n')
+			buffer->Cut (cursor, 2);
 		else
-			buffer->Cut (start, 1);
+			buffer->Cut (cursor, 1);
 		
 		emit |= TEXT_CHANGED;
 	}
 	
-	cursor = SELECTION_BEGIN;
-	
 	// check to see if selection has changed
-	if (selection.start != start || selection.length != length) {
-		SetSelectionLength (length);
-		SetSelectionStart (start);
+	if (selection_anchor != anchor || selection_cursor != cursor) {
+		SetSelectionLength (abs (cursor - anchor));
+		SetSelectionStart (MIN (anchor, cursor));
+		selection_anchor = anchor;
+		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
 	}
 }
@@ -587,47 +591,27 @@ TextBox::KeyPressDelete (GdkModifierType modifiers)
 void
 TextBox::KeyPressPageDown (GdkModifierType modifiers)
 {
-	int length = selection.length;
-	int start = selection.start;
-	int pos;
+	int anchor = selection_anchor;
+	int cursor = selection_cursor;
 	
 	if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK)) != 0)
 		return;
 	
 	if ((modifiers & GDK_SHIFT_MASK) != 0) {
 		// Shift+Page_Down: grow selection by one page in the downward direction
-		if (cursor == SELECTION_BEGIN) {
-			// cursor is at the beginning of the selection
-			pos = move_down (buffer, start, 8);
-			
-			if (pos > selection.start + selection.length) {
-				// flip selection over the current selection endpoint
-				start += selection.length;
-				cursor = SELECTION_END;
-				length = pos - start;
-			} else {
-				// shrink the selection from the start
-				length -= pos - start;
-				start = pos;
-			}
-		} else {
-			// cursor is at the end of the selection
-			pos = move_down (buffer, start + length, 8);
-			
-			// grow the selection beyond the current endpoint
-			length = pos - start;
-		}
+		cursor = move_down (buffer, cursor, 8);
 	} else {
 		// Page_Down: move cursor down one page and clear selection
-		start = move_down (buffer, start, 8);
-		cursor = SELECTION_BEGIN;
-		length = 0;
+		cursor = move_down (buffer, cursor, 8);
+		anchor = cursor;
 	}
 	
 	// check to see if selection has changed
-	if (selection.start != start || selection.length != length) {
-		SetSelectionLength (length);
-		SetSelectionStart (start);
+	if (selection_anchor != anchor || selection_cursor != cursor) {
+		SetSelectionLength (abs (cursor - anchor));
+		SetSelectionStart (MIN (anchor, cursor));
+		selection_anchor = anchor;
+		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
 	}
 }
@@ -635,48 +619,27 @@ TextBox::KeyPressPageDown (GdkModifierType modifiers)
 void
 TextBox::KeyPressPageUp (GdkModifierType modifiers)
 {
-	int length = selection.length;
-	int start = selection.start;
-	int pos;
+	int anchor = selection_anchor;
+	int cursor = selection_cursor;
 	
 	if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK)) != 0)
 		return;
 	
 	if ((modifiers & GDK_SHIFT_MASK) != 0) {
 		// Shift+Page_Up: grow selection by one page in the upward direction
-		if (cursor == SELECTION_END) {
-			// cursor is at the end of the selection
-			pos = move_up (buffer, start + length, 8);
-			
-			if (pos < start) {
-				// flip selection over the current selection starting point
-				length = selection.start - pos;
-				cursor = SELECTION_BEGIN;
-				start = pos;
-			} else {
-				// shrink the selection from the start
-				length += start - pos;
-				start = pos;
-			}
-		} else {
-			// cursor is at the beginning of the selection
-			pos = move_up (buffer, start, 8);
-			
-			// grow the selection to the left
-			length += start - pos;
-			start = pos;
-		}
+		cursor = move_up (buffer, cursor, 8);
 	} else {
 		// Page_Up: move cursor up one page and clear selection
-		start = move_up (buffer, start, 8);
-		cursor = SELECTION_BEGIN;
-		length = 0;
+		cursor = move_up (buffer, cursor, 8);
+		anchor = cursor;
 	}
 	
 	// check to see if selection has changed
-	if (selection.start != start || selection.length != length) {
-		SetSelectionLength (length);
-		SetSelectionStart (start);
+	if (selection_anchor != anchor || selection_cursor != cursor) {
+		SetSelectionLength (abs (cursor - anchor));
+		SetSelectionStart (MIN (anchor, cursor));
+		selection_anchor = anchor;
+		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
 	}
 }
@@ -684,80 +647,37 @@ TextBox::KeyPressPageUp (GdkModifierType modifiers)
 void
 TextBox::KeyPressHome (GdkModifierType modifiers)
 {
-	int length = selection.length;
-	int start = selection.start;
-	int pos;
+	int anchor = selection_anchor;
+	int cursor = selection_cursor;
 	
 	if ((modifiers & MY_GDK_ALT_MASK) != 0)
 		return;
 	
 	if ((modifiers & (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) == (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) {
 		// Ctrl+Shift+Home: update selection to start at the beginning of the buffer
-		pos = 0;
-		
-		if (cursor == SELECTION_END) {
-			// cursor was at the end of the selection
-			if (pos < start) {
-				// flip selection over the current selection starting point
-				cursor = SELECTION_BEGIN;
-				length = start - pos;
-				start = pos;
-			} else {
-				// shrink the selection from the start
-				length += start - pos;
-				start = pos;
-			}
-		} else {
-			// grow the selection to the left
-			length += start - pos;
-			start = pos;
-		}
+		cursor = 0;
 	} else if ((modifiers & GDK_CONTROL_MASK) != 0) {
 		// Ctrl+Home: move cursor to beginning of the buffer and clear selection
-		cursor = SELECTION_BEGIN;
-		length = start = 0;
+		cursor = 0;
+		anchor = cursor;
 	} else if ((modifiers & GDK_SHIFT_MASK) != 0) {
 		// Shift+Home: update selection to start at beginning of line
-		if (cursor == SELECTION_END)
-			pos = start + length;
-		else
-			pos = start;
-		
-		while (pos > 0 && !IsEOL (buffer->text[pos - 1]))
-			pos--;
-		
-		if (cursor == SELECTION_END) {
-			// cursor was at the end of the selection
-			if (pos < start) {
-				// flip selection over the current selection starting point
-				cursor = SELECTION_BEGIN;
-				length = start - pos;
-				start = pos;
-			} else {
-				// shrink the selection from the start
-				length += start - pos;
-				start = pos;
-			}
-		} else {
-			// grow the selection to the left
-			length += start - pos;
-			start = pos;
-		}
+		while (cursor > 0 && !IsEOL (buffer->text[cursor - 1]))
+			cursor--;
 	} else {
 		// Home: move cursor to beginning of line and clear selection
-		pos = start;
-		while (pos > 0 && !IsEOL (buffer->text[pos - 1]))
-			pos--;
+		while (cursor > 0 && !IsEOL (buffer->text[cursor - 1]))
+			cursor--;
 		
-		cursor = SELECTION_BEGIN;
-		start = pos;
-		length = 0;
+		anchor = cursor;
 	}
 	
 	// check to see if selection has changed
-	if (selection.start != start || selection.length != length) {
-		SetSelectionLength (length);
-		SetSelectionStart (start);
+	if (selection_anchor != anchor || selection_cursor != cursor) {
+		SetSelectionLength (abs (cursor - anchor));
+		SetSelectionStart (MIN (anchor, cursor));
+		selection_anchor = anchor;
+		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
 	}
 }
@@ -765,75 +685,37 @@ TextBox::KeyPressHome (GdkModifierType modifiers)
 void
 TextBox::KeyPressEnd (GdkModifierType modifiers)
 {
-	int length = selection.length;
-	int start = selection.start;
-	int pos;
+	int anchor = selection_anchor;
+	int cursor = selection_cursor;
 	
 	if ((modifiers & MY_GDK_ALT_MASK) != 0)
 		return;
 	
 	if ((modifiers & (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) == (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) {
 		// Ctrl+Shift+End: update selection to end at the end of the buffer
-		pos = buffer->len;
-		
-		if (cursor == SELECTION_BEGIN) {
-			// cursor was at the beginning of the selection
-			if (pos > start + length) {
-				// flip selection over the current selection endpoint
-				cursor = SELECTION_END;
-				start += length;
-				length = pos - start;
-			} else {
-				// shrink the selection from the start
-				length -= pos - start;
-				start = pos;
-			}
-		} else {
-			// grow the selection beyond the current endpoint
-			length = pos - start;
-		}
+		cursor = buffer->len;
 	} else if ((modifiers & GDK_CONTROL_MASK) != 0) {
 		// Ctrl+End: move cursor to end of the buffer and clear selection
-		cursor = SELECTION_BEGIN;
-		start = buffer->len;
-		length = 0;
+		cursor = buffer->len;
+		anchor = cursor;
 	} else if ((modifiers & GDK_SHIFT_MASK) != 0) {
 		// Shift+End: update selection to end at the end of the current line
-		pos = start;
-		while (pos < buffer->len && !IsEOL (buffer->text[pos]))
-			pos++;
-		
-		if (cursor == SELECTION_BEGIN) {
-			// cursor was at the beginning of the selection
-			if (pos > start + length) {
-				// flip selection over the current selection endpoint
-				cursor = SELECTION_END;
-				start += length;
-				length = pos - start;
-			} else {
-				// shrink the selection from the start
-				length -= pos - start;
-				start = pos;
-			}
-		} else {
-			// grow the selection beyond the current endpoint
-			length = pos - start;
-		}
+		while (cursor < buffer->len && !IsEOL (buffer->text[cursor]))
+			cursor++;
 	} else {
 		// End: move cursor to end of line and clear selection
-		pos = start;
-		while (pos < buffer->len && !IsEOL (buffer->text[pos]))
-			pos++;
+		while (cursor < buffer->len && !IsEOL (buffer->text[cursor]))
+			cursor++;
 		
-		cursor = SELECTION_BEGIN;
-		start = pos;
-		length = 0;
+		anchor = cursor;
 	}
 	
 	// check to see if selection has changed
-	if (selection.start != start || selection.length != length) {
-		SetSelectionLength (length);
-		SetSelectionStart (start);
+	if (selection_anchor != anchor || selection_cursor != cursor) {
+		SetSelectionLength (abs (cursor - anchor));
+		SetSelectionStart (MIN (anchor, cursor));
+		selection_anchor = anchor;
+		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
 	}
 }
@@ -841,96 +723,41 @@ TextBox::KeyPressEnd (GdkModifierType modifiers)
 void
 TextBox::KeyPressRight (GdkModifierType modifiers)
 {
-	int length = selection.length;
-	int start = selection.start;
-	int pos;
+	int anchor = selection_anchor;
+	int cursor = selection_cursor;
 	
 	if ((modifiers & MY_GDK_ALT_MASK) != 0)
 		return;
 	
 	if ((modifiers & (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) == (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) {
 		// Ctrl+Shift+Right: grow selection to the right on word's worth of characters
-		if (cursor == SELECTION_BEGIN) {
-			// cursor is at the beginning of the selection
-			pos = next_word (buffer, start);
-			
-			if (pos > selection.start + selection.length) {
-				// flip selection over the current selection endpoint
-				cursor = SELECTION_END;
-				start += length;
-				length = pos - start;
-			} else {
-				// shrink the selection from the start
-				length -= pos - start;
-				start = pos;
-			}
-		} else {
-			// cursor is at the end of the selection
-			pos = next_word (buffer, start + length);
-			
-			// grow the selection beyond the current endpoint
-			length = pos - start;
-		}
+		cursor = next_word (buffer, cursor);
 	} else if ((modifiers & GDK_CONTROL_MASK) != 0) {
 		// Ctrl+Right: move cursor to right one word's worth of characters and clear selection
-		pos = next_word (buffer, start);
-		cursor = SELECTION_BEGIN;
-		start = pos;
-		length = 0;
+		cursor = next_word (buffer, cursor);
+		anchor = cursor;
 	} else if ((modifiers & GDK_SHIFT_MASK) != 0) {
 		// Right: grow the selection to the right by one character
-		if (cursor == SELECTION_END)
-			pos = start + length;
-		else
-			pos = start;
-		
-		if (pos < buffer->len) {
-			if (buffer->text[pos] == '\r' && buffer->text[pos + 1] == '\n') 
-				pos += 2;
-			else
-				pos++;
-			
-			if (cursor == SELECTION_BEGIN) {
-				// cursor was at the beginning of the selection
-				if (pos > start + length) {
-					// flip selection over the current selection endpoint
-					cursor = SELECTION_END;
-					start += length;
-					length = pos - start;
-				} else {
-					// shrink the selection from the start
-					length -= pos - start;
-					start = pos;
-				}
-			} else {
-				// grow the selection beyond the current endpoint
-				length = pos - start;
-			}
-		}
+		if (buffer->text[cursor] == '\r' && buffer->text[cursor + 1] == '\n') 
+			cursor += 2;
+		else if (cursor < buffer->len)
+			cursor++;
 	} else {
-		// Right: grow the selection to the right by one character
-		if (cursor == SELECTION_END)
-			pos = start + length;
-		else
-			pos = start;
+		// Right: grow the selection to the right by one character and clear the selection
+		if (buffer->text[cursor] == '\r' && buffer->text[cursor + 1] == '\n') 
+			cursor += 2;
+		else if (cursor < buffer->len)
+			cursor++;
 		
-		if (pos < buffer->len) {
-			// Right: move the cursor one character to the right and clear the selection
-			if (buffer->text[pos] == '\r' && buffer->text[pos + 1] == '\n') 
-				pos += 2;
-			else
-				pos++;
-			
-			cursor = SELECTION_BEGIN;
-			start = pos;
-			length = 0;
-		}
+		anchor = cursor;
 	}
 	
 	// check to see if selection has changed
-	if (selection.start != start || selection.length != length) {
-		SetSelectionLength (length);
-		SetSelectionStart (start);
+	if (selection_anchor != anchor || selection_cursor != cursor) {
+		SetSelectionLength (abs (cursor - anchor));
+		SetSelectionStart (MIN (anchor, cursor));
+		selection_anchor = anchor;
+		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
 	}
 }
@@ -938,99 +765,41 @@ TextBox::KeyPressRight (GdkModifierType modifiers)
 void
 TextBox::KeyPressLeft (GdkModifierType modifiers)
 {
-	int length = selection.length;
-	int start = selection.start;
-	int pos;
+	int anchor = selection_anchor;
+	int cursor = selection_cursor;
 	
 	if ((modifiers & MY_GDK_ALT_MASK) != 0)
 		return;
 	
 	if ((modifiers & (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) == (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) {
 		// Ctrl+Shift+Left: grow selection to the left one word's worth of characters
-		pos = prev_word (buffer, cursor);
-		
-		if (cursor == SELECTION_END) {
-			// cursor is at the end of the selection
-			pos = prev_word (buffer, start + length);
-			
-			if (pos < start) {
-				// flip selection over the current selection starting point
-				cursor = SELECTION_BEGIN;
-				length = start - pos;
-				start = pos;
-			} else {
-				// shrink the selection from the start
-				length += start - pos;
-				start = pos;
-			}
-		} else {
-			// cursor is at the beginning of the selection
-			pos = prev_word (buffer, start);
-			
-			// grow the selection to the left
-			length += start - pos;
-			start = pos;
-		}
+		cursor = prev_word (buffer, cursor);
 	} else if ((modifiers & GDK_CONTROL_MASK) != 0) {
 		// Ctrl+Left: move cursor to left one word's worth of characters and clear selection
-		pos = prev_word (buffer, start);
-		cursor = SELECTION_BEGIN;
-		start = pos;
-		length = 0;
+		cursor = prev_word (buffer, cursor);
+		anchor = cursor;
 	} else if ((modifiers & GDK_SHIFT_MASK) != 0) {
 		// Shift+Left: grow the selection to the left by one character
-		if (cursor == SELECTION_END)
-			pos = start + length;
-		else
-			pos = start;
-		
-		if (pos > 0) {
-			if (pos >= 2 && buffer->text[pos - 2] == '\r' && buffer->text[pos - 1] == '\n')
-				pos -= 2;
-			else
-				pos--;
-			
-			if (cursor == SELECTION_END) {
-				// cursor was at the end of the selection
-				if (pos < start) {
-					// flip selection over the current selection starting point
-					cursor = SELECTION_BEGIN;
-					length = start - pos;
-					start = pos;
-				} else {
-					// shrink the selection from the start
-					length += start - pos;
-					start = pos;
-				}
-			} else {
-				// grow the selection to the left
-				length += start - pos;
-				start = pos;
-			}
-		}
+		if (cursor >= 2 && buffer->text[cursor - 2] == '\r' && buffer->text[cursor - 1] == '\n')
+			cursor -= 2;
+		else if (cursor > 0)
+			cursor--;
 	} else {
-		if (cursor == SELECTION_END)
-			pos = start + length;
-		else
-			pos = start;
+		// Left: move the cursor one character to the right and clear the selection
+		if (cursor >= 2 && buffer->text[cursor - 2] == '\r' && buffer->text[cursor - 1] == '\n')
+			cursor -= 2;
+		else if (cursor > 0)
+			cursor--;
 		
-		if (pos > 0) {
-			// Left: move the cursor one character to the right and clear the selection
-			if (pos >= 2 && buffer->text[pos - 2] == '\r' && buffer->text[pos - 1] == '\n')
-				pos -= 2;
-			else
-				pos--;
-			
-			cursor = SELECTION_BEGIN;
-			start = pos;
-			length = 0;
-		}
+		anchor = cursor;
 	}
 	
 	// check to see if selection has changed
-	if (selection.start != start || selection.length != length) {
-		SetSelectionLength (length);
-		SetSelectionStart (start);
+	if (selection_anchor != anchor || selection_cursor != cursor) {
+		SetSelectionLength (abs (cursor - anchor));
+		SetSelectionStart (MIN (anchor, cursor));
+		selection_anchor = anchor;
+		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
 	}
 }
@@ -1038,47 +807,27 @@ TextBox::KeyPressLeft (GdkModifierType modifiers)
 void
 TextBox::KeyPressDown (GdkModifierType modifiers)
 {
-	int length = selection.length;
-	int start = selection.start;
-	int pos;
+	int anchor = selection_anchor;
+	int cursor = selection_cursor;
 	
 	if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK)) != 0)
 		return;
 	
 	if ((modifiers & GDK_SHIFT_MASK) != 0) {
 		// Shift+Down: grow selection by one line in the downward direction
-		if (cursor == SELECTION_BEGIN) {
-			// cursor is at the beginning of the selection
-			pos = move_down (buffer, start, 1);
-			
-			if (pos > selection.start + selection.length) {
-				// flip selection over the current selection endpoint
-				start += selection.length;
-				cursor = SELECTION_END;
-				length = pos - start;
-			} else {
-				// shrink the selection from the start
-				length -= pos - start;
-				start = pos;
-			}
-		} else {
-			// cursor is at the end of the selection
-			pos = move_down (buffer, start + length, 1);
-			
-			// grow the selection beyond the current endpoint
-			length = pos - start;
-		}
+		cursor = move_down (buffer, cursor, 1);
 	} else {
 		// Down: move cursor down one line and clear selection
-		start = move_down (buffer, start, 1);
-		cursor = SELECTION_BEGIN;
-		length = 0;
+		cursor = move_down (buffer, cursor, 1);
+		anchor = cursor;
 	}
 	
 	// check to see if selection has changed
-	if (selection.start != start || selection.length != length) {
-		SetSelectionLength (length);
-		SetSelectionStart (start);
+	if (selection_anchor != anchor || selection_cursor != cursor) {
+		SetSelectionLength (abs (cursor - anchor));
+		SetSelectionStart (MIN (anchor, cursor));
+		selection_anchor = anchor;
+		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
 	}
 }
@@ -1086,48 +835,27 @@ TextBox::KeyPressDown (GdkModifierType modifiers)
 void
 TextBox::KeyPressUp (GdkModifierType modifiers)
 {
-	int length = selection.length;
-	int start = selection.start;
-	int pos;
+	int anchor = selection_anchor;
+	int cursor = selection_cursor;
 	
 	if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK)) != 0)
 		return;
 	
 	if ((modifiers & GDK_SHIFT_MASK) != 0) {
 		// Shift+Page_Up: grow selection by one line in the upward direction
-		if (cursor == SELECTION_END) {
-			// cursor is at the end of the selection
-			pos = move_up (buffer, start + length, 1);
-			
-			if (pos < start) {
-				// flip selection over the current selection starting point
-				length = selection.start - pos;
-				cursor = SELECTION_BEGIN;
-				start = pos;
-			} else {
-				// shrink the selection from the start
-				length += start - pos;
-				start = pos;
-			}
-		} else {
-			// cursor is at the beginning of the selection
-			pos = move_up (buffer, start, 1);
-			
-			// grow the selection to the left
-			length += start - pos;
-			start = pos;
-		}
+		cursor = move_up (buffer, cursor, 1);
 	} else {
 		// Page_Up: move cursor up one line and clear selection
-		start = move_up (buffer, start, 1);
-		cursor = SELECTION_BEGIN;
-		length = 0;
+		cursor = move_up (buffer, cursor, 1);
+		anchor = cursor;
 	}
 	
 	// check to see if selection has changed
-	if (selection.start != start || selection.length != length) {
-		SetSelectionLength (length);
-		SetSelectionStart (start);
+	if (selection_anchor != anchor || selection_cursor != cursor) {
+		SetSelectionLength (abs (cursor - anchor));
+		SetSelectionStart (MIN (anchor, cursor));
+		selection_anchor = anchor;
+		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
 	}
 }
@@ -1135,8 +863,10 @@ TextBox::KeyPressUp (GdkModifierType modifiers)
 void
 TextBox::KeyPressUnichar (gunichar c)
 {
-	int length = selection.length;
-	int start = selection.start;
+	int length = abs (selection_cursor - selection_anchor);
+	int start = MIN (selection_anchor, selection_cursor);
+	int anchor = selection_anchor;
+	int cursor = selection_cursor;
 	
 	if ((maxlen > 0 && buffer->len >= maxlen) || ((c == '\r') && !GetAcceptsReturn ()))
 		return;
@@ -1151,15 +881,16 @@ TextBox::KeyPressUnichar (gunichar c)
 		buffer->Insert (start, c);
 	}
 	
-	cursor = SELECTION_BEGIN;
 	emit |= TEXT_CHANGED;
-	length = 0;
-	start++;
+	cursor = start + 1;
+	anchor = cursor;
 	
 	// check to see if selection has changed
-	if (selection.start != start || selection.length != length) {
-		SetSelectionLength (length);
-		SetSelectionStart (start);
+	if (selection_anchor != anchor || selection_cursor != cursor) {
+		SetSelectionLength (abs (cursor - anchor));
+		SetSelectionStart (MIN (anchor, cursor));
+		selection_anchor = anchor;
+		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
 	}
 }
@@ -1438,8 +1169,12 @@ TextBox::EmitTextChanged ()
 void
 TextBox::SyncSelectedText ()
 {
-	if (selection.length > 0) {
-		char *text = g_ucs4_to_utf8 (buffer->text + selection.start, selection.length, NULL, NULL, NULL);
+	if (selection_cursor != selection_anchor) {
+		int length = abs (selection_cursor - selection_anchor);
+		int start = MIN (selection_anchor, selection_cursor);
+		char *text;
+		
+		text = g_ucs4_to_utf8 (buffer->text + start, length, NULL, NULL, NULL);
 		
 		setvalue = false;
 		SetValue (TextBox::SelectedTextProperty, Value (text, true));
@@ -1496,27 +1231,35 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 	} else if (args->property == TextBox::SelectedTextProperty) {
 		if (setvalue) {
 			const char *str = args->new_value ? args->new_value->AsString () : "";
+			int length = abs (selection_cursor - selection_anchor);
+			int start = MIN (selection_anchor, selection_cursor);
 			gunichar *text;
 			glong textlen;
 			
 			// replace the currently selected text
 			text = g_utf8_to_ucs4_fast (str, -1, &textlen);
-			buffer->Replace (selection.start, selection.length, text, textlen);
+			buffer->Replace (start, length, text, textlen);
 			g_free (text);
 			
-			ClearSelection (selection.start + textlen);
+			ClearSelection (start + textlen);
 			SyncText ();
 		}
 		
 		emit |= SELECTION_CHANGED;
 	} else if (args->property == TextBox::SelectionStartProperty) {
-		selection.start = args->new_value->AsInt32 ();
+		if (selection_cursor == selection_anchor) {
+			selection_anchor = args->new_value->AsInt32 ();
+			selection_cursor = selection_anchor;
+		} else {
+			selection_anchor = args->new_value->AsInt32 ();
+		}
+		
 		changed = TextBoxModelChangedSelection;
 		
 		// update SelectedText
 		SyncSelectedText ();
 	} else if (args->property == TextBox::SelectionLengthProperty) {
-		selection.length = args->new_value->AsInt32 ();
+		selection_cursor = selection_anchor + args->new_value->AsInt32 ();
 		changed = TextBoxModelChangedSelection;
 		
 		// update SelectedText
@@ -1620,7 +1363,6 @@ TextBox::OnApplyTemplate ()
 void
 TextBox::ClearSelection (int start)
 {
-	cursor = SELECTION_BEGIN;
 	SetSelectionStart (start);
 	SetSelectionLength (0);
 	SyncSelectedText ();
@@ -1638,21 +1380,15 @@ TextBox::Select (int start, int length)
 	if (length > (buffer->len - start))
 		length = (buffer->len - start);
 	
-	cursor = SELECTION_BEGIN;
 	SetSelectionStart (start);
 	SetSelectionLength (length);
 	SyncSelectedText ();
 }
 
-bool
+void
 TextBox::SelectAll ()
 {
-	if (selection.start == 0 && selection.length == buffer->len)
-		return false;
-	
 	Select (0, buffer->len);
-	
-	return true;
 }
 
 
@@ -1913,10 +1649,11 @@ TextBoxView::ArrangeOverride (Size finalSize)
 void
 TextBoxView::Layout (cairo_t *cr, Size constraint)
 {
+	int selection_length = textbox->GetSelectionLength ();
+	int selection_start = textbox->GetSelectionStart ();
+	TextBuffer *buffer = textbox->GetBuffer ();
+	const gunichar *text = buffer->text;
 	double width = constraint.width;
-	TextSelection *selection;
-	const gunichar *text;
-	TextBuffer *buffer;
 	List *runs;
 	int left;
 	
@@ -1925,14 +1662,10 @@ TextBoxView::Layout (cairo_t *cr, Size constraint)
 	else
 		layout->SetMaxWidth (width);
 	
-	selection = textbox->GetSelection ();
-	buffer = textbox->GetBuffer ();
-	text = buffer->text;
-	
 	runs = new List ();
 	
-	if (selection->length > 0) {
-		left = selection->start;
+	if (selection_length > 0) {
+		left = selection_start;
 		
 		if (left > 0) {
 			// add text before the selected region
@@ -1940,7 +1673,7 @@ TextBoxView::Layout (cairo_t *cr, Size constraint)
 		}
 		
 		// add the selected region of text
-		left += selection->length;
+		left += selection_length;
 		append_runs ((ITextSource *) textbox, runs, &text, &left, true);
 		
 		left += buffer->len - (text - buffer->text);

@@ -1,3 +1,8 @@
+2009-02-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp: Rewrote selection logic and vastly simplified
+	cursor movement along the way.
+
 2009-02-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* type.h:
