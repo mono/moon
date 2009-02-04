@@ -1,5 +1,11 @@
 2009-02-04  Larry Ewing  <lewing@novell.com>
 
+	* StackPanel.cs: remove the restriction on size of the visible
+	children it breaks since that uses a rendertransform to make
+	things visible again.
+
+2009-02-04  Larry Ewing  <lewing@novell.com>
+
 	* StackPanel.cs: rework the alignment logic to match some of the
 	new tests.
 

@@ -49,11 +49,11 @@ namespace System.Windows.Controls {
 
 				if (Orientation == Orientation.Vertical) {
 					result.Height += size.Height;
-					childAvailable.Height = Math.Max (childAvailable.Height - size.Height, 0);
+					//childAvailable.Height = Math.Max (childAvailable.Height - size.Height, 0);
 					result.Width = Math.Max (result.Width, size.Width);
 				} else {
 					result.Width += size.Width;
-					childAvailable.Width = Math.Max (childAvailable.Width - size.Width, 0);
+					//childAvailable.Width = Math.Max (childAvailable.Width - size.Width, 0);
 					result.Height = Math.Max (result.Height, size.Height);
 				}
 			}
@@ -98,7 +98,7 @@ namespace System.Windows.Controls {
 					
 					Rect childFinal = new Rect (0, result.Height, size.Width, size.Height);
 
-					childFinal.Intersect (requested);					
+					//childFinal.Intersect (requested);					
 					if (childFinal.IsEmpty)
 						child.Arrange (new Rect ());
 					else
@@ -111,7 +111,7 @@ namespace System.Windows.Controls {
 					
 					Rect childFinal = new Rect (result.Width, 0, size.Width, size.Height);
 
-					childFinal.Intersect (requested);					
+					//childFinal.Intersect (requested);					
 					if (childFinal.IsEmpty)
 						child.Arrange (new Rect ());
 					else
