@@ -1,3 +1,8 @@
+2009-02-03  Larry Ewing  <lewing@novell.com>
+
+	* frameworkelement.cpp (FrameworkElement::Arrange): shrink the
+	clip by the margin.
+
 2009-02-03  Geoff Norton  <gnorton@novell.com>
 
 	* frameworkelement.cpp (Arrange): If we have a negative margin,

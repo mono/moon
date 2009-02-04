@@ -578,10 +578,7 @@ FrameworkElement::Arrange (Rect finalRect)
 	cairo_matrix_invert (&inverse_layout);
 	
 	Rect layout_clip = finalRect.Transform (&inverse_layout);
-	if (margin.top < 0) layout_clip.y -= margin.top;
-	if (margin.bottom < 0) layout_clip.y += margin.bottom;
-	if (margin.right < 0) layout_clip.x -= margin.right;
-	if (margin.left < 0) layout_clip.x += margin.left;
+	layout_clip = layout_clip.GrowBy (-margin);
 	RectangleGeometry *rectangle = new RectangleGeometry ();
 	rectangle->SetRect (&layout_clip);
 	LayoutInformation::SetLayoutClip (this, rectangle);
