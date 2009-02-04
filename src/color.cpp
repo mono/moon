@@ -183,7 +183,7 @@ read_next_double (char **str)
 	char *iter = *str;
 
 	if (iter) {
-		double v = strtod (iter, &iter);
+		double v = g_ascii_strtod (iter, &iter);
 		if (iter)
 			iter = strchr (iter, ',');
 		if (iter)
