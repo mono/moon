@@ -1,3 +1,8 @@
+2009-02-04  Alan McGovern  <amcgovern@novell.com>
+
+	* HitTestCollection.cs: Hook up the managed hittesting code
+	  to the native hit testing code.
+
 2009-02-02  Chris Toshok  <toshok@ximian.com>
 
 	* UserControl.cs: remove the ContentProperty attribute - we

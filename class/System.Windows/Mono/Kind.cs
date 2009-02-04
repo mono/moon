@@ -97,6 +97,7 @@ namespace Mono {
 		GRADIENTSTOP_COLLECTION,
 		GRID,// Silverlight 2.0 only
 		GRIDLENGTH,// Silverlight 2.0 only
+		HITTEST_COLLECTION,
 		IIMAGECONVERTER,
 		IMAGE,
 		IMAGEBRUSH,

@@ -499,6 +499,17 @@ UIElementCollection::CanAdd (Value *value)
 	return Collection::CanAdd (value) && value->AsUIElement ()->GetVisualParent () == NULL;
 }
 
+HitTestCollection::HitTestCollection ()
+{
+	
+}
+
+bool
+HitTestCollection::CanAdd (Value *value)
+{
+	return Collection::CanAdd (value);
+}
+
 //
 // DoubleCollection
 //

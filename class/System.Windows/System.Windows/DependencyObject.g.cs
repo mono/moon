@@ -182,6 +182,11 @@ namespace System.Windows.Controls {
 		internal Grid (IntPtr raw) : base (raw) {}
 	}
 
+	partial class HitTestCollection {
+		internal HitTestCollection () : base (NativeMethods.hit_test_collection_new ()) {}
+		internal HitTestCollection (IntPtr raw) : base (raw) {}
+	}
+
 	partial class Image {
 		public Image () : base (NativeMethods.image_new ()) {}
 		internal Image (IntPtr raw) : base (raw) {}

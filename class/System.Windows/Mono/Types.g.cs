@@ -79,6 +79,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.CONTROLTEMPLATE));
 				t = typeof (System.Windows.Controls.Grid); 
 				types.Add (t, new ManagedType (t, Kind.GRID));
+				t = typeof (System.Windows.Controls.HitTestCollection); 
+				types.Add (t, new ManagedType (t, Kind.HITTEST_COLLECTION));
 				t = typeof (System.Windows.Controls.Image); 
 				types.Add (t, new ManagedType (t, Kind.IMAGE));
 				t = typeof (System.Windows.Controls.InkPresenter); 

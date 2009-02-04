@@ -712,6 +712,12 @@ GradientStopCollection *gradient_stop_collection_new (void);
 Grid *grid_new (void);
 
 /**
+ * HitTestCollection
+ **/
+/* @GeneratePInvoke */
+HitTestCollection *hit_test_collection_new (void);
+
+/**
  * Image
  **/
 /* @GeneratePInvoke */
@@ -1555,6 +1561,12 @@ GeneralTransform *uielement_get_transform_to_uielement (UIElement *instance, UIE
 
 /* @GeneratePInvoke */
 UIElement *uielement_get_visual_parent (UIElement *instance);
+
+/* @GeneratePInvoke */
+void uielement_hit_test_children_p (UIElement *instance, Point p, HitTestCollection *uielement_list);
+
+/* @GeneratePInvoke */
+void uielement_hit_test_children_r (UIElement *instance, Rect p, HitTestCollection *uielement_list);
 
 /* @GeneratePInvoke */
 void uielement_invalidate_arrange (UIElement *instance);

@@ -1,3 +1,8 @@
+2009-02-04  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.mdp: Hook up the managed hittesting code to
+	  the native hit testing code.
+
 2009-02-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.mdp: Updated to use new MD features

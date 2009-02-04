@@ -422,6 +422,7 @@
     <File name="Microsoft.Internal/TextBoxView.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono/INativeDependencyObjectWrapper.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono/NativeDependencyObjectHelper.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/HitTestCollection.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Assembly" localcopy="True" specificVersion="False" refto="../lib/2.1/System.Windows.Browser.dll" />

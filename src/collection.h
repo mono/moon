@@ -274,6 +274,16 @@ protected:
 	virtual ~MultiScaleSubImageCollection ();
 };
 
+/* @Namespace=System.Windows.Controls */
+class HitTestCollection : public UIElementCollection {
+ protected:
+	virtual bool CanAdd (Value *value);
+	
+ public:
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	HitTestCollection ();
+};
+
 G_BEGIN_DECLS
 
 Collection *collection_new (Type::Kind kind);

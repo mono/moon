@@ -82,13 +82,17 @@ namespace System.Windows.Media {
 		[SecuritySafeCritical]
 		public static IEnumerable<UIElement> FindElementsInHostCoordinates (Point intersectingPoint, UIElement subtree)
 		{
-			throw new NotImplementedException ();
+			HitTestCollection collection = new HitTestCollection ();
+			Mono.NativeMethods.uielement_hit_test_children_p (subtree.native, intersectingPoint, collection.native);
+			return new List<UIElement> (collection);
 		}
 
 		[SecuritySafeCritical]
 		public static IEnumerable<UIElement> FindElementsInHostCoordinates (Rect intersectingRect, UIElement subtree)
 		{
-			throw new NotImplementedException ();
+			HitTestCollection collection = new HitTestCollection ();
+			Mono.NativeMethods.uielement_hit_test_children_r (subtree.native, intersectingRect, collection.native);
+			return new List<UIElement> (collection);
 		}
 	}
 }

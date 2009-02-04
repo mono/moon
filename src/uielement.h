@@ -245,6 +245,11 @@ public:
 	virtual void HitTest (cairo_t *cr, Point p, List *uielement_list);
 	virtual void HitTest (cairo_t *cr, Rect r, List *uielement_list);
 
+	/* @GenerateCBinding,GeneratePInvoke */
+	void HitTestChildren_p (Point p, HitTestCollection *uielement_list);
+	/* @GenerateCBinding,GeneratePInvoke */
+	void HitTestChildren_r (Rect p, HitTestCollection *uielement_list);
+	
 	//
 	// Recomputes the bounding box, requests redraws, 
 	// the parameter determines if we should also update the transformation

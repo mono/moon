@@ -1629,6 +1629,16 @@ grid_new (void)
 
 
 /**
+ * HitTestCollection
+ **/
+HitTestCollection *
+hit_test_collection_new (void)
+{
+	return new HitTestCollection ();
+}
+
+
+/**
  * Image
  **/
 Image *
@@ -3431,6 +3441,26 @@ uielement_get_visual_parent (UIElement *instance)
 		return NULL;
 	
 	return instance->GetVisualParent ();
+}
+
+
+void
+uielement_hit_test_children_p (UIElement *instance, Point p, HitTestCollection *uielement_list)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->HitTestChildren_p (p, uielement_list);
+}
+
+
+void
+uielement_hit_test_children_r (UIElement *instance, Rect p, HitTestCollection *uielement_list)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->HitTestChildren_r (p, uielement_list);
 }
 
 

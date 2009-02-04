@@ -813,6 +813,10 @@ namespace Mono {
 		public extern static IntPtr grid_new ();
 
 		[DllImport ("moon")]
+		// HitTestCollection *hit_test_collection_new ();
+		public extern static IntPtr hit_test_collection_new ();
+
+		[DllImport ("moon")]
 		// Image *image_new ();
 		public extern static IntPtr image_new ();
 
@@ -1537,6 +1541,14 @@ namespace Mono {
 		[DllImport ("moon")]
 		// UIElement *uielement_get_visual_parent (UIElement *instance);
 		public extern static IntPtr uielement_get_visual_parent (IntPtr instance);
+
+		[DllImport ("moon")]
+		// void uielement_hit_test_children_p (UIElement *instance, Point p, HitTestCollection *uielement_list);
+		public extern static void uielement_hit_test_children_p (IntPtr instance, Point p, IntPtr uielement_list);
+
+		[DllImport ("moon")]
+		// void uielement_hit_test_children_r (UIElement *instance, Rect p, HitTestCollection *uielement_list);
+		public extern static void uielement_hit_test_children_r (IntPtr instance, Rect p, IntPtr uielement_list);
 
 		[DllImport ("moon")]
 		// void uielement_invalidate_arrange (UIElement *instance);

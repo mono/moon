@@ -125,6 +125,7 @@ class GradientBrush;
 class GradientStop;
 class GradientStopCollection;
 class Grid;
+class HitTestCollection;
 class IImageConverter;
 class Image;
 class ImageBrush;
@@ -429,6 +430,7 @@ public:
 	GradientStop*                  AsGradientStop () { checked_get_subclass (Type::GRADIENTSTOP, GradientStop) }
 	GradientStopCollection*        AsGradientStopCollection () { checked_get_subclass (Type::GRADIENTSTOP_COLLECTION, GradientStopCollection) }
 	Grid*                          AsGrid () { checked_get_subclass (Type::GRID, Grid) }
+	HitTestCollection*             AsHitTestCollection () { checked_get_subclass (Type::HITTEST_COLLECTION, HitTestCollection) }
 	IImageConverter*               AsIImageConverter () { checked_get_subclass (Type::IIMAGECONVERTER, IImageConverter) }
 	Image*                         AsImage () { checked_get_subclass (Type::IMAGE, Image) }
 	ImageBrush*                    AsImageBrush () { checked_get_subclass (Type::IMAGEBRUSH, ImageBrush) }

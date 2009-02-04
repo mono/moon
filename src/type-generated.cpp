@@ -234,6 +234,7 @@ Types::RegisterStaticTypes ()
 	types [(int) Type::GRADIENTSTOP_COLLECTION] = new Type (Type::GRADIENTSTOP_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "GradientStopCollection", "GRADIENTSTOP_COLLECTION", 0, 1, NULL, (create_inst_func *) gradient_stop_collection_new, NULL);
 	types [(int) Type::GRID] = new Type (Type::GRID, Type::PANEL, false, "Grid", "GRID", 0, 16, NULL, (create_inst_func *) grid_new, NULL);
 	types [(int) Type::GRIDLENGTH] = new Type (Type::GRIDLENGTH, Type::OBJECT, true, "GridLength", "GRIDLENGTH", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::HITTEST_COLLECTION] = new Type (Type::HITTEST_COLLECTION, Type::UIELEMENT_COLLECTION, false, "HitTestCollection", "HITTEST_COLLECTION", 0, 1, NULL, (create_inst_func *) hit_test_collection_new, NULL);
 	types [(int) Type::IIMAGECONVERTER] = new Type (Type::IIMAGECONVERTER, Type::IMEDIAOBJECT, false, "IImageConverter", "IIMAGECONVERTER", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::IMAGE] = new Type (Type::IMAGE, Type::MEDIABASE, false, "Image", "IMAGE", 1, 18, Image_Events, (create_inst_func *) image_new, NULL);
 	types [(int) Type::IMAGEBRUSH] = new Type (Type::IMAGEBRUSH, Type::TILEBRUSH, false, "ImageBrush", "IMAGEBRUSH", 2, 3, ImageBrush_Events, (create_inst_func *) image_brush_new, NULL);
