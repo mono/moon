@@ -887,6 +887,7 @@ MediaElement::Render (cairo_t *cr, Region *region)
 	Rect paint = Rect (0, 0, GetActualWidth (), GetActualHeight ());
 	Rect video = Rect (0, 0, mplayer->GetVideoWidth (), mplayer->GetVideoHeight ());
 
+	/*
 	if (absolute_xform.xy == 0 && absolute_xform.yx == 0) {
 		//cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
 		cairo_matrix_t inv = absolute_xform;
@@ -895,7 +896,8 @@ MediaElement::Render (cairo_t *cr, Region *region)
 		paint = paint.RoundIn ();
 		paint = paint.Transform (&inv);
 	}
-	
+	*/
+
 	image_brush_compute_pattern_matrix (&matrix, 
 					    paint.width, paint.height, 
 					    video.width, video.height,

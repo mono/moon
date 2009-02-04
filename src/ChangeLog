@@ -1,3 +1,8 @@
+2009-02-04  Larry Ewing  <lewing@novell.com>
+
+	* mediaelement.cpp (MediaElement::Render): disable mediaelement
+	pixel snapping for now, we'll deal with this at a higher level.
+
 2009-02-04  Chris Toshok  <toshok@ximian.com>
 
 	* type.cpp (type_is_dependency_object): no need to c&p the entire
