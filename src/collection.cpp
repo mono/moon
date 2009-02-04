@@ -607,6 +607,19 @@ TriggerActionCollection::~TriggerActionCollection ()
 }
 
 //
+// MultiScaleSubImage Collection
+//
+MultiScaleSubImageCollection::MultiScaleSubImageCollection ()
+{
+	SetObjectType (Type::MULTISCALESUBIMAGE_COLLECTION);
+}
+
+MultiScaleSubImageCollection::~MultiScaleSubImageCollection ()
+{
+}
+
+
+//
 // CollectionIterator
 //
 
