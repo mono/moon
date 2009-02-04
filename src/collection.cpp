@@ -486,6 +486,17 @@ UIElementCollection::ResortByZIndex ()
 		g_ptr_array_sort (z_sorted, UIElementZIndexComparer);
 }
 
+int
+UIElementCollection::AddWithError (Value *value, MoonError *error)
+{
+	if (IndexOf (value) >= 0) {
+		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Duplicated UIElement");
+		return -1;
+	}
+
+	return Collection::AddWithError (value, error);
+}
+
 bool
 UIElementCollection::Clear ()
 {
@@ -499,9 +510,12 @@ UIElementCollection::CanAdd (Value *value)
 	return Collection::CanAdd (value) && value->AsUIElement ()->GetVisualParent () == NULL;
 }
 
+//
+// HitTestCollection
+//
+
 HitTestCollection::HitTestCollection ()
 {
-	
 }
 
 bool

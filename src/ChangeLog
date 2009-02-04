@@ -1,3 +1,8 @@
+2009-02-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* collection.cpp|h: Override AddWithError on UIElementCollection
+	to return an error on duplicate elements
+
 2009-02-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* color.cpp (read_next_double): Use g_ascii_strtod().
