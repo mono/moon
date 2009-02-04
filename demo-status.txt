@@ -1,3 +1,6 @@
+site:Channel9 Silverlight 2.0 player
+url:http://channel9.msdn.com/pdc2008/PC54
+
 site:Presidential Inauguration
 url:http://www.cnn.com/SPECIALS/2009/44.president/inauguration/themoment/
 rating:0
