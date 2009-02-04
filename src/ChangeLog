@@ -1,3 +1,8 @@
+2009-02-04  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* deepzoomimagetilesource.cpp: set the aspect ratio for subimages on
+	subimage creation.
+
 2009-02-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBox::TextBox): Initialize our 'selecting' state

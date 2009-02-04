@@ -513,6 +513,7 @@ end_element (void *data, const char *el)
 					subi->n = info->current_subimage->n;
 					subi->SetViewportOrigin (new Point (info->current_subimage->vp_x, info->current_subimage->vp_y));
 					subi->SetViewportWidth (info->current_subimage->vp_w);
+					subi->SetValue (MultiScaleSubImage::AspectRatioProperty, Value ((double)info->current_subimage->width/(double)info->current_subimage->height));
 					info->sub_images = g_list_append (info->sub_images, subi);
 					info->current_subimage = NULL;
 				}
