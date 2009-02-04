@@ -1,5 +1,9 @@
 2009-02-04  Jb Evain  <jbevain@novell.com>
 
+	* HtmlDocument.cs: cache the body element.
+
+2009-02-04  Jb Evain  <jbevain@novell.com>
+
 	* HtmlDocument.cs (GetElementById): return null if the element
 	is not found.
 

@@ -34,6 +34,7 @@ namespace System.Windows.Browser
 	public class HtmlDocument  : HtmlObject 
 	{
 		private HtmlElement document_element;
+		private HtmlElement body;
 
 		internal HtmlDocument ()
 		{
@@ -123,21 +124,19 @@ namespace System.Windows.Browser
 		public Uri DocumentUri {
 			get {
 				IntPtr location = GetPropertyInternal<IntPtr> (Handle, "location");
-				string href;
-				
 				if (location == IntPtr.Zero)
 					return null;
 
-				href = GetPropertyInternal<string> (location, "href");
-				
-				return new Uri (href);
+				return new Uri (GetPropertyInternal<string> (location, "href"));
 			}
 		}
 		
 		public HtmlElement Body {
 			get {
-				return GetPropertyInternal<HtmlElement> (Handle, "body");
-				//Console.WriteLine ("HtmlDocument.Body: {0} Handle: {1}", body, Handle);
+				if (body == null)
+					body = GetPropertyInternal<HtmlElement> (Handle, "body");
+
+				return body;
 			}
 		}
 		
