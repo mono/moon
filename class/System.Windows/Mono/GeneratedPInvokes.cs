@@ -765,6 +765,10 @@ namespace Mono {
 		public extern static void framework_element_register_managed_overrides (IntPtr instance, Mono.MeasureOverrideCallback measure_cb, Mono.ArrangeOverrideCallback arrange_cb);
 
 		[DllImport ("moon")]
+		// void framework_template_add_xaml_binding (FrameworkTemplate *instance, FrameworkElement *target, const char *target_prop_name, const char *source_prop_name);
+		public extern static void framework_template_add_xaml_binding (IntPtr instance, IntPtr target, string target_prop_name, string source_prop_name);
+
+		[DllImport ("moon")]
 		// FrameworkTemplate *framework_template_new ();
 		public extern static IntPtr framework_template_new ();
 

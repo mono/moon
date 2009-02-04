@@ -111,6 +111,14 @@ FrameworkTemplate::AddXamlBinding (XamlTemplateBinding *binding)
 	}
 }
 
+void
+FrameworkTemplate::AddXamlBinding (FrameworkElement *target, const char *target_prop_name, const char *source_prop_name)
+{
+	XamlTemplateBinding *binding = new XamlTemplateBinding (target, target_prop_name, source_prop_name);
+	AddXamlBinding (binding);
+
+	binding->unref ();
+}
 
 ControlTemplate::ControlTemplate ()
 {

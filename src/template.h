@@ -33,6 +33,9 @@ public:
 
 	void AddXamlBinding (XamlTemplateBinding *binding);
 
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	void AddXamlBinding (FrameworkElement *target, const char *target_prop_name, const char *source_prop_name);
+
 	void SetXamlBuffer (XamlContext *context, const char *buffer);
 
 protected:
@@ -128,4 +131,6 @@ private:
 	static void SourcePropertyChangedCallback (DependencyObject *sender, PropertyChangedEventArgs *args, gpointer closure);
 };
 
+
+		
 #endif /* __MOON_TEMPLATE_H__ */

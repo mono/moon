@@ -1,3 +1,8 @@
+2009-02-04  Jackson Harper  <jackson@ximian.com>
+
+	* template.cpp|h: Add a function for creating xaml template
+	bindings.
+
 2009-02-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* audio.cpp:
