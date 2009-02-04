@@ -1,3 +1,8 @@
+2009-02-03  Larry Ewing  <lewing@novell.com>
+
+	* shape.cpp (Shape::ArrangeOverride): invalidate the path cache
+	when we arrange.  Fixes the rectangle bg on pdc.
+
 2009-02-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBox::OnPropertyChanged): Set the default

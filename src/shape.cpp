@@ -533,6 +533,8 @@ Shape::ArrangeOverride (Size finalSize)
 	double sx = 1.0;
 	double sy = 1.0;
 
+	InvalidatePathCache ();
+
 	if (GetStretch () == StretchNone)
 		return arranged.Max (shape_bounds.x + shape_bounds.width, shape_bounds.y + shape_bounds.height);
 
