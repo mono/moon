@@ -25,9 +25,10 @@ MultiScaleSubImage::MultiScaleSubImage ()
 	source = NULL;	
 }
 
-MultiScaleSubImage::MultiScaleSubImage (MultiScaleTileSource *tsource)
+MultiScaleSubImage::MultiScaleSubImage (const char* parent_uri, MultiScaleTileSource *tsource)
 {
 	LOG_MSI ("new MultiScaleSubImage ()\n");
 	SetObjectType (Type::MULTISCALESUBIMAGE);
 	source = tsource;
+	//FIXME, set the new relative uri
 }

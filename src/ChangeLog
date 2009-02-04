@@ -1,5 +1,11 @@
 2009-02-04  Stephane Delcroix <sdelcroix@novell.com>
 
+	* multiscalesubimage.h|cpp:
+	* deepzoomimagetilesource.cpp: add a uri parameter to MSISI ctor
+	so we can compute the UriSource based on parent's one
+
+2009-02-04  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* collection.cpp: MultiScaleSubImageCollection ctor
 
 2009-02-03  Larry Ewing  <lewing@novell.com>

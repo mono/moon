@@ -24,7 +24,7 @@ class MultiScaleSubImage : public DependencyObject {
 	friend void end_element (void *data, const char *el);
 
 	MultiScaleTileSource *source;
-	MultiScaleSubImage (MultiScaleTileSource *source);
+	MultiScaleSubImage (const char* parent_uri, MultiScaleTileSource *source);
 
 	int id, n;
 

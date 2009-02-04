@@ -64,6 +64,7 @@ class DZParserinfo
 	int depth;
 	int skip;
 	bool error;
+	DeepZoomImageTileSource *source;
 
 	bool isCollection;
 
@@ -94,6 +95,7 @@ class DZParserinfo
 		display_rects = NULL;
 		sub_images = NULL;
 		current_subimage = NULL;
+		source = NULL;
 	}
 };
 
@@ -209,6 +211,7 @@ LOG_MSI ("Parsing DeepZoom %s\n", filename);
 	XML_Parser p = XML_ParserCreate (NULL);
 	XML_SetElementHandler (p, start_element, end_element);
 	DZParserinfo *info = new DZParserinfo ();
+	info->source = this;
 
 	XML_SetUserData (p, info);
 
@@ -301,7 +304,7 @@ DeepZoomImageTileSource::downloader_failed (EventObject *sender, EventArgs *call
 void
 DeepZoomImageTileSource::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
-	LOG_MSI ("DZITS::dl_complete");
+	LOG_MSI ("DZITS::dl_complete\n");
 	((DeepZoomImageTileSource *) closure)->DownloaderComplete ();
 }
 
@@ -505,7 +508,7 @@ end_element (void *data, const char *el)
 		case 2:
 			if (info->isCollection)
 				if (!strcmp ("I", el)) {
-					MultiScaleSubImage *subi = new MultiScaleSubImage (new DeepZoomImageTileSource (info->current_subimage->source));
+					MultiScaleSubImage *subi = new MultiScaleSubImage (info->source->GetUriSource (), new DeepZoomImageTileSource (info->current_subimage->source));
 					info->sub_images = g_list_append (info->sub_images, subi);
 					info->current_subimage = NULL;
 				}
