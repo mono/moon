@@ -1,3 +1,8 @@
+2009-02-04  Andreia Gaita  <avidigal@novell.com>
+
+	* plugin-class.[cpp|h]: Change Invoke call to take a name parameter,
+	  so that methods can be called by name as well.
+
 2009-02-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.cpp: PluginInstance::UrlNotify: We need to set the

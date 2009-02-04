@@ -1,6 +1,19 @@
+2009-02-04  Andreia Gaita  <avidigal@novell.com>
+
+	* ScriptableObjectWrapper.cs:
+	- Change Invoke delegate to support a name parameter - custom methods
+	like createManagedObject are a part of the wrapper class but can be
+	called directly on any object, so they're invoked by name and treated
+	separately.
+	- Optimize the constructor a bit.
+	- Implement event removal.
+	- Use the wrapper as a handle for the native calls instead of the
+	object it's wrapping, so we can call stuff directly on the wrapper
+	(like custom methods registered by name).
+
 2009-02-02  Andreia Gaita  <avidigal@novell.com>
 
-	* System.Windows/ScriptableObjectGenerator.cs: Set HasTypes property
+	* ScriptableObjectGenerator.cs: Set HasTypes property
 	if the object referencs any types that can be created.
 
 2009-02-02  Andreia Gaita  <avidigal@novell.com>

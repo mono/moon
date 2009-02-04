@@ -188,7 +188,7 @@ namespace System.Windows
 // 				Console.WriteLine ("typeof (EventHandler<>) == {0}", typeof (EventHandler<>));
 
 				if (ei.EventHandlerType != typeof (EventHandler) && 
-				    typeof (EventHandler<>).IsAssignableFrom (ei.EventHandlerType)) {
+					typeof (EventHandler<>).IsAssignableFrom (ei.EventHandlerType)) {
 					if (!ValidateType (ei.EventHandlerType)) {
 						throw new NotSupportedException (
 							String.Format ("The scriptable object type {0} has a event {1} whose type {2} is not supported",
@@ -237,6 +237,9 @@ namespace System.Windows
 				if (AddTypes (mi))
 					scriptable.HasTypes = true;
 			}
+
+			if (scriptable.HasTypes)
+				scriptable.AddMethod ("createManagedObject", new TypeCode[]{TypeCode.String}, TypeCode.Object);
 
 			return scriptable;
 		}
@@ -308,15 +311,15 @@ namespace System.Windows
 
 		static bool IsCreateable (Type type)
 		{
-			if (type != null && type != typeof (object))
+			if (type != null && (Type.GetTypeCode (type) != TypeCode.Object || type == typeof (object)))
 				return false;
 
 			if (!type.IsVisible || type.IsAbstract ||
-			    type.IsInterface || type.IsPrimitive ||
+				type.IsInterface || type.IsPrimitive ||
 				type.IsGenericTypeDefinition)
 				return false;
 
-			if (!type.IsValueType)
+			if (type.IsValueType)
 				return false;
 
 			// default constructor

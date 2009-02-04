@@ -1,3 +1,9 @@
+2009-02-04  Andreia Gaita  <avidigal@novell.com>
+
+	* ScriptableObjectGenerator.cs: Add scriptable method
+	createManagedObject to types that can be created from script.
+	Fix createable checks.
+
 2009-02-02  Andreia Gaita  <avidigal@novell.com>
 
 	* ScriptableObjectWrapper.cs: ... fix the previous commit and put the 

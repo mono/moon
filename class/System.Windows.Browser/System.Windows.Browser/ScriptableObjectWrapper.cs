@@ -36,10 +36,11 @@ namespace System.Windows.Browser
 {
 
 	delegate void InvokeDelegate (IntPtr obj_handle, IntPtr method_handle,
-				      [MarshalAs (UnmanagedType.LPArray, SizeParamIndex = 3)]
-				      IntPtr[] args,
-				      int arg_count,
-				      ref Value return_value);
+								[MarshalAs (UnmanagedType.LPStr)] string name,
+								[MarshalAs (UnmanagedType.LPArray, SizeParamIndex = 4)]
+								IntPtr[] args,
+								int arg_count,
+								ref Value return_value);
 
 	delegate void SetPropertyDelegate (IntPtr obj_handle, IntPtr property_handle, ref Value value);
 	delegate void GetPropertyDelegate (IntPtr obj_handle, IntPtr property_handle, ref Value value);
@@ -47,9 +48,17 @@ namespace System.Windows.Browser
 	
 	internal class ScriptableObjectWrapper : ScriptObject {
 
+		static InvokeDelegate invoke = new InvokeDelegate (InvokeFromUnmanaged);
+		static SetPropertyDelegate set_prop = new SetPropertyDelegate (SetPropertyFromUnmanaged);
+		static GetPropertyDelegate get_prop = new GetPropertyDelegate (GetPropertyFromUnmanaged);
+		static EventHandlerDelegate add_event = new EventHandlerDelegate (AddEventFromUnmanaged);
+		static EventHandlerDelegate remove_event = new EventHandlerDelegate (RemoveEventFromUnmanaged);
+
 		static Dictionary<IntPtr, WeakReference> scriptableObjects;
+		Dictionary<IntPtr, Delegate> events;
 
 		List<GCHandle> handles; /* for methods, events, properties, as well as the object itself */
+
 		IntPtr moon_handle;
 		public IntPtr MoonHandle {
 			get { return moon_handle; }
@@ -62,43 +71,37 @@ namespace System.Windows.Browser
 			scriptableObjects = new Dictionary<IntPtr,WeakReference> ();
 		}
 
-		public ScriptableObjectWrapper (object obj) : base(obj)
+		public ScriptableObjectWrapper (object obj) : this(obj, IntPtr.Zero)
 		{
-			this.handles = new List<GCHandle>();
-
-			GCHandle obj_handle = GCHandle.Alloc (obj);
-
-			handles.Add (obj_handle);
-
-			moon_handle = ScriptableNativeMethods.wrapper_create_root (
-									WebApplication.Current.PluginHandle,
-									(IntPtr)obj_handle,
-									invoke,
-									set_prop,
-									get_prop,
-									add_event,
-									remove_event);
-
-			handle = ScriptableNativeMethods.moonlight_object_to_npobject (moon_handle);
-			scriptableObjects [handle] = new WeakReference(this);
 		}
 
 		public ScriptableObjectWrapper (object obj, IntPtr parent) : base (obj)
 		{
 			this.handles = new List<GCHandle>();
+			this.events = new Dictionary<IntPtr, Delegate> ();
 
-			GCHandle obj_handle = GCHandle.Alloc (obj);
+			GCHandle obj_handle = GCHandle.Alloc (this);
 
 			handles.Add (obj_handle);
 
-			moon_handle = ScriptableNativeMethods.wrapper_create (parent,
-										     (IntPtr)obj_handle,
-										     invoke,
-										     set_prop,
-										     get_prop,
-										     add_event,
-										     remove_event);
-
+			if (parent == IntPtr.Zero) {
+				moon_handle = ScriptableNativeMethods.wrapper_create_root (
+							WebApplication.Current.PluginHandle,
+							(IntPtr)obj_handle,
+							invoke,
+							set_prop,
+							get_prop,
+							add_event,
+							remove_event);
+			} else {
+				moon_handle = ScriptableNativeMethods.wrapper_create (parent,
+							(IntPtr)obj_handle,
+							invoke,
+							set_prop,
+							get_prop,
+							add_event,
+							remove_event);
+			}
 			handle = ScriptableNativeMethods.moonlight_object_to_npobject (moon_handle);
 			scriptableObjects [handle] = new WeakReference(this);
 		}
@@ -117,26 +120,38 @@ namespace System.Windows.Browser
 			TypeCode tc = Type.GetTypeCode (pi.PropertyType);
 
 			ScriptableNativeMethods.add_property (WebApplication.Current.PluginHandle,
-							      moon_handle,
-							      (IntPtr)prop_handle,
-							      pi.Name,
-							      tc,
-							      pi.CanRead,
-							      pi.CanWrite);
+									moon_handle,
+									(IntPtr)prop_handle,
+									pi.Name,
+									tc,
+									pi.CanRead,
+									pi.CanWrite);
 		}
 
 		public void AddEvent (EventInfo ei)
 		{
- 			GCHandle event_handle = GCHandle.Alloc (ei);
+			GCHandle event_handle = GCHandle.Alloc (ei);
 
 			handles.Add (event_handle);
 
- 			ScriptableNativeMethods.add_event (WebApplication.Current.PluginHandle,
-						           moon_handle,
- 							   (IntPtr)event_handle,
-							   ei.Name);
+			ScriptableNativeMethods.add_event (WebApplication.Current.PluginHandle,
+									moon_handle,
+									(IntPtr)event_handle,
+									ei.Name);
 		}
 
+		public void AddMethod (string name, TypeCode[] args, TypeCode ret_type)
+		{
+			ScriptableNativeMethods.add_method (
+								WebApplication.Current.PluginHandle,
+								moon_handle,
+								IntPtr.Zero,
+								name,
+								ret_type,
+								args,
+								args.Length);
+		}
+		
 		public void AddMethod (MethodInfo mi)
 		{
 			ParameterInfo[] ps = mi.GetParameters();
@@ -152,54 +167,26 @@ namespace System.Windows.Browser
 			handles.Add (method_handle);
 
 			ScriptableNativeMethods.add_method (WebApplication.Current.PluginHandle,
-							    moon_handle,
-							    (IntPtr)method_handle,
-							    mi.Name,
-							    Type.GetTypeCode (mi.ReturnType),
-							    tcs,
-							    tcs.Length);
+								moon_handle,
+								(IntPtr)method_handle,
+								mi.Name,
+								Type.GetTypeCode (mi.ReturnType),
+								tcs,
+								tcs.Length);
 		}
 
-		class EventDelegate {
-			public EventDelegate (Type event_handler_type, IntPtr scriptable_handle, IntPtr closure)
-			{
-				this.event_handler_type = event_handler_type;
-				this.scriptable_handle = scriptable_handle;
-				this.closure = closure;
-			}
+		public void CreateObject (string name, ref Value ret)
+		{
+			//Console.WriteLine (name);
+			if (!WebApplication.ScriptableTypes.ContainsKey (name))
+				return;
 
-			Type event_handler_type;
-			IntPtr scriptable_handle;
-			IntPtr closure;
-
-			public Delegate Delegate {
-				get {
-					return Delegate.CreateDelegate (event_handler_type, this, GetType().GetMethod ("del"));
-				}
-			}
-
-			public void del (object sender, object args)
-			{
-				// don't need to validate the type
-				// again, this was done when the class
-				// containing the event was validated.
-				ScriptableObjectWrapper event_wrapper = ScriptableObjectGenerator.Generate (args, false);
-
-				//Console.WriteLine ("emitting scriptable event!");
-
-				ScriptableNativeMethods.emit_event (WebApplication.Current.PluginHandle,
-								    scriptable_handle,
-								    event_wrapper.MoonHandle,
-								    closure);
-			}
+			//Console.WriteLine ("creating " + name);
+			object o = Activator.CreateInstance (WebApplication.ScriptableTypes[name]);
+			//Console.WriteLine (o + " created");
+			ScriptableObjectWrapper wrapper = ScriptableObjectGenerator.Generate (o, false);
+			ValueFromObject (ref ret, wrapper);
 		}
-
-
-		static InvokeDelegate invoke = new InvokeDelegate (InvokeFromUnmanaged);
-		static SetPropertyDelegate set_prop = new SetPropertyDelegate (SetPropertyFromUnmanaged);
-		static GetPropertyDelegate get_prop = new GetPropertyDelegate (GetPropertyFromUnmanaged);
-		static EventHandlerDelegate add_event = new EventHandlerDelegate (AddEventFromUnmanaged);
-		static EventHandlerDelegate remove_event = new EventHandlerDelegate (RemoveEventFromUnmanaged);
 
 		internal static object ObjectFromValue<T> (Value v)
 		{
@@ -240,7 +227,7 @@ namespace System.Windows.Browser
 				v.u.p = IntPtr.Zero;
 				return;
 			}
-			
+
 			switch (Type.GetTypeCode (o.GetType())) {
 			case TypeCode.Boolean:
 				v.k = Kind.BOOL;
@@ -294,50 +281,85 @@ namespace System.Windows.Browser
 			}
 		}
 
-		static void InvokeFromUnmanaged (IntPtr obj_handle, IntPtr method_handle, IntPtr[] uargs, int arg_count, ref Value return_value)
+		void Invoke (string name, IntPtr[] uargs, int arg_count, ref Value ret)
 		{
-			object obj = ((GCHandle)obj_handle).Target;
-			MethodInfo mi = (MethodInfo)((GCHandle)method_handle).Target;
-
-			object[] margs = new object[arg_count];
-			ParameterInfo[] pis = mi.GetParameters ();
-
-			//Console.WriteLine ("arg_count = {0}", arg_count);
-			for (int i = 0; i < arg_count; i ++) {
-				Value v = (Value)Marshal.PtrToStructure (uargs[i], typeof (Value));
-
-				object o = ObjectFromValue<object> (v);
-				//Console.WriteLine ("margs[{1}] = {2} ({0})", o.GetType(), i, o);
-
-				margs[i] = o; //Convert.ChangeType (o, pis[i].ParameterType);
+			switch (name) {
+				case "createManagedObject":
+					if (arg_count == 1) {
+						Value v = (Value)Marshal.PtrToStructure (uargs[0], typeof (Value));
+						string o = (string)ObjectFromValue<string> (v);
+						CreateObject (o, ref ret);
+					}
+				break;
 			}
-
-			object rv = mi.Invoke (obj, BindingFlags.Default, new JSFriendlyMethodBinder(), margs, null);
-
-			if (mi.ReturnType != typeof (void))
-				ValueFromObject (ref return_value, rv);
 		}
 
-		static void SetPropertyFromUnmanaged (IntPtr obj_handle, IntPtr property_handle, ref Value value)
+		void Invoke (MethodInfo mi, object[] args, ref Value ret)
 		{
-			object obj = ((GCHandle)obj_handle).Target;
-			PropertyInfo pi = (PropertyInfo)((GCHandle)property_handle).Target;
+			object rv = mi.Invoke (this.ManagedObject, BindingFlags.Default, new JSFriendlyMethodBinder (), args, null);
+			if (mi.ReturnType != typeof (void))
+				ValueFromObject (ref ret, rv);
+		}
 
-			object v = ObjectFromValue<object> (value);
+		static void InvokeFromUnmanaged (IntPtr obj_handle, IntPtr method_handle, string name, IntPtr[] uargs, int arg_count, ref Value return_value)
+		{
+			//Console.WriteLine ("Invoke " + name);
+
+			ScriptableObjectWrapper obj = (ScriptableObjectWrapper) ((GCHandle)obj_handle).Target;
+			if (method_handle == IntPtr.Zero) {
+				obj.Invoke (name, uargs, arg_count, ref return_value);
+			} else {
+				MethodInfo mi = (MethodInfo)((GCHandle)method_handle).Target;
+
+				object[] margs = new object[arg_count];
+				ParameterInfo[] pis = mi.GetParameters ();
+
+				//Console.WriteLine ("arg_count = {0}", arg_count);
+				for (int i = 0; i < arg_count; i ++) {
+					Value v = (Value)Marshal.PtrToStructure (uargs[i], typeof (Value));
+
+					object o = ObjectFromValue<object> (v);
+					//Console.WriteLine ("margs[{1}] = {2} ({0})", o.GetType(), i, o);
+
+					margs[i] = o; //Convert.ChangeType (o, pis[i].ParameterType);
+				}
+
+				obj.Invoke (mi, margs, ref return_value);
+			}
+		}
+
+		void SetProperty (PropertyInfo pi, object value)
+		{
 
 			try {
-				pi.SetValue (obj, v, null);
+				pi.SetValue (this.ManagedObject, value, null);
 			} catch (Exception ex) {
 				Console.WriteLine (ex);
 			}
 		}
 
-		static void GetPropertyFromUnmanaged (IntPtr obj_handle, IntPtr property_handle, ref Value value)
+		static void SetPropertyFromUnmanaged (IntPtr obj_handle, IntPtr property_handle, ref Value value)
 		{
-			object obj = ((GCHandle)obj_handle).Target;
+			ScriptableObjectWrapper obj = (ScriptableObjectWrapper) ((GCHandle)obj_handle).Target;
+			
 			PropertyInfo pi = (PropertyInfo)((GCHandle)property_handle).Target;
 
-			object v = pi.GetValue (obj, null);
+			object v = ObjectFromValue<object> (value);
+
+			obj.SetProperty (pi, v);
+		}
+
+		object GetProperty (PropertyInfo pi)
+		{
+			return pi.GetValue (this.ManagedObject, null);
+		}
+
+		static void GetPropertyFromUnmanaged (IntPtr obj_handle, IntPtr property_handle, ref Value value)
+		{
+			ScriptableObjectWrapper obj = (ScriptableObjectWrapper) ((GCHandle)obj_handle).Target;
+			PropertyInfo pi = (PropertyInfo)((GCHandle)property_handle).Target;
+
+			object v = obj.GetProperty (pi);
 
 			if (Type.GetTypeCode (pi.PropertyType) == TypeCode.Object) {
 				v = ScriptableObjectGenerator.Generate (v, false); // the type has already been validated
@@ -346,40 +368,86 @@ namespace System.Windows.Browser
 			ValueFromObject (ref value, v);
 		}
 
+		void AddEvent (EventInfo ei, IntPtr scriptable_handle, IntPtr closure)
+		{
+			Delegate d = new EventDelegate (ei.EventHandlerType, scriptable_handle, closure).Delegate;
+			ei.AddEventHandler (this.ManagedObject, d);
+			if (!this.events.ContainsKey (closure))
+				this.events[closure] = d;
+		}
+
 		static void AddEventFromUnmanaged (IntPtr obj_handle, IntPtr event_handle, IntPtr scriptable_obj, IntPtr closure)
 		{
-			object obj = ((GCHandle)obj_handle).Target;
+			ScriptableObjectWrapper obj = (ScriptableObjectWrapper) ((GCHandle)obj_handle).Target;
 			EventInfo ei = (EventInfo)((GCHandle)event_handle).Target;
+			obj.AddEvent (ei, scriptable_obj, closure);
+		}
 
-			ei.AddEventHandler (obj, new EventDelegate (ei.EventHandlerType, scriptable_obj, closure).Delegate);
+		void RemoveEvent (EventInfo ei, IntPtr closure)
+		{
+			Delegate d = this.events[closure];
+			ei.RemoveEventHandler (this.ManagedObject, d);
+			events.Remove (closure);
 		}
 
 		static void RemoveEventFromUnmanaged (IntPtr obj_handle, IntPtr event_handle, IntPtr scriptable_obj, IntPtr closure)
 		{
+			ScriptableObjectWrapper obj = (ScriptableObjectWrapper) ((GCHandle)obj_handle).Target;
 			EventInfo ei = (EventInfo)((GCHandle)event_handle).Target;
 
-			Console.WriteLine ("TODO - RemoveEventFromUnmanaged");
-			Console.WriteLine (" + {0}", ei.Name);
-			Console.WriteLine (" + {0}", ei.DeclaringType.FullName);
-			Console.WriteLine (" + {0}", ei.EventHandlerType);
+			obj.RemoveEvent (ei, closure);
 		}
-		
+
+		class EventDelegate {
+			public EventDelegate (Type event_handler_type, IntPtr scriptable_handle, IntPtr closure)
+			{
+				this.event_handler_type = event_handler_type;
+				this.scriptable_handle = scriptable_handle;
+				this.closure = closure;
+			}
+
+			Type event_handler_type;
+			IntPtr scriptable_handle;
+			IntPtr closure;
+
+			public Delegate Delegate {
+				get {
+					return Delegate.CreateDelegate (event_handler_type, this, GetType().GetMethod ("del"));
+				}
+			}
+
+			public void del (object sender, object args)
+			{
+				// don't need to validate the type
+				// again, this was done when the class
+				// containing the event was validated.
+				ScriptableObjectWrapper event_wrapper = ScriptableObjectGenerator.Generate (args, false);
+
+				//Console.WriteLine ("emitting scriptable event!");
+
+				ScriptableNativeMethods.emit_event (WebApplication.Current.PluginHandle,
+								    scriptable_handle,
+								    event_wrapper.MoonHandle,
+								    closure);
+			}
+		}
+
 		class ScriptableNativeMethods {
 			[DllImport ("moonplugin", EntryPoint = "moonlight_scriptable_object_wrapper_create_root")]
 			public static extern IntPtr wrapper_create_root (IntPtr plugin, IntPtr obj_handle,
-								    InvokeDelegate invoke,
-								    SetPropertyDelegate set_prop,
-								    GetPropertyDelegate get_prop,
-								    EventHandlerDelegate add_event,
-								    EventHandlerDelegate remove_event);
+									InvokeDelegate invoke,
+									SetPropertyDelegate set_prop,
+									GetPropertyDelegate get_prop,
+									EventHandlerDelegate add_event,
+									EventHandlerDelegate remove_event);
 
 			[DllImport ("moonplugin", EntryPoint = "moonlight_scriptable_object_wrapper_create")]
 			public static extern IntPtr wrapper_create (IntPtr parent_handle, IntPtr obj_handle,
-								    InvokeDelegate invoke,
-								    SetPropertyDelegate set_prop,
-								    GetPropertyDelegate get_prop,
-								    EventHandlerDelegate add_event,
-								    EventHandlerDelegate remove_event);
+									InvokeDelegate invoke,
+									SetPropertyDelegate set_prop,
+									GetPropertyDelegate get_prop,
+									EventHandlerDelegate add_event,
+									EventHandlerDelegate remove_event);
 
 			[DllImport ("moonplugin", EntryPoint = "moonlight_scriptable_object_add_property")]
 			public static extern void add_property (IntPtr plugin_handle,
@@ -392,37 +460,35 @@ namespace System.Windows.Browser
 
 			[DllImport ("moonplugin", EntryPoint = "moonlight_scriptable_object_add_event")]
 			public static extern void add_event (IntPtr plugin_handle,
-							     IntPtr wrapper,
-							     IntPtr event_handle,
-							     string event_name);
+								IntPtr wrapper,
+								IntPtr event_handle,
+								string event_name);
 
 			[DllImport ("moonplugin", EntryPoint = "moonlight_scriptable_object_add_method")]
 			public static extern void add_method (IntPtr plugin_handle,
-							      IntPtr wrapper,
-							      IntPtr method_handle,
-							      string method_name,
-							      TypeCode method_return_type,
-							      TypeCode[] method_parameter_types,
-							      int parameter_count);
+								IntPtr wrapper,
+								IntPtr method_handle,
+								string method_name,
+								TypeCode method_return_type,
+								TypeCode[] method_parameter_types,
+								int parameter_count);
 
 			[DllImport ("moonplugin", EntryPoint = "moonlight_scriptable_object_emit_event")]
 			public static extern void emit_event (IntPtr plugin_handle,
-							      IntPtr scriptable_obj,
-							      IntPtr event_wrapper,
-							      IntPtr closure);
+								IntPtr scriptable_obj,
+								IntPtr event_wrapper,
+								IntPtr closure);
 
 			[DllImport ("moonplugin", EntryPoint = "moonlight_scriptable_object_register")]
 			public static extern void register (IntPtr plugin_handle,
-							    string name,
-							    IntPtr wrapper);
+								string name,
+								IntPtr wrapper);
 
 			[DllImport ("moonplugin", EntryPoint = "moonlight_object_to_npobject")]
 			public static extern IntPtr moonlight_object_to_npobject (IntPtr obj);
 
 			[DllImport ("moonplugin", EntryPoint = "npobject_to_moonlight_object")]
-			public static extern IntPtr npobject_to_moonlight_object (IntPtr obj);
-			
+			public static extern IntPtr npobject_to_moonlight_object (IntPtr obj);	
 		}
-		
 	}
 }

@@ -4137,10 +4137,9 @@ MoonlightScriptableObjectObject::Invoke (int id, NPIdentifier name,
 	if (!method)
 		return MoonlightObject::Invoke (id, name, args, argCount, result);
 
-#if ds(!)0
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+#if ds(!)0
 	printf ("invoking scriptable object method %s\n", strname);
-	NPN_MemFree (strname);
 #endif
 	
 	if (argCount > 0) {
@@ -4149,7 +4148,7 @@ MoonlightScriptableObjectObject::Invoke (int id, NPIdentifier name,
 			variant_to_value (&args[i], &vargs[i]);
 	}
 	
-	invoke (managed_scriptable, method->method_handle, vargs, argCount, &rv);
+	invoke (managed_scriptable, method->method_handle, strname, vargs, argCount, &rv);
 	
 	if (argCount > 0) {
 		for (i = 0; i < argCount; i++)
@@ -4157,11 +4156,14 @@ MoonlightScriptableObjectObject::Invoke (int id, NPIdentifier name,
 		
 		delete [] vargs;
 	}
+
+	ds(printf ("result of invoking %s was %p\n", strname, rv.AsNPObj ()));
 	
 	/* Note: this 1 is "void" */
-	if (method->method_return_type != 1)
+	if (method->method_return_type != 0)
 		value_to_variant (this, &rv, result);
 	
+	NPN_MemFree (strname);
 	return true;
 }
 
