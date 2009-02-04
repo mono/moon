@@ -250,6 +250,7 @@ multi_scale_image_handle_parsed (void *userdata)
 {
 	MultiScaleImage *msi = (MultiScaleImage*)userdata;
 	//if the source is a collection, fill the subimages list
+	msi->SetValue (MultiScaleImage::AspectRatioProperty, Value ((double)msi->source->GetImageWidth () / (double)msi->source->GetImageHeight ()));
 	DeepZoomImageTileSource *source = (DeepZoomImageTileSource *)msi->source;
 	if (source) {
 		int i;
@@ -321,8 +322,6 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 		return;
 	}
 
-	//FIXME: only need to set this once
-	SetValue (MultiScaleImage::AspectRatioProperty, Value ((double)source->GetImageWidth () / (double)source->GetImageHeight ()));
 
 	if (!source->get_tile_func) {
 		g_warning ("no get_tile_func set\n");
@@ -406,7 +405,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 		int i, j;
 
 		for (i = MAX(0, (int)((double)vp_ox * im_w / (double)v_tile_w)); i * v_tile_w < vp_ox * im_w + vp_w * im_w && i * v_tile_w < im_w; i++) {
-			for (j = MAX(0, (int)((double)vp_oy * im_h / (double)v_tile_h)); j * v_tile_h < vp_oy * im_h + vp_h * im_h && j * v_tile_h < im_h; j++) {
+			for (j = MAX(0, (int)((double)vp_oy * im_h / (double)v_tile_h)); j * v_tile_h < vp_oy * im_h + vp_h * im_w && j * v_tile_h < im_h; j++) {
 				count++;
 				if (cache_contains (from_layer, i, j, false))
 					found ++;
@@ -427,7 +426,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 		double v_tile_w = tile_width * ldexp (1.0, layers - layer_to_render);
 		double v_tile_h = tile_height * ldexp (1.0, layers - layer_to_render);
 		for (i = MAX(0, (int)((double)vp_ox * im_w / (double)v_tile_w)); i * v_tile_w < vp_ox * im_w + vp_w * im_w && i * v_tile_w < im_w; i++) {
-			for (j = MAX(0, (int)((double)vp_oy * im_h / (double)v_tile_h)); j * v_tile_h < vp_oy * im_h + vp_h * im_h && j * v_tile_h < im_h; j++) {
+			for (j = MAX(0, (int)((double)vp_oy * im_h / (double)v_tile_h)); j * v_tile_h < vp_oy * im_h + vp_h * im_w && j * v_tile_h < im_h; j++) {
 				cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, to_key (layer_to_render, i, j));
 				if (!image)
 					continue;
@@ -437,7 +436,8 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 				cairo_save (cr);
 
 				cairo_rectangle (cr, 0, 0, w, h);
-				cairo_scale (cr, w / (vp_w * im_w), h / (vp_h * im_h)); //scale to viewport
+				//cairo_scale (cr, w / (vp_w * im_w), h / (vp_h * im_h)); //scale to viewport
+				cairo_scale (cr, w / (vp_w * im_w), w / (vp_w * im_w)); //scale to viewport
 				cairo_translate (cr, -vp_ox * im_w + i * v_tile_w, -vp_oy * im_h+ j * v_tile_h);
 				//cairo_scale (cr, im_w / (double)*p_w, im_h / (double)*p_h); //scale to image size
 				cairo_scale (cr, ldexp (1.0, layers - layer_to_render), ldexp (1.0, layers - layer_to_render)); //scale to image size
@@ -464,7 +464,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 
 
 		for (i = MAX(0, (int)((double)vp_ox * im_w / (double)v_tile_w)); i * v_tile_w < vp_ox * im_w + vp_w * im_w && i * v_tile_w < im_w; i++) {
-			for (j = MAX(0, (int)((double)vp_oy * im_h / (double)v_tile_h)); j * v_tile_h < vp_oy * im_h + vp_h * im_h && j * v_tile_h < im_h; j++) {
+			for (j = MAX(0, (int)((double)vp_oy * im_h / (double)v_tile_h)); j * v_tile_h < vp_oy * im_h + vp_h * im_w && j * v_tile_h < im_h; j++) {
 				if (!cache_contains (from_layer, i, j, true)) {
 					context = to_key (from_layer, i, j);
 				
@@ -555,6 +555,6 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args)
 double
 MultiScaleImage::GetViewportHeight ()
 {
-	return GetAspectRatio () * GetActualHeight() * GetViewportWidth () / GetActualWidth (); 
+	return GetViewportWidth () / GetAspectRatio ();
 }
 
