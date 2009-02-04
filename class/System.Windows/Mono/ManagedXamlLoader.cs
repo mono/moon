@@ -375,13 +375,18 @@ namespace Mono.Xaml
 						set_method.Invoke (null, new object [] {target, the_list});
 					}
 
-					the_list.Add (o_value);
+					try {
+						the_list.Add (o_value);
 
-					if (o_value is DependencyObject && target is DependencyObject && !(the_list is DependencyObject)) {
-						NativeMethods.dependency_object_set_logical_parent (((DependencyObject)o_value).native, ((DependencyObject)target).native);
+						if (o_value is DependencyObject && target is DependencyObject && !(the_list is DependencyObject)) {
+							NativeMethods.dependency_object_set_logical_parent (((DependencyObject)o_value).native, ((DependencyObject)target).native);
+						}
+
+						return true;
 					}
-
-					return true;
+					catch {
+						// don't return here, fall through to the ConvertType case below.
+					}
 				} else {
 					// I guess we need to wrap the current value in a collection, or does this error out?
 					Console.WriteLine ("ow god my eye!");
@@ -627,10 +632,39 @@ namespace Mono.Xaml
 		
 		private bool SetPropertyFromValue (IntPtr parser, IntPtr top_level, object target, IntPtr target_parent_ptr, PropertyInfo pi, IntPtr value_ptr, out string error)
 		{
-			object obj_value = Value.ToObject (null, value_ptr);
-			string str_value = obj_value as string;
-
 			error = null;
+
+			object obj_value = Value.ToObject (null, value_ptr);
+
+			if (typeof (IList).IsAssignableFrom (pi.PropertyType) && !(obj_value is IList)) {
+				IList the_list = (IList) pi.GetValue (target, null);
+
+				if (the_list == null) {
+					the_list = (IList) Activator.CreateInstance (pi.PropertyType);
+					if (the_list == null) {
+						error = "Unable to create instance of list: " + pi.PropertyType;
+						return false;
+					}
+					pi.SetValue (target, the_list, null);
+				}
+
+				try {
+					the_list.Add (obj_value);
+
+					if (obj_value is DependencyObject && target is DependencyObject && !(the_list is DependencyObject)) {
+						NativeMethods.dependency_object_set_logical_parent (((DependencyObject)obj_value).native, ((DependencyObject)target).native);
+					}
+
+					return true;
+				}
+				catch {
+					// don't return here, fall
+					// through to the string case
+					// below.
+				}
+			}
+
+			string str_value = obj_value as string;
 
 			if (str_value != null) {
 				IntPtr unmanaged_value;
@@ -663,26 +697,6 @@ namespace Mono.Xaml
 					return error == null;
 			} else {
 				obj_value = Value.ToObject (pi.PropertyType, value_ptr);
-			}
-
-			if (typeof (IList).IsAssignableFrom (pi.PropertyType) && !(obj_value is IList)) {
-				IList the_list = (IList) pi.GetValue (target, null);
-
-				if (the_list == null) {
-					the_list = (IList) Activator.CreateInstance (pi.PropertyType);
-					if (the_list == null) {
-						error = "Unable to create instance of list: " + pi.PropertyType;
-						return false;
-					}
-					pi.SetValue (target, the_list, null);
-				}
-				the_list.Add (obj_value);
-
-				if (obj_value is DependencyObject && target is DependencyObject && !(the_list is DependencyObject)) {
-					NativeMethods.dependency_object_set_logical_parent (((DependencyObject)obj_value).native, ((DependencyObject)target).native);
-				}
-
-				return true;
 			}
 
 			obj_value = ConvertType (pi.PropertyType, obj_value);

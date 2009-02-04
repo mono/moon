@@ -76,7 +76,7 @@ namespace System.Windows.Media {
 			FrameworkElement fw = reference as FrameworkElement;
 			if (fw == null)
 				throw new InvalidOperationException ("Reference is not a valid visual DependencyObject");
-			return fw.Parent;
+			return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.uielement_get_visual_parent (fw.native)) as DependencyObject;
 		}
 
 		[SecuritySafeCritical]
