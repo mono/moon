@@ -75,6 +75,7 @@ namespace Mono {
 		internal static UnmanagedEventHandler mouse_leave = CreateSafeHandler (mouse_leave_callback);
 		internal static UnmanagedEventHandler size_changed = CreateSafeHandler (size_changed_callback);
 		internal static UnmanagedEventHandler surface_resized = CreateSafeHandler (surface_resized_callback);
+		internal static UnmanagedEventHandler surface_full_screen_changed = CreateSafeHandler (surface_full_screen_changed_callback);
 		internal static UnmanagedEventHandler template_applied = CreateSafeHandler (template_applied_callback);
 
 		static void template_applied_callback (IntPtr target, IntPtr calldata, IntPtr closure)
@@ -185,14 +186,18 @@ namespace Mono {
 
 		static void surface_resized_callback (IntPtr target, IntPtr calldata, IntPtr clozure)
 		{
-			// Parameter ignored
-			//FIXME: BrowserHost is now replaced by SilverlightHost.Content
-			BrowserHost.InvokeResize ();
+			Content.InvokeResize ();
+		}
+		
+		static void surface_full_screen_changed_callback (IntPtr target, IntPtr calldata, IntPtr clozure)
+		{
+			Content.InvokeFullScreenChange ();
 		}
 
 		internal static void InitSurface (IntPtr surface)
 		{
 			NativeMethods.event_object_add_handler (surface, "Resize", surface_resized, IntPtr.Zero, IntPtr.Zero);
+			NativeMethods.event_object_add_handler (surface, "FullScreenChange", surface_full_screen_changed, IntPtr.Zero, IntPtr.Zero);
 		}
 
 		internal static void AddHandler (DependencyObject obj, string eventName, UnmanagedEventHandler handler)
