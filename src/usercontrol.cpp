@@ -117,5 +117,5 @@ UserControl::ArrangeOverride (Size finalSize)
 			arranged.height = MAX (arranged.height, finalSize.height);
 	}
 
-	return finalSize;
+	return arranged;
 }

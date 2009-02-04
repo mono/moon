@@ -442,8 +442,10 @@ Surface::UpdateLayout ()
 		toplevel->Measure (available);
 		Size desired = toplevel->GetDesiredSize ();
 
-		if (toplevel->IsLayoutContainer ())
-			desired = desired.Max (available);
+		if (toplevel->IsLayoutContainer ()) {
+			if (desired.width == 0 && desired.height == 0)
+				desired = desired.Max (available);
+		}
 
 		toplevel->Arrange (Rect (Canvas::GetLeft (toplevel), Canvas::GetTop (toplevel), 
 					 desired.width, desired.height));

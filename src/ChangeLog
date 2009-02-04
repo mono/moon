@@ -1,5 +1,12 @@
 2009-02-03  Larry Ewing  <lewing@novell.com>
 
+	* dirty.cpp (Surface::UpdateLayout): hack some sizing logic into
+	the toplevel logic.
+
+	* usercontrol.cpp: fix missing modification.
+
+2009-02-03  Larry Ewing  <lewing@novell.com>
+
 	* frameworkelement.cpp (FrameworkElement::Arrange): shrink the
 	clip by the margin.
 
