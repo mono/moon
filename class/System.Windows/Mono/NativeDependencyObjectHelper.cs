@@ -248,6 +248,7 @@ namespace Mono {
 			case Kind.IMAGE: return new Image (raw);
 			case Kind.INLINE_COLLECTION: return new InlineCollection (raw);
 			case Kind.INKPRESENTER: return new InkPresenter (raw);
+			case Kind.INPUTMETHOD: return new InputMethod (raw);
 			case Kind.KEYSPLINE: return new KeySpline(raw);
 			case Kind.LINEARGRADIENTBRUSH: return new LinearGradientBrush (raw);
 			case Kind.LINEBREAK: return new LineBreak (raw);
