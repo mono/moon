@@ -1,5 +1,11 @@
 2009-02-03  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.cpp (TextBoxView::ResetCursorBlink): We don't care about
+	ReadOnly status afterall.
+	(TextBoxView::OnModelChanged): Same.
+	(TextBox::OnKeyDown): If we are ReadOnly, don't allow editing of
+	the buffer.
+
 	* control.h: Control's default FontSize is 11, not 14.666 like
 	TextBlock's.
 

@@ -934,22 +934,30 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 	KeyPressFreeze ();
 	
 	if ((c = args->GetUnicode ())) {
-		KeyPressUnichar (c);
-		args->SetHandled (true);
+		if (!GetIsReadOnly ()) {
+			KeyPressUnichar (c);
+			args->SetHandled (true);
+		}
 	} else {
 		// special key
 		switch (key) {
 		case GDK_Return:
-			KeyPressUnichar ('\r');
-			args->SetHandled (true);
+			if (!GetIsReadOnly ()) {
+				KeyPressUnichar ('\r');
+				args->SetHandled (true);
+			}
 			break;
 		case GDK_BackSpace:
-			KeyPressBackSpace (modifiers);
-			args->SetHandled (true);
+			if (!GetIsReadOnly ()) {
+				KeyPressBackSpace (modifiers);
+				args->SetHandled (true);
+			}
 			break;
 		case GDK_Delete:
-			KeyPressDelete (modifiers);
-			args->SetHandled (true);
+			if (!GetIsReadOnly ()) {
+				KeyPressDelete (modifiers);
+				args->SetHandled (true);
+			}
 			break;
 		case GDK_KP_Page_Down:
 		case GDK_Page_Down:
@@ -1002,31 +1010,41 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 		case GDK_X:
 		case GDK_x:
 			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK | GDK_SHIFT_MASK)) == GDK_CONTROL_MASK) {
-				// copy selection to the clipboard and then cut
-				// FIXME: implement me
-				args->SetHandled (true);
+				if (!GetIsReadOnly ()) {
+					// copy selection to the clipboard and then cut
+					// FIXME: implement me
+					args->SetHandled (true);
+				}
 			}
 			break;
 		case GDK_V:
 		case GDK_v:
 			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK | GDK_SHIFT_MASK)) == GDK_CONTROL_MASK) {
-				// paste clipboard contents to the buffer
-				// FIXME: implement me
-				args->SetHandled (true);
+				if (!GetIsReadOnly ()) {
+					// paste clipboard contents to the buffer
+					// FIXME: implement me
+					args->SetHandled (true);
+				}
 			}
 			break;
 		case GDK_Y:
 		case GDK_y:
+			// Ctrl+Y := Redo
 			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK)) == GDK_CONTROL_MASK) {
-				// Ctrl+Y := Redo
-				args->SetHandled (true);
+				if (!GetIsReadOnly ()) {
+					// FIXME: implement me
+					args->SetHandled (true);
+				}
 			}
 			break;
 		case GDK_Z:
 		case GDK_z:
+			// Ctrl+Z := Undo
 			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK)) == GDK_CONTROL_MASK) {
-				// Ctrl+Z := Undo
-				args->SetHandled (true);
+				if (!GetIsReadOnly ()) {
+					// FIXME: implement me
+					args->SetHandled (true);
+				}
 			}
 			break;
 		default:
@@ -1225,9 +1243,9 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		changed = TextBoxModelChangedFont;
 		font->SetWeight (weight);
 	} else if (args->property == TextBox::AcceptsReturnProperty) {
-		// no rendering changes required
+		// no state changes needed
 	} else if (args->property == TextBox::IsReadOnlyProperty) {
-		changed = TextBoxModelChangedReadOnly;
+		// no state changes needed
 	} else if (args->property == TextBox::MaxLengthProperty) {
 		maxlen = args->new_value->AsInt32 ();
 	} else if (args->property == TextBox::SelectedTextProperty) {
@@ -1517,7 +1535,7 @@ TextBoxView::EndCursorBlink ()
 void
 TextBoxView::ResetCursorBlink (bool delay)
 {
-	if (textbox->IsFocused () && !textbox->GetIsReadOnly () && !textbox->HasSelectedText ()) {
+	if (textbox->IsFocused () && !textbox->HasSelectedText ()) {
 		// cursor is blinkable... proceed with blinkage
 		if (delay)
 			DelayCursorBlink ();
@@ -1751,9 +1769,6 @@ TextBoxView::OnModelChanged (TextBoxModelChangedEventArgs *args)
 			return;
 		}
 		break;
-	case TextBoxModelChangedReadOnly:
-		ResetCursorBlink (false);
-		return;
 	case TextBoxModelChangedBrush:
 		// a brush has changed, no layout updates needed, we just need to re-render
 		break;

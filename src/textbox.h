@@ -43,7 +43,6 @@ enum TextBoxModelChangeType {
 	TextBoxModelChangedTextAlignment,
 	TextBoxModelChangedTextWrapping,
 	TextBoxModelChangedSelection,
-	TextBoxModelChangedReadOnly,
 	TextBoxModelChangedBrush,
 	TextBoxModelChangedFont,
 	TextBoxModelChangedText
