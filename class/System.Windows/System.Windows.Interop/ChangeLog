@@ -1,3 +1,7 @@
+2009-02-03  Geoff Norton  <gnorton@novell.com>
+
+	* Content.cs: Wire up Resize and FullScreenChange events.
+
 2009-01-30  Geoff Norton  <gnorton@novell.com>
 
 	* Content.cs: Implement IsFullscreen.

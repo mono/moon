@@ -71,31 +71,40 @@ namespace System.Windows.Interop {
 				NativeMethods.surface_set_full_screen (Deployment.Current.Surface.Native, value);
 			}
 		}
-
-//		internal void InvokeResize ()
-//		{
-//			EventHandler h = (EventHandler) events[ResizeEvent];
-//			
-//			if (h != null)
-//				h (null, null);
-//		}
-	
-		public event EventHandler FullScreenChanged;
 		
-		object ResizeEvent = new object ();
-		IntPtr surface = IntPtr.Zero;
-		EventHandlerList events = new EventHandlerList ();
+		static EventHandlerList events = new EventHandlerList ();
+		static object ResizeEvent = new object ();
+		static object FullScreenChangeEvent = new object ();
+
+		static internal void InvokeResize ()
+		{
+			EventHandler h = (EventHandler) events[ResizeEvent];
+			
+			if (h != null)
+				h (null, null);
+		}
+		
+		static internal void InvokeFullScreenChange ()
+		{
+			EventHandler h = (EventHandler) events[FullScreenChangeEvent];
+			
+			if (h != null)
+				h (null, null);
+		}
 	
+		public event EventHandler FullScreenChanged {
+			add {
+				events.AddHandler (FullScreenChangeEvent, value);
+			}
+			remove {
+				events.RemoveHandler (FullScreenChangeEvent, value);
+			}
+		}
+		
 		public event EventHandler Resized {
 			add {
-				if (surface == IntPtr.Zero) {
-					surface = NativeMethods.plugin_instance_get_surface (PluginHost.Handle);
-					Events.InitSurface (surface);
-				}
-				
 				events.AddHandler (ResizeEvent, value);
 			}
-			
 			remove {
 				events.RemoveHandler (ResizeEvent, value);
 			}
