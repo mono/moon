@@ -25,7 +25,9 @@
 
 #include "dependencyproperty.h"
 #include "contentcontrol.h"
+#include "runtime.h"
 #include "textbox.h"
+#include "clock.h"
 #include "utils.h"
 
 
@@ -1510,14 +1512,27 @@ TextBoxView::blink (void *user_data)
 void
 TextBoxView::ConnectBlinkTimeout (guint multiplier)
 {
-	blink_timeout = g_timeout_add (CURSOR_BLINK_TIMEOUT_BASE * multiplier / CURSOR_BLINK_DIVIDER, TextBoxView::blink, this);
+	guint timeout = CURSOR_BLINK_TIMEOUT_BASE * multiplier / CURSOR_BLINK_DIVIDER;
+	Surface *surface = GetSurface ();
+	TimeManager *manager;
+	
+	if (!surface || !(manager = surface->GetTimeManager ()))
+		return;
+	
+	blink_timeout = manager->AddTimeout (G_PRIORITY_DEFAULT, timeout, TextBoxView::blink, this);
 }
 
 void
 TextBoxView::DisconnectBlinkTimeout ()
 {
+	TimeManager *manager;
+	Surface *surface;
+	
 	if (blink_timeout != 0) {
-		g_source_remove (blink_timeout);
+		if (!(surface = GetSurface ()) || !(manager = surface->GetTimeManager ()))
+			return;
+		
+		manager->RemoveTimeout (blink_timeout);
 		blink_timeout = 0;
 	}
 }
