@@ -25,7 +25,7 @@
 #define CONTROL_FONT_STRETCH FontStretchesNormal
 #define CONTROL_FONT_WEIGHT  FontWeightsNormal
 #define CONTROL_FONT_STYLE   FontStylesNormal
-#define CONTROL_FONT_SIZE    14.666666984558105
+#define CONTROL_FONT_SIZE    11
 
 //
 // Control Class

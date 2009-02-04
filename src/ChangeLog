@@ -1,3 +1,8 @@
+2009-02-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* control.h: Control's default FontSize is 11, not 14.666 like
+	TextBlock's.
+
 2009-02-03  Larry Ewing  <lewing@novell.com>
 
 	* shape.cpp (Shape::ArrangeOverride): invalidate the path cache
