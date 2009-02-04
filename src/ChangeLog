@@ -1,3 +1,10 @@
+2009-02-04  Alan McGovern  <amcgovern@novell.com>
+
+	* frameworkelement.cpp: Fixed hit tests which didn't do what
+	  i meant them to do and added new tests. Panels should not
+	  swallow a click when hit testing, so we should never abort
+	  checking children.
+
 2009-02-04  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscalesubimage.cpp: fix the source uri in the subimage

@@ -1,5 +1,11 @@
 2009-02-04  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Media/VisualTreeHelperTest.cs: Add more
+	  NUnit tests to check the handling of multiple panels and
+	  multiple children.
+
+2009-02-04  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Media/VisualTreeHelperTest.cs: The hittests
 	  are all passing now
 

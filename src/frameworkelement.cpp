@@ -364,13 +364,14 @@ FrameworkElement::HitTest (cairo_t *cr, Point p, List *uielement_list)
 	List::Node *us = uielement_list->Prepend (new UIElementNode (this));
 	bool hit = false;
 
-	VisualTreeWalker walker = VisualTreeWalker (this, ZReverse);
+	VisualTreeWalker walker = VisualTreeWalker (this, ZForward);
 	while (UIElement *child = walker.Step ()) {
 		child->HitTest (cr, p, uielement_list);
 
 		if (us != uielement_list->First ()) {
 			hit = true;
-			break;
+			//if (child->Is (Type::PANEL))
+				//break;
 		}
 	}	
 
