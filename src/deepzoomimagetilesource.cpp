@@ -478,11 +478,11 @@ start_element (void *data, const char *el, const char **attr)
 				int i;
 				for (i = 0; attr [i]; i+=2)
 					if (!strcmp ("X", attr[i]))
-						info->current_subimage->vp_x = atol (attr[i+1]);
+						info->current_subimage->vp_x = strtod (attr[i+1], NULL);
 					else if (!strcmp ("Y", attr[i]))
-						info->current_subimage->vp_y = atol (attr[i+1]);
+						info->current_subimage->vp_y = strtod (attr[i+1], NULL);
 					else if (!strcmp ("Width", attr[i]))
-						info->current_subimage->vp_w = atol (attr[i+1]);
+						info->current_subimage->vp_w = strtod (attr[i+1], NULL);
 					else
 						LOG_MSI ("\tunparsed attr %s: %s\n", attr[i], attr[i+1]);
 			} else {
@@ -509,6 +509,10 @@ end_element (void *data, const char *el)
 			if (info->isCollection)
 				if (!strcmp ("I", el)) {
 					MultiScaleSubImage *subi = new MultiScaleSubImage (info->source->GetUriSource (), new DeepZoomImageTileSource (info->current_subimage->source));
+					subi->id = info->current_subimage->id;
+					subi->n = info->current_subimage->n;
+					subi->SetViewportOrigin (new Point (info->current_subimage->vp_x, info->current_subimage->vp_y));
+					subi->SetViewportWidth (info->current_subimage->vp_w);
 					info->sub_images = g_list_append (info->sub_images, subi);
 					info->current_subimage = NULL;
 				}
