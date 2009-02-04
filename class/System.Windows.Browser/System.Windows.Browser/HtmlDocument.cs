@@ -61,7 +61,11 @@ namespace System.Windows.Browser
 		[SecuritySafeCritical ()]
 		public HtmlElement GetElementById (string id)
 		{
-			return new HtmlElement (InvokeInternal<IntPtr> (Handle, "getElementById", id));
+			var handle = InvokeInternal<IntPtr> (Handle, "getElementById", id);
+			if (handle == IntPtr.Zero)
+				return null;
+
+			return new HtmlElement (handle);
 		}
 
 		[SecuritySafeCritical ()]
