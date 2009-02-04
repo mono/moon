@@ -1,6 +1,10 @@
 2009-02-04  Jackson Harper  <jackson@ximian.com>
 
 	* GeneratedPInvokes.cs: Regenerate.
+	* ManagedXamlLoader.cs: Use the binding expression parser when we
+	are given a BINDINGEXPRESSION or TEMPLATEBINDING.
+	* MarkupExpressionParser.cs: Add some methods for detecting what
+	kind of expression we are dealing with.
 
 2009-02-04  Jackson Harper  <jackson@ximian.com>
 

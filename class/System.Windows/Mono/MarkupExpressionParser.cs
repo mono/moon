@@ -47,6 +47,22 @@ namespace Mono.Xaml {
 			}
 		}
 #endif
+
+		public static bool IsTemplateBinding (string expression)
+		{
+			return expression.StartsWith ("{TemplateBinding");
+		}
+
+		public static bool IsStaticResource (string expression)
+		{
+			return expression.StartsWith ("{StaticResource");
+		}
+
+		public static bool IsBinding (string expression)
+		{
+			return expression.StartsWith ("{Binding");
+		}
+
 		public object ParseExpression (ref string expression)
 		{
 			if (expression.StartsWith ("{Binding")) {

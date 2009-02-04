@@ -36,6 +36,7 @@ using System.Windows;
 using System.Windows.Markup;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
+using System.Windows.Data;
 using Mono;
 
 namespace Mono.Xaml
@@ -275,6 +276,34 @@ namespace Mono.Xaml
 			return name.IndexOf ('.') > 0;
 		}
 
+		private bool TrySetExpression (IntPtr parser, object target, string name, IntPtr value_ptr)
+		{
+			if (!name.StartsWith ("{"))
+				return false;
+
+			DependencyObject dob = target as DependencyObject;
+			object obj_value = Value.ToObject (null, value_ptr);
+			string str_value = obj_value as string;
+
+			if (str_value == null || dob == null)
+				return false;
+
+			MarkupExpressionParser p = new MarkupExpressionParser (dob, name, parser);
+			object o = p.ParseExpression (ref str_value);
+			Binding binding = o as Binding;
+
+			if (binding == null && !MarkupExpressionParser.IsTemplateBinding (str_value))
+				return false;
+
+			DependencyProperty prop = DependencyProperty.Lookup (dob.GetKind (), name);
+
+			if (prop == null)
+				return false;
+
+			dob.SetValue (prop, binding);
+			return true;
+		}
+
 		private bool TrySetAttachedProperty (IntPtr top_level, string xmlns, IntPtr target_ptr, string type_name, string name, IntPtr value_ptr)
 		{
 			if (type_name == null)
@@ -499,6 +528,9 @@ namespace Mono.Xaml
 				}
 				name = name.Substring (++dot, name.Length - dot);
 			}
+
+			if (TrySetExpression (parser, target, name, value_ptr))
+				return true;
 
 			if (TrySetPropertyReflection (parser, top_level, xmlns, target, target_parent_ptr, type_name, name, value_ptr, out error))
 				return true;
