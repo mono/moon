@@ -279,10 +279,10 @@ TextBox::TextBox ()
 	selection_anchor = 0;
 	selection_cursor = 0;
 	cursor_column = 0;
+	selecting = false;
 	setvalue = true;
 	focused = false;
 	view = NULL;
-	maxlen = 0;
 }
 
 TextBox::~TextBox ()
@@ -872,6 +872,7 @@ TextBox::KeyPressUnichar (gunichar c)
 	int start = MIN (selection_anchor, selection_cursor);
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
+	int maxlen = GetMaxLength ();
 	
 	if ((maxlen > 0 && buffer->len >= maxlen) || ((c == '\r') && !GetAcceptsReturn ()))
 		return;
@@ -899,13 +900,7 @@ TextBox::KeyPressUnichar (gunichar c)
 }
 
 void
-TextBox::KeyPressFreeze ()
-{
-	emit = NOTHING_CHANGED;
-}
-
-void
-TextBox::KeyPressThaw ()
+TextBox::SyncAndEmit ()
 {
 	if (emit & TEXT_CHANGED)
 		SyncText ();
@@ -918,6 +913,8 @@ TextBox::KeyPressThaw ()
 	
 	if (emit & SELECTION_CHANGED)
 		EmitSelectionChanged ();
+	
+	emit = NOTHING_CHANGED;
 }
 
 void
@@ -930,8 +927,10 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 	if (args->IsModifier ())
 		return;
 	
-	// freeze TextBox event emission
-	KeyPressFreeze ();
+	// set 'emit' to NOTHING_CHANGED so that we can figure out
+	// what has chanegd after applying the changes that this
+	// keypress will cause.
+	emit = NOTHING_CHANGED;
 	
 	if ((c = args->GetUnicode ())) {
 		if (!GetIsReadOnly ()) {
@@ -1058,9 +1057,7 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 	if (emit & TEXT_CHANGED)
 		buffer->Print ();
 	
-	// thaw textbox keypress, causes Text and SelectedText to be
-	// sync'd and events to be emitted
-	KeyPressThaw ();
+	SyncAndEmit ();
 	
 	// FIXME: register a key repeat timeout?
 }
@@ -1086,7 +1083,19 @@ TextBox::key_up (EventObject *sender, EventArgs *args, void *closure)
 void
 TextBox::OnMouseLeftButtonDown (MouseEventArgs *args)
 {
-	//printf ("TextBox::OnMouseLeftButtonDown()\n");
+	double x, y;
+	int cursor;
+	
+	if (view) {
+		args->GetPosition (view, &x, &y);
+		selecting = true;
+		
+		cursor = view->GetCursorFromXY (x, y);
+		
+		emit = NOTHING_CHANGED;
+		ClearSelection (cursor);
+		SyncAndEmit ();
+	}
 }
 
 void
@@ -1098,7 +1107,7 @@ TextBox::mouse_left_button_down (EventObject *sender, EventArgs *args, gpointer 
 void
 TextBox::OnMouseLeftButtonUp (MouseEventArgs *args)
 {
-	//printf ("TextBox::OnMouseLeftButtonUp()\n");
+	selecting = false;
 }
 
 void
@@ -1134,7 +1143,22 @@ TextBox::mouse_leave (EventObject *sender, EventArgs *args, gpointer closure)
 void
 TextBox::OnMouseMove (MouseEventArgs *args)
 {
-	//printf ("TextBox::OnMouseMove()\n");
+	int anchor = selection_anchor;
+	int cursor = selection_cursor;
+	double x, y;
+	
+	if (selecting) {
+		args->GetPosition (view, &x, &y);
+		
+		cursor = view->GetCursorFromXY (x, y);
+		
+		emit = NOTHING_CHANGED;
+		SetSelectionLength (abs (cursor - anchor));
+		SetSelectionStart (MIN (anchor, cursor));
+		selection_anchor = anchor;
+		selection_cursor = cursor;
+		SyncAndEmit ();
+	}
 }
 
 void
@@ -1247,7 +1271,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 	} else if (args->property == TextBox::IsReadOnlyProperty) {
 		// no state changes needed
 	} else if (args->property == TextBox::MaxLengthProperty) {
-		maxlen = args->new_value->AsInt32 ();
+		// no state changes needed
 	} else if (args->property == TextBox::SelectedTextProperty) {
 		if (setvalue) {
 			const char *str = args->new_value ? args->new_value->AsString () : "";
@@ -1445,6 +1469,8 @@ TextBoxView::TextBoxView ()
 {
 	SetObjectType (Type::TEXTBOXVIEW);
 	
+	SetCursor (MouseCursorIBeam);
+	
 	cursor = Rect (0, 0, 0, 0);
 	layout = new TextLayout ();
 	had_selected_text = false;
@@ -1464,6 +1490,12 @@ TextBoxView::~TextBoxView ()
 	DisconnectBlinkTimeout ();
 	
 	delete layout;
+}
+
+int
+TextBoxView::GetCursorFromXY (double x, double y)
+{
+	return layout->GetCursorFromXY (Point (), x, y);
 }
 
 gboolean

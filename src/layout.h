@@ -57,6 +57,8 @@ class TextRun : public List::Node {
 	}
 };
 
+class TextLine;
+
 class TextLayout {
 	// User-set data
 	LineStackingStrategy strategy;
@@ -77,6 +79,8 @@ class TextLayout {
 	bool OverrideLineHeight () { return (strategy == LineStackingStrategyBlockLineHeight && !isnan (line_height)); }
 	
 	double HorizontalAlignment (double line_width);
+	
+	TextLine *GetLineFromY (const Point &origin, double y, int *index);
 	
 	void LayoutWrapWithOverflow ();
 	void LayoutNoWrap ();
@@ -120,7 +124,7 @@ class TextLayout {
 	//
 	
 	void Render (cairo_t *cr, const Point &origin, const Point &offset);
-	int GetIndexFromPoint (const Point &offset, double x, double y);
+	int GetCursorFromXY (const Point &offset, double x, double y);
 	Rect GetCursor (const Point &offset, int pos);
 	void Layout ();
 	

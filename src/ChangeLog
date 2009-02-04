@@ -1,3 +1,24 @@
+2009-02-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBox::TextBox): Initialize our 'selecting' state
+	to false. Get rid of maxlen state, it's not needed.
+	(TextBox::KeyPressUnichar): Use GetMaxLength() instead of a maxlen
+	class member variable.
+	(TextBox::SyncAndEmit): Renamed from KeyPressThaw() since it's
+	useful for mouse events too.
+	(TextBox::KeyPressFreeze): Removed.
+	(TextBox::OnMouseLeftButtonDown): Set our 'selecting' state to
+	true, get the cursor from the x,y coordinates and update the
+	selection to be zero-length starting at the cursor position.
+	(TextBox::OnMouseLeftButtonUp): Set 'selecting' state to false.
+	(TextBox::OnMouseMove): If we are in the 'selecting' state,
+	translate current mouse coordinates into a new cursor position and
+	update selection start/length.
+	(TextBoxView::GetCursorFromXY): New helper method.
+	(TextBoxView::TextBoxView): Set our cursor to be the IBeam.
+
+	* layout.cpp (TextLayout::GetCursorFromXY): Implemented.
+
 2009-02-04  Jackson Harper  <jackson@ximian.com>
 
 	* template.cpp|h: Add a function for creating xaml template

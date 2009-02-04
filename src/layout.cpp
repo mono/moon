@@ -1416,15 +1416,106 @@ TextLayout::Render (cairo_t *cr, const Point &origin, const Point &offset)
 	}
 }
 
+TextLine *
+TextLayout::GetLineFromY (const Point &offset, double y, int *index)
+{
+	TextSegment *segment;
+	TextLine *line;
+	double y0, y1;
+	int cur = 0;
+	
+	//printf ("TextLayout::GetLineFromY (%.2g)\n", y);
+	
+	line = (TextLine *) lines->First ();
+	y0 = offset.y;
+	
+	while (line) {
+		// set y1 the top of the next line
+		y1 = y0 + line->height;
+		
+		if (y < y1) {
+			// we found the line that the point is located on
+			break;
+		}
+		
+		if (index) {
+			// keep track of character indexes
+			segment = (TextSegment *) line->segments->First ();
+			while (segment) {
+				cur += (segment->end - segment->start);
+				
+				segment = (TextSegment *) segment->next;
+			}
+			
+			cur += line->crlf;
+		}
+		
+		line = (TextLine *) line->next;
+		y0 = y1;
+	}
+	
+	if (index)
+		*index = cur;
+	
+	return line;
+}
 
 int
-TextLayout::GetIndexFromPoint (const Point &offset, double x, double y)
+TextLayout::GetCursorFromXY (const Point &offset, double x, double y)
 {
-	return -1;
+	TextSegment *segment;
+	GlyphInfo *glyph;
+	guint32 prev = 0;
+	TextLine *line;
+	TextFont *font;
+	int cur = 0;
+	gunichar c;
+	double x0;
+	int i;
+	
+	//printf ("TextLayout::GetCursorFromXY (%.2g, %.2g)\n", x, y);
+	
+	if (!(line = GetLineFromY (offset, y, &cur)))
+		return cur;
+	
+	segment = (TextSegment *) line->segments->First ();
+	
+	// adjust x0 for horizontal alignment
+	x0 = offset.x + HorizontalAlignment (line->width);
+	
+	while (segment) {
+		if (x < x0 + segment->advance) {
+			font = segment->Font ();
+			
+			// we'll find the cursor index we're looking for in this segment
+			for (i = segment->start; i < segment->end && x0 < x; cur++, i++) {
+				c = segment->run->text[i];
+				
+				if (!(glyph = font->GetGlyphInfo (c)))
+					continue;
+				
+				if ((prev != 0) && APPLY_KERNING (c))
+					x0 += font->Kerning (prev, glyph->index);
+				else if (glyph->metrics.horiBearingX < 0)
+					x0 += glyph->metrics.horiBearingX;
+				
+				x0 += glyph->metrics.horiAdvance;
+				prev = glyph->index;
+			}
+			break;
+		}
+		
+		// not in this segment... maybe the next one
+		cur += (segment->end - segment->start);
+		
+		segment = (TextSegment *) segment->next;
+	}
+	
+	return cur;
 }
 
 Rect
-TextLayout::GetCursor (const Point &offset, int pos)
+TextLayout::GetCursor (const Point &offset, int index)
 {
 	double ascend, x0, y0, y1;
 	TextSegment *segment;
@@ -1436,7 +1527,7 @@ TextLayout::GetCursor (const Point &offset, int pos)
 	gunichar c;
 	int i, n;
 	
-	//printf ("TextLayout::GetCursor (%d)\n", pos);
+	//printf ("TextLayout::GetCursor (%d)\n", index);
 	
 	x0 = offset.x;
 	y0 = offset.y;
@@ -1454,11 +1545,11 @@ TextLayout::GetCursor (const Point &offset, int pos)
 		
 		//printf ("\tline: left=%.2g, top=%.2g, baseline=%.2g, start index=%d\n", x0, y0, y1, cur);
 		
-		if (cur >= pos)
+		if (cur >= index)
 			break;
 		
 		segment = (TextSegment *) line->segments->First ();
-		while (segment && cur < pos) {
+		while (segment && cur < index) {
 			n = segment->end - segment->start;
 			font = segment->Font ();
 			
@@ -1466,9 +1557,9 @@ TextLayout::GetCursor (const Point &offset, int pos)
 			
 			//printf ("\t\tsegment: n=%d, ascend=%.2g, cur=%d\n", n, ascend, cur);
 			
-			if (pos < (cur + n)) {
+			if (index < (cur + n)) {
 				//printf ("\t\t\tscanning segment...\n");
-				for (i = segment->start, prev = 0; cur < pos; cur++, i++) {
+				for (i = segment->start, prev = 0; cur < index; cur++, i++) {
 					c = segment->run->text[i];
 					
 					if (!(glyph = font->GetGlyphInfo (c)))
@@ -1493,7 +1584,7 @@ TextLayout::GetCursor (const Point &offset, int pos)
 			segment = (TextSegment *) segment->next;
 		}
 		
-		if (cur == pos)
+		if (cur == index)
 			break;
 		
 		y0 += line->height;
@@ -1501,7 +1592,7 @@ TextLayout::GetCursor (const Point &offset, int pos)
 		
 		line = (TextLine *) line->next;
 		
-		if (cur >= pos) {
+		if (cur >= index) {
 			x0 = HorizontalAlignment (line ? line->width : 0.0);
 			break;
 		}

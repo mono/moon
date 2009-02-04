@@ -84,11 +84,12 @@ class TextBox : public Control, public ITextSource {
 	TextFontDescription *font;
 	int selection_anchor;
 	int selection_cursor;
+	//Point select_start;
 	int cursor_column;
 	TextBuffer *buffer;
 	TextBoxView *view;
-	int maxlen;
 	
+	int selecting:1;
 	int setvalue:1;
 	int focused:1;
 	int emit:2;
@@ -144,8 +145,7 @@ class TextBox : public Control, public ITextSource {
 	void EmitSelectionChanged ();
 	void EmitTextChanged ();
 	
-	void KeyPressFreeze ();
-	void KeyPressThaw ();
+	void SyncAndEmit ();
 	
 	//
 	// Protected Property Accessors
@@ -293,21 +293,6 @@ class TextBoxView : public FrameworkElement {
 	int cursor_visible:1;
 	int dirty:1;
 	
-	// focus in/out events
-	void OnFocusOut (EventArgs *args);
-	void OnFocusIn (EventArgs *args);
-	
-	// mouse events
-	void OnMouseLeftButtonDown (MouseEventArgs *args);
-	void OnMouseLeftButtonUp (MouseEventArgs *args);
-	void OnMouseEnter (MouseEventArgs *args);
-	void OnMouseLeave (EventArgs *args);
-	void OnMouseMove (MouseEventArgs *args);
-	
-	// keypress events
-	void OnKeyDown (KeyEventArgs *args);
-	void OnKeyUp (KeyEventArgs *args);
-	
 	// TextBox events
 	static void model_changed (EventObject *sender, EventArgs *args, gpointer closure);
 	void OnModelChanged (TextBoxModelChangedEventArgs *args);
@@ -347,6 +332,7 @@ class TextBoxView : public FrameworkElement {
 	//
 	// Methods
 	//
+	int GetCursorFromXY (double x, double y);
 	void OnFocusOut ();
 	void OnFocusIn ();
 	
