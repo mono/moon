@@ -1,3 +1,7 @@
+2009-02-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* audio.cpp: One more SetCurrentDeployment.
+
 2009-02-04  Alan McGovern  <amcgovern@novell.com>
 
 	* frameworkelement.cpp: Fixed hit tests which didn't do what

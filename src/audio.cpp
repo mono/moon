@@ -791,6 +791,7 @@ AudioSources::GetHead ()
 	node = (AudioListNode *) list.First ();
 	if (node != NULL) {
 		result = node->source;
+		result->SetCurrentDeployment (false);
 		result->ref ();
 	}
 	
