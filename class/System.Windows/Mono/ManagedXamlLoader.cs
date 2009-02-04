@@ -278,14 +278,14 @@ namespace Mono.Xaml
 
 		private bool TrySetExpression (IntPtr parser, object target, string name, IntPtr value_ptr)
 		{
-			if (!name.StartsWith ("{"))
-				return false;
-
-			DependencyObject dob = target as DependencyObject;
+			FrameworkElement dob = target as FrameworkElement;
 			object obj_value = Value.ToObject (null, value_ptr);
 			string str_value = obj_value as string;
 
 			if (str_value == null || dob == null)
+				return false;
+			
+			if (!str_value.StartsWith ("{"))
 				return false;
 
 			MarkupExpressionParser p = new MarkupExpressionParser (dob, name, parser);
@@ -296,11 +296,10 @@ namespace Mono.Xaml
 				return false;
 
 			DependencyProperty prop = DependencyProperty.Lookup (dob.GetKind (), name);
-
 			if (prop == null)
 				return false;
 
-			dob.SetValue (prop, binding);
+			dob.SetBinding (prop, binding);
 			return true;
 		}
 

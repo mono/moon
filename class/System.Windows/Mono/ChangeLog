@@ -1,5 +1,10 @@
 2009-02-04  Jackson Harper  <jackson@ximian.com>
 
+	* ManagedXamlLoader.cs: Don't use SetValue for attaching bindings,
+	use SetBinding.
+
+2009-02-04  Jackson Harper  <jackson@ximian.com>
+
 	* GeneratedPInvokes.cs: Regenerate.
 	* ManagedXamlLoader.cs: Use the binding expression parser when we
 	are given a BINDINGEXPRESSION or TEMPLATEBINDING.
