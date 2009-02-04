@@ -1,3 +1,8 @@
+2009-02-04  Jackson Harper  <jackson@ximian.com>
+
+	* MarkupExpressionParser.cs: New class for parsing
+	StaticResources, TemplateBindings and Binding Expressions.
+
 2009-02-04  Alan McGovern  <amcgovern@novell.com>
 
 	* Kind.cs:
