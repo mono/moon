@@ -30,6 +30,8 @@ using Mono;
 
 namespace System.Windows.Controls {
 	public partial class StackPanel : Panel {
+		Size _desired = new Size ();
+
 		public static readonly DependencyProperty OrientationProperty = 
 		DependencyProperty.Register ("Orientation", typeof (Orientation), typeof (StackPanel), null);
 		public Orientation Orientation {
@@ -40,15 +42,18 @@ namespace System.Windows.Controls {
 		protected override sealed Size MeasureOverride (Size availableSize) {
 			Size result = new Size (0,0);
 
+			Size childAvailable = availableSize;
 			foreach (UIElement child in this.Children) {
-				child.Measure (availableSize);
+				child.Measure (childAvailable);
 				Size size = child.DesiredSize;
 
 				if (Orientation == Orientation.Vertical) {
 					result.Height += size.Height;
+					childAvailable.Height = Math.Max (childAvailable.Height - size.Height, 0);
 					result.Width = Math.Max (result.Width, size.Width);
 				} else {
 					result.Width += size.Width;
+					childAvailable.Width = Math.Max (childAvailable.Width - size.Width, 0);
 					result.Height = Math.Max (result.Height, size.Height);
 				}
 			}
@@ -59,35 +64,65 @@ namespace System.Windows.Controls {
 			if (!Double.IsNaN (this.Height))
 				result.Height = this.Height;
 
+			result.Width = Math.Min (result.Width, availableSize.Width);
+			result.Height = Math.Min (result.Height, availableSize.Height);
+			
+			_desired = result;
+
 			return result;
 		}
 
 		protected override sealed Size ArrangeOverride (Size finalSize) {
-			Size result = new Size (0, 0);
+			Size result = finalSize;
+			Rect requested = new Rect (0, 0, _desired.Width, _desired.Height);
+			bool first = true;
+
+			HorizontalAlignment horiz = Double.IsNaN (Width) ? this.HorizontalAlignment : HorizontalAlignment.Stretch;
+			VerticalAlignment vert = Double.IsNaN (Height) ? this.VerticalAlignment : VerticalAlignment.Stretch;
+			
+			if (HorizontalAlignment == HorizontalAlignment.Stretch)
+				requested.Width = finalSize.Width;
+			
+			if (VerticalAlignment == VerticalAlignment.Stretch)
+				requested.Height = finalSize.Height;
+
 			foreach (UIElement child in this.Children) {
+				if (first) {
+					result = new Size ();
+					first = false;
+				}
+
 				Size size = child.DesiredSize;
 				if (Orientation == Orientation.Vertical) {
-					if (HorizontalAlignment == HorizontalAlignment.Stretch || !Double.IsNaN (this.Width))
-						size.Width = Math.Max (size.Width, finalSize.Width);
+					size.Width = requested.Width;
+					
+					Rect childFinal = new Rect (0, result.Height, size.Width, size.Height);
 
-					//if (child.VerticalAlignment == VerticalAlignment.Stretch)
+					childFinal.Intersect (requested);					
+					if (childFinal.IsEmpty)
+						child.Arrange (new Rect ());
+					else
+						child.Arrange (childFinal);
 
-					child.Arrange (new Rect (0, result.Height, size.Width, size.Height));
 					result.Height += size.Height;
 					result.Width = Math.Max (result.Width, size.Width);
 				} else {
-					//if (child.HorizontalAlignment == HorizontalAlignment.Stretch)
-					//	size.Width = Math.Max (size.Width, finalSize.Width);
+					size.Height = requested.Height;
 					
-					if (VerticalAlignment == VerticalAlignment.Stretch || !Double.IsNaN (this.Height))
-						size.Height = Math.Max (size.Height, finalSize.Height);
-					
-					child.Arrange (new Rect (result.Width, 0, size.Width, size.Height));
+					Rect childFinal = new Rect (result.Width, 0, size.Width, size.Height);
+
+					childFinal.Intersect (requested);					
+					if (childFinal.IsEmpty)
+						child.Arrange (new Rect ());
+					else
+						child.Arrange (childFinal);
+
 					result.Width += size.Width;
 					result.Height = Math.Max (result.Height, size.Height);
 				}
 			}
-			return finalSize;
+
+			return new Size (requested.Width, requested.Height);
 		}
 	}
 }

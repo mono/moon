@@ -154,6 +154,7 @@ DirtyLists::Clear (bool freeNodes)
 bool
 Surface::IsAnythingDirty ()
 {
+	//return !down_dirty->IsEmpty() || !up_dirty->IsEmpty() || toplevel->dirty_flags & (DirtyMeasure | DirtyArrange);
 	return !down_dirty->IsEmpty() || !up_dirty->IsEmpty();
 }
 
@@ -443,8 +444,7 @@ Surface::UpdateLayout ()
 		Size desired = toplevel->GetDesiredSize ();
 
 		if (toplevel->IsLayoutContainer ()) {
-			if (desired.width == 0 && desired.height == 0)
-				desired = desired.Max (available);
+			desired = desired.Max (available);
 		}
 
 		toplevel->Arrange (Rect (Canvas::GetLeft (toplevel), Canvas::GetTop (toplevel), 
