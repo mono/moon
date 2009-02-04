@@ -303,7 +303,9 @@ TextBox::~TextBox ()
 	delete font;
 }
 
-#define MY_GDK_ALT_MASK (GDK_MOD1_MASK | GDK_MOD2_MASK | GDK_MOD3_MASK | GDK_MOD4_MASK | GDK_MOD5_MASK)
+#define ALT_MASK (GDK_MOD1_MASK | GDK_MOD2_MASK | GDK_MOD3_MASK | GDK_MOD4_MASK | GDK_MOD5_MASK)
+#define CONTROL_MASK GDK_CONTROL_MASK
+#define SHIFT_MASK GDK_SHIFT_MASK
 
 #define IsEOL(c) ((c) == '\r' || (c) == '\n')
 
@@ -517,7 +519,7 @@ TextBox::KeyPressBackSpace (GdkModifierType modifiers)
 	int cursor = selection_cursor;
 	int cur;
 	
-	if ((modifiers & (MY_GDK_ALT_MASK | GDK_SHIFT_MASK)) != 0)
+	if ((modifiers & (ALT_MASK | SHIFT_MASK)) != 0)
 		return;
 	
 	if (cursor != anchor) {
@@ -529,7 +531,7 @@ TextBox::KeyPressBackSpace (GdkModifierType modifiers)
 		emit |= TEXT_CHANGED;
 		anchor = start;
 		cursor = start;
-	} else if ((modifiers & GDK_CONTROL_MASK) != 0) {
+	} else if ((modifiers & CONTROL_MASK) != 0) {
 		// Ctrl+BackSpace: delete the word ending at the cursor
 		cur = CursorPrevWord (cursor);
 		
@@ -570,7 +572,7 @@ TextBox::KeyPressDelete (GdkModifierType modifiers)
 	int cursor = selection_cursor;
 	int cur;
 	
-	if ((modifiers & (MY_GDK_ALT_MASK | GDK_SHIFT_MASK)) != 0)
+	if ((modifiers & (ALT_MASK | SHIFT_MASK)) != 0)
 		return;
 	
 	if (cursor != anchor) {
@@ -582,7 +584,7 @@ TextBox::KeyPressDelete (GdkModifierType modifiers)
 		emit |= TEXT_CHANGED;
 		anchor = start;
 		cursor = start;
-	} else if ((modifiers & GDK_CONTROL_MASK) != 0) {
+	} else if ((modifiers & CONTROL_MASK) != 0) {
 		// Ctrl+Delete: delete the word starting at the cursor
 		cur = CursorNextWord (cursor);
 		
@@ -617,14 +619,14 @@ TextBox::KeyPressPageDown (GdkModifierType modifiers)
 	int cursor = selection_cursor;
 	int column;
 	
-	if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK)) != 0)
+	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
 		return;
 	
 	// move the cursor down one page from its current position
 	cursor = CursorDown (cursor, 8);
 	column = cursor_column;
 	
-	if ((modifiers & GDK_SHIFT_MASK) == 0) {
+	if ((modifiers & SHIFT_MASK) == 0) {
 		// clobber the selection
 		anchor = cursor;
 	}
@@ -647,14 +649,14 @@ TextBox::KeyPressPageUp (GdkModifierType modifiers)
 	int cursor = selection_cursor;
 	int column;
 	
-	if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK)) != 0)
+	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
 		return;
 	
 	// move the cursor up one page from its current position
 	cursor = CursorUp (cursor, 8);
 	column = cursor_column;
 	
-	if ((modifiers & GDK_SHIFT_MASK) == 0) {
+	if ((modifiers & SHIFT_MASK) == 0) {
 		// clobber the selection
 		anchor = cursor;
 	}
@@ -677,14 +679,14 @@ TextBox::KeyPressDown (GdkModifierType modifiers)
 	int cursor = selection_cursor;
 	int column;
 	
-	if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK)) != 0)
+	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
 		return;
 	
 	// move the cursor down by one line from its current position
 	cursor = CursorDown (cursor, 1);
 	column = cursor_column;
 	
-	if ((modifiers & GDK_SHIFT_MASK) == 0) {
+	if ((modifiers & SHIFT_MASK) == 0) {
 		// clobber the selection
 		anchor = cursor;
 	}
@@ -707,14 +709,14 @@ TextBox::KeyPressUp (GdkModifierType modifiers)
 	int cursor = selection_cursor;
 	int column;
 	
-	if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK)) != 0)
+	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
 		return;
 	
 	// move the cursor up by one line from its current position
 	cursor = CursorUp (cursor, 1);
 	column = cursor_column;
 	
-	if ((modifiers & GDK_SHIFT_MASK) == 0) {
+	if ((modifiers & SHIFT_MASK) == 0) {
 		// clobber the selection
 		anchor = cursor;
 	}
@@ -736,10 +738,10 @@ TextBox::KeyPressHome (GdkModifierType modifiers)
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
 	
-	if ((modifiers & MY_GDK_ALT_MASK) != 0)
+	if ((modifiers & ALT_MASK) != 0)
 		return;
 	
-	if ((modifiers & GDK_CONTROL_MASK) != 0) {
+	if ((modifiers & CONTROL_MASK) != 0) {
 		// move the cursor to the beginning of the buffer
 		cursor = 0;
 	} else {
@@ -748,7 +750,7 @@ TextBox::KeyPressHome (GdkModifierType modifiers)
 			cursor--;
 	}
 	
-	if ((modifiers & GDK_SHIFT_MASK) == 0) {
+	if ((modifiers & SHIFT_MASK) == 0) {
 		// clobber the selection
 		anchor = cursor;
 	}
@@ -770,10 +772,10 @@ TextBox::KeyPressEnd (GdkModifierType modifiers)
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
 	
-	if ((modifiers & MY_GDK_ALT_MASK) != 0)
+	if ((modifiers & ALT_MASK) != 0)
 		return;
 	
-	if ((modifiers & GDK_CONTROL_MASK) != 0) {
+	if ((modifiers & CONTROL_MASK) != 0) {
 		// move the cursor to the end of the buffer
 		cursor = buffer->len;
 	} else {
@@ -782,7 +784,7 @@ TextBox::KeyPressEnd (GdkModifierType modifiers)
 			cursor++;
 	}
 	
-	if ((modifiers & GDK_SHIFT_MASK) == 0) {
+	if ((modifiers & SHIFT_MASK) == 0) {
 		// clobber the selection
 		anchor = cursor;
 	}
@@ -803,10 +805,10 @@ TextBox::KeyPressRight (GdkModifierType modifiers)
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
 	
-	if ((modifiers & MY_GDK_ALT_MASK) != 0)
+	if ((modifiers & ALT_MASK) != 0)
 		return;
 	
-	if ((modifiers & GDK_CONTROL_MASK) != 0) {
+	if ((modifiers & CONTROL_MASK) != 0) {
 		// move the cursor to beginning of the next word
 		cursor = CursorNextWord (cursor);
 	} else {
@@ -817,7 +819,7 @@ TextBox::KeyPressRight (GdkModifierType modifiers)
 			cursor++;
 	}
 	
-	if ((modifiers & GDK_SHIFT_MASK) == 0) {
+	if ((modifiers & SHIFT_MASK) == 0) {
 		// clobber the selection
 		anchor = cursor;
 	}
@@ -838,10 +840,10 @@ TextBox::KeyPressLeft (GdkModifierType modifiers)
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
 	
-	if ((modifiers & MY_GDK_ALT_MASK) != 0)
+	if ((modifiers & ALT_MASK) != 0)
 		return;
 	
-	if ((modifiers & GDK_CONTROL_MASK) != 0) {
+	if ((modifiers & CONTROL_MASK) != 0) {
 		// move the cursor to the beginning of the previous word
 		cursor = CursorPrevWord (cursor);
 	} else {
@@ -852,7 +854,7 @@ TextBox::KeyPressLeft (GdkModifierType modifiers)
 			cursor--;
 	}
 	
-	if ((modifiers & GDK_SHIFT_MASK) == 0) {
+	if ((modifiers & SHIFT_MASK) == 0) {
 		// clobber the selection
 		anchor = cursor;
 	}
@@ -919,11 +921,43 @@ TextBox::SyncAndEmit ()
 	emit = NOTHING_CHANGED;
 }
 
+static GtkClipboard *
+GetClipboard (TextBox *textbox, GdkAtom atom)
+{
+	GdkDisplay *display;
+	MoonWindow *window;
+	GdkWindow *widget;
+	Surface *surface;
+	
+	if (!(surface = textbox->GetSurface ()))
+		return NULL;
+	
+	if (!(window = surface->GetWindow ()))
+		return NULL;
+	
+	if (!(widget = window->GetGdkWindow ()))
+		return NULL;
+	
+	if (!(display = gdk_drawable_get_display ((GdkDrawable *) widget)))
+		return NULL;
+	
+	return gtk_clipboard_get_for_display (display, atom);
+}
+
+void
+TextBox::paste (GtkClipboard *clipboard, const char *text, gpointer closure)
+{
+	TextBox *textbox = (TextBox *) closure;
+	
+	textbox->SetSelectedText (text);
+}
+
 void
 TextBox::OnKeyDown (KeyEventArgs *args)
 {
 	GdkModifierType modifiers = (GdkModifierType) args->GetModifiers ();
 	guint key = args->GetKeyVal ();
+	GtkClipboard *clipboard;
 	gunichar c;
 	
 	if (args->IsModifier ())
@@ -934,127 +968,126 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 	// keypress will cause.
 	emit = NOTHING_CHANGED;
 	
-	if ((c = args->GetUnicode ())) {
+	switch (key) {
+	case GDK_Return:
 		if (!GetIsReadOnly ()) {
-			KeyPressUnichar (c);
+			args->SetHandled (true);
+			KeyPressUnichar ('\r');
+		}
+		break;
+	case GDK_BackSpace:
+		if (!GetIsReadOnly ()) {
+			KeyPressBackSpace (modifiers);
 			args->SetHandled (true);
 		}
-	} else {
-		// special key
-		switch (key) {
-		case GDK_Return:
-			if (!GetIsReadOnly ()) {
-				KeyPressUnichar ('\r');
-				args->SetHandled (true);
-			}
-			break;
-		case GDK_BackSpace:
-			if (!GetIsReadOnly ()) {
-				KeyPressBackSpace (modifiers);
-				args->SetHandled (true);
-			}
-			break;
-		case GDK_Delete:
-			if (!GetIsReadOnly ()) {
-				KeyPressDelete (modifiers);
-				args->SetHandled (true);
-			}
-			break;
-		case GDK_KP_Page_Down:
-		case GDK_Page_Down:
-			KeyPressPageDown (modifiers);
-			break;
-		case GDK_KP_Page_Up:
-		case GDK_Page_Up:
-			KeyPressPageUp (modifiers);
-			break;
-		case GDK_KP_Home:
-		case GDK_Home:
-			KeyPressHome (modifiers);
-			break;
-		case GDK_KP_End:
-		case GDK_End:
-			KeyPressEnd (modifiers);
-			break;
-		case GDK_KP_Right:
-		case GDK_Right:
-			KeyPressRight (modifiers);
-			break;
-		case GDK_KP_Left:
-		case GDK_Left:
-			KeyPressLeft (modifiers);
-			break;
-		case GDK_KP_Down:
-		case GDK_Down:
-			KeyPressDown (modifiers);
-			break;
-		case GDK_KP_Up:
-		case GDK_Up:
-			KeyPressUp (modifiers);
-			break;
-		case GDK_A:
-		case GDK_a:
-			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK | GDK_SHIFT_MASK)) == GDK_CONTROL_MASK) {
-				// select all
+		break;
+	case GDK_Delete:
+		if (!GetIsReadOnly ()) {
+			KeyPressDelete (modifiers);
+			args->SetHandled (true);
+		}
+		break;
+	case GDK_KP_Page_Down:
+	case GDK_Page_Down:
+		KeyPressPageDown (modifiers);
+		break;
+	case GDK_KP_Page_Up:
+	case GDK_Page_Up:
+		KeyPressPageUp (modifiers);
+		break;
+	case GDK_KP_Home:
+	case GDK_Home:
+		KeyPressHome (modifiers);
+		break;
+	case GDK_KP_End:
+	case GDK_End:
+		KeyPressEnd (modifiers);
+		break;
+	case GDK_KP_Right:
+	case GDK_Right:
+		KeyPressRight (modifiers);
+		break;
+	case GDK_KP_Left:
+	case GDK_Left:
+		KeyPressLeft (modifiers);
+		break;
+	case GDK_KP_Down:
+	case GDK_Down:
+		KeyPressDown (modifiers);
+		break;
+	case GDK_KP_Up:
+	case GDK_Up:
+		KeyPressUp (modifiers);
+		break;
+	default:
+		if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == CONTROL_MASK) {
+			switch (key) {
+			case GDK_A:
+			case GDK_a:
+				// Ctrl+A => Select All
 				args->SetHandled (true);
 				SelectAll ();
-			}
-			break;
-		case GDK_C:
-		case GDK_c:
-			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK | GDK_SHIFT_MASK)) == GDK_CONTROL_MASK) {
-				// copy selection to the clipboard
-				// FIXME: implement me
-				args->SetHandled (true);
-			}
-			break;
-		case GDK_X:
-		case GDK_x:
-			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK | GDK_SHIFT_MASK)) == GDK_CONTROL_MASK) {
-				if (!GetIsReadOnly ()) {
+				break;
+			case GDK_C:
+			case GDK_c:
+				// Ctrl+C => Copy
+				if ((clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
+					// copy selection to the clipboard
+					gtk_clipboard_set_text (clipboard, GetSelectedText (), -1);
+					args->SetHandled (true);
+				}
+				break;
+			case GDK_X:
+			case GDK_x:
+				// Ctrl+X => Cut
+				if ((clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
 					// copy selection to the clipboard and then cut
-					// FIXME: implement me
+					gtk_clipboard_set_text (clipboard, GetSelectedText (), -1);
+					if (!GetIsReadOnly ())
+						SetSelectedText ("");
 					args->SetHandled (true);
 				}
-			}
-			break;
-		case GDK_V:
-		case GDK_v:
-			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK | GDK_SHIFT_MASK)) == GDK_CONTROL_MASK) {
-				if (!GetIsReadOnly ()) {
+				break;
+			case GDK_V:
+			case GDK_v:
+				// Ctrl+V => Paste
+				if (!GetIsReadOnly () && (clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
 					// paste clipboard contents to the buffer
-					// FIXME: implement me
+					gtk_clipboard_request_text (clipboard, TextBox::paste, this);
 					args->SetHandled (true);
 				}
-			}
-			break;
-		case GDK_Y:
-		case GDK_y:
-			// Ctrl+Y := Redo
-			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK)) == GDK_CONTROL_MASK) {
+				break;
+			case GDK_Y:
+			case GDK_y:
+				// Ctrl+Y => Redo
 				if (!GetIsReadOnly ()) {
 					// FIXME: implement me
 					args->SetHandled (true);
 				}
-			}
-			break;
-		case GDK_Z:
-		case GDK_z:
-			// Ctrl+Z := Undo
-			if ((modifiers & (GDK_CONTROL_MASK | MY_GDK_ALT_MASK)) == GDK_CONTROL_MASK) {
+				break;
+			case GDK_Z:
+			case GDK_z:
+				// Ctrl+Z => Undo
 				if (!GetIsReadOnly ()) {
 					// FIXME: implement me
 					args->SetHandled (true);
 				}
+				break;
+			default:
+				// unhandled Control commands
+				break;
 			}
-			break;
-		default:
-			// FIXME: what other keys do we need to handle?
-			break;
+		} else if ((modifiers & (CONTROL_MASK | ALT_MASK)) == 0) {
+			// normal character input
+			if ((c = args->GetUnicode ()) && !GetIsReadOnly ()) {
+				args->SetHandled (true);
+				KeyPressUnichar (c);
+			}
 		}
-		
-		// FIXME: some of these may also require updating scrollbars?
+		break;
 	}
+	
+	// FIXME: some of these may also require updating scrollbars?
 	
 	if (emit & TEXT_CHANGED)
 		buffer->Print ();
