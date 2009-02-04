@@ -289,10 +289,7 @@ type_get_value_type (Type::Kind type)
 bool
 type_is_dependency_object (Type::Kind type)
 {
-	Type *t = Type::Find (type);
-	if (t == NULL)
-		return false;
-	return t->IsSubclassOf (Type::DEPENDENCY_OBJECT);
+	return Type::IsSubclassOf (type, Type::DEPENDENCY_OBJECT);
 }
 
 DependencyObject *

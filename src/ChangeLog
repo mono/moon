@@ -1,3 +1,8 @@
+2009-02-04  Chris Toshok  <toshok@ximian.com>
+
+	* type.cpp (type_is_dependency_object): no need to c&p the entire
+	method, just call Type::IsSubclassOf with the kinds.
+
 2009-02-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBoxView::ConnectBlinkTimeout): Use
