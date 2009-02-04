@@ -1,3 +1,10 @@
+2009-02-03  Geoff Norton  <gnorton@novell.com>
+
+	* frameworkelement.cpp (Arrange): If we have a negative margin,
+	it moves our layout slot, instead of clipping it, as such we need
+	to adjust the clipping path accordingly in these cases to accomodate
+	this.
+
 2009-02-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBoxView::ResetCursorBlink): We don't care about
