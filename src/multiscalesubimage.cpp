@@ -47,3 +47,9 @@ MultiScaleSubImage::MultiScaleSubImage (const char* parent_uri, MultiScaleTileSo
 	LOG_MSI ("UriSource changed to %s (from %s)\n", buffer, urisource);
 	((DeepZoomImageTileSource*)source)->SetUriSource (g_strdup (buffer));
 }
+
+double
+MultiScaleSubImage::GetViewportHeight ()
+{
+	return GetAspectRatio () * GetViewportWidth ();
+}

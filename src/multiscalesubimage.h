@@ -28,6 +28,8 @@ class MultiScaleSubImage : public DependencyObject {
 
 	int id, n;
 
+	double GetViewportHeight ();
+
  protected:
 	virtual ~MultiScaleSubImage () {}
 
