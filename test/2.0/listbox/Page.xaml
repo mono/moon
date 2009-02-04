@@ -1,0 +1,41 @@
+﻿<UserControl x:Class="listbox.Page"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    Width="200" Height="200" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+
+    <Grid>
+	<Grid.ColumnDefinitions>
+		<ColumnDefinition Width="*" />
+		<ColumnDefinition Width="*" />
+		<ColumnDefinition Width="Auto" />
+	</Grid.ColumnDefinitions>
+
+<!--
+	<StackPanel Grid.Column="0">
+		<TextBlock>ListBox</TextBlock>
+		<Border BorderBrush="Black" BorderThickness="2" Width="100" Height="100">
+		    <ListBox>
+ 	    	    	<Button Content="Button" />
+	    	    	<sys:String>String</sys:String>
+ 		    </ListBox>
+		</Border>
+	</StackPanel>
+-->
+
+	<StackPanel Grid.Column="1">
+		<TextBlock>ItemsControl</TextBlock>
+		<Border BorderBrush="Black" BorderThickness="2" Width="100" Height="100">
+		    <ItemsControl x:Name="itemsControl">
+ 	    	    	<Button Content="Button1" />
+	    	    	<sys:String>String</sys:String>
+ 	    	    	<Button Content="Button2" />
+ 		    </ItemsControl>
+		</Border>
+	</StackPanel>
+
+	<StackPanel Grid.Column="2">
+		<Button Content="Add Item" Click="button_Click" />
+	</StackPanel>
+    </Grid>
+</UserControl>
