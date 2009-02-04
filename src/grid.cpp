@@ -266,7 +266,8 @@ Grid::ArrangeOverride (Size finalSize)
 
 		switch (height->type) {
 		case GridUnitTypeStar:
-			requested.height += rowdef->GetActualHeight ();
+			// Star columns distribute evenly
+			//requested.height += rowdef->GetActualHeight ();
 			row_stars += height->val;
 			break;
 		case GridUnitTypePixel:
@@ -285,7 +286,8 @@ Grid::ArrangeOverride (Size finalSize)
 
 		switch (width->type) {
 		case GridUnitTypeStar:
-			requested.width += coldef->GetActualWidth ();
+			// Star columns distribute evenly
+			//requested.width += coldef->GetActualWidth ();
 			col_stars += width->val;
 			break;
 		case GridUnitTypePixel:
@@ -310,7 +312,7 @@ Grid::ArrangeOverride (Size finalSize)
 		GridLength* height = rowdef->GetHeight();
 
 		if (height->type == GridUnitTypeStar)
-			rowdef->SetActualHeight (MAX (rowdef->GetActualHeight () + (remaining.height * height->val / row_stars), 0));
+			rowdef->SetActualHeight (MAX ((remaining.height * height->val / row_stars), 0));
 	}
 
 	for (int i = 0; i < col_count; i ++) {
@@ -318,7 +320,7 @@ Grid::ArrangeOverride (Size finalSize)
 		GridLength* width = coldef->GetWidth();
 
 		if (width->type == GridUnitTypeStar)
-			coldef->SetActualWidth (MAX (coldef->GetActualWidth () + (remaining.width * width->val / col_stars), 0));
+			coldef->SetActualWidth (MAX ((remaining.width * width->val / col_stars), 0));
 	}
 
 	bool first = true;

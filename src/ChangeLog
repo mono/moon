@@ -4,6 +4,9 @@
 
 2009-02-04  Larry Ewing  <lewing@novell.com>
 
+	* grid.cpp (Grid::ArrangeOverride): thanks to the listbox test
+	case we implement star columns in a matching manor.
+
 	* mediaelement.cpp (MediaElement::Render): disable mediaelement
 	pixel snapping for now, we'll deal with this at a higher level.
 
