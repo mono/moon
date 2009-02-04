@@ -36,7 +36,6 @@ class MultiScaleImage : public MediaBase {
 	char* context;
 	char* filename;
 	bool downloading;
-	GList *subimages;
 
 	cairo_user_data_key_t width_key;
 	cairo_user_data_key_t height_key;

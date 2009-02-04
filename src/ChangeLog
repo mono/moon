@@ -1,5 +1,10 @@
 2009-02-04  Stephane Delcroix <sdelcroix@novell.com>
 
+	* multiscaleimage.cpp: iterate the collection and not the GList
+	anymore.
+
+2009-02-04  Stephane Delcroix <sdelcroix@novell.com>
+
 	* multiscalesubimage.h|cpp:
 	* deepzoomimagetilesource.cpp: add a uri parameter to MSISI ctor
 	so we can compute the UriSource based on parent's one

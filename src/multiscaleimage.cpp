@@ -39,7 +39,6 @@ MultiScaleImage::MultiScaleImage ()
 	filename = NULL;
 	cache = g_hash_table_new (g_str_hash, g_str_equal);
 	downloading = false;
-	subimages = NULL;
 }
 
 MultiScaleImage::~MultiScaleImage ()
@@ -255,8 +254,12 @@ multi_scale_image_handle_parsed (void *userdata)
 	if (source) {
 		int i;
 		MultiScaleSubImage *si;
-		for (i = 0; (si = (MultiScaleSubImage*)g_list_nth_data (source->subimages, i)); i++)
+		for (i = 0; (si = (MultiScaleSubImage*)g_list_nth_data (source->subimages, i)); i++) {
+			if (!msi->GetSubImages())
+				msi->SetValue (MultiScaleImage::SubImagesProperty, new MultiScaleSubImageCollection ());
+
 			msi->GetSubImages()->Add (si);
+		}
 	}
 	msi->Invalidate ();
 }
@@ -266,17 +269,22 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 {
 	LOG_MSI ("MSI::RenderCollection\n");
 
-	int i;
-	MultiScaleSubImage *sub_image;
+	CollectionIterator *iter = GetSubImages()->GetIterator();
+	Value *val;
+	int error;
 	//FIXME: sort the subimages by ZIndex first
-	for (i = 0; (sub_image = (MultiScaleSubImage*)g_list_nth_data (subimages, i)); i++) {
-		//render if the subimage viewport intersects with this viewport
+	while (iter->Next () && (val = iter->GetCurrent(&error))) {
+		MultiScaleSubImage *sub_image = val->AsMultiScaleSubImage ();
+
+		//if the subimage is unparsed, trigger the download
 		if (sub_image->source->GetImageWidth () < 0) {
 			LOG_MSI ("skip\n");
 			((DeepZoomImageTileSource*)sub_image->source)->set_parsed_cb (multi_scale_image_handle_parsed, this);
 			((DeepZoomImageTileSource*)sub_image->source)->Download ();
 			continue;
 		}
+
+		//render if the subimage viewport intersects with this viewport
 		LOG_MSI ("subimage #%d (%d, %d), vpo(%f %f) vpw %f\n", sub_image->id, sub_image->source->GetImageWidth (), sub_image->source->GetImageHeight (), 
 			sub_image->GetViewportOrigin ()->x, sub_image->GetViewportOrigin()->y, sub_image->GetViewportWidth ());
 	}
@@ -290,7 +298,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 
 
 	DeepZoomImageTileSource *dzits = (DeepZoomImageTileSource*) source;
-	if (dzits && dzits->isCollection && subimages) {
+	if (dzits && dzits->isCollection && GetSubImages ()) {
 		//Let's render collection in a different method to not break this one right now
 		RenderCollection (cr, region);
 		return;
