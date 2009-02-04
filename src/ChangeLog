@@ -1,3 +1,8 @@
+2009-02-04  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscalesubimage.cpp: fix the source uri in the subimage
+	ctor. the source for the subimage is now parsed.
+
 2009-02-04  Alan McGovern  <amcgovern@novell.com>
 
 	* type.h:
