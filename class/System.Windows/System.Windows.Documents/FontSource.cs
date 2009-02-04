@@ -33,6 +33,7 @@ namespace System.Windows.Documents {
 	public class FontSource {
 		Stream stream;
 		
+		[MonoTODO ("does nothing but keeping a reference to a stream")]
 		public FontSource (Stream stream)
 		{
 			this.stream = stream;

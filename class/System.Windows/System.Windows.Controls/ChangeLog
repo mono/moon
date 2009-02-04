@@ -1,3 +1,8 @@
+2009-02-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* TextBlock.cs: Change the NotImplementedException into a MonoTODO
+	to get Tetrislite go further
+
 2009-02-04  Chris Toshok  <toshok@ximian.com>
 
 	* ItemsControl.cs: flesh out some of the implementation in the

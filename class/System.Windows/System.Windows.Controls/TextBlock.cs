@@ -31,9 +31,11 @@ using System.Windows.Documents;
 
 namespace System.Windows.Controls {
 	public sealed partial class TextBlock : FrameworkElement {
+
+		[MonoTODO ("does nothing")]
 		public FontSource FontSource {
-			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
+			get { return null; }
+			set { ; }
 		}
 	}
 }
