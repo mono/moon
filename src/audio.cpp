@@ -395,6 +395,8 @@ AudioSource::Underflowed ()
 {
 	LOG_AUDIO ("AudioSource::Underflowed (), state: %s, flags: %s, queue length: %i\n", GetStateName (GetState ()), GetFlagNames (flags), frames.Length ());
 	
+	SetCurrentDeployment (false);
+	
 	if (GetState () == AudioPlaying) {
 		if (GetFlag (AudioEOF)) {
 			Stop ();

@@ -323,6 +323,8 @@ PulseSource::OnStateChanged (pa_stream *pulse_stream)
 	
 	state = GetPAState (pulse_stream);
 	
+	SetCurrentDeployment (false);
+	
 	LOG_PULSE ("PulseSource::OnStateChanged (): %s (%i)\n", get_pa_stream_state_name (state), state);
 	
 	switch (state) {
