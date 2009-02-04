@@ -26,43 +26,42 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System.Collections.Specialized;
 
 namespace System.Windows.Controls.Primitives {
 	public abstract class Selector : ItemsControl {
 		
-		public static readonly DependencyProperty SelectedIndexProperty;
-		public static readonly DependencyProperty SelectedItemProperty;
-		static int DefaultSelectedIndex = -1;
-		
-		static Selector ()
-		{
-			PropertyMetadata metadata = new PropertyMetadata (DefaultSelectedIndex, delegate (DependencyObject o, DependencyPropertyChangedEventArgs e) {
-				((Selector) o).SelectedIndexChanged (o, e);
-			});
-			SelectedIndexProperty = DependencyProperty.Register ("SelectedIndex", typeof(int), typeof(Selector), metadata);
+		public static readonly DependencyProperty SelectedIndexProperty =
+			DependencyProperty.Register ("SelectedIndex", typeof(int), typeof(Selector),
+						     new PropertyMetadata(new PropertyChangedCallback(OnSelectedIndexChanged)));
 
-			metadata = new PropertyMetadata (null, delegate (DependencyObject o, DependencyPropertyChangedEventArgs e) {
-				((Selector) o).SelectedItemChanged (o, e);
-			});
-			SelectedItemProperty = DependencyProperty.Register ("SelectedItem", typeof(object), typeof(Selector), metadata);
+		static void OnSelectedIndexChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
+		{
+			((Selector) o).SelectedIndexChanged (o, e);
 		}
 
-		// looks like a bad idea (if only to test it) but SL2 does not expose it
+		public static readonly DependencyProperty SelectedItemProperty =
+			DependencyProperty.Register ("SelectedItem", typeof(object), typeof(Selector),
+						     new PropertyMetadata(new PropertyChangedCallback(OnSelectedItemChanged)));
+
+		
+		static void OnSelectedItemChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
+		{
+			((Selector) o).SelectedItemChanged (o, e);
+		}
+
 		internal Selector ()
 		{
 		}
 
-		int selectedIndex = DefaultSelectedIndex;
-		object selectedItem;
-		
 		public int SelectedIndex {
-			get { return selectedIndex; }
+			get { return (int)GetValue(SelectedIndexProperty); }
 			set { SetValue (SelectedIndexProperty, value); }
 		}
 
 		
 		public object SelectedItem {
-			get { return selectedItem; }
+			get { return GetValue (SelectedItemProperty); }
 			set { SetValue (SelectedItemProperty, value); }
 		}
 
@@ -73,11 +72,11 @@ namespace System.Windows.Controls.Primitives {
 		{
 			int newVal = (int) e.NewValue;
 			if (newVal == (int) e.OldValue || changing) {
-				selectedIndex = newVal;
+				SelectedIndex = newVal;
 				return;
 			}
 
-			selectedIndex = newVal;
+			SelectedIndex = newVal;
 			changing = true;
 			try {
 				if (newVal < 0)
@@ -94,7 +93,7 @@ namespace System.Windows.Controls.Primitives {
 		void SelectedItemChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
 		{
 			if (e.NewValue == e.OldValue || changing) {
-				selectedItem = e.NewValue;
+				SelectedItem = e.NewValue;
 				return;
 			}
 			
@@ -109,7 +108,7 @@ namespace System.Windows.Controls.Primitives {
 						SelectedItem = e.OldValue;
 				}
 				else {
-					selectedItem = e.NewValue;
+					SelectedItem = e.NewValue;
 					SelectedIndex = index;
 					RaiseSelectionChanged (o, new SelectionChangedEventArgs (new object[] { e.OldValue }, new object [] { e.NewValue }));
 				}
@@ -138,6 +137,14 @@ namespace System.Windows.Controls.Primitives {
 
 			// FIXME: return true if focused (but there's no public IsFocused available)
 			return false;
+		}
+
+		protected virtual void ClearContainerForItemOverride (DependencyObject element, object item)
+		{
+		}
+		
+		protected virtual void OnItemsChanged (NotifyCollectionChangedEventArgs e)
+		{
 		}
 	}
 }

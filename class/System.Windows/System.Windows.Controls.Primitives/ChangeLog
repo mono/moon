@@ -1,3 +1,8 @@
+2009-02-04  Chris Toshok  <toshok@ximian.com>
+
+	* Selector.cs: add a couple of missing methods, and stop with the
+	local caching of DP values.
+
 2009-01-21  Alan McGovern  <amcgovern@novell.com>
 
 	* Popup.cs: Should be sending the native handle, the surface is
