@@ -1088,6 +1088,7 @@ TextBox::OnMouseLeftButtonDown (MouseEventArgs *args)
 	
 	if (view) {
 		args->GetPosition (view, &x, &y);
+		args->SetHandled (true);
 		selecting = true;
 		
 		cursor = view->GetCursorFromXY (x, y);
@@ -1107,6 +1108,7 @@ TextBox::mouse_left_button_down (EventObject *sender, EventArgs *args, gpointer 
 void
 TextBox::OnMouseLeftButtonUp (MouseEventArgs *args)
 {
+	args->SetHandled (true);
 	selecting = false;
 }
 
@@ -1149,6 +1151,7 @@ TextBox::OnMouseMove (MouseEventArgs *args)
 	
 	if (selecting) {
 		args->GetPosition (view, &x, &y);
+		args->SetHandled (true);
 		
 		cursor = view->GetCursorFromXY (x, y);
 		
