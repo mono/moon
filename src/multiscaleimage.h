@@ -58,9 +58,8 @@ class MultiScaleImage : public MediaBase {
 	static DependencyProperty *AspectRatioProperty;
 	/* @PropertyType=MultiScaleTileSource,Version=2.0,GenerateAccessors */
 	static DependencyProperty *SourceProperty;
-//	/* @PropertyType=ReadOnlyCollection<MultiScaleSubImage>,Version=2.0,GenerateGetter */
-// FIXME: When this DP is reinstated - uncomment the validator in the MultiScaleImage constructor
-//	static DependencyProperty *SubImagesProperty;
+	/* @PropertyType=MultiScaleSubImageCollection,ManagedPropertyType=System.Collections.ObjectModel.ReadOnlyCollection<MultiScaleSubImage>,Version=2.0,GenerateGetter */
+	static DependencyProperty *SubImagesProperty;
 	/* @PropertyType=bool,DefaultValue=true,Version=2.0,GenerateAccessors */
 	static DependencyProperty *UseSpringsProperty;
 	/* @PropertyType=Point,DefaultValue=Point(0\,0),Version=2.0,GenerateAccessors */
@@ -101,6 +100,8 @@ class MultiScaleImage : public MediaBase {
 
 	double GetViewportWidth ();
 	void SetViewportWidth (double width);
+
+	MultiScaleSubImageCollection* GetSubImages ();
 
 	//
 	// Events

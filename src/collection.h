@@ -263,6 +263,17 @@ class ItemCollection : public Collection {
 	virtual Type::Kind GetElementType () { return Type::OBJECT; }
 };
 
+class MultiScaleSubImageCollection : public Collection {
+public:
+	MultiScaleSubImageCollection ();
+	
+	virtual Type::Kind GetElementType () { return Type::MULTISCALESUBIMAGE; }
+
+
+protected:
+	virtual ~MultiScaleSubImageCollection ();
+};
+
 G_BEGIN_DECLS
 
 Collection *collection_new (Type::Kind kind);

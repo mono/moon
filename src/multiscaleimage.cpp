@@ -253,7 +253,10 @@ multi_scale_image_handle_parsed (void *userdata)
 	//if the source is a collection, fill the subimages list
 	DeepZoomImageTileSource *source = (DeepZoomImageTileSource *)msi->source;
 	if (source) {
-		msi->subimages = source->subimages;
+		int i;
+		MultiScaleSubImage *si;
+		for (i = 0; (si = (MultiScaleSubImage*)g_list_nth_data (source->subimages, i)); i++)
+			msi->GetSubImages()->Add (si);
 	}
 	msi->Invalidate ();
 }

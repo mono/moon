@@ -288,6 +288,7 @@ Types::RegisterStaticTypes ()
 	types [(int) Type::MP3DEMUXER] = new Type (Type::MP3DEMUXER, Type::IMEDIADEMUXER, false, "Mp3Demuxer", "MP3DEMUXER", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::MULTISCALEIMAGE] = new Type (Type::MULTISCALEIMAGE, Type::MEDIABASE, false, "MultiScaleImage", "MULTISCALEIMAGE", 5, 22, MultiScaleImage_Events, (create_inst_func *) multi_scale_image_new, NULL);
 	types [(int) Type::MULTISCALESUBIMAGE] = new Type (Type::MULTISCALESUBIMAGE, Type::DEPENDENCY_OBJECT, false, "MultiScaleSubImage", "MULTISCALESUBIMAGE", 0, 1, NULL, (create_inst_func *) multi_scale_sub_image_new, NULL);
+	types [(int) Type::MULTISCALESUBIMAGE_COLLECTION] = new Type (Type::MULTISCALESUBIMAGE_COLLECTION, Type::COLLECTION, false, "MultiScaleSubImageCollection", "MULTISCALESUBIMAGE_COLLECTION", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::MULTISCALETILESOURCE] = new Type (Type::MULTISCALETILESOURCE, Type::DEPENDENCY_OBJECT, false, "MultiScaleTileSource", "MULTISCALETILESOURCE", 0, 1, NULL, (create_inst_func *) multi_scale_tile_source_new, NULL);
 	types [(int) Type::NAMESCOPE] = new Type (Type::NAMESCOPE, Type::DEPENDENCY_OBJECT, false, "NameScope", "NAMESCOPE", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::NPOBJ] = new Type (Type::NPOBJ, Type::OBJECT, true, "NPObj", "NPOBJ", 0, 0, NULL, NULL, NULL);

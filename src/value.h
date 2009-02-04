@@ -174,6 +174,7 @@ class MouseEventArgs;
 class Mp3Demuxer;
 class MultiScaleImage;
 class MultiScaleSubImage;
+class MultiScaleSubImageCollection;
 class MultiScaleTileSource;
 class NameScope;
 class NullDecoder;
@@ -477,6 +478,7 @@ public:
 	Mp3Demuxer*                    AsMp3Demuxer () { checked_get_subclass (Type::MP3DEMUXER, Mp3Demuxer) }
 	MultiScaleImage*               AsMultiScaleImage () { checked_get_subclass (Type::MULTISCALEIMAGE, MultiScaleImage) }
 	MultiScaleSubImage*            AsMultiScaleSubImage () { checked_get_subclass (Type::MULTISCALESUBIMAGE, MultiScaleSubImage) }
+	MultiScaleSubImageCollection*  AsMultiScaleSubImageCollection () { checked_get_subclass (Type::MULTISCALESUBIMAGE_COLLECTION, MultiScaleSubImageCollection) }
 	MultiScaleTileSource*          AsMultiScaleTileSource () { checked_get_subclass (Type::MULTISCALETILESOURCE, MultiScaleTileSource) }
 	NameScope*                     AsNameScope () { checked_get_subclass (Type::NAMESCOPE, NameScope) }
 	NullDecoder*                   AsNullDecoder () { checked_get_subclass (Type::NULLDECODER, NullDecoder) }

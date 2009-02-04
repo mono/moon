@@ -653,6 +653,7 @@ namespace System.Windows.Controls {
 	partial class MultiScaleImage {
 		public static readonly DependencyProperty AspectRatioProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "AspectRatio", typeof (double));
 		public static readonly DependencyProperty SourceProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "Source", typeof (MultiScaleTileSource));
+		public static readonly DependencyProperty SubImagesProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "SubImages", typeof (System.Collections.ObjectModel.ReadOnlyCollection<MultiScaleSubImage>));
 		public static readonly DependencyProperty UseSpringsProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "UseSprings", typeof (bool));
 		public static readonly DependencyProperty ViewportOriginProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "ViewportOrigin", typeof (Point));
 		public static readonly DependencyProperty ViewportWidthProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "ViewportWidth", typeof (double));
@@ -665,6 +666,11 @@ namespace System.Windows.Controls {
 		public MultiScaleTileSource Source {
 			get { return (MultiScaleTileSource) GetValue (SourceProperty); }
 			set { SetValue (SourceProperty, value); }
+		}
+
+		public System.Collections.ObjectModel.ReadOnlyCollection<MultiScaleSubImage> SubImages {
+			get { return (System.Collections.ObjectModel.ReadOnlyCollection<MultiScaleSubImage>) GetValue (SubImagesProperty); }
+			set { SetValue (SubImagesProperty, value); }
 		}
 
 		public bool UseSprings {

@@ -235,6 +235,7 @@ Types::RegisterStaticDependencyProperties ()
 	MediaElement::VolumeProperty = DependencyProperty::Register (Type::MEDIAELEMENT, "Volume", new Value (0.5), Type::DOUBLE);
 	MultiScaleImage::AspectRatioProperty = DependencyProperty::Register (Type::MULTISCALEIMAGE, "AspectRatio", new Value (1.0), Type::DOUBLE);
 	MultiScaleImage::SourceProperty = DependencyProperty::Register (Type::MULTISCALEIMAGE, "Source", Type::MULTISCALETILESOURCE);
+	MultiScaleImage::SubImagesProperty = DependencyProperty::Register (Type::MULTISCALEIMAGE, "SubImages", Type::MULTISCALESUBIMAGE_COLLECTION);
 	MultiScaleImage::UseSpringsProperty = DependencyProperty::Register (Type::MULTISCALEIMAGE, "UseSprings", new Value (true), Type::BOOL);
 	MultiScaleImage::ViewportOriginProperty = DependencyProperty::Register (Type::MULTISCALEIMAGE, "ViewportOrigin", new Value (Point(0,0)), Type::POINT);
 	MultiScaleImage::ViewportWidthProperty = DependencyProperty::Register (Type::MULTISCALEIMAGE, "ViewportWidth", new Value (1.0), Type::DOUBLE);
@@ -583,6 +584,7 @@ DependencyProperty *MediaElement::StretchProperty = NULL;
 DependencyProperty *MediaElement::VolumeProperty = NULL;
 DependencyProperty *MultiScaleImage::AspectRatioProperty = NULL;
 DependencyProperty *MultiScaleImage::SourceProperty = NULL;
+DependencyProperty *MultiScaleImage::SubImagesProperty = NULL;
 DependencyProperty *MultiScaleImage::UseSpringsProperty = NULL;
 DependencyProperty *MultiScaleImage::ViewportOriginProperty = NULL;
 DependencyProperty *MultiScaleImage::ViewportWidthProperty = NULL;
@@ -3064,6 +3066,13 @@ void
 MultiScaleImage::SetSource (MultiScaleTileSource *value)
 {
 	SetValue (MultiScaleImage::SourceProperty, Value (value));
+}
+
+MultiScaleSubImageCollection *
+MultiScaleImage::GetSubImages ()
+{
+	Value *value = GetValue (MultiScaleImage::SubImagesProperty);
+	return value ? value->AsMultiScaleSubImageCollection () : NULL;
 }
 
 bool

@@ -48,11 +48,6 @@ namespace System.Windows.Controls {
 			throw new NotImplementedException ();
 		}
 
-		public ReadOnlyCollection<MultiScaleSubImage> SubImages {
-			get { return new ReadOnlyCollection<MultiScaleSubImage> (new System.Collections.Generic.List<MultiScaleSubImage> ()); }
-//			get { throw new NotImplementedException (); }
-		}
-
 		static object ImageFailedEvent = new object ();
 		static object ImageOpenFailedEvent = new object ();
 		static object ImageOpenSucceededEvent = new object ();
