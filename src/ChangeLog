@@ -1,6 +1,7 @@
 2009-02-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* color.cpp (read_next_double): Use g_ascii_strtod().
+	(color_from_str): Use g_ascii_strcasecmp().
 
 	* textbox.cpp (TextBox::OnKeyDown): Implemented Cut/Copy/Paste.
 

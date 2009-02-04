@@ -280,7 +280,7 @@ color_from_str (const char *name)
 	}
 	
 	for (int i = 0; named_colors [i].name; i++) {
-		if (!g_strcasecmp (named_colors [i].name, name))
+		if (!g_ascii_strcasecmp (named_colors [i].name, name))
 			return new Color (named_colors [i].color);
 	}
 	
