@@ -29,11 +29,21 @@ using System.Windows.Input;
 
 namespace System.Windows.Controls
 {
+	[TemplateVisualStateAttribute(Name="Unselected", GroupName="SelectionStates")]
+	[TemplateVisualStateAttribute(Name="Focused", GroupName="FocusStates")]
+	[TemplateVisualStateAttribute(Name="Normal", GroupName="CommonStates")]
+	[TemplateVisualStateAttribute(Name="MouseOver", GroupName="CommonStates")]
+	[TemplateVisualStateAttribute(Name="Selected", GroupName="SelectionStates")]
+	[TemplateVisualStateAttribute(Name="SelectedUnfocused", GroupName="SelectionStates")]
+	[TemplateVisualStateAttribute(Name="Unfocused", GroupName="FocusStates")]
 	public class ComboBoxItem : ListBoxItem
 	{
 		public ComboBoxItem ()
 		{
-			
+		}
+
+		protected override void OnMouseLeftButtonUp (MouseButtonEventArgs e)
+		{
 		}
 	}
 }

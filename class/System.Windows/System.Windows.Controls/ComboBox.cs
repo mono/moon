@@ -32,28 +32,34 @@ using System.Windows.Input;
 
 namespace System.Windows.Controls
 {
+	[TemplateVisualState (Name="FocusedDropDown", GroupName="FocusStates")]
+	[TemplateVisualState (Name="Normal", GroupName="CommonStates")]
+	[TemplateVisualState (Name="MouseOver", GroupName="CommonStates")]
+	[TemplateVisualState (Name="Disabled", GroupName="CommonStates")]
+	[TemplateVisualState (Name="Unfocused", GroupName="FocusStates")]
+	[TemplateVisualState (Name="Focused", GroupName="FocuStates")]
+	[TemplatePart (Name="ContentPresenter", Type=typeof(ContentPresenter))]
+	[TemplatePart (Name="Popup", Type=typeof(Popup))]
+	[TemplatePart (Name="ContentPresenterBorder", Type=typeof(FrameworkElement))]
+	[TemplatePart (Name="DropDownToggle", Type=typeof(ToggleButton))]
 	public class ComboBox : Selector
 	{
-		public static readonly DependencyProperty IsDropDownOpenProperty;
-		public static readonly DependencyProperty IsSelectionActiveProperty;
-		public static readonly DependencyProperty ItemContainerStyleProperty;
-		public static readonly DependencyProperty MaxDropDownHeightProperty;
+		public static readonly DependencyProperty IsDropDownOpenProperty = 
+			DependencyProperty.Register ("IsDropDownOpen", typeof (bool), typeof (ComboBox),
+						     new PropertyMetadata (null, delegate (DependencyObject sender, DependencyPropertyChangedEventArgs e) {
+								     ((ComboBox) sender).IsDropDownOpenChanged (sender, e);
+							     }));
+
+		public static readonly DependencyProperty IsSelectionActiveProperty =
+			DependencyProperty.Register ("IsSelectionActive", typeof (bool), typeof (ComboBox), null);
+
+		public static readonly DependencyProperty ItemContainerStyleProperty =
+			DependencyProperty.Register ("ItemContainerStyle", typeof (Style), typeof (ComboBox), null);
+
+		public static readonly DependencyProperty MaxDropDownHeightProperty =
+			DependencyProperty.Register ("MaxDropDownHeight", typeof (double), typeof (ComboBox),
+						     new PropertyMetadata (double.PositiveInfinity, null));
 		
-		static ComboBox ()
-		{
-			PropertyMetadata metadata;
-			metadata = new PropertyMetadata (null, delegate (DependencyObject sender, DependencyPropertyChangedEventArgs e) {
-				((ComboBox) sender).IsDropDownOpenChanged (sender, e);
-			});
-			IsDropDownOpenProperty = DependencyProperty.Register ("IsDropDownOpen", typeof (bool), typeof (ComboBox), metadata);
-			
-			IsSelectionActiveProperty = DependencyProperty.Register ("IsSelectionActive", typeof (bool), typeof (ComboBox), null);
-			
-			ItemContainerStyleProperty = DependencyProperty.Register ("ItemContainerStyle", typeof (Style), typeof (ComboBox), null);
-			
-			metadata = new PropertyMetadata (double.PositiveInfinity, null);
-			MaxDropDownHeightProperty = DependencyProperty.Register ("MaxDropDownHeight", typeof (double), typeof (ComboBox), metadata);
-		}
 
 		public event EventHandler DropDownClosed;
 		public event EventHandler DropDownOpened;
@@ -64,7 +70,8 @@ namespace System.Windows.Controls
 		}
 		
 		public bool IsEditable {
-			get; set;
+			get;
+			internal set;
 		}
 		
 		public bool IsSelectionBoxHighlighted {
@@ -73,6 +80,7 @@ namespace System.Windows.Controls
 		
 		public Style ItemContainerStyle {
 			get { return (Style) GetValue (ItemContainerStyleProperty); }
+			set { SetValue (ItemContainerStyleProperty, value); }
 		}
 		
 		public double MaxDropDownHeight {
@@ -91,24 +99,20 @@ namespace System.Windows.Controls
 		public ComboBox ()
 		{
 			DefaultStyleKey = typeof (ComboBox);
+
+			Loaded += delegate { UpdateVisualState (false); };
 		}
 
 		#region Property Changed Handlers
 		
 		void IsDropDownOpenChanged (DependencyObject sender, DependencyPropertyChangedEventArgs e)
 		{
-			if ((bool) e.NewValue) {
+			if ((bool) e.NewValue)
 				OnDropDownOpened (EventArgs.Empty);
-				EventHandler h = DropDownOpened;
-				if (h != null)
-					h (sender, EventArgs.Empty);
-			}
-			else {
+			else
 				OnDropDownClosed (EventArgs.Empty);
-				EventHandler h = DropDownClosed;
-				if (h != null)
-					h (sender, EventArgs.Empty);
-			}
+
+			UpdateVisualState (true);
 		}
 		
 		void IsSelectionActiveChanged (DependencyObject sender, DependencyPropertyChangedEventArgs e)
@@ -129,75 +133,137 @@ namespace System.Windows.Controls
 		#endregion
 		
 
+		void UpdateVisualState (bool useTransitions)
+		{
+			if (!IsEnabled) {
+				VisualStateManager.GoToState (this, "Disabled", useTransitions);
+			}
+			else if (isMouseOver) {
+				VisualStateManager.GoToState (this, "MouseOver", useTransitions);
+			}
+			else {
+				VisualStateManager.GoToState (this, "Normal", useTransitions);
+			}
+
+			if (IsDropDownOpen && IsEnabled) {
+				VisualStateManager.GoToState (this, "FocusedDropDown", useTransitions);
+			}
+			else if (isFocused && IsEnabled) {
+				VisualStateManager.GoToState (this, "Focused", useTransitions);
+			}
+			else {
+				VisualStateManager.GoToState (this, "Unfocused", useTransitions);
+			}
+		}
+
 		protected virtual void OnDropDownClosed (EventArgs e)
 		{
-			
+			EventHandler h = DropDownClosed;
+			if (h != null)
+				h (this, e);
 		}
 		
 		protected virtual void OnDropDownOpened (EventArgs e)
 		{
-			
+			EventHandler h = DropDownOpened;
+			if (h != null)
+				h (this, e);
 		}
 
-//
-//		protected override Size ArrangeOverride (Size arrangeBounds)
-//		{
-//			throw new NotImplementedException ();
-//		}
-//
-//		protected override DependencyObject GetContainerForItemOverride ()
-//		{
-//			throw new NotImplementedException ();
-//		}
-//		
-//		protected override bool IsItemItsOwnContainerOverride (object item)
-//		{
-//			throw new NotImplementedException ();
-//		}
-//		
-//		public override void OnApplyTemplate ()
-//		{
-//			throw new NotImplementedException ();
-//		}
-//		
-//		protected override AutomationPeer OnCreateAutomationPeer ()
-//		{
-//			throw new NotImplementedException ();
-//		}
-//		
-//		protected override void OnGotFocus (RoutedEventArgs e)
-//		{
-//			throw new NotImplementedException ();
-//		}
-//		
-//		protected override void OnKeyDown (KeyEventArgs e)
-//		{
-//			throw new NotImplementedException ();
-//		}
-//		
-//		protected override void OnLostFocus (RoutedEventArgs e)
-//		{
-//			throw new NotImplementedException ();
-//		}
-//		
-//		protected override void OnMouseEnter (MouseEventArgs e)
-//		{
-//			throw new NotImplementedException ();
-//		}
-//		
-//		protected override void OnMouseLeave (MouseEventArgs e)
-//		{
-//			throw new NotImplementedException ();
-//		}
-//		
-//		protected override void OnMouseLeftButtonDown (MouseButtonEventArgs e)
-//		{
-//			throw new NotImplementedException ();
-//		}
-//		
-//		protected override void PrepareContainerForItemOverride (DependencyObject element, object item)
-//		{
-//			throw new NotImplementedException ();
-//		}
+
+		protected override Size ArrangeOverride (Size arrangeBounds)
+		{
+			return base.ArrangeOverride (arrangeBounds);
+		}
+
+		protected override DependencyObject GetContainerForItemOverride ()
+		{
+			ComboBoxItem cbItem = new ComboBoxItem ();
+			if (null != ItemContainerStyle) {
+				cbItem.Style = ItemContainerStyle;
+			}
+			return cbItem;
+		}
+		
+		protected override bool IsItemItsOwnContainerOverride (object item)
+		{
+			return item is ComboBoxItem;
+		}
+
+		
+		protected override void PrepareContainerForItemOverride (DependencyObject element, object item)
+		{
+			throw new NotImplementedException ();
+		}
+
+		
+		public override void OnApplyTemplate ()
+		{
+			_contentPresenter = GetTemplateChild ("ContentPresenter") as ContentPresenter;
+			_popup = GetTemplateChild ("Popup") as Popup;
+			_contentPresenterBorder = GetTemplateChild ("ContentPresenterBorder") as FrameworkElement;
+			_dropDownToggle = GetTemplateChild ("DropDownToggle") as ToggleButton;
+		}
+		
+		protected override AutomationPeer OnCreateAutomationPeer ()
+		{
+			throw new NotImplementedException ();
+		}
+		
+		protected override void OnGotFocus (RoutedEventArgs e)
+		{
+			base.OnGotFocus (e);
+			isFocused = true;
+			UpdateVisualState (true);
+		}
+		
+		protected override void OnLostFocus (RoutedEventArgs e)
+		{
+			base.OnLostFocus (e);
+			isFocused = false;
+			UpdateVisualState (true);
+		}
+		
+		protected override void OnMouseEnter (MouseEventArgs e)
+		{
+			base.OnMouseEnter(e);
+			isMouseOver = true;
+			UpdateVisualState (true);
+		}
+		
+		protected override void OnMouseLeave (MouseEventArgs e)
+		{
+			base.OnMouseLeave(e);
+			isMouseOver = false;
+			UpdateVisualState (true);
+		}
+		
+		protected override void OnMouseLeftButtonDown (MouseButtonEventArgs e)
+		{
+			base.OnMouseLeftButtonDown (e);
+			IsDropDownOpen = true;
+			UpdateVisualState (true);
+		}
+
+		protected override void OnKeyDown (KeyEventArgs e)
+		{
+			if (e.Key == Key.Enter ||
+			    e.Key == Key.Space) {
+				Console.WriteLine ("open the popup here");
+				IsDropDownOpen = true;
+				UpdateVisualState (true);
+			}
+			else
+				base.OnKeyDown (e);
+		}
+		
+
+		ContentPresenter _contentPresenter;
+		Popup _popup;
+		FrameworkElement _contentPresenterBorder;
+		ToggleButton _dropDownToggle;
+
+		bool isMouseOver;
+		bool isFocused;
 	}
 }

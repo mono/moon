@@ -24,8 +24,10 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using Mono;
 using System.Collections;
 using System.Windows.Markup;
+using System.Windows.Media;
 using System.Collections.Specialized;
 
 namespace System.Windows.Controls {
@@ -43,10 +45,28 @@ namespace System.Windows.Controls {
 			DependencyProperty.Register ("ItemTemplate", typeof (DataTemplate), typeof (ItemsControl), null);
 
 		private ItemCollection items;
-
+		private ItemsPresenter _presenter;
 
 		public ItemsControl ()
 		{
+			DefaultStyleKey = typeof (ItemsControl);
+		}
+
+		internal override void InvokeLoaded ()
+		{
+			base.InvokeLoaded ();
+
+			// XXX
+			SetItemsPresenter (new ItemsPresenter ());
+		}
+		
+		internal void SetItemsPresenter (ItemsPresenter presenter)
+		{
+			_presenter = presenter;
+			NativeMethods.uielement_element_added (native, _presenter.native);
+			NativeMethods.uielement_set_subtree_object (native, _presenter.native);
+
+			AddItemsToPresenter (Items, 0);
 		}
 
 		protected virtual void ClearContainerForItemOverride (DependencyObject element, object item)
@@ -66,19 +86,71 @@ namespace System.Windows.Controls {
 
 		protected virtual void OnItemsChanged (NotifyCollectionChangedEventArgs e)
 		{
+			if (_presenter == null || _presenter._elementRoot == null)
+				return;
+
+			StackPanel panel = _presenter._elementRoot;
+
+			switch (e.Action) {
+			case NotifyCollectionChangedAction.Reset:
+				// the list has gone away, so clear the children of the panel
+				panel.Children.Clear ();
+				break;
+			case NotifyCollectionChangedAction.Add:
+				AddItemsToPresenter (e.NewItems, e.NewStartingIndex);
+				break;
+			case NotifyCollectionChangedAction.Remove:
+				RemoveItemsFromPresenter (e.OldItems, e.OldStartingIndex);
+				break;
+			case NotifyCollectionChangedAction.Replace:
+				DependencyObject element = panel.Children[e.NewStartingIndex];
+				break;
+			}
+		}
+
+		void AddItemsToPresenter (IList newItems, int newIndex)
+		{
+			StackPanel panel = _presenter._elementRoot;
+			for (int i = 0; i < newItems.Count; i ++) {
+				object item = newItems[i];
+				object element;
+
+				Console.WriteLine ("adding item of type {0}", item.GetType());
+
+				if (IsItemItsOwnContainerOverride (item)) {
+					Console.WriteLine("item is its own container");
+					element = item;
+				}
+				else {
+					Console.WriteLine ("creating a container for it.");
+					element = GetContainerForItemOverride ();
+				}
+
+				PrepareContainerForItemOverride (element as DependencyObject, item);
+
+				if (element is UIElement) {
+					Console.WriteLine ("inserting {0} at index {1}", element, newIndex + i);
+					panel.Children.Insert (newIndex + i, (UIElement)element);
+				}
+			}
+		}
+
+		void RemoveItemsFromPresenter (IList oldItems, int oldIndex)
+		{
+			StackPanel panel = _presenter._elementRoot;
+			for (int i = 0; i < oldItems.Count; i ++)
+				panel.Children.RemoveAt (oldIndex);
 		}
 
 		protected virtual void PrepareContainerForItemOverride (DependencyObject element, object item)
 		{
-			// nothing is prepared by default
-		}
+			ContentPresenter presenter = element as ContentPresenter;
 
-		public string DisplayMemberPath { 
-			get {
-				return (string) GetValue (DisplayMemberPathProperty);
-			}
-			set {
-				SetValue (DisplayMemberPathProperty, value);
+			Console.WriteLine ("presenter = {0}, item = {1}", presenter, item);
+
+			if (presenter != null && presenter != item) {
+				Console.WriteLine (" + setting .Content");
+				presenter.Content = item;
 			}
 		}
 
@@ -94,31 +166,24 @@ namespace System.Windows.Controls {
 			}
 		}
 
+		public string DisplayMemberPath { 
+			get { return (string) GetValue (DisplayMemberPathProperty); }
+			set { SetValue (DisplayMemberPathProperty, value); }
+		}
+
 		public ItemsPanelTemplate ItemsPanel { 
-			get {
-				return (ItemsPanelTemplate) GetValue (ItemsPanelProperty);
-			}
-			set {
-				SetValue (ItemsPanelProperty, value);
-			}
+			get { return (ItemsPanelTemplate) GetValue (ItemsPanelProperty); }
+			set { SetValue (ItemsPanelProperty, value); }
 		}
 
 		public IEnumerable ItemsSource { 
-			get {
-				return (IEnumerable) GetValue (ItemsSourceProperty);
-			}
-			set {
-				SetValue (ItemsSourceProperty, value);
-			}
+			get { return (IEnumerable) GetValue (ItemsSourceProperty); }
+			set { SetValue (ItemsSourceProperty, value); }
 		}
 
 		public DataTemplate ItemTemplate { 
-			get {
-				return (DataTemplate) GetValue (ItemTemplateProperty);
-			}
-			set {
-				SetValue (ItemTemplateProperty, value);
-			}
+			get { return (DataTemplate) GetValue (ItemTemplateProperty); }
+			set { SetValue (ItemTemplateProperty, value); }
 		}
 	}
 }

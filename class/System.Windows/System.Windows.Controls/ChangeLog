@@ -1,3 +1,16 @@
+2009-02-04  Chris Toshok  <toshok@ximian.com>
+
+	* ItemsControl.cs: flesh out some of the implementation in the
+	non-databound scenario (using the Items collection).
+
+	* ItemsPresenter.cs: create a stackpanel for the time being, since
+	that seems to be what the default behavior is.
+
+	* ComboBox.cs: flesh out the implementation and fix up the
+	gui-compare.
+
+	* ComboBoxItem.cs: gui-compare stuff.
+
 2009-02-04  Larry Ewing  <lewing@novell.com>
 
 	* StackPanel.cs: remove the restriction on size of the visible

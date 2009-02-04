@@ -23,6 +23,7 @@
 // THE SOFTWARE.
 //
 
+using Mono;
 using System;
 using System.Windows;
 
@@ -30,8 +31,25 @@ namespace System.Windows.Controls
 {
 	public sealed class ItemsPresenter : FrameworkElement
 	{
+		internal StackPanel _elementRoot;
+
 		public ItemsPresenter ()
 		{
+		}
+
+		internal override void InvokeLoaded ()
+		{
+			PreparePresenter ();
+		}
+
+		void PreparePresenter ()
+		{
+			if (_elementRoot == null) {
+				_elementRoot = new StackPanel ();
+
+				NativeMethods.uielement_element_added (native, _elementRoot.native);
+				NativeMethods.uielement_set_subtree_object (native, _elementRoot.native);
+			}
 		}
 	}
 }
