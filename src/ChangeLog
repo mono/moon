@@ -1,5 +1,9 @@
 2009-02-04  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* multiscaleimage.cpp: prepare the rendering for subimages.
+
+2009-02-04  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* multiscalesubimage.h|cpp: GetViewportHeight () utility method.
 
 2009-02-04  Stephane Delcroix  <sdelcroix@novell.com>

@@ -250,7 +250,9 @@ multi_scale_image_handle_parsed (void *userdata)
 {
 	MultiScaleImage *msi = (MultiScaleImage*)userdata;
 	//if the source is a collection, fill the subimages list
-	msi->SetValue (MultiScaleImage::AspectRatioProperty, Value ((double)msi->source->GetImageWidth () / (double)msi->source->GetImageHeight ()));
+	if (msi->source->GetImageWidth () >= 0 && msi->source->GetImageHeight () >= 0)
+		msi->SetValue (MultiScaleImage::AspectRatioProperty, Value ((double)msi->source->GetImageWidth () / (double)msi->source->GetImageHeight ()));
+
 	DeepZoomImageTileSource *source = (DeepZoomImageTileSource *)msi->source;
 	if (source) {
 		int i;
@@ -266,6 +268,13 @@ multi_scale_image_handle_parsed (void *userdata)
 }
 
 void
+multi_scale_subimage_handle_parsed (void *userdata)
+{
+	MultiScaleImage *msi = (MultiScaleImage*)userdata;
+	msi->Invalidate ();
+}
+
+void
 MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 {
 	LOG_MSI ("MSI::RenderCollection\n");
@@ -273,14 +282,13 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 	CollectionIterator *iter = GetSubImages()->GetIterator();
 	Value *val;
 	int error;
+	Rect viewport = Rect (GetViewportOrigin()->x, GetViewportOrigin()->y, GetViewportWidth(), GetViewportHeight());
 	//FIXME: sort the subimages by ZIndex first
 	while (iter->Next () && (val = iter->GetCurrent(&error))) {
 		MultiScaleSubImage *sub_image = val->AsMultiScaleSubImage ();
-
 		//if the subimage is unparsed, trigger the download
 		if (sub_image->source->GetImageWidth () < 0) {
-			LOG_MSI ("skip\n");
-			((DeepZoomImageTileSource*)sub_image->source)->set_parsed_cb (multi_scale_image_handle_parsed, this);
+			((DeepZoomImageTileSource*)sub_image->source)->set_parsed_cb (multi_scale_subimage_handle_parsed, this);
 			((DeepZoomImageTileSource*)sub_image->source)->Download ();
 			continue;
 		}
@@ -288,6 +296,21 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 		//render if the subimage viewport intersects with this viewport
 		LOG_MSI ("subimage #%d (%d, %d), vpo(%f %f) vpw %f\n", sub_image->id, sub_image->source->GetImageWidth (), sub_image->source->GetImageHeight (), 
 			sub_image->GetViewportOrigin ()->x, sub_image->GetViewportOrigin()->y, sub_image->GetViewportWidth ());
+
+		Rect sub_vp = Rect (sub_image->GetViewportOrigin()->x, sub_image->GetViewportOrigin()->y, sub_image->GetViewportWidth (), sub_image->GetViewportHeight ());
+
+		LOG_MSI ("viewport\t%f\t%f\t%f\t%f\n", viewport.x, viewport.y, viewport.width, viewport.height);
+		LOG_MSI ("sub_vp\t%f\t%f\t%f\t%f\n", sub_vp.x, sub_vp.y, sub_vp.width, sub_vp.height);
+		if (!sub_vp.IntersectsWith (viewport))
+			continue;
+
+		LOG_MSI ("Intersects with main viewport...rendering\n");
+		//now it goes like
+		// - figure which layers to render
+		// - get the tile, scale, crop
+		// - paint
+		// - profit !
+
 	}
 	
 }
@@ -555,6 +578,7 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args)
 double
 MultiScaleImage::GetViewportHeight ()
 {
+	LOG_MSI ("VP_W %f, AR %f => VP_H %f\n", GetViewportWidth(), GetAspectRatio(), GetViewportWidth() / GetAspectRatio ());
 	return GetViewportWidth () / GetAspectRatio ();
 }
 
