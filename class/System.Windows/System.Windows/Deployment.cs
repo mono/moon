@@ -258,6 +258,7 @@ namespace System.Windows {
 				NativeMethods.surface_attach (Surface.Native, instance.RootVisual.native);
 			}
 
+			Events.InitSurface (Surface.Native);
 			SetCurrentApplication (instance);
 			NativeMethods.event_object_unref (instance.NativeHandle);
 

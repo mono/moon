@@ -1,3 +1,8 @@
+2009-02-02  Geoff Norton  <gnorton@novell.com>
+
+	* Deployment.cs: Initialize the surface level events before 
+	setting the current application to current.
+
 2009-02-02  Chris Toshok  <toshok@ximian.com>
 
 	* Style.cs: remove the ContentProperty attribute - we autogenerate
