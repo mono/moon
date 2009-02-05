@@ -38,6 +38,12 @@ namespace System.Windows.Controls {
 			NativeMethods.multi_scale_image_zoom_about_logical_point (this.native, zoomIncrementFactor, zoomCenterLogicalX, zoomCenterLogicalY);
 		}
 
+		public ReadOnlyCollection <MultiScaleSubImage> SubImages {
+			get {
+				return new ReadOnlyCollection <MultiScaleSubImage> (SubImageCollection);
+			}
+		}
+
 		public Point ElementToLogicalPoint (Point elementPoint)
 		{
 			return NativeMethods.multi_scale_image_element_to_logical_point (this.native, elementPoint);
@@ -146,9 +152,9 @@ namespace System.Windows.Controls {
 
 		void InvokeImageOpenSucceeded ()
 		{
-			EventHandler h = (EventHandler) EventList [ImageOpenSucceededEvent];
+			RoutedEventHandler h = (RoutedEventHandler) EventList [ImageOpenSucceededEvent];
 			if (h != null)
-				h (this, EventArgs.Empty);
+				h (this, null);
 		}
 
 		void InvokeMotionFinished ()
