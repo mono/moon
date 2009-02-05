@@ -101,6 +101,12 @@ Value::Value (const Value& v)
 			u.fontfamily->source = g_strdup (v.u.fontfamily->source);
 		}
 		break;
+	case Type::PROPERTYPATH:
+		if (v.u.propertypath) {
+			u.propertypath = g_new (PropertyPath, 1);
+			u.propertypath->path = g_strdup (v.u.propertypath->path);
+		}
+		break;
 	case Type::COLOR:
 		u.color = g_new (Color, 1);
 		*u.color = *v.u.color;
@@ -231,6 +237,14 @@ Value::Value (FontFamily family)
 	u.fontfamily->source = g_strdup (family.source);
 }
 
+Value::Value (PropertyPath propertypath)
+{
+	Init ();
+	k = Type::PROPERTYPATH;
+	u.propertypath = g_new (PropertyPath, 1);
+	u.propertypath->path = g_strdup (propertypath.path);
+}
+
 Value::Value (Type::Kind kind, void *npobj)
 {
 	Init ();
@@ -339,6 +353,10 @@ Value::FreeValue ()
 	case Type::FONTFAMILY:
 		g_free (u.fontfamily->source);
 		g_free (u.fontfamily);
+		break;
+	case Type::PROPERTYPATH:
+		g_free (u.propertypath->path);
+		g_free (u.propertypath);
 		break;
 	case Type::POINT:
 		g_free (u.point);
@@ -456,6 +474,8 @@ Value::operator== (const Value &v) const
 		return !strcmp (u.s, v.u.s);
 	case Type::FONTFAMILY:
 		return *u.fontfamily == *v.u.fontfamily;
+	case Type::PROPERTYPATH:
+		return *u.propertypath == *v.u.propertypath;
 	case Type::COLOR:
 		return !memcmp (u.color, v.u.color, sizeof (Color));
 	case Type::POINT:

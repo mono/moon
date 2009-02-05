@@ -40,6 +40,11 @@ namespace Mono {
 		public IntPtr source;
 	}
 
+	[StructLayout(LayoutKind.Sequential)]
+	internal struct UnmanagedPropertyPath {
+		public IntPtr path;
+	}
+
 	internal struct UnmanagedColor {
 		public double r;
 		public double g;
@@ -175,6 +180,11 @@ namespace Mono {
 				case Kind.FONTFAMILY: {
 					UnmanagedFontFamily *family = (UnmanagedFontFamily*)val->u.p;
 					return new FontFamily (family == null ? null : Helper.PtrToStringAuto (family->source));
+				}
+
+				case Kind.PROPERTYPATH: {
+					UnmanagedPropertyPath *propertypath = (UnmanagedPropertyPath *) val->u.p;
+					return new PropertyPath (propertypath == null ? null : Helper.PtrToStringAuto (propertypath->path));
 				}
 
 				case Kind.POINT: {
@@ -409,6 +419,20 @@ namespace Mono {
 					value.k = Kind.FONTFAMILY;
 					value.u.p = Helper.AllocHGlobal (sizeof (UnmanagedFontFamily));
 					Marshal.StructureToPtr (family, value.u.p, false); // Unmanaged and managed structure layout is equal.
+				}
+				else if (v is PropertyPath) {
+					PropertyPath propertypath = (PropertyPath) v;
+					value.k = Kind.PROPERTYPATH;
+					value.u.p = Helper.AllocHGlobal (sizeof (UnmanagedPropertyPath));
+
+					UnmanagedPropertyPath *upp = (UnmanagedPropertyPath *) value.u.p;
+					
+					byte[] bytes = System.Text.Encoding.UTF8.GetBytes (propertypath.Path);
+					IntPtr result = Helper.AllocHGlobal (bytes.Length + 1);
+					Marshal.Copy (bytes, 0, result, bytes.Length);
+					Marshal.WriteByte (result, bytes.Length, 0);
+
+					upp->path = result;
 				}
 				else if (v is Uri) {
 					Uri uri = (Uri) v;

@@ -348,7 +348,7 @@ Animation/*Timeline*/::AllocateClock()
 	char *name = g_strdup_printf ("AnimationClock for %s, targetobj = %p/%s, targetprop = %s", GetTypeName(),
 				      Storyboard::GetTargetName(this) == NULL ? NULL : FindName (Storyboard::GetTargetName(this)),
 				      Storyboard::GetTargetName(this),
-				      Storyboard::GetTargetProperty (this));
+				      Storyboard::GetTargetProperty (this)->path);
 	clock->SetValue (DependencyObject::NameProperty, name);
 	g_free (name);
 	return clock;
@@ -403,7 +403,7 @@ Storyboard::HookupAnimationsRecurse (Clock *clock)
 	case Type::ANIMATIONCLOCK: {
 		AnimationClock *ac = (AnimationClock*)clock;
 
-		const char *targetProperty = NULL;
+		PropertyPath *targetProperty = NULL;
 		const char *targetName = NULL;
 		DependencyObject *o = NULL; 
 		DependencyObject *real_target_o = NULL;
@@ -445,7 +445,7 @@ Storyboard::HookupAnimationsRecurse (Clock *clock)
 		prop = resolve_property_path (&real_target_o, targetProperty);
 
 		if (!prop || !real_target_o) {
-			g_warning ("No property named %s on object %s, which has type %s!", targetProperty, targetName, o->GetTypeName());
+			g_warning ("No property named %s on object %s, which has type %s!", targetProperty->path, targetName, o->GetTypeName());
 			return;
 		}
 

@@ -3144,6 +3144,10 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 		*v = new Value (FontFamily (str)); 
 		break;
 	}
+	case Type::PROPERTYPATH: {
+		*v = new Value (PropertyPath (str));
+		break;
+	}
 	default:
 		// we don't care about NULL or empty values
 		return IS_NULL_OR_EMPTY(str);

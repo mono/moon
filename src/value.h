@@ -29,6 +29,7 @@
  */
 
 struct FontFamily;
+struct PropertyPath;
 struct Color;
 struct Duration;
 struct KeyTime;
@@ -288,6 +289,7 @@ public:
 	Value (Color c);
 	Value (EventObject *obj);
 	Value (FontFamily family);
+	Value (PropertyPath propertypath);
 	Value (Point pt);
 	Value (Rect rect);
 	Value (Size size);
@@ -334,6 +336,7 @@ public:
 	Rect*		AsRect ()	{ checked_get_exact (Type::RECT, NULL, u.rect); }
 	Size*		AsSize ()	{ checked_get_exact (Type::SIZE, NULL, u.size); }
 	FontFamily*	AsFontFamily ()	{ checked_get_exact (Type::FONTFAMILY, NULL, u.fontfamily); }
+	PropertyPath*	AsPropertyPath ()	{ checked_get_exact (Type::PROPERTYPATH, NULL, u.propertypath); }
 	char*		AsString ()	{ checked_get_exact (Type::STRING, NULL, u.s); }
 	DependencyProperty*		AsDependencyProperty ()	{ checked_get_exact (Type::DEPENDENCYPROPERTY, NULL, u.dp); }
 	
@@ -601,6 +604,7 @@ public:
 		Rect *rect;
 		Size *size;
 		FontFamily *fontfamily;
+		PropertyPath *propertypath;
 		RepeatBehavior *repeat;
 		Duration *duration;
 		KeyTime *keytime;

@@ -72,6 +72,7 @@ libmoon_include_headers = 	\
 	playlist.h		\
 	point.h			\
 	popup.h			\
+	propertypath.h	\
 	provider.h		\
 	rect.h			\
 	region.h		\

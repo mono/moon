@@ -1,3 +1,8 @@
+2009-02-05  Jb Evain  <jbevain@novell.com>
+
+	* Storyboard.cs: TargetProperty now takes and returns
+	instances of PropertyPath.
+
 2009-01-20  Larry Ewing  <lewing@novell.com>
 
 	* Storyboard.cs: add a private dp for Children and access it

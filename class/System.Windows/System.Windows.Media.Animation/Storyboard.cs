@@ -111,7 +111,7 @@ namespace System.Windows.Media.Animation {
 			if (path == null)
 				throw new ArgumentNullException ("path");
 			// FIXME Exception if setting on running
-			element.SetValue (TargetPropertyProperty, path.Path);
+			element.SetValue (TargetPropertyProperty, path);
 		}
 
 		public static string GetTargetName (Timeline element)
@@ -124,8 +124,7 @@ namespace System.Windows.Media.Animation {
 			if (element == null)
 				throw new ArgumentNullException ("element");
 
-			string path = (string) element.GetValue (TargetPropertyProperty);
-			return new PropertyPath (path);
+			return (PropertyPath) element.GetValue (TargetPropertyProperty);
 		}
 
 		public TimeSpan GetCurrentTime ()

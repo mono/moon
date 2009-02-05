@@ -323,6 +323,7 @@ Types::RegisterStaticTypes ()
 	types [(int) Type::POLYQUADRATICBEZIERSEGMENT] = new Type (Type::POLYQUADRATICBEZIERSEGMENT, Type::PATHSEGMENT, false, "PolyQuadraticBezierSegment", "POLYQUADRATICBEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) poly_quadratic_bezier_segment_new, NULL);
 	types [(int) Type::POPUP] = new Type (Type::POPUP, Type::FRAMEWORKELEMENT, false, "Popup", "POPUP", 1, 17, Popup_Events, (create_inst_func *) popup_new, NULL);
 	types [(int) Type::PROGRESSIVESOURCE] = new Type (Type::PROGRESSIVESOURCE, Type::FILESOURCE, false, "ProgressiveSource", "PROGRESSIVESOURCE", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::PROPERTYPATH] = new Type (Type::PROPERTYPATH, Type::OBJECT, true, "PropertyPath", "PROPERTYPATH", 0, 0, NULL, NULL, NULL);
 	types [(int) Type::PULSESOURCE] = new Type (Type::PULSESOURCE, Type::AUDIOSOURCE, false, "PulseSource", "PULSESOURCE", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::QUADRATICBEZIERSEGMENT] = new Type (Type::QUADRATICBEZIERSEGMENT, Type::PATHSEGMENT, false, "QuadraticBezierSegment", "QUADRATICBEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) quadratic_bezier_segment_new, NULL);
 	types [(int) Type::RADIALGRADIENTBRUSH] = new Type (Type::RADIALGRADIENTBRUSH, Type::GRADIENTBRUSH, false, "RadialGradientBrush", "RADIALGRADIENTBRUSH", 0, 1, NULL, (create_inst_func *) radial_gradient_brush_new, NULL);

@@ -1,3 +1,7 @@
+2009-02-05  Jb Evain  <jbevain@novell.com>
+
+	* DependencyProperty.g.cs: regen.
+
 2009-02-04  Jackson Harper  <jackson@ximian.com>
 
 	* FrameworkTemplate.cs: Function for attaching xaml bindings.

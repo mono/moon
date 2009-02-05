@@ -106,7 +106,7 @@ private:
 
 G_BEGIN_DECLS
 
-DependencyProperty *resolve_property_path (DependencyObject **o, const char *path);
+DependencyProperty *resolve_property_path (DependencyObject **o, PropertyPath *propertypath);
 void dependency_property_g_init (void);
 G_END_DECLS
 

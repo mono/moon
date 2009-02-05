@@ -1906,7 +1906,7 @@ namespace System.Windows.Media.Animation {
 
 	partial class Storyboard {
 		public static readonly DependencyProperty TargetNameProperty = DependencyProperty.Lookup (Kind.STORYBOARD, "TargetName", typeof (string));
-		public static readonly DependencyProperty TargetPropertyProperty = DependencyProperty.Lookup (Kind.STORYBOARD, "TargetProperty", typeof (string));
+		public static readonly DependencyProperty TargetPropertyProperty = DependencyProperty.Lookup (Kind.STORYBOARD, "TargetProperty", typeof (PropertyPath));
 	}
 
 	partial class Timeline {

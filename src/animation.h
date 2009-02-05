@@ -21,6 +21,7 @@
 #include "clock.h"
 #include "list.h"
 #include "point.h"
+#include "propertypath.h"
 #include "moon-curves.h"
 #include "applier.h"
 
@@ -798,7 +799,7 @@ class Storyboard : public ParallelTimeline {
  public:
  	/* @PropertyType=string,Attached,GenerateAccessors,Validator=IsTimelineValidator */
 	static DependencyProperty *TargetNameProperty;
- 	/* @PropertyType=string,Attached,GenerateAccessors,Validator=IsTimelineValidator */
+ 	/* @PropertyType=PropertyPath,Attached,GenerateAccessors,Validator=IsTimelineValidator */
 	static DependencyProperty *TargetPropertyProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -823,8 +824,8 @@ class Storyboard : public ParallelTimeline {
 	
 	static void SetTargetName (DependencyObject *o, const char *targetName);
 	static const char *GetTargetName (DependencyObject *o);
-	static void SetTargetProperty (DependencyObject *o, const char *targetProperty);
-	static const char *GetTargetProperty (DependencyObject *o);
+	static void SetTargetProperty (DependencyObject *o, PropertyPath *targetProperty);
+	static PropertyPath *GetTargetProperty (DependencyObject *o);
 };
 
 /* @Namespace=System.Windows.Media.Animation */

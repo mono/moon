@@ -1,3 +1,15 @@
+2009-02-05  Jb Evain  <jbevain@novell.com>
+
+	* propertypath.h: new type.
+	* value.h.in, value.cpp: make Value deal with PROPERTYPATH.
+	* xaml.cpp (value_from_str): parse Kind::PROPERTYPATH.
+	* animation.h: change type of Storyboard.TargetPropertyProperty
+	from string to PropertyPath.
+	* animation.cpp: update accordingly.
+	* dependecyproperty.h (resolve_property_path): now takes a PropertyPath.
+	* dependecyproperty.cpp: update accordingly.
+	* value.h, type-generated.cpp, type.h, dependecyproperty.h.cpp: regen.
+
 2009-02-05  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp|h: Use the kind for getting content property names.

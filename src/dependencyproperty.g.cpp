@@ -326,7 +326,7 @@ Types::RegisterStaticDependencyProperties ()
 	SplineDoubleKeyFrame::KeySplineProperty = DependencyProperty::Register (Type::SPLINEDOUBLEKEYFRAME, "KeySpline", Type::KEYSPLINE);
 	SplinePointKeyFrame::KeySplineProperty = DependencyProperty::Register (Type::SPLINEPOINTKEYFRAME, "KeySpline", Type::KEYSPLINE);
 	Storyboard::TargetNameProperty = DependencyProperty::RegisterFull (Type::STORYBOARD, "TargetName", NULL, Type::STRING, true, false, false, NULL, Validators::IsTimelineValidator);
-	Storyboard::TargetPropertyProperty = DependencyProperty::RegisterFull (Type::STORYBOARD, "TargetProperty", NULL, Type::STRING, true, false, false, NULL, Validators::IsTimelineValidator);
+	Storyboard::TargetPropertyProperty = DependencyProperty::RegisterFull (Type::STORYBOARD, "TargetProperty", NULL, Type::PROPERTYPATH, true, false, false, NULL, Validators::IsTimelineValidator);
 	Stroke::DrawingAttributesProperty = DependencyProperty::Register (Type::STROKE, "DrawingAttributes", Type::DRAWINGATTRIBUTES);
 	Stroke::StylusPointsProperty = DependencyProperty::Register (Type::STROKE, "StylusPoints", Type::STYLUSPOINT_COLLECTION);
 	Style::IsSealedProperty = DependencyProperty::Register (Type::STYLE, "IsSealed", new Value (false), Type::BOOL);
@@ -4268,19 +4268,20 @@ Storyboard::SetTargetName (DependencyObject *obj, const char *value)
 	obj->SetValue (Storyboard::TargetNameProperty, Value (value));
 }
 
-const char *
+PropertyPath *
 Storyboard::GetTargetProperty (DependencyObject *obj)
 {
 	Value *value = (!obj) ? NULL : obj->GetValue (Storyboard::TargetPropertyProperty);
 	if (!value) value = Storyboard::TargetPropertyProperty->GetDefaultValue();
-	return value ? value->AsString () : NULL;
+	return value ? value->AsPropertyPath () : NULL;
 }
 
 void
-Storyboard::SetTargetProperty (DependencyObject *obj, const char *value)
+Storyboard::SetTargetProperty (DependencyObject *obj, PropertyPath *value)
 {
 	if (!obj) return;
-	obj->SetValue (Storyboard::TargetPropertyProperty, Value (value));
+	if (!value) return;
+	obj->SetValue (Storyboard::TargetPropertyProperty, Value (*value));
 }
 
 DrawingAttributes *
