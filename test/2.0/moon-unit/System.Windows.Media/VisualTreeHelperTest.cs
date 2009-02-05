@@ -33,8 +33,6 @@ namespace MoonTest.System.Windows.Media
                                 Height = 1000,
                                 Name = "Root"
             };
-            ((TestPage)Application.Current.RootVisual).TestPanel.Children.Clear();
-            ((TestPage)Application.Current.RootVisual).TestPanel.Children.Add(Root);
 		}
 			
 		[TestMethod]
@@ -112,23 +110,22 @@ namespace MoonTest.System.Windows.Media
 		public void HitTest2()
 		{
             Root.Background = new SolidColorBrush(Colors.Black);
-            Root.Dispatcher.BeginInvoke(delegate {
+            CreateAsyncTest(Root, delegate {
                 List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 0), Root));
                 Assert.AreEqual(1, hits.Count, "#1");
-                this.TestComplete();
             });
 		}
+
 		[TestMethod]
 		[Asynchronous]
 		public void HitTest3()
 		{
             Root.Children.Add(new Rectangle { Width = 100, Height = 100, Fill = new SolidColorBrush(Colors.Black) });
-			Root.Dispatcher.BeginInvoke(delegate {
+            CreateAsyncTest(Root, delegate {
                 List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(5, 5), Root));
-				Assert.AreEqual(2, hits.Count, "#1");
-				Assert.IsTrue(hits[0] is Rectangle, "#2");
+			    Assert.AreEqual(2, hits.Count, "#1");
+			    Assert.IsTrue(hits[0] is Rectangle, "#2");
                 Assert.IsTrue(hits[1] == Root, "#3");
-				this.TestComplete();
 			});
 		}
 
@@ -147,13 +144,12 @@ namespace MoonTest.System.Windows.Media
 	</Path.Fill>
 </Path>"));
 
-            Root.Dispatcher.BeginInvoke(delegate {
+            CreateAsyncTest(Root, delegate {
                 List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(30, 30), Root));
-				Assert.AreEqual(2, hits.Count, "#1");
-				Assert.IsTrue(hits[0] is Path, "#2");
+			    Assert.AreEqual(2, hits.Count, "#1");
+			    Assert.IsTrue(hits[0] is Path, "#2");
                 Assert.IsTrue(hits[1] == Root, "#3");
-				this.TestComplete();
-			});
+		    });
 		}
 		
 		[TestMethod]
@@ -173,14 +169,13 @@ namespace MoonTest.System.Windows.Media
 	</Path.Fill>
 </Path>"));
 
-			Root.Dispatcher.BeginInvoke(delegate {
+			CreateAsyncTest(Root, delegate {
                 List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(30, 30), Root));
-				Assert.AreEqual(3, hits.Count, "#1");
-				Assert.IsTrue(hits[0] is Path, "Should be Path, was " + hits[0].GetType ().Name);
-				Assert.IsTrue(hits[1] is Rectangle, "Should be Rectangle, was " + hits[1].GetType ().Name);
-				Assert.IsTrue(hits[2] is Canvas, "Should be Canvas, was " + hits[2].GetType ().Name);
-				this.TestComplete();
-			});
+			    Assert.AreEqual(3, hits.Count, "#1");
+			    Assert.IsTrue(hits[0] is Path, "Should be Path, was " + hits[0].GetType ().Name);
+			    Assert.IsTrue(hits[1] is Rectangle, "Should be Rectangle, was " + hits[1].GetType ().Name);
+			    Assert.IsTrue(hits[2] is Canvas, "Should be Canvas, was " + hits[2].GetType ().Name);
+            });
 		}
 		
 		[TestMethod]
@@ -199,18 +194,17 @@ namespace MoonTest.System.Windows.Media
 			panel.Children.Add(new Rectangle { Width = 100, Height = 100, Fill = new SolidColorBrush(Colors.Blue), Name = "B3" });
             Root.Children.Add(panel);
 
-			Root.Dispatcher.BeginInvoke(delegate {
+			CreateAsyncTest(Root, delegate {
                 List<FrameworkElement> hits = VisualTreeHelper.FindElementsInHostCoordinates(new Point(30, 30), Root).Cast<FrameworkElement>().ToList();
-				Assert.AreEqual(7, hits.Count, "#1");
-				Assert.AreEqual("B3", hits[0].Name, "#2");
-				Assert.AreEqual("B2", hits[1].Name, "#3");
-				Assert.AreEqual("B", hits[2].Name, "#4");
-				Assert.AreEqual("A3", hits[3].Name, "#2");
-				Assert.AreEqual("A2", hits[4].Name, "#3");
-				Assert.AreEqual("A", hits[5].Name, "#4");
-				Assert.AreEqual("Root", hits[6].Name, "#4");
-				this.TestComplete();
-			});
+			    Assert.AreEqual(7, hits.Count, "#1");
+			    Assert.AreEqual("B3", hits[0].Name, "#2");
+			    Assert.AreEqual("B2", hits[1].Name, "#3");
+			    Assert.AreEqual("B", hits[2].Name, "#4");
+			    Assert.AreEqual("A3", hits[3].Name, "#2");
+			    Assert.AreEqual("A2", hits[4].Name, "#3");
+			    Assert.AreEqual("A", hits[5].Name, "#4");
+			    Assert.AreEqual("Root", hits[6].Name, "#4");
+            });
 		}
 		
 		[TestMethod]
@@ -239,18 +233,17 @@ namespace MoonTest.System.Windows.Media
 			Canvas.SetZIndex(panel.Children[1], 30);
 			Canvas.SetZIndex(panel.Children[2], 10);
 
-			panel.Dispatcher.BeginInvoke(delegate {
+            CreateAsyncTest(Root, delegate {
                 List<FrameworkElement> hits = VisualTreeHelper.FindElementsInHostCoordinates(new Point(30, 30), Root).Cast<FrameworkElement>().ToList();
-				Assert.AreEqual(7, hits.Count, "#1");
-				Assert.AreEqual("A2", hits[0].Name, "#2");
-				Assert.AreEqual("A3", hits[1].Name, "#3");
-				Assert.AreEqual("A", hits[2].Name, "#4");
-				Assert.AreEqual("B2", hits[3].Name, "#2");
-				Assert.AreEqual("B3", hits[4].Name, "#3");
-				Assert.AreEqual("B", hits[5].Name, "#4");
-				Assert.AreEqual("Root", hits[6].Name, "#4");
-				this.TestComplete();
-			});
+			    Assert.AreEqual(7, hits.Count, "#1");
+			    Assert.AreEqual("A2", hits[0].Name, "#2");
+			    Assert.AreEqual("A3", hits[1].Name, "#3");
+			    Assert.AreEqual("A", hits[2].Name, "#4");
+			    Assert.AreEqual("B2", hits[3].Name, "#2");
+			    Assert.AreEqual("B3", hits[4].Name, "#3");
+			    Assert.AreEqual("B", hits[5].Name, "#4");
+			    Assert.AreEqual("Root", hits[6].Name, "#4");
+            });
 		}
 	}
 }

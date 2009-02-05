@@ -1,3 +1,9 @@
+2009-02-05  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Media/VisualTreeHelperTest.cs: Rewrite the
+	hit tests so they use the proper async framework. It appears
+	to be working now.
+
 2009-02-05  Andreia Gaita  <avidigal@novell.com>
 
 	* System.Windows.Browser/ScriptableTest.cs: Add a bunch of tests for
