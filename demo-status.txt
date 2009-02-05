@@ -59,3 +59,8 @@ site:Grid Transition Rotator
 url:http://www.shinedraw.com/image-manipulation/flash-vs-silverlight-grid-transition-rotator/
 rating:0
  * not loading, error while launching app from xap
+
+site:Tic-Tac-Toe
+url:http://oldschooldotnet.blogspot.com/2009/01/tic-tac-toe-in-silverlight.html
+rating:4
+ * works!
