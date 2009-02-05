@@ -437,6 +437,7 @@ TextLayout::LayoutWrapWithOverflow ()
 	bool blank = true;
 	GlyphInfo *glyph;
 	TextLine *line;
+	TextFont *font;
 	double advance;
 	guint32 prev;
 	TextRun *run;
@@ -446,11 +447,13 @@ TextLayout::LayoutWrapWithOverflow ()
 	
 	line = new TextLine ();
 	for (run = (TextRun *) runs->First (); run; run = (TextRun *) run->next) {
+		font = run->Font ();
+		
 		if (run->IsLineBreak ()) {
 			// LineBreak
 			if (blank && !OverrideLineHeight ()) {
-				descend = run->Font ()->Descender ();
-				height = run->Font ()->Height ();
+				descend = font->Descender ();
+				height = font->Height ();
 			}
 			
 			line->descend = descend;
@@ -490,8 +493,8 @@ TextLayout::LayoutWrapWithOverflow ()
 			underlined = run->IsUnderlined ();
 		
 		if (!OverrideLineHeight ()) {
-			descend = MIN (descend, run->Font ()->Descender ());
-			height = MAX (height, run->Font ()->Height ());
+			descend = MIN (descend, font->Descender ());
+			height = MAX (height, font->Height ());
 		}
 		
 		segment = new TextSegment (run, 0);
@@ -504,10 +507,10 @@ TextLayout::LayoutWrapWithOverflow ()
 			// always include the lwsp, it is allowed to go past max_width
 			btype = g_unichar_break_type (*inptr);
 			while (BreakSpace (btype)) {
-				if ((glyph = run->Font ()->GetGlyphInfo (*inptr))) {
+				if ((glyph = font->GetGlyphInfo (*inptr))) {
 					if ((advance = glyph->metrics.horiAdvance) > 0.0) {
 						if ((prev != 0) && APPLY_KERNING (*inptr))
-							advance += run->Font ()->Kerning (prev, glyph->index);
+							advance += font->Kerning (prev, glyph->index);
 						else if (glyph->metrics.horiBearingX < 0)
 							advance -= glyph->metrics.horiBearingX;
 					}
@@ -563,8 +566,8 @@ TextLayout::LayoutWrapWithOverflow ()
 				underlined = run->IsUnderlined ();
 				
 				if (!OverrideLineHeight ()) {
-					descend = run->Font ()->Descender ();
-					height = run->Font ()->Height ();
+					descend = font->Descender ();
+					height = font->Height ();
 				}
 				
 				width = 0.0;
@@ -578,10 +581,10 @@ TextLayout::LayoutWrapWithOverflow ()
 			inptr = word;
 			btype = g_unichar_break_type (*inptr);
 			while (!BreakSpace (btype)) {
-				if ((glyph = run->Font ()->GetGlyphInfo (*inptr))) {
+				if ((glyph = font->GetGlyphInfo (*inptr))) {
 					if ((advance = glyph->metrics.horiAdvance) > 0.0) {
 						if ((prev != 0) && APPLY_KERNING (*inptr))
-							advance += run->Font ()->Kerning (prev, glyph->index);
+							advance += font->Kerning (prev, glyph->index);
 						else if (glyph->metrics.horiBearingX < 0)
 							advance -= glyph->metrics.horiBearingX;
 					}
@@ -606,7 +609,7 @@ TextLayout::LayoutWrapWithOverflow ()
 			segment->end = inptr - text;
 			segment->width = x1 - x0;
 			blank = false;
-		} while (*inptr);
+		} while (inptr < inend);
 		
 		segment->advance = x1 - x0;
 		line->segments->Append (segment);
@@ -641,6 +644,7 @@ TextLayout::LayoutNoWrap ()
 	bool blank = true;
 	GlyphInfo *glyph;
 	TextLine *line;
+	TextFont *font;
 	double advance;
 	guint32 prev;
 	TextRun *run;
@@ -650,11 +654,13 @@ TextLayout::LayoutNoWrap ()
 	
 	line = new TextLine ();
 	for (run = (TextRun *) runs->First (); run; run = (TextRun *) run->next) {
+		font = run->Font ();
+		
 		if (run->IsLineBreak ()) {
 			// LineBreak
 			if (blank && !OverrideLineHeight ()) {
-				descend = run->Font ()->Descender ();
-				height = run->Font ()->Height ();
+				descend = font->Descender ();
+				height = font->Height ();
 			}
 			
 			line->descend = descend;
@@ -699,8 +705,8 @@ TextLayout::LayoutNoWrap ()
 			underlined = run->IsUnderlined ();
 		
 		if (!OverrideLineHeight ()) {
-			descend = MIN (descend, run->Font ()->Descender ());
-			height = MAX (height, run->Font ()->Height ());
+			descend = MIN (descend, font->Descender ());
+			height = MAX (height, font->Height ());
 		}
 		
 		segment = new TextSegment (run, 0);
@@ -713,10 +719,10 @@ TextLayout::LayoutNoWrap ()
 			// always include the lwsp, it is allowed to go past max_width
 			btype = g_unichar_break_type (*inptr);
 			while (BreakSpace (btype)) {
-				if ((glyph = run->Font ()->GetGlyphInfo (*inptr))) {
+				if ((glyph = font->GetGlyphInfo (*inptr))) {
 					if ((advance = glyph->metrics.horiAdvance) > 0.0) {
 						if ((prev != 0) && APPLY_KERNING (*inptr))
-							advance += run->Font ()->Kerning (prev, glyph->index);
+							advance += font->Kerning (prev, glyph->index);
 						else if (glyph->metrics.horiBearingX < 0)
 							advance -= glyph->metrics.horiBearingX;
 					}
@@ -746,10 +752,10 @@ TextLayout::LayoutNoWrap ()
 			// append this word onto the line
 			btype = g_unichar_break_type (*inptr);
 			while (!BreakSpace (btype)) {
-				if ((glyph = run->Font ()->GetGlyphInfo (*inptr))) {
+				if ((glyph = font->GetGlyphInfo (*inptr))) {
 					if ((advance = glyph->metrics.horiAdvance) > 0.0) {
 						if ((prev != 0) && APPLY_KERNING (*inptr))
-							advance += run->Font ()->Kerning (prev, glyph->index);
+							advance += font->Kerning (prev, glyph->index);
 						else if (glyph->metrics.horiBearingX < 0)
 							advance -= glyph->metrics.horiBearingX;
 					}
@@ -780,7 +786,7 @@ TextLayout::LayoutNoWrap ()
 					break;
 				}
 			}
-		} while (*inptr);
+		} while (inptr < inend);
 		
 		segment->advance = x1 - x0;
 		line->segments->Append (segment);
@@ -870,6 +876,7 @@ TextLayout::LayoutWrap ()
 	bool blank = true;
 	GlyphInfo *glyph;
 	TextLine *line;
+	TextFont *font;
 	double advance;
 	GArray *array;
 	guint32 prev;
@@ -885,11 +892,13 @@ TextLayout::LayoutWrap ()
 	
 	line = new TextLine ();
 	for (run = (TextRun *) runs->First (); run; run = (TextRun *) run->next) {
+		font = run->Font ();
+		
 		if (run->IsLineBreak ()) {
 			// LineBreak
 			if (blank && !OverrideLineHeight ()) {
-				descend = run->Font ()->Descender ();
-				height = run->Font ()->Height ();
+				descend = font->Descender ();
+				height = font->Height ();
 			}
 			
 			line->descend = descend;
@@ -932,8 +941,8 @@ TextLayout::LayoutWrap ()
 			underlined = run->IsUnderlined ();
 		
 		if (!OverrideLineHeight ()) {
-			descend = MIN (descend, run->Font ()->Descender ());
-			height = MAX (height, run->Font ()->Height ());
+			descend = MIN (descend, font->Descender ());
+			height = MAX (height, font->Height ());
 		}
 		
 		segment = new TextSegment (run, 0);
@@ -959,10 +968,10 @@ TextLayout::LayoutWrap ()
 			}
 			
 			while (BreakSpace (btype)) {
-				if ((glyph = run->Font ()->GetGlyphInfo (*inptr))) {
+				if ((glyph = font->GetGlyphInfo (*inptr))) {
 					advance = glyph->metrics.horiAdvance;
 					if ((prev != 0) && APPLY_KERNING (*inptr))
-						advance += run->Font ()->Kerning (prev, glyph->index);
+						advance += font->Kerning (prev, glyph->index);
 					else if (glyph->metrics.horiBearingX < 0) {
 						bearing_adj = glyph->metrics.horiBearingX;
 						advance += bearing_adj;
@@ -1024,8 +1033,8 @@ TextLayout::LayoutWrap ()
 				underlined = run->IsUnderlined ();
 				
 				if (!OverrideLineHeight ()) {
-					descend = run->Font ()->Descender ();
-					height = run->Font ()->Height ();
+					descend = font->Descender ();
+					height = font->Height ();
 				}
 				
 				in_word = false;
@@ -1043,12 +1052,12 @@ TextLayout::LayoutWrap ()
 			g_array_set_size (array, 0);
 			btype = g_unichar_break_type (*inptr);
 			while (btype != G_UNICODE_BREAK_SPACE) {
-				if (!(glyph = run->Font ()->GetGlyphInfo (*inptr)))
+				if (!(glyph = font->GetGlyphInfo (*inptr)))
 					goto next;
 				
 				advance = glyph->metrics.horiAdvance;
 				if ((prev != 0) && APPLY_KERNING (*inptr))
-					advance += run->Font ()->Kerning (prev, glyph->index);
+					advance += font->Kerning (prev, glyph->index);
 				else if (glyph->metrics.horiBearingX < 0) {
 					bearing_adj = glyph->metrics.horiBearingX;
 					advance += bearing_adj;
@@ -1132,7 +1141,7 @@ TextLayout::LayoutWrap ()
 				
 			next:
 				
-				if (!run->Font ()->HasGlyph (*inptr))
+				if (!font->HasGlyph (*inptr))
 					wc.btype = G_UNICODE_BREAK_UNKNOWN;
 				else
 					wc.btype = btype;
@@ -1156,7 +1165,7 @@ TextLayout::LayoutWrap ()
 			segment->end = inptr - text;
 			segment->width = x1 - x0;
 			blank = false;
-		} while (*inptr);
+		} while (inptr < inend);
 		
 		segment->advance = x1 - x0;
 		line->segments->Append (segment);
