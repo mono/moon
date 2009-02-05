@@ -114,7 +114,7 @@ namespace System.Windows {
 			owner_type = Deployment.Current.Types.Find (ownerType);
 
 			if (metadata != null) {
-				handler = NativePropertyChangedCallback;
+				handler = NativePropertyChangedCallbackSafe;
 				defaultVal = metadata.default_value;
 			}
 
@@ -141,6 +141,18 @@ namespace System.Windows {
 			result.PropertyChangedHandler = handler;
 			
 			return result;
+		}
+		
+		private static void NativePropertyChangedCallbackSafe (IntPtr dependency_property, IntPtr dependency_object, IntPtr old_value, IntPtr new_value)
+		{
+			try {
+				NativePropertyChangedCallback (dependency_property, dependency_object, old_value, new_value);
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in DependencyProperty.NativePropertyChangedCallback: {0}", ex.Message);
+				} catch {
+				}
+			}
 		}
 		
 		private static void NativePropertyChangedCallback (IntPtr dependency_property, IntPtr dependency_object, IntPtr old_value, IntPtr new_value)

@@ -1,3 +1,10 @@
+2009-02-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Application.cs:
+	* FrameworkElement.cs:
+	* DependencyProperty.cs: Ensure no exceptions reach native
+	  code.
+
 2009-02-05  Jb Evain  <jbevain@novell.com>
 
 	* DependencyProperty.g.cs: regen.

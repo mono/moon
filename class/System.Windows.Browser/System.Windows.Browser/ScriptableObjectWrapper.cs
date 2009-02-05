@@ -48,11 +48,11 @@ namespace System.Windows.Browser
 	
 	internal class ScriptableObjectWrapper : ScriptObject {
 
-		static InvokeDelegate invoke = new InvokeDelegate (InvokeFromUnmanaged);
-		static SetPropertyDelegate set_prop = new SetPropertyDelegate (SetPropertyFromUnmanaged);
-		static GetPropertyDelegate get_prop = new GetPropertyDelegate (GetPropertyFromUnmanaged);
-		static EventHandlerDelegate add_event = new EventHandlerDelegate (AddEventFromUnmanaged);
-		static EventHandlerDelegate remove_event = new EventHandlerDelegate (RemoveEventFromUnmanaged);
+		static InvokeDelegate invoke = new InvokeDelegate (InvokeFromUnmanagedSafe);
+		static SetPropertyDelegate set_prop = new SetPropertyDelegate (SetPropertyFromUnmanagedSafe);
+		static GetPropertyDelegate get_prop = new GetPropertyDelegate (GetPropertyFromUnmanagedSafe);
+		static EventHandlerDelegate add_event = new EventHandlerDelegate (AddEventFromUnmanagedSafe);
+		static EventHandlerDelegate remove_event = new EventHandlerDelegate (RemoveEventFromUnmanagedSafe);
 
 		static Dictionary<IntPtr, WeakReference> scriptableObjects;
 		Dictionary<IntPtr, Delegate> events;
@@ -301,6 +301,18 @@ namespace System.Windows.Browser
 				ValueFromObject (ref ret, rv);
 		}
 
+		static void InvokeFromUnmanagedSafe (IntPtr obj_handle, IntPtr method_handle, string name, IntPtr[] uargs, int arg_count, ref Value return_value)
+		{
+			try {
+				InvokeFromUnmanaged (obj_handle, method_handle, name, uargs, arg_count, ref return_value);
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in ScriptableObjectWrapper.InvokeFromUnmanagedSafe: {0}", ex);
+				} catch {
+				}
+			}
+		}
+		
 		static void InvokeFromUnmanaged (IntPtr obj_handle, IntPtr method_handle, string name, IntPtr[] uargs, int arg_count, ref Value return_value)
 		{
 			//Console.WriteLine ("Invoke " + name);
@@ -338,6 +350,18 @@ namespace System.Windows.Browser
 			}
 		}
 
+		static void SetPropertyFromUnmanagedSafe (IntPtr obj_handle, IntPtr property_handle, ref Value value)
+		{
+			try {
+				SetPropertyFromUnmanaged (obj_handle, property_handle, ref value);
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in ScriptableObjectWrapper.SetPropertyFromUnmanagedSafe: {0}", ex);
+				} catch {
+				}
+			}
+		}
+		
 		static void SetPropertyFromUnmanaged (IntPtr obj_handle, IntPtr property_handle, ref Value value)
 		{
 			ScriptableObjectWrapper obj = (ScriptableObjectWrapper) ((GCHandle)obj_handle).Target;
@@ -354,6 +378,18 @@ namespace System.Windows.Browser
 			return pi.GetValue (this.ManagedObject, null);
 		}
 
+		static void GetPropertyFromUnmanagedSafe (IntPtr obj_handle, IntPtr property_handle, ref Value value)
+		{
+			try {
+				GetPropertyFromUnmanaged (obj_handle, property_handle, ref value);
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in ScriptableObjectWrapper.GetPropertyFromUnmanagedSafe: {0}", ex);
+				} catch {
+				}
+			}
+		}
+		
 		static void GetPropertyFromUnmanaged (IntPtr obj_handle, IntPtr property_handle, ref Value value)
 		{
 			ScriptableObjectWrapper obj = (ScriptableObjectWrapper) ((GCHandle)obj_handle).Target;
@@ -376,6 +412,18 @@ namespace System.Windows.Browser
 				this.events[closure] = d;
 		}
 
+		static void AddEventFromUnmanagedSafe (IntPtr obj_handle, IntPtr event_handle, IntPtr scriptable_obj, IntPtr closure)
+		{
+			try {
+				AddEventFromUnmanaged (obj_handle, event_handle, scriptable_obj, closure);
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in ScriptableObjectWrapper.AddEventFromUnmanagedSafe: {0}", ex);
+				} catch {
+				}
+			}
+		}
+		
 		static void AddEventFromUnmanaged (IntPtr obj_handle, IntPtr event_handle, IntPtr scriptable_obj, IntPtr closure)
 		{
 			ScriptableObjectWrapper obj = (ScriptableObjectWrapper) ((GCHandle)obj_handle).Target;
@@ -390,6 +438,18 @@ namespace System.Windows.Browser
 			events.Remove (closure);
 		}
 
+		static void RemoveEventFromUnmanagedSafe (IntPtr obj_handle, IntPtr event_handle, IntPtr scriptable_obj, IntPtr closure)
+		{
+			try {
+				RemoveEventFromUnmanaged (obj_handle, event_handle, scriptable_obj, closure);
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in ScriptableObjectWrapper.RemoveEventFromUnmanagedSafe: {0}", ex);
+				} catch {
+				}
+			}
+		}
+		
 		static void RemoveEventFromUnmanaged (IntPtr obj_handle, IntPtr event_handle, IntPtr scriptable_obj, IntPtr closure)
 		{
 			ScriptableObjectWrapper obj = (ScriptableObjectWrapper) ((GCHandle)obj_handle).Target;

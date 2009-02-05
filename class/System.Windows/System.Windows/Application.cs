@@ -66,9 +66,9 @@ namespace System.Windows {
 		{
 			NativeHandle = raw;
 
-			apply_default_style = new ApplyDefaultStyleCallback (apply_default_style_cb);
-			apply_style = new ApplyStyleCallback (apply_style_cb);
-			get_resource = new GetResourceCallback (get_resource_cb);
+			apply_default_style = new ApplyDefaultStyleCallback (apply_default_style_cb_safe);
+			apply_style = new ApplyStyleCallback (apply_style_cb_safe);
+			get_resource = new GetResourceCallback (get_resource_cb_safe);
 
 			NativeMethods.application_register_callbacks (NativeHandle, apply_default_style, apply_style, get_resource);
 
@@ -117,6 +117,18 @@ namespace System.Windows {
 
 		Dictionary<Assembly, ResourceDictionary> assemblyToGenericXaml = new Dictionary<Assembly, ResourceDictionary>();
 
+		void apply_default_style_cb_safe (IntPtr fwe_ptr, IntPtr type_info_ptr)
+		{
+			try {
+				apply_default_style_cb (fwe_ptr, type_info_ptr);
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in Application.apply_default_style_cb_safe: {0}", ex);
+				} catch {
+				}
+			}
+		}
+		
 		void apply_default_style_cb (IntPtr fwe_ptr, IntPtr type_info_ptr)
 		{
 			ManagedTypeInfo type_info = (ManagedTypeInfo)Marshal.PtrToStructure (type_info_ptr, typeof (ManagedTypeInfo));
@@ -149,6 +161,18 @@ namespace System.Windows {
 			fwe.Style = s;
 		}
 
+		void apply_style_cb_safe (IntPtr fwe_ptr, IntPtr style_ptr)
+		{
+			try {
+				apply_style_cb (fwe_ptr, style_ptr);
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in Application.apply_style_cb_safe: {0}", ex);
+				} catch {
+				}
+			}
+		}
+		
 		void apply_style_cb (IntPtr fwe_ptr, IntPtr style_ptr)
 		{
 #if not_needed
@@ -295,6 +319,20 @@ namespace System.Windows {
 			return null;
 		}
 
+		internal static IntPtr get_resource_cb_safe (string name, out int size)
+		{
+			try {
+				return get_resource_cb (name, out size);
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in Application.get_resource_cb: {0}", ex);
+				} catch {
+				}
+			}
+			size = 0;
+			return new IntPtr ();
+		}
+		
 		internal static IntPtr get_resource_cb (string name, out int size)
 		{
 			size = 0;

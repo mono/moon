@@ -50,10 +50,14 @@ namespace Mono {
 				try {
 					handler (a, b, c);
 				} catch (Exception ex) {
-					if (IsPlugin ())
-						ReportException (ex);
-					else
-						throw;
+					try {
+						if (IsPlugin ())
+							ReportException (ex);
+						else
+							Console.WriteLine ("Moonlight: Unhandled exception in Events.CreateSafeHandler: {0}", ex);
+					} catch {
+						// Ignore
+					}
 				}
 			};
 		}

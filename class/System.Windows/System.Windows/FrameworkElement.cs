@@ -182,12 +182,30 @@ namespace System.Windows {
 
 		private Size InvokeMeasureOverride (Size availableSize)
 		{
-			return MeasureOverride (availableSize);
+			try {
+				return MeasureOverride (availableSize);
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in FrameworkElement.InvokeMeasureOverride: {0}", ex.Message);
+				} catch {
+					// Ignore
+				}
+			}
+			return new Size (); 
 		}
 
 		private Size InvokeArrangeOverride (Size finalSize)
 		{
-			return ArrangeOverride (finalSize);
+			try {
+				return ArrangeOverride (finalSize);
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in FrameworkElement.InvokeArrangeOverride: {0}", ex.Message);
+				} catch {
+					// Ignore
+				}
+			}
+			return new Size ();
 		}
 		
 		[SecuritySafeCritical]

@@ -1,3 +1,8 @@
+2009-02-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* BrowserHttpWebRequest.cs: Ensure no exceptions reach native
+	  code.
+
 2009-01-23  Alan McGovern  <amcgovern@novell.com>
 
 	* BrowserHttpWebRequest.cs: The callback object may be null and the

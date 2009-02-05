@@ -66,9 +66,9 @@ namespace System.Windows.Browser.Net
 
  		public BrowserHttpWebRequest (Uri uri)
  		{
-			started = new NativeMethods.DownloaderResponseStartedDelegate (OnAsyncResponseStarted);
-			available = new NativeMethods.DownloaderResponseAvailableDelegate (OnAsyncDataAvailable);
-			finished = new NativeMethods.DownloaderResponseFinishedDelegate (OnAsyncResponseFinished);
+			started = new NativeMethods.DownloaderResponseStartedDelegate (OnAsyncResponseStartedSafe);
+			available = new NativeMethods.DownloaderResponseAvailableDelegate (OnAsyncDataAvailableSafe);
+			finished = new NativeMethods.DownloaderResponseFinishedDelegate (OnAsyncResponseFinishedSafe);
  			this.uri = uri;
 			managed = GCHandle.Alloc (this, GCHandleType.Normal);
 		}
@@ -113,7 +113,7 @@ namespace System.Windows.Browser.Net
 			if (NativeMethods.surface_in_main_thread ()) {
 				InitializeNativeRequest (IntPtr.Zero);
 			} else {
-				NativeMethods.TickCallHandler tch = new NativeMethods.TickCallHandler (InitializeNativeRequest);
+				NativeMethods.TickCallHandler tch = new NativeMethods.TickCallHandler (InitializeNativeRequestSafe);
 
 				NativeMethods.time_manager_add_tick_call (NativeMethods.surface_get_time_manager (NativeMethods.plugin_instance_get_surface (PluginHost.Handle)), tch, IntPtr.Zero);
 
@@ -127,6 +127,19 @@ namespace System.Windows.Browser.Net
 			return async_result;
 		}
 
+		static uint OnAsyncResponseStartedSafe (IntPtr native, IntPtr context)
+		{
+			try {
+				return OnAsyncResponseStarted (native, context);
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in BrowserHttpWebRequest.OnAsyncResponseStartedSafe: {0}", ex);
+				} catch {
+				}
+			}
+			return 0;
+		}
+		
 		static uint OnAsyncResponseStarted (IntPtr native, IntPtr context)
 		{
 			GCHandle handle = Helper.GCHandleFromIntPtr (context);
@@ -140,7 +153,20 @@ namespace System.Windows.Browser.Net
 			}
 			return 0;
 		}
-
+		
+		static uint OnAsyncResponseFinishedSafe (IntPtr native, IntPtr context, bool success, IntPtr data)
+		{
+			try {
+				return OnAsyncResponseFinished (native, context, success, data);
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in BrowserHttpWebRequest.OnAsyncResponseFinishedSafe: {0}", ex);
+				} catch {
+				}
+			}
+			return 0;
+		}
+		
 		static uint OnAsyncResponseFinished (IntPtr native, IntPtr context, bool success, IntPtr data)
 		{
 			GCHandle handle = Helper.GCHandleFromIntPtr (context);
@@ -153,7 +179,20 @@ namespace System.Windows.Browser.Net
 			}
 			return 0;
 		}
-
+		
+		static uint OnAsyncDataAvailableSafe (IntPtr native, IntPtr context, IntPtr data, uint length)
+		{
+			try {
+				return OnAsyncDataAvailable (native, context, data, length);
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in BrowserHttpWebRequest.OnAsyncDataAvailableSafe: {0}", ex);
+				} catch {
+				}
+			}
+			return 0;
+		}
+		
 		static uint OnAsyncDataAvailable (IntPtr native, IntPtr context, IntPtr data, uint length)
 		{
 			GCHandle handle = Helper.GCHandleFromIntPtr (context);
@@ -216,6 +255,18 @@ namespace System.Windows.Browser.Net
 			return new Uri (GetBaseUri (), uri);
 		}
 
+		void InitializeNativeRequestSafe (IntPtr context)
+		{
+			try {
+				InitializeNativeRequest (context);
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in BrowserHttpWebRequest.InitializeNativeRequestSafe: {0}", ex);
+				} catch {
+				}
+			}
+		}
+		
 		void InitializeNativeRequest (IntPtr context)
 		{
 			if (native != IntPtr.Zero)

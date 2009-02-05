@@ -49,7 +49,7 @@ namespace System.Windows.Media
 		System.Runtime.InteropServices.GCHandle handle;
 		void Initialize ()
 		{
-			NativeMethods.ImageUriFunc func = new NativeMethods.ImageUriFunc (GetImageUri);
+			NativeMethods.ImageUriFunc func = new NativeMethods.ImageUriFunc (GetImageUriSafe);
 			handle = System.Runtime.InteropServices.GCHandle.Alloc (func);
 			NativeMethods.multi_scale_tile_source_set_image_uri_func (native, func);
 		}
@@ -84,6 +84,20 @@ namespace System.Windows.Media
 		
 		protected abstract void GetTileLayers (int tileLevel, int tilePositionX, int tilePositionY, IList<object> tileImageLayerSources);
 
+		private string GetImageUriSafe (int tileLevel, int tilePositionX, int tilePositionY)
+		{
+			try {
+				return GetImageUri (tileLevel, tilePositionX, tilePositionY);
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in MultiScaleTileSource.GetImageUri: {0}", ex);
+				} catch {
+					// Ignore
+				}
+			}
+			return null;
+		}
+		
 		protected internal string GetImageUri (int tileLevel, int tilePositionX, int tilePositionY)
 		{
 			List<object> list = new List<object> ();

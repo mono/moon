@@ -139,7 +139,14 @@ namespace System.Windows.Threading {
 
 		void dispatcher_callback (IntPtr data)
 		{
-			Dispatch ();
+			try {
+				Dispatch ();
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in DependencyProperty.NativePropertyChangedCallback: {0}", ex);
+				} catch {
+				}
+			}
 		}
 
 	}
