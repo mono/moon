@@ -1,3 +1,8 @@
+2009-02-05  Geoff Norton  <gnorton@novell.com>
+
+	* MultiScaleSubImageCollection.cs: Managed counterpart to the native
+	collection.
+
 2009-02-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* TextBlock.cs: Change the NotImplementedException into a MonoTODO
