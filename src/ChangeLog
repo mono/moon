@@ -1,7 +1,12 @@
 2009-02-05  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.cpp (TextBox::OnMouseLeftButtonDown): Don't use
+	ClearSelection() because we'll be syncing the SelectedText in
+	SyncAndEmit() anyway.
+
 	* layout.cpp (TextLayout::Layout*Wrap*): Oops, fix outer loop to
 	exit when inptr >= inend rather than when *inptr == 0.
+	(TextLayout::GetCursorFromXY): Slightly improved.
 
 2009-02-05  Sebastien Pouliot  <sebastien@ximian.com> 
 

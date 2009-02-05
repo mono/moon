@@ -1129,7 +1129,8 @@ TextBox::OnMouseLeftButtonDown (MouseEventArgs *args)
 		cursor = view->GetCursorFromXY (x, y);
 		
 		emit = NOTHING_CHANGED;
-		ClearSelection (cursor);
+		SetSelectionStart (cursor);
+		SetSelectionLength (0);
 		SyncAndEmit ();
 	}
 }
@@ -1703,7 +1704,6 @@ append_runs (ITextSource *textbox, List *runs, const gunichar **text, int *lengt
 		n = 0;
 		
 		while (inptr < inend && *inptr != '\r' && *inptr != '\n') {
-			fputc ((char) *inptr, stdout);
 			inptr++;
 			n++;
 		}

@@ -1513,6 +1513,7 @@ TextLayout::GetCursorFromXY (const Point &offset, double x, double y)
 	int cur = 0;
 	gunichar c;
 	double x0;
+	double m;
 	int i;
 	
 	//printf ("TextLayout::GetCursorFromXY (%.2g, %.2g)\n", x, y);
@@ -1525,33 +1526,41 @@ TextLayout::GetCursorFromXY (const Point &offset, double x, double y)
 	// adjust x0 for horizontal alignment
 	x0 = offset.x + HorizontalAlignment (line->width);
 	
-	while (segment) {
-		if (x < x0 + segment->advance) {
-			text = segment->run->Text ();
-			font = segment->Font ();
-			
-			// we'll find the cursor index we're looking for in this segment
-			for (i = segment->start; i < segment->end && x0 < x; cur++, i++) {
-				c = text[i];
-				
-				if (!(glyph = font->GetGlyphInfo (c)))
-					continue;
-				
-				if ((prev != 0) && APPLY_KERNING (c))
-					x0 += font->Kerning (prev, glyph->index);
-				else if (glyph->metrics.horiBearingX < 0)
-					x0 += glyph->metrics.horiBearingX;
-				
-				x0 += glyph->metrics.horiAdvance;
-				prev = glyph->index;
-			}
-			break;
-		}
-		
+	while (segment && (x >= x0 + segment->advance)) {
 		// not in this segment... maybe the next one
 		cur += (segment->end - segment->start);
+		x0 += segment->advance;
 		
 		segment = (TextSegment *) segment->next;
+	}
+	
+	if (segment && x < x0 + segment->advance) {
+		// we'll find the cursor index we're looking for in this segment
+		text = segment->run->Text ();
+		font = segment->Font ();
+		
+		for (i = segment->start; i < segment->end && x0 < x; cur++, i++) {
+			c = text[i];
+			
+			if (!(glyph = font->GetGlyphInfo (c)))
+				continue;
+			
+			if ((prev != 0) && APPLY_KERNING (c))
+				x0 += font->Kerning (prev, glyph->index);
+			else if (glyph->metrics.horiBearingX < 0)
+				x0 += glyph->metrics.horiBearingX;
+			
+			// calculate midpoint of the character
+			m = glyph->metrics.horiAdvance / 2.0;
+			
+			// if x is <= the midpoint, then cursor is
+			// considered to be at this character.
+			if (x <= x0 + m)
+				break;
+			
+			x0 += glyph->metrics.horiAdvance;
+			prev = glyph->index;
+		}
 	}
 	
 	return cur;
