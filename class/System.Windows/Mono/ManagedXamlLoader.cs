@@ -715,7 +715,7 @@ namespace Mono.Xaml
 				return converter.ConvertFrom (value);
 
 			try {
-				if (typeof (Enum).IsAssignableFrom (t) && value is string)
+				if (t.IsEnum && value is string)
 					return Enum.Parse (t, (string)value);
 			} catch {
 			}
