@@ -69,6 +69,7 @@ namespace MoonTest.System.Windows.Threading
 
 		[TestMethod]
 		[SilverlightBug]
+		[Ignore ("this can crash the process/IE with SL2")]
 		public void SyncContextCheck ()
 		{
 			int mainui = Thread.CurrentThread.ManagedThreadId;
