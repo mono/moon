@@ -153,8 +153,8 @@ StylePropertyValueProvider::SealStyle (Style *style)
 	}
 }
 
-Value*
-InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
+static DependencyObject*
+get_parent (DependencyObject *obj)
 {
 	DependencyObject *parent = NULL;
 
@@ -167,35 +167,51 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 	if (!parent)
 		parent = obj->GetLogicalParent();
 
+	return parent;
+}
+
+Value*
+InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
+{
+	DependencyObject *parent = get_parent (obj);
+
 	if (!parent)
 		return NULL;
-
-	Type::Kind parent_kind = parent->GetObjectType();
 
 	DependencyProperty *parent_property = NULL;
 
 #define INHERIT1(p) \
-	G_STMT_START { \
-	if (property == Control::p || \
-	    property == TextBlock::p || \
-	    property == Inline::p) { \
-		switch (parent_kind) { \
-		case Type::CONTROL:   parent_property = Control::p; break; \
-		case Type::TEXTBLOCK: parent_property = TextBlock::p; break; \
-		case Type::INLINE:    parent_property = Inline::p; break; \
-		default:              parent_property = NULL; break; \
-		} \
-	} \
+	G_STMT_START {									\
+	if (property == Control::p ||							\
+	    property == TextBlock::p ||							\
+	    property == Inline::p) {							\
+											\
+		do {									\
+			if (parent->Is (Type::CONTROL))					\
+				parent_property = Control::p;				\
+			else if (parent->Is (Type::TEXTBLOCK))				\
+				parent_property = TextBlock::p;				\
+			else if (parent->Is (Type::INLINE))				\
+				parent_property = Inline::p;				\
+											\
+			if (!parent_property)						\
+				parent = get_parent (parent);				\
+		} while (parent && !parent_property);					\
+	}										\
 	} G_STMT_END
 
 #define INHERIT2(p) \
-	G_STMT_START { \
-	if (property == Inline::p) { \
-		switch (parent_kind) { \
-		case Type::TEXTBLOCK: parent_property = TextBlock::p; break; \
-		default:              parent_property = NULL; break; \
-		} \
-	} \
+	G_STMT_START {									\
+	if (property == Inline::p) {							\
+											\
+		do {									\
+			if (parent->Is (Type::TEXTBLOCK))				\
+				parent_property = TextBlock::p;				\
+											\
+			if (!parent_property)						\
+				parent = get_parent (parent);				\
+		} while (parent && !parent_property);					\
+	}										\
 	} G_STMT_END
 
 
