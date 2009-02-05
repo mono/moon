@@ -179,28 +179,9 @@ namespace Mono.Xaml
 			Assembly clientlib = null;
 			string assembly_name = AssemblyNameFromXmlns (xmlns);
 			string clr_namespace = ClrNamespaceFromXmlns (xmlns);
-
-			if (assembly_name == null && !TryGetDefaultAssemblyName (top_level, out assembly_name)) {
-				Console.Error.WriteLine ("Unable to find an assembly to load type from.");
-				value = Value.Empty;
-				return false;
-			}
-
-			if (LoadAssembly (assembly_name, out clientlib) != AssemblyLoadResult.Success) {
-				Console.Error.WriteLine ("Unable to load assembly");
-				value = Value.Empty;
-				return false;
-			}
-
-			if (clientlib == null) {
-				Console.Error.WriteLine ("ManagedXamlLoader::LoadObject ({0}, {1}, {2}): Assembly loaded, but where is it?", assembly_name, xmlns, name);
-				value = Value.Empty;
-				return false;
-			}
-
 			string full_name = string.IsNullOrEmpty (clr_namespace) ? name : clr_namespace + "." + name;
 
-			Type type = clientlib.GetType (full_name);
+			Type type = LookupType (top_level, assembly_name, full_name);
 			if (type == null) {
 				Console.Error.WriteLine ("ManagedXamlLoader::LoadObject: GetType ({0}) failed using assembly: {1}.", name, clientlib);
 				value = Value.Empty;
@@ -548,6 +529,37 @@ namespace Mono.Xaml
 			return false;
 		}
 
+		private Type LookupType (IntPtr top_level, string assembly_name, string full_name)
+		{
+			Type res = null;
+			bool explicit_assembly = assembly_name != null;
+
+			do {
+				if (assembly_name == null && !TryGetDefaultAssemblyName (top_level, out assembly_name)) {
+					Console.Error.WriteLine ("unable to find the assembly name for the target type.");
+					break;
+				}
+
+				Assembly assembly = null;
+				if (LoadAssembly (assembly_name, out assembly) != AssemblyLoadResult.Success) {
+					Console.Error.WriteLine ("unable to load assembly for target type.");
+					break;
+				}
+
+				res = assembly.GetType (full_name);
+
+				if (res == null && !explicit_assembly) {
+					assembly = typeof (DependencyObject).Assembly;
+					res = assembly.GetType (full_name);
+				}
+			} while (false);
+
+			if (res == null)
+				res = Application.GetComponentTypeFromName (full_name);
+
+			return res;
+		}
+
 		//
 		// TODO: Is it legal to jam the whole metadata right in the string ie: TargetType="clr-namespace:Mono;MyType"
 		//
@@ -567,25 +579,7 @@ namespace Mono.Xaml
 				full_name = string.IsNullOrEmpty (clr_namespace) ? name : clr_namespace + "." + name;
 			}
 
-			do {
-				if (assembly_name == null && !TryGetDefaultAssemblyName (top_level, out assembly_name)) {
-					Console.Error.WriteLine ("unable to find the assembly name for the target type.");
-					break;
-				}
-
-				Assembly assembly = null;
-				if (LoadAssembly (assembly_name, out assembly) != AssemblyLoadResult.Success) {
-					Console.Error.WriteLine ("unable to load assembly for target type.");
-					break;
-				}
-
-				res = assembly.GetType (full_name);
-			} while (false);
-
-			if (res == null)
-				res = Application.GetComponentTypeFromName (full_name);
-
-			return res;
+			return LookupType (top_level, assembly_name, full_name);
 		}
 
 		private DependencyProperty DependencyPropertyFromString (IntPtr parser, IntPtr top_level, object otarget, IntPtr target_parent_ptr, string str_value)
@@ -633,7 +627,6 @@ namespace Mono.Xaml
 		private bool SetPropertyFromValue (IntPtr parser, IntPtr top_level, object target, IntPtr target_parent_ptr, PropertyInfo pi, IntPtr value_ptr, out string error)
 		{
 			error = null;
-
 			object obj_value = Value.ToObject (null, value_ptr);
 
 			if (typeof (IList).IsAssignableFrom (pi.PropertyType) && !(obj_value is IList)) {

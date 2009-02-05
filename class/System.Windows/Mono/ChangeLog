@@ -1,3 +1,9 @@
+2009-02-05  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: Consolidate type/assembly loading a little
+	bit better.  Always fallback to the System.Windows.dll assembly if
+	we don't find anything in the user assembly.
+
 2009-02-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Events.cs: Ensure no exceptions reach native code.
