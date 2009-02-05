@@ -1,5 +1,9 @@
 2009-02-05  Jb Evain  <jbevain@novell.com>
 
+	* Value.cs: refactoring: use StringToIntPtr.
+
+2009-02-05  Jb Evain  <jbevain@novell.com>
+
 	* Value.cs: marshal PROPERTYPATH back and forth to
 	System.Windows.PropertyPath.
 	* Types.g.cs, Kind.cs: regen.

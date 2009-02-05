@@ -344,12 +344,7 @@ namespace Mono {
 				else if (v is string) {
 					value.k = Kind.STRING;
 
-					byte[] bytes = System.Text.Encoding.UTF8.GetBytes ((string)v);
-					IntPtr result = Helper.AllocHGlobal (bytes.Length + 1);
-					Marshal.Copy (bytes, 0, result, bytes.Length);
-					Marshal.WriteByte (result, bytes.Length, 0);
-
-					value.u.p = result;
+					value.u.p = StringToIntPtr ((string) v);
 				}
 				else if (v is Rect) {
 					Rect rect = (Rect) v;
@@ -426,37 +421,22 @@ namespace Mono {
 					value.u.p = Helper.AllocHGlobal (sizeof (UnmanagedPropertyPath));
 
 					UnmanagedPropertyPath *upp = (UnmanagedPropertyPath *) value.u.p;
-					
-					byte[] bytes = System.Text.Encoding.UTF8.GetBytes (propertypath.Path);
-					IntPtr result = Helper.AllocHGlobal (bytes.Length + 1);
-					Marshal.Copy (bytes, 0, result, bytes.Length);
-					Marshal.WriteByte (result, bytes.Length, 0);
 
-					upp->path = result;
+					upp->path = StringToIntPtr (propertypath.Path);
 				}
 				else if (v is Uri) {
 					Uri uri = (Uri) v;
 					
 					value.k = Kind.URI;
 					
-					byte[] bytes = System.Text.Encoding.UTF8.GetBytes (uri.OriginalString);
-					IntPtr result = Helper.AllocHGlobal (bytes.Length + 1);
-					Marshal.Copy (bytes, 0, result, bytes.Length);
-					Marshal.WriteByte (result, bytes.Length, 0);
-					
-					value.u.p = result;
+					value.u.p = StringToIntPtr (uri.OriginalString);
 				}
 				else if (v is XmlLanguage) {
 					XmlLanguage lang = (XmlLanguage) v;
 					
 					value.k = Kind.XMLLANGUAGE;
 					
-					byte[] bytes = System.Text.Encoding.UTF8.GetBytes (lang.IetfLanguageTag);
-					IntPtr result = Helper.AllocHGlobal (bytes.Length + 1);
-					Marshal.Copy (bytes, 0, result, bytes.Length);
-					Marshal.WriteByte (result, bytes.Length, 0);
-					
-					value.u.p = result;
+					value.u.p = StringToIntPtr (lang.IetfLanguageTag);
 				}
 				else if (v is Cursor) {
 					Cursor c = (Cursor) v;
