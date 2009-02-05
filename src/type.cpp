@@ -389,7 +389,7 @@ Types::Find (const char *name)
 		if (i == Type::LASTTYPE)
 			continue;
 			
-		if (!g_strcasecmp (types [i]->GetName (), name))
+		if (!strcmp (types [i]->GetName (), name))
 			return types [i];
 	}
 

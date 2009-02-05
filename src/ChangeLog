@@ -1,3 +1,9 @@
+2009-02-05  Jackson Harper  <jackson@ximian.com>
+
+	* type.cpp: As far as I can tell, Type::Find does not need to be
+	case sensitive. This fixes "Double" being found when we register
+	it as "double".
+
 2009-02-05  Jeffrey Stedfast  <fejj@novell.com>
 
 	Save some additional state for an optimization I'd like to do.
