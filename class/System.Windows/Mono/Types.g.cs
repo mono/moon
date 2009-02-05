@@ -93,6 +93,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.MULTISCALEIMAGE));
 				t = typeof (System.Windows.Controls.MultiScaleSubImage); 
 				types.Add (t, new ManagedType (t, Kind.MULTISCALESUBIMAGE));
+				t = typeof (System.Windows.Controls.MultiScaleSubImageCollection); 
+				types.Add (t, new ManagedType (t, Kind.MULTISCALESUBIMAGE_COLLECTION));
 				t = typeof (System.Windows.Controls.Panel); 
 				types.Add (t, new ManagedType (t, Kind.PANEL));
 				t = typeof (System.Windows.Controls.PasswordBox); 

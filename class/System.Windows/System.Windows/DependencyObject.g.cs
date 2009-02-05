@@ -217,6 +217,11 @@ namespace System.Windows.Controls {
 		internal MultiScaleSubImage (IntPtr raw) : base (raw) {}
 	}
 
+	partial class MultiScaleSubImageCollection {
+		internal MultiScaleSubImageCollection () : base (NativeMethods.multi_scale_sub_image_collection_new ()) {}
+		internal MultiScaleSubImageCollection (IntPtr raw) : base (raw) {}
+	}
+
 	[ContentProperty ("Children")]
 	partial class Panel {
 		protected Panel () : base (NativeMethods.panel_new ()) {}

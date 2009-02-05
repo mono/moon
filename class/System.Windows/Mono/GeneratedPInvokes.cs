@@ -1006,6 +1006,10 @@ namespace Mono {
 		public extern static IntPtr multi_scale_sub_image_new ();
 
 		[DllImport ("moon")]
+		// MultiScaleSubImageCollection *multi_scale_sub_image_collection_new ();
+		public extern static IntPtr multi_scale_sub_image_collection_new ();
+
+		[DllImport ("moon")]
 		// long multi_scale_tile_source_get_image_height (MultiScaleTileSource *instance);
 		public extern static long multi_scale_tile_source_get_image_height (IntPtr instance);
 
