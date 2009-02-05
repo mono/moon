@@ -112,7 +112,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug ("known issue, fix requires xaml parser fix + patch to style.cpp")]
 		public void ModifyIsSealed ()
 		{
 			Style style = (Style) XamlReader.Load (@"

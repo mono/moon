@@ -79,7 +79,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug ("known issue, fix requires xaml parser fix + patch to style.cpp")]
 		public void SealedChildren_UnsealedStyle ()
 		{
 			SealedChildren (false);
@@ -130,7 +129,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug ("known issue, fix requires xaml parser fix + patch to style.cpp")]
 		public void SetSealedStyleWithSetterToElement ()
 		{
 			Setter setter = new Setter (Rectangle.HeightProperty, "50");
@@ -169,7 +167,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug ("known issue, fix requires xaml parser fix + patch to style.cpp")]
 		public void SetUnsealedStyleWithSetterToElement ()
 		{
 			Setter setter = new Setter (Rectangle.HeightProperty, "50");

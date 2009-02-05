@@ -45,7 +45,7 @@ namespace MoonTest.System.Windows
 	}
 		
 	[TestClass]
-	public class _StyleTest
+	public class StyleTest
 	{
 		// NOTE: This test must be run first for it to work - do not remove the 'aaa' from the start of its name
 		[TestMethod]
@@ -451,7 +451,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug ("known issue, fix requires xaml parser fix + patch to style.cpp")]
 		public void Seal ()
 		{
 			Setter setter = new Setter (UIElement.OpacityProperty, 2.0);

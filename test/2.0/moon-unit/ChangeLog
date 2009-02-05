@@ -1,3 +1,10 @@
+2009-02-05  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows/SetterBaseCollectionTest.cs:
+	* System.Windows/SetterTest.cs:
+	* System.Windows/StyleTest.cs: Remove [MoonlightBug] from tests
+	that depends on the xaml parser fix (new HACK is in SVN).
+
 2009-02-05  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Media/VisualTreeHelperTest.cs: Rewrite the
