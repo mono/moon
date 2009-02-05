@@ -32,28 +32,40 @@ class ITextSource {
 };
 
 class TextRun : public List::Node {
- public:
+	const gunichar *text;
 	ITextSource *source;
-	TextDecorations deco;
 	TextFont *font;
-	gunichar *text;
+	gunichar *buf;
 	bool selected;
-	short crlf;
+	int length;
+	
+ public:
 	
 	TextRun (const gunichar *ucs4, int len, ITextSource *source, bool selected = false);
 	TextRun (const char *utf8, int len, ITextSource *source, bool selected = false);
-	TextRun (ITextSource *source, short crlf, bool selected = false);
+	TextRun (ITextSource *source);
 	
 	virtual ~TextRun ();
 	
+	//
+	// Property Accessors
+	//
+	TextDecorations Decorations () { return source->Decorations (); }
+	Brush *Background () { return source->Background (selected); }
+	Brush *Foreground () { return source->Foreground (selected); }
+	bool IsSelected () { return selected; }
+	const gunichar *Text () { return text; }
+	int Length () { return length; }
+	TextFont *Font () { return font; }
+	
 	bool IsUnderlined ()
 	{
-		return (source->Decorations () & TextDecorationsUnderline);
+		return (Decorations () & TextDecorationsUnderline);
 	}
 	
 	bool IsLineBreak ()
 	{
-		return !text;
+		return !text || text[0] == '\r' || text[0] == '\n';
 	}
 };
 

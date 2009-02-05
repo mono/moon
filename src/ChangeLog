@@ -1,3 +1,21 @@
+2009-02-05  Jeffrey Stedfast  <fejj@novell.com>
+
+	Memory Optimization:
+
+	* textbox.cpp (append_runs): Updated. Also fixed a bug which would
+	sometimes append empty TextRuns to the list.
+
+	* text.cpp (TextBlock::Layout): Updated. No longer need to use the
+	retarded TextRun linebreak ctor.
+
+	* layout.cpp (TextRun): Changed TextRuns a bit, all members are
+	now private but accessors have been added to get the values. Get
+	rid of the crlf field and ctor params. We also no longer "strdup"
+	for the ucs4 ctor since TextBox is the only consumer of that API
+	and it is not constructed using a temp buffer.
+	(TextSegment): Updated a bit for TextRun changes.
+	(TextLayout): Updated for TextRun changes.
+
 2009-02-05  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* style.cpp|h: Remove "style-hack" from SetterBaseCollection 

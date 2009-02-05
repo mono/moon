@@ -1703,13 +1703,16 @@ append_runs (ITextSource *textbox, List *runs, const gunichar **text, int *lengt
 		n = 0;
 		
 		while (inptr < inend && *inptr != '\r' && *inptr != '\n') {
+			fputc ((char) *inptr, stdout);
 			inptr++;
 			n++;
 		}
 		
-		// append the Run
-		run = new TextRun (start, n, textbox, selected);
-		runs->Append (run);
+		if (n > 0) {
+			// append the Run
+			run = new TextRun (start, n, textbox, selected);
+			runs->Append (run);
+		}
 		
 		if (inptr == inend) {
 			(*length) -= n;
@@ -1718,11 +1721,11 @@ append_runs (ITextSource *textbox, List *runs, const gunichar **text, int *lengt
 		
 		// append the LineBreak
 		if (inptr[0] == '\r' && inptr[1] == '\n') {
-			run = new TextRun (textbox, 2, selected);
+			run = new TextRun (inptr, 2, textbox, selected);
 			inptr += 2;
 			n += 2;
 		} else {
-			run = new TextRun (textbox, 1, selected);
+			run = new TextRun (inptr, 1, textbox, selected);
 			inptr++;
 			n++;
 		}
