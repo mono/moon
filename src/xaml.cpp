@@ -1178,10 +1178,10 @@ XamlLoader::LookupObject (void *p, void *top_level, const char* xmlns, const cha
 }
 
 const char *
-XamlLoader::GetContentPropertyName (void *p, void *obj)
+XamlLoader::GetContentPropertyName (void *p, Type::Kind kind)
 {
 	if (callbacks.get_content_property_name) {
-		return callbacks.get_content_property_name (p, obj);
+		return callbacks.get_content_property_name (p, kind);
 	}
 	return NULL;
 }
@@ -3507,7 +3507,7 @@ XamlElementInfoManaged::GetContentProperty (XamlParserInfo *p)
 		return NULL;
 
 	// TODO: We could cache this, but for now lets keep things as simple as possible.
-	const char *res = p->loader->GetContentPropertyName (p, obj->Is(Type::DEPENDENCY_OBJECT) ? obj->AsDependencyObject() : obj->AsManagedObject());
+	const char *res = p->loader->GetContentPropertyName (p, kind);
 	if (res)
 		return res;
 	return XamlElementInfo::GetContentProperty (p);
@@ -3680,7 +3680,7 @@ XamlElementInfoImportedManaged::GetContentProperty (XamlParserInfo *p)
 
 	
 	// TODO: We could cache this, but for now lets keep things as simple as possible.
-	const char *res = p->loader->GetContentPropertyName (p, obj->AsDependencyObject ());
+	const char *res = p->loader->GetContentPropertyName (p, kind);
 	if (res)
 		return res;
 	
@@ -4642,7 +4642,6 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 			expr->unref ();
 			return true;
 		}
-
 		// if create_binding_expression_from_markup returns NULL, it's already called parser_error
 		return false;
 	default:

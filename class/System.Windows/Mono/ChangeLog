@@ -1,3 +1,10 @@
+2009-02-05  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs:
+	* XamlLoaderCallbacks.cs: We use the kind for getting content
+	property names now.  (Is this even needed or can it be handled
+	with the additional_types stuff?).
+
 2009-02-04  Geoff Norton  <gnorton@novell.com>
 
 	* ManagedXamlLoader.cs: A managed subclass of UserControl can
