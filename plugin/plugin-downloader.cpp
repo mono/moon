@@ -134,14 +134,16 @@ plugin_downloader_abort (gpointer state)
 	pd->Abort ();
 }
 
-static void
-*plugin_downloader_create_webrequest (const char *method, const char *uri, gpointer context)
+static void *
+plugin_downloader_create_webrequest (const char *method, const char *uri, gpointer context)
 {
 	if (!context)
 		return NULL;
-
+	
 	PluginInstance *instance = (PluginInstance *) context;
-	return instance->GetBridge ()->CreateDownloaderRequest (method, uri);
+	BrowserBridge *bridge = instance->GetBridge ();
+	
+	return bridge ? bridge->CreateDownloaderRequest (method, uri) : NULL;
 }
 
 PluginDownloader::PluginDownloader (Downloader *dl)
