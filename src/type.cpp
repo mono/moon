@@ -178,6 +178,12 @@ Type::Find (const char *name)
 }
 
 Type *
+Type::Find (const char *name, bool ignore_case)
+{
+	return Deployment::GetCurrent ()->GetTypes ()->Find (name, ignore_case);
+}
+
+Type *
 Type::Find (Type::Kind type)
 {
 	if (type < Type::INVALID || type == Type::LASTTYPE)
@@ -385,11 +391,17 @@ Types::Find (Type::Kind type)
 Type *
 Types::Find (const char *name)
 {
+	return Types::Find (name, true);
+}
+
+Type *
+Types::Find (const char *name, bool ignore_case)
+{
 	for (int i = 1; i < count; i++) { // 0 = INVALID, shouldn't compare against that
 		if (i == Type::LASTTYPE)
 			continue;
 			
-		if (!strcmp (types [i]->GetName (), name))
+		if ((ignore_case && !g_ascii_strcasecmp (types [i]->GetName (), name)) || !strcmp (types [i]->GetName (), name))
 			return types [i];
 	}
 

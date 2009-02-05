@@ -1,5 +1,10 @@
 2009-02-05  Jackson Harper  <jackson@ximian.com>
 
+	* type.cpp|h|h.in: Type:Find does need to be insensitive for JS.
+	So I've added an ignore_case flag that the parser can use.
+
+2009-02-05  Jackson Harper  <jackson@ximian.com>
+
 	* type.cpp: As far as I can tell, Type::Find does not need to be
 	case sensitive. This fixes "Double" being found when we register
 	it as "double".

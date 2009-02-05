@@ -287,6 +287,7 @@ public:
 	
 	static Type *Find (const char *name);
 	static Type *Find (Type::Kind type);
+	static Type *Find (const char *name, bool ignore_case);
 	
 	bool IsSubclassOf (Type::Kind super);
 	static bool IsSubclassOf (Type::Kind type, Type::Kind super);
@@ -369,6 +370,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Type *Find (Type::Kind type);
 	Type *Find (const char *name);
+	Type *Find (const char *name, bool ignore_case);
 	
 	// This method must be called right after creating the Types instance
 	// and the Types instance must be available from Deployment::GetCurrent ()
