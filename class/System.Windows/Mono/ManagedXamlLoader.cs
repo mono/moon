@@ -402,7 +402,7 @@ namespace Mono.Xaml
 
 		private bool TrySetPropertyReflection (IntPtr parser, IntPtr top_level, string xmlns, object target, IntPtr target_parent_ptr, string type_name, string name, IntPtr value_ptr, out string error)
 		{
-			PropertyInfo pi = target.GetType ().GetProperty (name);
+			PropertyInfo pi = target.GetType ().GetProperty (name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy);
 
 			if (pi == null) {
 				error = "Property does not exist.";
