@@ -228,21 +228,21 @@ expand_rgb_to_argb (GdkPixbuf *pixbuf, int *stride)
 }
 
 char *
-to_key (int layer, int x, int y)
+to_key (int subimage_id, int layer, int x, int y)
 {
-	char key[16];
-	sprintf (key, "%dx%dx%d", layer, x, y);
+	char key[32];
+	sprintf (key, "%dx%dx%dx%d", subimage_id, layer, x, y);
 	return g_strdup (key);
 }
 
 bool
-MultiScaleImage::cache_contains (int layer, int x, int y, bool empty_tiles)
+MultiScaleImage::cache_contains (int layer, int x, int y, int subimage_id ,bool empty_tiles)
 {
 	//empty_tiles = TRUE means that this will return true if a tile is present, but NULL
 	if (empty_tiles)
-		return g_hash_table_lookup_extended (cache, to_key (layer, x, y), NULL, NULL);
+		return g_hash_table_lookup_extended (cache, to_key (subimage_id, layer, x, y), NULL, NULL);
 	else
-		return g_hash_table_lookup (cache, to_key (layer, x, y)) != NULL;
+		return g_hash_table_lookup (cache, to_key (subimage_id, layer, x, y)) != NULL;
 }
 
 void
@@ -277,13 +277,23 @@ multi_scale_subimage_handle_parsed (void *userdata)
 void
 MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 {
-	LOG_MSI ("MSI::RenderCollection\n");
+	LOG_MSI ("\nMSI::RenderCollection\n");
 
+	double msi_x = GetViewportOrigin()->x;
+	double msi_y = GetViewportOrigin()->y;
+	double msi_w = GetViewportWidth();
+	double msi_ar = GetAspectRatio();
+
+	int tile_width = source->GetTileWidth ();
+	int tile_height = source->GetTileHeight ();
+
+	Rect viewport = Rect (msi_x, msi_y, msi_w, msi_w/msi_ar);
+
+	//FIXME: sort the subimages by ZIndex first
 	CollectionIterator *iter = GetSubImages()->GetIterator();
 	Value *val;
 	int error;
-	Rect viewport = Rect (GetViewportOrigin()->x, GetViewportOrigin()->y, GetViewportWidth(), GetViewportHeight());
-	//FIXME: sort the subimages by ZIndex first
+
 	while (iter->Next () && (val = iter->GetCurrent(&error))) {
 		MultiScaleSubImage *sub_image = val->AsMultiScaleSubImage ();
 		//if the subimage is unparsed, trigger the download
@@ -293,16 +303,28 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			continue;
 		}
 
+		double widget_w = GetActualWidth ();
+		double widget_h = GetActualHeight ();
+LOG_MSI ("Widget %fx%f\n", widget_w, widget_h);
+		double sub_x = sub_image->GetViewportOrigin()->x;
+		double sub_y = sub_image->GetViewportOrigin()->y;
+		double sub_w = sub_image->GetViewportWidth();
+		double sub_ar = sub_image->GetAspectRatio();
+
 		//render if the subimage viewport intersects with this viewport
 		LOG_MSI ("subimage #%d (%d, %d), vpo(%f %f) vpw %f\n", sub_image->id, sub_image->source->GetImageWidth (), sub_image->source->GetImageHeight (), 
 			sub_image->GetViewportOrigin ()->x, sub_image->GetViewportOrigin()->y, sub_image->GetViewportWidth ());
 
-		Rect sub_vp = Rect (sub_image->GetViewportOrigin()->x, sub_image->GetViewportOrigin()->y, sub_image->GetViewportWidth (), sub_image->GetViewportHeight ());
+		//expressing the subimage viewport in main viewport coordinates.
+		Rect sub_vp = Rect (-sub_x / sub_w, -sub_y / sub_w, 1.0/sub_w, 1.0/(sub_ar * sub_w));
 
-		LOG_MSI ("viewport\t%f\t%f\t%f\t%f\n", viewport.x, viewport.y, viewport.width, viewport.height);
-		LOG_MSI ("sub_vp\t%f\t%f\t%f\t%f\n", sub_vp.x, sub_vp.y, sub_vp.width, sub_vp.height);
+		//NOTE, we could reuse the same routine to render single dz images, by setting the sub_vp to an appropriate value
+
 		if (!sub_vp.IntersectsWith (viewport))
 			continue;
+
+		LOG_MSI ("viewport\t%f\t%f\t%f\t%f\n", viewport.x, viewport.y, viewport.width, viewport.height);
+		LOG_MSI ("sub_vp  \t%f\t%f\t%f\t%f\n", sub_vp.x, sub_vp.y, sub_vp.width, sub_vp.height);
 
 		LOG_MSI ("Intersects with main viewport...rendering\n");
 		//now it goes like
@@ -311,6 +333,57 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 		// - paint
 		// - profit !
 
+#if TRUE
+//		LOG_MSI ("rendering from x = %f to %f\n", MAX(msi_x, sub_vp.x), MIN(msi_x + msi_w, sub_vp.x + sub_vp.width));
+//		LOG_MSI ("rendering from y = %f to %f\n", MAX(msi_y, sub_vp.y), MIN(msi_y + msi_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar)); 
+
+		cairo_save (cr);
+		cairo_set_source_rgba (cr, 1, 0, 0, .2);
+
+		cairo_rectangle (cr, 
+			widget_w / msi_w * (-msi_x + MAX(msi_x, sub_vp.x)), 
+			widget_w / msi_w * (-msi_y + MAX(msi_y, sub_vp.y)),
+			widget_w / msi_w * (MIN(msi_x + msi_w, sub_vp.x + sub_vp.width) - MAX(msi_x, sub_vp.x)),
+			widget_w / msi_w * (MIN(msi_y + msi_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - MAX(msi_y, sub_vp.y)));
+		cairo_fill (cr);
+		cairo_restore (cr);
+#endif
+
+		int layers;
+		frexp (MAX (sub_image->source->GetImageWidth(), sub_image->source->GetImageHeight()), &layers);
+
+		int optimal_layer;
+		frexp (widget_w / (sub_w * msi_w), &optimal_layer); 
+		optimal_layer = MIN (optimal_layer, layers);
+		LOG_MSI ("number of layers: %d\toptimal layer for this: %d\n", layers, optimal_layer);
+
+		int to_layer = -1;
+		int from_layer = optimal_layer;	
+		while (from_layer >= 0) {
+			int count = 0;
+			int found = 0;
+
+			//in msi relative coord
+			double v_tile_w = tile_width * ldexp (1.0, layers - from_layer) * sub_vp.width / (double)sub_image->source->GetImageWidth ();
+			double v_tile_h = tile_height * ldexp (1.0, layers - from_layer) * sub_vp.width / (double)sub_image->source->GetImageWidth ();
+			LOG_MSI ("virtual tile size at layer %d; %fx%f\n", from_layer, v_tile_w, v_tile_h);
+
+			int i, j;
+			for (i = (int)(MAX(msi_x, sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msi_x + msi_w, sub_vp.x + sub_vp.width);i++) 
+				for (j = (int)(MAX(msi_y, sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msi_y + msi_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar);j++) {
+					LOG_MSI ("%d:%d %d\n", from_layer, i, j);
+					count++;
+					if (cache_contains (from_layer, i, j, sub_image->id, false))
+						found ++;
+				}
+
+			if (found > 0 && to_layer < from_layer)
+				to_layer = from_layer;
+			if (found == count)
+				break;
+
+			from_layer --;
+		}
 	}
 	
 }
@@ -430,7 +503,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 		for (i = MAX(0, (int)((double)vp_ox * im_w / (double)v_tile_w)); i * v_tile_w < vp_ox * im_w + vp_w * im_w && i * v_tile_w < im_w; i++) {
 			for (j = MAX(0, (int)((double)vp_oy * im_h / (double)v_tile_h)); j * v_tile_h < vp_oy * im_h + vp_h * im_w && j * v_tile_h < im_h; j++) {
 				count++;
-				if (cache_contains (from_layer, i, j, false))
+				if (cache_contains (from_layer, i, j, 0, false))
 					found ++;
 			}
 		}
@@ -450,7 +523,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 		double v_tile_h = tile_height * ldexp (1.0, layers - layer_to_render);
 		for (i = MAX(0, (int)((double)vp_ox * im_w / (double)v_tile_w)); i * v_tile_w < vp_ox * im_w + vp_w * im_w && i * v_tile_w < im_w; i++) {
 			for (j = MAX(0, (int)((double)vp_oy * im_h / (double)v_tile_h)); j * v_tile_h < vp_oy * im_h + vp_h * im_w && j * v_tile_h < im_h; j++) {
-				cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, to_key (layer_to_render, i, j));
+				cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, to_key (0, layer_to_render, i, j));
 				if (!image)
 					continue;
 				LOG_MSI ("rendering %d %d %d\n", layer_to_render, i, j);
@@ -488,8 +561,8 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 
 		for (i = MAX(0, (int)((double)vp_ox * im_w / (double)v_tile_w)); i * v_tile_w < vp_ox * im_w + vp_w * im_w && i * v_tile_w < im_w; i++) {
 			for (j = MAX(0, (int)((double)vp_oy * im_h / (double)v_tile_h)); j * v_tile_h < vp_oy * im_h + vp_h * im_w && j * v_tile_h < im_h; j++) {
-				if (!cache_contains (from_layer, i, j, true)) {
-					context = to_key (from_layer, i, j);
+				if (!cache_contains (from_layer, i, j, 0, true)) {
+					context = to_key (0, from_layer, i, j);
 				
 					const char* ret = g_strdup ((const char*)source->get_tile_func (from_layer, i, j, source));
 					if (ret) {
@@ -578,7 +651,6 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args)
 double
 MultiScaleImage::GetViewportHeight ()
 {
-	LOG_MSI ("VP_W %f, AR %f => VP_H %f\n", GetViewportWidth(), GetAspectRatio(), GetViewportWidth() / GetAspectRatio ());
 	return GetViewportWidth () / GetAspectRatio ();
 }
 
