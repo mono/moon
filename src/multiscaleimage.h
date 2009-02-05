@@ -57,7 +57,7 @@ class MultiScaleImage : public MediaBase {
 	static DependencyProperty *AspectRatioProperty;
 	/* @PropertyType=MultiScaleTileSource,Version=2.0,GenerateAccessors */
 	static DependencyProperty *SourceProperty;
-	/* @PropertyType=MultiScaleSubImageCollection,Version=2.0,GenerateGetter */
+	/* @PropertyType=MultiScaleSubImageCollection,ManagedAccess=Internal,Version=2.0,GenerateGetter */
 	static DependencyProperty *SubImageCollectionProperty;
 	/* @PropertyType=bool,DefaultValue=true,Version=2.0,GenerateAccessors */
 	static DependencyProperty *UseSpringsProperty;
