@@ -22,12 +22,19 @@ namespace MoonTest.System.Windows.Media
 	[TestClass]
 	public class ___VisualTreeHelperTest : Microsoft.Silverlight.Testing.SilverlightTest
 	{
-		UIElementCollection Root;
+		Panel Root;
 	
 		[TestInitialize]
 		public void Init ()
 		{
-			Root = ((TestPage)Application.Current.RootVisual).TestPanel.Children;
+            Root = new Canvas { HorizontalAlignment = HorizontalAlignment.Left,
+                                VerticalAlignment = VerticalAlignment.Top,
+                                Width = 1000,
+                                Height = 1000,
+                                Name = "Root"
+            };
+            ((TestPage)Application.Current.RootVisual).TestPanel.Children.Clear();
+            ((TestPage)Application.Current.RootVisual).TestPanel.Children.Add(Root);
 		}
 			
 		[TestMethod]
@@ -93,12 +100,8 @@ namespace MoonTest.System.Windows.Media
 		[Asynchronous]
 		public void HitTest1()
 		{
-			Panel panel = new Canvas ();
-			Root.Add (panel);
-			panel.Width = 1000;
-			panel.Height = 1000;
-			panel.Dispatcher.BeginInvoke(delegate {
-				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point (0, 0), panel));
+			Root.Dispatcher.BeginInvoke(delegate {
+                List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 0), Root));
 				Assert.AreEqual(0, hits.Count, "#1");
 				this.TestComplete ();
 			});
@@ -108,38 +111,23 @@ namespace MoonTest.System.Windows.Media
 		[Asynchronous]
 		public void HitTest2()
 		{
-			Panel panel = new Canvas ();
-			Root.Add (panel);
-			panel.Background = new SolidColorBrush(Colors.Black);
-			Console.WriteLine ("I'm about to change the widths");
-			panel.Width = 1000;
-			panel.Height = 1000;;
-			panel.Dispatcher.BeginInvoke(delegate {
-				Console.WriteLine ("Dispatching");
-				try{
-					List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 0), panel));
-					Assert.AreEqual(1, hits.Count, "#1");
-				}catch (Exception ex) {
-					Console.WriteLine (ex);
-				}
-				finally {
-					this.TestComplete();
-				}
-			});
+            Root.Background = new SolidColorBrush(Colors.Black);
+            Root.Dispatcher.BeginInvoke(delegate {
+                List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 0), Root));
+                Assert.AreEqual(1, hits.Count, "#1");
+                this.TestComplete();
+            });
 		}
 		[TestMethod]
 		[Asynchronous]
 		public void HitTest3()
 		{
-			Canvas panel = new Canvas {Width =1000, Height = 1000 };
-			Root.Add(panel);
-			
-			panel.Children.Add(new Rectangle { Width = 100, Height = 100, Fill = new SolidColorBrush(Colors.Black) });
-			panel.Dispatcher.BeginInvoke(delegate {
-				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point (5, 5), panel));
+            Root.Children.Add(new Rectangle { Width = 100, Height = 100, Fill = new SolidColorBrush(Colors.Black) });
+			Root.Dispatcher.BeginInvoke(delegate {
+                List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(5, 5), Root));
 				Assert.AreEqual(2, hits.Count, "#1");
 				Assert.IsTrue(hits[0] is Rectangle, "#2");
-				Assert.IsTrue(hits[1] == panel, "#3");
+                Assert.IsTrue(hits[1] == Root, "#3");
 				this.TestComplete();
 			});
 		}
@@ -148,38 +136,7 @@ namespace MoonTest.System.Windows.Media
 		[Asynchronous]
 		public void HitTest4()
 		{
-			Canvas panel = new Canvas { Width = 1000, Height = 1000 };
-			Root.Add(panel);
-			panel.Children.Add((Path)XamlReader.Load(
-@"<Path xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" x:Name=""ShipShell"" Stretch=""Fill"" Stroke=""#FF000000"" Width=""50"" Height=""44"" Canvas.Left=""1"" Canvas.Top=""1"" Data=""M256,82 L241,99 239,129 231,150 206,162 206,176 257,180 311,174 299,155 280,148 273,127 271,98 z"">
-	<Path.Fill>
-		<RadialGradientBrush>
-			<GradientStop Color=""#FFE1D0D0"" Offset=""0""/>
-			<GradientStop Color=""#FF673434"" Offset=""1""/>
-			<GradientStop Color=""#FFE3D8D8"" Offset=""0.024""/>
-		</RadialGradientBrush>
-	</Path.Fill>
-</Path>"));
-	
-			panel.Dispatcher.BeginInvoke(delegate
-			{
-				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point (30, 30), panel));
-				Assert.AreEqual(2, hits.Count, "#1");
-				Assert.IsTrue(hits[0] is Path, "#2");
-				Assert.IsTrue(hits[1] == panel, "#3");
-				this.TestComplete();
-			});
-		}
-		
-		[TestMethod]
-		[Asynchronous]
-		public void HitTest5()
-		{
-			Canvas panel = new Canvas { Width = 1000, Height = 1000 };
-			Root.Add(panel);
-			panel.Children.Add(new Ellipse { Width = 100, Height = 100 });
-			panel.Children.Add(new Rectangle { Width = 100, Height = 100, Fill = new SolidColorBrush(Colors.Blue) });
-			panel.Children.Add((Path)XamlReader.Load(
+            Root.Children.Add((Path)XamlReader.Load(
 @"<Path xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" x:Name=""ShipShell"" Stretch=""Fill"" Stroke=""#FF000000"" Width=""50"" Height=""44"" Canvas.Left=""1"" Canvas.Top=""1"" Data=""M256,82 L241,99 239,129 231,150 206,162 206,176 257,180 311,174 299,155 280,148 273,127 271,98 z"">
 	<Path.Fill>
 		<RadialGradientBrush>
@@ -190,8 +147,34 @@ namespace MoonTest.System.Windows.Media
 	</Path.Fill>
 </Path>"));
 
-			panel.Dispatcher.BeginInvoke(delegate {
-				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(30, 30), panel));
+            Root.Dispatcher.BeginInvoke(delegate {
+                List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(30, 30), Root));
+				Assert.AreEqual(2, hits.Count, "#1");
+				Assert.IsTrue(hits[0] is Path, "#2");
+                Assert.IsTrue(hits[1] == Root, "#3");
+				this.TestComplete();
+			});
+		}
+		
+		[TestMethod]
+		[Asynchronous]
+		public void HitTest5()
+		{
+            Root.Children.Add(new Ellipse { Width = 100, Height = 100 });
+            Root.Children.Add(new Rectangle { Width = 100, Height = 100, Fill = new SolidColorBrush(Colors.Blue) });
+            Root.Children.Add((Path)XamlReader.Load(
+@"<Path xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" x:Name=""ShipShell"" Stretch=""Fill"" Stroke=""#FF000000"" Width=""50"" Height=""44"" Canvas.Left=""1"" Canvas.Top=""1"" Data=""M256,82 L241,99 239,129 231,150 206,162 206,176 257,180 311,174 299,155 280,148 273,127 271,98 z"">
+	<Path.Fill>
+		<RadialGradientBrush>
+			<GradientStop Color=""#FFE1D0D0"" Offset=""0""/>
+			<GradientStop Color=""#FF673434"" Offset=""1""/>
+			<GradientStop Color=""#FFE3D8D8"" Offset=""0.024""/>
+		</RadialGradientBrush>
+	</Path.Fill>
+</Path>"));
+
+			Root.Dispatcher.BeginInvoke(delegate {
+                List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(30, 30), Root));
 				Assert.AreEqual(3, hits.Count, "#1");
 				Assert.IsTrue(hits[0] is Path, "Should be Path, was " + hits[0].GetType ().Name);
 				Assert.IsTrue(hits[1] is Rectangle, "Should be Rectangle, was " + hits[1].GetType ().Name);
@@ -204,22 +187,20 @@ namespace MoonTest.System.Windows.Media
 		[Asynchronous]
 		public void HitTest6()
 		{
-			Panel basePanel = new Canvas { Name = "Root" };
-			Root.Add(basePanel);
 			Canvas panel = new Canvas { Width = 1000, Height = 1000, Name = "A" };
 			panel.Children.Add(new Ellipse { Width = 100, Height = 100, Name = "A1" });
 			panel.Children.Add(new Rectangle { Width = 100, Height = 100, Fill = new SolidColorBrush(Colors.Blue), Name = "A2" });
 			panel.Children.Add(new Rectangle { Width = 100, Height = 100, Fill = new SolidColorBrush(Colors.Blue), Name = "A3" });
-			basePanel.Children.Add(panel);
+            Root.Children.Add(panel);
 
 			panel = new Canvas { Width = 1000, Height = 1000, Name = "B" };
 			panel.Children.Add(new Ellipse { Width = 100, Height = 100, Name = "B1" });
 			panel.Children.Add(new Rectangle { Width = 100, Height = 100, Fill = new SolidColorBrush(Colors.Blue), Name = "B2" });
 			panel.Children.Add(new Rectangle { Width = 100, Height = 100, Fill = new SolidColorBrush(Colors.Blue), Name = "B3" });
-			basePanel.Children.Add(panel);
+            Root.Children.Add(panel);
 
-			panel.Dispatcher.BeginInvoke(delegate {
-				List<FrameworkElement> hits = VisualTreeHelper.FindElementsInHostCoordinates(new Point(30, 30), basePanel).Cast<FrameworkElement>().ToList();
+			Root.Dispatcher.BeginInvoke(delegate {
+                List<FrameworkElement> hits = VisualTreeHelper.FindElementsInHostCoordinates(new Point(30, 30), Root).Cast<FrameworkElement>().ToList();
 				Assert.AreEqual(7, hits.Count, "#1");
 				Assert.AreEqual("B3", hits[0].Name, "#2");
 				Assert.AreEqual("B2", hits[1].Name, "#3");
@@ -236,13 +217,11 @@ namespace MoonTest.System.Windows.Media
 		[Asynchronous]
 		public void HitTest7()
 		{
-			Panel basePanel = new Canvas { Name = "Root" };
-			Root.Add(basePanel);
 			Canvas panel = new Canvas { Width = 1000, Height = 1000, Name = "A" };
 			panel.Children.Add(new Ellipse { Width = 100, Height = 100, Name = "A1" });
 			panel.Children.Add(new Rectangle { Width = 100, Height = 100, Fill = new SolidColorBrush(Colors.Blue), Name = "A2" });
 			panel.Children.Add(new Rectangle { Width = 100, Height = 100, Fill = new SolidColorBrush(Colors.Blue), Name = "A3" });
-			basePanel.Children.Add(panel);
+            Root.Children.Add(panel);
 
 			Canvas.SetZIndex(panel, 1);
 			Canvas.SetZIndex(panel.Children[0], 1);
@@ -253,7 +232,7 @@ namespace MoonTest.System.Windows.Media
 			panel.Children.Add(new Ellipse { Width = 100, Height = 100, Name = "B1" });
 			panel.Children.Add(new Rectangle { Width = 100, Height = 100, Fill = new SolidColorBrush(Colors.Blue), Name = "B2" });
 			panel.Children.Add(new Rectangle { Width = 100, Height = 100, Fill = new SolidColorBrush(Colors.Blue), Name = "B3" });
-			basePanel.Children.Add(panel);
+            Root.Children.Add(panel);
 
 			Canvas.SetZIndex(panel, 0);
 			Canvas.SetZIndex(panel.Children[0], 20);
@@ -261,7 +240,7 @@ namespace MoonTest.System.Windows.Media
 			Canvas.SetZIndex(panel.Children[2], 10);
 
 			panel.Dispatcher.BeginInvoke(delegate {
-				List<FrameworkElement> hits = VisualTreeHelper.FindElementsInHostCoordinates(new Point(30, 30), basePanel).Cast<FrameworkElement>().ToList();
+                List<FrameworkElement> hits = VisualTreeHelper.FindElementsInHostCoordinates(new Point(30, 30), Root).Cast<FrameworkElement>().ToList();
 				Assert.AreEqual(7, hits.Count, "#1");
 				Assert.AreEqual("A2", hits[0].Name, "#2");
 				Assert.AreEqual("A3", hits[1].Name, "#3");
