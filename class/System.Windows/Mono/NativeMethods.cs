@@ -86,6 +86,9 @@ namespace Mono {
 		[DllImport ("moon")]
 		public extern static string xaml_uri_for_prefix (IntPtr parser, string prefix);
 
+		[DllImport ("moon")]
+		public extern static IntPtr xaml_lookup_named_item (IntPtr parser, IntPtr element, string name);
+
 		[DllImport("moon")]
 		public extern static void value_free_value (ref Value val);
 		

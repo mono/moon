@@ -14,13 +14,15 @@ namespace Mono.Xaml {
 
 		private DependencyObject target;
 		private string attribute_name;
-		private IntPtr xaml_context;
+		private IntPtr parser;
+		private IntPtr target_data;
 
-		public MarkupExpressionParser (DependencyObject target, string attribute_name, IntPtr xaml_context)
+		public MarkupExpressionParser (DependencyObject target, string attribute_name, IntPtr parser, IntPtr target_data)
 		{
 			this.target = target;
 			this.attribute_name = attribute_name;
-			this.xaml_context = xaml_context;
+			this.parser = parser;
+			this.target_data = target_data;
 		}
 #if __TESTING
 		public static void Main ()
@@ -143,22 +145,10 @@ namespace Mono.Xaml {
 
 		private object LookupNamedResource (DependencyObject dob, string name)
 		{
-			FrameworkElement fe = dob as FrameworkElement;
+			IntPtr value_ptr = NativeMethods.xaml_lookup_named_item (parser, target_data, name);
+			object o = Value.ToObject (null, value_ptr);
 
-			if (fe != null) {
-				object value = fe.Resources [name];
-				if (value != null)
-					return value;
-				if (fe.Parent != null)
-					return LookupNamedResource (fe.Parent, name);
-			}
-
-#if __TESTING
-			/// XXXX: This is just for testing, we need to return null here normally
-			return new object ();
-#else
-			return null;
-#endif		
+			return o;
 		}
 
 		private FrameworkTemplate GetParentTemplate (DependencyObject item)

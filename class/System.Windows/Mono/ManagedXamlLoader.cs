@@ -202,7 +202,7 @@ namespace Mono.Xaml
 
 			Type type = clientlib.GetType (full_name);
 			if (type == null) {
-				Console.Error.WriteLine ("ManagedXamlLoader::LoadObject: GetType ({0}) failed.", name);
+				Console.Error.WriteLine ("ManagedXamlLoader::LoadObject: GetType ({0}) failed using assembly: {1}.", name, clientlib);
 				value = Value.Empty;
 				return false;
 			}
@@ -276,7 +276,7 @@ namespace Mono.Xaml
 			return name.IndexOf ('.') > 0;
 		}
 
-		private bool TrySetExpression (IntPtr parser, object target, string name, IntPtr value_ptr)
+		private bool TrySetExpression (IntPtr parser, object target, IntPtr target_data, string name, IntPtr value_ptr)
 		{
 			FrameworkElement dob = target as FrameworkElement;
 			object obj_value = Value.ToObject (null, value_ptr);
@@ -288,7 +288,7 @@ namespace Mono.Xaml
 			if (!str_value.StartsWith ("{"))
 				return false;
 
-			MarkupExpressionParser p = new MarkupExpressionParser (dob, name, parser);
+			MarkupExpressionParser p = new MarkupExpressionParser (dob, name, parser, target_data);
 			object o = p.ParseExpression (ref str_value);
 			Binding binding = o as Binding;
 
@@ -511,7 +511,7 @@ namespace Mono.Xaml
 			return true;
 		}
 
-		private bool SetProperty (IntPtr parser, IntPtr top_level, string xmlns, IntPtr target_ptr, IntPtr target_parent_ptr, string name, IntPtr value_ptr)
+		private bool SetProperty (IntPtr parser, IntPtr top_level, string xmlns, IntPtr target_ptr, IntPtr target_data, IntPtr target_parent_ptr, string name, IntPtr value_ptr)
 		{
 			string error;
 			object target = LookupObject (target_ptr);
@@ -533,7 +533,7 @@ namespace Mono.Xaml
 				name = name.Substring (++dot, name.Length - dot);
 			}
 
-			if (TrySetExpression (parser, target, name, value_ptr))
+			if (TrySetExpression (parser, target, target_data, name, value_ptr))
 				return true;
 
 			if (TrySetPropertyReflection (parser, top_level, xmlns, target, target_parent_ptr, type_name, name, value_ptr, out error))
@@ -813,10 +813,10 @@ namespace Mono.Xaml
 		// Proxy so that we return IntPtr.Zero in case of any failures, instead of
 		// generating an exception and unwinding the stack.
 		//
-		private bool cb_set_property (IntPtr parser, IntPtr top_level, string xmlns, IntPtr target, IntPtr target_parent, string name, IntPtr value_ptr)
+		private bool cb_set_property (IntPtr parser, IntPtr top_level, string xmlns, IntPtr target, IntPtr target_data, IntPtr target_parent, string name, IntPtr value_ptr)
 		{
 			try {
-				return SetProperty (parser, top_level, xmlns, target, target_parent, name, value_ptr);
+				return SetProperty (parser, top_level, xmlns, target, target_data, target_parent, name, value_ptr);
 			} catch (Exception ex) {
 				Console.Error.WriteLine ("ManagedXamlLoader::SetProperty ({0}, {1}, {2}, {3}, {4}) threw an exception: {5}.", top_level, xmlns, target, name, value_ptr, ex.Message);
 				Console.Error.WriteLine (ex);

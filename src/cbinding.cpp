@@ -1510,6 +1510,16 @@ framework_element_register_managed_overrides (FrameworkElement *instance, Measur
 /**
  * FrameworkTemplate
  **/
+void
+framework_template_add_xaml_binding (FrameworkTemplate *instance, FrameworkElement *target, const char *target_prop_name, const char *source_prop_name)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->AddXamlBinding (target, target_prop_name, source_prop_name);
+}
+
+
 FrameworkTemplate *
 framework_template_new (void)
 {

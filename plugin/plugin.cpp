@@ -1812,9 +1812,9 @@ PluginXamlLoader::TryLoad (int *error)
 }
 
 bool
-PluginXamlLoader::SetProperty (void *parser, void *top_level, const char *xmlns, void* target, void *target_parent, const char *name, Value* value)
+PluginXamlLoader::SetProperty (void *parser, void *top_level, const char *xmlns, void* target, void* target_data, void *target_parent, const char *name, Value* value)
 {
-	if (XamlLoader::SetProperty (parser, top_level, xmlns, target, target_parent, name, value))
+	if (XamlLoader::SetProperty (parser, top_level, xmlns, target, target_data, target_parent, name, value))
 		return true;
 
 	if (value->GetKind () != Type::STRING)

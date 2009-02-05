@@ -1,3 +1,7 @@
+2009-02-04  Jackson Harper  <jackson@ximian.com>
+
+	* plugin.cpp|h: Updated xaml signatures.
+
 2009-02-04  Andreia Gaita  <avidigal@novell.com>
 
 	* plugin-class.[cpp|h]: Change Invoke call to take a name parameter,

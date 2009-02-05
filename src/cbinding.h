@@ -649,6 +649,9 @@ void framework_element_register_managed_overrides (FrameworkElement *instance, M
  * FrameworkTemplate
  **/
 /* @GeneratePInvoke */
+void framework_template_add_xaml_binding (FrameworkTemplate *instance, FrameworkElement *target, const char *target_prop_name, const char *source_prop_name);
+
+/* @GeneratePInvoke */
 FrameworkTemplate *framework_template_new (void);
 
 /**

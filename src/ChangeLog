@@ -1,3 +1,10 @@
+2009-02-04  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp|h: When setting properties pass in the
+	XamlElementInstance.
+	- Function so named items can be looked up from managed.
+	* cbinding.cpp|h: regen.
+
 2009-02-04  Aaron Bockover  <abockover@novell.com>
 
 	* color.cpp: Use double_garray_from_str to parse sc# color strings, fixing

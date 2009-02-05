@@ -6,6 +6,16 @@
 
 2009-02-04  Jackson Harper  <jackson@ximian.com>
 
+	* XamlLoaderCallbacks.cs:
+	* ManagedXamlLoader.cs: Had to change the signature a little here
+	so we could call back into unmanaged (sigh) to lookup resources
+	(without everything being all parented up).
+	* MarkupExtensioParser.cs: Call into unmanaged to lookup static
+	resources.
+	* NativeMethods.cs: New method for looking up named items.
+
+2009-02-04  Jackson Harper  <jackson@ximian.com>
+
 	* ManagedXamlLoader.cs: Don't use SetValue for attaching bindings,
 	use SetBinding.
 
