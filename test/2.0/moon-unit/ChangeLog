@@ -1,3 +1,8 @@
+2009-02-05  Alan McGovern  <alan.mcgovern@gmail.com>
+
+	* System.Windows.Media/VisualTreeHelperTest.cs: Add more
+	  hittesting tests
+
 2009-02-05  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows/SetterBaseCollectionTest.cs:

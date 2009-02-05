@@ -113,6 +113,16 @@ namespace MoonTest.System.Windows.Media
             CreateAsyncTest(Root, delegate {
                 List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 0), Root));
                 Assert.AreEqual(1, hits.Count, "#1");
+                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(Root.Width, 0), Root));
+                Assert.AreEqual(1, hits.Count, "#2");
+                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(Root.Width, Root.Height), Root));
+                Assert.AreEqual(0, hits.Count, "#3");
+                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(Root.Width, Root.Height-1), Root));
+                Assert.AreEqual(1, hits.Count, "#4");
+                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, Root.Height-1), Root));
+                Assert.AreEqual(1, hits.Count, "#5");
+                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, Root.Height), Root));
+                Assert.AreEqual(0, hits.Count, "#6");
             });
 		}
 
@@ -245,5 +255,32 @@ namespace MoonTest.System.Windows.Media
 			    Assert.AreEqual("Root", hits[6].Name, "#4");
             });
 		}
+
+        [TestMethod]
+        [Asynchronous]
+        public void HitTest8()
+        {
+            Root.Width = 0;
+            Root.Height = 1;
+            Root.Background = new SolidColorBrush(Colors.Black);
+            CreateAsyncTest(Root, delegate {
+                List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 0), Root));
+                Assert.AreEqual(1, hits.Count, "#1");
+            });
+        }
+
+        [TestMethod]
+        [Asynchronous]
+        public void HitTest9()
+        {
+            Root.Width = 0;
+            Root.Height = 0;
+            Root.Background = new SolidColorBrush(Colors.Black);
+            CreateAsyncTest(Root, delegate
+            {
+                List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 0), Root));
+                Assert.AreEqual(0, hits.Count, "#1");
+            });
+        }
 	}
 }
