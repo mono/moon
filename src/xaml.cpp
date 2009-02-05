@@ -3579,7 +3579,6 @@ XamlElementInstanceManaged::GetParentPointer ()
 		walk = walk->parent;
 
 	if (!walk) {
-		printf ("no parent for:  %s\n", element_name);
 		return NULL;
 	}
 
