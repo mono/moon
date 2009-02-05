@@ -157,6 +157,8 @@ namespace MoonTest.System.Windows.Controls {
 		{
 			ItemsControlPoker ic = new ItemsControlPoker ();
 			ContentPresenter cp1 = (ContentPresenter) ic.GetContainerForItemOverride_ ();
+
+			Assert.AreEqual (cp1.GetType(), typeof (ContentPresenter), "ContentPresenter type");
 			Assert.IsNull (cp1.Content, "Content");
 			Assert.IsNull (cp1.ContentTemplate, "ContentTemplate");
 
@@ -225,5 +227,16 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsNull (ic.EventArgs.OldItems, "OldItems-7");
 			Assert.AreEqual (-1, ic.EventArgs.OldStartingIndex, "OldStartingIndex-7");
 		}
+
+		[TestMethod]
+		public void ItemsSource ()
+		{
+			ItemsControl ic = new ItemsControl ();
+			ic.Items.Add ("hi");
+			Assert.Throws<InvalidOperationException>(delegate {
+					ic.ItemsSource = new string[] { "hi", "there" };
+			});
+		}
+
 	}
 }
