@@ -1766,9 +1766,12 @@ DependencyObject::SetLogicalParent (DependencyObject *logical_parent, MoonError 
 }
 
 DependencyObject *
-DependencyObject::GetLogicalParent ()
+DependencyObject::GetLogicalParent (bool hide_collections)
 {
 	DependencyObject *res = logical_parent;
+	if (!hide_collections)
+		return res;
+
 	while (res && Type::Find (res->GetObjectType ())->IsSubclassOf (Type::COLLECTION))
 		res = res->GetLogicalParent ();
 	return res;

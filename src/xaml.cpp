@@ -579,20 +579,15 @@ class XamlParserInfo {
 				return true;
 		}
 
+		bool exists = false;
 		Application *app = Application::GetCurrent ();
 		if (app) {
 			ResourceDictionary *rd = app->GetResources ();
 
-			bool exists = false;
-			Value *resource_value = rd->Get (name, &exists);
-
-			if (exists) {
-				*v = new Value (*resource_value);
-				return true;
-			}
+			*v = LookupResourceDictionary (rd, name, &exists);
 		}
 		
-		return false;
+		return exists;
 	}
 
 	
@@ -603,23 +598,35 @@ class XamlParserInfo {
 			return false;
 		}
 
-		if (item->Is (Type::FRAMEWORKELEMENT)) {
+		bool exists = false;
+		if (item->Is (Type::RESOURCE_DICTIONARY)) {
+			*v = LookupResourceDictionary ((ResourceDictionary*)item, name, &exists);
+			if (exists)
+				return true;
+		} else if (item->Is (Type::FRAMEWORKELEMENT)) {
 			ResourceDictionary *rd = item->GetValue (UIElement::ResourcesProperty)->AsResourceDictionary ();
 
-			bool exists = false;
-			Value *resource_value = rd->Get (name, &exists);
-
-			if (exists) {
-				*v = new Value (*resource_value);
+			*v = LookupResourceDictionary (rd, name, &exists);
+			if (exists)
 				return true;
-			}
 		}
 
-		DependencyObject *parent = item->GetLogicalParent ();
-		if (parent)
-			return LookupNamedItemResource (parent, name, v);
+		// we want/need the real parent, even more it's a collection (like a ResourceDictionary)
+		// so we call GetLogicalParent with false (i.e. so it does not hide collections)
+		DependencyObject *parent = item->GetLogicalParent (false);
+		if (parent) {
+			if (LookupNamedItemResource (parent, name, v))
+				return true;
+		}
 
 		return false;
+	}
+
+	Value* LookupResourceDictionary (ResourceDictionary *rd, const char *name, bool *exists)
+	{
+		*exists = false;
+		Value *resource_value = rd->Get (name, exists);
+		return *exists ? new Value (*resource_value) : NULL;
 	}
 
 	~XamlParserInfo ()

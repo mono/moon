@@ -1,3 +1,12 @@
+2009-02-05  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* dependencyobject.cpp|h: Let GetLogicalParent optionally report
+	a collection for it's parent. This is needed in some cases like
+	a Style inside a ResourceDictionary that defines "{StaticResource..."
+	that other Style needs (e.g. SL toolkit unit tests)
+	* xaml.cpp: Adjust lookup to find StaticResources defined in 
+	a ResourceDictionary
+
 2009-02-05  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.cpp: Renders subimages
