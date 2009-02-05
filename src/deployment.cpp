@@ -398,7 +398,7 @@ Deployment::DrainUnrefs ()
 	
 #if OBJECT_TRACKING
 	if (IsDisposed () && list == NULL && objects_destroyed != objects_created) {
-		printf ("Moonlight: the current deployment (%p) has detect that probably no more objects will get freed on this deployment.\n", this);
+		printf ("Moonlight: the current deployment (%p) has detected that probably no more objects will get freed on this deployment.\n", this);
 		ReportLeaks ();
 	}
 #endif
