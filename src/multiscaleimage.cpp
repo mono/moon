@@ -384,6 +384,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 					cairo_save (cr);
 
 					cairo_rectangle (cr, 0, 0, widget_w, widget_h);
+					cairo_clip (cr);
 					cairo_scale (cr, widget_w / msi_w, widget_w / msi_w); //scale to widget
 					cairo_translate (cr, -msi_x + sub_vp.x + i * v_tile_w, -msi_y + sub_vp.y + j* v_tile_h);
 					//cairo_scale (cr, v_tile_w / ldexp (1.0, layer_to_render), v_tile_w / ldexp (1.0, layer_to_render)); //scale to viewport
@@ -394,7 +395,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 
 					cairo_set_source_surface (cr, image, 0, 0);
 //
-					cairo_fill (cr);
+					cairo_paint_with_alpha (cr, sub_image->GetOpacity ());
 					cairo_restore (cr);
 
 				}
