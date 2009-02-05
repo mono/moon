@@ -193,7 +193,6 @@ namespace System.Windows.Controls
 		
 		protected override void PrepareContainerForItemOverride (DependencyObject element, object item)
 		{
-			throw new NotImplementedException ();
 		}
 
 		
