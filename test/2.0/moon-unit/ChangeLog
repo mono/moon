@@ -1,3 +1,8 @@
+2009-02-05  Andreia Gaita  <avidigal@novell.com>
+
+	* System.Windows.Browser/ScriptableTest.cs: Add a bunch of tests for
+	scriptable objects, via javascript.
+
 2009-02-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Controls/UIElementCollectionTest.cs: New.
