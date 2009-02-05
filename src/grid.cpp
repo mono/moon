@@ -259,7 +259,11 @@ Grid::ArrangeOverride (Size finalSize)
 	}
 
 	Size requested = Size ();
+	Size star_size = Size ();
 	double row_stars = 0.0;
+	HorizontalAlignment horiz = free_col || !isnan (GetWidth ()) ? HorizontalAlignmentStretch : GetHorizontalAlignment ();
+	VerticalAlignment vert = free_row || !isnan (GetHeight ()) ? VerticalAlignmentStretch : GetVerticalAlignment ();
+
 	for (int i = 0; i < row_count; i ++) {
 		RowDefinition *rowdef = rows->GetValueAt (i)->AsRowDefinition ();
 		GridLength* height = rowdef->GetHeight();
@@ -267,7 +271,11 @@ Grid::ArrangeOverride (Size finalSize)
 		switch (height->type) {
 		case GridUnitTypeStar:
 			// Star columns distribute evenly
-			//requested.height += rowdef->GetActualHeight ();
+			requested.height += rowdef->GetActualHeight ();
+			star_size.height += rowdef->GetActualHeight ();
+			//if (vert == VerticalAlignmentStretch)
+			//	rowdef->SetActualHeight (0.0);
+
 			row_stars += height->val;
 			break;
 		case GridUnitTypePixel:
@@ -287,7 +295,11 @@ Grid::ArrangeOverride (Size finalSize)
 		switch (width->type) {
 		case GridUnitTypeStar:
 			// Star columns distribute evenly
-			//requested.width += coldef->GetActualWidth ();
+			requested.width += coldef->GetActualWidth ();
+			star_size.width += coldef->GetActualWidth ();
+			//if (horiz == HorizontalAlignmentStretch)
+			//	coldef->SetActualWidth (0.0);
+
 			col_stars += width->val;
 			break;
 		case GridUnitTypePixel:
@@ -301,27 +313,35 @@ Grid::ArrangeOverride (Size finalSize)
 
 	Size remaining = Size (finalSize.width - requested.width, finalSize.height - requested.height);
 
-	if (!free_col && GetHorizontalAlignment () != HorizontalAlignmentStretch && isnan (GetWidth ()))
+	if (horiz != HorizontalAlignmentStretch)
 		remaining.width = MIN (remaining.width, 0);
-	
-	if (!free_row && GetVerticalAlignment () != VerticalAlignmentStretch && isnan (GetHeight ()))
+
+	if (vert != VerticalAlignmentStretch)
 		remaining.height = MIN (remaining.height, 0);
 
-	for (int i = 0; i < row_count; i ++) {
-		RowDefinition *rowdef = rows->GetValueAt (i)->AsRowDefinition ();
-		GridLength* height = rowdef->GetHeight();
+	if (remaining.height != 0) {     
+		remaining.height += star_size.height;
 
-		if (height->type == GridUnitTypeStar)
-			rowdef->SetActualHeight (MAX ((remaining.height * height->val / row_stars), 0));
+		for (int i = 0; i < row_count; i ++) {
+			RowDefinition *rowdef = rows->GetValueAt (i)->AsRowDefinition ();
+			GridLength* height = rowdef->GetHeight();
+			
+			if (height->type == GridUnitTypeStar)
+				rowdef->SetActualHeight (MAX ((remaining.height * height->val / row_stars), 0));
+		}
 	}
+	
+	if (remaining.width != 0) {
+		remaining.width += star_size.width;
 
-	for (int i = 0; i < col_count; i ++) {
-		ColumnDefinition *coldef = columns->GetValueAt (i)->AsColumnDefinition ();
-		GridLength* width = coldef->GetWidth();
-
-		if (width->type == GridUnitTypeStar)
-			coldef->SetActualWidth (MAX ((remaining.width * width->val / col_stars), 0));
-	}
+		for (int i = 0; i < col_count; i ++) {
+			ColumnDefinition *coldef = columns->GetValueAt (i)->AsColumnDefinition ();
+			GridLength* width = coldef->GetWidth();
+			
+			if (width->type == GridUnitTypeStar)
+				coldef->SetActualWidth (MAX ((remaining.width * width->val / col_stars), 0));
+		}
+       	}
 
 	bool first = true;
 	Size arranged = finalSize;

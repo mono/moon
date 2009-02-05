@@ -1,3 +1,8 @@
+2009-02-04  Larry Ewing  <lewing@novell.com>
+
+	* grid.cpp (Grid::ArrangeOverride): make the resizing logic only
+	apply when the final value is not equal to the measured value.
+
 2009-02-04  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp|h: When setting properties pass in the
