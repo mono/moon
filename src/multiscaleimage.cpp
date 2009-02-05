@@ -305,7 +305,6 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 
 		double widget_w = GetActualWidth ();
 		double widget_h = GetActualHeight ();
-LOG_MSI ("Widget %fx%f\n", widget_w, widget_h);
 		double sub_x = sub_image->GetViewportOrigin()->x;
 		double sub_y = sub_image->GetViewportOrigin()->y;
 		double sub_w = sub_image->GetViewportWidth();
@@ -323,8 +322,8 @@ LOG_MSI ("Widget %fx%f\n", widget_w, widget_h);
 		if (!sub_vp.IntersectsWith (viewport))
 			continue;
 
-		LOG_MSI ("viewport\t%f\t%f\t%f\t%f\n", viewport.x, viewport.y, viewport.width, viewport.height);
-		LOG_MSI ("sub_vp  \t%f\t%f\t%f\t%f\n", sub_vp.x, sub_vp.y, sub_vp.width, sub_vp.height);
+//		LOG_MSI ("viewport\t%f\t%f\t%f\t%f\n", viewport.x, viewport.y, viewport.width, viewport.height);
+//		LOG_MSI ("sub_vp  \t%f\t%f\t%f\t%f\n", sub_vp.x, sub_vp.y, sub_vp.width, sub_vp.height);
 
 		LOG_MSI ("Intersects with main viewport...rendering\n");
 		//now it goes like
@@ -332,22 +331,6 @@ LOG_MSI ("Widget %fx%f\n", widget_w, widget_h);
 		// - get the tile, scale, crop
 		// - paint
 		// - profit !
-
-#if TRUE
-//		LOG_MSI ("rendering from x = %f to %f\n", MAX(msi_x, sub_vp.x), MIN(msi_x + msi_w, sub_vp.x + sub_vp.width));
-//		LOG_MSI ("rendering from y = %f to %f\n", MAX(msi_y, sub_vp.y), MIN(msi_y + msi_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar)); 
-
-		cairo_save (cr);
-		cairo_set_source_rgba (cr, 1, 0, 0, .2);
-
-		cairo_rectangle (cr, 
-			widget_w / msi_w * (-msi_x + MAX(msi_x, sub_vp.x)), 
-			widget_w / msi_w * (-msi_y + MAX(msi_y, sub_vp.y)),
-			widget_w / msi_w * (MIN(msi_x + msi_w, sub_vp.x + sub_vp.width) - MAX(msi_x, sub_vp.x)),
-			widget_w / msi_w * (MIN(msi_y + msi_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - MAX(msi_y, sub_vp.y)));
-		cairo_fill (cr);
-		cairo_restore (cr);
-#endif
 
 		int layers;
 		frexp (MAX (sub_image->source->GetImageWidth(), sub_image->source->GetImageHeight()), &layers);
@@ -371,7 +354,6 @@ LOG_MSI ("Widget %fx%f\n", widget_w, widget_h);
 			int i, j;
 			for (i = (int)(MAX(msi_x, sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msi_x + msi_w, sub_vp.x + sub_vp.width);i++) 
 				for (j = (int)(MAX(msi_y, sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msi_y + msi_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar);j++) {
-					LOG_MSI ("%d:%d %d\n", from_layer, i, j);
 					count++;
 					if (cache_contains (from_layer, i, j, sub_image->id, false))
 						found ++;
@@ -384,8 +366,88 @@ LOG_MSI ("Widget %fx%f\n", widget_w, widget_h);
 
 			from_layer --;
 		}
-	}
 	
+		//render here
+		LOG_MSI ("rendering layers from %d to %d\n", from_layer, to_layer);
+		int layer_to_render = from_layer;
+		while (from_layer > 0 && layer_to_render <= to_layer) {
+			double v_tile_w = tile_width * ldexp (1.0, layers - from_layer) * sub_vp.width / (double)sub_image->source->GetImageWidth ();
+			double v_tile_h = tile_height * ldexp (1.0, layers - from_layer) * sub_vp.width / (double)sub_image->source->GetImageWidth ();
+
+			int i, j;
+			for (i = (int)(MAX(msi_x, sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msi_x + msi_w, sub_vp.x + sub_vp.width);i++) {
+				for (j = (int)(MAX(msi_y, sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msi_y + msi_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar);j++) {
+					cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, to_key (sub_image->id, layer_to_render, i, j));
+					if (!image)
+						continue;
+					LOG_MSI ("rendering %d %d %d %d\n", sub_image->id, layer_to_render, i, j);
+					cairo_save (cr);
+
+					cairo_rectangle (cr, 0, 0, widget_w, widget_h);
+					cairo_scale (cr, widget_w / msi_w, widget_w / msi_w); //scale to widget
+					cairo_translate (cr, -msi_x + sub_vp.x + i * v_tile_w, -msi_y + sub_vp.y + j* v_tile_h);
+					//cairo_scale (cr, v_tile_w / ldexp (1.0, layer_to_render), v_tile_w / ldexp (1.0, layer_to_render)); //scale to viewport
+
+					//scale to viewport
+					cairo_scale (cr, 1.0/sub_image->source->GetImageWidth(), 1.0/sub_image->source->GetImageWidth());
+					cairo_scale (cr, sub_vp.width * ldexp(1.0, layers - layer_to_render), sub_vp.width * ldexp (1.0, layers - layer_to_render));
+
+					cairo_set_source_surface (cr, image, 0, 0);
+//
+					cairo_fill (cr);
+					cairo_restore (cr);
+
+				}
+			}
+			layer_to_render++;
+		}
+
+#if FALSE
+//		LOG_MSI ("rendering from x = %f to %f\n", MAX(msi_x, sub_vp.x), MIN(msi_x + msi_w, sub_vp.x + sub_vp.width));
+//		LOG_MSI ("rendering from y = %f to %f\n", MAX(msi_y, sub_vp.y), MIN(msi_y + msi_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar));
+
+		cairo_save (cr);
+		cairo_set_source_rgba (cr, 1, 0, 0, .2);
+
+		cairo_rectangle (cr,
+			widget_w / msi_w * (-msi_x + MAX(msi_x, sub_vp.x)),
+			widget_w / msi_w * (-msi_y + MAX(msi_y, sub_vp.y)),
+			widget_w / msi_w * (MIN(msi_x + msi_w, sub_vp.x + sub_vp.width) - MAX(msi_x, sub_vp.x)),
+			widget_w / msi_w * (MIN(msi_y + msi_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - MAX(msi_y, sub_vp.y)));
+		cairo_fill (cr);
+		cairo_restore (cr);
+#endif
+
+		if (downloading)
+			return;
+
+		//Get the next tile...
+		while (from_layer < optimal_layer) {
+			from_layer ++;
+
+			double v_tile_w = tile_width * ldexp (1.0, layers - from_layer) * sub_vp.width / (double)sub_image->source->GetImageWidth ();
+			double v_tile_h = tile_height * ldexp (1.0, layers - from_layer) * sub_vp.width / (double)sub_image->source->GetImageWidth ();
+
+			int i, j;
+			for (i = (int)(MAX(msi_x, sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msi_x + msi_w, sub_vp.x + sub_vp.width);i++) {
+				for (j = (int)(MAX(msi_y, sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msi_y + msi_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar);j++) {
+					if (!cache_contains (from_layer, i, j, sub_image->id, true)) {
+						context = to_key (sub_image->id, from_layer, i, j);
+
+						const char* ret = g_strdup ((const char*)source->get_tile_func (from_layer, i, j, sub_image->source));
+						if (ret) {
+							downloading = true;
+							DownloadUri (ret);
+							return;
+						} else {
+							LOG_MSI ("caching a NULL %s\n", context);
+							g_hash_table_insert (cache, g_strdup(context), NULL);
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 void
@@ -393,36 +455,6 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 {
 //FIXME: only render region
 
-
-	DeepZoomImageTileSource *dzits = (DeepZoomImageTileSource*) source;
-	if (dzits && dzits->isCollection && GetSubImages ()) {
-		//Let's render collection in a different method to not break this one right now
-		RenderCollection (cr, region);
-		return;
-	}
-	LOG_MSI ("MSI::Render\n");
-
-//	if (!surface)
-//		return;
-
-	if (!(source = GetSource ())) {
-		LOG_MSI ("no sources set, nothing to render\n");
-		return;
-	}
-
-	if (source->GetImageWidth () < 0) {
-		LOG_MSI ("nothing to render so far...\n");
-		//FIXME: check for null cast
-		((DeepZoomImageTileSource*)source)->set_parsed_cb (multi_scale_image_handle_parsed, this);
-		((DeepZoomImageTileSource*)source)->Download ();
-		return;
-	}
-
-
-	if (!source->get_tile_func) {
-		g_warning ("no get_tile_func set\n");
-		return;
-	}
 
 	//if there's a downloaded file pending, cache it
 	if (filename) {
@@ -460,6 +492,38 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 		}
 		LOG_MSI ("caching %s\n", context);
 		g_hash_table_insert (cache, g_strdup(context), image);
+	}
+
+	DeepZoomImageTileSource *dzits = (DeepZoomImageTileSource*) source;
+	if (dzits && dzits->isCollection && GetSubImages ()) {
+		//Let's render collection in a different method to not break this one right now
+		RenderCollection (cr, region);
+		return;
+	}
+	LOG_MSI ("MSI::Render\n");
+
+
+
+//	if (!surface)
+//		return;
+
+	if (!(source = GetSource ())) {
+		LOG_MSI ("no sources set, nothing to render\n");
+		return;
+	}
+
+	if (source->GetImageWidth () < 0) {
+		LOG_MSI ("nothing to render so far...\n");
+		//FIXME: check for null cast
+		((DeepZoomImageTileSource*)source)->set_parsed_cb (multi_scale_image_handle_parsed, this);
+		((DeepZoomImageTileSource*)source)->Download ();
+		return;
+	}
+
+
+	if (!source->get_tile_func) {
+		g_warning ("no get_tile_func set\n");
+		return;
 	}
 
 
@@ -597,8 +661,11 @@ MultiScaleImage::DownloaderComplete ()
 void
 MultiScaleImage::DownloaderFailed ()
 {
-	LOG_MSI ("dl failed\n");
+	LOG_MSI ("dl failed, caching a NULL\n");
+	g_hash_table_insert (cache, g_strdup(context), NULL);
 	downloading = false;
+
+	Invalidate ();
 }
 
 void
