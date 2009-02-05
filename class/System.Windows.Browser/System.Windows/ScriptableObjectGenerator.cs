@@ -61,7 +61,7 @@ namespace System.Windows
 			if (value.GetType() == type)
 				return value;
 
-			if (typeof(Enum).IsAssignableFrom (type.BaseType)) {
+			if (type.IsEnum) {
 				try {
 					return Enum.Parse (type, value.ToString(), true);
 				} catch {
