@@ -3412,6 +3412,26 @@ uielement_element_removed (UIElement *instance, UIElement *obj)
 }
 
 
+void
+uielement_find_elements_in_host_coordinates_p (UIElement *instance, Point p, HitTestCollection *uielement_list)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->FindElementsInHostCoordinates_p (p, uielement_list);
+}
+
+
+void
+uielement_find_elements_in_host_coordinates_r (UIElement *instance, Rect p, HitTestCollection *uielement_list)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->FindElementsInHostCoordinates_r (p, uielement_list);
+}
+
+
 Size
 uielement_get_desired_size (UIElement *instance)
 {
@@ -3461,26 +3481,6 @@ uielement_get_visual_parent (UIElement *instance)
 		return NULL;
 	
 	return instance->GetVisualParent ();
-}
-
-
-void
-uielement_hit_test_children_p (UIElement *instance, Point p, HitTestCollection *uielement_list)
-{
-	if (instance == NULL)
-		return;
-	
-	instance->HitTestChildren_p (p, uielement_list);
-}
-
-
-void
-uielement_hit_test_children_r (UIElement *instance, Rect p, HitTestCollection *uielement_list)
-{
-	if (instance == NULL)
-		return;
-	
-	instance->HitTestChildren_r (p, uielement_list);
 }
 
 

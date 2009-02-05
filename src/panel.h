@@ -49,6 +49,8 @@ class Panel : public FrameworkElement {
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 
+	virtual bool CanFindElement () { return GetBackground () != NULL; }
+
 	virtual bool IsLayoutContainer () { return true; }
 
 	virtual void ShiftPosition (Point p);

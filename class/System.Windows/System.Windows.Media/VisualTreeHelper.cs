@@ -83,7 +83,7 @@ namespace System.Windows.Media {
 		public static IEnumerable<UIElement> FindElementsInHostCoordinates (Point intersectingPoint, UIElement subtree)
 		{
 			HitTestCollection collection = new HitTestCollection ();
-			Mono.NativeMethods.uielement_hit_test_children_p (subtree.native, intersectingPoint, collection.native);
+			Mono.NativeMethods.uielement_find_elements_in_host_coordinates_p (subtree.native, intersectingPoint, collection.native);
 			return new List<UIElement> (collection);
 		}
 
@@ -91,7 +91,7 @@ namespace System.Windows.Media {
 		public static IEnumerable<UIElement> FindElementsInHostCoordinates (Rect intersectingRect, UIElement subtree)
 		{
 			HitTestCollection collection = new HitTestCollection ();
-			Mono.NativeMethods.uielement_hit_test_children_r (subtree.native, intersectingRect, collection.native);
+			Mono.NativeMethods.uielement_find_elements_in_host_coordinates_r (subtree.native, intersectingRect, collection.native);
 			return new List<UIElement> (collection);
 		}
 	}

@@ -1531,6 +1531,14 @@ namespace Mono {
 		public extern static void uielement_element_removed (IntPtr instance, IntPtr obj);
 
 		[DllImport ("moon")]
+		// void uielement_find_elements_in_host_coordinates_p (UIElement *instance, Point p, HitTestCollection *uielement_list);
+		public extern static void uielement_find_elements_in_host_coordinates_p (IntPtr instance, Point p, IntPtr uielement_list);
+
+		[DllImport ("moon")]
+		// void uielement_find_elements_in_host_coordinates_r (UIElement *instance, Rect p, HitTestCollection *uielement_list);
+		public extern static void uielement_find_elements_in_host_coordinates_r (IntPtr instance, Rect p, IntPtr uielement_list);
+
+		[DllImport ("moon")]
 		// Size uielement_get_desired_size (UIElement *instance);
 		public extern static Size uielement_get_desired_size (IntPtr instance);
 
@@ -1549,14 +1557,6 @@ namespace Mono {
 		[DllImport ("moon")]
 		// UIElement *uielement_get_visual_parent (UIElement *instance);
 		public extern static IntPtr uielement_get_visual_parent (IntPtr instance);
-
-		[DllImport ("moon")]
-		// void uielement_hit_test_children_p (UIElement *instance, Point p, HitTestCollection *uielement_list);
-		public extern static void uielement_hit_test_children_p (IntPtr instance, Point p, IntPtr uielement_list);
-
-		[DllImport ("moon")]
-		// void uielement_hit_test_children_r (UIElement *instance, Rect p, HitTestCollection *uielement_list);
-		public extern static void uielement_hit_test_children_r (IntPtr instance, Rect p, IntPtr uielement_list);
 
 		[DllImport ("moon")]
 		// void uielement_invalidate_arrange (UIElement *instance);

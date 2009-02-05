@@ -1557,6 +1557,12 @@ void uielement_element_added (UIElement *instance, UIElement *obj);
 void uielement_element_removed (UIElement *instance, UIElement *obj);
 
 /* @GeneratePInvoke */
+void uielement_find_elements_in_host_coordinates_p (UIElement *instance, Point p, HitTestCollection *uielement_list);
+
+/* @GeneratePInvoke */
+void uielement_find_elements_in_host_coordinates_r (UIElement *instance, Rect p, HitTestCollection *uielement_list);
+
+/* @GeneratePInvoke */
 Size uielement_get_desired_size (UIElement *instance);
 
 /* @GeneratePInvoke */
@@ -1570,12 +1576,6 @@ GeneralTransform *uielement_get_transform_to_uielement (UIElement *instance, UIE
 
 /* @GeneratePInvoke */
 UIElement *uielement_get_visual_parent (UIElement *instance);
-
-/* @GeneratePInvoke */
-void uielement_hit_test_children_p (UIElement *instance, Point p, HitTestCollection *uielement_list);
-
-/* @GeneratePInvoke */
-void uielement_hit_test_children_r (UIElement *instance, Rect p, HitTestCollection *uielement_list);
 
 /* @GeneratePInvoke */
 void uielement_invalidate_arrange (UIElement *instance);

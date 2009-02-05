@@ -1,3 +1,16 @@
+2009-02-05  Alan McGovern  <alan.mcgovern@gmail.com>
+
+	* panel.h:
+	* shape.h:
+	* border.h:
+	* cbinding.h:
+	* uielement.h:
+	* cbinding.cpp:
+	* uielement.cpp:
+	* frameworkelement.h:
+	* frameworkelement.cpp: Create an unmanaged version of
+	  FindElementsInHostCoordinates
+
 2009-02-05  Geoff Norton  <gnorton@novell.com>
 
 	* cbinding.cpp|h:

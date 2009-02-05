@@ -674,12 +674,12 @@ UIElement::HitTest (cairo_t *cr, Rect r, List *uielement_list)
 }
 
 void
-UIElement::HitTestChildren_p (Point p, HitTestCollection *uielement_list)
+UIElement::FindElementsInHostCoordinates_p (Point p, HitTestCollection *uielement_list)
 {
 	List *list = new List ();
 	cairo_t *ctx = measuring_context_create ();
 	
-	HitTest (ctx, p, list);
+	FindElementsInHostCoordinates (ctx, p, list);
 	
 	UIElementNode *node = (UIElementNode *) list->First ();
 	while (node) {
@@ -691,22 +691,24 @@ UIElement::HitTestChildren_p (Point p, HitTestCollection *uielement_list)
 	measuring_context_destroy (ctx);
 }
 
-void
-UIElement::HitTestChildren_r (Rect p, HitTestCollection *uielement_list)
-{
-	List *list = new List ();
-	cairo_t *ctx = measuring_context_create ();
-	
-	HitTest (ctx, p, list);
-	
-	UIElementNode *node = (UIElementNode *) list->First ();
-	while (node) {
-		uielement_list->Add (new Value (node->uielement));
-		node = (UIElementNode *) node->next;
-	}
 
-	delete list;
-	measuring_context_destroy (ctx);
+void
+UIElement::FindElementsInHostCoordinates (cairo_t *cr, Point P, List *uielement_list)
+{
+	uielement_list->Prepend (new UIElementNode (this));
+}
+
+
+void
+UIElement::FindElementsInHostCoordinates_r (Rect r, HitTestCollection *uielement_list)
+{
+	
+}
+
+void
+UIElement::FindElementsInHostCoordinates (cairo_t *cr, Rect r, List *uielement_list)
+{
+
 }
 
 bool

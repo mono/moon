@@ -244,11 +244,15 @@ public:
 	//   root.
 	virtual void HitTest (cairo_t *cr, Point p, List *uielement_list);
 	virtual void HitTest (cairo_t *cr, Rect r, List *uielement_list);
-
+	
 	/* @GenerateCBinding,GeneratePInvoke */
-	void HitTestChildren_p (Point p, HitTestCollection *uielement_list);
+	void FindElementsInHostCoordinates_p (Point p, HitTestCollection *uielement_list);
 	/* @GenerateCBinding,GeneratePInvoke */
-	void HitTestChildren_r (Rect p, HitTestCollection *uielement_list);
+	void FindElementsInHostCoordinates_r (Rect p, HitTestCollection *uielement_list);
+	
+	virtual bool CanFindElement () { return true; }
+	virtual void FindElementsInHostCoordinates (cairo_t *cr, Point P, List *uielement_list);
+	virtual void FindElementsInHostCoordinates (cairo_t *cr, Rect r, List *uielement_list);
 	
 	//
 	// Recomputes the bounding box, requests redraws, 

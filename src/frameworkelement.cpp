@@ -379,6 +379,34 @@ FrameworkElement::HitTest (cairo_t *cr, Point p, List *uielement_list)
 }
 
 void
+FrameworkElement::FindElementsInHostCoordinates (cairo_t *cr, Point p, List *uielement_list)
+{
+	if (!GetRenderVisible ())
+		return;
+
+	if (!GetHitTestVisible ())
+		return;
+	
+	// first a quick bounds check
+	Rect r(0, 0, GetWidth (), GetHeight ());
+	if (r.IsEmpty (true) || !r.GrowBy (1, 1, 1, 0).PointInside (p.x, p.y))
+		return;
+
+	if (!InsideClip (cr, p.x, p.y))
+		return;
+
+	/* create our node and stick it on front */
+	List::Node *us = uielement_list->Prepend (new UIElementNode (this));
+
+	VisualTreeWalker walker = VisualTreeWalker (this, ZForward);
+	while (UIElement *child = walker.Step ())
+		child->FindElementsInHostCoordinates (cr, p, uielement_list);
+
+	if (us == uielement_list->First () && !CanFindElement ())
+		uielement_list->Remove (us);
+}
+
+void
 FrameworkElement::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 {
 	*width = GetActualWidth ();

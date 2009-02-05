@@ -120,6 +120,7 @@ class Shape : public FrameworkElement {
 	virtual bool IsStroked () { return stroke; }
 	virtual bool IsFilled () { return fill; }
 	virtual bool CanFill () { return false; }
+	virtual bool CanFindElement () { return IsFilled () || IsStroked (); }
 	virtual FillRule GetFillRule () { return FillRuleNonzero; }
 	
 	//

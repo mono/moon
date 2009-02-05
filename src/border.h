@@ -53,7 +53,7 @@ public:
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	virtual void HitTest (cairo_t *cr, Rect r, List *uielement_list);
-
+	virtual bool CanFindElement () { return GetBackground () != NULL; }
 	// property accessors
 
 	Brush *GetBackground ();
