@@ -149,6 +149,7 @@ class TextLine : public List::Node {
 	double descend;
 	double height;
 	double width;
+	int start;
 	short crlf_selected;
 	short crlf;
 	
@@ -163,6 +164,7 @@ TextLine::TextLine ()
 	descend = 0.0;
 	height = -1.0;
 	width = 0.0;
+	start = 0;
 	crlf = 0;
 }
 
@@ -439,6 +441,7 @@ TextLayout::LayoutWrapWithOverflow ()
 	TextLine *line;
 	TextFont *font;
 	double advance;
+	int cursor = 0;
 	guint32 prev;
 	TextRun *run;
 	
@@ -464,10 +467,13 @@ TextLayout::LayoutWrapWithOverflow ()
 			line->crlf_selected = run->IsSelected ();
 			line->crlf = run->Length ();
 			
+			cursor += run->Length ();
+			
 			lines->Append (line);
 			
 			if (run->next) {
 				line = new TextLine ();
+				line->start = cursor;
 			} else {
 				dy += height;
 				line = NULL;
@@ -519,6 +525,7 @@ TextLayout::LayoutWrapWithOverflow ()
 					x1 += advance;
 				}
 				
+				cursor++;
 				inptr++;
 				
 				if (inptr == inend)
@@ -561,6 +568,7 @@ TextLayout::LayoutWrapWithOverflow ()
 				actual_height = dy;
 				
 				line = new TextLine ();
+				line->start = cursor;
 				blank = true;
 				
 				underlined = run->IsUnderlined ();
@@ -597,6 +605,7 @@ TextLayout::LayoutWrapWithOverflow ()
 						goto linebreak;
 				}
 				
+				cursor++;
 				inptr++;
 				
 				if (inptr == inend)
@@ -646,6 +655,7 @@ TextLayout::LayoutNoWrap ()
 	TextLine *line;
 	TextFont *font;
 	double advance;
+	int cursor = 0;
 	guint32 prev;
 	TextRun *run;
 	
@@ -671,10 +681,13 @@ TextLayout::LayoutNoWrap ()
 			line->crlf_selected = run->IsSelected ();
 			line->crlf = run->Length ();
 			
+			cursor += run->Length ();
+			
 			lines->Append (line);
 			
 			if (run->next) {
 				line = new TextLine ();
+				line->start = cursor;
 			} else {
 				dy += height;
 				line = NULL;
@@ -731,6 +744,7 @@ TextLayout::LayoutNoWrap ()
 					x1 += advance;
 				}
 				
+				cursor++;
 				inptr++;
 				
 				if (inptr == inend)
@@ -765,6 +779,7 @@ TextLayout::LayoutNoWrap ()
 					width = x1;
 				}
 				
+				cursor++;
 				inptr++;
 				
 				if (inptr == inend)
@@ -878,6 +893,7 @@ TextLayout::LayoutWrap ()
 	TextLine *line;
 	TextFont *font;
 	double advance;
+	int cursor = 0;
 	GArray *array;
 	guint32 prev;
 	TextRun *run;
@@ -909,10 +925,13 @@ TextLayout::LayoutWrap ()
 			line->crlf_selected = run->IsSelected ();
 			line->crlf = run->Length ();
 			
+			cursor += run->Length ();
+			
 			lines->Append (line);
 			
 			if (run->next) {
 				line = new TextLine ();
+				line->start = cursor;
 			} else {
 				dy += height;
 				line = NULL;
@@ -982,6 +1001,7 @@ TextLayout::LayoutWrap ()
 					bearing_adj = 0.0;
 				}
 				
+				cursor++;
 				inptr++;
 				
 				if (inptr == inend)
@@ -1028,6 +1048,7 @@ TextLayout::LayoutWrap ()
 				actual_height = dy;
 				
 				line = new TextLine ();
+				line->start = cursor;
 				blank = true;
 				
 				underlined = run->IsUnderlined ();
@@ -1071,6 +1092,7 @@ TextLayout::LayoutWrap ()
 						segment->end = inptr - text;
 						segment->advance = x1 - x0;
 						segment->width = x1 - x0;
+						cursor += (inptr - word);
 						blank = false;
 						word = inptr;
 						goto linebreak;
@@ -1122,6 +1144,7 @@ TextLayout::LayoutWrap ()
 							segment->end = inptr - text;
 							segment->advance = x1 - x0;
 							segment->width = x1 - x0;
+							cursor += (inptr - word);
 							blank = false;
 							word = inptr;
 							goto linebreak;
@@ -1164,6 +1187,7 @@ TextLayout::LayoutWrap ()
 			actual_width = MAX (actual_width, x1);
 			segment->end = inptr - text;
 			segment->width = x1 - x0;
+			cursor += (inptr - word);
 			blank = false;
 		} while (inptr < inend);
 		
@@ -1471,6 +1495,9 @@ TextLayout::GetLineFromY (const Point &offset, double y, int *index)
 	y0 = offset.y;
 	
 	while (line) {
+		if (line->start != cur)
+			printf ("oops, Line start not what we expected: %d instead of %d\n", cur, line->start);
+		
 		// set y1 the top of the next line
 		y1 = y0 + line->height;
 		

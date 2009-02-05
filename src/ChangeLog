@@ -1,3 +1,12 @@
+2009-02-05  Jeffrey Stedfast  <fejj@novell.com>
+
+	Save some additional state for an optimization I'd like to do.
+
+	* layout.cpp (TextLayout::LayoutWrapWithOverflow): Keep track of
+	character offset for each TextLine.
+	(TextLayout::LayoutNoWrap): Same.
+	(TextLayout::LayoutWrap): Here too.
+
 2009-02-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* deployment.cpp: Fix typo.
