@@ -16,6 +16,7 @@
 #include <math.h>
 
 #include "color.h"
+#include "utils.h"
 
 // match System.Windows.Media.Colors properties
 typedef struct {
@@ -170,31 +171,6 @@ named_colors_t named_colors [] = {
 	{ NULL, 0 }
 };
 
-/* Safely read next double from string checking for NULL's
- * etc. Returns 0.0 if can't read. Modifies passed str to point
- * at next character after the coma (,) following the number
- * (if it makes sense). */
-static double
-read_next_double (char **str)
-{
-	if (str == NULL)
-		return 0.0;
-
-	char *iter = *str;
-
-	if (iter) {
-		double v = g_ascii_strtod (iter, &iter);
-		if (iter)
-			iter = strchr (iter, ',');
-		if (iter)
-			iter++;
-		*str = iter;
-		return v;
-	} else {
-		return 0.0;
-	}
-}
-
 /**
  * see: http://msdn2.microsoft.com/en-us/library/system.windows.media.solidcolorbrush.aspx
  *
@@ -250,10 +226,24 @@ color_from_str (const char *name)
 	
 	if (name [0] == 's' && name [1] == 'c' && name [2] == '#') {
 		char *iter = (char *) name + 3;
-		double a = read_next_double (&iter);
-		double r = read_next_double (&iter);
-		double g = read_next_double (&iter);
-		double b = read_next_double (&iter);
+		double a = 1.0, r = 1.0, g = 1.0, b = 1.0;
+		GArray *channels = double_garray_from_str (iter, 0);
+
+		if (channels != NULL) {
+			int i = 0;
+			if (channels->len >= 4) {
+				a = g_array_index (channels, double, 0);
+				i++;
+			}
+
+			if (channels->len >= 3) {
+				r = g_array_index (channels, double, 0 + i);
+				g = g_array_index (channels, double, 1 + i);
+				b = g_array_index (channels, double, 2 + i);
+			}
+
+			g_array_free (channels, TRUE);
+		}
 
 		/* Clamp values. scRGB theoretically supports negative numbers
 		 * ('darker than black') as a refference to another source but here

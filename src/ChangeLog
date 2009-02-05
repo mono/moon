@@ -1,3 +1,8 @@
+2009-02-04  Aaron Bockover  <abockover@novell.com>
+
+	* color.cpp: Use double_garray_from_str to parse sc# color strings, fixing
+	bug where the blue channel was dropped in sc#r,g,b
+
 2009-02-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* collection.cpp|h: Override AddWithError on UIElementCollection
