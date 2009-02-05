@@ -1,3 +1,13 @@
+2009-02-05  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* style.cpp|h: Remove "style-hack" from SetterBaseCollection 
+	since that collection has no need to know about the style itself.
+	Simplify the API a bit.
+	* xaml.cpp: Introduce an hack for SetterBase tp workaround the 
+	fact that the current parser adds elements to the collections
+	before setting their properties (and a SetterBase would seal
+	itself when added to a collection).
+
 2009-02-05  Jb Evain  <jbevain@novell.com>
 
 	* propertypath.h: new type.

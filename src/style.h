@@ -70,13 +70,10 @@ public:
 	
 	void Seal ();
 
-	void SetStyle (Style *style);
-
 protected:
 	virtual ~SetterBaseCollection () { }
 
 private:
-	Style *style;
 	bool ValidateSetter (Value *value, MoonError *error);
 };
 

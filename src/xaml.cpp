@@ -3936,8 +3936,20 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 				} else {
 					MoonError err;
 
+					// HACK - since the Setter is added to the collection *before* its properties are set
+					// we find ourselves with a sealed Setter - which should not be possible at the parse time
+					SetterBase *sb = NULL;
+					if (dep->Is (Type::SETTERBASE)) {
+						sb = (SetterBase*) dep;
+						sb->SetIsSealed (false);
+					}
+
 					if (!dep->SetValueWithError (prop, value->GetAsValue (), &err))
 						parser_error (p, item->element_name, NULL, err.code, err.message);
+					
+					// re-seal the Setter (end-HACK)
+					if (sb)
+						sb->SetIsSealed (true);
 					
 					item->MarkPropertyAsSet (prop->GetName());
 					res = true;

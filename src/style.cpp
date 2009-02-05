@@ -20,7 +20,6 @@ Style::Style ()
 {
 	SetObjectType (Type::STYLE);
 	SetValue (Style::SettersProperty, Value::CreateUnref (new SetterBaseCollection()));
-	GetSetters ()->SetStyle (this);
 }
 
 Style::~Style ()
@@ -37,13 +36,6 @@ Style::Seal ()
 SetterBaseCollection::SetterBaseCollection ()
 {
 	SetObjectType (Type::SETTERBASE_COLLECTION);
-	this->style = NULL;
-}
-
-void
-SetterBaseCollection::SetStyle (Style *style)
-{
-	this->style = style;
 }
 
 void
@@ -68,12 +60,7 @@ SetterBaseCollection::AddedToCollection (Value *value, MoonError *error)
 
 	SetterBase *setter = value->AsSetterBase ();
 	setter->SetAttached (true);
-
-	// FIXME: the next (non-comment) line is an ugly HACK which often works since it avoid
-	// sealing the collection when it's called by the XAML parser (which is settings 
-	// properties after adding the element to collection, which seals it)
-	if (!style || style->GetIsSealed ())
-		setter->Seal ();
+	setter->Seal ();
 
 	return DependencyObjectCollection::AddedToCollection (value, error);
 }
