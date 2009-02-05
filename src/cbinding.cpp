@@ -2114,6 +2114,16 @@ multi_scale_sub_image_new (void)
 
 
 /**
+ * MultiScaleSubImageCollection
+ **/
+MultiScaleSubImageCollection *
+multi_scale_sub_image_collection_new (void)
+{
+	return new MultiScaleSubImageCollection ();
+}
+
+
+/**
  * MultiScaleTileSource
  **/
 long

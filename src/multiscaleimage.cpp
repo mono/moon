@@ -251,6 +251,9 @@ multi_scale_image_handle_parsed (void *userdata)
 {
 	MultiScaleImage *msi = (MultiScaleImage*)userdata;
 	//if the source is a collection, fill the subimages list
+	if (msi->source == NULL)
+		msi->source = msi->GetSource ();
+
 	if (msi->source->GetImageWidth () >= 0 && msi->source->GetImageHeight () >= 0)
 		msi->SetValue (MultiScaleImage::AspectRatioProperty, Value ((double)msi->source->GetImageWidth () / (double)msi->source->GetImageHeight ()));
 
@@ -259,13 +262,14 @@ multi_scale_image_handle_parsed (void *userdata)
 		int i;
 		MultiScaleSubImage *si;
 		for (i = 0; (si = (MultiScaleSubImage*)g_list_nth_data (source->subimages, i)); i++) {
-			if (!msi->GetSubImages())
-				msi->SetValue (MultiScaleImage::SubImagesProperty, new MultiScaleSubImageCollection ());
+			if (!msi->GetSubImageCollection())
+				msi->SetValue (MultiScaleImage::SubImageCollectionProperty, new MultiScaleSubImageCollection ());
 
-			msi->GetSubImages()->Add (si);
+			msi->GetSubImageCollection()->Add (si);
 		}
 	}
 	msi->Invalidate ();
+	msi->Emit (MultiScaleImage::ImageOpenSucceededEvent);
 }
 
 void
@@ -291,7 +295,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 	Rect viewport = Rect (msi_x, msi_y, msi_w, msi_w/msi_ar);
 
 	//FIXME: sort the subimages by ZIndex first
-	CollectionIterator *iter = GetSubImages()->GetIterator();
+	CollectionIterator *iter = GetSubImageCollection()->GetIterator();
 	Value *val;
 	int error;
 
@@ -497,7 +501,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region)
 	}
 
 	DeepZoomImageTileSource *dzits = (DeepZoomImageTileSource*) source;
-	if (dzits && dzits->isCollection && GetSubImages ()) {
+	if (dzits && dzits->isCollection && GetSubImageCollection ()) {
 		//Let's render collection in a different method to not break this one right now
 		RenderCollection (cr, region);
 		return;
@@ -707,6 +711,14 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args)
 
 	if (args->property == MultiScaleImage::ViewportWidthProperty) {
 		Invalidate ();
+	}
+
+	if (args->property == MultiScaleImage::SourceProperty) {
+		DeepZoomImageTileSource *source = args->new_value ? args->new_value->AsDeepZoomImageTileSource () : NULL;
+		if (source) {
+			source->set_parsed_cb (multi_scale_image_handle_parsed, this);
+			source->Download ();
+		}
 	}
 
 	if (args->property->GetOwnerType () != Type::MULTISCALEIMAGE) {

@@ -30,9 +30,9 @@ class MultiScaleImage : public MediaBase {
 
 	void DownloaderAbort ();
 	void DownloadUri (const char* url);
-	MultiScaleTileSource *source;
 	GHashTable *cache;
 	bool cache_contains (int layer, int x, int y, int subimage_id, bool check_empty_tile);
+	MultiScaleTileSource *source;
 	char* context;
 	char* filename;
 	bool downloading;
@@ -57,8 +57,8 @@ class MultiScaleImage : public MediaBase {
 	static DependencyProperty *AspectRatioProperty;
 	/* @PropertyType=MultiScaleTileSource,Version=2.0,GenerateAccessors */
 	static DependencyProperty *SourceProperty;
-	/* @PropertyType=MultiScaleSubImageCollection,ManagedPropertyType=System.Collections.ObjectModel.ReadOnlyCollection<MultiScaleSubImage>,Version=2.0,GenerateGetter */
-	static DependencyProperty *SubImagesProperty;
+	/* @PropertyType=MultiScaleSubImageCollection,Version=2.0,GenerateGetter */
+	static DependencyProperty *SubImageCollectionProperty;
 	/* @PropertyType=bool,DefaultValue=true,Version=2.0,GenerateAccessors */
 	static DependencyProperty *UseSpringsProperty;
 	/* @PropertyType=Point,DefaultValue=Point(0\,0),Version=2.0,GenerateAccessors */
@@ -100,7 +100,7 @@ class MultiScaleImage : public MediaBase {
 	double GetViewportWidth ();
 	void SetViewportWidth (double width);
 
-	MultiScaleSubImageCollection* GetSubImages ();
+	MultiScaleSubImageCollection* GetSubImageCollection ();
 
 	//
 	// Events

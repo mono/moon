@@ -264,8 +264,10 @@ class ItemCollection : public Collection {
 	virtual Type::Kind GetElementType () { return Type::OBJECT; }
 };
 
+/* @Namespace=System.Windows.Controls */
 class MultiScaleSubImageCollection : public Collection {
 public:
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	MultiScaleSubImageCollection ();
 	
 	virtual Type::Kind GetElementType () { return Type::MULTISCALESUBIMAGE; }

@@ -313,6 +313,7 @@ DeepZoomImageTileSource::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
 	if (args->property == DeepZoomImageTileSource::UriSourceProperty) {
 		downloaded = false;
+		Download ();
 	}
 
 	if (args->property->GetOwnerType () != Type::DEEPZOOMIMAGETILESOURCE) {

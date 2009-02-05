@@ -949,6 +949,12 @@ void multi_scale_image_zoom_about_logical_point (MultiScaleImage *instance, doub
 MultiScaleSubImage *multi_scale_sub_image_new (void);
 
 /**
+ * MultiScaleSubImageCollection
+ **/
+/* @GeneratePInvoke */
+MultiScaleSubImageCollection *multi_scale_sub_image_collection_new (void);
+
+/**
  * MultiScaleTileSource
  **/
 /* @GeneratePInvoke */
