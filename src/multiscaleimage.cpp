@@ -54,7 +54,8 @@ MultiScaleImage::ZoomAboutLogicalPoint (double zoomIncrementFactor, double zoomC
 	double width = GetViewportWidth () / zoomIncrementFactor;
 	double height = GetViewportHeight () / zoomIncrementFactor;
 	SetValue (MultiScaleImage::ViewportWidthProperty, Value (width));
-	SetValue (MultiScaleImage::ViewportOriginProperty, Value (Point (zoomCenterLogicalX - width/2.0, zoomCenterLogicalY - height/2.0)));
+	if (!isnan(zoomCenterLogicalX) && !isnan(zoomCenterLogicalY))
+		SetValue (MultiScaleImage::ViewportOriginProperty, Value (Point (zoomCenterLogicalX - width/2.0, zoomCenterLogicalY - height/2.0)));
 	Invalidate ();
 }
 
@@ -319,11 +320,11 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 
 		//NOTE, we could reuse the same routine to render single dz images, by setting the sub_vp to an appropriate value
 
+		LOG_MSI ("viewport\t%f\t%f\t%f\t%f\n", viewport.x, viewport.y, viewport.width, viewport.height);
+		LOG_MSI ("sub_vp  \t%f\t%f\t%f\t%f\n", sub_vp.x, sub_vp.y, sub_vp.width, sub_vp.height);
 		if (!sub_vp.IntersectsWith (viewport))
 			continue;
 
-//		LOG_MSI ("viewport\t%f\t%f\t%f\t%f\n", viewport.x, viewport.y, viewport.width, viewport.height);
-//		LOG_MSI ("sub_vp  \t%f\t%f\t%f\t%f\n", sub_vp.x, sub_vp.y, sub_vp.width, sub_vp.height);
 
 		LOG_MSI ("Intersects with main viewport...rendering\n");
 		//now it goes like
