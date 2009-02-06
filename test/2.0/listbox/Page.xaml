@@ -4,19 +4,10 @@
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
     Width="800" Height="400">
 
-    <Grid>
-	<Grid.ColumnDefinitions>
-		<ColumnDefinition Width="200" />
-		<ColumnDefinition Width="200" />
-		<ColumnDefinition Width="200" />
-	</Grid.ColumnDefinitions>
-
-	<Grid.Resources>
-		<sys:String x:Key="word">Contents</sys:String>
-	</Grid.Resources>
+    <StackPanel Orientation="Horizontal">
 <!--
-	<StackPanel Grid.Column="0">
-		<ContentPresenter Content="ListBox" />
+	<StackPanel>
+		<TextBlock Text="ListBox" />
 		<Border BorderBrush="Black" BorderThickness="2" Width="100" Height="300">
 		    <ListBox>
  	    	    	<Button Content="Button" />
@@ -26,8 +17,8 @@
 	</StackPanel>
 -->
 
-	<StackPanel Grid.Column="1">
-		<ContentPresenter Content="ItemsControl (non-databound)" />
+	<StackPanel Margin="5">
+		<TextBlock Text="ItemsControl (non-databound)" />
 		<Button Content="Add Button" Click="button_Click" />
 		<Border BorderBrush="Black" BorderThickness="2" Width="100" Height="300">
 		    <ItemsControl x:Name="itemsControl">
@@ -37,12 +28,31 @@
 		</Border>
 	</StackPanel>
 
-	<StackPanel Grid.Column="2">
-		<ContentPresenter Content="ItemsControl (databound)" />
+	<StackPanel Margin="5">
+		<TextBlock Text="ItemsControl (databound)" />
 		<Button Content="Add String" Click="databoundButton_Click" />
 		<Border BorderBrush="Black" BorderThickness="2" Width="100" Height="300">
 		    <ItemsControl x:Name="databoundItemsControl" />
 		</Border>
 	</StackPanel>
-    </Grid>
+
+	<StackPanel Margin="5">
+		<TextBlock Text="ItemsControl templated" />
+		<Border BorderBrush="Black" BorderThickness="2" Width="100" Height="300">
+		    <ItemsControl x:Name="templatedItemsControl">
+	    		  <ItemsControl.ItemTemplate>
+			      <DataTemplate>
+			          <Border BorderBrush="Green" BorderThickness="2">
+				    <ContentPresenter Content="{Binding}" />
+			          </Border>
+			      </DataTemplate>
+	    		  </ItemsControl.ItemTemplate>
+	    		  <ItemsControl.Items>
+			      <Button Content="Button1" />
+	    	    	      <sys:String>String</sys:String>
+	    		  </ItemsControl.Items>
+		    </ItemsControl>
+		</Border>
+	</StackPanel>
+    </StackPanel>
 </UserControl>
