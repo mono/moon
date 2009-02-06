@@ -1,3 +1,7 @@
+2009-02-06  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Remove System.Windows.Interop/BrowserHost.cs
+
 2009-02-04  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.mdp: Hook up the managed hittesting code to
