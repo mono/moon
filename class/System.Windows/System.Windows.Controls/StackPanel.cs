@@ -44,6 +44,9 @@ namespace System.Windows.Controls {
 
 			Size childAvailable = availableSize;
 			foreach (UIElement child in this.Children) {
+				if (child.Visibility == Visibility.Collapsed)
+					continue;
+
 				child.Measure (childAvailable);
 				Size size = child.DesiredSize;
 
@@ -87,6 +90,9 @@ namespace System.Windows.Controls {
 				requested.Height = finalSize.Height;
 
 			foreach (UIElement child in this.Children) {
+				if (child.Visibility == Visibility.Collapsed)
+					continue;
+
 				if (first) {
 					result = new Size ();
 					first = false;

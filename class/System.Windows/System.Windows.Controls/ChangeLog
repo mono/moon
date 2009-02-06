@@ -1,3 +1,7 @@
+2009-02-05  Larry Ewing  <lewing@novell.com>
+
+	* StackPanel.cs: skip collapsed children.
+
 2009-02-05  Geoff Norton  <gnorton@novell.com>
 
 	* MultiScaleImage.cs: We hide the SubImages in a internal DP for now
