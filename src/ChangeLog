@@ -1,3 +1,9 @@
+2009-02-06  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* deepzoomimagetilesource.cpp: set subimage width/height
+	* multiscaleimage.cpp: do not download subimages .xml, we can work
+	without them
+
 2009-02-06  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* cbinding.h:

@@ -322,11 +322,11 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 		MultiScaleSubImage *sub_image = val->AsMultiScaleSubImage ();
 		//if the subimage is unparsed, trigger the download
 		//FIXME: THIS NOT REQUIRED FOR LAYERS << MaxTileLayer
-		if (sub_image->source->GetImageWidth () < 0) {
-			((DeepZoomImageTileSource*)sub_image->source)->set_parsed_cb (multi_scale_subimage_handle_parsed, this);
-			((DeepZoomImageTileSource*)sub_image->source)->Download ();
-			continue;
-		}
+//		if (sub_image->source->GetImageWidth () < 0) {
+//			((DeepZoomImageTileSource*)sub_image->source)->set_parsed_cb (multi_scale_subimage_handle_parsed, this);
+//			((DeepZoomImageTileSource*)sub_image->source)->Download ();
+//			continue;
+//		}
 
 		double widget_w = GetActualWidth ();
 		double widget_h = GetActualHeight ();

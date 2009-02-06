@@ -516,6 +516,9 @@ end_element (void *data, const char *el)
 					MultiScaleSubImage *subi = new MultiScaleSubImage (info->source->GetUriSource (), new DeepZoomImageTileSource (info->current_subimage->source, TRUE));
 					subi->id = info->current_subimage->id;
 					subi->n = info->current_subimage->n;
+					subi->source->SetImageWidth (info->current_subimage->width);
+					subi->source->SetImageHeight (info->current_subimage->height);
+					((DeepZoomImageTileSource*)subi->source)->format = info->format;
 					subi->SetViewportOrigin (new Point (info->current_subimage->vp_x, info->current_subimage->vp_y));
 					subi->SetViewportWidth (info->current_subimage->vp_w);
 					subi->SetValue (MultiScaleSubImage::AspectRatioProperty, Value ((double)info->current_subimage->width/(double)info->current_subimage->height));
