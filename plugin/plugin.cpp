@@ -1416,10 +1416,6 @@ PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 	
 	if (notify)
 		delete notify;
-		
-#if SANITY
-	Deployment::SetCurrent (NULL);
-#endif
 }
 
 void

@@ -1,3 +1,9 @@
+2009-02-05  Geoff Norton  <gnorton@novell.com>
+
+	* plugin.cpp: We cannot safely null the deployment here as NPN_GetURLNotify
+	can sync invoke NPN_URLNotify in the same tick, and we might need the deployment
+	later as we unwind.
+
 2009-02-05  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin-class.cpp (MoonlightDependencyObjectObject::GetProperty):
