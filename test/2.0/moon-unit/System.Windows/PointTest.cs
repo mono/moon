@@ -112,5 +112,67 @@ namespace MoonTest.System.Windows {
 			Assert.AreEqual (String.Format ("{0},{0}",Double.NegativeInfinity,Double.NegativeInfinity), p.ToString (), "compare ToString to ToString");
 			Assert.AreEqual ("-Infinity,-Infinity", p.ToString (), "is ToString Infinity or \u221e");
 		}
+
+		class PointFormatter : IFormatProvider, ICustomFormatter {
+
+			public object GetFormat (Type formatType)
+			{
+				return (formatType == typeof (ICustomFormatter)) ? this : null;
+			}
+
+			public string Format (string format, object arg, IFormatProvider formatProvider)
+			{
+				CallCount++;
+				Assert.AreEqual (this, formatProvider, "formatProvider");
+				if (arg.Equals (','))
+					return "#";
+
+				Assert.IsTrue (arg is double, "arg");
+				int n = (int) (double) arg;
+				switch (n) {
+				case 1:
+				case 2:
+					if (format == null)
+						return String.Format ("[{0}]", n);
+					if (format.Length == 0)
+						return "@";
+					Assert.Fail (n.ToString ());
+					return null;
+				default:
+					Assert.Fail (n.ToString ());
+					return null;
+				}
+			}
+
+			static public int CallCount = 0;
+		}
+
+		[TestMethod]
+		public void ToStringIFormatProvider ()
+		{
+			Point p = new Point (1, 2);
+			PointFormatter.CallCount = 0;
+			Assert.AreEqual ("1,2", p.ToString (null), "null");
+			Assert.AreEqual (0, PointFormatter.CallCount, "CallCount-a");
+			Assert.AreEqual ("[1]#[2]", p.ToString (new PointFormatter ()), "PointFormatter");
+			// 3 times: one per double (2) and 1 for ','
+			Assert.AreEqual (3, PointFormatter.CallCount, "CallCount");
+		}
+
+		[TestMethod]
+		public void ToStringIFormattable ()
+		{
+			Point p = new Point (2, 1);
+			PointFormatter.CallCount = 0;
+			IFormattable f = (p as IFormattable);
+			Assert.AreEqual ("2,1", f.ToString (null, null), "null,null");
+			Assert.AreEqual (0, PointFormatter.CallCount, "CallCount-a");
+			Assert.AreEqual ("[2]#[1]", f.ToString (null, new PointFormatter ()), "null,PointFormatter");
+			Assert.AreEqual (3, PointFormatter.CallCount, "CallCount-b");
+			Assert.AreEqual ("2.000000e+000,1.000000e+000", f.ToString ("e", null), "e,null");
+			Assert.AreEqual (3, PointFormatter.CallCount, "CallCount-c");
+			Assert.AreEqual ("[2]#[1]", f.ToString (String.Empty, new PointFormatter ()), "Empty,PointFormatter");
+			Assert.AreEqual (6, PointFormatter.CallCount, "CallCount-d");
+		}
 	}
 }

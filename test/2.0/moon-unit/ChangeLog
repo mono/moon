@@ -1,3 +1,9 @@
+2009-02-06  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows/PointTest.cs: Add IFormattable test cases
+	* System.Windows/RectTest.cs: Add IFormattable test cases
+	* System.Windows.Media.Animation/RepeatBehaviorTest.cs: New.
+
 2009-02-06  Alan McGovern  <alan.mcgovern@gmail.com>
 
 	* System.Windows.Data/BindingTest.cs:

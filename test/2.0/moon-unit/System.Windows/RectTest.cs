@@ -135,5 +135,69 @@ namespace MoonTest.System.Windows
 			Assert.IsFalse (r.Equals (r), "Equals(Rect)");
 			Assert.IsFalse (r.Equals ((object)r), "Equals(object)");
 		}
+
+		class RectFormatter : IFormatProvider, ICustomFormatter {
+
+			public object GetFormat (Type formatType)
+			{
+				return (formatType == typeof (ICustomFormatter)) ? this : null;
+			}
+
+			public string Format (string format, object arg, IFormatProvider formatProvider)
+			{
+				CallCount++;
+				Assert.AreEqual (this, formatProvider, "formatProvider");
+				if (arg.Equals (','))
+					return "#";
+
+				Assert.IsTrue (arg is double, "arg");
+				int n = (int) (double) arg;
+				switch (n) {
+				case -2:
+				case -1:
+				case 1:
+				case 2:
+					if (format == null)
+						return String.Format ("[{0}]", n);
+					if (format.Length == 0)
+						return "@";
+					Assert.Fail (n.ToString ());
+					return null;
+				default:
+					Assert.Fail (n.ToString ());
+					return null;
+				}
+			}
+
+			static public int CallCount = 0;
+		}
+
+		[TestMethod]
+		public void ToStringIFormatProvider ()
+		{
+			Rect r = new Rect (-2, -1, 1, 2);
+			RectFormatter.CallCount = 0;
+			Assert.AreEqual ("-2,-1,1,2", r.ToString (null), "null");
+			Assert.AreEqual (0, RectFormatter.CallCount, "CallCount-a");
+			Assert.AreEqual ("[-2]#[-1]#[1]#[2]", r.ToString (new RectFormatter ()), "RectFormatter");
+			// 7 times: one per double (4) and 3 for ','
+			Assert.AreEqual (7, RectFormatter.CallCount, "CallCount");
+		}
+
+		[TestMethod]
+		public void ToStringIFormattable ()
+		{
+			Rect r = new Rect (-1, -2, 2, 1);
+			RectFormatter.CallCount = 0;
+			IFormattable f = (r as IFormattable);
+			Assert.AreEqual ("-1,-2,2,1", f.ToString (null, null), "null,null");
+			Assert.AreEqual (0, RectFormatter.CallCount, "CallCount-a");
+			Assert.AreEqual ("[-1]#[-2]#[2]#[1]", f.ToString (null, new RectFormatter ()), "null,RectFormatter");
+			Assert.AreEqual (7, RectFormatter.CallCount, "CallCount-b");
+			Assert.AreEqual ("-1.000000e+000,-2.000000e+000,2.000000e+000,1.000000e+000", f.ToString ("e", null), "e,null");
+			Assert.AreEqual (7, RectFormatter.CallCount, "CallCount-c");
+			Assert.AreEqual ("[-1]#[-2]#[2]#[1]", f.ToString (String.Empty, new RectFormatter ()), "Empty,RectFormatter");
+			Assert.AreEqual (14, RectFormatter.CallCount, "CallCount-d");
+		}
 	}
 }
