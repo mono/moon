@@ -518,7 +518,7 @@ namespace MoonTest.System.Windows.Media
 			Rectangle r = new Rectangle { Width = 100, Height = 10, Fill = new SolidColorBrush( Colors.Black) };
 			r.Clip = new RectangleGeometry { Rect = new Rect(50, 0, 50, 10) };
 			Root.Children.Add(r);
-			Root.Clip = new RectangleGeometry { Rect = new Rect (0, 0, 10000, 10000) };
+			Root.Clip = new RectangleGeometry { Rect = new Rect (0, 0, 1, 1) };
 
 			CreateAsyncTest(Root, delegate {
 				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(10, 5), Root));
