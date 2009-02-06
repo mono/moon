@@ -1,5 +1,10 @@
 2009-02-06  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* System.Windows.Controls.Primitives/PopupTest.cs: Inherit
+	  from UserControl instead of Canvas. Fixes VS build.
+
+2009-02-06  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* System.Windows.Controls.Primitives/RepeatButtonTest.cs:
 	  RepeatButtonTest: Add a few asserts after checking for
 	  ArgumentExceptions showing that even though setting an

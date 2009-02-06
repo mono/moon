@@ -17,7 +17,7 @@ using System.Threading;
 
 namespace NS
 {
-    public partial class PopupTestClass : global::System.Windows.Controls.Canvas
+    public partial class PopupTestClass : global::System.Windows.Controls.UserControl
     {
         public PopupTestClass()
             : this(new Uri("/moon-unit;component/System.Windows/BasicCanvas.xaml", UriKind.Relative))
