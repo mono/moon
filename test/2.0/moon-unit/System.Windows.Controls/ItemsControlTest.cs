@@ -229,14 +229,32 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void ItemsSource ()
 		{
 			ItemsControl ic = new ItemsControl ();
 			ic.Items.Add ("hi");
+			Assert.AreEqual (ic.Items[0], "hi", "first item #1");
+			Assert.IsFalse (ic.Items.IsReadOnly, "items IsReadOnly #1");
+
 			Assert.Throws<InvalidOperationException>(delegate {
 					ic.ItemsSource = new string[] { "hi", "there" };
-			});
-		}
+				}, "assigning ItemsSource when Items is not empty");
 
+			ic.Items.Clear ();
+			ic.ItemsSource = new string[] { "hi", "there" };
+			Assert.AreEqual (ic.Items.Count, 2, "count after setting ItemsSource");
+			Assert.AreEqual (ic.Items[0], "hi", "first item #2");
+			Assert.IsTrue (ic.Items.IsReadOnly, "items IsReadOnly #2");
+			Assert.Throws<InvalidOperationException>(delegate {
+					ic.Items.Add ("hi");
+				}, "adding element to Items when ItemsSource is in use");
+
+
+			ic.ItemsSource = null;
+			Assert.AreEqual (ic.Items.Count, 0, "count after setting ItemsSource to null");
+			Assert.IsFalse (ic.Items.IsReadOnly, "items IsReadOnly #3");
+			ic.Items.Add ("hi");
+		}
 	}
 }
