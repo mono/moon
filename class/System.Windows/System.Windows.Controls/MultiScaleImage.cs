@@ -40,7 +40,7 @@ namespace System.Windows.Controls {
 
 		public ReadOnlyCollection <MultiScaleSubImage> SubImages {
 			get {
-				return new ReadOnlyCollection <MultiScaleSubImage> (SubImageCollection);
+				return new ReadOnlyCollection <MultiScaleSubImage> (SubImageCollection ?? new MultiScaleSubImageCollection ());
 			}
 		}
 
