@@ -321,6 +321,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 	while (iter->Next () && (val = iter->GetCurrent(&error))) {
 		MultiScaleSubImage *sub_image = val->AsMultiScaleSubImage ();
 		//if the subimage is unparsed, trigger the download
+		//FIXME: THIS NOT REQUIRED FOR LAYERS << MaxTileLayer
 		if (sub_image->source->GetImageWidth () < 0) {
 			((DeepZoomImageTileSource*)sub_image->source)->set_parsed_cb (multi_scale_subimage_handle_parsed, this);
 			((DeepZoomImageTileSource*)sub_image->source)->Download ();
@@ -373,16 +374,17 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			//in msi relative coord
 			double v_tile_w = tile_width * ldexp (1.0, layers - from_layer) * sub_vp.width / (double)sub_image->source->GetImageWidth ();
 			double v_tile_h = tile_height * ldexp (1.0, layers - from_layer) * sub_vp.width / (double)sub_image->source->GetImageWidth ();
-			LOG_MSI ("virtual tile size at layer %d; %fx%f\n", from_layer, v_tile_w, v_tile_h);
+			//LOG_MSI ("virtual tile size at layer %d; %fx%f\n", from_layer, v_tile_w, v_tile_h);
 
 			int i, j;
-			for (i = (int)(MAX(msi_x, sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msi_x + msi_w, sub_vp.x + sub_vp.width);i++) 
-				for (j = (int)(MAX(msi_y, sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msi_y + msi_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar);j++) {
+			for (i = (int)((MAX(msi_x, sub_vp.x) - sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msi_x + msi_w, sub_vp.x + sub_vp.width) - sub_vp.x;i++) {
+				for (j = (int)((MAX(msi_y, sub_vp.y) - sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msi_y + msi_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - sub_vp.y;j++) {
+					LOG_MSI ("TILE %d %d %d %d\n", sub_image->id, from_layer, i, j);
 					count++;
 					if (cache_contains (from_layer, i, j, sub_image->id, false))
 						found ++;
 				}
-
+			}
 			if (found > 0 && to_layer < from_layer)
 				to_layer = from_layer;
 			if (found == count)
@@ -399,8 +401,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			double v_tile_h = tile_height * ldexp (1.0, layers - from_layer) * sub_vp.width / (double)sub_image->source->GetImageWidth ();
 
 			int i, j;
-			for (i = (int)(MAX(msi_x, sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msi_x + msi_w, sub_vp.x + sub_vp.width);i++) {
-				for (j = (int)(MAX(msi_y, sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msi_y + msi_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar);j++) {
+			for (i = (int)((MAX(msi_x, sub_vp.x) - sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msi_x + msi_w, sub_vp.x + sub_vp.width) - sub_vp.x;i++) {
+				for (j = (int)((MAX(msi_y, sub_vp.y) - sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msi_y + msi_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - sub_vp.y;j++) {
 					cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, to_key (sub_image->id, layer_to_render, i, j));
 					if (!image)
 						continue;
@@ -428,8 +430,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 		}
 
 #if FALSE
-//		LOG_MSI ("rendering from x = %f to %f\n", MAX(msi_x, sub_vp.x), MIN(msi_x + msi_w, sub_vp.x + sub_vp.width));
-//		LOG_MSI ("rendering from y = %f to %f\n", MAX(msi_y, sub_vp.y), MIN(msi_y + msi_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar));
+		LOG_MSI ("rendering from x = %f to %f\n", MAX(msi_x, sub_vp.x), MIN(msi_x + msi_w, sub_vp.x + sub_vp.width));
+		LOG_MSI ("rendering from y = %f to %f\n", MAX(msi_y, sub_vp.y), MIN(msi_y + msi_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar));
 
 		cairo_save (cr);
 		cairo_set_source_rgba (cr, 1, 0, 0, .2);
@@ -454,8 +456,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			double v_tile_h = tile_height * ldexp (1.0, layers - from_layer) * sub_vp.width / (double)sub_image->source->GetImageWidth ();
 
 			int i, j;
-			for (i = (int)(MAX(msi_x, sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msi_x + msi_w, sub_vp.x + sub_vp.width);i++) {
-				for (j = (int)(MAX(msi_y, sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msi_y + msi_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar);j++) {
+			for (i = (int)((MAX(msi_x, sub_vp.x) - sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msi_x + msi_w, sub_vp.x + sub_vp.width) - sub_vp.x;i++) {
+				for (j = (int)((MAX(msi_y, sub_vp.y) - sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msi_y + msi_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - sub_vp.y;j++) {
 					if (!cache_contains (from_layer, i, j, sub_image->id, true)) {
 						context = to_key (sub_image->id, from_layer, i, j);
 
