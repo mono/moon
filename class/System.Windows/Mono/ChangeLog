@@ -1,3 +1,8 @@
+2009-02-05  Jeffrey Stedfast  <fejj@novell.com>
+
+	* NativeDependencyObjectHelper.cs: Unmanaged ReadLocalValue()
+	function name changed.
+
 2009-02-05  Alan McGovern  <alan.mcgovern@gmail.com>
 
 	* GeneratedPInvokes.cs: Create an unmanaged version of

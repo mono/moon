@@ -114,7 +114,7 @@ namespace Mono {
 
 		public static object ReadLocalValue (INativeDependencyObjectWrapper wrapper, DependencyProperty dp)
 		{
-			IntPtr val = NativeMethods.dependency_object_get_local_value (wrapper.NativeHandle, dp.Native);
+			IntPtr val = NativeMethods.dependency_object_read_local_value (wrapper.NativeHandle, dp.Native);
 			if (val == IntPtr.Zero) {
 				return DependencyProperty.UnsetValue;
 			} else {
