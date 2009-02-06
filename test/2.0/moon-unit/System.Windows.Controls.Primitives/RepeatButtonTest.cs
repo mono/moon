@@ -59,6 +59,7 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 			Assert.Throws<ArgumentException> (delegate {
 				rb.Delay = -1;
 			}, "negative");
+			Assert.AreEqual (-1, rb.Delay, "changed after exception");
 
 			rb.Delay = 0;
 			Assert.AreEqual (0, rb.Delay, "0");
@@ -74,6 +75,7 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 			Assert.Throws<ArgumentException> (delegate {
 				rb.SetValue (RepeatButton.DelayProperty, -1);
 			}, "negative");
+			Assert.AreEqual (-1, rb.Delay, "changed after exception");
 
 			rb.SetValue (RepeatButton.DelayProperty, 0);
 			Assert.AreEqual (0, rb.Delay, "0");
@@ -94,10 +96,12 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 			Assert.Throws<ArgumentException> (delegate {
 				rb.Interval = -1;
 			}, "negative");
+			Assert.AreEqual (-1, rb.Interval, "changed after exception negative");
 
 			Assert.Throws<ArgumentException> (delegate {
 				rb.Interval = 0;
 			}, "0");
+			Assert.AreEqual (0, rb.Interval, "changed after exception 0");
 
 			rb.Interval = Int32.MaxValue;
 			Assert.AreEqual (Int32.MaxValue, rb.Interval, "MaxValue");
@@ -110,10 +114,12 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 			Assert.Throws<ArgumentException> (delegate {
 				rb.SetValue (RepeatButton.IntervalProperty, -1);
 			}, "negative");
+			Assert.AreEqual (-1, rb.Interval, "changed after exception negative");
 
 			Assert.Throws<ArgumentException> (delegate {
 				rb.SetValue (RepeatButton.IntervalProperty, 0);
 			}, "0");
+			Assert.AreEqual (0, rb.Interval, "changed after exception 0");
 
 			rb.SetValue (RepeatButton.IntervalProperty, Int32.MaxValue);
 			Assert.AreEqual (Int32.MaxValue, rb.Interval, "MaxValue");

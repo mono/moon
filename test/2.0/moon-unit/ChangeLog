@@ -1,3 +1,10 @@
+2009-02-06  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.Controls.Primitives/RepeatButtonTest.cs:
+	  RepeatButtonTest: Add a few asserts after checking for
+	  ArgumentExceptions showing that even though setting an
+	  invalid value throws an exception, the value has changed.
+
 2009-02-06  Alan McGovern  <alan.mcgovern@gmail.com>
 
 	* System.Windows.Media/VisualTreeHelperTest.cs: Add 8 more
