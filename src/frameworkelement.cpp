@@ -580,32 +580,34 @@ FrameworkElement::Arrange (Rect finalRect)
 	SetActualWidth (response.width);
 	SetActualHeight (response.height);
 
-	switch (horiz) {
-	case HorizontalAlignmentLeft:
-		break;
-	case HorizontalAlignmentRight:
-		cairo_matrix_translate (&layout_xform, child_rect.width - response.width, 0);
-		break;
-	case HorizontalAlignmentCenter:
-		cairo_matrix_translate (&layout_xform, (child_rect.width  - response.width) * .5, 0);
-		break;
-	default:
-		cairo_matrix_translate (&layout_xform, MAX ((child_rect.width  - response.width) * .5, 0), 0);
-		break;
-	}
-
-	switch (vert) {
-	case VerticalAlignmentTop:
-		break;
-	case VerticalAlignmentBottom:
-		cairo_matrix_translate (&layout_xform, 0, child_rect.height - response.height);
-		break;
-	case VerticalAlignmentCenter:
-		cairo_matrix_translate (&layout_xform, 0, (child_rect.height - response.height) * .5);
-		break;
-	default:
-		cairo_matrix_translate (&layout_xform, 0, MAX ((child_rect.height - response.height) * .5, 0));
-		break;
+	if (GetVisualParent ()) {
+		switch (horiz) {
+		case HorizontalAlignmentLeft:
+			break;
+		case HorizontalAlignmentRight:
+			cairo_matrix_translate (&layout_xform, child_rect.width - response.width, 0);
+			break;
+		case HorizontalAlignmentCenter:
+			cairo_matrix_translate (&layout_xform, (child_rect.width  - response.width) * .5, 0);
+			break;
+		default:
+			cairo_matrix_translate (&layout_xform, MAX ((child_rect.width  - response.width) * .5, 0), 0);
+			break;
+		}
+	
+		switch (vert) {
+		case VerticalAlignmentTop:
+			break;
+		case VerticalAlignmentBottom:
+			cairo_matrix_translate (&layout_xform, 0, child_rect.height - response.height);
+			break;
+		case VerticalAlignmentCenter:
+			cairo_matrix_translate (&layout_xform, 0, (child_rect.height - response.height) * .5);
+			break;
+		default:
+			cairo_matrix_translate (&layout_xform, 0, MAX ((child_rect.height - response.height) * .5, 0));
+			break;
+		}
 	}
 
 	SetRenderSize (response);

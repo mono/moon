@@ -1,3 +1,8 @@
+2009-02-06  Larry Ewing  <lewing@novell.com>
+
+	* frameworkelement.cpp (FrameworkElement::Arrange): don't align if
+	we are the toplevel.
+
 2009-02-06  Jeffrey Stedfast  <fejj@novell.com>
 
 	See InkPresenter's ClearValue unit test
