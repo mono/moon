@@ -110,6 +110,7 @@ static void value_type_set_attributes (XamlParserInfo *p, XamlElementInstance *i
 static bool handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, const char* attr_name, const char* attr_value, Value **value);
 static bool element_begins_buffering (const char* element);
 static bool is_managed_kind (Type::Kind kind);
+static Value *lookup_resource_dictionary (ResourceDictionary *rd, const char *name, bool *exists);
 static void parser_error (XamlParserInfo *p, const char *el, const char *attr, int error_code, const char *format, ...);
 
 static XamlElementInfo *create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *name, bool create);
@@ -156,12 +157,14 @@ class XamlContextInternal {
 	GHashTable *imported_namespaces;
 	Surface *surface;
 	XamlLoaderCallbacks callbacks;
+	GSList *resources;
 
-	XamlContextInternal (XamlLoaderCallbacks callbacks, FrameworkTemplate *template_parent, GHashTable *namespaces)
+	XamlContextInternal (XamlLoaderCallbacks callbacks, FrameworkTemplate *template_parent, GHashTable *namespaces, GSList *resources)
 	{
 		this->callbacks = callbacks;
 		this->template_parent = template_parent;
 		this->surface = template_parent->GetSurface ();
+		this->resources = resources;
 
 		if (this->callbacks.create_gchandle) 
 			this->callbacks.create_gchandle ();
@@ -174,6 +177,8 @@ class XamlContextInternal {
 	{
 		if (imported_namespaces)
 			g_hash_table_destroy (imported_namespaces);
+		if (resources)
+			g_slist_free (resources);
 	}
 
 	char *CreateIngorableTagOpen ()
@@ -193,7 +198,25 @@ class XamlContextInternal {
 	{
 		return g_strdup ("</" INTERNAL_IGNORABLE_ELEMENT ">");
 	}
-	
+
+	bool LookupNamedItem (const char* name, Value **v)
+	{
+		if (!resources)
+			return NULL;
+
+		bool exists = false;
+		GSList *walk = resources;
+		while (walk) {
+			bool exists;
+			*v = lookup_resource_dictionary ((ResourceDictionary *) walk->data, name, &exists);
+
+			if (exists)
+				break;
+			walk = walk->next;
+		}
+
+		return exists;
+	}
 };
 
 
@@ -547,6 +570,12 @@ class XamlParserInfo {
 		xml_buffer_start_index = 0;
 	}
 
+	bool LookupNamedResource (const char *name, Value **v)
+	{
+		*v = xaml_lookup_named_item (this, current_element, name);
+		return *v != NULL;
+	}
+
 	FrameworkTemplate *GetTemplateParent (XamlElementInstance *item)
 	{
 		XamlElementInstance *parent = item->parent;
@@ -565,68 +594,6 @@ class XamlParserInfo {
 			return NULL;
 
 		return context->internal->template_parent;
-	}
-
-	bool LookupNamedResource (const char *name, Value **v)
-	{
-		if (current_element && LookupNamedItemResource (current_element->GetAsDependencyObject (), name, v)) {
-			return true;
-		}
-
-		if (loader) {
-			XamlContext *context = loader->GetContext ();
-			if (context && LookupNamedItemResource (context->internal->template_parent, name, v))
-				return true;
-		}
-
-		bool exists = false;
-		Application *app = Application::GetCurrent ();
-		if (app) {
-			ResourceDictionary *rd = app->GetResources ();
-
-			*v = LookupResourceDictionary (rd, name, &exists);
-		}
-		
-		return exists;
-	}
-
-	
-	bool LookupNamedItemResource (DependencyObject *item, const char *name, Value **v)
-	{
-		if (!item) {
-			*v = NULL;
-			return false;
-		}
-
-		bool exists = false;
-		if (item->Is (Type::RESOURCE_DICTIONARY)) {
-			*v = LookupResourceDictionary ((ResourceDictionary*)item, name, &exists);
-			if (exists)
-				return true;
-		} else if (item->Is (Type::FRAMEWORKELEMENT)) {
-			ResourceDictionary *rd = item->GetValue (UIElement::ResourcesProperty)->AsResourceDictionary ();
-
-			*v = LookupResourceDictionary (rd, name, &exists);
-			if (exists)
-				return true;
-		}
-
-		// we want/need the real parent, even more it's a collection (like a ResourceDictionary)
-		// so we call GetLogicalParent with false (i.e. so it does not hide collections)
-		DependencyObject *parent = item->GetLogicalParent (false);
-		if (parent) {
-			if (LookupNamedItemResource (parent, name, v))
-				return true;
-		}
-
-		return false;
-	}
-
-	Value* LookupResourceDictionary (ResourceDictionary *rd, const char *name, bool *exists)
-	{
-		*exists = false;
-		Value *resource_value = rd->Get (name, exists);
-		return *exists ? new Value (*resource_value) : NULL;
 	}
 
 	~XamlParserInfo ()
@@ -1570,6 +1537,30 @@ get_element_name (XamlParserInfo* p, const char *el)
 	return name;
 }
 
+static GSList *
+create_resource_list (XamlParserInfo *p)
+{
+	GSList *list = NULL;
+	XamlElementInstance *walk = p->current_element;
+
+	while (walk) {
+		if (walk->element_type == XamlElementInstance::ELEMENT && Type::Find (walk->info->GetKind ())->IsSubclassOf (Type::FRAMEWORKELEMENT)) {
+			list = g_slist_append (list, walk->GetAsDependencyObject ()->GetValue (UIElement::ResourcesProperty)->AsResourceDictionary ());
+		}
+		walk = walk->parent;
+	}
+
+	return list;
+}
+
+static XamlContext *
+create_xaml_context (XamlParserInfo *p, FrameworkTemplate *template_)
+{
+	GSList *resources = create_resource_list (p);
+	XamlContextInternal *ic =  new XamlContextInternal (p->loader->callbacks, template_, p->namespace_map, resources);
+	return new XamlContext (ic);
+}
+
 static void
 end_element_handler (void *data, const char *el)
 {
@@ -1597,8 +1588,8 @@ end_element_handler (void *data, const char *el)
 				FrameworkTemplate* template_ = (FrameworkTemplate *) p->current_element->GetAsDependencyObject ();
 
                                 char* buffer = p->ClearBuffer ();
-				XamlContextInternal *ic = new XamlContextInternal (p->loader->callbacks, template_, p->namespace_map);
-				XamlContext *context = new XamlContext (ic);
+				
+				XamlContext *context = create_xaml_context (p, template_);
 
                                 template_->SetXamlBuffer (context, buffer);
 				p->current_element = p->current_element->parent;
@@ -4677,14 +4668,13 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 static Value*
 lookup_named_item (XamlElementInstance *inst, const char *name)
 {
-	if (Type::Find (inst->info->GetKind ())->IsSubclassOf (Type::FRAMEWORKELEMENT)) {
+	if (inst->element_type == XamlElementInstance::ELEMENT && Type::Find (inst->info->GetKind ())->IsSubclassOf (Type::FRAMEWORKELEMENT)) {
 		ResourceDictionary *rd = inst->GetAsDependencyObject ()->GetValue (UIElement::ResourcesProperty)->AsResourceDictionary ();
 
-		bool exists = false;
-		Value *resource_value = rd->Get (name, &exists);
-
+		bool exists;
+		Value *res = lookup_resource_dictionary (rd, name, &exists);
 		if (exists)
-			return new Value (*resource_value);
+			return res;
 	}
 
 	XamlElementInstance *parent = inst->parent;
@@ -4694,12 +4684,27 @@ lookup_named_item (XamlElementInstance *inst, const char *name)
 	return NULL;
 }
 
+static Value*
+lookup_resource_dictionary (ResourceDictionary *rd, const char *name, bool *exists)
+{
+	*exists = false;
+	Value *resource_value = rd->Get (name, exists);
+	return *exists ? new Value (*resource_value) : NULL;
+}
+
 Value *
 xaml_lookup_named_item (void *parser, void *instance, const char* name)
 {
+	XamlParserInfo *p = (XamlParserInfo *) parser;
 	XamlElementInstance *inst = (XamlElementInstance *) instance;
+	Value *res = NULL;
 
-	Value *res = lookup_named_item (inst, name);
+	if (inst)
+		res = lookup_named_item (inst, name);
+
+	XamlContext *context = p->loader->GetContext ();
+	if (!res && context)
+		context->internal->LookupNamedItem (name, &res);
 
 	if (!res) {
 		Application *app = Application::GetCurrent ();
@@ -4707,11 +4712,7 @@ xaml_lookup_named_item (void *parser, void *instance, const char* name)
 			ResourceDictionary *rd = app->GetResources ();
 
 			bool exists = false;
-			Value *resource_value = rd->Get (name, &exists);
-
-			if (exists) {
-				res = new Value (*resource_value);
-			}
+			res = lookup_resource_dictionary (rd, name, &exists);
 		}
 	}
 
