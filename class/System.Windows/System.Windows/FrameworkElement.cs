@@ -77,7 +77,7 @@ namespace System.Windows {
 		{
 			if (OverridesLayoutMethod ("MeasureOverride"))
 				measure_cb = new MeasureOverrideCallback (InvokeMeasureOverride);
-			if (true && OverridesLayoutMethod ("ArrangeOverride"))
+			if (OverridesLayoutMethod ("ArrangeOverride"))
 				arrange_cb = new ArrangeOverrideCallback (InvokeArrangeOverride);
 			NativeMethods.framework_element_register_managed_overrides (native, measure_cb, arrange_cb);
 
