@@ -10,6 +10,16 @@
  * See the LICENSE file included with the distribution for details.
  */
 
+//TODO
+//
+//- drop the friends
+//- blend new layers
+//- animation for VP changes
+//- if opacity is not 1.0, stack the layers internally, then paint at once
+//- fix the leaks
+//- only invalidate regions
+//- only render changed regions
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
