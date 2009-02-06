@@ -1041,12 +1041,12 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 
 	if (!equal) {
 		Value *new_value = value ? new Value (*value) : NULL;
-
+		
 		// store the new value in the hash
 		g_hash_table_insert (current_values, property, new_value);
-
+		
 		ProviderValueChanged (PropertyPrecedence_LocalValue, property, current_value, new_value, true, error);
-
+		
 		if (current_value)
 			delete current_value;
 	}
@@ -1164,7 +1164,7 @@ DependencyObject::UnregisterAllNamesRootedAt (NameScope *from_ns)
 Value *
 DependencyObject::ReadLocalValue (DependencyProperty *property)
 {
-	return providers[PropertyPrecedence_LocalValue]->GetPropertyValue (property);
+	return (Value *) g_hash_table_lookup (current_values, property);
 }
 
 Value *
@@ -1384,7 +1384,7 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 	}
 
 	// detach from the existing value
-	if (old_local_value->Is (Type::DEPENDENCY_OBJECT)){
+	if (old_local_value->Is (Type::DEPENDENCY_OBJECT)) {
 		DependencyObject *dob = old_local_value->AsDependencyObject();
 
 		if (dob != NULL) {

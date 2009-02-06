@@ -21,13 +21,25 @@
 Panel::Panel ()
 {
 	SetObjectType (Type::PANEL);
-	SetValue (Panel::ChildrenProperty, Value::CreateUnref (new UIElementCollection ()));
-	SetSubtreeObject (GetChildren());
 	mouse_over = NULL;
 }
 
 Panel::~Panel()
 {
+}
+
+Value *
+Panel::GetDefaultValue (DependencyProperty *property)
+{
+	Value *value = NULL;
+	
+	if (property->GetOwnerType () != Type::PANEL)
+		return FrameworkElement::GetDefaultValue (property);
+	
+	if (property == Panel::ChildrenProperty)
+		value = Value::CreateUnrefPtr (new UIElementCollection ());
+	
+	return value;
 }
 
 #define DEBUG_BOUNDS 0

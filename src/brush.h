@@ -188,6 +188,7 @@ class GradientBrush : public Brush {
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	virtual void SetupGradient (cairo_pattern_t *pattern, const Rect &area, bool single = false);
+	virtual Value *GetDefaultValue (DependencyProperty *property);
 	
 	virtual bool IsOpaque ();
 	

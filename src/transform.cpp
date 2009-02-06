@@ -271,7 +271,20 @@ MatrixTransform::UpdateTransform ()
 TransformGroup::TransformGroup ()
 {
 	SetObjectType (Type::TRANSFORMGROUP);
-	SetValue (TransformGroup::ChildrenProperty, Value::CreateUnref (new TransformCollection ()));
+}
+
+Value *
+TransformGroup::GetDefaultValue (DependencyProperty *property)
+{
+	Value *value = NULL;
+	
+	if (property->GetOwnerType () != Type::TRANSFORMGROUP)
+		return Transform::GetDefaultValue (property);
+	
+	if (property == TransformGroup::ChildrenProperty)
+		value = Value::CreateUnrefPtr (new TransformCollection ());
+	
+	return value;
 }
 
 void

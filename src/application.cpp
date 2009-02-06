@@ -23,14 +23,28 @@ Application::Application ()
 	apply_default_style_cb = NULL;
 	apply_style_cb = NULL;
 	get_resource_cb = NULL;
-
-	surface = NULL;
-
+	
 	SetValue (Application::ResourcesProperty, Value::CreateUnref (new ResourceDictionary ()));
+	
+	surface = NULL;
 }
 
 Application::~Application ()
 {
+}
+
+Value *
+Application::GetDefaultValue (DependencyProperty *property)
+{
+	Value *value = NULL;
+	
+	if (property->GetOwnerType () != Type::APPLICATION)
+		return DependencyObject::GetDefaultValue (property);
+	
+	if (property == Application::ResourcesProperty)
+		value = Value::CreateUnrefPtr (new ResourceDictionary ());
+	
+	return value;
 }
 
 Application*

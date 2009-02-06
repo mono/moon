@@ -331,6 +331,7 @@ MediaElement::AdvanceFrame ()
 
 MediaElement::MediaElement ()
 {
+	providers [PropertyPrecedence_DynamicValue] = new MediaElementPropertyValueProvider (this);
 	SetObjectType (Type::MEDIAELEMENT);
 
 	pthread_mutex_init (&open_mutex, NULL);
@@ -360,16 +361,27 @@ MediaElement::MediaElement ()
 	Reinitialize (false);
 	
 	mplayer = new MediaPlayer (this);
-	
-	SetValue (MediaElement::AttributesProperty, Value::CreateUnref (new MediaAttributeCollection ()));		
-	SetValue (MediaElement::MarkersProperty, Value::CreateUnref (new TimelineMarkerCollection ()));
-	
-	providers [PropertyPrecedence_DynamicValue] = new MediaElementPropertyValueProvider (this);
 }
 
 MediaElement::~MediaElement ()
 {
 	pthread_mutex_destroy (&open_mutex);
+}
+
+Value *
+MediaElement::GetDefaultValue (DependencyProperty *property)
+{
+	Value *value = NULL;
+	
+	if (property->GetOwnerType () != Type::MEDIAELEMENT)
+		return FrameworkElement::GetDefaultValue (property);
+	
+	if (property == MediaElement::AttributesProperty)
+		value = Value::CreateUnrefPtr (new MediaAttributeCollection ());
+	else if (property == MediaElement::MarkersProperty)
+		value = Value::CreateUnrefPtr (new TimelineMarkerCollection ());
+	
+	return value;
 }
 
 void

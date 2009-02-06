@@ -35,10 +35,20 @@ LocalPropertyValueProvider::~LocalPropertyValueProvider ()
 {
 }
 
-Value*
+Value *
 LocalPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 {
-	return (Value*)g_hash_table_lookup (obj->GetCurrentValues(), property);
+	MoonError err;
+	Value *value;
+	
+	if (!(value = (Value *) g_hash_table_lookup (obj->GetCurrentValues (), property))) {
+		if ((value = obj->GetDefaultValue (property))) {
+			g_hash_table_insert (obj->GetCurrentValues (), property, value);
+			obj->ProviderValueChanged (PropertyPrecedence_LocalValue, property, NULL, value, true, &err);
+		}
+	}
+		
+	return value;
 }
 
 StylePropertyValueProvider::StylePropertyValueProvider (DependencyObject *obj)
@@ -231,7 +241,7 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 	return NULL;
 }
 
-Value*
+Value *
 DefaultValuePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 {
 	return property->GetDefaultValue ();

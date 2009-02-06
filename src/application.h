@@ -33,25 +33,30 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	Application ();
 	
-	ResourceDictionary* GetResources();
-	void SetResources (ResourceDictionary* value);
-
-	/* @GenerateCBinding,GeneratePInvoke */
-	Surface* GetSurface ();
-	/* @GenerateCBinding,GeneratePInvoke */
-	void SetSurface (Surface* value);
-
-	/* @GenerateCBinding,GeneratePInvoke */
-	static Application* GetCurrent ();
-	/* @GenerateCBinding,GeneratePInvoke */
-	static void SetCurrent (Application *current);
-
+	virtual Value *GetDefaultValue (DependencyProperty *property);
+	
 	/* @GenerateCBinding,GeneratePInvoke */
 	void RegisterCallbacks (ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb);
-
+	
 	void ApplyDefaultStyle (FrameworkElement *fwe, ManagedTypeInfo *key);
 	void ApplyStyle (FrameworkElement *fwe, Style *style);
 	gpointer GetResource (const char *name, int *size);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	Surface *GetSurface ();
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetSurface (Surface *value);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	static Application *GetCurrent ();
+	/* @GenerateCBinding,GeneratePInvoke */
+	static void SetCurrent (Application *current);
+	
+	//
+	// Property Accessors
+	//
+	void SetResources (ResourceDictionary *value);
+	ResourceDictionary *GetResources ();
 	
 protected:
 	virtual ~Application ();

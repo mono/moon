@@ -254,6 +254,7 @@ class MediaElement : public FrameworkElement {
 	virtual Size ArrangeOverride (Size finalSize);
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual Value *GetDefaultValue (DependencyProperty *property);
 	
 	virtual void SetSourceInternal (Downloader *downloader, char *PartName);
 	virtual void SetSource (Downloader *downloader, const char *PartName);

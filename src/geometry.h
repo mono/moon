@@ -122,6 +122,7 @@ class GeometryGroup : public Geometry {
 	
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
+	virtual Value *GetDefaultValue (DependencyProperty *property);
 	
 	virtual void Draw (cairo_t *cr);
 	
@@ -337,6 +338,7 @@ class PathFigure : public DependencyObject {
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
+	virtual Value *GetDefaultValue (DependencyProperty *property);
 	virtual void Build ();
 	
 	virtual bool IsBuilt () { return path && path->cairo.num_data != 0; }

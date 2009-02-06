@@ -1588,18 +1588,30 @@ Timeline::GetBeginTime ()
 TimelineGroup::TimelineGroup ()
 {
 	SetObjectType (Type::TIMELINEGROUP);
-
-	SetValue (TimelineGroup::ChildrenProperty, Value::CreateUnref (new TimelineCollection ()));
 }
 
 TimelineGroup::~TimelineGroup ()
 {
 }
 
+Value *
+TimelineGroup::GetDefaultValue (DependencyProperty *property)
+{
+	Value *value = NULL;
+	
+	if (property->GetOwnerType () != Type::TIMELINEGROUP)
+		return Timeline::GetDefaultValue (property);
+	
+	if (property == TimelineGroup::ChildrenProperty)
+		value = Value::CreateUnrefPtr (new TimelineCollection ());
+	
+	return value;
+}
+
 Clock *
 TimelineGroup::AllocateClock ()
 {
-	TimelineCollection *collection = GetValue (TimelineGroup::ChildrenProperty)->AsTimelineCollection ();
+	TimelineCollection *collection = GetChildren ();
 	ClockGroup *group = new ClockGroup (this);
 	Clock *clock;
 	
@@ -1616,7 +1628,7 @@ TimelineGroup::AllocateClock ()
 bool
 TimelineGroup::Validate ()
 {
-	TimelineCollection *collection = GetValue (TimelineGroup::ChildrenProperty)->AsTimelineCollection ();
+	TimelineCollection *collection = GetChildren ();
 	Timeline *timeline;
 	
 	for (int i = 0; i < collection->GetCount (); i++) {
@@ -1631,13 +1643,17 @@ TimelineGroup::Validate ()
 void
 TimelineGroup::AddChild (Timeline *child)
 {
-	GetValue (TimelineGroup::ChildrenProperty)->AsTimelineCollection()->Add (child);
+	TimelineCollection *children = GetChildren ();
+	
+	children->Add (child);
 }
 
 void
 TimelineGroup::RemoveChild (Timeline *child)
 {
-	GetValue (TimelineGroup::ChildrenProperty)->AsTimelineCollection()->Remove (child);
+	TimelineCollection *children = GetChildren ();
+	
+	children->Remove (child);
 }
 
 TimelineCollection::TimelineCollection ()
@@ -1661,7 +1677,7 @@ ParallelTimeline::~ParallelTimeline ()
 Duration
 ParallelTimeline::GetNaturalDurationCore (Clock *clock)
 {
-	TimelineCollection *collection = GetValue (TimelineGroup::ChildrenProperty)->AsTimelineCollection ();
+	TimelineCollection *collection = GetChildren ();
 	Duration d = Duration::Automatic;
 	TimeSpan duration_span = 0;
 	Timeline *timeline;

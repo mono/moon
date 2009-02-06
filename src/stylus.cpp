@@ -23,6 +23,11 @@
 
 #define DEBUG_HITTEST 0
 
+
+//
+// StylusPointCollection
+//
+
 bool
 StylusPointCollection::CanAdd (Value *value)
 {
@@ -60,16 +65,33 @@ StylusPointCollection::GetBounds ()
 	return r;
 }
 
+
+//
+// Stroke
+//
+
 Stroke::Stroke ()
 {
 	SetObjectType (Type::STROKE);
-
-	SetValue (Stroke::StylusPointsProperty, Value::CreateUnref (new StylusPointCollection ()));
-	SetValue (Stroke::DrawingAttributesProperty, Value::CreateUnref (new DrawingAttributes ()));
-	
-	dirty = Rect ();
-	bounds = Rect ();
 	old_bounds = Rect ();
+	bounds = Rect ();
+	dirty = Rect ();
+}
+
+Value *
+Stroke::GetDefaultValue (DependencyProperty *property)
+{
+	Value *value = NULL;
+	
+	if (property->GetOwnerType () != Type::STROKE)
+		return DependencyObject::GetDefaultValue (property);
+	
+	if (property == Stroke::DrawingAttributesProperty)
+		value = Value::CreateUnrefPtr (new DrawingAttributes ());
+	else if (property == Stroke::StylusPointsProperty)
+		value = Value::CreateUnrefPtr (new StylusPointCollection ());
+	
+	return value;
 }
 
 bool
@@ -671,6 +693,11 @@ Stroke::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, P
 	DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
+
+//
+// StrokeCollection
+//
+
 bool
 StrokeCollection::CanAdd (Value *value)
 {
@@ -807,11 +834,28 @@ DrawingAttributes::RenderWithoutDrawingAttributes (cairo_t *cr, StylusPointColle
 	drawing_attributes_quick_render (cr, 2.0, NULL, collection);
 }
 
+
+//
+// InkPresenter
+//
+
 InkPresenter::InkPresenter ()
 {
 	SetObjectType (Type::INKPRESENTER);
+}
 
-	SetValue (InkPresenter::StrokesProperty, Value::CreateUnref (new StrokeCollection ()));
+Value *
+InkPresenter::GetDefaultValue (DependencyProperty *property)
+{
+	Value *value = NULL;
+	
+	if (property->GetOwnerType () != Type::INKPRESENTER)
+		return Canvas::GetDefaultValue (property);
+	
+	if (property == InkPresenter::StrokesProperty)
+		value = Value::CreateUnrefPtr (new StrokeCollection ());
+	
+	return value;
 }
 
 void

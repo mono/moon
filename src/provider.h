@@ -36,7 +36,7 @@ public:
 	PropertyValueProvider (DependencyObject *_obj) : obj(_obj) { }
 	virtual ~PropertyValueProvider () { }
 
-	virtual Value* GetPropertyValue (DependencyProperty *property) = 0;
+	virtual Value *GetPropertyValue (DependencyProperty *property) = 0;
 
 	virtual void RecomputePropertyValue (DependencyProperty *property) { }
 
@@ -50,7 +50,7 @@ public:
 	AnimationPropertyValueProvider (DependencyObject *obj) : PropertyValueProvider (obj) { };
 	virtual ~AnimationPropertyValueProvider () { };
 
-	virtual Value* GetPropertyValue (DependencyProperty *property);
+	virtual Value *GetPropertyValue (DependencyProperty *property);
 };
 
 class LocalPropertyValueProvider : public PropertyValueProvider {
@@ -58,7 +58,7 @@ public:
 	LocalPropertyValueProvider (DependencyObject *obj);
 	virtual ~LocalPropertyValueProvider ();
 
-	virtual Value* GetPropertyValue (DependencyProperty *property);
+	virtual Value *GetPropertyValue (DependencyProperty *property);
 };
 
 class StylePropertyValueProvider : public PropertyValueProvider {
@@ -66,7 +66,7 @@ public:
 	StylePropertyValueProvider (DependencyObject *obj);
 	virtual ~StylePropertyValueProvider ();
 
-	virtual Value* GetPropertyValue (DependencyProperty *property);
+	virtual Value *GetPropertyValue (DependencyProperty *property);
 
 	virtual void RecomputePropertyValue (DependencyProperty *property);
 
@@ -81,7 +81,7 @@ public:
 	InheritedPropertyValueProvider (DependencyObject *obj) : PropertyValueProvider (obj) { };
 	virtual ~InheritedPropertyValueProvider () { };
 
-	virtual Value* GetPropertyValue (DependencyProperty *property);
+	virtual Value *GetPropertyValue (DependencyProperty *property);
 };
 
 class DefaultValuePropertyValueProvider : public PropertyValueProvider {
@@ -89,7 +89,7 @@ public:
 	DefaultValuePropertyValueProvider (DependencyObject *obj) : PropertyValueProvider (obj) { };
 	virtual ~DefaultValuePropertyValueProvider () { };
 
-	virtual Value* GetPropertyValue (DependencyProperty *property);
+	virtual Value *GetPropertyValue (DependencyProperty *property);
 };
 
 

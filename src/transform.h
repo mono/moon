@@ -308,6 +308,7 @@ class TransformGroup : public Transform {
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual Value *GetDefaultValue (DependencyProperty *property);
 	
 	//
 	// Property Accessors

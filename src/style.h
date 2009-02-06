@@ -34,15 +34,20 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	Style ();
 	
-	SetterBaseCollection* GetSetters();
-	void SetSetters (SetterBaseCollection* value);
-
-	bool GetIsSealed();
-	void SetIsSealed(bool value);
-
+	virtual Value *GetDefaultValue (DependencyProperty *property);
+	
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Seal ();
-
+	
+	//
+	// Property Accessors
+	//
+	void SetSetters (SetterBaseCollection *setters);
+	SetterBaseCollection *GetSetters ();
+	
+	void SetIsSealed (bool sealed);
+	bool GetIsSealed ();
+	
 protected:
 	virtual ~Style ();
 };
@@ -64,12 +69,15 @@ public:
 	virtual void RemovedFromCollection (Value *value);
 	
 	virtual Type::Kind GetElementType () { return Type::SETTERBASE; }
-
-	bool GetIsSealed();
-	void SetIsSealed(bool value);
 	
 	void Seal ();
-
+	
+	//
+	// Property Accessors
+	//
+	void SetIsSealed (bool sealed);
+	bool GetIsSealed ();
+	
 protected:
 	virtual ~SetterBaseCollection () { }
 
@@ -92,14 +100,18 @@ class SetterBase : public DependencyObject {
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	SetterBase ();
-
-	bool GetAttached ();
-	void SetAttached (bool value);
-	
-	bool GetIsSealed();
-	void SetIsSealed(bool value);
 	
 	void Seal ();
+	
+	//
+	// Property Accessors
+	//
+	void SetAttached (bool attached);
+	bool GetAttached ();
+	
+	void SetIsSealed (bool sealed);
+	bool GetIsSealed ();
+	
  private:
 	bool attached;
 };

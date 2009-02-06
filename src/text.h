@@ -229,6 +229,7 @@ class TextBlock : public FrameworkElement {
 	virtual void ComputeBounds ();
 	virtual Point GetTransformOrigin ();
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
+	virtual Value *GetDefaultValue (DependencyProperty *property);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);

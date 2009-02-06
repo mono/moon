@@ -1,3 +1,25 @@
+2009-02-06  Jeffrey Stedfast  <fejj@novell.com>
+
+	See InkPresenter's ClearValue unit test
+
+	1. Calling SetValue() in ctors was gross.
+	2. it was wrong because ReadLocalValue() on Silverlight got "Unset"
+	3. it broke things if ClearValue was used and/or if the properties
+	   were set to null
+
+	* dependencyobject.cpp (DependencyObject::GetDefaultValue): New
+	method to query for a default property value as used by the
+	PropertyValueProviders.
+	(DependencyObject::ReadLocalValue): Read the value directly from
+	the hash table.
+
+	* provider.cpp (LocalValuePropertyValueProvider::GetPropertyValue):
+	Call DependencyObject::GetDefaultValue() to try and get a default
+	value. If successful, set it on the current_values hash table.
+
+	* *.cpp: Fixed all classes that had ctors that called SetValue()
+	to instead override GetDefaultValue().
+
 2009-02-06  Chris Toshok  <toshok@ximian.com>
 
 	* uielement.cpp (UIElement::SetSurface): if we have a subtree

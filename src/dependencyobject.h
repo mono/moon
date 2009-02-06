@@ -197,7 +197,7 @@ public:
 
 	void Freeze ();
 
-	GHashTable* GetCurrentValues () { return current_values; }
+	GHashTable *GetCurrentValues () { return current_values; }
 
 	// Gets the content property from this object's type, and
 	// returns the value of that dependency property.
@@ -220,7 +220,7 @@ public:
 	void ProviderValueChanged (PropertyPrecedence providerPrecedence, DependencyProperty *property, Value *old_value, Value *new_value, bool notify_listeners, MoonError *error);
 	Value *GetValue (DependencyProperty *property, PropertyPrecedence startingAtPrecedence);
 	Value *GetValueSkippingPrecedence (DependencyProperty *property, PropertyPrecedence toSkip);
-
+	
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Value *ReadLocalValueWithError (DependencyProperty *property, MoonError *error);
 	virtual Value *ReadLocalValue (DependencyProperty *property);
@@ -228,7 +228,9 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Value *GetValueNoDefaultWithError (DependencyProperty *property, MoonError *error);
 	Value *GetValueNoDefault (DependencyProperty *property);
-
+	
+	virtual Value *GetDefaultValue (DependencyProperty *property) { return NULL; };
+	
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	virtual void ClearValue (DependencyProperty *property, bool notify_listeners, MoonError *error);
 	void ClearValue (DependencyProperty *property, bool notify_listeners = true /*, error = NULL */);

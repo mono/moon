@@ -16,14 +16,32 @@
 #include "style.h"
 #include "error.h"
 
+
+//
+// Style
+//
+
 Style::Style ()
 {
 	SetObjectType (Type::STYLE);
-	SetValue (Style::SettersProperty, Value::CreateUnref (new SetterBaseCollection()));
 }
 
 Style::~Style ()
 {
+}
+
+Value *
+Style::GetDefaultValue (DependencyProperty *property)
+{
+	Value *value = NULL;
+	
+	if (property->GetOwnerType () != Type::STYLE)
+		return DependencyObject::GetDefaultValue (property);
+	
+	if (property == Style::SettersProperty)
+		value = Value::CreateUnrefPtr (new SetterBaseCollection ());
+	
+	return value;
 }
 
 void
@@ -32,6 +50,11 @@ Style::Seal ()
 	SetIsSealed (true);
 	GetSetters ()->Seal ();
 }
+
+
+//
+// SetterBaseCollection
+//
 
 SetterBaseCollection::SetterBaseCollection ()
 {
@@ -99,21 +122,15 @@ SetterBaseCollection::ValidateSetter (Value *value, MoonError *error)
 	return true;
 }
 
-bool 
-SetterBase::GetAttached ()
-{
-	return this->attached;	
-}
-void
-SetterBase::SetAttached (bool value)
-{
-	this->attached = value;
-}
+
+//
+// SetterBase
+//
 
 SetterBase::SetterBase ()
 {
 	SetObjectType (Type::SETTERBASE);
-	this->attached = false;
+	attached = false;
 }
 
 void
@@ -123,6 +140,23 @@ SetterBase::Seal ()
 		return;
 	SetIsSealed (true);	
 }
+
+bool 
+SetterBase::GetAttached ()
+{
+	return attached;	
+}
+
+void
+SetterBase::SetAttached (bool value)
+{
+	attached = value;
+}
+
+
+//
+// Setter
+//
 
 Setter::Setter ()
 {

@@ -338,7 +338,8 @@ public:
 	void ReleaseMouseCapture ();
 
 	virtual void OnLoaded ();
-
+	
+	virtual Value *GetDefaultValue (DependencyProperty *property);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);

@@ -594,7 +594,7 @@ class TimelineCollection : public DependencyObjectCollection {
 class TimelineGroup : public Timeline {
  protected:
 	virtual ~TimelineGroup ();
-
+	
  public:
 	/* @PropertyType=TimelineCollection,GenerateAccessors */
 	static DependencyProperty *ChildrenProperty;
@@ -602,15 +602,18 @@ class TimelineGroup : public Timeline {
  	/* @GenerateCBinding,GeneratePInvoke */
 	TimelineGroup ();
 	
+	virtual Value *GetDefaultValue (DependencyProperty *property);
 	virtual Clock *AllocateClock ();
 	virtual bool Validate ();
-
+	
 	void AddChild (Timeline *child);
 	void RemoveChild (Timeline *child);
-
-	// property accessors
-	TimelineCollection* GetChildren ();
-	void SetChildren (TimelineCollection *value);
+	
+	//
+	// Property Accessors
+	//
+	void SetChildren (TimelineCollection *children);
+	TimelineCollection *GetChildren ();
 };
 
 
