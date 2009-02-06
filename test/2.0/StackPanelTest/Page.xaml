@@ -1,0 +1,31 @@
+﻿<Canvas x:Class="StackPanelTest.Page"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    Background="Violet" HorizontalAlignment="Center" VerticalAlignment="Center">
+  <StackPanel Canvas.Top="150" HorizontalAlignment="Center" Background="Red">
+    <Border Width="20" Height="50" Background="Yellow"/>
+    <Border Height="50" Width="30" Background="Blue"/>
+  </StackPanel>
+  <StackPanel Canvas.Left="75" Canvas.Top="150" HorizontalAlignment="Left">
+    <Border Width="20" Height="50" Background="Yellow"/>
+    <Border Height="50" Width="30" Background="Blue"/>
+  </StackPanel>
+  <Border Canvas.Left="150" Canvas.Top="150" Height="200">
+  <StackPanel Background="Green" VerticalAlignment="Bottom">
+    <Border Width="20" Height="50" Background="Yellow"/>
+    <Border Height="50" Width="30" Background="Blue"/>
+  </StackPanel>
+  </Border>
+  <Border Canvas.Left="225" Canvas.Top="150" Height="75" Width="75">
+  <StackPanel Background="Green">
+    <Border Width="20" Height="50" Background="Yellow"/>
+    <Border Width="30" Height="50" BorderThickness="4" BorderBrush="red" Background="Blue"/>
+  </StackPanel>
+  </Border>
+  <Border Canvas.Left="300" Canvas.Top="150" Width="100">
+  <StackPanel Background="Purple" HorizontalAlignment="Left">
+    <Border Width="20" Height="50" Background="Yellow"/>
+    <Border Height="50" Background="Blue"/>
+  </StackPanel>
+  </Border>  
+</Canvas>
