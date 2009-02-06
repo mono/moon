@@ -30,6 +30,13 @@ namespace System.Windows.Controls {
 
 	public sealed partial class ItemCollection : PresentationFrameworkCollection<object> {
 
+		bool readOnly;
+
+		internal void SetReadOnly ()
+		{
+			readOnly = true;
+		}
+
 		// Note: Parameter handling is different from other PresentationFrameworkCollection<T> types
 		// but it may not be limited to this
 		internal override bool NullCheck (NotifyCollectionChangedAction action, object value)
@@ -51,6 +58,11 @@ namespace System.Windows.Controls {
 					return i;
 			}
 			return -1;			
+		}
+
+		internal override bool IsReadOnlyImpl ()
+		{
+			return readOnly;
 		}
 	}
 }

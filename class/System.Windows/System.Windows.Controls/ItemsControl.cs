@@ -36,14 +36,17 @@ namespace System.Windows.Controls {
 	public class ItemsControl : Control {
 
 		public static readonly DependencyProperty DisplayMemberPathProperty =
-			DependencyProperty.Register ("DisplayMemberPath", typeof (string), typeof (ItemsControl), null);
+			DependencyProperty.Register ("DisplayMemberPath", typeof (string), typeof (ItemsControl),
+						     new PropertyMetadata (null, new PropertyChangedCallback (DisplayMemberPathChanged)));
 		public static readonly DependencyProperty ItemsPanelProperty =
 			DependencyProperty.Register ("ItemsPanel", typeof (ItemsPanelTemplate), typeof (ItemsControl), null);
 		public static readonly DependencyProperty ItemsSourceProperty =
-			DependencyProperty.Register ("ItemsSource", typeof (IEnumerable), typeof (ItemsControl), null);
+			DependencyProperty.Register ("ItemsSource", typeof (IEnumerable), typeof (ItemsControl),
+						     new PropertyMetadata (null, new PropertyChangedCallback (ItemsSourceChanged)));
 		public static readonly DependencyProperty ItemTemplateProperty =
 			DependencyProperty.Register ("ItemTemplate", typeof (DataTemplate), typeof (ItemsControl), null);
 
+		private bool itemsIsDataBound;
 		private ItemCollection items;
 		private ItemsPresenter _presenter;
 
@@ -67,6 +70,70 @@ namespace System.Windows.Controls {
 			NativeMethods.uielement_set_subtree_object (native, _presenter.native);
 
 			AddItemsToPresenter (Items, 0);
+		}
+
+		static void ItemsSourceChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
+		{
+			((ItemsControl) o).OnItemsSourceChanged (e.OldValue as IEnumerable,
+								 e.NewValue as IEnumerable);
+		}
+
+		void OnItemsSourceChanged (IEnumerable oldSource, IEnumerable newSource)
+		{
+			if (oldSource is INotifyCollectionChanged) {
+				((INotifyCollectionChanged)oldSource).CollectionChanged -= OnSourceCollectionChanged;
+			}
+
+
+			if (newSource != null) {
+
+				if (newSource is INotifyCollectionChanged) {
+					((INotifyCollectionChanged)newSource).CollectionChanged += OnSourceCollectionChanged;
+				}
+
+				itemsIsDataBound = true;
+
+				items = new ItemCollection ();
+				items.SetReadOnly();
+				items.ItemsChanged += delegate (object o, NotifyCollectionChangedEventArgs e) {
+					OnItemsChanged (e);
+				};
+
+				foreach (var v in newSource) {
+					items.AddImpl (v);
+				}
+			}
+		}
+
+		void OnSourceCollectionChanged (object sender, NotifyCollectionChangedEventArgs e)
+		{
+			switch (e.Action) {
+			case NotifyCollectionChangedAction.Add:
+				for (int i = 0; i < e.NewItems.Count; i ++)
+					items.InsertImpl (e.NewStartingIndex + i, e.NewItems[i]);
+				break;
+			case NotifyCollectionChangedAction.Remove:
+				for (int i = 0; i < e.OldItems.Count; i ++)
+					items.RemoveAtImpl (e.OldStartingIndex);
+				break;
+			case NotifyCollectionChangedAction.Replace:
+				for (int i = 0; i < e.NewItems.Count; i++)
+					items.SetItemImpl (e.NewStartingIndex+i, e.NewItems[i]);
+				break;
+			case NotifyCollectionChangedAction.Reset:
+				items.ClearImpl ();
+				break;
+			}
+		}
+		
+		static void DisplayMemberPathChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
+		{
+			((ItemsControl) o).OnDisplayMemberPathChanged (e.OldValue as string,
+								       e.NewValue as string);
+		}
+
+		void OnDisplayMemberPathChanged (string oldPath, string newPath)
+		{
 		}
 
 		protected virtual void ClearContainerForItemOverride (DependencyObject element, object item)
@@ -158,6 +225,7 @@ namespace System.Windows.Controls {
 			get {
 				if (items == null) {
 					items = new ItemCollection ();
+					itemsIsDataBound = false;
 					items.ItemsChanged += delegate (object o, NotifyCollectionChangedEventArgs e) {
 						OnItemsChanged (e);
 					};
@@ -178,7 +246,13 @@ namespace System.Windows.Controls {
 
 		public IEnumerable ItemsSource { 
 			get { return (IEnumerable) GetValue (ItemsSourceProperty); }
-			set { SetValue (ItemsSourceProperty, value); }
+			set {
+				if (!itemsIsDataBound && items != null && items.Count > 0) {
+					throw new InvalidOperationException ("Items collection must be empty before using ItemsSource");
+				}
+				items = null;
+				SetValue (ItemsSourceProperty, value);
+			}
 		}
 
 		public DataTemplate ItemTemplate { 

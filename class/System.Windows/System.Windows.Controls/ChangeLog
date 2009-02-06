@@ -1,3 +1,13 @@
+2009-02-05  Chris Toshok  <toshok@ximian.com>
+
+	* ItemsControl.cs: implement basic databinding support - no
+	templates, no DisplayMemberPath, just a databound ItemsSource with
+	INotifyCollectionChanged handling.
+
+	* ItemCollection.cs: add SetReadOnly so ItemsControl can mark the
+	collection as readonly (only for the user, the collection remains
+	modifiable by the control).
+
 2009-02-05  Larry Ewing  <lewing@novell.com>
 
 	* StackPanel.cs: skip collapsed children.
