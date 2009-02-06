@@ -269,6 +269,7 @@ multi_scale_image_handle_parsed (void *userdata)
 		}
 	}
 	msi->Invalidate ();
+	LOG_MSI ("\nMSI::Emitting open suceeded\n");
 	msi->Emit (MultiScaleImage::ImageOpenSucceededEvent);
 }
 
