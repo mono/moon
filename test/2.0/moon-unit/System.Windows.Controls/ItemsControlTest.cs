@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Specialized;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -229,12 +230,11 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void ItemsSource ()
 		{
 			ItemsControl ic = new ItemsControl ();
 			ic.Items.Add ("hi");
-			Assert.AreEqual (ic.Items[0], "hi", "first item #1");
+			Assert.AreEqual ("hi", ic.Items[0], "first item #1");
 			Assert.IsFalse (ic.Items.IsReadOnly, "items IsReadOnly #1");
 
 			Assert.Throws<InvalidOperationException>(delegate {
@@ -243,8 +243,8 @@ namespace MoonTest.System.Windows.Controls {
 
 			ic.Items.Clear ();
 			ic.ItemsSource = new string[] { "hi", "there" };
-			Assert.AreEqual (ic.Items.Count, 2, "count after setting ItemsSource");
-			Assert.AreEqual (ic.Items[0], "hi", "first item #2");
+			Assert.AreEqual (2, ic.Items.Count, "count after setting ItemsSource");
+			Assert.AreEqual ("hi", ic.Items[0], "first item #2");
 			Assert.IsTrue (ic.Items.IsReadOnly, "items IsReadOnly #2");
 			Assert.Throws<InvalidOperationException>(delegate {
 					ic.Items.Add ("hi");
@@ -252,9 +252,50 @@ namespace MoonTest.System.Windows.Controls {
 
 
 			ic.ItemsSource = null;
-			Assert.AreEqual (ic.Items.Count, 0, "count after setting ItemsSource to null");
+			Assert.AreEqual (0, ic.Items.Count, "count after setting ItemsSource to null");
 			Assert.IsFalse (ic.Items.IsReadOnly, "items IsReadOnly #3");
 			ic.Items.Add ("hi");
+		}
+
+		[TestMethod]
+		public void ItemsSource_ObservableCollection ()
+		{
+			ItemsControl ic = new ItemsControl ();
+
+			ObservableCollection<string> stringCollection = new ObservableCollection<string>();
+
+			ic.ItemsSource = stringCollection;
+
+			Assert.AreEqual (ic.Items.Count, 0, "1");
+
+			stringCollection.Add ("hi");
+
+			Assert.AreEqual (ic.Items.Count, 1, "2");
+
+			Assert.AreEqual (ic.Items[0], "hi", "3");
+
+			ic.DisplayMemberPath = "Length";
+
+			// i would really love it if this was "2"...
+			Assert.AreEqual (ic.Items[0], "hi", "4");
+
+		}
+
+		[TestMethod]
+		[MoonlightBug ("due to our string->char*->string marshaling (i think), we end up with a different object")]
+		public void ItemsSource_ObservableCollection_testReferenceEquals ()
+		{
+			ItemsControl ic = new ItemsControl ();
+
+			ObservableCollection<string> stringCollection = new ObservableCollection<string>();
+
+			ic.ItemsSource = stringCollection;
+
+			string f = "foo";
+
+			stringCollection.Add("foo");
+
+			Assert.IsTrue (object.ReferenceEquals (ic.Items[0], f), "string is the same object");
 		}
 	}
 }
