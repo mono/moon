@@ -404,5 +404,128 @@ namespace MoonTest.System.Windows.Media
 				Assert.AreEqual(2, hits.Count, "#2");
 			});
 		}
+					
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void HitTest18()
+		{
+			Border b = new Border {CornerRadius = new CornerRadius(50),
+				Width = 100,
+				Height = 100,
+				Background = new SolidColorBrush (Colors.Black)
+			};
+			Root.Children.Add(b);
+
+			CreateAsyncTest(Root, delegate {
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(10, 10), Root));
+				Assert.AreEqual(0, hits.Count, "#1");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(50, 50), Root));
+				Assert.AreEqual(2, hits.Count, "#1");
+			});
+		}
+					
+		[TestMethod]
+		[Asynchronous]
+		public void HitTest19()
+		{
+			Rectangle r = new Rectangle { Width = 100, Height = 10, Fill = new SolidColorBrush( Colors.Black) };
+			r.Clip = new RectangleGeometry { Rect = new Rect(50, 0, 50, 10) };
+			Root.Children.Add(r);
+
+			CreateAsyncTest(Root, delegate {
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(10, 5), Root));
+				Assert.AreEqual(0, hits.Count, "#1");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(75, 5), Root));
+				Assert.AreEqual(2, hits.Count, "#1");
+			});
+		}
+		
+		[TestMethod]
+		[Asynchronous]
+		public void HitTest20()
+		{
+			Rectangle r = new Rectangle {
+				Width = 100,
+				Height = 10,
+				Fill = new SolidColorBrush(Colors.Green),
+				RenderTransform = new RotateTransform { Angle = 90 }
+			};
+			Canvas.SetLeft(r, 10);
+			Root.Children.Add(r);
+			CreateAsyncTest(Root, delegate {
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(50, 5), Root));
+				Assert.AreEqual(0, hits.Count, "#1");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(5, 50), Root));
+				Assert.AreEqual(2, hits.Count, "#1");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void HitTest21()
+		{
+			Rectangle r = new Rectangle {
+				Width = 100,
+				Height = 10,
+				Fill = new SolidColorBrush(Colors.Green),
+				RenderTransform = new RotateTransform { Angle = 45 }
+			};
+			Canvas.SetLeft(r, 10);
+			Root.Children.Add(r);
+			CreateAsyncTest(Root, delegate {
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(50, 5), Root));
+				Assert.AreEqual(0, hits.Count, "#1");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(5, 50), Root));
+				Assert.AreEqual(0, hits.Count, "#2");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(50, 50), Root));
+				Assert.AreEqual(2, hits.Count, "#3");
+			});
+		}
+					
+		[TestMethod]
+		[Asynchronous]
+		[Ignore ("This makes moon hang")]
+		public void ___HitTest22()
+		{
+			PathFigure figure = new PathFigure { IsFilled = true, StartPoint = new Point(10, 0) };
+			figure.Segments.Add(new LineSegment { Point = new Point(20, 10) });
+			figure.Segments.Add(new LineSegment { Point = new Point(0, 10) });
+			figure.Segments.Add(new LineSegment { Point = new Point(10, 0) });
+
+			PathGeometry g = new PathGeometry();
+			g.Figures.Add(figure);
+
+			Path p = new Path { Fill = new SolidColorBrush(Colors.Black), Data = g };
+			Root.Children.Add(p);
+
+			CreateAsyncTest(Root, delegate {
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 0), Root));
+				Assert.AreEqual(0, hits.Count, "#1");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(10, 0), Root));
+				Assert.AreEqual(2, hits.Count, "#1");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 10), Root));
+				Assert.AreEqual(0, hits.Count, "#1");
+			});
+		}
+					
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void HitTest23()
+		{
+			Rectangle r = new Rectangle { Width = 100, Height = 10, Fill = new SolidColorBrush( Colors.Black) };
+			r.Clip = new RectangleGeometry { Rect = new Rect(50, 0, 50, 10) };
+			Root.Children.Add(r);
+			Root.Clip = new RectangleGeometry { Rect = new Rect (0, 0, 10000, 10000) };
+
+			CreateAsyncTest(Root, delegate {
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(10, 5), Root));
+				Assert.AreEqual(0, hits.Count, "#1");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(75, 5), Root));
+				Assert.AreEqual (0, hits.Count, "#2");
+			});
+		}
 	}
 }
