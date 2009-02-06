@@ -55,7 +55,7 @@ namespace Mono {
 
 	internal delegate void HttpHeaderHandler (string name, string value);
 	internal delegate void AsyncResponseAvailableHandler (IntPtr response, IntPtr context);
-	internal delegate void NativePropertyChangedHandler (IntPtr dependency_property, IntPtr dependency_object, IntPtr old_value, IntPtr new_value);
+	internal delegate void NativePropertyChangedHandler (IntPtr dependency_property, IntPtr dependency_object, IntPtr old_value, IntPtr new_value, ref MoonError error);
 
 	internal static partial class NativeMethods {
 
@@ -284,6 +284,13 @@ namespace Mono {
 		private static Exception CreateManagedException (MoonError err)
 		{
 			string msg = err.Message;
+			Exception ex = null;
+			
+			if (err.GCHandlePtr != IntPtr.Zero) {
+				// We need to get this before calling Dispose.
+				ex = err.GCHandle.Target as Exception;
+			}
+			
 			err.Dispose ();
 			
 			switch (err.Number) {
@@ -298,13 +305,16 @@ namespace Mono {
 				throw new ArgumentOutOfRangeException (msg);
 			case 5:
 				throw new InvalidOperationException (msg);
-			case 6: {
+			case 6:
 				throw new XamlParseException (msg);
-			}
 			case 7:
 				throw new UnauthorizedAccessException (msg);
 			case 8:
 				throw new ExecutionEngineException (msg);
+			case 9:
+				if (ex != null)
+					throw ex;
+				throw new Exception (msg);
 			}
 		}
 	}

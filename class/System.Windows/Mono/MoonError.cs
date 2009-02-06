@@ -38,6 +38,7 @@ namespace Mono
 		private int number;
 		private int code;
 		private IntPtr message;
+		private IntPtr gchandle_ptr;
 		
 		public int Number {
 			get { return number; }
@@ -51,12 +52,33 @@ namespace Mono
 			get { return message == IntPtr.Zero ? null : Marshal.PtrToStringAnsi (message); }
 		}
 		
+		public IntPtr GCHandlePtr {
+			get { return gchandle_ptr; }
+		}
+		
+		public GCHandle GCHandle {
+			get { return GCHandle.FromIntPtr (gchandle_ptr); }
+		}
+		
 		public void Dispose ()
 		{
-			if (message == IntPtr.Zero)
-				return;
+			if (message != IntPtr.Zero) {
+				Marshal.FreeHGlobal (message);
+				message = IntPtr.Zero;
+			}
 			
-			Marshal.FreeHGlobal (message);
+			if (gchandle_ptr != IntPtr.Zero) {
+				Helper.GCHandleFromIntPtr (gchandle_ptr).Free ();
+				gchandle_ptr = IntPtr.Zero;
+			}
+		}
+		
+		public MoonError (Exception ex)
+		{
+			GCHandle handle = GCHandle.Alloc (ex);
+			gchandle_ptr = Helper.GCHandleToIntPtr (handle);
+			number = 9;
+			code = 0;
 			message = IntPtr.Zero;
 		}
 	}

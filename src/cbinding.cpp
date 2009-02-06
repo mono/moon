@@ -908,12 +908,14 @@ deep_zoom_image_tile_source_new (void)
  * DependencyObject
  **/
 void
-dependency_object_clear_value (DependencyObject *instance, DependencyProperty *property, bool notify_listeners)
+dependency_object_clear_value (DependencyObject *instance, DependencyProperty *property, bool notify_listeners, MoonError *error)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->ClearValue (property, notify_listeners);
+	if (error == NULL)
+		g_warning ("Moonlight: Called dependency_object_clear_value () with error == NULL.");
+	instance->ClearValue (property, notify_listeners, error);
 }
 
 

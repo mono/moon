@@ -159,12 +159,18 @@ FrameworkElement::ClearBindingExpression (DependencyProperty *property, BindingE
 void
 FrameworkElement::ClearValue (DependencyProperty *property, bool notify_listeners)
 {
+	ClearValue (property, notify_listeners, NULL);
+}
+
+void
+FrameworkElement::ClearValue (DependencyProperty *property, bool notify_listeners, MoonError *error)
+{
 	BindingExpressionBase *cur_expr = GetBindingExpression (property);
 	
 	if (cur_expr)
 		ClearBindingExpression (property, cur_expr);
 	
-	UIElement::ClearValue (property, notify_listeners);
+	UIElement::ClearValue (property, notify_listeners, error);
 }
 
 Value *

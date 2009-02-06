@@ -1,3 +1,30 @@
+2009-02-06  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* cbinding.h:
+	* cbinding.cpp: Regenerated.
+
+	* dependencyobject.h:
+	* dependencyobject.cpp:
+	  DependencyObject::ProviderValueChanged: Add a MoonError
+	  argument to be able to marshal managed exceptions through
+	  native code. ClearValue: Add a MoonError argument to match
+	  the signature of ProviderValueChanged.
+
+	* dependencyproperty.h: Make NativePropertyChangedHandler
+	  take a MoonError argument to be able to marshal managed
+	  exceptions through native code.
+
+	* error.h:
+	* error.cpp: Add a gchandle_ptr field to hold managed
+	  exceptions.
+
+	* frameworkelement.h:
+	* frameworkelement.cpp: Update according to ClearValue
+	  signature changes.
+
+	* provider.cpp: Update according to ProviderValueChanged
+	  signature changes.
+
 2009-02-06  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* morton-layout-table.inc: pre-computed table for Morton Layout 

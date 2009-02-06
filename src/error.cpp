@@ -74,7 +74,7 @@ ParserErrorEventArgs::~ParserErrorEventArgs ()
 //
 
 MoonError::MoonError ()
-  : number ((ErrorType)0), code (0), message (0) 
+  : number ((ErrorType)0), code (0), message (0), gchandle_ptr (NULL)
 {
 }
 

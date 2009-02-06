@@ -1,3 +1,14 @@
+2009-02-06  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* GeneratedPInvokes.cs: Regenerated.
+
+	* MoonError.cs: Add support for marshalling managed exception
+	  objects.
+
+	* NativeMethods.cs: CreateManagedException: Add support for
+	  marshalling managed exception objects.
+	  NativePropertyChangedHandler: update signature.
+
 2009-02-05  Jeffrey Stedfast  <fejj@novell.com>
 
 	* NativeDependencyObjectHelper.cs: Unmanaged ReadLocalValue()

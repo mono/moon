@@ -449,9 +449,16 @@ namespace Mono {
 		// DeepZoomImageTileSource *deep_zoom_image_tile_source_new ();
 		public extern static IntPtr deep_zoom_image_tile_source_new ();
 
-		[DllImport ("moon")]
-		// void dependency_object_clear_value (DependencyObject *instance, DependencyProperty *property, bool notify_listeners);
-		public extern static void dependency_object_clear_value (IntPtr instance, IntPtr property, [MarshalAs (UnmanagedType.U1)] bool notify_listeners);
+		[DllImport ("moon", EntryPoint="dependency_object_clear_value")]
+		// void dependency_object_clear_value (DependencyObject *instance, DependencyProperty *property, bool notify_listeners, MoonError *error);
+		private extern static void dependency_object_clear_value_ (IntPtr instance, IntPtr property, [MarshalAs (UnmanagedType.U1)] bool notify_listeners, out MoonError error);
+		public static void dependency_object_clear_value (IntPtr instance, IntPtr property, bool notify_listeners)
+		{
+					MoonError error;
+			dependency_object_clear_value_ (instance, property, notify_listeners, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+		}
 
 		[DllImport ("moon")]
 		// DependencyObject *dependency_object_new ();

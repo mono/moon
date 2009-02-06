@@ -143,10 +143,14 @@ namespace System.Windows {
 			return result;
 		}
 		
-		private static void NativePropertyChangedCallbackSafe (IntPtr dependency_property, IntPtr dependency_object, IntPtr old_value, IntPtr new_value)
+		private static void NativePropertyChangedCallbackSafe (IntPtr dependency_property, IntPtr dependency_object, IntPtr old_value, IntPtr new_value, ref MoonError error)
 		{
 			try {
-				NativePropertyChangedCallback (dependency_property, dependency_object, old_value, new_value);
+				try {
+					NativePropertyChangedCallback (dependency_property, dependency_object, old_value, new_value);
+				} catch (Exception ex) {
+					error = new MoonError (ex);
+				}
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Moonlight: Unhandled exception in DependencyProperty.NativePropertyChangedCallback: {0}", ex.Message);

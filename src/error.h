@@ -70,7 +70,8 @@ public:
 		INVALID_OPERATION = 5,
 		XAML_PARSE_EXCEPTION = 6,
 		UNAUTHORIZED_ACCESS = 7,
-		EXECUTION_ENGINE_EXCEPTION = 8
+		EXECUTION_ENGINE_EXCEPTION = 8,
+		GCHANDLE_EXCEPTION = 9
 	};
 
 	// non-zero if an error occurred.
@@ -82,6 +83,10 @@ public:
 	// the caller of the method which returned the error must call Dispose to free this value
 	// (only necessary if there were any errors)
 	char *message;
+	
+	// managed code has thrown an exception, we store a gchandle
+	// to the exception here.
+	void* gchandle_ptr;
 	
 	MoonError ();
 	~MoonError ();

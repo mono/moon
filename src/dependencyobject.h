@@ -217,7 +217,7 @@ public:
 	Value *GetValueWithError (Type::Kind whatami, DependencyProperty *property, MoonError *error);
 	virtual Value *GetValue (DependencyProperty *property);
 
-	void ProviderValueChanged (PropertyPrecedence providerPrecedence, DependencyProperty *property, Value *old_value, Value *new_value, bool notify_listeners);
+	void ProviderValueChanged (PropertyPrecedence providerPrecedence, DependencyProperty *property, Value *old_value, Value *new_value, bool notify_listeners, MoonError *error);
 	Value *GetValue (DependencyProperty *property, PropertyPrecedence startingAtPrecedence);
 	Value *GetValueSkippingPrecedence (DependencyProperty *property, PropertyPrecedence toSkip);
 
@@ -230,7 +230,8 @@ public:
 	Value *GetValueNoDefault (DependencyProperty *property);
 
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
-	virtual void ClearValue (DependencyProperty *property, bool notify_listeners = true);
+	virtual void ClearValue (DependencyProperty *property, bool notify_listeners, MoonError *error);
+	void ClearValue (DependencyProperty *property, bool notify_listeners = true /*, error = NULL */);
 	bool HasProperty (const char *name, bool inherits);
 	bool HasProperty (Type::Kind whatami, DependencyProperty *property, bool inherits);
 

@@ -406,7 +406,7 @@ DeepZoomImageTileSource *deep_zoom_image_tile_source_new (void);
  * DependencyObject
  **/
 /* @GeneratePInvoke */
-void dependency_object_clear_value (DependencyObject *instance, DependencyProperty *property, bool notify_listeners);
+void dependency_object_clear_value (DependencyObject *instance, DependencyProperty *property, bool notify_listeners, MoonError *error);
 
 /* @GeneratePInvoke */
 DependencyObject *dependency_object_new (void);

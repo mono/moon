@@ -1045,7 +1045,7 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 		// store the new value in the hash
 		g_hash_table_insert (current_values, property, new_value);
 
-		ProviderValueChanged (PropertyPrecedence_LocalValue, property, current_value, new_value, true);
+		ProviderValueChanged (PropertyPrecedence_LocalValue, property, current_value, new_value, true, error);
 
 		if (current_value)
 			delete current_value;
@@ -1250,7 +1250,7 @@ void
 DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 					DependencyProperty *property,
 					Value *old_provider_value, Value *new_provider_value,
-					bool notify_listeners)
+					bool notify_listeners, MoonError *error)
 {
 	int p;
 
@@ -1362,13 +1362,19 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 
 		if (property && property->GetChangedCallback () != NULL) {
 			NativePropertyChangedHandler *callback = property->GetChangedCallback ();
-			callback (property, this, old_value, new_value);
+			callback (property, this, old_value, new_value, error);
 		}
  	}
 }
 
 void
 DependencyObject::ClearValue (DependencyProperty *property, bool notify_listeners)
+{
+	ClearValue(property, notify_listeners, NULL);
+}
+
+void
+DependencyObject::ClearValue (DependencyProperty *property, bool notify_listeners, MoonError *error)
 {
 	Value *old_local_value = providers[PropertyPrecedence_LocalValue]->GetPropertyValue (property);
 
@@ -1399,7 +1405,7 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 			providers[p]->RecomputePropertyValue (property);
 	}
 
-	ProviderValueChanged (PropertyPrecedence_LocalValue, property, old_local_value, NULL, notify_listeners);
+	ProviderValueChanged (PropertyPrecedence_LocalValue, property, old_local_value, NULL, notify_listeners, error);
 	
 	delete old_local_value;
 }

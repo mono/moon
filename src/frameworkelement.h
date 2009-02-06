@@ -145,7 +145,8 @@ public:
 	void SetVerticalAlignment (VerticalAlignment value);
 
 	virtual Value *ReadLocalValue (DependencyProperty *property);
-	virtual void ClearValue (DependencyProperty *property, bool notify_listeners = true);
+	virtual void ClearValue (DependencyProperty *property, bool notify_listeners, MoonError *error);
+	void ClearValue (DependencyProperty *property, bool notify_listeners = true);
 
 	void InvalidateBinding (DependencyProperty *property, BindingExpressionBase *binding);
 	GHashTable *bindings;

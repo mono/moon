@@ -149,7 +149,7 @@ StylePropertyValueProvider::SealStyle (Style *style)
 		g_hash_table_insert (style_hash, setter_property, setter);
 
 		// let the DO know the property might have changed
- 		obj->ProviderValueChanged (PropertyPrecedence_Style, setter_property, NULL, setter_value, true);
+ 		obj->ProviderValueChanged (PropertyPrecedence_Style, setter_property, NULL, setter_value, true, NULL);
 	}
 }
 
