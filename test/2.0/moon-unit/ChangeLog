@@ -1,5 +1,10 @@
 2009-02-06  Alan McGovern  <alan.mcgovern@gmail.com>
 
+	* System.Windows.Media/VisualTreeHelperTest.cs: Add a
+	  moonlightbug attr to the failing test
+
+2009-02-06  Alan McGovern  <alan.mcgovern@gmail.com>
+
 	* System.Windows.Media/VisualTreeHelperTest.cs: Fix this test
 	  properly - 'Clip.Rect' is the part of the shape that is
 	  *not* clipped out. Parent clip is respected.

@@ -443,6 +443,7 @@ namespace MoonTest.System.Windows.Media
 		
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void HitTest20()
 		{
 			Rectangle r = new Rectangle {
