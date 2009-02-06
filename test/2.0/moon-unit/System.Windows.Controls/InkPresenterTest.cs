@@ -22,30 +22,50 @@ namespace MoonTest.System.Windows.Controls
 		[TestMethod]
 		public void ClearValueTest()
 		{
-			StrokeCollection strokes, new_strokes, rlv_strokes;
+			object strokes, new_strokes, rlv_strokes;
 			InkPresenter ink = new InkPresenter();
 			
 			// check initial value
-			strokes = ink.ReadLocalValue(InkPresenter.StrokesProperty) as StrokeCollection;
-			Assert.IsNull(strokes, "initial strokes is null");
+			strokes = ink.ReadLocalValue(InkPresenter.StrokesProperty);
+			Assert.AreEqual(DependencyProperty.UnsetValue, strokes, "initial strokes is not set");
 			
 			// now try ClearValue
 			ink.ClearValue(InkPresenter.StrokesProperty);
 			
-			// check that ReadLocalValue returns null
-			rlv_strokes = ink.ReadLocalValue(InkPresenter.StrokesProperty) as StrokeCollection;
-			Assert.IsNull(rlv_strokes, "ReadLocalValue after ClearValue returns null");
+			// check that ReadLocalValue returns unset
+			rlv_strokes = ink.ReadLocalValue(InkPresenter.StrokesProperty);
+			Assert.AreEqual(DependencyProperty.UnsetValue, rlv_strokes, "ReadLocalValue after ClearValue is unset");
 			
 			// check that GetValue returns a StrokeCollection
-			new_strokes = ink.GetValue(InkPresenter.StrokesProperty) as StrokeCollection;
-			Assert.IsNotNull(new_strokes, "GetValue after ClearValue returns a StrokeCollection");
+			new_strokes = ink.GetValue(InkPresenter.StrokesProperty);
+			Assert.AreNotEqual(DependencyProperty.UnsetValue, new_strokes, "GetValue after a ClearValue is set");
+			Assert.IsNotNull(new_strokes as StrokeCollection, "GetValue after a ClearValue does not return null");
 			
-			// check that the GetValue set a local StrokeCollection value on the InkPresenter
-			rlv_strokes = ink.ReadLocalValue(InkPresenter.StrokesProperty) as StrokeCollection;
-			Assert.IsNotNull(rlv_strokes, "ReadLocalValue after GetValue returns a StrokeCollection");
+			// check that ReadLocalValue still returns unset
+			rlv_strokes = ink.ReadLocalValue(InkPresenter.StrokesProperty);
+			Assert.AreEqual(DependencyProperty.UnsetValue, rlv_strokes, "ReadLocalValue after a GetValue still returns unset");
+			
+			// add a stroke
+			strokes = new_strokes;
+			((StrokeCollection) strokes).Add(new Stroke());
+			
+			// check that ReadLocalValue still returns unset
+			rlv_strokes = ink.ReadLocalValue(InkPresenter.StrokesProperty);
+			Assert.AreEqual(DependencyProperty.UnsetValue, rlv_strokes, "ReadLocalValue after adding a stroke still returns unset");
+			
+			// check that GetValue still returns the same StrokeCollection
+			new_strokes = ink.GetValue(InkPresenter.StrokesProperty);
+			Assert.AreEqual(strokes, new_strokes, "strokes are the same");
+			
+			// set the strokes to something
+			strokes = ink.Strokes = new StrokeCollection();
+			
+			// check that ReadLocalValue doesn't return unset anymore
+			rlv_strokes = ink.ReadLocalValue(InkPresenter.StrokesProperty);
+			Assert.AreEqual(strokes, rlv_strokes, "ReadLocalValue returned the strokes we just set on it");
 			
 #if false
-			// FIXME: current causes us to crash because
+			// FIXME: currently causes us to crash because
 			// InkPresenter::OnPropertyChanged()'s
 			// new_value->AsStrokeCollection() returning
 			// null is not handled.
@@ -53,13 +73,9 @@ namespace MoonTest.System.Windows.Controls
 			// now try setting it to null instead of using ClearValue
 			ink.Strokes = null;
 			
-			// check that ReadLocalValue returns null
-			rlv_strokes = ink.ReadLocalValue(InkPresenter.StrokesProperty) as StrokeCollection;
-			Assert.IsNull(rlv_strokes, "ReadLocalValue after setting to null returns null");
-			
-			// check that GetValue restores an empty StrokeCollection
-			new_strokes = ink.GetValue(InkPresenter.StrokesProperty) as StrokeCollection;
-			Assert.IsNotNull(new_strokes, "GetValue after setting to null returns a StrokeCollection");
+			// check that ReadLocalValue still returns unset
+			rlv_strokes = ink.ReadLocalValue(InkPresenter.StrokesProperty);
+			Assert.AreNotEqual(DependencyProperty.UnsetValue, rlv_strokes, "ReadLocalValue after setting to null returns unset");
 #endif
 		}
 	}
