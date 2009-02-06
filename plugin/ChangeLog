@@ -1,5 +1,8 @@
 2009-02-05  Jeffrey Stedfast  <fejj@novell.com>
 
+	* plugin-class.cpp (MoonlightDependencyObjectObject::GetProperty):
+	Updated for ReadLocalValue method rename.
+
 	* plugin-downloader.cpp (plugin_downloader_create_webrequest):
 	Don't crash if we don't have a browser bridge.
 
