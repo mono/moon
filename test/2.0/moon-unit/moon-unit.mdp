@@ -44,6 +44,7 @@
     <File name="System.Windows/VisualStateTest.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/BorderTest.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/CanvasTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/InkPresenetrTest.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/ControlTemplateTest.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/ControlTest.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/GridTest.cs" subtype="Code" buildaction="Compile" />

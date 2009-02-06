@@ -102,6 +102,7 @@
     <Compile Include="System.Windows.Controls\ControlTemplateTest.cs" />
     <Compile Include="System.Windows.Controls\ControlTest.cs" />
     <Compile Include="System.Windows.Controls\GridTest.cs" />
+    <Compile Include="System.Windows.Controls\InkPresenterTest.cs" />
     <Compile Include="System.Windows.Controls\ItemCollectionTest.cs" />
     <Compile Include="System.Windows.Controls\ItemsControlTest.cs" />
     <Compile Include="System.Windows.Controls\MediaElementTest.cs" />
