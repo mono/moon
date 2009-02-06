@@ -24,7 +24,6 @@
 //
 
 using System;
-using System;
 using System.Net;
 using System.Windows;
 using System.Windows.Controls;
@@ -51,7 +50,7 @@ namespace MoonTest.System.Windows.Browser
 			HtmlDocument document = HtmlPage.Document;
 			bool isenabled = HtmlPage.IsEnabled;
 			plugin = HtmlPage.Plugin;
-			HtmlWindow window = HtmlPage.Window;
+			window = HtmlPage.Window;
 			content = plugin.GetProperty ("Content") as ScriptObject;
 
 			//bool ispopupon = HtmlPage.IsPopupWindowAllowed;
