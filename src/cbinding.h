@@ -67,16 +67,10 @@ Application *application_new (void);
 Application *application_get_current (void);
 
 /* @GeneratePInvoke */
-Surface *application_get_surface (Application *instance);
-
-/* @GeneratePInvoke */
 void application_register_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb);
 
 /* @GeneratePInvoke */
 void application_set_current (Application *current);
-
-/* @GeneratePInvoke */
-void application_set_surface (Application *instance, Surface *value);
 
 /**
  * ArcSegment

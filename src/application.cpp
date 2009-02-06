@@ -25,8 +25,6 @@ Application::Application ()
 	get_resource_cb = NULL;
 	
 	SetValue (Application::ResourcesProperty, Value::CreateUnref (new ResourceDictionary ()));
-	
-	surface = NULL;
 }
 
 Application::~Application ()
@@ -57,26 +55,6 @@ void
 Application::SetCurrent (Application *application)
 {
 	Deployment::GetCurrent()->SetCurrentApplication (application);
-}
-
-Surface*
-Application::GetSurface ()
-{
-	return surface;
-}
-
-void
-Application::SetSurface (Surface* value)
-{
-	if (surface) {
-		surface->unref ();
-		surface = NULL;
-	}
-
-	surface = value;
-
-	if (surface)
-		surface->ref ();
 }
 
 void

@@ -20,8 +20,6 @@ typedef void (*ApplyDefaultStyleCallback)(FrameworkElement *fwe, ManagedTypeInfo
 typedef void (*ApplyStyleCallback)(FrameworkElement *fwe, Style *style);
 typedef void *(*GetResourceCallback)(const char *name, int *size);
 
-class Surface;
-
 /* @SilverlightVersion="2" */
 /* @ManagedDependencyProperties=Manual */
 /* @Namespace=None */
@@ -43,11 +41,6 @@ public:
 	gpointer GetResource (const char *name, int *size);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	Surface *GetSurface ();
-	/* @GenerateCBinding,GeneratePInvoke */
-	void SetSurface (Surface *value);
-	
-	/* @GenerateCBinding,GeneratePInvoke */
 	static Application *GetCurrent ();
 	/* @GenerateCBinding,GeneratePInvoke */
 	static void SetCurrent (Application *current);
@@ -62,7 +55,6 @@ protected:
 	virtual ~Application ();
 
 private:
-	Surface *surface;
 	ApplyDefaultStyleCallback apply_default_style_cb;
 	ApplyStyleCallback apply_style_cb;
 	GetResourceCallback get_resource_cb;
