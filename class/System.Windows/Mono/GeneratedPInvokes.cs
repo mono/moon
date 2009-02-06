@@ -1655,13 +1655,5 @@ namespace Mono {
 			return s;
 		}
 
-		[DllImport ("moon")]
-		// Surface *application_get_surface ( *instance, Application *instance);
-		public extern static IntPtr application_get_surface (IntPtr instance, IntPtr instance);
-
-		[DllImport ("moon")]
-		// void application_set_surface ( *instance, Application *instance, Surface *value);
-		public extern static void application_set_surface (IntPtr instance, IntPtr instance, IntPtr value);
-
 	}
 }
