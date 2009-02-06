@@ -74,31 +74,37 @@ namespace System.Windows {
 		
 		public void Clear ()
 		{
-			NativeMethods.collection_clear (native);
+			if (IsReadOnly)
+				throw new InvalidOperationException ("the collection is readonly");
 
-			NotifyCollectionChangedEventHandler handler = ItemsChanged;
-			if (handler != null) {
-				handler (this, new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
-			}
+			ClearImpl ();
 		}
 		
 		public void RemoveAt (int index)
 		{
+			if (IsReadOnly)
+				throw new InvalidOperationException ("the collection is readonly");
 			RemoveAtImpl (index);
 		}
 
 		public void Add (T value)
 		{
+			if (IsReadOnly)
+				throw new InvalidOperationException ("the collection is readonly");
 			AddImpl (value);
 		}
 		
 		public void Insert (int index, T value)
 		{
+			if (IsReadOnly)
+				throw new InvalidOperationException ("the collection is readonly");
 			InsertImpl (index, value);
 		}
 		
 		public bool Remove (T value)
 		{
+			if (IsReadOnly)
+				throw new InvalidOperationException ("the collection is readonly");
 			return RemoveImpl (value);
 		}
 		
@@ -107,6 +113,8 @@ namespace System.Windows {
 				return GetItemImpl (index);
 			}
 			set {
+				if (IsReadOnly)
+					throw new InvalidOperationException ("the collection is readonly");
 				SetItemImpl (index, value);
 			}
 		}
@@ -119,83 +127,6 @@ namespace System.Windows {
 		public int IndexOf (T value)
 		{
 			return IndexOfImpl (value);
-		}
-
-
-		internal void AddImpl (T value)
-		{
-			if (NullCheck (NotifyCollectionChangedAction.Add, value))
-				throw new ArgumentNullException ();
-
-			Value v = Value.FromObject (value, true);
-			int index = NativeMethods.collection_add (native, ref v);
-			NativeMethods.value_free_value (ref v);
-
-			Notify (NotifyCollectionChangedAction.Add, value, index);
-		}
-
-		internal void InsertImpl (int index, T value)
-		{
-			if (NullCheck (NotifyCollectionChangedAction.Add, value))
-				throw new ArgumentNullException ();
-			if (index < 0)
-				throw new ArgumentOutOfRangeException ();
-
-			Value v = Value.FromObject (value, true);
-			NativeMethods.collection_insert (native, index, ref v);
-			NativeMethods.value_free_value (ref v);
-
-			Notify (NotifyCollectionChangedAction.Add, value, index);
-		}
-
-		internal bool RemoveImpl (T value)
-		{
-			if (NullCheck (NotifyCollectionChangedAction.Remove, value))
-				return false;
-
-			int index = IndexOfImpl (value);
-			if (index == -1)
-				return false;
-
-			NativeMethods.collection_remove_at (native, index);
-			Notify (NotifyCollectionChangedAction.Remove, value, index);
-			return true;
-		}
-
-		internal void RemoveAtImpl (int index)
-		{
-			T value = GetItemImpl (index);
-			NativeMethods.collection_remove_at (native, index);
-			Notify (NotifyCollectionChangedAction.Remove, value, index);
-		}
-
-		internal T GetItemImpl (int index)
-		{
-			IntPtr val = NativeMethods.collection_get_value_at (native, index);
-			if (val == IntPtr.Zero)
-				return default(T);
-			return (T) Value.ToObject (typeof (T), val);
-		}
-
-		internal void SetItemImpl (int index, T value)
-		{
-			T old = GetItemImpl (index);
-			Value v = Value.FromObject (value, true);
-			NativeMethods.collection_set_value_at (native, index, ref v);
-			NativeMethods.value_free_value (ref v);
-
-			Notify (NotifyCollectionChangedAction.Replace, value, old, index);
-		}
-
-		internal virtual int IndexOfImpl (T value)
-		{
-			if (value == null)
-				return -1;
-
-			Value v = Value.FromObject (value, true);
-			int rv = NativeMethods.collection_index_of (native, ref v);
-			NativeMethods.value_free_value (ref v);
-			return rv;
 		}
 
 		// most types that inherits from this throws ArgumentNullException when
@@ -422,9 +353,102 @@ namespace System.Windows {
 
 		public bool IsReadOnly {
 			get {
-				return false;
+				return IsReadOnlyImpl ();
 			}
 		}
 
+
+		// the internal implementations.
+
+		internal void ClearImpl ()
+		{
+			NativeMethods.collection_clear (native);
+
+			NotifyCollectionChangedEventHandler handler = ItemsChanged;
+			if (handler != null) {
+				handler (this, new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
+			}
+		}
+
+		internal void AddImpl (T value)
+		{
+			if (NullCheck (NotifyCollectionChangedAction.Add, value))
+				throw new ArgumentNullException ();
+
+			Value v = Value.FromObject (value, true);
+			int index = NativeMethods.collection_add (native, ref v);
+			NativeMethods.value_free_value (ref v);
+
+			Notify (NotifyCollectionChangedAction.Add, value, index);
+		}
+
+		internal void InsertImpl (int index, T value)
+		{
+			if (NullCheck (NotifyCollectionChangedAction.Add, value))
+				throw new ArgumentNullException ();
+			if (index < 0)
+				throw new ArgumentOutOfRangeException ();
+
+			Value v = Value.FromObject (value, true);
+			NativeMethods.collection_insert (native, index, ref v);
+			NativeMethods.value_free_value (ref v);
+
+			Notify (NotifyCollectionChangedAction.Add, value, index);
+		}
+
+		internal bool RemoveImpl (T value)
+		{
+			if (NullCheck (NotifyCollectionChangedAction.Remove, value))
+				return false;
+
+			int index = IndexOfImpl (value);
+			if (index == -1)
+				return false;
+
+			NativeMethods.collection_remove_at (native, index);
+			Notify (NotifyCollectionChangedAction.Remove, value, index);
+			return true;
+		}
+
+		internal void RemoveAtImpl (int index)
+		{
+			T value = GetItemImpl (index);
+			NativeMethods.collection_remove_at (native, index);
+			Notify (NotifyCollectionChangedAction.Remove, value, index);
+		}
+
+		internal T GetItemImpl (int index)
+		{
+			IntPtr val = NativeMethods.collection_get_value_at (native, index);
+			if (val == IntPtr.Zero)
+				return default(T);
+			return (T) Value.ToObject (typeof (T), val);
+		}
+
+		internal void SetItemImpl (int index, T value)
+		{
+			T old = GetItemImpl (index);
+			Value v = Value.FromObject (value, true);
+			NativeMethods.collection_set_value_at (native, index, ref v);
+			NativeMethods.value_free_value (ref v);
+
+			Notify (NotifyCollectionChangedAction.Replace, value, old, index);
+		}
+
+		internal virtual int IndexOfImpl (T value)
+		{
+			if (value == null)
+				return -1;
+
+			Value v = Value.FromObject (value, true);
+			int rv = NativeMethods.collection_index_of (native, ref v);
+			NativeMethods.value_free_value (ref v);
+			return rv;
+		}
+
+		internal virtual bool IsReadOnlyImpl ()
+		{
+			return false;
+		}
 	}
 }

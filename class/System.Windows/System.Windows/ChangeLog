@@ -1,3 +1,12 @@
+2009-02-05  Chris Toshok  <toshok@ximian.com>
+
+	* PresentationFrameworkCollection.cs: move all the *Impl methods
+	to the end, and add ClearImpl and IsReadOnlyImpl virtual methods.
+
+	have all public (non-*Impl) methods that modify the collection
+	check IsReadOnly and throw an exception if modifications are
+	performed and IsReadOnly == true.
+
 2009-02-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Application.cs:
