@@ -524,7 +524,7 @@ namespace MoonTest.System.Windows.Media
 				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(10, 5), Root));
 				Assert.AreEqual(0, hits.Count, "#1");
 				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(75, 5), Root));
-				Assert.AreEqual (0, hits.Count, "#2");
+				Assert.AreEqual (2, hits.Count, "#2");
 			});
 		}
 	}
