@@ -325,7 +325,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 		double sub_ar = sub_image->GetAspectRatio();
 
 		//render if the subimage viewport intersects with this viewport
-		LOG_MSI ("subimage #%d (%d, %d), vpo(%f %f) vpw %f\n", sub_image->id, sub_image->source->GetImageWidth (), sub_image->source->GetImageHeight (), 
+		LOG_MSI ("subimage #%d (%ld, %ld), vpo(%f %f) vpw %f\n", sub_image->id, sub_image->source->GetImageWidth (), sub_image->source->GetImageHeight (), 
 			sub_image->GetViewportOrigin ()->x, sub_image->GetViewportOrigin()->y, sub_image->GetViewportWidth ());
 
 		//expressing the subimage viewport in main viewport coordinates.
