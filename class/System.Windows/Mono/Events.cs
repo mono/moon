@@ -136,8 +136,7 @@ namespace Mono {
 			FrameworkElement e = (FrameworkElement)Helper.GCHandleFromIntPtr (closure).Target;
 			e.InvokeLoaded ();
 			
-			//FIXME: BrowserHost is now replaced by SilverlightHost.Content
-			BrowserHost.InvokeResize ();
+			Content.InvokeResize ();
 		}
 
 		static void mouse_leave_callback (IntPtr target, IntPtr calldata, IntPtr closure)

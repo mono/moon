@@ -1,3 +1,7 @@
+2009-02-06  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Events.cs (loaded_callback): Use Content to InvokeResize
+
 2009-02-06  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* GeneratedPInvokes.cs: Regenerated.
