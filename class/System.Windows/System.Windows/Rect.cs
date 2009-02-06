@@ -64,10 +64,9 @@ namespace System.Windows {
 			return String.Format ("{0},{1},{2},{3}", x, y, w, h);
 		}
 
-		[MonoTODO ("only calls ToString right now")]
 		public string ToString (IFormatProvider provider)
 		{
-			return ToString ();
+			return (this as IFormattable).ToString (null, provider);
 		}
 		
 		public double X {
@@ -215,10 +214,24 @@ namespace System.Windows {
 			return x.GetHashCode () ^ y.GetHashCode () ^ w.GetHashCode () ^ h.GetHashCode ();
 		}
 		
-		[MonoTODO ("only calls ToString right now")]
 		string System.IFormattable.ToString (string format, IFormatProvider provider)
 		{
-			return ToString ();
+			if (String.IsNullOrEmpty (format))
+				format = null;
+
+			if (provider != null) {
+				ICustomFormatter cp = (ICustomFormatter) provider.GetFormat (typeof (ICustomFormatter));
+				if (cp != null) {
+					return String.Format ("{0}{1}{2}{3}{4}{5}{6}", 
+						cp.Format (format, x, provider), cp.Format (null, ',', provider), 
+						cp.Format (format, y, provider), cp.Format (null, ',', provider), 
+						cp.Format (format, w, provider), cp.Format (null, ',', provider), 
+						cp.Format (format, h, provider));
+				}
+			}
+
+			return String.Format ("{0},{1},{2},{3}", x.ToString (format, provider), y.ToString (format, provider),
+				w.ToString (format, provider), h.ToString (format, provider));
 		}
 	}
 }

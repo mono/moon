@@ -51,7 +51,7 @@ namespace System.Windows {
 			
 		public override int GetHashCode ()
 		{
-			return ((int) x) ^ ((int) y);
+			return x.GetHashCode () ^ y.GetHashCode ();
 		}
 			
 		public override string ToString ()
@@ -59,10 +59,9 @@ namespace System.Windows {
 			return String.Format ("{0},{1}", x, y);
 		}
 
-		[MonoTODO ("simply returns ToString")]
 		public string ToString (IFormatProvider provider)
 		{
-			return ToString ();
+			return (this as IFormattable).ToString (null, provider);
 		}
 
 		public static bool operator == (Point point1, Point point2)
@@ -85,10 +84,20 @@ namespace System.Windows {
 			set { y = value; } 
 		}
 
-		[MonoTODO ("simply returns ToString")]
 		string System.IFormattable.ToString (string format, IFormatProvider provider)
 		{
-			return ToString ();
+			if (String.IsNullOrEmpty (format))
+				format = null;
+
+			if (provider != null) {
+				ICustomFormatter cp = (ICustomFormatter) provider.GetFormat (typeof (ICustomFormatter));
+				if (cp != null) {
+					return String.Format ("{0}{1}{2}", cp.Format (format, x, provider), 
+						cp.Format (null, ',', provider), cp.Format (format, y, provider));
+				}
+			}
+
+			return String.Format ("{0},{1}", x.ToString (format, provider), y.ToString (format, provider));
 		}
 	}
 }
