@@ -219,6 +219,7 @@ endif
 
 EXTRA_DIST = \
 	alpha-premul-table.inc \
+	morton-layout-table.inc \
 	zip/README \
 	zip/ChangeLogUnzip \
 	$(libmoon_include_headers)

@@ -1,5 +1,10 @@
 2009-02-06  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* morton-layout-table.inc: pre-computed table for Morton Layout 
+	indices.
+
+2009-02-06  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* multiscaleimage.cpp: fix the most annoying rendering issue for
 	subimages.
 
