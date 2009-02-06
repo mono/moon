@@ -218,6 +218,10 @@ namespace System.Windows.Controls {
 			if (presenter != null && presenter != item) {
 				Console.WriteLine (" + setting .Content");
 				presenter.Content = item;
+
+				if (ItemTemplate != null) {
+					presenter.ContentTemplate = ItemTemplate;
+				}
 			}
 		}
 
