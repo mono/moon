@@ -1,5 +1,11 @@
 2009-02-06  Alan McGovern  <alan.mcgovern@gmail.com>
 
+	* System.Windows.Data/BindingTest.cs:
+	* System.Windows/ResourceDictionaryTest.cs: Remove the
+	  moonlightbug attr as these pass
+
+2009-02-06  Alan McGovern  <alan.mcgovern@gmail.com>
+
 	* System.Windows.Media/VisualTreeHelperTest.cs: Add a
 	  moonlightbug attr to the failing test
 

@@ -648,7 +648,6 @@ Width=""100"" Height=""100"">
 		}
 		
 		[TestMethod]
-		[MoonlightBug]
 		public void XamlBindToClr()
 		{
 			Assert.Throws<XamlParseException>(delegate {
