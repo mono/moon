@@ -1,5 +1,10 @@
 2009-02-06  Alan McGovern  <alan.mcgovern@gmail.com>
 
+	* System.Windows.Media/VisualTreeHelperTest.cs: Add 8 more
+	  tests for FindElementsInHostCoordinates
+
+2009-02-06  Alan McGovern  <alan.mcgovern@gmail.com>
+
 	* System.Windows.Media/VisualTreeHelperTest.cs: Cosmetic - fix
 	  whitespacing
 

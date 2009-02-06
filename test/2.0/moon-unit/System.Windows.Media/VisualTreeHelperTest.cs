@@ -283,5 +283,126 @@ namespace MoonTest.System.Windows.Media
 			});
 		}
 		
+		[TestMethod]
+		[Asynchronous]
+		public void HitTest10()
+		{
+			Root.MaxWidth = 50;
+			Root.MaxHeight = 50;
+			Root.Children.Add(new Rectangle { Width = 100, Height = 100, Fill = new SolidColorBrush(Colors.Black) });
+			CreateAsyncTest(Root, delegate  {
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(75, 75), Root));
+				Assert.AreEqual(2, hits.Count, "#1");
+			});
+		}
+		
+		[TestMethod]
+		[Asynchronous]
+		public void HitTest11()
+		{
+			Root.Children.Add(new Rectangle { Width = 100, Height = 100,
+				Fill = new SolidColorBrush(Colors.Black),
+				Name = "A"
+			});
+			
+			Root.Children.Add(new Rectangle { Width = 100, Height = 100,
+				Fill = new SolidColorBrush(Colors.Black),
+				IsHitTestVisible = false
+			});
+			CreateAsyncTest(Root, delegate {
+				List<FrameworkElement> hits = VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 0), Root).Cast<FrameworkElement> ().ToList ();
+				Assert.AreEqual(2, hits.Count, "#1");
+				Assert.AreEqual ("A", hits[0].Name);
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void HitTest12()
+		{
+			Root.MaxWidth = 50;
+			Root.MaxHeight = 50;
+			CreateAsyncTest(Root, delegate {
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 0), Root));
+				Assert.AreEqual(0, hits.Count, "#1");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void HitTest13()
+		{
+			Root.Children.Add(new Rectangle { Width = 100, Height = 100,
+				Fill = new SolidColorBrush(Colors.Black),
+				IsHitTestVisible = false
+			});
+			CreateAsyncTest(Root, delegate {
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 0), Root));
+				Assert.AreEqual(0, hits.Count, "#1");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void HitTest14()
+		{
+			Root.IsHitTestVisible = false;
+			Root.Children.Add(new Rectangle { Width = 100, Height = 100, Fill = new SolidColorBrush(Colors.Black) });
+			CreateAsyncTest(Root, delegate {
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 0), Root));
+				Assert.AreEqual(0, hits.Count, "#1");
+			});
+		}
+
+
+		[TestMethod]
+		[Asynchronous]
+		public void HitTest15()
+		{
+			Canvas panel = new Canvas { Width = 1000, Height = 1000, Name = "A" };
+			panel.Children.Add(new Rectangle { Width = 100, Height = 100, Fill = new SolidColorBrush(Colors.Blue), Name = "A1" });
+			Root.Children.Add(panel);
+
+			panel = new Canvas { Width = 1000, Height = 1000, Name = "B", IsHitTestVisible = false };
+			panel.Children.Add(new Rectangle { Width = 100, Height = 100, Fill = new SolidColorBrush(Colors.Blue), Name = "B1" });
+			Root.Children.Add(panel);
+
+			CreateAsyncTest(Root, delegate {
+				List<FrameworkElement> hits = VisualTreeHelper.FindElementsInHostCoordinates(new Point(30, 30), Root).Cast<FrameworkElement>().ToList();
+				Assert.AreEqual(3, hits.Count, "#1");
+				Assert.AreEqual("A1", hits[0].Name, "#2");
+				Assert.AreEqual("A", hits[1].Name, "#3");
+				Assert.AreEqual("Root", hits[2].Name, "#4");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void HitTest16()
+		{
+			Canvas panel = new Canvas { Width = 1000, Height = 1000, Name = "B"};
+			panel.Children.Add(new Rectangle { Width = 100, Height = 100, IsHitTestVisible = false, Fill = new SolidColorBrush(Colors.Blue), Name = "B1" });
+			Root.Children.Add(panel);
+
+			CreateAsyncTest(Root, delegate {
+				List<FrameworkElement> hits = VisualTreeHelper.FindElementsInHostCoordinates(new Point(30, 30), Root).Cast<FrameworkElement>().ToList();
+				Assert.AreEqual(0, hits.Count, "#1");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void HitTest17()
+		{
+			Root.MaxWidth = 50;
+			Root.MaxHeight = 50;
+			Root.Children.Add(new Rectangle { Width = 100, Height = 100, Fill = new SolidColorBrush(Colors.Black) });
+			CreateAsyncTest(Root, delegate {
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(100, 100), Root));
+				Assert.AreEqual(0, hits.Count, "#1");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(100, 99), Root));
+				Assert.AreEqual(2, hits.Count, "#2");
+			});
+		}
 	}
 }
