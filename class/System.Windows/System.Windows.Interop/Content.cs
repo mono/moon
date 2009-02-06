@@ -31,8 +31,11 @@ using System;
 using System.Security;
 
 namespace System.Windows.Interop {
-	public sealed class Content
-	{
+
+	public sealed class Content {
+
+		static IntPtr surface = IntPtr.Zero;
+
 		public Content ()
 		{
 		}
@@ -103,6 +106,10 @@ namespace System.Windows.Interop {
 		
 		public event EventHandler Resized {
 			add {
+				if (surface == IntPtr.Zero) {
+					surface = NativeMethods.plugin_instance_get_surface (PluginHost.Handle);
+					Events.InitSurface (surface);
+				}
 				events.AddHandler (ResizeEvent, value);
 			}
 			remove {

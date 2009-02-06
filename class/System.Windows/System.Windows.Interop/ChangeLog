@@ -1,3 +1,7 @@
+2009-02-06  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Content.cs: Move some logic from (old) BrowserHost here
+
 2009-02-03  Geoff Norton  <gnorton@novell.com>
 
 	* Content.cs: Wire up Resize and FullScreenChange events.
