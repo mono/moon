@@ -93,6 +93,7 @@
     <Compile Include="System.Windows.Controls.Primitives\ThumbTest.cs" />
     <Compile Include="System.Windows.Controls.Primitives\ToggleButtonTest.cs" />
     <Compile Include="System.Windows.Controls\BorderTest.cs" />
+    <Compile Include="System.Windows.Controls\ButtonTest.cs" />
     <Compile Include="System.Windows.Controls\CanvasTest.cs" />
     <Compile Include="System.Windows.Controls\ColumnDefinitionTest.cs" />
     <Compile Include="System.Windows.Controls\ComboBoxTest.cs" />
@@ -115,9 +116,11 @@
     <Compile Include="System.Windows.Controls\StackPanelTest.cs" />
     <Compile Include="System.Windows.Controls\TextBlockTest.cs" />
     <Compile Include="System.Windows.Controls\TextBoxTest.cs" />
+    <Compile Include="System.Windows.Controls\UIElementCollectionTest.cs" />
     <Compile Include="System.Windows.Controls\UserControlTest.cs" />
     <Compile Include="System.Windows.Data\BindingTest.cs" />
     <Compile Include="System.Windows.Data\IValueConverterTest.cs" />
+    <Compile Include="System.Windows.Documents\FontSourceTest.cs" />
     <Compile Include="System.Windows.Documents\InlineTest.cs" />
     <Compile Include="System.Windows.Documents\LineBreakTest.cs" />
     <Compile Include="System.Windows.Documents\RunTest.cs" />
@@ -128,6 +131,7 @@
     <Compile Include="System.Windows.Interop\SilverlightHostTest.cs" />
     <Compile Include="System.Windows.Markup\XamlReaderTest.cs" />
     <Compile Include="System.Windows.Markup\XmlLanguageTest.cs" />
+    <Compile Include="System.Windows.Media.Animation\RepeatBehaviorTest.cs" />
     <Compile Include="System.Windows.Media.Animation\StoryboardTest.cs" />
     <Compile Include="System.Windows.Media.Imaging\BitmapImageTest.cs" />
     <Compile Include="System.Windows.Media\BrushTest.cs" />
