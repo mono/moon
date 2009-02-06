@@ -144,11 +144,12 @@ public:
 	VerticalAlignment GetVerticalAlignment ();
 	void SetVerticalAlignment (VerticalAlignment value);
 
-	virtual Value *GetLocalValue (DependencyProperty *property);
+	virtual Value *ReadLocalValue (DependencyProperty *property);
 	virtual void ClearValue (DependencyProperty *property, bool notify_listeners = true);
 
 	void InvalidateBinding (DependencyProperty *property, BindingExpressionBase *binding);
 	GHashTable *bindings;
+	
 protected:
 	Rect bounds_with_children;
 	GHashTable *styles;

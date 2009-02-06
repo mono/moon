@@ -1029,7 +1029,7 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 		return false;
 	}
 
-	Value *current_value = GetLocalValue (property);
+	Value *current_value = ReadLocalValue (property);
 
 	bool equal = false;
 	
@@ -1072,7 +1072,7 @@ DependencyObject::SetValueWithError (DependencyProperty *property, Value *value,
 		return false;
 	if (!property->Validate (this, value, error))
 		return false;
-		
+	
 	return SetValueWithErrorImpl (property, value, error);
 }
 
@@ -1162,20 +1162,20 @@ DependencyObject::UnregisterAllNamesRootedAt (NameScope *from_ns)
 }
 
 Value *
-DependencyObject::GetLocalValue (DependencyProperty *property)
+DependencyObject::ReadLocalValue (DependencyProperty *property)
 {
 	return providers[PropertyPrecedence_LocalValue]->GetPropertyValue (property);
 }
 
 Value *
-DependencyObject::GetLocalValueWithError (DependencyProperty *property, MoonError *error)
+DependencyObject::ReadLocalValueWithError (DependencyProperty *property, MoonError *error)
 {
 	if (!HasProperty (Type::INVALID, property, true)) {
 		Type *pt = Type::Find (property->GetOwnerType ());
 		MoonError::FillIn (error, MoonError::EXCEPTION, g_strdup_printf ("Cannot get the DependencyProperty %s.%s on an object of type %s", pt ? pt->GetName () : "<unknown>", property->GetName (), GetTypeName ()));
 		return NULL;
 	}
-	return GetLocalValue (property);
+	return ReadLocalValue (property);
 }
 
 Value *

@@ -160,6 +160,7 @@ void
 FrameworkElement::ClearValue (DependencyProperty *property, bool notify_listeners)
 {
 	BindingExpressionBase *cur_expr = GetBindingExpression (property);
+	
 	if (cur_expr)
 		ClearBindingExpression (property, cur_expr);
 	
@@ -167,13 +168,14 @@ FrameworkElement::ClearValue (DependencyProperty *property, bool notify_listener
 }
 
 Value *
-FrameworkElement::GetLocalValue (DependencyProperty *property)
+FrameworkElement::ReadLocalValue (DependencyProperty *property)
 {
 	Value *binding = (Value *) g_hash_table_lookup (bindings, property);
+	
 	if (binding)
 		return binding;
-
-	return UIElement::GetLocalValue (property);
+	
+	return UIElement::ReadLocalValue (property);
 }
 
 bool

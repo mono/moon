@@ -1,3 +1,10 @@
+2009-02-05  Jeffrey Stedfast  <fejj@novell.com>
+
+	* dependencyobject.cpp (DependencyObject::ReadLocalValue): Renamed
+	to be more consistent with the managed API.
+
+	* frameworkelement.cpp (FrameworkElement::ReadLocalValue): Same.
+
 2009-02-05  Alan McGovern  <alan.mcgovern@gmail.com>
 
 	* panel.h:

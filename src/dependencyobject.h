@@ -222,8 +222,8 @@ public:
 	Value *GetValueSkippingPrecedence (DependencyProperty *property, PropertyPrecedence toSkip);
 
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
-	Value *GetLocalValueWithError  (DependencyProperty *property, MoonError *error);
-	virtual Value *GetLocalValue (DependencyProperty *property);
+	Value *ReadLocalValueWithError (DependencyProperty *property, MoonError *error);
+	virtual Value *ReadLocalValue (DependencyProperty *property);
 	
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Value *GetValueNoDefaultWithError (DependencyProperty *property, MoonError *error);

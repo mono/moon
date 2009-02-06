@@ -934,18 +934,6 @@ dependency_object_find_name (DependencyObject *instance, const char *name, Type:
 }
 
 
-Value *
-dependency_object_get_local_value_with_error (DependencyObject *instance, DependencyProperty *property, MoonError *error)
-{
-	if (instance == NULL)
-		return NULL;
-	
-	if (error == NULL)
-		g_warning ("Moonlight: Called dependency_object_get_local_value_with_error () with error == NULL.");
-	return instance->GetLocalValueWithError (property, error);
-}
-
-
 const char *
 dependency_object_get_name (DependencyObject *instance)
 {
@@ -977,6 +965,18 @@ dependency_object_get_value_with_error (DependencyObject *instance, Type::Kind w
 	if (error == NULL)
 		g_warning ("Moonlight: Called dependency_object_get_value_with_error () with error == NULL.");
 	return instance->GetValueWithError (whatami, property, error);
+}
+
+
+Value *
+dependency_object_read_local_value_with_error (DependencyObject *instance, DependencyProperty *property, MoonError *error)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	if (error == NULL)
+		g_warning ("Moonlight: Called dependency_object_read_local_value_with_error () with error == NULL.");
+	return instance->ReadLocalValueWithError (property, error);
 }
 
 
