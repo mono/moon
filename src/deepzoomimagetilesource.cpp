@@ -115,6 +115,7 @@ DeepZoomImageTileSource::Init ()
 	parsed_callback = NULL;	
 	isCollection = false;
 	subimages = NULL;
+	nested = false;
 }
 
 DeepZoomImageTileSource::DeepZoomImageTileSource ()
@@ -122,9 +123,10 @@ DeepZoomImageTileSource::DeepZoomImageTileSource ()
 	Init ();
 }
 
-DeepZoomImageTileSource::DeepZoomImageTileSource (const char *uri)
+DeepZoomImageTileSource::DeepZoomImageTileSource (const char *uri, bool nested)
 {
 	Init ();
+	this->nested = nested;
 	SetValue (DeepZoomImageTileSource::UriSourceProperty, new Value (uri, true));
 }
 
@@ -312,8 +314,10 @@ void
 DeepZoomImageTileSource::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
 	if (args->property == DeepZoomImageTileSource::UriSourceProperty) {
-		downloaded = false;
-		Download ();
+		if (!nested) {
+			downloaded = false;
+			Download ();
+		}
 	}
 
 	if (args->property->GetOwnerType () != Type::DEEPZOOMIMAGETILESOURCE) {
@@ -509,7 +513,7 @@ end_element (void *data, const char *el)
 		case 2:
 			if (info->isCollection)
 				if (!strcmp ("I", el)) {
-					MultiScaleSubImage *subi = new MultiScaleSubImage (info->source->GetUriSource (), new DeepZoomImageTileSource (info->current_subimage->source));
+					MultiScaleSubImage *subi = new MultiScaleSubImage (info->source->GetUriSource (), new DeepZoomImageTileSource (info->current_subimage->source, TRUE));
 					subi->id = info->current_subimage->id;
 					subi->n = info->current_subimage->n;
 					subi->SetViewportOrigin (new Point (info->current_subimage->vp_x, info->current_subimage->vp_y));

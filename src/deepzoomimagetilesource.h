@@ -42,6 +42,7 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	void download_uri (const char* url);
 	bool downloaded;
 	char *format;
+	bool nested;
 	GList *display_rects;
 	GList *subimages;
 
@@ -65,7 +66,7 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	/* @GenerateCBinding,GeneratePInvoke */
 	DeepZoomImageTileSource ();
 
-	DeepZoomImageTileSource (const char *uri);
+	DeepZoomImageTileSource (const char *uri, bool nested = false);
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 

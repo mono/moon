@@ -5,6 +5,12 @@
 	Also go back to using the XamlElementInstance's for walking up the
 	tree, this allows us to parse before parenting items.
 
+2009-02-05  Geoff Norton  <gnorton@novell.com>
+
+	* deepzoomimagetilesource.cpp|h: We don't want to download all of
+	the sub images at creation time, so allow them to defer, otherwise
+	we might fire off hundreds of downloaders at once.
+
 2009-02-05  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Use the case sensitive Type::Find (fixes parsing
