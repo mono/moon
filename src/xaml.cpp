@@ -4694,10 +4694,9 @@ lookup_named_item (XamlElementInstance *inst, const char *name)
 	return NULL;
 }
 
-Value*
+Value *
 xaml_lookup_named_item (void *parser, void *instance, const char* name)
 {
-	XamlParserInfo *p = (XamlParserInfo *) parser;
 	XamlElementInstance *inst = (XamlElementInstance *) instance;
 
 	Value *res = lookup_named_item (inst, name);
