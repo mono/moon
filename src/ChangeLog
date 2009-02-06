@@ -5,6 +5,10 @@
 
 	* frameworkelement.cpp (FrameworkElement::ReadLocalValue): Same.
 
+2009-02-05  Geoff Norton  <gnorton@novell.com>
+
+	* multiscaleimage.cpp|h: We must emit this event on the main thread
+
 2009-02-05  Alan McGovern  <alan.mcgovern@gmail.com>
 
 	* panel.h:

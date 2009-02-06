@@ -41,6 +41,7 @@ class MultiScaleImage : public MediaBase {
 	cairo_user_data_key_t height_key;
 
 	void DownloaderComplete ();
+	static void EmitImageOpenSucceeded (EventObject *user_data);
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	void DownloaderFailed ();
 	static void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);

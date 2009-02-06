@@ -270,6 +270,14 @@ multi_scale_image_handle_parsed (void *userdata)
 	}
 	msi->Invalidate ();
 	LOG_MSI ("\nMSI::Emitting open suceeded\n");
+	msi->AddTickCall (MultiScaleImage::EmitImageOpenSucceeded);
+}
+
+void
+MultiScaleImage::EmitImageOpenSucceeded (EventObject *user_data)
+{
+	MultiScaleImage *msi = (MultiScaleImage *) user_data;
+	
 	msi->Emit (MultiScaleImage::ImageOpenSucceededEvent);
 }
 
