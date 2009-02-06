@@ -27,6 +27,7 @@
 //
 
 using Mono;
+using System.Reflection;
 using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -53,10 +54,31 @@ namespace System.Windows {
 		internal ArrangeOverrideCallback arrange_cb;
 		Dictionary<DependencyProperty, BindingExpressionBase> bindings = new Dictionary<DependencyProperty, BindingExpressionBase> ();
 
+		private bool OverridesLayoutMethod (string name)
+		{
+			MethodInfo method = GetType().GetMethod ("MeasureOverride", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+			if (method != null) {
+				if (method.DeclaringType != typeof (FrameworkElement)
+				    && method.IsFamily && method.IsVirtual
+				    && method.ReturnType == typeof (Size)) {
+
+					ParameterInfo[] ps = method.GetParameters();
+					if (ps.Length == 1
+					    && ps[0].ParameterType == typeof (Size)) {
+
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
 		private void Initialize ()
 		{
-			measure_cb = new MeasureOverrideCallback (InvokeMeasureOverride);
-			arrange_cb = new ArrangeOverrideCallback (InvokeArrangeOverride);
+			if (OverridesLayoutMethod ("MeasureOverride"))
+				measure_cb = new MeasureOverrideCallback (InvokeMeasureOverride);
+			if (true && OverridesLayoutMethod ("ArrangeOverride"))
+				arrange_cb = new ArrangeOverrideCallback (InvokeArrangeOverride);
 			NativeMethods.framework_element_register_managed_overrides (native, measure_cb, arrange_cb);
 
 			// we always need to attach this event to allow for Controls to load their default style
