@@ -1,3 +1,8 @@
+2009-02-06  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: fix the most annoying rendering issue for
+	subimages.
+
 2009-02-06  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Store a list of resource dictionaries on the xaml

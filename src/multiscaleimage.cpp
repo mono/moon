@@ -351,11 +351,6 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 
 
 		LOG_MSI ("Intersects with main viewport...rendering\n");
-		//now it goes like
-		// - figure which layers to render
-		// - get the tile, scale, crop
-		// - paint
-		// - profit !
 
 		int layers;
 		frexp (MAX (sub_image->source->GetImageWidth(), sub_image->source->GetImageHeight()), &layers);
@@ -379,7 +374,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			int i, j;
 			for (i = (int)((MAX(msi_x, sub_vp.x) - sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msi_x + msi_w, sub_vp.x + sub_vp.width) - sub_vp.x;i++) {
 				for (j = (int)((MAX(msi_y, sub_vp.y) - sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msi_y + msi_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - sub_vp.y;j++) {
-					LOG_MSI ("TILE %d %d %d %d\n", sub_image->id, from_layer, i, j);
+					//LOG_MSI ("TILE %d %d %d %d\n", sub_image->id, from_layer, i, j);
 					count++;
 					if (cache_contains (from_layer, i, j, sub_image->id, false))
 						found ++;
@@ -397,8 +392,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 		LOG_MSI ("rendering layers from %d to %d\n", from_layer, to_layer);
 		int layer_to_render = from_layer;
 		while (from_layer > 0 && layer_to_render <= to_layer) {
-			double v_tile_w = tile_width * ldexp (1.0, layers - from_layer) * sub_vp.width / (double)sub_image->source->GetImageWidth ();
-			double v_tile_h = tile_height * ldexp (1.0, layers - from_layer) * sub_vp.width / (double)sub_image->source->GetImageWidth ();
+			double v_tile_w = tile_width * ldexp (1.0, layers - layer_to_render) * sub_vp.width / (double)sub_image->source->GetImageWidth ();
+			double v_tile_h = tile_height * ldexp (1.0, layers - layer_to_render) * sub_vp.width / (double)sub_image->source->GetImageWidth ();
 
 			int i, j;
 			for (i = (int)((MAX(msi_x, sub_vp.x) - sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msi_x + msi_w, sub_vp.x + sub_vp.width) - sub_vp.x;i++) {
@@ -446,7 +441,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 #endif
 
 		if (downloading)
-			return;
+			continue;
 
 		//Get the next tile...
 		while (from_layer < optimal_layer) {
