@@ -20,6 +20,7 @@ namespace MoonTest.System.Windows.Controls
 	public class InkPresenterTest
 	{
 		[TestMethod]
+		[MoonlightBug ("Property value semantics still not right")]
 		public void ClearValueTest()
 		{
 			object strokes, new_strokes, rlv_strokes;
