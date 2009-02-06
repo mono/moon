@@ -1,3 +1,9 @@
+2009-02-06  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* RepeatBehavior.cs: Correct behavior for a default (empty) 
+	RepeatBehavior. Add missing validations for Count and Duration
+	based RepeatBehavior. Implement IFormattable
+
 2009-02-05  Jb Evain  <jbevain@novell.com>
 
 	* Storyboard.cs: TargetProperty now takes and returns

@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2007 Novell, Inc.
+// Copyright 2007, 2009 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -28,16 +28,20 @@
 namespace System.Windows.Media.Animation {
 
 	public struct RepeatBehavior : IFormattable {
-		const int COUNT = 1;
-		const int TIMESPAN = 2;
-		const int FOREVER = 3;
 
-		internal int kind;
+		// note: Count is default for the (default) empty ctor, so it needs to have a 0 value
+		enum RepeatBehaviorKind {
+			Count,
+			TimeSpan,
+			Forever
+		}
+
+		private RepeatBehaviorKind kind;
 		private int padding;
-		internal double count;
-		internal TimeSpan duration;
+		private double count;
+		private TimeSpan duration;
 
-		internal RepeatBehavior (int kind, double count, TimeSpan duration)
+		private RepeatBehavior (RepeatBehaviorKind kind, double count, TimeSpan duration)
 		{
 			this.kind = kind;
 			this.count = count;
@@ -47,51 +51,53 @@ namespace System.Windows.Media.Animation {
 
 		public RepeatBehavior (double count)
 		{
-			kind = COUNT;
+			if ((count < 0) || Double.IsNaN (count) || Double.IsInfinity (count))
+				throw new ArgumentOutOfRangeException ("count");
+
+			kind = RepeatBehaviorKind.Count;
 			this.count = count;
-			duration = new TimeSpan (0);
-			this.padding = 0;
+			duration = TimeSpan.Zero;
+			padding = 0;
 		}
 
 		public RepeatBehavior (TimeSpan duration)
 		{
-			kind = TIMESPAN;
+			if (duration.Ticks < 0)
+				throw new ArgumentOutOfRangeException ("duration");
+
+			kind = RepeatBehaviorKind.TimeSpan;
 			this.duration = duration;
 			count = 0;
-			this.padding = 0;
+			padding = 0;
 		}
 
 		public double Count {
 			get {
-				if (kind == COUNT)
+				if (kind == RepeatBehaviorKind.Count)
 					return count;
-				throw new Exception ("This RepeatBehavior does not contain a Count");
+				throw new InvalidOperationException ("This RepeatBehavior does not contain a Count");
 			}
 		}
 
 		public TimeSpan Duration {
 			get {
-				if (kind == TIMESPAN)
+				if (kind == RepeatBehaviorKind.TimeSpan)
 					return duration;
-				throw new Exception ("This RepeatBehavior does not contain a Duration");
+				throw new InvalidOperationException ("This RepeatBehavior does not contain a Duration");
 			}
 		}
 
 		public static RepeatBehavior Forever {
-			get { return new RepeatBehavior (FOREVER, 0, TimeSpan.Zero); }
+			get { return new RepeatBehavior (RepeatBehaviorKind.Forever, 0, TimeSpan.Zero); }
 		}
 
 
 		public bool HasCount {
-			get {
-				return kind == COUNT;
-			}
+			get { return kind == RepeatBehaviorKind.Count; }
 		}
 
 		public bool HasDuration {
-			get {
-				return kind == TIMESPAN;
-			}
+			get { return kind == RepeatBehaviorKind.TimeSpan; }
 		}
 
 		public override bool Equals (object value)
@@ -113,14 +119,14 @@ namespace System.Windows.Media.Animation {
 				return false;
 
 			switch (repeatBehavior1.kind) {
-			case COUNT:
+			case RepeatBehaviorKind.Count:
 				return repeatBehavior1.count == repeatBehavior2.count;
-			case TIMESPAN:
+			case RepeatBehaviorKind.TimeSpan:
 				return repeatBehavior1.duration == repeatBehavior2.duration;
-			case FOREVER:
+			case RepeatBehaviorKind.Forever:
 				return true;
 			default:
-				return false; // throw?
+				return false;
 			}
 		}
 
@@ -137,33 +143,52 @@ namespace System.Windows.Media.Animation {
 		public override int GetHashCode ()
 		{
 			switch (kind) {
-			case COUNT:
+			case RepeatBehaviorKind.Count:
 				return count.GetHashCode ();
-			case TIMESPAN:
+			case RepeatBehaviorKind.TimeSpan:
 				return duration.GetHashCode ();
-			case FOREVER:
-				return FOREVER.GetHashCode ();
+			case RepeatBehaviorKind.Forever:
+				return RepeatBehaviorKind.Forever.GetHashCode ();
 			default:
-				return base.GetHashCode (); // throw?
+				return base.GetHashCode ();
 			}
 		}
 		
 		public override string ToString ()
 		{
-			return base.ToString ();
+			switch (kind) {
+			case RepeatBehaviorKind.Forever:
+				return "Forever";
+			case RepeatBehaviorKind.Count:
+				return String.Format ("{0}x", count);
+			case RepeatBehaviorKind.TimeSpan:
+				return duration.ToString ();
+			default:
+				return base.ToString ();
+			}
 		}
 
 		public string ToString (IFormatProvider formatProvider)
 		{
-			throw new System.NotImplementedException ();
+			return (this as IFormattable).ToString (null, formatProvider);
 		}
 
-		// This method shows up in gui-compare, don't know how I can remove it
 		string System.IFormattable.ToString (string format, IFormatProvider formatProvider)
 		{
-			throw new System.NotImplementedException ();
-		}
+			if (kind != RepeatBehaviorKind.Count)
+				return ToString ();
 
-		
+			if (String.IsNullOrEmpty (format))
+				format = null;
+
+			if (formatProvider != null) {
+				ICustomFormatter cp = (ICustomFormatter) formatProvider.GetFormat (typeof (ICustomFormatter));
+				if (cp != null) {
+					return String.Format ("{0}x", cp.Format (format, count, formatProvider));
+				}
+			}
+
+			return String.Format ("{0}x", count.ToString (format, formatProvider));
+		}
 	}
 }
