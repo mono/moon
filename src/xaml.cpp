@@ -798,7 +798,7 @@ class DefaultNamespace : public XamlNamespace {
 
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el, const char **attr, bool create)
 	{
-		Type* t = Type::Find (el);
+		Type* t = Type::Find (el, false);
 		if (t)
 			return new XamlElementInfoNative (t);
 

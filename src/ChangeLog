@@ -1,3 +1,8 @@
+2009-02-05  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Use the case sensitive Type::Find (fixes parsing
+	Double).
+
 2009-02-05  Jeffrey Stedfast  <fejj@novell.com>
 
 	* dependencyobject.cpp (DependencyObject::ReadLocalValue): Renamed
