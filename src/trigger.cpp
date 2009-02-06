@@ -19,25 +19,12 @@
 EventTrigger::EventTrigger ()
 {
 	SetObjectType (Type::EVENTTRIGGER);
+	SetValue (EventTrigger::ActionsProperty, Value::CreateUnref (new TriggerActionCollection ()));
 	registered_event_id = -1;
 }
 
 EventTrigger::~EventTrigger ()
 {
-}
-
-Value *
-EventTrigger::GetDefaultValue (DependencyProperty *property)
-{
-	Value *value = NULL;
-	
-	if (property->GetOwnerType () != Type::EVENTTRIGGER)
-		return TriggerBase::GetDefaultValue (property);
-	
-	if (property == EventTrigger::ActionsProperty)
-		value = Value::CreateUnrefPtr (new TriggerActionCollection ());
-	
-	return value;
 }
 
 void

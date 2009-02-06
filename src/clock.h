@@ -602,7 +602,6 @@ class TimelineGroup : public Timeline {
  	/* @GenerateCBinding,GeneratePInvoke */
 	TimelineGroup ();
 	
-	virtual Value *GetDefaultValue (DependencyProperty *property);
 	virtual Clock *AllocateClock ();
 	virtual bool Validate ();
 	

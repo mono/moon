@@ -25,26 +25,12 @@
 Grid::Grid ()
 {
 	SetObjectType (Type::GRID);
+	SetValue (Grid::ColumnDefinitionsProperty, Value::CreateUnref (new ColumnDefinitionCollection ()));
+	SetValue (Grid::RowDefinitionsProperty, Value::CreateUnref (new RowDefinitionCollection ()));
 }
 
 Grid::~Grid ()
 {
-}
-
-Value *
-Grid::GetDefaultValue (DependencyProperty *property)
-{
-	Value *value = NULL;
-	
-	if (property->GetOwnerType () != Type::GRID)
-		return Panel::GetDefaultValue (property);
-	
-	if (property == Grid::ColumnDefinitionsProperty)
-		value = Value::CreateUnrefPtr (new ColumnDefinitionCollection ());
-	else if (property == Grid::RowDefinitionsProperty)
-		value = Value::CreateUnrefPtr (new RowDefinitionCollection ());
-	
-	return value;
 }
 
 void

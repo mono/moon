@@ -209,6 +209,11 @@ TextBlock::TextBlock ()
 	font->SetWeight (TEXTBLOCK_FONT_WEIGHT);
 	font->SetStyle (TEXTBLOCK_FONT_STYLE);
 	font->SetSize (TEXTBLOCK_FONT_SIZE);
+	
+	setvalue = false;
+	SetValue (TextBlock::ForegroundProperty, Value::CreateUnref (new SolidColorBrush ("black")));
+	SetValue (TextBlock::InlinesProperty, Value::CreateUnref (new InlineCollection ()));
+	setvalue = true;
 }
 
 TextBlock::~TextBlock ()
@@ -220,22 +225,6 @@ TextBlock::~TextBlock ()
 		downloader_abort (downloader);
 		downloader->unref ();
 	}
-}
-
-Value *
-TextBlock::GetDefaultValue (DependencyProperty *property)
-{
-	Value *value = NULL;
-	
-	if (property->GetOwnerType () != Type::TEXTBLOCK)
-		return FrameworkElement::GetDefaultValue (property);
-	
-	if (property == TextBlock::ForegroundProperty)
-		value = Value::CreateUnrefPtr (new SolidColorBrush ("black"));
-	else if (property == TextBlock::InlinesProperty)
-		value = Value::CreateUnrefPtr (new InlineCollection ());
-	
-	return value;
 }
 
 void

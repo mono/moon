@@ -160,7 +160,6 @@ class Grid : public Panel {
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
-	virtual Value *GetDefaultValue (DependencyProperty *property);
 	
 	virtual Size MeasureOverride (Size availableSize);
 	virtual Size ArrangeOverride (Size finalSize);

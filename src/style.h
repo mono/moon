@@ -34,8 +34,6 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	Style ();
 	
-	virtual Value *GetDefaultValue (DependencyProperty *property);
-	
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Seal ();
 	

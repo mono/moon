@@ -31,20 +31,6 @@ Application::~Application ()
 {
 }
 
-Value *
-Application::GetDefaultValue (DependencyProperty *property)
-{
-	Value *value = NULL;
-	
-	if (property->GetOwnerType () != Type::APPLICATION)
-		return DependencyObject::GetDefaultValue (property);
-	
-	if (property == Application::ResourcesProperty)
-		value = Value::CreateUnrefPtr (new ResourceDictionary ());
-	
-	return value;
-}
-
 Application*
 Application::GetCurrent ()
 {

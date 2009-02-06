@@ -1588,24 +1588,11 @@ Timeline::GetBeginTime ()
 TimelineGroup::TimelineGroup ()
 {
 	SetObjectType (Type::TIMELINEGROUP);
+	SetValue (TimelineGroup::ChildrenProperty, Value::CreateUnref (new TimelineCollection ()));
 }
 
 TimelineGroup::~TimelineGroup ()
 {
-}
-
-Value *
-TimelineGroup::GetDefaultValue (DependencyProperty *property)
-{
-	Value *value = NULL;
-	
-	if (property->GetOwnerType () != Type::TIMELINEGROUP)
-		return Timeline::GetDefaultValue (property);
-	
-	if (property == TimelineGroup::ChildrenProperty)
-		value = Value::CreateUnrefPtr (new TimelineCollection ());
-	
-	return value;
 }
 
 Clock *

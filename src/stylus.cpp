@@ -73,25 +73,11 @@ StylusPointCollection::GetBounds ()
 Stroke::Stroke ()
 {
 	SetObjectType (Type::STROKE);
+	SetValue (Stroke::StylusPointsProperty, Value::CreateUnref (new StylusPointCollection ()));
+	SetValue (Stroke::DrawingAttributesProperty, Value::CreateUnref (new DrawingAttributes ()));
 	old_bounds = Rect ();
 	bounds = Rect ();
 	dirty = Rect ();
-}
-
-Value *
-Stroke::GetDefaultValue (DependencyProperty *property)
-{
-	Value *value = NULL;
-	
-	if (property->GetOwnerType () != Type::STROKE)
-		return DependencyObject::GetDefaultValue (property);
-	
-	if (property == Stroke::DrawingAttributesProperty)
-		value = Value::CreateUnrefPtr (new DrawingAttributes ());
-	else if (property == Stroke::StylusPointsProperty)
-		value = Value::CreateUnrefPtr (new StylusPointCollection ());
-	
-	return value;
 }
 
 bool
@@ -842,20 +828,7 @@ DrawingAttributes::RenderWithoutDrawingAttributes (cairo_t *cr, StylusPointColle
 InkPresenter::InkPresenter ()
 {
 	SetObjectType (Type::INKPRESENTER);
-}
-
-Value *
-InkPresenter::GetDefaultValue (DependencyProperty *property)
-{
-	Value *value = NULL;
-	
-	if (property->GetOwnerType () != Type::INKPRESENTER)
-		return Canvas::GetDefaultValue (property);
-	
-	if (property == InkPresenter::StrokesProperty)
-		value = Value::CreateUnrefPtr (new StrokeCollection ());
-	
-	return value;
+	SetValue (InkPresenter::StrokesProperty, Value::CreateUnref (new StrokeCollection ()));
 }
 
 void

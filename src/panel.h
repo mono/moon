@@ -55,7 +55,6 @@ class Panel : public FrameworkElement {
 
 	virtual void ShiftPosition (Point p);
 	
-	virtual Value *GetDefaultValue (DependencyProperty *property);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	

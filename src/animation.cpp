@@ -1293,24 +1293,11 @@ LinearPointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress
 SplineDoubleKeyFrame::SplineDoubleKeyFrame ()
 {
 	SetObjectType (Type::SPLINEDOUBLEKEYFRAME);
+	DependencyObject::SetValue (SplineDoubleKeyFrame::KeySplineProperty, Value::CreateUnref (new KeySpline (0, 0, 1, 1)));
 }
 
 SplineDoubleKeyFrame::~SplineDoubleKeyFrame ()
 {
-}
-
-Value *
-SplineDoubleKeyFrame::GetDefaultValue (DependencyProperty *property)
-{
-	Value *value = NULL;
-	
-	if (property->GetOwnerType () != Type::SPLINEDOUBLEKEYFRAME)
-		return DoubleKeyFrame::GetDefaultValue (property);
-	
-	if (property == SplineDoubleKeyFrame::KeySplineProperty)
-		value = Value::CreateUnrefPtr (new KeySpline (0, 0, 1, 1));
-	
-	return value;
 }
 
 Value *
@@ -1337,24 +1324,11 @@ SplineDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgres
 SplineColorKeyFrame::SplineColorKeyFrame ()
 {
 	SetObjectType (Type::SPLINECOLORKEYFRAME);
+	DependencyObject::SetValue (SplineColorKeyFrame::KeySplineProperty, Value::CreateUnref (new KeySpline (0, 0, 1, 1)));
 }
 
 SplineColorKeyFrame::~SplineColorKeyFrame ()
 {
-}
-
-Value *
-SplineColorKeyFrame::GetDefaultValue (DependencyProperty *property)
-{
-	Value *value = NULL;
-	
-	if (property->GetOwnerType () != Type::SPLINECOLORKEYFRAME)
-		return ColorKeyFrame::GetDefaultValue (property);
-	
-	if (property == SplineColorKeyFrame::KeySplineProperty)
-		value = Value::CreateUnrefPtr (new KeySpline (0, 0, 1, 1));
-	
-	return value;
 }
 
 Value *
@@ -1381,24 +1355,11 @@ SplineColorKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress
 SplinePointKeyFrame::SplinePointKeyFrame ()
 {
 	SetObjectType (Type::SPLINEPOINTKEYFRAME);
+	DependencyObject::SetValue (SplinePointKeyFrame::KeySplineProperty, Value::CreateUnref (new KeySpline (0, 0, 1, 1)));
 }
 
 SplinePointKeyFrame::~SplinePointKeyFrame ()
 {
-}
-
-Value *
-SplinePointKeyFrame::GetDefaultValue (DependencyProperty *property)
-{
-	Value *value = NULL;
-	
-	if (property->GetOwnerType () != Type::SPLINEPOINTKEYFRAME)
-		return PointKeyFrame::GetDefaultValue (property);
-	
-	if (property == SplinePointKeyFrame::KeySplineProperty)
-		value = Value::CreateUnrefPtr (new KeySpline (0, 0, 1, 1));
-	
-	return value;
 }
 
 Value *
@@ -1566,24 +1527,11 @@ generic_keyframe_validator (KeyFrameCollection *col)
 DoubleAnimationUsingKeyFrames::DoubleAnimationUsingKeyFrames ()
 {
 	SetObjectType (Type::DOUBLEANIMATIONUSINGKEYFRAMES);
+	SetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty, Value::CreateUnref (new DoubleKeyFrameCollection ()));
 }
 
 DoubleAnimationUsingKeyFrames::~DoubleAnimationUsingKeyFrames ()
 {
-}
-
-Value *
-DoubleAnimationUsingKeyFrames::GetDefaultValue (DependencyProperty *property)
-{
-	Value *value = NULL;
-	
-	if (property->GetOwnerType () != Type::DOUBLEANIMATIONUSINGKEYFRAMES)
-		return DoubleAnimation::GetDefaultValue (property);
-	
-	if (property == DoubleAnimationUsingKeyFrames::KeyFramesProperty)
-		value = Value::CreateUnrefPtr (new DoubleKeyFrameCollection ());
-	
-	return value;
 }
 
 void
@@ -1687,24 +1635,11 @@ DoubleAnimationUsingKeyFrames::Validate ()
 ColorAnimationUsingKeyFrames::ColorAnimationUsingKeyFrames()
 {
 	SetObjectType (Type::COLORANIMATIONUSINGKEYFRAMES);
+	SetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty, Value::CreateUnref (new ColorKeyFrameCollection ()));
 }
 
 ColorAnimationUsingKeyFrames::~ColorAnimationUsingKeyFrames ()
 {
-}
-
-Value *
-ColorAnimationUsingKeyFrames::GetDefaultValue (DependencyProperty *property)
-{
-	Value *value = NULL;
-	
-	if (property->GetOwnerType () != Type::COLORANIMATIONUSINGKEYFRAMES)
-		return ColorAnimation::GetDefaultValue (property);
-	
-	if (property == ColorAnimationUsingKeyFrames::KeyFramesProperty)
-		value = Value::CreateUnrefPtr (new ColorKeyFrameCollection ());
-	
-	return value;
 }
 
 void
@@ -1805,24 +1740,11 @@ ColorAnimationUsingKeyFrames::Validate ()
 PointAnimationUsingKeyFrames::PointAnimationUsingKeyFrames()
 {
 	SetObjectType (Type::POINTANIMATIONUSINGKEYFRAMES);
+	SetValue (PointAnimationUsingKeyFrames::KeyFramesProperty, Value::CreateUnref (new PointKeyFrameCollection ()));
 }
 
 PointAnimationUsingKeyFrames::~PointAnimationUsingKeyFrames ()
 {
-}
-
-Value *
-PointAnimationUsingKeyFrames::GetDefaultValue (DependencyProperty *property)
-{
-	Value *value = NULL;
-	
-	if (property->GetOwnerType () != Type::POINTANIMATIONUSINGKEYFRAMES)
-		return PointAnimation::GetDefaultValue (property);
-	
-	if (property == PointAnimationUsingKeyFrames::KeyFramesProperty)
-		value = Value::CreateUnrefPtr (new PointKeyFrameCollection ());
-	
-	return value;
 }
 
 void

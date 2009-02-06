@@ -24,24 +24,11 @@
 Style::Style ()
 {
 	SetObjectType (Type::STYLE);
+	SetValue (Style::SettersProperty, Value::CreateUnref (new SetterBaseCollection()));
 }
 
 Style::~Style ()
 {
-}
-
-Value *
-Style::GetDefaultValue (DependencyProperty *property)
-{
-	Value *value = NULL;
-	
-	if (property->GetOwnerType () != Type::STYLE)
-		return DependencyObject::GetDefaultValue (property);
-	
-	if (property == Style::SettersProperty)
-		value = Value::CreateUnrefPtr (new SetterBaseCollection ());
-	
-	return value;
 }
 
 void

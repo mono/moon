@@ -180,7 +180,6 @@ class Stroke : public DependencyObject {
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
-	virtual Value *GetDefaultValue (DependencyProperty *property);
 	
 	//
 	// Property Accessors
@@ -233,7 +232,6 @@ class InkPresenter : public Canvas {
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
-	virtual Value *GetDefaultValue (DependencyProperty *property);
 	
 	virtual void ComputeBounds ();
 

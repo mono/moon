@@ -38,17 +38,7 @@ LocalPropertyValueProvider::~LocalPropertyValueProvider ()
 Value *
 LocalPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 {
-	MoonError err;
-	Value *value;
-	
-	if (!(value = (Value *) g_hash_table_lookup (obj->GetCurrentValues (), property))) {
-		if ((value = obj->GetDefaultValue (property))) {
-			g_hash_table_insert (obj->GetCurrentValues (), property, value);
-			obj->ProviderValueChanged (PropertyPrecedence_LocalValue, property, NULL, value, true, &err);
-		}
-	}
-		
-	return value;
+	return (Value *) g_hash_table_lookup (obj->GetCurrentValues (), property);
 }
 
 StylePropertyValueProvider::StylePropertyValueProvider (DependencyObject *obj)

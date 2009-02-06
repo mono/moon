@@ -55,27 +55,15 @@ UIElement::UIElement ()
 	ComputeLocalTransform ();
 	ComputeTotalRenderVisibility ();
 	ComputeTotalHitTestVisibility ();
+	
+	// XXX bad bad bad.  no virtual method calls in ctors
+	SetValue (UIElement::TriggersProperty, Value::CreateUnref (new TriggerCollection ()));
+	SetValue (UIElement::ResourcesProperty, Value::CreateUnref (new ResourceDictionary ()));
 }
 
 UIElement::~UIElement()
 {
 	delete dirty_region;
-}
-
-Value *
-UIElement::GetDefaultValue (DependencyProperty *property)
-{
-	Value *value = NULL;
-	
-	if (property->GetOwnerType () != Type::UIELEMENT)
-		return DependencyObject::GetDefaultValue (property);
-	
-	if (property == UIElement::ResourcesProperty)
-		value = Value::CreateUnrefPtr (new ResourceDictionary ());
-	else if (property == UIElement::TriggersProperty)
-		value = Value::CreateUnrefPtr (new TriggerCollection ());
-	
-	return value;
 }
 
 void

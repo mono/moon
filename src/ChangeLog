@@ -1,3 +1,9 @@
+2009-02-06  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Reverted previous commit as I goofed the unit test on
+	Windows. Once I fixed it, the logic I worked so hard to achieve
+	wasn't correct :(
+
 2009-02-06  Larry Ewing  <lewing@novell.com>
 
 	* frameworkelement.cpp (FrameworkElement::Arrange): don't align if

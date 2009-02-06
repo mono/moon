@@ -169,24 +169,11 @@ GeometryCollection::~GeometryCollection ()
 GeometryGroup::GeometryGroup ()
 {
 	SetObjectType (Type::GEOMETRYGROUP);
+	SetValue (GeometryGroup::ChildrenProperty, Value::CreateUnref (new GeometryCollection ()));
 }
 
 GeometryGroup::~GeometryGroup ()
 {
-}
-
-Value *
-GeometryGroup::GetDefaultValue (DependencyProperty *property)
-{
-	Value *value = NULL;
-	
-	if (property->GetOwnerType () != Type::GEOMETRYGROUP)
-		return Geometry::GetDefaultValue (property);
-	
-	if (property == GeometryGroup::ChildrenProperty)
-		value = Value::CreateUnrefPtr (new GeometryCollection ());
-	
-	return value;
 }
 
 void
@@ -533,26 +520,14 @@ PathFigure::PathFigure ()
 {
 	SetObjectType (Type::PATHFIGURE);
 	path = NULL;
+	
+	SetValue (PathFigure::SegmentsProperty, Value::CreateUnref (new PathSegmentCollection ()));
 }
 
 PathFigure::~PathFigure ()
 {
 	if (path)
 		moon_path_destroy (path);
-}
-
-Value *
-PathFigure::GetDefaultValue (DependencyProperty *property)
-{
-	Value *value = NULL;
-	
-	if (property->GetOwnerType () != Type::PATHFIGURE)
-		return DependencyObject::GetDefaultValue (property);
-	
-	if (property == PathFigure::SegmentsProperty)
-		value = Value::CreateUnrefPtr (new PathSegmentCollection ());
-	
-	return value;
 }
 
 void

@@ -31,8 +31,6 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	Application ();
 	
-	virtual Value *GetDefaultValue (DependencyProperty *property);
-	
 	/* @GenerateCBinding,GeneratePInvoke */
 	void RegisterCallbacks (ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb);
 	

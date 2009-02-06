@@ -629,7 +629,6 @@ class SplineDoubleKeyFrame : public DoubleKeyFrame {
 	SplineDoubleKeyFrame ();
 	
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
-	virtual Value *GetDefaultValue (DependencyProperty *property);
 	
 	//
 	// Property Accessors
@@ -653,7 +652,6 @@ class SplineColorKeyFrame : public ColorKeyFrame {
 	SplineColorKeyFrame ();
 	
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
-	virtual Value *GetDefaultValue (DependencyProperty *property);
 	
 	//
 	// Property Accessors
@@ -677,7 +675,6 @@ class SplinePointKeyFrame : public PointKeyFrame {
 	SplinePointKeyFrame ();
 
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
-	virtual Value *GetDefaultValue (DependencyProperty *property);
 	
 	//
 	// Property Accessors
@@ -705,7 +702,6 @@ class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
 	
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock *animationClock);
-	virtual Value *GetDefaultValue (DependencyProperty *property);
 	virtual void Resolve ();
 
 	virtual Duration GetNaturalDurationCore (Clock* clock);
@@ -737,7 +733,6 @@ class ColorAnimationUsingKeyFrames : public ColorAnimation {
 	
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock *animationClock);
-	virtual Value *GetDefaultValue (DependencyProperty *property);
 	virtual void Resolve ();
 	
 	virtual Duration GetNaturalDurationCore (Clock* clock);
@@ -769,7 +764,6 @@ class PointAnimationUsingKeyFrames : public PointAnimation {
 	
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock *animationClock);
-	virtual Value *GetDefaultValue (DependencyProperty *property);
 	virtual void Resolve ();
 
 	virtual Duration GetNaturalDurationCore (Clock *clock);

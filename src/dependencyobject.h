@@ -229,7 +229,6 @@ public:
 	Value *GetValueNoDefaultWithError (DependencyProperty *property, MoonError *error);
 	Value *GetValueNoDefault (DependencyProperty *property);
 	
-	virtual Value *GetDefaultValue (DependencyProperty *property) { return NULL; };
 	
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	virtual void ClearValue (DependencyProperty *property, bool notify_listeners, MoonError *error);

@@ -55,8 +55,6 @@ class EventTrigger : public TriggerBase {
 	/* @GenerateCBinding,GeneratePInvoke */
 	EventTrigger ();
 	
-	virtual Value *GetDefaultValue (DependencyProperty *property);
-	
 	void SetTarget (DependencyObject *target);
 	void RemoveTarget (DependencyObject *target);
 
