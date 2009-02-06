@@ -202,7 +202,7 @@ namespace System.Windows.Controls
 			}
 
 			// Remove the old content 
-			if (_elementContent != _elementText) {
+			if (_elementContent != null) {
 				_elementRoot.Children.Remove(_elementContent); 
 				_elementContent = null; 
 			}

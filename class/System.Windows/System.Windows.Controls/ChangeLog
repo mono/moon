@@ -1,3 +1,8 @@
+2009-02-06  Larry Ewing  <lewing@novell.com>
+
+	* ContentPresenter.cs: don't compare against _elementText compare
+	against null.
+
 2009-02-05  Chris Toshok  <toshok@ximian.com>
 
 	* ItemsControl.cs: implement basic databinding support - no
