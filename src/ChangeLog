@@ -1,3 +1,9 @@
+2009-02-06  Chris Toshok  <toshok@ximian.com>
+
+	* uielement.cpp (UIElement::SetSurface): if we have a subtree
+	object (which is a UIElement), set its surface too.  Fixes the
+	ContentPresenter textblocks in ItemsControl.
+
 2009-02-06  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* deepzoomimagetilesource.cpp: set subimage width/height

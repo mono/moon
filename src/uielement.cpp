@@ -96,6 +96,9 @@ UIElement::SetSurface (Surface *s)
 		GetSurface()->RemoveDirtyElement (this);
 	}
 
+	if (subtree_object != NULL && subtree_object->Is(Type::UIELEMENT))
+		subtree_object->SetSurface (s);
+
 	DependencyObject::SetSurface (s);
 }
 
