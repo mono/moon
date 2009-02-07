@@ -171,7 +171,7 @@ class TextBlock : public FrameworkElement {
 	void Layout (cairo_t *cr);
 	void Paint (cairo_t *cr);
 	
-	char *GetTextInternal ();
+	char *GetTextInternal (InlineCollection *inlines);
 	bool SetTextInternal (const char *text);
 	
 	void DownloaderComplete ();

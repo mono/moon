@@ -506,34 +506,33 @@ TextBlock::Paint (cairo_t *cr)
 }
 
 char *
-TextBlock::GetTextInternal ()
+TextBlock::GetTextInternal (InlineCollection *inlines)
 {
-	InlineCollection *inlines = GetInlines ();
+	const char *text;
 	GString *block;
+	Inline *item;
 	char *str;
+	
+	if (!inlines)
+		return g_strdup ("");
 	
 	block = g_string_new ("");
 	
-	if (inlines != NULL) {
-		const char *text;
-		Inline *item;
+	for (int i = 0; i < inlines->GetCount (); i++) {
+		item = inlines->GetValueAt (i)->AsInline ();
 		
-		for (int i = 0; i < inlines->GetCount (); i++) {
-			item = inlines->GetValueAt (i)->AsInline ();
+		switch (item->GetObjectType ()) {
+		case Type::RUN:
+			text = ((Run *) item)->GetText ();
 			
-			switch (item->GetObjectType ()) {
-			case Type::RUN:
-				text = ((Run *) item)->GetText ();
-				
-				if (text && text[0])
-					g_string_append (block, text);
-				break;
-			case Type::LINEBREAK:
-				g_string_append_c (block, '\n');
-				break;
-			default:
-				break;
-			}
+			if (text && text[0])
+				g_string_append (block, text);
+			break;
+		case Type::LINEBREAK:
+			g_string_append_c (block, '\n');
+			break;
+		default:
+			break;
 		}
 	}
 	
@@ -675,8 +674,10 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 	} else if (args->property == TextBlock::InlinesProperty) {
 		if (setvalue) {
 			// result of a change to the TextBlock.Inlines property
+			InlineCollection *inlines = args->new_value ? args->new_value->AsInlineCollection () : NULL;
+			
 			setvalue = false;
-			SetValue (TextBlock::TextProperty, Value (GetTextInternal (), true));
+			SetValue (TextBlock::TextProperty, Value (GetTextInternal (inlines), true));
 			setvalue = true;
 			dirty = true;
 		} else {
@@ -716,10 +717,11 @@ TextBlock::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj
 void
 TextBlock::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
+	InlineCollection *inlines = GetInlines ();
 	bool update_bounds = false;
 	bool update_text = false;
 	
-	if (col != GetInlines ()) {
+	if (col != inlines) {
 		FrameworkElement::OnCollectionChanged (col, args);
 		return;
 	}
@@ -745,7 +747,7 @@ TextBlock::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *arg
 	
 	if (update_text) {
 		setvalue = false;
-		SetValue (TextBlock::TextProperty, Value (GetTextInternal (), true));
+		SetValue (TextBlock::TextProperty, Value (GetTextInternal (inlines), true));
 		setvalue = true;
 	}
 	
@@ -758,7 +760,9 @@ TextBlock::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *arg
 void
 TextBlock::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
 {
-	if (col != GetInlines ()) {
+	InlineCollection *inlines = GetInlines ();
+	
+	if (col != inlines) {
 		FrameworkElement::OnCollectionItemChanged (col, obj, args);
 		return;
 	}
@@ -767,7 +771,7 @@ TextBlock::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Prop
 		if (args->property == Run::TextProperty) {
 			// update our TextProperty
 			setvalue = false;
-			SetValue (TextBlock::TextProperty, Value (GetTextInternal (), true));
+			SetValue (TextBlock::TextProperty, Value (GetTextInternal (inlines), true));
 			setvalue = true;
 		}
 		

@@ -1,3 +1,14 @@
+2009-02-07  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.cpp (TextBlock::GetTextInternal): Now takes an
+	InlineCollection argument.
+	(TextBlock::OnPropertyChanged): Pass args->new_value to
+	GetTextInternal() so that we avoid unnecesary recursion in the
+	case that we're being called as a result of a GetValue() of the
+	InlinesProperty.
+	(TextBlock::OnCollectionChanged): Updated.
+	(TextBlock::OnCollectionItemChanged): Updated.
+
 2009-02-06  Larry Ewing  <lewing@novell.com>
 
 	* shape.cpp (Shape::ArrangeOverride): take alignment into account
