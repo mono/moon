@@ -958,6 +958,33 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		public void DefaultDefinitions ()
+		{
+			Grid grid = new Grid ();
+			
+			grid.Children.Add (new Border ());
+
+			Assert.IsTrue (grid.ColumnDefinitions != null);
+			Assert.IsTrue (grid.RowDefinitions != null);
+			Assert.AreEqual (0, grid.ColumnDefinitions.Count);
+			Assert.AreEqual (0, grid.RowDefinitions.Count);
+
+			grid.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			
+			Assert.IsTrue (grid.ColumnDefinitions != null);
+			Assert.IsTrue (grid.RowDefinitions != null);
+			Assert.AreEqual (0, grid.ColumnDefinitions.Count);
+			Assert.AreEqual (0, grid.RowDefinitions.Count);
+
+			grid.Arrange (new Rect (0,0, grid.DesiredSize.Width, grid.DesiredSize.Height));
+
+			Assert.IsTrue (grid.ColumnDefinitions != null);
+			Assert.IsTrue (grid.RowDefinitions != null);
+			Assert.AreEqual (0, grid.ColumnDefinitions.Count);
+			Assert.AreEqual (0, grid.RowDefinitions.Count);
+		}
+
+		[TestMethod]
 		public void StaticMethods_Null ()
 		{
 			Assert.Throws<NullReferenceException> (delegate {
