@@ -1,10 +1,5 @@
 2009-02-06  Jeffrey Stedfast  <fejj@novell.com>
 
-	* control.cpp (Control::Control): Set a default Foreground brush,
-	fixes 12 unit tests.
-
-2009-02-06  Jeffrey Stedfast  <fejj@novell.com>
-
 	* dependencyobject.cpp (DependencyObject::SetValueWithErrorImpl):
 	We need to clear the LocalProvider value as well, if there is
 	one. Also, don't allow setting a Value* with a null

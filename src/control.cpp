@@ -27,8 +27,6 @@ Control::Control ()
 	applied_template = NULL;
 	template_root = NULL;
 	bindings = NULL;
-	
-	SetValue (Control::ForegroundProperty, Value::CreateUnref (new SolidColorBrush ("black")));
 }
 
 Control::~Control ()
