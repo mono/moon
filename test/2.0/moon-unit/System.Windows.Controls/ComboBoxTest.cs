@@ -124,7 +124,7 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual (double.PositiveInfinity, b.MaxDropDownHeight, "#5");
 			Assert.IsNull (b.SelectionBoxItem, "#6");
 			Assert.IsNull (b.SelectionBoxItemTemplate, "#7");
-			Assert.AreEqual (b.SelectedIndex, -1, "#8");
+			Assert.AreEqual (-1, b.SelectedIndex, "#8");
 		}
 
 		[TestMethod]
