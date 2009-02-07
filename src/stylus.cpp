@@ -880,12 +880,16 @@ InkPresenter::OnPropertyChanged (PropertyChangedEventArgs *args)
 
 		if (args->old_value) {
 			StrokeCollection *strokes = args->old_value->AsStrokeCollection();
-			Invalidate (strokes->GetBounds().Transform (&absolute_xform));
+			if (strokes)
+				Invalidate (strokes->GetBounds().Transform (&absolute_xform));
+			//XXX else ?
 		}
 
 		if (args->new_value) {
 			StrokeCollection *strokes = args->new_value->AsStrokeCollection();
-			Invalidate (strokes->GetBounds().Transform (&absolute_xform));
+			if (strokes)
+				Invalidate (strokes->GetBounds().Transform (&absolute_xform));
+			//XXX else ?
 		}
 
 		UpdateBounds ();
