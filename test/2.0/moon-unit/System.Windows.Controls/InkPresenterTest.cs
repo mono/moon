@@ -79,5 +79,27 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreNotEqual(DependencyProperty.UnsetValue, rlv_strokes, "ReadLocalValue after setting to null returns unset");
 #endif
 		}
+		
+		[TestMethod]
+		[MoonlightBug ("Property value 'reset' semantics still not right")]
+		public void ResetValueTest()
+		{
+			InkPresenter ink = new InkPresenter();
+			StrokeCollection strokes;
+			
+			strokes = ink.GetValue(InkPresenter.StrokesProperty) as StrokeCollection;
+			
+			// does setting the value to null reset the collection?
+			strokes.Add(new Stroke());
+			ink.Strokes = null;
+			strokes = ink.GetValue(InkPresenter.StrokesProperty) as StrokeCollection;
+			Assert.AreEqual(0, strokes.Count, "Nulled strokes not empty as expected");
+			
+			// does clearing the value reset the collection?
+			strokes.Add(new Stroke());
+			ink.ClearValue(InkPresenter.StrokesProperty);
+			strokes = ink.GetValue(InkPresenter.StrokesProperty) as StrokeCollection;
+			Assert.AreEqual(0, strokes.Count, "Cleared strokes not empty as expected");
+		}
 	}
 }
