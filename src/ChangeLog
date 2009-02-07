@@ -1,3 +1,8 @@
+2009-02-07  Larry Ewing  <lewing@novell.com>
+
+	* grid.cpp (Grid::MeasureOverride): don't give our whole
+	allocation to the first column.
+
 2009-02-07  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* stylus.cpp: Committed a variation of Geoff patch to fix

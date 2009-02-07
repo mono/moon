@@ -184,7 +184,20 @@ Grid::MeasureOverride (Size availableSize)
 			ColumnDefinition *coldef = columns->GetValueAt (c)->AsColumnDefinition ();
 			GridLength *width = coldef->GetWidth ();
 
-			double contribution = width->type != GridUnitTypePixel ? remaining.width : width->val;
+			double contribution = 0;
+			switch (width->type) {
+			case GridUnitTypeAuto:
+				/* XXX FIXME this is not correct if we only span auto */
+				if (colspan == 1)
+					contribution = remaining.width;
+				break;
+			case GridUnitTypePixel:
+				contribution = width->val;
+				break;
+			default:
+				contribution = remaining.width;
+				break;
+			}
 			
 			contribution = MAX (contribution, coldef->GetMinWidth ());
 			contribution = MIN (contribution, coldef->GetMaxWidth ());
@@ -198,7 +211,20 @@ Grid::MeasureOverride (Size availableSize)
 			GridLength *height = rowdef->GetHeight ();
 
 			double contribution = height->type != GridUnitTypePixel ? remaining.height : height->val;
-				
+			switch (height->type) {
+			case GridUnitTypeAuto:
+				/* XXX FIXME this is not correct if we only span auto */
+				if (rowspan == 1)
+					contribution = remaining.height;
+				break;
+			case GridUnitTypePixel:
+				contribution = height->val;
+				break;
+			default:
+				contribution = remaining.height;
+				break;
+			}
+
 			contribution = MAX (contribution, rowdef->GetMinHeight ());
 			contribution = MIN (contribution, rowdef->GetMaxHeight ());
 			
