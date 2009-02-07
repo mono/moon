@@ -483,11 +483,11 @@ start_element (void *data, const char *el, const char **attr)
 				int i;
 				for (i = 0; attr [i]; i+=2)
 					if (!strcmp ("X", attr[i]))
-						info->current_subimage->vp_x = strtod (attr[i+1], NULL);
+						info->current_subimage->vp_x = g_ascii_strtod (attr[i+1], NULL);
 					else if (!strcmp ("Y", attr[i]))
-						info->current_subimage->vp_y = strtod (attr[i+1], NULL);
+						info->current_subimage->vp_y = g_ascii_strtod (attr[i+1], NULL);
 					else if (!strcmp ("Width", attr[i]))
-						info->current_subimage->vp_w = strtod (attr[i+1], NULL);
+						info->current_subimage->vp_w = g_ascii_strtod (attr[i+1], NULL);
 					else
 						LOG_MSI ("\tunparsed attr %s: %s\n", attr[i], attr[i+1]);
 			} else {
