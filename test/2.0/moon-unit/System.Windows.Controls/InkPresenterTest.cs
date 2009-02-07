@@ -20,7 +20,7 @@ namespace MoonTest.System.Windows.Controls
 	public class InkPresenterTest
 	{
 		[TestMethod]
-		[MoonlightBug ("Property value semantics still not right")]
+		//[MoonlightBug ("Property value semantics still not right")]
 		public void ClearValueTest()
 		{
 			object strokes, new_strokes, rlv_strokes;
@@ -65,7 +65,6 @@ namespace MoonTest.System.Windows.Controls
 			rlv_strokes = ink.ReadLocalValue(InkPresenter.StrokesProperty);
 			Assert.AreEqual(strokes, rlv_strokes, "ReadLocalValue returned the strokes we just set on it");
 			
-#if false
 			// FIXME: currently causes us to crash because
 			// InkPresenter::OnPropertyChanged()'s
 			// new_value->AsStrokeCollection() returning
@@ -76,12 +75,11 @@ namespace MoonTest.System.Windows.Controls
 			
 			// check that ReadLocalValue still returns unset
 			rlv_strokes = ink.ReadLocalValue(InkPresenter.StrokesProperty);
-			Assert.AreNotEqual(DependencyProperty.UnsetValue, rlv_strokes, "ReadLocalValue after setting to null returns unset");
-#endif
+			Assert.AreEqual(DependencyProperty.UnsetValue, rlv_strokes, "ReadLocalValue after setting to null returns unset");
 		}
 		
 		[TestMethod]
-		[MoonlightBug ("Property value 'reset' semantics still not right")]
+		//[MoonlightBug ("Property value 'reset' semantics still not right")]
 		public void ResetValueTest()
 		{
 			InkPresenter ink = new InkPresenter();
