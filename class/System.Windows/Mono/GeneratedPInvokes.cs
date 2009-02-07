@@ -672,6 +672,22 @@ namespace Mono {
 		public extern static IntPtr double_key_frame_collection_new ();
 
 		[DllImport ("moon")]
+		// void downloader_request_free (DownloaderRequest *instance);
+		public extern static void downloader_request_free (IntPtr instance);
+
+		[DllImport ("moon")]
+		// void downloader_request_abort (DownloaderRequest *instance);
+		public extern static void downloader_request_abort (IntPtr instance);
+
+		[DllImport ("moon")]
+		// void downloader_response_free (DownloaderResponse *instance);
+		public extern static void downloader_response_free (IntPtr instance);
+
+		[DllImport ("moon")]
+		// void downloader_response_abort (DownloaderResponse *instance);
+		public extern static void downloader_response_abort (IntPtr instance);
+
+		[DllImport ("moon")]
 		// int downloader_response_get_response_status (DownloaderResponse *instance);
 		public extern static int downloader_response_get_response_status (IntPtr instance);
 

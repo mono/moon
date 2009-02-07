@@ -148,12 +148,6 @@ namespace Mono {
 		public delegate void HeaderVisitor (IntPtr name, IntPtr val);
 
 		[DllImport("moon")]
-		public extern static void downloader_request_abort (IntPtr downloader_request);
-		
-		[DllImport("moon")]
-		public extern static void downloader_request_destroy (IntPtr downloader_request);
-
-		[DllImport("moon")]
 		[return: MarshalAs (UnmanagedType.U1)]
 		public extern static bool downloader_request_get_response (IntPtr downloader_request, DownloaderResponseStartedDelegate started, DownloaderResponseAvailableDelegate available, DownloaderResponseFinishedDelegate finished, IntPtr context);
 
