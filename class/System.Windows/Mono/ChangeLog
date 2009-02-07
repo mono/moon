@@ -1,3 +1,12 @@
+2009-02-06  Jackson Harper  <jackson@ximian.com>
+
+	* Value.cs: Let BINDINGEXPRESSIONs be parsed as strings.
+	* ManagedXamlLoader.cs: If we are setting a template binding we
+	don't get a return value.
+	* MarkupExpressionParser.cs: Use an unmanaged method for getting
+	the template parent of an element.
+	* NativeMethods.cs: New method
+
 2009-02-06  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Events.cs (loaded_callback): Use Content to InvokeResize

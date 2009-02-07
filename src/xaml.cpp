@@ -107,6 +107,7 @@ static bool dependency_object_set_property (XamlParserInfo *p, XamlElementInstan
 static void dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child);
 static void dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
 static void value_type_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
+static bool handle_markup_in_managed (const char* attr_value);
 static bool handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, const char* attr_name, const char* attr_value, Value **value);
 static bool element_begins_buffering (const char* element);
 static bool is_managed_kind (Type::Kind kind);
@@ -4143,12 +4144,14 @@ start_parse:
 
 			Value *v = NULL;
 			bool need_setvalue = true;
-
+			bool need_managed = false;
 			if (attr[i+1][0] == '{' && attr[i+1][strlen(attr[i+1]) - 1] == '}') {
 				need_setvalue = handle_xaml_markup_extension (p, item, attr [i], attr [i+1], &v);
 
 				if (p->error_args)
 					return;
+
+				need_managed = handle_markup_in_managed (attr [i+1]);
 			}
 			
 			if (!need_setvalue)
@@ -4160,10 +4163,11 @@ start_parse:
 			Type::Kind propKind = prop->GetPropertyType ();
 			Type::Kind itemKind = item->info->GetKind();
 
-			if (is_managed_kind (propKind) || Type::Find (itemKind)->IsCustomType () || (v && is_managed_kind (v->GetKind ()))) {
+			if (need_managed || is_managed_kind (propKind) || Type::Find (itemKind)->IsCustomType () || (v && is_managed_kind (v->GetKind ()))) {
 				if (!v)
 					v = new Value (g_strdup (attr [i + 1]));
-				
+
+				printf ("setting property:  %s %s\n", prop->GetName (), attr [i+1]);
 				if (p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, NULL, item->GetManagedPointer (), item, item->GetParentPointer (), g_strdup (prop->GetName ()), v)) {
 					delete v;
 					continue;
@@ -4555,6 +4559,24 @@ create_binding_expression_from_markup (XamlParserInfo *p, XamlElementInstance *i
 	return expr;
 }
 
+static bool
+handle_markup_in_managed (const char* attr_value)
+{
+	XamlMarkupExtensionType type = XamlMarkupExtensionNone;
+	const char *inptr, *start = attr_value + 1; // skip the initial '{'
+	// Find the beginning of the extension name
+	while (*start && g_ascii_isspace (*start))
+		start++;
+	
+	// Find the end of the extension name
+	inptr = start;
+	while (*inptr && *inptr != '}' && !g_ascii_isspace (*inptr))
+		inptr++;
+	
+	type = xaml_markup_extension_type (start, inptr - start);
+
+	return type == XamlMarkupExtensionBinding || type == XamlMarkupExtensionTemplateBinding;
+}
 
 // return value = do we need to SetValue with the [Out] Value* ?
 //
@@ -4612,6 +4634,7 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 			return true;
 		}
 		break;
+/*
 	case XamlMarkupExtensionTemplateBinding:
 		template_parent = p->GetTemplateParent (item);
 		
@@ -4658,6 +4681,7 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 		}
 		// if create_binding_expression_from_markup returns NULL, it's already called parser_error
 		return false;
+*/
 	default:
 		return true;
 	}
@@ -4665,7 +4689,7 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 
 
 	
-static Value*
+static Value *
 lookup_named_item (XamlElementInstance *inst, const char *name)
 {
 	if (inst->element_type == XamlElementInstance::ELEMENT && Type::Find (inst->info->GetKind ())->IsSubclassOf (Type::FRAMEWORKELEMENT)) {
@@ -4684,7 +4708,7 @@ lookup_named_item (XamlElementInstance *inst, const char *name)
 	return NULL;
 }
 
-static Value*
+static Value *
 lookup_resource_dictionary (ResourceDictionary *rd, const char *name, bool *exists)
 {
 	*exists = false;
@@ -4719,6 +4743,14 @@ xaml_lookup_named_item (void *parser, void *instance, const char* name)
 	return res;
 }
 
+void *
+xaml_get_template_parent (void *parser, void *element_instance)
+{
+	XamlParserInfo *p = (XamlParserInfo *) p;
+	XamlElementInstance *item = (XamlElementInstance *) element_instance;
+
+	return p->GetTemplateParent (item);
+}
 
 void
 xaml_init (void)

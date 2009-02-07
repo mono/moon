@@ -270,10 +270,14 @@ namespace Mono.Xaml
 				return false;
 
 			MarkupExpressionParser p = new MarkupExpressionParser (dob, name, parser, target_data);
-			object o = p.ParseExpression (ref str_value);
+			string expression = str_value;
+			object o = p.ParseExpression (ref expression);
 			Binding binding = o as Binding;
 
-			if (binding == null && !MarkupExpressionParser.IsTemplateBinding (str_value))
+			if (MarkupExpressionParser.IsTemplateBinding (str_value))
+				return true;
+
+			if (binding == null)
 				return false;
 
 			DependencyProperty prop = DependencyProperty.Lookup (dob.GetKind (), name);

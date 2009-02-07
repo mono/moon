@@ -1,3 +1,9 @@
+2009-02-06  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp|h: Add a new method for retrieving the control template
+	parent of a xaml element instance (called from unmanaged).
+	- quick hack to force binding expressions to be parsed in managed.
+
 2009-02-06  Jeffrey Stedfast  <fejj@novell.com>
 
 	* keyboard.cpp (Keyboard::MapKeyValToKey): Map alternative names

@@ -6,6 +6,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Data;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 
 namespace Mono.Xaml {
@@ -52,17 +53,17 @@ namespace Mono.Xaml {
 
 		public static bool IsTemplateBinding (string expression)
 		{
-			return expression.StartsWith ("{TemplateBinding");
+			return Regex.IsMatch (expression, "{\\s*TemplateBinding");
 		}
 
 		public static bool IsStaticResource (string expression)
 		{
-			return expression.StartsWith ("{StaticResource");
+			return Regex.IsMatch (expression, "{\\s*StaticResource");
 		}
 
 		public static bool IsBinding (string expression)
 		{
-			return expression.StartsWith ("{Binding");
+			return Regex.IsMatch (expression, "{\\s*Binding");
 		}
 
 		public object ParseExpression (ref string expression)
@@ -80,7 +81,7 @@ namespace Mono.Xaml {
 
 				return ParseStaticResource (ref expression);
 			} else if (expression.StartsWith ("{TemplateBinding")) {
-				int len = "{StaticResource".Length;
+				int len = "{TemplateBinding".Length;
 				expression = expression.Substring (len, expression.Length - len);
 				expression = expression.TrimStart ();
 
@@ -138,7 +139,7 @@ namespace Mono.Xaml {
 		{
 			char next;
 			string prop = GetNextPiece (ref expression, out next);
-			FrameworkTemplate template = GetParentTemplate (target);
+			FrameworkTemplate template = GetParentTemplate ();
 
 			template.AddXamlBinding (target, attribute_name, prop);
 		}
@@ -151,38 +152,16 @@ namespace Mono.Xaml {
 			return o;
 		}
 
-		private FrameworkTemplate GetParentTemplate (DependencyObject item)
+		private FrameworkTemplate GetParentTemplate ()
 		{
-			FrameworkElement fe = item as FrameworkElement;
+			IntPtr template = NativeMethods.xaml_get_template_parent (parser, target_data);
 
-			if (fe == null) {
-				Console.Error.WriteLine ("Unable to lookup Template parents on non FrameworkElement types ({0})", item.GetType ());
-				return null;
-			}
-
-			if (fe.Parent == null)
+			if (template == IntPtr.Zero)
 				return null;
 
-			return GetTemplate (fe.Parent);
-		}
+			INativeDependencyObjectWrapper dob = NativeDependencyObjectHelper.FromIntPtr (template);
 
-		private FrameworkTemplate GetTemplate (DependencyObject item)
-		{
-			FrameworkTemplate template = item as FrameworkTemplate;
-			if (template != null)
-				return template;
-
-			FrameworkElement fe = item as FrameworkElement;
-
-			if (fe == null) {
-				Console.Error.WriteLine ("Unable to lookup Template parents on non FrameworkElement types ({0})", item.GetType ());
-				return null;
-			}
-
-			if (fe.Parent == null)
-				return null;
-
-			return GetTemplate (fe.Parent);
+			return dob as FrameworkTemplate;
 		}
 
 		private void HandleProperty (Binding b, string prop, ref string remaining)
