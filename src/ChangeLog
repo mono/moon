@@ -1,5 +1,11 @@
 2009-02-06  Larry Ewing  <lewing@novell.com>
 
+	* grid.cpp, grid.h: keep track of the automagical w/h make handle
+	it properly when alignment is not stretch.  Fixes leaf control
+	placement on "the moment".
+
+2009-02-06  Larry Ewing  <lewing@novell.com>
+
 	* type.cpp:
 	* playlist.cpp:
 	* enums.cpp (enum_from_str): use g_ascii_strcasecmp.

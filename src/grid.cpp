@@ -128,6 +128,7 @@ Grid::MeasureOverride (Size availableSize)
 
 	}
 	
+	magic = Size ();
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
 		if (child->GetVisibility () != VisibilityVisible)
@@ -214,16 +215,19 @@ Grid::MeasureOverride (Size availableSize)
 	for (int c = 0; c < col_count; c ++) {
 		grid_size.width += columns->GetValueAt (c)->AsColumnDefinition ()->GetActualWidth ();
 	}
-	
+
 	grid_size = grid_size.Max (GetWidth (), GetHeight ());
 	results = results.Min (grid_size);
 
-	if (free_col)
+	if (free_col) {
+		magic.width = columns->GetValueAt (0)->AsColumnDefinition ()->GetActualWidth ();
 		columns->unref ();
+	}
 
-	if (free_row)
+	if (free_row) {
+		magic.height = rows->GetValueAt (0)->AsRowDefinition ()->GetActualHeight ();
 		rows->unref ();
-
+	}
 	// now choose whichever is smaller, our chosen size or the availableSize.
 	return results;
 }
@@ -242,6 +246,7 @@ Grid::ArrangeOverride (Size finalSize)
 	if (col_count == 0) {
 		columns = new ColumnDefinitionCollection ();
 		ColumnDefinition *coldef = new ColumnDefinition ();
+		coldef->SetActualWidth (magic.width);
 		columns->Add (coldef);
 		coldef->unref ();
 		free_col = true;
@@ -251,6 +256,7 @@ Grid::ArrangeOverride (Size finalSize)
 	if (row_count == 0) {
 		rows = new RowDefinitionCollection ();
 		RowDefinition *rowdef = new RowDefinition ();
+		rowdef->SetActualHeight (magic.height);
 		rows->Add (rowdef);
 		rowdef->unref ();
 		free_row = true;
@@ -260,8 +266,8 @@ Grid::ArrangeOverride (Size finalSize)
 	Size requested = Size ();
 	Size star_size = Size ();
 	double row_stars = 0.0;
-	HorizontalAlignment horiz = free_col || !isnan (GetWidth ()) ? HorizontalAlignmentStretch : GetHorizontalAlignment ();
-	VerticalAlignment vert = free_row || !isnan (GetHeight ()) ? VerticalAlignmentStretch : GetVerticalAlignment ();
+	HorizontalAlignment horiz = !isnan (GetWidth ()) ? HorizontalAlignmentStretch : GetHorizontalAlignment ();
+	VerticalAlignment vert = !isnan (GetHeight ()) ? VerticalAlignmentStretch : GetVerticalAlignment ();
 
 	for (int i = 0; i < row_count; i ++) {
 		RowDefinition *rowdef = rows->GetValueAt (i)->AsRowDefinition ();
@@ -393,11 +399,15 @@ Grid::ArrangeOverride (Size finalSize)
 		child->Arrange (child_final);
 		Size child_arranged = child->GetRenderSize ();
 
-		if (free_col || GetHorizontalAlignment () == HorizontalAlignmentStretch || !isnan (GetWidth ()))
+		if (horiz == HorizontalAlignmentStretch)
 			arranged.width = MAX (child_final.x + child_final.width, finalSize.width);
+		else 
+			arranged.width = MAX (child_final.x + child_final.width, arranged.width);
 		    
-		if (free_row || GetVerticalAlignment () == VerticalAlignmentStretch || !isnan (GetHeight()))
+		if (vert == VerticalAlignmentStretch)
 			arranged.height = MAX (child_final.y + child_final.height, finalSize.height);
+		else
+			arranged.height = MAX (child_final.y + child_final.height, arranged.height);
 	}
 
 	if (free_col)

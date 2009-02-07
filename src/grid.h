@@ -135,6 +135,8 @@ class RowDefinitionCollection : public DependencyObjectCollection {
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
 class Grid : public Panel {
+	Size magic;
+
  protected:
 	virtual ~Grid ();
 
