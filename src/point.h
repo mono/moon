@@ -13,6 +13,7 @@
 
 #include <glib.h>
 #include <cairo.h>
+#include <math.h>
 
 /* @IncludeInKinds */
 struct Point {
@@ -46,7 +47,7 @@ public:
 
 	bool operator == (const Point &point)
 	{
-		return x == point.x && y == point.y;
+		return fabs (point.x-x) < DBL_EPSILON && fabs (point.y-y) < DBL_EPSILON;
 	}
 
 	Point Transform (cairo_matrix_t *matrix);

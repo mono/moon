@@ -70,7 +70,7 @@ struct Size {
 
 	bool operator == (const Size &size)
 	{
-		return size.width == height && size.height == height;
+		return fabs (size.width-width) < DBL_EPSILON && fabs (size.height-height) < DBL_EPSILON;
 	}
 
 	bool operator != (const Size &size)

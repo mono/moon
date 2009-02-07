@@ -11,6 +11,8 @@
 #ifndef __MOON_CORNERRADIUS_H__
 #define __MOON_CORNERRADIUS_H__
 
+#include <math.h>
+
 /* @SilverlightVersion="2" */
 /* @IncludeInKinds */
 struct CornerRadius {
@@ -40,7 +42,7 @@ struct CornerRadius {
 
 	bool operator == (const CornerRadius &corner)
 	{
-		return topLeft == corner.topLeft && bottomLeft == corner.bottomLeft && topRight == corner.topRight && bottomRight == corner.bottomRight;
+		return fabs (topLeft-corner.topLeft) < DBL_EPSILON && fabs (bottomLeft-corner.bottomLeft) < DBL_EPSILON && fabs(topRight-corner.topRight) < DBL_EPSILON && fabs(bottomRight-corner.bottomRight) < DBL_EPSILON; 
 	}
 
 	bool operator != (const CornerRadius &corner)

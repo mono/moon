@@ -67,7 +67,7 @@ struct Color {
 
 	bool operator== (const Color &v) const
 	{
-		return (r == v.r && g == v.g && b == v.b && a == v.a);
+		return (fabs (r-v.r) < DBL_EPSILON && fabs (g-v.g) < DBL_EPSILON && fabs (b-v.b) < DBL_EPSILON && fabs (a-v.a) < DBL_EPSILON);
 	}
 };
 

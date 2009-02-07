@@ -1,3 +1,12 @@
+2009-02-07  Geoff Norton  <gnorton@novell.com>
+
+	* color.h:
+	* cornerradius.h:
+	* point.h:
+	* rect.h:
+	* size.h: Account for an epsilon when comparing these structures
+	to avoid erroneously emitting false results.
+
 2009-02-07  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.cpp (TextBlock::GetTextInternal): Now takes an

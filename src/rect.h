@@ -191,7 +191,7 @@ struct Rect {
 
 	bool operator == (const Rect &rect)
 	{
-		return x == rect.x && y == rect.y && width == rect.width && height == rect.height;
+		return fabs(x-rect.x) < DBL_EPSILON && fabs(y-rect.y) < DBL_EPSILON && fabs(width-rect.width) < DBL_EPSILON && fabs(height-rect.height) < DBL_EPSILON;
 	}
 
 	bool operator != (const Rect &rect)
