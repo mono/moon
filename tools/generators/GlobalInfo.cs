@@ -84,6 +84,7 @@ class GlobalInfo : MemberInfo {
 				known_annotations.Add ("AlwaysChange", null);
 				known_annotations.Add ("Version", null);
 				known_annotations.Add ("PropertyType", null);
+				known_annotations.Add ("AutoCreateValue", null);
 				known_annotations.Add ("DefaultValue", null);
 				known_annotations.Add ("Access", null);
 				known_annotations.Add ("ManagedAccess", null);
