@@ -50,6 +50,7 @@ namespace System.Windows.Browser.Net
 		IntPtr downloader;
 		Uri uri;
 		long bytes_read;
+		bool aborted;
 		string method = "GET";
 		WebHeaderCollection headers = new WebHeaderCollection ();
 		BrowserHttpWebRequestStream request;
@@ -71,26 +72,40 @@ namespace System.Windows.Browser.Net
 			finished = new NativeMethods.DownloaderResponseFinishedDelegate (OnAsyncResponseFinishedSafe);
  			this.uri = uri;
 			managed = GCHandle.Alloc (this, GCHandleType.Normal);
+			aborted = false;
 		}
 
 		~BrowserHttpWebRequest ()
 		{
+			Abort ();
+
 			if (async_result != null)
 				async_result.Dispose ();
 
 			if (native == IntPtr.Zero)
 				return;
 
-			NativeMethods.downloader_request_destroy (native);
+			NativeMethods.downloader_request_free (native);
 		}
 
 		public override void Abort ()
 		{
 			if (native == IntPtr.Zero)
 				return;
+			
+			if (response != null)
+				response.InternalAbort ();
+
+			InternalAbort ();
+		}
+
+		internal void InternalAbort ()
+		{
+			if (aborted)
+				return;
 
 			NativeMethods.downloader_request_abort (native);
-
+			aborted = true;
 			managed.Free ();
 		}
 

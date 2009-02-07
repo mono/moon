@@ -1,3 +1,8 @@
+2009-02-07  Geoff Norton  <gnorton@novell.com>
+
+	* BrowserHttpWeb(Request|Response).cs: Clean up our finalizer/abort
+	semantics to avoid some crashes that could happen.
+
 2009-02-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* BrowserHttpWebRequest.cs: Ensure no exceptions reach native

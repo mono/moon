@@ -43,6 +43,7 @@ namespace System.Windows.Browser.Net
 		BrowserHttpWebRequest request;
 		IntPtr native;
 		Stream response;
+		bool aborted;
 
 		HttpStatusCode status_code;
 		string status_desc;
@@ -54,6 +55,7 @@ namespace System.Windows.Browser.Net
 			this.request = request;
 			this.native = native;
 			this.response = new MemoryStream ();
+			this.aborted = false;
 
 			if (native == IntPtr.Zero)
 				return;
@@ -65,6 +67,35 @@ namespace System.Windows.Browser.Net
 		{
 			if (native == IntPtr.Zero)
 				return;
+			
+			/* FIXME: Firefox will be releasing this object automatically but the managed side
+			 * really doesn't know when this will happen
+			 * Abort ();
+			 *
+			 * NativeMethods.downloader_response_free (native);
+			 */
+		}
+
+		public void Abort ()
+		{
+			if (native == IntPtr.Zero)
+				return;
+
+			if (request != null)
+				request.InternalAbort ();
+			
+			InternalAbort ();
+		}
+
+		internal void InternalAbort () {
+			if (aborted)
+				return;
+
+			/* FIXME: Firefox will be releasing this object automatically but the managed side
+			 * really doesn't know when this will happen
+			 * NativeMethods.downloader_response_abort (native);
+			 */
+			aborted = true;
 		}
 
 		void OnHttpHeader (IntPtr name, IntPtr value)
