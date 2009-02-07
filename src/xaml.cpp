@@ -4167,7 +4167,7 @@ start_parse:
 				if (!v)
 					v = new Value (g_strdup (attr [i + 1]));
 
-				printf ("setting property:  %s %s\n", prop->GetName (), attr [i+1]);
+				//printf ("setting property:  %s %s\n", prop->GetName (), attr [i+1]);
 				if (p->loader->SetProperty (p, p->top_element ? p->top_element->GetManagedPointer () : NULL, NULL, item->GetManagedPointer (), item, item->GetParentPointer (), g_strdup (prop->GetName ()), v)) {
 					delete v;
 					continue;
