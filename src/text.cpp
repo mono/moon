@@ -212,7 +212,6 @@ TextBlock::TextBlock ()
 	
 	setvalue = false;
 	SetValue (TextBlock::ForegroundProperty, Value::CreateUnref (new SolidColorBrush ("black")));
-	SetValue (TextBlock::InlinesProperty, Value::CreateUnref (new InlineCollection ()));
 	setvalue = true;
 }
 

@@ -1,3 +1,36 @@
+2009-02-06  Jeffrey Stedfast  <fejj@novell.com>
+
+	* dependencyobject.cpp (DependencyObject::SetValueWithErrorImpl):
+	We need to clear the LocalProvider value as well, if there is
+	one. Also, don't allow setting a Value* with a null
+	DependencyObject if it is an autocreate property.
+	(DependencyObject::ClearValue): Clear the LocalProvider value too.
+
+	* dependencyproperty.cpp (DependencyProperty::DependencyProperty):
+	Now takes another bool arg to specify whether it is allowed to
+	autocreate new DP values.
+	(DependencyProperty::Register): Updated.
+	(DependencyProperty::RegisterFull): Updated, now also takes an
+	autocreate arg.
+
+	* provider.cpp (LocalPropertyValueProvider::LocalPropertyValueProvider):
+	Now keeps its own local_values hash table.
+	(LocalPropertyValueProvider): Destroy our own local_values hash
+	table.
+	(LocalPropertyValueProvider::GetPropertyValue): This is now a
+	multi-step process. First we return a manually set value. If none
+	exist, we fall back to our local_values hash, and then to
+	autocreating a new value if the DependencyProperty is allowed to
+	do so.
+	(LocalPropertyValueProvider::ReadLocalValue): New method to return
+	the value in our local hash.
+	(LocalPropertyValueProvider::ClearValue): Clear the value from our
+	local hash.
+
+	* *.cpp (*::ctor): Remove calls to SetValue()
+
+	* *.h: Added AutoCreateValue where appropriate.
+
 2009-02-06  Larry Ewing  <lewing@novell.com>
 
 	* type.cpp:

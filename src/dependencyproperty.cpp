@@ -22,7 +22,7 @@
 /*
  *	DependencyProperty
  */
-DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator, bool is_custom)
+DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool autocreate, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator, bool is_custom)
 {
 	this->owner_type = owner_type;
 	this->hash_key = NULL;
@@ -31,6 +31,7 @@ DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name,
 	this->property_type = property_type;
 	if (default_value && default_value->Is(Type::DEPENDENCY_OBJECT))
 		default_value->AsDependencyObject()->Freeze();
+	this->autocreate = autocreate;
 	this->is_nullable = false;
 	this->is_attached = attached;
 	this->is_readonly = readonly;
@@ -169,7 +170,7 @@ DependencyProperty::Register (Type::Kind type, const char *name, Type::Kind vtyp
 {
 	g_return_val_if_fail (name != NULL, NULL);
 
-	return RegisterFull (type, name, NULL, vtype, false, false, false, NULL);
+	return RegisterFull (type, name, NULL, vtype, false, false, false, false, NULL);
 }
 
 //
@@ -181,7 +182,7 @@ DependencyProperty::Register (Type::Kind type, const char *name, Value *default_
 	g_return_val_if_fail (default_value != NULL, NULL);
 	g_return_val_if_fail (name != NULL, NULL);
 
-	return RegisterFull (type, name, default_value, default_value->GetKind (), false, false, false, NULL);
+	return RegisterFull (type, name, default_value, default_value->GetKind (), false, false, false, false, NULL);
 }
 
 //
@@ -196,7 +197,7 @@ DependencyProperty::Register (Type::Kind type, const char *name, Value *default_
 	g_return_val_if_fail (default_value != NULL, NULL);
 	g_return_val_if_fail (name != NULL, NULL);
 
-	return RegisterFull (type, name, default_value, vtype, false, false, false, NULL);
+	return RegisterFull (type, name, default_value, vtype, false, false, false, false, NULL);
 }
 
 DependencyProperty *
@@ -210,15 +211,15 @@ DependencyProperty::RegisterNullable (Type::Kind type, const char *name, Type::K
 }
 
 DependencyProperty *
-DependencyProperty::RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator)
+DependencyProperty::RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool autocreate, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator)
 {
-	return RegisterFull (Type::Find (type), name, default_value, vtype, attached, readonly, always_change, changed_callback, validator, false);
+	return RegisterFull (Type::Find (type), name, default_value, vtype, autocreate, attached, readonly, always_change, changed_callback, validator, false);
 }
 
 DependencyProperty *
 DependencyProperty::RegisterCustom (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback)
 {
-	return RegisterFull (Type::Find (type), name, default_value, vtype, attached, readonly, always_change, changed_callback, NULL, true);
+	return RegisterFull (Type::Find (type), name, default_value, vtype, false, attached, readonly, always_change, changed_callback, NULL, true);
 }
 
 DependencyProperty *
@@ -228,7 +229,7 @@ DependencyProperty::RegisterManagedProperty (const char *name, Type::Kind proper
 		default_value = NULL;
 	else
 		default_value = new Value (*default_value);
-	return DependencyProperty::RegisterFull (Type::Find(owner_type), name, default_value, property_type, attached, readonly, false, callback, NULL, true);
+	return DependencyProperty::RegisterFull (Type::Find(owner_type), name, default_value, property_type, false, attached, readonly, false, callback, NULL, true);
 }
 
 //
@@ -237,14 +238,14 @@ DependencyProperty::RegisterManagedProperty (const char *name, Type::Kind proper
 // stored in the dependency property is of type @vtype
 //
 DependencyProperty *
-DependencyProperty::RegisterFull (Type *type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator, bool is_custom)
+DependencyProperty::RegisterFull (Type *type, const char *name, Value *default_value, Type::Kind vtype, bool autocreate, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator, bool is_custom)
 {
 	DependencyProperty *property;
 	
 	if (type == NULL)
 		return NULL;
 	
-	property = new DependencyProperty (type->GetKind (), name, default_value, vtype, attached, readonly, always_change, changed_callback, validator, is_custom);
+	property = new DependencyProperty (type->GetKind (), name, default_value, vtype, autocreate, attached, readonly, always_change, changed_callback, validator, is_custom);
 	
 	type->AddProperty (property);
 	

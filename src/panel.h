@@ -33,7 +33,7 @@ class Panel : public FrameworkElement {
  public:
  	/* @PropertyType=Brush,GenerateAccessors */
 	static DependencyProperty *BackgroundProperty;
- 	/* @PropertyType=UIElementCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
+ 	/* @PropertyType=UIElementCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *ChildrenProperty;
 	
  	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */

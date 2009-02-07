@@ -1028,10 +1028,13 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 		MoonError::FillIn (error, MoonError::UNAUTHORIZED_ACCESS, "Cannot set value on frozen DependencyObject");
 		return false;
 	}
-
-	Value *current_value = ReadLocalValue (property);
-
+	
+	LocalPropertyValueProvider *local = (LocalPropertyValueProvider *) providers[PropertyPrecedence_LocalValue];
+	Value *current_value;
 	bool equal = false;
+	
+	if (!(current_value = ReadLocalValue (property)))
+		current_value = local->ReadLocalValue (property);
 	
 	if (current_value != NULL && value != NULL) {
 		equal = !property->AlwaysChange() && (*current_value == *value);
@@ -1040,10 +1043,20 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 	}
 
 	if (!equal) {
-		Value *new_value = value ? new Value (*value) : NULL;
+		Value *new_value;
 		
-		// store the new value in the hash
-		g_hash_table_insert (current_values, property, new_value);
+		// remove the old value
+		g_hash_table_remove (current_values, property);
+		local->ClearValue (property);
+		
+		if (value && (!property->AutoCreate () || !value->Is (Type::DEPENDENCY_OBJECT) || value->AsDependencyObject () != NULL))
+			new_value = new Value (*value);
+		else
+			new_value = NULL;
+		
+		// replace it with the new value
+		if (new_value)
+			g_hash_table_insert (current_values, property, new_value);
 		
 		ProviderValueChanged (PropertyPrecedence_LocalValue, property, current_value, new_value, true, error);
 		
@@ -1376,8 +1389,12 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 void
 DependencyObject::ClearValue (DependencyProperty *property, bool notify_listeners, MoonError *error)
 {
-	Value *old_local_value = providers[PropertyPrecedence_LocalValue]->GetPropertyValue (property);
-
+	LocalPropertyValueProvider *local = (LocalPropertyValueProvider *) providers[PropertyPrecedence_LocalValue];
+	Value *old_local_value;
+	
+	if (!(old_local_value = ReadLocalValue (property)))
+		old_local_value = local->ReadLocalValue (property);
+	
 	if (old_local_value == NULL) {
 		// there wasn't a local value set.  don't do anything
 		return;
@@ -1396,9 +1413,10 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 			dob->SetSurface (NULL);
 		}
 	}
-
+	
 	g_hash_table_remove (current_values, property);
-
+	local->ClearValue (property);
+	
 	// this is... yeah, it's disgusting
 	for (int p = PropertyPrecedence_LocalValue + 1; p < PropertyPrecedence_Count; p ++) {
 		if (providers[p])

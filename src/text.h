@@ -194,7 +194,7 @@ class TextBlock : public FrameworkElement {
 	static DependencyProperty *FontWeightProperty;
  	/* @PropertyType=Brush,GenerateAccessors */
 	static DependencyProperty *ForegroundProperty;
- 	/* @PropertyType=InlineCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
+ 	/* @PropertyType=InlineCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *InlinesProperty;
  	/* @PropertyType=string,GenerateAccessors */
 	static DependencyProperty *TextProperty;

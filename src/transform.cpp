@@ -271,7 +271,6 @@ MatrixTransform::UpdateTransform ()
 TransformGroup::TransformGroup ()
 {
 	SetObjectType (Type::TRANSFORMGROUP);
-	SetValue (TransformGroup::ChildrenProperty, Value::CreateUnref (new TransformCollection ()));
 }
 
 void

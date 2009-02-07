@@ -407,11 +407,11 @@ public:
 	// in 2.0 these properties are actually in FrameworkElement
  	/* @PropertyType=MouseCursor,DefaultValue=MouseCursorDefault,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=Cursor,ManagedFieldAccess=Internal,GenerateAccessors,Validator=CursorValidator */
 	static DependencyProperty *CursorProperty;
- 	/* @PropertyType=ResourceDictionary,ManagedDeclaringType=FrameworkElement,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
+ 	/* @PropertyType=ResourceDictionary,ManagedDeclaringType=FrameworkElement,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *ResourcesProperty;
  	/* @PropertyType=string,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=object,GenerateAccessors */
 	static DependencyProperty *TagProperty;
- 	/* @PropertyType=TriggerCollection,ManagedDeclaringType=FrameworkElement,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
+ 	/* @PropertyType=TriggerCollection,ManagedDeclaringType=FrameworkElement,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *TriggersProperty;
 	
 	//

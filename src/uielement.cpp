@@ -55,10 +55,6 @@ UIElement::UIElement ()
 	ComputeLocalTransform ();
 	ComputeTotalRenderVisibility ();
 	ComputeTotalHitTestVisibility ();
-	
-	// XXX bad bad bad.  no virtual method calls in ctors
-	SetValue (UIElement::TriggersProperty, Value::CreateUnref (new TriggerCollection ()));
-	SetValue (UIElement::ResourcesProperty, Value::CreateUnref (new ResourceDictionary ()));
 }
 
 UIElement::~UIElement()

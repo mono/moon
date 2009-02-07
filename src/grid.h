@@ -141,13 +141,13 @@ class Grid : public Panel {
  public:
  	/* @PropertyType=gint32,DefaultValue=0,Attached,GenerateAccessors,Validator=PositiveIntValidator */
 	static DependencyProperty *ColumnProperty;
-	/* @PropertyType=ColumnDefinitionCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
+	/* @PropertyType=ColumnDefinitionCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *ColumnDefinitionsProperty;
  	/* @PropertyType=gint32,DefaultValue=1,Attached,GenerateAccessors,Validator=IntGreaterThanZeroValidator */
 	static DependencyProperty *ColumnSpanProperty;
  	/* @PropertyType=gint32,DefaultValue=0,Attached,GenerateAccessors,Validator=PositiveIntValidator */
 	static DependencyProperty *RowProperty;
-	/* @PropertyType=RowDefinitionCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
+	/* @PropertyType=RowDefinitionCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *RowDefinitionsProperty;
  	/* @PropertyType=gint32,DefaultValue=1,Attached,GenerateAccessors,Validator=IntGreaterThanZeroValidator */
 	static DependencyProperty *RowSpanProperty;
