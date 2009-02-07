@@ -1,5 +1,10 @@
 2009-02-06  Larry Ewing  <lewing@novell.com>
 
+	* xaml.cpp (value_from_str): replace use g_ascii_strcasecmp
+	everywhere.
+
+2009-02-06  Larry Ewing  <lewing@novell.com>
+
 	* control.cpp (Control::Control): remove bad setting of
 	foreground.
 

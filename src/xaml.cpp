@@ -2197,7 +2197,7 @@ time_span_from_str (const char *str, TimeSpan *res)
 bool
 repeat_behavior_from_str (const char *str, RepeatBehavior *res)
 {
-	if (!g_strcasecmp ("Forever", str)) {
+	if (!g_ascii_strcasecmp ("Forever", str)) {
 		*res = RepeatBehavior::Forever;
 		return true;
 	}
@@ -2241,12 +2241,12 @@ repeat_behavior_from_str (const char *str, RepeatBehavior *res)
 bool
 duration_from_str (const char *str, Duration *res)
 {
-	if (!g_strcasecmp ("Automatic", str)) {
+	if (!g_ascii_strcasecmp ("Automatic", str)) {
 		*res = Duration::Automatic;
 		return true;
 	}
 
-	if (!g_strcasecmp ("Forever", str)) {
+	if (!g_ascii_strcasecmp ("Forever", str)) {
 		*res = Duration::Forever;
 		return true;
 	}
@@ -2262,12 +2262,12 @@ duration_from_str (const char *str, Duration *res)
 bool
 keytime_from_str (const char *str, KeyTime *res)
 {
-	if (!g_strcasecmp ("Uniform", str)) {
+	if (!g_ascii_strcasecmp ("Uniform", str)) {
 		*res = KeyTime::Uniform;
 		return true;
 	}
 
-	if (!g_strcasecmp ("Paced", str)) {
+	if (!g_ascii_strcasecmp ("Paced", str)) {
 		*res = KeyTime::Paced;
 		return true;
 	}
@@ -2352,7 +2352,7 @@ grid_length_from_str (const char *str, GridLength *grid_length)
 	}
 
 	// unit tests shows that "Auto", "auto", "aUtO"... all works
-	if (!strcasecmp (str, "Auto")) {
+	if (!g_ascii_strcasecmp (str, "Auto")) {
 		*grid_length = GridLength ();
 		return true;
 	}
@@ -2900,7 +2900,7 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 		
 		if (errno || endptr == str || *endptr) {
 			if ((!strcmp (prop_name, "Width") || !strcmp (prop_name, "Height"))
-			    && !strcasecmp (str, "Auto"))
+			    && !g_ascii_strcasecmp (str, "Auto"))
 				d = NAN;
 			else 
 				return false;
