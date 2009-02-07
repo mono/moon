@@ -75,7 +75,7 @@ namespace MoonTest.System.Windows.Controls
 			
 			// check that ReadLocalValue returns a new collection
 			rlv_strokes = ink.ReadLocalValue(InkPresenter.StrokesProperty);
-			Assert.IsTrue(rlv_strokes is StrokeCollection, rlv_strokes, "ReadLocalValue after setting to null returns a collection");
+			Assert.IsTrue(rlv_strokes is StrokeCollection, "ReadLocalValue after setting to null returns a collection");
 		}
 		
 		[TestMethod]
