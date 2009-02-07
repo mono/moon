@@ -1,3 +1,8 @@
+2009-02-06  Larry Ewing  <lewing@novell.com>
+
+	* control.cpp (Control::Control): remove bad setting of
+	foreground.
+
 2009-02-06  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp|h: Add a new method for retrieving the control template

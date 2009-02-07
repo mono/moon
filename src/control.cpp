@@ -27,7 +27,6 @@ Control::Control ()
 	applied_template = NULL;
 	template_root = NULL;
 	bindings = NULL;
-	SetForeground (new SolidColorBrush ("black"));
 }
 
 Control::~Control ()
