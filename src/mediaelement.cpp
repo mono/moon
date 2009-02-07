@@ -361,6 +361,9 @@ MediaElement::MediaElement ()
 	Reinitialize (false);
 	
 	mplayer = new MediaPlayer (this);
+	
+	SetValue (MediaElement::AttributesProperty, Value::CreateUnref (new MediaAttributeCollection ()));		
+	SetValue (MediaElement::MarkersProperty, Value::CreateUnref (new TimelineMarkerCollection ()));
 }
 
 MediaElement::~MediaElement ()

@@ -54,16 +54,11 @@ public:
 };
 
 class LocalPropertyValueProvider : public PropertyValueProvider {
-	GHashTable *local_values;
-	
 public:
 	LocalPropertyValueProvider (DependencyObject *obj);
 	virtual ~LocalPropertyValueProvider ();
 
 	virtual Value *GetPropertyValue (DependencyProperty *property);
-	
-	Value *ReadLocalValue (DependencyProperty *property);
-	void ClearValue (DependencyProperty *property);
 };
 
 class StylePropertyValueProvider : public PropertyValueProvider {

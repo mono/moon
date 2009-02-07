@@ -47,7 +47,7 @@ class EventTrigger : public TriggerBase {
 	virtual ~EventTrigger ();
 	
  public:
-	/* @PropertyType=TriggerActionCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
+	/* @PropertyType=TriggerActionCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *ActionsProperty;
 	/* @PropertyType=string,ManagedPropertyType=RoutedEvent,ManagedFieldAccess=Internal,GenerateAccessors */
 	static DependencyProperty *RoutedEventProperty;

@@ -25,7 +25,7 @@ typedef void *(*GetResourceCallback)(const char *name, int *size);
 /* @Namespace=None */
 class Application : public DependencyObject {
 public:
-	/* @PropertyType=ResourceDictionary,AutoCreateValue,GenerateAccessors */
+	/* @PropertyType=ResourceDictionary,GenerateAccessors */
 	static DependencyProperty *ResourcesProperty;
 
 	/* @GenerateCBinding,GeneratePInvoke */

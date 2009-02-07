@@ -1,11 +1,3 @@
-2009-02-06  Jeffrey Stedfast  <fejj@novell.com>
-
-	* Generator.cs: Respect the new AutoCreateValue attribute.
-
-	* FieldInfo.cs: Added IsDPAutoCreateValue property.
-
-	* GlobalInfo.cs: Added AutoCreateValue attribute.
-
 2009-02-05  Jb Evain  <jbevain@novell.com>
 
 	* Generator.cs: generate a mapping from

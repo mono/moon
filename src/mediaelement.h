@@ -177,7 +177,7 @@ class MediaElement : public FrameworkElement {
 	virtual void Dispose ();
 	
 	// properties
- 	/* @PropertyType=MediaAttributeCollection,ManagedPropertyType=Dictionary<string\,string>,AutoCreateValue,ManagedSetterAccess=Internal,GenerateAccessors,Validator=MediaAttributeCollectionValidator */
+ 	/* @PropertyType=MediaAttributeCollection,ManagedPropertyType=Dictionary<string\,string>,ManagedSetterAccess=Internal,GenerateAccessors,Validator=MediaAttributeCollectionValidator */
 	static DependencyProperty *AttributesProperty;
  	/* @PropertyType=gint32,DefaultValue=0,ReadOnly,GenerateAccessors */
 	static DependencyProperty *AudioStreamCountProperty;
@@ -201,7 +201,7 @@ class MediaElement : public FrameworkElement {
 	static DependencyProperty *CurrentStateProperty;
  	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	static DependencyProperty *IsMutedProperty;
- 	/* @PropertyType=TimelineMarkerCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
+ 	/* @PropertyType=TimelineMarkerCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *MarkersProperty;
  	/* @PropertyType=Duration,DefaultValue=Duration::FromSeconds (0),ReadOnly,GenerateGetter */
 	static DependencyProperty *NaturalDurationProperty;

@@ -1293,6 +1293,7 @@ LinearPointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress
 SplineDoubleKeyFrame::SplineDoubleKeyFrame ()
 {
 	SetObjectType (Type::SPLINEDOUBLEKEYFRAME);
+	DependencyObject::SetValue (SplineDoubleKeyFrame::KeySplineProperty, Value::CreateUnref (new KeySpline (0, 0, 1, 1)));
 }
 
 SplineDoubleKeyFrame::~SplineDoubleKeyFrame ()
@@ -1323,6 +1324,7 @@ SplineDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgres
 SplineColorKeyFrame::SplineColorKeyFrame ()
 {
 	SetObjectType (Type::SPLINECOLORKEYFRAME);
+	DependencyObject::SetValue (SplineColorKeyFrame::KeySplineProperty, Value::CreateUnref (new KeySpline (0, 0, 1, 1)));
 }
 
 SplineColorKeyFrame::~SplineColorKeyFrame ()
@@ -1353,6 +1355,7 @@ SplineColorKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress
 SplinePointKeyFrame::SplinePointKeyFrame ()
 {
 	SetObjectType (Type::SPLINEPOINTKEYFRAME);
+	DependencyObject::SetValue (SplinePointKeyFrame::KeySplineProperty, Value::CreateUnref (new KeySpline (0, 0, 1, 1)));
 }
 
 SplinePointKeyFrame::~SplinePointKeyFrame ()
@@ -1524,6 +1527,7 @@ generic_keyframe_validator (KeyFrameCollection *col)
 DoubleAnimationUsingKeyFrames::DoubleAnimationUsingKeyFrames ()
 {
 	SetObjectType (Type::DOUBLEANIMATIONUSINGKEYFRAMES);
+	SetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty, Value::CreateUnref (new DoubleKeyFrameCollection ()));
 }
 
 DoubleAnimationUsingKeyFrames::~DoubleAnimationUsingKeyFrames ()
@@ -1631,6 +1635,7 @@ DoubleAnimationUsingKeyFrames::Validate ()
 ColorAnimationUsingKeyFrames::ColorAnimationUsingKeyFrames()
 {
 	SetObjectType (Type::COLORANIMATIONUSINGKEYFRAMES);
+	SetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty, Value::CreateUnref (new ColorKeyFrameCollection ()));
 }
 
 ColorAnimationUsingKeyFrames::~ColorAnimationUsingKeyFrames ()
@@ -1735,6 +1740,7 @@ ColorAnimationUsingKeyFrames::Validate ()
 PointAnimationUsingKeyFrames::PointAnimationUsingKeyFrames()
 {
 	SetObjectType (Type::POINTANIMATIONUSINGKEYFRAMES);
+	SetValue (PointAnimationUsingKeyFrames::KeyFramesProperty, Value::CreateUnref (new PointKeyFrameCollection ()));
 }
 
 PointAnimationUsingKeyFrames::~PointAnimationUsingKeyFrames ()

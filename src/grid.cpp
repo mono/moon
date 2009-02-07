@@ -25,6 +25,8 @@
 Grid::Grid ()
 {
 	SetObjectType (Type::GRID);
+	SetValue (Grid::ColumnDefinitionsProperty, Value::CreateUnref (new ColumnDefinitionCollection ()));
+	SetValue (Grid::RowDefinitionsProperty, Value::CreateUnref (new RowDefinitionCollection ()));
 }
 
 Grid::~Grid ()

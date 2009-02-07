@@ -21,6 +21,8 @@
 Panel::Panel ()
 {
 	SetObjectType (Type::PANEL);
+	SetValue (Panel::ChildrenProperty, Value::CreateUnref (new UIElementCollection ()));
+	SetSubtreeObject (GetChildren());
 	mouse_over = NULL;
 }
 

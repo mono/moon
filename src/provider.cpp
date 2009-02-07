@@ -25,98 +25,21 @@ AnimationPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 	return NULL;
 }
 
-
-//
-// LocalPropertyValueProvider
-//
-
-static gboolean
-dispose_value (gpointer key, gpointer value, gpointer data)
-{
-	DependencyObject *obj = (DependencyObject *) data;
-	Value *v = (Value *) value;
-	
-	if (!value)
-		return true;
-	
-	// detach from the existing value
-	if (v->Is (Type::DEPENDENCY_OBJECT)) {
-		DependencyObject *dob = v->AsDependencyObject ();
-		
-		if (dob != NULL) {
-			if (obj == dob->GetLogicalParent ()) {
-				// unset its logical parent
-				dob->SetLogicalParent (NULL, NULL);
-			}
-			
-			// unregister from the existing value
-			dob->RemovePropertyChangeListener (obj, NULL);
-		}
-	}
-	
-	delete v;
-	
-	return true;
-}
-
 LocalPropertyValueProvider::LocalPropertyValueProvider (DependencyObject *obj)
 	: PropertyValueProvider (obj)
 {
-	local_values = g_hash_table_new (g_direct_hash, g_direct_equal);
+	// XXX maybe move the "DependencyObject::current_values" hash table here?
 }
 
 LocalPropertyValueProvider::~LocalPropertyValueProvider ()
 {
-	g_hash_table_foreach_remove (local_values, dispose_value, obj);
-	g_hash_table_destroy (local_values);
 }
 
 Value *
 LocalPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 {
-	MoonError err;
-	Value *value;
-	Type *type;
-	
-	// return manually overriden local values first
-	if ((value = (Value *) g_hash_table_lookup (obj->GetCurrentValues (), property)))
-		return value;
-	
-	if (!property->AutoCreate ())
-		return NULL;
-	
-	// return previously set local value next
-	if ((value = (Value *) g_hash_table_lookup (local_values, property)))
-		return value;
-	
-	if (!(type = Type::Find (property->GetPropertyType ())))
-		return NULL;
-	
-	// autocreate a new local value
-	value = Value::CreateUnrefPtr (type->CreateInstance ());
-	g_hash_table_insert (local_values, property, value);
-	
-	obj->ProviderValueChanged (PropertyPrecedence_LocalValue, property, NULL, value, true, &err);
-	
-	return value;
+	return (Value *) g_hash_table_lookup (obj->GetCurrentValues (), property);
 }
-
-Value *
-LocalPropertyValueProvider::ReadLocalValue (DependencyProperty *property)
-{
-	return (Value *) g_hash_table_lookup (local_values, property);
-}
-
-void
-LocalPropertyValueProvider::ClearValue (DependencyProperty *property)
-{
-	g_hash_table_remove (local_values, property);
-}
-
-
-//
-// StylePropertyValueProvider
-//
 
 StylePropertyValueProvider::StylePropertyValueProvider (DependencyObject *obj)
 	: PropertyValueProvider (obj)

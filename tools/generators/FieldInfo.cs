@@ -28,10 +28,6 @@ class FieldInfo : MemberInfo {
 		}
 	}
 	
-	public bool IsDPAutoCreateValue {
-		get { return Annotations.ContainsKey ("AutoCreateValue"); }
-	}
-	
 	public bool IsDPReadOnly {
 		get { return Annotations.ContainsKey ("ReadOnly"); }
 	}

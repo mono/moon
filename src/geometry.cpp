@@ -169,6 +169,7 @@ GeometryCollection::~GeometryCollection ()
 GeometryGroup::GeometryGroup ()
 {
 	SetObjectType (Type::GEOMETRYGROUP);
+	SetValue (GeometryGroup::ChildrenProperty, Value::CreateUnref (new GeometryCollection ()));
 }
 
 GeometryGroup::~GeometryGroup ()
@@ -519,6 +520,8 @@ PathFigure::PathFigure ()
 {
 	SetObjectType (Type::PATHFIGURE);
 	path = NULL;
+	
+	SetValue (PathFigure::SegmentsProperty, Value::CreateUnref (new PathSegmentCollection ()));
 }
 
 PathFigure::~PathFigure ()

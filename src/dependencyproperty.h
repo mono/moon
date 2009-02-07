@@ -32,7 +32,7 @@ class DependencyProperty {
  public:
 	DependencyProperty () {};
 	~DependencyProperty ();
-	DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool autocreate, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator, bool is_custom);
+	DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator, bool is_custom);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	const char *GetName() { return name; }
@@ -49,7 +49,6 @@ class DependencyProperty {
 	bool IsReadOnly () { return is_readonly; }
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool IsAttached () { return is_attached; }
-	bool AutoCreate () { return autocreate; }
 	bool AlwaysChange () { return always_change; }
 	bool IsCustom () { return is_custom; }
 	NativePropertyChangedHandler *GetChangedCallback () { return changed_callback; }
@@ -68,8 +67,8 @@ class DependencyProperty {
 	static DependencyProperty *Register (Type::Kind type, const char *name, Type::Kind vtype);
 	static DependencyProperty *Register (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype);
 	static DependencyProperty *RegisterNullable (Type::Kind type, const char *name, Type::Kind vtype, ValueValidator *validator = NULL);
-	static DependencyProperty *RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool autocreate, bool attached, bool read_only, bool always_change = false, NativePropertyChangedHandler *changed_callback = NULL, ValueValidator *validator = NULL);
-	static DependencyProperty *RegisterFull (Type *type, const char *name, Value *default_value, Type::Kind vtype, bool autocreate, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator, bool is_custom);
+	static DependencyProperty *RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change = false, NativePropertyChangedHandler *changed_callback = NULL, ValueValidator *validator = NULL);
+	static DependencyProperty *RegisterFull (Type *type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator, bool is_custom);
 
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	static DependencyProperty *RegisterCustom (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler *changed_callback);
@@ -87,8 +86,7 @@ class DependencyProperty {
 
 private:
 	GHashTable *storage_hash; // keys: objects, values: animation storage's
-	
-	bool autocreate; // autocreate in LocalPropertyValueProvider
+
 	bool is_readonly;
 	bool is_nullable;
 	bool is_attached;

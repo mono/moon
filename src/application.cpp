@@ -23,6 +23,8 @@ Application::Application ()
 	apply_default_style_cb = NULL;
 	apply_style_cb = NULL;
 	get_resource_cb = NULL;
+	
+	SetValue (Application::ResourcesProperty, Value::CreateUnref (new ResourceDictionary ()));
 }
 
 Application::~Application ()

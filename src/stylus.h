@@ -159,9 +159,9 @@ class Stroke : public DependencyObject {
 	virtual ~Stroke () {}
 	
  public:
-	/* @PropertyType=DrawingAttributes,AutoCreateValue,ManagedFieldAccess=Private,GenerateAccessors */
+	/* @PropertyType=DrawingAttributes,ManagedFieldAccess=Private,GenerateAccessors */
 	static DependencyProperty *DrawingAttributesProperty;
-	/* @PropertyType=StylusPointCollection,AutoCreateValue,ManagedFieldAccess=Private,GenerateAccessors */
+	/* @PropertyType=StylusPointCollection,ManagedFieldAccess=Private,GenerateAccessors */
 	static DependencyProperty *StylusPointsProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -222,7 +222,7 @@ class InkPresenter : public Canvas {
 	virtual ~InkPresenter () {}
 
  public:
-	/* @PropertyType=StrokeCollection,AutoCreateValue,GenerateAccessors */
+	/* @PropertyType=StrokeCollection,GenerateAccessors */
 	static DependencyProperty *StrokesProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */

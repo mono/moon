@@ -1588,6 +1588,7 @@ Timeline::GetBeginTime ()
 TimelineGroup::TimelineGroup ()
 {
 	SetObjectType (Type::TIMELINEGROUP);
+	SetValue (TimelineGroup::ChildrenProperty, Value::CreateUnref (new TimelineCollection ()));
 }
 
 TimelineGroup::~TimelineGroup ()
