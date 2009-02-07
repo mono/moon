@@ -141,6 +141,10 @@ Grid::MeasureOverride (Size availableSize)
 		row = MIN (Grid::GetRow (child), row_count - 1);
 		colspan = MIN (Grid::GetColumnSpan (child), col_count - col);
 		rowspan = MIN (Grid::GetRowSpan (child), row_count - row);
+		Size pixels = Size ();
+		Size stars = Size ();
+		Size automatic = Size ();
+
 
 		Size child_size = Size (0,0);
 		Size min_size = Size (0,0);
@@ -150,11 +154,21 @@ Grid::MeasureOverride (Size availableSize)
 			RowDefinition *rowdef = rows->GetValueAt (r)->AsRowDefinition ();
 			GridLength* height = rowdef->GetHeight();
 
-			if (height->type == GridUnitTypePixel)
+			switch (height->type) {
+			case GridUnitTypePixel:
+				pixels.height += height->val;
 				child_size.height += height->val;
-			else
+				break;
+			case GridUnitTypeAuto:
+				automatic.height += 1;
 				child_size.height += rowdef->GetMaxHeight ();
-			
+				break;
+			case GridUnitTypeStar:
+				stars.height += height->val;
+				child_size.height += rowdef->GetMaxHeight ();				
+				break;
+			}
+
 			min_size.height += rowdef->GetMinHeight ();
 			max_size.height += rowdef->GetMaxHeight ();
 		}
@@ -162,11 +176,21 @@ Grid::MeasureOverride (Size availableSize)
 		for (int c = col; c < col + colspan; c++) {
 			ColumnDefinition *coldef = columns->GetValueAt (c)->AsColumnDefinition ();
 			GridLength* width = coldef->GetWidth();
-
-			if (width->type == GridUnitTypePixel)
+			
+			switch (width->type) {
+			case GridUnitTypePixel:
+				pixels.width += width->val;
 				child_size.width += width->val;
-			else
+				break;
+			case GridUnitTypeAuto:
+				automatic.width += 1;
 				child_size.width += coldef->GetMaxWidth ();
+				break;
+			case GridUnitTypeStar:
+				stars.width += width->val;
+				child_size.width += coldef->GetMaxWidth ();
+				break;
+			}
 
 			min_size.width += coldef->GetMinWidth ();
 			max_size.width += coldef->GetMaxWidth ();
@@ -187,9 +211,8 @@ Grid::MeasureOverride (Size availableSize)
 			double contribution = 0;
 			switch (width->type) {
 			case GridUnitTypeAuto:
-				/* XXX FIXME this is not correct if we only span auto */
-				if (colspan == 1)
-					contribution = remaining.width;
+				if (stars.width <= 0)
+					contribution = (desired.width - pixels.width) / automatic.width;
 				break;
 			case GridUnitTypePixel:
 				contribution = width->val;
@@ -210,12 +233,11 @@ Grid::MeasureOverride (Size availableSize)
 			RowDefinition *rowdef = rows->GetValueAt (r)->AsRowDefinition ();
 			GridLength *height = rowdef->GetHeight ();
 
-			double contribution = height->type != GridUnitTypePixel ? remaining.height : height->val;
+			double contribution = 0;
 			switch (height->type) {
 			case GridUnitTypeAuto:
-				/* XXX FIXME this is not correct if we only span auto */
-				if (rowspan == 1)
-					contribution = remaining.height;
+				if (stars.height <= 0)
+					contribution = (desired.height - pixels.height) / automatic.height;
 				break;
 			case GridUnitTypePixel:
 				contribution = height->val;

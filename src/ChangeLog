@@ -1,5 +1,10 @@
 2009-02-07  Larry Ewing  <lewing@novell.com>
 
+	* grid.cpp (Grid::MeasureOverride): distribute the allocation
+	across auto dimensions when it makes sense.
+	
+2009-02-07  Larry Ewing  <lewing@novell.com>
+
 	* grid.cpp (Grid::MeasureOverride): don't give our whole
 	allocation to the first column.
 
