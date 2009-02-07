@@ -4746,7 +4746,7 @@ xaml_lookup_named_item (void *parser, void *instance, const char* name)
 void *
 xaml_get_template_parent (void *parser, void *element_instance)
 {
-	XamlParserInfo *p = (XamlParserInfo *) p;
+	XamlParserInfo *p = (XamlParserInfo *) parser;
 	XamlElementInstance *item = (XamlElementInstance *) element_instance;
 
 	return p->GetTemplateParent (item);
