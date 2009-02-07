@@ -73,9 +73,9 @@ namespace MoonTest.System.Windows.Controls
 			// now try setting it to null instead of using ClearValue
 			ink.Strokes = null;
 			
-			// check that ReadLocalValue still returns unset
+			// check that ReadLocalValue returns a new collection
 			rlv_strokes = ink.ReadLocalValue(InkPresenter.StrokesProperty);
-			Assert.AreEqual(DependencyProperty.UnsetValue, rlv_strokes, "ReadLocalValue after setting to null returns unset");
+			Assert.IsTrue(rlv_strokes is StrokeCollection, rlv_strokes, "ReadLocalValue after setting to null returns a collection");
 		}
 		
 		[TestMethod]
