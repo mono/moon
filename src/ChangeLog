@@ -1,5 +1,8 @@
 2009-02-06  Larry Ewing  <lewing@novell.com>
 
+	* shape.cpp (Shape::ArrangeOverride): take alignment into account
+	when Stretch == None.
+
 	* media.cpp (Image::ArrangeOverride):
 	* mediaelement.cpp (MediaElement::ArrangeOverride): take alignment
 	into account when Stretch == None.
