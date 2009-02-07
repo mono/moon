@@ -122,7 +122,7 @@ Type::LookupEvent (const char *event_name)
 
 	if (events != NULL) {
 		for (int i = 0; events [i] != NULL; i++) {
-			if (!g_strcasecmp (events [i], event_name))
+			if (!g_ascii_strcasecmp (events [i], event_name))
 				return i + (parent_type == NULL ? 0 : parent_type->total_event_count);
 		}
 	}

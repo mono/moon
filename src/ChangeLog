@@ -1,5 +1,9 @@
 2009-02-06  Larry Ewing  <lewing@novell.com>
 
+	* type.cpp:
+	* playlist.cpp:
+	* enums.cpp (enum_from_str): use g_ascii_strcasecmp.
+
 	* deepzoomimagetilesource.cpp (start_element): use g_ascii_strtod.
 
 	* xaml.cpp (value_from_str): replace use g_ascii_strcasecmp
