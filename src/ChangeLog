@@ -1,5 +1,13 @@
 2009-02-07  Geoff Norton  <gnorton@novell.com>
 
+	* cbinding.cpp|h: Regenerate
+	* deployment.cpp|h: API cleanup
+	* downloader.cpp|h: Generate some code that doesn't need to be
+	hand maintained.  Clean up some API to prevent a crash when
+	unregistering downloaders.
+
+2009-02-07  Geoff Norton  <gnorton@novell.com>
+
 	* color.h:
 	* cornerradius.h:
 	* point.h:

@@ -563,8 +563,23 @@ DoubleKeyFrameCollection *double_key_frame_collection_new (void);
 Downloader *downloader_new (void);
 
 /**
+ * DownloaderRequest
+ **/
+/* @GeneratePInvoke */
+void downloader_request_free (DownloaderRequest *instance);
+
+/* @GeneratePInvoke */
+void downloader_request_abort (DownloaderRequest *instance);
+
+/**
  * DownloaderResponse
  **/
+/* @GeneratePInvoke */
+void downloader_response_free (DownloaderResponse *instance);
+
+/* @GeneratePInvoke */
+void downloader_response_abort (DownloaderResponse *instance);
+
 /* @GeneratePInvoke */
 int downloader_response_get_response_status (DownloaderResponse *instance);
 

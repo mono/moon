@@ -83,8 +83,8 @@ class Deployment : public DependencyObject {
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetCurrentApplication (Application* value);
 
-	void RegisterIDownloader (IDownloader *idl);
-	void UnregisterIDownloader (IDownloader *idl);
+	void RegisterDownloader (IDownloader *dl);
+	void UnregisterDownloader (IDownloader *dl);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	static Deployment* GetCurrent ();
@@ -101,14 +101,14 @@ class Deployment : public DependencyObject {
 	void TrackObjectDestroyed (EventObject *obj);
 
 private:	
-	void AbortAllIDownloaders ();
+	void AbortAllDownloaders ();
 	void DrainUnrefs ();
 	static gboolean DrainUnrefs (gpointer ptr);
 
 	Types* types;
 	Application* current_app;
 	MonoDomain *domain;
-	List *idownloaders;
+	List *downloaders;
 
 #if GLIB_CHECK_VERSION(2,10,0)
 	volatile gpointer pending_unrefs;

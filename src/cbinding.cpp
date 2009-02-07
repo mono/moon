@@ -1289,8 +1289,45 @@ downloader_new (void)
 
 
 /**
+ * DownloaderRequest
+ **/
+void
+downloader_request_free (DownloaderRequest *instance)
+{
+	delete instance;
+}
+
+
+void
+downloader_request_abort (DownloaderRequest *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->Abort ();
+}
+
+
+/**
  * DownloaderResponse
  **/
+void
+downloader_response_free (DownloaderResponse *instance)
+{
+	delete instance;
+}
+
+
+void
+downloader_response_abort (DownloaderResponse *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->Abort ();
+}
+
+
 int
 downloader_response_get_response_status (DownloaderResponse *instance)
 {

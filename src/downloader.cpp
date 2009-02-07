@@ -786,7 +786,7 @@ DownloaderResponse::~DownloaderResponse ()
 {
 	if (request != NULL && request->GetDownloaderResponse () == this)
 		request->SetDownloaderResponse (NULL);
-	Deployment::GetCurrent ()->UnregisterIDownloader ((IDownloader *)this);
+	GetDeployment ()->UnregisterDownloader (this);
 }
 
 DownloaderResponse::DownloaderResponse ()
@@ -797,7 +797,8 @@ DownloaderResponse::DownloaderResponse ()
 	finished = NULL;
 	context = NULL;
 	request = NULL;
-	Deployment::GetCurrent ()->RegisterIDownloader ((IDownloader *)this);
+	SetDeployment (Deployment::GetCurrent ());
+	GetDeployment ()->RegisterDownloader (this);
 }
 
 DownloaderResponse::DownloaderResponse (DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context)
@@ -808,7 +809,8 @@ DownloaderResponse::DownloaderResponse (DownloaderResponseStartedHandler started
 	this->finished = finished;
 	this->context = context;
 	this->request = NULL;
-	Deployment::GetCurrent ()->RegisterIDownloader ((IDownloader *)this);
+	SetDeployment (Deployment::GetCurrent ());
+	GetDeployment ()->RegisterDownloader (this);
 }
 
 DownloaderRequest::DownloaderRequest (const char *method, const char *uri)
@@ -816,7 +818,8 @@ DownloaderRequest::DownloaderRequest (const char *method, const char *uri)
 	this->method = g_strdup (method);
 	this->uri = g_strdup (uri);
 	this->response = NULL;
-	Deployment::GetCurrent ()->RegisterIDownloader ((IDownloader *)this);
+	SetDeployment (Deployment::GetCurrent ());
+	GetDeployment ()->RegisterDownloader (this);
 }
 
 DownloaderRequest::~DownloaderRequest ()
@@ -825,25 +828,13 @@ DownloaderRequest::~DownloaderRequest ()
 	g_free (uri);
 	if (response != NULL && response->GetDownloaderRequest () == this)
 		response->SetDownloaderRequest (NULL);
-	Deployment::GetCurrent ()->UnregisterIDownloader ((IDownloader *)this);
+	GetDeployment ()->UnregisterDownloader (this);
 }
 
 void
 *downloader_create_webrequest (Downloader *dl, const char *method, const char *uri)
 {
 	return dl->GetRequestFunc() (method, uri, dl->GetContext());
-}
-
-void
-downloader_request_destroy (DownloaderRequest *dr)
-{
-	delete dr;
-}
-
-void
-downloader_request_abort (DownloaderRequest *dr)
-{
-	dr->Abort ();
 }
 
 bool

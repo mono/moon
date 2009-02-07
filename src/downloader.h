@@ -193,9 +193,14 @@ typedef uint32_t (* DownloaderResponseFinishedHandler) (DownloaderResponse *resp
 typedef void (*DownloaderResponseHeaderVisitorCallback) (const char *header, const char *value);
 
 class IDownloader {
+ private:
+	Deployment *deployment;
+
  public:
 	virtual void Abort () = 0;
 	virtual const bool IsAborted () = 0;
+	Deployment *GetDeployment () { return deployment; }
+	void SetDeployment (Deployment *deployment) { this->deployment = deployment; }
 };
 
 class DownloaderResponse : public IDownloader {
@@ -210,8 +215,10 @@ class DownloaderResponse : public IDownloader {
  public:
 	DownloaderResponse ();
 	DownloaderResponse (DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context);
+	/* @GenerateCBinding,GeneratePInvoke */
 	virtual ~DownloaderResponse ();
 
+	/* @GenerateCBinding,GeneratePInvoke */
 	virtual void Abort () = 0;
 	virtual const bool IsAborted () { return this->aborted; }
 	virtual void SetHeaderVisitor (DownloaderResponseHeaderVisitorCallback visitor) = 0;
@@ -233,8 +240,10 @@ class DownloaderRequest : public IDownloader {
 
  public:
 	DownloaderRequest (const char *method, const char *uri);
+	/* @GenerateCBinding,GeneratePInvoke */
 	virtual ~DownloaderRequest ();
 
+	/* @GenerateCBinding,GeneratePInvoke */
 	virtual void Abort () = 0;
 	virtual bool GetResponse (DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context) = 0;
 	virtual const bool IsAborted () { return this->aborted; }
@@ -286,8 +295,6 @@ void downloader_init (void);
 
 void *downloader_create_webrequest (Downloader *dl, const char *method, const char *uri);
 
-void downloader_request_abort (DownloaderRequest *dr);
-void downloader_request_destroy (DownloaderRequest *dr);
 bool downloader_request_get_response (DownloaderRequest *dr, DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context);
 bool downloader_request_is_aborted (DownloaderRequest *dr);
 void downloader_request_set_http_header (DownloaderRequest *dr, const char *name, const char *value);

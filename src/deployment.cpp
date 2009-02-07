@@ -41,8 +41,8 @@ MonoDomain* Deployment::root_domain = NULL;
 
 class IDownloaderNode : public List::Node {
 public:
-	IDownloader *idl;
-	IDownloaderNode (IDownloader *dl) { idl = dl; }
+	IDownloader *dl;
+	IDownloaderNode (IDownloader *dl) { this->dl = dl; }
 };
  
 bool
@@ -164,7 +164,7 @@ Deployment::Deployment()
 	SetObjectType (Type::DEPLOYMENT);
 	current_app = NULL;
 	types = NULL;
-	idownloaders = NULL;
+	downloaders = NULL;
 	pending_unrefs = NULL;
 	objects_created = 0;
 	objects_destroyed = 0;
@@ -190,7 +190,7 @@ Deployment::Deployment()
 
 	types = new Types ();
 	types->Initialize ();
-	idownloaders = new List ();
+	downloaders = new List ();
 }
 
 #if OBJECT_TRACKING
@@ -291,7 +291,7 @@ Deployment::Dispose ()
 {
 	LOG_DEPLOYMENT ("Deployment::Dispose (): %p\n", this);
 	
-	AbortAllIDownloaders ();
+	AbortAllDownloaders ();
 
 	if (current_app != NULL)
 		current_app->Dispose ();
@@ -327,18 +327,18 @@ Deployment::SetCurrentApplication (Application* value)
 }
 
 void
-Deployment::RegisterIDownloader (IDownloader *idl)
+Deployment::RegisterDownloader (IDownloader *dl)
 {
-	idownloaders->Append (new IDownloaderNode (idl));
+	downloaders->Append (new IDownloaderNode (dl));
 }
 
 void
-Deployment::UnregisterIDownloader (IDownloader *idl)
+Deployment::UnregisterDownloader (IDownloader *dl)
 {
-	IDownloaderNode *node = (IDownloaderNode *) idownloaders->First ();
+	IDownloaderNode *node = (IDownloaderNode *) downloaders->First ();
 	while (node != NULL) {
-		if (node->idl == idl) {
-			idownloaders->Remove (node);
+		if (node->dl == dl) {
+			downloaders->Remove (node);
 			return;
 		}
 		node = (IDownloaderNode *) node->next;
@@ -346,14 +346,14 @@ Deployment::UnregisterIDownloader (IDownloader *idl)
 }
 
 void
-Deployment::AbortAllIDownloaders ()
+Deployment::AbortAllDownloaders ()
 {
 	IDownloaderNode *node;
 
-	while ((node = (IDownloaderNode *) idownloaders->First ()) != NULL) {
-		if (!node->idl->IsAborted ())
-			node->idl->Abort ();
-		idownloaders->Remove (node);
+	while ((node = (IDownloaderNode *) downloaders->First ()) != NULL) {
+		if (!node->dl->IsAborted ())
+			node->dl->Abort ();
+		downloaders->Remove (node);
 	}
 }
 
