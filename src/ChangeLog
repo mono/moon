@@ -1,5 +1,9 @@
 2009-02-06  Larry Ewing  <lewing@novell.com>
 
+	* media.cpp (Image::ArrangeOverride):
+	* mediaelement.cpp (MediaElement::ArrangeOverride): take alignment
+	into account when Stretch == None.
+
 	* grid.cpp, grid.h: keep track of the automagical w/h make handle
 	it properly when alignment is not stretch.  Fixes leaf control
 	placement on "the moment".
