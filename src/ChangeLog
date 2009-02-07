@@ -1,5 +1,9 @@
 2009-02-07  Larry Ewing  <lewing@novell.com>
 
+	* border.cpp (Border::ArrangeOverride): 
+	* usercontrol.cpp (UserControl::ArrangeOverride): Fix padding on
+	border children.
+
 	* grid.cpp (Grid::MeasureOverride): distribute the allocation
 	across auto dimensions when it makes sense.
 	

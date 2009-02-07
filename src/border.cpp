@@ -79,6 +79,7 @@ Border::ArrangeOverride (Size finalSize)
 
 		child->Arrange (childRect);
 		arranged = child->GetRenderSize ();
+		arranged = arranged.GrowBy (border);
 
 		if (GetHorizontalAlignment () == HorizontalAlignmentStretch || !isnan (GetWidth ()))
 			arranged.width = MAX (arranged.width, finalSize.width);
