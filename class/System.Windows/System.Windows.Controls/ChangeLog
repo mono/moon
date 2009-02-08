@@ -1,3 +1,7 @@
+2009-02-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* TextBlock.cs: Implement OnCreateAutomationPeer
+
 2009-02-06  Larry Ewing  <lewing@novell.com>
 
 	* ContentPresenter.cs: don't compare against _elementText compare
