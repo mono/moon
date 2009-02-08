@@ -57,9 +57,10 @@ namespace System.Windows.Automation.Peers {
 			return false;
 		}
 
+		[MonoTODO ("right now it only wraps the peer into a IRawElementProviderSimple")]
 		protected IRawElementProviderSimple ProviderFromPeer (AutomationPeer peer)
 		{
-			return null;
+			return new IRawElementProviderSimple (peer);
 		}
 
 		public AutomationPeer GetLabeledBy ()
@@ -74,12 +75,12 @@ namespace System.Windows.Automation.Peers {
 
 		public string GetItemType ()
 		{
-			throw new NotImplementedException ();
+			return GetItemTypeCore ();
 		}
 
 		public List<AutomationPeer> GetChildren ()
 		{
-			throw new NotImplementedException ();
+			return GetChildrenCore ();
 		}
 
 		protected abstract AutomationPeer GetLabeledByCore ();
@@ -111,12 +112,12 @@ namespace System.Windows.Automation.Peers {
 		
 		public string GetAcceleratorKey ()
 		{
-			throw new NotImplementedException ();
+			return GetAcceleratorKeyCore ();
 		}
 		
 		public string GetAccessKey ()
 		{
-			throw new NotImplementedException ();
+			return GetAccessKeyCore ();
 		}
 	
 		public AutomationControlType GetAutomationControlType ()
@@ -126,12 +127,12 @@ namespace System.Windows.Automation.Peers {
 	
 		public string GetAutomationId ()
 		{
-			throw new NotImplementedException ();
+			return GetAutomationIdCore ();
 		}
 	
 		public Rect GetBoundingRectangle ()
 		{
-			throw new NotImplementedException ();
+			return GetBoundingRectangleCore ();
 		}
 	
 		public string GetClassName ()
@@ -139,42 +140,39 @@ namespace System.Windows.Automation.Peers {
 			return GetClassNameCore ();
 		}
 	
-	
 		public Point GetClickablePoint ()
 		{
 			return GetClickablePointCore ();
 		}
 	
-	
 		public string GetHelpText ()
 		{
-			throw new NotImplementedException ();
+			return GetHelpTextCore ();
 		}
-	
 	
 		public string GetItemStatus ()
 		{
-			throw new NotImplementedException ();
+			return GetItemStatusCore ();
 		}
 	
 		public string GetLocalizedControlType ()
 		{
-			throw new NotImplementedException ();
+			return GetLocalizedControlTypeCore ();
 		}
 	
 		public AutomationOrientation GetOrientation ()
 		{
-			throw new NotImplementedException ();
+			return GetOrientationCore ();
 		}
 	
 		public AutomationPeer GetParent ()
 		{
-			throw new NotImplementedException ();
+			return GetParent ();
 		}
 	
 		public bool HasKeyboardFocus ()
 		{
-			throw new NotImplementedException ();
+			return HasKeyboardFocusCore ();
 		}
 
 		public void InvalidatePeer ()
@@ -194,32 +192,34 @@ namespace System.Windows.Automation.Peers {
 	
 		public bool IsEnabled ()
 		{
-			throw new NotImplementedException ();
+			return IsEnabledCore ();
 		}
 	
 		public bool IsKeyboardFocusable ()
 		{
-			throw new NotImplementedException ();
+			return IsKeyboardFocusableCore ();
 		}
 	
 		public bool IsOffscreen ()
 		{
-			throw new NotImplementedException ();
+			return IsOffscreenCore ();
 		}
 	
 		public bool IsPassword ()
 		{
-			throw new NotImplementedException ();
+			return IsPasswordCore ();
 		}
 	
 		public bool IsRequiredForForm ()
 		{
-			throw new NotImplementedException ();
+			return IsRequiredForFormCore ();
 		}
 	
+		[MonoTODO ("right now it only unwrap the peer from a IRawElementProviderSimple")]
 		protected AutomationPeer PeerFromProvider (IRawElementProviderSimple provider)
 		{
-			return null;
+			// SL2 will NRE too if 'provider' is null
+			return provider.AutomationPeer;
 		}
 	
 		[SecuritySafeCritical]
@@ -230,7 +230,7 @@ namespace System.Windows.Automation.Peers {
 	
 		public void SetFocus ()
 		{
-			throw new NotImplementedException ();
+			SetFocusCore ();
 		}
 	}
 }

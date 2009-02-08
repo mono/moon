@@ -152,7 +152,7 @@ namespace System.Windows.Automation.Peers {
 		
 		protected override bool IsKeyboardFocusableCore ()
 		{
-			throw new NotImplementedException ();
+			return false;
 		}
 		
 		protected override bool IsOffscreenCore ()

@@ -1,3 +1,11 @@
+2009-02-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* AutomationPeer.cs: Call *Core methods instead of throw 
+	NotImplementedException
+	* FrameworkElementAutomationPeer.cs: Return false for 
+	IsKeyboardFocusableCore (instead of throwing)
+	* TextBlockAutomationPeer.cs: New.
+
 2009-01-08  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* AutomationPeer.cs,
