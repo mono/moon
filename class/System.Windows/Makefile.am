@@ -91,7 +91,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Automation.Peers/PatternInterface.cs		\
 	$(srcdir)/System.Windows.Automation.Peers/RangeBaseAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/RepeatButtonAutomationPeer.cs	\
-	$(srcdir)/System.Windows.Automation.Peers/TextBoxAutomationPeer.cs		\
+	$(srcdir)/System.Windows.Automation.Peers/TextBlockAutomationPeer.cs	\
+	$(srcdir)/System.Windows.Automation.Peers/TextBoxAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/ThumbAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/SliderAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Provider/IDockProvider.cs		\
