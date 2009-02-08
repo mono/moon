@@ -1,3 +1,8 @@
+2009-02-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Automation.Peers/TextBlockAutomationPeerTest.cs: New
+	* System.Windows.Controls/UIElementCollectionTest.cs: Rename fixture
+
 2009-02-06  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows/PointTest.cs: Add IFormattable test cases

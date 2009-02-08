@@ -35,7 +35,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows {
 
 	[TestClass]
-	public class _UIElementCollectionTest {
+	public class UIElementCollectionTest {
 
 		UIElementCollection GetUIElementCollection ()
 		{
