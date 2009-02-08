@@ -4692,13 +4692,22 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 static Value *
 lookup_named_item (XamlElementInstance *inst, const char *name)
 {
-	if (inst->element_type == XamlElementInstance::ELEMENT && Type::Find (inst->info->GetKind ())->IsSubclassOf (Type::FRAMEWORKELEMENT)) {
-		ResourceDictionary *rd = inst->GetAsDependencyObject ()->GetValue (UIElement::ResourcesProperty)->AsResourceDictionary ();
+	if (inst->element_type == XamlElementInstance::ELEMENT) {
+		ResourceDictionary *rd = NULL;
+		Type *type = Type::Find (inst->info->GetKind ());
 
-		bool exists;
-		Value *res = lookup_resource_dictionary (rd, name, &exists);
-		if (exists)
-			return res;
+		if (type->IsSubclassOf (Type::FRAMEWORKELEMENT)) {
+			rd = inst->GetAsDependencyObject ()->GetValue (UIElement::ResourcesProperty)->AsResourceDictionary ();
+		} else if (type->IsSubclassOf (Type::RESOURCE_DICTIONARY)) {
+			rd = (ResourceDictionary*) inst->GetAsDependencyObject ();
+		}
+
+		if (rd) {
+			bool exists;
+			Value *res = lookup_resource_dictionary (rd, name, &exists);
+			if (exists)
+				return res;
+		}
 	}
 
 	XamlElementInstance *parent = inst->parent;

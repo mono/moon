@@ -1,3 +1,9 @@
+2009-02-07  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* xaml.cpp: Adjust lookup to find StaticResources defined in 
+	a ResourceDictionary. re-fix parsing of generic.xaml for the
+	SL toolkit (unit tests)
+
 2009-02-07  Larry Ewing  <lewing@novell.com>
 
 	* border.cpp (Border::ArrangeOverride): 
