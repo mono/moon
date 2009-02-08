@@ -17,20 +17,27 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-// Copyright (c) 2008 Novell, Inc. (http://www.novell.com)
+// Copyright (c) 2008, 2009 Novell, Inc. (http://www.novell.com)
 //
 // Contact:
 //   Moonlight Team (moonlight-list@lists.ximian.com)
 //
 
-using System.Windows.Automation;
+using System.Windows.Automation.Peers;
 
 namespace System.Windows.Automation.Provider {
 
 	public sealed class IRawElementProviderSimple {
-		internal IRawElementProviderSimple ()
+
+		AutomationPeer automation_peer;
+
+		internal IRawElementProviderSimple (AutomationPeer peer)
 		{
+			automation_peer = peer;
+		}
+
+		internal AutomationPeer AutomationPeer {
+			get { return automation_peer; }
 		}
 	}
-
 }

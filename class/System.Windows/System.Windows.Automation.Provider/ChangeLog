@@ -1,0 +1,4 @@
+2009-02-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* IRawElementProviderSimple.cs: Basic implementation that can wrap (and
+	unwrap) an AutomationPeer.
