@@ -106,6 +106,40 @@ namespace MoonTest.System.Windows.Data
 			}
 		}
 
+		public class TargetClass : Control {
+			bool propertyChanged;
+
+			public static readonly DependencyProperty TestProperty =
+				DependencyProperty.Register ("Test", typeof (string), typeof (TargetClass),
+							     new PropertyMetadata (null, new PropertyChangedCallback (TestPropertyChanged)));
+
+			static void TestPropertyChanged (DependencyObject sender, DependencyPropertyChangedEventArgs e)
+			{
+				(sender as TargetClass).OnTestPropertyChanged (e.OldValue as string,
+									       e.NewValue as string);
+			}
+
+			void OnTestPropertyChanged (string oldValue, string newValue)
+			{
+				propertyChanged = true;
+			}
+
+			public string Test {
+				get { return (string)GetValue (TestProperty); }
+				set { SetValue (TestProperty, value); }
+			}
+
+			public void ClearPropertyChanged ()
+			{
+				propertyChanged = false;
+			}
+
+			public bool GetPropertyChanged ()
+			{
+				return propertyChanged;
+			}
+		}
+
 		[TestMethod]
 		public void ConstructorTest()
 		{
@@ -126,11 +160,10 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
-		public void DataContextTest ()
+		public void DataContext_Precedence ()
 		{
 			Binding b = new Binding("");
 
-			Console.WriteLine ("Setting canvas");
 			Canvas c = new Canvas();
 			c.DataContext = new SolidColorBrush(Colors.Blue);
 
@@ -140,24 +173,78 @@ namespace MoonTest.System.Windows.Data
 			c.Children.Add(r);
 			r.SetBinding(Rectangle.FillProperty, b);
 
+			// the local DataContext takes precedent.
 			Assert.AreEqual(r.Fill, r.DataContext, "#1");
-			Console.WriteLine ("Setting datacontext to null");
-			r.DataContext = null;
-			Console.WriteLine ("Set to null");
-			Assert.AreEqual(null, r.Fill, "#2");
-			r.SetBinding(Rectangle.FillProperty, b);
-			Assert.AreEqual(r.Fill, null, "#3");
+		}
 
+
+		[TestMethod]
+		public void DataContext_NullLocal ()
+		{
+			Binding b = new Binding("");
+
+			Canvas c = new Canvas();
+			c.DataContext = new SolidColorBrush(Colors.Blue);
+
+			Rectangle r = new Rectangle();
+			r.DataContext = new SolidColorBrush(Colors.Green);
+
+			c.Children.Add(r);
+			r.SetBinding(Rectangle.FillProperty, b);
+
+			// a null DataContext is still a local value,
+			// and takes precedence over the inherited
+			// value.
+			r.DataContext = null;
+			Assert.AreEqual(null, r.Fill, "#1");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void DataContext_ClearLocal ()
+		{
+			Binding b = new Binding("");
+
+			Canvas c = new Canvas();
+			c.DataContext = new SolidColorBrush(Colors.Blue);
+
+			Rectangle r = new Rectangle();
+			r.DataContext = new SolidColorBrush(Colors.Green);
+
+			c.Children.Add(r);
+			r.SetBinding(Rectangle.FillProperty, b);
+
+			// clearing the value allows the inherited
+			// DataContext to be used again (and causes
+			// the bound property to be updated)
+			r.ClearValue (FrameworkElement.DataContextProperty);
+			Assert.AreEqual(c.DataContext, r.DataContext, "#1");
+			Assert.AreEqual(c.DataContext, r.Fill, "#2");
+		}
+
+		[TestMethod]
+		public void DataContext_SetBindingSource ()
+		{
+			Binding b = new Binding("");
+
+			Canvas c = new Canvas();
+			c.DataContext = new SolidColorBrush(Colors.Blue);
+
+			Rectangle r = new Rectangle();
+			r.DataContext = new SolidColorBrush(Colors.Green);
+
+			c.Children.Add(r);
+
+			// set the source of the Binding object
 			b = new Binding ("");
 			b.Source = new SolidColorBrush (Colors.Yellow);
 			r.SetBinding(Rectangle.FillProperty, b);
-			Assert.AreEqual(r.Fill, b.Source, "#4");
+			Assert.AreEqual(b.Source, r.Fill, "#1");
 
-			b = new Binding("");
-			r.SetBinding(Rectangle.FillProperty, b);
-			Assert.AreEqual(r.Fill, null, "#5");
+			// now set the data context, and show that the
+			// Binding.Source has precedence.
 			r.DataContext = new LinearGradientBrush();
-			Assert.AreEqual(r.Fill, r.DataContext, "#6");
+			Assert.AreEqual(b.Source, r.Fill, "#2");
 		}
 		
 		[TestMethod]
@@ -392,14 +479,11 @@ namespace MoonTest.System.Windows.Data
 			};
 
 			rectangle.SetBinding (Rectangle.OpacityProperty, binding);
-			Assert.AreEqual (data.Opacity, rectangle.Opacity, "#1");
-			data.Opacity = 0.0f;
-			Assert.AreEqual (data.Opacity, rectangle.Opacity, "#2");
 			rectangle.DataContext = null;
 			data.Opacity = 0.5f;
-			Assert.AreEqual (1.0f, rectangle.Opacity, "#3");
+			Assert.AreEqual (1.0f, rectangle.Opacity, "#1");
 			rectangle.DataContext = data;
-			Assert.AreEqual (0.5f, rectangle.Opacity, "#4");
+			Assert.AreEqual (0.5f, rectangle.Opacity, "#2");
 		}
 
 		[TestMethod]
@@ -506,7 +590,6 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void XamlCreateBinding()
 		{
 			object o = XamlReader.Load(
@@ -526,6 +609,7 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		}
 		
 		[TestMethod]
+		[Ignore ("another bogus parser test.")]
 		public void XamlCreateBinding2()
 		{
 			Assert.Throws<XamlParseException>(delegate { XamlReader.Load(@"	
@@ -542,7 +626,7 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 ");
             });
 		}
-		
+
 		[TestMethod]
 		[MoonlightBug]
 		public void XamlDataContext()
@@ -597,7 +681,6 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void XamlDataContext3()
 		{
 			Canvas c = (Canvas) XamlReader.Load (@"
@@ -627,7 +710,6 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void XamlBindingPropertyPathPriority()
 		{
 			Canvas canvas = (Canvas) XamlReader.Load(@"	
@@ -644,13 +726,14 @@ Width=""100"" Height=""100"">
 			TextBlock block = (TextBlock) canvas.Children[0];
 			object text = block.ReadLocalValue (TextBlock.TextProperty);
 			Assert.IsTrue (text is BindingExpressionBase);
-			Assert.AreEqual (block.Text, "4");
+			Assert.AreEqual ("4", block.Text);
 		}
 		
 		[TestMethod]
+		[Ignore ("this is supposed to be a binding test - testing for a parser error is hardly appropriate")]
 		public void XamlBindToClr()
 		{
-			Assert.Throws<XamlParseException>(delegate {
+ 			Assert.Throws<XamlParseException>(delegate {
 				XamlReader.Load(
 @"	
 <Canvas	
@@ -668,11 +751,11 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 </Canvas>
 
 ");
-			});
+ 			});
 		}
 		
 		[TestMethod]
-		[MoonlightBug]
+		[Ignore ("This test throws an NRE on both moonlight and silverlight.  needs to be fixed in SL-land")]
 		public void XamlBoundToClr()
 		{
 			TestNamespace.BindingXaml a = new TestNamespace.BindingXaml();
@@ -686,5 +769,51 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 			Assert.IsNull(a.FindName("CLRObject"));
 			Assert.IsNull(a.DataContext);
 		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void CustomObjectTest1 ()
+		{
+			// create the hierarchy, set the binding, and then set datacontext
+			Canvas c = new Canvas ();
+
+			TargetClass tc = new TargetClass ();
+
+			c.Children.Add (tc);
+
+			tc.SetBinding (TargetClass.TestProperty,
+				       new Binding ());
+
+			Assert.IsFalse (tc.GetPropertyChanged (), "#1");
+
+			c.DataContext = "hi";
+
+			Assert.IsTrue (tc.GetPropertyChanged (), "#2");
+
+			Assert.AreEqual ("hi", tc.Test, "#3");
+		}
+
+		[TestMethod]
+		public void CustomObjectTest2 ()
+		{
+			// set the binding, set the datacontext, then create the hierarchy
+			Canvas c = new Canvas ();
+
+			TargetClass tc = new TargetClass ();
+
+			tc.SetBinding (TargetClass.TestProperty,
+				       new Binding ());
+
+			c.DataContext = "hi";
+
+			Assert.IsFalse (tc.GetPropertyChanged (), "#1");
+
+			c.Children.Add (tc);
+
+			Assert.IsFalse (tc.GetPropertyChanged (), "#2");
+
+			Assert.IsNull (tc.Test, "#3");
+		}
+
 	}
 }
