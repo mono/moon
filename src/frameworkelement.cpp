@@ -225,7 +225,7 @@ FrameworkElement::FindElementsInHostCoordinates (cairo_t *cr, Point p, List *uie
 	if (r.IsEmpty (true) || !r.GrowBy (1, 1, 1, 0).PointInside (p.x, p.y))
 		return;
 
-	if (!InsideClip (cr, p.x, p.y))
+	if (!InsideFillOrClip (cr, p.x, p.y))
 		return;
 
 	/* create our node and stick it on front */

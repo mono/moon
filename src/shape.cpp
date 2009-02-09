@@ -129,6 +129,15 @@ Shape::Draw (cairo_t *cr)
 // * Fill
 
 bool
+Shape::InsideFillOrClip (cairo_t *cr, double x, double y)
+{
+	extents = extents.GrowBy (1, 1, 1, 0);
+	bool ret = Shape::InsideObject (cr, x, y);
+	extents = extents.GrowBy (-1, -1 ,-1, 0);
+	return ret;
+}
+
+bool
 Shape::SetupLine (cairo_t *cr)
 {
 	double thickness = GetStrokeThickness ();
@@ -652,7 +661,7 @@ Shape::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 bool
 Shape::InsideObject (cairo_t *cr, double x, double y)
 {
-	bool ret = true;
+	bool ret = false;
 
 	TransformPoint (&x, &y);
 	if (!extents.PointInside (x, y))
@@ -663,7 +672,10 @@ Shape::InsideObject (cairo_t *cr, double x, double y)
 	DoDraw (cr, false);
 
 	// don't check in_stroke without a stroke or in_fill without a fill (even if it can be filled)
-	ret = ((fill && CanFill () && cairo_in_fill (cr, x, y)) || (stroke && cairo_in_stroke (cr, x, y)));
+	if (fill && CanFill ())
+		ret |= cairo_in_fill (cr, x, y);
+	if (stroke || true)
+		ret |= cairo_in_stroke (cr, x, y);
 	cairo_new_path (cr);
 	cairo_restore (cr);
 		

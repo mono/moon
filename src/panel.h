@@ -48,7 +48,8 @@ class Panel : public FrameworkElement {
 	virtual void HitTest (cairo_t *cr, Rect r, List *uielement_list);
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
-
+	virtual bool InsideFillOrClip (cairo_t *cr, double x, double y);
+	
 	virtual bool CanFindElement () { return GetBackground () != NULL; }
 
 	virtual bool IsLayoutContainer () { return true; }

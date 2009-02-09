@@ -1,3 +1,12 @@
+2009-02-09  Alan McGovern  <alan.mcgovern@gmail.com>
+
+	* panel.h:
+	* shape.h:
+	* shape.cpp:
+	* panel.cpp:
+	* uielement.h:
+	* frameworkelement.cpp: Commit some more of the hittest code.
+
 2009-02-09  Jeffrey Stedfast  <fejj@novell.com>
 
 	* type.h.in (class Types): Added a private static field to record

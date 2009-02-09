@@ -58,6 +58,7 @@ class Shape : public FrameworkElement {
 	bool Fill (cairo_t *cr, bool do_op);
 	void Clip (cairo_t *cr);
 	virtual bool DrawShape (cairo_t *cr, bool do_op) { g_warning ("%s does not implement DrawShape ().", GetTypeName ()); return false; }
+	virtual bool InsideFillOrClip (cairo_t *cr, double x, double y);
 //	virtual bool DrawDegenerateShape (cairo_t *cr, bool do_op) = 0;
 
 	moon_path *path;

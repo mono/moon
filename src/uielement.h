@@ -265,7 +265,8 @@ public:
 	//   Returns whether the position x, y is inside the object
 	//
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
-
+	virtual bool InsideFillOrClip (cairo_t *cr, double x, double y) { return false; }
+	
 	//
 	// Checks if the point is inside the Clip region.
 	// Returns true if no Clip region is defined
