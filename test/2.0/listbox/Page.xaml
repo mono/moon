@@ -5,7 +5,6 @@
     Width="800" Height="400">
 
     <StackPanel Orientation="Horizontal">
-<!--
 	<StackPanel>
 		<TextBlock Text="ListBox" />
 		<Border BorderBrush="Black" BorderThickness="2" Width="100" Height="300">
@@ -15,7 +14,6 @@
  		    </ListBox>
 		</Border>
 	</StackPanel>
--->
 
 	<StackPanel Margin="5">
 		<TextBlock Text="ItemsControl (non-databound)" />
@@ -29,10 +27,25 @@
 	</StackPanel>
 
 	<StackPanel Margin="5">
-		<TextBlock Text="ItemsControl (databound)" />
+		<TextBlock Text="ItemsControl (databound collection)" />
 		<Button Content="Add String" Click="databoundButton_Click" />
 		<Border BorderBrush="Black" BorderThickness="2" Width="100" Height="300">
 		    <ItemsControl x:Name="databoundItemsControl" />
+		</Border>
+	</StackPanel>
+
+	<StackPanel Margin="5">
+		<TextBlock Text="ItemsControl (databound property)" />
+		<Border BorderBrush="Black" BorderThickness="2" Width="100" Height="300">
+		    <ItemsControl DisplayMemberPath="Length">
+			<sys:String>o</sys:String>
+			<sys:String>oo</sys:String>
+			<sys:String>ooo</sys:String>
+			<sys:String>oooo</sys:String>
+			<sys:String>ooooo</sys:String>
+			<sys:String>oooooo</sys:String>
+			<sys:String>ooooooo</sys:String>
+		    </ItemsControl>
 		</Border>
 	</StackPanel>
 
