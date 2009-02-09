@@ -1,3 +1,8 @@
+2009-02-09  Jonathan Pryor  <jpryor@novell.com>
+
+	* gtksilver.source: Add a /monodoc/node element so that
+	  documentation is inserted under the "Moonlight/Silverlight" node.
+
 2009-01-26  Geoff Norton  <gnorton@novell.com>
 
 	* gtk.cs: Update to the new deployment launcher api
