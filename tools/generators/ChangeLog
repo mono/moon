@@ -1,3 +1,8 @@
+2009-02-09  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Generator.cs: Autogenerate code to protect against
+	re-initializing static dependency properties.
+
 2009-02-05  Jb Evain  <jbevain@novell.com>
 
 	* Generator.cs: generate a mapping from

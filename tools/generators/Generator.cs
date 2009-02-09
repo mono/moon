@@ -368,9 +368,16 @@ class Generator {
 			text.AppendLine ("\"");
 		}
 		text.AppendLine ();
+		text.AppendLine ("bool Types::registered_static_properties = false;");
+		text.AppendLine ();
 		text.AppendLine ("void");
 		text.AppendLine ("Types::RegisterStaticDependencyProperties ()");
 		text.AppendLine ("{");
+		text.AppendLine ("\tif (Types::registered_static_properties)");
+		text.AppendLine ("\t\treturn;");
+		text.AppendLine ();
+		text.AppendLine ("\tTypes::registered_static_properties = true;");
+		text.AppendLine ();
 		
 		for (int i = 0; i < fields.Count; i++) {
 			FieldInfo field = fields [i];
