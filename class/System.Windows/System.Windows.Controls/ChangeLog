@@ -1,3 +1,9 @@
+2009-02-08  Chris Toshok  <toshok@ximian.com>
+
+	* ItemsControl.cs (PrepareContainerForItemOverride): if
+	DisplayMemberPath is set, create a binding and hook it up to the
+	content presenter's ContentProperty.
+
 2009-02-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* TextBlock.cs: Implement OnCreateAutomationPeer

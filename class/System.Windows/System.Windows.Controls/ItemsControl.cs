@@ -26,6 +26,7 @@
 
 using Mono;
 using System.Collections;
+using System.Windows.Data;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Collections.Specialized;
@@ -213,12 +214,19 @@ namespace System.Windows.Controls {
 		{
 			ContentPresenter presenter = element as ContentPresenter;
 
-			Console.WriteLine ("presenter = {0}, item = {1}", presenter, item);
-
 			if (presenter != null && presenter != item) {
-				Console.WriteLine (" + setting .Content");
-				presenter.Content = item;
-
+				if (DisplayMemberPath != null) {
+					Binding binding = new Binding (DisplayMemberPath);
+					// XXX I'm thinking this next line shouldn't be necessary.  The CP should be setting its DataContext
+					// property when DisplayMemberPath is in use, right?
+					binding.Source = item;
+					presenter.SetBinding (ContentPresenter.ContentProperty,
+							      binding);
+				}
+				else {
+					presenter.Content = item;
+				}
+					
 				if (ItemTemplate != null) {
 					presenter.ContentTemplate = ItemTemplate;
 				}
