@@ -161,7 +161,6 @@ Deployment::Deployment()
 {
 	char *domain_name = g_strdup_printf ("moonlight-%p", this);
 
-	SetObjectType (Type::DEPLOYMENT);
 	current_app = NULL;
 	types = NULL;
 	downloaders = NULL;
