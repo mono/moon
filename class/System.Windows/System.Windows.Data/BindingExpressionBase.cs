@@ -43,7 +43,7 @@ namespace System.Windows.Data {
 		
 		internal bool cached;
 		object cachedValue;
-		INotifyPropertyChanged cachedTarget;
+		INotifyPropertyChanged cachedSource;
 		
 		bool parsedPath;
 		PropertyInfo info;
@@ -51,20 +51,6 @@ namespace System.Windows.Data {
 		
 		internal Binding Binding {
 			get; set;
-//			get {
-//				IntPtr binding = NativeMethods.binding_expression_base_get_binding (Native);
-//				if (binding == IntPtr.Zero)
-//					return null;
-//				if (!bindings.ContainsKey (binding))
-//					bindings.Add (binding, new Binding (binding));
-//				return bindings [binding];
-//			}
-//			set {
-//				IntPtr binding = value == null ? IntPtr.Zero : value.Native;
-//				NativeMethods.binding_expression_base_set_binding (Native, binding);
-//				if (binding != IntPtr.Zero && !bindings.ContainsKey (binding))
-//					bindings.Add (binding, value);
-//			}
 		}
 
 		internal FrameworkElement Target {
@@ -78,28 +64,24 @@ namespace System.Windows.Data {
 		// This is the object we're databound to
 		internal object DataSource {
 			get {
-				object target = null;
+				object source = null;
 				if (Binding.Source != null)
-					target = Binding.Source;
-				if (target == null && Target != null)
-					target = Target.DataContext;
+					source = Binding.Source;
+				if (source == null && Target != null)
+					source = Target.DataContext;
 
 				// If the datasource has changed, disconnect from the old object and reconnect
 				// to the new one.
-				if (target != cachedTarget) {
-					if (cachedTarget != null)
-						cachedTarget.PropertyChanged -= PropertyChanged;
-					cachedTarget = target as INotifyPropertyChanged;
-					if (cachedTarget != null)
-						cachedTarget.PropertyChanged += PropertyChanged;
+				if (source != cachedSource) {
+					if (cachedSource != null)
+						cachedSource.PropertyChanged -= PropertyChanged;
+					cachedSource = source as INotifyPropertyChanged;
+					if (cachedSource != null)
+						cachedSource.PropertyChanged += PropertyChanged;
 				}
-				return target;
+				return source;
 			}
 		}
-//
-//		internal IntPtr Native {
-//			get; set;
-//		}
 
 		PropertyInfo PropertyInfo {
 			get {
@@ -113,35 +95,21 @@ namespace System.Windows.Data {
 		}
 
 		// This is the object at the end of the PropertyPath 
-		internal object PropertyTarget {
+		internal object PropertySource {
 			get; private set;
 		}
 
 		
 		internal BindingExpressionBase ()
-//			: this (Mono.NativeMethods.binding_expression_new ())
 		{
 			
 		}
 
-//		internal BindingExpressionBase (IntPtr native)
-//		{
-//			Native = native;
-//		}
-//
-//		~BindingExpressionBase ()
-//		{
-//			if (Native != IntPtr.Zero) {
-//				Mono.NativeMethods.event_object_unref (Native);
-//				Native = IntPtr.Zero;
-//			}
-//		}
-
 		PropertyInfo GetPropertyInfo ()
 		{
-			object target = DataSource;
+			object source = DataSource;
 
-			if (target == null)
+			if (source == null)
 				return null;
 
 			// FIXME: What if the path is invalid? A.B....C, AB.C£$.D etc
@@ -151,7 +119,7 @@ namespace System.Windows.Data {
 				return null;
 			}
 			for (int i = 0; i < parts.Length; i++) {
-				PropertyInfo p = target.GetType ().GetProperty (parts [i]);
+				PropertyInfo p = source.GetType ().GetProperty (parts [i]);
 
 				// The property does not exist, so abort.
 				if (p == null)
@@ -161,11 +129,11 @@ namespace System.Windows.Data {
 					throw new MethodAccessException (string.Format ("Property {0} cannot be accessed", p.Name));
 				
 				if (i != (parts.Length - 1)) {
-					target = p.GetValue (target, null);
+					source = p.GetValue (source, null);
 					continue;
 				}
 
-				PropertyTarget = target;
+				PropertySource = source;
 				return p;
 			}
 
@@ -200,42 +168,22 @@ namespace System.Windows.Data {
 				cachedValue = dp.DefaultValue;
 			}
 			else {
-				cachedValue = PropertyInfo.GetValue (PropertyTarget, null);
-			}
-			if (Binding.Converter != null) {
-				cachedValue = Binding.Converter.Convert (cachedValue,
-				                                   Property.PropertyType,
-				                                   Binding.ConverterParameter,
-				                                   Binding.ConverterCulture ?? enUS);
+				cachedValue = PropertyInfo.GetValue (PropertySource, null);
 			}
 
-			if (cachedValue != null) {
-				if (Property.PropertyType != cachedValue.GetType() && Property.PropertyType.IsValueType && cachedValue.GetType().IsValueType) {
-					cachedValue = Convert.ChangeType (cachedValue, Property.PropertyType, null);
-				}
-			}
+			IValueConverter converter = Binding.Converter;
+
+			if (converter == null)
+				converter = new MoonlightValueConverter();
+
+			cachedValue = converter.Convert (cachedValue,
+							 Property.PropertyType,
+							 Binding.ConverterParameter,
+							 Binding.ConverterCulture ?? enUS);
 
 			return cachedValue;
 		}
 
-		void PropertyChanged (object sender, PropertyChangedEventArgs e)
-		{
-			if (PropertyInfo.Name.Equals (e.PropertyName)) {
-				object value = PropertyInfo.GetValue (PropertyTarget, null);
-
-				if (Binding.Converter != null)
-					value = Binding.Converter.Convert (value,
-					                                   Property.PropertyType,
-					                                   Binding.ConverterParameter,
-					                                   Binding.ConverterCulture ?? enUS);
-				
-				if (Property.PropertyType.IsValueType && value.GetType () != Property.PropertyType)
-					value = Convert.ChangeType (value, Property.PropertyType, null);
-				
-				Target.UpdateFromBinding (Property, value);
-			}
-		}
-		
 		internal void SetValue (object value)
 		{
 			if (updating)
@@ -252,10 +200,28 @@ namespace System.Windows.Data {
 
 			try {
 				updating = true;
-				PropertyInfo.SetValue (PropertyTarget, value, null);
+				PropertyInfo.SetValue (PropertySource, value, null);
 			}
 			finally {
 				updating = false;
+			}
+		}
+
+		void PropertyChanged (object sender, PropertyChangedEventArgs e)
+		{
+			if (PropertyInfo.Name.Equals (e.PropertyName)) {
+				object value = PropertyInfo.GetValue (PropertySource, null);
+
+				if (Binding.Converter != null)
+					value = Binding.Converter.Convert (value,
+					                                   Property.PropertyType,
+					                                   Binding.ConverterParameter,
+					                                   Binding.ConverterCulture ?? enUS);
+				
+				if (Property.PropertyType.IsValueType && value.GetType () != Property.PropertyType)
+					value = Convert.ChangeType (value, Property.PropertyType, null);
+				
+				Target.SetValueImpl (Property, value);
 			}
 		}
 	}

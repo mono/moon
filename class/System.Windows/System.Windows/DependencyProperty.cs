@@ -142,7 +142,7 @@ namespace System.Windows {
 			
 			return result;
 		}
-		
+
 		private static void NativePropertyChangedCallbackSafe (IntPtr dependency_property, IntPtr dependency_object, IntPtr old_value, IntPtr new_value, ref MoonError error)
 		{
 			try {
@@ -163,9 +163,8 @@ namespace System.Windows {
 		{		
 			DependencyProperty property;
 			CustomDependencyProperty custom_property;
-			DependencyObject obj = null;
-			object old_obj = null, new_obj = null;
-			DependencyPropertyChangedEventArgs args;
+			DependencyObject obj;
+			object old_obj, new_obj;
 			
 			if (!properties.TryGetValue (dependency_property, out property)) {
 				Console.Error.WriteLine ("DependencyProperty.NativePropertyChangedCallback: Couldn't find the managed DependencyProperty corresponding with native {0}", dependency_property);
@@ -183,7 +182,7 @@ namespace System.Windows {
 			
 			if (custom_property.Metadata == null || custom_property.Metadata.property_changed_callback == null)
 				return;				
-			
+
 			obj = NativeDependencyObjectHelper.Lookup (dependency_object) as DependencyObject;
 			
 			if (obj == null)
@@ -192,6 +191,14 @@ namespace System.Windows {
 			old_obj = Value.ToObject (property.property_type, old_value);
 			new_obj = Value.ToObject (property.property_type, new_value);
 			
+			InvokeChangedCallback (obj, property, custom_property.Metadata.property_changed_callback, old_obj, new_obj);
+		}
+
+		static void InvokeChangedCallback (DependencyObject obj, DependencyProperty property, PropertyChangedCallback callback,
+						   object old_obj, object new_obj)
+		{
+			DependencyPropertyChangedEventArgs args;
+
 			if (old_obj == null && property.property_type.IsValueType && !property.IsNullable)
 				old_obj = property.DefaultValue;
 			
@@ -208,7 +215,7 @@ namespace System.Windows {
 			args = new DependencyPropertyChangedEventArgs (old_obj, new_obj, property);
 
 			// note: since callbacks might throw exceptions but we cannot catch them
-			custom_property.Metadata.property_changed_callback (obj, args);
+			callback (obj, args);
 		}
 
 		internal static DependencyProperty Lookup (IntPtr native)
@@ -257,6 +264,58 @@ namespace System.Windows {
 			return null;
 		}
 		
+		internal PropertyChangedCallback change_cb;
+
+		internal void AddPropertyChangeCallback (PropertyChangedCallback callback)
+		{
+			if (this is CustomDependencyProperty) {
+				Console.WriteLine ("this should really just be done by registering the property with metadata");
+				CustomDependencyProperty cdp = (CustomDependencyProperty)this;
+				if (cdp.Metadata.property_changed_callback != null)
+					throw new InvalidOperationException ("this DP was registered with a PropertyChangedCallback already");
+			}
+
+			if (change_cb != null)
+				throw new InvalidOperationException ("this DP already has a change callback registered");
+
+			change_cb = callback;
+
+			NativeMethods.dependency_property_set_property_changed_callback (native,
+											 CustomNativePropertyChangedCallbackSafe);
+		}
+
+		private static void CustomNativePropertyChangedCallbackSafe (IntPtr dependency_property, IntPtr dependency_object,
+									     IntPtr old_value, IntPtr new_value, ref MoonError error)
+		{
+			DependencyProperty property;
+			DependencyObject obj;
+
+			try {
+				try {
+					if (!properties.TryGetValue (dependency_property, out property)) {
+						Console.Error.WriteLine ("DependencyProperty.CustomNativePropertyChangedCallback: Couldn't find the managed DependencyProperty corresponding with native {0}", dependency_property);
+						return;
+					}
+
+					obj = NativeDependencyObjectHelper.Lookup (dependency_object) as DependencyObject;
+			
+					if (obj == null)
+						return;
+
+					InvokeChangedCallback (obj, property, property.change_cb,
+							       Value.ToObject (property.property_type, old_value),
+							       Value.ToObject (property.property_type, new_value));
+				} catch (Exception ex) {
+					error = new MoonError (ex);
+				}
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in DependencyProperty.NativePropertyChangedCallback: {0}", ex.Message);
+				} catch {
+				}
+			}
+		}
+
 		internal string Name {
 			get { return name; }
 		}

@@ -33,6 +33,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Markup;
+using System.Windows.Media;
 using System.Security;
 
 namespace System.Windows {
@@ -45,13 +46,62 @@ namespace System.Windows {
 				if (!styleType.IsAssignableFrom (target.GetType ()))
 					throw new System.Windows.Markup.XamlParseException (string.Format ("Target is of type {0} but the Style requires {1}", target.GetType ().Name, styleType.Name));
 			};
+
+			DataContextProperty.AddPropertyChangeCallback (DataContextChanged);
 		}
+
+#if false
+		public static readonly DependencyProperty DataContextProperty =
+			DependencyProperty.Register ("DataContext", typeof (object), typeof (FrameworkElement),
+						     new PropertyMetadata (null, new PropertyChangedCallback (DataContextChanged)));
+
+		public object DataContext {
+			get { return GetValue (DataContextProperty); }
+			set { SetValue (DataContextProperty, value); }
+		}
+#endif
+		static void DataContextChanged (DependencyObject sender, DependencyPropertyChangedEventArgs args)
+		{
+			(sender as FrameworkElement).OnDataContextChanged (args.OldValue, args.NewValue);
+		}
+
+		void OnDataContextChanged (object oldValue, object newValue)
+		{
+			// invalidate the bindings in our subtree
+			InvalidateSubtreeBindings ();
+		}
+
+		void InvalidateSubtreeBindings ()
+		{
+			for (int c = 0; c < VisualTreeHelper.GetChildrenCount (this); c++) {
+				FrameworkElement obj = VisualTreeHelper.GetChild (this, c) as FrameworkElement;
+				if (obj == null)
+					continue;
+				if (obj.ReadLocalValue (FrameworkElement.DataContextProperty) == DependencyProperty.UnsetValue) {
+					obj.InvalidateLocalBindings ();
+					obj.InvalidateSubtreeBindings ();
+				}
+			}
+		}
+
+		void InvalidateLocalBindings ()
+		{
+			Dictionary<DependencyProperty, BindingExpressionBase> old = bindings;
+			bindings = new Dictionary<DependencyProperty, BindingExpressionBase> ();
+			foreach (var keypair in old) {
+				keypair.Value.Invalidate ();
+				SetValue (keypair.Key, keypair.Value);
+			}
+		}
+
 		/* 
 		 * XXX these are marked internal because making them private seems
 		 * to cause the GC to collect them
 		 */
 		internal MeasureOverrideCallback measure_cb;
 		internal ArrangeOverrideCallback arrange_cb;
+		internal PropertyChangedCallback datacontext_changed_cb;
+
 		Dictionary<DependencyProperty, BindingExpressionBase> bindings = new Dictionary<DependencyProperty, BindingExpressionBase> ();
 
 		private bool OverridesLayoutMethod (string name)
@@ -80,6 +130,8 @@ namespace System.Windows {
 			if (OverridesLayoutMethod ("ArrangeOverride"))
 				arrange_cb = new ArrangeOverrideCallback (InvokeArrangeOverride);
 			NativeMethods.framework_element_register_managed_overrides (native, measure_cb, arrange_cb);
+
+			datacontext_changed_cb = new PropertyChangedCallback (DataContextChanged);
 
 			// we always need to attach this event to allow for Controls to load their default style
 			Events.AddHandler (this, "Loaded", Events.loaded);
@@ -174,6 +226,8 @@ namespace System.Windows {
 
 		internal virtual void InvokeLoaded ()
 		{
+			InvalidateLocalBindings ();
+
 			// this event is special, in that it is a
 			// RoutedEvent that doesn't bubble, so we
 			// don't need to worry about doing anything
@@ -266,18 +320,9 @@ namespace System.Windows {
 			base.SetValueImpl (dp, value);
 			
 			if (dp == FrameworkElement.DataContextProperty && bindings.Count > 0) {
-				Dictionary<DependencyProperty, BindingExpressionBase> old = bindings;
-				bindings = new Dictionary<DependencyProperty, BindingExpressionBase> ();
-				foreach (var keypair in old) {
-					keypair.Value.Invalidate ();
-					SetValue (keypair.Key, keypair.Value);
-				}
+				InvalidateLocalBindings ();
+				InvalidateSubtreeBindings ();
 			}
-		}
-
-		internal void UpdateFromBinding (DependencyProperty dp, object value)
-		{
-			base.SetValueImpl (dp, value);
 		}
 
 		internal override object ReadLocalValueImpl (DependencyProperty dp)

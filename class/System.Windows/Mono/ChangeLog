@@ -1,3 +1,16 @@
+2009-02-08  Chris Toshok  <toshok@ximian.com>
+
+	* MarkupExpressionParser.cs (HandleProperty): kinda gross, and
+	this should probably be fixed in a better way, but fix things so
+	that we continue parsing after parsing a subexpression.
+	i.e.  {Binding Source={StaticResource foo}, Path=bar} would stop
+	after parsing the {StaticResource} before this patch.
+
+	* MoonlightValueConverter.cs: default value converter used by
+	BindingExpressionBase when one isn't specified.
+
+	* GeneratedPInvokes.cs: regen.
+
 2009-02-06  Jackson Harper  <jackson@ximian.com>
 
 	* Value.cs: Let BINDINGEXPRESSIONs be parsed as strings.

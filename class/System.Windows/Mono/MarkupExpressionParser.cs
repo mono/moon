@@ -170,10 +170,17 @@ namespace Mono.Xaml {
 			object value = null;
 			string str_value = null;
 
-			if (remaining.StartsWith ("{"))
+			if (remaining.StartsWith ("{")) {
 				value = ParseExpression (ref remaining);
-			else
+
+				remaining = remaining.TrimStart ();
+
+				if (remaining.Length > 0 && remaining[0] == ',')
+					remaining = remaining.Substring (1);
+			}
+			else {
 				str_value = GetNextPiece (ref remaining, out next);
+			}
 
 			switch (prop) {
 			case "Mode":

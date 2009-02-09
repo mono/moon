@@ -604,6 +604,10 @@ namespace Mono {
 		public extern static void dependency_property_set_is_nullable (IntPtr instance, [MarshalAs (UnmanagedType.U1)] bool value);
 
 		[DllImport ("moon")]
+		// void dependency_property_set_property_changed_callback (DependencyProperty *instance, NativePropertyChangedHandler *changed_callback);
+		public extern static void dependency_property_set_property_changed_callback (IntPtr instance, Mono.NativePropertyChangedHandler changed_callback);
+
+		[DllImport ("moon")]
 		// Deployment *deployment_new ();
 		public extern static IntPtr deployment_new ();
 

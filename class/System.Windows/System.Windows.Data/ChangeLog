@@ -1,0 +1,5 @@
+2009-02-08  Chris Toshok  <toshok@ximian.com>
+
+	* System.Windows.Data/BindingExpressionBase.cs: clean this up a
+	bit, use the default value converter, rename Target <-> Source to
+	match SL terminology, and remove a bunch of commented out code.
