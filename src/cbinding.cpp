@@ -1114,6 +1114,16 @@ dependency_property_set_is_nullable (DependencyProperty *instance, bool value)
 }
 
 
+void
+dependency_property_set_property_changed_callback (DependencyProperty *instance, NativePropertyChangedHandler *changed_callback)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetPropertyChangedCallback (changed_callback);
+}
+
+
 /**
  * Deployment
  **/

@@ -61,7 +61,10 @@ class DependencyProperty {
 	AnimationStorage *GetAnimationStorageFor (DependencyObject *obj);
 	
 	bool Validate (DependencyObject *instance, Value *value, MoonError *error);
-	
+
+	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	void SetPropertyChangedCallback (NativePropertyChangedHandler *changed_callback);
+
 	/* @GenerateCBinding */
 	static DependencyProperty *Register (Type::Kind type, const char *name, Value *default_value);
 	static DependencyProperty *Register (Type::Kind type, const char *name, Type::Kind vtype);

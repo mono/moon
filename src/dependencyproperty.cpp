@@ -257,6 +257,12 @@ DependencyProperty::Validate (DependencyObject *instance, Value *value, MoonErro
 	return validator (instance, this, value, error);
 }
 
+void
+DependencyProperty::SetPropertyChangedCallback (NativePropertyChangedHandler *changed_callback)
+{
+	this->changed_callback = changed_callback;
+}
+
 //
 // Everything inside of a ( ) resolves to a DependencyProperty, if there is a
 // '.' after the property, we get the object, and continue resolving from there

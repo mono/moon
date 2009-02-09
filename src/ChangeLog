@@ -1,3 +1,15 @@
+2009-02-08  Chris Toshok  <toshok@ximian.com>
+
+	* provider.cpp (InheritedPropertyValueProvider::GetPropertyValue):
+	add inheritance of FrameworkElement::DataContextProperty.
+
+	* frameworkelement.[cpp,h]: remove all the databinding stuff from
+	here - it's all handled in managed code now.
+
+	* dependencyproperty.[cpp,h]: add SetPropertyChangedCallback.
+
+	* cbinding.[cpp,h]: regen.
+
 2009-02-07  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* xaml.cpp: Adjust lookup to find StaticResources defined in 

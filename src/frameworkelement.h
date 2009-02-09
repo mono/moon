@@ -144,13 +144,6 @@ public:
 	VerticalAlignment GetVerticalAlignment ();
 	void SetVerticalAlignment (VerticalAlignment value);
 
-	virtual Value *ReadLocalValue (DependencyProperty *property);
-	virtual void ClearValue (DependencyProperty *property, bool notify_listeners, MoonError *error);
-	void ClearValue (DependencyProperty *property, bool notify_listeners = true);
-
-	void InvalidateBinding (DependencyProperty *property, BindingExpressionBase *binding);
-	GHashTable *bindings;
-	
 protected:
 	Rect bounds_with_children;
 	GHashTable *styles;
@@ -159,9 +152,6 @@ protected:
 	void SetBindingExpression (DependencyProperty *property, BindingExpressionBase *expr);
 	BindingExpressionBase *GetBindingExpression (DependencyProperty *property);
 	void ClearBindingExpression (DependencyProperty *property, BindingExpressionBase *expr);
-	
-	void BoundPropertyChanged (DependencyObject *sender, PropertyChangedEventArgs *args, BindingExpressionBase *expr);
-	static void bound_property_changed (DependencyObject *sender, PropertyChangedEventArgs *args, gpointer user_data);
 	
 	virtual bool SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error);
 

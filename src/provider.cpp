@@ -214,6 +214,20 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 	}										\
 	} G_STMT_END
 
+#define INHERIT3(p) \
+	G_STMT_START {									\
+	if (property == FrameworkElement::p) {						\
+		do {									\
+			if (parent->Is (Type::FRAMEWORKELEMENT)) {			\
+				Value *contextV = parent->ReadLocalValue (FrameworkElement::p); \
+				if (contextV)						\
+					return contextV;				\
+			}								\
+			parent = get_parent (parent);					\
+		} while (parent);							\
+	}										\
+	} G_STMT_END
+
 
 	INHERIT1 (ForegroundProperty);
 	INHERIT1 (FontFamilyProperty);
@@ -227,6 +241,8 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 
 	if (parent_property)
 		return parent->GetValue (parent_property);
+
+	INHERIT3 (DataContextProperty);
 
 	return NULL;
 }

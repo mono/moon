@@ -25,37 +25,9 @@
 #include "style.h"
 #include "validators.h"
 
-static void
-binding_destroy (gpointer value)
-{
-	delete ((Value *) value);
-}
-
-static void
-invalidate_binding (gpointer key, gpointer value, gpointer user_data)
-{
-	FrameworkElement *element = (FrameworkElement *) user_data;
-	DependencyProperty *property = (DependencyProperty *)key;
-	BindingExpressionBase *binding = ((Value *)value)->AsBindingExpressionBase ();
-	
-	if (!binding->GetSource ())
-		element->InvalidateBinding (property, binding);
-}
-
-static void
-datacontext_changed (DependencyObject *sender, PropertyChangedEventArgs *args, gpointer user_data)
-{
-	FrameworkElement *element = (FrameworkElement *) user_data;
-	g_hash_table_foreach (element->bindings, invalidate_binding, element);
-}
-
 FrameworkElement::FrameworkElement ()
 {
 	SetObjectType (Type::FRAMEWORKELEMENT);
-
-	bindings = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, binding_destroy);
-
-	AddPropertyChangeHandler (FrameworkElement::DataContextProperty, datacontext_changed, this);
 
 	measure_cb = NULL;
 	arrange_cb = NULL;
@@ -76,9 +48,6 @@ FrameworkElement::GetTransformOrigin ()
 
 FrameworkElement::~FrameworkElement ()
 {
-	g_hash_table_destroy (bindings);
-
-	RemovePropertyChangeHandler (FrameworkElement::DataContextProperty, datacontext_changed);
 }
 
 void
@@ -96,125 +65,9 @@ FrameworkElement::ElementAdded (UIElement *item)
 	*/
 }
 
-void
-FrameworkElement::BoundPropertyChanged (DependencyObject *sender, PropertyChangedEventArgs *args, BindingExpressionBase *expr)
-{
-	DependencyProperty *property = expr->GetTargetProperty ();
-	Binding *binding;
-	
-	binding = expr->GetBinding ();
-	
-	// Setting the value will unregister the binding, so grab a
-	// ref before we set the new value.
-	expr->ref ();
-	
-	// update the destination property value
-	SetValue (property, args->new_value);
-	
-	// restore the binding
-	if (binding->GetBindingMode () != BindingModeOneTime)
-		SetBindingExpression (property, expr);
-	
-	expr->unref ();
-}
-
-void
-FrameworkElement::bound_property_changed (DependencyObject *sender, PropertyChangedEventArgs *args, gpointer user_data)
-{
-	BindingExpressionBase *expr = (BindingExpressionBase *) user_data;
-	
-	expr->GetTarget ()->BoundPropertyChanged (sender, args, expr);
-}
-
-void
-FrameworkElement::SetBindingExpression (DependencyProperty *property, BindingExpressionBase *expr)
-{
-	BindingExpressionBase *cur_expr = GetBindingExpression (property);
-	
-	if (cur_expr)
-		ClearBindingExpression (property, cur_expr);
-	
-	if (expr) {
-		expr->AttachListener (this, FrameworkElement::bound_property_changed, expr);
-		g_hash_table_insert (bindings, property, new Value (expr));
-		expr->SetTargetProperty (property);
-		expr->SetTarget (this);
-	}
-}
-
-BindingExpressionBase *
-FrameworkElement::GetBindingExpression (DependencyProperty *property)
-{
-	Value *value = (Value *) g_hash_table_lookup (bindings, property);
-	return value ? value->AsBindingExpressionBase () : NULL;
-}
-
-void
-FrameworkElement::ClearBindingExpression (DependencyProperty *property, BindingExpressionBase *expr)
-{
-	expr->DetachListener (FrameworkElement::bound_property_changed);
-	g_hash_table_remove (bindings, property);
-}
-
-void
-FrameworkElement::ClearValue (DependencyProperty *property, bool notify_listeners)
-{
-	ClearValue (property, notify_listeners, NULL);
-}
-
-void
-FrameworkElement::ClearValue (DependencyProperty *property, bool notify_listeners, MoonError *error)
-{
-	BindingExpressionBase *cur_expr = GetBindingExpression (property);
-	
-	if (cur_expr)
-		ClearBindingExpression (property, cur_expr);
-	
-	UIElement::ClearValue (property, notify_listeners, error);
-}
-
-Value *
-FrameworkElement::ReadLocalValue (DependencyProperty *property)
-{
-	Value *binding = (Value *) g_hash_table_lookup (bindings, property);
-	
-	if (binding)
-		return binding;
-	
-	return UIElement::ReadLocalValue (property);
-}
-
 bool
 FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error)
 {
-	bool activeBinding = false;
-	BindingExpressionBase *cur_binding = GetBindingExpression (property);
-	BindingExpressionBase *new_binding = NULL;
-	
-	if (value && value->Is (Type::BINDINGEXPRESSIONBASE))
-		new_binding = value->AsBindingExpressionBase ();
-	
-	if (new_binding) {
-		// We are setting a new data binding; replace the
-		// existing binding if there is one.
-		activeBinding = true;
-		SetBindingExpression (property, new_binding);
-		value = new_binding->GetValue ();
-	} else if (cur_binding) {
-		switch (cur_binding->GetBinding ()->GetBindingMode ()) {
-		case BindingModeTwoWay:
-			// We have a two way binding, so we update the
-			// source object
-			cur_binding->UpdateSource (value);
-			activeBinding = true;
-			break;
-		default:
-			// Remove the current binding
-			SetBindingExpression (property, NULL);
-			break;
-		}
-	}
-	
 	if (value && value->Is (Type::STYLE) && !GetStyle()) {
 		printf ("STYLE WAS SET, this = %s\n", GetTypeName());
 		Style *s = value->AsStyle ();
@@ -222,25 +75,9 @@ FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 			Application::GetCurrent()->ApplyStyle (this, s);
 	}
 
-	bool result = true;
-	if (value == NULL && activeBinding)
-		UIElement::ClearValue (property);
-	else
-		result = UIElement::SetValueWithErrorImpl (property, value, error);
-
-
-	return result;
+	return UIElement::SetValueWithErrorImpl (property, value, error);
 }
 
-
-void
-FrameworkElement::InvalidateBinding (DependencyProperty *property, BindingExpressionBase *binding)
-{
-	binding->SetGotValue (false);
-	
-	// Reset the binding so the new value is used
-	SetValue (property, binding);
-}
 
 void
 FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args)
@@ -295,18 +132,6 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 
 	NotifyListenersOfPropertyChange (args);
 }
-
-#if 0
-void
-FrameworkElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
-{
-	if (prop == FrameworkElement::DataContextProperty) {
-		// FIXME: do data binding stuff
-	}
-	
-	UIElement::OnSubPropertyChanged (prop, obj, subobj_args);
-}
-#endif
 
 void
 FrameworkElement::ComputeBounds ()

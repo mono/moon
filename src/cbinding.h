@@ -473,6 +473,9 @@ DependencyProperty *dependency_property_register_managed_property (const char *n
 /* @GeneratePInvoke */
 void dependency_property_set_is_nullable (DependencyProperty *instance, bool value);
 
+/* @GeneratePInvoke */
+void dependency_property_set_property_changed_callback (DependencyProperty *instance, NativePropertyChangedHandler *changed_callback);
+
 /**
  * Deployment
  **/
