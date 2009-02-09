@@ -48,7 +48,7 @@ public:
 bool
 Deployment::Initialize()
 {
-	char *trace_options;
+	const gchar *trace_options;
 
 	if (initialized)
 		return true;
@@ -58,7 +58,11 @@ Deployment::Initialize()
 #endif
 
 	mono_config_parse (NULL);
-	trace_options = getenv ("MOON_TRACE");
+
+	if (g_getenv ("MOON_SECURITY") != NULL)
+		mono_security_enable_core_clr ();
+
+	trace_options = g_getenv ("MOON_TRACE");
 	if (trace_options != NULL){
 		printf ("Setting trace options to: %s\n", trace_options);
 		mono_jit_set_trace_options (trace_options);
