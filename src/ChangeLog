@@ -1,3 +1,8 @@
+2009-02-09  Jeffrey Stedfast  <fejj@novell.com>
+
+	* type.h.in (class Types): Added a private static field to record
+	whether or not the static DP's have already been registered.
+
 2009-02-09  Geoff Norton  <gnorton@novell.com>
 
 	* deployment.cpp: Support enabling coreclr for moonlight so we

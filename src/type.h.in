@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * type.h: Generated code for the type system.
  *
@@ -94,7 +95,10 @@ private:
 };
 
 class Types {
-friend class Type;
+	friend class Type;
+	
+	static bool registered_static_properties;
+	
 private:
 	Type **types;
 	int size; // The allocated size of the array
