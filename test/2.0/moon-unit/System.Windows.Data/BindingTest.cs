@@ -771,7 +771,6 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void CustomObjectTest1 ()
 		{
 			// create the hierarchy, set the binding, and then set datacontext
