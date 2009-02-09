@@ -33,11 +33,16 @@ namespace System.Windows.Documents {
 	public sealed partial class InlineCollection : PresentationFrameworkCollection<Inline> {
 		public void Add (string text)
 		{
-			Run run = new Run ();
+			Run run;
 			
-			run.Text = text;
-			
-			Add (run);
+			if (Count != 1 || this[0] is LineBreak) {
+				run = new Run ();
+				run.Text = text;
+				Add (run);
+			} else {
+				run = this[0] as Run;
+				run.Text += text;
+			}
 		}
 	}
 }
