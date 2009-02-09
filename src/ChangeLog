@@ -1,5 +1,13 @@
 2009-02-09  Alan McGovern  <alan.mcgovern@gmail.com>
 
+	* border.h:
+	* shape.cpp:
+	* border.cpp:
+	* frameworkelement.cpp: Three more of the NUnit tests are now
+	  passing for FindElementsInHostCoordinates
+
+2009-02-09  Alan McGovern  <alan.mcgovern@gmail.com>
+
 	* panel.h:
 	* shape.h:
 	* shape.cpp:

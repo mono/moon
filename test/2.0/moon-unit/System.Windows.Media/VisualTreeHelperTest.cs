@@ -407,7 +407,6 @@ namespace MoonTest.System.Windows.Media
 					
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void HitTest18()
 		{
 			Border b = new Border {CornerRadius = new CornerRadius(50),
@@ -421,7 +420,7 @@ namespace MoonTest.System.Windows.Media
 				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(10, 10), Root));
 				Assert.AreEqual(0, hits.Count, "#1");
 				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(50, 50), Root));
-				Assert.AreEqual(2, hits.Count, "#1");
+				Assert.AreEqual(2, hits.Count, "#2");
 			});
 		}
 					
@@ -443,7 +442,6 @@ namespace MoonTest.System.Windows.Media
 		
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void HitTest20()
 		{
 			Rectangle r = new Rectangle {
@@ -458,13 +456,12 @@ namespace MoonTest.System.Windows.Media
 				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(50, 5), Root));
 				Assert.AreEqual(0, hits.Count, "#1");
 				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(5, 50), Root));
-				Assert.AreEqual(2, hits.Count, "#1");
+				Assert.AreEqual(2, hits.Count, "#2");
 			});
 		}
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void HitTest21()
 		{
 			Rectangle r = new Rectangle {
@@ -488,7 +485,7 @@ namespace MoonTest.System.Windows.Media
 		[TestMethod]
 		[Asynchronous]
 		[Ignore ("This makes moon hang")]
-		public void ___HitTest22()
+		public void HitTest22()
 		{
 			PathFigure figure = new PathFigure { IsFilled = true, StartPoint = new Point(10, 0) };
 			figure.Segments.Add(new LineSegment { Point = new Point(20, 10) });

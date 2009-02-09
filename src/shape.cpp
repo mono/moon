@@ -667,6 +667,18 @@ Shape::InsideObject (cairo_t *cr, double x, double y)
 	if (!extents.PointInside (x, y))
 		return false;
 
+	Geometry *clip = GetClip ();
+	if (clip) {
+		cairo_save (cr);
+		cairo_new_path (cr);
+		clip->Draw (cr);
+		ret = cairo_in_fill (cr, x, y);
+		if (!ret)
+			ret = cairo_in_stroke (cr, x, y);
+		cairo_restore (cr);
+		if (!ret)
+			return false; 
+	}
 
 	cairo_save (cr);
 	DoDraw (cr, false);

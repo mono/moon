@@ -222,6 +222,7 @@ FrameworkElement::FindElementsInHostCoordinates (cairo_t *cr, Point p, List *uie
 	
 	// first a quick bounds check
 	Rect r(0, 0, GetWidth (), GetHeight ());
+	r = r.Transform (&absolute_xform);
 	if (r.IsEmpty (true) || !r.GrowBy (1, 1, 1, 0).PointInside (p.x, p.y))
 		return;
 

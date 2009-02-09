@@ -190,6 +190,13 @@ Border::InsideObject (cairo_t *cr, double x, double y)
 	return false;
 }
 
+bool
+Border::InsideFillOrClip (cairo_t *cr, double x, double y)
+{
+	Rect r (0, 0, GetActualWidth (), GetActualHeight ());
+	return r.GrowBy (1, 1, 1, 0).PointInside (x, y);
+}
+
 void
 Border::HitTest (cairo_t *cr, Rect r, List *uielement_list)
 {

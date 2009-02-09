@@ -1,3 +1,9 @@
+2009-02-09  Alan McGovern  <alan.mcgovern@gmail.com>
+
+	* System.Windows.Media/VisualTreeHelperTest.cs: Three more of
+	  the NUnit tests are now passing for
+	  FindElementsInHostCoordinates
+
 2009-02-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Automation.Peers/TextBlockAutomationPeerTest.cs: New
