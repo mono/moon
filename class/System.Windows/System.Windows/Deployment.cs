@@ -103,11 +103,13 @@ namespace System.Windows {
 			}
 		}
 		
+		[SecurityCritical]
 		internal void InitializePluginHost (IntPtr plugin) {
 			if (plugin != IntPtr.Zero)
 				PluginHost.SetPluginHandle (plugin);
 		}
 
+		[SecurityCritical]
 		internal bool ExtractXap (string xapPath) {
 			xap_dir = NativeMethods.xap_unpack (xapPath);
 			if (xap_dir == null){
@@ -117,6 +119,7 @@ namespace System.Windows {
 			return true;
 		}
 
+		[SecurityCritical]
 		internal bool ReadManifest () {
 			XamlLoader loader = XamlLoader.CreateManagedXamlLoader (Surface.Native, PluginHost.Handle);
 			string app_manifest = Path.Combine (XapDir, "AppManifest.xaml");
@@ -151,6 +154,7 @@ namespace System.Windows {
 			return true;
 		}
 			
+		[SecurityCritical]
 		internal bool InitializeDeployment (IntPtr plugin, string xapPath) {
 			InitializePluginHost (plugin);
 			if (!ExtractXap (xapPath))

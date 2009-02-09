@@ -26,6 +26,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System.Security;
 using System.Runtime.InteropServices;
 using Mono;
 
@@ -47,6 +48,7 @@ namespace System.Windows.Interop {
 		static IntPtr plugin_handle;
 		static Uri root_uri;
 
+		[SecurityCritical]
 		public static void SetPluginHandle (IntPtr value)
 		{
 			string location = Marshal.PtrToStringAnsi (NativeMethods.plugin_instance_get_source_location (value));

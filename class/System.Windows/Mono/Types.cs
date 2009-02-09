@@ -29,6 +29,7 @@
 
 using Mono;
 using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
@@ -53,12 +54,12 @@ namespace Mono
 			foreach (Kind k in Enum.GetValues (typeof (Kind))) {
 				Type t = KindToType (k);
 				if (t == null) {
-					Console.Error.WriteLine ("Kind {0} missing from Types.g.cs", k);
+					Debug.WriteLine ("Kind {0} missing from Types.g.cs", k.ToString ());
 				}
 				else {
 					Kind k2 = TypeToKind (t);
 					if (k2 == Kind.INVALID)
-						Console.Error.WriteLine ("Type {0} missing from Types.g.cs", t);
+						Debug.WriteLine ("Type {0} missing from Types.g.cs", t.ToString ());
 				}
 			}
 #endif
