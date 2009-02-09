@@ -30,6 +30,7 @@ using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Markup;
 using System.Windows.Resources;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -100,7 +101,7 @@ namespace MoonTest.System.Windows {
 			// Note: Exception message can be misleading
 			Assert.Throws<ArgumentNullException> (() => Application.LoadComponent (Application.Current, null), "LoadComponent(app,null)");
 			Assert.Throws<ArgumentException> (() => Application.LoadComponent (Application.Current, uri), "LoadComponent(app,uri)");
-			Assert.Throws<ArgumentException> (() => Application.LoadComponent (Application.Current, Application.Current.Host.Source), "LoadComponent(app,xap)");
+			Assert.Throws<XamlParseException> (() => Application.LoadComponent (Application.Current, Application.Current.Host.Source), "LoadComponent(app,xap)");
 
 			// try to load an unexisting uri
 			Application.LoadComponent (Application.Current, new Uri ("/moon_unit;component/App-does-not-exists.xaml", UriKind.Relative));
