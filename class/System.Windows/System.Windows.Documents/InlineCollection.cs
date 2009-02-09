@@ -33,7 +33,11 @@ namespace System.Windows.Documents {
 	public sealed partial class InlineCollection : PresentationFrameworkCollection<Inline> {
 		public void Add (string text)
 		{
-			throw new NotImplementedException ();
+			Run run = new Run ();
+			
+			run.Text = text;
+			
+			Add (run);
 		}
 	}
 }

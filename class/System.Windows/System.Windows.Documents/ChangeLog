@@ -1,3 +1,7 @@
+2009-02-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* InlineCollection.cs (Add): Implemented.
+
 2009-02-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* FontSource.cs: Add MonoTODO since this does *nothing* right now
