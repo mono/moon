@@ -1,3 +1,9 @@
+2009-02-09  Jackson Harper  <jackson@ximian.com>
+
+	* MarkupExpressionParser.cs: Clean up the expression matching to
+	use regexs and advance past to the end of white space. This also
+	fixes matching things like {  StaticResource.
+
 2009-02-08  Chris Toshok  <toshok@ximian.com>
 
 	* MarkupExpressionParser.cs (HandleProperty): kinda gross, and

@@ -66,29 +66,35 @@ namespace Mono.Xaml {
 			return Regex.IsMatch (expression, "{\\s*Binding");
 		}
 
+		private delegate object ExpressionHandler (ref string expression);
+
 		public object ParseExpression (ref string expression)
 		{
-			if (expression.StartsWith ("{Binding")) {
-				int len = "{Binding".Length;
-				expression = expression.Substring (len, expression.Length - len);
-				expression = expression.TrimStart ();
+			string orig = expression;
 
-				return ParseBinding (ref expression);
-			} else if (expression.StartsWith ("{StaticResource")) {
-				int len = "{StaticResource".Length;
-				expression = expression.Substring (len, expression.Length - len);
-				expression = expression.TrimStart ();
+			object result = null;
+			if (TryHandler ("{\\s*Binding\\s*", ParseBinding, ref expression, out result))
+				;
+			else if (TryHandler ("{\\s*StaticResource\\s*", ParseStaticResource, ref expression, out result))
+				;
+			else if (TryHandler ("{\\s*TemplateBinding\\s*", ParseTemplateBinding, ref expression, out result))
+				;
 
-				return ParseStaticResource (ref expression);
-			} else if (expression.StartsWith ("{TemplateBinding")) {
-				int len = "{TemplateBinding".Length;
-				expression = expression.Substring (len, expression.Length - len);
-				expression = expression.TrimStart ();
+			return result;
+		}
 
-				ParseTemplateBinding (ref expression);
+		private bool TryHandler (string match, ExpressionHandler handler, ref string expression, out object result)
+		{
+			Match m = Regex.Match (expression, match);
+			if (m == Match.Empty) {
+				result = null;
+				return false;
 			}
 
-			return null;
+			int len = m.Index + m.Length;
+			expression = expression.Substring (len);
+			result = handler (ref expression);
+			return true;
 		}
 
 		public Binding ParseBinding (ref string expression)
@@ -132,16 +138,18 @@ namespace Mono.Xaml {
 				o = Application.Current.Resources [name];
 #endif
 
+			Console.WriteLine ("static resource:  '{0}'  is {1}", name, o);
 			return o;
 		}
 
-		public void ParseTemplateBinding (ref string expression)
+		public object ParseTemplateBinding (ref string expression)
 		{
 			char next;
 			string prop = GetNextPiece (ref expression, out next);
 			FrameworkTemplate template = GetParentTemplate ();
 
 			template.AddXamlBinding (target, attribute_name, prop);
+			return null;
 		}
 
 		private object LookupNamedResource (DependencyObject dob, string name)
