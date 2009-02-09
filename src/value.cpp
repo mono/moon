@@ -76,6 +76,7 @@ Value::Init ()
 {
 	padding = 0;
 	memset (&u, 0, sizeof (u));
+	SetIsNull (true);
 }
 
 Value::Value()
@@ -89,6 +90,8 @@ Value::Value (const Value& v)
 	padding = v.padding;
 	k = v.k;
 	u = v.u;
+
+	SetIsNull (((Value)v).GetIsNull());
 
 	/* make a copy of the string instead of just the pointer */
 	switch (k) {
@@ -171,6 +174,7 @@ Value::Value(bool z)
 	Init ();
 	k = Type::BOOL;
 	u.i32 = z;
+	SetIsNull (false);
 }
 
 Value::Value (double d)
@@ -178,6 +182,7 @@ Value::Value (double d)
 	Init ();
 	k = Type::DOUBLE;
 	u.d = d;
+	SetIsNull (false);
 }
 
 Value::Value (gint64 i, Type::Kind as)
@@ -185,6 +190,7 @@ Value::Value (gint64 i, Type::Kind as)
 	Init ();
 	k = as;
 	u.i64 = i;
+	SetIsNull (false);
 }
 
 Value::Value (gint32 i)
@@ -192,6 +198,7 @@ Value::Value (gint32 i)
 	Init ();
 	k = Type::INT32;
 	u.i32 = i;
+	SetIsNull (false);
 }
 
 
@@ -200,6 +207,7 @@ Value::Value (guint32 i)
 	Init ();
 	k = Type::UINT32;
 	u.ui32 = i;
+	SetIsNull (false);
 }
 
 Value::Value (Color c)
@@ -208,6 +216,7 @@ Value::Value (Color c)
 	k = Type::COLOR;
 	u.color = g_new (Color, 1);
 	*u.color = Color (c);
+	SetIsNull (false);
 }
 
 Value::Value (EventObject* obj)
@@ -225,6 +234,7 @@ Value::Value (EventObject* obj)
 		}
 		k = obj->GetObjectType ();
 		obj->ref ();
+		SetIsNull (false);
 	}
 	u.dependency_object = obj;
 }
@@ -235,6 +245,7 @@ Value::Value (FontFamily family)
 	k = Type::FONTFAMILY;
 	u.fontfamily = g_new (FontFamily, 1);
 	u.fontfamily->source = g_strdup (family.source);
+	SetIsNull (false);
 }
 
 Value::Value (PropertyPath propertypath)
@@ -243,6 +254,7 @@ Value::Value (PropertyPath propertypath)
 	k = Type::PROPERTYPATH;
 	u.propertypath = g_new (PropertyPath, 1);
 	u.propertypath->path = g_strdup (propertypath.path);
+	SetIsNull (false);
 }
 
 Value::Value (Type::Kind kind, void *npobj)
@@ -250,6 +262,7 @@ Value::Value (Type::Kind kind, void *npobj)
 	Init ();
 	k = kind;
 	u.managed_object = npobj;
+	SetIsNull (npobj == NULL);
 }
 
 Value::Value (Point pt)
@@ -258,6 +271,7 @@ Value::Value (Point pt)
 	k = Type::POINT;
 	u.point = g_new (Point, 1);
 	*u.point = Point (pt);
+	SetIsNull (false);
 }
 
 Value::Value (Rect rect)
@@ -266,6 +280,7 @@ Value::Value (Rect rect)
 	k = Type::RECT;
 	u.rect = g_new (Rect, 1);
 	*u.rect = Rect (rect);
+	SetIsNull (false);
 }
 
 Value::Value (Size size)
@@ -274,6 +289,7 @@ Value::Value (Size size)
 	k = Type::SIZE;
 	u.size = g_new (Size, 1);
 	*u.size = Size (size);
+	SetIsNull (false);
 }
 
 Value::Value (RepeatBehavior repeat)
@@ -282,6 +298,7 @@ Value::Value (RepeatBehavior repeat)
 	k = Type::REPEATBEHAVIOR;
 	u.repeat = g_new (RepeatBehavior, 1);
 	*u.repeat = RepeatBehavior (repeat);
+	SetIsNull (false);
 }
 
 Value::Value (Duration duration)
@@ -290,6 +307,7 @@ Value::Value (Duration duration)
 	k = Type::DURATION;
 	u.duration = g_new (Duration, 1);
 	*u.duration = Duration (duration);
+	SetIsNull (false);
 }
 
 Value::Value (KeyTime keytime)
@@ -298,6 +316,7 @@ Value::Value (KeyTime keytime)
 	k = Type::KEYTIME;
 	u.keytime = g_new (KeyTime, 1);
 	*u.keytime = KeyTime (keytime);
+	SetIsNull (false);
 }
 
 Value::Value (const char *s, bool take)
@@ -306,6 +325,7 @@ Value::Value (const char *s, bool take)
 	k = Type::STRING;
 	
 	u.s = take ? (char *) s : g_strdup (s);
+	SetIsNull (s == NULL);
 }
 
 Value::Value (GridLength grid_length)
@@ -314,6 +334,7 @@ Value::Value (GridLength grid_length)
 	k = Type::GRIDLENGTH;
 	u.grid_length = g_new (GridLength, 1);
 	*u.grid_length = GridLength (grid_length);
+	SetIsNull (false);
 }
 
 Value::Value (Thickness thickness)
@@ -322,6 +343,7 @@ Value::Value (Thickness thickness)
 	k = Type::THICKNESS;
 	u.thickness = g_new (Thickness, 1);
 	*u.thickness = Thickness (thickness);
+	SetIsNull (false);
 }
 
 Value::Value (CornerRadius corner)
@@ -330,6 +352,7 @@ Value::Value (CornerRadius corner)
 	k = Type::CORNERRADIUS;
 	u.corner = g_new (CornerRadius, 1);
 	*u.corner = CornerRadius (corner);
+	SetIsNull (false);
 }
 
 Value::Value (ManagedTypeInfo type_info)
@@ -338,6 +361,7 @@ Value::Value (ManagedTypeInfo type_info)
 	k = Type::MANAGEDTYPEINFO;
 	u.type_info = g_new (ManagedTypeInfo, 1);
 	*u.type_info = ManagedTypeInfo (type_info);
+	SetIsNull (false);
 }
 
 void
@@ -394,9 +418,6 @@ Value::FreeValue ()
 char *
 Value::ToString ()
 {
-	if (this == NULL)
-		return g_strdup ("NULL");
-	
 	GString *str = g_string_new ("");
 	
 	switch (k) {

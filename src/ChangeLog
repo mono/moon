@@ -1,3 +1,8 @@
+2009-02-09  Chris Toshok  <toshok@ximian.com>
+
+	* value.cpp: call SetIsNull everywhere so we can always check
+	GetIsNull.
+
 2009-02-09  Alan McGovern  <alan.mcgovern@gmail.com>
 
 	* border.h:
