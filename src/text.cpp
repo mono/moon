@@ -64,7 +64,7 @@ Inline::Equals (Inline *item)
 	if (item->GetObjectType () != GetObjectType ())
 		return false;
 	
-	if (*item->GetFontFamily() == *GetFontFamily())
+	if (*item->GetFontFamily () != *GetFontFamily ())
 		return false;
 	
 	if (item->GetFontSize () != GetFontSize ())

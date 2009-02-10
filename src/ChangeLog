@@ -1,5 +1,7 @@
 2009-02-10  Jeffrey Stedfast  <fejj@novell.com>
 
+	* text.cpp (Inline::Equals): Fixed the fontfamily check.
+
 	* provider.cpp (AutoCreatePropertyValueProvider::SetSurface): Removed.
 
 	* dependencyobject.cpp (DependencyObject::Dispose): Fixed to
