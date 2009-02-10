@@ -384,7 +384,7 @@ class Generator {
 			bool is_readonly = field.IsDPReadOnly;
 			bool is_always_change = field.IsDPAlwaysChange;
 			string validator = field.DPValidator;
-			bool is_full = is_attached || is_readonly || is_always_change || validator != null;
+			bool is_full = is_autocreate || is_attached || is_readonly || is_always_change || validator != null;
 
 			propertyType = field.GetDPPropertyType (all);
 			
