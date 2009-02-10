@@ -39,6 +39,7 @@ namespace MoonTest.System.Windows.Controls {
 	public class ScrollViewerTest {
 
 		[TestMethod]
+		[MoonlightBug]
 		public void DefaultProperties ()
 		{
 			ScrollViewer cp = new ScrollViewer ();

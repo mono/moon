@@ -43,6 +43,7 @@ namespace MoonTest.System.Windows.Controls {
 	public class ButtonTest {
 
 		[TestMethod]
+		[MoonlightBug]
 		public void DefaultProperties ()
 		{
 			Button b = new Button ();

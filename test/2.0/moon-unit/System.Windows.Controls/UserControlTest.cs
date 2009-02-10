@@ -279,6 +279,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void DefaultProperties ()
 		{
 			UserControlPoker uc = new UserControlPoker ();

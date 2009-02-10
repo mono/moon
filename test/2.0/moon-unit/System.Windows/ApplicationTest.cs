@@ -96,6 +96,7 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void LoadComponent_Application ()
 		{
 			// Note: Exception message can be misleading

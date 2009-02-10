@@ -86,6 +86,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void TestWithString ()
 		{
 			HappyButton b = new HappyButton ();

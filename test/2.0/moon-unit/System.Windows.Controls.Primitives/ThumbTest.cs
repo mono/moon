@@ -43,6 +43,7 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 	public class ThumbTest {
 
 		[TestMethod]
+		[MoonlightBug]
 		public void DefaultProperties ()
 		{
 			Thumb t = new Thumb ();

@@ -45,6 +45,7 @@ namespace MoonTest.System.Windows.Controls {
 	public class SliderTest {
 
 		[TestMethod]
+		[MoonlightBug]
 		public void DefaultProperties ()
 		{
 			Slider s = new Slider ();

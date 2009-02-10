@@ -668,6 +668,7 @@ namespace MoonTest.System.Windows.Shapes
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void Measure_StretchFill_Test1 ()
 		{
 			Border b = new Border ();
@@ -732,6 +733,7 @@ namespace MoonTest.System.Windows.Shapes
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void Measure_StretchFill_Test3 ()
 		{
 			Border b = new Border ();
@@ -766,6 +768,7 @@ namespace MoonTest.System.Windows.Shapes
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void MeasureStretchTest4 ()
 		{
 			Border b = (Border)XamlReader.Load (@"

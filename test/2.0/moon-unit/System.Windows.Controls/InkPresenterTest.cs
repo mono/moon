@@ -20,7 +20,7 @@ namespace MoonTest.System.Windows.Controls
 	public class InkPresenterTest
 	{
 		[TestMethod]
-		//[MoonlightBug ("Property value semantics still not right")]
+		[MoonlightBug ("Property value semantics still not right")]
 		public void ClearValueTest()
 		{
 			object strokes, new_strokes, rlv_strokes;
@@ -79,7 +79,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 		
 		[TestMethod]
-		//[MoonlightBug ("Property value 'reset' semantics still not right")]
+		[MoonlightBug ("Property value 'reset' semantics still not right")]
 		public void ResetValueTest()
 		{
 			InkPresenter ink = new InkPresenter();

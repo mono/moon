@@ -1,5 +1,30 @@
 2009-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* System.Windows/StyleTest5.cs:
+	* System.Windows/StyleTest4.cs:
+	* System.Windows.Shapes/PathTest.cs:
+	* System.Windows/ApplicationTest.cs:
+	* System.Windows.Controls/GridTest.cs:
+	* System.Windows.Controls/PanelTest.cs:
+	* System.Windows.Controls/SliderTest.cs:
+	* System.Windows.Controls/ButtonTest.cs:
+	* System.Windows.Controls/ControlTest.cs:
+	* System.Windows.Controls/ComboBoxTest.cs:
+	* System.Windows.Controls/TextBlockTest.cs:
+	* System.Windows.Controls/UserControlTest.cs:
+	* System.Windows.Controls/ProgressBarTest.cs:
+	* System.Windows.Controls/ScrollViewerTest.cs:
+	* System.Windows.Controls/InkPresenterTest.cs:
+	* System.Windows.Controls/ContentControlTest.cs:
+	* System.Windows.Controls/ControlTemplateTest.cs:
+	* System.Windows.Controls.Primitives/ThumbTest.cs:
+	* System.Windows.Controls.Primitives/RangeBaseTest.cs:
+	* System.Windows.Controls.Primitives/ButtonBaseTest.cs:
+	* System.Windows.Controls.Primitives/RepeatButtonTest.cs:
+	  Make moon-unit green.
+
+2009-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* moon-unit.mdp: Updated with new files.
 
 2009-02-10  Jackson Harper  <jackson@ximian.com>

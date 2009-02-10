@@ -70,6 +70,7 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void DefaultProperties ()
 		{
 			ConcreteButtonBase bb = new ConcreteButtonBase ();

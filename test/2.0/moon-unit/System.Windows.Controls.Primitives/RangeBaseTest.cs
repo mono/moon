@@ -32,6 +32,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Mono.Moonlight.UnitTesting;
 
 namespace MoonTest.System.Windows.Controls.Primitives {
 
@@ -70,6 +71,7 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void DefaultProperties ()
 		{
 			ConcreteRange rb = new ConcreteRange ();

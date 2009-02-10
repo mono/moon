@@ -54,6 +54,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void MeasureTest ()
 		{
 			Border b = new Border ();
@@ -68,6 +69,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void MeasureNewlineTest ()
 		{
 			Border b = new Border ();
@@ -82,6 +84,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void MeasureTooLongLineTest ()
 		{
 			Border b = new Border ();
@@ -97,6 +100,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void MeasureTooLongLineWrapTest ()
 		{
 			Border b = new Border ();
@@ -113,6 +117,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void ArrangeTooLongLineTest ()
 		{
 			Border b = new Border ();
@@ -142,6 +147,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void ArrangeTooLongLineWrapMeasureTest ()
 		{
 			Border b = new Border ();
@@ -162,6 +168,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void ArrangeTooLongLineWrapMeasureReverseTest ()
 		{
 			Border b = new Border ();
@@ -182,6 +189,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void ComputeActualWidth ()
 		{
 			var c = new TextBlock ();

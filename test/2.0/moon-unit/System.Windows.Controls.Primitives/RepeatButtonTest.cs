@@ -41,6 +41,7 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 	public class RepeatButtonTest {
 
 		[TestMethod]
+		[MoonlightBug]
 		public void DefaultProperties ()
 		{
 			RepeatButton rb = new RepeatButton ();

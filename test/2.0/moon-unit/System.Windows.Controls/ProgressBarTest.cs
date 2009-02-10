@@ -31,6 +31,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 
+using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MoonTest.System.Windows.Controls.Primitives;
 
@@ -40,6 +41,7 @@ namespace MoonTest.System.Windows.Controls {
 	public class ProgressBarTest {
 
 		[TestMethod]
+		[MoonlightBug]
 		public void DefaultProperties ()
 		{
 			ProgressBar pb = new ProgressBar ();

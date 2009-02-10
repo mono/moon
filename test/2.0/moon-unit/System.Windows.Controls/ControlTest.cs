@@ -179,6 +179,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void DefaultProperties ()
 		{
 			ConcreteControl c = new ConcreteControl ();

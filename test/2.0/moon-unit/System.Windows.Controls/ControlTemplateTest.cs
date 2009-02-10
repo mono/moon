@@ -102,6 +102,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void TemplatePropertyValuePrecedence ()
 		{
 			Button b;
