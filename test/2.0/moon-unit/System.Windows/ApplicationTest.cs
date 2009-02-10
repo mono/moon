@@ -96,7 +96,7 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
+		[MoonlightBug ("This isn't actually a bug, it just occurs when you run the tests from a file instead of over http.")]
 		public void LoadComponent_Application ()
 		{
 			// Note: Exception message can be misleading
