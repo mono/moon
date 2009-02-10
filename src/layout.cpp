@@ -340,7 +340,7 @@ TextLayout::GetLayoutExtents (double *width, double *height)
 
 #if DEBUG
 static void
-print_run_text (TextRun *run, const char *msg)
+print_run_text (TextRun *run)
 {
 	register const gunichar *inptr = run->Text ();
 	const gunichar *inend = inptr + run->Length ();
@@ -351,7 +351,7 @@ print_run_text (TextRun *run, const char *msg)
 		inptr++;
 	}
 	
-	printf ("%s = \"%s\"\n", msg, str->str);
+	printf ("\"%s\"", str->str);
 	
 	g_string_free (str, true);
 }
@@ -432,6 +432,7 @@ TextLayout::LayoutWrapWithOverflow ()
 	const gunichar *text, *word, *inend;
 	GUnicodeBreakType btype;
 	bool underlined = false;
+	TextRun *nextrun, *run;
 	TextSegment *segment;
 	double descend = 0.0;
 	double height = 0.0;
@@ -443,7 +444,7 @@ TextLayout::LayoutWrapWithOverflow ()
 	double advance;
 	int cursor = 0;
 	guint32 prev;
-	TextRun *run;
+	double kern;
 	
 	if (OverrideLineHeight ())
 		height = line_height;
@@ -620,7 +621,19 @@ TextLayout::LayoutWrapWithOverflow ()
 			blank = false;
 		} while (inptr < inend);
 		
-		segment->advance = x1 - x0;
+		// kern with the beginning of the next run
+		nextrun = (TextRun *) run->next;
+		kern = 0.0;
+		
+		if (nextrun && !nextrun->IsLineBreak () && nextrun->Font () == font) {
+			inptr = nextrun->Text ();
+			if ((glyph = font->GetGlyphInfo (*inptr))) {
+				if (glyph->metrics.horiBearingX < 0)
+					kern = -glyph->metrics.horiBearingX;
+			}
+		}
+		
+		segment->advance = (x1 - x0) - kern;
 		line->segments->Append (segment);
 		
 		x0 = x1;
@@ -646,6 +659,7 @@ TextLayout::LayoutNoWrap ()
 	GUnicodeBreakType btype;
 	bool underlined = false;
 	bool clipped = false;
+	TextRun *nextrun, *run;
 	TextSegment *segment;
 	double descend = 0.0;
 	double height = 0.0;
@@ -657,7 +671,7 @@ TextLayout::LayoutNoWrap ()
 	double advance;
 	int cursor = 0;
 	guint32 prev;
-	TextRun *run;
+	double kern;
 	
 	if (OverrideLineHeight ())
 		height = line_height;
@@ -803,7 +817,19 @@ TextLayout::LayoutNoWrap ()
 			}
 		} while (inptr < inend);
 		
-		segment->advance = x1 - x0;
+		// kern with the beginning of the next run
+		nextrun = (TextRun *) run->next;
+		kern = 0.0;
+		
+		if (nextrun && !nextrun->IsLineBreak () && nextrun->Font () == font) {
+			inptr = nextrun->Text ();
+			if ((glyph = font->GetGlyphInfo (*inptr))) {
+				if (glyph->metrics.horiBearingX < 0)
+					kern = -glyph->metrics.horiBearingX;
+			}
+		}
+		
+		segment->advance = (x1 - x0) - kern;
 		line->segments->Append (segment);
 		
 		x0 = x1;
@@ -883,6 +909,7 @@ TextLayout::LayoutWrap ()
 	bool underlined = false;
 	bool last_word = false;
 	bool in_word = false;
+	TextRun *nextrun, *run;
 	TextSegment *segment;
 	double word_end = 0.0;
 	double descend = 0.0;
@@ -896,7 +923,7 @@ TextLayout::LayoutWrap ()
 	int cursor = 0;
 	GArray *array;
 	guint32 prev;
-	TextRun *run;
+	double kern;
 	WordChar wc;
 	bool after;
 	guint i;
@@ -967,7 +994,9 @@ TextLayout::LayoutWrap ()
 		segment = new TextSegment (run, 0);
 #if DEBUG
 		if (debug_flags & RUNTIME_DEBUG_LAYOUT) {
-			print_run_text (run, "Laying out Run.Text");
+			printf ("Laying out Run.Text: ");
+			print_run_text (run);
+			printf ("\n");
 			print_break_info (run);
 		}
 #endif
@@ -1191,7 +1220,19 @@ TextLayout::LayoutWrap ()
 			blank = false;
 		} while (inptr < inend);
 		
-		segment->advance = x1 - x0;
+		// kern with the beginning of the next run
+		nextrun = (TextRun *) run->next;
+		kern = 0.0;
+		
+		if (nextrun && !nextrun->IsLineBreak () && nextrun->Font () == font) {
+			inptr = nextrun->Text ();
+			if ((glyph = font->GetGlyphInfo (*inptr))) {
+				if (glyph->metrics.horiBearingX < 0)
+					kern = -glyph->metrics.horiBearingX;
+			}
+		}
+		
+		segment->advance = (x1 - x0) - kern;
 		line->segments->Append (segment);
 		
 		x0 = x1;
