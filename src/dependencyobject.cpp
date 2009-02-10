@@ -1186,7 +1186,7 @@ DependencyObject::UnregisterAllNamesRootedAt (NameScope *from_ns)
 		from_ns->UnregisterName (n);
 	
 	if (autocreate)
-		g_hash_table_foreach (autocreate->auto__values, unregister_depobj_names, from_ns);
+		g_hash_table_foreach (autocreate->auto_values, unregister_depobj_names, from_ns);
 	
 	g_hash_table_foreach (current_values, unregister_depobj_names, from_ns);
 }
