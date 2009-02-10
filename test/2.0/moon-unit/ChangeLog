@@ -1,3 +1,8 @@
+2009-02-10  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Media/VisualTreeHelperTest.cs: spaces->tabs
+	  for consistency.
+
 2009-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* moon-unit.csproj: Updated.
