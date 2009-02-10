@@ -58,10 +58,10 @@ XAML_RESOURCES= \
 	-res:System.Windows/DependencyPropertyTest_ManagedTest_D4.xaml,System.Windows/DependencyPropertyTest_ManagedTest_D4.xaml	\
 	-res:System.Windows/DependencyPropertyTest_ManagedTest_E1.xaml,System.Windows/DependencyPropertyTest_ManagedTest_E1.xaml	\
 	-res:System.Windows/DependencyPropertyTest_ManagedTest_E2.xaml,System.Windows/DependencyPropertyTest_ManagedTest_E2.xaml	\
-	-res:System.Windows/DependencyPropertyTest_ManagedTest_D1.xaml,System.Windows/DependencyPropertyTest_ManagedTest_F1.xaml	\
-	-res:System.Windows/DependencyPropertyTest_ManagedTest_D2.xaml,System.Windows/DependencyPropertyTest_ManagedTest_F2.xaml	\
-	-res:System.Windows/DependencyPropertyTest_ManagedTest_D3.xaml,System.Windows/DependencyPropertyTest_ManagedTest_F3.xaml	\
-	-res:System.Windows/DependencyPropertyTest_ManagedTest_D4.xaml,System.Windows/DependencyPropertyTest_ManagedTest_F4.xaml
+	-res:System.Windows/DependencyPropertyTest_ManagedTest_F1.xaml,System.Windows/DependencyPropertyTest_ManagedTest_F1.xaml	\
+	-res:System.Windows/DependencyPropertyTest_ManagedTest_F2.xaml,System.Windows/DependencyPropertyTest_ManagedTest_F2.xaml	\
+	-res:System.Windows/DependencyPropertyTest_ManagedTest_F3.xaml,System.Windows/DependencyPropertyTest_ManagedTest_F3.xaml	\
+	-res:System.Windows/DependencyPropertyTest_ManagedTest_F4.xaml,System.Windows/DependencyPropertyTest_ManagedTest_F4.xaml
 	
 SOURCES= \
 	$(wildcard $(srcdir)/*.xaml.cs)	\
