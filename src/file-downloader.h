@@ -16,8 +16,6 @@
 
 #include <glib.h>
 
-G_BEGIN_DECLS
-
 #include "internal-downloader.h"
 #include "downloader.h"
 
@@ -56,7 +54,5 @@ class FileDownloader : public InternalDownloader {
 
 	void setFilename (char *fname) { if (filename) g_free (filename); filename = g_strdup (fname); }
 };
-
-G_END_DECLS
 
 #endif

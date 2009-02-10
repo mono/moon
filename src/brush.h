@@ -16,8 +16,6 @@
 
 #include <glib.h>
 
-G_BEGIN_DECLS
-
 #include "enums.h"
 #include "collection.h"
 
@@ -411,7 +409,5 @@ class VisualBrush : public TileBrush {
 	void SetVisual (UIElement *visual);
 	UIElement *GetVisual ();
 };
-
-G_END_DECLS
 
 #endif /* __BRUSH_H__ */

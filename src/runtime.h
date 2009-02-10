@@ -16,8 +16,6 @@
 
 #include <glib.h>
 
-G_BEGIN_DECLS
-
 #include <stdint.h>
 #include <cairo.h>
 #include <gtk/gtkwidget.h>
@@ -394,6 +392,7 @@ private:
 
 };
 
+G_BEGIN_DECLS
 
 void     runtime_init (guint64 flags);
 

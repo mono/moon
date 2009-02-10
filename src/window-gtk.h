@@ -15,9 +15,6 @@
 #define __MOON_WINDOW_GTK_H__
 
 #include <glib.h>
-
-G_BEGIN_DECLS
-
 #include <gtk/gtk.h>
 
 #include "window.h"
@@ -75,7 +72,5 @@ private:
 	void InitializeNormal ();
 	void InitializeCommon ();
 };
-
-G_END_DECLS
 
 #endif /* __MOON_WINDOW_GTK_H__ */

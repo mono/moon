@@ -13,8 +13,6 @@
 
 #include <glib.h>
 
-G_BEGIN_DECLS
-
 #include "control.h"
 
 //
@@ -41,6 +39,8 @@ public:
 	virtual Size MeasureOverride (Size availableSize);
 	virtual Size ArrangeOverride (Size finalSize);
 };
+
+G_BEGIN_DECLS
 
 UIElement *user_control_get_content (UserControl *user_control);
 

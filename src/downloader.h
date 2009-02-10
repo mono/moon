@@ -16,8 +16,6 @@
 
 #include <glib.h>
 
-G_BEGIN_DECLS
-
 #include <stdint.h>
 #include <cairo.h>
 
@@ -252,6 +250,8 @@ class DownloaderRequest : public IDownloader {
 	DownloaderResponse *GetDownloaderResponse () { return response; }
 	void SetDownloaderResponse (DownloaderResponse *value) { response = value; }
 };
+
+G_BEGIN_DECLS
 
 double downloader_get_download_progress (Downloader *dl);
 
