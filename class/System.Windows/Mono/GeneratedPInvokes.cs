@@ -4,7 +4,6 @@
 
 using System;
 using System.Windows;
-using System.Security;
 using System.Runtime.InteropServices;
 
 namespace Mono {
@@ -1661,7 +1660,6 @@ namespace Mono {
 		[DllImport ("moon", EntryPoint="xap_unpack")]
 		// char *xap_unpack (const char *fname);
 		private extern static IntPtr xap_unpack_ (string fname);
-		[SecurityCritical]
 		public static string xap_unpack (string fname)
 		{
 			IntPtr result;
