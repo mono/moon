@@ -893,7 +893,6 @@ class XNamespace : public XamlNamespace {
 					      "You can't specify x:Name along with x:Key, or x:Key twice.");
 				return false;
 			}
-			printf ("setting key:  %s (%p)  %s\n", item->element_name, item, value);
 			item->SetKey (value);
 			return true;
 		}
