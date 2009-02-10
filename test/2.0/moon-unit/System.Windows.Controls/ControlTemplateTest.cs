@@ -102,7 +102,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
+		[MoonlightBug ("Foreground doesn't have a default value (see the DefaultProperties tests).")]
 		public void TemplatePropertyValuePrecedence ()
 		{
 			Button b;
