@@ -1,5 +1,33 @@
 2009-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* list.h:
+	* list.cpp: Add a simple ArrayList implementation.
+
+	* type.h:
+	* cbinding.h:
+	* cbinding.cpp:
+	* type-generated.cpp:
+	* dependencyproperty.g.cpp: Regenerated.
+
+	* dependencyproperty.h:
+	* dependencyproperty.cpp: RegisterCustom: removed, no longer
+	  used anywhere. RegisterNull: incorporated into
+	  RegisterFull. Register[Full]: take another Types* argument
+	  so that the registration doesn't have to look it up in the
+	  deployment for every call (this way we can later register
+	  dependency properties in the Types ctor). Also move any
+	  logic from the individial Register overloads to
+	  RegisterFull, this way we don't have different logic
+	  depending on the overload.
+
+	* type.cpp:
+	* type.h.in: Keep a list of all properties for all types on
+	  the Types* instance, and remove the custom properties (hash
+	  and list) on the Type* instance, keeping only one hash
+	  table for both native and custom properties.
+
+2009-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* brush.h:
 	* runtime.h:
 	* window-gtk.h:

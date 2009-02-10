@@ -65,17 +65,11 @@ class DependencyProperty {
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	void SetPropertyChangedCallback (NativePropertyChangedHandler *changed_callback);
 
-	/* @GenerateCBinding */
-	static DependencyProperty *Register (Type::Kind type, const char *name, Value *default_value);
-	static DependencyProperty *Register (Type::Kind type, const char *name, Type::Kind vtype);
-	static DependencyProperty *Register (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype);
-	static DependencyProperty *RegisterNullable (Type::Kind type, const char *name, Type::Kind vtype, ValueValidator *validator = NULL);
-	static DependencyProperty *RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change = false, NativePropertyChangedHandler *changed_callback = NULL, ValueValidator *validator = NULL);
-	static DependencyProperty *RegisterFull (Type *type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator, bool is_custom);
+	static DependencyProperty *Register (Types *types, Type::Kind type, const char *name, Value *default_value);
+	static DependencyProperty *Register (Types *types, Type::Kind type, const char *name, Type::Kind vtype);
+	static DependencyProperty *Register (Types *types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype);
+	static DependencyProperty *RegisterFull (Types *types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator, bool is_custom, bool is_nullable);
 
-	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
-	static DependencyProperty *RegisterCustom (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler *changed_callback);
-	
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	static DependencyProperty *RegisterManagedProperty (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, NativePropertyChangedHandler *callback);
 	

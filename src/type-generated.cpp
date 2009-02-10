@@ -144,7 +144,7 @@ const char *TimeSource_Events [] = { "Tick", NULL };
 const char *UIElement_Events [] = { "GotFocus", "Invalidated", "KeyDown", "KeyUp", "Loaded", "LostFocus", "MouseEnter", "MouseLeave", "MouseLeftButtonDown", "MouseLeftButtonUp", "MouseMove", "Unloaded", NULL };
 
 void
-Types::RegisterStaticTypes ()
+Types::RegisterNativeTypes ()
 {
 	types [(int) Type::INVALID] = new Type (Type::INVALID, Type::INVALID, false, "INVALID", NULL, 0, 0, NULL, NULL, NULL );
 	types [(int) Type::ALSASOURCE] = new Type (Type::ALSASOURCE, Type::AUDIOSOURCE, false, "AlsaSource", "ALSASOURCE", 0, 1, NULL, NULL, NULL);

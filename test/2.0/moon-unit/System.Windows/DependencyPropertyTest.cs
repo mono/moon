@@ -1064,7 +1064,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void ManagedTest_E ()
 		{
 			ManagedTestClass mtc;

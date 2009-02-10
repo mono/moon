@@ -29,8 +29,6 @@ DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name,
 	this->name = g_strdup (name);
 	this->default_value = default_value;
 	this->property_type = property_type;
-	if (default_value && default_value->Is(Type::DEPENDENCY_OBJECT))
-		default_value->AsDependencyObject()->Freeze();
 	this->is_nullable = false;
 	this->is_attached = attached;
 	this->is_readonly = readonly;
@@ -165,23 +163,20 @@ DependencyProperty::GetDependencyProperty (Type *type, const char *name, bool in
 // Use this for values that can be null
 //
 DependencyProperty *
-DependencyProperty::Register (Type::Kind type, const char *name, Type::Kind vtype)
+DependencyProperty::Register (Types *types, Type::Kind type, const char *name, Type::Kind vtype)
 {
-	g_return_val_if_fail (name != NULL, NULL);
-
-	return RegisterFull (type, name, NULL, vtype, false, false, false, NULL);
+	return RegisterFull (types, type, name, NULL, vtype, false, false, false, NULL, NULL, false, false);
 }
 
 //
 // DependencyObject takes ownership of the Value * for default_value
 //
 DependencyProperty *
-DependencyProperty::Register (Type::Kind type, const char *name, Value *default_value)
+DependencyProperty::Register (Types *types, Type::Kind type, const char *name, Value *default_value)
 {
 	g_return_val_if_fail (default_value != NULL, NULL);
-	g_return_val_if_fail (name != NULL, NULL);
 
-	return RegisterFull (type, name, default_value, default_value->GetKind (), false, false, false, NULL);
+	return RegisterFull (types, type, name, default_value, default_value->GetKind (), false, false, false, NULL, NULL, false, false);
 }
 
 //
@@ -191,44 +186,20 @@ DependencyProperty::Register (Type::Kind type, const char *name, Value *default_
 // while the property type can be a Brush).
 //
 DependencyProperty *
-DependencyProperty::Register (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype)
+DependencyProperty::Register (Types *types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype)
 {
-	g_return_val_if_fail (default_value != NULL, NULL);
-	g_return_val_if_fail (name != NULL, NULL);
-
-	return RegisterFull (type, name, default_value, vtype, false, false, false, NULL);
-}
-
-DependencyProperty *
-DependencyProperty::RegisterNullable (Type::Kind type, const char *name, Type::Kind vtype, ValueValidator *validator)
-{
-	DependencyProperty *property;
-	property = Register (type, name, vtype);
-	property->is_nullable = true;
-	property->validator = validator ? validator : Validators::default_validator;
-	return property;
-}
-
-DependencyProperty *
-DependencyProperty::RegisterFull (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator)
-{
-	return RegisterFull (Type::Find (type), name, default_value, vtype, attached, readonly, always_change, changed_callback, validator, false);
-}
-
-DependencyProperty *
-DependencyProperty::RegisterCustom (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback)
-{
-	return RegisterFull (Type::Find (type), name, default_value, vtype, attached, readonly, always_change, changed_callback, NULL, true);
+	return RegisterFull (types, type, name, default_value, vtype, false, false, false, NULL, NULL, false, false);
 }
 
 DependencyProperty *
 DependencyProperty::RegisterManagedProperty (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *default_value, bool attached, bool readonly, NativePropertyChangedHandler *callback)
 {
+	Types *types = Deployment::GetCurrent ()->GetTypes ();
 	if (default_value && default_value->GetKind () == Type::INVALID)
 		default_value = NULL;
 	else
 		default_value = new Value (*default_value);
-	return DependencyProperty::RegisterFull (Type::Find(owner_type), name, default_value, property_type, attached, readonly, false, callback, NULL, true);
+	return DependencyProperty::RegisterFull (types, owner_type, name, default_value, property_type, attached, readonly, false, callback, NULL, true, false);
 }
 
 //
@@ -237,16 +208,22 @@ DependencyProperty::RegisterManagedProperty (const char *name, Type::Kind proper
 // stored in the dependency property is of type @vtype
 //
 DependencyProperty *
-DependencyProperty::RegisterFull (Type *type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator, bool is_custom)
+DependencyProperty::RegisterFull (Types *types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator, bool is_custom, bool is_nullable)
 {
 	DependencyProperty *property;
 	
-	if (type == NULL)
-		return NULL;
+	g_return_val_if_fail (types != NULL, NULL);
+	g_return_val_if_fail (type != Type::INVALID, NULL);
+	g_return_val_if_fail (name != NULL, NULL);
 	
-	property = new DependencyProperty (type->GetKind (), name, default_value, vtype, attached, readonly, always_change, changed_callback, validator, is_custom);
+	if (default_value && types->IsSubclassOf (default_value->GetKind (), Type::DEPENDENCY_OBJECT))
+		default_value->AsDependencyObject ()->Freeze();
+		
+	property = new DependencyProperty (type, name, default_value, vtype, attached, readonly, always_change, changed_callback, validator, is_custom);
+	property->is_nullable = is_nullable;
+	property->validator = validator ? validator : Validators::default_validator;
 	
-	type->AddProperty (property);
+	types->AddProperty (property);
 	
 	return property;
 }

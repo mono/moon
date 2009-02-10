@@ -37,8 +37,6 @@ Type::Type (Type::Kind type, Type::Kind parent, bool value_type, const char *nam
 	this->create_inst = create_inst;
 	this->content_property = content_property;
 	this->properties = NULL;
-	this->custom_properties_hash = NULL;
-	this->custom_properties = NULL;
 }
 		
 Type::~Type ()
@@ -47,39 +45,6 @@ Type::~Type ()
 		g_hash_table_destroy (properties);
 		properties = NULL;
 	}
-
-	if (custom_properties_hash != NULL)
-		g_hash_table_destroy (custom_properties_hash);
-		
-	if (custom_properties != NULL) {
-		GSList *current = custom_properties;
-		while (current != NULL) {
-			delete (DependencyProperty *) current->data;
-			current = current->next;
-		}
-		g_slist_free (custom_properties);
-	}
-}
-
-Type *
-Type::Clone ()
-{
-	Type *result = new Type ();
-	
-	result->type = type;
-	result->parent = parent;
-	result->value_type = value_type;
-	result->name = g_strdup (name);
-	result->kindname = g_strdup (kindname);
-	result->event_count = event_count;
-	result->total_event_count = total_event_count;
-	result->events = events;
-	result->create_inst = create_inst;
-	result->content_property = g_strdup (content_property);
-	result->properties = NULL;
-	result->custom_properties = NULL;
-	
-	return result;
 }
 
 const char *
@@ -143,32 +108,47 @@ Type::LookupEvent (const char *event_name)
 bool
 Type::IsSubclassOf (Type::Kind type, Type::Kind super)
 {
-	Type *t = Find (type);
-	if (t == NULL)
-		return false;
-	return t->IsSubclassOf (super);
+	return Deployment::GetCurrent ()->GetTypes ()->IsSubclassOf (type, super);
 }
 
 bool 
 Type::IsSubclassOf (Type::Kind super)
 {
-	Type *parent_type;
+	return Deployment::GetCurrent ()->GetTypes ()->IsSubclassOf (type, super);
+}
 
+bool
+Types::IsSubclassOf (Type::Kind type, Type::Kind super)
+{
+	Type *t;
+	Type::Kind parent;
+	
+	if (type == Type::INVALID)
+		return false;
+	
 	if (type == super)
 		return true;
-
-	if (parent == super)
-		return true;
-
-	if (parent == Type::INVALID || type == Type::INVALID)
-		return false;
-
-	parent_type = Type::Find (parent);
 	
-	if (parent_type == NULL)
-		return false;
+	t = Find (type);
 	
-	return parent_type->IsSubclassOf (super);
+	g_return_val_if_fail (t != NULL, false);
+	
+	do {
+		parent = t->GetParent ();
+		
+		if (parent == super)
+			return true;
+			
+		if (parent == Type::INVALID)
+			return false;
+		
+		t = Find (parent);
+		
+		if (t == NULL)
+			return false;		
+	} while (true);
+	
+	return false;
 }
 
 Type *
@@ -238,46 +218,28 @@ Type::LookupProperty (const char *name)
 			return property;
 	}
 	
-	if (custom_properties_hash != NULL) {
-		property = (DependencyProperty *) g_hash_table_lookup (custom_properties_hash, name);
-		
-		if (property != NULL)
-			return property;
-	}
-	
 	return NULL;
-}
-
-static void
-free_property (gpointer v)
-{
-	delete (DependencyProperty *) v;
 }
 
 void
 Type::AddProperty (DependencyProperty *property)
 {
-	g_return_if_fail (property != NULL);
-	
-	if (property->IsCustom ()) {
-		// Managed code is allowed to register several properties with the same name
-		// and they all get the callback called when the property value changes.
-		// See comment in type.h.
-		custom_properties = g_slist_prepend (custom_properties, property);
-		if (custom_properties_hash == NULL)
-			custom_properties_hash = g_hash_table_new (g_str_hash, g_str_equal);
-		g_hash_table_insert (custom_properties_hash, (gpointer) property->GetName (), property);
-	} else {
-		DependencyProperty *existing;
-		if (properties == NULL)
-			properties = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, free_property);
+	DependencyProperty *existing = NULL;
 
-		if ((existing = (DependencyProperty *) g_hash_table_lookup (properties, property->GetHashKey ())) != NULL) {
-			g_warning ("Type::AddProperty (): Trying to register the property '%s' (of type %s) in the owner type '%s', and there already is a property registered on that type with the same name.",
-				   property->GetName (), Type::Find (property->GetPropertyType ())->GetName(), GetName());
-		} else {
-			g_hash_table_insert (properties, (gpointer) property->GetHashKey (), property);
-		}
+	g_return_if_fail (property != NULL);
+
+	if (properties == NULL) {
+		properties = g_hash_table_new (g_str_hash, g_str_equal);
+	} else {
+		existing = (DependencyProperty *) g_hash_table_lookup (properties, property->GetHashKey ());
+	}
+
+	if (existing == NULL || existing->IsCustom ()) {
+		// Allow overwriting of custom properties
+		g_hash_table_insert (properties, (gpointer) property->GetHashKey (), property);
+	} else {
+		g_warning ("Type::AddProperty (): Trying to register the property '%s' (of type %s) in the owner type '%s', and there already is a property registered on that type with the same name.",
+			   property->GetName (), Type::Find (property->GetPropertyType ())->GetName(), GetName());	
 	}
 }
 
@@ -329,63 +291,48 @@ type_create_instance_from_kind (Type::Kind kind)
 Types::Types ()
 {
 	//printf ("Types::Types (). this: %p\n", this);
-	types = NULL;
-	size = 0;
-	count = 0;
-	EnsureSize ((int) Type::LASTTYPE + 1); // expand immediately to the builtin types we know we'll put into the array
-	RegisterStaticTypes ();
-	count = 1 + (int) Type::LASTTYPE;
-}
-
-Types::~Types ()
-{
-	//printf ("Types::~Types (). this: %p\n", this);
-	if (types != NULL) {
-		for (int i = 0; i < count; i++) {
-			if (types [i] != NULL)
-				delete types [i];
-		}
-		g_free (types);
-		types = NULL;
-		size = 0;
-		count = 0;
-	}
+	types.SetCount ((int) Type::LASTTYPE + 1);
+	RegisterNativeTypes ();
 }
 
 void
 Types::Initialize ()
 {
-	RegisterStaticDependencyProperties ();
+	RegisterNativeProperties ();
+}
+
+Types::~Types ()
+{
+	//printf ("Types::~Types (). this: %p\n", this);
+	for (int i = 0; i < properties.GetCount (); i++)
+		delete (DependencyProperty *) properties [i];
+	
+	for (int i = 0; i < types.GetCount (); i++)
+		delete (Type *) types [i];
 }
 
 void
-Types::EnsureSize (int size)
+Types::AddProperty (DependencyProperty *property)
 {
-	//printf ("Types::EnsureSize (%i). this: %p\n", size, this);
+	Type *type;
 	
-	Type **new_array;
+	g_return_if_fail (property != NULL);
 	
-	if (this->size > size)
-		return;
+	type = Find (property->GetOwnerType ());
 	
-	new_array = (Type **) g_malloc0 (size * sizeof (Type *));
-	if (this->types != NULL) {
-		for (int i = 0; i < count; i++)
-			new_array [i] = this->types [i];
-		g_free (this->types);
-		this->types = NULL;
-	}
-	types = new_array;
-	this->size = size;
+	g_return_if_fail (type != NULL);
+	
+	properties.Add (property);
+	type->AddProperty (property);
 }
 
 Type *
 Types::Find (Type::Kind type)
 {
-	if ((int) type + 1 > count)
+	if ((int) type + 1 > types.GetCount ())
 		return NULL;
 	
-	return types [(int) type];
+	return (Type *) types [(int) type];
 }
 
 Type *
@@ -397,12 +344,15 @@ Types::Find (const char *name)
 Type *
 Types::Find (const char *name, bool ignore_case)
 {
-	for (int i = 1; i < count; i++) { // 0 = INVALID, shouldn't compare against that
+	Type *t;
+	
+	for (int i = 1; i < types.GetCount (); i++) { // 0 = INVALID, shouldn't compare against that
 		if (i == Type::LASTTYPE)
 			continue;
-			
-		if ((ignore_case && !g_ascii_strcasecmp (types [i]->GetName (), name)) || !strcmp (types [i]->GetName (), name))
-			return types [i];
+	
+		t = (Type *) types [i];
+		if ((ignore_case && !g_ascii_strcasecmp (t->GetName (), name)) || !strcmp (t->GetName (), name))
+			return t;
 	}
 
 	return NULL;
@@ -411,16 +361,11 @@ Types::Find (const char *name, bool ignore_case)
 Type::Kind
 Types::RegisterType (const char *name, void *gc_handle, Type::Kind parent)
 {
-	Type::Kind type_id = (Type::Kind) count;
-	Type *type = new Type (type_id, parent, false, g_strdup (name), NULL, 0, Find (parent)->GetEventCount (), NULL, NULL, NULL);
+	Type *type = new Type (Type::INVALID, parent, false, g_strdup (name), NULL, 0, Find (parent)->GetEventCount (), NULL, NULL, NULL);
 	
 	// printf ("Types::RegisterType (%s, %p, %i (%s)). this: %p, size: %i, count: %i\n", name, gc_handle, parent, Type::Find (this, parent) ? Type::Find (this, parent)->name : NULL, this, size, count);
 	
-	EnsureSize (type_id + 1);
-
-	count++;
+	type->SetKind ((Type::Kind) types.Add (type));
 	
-	types [type_id] = type;
-	
-	return type_id;
+	return type->GetKind ();
 }

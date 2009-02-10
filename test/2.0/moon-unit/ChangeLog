@@ -1,5 +1,10 @@
 2009-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* System.Windows/DependencyPropertyTest.cs: This test is
+	  fixed now.
+
+2009-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* System.Windows/StyleTest5.cs:
 	* System.Windows/StyleTest4.cs:
 	* System.Windows.Shapes/PathTest.cs:

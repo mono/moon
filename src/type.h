@@ -18,6 +18,7 @@
 #define __TYPE_H__
 
 #include <glib.h>
+#include "list.h"
 
 class DependencyObject;
 class DependencyProperty;
@@ -302,6 +303,7 @@ public:
 	void AddProperty (DependencyProperty *property);
 	
 	Type::Kind GetKind () { return type; }
+	void SetKind (Type::Kind value) { type = value; }
 	Type::Kind GetParent () { return parent; }
 	bool IsValueType () { return value_type; }
 	bool IsCustomType () { return type > LASTTYPE; }
@@ -312,9 +314,6 @@ public:
 	Type (Type::Kind type, Type::Kind parent, bool value_type, const char *name, 
 		const char *kindname, int event_count, int total_event_count, const char **events, 
 		create_inst_func *create_inst, const char *content_property);
-	
-	
-	Type *Clone ();
 	
 private:
 	Type () {}
@@ -333,35 +332,22 @@ private:
 	create_inst_func *create_inst; // a function pointer to create an instance of this type
 
 	const char *content_property;
-	GHashTable *properties; // Registered DependencyProperties for this type
-
-	// Custom DependencyProperties for this type
+	
 	// The catch here is that SL allows us to register several DPs with the same name,
 	// and when looking up DP on name they seem to return the latest DP registered
 	// with that name.
-	// So we keep one list of all registed DPs (custom_properties) in order to track
-	// them all and free them upon shutdown, and a hash table to look up DP on name,
-	// and if an entry already exists for a DP in the hash table, we overwrite it 
-	// with the new DP.
-	GHashTable *custom_properties_hash;
-	GSList *custom_properties; 
+	GHashTable *properties; // Registered DependencyProperties for this type
 };
 
 class Types {
 	friend class Type;
 	
-	static bool registered_static_properties;
-	
 private:
-	Type **types;
-	int size; // The allocated size of the array
-	int count; // The number of elements in the array (<= length)
+	ArrayList types;
+	ArrayList properties;
 	
-	void EnsureSize (int size);
-	// Note that we need to clone native types here too, since user code can 
-	// register properties with native types.
-	void RegisterStaticTypes ();
-	void RegisterStaticDependencyProperties ();
+	void RegisterNativeTypes ();
+	void RegisterNativeProperties ();
 	
 public:
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
@@ -371,13 +357,16 @@ public:
 	
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Type::Kind RegisterType (const char *name, void *gc_handle, Type::Kind parent);
+	
+	void AddProperty (DependencyProperty *property);
+	
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Type *Find (Type::Kind type);
 	Type *Find (const char *name);
 	Type *Find (const char *name, bool ignore_case);
 	
-	// This method must be called right after creating the Types instance
-	// and the Types instance must be available from Deployment::GetCurrent ()
+	bool IsSubclassOf (Type::Kind type, Type::Kind super);
+	
 	void Initialize ();
 };
 

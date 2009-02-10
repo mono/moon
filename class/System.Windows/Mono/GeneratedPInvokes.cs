@@ -593,10 +593,6 @@ namespace Mono {
 		public extern static bool dependency_property_is_read_only (IntPtr instance);
 
 		[DllImport ("moon")]
-		// DependencyProperty *dependency_property_register_custom (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler *changed_callback);
-		public extern static IntPtr dependency_property_register_custom (Kind type, string name, ref Value default_value, Kind vtype, [MarshalAs (UnmanagedType.U1)] bool attached, [MarshalAs (UnmanagedType.U1)] bool read_only, [MarshalAs (UnmanagedType.U1)] bool always_change, Mono.NativePropertyChangedHandler changed_callback);
-
-		[DllImport ("moon")]
 		// DependencyProperty *dependency_property_register_managed_property (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, NativePropertyChangedHandler *callback);
 		public extern static IntPtr dependency_property_register_managed_property (string name, Kind property_type, Kind owner_type, ref Value defaultValue, [MarshalAs (UnmanagedType.U1)] bool attached, [MarshalAs (UnmanagedType.U1)] bool read_only, Mono.NativePropertyChangedHandler callback);
 

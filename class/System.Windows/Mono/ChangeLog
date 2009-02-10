@@ -1,3 +1,7 @@
+2009-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* GeneratedPInvokes.cs: Regenerated.
+
 2009-02-10  Jackson Harper  <jackson@ximian.com>
 
 	* XamlLoaderCallbacks.cs: Add the value data (xaml element

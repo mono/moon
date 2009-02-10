@@ -462,11 +462,6 @@ bool dependency_property_is_nullable (DependencyProperty *instance);
 /* @GeneratePInvoke */
 bool dependency_property_is_read_only (DependencyProperty *instance);
 
-DependencyProperty *dependency_property_register (Type::Kind type, const char *name, Value *default_value);
-
-/* @GeneratePInvoke */
-DependencyProperty *dependency_property_register_custom (Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler *changed_callback);
-
 /* @GeneratePInvoke */
 DependencyProperty *dependency_property_register_managed_property (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, NativePropertyChangedHandler *callback);
 

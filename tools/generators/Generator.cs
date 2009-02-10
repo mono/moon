@@ -368,17 +368,10 @@ class Generator {
 			text.AppendLine ("\"");
 		}
 		text.AppendLine ();
-		text.AppendLine ("bool Types::registered_static_properties = false;");
-		text.AppendLine ();
 		text.AppendLine ("void");
-		text.AppendLine ("Types::RegisterStaticDependencyProperties ()");
+		text.AppendLine ("Types::RegisterNativeProperties ()");
 		text.AppendLine ("{");
-		text.AppendLine ("\tif (Types::registered_static_properties)");
-		text.AppendLine ("\t\treturn;");
-		text.AppendLine ();
-		text.AppendLine ("\t// This breaks loading > 1 app per process Types::registered_static_properties = true;");
-		text.AppendLine ();
-		
+				
 		for (int i = 0; i < fields.Count; i++) {
 			FieldInfo field = fields [i];
 			TypeInfo type = field.ParentType;
@@ -406,75 +399,64 @@ class Generator {
 			text.Append ("::");
 			text.Append (field.Name);
 			text.Append (" = DependencyProperty::Register");
-			if (is_nullable)
-				text.Append ("Nullable");
-			else if (is_full)
+			if (is_full)
 				text.Append ("Full");
-			text.Append (" (Type::");
+			
+			text.Append (" (");
+			text.Append ("this, ");
+			text.Append ("Type::");
 			text.Append (type.KindName);
 			text.Append (", \"");
 			
 			text.Append (field.GetDependencyPropertyName ());
 			text.Append ("\"");
 			text.Append (", ");
-			if (is_nullable) {
-				if (propertyType != null) {
-					if (propertyType.IsEnum) {
-						text.Append ("Type::INT32");
-					} else {
-						text.Append ("Type::");
-						text.Append (propertyType.KindName);
-					}
+
+			if (is_full) {
+				if (has_default_value) {
+					text.Append ("new Value (");
+					text.Append (default_value);
+					text.Append (")");
 				} else {
-					text.Append ("Type::INVALID");
-					//Console.WriteLine ("{0} does not define its property type.", field.FullName);
+					text.Append ("NULL");
 				}
+			} else {
+				if (has_default_value) {
+					text.Append ("new Value (");
+					text.Append (default_value);
+					text.Append (")");
+				}
+			}
+
+			if ((has_default_value || is_full))
+				text.Append (", ");
+			
+			if (propertyType != null) {
+				if (propertyType.IsEnum) {
+					text.Append ("Type::INT32");
+				} else {
+					text.Append ("Type::");
+					text.Append (propertyType.KindName);
+				}
+			} else if (!has_default_value) {
+				text.Append ("Type::INVALID");
+				Console.WriteLine ("{0} does not define its property type.", field.FullName);
+			}
+			
+			if (is_full) {
+				text.Append (", ");
+				text.Append (is_attached ? "true" : "false");
+				text.Append (", ");
+				text.Append (is_readonly ? "true" : "false");
+				text.Append (", ");
+				text.Append (is_always_change ? "true" : "false");
+				text.Append (", ");
+				text.Append ("NULL");
 				text.Append (", ");
 				text.Append (validator != null ? ("Validators::" + validator) : "NULL");
-			}
-			else {
-				if (is_full) {
-					if (has_default_value) {
-						text.Append ("new Value (");
-						text.Append (default_value);
-						text.Append (")");
-					} else {
-						text.Append ("NULL");
-					}
-				} else {
-					if (has_default_value) {
-						text.Append ("new Value (");
-						text.Append (default_value);
-						text.Append (")");
-					}
-				}
-
-				if ((has_default_value || is_full))
-					text.Append (", ");
-				if (propertyType != null) {
-					if (propertyType.IsEnum) {
-						text.Append ("Type::INT32");
-					} else {
-						text.Append ("Type::");
-						text.Append (propertyType.KindName);
-					}
-				} else if (!has_default_value) {
-					text.Append ("Type::INVALID");
-					//Console.WriteLine ("{0} does not define its property type.", field.FullName);
-				}
-				
-				if (is_full) {
-					text.Append (", ");
-					text.Append (is_attached ? "true" : "false");
-					text.Append (", ");
-					text.Append (is_readonly ? "true" : "false");
-					text.Append (", ");
-					text.Append (is_always_change ? "true" : "false");
-					text.Append (", ");
-					text.Append ("NULL");
-					text.Append (", ");
-					text.Append (validator != null ? ("Validators::" + validator) : "NULL");
-				}
+				text.Append (", false"); // is_custom
+				text.Append (", ");
+				text.Append (is_nullable ? "true" : "false");
 			}
 
 			text.AppendLine (");");
@@ -896,6 +878,13 @@ class Generator {
 						tokenizer.Advance (true);
 					}
 					continue;
+				case "template":
+					tokenizer.Advance (true);
+					tokenizer.AcceptOrThrow (Token2Type.Punctuation, "<");
+					tokenizer.AcceptOrThrow (Token2Type.Identifier, "typename");
+					tokenizer.GetIdentifier ();
+					tokenizer.AcceptOrThrow (Token2Type.Punctuation, ">");
+					continue;
 				}
 			}
 			
@@ -946,6 +935,12 @@ class Generator {
 				returntype = new TypeReference ("void");
 			} else {
 				returntype = ParseTypeReference (tokenizer);
+				
+				if (tokenizer.CurrentToken.value == "<") {
+					tokenizer.Advance (true);
+					while (!tokenizer.Accept (Token2Type.Punctuation, ">"))
+						tokenizer.Advance (true);
+				}
 				
 				if (returntype.Value == parent.Name && tokenizer.CurrentToken.value == "(") {
 					is_ctor = true;
@@ -1566,7 +1561,7 @@ class Generator {
 		// Create the array of type data
 		text.AppendLine ("");
 		text.AppendLine ("void");
-		text.AppendLine ("Types::RegisterStaticTypes ()");
+		text.AppendLine ("Types::RegisterNativeTypes ()");
 		text.AppendLine ("{");
 		text.AppendLine ("\ttypes [(int) Type::INVALID] = new Type (Type::INVALID, Type::INVALID, false, \"INVALID\", NULL, 0, 0, NULL, NULL, NULL );");
 		foreach (TypeInfo type in all.Children.SortedTypesByKind) {

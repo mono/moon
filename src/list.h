@@ -98,4 +98,25 @@ public:
 	List *LinkedList ();
 };
 
+class ArrayList {
+private:
+	void **array;
+	int size; // size of array
+	int count; // # of items in the array
+	
+public:
+	ArrayList ();
+	~ArrayList ();
+	
+	int GetCount ();
+	void SetCount (int value);
+	
+	int GetCapacity ();
+	void SetCapacity (int value);
+	
+	void EnsureCapacity (int capacity);
+	int Add (void *item);
+	void *& operator [] (int index);
+};
+
 #endif /* __LIST_H__ */

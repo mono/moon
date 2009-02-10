@@ -14,7 +14,7 @@
 #include <config.h>
 #endif
 
-
+#include <glib.h>
 #include "list.h"
 
 
@@ -457,6 +457,76 @@ List *
 Queue::LinkedList ()
 {
 	return list;
+}
+
+
+/*
+ * ArrayList
+ */
+
+ArrayList::ArrayList ()
+{
+	array = NULL;
+	size = 0;
+	count = 0;
+}
+
+ArrayList::~ArrayList ()
+{
+	g_free (array);
+}
+	
+int
+ArrayList::GetCount ()
+{
+	return count;
+}
+
+void
+ArrayList::SetCount (int value)
+{
+	EnsureCapacity (value);
+	count = value;
+}
+
+int
+ArrayList::GetCapacity ()
+{
+	return size;
+}
+
+void
+ArrayList::SetCapacity (int capacity)
+{
+	if (capacity == size)
+		return;
+	
+	array = (void **) g_realloc (array, sizeof (void *) * capacity);
+	
+	for (int i = size; i < capacity; i++)
+		array [i] = NULL;
+	size = capacity;
+}
+	
+void
+ArrayList::EnsureCapacity (int capacity)
+{
+	if (size < capacity)
+		SetCapacity (capacity);
+}
+
+int
+ArrayList::Add (void *item)
+{
+	EnsureCapacity (count + 1);
+	array [count] = item;
+	return count++;
+}
+
+void *& 
+ArrayList::operator [] (int index)
+{
+	return array [index];
 }
 
 
