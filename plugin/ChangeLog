@@ -1,3 +1,8 @@
+2009-02-10  Jackson Harper  <jackson@ximian.com>
+
+	* plugin.cpp|h: Added a param to the SetProperty callback, plugin
+	doesn't need to use it for anything.
+
 2009-02-05  Geoff Norton  <gnorton@novell.com>
 
 	* plugin.cpp: We cannot safely null the deployment here as NPN_GetURLNotify

@@ -385,7 +385,7 @@ namespace Mono.Xaml
 			return true;
 		}
 
-		private bool TrySetPropertyReflection (IntPtr parser, IntPtr top_level, string xmlns, object target, IntPtr target_parent_ptr, string type_name, string name, IntPtr value_ptr, out string error)
+		private bool TrySetPropertyReflection (IntPtr parser, IntPtr top_level, string xmlns, object target, IntPtr target_data, IntPtr target_parent_ptr, string type_name, string name, IntPtr value_ptr, IntPtr value_data, out string error)
 		{
 			PropertyInfo pi = target.GetType ().GetProperty (name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy);
 
@@ -394,7 +394,7 @@ namespace Mono.Xaml
 				return false;
 			}
 
-			if (!SetPropertyFromValue (parser, top_level, target, target_parent_ptr, pi, value_ptr, out error))
+			if (!SetPropertyFromValue (parser, top_level, target, target_data, target_parent_ptr, pi, value_ptr, value_data, out error))
 				return false;
 
 			error = null;
@@ -496,7 +496,7 @@ namespace Mono.Xaml
 			return true;
 		}
 
-		private bool SetProperty (IntPtr parser, IntPtr top_level, string xmlns, IntPtr target_ptr, IntPtr target_data, IntPtr target_parent_ptr, string name, IntPtr value_ptr)
+		private bool SetProperty (IntPtr parser, IntPtr top_level, string xmlns, IntPtr target_ptr, IntPtr target_data, IntPtr target_parent_ptr, string name, IntPtr value_ptr, IntPtr value_data)
 		{
 			string error;
 			object target = LookupObject (target_ptr);
@@ -521,7 +521,7 @@ namespace Mono.Xaml
 			if (TrySetExpression (parser, target, target_data, name, value_ptr))
 				return true;
 
-			if (TrySetPropertyReflection (parser, top_level, xmlns, target, target_parent_ptr, type_name, name, value_ptr, out error))
+			if (TrySetPropertyReflection (parser, top_level, xmlns, target, target_data, target_parent_ptr, type_name, name, value_ptr, value_data, out error))
 				return true;
 
 			if (TrySetEventReflection (top_level, xmlns, target, type_name, name, value_ptr, out error))
@@ -628,7 +628,7 @@ namespace Mono.Xaml
 			return dp;
 		}
 		
-		private bool SetPropertyFromValue (IntPtr parser, IntPtr top_level, object target, IntPtr target_parent_ptr, PropertyInfo pi, IntPtr value_ptr, out string error)
+		private bool SetPropertyFromValue (IntPtr parser, IntPtr top_level, object target, IntPtr target_data, IntPtr target_parent_ptr, PropertyInfo pi, IntPtr value_ptr, IntPtr value_data, out string error)
 		{
 			error = null;
 			object obj_value = Value.ToObject (null, value_ptr);
@@ -661,8 +661,44 @@ namespace Mono.Xaml
 				}
 			}
 
-			string str_value = obj_value as string;
+			if (typeof (ResourceDictionary).IsAssignableFrom (pi.PropertyType) && !(obj_value is ResourceDictionary)) {
+				ResourceDictionary the_dict = (ResourceDictionary) pi.GetValue (target, null);
 
+				if (the_dict == null) {
+					the_dict = (ResourceDictionary) Activator.CreateInstance (pi.PropertyType);
+					if (the_dict == null) {
+						error = "Unable to create instance of dictionary: " + pi.PropertyType;
+						return false;
+					}
+					pi.SetValue (target, the_dict, null);
+				}
+
+				if (value_data == IntPtr.Zero) {
+					error = "Can not add attributes to a resource dictionary.";
+					return false;
+				}
+
+				try {
+					string key = NativeMethods.xaml_get_element_key (parser, value_data);
+
+					if (key == null) {
+						error = "No key for element: " + obj_value;
+						return false;
+					}
+
+					the_dict.Add (key, obj_value);
+					if (obj_value is DependencyObject && target is DependencyObject && !(the_dict is DependencyObject)) {
+						NativeMethods.dependency_object_set_logical_parent (((DependencyObject)obj_value).native, ((DependencyObject) target).native);
+					}
+
+					return true;
+				} catch (Exception e) {
+					// Fall through to string
+					Console.Error.WriteLine (e);
+				}
+			}
+
+			string str_value = obj_value as string;
 			if (str_value != null) {
 				IntPtr unmanaged_value;
 
@@ -810,10 +846,10 @@ namespace Mono.Xaml
 		// Proxy so that we return IntPtr.Zero in case of any failures, instead of
 		// generating an exception and unwinding the stack.
 		//
-		private bool cb_set_property (IntPtr parser, IntPtr top_level, string xmlns, IntPtr target, IntPtr target_data, IntPtr target_parent, string name, IntPtr value_ptr)
+		private bool cb_set_property (IntPtr parser, IntPtr top_level, string xmlns, IntPtr target, IntPtr target_data, IntPtr target_parent, string name, IntPtr value_ptr, IntPtr value_data)
 		{
 			try {
-				return SetProperty (parser, top_level, xmlns, target, target_data, target_parent, name, value_ptr);
+				return SetProperty (parser, top_level, xmlns, target, target_data, target_parent, name, value_ptr, value_data);
 			} catch (Exception ex) {
 				Console.Error.WriteLine ("ManagedXamlLoader::SetProperty ({0}, {1}, {2}, {3}, {4}) threw an exception: {5}.", top_level, xmlns, target, name, value_ptr, ex.Message);
 				Console.Error.WriteLine (ex);
