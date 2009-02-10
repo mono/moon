@@ -91,7 +91,7 @@ Value::Value (const Value& v)
 	k = v.k;
 	u = v.u;
 
-	SetIsNull (((Value)v).GetIsNull());
+	SetIsNull (((Value&)v).GetIsNull());
 
 	/* make a copy of the string instead of just the pointer */
 	switch (k) {
