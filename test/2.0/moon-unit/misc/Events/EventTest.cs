@@ -249,10 +249,7 @@ namespace MoonTest.Misc
 			EnqueueCompleteIfEtcIsNull (delegate ()
 			{
 				// Case doesn't matter. VS always embeds resources in lowercase
-				if (Environment.OSVersion.Platform == PlatformID.MacOSX)
-					Assert.Throws<ObjectDisposedException>(delegate () { etc = new EventTestCanvas (this, "event_exact.xaml"); });
-				else
-					Assert.Throws<XamlParseException>(delegate () { etc = new EventTestCanvas (this, "event_exact.xaml"); });					
+				Assert.Throws<XamlParseException>(delegate () { etc = new EventTestCanvas (this, "event_exactcasemismatch.xaml"); });					
 			});
 		}
 
@@ -451,6 +448,11 @@ namespace MoonTest.Misc
 		#endregion
 		#region Non-working events
 		public void Loaded_Exact (Canvas c, RoutedEvent e)
+		{
+			Fail ();
+		}
+
+		public void Loaded_ExactCaSeMiSmAtCh (Canvas c, RoutedEvent e)
 		{
 			Fail ();
 		}

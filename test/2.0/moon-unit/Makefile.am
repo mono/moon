@@ -30,6 +30,7 @@ XAML_RESOURCES= \
 	-res:misc/Events/Event_CaseMismatch.xaml,misc/Events/Event_CaseMismatch.xaml \
 	-res:misc/Events/Event_DO.xaml,misc/Events/Event_DO.xaml \
 	-res:misc/Events/Event_Exact.xaml,misc/Events/Event_Exact.xaml \
+	-res:misc/Events/Event_ExactCaseMismatch.xaml,misc/Events/Event_ExactCaseMismatch.xaml \
 	-res:misc/Events/Event_Ex_Derived2.xaml,misc/Events/Event_Ex_Derived2.xaml \
 	-res:misc/Events/Event_Ex_Derived3.xaml,misc/Events/Event_Ex_Derived3.xaml \
 	-res:misc/Events/Event_Ex_Derived.xaml,misc/Events/Event_Ex_Derived.xaml \

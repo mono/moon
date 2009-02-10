@@ -1,5 +1,13 @@
 2009-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* Makefile.am:
+	* misc/Events/EventTest.cs:
+	* misc/Events/Event_ExactCaseMismatch.xaml: Use a different
+	  resource for Test_ExactCaseMismatch. Works around weird SL
+	  resource issues causing ObjectDisposedExceptions.
+
+2009-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* Makefile.am: Fix copy-paste error. Should make
 	  DependencyPropertyTest.ManagedTestF work.
 
