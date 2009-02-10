@@ -44,7 +44,6 @@
     <File name="System.Windows/VisualStateTest.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/BorderTest.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/CanvasTest.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows.Controls/InkPresenetrTest.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/ControlTemplateTest.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/ControlTest.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/GridTest.cs" subtype="Code" buildaction="Compile" />
@@ -119,6 +118,27 @@
     <File name="System.Windows.Controls/ComboBoxTest.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls.Primitives/PopupTest.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Browser/ScriptableTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls.Primitives/SelectorTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls.Primitives/ToggleButtonTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/AssemblyPartTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/CornerRadiusTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/ColumnDefinitionTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/ButtonTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/ContentPresenterTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/InkPresenterTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/ItemCollectionTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/ItemsControlTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/RowDefinitionTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/ScrollViewerTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/StackPanelTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/TextBlockTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/UIElementCollectionTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/StyleTest2.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/StyleTest3.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/StyleTest4.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/StyleTest5.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/TemplatePartAttributeTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/TextDecorationsTest.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

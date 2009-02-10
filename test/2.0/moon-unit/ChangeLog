@@ -1,3 +1,7 @@
+2009-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* moon-unit.mdp: Updated with new files.
+
 2009-02-10  Jackson Harper  <jackson@ximian.com>
 
 	* System.Windows.Data/BindingTest.cs: These tests are failing
