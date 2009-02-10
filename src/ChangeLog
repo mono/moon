@@ -1,5 +1,15 @@
 2009-02-10  Jeffrey Stedfast  <fejj@novell.com>
 
+	* provider.cpp (AutoCreatePropertyValueProvider::SetSurface): Removed.
+
+	* dependencyobject.cpp (DependencyObject::Dispose): Fixed to
+	dispose autocreated values too.
+	(DependencyObject::RemoveAllListeners): Same here.
+	(DependencyObject::RegisterAllNamesRootedAt): And here.
+	(DependencyObject::UnregisterAllNamesRootedAt): Here too.
+
+2009-02-10  Jeffrey Stedfast  <fejj@novell.com>
+
 	* panel.cpp (Panel::GetSubtreeObject): Override UIElement's
 	GetSubtreeObject so that we can auto-create our Children property
 	and set it if it hasn't already been set.

@@ -890,6 +890,11 @@ unregister_depobj_values (gpointer  key,
 void
 DependencyObject::RemoveAllListeners ()
 {
+	AutoCreatePropertyValueProvider *autocreate = (AutoCreatePropertyValueProvider *) providers[PropertyPrecedence_AutoCreate];
+	
+	if (autocreate)
+		g_hash_table_foreach (autocreate->auto_values, unregister_depobj_values, this);
+	
 	g_hash_table_foreach (current_values, unregister_depobj_values, this);
 }
 
@@ -1117,6 +1122,8 @@ register_depobj_names (gpointer  key,
 void
 DependencyObject::RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error)
 {
+	AutoCreatePropertyValueProvider *autocreate = (AutoCreatePropertyValueProvider *) providers[PropertyPrecedence_AutoCreate];
+	
 	if (error->number)
 		return;
 
@@ -1144,7 +1151,10 @@ DependencyObject::RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error)
 	RegisterNamesClosure closure;
 	closure.to_ns = to_ns;
 	closure.error = error;
-
+	
+	if (autocreate)
+		g_hash_table_foreach (autocreate->auto_values, register_depobj_names, &closure);
+	
 	g_hash_table_foreach (current_values, register_depobj_names, &closure);
 }
 
@@ -1165,6 +1175,7 @@ unregister_depobj_names (gpointer  key,
 void
 DependencyObject::UnregisterAllNamesRootedAt (NameScope *from_ns)
 {
+	AutoCreatePropertyValueProvider *autocreate = (AutoCreatePropertyValueProvider *) providers[PropertyPrecedence_AutoCreate];
 	NameScope *this_ns = NameScope::GetNameScope(this);
 	if (this_ns && !this_ns->GetTemporary())
 		return;
@@ -1173,6 +1184,9 @@ DependencyObject::UnregisterAllNamesRootedAt (NameScope *from_ns)
 	
 	if (n && strlen (n) > 0)
 		from_ns->UnregisterName (n);
+	
+	if (autocreate)
+		g_hash_table_foreach (autocreate->auto__values, unregister_depobj_names, from_ns);
 	
 	g_hash_table_foreach (current_values, unregister_depobj_names, from_ns);
 }
@@ -1525,7 +1539,9 @@ DependencyObject::~DependencyObject ()
 
 void
 DependencyObject::Dispose ()
-{	
+{
+	AutoCreatePropertyValueProvider *autocreate = (AutoCreatePropertyValueProvider *) providers[PropertyPrecedence_AutoCreate];
+	
 	if (listener_list != NULL) {
 		g_slist_foreach (listener_list, free_listener, NULL);
 		g_slist_free (listener_list);
@@ -1533,6 +1549,10 @@ DependencyObject::Dispose ()
 	}
 
 	RemoveAllListeners();
+	
+	if (autocreate)
+		g_hash_table_foreach_remove (autocreate->auto_values, dispose_value, this);
+	
 	g_hash_table_foreach_remove (current_values, dispose_value, this);
 	
 	for (int i = 0; i < PropertyPrecedence_Count; i ++) {
@@ -1708,10 +1728,10 @@ DependencyObject::SetSurface (Surface *s)
 	
 	EventObject::SetSurface (s);
 	
-	g_hash_table_foreach (current_values, set_surface, s);
-	
 	if (autocreate)
-		autocreate->SetSurface (s);
+		g_hash_table_foreach (autocreate->auto_values, set_surface, s);
+	
+	g_hash_table_foreach (current_values, set_surface, s);
 }
 
 void

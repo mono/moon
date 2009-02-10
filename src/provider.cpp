@@ -355,22 +355,3 @@ AutoCreatePropertyValueProvider::ClearValue (DependencyProperty *property)
 {
 	g_hash_table_remove (auto_values, property);
 }
-
-static void
-set_surface (gpointer key, gpointer value, gpointer user_data)
-{
-	Surface *s = (Surface *) user_data;
-	Value *v = (Value *) value;
-	
-	if (v && v->Is (Type::DEPENDENCY_OBJECT)) {
-		DependencyObject *dob = v->AsDependencyObject();
-		if (dob)
-			dob->SetSurface (s);
-	}
-}
-
-void
-AutoCreatePropertyValueProvider::SetSurface (Surface *surface)
-{
-	g_hash_table_foreach (auto_values, set_surface, surface);
-}

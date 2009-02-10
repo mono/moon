@@ -95,9 +95,9 @@ public:
 };
 
 class AutoCreatePropertyValueProvider : public PropertyValueProvider {
+ public:
 	GHashTable *auto_values;
 	
- public:
 	AutoCreatePropertyValueProvider (DependencyObject *obj);
 	virtual ~AutoCreatePropertyValueProvider ();
 
@@ -105,7 +105,6 @@ class AutoCreatePropertyValueProvider : public PropertyValueProvider {
 	
 	Value *ReadLocalValue (DependencyProperty *property);
 	void ClearValue (DependencyProperty *property);
-	void SetSurface (Surface *surface);
 };
 
 
