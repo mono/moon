@@ -1,3 +1,8 @@
+2009-02-10  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Media/VisualTreeHelperTest.cs: Added a test
+	for usercontrols.
+
 2009-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows/DependencyPropertyTest.cs: This test is

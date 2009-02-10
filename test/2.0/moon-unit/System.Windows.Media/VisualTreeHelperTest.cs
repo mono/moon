@@ -19,6 +19,20 @@ using System.Linq;
 
 namespace MoonTest.System.Windows.Media
 {
+	public class TestControl : UserControl
+	{
+		public TestControl()
+		{
+			Canvas c = new Canvas { };
+			Rectangle r = new Rectangle { Width = 100, Height = 10, Fill = new SolidColorBrush(Colors.Orange) };
+			Canvas.SetTop(r, 100);
+			Canvas.SetLeft(r, 100);
+			r.RenderTransform = new RotateTransform { Angle = 90 };
+			c.Children.Add(r);
+			
+			Content = c;
+		}
+	}
 	[TestClass]
 	public class ___VisualTreeHelperTest : Microsoft.Silverlight.Testing.SilverlightTest
 	{
@@ -588,6 +602,24 @@ namespace MoonTest.System.Windows.Media
 				Assert.AreEqual(0, hits.Count, "#3");
 				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(200, 200), Root));
 				Assert.AreEqual(3, hits.Count, "#4");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void HitTest27()
+		{
+			Root.Children.Add(new TestControl());
+			CreateAsyncTest(Root, delegate {
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(101, 101), Root));
+				Assert.AreEqual(0, hits.Count, "#1");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(100, 100), Root));
+				Assert.AreEqual(4, hits.Count, "#2");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(91, 100), Root));
+				Assert.AreEqual(4, hits.Count, "#3");
+                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(89, 100), Root));
+				Assert.AreEqual(0, hits.Count, "#4");
 			});
 		}
 	}
