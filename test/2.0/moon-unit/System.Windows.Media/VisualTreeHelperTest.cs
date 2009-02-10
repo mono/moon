@@ -283,6 +283,19 @@ namespace MoonTest.System.Windows.Media
 			});
 		}
 
+        [TestMethod]
+        [Asynchronous]
+        public void HitTest8b()
+        {
+            Root.Width = 0;
+            Root.Height = 1;
+            Root.Background = new SolidColorBrush(Colors.Black);
+            CreateAsyncTest(Root, delegate {
+                List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Rect(0, 0,2,2), Root));
+                Assert.AreEqual(1, hits.Count, "#1");
+            });
+        }
+
 		[TestMethod]
 		[Asynchronous]
 		public void HitTest9()
