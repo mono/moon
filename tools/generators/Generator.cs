@@ -376,7 +376,7 @@ class Generator {
 		text.AppendLine ("\tif (Types::registered_static_properties)");
 		text.AppendLine ("\t\treturn;");
 		text.AppendLine ();
-		text.AppendLine ("\tTypes::registered_static_properties = true;");
+		text.AppendLine ("\t// This breaks loading > 1 app per process Types::registered_static_properties = true;");
 		text.AppendLine ();
 		
 		for (int i = 0; i < fields.Count; i++) {

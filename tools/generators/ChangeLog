@@ -1,3 +1,8 @@
+2009-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Generator.cs: Temporary fix for > 1 xap per process: don't
+	  check if DPs have been created before recreating them.
+
 2009-02-09  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Generator.cs: Autogenerate code to protect against

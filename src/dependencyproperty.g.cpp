@@ -54,7 +54,7 @@ Types::RegisterStaticDependencyProperties ()
 	if (Types::registered_static_properties)
 		return;
 
-	Types::registered_static_properties = true;
+	// This breaks loading > 1 app per process Types::registered_static_properties = true;
 
 	Application::ResourcesProperty = DependencyProperty::Register (Type::APPLICATION, "Resources", Type::RESOURCE_DICTIONARY);
 	ArcSegment::IsLargeArcProperty = DependencyProperty::Register (Type::ARCSEGMENT, "IsLargeArc", new Value (false), Type::BOOL);
