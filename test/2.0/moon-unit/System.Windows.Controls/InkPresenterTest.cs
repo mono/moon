@@ -20,7 +20,6 @@ namespace MoonTest.System.Windows.Controls
 	public class InkPresenterTest
 	{
 		[TestMethod]
-		[MoonlightBug ("Property value semantics still not right")]
 		public void ClearValueTest()
 		{
 			object strokes, new_strokes, rlv_strokes;
@@ -64,22 +63,27 @@ namespace MoonTest.System.Windows.Controls
 			// check that ReadLocalValue doesn't return unset anymore
 			rlv_strokes = ink.ReadLocalValue(InkPresenter.StrokesProperty);
 			Assert.AreEqual(strokes, rlv_strokes, "ReadLocalValue returned the strokes we just set on it");
-			
-			// FIXME: currently causes us to crash because
-			// InkPresenter::OnPropertyChanged()'s
-			// new_value->AsStrokeCollection() returning
-			// null is not handled.
-			
-			// now try setting it to null instead of using ClearValue
-			ink.Strokes = null;
-			
-			// check that ReadLocalValue returns a new collection
-			rlv_strokes = ink.ReadLocalValue(InkPresenter.StrokesProperty);
-			Assert.IsTrue(rlv_strokes is StrokeCollection, "ReadLocalValue after setting to null returns a collection");
 		}
 		
 		[TestMethod]
-		[MoonlightBug ("Property value 'reset' semantics still not right")]
+		[MoonlightBug ("Property value semantics still not right for SetValue (Strokes, null)")]
+		public void SetStrokesToNull ()
+		{
+			InkPresenter ink = new InkPresenter();
+			object strokes;
+			
+			// check that ReadLocalValue returns a collection after setting it to null via the property accessor
+			ink.Strokes = null;
+			strokes = ink.ReadLocalValue(InkPresenter.StrokesProperty);
+			Assert.IsTrue(strokes is StrokeCollection, "ReadLocalValue after setting to null returns a collection");
+			
+			// check that ReadLocalValue returns a collection after SetValue to null
+			ink.SetValue(InkPresenter.StrokesProperty, null);
+			strokes = ink.ReadLocalValue(InkPresenter.StrokesProperty);
+			Assert.IsTrue(strokes is StrokeCollection, "ReadLocalValue after SetValue(null) returns a collection");
+		}
+		
+		[TestMethod]
 		public void ResetValueTest()
 		{
 			InkPresenter ink = new InkPresenter();
