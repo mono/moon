@@ -574,6 +574,7 @@ namespace MoonTest.System.Windows.Media
             Canvas.SetTop(main, 100);
 
             main.Children.Add(r);
+            main.Children.Add(new Rectangle { Width = 10, Height = 10, Fill = new SolidColorBrush(Colors.Orange) });
 
             Root.Children.Add(main);
             CreateAsyncTest(Root, delegate
@@ -581,7 +582,7 @@ namespace MoonTest.System.Windows.Media
                 List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(5, 5), Root));
                 Assert.AreEqual(0, hits.Count, "#1");
                 hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(100, 100), Root));
-                Assert.AreEqual(0, hits.Count, "#3");
+                Assert.AreEqual(3, hits.Count, "#2");
                 hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(199, 199), Root));
                 Assert.AreEqual(0, hits.Count, "#3");
                 hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(200, 200), Root));
