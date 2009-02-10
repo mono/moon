@@ -378,6 +378,7 @@ class Generator {
 			TypeInfo propertyType = null;
 			string default_value = field.DPDefaultValue;
 			bool has_default_value = !string.IsNullOrEmpty (default_value);
+			bool is_autocreate = field.IsDPAutoCreateValue;
 			bool is_nullable = field.IsDPNullable;
 			bool is_attached = field.IsDPAttached;
 			bool is_readonly = field.IsDPReadOnly;
@@ -444,6 +445,8 @@ class Generator {
 			}
 			
 			if (is_full) {
+				text.Append (", ");
+				text.Append (is_autocreate ? "true" : "false");
 				text.Append (", ");
 				text.Append (is_attached ? "true" : "false");
 				text.Append (", ");

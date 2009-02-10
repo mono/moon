@@ -1,3 +1,11 @@
+2009-02-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Generator.cs: Respect the new AutoCreateValue attribute.
+
+	* FieldInfo.cs: Added IsDPAutoCreateValue property.
+
+	* GlobalInfo.cs: Added AutoCreateValue attribute.
+
 2009-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Generator.cs: Modified to match Type and DP changes.
