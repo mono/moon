@@ -1,3 +1,30 @@
+2009-02-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* panel.cpp (Panel::GetSubtreeObject): Override UIElement's
+	GetSubtreeObject so that we can auto-create our Children property
+	and set it if it hasn't already been set.
+
+	* dependencyobject.cpp (DependencyObject::SetValueWithErrorImpl):
+	We need to clear the LocalProvider value as well, if there is
+	one. Also, don't allow setting a Value* with a null
+	DependencyObject if it is an autocreate property.
+	(DependencyObject::ClearValue): Clear the LocalProvider value too.
+	(DependencyObject::SetSurface): SetSurface on autocreated values too.
+
+	* dependencyproperty.cpp (DependencyProperty::DependencyProperty):
+	Now takes another bool arg to specify whether it is allowed to
+	autocreate new DP values.
+	(DependencyProperty::Register): Updated.
+	(DependencyProperty::RegisterFull): Updated, now also takes an
+	autocreate arg.
+
+	* provider.cpp (AutoCreatePropertyValueProvider): A new provider
+	which sits below DefaultValue.
+
+	* *.cpp (*::ctor): Remove calls to SetValue()
+
+	* *.h: Added AutoCreateValue where appropriate.
+
 2009-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* color.h: fabs is in math.h.

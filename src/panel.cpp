@@ -21,13 +21,28 @@
 Panel::Panel ()
 {
 	SetObjectType (Type::PANEL);
-	SetValue (Panel::ChildrenProperty, Value::CreateUnref (new UIElementCollection ()));
-	SetSubtreeObject (GetChildren());
 	mouse_over = NULL;
 }
 
 Panel::~Panel()
 {
+}
+
+DependencyObject *
+Panel::GetSubtreeObject ()
+{
+	DependencyObject *obj;
+	
+	if ((obj = UIElement::GetSubtreeObject ()))
+		return obj;
+	
+	// cause our ChildrenProperty to be auto-created
+	obj = GetChildren ();
+	
+	// set it as our subtree object
+	SetSubtreeObject (obj);
+	
+	return obj;
 }
 
 #define DEBUG_BOUNDS 0

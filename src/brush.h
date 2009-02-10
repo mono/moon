@@ -173,7 +173,7 @@ class GradientBrush : public Brush {
  public:
 	/* @PropertyType=ColorInterpolationMode,DefaultValue=ColorInterpolationModeSRgbLinearInterpolation,GenerateAccessors */
 	static DependencyProperty *ColorInterpolationModeProperty;
-	/* @PropertyType=GradientStopCollection,GenerateAccessors */
+	/* @PropertyType=GradientStopCollection,AutoCreateValue,GenerateAccessors */
 	static DependencyProperty *GradientStopsProperty;
 	/* @PropertyType=BrushMappingMode,DefaultValue=BrushMappingModeRelativeToBoundingBox,GenerateAccessors */
 	static DependencyProperty *MappingModeProperty;

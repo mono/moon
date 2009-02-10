@@ -212,7 +212,6 @@ TextBlock::TextBlock ()
 	
 	setvalue = false;
 	SetValue (TextBlock::ForegroundProperty, Value::CreateUnref (new SolidColorBrush ("black")));
-	SetValue (TextBlock::InlinesProperty, Value::CreateUnref (new InlineCollection ()));
 	setvalue = true;
 }
 
@@ -351,7 +350,7 @@ TextBlock::MeasureOverride (Size availableSize)
 	
 	//printf ("measure actual = %g, %g\n", actual_width, actual_height);
 	Size desired = Size (actual_width, actual_height).GrowBy (padding);
-
+	
 	return availableSize.Min (desired);
 }
 
@@ -545,7 +544,8 @@ TextBlock::GetTextInternal (InlineCollection *inlines)
 bool
 TextBlock::SetTextInternal (const char *text)
 {
-	InlineCollection *curInlines = GetInlines ();
+	Value *value = ReadLocalValue (TextBlock::InlinesProperty);
+	InlineCollection *curInlines = value ? value->AsInlineCollection () : NULL;
 	InlineCollection *inlines = NULL;
 	char *inptr, *buf, *d;
 	const char *txt;
@@ -655,7 +655,7 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 	} else if (args->property == TextBlock::TextProperty) {
 		if (setvalue) {
 			// result of a change to the TextBlock.Text property
-			char *text = args->new_value ? args->new_value->AsString () : NULL;
+			const char *text = args->new_value ? args->new_value->AsString () : NULL;
 			
 			if (!SetTextInternal (text)) {
 				// no change so nothing to invalidate

@@ -33,12 +33,12 @@ class Panel : public FrameworkElement {
  public:
  	/* @PropertyType=Brush,GenerateAccessors */
 	static DependencyProperty *BackgroundProperty;
- 	/* @PropertyType=UIElementCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
+ 	/* @PropertyType=UIElementCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *ChildrenProperty;
 	
  	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Panel ();
-
+	
 	virtual void ComputeBounds ();
 	virtual Size MeasureOverride (Size availableSize);
 
@@ -60,7 +60,9 @@ class Panel : public FrameworkElement {
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
-
+	
+	virtual DependencyObject *GetSubtreeObject ();
+	
 	//
 	// Property Accessors
 	//

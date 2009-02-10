@@ -15,6 +15,7 @@
 
 class DependencyObject;
 class DependencyProperty;
+class Surface;
 class Style;
 struct Value;
 
@@ -25,6 +26,7 @@ enum PropertyPrecedence {
 	PropertyPrecedence_Style,
 	PropertyPrecedence_Inherited,
 	PropertyPrecedence_DefaultValue,
+	PropertyPrecedence_AutoCreate,
 
 	PropertyPrecedence_Count,
 
@@ -90,6 +92,20 @@ public:
 	virtual ~DefaultValuePropertyValueProvider () { };
 
 	virtual Value *GetPropertyValue (DependencyProperty *property);
+};
+
+class AutoCreatePropertyValueProvider : public PropertyValueProvider {
+	GHashTable *auto_values;
+	
+ public:
+	AutoCreatePropertyValueProvider (DependencyObject *obj);
+	virtual ~AutoCreatePropertyValueProvider ();
+
+	virtual Value *GetPropertyValue (DependencyProperty *property);
+	
+	Value *ReadLocalValue (DependencyProperty *property);
+	void ClearValue (DependencyProperty *property);
+	void SetSurface (Surface *surface);
 };
 
 

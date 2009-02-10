@@ -114,7 +114,7 @@ class GeometryGroup : public Geometry {
  public:
  	/* @PropertyType=FillRule,DefaultValue=FillRuleEvenOdd,GenerateAccessors */
 	static DependencyProperty *FillRuleProperty;
- 	/* @PropertyType=GeometryCollection,GenerateAccessors */
+ 	/* @PropertyType=GeometryCollection,AutoCreateValue,GenerateAccessors */
 	static DependencyProperty *ChildrenProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -322,7 +322,7 @@ class PathFigure : public DependencyObject {
  public:
  	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	static DependencyProperty *IsClosedProperty;
- 	/* @PropertyType=PathSegmentCollection,GenerateAccessors */
+ 	/* @PropertyType=PathSegmentCollection,AutoCreateValue,GenerateAccessors */
 	static DependencyProperty *SegmentsProperty;
  	/* @PropertyType=Point,GenerateAccessors */
 	static DependencyProperty *StartPointProperty;

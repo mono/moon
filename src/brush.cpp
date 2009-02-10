@@ -149,7 +149,6 @@ SolidColorBrush::IsOpaque ()
 GradientBrush::GradientBrush ()
 {
 	SetObjectType (Type::GRADIENTBRUSH);
-	SetValue (GradientBrush::GradientStopsProperty, Value::CreateUnref (new GradientStopCollection ()));
 }
 
 GradientBrush::~GradientBrush ()

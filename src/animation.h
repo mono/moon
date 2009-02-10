@@ -622,7 +622,7 @@ class SplineDoubleKeyFrame : public DoubleKeyFrame {
 	virtual ~SplineDoubleKeyFrame ();
 	
  public:
- 	/* @PropertyType=KeySpline,GenerateAccessors */
+ 	/* @PropertyType=KeySpline,AutoCreateValue,GenerateAccessors */
 	static DependencyProperty *KeySplineProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -645,7 +645,7 @@ class SplineColorKeyFrame : public ColorKeyFrame {
 	virtual ~SplineColorKeyFrame ();
 
  public:
- 	/* @PropertyType=KeySpline,GenerateAccessors */
+ 	/* @PropertyType=KeySpline,AutoCreateValue,GenerateAccessors */
 	static DependencyProperty *KeySplineProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -668,7 +668,7 @@ class SplinePointKeyFrame : public PointKeyFrame {
 	virtual ~SplinePointKeyFrame ();
 	
  public:
- 	/* @PropertyType=KeySpline,GenerateAccessors */
+ 	/* @PropertyType=KeySpline,AutoCreateValue,GenerateAccessors */
 	static DependencyProperty *KeySplineProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -691,7 +691,7 @@ class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
 	virtual ~DoubleAnimationUsingKeyFrames ();
 
  public:
- 	/* @PropertyType=DoubleKeyFrameCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
+ 	/* @PropertyType=DoubleKeyFrameCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *KeyFramesProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -722,7 +722,7 @@ class ColorAnimationUsingKeyFrames : public ColorAnimation {
 	virtual ~ColorAnimationUsingKeyFrames ();
 
  public:
- 	/* @PropertyType=ColorKeyFrameCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
+ 	/* @PropertyType=ColorKeyFrameCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *KeyFramesProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -753,7 +753,7 @@ class PointAnimationUsingKeyFrames : public PointAnimation {
 	virtual ~PointAnimationUsingKeyFrames ();
 
  public:
- 	/* @PropertyType=PointKeyFrameCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
+ 	/* @PropertyType=PointKeyFrameCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	static DependencyProperty *KeyFramesProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */

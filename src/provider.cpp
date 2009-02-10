@@ -25,6 +25,11 @@ AnimationPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 	return NULL;
 }
 
+
+//
+// LocalPropertyValueProvider
+//
+
 LocalPropertyValueProvider::LocalPropertyValueProvider (DependencyObject *obj)
 	: PropertyValueProvider (obj)
 {
@@ -40,6 +45,11 @@ LocalPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 {
 	return (Value *) g_hash_table_lookup (obj->GetCurrentValues (), property);
 }
+
+
+//
+// StylePropertyValueProvider
+//
 
 StylePropertyValueProvider::StylePropertyValueProvider (DependencyObject *obj)
 	: PropertyValueProvider (obj)
@@ -153,6 +163,11 @@ StylePropertyValueProvider::SealStyle (Style *style)
 	}
 }
 
+
+//
+// InheritedPropertyValueProvider
+//
+
 static DependencyObject*
 get_parent (DependencyObject *obj)
 {
@@ -247,8 +262,115 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 	return NULL;
 }
 
+
+//
+// DefaultPropertyValueProvider
+//
+
 Value *
 DefaultValuePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 {
 	return property->GetDefaultValue ();
+}
+
+
+//
+// AutoPropertyValueProvider
+//
+
+static gboolean
+dispose_value (gpointer key, gpointer value, gpointer data)
+{
+	DependencyObject *obj = (DependencyObject *) data;
+	Value *v = (Value *) value;
+	
+	if (!value)
+		return true;
+	
+	// detach from the existing value
+	if (v->Is (Type::DEPENDENCY_OBJECT)) {
+		DependencyObject *dob = v->AsDependencyObject ();
+		
+		if (dob != NULL) {
+			if (obj == dob->GetLogicalParent ()) {
+				// unset its logical parent
+				dob->SetLogicalParent (NULL, NULL);
+			}
+			
+			// unregister from the existing value
+			dob->RemovePropertyChangeListener (obj, NULL);
+		}
+	}
+	
+	delete v;
+	
+	return true;
+}
+
+AutoCreatePropertyValueProvider::AutoCreatePropertyValueProvider (DependencyObject *obj)
+	: PropertyValueProvider (obj)
+{
+	auto_values = g_hash_table_new (g_direct_hash, g_direct_equal);
+}
+
+AutoCreatePropertyValueProvider::~AutoCreatePropertyValueProvider ()
+{
+	g_hash_table_foreach_remove (auto_values, dispose_value, obj);
+	g_hash_table_destroy (auto_values);
+}
+
+Value *
+AutoCreatePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
+{
+	Value *value;
+	Type *type;
+	
+	if (!property->AutoCreate ())
+		return NULL;
+	
+	// return previously set auto value next
+	if ((value = (Value *) g_hash_table_lookup (auto_values, property)))
+		return value;
+	
+	if (!(type = Type::Find (property->GetPropertyType ())))
+		return NULL;
+	
+	// autocreate a new auto value
+	value = Value::CreateUnrefPtr (type->CreateInstance ());
+	g_hash_table_insert (auto_values, property, value);
+	
+	obj->ProviderValueChanged (PropertyPrecedence_AutoCreate, property, NULL, value, true, NULL);
+	
+	return value;
+}
+
+Value *
+AutoCreatePropertyValueProvider::ReadLocalValue (DependencyProperty *property)
+{
+	return (Value *) g_hash_table_lookup (auto_values, property);
+}
+
+void
+AutoCreatePropertyValueProvider::ClearValue (DependencyProperty *property)
+{
+	g_hash_table_remove (auto_values, property);
+}
+
+static void
+set_surface (gpointer key, gpointer value, gpointer user_data)
+{
+	Surface *s = (Surface *) user_data;
+	Value *v = (Value *) value;
+	
+	if (v && v->Is (Type::DEPENDENCY_OBJECT)) {
+		DependencyObject *dob = v->AsDependencyObject();
+		if (dob)
+			dob->SetSurface (s);
+	}
+}
+
+void
+AutoCreatePropertyValueProvider::SetSurface (Surface *surface)
+{
+	g_hash_table_foreach (auto_values, set_surface, surface);
 }

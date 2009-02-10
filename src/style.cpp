@@ -24,7 +24,6 @@
 Style::Style ()
 {
 	SetObjectType (Type::STYLE);
-	SetValue (Style::SettersProperty, Value::CreateUnref (new SetterBaseCollection()));
 }
 
 Style::~Style ()

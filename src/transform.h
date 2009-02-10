@@ -299,7 +299,7 @@ class TransformGroup : public Transform {
 	virtual void UpdateTransform ();
 	
  public:
-	/* @PropertyType=TransformCollection,GenerateAccessors */
+	/* @PropertyType=TransformCollection,AutoCreateValue,GenerateAccessors */
 	static DependencyProperty *ChildrenProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */

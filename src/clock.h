@@ -596,7 +596,7 @@ class TimelineGroup : public Timeline {
 	virtual ~TimelineGroup ();
 	
  public:
-	/* @PropertyType=TimelineCollection,GenerateAccessors */
+	/* @PropertyType=TimelineCollection,AutoCreateValue,GenerateAccessors */
 	static DependencyProperty *ChildrenProperty;
 	
  	/* @GenerateCBinding,GeneratePInvoke */
