@@ -31,9 +31,14 @@ public:
 
 	bool operator== (const FontFamily &v) const
 	{
-		return !strcmp (v.source, source);
+		return strcmp (v.source, source) == 0;
 	}
-
+	
+	bool operator!= (const FontFamily &v) const
+	{
+		return strcmp (v.source, source) != 0;
+	}
+	
 	char *source;
 };
 

@@ -1,5 +1,7 @@
 2009-02-10  Jeffrey Stedfast  <fejj@novell.com>
 
+	* fontfamily.h (struct FontFamily): Implemented != operator.
+
 	* text.cpp (Inline::Equals): Fixed the fontfamily check.
 
 	* provider.cpp (AutoCreatePropertyValueProvider::SetSurface): Removed.
