@@ -730,7 +730,6 @@ Width=""100"" Height=""100"">
 		}
 
 		[TestMethod]
-		[Ignore ("this is supposed to be a binding test - testing for a parser error is hardly appropriate")]
 		public void XamlBindToClr()
 		{
  			Assert.Throws<XamlParseException>(delegate {

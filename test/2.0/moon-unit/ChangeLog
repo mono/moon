@@ -1,3 +1,9 @@
+2009-02-10  Jackson Harper  <jackson@ximian.com>
+
+	* BindingTest.cs: Unignore this test, it's fixed now and I think
+	it's a legit test given that it checks binding against an
+	unmanaged object, which takes a slightly different path than normal.
+
 2009-02-10  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Media/VisualTreeHelperTest.cs: Added a test
