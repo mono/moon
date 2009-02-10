@@ -183,7 +183,7 @@ read_next_double (char **str)
 	char *iter = *str;
 
 	if (iter) {
-		double v = strtod (iter, &iter);
+		double v = g_ascii_strtod (iter, &iter);
 		if (iter)
 			iter = strchr (iter, ',');
 		if (iter)
@@ -280,7 +280,7 @@ color_from_str (const char *name)
 	}
 	
 	for (int i = 0; named_colors [i].name; i++) {
-		if (!g_strcasecmp (named_colors [i].name, name))
+		if (!g_ascii_strcasecmp (named_colors [i].name, name))
 			return new Color (named_colors [i].color);
 	}
 	

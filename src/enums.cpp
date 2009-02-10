@@ -322,7 +322,7 @@ enum_from_str (const enum_map_t *emu, const char *str)
 {
 	int i;
 	for (i = 0; emu [i].name; i++) {
-		if (!g_strcasecmp (emu [i].name, str))
+		if (!g_ascii_strcasecmp (emu [i].name, str))
 			return emu [i].value;
 	}
 

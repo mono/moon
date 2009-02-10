@@ -834,7 +834,7 @@ PlaylistParser::~PlaylistParser ()
 static bool
 str_match (const char *candidate, const char *tag)
 {
-	return g_strcasecmp (candidate, tag) == 0;
+	return g_ascii_strcasecmp (candidate, tag) == 0;
 }
 
 void
@@ -1041,11 +1041,11 @@ PlaylistParser::OnStartElement (const char *name, const char **attrs)
 						failed = true;
 					} else if (uri->protocol == NULL) {
 						failed = true;
-					} else if (g_strcasecmp (uri->protocol, "http") && 
-						   g_strcasecmp (uri->protocol, "https") && 
-						   g_strcasecmp (uri->protocol, "mms") &&
-						   g_strcasecmp (uri->protocol, "rtsp") && 
-						   g_strcasecmp (uri->protocol, "rstpt")) {
+					} else if (g_ascii_strcasecmp (uri->protocol, "http") && 
+						   g_ascii_strcasecmp (uri->protocol, "https") && 
+						   g_ascii_strcasecmp (uri->protocol, "mms") &&
+						   g_ascii_strcasecmp (uri->protocol, "rtsp") && 
+						   g_ascii_strcasecmp (uri->protocol, "rstpt")) {
 						failed = true;
 					}
 

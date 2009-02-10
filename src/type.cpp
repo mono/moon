@@ -99,7 +99,7 @@ Type::LookupEvent (const char *event_name)
 
 	if (events != NULL) {
 		for (int i = 0; events [i] != NULL; i++) {
-			if (!g_strcasecmp (events [i], event_name))
+			if (!g_ascii_strcasecmp (events [i], event_name))
 				return i + (parent_type == NULL ? 0 : parent_type->total_event_count);
 		}
 	}
@@ -186,10 +186,10 @@ Type::Find (const char *name)
 	// so an optimization here would be to do a binary search.
 
 	for (int i = 1; i < Type::LASTTYPE; i++) {
-		if (!g_strcasecmp (type_infos [i].name, name))
+		if (!g_ascii_strcasecmp (type_infos [i].name, name))
 			return &type_infos [i];
 		
-		if (!g_strcasecmp (type_infos [i].kindname, name))
+		if (!g_ascii_strcasecmp (type_infos [i].kindname, name))
 			return &type_infos [i];
 	}
 
