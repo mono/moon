@@ -607,7 +607,7 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 			TextBlock block = (TextBlock) ((Canvas)o).Children[0];
 			Assert.IsTrue(block.ReadLocalValue(TextBlock.TextProperty) is BindingExpressionBase);
 		}
-		
+
 		[TestMethod]
 		[Ignore ("another bogus parser test.")]
 		public void XamlCreateBinding2()
@@ -728,7 +728,7 @@ Width=""100"" Height=""100"">
 			Assert.IsTrue (text is BindingExpressionBase);
 			Assert.AreEqual ("4", block.Text);
 		}
-		
+
 		[TestMethod]
 		[Ignore ("this is supposed to be a binding test - testing for a parser error is hardly appropriate")]
 		public void XamlBindToClr()
@@ -753,7 +753,7 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 ");
  			});
 		}
-		
+
 		[TestMethod]
 		[Ignore ("This test throws an NRE on both moonlight and silverlight.  needs to be fixed in SL-land")]
 		public void XamlBoundToClr()

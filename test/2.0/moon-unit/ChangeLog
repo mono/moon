@@ -1,3 +1,8 @@
+2009-02-10  Jackson Harper  <jackson@ximian.com>
+
+	* System.Windows.Data/BindingTest.cs: These tests are failing
+	right now.
+
 2009-02-10  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Media/VisualTreeHelperTest.cs: spaces->tabs
