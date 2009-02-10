@@ -1,3 +1,8 @@
+2009-02-10  Alan McGovern  <amcgovern@novell.com>
+
+	* border.cpp: Corner rounding is now taken into account when
+	  hittesting a Border
+
 2009-02-10  Fernando Herrera  <fherrera@novell.com>
 
 	* value.cpp: Fix GetIsNull call casting in the copy

@@ -194,7 +194,15 @@ bool
 Border::InsideFillOrClip (cairo_t *cr, double x, double y)
 {
 	Rect r (0, 0, GetActualWidth (), GetActualHeight ());
-	return r.GrowBy (1, 1, 1, 0).PointInside (x, y);
+	CornerRadius *round = GetCornerRadius ();
+	if (!round)
+		return r.GrowBy (1, 1, 1, 0).PointInside (x, y);
+	
+	cairo_save (cr);
+	r.Draw (cr, round);
+	bool ret = cairo_in_fill (cr, x, y) || cairo_in_stroke (cr, x, y);
+	cairo_restore (cr);
+	return ret;
 }
 
 void
