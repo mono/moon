@@ -85,6 +85,7 @@
     <Compile Include="System.Windows.Automation.Peers\RepeatButtonAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\SliderAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\ThumbAutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Browser\ScriptableTest.cs" />
     <Compile Include="System.Windows.Controls.Primitives\ButtonBaseTest.cs" />
     <Compile Include="System.Windows.Controls.Primitives\PopupTest.cs" />
     <Compile Include="System.Windows.Controls.Primitives\RangeBaseTest.cs" />
@@ -378,6 +379,10 @@
       <SubType>Page</SubType>
       <Generator>MSBuild:MarkupCompilePass1</Generator>
     </Page>
+    <Resource Include="misc\Events\Event_ExactCaseMismatch.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="System.Windows.Ink\" />

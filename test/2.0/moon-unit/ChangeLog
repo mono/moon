@@ -1,5 +1,9 @@
 2009-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* moon-unit.csproj: Updated.
+
+2009-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* Makefile.am:
 	* misc/Events/EventTest.cs:
 	* misc/Events/Event_ExactCaseMismatch.xaml: Use a different
