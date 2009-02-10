@@ -12,6 +12,7 @@
 
 #include <glib.h>
 #include <stdint.h>
+#include <math.h>
 
 /* @IncludeInKinds */
 /* @Namespace=System.Windows.Media */

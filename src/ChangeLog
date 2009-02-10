@@ -1,5 +1,9 @@
 2009-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* color.h: fabs is in math.h.
+
+2009-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* list.h:
 	* list.cpp: Add a simple ArrayList implementation.
 
