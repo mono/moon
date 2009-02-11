@@ -1,5 +1,10 @@
 2009-02-11  Andreia Gaita  <avidigal@novell.com>
 
+	* ScriptableObjectWrapper.cs: Remove try block on SetProperty, 
+	exceptions are caught on SetPropertySafe
+
+2009-02-11  Andreia Gaita  <avidigal@novell.com>
+
 	* ScriptableObjectWrapper.cs: When converting from Object to Value, 
 	check if the object is scriptable, and create a wrapper for it if
 	it's not yet wrapped

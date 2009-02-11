@@ -348,12 +348,7 @@ namespace System.Windows.Browser
 
 		void SetProperty (PropertyInfo pi, object value)
 		{
-
-			try {
-				pi.SetValue (this.ManagedObject, value, null);
-			} catch (Exception ex) {
-				Console.WriteLine (ex);
-			}
+			pi.SetValue (this.ManagedObject, value, null);
 		}
 
 		static void SetPropertyFromUnmanagedSafe (IntPtr obj_handle, IntPtr property_handle, ref Value value)
