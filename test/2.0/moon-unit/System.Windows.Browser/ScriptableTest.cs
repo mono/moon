@@ -40,7 +40,7 @@ namespace MoonTest.System.Windows.Browser
 		HtmlElement plugin;
 		HtmlWindow window;
 		ScriptObject content;
-		string root = "var plugin = document.getElementById('silverlightControlHost').children[0];";
+		string root = "var plugin = document.getElementById('silverlight');";
 
 		Scriptable scriptable;
 		ScriptableType scriptabletype;
@@ -81,7 +81,6 @@ namespace MoonTest.System.Windows.Browser
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void ScriptableMemberTest () {
 			scriptable = new Scriptable ();
 			HtmlPage.RegisterScriptableObject ("scriptable", scriptable);
@@ -98,7 +97,6 @@ namespace MoonTest.System.Windows.Browser
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void ScriptableTypeTest () {
 			scriptabletype = new ScriptableType ();
 			HtmlPage.RegisterScriptableObject ("scriptabletype", scriptabletype);
@@ -115,13 +113,13 @@ namespace MoonTest.System.Windows.Browser
 
 			window.Eval ("referencedtype = scriptabletype.GetAType();");
 			window.Eval ("referencedtype.MethodAdd();");
-			Assert.AreEqual (1, scriptabletype.referencedTyped.MethodCount, "C4");
+			Assert.AreEqual (1, scriptabletype.referencedType.MethodCount, "C4");
 
 			window.Eval ("referencedtype.SetCount(10);");
-			Assert.AreEqual (10, scriptabletype.referencedTyped.MethodCount, "C5");
+			Assert.AreEqual (10, scriptabletype.referencedType.MethodCount, "C5");
 
 			window.Eval ("referencedtype.SetCount(referencedtype.GetCount()-1);");
-			Assert.AreEqual (9, scriptabletype.referencedTyped.MethodCount, "C6");
+			Assert.AreEqual (9, scriptabletype.referencedType.MethodCount, "C6");
 
 			window.Eval ("newreferencedtype = scriptabletype.createManagedObject('ReferencedType');");
 			window.Eval ("newreferencedtype.MethodAdd();");
@@ -139,18 +137,15 @@ namespace MoonTest.System.Windows.Browser
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void CreateableTypeTest () {
 			scriptable = new Scriptable ();
 			HtmlPage.RegisterScriptableObject ("scriptable", scriptable);
-
 			HtmlPage.RegisterCreateableType ("createable", typeof (CreateableType));
 			window.Eval ("createabletype = plugin.content.services.createObject ('createable');");
 			window.Eval ("createabletype.MethodAdd ()");
 			window.Eval ("c = createabletype.GetCount();");
 			window.Eval ("plugin.content.scriptable.SetCount(c)");
 			Assert.AreEqual (1, scriptable.MethodCount, "D1");
-
 			window.Eval ("createabletype.Property = 'test test'");
 			window.Eval ("plugin.content.scriptable.Property = createabletype.Property");
 			Assert.AreEqual ("test test", scriptable.Property, "D2");
@@ -172,7 +167,15 @@ namespace MoonTest.System.Windows.Browser
 
 	public class Scriptable {
 
-		public int MethodCount {get;set;}
+		int methodCount;
+		public int MethodCount {
+			get {
+				return methodCount;
+			}
+			set {
+				methodCount = value;
+			}
+		}
 
 		[ScriptableMember]
 		public void MethodAdd () {
@@ -196,12 +199,12 @@ namespace MoonTest.System.Windows.Browser
 
 	[ScriptableType]
 	public class ScriptableType : Scriptable {
-		public ReferencedType referencedTyped;
+		public ReferencedType referencedType;
 		
 		public ReferencedType GetAType ()
 		{
-			referencedTyped = new ReferencedType ();
-			return referencedTyped;
+			referencedType = new ReferencedType ();
+			return referencedType;
 		}
 	}
 
