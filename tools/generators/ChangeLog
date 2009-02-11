@@ -1,5 +1,9 @@
 2009-02-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* GlobalInfo.cs: Quiet a warning.
+
+2009-02-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* Generator.cs: Make DP backing fields const.
 
 2009-02-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
