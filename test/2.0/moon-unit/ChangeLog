@@ -1,5 +1,11 @@
 2009-02-11  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Media/VisualTreeHelperTest.cs: Remove
+	some underscores from the tests so they execute in the
+	normal order.
+
+2009-02-11  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Media/VisualTreeHelperTest.cs: Add an extra
 	  parameter to ::Render () to specify whether or not the paths
 	  appended to the cairo_t should be filled/stroked/clipped so

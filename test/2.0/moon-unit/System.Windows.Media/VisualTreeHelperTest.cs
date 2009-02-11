@@ -34,7 +34,7 @@ namespace MoonTest.System.Windows.Media
 		}
 	}
 	[TestClass]
-	public class ___VisualTreeHelperTest : Microsoft.Silverlight.Testing.SilverlightTest
+	public class VisualTreeHelperTest : Microsoft.Silverlight.Testing.SilverlightTest
 	{
 		Panel Root;
 	
@@ -591,7 +591,7 @@ namespace MoonTest.System.Windows.Media
 		[TestMethod]
 		[Asynchronous]
 		[MoonlightBug]
-		public void ___HitTest26()
+		public void HitTest26()
 		{
 			Rectangle r = new Rectangle { Width = 100, Height = 100, Fill = new SolidColorBrush(Colors.Black) };
 			Canvas.SetLeft(r, 100);
