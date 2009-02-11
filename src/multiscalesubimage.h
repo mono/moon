@@ -35,15 +35,15 @@ class MultiScaleSubImage : public DependencyObject {
 
  public:
 	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,ReadOnly,GenerateGetter */
-	static int AspectRatioProperty;
+	const static int AspectRatioProperty;
  	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateAccessors */
-	static int OpacityProperty;
+	const static int OpacityProperty;
 	/* @PropertyType=Point,DefaultValue=Point(0\,0),Version=2.0,GenerateAccessors */
-	static int ViewportOriginProperty;
+	const static int ViewportOriginProperty;
 	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateAccessors */
-	static int ViewportWidthProperty;
+	const static int ViewportWidthProperty;
 	/* @PropertyType=gint32,Version=2.0,GenerateAccessors */
-	static int ZIndexProperty;
+	const static int ZIndexProperty;
 
 	
 	/* @GenerateCBinding,GeneratePInvoke */

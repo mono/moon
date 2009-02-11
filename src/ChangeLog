@@ -1,5 +1,44 @@
 2009-02-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* grid.h:
+	* text.h:
+	* clock.h:
+	* panel.h:
+	* shape.h:
+	* style.h:
+	* media.h:
+	* popup.h:
+	* brush.h:
+	* canvas.h:
+	* border.h:
+	* stylus.h:
+	* control.h:
+	* trigger.h:
+	* textbox.h:
+	* geometry.h:
+	* template.h:
+	* namescope.h:
+	* uielement.h:
+	* animation.h:
+	* transform.h:
+	* collection.h:
+	* downloader.h:
+	* animation2.h:
+	* deployment.h:
+	* bitmapimage.h:
+	* application.h:
+	* usercontrol.h:
+	* mediaelement.h:
+	* contentcontrol.h:
+	* multiscaleimage.h:
+	* frameworkelement.h:
+	* dependencyobject.h:
+	* multiscalesubimage.h:
+	* dependencyproperty.g.cpp:
+	* deepzoomimagetilesource.h: Make DP backing fields const.
+
+2009-02-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* grid.cpp:
 	* text.cpp:
 	* panel.cpp:

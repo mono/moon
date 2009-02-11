@@ -45,9 +45,9 @@ class ContentControl : public Control {
 	
  public:
  	/* @PropertyType=object */
-	static int ContentProperty;
+	const static int ContentProperty;
  	/* @PropertyType=DataTemplate,GenerateAccessors */
-	static int ContentTemplateProperty;
+	const static int ContentTemplateProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	ContentControl ();

@@ -1,5 +1,9 @@
 2009-02-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* Generator.cs: Make DP backing fields const.
+
+2009-02-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* Generator.cs:
 	* GlobalInfo.cs: Modify generation of native DPs to match new
 	  design.

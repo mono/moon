@@ -31,7 +31,7 @@ class NameScope : public DependencyObject {
 
  public:
  	/* @PropertyType=NameScope,Attached,GenerateAccessors */
-	static int NameScopeProperty;
+	const static int NameScopeProperty;
 	
 	NameScope ();
 	virtual void Dispose ();

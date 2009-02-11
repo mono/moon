@@ -115,39 +115,39 @@ public:
 	ManagedTypeInfo* GetDefaultStyleKey ();
 
  	/* @PropertyType=Brush,GenerateAccessors */
-	static int BackgroundProperty;
+	const static int BackgroundProperty;
  	/* @PropertyType=Brush,GenerateAccessors */
-	static int BorderBrushProperty;
+	const static int BorderBrushProperty;
  	/* @PropertyType=Thickness,DefaultValue=Thickness(0.0),GenerateAccessors */
-	static int BorderThicknessProperty;
+	const static int BorderThicknessProperty;
  	/* @PropertyType=FontFamily,DefaultValue=FontFamily(CONTROL_FONT_FAMILY),GenerateAccessors */
-	static int FontFamilyProperty;
+	const static int FontFamilyProperty;
  	/* @PropertyType=double,DefaultValue=CONTROL_FONT_SIZE,GenerateAccessors */
-	static int FontSizeProperty;
+	const static int FontSizeProperty;
  	/* @PropertyType=FontStretch,DefaultValue=CONTROL_FONT_STRETCH,GenerateAccessors */
-	static int FontStretchProperty;
+	const static int FontStretchProperty;
  	/* @PropertyType=FontStyle,DefaultValue=CONTROL_FONT_STYLE,GenerateAccessors */
-	static int FontStyleProperty;
+	const static int FontStyleProperty;
  	/* @PropertyType=FontWeight,DefaultValue=CONTROL_FONT_WEIGHT,GenerateAccessors */
-	static int FontWeightProperty;
+	const static int FontWeightProperty;
  	/* @PropertyType=Brush,GenerateAccessors */
-	static int ForegroundProperty;
+	const static int ForegroundProperty;
  	/* @PropertyType=HorizontalAlignment,DefaultValue=HorizontalAlignmentCenter,GenerateAccessors */
-	static int HorizontalContentAlignmentProperty;
+	const static int HorizontalContentAlignmentProperty;
  	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
-	static int IsTabStopProperty;
+	const static int IsTabStopProperty;
  	/* @PropertyType=Thickness,DefaultValue=Thickness(0.0),GenerateAccessors */
-	static int PaddingProperty;
+	const static int PaddingProperty;
  	/* @PropertyType=gint32,DefaultValue=INT_MAX,GenerateAccessors */
-	static int TabIndexProperty;
+	const static int TabIndexProperty;
  	/* @PropertyType=KeyboardNavigationMode,DefaultValue=KeyboardNavigationModeLocal,GenerateAccessors */
-	static int TabNavigationProperty;
+	const static int TabNavigationProperty;
  	/* @PropertyType=ControlTemplate,GenerateAccessors,Validator=TemplateValidator */
-	static int TemplateProperty;
+	const static int TemplateProperty;
  	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentCenter,GenerateAccessors */
-	static int VerticalContentAlignmentProperty;
+	const static int VerticalContentAlignmentProperty;
 	/* @PropertyType=ManagedTypeInfo,ManagedPropertyType=object,GenerateManagedDP=false,GenerateAccessors */
-	static int DefaultStyleKeyProperty;
+	const static int DefaultStyleKeyProperty;
 	
 protected:
 	virtual ~Control ();

@@ -371,7 +371,7 @@ class Generator {
 		text.AppendLine ("void");
 		text.AppendLine ("Types::RegisterNativeProperties ()");
 		text.AppendLine ("{");
-				
+		
 		for (int i = 0; i < fields.Count; i++) {
 			FieldInfo field = fields [i];
 			TypeInfo type = field.ParentType;
@@ -395,11 +395,8 @@ class Generator {
 			} else {
 				headers.Add (propertyType.Header);
 			}
-			
-			text.Append (type.Name);
-			text.Append ("::");
-			text.Append (field.Name);
-			text.Append (" = DependencyProperty::Register");
+
+			text.Append ("DependencyProperty::Register");
 			if (is_full)
 				text.Append ("Full");
 			
@@ -470,11 +467,13 @@ class Generator {
 		// Static initializers
 		for (int i = 0; i < fields.Count; i++) {
 			FieldInfo field = fields [i];
-			text.Append ("int ");
+			text.Append ("const int ");
 			text.Append (field.Parent.Name);
 			text.Append ("::");
 			text.Append (field.Name);
-			text.AppendLine (" = NULL;");
+			text.Append (" = ");
+			text.Append (i);
+			text.AppendLine (";");
 		}
 		text.AppendLine ();
 		

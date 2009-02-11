@@ -178,52 +178,52 @@ class MediaElement : public FrameworkElement {
 	
 	// properties
  	/* @PropertyType=MediaAttributeCollection,ManagedPropertyType=Dictionary<string\,string>,AutoCreateValue,ManagedSetterAccess=Internal,GenerateAccessors,Validator=MediaAttributeCollectionValidator */
-	static int AttributesProperty;
+	const static int AttributesProperty;
  	/* @PropertyType=gint32,DefaultValue=0,ReadOnly,GenerateAccessors */
-	static int AudioStreamCountProperty;
+	const static int AudioStreamCountProperty;
  	/* @PropertyType=gint32,Nullable,GenerateAccessors,Validator=AudioStreamIndexValidator */
-	static int AudioStreamIndexProperty;
+	const static int AudioStreamIndexProperty;
  	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
-	static int AutoPlayProperty;
+	const static int AutoPlayProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static int BalanceProperty;
+	const static int BalanceProperty;
  	/* @PropertyType=double,DefaultValue=0.0,ReadOnly,GenerateAccessors */
-	static int BufferingProgressProperty;
+	const static int BufferingProgressProperty;
  	/* @PropertyType=TimeSpan,DefaultValue="TimeSpan_FromSeconds (5)\,Type::TIMESPAN",GenerateAccessors,Validator=BufferingTimeValidator */
-	static int BufferingTimeProperty;
+	const static int BufferingTimeProperty;
  	/* @PropertyType=bool,DefaultValue=false,ReadOnly,GenerateAccessors */
-	static int CanPauseProperty;
+	const static int CanPauseProperty;
  	/* @PropertyType=bool,DefaultValue=false,ReadOnly,GenerateAccessors */
-	static int CanSeekProperty;
+	const static int CanSeekProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static int DownloadProgressProperty;
+	const static int DownloadProgressProperty;
  	/* @PropertyType=MediaElementState,ReadOnly,GenerateAccessors */
-	static int CurrentStateProperty;
+	const static int CurrentStateProperty;
  	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
-	static int IsMutedProperty;
+	const static int IsMutedProperty;
  	/* @PropertyType=TimelineMarkerCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
-	static int MarkersProperty;
+	const static int MarkersProperty;
  	/* @PropertyType=Duration,DefaultValue=Duration::FromSeconds (0),ReadOnly,GenerateGetter */
-	static int NaturalDurationProperty;
+	const static int NaturalDurationProperty;
  	/* @PropertyType=double,DefaultValue=0.0,ReadOnly,ManagedPropertyType=int,GenerateAccessors,Validator=DoubleGreaterThanZeroValidator */
-	static int NaturalVideoHeightProperty;
+	const static int NaturalVideoHeightProperty;
  	/* @PropertyType=double,DefaultValue=0.0,ReadOnly,ManagedPropertyType=int,GenerateAccessors,Validator=DoubleGreaterThanZeroValidator */
-	static int NaturalVideoWidthProperty;
+	const static int NaturalVideoWidthProperty;
  	/* @PropertyType=TimeSpan,GenerateAccessors */
-	static int PositionProperty;
+	const static int PositionProperty;
  	/* @PropertyType=string,ManagedPropertyType=Uri,AlwaysChange,GenerateAccessors */
-	static int SourceProperty;
+	const static int SourceProperty;
  	/* @PropertyType=Stretch,DefaultValue=StretchUniform,GenerateAccessors */
-	static int StretchProperty;
+	const static int StretchProperty;
  	/* @PropertyType=double,DefaultValue=0.5,GenerateAccessors */
-	static int VolumeProperty;
+	const static int VolumeProperty;
 
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors,ReadOnly */
-	static int DownloadProgressOffsetProperty;
+	const static int DownloadProgressOffsetProperty;
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors,ReadOnly */
-	static int DroppedFramesPerSecondProperty;
+	const static int DroppedFramesPerSecondProperty;
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors,ReadOnly */
-	static int RenderedFramesPerSecondProperty;
+	const static int RenderedFramesPerSecondProperty;
 	
 	// events
 	const static int BufferingProgressChangedEvent;

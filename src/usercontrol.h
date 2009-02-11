@@ -27,7 +27,7 @@ protected:
 	
 public:
 	/* @PropertyType=UIElement,ManagedAccess=ProtectedInternal */
-	static int ContentProperty;
+	const static int ContentProperty;
 	
  	/* @GenerateCBinding,GeneratePInvoke */
 	UserControl ();

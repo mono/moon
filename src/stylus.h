@@ -32,9 +32,9 @@ class StylusInfo : public DependencyObject {
 	
  public:
 	/* @PropertyType=TabletDeviceType,DefaultValue=TabletDeviceTypeMouse,GenerateAccessors */
-	static int DeviceTypeProperty;
+	const static int DeviceTypeProperty;
 	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
-	static int IsInvertedProperty;
+	const static int IsInvertedProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	StylusInfo () { SetObjectType (Type::STYLUSINFO); }
@@ -58,11 +58,11 @@ class StylusPoint : public DependencyObject {
 	
  public:
 	/* @PropertyType=double,DefaultValue=0.5,GenerateAccessors */
-	static int PressureFactorProperty;
+	const static int PressureFactorProperty;
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static int XProperty;
+	const static int XProperty;
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static int YProperty;
+	const static int YProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	StylusPoint () { SetObjectType (Type::STYLUSPOINT); }
@@ -107,13 +107,13 @@ class DrawingAttributes : public DependencyObject {
 
  public:
 	/* @PropertyType=Color,DefaultValue=Color (0xFF000000),ManagedFieldAccess=Private,GenerateAccessors */
-	static int ColorProperty;
+	const static int ColorProperty;
 	/* @PropertyType=Color,DefaultValue=Color (0x00000000),ManagedFieldAccess=Private,GenerateAccessors */
-	static int OutlineColorProperty;
+	const static int OutlineColorProperty;
 	/* @PropertyType=double,DefaultValue=3.0,ManagedFieldAccess=Private,GenerateAccessors */
-	static int HeightProperty;
+	const static int HeightProperty;
 	/* @PropertyType=double,DefaultValue=3.0,ManagedFieldAccess=Private,GenerateAccessors */
-	static int WidthProperty;
+	const static int WidthProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	DrawingAttributes () { SetObjectType (Type::DRAWINGATTRIBUTES); }
@@ -160,9 +160,9 @@ class Stroke : public DependencyObject {
 	
  public:
 	/* @PropertyType=DrawingAttributes,AutoCreateValue,ManagedFieldAccess=Private,GenerateAccessors */
-	static int DrawingAttributesProperty;
+	const static int DrawingAttributesProperty;
 	/* @PropertyType=StylusPointCollection,AutoCreateValue,ManagedFieldAccess=Private,GenerateAccessors */
-	static int StylusPointsProperty;
+	const static int StylusPointsProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Stroke ();
@@ -223,7 +223,7 @@ class InkPresenter : public Canvas {
 
  public:
 	/* @PropertyType=StrokeCollection,AutoCreateValue,GenerateAccessors */
-	static int StrokesProperty;
+	const static int StrokesProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	InkPresenter ();

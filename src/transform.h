@@ -63,11 +63,11 @@ class RotateTransform : public Transform {
 	
  public:
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static int AngleProperty;
+	const static int AngleProperty;
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static int CenterXProperty;
+	const static int CenterXProperty;
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static int CenterYProperty;
+	const static int CenterYProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	RotateTransform () { SetObjectType (Type::ROTATETRANSFORM); }
@@ -94,9 +94,9 @@ class TranslateTransform : public Transform {
 	
  public:
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static int XProperty;
+	const static int XProperty;
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static int YProperty;
+	const static int YProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	TranslateTransform () { SetObjectType (Type::TRANSLATETRANSFORM); }
@@ -120,13 +120,13 @@ class ScaleTransform : public Transform {
 
  public:
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static int CenterXProperty;
+	const static int CenterXProperty;
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static int CenterYProperty;
+	const static int CenterYProperty;
 	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
-	static int ScaleXProperty;
+	const static int ScaleXProperty;
 	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
-	static int ScaleYProperty;
+	const static int ScaleYProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	ScaleTransform () { SetObjectType (Type::SCALETRANSFORM); }
@@ -156,13 +156,13 @@ class SkewTransform : public Transform {
 	
  public:
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static int AngleXProperty;
+	const static int AngleXProperty;
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static int AngleYProperty;
+	const static int AngleYProperty;
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static int CenterXProperty;
+	const static int CenterXProperty;
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static int CenterYProperty;
+	const static int CenterYProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	SkewTransform () { SetObjectType (Type::SKEWTRANSFORM); }
@@ -194,17 +194,17 @@ class Matrix : public DependencyObject {
 	
  public:
 	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
-	static int M11Property;
+	const static int M11Property;
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static int M12Property;
+	const static int M12Property;
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static int M21Property;
+	const static int M21Property;
 	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
-	static int M22Property;
+	const static int M22Property;
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static int OffsetXProperty;
+	const static int OffsetXProperty;
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static int OffsetYProperty;
+	const static int OffsetYProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Matrix ();
@@ -262,7 +262,7 @@ class MatrixTransform : public Transform {
 	
  public:
 	/* @PropertyType=Matrix,GenerateAccessors */
-	static int MatrixProperty;
+	const static int MatrixProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	MatrixTransform () { SetObjectType (Type::MATRIXTRANSFORM); }
@@ -300,7 +300,7 @@ class TransformGroup : public Transform {
 	
  public:
 	/* @PropertyType=TransformCollection,AutoCreateValue,GenerateAccessors */
-	static int ChildrenProperty;
+	const static int ChildrenProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	TransformGroup ();

@@ -57,16 +57,16 @@ class Brush : public DependencyObject {
 
  public:
 	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
-	static int OpacityProperty;
+	const static int OpacityProperty;
 	/* @PropertyType=Transform,DefaultValue=new MatrixTransform (),GenerateAccessors */
-	static int RelativeTransformProperty;
+	const static int RelativeTransformProperty;
 	/* @PropertyType=Transform,DefaultValue=new MatrixTransform (),GenerateAccessors */
-	static int TransformProperty;
+	const static int TransformProperty;
 	
 	// internal property - generic brush property change
 	// used only for notifying attachees
 	/* @PropertyType=bool,Access=Internal */
-	static int ChangedProperty;
+	const static int ChangedProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Brush ();
@@ -107,7 +107,7 @@ class SolidColorBrush : public Brush {
 	
  public:
 	/* @PropertyType=Color,DefaultValue=Color (0x00000000),GenerateAccessors */
-	static int ColorProperty;
+	const static int ColorProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	SolidColorBrush ();
@@ -145,9 +145,9 @@ class GradientStop : public DependencyObject {
 	
  public:
 	/* @PropertyType=Color,DefaultValue=Color (0x00000000),GenerateAccessors */
-	static int ColorProperty;
+	const static int ColorProperty;
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static int OffsetProperty;
+	const static int OffsetProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	GradientStop ();
@@ -172,13 +172,13 @@ class GradientBrush : public Brush {
 
  public:
 	/* @PropertyType=ColorInterpolationMode,DefaultValue=ColorInterpolationModeSRgbLinearInterpolation,GenerateAccessors */
-	static int ColorInterpolationModeProperty;
+	const static int ColorInterpolationModeProperty;
 	/* @PropertyType=GradientStopCollection,AutoCreateValue,GenerateAccessors */
-	static int GradientStopsProperty;
+	const static int GradientStopsProperty;
 	/* @PropertyType=BrushMappingMode,DefaultValue=BrushMappingModeRelativeToBoundingBox,GenerateAccessors */
-	static int MappingModeProperty;
+	const static int MappingModeProperty;
 	/* @PropertyType=GradientSpreadMethod,DefaultValue=GradientSpreadMethodPad,GenerateAccessors */
-	static int SpreadMethodProperty;
+	const static int SpreadMethodProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	GradientBrush ();
@@ -213,9 +213,9 @@ class LinearGradientBrush : public GradientBrush {
 
  public:
 	/* @PropertyType=Point,DefaultValue=Point(1\,1),GenerateAccessors */
-	static int EndPointProperty;
+	const static int EndPointProperty;
 	/* @PropertyType=Point,GenerateAccessors */
-	static int StartPointProperty;
+	const static int StartPointProperty;
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	LinearGradientBrush ();
@@ -240,13 +240,13 @@ class RadialGradientBrush : public GradientBrush {
 
  public:
 	/* @PropertyType=Point,DefaultValue=Point (0.5\, 0.5),GenerateAccessors */
-	static int CenterProperty;
+	const static int CenterProperty;
 	/* @PropertyType=Point,DefaultValue=Point (0.5\, 0.5),GenerateAccessors */
-	static int GradientOriginProperty;
+	const static int GradientOriginProperty;
 	/* @PropertyType=double,DefaultValue=0.5,GenerateAccessors */
-	static int RadiusXProperty;
+	const static int RadiusXProperty;
 	/* @PropertyType=double,DefaultValue=0.5,GenerateAccessors */
-	static int RadiusYProperty;
+	const static int RadiusYProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	RadialGradientBrush ();
@@ -277,11 +277,11 @@ class TileBrush : public Brush {
 
  public:
 	/* @PropertyType=AlignmentX,DefaultValue=AlignmentXCenter,GenerateAccessors */
-	static int AlignmentXProperty;
+	const static int AlignmentXProperty;
 	/* @PropertyType=AlignmentY,DefaultValue=AlignmentYCenter,GenerateAccessors */
-	static int AlignmentYProperty;
+	const static int AlignmentYProperty;
 	/* @PropertyType=Stretch,DefaultValue=StretchFill,GenerateAccessors */
-	static int StretchProperty;
+	const static int StretchProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	TileBrush ();
@@ -320,9 +320,9 @@ class ImageBrush : public TileBrush {
 	
  public:
 	/* @PropertyType=double,DefaultValue=0.0,ManagedAccess=Private,GenerateAccessors */
-	static int DownloadProgressProperty;
+	const static int DownloadProgressProperty;
  	/* @PropertyType=BitmapImage,ManagedPropertyType=ImageSource,GenerateAccessors */
-	static int ImageSourceProperty;
+	const static int ImageSourceProperty;
 	
 	const static int DownloadProgressChangedEvent;
 	const static int ImageFailedEvent;
@@ -361,7 +361,7 @@ class VideoBrush : public TileBrush {
 	
  public:
 	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors */
-	static int SourceNameProperty;
+	const static int SourceNameProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	VideoBrush ();
@@ -393,7 +393,7 @@ class VisualBrush : public TileBrush {
 
  public:
 	/* @PropertyType=UIElement,GenerateAccessors */
-	static int VisualProperty;
+	const static int VisualProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	VisualBrush ();

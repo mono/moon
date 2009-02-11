@@ -46,9 +46,9 @@ class KeySpline : public DependencyObject {
 
 	double GetSplineProgress (double linearProgress);
 	/* @PropertyType=Point,ManagedPropertyType=Point,DefaultValue=Point (0\,0),ManagedFieldAccess=Internal,GenerateAccessors */
-	static int ControlPoint1Property;
+	const static int ControlPoint1Property;
 	/* @PropertyType=Point,ManagedPropertyType=Point,DefaultValue=Point (1.0\, 1.0),ManagedFieldAccess=Internal,GenerateAccessors */
-	static int ControlPoint2Property;
+	const static int ControlPoint2Property;
 
 	Point *GetControlPoint1 ();
 	void SetControlPoint1 (Point *controlPoint1);
@@ -240,11 +240,11 @@ class DoubleAnimation : public Animation/*Timeline*/ {
 
  public:
  	/* @PropertyType=double,Nullable,GenerateAccessors */
-	static int ByProperty;
+	const static int ByProperty;
 	/* @PropertyType=double,Nullable,GenerateAccessors */
-	static int FromProperty;
+	const static int FromProperty;
 	/* @PropertyType=double,Nullable,GenerateAccessors */
-	static int ToProperty;
+	const static int ToProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	DoubleAnimation ();
@@ -289,11 +289,11 @@ class ColorAnimation : public Animation/*Timeline*/ {
 
  public:
  	/* @PropertyType=Color,Nullable,GenerateAccessors */
-	static int ByProperty;
+	const static int ByProperty;
  	/* @PropertyType=Color,Nullable,GenerateAccessors */
-	static int FromProperty;
+	const static int FromProperty;
  	/* @PropertyType=Color,Nullable,GenerateAccessors */
-	static int ToProperty;
+	const static int ToProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	ColorAnimation ();
@@ -338,11 +338,11 @@ class PointAnimation : public Animation/*Timeline*/ {
 
  public:
  	/* @PropertyType=Point,Nullable,GenerateAccessors */
-	static int ByProperty;
+	const static int ByProperty;
  	/* @PropertyType=Point,Nullable,GenerateAccessors */
-	static int FromProperty;
+	const static int FromProperty;
  	/* @PropertyType=Point,Nullable,GenerateAccessors */
-	static int ToProperty;
+	const static int ToProperty;
 	
  	/* @GenerateCBinding,GeneratePInvoke */
  	PointAnimation ();
@@ -459,9 +459,9 @@ class DoubleKeyFrame : public KeyFrame {
 
  public:
  	/* @PropertyType=double,Nullable,ManagedPropertyType=double,GenerateAccessors */
-	static int ValueProperty;
+	const static int ValueProperty;
 	/* @PropertyType=KeyTime,Nullable,ManagedPropertyType=KeyTime,GenerateAccessors */
-	static int KeyTimeProperty;
+	const static int KeyTimeProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	DoubleKeyFrame ();
@@ -485,9 +485,9 @@ class ColorKeyFrame : public KeyFrame {
 
  public:
  	/* @PropertyType=Color,Nullable,ManagedPropertyType=Color,GenerateAccessors */
-	static int ValueProperty;
+	const static int ValueProperty;
 	/* @PropertyType=KeyTime,Nullable,ManagedPropertyType=KeyTime,GenerateAccessors */
-	static int KeyTimeProperty;
+	const static int KeyTimeProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	ColorKeyFrame ();
@@ -511,9 +511,9 @@ class PointKeyFrame : public KeyFrame {
 	
  public:
  	/* @PropertyType=Point,Nullable,ManagedPropertyType=Point,GenerateAccessors */
-	static int ValueProperty;
+	const static int ValueProperty;
 	/* @PropertyType=KeyTime,Nullable,ManagedPropertyType=KeyTime,GenerateAccessors */
-	static int KeyTimeProperty;
+	const static int KeyTimeProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	PointKeyFrame ();
@@ -623,7 +623,7 @@ class SplineDoubleKeyFrame : public DoubleKeyFrame {
 	
  public:
  	/* @PropertyType=KeySpline,AutoCreateValue,GenerateAccessors */
-	static int KeySplineProperty;
+	const static int KeySplineProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	SplineDoubleKeyFrame ();
@@ -646,7 +646,7 @@ class SplineColorKeyFrame : public ColorKeyFrame {
 
  public:
  	/* @PropertyType=KeySpline,AutoCreateValue,GenerateAccessors */
-	static int KeySplineProperty;
+	const static int KeySplineProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	SplineColorKeyFrame ();
@@ -669,7 +669,7 @@ class SplinePointKeyFrame : public PointKeyFrame {
 	
  public:
  	/* @PropertyType=KeySpline,AutoCreateValue,GenerateAccessors */
-	static int KeySplineProperty;
+	const static int KeySplineProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	SplinePointKeyFrame ();
@@ -692,7 +692,7 @@ class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
 
  public:
  	/* @PropertyType=DoubleKeyFrameCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
-	static int KeyFramesProperty;
+	const static int KeyFramesProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	DoubleAnimationUsingKeyFrames ();
@@ -723,7 +723,7 @@ class ColorAnimationUsingKeyFrames : public ColorAnimation {
 
  public:
  	/* @PropertyType=ColorKeyFrameCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
-	static int KeyFramesProperty;
+	const static int KeyFramesProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	ColorAnimationUsingKeyFrames ();
@@ -754,7 +754,7 @@ class PointAnimationUsingKeyFrames : public PointAnimation {
 
  public:
  	/* @PropertyType=PointKeyFrameCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
-	static int KeyFramesProperty;
+	const static int KeyFramesProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	PointAnimationUsingKeyFrames ();
@@ -795,9 +795,9 @@ class Storyboard : public ParallelTimeline {
 
  public:
  	/* @PropertyType=string,Attached,GenerateAccessors,Validator=IsTimelineValidator */
-	static int TargetNameProperty;
+	const static int TargetNameProperty;
  	/* @PropertyType=PropertyPath,Attached,GenerateAccessors,Validator=IsTimelineValidator */
-	static int TargetPropertyProperty;
+	const static int TargetPropertyProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Storyboard ();
@@ -833,7 +833,7 @@ class BeginStoryboard : public TriggerAction {
 
  public:
  	/* @PropertyType=Storyboard,GenerateAccessors */
-	static int StoryboardProperty;
+	const static int StoryboardProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	BeginStoryboard ();

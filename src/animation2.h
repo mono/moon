@@ -25,9 +25,9 @@ class ObjectKeyFrame : public KeyFrame /* The managed class derives directly fro
 	
 	/* BROKEN BROKEN BROKEN! */
 	/* @PropertyType=DependencyObject,ManagedPropertyType=object,GenerateAccessors */
-	static int ValueProperty;
+	const static int ValueProperty;
 	/* @PropertyType=KeyTime,Nullable,ManagedPropertyType=KeyTime,GenerateAccessors */
-	static int KeyTimeProperty;
+	const static int KeyTimeProperty;
 
 	// Property accessors
 	DependencyObject *GetValue ();
@@ -75,7 +75,7 @@ class ObjectAnimationUsingKeyFrames : public /*Object*/Animation {
 
  public:
  	/* @PropertyType=ObjectKeyFrameCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
-	static int KeyFramesProperty;
+	const static int KeyFramesProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	ObjectAnimationUsingKeyFrames ();

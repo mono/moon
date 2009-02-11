@@ -48,9 +48,9 @@ class EventTrigger : public TriggerBase {
 	
  public:
 	/* @PropertyType=TriggerActionCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
-	static int ActionsProperty;
+	const static int ActionsProperty;
 	/* @PropertyType=string,ManagedPropertyType=RoutedEvent,ManagedFieldAccess=Internal,GenerateAccessors */
-	static int RoutedEventProperty;
+	const static int RoutedEventProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	EventTrigger ();

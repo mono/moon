@@ -53,7 +53,7 @@ class Geometry : public DependencyObject {
 	
  public:
  	/* @PropertyType=Transform,GenerateAccessors */
-	static int TransformProperty;
+	const static int TransformProperty;
 
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	Geometry ();
@@ -113,9 +113,9 @@ class GeometryGroup : public Geometry {
 
  public:
  	/* @PropertyType=FillRule,DefaultValue=FillRuleEvenOdd,GenerateAccessors */
-	static int FillRuleProperty;
+	const static int FillRuleProperty;
  	/* @PropertyType=GeometryCollection,AutoCreateValue,GenerateAccessors */
-	static int ChildrenProperty;
+	const static int ChildrenProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	GeometryGroup ();
@@ -149,11 +149,11 @@ class EllipseGeometry : public Geometry {
 	
  public:
  	/* @PropertyType=Point,GenerateAccessors */
-	static int CenterProperty;
+	const static int CenterProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static int RadiusXProperty;
+	const static int RadiusXProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static int RadiusYProperty;
+	const static int RadiusYProperty;
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	EllipseGeometry ();
@@ -185,9 +185,9 @@ class LineGeometry : public Geometry {
 	
  public:
  	/* @PropertyType=Point,GenerateAccessors */
-	static int EndPointProperty;
+	const static int EndPointProperty;
  	/* @PropertyType=Point,GenerateAccessors */
-	static int StartPointProperty;
+	const static int StartPointProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	LineGeometry ();
@@ -233,9 +233,9 @@ class PathGeometry : public Geometry {
 	
  public:
  	/* @PropertyType=FillRule,DefaultValue=FillRuleEvenOdd,GenerateAccessors */
-	static int FillRuleProperty;
+	const static int FillRuleProperty;
  	/* @PropertyType=PathFigureCollection,GenerateAccessors */
-	static int FiguresProperty;
+	const static int FiguresProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	PathGeometry ();
@@ -271,11 +271,11 @@ class RectangleGeometry : public Geometry {
 	
  public:
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static int RadiusXProperty;
+	const static int RadiusXProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static int RadiusYProperty;
+	const static int RadiusYProperty;
  	/* @PropertyType=Rect,GenerateAccessors */
-	static int RectProperty;
+	const static int RectProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	RectangleGeometry ();
@@ -321,13 +321,13 @@ class PathFigure : public DependencyObject {
 	
  public:
  	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
-	static int IsClosedProperty;
+	const static int IsClosedProperty;
  	/* @PropertyType=PathSegmentCollection,AutoCreateValue,GenerateAccessors */
-	static int SegmentsProperty;
+	const static int SegmentsProperty;
  	/* @PropertyType=Point,GenerateAccessors */
-	static int StartPointProperty;
+	const static int StartPointProperty;
 	/* @PropertyType=bool,Version=2,GenerateAccessors */
-	static int IsFilledProperty;
+	const static int IsFilledProperty;
 	
 	moon_path *path;
 	
@@ -388,15 +388,15 @@ class ArcSegment : public PathSegment {
 
  public:
  	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
-	static int IsLargeArcProperty;
+	const static int IsLargeArcProperty;
  	/* @PropertyType=Point,GenerateAccessors */
-	static int PointProperty;
+	const static int PointProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static int RotationAngleProperty;
+	const static int RotationAngleProperty;
  	/* @PropertyType=Point,ManagedPropertyType=Size,GenerateAccessors */
-	static int SizeProperty;
+	const static int SizeProperty;
  	/* @PropertyType=SweepDirection,DefaultValue=SweepDirectionCounterclockwise,GenerateAccessors */
-	static int SweepDirectionProperty;
+	const static int SweepDirectionProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	ArcSegment ();
@@ -435,11 +435,11 @@ class BezierSegment : public PathSegment {
 
  public:
  	/* @PropertyType=Point,GenerateAccessors */
-	static int Point1Property;
+	const static int Point1Property;
  	/* @PropertyType=Point,GenerateAccessors */
-	static int Point2Property;
+	const static int Point2Property;
  	/* @PropertyType=Point,GenerateAccessors */
-	static int Point3Property;
+	const static int Point3Property;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	BezierSegment ();
@@ -472,7 +472,7 @@ class LineSegment : public PathSegment {
 
  public:
  	/* @PropertyType=Point,GenerateAccessors */
-	static int PointProperty;
+	const static int PointProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	LineSegment ();
@@ -501,7 +501,7 @@ class PolyBezierSegment : public PathSegment {
 	
  public:
  	/* @PropertyType=PointCollection,GenerateAccessors */
-	static int PointsProperty;
+	const static int PointsProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	PolyBezierSegment ();
@@ -530,7 +530,7 @@ class PolyLineSegment : public PathSegment {
 	
  public:
  	/* @PropertyType=PointCollection,GenerateAccessors */
-	static int PointsProperty;
+	const static int PointsProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	PolyLineSegment ();
@@ -558,7 +558,7 @@ class PolyQuadraticBezierSegment : public PathSegment {
 	
  public:
  	/* @PropertyType=PointCollection,GenerateAccessors */
-	static int PointsProperty;
+	const static int PointsProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	PolyQuadraticBezierSegment ();
@@ -584,9 +584,9 @@ class QuadraticBezierSegment : public PathSegment {
 
  public:
  	/* @PropertyType=Point,GenerateAccessors */
-	static int Point1Property;
+	const static int Point1Property;
  	/* @PropertyType=Point,GenerateAccessors */
-	static int Point2Property;
+	const static int Point2Property;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	QuadraticBezierSegment ();

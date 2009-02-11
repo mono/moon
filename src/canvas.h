@@ -29,11 +29,11 @@ class Canvas : public Panel {
 	
  public:
  	/* @PropertyType=double,DefaultValue=0.0,Attached,GenerateAccessors */
-	static int LeftProperty;
+	const static int LeftProperty;
  	/* @PropertyType=double,DefaultValue=0.0,Attached,GenerateAccessors */
-	static int TopProperty;
+	const static int TopProperty;
 	/* @PropertyType=gint32,DefaultValue=0,Attached,GenerateAccessors */
-	static int ZIndexProperty;
+	const static int ZIndexProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Canvas ();

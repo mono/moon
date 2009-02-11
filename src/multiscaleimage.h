@@ -55,17 +55,17 @@ class MultiScaleImage : public MediaBase {
 
  public:
 	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateGetter */
-	static int AspectRatioProperty;
+	const static int AspectRatioProperty;
 	/* @PropertyType=MultiScaleTileSource,Version=2.0,GenerateAccessors */
-	static int SourceProperty;
+	const static int SourceProperty;
 	/* @PropertyType=MultiScaleSubImageCollection,ManagedAccess=Internal,Version=2.0,GenerateGetter */
-	static int SubImageCollectionProperty;
+	const static int SubImageCollectionProperty;
 	/* @PropertyType=bool,DefaultValue=true,Version=2.0,GenerateAccessors */
-	static int UseSpringsProperty;
+	const static int UseSpringsProperty;
 	/* @PropertyType=Point,DefaultValue=Point(0\,0),Version=2.0,GenerateAccessors */
-	static int ViewportOriginProperty;
+	const static int ViewportOriginProperty;
 	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateAccessors */
-	static int ViewportWidthProperty;
+	const static int ViewportWidthProperty;
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	MultiScaleImage ();

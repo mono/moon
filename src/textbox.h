@@ -169,31 +169,31 @@ class TextBox : public Control, public ITextSource {
 	
  public:
 	/* @PropertyType=bool,DefaultValue=false,Version=2.0,GenerateAccessors */
-	static int AcceptsReturnProperty;
+	const static int AcceptsReturnProperty;
 	/* @PropertyType=ScrollBarVisibility,DefaultValue=ScrollBarVisibilityHidden,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
-	static int HorizontalScrollBarVisibilityProperty;
+	const static int HorizontalScrollBarVisibilityProperty;
 	/* @PropertyType=bool,DefaultValue=false,Version=2.0,GenerateAccessors */
-	static int IsReadOnlyProperty;
+	const static int IsReadOnlyProperty;
 	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors,Validator=PositiveIntValidator */
-	static int MaxLengthProperty;
+	const static int MaxLengthProperty;
 	/* @PropertyType=string,DefaultValue=\"\",Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
-	static int SelectedTextProperty;
+	const static int SelectedTextProperty;
 	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
-	static int SelectionBackgroundProperty;
+	const static int SelectionBackgroundProperty;
 	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
-	static int SelectionForegroundProperty;
+	const static int SelectionForegroundProperty;
 	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
-	static int SelectionLengthProperty;
+	const static int SelectionLengthProperty;
 	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
-	static int SelectionStartProperty;
+	const static int SelectionStartProperty;
 	/* @PropertyType=string,DefaultValue=\"\",Version=2.0,GenerateAccessors */
-	static int TextProperty;
+	const static int TextProperty;
 	/* @PropertyType=TextAlignment,DefaultValue=TextAlignmentLeft,Version=2.0,GenerateAccessors */
-	static int TextAlignmentProperty;
+	const static int TextAlignmentProperty;
 	/* @PropertyType=TextWrapping,DefaultValue=TextWrappingNoWrap,Version=2.0,GenerateAccessors */
-	static int TextWrappingProperty;
+	const static int TextWrappingProperty;
 	/* @PropertyType=ScrollBarVisibility,DefaultValue=ScrollBarVisibilityHidden,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
-	static int VerticalScrollBarVisibilityProperty;
+	const static int VerticalScrollBarVisibilityProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	TextBox ();
@@ -351,15 +351,15 @@ class TextBoxView : public FrameworkElement {
 class PasswordBox : public TextBox {
  public:
 	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors,Validator=IntGreaterThanZeroValidator */
-	static int MaxLengthProperty;
+	const static int MaxLengthProperty;
 	/* @PropertyType=string,DefaultValue=\"\",Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors,Validator=PasswordValidator */
-	static int PasswordProperty;
+	const static int PasswordProperty;
 	/* @PropertyType=char,DefaultValue=9679,Version=2.0,GenerateAccessors */
-	static int PasswordCharProperty;
+	const static int PasswordCharProperty;
 	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
-	static int SelectionBackgroundProperty;
+	const static int SelectionBackgroundProperty;
 	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
-	static int SelectionForegroundProperty;
+	const static int SelectionForegroundProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	PasswordBox ();

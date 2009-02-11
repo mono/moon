@@ -325,7 +325,7 @@ public:
 	virtual void RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error);
 
 	/* @PropertyType=string,GenerateAccessors,ManagedDeclaringType=FrameworkElement,DefaultValue=\"\" */
-	static int NameProperty;
+	const static int NameProperty;
 	
 protected:
 	virtual ~DependencyObject ();

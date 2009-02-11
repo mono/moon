@@ -28,7 +28,7 @@ class AssemblyPart : public DependencyObject {
 	
  public:
  	/* @PropertyType=string */
-	static int SourceProperty;
+	const static int SourceProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	AssemblyPart ();
@@ -56,17 +56,17 @@ class Deployment : public DependencyObject {
 
  public:
  	/* @PropertyType=CrossDomainAccess,DefaultValue=CrossDomainAccessNoAccess,ManagedSetterAccess=Internal */
-	static int ExternalCallersFromCrossDomainProperty;
+	const static int ExternalCallersFromCrossDomainProperty;
  	/* @PropertyType=string,ManagedSetterAccess=Internal */
-	static int EntryPointAssemblyProperty;
+	const static int EntryPointAssemblyProperty;
  	/* @PropertyType=string,ManagedSetterAccess=Internal */
-	static int EntryPointTypeProperty;
+	const static int EntryPointTypeProperty;
  	/* @PropertyType=AssemblyPartCollection,ManagedSetterAccess=Internal */
-	static int PartsProperty;
+	const static int PartsProperty;
  	/* @PropertyType=string,ManagedSetterAccess=Internal */
-	static int RuntimeVersionProperty;
+	const static int RuntimeVersionProperty;
  	/* @PropertyType=Surface,ManagedAccess=Internal,GenerateAccessors */
-	static int SurfaceProperty;
+	const static int SurfaceProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Deployment ();

@@ -24,34 +24,34 @@ typedef Size (*ArrangeOverrideCallback)(Size finalSize);
 class FrameworkElement : public UIElement {
 public:
 	/* @PropertyType=double,DefaultValue=NAN,GenerateAccessors */
-	static int HeightProperty;
+	const static int HeightProperty;
 	/* @PropertyType=double,DefaultValue=NAN,GenerateAccessors */
-	static int WidthProperty;
+	const static int WidthProperty;
 
 	/* @PropertyType=double,DefaultValue=0.0,Version=2,ManagedSetterAccess=Internal,GenerateAccessors */
-	static int ActualHeightProperty;
+	const static int ActualHeightProperty;
 	/* @PropertyType=double,DefaultValue=0.0,Version=2,ManagedSetterAccess=Internal,GenerateAccessors */
-	static int ActualWidthProperty;
+	const static int ActualWidthProperty;
 	/* @PropertyType=object,Version=2.0 */
-	static int DataContextProperty;
+	const static int DataContextProperty;
 	/* @PropertyType=HorizontalAlignment,DefaultValue=HorizontalAlignmentStretch,Version=2.0,GenerateAccessors */
-	static int HorizontalAlignmentProperty;
+	const static int HorizontalAlignmentProperty;
 	/* @PropertyType=string,DefaultValue=\"en-US\",Version=2.0,ManagedPropertyType=XmlLanguage,Validator=NonNullStringValidator */
-	static int LanguageProperty;
+	const static int LanguageProperty;
 	/* @PropertyType=Thickness,DefaultValue=Thickness (0),Version=2.0,GenerateAccessors */
-	static int MarginProperty;
+	const static int MarginProperty;
 	/* @PropertyType=double,DefaultValue=INFINITY,Version=2.0,GenerateAccessors */
-	static int MaxHeightProperty;
+	const static int MaxHeightProperty;
 	/* @PropertyType=double,DefaultValue=INFINITY,Version=2.0,GenerateAccessors */
-	static int MaxWidthProperty;
+	const static int MaxWidthProperty;
 	/* @PropertyType=double,DefaultValue=0.0,Version=2.0,GenerateAccessors */
-	static int MinHeightProperty;
+	const static int MinHeightProperty;
 	/* @PropertyType=double,DefaultValue=0.0,Version=2.0,GenerateAccessors */
-	static int MinWidthProperty;
+	const static int MinWidthProperty;
 	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentStretch,Version=2.0,GenerateAccessors */
-	static int VerticalAlignmentProperty;
+	const static int VerticalAlignmentProperty;
 	/* @PropertyType=Style,Version=2.0,GenerateAccessors,Validator=StyleValidator */
-	static int StyleProperty;
+	const static int StyleProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	FrameworkElement ();
