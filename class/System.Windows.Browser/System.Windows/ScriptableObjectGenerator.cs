@@ -124,7 +124,7 @@ namespace System.Windows
 
 	internal static class ScriptableObjectGenerator
 	{
-		static bool ValidateType (Type t)
+		public static bool ValidateType (Type t)
 		{
 			if (!t.IsDefined (typeof(ScriptableTypeAttribute), true)) {
 				if (ValidateProperties (t) | ValidateMethods (t) | ValidateEvents (t))
@@ -141,7 +141,7 @@ namespace System.Windows
 				if (!pi.IsDefined (typeof(ScriptableMemberAttribute), true))
 					continue;
 
-				if (!IsSupportedType (pi.PropertyType)) {
+				if (pi.PropertyType != t && !IsSupportedType (pi.PropertyType)) {
 					throw new NotSupportedException (
 						 String.Format ("The scriptable object type {0} has a property {1} whose type {2} is not supported",
 								t, pi, pi.PropertyType));
@@ -158,14 +158,14 @@ namespace System.Windows
 				if (!mi.IsDefined (typeof(ScriptableMemberAttribute), true))
 					continue;
 
-				if (mi.ReturnType != typeof (void) && !IsSupportedType (mi.ReturnType))
+				if (mi.ReturnType != typeof (void) && mi.ReturnType != t && !IsSupportedType (mi.ReturnType))
 					throw new NotSupportedException (
 						 String.Format ("The scriptable object type {0} has a method {1} whose return type {2} is not supported",
 								t, mi, mi.ReturnType));
 
 				ParameterInfo[] ps = mi.GetParameters();
 				foreach (ParameterInfo p in ps) {
-					if (p.IsOut || !IsSupportedType (p.ParameterType))
+					if (p.IsOut || (p.ParameterType != t && !IsSupportedType (p.ParameterType)))
 						throw new NotSupportedException (
 						 String.Format ("The scriptable object type {0} has a method {1} whose parameter {2} is of not supported type",
 								t, mi, p));

@@ -1,5 +1,10 @@
 2009-02-11  Andreia Gaita  <avidigal@novell.com>
 
+	* ScriptableObjectGenerator.cs (ValidateType): Fix infinite recursion 
+	on type checks.
+
+2009-02-11  Andreia Gaita  <avidigal@novell.com>
+
 	* WebApplication.cs: Register a dummy script object wrapper to serve
 	as the "services" object and provide the createObject method
 
