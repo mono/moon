@@ -14,14 +14,14 @@
 #ifndef __DEEPZOOMIMAGETILESOURCE_H__
 #define __DEEPZOOMIMAGETILESOURCE_H__
 
+#include "multiscalesubimage.h"
+#include "multiscaleimage.h"
 #include "tilesource.h"
 #include "downloader.h"
 #include "uri.h"
 
 typedef void (*parsed_cb) (void *userdata);
 gpointer get_tile_layer (int level, int x, int y, void *user_data);
-void multi_scale_image_handle_parsed (void *userdata);
-void end_element (void *data, const char *el);
 
 /* @Version=2,Namespace=System.Windows.Media */
 class DeepZoomImageTileSource : public MultiScaleTileSource {
