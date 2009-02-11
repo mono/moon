@@ -42,10 +42,12 @@ namespace System.Windows
 
 		public static WebApplication Current {
 			get {
-				if (current == null)
+				if (current == null) {
 					lock (lockobj) {
 						current = new WebApplication ();
 					}
+					current.Init ();
+				}
 				return current;
 			}
 		}
@@ -79,6 +81,11 @@ namespace System.Windows
 			}
 
 			scriptableTypes = new Dictionary<string, Type>();
+		}
+
+		void Init ()
+		{
+			RegisterScriptableObject ("services", new ScriptableObjectWrapper ());
 		}
 
 		internal IntPtr PluginHandle {

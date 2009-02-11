@@ -71,6 +71,10 @@ namespace System.Windows.Browser
 			scriptableObjects = new Dictionary<IntPtr,WeakReference> ();
 		}
 
+		public ScriptableObjectWrapper () : this(null)
+		{
+		}
+
 		public ScriptableObjectWrapper (object obj) : this(obj, IntPtr.Zero)
 		{
 		}
@@ -175,17 +179,14 @@ namespace System.Windows.Browser
 								tcs.Length);
 		}
 
-		public void CreateObject (string name, ref Value ret)
+		[ScriptableMember]
+		public ScriptableObjectWrapper CreateObject (string name)
 		{
-			//Console.WriteLine (name);
 			if (!WebApplication.ScriptableTypes.ContainsKey (name))
-				return;
+				return null;
 
-			//Console.WriteLine ("creating " + name);
 			object o = Activator.CreateInstance (WebApplication.ScriptableTypes[name]);
-			//Console.WriteLine (o + " created");
-			ScriptableObjectWrapper wrapper = ScriptableObjectGenerator.Generate (o, false);
-			ValueFromObject (ref ret, wrapper);
+			return ScriptableObjectGenerator.Generate (o, false);
 		}
 
 		internal static object ObjectFromValue<T> (Value v)
@@ -288,7 +289,8 @@ namespace System.Windows.Browser
 					if (arg_count == 1) {
 						Value v = (Value)Marshal.PtrToStructure (uargs[0], typeof (Value));
 						string o = (string)ObjectFromValue<string> (v);
-						CreateObject (o, ref ret);
+						ScriptableObjectWrapper wrapper = CreateObject (o);
+						ValueFromObject (ref ret, wrapper);
 					}
 				break;
 			}

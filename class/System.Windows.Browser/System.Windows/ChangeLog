@@ -1,3 +1,8 @@
+2009-02-11  Andreia Gaita  <avidigal@novell.com>
+
+	* WebApplication.cs: Register a dummy script object wrapper to serve
+	as the "services" object and provide the createObject method
+
 2009-02-04  Andreia Gaita  <avidigal@novell.com>
 
 	* ScriptableObjectWrapper.cs:
