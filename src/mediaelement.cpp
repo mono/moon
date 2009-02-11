@@ -1950,7 +1950,7 @@ MediaElement::SeekNow ()
 void
 MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property == MediaElement::SourceProperty) {
+	if (args->GetId () == MediaElement::SourceProperty) {
 		flags |= RecalculateMatrix;
 		
 		// TODO: This should really be passed on to Media, who should have the
@@ -1975,43 +1975,43 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 			source_changed = true;
 		}
 		
-	} else if (args->property == MediaElement::AudioStreamIndexProperty) {
+	} else if (args->GetId () == MediaElement::AudioStreamIndexProperty) {
 		mplayer->SetAudioStreamIndex (args->new_value->AsInt32 ());
-	} else if (args->property == MediaElement::AutoPlayProperty) {
+	} else if (args->GetId () == MediaElement::AutoPlayProperty) {
 		// no state to change
-	} else if (args->property == MediaElement::BalanceProperty) {
+	} else if (args->GetId () == MediaElement::BalanceProperty) {
 		mplayer->SetBalance (args->new_value->AsDouble ());
-	} else if (args->property == MediaElement::BufferingProgressProperty) {
+	} else if (args->GetId () == MediaElement::BufferingProgressProperty) {
 		// read-only property
-	} else if (args->property == MediaElement::BufferingTimeProperty) {
+	} else if (args->GetId () == MediaElement::BufferingTimeProperty) {
 		if (media)
 			media->SetBufferingTime (TimeSpan_ToPts (GetBufferingTime ()));
-	} else if (args->property == MediaElement::CurrentStateProperty) {
+	} else if (args->GetId () == MediaElement::CurrentStateProperty) {
 		Emit (CurrentStateChangedEvent);
 		Invalidate ();
-	} else if (args->property == MediaElement::IsMutedProperty) {
+	} else if (args->GetId () == MediaElement::IsMutedProperty) {
 		mplayer->SetMuted (args->new_value->AsBool ());
-	} else if (args->property == MediaElement::MarkersProperty) {
+	} else if (args->GetId () == MediaElement::MarkersProperty) {
 		// 
-	} else if (args->property == MediaElement::NaturalVideoHeightProperty) {
+	} else if (args->GetId () == MediaElement::NaturalVideoHeightProperty) {
 		// read-only property
 		flags |= RecalculateMatrix;
-	} else if (args->property == MediaElement::NaturalVideoWidthProperty) {
+	} else if (args->GetId () == MediaElement::NaturalVideoWidthProperty) {
 		// read-only property
 		flags |= RecalculateMatrix;
-	} else if (args->property == MediaElement::PositionProperty) {
+	} else if (args->GetId () == MediaElement::PositionProperty) {
 		if (!(flags & UpdatingPosition)) {
 			seek_to_position = args->new_value->AsTimeSpan ();
 			AddTickCall (MediaElement::SeekNow);
 		} else if (IsPlaying() && mplayer->HasVideo () && !IsMissingCodecs ()) {
 			Invalidate (GetCoverageBounds ());
 		}
-	} else if (args->property == MediaElement::VolumeProperty) {
+	} else if (args->GetId () == MediaElement::VolumeProperty) {
 		mplayer->SetVolume (args->new_value->AsDouble ());
-	} else if (args->property == FrameworkElement::HeightProperty) {
+	} else if (args->GetId () == FrameworkElement::HeightProperty) {
 		if (!updating_size_from_media)
 			use_media_height = args->new_value == NULL;
-	} else if (args->property == FrameworkElement::WidthProperty) {
+	} else if (args->GetId () == FrameworkElement::WidthProperty) {
 		if (!updating_size_from_media)
 			use_media_width = args->new_value == NULL;
 	}

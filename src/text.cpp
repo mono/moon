@@ -622,7 +622,7 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 	
 	if (args->GetProperty ()->GetOwnerType () != Type::TEXTBLOCK) {
 		FrameworkElement::OnPropertyChanged (args);
-		if (args->property == FrameworkElement::WidthProperty) {
+		if (args->GetId () == FrameworkElement::WidthProperty) {
 			if (layout->GetTextWrapping () != TextWrappingNoWrap)
 				dirty = true;
 			
@@ -632,27 +632,27 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 		return;
 	}
 	
-	if (args->property == TextBlock::FontFamilyProperty) {
+	if (args->GetId () == TextBlock::FontFamilyProperty) {
 		FontFamily *family = args->new_value ? args->new_value->AsFontFamily () : NULL;
 		font->SetFamily (family ? family->source : NULL);
 		dirty = true;
-	} else if (args->property == TextBlock::FontSizeProperty) {
+	} else if (args->GetId () == TextBlock::FontSizeProperty) {
 		double size = args->new_value->AsDouble ();
 		font->SetSize (size);
 		dirty = true;
-	} else if (args->property == TextBlock::FontStretchProperty) {
+	} else if (args->GetId () == TextBlock::FontStretchProperty) {
 		FontStretches stretch = (FontStretches) args->new_value->AsInt32 ();
 		font->SetStretch (stretch);
 		dirty = true;
-	} else if (args->property == TextBlock::FontStyleProperty) {
+	} else if (args->GetId () == TextBlock::FontStyleProperty) {
 		FontStyles style = (FontStyles) args->new_value->AsInt32 ();
 		font->SetStyle (style);
 		dirty = true;
-	} else if (args->property == TextBlock::FontWeightProperty) {
+	} else if (args->GetId () == TextBlock::FontWeightProperty) {
 		FontWeights weight = (FontWeights) args->new_value->AsInt32 ();
 		font->SetWeight (weight);
 		dirty = true;
-	} else if (args->property == TextBlock::TextProperty) {
+	} else if (args->GetId () == TextBlock::TextProperty) {
 		if (setvalue) {
 			// result of a change to the TextBlock.Text property
 			const char *text = args->new_value ? args->new_value->AsString () : NULL;
@@ -667,11 +667,11 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 			// result of a change to the TextBlock.Inlines property
 			invalidate = false;
 		}
-	} else if (args->property == TextBlock::TextDecorationsProperty) {
+	} else if (args->GetId () == TextBlock::TextDecorationsProperty) {
 		dirty = true;
-	} else if (args->property == TextBlock::TextWrappingProperty) {
+	} else if (args->GetId () == TextBlock::TextWrappingProperty) {
 		dirty = layout->SetTextWrapping ((TextWrapping) args->new_value->AsInt32 ());
-	} else if (args->property == TextBlock::InlinesProperty) {
+	} else if (args->GetId () == TextBlock::InlinesProperty) {
 		if (setvalue) {
 			// result of a change to the TextBlock.Inlines property
 			InlineCollection *inlines = args->new_value ? args->new_value->AsInlineCollection () : NULL;
@@ -684,13 +684,13 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 			// result of a change to the TextBlock.Text property
 			invalidate = false;
 		}
-	} else if (args->property == TextBlock::LineStackingStrategyProperty) {
+	} else if (args->GetId () == TextBlock::LineStackingStrategyProperty) {
 		dirty = layout->SetLineStackingStrategy ((LineStackingStrategy) args->new_value->AsInt32 ());
-	} else if (args->property == TextBlock::LineHeightProperty) {
+	} else if (args->GetId () == TextBlock::LineHeightProperty) {
 		dirty = layout->SetLineHeight (args->new_value->AsDouble ());
-	} else if (args->property == TextBlock::TextAlignmentProperty) {
+	} else if (args->GetId () == TextBlock::TextAlignmentProperty) {
 		dirty = layout->SetTextAlignment ((TextAlignment) args->new_value->AsInt32 ());
-	} else if (args->property == TextBlock::PaddingProperty) {
+	} else if (args->GetId () == TextBlock::PaddingProperty) {
 		dirty = true;
 	}
 	
@@ -767,8 +767,8 @@ TextBlock::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Prop
 		return;
 	}
 	
-	if (args->property != Inline::ForegroundProperty) {
-		if (args->property == Run::TextProperty) {
+	if (args->GetId () != Inline::ForegroundProperty) {
+		if (args->GetId () == Run::TextProperty) {
 			// update our TextProperty
 			setvalue = false;
 			SetValue (TextBlock::TextProperty, Value (GetTextInternal (inlines), true));
@@ -1573,7 +1573,7 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args)
 		return;
 	}
 	
-	if (args->property == Glyphs::FontUriProperty) {
+	if (args->GetId () == Glyphs::FontUriProperty) {
 		const char *str = args->new_value ? args->new_value->AsString () : NULL;
 		Surface *surface = GetSurface ();
 		
@@ -1593,9 +1593,9 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args)
 		}
 		
 		invalidate = false;
-	} else if (args->property == Glyphs::FillProperty) {
+	} else if (args->GetId () == Glyphs::FillProperty) {
 		fill = args->new_value ? args->new_value->AsBrush() : NULL;
-	} else if (args->property == Glyphs::UnicodeStringProperty) {
+	} else if (args->GetId () == Glyphs::UnicodeStringProperty) {
 		const char *str = args->new_value ? args->new_value->AsString () : NULL;
 		g_free (text);
 		
@@ -1605,22 +1605,22 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args)
 			text = NULL;
 		
 		dirty = true;
-	} else if (args->property == Glyphs::IndicesProperty) {
+	} else if (args->GetId () == Glyphs::IndicesProperty) {
 		const char *str = args->new_value ? args->new_value->AsString () : NULL;
 		SetIndicesInternal (str);
 		dirty = true;
-	} else if (args->property == Glyphs::FontRenderingEmSizeProperty) {
+	} else if (args->GetId () == Glyphs::FontRenderingEmSizeProperty) {
 		double size = args->new_value->AsDouble();
 		desc->SetSize (size);
 		dirty = true;
-	} else if (args->property == Glyphs::OriginXProperty) {
+	} else if (args->GetId () == Glyphs::OriginXProperty) {
 		origin_x = args->new_value->AsDouble ();
 		dirty = true;
-	} else if (args->property == Glyphs::OriginYProperty) {
+	} else if (args->GetId () == Glyphs::OriginYProperty) {
 		origin_y = args->new_value->AsDouble ();
 		origin_y_specified = true;
 		dirty = true;
-	} else if (args->property == Glyphs::StyleSimulationsProperty) {
+	} else if (args->GetId () == Glyphs::StyleSimulationsProperty) {
 		// Silverlight 1.0 does not implement this property but, if present, 
 		// requires it to be 0 (or else nothing is displayed)
 		bool none = (args->new_value->AsInt32 () == StyleSimulationsNone);

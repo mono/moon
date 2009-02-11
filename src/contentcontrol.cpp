@@ -36,7 +36,7 @@ ContentControl::OnPropertyChanged (PropertyChangedEventArgs *args)
 		return;
 	}
 	
-	if (args->property == ContentControl::ContentProperty) {
+	if (args->GetId () == ContentControl::ContentProperty) {
 		Emit (ContentControl::ContentChangedEvent, new ContentChangedEventArgs (args->old_value, args->new_value));
 	}
 	

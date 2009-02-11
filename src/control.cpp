@@ -51,13 +51,13 @@ Control::OnPropertyChanged (PropertyChangedEventArgs *args)
 		return;
 	}
 
-	if (args->property == Control::TemplateProperty) {
+	if (args->GetId () == Control::TemplateProperty) {
 		if (IsLoaded())
 			ApplyTemplate ();
 		InvalidateMeasure ();
 	}
-	else if (args->property == Control::PaddingProperty
-		 || args->property == Control::BorderThicknessProperty) {
+	else if (args->GetId () == Control::PaddingProperty
+		 || args->GetId () == Control::BorderThicknessProperty) {
 		InvalidateMeasure ();
 	}
 	NotifyListenersOfPropertyChange (args);

@@ -614,10 +614,10 @@ ImageBrush::OnPropertyChanged (PropertyChangedEventArgs *args)
 		return;
 	}
 
-	if (args->property == ImageBrush::DownloadProgressProperty) {
+	if (args->GetId () == ImageBrush::DownloadProgressProperty) {
 		image->SetValue (Image::DownloadProgressProperty, args->new_value);
 	}
-	else if (args->property == ImageBrush::ImageSourceProperty) {
+	else if (args->GetId () == ImageBrush::ImageSourceProperty) {
 		image->SetValue (Image::SourceProperty, args->new_value);
 	}
 
@@ -934,7 +934,7 @@ VideoBrush::OnPropertyChanged (PropertyChangedEventArgs *args)
 		return;
 	}
 
-	if (args->property == VideoBrush::SourceNameProperty) {
+	if (args->GetId () == VideoBrush::SourceNameProperty) {
 		char *name = args->new_value ? args->new_value->AsString () : NULL;
 		DependencyObject *obj;
 		
@@ -962,7 +962,7 @@ VideoBrush::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *ob
 {
 	/* this is being handled in the base class */
 	/*
-	if (subobj_args->property == MediaElement::PositionProperty) {
+	if (subobj_args->GetId () == MediaElement::PositionProperty) {
 		// We to changes in this MediaElement property so we
 		// can notify whoever is using us to paint that they
 		// need to redraw themselves.
@@ -1061,7 +1061,7 @@ VisualBrush::OnPropertyChanged (PropertyChangedEventArgs *args)
 		return;
 	}
 
-	if (args->property == VisualBrush::VisualProperty) {
+	if (args->GetId () == VisualBrush::VisualProperty) {
 		// XXX we really need a way to disconnect from the preview visual
 		UIElement *v = args->new_value->AsUIElement();
 		v->AddHandler (((UIElement*)v)->InvalidatedEvent, update_brush, this);

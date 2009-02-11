@@ -54,8 +54,8 @@ Canvas::OnPropertyChanged (PropertyChangedEventArgs *args)
 		return;
 	}
 
-	if (args->property == Canvas::TopProperty 
-	    || args->property == Canvas::LeftProperty) {
+	if (args->GetId () == Canvas::TopProperty 
+	    || args->GetId () == Canvas::LeftProperty) {
 		if (GetVisualParent () == NULL)
 			UpdateTransform ();
 	}
@@ -65,8 +65,8 @@ Canvas::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 Canvas::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
-	if (subobj_args->property == Canvas::TopProperty ||
-	    subobj_args->property == Canvas::LeftProperty) {
+	if (subobj_args->GetId () == Canvas::TopProperty ||
+	    subobj_args->GetId () == Canvas::LeftProperty) {
 		//
 		// Technically the canvas cares about Visuals, but we cant do much
 		// with them, all the logic to relayout is in UIElement
@@ -161,7 +161,7 @@ Canvas::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Propert
 {
 	if (col == GetChildren()) {
 		// if a child changes its ZIndex property we need to resort our Children
-		if (args->property == Canvas::ZIndexProperty) {
+		if (args->GetId () == Canvas::ZIndexProperty) {
 			((UIElement *) obj)->Invalidate ();
 			if (GetSurface ()) {
 				// queue a resort based on ZIndex

@@ -218,17 +218,17 @@ Matrix::OnPropertyChanged (PropertyChangedEventArgs *args)
 		return;
 	}
 	
-	if (args->property == Matrix::M11Property)
+	if (args->GetId () == Matrix::M11Property)
 		matrix.xx = args->new_value->AsDouble ();
-	else if (args->property == Matrix::M12Property)
+	else if (args->GetId () == Matrix::M12Property)
 		matrix.yx = args->new_value->AsDouble ();
-	else if (args->property == Matrix::M21Property)
+	else if (args->GetId () == Matrix::M21Property)
 		matrix.xy = args->new_value->AsDouble ();
-	else if (args->property == Matrix::M22Property)
+	else if (args->GetId () == Matrix::M22Property)
 		matrix.yy = args->new_value->AsDouble ();
-	else if (args->property == Matrix::OffsetXProperty)
+	else if (args->GetId () == Matrix::OffsetXProperty)
 		matrix.x0 = args->new_value->AsDouble ();
-	else if (args->property == Matrix::OffsetYProperty)
+	else if (args->GetId () == Matrix::OffsetYProperty)
 		matrix.y0 = args->new_value->AsDouble ();
 
 	NotifyListenersOfPropertyChange (args);
@@ -281,7 +281,7 @@ TransformGroup::OnPropertyChanged (PropertyChangedEventArgs *args)
 		return;
 	}
 
-	if (args->property == TransformGroup::ChildrenProperty) {
+	if (args->GetId () == TransformGroup::ChildrenProperty) {
 		need_update = true;
 	}
 

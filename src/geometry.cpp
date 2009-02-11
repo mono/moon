@@ -128,8 +128,8 @@ Geometry::OnPropertyChanged (PropertyChangedEventArgs *args)
 	// no need to clear the path for Geometry itself as FillRule and Transform properties are 
 	// only used when drawing, i.e. they do not affect the path itself
 	if (args->GetProperty ()->GetOwnerType() != Type::GEOMETRY && 
-		args->property != PathGeometry::FillRuleProperty && 
-		args->property != GeometryGroup::FillRuleProperty) {
+		args->GetId () != PathGeometry::FillRuleProperty && 
+		args->GetId () != GeometryGroup::FillRuleProperty) {
 		DependencyObject::OnPropertyChanged (args);
 
 		// not sure why we're doing this inside this block.. seems like it should happen outside it?

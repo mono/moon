@@ -51,7 +51,7 @@ BitmapImage::SetBuffer (gpointer buffer, int size)
 void
 BitmapImage::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property == BitmapImage::UriSourceProperty) {
+	if (args->GetId () == BitmapImage::UriSourceProperty) {
 		const char *uri = args->new_value ? args->new_value->AsString () : NULL;
 
 		CleanUp ();

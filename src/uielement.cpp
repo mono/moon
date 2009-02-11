@@ -147,10 +147,10 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 		return;
 	}
 	  
-	if (args->property == UIElement::OpacityProperty) {
+	if (args->GetId () == UIElement::OpacityProperty) {
 		UpdateTotalRenderVisibility ();
 		Invalidate (GetSubtreeBounds ());
-	} else if (args->property == UIElement::VisibilityProperty) {
+	} else if (args->GetId () == UIElement::VisibilityProperty) {
 		// note: invalid enum values are only validated in 1.1 (managed code),
 		// the default value for VisibilityProperty is VisibilityCollapsed
 		// (see bug #340799 for more details)
@@ -161,24 +161,24 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 		InvalidateMeasure ();
 		UpdateTotalRenderVisibility();
 		Invalidate (GetSubtreeBounds ());
-	} else if (args->property == UIElement::IsHitTestVisibleProperty) {
+	} else if (args->GetId () == UIElement::IsHitTestVisibleProperty) {
 		if (args->new_value->AsBool())
 			flags |= UIElement::HIT_TEST_VISIBLE;
 		else
 			flags &= ~UIElement::HIT_TEST_VISIBLE;
 		UpdateTotalHitTestVisibility();
-	} else if (args->property == UIElement::ClipProperty) {
+	} else if (args->GetId () == UIElement::ClipProperty) {
 		Invalidate(GetSubtreeBounds());
 		// force invalidation even if the bounding rectangle
 		// changes (since the clip can be concave)
 		UpdateBounds (true);
-	} else if (args->property == UIElement::OpacityMaskProperty) {
+	} else if (args->GetId () == UIElement::OpacityMaskProperty) {
 		opacityMask = args->new_value ? args->new_value->AsBrush() : NULL;
 		Invalidate (GetSubtreeBounds ());
-	} else if (args->property == UIElement::RenderTransformProperty || args->property == UIElement::RenderTransformOriginProperty) {
+	} else if (args->GetId () == UIElement::RenderTransformProperty || args->GetId () == UIElement::RenderTransformOriginProperty) {
 		UpdateTransform ();
 	}
-	else if (args->property == UIElement::TriggersProperty) {
+	else if (args->GetId () == UIElement::TriggersProperty) {
 		if (args->old_value) {
 			// remove the old trigger targets
 			TriggerCollection *triggers = args->old_value->AsTriggerCollection();

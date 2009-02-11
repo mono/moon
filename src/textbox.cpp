@@ -1285,33 +1285,33 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 	DependencyProperty *prop;
 	bool invalidate = false;
 	
-	if (args->property == Control::FontFamilyProperty) {
+	if (args->GetId () == Control::FontFamilyProperty) {
 		FontFamily *family = args->new_value ? args->new_value->AsFontFamily () : NULL;
 		changed = TextBoxModelChangedFont;
 		font->SetFamily (family ? family->source : NULL);
-	} else if (args->property == Control::FontSizeProperty) {
+	} else if (args->GetId () == Control::FontSizeProperty) {
 		double size = args->new_value->AsDouble ();
 		changed = TextBoxModelChangedFont;
 		font->SetSize (size);
-	} else if (args->property == Control::FontStretchProperty) {
+	} else if (args->GetId () == Control::FontStretchProperty) {
 		FontStretches stretch = (FontStretches) args->new_value->AsInt32 ();
 		changed = TextBoxModelChangedFont;
 		font->SetStretch (stretch);
-	} else if (args->property == Control::FontStyleProperty) {
+	} else if (args->GetId () == Control::FontStyleProperty) {
 		FontStyles style = (FontStyles) args->new_value->AsInt32 ();
 		changed = TextBoxModelChangedFont;
 		font->SetStyle (style);
-	} else if (args->property == Control::FontWeightProperty) {
+	} else if (args->GetId () == Control::FontWeightProperty) {
 		FontWeights weight = (FontWeights) args->new_value->AsInt32 ();
 		changed = TextBoxModelChangedFont;
 		font->SetWeight (weight);
-	} else if (args->property == TextBox::AcceptsReturnProperty) {
+	} else if (args->GetId () == TextBox::AcceptsReturnProperty) {
 		// no state changes needed
-	} else if (args->property == TextBox::IsReadOnlyProperty) {
+	} else if (args->GetId () == TextBox::IsReadOnlyProperty) {
 		// no state changes needed
-	} else if (args->property == TextBox::MaxLengthProperty) {
+	} else if (args->GetId () == TextBox::MaxLengthProperty) {
 		// no state changes needed
-	} else if (args->property == TextBox::SelectedTextProperty) {
+	} else if (args->GetId () == TextBox::SelectedTextProperty) {
 		if (setvalue) {
 			const char *str = args->new_value ? args->new_value->AsString () : "";
 			int length = abs (selection_cursor - selection_anchor);
@@ -1329,7 +1329,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		}
 		
 		emit |= SELECTION_CHANGED;
-	} else if (args->property == TextBox::SelectionStartProperty) {
+	} else if (args->GetId () == TextBox::SelectionStartProperty) {
 		if (selection_cursor == selection_anchor) {
 			selection_anchor = args->new_value->AsInt32 ();
 			selection_cursor = selection_anchor;
@@ -1342,7 +1342,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		
 		// update SelectedText
 		SyncSelectedText ();
-	} else if (args->property == TextBox::SelectionLengthProperty) {
+	} else if (args->GetId () == TextBox::SelectionLengthProperty) {
 		selection_cursor = selection_anchor + args->new_value->AsInt32 ();
 		changed = TextBoxModelChangedSelection;
 		cursor_column = -1;
@@ -1366,11 +1366,11 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		
 		// update SelectedText
 		SyncSelectedText ();
-	} else if (args->property == TextBox::SelectionBackgroundProperty) {
+	} else if (args->GetId () == TextBox::SelectionBackgroundProperty) {
 		changed = TextBoxModelChangedBrush;
-	} else if (args->property == TextBox::SelectionForegroundProperty) {
+	} else if (args->GetId () == TextBox::SelectionForegroundProperty) {
 		changed = TextBoxModelChangedBrush;
-	} else if (args->property == TextBox::TextProperty) {
+	} else if (args->GetId () == TextBox::TextProperty) {
 		if (setvalue) {
 			const char *str = args->new_value ? args->new_value->AsString () : "";
 			gunichar *text;
@@ -1385,11 +1385,11 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		
 		changed = TextBoxModelChangedText;
 		emit |= TEXT_CHANGED;
-	} else if (args->property == TextBox::TextAlignmentProperty) {
+	} else if (args->GetId () == TextBox::TextAlignmentProperty) {
 		changed = TextBoxModelChangedTextAlignment;
-	} else if (args->property == TextBox::TextWrappingProperty) {
+	} else if (args->GetId () == TextBox::TextWrappingProperty) {
 		changed = TextBoxModelChangedTextWrapping;
-	} else if (args->property == TextBox::HorizontalScrollBarVisibilityProperty) {
+	} else if (args->GetId () == TextBox::HorizontalScrollBarVisibilityProperty) {
 		invalidate = true;
 		
 		// XXX more crap because these aren't templatebound.
@@ -1397,7 +1397,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 			if ((prop = contentElement->GetDependencyProperty ("VerticalScrollBarVisibility")))
 				contentElement->SetValue (prop, GetValue (TextBox::VerticalScrollBarVisibilityProperty));
 		}
-	} else if (args->property == TextBox::VerticalScrollBarVisibilityProperty) {
+	} else if (args->GetId () == TextBox::VerticalScrollBarVisibilityProperty) {
 		invalidate = true;
 		
 		// XXX more crap because these aren't templatebound.
@@ -1940,7 +1940,7 @@ PasswordBox::PasswordBox ()
 void
 PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property == PasswordBox::PasswordProperty)
+	if (args->GetId () == PasswordBox::PasswordProperty)
 		Emit (PasswordBox::PasswordChangedEvent);
 	
 	TextBox::OnPropertyChanged (args);	

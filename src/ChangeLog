@@ -1,5 +1,33 @@
 2009-02-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* grid.cpp:
+	* text.cpp:
+	* panel.cpp:
+	* media.cpp:
+	* shape.cpp:
+	* popup.cpp:
+	* brush.cpp:
+	* border.cpp:
+	* canvas.cpp:
+	* stylus.cpp:
+	* control.cpp:
+	* textbox.cpp:
+	* geometry.cpp:
+	* uielement.cpp:
+	* transform.cpp:
+	* usercontrol.cpp:
+	* bitmapimage.cpp:
+	* mediaelement.cpp:
+	* contentcontrol.cpp:
+	* dependencyobject.h:
+	* multiscaleimage.cpp:
+	* dependencyobject.cpp:
+	* frameworkelement.cpp:
+	* deepzoomimagetilesource.cpp: PropertyChangedEventArgs: make
+	  dp and id fields private and add accessors.
+
+2009-02-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* type.h:
 	* grid.h:
 	* text.h:

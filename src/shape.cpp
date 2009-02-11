@@ -727,15 +727,15 @@ void
 Shape::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
 	if (args->GetProperty ()->GetOwnerType() != Type::SHAPE) {
-		if ((args->property == FrameworkElement::HeightProperty) || (args->property == FrameworkElement::WidthProperty))
+		if ((args->GetId () == FrameworkElement::HeightProperty) || (args->GetId () == FrameworkElement::WidthProperty))
 			InvalidatePathCache ();
 
-		if (args->property == UIElement::OpacityProperty) {
+		if (args->GetId () == UIElement::OpacityProperty) {
 			double value = args->new_value->AsDouble ();
 			if (IS_INVISIBLE (value))
 				InvalidateSurfaceCache ();
 		} else {
-			if (args->property == UIElement::VisibilityProperty) {
+			if (args->GetId () == UIElement::VisibilityProperty) {
 				int value = args->new_value->AsInt32 ();
 				if (value != VisibilityVisible)
 					InvalidateSurfaceCache ();
@@ -746,11 +746,11 @@ Shape::OnPropertyChanged (PropertyChangedEventArgs *args)
 		return;
 	}
 
-	if (args->property == Shape::StretchProperty) {
+	if (args->GetId () == Shape::StretchProperty) {
 		InvalidatePathCache ();
 		UpdateBounds (true);
 	}
-	else if (args->property == Shape::StrokeProperty) {
+	else if (args->GetId () == Shape::StrokeProperty) {
 		Brush *new_stroke = args->new_value ? args->new_value->AsBrush () : NULL;
 
 		if (!stroke || !new_stroke) {
@@ -766,7 +766,7 @@ Shape::OnPropertyChanged (PropertyChangedEventArgs *args)
 		
 
 		stroke = new_stroke;
-	} else if (args->property == Shape::FillProperty) {
+	} else if (args->GetId () == Shape::FillProperty) {
 		Brush *new_fill = args->new_value ? args->new_value->AsBrush () : NULL;
 
 		if (!fill || !new_fill) {
@@ -776,14 +776,14 @@ Shape::OnPropertyChanged (PropertyChangedEventArgs *args)
 			InvalidateSurfaceCache ();
 			
 		fill = args->new_value ? args->new_value->AsBrush() : NULL;
-	} else if (args->property == Shape::StrokeThicknessProperty) {
+	} else if (args->GetId () == Shape::StrokeThicknessProperty) {
 		InvalidatePathCache ();
 		UpdateBounds ();
-	} else if (args->property == Shape::StrokeDashCapProperty
-		   || args->property == Shape::StrokeEndLineCapProperty
-		   || args->property == Shape::StrokeLineJoinProperty
-		   || args->property == Shape::StrokeMiterLimitProperty
-		   || args->property == Shape::StrokeStartLineCapProperty) {
+	} else if (args->GetId () == Shape::StrokeDashCapProperty
+		   || args->GetId () == Shape::StrokeEndLineCapProperty
+		   || args->GetId () == Shape::StrokeLineJoinProperty
+		   || args->GetId () == Shape::StrokeMiterLimitProperty
+		   || args->GetId () == Shape::StrokeStartLineCapProperty) {
 		UpdateBounds ();
 		InvalidatePathCache ();
 	}
@@ -1125,7 +1125,7 @@ Rectangle::OnPropertyChanged (PropertyChangedEventArgs *args)
 		return;
 	}
 
-	if ((args->property == Rectangle::RadiusXProperty) || (args->property == Rectangle::RadiusYProperty)) {
+	if ((args->GetId () == Rectangle::RadiusXProperty) || (args->GetId () == Rectangle::RadiusYProperty)) {
 		InvalidatePathCache ();
 		// note: changing the X and/or Y radius doesn't affect the bounds
 	}
@@ -1405,10 +1405,10 @@ Line::OnPropertyChanged (PropertyChangedEventArgs *args)
 		return;
 	}
 
-	if (args->property == Line::X1Property ||
-	    args->property == Line::X2Property ||
-	    args->property == Line::Y1Property ||
-	    args->property == Line::Y2Property) {
+	if (args->GetId () == Line::X1Property ||
+	    args->GetId () == Line::X2Property ||
+	    args->GetId () == Line::Y1Property ||
+	    args->GetId () == Line::Y2Property) {
 		InvalidatePathCache ();
 		UpdateBounds (true);
 	}
@@ -1558,7 +1558,7 @@ Polygon::OnPropertyChanged (PropertyChangedEventArgs *args)
 		return;
 	}
 
-	if (args->property == Polygon::PointsProperty) {
+	if (args->GetId () == Polygon::PointsProperty) {
 		InvalidatePathCache ();
 		UpdateBounds (true /* force one here, even if the bounds don't change */);
 	}
@@ -1693,7 +1693,7 @@ Polyline::OnPropertyChanged (PropertyChangedEventArgs *args)
 		return;
 	}
 
-	if (args->property == Polyline::PointsProperty) {
+	if (args->GetId () == Polyline::PointsProperty) {
 		InvalidatePathCache ();
 		UpdateBounds (true /* force one here, even if the bounds don't change */);
 	}

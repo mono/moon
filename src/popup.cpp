@@ -21,7 +21,7 @@ void
 Popup::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
 	printf ("This: %p, New: %p. Old: %p", this, args->new_value, args->old_value);
-	if (args->property == Popup::IsOpenProperty) {
+	if (args->GetId () == Popup::IsOpenProperty) {
 		Emit (Popup::IsOpenChangedEvent);
 	}
 	DependencyObject::OnPropertyChanged (args);

@@ -197,10 +197,10 @@ Panel::OnPropertyChanged (PropertyChangedEventArgs *args)
 		return;
 	}
 
-	if (args->property == Panel::BackgroundProperty)
+	if (args->GetId () == Panel::BackgroundProperty)
 		Invalidate ();
 
-	if (args->property == Panel::ChildrenProperty) {
+	if (args->GetId () == Panel::ChildrenProperty) {
 		Collection *collection;
 		
 		if (args->old_value) {

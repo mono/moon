@@ -721,15 +721,15 @@ MultiScaleImage::DownloaderAbort ()
 void
 MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property == MultiScaleImage::ViewportOriginProperty) {
+	if (args->GetId () == MultiScaleImage::ViewportOriginProperty) {
 		Invalidate ();
 	}
 
-	if (args->property == MultiScaleImage::ViewportWidthProperty) {
+	if (args->GetId () == MultiScaleImage::ViewportWidthProperty) {
 		Invalidate ();
 	}
 
-	if (args->property == MultiScaleImage::SourceProperty) {
+	if (args->GetId () == MultiScaleImage::SourceProperty) {
 		DeepZoomImageTileSource *source = args->new_value ? args->new_value->AsDeepZoomImageTileSource () : NULL;
 		if (source) {
 			source->set_parsed_cb (multi_scale_image_handle_parsed, this);

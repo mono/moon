@@ -39,7 +39,7 @@ UserControl::OnPropertyChanged (PropertyChangedEventArgs *args)
 		return;
 	}
 	
-	if (args->property == UserControl::ContentProperty){
+	if (args->GetId () == UserControl::ContentProperty){
 		if (args->old_value) {
 			ElementRemoved (args->old_value->AsUIElement ());
 		}

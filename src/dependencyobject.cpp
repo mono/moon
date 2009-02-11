@@ -1921,7 +1921,7 @@ dependency_object_set_value (DependencyObject *object, DependencyProperty *prop,
 void
 DependencyObject::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (DependencyObject::NameProperty == args->property) {
+	if (DependencyObject::NameProperty == args->GetId ()) {
 		NameScope *scope = FindNameScope ();
 		if (scope && args->new_value)
 			scope->RegisterName (args->new_value->AsString (), this);

@@ -656,7 +656,7 @@ Stroke::OnPropertyChanged (PropertyChangedEventArgs *args)
 		DependencyObject::OnPropertyChanged (args);
 	}
 
-	if (args->property == Stroke::DrawingAttributesProperty) {
+	if (args->GetId () == Stroke::DrawingAttributesProperty) {
 		ComputeBounds ();
 	}
 
@@ -667,9 +667,9 @@ void
 Stroke::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
 	if (prop->GetId () == Stroke::DrawingAttributesProperty) {
-		if (subobj_args->property == DrawingAttributes::WidthProperty ||
-		    subobj_args->property == DrawingAttributes::HeightProperty ||
-		    subobj_args->property == DrawingAttributes::OutlineColorProperty) {
+		if (subobj_args->GetId () == DrawingAttributes::WidthProperty ||
+		    subobj_args->GetId () == DrawingAttributes::HeightProperty ||
+		    subobj_args->GetId () == DrawingAttributes::OutlineColorProperty) {
 			ComputeBounds ();
 		}
 	}
@@ -871,7 +871,7 @@ InkPresenter::OnPropertyChanged (PropertyChangedEventArgs *args)
 		return;
 	}
 
-	if (args->property == InkPresenter::StrokesProperty) {
+	if (args->GetId () == InkPresenter::StrokesProperty) {
 		// be smart about invalidating only the union of the
 		// old stroke bounds and the new stroke bounds
 

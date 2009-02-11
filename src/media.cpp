@@ -212,7 +212,7 @@ MediaBase::SetSource (Downloader *downloader, const char *PartName)
 void
 MediaBase::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property == MediaBase::SourceProperty) {
+	if (args->GetId () == MediaBase::SourceProperty) {
 		const char *uri = args->new_value ? args->new_value->AsString () : NULL;
 		Surface *surface = GetSurface ();
 					
@@ -954,13 +954,13 @@ Image::GetCairoSurface ()
 void
 Image::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property == FrameworkElement::HeightProperty) {
+	if (args->GetId () == FrameworkElement::HeightProperty) {
 		if (!updating_size_from_media)
 			use_media_height = args->new_value == NULL;
-	} else if (args->property == FrameworkElement::WidthProperty) {
+	} else if (args->GetId () == FrameworkElement::WidthProperty) {
 		if (!updating_size_from_media)
 			use_media_width = args->new_value == NULL;
-	} else if (args->property == Image::SourceProperty) {
+	} else if (args->GetId () == Image::SourceProperty) {
 		BitmapImage *source = args->new_value ? args->new_value->AsBitmapImage () : NULL;
 
 		if (source == NULL) {

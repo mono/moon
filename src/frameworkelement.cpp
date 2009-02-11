@@ -87,13 +87,13 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 		return;
 	}
 
-	if (args->property == FrameworkElement::WidthProperty ||
-	    args->property == FrameworkElement::MaxWidthProperty ||
-	    args->property == FrameworkElement::MinWidthProperty ||
-	    args->property == FrameworkElement::MaxHeightProperty ||
-	    args->property == FrameworkElement::MinHeightProperty ||
-	    args->property == FrameworkElement::HeightProperty ||
-	    args->property == FrameworkElement::MarginProperty) {
+	if (args->GetId () == FrameworkElement::WidthProperty ||
+	    args->GetId () == FrameworkElement::MaxWidthProperty ||
+	    args->GetId () == FrameworkElement::MinWidthProperty ||
+	    args->GetId () == FrameworkElement::MaxHeightProperty ||
+	    args->GetId () == FrameworkElement::MinHeightProperty ||
+	    args->GetId () == FrameworkElement::HeightProperty ||
+	    args->GetId () == FrameworkElement::MarginProperty) {
 
 		Point *p = GetRenderTransformOrigin ();
 
@@ -116,7 +116,7 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 
 		InvalidateMeasure ();
 	}
-	else if (args->property == FrameworkElement::StyleProperty) {
+	else if (args->GetId () == FrameworkElement::StyleProperty) {
 		if (args->new_value) {
 			Style *s = args->new_value->AsStyle ();
 			if (s) {

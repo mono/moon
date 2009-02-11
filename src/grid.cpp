@@ -39,7 +39,7 @@ Grid::OnPropertyChanged (PropertyChangedEventArgs *args)
 		return;
 	}
 
-	if (args->property == Grid::ShowGridLinesProperty){
+	if (args->GetId () == Grid::ShowGridLinesProperty){
 		Invalidate ();
 	}
 
@@ -51,10 +51,10 @@ Grid::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 Grid::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
-	if (subobj_args->property == Grid::ColumnProperty
-	    || subobj_args->property == Grid::RowProperty
-	    || subobj_args->property == Grid::ColumnSpanProperty
-	    || subobj_args->property == Grid::RowSpanProperty) {
+	if (subobj_args->GetId () == Grid::ColumnProperty
+	    || subobj_args->GetId () == Grid::RowProperty
+	    || subobj_args->GetId () == Grid::ColumnSpanProperty
+	    || subobj_args->GetId () == Grid::RowSpanProperty) {
 		InvalidateMeasure ();
 	}
 	

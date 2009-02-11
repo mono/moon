@@ -161,7 +161,7 @@ Border::OnPropertyChanged (PropertyChangedEventArgs *args)
 		return;
 	}
 	
-	if (args->property == Border::ChildProperty){
+	if (args->GetId () == Border::ChildProperty){
 		if (args->old_value) {
 			ElementRemoved (args->old_value->AsUIElement ());
 		}
@@ -174,8 +174,8 @@ Border::OnPropertyChanged (PropertyChangedEventArgs *args)
 		UpdateBounds ();
 		InvalidateMeasure ();
 	}
-	else if (args->property == Border::PaddingProperty
-		 || args->property == Border::BorderThicknessProperty) {
+	else if (args->GetId () == Border::PaddingProperty
+		 || args->GetId () == Border::BorderThicknessProperty) {
 		InvalidateMeasure ();
 	}
 	NotifyListenersOfPropertyChange (args);

@@ -313,7 +313,7 @@ DeepZoomImageTileSource::downloader_complete (EventObject *sender, EventArgs *ca
 void
 DeepZoomImageTileSource::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property == DeepZoomImageTileSource::UriSourceProperty) {
+	if (args->GetId () == DeepZoomImageTileSource::UriSourceProperty) {
 		if (!nested) {
 			downloaded = false;
 			Download ();
