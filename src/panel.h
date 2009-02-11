@@ -43,12 +43,11 @@ class Panel : public FrameworkElement {
 	virtual Size MeasureOverride (Size availableSize);
 
 	virtual Rect GetCoverageBounds ();
-	virtual void Render (cairo_t *cr, Region *region);
+	virtual void Render (cairo_t *cr, Region *region, bool path_only = false);
 
 	virtual void HitTest (cairo_t *cr, Rect r, List *uielement_list);
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
-	virtual bool InsideFillOrClip (cairo_t *cr, double x, double y);
 	
 	virtual bool CanFindElement () { return GetBackground () != NULL; }
 

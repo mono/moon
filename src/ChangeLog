@@ -1,3 +1,38 @@
+2009-02-11  Alan McGovern  <amcgovern@novell.com>
+
+	* text.h:
+	* shape.h:
+	* media.h:
+	* panel.h:
+	* text.cpp:
+	* border.h:
+	* panel.cpp:
+	* shape.cpp:
+	* textbox.h:
+	* media.cpp:
+	* border.cpp:
+	* textbox.cpp:
+	* uielement.h:
+	* uielement.cpp:
+	* mediaelement.h:
+	* mediaelement.cpp:
+	* multiscaleimage.h:
+	* multiscaleimage.cpp: Switch FindElementsInHostCoordinates to
+	  use the ::Render codepaths instead of it's own custom
+	  codepath. Added an extra parameter to ::Render () to specify
+	  whether or not the paths appended to the cairo_t should be
+	  filled/stroked/clipped. This allows a whole bunch of NUnit
+	  tests to pass.
+
+	* usercontrol.cpp:
+	* frameworkelement.cpp: Add an extra parameter to ::Render ()
+	  to specify whether or not the paths appended to the cairo_t
+	  should be filled/stroked/clipped so it can be shared with
+	  the managed hittesting.
+	Switch FindElementsInHostCoordinates to use the ::Render
+	  codepaths instead of it's own custom codepath. This allows a
+	  whole bunch of NUnit tests to pass.
+
 2009-02-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* grid.h:

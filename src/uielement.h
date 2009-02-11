@@ -146,7 +146,7 @@ public:
 	//   Renders the given @item on the @surface.  the area that is
 	//   exposed is delimited by x, y, width, height
 	//
-	virtual void Render (cairo_t *cr, Region *region);
+	virtual void Render (cairo_t *cr, Region *region, bool path_only = false);
 	
 	// a non virtual method for use when we want to wrap render
 	// with debugging and/or timing info
@@ -265,7 +265,6 @@ public:
 	//   Returns whether the position x, y is inside the object
 	//
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
-	virtual bool InsideFillOrClip (cairo_t *cr, double x, double y) { return false; }
 	
 	//
 	// Checks if the point is inside the Clip region.
@@ -472,7 +471,7 @@ public:
 protected:
 	virtual ~UIElement ();
 	Rect IntersectBoundsWithClipPath (Rect bounds, bool transform);
-	void RenderClipPath (cairo_t *cr);
+	void RenderClipPath (cairo_t *cr, bool path_only = false);
 
 	void SetDesiredSize (Size s) { desired_size = s; }
 	void SetRenderSize (Size s) { render_size = s; }

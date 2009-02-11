@@ -63,7 +63,7 @@ UserControl::FindElementsInHostCoordinates (cairo_t *cr, Point p, List *uielemen
 		
 		element->FindElementsInHostCoordinates (cr, p, uielement_list);
 		
-		if (us == uielement_list->First () && !CanFindElement ())
+		if (us == uielement_list->First ())
 			uielement_list->Remove (us);
 	}
 }

@@ -1,5 +1,15 @@
 2009-02-11  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Media/VisualTreeHelperTest.cs: Add an extra
+	  parameter to ::Render () to specify whether or not the paths
+	  appended to the cairo_t should be filled/stroked/clipped so
+	  it can be shared with the managed hittesting.
+	Switch FindElementsInHostCoordinates to use the ::Render
+	  codepaths instead of it's own custom codepath. This allows a
+	  whole bunch of NUnit tests to pass.
+
+2009-02-11  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Media/VisualTreeHelperTest.cs: Add
 	  [MoonlightBug] to tests which i broke yesterday.
 

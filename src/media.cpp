@@ -758,7 +758,7 @@ Image::pixbuf_write (void *buf, gint32 offset, gint32 n, gpointer data)
 }
 
 void
-Image::Render (cairo_t *cr, Region *region)
+Image::Render (cairo_t *cr, Region *region, bool path_only)
 {
 	if (!surface)
 		return;

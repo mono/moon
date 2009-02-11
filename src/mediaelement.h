@@ -246,7 +246,7 @@ class MediaElement : public FrameworkElement {
 	MediaPlayer *GetMediaPlayer () { return mplayer; }
 	
 	// overrides
-	virtual void Render (cairo_t *cr, Region *region);
+	virtual void Render (cairo_t *cr, Region *region, bool path_only = false);
 	virtual Point GetTransformOrigin ();
 
 	virtual Rect GetCoverageBounds ();

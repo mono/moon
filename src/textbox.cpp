@@ -1672,7 +1672,7 @@ TextBoxView::UpdateCursor (bool invalidate)
 }
 
 void
-TextBoxView::Render (cairo_t *cr, Region *region)
+TextBoxView::Render (cairo_t *cr, Region *region, bool path_only)
 {
 	if (dirty)
 		Layout (cr, GetRenderSize ());

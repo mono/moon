@@ -92,14 +92,14 @@ Border::ArrangeOverride (Size finalSize)
 }
 
 void 
-Border::Render (cairo_t *cr, Region *region)
+Border::Render (cairo_t *cr, Region *region, bool path_only)
 {
 	Brush *background = GetBackground ();
 	Brush *border_brush = GetBorderBrush ();
 
 	cairo_set_matrix (cr, &absolute_xform);
 
-	Geometry *clip = LayoutInformation::GetLayoutClip (this);
+	Geometry *clip = path_only ? NULL : LayoutInformation::GetLayoutClip (this);
 	if (clip) {
 		cairo_save (cr);
 		clip->Draw (cr);
@@ -125,6 +125,13 @@ Border::Render (cairo_t *cr, Region *region)
 	 * but some simple inspection of the ms results make me think that is what happens there
 	 * too.
 	 */
+	if (path_only) {
+		cairo_new_path (cr);
+		paint_border.Draw (cr, round);
+		paint_background.Draw (cr, round ? &adjusted : NULL);
+		return;
+	}
+	
 	if (border_brush && paint_border != paint_background) {
 		border_brush->SetupBrush (cr, paint_border);
 
@@ -188,21 +195,6 @@ Border::InsideObject (cairo_t *cr, double x, double y)
 		return FrameworkElement::InsideObject (cr, x, y);
 
 	return false;
-}
-
-bool
-Border::InsideFillOrClip (cairo_t *cr, double x, double y)
-{
-	Rect r (0, 0, GetActualWidth (), GetActualHeight ());
-	CornerRadius *round = GetCornerRadius ();
-	if (!round)
-		return r.GrowBy (1, 1, 1, 0).PointInside (x, y);
-	
-	cairo_save (cr);
-	r.Draw (cr, round);
-	bool ret = cairo_in_fill (cr, x, y) || cairo_in_stroke (cr, x, y);
-	cairo_restore (cr);
-	return ret;
 }
 
 void

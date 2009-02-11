@@ -473,7 +473,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 }
 
 void
-MultiScaleImage::Render (cairo_t *cr, Region *region)
+MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 {
 //FIXME: only render region
 

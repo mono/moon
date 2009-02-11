@@ -126,7 +126,7 @@ UIElement::IntersectBoundsWithClipPath (Rect unclipped, bool transform)
 }
 
 void
-UIElement::RenderClipPath (cairo_t *cr)
+UIElement::RenderClipPath (cairo_t *cr, bool path_only)
 {
 	cairo_new_path (cr);
 	cairo_set_matrix (cr, &absolute_xform);
@@ -136,7 +136,8 @@ UIElement::RenderClipPath (cairo_t *cr)
 		return;
 
 	geometry->Draw (cr);
-	cairo_clip (cr);
+	if (!path_only)
+		cairo_clip (cr);
 }
 
 void
@@ -1004,7 +1005,7 @@ UIElement::CallPostRender (cairo_t *cr, UIElement *element, Region *region, bool
 }
 
 void
-UIElement::Render (cairo_t *cr, Region *region)
+UIElement::Render (cairo_t *cr, Region *region, bool path_only)
 {
 	/* do nothing by default */
 }

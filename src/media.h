@@ -238,7 +238,7 @@ class Image : public MediaBase {
  	/* @GenerateCBinding,GeneratePInvoke */
 	Image ();
 	
-	virtual void Render (cairo_t *cr, Region *region);
+	virtual void Render (cairo_t *cr, Region *region, bool path_only = false);
 	
 	cairo_surface_t *GetCairoSurface ();
 	

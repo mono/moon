@@ -869,7 +869,7 @@ MediaElement::GetCoverageBounds ()
 }
 
 void
-MediaElement::Render (cairo_t *cr, Region *region)
+MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 {
 	Stretch stretch = GetStretch ();
 	cairo_surface_t *surface;

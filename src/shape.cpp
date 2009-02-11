@@ -129,37 +129,6 @@ Shape::Draw (cairo_t *cr)
 // * Fill
 
 bool
-Shape::InsideFillOrClip (cairo_t *cr, double x, double y)
-{
-	bool ret = false;
-
-	if (!extents.Transform (&absolute_xform).GrowBy (1, 1, 1, 0).PointInside (x, y))
-		return false;
-
-	Geometry *clip = GetClip ();
-	if (clip) {
-		cairo_save (cr);
-		
-		cairo_new_path (cr);
-		clip->Draw (cr);
-		ret = cairo_in_fill (cr, x, y) ||  cairo_in_stroke (cr, x, y);
-		
-		cairo_restore (cr);
-		if (!ret)
-			return false; 
-	}
-
-	cairo_save (cr);
-	
-	cairo_new_path (cr);
-	DoDraw (cr, false);
-	ret = cairo_in_fill (cr, x, y) || cairo_in_stroke (cr, x, y);
-
-	cairo_restore (cr);
-	return ret;
-}
-
-bool
 Shape::SetupLine (cairo_t *cr)
 {
 	double thickness = GetStrokeThickness ();
@@ -488,10 +457,10 @@ cleanpath:
 }
 
 void
-Shape::Render (cairo_t *cr, Region *region)
+Shape::Render (cairo_t *cr, Region *region, bool path_only)
 {
 	cairo_save (cr);
-	DoDraw (cr, true);
+	DoDraw (cr, true && !path_only);
 	cairo_restore (cr);
 }
 

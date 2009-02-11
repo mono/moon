@@ -223,7 +223,7 @@ class TextBlock : public FrameworkElement {
 	//
 	// Overrides
 	//
-	virtual void Render (cairo_t *cr, Region *region);
+	virtual void Render (cairo_t *cr, Region *region, bool path_only = false);
 	virtual Size MeasureOverride (Size availableSize);
 	virtual Size ArrangeOverride (Size finalSize);
 	virtual void ComputeBounds ();
@@ -339,7 +339,7 @@ class Glyphs : public FrameworkElement {
 	Glyphs ();
 	
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
-	virtual void Render (cairo_t *cr, Region *region);
+	virtual void Render (cairo_t *cr, Region *region, bool path_only = false);
 	virtual void ComputeBounds ();
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	virtual Point GetTransformOrigin ();

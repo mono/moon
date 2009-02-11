@@ -121,13 +121,24 @@ Panel::ShiftPosition (Point p)
 //#define DEBUG_INVALIDATE 1
 
 void
-Panel::Render (cairo_t *cr, Region *region)
+Panel::Render (cairo_t *cr, Region *region, bool path_only)
 {
 	Brush *background;
 	
 	cairo_set_matrix (cr, &absolute_xform);
 	
-	if ((background = GetBackground ())) {
+	if (path_only) {
+		Rect area = Rect (0.0, 0.0, GetActualWidth (), GetActualHeight ());
+		
+		// FIXME: This is a horrible hack to work around an issue with panels inside panels
+		if (area.IsEmpty (true)) {
+			cairo_matrix_t inverse = absolute_xform;
+			cairo_matrix_invert (&inverse);
+			area = bounds_with_children.Transform (&inverse);
+		}
+		cairo_new_path (cr);
+		area.Draw (cr);
+	} else if ((background = GetBackground ())) {
 		Rect area = Rect (0.0, 0.0, GetActualWidth (), GetActualHeight ());
 		if (area.width > 0 && area.height > 0) {
 			background->SetupBrush (cr, area);
@@ -157,14 +168,6 @@ Panel::InsideObject (cairo_t *cr, double x, double y)
 		return FrameworkElement::InsideObject (cr, x, y);
 
 	return false;
-}
-
-bool
-Panel::InsideFillOrClip (cairo_t *cr, double x, double y)
-{
-	Rect r (0, 0, GetActualWidth (), GetActualHeight ());
-	r = r.Transform (&absolute_xform);
-	return r.GrowBy (1, 1, 1, 0).PointInside (x, y);
 }
 
 void
