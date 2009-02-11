@@ -1,5 +1,16 @@
 2009-02-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* harness.mdp:
+	* test-runner/Log.cs:
+	* test-runner/Driver.cs:
+	* test-runner/TestRun.cs:
+	* test-runner/Makefile.am:
+	* test-runner/TestRunner.cs: Add some logging to see if this
+	  will help figure out why the harness isn't shutting down on
+	  the buildbot.
+
+2009-02-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* shocker/shutdown-manager.h:
 	* shocker/shutdown-manager.cpp: Remove unused method.
 

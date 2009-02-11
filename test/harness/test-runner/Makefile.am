@@ -31,6 +31,7 @@ test_runner_sources = 		\
 	HtmlReport.cs		\
 	XmlReport.cs		\
 	DbReport.cs		\
+	Log.cs			\
 	$(srcdir)/../../../tools/Options.cs
 
 test_runner_resources = 				\

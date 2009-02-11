@@ -85,6 +85,7 @@ namespace MoonlightTests {
 
 		public void MarkTestAsCompleteAndGetNextTest (string test, bool successful, out bool next_available, out string next_test_path, out int timeout)
 		{
+			Log.WriteLine ("TestRunner.MarkTestAsCompleteAndGetNextTest ({0}, {1})", test, successful);
 			TestComplete (test, successful);
 			GetNextTest (out next_available, out next_test_path, out timeout);
 		}
@@ -93,6 +94,7 @@ namespace MoonlightTests {
 		{
 			lock (tests_enumerator) {
 				if (!tests_enumerator.MoveNext ()) {
+					Log.WriteLine ("TestRunner.GetNextTest (): run complete");
 					run_complete = true;
 					test_path = String.Empty;
 					timeout = -1;
@@ -124,6 +126,7 @@ namespace MoonlightTests {
 
 		public void RequestShutdown ()
 		{
+			Log.WriteLine ("TestRunner.RequestShutdown ()");
 			run_complete = true;
 		}
 
@@ -139,8 +142,10 @@ namespace MoonlightTests {
 					agviewer_process.Kill ();
 					if (run_complete)
 						break;
-					if (current_test != null)
+					if (current_test != null) {
+						Log.WriteLine ("Start (): agviewer crashed.");
 						OnTestComplete (current_test, TestCompleteReason.Crashed);
+					}
 				}
 			 } while (!run_complete);
 		}

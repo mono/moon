@@ -72,6 +72,8 @@
     <File name="test-runner/ExocortexDSP/src/ComplexStats.cs" subtype="Code" buildaction="Compile" />
     <File name="test-runner/ExocortexDSP/src/Fourier.cs" subtype="Code" buildaction="Compile" />
     <File name="test-runner/ExocortexDSP/src/FourierDirection.cs" subtype="Code" buildaction="Compile" />
+    <File name="test-runner/Log.cs" subtype="Code" buildaction="Compile" />
+    <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

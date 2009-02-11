@@ -299,8 +299,12 @@ namespace MoonlightTests {
 			TestRun run = new TestRun (Path.GetDirectoryName (drtlist), verbose_level, tests, reports, logging_server, runner);
 			run.IgnoredTests.AddRange (ignored_tests);
 
+			Log.WriteLine ("Driver.Run (): starting.");
+			
 			int res = run.Run ();
 
+			Log.WriteLine ("Driver.Run (): finished.");
+			
 			DbusServices.Stop ();
 			return res;
 		}

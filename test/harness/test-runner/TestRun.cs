@@ -128,8 +128,12 @@ namespace MoonlightTests {
 
 			runner.Start ();
 
+			Log.WriteLine ("TestRun.Run (): runner started, waiting for finished event.");
+			
 			tests_finished_event.WaitOne ();
 
+			Log.WriteLine ("TestRun.Run (): got finished event.");
+			
 			reports.ForEach (delegate (IReport report) { report.EndRun (); });
 
 			return FailedTests.Count;
@@ -163,17 +167,21 @@ namespace MoonlightTests {
 
 					Test test = null;
 					lock (process_tests_queue) {
-						if (process_tests_queue.Count == 0)
+						if (process_tests_queue.Count == 0) {
+							Log.WriteLine ("TestRun.ProcessTestsWorker (): no more tests.");
 							break;
+						}
 						test = process_tests_queue.Dequeue ();
 					}
 
 					tests_finished_event.Reset ();
 
+					Log.WriteLine ("TestRun.ProcessTestsWorker (): processing test {0}", test.Id);
+					
 					ProcessTest (test);
 				}
 
-				// Notify the main thread that we are out of tests
+				Log.WriteLine ("TestRun.ProcessTestsWorker (): Notify the main thread that we are out of tests");
 				tests_finished_event.Set ();
 			}
 		}
