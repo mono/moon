@@ -281,6 +281,7 @@ protected:
 class HitTestCollection : public UIElementCollection {
  protected:
 	virtual bool CanAdd (Value *value);
+	virtual bool AddedToCollection (Value *value, MoonError *error) { return true; }
 	
  public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */

@@ -9,6 +9,8 @@
 
 #include <config.h>
 #include "usercontrol.h"
+#include "collection.h"
+#include "runtime.h"
 
 UserControl::UserControl ()
 {
@@ -48,6 +50,22 @@ UserControl::OnPropertyChanged (PropertyChangedEventArgs *args)
 		UpdateBounds ();
 	}
 	NotifyListenersOfPropertyChange (args);
+}
+
+void
+UserControl::FindElementsInHostCoordinates (cairo_t *cr, Point p, List *uielement_list)
+{
+	Value *v = GetValue (UserControl::ContentProperty);
+	if (v && !v->GetIsNull ()) {
+		UIElement *element = v->AsUIElement ();
+		
+		List::Node *us = uielement_list->Prepend (new UIElementNode (this));
+		
+		element->FindElementsInHostCoordinates (cr, p, uielement_list);
+		
+		if (us == uielement_list->First () && !CanFindElement ())
+			uielement_list->Remove (us);
+	}
 }
 
 Size

@@ -163,6 +163,7 @@ bool
 Panel::InsideFillOrClip (cairo_t *cr, double x, double y)
 {
 	Rect r (0, 0, GetActualWidth (), GetActualHeight ());
+	r = r.Transform (&absolute_xform);
 	return r.GrowBy (1, 1, 1, 0).PointInside (x, y);
 }
 

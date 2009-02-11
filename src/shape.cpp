@@ -131,9 +131,31 @@ Shape::Draw (cairo_t *cr)
 bool
 Shape::InsideFillOrClip (cairo_t *cr, double x, double y)
 {
-	extents = extents.GrowBy (1, 1, 1, 0);
-	bool ret = Shape::InsideObject (cr, x, y);
-	extents = extents.GrowBy (-1, -1 ,-1, 0);
+	bool ret = false;
+
+	if (!extents.Transform (&absolute_xform).GrowBy (1, 1, 1, 0).PointInside (x, y))
+		return false;
+
+	Geometry *clip = GetClip ();
+	if (clip) {
+		cairo_save (cr);
+		
+		cairo_new_path (cr);
+		clip->Draw (cr);
+		ret = cairo_in_fill (cr, x, y) ||  cairo_in_stroke (cr, x, y);
+		
+		cairo_restore (cr);
+		if (!ret)
+			return false; 
+	}
+
+	cairo_save (cr);
+	
+	cairo_new_path (cr);
+	DoDraw (cr, false);
+	ret = cairo_in_fill (cr, x, y) || cairo_in_stroke (cr, x, y);
+
+	cairo_restore (cr);
 	return ret;
 }
 

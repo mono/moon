@@ -33,7 +33,7 @@ public:
 	UserControl ();
 	
 	virtual bool IsLayoutContainer () { return true; }
-
+	virtual void FindElementsInHostCoordinates (cairo_t *cr, Point P, List *uielement_list);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 
 	virtual Size MeasureOverride (Size availableSize);
