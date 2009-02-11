@@ -1,3 +1,7 @@
+2009-02-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* drtlist.xml: Marking test-mms-failure as known failure.
+
 2008-12-04  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* drtlist.xml, test-mms-with-markers.html: Added test for #456154.
