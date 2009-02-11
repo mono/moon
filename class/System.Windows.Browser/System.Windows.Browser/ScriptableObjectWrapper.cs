@@ -155,7 +155,7 @@ namespace System.Windows.Browser
 								args,
 								args.Length);
 		}
-		
+
 		public void AddMethod (MethodInfo mi)
 		{
 			ParameterInfo[] ps = mi.GetParameters();
@@ -268,6 +268,10 @@ namespace System.Windows.Browser
 				if (so != null) {
 					v.u.p = so.Handle;
 					v.k = Kind.NPOBJ;
+				} else if (ScriptableObjectGenerator.ValidateType (o.GetType())) {
+					ScriptableObjectWrapper wrapper = ScriptableObjectGenerator.Generate (o, false);
+					v.u.p = wrapper.Handle;
+					v.k = Kind.NPOBJ;
 				} else {
 					GCHandle handle = new GCHandle ();
 					handle.Target = o;
@@ -367,7 +371,7 @@ namespace System.Windows.Browser
 		static void SetPropertyFromUnmanaged (IntPtr obj_handle, IntPtr property_handle, ref Value value)
 		{
 			ScriptableObjectWrapper obj = (ScriptableObjectWrapper) ((GCHandle)obj_handle).Target;
-			
+
 			PropertyInfo pi = (PropertyInfo)((GCHandle)property_handle).Target;
 
 			object v = ObjectFromValue<object> (value);
