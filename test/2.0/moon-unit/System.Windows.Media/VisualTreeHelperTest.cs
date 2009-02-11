@@ -697,6 +697,38 @@ namespace MoonTest.System.Windows.Media
                 Assert.AreEqual(1, hits.Count, "#7");
                 hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width, b.Height - 1), b));
                 Assert.AreEqual(1, hits.Count, "#8");
+                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(20, 20), b));
+                Assert.AreEqual(0, hits.Count, "#9");
+            });
+        }
+
+        [TestMethod]
+        [Asynchronous]
+        public void HitTest30b()
+        {
+            Border b = new Border { Width = 100, Height = 100, BorderBrush = new SolidColorBrush(Colors.Green), BorderThickness = new Thickness(10) };
+            Root.Children.Add(b);
+
+            CreateAsyncTest(Root, delegate
+            {
+                List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(10, 10), b));
+                Assert.AreEqual(1, hits.Count, "#1");
+                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 0), b));
+                Assert.AreEqual(1, hits.Count, "#2");
+                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(1, 0), b));
+                Assert.AreEqual(1, hits.Count, "#3");
+                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 1), b));
+                Assert.AreEqual(1, hits.Count, "#4");
+                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width, 0), b));
+                Assert.AreEqual(1, hits.Count, "#5");
+                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width - 1, 0), b));
+                Assert.AreEqual(1, hits.Count, "#6");
+                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width, 1), b));
+                Assert.AreEqual(1, hits.Count, "#7");
+                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width, b.Height - 1), b));
+                Assert.AreEqual(1, hits.Count, "#8");
+                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(20, 20), b));
+                Assert.AreEqual(0, hits.Count, "#9");
             });
         }
 
@@ -728,6 +760,41 @@ namespace MoonTest.System.Windows.Media
                 Assert.AreEqual(1, hits.Count, "#7");
                 hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width, b.Height - 1), b));
                 Assert.AreEqual(1, hits.Count, "#8");
+                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(20, 20), b));
+                Assert.AreEqual(0, hits.Count, "#9");
+            });
+        }
+
+        [TestMethod]
+        [Asynchronous]
+        public void HitTest31b()
+        {
+            Border b = new Border { Width = 100, Height = 100, BorderBrush = new SolidColorBrush(Colors.Green), BorderThickness = new Thickness(10) };
+            Rectangle r = new Rectangle { Width = 10, Height = 10, Fill = new SolidColorBrush(Colors.Blue) };
+            Canvas.SetLeft(r, 70);
+            Canvas.SetTop(r, 70);
+            b.Child = r;
+            Root.Children.Add(b);
+
+            CreateAsyncTest(Root, delegate {
+                List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(10, 10), b));
+                Assert.AreEqual(1, hits.Count, "#1");
+                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 0), b));
+                Assert.AreEqual(1, hits.Count, "#2");
+                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(1, 0), b));
+                Assert.AreEqual(1, hits.Count, "#3");
+                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 1), b));
+                Assert.AreEqual(1, hits.Count, "#4");
+                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width, 0), b));
+                Assert.AreEqual(1, hits.Count, "#5");
+                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width - 1, 0), b));
+                Assert.AreEqual(1, hits.Count, "#6");
+                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width, 1), b));
+                Assert.AreEqual(1, hits.Count, "#7");
+                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width, b.Height - 1), b));
+                Assert.AreEqual(1, hits.Count, "#8");
+                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(20, 20), b));
+                Assert.AreEqual(0, hits.Count, "#9");
             });
         }
 	}
