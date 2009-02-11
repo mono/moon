@@ -1,5 +1,10 @@
 2009-02-11  Andreia Gaita  <avidigal@novell.com>
 
+	* plugin-class.cpp: lowercase all method, property and event name
+	references, they're all added in lowercase
+
+2009-02-11  Andreia Gaita  <avidigal@novell.com>
+
 	* plugin-class.cpp (html_object_invoke): Check method invoke return
 	value and throw an exception if it fails. Add an alternate "static"
 	version of the js exception throwing macro.

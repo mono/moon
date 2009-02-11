@@ -4046,6 +4046,7 @@ MoonlightScriptableObjectObject::~MoonlightScriptableObjectObject ()
 bool
 MoonlightScriptableObjectObject::HasProperty (NPIdentifier name)
 {
+	name = NPID(npidentifier_to_downstr (name));
 #if ds(!)0
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
 	printf ("scriptable has property %s\n", strname);
@@ -4059,6 +4060,7 @@ MoonlightScriptableObjectObject::HasProperty (NPIdentifier name)
 bool
 MoonlightScriptableObjectObject::GetProperty (int id, NPIdentifier name, NPVariant *result)
 {
+	name = NPID(npidentifier_to_downstr (name));
 	ScriptableProperty *prop = (ScriptableProperty*)g_hash_table_lookup (properties, name);
 	if (!prop)
 		return MoonlightObject::GetProperty (id, name, result);
@@ -4085,6 +4087,7 @@ MoonlightScriptableObjectObject::SetProperty (int id, NPIdentifier name, const N
 	ScriptableEvent *event;
 	Value *v;
 	
+	name = NPID(npidentifier_to_downstr (name));
 	// first we try the property hash
 	if ((prop = (ScriptableProperty *) g_hash_table_lookup (properties, name))) {
 #if ds(!)0
@@ -4127,7 +4130,7 @@ MoonlightScriptableObjectObject::SetProperty (int id, NPIdentifier name, const N
 bool
 MoonlightScriptableObjectObject::HasMethod (NPIdentifier name)
 {
-	return g_hash_table_lookup (methods, name) != NULL;
+	return g_hash_table_lookup (methods, NPID(npidentifier_to_downstr (name))) != NULL;
 }
 
 bool
@@ -4135,6 +4138,7 @@ MoonlightScriptableObjectObject::Invoke (int id, NPIdentifier name,
 					 const NPVariant *args, uint32_t argCount,
 					 NPVariant *result)
 {
+	name = NPID(npidentifier_to_downstr (name));
 	ScriptableMethod *method = (ScriptableMethod*)g_hash_table_lookup (methods, name);
 	Value rv, **vargs = NULL;
 	uint32_t i;
@@ -4162,7 +4166,7 @@ MoonlightScriptableObjectObject::Invoke (int id, NPIdentifier name,
 		delete [] vargs;
 	}
 
-	ds(printf ("result of invoking %s was %p\n", strname, rv.AsNPObj ()));
+	ds(printf ("result of invoking %s was %p\n", strname, rv.ToString()));
 	
 	/* Note: this 1 is "void" */
 	if (method->method_return_type != 0)
