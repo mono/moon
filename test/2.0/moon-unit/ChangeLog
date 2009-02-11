@@ -1,6 +1,11 @@
 2009-02-11  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Media/VisualTreeHelperTest.cs: Add
+	tests for Border with just a BorderBrush.
+
+2009-02-11  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Media/VisualTreeHelperTest.cs: Add
 	tests for a Rect with just a stroke.
 
 2009-02-11  Alan McGovern  <amcgovern@novell.com>
