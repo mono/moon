@@ -283,6 +283,7 @@ TextBox::TextBox ()
 	cursor_column = 0;
 	selecting = false;
 	setvalue = true;
+	captured = false;
 	focused = false;
 	view = NULL;
 }
@@ -309,21 +310,10 @@ TextBox::~TextBox ()
 
 #define IsEOL(c) ((c) == '\r' || (c) == '\n')
 
-static int
-begin_line (TextBuffer *buffer, int cursor)
-{
-	int cur = cursor;
-	
-	while (cur > 0 && !IsEOL (buffer->text[cur - 1]))
-		cur--;
-	
-	return cur;
-}
-
 int
 TextBox::CursorDown (int cursor, int n_lines)
 {
-	int line_start = begin_line (buffer, cursor);
+	int line_start = CursorLineBegin (cursor);
 	int cur, n = 0;
 	
 	// first find out what our character offset is in the current line
@@ -371,7 +361,7 @@ TextBox::CursorDown (int cursor, int n_lines)
 int
 TextBox::CursorUp (int cursor, int n_lines)
 {
-	int line_start = begin_line (buffer, cursor);
+	int line_start = CursorLineBegin (cursor);
 	int cur, n = 0;
 	
 	// first find out what our character offset is in the current line
@@ -438,13 +428,11 @@ char_class (gunichar c)
 int
 TextBox::CursorNextWord (int cursor)
 {
-	int i, lf, cr = cursor;
+	int i, lf, cr;
 	CharClass cc;
 	
 	// find the end of the current line
-	while (cr < buffer->len && !IsEOL (buffer->text[cr]))
-		cr++;
-	
+	cr = CursorLineEnd (cursor);
 	if (buffer->text[cr] == '\r' && buffer->text[cr + 1] == '\n')
 		lf = cr + 1;
 	else
@@ -475,12 +463,11 @@ TextBox::CursorNextWord (int cursor)
 int
 TextBox::CursorPrevWord (int cursor)
 {
-	int i, cr, lf = cursor - 1;
+	int begin, i, cr, lf;
 	CharClass cc;
 	
 	// find the beginning of the current line
-	while (lf > 0 && !IsEOL (buffer->text[lf]))
-		lf--;
+	lf = CursorLineBegin (cursor) - 1;
 	
 	if (lf > 0 && buffer->text[lf] == '\n' && buffer->text[lf - 1] == '\r')
 		cr = lf - 1;
@@ -496,20 +483,52 @@ TextBox::CursorPrevWord (int cursor)
 	}
 	
 	cc = char_class (buffer->text[cursor - 1]);
+	begin = lf + 1;
 	i = cursor;
 	
 	// skip over the word, punctuation, or run of whitespace
-	while (i > lf && char_class (buffer->text[i - 1]) == cc)
+	while (i > begin && char_class (buffer->text[i - 1]) == cc)
 		i--;
 	
 	// if the cursor was at whitespace, skip back a word too
-	if (cc == CharClassWhitespace && i > lf) {
+	if (cc == CharClassWhitespace && i > begin) {
 		cc = char_class (buffer->text[i - 1]);
 		while (i > lf && char_class (buffer->text[i - 1]) == cc)
 			i--;
 	}
 	
 	return i;
+}
+
+int
+TextBox::CursorLineBegin (int cursor)
+{
+	int cur = cursor;
+	
+	// find the beginning of the line
+	while (cur > 0 && !IsEOL (buffer->text[cur - 1]))
+		cur--;
+	
+	return cur;
+}
+
+int
+TextBox::CursorLineEnd (int cursor, bool include)
+{
+	int cur = cursor;
+	
+	// find the end of the line
+	while (cur < buffer->len && !IsEOL (buffer->text[cur]))
+		cur++;
+	
+	if (include && cur < buffer->len) {
+		if (buffer->text[cur] == '\r' && buffer->text[cur + 1] == '\n')
+			cur += 2;
+		else
+			cur++;
+	}
+	
+	return cur;
 }
 
 void
@@ -746,8 +765,7 @@ TextBox::KeyPressHome (GdkModifierType modifiers)
 		cursor = 0;
 	} else {
 		// move the cursor to the beginning of the line
-		while (cursor > 0 && !IsEOL (buffer->text[cursor - 1]))
-			cursor--;
+		cursor = CursorLineBegin (cursor);
 	}
 	
 	if ((modifiers & SHIFT_MASK) == 0) {
@@ -780,8 +798,7 @@ TextBox::KeyPressEnd (GdkModifierType modifiers)
 		cursor = buffer->len;
 	} else {
 		// move the cursor to the end of the line
-		while (cursor < buffer->len && !IsEOL (buffer->text[cursor]))
-			cursor++;
+		cursor = CursorLineEnd (cursor);
 	}
 	
 	if ((modifiers & SHIFT_MASK) == 0) {
@@ -1115,19 +1132,51 @@ TextBox::key_up (EventObject *sender, EventArgs *args, void *closure)
 void
 TextBox::OnMouseLeftButtonDown (MouseEventArgs *args)
 {
+	GdkEventButton *event = (GdkEventButton *) args->GetEvent ();
+	int cursor, start, end;
 	double x, y;
-	int cursor;
 	
 	if (view) {
 		args->GetPosition (view, &x, &y);
 		args->SetHandled (true);
-		selecting = true;
 		
 		cursor = view->GetCursorFromXY (x, y);
 		
+		switch (event->type) {
+		case GDK_3BUTTON_PRESS:
+			// Note: Silverlight doesn't implement this, but to
+			// be consistent with other TextEntry-type
+			// widgets, we will.
+			//
+			// Triple-Click: select the line
+			if (captured)
+				ReleaseMouseCapture ();
+			start = CursorLineBegin (cursor);
+			end = CursorLineEnd (cursor, true);
+			selecting = false;
+			captured = false;
+			break;
+		case GDK_2BUTTON_PRESS:
+			// Double-Click: select the word
+			if (captured)
+				ReleaseMouseCapture ();
+			start = CursorPrevWord (cursor);
+			end = CursorNextWord (cursor);
+			selecting = false;
+			captured = false;
+			break;
+		case GDK_BUTTON_PRESS:
+		default:
+			// Single-Click: cursor placement
+			captured = CaptureMouse ();
+			start = end = cursor;
+			selecting = true;
+			break;
+		}
+		
 		emit = NOTHING_CHANGED;
-		SetSelectionStart (cursor);
-		SetSelectionLength (0);
+		SetSelectionLength (end - start);
+		SetSelectionStart (start);
 		SyncAndEmit ();
 	}
 }
@@ -1141,8 +1190,12 @@ TextBox::mouse_left_button_down (EventObject *sender, EventArgs *args, gpointer 
 void
 TextBox::OnMouseLeftButtonUp (MouseEventArgs *args)
 {
+	if (captured)
+		ReleaseMouseCapture ();
+	
 	args->SetHandled (true);
 	selecting = false;
+	captured = false;
 }
 
 void

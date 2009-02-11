@@ -91,6 +91,7 @@ class TextBox : public Control, public ITextSource {
 	
 	int selecting:1;
 	int setvalue:1;
+	int captured:1;
 	int focused:1;
 	int emit:2;
 	
@@ -122,6 +123,8 @@ class TextBox : public Control, public ITextSource {
 	
 	int CursorDown (int cursor, int n_lines);
 	int CursorUp (int cursor, int n_lines);
+	int CursorLineBegin (int cursor);
+	int CursorLineEnd (int cursor, bool include = false);
 	int CursorNextWord (int cursor);
 	int CursorPrevWord (int cursor);
 	

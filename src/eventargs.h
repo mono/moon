@@ -150,6 +150,8 @@ class MouseEventArgs : public RoutedEventArgs {
 	MouseEventArgs ();
 	MouseEventArgs (GdkEvent *event);
 	
+	GdkEvent *GetEvent () { return event; }
+	
 	int GetState ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
