@@ -126,7 +126,7 @@ namespace System.Windows.Browser
 			ScriptableNativeMethods.add_property (WebApplication.Current.PluginHandle,
 									moon_handle,
 									(IntPtr)prop_handle,
-									pi.Name,
+									pi.Name.ToLower(),
 									tc,
 									pi.CanRead,
 									pi.CanWrite);
@@ -141,7 +141,7 @@ namespace System.Windows.Browser
 			ScriptableNativeMethods.add_event (WebApplication.Current.PluginHandle,
 									moon_handle,
 									(IntPtr)event_handle,
-									ei.Name);
+									ei.Name.ToLower());
 		}
 
 		public void AddMethod (string name, TypeCode[] args, TypeCode ret_type)
@@ -150,7 +150,7 @@ namespace System.Windows.Browser
 								WebApplication.Current.PluginHandle,
 								moon_handle,
 								IntPtr.Zero,
-								name,
+								name.ToLower(),
 								ret_type,
 								args,
 								args.Length);
@@ -173,7 +173,7 @@ namespace System.Windows.Browser
 			ScriptableNativeMethods.add_method (WebApplication.Current.PluginHandle,
 								moon_handle,
 								(IntPtr)method_handle,
-								mi.Name,
+								mi.Name.ToLower(),
 								Type.GetTypeCode (mi.ReturnType),
 								tcs,
 								tcs.Length);
@@ -284,8 +284,8 @@ namespace System.Windows.Browser
 
 		void Invoke (string name, IntPtr[] uargs, int arg_count, ref Value ret)
 		{
-			switch (name) {
-				case "createManagedObject":
+			switch (name.ToLower ()) {
+				case "createmanagedobject":
 					if (arg_count == 1) {
 						Value v = (Value)Marshal.PtrToStructure (uargs[0], typeof (Value));
 						string o = (string)ObjectFromValue<string> (v);

@@ -1,6 +1,11 @@
 2009-02-11  Andreia Gaita  <avidigal@novell.com>
 
-	* ScriptableObjectWrapper.cs:  Expose the CreateObject method
+	* ScriptableObjectWrapper.cs: Add all methods, properties and
+	events in lowercase. Fix createManagedObject invocation
+
+2009-02-11  Andreia Gaita  <avidigal@novell.com>
+
+	* ScriptableObjectWrapper.cs: Expose the CreateObject method
         as scriptable
 
 2009-02-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
