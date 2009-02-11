@@ -1,3 +1,10 @@
+2009-02-11  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxView::ConnectBlinkTimeout): Get the cursor
+	blink timeout from the GtkSettings.
+	(TextBox::OnKeyDown): Don't bother printing the buffer anymore,
+	things seem to have been debugged enough now.
+
 2009-02-11  Alan McGovern  <amcgovern@novell.com>
 
 	* text.h:

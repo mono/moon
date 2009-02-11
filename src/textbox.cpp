@@ -1089,9 +1089,6 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 	
 	// FIXME: some of these may also require updating scrollbars?
 	
-	if (emit & TEXT_CHANGED)
-		buffer->Print ();
-	
 	SyncAndEmit ();
 	
 	// FIXME: register a key repeat timeout?
@@ -1498,7 +1495,7 @@ TextBox::SelectAll ()
 // TextBoxView
 //
 
-#define CURSOR_BLINK_TIMEOUT_BASE     900
+#define CURSOR_BLINK_TIMEOUT_DEFAULT  900
 #define CURSOR_BLINK_ON_MULTIPLIER    2
 #define CURSOR_BLINK_OFF_MULTIPLIER   1
 #define CURSOR_BLINK_DELAY_MULTIPLIER 3
@@ -1543,10 +1540,40 @@ TextBoxView::blink (void *user_data)
 	return ((TextBoxView *) user_data)->Blink ();
 }
 
+static guint
+GetCursorBlinkTimeout (TextBoxView *view)
+{
+	GtkSettings *settings;
+	MoonWindow *window;
+	GdkScreen *screen;
+	GdkWindow *widget;
+	Surface *surface;
+	guint timeout;
+	
+	if (!(surface = view->GetSurface ()))
+		return CURSOR_BLINK_TIMEOUT_DEFAULT;
+	
+	if (!(window = surface->GetWindow ()))
+		return CURSOR_BLINK_TIMEOUT_DEFAULT;
+	
+	if (!(widget = window->GetGdkWindow ()))
+		return CURSOR_BLINK_TIMEOUT_DEFAULT;
+	
+	if (!(screen = gdk_drawable_get_screen ((GdkDrawable *) widget)))
+		return CURSOR_BLINK_TIMEOUT_DEFAULT;
+	
+	if (!(settings = gtk_settings_get_for_screen (screen)))
+		return CURSOR_BLINK_TIMEOUT_DEFAULT;
+	
+	g_object_get (settings, "gtk-cursor-blink-time", &timeout, NULL);
+	
+	return timeout;
+}
+
 void
 TextBoxView::ConnectBlinkTimeout (guint multiplier)
 {
-	guint timeout = CURSOR_BLINK_TIMEOUT_BASE * multiplier / CURSOR_BLINK_DIVIDER;
+	guint timeout = GetCursorBlinkTimeout (this) * multiplier / CURSOR_BLINK_DIVIDER;
 	Surface *surface = GetSurface ();
 	TimeManager *manager;
 	
