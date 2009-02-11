@@ -306,6 +306,11 @@ check_arg_list (const char *arglist, uint32_t argc, const NPVariant *argv)
 		return true; \
 	} while (0);	\
 
+#define THROW_JS_EXCEPTION2(obj, meth)	\
+	char *message = g_strdup_printf ("Error calling method: %s", meth);	\
+	NPN_SetException (obj, message);	\
+	g_free (message);	\
+
 /* for use with bsearch & qsort */
 static int
 compare_mapping (const void *m1, const void *m2)
@@ -4434,18 +4439,24 @@ html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name,
 			value_to_variant (npobj, &args [i], &npargs [i]);
 	}
 
-	NPN_Invoke (npp, npobj, identifier, npargs, arg_count, &npresult);
+	bool ret = NPN_Invoke (npp, npobj, identifier, npargs, arg_count, &npresult);
 
 	if (arg_count) {
 		for (uint32_t i = 0; i < arg_count; i++)
 			NPN_ReleaseVariantValue (&npargs [i]);
 	}
 
-	Value *res = NULL;
-	if (!NPVARIANT_IS_VOID (npresult) && !NPVARIANT_IS_NULL (npresult)) {
-		variant_to_value (&npresult, &res);
-		*result = *res;
+	if (ret)
+	{
+		Value *res = NULL;
+		if (!NPVARIANT_IS_VOID (npresult) && !NPVARIANT_IS_NULL (npresult)) {
+			variant_to_value (&npresult, &res);
+			*result = *res;
+		    } else {
+			*result = Value (Type::INVALID);
+		}
 	} else {
+		THROW_JS_EXCEPTION2 (npobj, name);
 		*result = Value (Type::INVALID);
 	}
 }
