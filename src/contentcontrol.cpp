@@ -31,7 +31,7 @@ ContentControl::~ContentControl ()
 void
 ContentControl::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->GetOwnerType () != Type::CONTENTCONTROL) {
+	if (args->GetProperty ()->GetOwnerType () != Type::CONTENTCONTROL) {
 		Control::OnPropertyChanged (args);
 		return;
 	}

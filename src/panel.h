@@ -32,9 +32,9 @@ class Panel : public FrameworkElement {
 	virtual bool EmptyBackground ();
  public:
  	/* @PropertyType=Brush,GenerateAccessors */
-	static DependencyProperty *BackgroundProperty;
+	static int BackgroundProperty;
  	/* @PropertyType=UIElementCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
-	static DependencyProperty *ChildrenProperty;
+	static int ChildrenProperty;
 	
  	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Panel ();

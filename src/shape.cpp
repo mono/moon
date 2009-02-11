@@ -726,7 +726,7 @@ Shape::CacheInvalidateHint (void)
 void
 Shape::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->GetOwnerType() != Type::SHAPE) {
+	if (args->GetProperty ()->GetOwnerType() != Type::SHAPE) {
 		if ((args->property == FrameworkElement::HeightProperty) || (args->property == FrameworkElement::WidthProperty))
 			InvalidatePathCache ();
 
@@ -796,7 +796,7 @@ Shape::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 Shape::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
-	if (prop == Shape::FillProperty || prop == Shape::StrokeProperty) {
+	if (prop && (prop->GetId () == Shape::FillProperty || prop->GetId () == Shape::StrokeProperty)) {
 		Invalidate ();
 		InvalidateSurfaceCache ();
 	}
@@ -937,10 +937,10 @@ Ellipse::BuildPath ()
 void
 Ellipse::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	DependencyProperty *prop = args->property;
+	DependencyProperty *prop = args->GetProperty ();
 
-	if ((prop == Shape::StrokeThicknessProperty) || (prop == Shape::StretchProperty) ||
-		(prop == FrameworkElement::WidthProperty) || (prop == FrameworkElement::HeightProperty)) {
+	if ((prop->GetId () == Shape::StrokeThicknessProperty) || (prop->GetId () == Shape::StretchProperty) ||
+		(prop->GetId () == FrameworkElement::WidthProperty) || (prop->GetId () == FrameworkElement::HeightProperty)) {
 		BuildPath ();
 		InvalidateSurfaceCache ();
 	}
@@ -1120,7 +1120,7 @@ Rectangle::BuildPath ()
 void
 Rectangle::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->GetOwnerType() != Type::RECTANGLE) {
+	if (args->GetProperty ()->GetOwnerType() != Type::RECTANGLE) {
 		Shape::OnPropertyChanged (args);
 		return;
 	}
@@ -1400,7 +1400,7 @@ Line::ComputeShapeBounds (bool logical)
 void
 Line::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->GetOwnerType() != Type::LINE) {
+	if (args->GetProperty ()->GetOwnerType() != Type::LINE) {
 		Shape::OnPropertyChanged (args);
 		return;
 	}
@@ -1553,7 +1553,7 @@ Polygon::BuildPath ()
 void
 Polygon::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->GetOwnerType() != Type::POLYGON) {
+	if (args->GetProperty ()->GetOwnerType() != Type::POLYGON) {
 		Shape::OnPropertyChanged (args);
 		return;
 	}
@@ -1688,7 +1688,7 @@ Polyline::BuildPath ()
 void
 Polyline::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->GetOwnerType() != Type::POLYLINE) {
+	if (args->GetProperty ()->GetOwnerType() != Type::POLYLINE) {
 		Shape::OnPropertyChanged (args);
 		return;
 	}
@@ -1840,7 +1840,7 @@ Path::Draw (cairo_t *cr)
 void
 Path::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->GetOwnerType() != Type::PATH) {
+	if (args->GetProperty ()->GetOwnerType() != Type::PATH) {
 		Shape::OnPropertyChanged (args);
 		return;
 	}
@@ -1854,7 +1854,7 @@ Path::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 Path::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
-	if (prop == Path::DataProperty) {
+	if (prop && prop->GetId () == Path::DataProperty) {
 		InvalidatePathCache ();
 		FullInvalidate (false);
 	}

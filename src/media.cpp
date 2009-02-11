@@ -234,7 +234,7 @@ MediaBase::OnPropertyChanged (PropertyChangedEventArgs *args)
 		}
 	}
 	
-	if (args->property->GetOwnerType() != Type::MEDIABASE) {
+	if (args->GetProperty ()->GetOwnerType() != Type::MEDIABASE) {
 		FrameworkElement::OnPropertyChanged (args);
 		return;
 	}
@@ -471,7 +471,7 @@ Image::UpdateSize ()
 		// FIXME: this is wrong, we probably need to set the
 		// property, or use some other mechanism, but this is
 		// gross.
-		PropertyChangedEventArgs args (ImageBrush::DownloadProgressProperty, NULL, 
+		PropertyChangedEventArgs args (GetDeployment ()->GetTypes ()->GetProperty (ImageBrush::DownloadProgressProperty), ImageBrush::DownloadProgressProperty, NULL, 
 					       brush->GetValue (ImageBrush::DownloadProgressProperty));
 		
 		brush->OnPropertyChanged (&args);
@@ -982,7 +982,7 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args)
 		}
 	}
 
-	if (args->property->GetOwnerType() != Type::IMAGE) {
+	if (args->GetProperty ()->GetOwnerType() != Type::IMAGE) {
 		MediaBase::OnPropertyChanged (args);
 		return;
 	}

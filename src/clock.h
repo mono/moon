@@ -515,17 +515,17 @@ class Timeline : public DependencyObject {
 
  public:
 	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
-	static DependencyProperty *AutoReverseProperty;
+	static int AutoReverseProperty;
  	/* @PropertyType=TimeSpan,Nullable */
-	static DependencyProperty *BeginTimeProperty;
+	static int BeginTimeProperty;
  	/* @PropertyType=Duration,DefaultValue=Duration::Automatic */
-	static DependencyProperty *DurationProperty;
+	static int DurationProperty;
  	/* @PropertyType=FillBehavior,DefaultValue=FillBehaviorHoldEnd,GenerateAccessors */
-	static DependencyProperty *FillBehaviorProperty;
+	static int FillBehaviorProperty;
  	/* @PropertyType=RepeatBehavior,DefaultValue=RepeatBehavior ((double) 1) */
-	static DependencyProperty *RepeatBehaviorProperty;
+	static int RepeatBehaviorProperty;
  	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
-	static DependencyProperty *SpeedRatioProperty;
+	static int SpeedRatioProperty;
 	
  	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Timeline ();
@@ -597,7 +597,7 @@ class TimelineGroup : public Timeline {
 	
  public:
 	/* @PropertyType=TimelineCollection,AutoCreateValue,GenerateAccessors */
-	static DependencyProperty *ChildrenProperty;
+	static int ChildrenProperty;
 	
  	/* @GenerateCBinding,GeneratePInvoke */
 	TimelineGroup ();
@@ -636,11 +636,11 @@ class TimelineMarker : public DependencyObject {
 
  public:
  	/* @PropertyType=string,GenerateAccessors */
-	static DependencyProperty *TextProperty;
+	static int TextProperty;
  	/* @PropertyType=TimeSpan,GenerateAccessors */
-	static DependencyProperty *TimeProperty;
+	static int TimeProperty;
  	/* @PropertyType=string,GenerateAccessors */
-	static DependencyProperty *TypeProperty;
+	static int TypeProperty;
 	
  	/* @GenerateCBinding,GeneratePInvoke */
 	TimelineMarker ();

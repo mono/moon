@@ -2016,7 +2016,7 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 			use_media_width = args->new_value == NULL;
 	}
 	
-	if (args->property->GetOwnerType() != Type::MEDIAELEMENT) {
+	if (args->GetProperty ()->GetOwnerType() != Type::MEDIAELEMENT) {
 		// propagate to parent class
 		FrameworkElement::OnPropertyChanged (args);
 		flags |= RecalculateMatrix;
@@ -2072,7 +2072,7 @@ MediaElementPropertyValueProvider::~MediaElementPropertyValueProvider ()
 Value *
 MediaElementPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 {
-	if (property != MediaElement::PositionProperty)
+	if (property->GetId () != MediaElement::PositionProperty)
 		return NULL;
 	
 	bool use_mplayer;

@@ -193,13 +193,13 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 	if (!parent)
 		return NULL;
 
-	DependencyProperty *parent_property = NULL;
+	int parent_property = -1;
 
 #define INHERIT1(p) \
 	G_STMT_START {									\
-	if (property == Control::p ||							\
-	    property == TextBlock::p ||							\
-	    property == Inline::p) {							\
+	if (property->GetId () == Control::p ||							\
+	    property->GetId () == TextBlock::p ||							\
+	    property->GetId () == Inline::p) {							\
 											\
 		do {									\
 			if (parent->Is (Type::CONTROL))					\
@@ -209,29 +209,29 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 			else if (parent->Is (Type::INLINE))				\
 				parent_property = Inline::p;				\
 											\
-			if (!parent_property)						\
+			if (parent_property != -1)						\
 				parent = get_parent (parent);				\
-		} while (parent && !parent_property);					\
+		} while (parent && parent_property != -1);					\
 	}										\
 	} G_STMT_END
 
 #define INHERIT2(p) \
 	G_STMT_START {									\
-	if (property == Inline::p) {							\
+	if (property->GetId () == Inline::p) {							\
 											\
 		do {									\
 			if (parent->Is (Type::TEXTBLOCK))				\
 				parent_property = TextBlock::p;				\
 											\
-			if (!parent_property)						\
+			if (parent_property != -1)						\
 				parent = get_parent (parent);				\
-		} while (parent && !parent_property);					\
+		} while (parent && parent_property != -1);					\
 	}										\
 	} G_STMT_END
 
 #define INHERIT3(p) \
 	G_STMT_START {									\
-	if (property == FrameworkElement::p) {						\
+	if (property->GetId () == FrameworkElement::p) {						\
 		do {									\
 			if (parent->Is (Type::FRAMEWORKELEMENT)) {			\
 				Value *contextV = parent->ReadLocalValue (FrameworkElement::p); \
@@ -254,7 +254,7 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 	INHERIT2 (TextDecorationsProperty);
 	INHERIT2 (FontFilenameProperty);
 
-	if (parent_property)
+	if (parent_property != -1 && parent != NULL)
 		return parent->GetValue (parent_property);
 
 	INHERIT3 (DataContextProperty);

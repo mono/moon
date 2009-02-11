@@ -320,7 +320,7 @@ DeepZoomImageTileSource::OnPropertyChanged (PropertyChangedEventArgs *args)
 		}
 	}
 
-	if (args->property->GetOwnerType () != Type::DEEPZOOMIMAGETILESOURCE) {
+	if (args->GetProperty ()->GetOwnerType () != Type::DEEPZOOMIMAGETILESOURCE) {
 		DependencyObject::OnPropertyChanged (args);
 		return;
 	}

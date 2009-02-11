@@ -389,31 +389,31 @@ public:
 	void TransformPoint (double *x, double *y);
 	
  	/* @PropertyType=Geometry,GenerateAccessors */
-	static DependencyProperty *ClipProperty;
+	static int ClipProperty;
  	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
-	static DependencyProperty *IsHitTestVisibleProperty;
+	static int IsHitTestVisibleProperty;
  	/* @PropertyType=Brush,GenerateAccessors */
-	static DependencyProperty *OpacityMaskProperty;
+	static int OpacityMaskProperty;
  	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
-	static DependencyProperty *OpacityProperty;
+	static int OpacityProperty;
  	/* @PropertyType=Point,DefaultValue=Point (0\,0),GenerateAccessors */
-	static DependencyProperty *RenderTransformOriginProperty;
+	static int RenderTransformOriginProperty;
 	/* @PropertyType=Transform,DefaultValue=new MatrixTransform (),GenerateAccessors */
-	static DependencyProperty *RenderTransformProperty;
+	static int RenderTransformProperty;
  	/* @PropertyType=Visibility,DefaultValue=VisibilityVisible,GenerateAccessors */
-	static DependencyProperty *VisibilityProperty;
+	static int VisibilityProperty;
 	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
-	static DependencyProperty *UseLayoutRoundingProperty;
+	static int UseLayoutRoundingProperty;
 
 	// in 2.0 these properties are actually in FrameworkElement
  	/* @PropertyType=MouseCursor,DefaultValue=MouseCursorDefault,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=Cursor,ManagedFieldAccess=Internal,GenerateAccessors,Validator=CursorValidator */
-	static DependencyProperty *CursorProperty;
+	static int CursorProperty;
  	/* @PropertyType=ResourceDictionary,ManagedDeclaringType=FrameworkElement,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
-	static DependencyProperty *ResourcesProperty;
+	static int ResourcesProperty;
  	/* @PropertyType=string,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=object,GenerateAccessors */
-	static DependencyProperty *TagProperty;
+	static int TagProperty;
  	/* @PropertyType=TriggerCollection,ManagedDeclaringType=FrameworkElement,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
-	static DependencyProperty *TriggersProperty;
+	static int TriggersProperty;
 	
 	//
 	// Property Accessors
@@ -504,13 +504,13 @@ private:
 class LayoutInformation {
 public:
 	/* @PropertyType=Geometry,Attached,GenerateAccessors */
-	static DependencyProperty *LayoutClipProperty;
+	static int LayoutClipProperty;
 	/* @PropertyType=Rect,Attached,GenerateAccessors */
-	static DependencyProperty *LayoutSlotProperty;
+	static int LayoutSlotProperty;
 	/* @PropertyType=Size,Attached,GenerateAccessors */
-	static DependencyProperty *LastMeasureProperty;
+	static int LastMeasureProperty;
 	/* @PropertyType=Size,Attached,GenerateAccessors */
-	static DependencyProperty *LastArrangeProperty;
+	static int LastArrangeProperty;
 
 	static void SetLayoutClip (DependencyObject *item, Geometry *clip);
 	static Geometry* GetLayoutClip (DependencyObject *item);

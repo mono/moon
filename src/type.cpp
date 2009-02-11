@@ -322,8 +322,15 @@ Types::AddProperty (DependencyProperty *property)
 	
 	g_return_if_fail (type != NULL);
 	
-	properties.Add (property);
+	property->SetId (properties.Add (property));
 	type->AddProperty (property);
+}
+
+DependencyProperty *
+Types::GetProperty (int id)
+{
+	g_return_val_if_fail (properties.GetCount () > id, NULL);
+	return (DependencyProperty *) properties [id];
 }
 
 Type *

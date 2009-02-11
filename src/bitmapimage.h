@@ -33,7 +33,7 @@ class BitmapImage : public ImageSource {
 	gint32 size;
 
 	/* @PropertyType=string,ManagedPropertyType=Uri,GenerateAccessors,DefaultValue=\"\" */
-	static DependencyProperty *UriSourceProperty;
+	static int UriSourceProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	BitmapImage ();

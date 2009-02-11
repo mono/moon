@@ -1,3 +1,10 @@
+2009-02-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-class.cpp: Change our static DependencyProperty
+	  backing fields to store an integer id instead of an
+	  instance to a DependencyProperty. This way we can have true
+	  per-deployment dependency properties.
+
 2009-02-10  Jackson Harper  <jackson@ximian.com>
 
 	* plugin.cpp|h: Added a param to the SetProperty callback, plugin

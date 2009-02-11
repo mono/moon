@@ -56,7 +56,7 @@ protected:
 class ControlTemplate : public FrameworkTemplate {
 public:
 	/* @PropertyType=ManagedTypeInfo,ManagedPropertyType=System.Type,Access=Internal,ManagedAccessorAccess=Public,ManagedFieldAccess=Private */
-	static DependencyProperty *TargetTypeProperty;
+	static int TargetTypeProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	ControlTemplate ();

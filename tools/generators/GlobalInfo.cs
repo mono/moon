@@ -115,14 +115,14 @@ class GlobalInfo : MemberInfo {
 						if (field == null)
 							continue;
 						
-						if (field.FieldType == null || field.FieldType.Value != "DependencyProperty*")
+						if (field.FieldType == null || field.FieldType.Value != "int")
 							continue;
 						
 						if (!field.IsStatic)
 							continue;
 						
 						if (!field.Name.EndsWith ("Property")) {
-							Console.WriteLine ("GenerateDPs: Found the static field {0} which returns a DependencyProperty*, but the property name doesn't end with 'Property' (ignore this warning if the field isn't supposed to be a DP).", field.FullName);
+							Console.WriteLine ("GenerateDPs: Found the static field {0} which returns an int, but the property name doesn't end with 'Property' (ignore this warning if the field isn't supposed to be a DP).", field.FullName);
 							continue;
 						}
 						

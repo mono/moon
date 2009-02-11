@@ -359,6 +359,7 @@ public:
 	Type::Kind RegisterType (const char *name, void *gc_handle, Type::Kind parent);
 	
 	void AddProperty (DependencyProperty *property);
+	DependencyProperty *GetProperty (int id);
 	
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Type *Find (Type::Kind type);

@@ -32,9 +32,9 @@ class StylusInfo : public DependencyObject {
 	
  public:
 	/* @PropertyType=TabletDeviceType,DefaultValue=TabletDeviceTypeMouse,GenerateAccessors */
-	static DependencyProperty *DeviceTypeProperty;
+	static int DeviceTypeProperty;
 	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
-	static DependencyProperty *IsInvertedProperty;
+	static int IsInvertedProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	StylusInfo () { SetObjectType (Type::STYLUSINFO); }
@@ -58,11 +58,11 @@ class StylusPoint : public DependencyObject {
 	
  public:
 	/* @PropertyType=double,DefaultValue=0.5,GenerateAccessors */
-	static DependencyProperty *PressureFactorProperty;
+	static int PressureFactorProperty;
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static DependencyProperty *XProperty;
+	static int XProperty;
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static DependencyProperty *YProperty;
+	static int YProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	StylusPoint () { SetObjectType (Type::STYLUSPOINT); }
@@ -107,13 +107,13 @@ class DrawingAttributes : public DependencyObject {
 
  public:
 	/* @PropertyType=Color,DefaultValue=Color (0xFF000000),ManagedFieldAccess=Private,GenerateAccessors */
-	static DependencyProperty *ColorProperty;
+	static int ColorProperty;
 	/* @PropertyType=Color,DefaultValue=Color (0x00000000),ManagedFieldAccess=Private,GenerateAccessors */
-	static DependencyProperty *OutlineColorProperty;
+	static int OutlineColorProperty;
 	/* @PropertyType=double,DefaultValue=3.0,ManagedFieldAccess=Private,GenerateAccessors */
-	static DependencyProperty *HeightProperty;
+	static int HeightProperty;
 	/* @PropertyType=double,DefaultValue=3.0,ManagedFieldAccess=Private,GenerateAccessors */
-	static DependencyProperty *WidthProperty;
+	static int WidthProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	DrawingAttributes () { SetObjectType (Type::DRAWINGATTRIBUTES); }
@@ -160,9 +160,9 @@ class Stroke : public DependencyObject {
 	
  public:
 	/* @PropertyType=DrawingAttributes,AutoCreateValue,ManagedFieldAccess=Private,GenerateAccessors */
-	static DependencyProperty *DrawingAttributesProperty;
+	static int DrawingAttributesProperty;
 	/* @PropertyType=StylusPointCollection,AutoCreateValue,ManagedFieldAccess=Private,GenerateAccessors */
-	static DependencyProperty *StylusPointsProperty;
+	static int StylusPointsProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Stroke ();
@@ -223,7 +223,7 @@ class InkPresenter : public Canvas {
 
  public:
 	/* @PropertyType=StrokeCollection,AutoCreateValue,GenerateAccessors */
-	static DependencyProperty *StrokesProperty;
+	static int StrokesProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	InkPresenter ();

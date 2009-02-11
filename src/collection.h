@@ -31,7 +31,7 @@ class CollectionIterator;
 class Collection : public DependencyObject {
 public:
  	/* @PropertyType=gint32,DefaultValue=0,GenerateAccessors */
-	static DependencyProperty *CountProperty;
+	static int CountProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual Type::Kind GetElementType () = 0;

@@ -41,25 +41,25 @@ class Inline : public DependencyObject, public ITextSource {
 	
  public:
  	/* @PropertyType=FontFamily,DefaultValue=FontFamily(TEXTBLOCK_FONT_FAMILY),GenerateAccessors */
-	static DependencyProperty *FontFamilyProperty;
+	static int FontFamilyProperty;
  	/* @PropertyType=double,DefaultValue=TEXTBLOCK_FONT_SIZE,GenerateAccessors */
-	static DependencyProperty *FontSizeProperty;
+	static int FontSizeProperty;
  	/* @PropertyType=FontStretch,DefaultValue=TEXTBLOCK_FONT_STRETCH,GenerateAccessors */
-	static DependencyProperty *FontStretchProperty;
+	static int FontStretchProperty;
  	/* @PropertyType=FontStyle,DefaultValue=TEXTBLOCK_FONT_STYLE,GenerateAccessors */
-	static DependencyProperty *FontStyleProperty;
+	static int FontStyleProperty;
  	/* @PropertyType=FontWeight,DefaultValue=TEXTBLOCK_FONT_WEIGHT,GenerateAccessors */
-	static DependencyProperty *FontWeightProperty;
+	static int FontWeightProperty;
  	/* @PropertyType=Brush,DefaultValue=new SolidColorBrush("black"),GenerateAccessors */
-	static DependencyProperty *ForegroundProperty;
+	static int ForegroundProperty;
  	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone,ManagedPropertyType=TextDecorationCollection,GenerateAccessors */
-	static DependencyProperty *TextDecorationsProperty;
+	static int TextDecorationsProperty;
 	/* @PropertyType=string,DefaultValue=\"en-US\",Version=2.0,ManagedPropertyType=XmlLanguage,Validator=NonNullStringValidator */
-	static DependencyProperty *LanguageProperty;
+	static int LanguageProperty;
 	
 	// internal property to inherit the font filename between inlines and textblocks
  	/* @PropertyType=string,GenerateManagedDP=false,GenerateAccessors */
-	static DependencyProperty *FontFilenameProperty;
+	static int FontFilenameProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Inline ();
@@ -135,7 +135,7 @@ class Run : public Inline {
 	
  public:
  	/* @PropertyType=string,ManagedFieldAccess=Internal,GenerateAccessors */
-	static DependencyProperty *TextProperty;
+	static int TextProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Run () { SetObjectType (Type::RUN); }
@@ -183,37 +183,37 @@ class TextBlock : public FrameworkElement {
 	
  public:
  	/* @PropertyType=FontFamily,DefaultValue=FontFamily(TEXTBLOCK_FONT_FAMILY),GenerateAccessors */
-	static DependencyProperty *FontFamilyProperty;
+	static int FontFamilyProperty;
  	/* @PropertyType=double,DefaultValue=TEXTBLOCK_FONT_SIZE,GenerateAccessors */
-	static DependencyProperty *FontSizeProperty;
+	static int FontSizeProperty;
  	/* @PropertyType=FontStretch,DefaultValue=TEXTBLOCK_FONT_STRETCH,GenerateAccessors */
-	static DependencyProperty *FontStretchProperty;
+	static int FontStretchProperty;
  	/* @PropertyType=FontStyle,DefaultValue=TEXTBLOCK_FONT_STYLE,GenerateAccessors */
-	static DependencyProperty *FontStyleProperty;
+	static int FontStyleProperty;
  	/* @PropertyType=FontWeight,DefaultValue=TEXTBLOCK_FONT_WEIGHT,GenerateAccessors */
-	static DependencyProperty *FontWeightProperty;
+	static int FontWeightProperty;
  	/* @PropertyType=Brush,GenerateAccessors */
-	static DependencyProperty *ForegroundProperty;
+	static int ForegroundProperty;
  	/* @PropertyType=InlineCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
-	static DependencyProperty *InlinesProperty;
+	static int InlinesProperty;
  	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors */
-	static DependencyProperty *TextProperty;
+	static int TextProperty;
 	/* @PropertyType=double,DefaultValue=NAN,Version=2.0,GenerateAccessors */
-	static DependencyProperty *LineHeightProperty;
+	static int LineHeightProperty;
 	/* @PropertyType=LineStackingStrategy,DefaultValue=LineStackingStrategyMaxHeight,Version=2.0,GenerateAccessors */
-	static DependencyProperty *LineStackingStrategyProperty;
+	static int LineStackingStrategyProperty;
 	/* @PropertyType=Thickness,DefaultValue=Thickness (0),Version=2.0,GenerateAccessors */
-	static DependencyProperty *PaddingProperty;
+	static int PaddingProperty;
 	/* @PropertyType=TextAlignment,DefaultValue=TextAlignmentLeft,Version=2.0,GenerateAccessors */
-	static DependencyProperty *TextAlignmentProperty;
+	static int TextAlignmentProperty;
  	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone,ManagedPropertyType=TextDecorationCollection,GenerateAccessors */
-	static DependencyProperty *TextDecorationsProperty;
+	static int TextDecorationsProperty;
  	/* @PropertyType=TextWrapping,DefaultValue=TextWrappingNoWrap,GenerateAccessors */
-	static DependencyProperty *TextWrappingProperty;
+	static int TextWrappingProperty;
 	
 	// internal property to inherit the font filename between inlines and textblocks
  	/* @PropertyType=string,GenerateManagedDP=false,GenerateAccessors */
-	static DependencyProperty *FontFilenameProperty;
+	static int FontFilenameProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	TextBlock ();
@@ -319,21 +319,21 @@ class Glyphs : public FrameworkElement {
 	
  public:
  	/* @PropertyType=Brush,GenerateAccessors */
-	static DependencyProperty *FillProperty;
+	static int FillProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static DependencyProperty *FontRenderingEmSizeProperty;
+	static int FontRenderingEmSizeProperty;
  	/* @PropertyType=string,ManagedPropertyType=Uri,GenerateAccessors,Validator=NonNullStringValidator */
-	static DependencyProperty *FontUriProperty;
+	static int FontUriProperty;
  	/* @PropertyType=string,GenerateAccessors */
-	static DependencyProperty *IndicesProperty;
+	static int IndicesProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static DependencyProperty *OriginXProperty;
+	static int OriginXProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static DependencyProperty *OriginYProperty;
+	static int OriginYProperty;
  	/* @PropertyType=StyleSimulations,DefaultValue=StyleSimulationsNone,GenerateAccessors */
-	static DependencyProperty *StyleSimulationsProperty;
+	static int StyleSimulationsProperty;
  	/* @PropertyType=string,GenerateAccessors */
-	static DependencyProperty *UnicodeStringProperty;
+	static int UnicodeStringProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Glyphs ();
@@ -384,7 +384,7 @@ class InputMethod : public DependencyObject {
 	
  public:
 	/* @PropertyType=bool,Attached */
-	static DependencyProperty *IsInputMethodEnabledProperty;
+	static int IsInputMethodEnabledProperty;
 	
  	/* @ManagedAccess=Internal,GeneratePInvoke,GenerateCBinding */
 	InputMethod () { SetObjectType (Type::INPUTMETHOD); }

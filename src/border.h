@@ -28,17 +28,17 @@ protected:
 	
 public:
 	/* @PropertyType=Brush,GenerateAccessors */
-	static DependencyProperty *BackgroundProperty;
+	static int BackgroundProperty;
 	/* @PropertyType=Brush,GenerateAccessors */
-	static DependencyProperty *BorderBrushProperty;
+	static int BorderBrushProperty;
 	/* @PropertyType=Thickness,DefaultValue=Thickness(0),GenerateAccessors,Validator=BorderThicknessValidator */
-	static DependencyProperty *BorderThicknessProperty;
+	static int BorderThicknessProperty;
 	/* @PropertyType=UIElement,GenerateAccessors,ManagedFieldAccess=Internal */
-	static DependencyProperty *ChildProperty;
+	static int ChildProperty;
 	/* @PropertyType=CornerRadius,GenerateAccessors,Validator=CornerRadiusValidator */
-	static DependencyProperty *CornerRadiusProperty;
+	static int CornerRadiusProperty;
 	/* @PropertyType=Thickness,DefaultValue=Thickness(0),GenerateAccessors,Validator=BorderThicknessValidator */
-	static DependencyProperty *PaddingProperty;
+	static int PaddingProperty;
 	
  	/* @GenerateCBinding,GeneratePInvoke */
 	Border ();

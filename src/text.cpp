@@ -49,7 +49,7 @@ Inline::~Inline ()
 void
 Inline::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
-	if (prop == Inline::ForegroundProperty) {
+	if (prop && prop->GetId () == Inline::ForegroundProperty) {
 		// this isn't exactly what we want, I don't
 		// think... but it'll have to do.
 		NotifyListenersOfPropertyChange (prop);
@@ -158,7 +158,7 @@ class TextBlockDynamicPropertyValueProvider : public PropertyValueProvider {
 	
 	virtual Value *GetPropertyValue (DependencyProperty *property)
 	{
-		if (property != FrameworkElement::ActualHeightProperty && property != FrameworkElement::ActualWidthProperty)
+		if (property->GetId () != FrameworkElement::ActualHeightProperty && property->GetId () != FrameworkElement::ActualWidthProperty)
 			return NULL;
 		
 		TextBlock *tb = (TextBlock *) obj;
@@ -170,7 +170,7 @@ class TextBlockDynamicPropertyValueProvider : public PropertyValueProvider {
 			tb->CalcActualWidthHeight (NULL);
 		}
 		
-		if (property == FrameworkElement::ActualHeightProperty) {
+		if (property->GetId () == FrameworkElement::ActualHeightProperty) {
 			if (!actual_height_value)
 				actual_height_value = new Value (tb->actual_height);
 			return actual_height_value;
@@ -620,7 +620,7 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
 	bool invalidate = true;
 	
-	if (args->property->GetOwnerType () != Type::TEXTBLOCK) {
+	if (args->GetProperty ()->GetOwnerType () != Type::TEXTBLOCK) {
 		FrameworkElement::OnPropertyChanged (args);
 		if (args->property == FrameworkElement::WidthProperty) {
 			if (layout->GetTextWrapping () != TextWrappingNoWrap)
@@ -707,7 +707,7 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 TextBlock::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
-	if (prop == TextBlock::ForegroundProperty) {
+	if (prop && prop->GetId () == TextBlock::ForegroundProperty) {
 		Invalidate ();
 	} else {
 		FrameworkElement::OnSubPropertyChanged (prop, obj, subobj_args);
@@ -1292,7 +1292,7 @@ Glyphs::GetTransformOrigin ()
 void
 Glyphs::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
-	if (prop == Glyphs::FillProperty) {
+	if (prop && prop->GetId () == Glyphs::FillProperty) {
 		Invalidate ();
 	} else {
 		FrameworkElement::OnSubPropertyChanged (prop, obj, subobj_args);
@@ -1568,7 +1568,7 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
 	bool invalidate = true;
 	
-	if (args->property->GetOwnerType() != Type::GLYPHS) {
+	if (args->GetProperty ()->GetOwnerType() != Type::GLYPHS) {
 		FrameworkElement::OnPropertyChanged (args);
 		return;
 	}

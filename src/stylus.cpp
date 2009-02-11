@@ -652,7 +652,7 @@ Stroke::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Propert
 void
 Stroke::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->GetOwnerType() != Type::STROKE) {
+	if (args->GetProperty ()->GetOwnerType() != Type::STROKE) {
 		DependencyObject::OnPropertyChanged (args);
 	}
 
@@ -666,7 +666,7 @@ Stroke::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 Stroke::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
-	if (prop == Stroke::DrawingAttributesProperty) {
+	if (prop->GetId () == Stroke::DrawingAttributesProperty) {
 		if (subobj_args->property == DrawingAttributes::WidthProperty ||
 		    subobj_args->property == DrawingAttributes::HeightProperty ||
 		    subobj_args->property == DrawingAttributes::OutlineColorProperty) {
@@ -866,7 +866,7 @@ InkPresenter::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 void
 InkPresenter::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->GetOwnerType() != Type::INKPRESENTER) {
+	if (args->GetProperty ()->GetOwnerType() != Type::INKPRESENTER) {
 		Canvas::OnPropertyChanged (args);
 		return;
 	}

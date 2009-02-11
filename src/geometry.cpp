@@ -127,7 +127,7 @@ Geometry::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
 	// no need to clear the path for Geometry itself as FillRule and Transform properties are 
 	// only used when drawing, i.e. they do not affect the path itself
-	if (args->property->GetOwnerType() != Type::GEOMETRY && 
+	if (args->GetProperty ()->GetOwnerType() != Type::GEOMETRY && 
 		args->property != PathGeometry::FillRuleProperty && 
 		args->property != GeometryGroup::FillRuleProperty) {
 		DependencyObject::OnPropertyChanged (args);
@@ -530,7 +530,7 @@ PathFigure::~PathFigure ()
 void
 PathFigure::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->GetOwnerType() != Type::PATHFIGURE) {
+	if (args->GetProperty ()->GetOwnerType() != Type::PATHFIGURE) {
 		DependencyObject::OnPropertyChanged (args);
 		return;
 	}

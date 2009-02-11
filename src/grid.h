@@ -45,11 +45,11 @@ class ColumnDefinition : public DependencyObject {
 	
  public:
  	/* @PropertyType=double,DefaultValue=INFINITY,GenerateAccessors */
-	static DependencyProperty *MaxWidthProperty;
+	static int MaxWidthProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static DependencyProperty *MinWidthProperty;
+	static int MinWidthProperty;
  	/* @PropertyType=GridLength,DefaultValue=GridLength (1.0\, GridUnitTypeStar),GenerateAccessors */
-	static DependencyProperty *WidthProperty;
+	static int WidthProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	ColumnDefinition ();
@@ -80,11 +80,11 @@ class RowDefinition : public DependencyObject {
 	
  public:
  	/* @PropertyType=GridLength,DefaultValue=GridLength (1.0\, GridUnitTypeStar),GenerateAccessors */
-	static DependencyProperty *HeightProperty;
+	static int HeightProperty;
  	/* @PropertyType=double,DefaultValue=INFINITY,GenerateAccessors */
-	static DependencyProperty *MaxHeightProperty;
+	static int MaxHeightProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static DependencyProperty *MinHeightProperty;
+	static int MinHeightProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	RowDefinition ();
@@ -142,19 +142,19 @@ class Grid : public Panel {
 
  public:
  	/* @PropertyType=gint32,DefaultValue=0,Attached,GenerateAccessors,Validator=PositiveIntValidator */
-	static DependencyProperty *ColumnProperty;
+	static int ColumnProperty;
 	/* @PropertyType=ColumnDefinitionCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
-	static DependencyProperty *ColumnDefinitionsProperty;
+	static int ColumnDefinitionsProperty;
  	/* @PropertyType=gint32,DefaultValue=1,Attached,GenerateAccessors,Validator=IntGreaterThanZeroValidator */
-	static DependencyProperty *ColumnSpanProperty;
+	static int ColumnSpanProperty;
  	/* @PropertyType=gint32,DefaultValue=0,Attached,GenerateAccessors,Validator=PositiveIntValidator */
-	static DependencyProperty *RowProperty;
+	static int RowProperty;
 	/* @PropertyType=RowDefinitionCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
-	static DependencyProperty *RowDefinitionsProperty;
+	static int RowDefinitionsProperty;
  	/* @PropertyType=gint32,DefaultValue=1,Attached,GenerateAccessors,Validator=IntGreaterThanZeroValidator */
-	static DependencyProperty *RowSpanProperty;
+	static int RowSpanProperty;
  	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
-	static DependencyProperty *ShowGridLinesProperty;
+	static int ShowGridLinesProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Grid ();

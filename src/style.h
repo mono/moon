@@ -25,11 +25,11 @@
 class Style : public DependencyObject {
 public:
   	/* @PropertyType=bool,DefaultValue=false,ManagedSetterAccess=Private,GenerateAccessors */
-	static DependencyProperty *IsSealedProperty;
+	static int IsSealedProperty;
  	/* @PropertyType=SetterBaseCollection,AutoCreateValue,Access=Internal,ManagedFieldAccess=Private,ManagedAccess=Public,ManagedSetterAccess=Private,GenerateAccessors */
-	static DependencyProperty *SettersProperty;
+	static int SettersProperty;
  	/* @PropertyType=ManagedTypeInfo,ManagedPropertyType=System.Type,Access=Internal,ManagedAccess=Public,ManagedFieldAccess=Internal */
-	static DependencyProperty *TargetTypeProperty;
+	static int TargetTypeProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Style ();
@@ -61,7 +61,7 @@ public:
 	SetterBaseCollection ();
 	
   	/* @PropertyType=bool,DefaultValue=false,ManagedSetterAccess=Private,GenerateAccessors */
-	static DependencyProperty *IsSealedProperty;
+	static int IsSealedProperty;
 
 	virtual bool AddedToCollection (Value *value, MoonError *error);
 	virtual void RemovedFromCollection (Value *value);
@@ -94,7 +94,7 @@ class SetterBase : public DependencyObject {
 	
  public:
    	/* @PropertyType=bool,DefaultValue=false,ManagedSetterAccess=Private,GenerateAccessors */
-	static DependencyProperty *IsSealedProperty;
+	static int IsSealedProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	SetterBase ();
@@ -126,12 +126,12 @@ class Setter : public SetterBase {
 	
  public:
 	/* @PropertyType=DependencyProperty,Validator=IsSetterSealedValidator */
-	static DependencyProperty *PropertyProperty;
+	static int PropertyProperty;
 	/* @PropertyType=object,Validator=IsSetterSealedValidator */
-	static DependencyProperty *ValueProperty;
+	static int ValueProperty;
 
 	/* @PropertyType=object */
-	static DependencyProperty *ConvertedValueProperty;
+	static int ConvertedValueProperty;
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	Setter ();

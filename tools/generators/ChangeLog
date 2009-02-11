@@ -1,3 +1,9 @@
+2009-02-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Generator.cs:
+	* GlobalInfo.cs: Modify generation of native DPs to match new
+	  design.
+
 2009-02-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Generator.cs: Respect the new AutoCreateValue attribute.

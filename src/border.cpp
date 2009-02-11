@@ -156,7 +156,7 @@ Border::Render (cairo_t *cr, Region *region)
 void
 Border::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->GetOwnerType() != Type::BORDER) {
+	if (args->GetProperty ()->GetOwnerType() != Type::BORDER) {
 		FrameworkElement::OnPropertyChanged (args);
 		return;
 	}

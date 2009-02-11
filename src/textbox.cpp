@@ -1413,7 +1413,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 	if (changed != TextBoxModelChangedNothing)
 		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (changed, args));
 	
-	if (args->property->GetOwnerType () != Type::TEXTBOX) {
+	if (args->GetProperty ()->GetOwnerType () != Type::TEXTBOX) {
 		Control::OnPropertyChanged (args);
 		return;
 	}
@@ -1424,10 +1424,10 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 TextBox::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
-	if (prop == TextBox::SelectionBackgroundProperty ||
-	    prop == TextBox::SelectionForegroundProperty ||
-	    prop == Control::BackgroundProperty ||
-	    prop == Control::ForegroundProperty) {
+	if (prop && (prop->GetId () == TextBox::SelectionBackgroundProperty ||
+	    prop->GetId () == TextBox::SelectionForegroundProperty ||
+	    prop->GetId () == Control::BackgroundProperty ||
+	    prop->GetId () == Control::ForegroundProperty)) {
 		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (TextBoxModelChangedBrush));
 		Invalidate ();
 	}

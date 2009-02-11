@@ -19,13 +19,13 @@
 class Popup : public FrameworkElement {
  public:
 	/* @PropertyType=UIElement,GenerateAccessors */
-	static DependencyProperty *ChildProperty;
+	static int ChildProperty;
 	/* @PropertyType=double,GenerateAccessors */
-	static DependencyProperty *HorizontalOffsetProperty;
+	static int HorizontalOffsetProperty;
 	/* @PropertyType=bool,GenerateAccessors */
-	static DependencyProperty *IsOpenProperty;
+	static int IsOpenProperty;
 	/* @PropertyType=double,GenerateAccessors */
-	static DependencyProperty *VerticalOffsetProperty;
+	static int VerticalOffsetProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Popup ();

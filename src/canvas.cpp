@@ -49,7 +49,7 @@ Canvas::ShiftPosition (Point p)
 void
 Canvas::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->GetOwnerType() != Type::CANVAS) {
+	if (args->GetProperty ()->GetOwnerType() != Type::CANVAS) {
 		Panel::OnPropertyChanged (args);
 		return;
 	}

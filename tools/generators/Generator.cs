@@ -470,7 +470,7 @@ class Generator {
 		// Static initializers
 		for (int i = 0; i < fields.Count; i++) {
 			FieldInfo field = fields [i];
-			text.Append ("DependencyProperty *");
+			text.Append ("int ");
 			text.Append (field.Parent.Name);
 			text.Append ("::");
 			text.Append (field.Name);
@@ -564,7 +564,7 @@ class Generator {
 						   field.ParentType.Name, field.Name);
 
 				if (is_attached) {
-					text.AppendFormat ("\tif (!value) value = {0}::{1}->GetDefaultValue();\n",
+					text.AppendFormat ("\tif (!value) value = Deployment::GetCurrent ()->GetTypes ()->GetProperty ({0}::{1})->GetDefaultValue();\n",
 							   field.ParentType.Name, field.Name);
 				}
 

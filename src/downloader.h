@@ -93,15 +93,15 @@ class Downloader : public DependencyObject {
  public:
 	// Properties
 	/* @PropertyType=double,DefaultValue=0.0 */
-	static DependencyProperty *DownloadProgressProperty;
+	static int DownloadProgressProperty;
 	/* @PropertyType=string */
-	static DependencyProperty *ResponseTextProperty;
+	static int ResponseTextProperty;
 	/* @PropertyType=gint32,DefaultValue=0 */
-	static DependencyProperty *StatusProperty;
+	static int StatusProperty;
 	/* @PropertyType=string,DefaultValue=\"\" */
-	static DependencyProperty *StatusTextProperty;
+	static int StatusTextProperty;
 	/* @PropertyType=string */
-	static DependencyProperty *UriProperty;
+	static int UriProperty;
 	
 	// Events you can AddHandler to
 	const static int CompletedEvent;

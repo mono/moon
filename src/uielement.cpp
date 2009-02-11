@@ -142,7 +142,7 @@ UIElement::RenderClipPath (cairo_t *cr)
 void
 UIElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->GetOwnerType() != Type::UIELEMENT) {
+	if (args->GetProperty ()->GetOwnerType() != Type::UIELEMENT) {
 		DependencyObject::OnPropertyChanged (args);
 		return;
 	}
@@ -408,16 +408,16 @@ UIElement::ShiftPosition (Point p)
 void
 UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
-	if (prop == UIElement::RenderTransformProperty) {
+	if (prop && prop->GetId () == UIElement::RenderTransformProperty) {
 		UpdateTransform ();
 	}
-	else if (prop == UIElement::ClipProperty) {
+	else if (prop && prop->GetId () == UIElement::ClipProperty) {
 		Invalidate(GetSubtreeBounds());
 		// force invalidation even if the bounding rectangle
 		// changes (since the clip can be concave)
 		UpdateBounds (true);
 	}
-	else if (prop == UIElement::OpacityMaskProperty) {
+	else if (prop && prop->GetId () == UIElement::OpacityMaskProperty) {
 	        Invalidate ();
 	}
 	

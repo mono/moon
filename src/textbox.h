@@ -169,31 +169,31 @@ class TextBox : public Control, public ITextSource {
 	
  public:
 	/* @PropertyType=bool,DefaultValue=false,Version=2.0,GenerateAccessors */
-	static DependencyProperty *AcceptsReturnProperty;
+	static int AcceptsReturnProperty;
 	/* @PropertyType=ScrollBarVisibility,DefaultValue=ScrollBarVisibilityHidden,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
-	static DependencyProperty *HorizontalScrollBarVisibilityProperty;
+	static int HorizontalScrollBarVisibilityProperty;
 	/* @PropertyType=bool,DefaultValue=false,Version=2.0,GenerateAccessors */
-	static DependencyProperty *IsReadOnlyProperty;
+	static int IsReadOnlyProperty;
 	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors,Validator=PositiveIntValidator */
-	static DependencyProperty *MaxLengthProperty;
+	static int MaxLengthProperty;
 	/* @PropertyType=string,DefaultValue=\"\",Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
-	static DependencyProperty *SelectedTextProperty;
+	static int SelectedTextProperty;
 	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
-	static DependencyProperty *SelectionBackgroundProperty;
+	static int SelectionBackgroundProperty;
 	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
-	static DependencyProperty *SelectionForegroundProperty;
+	static int SelectionForegroundProperty;
 	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
-	static DependencyProperty *SelectionLengthProperty;
+	static int SelectionLengthProperty;
 	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
-	static DependencyProperty *SelectionStartProperty;
+	static int SelectionStartProperty;
 	/* @PropertyType=string,DefaultValue=\"\",Version=2.0,GenerateAccessors */
-	static DependencyProperty *TextProperty;
+	static int TextProperty;
 	/* @PropertyType=TextAlignment,DefaultValue=TextAlignmentLeft,Version=2.0,GenerateAccessors */
-	static DependencyProperty *TextAlignmentProperty;
+	static int TextAlignmentProperty;
 	/* @PropertyType=TextWrapping,DefaultValue=TextWrappingNoWrap,Version=2.0,GenerateAccessors */
-	static DependencyProperty *TextWrappingProperty;
+	static int TextWrappingProperty;
 	/* @PropertyType=ScrollBarVisibility,DefaultValue=ScrollBarVisibilityHidden,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
-	static DependencyProperty *VerticalScrollBarVisibilityProperty;
+	static int VerticalScrollBarVisibilityProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	TextBox ();
@@ -351,15 +351,15 @@ class TextBoxView : public FrameworkElement {
 class PasswordBox : public TextBox {
  public:
 	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors,Validator=IntGreaterThanZeroValidator */
-	static DependencyProperty *MaxLengthProperty;
+	static int MaxLengthProperty;
 	/* @PropertyType=string,DefaultValue=\"\",Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors,Validator=PasswordValidator */
-	static DependencyProperty *PasswordProperty;
+	static int PasswordProperty;
 	/* @PropertyType=char,DefaultValue=9679,Version=2.0,GenerateAccessors */
-	static DependencyProperty *PasswordCharProperty;
+	static int PasswordCharProperty;
 	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
-	static DependencyProperty *SelectionBackgroundProperty;
+	static int SelectionBackgroundProperty;
 	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
-	static DependencyProperty *SelectionForegroundProperty;
+	static int SelectionForegroundProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	PasswordBox ();

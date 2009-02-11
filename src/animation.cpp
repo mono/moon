@@ -707,7 +707,7 @@ DoubleAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDesti
 void
 DoubleAnimation::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->GetOwnerType() != Type::DOUBLEANIMATION) {
+	if (args->GetProperty ()->GetOwnerType() != Type::DOUBLEANIMATION) {
 		DependencyObject::OnPropertyChanged (args);
 		return;
 	}
@@ -783,7 +783,7 @@ ColorAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 void
 ColorAnimation::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->GetOwnerType() != Type::COLORANIMATION) {
+	if (args->GetProperty ()->GetOwnerType() != Type::COLORANIMATION) {
 		DependencyObject::OnPropertyChanged (args);
 		return;
 	}
@@ -863,7 +863,7 @@ PointAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 void
 PointAnimation::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->GetOwnerType() != Type::POINTANIMATION) {
+	if (args->GetProperty ()->GetOwnerType() != Type::POINTANIMATION) {
 		DependencyObject::OnPropertyChanged (args);
 		return;
 	}
@@ -937,7 +937,7 @@ KeySpline::RegenerateQuadratics ()
 void
 KeySpline::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->GetOwnerType() != Type::KEYSPLINE) {
+	if (args->GetProperty ()->GetOwnerType() != Type::KEYSPLINE) {
 		DependencyObject::OnPropertyChanged (args);
 		return;
 	}
@@ -1089,7 +1089,7 @@ KeyFrameCollection::GetKeyFrameForTime (TimeSpan t, KeyFrame **prev_frame)
 void
 KeyFrameCollection::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
-	if (strcmp (subobj_args->property->GetName (), "KeyTime") == 0) {
+	if (strcmp (subobj_args->GetProperty ()->GetName (), "KeyTime") == 0) {
 		resolved = false;
 	}
 

@@ -40,7 +40,7 @@ class MediaAttribute : public DependencyObject {
 
  public:
  	/* @PropertyType=string,GenerateAccessors */
-	static DependencyProperty *ValueProperty;
+	static int ValueProperty;
 	
  	/* @GenerateCBinding,GeneratePInvoke */
 	MediaAttribute () { SetObjectType (Type::MEDIAATTRIBUTE); }
@@ -144,11 +144,11 @@ class MediaBase : public FrameworkElement {
 
  public:
  	/* @PropertyType=string,AlwaysChange,GenerateAccessors */
-	static DependencyProperty *SourceProperty;
+	static int SourceProperty;
  	/* @PropertyType=Stretch,DefaultValue=StretchUniform,GenerateAccessors */
-	static DependencyProperty *StretchProperty;
+	static int StretchProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static DependencyProperty *DownloadProgressProperty;
+	static int DownloadProgressProperty;
 	
 	const static int DownloadProgressChangedEvent;
 	
@@ -212,7 +212,7 @@ class Image : public MediaBase {
 	
  public:
  	/* @PropertyType=BitmapImage,ManagedPropertyType=ImageSource,GenerateAccessors */
-	static DependencyProperty *SourceProperty;
+	static int SourceProperty;
 
 	static GHashTable *surface_cache;
 	

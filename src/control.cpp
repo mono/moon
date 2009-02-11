@@ -46,7 +46,7 @@ Control::HitTest (cairo_t *cr, Rect r, List *uielement_list)
 void
 Control::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->GetOwnerType() != Type::CONTROL) {
+	if (args->GetProperty ()->GetOwnerType() != Type::CONTROL) {
 		FrameworkElement::OnPropertyChanged (args);
 		return;
 	}

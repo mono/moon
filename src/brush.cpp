@@ -609,7 +609,7 @@ ImageBrush::RemoveTarget (DependencyObject *obj)
 void
 ImageBrush::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->GetOwnerType() != Type::IMAGEBRUSH) {
+	if (args->GetProperty ()->GetOwnerType() != Type::IMAGEBRUSH) {
 		TileBrush::OnPropertyChanged (args);
 		return;
 	}
@@ -929,7 +929,7 @@ VideoBrush::SetupBrush (cairo_t *cr, const Rect &area)
 void
 VideoBrush::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->GetOwnerType() != Type::VIDEOBRUSH) {
+	if (args->GetProperty ()->GetOwnerType() != Type::VIDEOBRUSH) {
 		TileBrush::OnPropertyChanged (args);
 		return;
 	}
@@ -1056,7 +1056,7 @@ VisualBrush::update_brush (EventObject *, EventArgs *, gpointer closure)
 void
 VisualBrush::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->GetOwnerType() != Type::VISUALBRUSH) {
+	if (args->GetProperty ()->GetOwnerType() != Type::VISUALBRUSH) {
 		TileBrush::OnPropertyChanged (args);
 		return;
 	}

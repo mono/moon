@@ -192,7 +192,7 @@ Panel::MeasureOverride (Size availableSize)
 void
 Panel::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->GetOwnerType() != Type::PANEL) {
+	if (args->GetProperty ()->GetOwnerType() != Type::PANEL) {
 		FrameworkElement::OnPropertyChanged (args);
 		return;
 	}
@@ -226,7 +226,7 @@ Panel::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 Panel::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
-	if (prop == Panel::BackgroundProperty) {
+	if (prop && prop->GetId () == Panel::BackgroundProperty) {
 		Invalidate ();
 	} else {
 		FrameworkElement::OnSubPropertyChanged (prop, obj, subobj_args);

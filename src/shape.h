@@ -79,27 +79,27 @@ class Shape : public FrameworkElement {
 	Rect natural_bounds;
  public: 
  	/* @PropertyType=Brush,GenerateAccessors */
-	static DependencyProperty *FillProperty;
+	static int FillProperty;
  	/* @PropertyType=Stretch,DefaultValue=StretchNone,GenerateAccessors */
-	static DependencyProperty *StretchProperty;
+	static int StretchProperty;
  	/* @PropertyType=Brush,GenerateAccessors */
-	static DependencyProperty *StrokeProperty;
+	static int StrokeProperty;
  	/* @PropertyType=DoubleCollection,GenerateAccessors */
-	static DependencyProperty *StrokeDashArrayProperty;
+	static int StrokeDashArrayProperty;
  	/* @PropertyType=PenLineCap,DefaultValue=PenLineCapFlat,GenerateAccessors */
-	static DependencyProperty *StrokeDashCapProperty;
+	static int StrokeDashCapProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static DependencyProperty *StrokeDashOffsetProperty;
+	static int StrokeDashOffsetProperty;
  	/* @PropertyType=PenLineCap,DefaultValue=PenLineCapFlat,GenerateAccessors */
-	static DependencyProperty *StrokeEndLineCapProperty;
+	static int StrokeEndLineCapProperty;
  	/* @PropertyType=PenLineJoin,DefaultValue=PenLineJoinMiter,GenerateAccessors */
-	static DependencyProperty *StrokeLineJoinProperty;
+	static int StrokeLineJoinProperty;
  	/* @PropertyType=double,DefaultValue=10.0,GenerateAccessors */
-	static DependencyProperty *StrokeMiterLimitProperty;
+	static int StrokeMiterLimitProperty;
  	/* @PropertyType=PenLineCap,DefaultValue=PenLineCapFlat,GenerateAccessors */
-	static DependencyProperty *StrokeStartLineCapProperty;
+	static int StrokeStartLineCapProperty;
  	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
-	static DependencyProperty *StrokeThicknessProperty;
+	static int StrokeThicknessProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Shape ();
@@ -220,9 +220,9 @@ class Rectangle : public Shape {
 
  public:
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static DependencyProperty *RadiusXProperty;
+	static int RadiusXProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static DependencyProperty *RadiusYProperty;
+	static int RadiusYProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Rectangle ();
@@ -256,13 +256,13 @@ class Line : public Shape {
 	
  public:
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static DependencyProperty *X1Property;
+	static int X1Property;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static DependencyProperty *Y1Property;
+	static int Y1Property;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static DependencyProperty *X2Property;
+	static int X2Property;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
-	static DependencyProperty *Y2Property;
+	static int Y2Property;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Line () { SetObjectType (Type::LINE); }
@@ -304,9 +304,9 @@ class Polygon : public Shape {
 	
  public:
  	/* @PropertyType=FillRule,DefaultValue=FillRuleEvenOdd,GenerateAccessors */
-	static DependencyProperty *FillRuleProperty;
+	static int FillRuleProperty;
  	/* @PropertyType=PointCollection,GenerateAccessors */
-	static DependencyProperty *PointsProperty;
+	static int PointsProperty;
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	Polygon ();
@@ -345,9 +345,9 @@ class Polyline : public Shape {
 	
  public:
  	/* @PropertyType=FillRule,DefaultValue=FillRuleEvenOdd,GenerateAccessors */
-	static DependencyProperty *FillRuleProperty;
+	static int FillRuleProperty;
  	/* @PropertyType=PointCollection,GenerateAccessors */
-	static DependencyProperty *PointsProperty;
+	static int PointsProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Polyline ();
@@ -386,7 +386,7 @@ class Path : public Shape {
 
  public:
  	/* @PropertyType=Geometry,GenerateAccessors */
-	static DependencyProperty *DataProperty;
+	static int DataProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Path () { SetObjectType (Type::PATH); }

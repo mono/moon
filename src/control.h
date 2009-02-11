@@ -115,39 +115,39 @@ public:
 	ManagedTypeInfo* GetDefaultStyleKey ();
 
  	/* @PropertyType=Brush,GenerateAccessors */
-	static DependencyProperty *BackgroundProperty;
+	static int BackgroundProperty;
  	/* @PropertyType=Brush,GenerateAccessors */
-	static DependencyProperty *BorderBrushProperty;
+	static int BorderBrushProperty;
  	/* @PropertyType=Thickness,DefaultValue=Thickness(0.0),GenerateAccessors */
-	static DependencyProperty *BorderThicknessProperty;
+	static int BorderThicknessProperty;
  	/* @PropertyType=FontFamily,DefaultValue=FontFamily(CONTROL_FONT_FAMILY),GenerateAccessors */
-	static DependencyProperty *FontFamilyProperty;
+	static int FontFamilyProperty;
  	/* @PropertyType=double,DefaultValue=CONTROL_FONT_SIZE,GenerateAccessors */
-	static DependencyProperty *FontSizeProperty;
+	static int FontSizeProperty;
  	/* @PropertyType=FontStretch,DefaultValue=CONTROL_FONT_STRETCH,GenerateAccessors */
-	static DependencyProperty *FontStretchProperty;
+	static int FontStretchProperty;
  	/* @PropertyType=FontStyle,DefaultValue=CONTROL_FONT_STYLE,GenerateAccessors */
-	static DependencyProperty *FontStyleProperty;
+	static int FontStyleProperty;
  	/* @PropertyType=FontWeight,DefaultValue=CONTROL_FONT_WEIGHT,GenerateAccessors */
-	static DependencyProperty *FontWeightProperty;
+	static int FontWeightProperty;
  	/* @PropertyType=Brush,GenerateAccessors */
-	static DependencyProperty *ForegroundProperty;
+	static int ForegroundProperty;
  	/* @PropertyType=HorizontalAlignment,DefaultValue=HorizontalAlignmentCenter,GenerateAccessors */
-	static DependencyProperty *HorizontalContentAlignmentProperty;
+	static int HorizontalContentAlignmentProperty;
  	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
-	static DependencyProperty *IsTabStopProperty;
+	static int IsTabStopProperty;
  	/* @PropertyType=Thickness,DefaultValue=Thickness(0.0),GenerateAccessors */
-	static DependencyProperty *PaddingProperty;
+	static int PaddingProperty;
  	/* @PropertyType=gint32,DefaultValue=INT_MAX,GenerateAccessors */
-	static DependencyProperty *TabIndexProperty;
+	static int TabIndexProperty;
  	/* @PropertyType=KeyboardNavigationMode,DefaultValue=KeyboardNavigationModeLocal,GenerateAccessors */
-	static DependencyProperty *TabNavigationProperty;
+	static int TabNavigationProperty;
  	/* @PropertyType=ControlTemplate,GenerateAccessors,Validator=TemplateValidator */
-	static DependencyProperty *TemplateProperty;
+	static int TemplateProperty;
  	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentCenter,GenerateAccessors */
-	static DependencyProperty *VerticalContentAlignmentProperty;
+	static int VerticalContentAlignmentProperty;
 	/* @PropertyType=ManagedTypeInfo,ManagedPropertyType=object,GenerateManagedDP=false,GenerateAccessors */
-	static DependencyProperty *DefaultStyleKeyProperty;
+	static int DefaultStyleKeyProperty;
 	
 protected:
 	virtual ~Control ();

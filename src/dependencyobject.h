@@ -179,11 +179,14 @@ private:
 
 
 struct PropertyChangedEventArgs {
-	PropertyChangedEventArgs (DependencyProperty *p, Value *ov, Value *nv) : property(p), old_value(ov), new_value (nv) { }
+	PropertyChangedEventArgs (DependencyProperty *p, int id, Value *ov, Value *nv) : property_obj (p), property (id), old_value(ov), new_value (nv) { }
 
-	DependencyProperty *property;
+	DependencyProperty *property_obj;
+	int property;
 	Value *old_value;
 	Value *new_value;
+	
+	DependencyProperty *GetProperty () { return property_obj; }
 };
 
 typedef void (* PropertyChangeHandler) (DependencyObject *sender, PropertyChangedEventArgs *args, gpointer closure);
@@ -207,6 +210,9 @@ public:
 	
 	bool SetValue (DependencyProperty *property, Value *value);
 	bool SetValue (DependencyProperty *property, Value value);
+	
+	bool SetValue (int property, Value *value);
+	bool SetValue (int property, Value value);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool SetMarshalledValueWithError (DependencyProperty *property, Value *value, MoonError *error);
@@ -216,6 +222,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Value *GetValueWithError (Type::Kind whatami, DependencyProperty *property, MoonError *error);
 	virtual Value *GetValue (DependencyProperty *property);
+	Value *GetValue (int id);
 
 	void ProviderValueChanged (PropertyPrecedence providerPrecedence, DependencyProperty *property, Value *old_value, Value *new_value, bool notify_listeners, MoonError *error);
 	Value *GetValue (DependencyProperty *property, PropertyPrecedence startingAtPrecedence);
@@ -224,15 +231,19 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Value *ReadLocalValueWithError (DependencyProperty *property, MoonError *error);
 	virtual Value *ReadLocalValue (DependencyProperty *property);
+	virtual Value *ReadLocalValue (int id);
 	
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Value *GetValueNoDefaultWithError (DependencyProperty *property, MoonError *error);
 	Value *GetValueNoDefault (DependencyProperty *property);
+	Value *GetValueNoDefault (int id);
 	
 	
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	virtual void ClearValue (DependencyProperty *property, bool notify_listeners, MoonError *error);
+	void ClearValue (int id, bool notify_listeners, MoonError *error);
 	void ClearValue (DependencyProperty *property, bool notify_listeners = true /*, error = NULL */);
+	void ClearValue (int id, bool notify_listeners = true);
 	bool HasProperty (const char *name, bool inherits);
 	bool HasProperty (Type::Kind whatami, DependencyProperty *property, bool inherits);
 
@@ -310,7 +321,7 @@ public:
 	virtual void RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error);
 
 	/* @PropertyType=string,GenerateAccessors,ManagedDeclaringType=FrameworkElement,DefaultValue=\"\" */
-	static DependencyProperty *NameProperty;
+	static int NameProperty;
 	
 protected:
 	virtual ~DependencyObject ();
@@ -327,6 +338,7 @@ protected:
 	
 	void NotifyListenersOfPropertyChange (PropertyChangedEventArgs *args);
 	void NotifyListenersOfPropertyChange (DependencyProperty *property);
+	void NotifyListenersOfPropertyChange (int id);
 	
 	void RemoveAllListeners ();
 

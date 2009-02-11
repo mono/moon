@@ -4122,7 +4122,7 @@ start_parse:
 		}
 
 		if (prop) {
-			if (prop == DependencyObject::NameProperty) {
+			if (prop->GetId () == DependencyObject::NameProperty) {
 				// XXX toshok - I don't like doing this here... but it fixes airlines.
 				item->SetKey (attr[i+1]);
 			}

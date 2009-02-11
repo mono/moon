@@ -800,7 +800,7 @@ public:
 
 	virtual bool Matches (PropertyChangedEventArgs *args)
 	{
-		return prop == args->property;
+		return prop == args->GetProperty ();
 	}
 
 	virtual void Invoke (DependencyObject *sender, PropertyChangedEventArgs *args)
@@ -923,10 +923,18 @@ DependencyObject::NotifyListenersOfPropertyChange (PropertyChangedEventArgs *arg
 	// attached properties are implicitly listened to by the
 	// object's logical parent.  Notify them, but sure not to do
 	// it twice.
-	if (args->property->IsAttached() && !notified_parent) {
+	if (args->GetProperty ()->IsAttached() && !notified_parent) {
 		if (logical_parent /*&& args->property->GetOwnerType() == logical_parent->GetObjectType ()*/)
 			logical_parent->OnSubPropertyChanged (NULL, this, args);
 	}
+}
+
+void
+DependencyObject::NotifyListenersOfPropertyChange (int id)
+{
+	if (IsDisposed ())
+		return;
+	NotifyListenersOfPropertyChange (GetDeployment ()->GetTypes ()->GetProperty (id));
 }
 
 void
@@ -937,7 +945,7 @@ DependencyObject::NotifyListenersOfPropertyChange (DependencyProperty *subproper
 
 	Value *new_value = subproperty ? GetValue (subproperty) : NULL;
 
-	PropertyChangedEventArgs args (subproperty, NULL, new_value);
+	PropertyChangedEventArgs args (subproperty, subproperty->GetId (), NULL, new_value);
 
 	NotifyListenersOfPropertyChange (&args);
 }
@@ -985,7 +993,7 @@ DependencyObject::IsValueValid (DependencyProperty* property, Value* value, Moon
 		}
 	}
 
-	if (DependencyObject::NameProperty == property) {
+	if (DependencyObject::NameProperty == property->GetId ()) {
 		NameScope *scope = FindNameScope ();
 		if (scope && value) {
 			DependencyObject *o = scope->FindName (value->AsString ());
@@ -1004,6 +1012,22 @@ DependencyObject::IsValueValid (DependencyProperty* property, Value* value, Moon
 	}
 
 	return true;
+}
+
+bool
+DependencyObject::SetValue (int id, Value *value)
+{
+	if (IsDisposed ())
+		return false;
+	return SetValue (GetDeployment ()->GetTypes ()->GetProperty (id), value);
+}
+
+bool
+DependencyObject::SetValue (int id, Value value)
+{
+	if (IsDisposed ())
+		return false;
+	return SetValue (GetDeployment ()->GetTypes ()->GetProperty (id), value);
 }
 
 bool
@@ -1192,6 +1216,14 @@ DependencyObject::UnregisterAllNamesRootedAt (NameScope *from_ns)
 }
 
 Value *
+DependencyObject::ReadLocalValue (int id)
+{
+	if (IsDisposed ())
+		return NULL;
+	return ReadLocalValue (GetDeployment ()->GetTypes ()->GetProperty (id));
+}
+
+Value *
 DependencyObject::ReadLocalValue (DependencyProperty *property)
 {
 	return (Value *) g_hash_table_lookup (current_values, property);
@@ -1217,6 +1249,14 @@ DependencyObject::GetValueWithError (Type::Kind whatami, DependencyProperty *pro
 		return NULL;
 	}
 	return GetValue (property);
+}
+
+Value *
+DependencyObject::GetValue (int id)
+{
+	if (IsDisposed ())
+		return NULL;
+	return GetValue (GetDeployment ()->GetTypes ()->GetProperty (id));
 }
 
 Value *
@@ -1249,6 +1289,14 @@ DependencyObject::GetValueSkippingPrecedence (DependencyProperty *property, Prop
 		if (value) return value;
 	}
 	return NULL;
+}
+
+Value *
+DependencyObject::GetValueNoDefault (int id)
+{
+	if (IsDisposed ())
+		return NULL;
+	return GetValueNoDefault (GetDeployment ()->GetTypes ()->GetProperty (id));
 }
 
 Value *
@@ -1381,7 +1429,7 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 		if (notify_listeners) {
 			listeners_notified = false;
 		
-			PropertyChangedEventArgs args (property, old_value, new_value);
+			PropertyChangedEventArgs args (property, property->GetId (), old_value, new_value);
 
 			OnPropertyChanged (&args);
 
@@ -1395,6 +1443,14 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 			callback (property, this, old_value, new_value, error);
 		}
  	}
+}
+
+void
+DependencyObject::ClearValue (int id, bool notify_listeners)
+{
+	if (IsDisposed ())
+		return;
+	ClearValue (GetDeployment ()->GetTypes ()->GetProperty (id), notify_listeners);
 }
 
 void

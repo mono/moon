@@ -24,34 +24,34 @@ typedef Size (*ArrangeOverrideCallback)(Size finalSize);
 class FrameworkElement : public UIElement {
 public:
 	/* @PropertyType=double,DefaultValue=NAN,GenerateAccessors */
-	static DependencyProperty *HeightProperty;
+	static int HeightProperty;
 	/* @PropertyType=double,DefaultValue=NAN,GenerateAccessors */
-	static DependencyProperty *WidthProperty;
+	static int WidthProperty;
 
 	/* @PropertyType=double,DefaultValue=0.0,Version=2,ManagedSetterAccess=Internal,GenerateAccessors */
-	static DependencyProperty *ActualHeightProperty;
+	static int ActualHeightProperty;
 	/* @PropertyType=double,DefaultValue=0.0,Version=2,ManagedSetterAccess=Internal,GenerateAccessors */
-	static DependencyProperty *ActualWidthProperty;
+	static int ActualWidthProperty;
 	/* @PropertyType=object,Version=2.0 */
-	static DependencyProperty *DataContextProperty;
+	static int DataContextProperty;
 	/* @PropertyType=HorizontalAlignment,DefaultValue=HorizontalAlignmentStretch,Version=2.0,GenerateAccessors */
-	static DependencyProperty *HorizontalAlignmentProperty;
+	static int HorizontalAlignmentProperty;
 	/* @PropertyType=string,DefaultValue=\"en-US\",Version=2.0,ManagedPropertyType=XmlLanguage,Validator=NonNullStringValidator */
-	static DependencyProperty *LanguageProperty;
+	static int LanguageProperty;
 	/* @PropertyType=Thickness,DefaultValue=Thickness (0),Version=2.0,GenerateAccessors */
-	static DependencyProperty *MarginProperty;
+	static int MarginProperty;
 	/* @PropertyType=double,DefaultValue=INFINITY,Version=2.0,GenerateAccessors */
-	static DependencyProperty *MaxHeightProperty;
+	static int MaxHeightProperty;
 	/* @PropertyType=double,DefaultValue=INFINITY,Version=2.0,GenerateAccessors */
-	static DependencyProperty *MaxWidthProperty;
+	static int MaxWidthProperty;
 	/* @PropertyType=double,DefaultValue=0.0,Version=2.0,GenerateAccessors */
-	static DependencyProperty *MinHeightProperty;
+	static int MinHeightProperty;
 	/* @PropertyType=double,DefaultValue=0.0,Version=2.0,GenerateAccessors */
-	static DependencyProperty *MinWidthProperty;
+	static int MinWidthProperty;
 	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentStretch,Version=2.0,GenerateAccessors */
-	static DependencyProperty *VerticalAlignmentProperty;
+	static int VerticalAlignmentProperty;
 	/* @PropertyType=Style,Version=2.0,GenerateAccessors,Validator=StyleValidator */
-	static DependencyProperty *StyleProperty;
+	static int StyleProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	FrameworkElement ();

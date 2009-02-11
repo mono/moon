@@ -737,7 +737,7 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args)
 		}
 	}
 
-	if (args->property->GetOwnerType () != Type::MULTISCALEIMAGE) {
+	if (args->GetProperty ()->GetOwnerType () != Type::MULTISCALEIMAGE) {
 		DependencyObject::OnPropertyChanged (args);
 		return;
 	}

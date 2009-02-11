@@ -163,7 +163,7 @@ DependencyProperty::GetDependencyProperty (Type *type, const char *name, bool in
 //
 // Use this for values that can be null
 //
-DependencyProperty *
+int
 DependencyProperty::Register (Types *types, Type::Kind type, const char *name, Type::Kind vtype)
 {
 	return RegisterFull (types, type, name, NULL, vtype, false, false, false, false, NULL, NULL, false, false);
@@ -172,7 +172,7 @@ DependencyProperty::Register (Types *types, Type::Kind type, const char *name, T
 //
 // DependencyObject takes ownership of the Value * for default_value
 //
-DependencyProperty *
+int
 DependencyProperty::Register (Types *types, Type::Kind type, const char *name, Value *default_value)
 {
 	g_return_val_if_fail (default_value != NULL, NULL);
@@ -186,7 +186,7 @@ DependencyProperty::Register (Types *types, Type::Kind type, const char *name, V
 // than the default value (the default value can for instance be a SolidColorBrush
 // while the property type can be a Brush).
 //
-DependencyProperty *
+int
 DependencyProperty::Register (Types *types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype)
 {
 	return RegisterFull (types, type, name, default_value, vtype, false, false, false, false, NULL, NULL, false, false);
@@ -196,12 +196,16 @@ DependencyProperty *
 DependencyProperty::RegisterManagedProperty (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *default_value, bool attached, bool readonly, NativePropertyChangedHandler *callback)
 {
 	Types *types = Deployment::GetCurrent ()->GetTypes ();
+	int id;
+	
 	if (default_value && default_value->GetKind () == Type::INVALID)
 		default_value = NULL;
 	else
 		default_value = new Value (*default_value);
 	
-	return DependencyProperty::RegisterFull (types, owner_type, name, default_value, property_type, false, attached, readonly, false, callback, NULL, true, false);
+	id = DependencyProperty::RegisterFull (types, owner_type, name, default_value, property_type, false, attached, readonly, false, callback, NULL, true, false);
+	
+	return types->GetProperty (id);
 }
 
 //
@@ -209,7 +213,7 @@ DependencyProperty::RegisterManagedProperty (const char *name, Type::Kind proper
 // The default value is @default_value (if provided) and the type that can be
 // stored in the dependency property is of type @vtype
 //
-DependencyProperty *
+int
 DependencyProperty::RegisterFull (Types *types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool autocreate, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator, bool is_custom, bool is_nullable)
 {
 	DependencyProperty *property;
@@ -227,7 +231,7 @@ DependencyProperty::RegisterFull (Types *types, Type::Kind type, const char *nam
 	
 	types->AddProperty (property);
 	
-	return property;
+	return property->GetId ();
 }
 
 bool

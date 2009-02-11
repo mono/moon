@@ -82,7 +82,7 @@ FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 void
 FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->property->GetOwnerType() != Type::FRAMEWORKELEMENT) {
+	if (args->GetProperty ()->GetOwnerType() != Type::FRAMEWORKELEMENT) {
 		UIElement::OnPropertyChanged (args);
 		return;
 	}

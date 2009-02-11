@@ -1,3 +1,74 @@
+2009-02-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* type.h:
+	* grid.h:
+	* text.h:
+	* shape.h:
+	* style.h:
+	* clock.h:
+	* brush.h:
+	* media.h:
+	* panel.h:
+	* popup.h:
+	* grid.cpp:
+	* canvas.h:
+	* xaml.cpp:
+	* type.cpp:
+	* border.h:
+	* stylus.h:
+	* text.cpp:
+	* media.cpp:
+	* type.h.in:
+	* textbox.h:
+	* shape.cpp:
+	* panel.cpp:
+	* trigger.h:
+	* brush.cpp:
+	* control.h:
+	* template.h:
+	* geometry.h:
+	* stylus.cpp:
+	* canvas.cpp:
+	* border.cpp:
+	* namescope.h:
+	* uielement.h:
+	* control.cpp:
+	* animation.h:
+	* textbox.cpp:
+	* transform.h:
+	* animation2.h:
+	* collection.h:
+	* provider.cpp:
+	* geometry.cpp:
+	* downloader.h:
+	* deployment.h:
+	* application.h:
+	* transform.cpp:
+	* bitmapimage.h:
+	* usercontrol.h:
+	* uielement.cpp:
+	* animation.cpp:
+	* mediaelement.h:
+	* usercontrol.cpp:
+	* mediaelement.cpp:
+	* contentcontrol.h:
+	* multiscaleimage.h:
+	* contentcontrol.cpp:
+	* frameworkelement.h:
+	* dependencyobject.h:
+	* multiscaleimage.cpp:
+	* dependencyproperty.h:
+	* multiscalesubimage.h:
+	* frameworkelement.cpp:
+	* dependencyobject.cpp:
+	* dependencyproperty.cpp:
+	* dependencyproperty.g.cpp:
+	* deepzoomimagetilesource.h:
+	* deepzoomimagetilesource.cpp: Change our static
+	  DependencyProperty backing fields to store an integer id
+	  instead of an instance to a DependencyProperty. This way we
+	  can have true per-deployment dependency properties.
+
 2009-02-11  Alan McGovern  <amcgovern@novell.com>
 
 	* shape.cpp:
