@@ -104,16 +104,6 @@ shutdown_manager_wait_decrement ()
 	g_mutex_unlock (shutdown_mutex);
 }
 
-void
-shutdown_manager_wait ()
-{
-	g_assert (shutdown_mutex);
-	g_assert (shutdown_cond);
-
-	while (wait_count > 0)
-		g_cond_wait (shutdown_cond, shutdown_mutex);
-}
-
 static void
 execute_shutdown (ShockerScriptableControlObject *shocker)
 {
@@ -191,6 +181,8 @@ shutdown_manager_queue_shutdown (ShockerScriptableControlObject* shocker)
 	if (!wait_count)
 		return execute_shutdown (shocker);
 
+	printf ("Unable to execute shutdown immediately, attempting a clean shutdown.\n");
+	
 	if (!g_timeout_add (TIMEOUT_INTERVAL, attempt_clean_shutdown, shocker)) {
 		g_error ("Unable to create timeout for queued shutdown, executing immediate shutdown.");
 		execute_shutdown (shocker);
