@@ -285,6 +285,7 @@ namespace MoonTest.System.Windows.Media
 
         [TestMethod]
         [Asynchronous]
+		[MoonlightBug]
         public void HitTest8b()
         {
             Root.Width = 0;
@@ -469,6 +470,7 @@ namespace MoonTest.System.Windows.Media
 		
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void HitTest20()
 		{
 			Rectangle r = new Rectangle {
@@ -489,6 +491,7 @@ namespace MoonTest.System.Windows.Media
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void HitTest21()
 		{
 			Rectangle r = new Rectangle {
@@ -571,6 +574,7 @@ namespace MoonTest.System.Windows.Media
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void HitTest25()
 		{
 			Root.Background = new SolidColorBrush(Colors.Brown);
