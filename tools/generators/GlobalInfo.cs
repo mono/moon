@@ -121,11 +121,8 @@ class GlobalInfo : MemberInfo {
 						if (!field.IsStatic)
 							continue;
 						
-						if (!field.Name.EndsWith ("Property")) {
-							if (!field.Name.EndsWith ("Event"))
-								Console.WriteLine ("GenerateDPs: Found the static field {0} which returns an int, but the property name doesn't end with 'Property' (ignore this warning if the field isn't supposed to be a DP).", field.FullName);
+						if (!field.Name.EndsWith ("Property"))
 							continue;
-						}
 						
 						dependency_properties.Add (field);
 						

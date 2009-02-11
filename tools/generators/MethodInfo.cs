@@ -22,7 +22,6 @@ class MethodInfo : MemberInfo {
 	public bool IsVirtual;
 	public bool IsStatic;
 	public bool IsAbstract;
-	public bool IsCMethod;
 	
 	private MethodInfo c_method;
 	private string signature;
@@ -50,9 +49,6 @@ class MethodInfo : MemberInfo {
 	
 	public MethodInfo CMethod {
 		get {
-			if (IsCMethod)
-				return null;
-			
 			if (c_method == null) {
 				c_method = new MethodInfo ();
 				c_method.IsStatic = IsStatic;

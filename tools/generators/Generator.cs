@@ -914,7 +914,7 @@ class Generator {
 				if (tokenizer.Accept (Token2Type.Identifier, "volatile")) {
 					continue;
 				}
-				
+
 			    break;
 			} while (true);
 
@@ -1134,7 +1134,6 @@ class Generator {
 	{
 		TypeReference tr = new TypeReference ();
 		StringBuilder result = new StringBuilder ();
-		bool unsigned;
 
 		if (tokenizer.Accept (Token2Type.Identifier, "const"))
 			tr.IsConst = true;
@@ -1708,6 +1707,7 @@ class Generator {
 		Helper.WriteAllText (file, result.ToString ());
 	}
 	
+#if false
 	static bool IsManuallyDefined (string NativeMethods_cs, string method)
 	{
 		if (NativeMethods_cs.Contains (" " + method + " "))
@@ -1719,6 +1719,7 @@ class Generator {
 		else
 			return false;
 	}
+#endif
 	
 	static void GeneratePInvokes (GlobalInfo all)
 	{
