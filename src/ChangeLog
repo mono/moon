@@ -1,3 +1,8 @@
+2009-02-11  Chris Toshok  <toshok@ximian.com>
+
+	* text.h: Inline's fontsize default value is 11.  looks like
+	textblock is the only case where it differs.
+
 2009-02-11  Jeffrey Stedfast  <fejj@novell.com>
 
 	* eventargs.h (MouseEventArgs::GetEvent): Expose the raw GdkEvent.
