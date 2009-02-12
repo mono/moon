@@ -1,0 +1,8 @@
+<Canvas x:Class="DefaultValues.Page"
+       xmlns="http://schemas.microsoft.com/client/2007"
+       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+       Width="1024" Height="768">
+
+  <TextBox Canvas.Left="5" Canvas.Top="5" x:Name="txtOutput" Width="1014" Height="758"
+   HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible"/>
+</Canvas>
