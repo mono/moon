@@ -1,3 +1,9 @@
+2009-02-12  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ItemCollectionTest.cs: Add test case
+	to see if we use a .Equals or an object.ReferenceEquals
+	comparison.
+
 2009-02-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Controls/ItemCollectionTest.cs: Add test case

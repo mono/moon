@@ -39,6 +39,15 @@ namespace MoonTest.System.Windows.Controls {
 	[TestClass]
 	public class ItemCollectionTest {
 
+        class T
+        {
+            public string Name;
+            public override bool Equals(object obj)
+            {
+                return Name.Equals(((T)obj).Name);
+            }
+        }
+
 		private ItemsControl parent;
 
 		public DependencyObject Parent {
@@ -124,6 +133,16 @@ namespace MoonTest.System.Windows.Controls {
 
 			ic.Clear ();
 			Assert.AreEqual (0, ic.Count, "Count-6");
+		}
+
+		[TestMethod]
+		public void CustomEquals()
+		{
+			ItemCollection c = GetCollection();
+			T t = new T { Name = "A" };
+			c.Add(t);
+			Assert.IsTrue(c.Contains(t), "#1");
+			Assert.IsFalse(c.Contains(new T { Name = "A" }), "#2");
 		}
 
 		[TestMethod]
