@@ -1,3 +1,14 @@
+2009-02-11  Chris Toshok  <toshok@ximian.com>
+
+	* Generator.cs: add topological sorting of types based on
+	properties, so we can clean up things like Inline's default value
+	depending on SolidColorBrush's initialization.
+
+	* GlobalInfo.cs: no need to pass a GlobalInfo to an instance
+	method.
+
+	* TypeInfo.cs: add the ability to look up properties of a type.
+
 2009-02-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* GlobalInfo.cs: Quiet a warning.

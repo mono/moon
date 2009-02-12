@@ -18,6 +18,7 @@ class TypeInfo : MemberInfo {
 	private string _KindName; // The name as it appears in the Kind enum (STRING, POINT_ARRAY, etc)
 	private string c_constructor; // The C constructor
 	private List<FieldInfo> events;
+	private List<FieldInfo> properties;
 	private bool? is_abstract;
 	
 	public TypeReference Base; // The parent type
@@ -72,6 +73,30 @@ class TypeInfo : MemberInfo {
 				events.Sort (new Members.MembersSortedByFullName <FieldInfo>());
 			}
 			return events;
+		}
+	}
+
+	public List<FieldInfo> Properties {
+		get {
+			if (properties == null) {
+				properties = new List<FieldInfo> ();
+
+				foreach (MemberInfo member in Children.Values) {
+					FieldInfo property = member as FieldInfo;
+					if (property == null)
+						continue;
+				
+					if (!property.Name.EndsWith ("Property"))
+						continue;
+					
+					if (!property.IsStatic)
+						continue;
+						
+					properties.Add (property);
+				}
+				properties.Sort (new Members.MembersSortedByFullName <FieldInfo>());
+			}
+			return properties;
 		}
 	}
 	

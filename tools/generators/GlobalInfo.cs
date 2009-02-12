@@ -23,7 +23,7 @@ class GlobalInfo : MemberInfo {
 	/// <value>
 	/// A list of all the types that inherits from DependencyObject
 	/// </value>
-	public List<TypeInfo> GetDependencyObjects (GlobalInfo all) {
+	public List<TypeInfo> GetDependencyObjects () {
 		if (dependency_objects == null) {
 			dependency_objects = new List<TypeInfo> ();
 			
@@ -42,13 +42,14 @@ class GlobalInfo : MemberInfo {
 				current = type;
 				
 				while (limit-- > 0) {
+
 					if (current.Base == null || string.IsNullOrEmpty (current.Base.Value))
 						break;
 					
-					if (!all.Children.ContainsKey (current.Base.Value))
+					if (!Children.ContainsKey (current.Base.Value))
 						continue;
 					
-					parent = all.Children [current.Base.Value] as TypeInfo;
+					parent = Children [current.Base.Value] as TypeInfo;
 					
 					if (parent == null)
 						break;

@@ -46,7 +46,7 @@ class Generator {
 		string filename = Path.Combine (sys_win_dir, "DependencyObject.g.cs");
 		string previous_namespace = "";
 		StringBuilder text = new StringBuilder ();
-		List<TypeInfo> types = all.GetDependencyObjects (all);
+		List<TypeInfo> types = all.GetDependencyObjects ();
 				
 		Helper.WriteWarningGenerated (text);
 		text.AppendLine ("using Mono;");
@@ -333,6 +333,113 @@ class Generator {
 		Helper.WriteAllText (filename, text.ToString ());
 	}
 
+	class TypeEdgeCount {
+		public TypeEdgeCount (TypeInfo type)
+		{
+			Type = type;
+			Inbound = new List<TypeInfo>();
+			Outbound = new List<TypeInfo>();
+		}
+
+		public TypeInfo Type {
+			get; private set;
+		}
+		public List<TypeInfo> Inbound {
+			get; private set;
+		}
+		public List<TypeInfo> Outbound {
+			get; private set;
+		}
+	};
+
+	static List<FieldInfo> TopoSortedProperties (GlobalInfo all, List<TypeInfo> types)
+	{
+		Dictionary<TypeInfo,TypeEdgeCount> typeHash = new Dictionary<TypeInfo,TypeEdgeCount>();
+
+		List<TypeInfo> remainingTypes = new List<TypeInfo>();
+
+		foreach (TypeInfo type in types) {
+			typeHash.Add (type, new TypeEdgeCount (type));
+			remainingTypes.Add (type);
+		}
+
+		// build up edges for our graph
+		foreach (TypeInfo type in typeHash.Keys) {
+
+			// every property defines an edge from the declaring type to the property type
+			foreach (FieldInfo prop in type.Properties) {
+				if (string.IsNullOrEmpty (prop.DPDefaultValue))
+					continue;
+
+				TypeInfo propType = prop.GetDPPropertyType (all);
+				if (propType == type)
+					continue;
+				if (typeHash.ContainsKey (propType) && !typeHash[propType].Inbound.Contains (type)) {
+					typeHash[propType].Inbound.Add (type);
+					typeHash[type].Outbound.Add (propType);
+				}
+			}
+
+			// every base class has an edge to subclass
+			// (this is kind of a hack to deal with
+			// property types which are listed as base
+			// types when the default values are
+			// subclasses.
+
+			TypeInfo ourType = type;
+			TypeReference baseRef = ourType.Base;
+			while (baseRef != null && !string.IsNullOrEmpty (baseRef.Value)) {
+				TypeInfo baseType = (TypeInfo) all.Children [baseRef.Value];
+				if (baseType == null)
+					break;
+				if (typeHash.ContainsKey (baseType) && !typeHash[baseType].Outbound.Contains (ourType)) {
+					typeHash[baseType].Outbound.Add (ourType);
+					typeHash[ourType].Inbound.Add (baseType);
+				}
+				ourType = baseType;
+				if (!typeHash.ContainsKey (ourType))
+					break;
+				baseRef = ourType.Base;
+			}
+		}
+
+		List<TypeInfo> sorted = new List<TypeInfo>();
+		List<TypeInfo> roots = new List<TypeInfo>();
+
+		foreach (TypeEdgeCount tec in typeHash.Values) {
+			if (tec.Inbound.Count == 0)
+				roots.Add (tec.Type);
+		}
+
+		while (roots.Count > 0) {
+			TypeInfo type = roots[0];
+			roots.RemoveAt (0);
+
+			sorted.Add (type);
+			remainingTypes.Remove (type);
+
+			foreach (TypeInfo targetType in typeHash[type].Outbound) {
+				if (!typeHash.ContainsKey (targetType))
+					continue;
+				typeHash[targetType].Inbound.Remove (type);
+				if (typeHash[targetType].Inbound.Count == 0) {
+					roots.Add (targetType);
+				}
+			}
+		}
+
+		if (remainingTypes.Count > 0) {
+			throw new Exception (string.Format ("cycle in the DO/DP graph ({0} types left)", remainingTypes.Count));
+		}
+
+		List<FieldInfo> fields = new List<FieldInfo>();
+		foreach (TypeInfo type in sorted) {
+			foreach (FieldInfo field in type.Properties)
+				fields.Insert (0, field);
+		}
+		return fields;
+	}
+
 	static void GenerateDPs (GlobalInfo all)
 	{	
 		string base_dir = Environment.CurrentDirectory;
@@ -341,7 +448,14 @@ class Generator {
 		StringBuilder text = new StringBuilder ();
 		List<FieldInfo> fields = all.DependencyProperties;
 		List<string> headers = new List<string> ();
-		
+
+		List<TypeInfo> types = new List<TypeInfo> ();
+		foreach (FieldInfo field in fields) {
+			if (!types.Contains ((TypeInfo)field.Parent))
+				types.Add ((TypeInfo)field.Parent);
+		}
+		fields = TopoSortedProperties (all, types);
+
 		headers.Add ("dependencyproperty.h");
 		headers.Add ("validators.h");
 		headers.Add ("color.h");
@@ -1193,7 +1307,7 @@ class Generator {
 		string base_dir = Environment.CurrentDirectory;
 		string class_dir = Path.Combine (base_dir, "class");
 		string moon_moonlight_dir = Path.Combine (class_dir, "System.Windows");
-		List<TypeInfo> types = new List<TypeInfo> (all.GetDependencyObjects (all));
+		List<TypeInfo> types = new List<TypeInfo> (all.GetDependencyObjects ());
 		
 		StringBuilder text = new StringBuilder ();
 		
