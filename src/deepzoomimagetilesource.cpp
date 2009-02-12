@@ -341,27 +341,27 @@ start_element (void *data, const char *el, const char **attr)
 	switch (info->depth) {
 	case 0:
 		//Image or Collection
-		if (!strcmp ("Image", el)) {
+		if (!g_ascii_strcasecmp ("Image", el)) {
 			info->isCollection = false;
 			int i;
 			for (i = 0; attr[i]; i+=2)
-				if (!strcmp ("Format", attr[i]))
+				if (!g_ascii_strcasecmp ("Format", attr[i]))
 					info->format = g_strdup (attr[i+1]);
-				else if (!strcmp ("TileSize", attr[i]))
+				else if (!g_ascii_strcasecmp ("TileSize", attr[i]))
 					info->tile_size = atoi (attr[i+1]);
-				else if (!strcmp ("Overlap", attr[i]))
+				else if (!g_ascii_strcasecmp ("Overlap", attr[i]))
 					info->overlap = atoi (attr[i+1]);
 				else
 					LOG_MSI ("\tunparsed attr %s: %s\n", attr[i], attr[i+1]);
-		} else if (!strcmp ("Collection", el)) {
+		} else if (!g_ascii_strcasecmp ("Collection", el)) {
 			info->isCollection = true;
 			int i;
 			for (i = 0; attr[i]; i+=2)
-				if (!strcmp ("Format", attr[i]))
+				if (!g_ascii_strcasecmp ("Format", attr[i]))
 					info->format = g_strdup (attr[i+1]);
-				else if (!strcmp ("TileSize", attr[i]))
+				else if (!g_ascii_strcasecmp ("TileSize", attr[i]))
 					info->tile_size = atoi (attr[i+1]);
-				else if (!strcmp ("MaxLevel", attr[i]))
+				else if (!g_ascii_strcasecmp ("MaxLevel", attr[i]))
 					info->max_level = atoi (attr[i+1]);
 				else
 					LOG_MSI ("\tunparsed attr %s: %s\n", attr[i], attr[i+1]);
@@ -373,23 +373,23 @@ start_element (void *data, const char *el, const char **attr)
 	case 1:
 		if (!info->isCollection) {
 			//Size or DisplayRects
-			if (!strcmp ("Size", el)) {
+			if (!g_ascii_strcasecmp ("Size", el)) {
 				int i;
 				for (i = 0; attr[i]; i+=2)
-					if (!strcmp ("Width", attr[i]))
+					if (!g_ascii_strcasecmp ("Width", attr[i]))
 						info->image_width = atol (attr[i+1]);
-					else if (!strcmp ("Height", attr[i]))
+					else if (!g_ascii_strcasecmp ("Height", attr[i]))
 						info->image_height = atol (attr[i+1]);
 					else
 						LOG_MSI ("\tunparsed attr %s: %s\n", attr[i], attr[i+1]);
-			} else if (!strcmp ("DisplayRects", el)) {
+			} else if (!g_ascii_strcasecmp ("DisplayRects", el)) {
 				//no attributes, only contains DisplayRect element
 			} else {
 				printf ("Unexpected element %s\n", el);
 				info->error = true;
 			}
 		} else {
-			if (!strcmp ("Items", el)) {
+			if (!g_ascii_strcasecmp ("Items", el)) {
 				//no attributes, only contains <I> elements
 			} else {
 				printf ("Unexpected element %d %s\n", info->depth, el);
@@ -400,13 +400,13 @@ start_element (void *data, const char *el, const char **attr)
 	case 2:
 		if (!info->isCollection) {
 			//DisplayRect elts
-			if (!strcmp ("DisplayRect", el)) {
+			if (!g_ascii_strcasecmp ("DisplayRect", el)) {
 				long min_level, max_level;
 				int i;
 				for (i = 0; attr[i]; i+=2)
-					if (!strcmp ("MinLevel", attr[i]))
+					if (!g_ascii_strcasecmp ("MinLevel", attr[i]))
 						min_level = atol (attr[i+1]);
-					else if (!strcmp ("MaxLevel", attr[i]))
+					else if (!g_ascii_strcasecmp ("MaxLevel", attr[i]))
 						max_level = atol (attr[i+1]);
 					else
 						LOG_MSI ("\tunparsed arg %s: %s\n", attr[i], attr[i+1]);
@@ -416,15 +416,15 @@ start_element (void *data, const char *el, const char **attr)
 				info->error = true;
 			}
 		} else {
-			if (!strcmp ("I", el)) {
+			if (!g_ascii_strcasecmp ("I", el)) {
 				info->current_subimage = new SubImage ();
 				int i;
 				for (i = 0; attr[i]; i+=2)
-					if (!strcmp ("N", attr[i]))
+					if (!g_ascii_strcasecmp ("N", attr[i]))
 						info->current_subimage->n = atoi (attr[i+1]);
-					else if (!strcmp ("Id", attr[i]))
+					else if (!g_ascii_strcasecmp ("Id", attr[i]))
 						info->current_subimage->id = atoi (attr[i+1]);
-					else if (!strcmp ("Source", attr[i]))
+					else if (!g_ascii_strcasecmp ("Source", attr[i]))
 						info->current_subimage->source = g_strdup (attr[i+1]);
 					else
 						LOG_MSI ("\tunparsed arg %s: %s\n", attr[i], attr[i+1]);
@@ -438,20 +438,20 @@ start_element (void *data, const char *el, const char **attr)
 	case 3:
 		if (!info->isCollection) {
 			//Rect elt
-			if (!strcmp ("Rect", el)) {
+			if (!g_ascii_strcasecmp ("Rect", el)) {
 				if (!info->current_rect) {
 					info->error = true;
 					break;
 				}
 				int i;
 				for (i = 0; attr[i]; i+=2)
-					if (!strcmp ("X", attr[i]))
+					if (!g_ascii_strcasecmp ("X", attr[i]))
 						info->current_rect->rect.x = (double)atol (attr[i+1]);
-					else if (!strcmp ("Y", attr[i]))
+					else if (!g_ascii_strcasecmp ("Y", attr[i]))
 						info->current_rect->rect.y = (double)atol (attr[i+1]);
-					else if (!strcmp ("Width", attr[i]))
+					else if (!g_ascii_strcasecmp ("Width", attr[i]))
 						info->current_rect->rect.width = (double)atol (attr[i+1]);
-					else if (!strcmp ("Height", attr[i]))
+					else if (!g_ascii_strcasecmp ("Height", attr[i]))
 						info->current_rect->rect.height = (double)atol (attr[i+1]);
 					else
 						LOG_MSI ("\tunparsed attr %s: %s\n", attr[i], attr[i+1]);
@@ -462,31 +462,31 @@ start_element (void *data, const char *el, const char **attr)
 				info->error = true;
 			}
 		} else {
-			if (!strcmp ("Size", el)) {
+			if (!g_ascii_strcasecmp ("Size", el)) {
 				if (!info->current_subimage) {
 					info->error = true;
 					break;
 				}
 				int i;
 				for (i = 0; attr [i]; i+=2)
-					if (!strcmp ("Width", attr[i]))
+					if (!g_ascii_strcasecmp ("Width", attr[i]))
 						info->current_subimage->width = atol (attr[i+1]);
-					else if (!strcmp ("Height", attr[i]))
+					else if (!g_ascii_strcasecmp ("Height", attr[i]))
 						info->current_subimage->height = atol (attr[i+1]);
 					else
 						LOG_MSI ("\tunparsed attr %s.%s: %s\n", el, attr[i], attr[i+1]);
-			} else if (!strcmp ("Viewport", el)) {
+			} else if (!g_ascii_strcasecmp ("Viewport", el)) {
 				if (!info->current_subimage) {
 					info->error = true;
 					break;
 				}
 				int i;
 				for (i = 0; attr [i]; i+=2)
-					if (!strcmp ("X", attr[i]))
+					if (!g_ascii_strcasecmp ("X", attr[i]))
 						info->current_subimage->vp_x = g_ascii_strtod (attr[i+1], NULL);
-					else if (!strcmp ("Y", attr[i]))
+					else if (!g_ascii_strcasecmp ("Y", attr[i]))
 						info->current_subimage->vp_y = g_ascii_strtod (attr[i+1], NULL);
-					else if (!strcmp ("Width", attr[i]))
+					else if (!g_ascii_strcasecmp ("Width", attr[i]))
 						info->current_subimage->vp_w = g_ascii_strtod (attr[i+1], NULL);
 					else
 						LOG_MSI ("\tunparsed attr %s: %s\n", attr[i], attr[i+1]);
@@ -512,7 +512,7 @@ end_element (void *data, const char *el)
 		switch (info->depth) {
 		case 2:
 			if (info->isCollection)
-				if (!strcmp ("I", el)) {
+				if (!g_ascii_strcasecmp ("I", el)) {
 					MultiScaleSubImage *subi = new MultiScaleSubImage (info->source->GetUriSource (), new DeepZoomImageTileSource (info->current_subimage->source, TRUE));
 					subi->id = info->current_subimage->id;
 					subi->n = info->current_subimage->n;
