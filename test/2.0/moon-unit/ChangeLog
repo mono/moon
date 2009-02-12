@@ -1,6 +1,11 @@
 2009-02-12  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ItemCollectionTest.cs: Add test case
+	for boxed custom structs
+
+2009-02-12  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ItemCollectionTest.cs: Add test case
 	for boxed value types.
 
 2009-02-12  Alan McGovern  <amcgovern@novell.com>
