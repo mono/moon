@@ -1,3 +1,8 @@
+2009-02-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Controls/ItemCollectionTest.cs: Add test case
+	for DO's parents when added to the collection
+
 2009-02-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.Data/BindingTest.cs:

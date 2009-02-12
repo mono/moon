@@ -39,9 +39,16 @@ namespace MoonTest.System.Windows.Controls {
 	[TestClass]
 	public class ItemCollectionTest {
 
+		private ItemsControl parent;
+
+		public DependencyObject Parent {
+			get { return parent; }
+		}
+
 		ItemCollection GetCollection ()
 		{
-			return new ItemsControl ().Items;
+			parent = new ItemsControl ();
+			return parent.Items;
 		}
 
 		[TestMethod]
@@ -110,6 +117,48 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsFalse (ic.Contains (c), "Contains(moon)");
 
 			ic.Remove (a);
+			Assert.AreEqual (2, ic.Count, "Count-4");
+
+			ic.RemoveAt (0);
+			Assert.AreEqual (1, ic.Count, "Count-5");
+
+			ic.Clear ();
+			Assert.AreEqual (0, ic.Count, "Count-6");
+		}
+
+		[TestMethod]
+		[MoonlightBug ("DO needs special support for setting parents")]
+		public void Methods_Control ()
+		{
+			Slider a = new Slider ();
+			Button b = new Button ();
+			TextBlock c = new TextBlock ();
+
+			ItemCollection ic = GetCollection ();
+			Assert.IsNull (a.Parent, "Slider-Parent-0");
+
+			ic.Add (a);
+			Assert.IsNotNull (a.Parent, "Slider-Parent-1");
+			Assert.AreSame (Parent, a.Parent, "Slider-Parent-1-Same");
+			Assert.AreEqual (1, ic.Count, "Count-1");
+
+			ic.Insert (0, ic);
+			Assert.AreEqual (2, ic.Count, "Count-2");
+
+			Assert.IsNull (b.Parent, "Button-Parent-2");
+			ic.Insert (0, b);
+			Assert.AreSame (Parent, b.Parent, "Button-Parent-3");
+			Assert.AreEqual (3, ic.Count, "Count-3");
+
+			Assert.AreEqual (1, ic.IndexOf (ic), "IndexOf");
+			Assert.AreEqual (-1, ic.IndexOf (c), "IndexOf-not in collection");
+
+			Assert.IsTrue (ic.IndexOf (a) >= 0, "IndexOf(object)");
+			Assert.IsTrue (ic.Contains (a), "Contains(object)");
+			Assert.IsFalse (ic.Contains (c), "Contains(moon)");
+
+			ic.Remove (a);
+			Assert.IsNull (a.Parent, "Slider-Parent-4");
 			Assert.AreEqual (2, ic.Count, "Count-4");
 
 			ic.RemoveAt (0);
