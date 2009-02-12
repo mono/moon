@@ -645,6 +645,8 @@ namespace MoonTest.System.Windows.Media
             CreateAsyncTest(Root, delegate {
                 List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(10, 10), r));
                 Assert.AreEqual(0, hits.Count, "#1");
+                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 0), r));
+                Assert.AreEqual(0, hits.Count, "#2");
             });
         }
 
