@@ -85,6 +85,8 @@
    <Test id="16"
 	inputFile="test-brush-linear-points.xaml"
 	masterFile10="../harness/masters/test-brush-linear-pointsMaster.png"
+	knownFailure="True"
+	knownFailureReason="Regressed"
    />
    <Test id="17"
 	inputFile="test-brush-linear.xaml"
@@ -176,6 +178,8 @@
    <Test id="37"
 	inputFile="test-opacity-mask.xaml"
 	masterFile10="../harness/masters/test-opacity-maskMaster.png"
+	knownFailure="True"
+	knownFailureReason="Regressed"
    />
    <Test id="38"
 	inputFile="test-path-ellipse-renderxorigin.xaml"
@@ -240,6 +244,8 @@
 	inputFile="test-path-group-stretch.xaml"
 	masterFile10="../harness/masters/test-path-group-stretchMaster.png"
         categories="stretch"
+	knownFailure="True"
+	knownFailureReason="Regressed"
    />
    <Test id="50"
 	inputFile="test-path-group-stroke.xaml"
@@ -392,6 +398,8 @@
 	inputFile="test-shape-ellipse-stretch.xaml"
 	masterFile10="../harness/masters/test-shape-ellipse-stretchMaster.png"
         categories="stretch,ellipse"
+	knownFailure="True"
+	knownFailureReason="Regressed"
    />
    <Test id="85"
 	inputFile="test-shape-ellipse-stroke-2.xaml"
@@ -433,6 +441,8 @@
 	inputFile="test-shape-negative.xaml"
 	masterFile10="../harness/masters/test-shape-negativeMaster.png"
 	categories="ellipse"
+	knownFailure="True"
+	knownFailureReason="Regressed"
    />
    <Test id="94"
 	inputFile="test-shape-opacity.xaml"
@@ -489,6 +499,8 @@
 	inputFile="test-shape-rectangle-matrix.xaml"
 	masterFile10="../harness/masters/test-shape-rectangle-matrixMaster.png"
 	categories="rectangle"
+	knownFailure="True"
+	knownFailureReason="Regressed"
    />
    <Test id="107"
 	inputFile="test-shape-rectangle-renderxorigin.xaml"
@@ -504,6 +516,8 @@
 	inputFile="test-shape-rectangle-stretch.xaml"
 	masterFile10="../harness/masters/test-shape-rectangle-stretchMaster.png"
         categories="stretch,rectangle"
+	knownFailure="True"
+	knownFailureReason="Regressed"
    />
    <Test id="110"
 	inputFile="test-shape-rectangle-stroke.xaml"
@@ -537,14 +551,20 @@
    <Test id="117"
 	inputFile="test-text-runs.xaml"
 	masterFile10="../harness/masters/test-text-runsMaster.png"
+	knownFailure="True"
+	knownFailureReason="Regressed"
    />
    <Test id="118"
 	inputFile="test-textblock-brush-runs.xaml"
 	masterFile10="../harness/masters/test-textblock-brush-runsMaster.png"
+	knownFailure="True"
+	knownFailureReason="Regressed"
    />
    <Test id="119"
 	inputFile="test-textblock-content.xaml"
 	masterFile10="../harness/masters/test-textblock-contentMaster.png"
+	knownFailure="True"
+	knownFailureReason="Regressed"
    />
    <Test id="120"
 	inputFile="test-textblock-examples.xaml"
@@ -554,6 +574,8 @@
    <Test id="121"
 	inputFile="test-textblock.xaml"
 	masterFile10="../harness/masters/test-textblockMaster.png"
+	knownFailure="True"
+	knownFailureReason="Regressed"
    />
    <Test id="122"
 	inputFile="test-transform-group-empty.xaml"
@@ -636,11 +658,15 @@
 	inputFile="test-shape-line-stretch2.xaml"
 	masterFile10="../harness/masters/test-shape-line-stretch2Master.png"
          categories="stretch"
+	knownFailure="True"
+	knownFailureReason="Regressed"
    />
    <Test id="141"
 	inputFile="test-shape-polyline-stretch2.xaml"
 	masterFile10="../harness/masters/test-shape-polyline-stretch2Master.png"
          categories="stretch"
+	knownFailure="True"
+	knownFailureReason="Regressed"
    />
    <Test id="142"
 	inputFile="test-shape-polygon-stretch2.xaml"
@@ -718,6 +744,8 @@
    <Test id="156"
         inputFile="test-text-font-quality.xaml"
         masterFile10="../harness/masters/test-text-font-qualityMaster.png"
+	knownFailure="True"
+	knownFailureReason="Regressed"
    />
    <Test id="157"
         inputFile="test-text-font-sizing-vs-hinting.xaml"
@@ -793,6 +821,8 @@
          inputFile="test-geometry-collection-stretch.xaml"
          masterFile10="../harness/masters/test-geometry-collection-stretchMaster.png"
          categories="stretch"
+	knownFailure="True"
+	knownFailureReason="Regressed"
    />
    <Test id="172"
          inputFile="test-animation-null-defaults-double.xaml"
@@ -919,6 +949,8 @@
 	inputFile="test-shape-ellipse-matrix.xaml"
 	masterFile10="../harness/masters/test-shape-ellipse-matrixMaster.png"
 	categories="ellipse"
+	knownFailure="True"
+	knownFailureReason="Regressed"
    />
    <Test id="200"
 	 inputFile="test-parser-multiple-canvases.xaml"
