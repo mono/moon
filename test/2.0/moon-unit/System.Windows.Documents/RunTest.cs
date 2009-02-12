@@ -28,6 +28,7 @@
 
 using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 
@@ -49,11 +50,28 @@ namespace MoonTest.System.Windows.Documents {
 		}
 
 		[TestMethod]
+		[MoonlightBug ("we aren't inheriting the font size properly yet")]
+		public void TextBlockInherited ()
+		{
+			TextBlock tb = new TextBlock ();
+			Run r = new Run ();
+
+			tb.Inlines.Add (r);
+
+			InlineTest.CheckTextBlockInherited (r);
+
+			tb.FontSize = 18;
+
+			Assert.AreEqual (18, r.FontSize, "FontSize after changing tb");
+		}
+
+		[TestMethod]
 		[Ignore ("sl2 crasher")]
 		public void NullifyFontFamily ()
 		{
 			Run r = new Run ();
 			r.FontFamily = null;
 		}
+
 	}
 }
