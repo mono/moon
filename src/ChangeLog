@@ -1,3 +1,11 @@
+2009-02-12  Alan McGovern  <amcgovern@novell.com>
+
+	* value.cpp: Managed objects are stored in native as
+	  GCHandles. Use the mono api to get the target of that
+	  GCHandle so that they can be compared correctly in
+	  value.cpp. Remove hack in ItemCollection.cs which worked
+	  around this bug.
+
 2009-02-12  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscalesubimage.h|cpp: add id, n as ctor params, make the ctor

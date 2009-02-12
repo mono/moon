@@ -27,6 +27,7 @@
 #include "point.h"
 #include "grid.h"
 #include "cornerradius.h"
+#include "mono/metadata/object.h"
 
 /**
  * Value implementation
@@ -522,6 +523,9 @@ Value::operator== (const Value &v) const
 		return !memcmp (u.corner, v.u.corner, sizeof (CornerRadius));
 	case Type::MANAGEDTYPEINFO:
 		return !memcmp (u.type_info, v.u.type_info, sizeof (ManagedTypeInfo));
+	case Type::MANAGED:
+		return mono_gchandle_get_target ((gint32)u.managed_object) == mono_gchandle_get_target ((gint32)v.u.managed_object);
+	
 	default:
 		return !memcmp (&u, &v.u, sizeof (u));
 	}

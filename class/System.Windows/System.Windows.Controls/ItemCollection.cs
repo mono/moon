@@ -53,11 +53,7 @@ namespace System.Windows.Controls {
 			if (value == null)
 				throw new ArgumentException ();
 
-			for (int i=0; i < Count; i++) {
-				if (this [i].Equals (value))
-					return i;
-			}
-			return -1;			
+			return base.IndexOfImpl (value);		
 		}
 
 		internal override bool IsReadOnlyImpl ()
