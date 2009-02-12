@@ -868,6 +868,12 @@ PlaylistParser::PlaylistParser (MediaElement *element, IMediaSource *source)
 {
 	this->element = element;
 	this->source = source;
+	this->internal = NULL;
+	this->kind_stack = NULL;
+	this->playlist = NULL;
+	this->current_entry = NULL;
+	this->current_text = NULL;
+	
 }
 
 void
@@ -905,7 +911,8 @@ PlaylistParser::Setup (XmlType type)
 void
 PlaylistParser::Cleanup ()
 {
-	kind_stack->Clear (true);
+	if (kind_stack)
+		kind_stack->Clear (true);
 	delete kind_stack;
 	delete internal;
 	if (playlist)
@@ -1984,9 +1991,9 @@ PlaylistParser::Parse ()
 			result = false;
 		}
 
-		if (internal->reparse)
+		if (result && internal->reparse)
 			Cleanup ();
-	} while (internal->reparse);
+	} while (result && internal->reparse);
 
 	return result ? MEDIA_SUCCESS : MEDIA_FAIL;
 }
