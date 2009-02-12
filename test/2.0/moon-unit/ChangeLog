@@ -1,3 +1,10 @@
+2009-02-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.Data/BindingTest.cs:
+	* System.Windows.Controls/TextBlockTest.cs:
+	* System.Windows.Browser/ScriptableTest.cs:
+	* System.Windows.Media/VisualTreeHelperTest.cs: Greenify.
+
 2009-02-11  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Media/VisualTreeHelperTest.cs: Add

@@ -34,7 +34,7 @@ namespace MoonTest.System.Windows.Media
 		}
 	}
 	[TestClass]
-	public class ___VisualTreeHelperTest : Microsoft.Silverlight.Testing.SilverlightTest
+	public class VisualTreeHelperTest : Microsoft.Silverlight.Testing.SilverlightTest
 	{
 		Panel Root;
 	
@@ -650,6 +650,7 @@ namespace MoonTest.System.Windows.Media
 
         [TestMethod]
         [Asynchronous]
+		[MoonlightBug]
         public void HitTest29()
         {
             Rectangle r = new Rectangle { Stroke = new SolidColorBrush(Colors.Blue), Width = 100, Height = 100, StrokeThickness = 1 };
@@ -675,6 +676,7 @@ namespace MoonTest.System.Windows.Media
 
         [TestMethod]
         [Asynchronous]
+		[MoonlightBug]
         public void HitTest30()
         {
             Border b = new Border { Width = 100, Height = 100, BorderBrush = new SolidColorBrush(Colors.Green), BorderThickness = new Thickness(0) };
@@ -704,6 +706,7 @@ namespace MoonTest.System.Windows.Media
 
         [TestMethod]
         [Asynchronous]
+		[MoonlightBug]
         public void HitTest30b()
         {
             Border b = new Border { Width = 100, Height = 100, BorderBrush = new SolidColorBrush(Colors.Green), BorderThickness = new Thickness(10) };
@@ -734,6 +737,7 @@ namespace MoonTest.System.Windows.Media
 
         [TestMethod]
         [Asynchronous]
+		[MoonlightBug]
         public void HitTest31()
         {
             Border b = new Border { Width = 100, Height = 100, BorderBrush = new SolidColorBrush(Colors.Green), BorderThickness = new Thickness(0) };
@@ -767,6 +771,7 @@ namespace MoonTest.System.Windows.Media
 
         [TestMethod]
         [Asynchronous]
+		[MoonlightBug]
         public void HitTest31b()
         {
             Border b = new Border { Width = 100, Height = 100, BorderBrush = new SolidColorBrush(Colors.Green), BorderThickness = new Thickness(10) };

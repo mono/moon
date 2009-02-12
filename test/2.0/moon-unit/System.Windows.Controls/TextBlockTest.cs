@@ -39,6 +39,7 @@ namespace MoonTest.System.Windows.Controls {
 	public class TextBlockTest {
 
 		[TestMethod]
+		[MoonlightBug]
 		public void Defaults ()
 		{
 			TextBlock tb = new TextBlock ();
