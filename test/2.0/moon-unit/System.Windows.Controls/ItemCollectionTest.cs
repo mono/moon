@@ -37,7 +37,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Controls {
 
 	[TestClass]
-	public class ItemCollectionTest {
+	public class ___ItemCollectionTest {
 
         class T
         {
@@ -134,6 +134,40 @@ namespace MoonTest.System.Windows.Controls {
 			ic.Clear ();
 			Assert.AreEqual (0, ic.Count, "Count-6");
 		}
+
+        [TestMethod]
+        public void Methods_Int()
+        {
+            int a = 5;
+            int b = 6;
+            int c = 7;
+
+            ItemCollection ic = GetCollection();
+            ic.Add(a);
+            Assert.AreEqual(1, ic.Count, "Count-1");
+
+            ic.Insert(0, ic);
+            Assert.AreEqual(2, ic.Count, "Count-2");
+
+            ic.Insert(0, b);
+            Assert.AreEqual(3, ic.Count, "Count-3");
+
+            Assert.AreEqual(1, ic.IndexOf(ic), "IndexOf");
+            Assert.AreEqual(-1, ic.IndexOf(c), "IndexOf-not in collection");
+
+            Assert.IsFalse(ic.IndexOf(a) >= 0, "IndexOf(object)");
+            Assert.IsFalse(ic.Contains(a), "Contains(object)");
+            Assert.IsFalse(ic.Contains(c), "Contains(moon)");
+
+            ic.Remove(a);
+            Assert.AreEqual(3, ic.Count, "Count-4");
+
+            ic.RemoveAt(0);
+            Assert.AreEqual(2, ic.Count, "Count-5");
+
+            ic.Clear();
+            Assert.AreEqual(0, ic.Count, "Count-6");
+        }
 
 		[TestMethod]
 		public void CustomEquals()
