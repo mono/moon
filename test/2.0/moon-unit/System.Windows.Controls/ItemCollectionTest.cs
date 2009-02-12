@@ -145,6 +145,9 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
         [TestMethod]
+        [MoonlightBug (@"The comparison used for 'Contains' and 'IndexOf' logic is a simple pointer comparison.
+                        We store an actual int instead of a boxed int which causes this comparison to succeed
+                        instead of fail.")]
         public void Methods_Int()
         {
             int a = 5;

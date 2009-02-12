@@ -1,5 +1,10 @@
 2009-02-12  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ItemCollectionTest.cs: Mark test
+	  with moonlight bug until a good solution can be found.
+
+2009-02-12  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ItemCollectionTest.cs: I seem to
 	  have duplicated a test by accident.
 
