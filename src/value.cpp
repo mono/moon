@@ -524,7 +524,7 @@ Value::operator== (const Value &v) const
 	case Type::MANAGEDTYPEINFO:
 		return !memcmp (u.type_info, v.u.type_info, sizeof (ManagedTypeInfo));
 	case Type::MANAGED:
-		return mono_gchandle_get_target ((gint32)u.managed_object) == mono_gchandle_get_target ((gint32)v.u.managed_object);
+		return mono_gchandle_get_target ((gint32)(gint64)u.managed_object) == mono_gchandle_get_target ((gint32)(gint64)v.u.managed_object);
 	
 	default:
 		return !memcmp (&u, &v.u, sizeof (u));
