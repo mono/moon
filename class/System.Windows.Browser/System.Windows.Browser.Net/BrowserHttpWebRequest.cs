@@ -125,6 +125,8 @@ namespace System.Windows.Browser.Net
 
 		public override IAsyncResult BeginGetResponse (AsyncCallback callback, object state)
 		{
+			async_result = new BrowserHttpWebAsyncResult (callback, state);
+			
 			if (NativeMethods.surface_in_main_thread ()) {
 				InitializeNativeRequest (IntPtr.Zero);
 			} else {
@@ -136,8 +138,6 @@ namespace System.Windows.Browser.Net
 
 				GC.KeepAlive (tch);
 			}
-
-			async_result = new BrowserHttpWebAsyncResult (callback, state);
 
 			return async_result;
 		}

@@ -1,3 +1,9 @@
+2009-02-12  Alan McGovern  <amcgovern@novell.com>
+
+	* BrowserHttpWebRequest.cs: Fixed a race condition where
+	  async_result would still be null if native callbacks were
+	  invoked synchronously. 
+
 2009-02-07  Geoff Norton  <gnorton@novell.com>
 
 	* BrowserHttpWeb(Request|Response).cs: Clean up our finalizer/abort
