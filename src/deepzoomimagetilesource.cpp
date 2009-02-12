@@ -503,7 +503,7 @@ start_element (void *data, const char *el, const char **attr)
 }
 
 void
-end_element (void *data, const char *el)
+DeepZoomImageTileSource::EndElement (void *data, const char *el)
 {
 	DZParserinfo *info = (DZParserinfo*)data;
 	(info->depth)--;
@@ -513,12 +513,14 @@ end_element (void *data, const char *el)
 		case 2:
 			if (info->isCollection)
 				if (!g_ascii_strcasecmp ("I", el)) {
-					MultiScaleSubImage *subi = new MultiScaleSubImage (info->source->GetUriSource (), new DeepZoomImageTileSource (info->current_subimage->source, TRUE));
-					subi->id = info->current_subimage->id;
-					subi->n = info->current_subimage->n;
-					subi->source->SetImageWidth (info->current_subimage->width);
-					subi->source->SetImageHeight (info->current_subimage->height);
-					((DeepZoomImageTileSource*)subi->source)->format = info->format;
+					DeepZoomImageTileSource *subsource = new DeepZoomImageTileSource (info->current_subimage->source, TRUE);
+					MultiScaleSubImage *subi = new MultiScaleSubImage (info->source->GetUriSource (),
+											   subsource, 
+											   info->current_subimage->id, 
+											   info->current_subimage->n);
+					subsource->SetImageWidth (info->current_subimage->width);
+					subsource->SetImageHeight (info->current_subimage->height);
+					subsource->format = info->format;
 					subi->SetViewportOrigin (new Point (info->current_subimage->vp_x, info->current_subimage->vp_y));
 					subi->SetViewportWidth (info->current_subimage->vp_w);
 					subi->SetValue (MultiScaleSubImage::AspectRatioProperty, Value ((double)info->current_subimage->width/(double)info->current_subimage->height));
@@ -530,5 +532,15 @@ end_element (void *data, const char *el)
 	}
 
 	if (info->skip == info->depth)
-		info->skip = -1;
+		info->skip = -1;	
+}
+
+void
+end_element (void *data, const char *el)
+{
+	DZParserinfo *info = (DZParserinfo*)data;
+	DeepZoomImageTileSource *dzits = (DeepZoomImageTileSource*)info->source;
+	if (!dzits)
+		g_assert ("That's wrong...\n");
+	dzits->EndElement (info, el);
 }

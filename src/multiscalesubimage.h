@@ -16,15 +16,11 @@
 
 #include "dependencyobject.h"
 
-void end_element (void *data, const char *el);
-
 /* @Version=2,Namespace=System.Windows.Controls */
 class MultiScaleSubImage : public DependencyObject {
 	friend class MultiScaleImage;
-	friend void end_element (void *data, const char *el);
 
 	MultiScaleTileSource *source;
-	MultiScaleSubImage (const char* parent_uri, MultiScaleTileSource *source);
 
 	int id, n;
 
@@ -48,6 +44,7 @@ class MultiScaleSubImage : public DependencyObject {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	MultiScaleSubImage ();
+	MultiScaleSubImage (const char* parent_uri, MultiScaleTileSource *source, int id, int n);
 
 	double GetAspectRatio ();
 	void SetAspectRatio (double ratio);

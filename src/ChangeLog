@@ -1,5 +1,12 @@
 2009-02-12  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* multiscalesubimage.h|cpp: add id, n as ctor params, make the ctor
+	public, drop a friend.
+	* deepzoomimagetilesource.h|cpp: EndElement is now a class method, drop
+	a friend.
+
+2009-02-12  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* deepzoomtilesource.cpp: some g_ascii love
 
 2009-02-11  Chris Toshok  <toshok@ximian.com>

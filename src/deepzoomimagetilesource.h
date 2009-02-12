@@ -28,8 +28,6 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	friend class MultiScaleImage;
 	friend gpointer get_tile_layer (int level, int x, int y, void *user_data);
 	friend void multi_scale_image_handle_parsed (void *userdata);
-	friend void end_element (void *data, const char *el);
-
 
 	void Download ();
 	gpointer GetTileLayer (int level, int x, int y);
@@ -81,6 +79,8 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 
 	void        SetUriSource (const char *value);
 	const char* GetUriSource ();
+
+	void EndElement (void *info, const char* el);
 		
 };
 
