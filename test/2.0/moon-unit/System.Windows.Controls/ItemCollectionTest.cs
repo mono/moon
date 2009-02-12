@@ -39,23 +39,23 @@ namespace MoonTest.System.Windows.Controls {
 	[TestClass]
 	public class ItemCollectionTest {
 
-        struct S
-        {
-            public string Name;
-            public override bool Equals(object obj)
-            {
-                return Name.Equals(((T)obj).Name);
-            }
-        }
+		struct S
+		{
+			public string Name;
+			public override bool Equals(object obj)
+			{
+				return Name.Equals(((T)obj).Name);
+			}
+		}
 
-        class T
-        {
-            public string Name;
-            public override bool Equals(object obj)
-            {
-                return Name.Equals(((T)obj).Name);
-            }
-        }
+		class T
+		{
+			public string Name;
+			public override bool Equals(object obj)
+			{
+				return Name.Equals(((T)obj).Name);
+			}
+		}
 
 		private ItemsControl parent;
 
@@ -144,76 +144,89 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual (0, ic.Count, "Count-6");
 		}
 
-        [TestMethod]
-        [MoonlightBug (@"The comparison used for 'Contains' and 'IndexOf' logic is a simple pointer comparison.
+		[TestMethod]
+		[MoonlightBug (@"The comparison used for 'Contains' and 'IndexOf' logic is a simple pointer comparison.
                         We store an actual int instead of a boxed int which causes this comparison to succeed
                         instead of fail.")]
-        public void Methods_Int()
-        {
-            int a = 5;
-            int b = 6;
-            int c = 7;
+		public void Methods_Int()
+		{
+			int a = 5;
+			int b = 6;
+			int c = 7;
 
-            ItemCollection ic = GetCollection();
-            ic.Add(a);
-            Assert.AreEqual(1, ic.Count, "Count-1");
+			ItemCollection ic = GetCollection();
+			ic.Add(a);
+			Assert.AreEqual(1, ic.Count, "Count-1");
 
-            ic.Insert(0, ic);
-            Assert.AreEqual(2, ic.Count, "Count-2");
+			ic.Insert(0, ic);
+			Assert.AreEqual(2, ic.Count, "Count-2");
 
-            ic.Insert(0, b);
-            Assert.AreEqual(3, ic.Count, "Count-3");
+			ic.Insert(0, b);
+			Assert.AreEqual(3, ic.Count, "Count-3");
 
-            Assert.AreEqual(1, ic.IndexOf(ic), "IndexOf");
-            Assert.AreEqual(-1, ic.IndexOf(c), "IndexOf-not in collection");
+			Assert.AreEqual(1, ic.IndexOf(ic), "IndexOf");
+			Assert.AreEqual(-1, ic.IndexOf(c), "IndexOf-not in collection");
 
-            Assert.IsFalse(ic.IndexOf(a) >= 0, "IndexOf(object)");
-            Assert.IsFalse(ic.Contains(a), "Contains(object)");
-            Assert.IsFalse(ic.Contains(c), "Contains(moon)");
+			Assert.IsFalse(ic.IndexOf(a) >= 0, "IndexOf(object)");
+			Assert.IsFalse(ic.Contains(a), "Contains(object)");
+			Assert.IsFalse(ic.Contains(c), "Contains(moon)");
 
-            ic.Remove(a);
-            Assert.AreEqual(3, ic.Count, "Count-4");
+			ic.Remove(a);
+			Assert.AreEqual(3, ic.Count, "Count-4");
 
-            ic.RemoveAt(0);
-            Assert.AreEqual(2, ic.Count, "Count-5");
+			ic.RemoveAt(0);
+			Assert.AreEqual(2, ic.Count, "Count-5");
 
-            ic.Clear();
-            Assert.AreEqual(0, ic.Count, "Count-6");
-        }
+			ic.Clear();
+			Assert.AreEqual(0, ic.Count, "Count-6");
+		}
 
-        [TestMethod]
-        public void Methods_Struct()
-        {
-            S a = new S { Name = "A" };
-            S b = new S { Name = "B" };
-            S c = new S { Name = "C" };
 
-            ItemCollection ic = GetCollection();
-            ic.Add(a);
-            Assert.AreEqual(1, ic.Count, "Count-1");
+		[TestMethod]
+		[MoonlightBug (@"The comparison used for 'Contains' and 'IndexOf' logic is a simple pointer comparison.
+                        We store an actual int instead of a boxed int which causes this comparison to succeed
+                        instead of fail.")]
+		public void IndexOf_IntConst ()
+		{
+			ItemCollection ic = GetCollection ();
 
-            ic.Insert(0, ic);
-            Assert.AreEqual(2, ic.Count, "Count-2");
+			ic.Add (5);
+			Assert.IsTrue (ic.IndexOf(5) == -1, "IndexOf(int)");
+		}
 
-            ic.Insert(0, b);
-            Assert.AreEqual(3, ic.Count, "Count-3");
+		[TestMethod]
+		public void Methods_Struct()
+		{
+			S a = new S { Name = "A" };
+			S b = new S { Name = "B" };
+			S c = new S { Name = "C" };
 
-            Assert.AreEqual(1, ic.IndexOf(ic), "IndexOf");
-            Assert.AreEqual(-1, ic.IndexOf(c), "IndexOf-not in collection");
+			ItemCollection ic = GetCollection();
+			ic.Add(a);
+			Assert.AreEqual(1, ic.Count, "Count-1");
 
-            Assert.IsFalse(ic.IndexOf(a) >= 0, "IndexOf(object)");
-            Assert.IsFalse(ic.Contains(a), "Contains(object)");
-            Assert.IsFalse(ic.Contains(c), "Contains(moon)");
+			ic.Insert(0, ic);
+			Assert.AreEqual(2, ic.Count, "Count-2");
 
-            ic.Remove(a);
-            Assert.AreEqual(3, ic.Count, "Count-4");
+			ic.Insert(0, b);
+			Assert.AreEqual(3, ic.Count, "Count-3");
 
-            ic.RemoveAt(0);
-            Assert.AreEqual(2, ic.Count, "Count-5");
+			Assert.AreEqual(1, ic.IndexOf(ic), "IndexOf");
+			Assert.AreEqual(-1, ic.IndexOf(c), "IndexOf-not in collection");
 
-            ic.Clear();
-            Assert.AreEqual(0, ic.Count, "Count-6");
-        }
+			Assert.IsFalse(ic.IndexOf(a) >= 0, "IndexOf(object)");
+			Assert.IsFalse(ic.Contains(a), "Contains(object)");
+			Assert.IsFalse(ic.Contains(c), "Contains(moon)");
+
+			ic.Remove(a);
+			Assert.AreEqual(3, ic.Count, "Count-4");
+
+			ic.RemoveAt(0);
+			Assert.AreEqual(2, ic.Count, "Count-5");
+
+			ic.Clear();
+			Assert.AreEqual(0, ic.Count, "Count-6");
+		}
 
 		[TestMethod]
 		public void CustomEquals()
@@ -265,6 +278,16 @@ namespace MoonTest.System.Windows.Controls {
 
 			ic.Clear ();
 			Assert.AreEqual (0, ic.Count, "Count-6");
+
+			// try removing an element not in the
+			// collection (when we know it has a different
+			// parent)
+			ItemsControl parent2 = new ItemsControl ();
+			ItemCollection ic2 = parent2.Items;
+			ic2.Add (a);
+
+			ic.Remove (a);
+			Assert.AreEqual (parent2, a.Parent, "Parent-different-collection");
 		}
 
 		[TestMethod]
@@ -272,8 +295,8 @@ namespace MoonTest.System.Windows.Controls {
 		{
 			ItemCollection ic = GetCollection ();
 			Assert.Throws<ArgumentException> (delegate {
-				ic.Add (null);
-			}, "add/null");
+					ic.Add (null);
+				}, "add/null");
 		}
 
 		[TestMethod]
@@ -281,8 +304,8 @@ namespace MoonTest.System.Windows.Controls {
 		{
 			ItemCollection ic = GetCollection ();
 			Assert.Throws<ArgumentException> (delegate {
-				ic.Insert (0, null);
-			}, "insert/null");
+					ic.Insert (0, null);
+				}, "insert/null");
 		}
 
 		[TestMethod]
@@ -290,8 +313,8 @@ namespace MoonTest.System.Windows.Controls {
 		{
 			ItemCollection ic = GetCollection ();
 			Assert.Throws<ArgumentException> (delegate {
-				ic.Remove (null);
-			}, "remove/null");
+					ic.Remove (null);
+				}, "remove/null");
 		}
 
 		[TestMethod]
@@ -299,8 +322,8 @@ namespace MoonTest.System.Windows.Controls {
 		{
 			ItemCollection ic = GetCollection ();
 			Assert.Throws<ArgumentException> (delegate {
-				ic.IndexOf (null);
-			}, "indexof/null");
+					ic.IndexOf (null);
+				}, "indexof/null");
 		}
 
 		[TestMethod]
@@ -308,8 +331,8 @@ namespace MoonTest.System.Windows.Controls {
 		{
 			ItemCollection ic = GetCollection ();
 			Assert.Throws<ArgumentException> (delegate {
-				ic.Contains (null);
-			}, "contains/null");
+					ic.Contains (null);
+				}, "contains/null");
 		}
 	}
 }
