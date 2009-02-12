@@ -523,8 +523,12 @@ Value::operator== (const Value &v) const
 		return !memcmp (u.corner, v.u.corner, sizeof (CornerRadius));
 	case Type::MANAGEDTYPEINFO:
 		return !memcmp (u.type_info, v.u.type_info, sizeof (ManagedTypeInfo));
-	case Type::MANAGED:
-		return mono_gchandle_get_target ((gint32)(gint64)u.managed_object) == mono_gchandle_get_target ((gint32)(gint64)v.u.managed_object);
+	case Type::MANAGED: {
+		guint64 a = (guint64) u.managed_object;
+		guint64 b = (guint64) v.u.managed_object;
+		g_return_val_if_fail (a == (a & 0xFFFFFFFF) && b == (b & 0xFFFFFFFF), false);
+		return mono_gchandle_get_target ((guint32) a) == mono_gchandle_get_target ((guint32) b);
+	}
 	
 	default:
 		return !memcmp (&u, &v.u, sizeof (u));

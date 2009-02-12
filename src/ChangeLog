@@ -1,5 +1,10 @@
 2009-02-12  Alan McGovern  <amcgovern@novell.com>
 
+	* value.cpp: Add an assert in case the gchandle value is out
+	  of range.
+
+2009-02-12  Alan McGovern  <amcgovern@novell.com>
+
 	* value.cpp: Fix compile error on x64 when casting a void* to
 	  a gint32.
 
