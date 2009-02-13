@@ -1,3 +1,9 @@
+2009-02-13  Geoff Norton  <gnorton@novell.com>
+
+	* media.cpp|h: Ensure we're comparing magics with unsigned values, and 
+	fix a logic bug that prevented us from proplery writing progressive pixbuf
+	loaders.
+
 2009-02-13  Jeffrey Stedfast  <fejj@novell.com>
 
 	* multiscaleimage.h (class MultiScaleImage): Rename the

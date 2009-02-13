@@ -393,7 +393,7 @@ Image::SetSource (Downloader *downloader, const char *PartName)
 }
 
 void
-Image::PixbufWrite (char *buf, gint32 offset, gint32 n)
+Image::PixbufWrite (unsigned char *buf, gint32 offset, gint32 n)
 {
 	UpdateProgress ();
 	if (loader == NULL && offset == 0) {
@@ -414,7 +414,7 @@ Image::PixbufWrite (char *buf, gint32 offset, gint32 n)
 		}
 	}
 
-	if (loader != NULL && loader_err != NULL) {
+	if (loader != NULL && loader_err == NULL) {
 		gdk_pixbuf_loader_write (GDK_PIXBUF_LOADER (loader), (const guchar *)buf, n, &loader_err);
 
 		if (loader_err != NULL) {
@@ -783,7 +783,7 @@ Image::size_notify (gint64 size, gpointer data)
 void
 Image::pixbuf_write (void *buf, gint32 offset, gint32 n, gpointer data)
 {
-	((Image *) data)->PixbufWrite ((char *)buf, offset, n);
+	((Image *) data)->PixbufWrite ((unsigned char *)buf, offset, n);
 }
 
 void
@@ -996,7 +996,7 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args)
 			MediaBase::SetSource (NULL);
 		} else {
 			if (source->buffer) {
-				PixbufWrite ((char *)source->buffer, 0, source->size);
+				PixbufWrite ((unsigned char *)source->buffer, 0, source->size);
 				CleanupSurface ();
 
 		                if (!CreateSurface (NULL)) {
