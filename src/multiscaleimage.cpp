@@ -247,7 +247,7 @@ expand_rgb_to_argb (GdkPixbuf *pixbuf, int *stride)
 	return data;
 }
 
-char *
+static char *
 to_key (int subimage_id, int layer, int x, int y)
 {
 	char key[32];
@@ -280,10 +280,10 @@ multi_scale_image_handle_parsed (void *userdata)
 		int i;
 		MultiScaleSubImage *si;
 		for (i = 0; (si = (MultiScaleSubImage*)g_list_nth_data (dsource->subimages, i)); i++) {
-			if (!msi->GetSubImageCollection())
-				msi->SetValue (MultiScaleImage::SubImageCollectionProperty, new MultiScaleSubImageCollection ());
+			if (!msi->GetSubImages ())
+				msi->SetValue (MultiScaleImage::SubImagesProperty, new MultiScaleSubImageCollection ());
 
-			msi->GetSubImageCollection()->Add (si);
+			msi->GetSubImages ()->Add (si);
 		}
 	}
 	msi->Invalidate ();
@@ -322,7 +322,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 	Rect viewport = Rect (msi_x, msi_y, msi_w, msi_w/msi_ar);
 
 	//FIXME: sort the subimages by ZIndex first
-	CollectionIterator *iter = GetSubImageCollection()->GetIterator();
+	CollectionIterator *iter = GetSubImages ()->GetIterator();
 	Value *val;
 	int error;
 
@@ -525,7 +525,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 	}
 
 	DeepZoomImageTileSource *dzits = (DeepZoomImageTileSource*) source;
-	if (dzits && dzits->IsCollection() && GetSubImageCollection ()) {
+	if (dzits && dzits->IsCollection() && GetSubImages ()) {
 		//Let's render collection in a different method to not break this one right now
 		RenderCollection (cr, region);
 		return;

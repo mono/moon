@@ -79,7 +79,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "ViewportWidth", new Value (1.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "ViewportOrigin", new Value (Point(0,0)), Type::POINT);
 	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "UseSprings", new Value (true), Type::BOOL);
-	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "SubImageCollection", Type::MULTISCALESUBIMAGE_COLLECTION);
+	DependencyProperty::RegisterFull (this, Type::MULTISCALEIMAGE, "SubImages", NULL, Type::MULTISCALESUBIMAGE_COLLECTION, true, false, true, false, NULL, NULL, false, false);
 	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "Source", Type::MULTISCALETILESOURCE);
 	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "AspectRatio", new Value (1.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::IMAGE, "Source", Type::BITMAPIMAGE);
@@ -428,7 +428,7 @@ const int Line::X1Property = 26;
 const int MultiScaleImage::ViewportWidthProperty = 27;
 const int MultiScaleImage::ViewportOriginProperty = 28;
 const int MultiScaleImage::UseSpringsProperty = 29;
-const int MultiScaleImage::SubImageCollectionProperty = 30;
+const int MultiScaleImage::SubImagesProperty = 30;
 const int MultiScaleImage::SourceProperty = 31;
 const int MultiScaleImage::AspectRatioProperty = 32;
 const int Image::SourceProperty = 33;
@@ -1142,9 +1142,9 @@ MultiScaleImage::SetUseSprings (bool value)
 }
 
 MultiScaleSubImageCollection *
-MultiScaleImage::GetSubImageCollection ()
+MultiScaleImage::GetSubImages ()
 {
-	Value *value = GetValue (MultiScaleImage::SubImageCollectionProperty);
+	Value *value = GetValue (MultiScaleImage::SubImagesProperty);
 	return value ? value->AsMultiScaleSubImageCollection () : NULL;
 }
 

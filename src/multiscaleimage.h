@@ -16,6 +16,7 @@
 #include <glib.h>
 #include <cairo.h>
 
+#include "multiscalesubimage.h"
 #include "tilesource.h"
 #include "eventargs.h"
 #include "control.h"
@@ -57,8 +58,8 @@ class MultiScaleImage : public MediaBase {
 	const static int AspectRatioProperty;
 	/* @PropertyType=MultiScaleTileSource,Version=2.0,GenerateAccessors */
 	const static int SourceProperty;
-	/* @PropertyType=MultiScaleSubImageCollection,ManagedAccess=Internal,Version=2.0,GenerateGetter */
-	const static int SubImageCollectionProperty;
+	/* @PropertyType=MultiScaleSubImageCollection,AutoCreateValue,ReadOnly,Version=2.0,GenerateGetter */
+	const static int SubImagesProperty;
 	/* @PropertyType=bool,DefaultValue=true,Version=2.0,GenerateAccessors */
 	const static int UseSpringsProperty;
 	/* @PropertyType=Point,DefaultValue=Point(0\,0),Version=2.0,GenerateAccessors */
@@ -100,7 +101,7 @@ class MultiScaleImage : public MediaBase {
 	double GetViewportWidth ();
 	void SetViewportWidth (double width);
 
-	MultiScaleSubImageCollection* GetSubImageCollection ();
+	MultiScaleSubImageCollection *GetSubImages ();
 
 	//
 	// Events
