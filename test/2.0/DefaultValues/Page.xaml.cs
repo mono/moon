@@ -44,6 +44,7 @@ namespace DefaultValues {
 			sb.AppendLine ("using Microsoft.VisualStudio.TestTools.UnitTesting;");
 			sb.AppendLine ("using Mono.Moonlight.UnitTesting;");
 			sb.AppendLine ("using System.Collections.Generic;");
+			sb.AppendLine ("using System.Collections.ObjectModel;");
 			sb.AppendLine ();
 			sb.AppendLine ("namespace MoonTest.System.Windows.Controls");
 			sb.AppendLine ("{");
@@ -62,14 +63,15 @@ namespace DefaultValues {
 		
 		void GenerateUnitTest (Type type)
 		{
-			object widget;
+			DependencyObject widget;
 			
 			try {
-				widget = Activator.CreateInstance (type);
-				GenerateReadLocalValueTest (widget, type);
-				GenerateGetValueTest (widget, type);
-				//GeneratePropertyTest (type);
-				//GenerateSetValueTest (type);
+				if ((widget = Activator.CreateInstance (type) as DependencyObject) != null) {
+					GenerateReadLocalValueTest (widget, type);
+					GenerateGetValueTest (widget, type);
+					//GeneratePropertyTest (type);
+					//GenerateSetValueTest (type);
+				}
 			} catch {
 			}
 		}
@@ -107,11 +109,11 @@ namespace DefaultValues {
 			return type.Name;
 		}
 		
-		void AssertDependencyObjectEqual (object widget, Type type, string test, string fieldName, object retval)
+		void AssertDependencyObjectEqual (DependencyObject widget, Type type, string test, string fieldName, object retval)
 		{
 		}
 		
-		void AssertValuesEqual (object widget, Type type, string test, string fieldName, object retval)
+		void AssertValuesEqual (DependencyObject widget, Type type, string test, string fieldName, object retval)
 		{
 			string expected = null;
 			string special = null;
@@ -168,11 +170,10 @@ namespace DefaultValues {
 					       ", \"" + test + "(" + fieldName + ") does not match the default value\");");
 		}
 		
-		void GenerateReadLocalValueTest (object widget, Type type)
+		void GenerateReadLocalValueTest (DependencyObject widget, Type type)
 		{
-			MethodInfo method = typeof (DependencyObject).GetMethod ("ReadLocalValue");
 			FieldInfo[] fields = type.GetFields ();
-			object[] args = new object [1];
+			DependencyProperty property;
 			bool testing = false;
 			object retval;
 			
@@ -181,15 +182,21 @@ namespace DefaultValues {
 					continue;
 				
 				try {
-					args[0] = fields[i].GetValue (null);
-					retval = method.Invoke (widget, args);
-					
-					if (!testing) {
-						EmitTestMethod (type, "ReadLocalValue");
-						testing = true;
-					} else {
-						sb.AppendLine ();
-					}
+					if ((property = fields[i].GetValue (null) as DependencyProperty) == null)
+						continue;
+				} catch {
+					continue;
+				}
+				
+				if (!testing) {
+					EmitTestMethod (type, "ReadLocalValue");
+					testing = true;
+				} else {
+					sb.AppendLine ();
+				}
+				
+				try {
+					retval = widget.ReadLocalValue (property);
 					
 					sb.AppendLine ("\t\t\tretval = widget.ReadLocalValue (" + type.Name + "." + fields[i].Name + ");");
 					
@@ -204,7 +211,10 @@ namespace DefaultValues {
 						sb.AppendLine ("\t\t\tAssert.AreEqual (DependencyProperty.UnsetValue, retval, \"ReadLocalValue(" +
 							       fields[i].Name + ") should not have a value by default\");");
 					}
-				} catch {
+				} catch (Exception ex) {
+					sb.AppendLine ("\t\t\tAssert.Throws<" + ex.GetType ().Name + ">(delegate {");
+					sb.AppendLine ("\t\t\t\tretval = widget.ReadLocalValue (" + type.Name + "." + fields[i].Name + ");");
+					sb.AppendLine ("\t\t\t}, \"ReadLocalValue(" + fields[i].Name + ") should thow an exception\");");
 				}
 			}
 			
@@ -214,11 +224,10 @@ namespace DefaultValues {
 			}
 		}
 		
-		void GenerateGetValueTest (object widget, Type type)
+		void GenerateGetValueTest (DependencyObject widget, Type type)
 		{
-			MethodInfo method = typeof (DependencyObject).GetMethod ("GetValue");
 			FieldInfo[] fields = type.GetFields ();
-			object[] args = new object [1];
+			DependencyProperty property;
 			bool testing = false;
 			object retval;
 			
@@ -227,15 +236,21 @@ namespace DefaultValues {
 					continue;
 				
 				try {
-					args[0] = fields[i].GetValue (null);
-					retval = method.Invoke (widget, args);
-					
-					if (!testing) {
-						EmitTestMethod (type, "GetValue");
-						testing = true;
-					} else {
-						sb.AppendLine ();
-					}
+					if ((property = fields[i].GetValue (null) as DependencyProperty) == null)
+						continue;
+				} catch {
+					continue;
+				}
+				
+				if (!testing) {
+					EmitTestMethod (type, "GetValue");
+					testing = true;
+				} else {
+					sb.AppendLine ();
+				}
+				
+				try {
+					retval = widget.GetValue (property);
 					
 					sb.AppendLine ("\t\t\tretval = widget.GetValue (" + type.Name + "." + fields[i].Name + ");");
 					
@@ -245,7 +260,10 @@ namespace DefaultValues {
 					} else {
 						sb.AppendLine ("\t\t\tAssert.IsNull (retval, \"GetValue(" + fields[i].Name + ") should have returned null\");");
 					}
-				} catch {
+				} catch (Exception ex) {
+					sb.AppendLine ("\t\t\tAssert.Throws<" + ex.GetType ().Name + ">(delegate {");
+					sb.AppendLine ("\t\t\t\tretval = widget.GetValue (" + type.Name + "." + fields[i].Name + ");");
+					sb.AppendLine ("\t\t\t}, \"GetValue(" + fields[i].Name + ") should thow an exception\");");
 				}
 			}
 			
