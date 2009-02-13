@@ -1,3 +1,7 @@
+2009-02-13  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MultiScaleImage.cs: Removed SubImages getter.
+
 2009-02-12  Alan McGovern  <amcgovern@novell.com>
 
 	* ItemCollection.cs: Managed objects are stored in native as

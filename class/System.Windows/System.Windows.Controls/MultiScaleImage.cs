@@ -25,7 +25,6 @@
 //
 
 using Mono;
-using System.Collections.ObjectModel;
 using System.Security;
 
 namespace System.Windows.Controls {
@@ -36,12 +35,6 @@ namespace System.Windows.Controls {
 		public void ZoomAboutLogicalPoint (double zoomIncrementFactor, double zoomCenterLogicalX, double zoomCenterLogicalY)
 		{
 			NativeMethods.multi_scale_image_zoom_about_logical_point (this.native, zoomIncrementFactor, zoomCenterLogicalX, zoomCenterLogicalY);
-		}
-
-		public ReadOnlyCollection <MultiScaleSubImage> SubImages {
-			get {
-				return new ReadOnlyCollection <MultiScaleSubImage> (SubImageCollection ?? new MultiScaleSubImageCollection ());
-			}
 		}
 
 		public Point ElementToLogicalPoint (Point elementPoint)
