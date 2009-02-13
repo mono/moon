@@ -143,7 +143,7 @@ namespace DefaultValues {
 					else if (Double.IsNaN (d))
 						special = "Double.IsNaN ((double) retval)";
 					else
-						expected = retval.ToString ();
+						expected = "(double) " + retval.ToString ();
 				} else if (retval is bool) {
 					// prettyification
 					expected = (bool) retval ? "true" : "false";
