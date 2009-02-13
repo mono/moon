@@ -537,8 +537,8 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty IsMutedProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "IsMuted", typeof (bool));
 		internal static readonly DependencyProperty MarkersProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Markers", typeof (TimelineMarkerCollection));
 		public static readonly DependencyProperty NaturalDurationProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "NaturalDuration", typeof (Duration));
-		public static readonly DependencyProperty NaturalVideoHeightProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "NaturalVideoHeight", typeof (double));
-		public static readonly DependencyProperty NaturalVideoWidthProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "NaturalVideoWidth", typeof (double));
+		public static readonly DependencyProperty NaturalVideoHeightProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "NaturalVideoHeight", typeof (int));
+		public static readonly DependencyProperty NaturalVideoWidthProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "NaturalVideoWidth", typeof (int));
 		public static readonly DependencyProperty PositionProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Position", typeof (TimeSpan));
 		public static readonly DependencyProperty RenderedFramesPerSecondProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "RenderedFramesPerSecond", typeof (double));
 		public static readonly DependencyProperty SourceProperty = DependencyProperty.Lookup (Kind.MEDIAELEMENT, "Source", typeof (Uri));
@@ -618,11 +618,11 @@ namespace System.Windows.Controls {
 		}
 
 		public int NaturalVideoHeight {
-			get { return (int) (double) GetValue (NaturalVideoHeightProperty); }
+			get { return (int) GetValue (NaturalVideoHeightProperty); }
 		}
 
 		public int NaturalVideoWidth {
-			get { return (int) (double) GetValue (NaturalVideoWidthProperty); }
+			get { return (int) GetValue (NaturalVideoWidthProperty); }
 		}
 
 		public TimeSpan Position {
