@@ -26,6 +26,7 @@
 
 using Mono;
 using System.Collections.ObjectModel;
+using System.Windows.Media;
 using System.Security;
 
 namespace System.Windows.Controls {
