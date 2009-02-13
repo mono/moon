@@ -284,19 +284,19 @@ namespace MoonTest.System.Windows.Media
 			});
 		}
 
-        [TestMethod]
-        [Asynchronous]
+		[TestMethod]
+		[Asynchronous]
 		[MoonlightBug]
-        public void HitTest8b()
-        {
-            Root.Width = 0;
-            Root.Height = 1;
-            Root.Background = new SolidColorBrush(Colors.Black);
-            CreateAsyncTest(Root, delegate {
-                List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Rect(0, 0,2,2), Root));
-                Assert.AreEqual(1, hits.Count, "#1");
-            });
-        }
+		public void HitTest8b()
+		{
+			Root.Width = 0;
+			Root.Height = 1;
+			Root.Background = new SolidColorBrush(Colors.Black);
+			CreateAsyncTest(Root, delegate {
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Rect(0, 0,2,2), Root));
+				Assert.AreEqual(1, hits.Count, "#1");
+			});
+		}
 
 		[TestMethod]
 		[Asynchronous]
@@ -631,180 +631,180 @@ namespace MoonTest.System.Windows.Media
 				Assert.AreEqual(4, hits.Count, "#2");
 				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(91, 100), Root));
 				Assert.AreEqual(4, hits.Count, "#3");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(89, 100), Root));
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(89, 100), Root));
 				Assert.AreEqual(0, hits.Count, "#4");
 			});
 		}
 
-        [TestMethod]
-        [Asynchronous]
-        public void HitTest28()
-        {
-            Rectangle r = new Rectangle { Stroke = new SolidColorBrush(Colors.Blue), Width = 100, Height = 100, StrokeThickness = 0 };
-            Root.Children.Add(r);
+		[TestMethod]
+		[Asynchronous]
+		public void HitTest28()
+		{
+			Rectangle r = new Rectangle { Stroke = new SolidColorBrush(Colors.Blue), Width = 100, Height = 100, StrokeThickness = 0 };
+			Root.Children.Add(r);
 
-            CreateAsyncTest(Root, delegate {
-                List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(10, 10), r));
-                Assert.AreEqual(0, hits.Count, "#1");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 0), r));
-                Assert.AreEqual(0, hits.Count, "#2");
-            });
-        }
+			CreateAsyncTest(Root, delegate {
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(10, 10), r));
+				Assert.AreEqual(0, hits.Count, "#1");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 0), r));
+				Assert.AreEqual(0, hits.Count, "#2");
+			});
+		}
 
-        [TestMethod]
-        [Asynchronous]
+		[TestMethod]
+		[Asynchronous]
 		[MoonlightBug]
-        public void HitTest29()
-        {
-            Rectangle r = new Rectangle { Stroke = new SolidColorBrush(Colors.Blue), Width = 100, Height = 100, StrokeThickness = 1 };
-            Root.Children.Add(r);
+		public void HitTest29()
+		{
+			Rectangle r = new Rectangle { Stroke = new SolidColorBrush(Colors.Blue), Width = 100, Height = 100, StrokeThickness = 1 };
+			Root.Children.Add(r);
 
-            CreateAsyncTest(Root, delegate {
-                List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 0), r));
-                Assert.AreEqual(1, hits.Count, "#1");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(r.Width, 0), r));
-                Assert.AreEqual(1, hits.Count, "#2");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(r.Width, r.Height), r));
-                Assert.AreEqual(0, hits.Count, "#3");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(r.Width, r.Height - 1), r));
-                Assert.AreEqual(1, hits.Count, "#4");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, r.Height - 1), r));
-                Assert.AreEqual(1, hits.Count, "#5");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, r.Height), r));
-                Assert.AreEqual(0, hits.Count, "#6");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(10, 10), r));
-                Assert.AreEqual(0, hits.Count, "#7");
-            });
-        }
+			CreateAsyncTest(Root, delegate {
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 0), r));
+				Assert.AreEqual(1, hits.Count, "#1");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(r.Width, 0), r));
+				Assert.AreEqual(1, hits.Count, "#2");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(r.Width, r.Height), r));
+				Assert.AreEqual(0, hits.Count, "#3");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(r.Width, r.Height - 1), r));
+				Assert.AreEqual(1, hits.Count, "#4");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, r.Height - 1), r));
+				Assert.AreEqual(1, hits.Count, "#5");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, r.Height), r));
+				Assert.AreEqual(0, hits.Count, "#6");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(10, 10), r));
+				Assert.AreEqual(0, hits.Count, "#7");
+			});
+		}
 
-        [TestMethod]
-        [Asynchronous]
+		[TestMethod]
+		[Asynchronous]
 		[MoonlightBug]
-        public void HitTest30()
-        {
-            Border b = new Border { Width = 100, Height = 100, BorderBrush = new SolidColorBrush(Colors.Green), BorderThickness = new Thickness(0) };
-            Root.Children.Add(b);
+		public void HitTest30()
+		{
+			Border b = new Border { Width = 100, Height = 100, BorderBrush = new SolidColorBrush(Colors.Green), BorderThickness = new Thickness(0) };
+			Root.Children.Add(b);
 
-            CreateAsyncTest(Root, delegate {
-                List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(10, 10), b));
-                Assert.AreEqual(0, hits.Count, "#1");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 0), b));
-                Assert.AreEqual(1, hits.Count, "#2");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(1, 0), b));
-                Assert.AreEqual(0, hits.Count, "#3");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 1), b));
-                Assert.AreEqual(1, hits.Count, "#4");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width, 0), b));
-                Assert.AreEqual(1, hits.Count, "#5");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width - 1, 0), b));
-                Assert.AreEqual(0, hits.Count, "#6");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width, 1), b));
-                Assert.AreEqual(1, hits.Count, "#7");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width, b.Height - 1), b));
-                Assert.AreEqual(1, hits.Count, "#8");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(20, 20), b));
-                Assert.AreEqual(0, hits.Count, "#9");
-            });
-        }
+			CreateAsyncTest(Root, delegate {
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(10, 10), b));
+				Assert.AreEqual(0, hits.Count, "#1");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 0), b));
+				Assert.AreEqual(1, hits.Count, "#2");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(1, 0), b));
+				Assert.AreEqual(0, hits.Count, "#3");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 1), b));
+				Assert.AreEqual(1, hits.Count, "#4");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width, 0), b));
+				Assert.AreEqual(1, hits.Count, "#5");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width - 1, 0), b));
+				Assert.AreEqual(0, hits.Count, "#6");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width, 1), b));
+				Assert.AreEqual(1, hits.Count, "#7");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width, b.Height - 1), b));
+				Assert.AreEqual(1, hits.Count, "#8");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(20, 20), b));
+				Assert.AreEqual(0, hits.Count, "#9");
+			});
+		}
 
-        [TestMethod]
-        [Asynchronous]
+		[TestMethod]
+		[Asynchronous]
 		[MoonlightBug]
-        public void HitTest30b()
-        {
-            Border b = new Border { Width = 100, Height = 100, BorderBrush = new SolidColorBrush(Colors.Green), BorderThickness = new Thickness(10) };
-            Root.Children.Add(b);
+		public void HitTest30b()
+		{
+			Border b = new Border { Width = 100, Height = 100, BorderBrush = new SolidColorBrush(Colors.Green), BorderThickness = new Thickness(10) };
+			Root.Children.Add(b);
 
-            CreateAsyncTest(Root, delegate
-            {
-                List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(10, 10), b));
-                Assert.AreEqual(1, hits.Count, "#1");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 0), b));
-                Assert.AreEqual(1, hits.Count, "#2");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(1, 0), b));
-                Assert.AreEqual(1, hits.Count, "#3");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 1), b));
-                Assert.AreEqual(1, hits.Count, "#4");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width, 0), b));
-                Assert.AreEqual(1, hits.Count, "#5");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width - 1, 0), b));
-                Assert.AreEqual(1, hits.Count, "#6");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width, 1), b));
-                Assert.AreEqual(1, hits.Count, "#7");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width, b.Height - 1), b));
-                Assert.AreEqual(1, hits.Count, "#8");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(20, 20), b));
-                Assert.AreEqual(0, hits.Count, "#9");
-            });
-        }
+			CreateAsyncTest(Root, delegate
+			{
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(10, 10), b));
+				Assert.AreEqual(1, hits.Count, "#1");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 0), b));
+				Assert.AreEqual(1, hits.Count, "#2");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(1, 0), b));
+				Assert.AreEqual(1, hits.Count, "#3");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 1), b));
+				Assert.AreEqual(1, hits.Count, "#4");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width, 0), b));
+				Assert.AreEqual(1, hits.Count, "#5");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width - 1, 0), b));
+				Assert.AreEqual(1, hits.Count, "#6");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width, 1), b));
+				Assert.AreEqual(1, hits.Count, "#7");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width, b.Height - 1), b));
+				Assert.AreEqual(1, hits.Count, "#8");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(20, 20), b));
+				Assert.AreEqual(0, hits.Count, "#9");
+			});
+		}
 
-        [TestMethod]
-        [Asynchronous]
+		[TestMethod]
+		[Asynchronous]
 		[MoonlightBug]
-        public void HitTest31()
-        {
-            Border b = new Border { Width = 100, Height = 100, BorderBrush = new SolidColorBrush(Colors.Green), BorderThickness = new Thickness(0) };
-            Rectangle r = new Rectangle { Width = 10, Height = 10, Fill = new SolidColorBrush(Colors.Blue) };
-            Canvas.SetLeft(r, 70);
-            Canvas.SetTop(r, 70);
-            b.Child = r;
-            Root.Children.Add(b);
+		public void HitTest31()
+		{
+			Border b = new Border { Width = 100, Height = 100, BorderBrush = new SolidColorBrush(Colors.Green), BorderThickness = new Thickness(0) };
+			Rectangle r = new Rectangle { Width = 10, Height = 10, Fill = new SolidColorBrush(Colors.Blue) };
+			Canvas.SetLeft(r, 70);
+			Canvas.SetTop(r, 70);
+			b.Child = r;
+			Root.Children.Add(b);
 
-            CreateAsyncTest(Root, delegate {
-                List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(10, 10), b));
-                Assert.AreEqual(0, hits.Count, "#1");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 0), b));
-                Assert.AreEqual(1, hits.Count, "#2");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(1, 0), b));
-                Assert.AreEqual(0, hits.Count, "#3");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 1), b));
-                Assert.AreEqual(1, hits.Count, "#4");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width, 0), b));
-                Assert.AreEqual(1, hits.Count, "#5");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width - 1, 0), b));
-                Assert.AreEqual(0, hits.Count, "#6");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width, 1), b));
-                Assert.AreEqual(1, hits.Count, "#7");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width, b.Height - 1), b));
-                Assert.AreEqual(1, hits.Count, "#8");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(20, 20), b));
-                Assert.AreEqual(0, hits.Count, "#9");
-            });
-        }
+			CreateAsyncTest(Root, delegate {
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(10, 10), b));
+				Assert.AreEqual(0, hits.Count, "#1");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 0), b));
+				Assert.AreEqual(1, hits.Count, "#2");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(1, 0), b));
+				Assert.AreEqual(0, hits.Count, "#3");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 1), b));
+				Assert.AreEqual(1, hits.Count, "#4");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width, 0), b));
+				Assert.AreEqual(1, hits.Count, "#5");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width - 1, 0), b));
+				Assert.AreEqual(0, hits.Count, "#6");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width, 1), b));
+				Assert.AreEqual(1, hits.Count, "#7");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width, b.Height - 1), b));
+				Assert.AreEqual(1, hits.Count, "#8");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(20, 20), b));
+				Assert.AreEqual(0, hits.Count, "#9");
+			});
+		}
 
-        [TestMethod]
-        [Asynchronous]
+		[TestMethod]
+		[Asynchronous]
 		[MoonlightBug]
-        public void HitTest31b()
-        {
-            Border b = new Border { Width = 100, Height = 100, BorderBrush = new SolidColorBrush(Colors.Green), BorderThickness = new Thickness(10) };
-            Rectangle r = new Rectangle { Width = 10, Height = 10, Fill = new SolidColorBrush(Colors.Blue) };
-            Canvas.SetLeft(r, 70);
-            Canvas.SetTop(r, 70);
-            b.Child = r;
-            Root.Children.Add(b);
+		public void HitTest31b()
+		{
+			Border b = new Border { Width = 100, Height = 100, BorderBrush = new SolidColorBrush(Colors.Green), BorderThickness = new Thickness(10) };
+			Rectangle r = new Rectangle { Width = 10, Height = 10, Fill = new SolidColorBrush(Colors.Blue) };
+			Canvas.SetLeft(r, 70);
+			Canvas.SetTop(r, 70);
+			b.Child = r;
+			Root.Children.Add(b);
 
-            CreateAsyncTest(Root, delegate {
-                List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(10, 10), b));
-                Assert.AreEqual(1, hits.Count, "#1");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 0), b));
-                Assert.AreEqual(1, hits.Count, "#2");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(1, 0), b));
-                Assert.AreEqual(1, hits.Count, "#3");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 1), b));
-                Assert.AreEqual(1, hits.Count, "#4");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width, 0), b));
-                Assert.AreEqual(1, hits.Count, "#5");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width - 1, 0), b));
-                Assert.AreEqual(1, hits.Count, "#6");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width, 1), b));
-                Assert.AreEqual(1, hits.Count, "#7");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width, b.Height - 1), b));
-                Assert.AreEqual(1, hits.Count, "#8");
-                hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(20, 20), b));
-                Assert.AreEqual(0, hits.Count, "#9");
-            });
-        }
+			CreateAsyncTest(Root, delegate {
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(10, 10), b));
+				Assert.AreEqual(1, hits.Count, "#1");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 0), b));
+				Assert.AreEqual(1, hits.Count, "#2");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(1, 0), b));
+				Assert.AreEqual(1, hits.Count, "#3");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(0, 1), b));
+				Assert.AreEqual(1, hits.Count, "#4");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width, 0), b));
+				Assert.AreEqual(1, hits.Count, "#5");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width - 1, 0), b));
+				Assert.AreEqual(1, hits.Count, "#6");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width, 1), b));
+				Assert.AreEqual(1, hits.Count, "#7");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(b.Width, b.Height - 1), b));
+				Assert.AreEqual(1, hits.Count, "#8");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(20, 20), b));
+				Assert.AreEqual(0, hits.Count, "#9");
+			});
+		}
 					
 		[TestMethod]
 		[Asynchronous]
