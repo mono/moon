@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Browser;
@@ -1670,8 +1670,6 @@ namespace MoonTest.System.Windows.Controls
 
             retval = widget.GetValue (MediaElement.AttributesProperty);
             Assert.IsNotNull (retval, "GetValue(AttributesProperty) should not have returned null");
-            Assert.IsTrue (retval is Dictionary`2, "GetValue(AttributesProperty) is not of the correct type");
-            Assert.AreEqual ("System.Collections.Generic.Dictionary`2[System.String,System.String]", retval.ToString (), "GetValue(AttributesProperty) does not match the default value");
         }
 
         [TestMethod]
@@ -1748,8 +1746,6 @@ namespace MoonTest.System.Windows.Controls
 
             retval = widget.GetValue (MultiScaleImage.SubImagesProperty);
             Assert.IsNotNull (retval, "GetValue(SubImagesProperty) should not have returned null");
-            Assert.IsTrue (retval is ReadOnlyCollection`1, "GetValue(SubImagesProperty) is not of the correct type");
-            Assert.AreEqual ("System.Collections.ObjectModel.ReadOnlyCollection`1[System.Windows.Controls.MultiScaleSubImage]", retval.ToString (), "GetValue(SubImagesProperty) does not match the default value");
         }
 
         [TestMethod]
@@ -1939,7 +1935,7 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (PasswordBox.PasswordCharProperty);
             Assert.IsNotNull (retval, "GetValue(PasswordCharProperty) should not have returned null");
             Assert.IsTrue (retval is char, "GetValue(PasswordCharProperty) is not of the correct type");
-            Assert.AreEqual (&#9679;, retval, "GetValue(PasswordCharProperty) does not match the default value");
+            Assert.AreEqual ("●", retval.ToString (), "GetValue(PasswordCharProperty) does not match the default value");
         }
 
         [TestMethod]
@@ -1972,7 +1968,7 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (RowDefinition.MaxHeightProperty);
             Assert.IsNotNull (retval, "GetValue(MaxHeightProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(MaxHeightProperty) is not of the correct type");
-            Assert.IsTrue (Double.IsPositiveInfinity (retval), "GetValue(MaxHeightProperty) does not match the default value");
+            Assert.IsTrue (Double.IsPositiveInfinity ((double) retval), "GetValue(MaxHeightProperty) does not match the default value");
 
             retval = widget.GetValue (RowDefinition.MinHeightProperty);
             Assert.IsNotNull (retval, "GetValue(MinHeightProperty) should not have returned null");
@@ -2010,7 +2006,7 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (ColumnDefinition.MaxWidthProperty);
             Assert.IsNotNull (retval, "GetValue(MaxWidthProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(MaxWidthProperty) is not of the correct type");
-            Assert.IsTrue (Double.IsPositiveInfinity (retval), "GetValue(MaxWidthProperty) does not match the default value");
+            Assert.IsTrue (Double.IsPositiveInfinity ((double) retval), "GetValue(MaxWidthProperty) does not match the default value");
 
             retval = widget.GetValue (ColumnDefinition.MinWidthProperty);
             Assert.IsNotNull (retval, "GetValue(MinWidthProperty) should not have returned null");
@@ -2349,7 +2345,7 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (ComboBox.MaxDropDownHeightProperty);
             Assert.IsNotNull (retval, "GetValue(MaxDropDownHeightProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(MaxDropDownHeightProperty) is not of the correct type");
-            Assert.IsTrue (Double.IsPositiveInfinity (retval), "GetValue(MaxDropDownHeightProperty) does not match the default value");
+            Assert.IsTrue (Double.IsPositiveInfinity ((double) retval), "GetValue(MaxDropDownHeightProperty) does not match the default value");
         }
 
         [TestMethod]
