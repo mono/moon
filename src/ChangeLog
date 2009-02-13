@@ -1,3 +1,9 @@
+2009-02-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* downloader.cpp: Sprinkle a few SetCurrentDeployments. Fixes
+	  a crash when downloading mms streams (due to not having
+	  deployment set).
+
 2009-02-12  Geoff Norton  <gnorton@novell.com>
 
 	* playlist.cpp: Ensure that we don't poke around in random memory

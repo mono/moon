@@ -120,6 +120,8 @@ Downloader::Abort ()
 {
 	LOG_DOWNLOADER ("Downloader::Abort ()\n");
 	
+	SetCurrentDeployment ();
+	
 	if (!aborted && !failed_msg) {
 		InternalAbort ();
 		SetDownloadProgress (0.0);
@@ -514,6 +516,8 @@ Downloader::NotifyFinished (const char* final_uri)
 	if (aborted)
 		return;
 	
+	SetCurrentDeployment ();
+	
 	if (!GetSurface ())
 		return;
 
@@ -546,6 +550,8 @@ Downloader::NotifyFailed (const char *msg)
 	if (failed_msg)
 		return;
 	
+	SetCurrentDeployment ();
+	
 	if (!GetSurface ())
 		return;
 	
@@ -568,6 +574,8 @@ Downloader::NotifySize (gint64 size)
 	
 	if (aborted)
 		return;
+	
+	SetCurrentDeployment ();
 	
 	if (!GetSurface ())
 		return;
