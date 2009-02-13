@@ -1718,9 +1718,9 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.ReadLocalValue (MultiScaleImage.UseSpringsProperty);
             Assert.AreEqual (DependencyProperty.UnsetValue, retval, "ReadLocalValue(UseSpringsProperty) should not have a value by default");
 
-            //Assert.Throws<Exception>(delegate {
-            //    retval = widget.ReadLocalValue (MultiScaleImage.SubImagesProperty);
-            //}, "ReadLocalValue(SubImagesProperty) should thow an exception");
+            Assert.Throws<Exception>(delegate {
+                retval = widget.ReadLocalValue (MultiScaleImage.SubImagesProperty);
+            }, "ReadLocalValue(SubImagesProperty) should thow an exception");
         }
 
         [TestMethod]
