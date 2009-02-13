@@ -575,8 +575,8 @@ MediaElement::SetMedia (Media *media)
 	media->SetBufferingEnabled (true);
 	
 	SetNaturalDuration (broadcast ? 0 : TimeSpan_FromPts (mplayer->GetDuration ()));
-	SetNaturalVideoHeight ((double) mplayer->GetVideoHeight ());
-	SetNaturalVideoWidth ((double) mplayer->GetVideoWidth ());
+	SetNaturalVideoHeight (mplayer->GetVideoHeight ());
+	SetNaturalVideoWidth (mplayer->GetVideoWidth ());
 	SetAudioStreamCount (mplayer->GetAudioStreamCount ());
 	
 	if (mplayer->HasAudio ()) {

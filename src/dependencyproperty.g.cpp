@@ -141,8 +141,8 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "Source", NULL, Type::STRING, false, false, false, true, NULL, NULL, false, false);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "RenderedFramesPerSecond", new Value (0.0), Type::DOUBLE, false, false, true, false, NULL, NULL, false, false);
 	DependencyProperty::Register (this, Type::MEDIAELEMENT, "Position", Type::TIMESPAN);
-	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "NaturalVideoWidth", new Value (0.0), Type::DOUBLE, false, false, true, false, NULL, Validators::DoubleGreaterThanZeroValidator, false, false);
-	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "NaturalVideoHeight", new Value (0.0), Type::DOUBLE, false, false, true, false, NULL, Validators::DoubleGreaterThanZeroValidator, false, false);
+	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "NaturalVideoWidth", new Value (0.0), Type::INT32, false, false, true, false, NULL, Validators::IntGreaterThanZeroValidator, false, false);
+	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "NaturalVideoHeight", new Value (0.0), Type::INT32, false, false, true, false, NULL, Validators::IntGreaterThanZeroValidator, false, false);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "NaturalDuration", new Value (Duration::FromSeconds (0)), Type::DURATION, false, false, true, false, NULL, NULL, false, false);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "Markers", NULL, Type::TIMELINEMARKER_COLLECTION, true, false, false, false, NULL, NULL, false, false);
 	DependencyProperty::Register (this, Type::MEDIAELEMENT, "IsMuted", new Value (false), Type::BOOL);
@@ -1926,28 +1926,28 @@ MediaElement::SetPosition (TimeSpan value)
 	SetValue (MediaElement::PositionProperty, Value (value, Type::TIMESPAN));
 }
 
-double
+gint32
 MediaElement::GetNaturalVideoWidth ()
 {
 	Value *value = GetValue (MediaElement::NaturalVideoWidthProperty);
-	return value->AsDouble ();
+	return value->AsInt32 ();
 }
 
 void
-MediaElement::SetNaturalVideoWidth (double value)
+MediaElement::SetNaturalVideoWidth (gint32 value)
 {
 	SetValue (MediaElement::NaturalVideoWidthProperty, Value (value));
 }
 
-double
+gint32
 MediaElement::GetNaturalVideoHeight ()
 {
 	Value *value = GetValue (MediaElement::NaturalVideoHeightProperty);
-	return value->AsDouble ();
+	return value->AsInt32 ();
 }
 
 void
-MediaElement::SetNaturalVideoHeight (double value)
+MediaElement::SetNaturalVideoHeight (gint32 value)
 {
 	SetValue (MediaElement::NaturalVideoHeightProperty, Value (value));
 }

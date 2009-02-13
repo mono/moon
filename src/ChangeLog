@@ -1,5 +1,8 @@
 2009-02-13  Jeffrey Stedfast  <fejj@novell.com>
 
+	* mediaelement.h (class MediaElement): NaturalVideoWidth/Height
+	should be ints, not doubles.
+
 	* text.h (class Glyphs): Set the DefaultValues for
 	UnicodeStringProperty, IndicesProperty, and FontUriProperty to "".
 

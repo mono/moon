@@ -154,8 +154,8 @@ class MediaElement : public FrameworkElement {
 	// this setter doesn't take a Duration.  why the disconnect?
 	void SetNaturalDuration (TimeSpan duration);
 
-	void SetNaturalVideoHeight (double height);
-	void SetNaturalVideoWidth (double width);
+	void SetNaturalVideoHeight (int height);
+	void SetNaturalVideoWidth (int width);
 	
 	void PlayOrStopNow ();
 	void PauseNow ();
@@ -205,9 +205,9 @@ class MediaElement : public FrameworkElement {
 	const static int MarkersProperty;
  	/* @PropertyType=Duration,DefaultValue=Duration::FromSeconds (0),ReadOnly,GenerateGetter */
 	const static int NaturalDurationProperty;
- 	/* @PropertyType=double,DefaultValue=0.0,ReadOnly,ManagedPropertyType=int,GenerateAccessors,Validator=DoubleGreaterThanZeroValidator */
+ 	/* @PropertyType=gint32,DefaultValue=0,ReadOnly,GenerateAccessors,Validator=IntGreaterThanZeroValidator */
 	const static int NaturalVideoHeightProperty;
- 	/* @PropertyType=double,DefaultValue=0.0,ReadOnly,ManagedPropertyType=int,GenerateAccessors,Validator=DoubleGreaterThanZeroValidator */
+ 	/* @PropertyType=gint32,DefaultValue=0,ReadOnly,GenerateAccessors,Validator=IntGreaterThanZeroValidator */
 	const static int NaturalVideoWidthProperty;
  	/* @PropertyType=TimeSpan,GenerateAccessors */
 	const static int PositionProperty;
@@ -346,8 +346,8 @@ class MediaElement : public FrameworkElement {
 	TimelineMarkerCollection *GetMarkers ();
 	
 	Duration *GetNaturalDuration ();
-	double GetNaturalVideoHeight ();
-	double GetNaturalVideoWidth ();
+	int GetNaturalVideoHeight ();
+	int GetNaturalVideoWidth ();
 	
 	void SetPosition (TimeSpan position);
 	TimeSpan GetPosition ();
