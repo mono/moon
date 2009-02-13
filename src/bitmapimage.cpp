@@ -21,7 +21,6 @@ BitmapImage::BitmapImage ()
 	SetObjectType (Type::BITMAPIMAGE);
 	buffer = NULL;
 	size = 0;
-	SetUriSource ("");
 }
 
 BitmapImage::~BitmapImage ()

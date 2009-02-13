@@ -324,9 +324,9 @@ class Glyphs : public FrameworkElement {
 	const static int FillProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int FontRenderingEmSizeProperty;
- 	/* @PropertyType=string,ManagedPropertyType=Uri,GenerateAccessors,Validator=NonNullStringValidator */
+ 	/* @PropertyType=string,ManagedPropertyType=Uri,DefaultValue=\"\",GenerateAccessors,Validator=NonNullStringValidator */
 	const static int FontUriProperty;
- 	/* @PropertyType=string,GenerateAccessors */
+ 	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors */
 	const static int IndicesProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int OriginXProperty;
@@ -334,7 +334,7 @@ class Glyphs : public FrameworkElement {
 	const static int OriginYProperty;
  	/* @PropertyType=StyleSimulations,DefaultValue=StyleSimulationsNone,GenerateAccessors */
 	const static int StyleSimulationsProperty;
- 	/* @PropertyType=string,GenerateAccessors */
+ 	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors */
 	const static int UnicodeStringProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */

@@ -1,3 +1,11 @@
+2009-02-13  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.h (class Glyphs): Set the DefaultValues for
+	UnicodeStringProperty, IndicesProperty, and FontUriProperty to "".
+
+	* bitmapimage.cpp (BitmapImage::BitmapImage): Don't call
+	SetUriSource("") (it's already the DefaultValue).
+
 2009-02-13  Geoff Norton  <gnorton@novell.com>
 
 	* media.cpp|h: Ensure we're comparing magics with unsigned values, and 

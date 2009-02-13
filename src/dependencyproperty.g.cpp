@@ -173,12 +173,12 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::MEDIABASE, "Stretch", new Value (StretchUniform), Type::INT32);
 	DependencyProperty::RegisterFull (this, Type::MEDIABASE, "Source", NULL, Type::STRING, false, false, false, true, NULL, NULL, false, false);
 	DependencyProperty::Register (this, Type::MEDIABASE, "DownloadProgress", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::GLYPHS, "UnicodeString", Type::STRING);
+	DependencyProperty::Register (this, Type::GLYPHS, "UnicodeString", new Value (""), Type::STRING);
 	DependencyProperty::Register (this, Type::GLYPHS, "StyleSimulations", new Value (StyleSimulationsNone), Type::INT32);
 	DependencyProperty::Register (this, Type::GLYPHS, "OriginY", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::GLYPHS, "OriginX", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::GLYPHS, "Indices", Type::STRING);
-	DependencyProperty::RegisterFull (this, Type::GLYPHS, "FontUri", NULL, Type::STRING, false, false, false, false, NULL, Validators::NonNullStringValidator, false, false);
+	DependencyProperty::Register (this, Type::GLYPHS, "Indices", new Value (""), Type::STRING);
+	DependencyProperty::RegisterFull (this, Type::GLYPHS, "FontUri", new Value (""), Type::STRING, false, false, false, false, NULL, Validators::NonNullStringValidator, false, false);
 	DependencyProperty::Register (this, Type::GLYPHS, "FontRenderingEmSize", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::GLYPHS, "Fill", Type::BRUSH);
 	DependencyProperty::Register (this, Type::CONTROL, "VerticalContentAlignment", new Value (VerticalAlignmentCenter), Type::INT32);
