@@ -142,6 +142,8 @@ namespace DefaultValues {
 						special = "Double.IsPositiveInfinity ((double) retval)";
 					else if (Double.IsNaN (d))
 						special = "Double.IsNaN ((double) retval)";
+					else if ((double) retval == -3.40282346638529E+38)
+						expected = "(double) 0";
 					else
 						expected = "(double) " + retval.ToString ();
 				} else if (retval is bool) {
