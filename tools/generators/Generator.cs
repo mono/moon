@@ -295,27 +295,51 @@ class Generator {
 					continue;
 				
 				text.AppendLine ();
+				
+				// property accessor
 				text.Append ("\t\t");
 				Helper.WriteAccess (text, field.GetManagedAccessorAccess ());
 				text.Append (" ");
-				text.Append (field.GetDPManagedPropertyType (all));
-				text.Append (" ");
+				
+				string ptype = field.GetDPManagedPropertyType (all);
+				if (field.IsDPReadOnly && ptype.EndsWith ("Collection")) {
+					text.Append ("ReadOnlyCollection <");
+					text.Append (ptype.Substring (0, ptype.Length - 10));
+					text.Append ("> ");
+				} else {
+					text.Append (ptype);
+					text.Append (" ");
+				}
+				
 				text.Append (field.GetDependencyPropertyName ());
 				text.AppendLine (" {");
 				
+				// property getter
 				text.Append ("\t\t\t");
 				if (field.GetManagedAccessorAccess () != field.GetManagedGetterAccess ()) {
 					Helper.WriteAccess (text, field.GetManagedGetterAccess ());
 					text.Append (" ");
 				}
 				
-				text.Append ("get { return (");
-				text.Append (field.GetDPManagedPropertyType (all));
-				if (conv_int_to_double)
-					text.Append (") (double");
-				text.Append (") GetValue (");
-				text.Append (field.Name);
-				text.AppendLine ("); }");
+				if (field.IsDPReadOnly && ptype.EndsWith ("Collection")) {
+					text.Append ("get { return new ReadOnlyCollection <");
+					text.Append (ptype.Substring (0, ptype.Length - 10));
+					text.Append ("> ((");
+					text.Append (ptype);
+					text.Append (") GetValue (");
+					text.Append (field.Name);
+					text.AppendLine (")); }");
+				} else {
+					text.Append ("get { return (");
+					text.Append (ptype);
+					if (conv_int_to_double)
+						text.Append (") (double");
+					text.Append (") GetValue (");
+					text.Append (field.Name);
+					text.AppendLine ("); }");
+				}
+				
+				// property setter
 				if (!field.IsDPReadOnly) {
 					text.Append ("\t\t\t");
 					if (field.GetManagedAccessorAccess () != field.GetManagedSetterAccess ()) {
