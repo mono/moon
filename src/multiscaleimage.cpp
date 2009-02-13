@@ -270,7 +270,7 @@ multi_scale_image_handle_parsed (void *userdata)
 {
 	MultiScaleImage *msi = (MultiScaleImage*)userdata;
 	//if the source is a collection, fill the subimages list
-	if (msi->source == NULL)
+	if (!msi->source)
 		msi->source = msi->GetSource ();
 
 	if (msi->source->GetImageWidth () >= 0 && msi->source->GetImageHeight () >= 0)
@@ -526,7 +526,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 	}
 
 	DeepZoomImageTileSource *dzits = (DeepZoomImageTileSource*) source;
-	if (dzits && dzits->isCollection && GetSubImageCollection ()) {
+	if (dzits && dzits->IsCollection() && GetSubImageCollection ()) {
 		//Let's render collection in a different method to not break this one right now
 		RenderCollection (cr, region);
 		return;

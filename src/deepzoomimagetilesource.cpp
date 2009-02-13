@@ -102,6 +102,13 @@ class DZParserinfo
 void start_element (void *data, const char *el, const char **attr);
 void end_element (void *data, const char *el);
 
+gpointer
+get_tile_layer (int level, int x, int y, void *userdata)
+{
+	return ((DeepZoomImageTileSource *)userdata)->GetTileLayer (level, x, y);
+}
+
+
 void
 DeepZoomImageTileSource::Init ()
 {
@@ -251,12 +258,6 @@ LOG_MSI ("Parsing DeepZoom %s\n", filename);
 LOG_MSI ("Done parsing...\n");
 	if (parsed_callback)
 		parsed_callback (cb_userdata);
-}
-
-gpointer
-get_tile_layer (int level, int x, int y, void *userdata)
-{
-	return ((DeepZoomImageTileSource *)userdata)->GetTileLayer (level, x, y);
 }
 
 gpointer

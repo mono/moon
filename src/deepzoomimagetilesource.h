@@ -21,16 +21,10 @@
 #include "uri.h"
 
 typedef void (*parsed_cb) (void *userdata);
-gpointer get_tile_layer (int level, int x, int y, void *user_data);
 
 /* @Version=2,Namespace=System.Windows.Media */
 class DeepZoomImageTileSource : public MultiScaleTileSource {
-	friend class MultiScaleImage;
-	friend gpointer get_tile_layer (int level, int x, int y, void *user_data);
-	friend void multi_scale_image_handle_parsed (void *userdata);
 
-	void Download ();
-	gpointer GetTileLayer (int level, int x, int y);
 
 	Downloader* downloader;
 
@@ -45,17 +39,10 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	char *format;
 	bool nested;
 	GList *display_rects;
-	GList *subimages;
 
 	void Init ();
 
 	void Parse (const char* filename);
-
-	void set_parsed_cb (parsed_cb callback, void *userdata)
-	{
-		parsed_callback = callback;
-		cb_userdata = userdata;
-	}
 
 	bool isCollection;
 	int maxLevel;
@@ -64,12 +51,22 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	virtual ~DeepZoomImageTileSource ();
 
  public:
+	GList *subimages;
+	bool IsCollection () { return isCollection;}
 	/* @GenerateCBinding,GeneratePInvoke */
 	DeepZoomImageTileSource ();
 
 	DeepZoomImageTileSource (const char *uri, bool nested = false);
+	void Download ();
+	gpointer GetTileLayer (int level, int x, int y);
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	void set_parsed_cb (parsed_cb callback, void *userdata)
+	{
+		parsed_callback = callback;
+		cb_userdata = userdata;
+	}
+
 
 	//
 	// Properties
