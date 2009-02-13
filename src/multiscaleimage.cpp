@@ -525,7 +525,6 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 	LOG_MSI ("MSI::Render\n");
 
 
-
 //	if (!surface)
 //		return;
 
@@ -601,6 +600,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 	}
 
 	//render here
+	cairo_push_group (cr);
 	LOG_MSI ("rendering layers from %d to %d\n", from_layer, to_layer);
 	int layer_to_render = from_layer;
 	while (from_layer > 0 && layer_to_render <= to_layer) {
@@ -618,13 +618,12 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 				cairo_save (cr);
 
 				cairo_rectangle (cr, 0, 0, w, h);
-				//cairo_scale (cr, w / (vp_w * im_w), h / (vp_h * im_h)); //scale to viewport
+				cairo_clip (cr);
 				cairo_scale (cr, w / (vp_w * im_w), w / (vp_w * im_w)); //scale to viewport
 				cairo_translate (cr, -vp_ox * im_w + i * v_tile_w, -vp_oy * im_h+ j * v_tile_h);
 				//cairo_scale (cr, im_w / (double)*p_w, im_h / (double)*p_h); //scale to image size
 				cairo_scale (cr, ldexp (1.0, layers - layer_to_render), ldexp (1.0, layers - layer_to_render)); //scale to image size
 				cairo_set_source_surface (cr, image, 0, 0);
-
 				cairo_fill (cr);
 				cairo_restore (cr);
 
@@ -632,6 +631,11 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 		}
 		layer_to_render++;
 	}
+	cairo_pop_group_to_source (cr);
+	cairo_rectangle (cr, 0, 0, w, h);
+	cairo_clip (cr);
+	cairo_paint (cr);
+
 
 	if (downloading)
 		return;
