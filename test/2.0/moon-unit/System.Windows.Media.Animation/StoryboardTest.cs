@@ -35,6 +35,7 @@ using System.Windows.Shapes;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Mono.Moonlight.UnitTesting;
+using Microsoft.Silverlight.Testing;
 
 namespace MoonTest.System.Windows.Media.Animation {
 
@@ -44,7 +45,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 	}
 	
 	[TestClass]
-	public class StoryboardTest {
+	public class StoryboardTest : SilverlightTest {
 
 		[TestMethod]
 		public void InvalidValues_NonTimeline ()
@@ -207,6 +208,65 @@ namespace MoonTest.System.Windows.Media.Animation {
 			Assert.Throws<ArgumentNullException> (delegate {
 				Storyboard.GetTargetProperty (null);
 			}, "null");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void CurrentState ()
+		{
+			Storyboard sb = new Storyboard { RepeatBehavior = new RepeatBehavior (2) };
+
+			Rectangle r = new Rectangle { Name = "A" };
+			Storyboard child = new Storyboard ();
+			DoubleAnimation animation = new DoubleAnimation { Duration = new Duration(TimeSpan.FromSeconds (1)), From = 10, To = 100 };
+			Storyboard.SetTargetName (animation, "A");
+			Storyboard.SetTargetProperty(animation, new PropertyPath ("Width"));
+
+			child.Children.Add (animation);
+			sb.Children.Add (child);
+			TestPanel.Children.Add(r);
+
+			r = new Rectangle { Name = "B" };
+			child = new Storyboard ();
+			animation = new DoubleAnimation { Duration = new Duration (TimeSpan.FromSeconds (2)), From = 10, To = 100 };
+			Storyboard.SetTargetName (animation, "B");
+			Storyboard.SetTargetProperty (animation, new PropertyPath ("Width"));
+			
+			child.Children.Add (animation);
+			sb.Children.Add (child);
+			TestPanel.Children.Add(r);
+
+			TestPanel.Resources.Add ("asdas", sb);
+			Enqueue (delegate { Assert.AreEqual (ClockState.Stopped, sb.GetCurrentState (), "#1"); });
+			Enqueue (delegate { sb.Begin (); });
+
+			EnqueueSleep (500);
+			Enqueue (delegate { Assert.AreEqual (ClockState.Active, sb.GetCurrentState (), "#2"); });
+			Enqueue (delegate { Assert.AreEqual (ClockState.Active, ((Storyboard)sb.Children[0]).GetCurrentState (), "#3"); });
+			Enqueue (delegate { Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#4"); });
+			
+			EnqueueSleep (750);
+			Enqueue (delegate { Assert.AreEqual (ClockState.Active, sb.GetCurrentState (), "#5"); });
+			Enqueue (delegate { Assert.AreEqual (ClockState.Filling, ((Storyboard) sb.Children [0]).GetCurrentState (), "#6"); });
+			Enqueue (delegate { Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#7"); });
+
+			Enqueue (delegate { TestPanel.Children.Clear (); TestPanel.Resources.Clear (); });
+			EnqueueSleep (100);
+			Enqueue (delegate { Assert.AreEqual (ClockState.Active, sb.GetCurrentState (), "#8"); });
+			Enqueue (delegate { Assert.AreEqual (ClockState.Filling, ((Storyboard) sb.Children [0]).GetCurrentState (), "#9"); });
+			Enqueue (delegate { Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#10"); });
+
+			Enqueue (delegate { sb.Stop (); });
+			Enqueue (delegate { Assert.AreEqual (ClockState.Stopped, sb.GetCurrentState (), "#11"); });
+			Enqueue (delegate { Assert.AreEqual (ClockState.Filling, ((Storyboard) sb.Children [0]).GetCurrentState (), "#12"); });
+			Enqueue (delegate { Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#13"); });
+
+			EnqueueSleep (100);
+			Enqueue (delegate { Assert.AreEqual (ClockState.Stopped, sb.GetCurrentState (), "#14"); });
+			Enqueue (delegate { Assert.AreEqual (ClockState.Filling, ((Storyboard) sb.Children [0]).GetCurrentState (), "#15"); });
+			Enqueue (delegate { Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#16"); });
+			EnqueueTestComplete ();
 		}
 	}
 }

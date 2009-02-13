@@ -1,3 +1,8 @@
+2009-02-13  Alan McGovern  <amcgovern@novell.com> 
+
+	* System.Windows.Media.Animation/StoryboardTest.cs: Add test
+	to check how the State changes in StoryBoard.
+
 2009-02-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.Controls/ListBoxTest.cs: Mark failing test as
