@@ -1,5 +1,10 @@
 2009-02-13  Jeffrey Stedfast  <fejj@novell.com>
 
+	* Generator.cs: Revert previous change, we'll just manually bind
+	these types of properties.
+
+2009-02-13  Jeffrey Stedfast  <fejj@novell.com>
+
 	* Generator.cs: Add logic for ReadOnlyCollection property
 	accessors.
 
