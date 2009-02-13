@@ -1,5 +1,9 @@
 2009-02-13  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* multiscaleimage.cpp: timing macros
+
+2009-02-13  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* multiscaleimage.cpp: embed the rendering in push_group/pop_group then
 	paint at once to avoid flickering.
 

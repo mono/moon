@@ -36,6 +36,15 @@
 #include "file-downloader.h"
 #include "multiscalesubimage.h"
 
+#if LOGGING
+#include "clock.h"
+#define STARTTIMER(id)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MSI)) TimeSpan id##_t_start = get_now()
+#define ENDTIMER(id,str)		if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MSI)) TimeSpan id##_t_end = get_now(); printf ("timing of '%s' ended took (%f ms)\n", str, id##_t_end, (double)(id##_t_end - id##_t_start) / 10000)
+#else
+#define STATTIMER(id)
+#define ENDTIMER(id,str)
+#endif
+
 MultiScaleImage::MultiScaleImage ()
 {
 //	static bool init = true;
