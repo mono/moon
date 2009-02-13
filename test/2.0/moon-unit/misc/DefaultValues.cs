@@ -1295,12 +1295,12 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (Glyphs.OriginXProperty);
             Assert.IsNotNull (retval, "GetValue(OriginXProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(OriginXProperty) is not of the correct type");
-            Assert.AreEqual ((double) -3.40282346638529E+38, retval, "GetValue(OriginXProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(OriginXProperty) does not match the default value");
 
             retval = widget.GetValue (Glyphs.OriginYProperty);
             Assert.IsNotNull (retval, "GetValue(OriginYProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(OriginYProperty) is not of the correct type");
-            Assert.AreEqual ((double) -3.40282346638529E+38, retval, "GetValue(OriginYProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(OriginYProperty) does not match the default value");
 
             retval = widget.GetValue (Glyphs.FillProperty);
             Assert.IsNull (retval, "GetValue(FillProperty) should have returned null");
