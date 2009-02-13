@@ -22,9 +22,6 @@ typedef gpointer (*get_image_uri_func) (int level, int posX, int posY, void* use
 /* @Version=2,Namespace=System.Windows.Media */
 /* @CallInitialize */
 class MultiScaleTileSource : public DependencyObject {
-	friend class MultiScaleImage;
-
-
  protected:
 	long imageWidth; //width of the DeepZoom Image
 	long imageHeight;
@@ -32,10 +29,11 @@ class MultiScaleTileSource : public DependencyObject {
 	int tileHeight;
 	int tileOverlap; //how much the tiles overlap
 
-	get_image_uri_func get_tile_func;
 	virtual ~MultiScaleTileSource () {}
 
  public:
+	get_image_uri_func get_tile_func;
+
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	MultiScaleTileSource ();
 

@@ -1,5 +1,9 @@
 2009-02-13  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* tilesource.h: drop the friends
+
+2009-02-13  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* Makefile.am: remove deepzoomimagetilesource.h from the
 	include_headers. no one should code against it.
 
