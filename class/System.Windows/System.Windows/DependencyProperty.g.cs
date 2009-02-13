@@ -5,7 +5,6 @@
 using Mono;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -648,44 +647,6 @@ namespace System.Windows.Controls {
 		public double Volume {
 			get { return (double) GetValue (VolumeProperty); }
 			set { SetValue (VolumeProperty, value); }
-		}
-	}
-
-	partial class MultiScaleImage {
-		public static readonly DependencyProperty AspectRatioProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "AspectRatio", typeof (double));
-		public static readonly DependencyProperty SourceProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "Source", typeof (MultiScaleTileSource));
-		public static readonly DependencyProperty SubImagesProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "SubImages", typeof (MultiScaleSubImageCollection));
-		public static readonly DependencyProperty UseSpringsProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "UseSprings", typeof (bool));
-		public static readonly DependencyProperty ViewportOriginProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "ViewportOrigin", typeof (Point));
-		public static readonly DependencyProperty ViewportWidthProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "ViewportWidth", typeof (double));
-
-		public double AspectRatio {
-			get { return (double) GetValue (AspectRatioProperty); }
-			set { SetValue (AspectRatioProperty, value); }
-		}
-
-		public MultiScaleTileSource Source {
-			get { return (MultiScaleTileSource) GetValue (SourceProperty); }
-			set { SetValue (SourceProperty, value); }
-		}
-
-		public ReadOnlyCollection <MultiScaleSubImage> SubImages {
-			get { return new ReadOnlyCollection <MultiScaleSubImage> ((MultiScaleSubImageCollection) GetValue (SubImagesProperty)); }
-		}
-
-		public bool UseSprings {
-			get { return (bool) GetValue (UseSpringsProperty); }
-			set { SetValue (UseSpringsProperty, value); }
-		}
-
-		public Point ViewportOrigin {
-			get { return (Point) GetValue (ViewportOriginProperty); }
-			set { SetValue (ViewportOriginProperty, value); }
-		}
-
-		public double ViewportWidth {
-			get { return (double) GetValue (ViewportWidthProperty); }
-			set { SetValue (ViewportWidthProperty, value); }
 		}
 	}
 
