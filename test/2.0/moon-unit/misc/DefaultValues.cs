@@ -1559,6 +1559,10 @@ namespace MoonTest.System.Windows.Controls
 
             retval = widget.ReadLocalValue (MediaElement.DroppedFramesPerSecondProperty);
             Assert.AreEqual (DependencyProperty.UnsetValue, retval, "ReadLocalValue(DroppedFramesPerSecondProperty) should not have a value by default");
+
+            Assert.Throws<Exception>(delegate {
+                retval = widget.ReadLocalValue (MediaElement.AttributesProperty);
+            }, "ReadLocalValue(AttributesProperty) should thow an exception");
         }
 
         [TestMethod]
@@ -1713,6 +1717,10 @@ namespace MoonTest.System.Windows.Controls
 
             retval = widget.ReadLocalValue (MultiScaleImage.UseSpringsProperty);
             Assert.AreEqual (DependencyProperty.UnsetValue, retval, "ReadLocalValue(UseSpringsProperty) should not have a value by default");
+
+            //Assert.Throws<Exception>(delegate {
+            //    retval = widget.ReadLocalValue (MultiScaleImage.SubImagesProperty);
+            //}, "ReadLocalValue(SubImagesProperty) should thow an exception");
         }
 
         [TestMethod]
