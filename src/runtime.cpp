@@ -271,6 +271,7 @@ Surface::Surface (MoonWindow *window, bool silverlight2)
 	zombie = false;
 	downloader_context = NULL;
 	downloaders = NULL;
+	media_element_emit_ended_on_error = false;
 	background_color = NULL;
 	cursor = MouseCursorDefault;
 	mouse_event = NULL;

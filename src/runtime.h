@@ -195,6 +195,9 @@ public:
 	Downloader *CreateDownloader ();
 	static Downloader *CreateDownloader (UIElement *element);
 
+	bool GetMediaElementEmitEndedOnError (void) { return media_element_emit_ended_on_error; }
+	void SetMediaElementEmitEndedOnError (bool value) { media_element_emit_ended_on_error = value; }
+
 	void SetFPSReportFunc (MoonlightFPSReportFunc report, void *user_data);
 	void SetCacheReportFunc (MoonlightCacheReportFunc report, void *user_data);
 	void SetExposeHandoffFunc (MoonlightExposeHandoffFunc func, void *user_data);
@@ -315,6 +318,10 @@ private:
 	int frames;
 	
 	GdkEvent *mouse_event;
+
+	// Variable to determine whether MediaElement should emit Failed or Ended
+	// when a playlist entry is encountered that cannot be demuxed (abock)
+	bool media_element_emit_ended_on_error;
 	
 	// Variables for reporting FPS
 	MoonlightFPSReportFunc fps_report;

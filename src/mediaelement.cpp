@@ -689,12 +689,24 @@ MediaElement::MediaFailed (ErrorEventArgs *args)
 	SetCanPause (false);
 	SetCanSeek (false);
 	SetDownloadProgress (0);
-	
-	SetState (MediaElement::Error);
-	
+
+	// Always terminate the downloader, even if we will transition
+	// to the next item in the playlist in case of 
+	// Surface::GetMediaElementEmitEndedOnError
 	DownloaderAbort ();
-	
-	Emit (MediaFailedEvent, args);
+
+	if (!GetSurface ()->GetMediaElementEmitEndedOnError () || 
+		playlist == NULL || playlist->IsCurrentEntryLastEntry ()) {
+		// This will cause the entire playlist to stop playing, even if there
+		// are entries after the current item that may be consumable
+		SetState (MediaElement::Error);
+		Emit (MediaFailedEvent, args);
+	} else {
+		// This allows the playlist to continue playing
+		// even though the current item was invalid
+		Emit (MediaEndedEvent);
+		playlist->OnEntryEnded ();
+	}
 }
 
 Point

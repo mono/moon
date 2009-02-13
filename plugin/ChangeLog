@@ -1,3 +1,13 @@
+2009-02-12  Aaron Bockover  <abockover@novell.com>
+
+	* plugin.cpp:
+	* plugin.h: Set Surface::SetMediaElementEmitEndedOnError if the Moonlight
+	specific __mediaElementEmitEndedOnError argument is passed to NPP_New,
+	directing MediaElement to play the next item in a playlist if the current
+	item cannot be demuxed; the default behavior is to bail playback
+
+	r: kangaroo
+
 2009-01-29  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* plugin-class.cpp: Only call NPN_ReleaseObject on callback

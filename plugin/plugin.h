@@ -154,6 +154,9 @@ class PluginInstance
 	char *onResize;
 	char *id;
 
+	// Used to determine the failure action (ended or failed) in MediaElement (abock)
+	bool media_element_emit_ended_on_error;
+
 	bool windowless;
 	bool silverlight2;
 	int maxFrameRate;

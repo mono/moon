@@ -1,3 +1,17 @@
+o2009-02-12  Aaron Bockover  <abockover@novell.com>
+
+	* mediaelement.cpp: if Surface::GetMediaElementEmitEndedOnError is
+	set, emit the Ended signal instead of the Failed signal when a playlist
+	item is encountered that cannot be demuxed; this allows playlists with
+	invalid items to continue playing possible valid items (e.g. Sports
+	Illustrated's WM playlists)
+
+	* runtime.cpp:
+	* runtime.h: Provide (Get|Set)MediaElementEmitEndedOnError properties as a
+	means for the plugin to proxy its desired playlist error handling behavior
+
+	r: kangaroo
+
 2009-02-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	* *.cpp: Fixed to use g_ascii_str[n]casecmp instead of
