@@ -117,28 +117,37 @@ namespace DefaultValues {
 			string special = null;
 			bool tostring = false;
 			
+			if (retval.GetType ().IsSubclassOf (typeof (DependencyObject))) {
+				sb.AppendLine ("\t\t\tAssert.IsTrue (retval is " + PrettyName (retval.GetType ()) + ", \"" + test + "(" +
+					       fieldName + ") is not of the correct type\");");
+				AssertDependencyObjectEqual (widget, type, test, fieldName, retval);
+				return;
+			} else if (retval.GetType ().IsGenericType) {
+				return;
+			}
+			
 			sb.AppendLine ("\t\t\tAssert.IsTrue (retval is " + PrettyName (retval.GetType ()) + ", \"" + test + "(" +
 				       fieldName + ") is not of the correct type\");");
 			
-			if (retval.GetType ().IsSubclassOf (typeof (DependencyObject))) {
-				AssertDependencyObjectEqual (widget, type, test, fieldName, retval);
-				return;
-			} else if (retval.GetType ().IsPrimitive) {
+			if (retval.GetType ().IsPrimitive) {
 				if (retval is double) {
 					// some special cases...
 					double d = (double) retval;
 					
 					if (Double.IsNegativeInfinity (d))
-						special = "Double.IsNegativeInfinity";
+						special = "Double.IsNegativeInfinity ((double) retval)";
 					else if (Double.IsPositiveInfinity (d))
-						special = "Double.IsPositiveInfinity";
+						special = "Double.IsPositiveInfinity ((double) retval)";
 					else if (Double.IsNaN (d))
-						special = "Double.IsNaN";
+						special = "Double.IsNaN ((double) retval)";
 					else
 						expected = retval.ToString ();
 				} else if (retval is bool) {
 					// prettyification
 					expected = (bool) retval ? "true" : "false";
+				} else if (retval is char) {
+					expected = "\"" + retval.ToString () + "\"";
+					tostring = true;
 				} else {
 					expected = retval.ToString ();
 				}
@@ -152,7 +161,7 @@ namespace DefaultValues {
 			}
 			
 			if (special != null)
-				sb.AppendLine ("\t\t\tAssert.IsTrue (" + special + " (retval), \"" + test + "(" + fieldName +
+				sb.AppendLine ("\t\t\tAssert.IsTrue (" + special + ", \"" + test + "(" + fieldName +
 					       ") does not match the default value\");");
 			else
 				sb.AppendLine ("\t\t\tAssert.AreEqual (" + expected + ", retval" + (tostring ? ".ToString ()" : "") +
