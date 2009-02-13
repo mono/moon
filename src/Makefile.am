@@ -29,7 +29,6 @@ libmoon_include_headers = 	\
 	control.h		\
 	cornerradius.h		\
 	debug.h			\
-	deepzoomimagetilesource.h \
 	dependencyobject.h	\
 	dependencyproperty.h	\
 	deployment.h		\
@@ -218,6 +217,7 @@ libmoon_la_SOURCES += audio-pulse.cpp audio-pulse.h
 endif
 
 EXTRA_DIST = \
+	deepzoomimagetilesource.h	\
 	alpha-premul-table.inc \
 	morton-layout-table.inc \
 	zip/README \
