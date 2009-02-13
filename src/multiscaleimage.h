@@ -26,8 +26,6 @@ void multi_scale_image_handle_parsed (void *userdata);
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
 class MultiScaleImage : public MediaBase {
-	friend void multi_scale_image_handle_parsed (void *userdata);
-
 	void DownloaderAbort ();
 	void DownloadUri (const char* url);
 	GHashTable *cache;
@@ -41,7 +39,6 @@ class MultiScaleImage : public MediaBase {
 	cairo_user_data_key_t height_key;
 
 	void DownloaderComplete ();
-	static void EmitImageOpenSucceeded (EventObject *user_data);
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	void DownloaderFailed ();
 	static void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
@@ -54,6 +51,8 @@ class MultiScaleImage : public MediaBase {
 	virtual ~MultiScaleImage ();
 
  public:
+	static void EmitImageOpenSucceeded (EventObject *user_data);
+
 	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateGetter */
 	const static int AspectRatioProperty;
 	/* @PropertyType=MultiScaleTileSource,Version=2.0,GenerateAccessors */

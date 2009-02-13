@@ -270,17 +270,16 @@ multi_scale_image_handle_parsed (void *userdata)
 {
 	MultiScaleImage *msi = (MultiScaleImage*)userdata;
 	//if the source is a collection, fill the subimages list
-	if (!msi->source)
-		msi->source = msi->GetSource ();
+	MultiScaleTileSource *source = msi->GetSource ();
 
-	if (msi->source->GetImageWidth () >= 0 && msi->source->GetImageHeight () >= 0)
-		msi->SetValue (MultiScaleImage::AspectRatioProperty, Value ((double)msi->source->GetImageWidth () / (double)msi->source->GetImageHeight ()));
+	if (source->GetImageWidth () >= 0 && source->GetImageHeight () >= 0)
+		msi->SetValue (MultiScaleImage::AspectRatioProperty, Value ((double)source->GetImageWidth () / (double)source->GetImageHeight ()));
 
-	DeepZoomImageTileSource *source = (DeepZoomImageTileSource *)msi->source;
-	if (source) {
+	DeepZoomImageTileSource *dsource = (DeepZoomImageTileSource *)source;
+	if (dsource) {
 		int i;
 		MultiScaleSubImage *si;
-		for (i = 0; (si = (MultiScaleSubImage*)g_list_nth_data (source->subimages, i)); i++) {
+		for (i = 0; (si = (MultiScaleSubImage*)g_list_nth_data (dsource->subimages, i)); i++) {
 			if (!msi->GetSubImageCollection())
 				msi->SetValue (MultiScaleImage::SubImageCollectionProperty, new MultiScaleSubImageCollection ());
 

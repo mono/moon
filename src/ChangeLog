@@ -1,5 +1,9 @@
 2009-02-13  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* multiscaleimage.h|cpp: drop the friend here too
+
+2009-02-13  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* tilesource.h: drop the friends
 
 2009-02-13  Stephane Delcroix  <sdelcroix@novell.com>
