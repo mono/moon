@@ -60,7 +60,6 @@ libmoon_include_headers = 	\
 	moon-path.h		\
 	mp3.h			\
 	multiscaleimage.h	\
-	multiscalesubimage.h	\
 	namescope.h		\
 	openfile.h		\
 	panel.h			\
@@ -218,6 +217,7 @@ endif
 
 EXTRA_DIST = \
 	deepzoomimagetilesource.h	\
+	multiscalesubimage.h	\
 	alpha-premul-table.inc \
 	morton-layout-table.inc \
 	zip/README \
