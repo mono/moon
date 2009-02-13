@@ -524,10 +524,11 @@ Value::operator== (const Value &v) const
 	case Type::MANAGEDTYPEINFO:
 		return !memcmp (u.type_info, v.u.type_info, sizeof (ManagedTypeInfo));
 	case Type::MANAGED: {
-		guint64 a = (guint64) u.managed_object;
-		guint64 b = (guint64) v.u.managed_object;
-		g_return_val_if_fail (a == (a & 0xFFFFFFFF) && b == (b & 0xFFFFFFFF), false);
-		return mono_gchandle_get_target ((guint32) a) == mono_gchandle_get_target ((guint32) b);
+		// If we avoid the cast to 64bit uint, i don't know how to implement this sanity check.
+		//g_return_val_if_fail (a == (a & 0xFFFFFFFF) && b == (b & 0xFFFFFFFF), false);
+		guint32 a = GPOINTER_TO_INT (u.managed_object);
+		guint32 b = GPOINTER_TO_INT (v.u.managed_object);
+		return mono_gchandle_get_target (a) == mono_gchandle_get_target (b);
 	}
 	
 	default:

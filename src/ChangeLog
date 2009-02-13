@@ -1,3 +1,8 @@
+2009-02-13  Alan McGovern  <amcgovern@novell.com>
+
+	* value.cpp: Use the GPOINTER_TO_INT macro as suggested rather
+	  than casting to a 64bit then 32bit value.
+
 2009-02-13  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.h|cpp: drop the friend here too
