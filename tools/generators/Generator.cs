@@ -52,6 +52,7 @@ class Generator {
 		text.AppendLine ("using Mono;");
 		text.AppendLine ("using System;");
 		text.AppendLine ("using System.Collections.Generic;");
+		text.AppendLine ("using System.Collections.ObjectModel;");
 		text.AppendLine ("using System.Windows;");
 		text.AppendLine ("using System.Windows.Controls;");
 		text.AppendLine ("using System.Windows.Documents;");
@@ -201,6 +202,7 @@ class Generator {
 		text.AppendLine ("using Mono;");
 		text.AppendLine ("using System;");
 		text.AppendLine ("using System.Collections.Generic;");
+		text.AppendLine ("using System.Collections.ObjectModel;");
 		text.AppendLine ("using System.Windows;");
 		text.AppendLine ("using System.Windows.Controls;");
 		text.AppendLine ("using System.Windows.Documents;");
@@ -306,6 +308,7 @@ class Generator {
 					Helper.WriteAccess (text, field.GetManagedGetterAccess ());
 					text.Append (" ");
 				}
+				
 				text.Append ("get { return (");
 				text.Append (field.GetDPManagedPropertyType (all));
 				if (conv_int_to_double)
@@ -1317,6 +1320,7 @@ class Generator {
 		text.AppendLine ("using System;");
 		text.AppendLine ("using System.Reflection;");
 		text.AppendLine ("using System.Collections.Generic;");
+		text.AppendLine ("using System.Collections.ObjectModel;");
 		text.AppendLine ("");
 		text.AppendLine ("namespace Mono {");
 		text.AppendLine ("\tpartial class Types {");
