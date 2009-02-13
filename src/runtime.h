@@ -69,6 +69,7 @@ enum RuntimeInitFlags {
 	RUNTIME_INIT_KEEP_MEDIA            = 1 << 21,
 	RUNTIME_INIT_ENABLE_MS_CODECS      = 1 << 22,
 	RUNTIME_INIT_DISABLE_FFMPEG_CODECS = 1 << 23,
+	RUNTIME_INIT_ALL_IMAGE_FORMATS     = 1 << 24,
 };
 
 extern guint64 moonlight_flags;

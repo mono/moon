@@ -1,3 +1,10 @@
+2009-02-13  Geoff Norton  <gnorton@novell.com>
+
+	* runtime.cpp|h: Add a new overload to control the gdk_pixbuf_loader
+	behaviour.
+	* media.cpp|h: Ensure that we only load jpeg/png images like microsoft
+	does when running in the browser profile.
+
 2009-02-13  Alan McGovern  <amcgovern@novell.com>
 
 	* value.cpp: Use the GPOINTER_TO_INT macro as suggested rather

@@ -189,7 +189,7 @@ class Image : public MediaBase {
 	void CleanupPattern ();
 
 	// downloader callbacks
-	void PixbufWrite (void *buf, gint32 offset, gint32 n);
+	void PixbufWrite (char *buf, gint32 offset, gint32 n);
 	virtual void DownloaderFailed (EventArgs *args);
 	virtual void DownloaderComplete ();
 	void UpdateProgress ();

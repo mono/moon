@@ -393,16 +393,31 @@ Image::SetSource (Downloader *downloader, const char *PartName)
 }
 
 void
-Image::PixbufWrite (void *buf, gint32 offset, gint32 n)
+Image::PixbufWrite (char *buf, gint32 offset, gint32 n)
 {
 	UpdateProgress ();
-	if (loader == NULL)
-		loader = gdk_pixbuf_loader_new ();
+	if (loader == NULL && offset == 0) {
+		if (!(moonlight_flags & RUNTIME_INIT_ALL_IMAGE_FORMATS)) {
+			if (n == 0)
+				return;
+			// 89 50 4E 47 == png magic
+			if (buf[0] == 0x89)
+				loader = gdk_pixbuf_loader_new_with_type ("png", NULL);
+			// ff d8 ff e0 == jfif magic
+			if (buf[0] == 0xff)
+				loader = gdk_pixbuf_loader_new_with_type ("jpeg", NULL);
 
-	if (!loader_err) {
+			if (loader == NULL)
+				return;
+		} else {
+			loader = gdk_pixbuf_loader_new ();
+		}
+	}
+
+	if (loader != NULL && loader_err != NULL) {
 		gdk_pixbuf_loader_write (GDK_PIXBUF_LOADER (loader), (const guchar *)buf, n, &loader_err);
 
-		if (loader_err) {
+		if (loader_err != NULL) {
 			gdk_pixbuf_loader_close (GDK_PIXBUF_LOADER (loader), NULL);
 		}
 	}
@@ -626,6 +641,7 @@ Image::CreateSurface (const char *uri)
 		// image surface already created
 		return true;
 	}
+	char *msg;
 
 	CleanupPattern ();
 
@@ -634,32 +650,40 @@ Image::CreateSurface (const char *uri)
 	
 	if (uri == NULL || !(surface = (CachedSurface *) g_hash_table_lookup (surface_cache, uri))) {
 		GdkPixbuf *pixbuf = NULL;
-		char *msg;
 		
 		if (loader == NULL) {
 			guchar buf[4096];
 			ssize_t n;
-			char *msg;
 			char *filename;
 			int fd;
                 
 			filename = downloader->GetDownloadedFilename (part_name);
-			if (!filename) {
-				msg = g_strdup_printf ("Failed to load image %s", part_name);
-				Emit (ImageFailedEvent, new ImageErrorEventArgs (msg));
-				return false;
+			if (filename == NULL)
+				goto failed;
+
+			if ((fd = open (filename, O_RDONLY)) == -1)
+				goto failed;
+
+			if (!(moonlight_flags & RUNTIME_INIT_ALL_IMAGE_FORMATS)) {
+				n = read (fd, buf, 4);
+				if (n < 4)
+					goto failed;
+
+				// 89 50 4E 47 == png magic
+				if (buf[0] == 0x89 && buf[1] == 0x50 && buf[2] == 0x4e && buf[3] == 0x47)
+					loader = gdk_pixbuf_loader_new_with_type ("png", NULL);
+				// ff d8 ff e0 == jfif magic
+				if (buf[0] == 0xff && buf[1] == 0xd8 && buf[2] == 0xff && buf[3] == 0xe0)
+					loader = gdk_pixbuf_loader_new_with_type ("jpeg", NULL);
+
+				if (loader)
+					gdk_pixbuf_loader_write (GDK_PIXBUF_LOADER (loader), buf, n, &loader_err);
+			} else {
+				loader = gdk_pixbuf_loader_new ();
 			}
 
-			loader = gdk_pixbuf_loader_new ();
-
-			if ((fd = open (filename, O_RDONLY)) == -1) {
-				gdk_pixbuf_loader_close (GDK_PIXBUF_LOADER (loader), NULL);
-				g_object_unref (loader);
-				loader = NULL;
-				msg = g_strdup_printf ("Failed to load image %s: %s", filename, g_strerror (errno));
-				Emit (ImageFailedEvent, new ImageErrorEventArgs (msg));
-				return false;
-			}
+			if (loader == NULL || loader_err != NULL)
+				goto failed;
 
 			do {
 				do {
@@ -740,6 +764,11 @@ Image::CreateSurface (const char *uri)
 	}
 
 	return true;
+
+failed:
+	msg = g_strdup_printf ("Failed to load image %s", part_name);
+	Emit (ImageFailedEvent, new ImageErrorEventArgs (msg));
+	return false;
 }
 
 void
@@ -754,7 +783,7 @@ Image::size_notify (gint64 size, gpointer data)
 void
 Image::pixbuf_write (void *buf, gint32 offset, gint32 n, gpointer data)
 {
-	((Image *) data)->PixbufWrite (buf, offset, n);
+	((Image *) data)->PixbufWrite ((char *)buf, offset, n);
 }
 
 void
@@ -967,7 +996,7 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args)
 			MediaBase::SetSource (NULL);
 		} else {
 			if (source->buffer) {
-				PixbufWrite (source->buffer, 0, source->size);
+				PixbufWrite ((char *)source->buffer, 0, source->size);
 				CleanupSurface ();
 
 		                if (!CreateSurface (NULL)) {
