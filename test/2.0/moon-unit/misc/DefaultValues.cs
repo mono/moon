@@ -19,6 +19,7 @@ using System.Windows.Shapes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Mono.Moonlight.UnitTesting;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace MoonTest.System.Windows.Controls
 {
@@ -72,17 +73,17 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (RotateTransform.CenterXProperty);
             Assert.IsNotNull (retval, "GetValue(CenterXProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(CenterXProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(CenterXProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(CenterXProperty) does not match the default value");
 
             retval = widget.GetValue (RotateTransform.CenterYProperty);
             Assert.IsNotNull (retval, "GetValue(CenterYProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(CenterYProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(CenterYProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(CenterYProperty) does not match the default value");
 
             retval = widget.GetValue (RotateTransform.AngleProperty);
             Assert.IsNotNull (retval, "GetValue(AngleProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(AngleProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(AngleProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(AngleProperty) does not match the default value");
         }
 
         [TestMethod]
@@ -113,22 +114,22 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (ScaleTransform.CenterXProperty);
             Assert.IsNotNull (retval, "GetValue(CenterXProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(CenterXProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(CenterXProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(CenterXProperty) does not match the default value");
 
             retval = widget.GetValue (ScaleTransform.CenterYProperty);
             Assert.IsNotNull (retval, "GetValue(CenterYProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(CenterYProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(CenterYProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(CenterYProperty) does not match the default value");
 
             retval = widget.GetValue (ScaleTransform.ScaleXProperty);
             Assert.IsNotNull (retval, "GetValue(ScaleXProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(ScaleXProperty) is not of the correct type");
-            Assert.AreEqual (1, retval, "GetValue(ScaleXProperty) does not match the default value");
+            Assert.AreEqual ((double) 1, retval, "GetValue(ScaleXProperty) does not match the default value");
 
             retval = widget.GetValue (ScaleTransform.ScaleYProperty);
             Assert.IsNotNull (retval, "GetValue(ScaleYProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(ScaleYProperty) is not of the correct type");
-            Assert.AreEqual (1, retval, "GetValue(ScaleYProperty) does not match the default value");
+            Assert.AreEqual ((double) 1, retval, "GetValue(ScaleYProperty) does not match the default value");
         }
 
         [TestMethod]
@@ -159,22 +160,22 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (SkewTransform.CenterXProperty);
             Assert.IsNotNull (retval, "GetValue(CenterXProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(CenterXProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(CenterXProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(CenterXProperty) does not match the default value");
 
             retval = widget.GetValue (SkewTransform.CenterYProperty);
             Assert.IsNotNull (retval, "GetValue(CenterYProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(CenterYProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(CenterYProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(CenterYProperty) does not match the default value");
 
             retval = widget.GetValue (SkewTransform.AngleXProperty);
             Assert.IsNotNull (retval, "GetValue(AngleXProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(AngleXProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(AngleXProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(AngleXProperty) does not match the default value");
 
             retval = widget.GetValue (SkewTransform.AngleYProperty);
             Assert.IsNotNull (retval, "GetValue(AngleYProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(AngleYProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(AngleYProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(AngleYProperty) does not match the default value");
         }
 
         [TestMethod]
@@ -199,12 +200,12 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (TranslateTransform.XProperty);
             Assert.IsNotNull (retval, "GetValue(XProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(XProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(XProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(XProperty) does not match the default value");
 
             retval = widget.GetValue (TranslateTransform.YProperty);
             Assert.IsNotNull (retval, "GetValue(YProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(YProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(YProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(YProperty) does not match the default value");
         }
 
         [TestMethod]
@@ -381,7 +382,7 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (ArcSegment.RotationAngleProperty);
             Assert.IsNotNull (retval, "GetValue(RotationAngleProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(RotationAngleProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(RotationAngleProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(RotationAngleProperty) does not match the default value");
 
             retval = widget.GetValue (ArcSegment.IsLargeArcProperty);
             Assert.IsNotNull (retval, "GetValue(IsLargeArcProperty) should not have returned null");
@@ -561,12 +562,12 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (EllipseGeometry.RadiusXProperty);
             Assert.IsNotNull (retval, "GetValue(RadiusXProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(RadiusXProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(RadiusXProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(RadiusXProperty) does not match the default value");
 
             retval = widget.GetValue (EllipseGeometry.RadiusYProperty);
             Assert.IsNotNull (retval, "GetValue(RadiusYProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(RadiusYProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(RadiusYProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(RadiusYProperty) does not match the default value");
         }
 
         [TestMethod]
@@ -599,12 +600,12 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (RectangleGeometry.RadiusXProperty);
             Assert.IsNotNull (retval, "GetValue(RadiusXProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(RadiusXProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(RadiusXProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(RadiusXProperty) does not match the default value");
 
             retval = widget.GetValue (RectangleGeometry.RadiusYProperty);
             Assert.IsNotNull (retval, "GetValue(RadiusYProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(RadiusYProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(RadiusYProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(RadiusYProperty) does not match the default value");
         }
 
         [TestMethod]
@@ -715,7 +716,7 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (GradientStop.OffsetProperty);
             Assert.IsNotNull (retval, "GetValue(OffsetProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(OffsetProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(OffsetProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(OffsetProperty) does not match the default value");
         }
 
         [TestMethod]
@@ -786,12 +787,12 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (RadialGradientBrush.RadiusXProperty);
             Assert.IsNotNull (retval, "GetValue(RadiusXProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(RadiusXProperty) is not of the correct type");
-            Assert.AreEqual (0.5, retval, "GetValue(RadiusXProperty) does not match the default value");
+            Assert.AreEqual ((double) 0.5, retval, "GetValue(RadiusXProperty) does not match the default value");
 
             retval = widget.GetValue (RadialGradientBrush.RadiusYProperty);
             Assert.IsNotNull (retval, "GetValue(RadiusYProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(RadiusYProperty) is not of the correct type");
-            Assert.AreEqual (0.5, retval, "GetValue(RadiusYProperty) does not match the default value");
+            Assert.AreEqual ((double) 0.5, retval, "GetValue(RadiusYProperty) does not match the default value");
         }
 
         [TestMethod]
@@ -1123,22 +1124,22 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (Line.X1Property);
             Assert.IsNotNull (retval, "GetValue(X1Property) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(X1Property) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(X1Property) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(X1Property) does not match the default value");
 
             retval = widget.GetValue (Line.Y1Property);
             Assert.IsNotNull (retval, "GetValue(Y1Property) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(Y1Property) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(Y1Property) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(Y1Property) does not match the default value");
 
             retval = widget.GetValue (Line.X2Property);
             Assert.IsNotNull (retval, "GetValue(X2Property) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(X2Property) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(X2Property) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(X2Property) does not match the default value");
 
             retval = widget.GetValue (Line.Y2Property);
             Assert.IsNotNull (retval, "GetValue(Y2Property) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(Y2Property) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(Y2Property) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(Y2Property) does not match the default value");
         }
 
         [TestMethod]
@@ -1221,12 +1222,12 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (Rectangle.RadiusXProperty);
             Assert.IsNotNull (retval, "GetValue(RadiusXProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(RadiusXProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(RadiusXProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(RadiusXProperty) does not match the default value");
 
             retval = widget.GetValue (Rectangle.RadiusYProperty);
             Assert.IsNotNull (retval, "GetValue(RadiusYProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(RadiusYProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(RadiusYProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(RadiusYProperty) does not match the default value");
         }
 
         [TestMethod]
@@ -1289,17 +1290,17 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (Glyphs.FontRenderingEmSizeProperty);
             Assert.IsNotNull (retval, "GetValue(FontRenderingEmSizeProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(FontRenderingEmSizeProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(FontRenderingEmSizeProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(FontRenderingEmSizeProperty) does not match the default value");
 
             retval = widget.GetValue (Glyphs.OriginXProperty);
             Assert.IsNotNull (retval, "GetValue(OriginXProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(OriginXProperty) is not of the correct type");
-            Assert.AreEqual (-3.40282346638529E+38, retval, "GetValue(OriginXProperty) does not match the default value");
+            Assert.AreEqual ((double) -3.40282346638529E+38, retval, "GetValue(OriginXProperty) does not match the default value");
 
             retval = widget.GetValue (Glyphs.OriginYProperty);
             Assert.IsNotNull (retval, "GetValue(OriginYProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(OriginYProperty) is not of the correct type");
-            Assert.AreEqual (-3.40282346638529E+38, retval, "GetValue(OriginYProperty) does not match the default value");
+            Assert.AreEqual ((double) -3.40282346638529E+38, retval, "GetValue(OriginYProperty) does not match the default value");
 
             retval = widget.GetValue (Glyphs.FillProperty);
             Assert.IsNull (retval, "GetValue(FillProperty) should have returned null");
@@ -1359,12 +1360,12 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (Canvas.LeftProperty);
             Assert.IsNotNull (retval, "GetValue(LeftProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(LeftProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(LeftProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(LeftProperty) does not match the default value");
 
             retval = widget.GetValue (Canvas.TopProperty);
             Assert.IsNotNull (retval, "GetValue(TopProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(TopProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(TopProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(TopProperty) does not match the default value");
 
             retval = widget.GetValue (Canvas.ZIndexProperty);
             Assert.IsNotNull (retval, "GetValue(ZIndexProperty) should not have returned null");
@@ -1427,7 +1428,7 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (TextBlock.FontSizeProperty);
             Assert.IsNotNull (retval, "GetValue(FontSizeProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(FontSizeProperty) is not of the correct type");
-            Assert.AreEqual (11, retval, "GetValue(FontSizeProperty) does not match the default value");
+            Assert.AreEqual ((double) 11, retval, "GetValue(FontSizeProperty) does not match the default value");
 
             retval = widget.GetValue (TextBlock.FontFamilyProperty);
             Assert.IsNotNull (retval, "GetValue(FontFamilyProperty) should not have returned null");
@@ -1479,7 +1480,7 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (TextBlock.LineHeightProperty);
             Assert.IsNotNull (retval, "GetValue(LineHeightProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(LineHeightProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(LineHeightProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(LineHeightProperty) does not match the default value");
 
             retval = widget.GetValue (TextBlock.LineStackingStrategyProperty);
             Assert.IsNotNull (retval, "GetValue(LineStackingStrategyProperty) should not have returned null");
@@ -1592,12 +1593,12 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (MediaElement.VolumeProperty);
             Assert.IsNotNull (retval, "GetValue(VolumeProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(VolumeProperty) is not of the correct type");
-            Assert.AreEqual (0.5, retval, "GetValue(VolumeProperty) does not match the default value");
+            Assert.AreEqual ((double) 0.5, retval, "GetValue(VolumeProperty) does not match the default value");
 
             retval = widget.GetValue (MediaElement.BalanceProperty);
             Assert.IsNotNull (retval, "GetValue(BalanceProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(BalanceProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(BalanceProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(BalanceProperty) does not match the default value");
 
             retval = widget.GetValue (MediaElement.NaturalVideoHeightProperty);
             Assert.IsNotNull (retval, "GetValue(NaturalVideoHeightProperty) should not have returned null");
@@ -1622,17 +1623,17 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (MediaElement.DownloadProgressProperty);
             Assert.IsNotNull (retval, "GetValue(DownloadProgressProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(DownloadProgressProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(DownloadProgressProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(DownloadProgressProperty) does not match the default value");
 
             retval = widget.GetValue (MediaElement.BufferingProgressProperty);
             Assert.IsNotNull (retval, "GetValue(BufferingProgressProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(BufferingProgressProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(BufferingProgressProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(BufferingProgressProperty) does not match the default value");
 
             retval = widget.GetValue (MediaElement.DownloadProgressOffsetProperty);
             Assert.IsNotNull (retval, "GetValue(DownloadProgressOffsetProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(DownloadProgressOffsetProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(DownloadProgressOffsetProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(DownloadProgressOffsetProperty) does not match the default value");
 
             retval = widget.GetValue (MediaElement.CurrentStateProperty);
             Assert.IsNotNull (retval, "GetValue(CurrentStateProperty) should not have returned null");
@@ -1665,12 +1666,12 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (MediaElement.RenderedFramesPerSecondProperty);
             Assert.IsNotNull (retval, "GetValue(RenderedFramesPerSecondProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(RenderedFramesPerSecondProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(RenderedFramesPerSecondProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(RenderedFramesPerSecondProperty) does not match the default value");
 
             retval = widget.GetValue (MediaElement.DroppedFramesPerSecondProperty);
             Assert.IsNotNull (retval, "GetValue(DroppedFramesPerSecondProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(DroppedFramesPerSecondProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(DroppedFramesPerSecondProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(DroppedFramesPerSecondProperty) does not match the default value");
 
             retval = widget.GetValue (MediaElement.AttributesProperty);
             Assert.IsNotNull (retval, "GetValue(AttributesProperty) should not have returned null");
@@ -1740,12 +1741,12 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (MultiScaleImage.ViewportWidthProperty);
             Assert.IsNotNull (retval, "GetValue(ViewportWidthProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(ViewportWidthProperty) is not of the correct type");
-            Assert.AreEqual (1, retval, "GetValue(ViewportWidthProperty) does not match the default value");
+            Assert.AreEqual ((double) 1, retval, "GetValue(ViewportWidthProperty) does not match the default value");
 
             retval = widget.GetValue (MultiScaleImage.AspectRatioProperty);
             Assert.IsNotNull (retval, "GetValue(AspectRatioProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(AspectRatioProperty) is not of the correct type");
-            Assert.AreEqual (1, retval, "GetValue(AspectRatioProperty) does not match the default value");
+            Assert.AreEqual ((double) 1, retval, "GetValue(AspectRatioProperty) does not match the default value");
 
             retval = widget.GetValue (MultiScaleImage.UseSpringsProperty);
             Assert.IsNotNull (retval, "GetValue(UseSpringsProperty) should not have returned null");
@@ -1792,12 +1793,12 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (MultiScaleSubImage.ViewportWidthProperty);
             Assert.IsNotNull (retval, "GetValue(ViewportWidthProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(ViewportWidthProperty) is not of the correct type");
-            Assert.AreEqual (1, retval, "GetValue(ViewportWidthProperty) does not match the default value");
+            Assert.AreEqual ((double) 1, retval, "GetValue(ViewportWidthProperty) does not match the default value");
 
             retval = widget.GetValue (MultiScaleSubImage.AspectRatioProperty);
             Assert.IsNotNull (retval, "GetValue(AspectRatioProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(AspectRatioProperty) is not of the correct type");
-            Assert.AreEqual (1, retval, "GetValue(AspectRatioProperty) does not match the default value");
+            Assert.AreEqual ((double) 1, retval, "GetValue(AspectRatioProperty) does not match the default value");
 
             retval = widget.GetValue (MultiScaleSubImage.ZIndexProperty);
             Assert.IsNotNull (retval, "GetValue(ZIndexProperty) should not have returned null");
@@ -1807,7 +1808,7 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (MultiScaleSubImage.OpacityProperty);
             Assert.IsNotNull (retval, "GetValue(OpacityProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(OpacityProperty) is not of the correct type");
-            Assert.AreEqual (1, retval, "GetValue(OpacityProperty) does not match the default value");
+            Assert.AreEqual ((double) 1, retval, "GetValue(OpacityProperty) does not match the default value");
         }
 
         [TestMethod]
@@ -1981,7 +1982,7 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (RowDefinition.MinHeightProperty);
             Assert.IsNotNull (retval, "GetValue(MinHeightProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(MinHeightProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(MinHeightProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(MinHeightProperty) does not match the default value");
         }
 
         [TestMethod]
@@ -2019,7 +2020,7 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (ColumnDefinition.MinWidthProperty);
             Assert.IsNotNull (retval, "GetValue(MinWidthProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(MinWidthProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(MinWidthProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(MinWidthProperty) does not match the default value");
         }
 
         [TestMethod]
@@ -2274,12 +2275,12 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (Popup.HorizontalOffsetProperty);
             Assert.IsNotNull (retval, "GetValue(HorizontalOffsetProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(HorizontalOffsetProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(HorizontalOffsetProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(HorizontalOffsetProperty) does not match the default value");
 
             retval = widget.GetValue (Popup.VerticalOffsetProperty);
             Assert.IsNotNull (retval, "GetValue(VerticalOffsetProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(VerticalOffsetProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(VerticalOffsetProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(VerticalOffsetProperty) does not match the default value");
         }
 
         [TestMethod]
@@ -2489,7 +2490,7 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (ScrollBar.ViewportSizeProperty);
             Assert.IsNotNull (retval, "GetValue(ViewportSizeProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(ViewportSizeProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(ViewportSizeProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(ViewportSizeProperty) does not match the default value");
         }
 
         [TestMethod]
@@ -2604,17 +2605,17 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (ScrollViewer.HorizontalOffsetProperty);
             Assert.IsNotNull (retval, "GetValue(HorizontalOffsetProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(HorizontalOffsetProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(HorizontalOffsetProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(HorizontalOffsetProperty) does not match the default value");
 
             retval = widget.GetValue (ScrollViewer.ViewportWidthProperty);
             Assert.IsNotNull (retval, "GetValue(ViewportWidthProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(ViewportWidthProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(ViewportWidthProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(ViewportWidthProperty) does not match the default value");
 
             retval = widget.GetValue (ScrollViewer.ScrollableWidthProperty);
             Assert.IsNotNull (retval, "GetValue(ScrollableWidthProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(ScrollableWidthProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(ScrollableWidthProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(ScrollableWidthProperty) does not match the default value");
 
             retval = widget.GetValue (ScrollViewer.ComputedHorizontalScrollBarVisibilityProperty);
             Assert.IsNotNull (retval, "GetValue(ComputedHorizontalScrollBarVisibilityProperty) should not have returned null");
@@ -2624,17 +2625,17 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (ScrollViewer.VerticalOffsetProperty);
             Assert.IsNotNull (retval, "GetValue(VerticalOffsetProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(VerticalOffsetProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(VerticalOffsetProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(VerticalOffsetProperty) does not match the default value");
 
             retval = widget.GetValue (ScrollViewer.ViewportHeightProperty);
             Assert.IsNotNull (retval, "GetValue(ViewportHeightProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(ViewportHeightProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(ViewportHeightProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(ViewportHeightProperty) does not match the default value");
 
             retval = widget.GetValue (ScrollViewer.ScrollableHeightProperty);
             Assert.IsNotNull (retval, "GetValue(ScrollableHeightProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(ScrollableHeightProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(ScrollableHeightProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(ScrollableHeightProperty) does not match the default value");
 
             retval = widget.GetValue (ScrollViewer.ComputedVerticalScrollBarVisibilityProperty);
             Assert.IsNotNull (retval, "GetValue(ComputedVerticalScrollBarVisibilityProperty) should not have returned null");
@@ -2644,12 +2645,12 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (ScrollViewer.ExtentHeightProperty);
             Assert.IsNotNull (retval, "GetValue(ExtentHeightProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(ExtentHeightProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(ExtentHeightProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(ExtentHeightProperty) does not match the default value");
 
             retval = widget.GetValue (ScrollViewer.ExtentWidthProperty);
             Assert.IsNotNull (retval, "GetValue(ExtentWidthProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(ExtentWidthProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(ExtentWidthProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(ExtentWidthProperty) does not match the default value");
         }
 
         [TestMethod]
@@ -2715,7 +2716,7 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (ToolTip.HorizontalOffsetProperty);
             Assert.IsNotNull (retval, "GetValue(HorizontalOffsetProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(HorizontalOffsetProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(HorizontalOffsetProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(HorizontalOffsetProperty) does not match the default value");
 
             retval = widget.GetValue (ToolTip.IsOpenProperty);
             Assert.IsNotNull (retval, "GetValue(IsOpenProperty) should not have returned null");
@@ -2725,7 +2726,7 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue (ToolTip.VerticalOffsetProperty);
             Assert.IsNotNull (retval, "GetValue(VerticalOffsetProperty) should not have returned null");
             Assert.IsTrue (retval is double, "GetValue(VerticalOffsetProperty) is not of the correct type");
-            Assert.AreEqual (0, retval, "GetValue(VerticalOffsetProperty) does not match the default value");
+            Assert.AreEqual ((double) 0, retval, "GetValue(VerticalOffsetProperty) does not match the default value");
         }
 
         [TestMethod]
