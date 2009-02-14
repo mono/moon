@@ -206,7 +206,9 @@ public:
 
 	GHashTable *GetCurrentValues ();
 	void FreeCurrentValues (GHashTable *current_values);
-
+	
+	DependencyProperty **GetProperties ();
+	
 	GHashTable *GetLocalValues () { return local_values; }
 
 	// Gets the content property from this object's type, and

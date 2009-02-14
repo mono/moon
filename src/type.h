@@ -310,7 +310,7 @@ public:
 	const char *GetName () { return name; }
 	int GetEventCount () { return total_event_count; }
 	
-	DependencyProperty **GetProperties ();
+	GHashTable *CopyProperties (bool inherited);
 	
 	~Type ();
 	Type (Type::Kind type, Type::Kind parent, bool value_type, const char *name, 

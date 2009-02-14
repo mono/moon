@@ -1,3 +1,13 @@
+2009-02-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* dependencyobject.cpp (DependencyObject::GetProperties): New
+	method to get an array of all properties on the object (including
+	currently attached properties).
+
+	* type.cpp (Type::CopyProperties): Renamed from GetProperties()
+	and changed what it does a bit. Now takes an 'inherited' argument
+	and returns a GHashTable of properties keyed by GetHashKey().
+
 2009-02-14  Chris Toshok  <toshok@ximian.com>
 
 	* dependencyobject.h, dependencyobject.cpp: rename

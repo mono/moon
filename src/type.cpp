@@ -246,43 +246,24 @@ Type::AddProperty (DependencyProperty *property)
 static void
 property_add (gpointer key, gpointer value, gpointer user_data)
 {
-	g_ptr_array_add ((GPtrArray *) user_data, value);
+	g_hash_table_insert ((GHashTable *) user_data, key, value);
 }
 
-static int
-property_compare (gconstpointer a, gconstpointer b)
+GHashTable *
+Type::CopyProperties (bool inherited)
 {
-	DependencyProperty *prop_a = *((DependencyProperty **) a);
-	DependencyProperty *prop_b = *((DependencyProperty **) b);
-	
-	return strcmp (prop_a->GetName (), prop_b->GetName ());
-}
-
-DependencyProperty **
-Type::GetProperties ()
-{
-	DependencyProperty **props;
-	GPtrArray *array;
+	GHashTable *props = g_hash_table_new (g_str_hash, g_str_equal);
 	Type *type = this;
-	
-	array = g_ptr_array_new ();
 	
 	do {
 		if (type->properties)
-			g_hash_table_foreach (type->properties, property_add, array);
+			g_hash_table_foreach (type->properties, property_add, props);
 		
-		if (type->GetParent () == Type::INVALID)
+		if (!inherited || type->GetParent () == Type::INVALID)
 			break;
 		
 		type = Type::Find (type->GetParent ());
 	} while (type);
-	
-	g_ptr_array_sort (array, property_compare);
-	
-	g_ptr_array_add (array, NULL);
-	
-	props = (DependencyProperty **) array->pdata;
-	g_ptr_array_free (array, false);
 	
 	return props;
 }

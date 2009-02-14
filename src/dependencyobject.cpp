@@ -1656,6 +1656,47 @@ DependencyObject::Dispose ()
 	EventObject::Dispose ();
 }
 
+static void
+get_attached_props (gpointer key, gpointer value, gpointer user_data)
+{
+	DependencyProperty *prop = (DependencyProperty *) key;
+	GHashTable *props = (GHashTable *) user_data;
+	
+	if (!(g_hash_table_lookup (props, (gpointer) prop->GetHashKey ())))
+		g_hash_table_insert (props, (gpointer) prop->GetHashKey (), prop);
+}
+
+static void
+hash_to_array (gpointer key, gpointer value, gpointer user_data)
+{
+	g_ptr_array_add ((GPtrArray *) user_data, value);
+}
+
+DependencyProperty **
+DependencyObject::GetProperties ()
+{
+	DependencyProperty **props;
+	GHashTable *table;
+	GPtrArray *array;
+	
+	// get our class/inherited DependencyProperties
+	table = GetType ()->CopyProperties (true);
+	
+	// find any attached properties that have been set
+	g_hash_table_foreach (local_values, get_attached_props, table);
+	
+	// dump them to an array
+	array = g_ptr_array_new ();
+	g_hash_table_foreach (table, hash_to_array, array);
+	g_ptr_array_add (array, NULL);
+	g_hash_table_destroy (table);
+	
+	props = (DependencyProperty **) array->pdata;
+	g_ptr_array_free (array, false);
+	
+	return props;
+}
+
 DependencyProperty *
 DependencyObject::GetDependencyProperty (const char *name)
 {
