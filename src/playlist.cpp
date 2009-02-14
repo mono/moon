@@ -1804,7 +1804,7 @@ PlaylistParser::IsASX3 (IMediaSource *source)
 	if (!source->Peek (buffer, asx_header_length))
 		return false;
 		
-	return strncmp (asx_header, buffer, asx_header_length) == 0;
+	return g_ascii_strncasecmp (asx_header, buffer, asx_header_length) == 0;
 }
 
 bool
@@ -1817,7 +1817,7 @@ PlaylistParser::IsASX2 (IMediaSource *source)
 	if (!source->Peek (buffer, asx2_header_length))
 		return false;
 		
-	return strncmp (asx2_header, buffer, asx2_header_length) == 0;
+	return g_ascii_strncasecmp (asx2_header, buffer, asx2_header_length) == 0;
 }
 
 bool
@@ -1830,7 +1830,7 @@ PlaylistParser::IsSMIL (IMediaSource *source)
 	if (!source->Peek (buffer, smil_header_length))
 		return false;
 
-	return strncmp (smil_header, buffer, smil_header_length) == 0;
+	return g_ascii_strncasecmp (smil_header, buffer, smil_header_length) == 0;
 }
 
 
