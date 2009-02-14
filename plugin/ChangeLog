@@ -1,5 +1,11 @@
 2009-02-14  Jeffrey Stedfast  <fejj@novell.com>
 
+	* plugin-debug.cpp (reflect_dependency_object_in_tree): Updated to
+	use DO::GetProperties() instead so that we could get attached
+	properties as well.
+
+2009-02-14  Jeffrey Stedfast  <fejj@novell.com>
+
 	* plugin-debug.cpp (reflect_dependency_object_in_tree): Fixed up
 	to use Type::GetProperties().
 

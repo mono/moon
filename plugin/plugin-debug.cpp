@@ -212,7 +212,7 @@ reflect_dependency_object_in_tree (DependencyObject *obj, GtkTreeStore *store, G
 		node = &iter;
 	}
 	
-	DependencyProperty **properties = obj->GetType ()->GetProperties ();
+	DependencyProperty **properties = obj->GetProperties ();
 	
 	if (properties[0] != NULL) {
 		GtkTreeIter prop_iter, iter;
