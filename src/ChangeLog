@@ -1,3 +1,8 @@
+2009-02-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* type.cpp (Type::GetProperties): New method to get an array of
+	DependencyProperties for a Type.
+
 2009-02-13  Geoff Norton  <gnorton@novell.com>
 
 	* playlist.cpp: Check these string with g_ascii_str* as well.

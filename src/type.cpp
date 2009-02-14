@@ -243,6 +243,50 @@ Type::AddProperty (DependencyProperty *property)
 	}
 }
 
+static void
+property_add (gpointer key, gpointer value, gpointer user_data)
+{
+	g_ptr_array_add ((GPtrArray *) user_data, value);
+}
+
+static int
+property_compare (gconstpointer a, gconstpointer b)
+{
+	DependencyProperty *prop_a = *((DependencyProperty **) a);
+	DependencyProperty *prop_b = *((DependencyProperty **) b);
+	
+	return strcmp (prop_a->GetName (), prop_b->GetName ());
+}
+
+DependencyProperty **
+Type::GetProperties ()
+{
+	DependencyProperty **props;
+	GPtrArray *array;
+	Type *type = this;
+	
+	array = g_ptr_array_new ();
+	
+	do {
+		if (type->properties)
+			g_hash_table_foreach (type->properties, property_add, array);
+		
+		if (type->GetParent () == Type::INVALID)
+			break;
+		
+		type = Type::Find (type->GetParent ());
+	} while (type);
+	
+	g_ptr_array_sort (array, property_compare);
+	
+	g_ptr_array_add (array, NULL);
+	
+	props = (DependencyProperty **) array->pdata;
+	g_ptr_array_free (array, false);
+	
+	return props;
+}
+
 bool
 type_get_value_type (Type::Kind type)
 {

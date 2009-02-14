@@ -310,6 +310,8 @@ public:
 	const char *GetName () { return name; }
 	int GetEventCount () { return total_event_count; }
 	
+	DependencyProperty **GetProperties ();
+	
 	~Type ();
 	Type (Type::Kind type, Type::Kind parent, bool value_type, const char *name, 
 		const char *kindname, int event_count, int total_event_count, const char **events, 
