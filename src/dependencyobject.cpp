@@ -895,7 +895,7 @@ DependencyObject::RemoveAllListeners ()
 	if (autocreate)
 		g_hash_table_foreach (autocreate->auto_values, unregister_depobj_values, this);
 	
-	g_hash_table_foreach (current_values, unregister_depobj_values, this);
+	g_hash_table_foreach (local_values, unregister_depobj_values, this);
 }
 
 static bool listeners_notified;
@@ -1076,7 +1076,7 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 		Value *new_value;
 		
 		// remove the old value
-		g_hash_table_remove (current_values, property);
+		g_hash_table_remove (local_values, property);
 		
 		if (property->AutoCreate ())
 			autocreate->ClearValue (property);
@@ -1088,7 +1088,7 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 		
 		// replace it with the new value
 		if (new_value)
-			g_hash_table_insert (current_values, property, new_value);
+			g_hash_table_insert (local_values, property, new_value);
 		
 		ProviderValueChanged (PropertyPrecedence_LocalValue, property, current_value, new_value, true, error);
 		
@@ -1179,7 +1179,7 @@ DependencyObject::RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error)
 	if (autocreate)
 		g_hash_table_foreach (autocreate->auto_values, register_depobj_names, &closure);
 	
-	g_hash_table_foreach (current_values, register_depobj_names, &closure);
+	g_hash_table_foreach (local_values, register_depobj_names, &closure);
 }
 
 static void
@@ -1212,7 +1212,7 @@ DependencyObject::UnregisterAllNamesRootedAt (NameScope *from_ns)
 	if (autocreate)
 		g_hash_table_foreach (autocreate->auto_values, unregister_depobj_names, from_ns);
 	
-	g_hash_table_foreach (current_values, unregister_depobj_names, from_ns);
+	g_hash_table_foreach (local_values, unregister_depobj_names, from_ns);
 }
 
 Value *
@@ -1226,7 +1226,7 @@ DependencyObject::ReadLocalValue (int id)
 Value *
 DependencyObject::ReadLocalValue (DependencyProperty *property)
 {
-	return (Value *) g_hash_table_lookup (current_values, property);
+	return (Value *) g_hash_table_lookup (local_values, property);
 }
 
 Value *
@@ -1488,7 +1488,7 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 		}
 	}
 	
-	g_hash_table_remove (current_values, property);
+	g_hash_table_remove (local_values, property);
 	
 	if (property->AutoCreate ())
 		autocreate->ClearValue (property);
@@ -1512,7 +1512,7 @@ dispose_value (gpointer key, gpointer value, gpointer data)
 	Value *v = (Value *) value;
 	
 	if (!value)
-		return true;
+		return TRUE;
 	
 	// detach from the existing value
 	if (v->Is (Type::DEPENDENCY_OBJECT)){
@@ -1531,7 +1531,7 @@ dispose_value (gpointer key, gpointer value, gpointer data)
 	
 	delete (Value *) value;
 	
-	return true;
+	return TRUE;
 }
 
 DependencyObject::DependencyObject ()
@@ -1566,7 +1566,7 @@ DependencyObject::Initialize ()
 	providers[PropertyPrecedence_DefaultValue] = new DefaultValuePropertyValueProvider (this);
 	providers[PropertyPrecedence_AutoCreate] = new AutoCreatePropertyValueProvider (this);
 	
-	current_values = g_hash_table_new (g_direct_hash, g_direct_equal);
+	local_values = g_hash_table_new (g_direct_hash, g_direct_equal);
 	listener_list = NULL;
 	logical_parent = NULL;
 	is_frozen = false;
@@ -1579,6 +1579,43 @@ DependencyObject::Freeze()
 }
 
 static void
+copy_current_value (gpointer key, gpointer value, gpointer data)
+{
+	GHashTable *hash = (GHashTable*)data;
+	Value *v = (Value *) value;
+	
+	g_hash_table_insert (hash, key, new Value(*v));
+}
+
+GHashTable*
+DependencyObject::GetCurrentValues ()
+{
+	AutoCreatePropertyValueProvider *autocreate = (AutoCreatePropertyValueProvider *) providers[PropertyPrecedence_AutoCreate];
+
+	GHashTable *value_hash = g_hash_table_new (g_direct_hash, g_direct_equal);
+
+	g_hash_table_foreach (local_values, copy_current_value, value_hash);
+	g_hash_table_foreach (autocreate->auto_values, copy_current_value, value_hash);
+
+	return value_hash;
+}
+
+static gboolean
+destroy_value (gpointer key, gpointer value, gpointer data)
+{
+	delete (Value *) value;
+	
+	return TRUE;
+}
+
+void
+DependencyObject::FreeCurrentValues (GHashTable *current_values)
+{
+	g_hash_table_foreach_remove (current_values, destroy_value, NULL);
+	g_hash_table_destroy (current_values);
+}
+
+static void
 free_listener (gpointer data, gpointer user_data)
 {
 	Listener* listener = (Listener*) data;
@@ -1587,8 +1624,8 @@ free_listener (gpointer data, gpointer user_data)
 
 DependencyObject::~DependencyObject ()
 {
-	g_hash_table_destroy (current_values);
-	current_values = NULL;
+	g_hash_table_destroy (local_values);
+	local_values = NULL;
 	delete[] providers;
 	providers = NULL;
 }
@@ -1609,7 +1646,7 @@ DependencyObject::Dispose ()
 	if (autocreate)
 		g_hash_table_foreach_remove (autocreate->auto_values, dispose_value, this);
 	
-	g_hash_table_foreach_remove (current_values, dispose_value, this);
+	g_hash_table_foreach_remove (local_values, dispose_value, this);
 	
 	for (int i = 0; i < PropertyPrecedence_Count; i ++) {
 		delete providers[i];
@@ -1787,7 +1824,7 @@ DependencyObject::SetSurface (Surface *s)
 	if (autocreate)
 		g_hash_table_foreach (autocreate->auto_values, set_surface, s);
 	
-	g_hash_table_foreach (current_values, set_surface, s);
+	g_hash_table_foreach (local_values, set_surface, s);
 }
 
 void

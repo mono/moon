@@ -204,7 +204,10 @@ public:
 
 	void Freeze ();
 
-	GHashTable *GetCurrentValues () { return current_values; }
+	GHashTable *GetCurrentValues ();
+	void FreeCurrentValues (GHashTable *current_values);
+
+	GHashTable *GetLocalValues () { return local_values; }
 
 	// Gets the content property from this object's type, and
 	// returns the value of that dependency property.
@@ -352,7 +355,7 @@ private:
 	void RemoveListener (gpointer listener, DependencyProperty *child_property);
 	void Initialize ();
 
-	GHashTable        *current_values;
+	GHashTable        *local_values;
 	GSList            *listener_list;
 	DependencyObject  *logical_parent;
 

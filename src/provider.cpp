@@ -43,7 +43,7 @@ LocalPropertyValueProvider::~LocalPropertyValueProvider ()
 Value *
 LocalPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 {
-	return (Value *) g_hash_table_lookup (obj->GetCurrentValues (), property);
+	return (Value *) g_hash_table_lookup (obj->GetLocalValues (), property);
 }
 
 
