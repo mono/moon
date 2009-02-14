@@ -40,7 +40,7 @@ namespace MoonTest.System.Windows.Browser
 		HtmlElement plugin;
 		HtmlWindow window;
 		ScriptObject content;
-		string root = "var plugin = document.getElementById('silverlight');";
+		string root = "var plugin = document.getElementById('silverlightControlHost').getElementsByTagName('object')[0];";
 
 		Scriptable scriptable;
 		ScriptableType scriptabletype;
@@ -81,7 +81,6 @@ namespace MoonTest.System.Windows.Browser
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void ScriptableMemberTest () {
 			scriptable = new Scriptable ();
 			HtmlPage.RegisterScriptableObject ("scriptable", scriptable);
@@ -98,7 +97,6 @@ namespace MoonTest.System.Windows.Browser
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void ScriptableTypeTest () {
 			scriptabletype = new ScriptableType ();
 			HtmlPage.RegisterScriptableObject ("scriptabletype", scriptabletype);
@@ -139,7 +137,6 @@ namespace MoonTest.System.Windows.Browser
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void CreateableTypeTest () {
 			scriptable = new Scriptable ();
 			HtmlPage.RegisterScriptableObject ("scriptable", scriptable);
