@@ -1,3 +1,8 @@
+2009-02-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin-debug.cpp (reflect_dependency_object_in_tree): Fixed up
+	to use Type::GetProperties().
+
 2009-02-11  Andreia Gaita  <avidigal@novell.com>
 
 	* plugin-class.cpp: lowercase all method, property and event name

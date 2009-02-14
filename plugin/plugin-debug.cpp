@@ -40,12 +40,6 @@ enum TreeColumns {
 static void reflect_dependency_object_in_tree (DependencyObject *obj, GtkTreeStore *store,
 					       GtkTreeIter *node, bool node_is_self);
 
-struct ReflectForeachData {
-	GtkTreeStore *store;
-	GtkTreeIter *parent;
-	DependencyObject *obj;
-};
-
 static char *
 timespan_to_str (TimeSpan ts)
 {
@@ -76,62 +70,66 @@ timespan_to_str (TimeSpan ts)
 }
 
 static void
-reflect_value (GtkTreeStore *store, GtkTreeIter *node, const char *name, Value *value)
+reflect_value (GtkTreeStore *store, GtkTreeIter *node, const char *name, const char *type_name, Value *value)
 {
-	if (value->Is(Type::DEPENDENCY_OBJECT)) {
+	const char *str = NULL;
+	char *buf = NULL;
+	
+	if (value && value->Is (Type::DEPENDENCY_OBJECT)) {
 		gtk_tree_store_set (store, node,
 				    COL_NAME, name,
 				    COL_TYPE_NAME, value->AsDependencyObject()->GetTypeName(),
 				    COL_VALUE, "",
 				    COL_ELEMENT_PTR, NULL,
 				    -1);
-
+		
 		reflect_dependency_object_in_tree (value->AsDependencyObject(), store, node, true);
+		return;
 	}
-	else {
-		Type* t = Type::Find (value->GetKind());
-
-		char *val_string = NULL;
-
+	
+	if (value != NULL) {
+		Type *type = Type::Find (value->GetKind ());
+		type_name = type->GetName ();
+		
 		switch (value->GetKind()) {
 		case Type::DOUBLE:
-			val_string = g_strdup_printf ("<b>%g</b>", value->AsDouble());
+			str = buf = g_strdup_printf ("<b>%g</b>", value->AsDouble ());
 			break;
 		case Type::INT32:
-			val_string = g_strdup_printf ("<b>%d</b>", value->AsInt32());
+			str = buf = g_strdup_printf ("<b>%d</b>", value->AsInt32 ());
 			break;
 		case Type::INT64:
-			val_string = g_strdup_printf ("<b>%lld</b>", value->AsInt64());
+			str = buf = g_strdup_printf ("<b>%lld</b>", value->AsInt64 ());
 			break;
 		case Type::TIMESPAN: {
 			char *ts_string = timespan_to_str (value->AsTimeSpan());
-			val_string = g_strdup_printf ("<b>%s</b>", ts_string);
+			str = buf = g_strdup_printf ("<b>%s</b>", ts_string);
 			g_free (ts_string);
 			break;
 		}
 		case Type::UINT64:
-			val_string = g_strdup_printf ("<b>%llu</b>", value->AsUint64());
+			str = buf = g_strdup_printf ("<b>%llu</b>", value->AsUint64 ());
 			break;
 		case Type::STRING:
-			val_string = g_strdup_printf ("<b>%s</b>", value->AsString());
+			str = buf = g_strdup_printf ("<b>%s</b>", value->AsString ());
 			break;
 		case Type::RECT: {
 			Rect *rect = value->AsRect();
-			val_string = g_strdup_printf ("<b>%g, %g, %g, %g</b>", rect->x, rect->y, rect->width, rect->height);
+			str = buf = g_strdup_printf ("<b>%g, %g, %g, %g</b>", rect->x, rect->y, rect->width, rect->height);
 			break;
 		}
 		case Type::SIZE:
-			val_string = g_strdup_printf ("<b>%g, %g</b>", value->AsSize()->width, value->AsSize()->height);
+			str = buf = g_strdup_printf ("<b>%g, %g</b>", value->AsSize()->width, value->AsSize()->height);
 			break;
 		case Type::REPEATBEHAVIOR: {
 			RepeatBehavior *rb = value->AsRepeatBehavior();
 			if (rb->IsForever ())
-				val_string = g_strdup_printf ("<b>Forever</b>");
+				str = "<b>Forever</b>";
 			else if (rb->HasCount())
-				val_string = g_strdup_printf ("<b>%gx</b>", rb->GetCount());
+				str = buf = g_strdup_printf ("<b>%gx</b>", rb->GetCount());
 			else /*if (rb->HasDuration())*/ {
 				char *ts_string = timespan_to_str (rb->GetDuration());
-				val_string = g_strdup_printf ("<b>%s</b>", ts_string);
+				str = buf = g_strdup_printf ("<b>%s</b>", ts_string);
 				g_free (ts_string);
 			}
 			break;
@@ -139,75 +137,57 @@ reflect_value (GtkTreeStore *store, GtkTreeIter *node, const char *name, Value *
 		case Type::DURATION: {
 			Duration *d = value->AsDuration();
 			if (d->IsForever ())
-				val_string = g_strdup_printf ("<b>Forever</b>");
+				str = "<b>Forever</b>";
 			else if (d->IsAutomatic())
-				val_string = g_strdup_printf ("<b>Automatic</b>");
+				str = "<b>Automatic</b>";
 			else /*if (d->HasTimeSpan())*/ {
 				char *ts_string = timespan_to_str (d->GetTimeSpan());
-				val_string = g_strdup_printf ("<b>%s</b>", ts_string);
+				str = buf = g_strdup_printf ("<b>%s</b>", ts_string);
 				g_free (ts_string);
 			}
 			break;
 		}
 		case Type::COLOR: {
 			Color *color = value->AsColor();
-			val_string = g_strdup_printf ("<b>r=%g, g=%g, b=%g, a=%g</b>", color->r, color->g, color->b, color->a);
+			str = buf = g_strdup_printf ("<b>r=%g, g=%g, b=%g, a=%g</b>", color->r, color->g, color->b, color->a);
 			break;
 		}
-		case Type::BOOL: {
-			bool result = value->AsBool ();
-			val_string = g_strdup_printf ("<b>%s</b>", result ? "True" : "False");
+		case Type::BOOL:
+			str = value->AsBool () ? "<b>true</b>" : "<b>false</b>";
 			break;
-		}
 		case Type::GRIDLENGTH: {
 			GridLength *length = value->AsGridLength ();
-			val_string = g_strdup_printf ("<b>%g (%s)", length->val,
-						      length->type == GridUnitTypeAuto ? "Auto" : length->type == GridUnitTypeStar ? "*" : "Pixel");
+			str = buf = g_strdup_printf ("<b>%g (%s)", length->val, length->type == GridUnitTypeAuto ?
+						     "Auto" : length->type == GridUnitTypeStar ? "*" : "Pixel");
 			break;
 		}
 		case Type::THICKNESS: {
 			Thickness *thickness = value->AsThickness ();
-			val_string = g_strdup_printf ("<b>%g, %g, %g, %g</b>", 
-						      thickness->left, 
-						      thickness->top, 
-						      thickness->right, 
-						      thickness->bottom);
+			str = buf = g_strdup_printf ("<b>%g, %g, %g, %g</b>", 
+						     thickness->left, 
+						     thickness->top, 
+						     thickness->right, 
+						     thickness->bottom);
 			break;
 		}
 		case Type::CORNERRADIUS:
 		case Type::KEYTIME:
 		default:
-			val_string = g_strdup ("<i>(unknown)</i>");
+			str = "<i>(unknown)</i>";
 			break;
 		}
-
-		gtk_tree_store_set (store, node,
-				    COL_NAME, name,
-				    COL_TYPE_NAME, t->GetName (),
-				    COL_VALUE, val_string,
-				    COL_ELEMENT_PTR, NULL,
-				    -1);
-
-		g_free (val_string);
+	} else {
+		str = "<b><i>null</i></b>";
 	}
-}
-
-static void
-reflect_foreach_current_value (gpointer key, gpointer val, gpointer user_data)
-{
-	ReflectForeachData *data = (ReflectForeachData *)user_data;
-	DependencyProperty *prop = (DependencyProperty *)key;
-	Value *value = (Value*)val;
-
-	GtkTreeIter iter;
-
-	gtk_tree_store_append (data->store, &iter, data->parent);
-
-	char *markup = g_strdup_printf ("<i>%s.%s</i>", Type::Find(prop->GetOwnerType()) ? Type::Find(prop->GetOwnerType())->GetName() : "(unknown)", prop->GetName());
-
-	reflect_value (data->store, &iter, markup, value);
-
-	g_free (markup);
+	
+	gtk_tree_store_set (store, node,
+			    COL_NAME, name,
+			    COL_TYPE_NAME, type_name,
+			    COL_VALUE, str,
+			    COL_ELEMENT_PTR, NULL,
+			    -1);
+	
+	g_free (buf);
 }
 
 static void
@@ -231,12 +211,16 @@ reflect_dependency_object_in_tree (DependencyObject *obj, GtkTreeStore *store, G
 
 		node = &iter;
 	}
-
-	GHashTable *ht = obj->GetCurrentValues();
-
-	if (g_hash_table_size (ht) > 0) {
-		GtkTreeIter prop_iter;
-
+	
+	DependencyProperty **properties = obj->GetType ()->GetProperties ();
+	
+	if (properties[0] != NULL) {
+		GtkTreeIter prop_iter, iter;
+		Type *owner_type;
+		Type *prop_type;
+		char *markup;
+		Value *value;
+		
 		gtk_tree_store_append (store, &prop_iter, node);
 
 		gtk_tree_store_set (store, &prop_iter,
@@ -244,15 +228,25 @@ reflect_dependency_object_in_tree (DependencyObject *obj, GtkTreeStore *store, G
 				    COL_TYPE_NAME, "",
 				    COL_ELEMENT_PTR, obj,
 				    -1);
-
-		ReflectForeachData reflect_data;
-		reflect_data.store = store;
-		reflect_data.parent = &prop_iter;
-		reflect_data.obj = obj;
-
-		g_hash_table_foreach (ht, reflect_foreach_current_value, &reflect_data);
+		
+		for (int i = 0; properties[i]; i++) {
+			owner_type = Type::Find (properties[i]->GetOwnerType ());
+			markup = g_strdup_printf ("<i>%s.%s</i>", owner_type ? owner_type->GetName () : "(unknown)",
+						  properties[i]->GetName ());
+			
+			gtk_tree_store_append (store, &iter, &prop_iter);
+			
+			prop_type = Type::Find (properties[i]->GetPropertyType ());
+			value = obj->GetValue (properties[i]);
+			
+			reflect_value (store, &iter, markup, prop_type ? prop_type->GetName () : "(unknown)", value);
+			
+			g_free (markup);
+		}
 	}
-
+	
+	g_free (properties);
+	
 	if (obj->Is(Type::COLLECTION)) {
 		Collection *col = (Collection*)obj;
 
@@ -280,7 +274,7 @@ reflect_dependency_object_in_tree (DependencyObject *obj, GtkTreeStore *store, G
 
 				gtk_tree_store_append (store, &child_iter, &elements_iter);
 
-				reflect_value (store, &child_iter, markup, v);
+				reflect_value (store, &child_iter, markup, NULL, v);
 
 				g_free (markup);
 			}
@@ -294,7 +288,7 @@ reflect_dependency_object_in_tree (DependencyObject *obj, GtkTreeStore *store, G
 
 		Value v(((Control*)obj)->GetSubtreeObject());
 
-		reflect_value (store, &subobject_iter, "Visual Child", &v);
+		reflect_value (store, &subobject_iter, "Visual Child", NULL, &v);
 	}
 }
 
