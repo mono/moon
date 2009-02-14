@@ -1,3 +1,9 @@
+2009-02-13  Chris Toshok  <toshok@ximian.com>
+
+	* provider.cpp (InheritedPropertyValueProvider::GetPropertyValue):
+	fix a number of logical errors.  gets inlines properly inheriting
+	text properties.
+
 2009-02-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* type.cpp (Type::GetProperties): New method to get an array of

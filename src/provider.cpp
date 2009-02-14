@@ -193,45 +193,38 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 	if (!parent)
 		return NULL;
 
-	int parent_property = -1;
+	int parentProperty = -1;
+
+	Value *parentValue = NULL;
 
 #define INHERIT1(p) \
-	G_STMT_START {									\
-	if (property->GetId () == Control::p ||							\
-	    property->GetId () == TextBlock::p ||							\
-	    property->GetId () == Inline::p) {							\
-											\
-		do {									\
-			if (parent->Is (Type::CONTROL))					\
-				parent_property = Control::p;				\
-			else if (parent->Is (Type::TEXTBLOCK))				\
-				parent_property = TextBlock::p;				\
-			else if (parent->Is (Type::INLINE))				\
-				parent_property = Inline::p;				\
-											\
-			if (parent_property != -1)						\
-				parent = get_parent (parent);				\
-		} while (parent && parent_property != -1);					\
-	}										\
+	G_STMT_START {							\
+	if (property->GetId () == Control::p ||				\
+	    property->GetId () == TextBlock::p ||			\
+	    property->GetId () == Inline::p) {				\
+									\
+		if (parent->Is (Type::CONTROL))				\
+			parentProperty = Control::p;			\
+		else if (parent->Is (Type::TEXTBLOCK))			\
+			parentProperty = TextBlock::p;			\
+		else if (parent->Is (Type::INLINE))			\
+			parentProperty = Inline::p;			\
+	}								\
 	} G_STMT_END
 
+
 #define INHERIT2(p) \
-	G_STMT_START {									\
-	if (property->GetId () == Inline::p) {							\
-											\
-		do {									\
-			if (parent->Is (Type::TEXTBLOCK))				\
-				parent_property = TextBlock::p;				\
-											\
-			if (parent_property != -1)						\
-				parent = get_parent (parent);				\
-		} while (parent && parent_property != -1);					\
-	}										\
+	G_STMT_START {							\
+	if (property->GetId () == Inline::p) {				\
+									\
+		if (parent->Is (Type::TEXTBLOCK))			\
+			parentProperty = TextBlock::p;			\
+	}								\
 	} G_STMT_END
 
 #define INHERIT3(p) \
 	G_STMT_START {									\
-	if (property->GetId () == FrameworkElement::p) {						\
+	if (property->GetId () == FrameworkElement::p) {				\
 		do {									\
 			if (parent->Is (Type::FRAMEWORKELEMENT)) {			\
 				Value *contextV = parent->ReadLocalValue (FrameworkElement::p); \
@@ -254,8 +247,11 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 	INHERIT2 (TextDecorationsProperty);
 	INHERIT2 (FontFilenameProperty);
 
-	if (parent_property != -1 && parent != NULL)
-		return parent->GetValue (parent_property);
+	if (parentProperty != -1)					\
+		parentValue = parent->ReadLocalValue (parentProperty);	\
+
+	if (parentValue)
+		return parentValue;
 
 	INHERIT3 (DataContextProperty);
 
