@@ -68,16 +68,19 @@ namespace MoonTest.System.Windows.Browser
 		}
 		
 		[TestMethod]
+		[MoonlightBug]
 		public void Casing () {
 			var c = content.GetProperty("Calc") as ScriptObject;
-			Assert.AreEqual (calc, c.ManagedObject, "ManagedObject");
+			Assert.AreEqual (null, c, "A1");
+			c = content.GetProperty("calc") as ScriptObject;
+			Assert.AreEqual (calc, c.ManagedObject, "A2");
 		}
 
 		[TestMethod]
 		public void Invoke () {
 			var calc = content.GetProperty ("calc") as ScriptObject;
 			var a = calc.Invoke ("Add", 5, 1);
-			Assert.AreEqual (a, 6, "Add");
+			Assert.AreEqual ("6", a.ToString(), "Add");
 		}
 
 		[TestMethod]

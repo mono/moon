@@ -1,5 +1,9 @@
 2009-02-14  Andreia Gaita  <avidigal@novell.com>
 
+	* System.Windows.Browser/ScriptableTest.cs: Test fixes
+
+2009-02-14  Andreia Gaita  <avidigal@novell.com>
+
 	* System.Windows.Browser/ScriptableTest.cs: Fix plugin loading on js
 	to work on vstudio automatically generated test pages (that don't
 	have an id on the js object for easy lookup)
