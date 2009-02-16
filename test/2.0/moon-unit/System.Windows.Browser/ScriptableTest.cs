@@ -68,7 +68,6 @@ namespace MoonTest.System.Windows.Browser
 		}
 		
 		[TestMethod]
-		[MoonlightBug]
 		public void Casing () {
 			var c = content.GetProperty("Calc") as ScriptObject;
 			Assert.AreEqual (null, c, "A1");
