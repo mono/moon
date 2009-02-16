@@ -1,5 +1,10 @@
 2009-02-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* dependencyobject.cpp: Change our g_error into a g_warning.
+	  Reffing an object with refcount = 0 can actually happen now.
+
+2009-02-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* dependencyobject.cpp: AddTickCallInternal: if we don't have
 	  a surface, get it from the deployment.
 

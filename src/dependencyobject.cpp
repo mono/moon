@@ -331,7 +331,10 @@ EventObject::ref ()
 #if OBJECT_TRACKING
 		PrintStackTrace ();
 #endif
-		g_error ("Ref was called on an object with a refcount of 0.\n"); // g_error valid, see comment above.
+		// Due to our mixed usage of Dispose and dtor, currently there are valid cases of reffing
+		// an object with refcount = 0. Use a warning instead of error until the mixed usage is
+		// gone.
+		g_warning ("Ref was called on an object with a refcount of 0.\n");
 	}
 	
 	OBJECT_TRACK ("Ref", GetTypeName ());
@@ -371,8 +374,7 @@ EventObject::unref ()
 	}
 	
 	// We need to check again the the refcount really is zero,
-	// the object might have resurrected in the Dispose. Should
-	// never happen, but checking avoids a crash, so...
+	// the object might have resurrected in the Dispose.
 	if (refcount == 0)
 		delete this;
 	
