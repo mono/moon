@@ -578,6 +578,31 @@ EventObject::RemoveHandler (int event_id, int token)
 }
 
 void
+EventObject::RemoveAllHandlers (gpointer data)
+{
+	if (events == NULL)
+		return;
+	
+	int count = GetType ()->GetEventCount ();
+	
+	for (int i = 0; i < count - 1; i++) {
+		EventClosure *closure = (EventClosure *) events->lists [i].event_list->First ();
+		while (closure) {
+			if (closure->data == data) {
+				if (events->lists [i].emitting > 0) {
+					closure->pending_removal = true;
+				} else {
+					events->lists [i].event_list->Remove (closure);
+				}
+				break;
+			}
+			
+			closure = (EventClosure *) closure->next;
+		}
+	}
+}
+
+void
 EventObject::RemoveMatchingHandlers (int event_id, bool (*predicate)(EventHandler cb_handler, gpointer cb_data, gpointer data), gpointer closure)
 {
 	if (GetType()->GetEventCount() <= 0) {
