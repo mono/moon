@@ -136,6 +136,13 @@ EventObject::~EventObject()
 #endif
 
 	delete events;
+	
+	// We can't unref the deployment in Dispose, it breaks
+	// object tracking.
+	if (deployment && this != deployment) {
+		deployment->unref ();
+		deployment = NULL;
+	}
 }
 
 static pthread_rwlock_t surface_lock = PTHREAD_RWLOCK_INITIALIZER;
@@ -250,16 +257,7 @@ EventObject::GetDeployment ()
 
 void
 EventObject::SetCurrentDeployment (bool domain)
-{
-#if SANITY
-	if ((deployment == NULL) != (IsDisposed ()) && (object_type != Type::DEPLOYMENT)) {
-		// Deployment should be null after Dispose has been called (and only then)
-		g_warning ("EventObject::SetCurrentDeployment (): deployment: %p, disposed: %i %s\n", deployment, IsDisposed (), GetTypeName ());
-		// print_stack_trace ();
-	}
-	// Sanity: maybe check if Deployment::GetCurrent is null at some later stage (when we actually do set current deployment to null)
-#endif
-	
+{	
 	if (deployment != NULL)
 		Deployment::SetCurrent (deployment, domain);
 }
@@ -297,11 +295,6 @@ EventObject::Dispose ()
 	// Remove attached flag and set the disposed flag.
 	flags = (Flags) (flags & ~Attached);
 	flags = (Flags) (flags | Disposed);
-	
-	if (deployment && this != deployment) {
-		deployment->unref ();
-		deployment = NULL;
-	}
 }
 
 bool
