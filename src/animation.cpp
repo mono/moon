@@ -383,6 +383,7 @@ Storyboard::Storyboard ()
 {
 	SetObjectType (Type::STORYBOARD);
 
+	clock = NULL;
 	root_clock = NULL;
 	pending_begin = false;
 }
@@ -394,6 +395,12 @@ Storyboard::~Storyboard ()
 		Stop ();
 		TeardownClockGroup ();
 	}
+}
+
+int
+Storyboard::GetCurrentState ()
+{
+	return clock ? clock->GetClockState () : Clock::Stopped;
 }
 
 void
@@ -477,6 +484,10 @@ Storyboard::TeardownClockGroup ()
 			group->RemoveChild (root_clock);
 		root_clock->unref ();
 		root_clock = NULL;
+	}
+	if (clock) {
+		clock->unref ();
+		clock = NULL;
 	}
 }
 
@@ -565,6 +576,14 @@ Storyboard::Begin ()
 	}
 
 	return true;
+}
+
+Clock *
+Storyboard::AllocateClock ()
+{
+	clock = ParallelTimeline::AllocateClock ();
+	clock->ref ();
+	return clock;
 }
 
 void

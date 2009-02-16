@@ -2849,6 +2849,17 @@ storyboard_begin (Storyboard *instance)
 }
 
 
+int
+storyboard_get_current_state (Storyboard *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetCurrentState ();
+}
+
+
 void
 storyboard_pause (Storyboard *instance)
 {

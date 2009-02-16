@@ -134,7 +134,7 @@ namespace System.Windows.Media.Animation {
 		
 		public ClockState GetCurrentState ()
 		{
-			throw new NotImplementedException ();
+			return (ClockState) NativeMethods.storyboard_get_current_state (native);
 		}
 	}
 }

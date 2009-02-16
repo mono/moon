@@ -786,7 +786,7 @@ class Storyboard : public ParallelTimeline {
 	void HookupAnimationsRecurse (Clock *clock);
 	void TeardownClockGroup ();
 	gboolean Tick ();
-	
+	Clock *clock;
 	Clock *root_clock;
 	bool pending_begin;
 	
@@ -819,6 +819,11 @@ class Storyboard : public ParallelTimeline {
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Stop ();
 	
+	/* @GenerateCBinding,GeneratePInvoke */
+	int GetCurrentState ();
+	
+	virtual Clock *AllocateClock ();
+
 	static void SetTargetName (DependencyObject *o, const char *targetName);
 	static const char *GetTargetName (DependencyObject *o);
 	static void SetTargetProperty (DependencyObject *o, PropertyPath *targetProperty);

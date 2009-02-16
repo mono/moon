@@ -212,7 +212,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
+		[MoonlightBug ("When a storyboard is stopped, we recursively set the state of all child storyboards to Stopped. This shouldn't happen")]
 		public void CurrentState ()
 		{
 			Storyboard sb = new Storyboard { RepeatBehavior = new RepeatBehavior (2) };
@@ -245,7 +245,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 			Enqueue (delegate { Assert.AreEqual (ClockState.Active, sb.GetCurrentState (), "#2"); });
 			Enqueue (delegate { Assert.AreEqual (ClockState.Active, ((Storyboard)sb.Children[0]).GetCurrentState (), "#3"); });
 			Enqueue (delegate { Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#4"); });
-			
+
 			EnqueueSleep (750);
 			Enqueue (delegate { Assert.AreEqual (ClockState.Active, sb.GetCurrentState (), "#5"); });
 			Enqueue (delegate { Assert.AreEqual (ClockState.Filling, ((Storyboard) sb.Children [0]).GetCurrentState (), "#6"); });
@@ -257,12 +257,13 @@ namespace MoonTest.System.Windows.Media.Animation {
 			Enqueue (delegate { Assert.AreEqual (ClockState.Filling, ((Storyboard) sb.Children [0]).GetCurrentState (), "#9"); });
 			Enqueue (delegate { Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#10"); });
 
+			// These ones fail.
 			Enqueue (delegate { sb.Stop (); });
 			Enqueue (delegate { Assert.AreEqual (ClockState.Stopped, sb.GetCurrentState (), "#11"); });
 			Enqueue (delegate { Assert.AreEqual (ClockState.Filling, ((Storyboard) sb.Children [0]).GetCurrentState (), "#12"); });
 			Enqueue (delegate { Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#13"); });
 
-			EnqueueSleep (100);
+			EnqueueSleep (1000);
 			Enqueue (delegate { Assert.AreEqual (ClockState.Stopped, sb.GetCurrentState (), "#14"); });
 			Enqueue (delegate { Assert.AreEqual (ClockState.Filling, ((Storyboard) sb.Children [0]).GetCurrentState (), "#15"); });
 			Enqueue (delegate { Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#16"); });

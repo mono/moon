@@ -1308,6 +1308,9 @@ SplinePointKeyFrame *spline_point_key_frame_new (void);
 bool storyboard_begin (Storyboard *instance);
 
 /* @GeneratePInvoke */
+int storyboard_get_current_state (Storyboard *instance);
+
+/* @GeneratePInvoke */
 void storyboard_pause (Storyboard *instance);
 
 /* @GeneratePInvoke */

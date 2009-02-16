@@ -1317,6 +1317,10 @@ namespace Mono {
 		public extern static bool storyboard_begin (IntPtr instance);
 
 		[DllImport ("moon")]
+		// int storyboard_get_current_state (Storyboard *instance);
+		public extern static int storyboard_get_current_state (IntPtr instance);
+
+		[DllImport ("moon")]
 		// void storyboard_pause (Storyboard *instance);
 		public extern static void storyboard_pause (IntPtr instance);
 
