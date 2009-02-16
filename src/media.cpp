@@ -658,45 +658,62 @@ Image::CreateSurface (const char *uri)
 			int fd;
                 
 			filename = downloader->GetDownloadedFilename (part_name);
-			if (filename == NULL)
-				goto failed;
-
-			if ((fd = open (filename, O_RDONLY)) == -1)
-				goto failed;
-
-			if (!(moonlight_flags & RUNTIME_INIT_ALL_IMAGE_FORMATS)) {
-				n = read (fd, buf, 4);
-				if (n < 4)
+			if (filename == NULL) {
+				guchar *dlbuf = (guchar *)downloader->GetBuffer ();
+				if (dlbuf == NULL)
 					goto failed;
 
-				// 89 50 4E 47 == png magic
-				if (buf[0] == 0x89 && buf[1] == 0x50 && buf[2] == 0x4e && buf[3] == 0x47)
-					loader = gdk_pixbuf_loader_new_with_type ("png", NULL);
-				// ff d8 ff e0 == jfif magic
-				if (buf[0] == 0xff && buf[1] == 0xd8 && buf[2] == 0xff && buf[3] == 0xe0)
-					loader = gdk_pixbuf_loader_new_with_type ("jpeg", NULL);
+				if (!(moonlight_flags & RUNTIME_INIT_ALL_IMAGE_FORMATS)) {
+					// 89 50 4E 47 == png magic
+					if (dlbuf[0] == 0x89 && dlbuf[1] == 0x50 && dlbuf[2] == 0x4e && dlbuf[3] == 0x47)
+						loader = gdk_pixbuf_loader_new_with_type ("png", NULL);
+					// ff d8 ff e0 == jfif magic
+					if (dlbuf[0] == 0xff && dlbuf[1] == 0xd8 && dlbuf[2] == 0xff && dlbuf[3] == 0xe0)
+						loader = gdk_pixbuf_loader_new_with_type ("jpeg", NULL);
+				} else {
+					loader = gdk_pixbuf_loader_new ();
+				}
 
 				if (loader)
-					gdk_pixbuf_loader_write (GDK_PIXBUF_LOADER (loader), buf, n, &loader_err);
+					gdk_pixbuf_loader_write (GDK_PIXBUF_LOADER (loader), dlbuf, downloader->GetSize (), &loader_err);
 			} else {
-				loader = gdk_pixbuf_loader_new ();
-			}
+				if ((fd = open (filename, O_RDONLY)) == -1)
+					goto failed;
 
-			if (loader == NULL || loader_err != NULL)
-				goto failed;
-
-			do {
+				if (!(moonlight_flags & RUNTIME_INIT_ALL_IMAGE_FORMATS)) {
+					n = read (fd, buf, 4);
+					if (n < 4)
+						goto failed;
+	
+					// 89 50 4E 47 == png magic
+					if (buf[0] == 0x89 && buf[1] == 0x50 && buf[2] == 0x4e && buf[3] == 0x47)
+						loader = gdk_pixbuf_loader_new_with_type ("png", NULL);
+					// ff d8 ff e0 == jfif magic
+					if (buf[0] == 0xff && buf[1] == 0xd8 && buf[2] == 0xff && buf[3] == 0xe0)
+						loader = gdk_pixbuf_loader_new_with_type ("jpeg", NULL);
+	
+					if (loader)
+						gdk_pixbuf_loader_write (GDK_PIXBUF_LOADER (loader), buf, n, &loader_err);
+				} else {
+					loader = gdk_pixbuf_loader_new ();
+				}
+	
+				if (loader == NULL || loader_err != NULL)
+					goto failed;
+	
 				do {
-					n = read (fd, buf, sizeof (buf));
-				} while (n == -1 && errno == EINTR);
+					do {
+						n = read (fd, buf, sizeof (buf));
+					} while (n == -1 && errno == EINTR);
+	
+					if (n == -1)
+						break;
+	
+					gdk_pixbuf_loader_write (GDK_PIXBUF_LOADER (loader), buf, n, &loader_err);
+				} while (n > 0 && !loader_err);
 
-				if (n == -1)
-					break;
-
-				gdk_pixbuf_loader_write (GDK_PIXBUF_LOADER (loader), buf, n, &loader_err);
-			} while (n > 0 && !loader_err);
-
-			close (fd);
+				close (fd);
+			}
 		}
 
 		gdk_pixbuf_loader_close (GDK_PIXBUF_LOADER (loader), loader_err ? NULL : &loader_err);

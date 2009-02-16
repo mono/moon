@@ -134,6 +134,8 @@ class Downloader : public DependencyObject {
 	void NotifySize (gint64 size);
 	char *GetDownloadedFilename (const char *partname);
 	void SetFilename (const char *fname);
+	char *GetBuffer () { return buffer; }
+	gint64 GetSize () { return total; }
 	
 	InternalDownloader *GetInternalDownloader () { return internal_dl; }
 	

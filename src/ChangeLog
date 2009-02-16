@@ -1,3 +1,10 @@
+2009-02-16  Geoff Norton  <gnorton@novell.com>
+
+	* media.cpp:
+	* downloader.h: Downloaders created in javascript can suffer the
+	same shared-cache firefox bug, so we need to expose the buffer
+	to the image layer in case this is the place.
+
 2009-02-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* dependencyobject.cpp (DependencyObject::GetProperties): New
