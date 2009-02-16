@@ -29,12 +29,6 @@
 #include "clock.h"
 #include "debug.h"
 
-// still too ugly to be exposed in the header files ;-)
-void image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double height, int sw, int sh, 
-					 Stretch stretch, AlignmentX align_x, AlignmentY align_y, Transform *transform,
-					 Transform *relative_transform);
-
-
 /*
  * MediaBase
  */

@@ -1,5 +1,13 @@
 2009-02-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* brush.h:
+	* media.cpp:
+	* mediaelement.cpp: Move image_brush_compute_pattern_matrix
+	  from media.cpp/mediaelement.cpp to brush.h to avoid having
+	  two declarations of the same method.
+
+2009-02-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* brush.cpp: Include mediaplayer.h here.
 
 2009-02-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
