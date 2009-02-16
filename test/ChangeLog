@@ -1,3 +1,8 @@
+2009-02-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* sizes/sizes.cpp: Remove Playlist and PlaylistEntry from
+	  here.
+
 2009-02-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* test.mdp: Updated to use new MD features (ChangeLog and log

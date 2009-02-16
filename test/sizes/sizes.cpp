@@ -98,8 +98,6 @@ main()
   PRINT_SIZEOF (MediaElement);
   PRINT_SIZEOF (NameScope);
   PRINT_SIZEOF (Panel);
-  PRINT_SIZEOF (PlaylistEntry);
-  PRINT_SIZEOF (Playlist);
   PRINT_SIZEOF (Surface);
   PRINT_SIZEOF (Shape);
   PRINT_SIZEOF (Ellipse);
