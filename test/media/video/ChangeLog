@@ -1,3 +1,7 @@
+2009-02-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* drtlist.xml: test-dns-failure.html needs xsp running.
+
 2009-02-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* drtlist.xml: Marking test-mms-failure as known failure.
