@@ -1,3 +1,8 @@
+2009-02-16  Larry Ewing  <lewing@novell.com>
+
+	* System.Windows.Controls/TextBlockTest.cs: add some new (and
+	confusing) actual* tests.
+
 2009-02-16  Andreia Gaita  <avidigal@novell.com>
 
 	* System.Windows.Browser/ScriptableTest.cs (Casing): Should be good now

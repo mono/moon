@@ -157,10 +157,33 @@ namespace MoonTest.System.Windows.Controls {
 			
 			b.Child = tb;
 			tb.Text = "Hello and don't you forget Who I am";
+			// notice this is on the border not the textblock
 			b.Width = 44;
 
 			Assert.IsTrue (tb.ActualWidth < 202.4 && tb.ActualWidth > 202.3, "tb.ActualWidth is " + tb.ActualWidth.ToString ());
 			Assert.AreEqual (16, tb.ActualHeight, "tb.ActualHeight");
+
+			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+
+			Assert.IsTrue (tb.ActualWidth < 10.9 && tb.ActualWidth > 10.8, "tb.ActualWidth1 is " + tb.ActualWidth.ToString ());
+			Assert.AreEqual (560, tb.ActualHeight, "tb.ActualHeight1");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void ArrangeTooLongLocal_LineWrapMeasureTest ()
+		{
+			Border b = new Border ();
+			TextBlock tb = new TextBlock ();
+			tb.TextWrapping = TextWrapping.Wrap;
+			
+			b.Child = tb;
+			tb.Text = "Hello and don't you forget Who I am";
+			// notice this is on the textblock not the border
+			tb.Width = 44;
+
+			Assert.IsTrue (tb.ActualWidth < 34 && tb.ActualWidth > 33, "tb.ActualWidth is " + tb.ActualWidth.ToString ());
+			Assert.AreEqual (112, tb.ActualHeight, "tb.ActualHeight");
 
 			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
 
@@ -182,6 +205,27 @@ namespace MoonTest.System.Windows.Controls {
 
 			Assert.IsTrue (tb.ActualWidth < 202.4 && tb.ActualWidth > 202.3, "tb.ActualWidth is " + tb.ActualWidth.ToString ());
 			Assert.AreEqual (16, tb.ActualHeight, "tb.ActualHeight");
+
+			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+
+			Assert.IsTrue (tb.ActualWidth < 10.9 && tb.ActualWidth > 10.8, "tb.ActualWidth1 is " + tb.ActualWidth.ToString ());
+			Assert.AreEqual (560, tb.ActualHeight, "tb.ActualHeight1");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void ArrangeTooLongLocal_LineWrapMeasureReverseTest ()
+		{
+			Border b = new Border ();
+			TextBlock tb = new TextBlock ();
+			tb.TextWrapping = TextWrapping.Wrap;
+			
+			b.Child = tb;
+			tb.Width = 44;
+			tb.Text = "Hello and don't you forget Who I am";
+
+			Assert.IsTrue (tb.ActualWidth < 34 && tb.ActualWidth > 33, "tb.ActualWidth is " + tb.ActualWidth.ToString ());
+			Assert.AreEqual (112, tb.ActualHeight, "tb.ActualHeight");
 
 			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
 
