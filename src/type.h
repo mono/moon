@@ -302,6 +302,8 @@ public:
 	DependencyProperty *LookupProperty (const char *name);
 	void AddProperty (DependencyProperty *property);
 	
+	GHashTable *CopyProperties (bool inherited);
+	
 	Type::Kind GetKind () { return type; }
 	void SetKind (Type::Kind value) { type = value; }
 	Type::Kind GetParent () { return parent; }
@@ -309,8 +311,6 @@ public:
 	bool IsCustomType () { return type > LASTTYPE; }
 	const char *GetName () { return name; }
 	int GetEventCount () { return total_event_count; }
-	
-	GHashTable *CopyProperties (bool inherited);
 	
 	~Type ();
 	Type (Type::Kind type, Type::Kind parent, bool value_type, const char *name, 

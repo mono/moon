@@ -49,6 +49,8 @@ public:
 	DependencyProperty *LookupProperty (const char *name);
 	void AddProperty (DependencyProperty *property);
 	
+	GHashTable *CopyProperties (bool inherited);
+	
 	Type::Kind GetKind () { return type; }
 	void SetKind (Type::Kind value) { type = value; }
 	Type::Kind GetParent () { return parent; }
