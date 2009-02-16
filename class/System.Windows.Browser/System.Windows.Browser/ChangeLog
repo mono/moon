@@ -1,3 +1,9 @@
+2009-02-16  Andreia Gaita  <avidigal@novell.com>
+
+	* ScriptableObjectWrapper.cs: Register type members by ScriptAlias, if
+	defined on the ScriptableMemberAttribute. Don't lowercase names,
+	scriptable objects are case sensitive
+
 2009-02-11  Andreia Gaita  <avidigal@novell.com>
 
 	* ScriptableObjectWrapper.cs: Remove try block on SetProperty, 

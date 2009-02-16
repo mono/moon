@@ -1,3 +1,9 @@
+2009-02-16  Andreia Gaita  <avidigal@novell.com>
+
+	* plugin-class.cpp: Check return value on GetProperty and throw a js
+	exception if it wasn't found. Don't lowercase names, scriptable objects
+	are case sensitive.
+
 2009-02-16  Geoff Norton  <gnorton@novell.com>
 
 	* plugin-class.cpp|h: Image(Brush).(Image)Source is the UriSource of the

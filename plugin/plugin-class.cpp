@@ -2409,13 +2409,9 @@ MoonlightContentObject::GetProperty (int id, NPIdentifier name, NPVariant *resul
 		MoonlightScriptableObjectObject *obj;
 		gpointer val;
 		
-		char *key = npidentifier_to_downstr (name);
-		if (!(val = g_hash_table_lookup (registered_scriptable_objects, NPID(key)))) {
-			NPN_MemFree (key);
+		if (!(val = g_hash_table_lookup (registered_scriptable_objects, name)))
 			return false;
-		}
-		NPN_MemFree (key);
-		
+
 		obj = (MoonlightScriptableObjectObject *) val;
 		
 		NPN_RetainObject (obj);
@@ -4053,8 +4049,6 @@ MoonlightDownloaderType::MoonlightDownloaderType ()
 
 /*** MoonlightScriptableObjectClass ***************************************************/
 
-// FIXME: the property/method hashes here are case sensitive
-
 struct ScriptableProperty {
 	gpointer property_handle;
 	int property_type;
@@ -4093,7 +4087,6 @@ MoonlightScriptableObjectObject::~MoonlightScriptableObjectObject ()
 bool
 MoonlightScriptableObjectObject::HasProperty (NPIdentifier name)
 {
-	name = NPID(npidentifier_to_downstr (name));
 #if ds(!)0
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
 	printf ("scriptable has property %s\n", strname);
@@ -4107,7 +4100,6 @@ MoonlightScriptableObjectObject::HasProperty (NPIdentifier name)
 bool
 MoonlightScriptableObjectObject::GetProperty (int id, NPIdentifier name, NPVariant *result)
 {
-	name = NPID(npidentifier_to_downstr (name));
 	ScriptableProperty *prop = (ScriptableProperty*)g_hash_table_lookup (properties, name);
 	if (!prop)
 		return MoonlightObject::GetProperty (id, name, result);
@@ -4134,7 +4126,6 @@ MoonlightScriptableObjectObject::SetProperty (int id, NPIdentifier name, const N
 	ScriptableEvent *event;
 	Value *v;
 	
-	name = NPID(npidentifier_to_downstr (name));
 	// first we try the property hash
 	if ((prop = (ScriptableProperty *) g_hash_table_lookup (properties, name))) {
 #if ds(!)0
@@ -4177,7 +4168,7 @@ MoonlightScriptableObjectObject::SetProperty (int id, NPIdentifier name, const N
 bool
 MoonlightScriptableObjectObject::HasMethod (NPIdentifier name)
 {
-	return g_hash_table_lookup (methods, NPID(npidentifier_to_downstr (name))) != NULL;
+	return g_hash_table_lookup (methods, name) != NULL;
 }
 
 bool
@@ -4185,7 +4176,6 @@ MoonlightScriptableObjectObject::Invoke (int id, NPIdentifier name,
 					 const NPVariant *args, uint32_t argCount,
 					 NPVariant *result)
 {
-	name = NPID(npidentifier_to_downstr (name));
 	ScriptableMethod *method = (ScriptableMethod*)g_hash_table_lookup (methods, name);
 	Value rv, **vargs = NULL;
 	uint32_t i;
@@ -4337,10 +4327,9 @@ moonlight_scriptable_object_register (PluginInstance *plugin,
 {
 	MoonlightContentObject *content = (MoonlightContentObject *) plugin->GetRootObject ()->content;
 	
-	char *key = g_strdown (name);
-	ds(printf ("registering scriptable object '%s' => %p\n", key, obj));
+	ds(printf ("registering scriptable object '%s' => %p\n", name, obj));
 	
-	g_hash_table_insert (content->registered_scriptable_objects, NPID (key), obj);
+	g_hash_table_insert (content->registered_scriptable_objects, NPID (name), obj);
 	
 	ds(printf (" => done\n"));
 }
@@ -4438,13 +4427,18 @@ html_object_get_property (PluginInstance *plugin, NPObject *npobj, char *name, V
 		npobj = window;
 	}
 
-	NPN_GetProperty (npp, npobj, identifier, &npresult);
+	bool ret = NPN_GetProperty (npp, npobj, identifier, &npresult);
 
-	Value *res = NULL;
-	if (!NPVARIANT_IS_VOID (npresult) && !NPVARIANT_IS_NULL (npresult)) {
-		variant_to_value (&npresult, &res);
-		*result = *res;
+	if (ret) {
+		Value *res = NULL;
+		if (!NPVARIANT_IS_VOID (npresult) && !NPVARIANT_IS_NULL (npresult)) {
+			variant_to_value (&npresult, &res);
+			*result = *res;
+		} else {
+			*result = Value (Type::INVALID);
+		}
 	} else {
+		THROW_JS_EXCEPTION2 (npobj, name);
 		*result = Value (Type::INVALID);
 	}
 }

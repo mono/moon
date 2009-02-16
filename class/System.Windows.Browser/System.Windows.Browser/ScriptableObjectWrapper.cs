@@ -123,10 +123,15 @@ namespace System.Windows.Browser
 
 			TypeCode tc = Type.GetTypeCode (pi.PropertyType);
 
+			string name = pi.Name;
+			if (pi.IsDefined (typeof(ScriptableMemberAttribute), false)) {
+			    ScriptableMemberAttribute att = (ScriptableMemberAttribute) pi.GetCustomAttributes (typeof (ScriptableMemberAttribute), false)[0];
+				name = (att.ScriptAlias ?? name);
+			}
 			ScriptableNativeMethods.add_property (WebApplication.Current.PluginHandle,
 									moon_handle,
 									(IntPtr)prop_handle,
-									pi.Name.ToLower(),
+									name,
 									tc,
 									pi.CanRead,
 									pi.CanWrite);
@@ -138,10 +143,15 @@ namespace System.Windows.Browser
 
 			handles.Add (event_handle);
 
+			string name = ei.Name;
+			if (ei.IsDefined (typeof(ScriptableMemberAttribute), false)) {
+			    ScriptableMemberAttribute att = (ScriptableMemberAttribute) ei.GetCustomAttributes (typeof (ScriptableMemberAttribute), false)[0];
+				name = (att.ScriptAlias ?? name);
+			}
 			ScriptableNativeMethods.add_event (WebApplication.Current.PluginHandle,
 									moon_handle,
 									(IntPtr)event_handle,
-									ei.Name.ToLower());
+									name);
 		}
 
 		public void AddMethod (string name, TypeCode[] args, TypeCode ret_type)
@@ -150,7 +160,7 @@ namespace System.Windows.Browser
 								WebApplication.Current.PluginHandle,
 								moon_handle,
 								IntPtr.Zero,
-								name.ToLower(),
+								name,
 								ret_type,
 								args,
 								args.Length);
@@ -170,16 +180,21 @@ namespace System.Windows.Browser
 
 			handles.Add (method_handle);
 
+			string name = mi.Name;
+			if (mi.IsDefined (typeof(ScriptableMemberAttribute), false)) {
+			    ScriptableMemberAttribute att = (ScriptableMemberAttribute) mi.GetCustomAttributes (typeof (ScriptableMemberAttribute), false)[0];
+				name = (att.ScriptAlias ?? name);
+			}
 			ScriptableNativeMethods.add_method (WebApplication.Current.PluginHandle,
 								moon_handle,
 								(IntPtr)method_handle,
-								mi.Name.ToLower(),
+								name,
 								Type.GetTypeCode (mi.ReturnType),
 								tcs,
 								tcs.Length);
 		}
 
-		[ScriptableMember]
+		[ScriptableMember(ScriptAlias="createObject")]
 		public ScriptableObjectWrapper CreateObject (string name)
 		{
 			if (!WebApplication.ScriptableTypes.ContainsKey (name))
