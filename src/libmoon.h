@@ -29,7 +29,6 @@
 #include "mediaelement.h"
 #include "mediaplayer.h"
 #include "namescope.h"
-#include "playlist.h"
 #include "point.h"
 #include "rect.h"
 #include "runtime.h"
