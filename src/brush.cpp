@@ -19,6 +19,7 @@
 #include "mediaelement.h"
 #include "color.h"
 #include "transform.h"
+#include "mediaplayer.h"
 
 //
 // SL-Cairo convertion and helper routines
