@@ -44,6 +44,9 @@ namespace MoonTest.System.Windows.Controls {
 		{
 			TextBlock tb = new TextBlock ();
 			// TODO
+			Assert.AreEqual (11, tb.FontSize, "FontSize");
+			Assert.AreEqual ("Portable User Interface", tb.FontFamily.ToString (), "FontFamily");
+			Assert.AreEqual (FontStretches.Normal, tb.FontStretch, "FontStretch");
 			FrameworkElementTest.CheckDefaultProperties (tb);
 		}
 
@@ -224,13 +227,34 @@ namespace MoonTest.System.Windows.Controls {
 			tb.Width = 44;
 			tb.Text = "Hello and don't you forget Who I am";
 
+			Assert.AreEqual (11, tb.FontSize);
 			Assert.IsTrue (tb.ActualWidth < 34 && tb.ActualWidth > 33, "tb.ActualWidth is " + tb.ActualWidth.ToString ());
 			Assert.AreEqual (112, tb.ActualHeight, "tb.ActualHeight");
 
 			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
 
+			Assert.AreEqual (11, tb.FontSize);
 			Assert.IsTrue (tb.ActualWidth < 10.9 && tb.ActualWidth > 10.8, "tb.ActualWidth1 is " + tb.ActualWidth.ToString ());
 			Assert.AreEqual (560, tb.ActualHeight, "tb.ActualHeight1");
+
+			tb.Text = "Hello and don't you forget Who I am.";
+
+			Assert.IsTrue (tb.ActualWidth < 10.9 && tb.ActualWidth > 10.8, "tb.ActualWidth2 is " + tb.ActualWidth.ToString ());
+			Assert.AreEqual (576, tb.ActualHeight, "tb.ActualHeight2");
+
+			tb.Width = 70;
+			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+
+			Assert.IsTrue (tb.ActualWidth < 10.9 && tb.ActualWidth > 10.8, "tb.ActualWidth3 is " + tb.ActualWidth.ToString ());
+			Assert.AreEqual (576, tb.ActualHeight, "tb.ActualHeight3");
+
+			b.InvalidateMeasure ();
+			tb.InvalidateMeasure ();
+
+			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			
+			Assert.IsTrue (tb.ActualWidth < 10.9 && tb.ActualWidth > 10.8, "tb.ActualWidth4 is " + tb.ActualWidth.ToString ());
+			Assert.AreEqual (576, tb.ActualHeight, "tb.ActualHeight4");
 		}
 
 		[TestMethod]
