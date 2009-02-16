@@ -1,3 +1,9 @@
+2009-02-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* TypeReference.cs: Add a few more cases here.
+
+	* Generator.cs: Skip any line starting with EVENTHANDLER.
+
 2009-02-13  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Generator.cs: Revert previous change, we'll just manually bind

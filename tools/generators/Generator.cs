@@ -1000,6 +1000,10 @@ class Generator {
 						tokenizer.Advance (true);
 					}
 					continue;
+				case "EVENTHANDLER":
+					while (!tokenizer.Accept (Token2Type.Punctuation, ";"))
+						tokenizer.Advance (true);
+					continue;
 				case "template":
 					tokenizer.Advance (true);
 					tokenizer.AcceptOrThrow (Token2Type.Punctuation, "<");

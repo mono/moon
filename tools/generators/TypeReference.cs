@@ -93,6 +93,14 @@ class TypeReference {
 			case "double":
 				managed_type = Value;
 				break;
+			case "int64_t":
+			case "gint64":
+				managed_type = "long";
+				break;
+			case "uint64_t":
+			case "guint64":
+				managed_type = "ulong";
+				break;
 			case "ManagedStreamCallbacks*":
 				IsRef = true;
 				managed_type = "ManagedStreamCallbacks";
