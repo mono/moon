@@ -226,6 +226,9 @@ EventObject::AddTickCallInternal (TickCallHandler handler)
 	
 	surface = GetSurface ();
 	
+	if (surface == NULL)
+		surface = GetDeployment ()->GetSurface ();
+	
 	if (!surface) {
 		LOG_DP ("EventObject::AddTickCall (): Could not add tick call, no surface\n");
 		return;
