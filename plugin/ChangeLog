@@ -1,3 +1,8 @@
+2009-02-16  Geoff Norton  <gnorton@novell.com>
+
+	* plugin-class.cpp|h: Image(Brush).(Image)Source is the UriSource of the
+	underlying ImageSource in the javascript API.
+
 2009-02-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin-debug.cpp (reflect_dependency_object_in_tree): Updated to

@@ -21,6 +21,7 @@
 #include "browser-bridge.h"
 #include "plugin.h"
 #include "deployment.h"
+#include "bitmapimage.h"
 
 #ifdef DEBUG
 #define DEBUG_WARN_NOTIMPLEMENTED(x) printf ("not implemented: (%s)\n" G_STRLOC, x)
@@ -3534,9 +3535,32 @@ static const MoonNameIdMapping
 moonlight_image_mapping [] = {
 	{ "downloadprogresschanged", MoonId_DownloadProgressChanged },
 	{ "imagefailed", MoonId_ImageFailed },
+	{ "source", MoonId_Source },
 	{ "setsource", MoonId_SetSource }
 };
 
+bool
+MoonlightImageObject::GetProperty (int id, NPIdentifier name, NPVariant *result)
+{
+	Image *img = (Image *) GetDependencyObject ();
+
+	switch (id) {
+	case MoonId_Source: {
+		ImageSource *source = img->GetSource ();
+		if (source) {
+			char *uri = g_strdup (source->GetUriSource ());
+			STRINGN_TO_NPVARIANT (uri, strlen (uri), *result);
+		} else {
+			NULL_TO_NPVARIANT (*result);
+		}
+
+		return true;
+	}
+
+	default:
+		return MoonlightDependencyObjectObject::GetProperty (id, name, result);
+	}
+}
 
 bool
 MoonlightImageObject::Invoke (int id, NPIdentifier name,
@@ -3587,9 +3611,32 @@ moonlight_image_brush_allocate (NPP instance, NPClass *klass)
 static const MoonNameIdMapping
 moonlight_image_brush_mapping [] = {
 	{ "downloadprogresschanged", MoonId_DownloadProgressChanged },
+	{ "imagesource", MoonId_Source },
 	{ "setsource", MoonId_SetSource }
 };
 
+bool
+MoonlightImageBrushObject::GetProperty (int id, NPIdentifier name, NPVariant *result)
+{
+	ImageBrush *brush = (ImageBrush *) GetDependencyObject ();
+
+	switch (id) {
+	case MoonId_Source: {
+		ImageSource *source = brush->GetImageSource ();
+		if (source) {
+			char *uri = g_strdup (source->GetUriSource ());
+			STRINGN_TO_NPVARIANT (uri, strlen (uri), *result);
+		} else {
+			NULL_TO_NPVARIANT (*result);
+		}
+
+		return true;
+	}
+
+	default:
+		return MoonlightDependencyObjectObject::GetProperty (id, name, result);
+	}
+}
 
 bool
 MoonlightImageBrushObject::Invoke (int id, NPIdentifier name,

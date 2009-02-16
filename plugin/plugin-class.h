@@ -550,6 +550,7 @@ struct MoonlightImageObject : MoonlightDependencyObjectObject {
 
 	virtual bool Invoke (int id, NPIdentifier name,
 			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 };
 
 /*** MoonlightImageBrush ***************************************************/
@@ -567,6 +568,7 @@ struct MoonlightImageBrushObject : MoonlightDependencyObjectObject {
 
 	virtual bool Invoke (int id, NPIdentifier name,
 			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 };
 
 /*** MoonlightDownloader ***************************************************/
