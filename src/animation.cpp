@@ -485,10 +485,8 @@ Storyboard::TeardownClockGroup ()
 		root_clock->unref ();
 		root_clock = NULL;
 	}
-	if (clock) {
-		clock->unref ();
-		clock = NULL;
-	}
+
+	clock = NULL;
 }
 
 void
@@ -581,9 +579,7 @@ Storyboard::Begin ()
 Clock *
 Storyboard::AllocateClock ()
 {
-	clock = ParallelTimeline::AllocateClock ();
-	clock->ref ();
-	return clock;
+	return (clock = ParallelTimeline::AllocateClock ());
 }
 
 void
