@@ -199,7 +199,7 @@ class TextBlock : public FrameworkElement {
 	const static int InlinesProperty;
  	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors */
 	const static int TextProperty;
-	/* @PropertyType=double,DefaultValue=NAN,Version=2.0,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=0.0,Version=2.0,GenerateAccessors */
 	const static int LineHeightProperty;
 	/* @PropertyType=LineStackingStrategy,DefaultValue=LineStackingStrategyMaxHeight,Version=2.0,GenerateAccessors */
 	const static int LineStackingStrategyProperty;

@@ -1,5 +1,9 @@
 2009-02-17  Jeffrey Stedfast  <fejj@novell.com>
 
+	* text.h (class TextBlock): Changed default LineHeightProperty
+	value from NaN to 0.0 (docs say NaN is the default, but not
+	according to the unit tests).
+
 	* textbox.h (class TextBox): Changed default TextProperty value
 	from "" to null (docs say "" is the default, but not according to
 	the unit tests).

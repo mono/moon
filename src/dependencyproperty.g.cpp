@@ -123,7 +123,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "TextAlignment", new Value (TextAlignmentLeft), Type::INT32);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "Padding", new Value (Thickness (0)), Type::THICKNESS);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "LineStackingStrategy", new Value (LineStackingStrategyMaxHeight), Type::INT32);
-	DependencyProperty::Register (this, Type::TEXTBLOCK, "LineHeight", new Value (NAN), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::TEXTBLOCK, "LineHeight", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::RegisterFull (this, Type::TEXTBLOCK, "Inlines", NULL, Type::INLINE_COLLECTION, true, false, false, false, NULL, NULL, false, false);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "Foreground", Type::BRUSH);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontWeight", new Value (TEXTBLOCK_FONT_WEIGHT), Type::INT32);
