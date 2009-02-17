@@ -259,6 +259,7 @@ namespace Mono {
 			case Kind.LINEARPOINTKEYFRAME: return new LinearPointKeyFrame (raw);
 			case Kind.LINESEGMENT: return new LineSegment (raw);
 			case Kind.MATRIXTRANSFORM: return new MatrixTransform (raw);
+			case Kind.MEDIAATTRIBUTE: return new MediaAttribute (raw);
 			case Kind.MEDIAELEMENT: return new MediaElement (raw);
 			case Kind.MULTISCALEIMAGE: return new MultiScaleImage (raw);
 			case Kind.MULTISCALESUBIMAGE: return new MultiScaleSubImage (raw);
@@ -314,13 +315,14 @@ namespace Mono {
 			case Kind.UIELEMENT_COLLECTION: return new UIElementCollection (raw);
 			case Kind.USERCONTROL: return new UserControl (raw);
 			case Kind.VIDEOBRUSH: return new VideoBrush (raw);
-							
+				
 			case Kind.CLOCKGROUP:
 			case Kind.ANIMATIONCLOCK:
 			case Kind.CLOCK: 
 			case Kind.NAMESCOPE: 
 			case Kind.TRIGGERACTION:
 			case Kind.KEYFRAME_COLLECTION:
+			case Kind.MEDIAATTRIBUTE_COLLECTION:
 				throw new Exception (
 					string.Format ("There is no managed equivalent of a {0} class.", k));
 			case Kind.UIELEMENT:
@@ -333,7 +335,6 @@ namespace Mono {
 			case Kind.TRANSFORM:
 			case Kind.SHAPE:
 			case Kind.GEOMETRY:
-			case Kind.MEDIAATTRIBUTE_COLLECTION: 
 			case Kind.SETTERBASE:
 			case Kind.FRAMEWORKTEMPLATE:
 				throw new Exception (

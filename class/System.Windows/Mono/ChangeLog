@@ -1,3 +1,11 @@
+2009-02-17  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Value.cs (ToObject): Handle MediaAttributeCollection specially
+	because this has to get mapped to a Dictionary.
+
+	* NativeDependencyObjectHelper.cs (CreateObject): Handle
+	MediaAttributes.
+
 2009-02-17  Alan McGovern  <amcgovern@novell.com>
 
 	* GeneratedPInvokes.cs: Regenerated

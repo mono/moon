@@ -427,6 +427,16 @@ namespace System.Windows.Media {
 		internal MatrixTransform (IntPtr raw) : base (raw) {}
 	}
 
+	partial class MediaAttribute {
+		public MediaAttribute () : base (NativeMethods.media_attribute_new ()) {}
+		internal MediaAttribute (IntPtr raw) : base (raw) {}
+	}
+
+	partial class MediaAttributeCollection {
+		public MediaAttributeCollection () : base (NativeMethods.media_attribute_collection_new ()) {}
+		internal MediaAttributeCollection (IntPtr raw) : base (raw) {}
+	}
+
 	partial class MultiScaleTileSource {
 		internal MultiScaleTileSource () : base (NativeMethods.multi_scale_tile_source_new ())
 		{

@@ -245,6 +245,11 @@ namespace Mono {
 					return (repeat == null) ? new RepeatBehavior () : *repeat;
 				}
 
+				case Kind.MEDIAATTRIBUTE_COLLECTION: {
+					MediaAttributeCollection attrs = new MediaAttributeCollection (val->u.p);
+					return attrs.AsDictionary ();
+				}
+
 				case Kind.MANAGEDTYPEINFO: {
 					ManagedTypeInfo *type_info = (ManagedTypeInfo *) val->u.p;
 

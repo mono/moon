@@ -1362,6 +1362,15 @@ namespace System.Windows.Media {
 		}
 	}
 
+	partial class MediaAttribute {
+		public static readonly DependencyProperty ValueProperty = DependencyProperty.Lookup (Kind.MEDIAATTRIBUTE, "Value", typeof (string));
+
+		public string Value {
+			get { return (string) GetValue (ValueProperty); }
+			set { SetValue (ValueProperty, value); }
+		}
+	}
+
 	partial class PathFigure {
 		public static readonly DependencyProperty IsClosedProperty = DependencyProperty.Lookup (Kind.PATHFIGURE, "IsClosed", typeof (bool));
 		public static readonly DependencyProperty IsFilledProperty = DependencyProperty.Lookup (Kind.PATHFIGURE, "IsFilled", typeof (bool));

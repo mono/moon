@@ -181,6 +181,10 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.LINESEGMENT));
 				t = typeof (System.Windows.Media.MatrixTransform); 
 				types.Add (t, new ManagedType (t, Kind.MATRIXTRANSFORM));
+				t = typeof (System.Windows.Media.MediaAttribute); 
+				types.Add (t, new ManagedType (t, Kind.MEDIAATTRIBUTE));
+				t = typeof (System.Windows.Media.MediaAttributeCollection); 
+				types.Add (t, new ManagedType (t, Kind.MEDIAATTRIBUTE_COLLECTION));
 				t = typeof (System.Windows.Media.MultiScaleTileSource); 
 				types.Add (t, new ManagedType (t, Kind.MULTISCALETILESOURCE));
 				t = typeof (System.Windows.Media.PathFigure); 
