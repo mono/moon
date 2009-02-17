@@ -1,5 +1,9 @@
 2009-02-17  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.h (class TextBox): Changed default TextProperty value
+	from "" to null (docs say "" is the default, but not according to
+	the unit tests).
+
 	* media.cpp (Image::Image): Fix the SourceProperty to be
 	autocreated.
 

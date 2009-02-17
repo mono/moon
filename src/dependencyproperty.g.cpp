@@ -86,7 +86,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::USERCONTROL, "Content", Type::UIELEMENT);
 	DependencyProperty::Register (this, Type::TEXTBOX, "VerticalScrollBarVisibility", new Value (ScrollBarVisibilityHidden), Type::INT32);
 	DependencyProperty::Register (this, Type::TEXTBOX, "TextWrapping", new Value (TextWrappingNoWrap), Type::INT32);
-	DependencyProperty::Register (this, Type::TEXTBOX, "Text", new Value (""), Type::STRING);
+	DependencyProperty::Register (this, Type::TEXTBOX, "Text", Type::STRING);
 	DependencyProperty::Register (this, Type::TEXTBOX, "TextAlignment", new Value (TextAlignmentLeft), Type::INT32);
 	DependencyProperty::RegisterFull (this, Type::TEXTBOX, "SelectionStart", new Value (0), Type::INT32, false, false, false, false, NULL, Validators::PositiveIntValidator, false, false);
 	DependencyProperty::RegisterFull (this, Type::TEXTBOX, "SelectionLength", new Value (0), Type::INT32, false, false, false, false, NULL, Validators::PositiveIntValidator, false, false);
