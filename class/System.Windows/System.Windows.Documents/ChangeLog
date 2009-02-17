@@ -1,3 +1,7 @@
+2009-02-17  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Inline.cs (Name): Implemented.
+
 2009-02-08  Jeffrey Stedfast  <fejj@novell.com>
 
 	* InlineCollection.cs (Add): Implemented.
