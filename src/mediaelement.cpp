@@ -1178,14 +1178,8 @@ MediaElement::SetStreamSource (ManagedStreamCallbacks *callbacks)
 	g_return_if_fail (callbacks != NULL);
 	g_return_if_fail (playlist == NULL);
 	
-	/*
-	// This is a big hack just to get things working
-	downloaded_file = new ManagedStreamSource (media, callbacks);
-	SetState (MediaElementStateOpening);
-	flags |= Loaded;
-	TryOpen ();
-	*/
-	g_warning ("MediaElement::SetStreamSource not implemented yet.");
+	CreatePlaylist ();
+	playlist->GetCurrentEntry ()->InitializeWithStream (callbacks);
 }
 
 void

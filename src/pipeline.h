@@ -410,6 +410,7 @@ public:
 	void Initialize (Downloader *downloader, const char *PartName); // MediaElement.SetSource (dl, 'PartName');
 	void Initialize (const char *uri); // MediaElement.Source = 'uri';
 	void Initialize (IMediaDemuxer *demuxer); // MediaElement.SetSource (demuxer); 
+	void Initialize (IMediaSource *source);
 
 	// Start opening the media.
 	// When done, OpenCompleted event is raised.

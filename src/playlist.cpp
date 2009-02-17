@@ -178,6 +178,31 @@ PlaylistEntry::Initialize (Media *media)
 }
 
 void
+PlaylistEntry::InitializeWithStream (ManagedStreamCallbacks *callbacks)
+{
+	Media *media;
+	ManagedStreamSource *source;
+	PlaylistRoot *root = GetRoot ();
+	
+	g_return_if_fail (callbacks != NULL);
+	g_return_if_fail (root != NULL);
+	
+	media = new Media (root);
+	Initialize (media);
+	
+	source = new ManagedStreamSource (media, callbacks);
+	media->Initialize (source);
+	media->OpenAsync ();
+	media->unref ();
+	source->unref ();
+}
+
+void
+PlaylistEntry::InitializeWithStream (IMediaStream *stream)
+{
+}
+
+void
 PlaylistEntry::InitializeWithUri (const char *uri)
 {
 	Media *media;

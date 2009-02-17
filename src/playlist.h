@@ -117,6 +117,8 @@ public:
 	void InitializeWithUri (const char *uri);
 	void InitializeWithDownloader (Downloader *dl, const char *PartName);
 	void InitializeWithDemuxer (IMediaDemuxer *demuxer);
+	void InitializeWithStream (ManagedStreamCallbacks *callbacks);
+	void InitializeWithStream (IMediaStream *stream);
 	
 	virtual void Dispose ();
 	

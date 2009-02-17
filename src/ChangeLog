@@ -1,5 +1,13 @@
 2009-02-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.h:
+	* playlist.h:
+	* playlist.cpp:
+	* pipeline.cpp:
+	* mediaelement.cpp: Make SetSource (Stream) work again.
+
+2009-02-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mp3.h:
 	* mp3.cpp:
 	* audio.h:

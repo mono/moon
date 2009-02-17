@@ -558,7 +558,7 @@ Media::StopAsync ()
 void
 Media::Initialize (Downloader *downloader, const char *PartName)
 {
-	MediaResult result;
+	IMediaSource *source;
 	
 	LOG_PIPELINE ("Media::Initialize (%p, '%s'), id: %i\n", downloader, PartName, GET_OBJ_ID (this));
 	
@@ -568,7 +568,7 @@ Media::Initialize (Downloader *downloader, const char *PartName)
 	g_warn_if_fail (uri != NULL);
 	g_warn_if_fail (initialized == false);
 	g_warn_if_fail (error_reported == false);
-	g_warn_if_fail (source == NULL);
+	g_warn_if_fail (this->source == NULL);
 	
 	if (downloader->Completed ()) {
 		file = downloader->GetDownloadedFilename (PartName);
@@ -597,13 +597,30 @@ Media::Initialize (Downloader *downloader, const char *PartName)
 		source = new FileSource (this, file);
 	}
 	
+	Initialize (source);
+	source->unref ();
+}
+
+void
+Media::Initialize (IMediaSource *source)
+{
+	MediaResult result;
+	
+	LOG_PIPELINE ("Media::Initialize (%p), id: %i\n", source, GET_OBJ_ID (this));
+	
+	g_return_if_fail (source != NULL);
+	g_return_if_fail (this->source == NULL);
+	g_warn_if_fail (initialized == false);
+	
 	result = source->Initialize ();
 	if (!MEDIA_SUCCEEDED (result)) {
 		ReportErrorOccurred (result);
 		return;
 	}
 	
-	initialized = true;	
+	initialized = true;
+	this->source = source;
+	this->source->ref ();
 }
 
 void
