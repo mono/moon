@@ -144,7 +144,7 @@ class MediaElement : public FrameworkElement {
 	const static int BalanceProperty;
  	/* @PropertyType=double,DefaultValue=0.0,ReadOnly,GenerateAccessors */
 	const static int BufferingProgressProperty;
- 	/* @PropertyType=TimeSpan,DefaultValue="TimeSpan_FromSeconds (5)\,Type::TIMESPAN",GenerateAccessors,Validator=BufferingTimeValidator */
+ 	/* @PropertyType=TimeSpan,GenerateAccessors,Validator=BufferingTimeValidator */
 	const static int BufferingTimeProperty;
  	/* @PropertyType=bool,DefaultValue=false,ReadOnly,GenerateAccessors */
 	const static int CanPauseProperty;
@@ -164,7 +164,7 @@ class MediaElement : public FrameworkElement {
 	const static int NaturalVideoHeightProperty;
  	/* @PropertyType=gint32,DefaultValue=0,ReadOnly,GenerateAccessors,Validator=IntGreaterThanZeroValidator */
 	const static int NaturalVideoWidthProperty;
- 	/* @PropertyType=TimeSpan,DefaultValue="TimeSpan_FromSeconds (0)\,Type::TIMESPAN",GenerateAccessors */
+ 	/* @PropertyType=TimeSpan,GenerateAccessors */
 	const static int PositionProperty;
  	/* @PropertyType=string,ManagedPropertyType=Uri,AlwaysChange,GenerateAccessors */
 	const static int SourceProperty;

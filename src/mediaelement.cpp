@@ -74,6 +74,11 @@ MediaElement::MediaElement ()
 	Reinitialize ();
 	
 	providers [PropertyPrecedence_DynamicValue] = new MediaElementPropertyValueProvider (this);
+	
+	// Note: BufferingTime and Position need to be set in the ctor
+	// so that ReadLocalValue() will get these values.
+	SetValue (MediaElement::BufferingTimeProperty, Value (TimeSpan_FromSeconds (5), Type::TIMESPAN));
+	SetValue (MediaElement::PositionProperty, Value (TimeSpan_FromSeconds (0), Type::TIMESPAN));
 }
 
 void

@@ -1,5 +1,11 @@
 2009-02-17  Jeffrey Stedfast  <fejj@novell.com>
 
+	* mediaelement.cpp (MediaElement::MediaElement): Set
+	BufferingTimeProperty and PositionProperty in the ctor, we can't
+	use DefaultValue nor AutoCreateValue for these since they need to
+	be returned by ReadLocalValue() immediately after instantiating a
+	new MediaElement object.
+
 	* media.h (class MediaAttribute): Set managed namespaces for
 	MediaAttribute and MediaAttributeCollection, we have internal
 	managed implementations of these now.

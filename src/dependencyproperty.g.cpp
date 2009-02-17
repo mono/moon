@@ -140,7 +140,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::MEDIAELEMENT, "Stretch", new Value (StretchUniform), Type::INT32);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "Source", NULL, Type::STRING, false, false, false, true, NULL, NULL, false, false);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "RenderedFramesPerSecond", new Value (0.0), Type::DOUBLE, false, false, true, false, NULL, NULL, false, false);
-	DependencyProperty::Register (this, Type::MEDIAELEMENT, "Position", new Value (TimeSpan_FromSeconds (0),Type::TIMESPAN), Type::TIMESPAN);
+	DependencyProperty::Register (this, Type::MEDIAELEMENT, "Position", Type::TIMESPAN);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "NaturalVideoWidth", new Value (0), Type::INT32, false, false, true, false, NULL, Validators::IntGreaterThanZeroValidator, false, false);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "NaturalVideoHeight", new Value (0), Type::INT32, false, false, true, false, NULL, Validators::IntGreaterThanZeroValidator, false, false);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "NaturalDuration", new Value (Duration::FromSeconds (0)), Type::DURATION, false, false, true, false, NULL, NULL, false, false);
@@ -152,7 +152,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "CurrentState", new Value (MediaStateClosed), Type::INT32, false, false, true, false, NULL, NULL, false, false);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "CanSeek", new Value (false), Type::BOOL, false, false, true, false, NULL, NULL, false, false);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "CanPause", new Value (false), Type::BOOL, false, false, true, false, NULL, NULL, false, false);
-	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "BufferingTime", new Value (TimeSpan_FromSeconds (5),Type::TIMESPAN), Type::TIMESPAN, false, false, false, false, NULL, Validators::BufferingTimeValidator, false, false);
+	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "BufferingTime", NULL, Type::TIMESPAN, false, false, false, false, NULL, Validators::BufferingTimeValidator, false, false);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "BufferingProgress", new Value (0.0), Type::DOUBLE, false, false, true, false, NULL, NULL, false, false);
 	DependencyProperty::Register (this, Type::MEDIAELEMENT, "Balance", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::MEDIAELEMENT, "AutoPlay", new Value (true), Type::BOOL);
