@@ -304,7 +304,7 @@ class Polygon : public Shape {
  public:
  	/* @PropertyType=FillRule,DefaultValue=FillRuleEvenOdd,GenerateAccessors */
 	const static int FillRuleProperty;
- 	/* @PropertyType=PointCollection,GenerateAccessors */
+ 	/* @PropertyType=PointCollection,AutoCreateValue,GenerateAccessors */
 	const static int PointsProperty;
 
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -345,7 +345,7 @@ class Polyline : public Shape {
  public:
  	/* @PropertyType=FillRule,DefaultValue=FillRuleEvenOdd,GenerateAccessors */
 	const static int FillRuleProperty;
- 	/* @PropertyType=PointCollection,GenerateAccessors */
+ 	/* @PropertyType=PointCollection,AutoCreateValue,GenerateAccessors */
 	const static int PointsProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */

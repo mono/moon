@@ -1,5 +1,9 @@
 2009-02-17  Jeffrey Stedfast  <fejj@novell.com>
 
+	* shape.cpp (Polygon::Polygon): Don't set a point
+	collection. We'll make it autocreated instead.
+	(Polyline::Polyline): Same.
+
 	* geometry.h (class PathFigure): Set the default value of
 	IsFilledProperty to true.
 	(class PathGeometry): AutoCreate the FiguresProperty.

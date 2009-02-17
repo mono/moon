@@ -1402,8 +1402,6 @@ Line::OnPropertyChanged (PropertyChangedEventArgs *args)
 Polygon::Polygon ()
 {
 	SetObjectType (Type::POLYGON);
-
-	SetPoints (new PointCollection ());
 }
 
 // The Polygon shape can be drawn while ignoring properties:
@@ -1574,7 +1572,6 @@ Polygon::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Proper
 Polyline::Polyline ()
 {
 	SetObjectType (Type::POLYLINE);
-	SetPoints (new PointCollection ());
 }
 
 // The Polyline shape can be drawn while ignoring NO properties

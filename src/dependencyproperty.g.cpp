@@ -67,9 +67,9 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::LINEARGRADIENTBRUSH, "EndPoint", new Value (Point(1,1)), Type::POINT);
 	DependencyProperty::Register (this, Type::RECTANGLE, "RadiusY", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::RECTANGLE, "RadiusX", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::POLYLINE, "Points", Type::POINT_COLLECTION);
+	DependencyProperty::RegisterFull (this, Type::POLYLINE, "Points", NULL, Type::POINT_COLLECTION, true, false, false, false, NULL, NULL, false, false);
 	DependencyProperty::Register (this, Type::POLYLINE, "FillRule", new Value (FillRuleEvenOdd), Type::INT32);
-	DependencyProperty::Register (this, Type::POLYGON, "Points", Type::POINT_COLLECTION);
+	DependencyProperty::RegisterFull (this, Type::POLYGON, "Points", NULL, Type::POINT_COLLECTION, true, false, false, false, NULL, NULL, false, false);
 	DependencyProperty::Register (this, Type::POLYGON, "FillRule", new Value (FillRuleEvenOdd), Type::INT32);
 	DependencyProperty::Register (this, Type::PATH, "Data", Type::GEOMETRY);
 	DependencyProperty::Register (this, Type::LINE, "Y2", new Value (0.0), Type::DOUBLE);
