@@ -73,9 +73,6 @@ MediaElement::MediaElement ()
 	
 	Reinitialize ();
 	
-	SetValue (MediaElement::AttributesProperty, Value::CreateUnref (new MediaAttributeCollection ()));		
-	SetValue (MediaElement::MarkersProperty, Value::CreateUnref (new TimelineMarkerCollection ()));
-	
 	providers [PropertyPrecedence_DynamicValue] = new MediaElementPropertyValueProvider (this);
 }
 

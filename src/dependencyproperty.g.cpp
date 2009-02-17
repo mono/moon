@@ -149,7 +149,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "DroppedFramesPerSecond", new Value (0.0), Type::DOUBLE, false, false, true, false, NULL, NULL, false, false);
 	DependencyProperty::Register (this, Type::MEDIAELEMENT, "DownloadProgress", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "DownloadProgressOffset", new Value (0.0), Type::DOUBLE, false, false, true, false, NULL, NULL, false, false);
-	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "CurrentState", NULL, Type::INT32, false, false, true, false, NULL, NULL, false, false);
+	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "CurrentState", new Value (MediaStateClosed), Type::INT32, false, false, true, false, NULL, NULL, false, false);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "CanSeek", new Value (false), Type::BOOL, false, false, true, false, NULL, NULL, false, false);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "CanPause", new Value (false), Type::BOOL, false, false, true, false, NULL, NULL, false, false);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "BufferingTime", new Value (TimeSpan_FromSeconds (5),Type::TIMESPAN), Type::TIMESPAN, false, false, false, false, NULL, Validators::BufferingTimeValidator, false, false);

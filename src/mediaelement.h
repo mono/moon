@@ -152,7 +152,7 @@ class MediaElement : public FrameworkElement {
 	const static int CanSeekProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int DownloadProgressProperty;
- 	/* @PropertyType=MediaState,ReadOnly,ManagedPropertyType=MediaElementState,GenerateAccessors */
+ 	/* @PropertyType=MediaState,ReadOnly,ManagedPropertyType=MediaElementState,DefaultValue=MediaStateClosed,GenerateAccessors */
 	const static int CurrentStateProperty;
  	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	const static int IsMutedProperty;
