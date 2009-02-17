@@ -3147,7 +3147,6 @@ EventObjectCreateWrapper (NPP instance, EventObject *obj)
 	case Type::ERROREVENTARGS:
 	case Type::PARSERERROREVENTARGS:
 	case Type::IMAGEERROREVENTARGS:
-	case Type::MEDIAERROREVENTARGS:
 		np_class = dependency_object_classes [ERROR_EVENT_ARGS_CLASS];
 		break;
 	default:

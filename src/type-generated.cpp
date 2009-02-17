@@ -279,7 +279,6 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::MEDIAATTRIBUTE_COLLECTION] = new Type (Type::MEDIAATTRIBUTE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "MediaAttributeCollection", "MEDIAATTRIBUTE_COLLECTION", 0, 1, NULL, (create_inst_func *) media_attribute_collection_new, NULL);
 	types [(int) Type::MEDIABASE] = new Type (Type::MEDIABASE, Type::FRAMEWORKELEMENT, false, "MediaBase", "MEDIABASE", 1, 17, MediaBase_Events, (create_inst_func *) media_base_new, NULL);
 	types [(int) Type::MEDIAELEMENT] = new Type (Type::MEDIAELEMENT, Type::FRAMEWORKELEMENT, false, "MediaElement", "MEDIAELEMENT", 7, 23, MediaElement_Events, (create_inst_func *) media_element_new, NULL);
-	types [(int) Type::MEDIAERROREVENTARGS] = new Type (Type::MEDIAERROREVENTARGS, Type::ERROREVENTARGS, false, "MediaErrorEventArgs", "MEDIAERROREVENTARGS", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::MEDIAMARKER] = new Type (Type::MEDIAMARKER, Type::EVENTOBJECT, false, "MediaMarker", "MEDIAMARKER", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::MEDIAPLAYER] = new Type (Type::MEDIAPLAYER, Type::EVENTOBJECT, false, "MediaPlayer", "MEDIAPLAYER", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::MEMORYNESTEDSOURCE] = new Type (Type::MEMORYNESTEDSOURCE, Type::MEMORYSOURCE, false, "MemoryNestedSource", "MEMORYNESTEDSOURCE", 0, 1, NULL, NULL, NULL);

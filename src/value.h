@@ -166,7 +166,6 @@ class MediaAttribute;
 class MediaAttributeCollection;
 class MediaBase;
 class MediaElement;
-class MediaErrorEventArgs;
 class MediaMarker;
 class MediaPlayer;
 class MemoryNestedSource;
@@ -473,7 +472,6 @@ public:
 	MediaAttributeCollection*      AsMediaAttributeCollection () { checked_get_subclass (Type::MEDIAATTRIBUTE_COLLECTION, MediaAttributeCollection) }
 	MediaBase*                     AsMediaBase () { checked_get_subclass (Type::MEDIABASE, MediaBase) }
 	MediaElement*                  AsMediaElement () { checked_get_subclass (Type::MEDIAELEMENT, MediaElement) }
-	MediaErrorEventArgs*           AsMediaErrorEventArgs () { checked_get_subclass (Type::MEDIAERROREVENTARGS, MediaErrorEventArgs) }
 	MediaMarker*                   AsMediaMarker () { checked_get_subclass (Type::MEDIAMARKER, MediaMarker) }
 	MediaPlayer*                   AsMediaPlayer () { checked_get_subclass (Type::MEDIAPLAYER, MediaPlayer) }
 	MemoryNestedSource*            AsMemoryNestedSource () { checked_get_subclass (Type::MEMORYNESTEDSOURCE, MemoryNestedSource) }

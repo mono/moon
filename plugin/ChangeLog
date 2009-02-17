@@ -1,5 +1,9 @@
 2009-02-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* plugin-class.cpp: Remove case for MediaErrorEventArgs.
+
+2009-02-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* plugin-class.cpp: EventListenerProxy: set our object type
 	  upon construction.
 

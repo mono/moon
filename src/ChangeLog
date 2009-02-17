@@ -1,5 +1,11 @@
 2009-02-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* type.h:
+	* value.h:
+	* type-generated.cpp: Regenerate.
+
+2009-02-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.h:
 	* pipeline.cpp:
 	* mediaelement.h:
