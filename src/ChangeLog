@@ -1,3 +1,8 @@
+2009-02-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* text.h: Default TextBlock font size seems to be 11px in SL2 as
+	opposed to 14.667 in SL1.
+
 2009-02-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* brush.h:

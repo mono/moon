@@ -294,7 +294,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::INLINE, "FontWeight", new Value (TEXTBLOCK_FONT_WEIGHT), Type::INT32);
 	DependencyProperty::Register (this, Type::INLINE, "FontStyle", new Value (TEXTBLOCK_FONT_STYLE), Type::INT32);
 	DependencyProperty::Register (this, Type::INLINE, "FontStretch", new Value (TEXTBLOCK_FONT_STRETCH), Type::INT32);
-	DependencyProperty::Register (this, Type::INLINE, "FontSize", new Value (INLINE_FONT_SIZE), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::INLINE, "FontSize", new Value (TEXTBLOCK_FONT_SIZE), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::INLINE, "FontFilename", Type::STRING);
 	DependencyProperty::Register (this, Type::INLINE, "FontFamily", new Value (FontFamily(TEXTBLOCK_FONT_FAMILY)), Type::FONTFAMILY);
 	DependencyProperty::Register (this, Type::GRADIENTSTOP, "Offset", new Value (0.0), Type::DOUBLE);
