@@ -500,7 +500,7 @@ class PolyBezierSegment : public PathSegment {
 	PointCollection *GetPoints ();
 	
  public:
- 	/* @PropertyType=PointCollection,GenerateAccessors */
+ 	/* @PropertyType=PointCollection,AutoCreateValue,GenerateAccessors */
 	const static int PointsProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -529,7 +529,7 @@ class PolyLineSegment : public PathSegment {
 	PointCollection *GetPoints ();
 	
  public:
- 	/* @PropertyType=PointCollection,GenerateAccessors */
+ 	/* @PropertyType=PointCollection,AutoCreateValue,GenerateAccessors */
 	const static int PointsProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -557,7 +557,7 @@ class PolyQuadraticBezierSegment : public PathSegment {
 	PointCollection *GetPoints ();
 	
  public:
- 	/* @PropertyType=PointCollection,GenerateAccessors */
+ 	/* @PropertyType=PointCollection,AutoCreateValue,GenerateAccessors */
 	const static int PointsProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */

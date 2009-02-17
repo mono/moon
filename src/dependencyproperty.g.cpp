@@ -354,9 +354,9 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::ROTATETRANSFORM, "Angle", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::QUADRATICBEZIERSEGMENT, "Point2", Type::POINT);
 	DependencyProperty::Register (this, Type::QUADRATICBEZIERSEGMENT, "Point1", Type::POINT);
-	DependencyProperty::Register (this, Type::POLYQUADRATICBEZIERSEGMENT, "Points", Type::POINT_COLLECTION);
-	DependencyProperty::Register (this, Type::POLYLINESEGMENT, "Points", Type::POINT_COLLECTION);
-	DependencyProperty::Register (this, Type::POLYBEZIERSEGMENT, "Points", Type::POINT_COLLECTION);
+	DependencyProperty::RegisterFull (this, Type::POLYQUADRATICBEZIERSEGMENT, "Points", NULL, Type::POINT_COLLECTION, true, false, false, false, NULL, NULL, false, false);
+	DependencyProperty::RegisterFull (this, Type::POLYLINESEGMENT, "Points", NULL, Type::POINT_COLLECTION, true, false, false, false, NULL, NULL, false, false);
+	DependencyProperty::RegisterFull (this, Type::POLYBEZIERSEGMENT, "Points", NULL, Type::POINT_COLLECTION, true, false, false, false, NULL, NULL, false, false);
 	DependencyProperty::Register (this, Type::POINTKEYFRAME, "Value", Type::POINT);
 	DependencyProperty::Register (this, Type::POINTKEYFRAME, "KeyTime", Type::KEYTIME);
 	DependencyProperty::Register (this, Type::POINTANIMATION, "To", Type::POINT);

@@ -3,6 +3,9 @@
 	* geometry.h (class PathFigure): Set the default value of
 	IsFilledProperty to true.
 	(class PathGeometry): AutoCreate the FiguresProperty.
+	(class PolyBezierSegment): AutoCreate the PointsProperty.
+	(class PolyLineSegment): AutoCreate the PointsProperty.
+	(class PolyQuadraticBezierSegment): AutoCreate the PointsProperty.
 
 	* deployment.h (class AssemblyPart): Set the default value of
 	AssemblyPart::SourceProperty to "".
