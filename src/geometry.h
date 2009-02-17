@@ -393,7 +393,7 @@ class ArcSegment : public PathSegment {
 	const static int PointProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int RotationAngleProperty;
- 	/* @PropertyType=Point,ManagedPropertyType=Size,GenerateAccessors */
+ 	/* @PropertyType=Size,GenerateAccessors */
 	const static int SizeProperty;
  	/* @PropertyType=SweepDirection,DefaultValue=SweepDirectionCounterclockwise,GenerateAccessors */
 	const static int SweepDirectionProperty;
@@ -417,8 +417,8 @@ class ArcSegment : public PathSegment {
 	void SetRotationAngle (double angle);
 	double GetRotationAngle ();
 	
-	void SetSize (Point *size);
-	Point *GetSize ();
+	void SetSize (Size *size);
+	Size *GetSize ();
 	
 	void SetSweepDirection (SweepDirection direction);
 	SweepDirection GetSweepDirection ();

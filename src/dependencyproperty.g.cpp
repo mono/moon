@@ -392,7 +392,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::BEZIERSEGMENT, "Point1", Type::POINT);
 	DependencyProperty::Register (this, Type::BEGINSTORYBOARD, "Storyboard", Type::STORYBOARD);
 	DependencyProperty::Register (this, Type::ARCSEGMENT, "SweepDirection", new Value (SweepDirectionCounterclockwise), Type::INT32);
-	DependencyProperty::Register (this, Type::ARCSEGMENT, "Size", Type::POINT);
+	DependencyProperty::Register (this, Type::ARCSEGMENT, "Size", Type::SIZE);
 	DependencyProperty::Register (this, Type::ARCSEGMENT, "RotationAngle", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::ARCSEGMENT, "Point", Type::POINT);
 	DependencyProperty::Register (this, Type::ARCSEGMENT, "IsLargeArc", new Value (false), Type::BOOL);
@@ -5065,15 +5065,15 @@ ArcSegment::SetSweepDirection (SweepDirection value)
 	SetValue (ArcSegment::SweepDirectionProperty, Value (value));
 }
 
-Point *
+Size *
 ArcSegment::GetSize ()
 {
 	Value *value = GetValue (ArcSegment::SizeProperty);
-	return value ? value->AsPoint () : NULL;
+	return value ? value->AsSize () : NULL;
 }
 
 void
-ArcSegment::SetSize (Point *value)
+ArcSegment::SetSize (Size *value)
 {
 	if (!value) return;
 	SetValue (ArcSegment::SizeProperty, Value (*value));

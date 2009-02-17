@@ -1,3 +1,8 @@
+2009-02-17  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* geometry.h, geometry.cpp, dependencyproperty.g.cpp:
+	  Fixed type of ArcSegment::Size from Point to Size.
+
 2009-02-16  Jeffrey Stedfast  <fejj@novell.com>
 
 	* text.h: Default TextBlock font size seems to be 11px in SL2 as

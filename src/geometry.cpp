@@ -632,9 +632,9 @@ ArcSegment::~ArcSegment ()
 void
 ArcSegment::Append (moon_path *path)
 {
-	Point *size = GetSize ();
-	double width = size ? size->x : 0.0;
-	double height = size ? size->y : 0.0;
+	Size *size = GetSize ();
+	double width = size ? size->width : 0.0;
+	double height = size ? size->height : 0.0;
 
 	Point *end_point = GetPoint ();
 	double ex = end_point ? end_point->x : 0.0;
