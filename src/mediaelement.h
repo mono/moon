@@ -133,7 +133,6 @@ class MediaElement : public FrameworkElement {
 	void SetPlaylist (PlaylistRoot *playlist); // Adds/removes event handlers
 
  protected:
-	DownloaderAccessPolicy GetDownloaderPolicy (const char *uri); // Thread-safe
 	virtual ~MediaElement () {}
 	
  public:

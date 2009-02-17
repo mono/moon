@@ -387,17 +387,6 @@ MediaElement::IsMissingCodecs ()
 	return flags & MissingCodecs;
 }
 
-DownloaderAccessPolicy
-MediaElement::GetDownloaderPolicy (const char *uri)
-{
-	// Thread-safe
-	
-	if (!g_ascii_strncasecmp (uri, "mms://", 6))
-		return StreamingPolicy;
-	
-	return MediaPolicy;
-}
-
 Point
 MediaElement::GetTransformOrigin ()
 {
