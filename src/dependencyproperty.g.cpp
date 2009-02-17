@@ -270,7 +270,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::ROWDEFINITION, "Height", new Value (GridLength (1.0, GridUnitTypeStar)), Type::GRIDLENGTH);
 	DependencyProperty::Register (this, Type::PATHFIGURE, "StartPoint", Type::POINT);
 	DependencyProperty::RegisterFull (this, Type::PATHFIGURE, "Segments", NULL, Type::PATHSEGMENT_COLLECTION, true, false, false, false, NULL, NULL, false, false);
-	DependencyProperty::Register (this, Type::PATHFIGURE, "IsFilled", Type::BOOL);
+	DependencyProperty::Register (this, Type::PATHFIGURE, "IsFilled", new Value (true), Type::BOOL);
 	DependencyProperty::Register (this, Type::PATHFIGURE, "IsClosed", new Value (false), Type::BOOL);
 	DependencyProperty::RegisterFull (this, Type::NAMESCOPE, "NameScope", NULL, Type::NAMESCOPE, false, true, false, false, NULL, NULL, false, false);
 	DependencyProperty::Register (this, Type::MULTISCALESUBIMAGE, "ZIndex", Type::INT32);

@@ -1,5 +1,8 @@
 2009-02-17  Jeffrey Stedfast  <fejj@novell.com>
 
+	* geometry.h (class PathFigure): Set the default value of
+	IsFilledProperty to true.
+
 	* deployment.h (class AssemblyPart): Set the default value of
 	AssemblyPart::SourceProperty to "".
 
