@@ -50,6 +50,9 @@ enum MediaElementFlags {
 	MediaOpenedEmitted  = (1 << 9),  // set if MediaOpened has been emitted.
 	MissingCodecs       = (1 << 11), // set if we have no video codecs
 	AutoPlayed          = (1 << 12), // set if we've autoplayed
+	UpdatingSizeFromMedia = (1 << 13),
+	UseMediaHeight =        (1 << 14),
+	UseMediaWidth =         (1 << 15),
 };
 
 /*
@@ -65,12 +68,7 @@ MediaElement::MediaElement ()
 	mplayer = NULL;
 	playlist = NULL;
 	flags = 0;
-	
-	updating_size_from_media = false;
-	allow_downloads = false;
-	use_media_height = true;
-	use_media_width = true;
-	
+		
 	mplayer = NULL;
 	
 	Reinitialize ();
@@ -352,7 +350,8 @@ MediaElement::Reinitialize ()
 		playlist = NULL;
 	}
 	
-	flags = (flags & (PlayRequested)) | RecalculateMatrix;
+	flags &= (PlayRequested | UseMediaHeight | UseMediaWidth);
+	flags |= RecalculateMatrix;
 	
 	prev_state = MediaStateClosed;
 	state = MediaStateClosed;
@@ -819,22 +818,6 @@ MediaElement::BufferingComplete ()
 }
 
 void
-MediaElement::SetAllowDownloads (bool allow)
-{
-	Surface *surface = GetSurface ();
-	
-	VERIFY_MAIN_THREAD;
-	
-	if (allow_downloads == allow)
-		return;
-	
-	if (surface == NULL)
-		return;
-	
-	allow_downloads = allow;
-}
-
-void
 MediaElement::CreatePlaylist ()
 {
 	g_warn_if_fail (mplayer == NULL);
@@ -971,27 +954,27 @@ MediaElement::SetProperties (Media *media)
 
 	/* XXX FIXME horrible hack to keep old world charm until canvas logic is updated */
 	if (GetVisualParent () && GetVisualParent ()->Is (Type::CANVAS)) {
-		updating_size_from_media = true;
+		flags |= UpdatingSizeFromMedia;
 
-		if (use_media_width) {
+		if (flags & UseMediaWidth) {
 			Value *height = GetValueNoDefault (FrameworkElement::HeightProperty);
 			
-			if (!use_media_height)
+			if (!(flags & UseMediaHeight))
 				SetWidth ((double) mplayer->GetVideoWidth() * height->AsDouble () / (double) mplayer->GetVideoHeight());
 			else
 				SetWidth ((double) mplayer->GetVideoWidth());
 		}
 		
-		if (use_media_height) {
+		if (flags & UseMediaHeight) {
 			Value *width = GetValueNoDefault (FrameworkElement::WidthProperty);
 			
-			if (!use_media_width)
+			if (!(flags & UseMediaWidth))
 				SetHeight ((double) mplayer->GetVideoHeight() * width->AsDouble () / (double) mplayer->GetVideoWidth());
 			else
 				SetHeight ((double) mplayer->GetVideoHeight());
 		}
 		
-		updating_size_from_media = false;
+		flags &= ~UpdatingSizeFromMedia;
 	}
 	InvalidateMeasure ();
 }
@@ -1395,11 +1378,19 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 		if (mplayer)
 			mplayer->SetVolume (args->new_value->AsDouble ());
 	} else if (args->GetId () == FrameworkElement::HeightProperty) {
-		if (!updating_size_from_media)
-			use_media_height = args->new_value == NULL;
+		if (!(flags & UpdatingSizeFromMedia)) {
+			if (args->new_value == NULL)
+				flags |= UseMediaHeight;
+			else
+				flags &= ~UseMediaHeight;
+		}
 	} else if (args->GetId () == FrameworkElement::WidthProperty) {
-		if (!updating_size_from_media)
-			use_media_width = args->new_value == NULL;
+		if (!(flags & UpdatingSizeFromMedia)) {
+			if (args->new_value == NULL)
+				flags |= UseMediaWidth;
+			else
+				flags &= ~UseMediaWidth;
+		}
 	}
 	
 	if (args->GetProperty ()->GetOwnerType() != Type::MEDIAELEMENT) {

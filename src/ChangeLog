@@ -1,6 +1,12 @@
 2009-02-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mediaelement.h:
+	* mediaelement.cpp: Move bitfields into our flags field.
+	  Remove allow_downloads and related methods, no longer used.
+
+2009-02-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.h:
 	* mediaelement.cpp: Remove GetDownloaderPolicy, not used
 	  anymore.
 

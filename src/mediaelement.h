@@ -26,17 +26,11 @@
 /* @Namespace=System.Windows.Controls */
 class MediaElement : public FrameworkElement {
  friend class MediaElementPropertyValueProvider;	
- private:
-	int updating_size_from_media:1;
-	int allow_downloads:1;
-	int use_media_height:1;
-	int use_media_width:1;
-	
+ private:	
 	Mutex mutex;
 	
 	TimelineMarkerCollection *streamed_markers; // Thread-safe: Accesses to this field needs to use the mutex.
 	MediaMarkerFoundClosure *marker_closure;
-	bool recalculate_matrix;
 	cairo_matrix_t matrix;
 	MediaPlayer *mplayer;
 	PlaylistRoot *playlist;
@@ -75,10 +69,7 @@ class MediaElement : public FrameworkElement {
 	guint32 flags;
 	
 	void BufferingComplete (); // not thread-safe
-	
-	void SetAllowDownloads (bool allow); // not thread-safe
-	bool AllowDownloads () { return allow_downloads; } // not thread-safe
-	
+		
 	double GetBufferedSize (); // not thread-safe
 	double CalculateBufferingProgress (); // not thread-safe
 	void UpdateProgress (); // not thread-safe
