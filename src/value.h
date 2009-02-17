@@ -112,6 +112,7 @@ class EventListenerProxy;
 class EventObject;
 class EventTrigger;
 class Expression;
+class ExternalDemuxer;
 class FfmpegDecoder;
 class FfmpegDemuxer;
 class FileSource;
@@ -165,9 +166,15 @@ class Media;
 class MediaAttribute;
 class MediaAttributeCollection;
 class MediaBase;
+class MediaClosure;
+class MediaDecodeFrameClosure;
 class MediaElement;
+class MediaFrame;
+class MediaGetFrameClosure;
 class MediaMarker;
+class MediaMarkerFoundClosure;
 class MediaPlayer;
+class MediaSeekClosure;
 class MemoryNestedSource;
 class MemoryQueueSource;
 class MemorySource;
@@ -194,6 +201,7 @@ class PathSegment;
 class PathSegmentCollection;
 class Playlist;
 class PlaylistEntry;
+class PlaylistRoot;
 class PointCollection;
 class PointAnimation;
 class PointAnimationUsingKeyFrames;
@@ -418,6 +426,7 @@ public:
 	EventObject*                   AsEventObject () { checked_get_subclass (Type::EVENTOBJECT, EventObject) }
 	EventTrigger*                  AsEventTrigger () { checked_get_subclass (Type::EVENTTRIGGER, EventTrigger) }
 	Expression*                    AsExpression () { checked_get_subclass (Type::EXPRESSION, Expression) }
+	ExternalDemuxer*               AsExternalDemuxer () { checked_get_subclass (Type::EXTERNALDEMUXER, ExternalDemuxer) }
 	FfmpegDecoder*                 AsFfmpegDecoder () { checked_get_subclass (Type::FFMPEGDECODER, FfmpegDecoder) }
 	FfmpegDemuxer*                 AsFfmpegDemuxer () { checked_get_subclass (Type::FFMPEGDEMUXER, FfmpegDemuxer) }
 	FileSource*                    AsFileSource () { checked_get_subclass (Type::FILESOURCE, FileSource) }
@@ -471,9 +480,15 @@ public:
 	MediaAttribute*                AsMediaAttribute () { checked_get_subclass (Type::MEDIAATTRIBUTE, MediaAttribute) }
 	MediaAttributeCollection*      AsMediaAttributeCollection () { checked_get_subclass (Type::MEDIAATTRIBUTE_COLLECTION, MediaAttributeCollection) }
 	MediaBase*                     AsMediaBase () { checked_get_subclass (Type::MEDIABASE, MediaBase) }
+	MediaClosure*                  AsMediaClosure () { checked_get_subclass (Type::MEDIACLOSURE, MediaClosure) }
+	MediaDecodeFrameClosure*       AsMediaDecodeFrameClosure () { checked_get_subclass (Type::MEDIADECODEFRAMECLOSURE, MediaDecodeFrameClosure) }
 	MediaElement*                  AsMediaElement () { checked_get_subclass (Type::MEDIAELEMENT, MediaElement) }
+	MediaFrame*                    AsMediaFrame () { checked_get_subclass (Type::MEDIAFRAME, MediaFrame) }
+	MediaGetFrameClosure*          AsMediaGetFrameClosure () { checked_get_subclass (Type::MEDIAGETFRAMECLOSURE, MediaGetFrameClosure) }
 	MediaMarker*                   AsMediaMarker () { checked_get_subclass (Type::MEDIAMARKER, MediaMarker) }
+	MediaMarkerFoundClosure*       AsMediaMarkerFoundClosure () { checked_get_subclass (Type::MEDIAMARKERFOUNDCLOSURE, MediaMarkerFoundClosure) }
 	MediaPlayer*                   AsMediaPlayer () { checked_get_subclass (Type::MEDIAPLAYER, MediaPlayer) }
+	MediaSeekClosure*              AsMediaSeekClosure () { checked_get_subclass (Type::MEDIASEEKCLOSURE, MediaSeekClosure) }
 	MemoryNestedSource*            AsMemoryNestedSource () { checked_get_subclass (Type::MEMORYNESTEDSOURCE, MemoryNestedSource) }
 	MemoryQueueSource*             AsMemoryQueueSource () { checked_get_subclass (Type::MEMORYQUEUESOURCE, MemoryQueueSource) }
 	MemorySource*                  AsMemorySource () { checked_get_subclass (Type::MEMORYSOURCE, MemorySource) }
@@ -500,6 +515,7 @@ public:
 	PathSegmentCollection*         AsPathSegmentCollection () { checked_get_subclass (Type::PATHSEGMENT_COLLECTION, PathSegmentCollection) }
 	Playlist*                      AsPlaylist () { checked_get_subclass (Type::PLAYLIST, Playlist) }
 	PlaylistEntry*                 AsPlaylistEntry () { checked_get_subclass (Type::PLAYLISTENTRY, PlaylistEntry) }
+	PlaylistRoot*                  AsPlaylistRoot () { checked_get_subclass (Type::PLAYLISTROOT, PlaylistRoot) }
 	PointCollection*               AsPointCollection () { checked_get_subclass (Type::POINT_COLLECTION, PointCollection) }
 	PointAnimation*                AsPointAnimation () { checked_get_subclass (Type::POINTANIMATION, PointAnimation) }
 	PointAnimationUsingKeyFrames*  AsPointAnimationUsingKeyFrames () { checked_get_subclass (Type::POINTANIMATIONUSINGKEYFRAMES, PointAnimationUsingKeyFrames) }

@@ -19,6 +19,14 @@
 #include "enums.h"
 #include "list.h"
 
+#define EVENTHANDLER(type, event, objtype, argtype)	\
+	static void event##Callback (EventObject *sender, EventArgs *calldata, gpointer closure)	\
+	{	\
+		g_return_if_fail (sender != NULL);	\
+		((type *) closure)->event##Handler ((objtype *) sender, (argtype *) calldata); \
+	}	\
+	void event##Handler (objtype *sender, argtype *calldata);
+
 class CollectionChangedEventArgs;
 class EventObject;
 class EventArgs;
@@ -139,6 +147,7 @@ public:
 	EmitContext *StartEmit (int event_id);
 	bool DoEmit (int event_id, EmitContext *ctx, EventArgs *calldata = NULL, bool only_unemitted = false);
 	void FinishEmit (int event_id, EmitContext *ctx);
+	static gboolean EmitCallback (gpointer d);
 	
 	virtual void Dispose ();
 	

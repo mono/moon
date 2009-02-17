@@ -22,6 +22,7 @@ class MemoryQueueSource;
 
 #include "pipeline.h"
 #include "asf.h"
+#include "mms-downloader.h"
 
 /*
  * MemoryQueueSource
@@ -32,14 +33,18 @@ private:
 	ASFParser *parser;
 	bool finished;
 	guint64 write_count;
+	MmsDownloader *mms_downloader;
+	Downloader *downloader;
 
+	EVENTHANDLER (MemoryQueueSource, DownloadFailed, Downloader, EventArgs);
+	EVENTHANDLER (MemoryQueueSource, DownloadComplete, Downloader, EventArgs);
+	
 protected:
 	virtual gint32 ReadInternal (void *buf, guint32 n);
 	virtual gint32 PeekInternal (void *buf, guint32 n);
 	virtual bool SeekInternal (gint64 offset, int mode);
 	virtual gint64 GetSizeInternal ();
 	virtual gint64 GetLastAvailablePositionInternal ();
-	virtual ~MemoryQueueSource ();
 	virtual void Dispose ();
 
 public:
@@ -52,7 +57,7 @@ public:
 		virtual ~QueueNode ();
 	};
 	
-	MemoryQueueSource (Media *media);
+	MemoryQueueSource (Media *media, Downloader *downloader);
 	void AddPacket (MemorySource *packet);
 	ASFPacket *Pop ();
 	bool Advance (); 
@@ -60,10 +65,11 @@ public:
 	virtual void NotifySize (gint64 size);
 	virtual void NotifyFinished ();
 
-	virtual MediaResult Initialize () { return MEDIA_SUCCESS; }
+	virtual MediaResult Initialize ();
 	virtual MediaSourceType GetType () { return MediaSourceTypeQueueMemory; }
 	virtual gint64 GetPositionInternal ();
 	virtual void Write (void *buf, gint64 offset, gint32 n);
+	void WritePacket (void *buf, gint32 n);
 	
 	virtual bool CanSeek () { return true; }
 	virtual bool Eof () { return finished && queue && queue->IsEmpty (); }
@@ -77,10 +83,8 @@ public:
 	Queue *GetQueue ();
 	void SetParser (ASFParser *parser);
 	ASFParser *GetParser ();
-
-#if DEBUG
-	virtual const char* GetTypeName () { return "MemoryQueueSource"; }
-#endif
+	MmsDownloader *GetMmsDownloader () { return mms_downloader; }
+	Downloader *GetDownloader () { return downloader; }
 };
 
 /*
@@ -93,16 +97,20 @@ private:
 	ASFParser *parser;
 	
 	void ReadMarkers ();
-
+	MediaResult Open ();
+	
 protected:
-	virtual ~ASFDemuxer ();
-	virtual MediaResult SeekInternal (guint64 pts);
+	virtual ~ASFDemuxer () {}
 
+	virtual void GetFrameAsyncInternal (IMediaStream *stream);
+	virtual void OpenDemuxerAsyncInternal ();
+	virtual void SeekAsyncInternal (guint64 seekToTime);
+	virtual void SwitchMediaStreamAsyncInternal (IMediaStream *stream);
+	
 public:
 	ASFDemuxer (Media *media, IMediaSource *source);
+	virtual void Dispose ();
 	
-	virtual MediaResult ReadHeader ();
-	virtual MediaResult TryReadFrame (IMediaStream *stream, MediaFrame **frame);
 	virtual void UpdateSelected (IMediaStream *stream);
 	
 	ASFParser *GetParser () { return parser; }
@@ -129,12 +137,13 @@ class ASFMarkerDecoder : public IMediaDecoder {
 protected:
 	virtual ~ASFMarkerDecoder () {};
 
-public:
-	ASFMarkerDecoder (Media *media, IMediaStream *stream) : IMediaDecoder (media, stream) {}
+	virtual void DecodeFrameAsyncInternal (MediaFrame *frame);
+	virtual void OpenDecoderAsyncInternal ();
 	
-	virtual MediaResult DecodeFrame (MediaFrame *frame);
-	virtual MediaResult Open () { return MEDIA_SUCCESS; }
-	virtual const char *GetTypeName () { return "ASFMarkerDecoder"; }
+public:
+	ASFMarkerDecoder (Media *media, IMediaStream *stream) ;
+	
+	virtual const char *GetName () { return "ASFMarkerDecoder"; }
 }; 
 
 /*
@@ -142,13 +151,9 @@ public:
  */
 class ASFMarkerDecoderInfo : public DecoderInfo {
 public:
-	virtual bool Supports (const char *codec) { return !strcmp (codec, "asf-marker"); };
-	
-	virtual IMediaDecoder *Create (Media *media, IMediaStream *stream)
-	{
-		return new ASFMarkerDecoder (media, stream);
-	}	
-	virtual const char *GetName () { return "ASFMarkerDecoder"; }
+	virtual bool Supports (const char *codec);
+	virtual IMediaDecoder *Create (Media *media, IMediaStream *stream);
+	virtual const char *GetName ();
 };
 
 #endif

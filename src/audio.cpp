@@ -24,23 +24,20 @@
 #include "mediaplayer.h"
 
 /*
- * AudioFrameNode
+ * AudioSource::AudioFrame
  */
 
-class AudioFrameNode : public List::Node {
-public:
-	MediaFrame *frame;
-	guint32 bytes_used;
-	AudioFrameNode (MediaFrame *frame) 
-	{
-		this->frame = frame;
-		bytes_used = 0;
-	}
-	~AudioFrameNode ()
-	{
-		delete frame;
-	}
-};
+AudioSource::AudioFrame::AudioFrame (MediaFrame *frame)
+{
+	this->frame = frame;
+	this->frame->ref ();
+	bytes_used = 0;
+}
+
+AudioSource::AudioFrame::~AudioFrame ()
+{
+	frame->unref ();
+}
 
 /*
  * AudioSource
@@ -56,6 +53,10 @@ AudioSource::AudioSource (AudioPlayer *player, MediaPlayer *mplayer, AudioStream
 	this->stream = stream;
 	this->stream->ref ();
 	this->player = player;
+	
+	stream->AddHandler (IMediaStream::FirstFrameEnqueuedEvent, FirstFrameEnqueuedCallback, this);
+	
+	current_frame = NULL;
 	
 	state = AudioNone;
 	flags = (AudioFlags) 0;
@@ -81,10 +82,29 @@ AudioSource::AudioSource (AudioPlayer *player, MediaPlayer *mplayer, AudioStream
 
 AudioSource::~AudioSource ()
 {
-	stream->unref ();
-	mplayer->unref ();
-	
 	pthread_mutex_destroy (&mutex);
+}
+
+void
+AudioSource::Dispose ()
+{
+	if (stream) {
+		stream->RemoveAllHandlers (this);
+		stream->unref ();
+		stream = NULL;
+	}
+	
+	if (mplayer) {
+		mplayer->unref ();
+		mplayer = NULL;
+	}
+	
+	if (current_frame) {
+		delete current_frame;
+		current_frame = NULL;
+	}
+	
+	EventObject::Dispose ();
 }
 
 void
@@ -128,7 +148,7 @@ AudioSource::GetBytesPerFrame ()
 }
 
 AudioStream *
-AudioSource::GetStream ()
+AudioSource::GetStreamReffed ()
 {
 	AudioStream *result;
 	Lock ();
@@ -298,22 +318,29 @@ AudioSource::GetSampleRate ()
 	return sample_rate;
 }
 
-void
-AudioSource::ClearFrames ()
+bool
+AudioSource::IsQueueEmpty ()
 {
-	LOG_AUDIO ("AudioSource::ClearFrames (), %i frames will be removed.\n", frames.Length ());
-	frames.Clear (true);
+	bool result;
+	AudioStream *stream;
+	
+	LOG_AUDIO_EX ("AudioSource::IsQueueEmpty ().\n");
+	
+	stream = GetStreamReffed ();
+	
+	g_return_val_if_fail (stream != NULL, false);
+	
+	result = stream->IsQueueEmpty ();
+	
+	stream->unref ();
+	
+	return result;
 }
 
 void
-AudioSource::AppendFrame (MediaFrame *frame)
+AudioSource::FirstFrameEnqueuedHandler (EventObject *sender, EventArgs *args)
 {
-	LOG_AUDIO ("AudioSource::AppendFrame (%p): now got %i frames, this frame's EOF: %i, buflen: %i, pts: %" G_GUINT64_FORMAT "\n", frame, frames.Length () + 1, frame->event == FrameEventEOF, frame->buflen, MilliSeconds_FromPts (frame->pts));
-		
-	if (frame == NULL)
-		return;
-
-	frames.Push (new AudioFrameNode (frame));
+	LOG_AUDIO_EX ("AudioSource::FirstFrameEnqueuedHandler ().\n");
 	
 	if (GetFlag (AudioWaiting)) {
 		SetFlag (AudioWaiting, false);
@@ -331,9 +358,9 @@ AudioSource::GetDelay ()
 guint64
 AudioSource::GetCurrentPts ()
 {
-	guint64 delay;
-	guint64 current_pts;
-	guint64 result;
+	guint64 delay = 0;
+	guint64 current_pts = 0;
+	guint64 result = 0;
 	
 	if (GetState () != AudioPlaying) {
 		result = last_current_pts;
@@ -368,7 +395,6 @@ AudioSource::Stop ()
 {
 	Lock ();
 	SetState (AudioStopped);
-	frames.Clear (true);
 	last_current_pts = G_MAXUINT64;
 	last_write_pts = G_MAXUINT64;
 	Unlock ();
@@ -393,7 +419,7 @@ AudioSource::Pause ()
 void
 AudioSource::Underflowed ()
 {
-	LOG_AUDIO ("AudioSource::Underflowed (), state: %s, flags: %s, queue length: %i\n", GetStateName (GetState ()), GetFlagNames (flags), frames.Length ());
+	LOG_AUDIO ("AudioSource::Underflowed (), state: %s, flags: %s\n", GetStateName (GetState ()), GetFlagNames (flags));
 	
 	SetCurrentDeployment (false);
 	
@@ -402,21 +428,10 @@ AudioSource::Underflowed ()
 			Stop ();
 			SetFlag (AudioEnded, true);
 			mplayer->AudioFinished ();
-		} else if (frames.Length () == 0) {
+		} else if (IsQueueEmpty ()) {
 			mplayer->SetBufferUnderflow ();
 		}
 	}
-}
-
-MediaResult
-AudioSource::FrameCallback (MediaClosure *closure)
-{
-	AudioSource *source = (AudioSource *) closure->GetContext ();
-	MediaFrame *frame = closure->frame;
-	closure->frame = NULL;
-	if (frame != NULL)
-		source->AppendFrame (frame);
-	return MEDIA_SUCCESS;
 }
 
 bool
@@ -477,27 +492,6 @@ AudioSource::Write (void *dest, guint32 samples)
 	return result;
 }
 
-void
-AudioSource::Enqueue ()
-{
-	if (GetFlag (AudioEOF))
-		return;
-		
-	MediaClosure *closure;
-	Media *media;
-
-
-	media = mplayer->GetMedia ();
-
-	if (media == NULL)
-		return;
-
-	closure = new MediaClosure (FrameCallback);
-	closure->SetContext (this);
-	
-	media->GetNextFrameAsync (closure, stream, FRAME_DEMUXED | FRAME_DECODED);
-}
-
 guint32
 AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 {
@@ -516,7 +510,6 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 	gint32 value;
 	guint64 last_frame_pts = 0; // The pts of the last frame which was used to write samples
 	guint64 last_frame_samples = 0; // Samples written from the last frame
-	AudioFrameNode *node;
 	
 	SetCurrentDeployment (false);
 	
@@ -571,30 +564,33 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 		write_ptr [i] = (gint16 *) channel_data [i]->dest;
 	
 	while (GetState () == AudioPlaying) {
-		node = (AudioFrameNode *) frames.Pop ();
+		if (current_frame == NULL) {
+			MediaFrame *frame = stream->PopFrame ();
+			if (frame != NULL)
+				current_frame = new AudioFrame (frame);
+		}
 		
-		if (node == NULL) {
-			LOG_AUDIO ("AudioSource::WriteFull (): No more data, starting to wait...\n");
-			if (!GetFlag (AudioEOF) && !GetFlag (AudioEnded)) {
-				SetFlag (AudioWaiting, true);
-				SetFlag ((AudioFlags) (AudioEOF | AudioEnded), false);
+		if (current_frame == NULL) {
+			if (stream->GetEnded ()) {
+				LOG_AUDIO ("AudioSource::WriteFull (): No more data and reached the end.\n");
+				SetFlag (AudioWaiting, false);
+				SetFlag ((AudioFlags) (AudioEOF | AudioEnded), true);
+			} else {
+				LOG_AUDIO ("AudioSource::WriteFull (): No more data, starting to wait...\n");
+				if (!GetFlag (AudioEOF) && !GetFlag (AudioEnded)) {
+					SetFlag (AudioWaiting, true);
+					SetFlag ((AudioFlags) (AudioEOF | AudioEnded), false);
+				}
 			}
 			goto cleanup;
 		}
-		
-		if (node->frame->event == FrameEventEOF && node->bytes_used == node->frame->buflen) {
-			// We've used all the data from the last packet
-			LOG_AUDIO ("AudioSource::WriteFull (): Reached end of data\n");
-			SetFlag (AudioEOF, true);
-			SetFlag ((AudioFlags) (AudioWaiting | AudioEnded), false);
-		}
-		
-		bytes_available = node->frame->buflen - node->bytes_used;
+
+		bytes_available = current_frame->frame->buflen - current_frame->bytes_used;
 		
 		if (bytes_available < bytes_per_sample) {
-			LOG_AUDIO ("AudioSource::WriteFull (): incomplete packet, bytes_available: %u, buflen: %u, bytes_used: %u\n", bytes_available, node->frame->buflen, node->bytes_used);
-			Enqueue ();
-			delete node;
+			LOG_AUDIO ("AudioSource::WriteFull (): incomplete packet, bytes_available: %u, buflen: %u, bytes_used: %u\n", bytes_available, current_frame->frame->buflen, current_frame->bytes_used);
+			delete current_frame;
+			current_frame = NULL;
 			continue;
 		}
 		
@@ -602,7 +598,7 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 		bytes_written = samples_to_write * bytes_per_sample;
 		
 		gint16 *initial_read_ptr;
-		read_ptr = (gint16 *) (((char *) node->frame->buffer) + node->bytes_used);
+		read_ptr = (gint16 *) (((char *) current_frame->frame->buffer) + current_frame->bytes_used);
 		initial_read_ptr = read_ptr;
 		
 		for (guint32 i = 0; i < samples_to_write; i++) {
@@ -615,21 +611,17 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 		}
 		
 		result += samples_to_write;
-		node->bytes_used += bytes_written;
+		current_frame->bytes_used += bytes_written;
 				
-		last_frame_samples = node->bytes_used / GetBytesPerFrame ();
-		last_frame_pts = node->frame->pts;
+		last_frame_samples = current_frame->bytes_used / GetBytesPerFrame ();
+		last_frame_pts = current_frame->frame->pts;
 		
-		if (node->bytes_used == node->frame->buflen) {
+		if (current_frame->bytes_used == current_frame->frame->buflen) {
 			// We used the entire packet
-			Enqueue ();
-			delete node;
-			node = NULL;
+			delete current_frame;
+			current_frame = NULL;
 		} else {
-			// There is still audio data left in the packet, put it back in the queue until the next Write.
-			frames.Lock ();
-			frames.LinkedList ()->Prepend (node);
-			frames.Unlock ();
+			// There is still audio data left in the packet, just leave it.
 		}
 		
 		if (result == samples) {
@@ -641,7 +633,7 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 	}
 	
 cleanup:
-	LOG_AUDIO_EX ("AudioSource::Write (%p, %u): Wrote %u samples, current pts: %" G_GUINT64_FORMAT "\n", channel_data, samples, result, MilliSeconds_FromPts (GetCurrentPts ()));
+	LOG_AUDIO_EX ("AudioSource::Write (%p, %u): Wrote %u samples, current pts: %" G_GUINT64_FORMAT ", volume: %.2f\n", channel_data, samples, result, MilliSeconds_FromPts (GetCurrentPts ()), this->volume);
 	
 	if (result > 0) {
 		last_write_pts = last_frame_pts + MilliSeconds_ToPts (last_frame_samples * 1000 / GetSampleRate ());

@@ -50,6 +50,7 @@
 #include "utils.h"
 #include "error.h"
 #include "debug.h"
+#include "uri.h"
 
 //
 // Downloader

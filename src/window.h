@@ -22,6 +22,8 @@
 #undef Visual
 #undef Region
 
+class MoonWindow;
+
 #include "rect.h"
 #include "enums.h"
 #include "color.h"

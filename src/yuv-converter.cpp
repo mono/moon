@@ -266,7 +266,7 @@ YUVConverterInfo::Create (Media* media, VideoStream* stream)
  * YUVConverter
  */
 
-YUVConverter::YUVConverter (Media* media, VideoStream* stream) : IImageConverter (media, stream)
+YUVConverter::YUVConverter (Media* media, VideoStream* stream) : IImageConverter (Type::YUVCONVERTER, media, stream)
 {
 #if defined(__amd64__) && defined(__x86_64__)
 	have_mmx = true;

@@ -17,6 +17,7 @@
 #include "mp3.h"
 #include "pipeline.h"
 #include "clock.h"
+#include "debug.h"
 
 //
 // Relevant links to documentation:
@@ -655,7 +656,7 @@ Mp3FrameReader::TryReadFrame (MediaFrame **f)
  * Mp3Demuxer
  */
 
-Mp3Demuxer::Mp3Demuxer (Media *media, IMediaSource *source) : IMediaDemuxer (media, source)
+Mp3Demuxer::Mp3Demuxer (Media *media, IMediaSource *source) : IMediaDemuxer (Type::MP3DEMUXER, media, source)
 {
 	reader = NULL;
 	xing = false;
@@ -667,15 +668,19 @@ Mp3Demuxer::~Mp3Demuxer ()
 		delete reader;
 }
 
-MediaResult
-Mp3Demuxer::SeekInternal (guint64 pts)
+void
+Mp3Demuxer::SeekAsyncInternal (guint64 pts)
 {
 	MediaResult result = MEDIA_FAIL;
 	
 	if (reader)
 		result = reader->Seek (pts);
 	
-	return result;
+	if (MEDIA_SUCCEEDED (result)) {
+		ReportSeekCompleted (pts);
+	} else {
+		ReportErrorOccurred (result);
+	}
 }
 
 MediaResult
@@ -772,6 +777,22 @@ Mp3FrameReader::FindMpegHeader (MpegFrameHeader *mpeg, MpegVBRHeader *vbr, IMedi
 	} while ((offset - start) < MPEG_FRAME_LENGTH_MAX);
 	
 	return MEDIA_FAIL;
+}
+
+void
+Mp3Demuxer::OpenDemuxerAsyncInternal ()
+{
+	MediaResult result;
+	
+	LOG_MP3 ("Mp3Demuxer::OpenDemuxerAsyncInternal ()\n");
+	
+	result = ReadHeader ();
+	
+	if (MEDIA_SUCCEEDED (result)) {
+		ReportOpenDemuxerCompleted ();
+	} else {
+		ReportErrorOccurred (result);
+	}
 }
 
 MediaResult
@@ -883,10 +904,24 @@ Mp3Demuxer::ReadHeader ()
 	return MEDIA_SUCCESS;
 }
 
-MediaResult
-Mp3Demuxer::TryReadFrame (IMediaStream *stream, MediaFrame **frame)
+void
+Mp3Demuxer::GetFrameAsyncInternal (IMediaStream *stream)
 {
-	return reader->TryReadFrame (frame);
+	MediaFrame *frame = NULL;
+	MediaResult result;
+	
+	result = reader->TryReadFrame (&frame);
+	
+	if (result == MEDIA_NO_MORE_DATA) {
+		ReportGetFrameCompleted (NULL);
+	} else if (MEDIA_SUCCEEDED (result)) {
+		ReportGetFrameCompleted (frame);
+	} else {
+		ReportErrorOccurred (result);
+	}
+	
+	if (frame)
+		frame->unref ();
 }
 
 /*

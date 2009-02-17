@@ -764,6 +764,15 @@ namespace Mono {
 		public extern static IntPtr event_trigger_new ();
 
 		[DllImport ("moon")]
+		// ExternalDemuxer *external_demuxer_new (Media *media, IMediaSource *source, void *instance);
+		public extern static IntPtr external_demuxer_new (IntPtr media, IntPtr source, IntPtr instance);
+
+		// This method contains types the generator didn't know about. Fix the generator (find the method 'GetManagedType' in TypeReference.cs and add the missing case) and try again.
+		// [DllImport ("moon")]
+		// void external_demuxer_set_callbacks (ExternalDemuxer *instance, CloseDemuxerCallback close_demuxer, GetDiagnosticAsyncCallback get_diagnostic, GetFrameAsyncCallback get_sample, OpenDemuxerAsyncCallback open_demuxer, SeekAsyncCallback seek, SwitchMediaStreamAsyncCallback switch_media_stream);
+		// public extern static void external_demuxer_set_callbacks (IntPtr instance, /* Unknown: 'CloseDemuxerCallback' */ close_demuxer, /* Unknown: 'GetDiagnosticAsyncCallback' */ get_diagnostic, /* Unknown: 'GetFrameAsyncCallback' */ get_sample, /* Unknown: 'OpenDemuxerAsyncCallback' */ open_demuxer, /* Unknown: 'SeekAsyncCallback' */ seek, /* Unknown: 'SwitchMediaStreamAsyncCallback' */ switch_media_stream);
+
+		[DllImport ("moon")]
 		// Size framework_element_arrange_override (FrameworkElement *instance, Size finalSize);
 		public extern static Size framework_element_arrange_override (IntPtr instance, Size finalSize);
 
@@ -846,6 +855,31 @@ namespace Mono {
 		[DllImport ("moon")]
 		// ImageBrush *image_brush_new ();
 		public extern static IntPtr image_brush_new ();
+
+		// This method contains types the generator didn't know about. Fix the generator (find the method 'GetManagedType' in TypeReference.cs and add the missing case) and try again.
+		// [DllImport ("moon")]
+		// void imedia_demuxer_report_get_diagnostic_completed (IMediaDemuxer *instance, MediaStreamSourceDiagnosticKind diagnosticKind, gint64 diagnosticValue);
+		// public extern static void imedia_demuxer_report_get_diagnostic_completed (IntPtr instance, /* Unknown: 'MediaStreamSourceDiagnosticKind' */ diagnosticKind, long diagnosticValue);
+
+		[DllImport ("moon")]
+		// void imedia_demuxer_report_get_frame_completed (IMediaDemuxer *instance, MediaFrame *frame);
+		public extern static void imedia_demuxer_report_get_frame_completed (IntPtr instance, IntPtr frame);
+
+		[DllImport ("moon")]
+		// void imedia_demuxer_report_get_frame_progress (IMediaDemuxer *instance, double bufferingProgress);
+		public extern static void imedia_demuxer_report_get_frame_progress (IntPtr instance, double bufferingProgress);
+
+		[DllImport ("moon")]
+		// void imedia_demuxer_report_open_demuxer_completed (IMediaDemuxer *instance);
+		public extern static void imedia_demuxer_report_open_demuxer_completed (IntPtr instance);
+
+		[DllImport ("moon")]
+		// void imedia_demuxer_report_seek_completed (IMediaDemuxer *instance, guint64 pts);
+		public extern static void imedia_demuxer_report_seek_completed (IntPtr instance, ulong pts);
+
+		[DllImport ("moon")]
+		// void imedia_demuxer_report_switch_media_stream_completed (IMediaDemuxer *instance, IMediaStream *stream);
+		public extern static void imedia_demuxer_report_switch_media_stream_completed (IntPtr instance, IntPtr stream);
 
 		[DllImport ("moon")]
 		// InkPresenter *ink_presenter_new ();
@@ -966,6 +1000,14 @@ namespace Mono {
 		[DllImport ("moon")]
 		// void media_element_play (MediaElement *instance);
 		public extern static void media_element_play (IntPtr instance);
+
+		[DllImport ("moon")]
+		// void media_element_report_error_occurred (MediaElement *instance, const char *args);
+		public extern static void media_element_report_error_occurred (IntPtr instance, string args);
+
+		[DllImport ("moon")]
+		// void media_element_set_demuxer_source (MediaElement *instance, IMediaDemuxer *demuxer);
+		public extern static void media_element_set_demuxer_source (IntPtr instance, IntPtr demuxer);
 
 		[DllImport ("moon")]
 		// void media_element_set_stream_source (MediaElement *instance, ManagedStreamCallbacks *stream);

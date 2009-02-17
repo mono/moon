@@ -639,9 +639,33 @@ EventObject::Emit (char *event_name, EventArgs *calldata, bool only_unemitted)
 	return Emit (id, calldata, only_unemitted);
 }
 
+struct EmitData {
+	EventObject *sender;
+	int event_id;
+	EventArgs *calldata;
+	bool only_unemitted;
+};
+
+gboolean
+EventObject::EmitCallback (gpointer d)
+{
+	EmitData *data = (EmitData *) d;
+	data->sender->SetCurrentDeployment ();
+	data->sender->Emit (data->event_id, data->calldata, data->only_unemitted);
+	data->sender->unref ();
+	delete data;
+#if SANITY
+	Deployment::SetCurrent (NULL);
+#endif
+	return FALSE;
+}
+
 bool
 EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted)
 {
+	if (IsDisposed ())
+		return false;
+	
 	if (GetType()->GetEventCount() <= 0 || event_id >= GetType()->GetEventCount()) {
 		g_warning ("trying to emit event with id %d, which has not been registered\n", event_id);
 		if (calldata)
@@ -652,6 +676,18 @@ EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted)
 	if (events == NULL || events->lists [event_id].event_list->IsEmpty ()) {
 		if (calldata)
 			calldata->unref ();
+		return false;
+	}
+
+	if (!Surface::InMainThread ()) {
+		Surface *surface = GetDeployment ()->GetSurface ();
+		EmitData *data = new EmitData ();
+		data->sender = this;
+		data->sender->ref ();
+		data->event_id = event_id;
+		data->calldata = calldata;
+		data->only_unemitted = only_unemitted;
+		surface->GetTimeManager ()->AddTimeout (G_PRIORITY_DEFAULT, 1, EmitCallback, data);
 		return false;
 	}
 

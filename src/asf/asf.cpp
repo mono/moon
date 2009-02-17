@@ -21,13 +21,20 @@
 	ASFParser
 */
 
-ASFParser::ASFParser (IMediaSource *src, Media *m)
+ASFParser::ASFParser (IMediaSource *source, Media *media)
+	: EventObject (Type::ASFPARSER)
 {
-	ASF_LOG ("ASFParser::ASFParser ('%p'), this: %p.\n", src, this);
-	source = src;
-	if (source)
-		source->ref ();
-	media = m;
+	ASF_LOG ("ASFParser::ASFParser ('%p'), this: %p.\n", source, this);
+	this->media = NULL;
+	this->source = NULL;
+	
+	g_return_if_fail (media != NULL);
+	g_return_if_fail (source != NULL);
+	
+	this->source = source;
+	this->source->ref ();
+	this->media = media;
+
 	Initialize ();
 }
 
@@ -537,11 +544,9 @@ ASFParser::AddError (MediaResult code, char *msg)
 {
 	fprintf (stdout, "ASF error: %s.\n", msg);
 	
-	if (error == NULL) {
-		error = new ErrorEventArgs (MediaError, 4001, msg);
-		if (media)
-			media->AddError (error);
-	}
+	if (error == NULL && media)
+		media->ReportErrorOccurred (new ErrorEventArgs (MediaError, 4001, msg));
+
 	g_free (msg);
 }
 
@@ -677,6 +682,7 @@ ASFParser::GetHeader (int index)
 */
 
 ASFPacket::ASFPacket (ASFParser *parser, IMediaSource *source)
+	: EventObject (Type::ASFPACKET)
 {
 	payloads = NULL;
 	position = -1;
@@ -804,7 +810,7 @@ ASFReader::ASFReader (ASFParser *parser, ASFDemuxer *demuxer)
 {
 	this->parser = parser;
 	this->demuxer = demuxer;
-	this->source = parser->GetSource ();
+	this->source = demuxer->GetSource ();
 	next_packet_index = 0;
 	memset (readers, 0, sizeof (ASFFrameReader*) * 128);
 }
@@ -858,6 +864,13 @@ ASFReader::TryReadMore ()
 	gint64 position, last_available_position;
 	MediaResult read_result = MEDIA_FAIL;
 	ASFPacket* packet = NULL;
+	
+	g_return_val_if_fail (parser != NULL, MEDIA_FAIL);
+	g_return_val_if_fail (parser->GetMedia () != NULL, MEDIA_FAIL);
+	
+#if SANITY
+	g_warn_if_fail (parser->GetMedia ()->InMediaThread ());
+#endif
 	
 	do {
 		if (Eof ()) {
@@ -988,6 +1001,10 @@ ASFReader::Seek (guint64 pts)
 {
 	ASF_LOG ("ASFReader::Seek (%" G_GUINT64_FORMAT "), CanSeek: %i, CanSeekToPts(): %i\n", pts, CanSeek (), source->CanSeekToPts ());
 	
+#if SANITY
+	g_warn_if_fail (parser->GetMedia ()->InMediaThread ());
+#endif
+
 	if (!CanSeek ())
 		return MEDIA_FAIL;
 
@@ -1766,7 +1783,7 @@ ASFFrameReader::AppendPayload (asf_single_payload *payload, guint64 packet_index
 				frame->buflen = Size ();
 				frame->buffer = (guint8 *) data;
 				marker_stream->MarkerFound (frame);
-				delete frame;
+				frame->unref ();
 			} else {
 				restore = true;
 				g_free (data);

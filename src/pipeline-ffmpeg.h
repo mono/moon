@@ -36,22 +36,10 @@ void register_ffmpeg ();
 
 class FfmpegDemuxer : public IMediaDemuxer {
 public:
-	FfmpegDemuxer (Media *media, IMediaSource *source) : IMediaDemuxer (media, source) {}
+	FfmpegDemuxer (Media *media, IMediaSource *source);
 };
  
 class FfmpegDecoder : public IMediaDecoder {
-public:
-	FfmpegDecoder (Media* media, IMediaStream* stream);
-	virtual ~FfmpegDecoder ();
-	
-	virtual MediaResult DecodeFrame (MediaFrame* frame);
-	virtual MediaResult Open ();
-	virtual void Cleanup (MediaFrame* frame);
-	virtual void CleanState ();
-	virtual bool HasDelayedFrame () {return has_delayed_frame; }
-
-	static PixelFormat ToFfmpegPixFmt (MoonPixelFormat format);	
-	static MoonPixelFormat ToMoonPixFmt (PixelFormat format);
 private:
 	AVCodecContext *context;
 	guint8* audio_buffer;
@@ -59,6 +47,23 @@ private:
 	guint32 frame_buffer_length;
 	guint64 last_pts;
 	bool has_delayed_frame;
+	
+	MediaResult Open ();
+	
+protected:
+	virtual ~FfmpegDecoder () {}
+	virtual void DecodeFrameAsyncInternal (MediaFrame* frame);
+	virtual void OpenDecoderAsyncInternal ();
+	
+public:
+	FfmpegDecoder (Media* media, IMediaStream* stream);
+	virtual void Dispose ();	
+	virtual void Cleanup (MediaFrame* frame);
+	virtual void CleanState ();
+	virtual bool HasDelayedFrame () {return has_delayed_frame; }
+
+	static PixelFormat ToFfmpegPixFmt (MoonPixelFormat format);	
+	static MoonPixelFormat ToMoonPixFmt (PixelFormat format);
 };
 
 class FfmpegDecoderInfo : public DecoderInfo {

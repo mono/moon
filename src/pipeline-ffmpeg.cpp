@@ -60,7 +60,7 @@ register_ffmpeg ()
  */
 
 FfmpegDecoder::FfmpegDecoder (Media* media, IMediaStream* stream) 
-	: IMediaDecoder (media, stream),
+	: IMediaDecoder (Type::FFMPEGDECODER, media, stream),
 	audio_buffer (NULL), has_delayed_frame (false)
 {
 	//printf ("FfmpegDecoder::FfmpegDecoder (%p, %p).\n", media, stream);
@@ -99,11 +99,25 @@ FfmpegDecoder::ToMoonPixFmt (PixelFormat format)
 	};
 }
 
+void
+FfmpegDecoder::OpenDecoderAsyncInternal ()
+{
+	MediaResult result;
+	
+	result = Open ();
+	
+	if (MEDIA_SUCCEEDED (result)) {
+		ReportOpenDecoderCompleted ();
+	} else {
+		ReportErrorOccurred (result);
+	}
+}
 
 MediaResult
 FfmpegDecoder::Open ()
 {
 	MediaResult result = MEDIA_SUCCESS;
+	IMediaStream *stream = GetStream ();
 	int ffmpeg_result = 0;
 	AVCodec *codec = NULL;
 	
@@ -170,7 +184,7 @@ FfmpegDecoder::Open ()
 		goto failure;
 	}
 	
-	pixel_format = FfmpegDecoder::ToMoonPixFmt (context->pix_fmt);
+	SetPixelFormat (FfmpegDecoder::ToMoonPixFmt (context->pix_fmt));
 		
 	//printf ("FfmpegDecoder::Open (): Opened codec successfully.\n");
 	
@@ -195,7 +209,8 @@ failure:
 	return result;
 }
 
-FfmpegDecoder::~FfmpegDecoder ()
+void
+FfmpegDecoder::Dispose ()
 {
 	pthread_mutex_lock (&ffmpeg_mutex);
 	
@@ -214,8 +229,10 @@ FfmpegDecoder::~FfmpegDecoder ()
 	av_free (audio_buffer);
 	audio_buffer = NULL;
 
-	if (frame_buffer != NULL)
+	if (frame_buffer != NULL) {
 		g_free (frame_buffer);
+		frame_buffer = NULL;
+	}
 	
 	pthread_mutex_unlock (&ffmpeg_mutex);
 }
@@ -242,6 +259,7 @@ FfmpegDecoder::CleanState ()
 	int length;
 	AVFrame *frame = NULL;
 	int got_picture = 0;
+	IMediaStream *stream = GetStream ();
 	
 	LOG_FFMPEG ("FfmpegDecoder::CleanState ()\n");
 	
@@ -262,9 +280,10 @@ FfmpegDecoder::CleanState ()
 	}		
 }
 
-MediaResult
-FfmpegDecoder::DecodeFrame (MediaFrame *mf)
+void
+FfmpegDecoder::DecodeFrameAsyncInternal (MediaFrame *mf)
 {
+	IMediaStream *stream = GetStream ();
 	AVFrame *frame = NULL;
 	guint64 prev_pts;
 	//guint64 input_pts = mf->pts;
@@ -273,8 +292,10 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 	
 	LOG_FFMPEG ("FfmpegDecoder::DecodeFrame (%p). pts: %" G_GUINT64_FORMAT " ms, context: %p\n", mf, MilliSeconds_FromPts (mf->pts), context);
 	
-	if (context == NULL)
-		return MEDIA_FAIL;
+	if (context == NULL) {
+		ReportErrorOccurred (MEDIA_FAIL);
+		return;
+	}
 	
 	if (stream->GetType () == MediaTypeVideo) {
 		frame = avcodec_alloc_frame ();
@@ -292,11 +313,13 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 			// (requires passing NULL as buffer and 0 as buflen)
 			if (has_delayed_frame) {
 				Media::Warning (MEDIA_CODEC_ERROR, "Error while decoding frame (got length: %d).", length);
-				return MEDIA_CODEC_ERROR;
+				ReportErrorOccurred (MEDIA_CODEC_ERROR);
+				return;
 			} else {
 				//Media::Warning (MEDIA_CODEC_ERROR, "Error while decoding frame (got length: %d), delaying.", length);
 				has_delayed_frame = true;
-				return MEDIA_CODEC_DELAYED;
+				// return MEDIA_CODEC_DELAYED;
+				return;
 			}
 		}
 		
@@ -318,7 +341,7 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 		int height = context->height;
 		int plane_bytes [4];
 		
-		switch (pixel_format) {
+		switch (GetPixelFormat ()) {
 		case MoonPixelFormatYUV420P:
 			plane_bytes [0] = height * frame->linesize [0];
 			plane_bytes [1] = height * frame->linesize [1] / 2;
@@ -339,7 +362,8 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 				if (posix_memalign ((void **)&mf->data_stride [i], 16, plane_bytes[i] + stream->min_padding)) {
 					g_warning ("Could not allocate memory for data stride");
 					av_free (frame);
-					return MEDIA_OUT_OF_MEMORY;
+					ReportErrorOccurred (MEDIA_OUT_OF_MEMORY);
+					return;
 				}
 				memcpy (mf->data_stride[i], frame->data[i], plane_bytes[i]);
 			} else {
@@ -400,7 +424,8 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 
 			if (length < 0 || buffer_size < frame_size) {
 				//Media::Warning (MEDIA_CODEC_ERROR, "Error while decoding audio frame (length: %d, frame_size. %d, buflen: %u).", length, frame_size, mf->buflen);
-				return MEDIA_CODEC_ERROR;
+				ReportErrorOccurred (MEDIA_CODEC_ERROR);
+				return;
 			}
 
 			LOG_FFMPEG ("FfmpegDecoder::DecodeFrame (), used %i bytes of %i input bytes to get %i output bytes\n", length, mf->buflen, buffer_size);
@@ -427,13 +452,13 @@ FfmpegDecoder::DecodeFrame (MediaFrame *mf)
 
 		LOG_FFMPEG ("FfmpegDecoder::DecodeFrame (), got a total of %i output bytes.\n", mf->buflen);
 	} else {
-		Media::Warning (MEDIA_FAIL, "Invalid media type.");
-		return MEDIA_FAIL;
+		ReportErrorOccurred ("Invalid media type.");
+		return;
 	}
 	
 	mf->AddState (FRAME_DECODED);
 	
-	return MEDIA_SUCCESS;
+	ReportDecodeFrameCompleted (mf);
 }
 
 /*
@@ -451,3 +476,13 @@ FfmpegDecoderInfo::Create (Media* media, IMediaStream* stream)
 {
 	return new FfmpegDecoder (media, stream);
 }
+
+/*
+ * FfmpegDemuxer
+ */
+ 
+FfmpegDemuxer::FfmpegDemuxer (Media *media, IMediaSource *source)
+	: IMediaDemuxer (Type::FFMPEGDEMUXER, media, source)
+{
+}
+

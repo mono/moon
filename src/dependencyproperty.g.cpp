@@ -140,7 +140,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::MEDIAELEMENT, "Stretch", new Value (StretchUniform), Type::INT32);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "Source", NULL, Type::STRING, false, false, false, true, NULL, NULL, false, false);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "RenderedFramesPerSecond", new Value (0.0), Type::DOUBLE, false, false, true, false, NULL, NULL, false, false);
-	DependencyProperty::Register (this, Type::MEDIAELEMENT, "Position", Type::TIMESPAN);
+	DependencyProperty::Register (this, Type::MEDIAELEMENT, "Position", new Value (TimeSpan_FromSeconds (0),Type::TIMESPAN), Type::TIMESPAN);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "NaturalVideoWidth", new Value (0), Type::INT32, false, false, true, false, NULL, Validators::IntGreaterThanZeroValidator, false, false);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "NaturalVideoHeight", new Value (0), Type::INT32, false, false, true, false, NULL, Validators::IntGreaterThanZeroValidator, false, false);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "NaturalDuration", new Value (Duration::FromSeconds (0)), Type::DURATION, false, false, true, false, NULL, NULL, false, false);
@@ -1959,6 +1959,13 @@ MediaElement::GetNaturalDuration ()
 	return value ? value->AsDuration () : NULL;
 }
 
+void
+MediaElement::SetNaturalDuration (Duration *value)
+{
+	if (!value) return;
+	SetValue (MediaElement::NaturalDurationProperty, Value (*value));
+}
+
 TimelineMarkerCollection *
 MediaElement::GetMarkers ()
 {
@@ -2024,15 +2031,15 @@ MediaElement::SetDownloadProgressOffset (double value)
 	SetValue (MediaElement::DownloadProgressOffsetProperty, Value (value));
 }
 
-MediaElementState
+MediaState
 MediaElement::GetCurrentState ()
 {
 	Value *value = GetValue (MediaElement::CurrentStateProperty);
-	return (MediaElementState) value->AsInt32 ();
+	return (MediaState) value->AsInt32 ();
 }
 
 void
-MediaElement::SetCurrentState (MediaElementState value)
+MediaElement::SetCurrentState (MediaState value)
 {
 	SetValue (MediaElement::CurrentStateProperty, Value (value));
 }

@@ -34,6 +34,7 @@
 #include "multiscaleimage.h"
 #include "multiscalesubimage.h"
 #include "panel.h"
+#include "pipeline.h"
 #include "popup.h"
 #include "resources.h"
 #include "runtime.h"
@@ -638,6 +639,15 @@ void event_object_unref (EventObject *instance);
 EventTrigger *event_trigger_new (void);
 
 /**
+ * ExternalDemuxer
+ **/
+/* @GeneratePInvoke */
+ExternalDemuxer *external_demuxer_new (Media *media, IMediaSource *source, void *instance);
+
+/* @GeneratePInvoke */
+void external_demuxer_set_callbacks (ExternalDemuxer *instance, CloseDemuxerCallback close_demuxer, GetDiagnosticAsyncCallback get_diagnostic, GetFrameAsyncCallback get_sample, OpenDemuxerAsyncCallback open_demuxer, SeekAsyncCallback seek, SwitchMediaStreamAsyncCallback switch_media_stream);
+
+/**
  * FrameworkElement
  **/
 /* @GeneratePInvoke */
@@ -741,6 +751,27 @@ void image_set_source (Image *instance, BitmapImage *source);
  **/
 /* @GeneratePInvoke */
 ImageBrush *image_brush_new (void);
+
+/**
+ * IMediaDemuxer
+ **/
+/* @GeneratePInvoke */
+void imedia_demuxer_report_get_diagnostic_completed (IMediaDemuxer *instance, MediaStreamSourceDiagnosticKind diagnosticKind, gint64 diagnosticValue);
+
+/* @GeneratePInvoke */
+void imedia_demuxer_report_get_frame_completed (IMediaDemuxer *instance, MediaFrame *frame);
+
+/* @GeneratePInvoke */
+void imedia_demuxer_report_get_frame_progress (IMediaDemuxer *instance, double bufferingProgress);
+
+/* @GeneratePInvoke */
+void imedia_demuxer_report_open_demuxer_completed (IMediaDemuxer *instance);
+
+/* @GeneratePInvoke */
+void imedia_demuxer_report_seek_completed (IMediaDemuxer *instance, guint64 pts);
+
+/* @GeneratePInvoke */
+void imedia_demuxer_report_switch_media_stream_completed (IMediaDemuxer *instance, IMediaStream *stream);
 
 /**
  * InkPresenter
@@ -900,6 +931,12 @@ void media_element_pause (MediaElement *instance);
 
 /* @GeneratePInvoke */
 void media_element_play (MediaElement *instance);
+
+/* @GeneratePInvoke */
+void media_element_report_error_occurred (MediaElement *instance, const char *args);
+
+/* @GeneratePInvoke */
+void media_element_set_demuxer_source (MediaElement *instance, IMediaDemuxer *demuxer);
 
 /* @GeneratePInvoke */
 void media_element_set_stream_source (MediaElement *instance, ManagedStreamCallbacks *stream);

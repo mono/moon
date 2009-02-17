@@ -13,11 +13,13 @@
 
 #include <glib.h>
 
+#include "xaml.h"
 #include "dependencyobject.h"
 #include "control.h"
 
 class TemplateBinding;
 class XamlTemplateBinding;
+class XamlContext;
 
 //
 // FrameworkTemplate

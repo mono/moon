@@ -57,12 +57,20 @@ struct AudioData {
 
 // All AudioSource's public methods must be safe to call from any thread.
 class AudioSource : public EventObject {
+ private:
+	struct AudioFrame {
+		MediaFrame *frame;
+		guint32 bytes_used;
+		AudioFrame (MediaFrame *frame);
+		~AudioFrame ();
+	};
+
 	MediaPlayer *mplayer;
 	AudioStream *stream;
 	AudioPlayer *player;
+	AudioFrame *current_frame;
 	AudioState state;
 	AudioFlags flags; 
-	Queue frames;
 	
 	double balance;
 	double volume;
@@ -79,8 +87,7 @@ class AudioSource : public EventObject {
 	void Lock ();
 	void Unlock ();
 	
-	static MediaResult FrameCallback (MediaClosure *closure);
-	void Enqueue ();
+	EVENTHANDLER (AudioSource, FirstFrameEnqueued, EventObject, EventArgs);
 	
  protected:
 	AudioSource (AudioPlayer *player, MediaPlayer *mplayer, AudioStream *stream);
@@ -115,6 +122,8 @@ class AudioSource : public EventObject {
 	virtual void CloseInternal () {};
 	
  public:
+ 	virtual void Dispose ();
+ 	
 	void Play ();
 	void Pause ();
 	void Stop ();
@@ -133,11 +142,8 @@ class AudioSource : public EventObject {
 	guint64 GetCurrentPts ();
 	guint32 GetBytesPerFrame ();
 	
-	AudioStream *GetStream ();
-	bool IsQueueEmpty () { return frames.IsEmpty (); }
-	
-	void AppendFrame (MediaFrame *frame);
-	void ClearFrames ();
+	AudioStream *GetStreamReffed ();
+	bool IsQueueEmpty ();
 
 	AudioState GetState ();
 	void SetState (AudioState value);

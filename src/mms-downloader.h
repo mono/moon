@@ -17,7 +17,7 @@
 #include <glib.h>
 #include <pthread.h>
 
-G_BEGIN_DECLS
+class MmsDownloader;
 
 #include "internal-downloader.h"
 #include "clock.h"
@@ -93,6 +93,7 @@ class MmsDownloader : public InternalDownloader {
 	bool seeked;
 	
 	ASFParser *parser;
+	MemoryQueueSource *source;
 
 	void AddAudioStream (int index, int bitrate) { audio_streams [index] = bitrate; if (bitrate > best_audio_stream_rate) { best_audio_stream_rate = bitrate; best_audio_stream = index; } }
 	void AddVideoStream (int index, int bitrate) { video_streams [index] = bitrate; if (bitrate > best_video_stream_rate) { best_video_stream_rate = bitrate; best_video_stream = index; } }
@@ -119,11 +120,10 @@ class MmsDownloader : public InternalDownloader {
 	virtual InternalDownloader::DownloaderType GetType () { return InternalDownloader::MmsDownloader; }
 
 	ASFParser *GetASFParser () { return parser; }
+	void SetSource (MemoryQueueSource *src);
 
 	void SetRequestedPts (guint64 value);
 	guint64 GetRequestedPts ();
 };
-
-G_END_DECLS
 
 #endif

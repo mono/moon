@@ -106,17 +106,20 @@ private:
 	Mp3FrameReader *reader;
 	bool xing;
 	
+	MediaResult ReadHeader ();
+	
 protected:
 	virtual ~Mp3Demuxer ();
-	virtual MediaResult SeekInternal (guint64 pts);
 
+	virtual void GetFrameAsyncInternal (IMediaStream *stream);
+	virtual void OpenDemuxerAsyncInternal ();
+	virtual void SeekAsyncInternal (guint64 timeToSeek);
+	virtual void SwitchMediaStreamAsyncInternal (IMediaStream *stream) {}; // An mp3 file has only 1 stream, so this doesn't make any sense
+	
 public:
 	Mp3Demuxer (Media *media, IMediaSource *source);
 	
-	virtual MediaResult ReadHeader ();
-	virtual MediaResult TryReadFrame (IMediaStream *stream, MediaFrame **frame);
-	
-	virtual const char *GetName () { return "Mp3Demuxer"; }
+	virtual const char *GetName () { return "Mp3Demuxer"; }	
 };
 
 class Mp3DemuxerInfo : public DemuxerInfo {

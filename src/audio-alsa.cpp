@@ -158,7 +158,7 @@ bool
 AlsaSource::InitializeInternal ()
 {
 	int result;
-	AudioStream *stream = GetStream ();
+	AudioStream *stream = GetStreamReffed ();
 	
 	LOG_AUDIO ("AlsaSource::Initialize (%p)\n", this);
 		

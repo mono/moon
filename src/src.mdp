@@ -140,7 +140,7 @@
     <File name="asf/asf-test.cpp" subtype="Code" buildaction="Nothing" />
     <File name="pipeline.h" subtype="Code" buildaction="Nothing" />
     <File name="pipeline.cpp" subtype="Code" buildaction="Compile" />
-    <File name="pipeline-ffmpeg.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="pipeline-ffmpeg.cpp" subtype="Code" buildaction="Compile" />
     <File name="pipeline-ffmpeg.h" subtype="Code" buildaction="Nothing" />
     <File name="utils.cpp" subtype="Code" buildaction="Compile" />
     <File name="utils.h" subtype="Code" buildaction="Nothing" />
@@ -235,6 +235,7 @@
     <File name="keyboard.cpp" subtype="Code" buildaction="Compile" />
     <File name="popup.cpp" subtype="Code" buildaction="Compile" />
     <File name="popup.h" subtype="Code" buildaction="Nothing" />
+    <File name="mutex.h" subtype="Code" buildaction="Nothing" />
     <File name="application.cpp" subtype="Code" buildaction="Compile" />
     <File name="application.h" subtype="Code" buildaction="Nothing" />
     <File name="bitmapimage.cpp" subtype="Code" buildaction="Compile" />

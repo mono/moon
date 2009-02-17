@@ -22,21 +22,29 @@
  * ASFDemuxer
  */
 
-ASFDemuxer::ASFDemuxer (Media *media, IMediaSource *source) : IMediaDemuxer (media, source)
+ASFDemuxer::ASFDemuxer (Media *media, IMediaSource *source) : IMediaDemuxer (Type::ASFDEMUXER, media, source)
 {
 	stream_to_asf_index = NULL;
 	reader = NULL;
 	parser = NULL;
 }
 
-ASFDemuxer::~ASFDemuxer ()
+void
+ASFDemuxer::Dispose ()
 {
 	g_free (stream_to_asf_index);
+	stream_to_asf_index = NULL;
 	
 	delete reader;
+	reader = NULL;
 
-	if (parser)
+	if (parser) {
+		parser->Dispose ();
 		parser->unref ();
+		parser = NULL;
+	}
+	
+	IMediaDemuxer::Dispose ();
 }
 
 void
@@ -48,15 +56,22 @@ ASFDemuxer::UpdateSelected (IMediaStream *stream)
 	IMediaDemuxer::UpdateSelected (stream);
 }
 
-MediaResult
-ASFDemuxer::SeekInternal (guint64 pts)
+void
+ASFDemuxer::SeekAsyncInternal (guint64 pts)
 {
-	//printf ("ASFDemuxer::Seek (%" G_GUINT64_FORMAT ")\n", pts);
+	LOG_PIPELINE ("ASFDemuxer::Seek (%" G_GUINT64_FORMAT ")\n", pts);
 	
-	if (reader == NULL)
-		return MEDIA_FAIL;
+	g_return_if_fail (reader != NULL);
 	
-	return reader->Seek (pts);
+	reader->Seek (pts);
+	
+	ReportSeekCompleted (pts);
+}
+
+void
+ASFDemuxer::SwitchMediaStreamAsyncInternal (IMediaStream *stream)
+{
+	LOG_PIPELINE ("ASFDemuxer::SwitchMediaStreamAsyncInternal (%p). TODO.\n", stream);
 }
 
 void
@@ -156,12 +171,34 @@ ASFDemuxer::SetParser (ASFParser *parser)
 	if (this->parser)
 		this->parser->unref ();
 	this->parser = parser;
-	if (this->parser)
+	if (this->parser) {
 		this->parser->ref ();
+		this->parser->SetSource (source);
+	}
+}
+
+void
+ASFDemuxer::OpenDemuxerAsyncInternal ()
+{
+	MediaResult result;
+	
+	LOG_PIPELINE ("ASFDemuxer::OpenDemuxerAsyncInternal ()\n");
+	
+	g_return_if_fail (media != NULL);
+	
+	result = Open ();
+	
+	if (MEDIA_SUCCEEDED (result)) {
+		ReportOpenDemuxerCompleted ();
+	} else if (result == MEDIA_NOT_ENOUGH_DATA) {
+		EnqueueOpen ();
+	} else {
+		ReportErrorOccurred (result);
+	}
 }
 
 MediaResult
-ASFDemuxer::ReadHeader ()
+ASFDemuxer::Open ()
 {
 	MediaResult result = MEDIA_SUCCESS;
 	ASFParser *asf_parser = NULL;
@@ -389,8 +426,8 @@ ASFDemuxer::GetStreamOfASFIndex (gint32 asf_index)
 	return NULL;
 }
 
-MediaResult
-ASFDemuxer::TryReadFrame (IMediaStream *stream, MediaFrame **f)
+void
+ASFDemuxer::GetFrameAsyncInternal (IMediaStream *stream)
 {
 	//printf ("ASFDemuxer::ReadFrame (%p).\n", frame);
 	ASFFrameReader *reader = this->reader->GetFrameReader (stream_to_asf_index [stream->index]);
@@ -398,22 +435,23 @@ ASFDemuxer::TryReadFrame (IMediaStream *stream, MediaFrame **f)
 	MediaResult result;
 	
 	result = reader->Advance ();
+	
 	if (result == MEDIA_NO_MORE_DATA) {
-		//Media::Warning (MEDIA_NO_MORE_DATA, "Reached end of data.");
-		return MEDIA_NO_MORE_DATA;
+		ReportGetFrameCompleted (NULL);
+		return;
 	}
 
-	if (result == MEDIA_BUFFER_UNDERFLOW)
-		return result;
+	if (result == MEDIA_BUFFER_UNDERFLOW) {
+		EnqueueGetFrame (stream);
+		return;
+	}
 	
 	if (!MEDIA_SUCCEEDED (result)) {
-		Media::Warning (MEDIA_DEMUXER_ERROR, "Error while advancing to the next frame (%d)", result);
-		return result;
+		ReportErrorOccurred ("Error while advancing to the next frame (%d)");
+		return;
 	}
 
-	frame = new MediaFrame (stream);
-	*f = frame;
-	
+	frame = new MediaFrame (stream);	
 	frame->pts = reader->Pts ();
 	//frame->duration = reader->Duration ();
 	if (reader->IsKeyFrame ())
@@ -422,8 +460,8 @@ ASFDemuxer::TryReadFrame (IMediaStream *stream, MediaFrame **f)
 	frame->buffer = (guint8 *) g_try_malloc (frame->buflen + frame->stream->min_padding);
 	
 	if (frame->buffer == NULL) {
-		Media::Warning (MEDIA_OUT_OF_MEMORY, "Could not allocate memory for next frame.");
-		return MEDIA_OUT_OF_MEMORY;
+		ReportErrorOccurred ( "Could not allocate memory for next frame.");
+		return;
 	}
 	
 	//printf ("ASFDemuxer::ReadFrame (%p), min_padding = %i\n", frame, frame->stream->min_padding);
@@ -431,21 +469,34 @@ ASFDemuxer::TryReadFrame (IMediaStream *stream, MediaFrame **f)
 		memset (frame->buffer + frame->buflen, 0, frame->stream->min_padding); 
 	
 	if (!reader->Write (frame->buffer)) {
-		Media::Warning (MEDIA_DEMUXER_ERROR, "Error while copying the next frame.");
-		return MEDIA_DEMUXER_ERROR;
+		ReportErrorOccurred ("Error while copying the next frame.");
+		return;
 	}
 	
 	frame->AddState (FRAME_DEMUXED);
 	
-	return MEDIA_SUCCESS;
+	ReportGetFrameCompleted (frame);
+	
+	frame->unref ();
 }
 
 /*
  * ASFMarkerDecoder
  */
 
-MediaResult 
-ASFMarkerDecoder::DecodeFrame (MediaFrame *frame)
+ASFMarkerDecoder::ASFMarkerDecoder (Media *media, IMediaStream *stream)
+	: IMediaDecoder (Type::ASFMARKERDECODER, media, stream)
+{
+}
+
+void
+ASFMarkerDecoder::OpenDecoderAsyncInternal ()
+{
+	ReportOpenDecoderCompleted ();
+}
+
+void
+ASFMarkerDecoder::DecodeFrameAsyncInternal (MediaFrame *frame)
 {
 	LOG_PIPELINE_ASF ("ASFMarkerDecoder::DecodeFrame ()\n");
 	
@@ -459,8 +510,10 @@ ASFMarkerDecoder::DecodeFrame (MediaFrame *frame)
 	int type_length = 0;
 	guint32 size = 0;
 	
-	if (frame->buflen % 2 != 0 || frame->buflen == 0 || frame->buffer == NULL)
-		return MEDIA_CORRUPTED_MEDIA;
+	if (frame->buflen % 2 != 0 || frame->buflen == 0 || frame->buffer == NULL) {
+		ReportErrorOccurred (MEDIA_CORRUPTED_MEDIA);
+		return;
+	}
 
 	data = (gunichar2 *) frame->buffer;
 	uni_type = data;
@@ -503,9 +556,34 @@ ASFMarkerDecoder::DecodeFrame (MediaFrame *frame)
 		result = MEDIA_CORRUPTED_MEDIA;
 	}
 
-	return result;
+	if (MEDIA_SUCCEEDED (result))  {
+		ReportDecodeFrameCompleted (frame);
+	} else {
+		ReportErrorOccurred (result);
+	}
 }
 
+/*
+ * ASFMarkerDecoderInfo
+ */
+
+IMediaDecoder *
+ASFMarkerDecoderInfo::Create (Media *media, IMediaStream *stream)
+{
+	return new ASFMarkerDecoder (media, stream);
+}	
+
+bool 
+ASFMarkerDecoderInfo::Supports (const char *codec)
+{
+	return !strcmp (codec, "asf-marker");
+}
+
+const char *
+ASFMarkerDecoderInfo::GetName ()
+{
+	return "ASFMarkerDecoder";
+}
 
 /*
  * ASFDemuxerInfo
@@ -579,17 +657,22 @@ MemoryQueueSource::QueueNode::~QueueNode ()
  * MemoryQueueSource
  */
  
-MemoryQueueSource::MemoryQueueSource (Media *media)
-	: IMediaSource (media)
+MemoryQueueSource::MemoryQueueSource (Media *media, Downloader *downloader)
+	: IMediaSource (Type::MEMORYQUEUESOURCE, media)
 {
 	finished = false;
 	write_count = 0;
 	parser = NULL;
 	queue = new Queue ();
-}
-
-MemoryQueueSource::~MemoryQueueSource ()
-{
+	this->downloader = NULL;
+	
+	g_return_if_fail (downloader != NULL);
+	g_return_if_fail (downloader->GetInternalDownloader () != NULL);
+	g_return_if_fail (downloader->GetInternalDownloader ()->GetType () == InternalDownloader::MmsDownloader);
+	
+	this->downloader = downloader;
+	this->downloader->ref ();
+	this->mms_downloader = (MmsDownloader *) downloader->GetInternalDownloader ();
 }
 
 void
@@ -603,6 +686,14 @@ MemoryQueueSource::Dispose ()
 		delete queue;
 		queue = NULL;
 	}
+	if (downloader) {
+		downloader->RemoveAllHandlers (this);
+		downloader->unref ();
+		downloader = NULL;
+		mms_downloader = NULL;
+	}
+	
+	
 	IMediaSource::Dispose ();
 }
 
@@ -610,6 +701,33 @@ ASFParser *
 MemoryQueueSource::GetParser ()
 {
 	return parser;
+}
+
+MediaResult
+MemoryQueueSource::Initialize ()
+{
+	g_return_val_if_fail (mms_downloader != NULL, MEDIA_FAIL);
+	g_return_val_if_fail (downloader != NULL, MEDIA_FAIL);
+	g_return_val_if_fail (!downloader->Started (), MEDIA_FAIL);
+	
+	mms_downloader->SetSource (this);
+	
+	downloader->AddHandler (Downloader::DownloadFailedEvent, DownloadFailedCallback, this);
+	downloader->AddHandler (Downloader::CompletedEvent, DownloadCompleteCallback, this);
+	downloader->Send ();
+	
+	return MEDIA_SUCCESS;
+}
+
+void
+MemoryQueueSource::DownloadFailedHandler (Downloader *dl, EventArgs *args)
+{
+	ReportErrorOccurred (new ErrorEventArgs (MediaError, 4001, "AG_E_NETWORK_ERROR"));
+}
+
+void
+MemoryQueueSource::DownloadCompleteHandler (Downloader *dl, EventArgs *args)
+{
 }
 
 void
@@ -705,34 +823,44 @@ cleanup:
 void
 MemoryQueueSource::Write (void *buf, gint64 offset, gint32 n)
 {
+	// We should never get here
+	// The MmsDownloader knowns about us and should call WritePacket.
+	g_warn_if_reached ();
+}
+
+void
+MemoryQueueSource::WritePacket (void *buf, gint32 n)
+{
 	MemorySource *src;
 	ASFPacket *packet;
 	
-	LOG_PIPELINE_ASF ("MemoryQueueSource::Write (%p, %lld, %i), write_count: %lld\n", buf, offset, n, write_count + 1);
+	LOG_PIPELINE_ASF ("MemoryQueueSource::WritePacket (%p, %i), write_count: %lld\n", buf, n, write_count + 1);
 
 	if (!queue)
 		return;
 
 	write_count++;
 	if (parser != NULL) {
-		src = new MemorySource (NULL, buf, n, offset);
+		src = new MemorySource (media, buf, n, 0);
 		src->SetOwner (false);
 		packet = new ASFPacket (parser, src);
 		if (!MEDIA_SUCCEEDED (packet->Read ())) {
-			LOG_PIPELINE_ASF ("MemoryQueueSource::Write (%p, %lld, %i): Error while parsing packet, dropping packet.\n", buf, offset, n);
+			LOG_PIPELINE_ASF ("MemoryQueueSource::WritePacket (%p, %i): Error while parsing packet, dropping packet.\n", buf, n);
 		} else {
 			queue->Push (new QueueNode (packet));
 		}
 		packet->unref ();
 		src->unref ();
 	} else {
-		src = new MemorySource (NULL, g_memdup (buf, n), n, offset);
+		src = new MemorySource (media, g_memdup (buf, n), n, 0);
 		queue->Push (new QueueNode (src));
 		src->unref ();
 	}
 
-	if (media)
+	if (media) {
+		media->ReportDownloadProgress (1.0);
 		media->WakeUp ();
+	}
 }
 
 bool

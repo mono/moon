@@ -1481,6 +1481,26 @@ event_trigger_new (void)
 
 
 /**
+ * ExternalDemuxer
+ **/
+ExternalDemuxer *
+external_demuxer_new (Media *media, IMediaSource *source, void *instance)
+{
+	return new ExternalDemuxer (media, source, instance);
+}
+
+
+void
+external_demuxer_set_callbacks (ExternalDemuxer *instance, CloseDemuxerCallback close_demuxer, GetDiagnosticAsyncCallback get_diagnostic, GetFrameAsyncCallback get_sample, OpenDemuxerAsyncCallback open_demuxer, SeekAsyncCallback seek, SwitchMediaStreamAsyncCallback switch_media_stream)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetCallbacks (close_demuxer, get_diagnostic, get_sample, open_demuxer, seek, switch_media_stream);
+}
+
+
+/**
  * FrameworkElement
  **/
 Size
@@ -1690,6 +1710,69 @@ ImageBrush *
 image_brush_new (void)
 {
 	return new ImageBrush ();
+}
+
+
+/**
+ * IMediaDemuxer
+ **/
+void
+imedia_demuxer_report_get_diagnostic_completed (IMediaDemuxer *instance, MediaStreamSourceDiagnosticKind diagnosticKind, gint64 diagnosticValue)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->ReportGetDiagnosticCompleted (diagnosticKind, diagnosticValue);
+}
+
+
+void
+imedia_demuxer_report_get_frame_completed (IMediaDemuxer *instance, MediaFrame *frame)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->ReportGetFrameCompleted (frame);
+}
+
+
+void
+imedia_demuxer_report_get_frame_progress (IMediaDemuxer *instance, double bufferingProgress)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->ReportGetFrameProgress (bufferingProgress);
+}
+
+
+void
+imedia_demuxer_report_open_demuxer_completed (IMediaDemuxer *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->ReportOpenDemuxerCompleted ();
+}
+
+
+void
+imedia_demuxer_report_seek_completed (IMediaDemuxer *instance, guint64 pts)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->ReportSeekCompleted (pts);
+}
+
+
+void
+imedia_demuxer_report_switch_media_stream_completed (IMediaDemuxer *instance, IMediaStream *stream)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->ReportSwitchMediaStreamCompleted (stream);
 }
 
 
@@ -1992,6 +2075,26 @@ media_element_play (MediaElement *instance)
 		return;
 	
 	instance->Play ();
+}
+
+
+void
+media_element_report_error_occurred (MediaElement *instance, const char *args)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->ReportErrorOccurred (args);
+}
+
+
+void
+media_element_set_demuxer_source (MediaElement *instance, IMediaDemuxer *demuxer)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetDemuxerSource (demuxer);
 }
 
 

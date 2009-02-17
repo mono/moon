@@ -15,25 +15,10 @@
 
 #include <glib.h>
 #include <cairo.h>
-#include <pthread.h>
-
-class MediaPlayer;
 
 #include "pipeline.h"
 #include "audio.h"
-
-struct Video {
-	Queue queue;
-	
-	// input
-	VideoStream *stream;
-	
-	// rendering
-	cairo_surface_t *surface;
-	guint8 *rgb_buffer;
-	
-	Video ();
-};
+#include "mutex.h"
 
 class MediaPlayer : public EventObject {
  public:
@@ -63,15 +48,19 @@ class MediaPlayer : public EventObject {
 		AudioEnded			= (1 << 13),
 		VideoEnded			= (1 << 14),
 		BufferUnderflow     = (1 << 15),
+		IsLive              = (1 << 16),
 	};
 	
  private:
  	// Some instance variables can be accessed from multiple threads.
  	// This mutex must be locked while these variables are accessed from
  	// any thread.
- 	pthread_mutex_t mutex; 
+ 	Mutex mutex; 
 	AudioSource *audio_unlocked; // mutex must be locked.
-	Video video;
+	VideoStream *video_stream;
+	// rendering
+	cairo_surface_t *surface;
+	guint8 *rgb_buffer;
 	
 	MediaElement *element;
 	Media *media;
@@ -79,6 +68,7 @@ class MediaPlayer : public EventObject {
 	gint32 height;
 	gint32 width;
 	int audio_stream_count;
+	int advance_frame_timeout_id;
 	
 	// sync
 	guint64 start_time; // 100-nanosecond units (pts)
@@ -95,41 +85,31 @@ class MediaPlayer : public EventObject {
 	guint32 dropped_frames;
 	guint32 rendered_frames;
 
-	bool LoadVideoFrame ();
+	static void LoadVideoFrameCallback (EventObject *user_data); 
+	void LoadVideoFrame ();
 	void Initialize ();
 	void CheckFinished ();
-	static void NotifyFinishedCallback (EventObject *player);
-	void NotifyFinished ();
 	
-	void SeekInternal (guint64 pts/* 100-nanosecond units (pts) */);
 	void RenderFrame (MediaFrame *frame);
-	// Thread-safe
-	static MediaResult SeekCallback (MediaClosure *closure);
-	// Thread-safe
-	static MediaResult FrameCallback (MediaClosure *closure);
 	
-	static void EnqueueVideoFrameCallback (EventObject *user_data);
-	static void EnqueueAudioFrameCallback (EventObject *user_data);
-	static void LoadFrameCallback (EventObject *user_data);
+	EVENTHANDLER (MediaPlayer, SeekCompleted, Media, EventArgs); // Not thread-safe
+	
+	// Thread-safe
 	static void AudioFinishedCallback (EventObject *user_data);
+	
+	void SetTimeout (gint32 interval /* set to 0 to clear */);
+	void AdvanceFrame ();
+	static gboolean AdvanceFrameCallback (void *user_data);
 	
  protected:
 	virtual ~MediaPlayer ();
 	
  public:
-	
 	MediaPlayer (MediaElement *element);
+	virtual void Dispose ();
 	
-	// Returns true if advanced at least one frame.
-	// A false return value does not say anything about why it didn't advance
-	// (No need to advance, eof, seeking, etc). 
-	bool AdvanceFrame (); 
-	
-	bool Open (Media *media);
-	void Close (bool dtor);
-	void EnqueueFrames (int audio_frames, int video_frames);
-	// Thread-safe
-	void EnqueueFramesAsync (int audio_frames, int video_frames);
+	bool Open (Media *media, PlaylistEntry *entry);
+	void Close ();
 
 	// Thread-safe.
 	// Returns a refcounted AudioStream.
@@ -163,23 +143,21 @@ class MediaPlayer : public EventObject {
 	bool GetCanPause ();
 	void SetCanPause (bool value);
 	void Pause ();
-	void Stop (bool seek_to_start = true);
+	void Stop ();
 	
 	void SetCanSeek (bool value);
 	bool GetCanSeek ();
-	void Seek (guint64 pts /* 100-nanosecond units (pts) */);
+	void NotifySeek (guint64 pts /* 100-nanosecond units (pts) */);
 	
-	void SeekCallback ();
-	static void SeekCallback (EventObject *mplayer);
 	virtual void SetSurface (Surface *surface);
 	
-	cairo_surface_t *GetCairoSurface () { return video.surface; }
+	cairo_surface_t *GetCairoSurface () { return surface; }
 	gint32 GetTimeoutInterval ();
 	
 	int GetAudioStreamCount () { return audio_stream_count; }
 	Media *GetMedia () { return media; }
 	
-	bool HasVideo () { return video.stream != NULL; }
+	bool HasVideo () { return video_stream != NULL; }
 	// We may go from having audio to not having audio at any time
 	// (async - this function may return true, but by the time it 
 	// returns we don't have audio anymore).
@@ -202,7 +180,7 @@ class MediaPlayer : public EventObject {
 	
 	guint64 GetTargetPts ();
 	
-	virtual const char * GetTypeName () { return "MediaPlayer"; }
+	const static int MediaEndedEvent; // This is raised when both audio and video has finished (or either one if not both are present).
 };
 
 #endif /* __MOON_MPLAYER_H__ */

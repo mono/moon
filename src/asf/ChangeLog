@@ -1,5 +1,9 @@
 2009-02-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* asf.cpp: Update according to new pipeline api.
+
+2009-02-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* asf.h:
 	* asf.cpp: Remove MediaErrorEventArgs.
 

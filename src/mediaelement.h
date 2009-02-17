@@ -16,53 +16,30 @@
 #include <glib.h>
 #include <gdk/gdkpixbuf.h>
 
-#include "mediaplayer.h"
 #include "value.h"
-#include "brush.h"
 #include "frameworkelement.h"
-#include "error.h"
 #include "pipeline.h"
+#include "downloader.h"
+#include "mutex.h"
 #include "enums.h"
 
 /* @Namespace=System.Windows.Controls */
 class MediaElement : public FrameworkElement {
  friend class MediaElementPropertyValueProvider;	
  private:
-	void SetSourceAsyncCallback ();
-	void DownloaderAbort ();
-
-	struct {
-		Downloader *downloader;
-		char *part_name;
-		bool queued;
-	} source;
-	
-	Downloader *downloader;
-	char *part_name;
-	
 	int updating_size_from_media:1;
 	int allow_downloads:1;
 	int use_media_height:1;
 	int use_media_width:1;
-	int source_changed:1;
-			
-	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
-	static void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
-	static void set_source_async (EventObject *user_data);
 	
-	static void data_write (void *data, gint32 offset, gint32 n, void *closure);
-	static void data_request_position (gint64 *pos, void *closure);
-	static void size_notify (gint64 size, gpointer data);
+	Mutex mutex;
 	
-	TimelineMarkerCollection *streamed_markers;
-	Queue *pending_streamed_markers;
-	MediaClosure *marker_closure;
-	int advance_frame_timeout_id;
+	TimelineMarkerCollection *streamed_markers; // Thread-safe: Accesses to this field needs to use the mutex.
+	MediaMarkerFoundClosure *marker_closure;
 	bool recalculate_matrix;
 	cairo_matrix_t matrix;
 	MediaPlayer *mplayer;
-	Playlist *playlist;
-	Media *media;
+	PlaylistRoot *playlist;
 	
 	// When checking if a marker has been reached, we need to 
 	// know the last time the check was made, to see if 
@@ -90,44 +67,51 @@ class MediaElement : public FrameworkElement {
 	int buffering_mode; // if we're in [3] or not: 0 = unknown, 1 = [1], etc.
 	
 	// this is used to know what to do after a Buffering state finishes
-	MediaElementState prev_state;
+	MediaState prev_state;
 	
 	// The current state of the media element.
-	MediaElementState state;
+	MediaState state;
 	
 	guint32 flags;
 	
-	// downloader methods/data
-	IMediaSource *downloaded_file;
+	void BufferingComplete (); // not thread-safe
 	
-	void DataWrite (void *data, gint32 offset, gint32 n);
-	void DataRequestPosition (gint64 *pos);
-	void DownloaderComplete ();
-	void DownloaderFailed (EventArgs *args);
-	void BufferingComplete ();
+	void SetAllowDownloads (bool allow); // not thread-safe
+	bool AllowDownloads () { return allow_downloads; } // not thread-safe
 	
-	void SetAllowDownloads (bool allow);
-	bool AllowDownloads () { return allow_downloads; }
+	double GetBufferedSize (); // not thread-safe
+	double CalculateBufferingProgress (); // not thread-safe
+	void UpdateProgress (); // not thread-safe
 	
-	double GetBufferedSize ();
-	double CalculateBufferingProgress ();
-	void UpdateProgress ();
+	void Reinitialize (); // not thread-safe
 	
-	virtual void OnLoaded ();
+	// Media event handlers	
+		
+	EVENTHANDLER (MediaElement, Opening, PlaylistRoot, EventArgs); // Not thread-safe
+	EVENTHANDLER (MediaElement, OpenCompleted,  PlaylistRoot, EventArgs); // Not thread-safe
+	EVENTHANDLER (MediaElement, Seeking, PlaylistRoot, EventArgs); // Not thread-safe
+	EVENTHANDLER (MediaElement, SeekCompleted, PlaylistRoot, EventArgs); // Not thread-safe
+	EVENTHANDLER (MediaElement, Seek,    PlaylistRoot, EventArgs); // Not thread-safe
+	EVENTHANDLER (MediaElement, CurrentStateChanged, PlaylistRoot, EventArgs); // Not thread-safe
+	EVENTHANDLER (MediaElement, MediaError,   PlaylistRoot, ErrorEventArgs); // Not thread-safe
+	EVENTHANDLER (MediaElement, MediaEnded, PlaylistRoot, EventArgs); // Not thread-safe
+	EVENTHANDLER (MediaElement, DownloadProgressChanged, PlaylistRoot, EventArgs); // Not thread-safe
+	EVENTHANDLER (MediaElement, BufferingProgressChanged, PlaylistRoot, EventArgs); // Not thread-safe
+	EVENTHANDLER (MediaElement, Play, PlaylistRoot, EventArgs); // Not thread-safe
+	EVENTHANDLER (MediaElement, Pause, PlaylistRoot, EventArgs); // Not thread-safe
+	EVENTHANDLER (MediaElement, Stop, PlaylistRoot, EventArgs); // Not thread-safe
 	
-	// Try to open the media (i.e. read the headers).
-	void TryOpen ();
+	// Fill in information to/from the media, mediaplayer, etc.
+	// Does not change any state
+	void SetProperties (Media *media);
 	
-	// Checks if the media was actually a playlist, in which case false is returned.
-	// Fill in all information from the opened media and raise MediaOpenedEvent. Does not change any state.
-	bool MediaOpened (Media *media);
 	void EmitMediaEnded ();
 	
-	void CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *col, bool remove);
-	void CheckMarkers (guint64 from, guint64 to);
-	void ReadMarkers ();
-	
-	TimeSpan UpdatePlayerPosition (TimeSpan position);
+	void AddStreamedMarker (TimelineMarker *marker); // Thread-safe
+	static MediaResult AddStreamedMarkerCallback (MediaClosure *closure); // Thread-safe
+	void CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *col, bool remove); // Not thread-safe
+	void CheckMarkers (guint64 from, guint64 to); // Not thread-safe
+	void ReadMarkers (Media *media, IMediaDemuxer *demuxer); // Not thread-safe
 	
 	//
 	// Private Property Accessors
@@ -139,26 +123,18 @@ class MediaElement : public FrameworkElement {
 	void SetCanPause (bool set);
 	void SetCanSeek (bool set);
 
-	// XXX NaturalDurationProperty only generates a getter because
-	// this setter doesn't take a Duration.  why the disconnect?
-	void SetNaturalDuration (TimeSpan duration);
-
 	void SetNaturalVideoHeight (int height);
 	void SetNaturalVideoWidth (int width);
 	
-	void PlayOrStopNow ();
-	void PauseNow ();
-	void PlayNow ();
-	void StopNow ();
-	void SeekNow ();
-	static void PauseNow (EventObject *value);
-	static void PlayNow (EventObject *value);
-	static void StopNow (EventObject *value);
-	static void SeekNow (EventObject *value);
-	
+	void Seek (TimeSpan to); // Not thread-safe. 
+	void PlayOrStop (); // Not thread-safe. To the right thing if we can pause, if we have to autoplay, etc.
+		
+	void CreatePlaylist ();
+	void SetPlaylist (PlaylistRoot *playlist); // Adds/removes event handlers
+
  protected:
-	DownloaderAccessPolicy GetDownloaderPolicy (const char *uri);
-	virtual ~MediaElement ();
+	DownloaderAccessPolicy GetDownloaderPolicy (const char *uri); // Thread-safe
+	virtual ~MediaElement () {}
 	
  public:
  	/* @GenerateCBinding,GeneratePInvoke */
@@ -186,19 +162,19 @@ class MediaElement : public FrameworkElement {
 	const static int CanSeekProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int DownloadProgressProperty;
- 	/* @PropertyType=MediaElementState,ReadOnly,GenerateAccessors */
+ 	/* @PropertyType=MediaState,ReadOnly,ManagedPropertyType=MediaElementState,GenerateAccessors */
 	const static int CurrentStateProperty;
  	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	const static int IsMutedProperty;
  	/* @PropertyType=TimelineMarkerCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int MarkersProperty;
- 	/* @PropertyType=Duration,DefaultValue=Duration::FromSeconds (0),ReadOnly,GenerateGetter */
+ 	/* @PropertyType=Duration,DefaultValue=Duration::FromSeconds (0),ReadOnly,GenerateAccessors */
 	const static int NaturalDurationProperty;
  	/* @PropertyType=gint32,DefaultValue=0,ReadOnly,GenerateAccessors,Validator=IntGreaterThanZeroValidator */
 	const static int NaturalVideoHeightProperty;
  	/* @PropertyType=gint32,DefaultValue=0,ReadOnly,GenerateAccessors,Validator=IntGreaterThanZeroValidator */
 	const static int NaturalVideoWidthProperty;
- 	/* @PropertyType=TimeSpan,GenerateAccessors */
+ 	/* @PropertyType=TimeSpan,DefaultValue="TimeSpan_FromSeconds (0)\,Type::TIMESPAN",GenerateAccessors */
 	const static int PositionProperty;
  	/* @PropertyType=string,ManagedPropertyType=Uri,AlwaysChange,GenerateAccessors */
 	const static int SourceProperty;
@@ -226,12 +202,6 @@ class MediaElement : public FrameworkElement {
 	
 	virtual void SetSurface (Surface *surface);
 	
-	bool AdvanceFrame ();
-	// Called by MediaPlayer when the media reaches its end.
-	// For media with both video and audio this method is called
-	// after both have finished.
-	void MediaFinished ();
-	
 	MediaPlayer *GetMediaPlayer () { return mplayer; }
 	
 	// overrides
@@ -244,60 +214,45 @@ class MediaElement : public FrameworkElement {
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	
-	virtual void SetSourceInternal (Downloader *downloader, char *PartName);
-	virtual void SetSource (Downloader *downloader, const char *PartName);
-	
+	void SetSource (Downloader *downloader, const char *PartName);
+	void SetUriSource (const char *uri); // This is called from OnPropertyChanged
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	void SetStreamSource (ManagedStreamCallbacks *stream);
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetDemuxerSource (IMediaDemuxer *demuxer);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	void Pause ();
+	void Pause (); // Not thread-safe
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	void Play ();
+	void Play (); // Not thread-safe
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	void Stop ();
+	void Stop (); // Not thread-safe
 	
-	// These methods are the ones that actually call the appropiate methods on the MediaPlayer
-	void PlayInternal ();
-	//void PauseInternal ();
-	//void StopInternal ();
+	void ReportErrorOccurred (ErrorEventArgs *args); // Not thread-safe
+	/* @GenerateCBinding,GeneratePInvoke */
+	void ReportErrorOccurred (const char *args); // Not thread-safe
 	
 	// State methods
-	bool IsClosed () { return state == MediaElementStateClosed; }
-	bool IsOpening () { return state == MediaElementStateOpening; }
-	bool IsBuffering () { return state == MediaElementStateBuffering; }
-	bool IsPlaying () { return state == MediaElementStatePlaying; }
-	bool IsPaused () { return state == MediaElementStatePaused; }
-	bool IsStopped () { return state == MediaElementStateStopped; }
+	bool IsClosed () { return state == MediaStateClosed; }
+	bool IsOpening () { return state == MediaStateOpening; }
+	bool IsBuffering () { return state == MediaStateBuffering; }
+	bool IsPlaying () { return state == MediaStatePlaying; }
+	bool IsPaused () { return state == MediaStatePaused; }
+	bool IsStopped () { return state == MediaStateStopped; }
 	
-	bool IsLive ();
-	bool IsMissingCodecs ();
-	void EmitMediaOpened ();
-	void Reinitialize (bool dtor); // dtor is true if we're calling from the destructor.
+	bool IsMissingCodecs (); // Not thread-safe
 	
-	pthread_mutex_t open_mutex; // Used when accessing closure.
-	MediaClosure *closure;
-	static void TryOpenFinished (EventObject *user_data);
-	void SetPlayRequested ();
+	void SetPlayRequested (); // Not thread-safe
+	void CheckMarkers (); // Not thread-safe
 	
-	// Reset all information to defaults, set state to 'Error' and raise MediaFailedEvent
-	void MediaFailed (ErrorEventArgs *args = NULL);
+	static const char *GetStateName (MediaState state); // Thread-safe
 	
-	static const char *GetStateName (MediaElementState state);
-	
-	MediaElementState GetState () { return state; }
-	void SetState (MediaElementState state);
-	
-	Playlist *GetPlaylist () { return playlist;  }
+	MediaState GetState () { return state; } // Thread-safe
+	void SetState (MediaState state); // Thread-safe
 	
 	virtual bool EnableAntiAlias ();
-	
-	void AddStreamedMarker (TimelineMarker *marker);
-	static void AddStreamedMarkersCallback (EventObject *obj);
-	void AddStreamedMarkers ();
-	void SetMedia (Media *media);
 	
 	//
 	// Public Property Accessors
@@ -325,8 +280,8 @@ class MediaElement : public FrameworkElement {
 	bool GetCanPause ();
 	bool GetCanSeek ();
 	
-	void SetCurrentState (MediaElementState state);
-	MediaElementState GetCurrentState ();
+	void SetCurrentState (MediaState state);
+	MediaState GetCurrentState ();
 	
 	void SetIsMuted (bool set);
 	bool GetIsMuted ();
@@ -334,7 +289,9 @@ class MediaElement : public FrameworkElement {
 	void SetMarkers (TimelineMarkerCollection *markers);
 	TimelineMarkerCollection *GetMarkers ();
 	
+	void SetNaturalDuration (Duration *duration);
 	Duration *GetNaturalDuration ();
+
 	int GetNaturalVideoHeight ();
 	int GetNaturalVideoWidth ();
 	
@@ -363,9 +320,16 @@ class MediaElement : public FrameworkElement {
 	Stretch GetStretch ();
 };
 
+/*
+ * MediaElementPropertyValueProvider
+ */
+ 
 class MediaElementPropertyValueProvider : public PropertyValueProvider {
  private:
  	Value *position;
+ 	Value *current_state;
+	Value *GetPosition ();
+	Value *GetCurrentState ();
  public:
 	MediaElementPropertyValueProvider (MediaElement *obj);
 	virtual ~MediaElementPropertyValueProvider ();

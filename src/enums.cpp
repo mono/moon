@@ -181,14 +181,14 @@ static enum_map_t keyboard_navigation_mode_map [] = {
 };
 
 static enum_map_t media_element_state_map [] = {
-	MAP_ENUM (MediaElementState, Closed),
-	MAP_ENUM (MediaElementState, Opening),
-	MAP_ENUM (MediaElementState, Buffering),
-	MAP_ENUM (MediaElementState, Playing),
-	MAP_ENUM (MediaElementState, Stopped),
-	MAP_ENUM (MediaElementState, Individualizing),
-	MAP_ENUM (MediaElementState, AcquiringLicense),
-	MAP_ENUM (MediaElementState, Error),
+	MAP_ENUM (MediaState, Closed),
+	MAP_ENUM (MediaState, Opening),
+	MAP_ENUM (MediaState, Buffering),
+	MAP_ENUM (MediaState, Playing),
+	MAP_ENUM (MediaState, Stopped),
+	MAP_ENUM (MediaState, Individualizing),
+	MAP_ENUM (MediaState, AcquiringLicense),
+	MAP_ENUM (MediaState, Error),
 	END_MAPPING
 };
 

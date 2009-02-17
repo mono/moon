@@ -14,26 +14,18 @@
 
 class PlaylistEntry;
 class Playlist;
-class MediaSource;
-class SingleMedia;
+class PlaylistRoot;
 
-#include "downloader.h"
-#include "media.h"
-#include "pipeline.h"
+#include <expat.h>
+
+#include "value.h"
 #include "error.h"
 #include "dependencyobject.h"
 #include "uri.h"
-#include "clock.h"
+#include "pipeline.h"
 
-class PlaylistNode : public List::Node {
-private:
-	PlaylistEntry *entry;
-
+class PlaylistKind {
 public:
-	PlaylistNode (PlaylistEntry *entry);
-	virtual ~PlaylistNode ();
-	PlaylistEntry *GetEntry () { return entry; }
-
 	enum Kind {
 		/* ASX3 playlists */
 		Unknown		= 0,
@@ -64,6 +56,25 @@ public:
 		Excl		= 1 << 23,
 		Seq		= 1 << 24,
 	};
+	
+public:
+	const char *str;
+	Kind kind;
+	PlaylistKind (const char *str, Kind kind)
+	{
+		this->str = str;
+		this->kind = kind;
+	}
+};
+
+class PlaylistNode : public List::Node {
+private:
+	PlaylistEntry *entry;
+
+public:
+	PlaylistNode (PlaylistEntry *entry);
+	virtual ~PlaylistNode ();
+	PlaylistEntry *GetEntry () { return entry; }
 };
 
 class PlaylistEntry : public EventObject {
@@ -84,24 +95,30 @@ private:
 	int repeat_count;
 	char *role;
 
-	PlaylistNode::Kind set_values;
+	PlaylistKind::Kind set_values;
 	
 	// Non ASX properties
 	char *full_source_name;
+	bool is_live;
 	bool play_when_available;
 	Playlist *parent;
-	MediaElement *element;
 	Media *media;
 
-	static MediaResult playlist_entry_open_callback (MediaClosure *closure);
 	void Init (Playlist *parent);
 
 protected:
-	virtual ~PlaylistEntry ();
+	PlaylistEntry (Type::Kind kind);
+	PlaylistEntry (Type::Kind kind, Playlist *parent);
+	virtual ~PlaylistEntry () {}
 
 public:
-	PlaylistEntry (MediaElement *element, Playlist *parent, Media *media = NULL);
-	void Dispose ();
+	PlaylistEntry (Playlist *parent);
+	void Initialize (Media *media);
+	void InitializeWithUri (const char *uri);
+	void InitializeWithDownloader (Downloader *dl, const char *PartName);
+	void InitializeWithDemuxer (IMediaDemuxer *demuxer);
+	
+	virtual void Dispose ();
 	
 	// ASX properties
 
@@ -129,7 +146,7 @@ public:
 
 	Duration *GetDuration ();
 	void SetDuration (Duration *duration);
-	bool HasDuration () { return (set_values & PlaylistNode::Duration); }
+	bool HasDuration () { return (set_values & PlaylistKind::Duration); }
 
 	Duration *GetRepeatDuration ();
 	void SetRepeatDuration (Duration *duration);
@@ -157,78 +174,87 @@ public:
 	// non-ASX properties
 
 	Playlist *GetParent () { return parent; }
-
-	MediaElement *GetElement () { return element; }
-	void SetElement (MediaElement *element) { this->element = element; }
-
+	void SetParent (Playlist *value) { parent = value; }
+	PlaylistRoot *GetRoot ();
+	
 	Media *GetMedia ();
-	void SetMedia (Media *media, bool try_to_play = true);
+	void ClearMedia ();
+
+	virtual MediaElement *GetElement ();
+	MediaPlayer *GetMediaPlayer ();
 
 	const char *GetFullSourceName ();
 	virtual bool IsPlaylist () { return false; }
 
+	bool GetIsLive () { return is_live; }
+	void SetIsLive (bool value) { is_live = value; }
+
 	// Playback methods
 
-	virtual void Open ();
-	virtual bool Play ();
-	virtual bool Pause ();
-	virtual void Stop ();
+	virtual void OpenAsync ();
+	virtual void PlayAsync ();
+	virtual void PauseAsync ();
+	virtual void StopAsync ();
+	virtual void SeekAsync (guint64 pts);
 	virtual void PopulateMediaAttributes ();
 	
 	virtual PlaylistEntry *GetCurrentPlaylistEntry () { return this; }
 	virtual bool IsSingleFile ();
 
-	virtual const char *GetTypeName () { return "PlaylistEntry"; }
 	void Print (int depth);
-
+	
+	EVENTHANDLER (PlaylistEntry, Opening,             Media, EventArgs);
+	EVENTHANDLER (PlaylistEntry, OpenCompleted,       Media, EventArgs);
+	EVENTHANDLER (PlaylistEntry, Seeking,             Media, EventArgs);
+	EVENTHANDLER (PlaylistEntry, SeekCompleted,       Media, EventArgs);
+	EVENTHANDLER (PlaylistEntry, CurrentStateChanged, Media, EventArgs);
+	EVENTHANDLER (PlaylistEntry, MediaError,          Media, ErrorEventArgs);
+	EVENTHANDLER (PlaylistEntry, DownloadProgressChanged, Media, EventArgs);
+	EVENTHANDLER (PlaylistEntry, BufferingProgressChanged, Media, EventArgs);
 };
 
 class Playlist : public PlaylistEntry {
 private:
 	List *entries;
 	PlaylistNode *current_node;
-	MediaElement *element;
 	IMediaSource *source;
 	bool is_single_file;
-	bool autoplayed;
 	bool is_sequential;
 	bool is_switch;
 	bool waiting;
 
-	void Init (MediaElement *element);
+	void Init ();
 
 	bool HasMediaSource ();
 	void OnMediaDownloaded ();
 
-	static void on_media_ended (EventObject *sender, EventArgs *calldata, gpointer userdata);
 	void MergeWith (PlaylistEntry *entry);
 	void PlayNext (bool fail);
 
 protected:
-	virtual ~Playlist ();
+	Playlist (Type::Kind kind);
+	virtual ~Playlist () {}
 
 public:
-	Playlist (MediaElement *element, Playlist *parent, IMediaSource *source);
-	Playlist (MediaElement *element, Media *media);
-	void Dispose ();
+	Playlist (Playlist *parent, IMediaSource *source);
+	
+	virtual void Dispose ();
 
-	virtual void Open ();
-	virtual bool Play ();
-	virtual bool Pause ();
-	virtual void Stop ();
+	virtual void OpenAsync ();
+	virtual void PlayAsync ();
+	virtual void PauseAsync ();
+	virtual void StopAsync ();
+	virtual void SeekAsync (guint64 to);
 	virtual void PopulateMediaAttributes ();
 	
 	virtual void AddEntry (PlaylistEntry *entry);
 
-	virtual MediaElement *GetElement () { return element; }
 	PlaylistEntry *GetCurrentEntry () { return current_node ? current_node->GetEntry () : NULL; }
 	virtual PlaylistEntry *GetCurrentPlaylistEntry () { return current_node ? current_node->GetEntry ()->GetCurrentPlaylistEntry () : NULL; }
 	bool ReplaceCurrentEntry (Playlist *entry);
 
 	virtual bool IsPlaylist () { return true; }
 	virtual bool IsSingleFile () { return is_single_file; }
-	bool GetAutoPlayed () { return autoplayed; }
-	void SetAutoPlayed (bool value) { autoplayed = value; }
 	void SetSequential (bool value) { is_sequential = value; }
 	bool GetSequential (void) { return is_sequential; }
 	void SetSwitch (bool value) { is_switch = value; }
@@ -240,19 +266,61 @@ public:
 	void OnEntryEnded ();
 	void OnEntryFailed ();
 
-	virtual const char *GetTypeName () { return "PlaylistEntry"; }
 	void Print (int depth);
 };
 
-class ParserInternal;
+class PlaylistRoot : public Playlist {
+private:
+	MediaElement *element;
+
+	static void EmitStopEvent (EventObject *obj);
+protected:
+	virtual ~PlaylistRoot () {}
+	
+public:
+	PlaylistRoot (MediaElement *element);
+	virtual void Dispose (); // not thread-safe
+	virtual MediaElement *GetElement ();
+	
+	virtual void StopAsync ();
+	
+	Media *GetCurrentMedia ();
+	
+	// Events
+	const static int OpeningEvent;
+	const static int OpenCompletedEvent;
+	const static int SeekingEvent;
+	const static int SeekCompletedEvent;
+	const static int CurrentStateChangedEvent;
+	const static int PlayEvent;
+	const static int PauseEvent;
+	const static int StopEvent;
+	const static int MediaErrorEvent;
+	const static int MediaEndedEvent;
+	const static int DownloadProgressChangedEvent;
+	const static int BufferingProgressChangedEvent;
+	
+	// Event handlers
+	EVENTHANDLER (PlaylistRoot, MediaEnded, MediaPlayer, EventArgs);
+};
+
+class PlaylistParserInternal {
+public:
+	XML_Parser parser;
+	gint32 bytes_read;
+	bool reparse;
+
+	PlaylistParserInternal ();
+	~PlaylistParserInternal ();
+};
 
 class PlaylistParser {
 private:
+	PlaylistRoot *root;
 	Playlist *playlist;
 	PlaylistEntry *current_entry;
-	ParserInternal *internal;
+	PlaylistParserInternal *internal;
 	IMediaSource *source;
-	MediaElement *element;
 	bool was_playlist;
 	// For <ASX* files, this is 3 (or 0 if no version attribute was found).
 	// for [Ref* files, this is 2.
@@ -269,27 +337,17 @@ private:
 
 	char *current_text;
 
-	struct PlaylistKind {
-		const char *str;
-		PlaylistNode::Kind kind;
-		PlaylistKind (const char *str, PlaylistNode::Kind kind)
-		{
-			this->str = str;
-			this->kind = kind;
-		}
-	};
-
 	class KindNode : public List::Node {
 	public:
-		PlaylistNode::Kind kind;
+		PlaylistKind::Kind kind;
 
-		KindNode (PlaylistNode::Kind kind)
+		KindNode (PlaylistKind::Kind kind)
 		{
 			this->kind = kind;
 		}
 	};
 
-	static PlaylistParser::PlaylistKind playlist_kinds [];
+	static PlaylistKind playlist_kinds [];
 	List *kind_stack;
 
 	void OnASXStartElement (const char *name, const char **attrs);
@@ -313,10 +371,10 @@ private:
 
 	PlaylistEntry *GetCurrentContent ();
 
-	void PushCurrentKind (PlaylistNode::Kind kind);
+	void PushCurrentKind (PlaylistKind::Kind kind);
 	void PopCurrentKind ();
-	PlaylistNode::Kind GetCurrentKind ();
-	PlaylistNode::Kind GetParentKind ();
+	PlaylistKind::Kind GetCurrentKind ();
+	PlaylistKind::Kind GetParentKind ();
 	bool AssertParentKind (int kind);
 
 	void Setup (XmlType type);
@@ -325,7 +383,7 @@ private:
 	bool TryFixError (gint8 *buffer, int bytes_read);
 public:
 
-	PlaylistParser (MediaElement *element, IMediaSource *source);
+	PlaylistParser (PlaylistRoot *root, IMediaSource *source);
 	~PlaylistParser ();
 
 	Playlist *GetPlaylist () { return playlist; }
@@ -344,8 +402,8 @@ public:
 	bool WasPlaylist () { return was_playlist; }
 	void ParsingError (ErrorEventArgs *args = NULL);
 
-	static PlaylistNode::Kind StringToKind (const char *str);
-	static const char *KindToString (PlaylistNode::Kind kind);
+	static PlaylistKind::Kind StringToKind (const char *str);
+	static const char *KindToString (PlaylistKind::Kind kind);
 };
 
 #endif /* __PLAYLIST_H__ */

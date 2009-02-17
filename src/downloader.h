@@ -160,6 +160,7 @@ class Downloader : public DependencyObject {
 	bool Started ();
 	bool Completed ();
 	bool IsAborted () { return aborted; }
+	const char *GetFailedMessage () { return failed_msg; }
 	
 	void     SetContext (gpointer context) { this->context = context;}
 	gpointer GetContext () { return context; }

@@ -61,6 +61,7 @@ MmsDownloader::MmsDownloader (Downloader *dl) : InternalDownloader (dl)
 	p_packet_times [2] = 0;
 	
 	parser = NULL;
+	source = NULL;
 
 	requested_pts = G_MAXUINT64;
 	pthread_mutex_init (&request_mutex, NULL);
@@ -73,6 +74,12 @@ MmsDownloader::~MmsDownloader ()
 	if (parser)
 		parser->unref ();
 	pthread_mutex_destroy (&request_mutex);
+}
+
+void
+MmsDownloader::SetSource (MemoryQueueSource *source)
+{
+	this->source = source;
 }
 
 void
@@ -270,7 +277,7 @@ MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *
 
 	if (parser == NULL) {
 		ASFDemuxerInfo *dx_info = new ASFDemuxerInfo ();
-		MemorySource *asf_src = new MemorySource (NULL, payload, header->length - sizeof (MmsDataPacket), 0);
+		MemorySource *asf_src = new MemorySource (source->GetMedia (), payload, header->length - sizeof (MmsDataPacket), 0);
 		
 		asf_src->SetOwner (false);
 
@@ -282,7 +289,7 @@ MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *
 			return true;
 		}
 		
-		parser = new ASFParser (asf_src, NULL);
+		parser = new ASFParser (asf_src, source->GetMedia ());
 		asf_src->unref ();
 		delete dx_info;
 		
@@ -474,13 +481,15 @@ MmsDownloader::ProcessDataPacket (MmsHeader *header, MmsPacket *packet, char *pa
 	
 	gint32 off = header_size;
 
+	g_return_val_if_fail (source != NULL, true);
+	
 	if (seekable) {
 		off += packet->packet.data.id * asf_packet_size;
 	} else {
 		off += packets_received * asf_packet_size;
 	}
 	
-	dl->InternalWrite (payload, off, header->length - sizeof (MmsDataPacket));
+	source->WritePacket (payload,header->length - sizeof (MmsDataPacket));
 	packets_received++;
 	
 	return true;

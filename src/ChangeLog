@@ -1,5 +1,61 @@
 2009-02-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mp3.h:
+	* mp3.cpp:
+	* audio.h:
+	* audio.cpp:
+	* audio-alsa.cpp:
+	* pipeline-ffmpeg.h:
+	* yuv-converter.cpp:
+	* pipeline-ffmpeg.cpp: Update according to new pipeline api.
+
+	* playlist.h:
+	* pipeline.h:
+	* pipeline.cpp:
+	* playlist.cpp:
+	* mediaplayer.h:
+	* mediaelement.h:
+	* pipeline-asf.h:
+	* mediaplayer.cpp:
+	* pipeline-asf.cpp:
+	* mediaelement.cpp:
+	* mms-downloader.h:
+	* mms-downloader.cpp: Rework pipeline to be async to support
+	  MediaStreamSource.
+
+	* type.h:
+	* value.h:
+	* cbinding.h:
+	* cbinding.cpp:
+	* type-generated.cpp:
+	* dependencyproperty.g.cpp: Regenerated.
+
+	* codec-version.h.in: Bump codec abi.
+
+	* downloader.cpp: Include uri.h.
+
+	* downloader.h: Add accessor for failed_msg.
+
+	* enums.h:
+	* enums.cpp: Rename MediaElementState to MediaState.
+
+	* mutex.h: Added, a pthread implementation of a mutex allowing
+	  easy c++ usage.
+
+	* template.h: Inlcude xaml.h and add a forward declaration of
+	  XamlContext.
+
+	* window.h: Add a forward declaration of MoonWindow.
+
+	* src.mdp: Updated.
+
+	* dependencyobject.h:
+	* dependencyobject.cpp: Added EVENTHANDLER macro. Added
+	  support for emititng events from other than the main thread
+	  (by marshalling the event emission to the main thread).
+
+2009-02-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* deployment.cpp: Use printf instead of g_warning for a
 	  message which is always printed. Makes it less annoying to
 	  break on g_log while debugging.
