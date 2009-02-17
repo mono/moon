@@ -1,6 +1,12 @@
 2009-02-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* runtime.h:
+	* runtime.cpp: CreateDownloader: take an EventObject instead
+	  of UIElement.
+
+2009-02-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* runtime.h:
 	* runtime.cpp: Add mp3 support to MOONLIGHT_DEBUG.
 
 2009-02-17  Atsushi Enomoto  <atsushi@ximian.com>

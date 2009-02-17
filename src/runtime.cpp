@@ -1512,15 +1512,18 @@ Surface::CreateDownloader (void)
 }
 
 Downloader *
-Surface::CreateDownloader (UIElement *element)
+Surface::CreateDownloader (EventObject *obj)
 {
-	Surface *surface = element ? element->GetSurface () : NULL;
+	Surface *surface = obj ? obj->GetSurface () : NULL;
+
+	if (surface == NULL)
+		surface = Deployment::GetCurrent ()->GetSurface ();
 	
 	if (surface)
 		return surface->CreateDownloader ();
 	
 	g_warning ("Surface::CreateDownloader (%p, ID: %i): Unable to create contextual downloader.\n",
-		   element, GET_OBJ_ID (element));
+		   obj, GET_OBJ_ID (obj));
 	
 	return NULL;
 }

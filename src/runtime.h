@@ -197,7 +197,7 @@ public:
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Downloader *CreateDownloader ();
-	static Downloader *CreateDownloader (UIElement *element);
+	static Downloader *CreateDownloader (EventObject *obj);
 
 	void SetFPSReportFunc (MoonlightFPSReportFunc report, void *user_data);
 	void SetCacheReportFunc (MoonlightCacheReportFunc report, void *user_data);
