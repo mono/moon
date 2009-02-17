@@ -53,7 +53,7 @@ Deployment::Initialize()
 	if (initialized)
 		return true;
 #if DEBUG
-	g_warning ("Enabling MONO_DEBUG=keep-delegates.");
+	printf ("Moonlight: Enabling MONO_DEBUG=keep-delegates.\n");
 	g_setenv ("MONO_DEBUG", "keep-delegates", false);
 #endif
 

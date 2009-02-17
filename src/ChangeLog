@@ -1,5 +1,11 @@
 2009-02-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* deployment.cpp: Use printf instead of g_warning for a
+	  message which is always printed. Makes it less annoying to
+	  break on g_log while debugging.
+
+2009-02-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* type.h:
 	* value.h:
 	* type-generated.cpp: Regenerate.
