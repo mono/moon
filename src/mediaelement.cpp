@@ -1339,11 +1339,13 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 		flags |= RecalculateMatrix;
 		SetUriSource (GetSource ());		
 	} else if (args->GetId () == MediaElement::AudioStreamIndexProperty) {
-		mplayer->SetAudioStreamIndex (args->new_value->AsInt32 ());
+		if (mplayer)
+			mplayer->SetAudioStreamIndex (args->new_value->AsInt32 ());
 	} else if (args->GetId () == MediaElement::AutoPlayProperty) {
 		// no state to change
 	} else if (args->GetId () == MediaElement::BalanceProperty) {
-		mplayer->SetBalance (args->new_value->AsDouble ());
+		if (mplayer)
+			mplayer->SetBalance (args->new_value->AsDouble ());
 	} else if (args->GetId () == MediaElement::BufferingProgressProperty) {
 		// read-only property
 	} else if (args->GetId () == MediaElement::BufferingTimeProperty) {

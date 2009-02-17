@@ -1,5 +1,9 @@
 2009-02-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaelement.cpp: Add some null checks.
+
+2009-02-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaelement.h:
 	* mediaelement.cpp: Move bitfields into our flags field.
 	  Remove allow_downloads and related methods, no longer used.
