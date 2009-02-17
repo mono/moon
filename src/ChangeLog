@@ -1,5 +1,10 @@
 2009-02-17  Alan McGovern  <amcgovern@novell.com>
 
+	* animation.cpp: Missed out on a "!" when changing from
+	  GetIsChild to GetIsRootStoryboard
+
+2009-02-17  Alan McGovern  <amcgovern@novell.com>
+
 	* cbinding.h:
 	* cbinding.cpp: Regenerated
 

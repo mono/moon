@@ -586,7 +586,7 @@ Storyboard::GetIsRootStoryboard ()
 bool
 Storyboard::BeginWithError (MoonError *error)
 {
-	if (GetIsRootStoryboard ()) {
+	if (!GetIsRootStoryboard ()) {
 		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot Begin a Storyboard which is not the root Storyboard.");
 		return false;
 	}
