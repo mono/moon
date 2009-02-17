@@ -445,7 +445,7 @@ Media::Warning (MediaResult result, const char *format, ...)
 }
 
 void
-Media::AddError (MediaErrorEventArgs *args)
+Media::AddError (ErrorEventArgs *args)
 {
 	LOG_PIPELINE ("Media::AddError (%p), message: %s, code: %i\n", args, args->error_message, args->error_code);
 

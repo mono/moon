@@ -538,7 +538,7 @@ ASFParser::AddError (MediaResult code, char *msg)
 	fprintf (stdout, "ASF error: %s.\n", msg);
 	
 	if (error == NULL) {
-		error = new MediaErrorEventArgs (code, msg);
+		error = new ErrorEventArgs (MediaError, 4001, msg);
 		if (media)
 			media->AddError (error);
 	}

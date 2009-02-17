@@ -385,7 +385,7 @@ public:
 	MediaElement *GetElement () { return element; }
 	
 	static void Warning (MediaResult result, const char *format, ...);
-	void AddError (MediaErrorEventArgs *args);
+	void AddError (ErrorEventArgs *args);
 
 	// A list of MediaMarker::Node.
 	// This is the list of markers found in the metadata/headers (not as a separate stream).

@@ -1,5 +1,12 @@
 2009-02-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.h:
+	* pipeline.cpp:
+	* mediaelement.h:
+	* mediaelement.cpp: Remove MediaErrorEventArgs.
+
+2009-02-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* debug.h: Added LOG_MP3.
 
 	* runtime.cpp: Surface ctor: set the surface of the current

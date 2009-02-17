@@ -24,17 +24,6 @@
 #include "pipeline.h"
 #include "enums.h"
 
-/* @Namespace=None */
-class MediaErrorEventArgs : public ErrorEventArgs {
- protected:
-	virtual ~MediaErrorEventArgs ();
-
- public:
-	MediaErrorEventArgs (MediaResult result, const char *msg);
-
-	MediaResult GetMediaResult () { return (MediaResult) error_code; }
-};
-
 /* @Namespace=System.Windows.Controls */
 class MediaElement : public FrameworkElement {
  friend class MediaElementPropertyValueProvider;	

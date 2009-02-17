@@ -265,7 +265,7 @@ public:
 /* @IncludeInKinds */
 class ASFParser : public EventObject {
 private:
-	MediaErrorEventArgs *error;
+	ErrorEventArgs *error;
 	bool header_read_successfully;
 	
 	void Initialize ();

@@ -2035,20 +2035,6 @@ MediaElement::SetNaturalDuration (TimeSpan duration)
 	SetValue (MediaElement::NaturalDurationProperty, Value (Duration (duration)));
 }
 
-//
-// MediaErrorEventArgs
-//
-
-MediaErrorEventArgs::MediaErrorEventArgs (MediaResult result, const char *msg)
-		: ErrorEventArgs (MediaError, (int) result, msg)
-{
-	SetObjectType (Type::MEDIAERROREVENTARGS);
-}
-
-MediaErrorEventArgs::~MediaErrorEventArgs ()
-{
-}
-
 /*
  * MediaElementPropertyValueProvider
  */
