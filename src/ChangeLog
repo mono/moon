@@ -1,5 +1,12 @@
 2009-02-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* debug.h: Added LOG_MP3.
+
+	* runtime.cpp: Surface ctor: set the surface of the current
+	  deployment to the ourself.
+
+2009-02-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* runtime.h: Add a VERIFY_MAIN_THREAD sanity macro.
 
 	* runtime.cpp: Add support for MOONLIGHT_DEBUG=all.

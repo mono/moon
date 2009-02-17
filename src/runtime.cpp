@@ -269,6 +269,8 @@ Surface::Surface (MoonWindow *window, bool silverlight2)
 {
 	SetObjectType (Type::SURFACE);
 
+	GetDeployment ()->SetSurface (this);
+
 	main_thread = pthread_self ();
 
 	this->silverlight2 = silverlight2;
