@@ -252,7 +252,6 @@ Image::Image ()
 	surface = NULL;
 	loader = NULL;
 	loader_err = NULL;
-	SetSource (new BitmapImage ());
 }
 
 Image::~Image ()

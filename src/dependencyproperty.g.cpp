@@ -82,7 +82,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::RegisterFull (this, Type::MULTISCALEIMAGE, "SubImages", NULL, Type::MULTISCALESUBIMAGE_COLLECTION, true, false, true, false, NULL, NULL, false, false);
 	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "Source", Type::MULTISCALETILESOURCE);
 	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "AspectRatio", new Value (1.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::IMAGE, "Source", Type::BITMAPIMAGE);
+	DependencyProperty::RegisterFull (this, Type::IMAGE, "Source", NULL, Type::BITMAPIMAGE, true, false, false, false, NULL, NULL, false, false);
 	DependencyProperty::Register (this, Type::USERCONTROL, "Content", Type::UIELEMENT);
 	DependencyProperty::Register (this, Type::TEXTBOX, "VerticalScrollBarVisibility", new Value (ScrollBarVisibilityHidden), Type::INT32);
 	DependencyProperty::Register (this, Type::TEXTBOX, "TextWrapping", new Value (TextWrappingNoWrap), Type::INT32);

@@ -1,5 +1,8 @@
 2009-02-17  Jeffrey Stedfast  <fejj@novell.com>
 
+	* media.cpp (Image::Image): Fix the SourceProperty to be
+	autocreated.
+
 	* shape.cpp (Polygon::Polygon): Don't set a point
 	collection. We'll make it autocreated instead.
 	(Polyline::Polyline): Same.

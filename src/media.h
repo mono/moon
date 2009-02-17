@@ -211,7 +211,7 @@ class Image : public MediaBase {
 	virtual void OnEmptySource () { CleanupSurface (); }
 	
  public:
- 	/* @PropertyType=BitmapImage,ManagedPropertyType=ImageSource,GenerateAccessors */
+ 	/* @PropertyType=BitmapImage,ManagedPropertyType=ImageSource,AutoCreateValue,GenerateAccessors */
 	const static int SourceProperty;
 
 	static GHashTable *surface_cache;
