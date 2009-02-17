@@ -382,6 +382,43 @@ namespace MoonTest.System.Windows.Media.Animation {
 				() => sb.Stop ()
 			);
 		}
+		
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void StartChildStoryboard ()
+		{
+			Canvas c = CreateStoryboard ();
+			Storyboard sb = (Storyboard) c.Resources ["Storyboard"];
+			Storyboard child = (Storyboard) sb.Children [1];
+			TestPanel.Children.Add (c);
+
+			Enqueue (() => {
+				Assert.Throws<InvalidOperationException> (() => child.Begin ());
+			});
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void StopChildStoryboard ()
+		{
+			Canvas c = CreateStoryboard ();
+			Storyboard sb = (Storyboard) c.Resources ["Storyboard"];
+			Storyboard child = (Storyboard) sb.Children [1];
+			TestPanel.Children.Add (c);
+
+			Enqueue (() => {
+				sb.Begin ();
+			});
+
+			EnqueueConditional (() => sb.GetCurrentTime ().TotalMilliseconds > 100);
+			Enqueue (() => {
+				Assert.Throws<InvalidOperationException> (() => child.Stop ());
+			});
+			EnqueueTestComplete ();
+		}
 
 		private Canvas CreateStoryboard ()
 		{
