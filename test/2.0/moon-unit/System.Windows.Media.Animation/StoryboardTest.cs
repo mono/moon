@@ -214,6 +214,55 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 		[TestMethod]
 		[Asynchronous]
+		public void AddRunningStoryboard ()
+		{
+			Canvas c = CreateStoryboard ();
+			Storyboard sb = (Storyboard) c.Resources ["Storyboard"];
+
+			Storyboard child = new Storyboard { };
+			DoubleAnimation animation = new DoubleAnimation { Duration = new Duration (TimeSpan.FromSeconds (1)), From = 10, To = 100 };
+			Storyboard.SetTargetName (animation, "A");
+			Storyboard.SetTargetProperty (animation, new PropertyPath ("Width"));
+			child.Children.Add (animation);
+
+			TestPanel.Children.Add (c);
+
+			Enqueue (delegate {
+				// The TargetName isn't resolvable
+				Assert.Throws<InvalidOperationException>(() => child.Begin (), "TargetName should not be resolvable");
+				Storyboard.SetTargetName (animation, null);
+				Assert.Throws<InvalidOperationException> (() => child.Begin (), "Target is not specified");
+				Storyboard.SetTarget (child, c.Children [0]);
+				child.Begin ();
+			});
+
+			Enqueue (delegate {
+				Assert.AreEqual (ClockState.Active, child.GetCurrentState (), "Active");
+				sb.Children.Add (child);
+			});
+
+			Enqueue (delegate {
+				Assert.AreEqual (ClockState.Active, child.GetCurrentState (), "#1");
+				Assert.AreEqual (ClockState.Stopped, sb.GetCurrentState (), "#2");
+			});
+
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void RemoveChildThenStart ()
+		{
+			Canvas c = CreateStoryboard ();
+			Storyboard sb = (Storyboard) c.Resources ["Storyboard"];
+			Storyboard child = (Storyboard) sb.Children [1];
+			sb.Children.RemoveAt (1);
+
+			CreateAsyncTest (c, () => { Assert.Throws<InvalidOperationException> (() => child.Begin ()); });
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		[MoonlightBug]
 		public void CurrentState ()
 		{
