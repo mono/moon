@@ -1917,6 +1917,7 @@ get_flags (gint64 def, const char *envname, struct env_options options[])
 
 		const char *flag = env;
 		const char *inptr;
+		bool all = !strcmp ("all", env);
 		size_t n;
 		uint i;
 		
@@ -1931,6 +1932,11 @@ get_flags (gint64 def, const char *envname, struct env_options options[])
 			
 			n = (inptr - flag);
 			for (i = 0; options[i].name != NULL; i++) {
+				if (all) {
+					flags |= options[i].flag;
+					continue;
+				}
+				
 				if (n != strlen (options[i].name))
 					continue;
 				
@@ -1966,7 +1972,7 @@ runtime_init (guint64 flags)
 	}
 
 	if (running_on_nvidia ()) {
-		g_warning ("Forcing client-side rendering because we detected binary drivers which are known to suffer performance problems.");
+		printf ("Moonlight: Forcing client-side rendering because we detected binary drivers which are known to suffer performance problems.");
 		flags &= ~RUNTIME_INIT_USE_BACKEND_XLIB;
 	}
 

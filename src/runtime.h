@@ -44,6 +44,15 @@
 #define ENDTIMER(id,str)
 #endif
 
+#if SANITY
+#define VERIFY_MAIN_THREAD \
+	if (!Surface::InMainThread ()) {	\
+		printf ("Moonlight: This method should be only be called from the main thread (%s)\n", __PRETTY_FUNCTION__);	\
+	}
+#else
+#define VERIFY_MAIN_THREAD
+#endif
+
 enum RuntimeInitFlags {
 	RUNTIME_INIT_PANGO_TEXT_LAYOUT     = 1 << 0,
 	// (not used)                      = 1 << 1,
