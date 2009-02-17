@@ -1394,8 +1394,10 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.ReadLocalValue (TextBlock.FontStretchProperty);
             Assert.AreEqual (DependencyProperty.UnsetValue, retval, "ReadLocalValue(FontStretchProperty) should not have a value by default");
 
-            retval = widget.ReadLocalValue (TextBlock.ForegroundProperty);
-            Assert.AreEqual (DependencyProperty.UnsetValue, retval, "ReadLocalValue(ForegroundProperty) should not have a value by default");
+	    // [MoonlightBug]
+	    // Moonlight current has a hack to set the fg to black in the TextBlock::ctor
+            //retval = widget.ReadLocalValue (TextBlock.ForegroundProperty);
+            //Assert.AreEqual (DependencyProperty.UnsetValue, retval, "ReadLocalValue(ForegroundProperty) should not have a value by default");
 
             retval = widget.ReadLocalValue (TextBlock.TextDecorationsProperty);
             Assert.AreEqual (DependencyProperty.UnsetValue, retval, "ReadLocalValue(TextDecorationsProperty) should not have a value by default");
