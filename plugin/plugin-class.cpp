@@ -606,6 +606,7 @@ npvariant_is_moonlight_object (NPVariant var)
 }
 
 EventListenerProxy::EventListenerProxy (NPP instance, const char *event_name, const char *cb_name)
+	: EventObject (Type::EVENTLISTENERPROXY)
 {
 	this->instance = instance;
 	this->event_name = g_strdup (event_name);
@@ -620,6 +621,7 @@ EventListenerProxy::EventListenerProxy (NPP instance, const char *event_name, co
 }
 
 EventListenerProxy::EventListenerProxy (NPP instance, const char *event_name, const NPVariant *cb)
+	: EventObject (Type::EVENTLISTENERPROXY)
 {
 	this->instance = instance;
 	this->event_name = g_strdup (event_name);
