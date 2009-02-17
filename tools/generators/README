@@ -1,6 +1,6 @@
 This directory includes a scripts to generate different parts of our code.
 
-Just run 'make' to execute the generator.
+Run 'make' to create the generator and 'make generate' to execute it.
 
 The generator parses every h file in src/ and creates a list of all the types,
 methods, enums, etc. it can find. It's not overly smart, feeding it complex
