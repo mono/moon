@@ -1342,22 +1342,22 @@ SplinePointKeyFrame *spline_point_key_frame_new (void);
  * Storyboard
  **/
 /* @GeneratePInvoke */
-bool storyboard_begin (Storyboard *instance);
+bool storyboard_begin_with_error (Storyboard *instance, MoonError *error);
 
 /* @GeneratePInvoke */
 int storyboard_get_current_state (Storyboard *instance);
 
 /* @GeneratePInvoke */
-void storyboard_pause (Storyboard *instance);
+void storyboard_pause_with_error (Storyboard *instance, MoonError *error);
 
 /* @GeneratePInvoke */
-void storyboard_resume (Storyboard *instance);
+void storyboard_resume_with_error (Storyboard *instance, MoonError *error);
 
 /* @GeneratePInvoke */
-void storyboard_seek (Storyboard *instance, TimeSpan timespan);
+void storyboard_seek_with_error (Storyboard *instance, TimeSpan timespan, MoonError *error);
 
 /* @GeneratePInvoke */
-void storyboard_stop (Storyboard *instance);
+void storyboard_stop_with_error (Storyboard *instance, MoonError *error);
 
 /* @GeneratePInvoke */
 Storyboard *storyboard_new (void);

@@ -2943,12 +2943,14 @@ spline_point_key_frame_new (void)
  * Storyboard
  **/
 bool
-storyboard_begin (Storyboard *instance)
+storyboard_begin_with_error (Storyboard *instance, MoonError *error)
 {
 	if (instance == NULL)
 		return false;
 	
-	return instance->Begin ();
+	if (error == NULL)
+		g_warning ("Moonlight: Called storyboard_begin_with_error () with error == NULL.");
+	return instance->BeginWithError (error);
 }
 
 
@@ -2964,42 +2966,50 @@ storyboard_get_current_state (Storyboard *instance)
 
 
 void
-storyboard_pause (Storyboard *instance)
+storyboard_pause_with_error (Storyboard *instance, MoonError *error)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->Pause ();
+	if (error == NULL)
+		g_warning ("Moonlight: Called storyboard_pause_with_error () with error == NULL.");
+	instance->PauseWithError (error);
 }
 
 
 void
-storyboard_resume (Storyboard *instance)
+storyboard_resume_with_error (Storyboard *instance, MoonError *error)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->Resume ();
+	if (error == NULL)
+		g_warning ("Moonlight: Called storyboard_resume_with_error () with error == NULL.");
+	instance->ResumeWithError (error);
 }
 
 
 void
-storyboard_seek (Storyboard *instance, TimeSpan timespan)
+storyboard_seek_with_error (Storyboard *instance, TimeSpan timespan, MoonError *error)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->Seek (timespan);
+	if (error == NULL)
+		g_warning ("Moonlight: Called storyboard_seek_with_error () with error == NULL.");
+	instance->SeekWithError (timespan, error);
 }
 
 
 void
-storyboard_stop (Storyboard *instance)
+storyboard_stop_with_error (Storyboard *instance, MoonError *error)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->Stop ();
+	if (error == NULL)
+		g_warning ("Moonlight: Called storyboard_stop_with_error () with error == NULL.");
+	instance->StopWithError (error);
 }
 
 

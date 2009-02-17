@@ -576,6 +576,24 @@ Storyboard::Begin ()
 	return true;
 }
 
+bool
+Storyboard::GetIsRootStoryboard ()
+{
+	DependencyObject *parent = GetLogicalParent (true);
+	return !(parent && parent->Is(Type::STORYBOARD));
+}
+
+bool
+Storyboard::BeginWithError (MoonError *error)
+{
+	if (GetIsRootStoryboard ()) {
+		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot Begin a Storyboard which is not the root Storyboard.");
+		return false;
+	}
+	
+	return Begin ();
+}
+
 Clock *
 Storyboard::AllocateClock ()
 {
@@ -590,8 +608,29 @@ Storyboard::Pause ()
 }
 
 void
+Storyboard::PauseWithError (MoonError *error)
+{
+	if (!GetIsRootStoryboard ()) {
+		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot Pause a Storyboard which is not the root Storyboard.");
+		return;
+	}
+	Pause ();
+}
+
+void
 Storyboard::Resume ()
 {
+	if (root_clock)
+		root_clock->Resume ();
+}
+
+void
+Storyboard::ResumeWithError (MoonError *error)
+{
+	if (!GetIsRootStoryboard ()) {
+		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot Resume a Storyboard which is not the root Storyboard.");
+		return;
+	}
 	if (root_clock)
 		root_clock->Resume ();
 }
@@ -604,6 +643,17 @@ Storyboard::Seek (TimeSpan timespan)
 }
 
 void
+Storyboard::SeekWithError (TimeSpan timespan, MoonError *error)
+{
+	if (!GetIsRootStoryboard ()) {
+		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot Seek a Storyboard which is not the root Storyboard.");
+		return;
+	}
+	if (root_clock)
+		root_clock->Seek (timespan);
+}
+
+void
 Storyboard::Stop ()
 {
 	if (root_clock) {
@@ -611,6 +661,16 @@ Storyboard::Stop ()
 		root_clock->Stop ();
 		TeardownClockGroup ();
 	}
+}
+
+void
+Storyboard::StopWithError (MoonError *error)
+{
+	if (!GetIsRootStoryboard ()) {
+		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot Stop a Storyboard which is not the root Storyboard.");
+		return;
+	}
+	Stop ();
 }
 
 void

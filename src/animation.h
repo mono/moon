@@ -790,6 +790,8 @@ class Storyboard : public ParallelTimeline {
 	Clock *root_clock;
 	bool pending_begin;
 	
+	bool GetIsRootStoryboard ();
+	
  protected:
 	virtual ~Storyboard ();
 
@@ -804,20 +806,30 @@ class Storyboard : public ParallelTimeline {
 	
 	virtual void SetSurface (Surface *surface);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
 	bool Begin ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
+	bool BeginWithError (MoonError *error);
+
 	void Pause ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
+	void PauseWithError (MoonError *error);
+	
 	void Resume ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
+	void ResumeWithError (MoonError *error);
+
 	void Seek (TimeSpan timespan);
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SeekWithError (TimeSpan timespan, MoonError *error);
+
+	void Stop ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	void Stop ();
+	void StopWithError (MoonError *error);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	int GetCurrentState ();

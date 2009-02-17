@@ -385,7 +385,6 @@ namespace MoonTest.System.Windows.Media.Animation {
 		
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void StartChildStoryboard ()
 		{
 			Canvas c = CreateStoryboard ();
@@ -401,7 +400,6 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void StopChildStoryboard ()
 		{
 			Canvas c = CreateStoryboard ();
@@ -413,8 +411,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 				sb.Begin ();
 			});
 
-			EnqueueConditional (() => sb.GetCurrentTime ().TotalMilliseconds > 100);
-			Enqueue (() => {
+			Sleep (100, () => {
 				Assert.Throws<InvalidOperationException> (() => child.Stop (), "#1");
 				Assert.Throws<InvalidOperationException> (() => child.Pause (), "#2");
 				Assert.Throws<InvalidOperationException> (() => child.Seek(TimeSpan.FromMilliseconds(10)), "#3");

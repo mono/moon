@@ -1,3 +1,13 @@
+2009-02-17  Alan McGovern  <amcgovern@novell.com>
+
+	* cbinding.h:
+	* cbinding.cpp: Regenerated
+
+	* animation.h:
+	* animation.cpp: Add *WithError functions so that storyboards
+	  can throw the right exceptions when they are not the root
+	  Storyboard.
+
 2009-02-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mediaelement.cpp: Add some null checks.

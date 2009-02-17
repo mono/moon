@@ -1353,30 +1353,67 @@ namespace Mono {
 		// SplinePointKeyFrame *spline_point_key_frame_new ();
 		public extern static IntPtr spline_point_key_frame_new ();
 
-		[DllImport ("moon")]
+		[DllImport ("moon", EntryPoint="storyboard_begin_with_error")]
 		[return: MarshalAs (UnmanagedType.U1)]
-		// bool storyboard_begin (Storyboard *instance);
-		public extern static bool storyboard_begin (IntPtr instance);
+		// bool storyboard_begin_with_error (Storyboard *instance, MoonError *error);
+		private extern static bool storyboard_begin_with_error_ (IntPtr instance, out MoonError error);
+		public static bool storyboard_begin (IntPtr instance)
+		{
+			bool result;
+			MoonError error;
+			result = storyboard_begin_with_error_ (instance, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+			return result;
+		}
 
 		[DllImport ("moon")]
 		// int storyboard_get_current_state (Storyboard *instance);
 		public extern static int storyboard_get_current_state (IntPtr instance);
 
-		[DllImport ("moon")]
-		// void storyboard_pause (Storyboard *instance);
-		public extern static void storyboard_pause (IntPtr instance);
+		[DllImport ("moon", EntryPoint="storyboard_pause_with_error")]
+		// void storyboard_pause_with_error (Storyboard *instance, MoonError *error);
+		private extern static void storyboard_pause_with_error_ (IntPtr instance, out MoonError error);
+		public static void storyboard_pause (IntPtr instance)
+		{
+					MoonError error;
+			storyboard_pause_with_error_ (instance, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+		}
 
-		[DllImport ("moon")]
-		// void storyboard_resume (Storyboard *instance);
-		public extern static void storyboard_resume (IntPtr instance);
+		[DllImport ("moon", EntryPoint="storyboard_resume_with_error")]
+		// void storyboard_resume_with_error (Storyboard *instance, MoonError *error);
+		private extern static void storyboard_resume_with_error_ (IntPtr instance, out MoonError error);
+		public static void storyboard_resume (IntPtr instance)
+		{
+					MoonError error;
+			storyboard_resume_with_error_ (instance, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+		}
 
-		[DllImport ("moon")]
-		// void storyboard_seek (Storyboard *instance, TimeSpan timespan);
-		public extern static void storyboard_seek (IntPtr instance, long timespan);
+		[DllImport ("moon", EntryPoint="storyboard_seek_with_error")]
+		// void storyboard_seek_with_error (Storyboard *instance, TimeSpan timespan, MoonError *error);
+		private extern static void storyboard_seek_with_error_ (IntPtr instance, long timespan, out MoonError error);
+		public static void storyboard_seek (IntPtr instance, long timespan)
+		{
+					MoonError error;
+			storyboard_seek_with_error_ (instance, timespan, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+		}
 
-		[DllImport ("moon")]
-		// void storyboard_stop (Storyboard *instance);
-		public extern static void storyboard_stop (IntPtr instance);
+		[DllImport ("moon", EntryPoint="storyboard_stop_with_error")]
+		// void storyboard_stop_with_error (Storyboard *instance, MoonError *error);
+		private extern static void storyboard_stop_with_error_ (IntPtr instance, out MoonError error);
+		public static void storyboard_stop (IntPtr instance)
+		{
+					MoonError error;
+			storyboard_stop_with_error_ (instance, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+		}
 
 		[DllImport ("moon")]
 		// Storyboard *storyboard_new ();
