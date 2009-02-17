@@ -1,5 +1,5 @@
 //
-// System.Windows.Media.MediaAttributeCollection
+// MediaAttribute
 //
 // Copyright (C) 2008 Novell, Inc (http://www.novell.com)
 //
