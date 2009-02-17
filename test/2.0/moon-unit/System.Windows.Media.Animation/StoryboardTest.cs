@@ -415,8 +415,13 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 			EnqueueConditional (() => sb.GetCurrentTime ().TotalMilliseconds > 100);
 			Enqueue (() => {
-				Assert.Throws<InvalidOperationException> (() => child.Stop ());
+				Assert.Throws<InvalidOperationException> (() => child.Stop (), "#1");
+				Assert.Throws<InvalidOperationException> (() => child.Pause (), "#2");
+				Assert.Throws<InvalidOperationException> (() => child.Seek(TimeSpan.FromMilliseconds(10)), "#3");
+				sb.Pause ();
 			});
+
+			Enqueue (() => Assert.Throws<InvalidOperationException> (() => child.Resume (), "#4"));
 			EnqueueTestComplete ();
 		}
 
