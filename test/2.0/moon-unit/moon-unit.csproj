@@ -64,6 +64,7 @@
     <Compile Include="BindingXaml.xaml.cs">
       <DependentUpon>BindingXaml.xaml</DependentUpon>
     </Compile>
+    <Compile Include="misc\DefaultValues.cs" />
     <Compile Include="misc\Events\EventTest.cs" />
     <Compile Include="Mono.Moonlight.UnitTesting\MoonlightBugAttribute.cs" />
     <Compile Include="Mono.Moonlight.UnitTesting\SilverlightBugAttribute.cs" />
