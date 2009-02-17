@@ -5,6 +5,12 @@
 
 2009-02-17  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Media.Animation/StoryboardTest.cs: Rewrote
+	CompleteTest and it's now doing what I'd expect it to. Added new
+	test for when multiple animations target the same object/property.
+
+2009-02-17  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Media.Animation/StoryboardTest.cs: Add
 	  *WithError functions so that storyboards can throw the right
 	  exceptions when they are not the root Storyboard.

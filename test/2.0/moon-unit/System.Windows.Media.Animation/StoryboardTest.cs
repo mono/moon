@@ -393,43 +393,68 @@ namespace MoonTest.System.Windows.Media.Animation {
 		[MoonlightBug]
 		public void CompleteEvent ()
 		{
-			ManualResetEvent h1 = new ManualResetEvent (false);
-			ManualResetEvent h2 = new ManualResetEvent (false);
-			ManualResetEvent h3 = new ManualResetEvent (false);
+			List<ManualResetEvent> handles = new List<ManualResetEvent> ();
+			Canvas c = new Canvas ();
 
-			Canvas c = CreateStoryboard ();
-			Storyboard sb = (Storyboard)c.Resources ["Storyboard"];
+			Storyboard sb = new Storyboard { Duration = new Duration(TimeSpan.FromMilliseconds(500)) };
+			ManualResetEvent handle = new ManualResetEvent(false);
+			handles.Add(handle);
+			sb.Completed += delegate { handle.Set (); };
+			c.Resources.Add ("Storyboard", sb);
 
-			sb.RepeatBehavior = new RepeatBehavior (0);
-			sb.Duration = new Duration (TimeSpan.FromMilliseconds (250));
-			sb.Children [0].Duration = new Duration (TimeSpan.FromMilliseconds (500));
-			sb.Children [1].Duration = new Duration (TimeSpan.FromMilliseconds (750));
+			for (int i = 0; i < 5; i++) {
+				DoubleAnimation anim = new DoubleAnimation { From = 10, To = 50 };
+				Storyboard child = new Storyboard { Duration = new Duration (TimeSpan.FromMilliseconds (500)) };
 
-			sb.Completed += delegate { h1.Set (); };
-			sb.Children [0].Completed += delegate { h2.Set (); };
-			sb.Children [1].Completed += delegate { h3.Set (); };
+				ManualResetEvent h = new ManualResetEvent (false);
+				handles.Add (h);
+				child.Completed += delegate { h.Set (); };
 
+				child.Children.Add (anim);
+				sb.Children.Add (child);
+				Rectangle r = new Rectangle ();
+				Storyboard.SetTarget (child, r);
+				Storyboard.SetTargetProperty (child, new PropertyPath("Width"));
+				c.Children.Add (r);
+			}
 
-			CreateAsyncTest (c,
-				() => sb.Begin (),
+			TestPanel.Children.Add (c);
 
-				() => Assert.IsTrue (h1.WaitOne (0), "#1"),
-				() => Assert.IsFalse (h2.WaitOne (0), "#2"),
-				() => Assert.IsFalse (h3.WaitOne (0), "#3"),
-
-				// The second animation should complete after 500ms
-				// so wait a little longer than that
-				() => Assert.IsFalse (h2.WaitOne (0), "#5"),
-				() => Assert.IsFalse (h2.WaitOne (600), "#6"),
-				() => Assert.IsFalse (h3.WaitOne (0), "#7"),
-
-				// The third animation should complete after an additional 250ms
-				// so wait a little longer than that
-				() => Assert.IsFalse (h3.WaitOne (0), "#8"),
-				() => Assert.IsFalse (h3.WaitOne (300), "#9"),
-
-				() => sb.Stop ()
+			Enqueue(() => sb.Begin ());
+			Enqueue(() => Assert.AreEqual(ClockState.Active, sb.GetCurrentState(), "#1"));
+			EnqueueConditional (() => handle.WaitOne (0));
+			Enqueue(() => {
+					for (int i = 0; i < handles.Count; i++)
+						Assert.IsTrue(handles [i].WaitOne (1000));
+				}
 			);
+			Enqueue(() => TestPanel.Children.Clear());
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void TargetSameProperty ()
+		{
+			Canvas c = new Canvas ();
+			Rectangle r = new Rectangle ();
+			c.Children.Add (r);
+
+			Storyboard sb = new Storyboard { Duration = new Duration (TimeSpan.FromMilliseconds (500)) };
+			c.Resources.Add ("Storyboard", sb);
+
+			for (int i = 0; i < 5; i++) {
+				DoubleAnimation anim = new DoubleAnimation { From = 10, To = 50 };
+				Storyboard child = new Storyboard { Duration = new Duration (TimeSpan.FromMilliseconds (500)) };
+
+				child.Children.Add (anim);
+				sb.Children.Add (child);
+				Storyboard.SetTarget (child, r);
+				Storyboard.SetTargetProperty (child, new PropertyPath ("Width"));
+			}
+
+			CreateAsyncTest (c, () => Assert.Throws<InvalidOperationException>(() => sb.Begin ()));
 		}
 		
 		[TestMethod]
