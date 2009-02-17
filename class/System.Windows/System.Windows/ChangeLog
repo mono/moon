@@ -1,3 +1,9 @@
+2009-02-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* FontStretchKind.cs: Get rid of Medium, no such value afaict in
+	SL2 plus it was breaking the unit tests because somehow Medium and
+	Normal were not comparing as equal(???).
+
 2009-02-08  Chris Toshok  <toshok@ximian.com>
 
 	* FrameworkElement.cs: add a managed changed handler for

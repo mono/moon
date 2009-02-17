@@ -37,12 +37,11 @@ namespace System.Windows {
 		ExtraCondensed,
 		Condensed,
 		SemiCondensed,
-		Medium,
+		Normal,
 		SemiExpanded,
 		Expanded,
 		ExtraExpanded,
 		UltraExpanded,
-		Normal = Medium
 	}
 }
 
