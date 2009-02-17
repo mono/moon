@@ -331,7 +331,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::UIELEMENT, "IsHitTestVisible", new Value (true), Type::BOOL);
 	DependencyProperty::RegisterFull (this, Type::UIELEMENT, "Cursor", new Value (MouseCursorDefault), Type::INT32, false, false, false, false, NULL, Validators::CursorValidator, false, false);
 	DependencyProperty::Register (this, Type::UIELEMENT, "Clip", Type::GEOMETRY);
-	DependencyProperty::Register (this, Type::ASSEMBLYPART, "Source", Type::STRING);
+	DependencyProperty::Register (this, Type::ASSEMBLYPART, "Source", new Value (""), Type::STRING);
 	DependencyProperty::RegisterFull (this, Type::APPLICATION, "Resources", NULL, Type::RESOURCE_DICTIONARY, true, false, false, false, NULL, NULL, false, false);
 	DependencyProperty::RegisterFull (this, Type::SPLINECOLORKEYFRAME, "KeySpline", NULL, Type::KEYSPLINE, true, false, false, false, NULL, NULL, false, false);
 	DependencyProperty::RegisterFull (this, Type::COLORANIMATIONUSINGKEYFRAMES, "KeyFrames", NULL, Type::COLORKEYFRAME_COLLECTION, true, false, false, false, NULL, NULL, false, false);

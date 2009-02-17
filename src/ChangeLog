@@ -1,5 +1,8 @@
 2009-02-17  Jeffrey Stedfast  <fejj@novell.com>
 
+	* deployment.h (class AssemblyPart): Set the default value of
+	AssemblyPart::SourceProperty to "".
+
 	* mediaelement.h: Set the default value of CurrentState to Closed.
 
 	* mediaelement.cpp (MediaElement::MediaElement): Don't need to set

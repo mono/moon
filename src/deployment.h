@@ -27,7 +27,7 @@ class AssemblyPart : public DependencyObject {
 	virtual ~AssemblyPart ();
 	
  public:
- 	/* @PropertyType=string */
+ 	/* @PropertyType=string,DefaultValue=\"\" */
 	const static int SourceProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
