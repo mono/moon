@@ -164,7 +164,7 @@ AC_ARG_WITH(managed,
 
 if test x$managed_code = xyes; then
   if pkg-config mono; then
-    PKG_CHECK_MODULES(MONO,mono >= 2.2)
+    PKG_CHECK_MODULES(MONO,mono >= 2.5)
     # browser assembly specific checks
     #
     # the browser assemblies require smcs
