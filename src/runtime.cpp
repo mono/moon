@@ -162,6 +162,7 @@ static struct env_options debugs[] = {
 	{ "text",              RUNTIME_DEBUG_TEXT,             true },
 	{ "xaml",              RUNTIME_DEBUG_XAML,             true },
 	{ "deployment",        RUNTIME_DEBUG_DEPLOYMENT,       true },
+	{ "mp3",               RUNTIME_DEBUG_MP3,              true },
 	{ NULL, 0, false }
 };
 #endif

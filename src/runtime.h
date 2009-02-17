@@ -111,6 +111,7 @@ enum RuntimeDebugFlags {
 	RUNTIME_DEBUG_DEPLOYMENT        = 1ULL << 31,
 	/* Add more as RUNTIME_DEBUG_XXX = 1ULL << 32, */
 	RUNTIME_DEBUG_MSI		= 1ULL << 32,
+	RUNTIME_DEBUG_MP3               = 1ULL << 33,
 };
 
 extern guint64 debug_flags;
