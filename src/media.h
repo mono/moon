@@ -32,8 +32,7 @@
 #endif
 #define MOON_FORMAT_ARGB CAIRO_FORMAT_ARGB32
 
-/* @Namespace=None */
-/* @ManagedDependencyProperties=None */
+/* @Namespace=System.Windows.Media */
 class MediaAttribute : public DependencyObject {
  protected:
 	virtual ~MediaAttribute () {}
@@ -45,14 +44,15 @@ class MediaAttribute : public DependencyObject {
  	/* @GenerateCBinding,GeneratePInvoke */
 	MediaAttribute () { SetObjectType (Type::MEDIAATTRIBUTE); }
 	
-	// property accessors
-
+	//
+	// Property Accessors
+	//
 	const char *GetValue();
 	void SetValue (const char *value);
 };
 
 
-/* @Namespace=None */
+/* @Namespace=System.Windows.Media */
 class MediaAttributeCollection : public DependencyObjectCollection {
  protected:
 	virtual ~MediaAttributeCollection () {}
