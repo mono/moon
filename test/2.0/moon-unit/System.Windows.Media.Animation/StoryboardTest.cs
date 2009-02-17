@@ -214,6 +214,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void CurrentState ()
 		{
 			Canvas c = CreateStoryboard ();
@@ -273,6 +274,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void CurrentState2 ()
 		{
 			Canvas c = CreateStoryboard ();
@@ -339,6 +341,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void CompleteEvent ()
 		{
 			ManualResetEvent h1 = new ManualResetEvent (false);
