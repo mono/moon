@@ -225,7 +225,8 @@ namespace MoonTest.System.Windows.Media.Animation {
 				sb.Begin ();
 			});
 
-			Sleep (300, delegate {
+			EnqueueConditional (delegate { return sb.GetCurrentTime ().TotalMilliseconds > 300; });
+			Enqueue (delegate {
 				// Animation1: 300/1000, Animation2: 300/2000
 				Assert.IsTrue (sb.GetCurrentTime ().TotalSeconds < 1, "#Sanity1");
 				Assert.AreEqual (ClockState.Active, sb.GetCurrentState (), "#2");
@@ -233,7 +234,8 @@ namespace MoonTest.System.Windows.Media.Animation {
 				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#4");
 			});
 
-			Sleep ((int) (1250 - sb.GetCurrentTime ().TotalMilliseconds), delegate {
+			EnqueueConditional (delegate { return sb.GetCurrentTime ().TotalMilliseconds > 1250; });
+			Enqueue (delegate {
 				// Animation1: 1250/1000, Animation2: 1250/2000
 				Assert.IsTrue (sb.GetCurrentTime ().TotalSeconds > 1, "#Sanity2");
 				Assert.AreEqual (ClockState.Active, sb.GetCurrentState (), "#5");
@@ -241,7 +243,8 @@ namespace MoonTest.System.Windows.Media.Animation {
 				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#7");
 			});
 
-			Sleep ((int) (1350 - sb.GetCurrentTime ().TotalMilliseconds), delegate {
+			EnqueueConditional (delegate { return sb.GetCurrentTime ().TotalMilliseconds > 1350; });
+			Enqueue (delegate {
 				// Animation1: 1350/1000, Animation2: 1350/2000
 				Assert.IsTrue (sb.GetCurrentTime ().TotalSeconds > 1, "#Sanity3");
 				Assert.AreEqual (ClockState.Active, sb.GetCurrentState (), "#8");
@@ -257,7 +260,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#13");
 			});
 
-			Sleep ((int) (1450 - sb.GetCurrentTime ().TotalMilliseconds), delegate {
+			Enqueue (delegate {
 				// Animation1: 1450/1000, Animation2: 1450/2000
 				Assert.IsTrue (sb.GetCurrentTime ().TotalSeconds > 1, "#Sanity5");
 				Assert.AreEqual (ClockState.Stopped, sb.GetCurrentState (), "#14");
@@ -276,12 +279,13 @@ namespace MoonTest.System.Windows.Media.Animation {
 			Storyboard sb = (Storyboard) c.Resources ["Storyboard"];
 			TestPanel.Children.Add (c);
 
-			Enqueue ( delegate {
+			Enqueue (delegate {
 				Assert.AreEqual (ClockState.Stopped, sb.GetCurrentState (), "#1");
 				sb.Begin ();
 			});
 
-			Sleep (300, delegate {
+			EnqueueConditional (delegate { return sb.GetCurrentTime ().TotalMilliseconds > 300; });
+			Enqueue (delegate {
 				// Animation1: 300/1000, Animation2: 300/2000
 				Assert.IsTrue (sb.GetCurrentTime ().TotalSeconds < 1, "#Sanity1");
 				Assert.AreEqual (ClockState.Active, sb.GetCurrentState (), "#2");
@@ -289,7 +293,8 @@ namespace MoonTest.System.Windows.Media.Animation {
 				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#4");
 			});
 
-			Sleep ((int) (1250 - sb.GetCurrentTime ().TotalMilliseconds), delegate {
+			EnqueueConditional (delegate { return sb.GetCurrentTime ().TotalMilliseconds > 1250; });
+			Enqueue (delegate {
 				// Animation1: 1250/1000, Animation2: 1250/2000
 				Assert.IsTrue (sb.GetCurrentTime ().TotalSeconds > 1, "#Sanity2");
 				Assert.AreEqual (ClockState.Active, sb.GetCurrentState (), "#5");
@@ -297,14 +302,15 @@ namespace MoonTest.System.Windows.Media.Animation {
 				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#7");
 			});
 
-			Enqueue(delegate {
+			Enqueue (delegate {
 				c.Children.Clear ();
 				c.Resources.Clear ();
 				TestPanel.Children.Clear ();
 				TestPanel.Resources.Clear ();
 			});
 
-			Sleep ((int) (1350 - sb.GetCurrentTime ().TotalMilliseconds), delegate {
+			EnqueueConditional (delegate { return sb.GetCurrentTime ().TotalMilliseconds > 1350; });
+			Enqueue (delegate {
 				// Animation1: 1350/1000, Animation2: 1350/2000
 				Assert.IsTrue (sb.GetCurrentTime ().TotalSeconds > 1, "#Sanity3");
 				Assert.AreEqual (ClockState.Active, sb.GetCurrentState (), "#8");
@@ -320,7 +326,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#13");
 			});
 
-			Sleep ((int) (1450 - sb.GetCurrentTime ().TotalMilliseconds), delegate {
+			Enqueue (delegate {
 				// Animation1: 1450/1000, Animation2: 1450/2000
 				Assert.IsTrue (sb.GetCurrentTime ().TotalSeconds > 1, "#Sanity5");
 				Assert.AreEqual (ClockState.Stopped, sb.GetCurrentState (), "#14");
