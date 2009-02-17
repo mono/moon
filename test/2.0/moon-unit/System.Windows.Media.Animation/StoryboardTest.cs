@@ -36,6 +36,8 @@ using System.Windows.Shapes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.Silverlight.Testing;
+using System.Threading;
+using System.Collections.Generic;
 
 namespace MoonTest.System.Windows.Media.Animation {
 
@@ -212,62 +214,194 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("When a storyboard is stopped, we recursively set the state of all child storyboards to Stopped. This shouldn't happen")]
 		public void CurrentState ()
 		{
+			Canvas c = CreateStoryboard ();
+			Storyboard sb = (Storyboard) c.Resources ["Storyboard"];
+			TestPanel.Children.Add (c);
+
+			Enqueue ( delegate {
+				Assert.AreEqual (ClockState.Stopped, sb.GetCurrentState (), "#1");
+				sb.Begin ();
+			});
+
+			Sleep (300, delegate {
+				// Animation1: 300/1000, Animation2: 300/2000
+				Assert.IsTrue (sb.GetCurrentTime ().TotalSeconds < 1, "#Sanity1");
+				Assert.AreEqual (ClockState.Active, sb.GetCurrentState (), "#2");
+				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [0]).GetCurrentState (), "#3");
+				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#4");
+			});
+
+			Sleep ((int) (1250 - sb.GetCurrentTime ().TotalMilliseconds), delegate {
+				// Animation1: 1250/1000, Animation2: 1250/2000
+				Assert.IsTrue (sb.GetCurrentTime ().TotalSeconds > 1, "#Sanity2");
+				Assert.AreEqual (ClockState.Active, sb.GetCurrentState (), "#5");
+				Assert.AreEqual (ClockState.Filling, ((Storyboard) sb.Children [0]).GetCurrentState (), "#6");
+				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#7");
+			});
+
+			Sleep ((int) (1350 - sb.GetCurrentTime ().TotalMilliseconds), delegate {
+				// Animation1: 1350/1000, Animation2: 1350/2000
+				Assert.IsTrue (sb.GetCurrentTime ().TotalSeconds > 1, "#Sanity3");
+				Assert.AreEqual (ClockState.Active, sb.GetCurrentState (), "#8");
+				Assert.AreEqual (ClockState.Filling, ((Storyboard) sb.Children [0]).GetCurrentState (), "#9");
+				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#10");
+				sb.Stop ();
+			});
+
+			Enqueue (delegate {
+				Assert.IsTrue (sb.GetCurrentTime ().TotalSeconds > 1, "#Sanity4");
+				Assert.AreEqual (ClockState.Stopped, sb.GetCurrentState (), "#11");
+				Assert.AreEqual (ClockState.Filling, ((Storyboard) sb.Children [0]).GetCurrentState (), "#12");
+				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#13");
+			});
+
+			Sleep ((int) (1450 - sb.GetCurrentTime ().TotalMilliseconds), delegate {
+				// Animation1: 1450/1000, Animation2: 1450/2000
+				Assert.IsTrue (sb.GetCurrentTime ().TotalSeconds > 1, "#Sanity5");
+				Assert.AreEqual (ClockState.Stopped, sb.GetCurrentState (), "#14");
+				Assert.AreEqual (ClockState.Filling, ((Storyboard) sb.Children [0]).GetCurrentState (), "#15");
+				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#16");
+			});
+
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void CurrentState2 ()
+		{
+			Canvas c = CreateStoryboard ();
+			Storyboard sb = (Storyboard) c.Resources ["Storyboard"];
+			TestPanel.Children.Add (c);
+
+			Enqueue ( delegate {
+				Assert.AreEqual (ClockState.Stopped, sb.GetCurrentState (), "#1");
+				sb.Begin ();
+			});
+
+			Sleep (300, delegate {
+				// Animation1: 300/1000, Animation2: 300/2000
+				Assert.IsTrue (sb.GetCurrentTime ().TotalSeconds < 1, "#Sanity1");
+				Assert.AreEqual (ClockState.Active, sb.GetCurrentState (), "#2");
+				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [0]).GetCurrentState (), "#3");
+				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#4");
+			});
+
+			Sleep ((int) (1250 - sb.GetCurrentTime ().TotalMilliseconds), delegate {
+				// Animation1: 1250/1000, Animation2: 1250/2000
+				Assert.IsTrue (sb.GetCurrentTime ().TotalSeconds > 1, "#Sanity2");
+				Assert.AreEqual (ClockState.Active, sb.GetCurrentState (), "#5");
+				Assert.AreEqual (ClockState.Filling, ((Storyboard) sb.Children [0]).GetCurrentState (), "#6");
+				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#7");
+			});
+
+			Enqueue(delegate {
+				c.Children.Clear ();
+				c.Resources.Clear ();
+				TestPanel.Children.Clear ();
+				TestPanel.Resources.Clear ();
+			});
+
+			Sleep ((int) (1350 - sb.GetCurrentTime ().TotalMilliseconds), delegate {
+				// Animation1: 1350/1000, Animation2: 1350/2000
+				Assert.IsTrue (sb.GetCurrentTime ().TotalSeconds > 1, "#Sanity3");
+				Assert.AreEqual (ClockState.Active, sb.GetCurrentState (), "#8");
+				Assert.AreEqual (ClockState.Filling, ((Storyboard) sb.Children [0]).GetCurrentState (), "#9");
+				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#10");
+				sb.Stop ();
+			});
+
+			Enqueue (delegate {
+				Assert.IsTrue (sb.GetCurrentTime ().TotalSeconds > 1, "#Sanity4");
+				Assert.AreEqual (ClockState.Stopped, sb.GetCurrentState (), "#11");
+				Assert.AreEqual (ClockState.Filling, ((Storyboard) sb.Children [0]).GetCurrentState (), "#12");
+				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#13");
+			});
+
+			Sleep ((int) (1450 - sb.GetCurrentTime ().TotalMilliseconds), delegate {
+				// Animation1: 1450/1000, Animation2: 1450/2000
+				Assert.IsTrue (sb.GetCurrentTime ().TotalSeconds > 1, "#Sanity5");
+				Assert.AreEqual (ClockState.Stopped, sb.GetCurrentState (), "#14");
+				Assert.AreEqual (ClockState.Filling, ((Storyboard) sb.Children [0]).GetCurrentState (), "#15");
+				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#16");
+			});
+
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void CompleteEvent ()
+		{
+			ManualResetEvent h1 = new ManualResetEvent (false);
+			ManualResetEvent h2 = new ManualResetEvent (false);
+			ManualResetEvent h3 = new ManualResetEvent (false);
+
+			Canvas c = CreateStoryboard ();
+			Storyboard sb = (Storyboard)c.Resources ["Storyboard"];
+
+			sb.RepeatBehavior = new RepeatBehavior (0);
+			sb.Duration = new Duration (TimeSpan.FromMilliseconds (250));
+			sb.Children [0].Duration = new Duration (TimeSpan.FromMilliseconds (500));
+			sb.Children [1].Duration = new Duration (TimeSpan.FromMilliseconds (750));
+
+			sb.Completed += delegate { h1.Set (); };
+			sb.Children [0].Completed += delegate { h2.Set (); };
+			sb.Children [1].Completed += delegate { h3.Set (); };
+
+
+			CreateAsyncTest (c,
+				() => sb.Begin (),
+
+				() => Assert.IsTrue (h1.WaitOne (0), "#1"),
+				() => Assert.IsFalse (h2.WaitOne (0), "#2"),
+				() => Assert.IsFalse (h3.WaitOne (0), "#3"),
+
+				// The second animation should complete after 500ms
+				// so wait a little longer than that
+				() => Assert.IsFalse (h2.WaitOne (0), "#5"),
+				() => Assert.IsFalse (h2.WaitOne (600), "#6"),
+				() => Assert.IsFalse (h3.WaitOne (0), "#7"),
+
+				// The third animation should complete after an additional 250ms
+				// so wait a little longer than that
+				() => Assert.IsFalse (h3.WaitOne (0), "#8"),
+				() => Assert.IsFalse (h3.WaitOne (300), "#9"),
+
+				() => sb.Stop ()
+			);
+		}
+
+		private Canvas CreateStoryboard ()
+		{
+			Canvas c = new Canvas ();
+
 			Storyboard sb = new Storyboard { RepeatBehavior = new RepeatBehavior (2) };
 
 			Rectangle r = new Rectangle { Name = "A" };
 			Storyboard child = new Storyboard ();
-			DoubleAnimation animation = new DoubleAnimation { Duration = new Duration(TimeSpan.FromSeconds (1)), From = 10, To = 100 };
+			DoubleAnimation animation = new DoubleAnimation { Duration = new Duration (TimeSpan.FromSeconds (1)), From = 10, To = 100 };
 			Storyboard.SetTargetName (animation, "A");
-			Storyboard.SetTargetProperty(animation, new PropertyPath ("Width"));
+			Storyboard.SetTargetProperty (animation, new PropertyPath ("Width"));
 
 			child.Children.Add (animation);
 			sb.Children.Add (child);
-			TestPanel.Children.Add(r);
+			c.Children.Add (r);
 
 			r = new Rectangle { Name = "B" };
 			child = new Storyboard ();
 			animation = new DoubleAnimation { Duration = new Duration (TimeSpan.FromSeconds (2)), From = 10, To = 100 };
 			Storyboard.SetTargetName (animation, "B");
 			Storyboard.SetTargetProperty (animation, new PropertyPath ("Width"));
-			
+
 			child.Children.Add (animation);
 			sb.Children.Add (child);
-			TestPanel.Children.Add(r);
+			c.Children.Add (r);
 
-			TestPanel.Resources.Add ("asdas", sb);
-			Enqueue (delegate { Assert.AreEqual (ClockState.Stopped, sb.GetCurrentState (), "#1"); });
-			Enqueue (delegate { sb.Begin (); });
-
-			EnqueueSleep (500);
-			Enqueue (delegate { Assert.AreEqual (ClockState.Active, sb.GetCurrentState (), "#2"); });
-			Enqueue (delegate { Assert.AreEqual (ClockState.Active, ((Storyboard)sb.Children[0]).GetCurrentState (), "#3"); });
-			Enqueue (delegate { Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#4"); });
-
-			EnqueueSleep (750);
-			Enqueue (delegate { Assert.AreEqual (ClockState.Active, sb.GetCurrentState (), "#5"); });
-			Enqueue (delegate { Assert.AreEqual (ClockState.Filling, ((Storyboard) sb.Children [0]).GetCurrentState (), "#6"); });
-			Enqueue (delegate { Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#7"); });
-
-			Enqueue (delegate { TestPanel.Children.Clear (); TestPanel.Resources.Clear (); });
-			EnqueueSleep (100);
-			Enqueue (delegate { Assert.AreEqual (ClockState.Active, sb.GetCurrentState (), "#8"); });
-			Enqueue (delegate { Assert.AreEqual (ClockState.Filling, ((Storyboard) sb.Children [0]).GetCurrentState (), "#9"); });
-			Enqueue (delegate { Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#10"); });
-
-			// These ones fail.
-			Enqueue (delegate { sb.Stop (); });
-			Enqueue (delegate { Assert.AreEqual (ClockState.Stopped, sb.GetCurrentState (), "#11"); });
-			Enqueue (delegate { Assert.AreEqual (ClockState.Filling, ((Storyboard) sb.Children [0]).GetCurrentState (), "#12"); });
-			Enqueue (delegate { Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#13"); });
-
-			EnqueueSleep (1000);
-			Enqueue (delegate { Assert.AreEqual (ClockState.Stopped, sb.GetCurrentState (), "#14"); });
-			Enqueue (delegate { Assert.AreEqual (ClockState.Filling, ((Storyboard) sb.Children [0]).GetCurrentState (), "#15"); });
-			Enqueue (delegate { Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#16"); });
-			EnqueueTestComplete ();
+			c.Resources.Add ("Storyboard", sb);
+			return c;
 		}
 	}
 }
